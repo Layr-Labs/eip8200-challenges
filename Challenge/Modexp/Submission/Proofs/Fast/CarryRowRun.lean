@@ -15,19 +15,18 @@ open CiosCachedMidMemory
 
 theorem run_tail (s : State) (c mu f pbi pa pb flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
-    (route : UInt256)
-    (hroute : MachineState.readWord s.memory 9280 = route)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code route.toNat = true) :
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 4254 = true) :
     runInstructions CarryRowPrograms.tail
-      (framed s (UInt256.ofNat 4765)
+      (framed s (UInt256.ofNat 4841)
         ([c,mu,f,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) =
     some (framed {s with memory := tailCarry s.memory c f}
-      (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb) then route else UInt256.ofNat 4794)
+      (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb) then UInt256.ofNat 4254 else UInt256.ofNat 4874)
       ([negative32+pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) := by
   have h1 := CarryRowTrace.run_tailStore s c mu f pbi pa pb flag dst ret rest hcap hact
-  have h2 := SquareRoute.run_test {s with memory := tailCarry s.memory c f}
-    pbi pa pb flag dst ret route rest hcap hact
-    ((readWord_tailCarry s.memory c f 9280 (Or.inr (by decide))).trans hroute) htarget
-  exact runInstructions_append_some _ _ _ _ _ h1 h2
+  have h2 := CiosCachedTailTest.run_test {s with memory := tailCarry s.memory c f}
+    pbi pa pb flag dst ret rest hcap htarget
+  have h := runInstructions_append_some _ _ _ _ _ h1 h2
+  simpa only [CarryRowPrograms.tail, CiosCachedTailDefs.testProgram,
+    CiosCachedTailDefs.tailLoopProgram, CiosCachedTailDefs.baseStack, List.drop_take] using h
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryRowRun

@@ -111,14 +111,15 @@ def qhatOf (mem : ByteArray) : UInt256 :=
   let diff := lo - rho
   let dinv := MachineState.readWord mem PRE_DINV
   let q := dinv * diff
+  let rhat := unext - MachineState.readWord mem 0 * q
+  let m1 := MachineState.readWord mem 32
+  let correction := UInt256.gt
+    (UInt256.shiftRight q (UInt256.ofNat 128) *
+      UInt256.shiftRight m1 (UInt256.ofNat 128)) rhat
   -- Saturate a quotient that would wrap at the word radix. The generic
   -- correction proof below accepts every UInt256 quotient, including this one.
   let overflow := UInt256.isZero (UInt256.lt hi dodd)
-  UInt256.lor (UInt256.ofNat 0 - overflow)
-    (q - UInt256.land
-      (UInt256.isZero (UInt256.isZero q))
-      (UInt256.gt (MachineState.readWord mem 32)
-        (unext - MachineState.readWord mem 0 * q)))
+  UInt256.lor (UInt256.ofNat 0 - overflow) (q - correction)
 
 /-- The limb pass `t += q * NEG` is exactly a CIOS first loop with `a = NEG`. -/
 def macOf (mem : ByteArray) (n : Nat) (q : UInt256) : Monpro.MacState :=

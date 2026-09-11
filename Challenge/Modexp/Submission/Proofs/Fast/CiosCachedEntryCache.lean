@@ -16,7 +16,7 @@ open WindowNibbleKernel
 /-- Virtual leading JUMPDEST for composing the uncached entry template. -/
 def maskEntryState (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { entryState s mem pa pb pdst ret rest with pc := UInt256.ofNat 4103 }
+  { entryState s mem pa pb pdst ret rest with pc := UInt256.ofNat 4198 }
 
 def cacheProgram : List Instr := entryProgram.take 18
 def entryBodyProgram : List Instr := entryProgram.drop 18
@@ -26,9 +26,40 @@ theorem entryProgram_split : entryProgram = cacheProgram ++ entryBodyProgram := 
 
 def cachedEntryState (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4222
+  { s with pc := UInt256.ofNat 4226
            stack := [UInt256.ofNat pa, UInt256.ofNat pb,
              l1Target n, negative32, allOnes, l2Target n, pdst, ret] ++ rest
            memory := mem }
+
+set_option linter.unusedSimpArgs false in
+theorem run_cache (s : State) (mem : ByteArray) (pa pb n : Nat)
+    (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1005) (hact : 296 ≤ s.activeWords.toNat)
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32*n)) :
+    runInstructions cacheProgram (maskEntryState s mem pa pb pdst ret rest) =
+      some (cachedEntryState s mem pa pb n pdst ret rest) := by
+  have hExtra9 : rest.length + 9 < 1024 := by omega
+  have hExtra10 : rest.length + 10 < 1024 := by omega
+  have hExtra11 : rest.length + 11 < 1024 := by omega
+  have hExtra12 : rest.length + 12 < 1024 := by omega
+  have hExtra13 : rest.length + 13 < 1024 := by omega
+  have hExtra14 : rest.length + 14 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hactS : UInt256.ofNat
+      (MachineState.activeWordsAfter s.activeWords.toNat 9344 32) = s.activeWords :=
+    activeWords_fix s 9344 32 (by decide) (by omega) hact
+  have h128 : (128 : UInt256) = UInt256.ofNat 128 := by decide
+  have h9344 : (9344 : UInt256).toNat = 9344 := by decide
+  simp [hExtra9, hExtra10, hExtra11, hExtra12, hExtra13, hExtra14, cacheProgram, entryProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    maskEntryState, entryState, cachedEntryState, l1Target, l2Target, isFour, hc4, hc5, hc6, hc7, hc8,
+    ← negative32_not, ← allOnes_not, h128, h9344, hs32, hactS, State.activeWordsAfterUInt256,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,
+    List.exchange, ← word_add_assoc]
+  exact ⟨rfl, rfl, rfl, rfl⟩
+
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCached

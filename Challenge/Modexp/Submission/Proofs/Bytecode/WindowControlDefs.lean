@@ -25,7 +25,7 @@ def guardPath :
    Main.pushAt 1828 1 32,
    Main.opAt 1829 .XOR,
    Main.opAt 1830 (.Dup ⟨2, by decide⟩),
-   Main.pushAt 1831 1 32,
+   Main.pushAt 1831 2 416,
    Main.opAt 1832 .XOR,
    Main.opAt 1833 .OR,
    Main.opAt 1834 (.Dup ⟨3, by decide⟩),

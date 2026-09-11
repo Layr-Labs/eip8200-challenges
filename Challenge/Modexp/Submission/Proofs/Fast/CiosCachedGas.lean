@@ -55,7 +55,7 @@ opaque gasSteps_out (s : State) (mem : ByteArray) (pa pb n i : Nat)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472) :
     Challenge.EvmProof.GasSteps
       (outState s mem pa pb n i pdst ret rest)
-      (firstAt 4167 s mem (rowBi mem pb n i) pa pb n i pdst ret rest) :=
+      (firstAt 4257 s mem (rowBi mem pb n i) pa pb n i pdst ret rest) :=
   CiosCachedBlocks.out.steps (environment (outState s mem pa pb n i pdst ret rest) hcode hfork hrun hnp) rfl
     (run_out s mem pa pb n i pdst ret rest hcap hrun hact hn hn32 hi
       hpa hpaFit hpb hpbFit)
@@ -74,7 +74,7 @@ opaque gasSteps_mid (s : State) (mem : ByteArray) (c bi : UInt256)
     (hc : CiosReadonly.ReadonlyCache mem n tl inv m0) :
     Challenge.EvmProof.GasSteps
       (midState s mem c bi pa pb n i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
-      (l2At 4507 s (midMem mem c) bi (rowMu mem n)
+      (l2At 4582 s (midMem mem c) bi (rowMu mem n)
         (rowC0 mem n) pa pb n i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) :=
   CiosCachedBlocks.mid.steps (environment (midState s mem c bi pa pb n i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) hcode hfork hrun hnp) rfl
     (CiosReadonly.run_middle s mem c bi pa pb n i tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hact
@@ -149,8 +149,8 @@ opaque gasSteps_commonFirst (s : State) (mem : ByteArray) (bi : UInt256)
     (htl : tl = UInt256.ofNat (8224+32*n))
     (hAend : aEnd = UInt256.ofNat (pa+32*n-32)) :
     Challenge.EvmProof.GasSteps
-      (firstAt 4167 s mem bi pa pb n i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
-      (l1At 4193 s mem bi pa pb n i 1 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) :=
+      (firstAt 4257 s mem bi pa pb n i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (l1At 4283 s mem bi pa pb n i 1 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) :=
   l1Mac0.steps (environment _ hcode hfork hrun hnp) rfl
     (CiosCommonFirst.run_commonFirst s mem bi pa pb n i tl inv m0 aEnd m96 m64 m32 pdst ret rest
       hcap hact hn hpos hpaFit htl hAend)
@@ -185,10 +185,10 @@ opaque gasSteps_l1Last (s : State) (mem : ByteArray) (bi : UInt256)
     (hn32 : n ≤ 32) (hpos : 0 < n)
     (hpa : 32 ≤ pa) (hpaFit : pa+32*n ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (l1At 4511 s mem bi pa pb n i (n-1) pdst ret rest)
+      (l1At 4515 s mem bi pa pb n i (n-1) pdst ret rest)
       (midState s (l1Step mem bi pa n n).memory (l1Step mem bi pa n n).carry bi
         pa pb n i pdst ret rest) :=
-  l1Mac7.steps (environment (l1At 4511 s mem bi pa pb n i (n-1) pdst ret rest) hcode hfork hrun hnp) rfl
+  l1Mac7.steps (environment (l1At 4515 s mem bi pa pb n i (n-1) pdst ret rest) hcode hfork hrun hnp) rfl
     (run_l1Last 8256 s mem bi pa pb n i pdst ret rest hcap hact hn32 hpos (by decide) hpa hpaFit)
 
 opaque gasSteps_l1Dispatch4 (s : State) (mem : ByteArray) (bi : UInt256)
@@ -199,9 +199,9 @@ opaque gasSteps_l1Dispatch4 (s : State) (mem : ByteArray) (bi : UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (l1At 4193 s mem bi pa pb 4 i j pdst ret rest)
-      (l1At 4347 s mem bi pa pb 4 i j pdst ret rest) :=
-  l1Dispatch.steps (environment (l1At 4193 s mem bi pa pb 4 i j pdst ret rest) hcode hfork hrun hnp) rfl
+      (l1At 4283 s mem bi pa pb 4 i j pdst ret rest)
+      (l1At 4438 s mem bi pa pb 4 i j pdst ret rest) :=
+  l1Dispatch.steps (environment (l1At 4283 s mem bi pa pb 4 i j pdst ret rest) hcode hfork hrun hnp) rfl
     (run_l1Dispatch4 s mem bi pa pb i j pdst ret rest hcap
       (by rw [hcode]; exact jumpDest4757))
 
@@ -213,12 +213,12 @@ opaque gasSteps_l1Dispatch8 (s : State) (mem : ByteArray) (bi : UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (l1At 4193 s mem bi pa pb 8 i j pdst ret rest)
-      (l1At 4282 s mem bi pa pb 8 i j pdst ret rest) :=
-  l1Dispatch.steps (environment (l1At 4193 s mem bi pa pb 8 i j pdst ret rest) hcode hfork hrun hnp) rfl
+      (l1At 4283 s mem bi pa pb 8 i j pdst ret rest)
+      (l1At 4286 s mem bi pa pb 8 i j pdst ret rest) :=
+  l1Dispatch.steps (environment (l1At 4283 s mem bi pa pb 8 i j pdst ret rest) hcode hfork hrun hnp) rfl
     (run_l1Dispatch8 s mem bi pa pb i j pdst ret rest hcap
       (by rw [hcode]; exact jumpDestL1Eight)) |>.trans
-  (l1Join8.steps (environment (l1At 4195 s mem bi pa pb 8 i j pdst ret rest) hcode hfork hrun hnp) rfl
+  (l1Join8.steps (environment (l1At 4285 s mem bi pa pb 8 i j pdst ret rest) hcode hfork hrun hnp) rfl
     (run_l1Join8 s mem bi pa pb 8 i j pdst ret rest hcap))
 
 opaque gasSteps_l1Join (s : State) (mem : ByteArray) (bi : UInt256)
@@ -229,9 +229,9 @@ opaque gasSteps_l1Join (s : State) (mem : ByteArray) (bi : UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (l1At 4347 s mem bi pa pb n i j pdst ret rest)
-      (l1At 4435 s mem bi pa pb n i j pdst ret rest) :=
-  l1Join.steps (environment (l1At 4347 s mem bi pa pb n i j pdst ret rest) hcode hfork hrun hnp) rfl
+      (l1At 4438 s mem bi pa pb n i j pdst ret rest)
+      (l1At 4439 s mem bi pa pb n i j pdst ret rest) :=
+  l1Join.steps (environment (l1At 4438 s mem bi pa pb n i j pdst ret rest) hcode hfork hrun hnp) rfl
     (run_l1Join s mem bi pa pb n i j pdst ret rest hcap)
 
 opaque gasSteps_l2Mac (pc : Nat) (w : Fin 33) (x tl ts : UInt256)
@@ -290,9 +290,9 @@ opaque gasSteps_l2Dispatch4 (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (l2At 4507 s mem bi mu c0 pa pb 4 i k pdst ret rest)
-      (l2At 4661 s mem bi mu c0 pa pb 4 i k pdst ret rest) :=
-  l2Dispatch.steps (environment (l2At 4507 s mem bi mu c0 pa pb 4 i k pdst ret rest) hcode hfork hrun hnp) rfl
+      (l2At 4582 s mem bi mu c0 pa pb 4 i k pdst ret rest)
+      (l2At 4737 s mem bi mu c0 pa pb 4 i k pdst ret rest) :=
+  l2Dispatch.steps (environment (l2At 4582 s mem bi mu c0 pa pb 4 i k pdst ret rest) hcode hfork hrun hnp) rfl
     (run_l2Dispatch4 s mem bi mu c0 pa pb i k pdst ret rest hcap
       (by rw [hcode]; exact jumpDest5112))
 
@@ -304,12 +304,12 @@ opaque gasSteps_l2Dispatch8 (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (l2At 4507 s mem bi mu c0 pa pb 8 i k pdst ret rest)
-      (l2At 4510 s mem bi mu c0 pa pb 8 i k pdst ret rest) :=
-  l2Dispatch.steps (environment (l2At 4507 s mem bi mu c0 pa pb 8 i k pdst ret rest) hcode hfork hrun hnp) rfl
+      (l2At 4582 s mem bi mu c0 pa pb 8 i k pdst ret rest)
+      (l2At 4585 s mem bi mu c0 pa pb 8 i k pdst ret rest) :=
+  l2Dispatch.steps (environment (l2At 4582 s mem bi mu c0 pa pb 8 i k pdst ret rest) hcode hfork hrun hnp) rfl
     (run_l2Dispatch8 s mem bi mu c0 pa pb i k pdst ret rest hcap
       (by rw [hcode]; exact jumpDestL2Eight)) |>.trans
-  (l2Join8.steps (environment (l2At 4509 s mem bi mu c0 pa pb 8 i k pdst ret rest) hcode hfork hrun hnp) rfl
+  (l2Join8.steps (environment (l2At 4584 s mem bi mu c0 pa pb 8 i k pdst ret rest) hcode hfork hrun hnp) rfl
     (run_l2Join8 s mem bi mu c0 pa pb 8 i k pdst ret rest hcap))
 
 opaque gasSteps_l2Join (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
@@ -320,9 +320,9 @@ opaque gasSteps_l2Join (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (l2At 4661 s mem bi mu c0 pa pb n i k pdst ret rest)
-      (l2At 4662 s mem bi mu c0 pa pb n i k pdst ret rest) :=
-  l2Join.steps (environment (l2At 4661 s mem bi mu c0 pa pb n i k pdst ret rest) hcode hfork hrun hnp) rfl
+      (l2At 4737 s mem bi mu c0 pa pb n i k pdst ret rest)
+      (l2At 4738 s mem bi mu c0 pa pb n i k pdst ret rest) :=
+  l2Join.steps (environment (l2At 4737 s mem bi mu c0 pa pb n i k pdst ret rest) hcode hfork hrun hnp) rfl
     (run_l2Join s mem bi mu c0 pa pb n i k pdst ret rest hcap)
 
 /-- The final second-loop copy lands exactly on the row tail frame. -/
@@ -336,10 +336,10 @@ opaque gasSteps_l2Final (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
     (hact : 296 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hn : 2 ≤ n) :
     Challenge.EvmProof.GasSteps
-      (l2At 4730 s mem bi mu c0 pa pb n i (n-2) pdst ret rest)
+      (l2At 4806 s mem bi mu c0 pa pb n i (n-2) pdst ret rest)
       (tailState s (l2Step mem mu c0 n (n-1)).memory
         (l2Step mem mu c0 n (n-1)).carry mu bi pa pb n i pdst ret rest) := by
-  have h := gasSteps_l2Mac 4730 0 0 8256 8288 l2Mac6 s mem bi mu c0 pa pb n i (n-2) pdst ret rest
+  have h := gasSteps_l2Mac 4806 0 0 8256 8288 l2Mac6 s mem bi mu c0 pa pb n i (n-2) pdst ret rest
     hcap hrun hcode hfork hnp hact hn32 (by omega)
     (by rw [show n - 2 - (n - 2) = 0 by omega]; decide)
     (by rw [show n - 2 - (n - 2) = 0 by omega]; decide)

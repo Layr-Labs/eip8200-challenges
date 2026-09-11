@@ -19,16 +19,16 @@ open Challenge.Modexp.Submission.Proofs.Fast.FixedExponentStates
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
 theorem jumpD3781 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 3781).toNat = true :=
-  Exp.jumpD 3781 (by decide) FixedExponentPaths.jumpDest3781
+    (UInt256.ofNat 3785).toNat = true :=
+  Exp.jumpD 3785 (by decide) FixedExponentPaths.jumpDest3781
 
 theorem jumpD3808 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 3808).toNat = true :=
-  Exp.jumpD 3772 (by decide) FixedExponentPaths.jumpDest3772
+    (UInt256.ofNat 3812).toNat = true :=
+  Exp.jumpD 3776 (by decide) FixedExponentPaths.jumpDest3772
 
 theorem jumpD3833 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 3833).toNat = true :=
-  Exp.jumpD 3833 (by decide) FixedExponentPaths.jumpDest3833
+    (UInt256.ofNat 3837).toNat = true :=
+  Exp.jumpD 3837 (by decide) FixedExponentPaths.jumpDest3833
 
 /-- Execute all remaining calls of the fixed squaring loop. -/
 def gasSteps_squareLoop (s : State) {n bsize mm minv R : Nat}
@@ -50,7 +50,7 @@ def gasSteps_squareLoop (s : State) {n bsize mm minv R : Nat}
   induction count generalizing memory acc with
   | zero => omega
   | succ k ih =>
-      have hcall := sub.monpro 1024 1024 1024 (UInt256.ofNat 3781)
+      have hcall := sub.monpro 1024 1024 1024 (UInt256.ofNat 3785)
         (UInt256.ofNat (k + 1) :: Exp.outer n bsize esize msize)
         memory acc acc (by simp [Exp.outer])
         (by omega) (by omega) (by omega) (by omega) (by omega)
@@ -116,7 +116,7 @@ def gasSteps_fixedSquares (s : State) {n bsize mm minv R : Nat}
       (special s memory n bsize esize msize count)
       (square s mem0 n bsize esize msize count) := by
     simpa [mem0, FixedExponentStates.initialSquareMem] using hhead
-  have hcall := sub.monpro 1024 1024 1024 (UInt256.ofNat 3781)
+  have hcall := sub.monpro 1024 1024 1024 (UInt256.ofNat 3785)
     (UInt256.ofNat count :: Exp.outer n bsize esize msize)
     mem0 bM bM (by simp [Exp.outer])
     (by omega) (by omega) (by omega) (by omega) (by omega)

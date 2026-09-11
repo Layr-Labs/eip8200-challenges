@@ -12,7 +12,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 
 def loadProgram (off : UInt256) : List Instr :=
-  [.op .JUMPDEST, .push 2 (UInt256.ofNat 8960 + off), .op .MLOAD, .op (.Dup ⟨8, by decide⟩)]
+  [.push 3 (UInt256.ofNat 8960 + off), .op .MLOAD, .op (.Dup ⟨8, by decide⟩)]
 
 def l1Program (off t : UInt256) : List Instr :=
   (loadProgram off ++ L2.productProgram) ++ L2.finishProgram t t

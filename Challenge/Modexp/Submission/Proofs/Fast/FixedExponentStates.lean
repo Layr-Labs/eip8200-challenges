@@ -56,35 +56,35 @@ def square (s : State) (mem : ByteArray)
 /-- Return from one Montgomery square. -/
 def squareReturn (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 3781
+  { s with pc := UInt256.ofNat 3785
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
 /-- Counter-zero fallthrough to the final multiply by BASE. -/
 def product (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3791
+  { s with pc := UInt256.ofNat 3795
            stack := UInt256.ofNat 0 :: outer n bsize esize msize
            memory := mem }
 
 /-- Return from the final Montgomery product. -/
 def decode (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3772
+  { s with pc := UInt256.ofNat 3776
            stack := outer n bsize esize msize
            memory := mem }
 
 /-- Return from Montgomery decoding, immediately before the inherited return. -/
 def finish (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3833
+  { s with pc := UInt256.ofNat 3837
            stack := outer n bsize esize msize
            memory := mem }
 
 /-- Shared generic fallback before copying R1 to ACC. -/
 def fallback (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3802
+  { s with pc := UInt256.ofNat 3806
            stack := outer n bsize esize msize
            memory := mem }
 

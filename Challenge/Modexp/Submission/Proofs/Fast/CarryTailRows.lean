@@ -1,5 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CarryRowRun
-import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedTailDefs
+import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedTail
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedExit
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedPointers
 
@@ -28,8 +28,7 @@ theorem run_next (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (pa pb n i : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005) (hact : 296 ≤ s.activeWords.toNat)
     (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 9472) (hi : i+1 < n)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 4164 = true)
-    (hroute : MachineState.readWord mem 9280 = UInt256.ofNat 4164) :
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 4254 = true) :
     runInstructions CarryRowPrograms.tail
       (CiosCached.tailState s mem c mu bi pa pb n i dst ret rest) =
     some (CiosCached.outState s (tailCarry mem c bi) pa pb n (i+1) dst ret rest) := by
@@ -39,7 +38,7 @@ theorem run_next (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (l1_condition pb n (i+1) hpb hpbFit (by omega)).mpr hi
   have trace := CarryRowRun.run_tail { s with memory := mem } c mu bi
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat pa) (UInt256.ofNat (pb-32))
-    (l1Target n) (l2Target n) dst (ret :: rest) (by simp only [List.length_cons]; omega) hact (UInt256.ofNat 4164) hroute htarget
+    (l1Target n) (l2Target n) dst (ret :: rest) (by simp only [List.length_cons]; omega) hact htarget
   simpa only [List.cons_append, List.nil_append, input, result, baseStack, framed, CiosCached.tailState,
     CiosCached.outState, hp, if_pos hcond, List.cons_append, List.nil_append] using trace
 
@@ -47,8 +46,7 @@ theorem run_last (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (pa pb n i : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005) (hact : 296 ≤ s.activeWords.toNat)
     (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 9472) (hi : i+1 = n)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 4164 = true)
-    (hroute : MachineState.readWord mem 9280 = UInt256.ofNat 4164) :
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 4254 = true) :
     runInstructions CarryRowPrograms.tail
       (CiosCached.tailState s mem c mu bi pa pb n i dst ret rest) =
     some (exitState s (tailCarry mem c bi)
@@ -60,7 +58,7 @@ theorem run_last (s : State) (mem : ByteArray) (c mu bi : UInt256)
     omega
   have trace := CarryRowRun.run_tail { s with memory := mem } c mu bi
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) (UInt256.ofNat pa) (UInt256.ofNat (pb-32))
-    (l1Target n) (l2Target n) dst (ret :: rest) (by simp only [List.length_cons]; omega) hact (UInt256.ofNat 4164) hroute htarget
+    (l1Target n) (l2Target n) dst (ret :: rest) (by simp only [List.length_cons]; omega) hact htarget
   simpa only [List.cons_append, List.nil_append, input, result, baseStack, framed, CiosCached.tailState,
     exitState, hp, if_neg hcond, List.cons_append, List.nil_append] using trace
 

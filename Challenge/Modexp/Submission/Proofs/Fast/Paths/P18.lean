@@ -4,15 +4,15 @@ set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
 /-! Basic-block instruction paths for the relocated leading-bit shortcut.
 
-`LZBASE` (pc 4030) is reached from `LZ`'s byte-0 arm with `[mask, w, i]`.  The
+`LZBASE` (pc 4121) is reached from `LZ`'s byte-0 arm with `[mask, w, i]`.  The
 bit loop's first iteration squares the accumulator, which is the Montgomery
 form of one and therefore a fixed point, and then multiplies by `BASE` because
 the leading bit of a nonzero byte is set, so it always ends holding `BASE`.
 This block copies `BASE` into `ACC` and resumes at the mask shift, pc 1832.  A
 zero byte has no set bit, so it takes the untouched loop head at pc 1789.
 
-* `blk2557` (idx 2557..2561, pc 4030..3635) — the `w = 0` test;
-* `blk2562` (idx 2562..2568, pc 3837..3650) — the copy and the resume;
+* `blk2557` (idx 2557..2561, pc 4121..3635) — the `w = 0` test;
+* `blk2562` (idx 2562..2568, pc 3872..3650) — the copy and the resume;
 * `blk2569` (idx 2569..2571, pc 3651..3655) — the zero-byte arm. -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast
@@ -21,7 +21,7 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 2557..2561, pc 4030..3635: the `w = 0` test. -/
+/-- Instructions 2557..2561, pc 4121..3635: the `w = 0` test. -/
 def blk2557 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2537 .JUMPDEST,
@@ -30,7 +30,7 @@ def blk2557 :
    pushAt 2540 2 3319,
    opAt 2541 .JUMPI]
 
-/-- Instructions 2562..2568, pc 3837..3650: `ACC := BASE`, then the shift. -/
+/-- Instructions 2562..2568, pc 3872..3650: `ACC := BASE`, then the shift. -/
 def blk2562 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 2542 2 9344,

@@ -32,13 +32,16 @@ def gasSteps_csub (s : State) (memory : ByteArray) (n : Nat)
     (run_check s memory pdst ret rest hcap hact hcode)
   by_cases hskip : Skip memory
   · rw [if_pos hskip] at hc
+    have hj := jumpBlock.steps
+      (environment (atState s memory 3837 pdst ret rest) hcode hfork hrun hnp) rfl
+      (run_jump s memory pdst ret rest hcap hcode)
     have hs : MachineState.readWord memory 9344 = UInt256.ofNat (32*n) := by
       rw [csStep_readWord_disjoint memory n 9344 (by omega) (by omega) n le_rfl] at hs32
       exact hs32
     have hk := copyBlock.steps
-      (environment (atState s memory 4920 pdst ret rest) hcode hfork hrun hnp) rfl
+      (environment (atState s memory 5223 pdst ret rest) hcode hfork hrun hnp) rfl
       (run_copy s memory n pdst ret rest hcap hact hn hn32 hcode hs hdstFit hjump)
-    simpa only [csReturnedState,if_pos hskip,copiedState] using hc.trans hk
+    simpa only [csReturnedState,if_pos hskip,copiedState] using hc.trans (hj.trans hk)
   · rw [if_neg hskip] at hc
     have hk := gasSteps_csub_sub s memory n pdst ret rest hcap hcode hfork hrun hnp
       hact hn hn32 hjump hml htl hs32 hdstFit htn

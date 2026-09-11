@@ -41,11 +41,12 @@ opaque inverse_rowsCarry (mem : ByteArray) (pa pb n i : Nat)
   exact hminv
 
 theorem readWord_selected_preserved (s : State) (memory : ByteArray)
-    (pa pb n i addr : Nat) (hn : n ≤ 32) (hi : i ≤ n)
-    (haddr : addr+32 ≤ 8192 ∨ 9312 ≤ addr) :
-    MachineState.readWord (selectedRows (SquarePrepared.prepared s memory pa pb n) pa pb n i) addr =
+    (pa pb n i addr : Nat) (hn : n ≤ 32)
+    (haddr : addr+32 ≤ 8192 ∨ 9280 ≤ addr) :
+    MachineState.readWord (selectedRows (mpZeroed s (inputMemory memory pa n) n) pa pb n i) addr =
       MachineState.readWord memory addr := by
-  rw [selectedRows_readWord_outside _ pa pb n i addr hn hi haddr,
-    SquarePrepared.read_prepared_outside s memory pa pb n addr hn haddr]
+  rw [selectedRows_readWord_outside _ pa pb n i addr hn haddr,
+    readWord_mpZeroed s (inputMemory memory pa n) n addr hn haddr,
+    read_inputMemory_outside memory pa n addr haddr]
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryFull

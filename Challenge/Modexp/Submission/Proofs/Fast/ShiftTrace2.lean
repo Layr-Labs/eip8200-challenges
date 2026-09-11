@@ -23,6 +23,7 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
+attribute [local simp] jumpDestGuardResume jumpDestFourResume
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs
 
@@ -134,12 +135,57 @@ private theorem addMod_comm (a b m : UInt256) :
 @[simp] private theorem newEstimatePC2966 : Artifact.submissionArtifact.instructionPC 2852 = 3769 := by rfl
 @[simp] private theorem newEstimatePC2967 : Artifact.submissionArtifact.instructionPC 2853 = 3771 := by rfl
 @[simp] private theorem newEstimatePC2968 : Artifact.submissionArtifact.instructionPC 2854 = 3772 := by rfl
-@[simp] private theorem newEstimatePC2969 : Artifact.submissionArtifact.instructionPC 2855 = 3773 := by rfl
-@[simp] private theorem newEstimatePC2970 : Artifact.submissionArtifact.instructionPC 2856 = 3774 := by rfl
-@[simp] private theorem newEstimatePC2971 : Artifact.submissionArtifact.instructionPC 2857 = 3775 := by rfl
-@[simp] private theorem newEstimatePC2972 : Artifact.submissionArtifact.instructionPC 2858 = 3776 := by rfl
-@[simp] private theorem newEstimatePC2973 : Artifact.submissionArtifact.instructionPC 2859 = 3777 := by rfl
-@[simp] private theorem newEstimatePC2974 : Artifact.submissionArtifact.instructionPC 2860 = 3778 := by rfl
+@[simp] private theorem newEstimatePC2969 : Artifact.submissionArtifact.instructionPC 2855 = 3774 := by rfl
+@[simp] private theorem newEstimatePC2970 : Artifact.submissionArtifact.instructionPC 2856 = 3775 := by rfl
+@[simp] private theorem newEstimatePC2971 : Artifact.submissionArtifact.instructionPC 2857 = 3776 := by rfl
+@[simp] private theorem newEstimatePC2972 : Artifact.submissionArtifact.instructionPC 2858 = 3778 := by rfl
+@[simp] private theorem newEstimatePC2973 : Artifact.submissionArtifact.instructionPC 2859 = 3779 := by rfl
+@[simp] private theorem newEstimatePC2974 : Artifact.submissionArtifact.instructionPC 2860 = 3780 := by rfl
+@[simp] private theorem newEstimatePC2975 : Artifact.submissionArtifact.instructionPC 2861 = 3781 := by rfl
+
+/-- State after forming the low half of the quotient numerator. -/
+private def estimateLoState (s : State) (mem : ByteArray)
+    (n bsize esize msize k : Nat) : State :=
+  let um := uMem mem n
+  let utop := MachineState.readWord um 2048
+  let L := MachineState.readWord um PRE_L
+  let hi := utop / L
+  let r := utop % L
+  let X := MachineState.readWord um PRE_X
+  let xr := X * r
+  let unext := MachineState.readWord um 2080
+  let uL := unext / L
+  let lo := uL + xr
+  { s with pc := UInt256.ofNat 3740
+           stack := lo :: hi :: UInt256.ofNat k :: outer n bsize esize msize
+           memory := um }
+
+/-- State immediately before the quotient-correction sequence.  Keeping this
+trace boundary explicit prevents the symbolic quotient expression from being
+duplicated through every instruction in `blk3026`. -/
+private def estimateCorrectionState (s : State) (mem : ByteArray)
+    (n bsize esize msize k : Nat) : State :=
+  let um := uMem mem n
+  let utop := MachineState.readWord um 2048
+  let L := MachineState.readWord um PRE_L
+  let hi := utop / L
+  let r := utop % L
+  let X := MachineState.readWord um PRE_X
+  let xr := X * r
+  let unext := MachineState.readWord um 2080
+  let uL := unext / L
+  let lo := uL + xr
+  let dodd := MachineState.readWord um PRE_DODD
+  let bmod := MachineState.readWord um PRE_BMOD
+  let mm := UInt256.mulMod hi bmod dodd
+  let rho := UInt256.addMod mm lo dodd
+  let diff := lo - rho
+  let dinv := MachineState.readWord um PRE_DINV
+  let q := dinv * diff
+  let rhat := unext - MachineState.readWord um 0 * q
+  { s with pc := UInt256.ofNat 3769
+           stack := rhat :: q :: hi :: UInt256.ofNat k :: outer n bsize esize msize
+           memory := um }
 
 /-- `blk3026`: quotient estimate with a branchless saturation mask. -/
 theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
@@ -167,19 +213,66 @@ theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hI : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 32 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  simp (config := { maxSteps := 600000 })
-    [blk3026, opAt, pushAt, wfOp,
+  have hhead : Challenge.EvmProof.Stepper.runLocatedBlock (blk3026.take 19)
+      (estimateState s mem n bsize esize msize k) =
+      some (estimateLoState s mem n bsize esize msize k) := by
+    simp (config := { maxSteps := 250000 })
+      [blk3026, opAt, pushAt, wfOp,
+        Challenge.EvmProof.Stepper.runLocatedBlock,
+        Challenge.EvmProof.Stepper.runLocated,
+        Challenge.EvmProof.Stepper.runInstr,
+        estimateState, estimateLoState, kState, pcEstimate,
+        PRE_L, PRE_X,
+        outer, Exp.outer, hcode, hrun, hA, hB, hC, hD,
+        State.activeWordsAfterUInt256,
+        Challenge.EvmProof.Word.literal_eq_ofNat,
+        Challenge.EvmProof.Word.word_toNat_ofNat,
+        Challenge.EvmProof.Word.succ_ofNat_mod,
+        Challenge.EvmProof.Word.ofNat_add_mod, List.exchange]
+  have hmiddle : Challenge.EvmProof.Stepper.runLocatedBlock
+      ((blk3026.drop 19).take 21)
+      (estimateLoState s mem n bsize esize msize k) =
+      some (estimateCorrectionState s mem n bsize esize msize k) := by
+    simp (config := { maxSteps := 250000 })
+      [blk3026, opAt, pushAt, wfOp,
+        Challenge.EvmProof.Stepper.runLocatedBlock,
+        Challenge.EvmProof.Stepper.runLocated,
+        Challenge.EvmProof.Stepper.runInstr,
+        estimateLoState, estimateCorrectionState,
+        PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
+        outer, Exp.outer, hcode, hrun, hE, hF, hG, hH,
+        State.activeWordsAfterUInt256,
+        Challenge.EvmProof.Word.literal_eq_ofNat,
+        Challenge.EvmProof.Word.word_toNat_ofNat,
+        Challenge.EvmProof.Word.succ_ofNat_mod,
+        Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm]
+  have hfinish : Challenge.EvmProof.Stepper.runLocatedBlock (blk3026.drop 40)
+      (estimateCorrectionState s mem n bsize esize msize k) =
+      some (macSetupState s mem n bsize esize msize k) := by
+    simp (config := { maxSteps := 300000 })
+      [blk3026, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      estimateState, macSetupState, kState, pcEstimate, pcMacSetup, qhatOf,
+      estimateCorrectionState, macSetupState, pcMacSetup, qhatOf,
       PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
-      outer, Exp.outer, hcode, hrun, hA, hB, hC, hD, hE, hF, hG, hH, hI, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
+      outer, Exp.outer, hcode, hrun, hE, hI, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, saturation_gt_eq_lt, addMod_comm]
+  have htail := Challenge.EvmProof.Stepper.runLocatedBlock_append
+    ((blk3026.drop 19).take 21) (blk3026.drop 40)
+    (estimateLoState s mem n bsize esize msize k)
+    (estimateCorrectionState s mem n bsize esize msize k)
+    (macSetupState s mem n bsize esize msize k)
+    hmiddle (by simp [estimateCorrectionState, hrun]) hfinish
+  have hprogram : blk3026 = blk3026.take 19 ++
+      ((blk3026.drop 19).take 21 ++ blk3026.drop 40) := by rfl
+  rw [hprogram]
+  exact Challenge.EvmProof.Stepper.runLocatedBlock_append _ _ _ _ _ hhead
+    (by simp [estimateLoState, hrun]) htail
 
 /-- `blk3069`: the limb-pass frame `[paj, ptj, 0, q]`. -/
 theorem run_macSetup (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
@@ -237,10 +330,10 @@ theorem run_macBodyA (s : State) (um : ByteArray) (q pa pt pa' pt' : UInt256)
   have hactT : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (8256 + 32 * (n - 1 - j)) 32) = s.activeWords :=
     Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have h3837 : (3807 : UInt256).toNat = 3807 := by decide
-  have heq3837 : (3807 : UInt256) = UInt256.ofNat 3807 := by decide
-  have h3898 : (3838 : UInt256).toNat = 3838 := by decide
-  have heq3898 : (3838 : UInt256) = UInt256.ofNat 3838 := by decide
+  have h3837 : (3837 : UInt256).toNat = 3837 := by decide
+  have heq3837 : (3837 : UInt256) = UInt256.ofNat 3837 := by decide
+  have h3898 : (3898 : UInt256).toNat = 3898 := by decide
+  have heq3898 : (3898 : UInt256) = UInt256.ofNat 3898 := by decide
   simp (config := { maxSteps := 800000 })
     [blk3077a, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -256,8 +349,13 @@ theorem run_macBodyA (s : State) (um : ByteArray) (q pa pt pa' pt' : UInt256)
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
       List.exchange]
-  refine ⟨?_, Monpro.MacAlt.macCarryFix _ _ _ _⟩
-  rw [Monpro.MacAlt.macSumNat]
+  exact Monpro.MacAlt.macCarryFix
+    (MachineState.readWord (Monpro.l1Step um q NEG n j).memory
+      (NEG + 32 * (n - 1 - j)))
+    q
+    (MachineState.readWord (Monpro.l1Step um q NEG n j).memory
+      (8256 + 32 * (n - 1 - j)))
+    (Monpro.l1Step um q NEG n j).carry
 
 /-- `blk3077b` with limbs to go: back to the loop head. -/
 theorem run_macTail_go (s : State) (mm : ByteArray) (pa pt c q : UInt256)

@@ -32,7 +32,7 @@ def tablePreludePath :
   [Main.pushAt 1850 1 96,
    Main.opAt 1851 .CALLDATALOAD,
    Main.pushAt 1852 2 3268,
-   Main.pushAt 1853 0 0,
+   Main.pushAt 1853 1 2,
    Main.opAt 1854 .MSTORE,
    Main.opAt 1855 (.Dup ⟨0, by decide⟩),
    Main.pushAt 1856 1 32,
@@ -117,7 +117,7 @@ def normalReturnPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [Main.opAt 2161 .JUMPDEST,
    Main.opAt 2162 .POP,
-   Main.pushAt 2163 0 0,
+   Main.pushAt 2163 1 191,
    Main.opAt 2164 .MSTORE,
    Main.pushAt 2165 1 32,
    Main.pushAt 2166 0 0,

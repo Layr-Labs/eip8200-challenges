@@ -2,7 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.CarryRowModel
 import Challenge.Modexp.Submission.Proofs.Fast.CarryRowPrograms
 import Challenge.Modexp.Submission.Proofs.Fast.CiosEndAroundCarry
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMidMemory
-import Challenge.Modexp.Submission.Proofs.Fast.SquareTop
+import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedTailTest
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -16,25 +16,32 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro CiosCached CiosCachedMacCore CarryRowModel
 
 theorem run_middleStore (s : State) (c bi pbi pa pb flag dst ret : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
-    (hzero : MachineState.readWord s.memory 8928 = UInt256.ofNat 0) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat) :
     runInstructions CarryRowPrograms.middleStore
-      (framed s (UInt256.ofNat 4461)
+      (framed s (UInt256.ofNat 4550)
         ([c,bi,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) =
-    some (framed {s with memory := midMem1 s.memory c} (UInt256.ofNat 4491)
+    some (framed {s with memory := midMem1 s.memory c} (UInt256.ofNat 4566)
       ([overflow s.memory c,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) := by
-  have h := SquareTop.run_top s s.memory c bi
-    ([pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)
-    (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) hact
-  simpa only [hzero, SquareTop.mul_zero, SquareTop.memory_zero, SquareTop.flag_zero,
-    SquareInit.stateAt, framed, overflow, List.cons_append] using h
+  have hc8 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
+  have hc9 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
+  have hc10 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
+  have hc11 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
+  have hc12 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
+  have hc13 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
+  have hactN := activeWords_fix s 8224 32 (by decide) (by omega) hact
+  have haddr : (8224 : UInt256).toNat = 8224 := by decide
+  simp (config := {maxSteps := 100000}) [ CarryRowPrograms.middleStore, runInstructions, framed,
+    Challenge.EvmProof.Stepper.runInstr, hc8, hc9, hc10, hc11, hc12, hc13, midMem1, overflow,
+    haddr, hactN, State.activeWordsAfterUInt256, List.exchange,
+    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem run_tailStore (s : State) (c mu f pbi pa pb flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat) :
     runInstructions CarryRowPrograms.tailStore
-      (framed s (UInt256.ofNat 4765)
+      (framed s (UInt256.ofNat 4841)
         ([c,mu,f,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) =
-    some (framed {s with memory := tailCarry s.memory c f} (UInt256.ofNat 4784)
+    some (framed {s with memory := tailCarry s.memory c f} (UInt256.ofNat 4865)
       ([pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) := by
   have hc8 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hc9 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
