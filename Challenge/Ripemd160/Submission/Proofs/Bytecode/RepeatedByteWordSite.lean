@@ -15,28 +15,28 @@ abbrev A := Artifact.submissionArtifact
 def template : List Instr := RepeatedByteWord.code (UInt256.ofNat 97)
 
 private theorem template_slice :
-    (A.instructions.drop 17).take template.length = template := by rfl
+    (A.instructions.drop 22).take template.length = template := by rfl
 
 private theorem template_wellFormed : ∀ instruction ∈ template,
     Stepper.WellFormed .Osaka instruction := by
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def site : GenericRoundSite A .Osaka template :=
-  StackSiteBuilder.ofSlice _ 17 template_slice (by
-    change 17 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 22 template_slice (by
+    change 22 + template.length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) StackRoundData.artifact_code_bound template_wellFormed (by decide)
 
-theorem site_start : site.startPC = UInt256.ofNat 25 := by rfl
-theorem site_end : site.endPC = UInt256.ofNat 33 := by rfl
+theorem site_start : site.startPC = UInt256.ofNat 34 := by rfl
+theorem site_end : site.endPC = UInt256.ofNat 42 := by rfl
 
 def gasSteps_fullWord (s : State) (rho : List UInt256) (hstack : rho.length < 1021)
     (hcode : s.executionEnv.code = A.code) (hfork : s.fork = .Osaka)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 25, stack := rho}
-      {s with pc := UInt256.ofNat 33, stack := KnownInputData.fullWord :: rho} := by
+    GasSteps {s with pc := UInt256.ofNat 34, stack := rho}
+      {s with pc := UInt256.ofNat 42, stack := KnownInputData.fullWord :: rho} := by
   have g := RepeatedByteWord.gasSteps_word (UInt256.ofNat 97) site
     s rho hstack hcode hfork hrun hnp
   exact g.cast (by rw [site_start]) (by rw [site_end, RepeatedByteWord.ascii_a])
