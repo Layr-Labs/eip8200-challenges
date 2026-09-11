@@ -105,25 +105,23 @@ theorem run_miss (template : State) (rest : List UInt256) (hrest : rest.length �
     hcap0, hcap1, Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat, htarget]
 
+/-- Entry of the one-word core at pc 2359. Both special-modulus misses jump
+here with the loaded modulus word on top of the route frame: `POP` discards it
+and five `JUMPDEST`s fill the bytes of the removed base-width test. There is no
+branch: a zero-width base runs the core with the base word
+`CALLDATALOAD 96 >> 256 = 0`. -/
 def baseProgram : List Instr :=
-  [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩)] ++ testProgram (UInt256.ofNat 3007)
+  [.op .JUMPDEST, .op .POP, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
+   .op .JUMPDEST, .op .JUMPDEST]
 
-theorem run_base (template : State) (baseSize : UInt256)
-    (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (hbase : rest[0]? = some baseSize)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 3007 = true) :
-    runInstructions baseProgram (framed template (UInt256.ofNat 2359) rest) =
-    some (framed template (if baseSize.toNat = 0 then UInt256.ofNat 3007 else UInt256.ofNat 2366) rest) := by
-  have hcap : rest.length < 1024 := by omega
-  have hh : runInstructions [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩)]
-      (framed template (UInt256.ofNat 2359) rest) =
-      some (framed template (UInt256.ofNat 2361) (baseSize :: rest)) := by
-    simp [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr, hcap,
-      hbase, Challenge.EvmProof.Word.succ_ofNat_mod]
-  have ht := run_test template (UInt256.ofNat 2361) (UInt256.ofNat 3007) baseSize rest hrest htarget
-  have both := runInstructions_append_some _ _ _ _ _ hh ht
-  have hpc : advancePC 5 (UInt256.ofNat 2361) = UInt256.ofNat 2366 := by decide
-  simpa only [baseProgram, framed, hpc] using both
+theorem run_base (template : State) (value : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1000) :
+    runInstructions baseProgram (framed template (UInt256.ofNat 2359) (value :: rest)) =
+    some (framed template (UInt256.ofNat 2366) rest) := by
+  have hcap0 : rest.length < 1024 := by omega
+  have hcap1 : rest.length + 1 < 1024 := by omega
+  simp [runInstructions, baseProgram, framed, Challenge.EvmProof.Stepper.runInstr,
+    hcap0, hcap1, Challenge.EvmProof.Word.succ_ofNat_mod]
 
 def modulusProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op .CALLDATALOAD, .op (.Dup ⟨0, by decide⟩)] ++

@@ -1,30 +1,28 @@
 # MODEXP Yukon submission
 
-This directory is the complete editable surface for the `modexp` track. A
-submission must include:
+This directory is the complete editable surface for the `modexp` track:
 
-- `bytecode.hex`: one line of lowercase EVM bytecode without a `0x` prefix;
-- `Solution.lean`: `Challenge.Modexp.Benchmark.candidate`, proving
-  `Challenge.Modexp.Correct bytecode` for the generated artifact.
+- `bytecode.hex` — one line of lowercase EVM bytecode without a `0x` prefix;
+- `Solution.lean` — `Challenge.Modexp.Benchmark.candidate`, proving
+  `Challenge.Modexp.Correct bytecode` for the generated artifact;
+- the Lean modules under `Proofs/` imported by `Solution.lean`.
 
-Additional Lean modules may live here and be imported by `Solution.lean`.
-Everything outside this directory is the protected specification, proof
-support, evaluator, and workflow.
+## Provenance
 
-The lower-is-better score is gas summed over the public vectors.
-Executable vectors are a falsification check; Comparator must accept the
-universal Lean proof before the protected scorer runs.
+This submission is built on promoted submission
+`7dcb030f-be44-4c91-b788-e910af6cc3a7` by Meganpark980320 ("triangular
+Montgomery squaring for eight limbs"), which is itself built on the earlier
+promoted lineage of this track. Source authorship of that work is not
+reassigned.
 
-## Cached CIOS kernel and fixed conditional subtraction
+## Change relative to the base
 
-The four- and eight-limb Montgomery kernels retain seven read-only values on
-stack across all rows: the Montgomery inverse, low modulus word, modulus
-words at addresses 128, 96, 64 and 32, and the low accumulator address.
-Entry loads are ordered so that three swaps establish the frame; exit removes
-all seven values before the shared conditional-subtraction calling convention.
-The existing arithmetic recurrence and generic fallback remain in place.
+The artifact has the same length as the base and differs from it in ten
+bytes: two jump operands in the special-modulus dispatch and one six-byte
+region at the entry of the fixed-width window route. No program counter
+moves. The proof modules listed in the submission note are updated to match.
 
-Fixed-width subtraction uses the seven-instruction borrow combination and
-dedicated zero-borrow first limbs. Code addresses and Located-block certificates
-are bound to the complete bytecode artifact. Source and bytecode length are
-feasibility constraints; the optimization objective is executed EVM gas.
+The universal theorem in `Solution.lean` is stated for the exact submitted
+bytes and depends only on `propext`, `Classical.choice` and `Quot.sound`.
+Official validation, scoring and promotion status are recorded by the
+platform.
