@@ -42,9 +42,9 @@ def prefixTemplate : List Instr :=
     .op (.Dup ⟨6, by decide⟩),
     .op .MUL,
     .push ⟨1, by decide⟩ (UInt256.ofNat 24),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 3282),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 3290),
     .op (.Swap ⟨10, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 5168),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 5176),
     .op .JUMP ]
 theorem prefix_slice :
     (Artifact.submissionArtifact.instructions.drop 2582).take prefixTemplate.length = prefixTemplate := by rfl
@@ -55,7 +55,7 @@ def prefixSite : GenericRoundSite Artifact.submissionArtifact .Osaka prefixTempl
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := prefixTemplate) (by decide))
     (by decide)
-theorem prefix_pc : prefixSite.startPC = UInt256.ofNat 3234 := by
+theorem prefix_pc : prefixSite.startPC = UInt256.ofNat 3242 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2582) = UInt256.ofNat 3234
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem prefix_advances : ∀ instruction ∈ prefixTemplate.dropLast, DenseScheduleLift.Advances instruction := by
@@ -103,8 +103,8 @@ def suffixSite : GenericRoundSite Artifact.submissionArtifact .Osaka suffixTempl
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := suffixTemplate) (by decide))
     (by decide)
-theorem suffix_pc : suffixSite.startPC = UInt256.ofNat 3282 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2620) = UInt256.ofNat 3282
+theorem suffix_pc : suffixSite.startPC = UInt256.ofNat 3290 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2620) = UInt256.ofNat 3290
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem suffix_advances : ∀ instruction ∈ suffixTemplate.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -121,7 +121,7 @@ def prefixStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     x.v6,
     x.v7,
     x.v8,
-    (UInt256.ofNat 3282) ] ++ rho
+    (UInt256.ofNat 3290) ] ++ rho
 def helperStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.add (UInt256.xor x.v2 (UInt256.land (UInt256.xor (UInt256.lor x.v8 x.v2) (UInt256.land x.v7 (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mul x.v6 (UInt256.add (UInt256.mul (UInt256.ofNat 63) (UInt256.land (UInt256.ofNat 4294967295) (UInt256.land x.v7 (UInt256.add x.v4 (UInt256.add (UInt256.lor (MachineState.readWord memory 336) (MachineState.readWord memory 544)) (UInt256.add (UInt256.xor x.v3 (UInt256.land (UInt256.xor (UInt256.lor x.v8 x.v3) x.v2) (UInt256.xor (UInt256.land x.v8 x.v3) x.v0))) x.v1)))))) (UInt256.land x.v7 (UInt256.add x.v4 (UInt256.add (UInt256.lor (MachineState.readWord memory 336) (MachineState.readWord memory 544)) (UInt256.add (UInt256.xor x.v3 (UInt256.land (UInt256.xor (UInt256.lor x.v8 x.v3) x.v2) (UInt256.xor (UInt256.land x.v8 x.v3) x.v0))) x.v1)))))) (UInt256.ofNat 24))))) (UInt256.xor (UInt256.land x.v8 x.v2) (UInt256.land x.v7 (UInt256.shiftRight (UInt256.mul x.v6 x.v3) (UInt256.ofNat 22)))))) x.v5),
     x.v0,
@@ -147,9 +147,9 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
 def originalTemplate : List Instr :=
   PairedAllInlineCoreTrace.inline50Block.code ++ PairedAllInlineCoreTrace.inline51Block.code
 theorem return_valid (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
-    Decode.isValidJumpDest s.executionEnv.code 3282 = true := by
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 2620 (by rfl)
-  have hp : Artifact.submissionArtifact.instructionPC 2620 = 3282 := by
+    Decode.isValidJumpDest s.executionEnv.code 3290 = true := by
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 2625 (by rfl)
+  have hp : Artifact.submissionArtifact.instructionPC 2625 = 3290 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   rw [hp] at h
   rw [hcode]
@@ -158,8 +158,8 @@ theorem run_prefix (s : State) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
-    runInstrSeq prefixTemplate {s with pc := UInt256.ofNat 3234, stack := inputStack x rho} =
-      some {s with pc := UInt256.ofNat 5168, stack := prefixStack s.memory x rho} := by
+    runInstrSeq prefixTemplate {s with pc := UInt256.ofNat 3242, stack := inputStack x rho} =
+      some {s with pc := UInt256.ofNat 5176, stack := prefixStack s.memory x rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
@@ -174,8 +174,8 @@ theorem run_helper (s : State) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
-    runInstrSeq helperTemplate {s with pc := UInt256.ofNat 5168, stack := prefixStack s.memory x rho} =
-      some {s with pc := UInt256.ofNat 3282, stack := helperStack s.memory x rho} := by
+    runInstrSeq helperTemplate {s with pc := UInt256.ofNat 5176, stack := prefixStack s.memory x rho} =
+      some {s with pc := UInt256.ofNat 3290, stack := helperStack s.memory x rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
@@ -190,8 +190,8 @@ theorem run_suffix (s : State) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
-    runInstrSeq suffixTemplate {s with pc := UInt256.ofNat 3282, stack := helperStack s.memory x rho} =
-      some {s with pc := UInt256.ofNat 3320, stack := outputStack s.memory x rho} := by
+    runInstrSeq suffixTemplate {s with pc := UInt256.ofNat 3290, stack := helperStack s.memory x rho} =
+      some {s with pc := UInt256.ofNat 3328, stack := outputStack s.memory x rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
@@ -205,8 +205,8 @@ theorem run_original (s : State) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
-    runInstrSeq originalTemplate {s with pc := UInt256.ofNat 3253, stack := inputStack x rho} =
-      some {s with pc := UInt256.ofNat 3358, stack := outputStack s.memory x rho} := by
+    runInstrSeq originalTemplate {s with pc := UInt256.ofNat 3261, stack := inputStack x rho} =
+      some {s with pc := UInt256.ofNat 3366, stack := outputStack s.memory x rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
@@ -222,13 +222,13 @@ def gasSteps_raw (s : State) (x : Input) (rho : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 3234, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 3320, stack := outputStack s.memory x rho} := by
-  have g0 := gasSteps_terminal_of_raw prefixSite {s with pc := UInt256.ofNat 3234, stack := inputStack x rho} _ hcode hfork hrun hnp prefix_pc.symm prefix_advances
+    GasSteps {s with pc := UInt256.ofNat 3242, stack := inputStack x rho}
+      {s with pc := UInt256.ofNat 3328, stack := outputStack s.memory x rho} := by
+  have g0 := gasSteps_terminal_of_raw prefixSite {s with pc := UInt256.ofNat 3242, stack := inputStack x rho} _ hcode hfork hrun hnp prefix_pc.symm prefix_advances
     (run_prefix s x rho hstack hrun hactive hcode)
-  have g1 := gasSteps_terminal_of_raw helperSite {s with pc := UInt256.ofNat 5168, stack := prefixStack s.memory x rho} _ hcode hfork hrun hnp helper_pc.symm helper_advances
+  have g1 := gasSteps_terminal_of_raw helperSite {s with pc := UInt256.ofNat 5176, stack := prefixStack s.memory x rho} _ hcode hfork hrun hnp helper_pc.symm helper_advances
     (run_helper s x rho hstack hrun hactive hcode)
-  have g2 := gasSteps_terminal_of_raw suffixSite {s with pc := UInt256.ofNat 3282, stack := helperStack s.memory x rho} _ hcode hfork hrun hnp suffix_pc.symm suffix_advances
+  have g2 := gasSteps_terminal_of_raw suffixSite {s with pc := UInt256.ofNat 3290, stack := helperStack s.memory x rho} _ hcode hfork hrun hnp suffix_pc.symm suffix_advances
     (run_suffix s x rho hstack hrun hactive hcode)
   exact g0.trans (g1.trans g2)
 
@@ -242,8 +242,8 @@ def gasSteps_pair (s : State) (f : CoreFrame) (rho : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 3234, stack := coreStack [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] f rho}
-      {s with pc := UInt256.ofNat 3320, stack := coreStack [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] (pairEval s.memory f) rho} := by
+    GasSteps {s with pc := UInt256.ofNat 3242, stack := coreStack [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] f rho}
+      {s with pc := UInt256.ofNat 3328, stack := coreStack [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] (pairEval s.memory f) rho} := by
   let x : Input := ⟨CoreReg.word .d f, CoreReg.word .a f, CoreReg.word .b f, CoreReg.word .c f, CoreReg.word .k f, CoreReg.word .e f, CoreReg.word .factor f, CoreReg.word .pair f, CoreReg.word .upper f⟩
   have hin : inputStack x rho = coreStack [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] f rho := rfl
   have h0 := PairedAllInlineCoreTrace.inline50Block.run s f rho hstack hrun hactive

@@ -22,8 +22,8 @@ def gasSteps_core_prefix (s : State) (f : CoreFrame) (rho : List UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 727, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] f rho}
-      {s with pc := UInt256.ofNat 4589, stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] (PairedAllInlineCoreTrace.corePrefixChain.eval s.memory f) rho} := by
+    GasSteps {s with pc := UInt256.ofNat 735, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] f rho}
+      {s with pc := UInt256.ofNat 4597, stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] (PairedAllInlineCoreTrace.corePrefixChain.eval s.memory f) rho} := by
   let f0 := f
   let f1 := SharedCoreStraight.group0Physical.eval s.memory f0
   have g0 := SharedCoreStraight.group0Gas.run s f0 rho hstack hrun hactive hcode hfork hnp

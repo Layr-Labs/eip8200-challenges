@@ -47,12 +47,12 @@ def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
     GasSteps (selectorState n input sv ov) (returnedState n input sv ov) := by
   have gselect := sound selectorPath (run_selector n input sv ov)
   have gstore := sound digestStorePath (run_store n input sv ov hn hsize)
-  have hc := Artifact.submissionArtifact.decodeAt_op_index 3921 .CODECOPY
+  have hc := Artifact.submissionArtifact.decodeAt_op_index 3922 .CODECOPY
     (by rfl) (by decide) trivial
   have hpc : (copyReadyState n input sv ov).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 3921 := by rw [pc4870]; rfl
+      Artifact.submissionArtifact.instructionPC 3922 := by rw [pc4870]; rfl
   have hcopy : (copyReadyState n input sv ov).decodedOp = some .CODECOPY :=
-    Artifact.submissionArtifact.state_decodedOp_of (copyReadyState n input sv ov) 3921
+    Artifact.submissionArtifact.state_decodedOp_of (copyReadyState n input sv ov) 3922
       (by rfl) hpc .CODECOPY none hc (by rfl)
   have gcraw := Codecopy.step (s := copyReadyState n input sv ov)
     12 (UInt256.ofNat (tableOffset n)) 20 (returnRest sv ov)
@@ -76,14 +76,14 @@ def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
       show MachineState.writeBytes ByteArray.empty
         (MachineState.readPadded submissionBytecode (tableOffset n) 20) 12 = answerMemory n
         from tableMemory_eq n hn] using gcraw
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3922 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3923 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedState n input sv ov).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 3922 := by
+      Artifact.submissionArtifact.instructionPC 3923 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
   have hop : (storedState n input sv ov).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedState n input sv ov) 3922
+    Artifact.submissionArtifact.state_decodedOp_of (storedState n input sv ov) 3923
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop
     (by simp [storedState, returnRest, stS, initialState])
@@ -97,13 +97,13 @@ def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
 
 def gasSteps_miss (input : ByteArray) (sv ov acc : UInt256)
     (hne : acc ≠ 0) :
-    GasSteps (stS input 250 [sv, ov, acc, P7, M, m7, P, m8])
+    GasSteps (stS input 258 [sv, ov, acc, P7, M, m7, P, m8])
       (fallbackState input) :=
   Prefix256Cleanup.gasSteps_miss input sv ov acc hne
 
 def gasSteps_finish_hit (n : Nat) (input : ByteArray) (sv ov acc : UInt256)
     (hz : acc = 0) (hn : n = 56 ∨ n = 120 ∨ n = 64 ∨ n = 65 ∨ n = 128 ∨ n = 63 ∨ n = 119 ∨ n = 55 ∨ n = 256 ∨ n = 376 ∨ n = 1000 ∨ n = 1 ∨ n = 31 ∨ n = 32) (hsize : input.size = n) :
-    GasSteps (stS input 250 [sv, ov, acc, P7, M, m7, P, m8])
+    GasSteps (stS input 258 [sv, ov, acc, P7, M, m7, P, m8])
       (returnedState n input sv ov) := by
   subst acc
   exact (Prefix256Cleanup.gasSteps_hit input sv ov).trans

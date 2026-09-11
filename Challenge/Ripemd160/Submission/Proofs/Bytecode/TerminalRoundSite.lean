@@ -25,7 +25,7 @@ def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
 
-theorem site_startPC : site.startPC = UInt256.ofNat 4589 := by
+theorem site_startPC : site.startPC = UInt256.ofNat 4597 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3719) = UInt256.ofNat 4589
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
@@ -33,9 +33,9 @@ theorem site_startPC : site.startPC = UInt256.ofNat 4589 := by
 theorem run_template (s : State) (q : PairedHelperBooleanTrace.Frame)
     (ret : UInt256) (rho : List UInt256) (hstack : (ret :: rho).length ≤ 1002)
     (hrun : s.halt = .Running) (hactive : 23 ≤ s.activeWords.toNat) :
-    runInstrSeq template {s with pc := UInt256.ofNat 4589, stack := inline79Entry q (ret :: rho)} =
+    runInstrSeq template {s with pc := UInt256.ofNat 4597, stack := inline79Entry q (ret :: rho)} =
       some {s with
-        pc := UInt256.ofNat 4638
+        pc := UInt256.ofNat 4646
         stack := PairedAllInlineTail.entryStack (modifiedFrame s.memory q) ret rho} := by
   let post : PairedHelperBooleanTrace.Frame :=
     {q with
@@ -57,9 +57,9 @@ def gasSteps_round (s : State) (q : PairedHelperBooleanTrace.Frame)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4589, stack := inline79Entry q (ret :: rho)}
+    GasSteps {s with pc := UInt256.ofNat 4597, stack := inline79Entry q (ret :: rho)}
       {s with
-        pc := UInt256.ofNat 4638
+        pc := UInt256.ofNat 4646
         stack := PairedAllInlineTail.entryStack (modifiedFrame s.memory q) ret rho} := by
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp
     site_startPC.symm
@@ -73,7 +73,7 @@ def gasSteps_suffix (s : State) (q : PairedHelperBooleanTrace.Frame)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4589, stack := inline79Entry q (ret :: rho)}
+    GasSteps {s with pc := UInt256.ofNat 4597, stack := inline79Entry q (ret :: rho)}
       {s with pc := ret, stack := rho, memory := PairedTailTrace.resultMemory s.memory (modifiedFrame s.memory q)} :=
   (gasSteps_round s q ret rho hstack hrun hactive hcode hfork hnp).trans
     (PairedAllInlineBoundarySites.gasSteps_tail s ret (modifiedFrame s.memory q) rho

@@ -61,3 +61,19 @@ digest is derived through the existing padding and compression definitions.
 
 Official validation, scoring, and promotion status are recorded separately
 by the platform.
+
+## Small-calldata entry branch (candidate on 14e6980)
+
+This candidate prepends `CALLDATASIZE; PUSH1 129; GT; PUSH2 4807; JUMPI`
+(`366081116112c757`) to the accepted `14e6980` artifact. Sizes below 129
+jump directly to the guard at 4807, skipping the 256/376/1000 length
+comparisons; larger sizes fall through unchanged. Thirty-five address
+literals move by 8; the selector, digest table and compression code are
+otherwise untouched: 5213 bytes, 3977 instructions, SHA-256
+`aceb0fffe3ce1d072e651906c04f693bcda32b696ac66b5c88c8c6f065f4030f`.
+Paired pinned-native score on the official vectors: 804991 down to 803950
+(all 49 vectors `ok`, clean and dirty equal). Proof entry follows the
+public `2cffd11` prelude/dispatch structure with renumbered literals; all
+other proofs are the uniform index+5/pc+8 image, verified by exact chunk
+reassembly and per-statement decode checks. Full local Lean/Comparator
+replay intentionally deferred to the official validator.
