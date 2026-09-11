@@ -175,9 +175,9 @@ def scheduleTemplate : List Instr :=
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 416),
     .op .MSTORE,
-    .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .push ⟨2, by decide⟩ (UInt256.ofNat 704),
-    .op .MSTORE,
+    .op .POP,
+    .op .JUMPDEST,
     .op (.Swap ⟨5, by decide⟩),
     .op .POP,
     .op (.Swap ⟨6, by decide⟩),
@@ -220,10 +220,11 @@ def gasSteps_schedule (s : State) (returnPC : UInt256) (p : Nat)
     (hp : 736 ≤ p) (hbound : p + 64 < 2 ^ 256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hsentinel : SentinelCore.SentinelOK s.memory) :
     GasSteps (DenseScheduleTemplate.scheduleEntry s (UInt256.ofNat 607) (UInt256.ofNat p) returnPC rest)
       {s with pc := UInt256.ofNat 850, stack := PairedMask32Cache.maskWord :: cache (PairedScheduleMemory.normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p)) ++ (returnPC :: rest), memory := PairedScheduleMemory.normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat p)} := by
-  have h := CachedSchedule.run_fullTemplate_natural s returnPC p rest hstack hrun hp hbound
+  have h := CachedSchedule.run_fullTemplate_natural s returnPC p rest hstack hrun hp hbound hsentinel
   have hpct : pcAfter (UInt256.ofNat 607) CachedSchedule.fullTemplate = UInt256.ofNat 850 := by rfl
   rw [hpct] at h
   have hl := runLocatedBlock_eq_runInstrSeq_site scheduleSite

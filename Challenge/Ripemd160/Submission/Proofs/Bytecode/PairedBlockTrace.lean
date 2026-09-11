@@ -86,7 +86,7 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
   have hcstack : (cache q.memory ++ rho).length ≤ 1002 := by simp only [List.length_append, cache_length]; omega
   have gschedule := PairedAllInlineBoundarySites.gasSteps_schedule s (UInt256.ofNat 587)
     (messagePointer i) (driverRest input i) (by simp [driverRest]) hrun
-    (messagePointer_lower i) (messagePointer_bound input hfit i hi) hcode hfork hnp
+    (messagePointer_lower i) (messagePointer_bound input hfit i hi) hcode hfork hnp ctx.sentinel
   have gschedule' : GasSteps (DriverTrace.compressEntry s input i)
       {q with pc := UInt256.ofNat 850, stack := PairedDerivedStartup.lowerWord :: cache q.memory ++ rho} := gschedule
   have hcanonical := SStartupPremises.scheduled_canonical s input i h ctx

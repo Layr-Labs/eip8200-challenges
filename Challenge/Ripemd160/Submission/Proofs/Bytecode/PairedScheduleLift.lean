@@ -257,6 +257,46 @@ theorem writeWord_size (memory : ByteArray) (address : Nat) (value : UInt256) :
     YulEvmCompiler.BytesLemmas.natToBytesPadded_size,
     if_neg (by decide : (32 : Nat) ≠ 0)]
 
+private theorem getD_eq_data (b : ByteArray) (j : Nat) (hj : j < b.data.size) :
+    b[j]?.getD 0 = b.data[j] := by
+  have h : j < b.size := hj
+  rw [getElem?_pos b j h]
+  rfl
+
+/-- Writing a zero word over 32 bytes that are ALREADY zero, in memory that is
+ALREADY long enough, changes nothing.  BOTH hypotheses are required: on a short
+`ByteArray` `writeBytes` EXTENDS the array, so "reads as zero" alone is false. -/
+theorem writeWord_zero_noop (memory : ByteArray) (address : Nat)
+    (hsize : address + 32 ≤ memory.size)
+    (hzero : ∀ i, i < 32 → memory[address + i]?.getD 0 = 0) :
+    writeWord memory address (UInt256.ofNat 0) = memory := by
+  have hbsize : (EvmSemantics.Data.Bytes.natToBytesPadded (UInt256.ofNat 0).toNat 32).size = 32 :=
+    YulEvmCompiler.BytesLemmas.natToBytesPadded_size _ _
+  apply ByteArray.ext
+  apply Array.ext
+  · show (EvmSemantics.MachineState.writeBytes memory _ address).size = memory.size
+    rw [EvmSemantics.MachineState.writeBytes_size, hbsize]
+    rw [if_neg (by omega)]
+    omega
+  · intro i hi₁ hi₂
+    have h := EvmSemantics.MachineState.writeBytes_getElem?_getD memory
+      (EvmSemantics.Data.Bytes.natToBytesPadded (UInt256.ofNat 0).toNat 32) address i
+    rw [hbsize] at h
+    rw [← getD_eq_data _ i hi₁, ← getD_eq_data _ i hi₂]
+    show (EvmSemantics.MachineState.writeBytes memory _ address)[i]?.getD 0 = _
+    by_cases hc : address ≤ i ∧ i < address + 32
+    · rw [if_pos hc] at h
+      have hk : i - address < 32 := by omega
+      have hz := YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD
+        (UInt256.ofNat 0).toNat 32 (i - address) hk
+      have hzero' := hzero (i - address) hk
+      have hidx : address + (i - address) = i := by omega
+      rw [hidx] at hzero'
+      rw [h, hz, hzero']
+      simp
+    · rw [if_neg hc] at h
+      exact h
+
 theorem storeCells_size (memory : ByteArray) (words : Nat → UInt256)
     (first n : Nat) :
     (storeCells memory words first n).size =

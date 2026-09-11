@@ -50,6 +50,14 @@ def preparedContext (s : State) (input : ByteArray) (i : Nat) (h : Compression.H
     StackRunBridge.BlockContext (prepared s i) input i h where
   calldata := by simpa using ctx.calldata
   separated := ctx.separated
+  sentinel := by
+    unfold prepared
+    split
+    · change SentinelCore.SentinelOK (MachineState.writeBytes s.memory
+        (MachineState.readPadded submissionBytecode 106 32) 0)
+      rw [PrefixStateMemory.literal_bytes]
+      exact SentinelCore.sentinel_writeWord_disjoint s.memory 0 _ (by decide) ctx.sentinel
+    · exact ctx.sentinel
   messageBlock := by
     intro k hk
     unfold ScheduleCorrect.expectedWord Schedule.readLEWord
