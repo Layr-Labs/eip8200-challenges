@@ -10,7 +10,7 @@ open PairedHelperBooleanTrace
 open PairedCall26Inline (oneRaw oneRaw_eq_rawBoolean)
 
 def inline22Frame (memory : ByteArray) (q : PairedHelperBooleanTrace.Frame) : PairedHelperBooleanTrace.Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 368) (MachineState.readWord memory 672), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 23}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 368) (MachineState.readWord memory 480), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 23}
 
 def inline22Entry (q : PairedHelperBooleanTrace.Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.a, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -38,7 +38,7 @@ def inline22Template : List Instr :=
    .op .AND,
    .op .OR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 672),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 480),
    .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 368),
    .op .MLOAD,
@@ -115,7 +115,7 @@ theorem inline22Template_terminal_advances :
 #print axioms inline22Template_terminal_advances
 
 def inline23Frame (memory : ByteArray) (q : PairedHelperBooleanTrace.Frame) : PairedHelperBooleanTrace.Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 528) (MachineState.readWord memory 288), leftShift0 := UInt256.ofNat 17, rightShift0 := UInt256.ofNat 21}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 144) (MachineState.readWord memory 288), leftShift0 := UInt256.ofNat 17, rightShift0 := UInt256.ofNat 21}
 
 def inline23Entry (q : PairedHelperBooleanTrace.Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.e, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -145,7 +145,7 @@ def inline23Template : List Instr :=
    .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 288),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 528),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
    .op .MLOAD,
    .op .OR,
    .op .ADD,

@@ -1,8 +1,7 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.SentinelPreserve
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedBlockTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.FastEmptyBlock
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Execution
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.TinyGuard
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectEmptyReturn
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -13,19 +12,11 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
 /-- Mathematical single-block state for the hash invariant. Nonempty inputs
-execute the generic compressor. The empty case returns through TinyGuard
+execute the generic compressor. The empty case returns through DirectEmptyReturn
 and retains this abstract state only for the common hash-state interface. -/
 def nextState (s : State) (input : ByteArray) (i : Nat) : State :=
   if input.size = 0 then FastEmptyBlock.resultState s input i
   else PairedBlockModel.resultState s input i
-
-theorem nextState_sentinel (s : State) (input : ByteArray) (i : Nat)
-    (hs : SentinelCore.SentinelOK s.memory) :
-    SentinelCore.SentinelOK (nextState s input i).memory := by
-  unfold nextState
-  split
-  · exact SentinelPreserve.sentinel_emptyMemory s.memory hs
-  · exact SentinelPreserve.sentinel_pairedResultState s input i
 
 @[simp] theorem nextState_executionEnv (s : State) (input : ByteArray) (i : Nat) :
     (nextState s input i).executionEnv = s.executionEnv := by
@@ -110,7 +101,6 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
 
 noncomputable def kernel : StackRunBridge.BlockKernel where
   nextState := nextState
-  sentinel := nextState_sentinel
   executionEnv := nextState_executionEnv
   halt := nextState_halt
   callStack := nextState_callStack
@@ -120,7 +110,6 @@ noncomputable def kernel : StackRunBridge.BlockKernel where
   gasSteps := fun s input i h hfit hi ctx hcode hfork hrun hnp _ hpositive =>
     gasSteps_block s input i h hfit hi ctx hpositive hcode hfork hrun hnp
   nextState2 := fun s _ => s
-  sentinel2 := by intros; assumption
   executionEnv2 := by intros; rfl
   halt2 := by intros; rfl
   callStack2 := by intros; rfl
@@ -131,16 +120,11 @@ noncomputable def kernel : StackRunBridge.BlockKernel where
 
 theorem correct (input : ByteArray) (hfit : CalldataFits input)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0)
-      (Execution.atPC input 393)) :
+      (Execution.atPC input 268)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  by_cases hhit : TinyGuardLogic.condition input = 0
-  · exact TinyGuard.correct_hit input hfit hhit entryPrefix
-  · have hnonempty : 0 < input.size := by
-      by_contra h
-      have he : input = ByteArray.empty := TinyGuardLogic.input_eq_empty input (by omega)
-      exact hhit (he ▸ TinyGuardLogic.condition_empty)
-    exact StackRunBridge.correct_of_block_kernel kernel input hfit hnonempty
-      (entryPrefix.trans (TinyGuard.gasSteps_miss input hhit))
+  by_cases hempty : input.size = 0
+  · exact DirectEmptyReturn.correct_empty input hfit hempty entryPrefix
+  · exact StackRunBridge.correct_of_block_kernel kernel input hfit (Nat.pos_of_ne_zero hempty) entryPrefix
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect

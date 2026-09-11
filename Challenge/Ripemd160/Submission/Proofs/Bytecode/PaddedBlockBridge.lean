@@ -631,15 +631,13 @@ theorem padReturned_paddedBlockAt (input : ByteArray)
     ScheduleCorrect.MessageBlockAt (PaddingTrace.padReturned input).memory
       (UInt256.ofNat (messageOffset + blockOff))
       (paddedMessage input) blockOff := by
-  have hcanonical := paddedBlockAt
-    {PaddingTrace.padReturned input with memory := Padding.paddedMemory (PaddingTrace.padLengthReady input).memory input}
+  apply paddedBlockAt (PaddingTrace.padReturned input)
     (PaddingTrace.padLengthReady input).memory input
-    (UInt256.ofNat (messageOffset + blockOff)) blockOff rfl (padBase_size input) rfl hfit hblock
-  intro k hk
-  have h := hcanonical k hk
-  simp only [ScheduleCorrect.expectedWord, Schedule.readLEWord] at h ⊢
-  rw [PaddingTrace.padReturned_readWord input hfit]
-  exact h
+  · exact PaddingTrace.padReturned_memory input hfit
+  · exact padBase_size input
+  · rfl
+  · exact hfit
+  · exact hblock
 
 /-- Block-number form of `padReturned_paddedBlockAt`, matching the driver's
 `i * 64` block offset. -/

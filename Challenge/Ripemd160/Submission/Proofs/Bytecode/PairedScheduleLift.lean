@@ -2,6 +2,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleLift
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseEndianMultiply
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleMemory
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.ScheduleLayout
 import Challenge.EvmProof.Bytes
 import Challenge.EvmProof.Memory
 
@@ -67,20 +68,19 @@ theorem readWord_offset16 (memory : ByteArray) (offset : Nat)
     readWord_halves, hleft, show offset + 16 + 16 = offset + 32 by omega,
     hright, Nat.add_zero]
 
+/-- Cell-indexed form: `words c` is the value of the 32-byte cell at `32 * c`
+(base 0, stride 32); cell 16 is the zero sentinel. -/
 theorem read_schedule_upper (memory : ByteArray) (words : Nat → UInt256)
-    (hread : ∀ i, i ≤ 16 → MachineState.readWord memory (192 + 32 * i) = words i)
+    (hread : ∀ i, i ≤ 16 → MachineState.readWord memory (32 * i) = words i)
     (hbound : ∀ i, i ≤ 16 → (words i).toNat < 2 ^ 32)
     (i : Nat) (hi : i < 16) :
-    MachineState.readWord memory (208 + 32 * i) =
+    MachineState.readWord memory (32 * i + 16) =
       UInt256.shiftLeft (words i) (UInt256.ofNat 128) := by
-  have hnext : MachineState.readWord memory (192 + 32 * i + 32) = words (i + 1) := by
-    convert hread (i + 1) (by omega) using 1
-    congr 1
-  have h := readWord_offset16 memory (192 + 32 * i) (words i) (words (i + 1))
+  have hnext : MachineState.readWord memory (32 * i + 32) = words (i + 1) := by
+    have h := hread (i + 1) (by omega)
+    rwa [show 32 * (i + 1) = 32 * i + 32 by omega] at h
+  exact readWord_offset16 memory (32 * i) (words i) (words (i + 1))
     (hread i (by omega)) hnext (hbound i (by omega)) (hbound (i + 1) (by omega))
-  convert h using 1
-  congr 1
-  omega
 
 #print axioms readWord_halves
 #print axioms halves_of_small
@@ -94,7 +94,19 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedScheduleMemory
 open EvmSemantics
 open Challenge.EvmProof
 
-def cell (i : Nat) : Nat := 192 + 32 * i
+/-- Address of the cell holding message word `i` (base 0, stride 32, permuted by
+`ScheduleLayout.perm`); `cell 16 = 512` is the zero sentinel. -/
+def cell (i : Nat) : Nat := 32 * ScheduleLayout.perm i
+
+theorem cell_disjoint {i j : Nat} (hij : i ≠ j) :
+    cell i + 32 ≤ cell j ∨ cell j + 32 ≤ cell i :=
+  ScheduleLayout.cell_disjoint hij
+
+theorem cell_le (i : Nat) (hi : i ≤ 16) : cell i ≤ 512 :=
+  ScheduleLayout.cell_le i hi
+
+theorem cell_lt_word (i : Nat) (hi : i < 16) : cell i + 32 ≤ 512 :=
+  ScheduleLayout.cell_lt_word i hi
 
 def writeWord (memory : ByteArray) (address : Nat) (value : UInt256) : ByteArray :=
   MachineState.writeBytes memory (Data.Bytes.natToBytesPadded value.toNat 32) address
@@ -130,27 +142,24 @@ theorem read_storeCells (memory : ByteArray) (words : Nat → UInt256)
     by_cases heq : i = first + n
     · subst i
       exact read_writeWord _ _ _
-    · rw [read_writeWord_disjoint _ _ _ _ (Or.inl (by simp only [cell]; omega))]
+    · rw [read_writeWord_disjoint _ _ _ _ (cell_disjoint heq)]
       exact ih i hfirst (by omega)
 
 theorem read_storeCells_outside (memory : ByteArray) (words : Nat → UInt256)
     (first n address : Nat)
-    (houtside : address + 32 ≤ cell first ∨ cell (first + n) ≤ address) :
+    (houtside : ∀ k, first ≤ k → k < first + n →
+      address + 32 ≤ cell k ∨ cell k + 32 ≤ address) :
     MachineState.readWord (storeCells memory words first n) address =
       MachineState.readWord memory address := by
   induction n with
   | zero => rfl
   | succ n ih =>
-    rw [storeCells, read_writeWord_disjoint]
-    · apply ih
-      simp only [cell] at houtside ⊢
-      omega
-    · simp only [cell] at houtside ⊢
-      omega
+    rw [storeCells, read_writeWord_disjoint _ _ _ _ (houtside (first + n) (by omega) (by omega))]
+    exact ih (fun k hk hk' => houtside k hk (by omega))
 
 theorem getD_storeCells_outside (memory : ByteArray) (words : Nat → UInt256)
     (first n address : Nat)
-    (houtside : address < cell first ∨ cell (first + n) ≤ address) :
+    (houtside : ∀ k, first ≤ k → k < first + n → address < cell k ∨ cell k + 32 ≤ address) :
     (storeCells memory words first n)[address]?.getD 0 = memory[address]?.getD 0 := by
   induction n with
   | zero => rfl
@@ -158,10 +167,9 @@ theorem getD_storeCells_outside (memory : ByteArray) (words : Nat → UInt256)
     rw [storeCells]
     simp only [writeWord, MachineState.writeBytes_getElem?_getD,
       YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
-    rw [if_neg (by simp only [cell] at houtside ⊢; omega)]
-    apply ih
-    simp only [cell] at houtside ⊢
-    omega
+    have hk := houtside (first + n) (by omega) (by omega)
+    rw [if_neg (by omega)]
+    exact ih (fun k hk hk' => houtside k hk (by omega))
 
 theorem read_normalized_cell (memory : ByteArray) (words : Nat → UInt256)
     (i : Nat) (hi : i ≤ 16) :
@@ -170,59 +178,79 @@ theorem read_normalized_cell (memory : ByteArray) (words : Nat → UInt256)
   by_cases heq : i = 16
   · subst i
     simp only [normalizedMemory, read_writeWord, ↓reduceIte]
-  · rw [if_neg heq, normalizedMemory, read_writeWord_disjoint _ _ _ _
-      (Or.inl (by simp only [cell]; omega))]
+  · rw [if_neg heq, normalizedMemory, read_writeWord_disjoint _ _ _ _ (cell_disjoint heq)]
     by_cases hlow : i < 8
     · exact read_storeCells _ _ 0 8 i (by omega) (by omega)
     · rw [read_storeCells_outside _ _ 0 8 (cell i)
-        (Or.inr (by simp only [cell]; omega))]
+        (fun k _ hk => cell_disjoint (by omega))]
       exact read_storeCells _ _ 8 8 i (by omega) (by omega)
+
+/-- Cell-indexed read: the cell at `32 * c` holds word `perm c` (sentinel at `c = 16`). -/
+theorem read_normalized_slot (memory : ByteArray) (words : Nat → UInt256)
+    (c : Nat) (hc : c ≤ 16) :
+    MachineState.readWord (normalizedMemory memory words) (32 * c) =
+      if c = 16 then UInt256.ofNat 0 else words (ScheduleLayout.perm c) := by
+  have h := read_normalized_cell memory words (ScheduleLayout.perm c)
+    (ScheduleLayout.perm_le c hc)
+  have hiff : ScheduleLayout.perm c = 16 ↔ c = 16 := by
+    constructor
+    · intro h16
+      rw [← ScheduleLayout.perm_perm c, h16]
+      decide
+    · intro h16
+      rw [h16]
+      decide
+  simp only [cell, ScheduleLayout.perm_perm] at h
+  by_cases h16 : c = 16
+  · rw [h, if_pos (hiff.mpr h16), if_pos h16]
+  · rw [h, if_neg (fun h' => h16 (hiff.mp h')), if_neg h16]
 
 theorem read_normalized_upper (memory : ByteArray) (words : Nat → UInt256)
     (hbound : ∀ i, i < 16 → (words i).toNat < 2 ^ 32)
     (i : Nat) (hi : i < 16) :
-    MachineState.readWord (normalizedMemory memory words) (208 + 32 * i) =
+    MachineState.readWord (normalizedMemory memory words) (cell i + 16) =
       UInt256.shiftLeft (words i) (UInt256.ofNat 128) := by
+  have hp := ScheduleLayout.perm_lt i hi
   have h := PairedScheduleOverlap.read_schedule_upper
-    (normalizedMemory memory words) (fun j => if j = 16 then UInt256.ofNat 0 else words j)
-    (fun j hj => read_normalized_cell memory words j hj)
+    (normalizedMemory memory words)
+    (fun c => if c = 16 then UInt256.ofNat 0 else words (ScheduleLayout.perm c))
+    (fun c hc => read_normalized_slot memory words c hc)
     (by
-      intro j hj
-      by_cases heq : j = 16
+      intro c hc
+      by_cases heq : c = 16
       · simp only [heq, ↓reduceIte]
         decide
       · simp only [if_neg heq]
-        exact hbound j (by omega))
-    i hi
-  simpa only [if_neg (show i ≠ 16 by omega)] using h
+        exact hbound _ (ScheduleLayout.perm_lt c (by omega)))
+    (ScheduleLayout.perm i) hp
+  simpa only [cell, if_neg (show ScheduleLayout.perm i ≠ 16 by omega),
+    ScheduleLayout.perm_perm] using h
 
 theorem read_normalized_outside (memory : ByteArray) (words : Nat → UInt256)
-    (address : Nat) (houtside : address + 32 ≤ 192 ∨ 736 ≤ address) :
+    (address : Nat) (houtside : 544 ≤ address) :
     MachineState.readWord (normalizedMemory memory words) address =
       MachineState.readWord memory address := by
-  rw [normalizedMemory, read_writeWord_disjoint]
-  · rw [read_storeCells_outside, read_storeCells_outside]
-    · simp only [cell]
-      omega
-    · simp only [cell]
-      omega
-  · simp only [cell]
-    omega
+  rw [normalizedMemory, read_writeWord_disjoint _ _ _ _
+      (Or.inr (by have := cell_le 16 (by decide); omega)),
+    read_storeCells_outside _ _ 0 8 address
+      (fun k _ hk => Or.inr (by have := cell_lt_word k (by omega); omega)),
+    read_storeCells_outside _ _ 8 8 address
+      (fun k _ hk => Or.inr (by have := cell_lt_word k (by omega); omega))]
 
 theorem getD_normalized_outside (memory : ByteArray) (words : Nat → UInt256)
-    (address : Nat) (houtside : address < 192 ∨ 736 ≤ address) :
+    (address : Nat) (houtside : 544 ≤ address) :
     (normalizedMemory memory words)[address]?.getD 0 = memory[address]?.getD 0 := by
   simp only [normalizedMemory, writeWord, MachineState.writeBytes_getElem?_getD,
     YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
-  rw [if_neg (by simp only [cell]; omega), getD_storeCells_outside,
-    getD_storeCells_outside]
-  · simp only [cell]
-    omega
-  · simp only [cell]
-    omega
+  have h16 := cell_le 16 (by decide)
+  rw [if_neg (by omega),
+    getD_storeCells_outside _ _ 0 8 address
+      (fun k _ hk => Or.inr (by have := cell_lt_word k (by omega); omega)),
+    getD_storeCells_outside _ _ 8 8 address
+      (fun k _ hk => Or.inr (by have := cell_lt_word k (by omega); omega))]
 
 theorem readPadded_normalized_outside (memory : ByteArray) (words : Nat → UInt256)
-    (address count : Nat) (houtside : address + count ≤ 192 ∨ 736 ≤ address) :
+    (address count : Nat) (houtside : 544 ≤ address) :
     MachineState.readPadded (normalizedMemory memory words) address count =
       MachineState.readPadded memory address count := by
   apply Memory.readPadded_congr
@@ -230,12 +258,12 @@ theorem readPadded_normalized_outside (memory : ByteArray) (words : Nat → UInt
   apply getD_normalized_outside
   omega
 
+/-- The relocated chaining state h0..h4 (544..672) lies above the schedule. -/
 theorem read_normalized_hash (memory : ByteArray) (words : Nat → UInt256)
     (i : Nat) (hi : i < 5) :
-    MachineState.readWord (normalizedMemory memory words) (32 + 32 * i) =
-      MachineState.readWord memory (32 + 32 * i) := by
+    MachineState.readWord (normalizedMemory memory words) (544 + 32 * i) =
+      MachineState.readWord memory (544 + 32 * i) := by
   apply read_normalized_outside
-  left
   omega
 
 #print axioms read_writeWord
@@ -257,69 +285,34 @@ theorem writeWord_size (memory : ByteArray) (address : Nat) (value : UInt256) :
     YulEvmCompiler.BytesLemmas.natToBytesPadded_size,
     if_neg (by decide : (32 : Nat) ≠ 0)]
 
-private theorem getD_eq_data (b : ByteArray) (j : Nat) (hj : j < b.data.size) :
-    b[j]?.getD 0 = b.data[j] := by
-  have h : j < b.size := hj
-  rw [getElem?_pos b j h]
-  rfl
-
-/-- Writing a zero word over 32 bytes that are ALREADY zero, in memory that is
-ALREADY long enough, changes nothing.  BOTH hypotheses are required: on a short
-`ByteArray` `writeBytes` EXTENDS the array, so "reads as zero" alone is false. -/
-theorem writeWord_zero_noop (memory : ByteArray) (address : Nat)
-    (hsize : address + 32 ≤ memory.size)
-    (hzero : ∀ i, i < 32 → memory[address + i]?.getD 0 = 0) :
-    writeWord memory address (UInt256.ofNat 0) = memory := by
-  have hbsize : (EvmSemantics.Data.Bytes.natToBytesPadded (UInt256.ofNat 0).toNat 32).size = 32 :=
-    YulEvmCompiler.BytesLemmas.natToBytesPadded_size _ _
-  apply ByteArray.ext
-  apply Array.ext
-  · show (EvmSemantics.MachineState.writeBytes memory _ address).size = memory.size
-    rw [EvmSemantics.MachineState.writeBytes_size, hbsize]
-    rw [if_neg (by omega)]
-    omega
-  · intro i hi₁ hi₂
-    have h := EvmSemantics.MachineState.writeBytes_getElem?_getD memory
-      (EvmSemantics.Data.Bytes.natToBytesPadded (UInt256.ofNat 0).toNat 32) address i
-    rw [hbsize] at h
-    rw [← getD_eq_data _ i hi₁, ← getD_eq_data _ i hi₂]
-    show (EvmSemantics.MachineState.writeBytes memory _ address)[i]?.getD 0 = _
-    by_cases hc : address ≤ i ∧ i < address + 32
-    · rw [if_pos hc] at h
-      have hk : i - address < 32 := by omega
-      have hz := YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD
-        (UInt256.ofNat 0).toNat 32 (i - address) hk
-      have hzero' := hzero (i - address) hk
-      have hidx : address + (i - address) = i := by omega
-      rw [hidx] at hzero'
-      rw [h, hz, hzero']
-      simp
-    · rw [if_neg hc] at h
-      exact h
-
+/-- Stores below the sentinel keep the memory within `max size 512`. -/
 theorem storeCells_size (memory : ByteArray) (words : Nat → UInt256)
-    (first n : Nat) :
-    (storeCells memory words first n).size =
-      if n = 0 then memory.size else max memory.size (cell (first + n)) := by
+    (first n : Nat) (hrange : first + n ≤ 16) :
+    memory.size ≤ (storeCells memory words first n).size ∧
+      (storeCells memory words first n).size ≤ max memory.size 512 := by
   induction n with
-  | zero => rfl
+  | zero => exact ⟨Nat.le_refl _, Nat.le_max_left _ _⟩
   | succ n ih =>
-    rw [storeCells, writeWord_size, ih]
-    simp only [Nat.succ_ne_zero, if_false]
-    split <;> simp only [cell] <;> omega
+    have hlt := cell_lt_word (first + n) (by omega)
+    rcases ih (by omega) with ⟨ih1, ih2⟩
+    rw [storeCells, writeWord_size]
+    constructor <;> omega
 
 theorem normalizedMemory_size (memory : ByteArray) (words : Nat → UInt256) :
-    (normalizedMemory memory words).size = max memory.size 736 := by
-  rw [normalizedMemory, writeWord_size, storeCells_size, storeCells_size]
-  norm_num [cell]
+    (normalizedMemory memory words).size = max memory.size 544 := by
+  rw [normalizedMemory, writeWord_size, show cell 16 = 512 by decide]
+  rcases storeCells_size memory words 8 8 (by decide) with ⟨h1, h2⟩
+  rcases storeCells_size (storeCells memory words 8 8) words 0 8 (by decide) with ⟨h3, h4⟩
+  omega
 
 theorem normalizedMemory_size_of_ge (memory : ByteArray) (words : Nat → UInt256)
-    (hsize : 736 ≤ memory.size) :
+    (hsize : 544 ≤ memory.size) :
     (normalizedMemory memory words).size = memory.size := by
   rw [normalizedMemory_size, Nat.max_eq_left hsize]
 
 theorem active_cell (current i : Nat) :
-    MachineState.activeWordsAfter current (cell i) 32 = max current (7 + i) := by
+    MachineState.activeWordsAfter current (cell i) 32 =
+      max current (ScheduleLayout.perm i + 1) := by
   simp only [MachineState.activeWordsAfter, if_neg (by decide : (32 : Nat) ≠ 0), cell]
   congr 1
   omega
@@ -327,6 +320,7 @@ theorem active_cell (current i : Nat) :
 theorem active_cell_preserved (current i : Nat)
     (hcurrent : 23 ≤ current) (hi : i ≤ 16) :
     MachineState.activeWordsAfter current (cell i) 32 = current := by
+  have := ScheduleLayout.perm_le i hi
   rw [active_cell, Nat.max_eq_left (by omega)]
 
 theorem active_wrapped_cell_preserved (current : UInt256) (i : Nat)
@@ -452,15 +446,13 @@ theorem extractedWord_eq_expectedWord (memory : ByteArray) (p i : Nat)
 
 theorem read_normalized_extracted (memory : ByteArray) (p i : Nat) (hi : i < 16) :
     MachineState.readWord (normalizedMemory memory (extractedWord memory p))
-      (192 + 32 * i) = littleWord memory p i := by
-  change MachineState.readWord (normalizedMemory memory (extractedWord memory p))
-    (cell i) = littleWord memory p i
+      (cell i) = littleWord memory p i := by
   rw [read_normalized_cell _ _ _ (by omega), if_neg (by omega)]
   exact extractedWord_eq_littleWord memory p i
 
 theorem read_normalized_extracted_upper (memory : ByteArray) (p i : Nat) (hi : i < 16) :
     MachineState.readWord (normalizedMemory memory (extractedWord memory p))
-      (208 + 32 * i) = UInt256.shiftLeft (littleWord memory p i) (UInt256.ofNat 128) := by
+      (cell i + 16) = UInt256.shiftLeft (littleWord memory p i) (UInt256.ofNat 128) := by
   rw [read_normalized_upper _ _ (fun j _ => extractedWord_bound memory p j) _ hi,
     extractedWord_eq_littleWord]
 
@@ -485,8 +477,11 @@ open Challenge.EvmProof
 open StackRoundTrace DenseScheduleTemplate
 open PairedScheduleMemory
 
+/-- Minimal-width address push: PUSH0 for address 0, PUSH1 below 256, else PUSH2. -/
 def storeTemplate (address : Nat) : List Instr :=
-  [if address = 192 ∨ address = 224 then push1 (UInt256.ofNat address) else push2 (UInt256.ofNat address), op .MSTORE]
+  [if address = 0 then .push ⟨0, by decide⟩ (UInt256.ofNat address)
+   else if address < 256 then push1 (UInt256.ofNat address) else push2 (UInt256.ofNat address),
+   op .MSTORE]
 
 theorem run_storeTemplate (s : State) (pc value : UInt256) (address : Nat)
     (rest : List UInt256) (hstack : rest.length < 1022)
@@ -502,12 +497,19 @@ theorem run_storeTemplate (s : State) (pc value : UInt256) (address : Nat)
   have haddr : (UInt256.ofNat address).toNat = address := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat]
     exact Nat.mod_eq_of_lt haddress
-  by_cases hsmall : address = 192 ∨ address = 224 <;>
-    simp [storeTemplate, hsmall, push1, push2, op, writeWord, runInstrSeq,
-    Challenge.EvmProof.Stepper.runInstr, pcAfter, hrun, hcap1, hcap,
-    UInt256.succ, Instr.size,
-    State.activeWordsAfterUInt256, haddr]
-  all_goals rfl
+  by_cases hzero : address = 0
+  · subst hzero
+    simp [storeTemplate, op, writeWord, runInstrSeq,
+      Challenge.EvmProof.Stepper.runInstr, pcAfter, hrun, hcap1, hcap,
+      UInt256.succ, Instr.size,
+      State.activeWordsAfterUInt256]
+    exact ⟨⟨rfl, rfl⟩, rfl⟩
+  · by_cases hsmall : address < 256 <;>
+      simp [storeTemplate, hzero, hsmall, push1, push2, op, writeWord, runInstrSeq,
+      Challenge.EvmProof.Stepper.runInstr, pcAfter, hrun, hcap1, hcap,
+      UInt256.succ, Instr.size,
+      State.activeWordsAfterUInt256, haddr]
+    all_goals rfl
 
 def maskTemplate : List Instr :=
   [.push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), op .AND]
@@ -653,8 +655,7 @@ def halfTemplate (first : Nat) : List Instr :=
   prefixTemplate first 7 ++ lastTemplate (cell (first + 7))
 
 theorem schedule_cell_lt (i : Nat) (hi : i ≤ 16) : cell i < 2 ^ 256 := by
-  simp only [cell]
-  norm_num
+  have := cell_le i hi
   omega
 
 theorem run_keepTemplate (s : State) (pc value : UInt256)
@@ -957,7 +958,7 @@ theorem fullTemplate_length : fullTemplate.length = 152 := by
     PairedSchedulePrimitives.duplicateShiftTemplate, PairedSchedulePrimitives.maskTemplate,
     PairedSchedulePrimitives.storeTemplate, sentinelTemplate]
 
-theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 391 := by
+theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 384 := by
   rw [DenseScheduleTemplate.assembleBytes_length]
   norm_num [fullTemplate, initialTemplate, reversedHalfTemplate, endianStage8, endianStage16,
     endianStage, endianMaskPush, endianFactorPush, endianFactor,
@@ -967,7 +968,7 @@ theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 391 := b
     PairedSchedulePrimitives.storeTemplate, sentinelTemplate, cell,
     op, push1, push2, push3, dup1, swap1]
 
-theorem fullTemplate_staticGas : staticGas fullTemplate = 461 := by
+theorem fullTemplate_staticGas : staticGas fullTemplate = 460 := by
   norm_num [staticGas, fullTemplate, initialTemplate, reversedHalfTemplate,
     endianStage8, endianStage16, endianStage, endianMaskPush, endianFactorPush, endianFactor,
     halfTemplate, prefixTemplate, keepTemplate, PairedScheduleStores.firstTemplate,
@@ -999,7 +1000,9 @@ open YulEvmCompiler
 open DenseScheduleTemplate PairedScheduleMemory PairedScheduleHalves PairedScheduleCombined
 
 /-- Exact instruction decoding of the frozen 5337-byte candidate's 393-byte
-window beginning at physical PC464. This list is not generated from test inputs. -/
+window beginning at physical PC464, with every schedule-cell address relocated
+to the stride-32 base-0 permuted layout (`ScheduleLayout.cell`) and re-encoded at
+minimal push width (386 bytes). This list is not generated from test inputs. -/
 def frozenInstructions : List Instr :=
   [.op .JUMPDEST,
    .op (.Dup ⟨0, by decide⟩),
@@ -1031,53 +1034,53 @@ def frozenInstructions : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0xe0),
    .op .SHR,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 0x01c0),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 0x40),
    .op .MSTORE,
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0xc0),
    .op .SHR,
    .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff),
    .op .AND,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 0x01e0),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 0x60),
    .op .MSTORE,
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0xa0),
    .op .SHR,
    .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff),
    .op .AND,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 0x0200),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .MSTORE,
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHR,
    .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff),
    .op .AND,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 0x0220),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 0xa0),
    .op .MSTORE,
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x60),
    .op .SHR,
    .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff),
    .op .AND,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 0x0240),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 0xc0),
    .op .MSTORE,
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x40),
    .op .SHR,
    .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff),
    .op .AND,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 0x0260),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 0xe0),
    .op .MSTORE,
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x20),
    .op .SHR,
    .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff),
    .op .AND,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 0x0280),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x01c0),
    .op .MSTORE,
    .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff),
    .op .AND,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 0x02a0),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x01e0),
    .op .MSTORE,
    .op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨0, by decide⟩),
@@ -1102,14 +1105,14 @@ def frozenInstructions : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0xe0),
    .op .SHR,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x00c0),
+   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
    .op .MSTORE,
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0xc0),
    .op .SHR,
    .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff),
    .op .AND,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x00e0),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 0x20),
    .op .MSTORE,
    .op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 0xa0),
@@ -1151,7 +1154,7 @@ def frozenInstructions : List Instr :=
    .push ⟨2, by decide⟩ (UInt256.ofNat 0x01a0),
    .op .MSTORE,
    .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 0x02c0),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x0200),
    .op .MSTORE]
 
 theorem fullTemplate_eq_frozenInstructions : fullTemplate = frozenInstructions := by

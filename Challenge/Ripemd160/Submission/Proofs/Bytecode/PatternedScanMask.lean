@@ -292,7 +292,7 @@ theorem acc256_zero_iff (input : ByteArray) (hsize : input.size = 256) :
     guardedAcc input guardWord (wordShift 256) 8 = 0 ↔ input = data256 := by
   change guardedAcc input guardWord (fun j => UInt256.ofNat ((32 - min 32 (256 - 32 * j)) * 8)) 8 = 0 ↔ input = data256
   have hs : input.size = data256.size := by simpa only [data256_size]
-  have hc : data256.size ≤ 32 * 8 := by rw [data256_size]
+  have hc : data256.size ≤ 32 * 8 := by change 256 ≤ 32 * 8; norm_num
   simpa only [data256_size, wordShift] using
     guardedAcc_zero_iff_eq input data256 guardWord 8 hs hc
       (by simpa only [data256_size, wordShift] using guardWord_projection_256)
