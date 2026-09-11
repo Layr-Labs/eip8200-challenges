@@ -1604,7 +1604,7 @@ theorem run_ebitMul (s : State) (mem : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1301
       (ebitMul s mem n bsize esize msize i w mask) =
-      some (mpCall s mem 1024 2048 1024 (UInt256.ofNat 1676)
+      some (mpCall s mem 1024 2048 1024 (UInt256.ofNat 1677)
         (bitStack n bsize esize msize i w mask)) := by
   have h1939Nat : (UInt256.ofNat 4053).toNat = 4053 := by decide
   simp (config := { maxSteps := 400000 }) [blk1301, opAt, pushAt, wfOp,
@@ -1984,7 +1984,7 @@ def gasSteps_ebitMul (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (ebitMul s mem n bsize esize msize i w mask)
-      (mpCall s mem 1024 2048 1024 (UInt256.ofNat 1676)
+      (mpCall s mem 1024 2048 1024 (UInt256.ofNat 1677)
         (bitStack n bsize esize msize i w mask)) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1301 hcode hfork
@@ -3704,8 +3704,8 @@ theorem jumpD1755 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
 theorem jumpD1806 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 1651).toNat = true := jumpD 1651 (by decide) jumpDest1732
 
-theorem jumpD1831 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 1676).toNat = true := jumpD 1676 (by decide) jumpDest1757
+theorem jumpD1832 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
+    (UInt256.ofNat 1677).toNat = true := jumpD 1677 (by decide) jumpDest1758
 
 theorem jumpD1533 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 1445).toNat = true := jumpD 1445 (by decide) jumpDest1526
@@ -4180,15 +4180,12 @@ def gasSteps_bitStep (s : State) {n bsize mm minv R : Nat}
           (2 ^ r) hmask hw256 hne hcode hfork hrun hnp)).trans
         ((gasSteps_ebitMul s (sub.mpMem 1024 1024 1024 mem) n bsize esize msize i w
             (2 ^ r) hcode hfork hrun hnp).trans
-          (sub.monpro 1024 2048 1024 (UInt256.ofNat 1676)
+          (sub.monpro 1024 2048 1024 (UInt256.ofNat 1677)
             (bitStack n bsize esize msize i w (2 ^ r))
             (sub.mpMem 1024 1024 1024 mem) (Model.montMul mm R acc acc) bM
             (by simp [bitStack]) (by omega) (by omega) (by omega) (by omega)
-            (by omega) jumpD1831 (sub.mpFrame 1024 1024 1024 mem (by omega) hframe) hmod1 hsq
-            hbase1 (Model.montMul_lt hm _ _ _)))).trans
-        (gasSteps_ebitJoin s
-          (sub.mpMem 1024 2048 1024 (sub.mpMem 1024 1024 1024 mem))
-          n bsize esize msize i w (2 ^ r) hcode hfork hrun hnp))
+            (by omega) jumpD1832 (sub.mpFrame 1024 1024 1024 mem (by omega) hframe) hmod1 hsq
+            hbase1 (Model.montMul_lt hm _ _ _)))))
       rfl (by rw [h1]; rfl)
 
 def gasSteps_bitBody (s : State) {n bsize mm minv R : Nat}
