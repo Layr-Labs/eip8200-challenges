@@ -93,12 +93,12 @@ def entryProgram : List Instr :=
    .op .MLOAD,
    .push 1 128,
    .op .EQ,
-   .push 1 153,
+   .push 1 152,
    .op .MUL,
-   .push 2 4281,
+   .push 2 4195,
    .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
-   .push 3 299,
+   .push 3 314,
    .op .ADD,
    .op (.Swap ⟨3, by decide⟩),
    .push 0 0,
@@ -182,7 +182,7 @@ def tailProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),
    .op .GT,
-   .push 2 4250,
+   .push 2 4164,
    .op .JUMPI,
    .op .POP,
    .op .POP,
@@ -191,7 +191,7 @@ def tailProgram : List Instr :=
    .op .POP,
    .op .POP,
    .op .POP,
-   .push 2 3811,
+   .push 2 4902,
    .op .JUMP]
 
 def l1DispatchProgram : List Instr :=

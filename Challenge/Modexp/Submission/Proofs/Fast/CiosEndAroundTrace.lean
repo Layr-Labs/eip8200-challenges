@@ -104,7 +104,7 @@ theorem run_loadMod (s : State) (bi pbi paEnd pbEnd flag dst ret : UInt256) (n :
     (haddr : MachineState.readWord s.memory 9408 = UInt256.ofNat (32*n-32)) :
     runInstructions loadMod
       (framed s (UInt256.ofNat 4931) ([mu, t0] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4937) ([MachineState.readWord s.memory (32*n-32), mu, mu, t0] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
+    some (framed s (UInt256.ofNat 4861) ([MachineState.readWord s.memory (32*n-32), mu, mu, t0] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hp9408 : (9408 : UInt256).toNat = 9408 := by decide
   have hp9440 : (9440 : UInt256).toNat = 9440 := by decide
   have hp9376 : (9376 : UInt256).toNat = 9376 := by decide
@@ -136,8 +136,8 @@ set_option linter.unusedSimpArgs false in
 theorem run_makeModProduct (s : State) (bi pbi paEnd pbEnd flag dst ret : UInt256) (m0 mu t0 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006)  :
     runInstructions makeModProduct
-      (framed s (UInt256.ofNat 4937) ([m0, mu, mu, t0] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
-    some (framed s (UInt256.ofNat 4940) ([UInt256.mulMod mu m0 maxWord, mu, t0] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
+      (framed s (UInt256.ofNat 4861) ([m0, mu, mu, t0] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+    some (framed s (UInt256.ofNat 4864) ([UInt256.mulMod mu m0 maxWord, mu, t0] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hp9408 : (9408 : UInt256).toNat = 9408 := by decide
   have hp9440 : (9440 : UInt256).toNat = 9440 := by decide
   have hp9376 : (9376 : UInt256).toNat = 9376 := by decide
@@ -167,7 +167,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_finishCarry (s : State) (bi pbi paEnd pbEnd flag dst ret : UInt256) (mm mu t0 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006)  :
     runInstructions finishCarry
-      (framed s (UInt256.ofNat 4940) ([mm, mu, t0] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
+      (framed s (UInt256.ofNat 4864) ([mm, mu, t0] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) =
     some (framed s (UInt256.ofNat 4950) ([endCarry mm t0, mu] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)) := by
   have hp9408 : (9408 : UInt256).toNat = 9408 := by decide
   have hp9440 : (9440 : UInt256).toNat = 9440 := by decide

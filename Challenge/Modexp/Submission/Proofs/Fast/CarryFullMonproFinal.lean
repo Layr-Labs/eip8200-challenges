@@ -1,8 +1,9 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CarryFullMonproCsub
+import Challenge.Modexp.Submission.Proofs.Fast.CarryResultBound
 
 set_option warningAsError true
 set_option maxRecDepth 40000
-set_option maxHeartbeats 4000000
+set_option maxHeartbeats 500000
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.CarryFull
 
@@ -14,6 +15,9 @@ open Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch
 open CiosCached CarryRowGas CiosCachedMidMemory
 open Challenge.Modexp.Submission.Proofs.Fast.CarryRows
 open CarryRowModel CarryResult StagedOperand
+
+attribute [local irreducible] SquarePrepared.prepared SquarePrepared.before Monpro.mpZeroed
+  SquareRowsModel.rows CarryRowModel.rowsCarry Monpro.rowsMem
 
 opaque gasSteps_monproFull (s : State) (mem : ByteArray) (pa pb p : Nat)
     (a b mm : Nat) (pdst ret : UInt256) (rest : List UInt256)
@@ -40,28 +44,11 @@ opaque gasSteps_monproFull (s : State) (mem : ByteArray) (pa pb p : Nat)
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
       (Csub.csReturnedState s
-        (selectedRows (mpZeroed s (inputMemory mem pa (p+2)) (p + 2)) pa pb (p + 2) (p + 2)) (p + 2) (p + 2)
+        (selectedRows (SquarePrepared.prepared s mem pa pb (p+2)) pa pb (p + 2) (p + 2)) (p + 2) (p + 2)
         pdst ret rest) :=
   gasSteps_monproCsub s mem pa pb (p + 2) pdst ret rest (by omega) hrun hcode hfork hnp
     hact (by omega) hn32 hpa (by omega) hpb (by omega) hcds hs32 htl hml hminv hjump
     hdstFit
-    (by
-      let prepared := inputMemory mem pa (p+2)
-      have ha' : Model.FastRepresents prepared pa (p+2) a :=
-        (fastRepresents_inputMemory mem pa (p+2) pa (p+2) a hpaFit).2 ha
-      have hb' : Model.FastRepresents prepared pb (p+2) b :=
-        (fastRepresents_inputMemory mem pa (p+2) pb (p+2) b hpbFit).2 hb
-      have hm' : Model.FastRepresents prepared 0 (p+2) mm :=
-        (fastRepresents_inputMemory mem pa (p+2) 0 (p+2) mm (by omega)).2 hm
-      have hminv' : ((MachineState.readWord prepared (32*(p+2)-32)).toNat *
-          (MachineState.readWord prepared 9376).toNat + 1) % 2^256 = 0 := by
-        simpa only [prepared,
-          read_inputMemory_outside mem pa (p+2) (32*(p+2)-32) (Or.inl (by omega)),
-          read_inputMemory_outside mem pa (p+2) 9376 (Or.inr (by decide))] using hminv
-      have hr := selectedRows_agree (mpZeroed s prepared (p+2)) pa pb (p+2) (p+2)
-        hpaFit hpbFit (by omega) hn32 (by omega)
-      rw [CarryScratchAgreement.readWord_eq hr 8224 (Or.inr (by decide))]
-      exact Monpro.monpro_tn_le_one s prepared pa pb p a b mm hn32 hpaFit hpbFit ha' hb' hm' ham
-        hmpos hminv')
+    (CarryResult.monpro_tn_le_one s mem pa pb p a b mm hn32 hpaFit hpbFit ha hb hm ham hmpos hminv)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryFull

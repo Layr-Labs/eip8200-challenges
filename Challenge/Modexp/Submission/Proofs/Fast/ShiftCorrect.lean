@@ -10,7 +10,7 @@ set_option maxHeartbeats 16000000
 # Fast-path certificate with the shift-reduce base conversion
 
 After `Fast.Setup` and the `R1B` guard, execution reaches the dispatcher at
-pc 3841.  When the base is exactly `n` words wide and the modulus has its top
+pc 3810.  When the base is exactly `n` words wide and the modulus has its top
 bit set, the shift-reduce routine converts the base and rejoins the exponent
 phase at `BDONE`; otherwise the old `r0` block runs the unchanged RR-leading
 chain.
@@ -232,7 +232,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
       simp only [base, hbEq]
       exact Nat.ModEq.refl _
     obtain ⟨fin, ⟨tr⟩, hdone, hres⟩ :=
-      FixedDirectCorrect.handled_of_entryStateConcrete input s final
+      FixedDirectCorrect.handled_of_bDoneConcrete input s final
         n bsize esize msize mm minv baseM sub hspec
         hcode hfork hrun hnp hdata hstack hact hn hn32 hb he hmz hm32 hbsize hesize
         hmsz hmm hodd hradix (Nat.mod_lt _ hmpos) hbaseForm hframeF hmodF

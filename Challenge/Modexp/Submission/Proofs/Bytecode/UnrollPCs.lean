@@ -35,7 +35,7 @@ private theorem instructionPC_succ
   calc
     Artifact.submissionArtifact.instructionPC 483 =
         Artifact.submissionArtifact.instructionPC 482 +
-          (YulEvmCompiler.Instr.push 2 3130).bytes.length :=
+          (YulEvmCompiler.Instr.push 2 3330).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 482 _ (by rfl)
     _ = 588 := by rw [pc485]; rfl
 @[simp] theorem pc2414 : Artifact.submissionArtifact.instructionPC 2396 = 3130 := by rfl

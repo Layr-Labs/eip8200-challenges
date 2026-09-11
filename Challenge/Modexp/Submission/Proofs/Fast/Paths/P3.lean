@@ -37,7 +37,7 @@ def blk1155 :
    pushAt 1102 2 6144,
    pushAt 1103 2 6144,
    pushAt 1104 2 6144,
-   pushAt 1105 2 4140,
+   pushAt 1105 2 4049,
    opAt 1106 .JUMP]
 
 /-- Instructions 1162..1173, pc 1586..1604. -/
@@ -82,7 +82,7 @@ def blk1189 :
    opAt 1131 .POP,
    opAt 1132 (.Dup ⟨2, by decide⟩),
    opAt 1133 .ISZERO,
-   pushAt 1134 2 3324,
+   pushAt 1134 2 1617,
    opAt 1135 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast

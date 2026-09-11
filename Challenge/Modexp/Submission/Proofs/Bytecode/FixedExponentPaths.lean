@@ -9,7 +9,7 @@ set_option maxHeartbeats 4000000
 # Exact located blocks for the fixed-exponent dispatcher
 
 The inherited program ends at pc 3694.  The appended handler occupies
-pc 3695..3851 and instruction indices 2414..2499.  These definitions are the
+pc 3695..3820 and instruction indices 2414..2499.  These definitions are the
 artifact-dependent boundary of the fixed-exponent proof; the regenerated
 artifact must discharge the PC and jump-destination certificates below.
 -/
@@ -53,7 +53,7 @@ def oneWidth : List Located :=
 def checkThree : List Located :=
   [pushAt 2417 1 32, opAt 2418 .MLOAD, opAt 2419 .CALLDATALOAD,
    pushAt 2420 0 0, opAt 2421 .BYTE, pushAt 2422 1 3,
-   opAt 2423 .EQ, opAt 2424 .ISZERO, pushAt 2425 2 3838,
+   opAt 2423 .EQ, opAt 2424 .ISZERO, pushAt 2425 2 3807,
    opAt 2426 .JUMPI]
 
 def threeHit : List Located :=

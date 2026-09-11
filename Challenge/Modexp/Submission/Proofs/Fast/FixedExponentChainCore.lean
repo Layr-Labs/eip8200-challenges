@@ -86,7 +86,7 @@ theorem run_decodeProgram (s : State) (memory : ByteArray)
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       3040 + 32 * n :=
     Exp.mod_word_self
-      (Nat.lt_of_le_of_lt (show 3040 + 32 * n ≤ 4064 by omega) (by norm_num))
+      (Nat.lt_of_le_of_lt (show 3040 + 32 * n ≤ 3973 by omega) (by norm_num))
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (3040 + 32 * n) 32) = s.activeWords :=
     Exp.activeWords_fix s (3040 + 32 * n) 32 (by omega) (by omega) hactive

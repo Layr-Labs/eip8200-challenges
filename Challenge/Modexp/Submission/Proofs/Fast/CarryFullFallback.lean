@@ -53,6 +53,6 @@ opaque gasSteps_fallback (s : State) (mem : ByteArray) (pa pb n : Nat)
     hfork hnp hact h128 h256).trans
     (gasSteps_monpro s mem pa pb n pdst ret rest (by omega) hrun hcode hfork hnp hact
       hn hn32 hpa hpaFit hpb hpbFit hcds hs32 htl hml)
-  simpa only [selectedRows, if_neg (show ¬(n=4 ∨ n=8) by simp [hn4, hn8])] using hf
+  simpa only [selectedRows, if_neg (show ¬(n=8 ∧ pa=pb) by simp [hn8]), if_neg (show ¬(n=4 ∨ n=8) by simp [hn4, hn8])] using hf
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryFull

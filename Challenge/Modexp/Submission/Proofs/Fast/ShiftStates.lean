@@ -38,23 +38,23 @@ def pcShiftBody : Nat := 3697
 def pcEstimate : Nat := 3711
 def pcMacSetup : Nat := 3789
 def pcMacLoop : Nat := 3802
-def pcMid : Nat := 3945
+def pcMid : Nat := 3854
 /-- The limb-pass body after the pointer steps, before the exit test. -/
-def pcMacTail : Nat := 3936
-def pcAddLoop : Nat := 3979
-def pcAddInner : Nat := 3985
-def pcAddTail : Nat := 4028
+def pcMacTail : Nat := 3845
+def pcAddLoop : Nat := 3888
+def pcAddInner : Nat := 3894
+def pcAddTail : Nat := 3937
 /-- The add body after `OR`, before the pointer step and exit test. -/
-def pcAddMid : Nat := 4014
-def pcSubCheck : Nat := 4046
-def pcSubEntry : Nat := 4056
-def pcSubInner : Nat := 4061
-def pcSubTail : Nat := 4100
+def pcAddMid : Nat := 3923
+def pcSubCheck : Nat := 3955
+def pcSubEntry : Nat := 3965
+def pcSubInner : Nat := 3970
+def pcSubTail : Nat := 4009
 /-- The subtract body after `OR`, before the pointer step and exit test. -/
-def pcSubMid : Nat := 4085
-def pcCsubCall : Nat := 4114
-def pcAfterCsub : Nat := 4125
-def pcShiftDone : Nat := 4134
+def pcSubMid : Nat := 3994
+def pcCsubCall : Nat := 4023
+def pcAfterCsub : Nat := 4034
+def pcShiftDone : Nat := 4043
 
 /-- A state with the outer frame only. -/
 def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat) : State :=
@@ -68,7 +68,7 @@ def kState (s : State) (mem : ByteArray) (pc k : Nat) (n bsize esize msize : Nat
            stack := UInt256.ofNat k :: outer n bsize esize msize
            memory := mem }
 
-/-- The dispatcher entry (pc 3841), reached from `R1B` with the outer frame. -/
+/-- The dispatcher entry (pc 3810), reached from `R1B` with the outer frame. -/
 def dispState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   frameState s mem pcDispatch n bsize esize msize
 

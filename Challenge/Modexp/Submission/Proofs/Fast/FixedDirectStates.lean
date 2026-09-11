@@ -36,7 +36,7 @@ def check65537 (s : State) (mem : ByteArray)
 
 def special (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 3392
+  { s with pc := UInt256.ofNat 3391
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 

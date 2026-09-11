@@ -33,10 +33,12 @@ opaque gasSteps_rowsFour (s : State) (mem : ByteArray) (pa pb : Nat)
     (hc : CiosReadonly.ReadonlyCache mem 4 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
     (hAend : aEnd = UInt256.ofNat (pa+32*4-32))
-    (hsnapshot : StagedOperand.Snapshot mem pa 4) :
+    (hsnapshot : StagedOperand.Snapshot mem pa 4)
+    (hcontrol : CarryControl.Control mem) :
     Challenge.EvmProof.GasSteps
       (outState s (mpZeroed s mem 4) pa pb 4 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (mpCsubState s (rowsCarry (mpZeroed s mem 4) pa pb 4 4) pdst ret rest) := by
+  have hctrlz := hcontrol.zeroed s 4 (by decide)
   have hsz := hsnapshot.zeroed s (by decide) hpaFit
   have hs32z : MachineState.readWord (mpZeroed s mem 4) 9344 =
       UInt256.ofNat (32 * 4) :=
@@ -65,7 +67,7 @@ opaque gasSteps_rowsFour (s : State) (mem : ByteArray) (pa pb : Nat)
         i).trans hmlz)
       (inverse_rowsCarry (mpZeroed s mem 4) pa pb 4 i (by decide) hminvz)
       (readonlyCache_rowsCarry hcz (by decide) pa pb i)
-      (extraCache_rowsCarry hez pa pb 4 i (by decide)) hAend (hsz.rows pb i (by decide) hpaFit)
+      (extraCache_rowsCarry hez pa pb 4 i (by decide)) hAend (hsz.rows pb i (by decide) hpaFit) (hctrlz.rows pa pb 4 (by decide) i)
   · exact
       gasSteps_rowFourLast s (rowsCarry (mpZeroed s mem 4) pa pb 4 3) pa pb 3
         tl inv m0 aEnd m96 m64 m32 pdst ret rest (by omega) hrun hcode hfork hnp hact (by decide) hpa hpaFit hpb
@@ -78,6 +80,6 @@ opaque gasSteps_rowsFour (s : State) (mem : ByteArray) (pa pb : Nat)
           3).trans hmlz)
         (inverse_rowsCarry (mpZeroed s mem 4) pa pb 4 3 (by decide) hminvz)
         (readonlyCache_rowsCarry hcz (by decide) pa pb 3)
-        (extraCache_rowsCarry hez pa pb 4 3 (by decide)) hAend (hsz.rows pb 3 (by decide) hpaFit)
+        (extraCache_rowsCarry hez pa pb 4 3 (by decide)) hAend (hsz.rows pb 3 (by decide) hpaFit) (hctrlz.rows pa pb 4 (by decide) 3)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryFull
