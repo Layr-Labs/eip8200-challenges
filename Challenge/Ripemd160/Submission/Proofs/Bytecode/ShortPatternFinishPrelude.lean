@@ -69,18 +69,18 @@ def digestEntryState (_n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
   stS input 4843 (returnRest sv ov)
 
 def storedState (n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
-  { stS input 4871 (returnRest sv ov) with
+  { stS input 4870 (returnRest sv ov) with
     memory := answerMemory n
     activeWords := UInt256.ofNat 1 }
 
 def sizedState (n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
   { storedState n input sv ov with
-    pc := UInt256.ofNat 4872
+    pc := UInt256.ofNat 4871
     stack := UInt256.ofNat 32 :: returnRest sv ov }
 
 def returnedState (n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
   { storedState n input sv ov with
-    pc := UInt256.ofNat 4873
+    pc := UInt256.ofNat 4872
     halt := .Returned
     hReturn := MachineState.readPadded (answerMemory n) 0 32 }
 
@@ -146,7 +146,7 @@ theorem answerMemory_read (n : Nat) :
 
 def tableOffset (n : Nat) : Nat := 4875 + 21 * (((1015 * n + 9) / 256) % 14)
 def copyReadyState (n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
-  stS input 4870 ([12, UInt256.ofNat (tableOffset n), 20] ++ returnRest sv ov)
+  stS input 4869 ([12, UInt256.ofNat (tableOffset n), 20] ++ returnRest sv ov)
 
 def tableMemory (n : Nat) : ByteArray :=
   MachineState.writeBytes ByteArray.empty (MachineState.readPadded submissionBytecode (tableOffset n) 20) 12
@@ -240,26 +240,25 @@ def selectorPath : List Located :=
   [pushAt 162 2 4843, opAt 163 .JUMP]
 
 def digestStorePath : List Located :=
-  [ opAt 3905 .JUMPDEST,
-    pushAt 3906 1 14,
-    opAt 3907 .CALLDATASIZE,
-    pushAt 3908 2 1015,
-    opAt 3909 .MUL,
-    pushAt 3910 1 9,
-    opAt 3911 .ADD,
-    pushAt 3912 1 8,
-    opAt 3913 .SHR,
-    opAt 3914 .MOD,
-    pushAt 3915 1 21,
-    opAt 3916 .MUL,
-    pushAt 3917 2 4875,
-    opAt 3918 .ADD,
-    pushAt 3919 1 20,
-    opAt 3920 (.Swap ⟨0, by decide⟩),
-    pushAt 3921 1 12 ]
+  [opAt 3905 .JUMPDEST,
+   pushAt 3906 1 20,
+   pushAt 3907 1 14,
+   opAt 3908 .CALLDATASIZE,
+   pushAt 3909 2 1015,
+   opAt 3910 .MUL,
+   pushAt 3911 1 9,
+   opAt 3912 .ADD,
+   pushAt 3913 1 8,
+   opAt 3914 .SHR,
+   opAt 3915 .MOD,
+   pushAt 3916 1 21,
+   opAt 3917 .MUL,
+   pushAt 3918 2 4875,
+   opAt 3919 .ADD,
+   pushAt 3920 1 12]
 
 def digestFinishPath : List Located :=
-  [pushAt 3924 0 0, opAt 3925 .RETURN]
+  [pushAt 3923 0 0, opAt 3924 .RETURN]
 
 @[simp] theorem pc255 : Artifact.submissionArtifact.instructionPC 162 = 255 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
@@ -267,45 +266,43 @@ def digestFinishPath : List Located :=
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 @[simp] theorem pc4843 : Artifact.submissionArtifact.instructionPC 3905 = 4843 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4844 : Artifact.submissionArtifact.instructionPC 3906 = 4844 := by
+@[simp] theorem pc4844 : Artifact.submissionArtifact.instructionPC 3907 = 4846 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4846 : Artifact.submissionArtifact.instructionPC 3907 = 4846 := by
+@[simp] theorem pc4846 : Artifact.submissionArtifact.instructionPC 3908 = 4848 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4847 : Artifact.submissionArtifact.instructionPC 3908 = 4847 := by
+@[simp] theorem pc4847 : Artifact.submissionArtifact.instructionPC 3909 = 4849 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4850 : Artifact.submissionArtifact.instructionPC 3909 = 4850 := by
+@[simp] theorem pc4850 : Artifact.submissionArtifact.instructionPC 3910 = 4852 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4851 : Artifact.submissionArtifact.instructionPC 3910 = 4851 := by
+@[simp] theorem pc4851 : Artifact.submissionArtifact.instructionPC 3911 = 4853 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4853 : Artifact.submissionArtifact.instructionPC 3911 = 4853 := by
+@[simp] theorem pc4853 : Artifact.submissionArtifact.instructionPC 3912 = 4855 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4854 : Artifact.submissionArtifact.instructionPC 3912 = 4854 := by
+@[simp] theorem pc4854 : Artifact.submissionArtifact.instructionPC 3913 = 4856 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4856 : Artifact.submissionArtifact.instructionPC 3913 = 4856 := by
+@[simp] theorem pc4856 : Artifact.submissionArtifact.instructionPC 3914 = 4858 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4857 : Artifact.submissionArtifact.instructionPC 3914 = 4857 := by
+@[simp] theorem pc4857 : Artifact.submissionArtifact.instructionPC 3915 = 4859 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4858 : Artifact.submissionArtifact.instructionPC 3915 = 4858 := by
+@[simp] theorem pc4858 : Artifact.submissionArtifact.instructionPC 3916 = 4860 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4860 : Artifact.submissionArtifact.instructionPC 3916 = 4860 := by
+@[simp] theorem pc4860 : Artifact.submissionArtifact.instructionPC 3917 = 4862 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4861 : Artifact.submissionArtifact.instructionPC 3917 = 4861 := by
+@[simp] theorem pc4861 : Artifact.submissionArtifact.instructionPC 3918 = 4863 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4864 : Artifact.submissionArtifact.instructionPC 3918 = 4864 := by
+@[simp] theorem pc4864 : Artifact.submissionArtifact.instructionPC 3919 = 4866 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4865 : Artifact.submissionArtifact.instructionPC 3919 = 4865 := by
+@[simp] theorem pc4865 : Artifact.submissionArtifact.instructionPC 3906 = 4844 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4867 : Artifact.submissionArtifact.instructionPC 3920 = 4867 := by
+@[simp] theorem pc4868 : Artifact.submissionArtifact.instructionPC 3920 = 4867 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4868 : Artifact.submissionArtifact.instructionPC 3921 = 4868 := by
+@[simp] theorem pc4870 : Artifact.submissionArtifact.instructionPC 3921 = 4869 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4870 : Artifact.submissionArtifact.instructionPC 3922 = 4870 := by
+@[simp] theorem pc4871 : Artifact.submissionArtifact.instructionPC 3922 = 4870 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4871 : Artifact.submissionArtifact.instructionPC 3923 = 4871 := by
+@[simp] theorem pc4872 : Artifact.submissionArtifact.instructionPC 3923 = 4871 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4872 : Artifact.submissionArtifact.instructionPC 3924 = 4872 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4873 : Artifact.submissionArtifact.instructionPC 3925 = 4873 := by
+@[simp] theorem pc4873 : Artifact.submissionArtifact.instructionPC 3924 = 4872 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem run_selector (n : Nat) (input : ByteArray) (sv ov : UInt256) :
     run selectorPath (selectorState n input sv ov) =
