@@ -30,25 +30,27 @@ private def wfOp {op : Operation}
 def atPC (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
 
-def mainStart (input : ByteArray) : State := atPC input 277
+def mainStart (input : ByteArray) : State := atPC input 466
 
 def path_start : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) := []
 
 def path_3ee : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨178, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨280, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def gasSteps_start (input : ByteArray) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0) (atPC input 0) :=
   ExecutionEntry.initial_entry input
 
 def gasSteps_3ee (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (atPC input 276) (mainStart input) := by
+    Challenge.EvmProof.GasSteps (atPC input 465) (mainStart input) := by
+  have hpc : Artifact.submissionArtifact.instructionPC 280 = 465 := by
+    rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   have hrun : Challenge.EvmProof.Stepper.runLocatedBlock path_3ee
-      (atPC input 276) = some (mainStart input) := by
+      (atPC input 465) = some (mainStart input) := by
     simp [path_3ee, Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      atPC, mainStart, initialState]
+      atPC, mainStart, initialState, hpc]
   apply Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka path_3ee
   · rfl
@@ -59,7 +61,7 @@ def gasSteps_3ee (input : ByteArray) :
 
 def gasSteps_entry (input : ByteArray)
     (entryPrefix : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (atPC input 276)) :
+      (atPC input 465)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (mainStart input) :=
   entryPrefix.trans (gasSteps_3ee input)

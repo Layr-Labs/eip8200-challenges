@@ -6,15 +6,11 @@ set_option warningAsError true
 set_option maxRecDepth 50000
 set_option maxHeartbeats 3000000
 set_option linter.unusedSimpArgs false
+set_option linter.unusedVariables false
 
-/-!
-# Empty-input block shortcut
-
-The appended dispatcher preserves the legacy compressor entry stack. A
-nonempty calldata buffer therefore jumps to the existing compressor. For the
-unique padded block of empty calldata, it installs the five known chaining
-words and returns directly to the driver.
--/
+/-! The empty-input compression result supplies the mathematical block
+invariant. Actual empty input returns through TinyGuard before padding.
+The nonempty driver entry now falls directly into the schedule decoder. -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.FastEmptyBlock
 
@@ -22,16 +18,6 @@ open Challenge.Ripemd160
 open Challenge.EvmProof
 open EvmSemantics
 open EvmSemantics.EVM
-
-private def wfOp {op : Operation}
-    (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
-    (hplain : YulEvmCompiler.plainOp op)
-    (havailable : op.availableInFork .Osaka = true) :
-    Challenge.EvmProof.Stepper.WellFormed .Osaka (.op op) :=
-  ⟨hopcode, hplain, havailable⟩
-
-abbrev Located :=
-  Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka
 
 def h0 : UInt256 := UInt256.ofNat 0xa585119c
 def h1 : UInt256 := UInt256.ofNat 0x54fce9c5
@@ -87,30 +73,11 @@ theorem compress_empty :
       Crypto.Ripemd160.KP]
   decide
 
-def decisionPath : List Located :=
-  [⟨253, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨254, .push ⟨2, by decide⟩ (UInt256.ofNat 429), by rfl, by decide⟩,
-   ⟨255, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
-
-def bodyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
-  { s with
-    pc := UInt256.ofNat 402
-    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 377,
-      DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
-
-/-- Entry state for the original empty-input dispatcher.  The outer exact-input
-dispatcher falls back to this address without changing the compressor stack. -/
-def legacyDispatchEntry (s : State) (input : ByteArray) (i : Nat) : State :=
-  { s with
-    pc := UInt256.ofNat 397
-    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 377,
-      DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
-
-/-- Nonempty dispatcher target: checked first-block helper. -/
+/-- The nonempty driver target is the physical schedule entry. -/
 def nonemptyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 429
-    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 377,
+    pc := UInt256.ofNat 609
+    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 589,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
 private def writeWord (memory : ByteArray) (offset : Nat)
@@ -134,7 +101,7 @@ def emptyActiveWords (s : State) : UInt256 :=
 
 def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 377
+    pc := UInt256.ofNat 589
     stack := [DriverTrace.blockOffsetWord i, Padding.paddedWord input]
     memory := emptyMemory s.memory
     activeWords := emptyActiveWords s }
@@ -216,85 +183,6 @@ theorem resultState_word_above (s : State) (input : ByteArray) (i address : Nat)
     readWord_writeWord_disjoint _ _ _ _ (Or.inr (by omega)),
     readWord_writeWord_disjoint _ _ _ _ (Or.inr (by omega))]
 
-theorem run_decision_nonempty (s : State) (input : ByteArray) (i : Nat)
-    (hfit : CalldataFits input) (hpositive : 0 < input.size)
-    (hcalldata : s.executionEnv.calldata = input)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock decisionPath
-      (legacyDispatchEntry s input i) =
-        some (nonemptyEntry s input i) := by
-  have hsize : input.size < 2 ^ 256 := Nat.lt_trans hfit (by norm_num)
-  have hmod : input.size % 2 ^ 256 ≠ 0 := by
-    rw [Nat.mod_eq_of_lt hsize]
-    omega
-  norm_num at hmod
-  have htrue : UInt256.isTrue (UInt256.ofNat input.size) := by
-    exact hmod
-  have hdest : Decode.isValidJumpDest submissionBytecode 429 = true := by
-    have hpc : Artifact.submissionArtifact.instructionPC 262 = 429 := by
-      rw [ArtifactByteLength.instructionPC_eq_byteLength]
-      decide
-    have h := Artifact.submissionArtifact.isValidJumpDest_index 262 (by rfl)
-    rw [hpc] at h
-    exact h
-  have hpc2792 : Artifact.submissionArtifact.instructionPC 253 = 397 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  have hpc2793 : Artifact.submissionArtifact.instructionPC 253 = 397 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  have hpc2794 : Artifact.submissionArtifact.instructionPC 254 = 398 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  have hpc2795 : Artifact.submissionArtifact.instructionPC 255 = 401 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  simp [decisionPath, Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    legacyDispatchEntry, nonemptyEntry, hcalldata, hcode,
-    hrun, hmod, htrue, hdest, hpc2792, hpc2793, hpc2794, hpc2795, UInt256.isTrue,
-    Challenge.EvmProof.Word.ofNat_add_mod,
-    Challenge.EvmProof.Word.succ_ofNat_mod]
-
-theorem run_decision_empty (s : State) (input : ByteArray) (i : Nat)
-    (hempty : input.size = 0)
-    (hcalldata : s.executionEnv.calldata = input)
-    (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock decisionPath
-      (legacyDispatchEntry s input i) = some (bodyEntry s input i) := by
-  have hfalse : ¬ UInt256.isTrue (UInt256.ofNat input.size) := by
-    simp [hempty, UInt256.isTrue]
-  have hpc2792 : Artifact.submissionArtifact.instructionPC 253 = 397 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  have hpc2793 : Artifact.submissionArtifact.instructionPC 253 = 397 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  have hpc2794 : Artifact.submissionArtifact.instructionPC 254 = 398 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  have hpc2795 : Artifact.submissionArtifact.instructionPC 255 = 401 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  simp [decisionPath, Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    legacyDispatchEntry, bodyEntry, hcalldata, hrun, hempty, hfalse,
-    hpc2792, hpc2793, hpc2794, hpc2795,
-    UInt256.isTrue, Challenge.EvmProof.Word.ofNat_add_mod,
-    Challenge.EvmProof.Word.succ_ofNat_mod]
-
-private def gasStepsBlock (path : List Located) (s t : State)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka)
-    (hresult : Challenge.EvmProof.Stepper.runLocatedBlock path s = some t)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps s t :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka path hcode hfork hresult hrun hnp
-
 def gasSteps_nonempty (s : State) (input : ByteArray) (i : Nat)
     (hfit : CalldataFits input) (hpositive : 0 < input.size)
     (hcalldata : s.executionEnv.calldata = input)
@@ -302,10 +190,7 @@ def gasSteps_nonempty (s : State) (input : ByteArray) (i : Nat)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps (legacyDispatchEntry s input i)
-      (nonemptyEntry s input i) :=
-  gasStepsBlock decisionPath _ _ hcode hfork
-    (run_decision_nonempty s input i hfit hpositive hcalldata hcode hrun)
-    hrun hnp
+    GasSteps (DriverTrace.dispatchEntry s input i)
+      (nonemptyEntry s input i) := GasSteps.refl _
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.FastEmptyBlock

@@ -15,6 +15,8 @@ The kernel is the only bytecode-specific compression premise.  In particular,
 this file does not assert that any concrete H10 endpoint has been verified.
 -/
 
+noncomputable section
+
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRunBridge
 
 open Challenge.Ripemd160
@@ -269,7 +271,7 @@ private theorem padReturned_word_below (input : ByteArray)
     wordAt (PaddingTrace.padReturned input) address =
       wordAt (Main.initializedState input) address := by
   unfold wordAt
-  rw [PaddingTrace.padReturned_memory input hfit]
+  rw [PaddingTrace.padReturned_readWord input hfit]
   unfold Padding.paddedMemory Padding.sentinelMemory Padding.copiedMemory
   have hpadded := Padding.input_and_footer_fit input.size
   rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint,
@@ -457,7 +459,7 @@ def compressionSeam (kernel : BlockKernel) (input : ByteArray)
 /-- Nonempty inputs use the compression loop; the caller proves the empty return separately. -/
 theorem correct_of_block_kernel (kernel : BlockKernel)
     (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 276)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 465)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   exact FastOutputResultBridge.correct_of_seam input hfit
