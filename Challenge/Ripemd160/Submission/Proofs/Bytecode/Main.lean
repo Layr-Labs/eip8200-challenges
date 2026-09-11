@@ -364,7 +364,7 @@ def gasSteps_bodyInitialization (input : ByteArray) :
 
 def gasSteps_initialize (input : ByteArray)
     (entryPrefix : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Execution.atPC input 0x168)) :
+      (Execution.atPC input 0x16b)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (initializedState input) :=
   (Execution.gasSteps_entry input entryPrefix).trans (gasSteps_bodyInitialization input)

@@ -25,17 +25,17 @@ def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
 
-theorem site_startPC : site.startPC = UInt256.ofNat 4825 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3915) = UInt256.ofNat 4825
+theorem site_startPC : site.startPC = UInt256.ofNat 4828 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3915) = UInt256.ofNat 4828
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem run_template (s : State) (q : PairedHelperBooleanTrace.Frame)
     (ret : UInt256) (rho : List UInt256) (hstack : (ret :: rho).length ≤ 1002)
     (hrun : s.halt = .Running) (hactive : 23 ≤ s.activeWords.toNat) :
-    runInstrSeq template {s with pc := UInt256.ofNat 4825, stack := inline79Entry q (ret :: rho)} =
+    runInstrSeq template {s with pc := UInt256.ofNat 4828, stack := inline79Entry q (ret :: rho)} =
       some {s with
-        pc := UInt256.ofNat 4874
+        pc := UInt256.ofNat 4877
         stack := PairedAllInlineTail.entryStack (modifiedFrame s.memory q) ret rho} := by
   let post : PairedHelperBooleanTrace.Frame :=
     {q with
@@ -44,10 +44,10 @@ theorem run_template (s : State) (q : PairedHelperBooleanTrace.Frame)
       c := q.b
       d := modifiedC10 q
       e := q.d}
-  have h0 := run_modifiedTemplate_raw s (UInt256.ofNat 4825) q (ret :: rho) hstack hrun hactive
+  have h0 := run_modifiedTemplate_raw s (UInt256.ofNat 4828) q (ret :: rho) hstack hrun hactive
   rw [modifiedTemplate_pc] at h0
-  have h1 := run_coreExitTemplate s (UInt256.ofNat 4872) post (ret :: rho) hstack hrun
-  have hpc : pcAfter (UInt256.ofNat 4872) coreExitTemplate = UInt256.ofNat 4874 := by decide
+  have h1 := run_coreExitTemplate s (UInt256.ofNat 4875) post (ret :: rho) hstack hrun
+  have hpc : pcAfter (UInt256.ofNat 4875) coreExitTemplate = UInt256.ofNat 4877 := by decide
   rw [hpc] at h1
   exact DenseScheduleTrace.runInstrSeq_append_running h0 hrun h1
 
@@ -57,9 +57,9 @@ def gasSteps_round (s : State) (q : PairedHelperBooleanTrace.Frame)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4825, stack := inline79Entry q (ret :: rho)}
+    GasSteps {s with pc := UInt256.ofNat 4828, stack := inline79Entry q (ret :: rho)}
       {s with
-        pc := UInt256.ofNat 4874
+        pc := UInt256.ofNat 4877
         stack := PairedAllInlineTail.entryStack (modifiedFrame s.memory q) ret rho} := by
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp
     site_startPC.symm
@@ -73,7 +73,7 @@ def gasSteps_suffix (s : State) (q : PairedHelperBooleanTrace.Frame)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4825, stack := inline79Entry q (ret :: rho)}
+    GasSteps {s with pc := UInt256.ofNat 4828, stack := inline79Entry q (ret :: rho)}
       {s with pc := ret, stack := rho, memory := PairedTailTrace.resultMemory s.memory (modifiedFrame s.memory q)} :=
   (gasSteps_round s q ret rho hstack hrun hactive hcode hfork hnp).trans
     (PairedAllInlineBoundarySites.gasSteps_tail s ret (modifiedFrame s.memory q) rho
