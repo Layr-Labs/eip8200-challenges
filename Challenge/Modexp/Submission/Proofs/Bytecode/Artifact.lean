@@ -905,7 +905,7 @@ def submissionInstructions : List Instr :=
  .op (.Dup { idx := 0 }),
  .push 2 1156,
  .op .JUMPI,
- .push 0 0,
+ .op .JUMPDEST,
  .push 0 0,
  .op .RETURN,
  .op .JUMPDEST,

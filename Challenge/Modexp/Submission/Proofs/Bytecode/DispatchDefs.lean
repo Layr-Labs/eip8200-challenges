@@ -40,7 +40,7 @@ def zeroSizePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 879 .JUMPDEST, opAt 880 (.Dup ⟨0, by decide⟩),
    pushAt 881 2 1156, opAt 882 .JUMPI,
-   pushAt 883 0 0, pushAt 884 0 0, opAt 885 .RETURN]
+   opAt 883 .JUMPDEST, pushAt 884 0 0, opAt 885 .RETURN]
 
 def wordEntryPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -95,7 +95,7 @@ set_option maxRecDepth 20000 in
 def zeroSizeFinalState (input : ByteArray) : State :=
   { Main.headerState input with
     pc := UInt256.ofNat 1155
-    stack := [UInt256.ofNat 0, UInt256.ofNat (exponentSize input),
+    stack := [UInt256.ofNat (exponentSize input),
       UInt256.ofNat (baseSize input)]
     halt := .Returned
     hReturn := ByteArray.empty }
@@ -103,7 +103,7 @@ def zeroSizeFinalState (input : ByteArray) : State :=
 def zeroSetupState (input : ByteArray) : State :=
   { Main.headerState input with
     pc := UInt256.ofNat 1155
-    stack := [0, 0, UInt256.ofNat 0, UInt256.ofNat (exponentSize input),
+    stack := [0, UInt256.ofNat 0, UInt256.ofNat (exponentSize input),
       UInt256.ofNat (baseSize input)] }
 
 def wordDispatchState (input : ByteArray) : State :=
