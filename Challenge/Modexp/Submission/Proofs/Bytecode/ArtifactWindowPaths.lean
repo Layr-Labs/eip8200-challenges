@@ -14,8 +14,8 @@ open EvmSemantics.EVM
 open YulEvmCompiler
 
 private def nine_bridge :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2525 WindowTwentyOneEntry.bridgeProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1862 3 2525 WindowTwentyOneEntry.bridgeProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 3049 WindowTwentyOneEntry.bridgeProgram :=
+  WindowTwentyOneSlice.block allWellFormed 2347 3 3049 WindowTwentyOneEntry.bridgeProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def nine_width :
@@ -50,30 +50,30 @@ private def nine_table :
 
 private def nine_init :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 2500 WindowTwentyOneInit.program :=
-  WindowTwentyOneSlice.block allWellFormed 1844 18 2500 WindowTwentyOneInit.program
+  WindowTwentyOneSlice.block allWellFormed 1844 16 2500 WindowTwentyOneInit.program
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def nine_iteration :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2530 WindowTwentyOneLoop.iterationProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1865 438 2530 WindowTwentyOneLoop.iterationProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2521 WindowTwentyOneLoop.iterationProgram :=
+  WindowTwentyOneSlice.block allWellFormed 1860 438 2521 WindowTwentyOneLoop.iterationProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def nine_finish :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2993 WindowTwentyOneReturn.program :=
-  WindowTwentyOneSlice.block allWellFormed 2303 5 2993 WindowTwentyOneReturn.program
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2984 WindowTwentyOneReturn.program :=
+  WindowTwentyOneSlice.block allWellFormed 2298 5 2984 WindowTwentyOneReturn.program
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def nine_zeroReturn :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2999 WindowTwentyOneReturn.zeroProgram :=
-  WindowTwentyOneSlice.block allWellFormed 2308 7 2999 WindowTwentyOneReturn.zeroProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2990 WindowTwentyOneReturn.zeroProgram :=
+  WindowTwentyOneSlice.block allWellFormed 2303 7 2990 WindowTwentyOneReturn.zeroProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def fermat_prime : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4812 FermatProgram.primeProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3695 14 4812 FermatProgram.primeProgram (by decide) (by rfl) (by rfl) (by decide)
+  WindowTwentyOneSlice.block allWellFormed 3697 14 4812 FermatProgram.primeProgram (by decide) (by rfl) (by rfl) (by decide)
 private def fermat_exponent : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4865 FermatProgram.exponentProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3709 9 4865 FermatProgram.exponentProgram (by decide) (by rfl) (by rfl) (by decide)
+  WindowTwentyOneSlice.block allWellFormed 3711 9 4865 FermatProgram.exponentProgram (by decide) (by rfl) (by rfl) (by decide)
 private def fermat_result : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4877 FermatProgram.returnProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3718 16 4877 FermatProgram.returnProgram (by decide) (by rfl) (by rfl) (by decide)
+  WindowTwentyOneSlice.block allWellFormed 3720 16 4877 FermatProgram.returnProgram (by decide) (by rfl) (by rfl) (by decide)
 def fermatPaths : FermatProgram.Paths submissionArtifact .Osaka where
   prime := fermat_prime
   exponent := fermat_exponent
@@ -94,13 +94,13 @@ def twentyOnePaths : WindowTwentyOneGasRoute.Paths submissionArtifact .Osaka whe
   finish := nine_finish
   zeroReturn := nine_zeroReturn
   hitJump := by
-    have h := isValidJumpDest_index 3695 (by rfl)
+    have h := isValidJumpDest_index 3697 (by rfl)
     exact h
   zeroJump := by
-    have h := isValidJumpDest_index 2308 (by rfl)
+    have h := isValidJumpDest_index 2303 (by rfl)
     exact h
   loopJump := by
-    have h := isValidJumpDest_index 1865 (by rfl)
+    have h := isValidJumpDest_index 1860 (by rfl)
     exact h
   missJump := by
     have h := isValidJumpDest_index 415 (by rfl)

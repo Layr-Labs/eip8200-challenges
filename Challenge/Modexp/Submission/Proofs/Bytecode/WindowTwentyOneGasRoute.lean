@@ -9,17 +9,17 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.EvmProof WindowNibbleKernel WindowTwentyOneBinding WindowTwentyOnePositive
 
 structure Paths (artifact : ProgramArtifact) (fork : Fork) extends WindowTwentyOneGasCore.Paths artifact fork where
-  entryBridge : Block artifact fork 2525 WindowTwentyOneEntry.bridgeProgram
+  entryBridge : Block artifact fork 3049 WindowTwentyOneEntry.bridgeProgram
   entryJump : Decode.isValidJumpDest artifact.code 2335 = true
   width : Block artifact fork 2335 WindowTwentyOneEntry.widthProgram
   miss : Block artifact fork 2355 WindowTwentyOneEntry.missProgram
   base : Block artifact fork 2359 WindowTwentyOneEntry.baseProgram
   modulus : Block artifact fork 2366 WindowTwentyOneEntry.modulusProgram
   normalize : Block artifact fork 2374 WindowTwentyOneEntry.normalizeProgram
-  zeroReturn : Block artifact fork 2999 WindowTwentyOneReturn.zeroProgram
+  zeroReturn : Block artifact fork 2990 WindowTwentyOneReturn.zeroProgram
   hitJump : Decode.isValidJumpDest artifact.code 4812 = true
-  zeroJump : Decode.isValidJumpDest artifact.code 2999 = true
-  loopJump : Decode.isValidJumpDest artifact.code 2530 = true
+  zeroJump : Decode.isValidJumpDest artifact.code 2990 = true
+  loopJump : Decode.isValidJumpDest artifact.code 2521 = true
   missJump : Decode.isValidJumpDest artifact.code 501 = true
 
 def context_env {artifact : ProgramArtifact} {fork : Fork} (template : State)
@@ -102,7 +102,7 @@ def zero_handled {artifact : ProgramArtifact} {fork : Fork}
   rw [modulus_at template input hmatch, if_pos hmodulus] at hm
   have hr := WindowTwentyOneReturn.run_zero ctx 0 (by decide) rfl
     (WindowTwentyOneInput.modulusWord input :: routeStack input) (by simp [routeStack])
-  let final := WindowTwentyOneReturn.returned ctx (UInt256.ofNat 3006) (UInt256.ofNat 0)
+  let final := WindowTwentyOneReturn.returned ctx (UInt256.ofNat 2997) (UInt256.ofNat 0)
     0 (WindowTwentyOneInput.modulusWord input :: routeStack input)
   have gas := ((lift paths.base hb (ec.transfer rfl rfl) rfl).trans
     (lift paths.modulus hm (ec.transfer rfl rfl) rfl)).trans
@@ -164,7 +164,7 @@ private theorem guard_zero_iff (input : ByteArray) :
 def steps_bridge {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (input : ByteArray) :
-    GasSteps (state template input (UInt256.ofNat 2525)) (state template input (UInt256.ofNat 2335)) := by
+    GasSteps (state template input (UInt256.ofNat 3049)) (state template input (UInt256.ofNat 2335)) := by
   have ec := context_env template env input
   have h := WindowTwentyOneEntry.run_bridge (context template input) (routeStack input)
     (by simp [routeStack]) (jump_env ec paths.entryJump)
@@ -173,7 +173,7 @@ def steps_bridge {artifact : ProgramArtifact} {fork : Fork}
 def steps_hit {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
-    GasSteps (state template input (UInt256.ofNat 2525)) (state template input (UInt256.ofNat 4812)) := by
+    GasSteps (state template input (UInt256.ofNat 3049)) (state template input (UInt256.ofNat 4812)) := by
   have h := width_raw template input (jump_env env paths.hitJump)
   rw [if_pos ((guard_zero_iff input).mpr hmatch)] at h
   exact (steps_bridge paths template env input).trans
@@ -182,7 +182,7 @@ def steps_hit {artifact : ProgramArtifact} {fork : Fork}
 def steps_miss {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (input : ByteArray) (hmatch : ¬ WindowTwentyOneInput.Matches input) :
-    GasSteps (state template input (UInt256.ofNat 2525)) (state template input (UInt256.ofNat 501)) := by
+    GasSteps (state template input (UInt256.ofNat 3049)) (state template input (UInt256.ofNat 501)) := by
   have h := width_raw template input (jump_env env paths.hitJump)
   have hn : (WindowTwentyOneInput.guardDiff input).toNat ≠ 0 := by
     intro hz

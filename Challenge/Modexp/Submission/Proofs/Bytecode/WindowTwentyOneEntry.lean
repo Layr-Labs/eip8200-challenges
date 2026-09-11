@@ -14,7 +14,7 @@ def bridgeProgram : List Instr := [.op .JUMPDEST, .push 2 2335, .op .JUMP]
 
 theorem run_bridge (template : State) (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (htarget : Decode.isValidJumpDest template.executionEnv.code 2335 = true) :
-    runInstructions bridgeProgram (framed template (UInt256.ofNat 2525) rest) =
+    runInstructions bridgeProgram (framed template (UInt256.ofNat 3049) rest) =
     some (framed template (UInt256.ofNat 2335) rest) := by
   have hcap0 : rest.length < 1024 := by omega
   have hcap1 : rest.length + 1 < 1024 := by omega
@@ -125,15 +125,15 @@ theorem run_base (template : State) (value : UInt256)
 
 def modulusProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op .CALLDATALOAD, .op (.Dup ⟨0, by decide⟩)] ++
-    testProgram (UInt256.ofNat 2999)
+    testProgram (UInt256.ofNat 2990)
 
 theorem run_modulus (template : State) (modulusOffset : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 999)
     (hoffset : rest[5]? = some modulusOffset)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 2999 = true) :
+    (htarget : Decode.isValidJumpDest template.executionEnv.code 2990 = true) :
     let modulus := MachineState.readWord template.executionEnv.calldata modulusOffset.toNat
     runInstructions modulusProgram (framed template (UInt256.ofNat 2366) rest) =
-    some (framed template (if modulus.toNat = 0 then UInt256.ofNat 2999 else UInt256.ofNat 2374)
+    some (framed template (if modulus.toNat = 0 then UInt256.ofNat 2990 else UInt256.ofNat 2374)
       (modulus :: rest)) := by
   let modulus := MachineState.readWord template.executionEnv.calldata modulusOffset.toNat
   have hcap0 : rest.length < 1024 := by omega
@@ -143,7 +143,7 @@ theorem run_modulus (template : State) (modulusOffset : UInt256)
       some (framed template (UInt256.ofNat 2369) (modulus :: modulus :: rest)) := by
     simp [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr, hcap0, hcap1,
       hoffset, modulus, Challenge.EvmProof.Word.succ_ofNat_mod]
-  have ht := run_test template (UInt256.ofNat 2369) (UInt256.ofNat 2999) modulus
+  have ht := run_test template (UInt256.ofNat 2369) (UInt256.ofNat 2990) modulus
     (modulus :: rest) (by simp only [List.length_cons]; omega) htarget
   have both := runInstructions_append_some _ _ _ _ _ hh ht
   have hpc : advancePC 5 (UInt256.ofNat 2369) = UInt256.ofNat 2374 := by decide

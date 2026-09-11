@@ -249,7 +249,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
       (Exp.gasSteps_r0 s mem1 n bsize esize msize hn hn32 hact hframe1.s32 hcode hfork hrun
         hnp).trans
       (Exp.gasSteps_ccbFull s sub hspec esize msize hmpos hn hn32 5120 (by omega) (by omega)
-        (UInt256.ofNat 3023) (Exp.mcopyMem mem1 5120 4096 (32 * n)) (Limbs.radix ^ n % mm)
+        (UInt256.ofNat 3014) (Exp.mcopyMem mem1 5120 4096 (32 * n)) (Limbs.radix ^ n % mm)
         Exp.jumpD3571 hf2 hcc.1 hcc.2 (Nat.mod_lt _ hmpos) hact296 hcode hfork hrun hnp)
     have hframeDirect : Exp.Frame directMem n bsize minv := by
       dsimp only [directMem]

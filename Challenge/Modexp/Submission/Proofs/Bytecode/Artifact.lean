@@ -927,7 +927,7 @@ def submissionInstructions : List Instr :=
  .op (.Dup { idx := 6 }),
  .op (.Dup { idx := 8 }),
  .op (.Dup { idx := 10 }),
- .push 2 2525,
+ .push 2 3049,
  .op .JUMP,
  .op .JUMPDEST,
  .op .JUMPDEST,
@@ -1118,7 +1118,7 @@ def submissionInstructions : List Instr :=
  .push 2 4096,
  .push 2 5120,
  .op .MCOPY,
- .push 2 3023,
+ .push 2 3014,
  .push 2 5120,
  .push 2 3455,
  .op .JUMP,
@@ -1764,7 +1764,7 @@ def submissionInstructions : List Instr :=
  .op .CALLDATALOAD,
  .op (.Dup { idx := 0 }),
  .op .ISZERO,
- .push 2 2999,
+ .push 2 2990,
  .op .JUMPI,
  .op (.Dup { idx := 4 }),
  .op .CALLDATALOAD,
@@ -1882,11 +1882,6 @@ def submissionInstructions : List Instr :=
  .op (.Dup { idx := 9 }),
  .op .CALLDATALOAD,
  .op (.Swap { idx := 0 }),
- .push 2 2530,
- .op .JUMP,
- .op .JUMPDEST,
- .push 2 2335,
- .op .JUMP,
  .op .JUMPDEST,
  .op (.Dup { idx := 1 }),
  .op (.Dup { idx := 0 }),
@@ -2323,7 +2318,7 @@ def submissionInstructions : List Instr :=
  .op (.Dup { idx := 5 }),
  .op .SUB,
  .op (.Swap { idx := 4 }),
- .push 2 2530,
+ .push 2 2521,
  .op .JUMPI,
  .push 0 0,
  .op .MSTORE,
@@ -2374,6 +2369,13 @@ def submissionInstructions : List Instr :=
  .op .ADD,
  .push 2 1467,
  .op .JUMP,
+ .op .JUMPDEST,
+ .push 2 2335,
+ .op .JUMP,
+ .op .JUMPDEST,
+ .op .JUMPDEST,
+ .op .JUMPDEST,
+ .op .JUMPDEST,
  .op .JUMPDEST,
  .op (.Dup { idx := 0 }),
  .op (.Dup { idx := 3 }),
@@ -4050,7 +4052,7 @@ def submissionInstructions : List Instr :=
  .push 2 4488,
  .op .JUMP]
 
-theorem submissionInstructions_count : submissionInstructions.length = 4027 := by
+theorem submissionInstructions_count : submissionInstructions.length = 4029 := by
   decide
 
 theorem assemble_submissionInstructions :

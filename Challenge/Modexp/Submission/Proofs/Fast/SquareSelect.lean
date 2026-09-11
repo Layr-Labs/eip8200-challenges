@@ -29,23 +29,23 @@ def storeProgram : List Instr :=
   [.op .JUMPDEST, .push 2 9280, .op .MSTORE, .push 2 4072, .op .JUMP]
 
 theorem destSquare : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5036 = true :=
-  Artifact.isValidJumpDest_index 3827 (by rfl)
-theorem destStore : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5040 = true :=
   Artifact.isValidJumpDest_index 3829 (by rfl)
+theorem destStore : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5040 = true :=
+  Artifact.isValidJumpDest_index 3831 (by rfl)
 theorem destHeader : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4072 = true :=
-  Artifact.isValidJumpDest_index 3082 (by rfl)
+  Artifact.isValidJumpDest_index 3084 (by rfl)
 
 def checkBlock : Block Artifact.submissionArtifact .Osaka 5007 checkProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3810 11 5007 checkProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3812 11 5007 checkProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def normalBlock : Block Artifact.submissionArtifact .Osaka 5024 normalProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3821 6 5024 normalProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3823 6 5024 normalProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def squareBlock : Block Artifact.submissionArtifact .Osaka 5036 squareProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3827 2 5036 squareProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3829 2 5036 squareProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def storeBlock : Block Artifact.submissionArtifact .Osaka 5040 storeProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3829 5 5040 storeProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3831 5 5040 storeProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem run_check (s : State) (mem : ByteArray) (pa pb dst ret : UInt256)
