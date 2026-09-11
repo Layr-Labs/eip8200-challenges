@@ -23,15 +23,15 @@ def isFour (n : Nat) : UInt256 :=
 
 
 def l1Target (n : Nat) : UInt256 :=
-  UInt256.ofNat 4281 + UInt256.ofNat 153 * isFour n
+  UInt256.ofNat 4280 + UInt256.ofNat 153 * isFour n
 
 def l2Target (n : Nat) : UInt256 :=
-  UInt256.ofNat 4580 + UInt256.ofNat 153 * isFour n
+  UInt256.ofNat 4571 + UInt256.ofNat 153 * isFour n
 
-@[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 4434 := by decide
-@[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 4281 := by decide
-@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 4733 := by decide
-@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 4580 := by decide
+@[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 4433 := by decide
+@[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 4280 := by decide
+@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 4724 := by decide
+@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 4571 := by decide
 
 /-- Before first-loop step `j`: carry and `b_i` above the honest cached base. -/
 def l1At (pc : Nat) (s : State) (mem : ByteArray) (bi : UInt256)

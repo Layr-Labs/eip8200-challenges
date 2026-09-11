@@ -24,7 +24,7 @@ theorem run_out (s : State) (mem : ByteArray) (pa pb n i : Nat)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472) :
     runInstructions outProgram
       (outState s mem pa pb n i pdst ret rest) =
-      some (firstAt 4253 s mem (rowBi mem pb n i) pa pb n i pdst ret rest) := by
+      some (firstAt 4255 s mem (rowBi mem pb n i) pa pb n i pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
   have hExtra11 : rest.length + 11 < 1024 := by omega
