@@ -133,7 +133,7 @@ private theorem instructionPC_segment_of_byteLength
 
 private theorem tail_instruction_at (i : Nat)
     (hi : i < StackTail.tailInstructions.length) :
-    Artifact.submissionArtifact.instructions[1646 + i]? =
+    Artifact.submissionArtifact.instructions[1650 + i]? =
       StackTail.tailInstructions[i]? := by
   have h := ArtifactSegment.getElem?_segment
     Artifact.submissionArtifact tailBefore StackTail.tailInstructions tailAfter
@@ -160,7 +160,7 @@ private theorem tail_instruction_pc_global (index : Nat)
   simpa only [Nat.add_sub_of_le hlo] using h
 
 private theorem finalJumpPC :
-    Artifact.submissionArtifact.instructionPC 1658 = 0x87b := by
+    Artifact.submissionArtifact.instructionPC 1662 = 0x87b := by
   have h := tail_instruction_pc 60 (by decide)
   simpa [StackTail.tailInstructions, StackTail.tail60Instructions,
     StackTail.c0Instructions, StackTail.c1Instructions,
@@ -185,7 +185,7 @@ private theorem tail_instruction_wellFormed (i : Nat)
 
 def tailLocated (i : Nat) (hi : i < StackTail.tailInstructions.length) :
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka where
-  index := 1642 + i
+  index := 1646 + i
   instruction := ((StackTail.tailInstructions)[i]'(by exact hi))
   atIndex := by
     have h := tail_instruction_at i hi

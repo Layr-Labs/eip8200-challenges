@@ -10,25 +10,25 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Cleanup
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedScan PatternedSwar
 
-@[simp] private theorem branchPC0 : Artifact.submissionArtifact.instructionPC 157 = 247 := rfl
-@[simp] private theorem branchPC1 : Artifact.submissionArtifact.instructionPC 158 = 248 := rfl
-@[simp] private theorem branchPC2 : Artifact.submissionArtifact.instructionPC 159 = 251 := rfl
-@[simp] private theorem cleanupDupPC : Artifact.submissionArtifact.instructionPC 185 = 344 := rfl
+@[simp] private theorem branchPC0 : Artifact.submissionArtifact.instructionPC 161 = 247 := rfl
+@[simp] private theorem branchPC1 : Artifact.submissionArtifact.instructionPC 162 = 248 := rfl
+@[simp] private theorem branchPC2 : Artifact.submissionArtifact.instructionPC 163 = 251 := rfl
+@[simp] private theorem cleanupDupPC : Artifact.submissionArtifact.instructionPC 189 = 344 := rfl
 @[simp] private theorem cleanupDest : Decode.isValidJumpDest submissionBytecode 343 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 184 (by rfl)
+  Artifact.submissionArtifact.isValidJumpDest_index 188 (by rfl)
 @[simp] private theorem fallbackDest : Decode.isValidJumpDest submissionBytecode 360 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 199 (by rfl)
+  Artifact.submissionArtifact.isValidJumpDest_index 203 (by rfl)
 
 def branchPath : List Located :=
-  [opAt 157 (.Dup ⟨2, by decide⟩), pushAt 158 2 343, opAt 159 .JUMPI]
+  [opAt 161 (.Dup ⟨2, by decide⟩), pushAt 162 2 343, opAt 163 .JUMPI]
 
 def cleanupPath : List Located :=
-  [opAt 184 .JUMPDEST, opAt 185 (.Dup ⟨2, by decide⟩),
-   opAt 186 (.Swap ⟨2, by decide⟩), opAt 187 .POP,
-   opAt 188 (.Swap ⟨1, by decide⟩), opAt 189 (.Swap ⟨6, by decide⟩),
-   opAt 190 .POP, opAt 191 .POP, opAt 192 .POP, opAt 193 .POP,
-   opAt 194 .POP, opAt 195 .POP, opAt 196 .POP,
-   pushAt 197 2 360, opAt 198 .JUMPI]
+  [opAt 188 .JUMPDEST, opAt 189 (.Dup ⟨2, by decide⟩),
+   opAt 190 (.Swap ⟨2, by decide⟩), opAt 191 .POP,
+   opAt 192 (.Swap ⟨1, by decide⟩), opAt 193 (.Swap ⟨6, by decide⟩),
+   opAt 194 .POP, opAt 195 .POP, opAt 196 .POP, opAt 197 .POP,
+   opAt 198 .POP, opAt 199 .POP, opAt 200 .POP,
+   pushAt 201 2 360, opAt 202 .JUMPI]
 
 theorem run_branch (input : ByteArray) (sv ov acc : UInt256) :
     run branchPath (stS input 247 [sv, ov, acc, P7, M, m7, P, m8]) =
