@@ -70,18 +70,18 @@ def digestEntryState (_n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
   stS input 558 (returnRest sv ov)
 
 def storedState (n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
-  { stS input 586 (returnRest sv ov) with
+  { stS input 585 (returnRest sv ov) with
     memory := answerMemory n
     activeWords := UInt256.ofNat 1 }
 
 def sizedState (n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
   { storedState n input sv ov with
-    pc := UInt256.ofNat 587
+    pc := UInt256.ofNat 586
     stack := UInt256.ofNat 32 :: returnRest sv ov }
 
 def returnedState (n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
   { storedState n input sv ov with
-    pc := UInt256.ofNat 588
+    pc := UInt256.ofNat 587
     halt := .Returned
     hReturn := MachineState.readPadded (answerMemory n) 0 32 }
 
@@ -147,7 +147,7 @@ theorem answerMemory_read (n : Nat) :
 
 def tableOffset (n : Nat) : Nat := 5232 - 21 * (((n * (n + 12345089)) / 1048576) % 16)
 def copyReadyState (n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
-  stS input 585 ([12, UInt256.ofNat (tableOffset n), 20] ++ returnRest sv ov)
+  stS input 584 ([12, UInt256.ofNat (tableOffset n), 20] ++ returnRest sv ov)
 
 def codeSizeEntryState (n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
   stS input 580 ([UInt256.ofNat (21 * ((n * (n + 12345089) / 1048576) % 16)), 20] ++ returnRest sv ov)
@@ -263,10 +263,10 @@ def digestBeforeSizePath : List Located :=
     opAt 347 .MUL ]
 
 def digestAfterSizePath : List Located :=
-  [opAt 349 .SUB, pushAt 350 1 12, opAt 351 .JUMPDEST]
+  [opAt 349 .SUB, pushAt 350 1 12]
 
 def digestFinishPath : List Located :=
-  [pushAt 354 0 0, opAt 355 .RETURN]
+  [pushAt 353 0 0, opAt 354 .RETURN]
 
 @[simp] theorem pc255 : Artifact.submissionArtifact.instructionPC 162 = 255 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
