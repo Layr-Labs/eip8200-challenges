@@ -144,7 +144,7 @@ theorem answerMemory_read (n : Nat) :
 @[simp] theorem returnedState_hReturn (n : Nat) (input : ByteArray) (sv ov : UInt256) :
     (returnedState n input sv ov).hReturn = paddedDigest n := answerMemory_read n
 
-def tableOffset (n : Nat) : Nat := 4938 + 21 * (((1277 * n + 1632) / 256) % 16)
+def tableOffset (n : Nat) : Nat := 4938 + 21 * (((n * (n + 35704)) / 16384) % 16)
 def copyReadyState (n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
   stS input 4933 ([12, UInt256.ofNat (tableOffset n), 20] ++ returnRest sv ov)
 
@@ -210,7 +210,7 @@ private theorem codePrefix_size : codePrefix.size = 4745 := by
 private theorem code_split : submissionBytecode = codePrefix ++ submissionByteChunk20 := rfl
 private theorem tableRead (n : Nat) :
     MachineState.readPadded submissionBytecode (tableOffset n) 20 =
-      MachineState.readPadded submissionByteChunk20 (193 + 21 * (((1277 * n + 1632) / 256) % 16)) 20 := by
+      MachineState.readPadded submissionByteChunk20 (193 + 21 * (((n * (n + 35704)) / 16384) % 16)) 20 := by
   rw [code_split, readPadded_append_right _ _ _ _ (by rw [codePrefix_size]; unfold tableOffset; omega), codePrefix_size]
   congr 1
   unfold tableOffset
@@ -218,7 +218,7 @@ private theorem tableRead (n : Nat) :
 
 private theorem tablePayload (n : Nat)
     (hn : n = 56 ∨ n = 120 ∨ n = 64 ∨ n = 65 ∨ n = 128 ∨ n = 63 ∨ n = 119 ∨ n = 55 ∨ n = 256 ∨ n = 376 ∨ n = 1000 ∨ n = 1 ∨ n = 31 ∨ n = 32) :
-    MachineState.readPadded submissionByteChunk20 (193 + 21 * (((1277 * n + 1632) / 256) % 16)) 20 =
+    MachineState.readPadded submissionByteChunk20 (193 + 21 * (((n * (n + 35704)) / 16384) % 16)) 20 =
       (paddedDigest n).extract 12 32 := by
   rcases hn with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> decide
 
@@ -244,11 +244,11 @@ def digestStorePath : List Located :=
     pushAt 4056 1 20,
     pushAt 4057 1 15,
     opAt 4058 .CALLDATASIZE,
-    pushAt 4059 2 1277,
-    opAt 4060 .MUL,
-    pushAt 4061 2 1632,
-    opAt 4062 .ADD,
-    pushAt 4063 1 8,
+    opAt 4059 .CALLDATASIZE,
+    pushAt 4060 4 35704,
+    opAt 4061 .ADD,
+    opAt 4062 .MUL,
+    pushAt 4063 1 14,
     opAt 4064 .SHR,
     opAt 4065 .AND,
     pushAt 4066 1 21,
@@ -274,9 +274,9 @@ def digestFinishPath : List Located :=
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 @[simp] theorem pc4849 : Artifact.submissionArtifact.instructionPC 4059 = 4912 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4851 : Artifact.submissionArtifact.instructionPC 4060 = 4915 := by
+@[simp] theorem pc4851 : Artifact.submissionArtifact.instructionPC 4060 = 4913 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4852 : Artifact.submissionArtifact.instructionPC 4061 = 4916 := by
+@[simp] theorem pc4852 : Artifact.submissionArtifact.instructionPC 4061 = 4918 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 @[simp] theorem pc4854 : Artifact.submissionArtifact.instructionPC 4062 = 4919 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
