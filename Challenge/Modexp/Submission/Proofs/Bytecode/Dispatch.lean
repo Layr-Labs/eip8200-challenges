@@ -44,10 +44,10 @@ private theorem blockCost_of_static
 
 private theorem gasSteps_zeroSetup_cost (input : ByteArray)
     (hzero : modulusSize input = 0) :
-    (gasSteps_zeroSetup input hzero).cost = 21 := by
+    (gasSteps_zeroSetup input hzero).cost = 19 := by
   change Challenge.EvmProof.Stepper.runLocatedBlockCost zeroSetupPath
-    (Main.headerState input) = 21
-  exact blockCost_of_static zeroSetupPath 21 (run_zeroSetup input hzero)
+    (Main.headerState input) = 19
+  exact blockCost_of_static zeroSetupPath 19 (run_zeroSetup input hzero)
     rfl (by decide) rfl rfl
 
 @[simp] private theorem gasSteps_zeroReturn_cost (input : ByteArray) :
@@ -65,7 +65,7 @@ def gasSteps_zeroSize (input : ByteArray) (hzero : modulusSize input = 0) :
 set_option maxHeartbeats 5000000 in
 theorem gasSteps_zeroSize_cost (input : ByteArray)
     (hzero : modulusSize input = 0) :
-    (gasSteps_zeroSize input hzero).cost = 21 := by
+    (gasSteps_zeroSize input hzero).cost = 19 := by
   simp [gasSteps_zeroSize, gasSteps_zeroSetup_cost]
 
 private def gasSteps_wordJump (input : ByteArray) (hvalid : ValidInput input)

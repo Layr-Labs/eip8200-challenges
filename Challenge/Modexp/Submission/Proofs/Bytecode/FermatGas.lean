@@ -22,20 +22,28 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
       final.isDone = true ∧ final.toResult = .returned (spec input) := by
   let ec := WindowTwentyOneGasRoute.context_env template env input
   let m := WindowTwentyOneInput.modulusWord input
-  have hjump : Decode.isValidJumpDest (context template input).executionEnv.code 2359 = true := by
+  have hjump : Decode.isValidJumpDest (context template input).executionEnv.code 4896 = true := by
+    rw [ec.code]
+    exact paths.missJump
+  have hlegacyJump : Decode.isValidJumpDest (context template input).executionEnv.code 2359 = true := by
     rw [ec.code]
     exact paths.legacyJump
   have hpraw := FermatProgram.run_prime (context template input) (modulusOffset input)
     (routeStack input) (by simp [routeStack]) (by simp [routeStack]) hjump
   rw [modulus_at template input hmatch] at hpraw
+  have hmraw := FermatProgram.run_miss (context template input) m (routeStack input)
+    (by simp [routeStack]) hlegacyJump
+  have missSteps : GasSteps (withModulus template input (UInt256.ofNat 4896))
+      (state template input (UInt256.ofNat 2359)) :=
+    paths.miss.steps (ec.transfer rfl rfl) rfl hmraw
   obtain ⟨oldFinal, ⟨oldTrace⟩, oldDone, oldResult⟩ :=
     WindowTwentyOneGasRoute.handled legacy template env hcall input hmatch
   by_cases hprime : (FermatProgram.primeValue m).toNat = 0
   · rw [if_pos hprime] at hpraw
     have headSteps : GasSteps (state template input (UInt256.ofNat 4812))
-        (WindowTwentyOneGasRoute.entryState template input) :=
+        (withModulus template input (UInt256.ofNat 4896)) :=
       paths.prime.steps (ec.transfer rfl rfl) rfl hpraw
-    exact ⟨oldFinal, ⟨headSteps.trans oldTrace⟩, oldDone, oldResult⟩
+    exact ⟨oldFinal, ⟨(headSteps.trans missSteps).trans oldTrace⟩, oldDone, oldResult⟩
   · rw [if_neg hprime] at hpraw
     have headSteps : GasSteps (state template input (UInt256.ofNat 4812))
         (withModulus template input (UInt256.ofNat 4865)) :=
@@ -46,9 +54,9 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
     by_cases he : (UInt256.eq (m - UInt256.ofNat 1) (WindowTwentyOneInput.exponentWord input)).toNat = 0
     · rw [if_pos he] at heraw
       have expSteps : GasSteps (withModulus template input (UInt256.ofNat 4865))
-          (WindowTwentyOneGasRoute.entryState template input) :=
+          (withModulus template input (UInt256.ofNat 4896)) :=
         paths.exponent.steps (ec.transfer rfl rfl) rfl heraw
-      exact ⟨oldFinal, ⟨(headSteps.trans expSteps).trans oldTrace⟩, oldDone, oldResult⟩
+      exact ⟨oldFinal, ⟨((headSteps.trans expSteps).trans missSteps).trans oldTrace⟩, oldDone, oldResult⟩
     · rw [if_neg he] at heraw
       have expSteps : GasSteps (withModulus template input (UInt256.ofNat 4865))
           (withModulus template input (UInt256.ofNat 4877)) :=

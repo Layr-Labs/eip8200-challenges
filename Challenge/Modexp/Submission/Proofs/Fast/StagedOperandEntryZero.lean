@@ -24,7 +24,7 @@ theorem run_zero (s : State) (mem : ByteArray) (pa pb n : Nat)
     (hcds : s.executionEnv.calldata.size < 115792089237316195423570985008687907853269984665640564039457584007913129639936)
     (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32*n)) :
     runInstructions zeroProgram
-      {cachedEntryState s mem pa pb n dst ret rest with pc := UInt256.ofNat 4129} =
+      {cachedEntryState s mem pa pb n dst ret rest with pc := UInt256.ofNat 4138} =
       some (clearedState s (stage mem pa n) pa pb n dst ret rest) := by
   have hc8 : rest.length+8 < 1024 := by omega
   have hc9 : rest.length+9 < 1024 := by omega
