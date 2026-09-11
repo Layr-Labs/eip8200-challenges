@@ -18,20 +18,20 @@ open _root_.Challenge.Modexp.Submission.Proofs.Fast.SquareDiagonal (base)
 def headProgram := SquareDiagonal.headProgram ++ SquareDiagonal.diagProgram
 
 def headBlock : Block Artifact.submissionArtifact .Osaka 5190 headProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3929 35 5190 headProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3934 35 5190 headProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def crossBlock : Block Artifact.submissionArtifact .Osaka 5235 SquareCross.crossProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3968 40 5235 SquareCross.crossProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3973 40 5235 SquareCross.crossProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jump_last : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5294 = true :=
-  Artifact.isValidJumpDest_index 4016 (by rfl)
-theorem jump_mu : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4488 = true :=
-  Artifact.isValidJumpDest_index 3421 (by rfl)
+  Artifact.isValidJumpDest_index 4021 (by rfl)
+theorem jump_mu : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4497 = true :=
+  Artifact.isValidJumpDest_index 3426 (by rfl)
 theorem jump_row : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5190 = true :=
-  Artifact.isValidJumpDest_index 3929 (by rfl)
+  Artifact.isValidJumpDest_index 3934 (by rfl)
 theorem jump_init : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5049 = true :=
-  Artifact.isValidJumpDest_index 3834 (by rfl)
+  Artifact.isValidJumpDest_index 3839 (by rfl)
 
 def delta (i : Nat) : UInt256 := UInt256.ofNat (32*(7-i))
 

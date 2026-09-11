@@ -51,7 +51,7 @@ opaque gasSteps_square (s : State) (mem : ByteArray) (pa : Nat) (dst ret : UInt2
     simpa only [SquareRowsGas.state, SquareRowsGas.tag, prepared, if_pos (show 8=8 ∧ pa=pa from ⟨rfl,rfl⟩),
       initial, start, SquareEntry.out, CiosCached.outState, SquareEntry.args, Nat.reduceLT,
       ite_true, true_and, Nat.reduceMul, Nat.reduceSub, Nat.reduceAdd, hpadd,
-      ptrAt_zero, show l2Target 8 = UInt256.ofNat 4509 by decide, SquareDiagonal.base, stateAt, List.cons_append, List.nil_append] using
+      ptrAt_zero, show l2Target 8 = UInt256.ofNat 4518 by decide, SquareDiagonal.base, stateAt, List.cons_append, List.nil_append] using
       hheader.trans (hroute.trans hinit)
   have hread (addr : Nat) (hd : addr+32 ≤ 8192 ∨ 9312 ≤ addr) := read_prepared_outside s mem pa pa 8 addr (by decide) hd
   refine hentry.trans <| SquareRowsGas.gasSteps_rows s (prepared s mem pa pa 8) pa
