@@ -45,7 +45,7 @@ theorem run_entry_three (s : State) (memory : ByteArray)
 
 set_option linter.unusedSimpArgs false in
 theorem run_entry_other (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat) (hne : esize ≠ 3) (he : esize ≤ 1024)
+    (n bsize esize msize : Nat) (hne : esize ≠ 3) (he : esize ≤ 256)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock entryPrefix
       (entryState s memory n bsize esize msize) =
@@ -89,7 +89,7 @@ theorem run_oneWidth_hit (s : State) (memory : ByteArray)
 
 set_option linter.unusedSimpArgs false in
 theorem run_oneWidth_miss (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat) (hne : esize ≠ 1) (he : esize ≤ 1024)
+    (n bsize esize msize : Nat) (hne : esize ≠ 1) (he : esize ≤ 256)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock oneWidth
@@ -141,7 +141,7 @@ def gasSteps_entry_three (s : State) (memory : ByteArray)
     (by simpa [entryState, Exp.bDone] using hnp)
 
 def gasSteps_entry_other (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat) (hne : esize ≠ 3) (he : esize ≤ 1024)
+    (n bsize esize msize : Nat) (hne : esize ≠ 3) (he : esize ≤ 256)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -172,7 +172,7 @@ def gasSteps_oneWidth_hit (s : State) (memory : ByteArray)
     (by simpa [otherWidth] using hnp)
 
 def gasSteps_oneWidth_miss (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat) (hne : esize ≠ 1) (he : esize ≤ 1024)
+    (n bsize esize msize : Nat) (hne : esize ≠ 1) (he : esize ≤ 256)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig

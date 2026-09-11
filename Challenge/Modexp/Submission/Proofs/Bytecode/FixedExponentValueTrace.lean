@@ -29,11 +29,11 @@ private theorem exponentValue_one (input : ByteArray) (bsize : Nat) :
 
 set_option linter.unusedSimpArgs false in
 theorem run_checkThree_hit (s : State) (memory input : ByteArray)
-    (n bsize msize : Nat) (hb : bsize ≤ 1024)
+    (n bsize msize : Nat) (hb : bsize ≤ 256)
     (hvalue : exponentValue input bsize 1 = 3)
     (hdata : s.executionEnv.calldata = input)
-    (hactive : 298 ≤ s.activeWords.toNat)
-    (heoff : MachineState.readWord memory 9472 = UInt256.ofNat (96 + bsize))
+    (hactive : 93 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord memory 2912 = UInt256.ofNat (96 + bsize))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock
@@ -41,8 +41,8 @@ theorem run_checkThree_hit (s : State) (memory input : ByteArray)
       (FixedExponentStates.checkThree s memory n bsize 1 msize) =
       some (FixedExponentStates.special s memory n bsize 1 msize 1) := by
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter
-      s.activeWords.toNat 9472 32) = s.activeWords :=
-    Exp.activeWords_fix s 9472 32 (by omega) (by omega) hactive
+      s.activeWords.toNat 2912 32) = s.activeWords :=
+    Exp.activeWords_fix s 2912 32 (by omega) (by omega) hactive
   have haddr : (96 + bsize) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       96 + bsize := by
@@ -71,19 +71,19 @@ theorem run_checkThree_hit (s : State) (memory input : ByteArray)
 
 set_option linter.unusedSimpArgs false in
 theorem run_checkThree_miss (s : State) (memory input : ByteArray)
-    (n bsize msize : Nat) (hb : bsize ≤ 1024)
+    (n bsize msize : Nat) (hb : bsize ≤ 256)
     (hvalue : exponentValue input bsize 1 ≠ 3)
     (hdata : s.executionEnv.calldata = input)
-    (hactive : 298 ≤ s.activeWords.toNat)
-    (heoff : MachineState.readWord memory 9472 = UInt256.ofNat (96 + bsize))
+    (hactive : 93 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord memory 2912 = UInt256.ofNat (96 + bsize))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedExponentPaths.checkThree
       (FixedExponentStates.checkThree s memory n bsize 1 msize) =
       some (FixedExponentStates.fallback s memory n bsize 1 msize) := by
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter
-      s.activeWords.toNat 9472 32) = s.activeWords :=
-    Exp.activeWords_fix s 9472 32 (by omega) (by omega) hactive
+      s.activeWords.toNat 2912 32) = s.activeWords :=
+    Exp.activeWords_fix s 2912 32 (by omega) (by omega) hactive
   have haddr : (96 + bsize) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       96 + bsize := by
@@ -116,19 +116,19 @@ theorem run_checkThree_miss (s : State) (memory input : ByteArray)
 
 set_option linter.unusedSimpArgs false in
 theorem run_check65537_hit (s : State) (memory input : ByteArray)
-    (n bsize msize : Nat) (hb : bsize ≤ 1024)
+    (n bsize msize : Nat) (hb : bsize ≤ 256)
     (hvalue : exponentValue input bsize 3 = 65537)
     (hdata : s.executionEnv.calldata = input)
-    (hactive : 298 ≤ s.activeWords.toNat)
-    (heoff : MachineState.readWord memory 9472 = UInt256.ofNat (96 + bsize))
+    (hactive : 93 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord memory 2912 = UInt256.ofNat (96 + bsize))
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock
       (FixedExponentPaths.check65537 ++ FixedExponentPaths.fermatHit)
       (FixedExponentStates.check65537 s memory n bsize 3 msize) =
       some (FixedExponentStates.special s memory n bsize 3 msize 16) := by
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter
-      s.activeWords.toNat 9472 32) = s.activeWords :=
-    Exp.activeWords_fix s 9472 32 (by omega) (by omega) hactive
+      s.activeWords.toNat 2912 32) = s.activeWords :=
+    Exp.activeWords_fix s 2912 32 (by omega) (by omega) hactive
   have haddr : (96 + bsize) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       96 + bsize := by
@@ -158,19 +158,19 @@ theorem run_check65537_hit (s : State) (memory input : ByteArray)
 
 set_option linter.unusedSimpArgs false in
 theorem run_check65537_miss (s : State) (memory input : ByteArray)
-    (n bsize msize : Nat) (hb : bsize ≤ 1024)
+    (n bsize msize : Nat) (hb : bsize ≤ 256)
     (hvalue : exponentValue input bsize 3 ≠ 65537)
     (hdata : s.executionEnv.calldata = input)
-    (hactive : 298 ≤ s.activeWords.toNat)
-    (heoff : MachineState.readWord memory 9472 = UInt256.ofNat (96 + bsize))
+    (hactive : 93 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord memory 2912 = UInt256.ofNat (96 + bsize))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedExponentPaths.check65537
       (FixedExponentStates.check65537 s memory n bsize 3 msize) =
       some (FixedExponentStates.fallback s memory n bsize 3 msize) := by
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter
-      s.activeWords.toNat 9472 32) = s.activeWords :=
-    Exp.activeWords_fix s 9472 32 (by omega) (by omega) hactive
+      s.activeWords.toNat 2912 32) = s.activeWords :=
+    Exp.activeWords_fix s 2912 32 (by omega) (by omega) hactive
   have haddr : (96 + bsize) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       96 + bsize := by
@@ -215,11 +215,11 @@ private def sound {start finish : State}
     Artifact.submissionArtifact .Osaka path hcode hfork h hrun hnp
 
 def gasSteps_checkThree_hit (s : State) (memory input : ByteArray)
-    (n bsize msize : Nat) (hb : bsize ≤ 1024)
+    (n bsize msize : Nat) (hb : bsize ≤ 256)
     (hvalue : exponentValue input bsize 1 = 3)
     (hdata : s.executionEnv.calldata = input)
-    (hactive : 298 ≤ s.activeWords.toNat)
-    (heoff : MachineState.readWord memory 9472 = UInt256.ofNat (96 + bsize))
+    (hactive : 93 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord memory 2912 = UInt256.ofNat (96 + bsize))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -236,11 +236,11 @@ def gasSteps_checkThree_hit (s : State) (memory input : ByteArray)
     (by simpa [FixedExponentStates.checkThree] using hnp)
 
 def gasSteps_checkThree_miss (s : State) (memory input : ByteArray)
-    (n bsize msize : Nat) (hb : bsize ≤ 1024)
+    (n bsize msize : Nat) (hb : bsize ≤ 256)
     (hvalue : exponentValue input bsize 1 ≠ 3)
     (hdata : s.executionEnv.calldata = input)
-    (hactive : 298 ≤ s.activeWords.toNat)
-    (heoff : MachineState.readWord memory 9472 = UInt256.ofNat (96 + bsize))
+    (hactive : 93 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord memory 2912 = UInt256.ofNat (96 + bsize))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -257,11 +257,11 @@ def gasSteps_checkThree_miss (s : State) (memory input : ByteArray)
     (by simpa [FixedExponentStates.checkThree] using hnp)
 
 def gasSteps_check65537_hit (s : State) (memory input : ByteArray)
-    (n bsize msize : Nat) (hb : bsize ≤ 1024)
+    (n bsize msize : Nat) (hb : bsize ≤ 256)
     (hvalue : exponentValue input bsize 3 = 65537)
     (hdata : s.executionEnv.calldata = input)
-    (hactive : 298 ≤ s.activeWords.toNat)
-    (heoff : MachineState.readWord memory 9472 = UInt256.ofNat (96 + bsize))
+    (hactive : 93 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord memory 2912 = UInt256.ofNat (96 + bsize))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -278,11 +278,11 @@ def gasSteps_check65537_hit (s : State) (memory input : ByteArray)
     (by simpa [FixedExponentStates.check65537] using hnp)
 
 def gasSteps_check65537_miss (s : State) (memory input : ByteArray)
-    (n bsize msize : Nat) (hb : bsize ≤ 1024)
+    (n bsize msize : Nat) (hb : bsize ≤ 256)
     (hvalue : exponentValue input bsize 3 ≠ 65537)
     (hdata : s.executionEnv.calldata = input)
-    (hactive : 298 ≤ s.activeWords.toNat)
-    (heoff : MachineState.readWord memory 9472 = UInt256.ofNat (96 + bsize))
+    (hactive : 93 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord memory 2912 = UInt256.ofNat (96 + bsize))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig

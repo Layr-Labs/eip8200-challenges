@@ -9,11 +9,11 @@ open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CarryRowModel SquareInit
 
 structure Control (mem : ByteArray) : Prop where
-  zero : MachineState.readWord mem 8928 = UInt256.ofNat 0
-  route : MachineState.readWord mem 9280 = UInt256.ofNat 4164
+  zero : MachineState.readWord mem 2368 = UInt256.ofNat 0
+  route : MachineState.readWord mem 2720 = UInt256.ofNat 4173
 
 theorem read_l1 (mem : ByteArray) (bi : UInt256) (pa n addr : Nat) (hn : n ≤ 8)
-    (hd : addr+32 ≤ 8256 ∨ 8512 ≤ addr) :
+    (hd : addr+32 ≤ 2112 ∨ 2368 ≤ addr) :
     ∀ j, MachineState.readWord (l1Step mem bi pa n j).memory addr = MachineState.readWord mem addr := by
   intro j
   induction j with
@@ -24,7 +24,7 @@ theorem read_l1 (mem : ByteArray) (bi : UInt256) (pa n addr : Nat) (hn : n ≤ 8
     rw [read_storeWord_outside _ _ _ _ (by omega), ih]
 
 theorem read_l2 (mem : ByteArray) (mu c0 : UInt256) (n addr : Nat) (hn : n ≤ 8)
-    (hd : addr+32 ≤ 8256 ∨ 8512 ≤ addr) :
+    (hd : addr+32 ≤ 2112 ∨ 2368 ≤ addr) :
     ∀ j, MachineState.readWord (l2Step mem mu c0 n j).memory addr = MachineState.readWord mem addr := by
   intro j
   induction j with
@@ -34,17 +34,17 @@ theorem read_l2 (mem : ByteArray) (mu c0 : UInt256) (n addr : Nat) (hn : n ≤ 8
     change MachineState.readWord (storeWord _ _ _) addr = _
     rw [read_storeWord_outside _ _ _ _ (by omega), ih]
 
-theorem read_mid (mem : ByteArray) (c : UInt256) (addr : Nat) (hd : 8512 ≤ addr) :
+theorem read_mid (mem : ByteArray) (c : UInt256) (addr : Nat) (hd : 2368 ≤ addr) :
     MachineState.readWord (midMem1 mem c) addr = MachineState.readWord mem addr :=
   read_storeWord_outside _ _ _ _ (Or.inr (by omega))
 
-theorem read_tail (mem : ByteArray) (c f : UInt256) (addr : Nat) (hd : 8512 ≤ addr) :
+theorem read_tail (mem : ByteArray) (c f : UInt256) (addr : Nat) (hd : 2368 ≤ addr) :
     MachineState.readWord (tailCarry mem c f) addr = MachineState.readWord mem addr := by
-  change MachineState.readWord (storeWord (storeWord mem 8256 _) 8224 _) addr = _
+  change MachineState.readWord (storeWord (storeWord mem 2112 _) 2080 _) addr = _
   rw [read_storeWord_outside _ _ _ _ (Or.inr (by omega)),
     read_storeWord_outside _ _ _ _ (Or.inr (by omega))]
 
-theorem read_rowL2 (mem : ByteArray) (pa pb n i addr : Nat) (hn : n ≤ 8) (hd : 8512 ≤ addr) :
+theorem read_rowL2 (mem : ByteArray) (pa pb n i addr : Nat) (hn : n ≤ 8) (hd : 2368 ≤ addr) :
     MachineState.readWord (rowL2Carry mem pa pb n i).memory addr = MachineState.readWord mem addr := by
   rw [rowL2Carry, read_l2 _ _ _ _ _ hn (Or.inr hd), read_mid _ _ _ hd]
   exact read_l1 _ _ _ _ _ hn (Or.inr hd) _

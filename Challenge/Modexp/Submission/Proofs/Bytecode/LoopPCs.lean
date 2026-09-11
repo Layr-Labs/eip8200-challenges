@@ -23,7 +23,7 @@ private theorem instructionPC_succ
     List.take_add_one, hget, Option.toList_some, assembleBytes_append,
     assembleBytes_cons, assembleBytes_nil, List.append_nil, List.length_append]
 
-@[simp] theorem pc2670 : Artifact.submissionArtifact.instructionPC 2429 = 3202 := by rfl
+@[simp] theorem pc2670 : Artifact.submissionArtifact.instructionPC 2429 = 3170 := by rfl
 @[simp] theorem pc2671 : Artifact.submissionArtifact.instructionPC 2430 = 3203 := by
   calc
     Artifact.submissionArtifact.instructionPC 2430 =

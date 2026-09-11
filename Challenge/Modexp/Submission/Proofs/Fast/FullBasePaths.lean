@@ -37,13 +37,13 @@ def blkFullBaseCopyAdd :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2364 (.Dup ⟨0, by decide⟩),
    pushAt 2365 1 96,
-   pushAt 2366 2 1024,
+   pushAt 2366 2 256,
    opAt 2367 .CALLDATACOPY,
    pushAt 2368 2 1616,
-   pushAt 2369 2 2048,
-   pushAt 2370 2 1024,
-   pushAt 2371 2 6144,
-   pushAt 2372 2 4049,
+   pushAt 2369 2 512,
+   pushAt 2370 2 256,
+   pushAt 2371 2 1536,
+   pushAt 2372 2 4053,
    opAt 2373 .JUMP]
 
 /-- Located block in the selected full-width-base helper. -/
@@ -67,7 +67,7 @@ def blkFullBaseFallback :
    opAt 2389 (.Swap ⟨0, by decide⟩),
    opAt 2390 .SHR,
    opAt 2391 (.Dup ⟨2, by decide⟩),
-   pushAt 2392 2 992,
+   pushAt 2392 2 224,
    opAt 2393 .ADD,
    opAt 2394 .MSTORE,
    pushAt 2395 1 1,

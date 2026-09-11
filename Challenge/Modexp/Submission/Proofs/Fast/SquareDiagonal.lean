@@ -37,7 +37,7 @@ def borrowProgram : List Instr :=
 def loadProgram : List Instr :=
   [.op (.Dup ⟨1, by decide⟩),
    .op (.Dup ⟨7, by decide⟩),
-   .push 2 8256,
+   .push 2 2112,
    .op .ADD,
    .op .MLOAD,
    .op .ADD]
@@ -45,7 +45,7 @@ def loadProgram : List Instr :=
 def storeProgram : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨8, by decide⟩),
-   .push 2 8256,
+   .push 2 2112,
    .op .ADD,
    .op .MSTORE,
    .op (.Dup ⟨2, by decide⟩),
@@ -54,8 +54,8 @@ def storeProgram : List Instr :=
    .op .SUB]
 
 theorem run_head (s : State) (pbi pa pb tag dst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
-    (hpbi : pbi.toNat+32 ≤ 9472) :
+    (hcap : rest.length ≤ 1006) (hact : 91 ≤ s.activeWords.toNat)
+    (hpbi : pbi.toNat+32 ≤ 2912) :
     runInstructions headProgram (framed s (UInt256.ofNat 5190) (base pbi pa pb tag dst ret rest)) =
       some (framed s (UInt256.ofNat 5198)
         (MachineState.readWord s.memory pbi.toNat :: base pbi pa pb (pbi-pa) dst ret rest)) := by
@@ -90,11 +90,11 @@ theorem run_borrow (s : State) (hi lo ai : UInt256) (rest : List UInt256)
 theorem run_load (s : State) (part lo ai pbi pa pb delta dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1006)
     (ha : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
-      (UInt256.ofNat 8256+delta).toNat 32) = s.activeWords) :
+      (UInt256.ofNat 2112+delta).toNat 32) = s.activeWords) :
     runInstructions loadProgram
       (framed s (UInt256.ofNat 5210) ([part,lo,ai] ++ base pbi pa pb delta dst ret rest)) =
       some (framed s (UInt256.ofNat 5218)
-        ([MachineState.readWord s.memory (UInt256.ofNat 8256+delta).toNat+lo,part,lo,ai] ++
+        ([MachineState.readWord s.memory (UInt256.ofNat 2112+delta).toNat+lo,part,lo,ai] ++
           base pbi pa pb delta dst ret rest)) := by
   have hc11 : rest.length+11 < 1024 := by omega
   have hc12 : rest.length+12 < 1024 := by omega
@@ -102,7 +102,7 @@ theorem run_load (s : State) (part lo ai pbi pa pb delta dst ret : UInt256) (res
   have hc14 : rest.length+14 < 1024 := by omega
   simp only [Challenge.EvmProof.Word.word_toNat_add,
     Challenge.EvmProof.Word.word_toNat_ofNat, Nat.reducePow, Nat.reduceMod] at ha
-  have haddr : (8256 : UInt256) = UInt256.ofNat 8256 := by decide
+  have haddr : (2112 : UInt256) = UInt256.ofNat 2112 := by decide
   simp [loadProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr, framed, base,
     hc11, hc12, hc13, hc14, haddr, ha, State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
@@ -110,10 +110,10 @@ theorem run_load (s : State) (part lo ai pbi pa pb delta dst ret : UInt256) (res
 theorem run_store (s : State) (v part lo ai pbi pa pb delta dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1006)
     (ha : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
-      (UInt256.ofNat 8256+delta).toNat 32) = s.activeWords) :
+      (UInt256.ofNat 2112+delta).toNat 32) = s.activeWords) :
     runInstructions storeProgram
       (framed s (UInt256.ofNat 5218) ([v,part,lo,ai] ++ base pbi pa pb delta dst ret rest)) =
-      some (framed {s with memory := storeWord s.memory (UInt256.ofNat 8256+delta).toNat v}
+      some (framed {s with memory := storeWord s.memory (UInt256.ofNat 2112+delta).toNat v}
         (UInt256.ofNat 5229)
         ([(UInt256.gt lo v-part)-lo,ai] ++ base pbi pa pb delta dst ret rest)) := by
   have hc10 : rest.length+10 < 1024 := by omega
@@ -124,7 +124,7 @@ theorem run_store (s : State) (v part lo ai pbi pa pb delta dst ret : UInt256) (
   have hc15 : rest.length+15 < 1024 := by omega
   simp only [Challenge.EvmProof.Word.word_toNat_add,
     Challenge.EvmProof.Word.word_toNat_ofNat, Nat.reducePow, Nat.reduceMod] at ha
-  have haddr : (8256 : UInt256) = UInt256.ofNat 8256 := by decide
+  have haddr : (2112 : UInt256) = UInt256.ofNat 2112 := by decide
   simp [storeProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr, framed, base, storeWord,
     hc10, hc11, hc12, hc13, hc14, hc15, haddr, ha, State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
@@ -151,18 +151,18 @@ def diagProgram : List Instr :=
 theorem run_diag (s : State) (ai pbi pa pb delta dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1006)
     (ha : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
-      (UInt256.ofNat 8256+delta).toNat 32) = s.activeWords) :
+      (UInt256.ofNat 2112+delta).toNat 32) = s.activeWords) :
     runInstructions diagProgram
       (framed s (UInt256.ofNat 5198) (ai :: base pbi pa pb delta dst ret rest)) =
-      some (framed {s with memory := (storeWord s.memory (UInt256.ofNat 8256+delta).toNat
-          (macSum ai ai (MachineState.readWord s.memory (UInt256.ofNat 8256+delta).toNat) (UInt256.ofNat 0)))}
+      some (framed {s with memory := (storeWord s.memory (UInt256.ofNat 2112+delta).toNat
+          (macSum ai ai (MachineState.readWord s.memory (UInt256.ofNat 2112+delta).toNat) (UInt256.ofNat 0)))}
         (UInt256.ofNat 5229)
-        ([macCarry ai ai (MachineState.readWord s.memory (UInt256.ofNat 8256+delta).toNat) (UInt256.ofNat 0),ai] ++
+        ([macCarry ai ai (MachineState.readWord s.memory (UInt256.ofNat 2112+delta).toNat) (UInt256.ofNat 0),ai] ++
           base pbi pa pb delta dst ret rest)) := by
   let lo := ai*ai
   let mm := UInt256.mulMod ai ai maxWord
   let part := UInt256.gt lo mm-mm
-  let t := MachineState.readWord s.memory (UInt256.ofNat 8256+delta).toNat
+  let t := MachineState.readWord s.memory (UInt256.ofNat 2112+delta).toNat
   have hp := run_prep s ai pbi pa pb delta dst ret rest hcap
   have hm := CiosNoDummyCarry.run_multiply s (UInt256.ofNat 5200) ai ai
     (base pbi pa pb delta dst ret rest) (by simp only [base, List.length_append, List.length_cons, List.length_nil]; omega)

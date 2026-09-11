@@ -14,9 +14,9 @@ open Monpro CiosCached CiosCachedMacCore CarryRowModel CarryScratchAgreement
 open CiosCachedMidMemory
 
 theorem run_tail (s : State) (c mu f pbi pa pb flag dst ret : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
+    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 91 ≤ s.activeWords.toNat)
     (route : UInt256)
-    (hroute : MachineState.readWord s.memory 9280 = route)
+    (hroute : MachineState.readWord s.memory 2720 = route)
     (htarget : Decode.isValidJumpDest s.executionEnv.code route.toNat = true) :
     runInstructions CarryRowPrograms.tail
       (framed s (UInt256.ofNat 4765)
@@ -27,7 +27,7 @@ theorem run_tail (s : State) (c mu f pbi pa pb flag dst ret : UInt256)
   have h1 := CarryRowTrace.run_tailStore s c mu f pbi pa pb flag dst ret rest hcap hact
   have h2 := SquareRoute.run_test {s with memory := tailCarry s.memory c f}
     pbi pa pb flag dst ret route rest hcap hact
-    ((readWord_tailCarry s.memory c f 9280 (Or.inr (by decide))).trans hroute) htarget
+    ((readWord_tailCarry s.memory c f 2720 (Or.inr (by decide))).trans hroute) htarget
   exact runInstructions_append_some _ _ _ _ _ h1 h2
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryRowRun

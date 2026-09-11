@@ -33,10 +33,10 @@ private theorem helperPCAnchor :
 def helperPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2329 .JUMPDEST,
-   pushAt 2330 2 9344,
+   pushAt 2330 2 2784,
    opAt 2331 .MLOAD,
-   pushAt 2332 2 5120,
-   pushAt 2333 2 6144,
+   pushAt 2332 2 1280,
+   pushAt 2333 2 1536,
    opAt 2334 .MCOPY,
    opAt 2335 (.Dup ⟨1, by decide⟩),
    pushAt 2336 1 3,

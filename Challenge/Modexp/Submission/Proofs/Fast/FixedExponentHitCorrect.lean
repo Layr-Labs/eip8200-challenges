@@ -28,8 +28,8 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hstack : s.callStack = []) (hactive : 298 ≤ s.activeWords.toNat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmz : 32 < msize)
+    (hstack : s.callStack = []) (hactive : 93 ≤ s.activeWords.toNat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmz : 32 < msize)
     (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
@@ -43,17 +43,17 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
       2 ^ count + 1)
     (hframe : Exp.Frame memory n bsize minv)
     (hmod : Model.FastRepresents memory 0 n mm)
-    (hbase : Model.FastRepresents memory 2048 n bM)
+    (hbase : Model.FastRepresents memory 512 n bM)
     (hone : ∃ one, one < Limbs.radix ∧
-      Model.FastRepresents memory 3072 n one) :
+      Model.FastRepresents memory 768 n one) :
     FixedExponentRoute.Handled input
       (special s memory n bsize esize msize count) := by
   let memSq := fixedMems sub.mpMem n memory count
   let sqVal := fixedValue mm R bM count
   let prodVal := Model.montMul mm R sqVal bM
-  let memProd := sub.mpMem 1024 2048 1024 memSq
-  let memOne := Exp.storeWord memProd (3040 + 32 * n) (UInt256.ofNat 1)
-  let memOut := sub.mpMem 1024 3072 1024 memOne
+  let memProd := sub.mpMem 256 512 256 memSq
+  let memOne := Exp.storeWord memProd (736 + 32 * n) (UInt256.ofNat 1)
+  let memOut := sub.mpMem 256 768 256 memOne
   have hsqInv : Exp.EbInv memSq n mm bM sqVal := by
     simpa [memSq, sqVal] using
       fixedMems_inv sub spec memory hm hn hn32 hbMlt hframe hmod hbase hone count
@@ -66,7 +66,7 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
     hcode hfork hrun hnp
   have htraceProdCall := FixedExponentChainTrace.gasSteps_product
     s memSq n bsize esize msize hcode hfork hrun hnp
-  have htraceProdMp := sub.monpro 1024 2048 1024 (UInt256.ofNat 3808)
+  have htraceProdMp := sub.monpro 256 512 256 (UInt256.ofNat 3812)
     (Exp.outer n bsize esize msize) memSq sqVal bM
     (by simp [Exp.outer]) (by omega) (by omega) (by omega) (by omega)
     (by omega) jumpD3808 hframeSq hsqInv.modulus hsqInv.accBlock
@@ -76,33 +76,33 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
       (decode s memProd n bsize esize msize) :=
     htraceProdCall.trans htraceProdMp
   have hframeProd : Exp.Frame memProd n bsize minv :=
-    sub.mpFrame 1024 2048 1024 memSq (by omega) hframeSq
+    sub.mpFrame 256 512 256 memSq (by omega) hframeSq
   have hmodProd : Model.FastRepresents memProd 0 n mm :=
-    spec.mpFrame 1024 2048 1024 0 mm memSq (by omega) (Or.inr (by omega))
+    spec.mpFrame 256 512 256 0 mm memSq (by omega) (Or.inr (by omega))
       hsqInv.modulus
-  have haccProd : Model.FastRepresents memProd 1024 n prodVal :=
-    spec.mpValue 1024 2048 1024 memSq sqVal bM (by omega) (by omega)
+  have haccProd : Model.FastRepresents memProd 256 n prodVal :=
+    spec.mpValue 256 512 256 memSq sqVal bM (by omega) (by omega)
       (by omega) hsqInv.modulus hframeSq.minvW hsqInv.accBlock
       hsqInv.baseBlock hsqLt hbMlt
   obtain ⟨one, honeLt, honeRep⟩ := hsqInv.oneBlock
-  have honeProd : Model.FastRepresents memProd 3072 n one :=
-    spec.mpFrame 1024 2048 1024 3072 one memSq (by omega)
+  have honeProd : Model.FastRepresents memProd 768 n one :=
+    spec.mpFrame 256 512 256 768 one memSq (by omega)
       (Or.inl (by omega)) honeRep
   have hframeOne : Exp.Frame memOne n bsize minv :=
     Exp.frame_storeWord (UInt256.ofNat 1) (by omega) hframeProd
   have hmodOne : Model.FastRepresents memOne 0 n mm :=
-    Exp.storeWord_frame memProd (3040 + 32 * n) 0 n mm (UInt256.ofNat 1)
+    Exp.storeWord_frame memProd (736 + 32 * n) 0 n mm (UInt256.ofNat 1)
       (Or.inr (by omega)) hmodProd
-  have haccOne : Model.FastRepresents memOne 1024 n prodVal :=
-    Exp.storeWord_frame memProd (3040 + 32 * n) 1024 n prodVal
+  have haccOne : Model.FastRepresents memOne 256 n prodVal :=
+    Exp.storeWord_frame memProd (736 + 32 * n) 256 n prodVal
       (UInt256.ofNat 1) (Or.inr (by omega)) haccProd
-  have honeOne : Model.FastRepresents memOne 3072 n 1 := by
+  have honeOne : Model.FastRepresents memOne 768 n 1 := by
     have hw := Exp.write_low_limb (UInt256.ofNat 1) (by omega) honeProd honeLt
     simpa [memOne, show (UInt256.ofNat 1).toNat = 1 from by decide] using hw
   have htraceDecode := FixedExponentChainTrace.gasSteps_decode
     s memProd n bsize esize msize hn32 hactive hcode hfork hrun hnp
   have hprodLt : prodVal < mm := Model.montMul_lt hm R sqVal bM
-  have htraceOutMp := sub.monpro 1024 3072 1024 (UInt256.ofNat 3833)
+  have htraceOutMp := sub.monpro 256 768 256 (UInt256.ofNat 3837)
     (Exp.outer n bsize esize msize) memOne prodVal 1
     (by simp [Exp.outer]) (by omega) (by omega) (by omega) (by omega)
     (by omega) jumpD3833 hframeOne hmodOne haccOne honeOne hprodLt
@@ -113,10 +113,10 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
   have htraceFinish := FixedExponentChainTrace.gasSteps_finish
     s memOut n bsize esize msize hcode hfork hrun hnp
   have hframeOut : Exp.Frame memOut n bsize minv :=
-    sub.mpFrame 1024 3072 1024 memOne (by omega) hframeOne
-  have houtRep : Model.FastRepresents memOut 1024 n
+    sub.mpFrame 256 768 256 memOne (by omega) hframeOne
+  have houtRep : Model.FastRepresents memOut 256 n
       (Model.montMul mm R prodVal 1) :=
-    spec.mpValue 1024 3072 1024 memOne prodVal 1
+    spec.mpValue 256 768 256 memOne prodVal 1
       (by omega) (by omega) (by omega) hmodOne hframeOne.minvW
       haccOne honeOne hprodLt (lt_of_lt_of_le Limbs.radix_gt_one hradix)
   have htraceReturn := Exp.gasSteps_return s memOut n bsize esize msize

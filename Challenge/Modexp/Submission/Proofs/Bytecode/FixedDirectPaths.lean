@@ -51,7 +51,7 @@ def oneWidth : List Located :=
    opAt 2570 .JUMPI]
 
 def checkThree : List Located :=
-  [pushAt 2571 2 9472,
+  [pushAt 2571 2 2912,
    opAt 2572 .MLOAD,
    opAt 2573 .CALLDATALOAD,
    pushAt 2574 0 0,
@@ -63,12 +63,12 @@ def checkThree : List Located :=
 
 def threeHit : List Located :=
   [pushAt 2580 1 1,
-   pushAt 2581 2 3391,
+   pushAt 2581 2 3392,
    opAt 2582 .JUMP]
 
 def check65537 : List Located :=
   [opAt 2583 .JUMPDEST,
-   pushAt 2584 2 9472,
+   pushAt 2584 2 2912,
    opAt 2585 .MLOAD,
    opAt 2586 .CALLDATALOAD,
    pushAt 2587 1 232,
@@ -79,18 +79,18 @@ def check65537 : List Located :=
    opAt 2592 .JUMPI]
 
 def fermatHit : List Located :=
-  [pushAt 2593 1 16]
+  [pushAt 2593 1 16, opAt 2594 .JUMPDEST]
 
 def start : List Located :=
-  [opAt 2594 .JUMPDEST]
+  []
 
 def squareCall : List Located :=
   [opAt 2595 .JUMPDEST,
    pushAt 2596 2 3409,
-   pushAt 2597 2 2048,
-   pushAt 2598 2 2048,
-   pushAt 2599 2 2048,
-   pushAt 2600 2 4049,
+   pushAt 2597 2 512,
+   pushAt 2598 2 512,
+   pushAt 2599 2 512,
+   pushAt 2600 2 4053,
    opAt 2601 .JUMP]
 
 def squareReturn : List Located :=
@@ -104,11 +104,11 @@ def squareReturn : List Located :=
 
 def product : List Located :=
   [opAt 2609 .POP,
-   pushAt 2610 2 3436,
-   pushAt 2611 2 1024,
-   pushAt 2612 2 1024,
-   pushAt 2613 2 2048,
-   pushAt 2614 2 4049,
+   pushAt 2610 2 1721,
+   pushAt 2611 2 256,
+   pushAt 2612 2 256,
+   pushAt 2613 2 512,
+   pushAt 2614 2 4053,
    opAt 2615 .JUMP]
 
 def finish : List Located :=
@@ -119,8 +119,8 @@ def finish : List Located :=
 def fallback : List Located :=
   [opAt 2619 .JUMPDEST,
    opAt 2620 (.Dup ⟨0, by decide⟩),
-   pushAt 2621 2 4096,
-   pushAt 2622 2 1024,
+   pushAt 2621 2 1024,
+   pushAt 2622 2 256,
    opAt 2623 .MCOPY,
    pushAt 2624 0 0,
    pushAt 2625 2 1622,

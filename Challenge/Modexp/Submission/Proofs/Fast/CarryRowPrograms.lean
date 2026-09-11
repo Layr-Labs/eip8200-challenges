@@ -8,19 +8,19 @@ open EvmSemantics YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Fast.CiosCached
 
 def middleStore : List Instr :=
-  [.op .JUMPDEST, .push 2 8928, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .op .MUL,
+  [.op .JUMPDEST, .push 2 2368, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .op .MUL,
    .op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨2, by decide⟩), .op .GT, .op (.Swap ⟨1, by decide⟩), .op .POP,
-   .op (.Dup ⟨0, by decide⟩), .push 2 8224, .op .MLOAD, .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .push 2 8224, .op .MSTORE, .op .LT, .op .ADD,
+   .op (.Dup ⟨0, by decide⟩), .push 2 2080, .op .MLOAD, .op .ADD,
+   .op (.Dup ⟨0, by decide⟩), .push 2 2080, .op .MSTORE, .op .LT, .op .ADD,
    .op .JUMPDEST, .op (.Swap ⟨0, by decide⟩), .op .POP]
 
 def middle : List Instr := middleStore ++ CiosReadonly.cachedProduct
 
 def tailStore : List Instr :=
   [.op (.Swap ⟨0, by decide⟩), .op .POP, .op (.Dup ⟨0, by decide⟩),
-   .push 2 8224, .op .MLOAD, .op .ADD, .op (.Dup ⟨0, by decide⟩),
-   .push 2 8256, .op .MSTORE, .op .LT, .op .ADD, .push 2 8224, .op .MSTORE]
+   .push 2 2080, .op .MLOAD, .op .ADD, .op (.Dup ⟨0, by decide⟩),
+   .push 2 2112, .op .MSTORE, .op .LT, .op .ADD, .push 2 2080, .op .MSTORE]
 
 def tail : List Instr := tailStore ++ SquareRoute.testProgram
 

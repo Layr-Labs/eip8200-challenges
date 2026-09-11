@@ -97,7 +97,7 @@ theorem products_invariant (mem : ByteArray) (x : Nat → UInt256) (y : UInt256)
     nlinarith only [prev, hs, hm']
 
 theorem read_products_outside (mem : ByteArray) (x : Nat → UInt256) (y : UInt256)
-    (i addr : Nat) (hd : addr+32 ≤ 8256 ∨ 8512 ≤ addr) :
+    (i addr : Nat) (hd : addr+32 ≤ 2112 ∨ 2368 ≤ addr) :
     ∀ k, i+k ≤ 8 →
       MachineState.readWord (products mem x y i k).memory addr = MachineState.readWord mem addr := by
   intro k

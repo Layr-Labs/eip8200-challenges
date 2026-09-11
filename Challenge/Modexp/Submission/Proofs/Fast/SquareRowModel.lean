@@ -28,24 +28,24 @@ def row (mem : ByteArray) (ai : UInt256) (i : Nat) : ByteArray :=
   SquareReduce.reduction (mid mem ai i) (flag mem ai i)
 
 theorem read_product_outside (mem : ByteArray) (ai : UInt256) (i addr : Nat)
-    (hi : i ≤ 8) (hd : addr+32 ≤ 8256 ∨ 8512 ≤ addr) :
+    (hi : i ≤ 8) (hd : addr+32 ≤ 2112 ∨ 2368 ≤ addr) :
     MachineState.readWord (product mem ai i).memory addr = MachineState.readWord mem addr :=
   read_products_outside mem _ ai i addr hd (8-i) (by omega)
 
 theorem read_mid_outside (mem : ByteArray) (ai : UInt256) (i addr : Nat)
-    (hi : i ≤ 8) (hd : addr+32 ≤ 8224 ∨ 8512 ≤ addr) :
+    (hi : i ≤ 8) (hd : addr+32 ≤ 2080 ∨ 2368 ≤ addr) :
     MachineState.readWord (mid mem ai i) addr = MachineState.readWord mem addr := by
   rw [mid, SquareTop.memory, read_storeWord_outside _ _ _ _ (by omega),
     read_product_outside _ _ _ _ hi (by omega)]
 
 theorem read_row_outside (mem : ByteArray) (ai : UInt256) (i addr : Nat)
-    (hi : i ≤ 8) (hd : addr+32 ≤ 8224 ∨ 8512 ≤ addr) :
+    (hi : i ≤ 8) (hd : addr+32 ≤ 2080 ∨ 2368 ≤ addr) :
     MachineState.readWord (row mem ai i) addr = MachineState.readWord mem addr := by
   rw [row, SquareReduce.read_reduction_outside _ _ _ hd,
     read_mid_outside _ _ _ _ hi hd]
 
 theorem represents_mid (mem : ByteArray) (ai : UInt256) (i ptr count v : Nat)
-    (hi : i ≤ 8) (hd : ptr+32*count ≤ 8224 ∨ 8512 ≤ ptr)
+    (hi : i ≤ 8) (hd : ptr+32*count ≤ 2080 ∨ 2368 ≤ ptr)
     (hr : Model.FastRepresents mem ptr count v) :
     Model.FastRepresents (mid mem ai i) ptr count v := by
   refine (Model.fastRepresents_congr (a := mid mem ai i) (b := mem) ?_ v).2 hr
@@ -53,7 +53,7 @@ theorem represents_mid (mem : ByteArray) (ai : UInt256) (i ptr count v : Nat)
   exact read_mid_outside _ _ _ _ hi (by omega)
 
 theorem represents_row (mem : ByteArray) (ai : UInt256) (i ptr count v : Nat)
-    (hi : i ≤ 8) (hd : ptr+32*count ≤ 8224 ∨ 8512 ≤ ptr)
+    (hi : i ≤ 8) (hd : ptr+32*count ≤ 2080 ∨ 2368 ≤ ptr)
     (hr : Model.FastRepresents mem ptr count v) :
     Model.FastRepresents (row mem ai i) ptr count v := by
   refine (Model.fastRepresents_congr (a := row mem ai i) (b := mem) ?_ v).2 hr
@@ -61,7 +61,7 @@ theorem represents_row (mem : ByteArray) (ai : UInt256) (i ptr count v : Nat)
   exact read_row_outside _ _ _ _ hi (by omega)
 
 theorem low_mid (mem : ByteArray) (ai : UInt256) (i : Nat) :
-    Csub.lowValue (mid mem ai i) 8256 8 8 = low (product mem ai i).memory := by
+    Csub.lowValue (mid mem ai i) 2112 8 8 = low (product mem ai i).memory := by
   rw [← limbSum_eq_lowValue]
   apply limbSum_congr
   intro k hk
@@ -69,7 +69,7 @@ theorem low_mid (mem : ByteArray) (ai : UInt256) (i : Nat) :
   rfl
 
 theorem extra_toNat (mem : ByteArray) (a : Nat) (ai : UInt256) (i : Nat)
-    (hd : Model.FastRepresents mem 8928 9 (2*a)) (ha : a < Limbs.radix^8)
+    (hd : Model.FastRepresents mem 2368 9 (2*a)) (ha : a < Limbs.radix^8)
     (hi : i < 8) :
     (extra mem ai i).toNat = ai.toNat*(coefficient mem ai i 8).toNat := by
   have hc := coefficient_high_le_one mem a ai i hd ha hi
@@ -78,17 +78,17 @@ theorem extra_toNat (mem : ByteArray) (a : Nat) (ai : UInt256) (i : Nat)
   exact lt_of_le_of_lt (by nlinarith only [hc]) hw
 
 theorem row_equation (mem : ByteArray) (a m : Nat) (ai : UInt256) (i : Nat)
-    (hd : Model.FastRepresents mem 8928 9 (2*a))
+    (hd : Model.FastRepresents mem 2368 9 (2*a))
     (hm : Model.FastRepresents mem 0 8 m) (ha : a < Limbs.radix^8)
     (hai : ai.toNat = a / Limbs.radix^i % Limbs.radix) (hi : i < 8)
     (hinv : ((MachineState.readWord mem 224).toNat *
-      (MachineState.readWord mem 9376).toNat+1) % 2^256 = 0) :
+      (MachineState.readWord mem 2816).toNat+1) % 2^256 = 0) :
     tValue (row mem ai i) 8*Limbs.radix =
       tValue mem 8 + SquareArithmetic.rowTerm Limbs.radix a i +
         (rowMu (mid mem ai i) 8).toNat*m := by
   have hmid := represents_mid mem ai i 0 8 m (by omega) (Or.inl (by decide)) hm
   have hiv : ((MachineState.readWord (mid mem ai i) 224).toNat *
-      (MachineState.readWord (mid mem ai i) 9376).toNat+1) % 2^256 = 0 := by
+      (MachineState.readWord (mid mem ai i) 2816).toNat+1) % 2^256 = 0 := by
     rw [read_mid_outside _ _ _ _ (by omega) (Or.inl (by decide)),
       read_mid_outside _ _ _ _ (by omega) (Or.inr (by decide))]
     exact hinv
@@ -108,14 +108,14 @@ theorem row_equation (mem : ByteArray) (a m : Nat) (ai : UInt256) (i : Nat)
   rw [hlen', weighted, hlen] at coeff
   change tValue (row mem ai i) 8*Limbs.radix = _ at red
   rw [low_mid] at red
-  have hhigh : (MachineState.readWord (mid mem ai i) 8224).toNat =
+  have hhigh : (MachineState.readWord (mid mem ai i) 2080).toNat =
       (SquareTop.value (product mem ai i).memory (product mem ai i).carry (extra mem ai i)).toNat := by
     rw [mid, SquareTop.memory, read_storeWord]
   rw [hhigh] at red
   change (flag mem ai i).toNat*Limbs.radix +
       (SquareTop.value (product mem ai i).memory (product mem ai i).carry (extra mem ai i)).toNat = _ at top
   rw [top] at red
-  have hlow : low mem = Csub.lowValue mem 8256 8 8 := limbSum_eq_lowValue mem 8256 8 8
+  have hlow : low mem = Csub.lowValue mem 2112 8 8 := limbSum_eq_lowValue mem 2112 8 8
   have heq : low (product mem ai i).memory +
       ((product mem ai i).carry.toNat + ai.toNat*(coefficient mem ai i 8).toNat)*Limbs.radix^8 =
       low mem + ai.toNat*(ai.toNat*Limbs.radix^i +
@@ -127,7 +127,7 @@ theorem row_equation (mem : ByteArray) (a m : Nat) (ai : UInt256) (i : Nat)
           (coefficient mem ai i 8).toNat*Limbs.radix^8) := by rw [prod]; ring
       _ = _ := by rw [coeff]
   calc
-    _ = (MachineState.readWord mem 8224).toNat*Limbs.radix^8 +
+    _ = (MachineState.readWord mem 2080).toNat*Limbs.radix^8 +
       (low (product mem ai i).memory +
        ((product mem ai i).carry.toNat + ai.toNat*(coefficient mem ai i 8).toNat)*Limbs.radix^8) +
       (rowMu (mid mem ai i) 8).toNat*m := by rw [red]; ring

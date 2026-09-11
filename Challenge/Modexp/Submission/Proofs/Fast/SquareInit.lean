@@ -25,7 +25,7 @@ def doubleProgram (addr : UInt256) : List Instr :=
 
 theorem run_double (s : State) (mem : ByteArray) (pc addr : Nat)
     (c : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1018)
-    (hact : 296 ≤ s.activeWords.toNat) (haddr : addr+32 ≤ 9472) :
+    (hact : 91 ≤ s.activeWords.toNat) (haddr : addr+32 ≤ 2912) :
     runInstructions (doubleProgram (UInt256.ofNat addr)) (stateAt s mem pc (c :: rest)) =
       some (stateAt s (storeWord mem addr (doubled (MachineState.readWord mem addr) c))
         (pc+16) (highBit (MachineState.readWord mem addr) :: rest)) := by
@@ -50,16 +50,16 @@ def doubleWords (mem : ByteArray) : Nat → Doubling
   | 0 => ⟨mem, UInt256.ofNat 0⟩
   | j+1 =>
     let d := doubleWords mem j
-    let addr := 8960 + 32*(7-j)
+    let addr := 2400 + 32*(7-j)
     let x := MachineState.readWord d.memory addr
     ⟨storeWord d.memory addr (doubled x d.carry), highBit x⟩
 
 def wordsProgram : Nat → List Instr
   | 0 => []
-  | j+1 => wordsProgram j ++ doubleProgram (UInt256.ofNat (8960+32*(7-j)))
+  | j+1 => wordsProgram j ++ doubleProgram (UInt256.ofNat (2400+32*(7-j)))
 
 theorem run_words (s : State) (mem : ByteArray) (rest : List UInt256)
-    (hcap : rest.length ≤ 1018) (hact : 296 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 1018) (hact : 91 ≤ s.activeWords.toNat) :
     ∀ j, j ≤ 8 →
       runInstructions (wordsProgram j) (stateAt s mem 5051 (UInt256.ofNat 0 :: rest)) =
         some (stateAt s (doubleWords mem j).memory (5051+16*j)
@@ -70,19 +70,19 @@ theorem run_words (s : State) (mem : ByteArray) (rest : List UInt256)
   | succ j ih =>
     intro hj
     have h := run_double s (doubleWords mem j).memory (5051+16*j)
-      (8960+32*(7-j)) (doubleWords mem j).carry rest hcap hact (by omega)
+      (2400+32*(7-j)) (doubleWords mem j).carry rest hcap hact (by omega)
     have prev := ih (by omega)
     have hp : 5051+16*j+16 = 5051+16*(j+1) := by omega
     simpa only [wordsProgram, doubleWords, hp] using
       runInstructions_append_some _ _ _ _ _ prev h
 
 def initMemory (mem : ByteArray) : ByteArray :=
-  storeWord (storeWord (doubleWords mem 8).memory 8928 (doubleWords mem 8).carry)
-    9280 (UInt256.ofNat 5190)
+  storeWord (storeWord (doubleWords mem 8).memory 2368 (doubleWords mem 8).carry)
+    2720 (UInt256.ofNat 5190)
 
 def prefixProgram : List Instr := [.op .JUMPDEST, .push 0 0]
 def finishProgram : List Instr :=
-  [.push 2 8928, .op .MSTORE, .push 2 5190, .push 2 9280, .op .MSTORE]
+  [.push 2 2368, .op .MSTORE, .push 2 5190, .push 2 2720, .op .MSTORE]
 def initProgram : List Instr := prefixProgram ++ wordsProgram 8 ++ finishProgram
 
 theorem run_prefix (s : State) (mem : ByteArray) (rest : List UInt256)
@@ -94,24 +94,24 @@ theorem run_prefix (s : State) (mem : ByteArray) (rest : List UInt256)
   rfl
 
 theorem run_finish (s : State) (mem : ByteArray) (rest : List UInt256)
-    (hcap : rest.length ≤ 1018) (hact : 296 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 1018) (hact : 91 ≤ s.activeWords.toNat) :
     runInstructions finishProgram
       (stateAt s (doubleWords mem 8).memory 5179 ((doubleWords mem 8).carry :: rest)) =
       some (stateAt s (initMemory mem) 5190 rest) := by
   have hc0 : rest.length < 1024 := by omega
   have hc1 : rest.length+1 < 1024 := by omega
   have hc2 : rest.length+2 < 1024 := by omega
-  have haD := EarlyCsub.activeWords_fix s 8928 32 (by decide) (by decide) hact
-  have haR := EarlyCsub.activeWords_fix s 9280 32 (by decide) (by decide) hact
-  have hd : (8928 : UInt256).toNat = 8928 := by decide
-  have hr : (9280 : UInt256).toNat = 9280 := by decide
+  have haD := EarlyCsub.activeWords_fix s 2368 32 (by decide) (by decide) hact
+  have haR := EarlyCsub.activeWords_fix s 2720 32 (by decide) (by decide) hact
+  have hd : (2368 : UInt256).toNat = 2368 := by decide
+  have hr : (2720 : UInt256).toNat = 2720 := by decide
   have hv : (5190 : UInt256) = UInt256.ofNat 5190 := by decide
   simp [finishProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     stateAt, initMemory, storeWord, hc0, hc1, hc2, haD, haR, hd, hr, hv,
     State.activeWordsAfterUInt256, succ_ofNat_mod, ofNat_add_mod]
 
 theorem run_init (s : State) (mem : ByteArray) (rest : List UInt256)
-    (hcap : rest.length ≤ 1018) (hact : 296 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 1018) (hact : 91 ≤ s.activeWords.toNat) :
     runInstructions initProgram (stateAt s mem 5049 rest) =
       some (stateAt s (initMemory mem) 5190 rest) := by
   have p := run_prefix s mem rest hcap

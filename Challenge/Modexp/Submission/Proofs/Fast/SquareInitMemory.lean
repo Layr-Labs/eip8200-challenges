@@ -11,7 +11,7 @@ open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Fast
 open SquareWords Monpro
 
-def digitAddr (j : Nat) : Nat := 8960+32*(7-j)
+def digitAddr (j : Nat) : Nat := 2400+32*(7-j)
 
 theorem read_storeWord_outside (mem : ByteArray) (dst addr : Nat) (x : UInt256)
     (hd : addr+32 ≤ dst ∨ dst+32 ≤ addr) :
@@ -67,7 +67,7 @@ theorem read_doubleWords_val (mem : ByteArray) (k : Nat) (hk : k < 8) :
       · right; simp only [digitAddr]; omega
 
 theorem read_doubleWords_outside (mem : ByteArray) (addr : Nat)
-    (hd : addr+32 ≤ 8960 ∨ 9216 ≤ addr) :
+    (hd : addr+32 ≤ 2400 ∨ 2656 ≤ addr) :
     ∀ j, j ≤ 8 →
       MachineState.readWord (doubleWords mem j).memory addr = MachineState.readWord mem addr := by
   intro j
@@ -124,15 +124,15 @@ theorem read_init_low (mem : ByteArray) (j : Nat) (hj : j < 8) :
   · simp only [digitAddr]; left; omega
 
 theorem read_init_high (mem : ByteArray) :
-    MachineState.readWord (initMemory mem) 8928 = (doubleWords mem 8).carry := by
+    MachineState.readWord (initMemory mem) 2368 = (doubleWords mem 8).carry := by
   rw [initMemory, read_storeWord_outside _ _ _ _ (Or.inl (by decide)), read_storeWord]
 
 theorem read_init_route (mem : ByteArray) :
-    MachineState.readWord (initMemory mem) 9280 = UInt256.ofNat 5190 := by
+    MachineState.readWord (initMemory mem) 2720 = UInt256.ofNat 5190 := by
   exact read_storeWord _ _ _
 
 theorem read_init_outside (mem : ByteArray) (addr : Nat)
-    (hd : addr+32 ≤ 8928 ∨ 9312 ≤ addr) :
+    (hd : addr+32 ≤ 2368 ∨ 2752 ≤ addr) :
     MachineState.readWord (initMemory mem) addr = MachineState.readWord mem addr := by
   rw [initMemory, read_storeWord_outside _ _ _ _ (by omega),
     read_storeWord_outside _ _ _ _ (by omega)]
@@ -142,20 +142,20 @@ attribute [local irreducible] doubleWords initMemory
 
 /-- The concrete in-place doubling pass prepares a nine-limb value equal to `2*a`. -/
 theorem init_represents (mem : ByteArray) (a : Nat)
-    (ha : Model.FastRepresents mem 8960 8 a) :
-    Model.FastRepresents (initMemory mem) 8928 9 (2*a) := by
+    (ha : Model.FastRepresents mem 2400 8 a) :
+    Model.FastRepresents (initMemory mem) 2368 9 (2*a) := by
   have hv := doubleWords_invariant mem 8 le_rfl
   have hsrc : limbSum (fun k => (MachineState.readWord mem (digitAddr k)).toNat) 8 = a :=
-    limbSum_fastRepresents (mem := mem) (ptr := 8960) (count := 8) (value := a) ha
+    limbSum_fastRepresents (mem := mem) (ptr := 2400) (count := 8) (value := a) ha
   rw [hsrc] at hv
-  have hval : Csub.lowValue (initMemory mem) 8928 9 9 = 2*a := by
+  have hval : Csub.lowValue (initMemory mem) 2368 9 9 = 2*a := by
     rw [← limbSum_eq_lowValue, limbSum_succ]
     have hlo : limbSum (fun k =>
-          (MachineState.readWord (initMemory mem) (8928+32*(9-1-k))).toNat) 8 =
+          (MachineState.readWord (initMemory mem) (2368+32*(9-1-k))).toNat) 8 =
         limbSum (fun k => (doubleDigit mem k).toNat) 8 := by
       apply limbSum_congr
       intro k hk
-      have hp : 8928+32*(9-1-k) = digitAddr k := by simp only [digitAddr]; omega
+      have hp : 2368+32*(9-1-k) = digitAddr k := by simp only [digitAddr]; omega
       rw [hp, read_init_low mem k hk]
     rw [hlo]
     norm_num only [Nat.reduceSub, Nat.reduceMul, Nat.reduceAdd]

@@ -18,13 +18,13 @@ set_option linter.unusedSimpArgs false in
 theorem run_out (s : State) (mem : ByteArray) (pa pb n i : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005) (hrun : s.halt = .Running)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (_hn : 2 ≤ n) (_hn32 : n ≤ 32) (hi : i < n)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472) :
+    (hact : 91 ≤ s.activeWords.toNat)
+    (_hn : 2 ≤ n) (_hn32 : n ≤ 8) (hi : i < n)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 2912)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2912) :
     runInstructions outProgram
       (outState s mem pa pb n i pdst ret rest) =
-      some (firstAt 4167 s mem (rowBi mem pb n i) pa pb n i pdst ret rest) := by
+      some (firstAt 4176 s mem (rowBi mem pb n i) pa pb n i pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
   have hExtra11 : rest.length + 11 < 1024 := by omega

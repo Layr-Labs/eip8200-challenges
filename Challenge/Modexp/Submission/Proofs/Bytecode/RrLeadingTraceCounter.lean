@@ -10,7 +10,7 @@ open EvmSemantics.EVM
 open YulEvmCompiler
 
 theorem run_counter (template : State) (mem : ByteArray)
-    (n bsize esize msize : Nat) (_hn2 : 2 ≤ n) (hn32 : n ≤ 32) :
+    (n bsize esize msize : Nat) (_hn2 : 2 ≤ n) (hn32 : n ≤ 8) :
     runInstructions counterProgram (copiedState template mem n bsize esize msize) =
       some (counterState template mem n bsize esize msize) := by
   have hpc :

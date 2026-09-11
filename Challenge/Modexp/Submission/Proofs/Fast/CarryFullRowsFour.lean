@@ -23,12 +23,12 @@ opaque gasSteps_rowsFour (s : State) (mem : ByteArray) (pa pb : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 8192)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 4 ≤ 9472)
-    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * 4))
-    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * 4))
-    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * 4 - 32))
+    (hact : 91 ≤ s.activeWords.toNat)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 2048)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 4 ≤ 2912)
+    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32 * 4))
+    (htl : MachineState.readWord mem 2880 = UInt256.ofNat (2080 + 32 * 4))
+    (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32 * 4 - 32))
     (hminv : inverseInvariant mem 4)
     (hc : CiosReadonly.ReadonlyCache mem 4 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
@@ -40,15 +40,15 @@ opaque gasSteps_rowsFour (s : State) (mem : ByteArray) (pa pb : Nat)
       (mpCsubState s (rowsCarry (mpZeroed s mem 4) pa pb 4 4) pdst ret rest) := by
   have hctrlz := hcontrol.zeroed s 4 (by decide)
   have hsz := hsnapshot.zeroed s (by decide) hpaFit
-  have hs32z : MachineState.readWord (mpZeroed s mem 4) 9344 =
+  have hs32z : MachineState.readWord (mpZeroed s mem 4) 2784 =
       UInt256.ofNat (32 * 4) :=
-    (readWord_mpZeroed s mem 4 9344 (by decide) (by omega)).trans hs32
-  have htlz : MachineState.readWord (mpZeroed s mem 4) 9440 =
-      UInt256.ofNat (8224 + 32 * 4) :=
-    (readWord_mpZeroed s mem 4 9440 (by decide) (by omega)).trans htl
-  have hmlz : MachineState.readWord (mpZeroed s mem 4) 9408 =
+    (readWord_mpZeroed s mem 4 2784 (by decide) (by omega)).trans hs32
+  have htlz : MachineState.readWord (mpZeroed s mem 4) 2880 =
+      UInt256.ofNat (2080 + 32 * 4) :=
+    (readWord_mpZeroed s mem 4 2880 (by decide) (by omega)).trans htl
+  have hmlz : MachineState.readWord (mpZeroed s mem 4) 2848 =
       UInt256.ofNat (32 * 4 - 32) :=
-    (readWord_mpZeroed s mem 4 9408 (by decide) (by omega)).trans hml
+    (readWord_mpZeroed s mem 4 2848 (by decide) (by omega)).trans hml
   have hminvz := inverse_mpZeroed s mem 4 (by decide) hminv
   have hcz := hc.zeroed (by decide) s
   have hez := he.zeroed s 4 (by decide)
@@ -59,11 +59,11 @@ opaque gasSteps_rowsFour (s : State) (mem : ByteArray) (pa pb : Nat)
     exact gasSteps_rowFourNext s (rowsCarry (mpZeroed s mem 4) pa pb 4 i) pa pb i
       tl inv m0 aEnd m96 m64 m32 pdst ret rest (by omega) hrun hcode hfork hnp hact (by omega) hpa hpaFit hpb
       hpbFit
-      ((readWord_rowsCarry (mpZeroed s mem 4) pa pb 4 9344 (by decide) (by omega)
+      ((readWord_rowsCarry (mpZeroed s mem 4) pa pb 4 2784 (by decide) (by omega)
         i).trans hs32z)
-      ((readWord_rowsCarry (mpZeroed s mem 4) pa pb 4 9440 (by decide) (by omega)
+      ((readWord_rowsCarry (mpZeroed s mem 4) pa pb 4 2880 (by decide) (by omega)
         i).trans htlz)
-      ((readWord_rowsCarry (mpZeroed s mem 4) pa pb 4 9408 (by decide) (by omega)
+      ((readWord_rowsCarry (mpZeroed s mem 4) pa pb 4 2848 (by decide) (by omega)
         i).trans hmlz)
       (inverse_rowsCarry (mpZeroed s mem 4) pa pb 4 i (by decide) hminvz)
       (readonlyCache_rowsCarry hcz (by decide) pa pb i)
@@ -72,11 +72,11 @@ opaque gasSteps_rowsFour (s : State) (mem : ByteArray) (pa pb : Nat)
       gasSteps_rowFourLast s (rowsCarry (mpZeroed s mem 4) pa pb 4 3) pa pb 3
         tl inv m0 aEnd m96 m64 m32 pdst ret rest (by omega) hrun hcode hfork hnp hact (by decide) hpa hpaFit hpb
         hpbFit
-        ((readWord_rowsCarry (mpZeroed s mem 4) pa pb 4 9344 (by decide) (by omega)
+        ((readWord_rowsCarry (mpZeroed s mem 4) pa pb 4 2784 (by decide) (by omega)
           3).trans hs32z)
-        ((readWord_rowsCarry (mpZeroed s mem 4) pa pb 4 9440 (by decide) (by omega)
+        ((readWord_rowsCarry (mpZeroed s mem 4) pa pb 4 2880 (by decide) (by omega)
           3).trans htlz)
-        ((readWord_rowsCarry (mpZeroed s mem 4) pa pb 4 9408 (by decide) (by omega)
+        ((readWord_rowsCarry (mpZeroed s mem 4) pa pb 4 2848 (by decide) (by omega)
           3).trans hmlz)
         (inverse_rowsCarry (mpZeroed s mem 4) pa pb 4 3 (by decide) hminvz)
         (readonlyCache_rowsCarry hcz (by decide) pa pb 3)

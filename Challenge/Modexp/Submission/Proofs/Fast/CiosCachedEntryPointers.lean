@@ -13,10 +13,10 @@ open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
 theorem run_pointers (s : State) (mem : ByteArray) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1005)
-    (_hpa : 32 ≤ pa) (_hpaFit : pa+32*n ≤ 9472)
-    (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 9472) :
+    (_hpa : 32 ≤ pa) (_hpaFit : pa+32*n ≤ 2912)
+    (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 2912) :
     runInstructions pointersProgram (clearedState s mem pa pb n dst ret rest) =
-      some {outState s (mpZeroed s mem n) pa pb n 0 dst ret rest with pc := UInt256.ofNat 4159} := by
+      some {outState s (mpZeroed s mem n) pa pb n 0 dst ret rest with pc := UInt256.ofNat 4168} := by
   have hsub1 : UInt256.ofNat (pb+32*n) - UInt256.ofNat 32 = UInt256.ofNat (pb+32*n-32) :=
     Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)
   have hsub2 : UInt256.ofNat pb - UInt256.ofNat 32 = UInt256.ofNat (pb-32) :=

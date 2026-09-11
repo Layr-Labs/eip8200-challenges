@@ -13,18 +13,18 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached
 
 def zeroProgram : List Instr :=
-  [.push 2 9344, .op .MLOAD,
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 8960, .op .MCOPY,
+  [.push 2 2784, .op .MLOAD,
+   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 2400, .op .MCOPY,
    .op (.Dup ⟨0, by decide⟩), .push 1 64, .op .ADD, .op .CALLDATASIZE,
-   .push 2 8192, .op .CALLDATACOPY]
+   .push 2 2048, .op .CALLDATACOPY]
 
 theorem run_zero (s : State) (mem : ByteArray) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1005)
-    (hact : 296 ≤ s.activeWords.toNat) (hnpos : 0 < n) (hn : n ≤ 8) (hpa : pa+32*n ≤ 9472)
+    (hact : 91 ≤ s.activeWords.toNat) (hnpos : 0 < n) (hn : n ≤ 8) (hpa : pa+32*n ≤ 2912)
     (hcds : s.executionEnv.calldata.size < 115792089237316195423570985008687907853269984665640564039457584007913129639936)
-    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32*n)) :
+    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32*n)) :
     runInstructions zeroProgram
-      {cachedEntryState s mem pa pb n dst ret rest with pc := UInt256.ofNat 4129} =
+      {cachedEntryState s mem pa pb n dst ret rest with pc := UInt256.ofNat 4138} =
       some (clearedState s (stage mem pa n) pa pb n dst ret rest) := by
   have hc8 : rest.length+8 < 1024 := by omega
   have hc9 : rest.length+9 < 1024 := by omega
@@ -38,15 +38,15 @@ theorem run_zero (s : State) (mem : ByteArray) (pa pb n : Nat)
   have hsizeN : (64+32*n) % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = 64+32*n := Nat.mod_eq_of_lt (by omega)
   have hcdsN : s.executionEnv.calldata.size % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = s.executionEnv.calldata.size :=
     Nat.mod_eq_of_lt hcds
-  have hactS := activeWords_fix s 9344 32 (by decide) (by omega) hact
-  have hactC := activeWords_fix s 8192 (64+32*n) (by omega) (by omega) hact
-  have hactD := activeWordsAfter_fix s.activeWords.toNat 8960 (32*n) (by omega) (by omega) hact
+  have hactS := activeWords_fix s 2784 32 (by decide) (by omega) hact
+  have hactC := activeWords_fix s 2048 (64+32*n) (by omega) (by omega) hact
+  have hactD := activeWordsAfter_fix s.activeWords.toNat 2400 (32*n) (by omega) (by omega) hact
   have hactA := activeWordsAfter_fix s.activeWords.toNat pa (32*n) (by omega) (by omega) hact
   have hactN : s.activeWords.toNat % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = s.activeWords.toNat :=
     Nat.mod_eq_of_lt s.activeWords.val.isLt
-  have h9344 : (9344 : UInt256).toNat = 9344 := by decide
-  have h8960 : (8960 : UInt256).toNat = 8960 := by decide
-  have h8192 : (8192 : UInt256).toNat = 8192 := by decide
+  have h9344 : (2784 : UInt256).toNat = 2784 := by decide
+  have h8960 : (2400 : UInt256).toNat = 2400 := by decide
+  have h8192 : (2048 : UInt256).toNat = 2048 := by decide
   have h64 : (64 : UInt256) = UInt256.ofNat 64 := by decide
   simp (config := { maxSteps := 200000 }) [zeroProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     cachedEntryState, clearedState, stage, mpZeroed, hs32,
