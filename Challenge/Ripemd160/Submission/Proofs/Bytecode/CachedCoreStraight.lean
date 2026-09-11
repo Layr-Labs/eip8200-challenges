@@ -22,16 +22,16 @@ def group0Template : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 128),
     .op .SHL ]
 theorem group0_slice :
-    (Artifact.submissionArtifact.instructions.drop 471).take group0Template.length = group0Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 470).take group0Template.length = group0Template := by rfl
 def group0Site : GenericRoundSite Artifact.submissionArtifact .Osaka group0Template :=
-  StackSiteBuilder.ofSlice group0Template 471 group0_slice
-    (by change 471 + group0Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice group0Template 470 group0_slice
+    (by change 470 + group0Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := group0Template) (by decide))
     (by decide)
 theorem group0_pc : group0Site.startPC = UInt256.ofNat 722 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 471) = UInt256.ofNat 722
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 470) = UInt256.ofNat 722
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem group0_advances : ∀ instruction ∈ group0Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -95,16 +95,16 @@ def inline0Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline0_slice :
-    (Artifact.submissionArtifact.instructions.drop 474).take inline0Template.length = inline0Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 473).take inline0Template.length = inline0Template := by rfl
 def inline0Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline0Template :=
-  StackSiteBuilder.ofSlice inline0Template 474 inline0_slice
-    (by change 474 + inline0Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline0Template 473 inline0_slice
+    (by change 473 + inline0Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline0Template) (by decide))
     (by decide)
 theorem inline0_pc : inline0Site.startPC = UInt256.ofNat 730 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 474) = UInt256.ofNat 730
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 473) = UInt256.ofNat 730
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline0_advances : ∀ instruction ∈ inline0Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -168,16 +168,16 @@ def inline1Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline1_slice :
-    (Artifact.submissionArtifact.instructions.drop 518).take inline1Template.length = inline1Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 517).take inline1Template.length = inline1Template := by rfl
 def inline1Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline1Template :=
-  StackSiteBuilder.ofSlice inline1Template 518 inline1_slice
-    (by change 518 + inline1Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline1Template 517 inline1_slice
+    (by change 517 + inline1Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline1Template) (by decide))
     (by decide)
 theorem inline1_pc : inline1Site.startPC = UInt256.ofNat 780 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 518) = UInt256.ofNat 780
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 517) = UInt256.ofNat 780
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline1_advances : ∀ instruction ∈ inline1Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -241,16 +241,16 @@ def inline8Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline8_slice :
-    (Artifact.submissionArtifact.instructions.drop 818).take inline8Template.length = inline8Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 817).take inline8Template.length = inline8Template := by rfl
 def inline8Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline8Template :=
-  StackSiteBuilder.ofSlice inline8Template 818 inline8_slice
-    (by change 818 + inline8Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline8Template 817 inline8_slice
+    (by change 817 + inline8Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline8Template) (by decide))
     (by decide)
 theorem inline8_pc : inline8Site.startPC = UInt256.ofNat 1114 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 818) = UInt256.ofNat 1114
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 817) = UInt256.ofNat 1114
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline8_advances : ∀ instruction ∈ inline8Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -314,16 +314,16 @@ def inline9Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline9_slice :
-    (Artifact.submissionArtifact.instructions.drop 862).take inline9Template.length = inline9Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 861).take inline9Template.length = inline9Template := by rfl
 def inline9Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline9Template :=
-  StackSiteBuilder.ofSlice inline9Template 862 inline9_slice
-    (by change 862 + inline9Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline9Template 861 inline9_slice
+    (by change 861 + inline9Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline9Template) (by decide))
     (by decide)
 theorem inline9_pc : inline9Site.startPC = UInt256.ofNat 1165 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 862) = UInt256.ofNat 1165
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 861) = UInt256.ofNat 1165
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline9_advances : ∀ instruction ∈ inline9Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -387,16 +387,16 @@ def inline10Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline10_slice :
-    (Artifact.submissionArtifact.instructions.drop 906).take inline10Template.length = inline10Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 905).take inline10Template.length = inline10Template := by rfl
 def inline10Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline10Template :=
-  StackSiteBuilder.ofSlice inline10Template 906 inline10_slice
-    (by change 906 + inline10Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline10Template 905 inline10_slice
+    (by change 905 + inline10Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline10Template) (by decide))
     (by decide)
 theorem inline10_pc : inline10Site.startPC = UInt256.ofNat 1216 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 906) = UInt256.ofNat 1216
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 905) = UInt256.ofNat 1216
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline10_advances : ∀ instruction ∈ inline10Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -460,16 +460,16 @@ def inline11Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline11_slice :
-    (Artifact.submissionArtifact.instructions.drop 950).take inline11Template.length = inline11Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 949).take inline11Template.length = inline11Template := by rfl
 def inline11Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline11Template :=
-  StackSiteBuilder.ofSlice inline11Template 950 inline11_slice
-    (by change 950 + inline11Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline11Template 949 inline11_slice
+    (by change 949 + inline11Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline11Template) (by decide))
     (by decide)
 theorem inline11_pc : inline11Site.startPC = UInt256.ofNat 1267 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 950) = UInt256.ofNat 1267
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 949) = UInt256.ofNat 1267
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline11_advances : ∀ instruction ∈ inline11Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -533,16 +533,16 @@ def inline12Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline12_slice :
-    (Artifact.submissionArtifact.instructions.drop 994).take inline12Template.length = inline12Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 993).take inline12Template.length = inline12Template := by rfl
 def inline12Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline12Template :=
-  StackSiteBuilder.ofSlice inline12Template 994 inline12_slice
-    (by change 994 + inline12Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline12Template 993 inline12_slice
+    (by change 993 + inline12Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline12Template) (by decide))
     (by decide)
 theorem inline12_pc : inline12Site.startPC = UInt256.ofNat 1318 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 994) = UInt256.ofNat 1318
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 993) = UInt256.ofNat 1318
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline12_advances : ∀ instruction ∈ inline12Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -606,16 +606,16 @@ def inline13Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline13_slice :
-    (Artifact.submissionArtifact.instructions.drop 1038).take inline13Template.length = inline13Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 1037).take inline13Template.length = inline13Template := by rfl
 def inline13Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline13Template :=
-  StackSiteBuilder.ofSlice inline13Template 1038 inline13_slice
-    (by change 1038 + inline13Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline13Template 1037 inline13_slice
+    (by change 1037 + inline13Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline13Template) (by decide))
     (by decide)
 theorem inline13_pc : inline13Site.startPC = UInt256.ofNat 1368 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1038) = UInt256.ofNat 1368
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1037) = UInt256.ofNat 1368
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline13_advances : ∀ instruction ∈ inline13Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -679,16 +679,16 @@ def inline14Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline14_slice :
-    (Artifact.submissionArtifact.instructions.drop 1082).take inline14Template.length = inline14Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 1081).take inline14Template.length = inline14Template := by rfl
 def inline14Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline14Template :=
-  StackSiteBuilder.ofSlice inline14Template 1082 inline14_slice
-    (by change 1082 + inline14Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline14Template 1081 inline14_slice
+    (by change 1081 + inline14Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline14Template) (by decide))
     (by decide)
 theorem inline14_pc : inline14Site.startPC = UInt256.ofNat 1419 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1082) = UInt256.ofNat 1419
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1081) = UInt256.ofNat 1419
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline14_advances : ∀ instruction ∈ inline14Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -752,16 +752,16 @@ def inline15Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline15_slice :
-    (Artifact.submissionArtifact.instructions.drop 1126).take inline15Template.length = inline15Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 1125).take inline15Template.length = inline15Template := by rfl
 def inline15Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline15Template :=
-  StackSiteBuilder.ofSlice inline15Template 1126 inline15_slice
-    (by change 1126 + inline15Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline15Template 1125 inline15_slice
+    (by change 1125 + inline15Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline15Template) (by decide))
     (by decide)
 theorem inline15_pc : inline15Site.startPC = UInt256.ofNat 1470 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1126) = UInt256.ofNat 1470
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1125) = UInt256.ofNat 1470
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline15_advances : ∀ instruction ∈ inline15Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -783,16 +783,16 @@ def group16Template : List Instr :=
     .op .POP,
     .push ⟨20, by decide⟩ (UInt256.ofNat 526962527014005041256681316140890030896371104153) ]
 theorem group16_slice :
-    (Artifact.submissionArtifact.instructions.drop 1170).take group16Template.length = group16Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 1169).take group16Template.length = group16Template := by rfl
 def group16Site : GenericRoundSite Artifact.submissionArtifact .Osaka group16Template :=
-  StackSiteBuilder.ofSlice group16Template 1170 group16_slice
-    (by change 1170 + group16Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice group16Template 1169 group16_slice
+    (by change 1169 + group16Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := group16Template) (by decide))
     (by decide)
 theorem group16_pc : group16Site.startPC = UInt256.ofNat 1521 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1170) = UInt256.ofNat 1521
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1169) = UInt256.ofNat 1521
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem group16_advances : ∀ instruction ∈ group16Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -858,16 +858,16 @@ def inline18Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline18_slice :
-    (Artifact.submissionArtifact.instructions.drop 1263).take inline18Template.length = inline18Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 1262).take inline18Template.length = inline18Template := by rfl
 def inline18Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline18Template :=
-  StackSiteBuilder.ofSlice inline18Template 1263 inline18_slice
-    (by change 1263 + inline18Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline18Template 1262 inline18_slice
+    (by change 1262 + inline18Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline18Template) (by decide))
     (by decide)
 theorem inline18_pc : inline18Site.startPC = UInt256.ofNat 1644 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1263) = UInt256.ofNat 1644
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1262) = UInt256.ofNat 1644
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline18_advances : ∀ instruction ∈ inline18Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -933,16 +933,16 @@ def inline19Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline19_slice :
-    (Artifact.submissionArtifact.instructions.drop 1309).take inline19Template.length = inline19Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 1308).take inline19Template.length = inline19Template := by rfl
 def inline19Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline19Template :=
-  StackSiteBuilder.ofSlice inline19Template 1309 inline19_slice
-    (by change 1309 + inline19Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline19Template 1308 inline19_slice
+    (by change 1308 + inline19Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline19Template) (by decide))
     (by decide)
 theorem inline19_pc : inline19Site.startPC = UInt256.ofNat 1697 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1309) = UInt256.ofNat 1697
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1308) = UInt256.ofNat 1697
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline19_advances : ∀ instruction ∈ inline19Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -1006,16 +1006,16 @@ def inline20Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline20_slice :
-    (Artifact.submissionArtifact.instructions.drop 1355).take inline20Template.length = inline20Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 1354).take inline20Template.length = inline20Template := by rfl
 def inline20Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline20Template :=
-  StackSiteBuilder.ofSlice inline20Template 1355 inline20_slice
-    (by change 1355 + inline20Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline20Template 1354 inline20_slice
+    (by change 1354 + inline20Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline20Template) (by decide))
     (by decide)
 theorem inline20_pc : inline20Site.startPC = UInt256.ofNat 1749 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1355) = UInt256.ofNat 1749
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1354) = UInt256.ofNat 1749
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline20_advances : ∀ instruction ∈ inline20Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -1081,16 +1081,16 @@ def inline22Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline22_slice :
-    (Artifact.submissionArtifact.instructions.drop 1442).take inline22Template.length = inline22Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 1441).take inline22Template.length = inline22Template := by rfl
 def inline22Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline22Template :=
-  StackSiteBuilder.ofSlice inline22Template 1442 inline22_slice
-    (by change 1442 + inline22Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline22Template 1441 inline22_slice
+    (by change 1441 + inline22Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline22Template) (by decide))
     (by decide)
 theorem inline22_pc : inline22Site.startPC = UInt256.ofNat 1845 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1442) = UInt256.ofNat 1845
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1441) = UInt256.ofNat 1845
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline22_advances : ∀ instruction ∈ inline22Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -1150,16 +1150,16 @@ def inline24Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline24_slice :
-    (Artifact.submissionArtifact.instructions.drop 1533).take inline24Template.length = inline24Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 1532).take inline24Template.length = inline24Template := by rfl
 def inline24Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline24Template :=
-  StackSiteBuilder.ofSlice inline24Template 1533 inline24_slice
-    (by change 1533 + inline24Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline24Template 1532 inline24_slice
+    (by change 1532 + inline24Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline24Template) (by decide))
     (by decide)
 theorem inline24_pc : inline24Site.startPC = UInt256.ofNat 1948 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1533) = UInt256.ofNat 1948
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1532) = UInt256.ofNat 1948
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline24_advances : ∀ instruction ∈ inline24Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -1225,16 +1225,16 @@ def inline25Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline25_slice :
-    (Artifact.submissionArtifact.instructions.drop 1573).take inline25Template.length = inline25Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 1572).take inline25Template.length = inline25Template := by rfl
 def inline25Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline25Template :=
-  StackSiteBuilder.ofSlice inline25Template 1573 inline25_slice
-    (by change 1573 + inline25Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline25Template 1572 inline25_slice
+    (by change 1572 + inline25Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline25Template) (by decide))
     (by decide)
 theorem inline25_pc : inline25Site.startPC = UInt256.ofNat 1994 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1573) = UInt256.ofNat 1994
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1572) = UInt256.ofNat 1994
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline25_advances : ∀ instruction ∈ inline25Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -1300,16 +1300,16 @@ def inline26Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline26_slice :
-    (Artifact.submissionArtifact.instructions.drop 1619).take inline26Template.length = inline26Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 1618).take inline26Template.length = inline26Template := by rfl
 def inline26Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline26Template :=
-  StackSiteBuilder.ofSlice inline26Template 1619 inline26_slice
-    (by change 1619 + inline26Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline26Template 1618 inline26_slice
+    (by change 1618 + inline26Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline26Template) (by decide))
     (by decide)
 theorem inline26_pc : inline26Site.startPC = UInt256.ofNat 2046 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1619) = UInt256.ofNat 2046
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1618) = UInt256.ofNat 2046
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline26_advances : ∀ instruction ∈ inline26Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -1375,16 +1375,16 @@ def inline29Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline29_slice :
-    (Artifact.submissionArtifact.instructions.drop 1755).take inline29Template.length = inline29Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 1754).take inline29Template.length = inline29Template := by rfl
 def inline29Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline29Template :=
-  StackSiteBuilder.ofSlice inline29Template 1755 inline29_slice
-    (by change 1755 + inline29Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline29Template 1754 inline29_slice
+    (by change 1754 + inline29Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline29Template) (by decide))
     (by decide)
 theorem inline29_pc : inline29Site.startPC = UInt256.ofNat 2199 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1755) = UInt256.ofNat 2199
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1754) = UInt256.ofNat 2199
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline29_advances : ∀ instruction ∈ inline29Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -1444,16 +1444,16 @@ def inline30Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline30_slice :
-    (Artifact.submissionArtifact.instructions.drop 1801).take inline30Template.length = inline30Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 1800).take inline30Template.length = inline30Template := by rfl
 def inline30Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline30Template :=
-  StackSiteBuilder.ofSlice inline30Template 1801 inline30_slice
-    (by change 1801 + inline30Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline30Template 1800 inline30_slice
+    (by change 1800 + inline30Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline30Template) (by decide))
     (by decide)
 theorem inline30_pc : inline30Site.startPC = UInt256.ofNat 2252 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1801) = UInt256.ofNat 2252
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1800) = UInt256.ofNat 2252
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline30_advances : ∀ instruction ∈ inline30Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -1517,16 +1517,16 @@ def inline31Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline31_slice :
-    (Artifact.submissionArtifact.instructions.drop 1841).take inline31Template.length = inline31Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 1840).take inline31Template.length = inline31Template := by rfl
 def inline31Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline31Template :=
-  StackSiteBuilder.ofSlice inline31Template 1841 inline31_slice
-    (by change 1841 + inline31Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline31Template 1840 inline31_slice
+    (by change 1840 + inline31Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline31Template) (by decide))
     (by decide)
 theorem inline31_pc : inline31Site.startPC = UInt256.ofNat 2297 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1841) = UInt256.ofNat 2297
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1840) = UInt256.ofNat 2297
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline31_advances : ∀ instruction ∈ inline31Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -1548,16 +1548,16 @@ def group32Template : List Instr :=
     .op .POP,
     .push ⟨21, by decide⟩ (UInt256.ofNat 2086284798122997420139349764661223671126594022305) ]
 theorem group32_slice :
-    (Artifact.submissionArtifact.instructions.drop 1885).take group32Template.length = group32Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 1884).take group32Template.length = group32Template := by rfl
 def group32Site : GenericRoundSite Artifact.submissionArtifact .Osaka group32Template :=
-  StackSiteBuilder.ofSlice group32Template 1885 group32_slice
-    (by change 1885 + group32Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice group32Template 1884 group32_slice
+    (by change 1884 + group32Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := group32Template) (by decide))
     (by decide)
 theorem group32_pc : group32Site.startPC = UInt256.ofNat 2347 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1885) = UInt256.ofNat 2347
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1884) = UInt256.ofNat 2347
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem group32_advances : ∀ instruction ∈ group32Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -1616,16 +1616,16 @@ def inline33Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline33_slice :
-    (Artifact.submissionArtifact.instructions.drop 1926).take inline33Template.length = inline33Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 1925).take inline33Template.length = inline33Template := by rfl
 def inline33Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline33Template :=
-  StackSiteBuilder.ofSlice inline33Template 1926 inline33_slice
-    (by change 1926 + inline33Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline33Template 1925 inline33_slice
+    (by change 1925 + inline33Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline33Template) (by decide))
     (by decide)
 theorem inline33_pc : inline33Site.startPC = UInt256.ofNat 2414 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1926) = UInt256.ofNat 2414
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1925) = UInt256.ofNat 2414
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline33_advances : ∀ instruction ∈ inline33Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -1684,16 +1684,16 @@ def inline34Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline34_slice :
-    (Artifact.submissionArtifact.instructions.drop 1965).take inline34Template.length = inline34Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 1964).take inline34Template.length = inline34Template := by rfl
 def inline34Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline34Template :=
-  StackSiteBuilder.ofSlice inline34Template 1965 inline34_slice
-    (by change 1965 + inline34Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline34Template 1964 inline34_slice
+    (by change 1964 + inline34Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline34Template) (by decide))
     (by decide)
 theorem inline34_pc : inline34Site.startPC = UInt256.ofNat 2460 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1965) = UInt256.ofNat 2460
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1964) = UInt256.ofNat 2460
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline34_advances : ∀ instruction ∈ inline34Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -1752,16 +1752,16 @@ def inline36Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline36_slice :
-    (Artifact.submissionArtifact.instructions.drop 2042).take inline36Template.length = inline36Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2041).take inline36Template.length = inline36Template := by rfl
 def inline36Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline36Template :=
-  StackSiteBuilder.ofSlice inline36Template 2042 inline36_slice
-    (by change 2042 + inline36Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline36Template 2041 inline36_slice
+    (by change 2041 + inline36Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline36Template) (by decide))
     (by decide)
 theorem inline36_pc : inline36Site.startPC = UInt256.ofNat 2549 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2042) = UInt256.ofNat 2549
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2041) = UInt256.ofNat 2549
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline36_advances : ∀ instruction ∈ inline36Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -1820,16 +1820,16 @@ def inline37Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline37_slice :
-    (Artifact.submissionArtifact.instructions.drop 2081).take inline37Template.length = inline37Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2080).take inline37Template.length = inline37Template := by rfl
 def inline37Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline37Template :=
-  StackSiteBuilder.ofSlice inline37Template 2081 inline37_slice
-    (by change 2081 + inline37Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline37Template 2080 inline37_slice
+    (by change 2080 + inline37Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline37Template) (by decide))
     (by decide)
 theorem inline37_pc : inline37Site.startPC = UInt256.ofNat 2595 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2081) = UInt256.ofNat 2595
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2080) = UInt256.ofNat 2595
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline37_advances : ∀ instruction ∈ inline37Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -1888,16 +1888,16 @@ def inline38Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline38_slice :
-    (Artifact.submissionArtifact.instructions.drop 2120).take inline38Template.length = inline38Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2119).take inline38Template.length = inline38Template := by rfl
 def inline38Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline38Template :=
-  StackSiteBuilder.ofSlice inline38Template 2120 inline38_slice
-    (by change 2120 + inline38Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline38Template 2119 inline38_slice
+    (by change 2119 + inline38Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline38Template) (by decide))
     (by decide)
 theorem inline38_pc : inline38Site.startPC = UInt256.ofNat 2641 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2120) = UInt256.ofNat 2641
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2119) = UInt256.ofNat 2641
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline38_advances : ∀ instruction ∈ inline38Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -1954,16 +1954,16 @@ def inline39Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline39_slice :
-    (Artifact.submissionArtifact.instructions.drop 2159).take inline39Template.length = inline39Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2158).take inline39Template.length = inline39Template := by rfl
 def inline39Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline39Template :=
-  StackSiteBuilder.ofSlice inline39Template 2159 inline39_slice
-    (by change 2159 + inline39Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline39Template 2158 inline39_slice
+    (by change 2158 + inline39Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline39Template) (by decide))
     (by decide)
 theorem inline39_pc : inline39Site.startPC = UInt256.ofNat 2687 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2159) = UInt256.ofNat 2687
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2158) = UInt256.ofNat 2687
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline39_advances : ∀ instruction ∈ inline39Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -2022,16 +2022,16 @@ def inline42Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline42_slice :
-    (Artifact.submissionArtifact.instructions.drop 2272).take inline42Template.length = inline42Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2271).take inline42Template.length = inline42Template := by rfl
 def inline42Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline42Template :=
-  StackSiteBuilder.ofSlice inline42Template 2272 inline42_slice
-    (by change 2272 + inline42Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline42Template 2271 inline42_slice
+    (by change 2271 + inline42Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline42Template) (by decide))
     (by decide)
 theorem inline42_pc : inline42Site.startPC = UInt256.ofNat 2815 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2272) = UInt256.ofNat 2815
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2271) = UInt256.ofNat 2815
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline42_advances : ∀ instruction ∈ inline42Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -2090,16 +2090,16 @@ def inline44Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline44_slice :
-    (Artifact.submissionArtifact.instructions.drop 2349).take inline44Template.length = inline44Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2348).take inline44Template.length = inline44Template := by rfl
 def inline44Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline44Template :=
-  StackSiteBuilder.ofSlice inline44Template 2349 inline44_slice
-    (by change 2349 + inline44Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline44Template 2348 inline44_slice
+    (by change 2348 + inline44Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline44Template) (by decide))
     (by decide)
 theorem inline44_pc : inline44Site.startPC = UInt256.ofNat 2903 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2349) = UInt256.ofNat 2903
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2348) = UInt256.ofNat 2903
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline44_advances : ∀ instruction ∈ inline44Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -2156,16 +2156,16 @@ def inline45Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline45_slice :
-    (Artifact.submissionArtifact.instructions.drop 2388).take inline45Template.length = inline45Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2387).take inline45Template.length = inline45Template := by rfl
 def inline45Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline45Template :=
-  StackSiteBuilder.ofSlice inline45Template 2388 inline45_slice
-    (by change 2388 + inline45Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline45Template 2387 inline45_slice
+    (by change 2387 + inline45Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline45Template) (by decide))
     (by decide)
 theorem inline45_pc : inline45Site.startPC = UInt256.ofNat 2949 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2388) = UInt256.ofNat 2949
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2387) = UInt256.ofNat 2949
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline45_advances : ∀ instruction ∈ inline45Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -2218,16 +2218,16 @@ def inline47Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline47_slice :
-    (Artifact.submissionArtifact.instructions.drop 2457).take inline47Template.length = inline47Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2456).take inline47Template.length = inline47Template := by rfl
 def inline47Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline47Template :=
-  StackSiteBuilder.ofSlice inline47Template 2457 inline47_slice
-    (by change 2457 + inline47Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline47Template 2456 inline47_slice
+    (by change 2456 + inline47Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline47Template) (by decide))
     (by decide)
 theorem inline47_pc : inline47Site.startPC = UInt256.ofNat 3027 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2457) = UInt256.ofNat 3027
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2456) = UInt256.ofNat 3027
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline47_advances : ∀ instruction ∈ inline47Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -2249,16 +2249,16 @@ def group48Template : List Instr :=
     .op .POP,
     .push ⟨20, by decide⟩ (UInt256.ofNat 698938013802679700166637234969497128417458109660) ]
 theorem group48_slice :
-    (Artifact.submissionArtifact.instructions.drop 2490).take group48Template.length = group48Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2489).take group48Template.length = group48Template := by rfl
 def group48Site : GenericRoundSite Artifact.submissionArtifact .Osaka group48Template :=
-  StackSiteBuilder.ofSlice group48Template 2490 group48_slice
-    (by change 2490 + group48Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice group48Template 2489 group48_slice
+    (by change 2489 + group48Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := group48Template) (by decide))
     (by decide)
 theorem group48_pc : group48Site.startPC = UInt256.ofNat 3066 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2490) = UInt256.ofNat 3066
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2489) = UInt256.ofNat 3066
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem group48_advances : ∀ instruction ∈ group48Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -2324,16 +2324,16 @@ def inline48Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline48_slice :
-    (Artifact.submissionArtifact.instructions.drop 2493).take inline48Template.length = inline48Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2492).take inline48Template.length = inline48Template := by rfl
 def inline48Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline48Template :=
-  StackSiteBuilder.ofSlice inline48Template 2493 inline48_slice
-    (by change 2493 + inline48Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline48Template 2492 inline48_slice
+    (by change 2492 + inline48Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline48Template) (by decide))
     (by decide)
 theorem inline48_pc : inline48Site.startPC = UInt256.ofNat 3089 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2493) = UInt256.ofNat 3089
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2492) = UInt256.ofNat 3089
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline48_advances : ∀ instruction ∈ inline48Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -2399,16 +2399,16 @@ def inline49Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline49_slice :
-    (Artifact.submissionArtifact.instructions.drop 2539).take inline49Template.length = inline49Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2538).take inline49Template.length = inline49Template := by rfl
 def inline49Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline49Template :=
-  StackSiteBuilder.ofSlice inline49Template 2539 inline49_slice
-    (by change 2539 + inline49Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline49Template 2538 inline49_slice
+    (by change 2538 + inline49Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline49Template) (by decide))
     (by decide)
 theorem inline49_pc : inline49Site.startPC = UInt256.ofNat 3141 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2539) = UInt256.ofNat 3141
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2538) = UInt256.ofNat 3141
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline49_advances : ∀ instruction ∈ inline49Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -2474,16 +2474,16 @@ def inline50Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline50_slice :
-    (Artifact.submissionArtifact.instructions.drop 2585).take inline50Template.length = inline50Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2584).take inline50Template.length = inline50Template := by rfl
 def inline50Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline50Template :=
-  StackSiteBuilder.ofSlice inline50Template 2585 inline50_slice
-    (by change 2585 + inline50Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline50Template 2584 inline50_slice
+    (by change 2584 + inline50Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline50Template) (by decide))
     (by decide)
 theorem inline50_pc : inline50Site.startPC = UInt256.ofNat 3194 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2585) = UInt256.ofNat 3194
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2584) = UInt256.ofNat 3194
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline50_advances : ∀ instruction ∈ inline50Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -2549,16 +2549,16 @@ def inline51Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline51_slice :
-    (Artifact.submissionArtifact.instructions.drop 2631).take inline51Template.length = inline51Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2630).take inline51Template.length = inline51Template := by rfl
 def inline51Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline51Template :=
-  StackSiteBuilder.ofSlice inline51Template 2631 inline51_slice
-    (by change 2631 + inline51Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline51Template 2630 inline51_slice
+    (by change 2630 + inline51Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline51Template) (by decide))
     (by decide)
 theorem inline51_pc : inline51Site.startPC = UInt256.ofNat 3247 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2631) = UInt256.ofNat 3247
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2630) = UInt256.ofNat 3247
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline51_advances : ∀ instruction ∈ inline51Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -2618,16 +2618,16 @@ def inline52Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline52_slice :
-    (Artifact.submissionArtifact.instructions.drop 2677).take inline52Template.length = inline52Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2676).take inline52Template.length = inline52Template := by rfl
 def inline52Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline52Template :=
-  StackSiteBuilder.ofSlice inline52Template 2677 inline52_slice
-    (by change 2677 + inline52Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline52Template 2676 inline52_slice
+    (by change 2676 + inline52Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline52Template) (by decide))
     (by decide)
 theorem inline52_pc : inline52Site.startPC = UInt256.ofNat 3299 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2677) = UInt256.ofNat 3299
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2676) = UInt256.ofNat 3299
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline52_advances : ∀ instruction ∈ inline52Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -2691,16 +2691,16 @@ def inline53Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline53_slice :
-    (Artifact.submissionArtifact.instructions.drop 2717).take inline53Template.length = inline53Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2716).take inline53Template.length = inline53Template := by rfl
 def inline53Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline53Template :=
-  StackSiteBuilder.ofSlice inline53Template 2717 inline53_slice
-    (by change 2717 + inline53Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline53Template 2716 inline53_slice
+    (by change 2716 + inline53Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline53Template) (by decide))
     (by decide)
 theorem inline53_pc : inline53Site.startPC = UInt256.ofNat 3344 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2717) = UInt256.ofNat 3344
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2716) = UInt256.ofNat 3344
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline53_advances : ∀ instruction ∈ inline53Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -2766,16 +2766,16 @@ def inline54Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline54_slice :
-    (Artifact.submissionArtifact.instructions.drop 2761).take inline54Template.length = inline54Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2760).take inline54Template.length = inline54Template := by rfl
 def inline54Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline54Template :=
-  StackSiteBuilder.ofSlice inline54Template 2761 inline54_slice
-    (by change 2761 + inline54Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline54Template 2760 inline54_slice
+    (by change 2760 + inline54Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline54Template) (by decide))
     (by decide)
 theorem inline54_pc : inline54Site.startPC = UInt256.ofNat 3394 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2761) = UInt256.ofNat 3394
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2760) = UInt256.ofNat 3394
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline54_advances : ∀ instruction ∈ inline54Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -2841,16 +2841,16 @@ def inline56Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline56_slice :
-    (Artifact.submissionArtifact.instructions.drop 2852).take inline56Template.length = inline56Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2851).take inline56Template.length = inline56Template := by rfl
 def inline56Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline56Template :=
-  StackSiteBuilder.ofSlice inline56Template 2852 inline56_slice
-    (by change 2852 + inline56Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline56Template 2851 inline56_slice
+    (by change 2851 + inline56Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline56Template) (by decide))
     (by decide)
 theorem inline56_pc : inline56Site.startPC = UInt256.ofNat 3496 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2852) = UInt256.ofNat 3496
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2851) = UInt256.ofNat 3496
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline56_advances : ∀ instruction ∈ inline56Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -2916,16 +2916,16 @@ def inline59Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline59_slice :
-    (Artifact.submissionArtifact.instructions.drop 2988).take inline59Template.length = inline59Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2987).take inline59Template.length = inline59Template := by rfl
 def inline59Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline59Template :=
-  StackSiteBuilder.ofSlice inline59Template 2988 inline59_slice
-    (by change 2988 + inline59Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline59Template 2987 inline59_slice
+    (by change 2987 + inline59Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline59Template) (by decide))
     (by decide)
 theorem inline59_pc : inline59Site.startPC = UInt256.ofNat 3649 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2988) = UInt256.ofNat 3649
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2987) = UInt256.ofNat 3649
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline59_advances : ∀ instruction ∈ inline59Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -2991,16 +2991,16 @@ def inline60Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline60_slice :
-    (Artifact.submissionArtifact.instructions.drop 3034).take inline60Template.length = inline60Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3033).take inline60Template.length = inline60Template := by rfl
 def inline60Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline60Template :=
-  StackSiteBuilder.ofSlice inline60Template 3034 inline60_slice
-    (by change 3034 + inline60Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline60Template 3033 inline60_slice
+    (by change 3033 + inline60Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline60Template) (by decide))
     (by decide)
 theorem inline60_pc : inline60Site.startPC = UInt256.ofNat 3702 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3034) = UInt256.ofNat 3702
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3033) = UInt256.ofNat 3702
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline60_advances : ∀ instruction ∈ inline60Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -3022,16 +3022,16 @@ def group64Template : List Instr :=
     .op .POP,
     .push ⟨4, by decide⟩ (UInt256.ofNat 2840853838) ]
 theorem group64_slice :
-    (Artifact.submissionArtifact.instructions.drop 3213).take group64Template.length = group64Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3212).take group64Template.length = group64Template := by rfl
 def group64Site : GenericRoundSite Artifact.submissionArtifact .Osaka group64Template :=
-  StackSiteBuilder.ofSlice group64Template 3213 group64_slice
-    (by change 3213 + group64Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice group64Template 3212 group64_slice
+    (by change 3212 + group64Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := group64Template) (by decide))
     (by decide)
 theorem group64_pc : group64Site.startPC = UInt256.ofNat 3903 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3213) = UInt256.ofNat 3903
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3212) = UInt256.ofNat 3903
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem group64_advances : ∀ instruction ∈ group64Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -3095,16 +3095,16 @@ def inline65Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline65_slice :
-    (Artifact.submissionArtifact.instructions.drop 3257).take inline65Template.length = inline65Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3256).take inline65Template.length = inline65Template := by rfl
 def inline65Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline65Template :=
-  StackSiteBuilder.ofSlice inline65Template 3257 inline65_slice
-    (by change 3257 + inline65Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline65Template 3256 inline65_slice
+    (by change 3256 + inline65Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline65Template) (by decide))
     (by decide)
 theorem inline65_pc : inline65Site.startPC = UInt256.ofNat 3955 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3257) = UInt256.ofNat 3955
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3256) = UInt256.ofNat 3955
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline65_advances : ∀ instruction ∈ inline65Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -3168,16 +3168,16 @@ def inline67Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline67_slice :
-    (Artifact.submissionArtifact.instructions.drop 3344).take inline67Template.length = inline67Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3343).take inline67Template.length = inline67Template := by rfl
 def inline67Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline67Template :=
-  StackSiteBuilder.ofSlice inline67Template 3344 inline67_slice
-    (by change 3344 + inline67Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline67Template 3343 inline67_slice
+    (by change 3343 + inline67Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline67Template) (by decide))
     (by decide)
 theorem inline67_pc : inline67Site.startPC = UInt256.ofNat 4054 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3344) = UInt256.ofNat 4054
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3343) = UInt256.ofNat 4054
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline67_advances : ∀ instruction ∈ inline67Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -3241,16 +3241,16 @@ def inline69Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline69_slice :
-    (Artifact.submissionArtifact.instructions.drop 3431).take inline69Template.length = inline69Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3430).take inline69Template.length = inline69Template := by rfl
 def inline69Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline69Template :=
-  StackSiteBuilder.ofSlice inline69Template 3431 inline69_slice
-    (by change 3431 + inline69Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline69Template 3430 inline69_slice
+    (by change 3430 + inline69Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline69Template) (by decide))
     (by decide)
 theorem inline69_pc : inline69Site.startPC = UInt256.ofNat 4152 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3431) = UInt256.ofNat 4152
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3430) = UInt256.ofNat 4152
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline69_advances : ∀ instruction ∈ inline69Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -3314,16 +3314,16 @@ def inline71Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline71_slice :
-    (Artifact.submissionArtifact.instructions.drop 3516).take inline71Template.length = inline71Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3515).take inline71Template.length = inline71Template := by rfl
 def inline71Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline71Template :=
-  StackSiteBuilder.ofSlice inline71Template 3516 inline71_slice
-    (by change 3516 + inline71Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline71Template 3515 inline71_slice
+    (by change 3515 + inline71Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline71Template) (by decide))
     (by decide)
 theorem inline71_pc : inline71Site.startPC = UInt256.ofNat 4248 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3516) = UInt256.ofNat 4248
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3515) = UInt256.ofNat 4248
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline71_advances : ∀ instruction ∈ inline71Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -3387,16 +3387,16 @@ def inline72Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline72_slice :
-    (Artifact.submissionArtifact.instructions.drop 3560).take inline72Template.length = inline72Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3559).take inline72Template.length = inline72Template := by rfl
 def inline72Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline72Template :=
-  StackSiteBuilder.ofSlice inline72Template 3560 inline72_slice
-    (by change 3560 + inline72Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline72Template 3559 inline72_slice
+    (by change 3559 + inline72Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline72Template) (by decide))
     (by decide)
 theorem inline72_pc : inline72Site.startPC = UInt256.ofNat 4299 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3560) = UInt256.ofNat 4299
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3559) = UInt256.ofNat 4299
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline72_advances : ∀ instruction ∈ inline72Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -3458,16 +3458,16 @@ def inline73Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline73_slice :
-    (Artifact.submissionArtifact.instructions.drop 3604).take inline73Template.length = inline73Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3603).take inline73Template.length = inline73Template := by rfl
 def inline73Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline73Template :=
-  StackSiteBuilder.ofSlice inline73Template 3604 inline73_slice
-    (by change 3604 + inline73Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline73Template 3603 inline73_slice
+    (by change 3603 + inline73Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline73Template) (by decide))
     (by decide)
 theorem inline73_pc : inline73Site.startPC = UInt256.ofNat 4350 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3604) = UInt256.ofNat 4350
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3603) = UInt256.ofNat 4350
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline73_advances : ∀ instruction ∈ inline73Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -3531,16 +3531,16 @@ def inline75Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline75_slice :
-    (Artifact.submissionArtifact.instructions.drop 3689).take inline75Template.length = inline75Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3688).take inline75Template.length = inline75Template := by rfl
 def inline75Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline75Template :=
-  StackSiteBuilder.ofSlice inline75Template 3689 inline75_slice
-    (by change 3689 + inline75Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline75Template 3688 inline75_slice
+    (by change 3688 + inline75Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline75Template) (by decide))
     (by decide)
 theorem inline75_pc : inline75Site.startPC = UInt256.ofNat 4445 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3689) = UInt256.ofNat 4445
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3688) = UInt256.ofNat 4445
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline75_advances : ∀ instruction ∈ inline75Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -3604,16 +3604,16 @@ def inline76Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline76_slice :
-    (Artifact.submissionArtifact.instructions.drop 3733).take inline76Template.length = inline76Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3732).take inline76Template.length = inline76Template := by rfl
 def inline76Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline76Template :=
-  StackSiteBuilder.ofSlice inline76Template 3733 inline76_slice
-    (by change 3733 + inline76Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline76Template 3732 inline76_slice
+    (by change 3732 + inline76Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline76Template) (by decide))
     (by decide)
 theorem inline76_pc : inline76Site.startPC = UInt256.ofNat 4497 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3733) = UInt256.ofNat 4497
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3732) = UInt256.ofNat 4497
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline76_advances : ∀ instruction ∈ inline76Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -3677,16 +3677,16 @@ def inline78Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline78_slice :
-    (Artifact.submissionArtifact.instructions.drop 3820).take inline78Template.length = inline78Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3819).take inline78Template.length = inline78Template := by rfl
 def inline78Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline78Template :=
-  StackSiteBuilder.ofSlice inline78Template 3820 inline78_slice
-    (by change 3820 + inline78Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline78Template 3819 inline78_slice
+    (by change 3819 + inline78Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline78Template) (by decide))
     (by decide)
 theorem inline78_pc : inline78Site.startPC = UInt256.ofNat 4595 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3820) = UInt256.ofNat 4595
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3819) = UInt256.ofNat 4595
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline78_advances : ∀ instruction ∈ inline78Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound

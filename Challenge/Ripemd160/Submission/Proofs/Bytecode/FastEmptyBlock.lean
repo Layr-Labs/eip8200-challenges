@@ -88,9 +88,9 @@ theorem compress_empty :
   decide
 
 def decisionPath : List Located :=
-  [⟨254, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨255, .push ⟨2, by decide⟩ (UInt256.ofNat 429), by rfl, by decide⟩,
-   ⟨256, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨253, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨254, .push ⟨2, by decide⟩ (UInt256.ofNat 429), by rfl, by decide⟩,
+   ⟨255, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def bodyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
@@ -232,22 +232,22 @@ theorem run_decision_nonempty (s : State) (input : ByteArray) (i : Nat)
   have htrue : UInt256.isTrue (UInt256.ofNat input.size) := by
     exact hmod
   have hdest : Decode.isValidJumpDest submissionBytecode 429 = true := by
-    have hpc : Artifact.submissionArtifact.instructionPC 263 = 429 := by
+    have hpc : Artifact.submissionArtifact.instructionPC 262 = 429 := by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]
       decide
-    have h := Artifact.submissionArtifact.isValidJumpDest_index 263 (by rfl)
+    have h := Artifact.submissionArtifact.isValidJumpDest_index 262 (by rfl)
     rw [hpc] at h
     exact h
-  have hpc2792 : Artifact.submissionArtifact.instructionPC 254 = 397 := by
+  have hpc2792 : Artifact.submissionArtifact.instructionPC 253 = 397 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have hpc2793 : Artifact.submissionArtifact.instructionPC 254 = 397 := by
+  have hpc2793 : Artifact.submissionArtifact.instructionPC 253 = 397 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have hpc2794 : Artifact.submissionArtifact.instructionPC 255 = 398 := by
+  have hpc2794 : Artifact.submissionArtifact.instructionPC 254 = 398 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have hpc2795 : Artifact.submissionArtifact.instructionPC 256 = 401 := by
+  have hpc2795 : Artifact.submissionArtifact.instructionPC 255 = 401 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
   simp [decisionPath, Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -265,16 +265,16 @@ theorem run_decision_empty (s : State) (input : ByteArray) (i : Nat)
       (legacyDispatchEntry s input i) = some (bodyEntry s input i) := by
   have hfalse : ¬ UInt256.isTrue (UInt256.ofNat input.size) := by
     simp [hempty, UInt256.isTrue]
-  have hpc2792 : Artifact.submissionArtifact.instructionPC 254 = 397 := by
+  have hpc2792 : Artifact.submissionArtifact.instructionPC 253 = 397 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have hpc2793 : Artifact.submissionArtifact.instructionPC 254 = 397 := by
+  have hpc2793 : Artifact.submissionArtifact.instructionPC 253 = 397 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have hpc2794 : Artifact.submissionArtifact.instructionPC 255 = 398 := by
+  have hpc2794 : Artifact.submissionArtifact.instructionPC 254 = 398 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have hpc2795 : Artifact.submissionArtifact.instructionPC 256 = 401 := by
+  have hpc2795 : Artifact.submissionArtifact.instructionPC 255 = 401 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
   simp [decisionPath, Challenge.EvmProof.Stepper.runLocatedBlock,
