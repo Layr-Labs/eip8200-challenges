@@ -1,3 +1,5 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.ShortPatternScan55
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.ScanDigest55
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ShortPatternScan119
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ScanDigest119
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ShortPatternScan64
@@ -21,6 +23,39 @@ set_option maxHeartbeats 20000000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.ShortPatternCorrect
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedScan PatternedSwar
+
+theorem correct55_from_patternedEntry (input : ByteArray) (hfit : CalldataFits input)
+    (hsize : input.size = 55) (_hbyte : DirectGuard.firstByte input = 7)
+    (hentry : GasSteps (initialState submissionBytecode input 0)
+      (PatternedScan.patternedEntry input)) :
+    ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
+      Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
+  by_cases hz : scanAcc input 2 = 0
+  · have heq := (ShortPatternLogic.scanAcc_zero_iff_eq_55 input hsize).1 hz
+    have hspec : spec input = ScanDigest55.paddedDigest := by
+      rw [heq]
+      exact ScanDigest55.spec_pattern
+    let trace := hentry.trans
+      ((ShortPatternScan55.gasSteps_scan input hsize).trans
+        (ShortPatternFinish.gasSteps_finish_hit 55 input (UInt256.ofNat (scalarAt 2))
+          64 (scanAcc input 2) hz (by decide) hsize))
+    refine ⟨trace.cost, fun gas hgas => ?_⟩
+    have heval := eval_of_steps (trace.trace gas hgas) (by
+      simp [withGas, ShortPatternFinish.returnedState,
+        ShortPatternFinish.storedState, ShortPatternFinish.returnRest,
+        stS, initialState, State.isDone, State.isHalted, State.isRunning])
+    rw [State.toResult_returned _ (by rfl)] at heval
+    change Eval (withGas (initialState submissionBytecode input 0) gas)
+      (.returned (MachineState.readPadded (ShortPatternFinish.answerMemory 55) 0 32)) at heval
+    have hdigest : ShortPatternFinish.paddedDigest 55 = ScanDigest55.paddedDigest := rfl
+    rw [ShortPatternFinish.answerMemory_read, hdigest, ← hspec] at heval
+    simpa [GasCost.withGas_initialState_zero] using heval
+  · exact StackCorrect.correct input hfit
+      (hentry.trans
+        ((ShortPatternScan55.gasSteps_scan input hsize).trans
+          (ShortPatternFinish.gasSteps_miss input (UInt256.ofNat (scalarAt 2))
+            64 (scanAcc input 2) hz)))
+
 
 theorem correct56_from_patternedEntry (input : ByteArray) (hfit : CalldataFits input)
     (hsize : input.size = 56) (_hbyte : DirectGuard.firstByte input = 7)

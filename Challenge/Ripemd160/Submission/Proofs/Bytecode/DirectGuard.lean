@@ -52,7 +52,7 @@ def gasSteps_target :
 def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
     (hne : input ≠ KnownInputData.targetInput)
     (hpne : input ≠ PatternedInputData.patternedInput)
-    (hbad : (input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119) ∨ firstByte input ≠ 7)
+    (hbad : (input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119 ∧ input.size ≠ 55) ∨ firstByte input ≠ 7)
     (h256 : input.size ≠ 376) (hshort : input.size ≠ 256) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) := by
   by_cases hsize : input.size = 1000
@@ -191,6 +191,12 @@ theorem correct : Correct submissionBytecode := by
             (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
         · exact StackCorrect.correct input hfit
             (gasSteps_fallback input hfit h hp (Or.inr hbyte) h256 hshort)
+      by_cases hsize55 : input.size = 55
+      · by_cases hbyte : firstByte input = 7
+        · exact ShortPatternCorrect.correct55_from_patternedEntry input hfit hsize55 hbyte
+            (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
+        · exact StackCorrect.correct input hfit
+            (gasSteps_fallback input hfit h hp (Or.inr hbyte) h256 hshort)
       by_cases hsize120 : input.size = 120
       · by_cases hbyte : firstByte input = 7
         · exact ShortPatternCorrect.correct120_from_patternedEntry input hfit hsize120 hbyte
@@ -229,6 +235,6 @@ theorem correct : Correct submissionBytecode := by
             (gasSteps_fallback input hfit h hp (Or.inr hbyte) h256 hshort)
       exact StackCorrect.correct input hfit
         (gasSteps_fallback input hfit h hp
-          (Or.inl ⟨hsize56, hsize120, hsize63, hsize64, hsize65, hsize128, hsize119⟩) h256 hshort)
+          (Or.inl ⟨hsize56, hsize120, hsize63, hsize64, hsize65, hsize128, hsize119, hsize55⟩) h256 hshort)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard

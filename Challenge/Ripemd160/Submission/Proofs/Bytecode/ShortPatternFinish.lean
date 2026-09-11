@@ -7,11 +7,11 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.ShortPatternFinish
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedScan PatternedSwar
 theorem run_store (n : Nat) (input : ByteArray) (sv ov : UInt256)
-    (hn : n = 56 ∨ n = 120 ∨ n = 64 ∨ n = 65 ∨ n = 128 ∨ n = 63 ∨ n = 119) (hsize : input.size = n) :
+    (hn : n = 56 ∨ n = 120 ∨ n = 64 ∨ n = 65 ∨ n = 128 ∨ n = 63 ∨ n = 119 ∨ n = 55 ∨ n = 256 ∨ n = 376 ∨ n = 1000) (hsize : input.size = n) :
     run digestStorePath (digestEntryState n input sv ov) =
       some (copyReadyState n input sv ov) := by
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
-  rcases hn with rfl | rfl | rfl | rfl | rfl | rfl | rfl <;>
+  rcases hn with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;>
     simp (config := { maxSteps := 400000 })
     [digestStorePath, opAt, pushAt, wfOp, digestEntryState, copyReadyState, tableOffset,
      returnRest, stS, initialState, answerMemory, storeWord, paddedDigestWord,
@@ -43,16 +43,16 @@ theorem run_finish (n : Nat) (input : ByteArray) (sv ov : UInt256) :
       Challenge.EvmProof.Word.word_toNat_ofNat]
 
 def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
-    (hn : n = 56 ∨ n = 120 ∨ n = 64 ∨ n = 65 ∨ n = 128 ∨ n = 63 ∨ n = 119) (hsize : input.size = n) :
+    (hn : n = 56 ∨ n = 120 ∨ n = 64 ∨ n = 65 ∨ n = 128 ∨ n = 63 ∨ n = 119 ∨ n = 55 ∨ n = 256 ∨ n = 376 ∨ n = 1000) (hsize : input.size = n) :
     GasSteps (selectorState n input sv ov) (returnedState n input sv ov) := by
-  have gselect := sound selectorPath (run_selector n input sv ov hn hsize)
+  have gselect := sound selectorPath (run_selector n input sv ov)
   have gstore := sound digestStorePath (run_store n input sv ov hn hsize)
-  have hc := Artifact.submissionArtifact.decodeAt_op_index 4120 .CODECOPY
+  have hc := Artifact.submissionArtifact.decodeAt_op_index 4095 .CODECOPY
     (by rfl) (by decide) trivial
   have hpc : (copyReadyState n input sv ov).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 4120 := by rw [pc5095]; rfl
+      Artifact.submissionArtifact.instructionPC 4095 := by rw [pc5009]; rfl
   have hcopy : (copyReadyState n input sv ov).decodedOp = some .CODECOPY :=
-    Artifact.submissionArtifact.state_decodedOp_of (copyReadyState n input sv ov) 4120
+    Artifact.submissionArtifact.state_decodedOp_of (copyReadyState n input sv ov) 4095
       (by rfl) hpc .CODECOPY none hc (by rfl)
   have gcraw := Codecopy.step (s := copyReadyState n input sv ov)
     12 (UInt256.ofNat (tableOffset n)) 20 (returnRest sv ov)
@@ -64,7 +64,7 @@ def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
     rw [Word.word_toNat_ofNat]
     apply Nat.mod_eq_of_lt
     unfold tableOffset
-    have hlt := Nat.mod_lt (((19 * n) / 16)) (by decide : 0 < 7)
+    have hlt := Nat.mod_lt (((479 * n) / 256)) (by decide : 0 < 11)
     omega
   have gc : GasSteps (copyReadyState n input sv ov) (storedState n input sv ov) := by
     simpa [copyReadyState, storedState, stS, initialState, hoff,
@@ -76,14 +76,14 @@ def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
       show MachineState.writeBytes ByteArray.empty
         (MachineState.readPadded submissionBytecode (tableOffset n) 20) 12 = answerMemory n
         from tableMemory_eq n hn] using gcraw
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 4121 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 4096 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedState n input sv ov).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 4121 := by
+      Artifact.submissionArtifact.instructionPC 4096 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
   have hop : (storedState n input sv ov).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedState n input sv ov) 4121
+    Artifact.submissionArtifact.state_decodedOp_of (storedState n input sv ov) 4096
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop
     (by simp [storedState, returnRest, stS, initialState])
@@ -102,7 +102,7 @@ def gasSteps_miss (input : ByteArray) (sv ov acc : UInt256)
   Prefix256Cleanup.gasSteps_miss input sv ov acc hne
 
 def gasSteps_finish_hit (n : Nat) (input : ByteArray) (sv ov acc : UInt256)
-    (hz : acc = 0) (hn : n = 56 ∨ n = 120 ∨ n = 64 ∨ n = 65 ∨ n = 128 ∨ n = 63 ∨ n = 119) (hsize : input.size = n) :
+    (hz : acc = 0) (hn : n = 56 ∨ n = 120 ∨ n = 64 ∨ n = 65 ∨ n = 128 ∨ n = 63 ∨ n = 119 ∨ n = 55 ∨ n = 256 ∨ n = 376 ∨ n = 1000) (hsize : input.size = n) :
     GasSteps (stS input 250 [sv, ov, acc, P7, M, m7, P, m8])
       (returnedState n input sv ov) := by
   subst acc

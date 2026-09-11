@@ -32,7 +32,7 @@ def gasSteps_hit (input : ByteArray) (hsize : input.size = 376)
 def gasSteps_miss (input : ByteArray) (hsize : input.size = 376)
     (href : KnownInputCompactState.referenceWord input ≠ KnownInputData.fullWord)
     (hne : scanAcc input 12 ≠ 0) :
-    GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 363) :=
+    GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 276) :=
   (Prefix256Entry.gasSteps_hit input hsize href).trans
     ((Prefix256Scan.gasSteps_scan input hsize).trans
       (Prefix256Finish.gasSteps_miss input (UInt256.ofNat (scalarAt 12))
@@ -51,7 +51,7 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
     let trace := gasSteps_hit input hsize href hz
     refine ⟨trace.cost, fun gas hgas => ?_⟩
     have heval := eval_of_steps (trace.trace gas hgas) (by
-      simp [withGas, Prefix256Finish.returnedState, DigestReturn.returnedState, DigestReturn.storedState,
+      simp [withGas, Prefix256Finish.returnedState, ShortPatternFinish.returnedState, ShortPatternFinish.storedState,
         stS, initialState, State.isDone, State.isHalted, State.isRunning])
     rw [State.toResult_returned _ (by rfl)] at heval
     change Eval (withGas (initialState submissionBytecode input 0) gas)
