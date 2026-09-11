@@ -13,11 +13,6 @@ open EvmSemantics
 open EvmSemantics.EVM
 open YulEvmCompiler
 
-private def nine_bridge :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2525 WindowTwentyOneEntry.bridgeProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1862 3 2525 WindowTwentyOneEntry.bridgeProgram
-    (by decide) (by rfl) (by rfl) (by decide)
-
 private def nine_width :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 2335 WindowTwentyOneEntry.widthProgram :=
   WindowTwentyOneSlice.block allWellFormed 1714 15 2335 WindowTwentyOneEntry.widthProgram
@@ -50,7 +45,7 @@ private def nine_table :
 
 private def nine_init :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 2500 WindowTwentyOneInit.program :=
-  WindowTwentyOneSlice.block allWellFormed 1844 18 2500 WindowTwentyOneInit.program
+  WindowTwentyOneSlice.block allWellFormed 1844 21 2500 WindowTwentyOneInit.program
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def nine_iteration :
@@ -81,7 +76,6 @@ def fermatPaths : FermatProgram.Paths submissionArtifact .Osaka where
   legacyJump := by exact isValidJumpDest_index 1731 (by rfl)
 
 def twentyOnePaths : WindowTwentyOneGasRoute.Paths submissionArtifact .Osaka where
-  entryBridge := nine_bridge
   entryJump := by exact isValidJumpDest_index 1714 (by rfl)
   width := nine_width
   miss := nine_miss
