@@ -568,7 +568,7 @@ def mpExitState (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb : Nat)
 /-- `CSUB` entry, pc 2309, with stack `[pd, ret]`. -/
 def mpCsubState (s : State) (mem : ByteArray) (pdst ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4902
+  { s with pc := UInt256.ofNat 4898
            stack := [pdst, ret] ++ rest
            memory := mem }
 
@@ -1203,10 +1203,10 @@ theorem run_mpExit (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb : Nat)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have h2642 : (4902 : UInt256).toNat = 4902 := by decide
-  have h2642' : (4902 : UInt256) = UInt256.ofNat 4902 := by decide
+  have h2642 : (4898 : UInt256).toNat = 4898 := by decide
+  have h2642' : (4898 : UInt256) = UInt256.ofNat 4898 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (4902 : UInt256).toNat = true := by
+      (4898 : UInt256).toNat = true := by
     rw [h2642]; exact jumpDest4976
   simp (config := { maxSteps := 400000 })
     [blk1595, opAt, pushAt, wfOp,

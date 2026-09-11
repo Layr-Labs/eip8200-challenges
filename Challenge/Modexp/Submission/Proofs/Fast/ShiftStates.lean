@@ -139,7 +139,8 @@ def macSetupState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : 
            stack := qhatOf (uMem mem n) :: UInt256.ofNat k :: outer n bsize esize msize
            memory := uMem mem n }
 
-/-- The limb-pass loop head after `j` limbs, over the `u` memory `um` and guess `q`. -/
+/-- The limb-pass loop head after `j` limbs, over the `u` memory `um` and guess `q`.
+`negative32` is the loop-invariant `~31` hoisted out of the body by `MAC_SETUP`. -/
 def macLoopState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k j : Nat) :
     State :=
   { s with pc := UInt256.ofNat pcMacLoop
@@ -149,7 +150,8 @@ def macLoopState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize
              outer n bsize esize msize
            memory := (Monpro.l1Step um q NEG n j).memory }
 
-/-- The middle block entry: the two spent pointers still on the stack. -/
+/-- The middle block entry: the two spent pointers and the hoisted constant
+still on the stack. -/
 def midState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat) :
     State :=
   { s with pc := UInt256.ofNat pcMid

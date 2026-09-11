@@ -20,10 +20,10 @@ theorem run_test (s : State) (pbi pa pb flag dst ret route : UInt256)
     (hr : MachineState.readWord s.memory 9280 = route)
     (htarget : Decode.isValidJumpDest s.executionEnv.code route.toNat = true) :
     runInstructions testProgram
-      (framed s (UInt256.ofNat 4784)
+      (framed s (UInt256.ofNat 4780)
         ([pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) =
     some (framed s
-      (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb) then route else UInt256.ofNat 4794)
+      (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb) then route else UInt256.ofNat 4790)
       ([negative32+pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) := by
   have hc8 : rest.length+8 < 1024 := by omega
   have hc9 : rest.length+9 < 1024 := by omega
@@ -42,7 +42,7 @@ theorem run_header (s : State) (mem : ByteArray) (route : UInt256) (rest : List 
     (hcap : rest.length ≤ 1022) (hact : 296 ≤ s.activeWords.toNat)
     (hr : MachineState.readWord mem 9280 = route)
     (htarget : Decode.isValidJumpDest s.executionEnv.code route.toNat = true) :
-    runInstructions headerProgram (SquareInit.stateAt s mem 4168 rest) =
+    runInstructions headerProgram (SquareInit.stateAt s mem 4164 rest) =
       some (framed {s with memory := mem} route rest) := by
   have hc0 : rest.length < 1024 := by omega
   have hc1 : rest.length+1 < 1024 := by omega

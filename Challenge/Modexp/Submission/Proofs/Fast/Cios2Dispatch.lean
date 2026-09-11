@@ -29,17 +29,17 @@ def dispatchState (s : State) (mem : ByteArray) (pa pb : Nat)
 
 def specializedEntryState (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 5007
+  { s with pc := UInt256.ofNat 5003
            stack := [UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
 theorem jumpDest4012 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4053 = true := by
-  exact Artifact.isValidJumpDest_index 3069 (by rfl)
+  exact Artifact.isValidJumpDest_index 3071 (by rfl)
 
 theorem jumpDest4035 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5007 = true := by
-  exact Artifact.isValidJumpDest_index 3815 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5003 = true := by
+  exact Artifact.isValidJumpDest_index 3799 (by rfl)
 
 private theorem activeWords9344 (s : State) (hact : 296 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 9344 32) =
@@ -78,8 +78,8 @@ theorem run_dispatch4 (s : State) (mem : ByteArray) (pa pb : Nat)
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
-  have h4080 : (5007 : UInt256).toNat = 5007 := by decide
-  have h4080' : (5007 : UInt256) = UInt256.ofNat 5007 := by decide
+  have h4080 : (5003 : UInt256).toNat = 5003 := by decide
+  have h4080' : (5003 : UInt256) = UInt256.ofNat 5003 := by decide
   have hcond128 :
       ((UInt256.ofNat 256).eq (UInt256.ofNat 128)).toNat |||
         ((UInt256.ofNat 128).eq (UInt256.ofNat 128)).toNat ≠ 0 := by decide
@@ -111,8 +111,8 @@ theorem run_dispatch8 (s : State) (mem : ByteArray) (pa pb : Nat)
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
-  have h4080 : (5007 : UInt256).toNat = 5007 := by decide
-  have h4080' : (5007 : UInt256) = UInt256.ofNat 5007 := by decide
+  have h4080 : (5003 : UInt256).toNat = 5003 := by decide
+  have h4080' : (5003 : UInt256) = UInt256.ofNat 5003 := by decide
   have hcond256 :
       ((UInt256.ofNat 256).eq (UInt256.ofNat 256)).toNat |||
         ((UInt256.ofNat 128).eq (UInt256.ofNat 256)).toNat ≠ 0 := by decide

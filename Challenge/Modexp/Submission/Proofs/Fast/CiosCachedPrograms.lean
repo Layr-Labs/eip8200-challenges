@@ -64,25 +64,53 @@ def macFinishProgram (tl ts : UInt256) : List Instr :=
    .push 2 tl, .op .MLOAD, .op .ADD, .op (.Dup ⟨0, by decide⟩),
    .push 2 ts, .op .MSTORE, .op .LT, .op .ADD]
 
+
+/-- Combine both carry tests while storing the low word before the final carry. -/
+def macFusedPostProgram (tl ts : UInt256) : List Instr :=
+  [.op (.Dup ⟨0, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩),
+   .op .GT,
+   .op .SUB,
+   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup ⟨3, by decide⟩),
+   .op .ADD,
+   .push 3 tl,
+   .op .MLOAD,
+   .op (.Dup ⟨1, by decide⟩),
+   .op .ADD,
+   .op (.Dup ⟨0, by decide⟩),
+   .push 2 ts,
+   .op .MSTORE,
+   .op (.Dup ⟨1, by decide⟩),
+   .op .GT,
+   .op (.Swap ⟨3, by decide⟩),
+   .op .GT,
+   .op .SUB,
+   .op .SUB,
+   .op .ADD]
+
+def macFusedProgram (tl ts : UInt256) : List Instr :=
+  macProductProgram.take 6 ++ macFusedPostProgram tl ts
+
 /-- Load at the cached base plus an immediate byte offset. -/
 def l1LoadProgram (off : UInt256) : List Instr :=
   [.push 1 off, .op (.Dup ⟨4, by decide⟩), .op .ADD,
    .op .MLOAD, .op (.Dup ⟨8, by decide⟩)]
 
 def l1Program (off t : UInt256) : List Instr :=
-  (l1LoadProgram off ++ macProductProgram) ++ macFinishProgram t t
+  l1LoadProgram off ++ macFusedProgram t t
 
 def l1FirstProgram (off t : UInt256) : List Instr :=
   (l1LoadProgram off ++ macZeroProductProgram) ++ macFinishProgram t t
 
 def l1LastProgram (t : UInt256) : List Instr :=
-  ([.op (.Dup ⟨3, by decide⟩), .op .MLOAD, .op (.Dup ⟨8, by decide⟩)] ++
-    macProductProgram) ++ macFinishProgram t t
+  [.op (.Dup ⟨3, by decide⟩), .op .MLOAD, .op (.Dup ⟨8, by decide⟩)] ++
+    macFusedProgram t t
 
 /-- The width is one for positive modulus offsets, zero for the final cell. -/
 def l2Program (w : Fin 33) (x tl ts : UInt256) : List Instr :=
-  ([.push w x, .op .MLOAD, .op (.Dup ⟨9, by decide⟩)] ++
-    macProductProgram) ++ macFinishProgram tl ts
+  [.push w x, .op .MLOAD, .op (.Dup ⟨9, by decide⟩)] ++
+    macFusedProgram tl ts
 
 def entryProgram : List Instr :=
   [
@@ -95,7 +123,7 @@ def entryProgram : List Instr :=
    .op .EQ,
    .push 1 152,
    .op .MUL,
-   .push 2 4204,
+   .push 2 4200,
    .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
    .push 3 314,
@@ -112,17 +140,13 @@ def entryProgram : List Instr :=
    .op .CALLDATASIZE,
    .push 2 8192,
    .op .CALLDATACOPY,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
-   .op .ADD,
+   .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨5, by decide⟩),
    .op .ADD,
    .op (.Swap ⟨2, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
    .op .ADD,
-   .op (.Swap ⟨2, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
-   .op .POP]
+   .op (.Dup ⟨4, by decide⟩),
+   .op .ADD]
 
 def outProgram : List Instr :=
   [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .op .MLOAD]
@@ -182,7 +206,7 @@ def tailProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),
    .op .GT,
-   .push 2 4173,
+   .push 2 4169,
    .op .JUMPI,
    .op .POP,
    .op .POP,
@@ -191,7 +215,7 @@ def tailProgram : List Instr :=
    .op .POP,
    .op .POP,
    .op .POP,
-   .push 2 4902,
+   .push 2 4898,
    .op .JUMP]
 
 def l1DispatchProgram : List Instr :=

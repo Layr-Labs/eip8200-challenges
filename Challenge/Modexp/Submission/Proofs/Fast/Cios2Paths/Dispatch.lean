@@ -9,7 +9,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
-def startIndex : Nat := 3069
+def startIndex : Nat := 3071
 
 /-- A bounded, cached instruction slice.  This keeps concrete reduction local. -/
 private def template : List Instr :=
@@ -23,7 +23,7 @@ private def template : List Instr :=
    .push 2 256,
    .op .EQ,
    .op .OR,
-   .push 2 5007,
+   .push 2 5003,
    .op .JUMPI,
    .push 2 1784,
    .op .JUMP]
@@ -50,7 +50,7 @@ private theorem instructionPC_add
 
 /-- Exact program-counter table for the bounded dispatcher slice. -/
 @[simp] theorem dispatchPC (i : Nat) (hi : startIndex ≤ i)
-    (hii : i ≤ 3082) :
+    (hii : i ≤ 3084) :
     Artifact.submissionArtifact.instructionPC i =
       [4053,4054,4057,4058,4059,4061,4062,4063,4066,4067,4068,4071,4072,4075][i - startIndex]! := by
   calc
@@ -97,10 +97,10 @@ def cios2DispatchGuard :
    pushAt 7 2 256,
    opAt 8 .EQ,
    opAt 9 .OR,
-   pushAt 10 2 5007,
+   pushAt 10 2 5003,
    opAt 11 .JUMPI]
 
-/-- Full fallback path (indices 2670..2683, pc 4488..4510). -/
+/-- Full fallback path (indices 2670..2683, pc 4484..4506). -/
 def cios2Dispatch :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   cios2DispatchGuard ++

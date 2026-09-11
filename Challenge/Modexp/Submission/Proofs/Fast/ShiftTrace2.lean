@@ -126,21 +126,21 @@ private theorem addMod_comm (a b m : UInt256) :
     UInt256.addMod a b m = UInt256.addMod b a m := by
   simp only [UInt256.addMod, Nat.add_comm]
 
-@[simp] private theorem newEstimatePC2960 : Artifact.submissionArtifact.instructionPC 2846 = 3761 := by rfl
-@[simp] private theorem newEstimatePC2961 : Artifact.submissionArtifact.instructionPC 2847 = 3762 := by rfl
-@[simp] private theorem newEstimatePC2962 : Artifact.submissionArtifact.instructionPC 2848 = 3763 := by rfl
-@[simp] private theorem newEstimatePC2963 : Artifact.submissionArtifact.instructionPC 2849 = 3764 := by rfl
-@[simp] private theorem newEstimatePC2964 : Artifact.submissionArtifact.instructionPC 2850 = 3767 := by rfl
-@[simp] private theorem newEstimatePC2965 : Artifact.submissionArtifact.instructionPC 2851 = 3768 := by rfl
-@[simp] private theorem newEstimatePC2966 : Artifact.submissionArtifact.instructionPC 2852 = 3769 := by rfl
-@[simp] private theorem newEstimatePC2967 : Artifact.submissionArtifact.instructionPC 2853 = 3771 := by rfl
-@[simp] private theorem newEstimatePC2968 : Artifact.submissionArtifact.instructionPC 2854 = 3772 := by rfl
-@[simp] private theorem newEstimatePC2969 : Artifact.submissionArtifact.instructionPC 2855 = 3774 := by rfl
-@[simp] private theorem newEstimatePC2970 : Artifact.submissionArtifact.instructionPC 2856 = 3775 := by rfl
-@[simp] private theorem newEstimatePC2971 : Artifact.submissionArtifact.instructionPC 2857 = 3776 := by rfl
-@[simp] private theorem newEstimatePC2972 : Artifact.submissionArtifact.instructionPC 2858 = 3778 := by rfl
-@[simp] private theorem newEstimatePC2973 : Artifact.submissionArtifact.instructionPC 2859 = 3779 := by rfl
-@[simp] private theorem newEstimatePC2974 : Artifact.submissionArtifact.instructionPC 2860 = 3780 := by rfl
+@[simp] private theorem newEstimatePC2960 : Artifact.submissionArtifact.instructionPC 2848 = 3761 := by rfl
+@[simp] private theorem newEstimatePC2961 : Artifact.submissionArtifact.instructionPC 2849 = 3762 := by rfl
+@[simp] private theorem newEstimatePC2962 : Artifact.submissionArtifact.instructionPC 2850 = 3763 := by rfl
+@[simp] private theorem newEstimatePC2963 : Artifact.submissionArtifact.instructionPC 2851 = 3764 := by rfl
+@[simp] private theorem newEstimatePC2964 : Artifact.submissionArtifact.instructionPC 2852 = 3767 := by rfl
+@[simp] private theorem newEstimatePC2965 : Artifact.submissionArtifact.instructionPC 2853 = 3768 := by rfl
+@[simp] private theorem newEstimatePC2966 : Artifact.submissionArtifact.instructionPC 2854 = 3769 := by rfl
+@[simp] private theorem newEstimatePC2967 : Artifact.submissionArtifact.instructionPC 2855 = 3771 := by rfl
+@[simp] private theorem newEstimatePC2968 : Artifact.submissionArtifact.instructionPC 2856 = 3772 := by rfl
+@[simp] private theorem newEstimatePC2969 : Artifact.submissionArtifact.instructionPC 2857 = 3774 := by rfl
+@[simp] private theorem newEstimatePC2970 : Artifact.submissionArtifact.instructionPC 2858 = 3775 := by rfl
+@[simp] private theorem newEstimatePC2971 : Artifact.submissionArtifact.instructionPC 2859 = 3776 := by rfl
+@[simp] private theorem newEstimatePC2972 : Artifact.submissionArtifact.instructionPC 2860 = 3778 := by rfl
+@[simp] private theorem newEstimatePC2973 : Artifact.submissionArtifact.instructionPC 2861 = 3779 := by rfl
+@[simp] private theorem newEstimatePC2974 : Artifact.submissionArtifact.instructionPC 2862 = 3780 := by rfl
 
 /-- `blk3026`: quotient estimate with a branchless saturation mask. -/
 theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)

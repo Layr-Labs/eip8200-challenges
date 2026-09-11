@@ -15,7 +15,7 @@ def loadProgram (off : UInt256) : List Instr :=
   [.op .JUMPDEST, .push 2 (UInt256.ofNat 8960 + off), .op .MLOAD, .op (.Dup ⟨8, by decide⟩)]
 
 def l1Program (off t : UInt256) : List Instr :=
-  (loadProgram off ++ L2.productProgram) ++ L2.finishProgram t t
+  loadProgram off ++ macFusedProgram t t
 
 theorem run_load (template : State)
     (pc off carry bi pbi paBase pbEnd flag destination returnPC : UInt256)
@@ -76,19 +76,13 @@ theorem run_step (template : State) (pc : UInt256) (mem : ByteArray)
     pbEnd flag destination returnPC rest hrest hA
   rw [show MachineState.readWord st.memory (UInt256.ofNat 8960 + off).toNat =
     MachineState.readWord st.memory (UInt256.ofNat pa + off).toNat from hsread] at hl
-  have hp := L2.run_product st (pc + UInt256.ofNat 6)
-    (MachineState.readWord st.memory (UInt256.ofNat pa + off).toNat) bi
-    (l1Step mem bi pa n j).carry
-    ([pbi, UInt256.ofNat pa, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)
-    (by simp only [List.length_append, List.length_cons, List.length_nil]; omega)
-  have hf := L2.run_finish st (advancePC 18 (pc + UInt256.ofNat 6))
+  have hf := CiosCachedFused.run_fused st (pc + UInt256.ofNat 6)
     (MachineState.readWord st.memory (UInt256.ofNat pa + off).toNat) bi
     (l1Step mem bi pa n j).carry t t
     ([pbi, UInt256.ofNat pa, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) hT hT
-  have both := runInstructions_append_some _ _ _ _ _ hl hp
-  have hall := runInstructions_append_some _ _ _ _ _ both hf
-  have hpc : advancePC 18 (pc + UInt256.ofNat 6) + UInt256.ofNat 14 =
+  have hall := runInstructions_append_some _ _ _ _ _ hl hf
+  have hpc : (pc + UInt256.ofNat 6) + UInt256.ofNat 32 =
       pc + UInt256.ofNat 38 := by
     simp [advancePC, succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
   simpa only [l1Program, st, CiosCachedL1.state, framed, l1Step, haddr, ht, hpc,

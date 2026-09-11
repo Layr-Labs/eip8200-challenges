@@ -19,10 +19,10 @@ theorem run_tail (s : State) (c mu f pbi pa pb flag dst ret : UInt256)
     (hroute : MachineState.readWord s.memory 9280 = route)
     (htarget : Decode.isValidJumpDest s.executionEnv.code route.toNat = true) :
     runInstructions CarryRowPrograms.tail
-      (framed s (UInt256.ofNat 4765)
+      (framed s (UInt256.ofNat 4761)
         ([c,mu,f,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) =
     some (framed {s with memory := tailCarry s.memory c f}
-      (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb) then route else UInt256.ofNat 4794)
+      (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb) then route else UInt256.ofNat 4790)
       ([negative32+pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) := by
   have h1 := CarryRowTrace.run_tailStore s c mu f pbi pa pb flag dst ret rest hcap hact
   have h2 := SquareRoute.run_test {s with memory := tailCarry s.memory c f}
