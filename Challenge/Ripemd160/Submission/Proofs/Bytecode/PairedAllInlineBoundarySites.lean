@@ -192,8 +192,8 @@ def scheduleSite : GenericRoundSite Artifact.submissionArtifact .Osaka scheduleT
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := scheduleTemplate) (by decide))
     (by decide)
-theorem schedule_pc : scheduleSite.startPC = UInt256.ofNat 609 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 368) = UInt256.ofNat 609
+theorem schedule_pc : scheduleSite.startPC = UInt256.ofNat 607 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 368) = UInt256.ofNat 607
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem schedule_advances {instruction : Instr} (hmem : instruction ∈ scheduleTemplate)
     {s t : State} (hr : Stepper.runInstr instruction s = some t) :
@@ -221,13 +221,13 @@ def gasSteps_schedule (s : State) (returnPC : UInt256) (p : Nat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps (DenseScheduleTemplate.scheduleEntry s (UInt256.ofNat 609) (UInt256.ofNat p) returnPC rest)
-      {s with pc := UInt256.ofNat 852, stack := PairedMask32Cache.maskWord :: cache (PairedScheduleMemory.normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p)) ++ (returnPC :: rest), memory := PairedScheduleMemory.normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat p)} := by
+    GasSteps (DenseScheduleTemplate.scheduleEntry s (UInt256.ofNat 607) (UInt256.ofNat p) returnPC rest)
+      {s with pc := UInt256.ofNat 850, stack := PairedMask32Cache.maskWord :: cache (PairedScheduleMemory.normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p)) ++ (returnPC :: rest), memory := PairedScheduleMemory.normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat p)} := by
   have h := CachedSchedule.run_fullTemplate_natural s returnPC p rest hstack hrun hp hbound
-  have hpct : pcAfter (UInt256.ofNat 609) CachedSchedule.fullTemplate = UInt256.ofNat 852 := by rfl
+  have hpct : pcAfter (UInt256.ofNat 607) CachedSchedule.fullTemplate = UInt256.ofNat 850 := by rfl
   rw [hpct] at h
   have hl := runLocatedBlock_eq_runInstrSeq_site scheduleSite
-    (DenseScheduleTemplate.scheduleEntry s (UInt256.ofNat 609) (UInt256.ofNat p) returnPC rest)
+    (DenseScheduleTemplate.scheduleEntry s (UInt256.ofNat 607) (UInt256.ofNat p) returnPC rest)
     schedule_pc.symm (by
       intro located hm u v hr
       apply schedule_advances ?_ hr
@@ -281,11 +281,11 @@ def startupSite : GenericRoundSite Artifact.submissionArtifact .Osaka startupTem
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := startupTemplate) (by decide))
     (by decide)
-theorem startup_pc : startupSite.startPC = UInt256.ofNat 852 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 541) = UInt256.ofNat 852
+theorem startup_pc : startupSite.startPC = UInt256.ofNat 850 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 541) = UInt256.ofNat 850
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem startup_endPC : startupSite.endPC = UInt256.ofNat 893 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 575) = UInt256.ofNat 893
+theorem startup_endPC : startupSite.endPC = UInt256.ofNat 891 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 575) = UInt256.ofNat 891
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem startup_resultStack (memory : ByteArray) (rho : List UInt256) :
     PairedDerivedStartup.resultStack memory rho =
@@ -307,8 +307,8 @@ def gasSteps_startup (s : State) (rho : List UInt256) (hstack : rho.length ≤ 1
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 852, stack := PairedDerivedStartup.lowerWord :: rho}
-      {s with pc := UInt256.ofNat 893, stack := PairedStartupTrace.resultStack s.memory rho} := by
+    GasSteps {s with pc := UInt256.ofNat 850, stack := PairedDerivedStartup.lowerWord :: rho}
+      {s with pc := UInt256.ofNat 891, stack := PairedStartupTrace.resultStack s.memory rho} := by
   have h := SCanonicalStartup.gasSteps_template startupSite s rho h32 h64 h96 h128 h160
     hstack hrun hactive hcode hfork hnp
   rw [startup_resultStack] at h
@@ -396,16 +396,16 @@ def tailTemplate : List Instr :=
     .op .POP,
     .op .JUMP ]
 theorem tail_slice :
-    (Artifact.submissionArtifact.instructions.drop 4022).take tailTemplate.length = tailTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 4018).take tailTemplate.length = tailTemplate := by rfl
 def tailSite : GenericRoundSite Artifact.submissionArtifact .Osaka tailTemplate :=
-  StackSiteBuilder.ofSlice tailTemplate 4022 tail_slice
-    (by change 4022 + tailTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice tailTemplate 4018 tail_slice
+    (by change 4018 + tailTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := tailTemplate) (by decide))
     (by decide)
-theorem tail_pc : tailSite.startPC = UInt256.ofNat 4846 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4022) = UInt256.ofNat 4846
+theorem tail_pc : tailSite.startPC = UInt256.ofNat 4851 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4018) = UInt256.ofNat 4851
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem tail_advances : ∀ instruction ∈ tailTemplate.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -414,7 +414,7 @@ theorem run_tail (s : State) (ret : UInt256) (q : PairedTailTrace.Frame)
     (rho : List UInt256) (hstack : rho.length ≤ 996)
     (hrun : s.halt = .Running) (hactive : 23 ≤ s.activeWords.toNat)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
-    runInstrSeq tailTemplate {s with pc := UInt256.ofNat 4846, stack := cachedTailEntry s.memory q ret rho} =
+    runInstrSeq tailTemplate {s with pc := UInt256.ofNat 4851, stack := cachedTailEntry s.memory q ret rho} =
       some {s with pc := ret, stack := rho, memory := PairedTailTrace.resultMemory s.memory q} := by
   have hcap (n : Nat) (hn : n ≤ 26) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 160) :
@@ -435,7 +435,7 @@ def gasSteps_tail (s : State) (ret : UInt256) (q : PairedTailTrace.Frame)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4846, stack := cachedTailEntry s.memory q ret rho}
+    GasSteps {s with pc := UInt256.ofNat 4851, stack := cachedTailEntry s.memory q ret rho}
       {s with pc := ret, stack := rho, memory := PairedTailTrace.resultMemory s.memory q} := by
   exact gasSteps_terminal_of_raw tailSite _ _ hcode hfork hrun hnp tail_pc.symm tail_advances
     (run_tail s ret q rho hstack hrun hactive hvalid)

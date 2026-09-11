@@ -745,12 +745,12 @@ def gasSteps_lengthIteration (input : ByteArray) (hfit : CalldataFits input)
 def lengthExitPath : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [⟨332, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨333, .push ⟨2, by decide⟩ (UInt256.ofNat 600), by rfl, by decide⟩,
+   ⟨333, .push ⟨2, by decide⟩ (UInt256.ofNat 598), by rfl, by decide⟩,
    ⟨334, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 @[simp] private theorem validPadReturn :
-    Decode.isValidJumpDest submissionBytecode 600 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 363 = 600 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+    Decode.isValidJumpDest submissionBytecode 598 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 363 = 598 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   rw [← hpc]
   exact Artifact.submissionArtifact.isValidJumpDest_index 363 (by rfl)
 
@@ -771,11 +771,11 @@ private theorem lengthExitPending_eq (input : ByteArray) (i : Nat) :
 def lengthExitSwapped (input : ByteArray) (i : Nat) : State :=
   { lengthExitEntered input i with
     pc := UInt256.ofNat (Artifact.instructionPC 334)
-    stack := [UInt256.ofNat 600, lengthShift input i, Padding.paddedWord input] }
+    stack := [UInt256.ofNat 598, lengthShift input i, Padding.paddedWord input] }
 
 def lengthExitReturned (input : ByteArray) (i : Nat) : State :=
   { lengthExitSwapped input i with
-    pc := UInt256.ofNat 600
+    pc := UInt256.ofNat 598
     stack := [lengthShift input i, Padding.paddedWord input] }
 
 @[simp] private theorem lengthExitEntered_halt (input : ByteArray) (i : Nat) :
@@ -818,7 +818,7 @@ private theorem run_lengthExitJump (input : ByteArray) (i : Nat) :
     Challenge.EvmProof.Stepper.runLocatedBlock lengthExitJumpPath
       (lengthExitSwapped input i) = some (lengthExitReturned input i) := by
   have hstep := jump_step (lengthExitPath[2]'(by simp [lengthExitPath]))
-    (lengthExitSwapped input i) (UInt256.ofNat 600)
+    (lengthExitSwapped input i) (UInt256.ofNat 598)
     [lengthShift input i, Padding.paddedWord input]
     (by simp [lengthExitPath]) (by simp [lengthExitPath]) rfl rfl (by simp) validPadReturn (by simp)
   simp only [lengthExitPath, List.getElem_cons_succ, List.getElem_cons_zero] at hstep
@@ -1068,13 +1068,13 @@ noncomputable def padFinalMemory (input : ByteArray) : ByteArray := by
 
 noncomputable def padReturned (input : ByteArray) : State :=
   { lengthLoopState input 0 with
-    pc := UInt256.ofNat 600
+    pc := UInt256.ofNat 598
     stack := [UInt256.ofNat 0, Padding.paddedWord input]
     memory := padFinalMemory input
     activeWords := topByteActiveWords input }
 
 @[simp] theorem padReturned_pc (input : ByteArray) :
-    (padReturned input).pc = UInt256.ofNat 600 := by rfl
+    (padReturned input).pc = UInt256.ofNat 598 := by rfl
 
 @[simp] theorem padReturned_stack (input : ByteArray) :
     (padReturned input).stack = [UInt256.ofNat 0, Padding.paddedWord input] := by rfl

@@ -158,8 +158,8 @@ theorem cache_rawMemory (memory : ByteArray) (value : UInt256) :
 theorem run_original_raw (s : State) (value returnPC : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 996) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat) :
-    runInstrSeq originalLower {s with pc := (UInt256.ofNat 599), stack := value :: mask8 :: maskWord :: mask16 :: returnPC :: rest} =
-      some {s with pc := pcAfter (UInt256.ofNat 599) originalLower, stack := (returnPC :: rest), memory := rawMemory s.memory value} := by
+    runInstrSeq originalLower {s with pc := (UInt256.ofNat 597), stack := value :: mask8 :: maskWord :: mask16 :: returnPC :: rest} =
+      some {s with pc := pcAfter (UInt256.ofNat 597) originalLower, stack := (returnPC :: rest), memory := rawMemory s.memory value} := by
   have hcap (n : Nat) (hn : n ≤ 26) : rest.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
@@ -172,8 +172,8 @@ theorem run_original_raw (s : State) (value returnPC : UInt256) (rest : List UIn
 theorem run_actual_raw (s : State) (value returnPC : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 996) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat) :
-    runInstrSeq actualLower {s with pc := (UInt256.ofNat 763), stack := value :: mask8 :: maskWord :: mask16 :: returnPC :: rest} =
-      some {s with pc := pcAfter (UInt256.ofNat 763) actualLower, stack := maskWord :: rawCache value ++ (returnPC :: rest), memory := rawMemory s.memory value} := by
+    runInstrSeq actualLower {s with pc := (UInt256.ofNat 761), stack := value :: mask8 :: maskWord :: mask16 :: returnPC :: rest} =
+      some {s with pc := pcAfter (UInt256.ofNat 761) actualLower, stack := maskWord :: rawCache value ++ (returnPC :: rest), memory := rawMemory s.memory value} := by
   have hcap (n : Nat) (hn : n ≤ 26) : rest.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
@@ -210,12 +210,12 @@ theorem run_original_model (s : State) (pc value returnPC : UInt256) (rest : Lis
 theorem run_actual_lower (s : State) (value returnPC : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 996) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat) :
-    runInstrSeq actualLower {s with pc := UInt256.ofNat 763, stack := value :: mask8 :: maskWord :: mask16 :: returnPC :: rest} =
-      some {s with pc := pcAfter (UInt256.ofNat 763) actualLower, stack := maskWord :: cache (modelMemory s.memory value) ++ (returnPC :: rest), memory := modelMemory s.memory value} := by
+    runInstrSeq actualLower {s with pc := UInt256.ofNat 761, stack := value :: mask8 :: maskWord :: mask16 :: returnPC :: rest} =
+      some {s with pc := pcAfter (UInt256.ofNat 761) actualLower, stack := maskWord :: cache (modelMemory s.memory value) ++ (returnPC :: rest), memory := modelMemory s.memory value} := by
   have hmem : rawMemory s.memory value = modelMemory s.memory value :=
     congrArg (fun t : State => t.memory) (Option.some.inj
       ((run_original_raw s value returnPC rest hstack hrun hactive).symm.trans
-        (run_original_model s (UInt256.ofNat 599) value returnPC rest hstack hrun hactive)))
+        (run_original_model s (UInt256.ofNat 597) value returnPC rest hstack hrun hactive)))
   have h := run_actual_raw s value returnPC rest hstack hrun hactive
   rw [← cache_rawMemory s.memory value, hmem] at h
   exact h
@@ -245,18 +245,18 @@ theorem initialTemplate_cons : PairedDivMaskCache.cachedInitial =
 
 theorem run_initialTemplate (s : State) (messageOffset returnPC : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1015) (hrun : s.halt = .Running) :
-    runInstrSeq initialTemplate (scheduleEntry s (UInt256.ofNat 609) messageOffset returnPC rest) =
+    runInstrSeq initialTemplate (scheduleEntry s (UInt256.ofNat 607) messageOffset returnPC rest) =
       some {s with
-        pc := pcAfter (UInt256.ofNat 609) initialTemplate,
+        pc := pcAfter (UInt256.ofNat 607) initialTemplate,
         stack := inputWord1 s messageOffset :: inputWord0 s messageOffset ::
           mask8 :: maskWord :: mask16 :: returnPC :: rest,
         activeWords := loadedActiveWords s messageOffset} := by
-  have h := PairedDivMaskCache.run_cachedInitial s (UInt256.ofNat 608) messageOffset returnPC rest hstack hrun
+  have h := PairedDivMaskCache.run_cachedInitial s (UInt256.ofNat 606) messageOffset returnPC rest hstack hrun
   have hcap : ([messageOffset, returnPC] ++ rest).length < 1024 := by
     simp only [List.length_append, List.length_cons, List.length_nil]; omega
   have hhead : Stepper.runInstr (.op .JUMPDEST)
-      (scheduleEntry s (UInt256.ofNat 608) messageOffset returnPC rest) =
-        some (scheduleEntry s (UInt256.ofNat 609) messageOffset returnPC rest) := by
+      (scheduleEntry s (UInt256.ofNat 606) messageOffset returnPC rest) =
+        some (scheduleEntry s (UInt256.ofNat 607) messageOffset returnPC rest) := by
     simp [Stepper.runInstr, scheduleEntry, hrun, hcap, UInt256.succ]
     constructor
     · omega
@@ -264,8 +264,8 @@ theorem run_initialTemplate (s : State) (messageOffset returnPC : UInt256)
   rw [initialTemplate_cons, runInstrSeq, hhead] at h
   obtain ⟨head, tail, heq⟩ : ∃ head tail, initialTemplate = head :: tail :=
     ⟨.push ⟨4, by decide⟩ maskWord, PairedDivMaskCache.cachedInitial.drop 2, by rfl⟩
-  have hpc : pcAfter (UInt256.ofNat 608) (.op .JUMPDEST :: initialTemplate) =
-      pcAfter (UInt256.ofNat 609) initialTemplate := by rfl
+  have hpc : pcAfter (UInt256.ofNat 606) (.op .JUMPDEST :: initialTemplate) =
+      pcAfter (UInt256.ofNat 607) initialTemplate := by rfl
   rw [hpc] at h
   simpa only [heq, scheduleEntry, hrun] using h
 
@@ -276,12 +276,12 @@ def fullTemplate : List Instr :=
 theorem run_fullTemplate (s : State) (messageOffset returnPC : UInt256)
     (rest : List UInt256) (hstack : rest.length ≤ 996) (hrun : s.halt = .Running)
     (hactive : 23 ≤ (loadedActiveWords s messageOffset).toNat) :
-    runInstrSeq fullTemplate (scheduleEntry s (UInt256.ofNat 609) messageOffset returnPC rest) =
-      some {s with pc := pcAfter (UInt256.ofNat 609) fullTemplate, stack := maskWord :: cache (normalizedMemory s.memory (scheduleWords s messageOffset)) ++ (returnPC :: rest), memory := normalizedMemory s.memory (scheduleWords s messageOffset), activeWords := loadedActiveWords s messageOffset} := by
+    runInstrSeq fullTemplate (scheduleEntry s (UInt256.ofNat 607) messageOffset returnPC rest) =
+      some {s with pc := pcAfter (UInt256.ofNat 607) fullTemplate, stack := maskWord :: cache (normalizedMemory s.memory (scheduleWords s messageOffset)) ++ (returnPC :: rest), memory := normalizedMemory s.memory (scheduleWords s messageOffset), activeWords := loadedActiveWords s messageOffset} := by
   have h1 := run_initialTemplate s messageOffset returnPC rest (by omega) hrun
   have h2 := run_cachedReversedHalf
     {s with activeWords := loadedActiveWords s messageOffset}
-    (pcAfter (UInt256.ofNat 609) initialTemplate) (inputWord1 s messageOffset) 8
+    (pcAfter (UInt256.ofNat 607) initialTemplate) (inputWord1 s messageOffset) 8
     ⟨3, by decide⟩ ⟨5, by decide⟩ ⟨2, by decide⟩
     (inputWord0 s messageOffset :: mask8 :: maskWord :: mask16 :: returnPC :: rest)
     (by simp only [List.length_cons]; omega) hrun hactive (by decide)
@@ -289,7 +289,7 @@ theorem run_fullTemplate (s : State) (messageOffset returnPC : UInt256)
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 hrun h2
   have he := run_lowerEndian
     {s with activeWords := loadedActiveWords s messageOffset, memory := storeCells s.memory (halfWords (packedInput1 s messageOffset) 8) 8 8}
-    (pcAfter (pcAfter (UInt256.ofNat 609) initialTemplate) upperTemplate)
+    (pcAfter (pcAfter (UInt256.ofNat 607) initialTemplate) upperTemplate)
     (inputWord0 s messageOffset) returnPC rest hstack hrun
   have h12e := DenseScheduleTrace.runInstrSeq_append_running h12 hrun he
   have h3 := run_actual_lower
@@ -298,16 +298,16 @@ theorem run_fullTemplate (s : State) (messageOffset returnPC : UInt256)
   have h := DenseScheduleTrace.runInstrSeq_append_running h12e hrun h3
   unfold modelMemory at h
   rw [store_upper_schedule, store_lower_schedule] at h
-  have hpc : pcAfter (UInt256.ofNat 609)
-      ((initialTemplate ++ upperTemplate) ++ lowerEndian) = UInt256.ofNat 763 := by decide
+  have hpc : pcAfter (UInt256.ofNat 607)
+      ((initialTemplate ++ upperTemplate) ++ lowerEndian) = UInt256.ofNat 761 := by decide
   rw [fullTemplate, DenseScheduleTrace.pcAfter_append, hpc]
   simpa only [upperTemplate, normalizedMemory] using h
 
 theorem run_fullTemplate_natural (s : State) (returnPC : UInt256)
     (p : Nat) (rest : List UInt256) (hstack : rest.length ≤ 996) (hrun : s.halt = .Running)
     (hp : 736 ≤ p) (hbound : p + 64 < 2 ^ 256) :
-    runInstrSeq fullTemplate (scheduleEntry s (UInt256.ofNat 609) (UInt256.ofNat p) returnPC rest) =
-      some {s with pc := pcAfter (UInt256.ofNat 609) fullTemplate, stack := maskWord :: cache (normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p)) ++ (returnPC :: rest), memory := normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p), activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
+    runInstrSeq fullTemplate (scheduleEntry s (UInt256.ofNat 607) (UInt256.ofNat p) returnPC rest) =
+      some {s with pc := pcAfter (UInt256.ofNat 607) fullTemplate, stack := maskWord :: cache (normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p)) ++ (returnPC :: rest), memory := normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p), activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
   have h := run_fullTemplate s (UInt256.ofNat p) returnPC rest hstack hrun
     (loaded_active_ge23 s p hp hbound)
   rw [normalizedMemory_congr s.memory (scheduleWords s (UInt256.ofNat p))

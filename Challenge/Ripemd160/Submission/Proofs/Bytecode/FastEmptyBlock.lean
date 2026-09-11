@@ -76,8 +76,8 @@ theorem compress_empty :
 /-- The nonempty driver target is the physical schedule entry. -/
 def nonemptyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 609
-    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 589,
+    pc := UInt256.ofNat 607
+    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 587,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
 private def writeWord (memory : ByteArray) (offset : Nat)
@@ -101,7 +101,7 @@ def emptyActiveWords (s : State) : UInt256 :=
 
 def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 589
+    pc := UInt256.ofNat 587
     stack := [DriverTrace.blockOffsetWord i, Padding.paddedWord input]
     memory := emptyMemory s.memory
     activeWords := emptyActiveWords s }
