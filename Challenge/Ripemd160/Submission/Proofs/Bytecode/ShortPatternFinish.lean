@@ -48,12 +48,12 @@ def gasSteps_store (n : Nat) (input : ByteArray) (sv ov : UInt256)
     (hn : n = 56 ∨ n = 120 ∨ n = 64 ∨ n = 65 ∨ n = 128 ∨ n = 63 ∨ n = 119 ∨ n = 55 ∨ n = 256 ∨ n = 376 ∨ n = 1000 ∨ n = 1 ∨ n = 31 ∨ n = 32) (hsize : input.size = n) :
     GasSteps (digestEntryState n input sv ov) (copyReadyState n input sv ov) := by
   have gb := sound digestBeforeSizePath (run_before_size n input sv ov hn hsize)
-  have hc := Artifact.submissionArtifact.decodeAt_op_index 349 .CODESIZE
+  have hc := Artifact.submissionArtifact.decodeAt_op_index 347 .CODESIZE
     (by rfl) (by decide) trivial
   have hp : (codeSizeEntryState n input sv ov).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 349 := by rw [pc4864]; rfl
+      Artifact.submissionArtifact.instructionPC 347 := by rw [pc4864]; rfl
   have hop : (codeSizeEntryState n input sv ov).decodedOp = some .CODESIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (codeSizeEntryState n input sv ov) 349
+    Artifact.submissionArtifact.state_decodedOp_of (codeSizeEntryState n input sv ov) 347
       (by rfl) hp .CODESIZE none hc (by rfl)
   have gsraw := Codesize.step hop
     (by simp [codeSizeEntryState, returnRest, stS, initialState])
@@ -85,12 +85,12 @@ def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
     GasSteps (selectorState n input sv ov) (returnedState n input sv ov) := by
   have gselect := sound selectorPath (run_selector n input sv ov)
   have gstore := gasSteps_store n input sv ov hn hsize
-  have hc := Artifact.submissionArtifact.decodeAt_op_index 352 .CODECOPY
+  have hc := Artifact.submissionArtifact.decodeAt_op_index 350 .CODECOPY
     (by rfl) (by decide) trivial
   have hpc : (copyReadyState n input sv ov).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 352 := by rw [pc4870]; rfl
+      Artifact.submissionArtifact.instructionPC 350 := by rw [pc4870]; rfl
   have hcopy : (copyReadyState n input sv ov).decodedOp = some .CODECOPY :=
-    Artifact.submissionArtifact.state_decodedOp_of (copyReadyState n input sv ov) 352
+    Artifact.submissionArtifact.state_decodedOp_of (copyReadyState n input sv ov) 350
       (by rfl) hpc .CODECOPY none hc (by rfl)
   have gcraw := Codecopy.step (s := copyReadyState n input sv ov)
     12 (UInt256.ofNat (tableOffset n)) 20 (returnRest sv ov)
@@ -114,14 +114,14 @@ def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
       show MachineState.writeBytes ByteArray.empty
         (MachineState.readPadded submissionBytecode (tableOffset n) 20) 12 = answerMemory n
         from tableMemory_eq n hn] using gcraw
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 353 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 351 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedState n input sv ov).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 353 := by
+      Artifact.submissionArtifact.instructionPC 351 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
   have hop : (storedState n input sv ov).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedState n input sv ov) 353
+    Artifact.submissionArtifact.state_decodedOp_of (storedState n input sv ov) 351
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop
     (by simp [storedState, returnRest, stS, initialState])
