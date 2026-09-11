@@ -96,7 +96,7 @@ theorem answerMemory_read (n : Nat) :
 @[simp] theorem returnedState_hReturn (n : Nat) (input : ByteArray) (sv ov : UInt256) :
     (returnedState n input sv ov).hReturn = paddedDigest n := answerMemory_read n
 
-def tableOffset (n : Nat) : Nat := 5020 + 21 * (((479 * n) / 256) % 11)
+def tableOffset (n : Nat) : Nat := 4957 + 21 * (((539 * n) / 256) % 16)
 def copyReadyState (n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
   stS input 5015 ([12, UInt256.ofNat (tableOffset n), 20] ++ returnRest sv ov)
 
@@ -162,7 +162,7 @@ private theorem codePrefix_size : codePrefix.size = 4839 := by
 private theorem code_split : submissionBytecode = codePrefix ++ submissionByteChunk20 := rfl
 private theorem tableRead (n : Nat) :
     MachineState.readPadded submissionBytecode (tableOffset n) 20 =
-      MachineState.readPadded submissionByteChunk20 (181 + 21 * (((479 * n) / 256) % 11)) 20 := by
+      MachineState.readPadded submissionByteChunk20 (118 + 21 * (((539 * n) / 256) % 16)) 20 := by
   rw [code_split, readPadded_append_right _ _ _ _ (by rw [codePrefix_size]; unfold tableOffset; omega), codePrefix_size]
   congr 1
   unfold tableOffset
@@ -170,7 +170,7 @@ private theorem tableRead (n : Nat) :
 
 private theorem tablePayload (n : Nat)
     (hn : n = 56 ∨ n = 120 ∨ n = 64 ∨ n = 65 ∨ n = 128 ∨ n = 63 ∨ n = 119 ∨ n = 55 ∨ n = 256 ∨ n = 376 ∨ n = 1000) :
-    MachineState.readPadded submissionByteChunk20 (181 + 21 * (((479 * n) / 256) % 11)) 20 =
+    MachineState.readPadded submissionByteChunk20 (118 + 21 * (((539 * n) / 256) % 16)) 20 =
       (paddedDigest n).extract 12 32 := by
   rcases hn with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> decide
 
@@ -193,16 +193,16 @@ def selectorPath : List Located :=
 
 def digestStorePath : List Located :=
   [opAt 4083 .JUMPDEST,
-   pushAt 4084 1 11,
+   pushAt 4084 1 15,
    opAt 4085 .CALLDATASIZE,
-   pushAt 4086 2 479,
+   pushAt 4086 2 539,
    opAt 4087 .MUL,
    pushAt 4088 1 8,
    opAt 4089 .SHR,
-   opAt 4090 .MOD,
+   opAt 4090 .AND,
    pushAt 4091 1 21,
    opAt 4092 .MUL,
-   pushAt 4093 2 5020,
+   pushAt 4093 2 4957,
    opAt 4094 .ADD,
    pushAt 4095 1 20,
    opAt 4096 (.Swap ⟨0, by decide⟩),
