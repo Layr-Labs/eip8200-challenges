@@ -14,12 +14,11 @@ theorem run_headerCheck (input : ByteArray) :
       (headerLoadedState input) = some (headerState input) := by
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := 1143) (b := 3) (by norm_num : 1143 + 3 < 2 ^ 256)
-  have hdest : (1147 : UInt256).toNat = 1147 := by decide
-  have hdestWord : (1147 : UInt256) = UInt256.ofNat 1147 := by decide
   simp [headerCheckPath, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    headerLoadedState, headerState, initialState, hadd, hdest, hdestWord,
+    headerLoadedState, headerState, initialState, hadd,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Main
