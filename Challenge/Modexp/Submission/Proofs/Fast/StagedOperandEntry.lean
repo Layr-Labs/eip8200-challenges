@@ -63,8 +63,8 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (EntryPrefix.displacement mem) rest hcap
   have hlow := EntryPrefix.run_low { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb)
-    (UInt256.ofNat 4072 + EntryPrefix.displacement mem)
-    (UInt256.ofNat 4371 + EntryPrefix.displacement mem)
+    (UInt256.ofNat 4068 + EntryPrefix.displacement mem)
+    (UInt256.ofNat 4367 + EntryPrefix.displacement mem)
     dst ret m0 inv aEnd tl m96 m32 rest hcap hact
   have hprefix := runInstructions_append_some _ _ _ _ _
     (runInstructions_append_some _ _ _ _ _ hreads hshuffle) hlow

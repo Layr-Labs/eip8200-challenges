@@ -21,7 +21,7 @@ theorem run_middle (s : State) (mem : ByteArray) (c bi : UInt256)
     runInstructions CarryRowPrograms.middleBlock
       (CiosCached.midState s mem c bi pb n i hd ent inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
-    some (CiosCached.l2At 4369 s (midMem1 mem c) (overflow mem c)
+    some (CiosCached.l2At 4365 s (midMem1 mem c) (overflow mem c)
       (rowMu mem n) (rowC0 mem n) pb n i 0 hd ent inv m0
       (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) := by
   have hmem := middle_agree mem mem (refl mem) c
@@ -43,7 +43,7 @@ theorem run_middle (s : State) (mem : ByteArray) (c bi : UInt256)
   have hjd : runInstructions [.op .JUMPDEST]
       (CiosCached.midState s mem c bi pb n i hd ent inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
-      some (framed {s with memory := mem} (UInt256.ofNat 4339)
+      some (framed {s with memory := mem} (UInt256.ofNat 4335)
         ([c,bi,UInt256.ofNat (ptrAt (pb+32*n-32) i),hd,
           UInt256.ofNat (pb-32),ent,negative32,allOnes,l2Target n,inv] ++
           (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))) := by
