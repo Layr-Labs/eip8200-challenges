@@ -8,7 +8,8 @@ set_option maxHeartbeats 4000000
 /-!
 # Direct fixed-exponent squaring chain
 
-BASE is squared in place while the reduced normal-domain base remains in ACC.
+BASE is squared in place by the `SQUARE` kernel (`Exp.Subroutines.square`)
+while the reduced normal-domain base remains in ACC.
 The final mixed-domain multiplication is composed in `FixedDirectHitCorrect`.
 -/
 
@@ -22,19 +23,18 @@ open Challenge.Modexp.Submission.Proofs.Fast.FixedDirectStates
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
 theorem jumpD3970 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 3409).toNat = true :=
-  Exp.jumpD 3409 (by decide) FixedDirectPaths.jumpDest3970
+    (UInt256.ofNat 3257).toNat = true :=
+  Exp.jumpD 3257 (by decide) FixedDirectPaths.jumpDest3970
 
 theorem jumpD3997 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 1721).toNat = true :=
-  Exp.jumpD 1721 (by decide) jumpDest1802
+    (UInt256.ofNat 1604).toNat = true :=
+  Exp.jumpD 1604 (by decide) jumpDest1802
 
 /-- Execute the remaining positive number of in-place BASE squares. -/
-def gasSteps_squareLoop (s : State) {n bsize mm minv R : Nat}
+def gasSteps_squareLoop (s : State) {n bsize mm minv : Nat}
     (sub : Exp.Subroutines s n bsize mm minv)
-    (spec : Exp.SubSpec sub.mpMem sub.amMem n mm R minv)
     (memory : ByteArray) (esize msize count bM rawBase : Nat)
-    (hm : 0 < mm) (hn32 : n ≤ 8) (hcount : 1 ≤ count)
+    (hm : 0 < mm) (hn32 : n ≤ 32) (hcount : 1 ≤ count)
     (hcount16 : count ≤ 16) (hbM : bM < mm)
     (hframe : Exp.Frame memory n bsize minv)
     (hinv : Inv memory n mm rawBase bM)
@@ -44,70 +44,67 @@ def gasSteps_squareLoop (s : State) {n bsize mm minv R : Nat}
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (square s memory n bsize esize msize count)
-      (product s (fixedDirectMems sub.mpMem memory count)
+      (product s (fixedDirectMems sub.sqMem memory count)
         n bsize esize msize) := by
   induction count generalizing memory bM with
   | zero => omega
   | succ k ih =>
-      have hcall := sub.monpro 512 512 512 (UInt256.ofNat 3409)
+      have hcall := sub.square (UInt256.ofNat 3257)
         (UInt256.ofNat (k + 1) :: Exp.outer n bsize esize msize)
-        memory bM bM (by simp [Exp.outer])
-        (by omega) (by omega) (by omega) (by omega) (by omega)
-        jumpD3970 hframe hinv.modulus hinv.squareBase hinv.squareBase hbM
+        memory bM (by simp [Exp.outer])
+        jumpD3970 hframe hinv.modulus hinv.squareBase hbM
       have hhead := FixedDirectChainTrace.gasSteps_squareCall
         s memory n bsize esize msize (k + 1) hcode hfork hrun hnp
       have hfirst : Challenge.EvmProof.GasSteps
           (square s memory n bsize esize msize (k + 1))
-          (squareReturn s (sub.mpMem 512 512 512 memory)
+          (squareReturn s (sub.sqMem memory)
             n bsize esize msize (k + 1)) := hhead.trans hcall
       cases k with
       | zero =>
           exact hfirst.trans
             (FixedDirectChainTrace.gasSteps_squareReturnExit s
-              (sub.mpMem 512 512 512 memory) n bsize esize msize
+              (sub.sqMem memory) n bsize esize msize
               hcode hfork hrun hnp)
       | succ j =>
           have hnext := FixedDirectChainTrace.gasSteps_squareReturnLoop s
-            (sub.mpMem 512 512 512 memory) n bsize esize msize (j + 1)
+            (sub.sqMem memory) n bsize esize msize (j + 1)
             (by omega) (by omega) hcode hfork hrun hnp
-          have hframe1 : Exp.Frame (sub.mpMem 512 512 512 memory)
-              n bsize minv :=
-            sub.mpFrame 512 512 512 memory (by omega) hframe
-          have hinv1 := fixedDirectMems_inv sub spec memory hm hn32 hbM
+          have hframe1 : Exp.Frame (sub.sqMem memory) n bsize minv :=
+            sub.sqFrame memory hframe
+          have hinv1 := fixedDirectMems_inv sub memory hm hn32 hbM
             hframe hinv 1
           simp only [fixedDirectMems, fixedDirectValue] at hinv1
-          have hrec := ih (memory := sub.mpMem 512 512 512 memory)
-            (bM := Model.montMul mm R bM bM) (by omega) (by omega)
-            (Model.montMul_lt hm R bM bM) hframe1 hinv1
+          have hrec := ih (memory := sub.sqMem memory)
+            (bM := Model.montMul mm (Limbs.radix ^ n) bM bM) (by omega) (by omega)
+            (Model.montMul_lt hm (Limbs.radix ^ n) bM bM) hframe1 hinv1
           have hall := (hfirst.trans hnext).trans hrec
           exact Challenge.EvmProof.GasSteps.cast hall rfl
             (by rw [fixedDirectMems_step_add])
 
 /-- Enter the fixed chain without copying BASE over the retained raw ACC. -/
-def gasSteps_fixedSquares (s : State) {n bsize mm minv R : Nat}
+def gasSteps_fixedSquares (s : State) {n bsize mm minv : Nat}
     (sub : Exp.Subroutines s n bsize mm minv)
-    (spec : Exp.SubSpec sub.mpMem sub.amMem n mm R minv)
     (memory : ByteArray) (esize msize count bM rawBase : Nat)
-    (hm : 0 < mm) (hn : 2 ≤ n) (hn32 : n ≤ 8)
+    (hm : 0 < mm) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hcount : 1 ≤ count) (hcount16 : count ≤ 16) (hbM : bM < mm)
-    (hactive : 93 ≤ s.activeWords.toNat)
+    (hactive : 298 ≤ s.activeWords.toNat)
     (hframe : Exp.Frame memory n bsize minv)
     (hmod : Model.FastRepresents memory 0 n mm)
-    (hbase : Model.FastRepresents memory 512 n bM)
-    (hrawAcc : Model.FastRepresents memory 256 n rawBase)
+    (hbase : Model.FastRepresents memory 2048 n bM)
+    (hrawAcc : Model.FastRepresents memory 1024 n rawBase)
     (hone : ∃ one, one < Limbs.radix ∧
-      Model.FastRepresents memory 768 n one)
+      Model.FastRepresents memory 3072 n one)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (special s memory n bsize esize msize count)
-      (product s (fixedDirectMems sub.mpMem memory count)
+      (product s (fixedDirectMems sub.sqMem memory count)
         n bsize esize msize) := by
   have hhead := FixedDirectChainTrace.gasSteps_start s memory
     n bsize esize msize count hn hn32 hactive hcode hfork hrun hnp
-  have hloop := gasSteps_squareLoop s sub spec memory esize msize count
+  have hloop := gasSteps_squareLoop s sub memory esize msize count
     bM rawBase hm hn32 hcount hcount16 hbM hframe
     ⟨hmod, hrawAcc, hbase, hone⟩ hcode hfork hrun hnp
   exact hhead.trans hloop

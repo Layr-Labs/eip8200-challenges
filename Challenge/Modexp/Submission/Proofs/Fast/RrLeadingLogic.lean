@@ -37,27 +37,27 @@ theorem directCounter_formula (n : Nat) :
   rfl
 
 /-- The direct counter always fits the inherited RR counter range. -/
-theorem directCounter_le_four {n : Nat} (_hn2 : 2 ≤ n) (_hn32 : n ≤ 8) :
+theorem directCounter_le_four {n : Nat} (_hn2 : 2 ≤ n) (_hn32 : n ≤ 32) :
     directCounter n ≤ 4 := by
   interval_cases n <;> norm_num [directCounter, ltWord]
 
 /-- Explicit interval form used by the EVM counter-state bridge. -/
-theorem directCounter_range {n : Nat} (hn2 : 2 ≤ n) (hn32 : n ≤ 8) :
+theorem directCounter_range {n : Nat} (hn2 : 2 ≤ n) (hn32 : n ≤ 32) :
     0 ≤ directCounter n ∧ directCounter n ≤ 4 := by
   exact ⟨Nat.zero_le _, directCounter_le_four hn2 hn32⟩
 
 /-- The counter points immediately below the unique consumed leading bit. -/
-theorem directCounter_leading_prefix {n : Nat} (hn2 : 2 ≤ n) (hn32 : n ≤ 8) :
+theorem directCounter_leading_prefix {n : Nat} (hn2 : 2 ≤ n) (hn32 : n ≤ 32) :
     Model.expPrefix n (directCounter n + 1) = 1 := by
   interval_cases n <;> norm_num [directCounter, ltWord, Model.expPrefix]
 
 /-- The next higher prefix is zero, so the prefix above is genuinely leading. -/
 theorem directCounter_higher_prefix_zero {n : Nat} (hn2 : 2 ≤ n)
-    (hn32 : n ≤ 8) :
+    (hn32 : n ≤ 32) :
     Model.expPrefix n (directCounter n + 2) = 0 := by
   interval_cases n <;> norm_num [directCounter, ltWord, Model.expPrefix]
 
-theorem directCounter_leading_bit {n : Nat} (hn2 : 2 ≤ n) (hn32 : n ≤ 8) :
+theorem directCounter_leading_bit {n : Nat} (hn2 : 2 ≤ n) (hn32 : n ≤ 32) :
     bitAt n (directCounter n + 1) = 1 := by
   interval_cases n <;> norm_num [directCounter, ltWord, bitAt]
 
@@ -141,7 +141,7 @@ theorem rrSuffixValue_form {mm R n start initial : Nat}
 remaining direct-counter bits, reaches the standard `R²` congruence. -/
 theorem rrSuffixValue_direct_final {mm R n : Nat}
     (hm : 0 < mm) (hcop : Nat.Coprime R mm)
-    (hn2 : 2 ≤ n) (hn32 : n ≤ 8) :
+    (hn2 : 2 ≤ n) (hn32 : n ≤ 32) :
     rrSuffixValue mm R n (directCounter n) (Limbs.radix * R % mm)
         (directCounter n + 1) ≡
       Limbs.radix ^ n * R [MOD mm] := by

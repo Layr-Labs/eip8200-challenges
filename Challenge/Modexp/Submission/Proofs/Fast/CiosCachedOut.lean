@@ -15,16 +15,15 @@ open WindowNibbleKernel
 
 set_option linter.unusedVariables false in
 set_option linter.unusedSimpArgs false in
-theorem run_out (s : State) (mem : ByteArray) (pa pb n i : Nat)
-    (pdst ret : UInt256) (rest : List UInt256)
+theorem run_out (s : State) (mem : ByteArray) (pb n i : Nat)
+    (ent pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005) (hrun : s.halt = .Running)
-    (hact : 91 ≤ s.activeWords.toNat)
-    (_hn : 2 ≤ n) (_hn32 : n ≤ 8) (hi : i < n)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 2912)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2912) :
+    (hact : 296 ≤ s.activeWords.toNat)
+    (_hn : 2 ≤ n) (_hn32 : n ≤ 32) (hi : i < n)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472) :
     runInstructions outProgram
-      (outState s mem pa pb n i pdst ret rest) =
-      some (firstAt 4172 s mem (rowBi mem pb n i) pa pb n i pdst ret rest) := by
+      (outState s mem pb n i (UInt256.ofNat 4037) ent pdst ret rest) =
+      some (firstAt 4040 s mem (rowBi mem pb n i) pb n i (UInt256.ofNat 4037) ent pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
   have hExtra11 : rest.length + 11 < 1024 := by omega
@@ -47,7 +46,7 @@ theorem run_out (s : State) (mem : ByteArray) (pa pb n i : Nat)
   simp (config := { maxSteps := 800000 })
     [hExtra9, hExtra10, hExtra11, hExtra12, hExtra13, hExtra14, outProgram, runInstructions,
       Challenge.EvmProof.Stepper.runInstr,
-      outState, firstAt, l1At, l1Step, rowBi,
+      outState, firstAt, rowBi,
       hc8, hc9, hc10, hc11, hzero, hpbi, hactB,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,

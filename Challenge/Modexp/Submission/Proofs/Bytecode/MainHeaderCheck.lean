@@ -13,16 +13,13 @@ theorem run_headerCheck (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock headerCheckPath
       (headerLoadedState input) = some (headerState input) := by
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 1143) (b := 3) (by norm_num : 1143 + 3 < 2 ^ 256)
-  have hdest : (1147 : UInt256).toNat = 1147 := by decide
-  have hdestWord : (1147 : UInt256) = UInt256.ofNat 1147 := by decide
-  -- the block now falls through from the POP at 1146 instead of jumping,
-  -- so the successor step at 1146 has to be discharged explicitly
-  have hsucc : (UInt256.ofNat 1146).succ = UInt256.ofNat 1147 := by decide
+    (a := 1063) (b := 3) (by norm_num : 1063 + 3 < 2 ^ 256)
+  have hdest : (1067 : UInt256).toNat = 1067 := by decide
+  have hdestWord : (1067 : UInt256) = UInt256.ofNat 1067 := by decide
   simp [headerCheckPath, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    headerLoadedState, headerState, initialState, hadd, hdest, hdestWord, hsucc,
+    headerLoadedState, headerState, initialState, hadd, hdest, hdestWord,
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Main

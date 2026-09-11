@@ -22,43 +22,61 @@ def isFour (n : Nat) : UInt256 :=
 @[simp] theorem isFour_eight : isFour 8 = UInt256.ofNat 0 := by decide
 
 
+/-- First-loop entry of the multiply rows (frame slot `ent`): the setup computes
+`0x0fe4 + 0x98 * [n = 4]` (k1 JUMPDEST for eight limbs, k5 JUMPDEST for four). -/
 def l1Target (n : Nat) : UInt256 :=
-  UInt256.ofNat 4200 + UInt256.ofNat 152 * isFour n
+  UInt256.ofNat 4068 + UInt256.ofNat 152 * isFour n
 
+/-- Second-loop entry (`ent + 0x12b`), fixed for the whole kernel call. -/
 def l2Target (n : Nat) : UInt256 :=
-  UInt256.ofNat 4514 + UInt256.ofNat 143 * isFour n
+  UInt256.ofNat 4367 + UInt256.ofNat 152 * isFour n
 
-@[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 4352 := by decide
-@[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 4200 := by decide
-@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 4657 := by decide
-@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 4514 := by decide
+@[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 4220 := by decide
+@[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 4068 := by decide
+@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 4519 := by decide
+@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 4367 := by decide
 
-/-- Before first-loop step `j`: carry and `b_i` above the honest cached base. -/
-def l1At (pc : Nat) (s : State) (mem : ByteArray) (bi : UInt256)
-    (pa pb n i j : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
+/-! ## Row frames
+
+The kernel keeps, below the per-step words, the row frame
+`[pbi, hd, pb - 32, ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest`
+(`pdst, ret, rest` are generic; the multiply instantiates them with
+`inv, m0, tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest`).
+`hd` is the row head the tail returns to (`JUMPI` via `DUP3`; 4037 for the multiply,
+the `sq_row` pc 4710 for the square) and `ent` is the first-loop entry
+(`l1Target n` for the multiply; the square rows advance it by 38 per row). -/
+
+/-- The first-loop frame on an arbitrary MAC state `q` (memory and running carry). -/
+def l1Q (pc : Nat) (s : State) (q : MacState) (bi : UInt256)
+    (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat pc
-           stack := [(l1Step mem bi pa n j).carry, bi,
+           stack := [q.carry, bi,
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     UInt256.ofNat pa, UInt256.ofNat (pb - 32), l1Target n, negative32, allOnes, l2Target n, pdst, ret] ++ rest
-           memory := (l1Step mem bi pa n j).memory }
+                     hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
+           memory := q.memory }
+
+/-- Before first-loop step `j` of a multiply row: `q = l1Step mem bi pa n j`. -/
+def l1At (pc : Nat) (s : State) (mem : ByteArray) (bi : UInt256)
+    (pa pb n i j : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
+  l1Q pc s (l1Step mem bi pa n j) bi pb n i hd ent pdst ret rest
 
 /-- Row head before the first product; no dummy carry occupies the stack. -/
 def firstAt (pc : Nat) (s : State) (mem : ByteArray) (bi : UInt256)
-    (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
+    (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat pc
            stack := [bi, UInt256.ofNat (ptrAt (pb+32*n-32) i),
-             UInt256.ofNat pa, UInt256.ofNat (pb-32), l1Target n,
+             hd, UInt256.ofNat (pb-32), ent,
              negative32, allOnes, l2Target n, pdst, ret] ++ rest
            memory := mem }
 
 /-- Before second-loop step `k` of row `i`: only the carry and `mu` above
 `b_i` and the row frame. -/
 def l2At (pc : Nat) (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
-    (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
+    (pb n i k : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat pc
            stack := [(l2Step mid mu c0 n k).carry, mu, bi,
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     UInt256.ofNat pa, UInt256.ofNat (pb - 32), l1Target n, negative32, allOnes, l2Target n, pdst, ret] ++ rest
+                     hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
            memory := (l2Step mid mu c0 n k).memory }
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCached

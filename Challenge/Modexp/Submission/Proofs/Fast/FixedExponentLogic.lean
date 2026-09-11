@@ -22,7 +22,7 @@ open Challenge.Modexp.Submission.Proofs
 def squareMems (mpMem : Nat → Nat → Nat → ByteArray → ByteArray)
     (mem : ByteArray) : Nat → ByteArray
   | 0 => mem
-  | t + 1 => mpMem 256 256 256 (squareMems mpMem mem t)
+  | t + 1 => mpMem 1024 1024 1024 (squareMems mpMem mem t)
 
 /-- Arithmetic counterpart of `squareMems`. -/
 def squareValue (mm R acc : Nat) : Nat → Nat
@@ -33,8 +33,8 @@ def squareValue (mm R acc : Nat) : Nat → Nat
 /-- Copy BASE to ACC and then perform `t` Montgomery squares. -/
 def fixedMems (mpMem : Nat → Nat → Nat → ByteArray → ByteArray)
     (n : Nat) (mem : ByteArray) : Nat → ByteArray
-  | 0 => Exp.mcopyMem mem 256 512 (32 * n)
-  | t + 1 => mpMem 256 256 256 (fixedMems mpMem n mem t)
+  | 0 => Exp.mcopyMem mem 1024 2048 (32 * n)
+  | t + 1 => mpMem 1024 1024 1024 (fixedMems mpMem n mem t)
 
 /-- Value represented by ACC after `t` fixed-chain squares. -/
 def fixedValue (mm R bM : Nat) : Nat → Nat
@@ -46,7 +46,7 @@ theorem fixedMems_eq_squareMems
     (mpMem : Nat → Nat → Nat → ByteArray → ByteArray)
     (n : Nat) (mem : ByteArray) (t : Nat) :
     fixedMems mpMem n mem t =
-      squareMems mpMem (Exp.mcopyMem mem 256 512 (32 * n)) t := by
+      squareMems mpMem (Exp.mcopyMem mem 1024 2048 (32 * n)) t := by
   induction t with
   | zero => rfl
   | succ t ih => simp only [fixedMems, squareMems, ih]
@@ -86,7 +86,7 @@ theorem squareValue_lt {mm R acc : Nat} (hm : 0 < mm) (hacc : acc < mm) :
 theorem squareMems_step_add
     (mpMem : Nat → Nat → Nat → ByteArray → ByteArray)
     (mem : ByteArray) (t : Nat) :
-    squareMems mpMem (mpMem 256 256 256 mem) t =
+    squareMems mpMem (mpMem 1024 1024 1024 mem) t =
       squareMems mpMem mem (t + 1) := by
   induction t with
   | zero => rfl
@@ -101,13 +101,13 @@ theorem squareValue_step_add (mm R acc t : Nat) :
 
 theorem fixedMems_frame {s : State} {n bsize mm minv : Nat}
     (sub : Exp.Subroutines s n bsize mm minv) (mem : ByteArray)
-    (hn32 : n ≤ 8)
+    (hn32 : n ≤ 32)
     (hframe : Exp.Frame mem n bsize minv) :
     ∀ t, Exp.Frame (fixedMems sub.mpMem n mem t) n bsize minv := by
   intro t
   induction t with
   | zero => exact Exp.frame_mcopyMem (by omega) hframe
-  | succ t ih => exact sub.mpFrame 256 256 256 _ (by omega) ih
+  | succ t ih => exact sub.mpFrame 1024 1024 1024 _ (by omega) ih
 
 theorem squareMems_frame {s : State} {n bsize mm minv : Nat}
     (sub : Exp.Subroutines s n bsize mm minv) (mem : ByteArray)
@@ -116,12 +116,12 @@ theorem squareMems_frame {s : State} {n bsize mm minv : Nat}
   intro t
   induction t with
   | zero => exact hframe
-  | succ t ih => exact sub.mpFrame 256 256 256 _ (by omega) ih
+  | succ t ih => exact sub.mpFrame 1024 1024 1024 _ (by omega) ih
 
 theorem squareMems_inv {s : State} {n bsize mm minv R bM acc : Nat}
     (sub : Exp.Subroutines s n bsize mm minv)
     (spec : Exp.SubSpec sub.mpMem sub.amMem n mm R minv)
-    (mem : ByteArray) (hm : 0 < mm) (hn32 : n ≤ 8) (hacc : acc < mm)
+    (mem : ByteArray) (hm : 0 < mm) (hn32 : n ≤ 32) (hacc : acc < mm)
     (hframe : Exp.Frame mem n bsize minv)
     (hinv : Exp.EbInv mem n mm bM acc) :
     ∀ t, Exp.EbInv (squareMems sub.mpMem mem t) n mm bM
@@ -133,15 +133,15 @@ theorem squareMems_inv {s : State} {n bsize mm minv R bM acc : Nat}
       have hf := squareMems_frame sub mem hframe t
       obtain ⟨one, honeLt, honeRep⟩ := ih.oneBlock
       refine ⟨?_, ?_, ?_, ⟨one, honeLt, ?_⟩⟩
-      · exact spec.mpFrame 256 256 256 0 mm _ (by omega)
+      · exact spec.mpFrame 1024 1024 1024 0 mm _ (by omega)
           (Or.inr (by omega)) ih.modulus
-      · exact spec.mpValue 256 256 256 _ _ _
+      · exact spec.mpValue 1024 1024 1024 _ _ _
           (by omega) (by omega) (by omega) ih.modulus hf.minvW
           ih.accBlock ih.accBlock (squareValue_lt hm hacc t)
           (squareValue_lt hm hacc t)
-      · exact spec.mpFrame 256 256 256 512 bM _ (by omega)
+      · exact spec.mpFrame 1024 1024 1024 2048 bM _ (by omega)
           (Or.inl (by omega)) ih.baseBlock
-      · exact spec.mpFrame 256 256 256 768 one _ (by omega)
+      · exact spec.mpFrame 1024 1024 1024 3072 one _ (by omega)
           (Or.inl (by omega)) honeRep
 
 /-- The initial BASE-to-ACC copy and every later square preserve the four
@@ -149,41 +149,41 @@ named Montgomery blocks. -/
 theorem fixedMems_inv {s : State} {n bsize mm minv R bM : Nat}
     (sub : Exp.Subroutines s n bsize mm minv)
     (spec : Exp.SubSpec sub.mpMem sub.amMem n mm R minv)
-    (mem : ByteArray) (hm : 0 < mm) (hn : 2 ≤ n) (hn32 : n ≤ 8)
+    (mem : ByteArray) (hm : 0 < mm) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hbM : bM < mm)
     (hframe : Exp.Frame mem n bsize minv)
     (hmod : Model.FastRepresents mem 0 n mm)
-    (hbase : Model.FastRepresents mem 512 n bM)
+    (hbase : Model.FastRepresents mem 2048 n bM)
     (hone : ∃ one, one < Limbs.radix ∧
-      Model.FastRepresents mem 768 n one) :
+      Model.FastRepresents mem 3072 n one) :
     ∀ t, Exp.EbInv (fixedMems sub.mpMem n mem t) n mm bM
       (fixedValue mm R bM t) := by
   intro t
   induction t with
   | zero =>
-      refine ⟨?_, Exp.fastRepresents_mcopyMem mem 256 512 n bM
+      refine ⟨?_, Exp.fastRepresents_mcopyMem mem 1024 2048 n bM
         (by omega) hbase, ?_, ?_⟩
-      · exact Exp.fastRepresents_mcopyMem_disjoint mem 256 512 (32 * n)
+      · exact Exp.fastRepresents_mcopyMem_disjoint mem 1024 2048 (32 * n)
           0 n mm (Or.inr (by omega)) hmod
-      · exact Exp.fastRepresents_mcopyMem_disjoint mem 256 512 (32 * n)
-          512 n bM (Or.inl (by omega)) hbase
+      · exact Exp.fastRepresents_mcopyMem_disjoint mem 1024 2048 (32 * n)
+          2048 n bM (Or.inl (by omega)) hbase
       · obtain ⟨one, honeLt, honeRep⟩ := hone
-        exact ⟨one, honeLt, Exp.fastRepresents_mcopyMem_disjoint mem 256 512
-          (32 * n) 768 n one (Or.inl (by omega)) honeRep⟩
+        exact ⟨one, honeLt, Exp.fastRepresents_mcopyMem_disjoint mem 1024 2048
+          (32 * n) 3072 n one (Or.inl (by omega)) honeRep⟩
   | succ t ih =>
       have hf : Exp.Frame (fixedMems sub.mpMem n mem t) n bsize minv :=
         fixedMems_frame sub mem hn32 hframe t
       obtain ⟨one, honeLt, honeRep⟩ := ih.oneBlock
       refine ⟨?_, ?_, ?_, ⟨one, honeLt, ?_⟩⟩
-      · exact spec.mpFrame 256 256 256 0 mm _ (by omega)
+      · exact spec.mpFrame 1024 1024 1024 0 mm _ (by omega)
           (Or.inr (by omega)) ih.modulus
-      · exact spec.mpValue 256 256 256 _ _ _
+      · exact spec.mpValue 1024 1024 1024 _ _ _
           (by omega) (by omega) (by omega) ih.modulus hf.minvW
           ih.accBlock ih.accBlock (fixedValue_lt hm hbM t)
           (fixedValue_lt hm hbM t)
-      · exact spec.mpFrame 256 256 256 512 bM _ (by omega)
+      · exact spec.mpFrame 1024 1024 1024 2048 bM _ (by omega)
           (Or.inl (by omega)) ih.baseBlock
-      · exact spec.mpFrame 256 256 256 768 one _ (by omega)
+      · exact spec.mpFrame 1024 1024 1024 3072 one _ (by omega)
           (Or.inl (by omega)) honeRep
 
 end Challenge.Modexp.Submission.Proofs.Fast.FixedExponentLogic

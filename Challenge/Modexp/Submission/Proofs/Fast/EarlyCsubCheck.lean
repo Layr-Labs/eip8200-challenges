@@ -11,22 +11,22 @@ open Challenge.EvmProof.Word
 
 /-- Nonzero exactly when the high-limb test cannot rule out subtraction. -/
 def guardWord (mem : ByteArray) : UInt256 :=
-  UInt256.lor (MachineState.readWord mem 2080)
-    (UInt256.isZero (UInt256.lt (MachineState.readWord mem 2112) (MachineState.readWord mem 0)))
+  UInt256.lor (MachineState.readWord mem 8224)
+    (UInt256.isZero (UInt256.lt (MachineState.readWord mem 8256) (MachineState.readWord mem 0)))
 
 theorem guardWord_eq (mem : ByteArray) : guardWord mem =
-    UInt256.lor (MachineState.readWord mem 2080)
-      (UInt256.isZero (UInt256.lt (MachineState.readWord mem 2112) (MachineState.readWord mem 0))) := rfl
+    UInt256.lor (MachineState.readWord mem 8224)
+      (UInt256.isZero (UInt256.lt (MachineState.readWord mem 8256) (MachineState.readWord mem 0))) := rfl
 
 def Skip (mem : ByteArray) : Prop := (guardWord mem).toNat = 0
 instance (mem : ByteArray) : Decidable (Skip mem) := inferInstanceAs (Decidable (_ = 0))
 
 theorem skip_iff (mem : ByteArray) : Skip mem ↔
-    (MachineState.readWord mem 2080).toNat = 0 ∧
-    (MachineState.readWord mem 2112).toNat < (MachineState.readWord mem 0).toNat := by
+    (MachineState.readWord mem 8224).toNat = 0 ∧
+    (MachineState.readWord mem 8256).toNat < (MachineState.readWord mem 0).toNat := by
   unfold Skip guardWord
   rw [word_toNat_lor, word_toNat_isZero, word_toNat_lt]
-  by_cases h : (MachineState.readWord mem 2112).toNat < (MachineState.readWord mem 0).toNat
+  by_cases h : (MachineState.readWord mem 8256).toNat < (MachineState.readWord mem 0).toNat
   · simp [h]
   · simp [h]
     intro hz
@@ -36,9 +36,9 @@ theorem skip_iff (mem : ByteArray) : Skip mem ↔
 /-- For equal-width big-endian arrays, a strict high-limb comparison orders
     the represented integers regardless of all lower limbs. -/
 theorem high_limb_lt {mem : ByteArray} {n t m : Nat}
-    (hn : 1 ≤ n) (ht : Model.FastRepresents mem 2112 n t)
+    (hn : 1 ≤ n) (ht : Model.FastRepresents mem 8256 n t)
     (hm : Model.FastRepresents mem 0 n m)
-    (h : (MachineState.readWord mem 2112).toNat < (MachineState.readWord mem 0).toNat) :
+    (h : (MachineState.readWord mem 8256).toNat < (MachineState.readWord mem 0).toNat) :
     t < m := by
   have ht0 := Model.readWord_of_fastRepresents ht (j := 0) (by omega)
   have hm0 := Model.readWord_of_fastRepresents hm (j := 0) (by omega)

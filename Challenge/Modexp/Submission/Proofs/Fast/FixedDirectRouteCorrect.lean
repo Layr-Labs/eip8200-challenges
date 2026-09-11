@@ -32,9 +32,9 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hactive : 93 ≤ s.activeWords.toNat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hb : bsize ≤ 256)
-    (he : esize ≤ 256) (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
+    (hactive : 298 ≤ s.activeWords.toNat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 1024)
+    (he : esize ≤ 1024) (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
     (hmsz : msize = Challenge.Modexp.modulusSize input)
@@ -44,10 +44,10 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
       Limbs.radix ^ n [MOD mm])
     (hframe : Exp.Frame memory n bsize minv)
     (hmod : Model.FastRepresents memory 0 n mm)
-    (hbase : Model.FastRepresents memory 512 n bM)
+    (hbase : Model.FastRepresents memory 2048 n bM)
     (hone : ∃ one, one < Limbs.radix ∧
-      Model.FastRepresents memory 768 n one)
-    (hraw : ∃ rawBase, Model.FastRepresents memory 256 n rawBase ∧
+      Model.FastRepresents memory 3072 n one)
+    (hraw : ∃ rawBase, Model.FastRepresents memory 1024 n rawBase ∧
       rawBase ≡ Precompile.bytesToNatPadded input 96 bsize [MOD mm]) :
     Route s memory input n bsize esize msize where
   enter := FixedDirectEntryTrace.gasSteps_entry s memory
@@ -103,7 +103,7 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
             n bsize msize hb hvalue hdata hactive hframe.eoff
             hcode hfork hrun hnp)
         have hfixed := FixedDirectHitCorrect.handled_of_fixed input s memory
-          n bsize 1 msize mm minv (Limbs.radix ^ n) bM
+          n bsize 1 msize mm minv bM
           rawBase 1 sub spec
           hcode hfork hrun hnp hstack hactive hn hn32 hmz hm32
           hbsize hesize hmsz hmm
@@ -123,7 +123,7 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
             n bsize msize hb hvalue hdata hactive hframe.eoff
             hcode hfork hrun hnp)
         have hfixed := FixedDirectHitCorrect.handled_of_fixed input s memory
-          n bsize 3 msize mm minv (Limbs.radix ^ n) bM
+          n bsize 3 msize mm minv bM
           rawBase 16 sub spec
           hcode hfork hrun hnp hstack hactive hn hn32 hmz hm32
           hbsize hesize hmsz hmm

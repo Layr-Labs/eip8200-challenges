@@ -10,13 +10,13 @@ open EvmSemantics.EVM
 open YulEvmCompiler
 
 theorem run_counter (template : State) (mem : ByteArray)
-    (n bsize esize msize : Nat) (_hn2 : 2 ≤ n) (hn32 : n ≤ 8) :
+    (n bsize esize msize : Nat) (_hn2 : 2 ≤ n) (hn32 : n ≤ 32) :
     runInstructions counterProgram (copiedState template mem n bsize esize msize) =
       some (counterState template mem n bsize esize msize) := by
   have hpc :
-      (((((UInt256.ofNat 3035).succ + UInt256.ofNat 2).succ.succ +
+      (((((UInt256.ofNat 2890).succ + UInt256.ofNat 2).succ.succ +
           UInt256.ofNat 2).succ.succ + UInt256.ofNat 2).succ.succ +
-          UInt256.ofNat 2).succ.succ.succ.succ = UInt256.ofNat 3054 := by
+          UInt256.ofNat 2).succ.succ.succ.succ = UInt256.ofNat 2909 := by
     decide
   simp [counterProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     copiedState, counterState, outer, counterWord n hn32, hpc]

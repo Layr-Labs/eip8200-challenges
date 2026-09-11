@@ -47,21 +47,21 @@ theorem rrSuffixValue_lt {mm R n start initial : Nat}
 theorem readWord_rrSuffixMem
     (mpMem : Nat → Nat → Nat → ByteArray → ByteArray)
     (hkeep : ∀ (pa pb : Nat) (mem' : ByteArray),
-      MachineState.readWord (mpMem pa pb 1536 mem') 2816 =
-        MachineState.readWord mem' 2816)
+      MachineState.readWord (mpMem pa pb 6144 mem') 9376 =
+        MachineState.readWord mem' 9376)
     (n start : Nat) (mem : ByteArray) : ∀ i,
-    MachineState.readWord (rrSuffixMem mpMem n start mem i) 2816 =
-      MachineState.readWord mem 2816 := by
+    MachineState.readWord (rrSuffixMem mpMem n start mem i) 9376 =
+      MachineState.readWord mem 9376 := by
   intro i
   induction i with
   | zero => rfl
   | succ i ih =>
       show MachineState.readWord
-        (rrStep mpMem n (start - i) (rrSuffixMem mpMem n start mem i)) 2816 = _
+        (rrStep mpMem n (start - i) (rrSuffixMem mpMem n start mem i)) 9376 = _
       unfold rrStep
       split
-      · rw [hkeep 1536 1536 _, ih]
-      · rw [hkeep 1536 1280 _, hkeep 1536 1536 _, ih]
+      · rw [hkeep 6144 6144 _, ih]
+      · rw [hkeep 6144 5120 _, hkeep 6144 6144 _, ih]
 
 theorem rrSuffixMem_frame {s : State} {n bsize mm minv : Nat}
     (sub : Subroutines s n bsize mm minv) (start : Nat)
@@ -76,14 +76,14 @@ theorem rrSuffixMem_frame {s : State} {n bsize mm minv : Nat}
         n bsize minv
       unfold rrStep
       split
-      · exact sub.mpFrame 1536 1536 1536 _ (by omega) ih
-      · exact sub.mpFrame 1536 1280 1536 _ (by omega)
-          (sub.mpFrame 1536 1536 1536 _ (by omega) ih)
+      · exact sub.mpFrame 6144 6144 6144 _ (by omega) ih
+      · exact sub.mpFrame 6144 5120 6144 _ (by omega)
+          (sub.mpFrame 6144 6144 6144 _ (by omega) ih)
 
 theorem rrSuffixMem_preserves {s : State} {n bsize mm minv R : Nat}
     (sub : Subroutines s n bsize mm minv)
     (spec : SubSpec sub.mpMem sub.amMem n mm R minv) (start ptr value : Nat)
-    (mem : ByteArray) (hbefore : ptr + 32 * n ≤ 1536)
+    (mem : ByteArray) (hbefore : ptr + 32 * n ≤ 6144)
     (hrep : Model.FastRepresents mem ptr n value) : ∀ i,
     Model.FastRepresents (rrSuffixMem sub.mpMem n start mem i) ptr n value := by
   intro i
@@ -95,19 +95,19 @@ theorem rrSuffixMem_preserves {s : State} {n bsize mm minv R : Nat}
         ptr n value
       unfold rrStep
       split
-      · exact spec.mpFrame 1536 1536 1536 ptr value _ (by omega)
+      · exact spec.mpFrame 6144 6144 6144 ptr value _ (by omega)
           (Or.inr hbefore) ih
-      · exact spec.mpFrame 1536 1280 1536 ptr value _ (by omega)
+      · exact spec.mpFrame 6144 5120 6144 ptr value _ (by omega)
           (Or.inr hbefore)
-          (spec.mpFrame 1536 1536 1536 ptr value _ (by omega)
+          (spec.mpFrame 6144 6144 6144 ptr value _ (by omega)
             (Or.inr hbefore) ih)
 
 /-- Generalized memory invariant for an arbitrary starting counter/value. -/
 theorem rrSuffixMem_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R minv start initial : Nat}
     (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
-    (hcop : Nat.Coprime R mm) (hn32 : n ≤ 8) (mem : ByteArray)
-    (hminv : MachineState.readWord mem 2816 = UInt256.ofNat minv)
+    (hcop : Nat.Coprime R mm) (hn32 : n ≤ 32) (mem : ByteArray)
+    (hminv : MachineState.readWord mem 9376 = UInt256.ofNat minv)
     (hinv : RrInv mem n mm R initial) (hinitial : initial < mm) : ∀ i,
     RrInv (rrSuffixMem mpMem n start mem i) n mm R
       (rrSuffixValue mm R n start initial i) := by
@@ -116,33 +116,33 @@ theorem rrSuffixMem_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → Byt
   | zero => exact hinv
   | succ i ih =>
       have hv := rrSuffixValue_lt (R := R) (n := n) (start := start) hm hinitial i
-      have hmi : MachineState.readWord (rrSuffixMem mpMem n start mem i) 2816 =
+      have hmi : MachineState.readWord (rrSuffixMem mpMem n start mem i) 9376 =
           UInt256.ofNat minv :=
         (readWord_rrSuffixMem mpMem
-          (fun pa pb m => spec.mpMinv pa pb 1536 m (by omega)) n start mem i).trans hminv
+          (fun pa pb m => spec.mpMinv pa pb 6144 m (by omega)) n start mem i).trans hminv
       have hmi1 : MachineState.readWord
-          (mpMem 1536 1536 1536 (rrSuffixMem mpMem n start mem i)) 2816 =
+          (mpMem 6144 6144 6144 (rrSuffixMem mpMem n start mem i)) 9376 =
             UInt256.ofNat minv :=
-        (spec.mpMinv 1536 1536 1536 _ (by omega)).trans hmi
+        (spec.mpMinv 6144 6144 6144 _ (by omega)).trans hmi
       have hsq : Model.FastRepresents
-          (mpMem 1536 1536 1536 (rrSuffixMem mpMem n start mem i)) 1536 n
+          (mpMem 6144 6144 6144 (rrSuffixMem mpMem n start mem i)) 6144 n
           (Model.montMul mm R
             (rrSuffixValue mm R n start initial i)
             (rrSuffixValue mm R n start initial i)) :=
-        spec.mpValue 1536 1536 1536 _ _ _ (by omega) (by omega) (by omega)
+        spec.mpValue 6144 6144 6144 _ _ _ (by omega) (by omega) (by omega)
           ih.modulus hmi ih.rr ih.rr hv hv
       have hmod1 : Model.FastRepresents
-          (mpMem 1536 1536 1536 (rrSuffixMem mpMem n start mem i)) 0 n mm :=
-        spec.mpFrame 1536 1536 1536 0 mm _ (by omega) (Or.inr (by omega)) ih.modulus
+          (mpMem 6144 6144 6144 (rrSuffixMem mpMem n start mem i)) 0 n mm :=
+        spec.mpFrame 6144 6144 6144 0 mm _ (by omega) (Or.inr (by omega)) ih.modulus
       have hr11 : Model.FastRepresents
-          (mpMem 1536 1536 1536 (rrSuffixMem mpMem n start mem i)) 1024 n (R % mm) :=
-        spec.mpFrame 1536 1536 1536 1024 _ _ (by omega) (Or.inr (by omega)) ih.r1
+          (mpMem 6144 6144 6144 (rrSuffixMem mpMem n start mem i)) 4096 n (R % mm) :=
+        spec.mpFrame 6144 6144 6144 4096 _ _ (by omega) (Or.inr (by omega)) ih.r1
       have hcc1 : Model.FastRepresents
-          (mpMem 1536 1536 1536 (rrSuffixMem mpMem n start mem i)) 1280 n
+          (mpMem 6144 6144 6144 (rrSuffixMem mpMem n start mem i)) 5120 n
             (Limbs.radix * R % mm) :=
-        spec.mpFrame 1536 1536 1536 1280 _ _ (by omega) (Or.inr (by omega)) ih.cc
+        spec.mpFrame 6144 6144 6144 5120 _ _ (by omega) (Or.inr (by omega)) ih.cc
       have hsel : Model.FastRepresents
-          (mpMem 1536 1536 1536 (rrSuffixMem mpMem n start mem i))
+          (mpMem 6144 6144 6144 (rrSuffixMem mpMem n start mem i))
           (selOf n (start - i)) n
           (if Exp.bitAt n (start - i) = 0 then R % mm
             else Limbs.radix * R % mm) := by
@@ -168,7 +168,7 @@ theorem rrSuffixMem_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → Byt
       · rw [rrStep, if_pos h0, if_pos h0,
           montMul_by_one hm hcop (Model.montMul_lt hm _ _ _)]
         exact ⟨hmod1, hr11, hcc1, hsq⟩
-      · have h1 : selOf n (start - i) = 1280 := by
+      · have h1 : selOf n (start - i) = 5120 := by
           have := Exp.bitAt_le_one n (start - i)
           unfold selOf
           omega
@@ -176,13 +176,13 @@ theorem rrSuffixMem_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → Byt
         rw [if_neg h0] at hsellt
         rw [rrStep, if_neg h0, if_neg h0]
         refine ⟨?_, ?_, ?_, ?_⟩
-        · exact spec.mpFrame 1536 1280 1536 0 mm _ (by omega)
+        · exact spec.mpFrame 6144 5120 6144 0 mm _ (by omega)
             (Or.inr (by omega)) hmod1
-        · exact spec.mpFrame 1536 1280 1536 1024 _ _ (by omega)
+        · exact spec.mpFrame 6144 5120 6144 4096 _ _ (by omega)
             (Or.inr (by omega)) hr11
-        · exact spec.mpFrame 1536 1280 1536 1280 _ _ (by omega)
+        · exact spec.mpFrame 6144 5120 6144 5120 _ _ (by omega)
             (Or.inr (by omega)) hcc1
-        · exact spec.mpValue 1536 1280 1536 _ _ _ (by omega)
+        · exact spec.mpValue 6144 5120 6144 _ _ _ (by omega)
             (by omega) (by omega) hmod1 hmi1 hsq hsel
             (Model.montMul_lt hm _ _ _) hsellt
 
@@ -191,7 +191,7 @@ def gasSteps_rrSuffixLoop (s : State) {n bsize mm minv R : Nat}
     (sub : Subroutines s n bsize mm minv)
     (spec : SubSpec sub.mpMem sub.amMem n mm R minv)
     (mem : ByteArray) (esize msize start initial : Nat)
-    (hm : 0 < mm) (hcop : Nat.Coprime R mm) (hn32 : n ≤ 8)
+    (hm : 0 < mm) (hcop : Nat.Coprime R mm) (hn32 : n ≤ 32)
     (hstart : start ≤ 5) (hinitial : initial < mm)
     (hframe : Frame mem n bsize minv) (hinv : RrInv mem n mm R initial)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -220,7 +220,7 @@ def gasSteps_rrSuffixChain (s : State) {n bsize mm minv R : Nat}
     (sub : Subroutines s n bsize mm minv)
     (spec : SubSpec sub.mpMem sub.amMem n mm R minv)
     (mem : ByteArray) (esize msize start initial : Nat)
-    (hm : 0 < mm) (hcop : Nat.Coprime R mm) (hn32 : n ≤ 8)
+    (hm : 0 < mm) (hcop : Nat.Coprime R mm) (hn32 : n ≤ 32)
     (hstart : start ≤ 5) (hinitial : initial < mm)
     (hframe : Frame mem n bsize minv) (hinv : RrInv mem n mm R initial)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -248,7 +248,7 @@ def gasSteps_directSuffix (s : State) {n bsize mm minv R : Nat}
     (spec : SubSpec sub.mpMem sub.amMem n mm R minv)
     (mem : ByteArray) (esize msize : Nat)
     (hm : 0 < mm) (hcop : Nat.Coprime R mm)
-    (hn2 : 2 ≤ n) (hn32 : n ≤ 8)
+    (hn2 : 2 ≤ n) (hn32 : n ≤ 32)
     (hframe : Frame mem n bsize minv)
     (hinv : RrInv mem n mm R (Limbs.radix * R % mm))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -271,8 +271,8 @@ theorem directSuffix_final {mpMem amMem : Nat → Nat → Nat → ByteArray → 
     {n mm R minv : Nat}
     (spec : SubSpec mpMem amMem n mm R minv)
     (hm : 0 < mm) (hcop : Nat.Coprime R mm)
-    (hn2 : 2 ≤ n) (hn32 : n ≤ 8) (mem : ByteArray)
-    (hminv : MachineState.readWord mem 2816 = UInt256.ofNat minv)
+    (hn2 : 2 ≤ n) (hn32 : n ≤ 32) (mem : ByteArray)
+    (hminv : MachineState.readWord mem 9376 = UInt256.ofNat minv)
     (hinv : RrInv mem n mm R (Limbs.radix * R % mm)) :
     RrInv
         (rrSuffixMem mpMem n (directCounter n) mem (directCounter n + 1))

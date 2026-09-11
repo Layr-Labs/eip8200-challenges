@@ -11,33 +11,33 @@ open Challenge.Modexp.Submission.Proofs.Fast
 
 /-- The eight-limb kernel leaves this portion of its scratch block unused. -/
 def stage (mem : ByteArray) (pa n : Nat) : ByteArray :=
-  MachineState.writeBytes mem (MachineState.readPadded mem pa (32*n)) 2400
+  MachineState.writeBytes mem (MachineState.readPadded mem pa (32*n)) 8960
 
 def inputMemory (mem : ByteArray) (pa n : Nat) : ByteArray :=
   if n = 4 ∨ n = 8 then stage mem pa n else mem
 
 def Snapshot (mem : ByteArray) (pa n : Nat) : Prop :=
-  ∀ j, j < n → MachineState.readWord mem (2400 + 32*j) =
+  ∀ j, j < n → MachineState.readWord mem (8960 + 32*j) =
     MachineState.readWord mem (pa + 32*j)
 
 theorem read_stage_outside (mem : ByteArray) (pa n addr : Nat)
-    (hd : addr + 32 ≤ 2400 ∨ 2400 + 32*n ≤ addr) :
+    (hd : addr + 32 ≤ 8960 ∨ 8960 + 32*n ≤ addr) :
     MachineState.readWord (stage mem pa n) addr = MachineState.readWord mem addr := by
   apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
   simpa using hd
 
 theorem read_stage_member (mem : ByteArray) (pa n j : Nat) (hj : j < n) :
-    MachineState.readWord (stage mem pa n) (2400 + 32*j) =
+    MachineState.readWord (stage mem pa n) (8960 + 32*j) =
       MachineState.readWord mem (pa + 32*j) := by
-  exact Csub.readWord_mcopy mem pa 2400 (32*n) j (by omega)
+  exact Csub.readWord_mcopy mem pa 8960 (32*n) j (by omega)
 
-theorem snapshot_stage (mem : ByteArray) (pa n : Nat) (hpa : pa + 32*n ≤ 2048) :
+theorem snapshot_stage (mem : ByteArray) (pa n : Nat) (hpa : pa + 32*n ≤ 8192) :
     Snapshot (stage mem pa n) pa n := by
   intro j hj
   rw [read_stage_member mem pa n j hj, read_stage_outside mem pa n _ (Or.inl (by omega))]
 
 theorem read_inputMemory_outside (mem : ByteArray) (pa n addr : Nat)
-    (hd : addr + 32 ≤ 2048 ∨ 2720 ≤ addr) :
+    (hd : addr + 32 ≤ 8192 ∨ 9280 ≤ addr) :
     MachineState.readWord (inputMemory mem pa n) addr = MachineState.readWord mem addr := by
   unfold inputMemory
   split
@@ -46,7 +46,7 @@ theorem read_inputMemory_outside (mem : ByteArray) (pa n addr : Nat)
   · rfl
 
 theorem fastRepresents_inputMemory (mem : ByteArray) (pa n ptr count value : Nat)
-    (hptr : ptr + 32*count ≤ 2048) :
+    (hptr : ptr + 32*count ≤ 8192) :
     Model.FastRepresents (inputMemory mem pa n) ptr count value ↔
       Model.FastRepresents mem ptr count value := by
   apply Model.fastRepresents_congr

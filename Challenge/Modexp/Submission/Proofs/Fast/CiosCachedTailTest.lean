@@ -3,6 +3,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedTailDefs
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 200000
+set_option linter.unusedSimpArgs false
 
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.CiosCachedTailTest
@@ -13,12 +14,12 @@ open WindowNibbleKernel CiosCachedMacCore CiosCached CiosCached CiosCachedTailDe
 
 theorem run_test (s : State) (pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 4173 = true) :
+    (htarget : Decode.isValidJumpDest s.executionEnv.code paEnd.toNat = true) :
     runInstructions testProgram
-      (framed s (UInt256.ofNat 4784) (baseStack pbi paEnd pbEnd flag dst ret rest)) =
+      (framed s (UInt256.ofNat 4642) (baseStack pbi paEnd pbEnd flag dst ret rest)) =
     some (framed s
-      (if UInt256.isTrue (UInt256.gt (negative32+pbi) pbEnd) then UInt256.ofNat 4173
-        else UInt256.ofNat 4794)
+      (if UInt256.isTrue (UInt256.gt (negative32+pbi) pbEnd) then paEnd
+        else UInt256.ofNat 4649)
       (baseStack (negative32+pbi) paEnd pbEnd flag dst ret rest)) := by
   have hc7 : rest.length+8 < 1024 := by omega
   have hc8 : rest.length+9 < 1024 := by omega

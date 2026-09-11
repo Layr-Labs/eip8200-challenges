@@ -30,12 +30,12 @@ opaque gasSteps_rowsFour (s : State) (mem : ByteArray) (pa pb : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 91 ≤ s.activeWords.toNat)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 2912)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 4 ≤ 2912)
-    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32 * 4))
-    (htl : MachineState.readWord mem 2880 = UInt256.ofNat (2080 + 32 * 4))
-    (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32 * 4 - 32))
+    (hact : 296 ≤ s.activeWords.toNat)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 9472)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 4 ≤ 9472)
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * 4))
+    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * 4))
+    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * 4 - 32))
     (hminv : inverseInvariant mem 4)
     (hc : CiosReadonly.ReadonlyCache mem 4 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
@@ -43,15 +43,15 @@ opaque gasSteps_rowsFour (s : State) (mem : ByteArray) (pa pb : Nat)
     Challenge.EvmProof.GasSteps
       (outState s (mpZeroed s mem 4) pa pb 4 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (mpCsubState s (rowsMem (mpZeroed s mem 4) pa pb 4 4) pdst ret rest) := by
-  have hs32z : MachineState.readWord (mpZeroed s mem 4) 2784 =
+  have hs32z : MachineState.readWord (mpZeroed s mem 4) 9344 =
       UInt256.ofNat (32 * 4) :=
-    (readWord_mpZeroed s mem 4 2784 (by decide) (by omega)).trans hs32
-  have htlz : MachineState.readWord (mpZeroed s mem 4) 2880 =
-      UInt256.ofNat (2080 + 32 * 4) :=
-    (readWord_mpZeroed s mem 4 2880 (by decide) (by omega)).trans htl
-  have hmlz : MachineState.readWord (mpZeroed s mem 4) 2848 =
+    (readWord_mpZeroed s mem 4 9344 (by decide) (by omega)).trans hs32
+  have htlz : MachineState.readWord (mpZeroed s mem 4) 9440 =
+      UInt256.ofNat (8224 + 32 * 4) :=
+    (readWord_mpZeroed s mem 4 9440 (by decide) (by omega)).trans htl
+  have hmlz : MachineState.readWord (mpZeroed s mem 4) 9408 =
       UInt256.ofNat (32 * 4 - 32) :=
-    (readWord_mpZeroed s mem 4 2848 (by decide) (by omega)).trans hml
+    (readWord_mpZeroed s mem 4 9408 (by decide) (by omega)).trans hml
   have hminvz := inverse_mpZeroed s mem 4 (by decide) hminv
   have hcz := hc.zeroed (by decide) s
   have hez := he.zeroed s 4 (by decide)
@@ -62,11 +62,11 @@ opaque gasSteps_rowsFour (s : State) (mem : ByteArray) (pa pb : Nat)
     exact gasSteps_rowFourNext s (rowsMem (mpZeroed s mem 4) pa pb 4 i) pa pb i
       tl inv m0 aEnd m96 m64 m32 pdst ret rest (by omega) hrun hcode hfork hnp hact (by omega) hpa hpaFit hpb
       hpbFit
-      ((readWord_rowsMem (mpZeroed s mem 4) pa pb 4 2784 (by decide) (by omega)
+      ((readWord_rowsMem (mpZeroed s mem 4) pa pb 4 9344 (by decide) (by omega)
         i).trans hs32z)
-      ((readWord_rowsMem (mpZeroed s mem 4) pa pb 4 2880 (by decide) (by omega)
+      ((readWord_rowsMem (mpZeroed s mem 4) pa pb 4 9440 (by decide) (by omega)
         i).trans htlz)
-      ((readWord_rowsMem (mpZeroed s mem 4) pa pb 4 2848 (by decide) (by omega)
+      ((readWord_rowsMem (mpZeroed s mem 4) pa pb 4 9408 (by decide) (by omega)
         i).trans hmlz)
       (inverse_rowsMem (mpZeroed s mem 4) pa pb 4 i (by decide) hminvz)
       (hcz.rows (by decide) pa pb i)
@@ -75,11 +75,11 @@ opaque gasSteps_rowsFour (s : State) (mem : ByteArray) (pa pb : Nat)
       gasSteps_rowFourLast s (rowsMem (mpZeroed s mem 4) pa pb 4 3) pa pb 3
         tl inv m0 aEnd m96 m64 m32 pdst ret rest (by omega) hrun hcode hfork hnp hact (by decide) hpa hpaFit hpb
         hpbFit
-        ((readWord_rowsMem (mpZeroed s mem 4) pa pb 4 2784 (by decide) (by omega)
+        ((readWord_rowsMem (mpZeroed s mem 4) pa pb 4 9344 (by decide) (by omega)
           3).trans hs32z)
-        ((readWord_rowsMem (mpZeroed s mem 4) pa pb 4 2880 (by decide) (by omega)
+        ((readWord_rowsMem (mpZeroed s mem 4) pa pb 4 9440 (by decide) (by omega)
           3).trans htlz)
-        ((readWord_rowsMem (mpZeroed s mem 4) pa pb 4 2848 (by decide) (by omega)
+        ((readWord_rowsMem (mpZeroed s mem 4) pa pb 4 9408 (by decide) (by omega)
           3).trans hmlz)
         (inverse_rowsMem (mpZeroed s mem 4) pa pb 4 3 (by decide) hminvz)
         (hcz.rows (by decide) pa pb 3)
@@ -92,12 +92,12 @@ opaque gasSteps_rowsEight (s : State) (mem : ByteArray) (pa pb : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 91 ≤ s.activeWords.toNat)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 8 ≤ 2912)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 8 ≤ 2912)
-    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32 * 8))
-    (htl : MachineState.readWord mem 2880 = UInt256.ofNat (2080 + 32 * 8))
-    (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32 * 8 - 32))
+    (hact : 296 ≤ s.activeWords.toNat)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 8 ≤ 9472)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 8 ≤ 9472)
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * 8))
+    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * 8))
+    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * 8 - 32))
     (hminv : inverseInvariant mem 8)
     (hc : CiosReadonly.ReadonlyCache mem 8 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
@@ -105,15 +105,15 @@ opaque gasSteps_rowsEight (s : State) (mem : ByteArray) (pa pb : Nat)
     Challenge.EvmProof.GasSteps
       (outState s (mpZeroed s mem 8) pa pb 8 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (mpCsubState s (rowsMem (mpZeroed s mem 8) pa pb 8 8) pdst ret rest) := by
-  have hs32z : MachineState.readWord (mpZeroed s mem 8) 2784 =
+  have hs32z : MachineState.readWord (mpZeroed s mem 8) 9344 =
       UInt256.ofNat (32 * 8) :=
-    (readWord_mpZeroed s mem 8 2784 (by decide) (by omega)).trans hs32
-  have htlz : MachineState.readWord (mpZeroed s mem 8) 2880 =
-      UInt256.ofNat (2080 + 32 * 8) :=
-    (readWord_mpZeroed s mem 8 2880 (by decide) (by omega)).trans htl
-  have hmlz : MachineState.readWord (mpZeroed s mem 8) 2848 =
+    (readWord_mpZeroed s mem 8 9344 (by decide) (by omega)).trans hs32
+  have htlz : MachineState.readWord (mpZeroed s mem 8) 9440 =
+      UInt256.ofNat (8224 + 32 * 8) :=
+    (readWord_mpZeroed s mem 8 9440 (by decide) (by omega)).trans htl
+  have hmlz : MachineState.readWord (mpZeroed s mem 8) 9408 =
       UInt256.ofNat (32 * 8 - 32) :=
-    (readWord_mpZeroed s mem 8 2848 (by decide) (by omega)).trans hml
+    (readWord_mpZeroed s mem 8 9408 (by decide) (by omega)).trans hml
   have hminvz := inverse_mpZeroed s mem 8 (by decide) hminv
   have hcz := hc.zeroed (by decide) s
   have hez := he.zeroed s 8 (by decide)
@@ -124,11 +124,11 @@ opaque gasSteps_rowsEight (s : State) (mem : ByteArray) (pa pb : Nat)
     exact gasSteps_rowEightNext s (rowsMem (mpZeroed s mem 8) pa pb 8 i) pa pb i
       tl inv m0 aEnd m96 m64 m32 pdst ret rest (by omega) hrun hcode hfork hnp hact (by omega) hpa hpaFit hpb
       hpbFit
-      ((readWord_rowsMem (mpZeroed s mem 8) pa pb 8 2784 (by decide) (by omega)
+      ((readWord_rowsMem (mpZeroed s mem 8) pa pb 8 9344 (by decide) (by omega)
         i).trans hs32z)
-      ((readWord_rowsMem (mpZeroed s mem 8) pa pb 8 2880 (by decide) (by omega)
+      ((readWord_rowsMem (mpZeroed s mem 8) pa pb 8 9440 (by decide) (by omega)
         i).trans htlz)
-      ((readWord_rowsMem (mpZeroed s mem 8) pa pb 8 2848 (by decide) (by omega)
+      ((readWord_rowsMem (mpZeroed s mem 8) pa pb 8 9408 (by decide) (by omega)
         i).trans hmlz)
       (inverse_rowsMem (mpZeroed s mem 8) pa pb 8 i (by decide) hminvz)
       (hcz.rows (by decide) pa pb i)
@@ -137,11 +137,11 @@ opaque gasSteps_rowsEight (s : State) (mem : ByteArray) (pa pb : Nat)
       gasSteps_rowEightLast s (rowsMem (mpZeroed s mem 8) pa pb 8 7) pa pb 7
         tl inv m0 aEnd m96 m64 m32 pdst ret rest (by omega) hrun hcode hfork hnp hact (by decide) hpa hpaFit hpb
         hpbFit
-        ((readWord_rowsMem (mpZeroed s mem 8) pa pb 8 2784 (by decide) (by omega)
+        ((readWord_rowsMem (mpZeroed s mem 8) pa pb 8 9344 (by decide) (by omega)
           7).trans hs32z)
-        ((readWord_rowsMem (mpZeroed s mem 8) pa pb 8 2880 (by decide) (by omega)
+        ((readWord_rowsMem (mpZeroed s mem 8) pa pb 8 9440 (by decide) (by omega)
           7).trans htlz)
-        ((readWord_rowsMem (mpZeroed s mem 8) pa pb 8 2848 (by decide) (by omega)
+        ((readWord_rowsMem (mpZeroed s mem 8) pa pb 8 9408 (by decide) (by omega)
           7).trans hmlz)
         (inverse_rowsMem (mpZeroed s mem 8) pa pb 8 7 (by decide) hminvz)
         (hcz.rows (by decide) pa pb 7)
@@ -154,13 +154,13 @@ opaque gasSteps_specializedFour (s : State) (mem : ByteArray) (pa pb : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 91 ≤ s.activeWords.toNat)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 2912)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 4 ≤ 2912)
+    (hact : 296 ≤ s.activeWords.toNat)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 9472)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 4 ≤ 9472)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32 * 4))
-    (htl : MachineState.readWord mem 2880 = UInt256.ofNat (2080 + 32 * 4))
-    (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32 * 4 - 32))
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * 4))
+    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * 4))
+    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * 4 - 32))
     (hminv : inverseInvariant mem 4) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
@@ -170,7 +170,7 @@ opaque gasSteps_specializedFour (s : State) (mem : ByteArray) (pa pb : Nat)
   (gasSteps_entry s mem pa pb 4 pdst ret rest (by omega) hrun hcode hfork hnp hact
     (by decide) (by decide) hpa hpaFit hpb hpbFit hcds hs32 hml).trans <|
   gasSteps_rowsFour s mem pa pb
-    (MachineState.readWord mem 2880) (MachineState.readWord mem 2816)
+    (MachineState.readWord mem 9440) (MachineState.readWord mem 9376)
     (MachineState.readWord mem (32*4-32)) (UInt256.ofNat (pa+32*4-32)) (MachineState.readWord mem 96) (MachineState.readWord mem 64)
     (MachineState.readWord mem 32) pdst ret rest (by omega) hrun hcode hfork hnp hact
     hpa hpaFit hpb hpbFit hs32 htl hml hminv ⟨htl, rfl, rfl⟩ ⟨rfl,rfl,rfl⟩ rfl
@@ -182,13 +182,13 @@ opaque gasSteps_specializedEight (s : State) (mem : ByteArray) (pa pb : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 91 ≤ s.activeWords.toNat)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 8 ≤ 2912)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 8 ≤ 2912)
+    (hact : 296 ≤ s.activeWords.toNat)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 8 ≤ 9472)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 8 ≤ 9472)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32 * 8))
-    (htl : MachineState.readWord mem 2880 = UInt256.ofNat (2080 + 32 * 8))
-    (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32 * 8 - 32))
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * 8))
+    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * 8))
+    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * 8 - 32))
     (hminv : inverseInvariant mem 8) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
@@ -198,7 +198,7 @@ opaque gasSteps_specializedEight (s : State) (mem : ByteArray) (pa pb : Nat)
   (gasSteps_entry s mem pa pb 8 pdst ret rest (by omega) hrun hcode hfork hnp hact
     (by decide) (by decide) hpa hpaFit hpb hpbFit hcds hs32 hml).trans <|
   gasSteps_rowsEight s mem pa pb
-    (MachineState.readWord mem 2880) (MachineState.readWord mem 2816)
+    (MachineState.readWord mem 9440) (MachineState.readWord mem 9376)
     (MachineState.readWord mem (32*8-32)) (UInt256.ofNat (pa+32*8-32)) (MachineState.readWord mem 96) (MachineState.readWord mem 64)
     (MachineState.readWord mem 32) pdst ret rest (by omega) hrun hcode hfork hnp hact
     hpa hpaFit hpb hpbFit hs32 htl hml hminv ⟨htl, rfl, rfl⟩ ⟨rfl,rfl,rfl⟩ rfl
@@ -212,13 +212,13 @@ opaque gasSteps_toCsub (s : State) (mem : ByteArray) (pa pb n : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 91 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 2912)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2912)
+    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32 * n))
-    (htl : MachineState.readWord mem 2880 = UInt256.ofNat (2080 + 32 * n))
-    (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32 * n - 32))
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
+    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n))
+    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * n - 32))
     (hminv : inverseInvariant mem n) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
@@ -232,14 +232,14 @@ opaque gasSteps_toCsub (s : State) (mem : ByteArray) (pa pb n : Nat)
     exact gasSteps_specializedEight s mem pa pb pdst ret rest (by omega) hrun hcode
       hfork hnp hact hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv
   have h32n : 32 * n < 2 ^ 256 := by omega
-  have h128 : MachineState.readWord mem 2784 ≠ UInt256.ofNat 128 := by
+  have h128 : MachineState.readWord mem 9344 ≠ UInt256.ofNat 128 := by
     intro heq
     have hword : UInt256.ofNat (32 * n) = UInt256.ofNat 128 := hs32.symm.trans heq
     have hnat := congrArg UInt256.toNat hword
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt h32n,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by norm_num)] at hnat
     exact hn4 (by omega)
-  have h256 : MachineState.readWord mem 2784 ≠ UInt256.ofNat 256 := by
+  have h256 : MachineState.readWord mem 9344 ≠ UInt256.ofNat 256 := by
     intro heq
     have hword : UInt256.ofNat (32 * n) = UInt256.ofNat 256 := hs32.symm.trans heq
     have hnat := congrArg UInt256.toNat hword
@@ -259,17 +259,17 @@ opaque gasSteps_monproCsub (s : State) (mem : ByteArray) (pa pb n : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 91 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 2912)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2912)
+    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32 * n))
-    (htl : MachineState.readWord mem 2880 = UInt256.ofNat (2080 + 32 * n))
-    (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32 * n - 32))
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
+    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n))
+    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * n - 32))
     (hminv : inverseInvariant mem n)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
-    (hdstFit : pdst.toNat + 32 * n ≤ 2912)
-    (htn : (MachineState.readWord (rowsMem (mpZeroed s mem n) pa pb n n) 2080).toNat
+    (hdstFit : pdst.toNat + 32 * n ≤ 9472)
+    (htn : (MachineState.readWord (rowsMem (mpZeroed s mem n) pa pb n n) 8224).toNat
       ≤ 1) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
@@ -279,15 +279,15 @@ opaque gasSteps_monproCsub (s : State) (mem : ByteArray) (pa pb n : Nat)
       hn32 hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv).trans
     (Csub.gasSteps_csub s (rowsMem (mpZeroed s mem n) pa pb n n) n pdst ret rest
       (by omega) hcode hfork hrun hnp hact hn hn32 hjump
-      ((readWord_monpro_preserved s mem pa pb n n 2848 hn32 (by omega)).trans hml)
-      ((readWord_monpro_preserved s mem pa pb n n 2880 hn32 (by omega)).trans htl)
-      ((Csub.csStep_readWord_disjoint (rowsMem (mpZeroed s mem n) pa pb n n) n 2784
+      ((readWord_monpro_preserved s mem pa pb n n 9408 hn32 (by omega)).trans hml)
+      ((readWord_monpro_preserved s mem pa pb n n 9440 hn32 (by omega)).trans htl)
+      ((Csub.csStep_readWord_disjoint (rowsMem (mpZeroed s mem n) pa pb n n) n 9344
             (by omega) (Or.inr (by omega)) n (Nat.le_refl n)).trans
-        ((readWord_monpro_preserved s mem pa pb n n 2784 hn32 (by omega)).trans hs32))
+        ((readWord_monpro_preserved s mem pa pb n n 9344 hn32 (by omega)).trans hs32))
       hdstFit
       (by
         rw [Csub.csStep_readWord_disjoint (rowsMem (mpZeroed s mem n) pa pb n n) n
-          2080 (by omega) (Or.inr (by omega)) n (Nat.le_refl n)]
+          8224 (by omega) (Or.inr (by omega)) n (Nat.le_refl n)]
         exact htn))
 
 /-- The full cached CIOS-dispatched MONPRO call with the existing arithmetic theorem
@@ -299,21 +299,21 @@ opaque gasSteps_monproFull (s : State) (mem : ByteArray) (pa pb p : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 91 ≤ s.activeWords.toNat) (hn32 : p + 2 ≤ 8)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * (p + 2) ≤ 2048)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * (p + 2) ≤ 2048)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : p + 2 ≤ 32)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * (p + 2) ≤ 8192)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * (p + 2) ≤ 8192)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32 * (p + 2)))
-    (htl : MachineState.readWord mem 2880 = UInt256.ofNat (2080 + 32 * (p + 2)))
-    (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32 * (p + 2) - 32))
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * (p + 2)))
+    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * (p + 2)))
+    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * (p + 2) - 32))
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
-    (hdstFit : pdst.toNat + 32 * (p + 2) ≤ 2912)
+    (hdstFit : pdst.toNat + 32 * (p + 2) ≤ 9472)
     (ha : Model.FastRepresents mem pa (p + 2) a)
     (hb : Model.FastRepresents mem pb (p + 2) b)
     (hm : Model.FastRepresents mem 0 (p + 2) mm)
     (ham : a < mm) (hmpos : 0 < mm)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
-        (MachineState.readWord mem 2816).toNat + 1) % 2 ^ 256 = 0) :
+        (MachineState.readWord mem 9376).toNat + 1) % 2 ^ 256 = 0) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
       (Csub.csReturnedState s

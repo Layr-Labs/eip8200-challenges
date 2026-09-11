@@ -89,19 +89,19 @@ theorem run_finish (s : State)
 
 /-- Both admitted widths have zero carry at the first limb of each row. -/
 theorem run_commonFirst (s : State) (mem : ByteArray) (bi : UInt256)
-    (pa pb n i : Nat) (tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
+    (pa pb n i : Nat) (hd ent tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)
-    (hact : 91 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hpos : 0 < n)
-    (hpaFit : pa+32*n ≤ 2912)
-    (htl : tl = UInt256.ofNat (2080+32*n))
+    (hact : 296 ≤ s.activeWords.toNat) (hn : n ≤ 32) (hpos : 0 < n)
+    (hpaFit : pa+32*n ≤ 9472)
+    (htl : tl = UInt256.ofNat (8224+32*n))
     (hAend : aEnd = UInt256.ofNat (pa+32*n-32)) :
     runInstructions commonFirstProgram
-      (firstAt 4172 s mem bi pa pb n i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
-    some (l1At 4198 s mem bi pa pb n i 1 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) := by
+      (firstAt 4040 s mem bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
+    some (l1At 4066 s mem bi pa pb n i 1 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) := by
   have ha : aEnd.toNat = pa+32*(n-1) := by
     rw [hAend,Challenge.EvmProof.Word.word_toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
     omega
-  have ht : tl.toNat = 2112+32*(n-1) := by
+  have ht : tl.toNat = 8256+32*(n-1) := by
     rw [htl,Challenge.EvmProof.Word.word_toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
     omega
   let st : State := {s with memory := mem}
@@ -112,16 +112,16 @@ theorem run_commonFirst (s : State) (mem : ByteArray) (bi : UInt256)
     rw [ht]
     exact activeWords_fix st _ 32 (by decide) (by omega) hact
   let pbi := UInt256.ofNat (ptrAt (pb+32*n-32) i)
-  let frame := tail pbi (UInt256.ofNat pa) (UInt256.ofNat (pb-32))
-    (l1Target n) (l2Target n) tl inv m0 aEnd m96 m64 m32 dst ret rest
-  have hl := run_load st (UInt256.ofNat 4172) bi pbi (UInt256.ofNat pa) (UInt256.ofNat (pb-32))
-    (l1Target n) (l2Target n) tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hA
-  have hp := CiosNoDummyCarry.run_product st (advancePC 3 (UInt256.ofNat 4172))
+  let frame := tail pbi hd (UInt256.ofNat (pb-32))
+    ent (l2Target n) tl inv m0 aEnd m96 m64 m32 dst ret rest
+  have hl := run_load st (UInt256.ofNat 4040) bi pbi hd (UInt256.ofNat (pb-32))
+    ent (l2Target n) tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hA
+  have hp := CiosNoDummyCarry.run_product st (advancePC 3 (UInt256.ofNat 4040))
     (MachineState.readWord mem aEnd.toNat) bi frame
     (by simp only [frame,tail,List.length_append,List.length_cons,List.length_nil]; omega)
-  have hf := run_finish st (advancePC 13 (advancePC 3 (UInt256.ofNat 4172)))
-    (MachineState.readWord mem aEnd.toNat) bi pbi (UInt256.ofNat pa) (UInt256.ofNat (pb-32))
-    (l1Target n) (l2Target n) tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hT
+  have hf := run_finish st (advancePC 13 (advancePC 3 (UInt256.ofNat 4040)))
+    (MachineState.readWord mem aEnd.toNat) bi pbi hd (UInt256.ofNat (pb-32))
+    ent (l2Target n) tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hT
   have hz : MachineState.readWord mem aEnd.toNat * bi + UInt256.ofNat 0 =
       MachineState.readWord mem aEnd.toNat * bi := by
     apply Challenge.EvmProof.Word.word_ext
@@ -132,9 +132,9 @@ theorem run_commonFirst (s : State) (mem : ByteArray) (bi : UInt256)
   rw [hz] at hf
   have both := runInstructions_append_some _ _ _ _ _ hl hp
   have hall := runInstructions_append_some _ _ _ _ _ both hf
-  have hpc : advancePC 13 (advancePC 3 (UInt256.ofNat 4172))+UInt256.ofNat 10 = UInt256.ofNat 4198 := by decide
+  have hpc : advancePC 13 (advancePC 3 (UInt256.ofNat 4040))+UInt256.ofNat 10 = UInt256.ofNat 4066 := by decide
   simpa only [commonFirstProgram,L2.multiplyProgram,L2.zeroCarryProgram,
-    macZeroProductProgram,show (0 : UInt256) = UInt256.ofNat 0 from by decide,st,frame,pbi,tail,firstAt,l1At,l1Step,
+    macZeroProductProgram,show (0 : UInt256) = UInt256.ofNat 0 from by decide,st,frame,pbi,tail,firstAt,l1At,l1Q,l1Step,
     framed,ha,ht,hpc,Nat.sub_zero,List.cons_append,List.nil_append] using hall
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCommonFirst

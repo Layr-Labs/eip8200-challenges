@@ -13,7 +13,7 @@ open Word
 entered with; the tail at pc 655 pops it. -/
 def bitFinishDispatchState (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) : State :=
-  { bitLoopState input outer 0 byte offset acc base with pc := UInt256.ofNat 628 }
+  { bitLoopState input outer 0 byte offset acc base with pc := UInt256.ofNat 557 }
 
 /-- The tail of the block drops `base - 1` and rejoins the byte loop. -/
 def gasSteps_bitExit (input : ByteArray) (outer : Nat)
@@ -25,6 +25,6 @@ def gasSteps_bitExit (input : ByteArray) (outer : Nat)
     (bitTail input) (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset
     (UInt256.ofNat outer) acc base (UInt256.ofNat (modulusValue input))
     (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
-    (by exact Artifact.isValidJumpDest_index 518 (by rfl))
+    (by exact Artifact.isValidJumpDest_index 464 (by rfl))
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WordLoops

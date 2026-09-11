@@ -9,7 +9,9 @@ set_option maxHeartbeats 2000000
 
 The generic fixed route copies Montgomery BASE into ACC and later decodes with
 ONE. The direct successor instead keeps the reduced normal-domain base in ACC,
-squares Montgomery BASE in place, and performs one final mixed-domain product.
+squares Montgomery BASE in place (the dedicated `SQUARE` kernel, contract
+`Exp.Subroutines.square/sqValue/sqKeep`), and performs one final mixed-domain
+product (`MONPRO`).
 
 This module is an arithmetic/interface layer. Concrete located instruction
 traces are kept in separate bytecode modules.
@@ -21,20 +23,21 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 
-/-- Memory after `t` in-place Montgomery squares of BASE. -/
+/-- Memory after `t` in-place Montgomery squares of BASE, `sq` being the
+memory effect of one `SQUARE(0x800) → 0x800` call. -/
 def fixedDirectMems
-    (mpMem : Nat → Nat → Nat → ByteArray → ByteArray)
+    (sq : ByteArray → ByteArray)
     (mem : ByteArray) : Nat → ByteArray
   | 0 => mem
-  | t + 1 => mpMem 512 512 512 (fixedDirectMems mpMem mem t)
+  | t + 1 => sq (fixedDirectMems sq mem t)
 
 /-- Moving the first in-place square before the remaining iterations does
 not change the memory reached by the complete chain. -/
 theorem fixedDirectMems_step_add
-    (mpMem : Nat → Nat → Nat → ByteArray → ByteArray)
+    (sq : ByteArray → ByteArray)
     (mem : ByteArray) (t : Nat) :
-    fixedDirectMems mpMem (mpMem 512 512 512 mem) t =
-      fixedDirectMems mpMem mem (t + 1) := by
+    fixedDirectMems sq (sq mem) t =
+      fixedDirectMems sq mem (t + 1) := by
   induction t with
   | zero => rfl
   | succ t ih => simp only [fixedDirectMems, ih]
@@ -68,29 +71,28 @@ theorem fixedDirectValue_form {mm R b bM : Nat} (hm : 0 < mm)
 normal-domain residue while BASE is in Montgomery form. -/
 structure Inv (mem : ByteArray) (n mm rawBase squareBase : Nat) : Prop where
   modulus : Model.FastRepresents mem 0 n mm
-  rawAcc : Model.FastRepresents mem 256 n rawBase
-  squareBase : Model.FastRepresents mem 512 n squareBase
+  rawAcc : Model.FastRepresents mem 1024 n rawBase
+  squareBase : Model.FastRepresents mem 2048 n squareBase
   oneBlock : ∃ one, one < Limbs.radix ∧
-    Model.FastRepresents mem 768 n one
+    Model.FastRepresents mem 3072 n one
 
 theorem fixedDirectMems_frame {s : State} {n bsize mm minv : Nat}
     (sub : Exp.Subroutines s n bsize mm minv) (mem : ByteArray)
     (hframe : Exp.Frame mem n bsize minv) :
-    ∀ t, Exp.Frame (fixedDirectMems sub.mpMem mem t) n bsize minv := by
+    ∀ t, Exp.Frame (fixedDirectMems sub.sqMem mem t) n bsize minv := by
   intro t
   induction t with
   | zero => exact hframe
-  | succ t ih => exact sub.mpFrame 512 512 512 _ (by omega) ih
+  | succ t ih => exact sub.sqFrame _ ih
 
 /-- In-place BASE squaring preserves modulus, raw ACC, and ONE. -/
-theorem fixedDirectMems_inv {s : State} {n bsize mm minv R bM rawBase : Nat}
+theorem fixedDirectMems_inv {s : State} {n bsize mm minv bM rawBase : Nat}
     (sub : Exp.Subroutines s n bsize mm minv)
-    (spec : Exp.SubSpec sub.mpMem sub.amMem n mm R minv)
-    (mem : ByteArray) (hm : 0 < mm) (hn32 : n ≤ 8) (hbM : bM < mm)
+    (mem : ByteArray) (hm : 0 < mm) (hn32 : n ≤ 32) (hbM : bM < mm)
     (hframe : Exp.Frame mem n bsize minv)
     (hinv : Inv mem n mm rawBase bM) :
-    ∀ t, Inv (fixedDirectMems sub.mpMem mem t) n mm rawBase
-      (fixedDirectValue mm R bM t) := by
+    ∀ t, Inv (fixedDirectMems sub.sqMem mem t) n mm rawBase
+      (fixedDirectValue mm (Limbs.radix ^ n) bM t) := by
   intro t
   induction t with
   | zero => exact hinv
@@ -98,16 +100,11 @@ theorem fixedDirectMems_inv {s : State} {n bsize mm minv R bM rawBase : Nat}
       have hf := fixedDirectMems_frame sub mem hframe t
       obtain ⟨one, honeLt, honeRep⟩ := ih.oneBlock
       refine ⟨?_, ?_, ?_, ⟨one, honeLt, ?_⟩⟩
-      · exact spec.mpFrame 512 512 512 0 mm _ (by omega)
-          (Or.inr (by omega)) ih.modulus
-      · exact spec.mpFrame 512 512 512 256 rawBase _ (by omega)
-          (Or.inr (by omega)) ih.rawAcc
-      · exact spec.mpValue 512 512 512 _ _ _
-          (by omega) (by omega) (by omega) ih.modulus hf.minvW
-          ih.squareBase ih.squareBase
-          (fixedDirectValue_lt hm hbM t) (fixedDirectValue_lt hm hbM t)
-      · exact spec.mpFrame 512 512 512 768 one _ (by omega)
-          (Or.inl (by omega)) honeRep
+      · exact sub.sqKeep 0 mm _ (by omega) (Or.inr (by omega)) ih.modulus
+      · exact sub.sqKeep 1024 rawBase _ (by omega) (Or.inr (by omega)) ih.rawAcc
+      · exact sub.sqValue _ _ hf ih.modulus ih.squareBase
+          (fixedDirectValue_lt hm hbM t)
+      · exact sub.sqKeep 3072 one _ (by omega) (Or.inl (by omega)) honeRep
 
 /-- A Montgomery-form left operand times a normal-form right operand is a
 normal-domain product. -/

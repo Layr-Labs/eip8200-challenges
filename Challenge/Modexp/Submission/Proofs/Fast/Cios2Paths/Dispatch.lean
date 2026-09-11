@@ -1,20 +1,35 @@
 import Challenge.Modexp.Submission.Proofs.Fast.Defs
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneSlice
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
+
+/-!
+# The kernel's `mul entry` and shared `common` width guard (sqCP1m)
+
+* `mul entry` (instruction 2961, pc 3920 = 0x0f50): `JUMPDEST; PUSH2 0x0fc5` pushes the
+  multiply row head `hd = 4037` and falls through into `common`.
+* `common` (instruction 2963, pc 3924 = 0x0f54, also entered directly by the square call
+  with `hd = 4710`): `JUMPDEST; PUSH2 0x2480; MLOAD; DUP1; PUSH1 0x80; EQ; SWAP1;
+  PUSH2 0x100; EQ; OR; PUSH2 0x0f6c; JUMPI` — widths of four and eight limbs jump to the
+  kernel `setup` (pc 3948).
+* fallback (instruction 2975, pc 3943): `POP; PUSH2 0x0683; JUMP` drops `hd` and enters the
+  generic `MONPRO` at pc 1667.
+-/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Dispatch
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
+open WindowTwentyOneBinding
 
-def startIndex : Nat := 3071
+def mulEntryProgram : List Instr :=
+  [.op .JUMPDEST, .push 2 4037]
 
-/-- A bounded, cached instruction slice.  This keeps concrete reduction local. -/
-private def template : List Instr :=
+def commonGuardProgram : List Instr :=
   [.op .JUMPDEST,
-   .push 2 2784,
+   .push 2 9344,
    .op .MLOAD,
    .op (.Dup ⟨0, by decide⟩),
    .push 1 128,
@@ -23,89 +38,22 @@ private def template : List Instr :=
    .push 2 256,
    .op .EQ,
    .op .OR,
-   .push 2 5003,
-   .op .JUMPI,
-   .push 2 1784,
-   .op .JUMP]
+   .push 2 3948,
+   .op .JUMPI]
 
-private theorem slice_eq :
-    (Artifact.submissionInstructions.drop startIndex).take template.length = template := by
-  rfl
+def commonFallbackProgram : List Instr :=
+  [.op .POP, .push 2 1667, .op .JUMP]
 
-private theorem getElem_slice (offset : Nat) (hoffset : offset < template.length) :
-    Artifact.submissionInstructions[startIndex + offset]? = template[offset]? := by
-  have hs := congrArg (fun xs : List Instr => xs[offset]?) slice_eq
-  rw [List.getElem?_take, if_pos hoffset, List.getElem?_drop] at hs
-  simpa [Nat.add_comm] using hs
+def mulEntry : Block Artifact.submissionArtifact .Osaka 3920 mulEntryProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2961 2 3920 mulEntryProgram
+    (by decide) (by rfl) (by rfl) (by decide)
 
-private theorem startPC : Artifact.submissionArtifact.instructionPC startIndex = 4053 := by
-  rfl
+def commonGuard : Block Artifact.submissionArtifact .Osaka 3924 commonGuardProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2963 12 3924 commonGuardProgram
+    (by decide) (by rfl) (by rfl) (by decide)
 
-private theorem instructionPC_add
-    (p : Challenge.EvmProof.ProgramArtifact) (base count : Nat) :
-    p.instructionPC (base + count) = p.instructionPC base +
-      (assembleBytes ((p.instructions.drop base).take count)).length := by
-  simp only [Challenge.EvmProof.ProgramArtifact.instructionPC, List.take_add,
-    assembleBytes_append, List.length_append]
-
-/-- Exact program-counter table for the bounded dispatcher slice. -/
-@[simp] theorem dispatchPC (i : Nat) (hi : startIndex ≤ i)
-    (hii : i ≤ 3084) :
-    Artifact.submissionArtifact.instructionPC i =
-      [4053,4054,4057,4058,4059,4061,4062,4063,4066,4067,4068,4071,4072,4075][i - startIndex]! := by
-  calc
-    Artifact.submissionArtifact.instructionPC i =
-        Artifact.submissionArtifact.instructionPC (startIndex + (i - startIndex)) := by
-      rw [Nat.add_sub_of_le hi]
-    _ = Artifact.submissionArtifact.instructionPC startIndex +
-          (assembleBytes
-            ((Artifact.submissionArtifact.instructions.drop startIndex).take
-              (i - startIndex))).length :=
-      instructionPC_add Artifact.submissionArtifact startIndex (i - startIndex)
-    _ = _ := by
-      rw [startPC]
-      simp only [startIndex] at hi
-      interval_cases i <;> rfl
-
-def opAt (offset : Nat) (op : Operation)
-    (hget : template[offset]? = some (.op op) := by rfl)
-    (hoffset : offset < template.length := by decide)
-    (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op := by decide)
-    (hplain : YulEvmCompiler.plainOp op := by trivial)
-    (havailable : op.availableInFork .Osaka = true := by rfl) :
-    Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
-  ⟨startIndex + offset, .op op, (getElem_slice offset hoffset).trans hget,
-    wfOp hopcode hplain havailable⟩
-
-def pushAt (offset : Nat) (width : Fin 33) (value : UInt256)
-    (hget : template[offset]? = some (.push width value) := by rfl)
-    (hoffset : offset < template.length := by decide)
-    (hwf : Challenge.EvmProof.Stepper.WellFormed .Osaka (.push width value) := by decide) :
-    Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
-  ⟨startIndex + offset, .push width value, (getElem_slice offset hoffset).trans hget, hwf⟩
-
-/-- The common dispatcher prefix through `JUMPI` (indices 2670..2681). -/
-def cios2DispatchGuard :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 0 .JUMPDEST,
-   pushAt 1 2 2784,
-   opAt 2 .MLOAD,
-   opAt 3 (.Dup ⟨0, by decide⟩),
-   pushAt 4 1 128,
-   opAt 5 .EQ,
-   opAt 6 (.Swap ⟨0, by decide⟩),
-   pushAt 7 2 256,
-   opAt 8 .EQ,
-   opAt 9 .OR,
-   pushAt 10 2 5003,
-   opAt 11 .JUMPI]
-
-/-- Full fallback path (indices 2670..2683, pc 4484..4506). -/
-def cios2Dispatch :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  cios2DispatchGuard ++
-  [
-   pushAt 12 2 1784,
-   opAt 13 .JUMP]
+def commonFallback : Block Artifact.submissionArtifact .Osaka 3943 commonFallbackProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2975 3 3943 commonFallbackProgram
+    (by decide) (by rfl) (by rfl) (by decide)
 
 end Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Dispatch

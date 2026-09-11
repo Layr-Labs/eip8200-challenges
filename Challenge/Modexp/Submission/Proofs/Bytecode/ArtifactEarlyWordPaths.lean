@@ -5,19 +5,19 @@ set_option maxRecDepth 20000
 set_option maxHeartbeats 2000000
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
-private def earlyWord_guard : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4947 EarlyWordProgram.guardProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3758 20 4947 EarlyWordProgram.guardProgram (by decide) (by rfl) (by rfl) (by decide)
-private def earlyWord_hit : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4974 EarlyWordProgram.hitProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3778 15 4974 EarlyWordProgram.hitProgram (by decide) (by rfl) (by rfl) (by decide)
-private def earlyWord_miss : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4995 EarlyWordProgram.missProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3793 6 4995 EarlyWordProgram.missProgram (by decide) (by rfl) (by rfl) (by decide)
+private def earlyWord_guard : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5111 EarlyWordProgram.guardProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3883 20 5111 EarlyWordProgram.guardProgram (by decide) (by rfl) (by rfl) (by decide)
+private def earlyWord_hit : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5138 EarlyWordProgram.hitProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3903 15 5138 EarlyWordProgram.hitProgram (by decide) (by rfl) (by rfl) (by decide)
+private def earlyWord_miss : WindowTwentyOneBinding.Block submissionArtifact .Osaka 5159 EarlyWordProgram.missProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3918 6 5159 EarlyWordProgram.missProgram (by decide) (by rfl) (by rfl) (by decide)
 def earlyWordPaths : EarlyWordProgram.Paths submissionArtifact .Osaka where
   guard := earlyWord_guard
   hit := earlyWord_hit
   miss := earlyWord_miss
-  helperJump := by exact isValidJumpDest_index 3758 (by rfl)
-  missJump := by exact isValidJumpDest_index 3793 (by rfl)
-  hitJump := by exact isValidJumpDest_index 3684 (by rfl)
-  legacyJump := by exact isValidJumpDest_index 935 (by rfl)
+  helperJump := by exact isValidJumpDest_index 3883 (by rfl)
+  missJump := by exact isValidJumpDest_index 3918 (by rfl)
+  hitJump := by exact isValidJumpDest_index 3654 (by rfl)
+  legacyJump := by exact isValidJumpDest_index 860 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Artifact

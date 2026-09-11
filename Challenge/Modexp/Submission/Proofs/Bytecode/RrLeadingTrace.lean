@@ -24,9 +24,9 @@ open RrLeadingPaths
 
 set_option linter.unusedSimpArgs false in
 theorem run_helper (template : State) (mem : ByteArray)
-    (n bsize esize msize : Nat) (_hn2 : 2 ≤ n) (hn32 : n ≤ 8)
-    (_hactive : 93 ≤ template.activeWords.toNat)
-    (hsize : MachineState.readWord mem 2784 = UInt256.ofNat (32 * n))
+    (n bsize esize msize : Nat) (_hn2 : 2 ≤ n) (hn32 : n ≤ 32)
+    (_hactive : 298 ≤ template.activeWords.toNat)
+    (hsize : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
     (hcode : template.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : template.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock helperPath
@@ -47,9 +47,9 @@ theorem run_helper (template : State) (mem : ByteArray)
       Challenge.EvmProof.Word.ofNat_add_mod]
 
 def gasSteps_helper (template : State) (mem : ByteArray)
-    (n bsize esize msize : Nat) (hn2 : 2 ≤ n) (hn32 : n ≤ 8)
-    (hactive : 93 ≤ template.activeWords.toNat)
-    (hsize : MachineState.readWord mem 2784 = UInt256.ofNat (32 * n))
+    (n bsize esize msize : Nat) (hn2 : 2 ≤ n) (hn32 : n ≤ 32)
+    (hactive : 298 ≤ template.activeWords.toNat)
+    (hsize : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
     (hcode : template.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : template.fork = .Osaka) (hrun : template.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig

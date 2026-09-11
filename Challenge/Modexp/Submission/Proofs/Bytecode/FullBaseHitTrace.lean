@@ -1,4 +1,3 @@
-import Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch
 import Challenge.Modexp.Submission.Proofs.Fast.FullBaseGuardCore
 import Challenge.Modexp.Submission.Proofs.Fast.FullBasePaths
 
@@ -21,6 +20,11 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.FullBase
 
+/-- The multiply entry `JUMPDEST` at pc 3920 (0x0f50, instruction 2961), the `MONPRO` call target. -/
+private theorem jumpDestMulEntry :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3920 = true :=
+  Artifact.isValidJumpDest_index 2961 (by rfl)
+
 set_option linter.unusedSimpArgs false in
 theorem run_redirect (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat)
@@ -39,8 +43,8 @@ theorem run_redirect (s : State) (memory : ByteArray)
 
 set_option linter.unusedSimpArgs false in
 theorem run_guard (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat) (hn32 : n ≤ 8)
-    (hb : bsize < 2 ^ 256) (hactive : 93 ≤ s.activeWords.toNat)
+    (n bsize esize msize : Nat) (hn32 : n ≤ 32)
+    (hb : bsize < 2 ^ 256) (hactive : 298 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blkFullBaseGuard
@@ -98,8 +102,8 @@ theorem run_guard (s : State) (memory : ByteArray)
 
 set_option linter.unusedSimpArgs false in
 theorem run_copyAdd (s : State) (memory input : ByteArray)
-    (n bsize esize msize : Nat) (hn32 : n ≤ 8)
-    (hactive : 93 ≤ s.activeWords.toNat)
+    (n bsize esize msize : Nat) (hn32 : n ≤ 32)
+    (hactive : 298 ≤ s.activeWords.toNat)
     (hdata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
@@ -114,14 +118,14 @@ theorem run_copyAdd (s : State) (memory input : ByteArray)
         Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
-        copyState, outer, hcode, hrun, fullBasePC, Cios2Dispatch.jumpDest4012,
+        copyState, outer, hcode, hrun, fullBasePC, jumpDestMulEntry,
         Challenge.EvmProof.Word.literal_eq_ofNat,
         Challenge.EvmProof.Word.word_toNat_ofNat,
         Challenge.EvmProof.Word.succ_ofNat_mod,
         Challenge.EvmProof.Word.ofNat_add_mod]]
   exact Challenge.Modexp.Submission.Proofs.Fast.FullBase.run_copyAdd
     s memory input n bsize esize msize hn32 hactive hdata
-      (by simpa [hcode] using Cios2Dispatch.jumpDest4012)
+      (by simpa [hcode] using jumpDestMulEntry)
 
 private def sound {s t : State}
     (path : List (Challenge.EvmProof.Stepper.Located
@@ -148,8 +152,8 @@ def gasSteps_redirect (s : State) (memory : ByteArray)
     hcode hfork hrun hnp
 
 def gasSteps_guard (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat) (hn32 : n ≤ 8)
-    (hb : bsize < 2 ^ 256) (hactive : 93 ≤ s.activeWords.toNat)
+    (n bsize esize msize : Nat) (hn32 : n ≤ 32)
+    (hb : bsize < 2 ^ 256) (hactive : 298 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -164,8 +168,8 @@ def gasSteps_guard (s : State) (memory : ByteArray)
     hcode hfork hrun hnp
 
 def gasSteps_copyAdd (s : State) (memory input : ByteArray)
-    (n bsize esize msize : Nat) (hn32 : n ≤ 8)
-    (hactive : 93 ≤ s.activeWords.toNat)
+    (n bsize esize msize : Nat) (hn32 : n ≤ 32)
+    (hactive : 298 ≤ s.activeWords.toNat)
     (hdata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)

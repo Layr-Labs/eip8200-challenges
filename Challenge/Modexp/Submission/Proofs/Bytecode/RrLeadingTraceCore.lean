@@ -49,9 +49,9 @@ def outer (n bsize esize msize : Nat) : List UInt256 :=
 /-- pc 3111..3122: load the established size word and copy CC to RR. -/
 def copyProgram : List Instr :=
   [.op .JUMPDEST,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 2784), .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 1280),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 1536), .op .MCOPY]
+   .push ⟨2, by decide⟩ (UInt256.ofNat 9344), .op .MLOAD,
+   .push ⟨2, by decide⟩ (UInt256.ofNat 5120),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 6144), .op .MCOPY]
 
 /-- pc 3123..3141: four threshold comparisons and their sum. -/
 def counterProgram : List Instr :=
@@ -63,33 +63,33 @@ def counterProgram : List Instr :=
 
 /-- pc 3142..3145: rejoin the inherited RR head at pc 1548. -/
 def jumpProgram : List Instr :=
-  [.push ⟨2, by decide⟩ (UInt256.ofNat 1467), .op .JUMP]
+  [.push ⟨2, by decide⟩ (UInt256.ofNat 1355), .op .JUMP]
 
 def helperProgram : List Instr := copyProgram ++ counterProgram ++ jumpProgram
 
 def copiedMemory (mem : ByteArray) (n : Nat) : ByteArray :=
   MachineState.writeBytes mem
-    (MachineState.readPadded mem 1280 (32 * n)) 1536
+    (MachineState.readPadded mem 5120 (32 * n)) 6144
 
 def loadActiveWords (template : State) : UInt256 :=
-  template.activeWordsAfterUInt256 2784 32
+  template.activeWordsAfterUInt256 9344 32
 
 def copiedActiveWords (template : State) (n : Nat) : UInt256 :=
   State.activeWordsAfterUInt256_2
     ({template with activeWords := loadActiveWords template} : State)
-    1536 (32 * n) 1280 (32 * n)
+    6144 (32 * n) 5120 (32 * n)
 
 def entryState (template : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { template with
-    pc := UInt256.ofNat 3023
+    pc := UInt256.ofNat 2878
     stack := outer n bsize esize msize
     memory := mem }
 
 def copiedState (template : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { template with
-    pc := UInt256.ofNat 3035
+    pc := UInt256.ofNat 2890
     stack := outer n bsize esize msize
     memory := copiedMemory mem n
     activeWords := copiedActiveWords template n }
@@ -97,7 +97,7 @@ def copiedState (template : State) (mem : ByteArray)
 def counterState (template : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { template with
-    pc := UInt256.ofNat 3054
+    pc := UInt256.ofNat 2909
     stack := UInt256.ofNat (directCounter n) :: outer n bsize esize msize
     memory := copiedMemory mem n
     activeWords := copiedActiveWords template n }
@@ -106,15 +106,15 @@ def counterState (template : State) (mem : ByteArray)
 def exitState (template : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { template with
-    pc := UInt256.ofNat 1467
+    pc := UInt256.ofNat 1355
     stack := UInt256.ofNat (directCounter n) :: outer n bsize esize msize
     memory := copiedMemory mem n
     activeWords := copiedActiveWords template n }
 
-theorem sizeWord_toNat {n : Nat} (hn32 : n ≤ 8) :
+theorem sizeWord_toNat {n : Nat} (hn32 : n ≤ 32) :
     (UInt256.ofNat (32 * n)).toNat = 32 * n := by
   rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
-  have hpow : 256 < 2 ^ 256 := by norm_num
+  have hpow : 1024 < 2 ^ 256 := by norm_num
   omega
 
 theorem wordLt_ofNat (threshold n : Nat)
@@ -126,7 +126,7 @@ theorem wordLt_ofNat (threshold n : Nat)
   unfold ltWord
   split <;> rfl
 
-theorem counterWord (n : Nat) (hn32 : n ≤ 8) :
+theorem counterWord (n : Nat) (hn32 : n ≤ 32) :
     ((UInt256.lt (UInt256.ofNat 31) (UInt256.ofNat n) +
           UInt256.lt (UInt256.ofNat 15) (UInt256.ofNat n)) +
         UInt256.lt (UInt256.ofNat 7) (UInt256.ofNat n)) +
@@ -147,15 +147,15 @@ theorem counterWord (n : Nat) (hn32 : n ≤ 8) :
   omega
 
 /-- Functional copy leaf.  Its only semantic input is the already-established
-size word `32*n` at memory address 2784. -/
+size word `32*n` at memory address 9344. -/
 theorem run_copy (template : State) (mem : ByteArray)
-    (n bsize esize msize : Nat) (hn32 : n ≤ 8)
-    (hsize : MachineState.readWord mem 2784 = UInt256.ofNat (32 * n)) :
+    (n bsize esize msize : Nat) (hn32 : n ≤ 32)
+    (hsize : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n)) :
     runInstructions copyProgram (entryState template mem n bsize esize msize) =
       some (copiedState template mem n bsize esize msize) := by
   have hpc :
-      (((UInt256.ofNat 3023).succ + UInt256.ofNat 3).succ +
-        UInt256.ofNat 3 + UInt256.ofNat 3).succ = UInt256.ofNat 3035 := by
+      (((UInt256.ofNat 2878).succ + UInt256.ofNat 3).succ +
+        UInt256.ofNat 3 + UInt256.ofNat 3).succ = UInt256.ofNat 2890 := by
     decide
   simp [copyProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     entryState, copiedState, copiedMemory, copiedActiveWords, loadActiveWords,

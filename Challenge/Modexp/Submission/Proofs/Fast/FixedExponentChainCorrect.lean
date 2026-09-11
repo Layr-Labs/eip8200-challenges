@@ -19,23 +19,23 @@ open Challenge.Modexp.Submission.Proofs.Fast.FixedExponentStates
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
 theorem jumpD3781 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 3785).toNat = true :=
-  Exp.jumpD 3785 (by decide) FixedExponentPaths.jumpDest3781
+    (UInt256.ofNat 3781).toNat = true :=
+  Exp.jumpD 3781 (by decide) FixedExponentPaths.jumpDest3781
 
 theorem jumpD3808 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 3812).toNat = true :=
+    (UInt256.ofNat 3808).toNat = true :=
   Exp.jumpD 3772 (by decide) FixedExponentPaths.jumpDest3772
 
 theorem jumpD3833 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 3837).toNat = true :=
-  Exp.jumpD 3837 (by decide) FixedExponentPaths.jumpDest3833
+    (UInt256.ofNat 3833).toNat = true :=
+  Exp.jumpD 3833 (by decide) FixedExponentPaths.jumpDest3833
 
 /-- Execute all remaining calls of the fixed squaring loop. -/
 def gasSteps_squareLoop (s : State) {n bsize mm minv R : Nat}
     (sub : Exp.Subroutines s n bsize mm minv)
     (spec : Exp.SubSpec sub.mpMem sub.amMem n mm R minv)
     (memory : ByteArray) (esize msize count bM acc : Nat)
-    (hm : 0 < mm) (hn32 : n ≤ 8) (hcount : 1 ≤ count)
+    (hm : 0 < mm) (hn32 : n ≤ 32) (hcount : 1 ≤ count)
     (hcount16 : count ≤ 16) (_hbM : bM < mm) (hacc : acc < mm)
     (hframe : Exp.Frame memory n bsize minv)
     (hinv : Exp.EbInv memory n mm bM acc)
@@ -50,7 +50,7 @@ def gasSteps_squareLoop (s : State) {n bsize mm minv R : Nat}
   induction count generalizing memory acc with
   | zero => omega
   | succ k ih =>
-      have hcall := sub.monpro 256 256 256 (UInt256.ofNat 3785)
+      have hcall := sub.monpro 1024 1024 1024 (UInt256.ofNat 3781)
         (UInt256.ofNat (k + 1) :: Exp.outer n bsize esize msize)
         memory acc acc (by simp [Exp.outer])
         (by omega) (by omega) (by omega) (by omega) (by omega)
@@ -59,24 +59,24 @@ def gasSteps_squareLoop (s : State) {n bsize mm minv R : Nat}
         s memory n bsize esize msize (k + 1) hcode hfork hrun hnp
       have hfirst : Challenge.EvmProof.GasSteps
           (square s memory n bsize esize msize (k + 1))
-          (squareReturn s (sub.mpMem 256 256 256 memory)
+          (squareReturn s (sub.mpMem 1024 1024 1024 memory)
             n bsize esize msize (k + 1)) := hhead.trans hcall
       cases k with
       | zero =>
           exact hfirst.trans
             (FixedExponentChainTrace.gasSteps_squareReturnExit s
-              (sub.mpMem 256 256 256 memory) n bsize esize msize
+              (sub.mpMem 1024 1024 1024 memory) n bsize esize msize
               hcode hfork hrun hnp)
       | succ j =>
           have hnext := FixedExponentChainTrace.gasSteps_squareReturnLoop s
-            (sub.mpMem 256 256 256 memory) n bsize esize msize (j + 1)
+            (sub.mpMem 1024 1024 1024 memory) n bsize esize msize (j + 1)
             (by omega) (by omega) hcode hfork hrun hnp
-          have hframe1 : Exp.Frame (sub.mpMem 256 256 256 memory)
+          have hframe1 : Exp.Frame (sub.mpMem 1024 1024 1024 memory)
               n bsize minv :=
-            sub.mpFrame 256 256 256 memory (by omega) hframe
+            sub.mpFrame 1024 1024 1024 memory (by omega) hframe
           have hinv1 := squareMems_inv sub spec memory hm hn32 hacc hframe hinv 1
           simp only [squareMems, squareValue] at hinv1
-          have hrec := ih (memory := sub.mpMem 256 256 256 memory)
+          have hrec := ih (memory := sub.mpMem 1024 1024 1024 memory)
             (acc := Model.montMul mm R acc acc) (by omega) (by omega)
             (Model.montMul_lt hm R acc acc) hframe1 hinv1
           have hall := (hfirst.trans hnext).trans hrec
@@ -88,14 +88,14 @@ def gasSteps_fixedSquares (s : State) {n bsize mm minv R : Nat}
     (sub : Exp.Subroutines s n bsize mm minv)
     (spec : Exp.SubSpec sub.mpMem sub.amMem n mm R minv)
     (memory : ByteArray) (esize msize count bM : Nat)
-    (hm : 0 < mm) (hn : 2 ≤ n) (hn32 : n ≤ 8)
+    (hm : 0 < mm) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hcount : 1 ≤ count) (hcount16 : count ≤ 16) (hbM : bM < mm)
-    (hactive : 93 ≤ s.activeWords.toNat)
+    (hactive : 298 ≤ s.activeWords.toNat)
     (hframe : Exp.Frame memory n bsize minv)
     (hmod : Model.FastRepresents memory 0 n mm)
-    (hbase : Model.FastRepresents memory 512 n bM)
+    (hbase : Model.FastRepresents memory 2048 n bM)
     (hone : ∃ one, one < Limbs.radix ∧
-      Model.FastRepresents memory 768 n one)
+      Model.FastRepresents memory 3072 n one)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -104,7 +104,7 @@ def gasSteps_fixedSquares (s : State) {n bsize mm minv R : Nat}
       (special s memory n bsize esize msize count)
       (product s (fixedMems sub.mpMem n memory count)
         n bsize esize msize) := by
-  let mem0 := Exp.mcopyMem memory 256 512 (32 * n)
+  let mem0 := Exp.mcopyMem memory 1024 2048 (32 * n)
   have hframe0 : Exp.Frame mem0 n bsize minv :=
     Exp.frame_mcopyMem (by omega) hframe
   have hinv0 : Exp.EbInv mem0 n mm bM bM := by
@@ -116,7 +116,7 @@ def gasSteps_fixedSquares (s : State) {n bsize mm minv R : Nat}
       (special s memory n bsize esize msize count)
       (square s mem0 n bsize esize msize count) := by
     simpa [mem0, FixedExponentStates.initialSquareMem] using hhead
-  have hcall := sub.monpro 256 256 256 (UInt256.ofNat 3785)
+  have hcall := sub.monpro 1024 1024 1024 (UInt256.ofNat 3781)
     (UInt256.ofNat count :: Exp.outer n bsize esize msize)
     mem0 bM bM (by simp [Exp.outer])
     (by omega) (by omega) (by omega) (by omega) (by omega)
@@ -125,7 +125,7 @@ def gasSteps_fixedSquares (s : State) {n bsize mm minv R : Nat}
     n bsize esize msize count hcode hfork hrun hnp
   have hfirst : Challenge.EvmProof.GasSteps
       (special s memory n bsize esize msize count)
-      (squareReturn s (sub.mpMem 256 256 256 mem0)
+      (squareReturn s (sub.mpMem 1024 1024 1024 mem0)
         n bsize esize msize count) := (hhead'.trans hsquare).trans hcall
   rcases count with _ | k
   · omega
@@ -133,19 +133,19 @@ def gasSteps_fixedSquares (s : State) {n bsize mm minv R : Nat}
     | zero =>
         exact hfirst.trans
           (FixedExponentChainTrace.gasSteps_squareReturnExit s
-            (sub.mpMem 256 256 256 mem0) n bsize esize msize
+            (sub.mpMem 1024 1024 1024 mem0) n bsize esize msize
             hcode hfork hrun hnp)
     | succ j =>
         have hnext := FixedExponentChainTrace.gasSteps_squareReturnLoop s
-          (sub.mpMem 256 256 256 mem0) n bsize esize msize (j + 1)
+          (sub.mpMem 1024 1024 1024 mem0) n bsize esize msize (j + 1)
           (by omega) (by omega) hcode hfork hrun hnp
-        have hframe1 : Exp.Frame (sub.mpMem 256 256 256 mem0)
+        have hframe1 : Exp.Frame (sub.mpMem 1024 1024 1024 mem0)
             n bsize minv :=
-          sub.mpFrame 256 256 256 mem0 (by omega) hframe0
+          sub.mpFrame 1024 1024 1024 mem0 (by omega) hframe0
         have hinv1 := squareMems_inv sub spec mem0 hm hn32 hbM hframe0 hinv0 1
         simp only [squareMems, squareValue] at hinv1
         have hloop := gasSteps_squareLoop s sub spec
-          (sub.mpMem 256 256 256 mem0) esize msize (j + 1) bM
+          (sub.mpMem 1024 1024 1024 mem0) esize msize (j + 1) bM
           (Model.montMul mm R bM bM) hm hn32 (by omega) (by omega) hbM
           (Model.montMul_lt hm R bM bM) hframe1 hinv1 hcode hfork hrun hnp
         have hall := (hfirst.trans hnext).trans hloop

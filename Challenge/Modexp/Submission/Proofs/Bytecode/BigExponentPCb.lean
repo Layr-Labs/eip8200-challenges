@@ -16,8 +16,8 @@ open EvmSemantics.EVM
 open Challenge.Modexp
 
 @[simp] theorem exponentMidPCs (i : Nat)
-    (hi : 736 ≤ i) (hii : i ≤ 756) :
+    (hi : 679 ≤ i) (hii : i ≤ 699) :
     Artifact.submissionArtifact.instructionPC i =
-      ([948,949,952,953,956,959,961,962,963,966,967,968,971,974,977,980,981,982,983,984,985] : List Nat)[i - 736]! := by
+      ([868,869,872,873,876,879,881,882,883,886,887,888,891,894,897,900,901,902,903,904,905] : List Nat)[i - 679]! := by
   interval_cases i <;> decide
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigExponent

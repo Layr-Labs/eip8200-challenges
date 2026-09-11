@@ -11,12 +11,13 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
-theorem run_l1Dispatch4 (s : State) (mem : ByteArray) (bi : UInt256)
-    (pa pb i j : Nat) (pdst ret : UInt256) (rest : List UInt256)
+/-- The first-loop dispatch `DUP6 JUMP` jumps to the frame's `ent` slot. -/
+theorem run_l1Dispatch4 (s : State) (q : MacState) (bi : UInt256)
+    (pb i : Nat) (hd pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 4352 = true) :
-    runInstructions l1DispatchProgram (l1At 4198 s mem bi pa pb 4 i j pdst ret rest) =
-      some (l1At 4352 s mem bi pa pb 4 i j pdst ret rest) := by
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 4220 = true) :
+    runInstructions l1DispatchProgram (l1Q 4066 s q bi pb 4 i hd (l1Target 4) pdst ret rest) =
+      some (l1Q 4220 s q bi pb 4 i hd (l1Target 4) pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
   have hExtra11 : rest.length + 11 < 1024 := by omega
@@ -27,17 +28,17 @@ theorem run_l1Dispatch4 (s : State) (mem : ByteArray) (bi : UInt256)
   have hc2 : rest.length+11 < 1024 := by omega
   have hc3 : rest.length+12 < 1024 := by omega
   simp [hExtra9, hExtra10, hExtra11, hExtra12, hExtra13, hExtra14, l1DispatchProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    l1At, hc1, hc2, hc3, l1Target_four, l2Target_four, htarget,
+    l1Q, hc1, hc2, hc3, l1Target_four, l2Target_four, l1Target_eight, l2Target_eight, htarget,
     UInt256.isTrue, Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod]
 
-theorem run_l1Dispatch8 (s : State) (mem : ByteArray) (bi : UInt256)
-    (pa pb i j : Nat) (pdst ret : UInt256) (rest : List UInt256)
+theorem run_l1Dispatch8 (s : State) (q : MacState) (bi : UInt256)
+    (pb i : Nat) (hd pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 4200 = true) :
-    runInstructions l1DispatchProgram (l1At 4198 s mem bi pa pb 8 i j pdst ret rest) =
-      some (l1At 4200 s mem bi pa pb 8 i j pdst ret rest) := by
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 4068 = true) :
+    runInstructions l1DispatchProgram (l1Q 4066 s q bi pb 8 i hd (l1Target 8) pdst ret rest) =
+      some (l1Q 4068 s q bi pb 8 i hd (l1Target 8) pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
   have hExtra11 : rest.length + 11 < 1024 := by omega
@@ -48,32 +49,18 @@ theorem run_l1Dispatch8 (s : State) (mem : ByteArray) (bi : UInt256)
   have hc2 : rest.length+11 < 1024 := by omega
   have hc3 : rest.length+12 < 1024 := by omega
   simp [hExtra9, hExtra10, hExtra11, hExtra12, hExtra13, hExtra14, l1DispatchProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    l1At, hc1, hc2, hc3, l1Target_eight, l2Target_eight, htarget,
+    l1Q, hc1, hc2, hc3, l1Target_four, l2Target_four, l1Target_eight, l2Target_eight, htarget,
     UInt256.isTrue, Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod]
 
-theorem run_l1Join (s : State) (mem : ByteArray) (bi : UInt256)
-    (pa pb n i j : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) :
-    runInstructions joinProgram (l1At 4352 s mem bi pa pb n i j pdst ret rest) =
-      some (l1At 4353 s mem bi pa pb n i j pdst ret rest) := by
-  have hExtra9 : rest.length + 9 < 1024 := by omega
-  have hExtra10 : rest.length + 10 < 1024 := by omega
-  have hExtra11 : rest.length + 11 < 1024 := by omega
-  have hExtra12 : rest.length + 12 < 1024 := by omega
-  have hExtra13 : rest.length + 13 < 1024 := by omega
-  have hExtra14 : rest.length + 14 < 1024 := by omega
-  have hc : rest.length+10 < 1024 := by omega
-  simp [hExtra9, hExtra10, hExtra11, hExtra12, hExtra13, hExtra14, joinProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    l1At, hc, Challenge.EvmProof.Word.succ_ofNat_mod]
-
+/-- The second-loop dispatch `DUP10 JUMP` jumps to `l2Target n`. -/
 theorem run_l2Dispatch4 (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
-    (pa pb i k : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (pb i k : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 4657 = true) :
-    runInstructions l2DispatchProgram (l2At 4512 s mid bi mu c0 pa pb 4 i k pdst ret rest) =
-      some (l2At 4657 s mid bi mu c0 pa pb 4 i k pdst ret rest) := by
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 4519 = true) :
+    runInstructions l2DispatchProgram (l2At 4365 s mid bi mu c0 pb 4 i k hd ent pdst ret rest) =
+      some (l2At 4519 s mid bi mu c0 pb 4 i k hd ent pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
   have hExtra11 : rest.length + 11 < 1024 := by omega
@@ -84,17 +71,17 @@ theorem run_l2Dispatch4 (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
   have hc2 : rest.length+12 < 1024 := by omega
   have hc3 : rest.length+13 < 1024 := by omega
   simp [hExtra9, hExtra10, hExtra11, hExtra12, hExtra13, hExtra14, l2DispatchProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    l2At, hc1, hc2, hc3, l1Target_four, l2Target_four, htarget,
+    l2At, hc1, hc2, hc3, l1Target_four, l2Target_four, l1Target_eight, l2Target_eight, htarget,
     UInt256.isTrue, Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem run_l2Dispatch8 (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
-    (pa pb i k : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (pb i k : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 4514 = true) :
-    runInstructions l2DispatchProgram (l2At 4512 s mid bi mu c0 pa pb 8 i k pdst ret rest) =
-      some (l2At 4514 s mid bi mu c0 pa pb 8 i k pdst ret rest) := by
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 4367 = true) :
+    runInstructions l2DispatchProgram (l2At 4365 s mid bi mu c0 pb 8 i k hd ent pdst ret rest) =
+      some (l2At 4367 s mid bi mu c0 pb 8 i k hd ent pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
   have hExtra11 : rest.length + 11 < 1024 := by omega
@@ -105,16 +92,16 @@ theorem run_l2Dispatch8 (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
   have hc2 : rest.length+12 < 1024 := by omega
   have hc3 : rest.length+13 < 1024 := by omega
   simp [hExtra9, hExtra10, hExtra11, hExtra12, hExtra13, hExtra14, l2DispatchProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    l2At, hc1, hc2, hc3, l1Target_eight, l2Target_eight, htarget,
+    l2At, hc1, hc2, hc3, l1Target_four, l2Target_four, l1Target_eight, l2Target_eight, htarget,
     UInt256.isTrue, Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem run_l2Join (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
-    (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (pb n i k : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005) :
-    runInstructions joinProgram (l2At 4657 s mid bi mu c0 pa pb n i k pdst ret rest) =
-      some (l2At 4658 s mid bi mu c0 pa pb n i k pdst ret rest) := by
+    runInstructions joinProgram (l2At 4519 s mid bi mu c0 pb n i k hd ent pdst ret rest) =
+      some (l2At 4520 s mid bi mu c0 pb n i k hd ent pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
   have hExtra11 : rest.length + 11 < 1024 := by omega
@@ -125,26 +112,11 @@ theorem run_l2Join (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
   simp [hExtra9, hExtra10, hExtra11, hExtra12, hExtra13, hExtra14, joinProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     l2At, hc, Challenge.EvmProof.Word.succ_ofNat_mod]
 
-theorem run_l1Join8 (s : State) (mem : ByteArray) (bi : UInt256)
-    (pa pb n i j : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) :
-    runInstructions joinProgram (l1At 4200 s mem bi pa pb n i j pdst ret rest) =
-      some (l1At 4201 s mem bi pa pb n i j pdst ret rest) := by
-  have hExtra9 : rest.length + 9 < 1024 := by omega
-  have hExtra10 : rest.length + 10 < 1024 := by omega
-  have hExtra11 : rest.length + 11 < 1024 := by omega
-  have hExtra12 : rest.length + 12 < 1024 := by omega
-  have hExtra13 : rest.length + 13 < 1024 := by omega
-  have hExtra14 : rest.length + 14 < 1024 := by omega
-  have hc : rest.length+10 < 1024 := by omega
-  simp [hExtra9, hExtra10, hExtra11, hExtra12, hExtra13, hExtra14, joinProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    l1At, hc, Challenge.EvmProof.Word.succ_ofNat_mod]
-
 theorem run_l2Join8 (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
-    (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (pb n i k : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005) :
-    runInstructions joinProgram (l2At 4514 s mid bi mu c0 pa pb n i k pdst ret rest) =
-      some (l2At 4515 s mid bi mu c0 pa pb n i k pdst ret rest) := by
+    runInstructions joinProgram (l2At 4367 s mid bi mu c0 pb n i k hd ent pdst ret rest) =
+      some (l2At 4368 s mid bi mu c0 pb n i k hd ent pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
   have hExtra11 : rest.length + 11 < 1024 := by omega
