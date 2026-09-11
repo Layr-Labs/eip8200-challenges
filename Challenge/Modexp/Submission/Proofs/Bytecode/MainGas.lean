@@ -123,7 +123,7 @@ private def gasSteps_headerCheck (input : ByteArray) :
     (gasSteps_headerLoad input).cost = 17 := by rfl
 
 @[simp] private theorem gasSteps_headerCheck_cost (input : ByteArray) :
-    (gasSteps_headerCheck input).cost = 11 := by rfl
+    (gasSteps_headerCheck input).cost = 5 := by rfl
 
 /-- The header block starting from the body `JUMPDEST` at pc 1196 rather than
 from the entry.  The appended fast path reaches that pc itself, so the entry hop
