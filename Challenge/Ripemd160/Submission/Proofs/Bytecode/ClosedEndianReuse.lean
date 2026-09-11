@@ -26,8 +26,8 @@ theorem mask16_div :
     UInt256.lnot (UInt256.ofNat 0) / UInt256.ofNat 65537 = mask16 := by decide
 
 def code (shift : Nat) : List Instr :=
-  [dup1, dup1, push1 (UInt256.ofNat shift), op .SHR, op .XOR,
-   endianFactorPush shift, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨1, by decide⟩),
+  [op .JUMPDEST, endianFactorPush shift, .op (.Dup ⟨1, by decide⟩), dup1,
+   push1 (UInt256.ofNat shift), op .SHR, op .XOR, .op (.Dup ⟨1, by decide⟩),
    .push 0 0, op .NOT, op .DIV, op .AND, op .MUL, op .XOR]
 
 theorem run_endian (s : State) (startPC value : UInt256) (shift : Nat)
@@ -67,7 +67,11 @@ theorem run_endian (s : State) (startPC value : UInt256) (shift : Nat)
         Instr.size_push, Instr.size_op, Word.literal_eq_ofNat,
         Word.word_toNat_ofNat, Word.ofNat_add_mod, Word.succ_ofNat, List.exchange, List.getElem?_cons_zero, List.getElem?_cons_succ,
         word_add_assoc, word_add_ofNat_assoc, hsemantic]
-    rw [add_ofNat_assoc startPC 1 1]
+    -- the constant push is PUSH2 for shift 8 and PUSH3 for shift 16, so the
+    -- second instruction is 3 or 4 bytes wide; seed the chain accordingly.
+    first
+      | rw [add_ofNat_assoc_hAdd startPC 1 3]
+      | rw [add_ofNat_assoc_hAdd startPC 1 4]
     repeat first
       | rw [add_ofNat_assoc_hAdd]
       | rw [add_ofNat_assoc_add]
@@ -92,6 +96,8 @@ theorem advances (shift : Nat) {instruction : Instr} {s t : State}
   all_goals first
     | exact Or.inr (Or.inr rfl)
     | exact Or.inl (Or.inl (by constructor))
+    -- the leading JUMPDEST: SharedCallTrace.Advances lists it explicitly
+    | exact Or.inl (Or.inr (Or.inr rfl))
     | simp only [endianFactorPush]; split <;>
         exact Or.inl (Or.inl (by constructor))
 

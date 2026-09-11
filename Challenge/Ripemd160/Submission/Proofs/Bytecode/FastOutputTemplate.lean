@@ -119,7 +119,9 @@ def staticGas (instructions : List Instr) : Nat :=
   (instructions.map
     (Challenge.EvmProof.Meter.instrStaticCost .Osaka)).sum
 
-theorem fastOutputTemplate_staticGas : staticGas fastOutputTemplate = 167 := by
+-- Two `SWAP1` (3 gas each) are replaced by `JUMPDEST` (1 gas each), so the
+-- template's static cost falls by 4.
+theorem fastOutputTemplate_staticGas : staticGas fastOutputTemplate = 163 := by
   norm_num [staticGas, fastOutputTemplate, fastOutputBeforeReturnTemplate,
     fastPackTemplate, fastLoad0, fastPackStep, fastEndianStage8,
     fastEndianStage16, ClosedEndianReuse.code,
