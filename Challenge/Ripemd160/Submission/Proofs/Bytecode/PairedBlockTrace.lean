@@ -1,9 +1,10 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Strip78Site
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Strip78Semantics
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.TerminalRoundSite
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedBlockModel
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedAllInlineCoreSites
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedAllInlineBoundarySites
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.SStartupPremises
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedLaneGarbageSchedule
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -166,7 +167,9 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     hcanonical.1 hcanonical.2.1 hcanonical.2.2.1 hcanonical.2.2.2.1 hcanonical.2.2.2.2
     qcode qfork qnp
   let initial : CoreFrame := ⟨PairedLaneWordRound.packCrypto lane lane, 0⟩
+  let before78 := Strip78Prefix.corePrefix77Chain.eval q.memory initial
   let terminal := PairedAllInlineCoreTrace.corePrefixChain.eval q.memory initial
+  let dirty := Strip78Round.dirtyFrame q.memory before78
   have gcore := PairedAllInlineCoreSites.gasSteps_core_prefix q initial rho
     hstack qrun qactive qcode qfork qnp
   have hentry :
@@ -185,14 +188,26 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
       (TerminalRound.modifiedFrame q.memory terminal.frame) =
       PairedTailTrace.resultMemory q.memory (resultFrame s input i) := by
     rw [TerminalRound.resultMemory_modified_eq_canonical _ _ rfl rfl, hterminal]
-  have gsuffix := TerminalRoundSite.gasSteps_suffix q terminal.frame
+  have hmemoryDirty : PairedTailTrace.resultMemory q.memory
+      (TerminalRound.modifiedFrame q.memory dirty) =
+      PairedTailTrace.resultMemory q.memory (resultFrame s input i) := by
+    exact (Strip78Semantics.resultMemory_prefix_strip_garbage q.memory (blockWords input i) lane lane
+      (PairedScheduleData.extractedGarbage s.memory (messagePointer i))
+      (scheduled_ready_garbage s input i h hfit hi ctx)
+      (by simp [PairedScheduleData.extractedGarbage, PairedScheduleData.extractedWordG,
+        PairedScheduleData.extractedWord, PairedScheduleData.chunkG])
+      (by simp [PairedScheduleData.extractedGarbage, PairedScheduleData.extractedWordG,
+        PairedScheduleData.extractedWord, PairedScheduleData.chunkG])).trans hmemory
+  have gstrip := Strip78Site.gasSteps q before78 (cache q.memory ++ rho)
+    hcstack qrun qactive qcode qfork qnp
+  have gsuffix := TerminalRoundSite.gasSteps_suffix q dirty
     (UInt256.ofNat 402) (driverRest input i) hstack qrun qactive
     (valid_return q qcode) qcode qfork qnp
-  rw [hmemory] at gsuffix
+  rw [hmemoryDirty] at gsuffix
   have gsuffix' : GasSteps
-      {q with pc := UInt256.ofNat 4569, stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] terminal (cache q.memory ++ rho)}
+      {q with pc := UInt256.ofNat 4578, stack := PairedAllInlineCoreTrace.inline79Entry dirty (cache q.memory ++ rho)}
       (DriverTrace.compressReturned (resultState s input i) input i) := gsuffix
-  exact gschedule'.trans (gstartup.trans ((gcore.cast hentry rfl).trans gsuffix'))
+  exact gschedule'.trans (gstartup.trans ((gcore.cast hentry rfl).trans (gstrip.trans gsuffix')))
 
 #print axioms startup_stack
 #print axioms scheduled_readLane
