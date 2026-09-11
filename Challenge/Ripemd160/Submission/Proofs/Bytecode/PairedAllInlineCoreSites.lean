@@ -45,7 +45,7 @@ def gasSteps_core_prefix (s : State) (f : CoreFrame) (rho : List UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 888, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] f (cache s.memory ++ rho)}
-      {s with pc := UInt256.ofNat 4799, stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] (PairedAllInlineCoreTrace.corePrefixChain.eval s.memory f) (cache s.memory ++ rho)} := by
+      {s with pc := UInt256.ofNat 4806, stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] (PairedAllInlineCoreTrace.corePrefixChain.eval s.memory f) (cache s.memory ++ rho)} := by
   have hs : (cache s.memory ++ rho).length ≤ 1002 := by simp only [List.length_append, cache_length]; omega
   let f0 := f
   let f1 := PairedAllInlineCoreTrace.group0Block.eval s.memory f0

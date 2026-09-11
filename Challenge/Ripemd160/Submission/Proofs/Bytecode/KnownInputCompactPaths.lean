@@ -57,7 +57,7 @@ def checkEntryPath : List Located :=
    pushAt 2831 1 128,
    opAt 2832 .SHL,
    opAt 2833 .OR,
-   opAt 2831 .XOR,
+   opAt 2834 .XOR,
    pushAt 2835 1 32]
 
 def loopPath : List Located :=

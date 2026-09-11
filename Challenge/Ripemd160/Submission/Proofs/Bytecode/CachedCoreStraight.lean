@@ -2244,13 +2244,9 @@ def inline47Gas : PairedAllInlineCoreTrace.CoreGasBlock inline47Physical Artifac
 def group48Template : List Instr :=
   [ .op (.Swap ⟨0, by decide⟩),
     .op .POP,
-    .push ⟨4, by decide⟩ (UInt256.ofNat 2053994217),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 128),
-    .op .SHL,
-    .push ⟨4, by decide⟩ (UInt256.ofNat 2400959708),
-    .op .OR ]
-theorem group48_pcAfter : pcAfter (UInt256.ofNat 3226) group48Template = UInt256.ofNat 3242 := by rfl
-def group48Physical : PairedAllInlineCoreTrace.CoreBlock 3226 3242 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.k, .d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
+    .push ⟨20, by decide⟩ (UInt256.ofNat 698938013802679700166637234969497128417458109660) ]
+theorem group48_pcAfter : pcAfter (UInt256.ofNat 3226) group48Template = UInt256.ofNat 3249 := by rfl
+def group48Physical : PairedAllInlineCoreTrace.CoreBlock 3226 3249 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.k, .d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
   code := group48Template
   eval := PairedAllInlineCoreTrace.group48Block.eval
   run := by
@@ -2279,13 +2275,13 @@ theorem group48_advances : ∀ instruction ∈ group48Template.dropLast, DenseSc
   decide
 def group48Gas : PairedAllInlineCoreTrace.CoreGasBlock group48Physical Artifact.submissionArtifact .Osaka :=
   PairedAllInlineCoreTrace.CoreGasBlock.of_site group48Physical group48Site group48_pc group48_advances
-theorem inline48_pcAfter : pcAfter (UInt256.ofNat 3242) PairedAllInlineCoreTrace.inline48Template = UInt256.ofNat 3294 := by rfl
-def inline48Physical : PairedAllInlineCoreTrace.CoreBlock 3242 3294 [.k, .d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.d, .e, .c, .b, .k, .a, .factor, .pair, .upper, .lower] where
+theorem inline48_pcAfter : pcAfter (UInt256.ofNat 3249) PairedAllInlineCoreTrace.inline48Template = UInt256.ofNat 3301 := by rfl
+def inline48Physical : PairedAllInlineCoreTrace.CoreBlock 3249 3301 [.k, .d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.d, .e, .c, .b, .k, .a, .factor, .pair, .upper, .lower] where
   code := PairedAllInlineCoreTrace.inline48Template
   eval := PairedAllInlineCoreTrace.inline48Block.eval
   run := by
     intro s f rho hstack hrun hactive
-    have h := PairedAllInlineCoreTrace.run_inline48Template_word s (UInt256.ofNat 3242) f.frame rho
+    have h := PairedAllInlineCoreTrace.run_inline48Template_word s (UInt256.ofNat 3249) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline48_pcAfter] at h
     exact h
@@ -2338,29 +2334,29 @@ def inline48Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline48_slice :
-    (Artifact.submissionArtifact.instructions.drop 2603).take inline48Template.length = inline48Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2599).take inline48Template.length = inline48Template := by rfl
 def inline48Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline48Template :=
-  StackSiteBuilder.ofSlice inline48Template 2603 inline48_slice
-    (by change 2603 + inline48Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline48Template 2599 inline48_slice
+    (by change 2599 + inline48Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline48Template) (by decide))
     (by decide)
-theorem inline48_pc : inline48Site.startPC = UInt256.ofNat 3242 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2603) = UInt256.ofNat 3242
+theorem inline48_pc : inline48Site.startPC = UInt256.ofNat 3249 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2599) = UInt256.ofNat 3249
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline48_advances : ∀ instruction ∈ inline48Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
   decide
 def inline48Gas : PairedAllInlineCoreTrace.CoreGasBlock inline48Physical Artifact.submissionArtifact .Osaka :=
   PairedAllInlineCoreTrace.CoreGasBlock.of_site inline48Physical inline48Site inline48_pc inline48_advances
-theorem inline49_pcAfter : pcAfter (UInt256.ofNat 3294) PairedAllInlineCoreTrace.inline49Template = UInt256.ofNat 3347 := by rfl
-def inline49Physical : PairedAllInlineCoreTrace.CoreBlock 3294 3347 [.d, .e, .c, .b, .k, .a, .factor, .pair, .upper, .lower] [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] where
+theorem inline49_pcAfter : pcAfter (UInt256.ofNat 3301) PairedAllInlineCoreTrace.inline49Template = UInt256.ofNat 3354 := by rfl
+def inline49Physical : PairedAllInlineCoreTrace.CoreBlock 3301 3354 [.d, .e, .c, .b, .k, .a, .factor, .pair, .upper, .lower] [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] where
   code := PairedAllInlineCoreTrace.inline49Template
   eval := PairedAllInlineCoreTrace.inline49Block.eval
   run := by
     intro s f rho hstack hrun hactive
-    have h := PairedAllInlineCoreTrace.run_inline49Template_word s (UInt256.ofNat 3294) f.frame rho
+    have h := PairedAllInlineCoreTrace.run_inline49Template_word s (UInt256.ofNat 3301) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline49_pcAfter] at h
     exact h
@@ -2413,29 +2409,29 @@ def inline49Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline49_slice :
-    (Artifact.submissionArtifact.instructions.drop 2649).take inline49Template.length = inline49Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2645).take inline49Template.length = inline49Template := by rfl
 def inline49Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline49Template :=
-  StackSiteBuilder.ofSlice inline49Template 2649 inline49_slice
-    (by change 2649 + inline49Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline49Template 2645 inline49_slice
+    (by change 2645 + inline49Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline49Template) (by decide))
     (by decide)
-theorem inline49_pc : inline49Site.startPC = UInt256.ofNat 3294 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2649) = UInt256.ofNat 3294
+theorem inline49_pc : inline49Site.startPC = UInt256.ofNat 3301 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2645) = UInt256.ofNat 3301
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline49_advances : ∀ instruction ∈ inline49Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
   decide
 def inline49Gas : PairedAllInlineCoreTrace.CoreGasBlock inline49Physical Artifact.submissionArtifact .Osaka :=
   PairedAllInlineCoreTrace.CoreGasBlock.of_site inline49Physical inline49Site inline49_pc inline49_advances
-theorem inline50_pcAfter : pcAfter (UInt256.ofNat 3347) PairedAllInlineCoreTrace.inline50Template = UInt256.ofNat 3400 := by rfl
-def inline50Physical : PairedAllInlineCoreTrace.CoreBlock 3347 3400 [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] [.d, .e, .c, .b, .k, .a, .factor, .pair, .upper, .lower] where
+theorem inline50_pcAfter : pcAfter (UInt256.ofNat 3354) PairedAllInlineCoreTrace.inline50Template = UInt256.ofNat 3407 := by rfl
+def inline50Physical : PairedAllInlineCoreTrace.CoreBlock 3354 3407 [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] [.d, .e, .c, .b, .k, .a, .factor, .pair, .upper, .lower] where
   code := PairedAllInlineCoreTrace.inline50Template
   eval := PairedAllInlineCoreTrace.inline50Block.eval
   run := by
     intro s f rho hstack hrun hactive
-    have h := PairedAllInlineCoreTrace.run_inline50Template_word s (UInt256.ofNat 3347) f.frame rho
+    have h := PairedAllInlineCoreTrace.run_inline50Template_word s (UInt256.ofNat 3354) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline50_pcAfter] at h
     exact h
@@ -2488,29 +2484,29 @@ def inline50Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline50_slice :
-    (Artifact.submissionArtifact.instructions.drop 2695).take inline50Template.length = inline50Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2691).take inline50Template.length = inline50Template := by rfl
 def inline50Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline50Template :=
-  StackSiteBuilder.ofSlice inline50Template 2695 inline50_slice
-    (by change 2695 + inline50Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline50Template 2691 inline50_slice
+    (by change 2691 + inline50Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline50Template) (by decide))
     (by decide)
-theorem inline50_pc : inline50Site.startPC = UInt256.ofNat 3347 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2695) = UInt256.ofNat 3347
+theorem inline50_pc : inline50Site.startPC = UInt256.ofNat 3354 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2691) = UInt256.ofNat 3354
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline50_advances : ∀ instruction ∈ inline50Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
   decide
 def inline50Gas : PairedAllInlineCoreTrace.CoreGasBlock inline50Physical Artifact.submissionArtifact .Osaka :=
   PairedAllInlineCoreTrace.CoreGasBlock.of_site inline50Physical inline50Site inline50_pc inline50_advances
-theorem inline51_pcAfter : pcAfter (UInt256.ofNat 3400) PairedAllInlineCoreTrace.inline51Template = UInt256.ofNat 3452 := by rfl
-def inline51Physical : PairedAllInlineCoreTrace.CoreBlock 3400 3452 [.d, .e, .c, .b, .k, .a, .factor, .pair, .upper, .lower] [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] where
+theorem inline51_pcAfter : pcAfter (UInt256.ofNat 3407) PairedAllInlineCoreTrace.inline51Template = UInt256.ofNat 3459 := by rfl
+def inline51Physical : PairedAllInlineCoreTrace.CoreBlock 3407 3459 [.d, .e, .c, .b, .k, .a, .factor, .pair, .upper, .lower] [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] where
   code := PairedAllInlineCoreTrace.inline51Template
   eval := PairedAllInlineCoreTrace.inline51Block.eval
   run := by
     intro s f rho hstack hrun hactive
-    have h := PairedAllInlineCoreTrace.run_inline51Template_word s (UInt256.ofNat 3400) f.frame rho
+    have h := PairedAllInlineCoreTrace.run_inline51Template_word s (UInt256.ofNat 3407) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline51_pcAfter] at h
     exact h
@@ -2563,29 +2559,29 @@ def inline51Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline51_slice :
-    (Artifact.submissionArtifact.instructions.drop 2741).take inline51Template.length = inline51Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2737).take inline51Template.length = inline51Template := by rfl
 def inline51Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline51Template :=
-  StackSiteBuilder.ofSlice inline51Template 2741 inline51_slice
-    (by change 2741 + inline51Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline51Template 2737 inline51_slice
+    (by change 2737 + inline51Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline51Template) (by decide))
     (by decide)
-theorem inline51_pc : inline51Site.startPC = UInt256.ofNat 3400 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2741) = UInt256.ofNat 3400
+theorem inline51_pc : inline51Site.startPC = UInt256.ofNat 3407 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2737) = UInt256.ofNat 3407
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline51_advances : ∀ instruction ∈ inline51Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
   decide
 def inline51Gas : PairedAllInlineCoreTrace.CoreGasBlock inline51Physical Artifact.submissionArtifact .Osaka :=
   PairedAllInlineCoreTrace.CoreGasBlock.of_site inline51Physical inline51Site inline51_pc inline51_advances
-theorem inline52_pcAfter : pcAfter (UInt256.ofNat 3452) PairedAllInlineCoreTrace.inline52Template = UInt256.ofNat 3497 := by rfl
-def inline52Physical : PairedAllInlineCoreTrace.CoreBlock 3452 3497 [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] [.d, .e, .c, .b, .k, .a, .factor, .pair, .upper, .lower] where
+theorem inline52_pcAfter : pcAfter (UInt256.ofNat 3459) PairedAllInlineCoreTrace.inline52Template = UInt256.ofNat 3504 := by rfl
+def inline52Physical : PairedAllInlineCoreTrace.CoreBlock 3459 3504 [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] [.d, .e, .c, .b, .k, .a, .factor, .pair, .upper, .lower] where
   code := PairedAllInlineCoreTrace.inline52Template
   eval := PairedAllInlineCoreTrace.inline52Block.eval
   run := by
     intro s f rho hstack hrun hactive
-    have h := PairedAllInlineCoreTrace.run_inline52Template_word s (UInt256.ofNat 3452) f.frame rho
+    have h := PairedAllInlineCoreTrace.run_inline52Template_word s (UInt256.ofNat 3459) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline52_pcAfter] at h
     exact h
@@ -2632,29 +2628,29 @@ def inline52Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline52_slice :
-    (Artifact.submissionArtifact.instructions.drop 2787).take inline52Template.length = inline52Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2783).take inline52Template.length = inline52Template := by rfl
 def inline52Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline52Template :=
-  StackSiteBuilder.ofSlice inline52Template 2787 inline52_slice
-    (by change 2787 + inline52Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline52Template 2783 inline52_slice
+    (by change 2783 + inline52Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline52Template) (by decide))
     (by decide)
-theorem inline52_pc : inline52Site.startPC = UInt256.ofNat 3452 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2787) = UInt256.ofNat 3452
+theorem inline52_pc : inline52Site.startPC = UInt256.ofNat 3459 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2783) = UInt256.ofNat 3459
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline52_advances : ∀ instruction ∈ inline52Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
   decide
 def inline52Gas : PairedAllInlineCoreTrace.CoreGasBlock inline52Physical Artifact.submissionArtifact .Osaka :=
   PairedAllInlineCoreTrace.CoreGasBlock.of_site inline52Physical inline52Site inline52_pc inline52_advances
-theorem inline53_pcAfter : pcAfter (UInt256.ofNat 3497) PairedAllInlineCoreTrace.inline53Template = UInt256.ofNat 3547 := by rfl
-def inline53Physical : PairedAllInlineCoreTrace.CoreBlock 3497 3547 [.d, .e, .c, .b, .k, .a, .factor, .pair, .upper, .lower] [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] where
+theorem inline53_pcAfter : pcAfter (UInt256.ofNat 3504) PairedAllInlineCoreTrace.inline53Template = UInt256.ofNat 3554 := by rfl
+def inline53Physical : PairedAllInlineCoreTrace.CoreBlock 3504 3554 [.d, .e, .c, .b, .k, .a, .factor, .pair, .upper, .lower] [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] where
   code := PairedAllInlineCoreTrace.inline53Template
   eval := PairedAllInlineCoreTrace.inline53Block.eval
   run := by
     intro s f rho hstack hrun hactive
-    have h := PairedAllInlineCoreTrace.run_inline53Template_word s (UInt256.ofNat 3497) f.frame rho
+    have h := PairedAllInlineCoreTrace.run_inline53Template_word s (UInt256.ofNat 3504) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline53_pcAfter] at h
     exact h
@@ -2705,29 +2701,29 @@ def inline53Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline53_slice :
-    (Artifact.submissionArtifact.instructions.drop 2827).take inline53Template.length = inline53Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2823).take inline53Template.length = inline53Template := by rfl
 def inline53Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline53Template :=
-  StackSiteBuilder.ofSlice inline53Template 2827 inline53_slice
-    (by change 2827 + inline53Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline53Template 2823 inline53_slice
+    (by change 2823 + inline53Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline53Template) (by decide))
     (by decide)
-theorem inline53_pc : inline53Site.startPC = UInt256.ofNat 3497 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2827) = UInt256.ofNat 3497
+theorem inline53_pc : inline53Site.startPC = UInt256.ofNat 3504 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2823) = UInt256.ofNat 3504
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline53_advances : ∀ instruction ∈ inline53Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
   decide
 def inline53Gas : PairedAllInlineCoreTrace.CoreGasBlock inline53Physical Artifact.submissionArtifact .Osaka :=
   PairedAllInlineCoreTrace.CoreGasBlock.of_site inline53Physical inline53Site inline53_pc inline53_advances
-theorem inline54_pcAfter : pcAfter (UInt256.ofNat 3547) PairedAllInlineCoreTrace.inline54Template = UInt256.ofNat 3600 := by rfl
-def inline54Physical : PairedAllInlineCoreTrace.CoreBlock 3547 3600 [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] [.d, .e, .c, .b, .k, .a, .factor, .pair, .upper, .lower] where
+theorem inline54_pcAfter : pcAfter (UInt256.ofNat 3554) PairedAllInlineCoreTrace.inline54Template = UInt256.ofNat 3607 := by rfl
+def inline54Physical : PairedAllInlineCoreTrace.CoreBlock 3554 3607 [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] [.d, .e, .c, .b, .k, .a, .factor, .pair, .upper, .lower] where
   code := PairedAllInlineCoreTrace.inline54Template
   eval := PairedAllInlineCoreTrace.inline54Block.eval
   run := by
     intro s f rho hstack hrun hactive
-    have h := PairedAllInlineCoreTrace.run_inline54Template_word s (UInt256.ofNat 3547) f.frame rho
+    have h := PairedAllInlineCoreTrace.run_inline54Template_word s (UInt256.ofNat 3554) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline54_pcAfter] at h
     exact h
@@ -2780,29 +2776,29 @@ def inline54Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline54_slice :
-    (Artifact.submissionArtifact.instructions.drop 2871).take inline54Template.length = inline54Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2867).take inline54Template.length = inline54Template := by rfl
 def inline54Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline54Template :=
-  StackSiteBuilder.ofSlice inline54Template 2871 inline54_slice
-    (by change 2871 + inline54Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline54Template 2867 inline54_slice
+    (by change 2867 + inline54Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline54Template) (by decide))
     (by decide)
-theorem inline54_pc : inline54Site.startPC = UInt256.ofNat 3547 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2871) = UInt256.ofNat 3547
+theorem inline54_pc : inline54Site.startPC = UInt256.ofNat 3554 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2867) = UInt256.ofNat 3554
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline54_advances : ∀ instruction ∈ inline54Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
   decide
 def inline54Gas : PairedAllInlineCoreTrace.CoreGasBlock inline54Physical Artifact.submissionArtifact .Osaka :=
   PairedAllInlineCoreTrace.CoreGasBlock.of_site inline54Physical inline54Site inline54_pc inline54_advances
-theorem inline56_pcAfter : pcAfter (UInt256.ofNat 3649) PairedAllInlineCoreTrace.inline56Template = UInt256.ofNat 3702 := by rfl
-def inline56Physical : PairedAllInlineCoreTrace.CoreBlock 3649 3702 [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] [.d, .e, .c, .b, .k, .a, .factor, .pair, .upper, .lower] where
+theorem inline56_pcAfter : pcAfter (UInt256.ofNat 3656) PairedAllInlineCoreTrace.inline56Template = UInt256.ofNat 3709 := by rfl
+def inline56Physical : PairedAllInlineCoreTrace.CoreBlock 3656 3709 [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] [.d, .e, .c, .b, .k, .a, .factor, .pair, .upper, .lower] where
   code := PairedAllInlineCoreTrace.inline56Template
   eval := PairedAllInlineCoreTrace.inline56Block.eval
   run := by
     intro s f rho hstack hrun hactive
-    have h := PairedAllInlineCoreTrace.run_inline56Template_word s (UInt256.ofNat 3649) f.frame rho
+    have h := PairedAllInlineCoreTrace.run_inline56Template_word s (UInt256.ofNat 3656) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline56_pcAfter] at h
     exact h
@@ -2855,29 +2851,29 @@ def inline56Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline56_slice :
-    (Artifact.submissionArtifact.instructions.drop 2962).take inline56Template.length = inline56Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2958).take inline56Template.length = inline56Template := by rfl
 def inline56Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline56Template :=
-  StackSiteBuilder.ofSlice inline56Template 2962 inline56_slice
-    (by change 2962 + inline56Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline56Template 2958 inline56_slice
+    (by change 2958 + inline56Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline56Template) (by decide))
     (by decide)
-theorem inline56_pc : inline56Site.startPC = UInt256.ofNat 3649 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2962) = UInt256.ofNat 3649
+theorem inline56_pc : inline56Site.startPC = UInt256.ofNat 3656 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2958) = UInt256.ofNat 3656
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline56_advances : ∀ instruction ∈ inline56Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
   decide
 def inline56Gas : PairedAllInlineCoreTrace.CoreGasBlock inline56Physical Artifact.submissionArtifact .Osaka :=
   PairedAllInlineCoreTrace.CoreGasBlock.of_site inline56Physical inline56Site inline56_pc inline56_advances
-theorem inline59_pcAfter : pcAfter (UInt256.ofNat 3802) PairedAllInlineCoreTrace.inline59Template = UInt256.ofNat 3855 := by rfl
-def inline59Physical : PairedAllInlineCoreTrace.CoreBlock 3802 3855 [.d, .e, .c, .b, .k, .a, .factor, .pair, .upper, .lower] [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] where
+theorem inline59_pcAfter : pcAfter (UInt256.ofNat 3809) PairedAllInlineCoreTrace.inline59Template = UInt256.ofNat 3862 := by rfl
+def inline59Physical : PairedAllInlineCoreTrace.CoreBlock 3809 3862 [.d, .e, .c, .b, .k, .a, .factor, .pair, .upper, .lower] [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] where
   code := PairedAllInlineCoreTrace.inline59Template
   eval := PairedAllInlineCoreTrace.inline59Block.eval
   run := by
     intro s f rho hstack hrun hactive
-    have h := PairedAllInlineCoreTrace.run_inline59Template_word s (UInt256.ofNat 3802) f.frame rho
+    have h := PairedAllInlineCoreTrace.run_inline59Template_word s (UInt256.ofNat 3809) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline59_pcAfter] at h
     exact h
@@ -2930,29 +2926,29 @@ def inline59Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline59_slice :
-    (Artifact.submissionArtifact.instructions.drop 3098).take inline59Template.length = inline59Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3094).take inline59Template.length = inline59Template := by rfl
 def inline59Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline59Template :=
-  StackSiteBuilder.ofSlice inline59Template 3098 inline59_slice
-    (by change 3098 + inline59Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline59Template 3094 inline59_slice
+    (by change 3094 + inline59Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline59Template) (by decide))
     (by decide)
-theorem inline59_pc : inline59Site.startPC = UInt256.ofNat 3802 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3098) = UInt256.ofNat 3802
+theorem inline59_pc : inline59Site.startPC = UInt256.ofNat 3809 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3094) = UInt256.ofNat 3809
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline59_advances : ∀ instruction ∈ inline59Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
   decide
 def inline59Gas : PairedAllInlineCoreTrace.CoreGasBlock inline59Physical Artifact.submissionArtifact .Osaka :=
   PairedAllInlineCoreTrace.CoreGasBlock.of_site inline59Physical inline59Site inline59_pc inline59_advances
-theorem inline60_pcAfter : pcAfter (UInt256.ofNat 3855) PairedAllInlineCoreTrace.inline60Template = UInt256.ofNat 3908 := by rfl
-def inline60Physical : PairedAllInlineCoreTrace.CoreBlock 3855 3908 [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] [.d, .e, .c, .b, .k, .a, .factor, .pair, .upper, .lower] where
+theorem inline60_pcAfter : pcAfter (UInt256.ofNat 3862) PairedAllInlineCoreTrace.inline60Template = UInt256.ofNat 3915 := by rfl
+def inline60Physical : PairedAllInlineCoreTrace.CoreBlock 3862 3915 [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] [.d, .e, .c, .b, .k, .a, .factor, .pair, .upper, .lower] where
   code := PairedAllInlineCoreTrace.inline60Template
   eval := PairedAllInlineCoreTrace.inline60Block.eval
   run := by
     intro s f rho hstack hrun hactive
-    have h := PairedAllInlineCoreTrace.run_inline60Template_word s (UInt256.ofNat 3855) f.frame rho
+    have h := PairedAllInlineCoreTrace.run_inline60Template_word s (UInt256.ofNat 3862) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline60_pcAfter] at h
     exact h
@@ -3005,29 +3001,29 @@ def inline60Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline60_slice :
-    (Artifact.submissionArtifact.instructions.drop 3144).take inline60Template.length = inline60Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3140).take inline60Template.length = inline60Template := by rfl
 def inline60Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline60Template :=
-  StackSiteBuilder.ofSlice inline60Template 3144 inline60_slice
-    (by change 3144 + inline60Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline60Template 3140 inline60_slice
+    (by change 3140 + inline60Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline60Template) (by decide))
     (by decide)
-theorem inline60_pc : inline60Site.startPC = UInt256.ofNat 3855 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3144) = UInt256.ofNat 3855
+theorem inline60_pc : inline60Site.startPC = UInt256.ofNat 3862 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3140) = UInt256.ofNat 3862
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline60_advances : ∀ instruction ∈ inline60Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
   decide
 def inline60Gas : PairedAllInlineCoreTrace.CoreGasBlock inline60Physical Artifact.submissionArtifact .Osaka :=
   PairedAllInlineCoreTrace.CoreGasBlock.of_site inline60Physical inline60Site inline60_pc inline60_advances
-theorem group64_pcAfter : pcAfter (UInt256.ofNat 4056) PairedAllInlineCoreTrace.group64Template = UInt256.ofNat 4063 := by rfl
-def group64Physical : PairedAllInlineCoreTrace.CoreBlock 4056 4063 [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] [.k, .a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] where
+theorem group64_pcAfter : pcAfter (UInt256.ofNat 4063) PairedAllInlineCoreTrace.group64Template = UInt256.ofNat 4070 := by rfl
+def group64Physical : PairedAllInlineCoreTrace.CoreBlock 4063 4070 [.d, .a, .b, .c, .k, .e, .factor, .pair, .upper, .lower] [.k, .a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] where
   code := PairedAllInlineCoreTrace.group64Template
   eval := PairedAllInlineCoreTrace.group64Block.eval
   run := by
     intro s f rho hstack hrun _hactive
-    have h := PairedAllInlineCoreTrace.run_group64Template s (UInt256.ofNat 4056) f.frame rho hstack hrun
+    have h := PairedAllInlineCoreTrace.run_group64Template s (UInt256.ofNat 4063) f.frame rho hstack hrun
     rw [group64_pcAfter] at h
     exact h
 
@@ -3036,29 +3032,29 @@ def group64Template : List Instr :=
     .op .POP,
     .push ⟨4, by decide⟩ (UInt256.ofNat 2840853838) ]
 theorem group64_slice :
-    (Artifact.submissionArtifact.instructions.drop 3323).take group64Template.length = group64Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3319).take group64Template.length = group64Template := by rfl
 def group64Site : GenericRoundSite Artifact.submissionArtifact .Osaka group64Template :=
-  StackSiteBuilder.ofSlice group64Template 3323 group64_slice
-    (by change 3323 + group64Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice group64Template 3319 group64_slice
+    (by change 3319 + group64Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := group64Template) (by decide))
     (by decide)
-theorem group64_pc : group64Site.startPC = UInt256.ofNat 4056 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3323) = UInt256.ofNat 4056
+theorem group64_pc : group64Site.startPC = UInt256.ofNat 4063 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3319) = UInt256.ofNat 4063
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem group64_advances : ∀ instruction ∈ group64Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
   decide
 def group64Gas : PairedAllInlineCoreTrace.CoreGasBlock group64Physical Artifact.submissionArtifact .Osaka :=
   PairedAllInlineCoreTrace.CoreGasBlock.of_site group64Physical group64Site group64_pc group64_advances
-theorem inline65_pcAfter : pcAfter (UInt256.ofNat 4108) PairedAllInlineCoreTrace.inline65Template = UInt256.ofNat 4159 := by rfl
-def inline65Physical : PairedAllInlineCoreTrace.CoreBlock 4108 4159 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
+theorem inline65_pcAfter : pcAfter (UInt256.ofNat 4115) PairedAllInlineCoreTrace.inline65Template = UInt256.ofNat 4166 := by rfl
+def inline65Physical : PairedAllInlineCoreTrace.CoreBlock 4115 4166 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
   code := PairedAllInlineCoreTrace.inline65Template
   eval := PairedAllInlineCoreTrace.inline65Block.eval
   run := by
     intro s f rho hstack hrun hactive
-    have h := PairedAllInlineCoreTrace.run_inline65Template_word s (UInt256.ofNat 4108) f.frame rho
+    have h := PairedAllInlineCoreTrace.run_inline65Template_word s (UInt256.ofNat 4115) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline65_pcAfter] at h
     exact h
@@ -3109,29 +3105,29 @@ def inline65Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline65_slice :
-    (Artifact.submissionArtifact.instructions.drop 3367).take inline65Template.length = inline65Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3363).take inline65Template.length = inline65Template := by rfl
 def inline65Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline65Template :=
-  StackSiteBuilder.ofSlice inline65Template 3367 inline65_slice
-    (by change 3367 + inline65Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline65Template 3363 inline65_slice
+    (by change 3363 + inline65Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline65Template) (by decide))
     (by decide)
-theorem inline65_pc : inline65Site.startPC = UInt256.ofNat 4108 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3367) = UInt256.ofNat 4108
+theorem inline65_pc : inline65Site.startPC = UInt256.ofNat 4115 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3363) = UInt256.ofNat 4115
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline65_advances : ∀ instruction ∈ inline65Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
   decide
 def inline65Gas : PairedAllInlineCoreTrace.CoreGasBlock inline65Physical Artifact.submissionArtifact .Osaka :=
   PairedAllInlineCoreTrace.CoreGasBlock.of_site inline65Physical inline65Site inline65_pc inline65_advances
-theorem inline67_pcAfter : pcAfter (UInt256.ofNat 4207) PairedAllInlineCoreTrace.inline67Template = UInt256.ofNat 4258 := by rfl
-def inline67Physical : PairedAllInlineCoreTrace.CoreBlock 4207 4258 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
+theorem inline67_pcAfter : pcAfter (UInt256.ofNat 4214) PairedAllInlineCoreTrace.inline67Template = UInt256.ofNat 4265 := by rfl
+def inline67Physical : PairedAllInlineCoreTrace.CoreBlock 4214 4265 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
   code := PairedAllInlineCoreTrace.inline67Template
   eval := PairedAllInlineCoreTrace.inline67Block.eval
   run := by
     intro s f rho hstack hrun hactive
-    have h := PairedAllInlineCoreTrace.run_inline67Template_word s (UInt256.ofNat 4207) f.frame rho
+    have h := PairedAllInlineCoreTrace.run_inline67Template_word s (UInt256.ofNat 4214) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline67_pcAfter] at h
     exact h
@@ -3182,29 +3178,29 @@ def inline67Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline67_slice :
-    (Artifact.submissionArtifact.instructions.drop 3454).take inline67Template.length = inline67Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3450).take inline67Template.length = inline67Template := by rfl
 def inline67Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline67Template :=
-  StackSiteBuilder.ofSlice inline67Template 3454 inline67_slice
-    (by change 3454 + inline67Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline67Template 3450 inline67_slice
+    (by change 3450 + inline67Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline67Template) (by decide))
     (by decide)
-theorem inline67_pc : inline67Site.startPC = UInt256.ofNat 4207 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3454) = UInt256.ofNat 4207
+theorem inline67_pc : inline67Site.startPC = UInt256.ofNat 4214 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3450) = UInt256.ofNat 4214
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline67_advances : ∀ instruction ∈ inline67Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
   decide
 def inline67Gas : PairedAllInlineCoreTrace.CoreGasBlock inline67Physical Artifact.submissionArtifact .Osaka :=
   PairedAllInlineCoreTrace.CoreGasBlock.of_site inline67Physical inline67Site inline67_pc inline67_advances
-theorem inline69_pcAfter : pcAfter (UInt256.ofNat 4305) PairedAllInlineCoreTrace.inline69Template = UInt256.ofNat 4356 := by rfl
-def inline69Physical : PairedAllInlineCoreTrace.CoreBlock 4305 4356 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
+theorem inline69_pcAfter : pcAfter (UInt256.ofNat 4312) PairedAllInlineCoreTrace.inline69Template = UInt256.ofNat 4363 := by rfl
+def inline69Physical : PairedAllInlineCoreTrace.CoreBlock 4312 4363 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
   code := PairedAllInlineCoreTrace.inline69Template
   eval := PairedAllInlineCoreTrace.inline69Block.eval
   run := by
     intro s f rho hstack hrun hactive
-    have h := PairedAllInlineCoreTrace.run_inline69Template_word s (UInt256.ofNat 4305) f.frame rho
+    have h := PairedAllInlineCoreTrace.run_inline69Template_word s (UInt256.ofNat 4312) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline69_pcAfter] at h
     exact h
@@ -3255,29 +3251,29 @@ def inline69Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline69_slice :
-    (Artifact.submissionArtifact.instructions.drop 3541).take inline69Template.length = inline69Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3537).take inline69Template.length = inline69Template := by rfl
 def inline69Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline69Template :=
-  StackSiteBuilder.ofSlice inline69Template 3541 inline69_slice
-    (by change 3541 + inline69Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline69Template 3537 inline69_slice
+    (by change 3537 + inline69Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline69Template) (by decide))
     (by decide)
-theorem inline69_pc : inline69Site.startPC = UInt256.ofNat 4305 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3541) = UInt256.ofNat 4305
+theorem inline69_pc : inline69Site.startPC = UInt256.ofNat 4312 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3537) = UInt256.ofNat 4312
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline69_advances : ∀ instruction ∈ inline69Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
   decide
 def inline69Gas : PairedAllInlineCoreTrace.CoreGasBlock inline69Physical Artifact.submissionArtifact .Osaka :=
   PairedAllInlineCoreTrace.CoreGasBlock.of_site inline69Physical inline69Site inline69_pc inline69_advances
-theorem inline71_pcAfter : pcAfter (UInt256.ofNat 4401) PairedAllInlineCoreTrace.inline71Template = UInt256.ofNat 4452 := by rfl
-def inline71Physical : PairedAllInlineCoreTrace.CoreBlock 4401 4452 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
+theorem inline71_pcAfter : pcAfter (UInt256.ofNat 4408) PairedAllInlineCoreTrace.inline71Template = UInt256.ofNat 4459 := by rfl
+def inline71Physical : PairedAllInlineCoreTrace.CoreBlock 4408 4459 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
   code := PairedAllInlineCoreTrace.inline71Template
   eval := PairedAllInlineCoreTrace.inline71Block.eval
   run := by
     intro s f rho hstack hrun hactive
-    have h := PairedAllInlineCoreTrace.run_inline71Template_word s (UInt256.ofNat 4401) f.frame rho
+    have h := PairedAllInlineCoreTrace.run_inline71Template_word s (UInt256.ofNat 4408) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline71_pcAfter] at h
     exact h
@@ -3328,29 +3324,29 @@ def inline71Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline71_slice :
-    (Artifact.submissionArtifact.instructions.drop 3626).take inline71Template.length = inline71Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3622).take inline71Template.length = inline71Template := by rfl
 def inline71Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline71Template :=
-  StackSiteBuilder.ofSlice inline71Template 3626 inline71_slice
-    (by change 3626 + inline71Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline71Template 3622 inline71_slice
+    (by change 3622 + inline71Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline71Template) (by decide))
     (by decide)
-theorem inline71_pc : inline71Site.startPC = UInt256.ofNat 4401 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3626) = UInt256.ofNat 4401
+theorem inline71_pc : inline71Site.startPC = UInt256.ofNat 4408 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3622) = UInt256.ofNat 4408
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline71_advances : ∀ instruction ∈ inline71Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
   decide
 def inline71Gas : PairedAllInlineCoreTrace.CoreGasBlock inline71Physical Artifact.submissionArtifact .Osaka :=
   PairedAllInlineCoreTrace.CoreGasBlock.of_site inline71Physical inline71Site inline71_pc inline71_advances
-theorem inline72_pcAfter : pcAfter (UInt256.ofNat 4452) PairedAllInlineCoreTrace.inline72Template = UInt256.ofNat 4503 := by rfl
-def inline72Physical : PairedAllInlineCoreTrace.CoreBlock 4452 4503 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] where
+theorem inline72_pcAfter : pcAfter (UInt256.ofNat 4459) PairedAllInlineCoreTrace.inline72Template = UInt256.ofNat 4510 := by rfl
+def inline72Physical : PairedAllInlineCoreTrace.CoreBlock 4459 4510 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] where
   code := PairedAllInlineCoreTrace.inline72Template
   eval := PairedAllInlineCoreTrace.inline72Block.eval
   run := by
     intro s f rho hstack hrun hactive
-    have h := PairedAllInlineCoreTrace.run_inline72Template_word s (UInt256.ofNat 4452) f.frame rho
+    have h := PairedAllInlineCoreTrace.run_inline72Template_word s (UInt256.ofNat 4459) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline72_pcAfter] at h
     exact h
@@ -3401,29 +3397,29 @@ def inline72Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline72_slice :
-    (Artifact.submissionArtifact.instructions.drop 3670).take inline72Template.length = inline72Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3666).take inline72Template.length = inline72Template := by rfl
 def inline72Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline72Template :=
-  StackSiteBuilder.ofSlice inline72Template 3670 inline72_slice
-    (by change 3670 + inline72Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline72Template 3666 inline72_slice
+    (by change 3666 + inline72Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline72Template) (by decide))
     (by decide)
-theorem inline72_pc : inline72Site.startPC = UInt256.ofNat 4452 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3670) = UInt256.ofNat 4452
+theorem inline72_pc : inline72Site.startPC = UInt256.ofNat 4459 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3666) = UInt256.ofNat 4459
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline72_advances : ∀ instruction ∈ inline72Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
   decide
 def inline72Gas : PairedAllInlineCoreTrace.CoreGasBlock inline72Physical Artifact.submissionArtifact .Osaka :=
   PairedAllInlineCoreTrace.CoreGasBlock.of_site inline72Physical inline72Site inline72_pc inline72_advances
-theorem inline73_pcAfter : pcAfter (UInt256.ofNat 4503) PairedAllInlineCoreTrace.inline73Template = UInt256.ofNat 4550 := by rfl
-def inline73Physical : PairedAllInlineCoreTrace.CoreBlock 4503 4550 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
+theorem inline73_pcAfter : pcAfter (UInt256.ofNat 4510) PairedAllInlineCoreTrace.inline73Template = UInt256.ofNat 4557 := by rfl
+def inline73Physical : PairedAllInlineCoreTrace.CoreBlock 4510 4557 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
   code := PairedAllInlineCoreTrace.inline73Template
   eval := PairedAllInlineCoreTrace.inline73Block.eval
   run := by
     intro s f rho hstack hrun hactive
-    have h := PairedAllInlineCoreTrace.run_inline73Template_word s (UInt256.ofNat 4503) f.frame rho
+    have h := PairedAllInlineCoreTrace.run_inline73Template_word s (UInt256.ofNat 4510) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline73_pcAfter] at h
     exact h
@@ -3472,29 +3468,29 @@ def inline73Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline73_slice :
-    (Artifact.submissionArtifact.instructions.drop 3714).take inline73Template.length = inline73Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3710).take inline73Template.length = inline73Template := by rfl
 def inline73Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline73Template :=
-  StackSiteBuilder.ofSlice inline73Template 3714 inline73_slice
-    (by change 3714 + inline73Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline73Template 3710 inline73_slice
+    (by change 3710 + inline73Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline73Template) (by decide))
     (by decide)
-theorem inline73_pc : inline73Site.startPC = UInt256.ofNat 4503 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3714) = UInt256.ofNat 4503
+theorem inline73_pc : inline73Site.startPC = UInt256.ofNat 4510 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3710) = UInt256.ofNat 4510
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline73_advances : ∀ instruction ∈ inline73Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
   decide
 def inline73Gas : PairedAllInlineCoreTrace.CoreGasBlock inline73Physical Artifact.submissionArtifact .Osaka :=
   PairedAllInlineCoreTrace.CoreGasBlock.of_site inline73Physical inline73Site inline73_pc inline73_advances
-theorem inline75_pcAfter : pcAfter (UInt256.ofNat 4598) PairedAllInlineCoreTrace.inline75Template = UInt256.ofNat 4650 := by rfl
-def inline75Physical : PairedAllInlineCoreTrace.CoreBlock 4598 4650 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
+theorem inline75_pcAfter : pcAfter (UInt256.ofNat 4605) PairedAllInlineCoreTrace.inline75Template = UInt256.ofNat 4657 := by rfl
+def inline75Physical : PairedAllInlineCoreTrace.CoreBlock 4605 4657 [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
   code := PairedAllInlineCoreTrace.inline75Template
   eval := PairedAllInlineCoreTrace.inline75Block.eval
   run := by
     intro s f rho hstack hrun hactive
-    have h := PairedAllInlineCoreTrace.run_inline75Template_word s (UInt256.ofNat 4598) f.frame rho
+    have h := PairedAllInlineCoreTrace.run_inline75Template_word s (UInt256.ofNat 4605) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline75_pcAfter] at h
     exact h
@@ -3545,29 +3541,29 @@ def inline75Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline75_slice :
-    (Artifact.submissionArtifact.instructions.drop 3799).take inline75Template.length = inline75Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3795).take inline75Template.length = inline75Template := by rfl
 def inline75Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline75Template :=
-  StackSiteBuilder.ofSlice inline75Template 3799 inline75_slice
-    (by change 3799 + inline75Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline75Template 3795 inline75_slice
+    (by change 3795 + inline75Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline75Template) (by decide))
     (by decide)
-theorem inline75_pc : inline75Site.startPC = UInt256.ofNat 4598 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3799) = UInt256.ofNat 4598
+theorem inline75_pc : inline75Site.startPC = UInt256.ofNat 4605 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3795) = UInt256.ofNat 4605
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline75_advances : ∀ instruction ∈ inline75Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
   decide
 def inline75Gas : PairedAllInlineCoreTrace.CoreGasBlock inline75Physical Artifact.submissionArtifact .Osaka :=
   PairedAllInlineCoreTrace.CoreGasBlock.of_site inline75Physical inline75Site inline75_pc inline75_advances
-theorem inline76_pcAfter : pcAfter (UInt256.ofNat 4650) PairedAllInlineCoreTrace.inline76Template = UInt256.ofNat 4700 := by rfl
-def inline76Physical : PairedAllInlineCoreTrace.CoreBlock 4650 4700 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] where
+theorem inline76_pcAfter : pcAfter (UInt256.ofNat 4657) PairedAllInlineCoreTrace.inline76Template = UInt256.ofNat 4707 := by rfl
+def inline76Physical : PairedAllInlineCoreTrace.CoreBlock 4657 4707 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] where
   code := PairedAllInlineCoreTrace.inline76Template
   eval := PairedAllInlineCoreTrace.inline76Block.eval
   run := by
     intro s f rho hstack hrun hactive
-    have h := PairedAllInlineCoreTrace.run_inline76Template_word s (UInt256.ofNat 4650) f.frame rho
+    have h := PairedAllInlineCoreTrace.run_inline76Template_word s (UInt256.ofNat 4657) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline76_pcAfter] at h
     exact h
@@ -3618,29 +3614,29 @@ def inline76Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline76_slice :
-    (Artifact.submissionArtifact.instructions.drop 3843).take inline76Template.length = inline76Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3839).take inline76Template.length = inline76Template := by rfl
 def inline76Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline76Template :=
-  StackSiteBuilder.ofSlice inline76Template 3843 inline76_slice
-    (by change 3843 + inline76Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline76Template 3839 inline76_slice
+    (by change 3839 + inline76Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline76Template) (by decide))
     (by decide)
-theorem inline76_pc : inline76Site.startPC = UInt256.ofNat 4650 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3843) = UInt256.ofNat 4650
+theorem inline76_pc : inline76Site.startPC = UInt256.ofNat 4657 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3839) = UInt256.ofNat 4657
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline76_advances : ∀ instruction ∈ inline76Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
   decide
 def inline76Gas : PairedAllInlineCoreTrace.CoreGasBlock inline76Physical Artifact.submissionArtifact .Osaka :=
   PairedAllInlineCoreTrace.CoreGasBlock.of_site inline76Physical inline76Site inline76_pc inline76_advances
-theorem inline78_pcAfter : pcAfter (UInt256.ofNat 4748) PairedAllInlineCoreTrace.inline78Template = UInt256.ofNat 4799 := by rfl
-def inline78Physical : PairedAllInlineCoreTrace.CoreBlock 4748 4799 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] where
+theorem inline78_pcAfter : pcAfter (UInt256.ofNat 4755) PairedAllInlineCoreTrace.inline78Template = UInt256.ofNat 4806 := by rfl
+def inline78Physical : PairedAllInlineCoreTrace.CoreBlock 4755 4806 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] where
   code := PairedAllInlineCoreTrace.inline78Template
   eval := PairedAllInlineCoreTrace.inline78Block.eval
   run := by
     intro s f rho hstack hrun hactive
-    have h := PairedAllInlineCoreTrace.run_inline78Template_word s (UInt256.ofNat 4748) f.frame rho
+    have h := PairedAllInlineCoreTrace.run_inline78Template_word s (UInt256.ofNat 4755) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline78_pcAfter] at h
     exact h
@@ -3691,16 +3687,16 @@ def inline78Template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem inline78_slice :
-    (Artifact.submissionArtifact.instructions.drop 3930).take inline78Template.length = inline78Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3926).take inline78Template.length = inline78Template := by rfl
 def inline78Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline78Template :=
-  StackSiteBuilder.ofSlice inline78Template 3930 inline78_slice
-    (by change 3930 + inline78Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice inline78Template 3926 inline78_slice
+    (by change 3926 + inline78Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline78Template) (by decide))
     (by decide)
-theorem inline78_pc : inline78Site.startPC = UInt256.ofNat 4748 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3930) = UInt256.ofNat 4748
+theorem inline78_pc : inline78Site.startPC = UInt256.ofNat 4755 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3926) = UInt256.ofNat 4755
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline78_advances : ∀ instruction ∈ inline78Template.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound

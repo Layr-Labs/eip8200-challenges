@@ -117,7 +117,7 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     (valid_return q qcode) qcode qfork qnp
   rw [hmemory] at gsuffix
   have gsuffix' : GasSteps
-      {q with pc := UInt256.ofNat 4799, stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] terminal (cache q.memory ++ rho)}
+      {q with pc := UInt256.ofNat 4806, stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] terminal (cache q.memory ++ rho)}
       (DriverTrace.compressReturned (resultState s input i) input i) := gsuffix
   exact gschedule'.trans (gstartup.trans ((gcore.cast hentry rfl).trans gsuffix'))
 
