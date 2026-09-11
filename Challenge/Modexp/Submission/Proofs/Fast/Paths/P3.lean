@@ -82,7 +82,7 @@ def blk1189 :
    opAt 1131 .POP,
    opAt 1132 (.Dup ⟨2, by decide⟩),
    opAt 1133 .ISZERO,
-   pushAt 1134 2 1617,
+   pushAt 1134 2 3324,
    opAt 1135 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast
