@@ -87,6 +87,60 @@ theorem read_schedule_upper (memory : ByteArray) (words : Nat → UInt256)
 #print axioms readWord_offset16
 #print axioms read_schedule_upper
 
+theorem readWord_offset16_wide (memory : ByteArray) (offset : Nat)
+    (current next : UInt256)
+    (hcurrent : MachineState.readWord memory offset = current)
+    (hnext : MachineState.readWord memory (offset + 32) = next)
+    (hcurrent128 : current.toNat < 2 ^ 128)
+    (hnext128 : next.toNat < 2 ^ 128) :
+    MachineState.readWord memory (offset + 16) =
+      UInt256.shiftLeft current (UInt256.ofNat 128) := by
+  have hsmall1 : (MachineState.readWord memory offset).toNat < 2 ^ 128 := by
+    rw [hcurrent]; exact hcurrent128
+  have hsmall2 : (MachineState.readWord memory (offset + 32)).toNat < 2 ^ 128 := by
+    rw [hnext]; exact hnext128
+  have hleft := (halves_of_small memory offset hsmall1).2
+  have hright := (halves_of_small memory (offset + 32) hsmall2).1
+  rw [hcurrent] at hleft
+  have hpow : 2 ^ 128 * 2 ^ 128 = 2 ^ 256 := by rw [← Nat.pow_add]
+  have hresult : current.toNat * 2 ^ 128 < 2 ^ 256 := by
+    calc current.toNat * 2 ^ 128 < current.toNat * 2 ^ 128 + 2 ^ 128 :=
+          Nat.lt_add_of_pos_right (Nat.two_pow_pos 128)
+      _ = (current.toNat + 1) * 2 ^ 128 := (Nat.succ_mul _ _).symm
+      _ ≤ 2 ^ 128 * 2 ^ 128 :=
+          Nat.mul_le_mul_right _ (Nat.succ_le_of_lt hcurrent128)
+      _ = 2 ^ 256 := hpow
+  have hshift : UInt256.shiftLeft current (UInt256.ofNat 128) =
+      UInt256.ofNat (current.toNat * 2 ^ 128) := by
+    calc
+      UInt256.shiftLeft current (UInt256.ofNat 128) =
+          UInt256.shiftLeft (UInt256.ofNat current.toNat) (UInt256.ofNat 128) :=
+        congrArg (fun value => UInt256.shiftLeft value (UInt256.ofNat 128))
+          (Challenge.EvmProof.Word.word_eq_ofNat_toNat current)
+      _ = _ := Challenge.EvmProof.Word.shiftLeft_ofNat current.val.isLt (by decide) hresult
+  apply Challenge.EvmProof.Word.word_ext
+  rw [hshift, Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hresult,
+    readWord_halves, hleft, show offset + 16 + 16 = offset + 32 by omega,
+    hright, Nat.add_zero]
+
+/-- `read_schedule_upper` at the widened bound. -/
+theorem read_schedule_upper_wide (memory : ByteArray) (words : Nat → UInt256)
+    (hread : ∀ i, i ≤ 16 → MachineState.readWord memory (32 * i) = words i)
+    (hbound : ∀ i, i ≤ 16 → (words i).toNat < 2 ^ 128)
+    (i : Nat) (hi : i < 16) :
+    MachineState.readWord memory (32 * i + 16) =
+      UInt256.shiftLeft (words i) (UInt256.ofNat 128) := by
+  have hnext : MachineState.readWord memory (32 * i + 32) = words (i + 1) := by
+    have h := hread (i + 1) (by omega)
+    rwa [show 32 * (i + 1) = 32 * i + 32 by omega] at h
+  have h := readWord_offset16_wide memory (32 * i) (words i) (words (i + 1))
+    (hread i (by omega)) hnext (hbound i (by omega)) (hbound (i + 1) (by omega))
+  exact h
+
+#print axioms readWord_offset16_wide
+#print axioms readWord_offset16_wide
+#print axioms read_schedule_upper_wide
+
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedScheduleOverlap
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedScheduleMemory
@@ -384,6 +438,29 @@ theorem active_load_ge23 (current offset : Nat) (hoffset : 736 ≤ offset) :
 #print axioms active_wrapped_cell_preserved
 #print axioms active_load_ge23
 
+theorem read_normalized_upper_wide (memory : ByteArray) (words : Nat → UInt256)
+    (hbound : ∀ i, i < 16 → (words i).toNat < 2 ^ 128)
+    (i : Nat) (hi : i < 16) :
+    MachineState.readWord (normalizedMemory memory words) (cell i + 16) =
+      UInt256.shiftLeft (words i) (UInt256.ofNat 128) := by
+  have hp := ScheduleLayout.perm_lt i hi
+  have h := PairedScheduleOverlap.read_schedule_upper_wide
+    (normalizedMemory memory words)
+    (fun c => if c = 16 then UInt256.ofNat 0 else words (ScheduleLayout.perm c))
+    (fun c hc => read_normalized_slot memory words c hc)
+    (by
+      intro c hc
+      by_cases heq : c = 16
+      · simp only [heq, ↓reduceIte]
+        exact Nat.lt_of_lt_of_le (by decide : (0 : Nat) < 1) Nat.one_le_two_pow
+      · simp only [if_neg heq]
+        exact hbound _ (ScheduleLayout.perm_lt c (by omega)))
+    (ScheduleLayout.perm i) hp
+  simpa only [cell, if_neg (show ScheduleLayout.perm i ≠ 16 by omega),
+    ScheduleLayout.perm_perm] using h
+
+#print axioms read_normalized_upper_wide
+
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedScheduleMemory
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedScheduleData
@@ -440,6 +517,112 @@ theorem chunk_eq_le4 (value : UInt256) (j : Nat) (hj : j < 8) :
 
 def extractedWord (memory : ByteArray) (p i : Nat) : UInt256 :=
   chunk (MachineState.readWord memory (p + 32 * (i / 8))) (i % 8)
+
+/-- The candidate's chunk: at `j = 1` and `j = 2` the 32-bit mask is dropped,
+so the cell keeps the bits below the word as garbage. -/
+def chunkG (value : UInt256) (j : Nat) : UInt256 :=
+  if j = 1 ∨ j = 2 then DensePacked.shr (reversedWord value) (32 * (7 - j))
+  else chunk value j
+
+def extractedWordG (memory : ByteArray) (p i : Nat) : UInt256 :=
+  chunkG (MachineState.readWord memory (p + 32 * (i / 8))) (i % 8)
+
+private theorem shr_bound (x : UInt256) (n k : Nat) (hn : n < 256) (hnk : n + k = 256) :
+    (UInt256.shiftRight x (UInt256.ofNat n)).toNat < 2 ^ k := by
+  rw [Challenge.EvmProof.Word.shiftRight_toNat _ hn, Nat.shiftRight_eq_div_pow]
+  have hx : x.toNat < 2 ^ 256 := x.val.isLt
+  have hpow : (2 : Nat) ^ k * 2 ^ n = 2 ^ 256 := by
+    rw [← Nat.pow_add, Nat.add_comm, hnk]
+  have hpow' : (2 : Nat) ^ n * 2 ^ k = 2 ^ 256 := by
+    rw [← Nat.pow_add, hnk]
+  have hlt : x.toNat < 2 ^ n * 2 ^ k := by rw [hpow']; exact hx
+  exact Nat.div_lt_of_lt_mul hlt
+
+private theorem and32_eq_mod (n : Nat) : n &&& 0xffffffff = n % 2 ^ 32 := by
+  have h := Nat.and_two_pow_sub_one_eq_mod n 32
+  norm_num at h
+  exact h
+
+private theorem mask32_of_lt (x : UInt256) (hx : x.toNat < 2 ^ 32) :
+    Challenge.EvmProof.Word.mask32 x = x := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.mask32_toNat, and32_eq_mod, Nat.mod_eq_of_lt hx]
+
+/-- Masking the candidate's chunk recovers the exact chunk. -/
+theorem mask32_chunkG (value : UInt256) (j : Nat) (hj : j < 8) :
+    Challenge.EvmProof.Word.mask32 (chunkG value j) = chunk value j := by
+  by_cases hg : j = 1 ∨ j = 2
+  · have hne0 : j ≠ 0 := by rcases hg with rfl | rfl <;> decide
+    have hne7 : j ≠ 7 := by rcases hg with rfl | rfl <;> decide
+    simp only [chunkG, if_pos hg, chunk, if_neg hne0, if_neg hne7, DensePacked.shr]
+  · simp only [chunkG, if_neg hg]
+    by_cases h0 : j = 0
+    · subst j
+      simp only [chunk, ↓reduceIte, DensePacked.shr]
+      exact mask32_of_lt _ (shr_bound _ 224 32 (by decide) (by decide))
+    · have hm : chunk value j = Challenge.EvmProof.Word.mask32
+          (if j = 7 then reversedWord value
+           else DensePacked.shr (reversedWord value) (32 * (7 - j))) := by
+        by_cases h7 : j = 7 <;> simp [chunk, h0, h7]
+      rw [hm]
+      exact Challenge.EvmProof.Word.mask32_idem _
+
+/-- The candidate's chunk carries at most two extra 32-bit words. -/
+theorem chunkG_lt (value : UInt256) (j : Nat) (hj : j < 8) :
+    (chunkG value j).toNat < 2 ^ 96 := by
+  by_cases hg : j = 1 ∨ j = 2
+  · rcases hg with rfl | rfl
+    · have h : (chunkG value 1).toNat =
+          (UInt256.shiftRight (reversedWord value) (UInt256.ofNat 192)).toNat := by
+        simp only [chunkG, DensePacked.shr]
+        norm_num
+      rw [h]
+      exact Nat.lt_of_lt_of_le (shr_bound _ 192 64 (by decide) (by decide)) (by norm_num)
+    · have h : (chunkG value 2).toNat =
+          (UInt256.shiftRight (reversedWord value) (UInt256.ofNat 160)).toNat := by
+        simp only [chunkG, DensePacked.shr]
+        norm_num
+      rw [h]
+      exact shr_bound _ 160 96 (by decide) (by decide)
+  · have hmask : chunkG value j = chunk value j := by simp only [chunkG, if_neg hg]
+    rw [hmask]
+    by_cases h0 : j = 0
+    · subst j
+      simp only [chunk, ↓reduceIte, DensePacked.shr]
+      exact Nat.lt_of_lt_of_le (shr_bound _ 224 32 (by decide) (by decide)) (by norm_num)
+    · have h32 : (chunk value j).toNat < 2 ^ 32 := by
+        have hm : chunk value j = Challenge.EvmProof.Word.mask32
+            (if j = 7 then reversedWord value
+             else DensePacked.shr (reversedWord value) (32 * (7 - j))) := by
+          by_cases h7 : j = 7 <;> simp [chunk, h0, h7]
+        rw [hm, Challenge.EvmProof.Word.mask32_toNat, and32_eq_mod]
+        exact Nat.mod_lt _ (by positivity)
+      omega
+
+/-- The additive garbage the candidate leaves in cell `i`. -/
+def extractedGarbage (memory : ByteArray) (p i : Nat) : Nat :=
+  (extractedWordG memory p i).toNat - (extractedWord memory p i).toNat
+
+theorem extractedWordG_eq_add (memory : ByteArray) (p i : Nat) :
+    (extractedWordG memory p i).toNat =
+      (extractedWord memory p i).toNat + extractedGarbage memory p i ∧
+    extractedGarbage memory p i % 2 ^ 32 = 0 ∧
+    extractedGarbage memory p i < 2 ^ 96 := by
+  have hj : i % 8 < 8 := Nat.mod_lt _ (by decide)
+  have hmask : (extractedWord memory p i).toNat =
+      (extractedWordG memory p i).toNat % 2 ^ 32 := by
+    change (chunk _ (i % 8)).toNat = (chunkG _ (i % 8)).toNat % 2 ^ 32
+    rw [← mask32_chunkG _ (i % 8) hj, Challenge.EvmProof.Word.mask32_toNat, and32_eq_mod]
+  have hlt : (extractedWordG memory p i).toNat < 2 ^ 96 := chunkG_lt _ (i % 8) hj
+  have hdm := Nat.div_add_mod (extractedWordG memory p i).toNat (2 ^ 32)
+  have hgz : extractedGarbage memory p i =
+      2 ^ 32 * ((extractedWordG memory p i).toNat / 2 ^ 32) := by
+    simp only [extractedGarbage, hmask]
+    omega
+  refine ⟨by simp only [extractedGarbage, hmask]; omega, ?_, by
+    simp only [extractedGarbage, hmask]; omega⟩
+  rw [hgz]
+  exact Nat.mul_mod_right _ _
 
 def littleWord (memory : ByteArray) (p i : Nat) : UInt256 :=
   Challenge.EvmProof.Word.mask32 (DensePacked.le4
@@ -691,6 +874,20 @@ def prefixTemplate (first : Nat) : Nat → List Instr
 def halfWords (value : UInt256) (first i : Nat) : UInt256 :=
   chunkValue value (i - first)
 
+/-- Garbage-tolerant chunk value. The candidate removes the 32-bit mask at
+`j = 1` and `j = 2`, where the bits shifted down from the packed word are
+confined to bits 32..95 and are absorbed by the round sum. -/
+def chunkValueG (value : UInt256) (j : Nat) : UInt256 :=
+  if j = 1 ∨ j = 2 then UInt256.shiftRight value (UInt256.ofNat (32 * (7 - j)))
+  else chunkValue value j
+
+def halfWordsG (value : UInt256) (first i : Nat) : UInt256 :=
+  chunkValueG value (i - first)
+
+theorem chunkValueG_eq_of_ne (value : UInt256) (j : Nat) (h : ¬ (j = 1 ∨ j = 2)) :
+    chunkValueG value j = chunkValue value j := by
+  simp only [chunkValueG, if_neg h]
+
 def halfTemplate (first : Nat) : List Instr :=
   prefixTemplate first 7 ++ lastTemplate (cell (first + 7))
 
@@ -832,6 +1029,26 @@ theorem store_lower_schedule (memory : ByteArray) (s : State) (messageOffset : U
   intro i _ hhi
   simp only [scheduleWords, if_pos (by omega : i < 8)]
 
+/-- Schedule words as the candidate actually stores them: cells 1, 2, 9 and 10
+carry the garbage the dropped masks no longer clear. -/
+def scheduleWordsG (s : State) (messageOffset : UInt256) (i : Nat) : UInt256 :=
+  if i < 8 then halfWordsG (packedInput0 s messageOffset) 0 i
+  else halfWordsG (packedInput1 s messageOffset) 8 i
+
+theorem store_upper_scheduleG (memory : ByteArray) (s : State) (messageOffset : UInt256) :
+    storeCells memory (halfWordsG (packedInput1 s messageOffset) 8) 8 8 =
+      storeCells memory (scheduleWordsG s messageOffset) 8 8 := by
+  apply storeCells_congr
+  intro i hlo _
+  simp only [scheduleWordsG, if_neg (by omega : ¬i < 8)]
+
+theorem store_lower_scheduleG (memory : ByteArray) (s : State) (messageOffset : UInt256) :
+    storeCells memory (halfWordsG (packedInput0 s messageOffset) 0) 0 8 =
+      storeCells memory (scheduleWordsG s messageOffset) 0 8 := by
+  apply storeCells_congr
+  intro i _ hhi
+  simp only [scheduleWordsG, if_pos (by omega : i < 8)]
+
 def sentinelTemplate : List Instr :=
   [.push ⟨0, by decide⟩ (UInt256.ofNat 0)] ++ PairedSchedulePrimitives.storeTemplate (cell 16)
 
@@ -950,6 +1167,31 @@ theorem chunkValue_packed (value : UInt256) (j : Nat) :
     chunkValue (packedWord value) j = PairedScheduleData.chunk value j := by
   rw [packedWord_eq_reversedWord]
   rfl
+
+theorem chunkValueG_packed (value : UInt256) (j : Nat) :
+    chunkValueG (packedWord value) j = PairedScheduleData.chunkG value j := by
+  by_cases hg : j = 1 ∨ j = 2
+  · simp only [chunkValueG, PairedScheduleData.chunkG, if_pos hg,
+      packedWord_eq_reversedWord]
+    rfl
+  · simp only [chunkValueG, PairedScheduleData.chunkG, if_neg hg]
+    exact chunkValue_packed value j
+
+theorem scheduleWordsG_eq_extractedG (s : State) (p i : Nat)
+    (hi : i < 16) (hbound : p + 64 < 2 ^ 256) :
+    scheduleWordsG s (UInt256.ofNat p) i =
+      PairedScheduleData.extractedWordG s.memory p i := by
+  have hp : (UInt256.ofNat p).toNat = p := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  by_cases hlo : i < 8
+  · simp only [scheduleWordsG, if_pos hlo, halfWordsG, Nat.sub_zero,
+      packedInput0, inputWord0, hp, chunkValueG_packed, PairedScheduleData.extractedWordG,
+      Nat.div_eq_of_lt hlo, Nat.mod_eq_of_lt hlo, Nat.mul_zero, Nat.add_zero]
+  · have hdiv : i / 8 = 1 := by omega
+    have hmod : i % 8 = i - 8 := by omega
+    simp only [scheduleWordsG, if_neg hlo, halfWordsG,
+      packedInput1, inputWord1, pointer_add32_toNat p hbound, chunkValueG_packed,
+      PairedScheduleData.extractedWordG, hdiv, hmod, Nat.mul_one]
 
 theorem scheduleWords_eq_extracted (s : State) (p i : Nat)
     (hi : i < 16) (hbound : p + 64 < 2 ^ 256) :
