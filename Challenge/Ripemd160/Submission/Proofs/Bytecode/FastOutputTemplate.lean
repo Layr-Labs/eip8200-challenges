@@ -83,23 +83,23 @@ def fastOutputTemplate : List Instr :=
 @[simp] theorem fastPackTemplate_length : fastPackTemplate.length = 23 := by
   rfl
 
-@[simp] theorem fastEndianStage8_length : fastEndianStage8.length = 14 := by
+@[simp] theorem fastEndianStage8_length : fastEndianStage8.length = 13 := by
   rfl
 
-@[simp] theorem fastEndianStage16_length : fastEndianStage16.length = 14 := by
+@[simp] theorem fastEndianStage16_length : fastEndianStage16.length = 13 := by
   rfl
 
 @[simp] theorem fastStoreAndSetup_length : fastStoreAndSetup.length = 4 := by
   rfl
 
 @[simp] theorem fastOutputBeforeReturnTemplate_length :
-    fastOutputBeforeReturnTemplate.length = 55 := by
+    fastOutputBeforeReturnTemplate.length = 53 := by
   rfl
 
 @[simp] theorem fastOutputReturnTemplate_length : fastOutputReturnTemplate.length = 1 := by
   rfl
 
-@[simp] theorem fastOutputTemplate_length : fastOutputTemplate.length = 56 := by
+@[simp] theorem fastOutputTemplate_length : fastOutputTemplate.length = 54 := by
   rfl
 
 theorem fastOutputTemplate_byteLength :
@@ -107,9 +107,9 @@ theorem fastOutputTemplate_byteLength :
   rw [fastOutputTemplate, assembleBytes_append,
     List.length_append, assembleBytes_length, assembleBytes_length]
   simp [fastOutputBeforeReturnTemplate, fastPackTemplate, fastLoad0,
-    fastPackStep, fastEndianStage8, fastEndianStage16, ClosedEndianReuse.code,
-    DenseScheduleTemplate.endianFactorPush, DenseScheduleTemplate.endianFactor,
-    DenseScheduleTemplate.push2, DenseScheduleTemplate.push3, fastStoreAndSetup,
+    fastPackStep, fastEndianStage8, fastEndianStage16, ClosedEndianReuse.code, ClosedEndianReuse.factorPush,
+
+    fastStoreAndSetup,
     fastOutputReturnTemplate, push0,
     DenseScheduleTemplate.op, DenseScheduleTemplate.push1,
     DenseScheduleTemplate.dup1,
@@ -119,12 +119,12 @@ def staticGas (instructions : List Instr) : Nat :=
   (instructions.map
     (Challenge.EvmProof.Meter.instrStaticCost .Osaka)).sum
 
-theorem fastOutputTemplate_staticGas : staticGas fastOutputTemplate = 163 := by
+theorem fastOutputTemplate_staticGas : staticGas fastOutputTemplate = 161 := by
   norm_num [staticGas, fastOutputTemplate, fastOutputBeforeReturnTemplate,
     fastPackTemplate, fastLoad0, fastPackStep, fastEndianStage8,
-    fastEndianStage16, ClosedEndianReuse.code,
-    DenseScheduleTemplate.endianFactorPush, DenseScheduleTemplate.endianFactor,
-    DenseScheduleTemplate.push2, DenseScheduleTemplate.push3, fastStoreAndSetup, fastOutputReturnTemplate,
+    fastEndianStage16, ClosedEndianReuse.code, ClosedEndianReuse.factorPush,
+
+    fastStoreAndSetup, fastOutputReturnTemplate,
     push0, DenseScheduleTemplate.op,
     DenseScheduleTemplate.push1, DenseScheduleTemplate.dup1,
     Challenge.EvmProof.Meter.instrStaticCost, Gas.baseCost]

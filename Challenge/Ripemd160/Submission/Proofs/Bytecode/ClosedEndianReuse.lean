@@ -25,10 +25,14 @@ theorem mask8_div :
 theorem mask16_div :
     UInt256.lnot (UInt256.ofNat 0) / UInt256.ofNat 65537 = mask16 := by decide
 
-/-- Keep the factor below the XOR operands, avoiding the intermediate SWAP.
-The leading JUMPDEST preserves the existing byte and instruction geometry. -/
+/-- A wider factor push preserves the byte span without a padding instruction. -/
+def factorPush (shift : Nat) : Instr :=
+  if shift = 8 then .push ⟨3, by decide⟩ (UInt256.ofNat 257)
+  else .push ⟨4, by decide⟩ (UInt256.ofNat 65537)
+
+/-- Keep the factor below the XOR operands. -/
 def code (shift : Nat) : List Instr :=
-  [op .JUMPDEST, endianFactorPush shift, .op (.Dup ⟨1, by decide⟩), dup1,
+  [factorPush shift, .op (.Dup ⟨1, by decide⟩), dup1,
    push1 (UInt256.ofNat shift), op .SHR, op .XOR, .op (.Dup ⟨1, by decide⟩),
    .push 0 0, op .NOT, op .DIV, op .AND, op .MUL, op .XOR]
 
@@ -63,7 +67,7 @@ theorem run_endian (s : State) (startPC value : UInt256) (shift : Nat)
   all_goals norm_num at hsemantic
   all_goals
     simp (config := { maxSteps := 1000000 })
-      [code, endianFactorPush, endianFactor, op, push1, push2, push3, dup1,
+      [code, factorPush, endianFactorPush, endianFactor, op, push1, push2, push3, dup1,
         runInstrSeq, Stepper.runInstr, pcAfter, hrun, hcap, hcap2, hcap3, hcap4, hcap5,
         hzero, mask8_div, mask16_div, UInt256.succ, Instr.size,
         Instr.size_push, Instr.size_op, Word.literal_eq_ofNat,
@@ -86,7 +90,7 @@ theorem advances (shift : Nat) {instruction : Instr} {s t : State}
     t.pc = s.pc + UInt256.ofNat instruction.size := by
   simp only [code, List.mem_cons, List.not_mem_nil, or_false] at hmem
   rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-    rfl | rfl | rfl | rfl | rfl
+    rfl | rfl | rfl | rfl
   all_goals first
     | exact RepeatedByteWord.runInstr_pc_div hrun
     | apply DenseScheduleLift.runInstr_pc_of_advances ?_ hrun
@@ -94,7 +98,7 @@ theorem advances (shift : Nat) {instruction : Instr} {s t : State}
     | exact Or.inl (Or.inr (Or.inr rfl))
     | exact Or.inr (Or.inr rfl)
     | exact Or.inl (Or.inl (by constructor))
-    | simp only [endianFactorPush]; split <;>
+    | simp only [factorPush]; split <;>
         exact Or.inl (Or.inl (by constructor))
 
 theorem run_located {artifact : ProgramArtifact} {fork : Fork}
