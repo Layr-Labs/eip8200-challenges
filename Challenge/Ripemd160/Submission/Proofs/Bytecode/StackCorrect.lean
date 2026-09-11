@@ -1,7 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedBlockTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.FastEmptyBlock
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Execution
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectEmptyReturn
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -11,9 +10,8 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
-/-- Mathematical single-block state for the hash invariant. Nonempty inputs
-execute the generic compressor. The empty case returns through DirectEmptyReturn
-and retains this abstract state only for the common hash-state interface. -/
+/-- The empty block keeps its certified shortcut. Every nonempty block goes
+directly to the generic compressor; complete checked inputs return earlier. -/
 def nextState (s : State) (input : ByteArray) (i : Nat) : State :=
   if input.size = 0 then FastEmptyBlock.resultState s input i
   else PairedBlockModel.resultState s input i
@@ -81,23 +79,26 @@ noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState) (hfit : CalldataFits input)
     (hi : i < DriverTrace.blockCount input)
     (ctx : StackRunBridge.BlockContext s input i h)
-    (hpositive : 0 < input.size)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (DriverTrace.dispatchEntry s input i)
       (DriverTrace.compressReturned (nextState s input i) input i) := by
-  have hempty : input.size ≠ 0 := Nat.ne_of_gt hpositive
-  have gdispatch := FastEmptyBlock.gasSteps_nonempty s input i hfit
-    hpositive ctx.calldata hcode hfork hrun hnp
-  have gcompress := PairedBlockTrace.gasSteps_compress s input i h hfit hi ctx
-    hcode hfork hrun hnp
-  have hentry : FastEmptyBlock.nonemptyEntry s input i =
-      DriverTrace.compressEntry s input i := by rfl
-  rw [hentry] at gdispatch
-  exact GasSteps.cast (gdispatch.trans gcompress) (by rfl) (by
-    simp [nextState, hempty, DriverTrace.compressReturned])
+  by_cases hempty : input.size = 0
+  · have gempty := FastEmptyBlock.gasSteps_empty s input i hempty
+      ctx.calldata hcode hfork hrun hnp
+    exact GasSteps.cast gempty (by rfl) (by
+      simp [nextState, hempty, DriverTrace.compressReturned, FastEmptyBlock.resultState])
+  · have gdispatch := FastEmptyBlock.gasSteps_nonempty s input i hfit
+      (Nat.pos_of_ne_zero hempty) ctx.calldata hcode hfork hrun hnp
+    have gcompress := PairedBlockTrace.gasSteps_compress s input i h hfit hi ctx
+      hcode hfork hrun hnp
+    have hentry : FastEmptyBlock.nonemptyEntry s input i =
+        DriverTrace.compressEntry s input i := by rfl
+    rw [hentry] at gdispatch
+    exact GasSteps.cast (gdispatch.trans gcompress) (by rfl) (by
+      simp [nextState, hempty, DriverTrace.compressReturned])
 
 noncomputable def kernel : StackRunBridge.BlockKernel where
   nextState := nextState
@@ -107,8 +108,8 @@ noncomputable def kernel : StackRunBridge.BlockKernel where
   wordAbove := nextState_word_above
   hashResult := nextState_hash
   double := fun _ => false
-  gasSteps := fun s input i h hfit hi ctx hcode hfork hrun hnp _ hpositive =>
-    gasSteps_block s input i h hfit hi ctx hpositive hcode hfork hrun hnp
+  gasSteps := fun s input i h hfit hi ctx hcode hfork hrun hnp _ =>
+    gasSteps_block s input i h hfit hi ctx hcode hfork hrun hnp
   nextState2 := fun s _ => s
   executionEnv2 := by intros; rfl
   halt2 := by intros; rfl
@@ -120,11 +121,9 @@ noncomputable def kernel : StackRunBridge.BlockKernel where
 
 theorem correct (input : ByteArray) (hfit : CalldataFits input)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0)
-      (Execution.atPC input 276)) :
+      (Execution.atPC input 284)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
-      Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  by_cases hempty : input.size = 0
-  · exact DirectEmptyReturn.correct_empty input hfit hempty entryPrefix
-  · exact StackRunBridge.correct_of_block_kernel kernel input hfit (Nat.pos_of_ne_zero hempty) entryPrefix
+      Eval (initialState submissionBytecode input gas) (.returned (spec input)) :=
+  StackRunBridge.correct_of_block_kernel kernel input hfit entryPrefix
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect

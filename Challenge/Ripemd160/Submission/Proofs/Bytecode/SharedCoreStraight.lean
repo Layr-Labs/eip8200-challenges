@@ -28,7 +28,7 @@ def group0Site : GenericRoundSite Artifact.submissionArtifact .Osaka group0Physi
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := group0Physical.code) (by decide))
     (by decide)
-theorem group0_pc : group0Site.startPC = UInt256.ofNat 727 := by
+theorem group0_pc : group0Site.startPC = UInt256.ofNat 735 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 472) = UInt256.ofNat 727
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem group0_advances : ∀ instruction ∈ group0Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -56,7 +56,7 @@ def inline0Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline0Phy
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline0Physical.code) (by decide))
     (by decide)
-theorem inline0_pc : inline0Site.startPC = UInt256.ofNat 735 := by
+theorem inline0_pc : inline0Site.startPC = UInt256.ofNat 743 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 475) = UInt256.ofNat 735
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline0_advances : ∀ instruction ∈ inline0Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -84,7 +84,7 @@ def inline1Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline1Phy
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline1Physical.code) (by decide))
     (by decide)
-theorem inline1_pc : inline1Site.startPC = UInt256.ofNat 785 := by
+theorem inline1_pc : inline1Site.startPC = UInt256.ofNat 793 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 519) = UInt256.ofNat 785
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline1_advances : ∀ instruction ∈ inline1Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -112,7 +112,7 @@ def inline2Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline2Phy
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline2Physical.code) (by decide))
     (by decide)
-theorem inline2_pc : inline2Site.startPC = UInt256.ofNat 835 := by
+theorem inline2_pc : inline2Site.startPC = UInt256.ofNat 843 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 563) = UInt256.ofNat 835
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline2_advances : ∀ instruction ∈ inline2Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -140,7 +140,7 @@ def inline3Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline3Phy
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline3Physical.code) (by decide))
     (by decide)
-theorem inline3_pc : inline3Site.startPC = UInt256.ofNat 886 := by
+theorem inline3_pc : inline3Site.startPC = UInt256.ofNat 894 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 607) = UInt256.ofNat 886
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline3_advances : ∀ instruction ∈ inline3Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -168,7 +168,7 @@ def inline4Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline4Phy
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline4Physical.code) (by decide))
     (by decide)
-theorem inline4_pc : inline4Site.startPC = UInt256.ofNat 933 := by
+theorem inline4_pc : inline4Site.startPC = UInt256.ofNat 941 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 649) = UInt256.ofNat 933
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline4_advances : ∀ instruction ∈ inline4Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -196,7 +196,7 @@ def inline5Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline5Phy
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline5Physical.code) (by decide))
     (by decide)
-theorem inline5_pc : inline5Site.startPC = UInt256.ofNat 984 := by
+theorem inline5_pc : inline5Site.startPC = UInt256.ofNat 992 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 693) = UInt256.ofNat 984
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline5_advances : ∀ instruction ∈ inline5Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -224,7 +224,7 @@ def inline6Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline6Phy
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline6Physical.code) (by decide))
     (by decide)
-theorem inline6_pc : inline6Site.startPC = UInt256.ofNat 1035 := by
+theorem inline6_pc : inline6Site.startPC = UInt256.ofNat 1043 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 737) = UInt256.ofNat 1035
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline6_advances : ∀ instruction ∈ inline6Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -252,7 +252,7 @@ def inline7Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline7Phy
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline7Physical.code) (by decide))
     (by decide)
-theorem inline7_pc : inline7Site.startPC = UInt256.ofNat 1086 := by
+theorem inline7_pc : inline7Site.startPC = UInt256.ofNat 1094 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 781) = UInt256.ofNat 1086
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline7_advances : ∀ instruction ∈ inline7Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -280,7 +280,7 @@ def inline8Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline8Phy
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline8Physical.code) (by decide))
     (by decide)
-theorem inline8_pc : inline8Site.startPC = UInt256.ofNat 1137 := by
+theorem inline8_pc : inline8Site.startPC = UInt256.ofNat 1145 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 825) = UInt256.ofNat 1137
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline8_advances : ∀ instruction ∈ inline8Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -308,7 +308,7 @@ def inline9Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline9Phy
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline9Physical.code) (by decide))
     (by decide)
-theorem inline9_pc : inline9Site.startPC = UInt256.ofNat 1188 := by
+theorem inline9_pc : inline9Site.startPC = UInt256.ofNat 1196 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 869) = UInt256.ofNat 1188
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline9_advances : ∀ instruction ∈ inline9Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -336,7 +336,7 @@ def inline10Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline10P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline10Physical.code) (by decide))
     (by decide)
-theorem inline10_pc : inline10Site.startPC = UInt256.ofNat 1239 := by
+theorem inline10_pc : inline10Site.startPC = UInt256.ofNat 1247 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 913) = UInt256.ofNat 1239
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline10_advances : ∀ instruction ∈ inline10Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -364,7 +364,7 @@ def inline11Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline11P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline11Physical.code) (by decide))
     (by decide)
-theorem inline11_pc : inline11Site.startPC = UInt256.ofNat 1290 := by
+theorem inline11_pc : inline11Site.startPC = UInt256.ofNat 1298 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 957) = UInt256.ofNat 1290
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline11_advances : ∀ instruction ∈ inline11Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -392,7 +392,7 @@ def inline12Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline12P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline12Physical.code) (by decide))
     (by decide)
-theorem inline12_pc : inline12Site.startPC = UInt256.ofNat 1341 := by
+theorem inline12_pc : inline12Site.startPC = UInt256.ofNat 1349 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1001) = UInt256.ofNat 1341
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline12_advances : ∀ instruction ∈ inline12Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -420,7 +420,7 @@ def inline13Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline13P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline13Physical.code) (by decide))
     (by decide)
-theorem inline13_pc : inline13Site.startPC = UInt256.ofNat 1391 := by
+theorem inline13_pc : inline13Site.startPC = UInt256.ofNat 1399 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1045) = UInt256.ofNat 1391
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline13_advances : ∀ instruction ∈ inline13Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -448,7 +448,7 @@ def inline14Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline14P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline14Physical.code) (by decide))
     (by decide)
-theorem inline14_pc : inline14Site.startPC = UInt256.ofNat 1442 := by
+theorem inline14_pc : inline14Site.startPC = UInt256.ofNat 1450 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1089) = UInt256.ofNat 1442
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline14_advances : ∀ instruction ∈ inline14Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -476,7 +476,7 @@ def inline15Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline15P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline15Physical.code) (by decide))
     (by decide)
-theorem inline15_pc : inline15Site.startPC = UInt256.ofNat 1493 := by
+theorem inline15_pc : inline15Site.startPC = UInt256.ofNat 1501 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1133) = UInt256.ofNat 1493
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline15_advances : ∀ instruction ∈ inline15Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -503,7 +503,7 @@ def group16Site : GenericRoundSite Artifact.submissionArtifact .Osaka group16Phy
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := group16Physical.code) (by decide))
     (by decide)
-theorem group16_pc : group16Site.startPC = UInt256.ofNat 1544 := by
+theorem group16_pc : group16Site.startPC = UInt256.ofNat 1552 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1177) = UInt256.ofNat 1544
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem group16_advances : ∀ instruction ∈ group16Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -531,7 +531,7 @@ def inline16Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline16P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline16Physical.code) (by decide))
     (by decide)
-theorem inline16_pc : inline16Site.startPC = UInt256.ofNat 1567 := by
+theorem inline16_pc : inline16Site.startPC = UInt256.ofNat 1575 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1180) = UInt256.ofNat 1567
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline16_advances : ∀ instruction ∈ inline16Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -559,7 +559,7 @@ def inline17Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline17P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline17Physical.code) (by decide))
     (by decide)
-theorem inline17_pc : inline17Site.startPC = UInt256.ofNat 1620 := by
+theorem inline17_pc : inline17Site.startPC = UInt256.ofNat 1628 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1226) = UInt256.ofNat 1620
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline17_advances : ∀ instruction ∈ inline17Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -587,7 +587,7 @@ def inline18Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline18P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline18Physical.code) (by decide))
     (by decide)
-theorem inline18_pc : inline18Site.startPC = UInt256.ofNat 1673 := by
+theorem inline18_pc : inline18Site.startPC = UInt256.ofNat 1681 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1272) = UInt256.ofNat 1673
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline18_advances : ∀ instruction ∈ inline18Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -615,7 +615,7 @@ def inline19Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline19P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline19Physical.code) (by decide))
     (by decide)
-theorem inline19_pc : inline19Site.startPC = UInt256.ofNat 1726 := by
+theorem inline19_pc : inline19Site.startPC = UInt256.ofNat 1734 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1318) = UInt256.ofNat 1726
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline19_advances : ∀ instruction ∈ inline19Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -643,7 +643,7 @@ def inline20Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline20P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline20Physical.code) (by decide))
     (by decide)
-theorem inline20_pc : inline20Site.startPC = UInt256.ofNat 1778 := by
+theorem inline20_pc : inline20Site.startPC = UInt256.ofNat 1786 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1364) = UInt256.ofNat 1778
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline20_advances : ∀ instruction ∈ inline20Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -671,7 +671,7 @@ def inline21Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline21P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline21Physical.code) (by decide))
     (by decide)
-theorem inline21_pc : inline21Site.startPC = UInt256.ofNat 1827 := by
+theorem inline21_pc : inline21Site.startPC = UInt256.ofNat 1835 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1408) = UInt256.ofNat 1827
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline21_advances : ∀ instruction ∈ inline21Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -699,7 +699,7 @@ def inline22Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline22P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline22Physical.code) (by decide))
     (by decide)
-theorem inline22_pc : inline22Site.startPC = UInt256.ofNat 1877 := by
+theorem inline22_pc : inline22Site.startPC = UInt256.ofNat 1885 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1452) = UInt256.ofNat 1877
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline22_advances : ∀ instruction ∈ inline22Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -727,7 +727,7 @@ def inline23Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline23P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline23Physical.code) (by decide))
     (by decide)
-theorem inline23_pc : inline23Site.startPC = UInt256.ofNat 1930 := by
+theorem inline23_pc : inline23Site.startPC = UInt256.ofNat 1938 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1498) = UInt256.ofNat 1930
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline23_advances : ∀ instruction ∈ inline23Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -755,7 +755,7 @@ def inline24Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline24P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline24Physical.code) (by decide))
     (by decide)
-theorem inline24_pc : inline24Site.startPC = UInt256.ofNat 1983 := by
+theorem inline24_pc : inline24Site.startPC = UInt256.ofNat 1991 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1544) = UInt256.ofNat 1983
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline24_advances : ∀ instruction ∈ inline24Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -783,7 +783,7 @@ def inline25Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline25P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline25Physical.code) (by decide))
     (by decide)
-theorem inline25_pc : inline25Site.startPC = UInt256.ofNat 2029 := by
+theorem inline25_pc : inline25Site.startPC = UInt256.ofNat 2037 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1584) = UInt256.ofNat 2029
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline25_advances : ∀ instruction ∈ inline25Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -811,7 +811,7 @@ def inline26Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline26P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline26Physical.code) (by decide))
     (by decide)
-theorem inline26_pc : inline26Site.startPC = UInt256.ofNat 2081 := by
+theorem inline26_pc : inline26Site.startPC = UInt256.ofNat 2089 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1630) = UInt256.ofNat 2081
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline26_advances : ∀ instruction ∈ inline26Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -839,7 +839,7 @@ def inline27Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline27P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline27Physical.code) (by decide))
     (by decide)
-theorem inline27_pc : inline27Site.startPC = UInt256.ofNat 2134 := by
+theorem inline27_pc : inline27Site.startPC = UInt256.ofNat 2142 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1676) = UInt256.ofNat 2134
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline27_advances : ∀ instruction ∈ inline27Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -867,7 +867,7 @@ def inline28Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline28P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline28Physical.code) (by decide))
     (by decide)
-theorem inline28_pc : inline28Site.startPC = UInt256.ofNat 2187 := by
+theorem inline28_pc : inline28Site.startPC = UInt256.ofNat 2195 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1722) = UInt256.ofNat 2187
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline28_advances : ∀ instruction ∈ inline28Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -895,7 +895,7 @@ def inline29Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline29P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline29Physical.code) (by decide))
     (by decide)
-theorem inline29_pc : inline29Site.startPC = UInt256.ofNat 2240 := by
+theorem inline29_pc : inline29Site.startPC = UInt256.ofNat 2248 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1768) = UInt256.ofNat 2240
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline29_advances : ∀ instruction ∈ inline29Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -923,7 +923,7 @@ def inline30Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline30P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline30Physical.code) (by decide))
     (by decide)
-theorem inline30_pc : inline30Site.startPC = UInt256.ofNat 2293 := by
+theorem inline30_pc : inline30Site.startPC = UInt256.ofNat 2301 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1814) = UInt256.ofNat 2293
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline30_advances : ∀ instruction ∈ inline30Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -951,7 +951,7 @@ def inline31Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline31P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline31Physical.code) (by decide))
     (by decide)
-theorem inline31_pc : inline31Site.startPC = UInt256.ofNat 2338 := by
+theorem inline31_pc : inline31Site.startPC = UInt256.ofNat 2346 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1854) = UInt256.ofNat 2338
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline31_advances : ∀ instruction ∈ inline31Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -978,7 +978,7 @@ def group32Site : GenericRoundSite Artifact.submissionArtifact .Osaka group32Phy
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := group32Physical.code) (by decide))
     (by decide)
-theorem group32_pc : group32Site.startPC = UInt256.ofNat 2388 := by
+theorem group32_pc : group32Site.startPC = UInt256.ofNat 2396 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1898) = UInt256.ofNat 2388
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem group32_advances : ∀ instruction ∈ group32Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1006,7 +1006,7 @@ def inline32Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline32P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline32Physical.code) (by decide))
     (by decide)
-theorem inline32_pc : inline32Site.startPC = UInt256.ofNat 2412 := by
+theorem inline32_pc : inline32Site.startPC = UInt256.ofNat 2420 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1901) = UInt256.ofNat 2412
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline32_advances : ∀ instruction ∈ inline32Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1034,7 +1034,7 @@ def inline33Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline33P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline33Physical.code) (by decide))
     (by decide)
-theorem inline33_pc : inline33Site.startPC = UInt256.ofNat 2458 := by
+theorem inline33_pc : inline33Site.startPC = UInt256.ofNat 2466 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1940) = UInt256.ofNat 2458
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline33_advances : ∀ instruction ∈ inline33Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1062,7 +1062,7 @@ def inline34Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline34P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline34Physical.code) (by decide))
     (by decide)
-theorem inline34_pc : inline34Site.startPC = UInt256.ofNat 2504 := by
+theorem inline34_pc : inline34Site.startPC = UInt256.ofNat 2512 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1979) = UInt256.ofNat 2504
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline34_advances : ∀ instruction ∈ inline34Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1090,7 +1090,7 @@ def inline35Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline35P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline35Physical.code) (by decide))
     (by decide)
-theorem inline35_pc : inline35Site.startPC = UInt256.ofNat 2550 := by
+theorem inline35_pc : inline35Site.startPC = UInt256.ofNat 2558 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2018) = UInt256.ofNat 2550
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline35_advances : ∀ instruction ∈ inline35Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1118,7 +1118,7 @@ def inline36Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline36P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline36Physical.code) (by decide))
     (by decide)
-theorem inline36_pc : inline36Site.startPC = UInt256.ofNat 2596 := by
+theorem inline36_pc : inline36Site.startPC = UInt256.ofNat 2604 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2057) = UInt256.ofNat 2596
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline36_advances : ∀ instruction ∈ inline36Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1146,7 +1146,7 @@ def inline37Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline37P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline37Physical.code) (by decide))
     (by decide)
-theorem inline37_pc : inline37Site.startPC = UInt256.ofNat 2642 := by
+theorem inline37_pc : inline37Site.startPC = UInt256.ofNat 2650 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2096) = UInt256.ofNat 2642
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline37_advances : ∀ instruction ∈ inline37Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1174,7 +1174,7 @@ def inline38Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline38P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline38Physical.code) (by decide))
     (by decide)
-theorem inline38_pc : inline38Site.startPC = UInt256.ofNat 2688 := by
+theorem inline38_pc : inline38Site.startPC = UInt256.ofNat 2696 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2135) = UInt256.ofNat 2688
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline38_advances : ∀ instruction ∈ inline38Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1202,7 +1202,7 @@ def inline39Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline39P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline39Physical.code) (by decide))
     (by decide)
-theorem inline39_pc : inline39Site.startPC = UInt256.ofNat 2734 := by
+theorem inline39_pc : inline39Site.startPC = UInt256.ofNat 2742 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2174) = UInt256.ofNat 2734
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline39_advances : ∀ instruction ∈ inline39Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1230,7 +1230,7 @@ def inline40Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline40P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline40Physical.code) (by decide))
     (by decide)
-theorem inline40_pc : inline40Site.startPC = UInt256.ofNat 2776 := by
+theorem inline40_pc : inline40Site.startPC = UInt256.ofNat 2784 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2211) = UInt256.ofNat 2776
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline40_advances : ∀ instruction ∈ inline40Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1258,7 +1258,7 @@ def inline41Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline41P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline41Physical.code) (by decide))
     (by decide)
-theorem inline41_pc : inline41Site.startPC = UInt256.ofNat 2822 := by
+theorem inline41_pc : inline41Site.startPC = UInt256.ofNat 2830 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2250) = UInt256.ofNat 2822
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline41_advances : ∀ instruction ∈ inline41Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1286,7 +1286,7 @@ def inline42Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline42P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline42Physical.code) (by decide))
     (by decide)
-theorem inline42_pc : inline42Site.startPC = UInt256.ofNat 2868 := by
+theorem inline42_pc : inline42Site.startPC = UInt256.ofNat 2876 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2289) = UInt256.ofNat 2868
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline42_advances : ∀ instruction ∈ inline42Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1314,7 +1314,7 @@ def inline43Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline43P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline43Physical.code) (by decide))
     (by decide)
-theorem inline43_pc : inline43Site.startPC = UInt256.ofNat 2913 := by
+theorem inline43_pc : inline43Site.startPC = UInt256.ofNat 2921 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2328) = UInt256.ofNat 2913
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline43_advances : ∀ instruction ∈ inline43Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1342,7 +1342,7 @@ def inline44Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline44P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline44Physical.code) (by decide))
     (by decide)
-theorem inline44_pc : inline44Site.startPC = UInt256.ofNat 2959 := by
+theorem inline44_pc : inline44Site.startPC = UInt256.ofNat 2967 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2367) = UInt256.ofNat 2959
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline44_advances : ∀ instruction ∈ inline44Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1370,7 +1370,7 @@ def inline45Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline45P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline45Physical.code) (by decide))
     (by decide)
-theorem inline45_pc : inline45Site.startPC = UInt256.ofNat 3005 := by
+theorem inline45_pc : inline45Site.startPC = UInt256.ofNat 3013 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2406) = UInt256.ofNat 3005
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline45_advances : ∀ instruction ∈ inline45Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1398,7 +1398,7 @@ def inline46Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline46P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline46Physical.code) (by decide))
     (by decide)
-theorem inline46_pc : inline46Site.startPC = UInt256.ofNat 3047 := by
+theorem inline46_pc : inline46Site.startPC = UInt256.ofNat 3055 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2443) = UInt256.ofNat 3047
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline46_advances : ∀ instruction ∈ inline46Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1426,7 +1426,7 @@ def inline47Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline47P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline47Physical.code) (by decide))
     (by decide)
-theorem inline47_pc : inline47Site.startPC = UInt256.ofNat 3086 := by
+theorem inline47_pc : inline47Site.startPC = UInt256.ofNat 3094 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2476) = UInt256.ofNat 3086
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline47_advances : ∀ instruction ∈ inline47Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1453,7 +1453,7 @@ def group48Site : GenericRoundSite Artifact.submissionArtifact .Osaka group48Phy
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := group48Physical.code) (by decide))
     (by decide)
-theorem group48_pc : group48Site.startPC = UInt256.ofNat 3125 := by
+theorem group48_pc : group48Site.startPC = UInt256.ofNat 3133 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2509) = UInt256.ofNat 3125
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem group48_advances : ∀ instruction ∈ group48Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1480,7 +1480,7 @@ def group64Site : GenericRoundSite Artifact.submissionArtifact .Osaka group64Phy
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := group64Physical.code) (by decide))
     (by decide)
-theorem group64_pc : group64Site.startPC = UInt256.ofNat 3828 := by
+theorem group64_pc : group64Site.startPC = UInt256.ofNat 3836 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3062) = UInt256.ofNat 3828
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem group64_advances : ∀ instruction ∈ group64Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1508,7 +1508,7 @@ def inline64Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline64P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline64Physical.code) (by decide))
     (by decide)
-theorem inline64_pc : inline64Site.startPC = UInt256.ofNat 3835 := by
+theorem inline64_pc : inline64Site.startPC = UInt256.ofNat 3843 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3065) = UInt256.ofNat 3835
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline64_advances : ∀ instruction ∈ inline64Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1536,7 +1536,7 @@ def inline65Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline65P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline65Physical.code) (by decide))
     (by decide)
-theorem inline65_pc : inline65Site.startPC = UInt256.ofNat 3883 := by
+theorem inline65_pc : inline65Site.startPC = UInt256.ofNat 3891 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3107) = UInt256.ofNat 3883
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline65_advances : ∀ instruction ∈ inline65Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1564,7 +1564,7 @@ def inline66Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline66P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline66Physical.code) (by decide))
     (by decide)
-theorem inline66_pc : inline66Site.startPC = UInt256.ofNat 3934 := by
+theorem inline66_pc : inline66Site.startPC = UInt256.ofNat 3942 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3151) = UInt256.ofNat 3934
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline66_advances : ∀ instruction ∈ inline66Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1592,7 +1592,7 @@ def inline67Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline67P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline67Physical.code) (by decide))
     (by decide)
-theorem inline67_pc : inline67Site.startPC = UInt256.ofNat 3985 := by
+theorem inline67_pc : inline67Site.startPC = UInt256.ofNat 3993 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3195) = UInt256.ofNat 3985
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline67_advances : ∀ instruction ∈ inline67Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1620,7 +1620,7 @@ def inline68Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline68P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline68Physical.code) (by decide))
     (by decide)
-theorem inline68_pc : inline68Site.startPC = UInt256.ofNat 4036 := by
+theorem inline68_pc : inline68Site.startPC = UInt256.ofNat 4044 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3239) = UInt256.ofNat 4036
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline68_advances : ∀ instruction ∈ inline68Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1648,7 +1648,7 @@ def inline69Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline69P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline69Physical.code) (by decide))
     (by decide)
-theorem inline69_pc : inline69Site.startPC = UInt256.ofNat 4086 := by
+theorem inline69_pc : inline69Site.startPC = UInt256.ofNat 4094 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3283) = UInt256.ofNat 4086
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline69_advances : ∀ instruction ∈ inline69Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1676,7 +1676,7 @@ def inline70Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline70P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline70Physical.code) (by decide))
     (by decide)
-theorem inline70_pc : inline70Site.startPC = UInt256.ofNat 4137 := by
+theorem inline70_pc : inline70Site.startPC = UInt256.ofNat 4145 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3327) = UInt256.ofNat 4137
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline70_advances : ∀ instruction ∈ inline70Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1704,7 +1704,7 @@ def inline71Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline71P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline71Physical.code) (by decide))
     (by decide)
-theorem inline71_pc : inline71Site.startPC = UInt256.ofNat 4185 := by
+theorem inline71_pc : inline71Site.startPC = UInt256.ofNat 4193 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3369) = UInt256.ofNat 4185
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline71_advances : ∀ instruction ∈ inline71Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1732,7 +1732,7 @@ def inline72Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline72P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline72Physical.code) (by decide))
     (by decide)
-theorem inline72_pc : inline72Site.startPC = UInt256.ofNat 4236 := by
+theorem inline72_pc : inline72Site.startPC = UInt256.ofNat 4244 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3413) = UInt256.ofNat 4236
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline72_advances : ∀ instruction ∈ inline72Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1760,7 +1760,7 @@ def inline73Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline73P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline73Physical.code) (by decide))
     (by decide)
-theorem inline73_pc : inline73Site.startPC = UInt256.ofNat 4287 := by
+theorem inline73_pc : inline73Site.startPC = UInt256.ofNat 4295 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3457) = UInt256.ofNat 4287
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline73_advances : ∀ instruction ∈ inline73Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1788,7 +1788,7 @@ def inline74Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline74P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline74Physical.code) (by decide))
     (by decide)
-theorem inline74_pc : inline74Site.startPC = UInt256.ofNat 4334 := by
+theorem inline74_pc : inline74Site.startPC = UInt256.ofNat 4342 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3499) = UInt256.ofNat 4334
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline74_advances : ∀ instruction ∈ inline74Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1816,7 +1816,7 @@ def inline75Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline75P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline75Physical.code) (by decide))
     (by decide)
-theorem inline75_pc : inline75Site.startPC = UInt256.ofNat 4385 := by
+theorem inline75_pc : inline75Site.startPC = UInt256.ofNat 4393 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3543) = UInt256.ofNat 4385
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline75_advances : ∀ instruction ∈ inline75Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1844,7 +1844,7 @@ def inline76Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline76P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline76Physical.code) (by decide))
     (by decide)
-theorem inline76_pc : inline76Site.startPC = UInt256.ofNat 4437 := by
+theorem inline76_pc : inline76Site.startPC = UInt256.ofNat 4445 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3587) = UInt256.ofNat 4437
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline76_advances : ∀ instruction ∈ inline76Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1872,7 +1872,7 @@ def inline77Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline77P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline77Physical.code) (by decide))
     (by decide)
-theorem inline77_pc : inline77Site.startPC = UInt256.ofNat 4487 := by
+theorem inline77_pc : inline77Site.startPC = UInt256.ofNat 4495 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3631) = UInt256.ofNat 4487
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline77_advances : ∀ instruction ∈ inline77Physical.code.dropLast, DenseScheduleLift.Advances instruction := by
@@ -1900,7 +1900,7 @@ def inline78Site : GenericRoundSite Artifact.submissionArtifact .Osaka inline78P
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := inline78Physical.code) (by decide))
     (by decide)
-theorem inline78_pc : inline78Site.startPC = UInt256.ofNat 4538 := by
+theorem inline78_pc : inline78Site.startPC = UInt256.ofNat 4546 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3675) = UInt256.ofNat 4538
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem inline78_advances : ∀ instruction ∈ inline78Physical.code.dropLast, DenseScheduleLift.Advances instruction := by

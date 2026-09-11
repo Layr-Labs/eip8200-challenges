@@ -64,16 +64,16 @@ def helperSite : GenericRoundSite Artifact.submissionArtifact .Osaka helperTempl
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := helperTemplate) (by decide))
     (by decide)
-theorem helper_pc : helperSite.startPC = UInt256.ofNat 5168 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3940) = UInt256.ofNat 5168
+theorem helper_pc : helperSite.startPC = UInt256.ofNat 5176 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3940) = UInt256.ofNat 5176
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem helper_advances : ∀ instruction ∈ helperTemplate.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
   decide
 theorem helper_valid (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
-    Decode.isValidJumpDest s.executionEnv.code 5168 = true := by
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3940 (by rfl)
-  have hp : Artifact.submissionArtifact.instructionPC 3940 = 5168 := by
+    Decode.isValidJumpDest s.executionEnv.code 5176 = true := by
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3945 (by rfl)
+  have hp : Artifact.submissionArtifact.instructionPC 3945 = 5176 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   rw [hp] at h
   rw [hcode]

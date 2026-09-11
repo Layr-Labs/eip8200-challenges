@@ -29,11 +29,11 @@ private def sound (path : List Located) {s t : State}
   Challenge.EvmProof.Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     path hcode hfork h hrun hnp
 
-@[simp] private theorem entryPC61 : Artifact.submissionArtifact.instructionPC 59 = 98 := by
+@[simp] private theorem entryPC61 : Artifact.submissionArtifact.instructionPC 64 = 106 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem entryPC62 : Artifact.submissionArtifact.instructionPC 60 = 99 := by
+@[simp] private theorem entryPC62 : Artifact.submissionArtifact.instructionPC 65 = 107 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -79,79 +79,79 @@ private theorem byteValue_true (input : ByteArray) (hbyte : DirectGuard.firstByt
   rw [← heq] at hbad
   exact (by decide : UInt256.eq (UInt256.ofNat 7) (UInt256.ofNat 7) ≠ UInt256.ofNat 0) hbad
 
-private theorem guard_fallback_dest : Decode.isValidJumpDest submissionBytecode 276 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 179 (by rfl)
-private theorem guard_match_dest : Decode.isValidJumpDest submissionBytecode 98 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 59 (by rfl)
-@[simp] private theorem pc4799 : Artifact.submissionArtifact.instructionPC 4036 = 4862 := by
+private theorem guard_fallback_dest : Decode.isValidJumpDest submissionBytecode 284 = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 184 (by rfl)
+private theorem guard_match_dest : Decode.isValidJumpDest submissionBytecode 106 = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 64 (by rfl)
+@[simp] private theorem pc4799 : Artifact.submissionArtifact.instructionPC 3890 = 4807 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] private theorem pc4800 : Artifact.submissionArtifact.instructionPC 4037 = 4863 := by
+@[simp] private theorem pc4800 : Artifact.submissionArtifact.instructionPC 3891 = 4808 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] private theorem pc4801 : Artifact.submissionArtifact.instructionPC 4038 = 4864 := by
+@[simp] private theorem pc4801 : Artifact.submissionArtifact.instructionPC 3892 = 4809 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] private theorem pc4802 : Artifact.submissionArtifact.instructionPC 4039 = 4865 := by
+@[simp] private theorem pc4802 : Artifact.submissionArtifact.instructionPC 3893 = 4810 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] private theorem pc4803 : Artifact.submissionArtifact.instructionPC 4040 = 4866 := by
+@[simp] private theorem pc4803 : Artifact.submissionArtifact.instructionPC 3894 = 4811 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] private theorem pc4804 : Artifact.submissionArtifact.instructionPC 4041 = 4867 := by
+@[simp] private theorem pc4804 : Artifact.submissionArtifact.instructionPC 3895 = 4812 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] private theorem pc4806 : Artifact.submissionArtifact.instructionPC 4042 = 4869 := by
+@[simp] private theorem pc4806 : Artifact.submissionArtifact.instructionPC 3896 = 4814 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] private theorem pc4807 : Artifact.submissionArtifact.instructionPC 4043 = 4870 := by
+@[simp] private theorem pc4807 : Artifact.submissionArtifact.instructionPC 3897 = 4815 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] private theorem pc4810 : Artifact.submissionArtifact.instructionPC 4044 = 4873 := by
+@[simp] private theorem pc4810 : Artifact.submissionArtifact.instructionPC 3898 = 4818 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] private theorem pc4811 : Artifact.submissionArtifact.instructionPC 4045 = 4874 := by
+@[simp] private theorem pc4811 : Artifact.submissionArtifact.instructionPC 3899 = 4819 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] private theorem pc4829 : Artifact.submissionArtifact.instructionPC 4046 = 4892 := by
+@[simp] private theorem pc4829 : Artifact.submissionArtifact.instructionPC 3900 = 4837 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] private theorem pc4830 : Artifact.submissionArtifact.instructionPC 4047 = 4893 := by
+@[simp] private theorem pc4830 : Artifact.submissionArtifact.instructionPC 3901 = 4838 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] private theorem pc4831 : Artifact.submissionArtifact.instructionPC 4048 = 4894 := by
+@[simp] private theorem pc4831 : Artifact.submissionArtifact.instructionPC 3902 = 4839 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] private theorem pc4833 : Artifact.submissionArtifact.instructionPC 4049 = 4896 := by
+@[simp] private theorem pc4833 : Artifact.submissionArtifact.instructionPC 3903 = 4841 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] private theorem pc4834 : Artifact.submissionArtifact.instructionPC 4050 = 4897 := by
+@[simp] private theorem pc4834 : Artifact.submissionArtifact.instructionPC 3904 = 4842 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] private theorem pc4835 : Artifact.submissionArtifact.instructionPC 4051 = 4898 := by
+@[simp] private theorem pc4835 : Artifact.submissionArtifact.instructionPC 3905 = 4843 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] private theorem pc4838 : Artifact.submissionArtifact.instructionPC 4052 = 4901 := by
+@[simp] private theorem pc4838 : Artifact.submissionArtifact.instructionPC 3906 = 4846 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] private theorem pc4839 : Artifact.submissionArtifact.instructionPC 4053 = 4902 := by
+@[simp] private theorem pc4839 : Artifact.submissionArtifact.instructionPC 3907 = 4847 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] private theorem pc4840 : Artifact.submissionArtifact.instructionPC 4054 = 4903 := by
+@[simp] private theorem pc4840 : Artifact.submissionArtifact.instructionPC 3908 = 4848 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] private theorem pc4842 : Artifact.submissionArtifact.instructionPC 4055 = 4905 := by
+@[simp] private theorem pc4842 : Artifact.submissionArtifact.instructionPC 3909 = 4850 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private def bytePrefix : List Located :=
-  [ DirectGuard.opAt 4036 .JUMPDEST,
-    DirectGuard.pushAt 4037 0 0,
-    DirectGuard.opAt 4038 .CALLDATALOAD,
-    DirectGuard.pushAt 4039 0 0,
-    DirectGuard.opAt 4040 .BYTE,
-    DirectGuard.pushAt 4041 1 7,
-    DirectGuard.opAt 4042 .XOR,
-    DirectGuard.pushAt 4043 2 276 ]
-private def byteJump : List Located := [DirectGuard.opAt 4044 .JUMPI]
+  [ DirectGuard.opAt 3890 .JUMPDEST,
+    DirectGuard.pushAt 3891 0 0,
+    DirectGuard.opAt 3892 .CALLDATALOAD,
+    DirectGuard.pushAt 3893 0 0,
+    DirectGuard.opAt 3894 .BYTE,
+    DirectGuard.pushAt 3895 1 7,
+    DirectGuard.opAt 3896 .XOR,
+    DirectGuard.pushAt 3897 2 284 ]
+private def byteJump : List Located := [DirectGuard.opAt 3898 .JUMPI]
 private def sizePrefix : List Located :=
-  [ DirectGuard.pushAt 4045 17 342276208914615837337402008677671501826,
-    DirectGuard.opAt 4046 .CALLDATASIZE,
-    DirectGuard.opAt 4047 .SHR,
-    DirectGuard.pushAt 4048 1 1,
-    DirectGuard.opAt 4049 .AND,
-    DirectGuard.opAt 4050 .ISZERO,
-    DirectGuard.pushAt 4051 2 276 ]
-private def sizeJump : List Located := [DirectGuard.opAt 4052 .JUMPI]
+  [ DirectGuard.pushAt 3899 17 342276208914615837337402008677671501826,
+    DirectGuard.opAt 3900 .CALLDATASIZE,
+    DirectGuard.opAt 3901 .SHR,
+    DirectGuard.pushAt 3902 1 1,
+    DirectGuard.opAt 3903 .AND,
+    DirectGuard.opAt 3904 .ISZERO,
+    DirectGuard.pushAt 3905 2 284 ]
+private def sizeJump : List Located := [DirectGuard.opAt 3906 .JUMPI]
 private def matchPath : List Located :=
-  [ DirectGuard.pushAt 4053 0 0,
-    DirectGuard.pushAt 4054 1 98,
-    DirectGuard.opAt 4055 .JUMP , DirectGuard.opAt 59 .JUMPDEST, DirectGuard.opAt 60 .POP ]
+  [ DirectGuard.pushAt 3907 0 0,
+    DirectGuard.pushAt 3908 1 106,
+    DirectGuard.opAt 3909 .JUMP , DirectGuard.opAt 64 .JUMPDEST, DirectGuard.opAt 65 .POP ]
 private def flag (input : ByteArray) : UInt256 :=
   UInt256.isZero (UInt256.land 1 (UInt256.shiftRight 342276208914615837337402008677671501826 (UInt256.ofNat input.size)))
 private def byteState (input : ByteArray) : State :=
-  PatternedScan.stS input 4873 [276, byteValue input]
-private def sizeEntry (input : ByteArray) : State := PatternedScan.stS input 4874 []
-private def sizeState (input : ByteArray) : State := PatternedScan.stS input 4901 [276, flag input]
+  PatternedScan.stS input 4818 [276, byteValue input]
+private def sizeEntry (input : ByteArray) : State := PatternedScan.stS input 4819 []
+private def sizeState (input : ByteArray) : State := PatternedScan.stS input 4846 [276, flag input]
 private theorem run_byte_prefix (input : ByteArray) :
     DirectGuard.run bytePrefix (DirectGuard.guardEntry input) = some (byteState input) := by
   simp [bytePrefix, byteState, byteValue, DirectGuard.run, DirectGuard.opAt, DirectGuard.pushAt, DirectGuard.wfOp,
@@ -241,7 +241,7 @@ def gasSteps_hit (input : ByteArray) (hfit : CalldataFits input)
   have h376 : input.size ≠ 376 := by omega
   have h256 : input.size ≠ 256 := by omega
   exact (Execution.gasSteps_start input).trans
-    ((sound DirectGuard.sizePath
+    ((sound (DirectGuard.sizePath input)
         (DirectGuard.run_size_fail input hfit h1000 h376 h256)).trans
       (gasSteps_match input hfit hsize hbyte))
 
@@ -253,7 +253,7 @@ def gasSteps_miss (input : ByteArray) (hfit : CalldataFits input)
     GasSteps (initialState submissionBytecode input 0)
       (DirectGuard.fallbackState input) := by
   exact (Execution.gasSteps_start input).trans
-    ((sound DirectGuard.sizePath
+    ((sound (DirectGuard.sizePath input)
         (DirectGuard.run_size_fail input hfit h1000 h376 h256)).trans
       (gasSteps_fail input hfit hbad))
 

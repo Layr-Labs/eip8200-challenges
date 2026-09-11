@@ -16,7 +16,7 @@ def driverRest (input : ByteArray) : List UInt256 :=
   [DriverTrace.blockOffsetWord (DriverTrace.blockCount input), Padding.paddedWord input]
 
 def outputState (s : State) (input : ByteArray) : State :=
-  FastOutputTrace.fastOutputReturned s (UInt256.ofNat 4786) (driverRest input)
+  FastOutputTrace.fastOutputReturned s (UInt256.ofNat 4731) (driverRest input)
 
 def outputBytes (s : State) : ByteArray :=
   MachineState.readPadded (FastOutputTrace.outputMemory s) 0 32
@@ -97,7 +97,7 @@ private theorem outputBytes_eq_spec (input : ByteArray) (seam : CompressionSeam 
 
 noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input)
     (seam : CompressionSeam input)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 276)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 284)) :
     GasSteps (initialState submissionBytecode input 0)
       (outputState (seam.states (DriverTrace.blockCount input)) input) := by
   let final := seam.states (DriverTrace.blockCount input)
@@ -112,7 +112,7 @@ noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input)
 theorem correct_of_compression_trace
     (seam : ∀ input : ByteArray, CalldataFits input → CompressionSeam input)
     (input : ByteArray) (hfit : CalldataFits input)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 276)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 284)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   let trace := fullTrace input hfit (seam input hfit) entryPrefix
@@ -128,26 +128,6 @@ theorem correct_of_compression_trace
   change Eval (withGas (initialState submissionBytecode input 0) gas)
     (.returned (outputBytes final)) at heval
   rw [outputBytes_eq_spec input (seam input hfit)] at heval
-  simpa [GasCost.withGas_initialState_zero] using heval
-
-theorem correct_of_seam
-    (input : ByteArray) (hfit : CalldataFits input) (seam : CompressionSeam input)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 276)) :
-    ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
-      Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  let trace := fullTrace input hfit seam entryPrefix
-  let final := seam.states (DriverTrace.blockCount input)
-  have hcall : (outputState final input).callStack = [] :=
-    seam.callStack _ (by omega)
-  have hreturned : (outputState final input).halt = .Returned := by rfl
-  refine ⟨trace.cost, fun gas hgas => ?_⟩
-  have heval := Challenge.EvmProof.eval_of_steps (trace.trace gas hgas) (by
-    change (withGas (outputState final input) (gas - trace.cost)).isDone = true
-    simp [withGas, State.isDone, State.isHalted, State.isRunning, hcall, hreturned])
-  rw [State.toResult_returned _ (by rfl)] at heval
-  change Eval (withGas (initialState submissionBytecode input 0) gas)
-    (.returned (outputBytes final)) at heval
-  rw [outputBytes_eq_spec input seam] at heval
   simpa [GasCost.withGas_initialState_zero] using heval
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.FastOutputResultBridge

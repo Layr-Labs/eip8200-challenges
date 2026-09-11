@@ -78,7 +78,7 @@ structure BlockKernel where
     (_hfork : s.fork = .Osaka) (_hrun : s.halt = .Running)
     (_hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (_hnd : double input = true → 2 ≤ i) (_hpositive : 0 < input.size),
+    (_hnd : double input = true → 2 ≤ i),
     GasSteps (DriverTrace.dispatchEntry s input i)
       (DriverTrace.compressReturned (nextState s input i) input i)
   nextState2 : State → ByteArray → State
@@ -400,7 +400,7 @@ theorem hashWords (kernel : BlockKernel) (input : ByteArray)
         (hashWords kernel input hfit (n + 1) (by omega))
 
 def compressionRun (kernel : BlockKernel) (input : ByteArray)
-    (hfit : CalldataFits input) (hpositive : 0 < input.size) : CompressionSeamBridge.CompressionRun input where
+    (hfit : CalldataFits input) : CompressionSeamBridge.CompressionRun input where
   states := states kernel input
   double := kernel.double input
   initial := states_initial kernel input
@@ -421,7 +421,7 @@ def compressionRun (kernel : BlockKernel) (input : ByteArray)
     have hgas := BlockKernel.gasSteps kernel (states kernel input i)
       input i h hfit hi ctx
       (states_code kernel input i) (states_fork kernel input i)
-      (states_halt kernel input i) (states_noPrecompile kernel input i) hnd hpositive
+      (states_halt kernel input i) (states_noPrecompile kernel input i) hnd
     have hstep : states kernel input (i + 1) =
         kernel.nextState (states kernel input i) input i := by
       apply states_succ_single
@@ -450,17 +450,17 @@ def compressionRun (kernel : BlockKernel) (input : ByteArray)
     exact hgas
   hashWords := fun i hi => hashWords kernel input hfit i hi
 
-def compressionSeam (kernel : BlockKernel) (input : ByteArray)
-    (hfit : CalldataFits input) (hpositive : 0 < input.size) : DirectCorrect.CompressionSeam input :=
-  CompressionSeamBridge.toCompressionSeam (compressionRun kernel input hfit hpositive)
+def compressionSeam (kernel : BlockKernel) :
+    ∀ input : ByteArray, CalldataFits input → DirectCorrect.CompressionSeam input :=
+  fun input hfit => CompressionSeamBridge.toCompressionSeam
+    (compressionRun kernel input hfit)
 
-/-- Nonempty inputs use the compression loop; the caller proves the empty return separately. -/
+/-- Correctness remains conditional on the genuine block kernel. -/
 theorem correct_of_block_kernel (kernel : BlockKernel)
-    (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 276)) :
+    (input : ByteArray) (hfit : CalldataFits input)
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 284)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  exact FastOutputResultBridge.correct_of_seam input hfit
-    (compressionSeam kernel input hfit hpositive) entryPrefix
+  exact FastOutputResultBridge.correct_of_compression_trace (compressionSeam kernel) input hfit entryPrefix
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRunBridge
