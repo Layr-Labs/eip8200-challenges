@@ -22,20 +22,20 @@ def tag : Nat → UInt256
 
 def state (s : State) (mem : ByteArray) (pa i : Nat)
     (tl inv m0 aEnd m96 m64 m32 dst ret : UInt256) (rest : List UInt256) : State :=
-  stateAt s mem (if i < 8 then 5191 else 4794)
+  stateAt s mem (if i < 8 then 5186 else 4790)
     (base (UInt256.ofNat (ptrAt (pa+32*8-32) i)) (UInt256.ofNat pa) (UInt256.ofNat (pa-32))
-      (tag i) (UInt256.ofNat 4518) inv
+      (tag i) (UInt256.ofNat 4514) inv
       (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))
 
 def gasSteps_row (s : State) (mem : ByteArray) (pa i : Nat)
     (tl inv m0 aEnd m96 m64 m32 dst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat)
-    (hpa : 32 ≤ pa) (hpafit : pa+256 ≤ 8192) (hi : i < 8)
+    (hcap : rest.length ≤ 998) (hact : 91 ≤ s.activeWords.toNat)
+    (hpa : 32 ≤ pa) (hpafit : pa+256 ≤ 2048) (hi : i < 8)
     (hc : CiosReadonly.ReadonlyCache mem 8 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
     (hinv : inverseInvariant mem 8)
-    (hroute : MachineState.readWord mem 9280 = UInt256.ofNat 5191)
-    (hhigh : SquareWords.clearBit (MachineState.readWord mem 8928) = UInt256.ofNat 0)
+    (hroute : MachineState.readWord mem 2720 = UInt256.ofNat 5186)
+    (hhigh : SquareWords.clearBit (MachineState.readWord mem 2368) = UInt256.ofNat 0)
     (env : Environment Artifact.submissionArtifact .Osaka s) :
     Challenge.EvmProof.GasSteps (state s mem pa i tl inv m0 aEnd m96 m64 m32 dst ret rest)
       (state s (row mem (digit mem pa i) i) pa (i+1) tl inv m0 aEnd m96 m64 m32 dst ret rest) := by
@@ -53,41 +53,41 @@ def gasSteps_row (s : State) (mem : ByteArray) (pa i : Nat)
     rw [hpword, Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)]
     congr 1
     omega
-  have hpbi : pbi.toNat+32 ≤ 9472 := by rw [hp]; omega
+  have hpbi : pbi.toNat+32 ≤ 2912 := by rw [hp]; omega
   have hh : i = 7 → SquareCoefficients.coefficient mem ai i 8 = UInt256.ofNat 0 := by
     intro h
     subst i
     simpa only [SquareCoefficients.coefficient, Nat.reduceEqDiff, if_false, ite_true,
       SquareCoefficients.dWord, Nat.reduceSub, Nat.reduceMul, Nat.reduceAdd] using hhigh
   have hpdt := SquareProductGas.gasSteps_product s mem ai i pbi (UInt256.ofNat pa)
-    (UInt256.ofNat (pa-32)) (tag i) (UInt256.ofNat 4518) inv
+    (UInt256.ofNat (pa-32)) (tag i) (UInt256.ofNat 4514) inv
     (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)
     (by simp only [List.length_cons]; omega) hact hi hpbi hdelta (by rw [hp]; rfl) hh env
-  have hread (addr : Nat) (hd : addr+32 ≤ 8224 ∨ 8512 ≤ addr) :
+  have hread (addr : Nat) (hd : addr+32 ≤ 2080 ∨ 2368 ≤ addr) :
       MachineState.readWord midmem addr = MachineState.readWord mem addr :=
     read_mid_outside mem ai i addr (by omega) hd
-  have hcm := hc.of_preserved (hread 9376 (Or.inr (by decide))) (hread 224 (Or.inl (by decide)))
+  have hcm := hc.of_preserved (hread 2816 (Or.inr (by decide))) (hread 224 (Or.inl (by decide)))
   have hem := he.of_preserved (hread 96 (Or.inl (by decide)))
     (hread 64 (Or.inl (by decide))) (hread 32 (Or.inl (by decide)))
   have him : inverseInvariant midmem 8 := by
     simpa only [inverseInvariant, hread 224 (Or.inl (by decide)),
-      hread 9376 (Or.inr (by decide))] using hinv
+      hread 2816 (Or.inr (by decide))] using hinv
   have hr := SquareReductionGas.gasSteps_reduce s midmem (flag mem ai i) pbi (UInt256.ofNat pa)
     (UInt256.ofNat (pa-32)) (SquareParts.delta i) tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hact hcm hem him
-    ((hread 9280 (Or.inr (by decide))).trans hroute) env
+    ((hread 2720 (Or.inr (by decide))).trans hroute) env
   have hnext := CarryTailRows.pointer_next (pa+32*8-32) i
   have hcond := CiosCachedPointers.l1_condition pa 8 (i+1) hpa (by omega) (by omega)
   simpa only [state, if_pos hi, tag, midmem, row, ai, pbi, hnext, hcond] using hpdt.trans hr
 
 def gasSteps_rows (s : State) (mem : ByteArray) (pa : Nat)
     (tl inv m0 aEnd m96 m64 m32 dst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 998) (hact : 296 ≤ s.activeWords.toNat)
-    (hpa : 32 ≤ pa) (hpafit : pa+256 ≤ 8192)
+    (hcap : rest.length ≤ 998) (hact : 91 ≤ s.activeWords.toNat)
+    (hpa : 32 ≤ pa) (hpafit : pa+256 ≤ 2048)
     (hc : CiosReadonly.ReadonlyCache mem 8 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
     (hinv : inverseInvariant mem 8)
-    (hroute : MachineState.readWord mem 9280 = UInt256.ofNat 5191)
-    (hhigh : SquareWords.clearBit (MachineState.readWord mem 8928) = UInt256.ofNat 0)
+    (hroute : MachineState.readWord mem 2720 = UInt256.ofNat 5186)
+    (hhigh : SquareWords.clearBit (MachineState.readWord mem 2368) = UInt256.ofNat 0)
     (env : Environment Artifact.submissionArtifact .Osaka s) :
     Challenge.EvmProof.GasSteps (state s mem pa 0 tl inv m0 aEnd m96 m64 m32 dst ret rest)
       (mpCsubState s (rows mem pa 8) dst ret rest) := by
@@ -97,22 +97,22 @@ def gasSteps_rows (s : State) (mem : ByteArray) (pa : Nat)
     apply Challenge.EvmProof.GasSteps.iterateBounded
       (I := fun i => state s (rows mem pa i) pa i tl inv m0 aEnd m96 m64 m32 dst ret rest) 8
     intro i hi
-    have hread (addr : Nat) (hd : addr+32 ≤ 8224 ∨ 8512 ≤ addr) :
+    have hread (addr : Nat) (hd : addr+32 ≤ 2080 ∨ 2368 ≤ addr) :
         MachineState.readWord (rows mem pa i) addr = MachineState.readWord mem addr :=
       read_rows_outside mem pa addr hd i (by omega)
     exact gasSteps_row s (rows mem pa i) pa i tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hact hpa hpafit hi
-      (hc.of_preserved (hread 9376 (Or.inr (by decide))) (hread 224 (Or.inl (by decide))))
+      (hc.of_preserved (hread 2816 (Or.inr (by decide))) (hread 224 (Or.inl (by decide))))
       (he.of_preserved (hread 96 (Or.inl (by decide))) (hread 64 (Or.inl (by decide))) (hread 32 (Or.inl (by decide))))
-      (by simpa only [inverseInvariant, hread 224 (Or.inl (by decide)), hread 9376 (Or.inr (by decide))] using hinv)
-      ((hread 9280 (Or.inr (by decide))).trans hroute)
-      (by rw [hread 8928 (Or.inr (by decide))]; exact hhigh) env
+      (by simpa only [inverseInvariant, hread 224 (Or.inl (by decide)), hread 2816 (Or.inr (by decide))] using hinv)
+      ((hread 2720 (Or.inr (by decide))).trans hroute)
+      (by rw [hread 2368 (Or.inr (by decide))]; exact hhigh) env
   refine hloop.trans ?_
   apply CarryRowBlocks.exitBlock.steps (s := state s (rows mem pa 8) pa 8 tl inv m0 aEnd m96 m64 m32 dst ret rest)
     (env.transfer rfl rfl) rfl
   exact CiosReadonly.run_exit {s with memory := rows mem pa 8}
     (UInt256.ofNat (ptrAt (pa+32*8-32) 8)) (UInt256.ofNat pa) (UInt256.ofNat (pa-32)) (tag 8)
-    (UInt256.ofNat 4518) tl inv m0 aEnd m96 m64 m32 dst ret rest hcap
-    (by change Decode.isValidJumpDest s.executionEnv.code 4902 = true
-        rw [env.code]; exact Artifact.isValidJumpDest_index 3743 (by rfl))
+    (UInt256.ofNat 4514) tl inv m0 aEnd m96 m64 m32 dst ret rest hcap
+    (by change Decode.isValidJumpDest s.executionEnv.code 4898 = true
+        rw [env.code]; exact Artifact.isValidJumpDest_index 3727 (by rfl))
 
 end Challenge.Modexp.Submission.Proofs.Fast.SquareRowsGas

@@ -11,7 +11,7 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro SquareProducts SquareWords
 
 def dWord (mem : ByteArray) (j : Nat) : UInt256 :=
-  MachineState.readWord mem (8928+32*(8-j))
+  MachineState.readWord mem (2368+32*(8-j))
 def coefficient (mem : ByteArray) (ai : UInt256) (i j : Nat) : UInt256 :=
   if j = i then ai else if j = i+1 then clearBit (dWord mem j) else dWord mem j
 
@@ -51,12 +51,12 @@ theorem weighted_digits (v i k : Nat) :
   rw [he, limbSum_digits]
 
 theorem weighted_dWords (mem : ByteArray) (v i : Nat)
-    (hv : Model.FastRepresents mem 8928 9 v) (hi : i ≤ 9) :
+    (hv : Model.FastRepresents mem 2368 9 v) (hi : i ≤ 9) :
     weighted (fun j => (dWord mem j).toNat) i (9-i) =
       (v / Limbs.radix^i)*Limbs.radix^i := by
   have he := weighted_congr (fun j => (dWord mem j).toNat)
     (fun j => v / Limbs.radix^j % Limbs.radix) i (9-i) (fun j hj =>
-      Model.readLimb_of_fastRepresents (memory := mem) (ptr := 8928) (count := 9) (value := v) (k := i+j) hv (by omega))
+      Model.readLimb_of_fastRepresents (memory := mem) (ptr := 2368) (count := 9) (value := v) (k := i+j) hv (by omega))
   rw [he, weighted_digits]
   have hbound : v / Limbs.radix^i < Limbs.radix^(9-i) := by
     rw [Nat.div_lt_iff_lt_mul (pow_pos Limbs.radix_pos i), ← pow_add]
@@ -64,7 +64,7 @@ theorem weighted_dWords (mem : ByteArray) (v i : Nat)
   rw [Nat.mod_eq_of_lt hbound]
 
 theorem weighted_coefficient (mem : ByteArray) (a : Nat) (ai : UInt256) (i : Nat)
-    (hd : Model.FastRepresents mem 8928 9 (2*a)) (hi : i < 8) :
+    (hd : Model.FastRepresents mem 2368 9 (2*a)) (hi : i < 8) :
     weighted (fun j => (coefficient mem ai i j).toNat) i (9-i) =
       ai.toNat*Limbs.radix^i + 2*(a / Limbs.radix^(i+1))*Limbs.radix^(i+1) := by
   let c := fun j => (coefficient mem ai i j).toNat
@@ -76,7 +76,7 @@ theorem weighted_coefficient (mem : ByteArray) (a : Nat) (ai : UInt256) (i : Nat
     simp only [c, d, coefficient, if_neg (show i+2+j ≠ i by omega),
       if_neg (show i+2+j ≠ i+1 by omega)]
   have hdi : d (i+1) = (2*a/P) % Limbs.radix :=
-    Model.readLimb_of_fastRepresents (memory := mem) (ptr := 8928) (count := 9) (value := 2*a) (k := i+1) hd (by omega)
+    Model.readLimb_of_fastRepresents (memory := mem) (ptr := 2368) (count := 9) (value := 2*a) (k := i+1) hd (by omega)
   have hmod : d (i+1) % 2 = (2*a/P) % 2 := by
     rw [hdi]
     exact Nat.mod_mod_of_dvd _ (show 2 ∣ Limbs.radix by norm_num [Limbs.radix])
@@ -115,10 +115,10 @@ theorem weighted_coefficient (mem : ByteArray) (a : Nat) (ai : UInt256) (i : Nat
   nlinarith only [hw, digitWeighted, splitWeighted]
 
 theorem coefficient_high_le_one (mem : ByteArray) (a : Nat) (ai : UInt256) (i : Nat)
-    (hd : Model.FastRepresents mem 8928 9 (2*a)) (ha : a < Limbs.radix^8) (hi : i < 8) :
+    (hd : Model.FastRepresents mem 2368 9 (2*a)) (ha : a < Limbs.radix^8) (hi : i < 8) :
     (coefficient mem ai i 8).toNat ≤ 1 := by
   have hword : (dWord mem 8).toNat = (2*a / Limbs.radix^8) % Limbs.radix :=
-    Model.readLimb_of_fastRepresents (memory := mem) (ptr := 8928) (count := 9) (value := 2*a) (k := 8) hd (by decide)
+    Model.readLimb_of_fastRepresents (memory := mem) (ptr := 2368) (count := 9) (value := 2*a) (k := 8) hd (by decide)
   have hdiv : 2*a / Limbs.radix^8 < 2 := by
     rw [Nat.div_lt_iff_lt_mul (pow_pos Limbs.radix_pos 8)]
     omega

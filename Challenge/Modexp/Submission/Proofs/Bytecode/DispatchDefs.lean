@@ -40,7 +40,7 @@ def zeroSizePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 879 .JUMPDEST, opAt 880 (.Dup ⟨0, by decide⟩),
    pushAt 881 2 1156, opAt 882 .JUMPI,
-   pushAt 883 0 0, pushAt 884 0 0, opAt 885 .RETURN]
+   pushAt 883 0 0, opAt 884 .RETURN]
 
 def wordEntryPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -51,13 +51,13 @@ def wordEntryPath :
    opAt 890 (.Dup ⟨2, by decide⟩), opAt 891 (.Dup ⟨1, by decide⟩),
    opAt 892 .ADD, pushAt 893 1 32, opAt 894 (.Dup ⟨3, by decide⟩),
    opAt 895 .GT, pushAt 896 2 1187, opAt 897 .JUMPI,
-   pushAt 898 2 1186, opAt 899 (.Dup ⟨1, by decide⟩),
-   opAt 900 (.Dup ⟨3, by decide⟩), pushAt 901 1 96,
+   pushAt 898 0 0, opAt 899 (.Dup ⟨1, by decide⟩),
+   opAt 900 (.Dup ⟨3, by decide⟩), pushAt 901 3 96,
    opAt 902 (.Dup ⟨6, by decide⟩), opAt 903 (.Dup ⟨8, by decide⟩),
-   opAt 904 (.Dup ⟨10, by decide⟩), pushAt 905 2 2525, opAt 906 .JUMP]
+   opAt 904 (.Dup ⟨10, by decide⟩), pushAt 905 2 2335, opAt 906 .JUMP]
 
-def zeroSetupPath := zeroSizePath.take 6
-def zeroReturnPath := [opAt 885 .RETURN]
+def zeroSetupPath := zeroSizePath.take 5
+def zeroReturnPath := [opAt 884 .RETURN]
 def wordJumpPath := wordEntryPath.take 4
 def wordRestPath := wordEntryPath.drop 4
 def wordCheckPath := wordRestPath.take 12
@@ -66,7 +66,7 @@ def wordTailPath := wordRestPath.drop 12
 @[simp] theorem dispatchPCs (i : Nat)
     (hi : 879 ≤ i) (hii : i ≤ 906) :
     Artifact.submissionArtifact.instructionPC i =
-      ([1147,1148,1149,1152,1153,1154,1155,1156,1157,1158,1160,1161,1162,1163,1164,1166,1167,1168,1171,1172,1175,1176,1177,1179,1180,1181,1182,1185] : List Nat)[i - 879]! := by
+      ([1147,1148,1149,1152,1153,1154,1155,1156,1157,1158,1160,1161,1162,1163,1164,1166,1167,1168,1171,1172,1173,1174,1175,1179,1180,1181,1182,1185] : List Nat)[i - 879]! := by
   interval_cases i <;> decide
 
 @[simp] theorem activeWordsAfterUInt256_zero (s : State) (offset : Nat) :
@@ -88,22 +88,22 @@ def wordTailPath := wordRestPath.drop 12
 
 set_option maxRecDepth 20000 in
 @[simp] theorem jump3000 :
-    Decode.isValidJumpDest submissionBytecode 2525 = true := by
-  have hpc : Artifact.instructionPC 1860 = 2525 := by decide
-  simpa only [hpc] using Artifact.isValidJumpDest_index 1860 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 2335 = true := by
+  have hpc : Artifact.instructionPC 1714 = 2335 := by decide
+  simpa only [hpc] using Artifact.isValidJumpDest_index 1714 (by rfl)
 
 def zeroSizeFinalState (input : ByteArray) : State :=
   { Main.headerState input with
-    pc := UInt256.ofNat 1155
-    stack := [UInt256.ofNat 0, UInt256.ofNat (exponentSize input),
+    pc := UInt256.ofNat 1154
+    stack := [UInt256.ofNat (exponentSize input),
       UInt256.ofNat (baseSize input)]
     halt := .Returned
     hReturn := ByteArray.empty }
 
 def zeroSetupState (input : ByteArray) : State :=
   { Main.headerState input with
-    pc := UInt256.ofNat 1155
-    stack := [0, 0, UInt256.ofNat 0, UInt256.ofNat (exponentSize input),
+    pc := UInt256.ofNat 1154
+    stack := [0, UInt256.ofNat 0, UInt256.ofNat (exponentSize input),
       UInt256.ofNat (baseSize input)] }
 
 def wordDispatchState (input : ByteArray) : State :=
@@ -130,7 +130,7 @@ def wordEntryState (input : ByteArray) : State :=
     pc := UInt256.ofNat 501
     stack := [UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
       UInt256.ofNat 96, UInt256.ofNat expOff, UInt256.ofNat modOff,
-      UInt256.ofNat 1186, UInt256.ofNat modOff, UInt256.ofNat expOff,
+      UInt256.ofNat 0, UInt256.ofNat modOff, UInt256.ofNat expOff,
       UInt256.ofNat m, UInt256.ofNat e, UInt256.ofNat b] }
 
 /-! ## Retargeted one-word dispatch boundary
@@ -147,7 +147,7 @@ submission artifact has been regenerated.
 
 /-- State reached by the retargeted one-word dispatcher at the appended route. -/
 def wordRouteEntryState (input : ByteArray) : State :=
-  { wordEntryState input with pc := UInt256.ofNat 2525 }
+  { wordEntryState input with pc := UInt256.ofNat 2335 }
 
 /-- The unchanged dispatcher prefix followed by its retargeted final jump. -/
 abbrev WordRouteEnter (input : ByteArray) : Type :=

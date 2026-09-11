@@ -17,7 +17,7 @@ open Challenge.Modexp.Submission.Proofs.Fast.CarryRows
 open CarryRowModel CarryResult StagedOperand
 
 attribute [local irreducible] SquarePrepared.prepared SquarePrepared.before Monpro.mpZeroed
-  SquareRowsModel.rows SquareFourRowsModel.rows CarryRowModel.rowsCarry Monpro.rowsMem
+  SquareRowsModel.rows CarryRowModel.rowsCarry Monpro.rowsMem
 
 opaque gasSteps_monproFull (s : State) (mem : ByteArray) (pa pb p : Nat)
     (a b mm : Nat) (pdst ret : UInt256) (rest : List UInt256)
@@ -26,21 +26,21 @@ opaque gasSteps_monproFull (s : State) (mem : ByteArray) (pa pb p : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hn32 : p + 2 ≤ 32)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * (p + 2) ≤ 8192)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * (p + 2) ≤ 8192)
+    (hact : 91 ≤ s.activeWords.toNat) (hn32 : p + 2 ≤ 8)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * (p + 2) ≤ 2048)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * (p + 2) ≤ 2048)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * (p + 2)))
-    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * (p + 2)))
-    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * (p + 2) - 32))
+    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32 * (p + 2)))
+    (htl : MachineState.readWord mem 2880 = UInt256.ofNat (2080 + 32 * (p + 2)))
+    (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32 * (p + 2) - 32))
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
-    (hdstFit : pdst.toNat + 32 * (p + 2) ≤ 9472)
+    (hdstFit : pdst.toNat + 32 * (p + 2) ≤ 2912)
     (ha : Model.FastRepresents mem pa (p + 2) a)
     (hb : Model.FastRepresents mem pb (p + 2) b)
     (hm : Model.FastRepresents mem 0 (p + 2) mm)
     (ham : a < mm) (hmpos : 0 < mm)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
-        (MachineState.readWord mem 9376).toNat + 1) % 2 ^ 256 = 0) :
+        (MachineState.readWord mem 2816).toNat + 1) % 2 ^ 256 = 0) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
       (Csub.csReturnedState s

@@ -20,8 +20,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths
 
 set_option linter.unusedSimpArgs false in
 theorem run_start (s : State) (memory : ByteArray)
-    (n bsize esize msize count : Nat) (_hn : 2 ≤ n) (_hn32 : n ≤ 32)
-    (_hactive : 298 ≤ s.activeWords.toNat)
+    (n bsize esize msize count : Nat) (_hn : 2 ≤ n) (_hn32 : n ≤ 8)
+    (_hactive : 93 ≤ s.activeWords.toNat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.start
       (FixedDirectStates.special s memory n bsize esize msize count) =
@@ -45,7 +45,7 @@ theorem run_squareCall (s : State) (memory : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.squareCall
       (FixedDirectStates.square s memory n bsize esize msize count) =
-      some (Exp.mpCall s memory 2048 2048 2048 (UInt256.ofNat 3409)
+      some (Exp.mpCall s memory 512 512 512 (UInt256.ofNat 3409)
         (UInt256.ofNat count :: Exp.outer n bsize esize msize)) := by
   simp (config := { maxSteps := 400000 })
     [FixedDirectPaths.squareCall, opAt, pushAt, wfOp,
@@ -114,7 +114,7 @@ theorem run_product (s : State) (memory : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.product
       (FixedDirectStates.product s memory n bsize esize msize) =
-      some (Exp.mpCall s memory 2048 1024 1024 (UInt256.ofNat 3436)
+      some (Exp.mpCall s memory 512 256 256 (UInt256.ofNat 1721)
         (Exp.outer n bsize esize msize)) := by
   simp (config := { maxSteps := 400000 })
     [FixedDirectPaths.product, opAt, pushAt, wfOp,
@@ -161,8 +161,8 @@ private def sound {s t : State}
     Artifact.submissionArtifact .Osaka path hcode hfork h hrun hnp
 
 def gasSteps_start (s : State) (memory : ByteArray)
-    (n bsize esize msize count : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hactive : 298 ≤ s.activeWords.toNat)
+    (n bsize esize msize count : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
+    (hactive : 93 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -183,7 +183,7 @@ def gasSteps_squareCall (s : State) (memory : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (FixedDirectStates.square s memory n bsize esize msize count)
-      (Exp.mpCall s memory 2048 2048 2048 (UInt256.ofNat 3409)
+      (Exp.mpCall s memory 512 512 512 (UInt256.ofNat 3409)
         (UInt256.ofNat count :: Exp.outer n bsize esize msize)) :=
   sound FixedDirectPaths.squareCall
     (run_squareCall s memory n bsize esize msize count hcode hrun)
@@ -223,7 +223,7 @@ def gasSteps_product (s : State) (memory : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (FixedDirectStates.product s memory n bsize esize msize)
-      (Exp.mpCall s memory 2048 1024 1024 (UInt256.ofNat 3436)
+      (Exp.mpCall s memory 512 256 256 (UInt256.ofNat 1721)
         (Exp.outer n bsize esize msize)) :=
   sound FixedDirectPaths.product
     (run_product s memory n bsize esize msize hcode hrun)

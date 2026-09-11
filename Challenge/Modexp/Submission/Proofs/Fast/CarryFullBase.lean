@@ -18,14 +18,14 @@ open Challenge.Modexp.Submission.Proofs.Fast.CarryRows
 open CarryRowModel CarryResult StagedOperand
 
 theorem readonlyCache_rowsCarry {mem : ByteArray} {n : Nat} {tl inv m0 : UInt256}
-    (hc : CiosReadonly.ReadonlyCache mem n tl inv m0) (hn : n ≤ 32) (pa pb i : Nat) :
+    (hc : CiosReadonly.ReadonlyCache mem n tl inv m0) (hn : n ≤ 8) (pa pb i : Nat) :
     CiosReadonly.ReadonlyCache (rowsCarry mem pa pb n i) n tl inv m0 :=
   hc.of_preserved
-    (readWord_rowsCarry mem pa pb n 9376 hn (Or.inr (by decide)) i)
+    (readWord_rowsCarry mem pa pb n 2816 hn (Or.inr (by decide)) i)
     (readWord_rowsCarry mem pa pb n (32*n-32) hn (Or.inl (by omega)) i)
 
 theorem extraCache_rowsCarry {mem : ByteArray} {m96 m64 m32 : UInt256}
-    (hc : CiosReadonlyExtra.ExtraCache mem m96 m64 m32) (pa pb n i : Nat) (hn : n ≤ 32) :
+    (hc : CiosReadonlyExtra.ExtraCache mem m96 m64 m32) (pa pb n i : Nat) (hn : n ≤ 8) :
     CiosReadonlyExtra.ExtraCache (rowsCarry mem pa pb n i) m96 m64 m32 :=
   hc.of_preserved
     (readWord_rowsCarry mem pa pb n 96 hn (Or.inl (by decide)) i)
@@ -33,16 +33,16 @@ theorem extraCache_rowsCarry {mem : ByteArray} {m96 m64 m32 : UInt256}
     (readWord_rowsCarry mem pa pb n 32 hn (Or.inl (by decide)) i)
 
 opaque inverse_rowsCarry (mem : ByteArray) (pa pb n i : Nat)
-    (hn : n ≤ 32) (hminv : inverseInvariant mem n) :
+    (hn : n ≤ 8) (hminv : inverseInvariant mem n) :
     inverseInvariant (rowsCarry mem pa pb n i) n := by
   unfold inverseInvariant at *
   rw [readWord_rowsCarry mem pa pb n (32*n-32) hn (Or.inl (by omega)) i,
-    readWord_rowsCarry mem pa pb n 9376 hn (Or.inr (by decide)) i]
+    readWord_rowsCarry mem pa pb n 2816 hn (Or.inr (by decide)) i]
   exact hminv
 
 theorem readWord_selected_preserved (s : State) (memory : ByteArray)
-    (pa pb n i addr : Nat) (hn : n ≤ 32) (hi : i ≤ n)
-    (haddr : addr+32 ≤ 8192 ∨ 9312 ≤ addr) :
+    (pa pb n i addr : Nat) (hn : n ≤ 8) (hi : i ≤ n)
+    (haddr : addr+32 ≤ 2048 ∨ 2752 ≤ addr) :
     MachineState.readWord (selectedRows (SquarePrepared.prepared s memory pa pb n) pa pb n i) addr =
       MachineState.readWord memory addr := by
   rw [selectedRows_readWord_outside _ pa pb n i addr hn hi haddr,

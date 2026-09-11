@@ -31,9 +31,9 @@ theorem handled_of_handover (input : ByteArray) (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 298 ≤ s.activeWords.toNat)
+    (hact : 93 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hb : bsize ≤ 256) (he : esize ≤ 256)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
@@ -45,18 +45,18 @@ theorem handled_of_handover (input : ByteArray) (s : State) (mem : ByteArray)
     (hxlt : Limbs.radix ^ (n - 1) < mm)
     (hframe0 : Frame mem n bsize minv)
     (hmod0 : Model.FastRepresents mem 0 n mm)
-    (hr10 : Model.FastRepresents mem 4096 n (Limbs.radix ^ (n - 1)))
-    (hacc0 : Model.FastRepresents mem 1024 n 0)
-    (hbase0 : Model.FastRepresents mem 2048 n 0)
-    (hone0 : Model.FastRepresents mem 3072 n 0)
-    (htz : Model.FastRepresents mem 8256 n 0) :
+    (hr10 : Model.FastRepresents mem 1024 n (Limbs.radix ^ (n - 1)))
+    (hacc0 : Model.FastRepresents mem 256 n 0)
+    (hbase0 : Model.FastRepresents mem 512 n 0)
+    (hone0 : Model.FastRepresents mem 768 n 0)
+    (htz : Model.FastRepresents mem 2112 n 0) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
-        (r1Call s mem 4096 (UInt256.ofNat 1526) n bsize esize msize) final) ∧
+        (r1Call s mem 1024 (UInt256.ofNat 1526) n bsize esize msize) final) ∧
         final.isDone = true ∧
         final.toResult = .returned (Challenge.Modexp.spec input) := by
-  have hact296 : 296 ≤ s.activeWords.toNat :=
-    Nat.le_trans (show 296 ≤ 298 by norm_num) hact
+  have hact296 : 91 ≤ s.activeWords.toNat :=
+    Nat.le_trans (show 91 ≤ 93 by norm_num) hact
   let sub := subs s n bsize mm minv hcode hfork hrun hnp hact296 hcds hn hn32 hmpos
     hminvlt hminvA
   have hspec : SubSpec sub.mpMem sub.amMem n mm (Limbs.radix ^ n) minv := by
@@ -71,22 +71,22 @@ theorem handled_of_handover (input : ByteArray) (s : State) (mem : ByteArray)
     hmod0 hr10 hxlt htz
   have hmodDirect : Model.FastRepresents directMem 0 n mm := by
     simpa only [directMem] using hdirect.1
-  have hr1Direct : Model.FastRepresents directMem 4096 n (Limbs.radix ^ n % mm) := by
+  have hr1Direct : Model.FastRepresents directMem 1024 n (Limbs.radix ^ n % mm) := by
     simpa only [directMem] using hdirect.2.1
-  have hccDirect : Model.FastRepresents directMem 5120 n
+  have hccDirect : Model.FastRepresents directMem 1280 n
       (Limbs.radix * Limbs.radix ^ n % mm) := by
     simpa only [directMem] using hdirect.2.2
-  have haccDirect : Model.FastRepresents directMem 1024 n 0 := by
+  have haccDirect : Model.FastRepresents directMem 256 n 0 := by
     dsimp only [directMem]
-    exact setupToDirect_preserves sub hspec 1024 0 hn hn32 (by omega) (by omega) mem
+    exact setupToDirect_preserves sub hspec 256 0 hn hn32 (by omega) (by omega) mem
       hacc0
-  have hbaseDirect : Model.FastRepresents directMem 2048 n 0 := by
+  have hbaseDirect : Model.FastRepresents directMem 512 n 0 := by
     dsimp only [directMem]
-    exact setupToDirect_preserves sub hspec 2048 0 hn hn32 (by omega) (by omega) mem
+    exact setupToDirect_preserves sub hspec 512 0 hn hn32 (by omega) (by omega) mem
       hbase0
-  have honeDirect : Model.FastRepresents directMem 3072 n 0 := by
+  have honeDirect : Model.FastRepresents directMem 768 n 0 := by
     dsimp only [directMem]
-    exact setupToDirect_preserves sub hspec 3072 0 hn hn32 (by omega) (by omega) mem
+    exact setupToDirect_preserves sub hspec 768 0 hn hn32 (by omega) (by omega) mem
       hone0
   have hhelper :=
     Bytecode.RrLeadingTrace.gasSteps_helper s directMem n bsize esize msize hn hn32

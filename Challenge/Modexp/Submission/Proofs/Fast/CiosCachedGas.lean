@@ -26,18 +26,18 @@ opaque gasSteps_entry (s : State) (mem : ByteArray) (pa pb n : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472)
+    (hact : 91 ≤ s.activeWords.toNat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 2912)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2912)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
-    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32*n-32)) :
+    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32 * n))
+    (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32*n-32)) :
     Challenge.EvmProof.GasSteps
       (entryState s mem pa pb pdst ret rest)
       (outState s (mpZeroed s mem n) pa pb n 0
-        (MachineState.readWord mem 9376) (MachineState.readWord mem (32*n-32))
-        (MachineState.readWord mem 9440 :: MachineState.readWord mem 96 :: MachineState.readWord mem 64 :: MachineState.readWord mem 32 :: UInt256.ofNat (pa+32*n-32) :: pdst :: ret :: rest)) :=
+        (MachineState.readWord mem 2816) (MachineState.readWord mem (32*n-32))
+        (MachineState.readWord mem 2880 :: MachineState.readWord mem 96 :: MachineState.readWord mem 64 :: MachineState.readWord mem 32 :: UInt256.ofNat (pa+32*n-32) :: pdst :: ret :: rest)) :=
   CiosCachedBlocks.entry.steps (environment (entryState s mem pa pb pdst ret rest) hcode hfork hrun hnp) rfl
     (CiosReadonly.run_entry s mem pa pb n pdst ret rest hcap hrun hact hn hn32
       hpa hpaFit hpb hpbFit hcds hs32 hml)
@@ -49,10 +49,10 @@ opaque gasSteps_out (s : State) (mem : ByteArray) (pa pb n i : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hi : i < n)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472) :
+    (hact : 91 ≤ s.activeWords.toNat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hi : i < n)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 2912)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2912) :
     Challenge.EvmProof.GasSteps
       (outState s mem pa pb n i pdst ret rest)
       (firstAt 4176 s mem (rowBi mem pb n i) pa pb n i pdst ret rest) :=
@@ -67,9 +67,9 @@ opaque gasSteps_mid (s : State) (mem : ByteArray) (c bi : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (_hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * n - 32))
-    (_htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n))
+    (hact : 91 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
+    (_hml : MachineState.readWord mem 2848 = UInt256.ofNat (32 * n - 32))
+    (_htl : MachineState.readWord mem 2880 = UInt256.ofNat (2080 + 32 * n))
     (hminv : inverseInvariant mem n)
     (hc : CiosReadonly.ReadonlyCache mem n tl inv m0) :
     Challenge.EvmProof.GasSteps
@@ -87,8 +87,8 @@ opaque gasSteps_tailNext (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (_hn32 : n ≤ 32) (hi : i + 1 < n)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472) :
+    (hact : 91 ≤ s.activeWords.toNat) (_hn32 : n ≤ 8) (hi : i + 1 < n)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2912) :
     Challenge.EvmProof.GasSteps
       (tailState s mem c mu bi pa pb n i pdst ret rest)
       (outState s (tailMem mem c) pa pb n (i + 1) pdst ret rest) :=
@@ -103,8 +103,8 @@ opaque gasSteps_tailLast (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (_hn32 : n ≤ 32) (hi : i + 1 = n)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472) :
+    (hact : 91 ≤ s.activeWords.toNat) (_hn32 : n ≤ 8) (hi : i + 1 = n)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2912) :
     Challenge.EvmProof.GasSteps
       (tailState s mem c mu bi pa pb n i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (mpCsubState s (tailMem mem c) pdst ret rest) :=
@@ -127,10 +127,10 @@ opaque gasSteps_l1Mac (pc : Nat) (off t : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hn32 : n ≤ 32) (hj : j < n) (hoff : off.toNat = 32 * (n - 1 - j))
-    (ht : t.toNat = 8256 + 32 * (n - 1 - j))
-    (hpa : 32 ≤ pa) (hpaFit : pa+32*n ≤ 9472) :
+    (hact : 91 ≤ s.activeWords.toNat)
+    (hn32 : n ≤ 8) (hj : j < n) (hoff : off.toNat = 32 * (n - 1 - j))
+    (ht : t.toNat = 2112 + 32 * (n - 1 - j))
+    (hpa : 32 ≤ pa) (hpaFit : pa+32*n ≤ 2912) :
     Challenge.EvmProof.GasSteps
       (l1At pc s mem bi pa pb n i j pdst ret rest)
       (l1At (pc+38) s mem bi pa pb n i (j+1) pdst ret rest) :=
@@ -144,9 +144,9 @@ opaque gasSteps_commonFirst (s : State) (mem : ByteArray) (bi : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hn : n ≤ 32) (hpos : 0 < n)
-    (hpaFit : pa+32*n ≤ 9472)
-    (htl : tl = UInt256.ofNat (8224+32*n))
+    (hact : 91 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hpos : 0 < n)
+    (hpaFit : pa+32*n ≤ 2912)
+    (htl : tl = UInt256.ofNat (2080+32*n))
     (hAend : aEnd = UInt256.ofNat (pa+32*n-32)) :
     Challenge.EvmProof.GasSteps
       (firstAt 4176 s mem bi pa pb n i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
@@ -164,10 +164,10 @@ opaque gasSteps_l1First (pc : Nat) (off t : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hn32 : n ≤ 32) (hpos : 0 < n) (hoff : off.toNat = 32 * (n - 1))
-    (ht : t.toNat = 8256 + 32 * (n - 1))
-    (hpa : 32 ≤ pa) (hpaFit : pa+32*n ≤ 9472) :
+    (hact : 91 ≤ s.activeWords.toNat)
+    (hn32 : n ≤ 8) (hpos : 0 < n) (hoff : off.toNat = 32 * (n - 1))
+    (ht : t.toNat = 2112 + 32 * (n - 1))
+    (hpa : 32 ≤ pa) (hpaFit : pa+32*n ≤ 2912) :
     Challenge.EvmProof.GasSteps
       (l1At pc s mem bi pa pb n i 0 pdst ret rest)
       (l1At (pc+35) s mem bi pa pb n i 1 pdst ret rest) :=
@@ -181,15 +181,15 @@ opaque gasSteps_l1Last (s : State) (mem : ByteArray) (bi : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hn32 : n ≤ 32) (hpos : 0 < n)
-    (hpa : 32 ≤ pa) (hpaFit : pa+32*n ≤ 9472) :
+    (hact : 91 ≤ s.activeWords.toNat)
+    (hn32 : n ≤ 8) (hpos : 0 < n)
+    (hpa : 32 ≤ pa) (hpaFit : pa+32*n ≤ 2912) :
     Challenge.EvmProof.GasSteps
       (l1At 4511 s mem bi pa pb n i (n-1) pdst ret rest)
       (midState s (l1Step mem bi pa n n).memory (l1Step mem bi pa n n).carry bi
         pa pb n i pdst ret rest) :=
   l1Mac7.steps (environment (l1At 4511 s mem bi pa pb n i (n-1) pdst ret rest) hcode hfork hrun hnp) rfl
-    (run_l1Last 8256 s mem bi pa pb n i pdst ret rest hcap hact hn32 hpos (by decide) hpa hpaFit)
+    (run_l1Last 2112 s mem bi pa pb n i pdst ret rest hcap hact hn32 hpos (by decide) hpa hpaFit)
 
 opaque gasSteps_l1Dispatch4 (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb i j : Nat) (pdst ret : UInt256) (rest : List UInt256)
@@ -243,10 +243,10 @@ opaque gasSteps_l2Mac (pc : Nat) (w : Fin 33) (x tl ts : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hn32 : n ≤ 32) (hk : k+1 < n)
-    (hx : x.toNat = 32 * (n - 2 - k)) (htl : tl.toNat = 8256 + 32 * (n - 2 - k))
-    (hts : ts.toNat = 8256 + 32 * (n - 1 - k))
+    (hact : 91 ≤ s.activeWords.toNat)
+    (hn32 : n ≤ 8) (hk : k+1 < n)
+    (hx : x.toNat = 32 * (n - 2 - k)) (htl : tl.toNat = 2112 + 32 * (n - 2 - k))
+    (hts : ts.toNat = 2112 + 32 * (n - 1 - k))
     (hpush : w.val = 0 → x = UInt256.ofNat 0) :
     Challenge.EvmProof.GasSteps
       (l2At pc s mem bi mu c0 pa pb n i k pdst ret rest)
@@ -264,10 +264,10 @@ opaque gasSteps_extraL2 (slot : Fin 3) (pc : Nat) (x loadAddr storeAddr : UInt25
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hn : n ≤ 32) (hk : k+1 < n)
+    (hact : 91 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hk : k+1 < n)
     (hx : x.toNat = 32*(n-2-k)) (hselect : x.toNat = CiosReadonlyExtra.cacheAddress slot)
-    (hload : loadAddr.toNat = 8256+32*(n-2-k))
-    (hstore : storeAddr.toNat = 8256+32*(n-1-k))
+    (hload : loadAddr.toNat = 2112+32*(n-2-k))
+    (hstore : storeAddr.toNat = 2112+32*(n-1-k))
     (hc : CiosReadonlyExtra.ExtraCache mem m96 m64 m32) :
     Challenge.EvmProof.GasSteps
       (l2At pc s mem bi mu c0 pa pb n i k inv m0
@@ -333,13 +333,13 @@ opaque gasSteps_l2Final (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hn32 : n ≤ 32) (hn : 2 ≤ n) :
+    (hact : 91 ≤ s.activeWords.toNat)
+    (hn32 : n ≤ 8) (hn : 2 ≤ n) :
     Challenge.EvmProof.GasSteps
       (l2At 4730 s mem bi mu c0 pa pb n i (n-2) pdst ret rest)
       (tailState s (l2Step mem mu c0 n (n-1)).memory
         (l2Step mem mu c0 n (n-1)).carry mu bi pa pb n i pdst ret rest) := by
-  have h := gasSteps_l2Mac 4730 0 0 8256 8288 l2Mac6 s mem bi mu c0 pa pb n i (n-2) pdst ret rest
+  have h := gasSteps_l2Mac 4730 0 0 2112 2144 l2Mac6 s mem bi mu c0 pa pb n i (n-2) pdst ret rest
     hcap hrun hcode hfork hnp hact hn32 (by omega)
     (by rw [show n - 2 - (n - 2) = 0 by omega]; decide)
     (by rw [show n - 2 - (n - 2) = 0 by omega]; decide)

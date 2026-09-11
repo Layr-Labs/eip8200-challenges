@@ -29,22 +29,22 @@ def dispatchState (s : State) (mem : ByteArray) (pa pb : Nat)
 
 def specializedEntryState (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 5007
+  { s with pc := UInt256.ofNat 5003
            stack := [UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
 theorem jumpDest4012 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4053 = true := by
-  exact Artifact.isValidJumpDest_index 3069 (by rfl)
+  exact Artifact.isValidJumpDest_index 3071 (by rfl)
 
 theorem jumpDest4035 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5007 = true := by
-  exact Artifact.isValidJumpDest_index 3815 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5003 = true := by
+  exact Artifact.isValidJumpDest_index 3799 (by rfl)
 
-private theorem activeWords9344 (s : State) (hact : 296 ≤ s.activeWords.toNat) :
-    UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 9344 32) =
+private theorem activeWords9344 (s : State) (hact : 91 ≤ s.activeWords.toNat) :
+    UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2784 32) =
       s.activeWords := by
-  have hnat : MachineState.activeWordsAfter s.activeWords.toNat 9344 32 =
+  have hnat : MachineState.activeWordsAfter s.activeWords.toNat 2784 32 =
       s.activeWords.toNat := by
     unfold MachineState.activeWordsAfter
     simp only [show (32 : Nat) ≠ 0 by decide, if_false]
@@ -69,8 +69,8 @@ theorem run_dispatch4 (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat 128) :
+    (hact : 91 ≤ s.activeWords.toNat)
+    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat 128) :
     Challenge.EvmProof.Stepper.runLocatedBlock cios2DispatchGuard
       (dispatchState s mem pa pb pdst ret rest) =
       some (specializedEntryState s mem pa pb pdst ret rest) := by
@@ -78,8 +78,8 @@ theorem run_dispatch4 (s : State) (mem : ByteArray) (pa pb : Nat)
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
-  have h4080 : (5007 : UInt256).toNat = 5007 := by decide
-  have h4080' : (5007 : UInt256) = UInt256.ofNat 5007 := by decide
+  have h4080 : (5003 : UInt256).toNat = 5003 := by decide
+  have h4080' : (5003 : UInt256) = UInt256.ofNat 5003 := by decide
   have hcond128 :
       ((UInt256.ofNat 256).eq (UInt256.ofNat 128)).toNat |||
         ((UInt256.ofNat 128).eq (UInt256.ofNat 128)).toNat ≠ 0 := by decide
@@ -102,8 +102,8 @@ theorem run_dispatch8 (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat 256) :
+    (hact : 91 ≤ s.activeWords.toNat)
+    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat 256) :
     Challenge.EvmProof.Stepper.runLocatedBlock cios2DispatchGuard
       (dispatchState s mem pa pb pdst ret rest) =
       some (specializedEntryState s mem pa pb pdst ret rest) := by
@@ -111,8 +111,8 @@ theorem run_dispatch8 (s : State) (mem : ByteArray) (pa pb : Nat)
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
-  have h4080 : (5007 : UInt256).toNat = 5007 := by decide
-  have h4080' : (5007 : UInt256) = UInt256.ofNat 5007 := by decide
+  have h4080 : (5003 : UInt256).toNat = 5003 := by decide
+  have h4080' : (5003 : UInt256) = UInt256.ofNat 5003 := by decide
   have hcond256 :
       ((UInt256.ofNat 256).eq (UInt256.ofNat 256)).toNat |||
         ((UInt256.ofNat 128).eq (UInt256.ofNat 256)).toNat ≠ 0 := by decide
@@ -135,9 +135,9 @@ theorem run_dispatchFallback (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (h128 : MachineState.readWord mem 9344 ≠ UInt256.ofNat 128)
-    (h256 : MachineState.readWord mem 9344 ≠ UInt256.ofNat 256) :
+    (hact : 91 ≤ s.activeWords.toNat)
+    (h128 : MachineState.readWord mem 2784 ≠ UInt256.ofNat 128)
+    (h256 : MachineState.readWord mem 2784 ≠ UInt256.ofNat 256) :
     Challenge.EvmProof.Stepper.runLocatedBlock cios2Dispatch
       (dispatchState s mem pa pb pdst ret rest) =
       some (mpEntryState s mem pa pb pdst ret rest) := by
@@ -148,14 +148,14 @@ theorem run_dispatchFallback (s : State) (mem : ByteArray) (pa pb : Nat)
   have h1939 : (1784 : UInt256).toNat = 1784 := by decide
   have h1939' : (1784 : UInt256) = UInt256.ofNat 1784 := by decide
   have h128Nat : (UInt256.ofNat 128).toNat ≠
-      (MachineState.readWord mem 9344).toNat :=
+      (MachineState.readWord mem 2784).toNat :=
     toNat_ne_of_ne h128.symm
   have h256Nat : (UInt256.ofNat 256).toNat ≠
-      (MachineState.readWord mem 9344).toNat :=
+      (MachineState.readWord mem 2784).toNat :=
     toNat_ne_of_ne h256.symm
   have hcond :
-      ((UInt256.ofNat 256).eq (MachineState.readWord mem 9344)).toNat |||
-        ((UInt256.ofNat 128).eq (MachineState.readWord mem 9344)).toNat = 0 := by
+      ((UInt256.ofNat 256).eq (MachineState.readWord mem 2784)).toNat |||
+        ((UInt256.ofNat 128).eq (MachineState.readWord mem 2784)).toNat = 0 := by
     rw [UInt256.eq, UInt256.eq]
     simp only [if_neg h256Nat, if_neg h128Nat]
     decide
@@ -182,8 +182,8 @@ opaque gasSteps_dispatch4 (s : State) (mem : ByteArray) (pa pb : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat 128) :
+    (hact : 91 ≤ s.activeWords.toNat)
+    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat 128) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
       (specializedEntryState s mem pa pb pdst ret rest) :=
@@ -198,8 +198,8 @@ opaque gasSteps_dispatch8 (s : State) (mem : ByteArray) (pa pb : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat 256) :
+    (hact : 91 ≤ s.activeWords.toNat)
+    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat 256) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
       (specializedEntryState s mem pa pb pdst ret rest) :=
@@ -214,9 +214,9 @@ opaque gasSteps_dispatchFallback (s : State) (mem : ByteArray) (pa pb : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (h128 : MachineState.readWord mem 9344 ≠ UInt256.ofNat 128)
-    (h256 : MachineState.readWord mem 9344 ≠ UInt256.ofNat 256) :
+    (hact : 91 ≤ s.activeWords.toNat)
+    (h128 : MachineState.readWord mem 2784 ≠ UInt256.ofNat 128)
+    (h256 : MachineState.readWord mem 2784 ≠ UInt256.ofNat 256) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
       (mpEntryState s mem pa pb pdst ret rest) :=
