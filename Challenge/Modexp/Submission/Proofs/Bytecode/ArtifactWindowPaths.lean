@@ -14,8 +14,8 @@ open EvmSemantics.EVM
 open YulEvmCompiler
 
 private def nine_bridge :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2525 WindowTwentyOneEntry.bridgeProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1860 3 2525 WindowTwentyOneEntry.bridgeProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 3049 WindowTwentyOneEntry.bridgeProgram :=
+  WindowTwentyOneSlice.block allWellFormed 2345 3 3049 WindowTwentyOneEntry.bridgeProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def nine_width :
@@ -50,35 +50,35 @@ private def nine_table :
 
 private def nine_init :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 2500 WindowTwentyOneInit.program :=
-  WindowTwentyOneSlice.block allWellFormed 1842 18 2500 WindowTwentyOneInit.program
+  WindowTwentyOneSlice.block allWellFormed 1842 16 2500 WindowTwentyOneInit.program
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def nine_iteration :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2530 WindowTwentyOneLoop.iterationProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1863 438 2530 WindowTwentyOneLoop.iterationProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2521 WindowTwentyOneLoop.iterationProgram :=
+  WindowTwentyOneSlice.block allWellFormed 1858 438 2521 WindowTwentyOneLoop.iterationProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def nine_finish :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2993 WindowTwentyOneReturn.program :=
-  WindowTwentyOneSlice.block allWellFormed 2301 5 2993 WindowTwentyOneReturn.program
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2984 WindowTwentyOneReturn.program :=
+  WindowTwentyOneSlice.block allWellFormed 2296 5 2984 WindowTwentyOneReturn.program
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def nine_zeroReturn :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2999 WindowTwentyOneReturn.zeroProgram :=
-  WindowTwentyOneSlice.block allWellFormed 2306 7 2999 WindowTwentyOneReturn.zeroProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2990 WindowTwentyOneReturn.zeroProgram :=
+  WindowTwentyOneSlice.block allWellFormed 2301 7 2990 WindowTwentyOneReturn.zeroProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def nine_emptyReturn :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 3007 WindowTwentyOneReturn.emptyProgram :=
-  WindowTwentyOneSlice.block allWellFormed 2313 14 3007 WindowTwentyOneReturn.emptyProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2998 WindowTwentyOneReturn.emptyProgram :=
+  WindowTwentyOneSlice.block allWellFormed 2308 14 2998 WindowTwentyOneReturn.emptyProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def fermat_prime : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4812 FermatProgram.primeProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3700 14 4812 FermatProgram.primeProgram (by decide) (by rfl) (by rfl) (by decide)
+  WindowTwentyOneSlice.block allWellFormed 3702 14 4812 FermatProgram.primeProgram (by decide) (by rfl) (by rfl) (by decide)
 private def fermat_exponent : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4865 FermatProgram.exponentProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3714 10 4865 FermatProgram.exponentProgram (by decide) (by rfl) (by rfl) (by decide)
+  WindowTwentyOneSlice.block allWellFormed 3716 10 4865 FermatProgram.exponentProgram (by decide) (by rfl) (by rfl) (by decide)
 private def fermat_result : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4878 FermatProgram.resultProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3724 18 4878 FermatProgram.resultProgram (by decide) (by rfl) (by rfl) (by decide)
+  WindowTwentyOneSlice.block allWellFormed 3726 18 4878 FermatProgram.resultProgram (by decide) (by rfl) (by rfl) (by decide)
 def fermatPaths : FermatProgram.Paths submissionArtifact .Osaka where
   prime := fermat_prime
   exponent := fermat_exponent
@@ -100,16 +100,16 @@ def twentyOnePaths : WindowTwentyOneGasRoute.Paths submissionArtifact .Osaka whe
   zeroReturn := nine_zeroReturn
   emptyReturn := nine_emptyReturn
   hitJump := by
-    have h := isValidJumpDest_index 3700 (by rfl)
+    have h := isValidJumpDest_index 3702 (by rfl)
     exact h
   emptyJump := by
-    have h := isValidJumpDest_index 2313 (by rfl)
+    have h := isValidJumpDest_index 2308 (by rfl)
     exact h
   zeroJump := by
-    have h := isValidJumpDest_index 2306 (by rfl)
+    have h := isValidJumpDest_index 2301 (by rfl)
     exact h
   loopJump := by
-    have h := isValidJumpDest_index 1863 (by rfl)
+    have h := isValidJumpDest_index 1858 (by rfl)
     exact h
   missJump := by
     have h := isValidJumpDest_index 415 (by rfl)

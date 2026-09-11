@@ -16,23 +16,23 @@ def prefixProgram : List Instr :=
 def joinProgram : List Instr := [.op .JUMPDEST]
 
 def prefixBlock : Block Artifact.submissionArtifact .Osaka 5040 prefixProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3834 7 5040 prefixProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3836 7 5040 prefixProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def firstBlock : Block Artifact.submissionArtifact .Osaka 5051 (fromProgram 0 4) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3841 44 5051 (fromProgram 0 4)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3843 44 5051 (fromProgram 0 4)
     (by decide) (by rfl) (by rfl) (by decide)
 def joinBlock : Block Artifact.submissionArtifact .Osaka 5115 joinProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3885 1 5115 joinProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3887 1 5115 joinProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def lastBlock : Block Artifact.submissionArtifact .Osaka 5116 (fromProgram 4 4) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3886 44 5116 (fromProgram 4 4)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3888 44 5116 (fromProgram 4 4)
     (by decide) (by rfl) (by rfl) (by decide)
 def finishBlock : Block Artifact.submissionArtifact .Osaka 5180 finishProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3930 5 5180 finishProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3932 5 5180 finishProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jump_join : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5115 = true :=
-  Artifact.isValidJumpDest_index 3885 (by rfl)
+  Artifact.isValidJumpDest_index 3887 (by rfl)
 
 theorem run_prefix (s : State) (mem : ByteArray) (rest : List UInt256)
     (tag : UInt256) (htag : rest[3]? = some tag) (hcap : rest.length ≤ 1018)

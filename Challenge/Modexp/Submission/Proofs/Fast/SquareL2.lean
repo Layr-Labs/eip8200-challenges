@@ -14,10 +14,10 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 /-- Includes the jump onto the eight-word reduction chain and its JUMPDEST. -/
 def dispatchProgram : List Instr := [.op (.Dup ⟨9, by decide⟩), .op .JUMP]
 def dispatchBlock : Block Artifact.submissionArtifact .Osaka 4516 dispatchProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3445 2 4516 dispatchProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3447 2 4516 dispatchProgram
     (by decide) (by rfl) (by rfl) (by decide)
 theorem jump_entry : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4518 = true :=
-  Artifact.isValidJumpDest_index 3447 (by rfl)
+  Artifact.isValidJumpDest_index 3449 (by rfl)
 
 def state (s : State) (mem : ByteArray) (f mu c0 pbi pa pb tag tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (pc k : Nat) : State :=
@@ -74,7 +74,7 @@ def gasSteps_loops (s : State) (mem : ByteArray) (f mu c0 pbi pa pb tag tl inv m
         (by rw [env.code]; exact jump_entry))
   have hdj : Challenge.EvmProof.GasSteps (S 4518 0) (S 4519 0) := by
     let block : Block Artifact.submissionArtifact .Osaka 4518 joinProgram :=
-      WindowTwentyOneSlice.block Artifact.allWellFormed 3447 1 4518 joinProgram
+      WindowTwentyOneSlice.block Artifact.allWellFormed 3449 1 4518 joinProgram
         (by decide) (by rfl) (by rfl) (by decide)
     apply block.steps (s := S 4518 0) (env.transfer rfl rfl) rfl
     have hlen : rest.length < 1005 := by omega

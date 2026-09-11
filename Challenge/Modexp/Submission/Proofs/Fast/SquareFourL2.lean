@@ -15,10 +15,10 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 /-- Includes the jump onto the four-word reduction chain and its JUMPDEST. -/
 def dispatchProgram : List Instr := [.op (.Dup ⟨9, by decide⟩), .op .JUMP]
 def dispatchBlock : Block Artifact.submissionArtifact .Osaka 4516 dispatchProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3445 2 4516 dispatchProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3447 2 4516 dispatchProgram
     (by decide) (by rfl) (by rfl) (by decide)
 theorem jump_entry : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4661 = true :=
-  Artifact.isValidJumpDest_index 3571 (by rfl)
+  Artifact.isValidJumpDest_index 3573 (by rfl)
 
 def state (s : State) (mem : ByteArray) (f mu c0 pbi pa pb tag tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (pc k : Nat) : State :=

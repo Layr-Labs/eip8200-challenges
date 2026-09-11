@@ -53,8 +53,8 @@ def normalized (template : State) (input : ByteArray) : State :=
 theorem run_prepare (template : State) (input : ByteArray)
     (hmatch : WindowTwentyOneInput.Matches input) (hbase : 0 < baseSize input)
     (hmodulus : 0 < (WindowTwentyOneInput.modulusWord input).toNat)
-    (hzeroBase : Decode.isValidJumpDest template.executionEnv.code 3007 = true)
-    (hzeroModulus : Decode.isValidJumpDest template.executionEnv.code 2999 = true) :
+    (hzeroBase : Decode.isValidJumpDest template.executionEnv.code 2998 = true)
+    (hzeroModulus : Decode.isValidJumpDest template.executionEnv.code 2990 = true) :
     runInstructions prepareProgram (state template input (UInt256.ofNat 2359)) =
       some (normalized template input) := by
   have hsmall : baseSize input < 2 ^ 256 := by have := hmatch.1; omega
@@ -96,9 +96,9 @@ def returned (template : State) (input : ByteArray) : State :=
 theorem run_positive (template : State) (input : ByteArray)
     (hmatch : WindowTwentyOneInput.Matches input) (hbase : 0 < baseSize input)
     (hmodulus : 0 < (WindowTwentyOneInput.modulusWord input).toNat)
-    (hzeroBase : Decode.isValidJumpDest template.executionEnv.code 3007 = true)
-    (hzeroModulus : Decode.isValidJumpDest template.executionEnv.code 2999 = true)
-    (hloop : Decode.isValidJumpDest template.executionEnv.code 2530 = true) :
+    (hzeroBase : Decode.isValidJumpDest template.executionEnv.code 2998 = true)
+    (hzeroModulus : Decode.isValidJumpDest template.executionEnv.code 2990 = true)
+    (hloop : Decode.isValidJumpDest template.executionEnv.code 2521 = true) :
     runInstructions program (state template input (UInt256.ofNat 2359)) =
       some (returned template input) := by
   have hp := run_prepare template input hmatch hbase hmodulus hzeroBase hzeroModulus

@@ -108,6 +108,6 @@ def gasSteps_rows (s : State) (mem : ByteArray) (pa : Nat)
     (UInt256.ofNat (ptrAt (pa+32*4-32) 4)) (UInt256.ofNat pa) (UInt256.ofNat (pa-32)) (tag 4)
     (UInt256.ofNat 4661) tl inv m0 aEnd m96 m64 m32 dst ret rest hcap
     (by change Decode.isValidJumpDest s.executionEnv.code 4902 = true
-        rw [env.code]; exact Artifact.isValidJumpDest_index 3743 (by rfl))
+        rw [env.code]; exact Artifact.isValidJumpDest_index 3745 (by rfl))
 
 end Challenge.Modexp.Submission.Proofs.Fast.SquareFourRowsGas

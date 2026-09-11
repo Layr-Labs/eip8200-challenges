@@ -9,7 +9,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
-def startIndex : Nat := 3069
+def startIndex : Nat := 3071
 
 /-- A bounded, cached instruction slice.  This keeps concrete reduction local. -/
 private def template : List Instr :=
@@ -50,7 +50,7 @@ private theorem instructionPC_add
 
 /-- Exact program-counter table for the bounded dispatcher slice. -/
 @[simp] theorem dispatchPC (i : Nat) (hi : startIndex ≤ i)
-    (hii : i ≤ 3082) :
+    (hii : i ≤ 3084) :
     Artifact.submissionArtifact.instructionPC i =
       [4053,4054,4057,4058,4059,4061,4062,4063,4066,4067,4068,4071,4072,4075][i - startIndex]! := by
   calc

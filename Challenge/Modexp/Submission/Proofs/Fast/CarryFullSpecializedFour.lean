@@ -60,7 +60,7 @@ opaque gasSteps_specializedFour (s : State) (mem : ByteArray) (pa pb : Nat)
       (SquareEntry.out s mem pa pb 4 pdst ret rest).stack
       (by simp only [SquareEntry.out, outState, SquareEntry.args, List.length_append, List.length_cons, List.length_nil]; omega)
       hact (hctrl.zeroed s 4 (by decide)).route
-      (Artifact.isValidJumpDest_index 3150 (by rfl)) env
+      (Artifact.isValidJumpDest_index 3152 (by rfl)) env
   refine hr.trans ?_
   exact gasSteps_rowsFour s (before mem pa pb 4) pa pb
     (MachineState.readWord mem 9440) (MachineState.readWord mem 9376)

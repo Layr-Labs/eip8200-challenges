@@ -109,16 +109,16 @@ theorem run_mu (s : State) (mem : ByteArray) (f ai : UInt256) (rest : List UInt2
     stateAt, hc2, List.exchange, Nat.add_assoc, Challenge.EvmProof.Word.succ_ofNat_mod]
 
 def guardBlock : Block Artifact.submissionArtifact .Osaka 5230 guardProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3970 4 5230 guardProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3972 4 5230 guardProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def dispatchBlock : Block Artifact.submissionArtifact .Osaka 5283 dispatchProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4014 8 5283 dispatchProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4016 8 5283 dispatchProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def lastBlock : Block Artifact.submissionArtifact .Osaka 5295 lastProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4022 11 5295 lastProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4024 11 5295 lastProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def muBlock : Block Artifact.submissionArtifact .Osaka 4497 muProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3426 3 4497 muProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3428 3 4497 muProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem target_index (i : Nat) (hi : i < 7) :
