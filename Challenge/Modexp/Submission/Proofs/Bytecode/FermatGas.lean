@@ -22,7 +22,7 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
       final.isDone = true ∧ final.toResult = .returned (spec input) := by
   let ec := WindowTwentyOneGasRoute.context_env template env input
   let m := WindowTwentyOneInput.modulusWord input
-  have hjump : Decode.isValidJumpDest (context template input).executionEnv.code 2359 = true := by
+  have hjump : Decode.isValidJumpDest (context template input).executionEnv.code 2367 = true := by
     rw [ec.code]
     exact paths.legacyJump
   have hpraw := FermatProgram.run_prime (context template input) (modulusOffset input)
