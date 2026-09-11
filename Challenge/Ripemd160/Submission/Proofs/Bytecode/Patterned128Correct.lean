@@ -15,8 +15,7 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedScan PatternedSwar
 
 theorem correct_from_patternedEntry (input : ByteArray) (hfit : CalldataFits input)
-    (hsize : input.size = 63) (_hbyte : DirectGuard.firstByte input = 7)
-    (hentry : GasSteps (initialState submissionBytecode input 0)
+    (hsize : input.size = 63)    (hentry : GasSteps (initialState submissionBytecode input 0)
       (PatternedScan.patternedEntry input)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by

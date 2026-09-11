@@ -31,8 +31,7 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedScan PatternedSwar
 
 theorem correct1_from_patternedEntry (input : ByteArray) (hfit : CalldataFits input)
-    (hsize : input.size = 1) (_hbyte : DirectGuard.firstByte input = 7)
-    (hentry : GasSteps (initialState submissionBytecode input 0)
+    (hsize : input.size = 1)    (hentry : GasSteps (initialState submissionBytecode input 0)
       (PatternedScan.patternedEntry input)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
@@ -64,8 +63,7 @@ theorem correct1_from_patternedEntry (input : ByteArray) (hfit : CalldataFits in
 
 
 theorem correct31_from_patternedEntry (input : ByteArray) (hfit : CalldataFits input)
-    (hsize : input.size = 31) (_hbyte : DirectGuard.firstByte input = 7)
-    (hentry : GasSteps (initialState submissionBytecode input 0)
+    (hsize : input.size = 31)    (hentry : GasSteps (initialState submissionBytecode input 0)
       (PatternedScan.patternedEntry input)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
@@ -97,8 +95,7 @@ theorem correct31_from_patternedEntry (input : ByteArray) (hfit : CalldataFits i
 
 
 theorem correct32_from_patternedEntry (input : ByteArray) (hfit : CalldataFits input)
-    (hsize : input.size = 32) (_hbyte : DirectGuard.firstByte input = 7)
-    (hentry : GasSteps (initialState submissionBytecode input 0)
+    (hsize : input.size = 32)    (hentry : GasSteps (initialState submissionBytecode input 0)
       (PatternedScan.patternedEntry input)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
@@ -130,8 +127,7 @@ theorem correct32_from_patternedEntry (input : ByteArray) (hfit : CalldataFits i
 
 
 theorem correct55_from_patternedEntry (input : ByteArray) (hfit : CalldataFits input)
-    (hsize : input.size = 55) (_hbyte : DirectGuard.firstByte input = 7)
-    (hentry : GasSteps (initialState submissionBytecode input 0)
+    (hsize : input.size = 55)    (hentry : GasSteps (initialState submissionBytecode input 0)
       (PatternedScan.patternedEntry input)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
@@ -163,8 +159,7 @@ theorem correct55_from_patternedEntry (input : ByteArray) (hfit : CalldataFits i
 
 
 theorem correct56_from_patternedEntry (input : ByteArray) (hfit : CalldataFits input)
-    (hsize : input.size = 56) (_hbyte : DirectGuard.firstByte input = 7)
-    (hentry : GasSteps (initialState submissionBytecode input 0)
+    (hsize : input.size = 56)    (hentry : GasSteps (initialState submissionBytecode input 0)
       (PatternedScan.patternedEntry input)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
@@ -196,8 +191,7 @@ theorem correct56_from_patternedEntry (input : ByteArray) (hfit : CalldataFits i
 
 
 theorem correct120_from_patternedEntry (input : ByteArray) (hfit : CalldataFits input)
-    (hsize : input.size = 120) (_hbyte : DirectGuard.firstByte input = 7)
-    (hentry : GasSteps (initialState submissionBytecode input 0)
+    (hsize : input.size = 120)    (hentry : GasSteps (initialState submissionBytecode input 0)
       (PatternedScan.patternedEntry input)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
@@ -229,8 +223,7 @@ theorem correct120_from_patternedEntry (input : ByteArray) (hfit : CalldataFits 
 
 
 theorem correct119_from_patternedEntry (input : ByteArray) (hfit : CalldataFits input)
-    (hsize : input.size = 119) (_hbyte : DirectGuard.firstByte input = 7)
-    (hentry : GasSteps (initialState submissionBytecode input 0)
+    (hsize : input.size = 119)    (hentry : GasSteps (initialState submissionBytecode input 0)
       (PatternedScan.patternedEntry input)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
@@ -265,8 +258,7 @@ theorem correct119_from_patternedEntry (input : ByteArray) (hfit : CalldataFits 
 #print axioms correct120_from_patternedEntry
 
 theorem correct64_from_patternedEntry (input : ByteArray) (hfit : CalldataFits input)
-    (hsize : input.size = 64) (_hbyte : DirectGuard.firstByte input = 7)
-    (hentry : GasSteps (initialState submissionBytecode input 0)
+    (hsize : input.size = 64)    (hentry : GasSteps (initialState submissionBytecode input 0)
       (PatternedScan.patternedEntry input)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
@@ -299,8 +291,7 @@ theorem correct64_from_patternedEntry (input : ByteArray) (hfit : CalldataFits i
 
 
 theorem correct65_from_patternedEntry (input : ByteArray) (hfit : CalldataFits input)
-    (hsize : input.size = 65) (_hbyte : DirectGuard.firstByte input = 7)
-    (hentry : GasSteps (initialState submissionBytecode input 0)
+    (hsize : input.size = 65)    (hentry : GasSteps (initialState submissionBytecode input 0)
       (PatternedScan.patternedEntry input)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
@@ -333,8 +324,7 @@ theorem correct65_from_patternedEntry (input : ByteArray) (hfit : CalldataFits i
 
 
 theorem correct128_from_patternedEntry (input : ByteArray) (hfit : CalldataFits input)
-    (hsize : input.size = 128) (_hbyte : DirectGuard.firstByte input = 7)
-    (hentry : GasSteps (initialState submissionBytecode input 0)
+    (hsize : input.size = 128)    (hentry : GasSteps (initialState submissionBytecode input 0)
       (PatternedScan.patternedEntry input)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
