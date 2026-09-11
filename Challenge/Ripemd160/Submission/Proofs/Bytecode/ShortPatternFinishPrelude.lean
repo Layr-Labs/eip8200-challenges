@@ -145,7 +145,7 @@ theorem answerMemory_read (n : Nat) :
 @[simp] theorem returnedState_hReturn (n : Nat) (input : ByteArray) (sv ov : UInt256) :
     (returnedState n input sv ov).hReturn = paddedDigest n := answerMemory_read n
 
-def tableOffset (n : Nat) : Nat := 5239 - 21 * (((n * (n + 12345089)) / 1048576) % 16)
+def tableOffset (n : Nat) : Nat := 5234 - 21 * (((n * (n + 12345089)) / 1048576) % 16)
 def copyReadyState (n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
   stS input 585 ([12, UInt256.ofNat (tableOffset n), 20] ++ returnRest sv ov)
 
@@ -153,7 +153,7 @@ def codeSizeEntryState (n : Nat) (input : ByteArray) (sv ov : UInt256) : State :
   stS input 581 ([UInt256.ofNat (21 * ((n * (n + 12345089) / 1048576) % 16)), 20] ++ returnRest sv ov)
 
 def codeSizeAfterState (n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
-  stS input 582 ([UInt256.ofNat 5239, UInt256.ofNat (21 * ((n * (n + 12345089) / 1048576) % 16)), 20] ++ returnRest sv ov)
+  stS input 582 ([UInt256.ofNat 5234, UInt256.ofNat (21 * ((n * (n + 12345089) / 1048576) % 16)), 20] ++ returnRest sv ov)
 
 def tableMemory (n : Nat) : ByteArray :=
   MachineState.writeBytes ByteArray.empty (MachineState.readPadded submissionBytecode (tableOffset n) 20) 12
@@ -192,7 +192,7 @@ private def codePrefix : ByteArray :=
  ++   submissionByteChunk17
  ++   submissionByteChunk18
  ++   submissionByteChunk19
-private theorem codePrefix_size : codePrefix.size = 4752 := by
+private theorem codePrefix_size : codePrefix.size = 4747 := by
   simp only [codePrefix, ByteArray.size_append,
     submissionByteChunk0_size,
     submissionByteChunk1_size,

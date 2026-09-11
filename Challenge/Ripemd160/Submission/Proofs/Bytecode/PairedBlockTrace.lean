@@ -88,7 +88,7 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     (messagePointer i) (driverRest input i) (by simp [driverRest]) hrun
     (messagePointer_lower i) (messagePointer_bound input hfit i hi) hcode hfork hnp ctx.sentinel
   have gschedule' : GasSteps (DriverTrace.compressEntry s input i)
-      {q with pc := UInt256.ofNat 852, stack := PairedDerivedStartup.lowerWord :: cache q.memory ++ rho} := gschedule
+      {q with pc := UInt256.ofNat 847, stack := PairedDerivedStartup.lowerWord :: cache q.memory ++ rho} := gschedule
   have hcanonical := SStartupPremises.scheduled_canonical s input i h ctx
   have gstartup := PairedAllInlineBoundarySites.gasSteps_startup q (cache q.memory ++ rho) hcstack qrun qactive
     hcanonical.1 hcanonical.2.1 hcanonical.2.2.1 hcanonical.2.2.2.1 hcanonical.2.2.2.2
@@ -98,8 +98,8 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
   have gcore := PairedAllInlineCoreSites.gasSteps_core_prefix q initial rho
     hstack qrun qactive qcode qfork qnp
   have hentry :
-      {q with pc := UInt256.ofNat 893, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] ⟨PairedLaneWordRound.packCrypto lane lane, 0⟩ (cache q.memory ++ rho)} =
-      {q with pc := UInt256.ofNat 893, stack := PairedStartupTrace.resultStack q.memory (cache q.memory ++ rho)} := by
+      {q with pc := UInt256.ofNat 888, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] ⟨PairedLaneWordRound.packCrypto lane lane, 0⟩ (cache q.memory ++ rho)} =
+      {q with pc := UInt256.ofNat 888, stack := PairedStartupTrace.resultStack q.memory (cache q.memory ++ rho)} := by
     rw [startup_stack, scheduled_readLane]
   have hterminal : TerminalRound.canonicalFrame q.memory terminal.frame =
       resultFrame s input i := by
@@ -117,7 +117,7 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     (valid_return q qcode) qcode qfork qnp
   rw [hmemory] at gsuffix
   have gsuffix' : GasSteps
-      {q with pc := UInt256.ofNat 4804, stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] terminal (cache q.memory ++ rho)}
+      {q with pc := UInt256.ofNat 4799, stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] terminal (cache q.memory ++ rho)}
       (DriverTrace.compressReturned (resultState s input i) input i) := gsuffix
   exact gschedule'.trans (gstartup.trans ((gcore.cast hentry rfl).trans gsuffix'))
 

@@ -135,8 +135,6 @@ def actualLower : List Instr :=
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 416),
     .op .MSTORE,
-    .push ⟨3, by decide⟩ (UInt256.ofNat 704),
-    .op .POP,
     .op (.Swap ⟨5, by decide⟩),
     .op .POP,
     .op (.Swap ⟨6, by decide⟩),

@@ -25,11 +25,9 @@ theorem mask8_div :
 theorem mask16_div :
     UInt256.lnot (UInt256.ofNat 0) / UInt256.ofNat 65537 = mask16 := by decide
 
-/-- Keep the factor below the XOR operands, avoiding the intermediate SWAP.
-The leading JUMPDEST preserves the existing byte and instruction geometry. -/
 def code (shift : Nat) : List Instr :=
-  [op .JUMPDEST, endianFactorPush shift, .op (.Dup ⟨1, by decide⟩), dup1,
-   push1 (UInt256.ofNat shift), op .SHR, op .XOR, .op (.Dup ⟨1, by decide⟩),
+  [dup1, dup1, push1 (UInt256.ofNat shift), op .SHR, op .XOR,
+   endianFactorPush shift, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨1, by decide⟩),
    .push 0 0, op .NOT, op .DIV, op .AND, op .MUL, op .XOR]
 
 theorem run_endian (s : State) (startPC value : UInt256) (shift : Nat)
@@ -69,6 +67,7 @@ theorem run_endian (s : State) (startPC value : UInt256) (shift : Nat)
         Instr.size_push, Instr.size_op, Word.literal_eq_ofNat,
         Word.word_toNat_ofNat, Word.ofNat_add_mod, Word.succ_ofNat, List.exchange, List.getElem?_cons_zero, List.getElem?_cons_succ,
         word_add_assoc, word_add_ofNat_assoc, hsemantic]
+    rw [add_ofNat_assoc startPC 1 1]
     repeat first
       | rw [add_ofNat_assoc_hAdd]
       | rw [add_ofNat_assoc_add]
@@ -91,7 +90,6 @@ theorem advances (shift : Nat) {instruction : Instr} {s t : State}
     | exact RepeatedByteWord.runInstr_pc_div hrun
     | apply DenseScheduleLift.runInstr_pc_of_advances ?_ hrun
   all_goals first
-    | exact Or.inl (Or.inr (Or.inr rfl))
     | exact Or.inr (Or.inr rfl)
     | exact Or.inl (Or.inl (by constructor))
     | simp only [endianFactorPush]; split <;>
