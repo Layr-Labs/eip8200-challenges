@@ -12,7 +12,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open KnownInputCompactState
 
-def guardEntry (input : ByteArray) : State := atPC input 5038
+def guardEntry (input : ByteArray) : State := atPC input 5035
 
 def firstByte (input : ByteArray) : Nat :=
   (YulSemantics.EVM.byteFrom input.toList 0).toNat
@@ -37,21 +37,21 @@ theorem size_eq_one (input : ByteArray) (k : Nat)
 
 theorem run_size_fail (input : ByteArray) (hfit : CalldataFits input)
     (hsize : input.size ≠ 1000) (hsize256 : input.size ≠ 376) (hshort : input.size ≠ 256) :
-    run sizePath (Execution.atPC input 0) = some (guardEntry input) := by
+    run sizePath (Execution.atPC input 0x0) = some (guardEntry input) := by
   have hlt : input.size < 2 ^ 256 := Nat.lt_trans hfit (by norm_num)
   have eshort := size_eq_zero input 256 hlt (by norm_num) hshort
   have e256 := size_eq_zero input 376 hlt (by norm_num) hsize256
   have e1000 := size_eq_zero input 1000 hlt (by norm_num) hsize
   change run sizePath (PatternedScan.stS input 0 []) =
-    some (PatternedScan.stS input 5038 [])
-  -- rw idiom rather than term mode: the term form forces instructionPC 4083 and
+    some (PatternedScan.stS input 5035 [])
+  -- rw idiom rather than term mode: the term form forces instructionPC 4081 and
   -- submissionBytecode into definitional equality with the literals, which ran
   -- past 800s at 18 GB on the other base.  Same statement, cheap elaboration.
-  have hpc4131 : Artifact.submissionArtifact.instructionPC 4083 = 5038 := by
+  have hpc4131 : Artifact.submissionArtifact.instructionPC 4081 = 5035 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 5038 = true := by
-    have h := Artifact.submissionArtifact.isValidJumpDest_index 4083 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 5035 = true := by
+    have h := Artifact.submissionArtifact.isValidJumpDest_index 4081 (by rfl)
     rw [hpc4131] at h
     exact h
   have hprefix :
@@ -73,20 +73,20 @@ theorem run_size_fail (input : ByteArray) (hfit : CalldataFits input)
        Challenge.EvmProof.Word.ofNat_add_mod,
        Challenge.EvmProof.Word.word_toNat_ofNat]
   have hpush :
-      run [pushAt 12 2 5038] (PatternedScan.stS input 18 [UInt256.ofNat 1]) =
-        some (PatternedScan.stS input 21 [UInt256.ofNat 5038, UInt256.ofNat 1]) := by
+      run [pushAt 12 2 5035] (PatternedScan.stS input 18 [UInt256.ofNat 1]) =
+        some (PatternedScan.stS input 21 [UInt256.ofNat 5035, UInt256.ofNat 1]) := by
     exact PatternedScan.blockOfS _
       (PatternedScan.pcFactS input 12 18 _ (by norm_num) pc_classifier_112)
-      (PatternedScan.stepS_push input 18 2 5038 [UInt256.ofNat 1]
+      (PatternedScan.stepS_push input 18 2 5035 [UInt256.ofNat 1]
         (by norm_num) (by decide) (by decide) (by norm_num))
   have htrue : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have hjump :
       run [opAt 13 .JUMPI]
-          (PatternedScan.stS input 21 [UInt256.ofNat 5038, UInt256.ofNat 1]) =
-        some (PatternedScan.stS input 5038 []) := by
+          (PatternedScan.stS input 21 [UInt256.ofNat 5035, UInt256.ofNat 1]) =
+        some (PatternedScan.stS input 5035 []) := by
     exact PatternedScan.blockOfS _
       (PatternedScan.pcFactS input 13 21 _ (by norm_num) pc_classifier_113)
-      (PatternedScan.stepS_jumpi_taken input 21 5038 5038 (UInt256.ofNat 1) []
+      (PatternedScan.stepS_jumpi_taken input 21 5035 5035 (UInt256.ofNat 1) []
         (by norm_num) (by norm_num) rfl htrue hdest)
   have hprefix_push :
       run
@@ -94,35 +94,35 @@ theorem run_size_fail (input : ByteArray) (hfit : CalldataFits input)
            opAt 3 .CALLDATASIZE, pushAt 4 2 376, opAt 5 .EQ,
            opAt 6 .CALLDATASIZE, pushAt 7 2 1000,
            opAt 8 .EQ, opAt 9 .OR, opAt 10 .OR, opAt 11 .ISZERO,
-           pushAt 12 2 5038]
+           pushAt 12 2 5035]
         (PatternedScan.stS input 0 []) =
-      some (PatternedScan.stS input 21 [UInt256.ofNat 5038, UInt256.ofNat 1]) := by
+      some (PatternedScan.stS input 21 [UInt256.ofNat 5035, UInt256.ofNat 1]) := by
     exact Challenge.EvmProof.Stepper.runLocatedBlock_append
       [opAt 0 .CALLDATASIZE, pushAt 1 2 256, opAt 2 .EQ,
        opAt 3 .CALLDATASIZE, pushAt 4 2 376, opAt 5 .EQ,
        opAt 6 .CALLDATASIZE, pushAt 7 2 1000,
        opAt 8 .EQ, opAt 9 .OR, opAt 10 .OR, opAt 11 .ISZERO]
-      [pushAt 12 2 5038] _ _ _ hprefix rfl hpush
+      [pushAt 12 2 5035] _ _ _ hprefix rfl hpush
   have hfull :
       run
           [opAt 0 .CALLDATASIZE, pushAt 1 2 256, opAt 2 .EQ,
            opAt 3 .CALLDATASIZE, pushAt 4 2 376, opAt 5 .EQ,
            opAt 6 .CALLDATASIZE, pushAt 7 2 1000,
            opAt 8 .EQ, opAt 9 .OR, opAt 10 .OR, opAt 11 .ISZERO,
-           pushAt 12 2 5038, opAt 13 .JUMPI]
+           pushAt 12 2 5035, opAt 13 .JUMPI]
         (PatternedScan.stS input 0 []) =
-      some (PatternedScan.stS input 5038 []) := by
+      some (PatternedScan.stS input 5035 []) := by
     exact Challenge.EvmProof.Stepper.runLocatedBlock_append
       [opAt 0 .CALLDATASIZE, pushAt 1 2 256, opAt 2 .EQ,
        opAt 3 .CALLDATASIZE, pushAt 4 2 376, opAt 5 .EQ,
        opAt 6 .CALLDATASIZE, pushAt 7 2 1000,
        opAt 8 .EQ, opAt 9 .OR, opAt 10 .OR, opAt 11 .ISZERO,
-       pushAt 12 2 5038]
+       pushAt 12 2 5035]
       [opAt 13 .JUMPI] _ _ _ hprefix_push rfl hjump
   simpa only [sizePath] using hfull
 
 theorem run_size_match (input : ByteArray) (hsize : input.size = 1000) :
-    run sizePath (Execution.atPC input 0) = some (sizeMatched input) := by
+    run sizePath (Execution.atPC input 0x0) = some (sizeMatched input) := by
   have hlt : input.size < 2 ^ 256 := by rw [hsize]; norm_num
   have eshort := size_eq_zero input 256 hlt (by norm_num) (by rw [hsize]; norm_num)
   have e256 := size_eq_zero input 376 hlt (by norm_num) (by rw [hsize]; norm_num)
@@ -138,7 +138,7 @@ theorem run_size_match (input : ByteArray) (hsize : input.size = 1000) :
 /-- The memo's size.  It reaches the SAME state as 1000: the merged test ORs the
 two equalities, and the first-word test at idx 113-124 separates them after. -/
 theorem run_size_match_256 (input : ByteArray) (hsize : input.size = 376) :
-    run sizePath (Execution.atPC input 0) = some (sizeMatched input) := by
+    run sizePath (Execution.atPC input 0x0) = some (sizeMatched input) := by
   have hlt : input.size < 2 ^ 256 := by rw [hsize]; norm_num
   have eshort := size_eq_zero input 256 hlt (by norm_num) (by rw [hsize]; norm_num)
   have e256 := size_eq_one input 376 hsize
@@ -152,7 +152,7 @@ theorem run_size_match_256 (input : ByteArray) (hsize : input.size = 376) :
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
 
 theorem run_size_match_short (input : ByteArray) (hsize : input.size = 256) :
-    run sizePath (Execution.atPC input 0) = some (sizeMatched input) := by
+    run sizePath (Execution.atPC input 0x0) = some (sizeMatched input) := by
   have hlt : input.size < 2 ^ 256 := by rw [hsize]; norm_num
   have eshort := size_eq_one input 256 hsize
   have e256 := size_eq_zero input 376 hlt (by norm_num) (by rw [hsize]; norm_num)

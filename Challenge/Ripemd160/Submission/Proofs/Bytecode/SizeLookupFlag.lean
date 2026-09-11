@@ -6,20 +6,20 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.SizeLookupFlag
 open EvmSemantics
 open Challenge.EvmProof
 
-/-- Exact size membership for the seven short checked scan paths. -/
-def maskNat : Nat := (2 ^ 0) ||| (2 ^ 64) ||| (2 ^ 7) ||| (2 ^ 8) ||| (2 ^ 9) ||| (2 ^ 72) ||| (2 ^ 63)
+/-- Exact size membership for the six short checked scan paths. -/
+def maskNat : Nat := (2 ^ 0) ||| (2 ^ 64) ||| (2 ^ 7) ||| (2 ^ 8) ||| (2 ^ 9) ||| (2 ^ 72)
 def mask : UInt256 := UInt256.ofNat maskNat
-theorem mask_literal : mask = UInt256.ofNat 4750036598980209542017 := by decide
+theorem mask_literal : mask = UInt256.ofNat 4740813226943354766209 := by decide
 private theorem mask_toNat : mask.toNat = maskNat := by decide
 
 private theorem mask_bit_false (n : Nat)
-    (h0 : n ≠ 0) (h64 : n ≠ 64) (h7 : n ≠ 7) (h8 : n ≠ 8) (h9 : n ≠ 9) (h72 : n ≠ 72) (h63 : n ≠ 63) : maskNat.testBit n = false := by
+    (h0 : n ≠ 0) (h64 : n ≠ 64) (h7 : n ≠ 7) (h8 : n ≠ 8) (h9 : n ≠ 9) (h72 : n ≠ 72) : maskNat.testBit n = false := by
   simp only [maskNat, Nat.testBit_or,
-    Nat.testBit_two_pow_of_ne (Ne.symm h0), Nat.testBit_two_pow_of_ne (Ne.symm h64), Nat.testBit_two_pow_of_ne (Ne.symm h7), Nat.testBit_two_pow_of_ne (Ne.symm h8), Nat.testBit_two_pow_of_ne (Ne.symm h9), Nat.testBit_two_pow_of_ne (Ne.symm h72), Nat.testBit_two_pow_of_ne (Ne.symm h63), Bool.false_or]
+    Nat.testBit_two_pow_of_ne (Ne.symm h0), Nat.testBit_two_pow_of_ne (Ne.symm h64), Nat.testBit_two_pow_of_ne (Ne.symm h7), Nat.testBit_two_pow_of_ne (Ne.symm h8), Nat.testBit_two_pow_of_ne (Ne.symm h9), Nat.testBit_two_pow_of_ne (Ne.symm h72), Bool.false_or]
 
 private theorem bit_zero (x : UInt256) (h56 : x.toNat ≠ 56)
     (h120 : x.toNat ≠ 120) (h63 : x.toNat ≠ 63)
-    (h64 : x.toNat ≠ 64) (h65 : x.toNat ≠ 65) (h128 : x.toNat ≠ 128) (h119 : x.toNat ≠ 119) :
+    (h64 : x.toNat ≠ 64) (h65 : x.toNat ≠ 65) (h128 : x.toNat ≠ 128) :
     UInt256.land (UInt256.ofNat 1)
       (UInt256.shiftRight mask (x - UInt256.ofNat 56)) = UInt256.ofNat 0 := by
   set s : UInt256 := x - UInt256.ofNat 56 with hs
@@ -48,7 +48,7 @@ private theorem bit_zero (x : UInt256) (h56 : x.toNat ≠ 56)
     change 1 &&& (maskNat >>> s.toNat) = 0
     have hb : (maskNat >>> s.toNat).testBit 0 = false := by
       rw [Nat.testBit_shiftRight, Nat.add_zero]
-      refine mask_bit_false _ ?_ ?_ ?_ ?_ ?_ ?_ ?_ <;> (rw [hval]; omega)
+      refine mask_bit_false _ ?_ ?_ ?_ ?_ ?_ ?_ <;> (rw [hval]; omega)
     have h := Nat.two_pow_and (maskNat >>> s.toNat) 0
     simpa [hb] using h
 
@@ -60,7 +60,7 @@ private theorem eq_zero (n : Nat) (hn : n < 2 ^ 256) (x : UInt256)
 theorem flag (x : UInt256) :
     UInt256.isZero (UInt256.land (UInt256.ofNat 1)
         (UInt256.shiftRight mask (x - UInt256.ofNat 56))) =
-      UInt256.isZero (UInt256.lor (UInt256.eq (UInt256.ofNat 56) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 120) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 63) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 64) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 65) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 128) x) (UInt256.eq (UInt256.ofNat 119) x))))))) := by
+      UInt256.isZero (UInt256.lor (UInt256.eq (UInt256.ofNat 56) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 120) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 63) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 64) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 65) x) (UInt256.eq (UInt256.ofNat 128) x)))))) := by
   by_cases h56 : x = UInt256.ofNat 56
   · subst x; decide
   by_cases h120 : x = UInt256.ofNat 120
@@ -72,8 +72,6 @@ theorem flag (x : UInt256) :
   by_cases h65 : x = UInt256.ofNat 65
   · subst x; decide
   by_cases h128 : x = UInt256.ofNat 128
-  · subst x; decide
-  by_cases h119 : x = UInt256.ofNat 119
   · subst x; decide
   have n56 : x.toNat ≠ 56 := by
     intro h; apply h56; apply Word.word_ext; change x.toNat = 56; exact h
@@ -87,10 +85,8 @@ theorem flag (x : UInt256) :
     intro h; apply h65; apply Word.word_ext; change x.toNat = 65; exact h
   have n128 : x.toNat ≠ 128 := by
     intro h; apply h128; apply Word.word_ext; change x.toNat = 128; exact h
-  have n119 : x.toNat ≠ 119 := by
-    intro h; apply h119; apply Word.word_ext; change x.toNat = 119; exact h
-  rw [bit_zero x n56 n120 n63 n64 n65 n128 n119,
-    eq_zero 56 (by decide) x n56, eq_zero 120 (by decide) x n120, eq_zero 63 (by decide) x n63, eq_zero 64 (by decide) x n64, eq_zero 65 (by decide) x n65, eq_zero 128 (by decide) x n128, eq_zero 119 (by decide) x n119]
+  rw [bit_zero x n56 n120 n63 n64 n65 n128,
+    eq_zero 56 (by decide) x n56, eq_zero 120 (by decide) x n120, eq_zero 63 (by decide) x n63, eq_zero 64 (by decide) x n64, eq_zero 65 (by decide) x n65, eq_zero 128 (by decide) x n128]
   decide
 
 #print axioms flag

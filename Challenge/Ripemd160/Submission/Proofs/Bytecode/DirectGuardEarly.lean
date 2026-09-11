@@ -38,7 +38,7 @@ def gasSteps_checkEarly (input : ByteArray)
       apply Challenge.EvmProof.Word.word_ext
       simpa using hnat
     simpa using h
-  have hcleanup : Decode.isValidJumpDest submissionBytecode 98 = true :=
+  have hcleanup : Decode.isValidJumpDest submissionBytecode 0x62 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 59 (by rfl)
   rw [show sizeMatched input = stG input 0x16 [] from rfl,
     show PatternedScan.patternedEntry input = stG input 0x64 [] from rfl]

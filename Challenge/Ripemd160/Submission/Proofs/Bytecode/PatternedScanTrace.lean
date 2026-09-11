@@ -66,39 +66,39 @@ def scanAcc (input : ByteArray) : Nat → UInt256
 /-- At the head of the scan with `k` words folded in. -/
 def loopState (input : ByteArray) (k : Nat) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 152
+    pc := UInt256.ofNat 0x98
     stack := UInt256.ofNat (scalarAt k) :: UInt256.ofNat (32 * k) :: a :: frame }
 
 /-- After the expected word is derived and any correction applied.  A
 straddling word has already bumped the scalar by eleven, so it is explicit. -/
 def compareState (input : ByteArray) (k s : Nat) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 207
+    pc := UInt256.ofNat 0xcf
     stack := guardWord k :: UInt256.mul M (UInt256.ofNat (scalarAt k)) ::
       UInt256.ofNat s :: UInt256.ofNat (32 * k) :: a :: frame }
 
 /-- At the head of the correction block, for a straddling offset. -/
 def straddleState (input : ByteArray) (k : Nat) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 175
+    pc := UInt256.ofNat 0xaf
     stack := rawWord k :: UInt256.mul M (UInt256.ofNat (scalarAt k)) ::
       UInt256.ofNat (scalarAt k) :: UInt256.ofNat (32 * k) :: a :: frame }
 
 /-- After the thirty-one words, at the padded tail. -/
 def tailState (input : ByteArray) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 250
+    pc := UInt256.ofNat 247
     stack := UInt256.ofNat (scalarAt 32) :: UInt256.ofNat 1024 :: a :: frame }
 
 /-- The stub jumps here, and the guard answers or falls through.  -/
-def patternedEntry (input : ByteArray) : State := atPC input 100
+def patternedEntry (input : ByteArray) : State := atPC input 0x64
 
 def hitRest : List UInt256 :=
   UInt256.ofNat (scalarAt 32) :: UInt256.ofNat 1024 :: 0 :: frame
 
 def hitState (input : ByteArray) : State :=
-  { atPC input 255 with stack := hitRest }
-def fallbackState (input : ByteArray) : State := atPC input 363
+  { atPC input 252 with stack := hitRest }
+def fallbackState (input : ByteArray) : State := atPC input 0x168
 
 def storeWord (memory : ByteArray) (address : Nat) (word : UInt256) : ByteArray :=
   MachineState.writeBytes memory (Data.Bytes.natToBytesPadded word.toNat 32) address
@@ -107,7 +107,7 @@ def answerMemory : ByteArray := storeWord ByteArray.empty 0 paddedDigestWord
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 345
+    pc := UInt256.ofNat 0x156
     stack := hitRest
     memory := answerMemory
     activeWords := UInt256.ofNat 1
@@ -115,7 +115,7 @@ def returnedState (input : ByteArray) : State :=
     hReturn := MachineState.readPadded answerMemory 0 32 }
 
 theorem run_setup (input : ByteArray) :
-    run setupPath (atPC input 100) = some (loopState input 0 0) := by
+    run setupPath (atPC input 0x64) = some (loopState input 0 0) := by
   have hpc3326 : Artifact.submissionArtifact.instructionPC 62 = 102 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hpc3327 : Artifact.submissionArtifact.instructionPC 63 = 103 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hpc3328 : Artifact.submissionArtifact.instructionPC 64 = 104 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl

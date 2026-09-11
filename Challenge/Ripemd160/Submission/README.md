@@ -1,53 +1,41 @@
-# RIPEMD-160: full checked 119-byte return and shared digest table
+# RIPEMD-160: checked returns for 64, 65, and 128 bytes
 
-The runtime checks complete patterned inputs of lengths 56, 63, 64, 65, 119,
-120, and 128 before returning a stored digest. Every real byte is compared;
-any mismatch uses the generic compressor. Existing checked long-input paths
-and the empty-input return remain.
+The runtime replaces the patterned first-block state installer with complete
+checked scan returns for 64-, 65-, and 128-byte inputs. Existing 56-, 63-,
+120-, 256-, 376-, and 1000-byte returns remain. Every real input byte is checked
+before returning a literal digest, and mismatches use the generic compressor.
 
-The local seed-zero score is **834,809 gas / 5,246 bytes**. Relative to promoted
-source `319735531a9dd865a2e8d593596eb675594434e6` (857,970 gas / 5,242 bytes),
-this saves 23,161 gas (2.699512%) for four additional bytes. It also improves
-the later 837,601-gas / 5,256-byte frontier at
-`3eb260102d73961e4ab1cf6ee016813c79057b38` by 2,792 gas and ten bytes
-under the same native scorer and seed.
-The platform randomizes generated inputs, so the eventual official score
-must be read from its validation result.
+The comparison is promoted source
+`12b801fc876f3fbb2cb1c3fbe41f817dc2866851` (895,873 gas / 5,264 bytes).
+This artifact is **857,970 gas / 5,242 bytes**, a 37,903-gas reduction (4.230845%).
+The total includes the regression on patterned 119-byte inputs, which lose the
+old first-block shortcut. Ordinary generated vectors become cheaper because
+their failed prefix checks are removed.
 
 SHA-256 of the exact bytecode:
-`14f31f6aececa27e28884df0302224bbd2af57c6a60eb21e491c8c4088f0e1de`.
+`88931136de8bf277b59929947e632c40af1ed3c7f819f3f0a24f1f1304ad3165`.
 
-The tail-shift lookup is `(0x01090307c0 >> (remaining XOR 2)) AND 0xf8`.
-Its 23-byte-tail case shifts by 72 bits, preserving all real bytes of the new
-119-byte input. The compact size-and-first-byte guard admits exactly the
-seven short lengths. After the complete scan, a shared selector at PC 5072
-computes `((19*n) >> 4) % 7`. Seven canonical PUSH20 rows start with their
-first digest payload at PC 5100 and use a 21-byte stride. CODECOPY writes the
-20-byte digest at memory offset 12, and MSIZE supplies the 32-byte return
-length. The generic compression entry is now PC 531.
+The short size bitmap now recognizes 56, 63, 64, 65, 120, and 128. The shared
+tail shift lookup adds the one-byte tail needed by length 65. The compressed
+round body keeps its addresses; nonempty dispatch goes directly to its
+existing entry at PC 528. The empty-input shortcut is retained.
 
-The 119-byte vector drops from 24,004 to 930 gas. The total also includes
-regressions: 29 gas for the 63-byte path and 48, 72, and 192 gas for the
-256-, 376-, and 1,000-byte patterned scans. Ordinary generated inputs benefit
-from the shorter entry guard.
+`StackCorrect` proves the simplified generic kernel. `SizeLookupFlag` proves
+exact length membership for every 256-bit size. `ShortPatternLogic` and
+`ShortPatternScan64/65/128` prove full-input recognition and scanner execution.
+`ScanDigest64/65/128` bind the recognized inputs to the mathematical hash.
+`ShortPatternFinish` and `DirectGuard` compose literal returns and all fallback
+cases into the universal theorem exported by `Solution.lean`. Some inherited
+module names describe earlier layouts; the active proof closure starts at
+`Solution.lean`.
 
-`SizeLookupFlag` establishes exact size membership, `ShortPatternLogic`
-establishes full-input equality, and `ShortPatternScan119` certifies the new
-scan. `ScanDigest119` derives the digest from the protected RIPEMD semantics.
-`Codecopy` derives its gas-accounted step from the pinned EVM semantics;
-`ShortPatternFinish` binds the code slice to the required padded digest.
-`DirectGuard` composes these paths with the generic correctness theorem.
-The universal theorem in `Solution.lean` is for the exact submitted bytes
-and uses only `propext`, `Classical.choice`, and `Quot.sound`.
-
-The native protected scorer verifies 49/49 vectors in clean and dirty frames,
-with equal 834,809-gas totals. Differential fuzzing covers 3,899 inputs, and
-4,920 single-bit mutations cover every bit in every checked short pattern.
-All outputs match an independent RIPEMD-160 oracle. A 67-seed study includes
-4,288 candidate/baseline generated executions, with zero mismatches and
-same-seed savings of 23,137 to 23,161 gas. Independent reconstruction agrees
-on all 5,246 bytes and 4,128 instructions. Some inherited proof module names
-refer to older layouts; `Solution.lean` defines the active import closure.
+The protected native Lean scorer verifies 49/49 vectors in both clean and dirty
+initial frames, at 857,970 gas in each frame. Differential fuzz checks 3,899
+boundary, random, and patterned-prefix inputs; a further 3,968 checks flip
+every individual bit of each recognized short input. All outputs agree with
+the independent RIPEMD-160 oracle. The byte array and decoded instruction
+representations independently reconstruct all 5,242 bytes and 4,145
+instructions. Official proof validation and promotion are recorded by Yukon.
 
 ## Attribution
 

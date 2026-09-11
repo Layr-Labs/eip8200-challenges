@@ -1,6 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Entry
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Scan
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.ShortPatternFinish
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Finish
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned63Digest
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ShortPatternLogic
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
@@ -27,23 +27,23 @@ theorem correct_from_patternedEntry (input : ByteArray) (hfit : CalldataFits inp
       exact Patterned63Digest.spec_data_eq
     let trace := hentry.trans
       ((Patterned128Scan.gasSteps_scan input hsize).trans
-        (ShortPatternFinish.gasSteps_finish_hit 63 input (UInt256.ofNat (scalarAt 2))
-          64 (scanAcc input 2) hz (by decide) hsize))
+        (Patterned128Finish.gasSteps_finish_hit input (UInt256.ofNat (scalarAt 2))
+          64 (scanAcc input 2) hz hsize))
     refine ⟨trace.cost, fun gas hgas => ?_⟩
     have heval := eval_of_steps (trace.trace gas hgas) (by
-      simp [withGas, ShortPatternFinish.returnedState,
-        ShortPatternFinish.storedState, ShortPatternFinish.returnRest,
+      simp [withGas, Patterned128Finish.returnedState,
+        Patterned128Finish.storedState, Patterned128Finish.returnRest,
         stS, initialState, State.isDone, State.isHalted, State.isRunning])
     rw [State.toResult_returned _ (by rfl)] at heval
     change Eval (withGas (initialState submissionBytecode input 0) gas)
-      (.returned (MachineState.readPadded (ShortPatternFinish.answerMemory 63) 0 32)) at heval
-    have hdigest : ShortPatternFinish.paddedDigest 63 = Patterned63Digest.paddedDigest := rfl
-    rw [ShortPatternFinish.answerMemory_read, hdigest, ← hspec] at heval
+      (.returned (MachineState.readPadded Patterned128Finish.answerMemory 0 32)) at heval
+    have hdigest : Patterned128Finish.paddedDigest = Patterned63Digest.paddedDigest := rfl
+    rw [Patterned128Finish.answerMemory_read, hdigest, ← hspec] at heval
     simpa [GasCost.withGas_initialState_zero] using heval
   · exact StackCorrect.correct input hfit
       (hentry.trans
         ((Patterned128Scan.gasSteps_scan input hsize).trans
-          (ShortPatternFinish.gasSteps_miss input (UInt256.ofNat (scalarAt 2))
+          (Patterned128Finish.gasSteps_miss input (UInt256.ofNat (scalarAt 2))
             64 (scanAcc input 2) hz)))
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Correct
