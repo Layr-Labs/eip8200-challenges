@@ -10,8 +10,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedAllInlineBoundary
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate PairedHelperBooleanTrace PairedAllInlineCoreTrace CachedCoreCommon
 def scheduleTemplate : List Instr :=
-  [ .op .JUMPDEST,
-    .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295),
+  [ .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295),
     .push ⟨2, by decide⟩ (UInt256.ofNat 257),
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .NOT,
@@ -191,8 +190,8 @@ def scheduleSite : GenericRoundSite Artifact.submissionArtifact .Osaka scheduleT
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := scheduleTemplate) (by decide))
     (by decide)
-theorem schedule_pc : scheduleSite.startPC = UInt256.ofNat 422 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 257) = UInt256.ofNat 422
+theorem schedule_pc : scheduleSite.startPC = UInt256.ofNat 423 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 257) = UInt256.ofNat 423
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem schedule_advances {instruction : Instr} (hmem : instruction ∈ scheduleTemplate)
     {s t : State} (hr : Stepper.runInstr instruction s = some t) :
@@ -221,13 +220,13 @@ def gasSteps_schedule (s : State) (returnPC : UInt256) (p : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hsentinel : SentinelCore.SentinelOK s.memory) :
-    GasSteps (DenseScheduleTemplate.scheduleEntry s (UInt256.ofNat 422) (UInt256.ofNat p) returnPC rest)
+    GasSteps (DenseScheduleTemplate.scheduleEntry s (UInt256.ofNat 423) (UInt256.ofNat p) returnPC rest)
       {s with pc := UInt256.ofNat 655, stack := cache (PairedScheduleMemory.normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p)) ++ (returnPC :: rest), memory := PairedScheduleMemory.normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat p)} := by
   have h := CachedSchedule.run_fullTemplate_natural s returnPC p rest hstack hrun hp hbound hsentinel
-  have hpct : pcAfter (UInt256.ofNat 422) CachedSchedule.fullTemplate = UInt256.ofNat 655 := by rfl
+  have hpct : pcAfter (UInt256.ofNat 423) CachedSchedule.fullTemplate = UInt256.ofNat 655 := by rfl
   rw [hpct] at h
   have hl := runLocatedBlock_eq_runInstrSeq_site scheduleSite
-    (DenseScheduleTemplate.scheduleEntry s (UInt256.ofNat 422) (UInt256.ofNat p) returnPC rest)
+    (DenseScheduleTemplate.scheduleEntry s (UInt256.ofNat 423) (UInt256.ofNat p) returnPC rest)
     schedule_pc.symm (by
       intro located hm u v hr
       apply schedule_advances ?_ hr
@@ -272,19 +271,19 @@ def startupTemplate : List Instr :=
     .op (.Swap ⟨5, by decide⟩),
     .op .POP ]
 theorem startup_slice :
-    (Artifact.submissionArtifact.instructions.drop 429).take startupTemplate.length = startupTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 428).take startupTemplate.length = startupTemplate := by rfl
 def startupSite : GenericRoundSite Artifact.submissionArtifact .Osaka startupTemplate :=
-  StackSiteBuilder.ofSlice startupTemplate 429 startup_slice
+  StackSiteBuilder.ofSlice startupTemplate 428 startup_slice
     (by change 429 + startupTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := startupTemplate) (by decide))
     (by decide)
 theorem startup_pc : startupSite.startPC = UInt256.ofNat 655 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 429) = UInt256.ofNat 655
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 428) = UInt256.ofNat 655
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem startup_endPC : startupSite.endPC = UInt256.ofNat 708 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 462) = UInt256.ofNat 708
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 461) = UInt256.ofNat 708
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem startup_resultStack (memory : ByteArray) (rho : List UInt256) :
     PairedDerivedStartup.resultStack memory rho =
@@ -395,16 +394,16 @@ def tailTemplate : List Instr :=
     .op .POP,
     .op .JUMP ]
 theorem tail_slice :
-    (Artifact.submissionArtifact.instructions.drop 3897).take tailTemplate.length = tailTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3896).take tailTemplate.length = tailTemplate := by rfl
 def tailSite : GenericRoundSite Artifact.submissionArtifact .Osaka tailTemplate :=
-  StackSiteBuilder.ofSlice tailTemplate 3897 tail_slice
+  StackSiteBuilder.ofSlice tailTemplate 3896 tail_slice
     (by change 3897 + tailTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := tailTemplate) (by decide))
     (by decide)
 theorem tail_pc : tailSite.startPC = UInt256.ofNat 4616 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3897) = UInt256.ofNat 4616
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3896) = UInt256.ofNat 4616
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem tail_advances : ∀ instruction ∈ tailTemplate.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound

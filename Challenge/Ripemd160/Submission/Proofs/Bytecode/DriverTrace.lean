@@ -35,7 +35,7 @@ def callPath : List Located :=
   [⟨252, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨253, .push ⟨2, by decide⟩ (UInt256.ofNat 402), by rfl, by decide⟩,
    ⟨254, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨255, .push ⟨2, by decide⟩ (UInt256.ofNat Padding.messageOffset),
+   ⟨255, .push ⟨3, by decide⟩ (UInt256.ofNat Padding.messageOffset),
       by rfl, by decide⟩,
    ⟨256, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩]
 
@@ -72,8 +72,8 @@ def enterPath : List Located :=
 @[simp] private theorem pcD253 : Artifact.submissionArtifact.instructionPC 253 = 414 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] private theorem pcD254 : Artifact.submissionArtifact.instructionPC 254 = 417 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] private theorem pcD255 : Artifact.submissionArtifact.instructionPC 255 = 418 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pcD256 : Artifact.submissionArtifact.instructionPC 256 = 421 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pcD257 : Artifact.submissionArtifact.instructionPC 257 = 422 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pcD256 : Artifact.submissionArtifact.instructionPC 256 = 422 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pcD257 : Artifact.submissionArtifact.instructionPC 257 = 423 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 def blockCount (input : ByteArray) : Nat :=
   Padding.paddedLength input.size / 64
@@ -99,7 +99,7 @@ def loopAt (s : State) (input : ByteArray) (i : Nat) : State :=
 driver entry, so this coincides with the compression entry. -/
 def dispatchEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 422
+    pc := UInt256.ofNat 423
     stack := [messageOffsetWord i, UInt256.ofNat 402,
       blockOffsetWord i, Padding.paddedWord input] }
 
@@ -108,7 +108,7 @@ padded-message pointer, its return destination, and the driver invariant
 stack underneath. -/
 def compressEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 422
+    pc := UInt256.ofNat 423
     stack := [messageOffsetWord i, UInt256.ofNat 402,
       blockOffsetWord i, Padding.paddedWord input] }
 
@@ -306,7 +306,7 @@ theorem run_postCheck_exit (s : State) (input : ByteArray)
   have htrue : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have honeNat : UInt256.toNat (1 : UInt256) = 1 := by decide
   have hdest : Decode.isValidJumpDest submissionBytecode 4717 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 3973 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 3972 (by rfl)
   simp [postCheckPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     compressReturned, afterExit, hrun, hcode, hadd, hlast, heq,

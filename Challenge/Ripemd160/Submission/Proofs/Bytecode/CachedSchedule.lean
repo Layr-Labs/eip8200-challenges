@@ -262,12 +262,12 @@ theorem run_fullTemplate (s : State) (messageOffset returnPC : UInt256)
     (rest : List UInt256) (hstack : rest.length ≤ 996) (hrun : s.halt = .Running)
     (hactive : 23 ≤ (loadedActiveWords s messageOffset).toNat)
     (hsentinel : SentinelOK s.memory) :
-    runInstrSeq fullTemplate (scheduleEntry s (UInt256.ofNat 422) messageOffset returnPC rest) =
-      some {s with pc := pcAfter (UInt256.ofNat 422) fullTemplate, stack := cache (normalizedMemory s.memory (scheduleWords s messageOffset)) ++ (returnPC :: rest), memory := normalizedMemory s.memory (scheduleWords s messageOffset), activeWords := loadedActiveWords s messageOffset} := by
-  have h1 := PairedDivMaskCache.run_cachedInitial s (UInt256.ofNat 422) messageOffset returnPC rest (by omega) hrun
+    runInstrSeq fullTemplate (scheduleEntry s (UInt256.ofNat 423) messageOffset returnPC rest) =
+      some {s with pc := pcAfter (UInt256.ofNat 423) fullTemplate, stack := cache (normalizedMemory s.memory (scheduleWords s messageOffset)) ++ (returnPC :: rest), memory := normalizedMemory s.memory (scheduleWords s messageOffset), activeWords := loadedActiveWords s messageOffset} := by
+  have h1 := PairedDivMaskCache.run_cachedInitial s (UInt256.ofNat 423) messageOffset returnPC rest (by omega) hrun
   have h2 := run_cachedReversedHalf
     {s with activeWords := loadedActiveWords s messageOffset}
-    (pcAfter (UInt256.ofNat 422) PairedDivMaskCache.cachedInitial) (inputWord1 s messageOffset) 8
+    (pcAfter (UInt256.ofNat 423) PairedDivMaskCache.cachedInitial) (inputWord1 s messageOffset) 8
     ⟨3, by decide⟩ ⟨5, by decide⟩ ⟨2, by decide⟩
     (inputWord0 s messageOffset :: mask8 :: maskWord :: mask16 :: returnPC :: rest)
     (by simp only [List.length_cons]; omega) hrun hactive (by decide)
@@ -275,7 +275,7 @@ theorem run_fullTemplate (s : State) (messageOffset returnPC : UInt256)
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 hrun h2
   have he := run_lowerEndian
     {s with activeWords := loadedActiveWords s messageOffset, memory := storeCells s.memory (halfWords (packedInput1 s messageOffset) 8) 8 8}
-    (pcAfter (pcAfter (UInt256.ofNat 422) PairedDivMaskCache.cachedInitial) upperTemplate)
+    (pcAfter (pcAfter (UInt256.ofNat 423) PairedDivMaskCache.cachedInitial) upperTemplate)
     (inputWord0 s messageOffset) returnPC rest hstack hrun
   have h12e := DenseScheduleTrace.runInstrSeq_append_running h12 hrun he
   have h3 := run_actual_lower
@@ -286,7 +286,7 @@ theorem run_fullTemplate (s : State) (messageOffset returnPC : UInt256)
   have h := DenseScheduleTrace.runInstrSeq_append_running h12e hrun h3
   unfold modelMemory at h
   rw [store_upper_schedule, store_lower_schedule] at h
-  have hpc : pcAfter (UInt256.ofNat 422)
+  have hpc : pcAfter (UInt256.ofNat 423)
       ((PairedDivMaskCache.cachedInitial ++ upperTemplate) ++ lowerEndian) = UInt256.ofNat 571 := by decide
   rw [fullTemplate, DenseScheduleTrace.pcAfter_append, hpc]
   simpa only [upperTemplate, normalizedMemory] using h
@@ -295,8 +295,8 @@ theorem run_fullTemplate_natural (s : State) (returnPC : UInt256)
     (p : Nat) (rest : List UInt256) (hstack : rest.length ≤ 996) (hrun : s.halt = .Running)
     (hp : 736 ≤ p) (hbound : p + 64 < 2 ^ 256)
     (hsentinel : SentinelOK s.memory) :
-    runInstrSeq fullTemplate (scheduleEntry s (UInt256.ofNat 422) (UInt256.ofNat p) returnPC rest) =
-      some {s with pc := pcAfter (UInt256.ofNat 422) fullTemplate, stack := cache (normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p)) ++ (returnPC :: rest), memory := normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p), activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
+    runInstrSeq fullTemplate (scheduleEntry s (UInt256.ofNat 423) (UInt256.ofNat p) returnPC rest) =
+      some {s with pc := pcAfter (UInt256.ofNat 423) fullTemplate, stack := cache (normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p)) ++ (returnPC :: rest), memory := normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p), activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
   have h := run_fullTemplate s (UInt256.ofNat p) returnPC rest hstack hrun
     (loaded_active_ge23 s p hp hbound) hsentinel
   rw [normalizedMemory_congr s.memory (scheduleWords s (UInt256.ofNat p))

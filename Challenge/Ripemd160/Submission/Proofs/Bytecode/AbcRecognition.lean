@@ -11,8 +11,8 @@ the input is exactly the three bytes `0x61 0x62 0x63`.
 
 The guard performs two tests:
 
-* `CALLDATASIZE == 3`   (instructions 4092-4096, pc `0x1470`-`0x1477`)
-* `CALLDATALOAD 0 == abcWord`  (instructions 4097-4102, pc `0x1478`-`0x149f`)
+* `CALLDATASIZE == 3`   (instructions 4091-4095, pc `0x1470`-`0x1477`)
+* `CALLDATALOAD 0 == abcWord`  (instructions 4096-4101, pc `0x1478`-`0x149f`)
 
 Because `3 ≤ 32`, a single zero-padded word read covers the whole input, so the
 two together pin the calldata down to one value.  `input_eq_abc` is exactly that

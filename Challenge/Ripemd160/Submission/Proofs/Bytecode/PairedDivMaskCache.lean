@@ -46,7 +46,7 @@ private theorem add_ofNat_assoc_add (u : UInt256) (a b : Nat) :
   exact word_add_ofNat_assoc u a b
 
 def cachedInitial : List Instr :=
-  [op .JUMPDEST, .push ⟨4, by decide⟩ maskWord,
+  [.push ⟨4, by decide⟩ maskWord,
     push2 (UInt256.ofNat 257), .push 0 0, op .NOT, op .DIV,
     push3 (UInt256.ofNat 65537), .push 0 0, op .NOT, op .DIV,
     .op (.Swap ⟨2, by decide⟩), dup1, op .MLOAD, swap1,
@@ -165,17 +165,17 @@ theorem run_fullTemplate_natural (s : State) (pc returnPC : UInt256)
 #print axioms run_fullTemplate_natural
 
 
-theorem fullTemplate_length : fullTemplate.length = 165 := by
+theorem fullTemplate_length : fullTemplate.length = 164 := by
   have hold := PairedMask32Cache.fullTemplate_length
   have hi : PairedMask32Cache.cachedInitial.length = 11 := rfl
-  have hn : cachedInitial.length = 17 := rfl
+  have hn : cachedInitial.length = 16 := rfl
   simp only [PairedMask32Cache.fullTemplate, List.length_append, hi] at hold
   simp only [fullTemplate, List.length_append, hn]
   omega
 
 #print axioms fullTemplate_length
 
-theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 228 := by
+theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 227 := by
   rw [DenseScheduleTemplate.assembleBytes_length]
   norm_num [fullTemplate, cachedInitial, upperTemplate, lowerTemplate, cachedReversedHalf,
     cachedStage, endianFactorPush, endianFactor, PairedMask32Cache.halfTemplate,
@@ -187,12 +187,12 @@ theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 228 := b
 
 #print axioms fullTemplate_byteLength
 
-theorem fullTemplate_staticGas : staticGas fullTemplate = 498 := by
+theorem fullTemplate_staticGas : staticGas fullTemplate = 497 := by
   have happend (xs ys : List Instr) : staticGas (xs ++ ys) = staticGas xs + staticGas ys := by
     simp only [staticGas, List.map_append, List.sum_append]
   have hold := PairedMask32Cache.fullTemplate_staticGas
   have hi : staticGas PairedMask32Cache.cachedInitial = 31 := by decide
-  have hn : staticGas cachedInitial = 51 := by decide
+  have hn : staticGas cachedInitial = 50 := by decide
   simp only [PairedMask32Cache.fullTemplate, happend, hi] at hold
   simp only [fullTemplate, happend, hn]
   omega

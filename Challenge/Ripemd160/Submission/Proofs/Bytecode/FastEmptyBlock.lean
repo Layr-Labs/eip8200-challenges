@@ -100,14 +100,14 @@ def bodyEntry (s : State) (input : ByteArray) (_i : Nat) : State :=
 once at the driver entry, so this is already the compressor entry. -/
 def legacyDispatchEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 422
+    pc := UInt256.ofNat 423
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 402,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
 /-- Nonempty dispatcher target: checked first-block helper. -/
 def nonemptyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 422
+    pc := UInt256.ofNat 423
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 402,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
