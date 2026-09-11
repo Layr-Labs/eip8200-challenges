@@ -36,7 +36,7 @@ def path_start : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArt
 
 def path_3ee : List
     (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨279, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨281, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def gasSteps_start (input : ByteArray) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0) (atPC input 0) :=
@@ -44,7 +44,7 @@ def gasSteps_start (input : ByteArray) :
 
 def gasSteps_3ee (input : ByteArray) :
     Challenge.EvmProof.GasSteps (atPC input 468) (mainStart input) := by
-  have hpc : Artifact.submissionArtifact.instructionPC 279 = 468 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 281 = 468 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   have hrun : Challenge.EvmProof.Stepper.runLocatedBlock path_3ee
       (atPC input 468) = some (mainStart input) := by

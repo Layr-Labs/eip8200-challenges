@@ -55,10 +55,10 @@ theorem tail_stack (s : State) (input : ByteArray) (i : Nat) :
 
 theorem valid_return (s : State) (hcode : s.executionEnv.code = submissionBytecode) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 589).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 354 = 589 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 356 = 589 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 354 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 356 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 589 = true
   rw [hcode]
@@ -117,7 +117,7 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     (valid_return q qcode) qcode qfork qnp
   rw [hmemory] at gsuffix
   have gsuffix' : GasSteps
-      {q with pc := UInt256.ofNat 4806, stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] terminal (cache q.memory ++ rho)}
+      {q with pc := UInt256.ofNat 4812, stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] terminal (cache q.memory ++ rho)}
       (DriverTrace.compressReturned (resultState s input i) input i) := gsuffix
   exact gschedule'.trans (gstartup.trans ((gcore.cast hentry rfl).trans gsuffix'))
 
