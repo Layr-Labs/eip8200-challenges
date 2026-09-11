@@ -74,15 +74,15 @@ def selectorPath : List Located :=
    pushAt 163 2 5200, opAt 164 .JUMPI]
 
 def digestStorePath : List Located :=
-  [opAt 4150 .JUMPDEST, opAt 4151 .CALLDATASIZE, pushAt 4152 1 63,
-   opAt 4153 .EQ, pushAt 4154 2 5173, opAt 4155 .JUMPI,
-   pushAt 4156 20 (paddedDigestWord 56),
-   pushAt 4157 20 (UInt256.xor (paddedDigestWord 56) (paddedDigestWord 120)),
-   opAt 4158 .CALLDATASIZE, pushAt 4159 1 120, opAt 4160 .EQ,
-   opAt 4161 .MUL, opAt 4162 .XOR, pushAt 4163 0 0, opAt 4164 .MSTORE]
+  [opAt 4140 .JUMPDEST, opAt 4141 .CALLDATASIZE, pushAt 4142 1 63,
+   opAt 4143 .EQ, pushAt 4144 2 5173, opAt 4145 .JUMPI,
+   pushAt 4146 20 (paddedDigestWord 56),
+   pushAt 4147 20 (UInt256.xor (paddedDigestWord 56) (paddedDigestWord 120)),
+   opAt 4148 .CALLDATASIZE, pushAt 4149 1 120, opAt 4150 .EQ,
+   opAt 4151 .MUL, opAt 4152 .XOR, pushAt 4153 0 0, opAt 4154 .MSTORE]
 
 def digestFinishPath : List Located :=
-  [pushAt 4166 0 0, opAt 4167 .RETURN]
+  [pushAt 4156 0 0, opAt 4157 .RETURN]
 
 @[simp] private theorem shortPC166 : Artifact.submissionArtifact.instructionPC 160 = 255 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
@@ -104,75 +104,75 @@ def digestFinishPath : List Located :=
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4181 : Artifact.submissionArtifact.instructionPC 4150 = 5200 := by
+@[simp] private theorem shortPC4181 : Artifact.submissionArtifact.instructionPC 4140 = 5200 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4182 : Artifact.submissionArtifact.instructionPC 4151 = 5201 := by
+@[simp] private theorem shortPC4182 : Artifact.submissionArtifact.instructionPC 4141 = 5201 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4183 : Artifact.submissionArtifact.instructionPC 4152 = 5202 := by
+@[simp] private theorem shortPC4183 : Artifact.submissionArtifact.instructionPC 4142 = 5202 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4184 : Artifact.submissionArtifact.instructionPC 4153 = 5204 := by
+@[simp] private theorem shortPC4184 : Artifact.submissionArtifact.instructionPC 4143 = 5204 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4185 : Artifact.submissionArtifact.instructionPC 4154 = 5205 := by
+@[simp] private theorem shortPC4185 : Artifact.submissionArtifact.instructionPC 4144 = 5205 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4186 : Artifact.submissionArtifact.instructionPC 4155 = 5208 := by
+@[simp] private theorem shortPC4186 : Artifact.submissionArtifact.instructionPC 4145 = 5208 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4187 : Artifact.submissionArtifact.instructionPC 4156 = 5209 := by
+@[simp] private theorem shortPC4187 : Artifact.submissionArtifact.instructionPC 4146 = 5209 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4188 : Artifact.submissionArtifact.instructionPC 4157 = 5230 := by
+@[simp] private theorem shortPC4188 : Artifact.submissionArtifact.instructionPC 4147 = 5230 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4189 : Artifact.submissionArtifact.instructionPC 4158 = 5251 := by
+@[simp] private theorem shortPC4189 : Artifact.submissionArtifact.instructionPC 4148 = 5251 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4190 : Artifact.submissionArtifact.instructionPC 4159 = 5252 := by
+@[simp] private theorem shortPC4190 : Artifact.submissionArtifact.instructionPC 4149 = 5252 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4191 : Artifact.submissionArtifact.instructionPC 4160 = 5254 := by
+@[simp] private theorem shortPC4191 : Artifact.submissionArtifact.instructionPC 4150 = 5254 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4192 : Artifact.submissionArtifact.instructionPC 4161 = 5255 := by
+@[simp] private theorem shortPC4192 : Artifact.submissionArtifact.instructionPC 4151 = 5255 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4193 : Artifact.submissionArtifact.instructionPC 4162 = 5256 := by
+@[simp] private theorem shortPC4193 : Artifact.submissionArtifact.instructionPC 4152 = 5256 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4194 : Artifact.submissionArtifact.instructionPC 4163 = 5257 := by
+@[simp] private theorem shortPC4194 : Artifact.submissionArtifact.instructionPC 4153 = 5257 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4195 : Artifact.submissionArtifact.instructionPC 4164 = 5258 := by
+@[simp] private theorem shortPC4195 : Artifact.submissionArtifact.instructionPC 4154 = 5258 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4196 : Artifact.submissionArtifact.instructionPC 4165 = 5259 := by
+@[simp] private theorem shortPC4196 : Artifact.submissionArtifact.instructionPC 4155 = 5259 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4197 : Artifact.submissionArtifact.instructionPC 4166 = 5260 := by
+@[simp] private theorem shortPC4197 : Artifact.submissionArtifact.instructionPC 4156 = 5260 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-@[simp] private theorem shortPC4198 : Artifact.submissionArtifact.instructionPC 4167 = 5261 := by
+@[simp] private theorem shortPC4198 : Artifact.submissionArtifact.instructionPC 4157 = 5261 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -183,7 +183,7 @@ theorem run_selector (n : Nat) (input : ByteArray) (sv ov : UInt256)
   change run selectorPath (stS input 255 (returnRest sv ov)) =
     some (stS input 5200 (returnRest sv ov))
   have hdest : Decode.isValidJumpDest submissionBytecode 5200 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 4150 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 4140 (by rfl)
   have htrue : UInt256.isTrue (UInt256.gt 129 (UInt256.ofNat input.size)) := by
     rw [hsize]
     rcases hn with rfl | rfl <;> decide
