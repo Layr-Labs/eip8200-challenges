@@ -14,6 +14,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.ShortPatternDigest
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Scan
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Cleanup
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Msize
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Codesize
 
 set_option warningAsError true
 set_option maxRecDepth 100000
@@ -144,9 +145,15 @@ theorem answerMemory_read (n : Nat) :
 @[simp] theorem returnedState_hReturn (n : Nat) (input : ByteArray) (sv ov : UInt256) :
     (returnedState n input sv ov).hReturn = paddedDigest n := answerMemory_read n
 
-def tableOffset (n : Nat) : Nat := 4874 + 21 * (((1015 * n + 9) / 256) % 14)
+def tableOffset (n : Nat) : Nat := 4874 + 21 * (((259820 * n + 5216) / 65536) % 14)
 def copyReadyState (n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
   stS input 4869 ([12, UInt256.ofNat (tableOffset n), 20] ++ returnRest sv ov)
+
+def multipliedState (n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
+  stS input 4851 ([UInt256.ofNat 259820 * UInt256.ofNat n, 14] ++ returnRest sv ov)
+
+def codeSizedState (n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
+  stS input 4852 ([UInt256.ofNat 5216, UInt256.ofNat 259820 * UInt256.ofNat n, 14] ++ returnRest sv ov)
 
 def tableMemory (n : Nat) : ByteArray :=
   MachineState.writeBytes ByteArray.empty (MachineState.readPadded submissionBytecode (tableOffset n) 20) 12
@@ -210,7 +217,7 @@ private theorem codePrefix_size : codePrefix.size = 4669 := by
 private theorem code_split : submissionBytecode = codePrefix ++ submissionByteChunk20 := rfl
 private theorem tableRead (n : Nat) :
     MachineState.readPadded submissionBytecode (tableOffset n) 20 =
-      MachineState.readPadded submissionByteChunk20 (205 + 21 * (((1015 * n + 9) / 256) % 14)) 20 := by
+      MachineState.readPadded submissionByteChunk20 (205 + 21 * (((259820 * n + 5216) / 65536) % 14)) 20 := by
   rw [code_split, readPadded_append_right _ _ _ _ (by rw [codePrefix_size]; unfold tableOffset; omega), codePrefix_size]
   congr 1
   unfold tableOffset
@@ -218,7 +225,7 @@ private theorem tableRead (n : Nat) :
 
 private theorem tablePayload (n : Nat)
     (hn : n = 56 ∨ n = 120 ∨ n = 64 ∨ n = 65 ∨ n = 128 ∨ n = 63 ∨ n = 119 ∨ n = 55 ∨ n = 256 ∨ n = 376 ∨ n = 1000 ∨ n = 1 ∨ n = 31 ∨ n = 32) :
-    MachineState.readPadded submissionByteChunk20 (205 + 21 * (((1015 * n + 9) / 256) % 14)) 20 =
+    MachineState.readPadded submissionByteChunk20 (205 + 21 * (((259820 * n + 5216) / 65536) % 14)) 20 =
       (paddedDigest n).extract 12 32 := by
   rcases hn with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> decide
 
@@ -239,15 +246,16 @@ theorem tableMemory_eq (n : Nat) (hn : n = 56 ∨ n = 120 ∨ n = 64 ∨ n = 65 
 def selectorPath : List Located :=
   [pushAt 162 2 4842, opAt 163 .JUMP]
 
-def digestStorePath : List Located :=
+def digestStorePrePath : List Located :=
   [ opAt 4047 .JUMPDEST,
     pushAt 4048 1 14,
     opAt 4049 .CALLDATASIZE,
-    pushAt 4050 2 1015,
-    opAt 4051 .MUL,
-    pushAt 4052 1 9,
-    opAt 4053 .ADD,
-    pushAt 4054 1 8,
+    pushAt 4050 3 259820,
+    opAt 4051 .MUL ]
+
+def digestStorePostPath : List Located :=
+  [ opAt 4053 .ADD,
+    pushAt 4054 1 16,
     opAt 4055 .SHR,
     opAt 4056 .MOD,
     pushAt 4057 1 21,
@@ -273,9 +281,9 @@ def digestFinishPath : List Located :=
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 @[simp] theorem pc4847 : Artifact.submissionArtifact.instructionPC 4050 = 4846 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4850 : Artifact.submissionArtifact.instructionPC 4051 = 4849 := by
+@[simp] theorem pc4850 : Artifact.submissionArtifact.instructionPC 4051 = 4850 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4851 : Artifact.submissionArtifact.instructionPC 4052 = 4850 := by
+@[simp] theorem pc4851 : Artifact.submissionArtifact.instructionPC 4052 = 4851 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 @[simp] theorem pc4853 : Artifact.submissionArtifact.instructionPC 4053 = 4852 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
