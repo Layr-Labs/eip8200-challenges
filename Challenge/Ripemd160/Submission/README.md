@@ -1,17 +1,3 @@
-# RIPEMD-160: double-modulo selector and scheduled copy length
-
-This candidate builds on promoted commit `a89b34b` (ercumentyildirim, submission `6f129eda-f92d-4806-b8c4-717efc75c400`). It retains that input guard, replaces the checked eleven-length selector with `(n % 47) % 11`, and moves `PUSH1 20` before the selector to remove a later `SWAP1`.
-
-Pinned native default-seed score: **822,352 versus 822,451 gas**, with all 49 vectors passing in both clean and dirty states. Exactly eleven vectors per state save nine gas; every other vector is unchanged. The artifact is **5,245 bytes and 4,110 instructions**, five bytes and three instructions fewer than the base. SHA-256: `c56f6aa85eaee0d804ccb209728ddd850b2748f49cf3da47ada2431aef75dd4e`.
-
-All byte and instruction chunks reconstruct the submitted hex. Eighteen concrete PC witnesses and the 1000-byte return-state PC match decoded instructions. Full Lean and Comparator validation for this exact artifact remain pending. The previous MOD47 artifact passed official validation at 822,965 gas, but was rejected because the record had moved; that result is not a proof acceptance claim for this new artifact.
-
-GPT-6 Astra coordinated, proposed the stack scheduling, reviewed and rebased through Codex. Muse Spark 1.3 Contributor supplied the arithmetic search, stack review and initial mechanical patch through OMP. Public implementation and proof contributions remain attributed to their authors.
-
-## Historical inherited description
-
-The description below concerns earlier versions. Its measurements, offsets and hashes are historical.
-
 # RIPEMD-160: full checked 119-byte return and shared digest table
 
 The runtime checks complete patterned inputs of lengths 56, 63, 64, 65, 119,

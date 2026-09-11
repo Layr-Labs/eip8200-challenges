@@ -121,7 +121,7 @@ noncomputable def kernel : StackRunBridge.BlockKernel where
 
 theorem correct (input : ByteArray) (hfit : CalldataFits input)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0)
-      (Execution.atPC input 276)) :
+      (Execution.atPC input 284)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) :=
   StackRunBridge.correct_of_block_kernel kernel input hfit entryPrefix

@@ -9,7 +9,7 @@ open PatternedInputData PatternedDigest PatternedGuardSpec PatternedSwar
 def gasSteps_return :
     GasSteps (hitState patternedInput) (returnedState patternedInput) := by
   change GasSteps
-    (ShortPatternFinish.selectorState 1000 patternedInput (UInt256.ofNat (scalarAt 32)) 1024)
+    (ShortPatternFinish.selectorState 1005 patternedInput (UInt256.ofNat (scalarAt 32)) 1024)
     (ShortPatternFinish.returnedState 1000 patternedInput (UInt256.ofNat (scalarAt 32)) 1024)
   exact ShortPatternFinish.gasSteps_return 1000 patternedInput
     (UInt256.ofNat (scalarAt 32)) 1024 (by decide) patternedInput_size
