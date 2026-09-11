@@ -17,7 +17,7 @@ open PatternedScan PatternedSwar
 @[simp] private theorem cleanupDest : Decode.isValidJumpDest submissionBytecode 259 = true :=
   Artifact.submissionArtifact.isValidJumpDest_index 164 (by rfl)
 @[simp] private theorem fallbackDest : Decode.isValidJumpDest submissionBytecode 393 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 255 (by rfl)
+  Artifact.submissionArtifact.isValidJumpDest_index 254 (by rfl)
 
 def branchPath : List Located :=
   [opAt 159 (.Dup ⟨2, by decide⟩), pushAt 160 2 259, opAt 161 .JUMPI]

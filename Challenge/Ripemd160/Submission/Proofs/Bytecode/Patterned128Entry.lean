@@ -80,7 +80,7 @@ private theorem byteValue_true (input : ByteArray) (hbyte : DirectGuard.firstByt
   exact (by decide : UInt256.eq (UInt256.ofNat 7) (UInt256.ofNat 7) ≠ UInt256.ofNat 0) hbad
 
 private theorem guard_fallback_dest : Decode.isValidJumpDest submissionBytecode 393 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 255 (by rfl)
+  Artifact.submissionArtifact.isValidJumpDest_index 254 (by rfl)
 private theorem guard_match_dest : Decode.isValidJumpDest submissionBytecode 98 = true :=
   Artifact.submissionArtifact.isValidJumpDest_index 59 (by rfl)
 @[simp] private theorem pc4799 : Artifact.submissionArtifact.instructionPC 179 = 276 := by

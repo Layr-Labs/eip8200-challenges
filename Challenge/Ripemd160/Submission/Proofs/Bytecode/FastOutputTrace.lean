@@ -415,8 +415,7 @@ theorem runInstrSeq_fastEndianStage16
         pc := pcAfter startPC fastEndianStage16
         stack := DenseScheduleTemplate.packedStage value 16
           FastOutputTemplate.mask16 :: rest } := by
-  exact ClosedEndianReuse.run_endian s startPC value 16
-    DenseScheduleTemplate.mask16 rest hstack (Or.inr ⟨rfl, rfl⟩) hrun
+  exact ClosedEndianReuse.run_wide16 s startPC value rest hstack hrun
 
 theorem runInstrSeq_fastStoreAndSetup
     (s : State) (startPC value : UInt256) (rest : List UInt256)

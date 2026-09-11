@@ -81,6 +81,78 @@ theorem run_endian (s : State) (startPC value : UInt256) (shift : Nat)
     all_goals
       simp [UInt256.mul, Fin.mul_def, Nat.mul_comm]
 
+/-- Stage 16 without the entry label, and with the endian factor pushed
+as four bytes instead of three. The label at the head of `code` is not a
+jump target, and the byte it costs is exactly the byte this push spends,
+so the artifact keeps both its size and every one of its pcs. -/
+def push4 (value : UInt256) : Instr :=
+  .push ⟨4, by decide⟩ value
+
+def codeWide16 : List Instr :=
+  [push4 (UInt256.ofNat 65537), .op (.Dup ⟨1, by decide⟩), dup1,
+   push1 (UInt256.ofNat 16), op .SHR, op .XOR, .op (.Dup ⟨1, by decide⟩),
+   .push 0 0, op .NOT, op .DIV, op .AND, op .MUL, op .XOR]
+
+theorem run_wide16 (s : State) (startPC value : UInt256)
+    (rest : List UInt256) (hstack : rest.length < 1019)
+    (hrun : s.halt = .Running) :
+    runInstrSeq codeWide16 {s with pc := startPC, stack := value :: rest} =
+      some {s with
+        pc := pcAfter startPC codeWide16
+        stack := packedStage value 16 mask16 :: rest} := by
+  have hcap (m : Nat) (hm : m ≤ 5) : rest.length + m < 1024 := by omega
+  have hcap2 : rest.length + 1 + 1 < 1024 := by omega
+  have hcap3 : rest.length + 1 + 1 + 1 < 1024 := by omega
+  have hcap4 : rest.length + 1 + 1 + 1 + 1 < 1024 := by omega
+  have hcap5 : rest.length + 5 < 1024 := by omega
+  have hzero : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hsemantic :
+      UInt256.xor
+        (UInt256.mul (endianFactor 16)
+          (UInt256.land mask16
+            (UInt256.xor (UInt256.shiftRight value (UInt256.ofNat 16)) value))) value =
+        packedStage value 16 mask16 := by
+    rw [Word.land_comm mask16]
+    simpa only [multipliedStage, endianDelta, endianFactor] using
+      DenseEndianMultiply.multipliedStage16_eq_packedStage value
+  simp only [endianFactor] at hsemantic
+  norm_num at hsemantic
+  simp (config := { maxSteps := 1000000 })
+    [codeWide16, endianFactorPush, endianFactor, op, push1, push2, push3,
+      push4, dup1,
+      runInstrSeq, Stepper.runInstr, pcAfter, hrun, hcap, hcap2, hcap3, hcap4,
+      hcap5, hzero, mask8_div, mask16_div, UInt256.succ, Instr.size,
+      Instr.size_push, Instr.size_op, Word.literal_eq_ofNat,
+      Word.word_toNat_ofNat, Word.ofNat_add_mod, Word.succ_ofNat, List.exchange,
+      List.getElem?_cons_zero, List.getElem?_cons_succ,
+      word_add_assoc, word_add_ofNat_assoc, hsemantic]
+  repeat first
+    | rw [add_ofNat_assoc_hAdd]
+    | rw [add_ofNat_assoc_add]
+    | rw [add_ofNat_assoc]
+  simp only [add_assoc_explicit, add_assoc_explicit_hAdd,
+    add_assoc_hAdd_explicit, word_add_assoc]
+  simp [Word.ofNat_add_mod, Nat.add_assoc]
+  rw [mul_op]
+  convert hsemantic using 1
+  all_goals
+    simp [UInt256.mul, Fin.mul_def, Nat.mul_comm]
+
+theorem advances_wide16 {instruction : Instr} {s t : State}
+    (hmem : instruction ∈ codeWide16)
+    (hrun : Stepper.runInstr instruction s = some t) :
+    t.pc = s.pc + UInt256.ofNat instruction.size := by
+  simp only [codeWide16, List.mem_cons, List.not_mem_nil, or_false] at hmem
+  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
+    rfl | rfl | rfl | rfl
+  all_goals first
+    | exact RepeatedByteWord.runInstr_pc_div hrun
+    | apply DenseScheduleLift.runInstr_pc_of_advances ?_ hrun
+  all_goals first
+    | exact Or.inl (Or.inr (Or.inr rfl))
+    | exact Or.inr (Or.inr rfl)
+    | exact Or.inl (Or.inl (by constructor))
+
 theorem advances (shift : Nat) {instruction : Instr} {s t : State}
     (hmem : instruction ∈ code shift) (hrun : Stepper.runInstr instruction s = some t) :
     t.pc = s.pc + UInt256.ofNat instruction.size := by

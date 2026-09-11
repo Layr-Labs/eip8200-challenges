@@ -106,7 +106,7 @@ private theorem fastOutputBeforeReturn_advances
   · exact DenseScheduleLift.runInstr_pc_of_advances
       (fastPackTemplate_advances instruction hpack) hrun
   · exact ClosedEndianReuse.advances 8 h8 hrun
-  · exact ClosedEndianReuse.advances 16 h16 hrun
+  · exact ClosedEndianReuse.advances_wide16 h16 hrun
   · exact DenseScheduleLift.runInstr_pc_of_advances
       (fastStoreAndSetup_advances instruction hstore) hrun
 
@@ -143,7 +143,7 @@ def fastOutputSite :
 
 @[simp] theorem fastOutputSite_endPC :
     fastOutputSite.endPC = UInt256.ofNat 392 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 254) =
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 253) =
     UInt256.ofNat 392
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
@@ -168,12 +168,12 @@ private theorem pc_toNat_instructionPC (index : Nat) :
 
 def fastOutputReturn : LocatedSite Artifact.submissionArtifact .Osaka where
   located :=
-    { index := 254
+    { index := 253
       instruction := .op .RETURN
       atIndex := by rfl
       wellFormed := ⟨by decide, trivial, rfl⟩ }
-  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 254)
-  pc_eq := pc_toNat_instructionPC 254
+  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 253)
+  pc_eq := pc_toNat_instructionPC 253
 
 def fastOutputReturnPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -181,7 +181,7 @@ def fastOutputReturnPath :
 
 @[simp] theorem fastOutputReturn_pc :
     fastOutputReturn.pc = UInt256.ofNat 392 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 254) =
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 253) =
     UInt256.ofNat 392
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
@@ -267,12 +267,12 @@ private theorem runFastOutputReturn
           simpa [h] using hret_raw
         subst next
         rfl
-  have hpc_nat : t.pc.toNat = Artifact.submissionArtifact.instructionPC 254 := by
+  have hpc_nat : t.pc.toNat = Artifact.submissionArtifact.instructionPC 253 := by
     calc
       t.pc.toNat = fastOutputReturn.pc.toNat := by rw [hpc_t]
       _ = Artifact.submissionArtifact.instructionPC fastOutputReturn.located.index :=
         fastOutputReturn.pc_eq
-      _ = Artifact.submissionArtifact.instructionPC 254 := by rfl
+      _ = Artifact.submissionArtifact.instructionPC 253 := by rfl
   have hlocated :
       Stepper.runLocated fastOutputReturn.located t =
         some (FastOutputTrace.afterFastReturn t t.pc rest) := by
