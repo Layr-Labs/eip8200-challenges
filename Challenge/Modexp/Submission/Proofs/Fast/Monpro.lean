@@ -568,7 +568,7 @@ def mpExitState (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb : Nat)
 /-- `CSUB` entry, pc 2309, with stack `[pd, ret]`. -/
 def mpCsubState (s : State) (mem : ByteArray) (pdst ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4993
+  { s with pc := UInt256.ofNat 3811
            stack := [pdst, ret] ++ rest
            memory := mem }
 
@@ -1203,18 +1203,18 @@ theorem run_mpExit (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb : Nat)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have h2642 : (4993 : UInt256).toNat = 4993 := by decide
-  have h2642' : (4993 : UInt256) = UInt256.ofNat 4993 := by decide
+  have h2642 : (3811 : UInt256).toNat = 3811 := by decide
+  have h2642' : (3811 : UInt256) = UInt256.ofNat 3811 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (4993 : UInt256).toNat = true := by
-    rw [h2642]; exact jumpDestCsubDirect
+      (3811 : UInt256).toNat = true := by
+    rw [h2642]; exact jumpDest4976
   simp (config := { maxSteps := 400000 })
     [blk1595, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       mpExitState, mpCsubState, fastPC15,
-      hc2, hc3, hc4, hc5, hrun, hcode, h2642, h2642', hjump, jumpDestCsubDirect,
+      hc2, hc3, hc4, hc5, hrun, hcode, h2642, h2642', hjump, jumpDest4976,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
@@ -2964,11 +2964,8 @@ theorem csResultMemory_readWord_outside (memory : ByteArray) (n pdst addr : Nat)
     (hsubb : addr + 32 ≤ 7168 ∨ 7168 + 32 * n ≤ addr)
     (hdst : addr + 32 ≤ pdst ∨ pdst + 32 * n ≤ addr) :
     MachineState.readWord (Csub.csResultMemory memory n pdst) addr =
-      MachineState.readWord memory addr := by
-  simp only [Csub.csResultMemory]
-  rw [readWord_mcopy_outside (Csub.csStep memory n n).memory
-    (Csub.csSrc memory n n).toNat pdst (32 * n) addr hdst]
-  exact Csub.csStep_readWord_disjoint memory n addr hn hsubb n (Nat.le_refl n)
+      MachineState.readWord memory addr :=
+  Csub.guarded_readWord_outside memory n pdst addr hn hsubb hdst
 
 /-- The memory a whole `MonPro(pa, pb) → pd` call leaves behind. -/
 def monproMem (s : State) (mem : ByteArray) (pa pb n pdst : Nat) : ByteArray :=

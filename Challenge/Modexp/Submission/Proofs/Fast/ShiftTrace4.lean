@@ -340,7 +340,10 @@ def gasSteps_csubStep (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
         (UInt256.ofNat k :: outer n bsize esize msize) hlen e.code e.fork e.run e.np
         e.act296 hn hn32 jumpD5357 hml htl hs32'
         (by rw [show (UInt256.ofNat 2048).toNat = 2048 by decide]; omega) htn'))
-    rfl rfl
+    rfl (by
+      rw [Csub.csReturnedState_eq_result,
+        show (UInt256.ofNat 2048).toNat = 2048 by decide]
+      rfl)
 
 /-- The first `CSUB(BASE)`, reducing the raw base, from `HIT` to `AFTER_CSUB0`. -/
 def gasSteps_hitCsub (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)
@@ -382,7 +385,10 @@ def gasSteps_hitCsub (s : State) (mem input : ByteArray) (n bsize esize msize : 
         (by rw [hhigh 9408 (by omega)]; exact hml)
         (by rw [hhigh 9440 (by omega)]; exact htl) hs32'
         (by rw [show (UInt256.ofNat 2048).toNat = 2048 by decide]; omega) htn'))
-    rfl rfl
+    rfl (by
+      rw [Csub.csReturnedState_eq_result,
+        show (UInt256.ofNat 2048).toNat = 2048 by decide]
+      rfl)
 
 /-! ## One shift step -/
 

@@ -1,4 +1,5 @@
-import Challenge.Modexp.Submission.Proofs.Fast.CiosAccumulatorFull
+import Challenge.Modexp.Submission.Proofs.Fast.CarryFull
+import Challenge.Modexp.Submission.Proofs.Fast.CsubReturnState
 import Challenge.Modexp.Submission.Proofs.Fast.Model
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P3
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P4
@@ -224,7 +225,7 @@ def gasSteps_addmodFull (s : State) (mem : ByteArray) (pa pb n pd : Nat)
         hrun hnp hact hn hn32 hpa (by omega) hpb (by omega) hs32 htl).trans
       (Csub.gasSteps_csub s (Csub.amResultMemory mem pa pb n) n (UInt256.ofNat pd) ret
         tail hcap hcode hfork hrun hnp hact hn hn32 hjump hml' htl' hs32' hdstFit htn))
-    rfl (by simp only [Csub.csReturnedState, retTo, amMemOf, Csub.csResultMemory, hpdN])
+    rfl (by simp only [Csub.csReturnedState_eq_result, retTo, amMemOf, hpdN])
 
 /-- `ADDMOD` writes only below `8256`, so nothing at or above `V_S32` moves. -/
 theorem amMemOf_readWord_high (mem : ByteArray) (pa pb n pd addr : Nat)
@@ -260,7 +261,7 @@ theorem monproMem_frame' {s : State} {mem : ByteArray} {n bsize minv : Nat}
    by rw [key.2.2.2.2]; exact hf.eoff⟩
 
 /-- The two subroutines this module calls, as abstract single-step contracts
-carrying exactly the side conditions `Fast.CiosAccumulatorFull.gasSteps_monproFull` and
+carrying exactly the side conditions `Fast.CarryFull.gasSteps_monproFull` and
 `Fast.Csub.gasSteps_addmod`/`gasSteps_csub` require: the configuration words
 (`Frame`), the pointer bounds, the return-address jump destination, and — for
 `MONPRO` — the values of the two operand blocks. -/
@@ -4845,7 +4846,7 @@ theorem handled_of_rrHead (input : ByteArray) (s : State) (mem : ByteArray)
 
 /-! ## The concrete subroutine instance
 
-`MONPRO` comes from `Fast.CiosAccumulatorFull.gasSteps_monproFull`, `ADDMOD` from the pair
+`MONPRO` comes from `Fast.CarryFull.gasSteps_monproFull`, `ADDMOD` from the pair
 `Fast.Csub.gasSteps_addmod` / `gasSteps_csub` packaged as `gasSteps_addmodFull`. -/
 
 /-- The `MONPRO` step of the concrete instance. -/
@@ -4886,13 +4887,12 @@ def subsMonpro (s : State) (n bsize mm minv : Nat)
       have hmi : (MachineState.readWord mem 9376).toNat = minv := by
         rw [hf.minvW, toNat_ofNat_self hminvlt]
       exact Challenge.EvmProof.GasSteps.cast
-        (CiosAccumulatorFull.gasSteps_monproFull s mem pa pb p a b mm (UInt256.ofNat pd) ret tail
+        (CarryFull.gasSteps_monproFull s mem pa pb p a b mm (UInt256.ofNat pd) ret tail
           (by omega) hrun hcode hfork hnp hact hn32 hpa hpaFit hpb hpbFit hcds
           hf.s32 hf.tl hf.ml hjump (by omega) ha hb hm ham hmpos
           (by rw [hlow, hmi]; exact hminvA))
         rfl
-        (by simp only [Csub.csReturnedState, retTo, CarryResult.monproMem_def,
-          Csub.csResultMemory, hpdN])
+        (by simp only [Csub.csReturnedState_eq_result, retTo, CarryResult.monproMem_def, hpdN])
 
 /-- The `ADDMOD` step of the concrete instance. -/
 def subsAddmod (s : State) (n bsize minv : Nat)
@@ -5172,8 +5172,8 @@ def gasSteps_r1Block (s : State) {n bsize minv : Nat} (esize msize : Nat)
         (outer n bsize esize msize) (by omega) hcode hfork hrun hnp hact hn hn32
         hjump hml htl hs32 hdstFit htn
     Challenge.EvmProof.GasSteps.cast ((g1.trans g2).trans g3) rfl
-      (by simp only [Csub.csReturnedState, retTo, r1Mem, if_pos htop,
-            Csub.csResultMemory, show (UInt256.ofNat 4096).toNat = 4096 by decide])
+      (by simp only [Csub.csReturnedState_eq_result, retTo, r1Mem, if_pos htop,
+            show (UInt256.ofNat 4096).toNat = 4096 by decide])
   else
     have g1 : Challenge.EvmProof.GasSteps
         (R1.entryState s mem 4096 ret (outer n bsize esize msize))

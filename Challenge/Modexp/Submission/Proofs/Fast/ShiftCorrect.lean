@@ -74,9 +74,13 @@ theorem hitFinal_acc (mem input : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 :
   have h1 : Model.FastRepresents (m1Of mem input n) 1024 n
       (Precompile.bytesToNatPadded input 96 (32 * n)) := by
     unfold m1Of Csub.csResultMemory
-    refine Csub.fastRepresents_mcopy_disjoint _ _ 2048 (32 * n) 1024 n _ (Or.inr (by omega)) ?_
-    exact Csub.fastRepresents_csStep _ n 1024 n _ (by omega) (Or.inl (by omega))
-      (hitMem_acc mem input n hn32) n le_rfl
+    split
+    · exact Csub.fastRepresents_mcopy_disjoint _ _ 2048 (32*n) 1024 n _
+        (Or.inr (by omega)) (hitMem_acc mem input n hn32)
+    · unfold Csub.subResultMemory
+      refine Csub.fastRepresents_mcopy_disjoint _ _ 2048 (32*n) 1024 n _ (Or.inr (by omega)) ?_
+      exact Csub.fastRepresents_csStep _ n 1024 n _ (by omega) (Or.inl (by omega))
+        (hitMem_acc mem input n hn32) n le_rfl
   have h2 : Model.FastRepresents (m2Of mem input n) 1024 n
       (Precompile.bytesToNatPadded input 96 (32 * n)) := by
     unfold m2Of preMem

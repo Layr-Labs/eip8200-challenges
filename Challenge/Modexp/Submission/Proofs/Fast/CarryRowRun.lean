@@ -1,5 +1,3 @@
-/- Adapted from delordemm1 submission 173ec87d-b01c-4a3b-b36a-e0a008eb4d72,
-   commit b07846bed58c2c028c8c9b987eaa0e049ca5587a. -/
 import Challenge.Modexp.Submission.Proofs.Fast.CarryRowTrace
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedPointers
 
@@ -17,12 +15,12 @@ open CiosCachedMidMemory
 
 theorem run_tail (s : State) (c mu f pbi pa pb flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 4252 = true) :
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 4250 = true) :
     runInstructions CarryRowPrograms.tail
-      (framed s (UInt256.ofNat 4828)
+      (framed s (UInt256.ofNat 4837)
         ([c,mu,f,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) =
     some (framed {s with memory := tailCarry s.memory c f}
-      (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb) then UInt256.ofNat 4252 else UInt256.ofNat 4885)
+      (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb) then UInt256.ofNat 4250 else UInt256.ofNat 4870)
       ([negative32+pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) := by
   have h1 := CarryRowTrace.run_tailStore s c mu f pbi pa pb flag dst ret rest hcap hact
   have h2 := CiosCachedTailTest.run_test {s with memory := tailCarry s.memory c f}

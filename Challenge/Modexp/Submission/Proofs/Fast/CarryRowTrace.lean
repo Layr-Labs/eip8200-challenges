@@ -1,8 +1,7 @@
-/- Adapted from delordemm1 submission 173ec87d-b01c-4a3b-b36a-e0a008eb4d72,
-   commit b07846bed58c2c028c8c9b987eaa0e049ca5587a. -/
 import Challenge.Modexp.Submission.Proofs.Fast.CarryRowModel
 import Challenge.Modexp.Submission.Proofs.Fast.CarryRowPrograms
-import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMidDefs
+import Challenge.Modexp.Submission.Proofs.Fast.CiosEndAroundCarry
+import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMidMemory
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedTailTest
 
 set_option warningAsError true
@@ -19,9 +18,9 @@ open Monpro CiosCached CiosCachedMacCore CarryRowModel
 theorem run_middleStore (s : State) (c bi pbi pa pb flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat) :
     runInstructions CarryRowPrograms.middleStore
-      (framed s (UInt256.ofNat 4537)
+      (framed s (UInt256.ofNat 4546)
         ([c,bi,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) =
-    some (framed {s with memory := midMem1 s.memory c} (UInt256.ofNat 4549)
+    some (framed {s with memory := midMem1 s.memory c} (UInt256.ofNat 4562)
       ([overflow s.memory c,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) := by
   have hc8 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hc9 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
@@ -40,9 +39,9 @@ theorem run_middleStore (s : State) (c bi pbi pa pb flag dst ret : UInt256)
 theorem run_tailStore (s : State) (c mu f pbi pa pb flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat) :
     runInstructions CarryRowPrograms.tailStore
-      (framed s (UInt256.ofNat 4828)
+      (framed s (UInt256.ofNat 4837)
         ([c,mu,f,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) =
-    some (framed {s with memory := tailCarry s.memory c f} (UInt256.ofNat 4844)
+    some (framed {s with memory := tailCarry s.memory c f} (UInt256.ofNat 4861)
       ([pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) := by
   have hc8 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hc9 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega

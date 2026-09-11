@@ -23,6 +23,7 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
+attribute [local simp] jumpDestGuardResume jumpDestFourResume
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs
 
@@ -237,6 +238,10 @@ theorem run_macBodyA (s : State) (um : ByteArray) (q pa pt pa' pt' : UInt256)
   have hactT : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (8256 + 32 * (n - 1 - j)) 32) = s.activeWords :=
     Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have h3837 : (3837 : UInt256).toNat = 3837 := by decide
+  have heq3837 : (3837 : UInt256) = UInt256.ofNat 3837 := by decide
+  have h3898 : (3898 : UInt256).toNat = 3898 := by decide
+  have heq3898 : (3898 : UInt256) = UInt256.ofNat 3898 := by decide
   simp (config := { maxSteps := 800000 })
     [blk3077a, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -245,6 +250,7 @@ theorem run_macBodyA (s : State) (um : ByteArray) (q pa pt pa' pt' : UInt256)
       pcMacLoop, pcMacTail, Monpro.l1Step, Monpro.macSum, Monpro.macCarry, Monpro.mulHi,
       Monpro.maxWord_literal, outer, Exp.outer,
       hrun, hcode, negK_literal, hpa, hpt, hpa', hpt', hactA, hactT,
+      h3837, heq3837, h3898, heq3898,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,

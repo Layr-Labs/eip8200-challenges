@@ -467,14 +467,9 @@ destination block stays below. -/
 theorem readWord_csResultMemory_high (mem : ByteArray) (n pdst addr : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 32) (hpdst : pdst + 32 * n ≤ 9344) (haddr : 9344 ≤ addr) :
     MachineState.readWord (Csub.csResultMemory mem n pdst) addr =
-      MachineState.readWord mem addr := by
-  have hsize : (MachineState.readPadded (Csub.csStep mem n n).memory
-      (Csub.csSrc mem n n).toNat (32 * n)).size = 32 * n :=
-    Challenge.EvmProof.Memory.readPadded_size _ _ _
-  simp only [Csub.csResultMemory]
-  rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _
-      (Or.inr (by rw [hsize]; omega)),
-    Csub.csStep_readWord_disjoint mem n addr hn (Or.inr (by omega)) n le_rfl]
+      MachineState.readWord mem addr :=
+  Csub.guarded_readWord_outside mem n pdst addr hn (Or.inr (by omega))
+    (Or.inr (by omega))
 
 theorem vars_dblStep (mem : ByteArray) (px n : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hpxFit : px + 32 * n ≤ 8192) (hv : Vars mem n) : Vars (dblStep px n mem) n := by
@@ -504,7 +499,7 @@ theorem csReturned_eq (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt25
       retState s (dblStep px n mem) px k ret rest := by
   have hpxN : (UInt256.ofNat px).toNat = px := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hpx]
-  simp only [Csub.csReturnedState, retState, dblStep, Csub.csResultMemory, hpxN]
+  simp only [Csub.csReturnedState, Csub.subReturnedState, Csub.subResultMemory, retState, dblStep, Csub.csResultMemory, hpxN]
 
 /-- One complete `ADDMOD(px, px, px)` call: `ADDMOD` followed by `CSUB`. -/
 def gasSteps_addmodStep (s : State) (mem : ByteArray) (px n : Nat) (ret' : UInt256)

@@ -1,5 +1,3 @@
-/- Adapted from delordemm1 submission 173ec87d-b01c-4a3b-b36a-e0a008eb4d72,
-   commit b07846bed58c2c028c8c9b987eaa0e049ca5587a. -/
 import Challenge.Modexp.Submission.Proofs.Fast.CarryScratchAgreement
 import Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
@@ -164,17 +162,27 @@ theorem csResult_agree (a b : ByteArray) (h : Agree a b) (n dst : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 32)
     (htn : (MachineState.readWord b 8224).toNat ≤ 1) :
     Agree (Csub.csResultMemory a n dst) (Csub.csResultMemory b n dst) := by
-  have hs := csStep_agree a b h n n hn32
-  have htn' : (MachineState.readWord (Csub.csStep b n n).memory 8224).toNat ≤ 1 := by
-    rw [Csub.csStep_readWord_disjoint b n 8224 hn (Or.inr (by omega)) n le_rfl]
-    exact htn
-  have hsrc := Csub.csSrc_toNat b n n (Csub.csUse_le_one b n n htn')
-  have hout : (Csub.csSrc b n n).toNat + 32*n ≤ 8192 ∨ 8224 ≤ (Csub.csSrc b n n).toNat := by
-    rw [hsrc]
-    split <;> omega
-  have hbytes := readPadded_eq hs.1 (Csub.csSrc b n n).toNat (32*n) hout
-  simp only [Csub.csResultMemory, csSrc_eq a b h n n hn32, hbytes]
-  exact write_same hs.1 _ _
+  have hg : EarlyCsub.Skip a = EarlyCsub.Skip b := by
+    unfold EarlyCsub.Skip EarlyCsub.guardWord
+    rw [readWord_eq h 8224 (Or.inr (by decide)),
+      readWord_eq h 8256 (Or.inr (by decide)), readWord_eq h 0 (Or.inl (by decide))]
+  simp only [Csub.csResultMemory, hg]
+  split
+  · rw [readPadded_eq h 8256 (32*n) (Or.inr (by decide))]
+    exact write_same h _ _
+  ·
+    have hs := csStep_agree a b h n n hn32
+    have htn' : (MachineState.readWord (Csub.csStep b n n).memory 8224).toNat ≤ 1 := by
+      rw [Csub.csStep_readWord_disjoint b n 8224 hn (Or.inr (by omega)) n le_rfl]
+      exact htn
+    have hsrc := Csub.csSrc_toNat b n n (Csub.csUse_le_one b n n htn')
+    have hout : (Csub.csSrc b n n).toNat + 32*n ≤ 8192 ∨ 8224 ≤ (Csub.csSrc b n n).toNat := by
+      rw [hsrc]
+      split <;> omega
+    have hbytes := readPadded_eq hs.1 (Csub.csSrc b n n).toNat (32*n) hout
+    simp only [Csub.subResultMemory, csSrc_eq a b h n n hn32, hbytes]
+    exact write_same hs.1 _ _
+
 
 theorem fastRepresents_iff (a b : ByteArray) (h : Agree a b) (ptr n value : Nat)
     (hout : ptr+32*n ≤ 8192 ∨ 8224 ≤ ptr) :
