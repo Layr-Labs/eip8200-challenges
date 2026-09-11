@@ -90,7 +90,7 @@ def squareCall : List Located :=
    pushAt 2595 2 2048,
    pushAt 2596 2 2048,
    pushAt 2597 2 2048,
-   pushAt 2598 2 4049,
+   pushAt 2598 2 4053,
    opAt 2599 .JUMP]
 
 def squareReturn : List Located :=
@@ -108,7 +108,7 @@ def product : List Located :=
    pushAt 2609 2 1024,
    pushAt 2610 2 1024,
    pushAt 2611 2 2048,
-   pushAt 2612 2 4049,
+   pushAt 2612 2 4053,
    opAt 2613 .JUMP]
 
 def finish : List Located :=

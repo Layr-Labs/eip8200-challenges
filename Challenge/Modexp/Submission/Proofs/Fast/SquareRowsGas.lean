@@ -24,7 +24,7 @@ def state (s : State) (mem : ByteArray) (pa i : Nat)
     (tl inv m0 aEnd m96 m64 m32 dst ret : UInt256) (rest : List UInt256) : State :=
   stateAt s mem (if i < 8 then 5190 else 4794)
     (base (UInt256.ofNat (ptrAt (pa+32*8-32) i)) (UInt256.ofNat pa) (UInt256.ofNat (pa-32))
-      (tag i) (UInt256.ofNat 4509) inv
+      (tag i) (UInt256.ofNat 4518) inv
       (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))
 
 def gasSteps_row (s : State) (mem : ByteArray) (pa i : Nat)
@@ -60,7 +60,7 @@ def gasSteps_row (s : State) (mem : ByteArray) (pa i : Nat)
     simpa only [SquareCoefficients.coefficient, Nat.reduceEqDiff, if_false, ite_true,
       SquareCoefficients.dWord, Nat.reduceSub, Nat.reduceMul, Nat.reduceAdd] using hhigh
   have hpdt := SquareProductGas.gasSteps_product s mem ai i pbi (UInt256.ofNat pa)
-    (UInt256.ofNat (pa-32)) (tag i) (UInt256.ofNat 4509) inv
+    (UInt256.ofNat (pa-32)) (tag i) (UInt256.ofNat 4518) inv
     (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)
     (by simp only [List.length_cons]; omega) hact hi hpbi hdelta (by rw [hp]; rfl) hh env
   have hread (addr : Nat) (hd : addr+32 ≤ 8224 ∨ 8512 ≤ addr) :
@@ -111,8 +111,8 @@ def gasSteps_rows (s : State) (mem : ByteArray) (pa : Nat)
     (env.transfer rfl rfl) rfl
   exact CiosReadonly.run_exit {s with memory := rows mem pa 8}
     (UInt256.ofNat (ptrAt (pa+32*8-32) 8)) (UInt256.ofNat pa) (UInt256.ofNat (pa-32)) (tag 8)
-    (UInt256.ofNat 4509) tl inv m0 aEnd m96 m64 m32 dst ret rest hcap
+    (UInt256.ofNat 4518) tl inv m0 aEnd m96 m64 m32 dst ret rest hcap
     (by change Decode.isValidJumpDest s.executionEnv.code 4902 = true
-        rw [env.code]; exact Artifact.isValidJumpDest_index 3737 (by rfl))
+        rw [env.code]; exact Artifact.isValidJumpDest_index 3743 (by rfl))
 
 end Challenge.Modexp.Submission.Proofs.Fast.SquareRowsGas

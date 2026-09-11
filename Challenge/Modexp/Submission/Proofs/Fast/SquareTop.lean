@@ -82,8 +82,8 @@ theorem flag_zero (mem : ByteArray) (c : UInt256) :
   simp only [flag, value, add_zero, gt_self]
 
 /-- The exact shared TOP block, including its common MU cleanup. -/
-def topBlock : Block Artifact.submissionArtifact .Osaka 4461 CarryRowPrograms.middleStore :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3399 24 4461 CarryRowPrograms.middleStore
+def topBlock : Block Artifact.submissionArtifact .Osaka 4470 CarryRowPrograms.middleStore :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3405 24 4470 CarryRowPrograms.middleStore
     (by decide) (by rfl) (by rfl) (by decide)
 
 def firstProgram : List Instr := CarryRowPrograms.middleStore.take 12
@@ -91,8 +91,8 @@ def secondProgram : List Instr := CarryRowPrograms.middleStore.drop 12
 
 theorem run_first (s : State) (mem : ByteArray) (c bi : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1016) (hact : 296 ≤ s.activeWords.toNat) :
-    runInstructions firstProgram (stateAt s mem 4461 (c :: bi :: rest)) =
-      some (stateAt s mem 4475
+    runInstructions firstProgram (stateAt s mem 4470 (c :: bi :: rest)) =
+      some (stateAt s mem 4484
         ((c+bi*MachineState.readWord mem 8928) ::
          UInt256.gt c (c+bi*MachineState.readWord mem 8928) :: bi :: rest)) := by
   have hc2 : rest.length+2 < 1024 := by omega
@@ -109,8 +109,8 @@ theorem run_first (s : State) (mem : ByteArray) (c bi : UInt256) (rest : List UI
 
 theorem run_second (s : State) (mem : ByteArray) (v f bi : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1016) (hact : 296 ≤ s.activeWords.toNat) :
-    runInstructions secondProgram (stateAt s mem 4475 (v :: f :: bi :: rest)) =
-      some (stateAt s (storeWord mem 8224 (MachineState.readWord mem 8224+v)) 4491
+    runInstructions secondProgram (stateAt s mem 4484 (v :: f :: bi :: rest)) =
+      some (stateAt s (storeWord mem 8224 (MachineState.readWord mem 8224+v)) 4500
         ((UInt256.lt (MachineState.readWord mem 8224+v) v+f) :: rest)) := by
   have hc2 : rest.length+2 < 1024 := by omega
   have hc3 : rest.length+3 < 1024 := by omega
@@ -126,8 +126,8 @@ theorem run_second (s : State) (mem : ByteArray) (v f bi : UInt256) (rest : List
 
 theorem run_top (s : State) (mem : ByteArray) (c bi : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1016) (hact : 296 ≤ s.activeWords.toNat) :
-    runInstructions CarryRowPrograms.middleStore (stateAt s mem 4461 (c :: bi :: rest)) =
-      some (stateAt s (memory mem c (bi*MachineState.readWord mem 8928)) 4491
+    runInstructions CarryRowPrograms.middleStore (stateAt s mem 4470 (c :: bi :: rest)) =
+      some (stateAt s (memory mem c (bi*MachineState.readWord mem 8928)) 4500
         (flag mem c (bi*MachineState.readWord mem 8928) :: rest)) := by
   exact runInstructions_append_some firstProgram secondProgram _ _ _
     (run_first s mem c bi rest hcap hact)
@@ -140,10 +140,10 @@ def gasSteps_top (s : State) (mem : ByteArray) (c bi : UInt256) (rest : List UIn
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps (stateAt s mem 4461 (c :: bi :: rest))
-      (stateAt s (memory mem c (bi*MachineState.readWord mem 8928)) 4491
+    Challenge.EvmProof.GasSteps (stateAt s mem 4470 (c :: bi :: rest))
+      (stateAt s (memory mem c (bi*MachineState.readWord mem 8928)) 4500
         (flag mem c (bi*MachineState.readWord mem 8928) :: rest)) :=
-  topBlock.steps (EarlyCsub.environment (stateAt s mem 4461 (c :: bi :: rest)) hcode hfork hrun hnp) rfl
+  topBlock.steps (EarlyCsub.environment (stateAt s mem 4470 (c :: bi :: rest)) hcode hfork hrun hnp) rfl
     (run_top s mem c bi rest hcap hact)
 
 end Challenge.Modexp.Submission.Proofs.Fast.SquareTop
