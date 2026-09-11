@@ -55,15 +55,15 @@ def scheduleTemplate : List Instr :=
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 192),
     .op .SHR,
-    .op .JUMPDEST,
-    .op .JUMPDEST,
+    .op (.Dup ⟨4, by decide⟩),
+    .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 96),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 160),
     .op .SHR,
-    .op .JUMPDEST,
-    .op .JUMPDEST,
+    .op (.Dup ⟨4, by decide⟩),
+    .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 128),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
@@ -126,15 +126,15 @@ def scheduleTemplate : List Instr :=
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 192),
     .op .SHR,
-    .op .JUMPDEST,
-    .op .JUMPDEST,
+    .op (.Dup ⟨3, by decide⟩),
+    .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 32),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 160),
     .op .SHR,
-    .op .JUMPDEST,
-    .op .JUMPDEST,
+    .op (.Dup ⟨3, by decide⟩),
+    .op .AND,
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 256),
     .op .MSTORE,
@@ -222,7 +222,7 @@ def gasSteps_schedule (s : State) (returnPC : UInt256) (p : Nat)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hsentinel : SentinelCore.SentinelOK s.memory) :
     GasSteps (DenseScheduleTemplate.scheduleEntry s (UInt256.ofNat 422) (UInt256.ofNat p) returnPC rest)
-      {s with pc := UInt256.ofNat 655, stack := cache (PairedScheduleMemory.normalizedMemory s.memory (PairedScheduleData.extractedWordG s.memory p)) ++ (returnPC :: rest), memory := PairedScheduleMemory.normalizedMemory s.memory (PairedScheduleData.extractedWordG s.memory p), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat p)} := by
+      {s with pc := UInt256.ofNat 655, stack := cache (PairedScheduleMemory.normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p)) ++ (returnPC :: rest), memory := PairedScheduleMemory.normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat p)} := by
   have h := CachedSchedule.run_fullTemplate_natural s returnPC p rest hstack hrun hp hbound hsentinel
   have hpct : pcAfter (UInt256.ofNat 422) CachedSchedule.fullTemplate = UInt256.ofNat 655 := by rfl
   rw [hpct] at h

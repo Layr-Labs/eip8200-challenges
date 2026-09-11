@@ -331,6 +331,7 @@ private def gasSteps_size_match (input : ByteArray) (hsize : input.size = 56 ∨
     ((sound _ (run_size_match input hc)).trans (sound guardMatchTail (run_guard_match_tail input)))
 
 def gasSteps_fail (input : ByteArray) (hfit : CalldataFits input)
+    (hnempty : input ≠ ByteArray.empty)
     (hnabc : input ≠ AbcInputData.abcInput)
     (hbad : (input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119 ∧ input.size ≠ 55 ∧ input.size ≠ 1 ∧ input.size ≠ 31 ∧ input.size ≠ 32) ∨ DirectGuard.firstByte input ≠ 7) :
     GasSteps (DirectGuard.guardEntry input) (DirectGuard.fallbackState input) := by
@@ -340,7 +341,7 @@ def gasSteps_fail (input : ByteArray) (hfit : CalldataFits input)
       · exact hs
       · exact False.elim (hb hbyte)
     exact (gasSteps_byte_match input hbyte).trans (gasSteps_size_fail input hfit hs)
-  · exact (gasSteps_byte_fail input hbyte).trans (AbcArm.gasSteps_miss input hfit hnabc)
+  · exact (gasSteps_byte_fail input hbyte).trans (AbcArm.gasSteps_miss input hfit hnempty hnabc)
 
 def gasSteps_match (input : ByteArray) (_hfit : CalldataFits input)
     (hsize : input.size = 56 ∨ input.size = 120 ∨ input.size = 63 ∨ input.size = 64 ∨ input.size = 65 ∨ input.size = 128 ∨ input.size = 119 ∨ input.size = 55 ∨ input.size = 1 ∨ input.size = 31 ∨ input.size = 32) (hbyte : DirectGuard.firstByte input = 7) :
@@ -360,6 +361,7 @@ def gasSteps_hit (input : ByteArray) (hfit : CalldataFits input)
       (gasSteps_match input hfit hsize hbyte))
 
 def gasSteps_miss (input : ByteArray) (hfit : CalldataFits input)
+    (hnempty : input ≠ ByteArray.empty)
     (hnabc : input ≠ AbcInputData.abcInput)
     (hbad : (input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119 ∧ input.size ≠ 55 ∧ input.size ≠ 1 ∧ input.size ≠ 31 ∧ input.size ≠ 32) ∨
       DirectGuard.firstByte input ≠ 7)
@@ -370,10 +372,10 @@ def gasSteps_miss (input : ByteArray) (hfit : CalldataFits input)
   exact (Execution.gasSteps_start input).trans
     ((sound DirectGuard.sizePath
         (DirectGuard.run_size_fail input hfit h1000 h376 h256)).trans
-      (gasSteps_fail input hfit hnabc hbad))
+      (gasSteps_fail input hfit hnempty hnabc hbad))
 
 /-- Reaching the `abc` arm: the entry size classifier misses (3 is not 256, 376 or 1000)
-and the byte-0 gate misses ('a' = 0x61 ≠ 7), so the byte-0 `JUMPI` lands on the arm (pc 5172). -/
+and the byte-0 gate misses ('a' = 0x61 ≠ 7), so the byte-0 `JUMPI` lands on the arm (pc 5167). -/
 def gasSteps_abc_entry (input : ByteArray) (hfit : CalldataFits input)
     (heq : input = AbcInputData.abcInput) :
     GasSteps (initialState submissionBytecode input 0) (AbcArm.armEntry input) := by
@@ -390,6 +392,35 @@ def gasSteps_abc_entry (input : ByteArray) (hfit : CalldataFits input)
     rw [heq] at h7
     rw [h7] at h
     revert h; decide
+  exact (Execution.gasSteps_start input).trans
+    ((sound DirectGuard.sizePath
+        (DirectGuard.run_size_fail input hfit h1000 h376 h256)).trans
+      (gasSteps_byte_fail input hbyte))
+
+/-- Reaching the arm on the empty input: the entry size classifier misses
+(0 is not 256, 376 or 1000) and the byte-0 gate misses (the zero-padded read
+is 0 ≠ 7), so the byte-0 `JUMPI` lands on the arm (pc 5167). -/
+def gasSteps_empty_entry (input : ByteArray) (hfit : CalldataFits input)
+    (heq : input = ByteArray.empty) :
+    GasSteps (initialState submissionBytecode input 0) (AbcArm.armEntry input) := by
+  have hsize : input.size = 0 := by rw [heq]; rfl
+  have h1000 : input.size ≠ 1000 := by omega
+  have h376 : input.size ≠ 376 := by omega
+  have h256 : input.size ≠ 256 := by omega
+  have hbyte : DirectGuard.firstByte input ≠ 7 := by
+    intro h7
+    have h0 : DirectGuard.firstByte input = 0 := by
+      rw [heq]
+      unfold DirectGuard.firstByte
+      have hb : YulSemantics.EVM.byteFrom ByteArray.empty.toList 0 = 0 := by
+        unfold YulSemantics.EVM.byteFrom
+        rw [YulEvmCompiler.ByteArray.toList_eq_data, List.getD_eq_getElem?_getD,
+          Array.getElem?_toList]
+        exact Challenge.EvmProof.Memory.getElem?_getD_eq_zero_of_size_le
+          ByteArray.empty 0 (by decide)
+      rw [hb]
+    rw [h0] at h7
+    exact (by decide : (0 : Nat) ≠ 7) h7
   exact (Execution.gasSteps_start input).trans
     ((sound DirectGuard.sizePath
         (DirectGuard.run_size_fail input hfit h1000 h376 h256)).trans
