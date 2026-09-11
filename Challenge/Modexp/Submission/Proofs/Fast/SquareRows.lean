@@ -38,7 +38,7 @@ open CiosCachedMidMemory CarryRowModel StagedOperand
 
 /-- First-loop entry of square row `i` of an `n`-limb square: the block `k = 9 - n + i`
 (limb step `i + 1`); for the last row the middle `JUMPDEST` 4334. -/
-def sqEnt (n i : Nat) : Nat := 4068 + 38 * (8 - n + i)
+def sqEnt (n i : Nat) : Nat := 4072 + 38 * (8 - n + i)
 
 /-- Frame slot 14 at row head `i`: the operand pointer `&a_0` for row 0 (the setup's
 `aEnd`), the limb `x_{i-1}` that row `i - 1` parked there afterwards. -/
@@ -62,7 +62,7 @@ theorem jumpDest_sqEnt (n i : Nat) (hn : n ≤ 8) (hi : i < n) :
   rwa [show 9 - n + i - 1 = 8 - n + i by omega] at h
 
 theorem jumpDest4710' :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 4710).toNat = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 4714).toNat = true :=
   jumpDest4710
 
 theorem extraCache_midMem1 {mem : ByteArray} {m96 m64 m32 : UInt256}
@@ -90,7 +90,7 @@ def gasSteps_rowToTail (s : State) (mem : ByteArray) (n i : Nat)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
     (hsnap : StagedOperand.Snapshot mem 2048 n) :
     Challenge.EvmProof.GasSteps
-      (outState s mem 2048 n i (UInt256.ofNat 4710) (UInt256.ofNat (sqEnt n i)) inv m0
+      (outState s mem 2048 n i (UInt256.ofNat 4714) (UInt256.ofNat (sqEnt n i)) inv m0
         (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest))
       (tailState s
         (rowFromL2Carry (sqL1 mem n i (UInt256.sgt (UInt256.ofNat 0) aprev)) n).memory
@@ -98,7 +98,7 @@ def gasSteps_rowToTail (s : State) (mem : ByteArray) (n i : Nat)
         (rowMu (sqL1 mem n i (UInt256.sgt (UInt256.ofNat 0) aprev)).memory n)
         (overflow (sqL1 mem n i (UInt256.sgt (UInt256.ofNat 0) aprev)).memory
           (sqL1 mem n i (UInt256.sgt (UInt256.ofNat 0) aprev)).carry)
-        2048 n i (UInt256.ofNat 4710) (UInt256.ofNat (sqEnt n i + 38)) inv m0
+        2048 n i (UInt256.ofNat 4714) (UInt256.ofNat (sqEnt n i + 38)) inv m0
         (tl :: m96 :: m64 :: m32 :: sqX mem n i :: pdst :: ret :: rest)) := by
   have hn8 : n ≤ 8 := by omega
   have hn2 : 2 ≤ n := by omega
@@ -113,7 +113,7 @@ def gasSteps_rowToTail (s : State) (mem : ByteArray) (n i : Nat)
   have gC := KernelChain.gasSteps_l1Suffix (9 - n + i) (by omega) (by omega) s
     (sqPro mem n i (UInt256.sgt (UInt256.ofNat 0) aprev))
     (sqB2 (sqX mem n i) (UInt256.sgt (UInt256.ofNat 0) aprev)) 2048 2048 n i (i + 1)
-    (UInt256.ofNat 4710) (UInt256.ofNat (sqEnt n i + 38)) inv m0
+    (UInt256.ofNat 4714) (UInt256.ofNat (sqEnt n i + 38)) inv m0
     (tl :: m96 :: m64 :: m32 :: sqX mem n i :: pdst :: ret :: rest)
     (by simp only [List.length_cons]; omega) hrun hcode hfork hnp hact hn8 (by omega) (by omega)
     (hsnap.sqPro i _ hi hn8)
@@ -140,17 +140,17 @@ def gasSteps_rowToTail (s : State) (mem : ByteArray) (n i : Nat)
   have gM := CarryRowGas.gasSteps_mid s (sqL1 mem n i (UInt256.sgt (UInt256.ofNat 0) aprev)).memory
     (sqL1 mem n i (UInt256.sgt (UInt256.ofNat 0) aprev)).carry
     (sqB2 (sqX mem n i) (UInt256.sgt (UInt256.ofNat 0) aprev)) 2048 n i
-    (UInt256.ofNat 4710) (UInt256.ofNat (sqEnt n i + 38)) tl inv m0 (sqX mem n i) m96 m64 m32
+    (UInt256.ofNat 4714) (UInt256.ofNat (sqEnt n i + 38)) tl inv m0 (sqX mem n i) m96 m64 m32
     pdst ret rest hcap hrun hcode hfork hnp hact hn2 hn32 hminvQ hcQ
   refine (gP.trans gC).trans (gM.trans ?_)
   -- the second loop
   by_cases h4 : n = 4
   · subst h4
-    exact CarryRowGas.gasSteps_l2Four s _ _ _ _ 2048 i (UInt256.ofNat 4710) (UInt256.ofNat (sqEnt 4 i + 38))
+    exact CarryRowGas.gasSteps_l2Four s _ _ _ _ 2048 i (UInt256.ofNat 4714) (UInt256.ofNat (sqEnt 4 i + 38))
       tl inv m0 (sqX mem 4 i) m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact
       (extraCache_midMem1 heQ _)
   · obtain rfl : n = 8 := by omega
-    exact CarryRowGas.gasSteps_l2Eight s _ _ _ _ 2048 i (UInt256.ofNat 4710) (UInt256.ofNat (sqEnt 8 i + 38))
+    exact CarryRowGas.gasSteps_l2Eight s _ _ _ _ 2048 i (UInt256.ofNat 4714) (UInt256.ofNat (sqEnt 8 i + 38))
       tl inv m0 (sqX mem 8 i) m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact
       (extraCache_midMem1 heQ _)
 
@@ -168,14 +168,14 @@ def gasSteps_rowNext (s : State) (mem : ByteArray) (n i : Nat)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
     (hsnap : StagedOperand.Snapshot mem 2048 n) :
     Challenge.EvmProof.GasSteps
-      (outState s mem 2048 n i (UInt256.ofNat 4710) (UInt256.ofNat (sqEnt n i)) inv m0
+      (outState s mem 2048 n i (UInt256.ofNat 4714) (UInt256.ofNat (sqEnt n i)) inv m0
         (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest))
       (outState s (sqRowCarry mem n i (UInt256.sgt (UInt256.ofNat 0) aprev)) 2048 n (i + 1)
-        (UInt256.ofNat 4710) (UInt256.ofNat (sqEnt n i + 38)) inv m0
+        (UInt256.ofNat 4714) (UInt256.ofNat (sqEnt n i + 38)) inv m0
         (tl :: m96 :: m64 :: m32 :: sqX mem n i :: pdst :: ret :: rest)) :=
   (gasSteps_rowToTail s mem n i tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hrun hcode hfork
     hnp hact hn (by omega) hminv hc he hsnap).trans
-  (CarryRowGas.gasSteps_tailNext s _ _ _ _ 2048 n i (UInt256.ofNat 4710) (UInt256.ofNat (sqEnt n i + 38))
+  (CarryRowGas.gasSteps_tailNext s _ _ _ _ 2048 n i (UInt256.ofNat 4714) (UInt256.ofNat (sqEnt n i + 38))
     inv m0 (tl :: m96 :: m64 :: m32 :: sqX mem n i :: pdst :: ret :: rest)
     (by simp only [List.length_cons]; omega) hrun hcode hfork hnp hact hi (by decide)
     (by omega) jumpDest4710')
@@ -194,12 +194,12 @@ def gasSteps_rowLast (s : State) (mem : ByteArray) (n i : Nat)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
     (hsnap : StagedOperand.Snapshot mem 2048 n) :
     Challenge.EvmProof.GasSteps
-      (outState s mem 2048 n i (UInt256.ofNat 4710) (UInt256.ofNat (sqEnt n i)) inv m0
+      (outState s mem 2048 n i (UInt256.ofNat 4714) (UInt256.ofNat (sqEnt n i)) inv m0
         (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest))
       (mpCsubState s (sqRowCarry mem n i (UInt256.sgt (UInt256.ofNat 0) aprev)) pdst ret rest) :=
   (gasSteps_rowToTail s mem n i tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hrun hcode hfork
     hnp hact hn (by omega) hminv hc he hsnap).trans
-  (CarryRowGas.gasSteps_tailLast s _ _ _ _ 2048 n i (UInt256.ofNat 4710) (UInt256.ofNat (sqEnt n i + 38))
+  (CarryRowGas.gasSteps_tailLast s _ _ _ _ 2048 n i (UInt256.ofNat 4714) (UInt256.ofNat (sqEnt n i + 38))
     tl inv m0 (sqX mem n i) m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact hi
     (by decide) (by omega) jumpDest4710')
 
@@ -209,7 +209,7 @@ def gasSteps_rowLast (s : State) (mem : ByteArray) (n i : Nat)
 `ent = sqEnt n i`, slot 14 = `sqPrev M0 n i`. -/
 def rowState (s : State) (M0 : ByteArray) (n : Nat)
     (tl inv m0 m96 m64 m32 pdst ret : UInt256) (rest : List UInt256) (i : Nat) : State :=
-  outState s (sqRowsCarry M0 n i) 2048 n i (UInt256.ofNat 4710) (UInt256.ofNat (sqEnt n i)) inv m0
+  outState s (sqRowsCarry M0 n i) 2048 n i (UInt256.ofNat 4714) (UInt256.ofNat (sqEnt n i)) inv m0
     (tl :: m96 :: m64 :: m32 :: sqPrev M0 n i :: pdst :: ret :: rest)
 
 theorem sqEnt_succ (n i : Nat) : sqEnt n i + 38 = sqEnt n (i + 1) := by

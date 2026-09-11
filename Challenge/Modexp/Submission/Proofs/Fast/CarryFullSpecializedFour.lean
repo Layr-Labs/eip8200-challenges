@@ -43,7 +43,7 @@ opaque gasSteps_specializedFour (L : RowLemmas) (E : EntryLemmas) (s : State) (m
       hread (32*4-32) (Or.inl (by decide)),
       hread 9376 (Or.inr (by decide))] using hminv
   refine (E.gasSteps_mulEntry s mem pa pb pdst ret rest (by omega) hrun hcode hfork hnp).trans ?_
-  refine (E.gasSteps_commonSetup s mem (UInt256.ofNat 4037) pa pb 4 pdst ret rest hcap hrun hcode
+  refine (E.gasSteps_commonSetup s mem (UInt256.ofNat 4041) pa pb 4 pdst ret rest hcap hrun hcode
     hfork hnp hact (by decide) (by omega) hpb hpbFit hcds hs32 hml jumpDest_rowHead).trans ?_
   exact gasSteps_rowsFour L s (stage mem pa 4) pa pb
     (MachineState.readWord mem 9440) (MachineState.readWord mem 9376)

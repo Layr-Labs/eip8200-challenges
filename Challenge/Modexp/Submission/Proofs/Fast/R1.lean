@@ -111,7 +111,7 @@ def fastState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
 store does not grow memory. -/
 def csubState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4667
+  { s with pc := UInt256.ofNat 4671
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := tnMem mem }
 

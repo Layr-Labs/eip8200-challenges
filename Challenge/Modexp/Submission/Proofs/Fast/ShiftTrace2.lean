@@ -133,13 +133,15 @@ private theorem addMod_comm (a b m : UInt256) :
 @[simp] private theorem newEstimatePC2965 : Artifact.submissionArtifact.instructionPC 2747 = 3609 := by rfl
 @[simp] private theorem newEstimatePC2966 : Artifact.submissionArtifact.instructionPC 2748 = 3610 := by rfl
 @[simp] private theorem newEstimatePC2967 : Artifact.submissionArtifact.instructionPC 2749 = 3612 := by rfl
-@[simp] private theorem newEstimatePC2968 : Artifact.submissionArtifact.instructionPC 2750 = 3613 := by rfl
-@[simp] private theorem newEstimatePC2969 : Artifact.submissionArtifact.instructionPC 2751 = 3614 := by rfl
-@[simp] private theorem newEstimatePC2970 : Artifact.submissionArtifact.instructionPC 2752 = 3615 := by rfl
-@[simp] private theorem newEstimatePC2971 : Artifact.submissionArtifact.instructionPC 2753 = 3616 := by rfl
-@[simp] private theorem newEstimatePC2972 : Artifact.submissionArtifact.instructionPC 2754 = 3617 := by rfl
-@[simp] private theorem newEstimatePC2973 : Artifact.submissionArtifact.instructionPC 2755 = 3618 := by rfl
-@[simp] private theorem newEstimatePC2974 : Artifact.submissionArtifact.instructionPC 2756 = 3619 := by rfl
+@[simp] private theorem newEstimatePCk2750 : Artifact.submissionArtifact.instructionPC 2750 = 3613 := by rfl
+@[simp] private theorem newEstimatePCk2751 : Artifact.submissionArtifact.instructionPC 2751 = 3615 := by rfl
+@[simp] private theorem newEstimatePCk2752 : Artifact.submissionArtifact.instructionPC 2752 = 3616 := by rfl
+@[simp] private theorem newEstimatePCk2753 : Artifact.submissionArtifact.instructionPC 2753 = 3617 := by rfl
+@[simp] private theorem newEstimatePCk2754 : Artifact.submissionArtifact.instructionPC 2754 = 3619 := by rfl
+@[simp] private theorem newEstimatePCk2755 : Artifact.submissionArtifact.instructionPC 2755 = 3620 := by rfl
+@[simp] private theorem newEstimatePCk2756 : Artifact.submissionArtifact.instructionPC 2756 = 3621 := by rfl
+@[simp] private theorem newEstimatePCk2757 : Artifact.submissionArtifact.instructionPC 2757 = 3622 := by rfl
+@[simp] private theorem newEstimatePCk2758 : Artifact.submissionArtifact.instructionPC 2758 = 3623 := by rfl
 
 /-- `blk3026`: quotient estimate with a branchless saturation mask. -/
 theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
