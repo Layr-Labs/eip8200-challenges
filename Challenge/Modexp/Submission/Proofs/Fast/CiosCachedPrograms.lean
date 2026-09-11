@@ -85,7 +85,8 @@ def l2Program (w : Fin 33) (x tl ts : UInt256) : List Instr :=
     macProductProgram) ++ macFinishProgram tl ts
 
 def entryProgram : List Instr :=
-  [.op .JUMPDEST,
+  [
+   .op .JUMPDEST,
    .push 1 31,
    .op .NOT,
    .push 2 9344,
@@ -94,10 +95,10 @@ def entryProgram : List Instr :=
    .op .EQ,
    .push 1 153,
    .op .MUL,
-   .push 2 4280,
+   .push 2 4281,
    .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
-   .push 2 287,
+   .push 3 299,
    .op .ADD,
    .op (.Swap ⟨3, by decide⟩),
    .push 0 0,
@@ -106,7 +107,7 @@ def entryProgram : List Instr :=
    .push 2 9344,
    .op .MLOAD,
    .op (.Dup ⟨0, by decide⟩),
-   .push 1 64,
+   .push 5 64,
    .op .ADD,
    .op .CALLDATASIZE,
    .push 2 8192,
@@ -181,7 +182,7 @@ def tailProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),
    .op .GT,
-   .push 2 4252,
+   .push 2 4250,
    .op .JUMPI,
    .op .POP,
    .op .POP,
@@ -190,7 +191,7 @@ def tailProgram : List Instr :=
    .op .POP,
    .op .POP,
    .op .POP,
-   .push 2 4993,
+   .push 2 4978,
    .op .JUMP]
 
 def l1DispatchProgram : List Instr :=

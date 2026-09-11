@@ -1,4 +1,4 @@
-import Challenge.Modexp.Submission.Proofs.Fast.CiosAccumulatorFull
+import Challenge.Modexp.Submission.Proofs.Fast.CarryFull
 import Challenge.Modexp.Submission.Proofs.Fast.Model
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P3
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P4
@@ -260,7 +260,7 @@ theorem monproMem_frame' {s : State} {mem : ByteArray} {n bsize minv : Nat}
    by rw [key.2.2.2.2]; exact hf.eoff⟩
 
 /-- The two subroutines this module calls, as abstract single-step contracts
-carrying exactly the side conditions `Fast.CiosAccumulatorFull.gasSteps_monproFull` and
+carrying exactly the side conditions `Fast.CarryFull.gasSteps_monproFull` and
 `Fast.Csub.gasSteps_addmod`/`gasSteps_csub` require: the configuration words
 (`Frame`), the pointer bounds, the return-address jump destination, and — for
 `MONPRO` — the values of the two operand blocks. -/
@@ -575,13 +575,13 @@ theorem run_rrDone_skip (s : State) (mem : ByteArray) (n esize msize : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1189
       (rrDone s mem n 0 esize msize) =
-      some (bDone s mem n 0 esize msize) := by
-  have h1756Nat : (UInt256.ofNat 1617).toNat = 1617 := by decide
+      some { bDone s mem n 0 esize msize with pc := UInt256.ofNat 3324 } := by
+  have h1756Nat : (UInt256.ofNat 3324).toNat = 3324 := by decide
   simp (config := { maxSteps := 400000 }) [blk1189, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     rrDone, bDone, outer, hcode, hrun, isZero_ofNat_zero, isTrue_one,
-    h1756Nat, jumpDest1698,
+    h1756Nat, jumpDest3412,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -708,7 +708,7 @@ def gasSteps_rrDone_skip (s : State) (mem : ByteArray) (n esize msize : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (rrDone s mem n 0 esize msize)
-      (bDone s mem n 0 esize msize) :=
+      { bDone s mem n 0 esize msize with pc := UInt256.ofNat 3324 } :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1189 hcode hfork
       (run_rrDone_skip s mem n esize msize hcode hrun) hrun hnp
@@ -4845,7 +4845,7 @@ theorem handled_of_rrHead (input : ByteArray) (s : State) (mem : ByteArray)
 
 /-! ## The concrete subroutine instance
 
-`MONPRO` comes from `Fast.CiosAccumulatorFull.gasSteps_monproFull`, `ADDMOD` from the pair
+`MONPRO` comes from `Fast.CarryFull.gasSteps_monproFull`, `ADDMOD` from the pair
 `Fast.Csub.gasSteps_addmod` / `gasSteps_csub` packaged as `gasSteps_addmodFull`. -/
 
 /-- The `MONPRO` step of the concrete instance. -/
@@ -4886,7 +4886,7 @@ def subsMonpro (s : State) (n bsize mm minv : Nat)
       have hmi : (MachineState.readWord mem 9376).toNat = minv := by
         rw [hf.minvW, toNat_ofNat_self hminvlt]
       exact Challenge.EvmProof.GasSteps.cast
-        (CiosAccumulatorFull.gasSteps_monproFull s mem pa pb p a b mm (UInt256.ofNat pd) ret tail
+        (CarryFull.gasSteps_monproFull s mem pa pb p a b mm (UInt256.ofNat pd) ret tail
           (by omega) hrun hcode hfork hnp hact hn32 hpa hpaFit hpb hpbFit hcds
           hf.s32 hf.tl hf.ml hjump (by omega) ha hb hm ham hmpos
           (by rw [hlow, hmi]; exact hminvA))

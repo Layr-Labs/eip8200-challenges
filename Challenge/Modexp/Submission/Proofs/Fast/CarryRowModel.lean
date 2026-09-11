@@ -1,5 +1,3 @@
-/- Adapted from delordemm1 submission 173ec87d-b01c-4a3b-b36a-e0a008eb4d72,
-   commit b07846bed58c2c028c8c9b987eaa0e049ca5587a. -/
 import Challenge.Modexp.Submission.Proofs.Fast.CarryScratchAgreement
 import Challenge.Modexp.Submission.Proofs.Fast.Monpro
 

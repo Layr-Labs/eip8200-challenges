@@ -454,7 +454,7 @@ theorem run_csubCall (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       csubCallState, kState, pcCsubCall, pcAfterCsub, Csub.csEntryState,
-      outer, Exp.outer, hcode, hrun, jumpDestCsubDirect,
+      outer, Exp.outer, hcode, hrun, jumpDest4976,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -482,20 +482,20 @@ theorem run_afterCsub (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange]
 
-/-- `blk3264`: drop the counter and jump to `BDONE`. -/
+/-- `blk3264`: drop the counter and jump to the dispatcher. -/
 theorem run_shiftDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3264
       (shiftDoneState s mem n bsize esize msize) =
-      some (Exp.bDone s mem n bsize esize msize) := by
+      some { Exp.bDone s mem n bsize esize msize with pc := UInt256.ofNat 3324 } := by
   simp (config := { maxSteps := 200000 })
     [blk3264, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       shiftDoneState, kState, pcShiftDone, Exp.bDone,
-      outer, Exp.outer, hcode, hrun, jumpDest1698,
+      outer, Exp.outer, hcode, hrun, jumpDest3412,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,

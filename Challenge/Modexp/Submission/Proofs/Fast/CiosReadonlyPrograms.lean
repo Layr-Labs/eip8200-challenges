@@ -1,3 +1,5 @@
+import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedEntryCache
+import Challenge.Modexp.Submission.Proofs.Fast.CiosReadonlyEntryPrefix
 import Challenge.Modexp.Submission.Proofs.Fast.CiosNoDummyCarry
 import Challenge.Modexp.Submission.Proofs.Fast.CiosReadonlyComponents
 
@@ -7,7 +9,7 @@ namespace Challenge.Modexp.Submission.Proofs.Fast.CiosReadonly
 open YulEvmCompiler
 
 def fullEntryProgram : List Instr :=
-  [.op .JUMPDEST] ++ entryPrelude ++ CiosCached.entryProgram.drop 1
+  (EntryPrefix.loadProgram ++ EntryPrefix.shuffleProgram) ++ CiosCached.entryBodyProgram
 
 def fullMidProgram : List Instr :=
   CiosCached.midProgram.take 10 ++ cachedProduct
@@ -19,7 +21,7 @@ def fullExitProgram : List Instr :=
 
 /-- First operand and accumulator pointers remain cached across every row. -/
 def commonFirstLoad : List Instr :=
-  [.op (.Dup ⟨14, by decide⟩), .op (.Dup ⟨7, by decide⟩)]
+  [.op (.Dup ⟨14, by decide⟩), .op .MLOAD, .op (.Dup ⟨7, by decide⟩)]
 
 def commonFinishLoad : List Instr :=
   [.op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
@@ -29,13 +31,8 @@ def commonFinishStore : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨14, by decide⟩),
    .op .MSTORE, .op .LT, .op .ADD]
 
-def commonFusedFinish : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT, .op .SUB,
-   .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .MLOAD, .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op .MSTORE,
-   .op (.Dup ⟨2, by decide⟩), .op .GT, .op .SUB, .op .SUB]
-
 def commonFirstProgram : List Instr :=
-  (commonFirstLoad ++ CiosNoDummyCarry.multiplyProgram) ++ commonFusedFinish
+  (commonFirstLoad ++ CiosNoDummyCarry.productProgram) ++
+    (commonFinishLoad ++ commonFinishStore)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosReadonly
