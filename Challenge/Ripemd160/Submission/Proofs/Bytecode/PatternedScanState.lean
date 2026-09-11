@@ -82,7 +82,7 @@ private def scanSuffix : List YulEvmCompiler.Instr :=
 private theorem scanBefore_length : scanBefore.length = 51 := by
   simp [scanBefore, scanPrefix]
 
-private theorem scanSuffix_length : scanSuffix.length = 4105 := by
+private theorem scanSuffix_length : scanSuffix.length = 4094 := by
   simp [scanSuffix]
 
 private theorem artifact_scan_split :
@@ -218,12 +218,12 @@ def comparePath : List Located :=
    opAt 128 (.Dup ⟨3, by decide⟩),
    opAt 129 .CALLDATALOAD,
    opAt 130 .XOR,
-   pushAt 131 5 18253660160,
+   pushAt 131 5 18253660656,
    opAt 132 (.Dup ⟨4, by decide⟩),
    opAt 133 .CALLDATASIZE,
    opAt 134 .SUB,
    opAt 135 .SHR,
-   pushAt 136 1 251,
+   pushAt 136 1 248,
    opAt 137 .AND,
    opAt 138 .SHR,
    opAt 139 (.Dup ⟨4, by decide⟩),

@@ -7,11 +7,11 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.ShortPatternFinish
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedScan PatternedSwar
 theorem run_store (n : Nat) (input : ByteArray) (sv ov : UInt256)
-    (hn : n = 56 ∨ n = 120) (hsize : input.size = n) :
+    (hn : n = 56 ∨ n = 120 ∨ n = 64 ∨ n = 65 ∨ n = 128) (hsize : input.size = n) :
     run digestStorePath (digestEntryState n input sv ov) =
       some (storedState n input sv ov) := by
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
-  rcases hn with rfl | rfl <;>
+  rcases hn with rfl | rfl | rfl | rfl | rfl <;>
     simp (config := { maxSteps := 400000 })
     [digestStorePath, opAt, pushAt, wfOp, digestEntryState, storedState,
      returnRest, stS, initialState, answerMemory, storeWord, paddedDigestWord,
@@ -43,18 +43,18 @@ theorem run_finish (n : Nat) (input : ByteArray) (sv ov : UInt256) :
       Challenge.EvmProof.Word.word_toNat_ofNat]
 
 def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
-    (hn : n = 56 ∨ n = 120) (hsize : input.size = n) :
+    (hn : n = 56 ∨ n = 120 ∨ n = 64 ∨ n = 65 ∨ n = 128) (hsize : input.size = n) :
     GasSteps (selectorState n input sv ov) (returnedState n input sv ov) := by
   have gselect := sound selectorPath (run_selector n input sv ov hn hsize)
   have gstore := sound digestStorePath (run_store n input sv ov hn hsize)
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 4153 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 4142 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedState n input sv ov).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 4153 := by
+      Artifact.submissionArtifact.instructionPC 4142 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
   have hop : (storedState n input sv ov).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedState n input sv ov) 4153
+    Artifact.submissionArtifact.state_decodedOp_of (storedState n input sv ov) 4142
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop
     (by simp [storedState, returnRest, stS, initialState])
@@ -73,7 +73,7 @@ def gasSteps_miss (input : ByteArray) (sv ov acc : UInt256)
   Prefix256Cleanup.gasSteps_miss input sv ov acc hne
 
 def gasSteps_finish_hit (n : Nat) (input : ByteArray) (sv ov acc : UInt256)
-    (hz : acc = 0) (hn : n = 56 ∨ n = 120) (hsize : input.size = n) :
+    (hz : acc = 0) (hn : n = 56 ∨ n = 120 ∨ n = 64 ∨ n = 65 ∨ n = 128) (hsize : input.size = n) :
     GasSteps (stS input 247 [sv, ov, acc, P7, M, m7, P, m8])
       (returnedState n input sv ov) := by
   subst acc
