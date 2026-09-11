@@ -12,36 +12,36 @@ open StackRoundTemplate StackRoundTrace PairedAllInlineCoreTrace TerminalRound C
 def template : List Instr := modifiedTemplate ++ coreExitTemplate
 
 theorem template_slice :
-    (Artifact.submissionArtifact.instructions.drop 3858).take template.length = template := by
+    (Artifact.submissionArtifact.instructions.drop 3977).take template.length = template := by
   rfl
 
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3858 template_slice
+  StackSiteBuilder.ofSlice template 3977 template_slice
     (by
-      change 3858 + template.length ≤ Artifact.submissionInstructions.length
+      change 3977 + template.length ≤ Artifact.submissionInstructions.length
       rw [Artifact.referenceInstructions_count]
       decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
 
-theorem site_startPC : site.startPC = UInt256.ofNat 4574 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3858) = UInt256.ofNat 4574
+theorem site_startPC : site.startPC = UInt256.ofNat 4804 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3977) = UInt256.ofNat 4804
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem run_template (s : State) (q : PairedHelperBooleanTrace.Frame)
     (ret : UInt256) (rho : List UInt256) (hstack : (ret :: rho).length ≤ 996)
     (hrun : s.halt = .Running) (hactive : 23 ≤ s.activeWords.toNat) :
-    runInstrSeq template {s with pc := UInt256.ofNat 4574, stack := inline79Entry q (cache s.memory ++ (ret :: rho))} =
-      some {s with pc := UInt256.ofNat 4621, stack := PairedAllInlineBoundarySites.cachedTailEntry s.memory (modifiedFrame s.memory q) ret rho} := by
+    runInstrSeq template {s with pc := UInt256.ofNat 4804, stack := inline79Entry q (cache s.memory ++ (ret :: rho))} =
+      some {s with pc := UInt256.ofNat 4853, stack := PairedAllInlineBoundarySites.cachedTailEntry s.memory (modifiedFrame s.memory q) ret rho} := by
   have hs : (cache s.memory ++ (ret :: rho)).length ≤ 1002 := by simp only [List.length_append, cache_length]; omega
   let post : PairedHelperBooleanTrace.Frame :=
     {q with a := q.e, b := modifiedT (inline79Frame s.memory q) (PairedHelperBooleanTrace.inline4Boolean q), c := q.b, d := modifiedC10 q, e := q.d}
-  have h0 := run_modifiedTemplate_raw s (UInt256.ofNat 4574) q (cache s.memory ++ (ret :: rho)) hs hrun hactive
+  have h0 := run_modifiedTemplate_raw s (UInt256.ofNat 4804) q (cache s.memory ++ (ret :: rho)) hs hrun hactive
   rw [modifiedTemplate_pc] at h0
-  have h1 := run_coreExitTemplate s (UInt256.ofNat 4619) post (cache s.memory ++ (ret :: rho)) hs hrun
-  have hpc : pcAfter (UInt256.ofNat 4619) coreExitTemplate = UInt256.ofNat 4621 := by decide
+  have h1 := run_coreExitTemplate s (UInt256.ofNat 4851) post (cache s.memory ++ (ret :: rho)) hs hrun
+  have hpc : pcAfter (UInt256.ofNat 4851) coreExitTemplate = UInt256.ofNat 4853 := by decide
   rw [hpc] at h1
   exact DenseScheduleTrace.runInstrSeq_append_running h0 hrun h1
 
@@ -51,8 +51,8 @@ def gasSteps_round (s : State) (q : PairedHelperBooleanTrace.Frame)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4574, stack := inline79Entry q (cache s.memory ++ (ret :: rho))}
-      {s with pc := UInt256.ofNat 4621, stack := PairedAllInlineBoundarySites.cachedTailEntry s.memory (modifiedFrame s.memory q) ret rho} := by
+    GasSteps {s with pc := UInt256.ofNat 4804, stack := inline79Entry q (cache s.memory ++ (ret :: rho))}
+      {s with pc := UInt256.ofNat 4853, stack := PairedAllInlineBoundarySites.cachedTailEntry s.memory (modifiedFrame s.memory q) ret rho} := by
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp
     site_startPC.symm
     (by apply PairedHelperBooleanTrace.coreAdvancesAll_sound; decide)
@@ -65,7 +65,7 @@ def gasSteps_suffix (s : State) (q : PairedHelperBooleanTrace.Frame)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4574, stack := inline79Entry q (cache s.memory ++ (ret :: rho))}
+    GasSteps {s with pc := UInt256.ofNat 4804, stack := inline79Entry q (cache s.memory ++ (ret :: rho))}
       {s with pc := ret, stack := rho, memory := PairedTailTrace.resultMemory s.memory (modifiedFrame s.memory q)} :=
   (gasSteps_round s q ret rho hstack hrun hactive hcode hfork hnp).trans
     (PairedAllInlineBoundarySites.gasSteps_tail s ret (modifiedFrame s.memory q) rho

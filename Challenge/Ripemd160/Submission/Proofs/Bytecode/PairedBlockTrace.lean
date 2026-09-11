@@ -48,19 +48,19 @@ theorem tail_stack (s : State) (input : ByteArray) (i : Nat) :
     coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower]
       (coreCryptoResult (blockWords input i) (PairedBlockMath.readLane s.memory)
         (PairedBlockMath.readLane s.memory))
-      (UInt256.ofNat 370 :: driverRest input i) =
+      (UInt256.ofNat 589 :: driverRest input i) =
       PairedAllInlineTail.entryStack (resultFrame s input i)
-        (UInt256.ofNat 370) (driverRest input i) := by
+        (UInt256.ofNat 589) (driverRest input i) := by
   rfl
 
 theorem valid_return (s : State) (hcode : s.executionEnv.code = submissionBytecode) :
-    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 370).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 235 = 370 := by
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 589).toNat = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 356 = 589 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 235 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 356 (by rfl)
   rw [hpc] at h
-  change Decode.isValidJumpDest s.executionEnv.code 370 = true
+  change Decode.isValidJumpDest s.executionEnv.code 589 = true
   rw [hcode]
   exact h
 
@@ -74,7 +74,7 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     GasSteps (DriverTrace.compressEntry s input i)
       (DriverTrace.compressReturned (resultState s input i) input i) := by
   let q := scheduledState s i
-  let rho := UInt256.ofNat 370 :: driverRest input i
+  let rho := UInt256.ofNat 589 :: driverRest input i
   let lane := PairedBlockMath.readLane s.memory
   have qactive : 23 ≤ q.activeWords.toNat := scheduled_active s input i hfit hi
   have qcode : q.executionEnv.code = submissionBytecode := hcode
@@ -84,11 +84,11 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
       q.executionEnv.fork q.executionEnv.codeAddr = false := hnp
   have hstack : rho.length ≤ 996 := by simp [rho, driverRest]
   have hcstack : (cache q.memory ++ rho).length ≤ 1002 := by simp only [List.length_append, cache_length]; omega
-  have gschedule := PairedAllInlineBoundarySites.gasSteps_schedule s (UInt256.ofNat 370)
+  have gschedule := PairedAllInlineBoundarySites.gasSteps_schedule s (UInt256.ofNat 589)
     (messagePointer i) (driverRest input i) (by simp [driverRest]) hrun
     (messagePointer_lower i) (messagePointer_bound input hfit i hi) hcode hfork hnp
   have gschedule' : GasSteps (DriverTrace.compressEntry s input i)
-      {q with pc := UInt256.ofNat 660, stack := cache q.memory ++ rho} := gschedule
+      {q with pc := UInt256.ofNat 852, stack := PairedDerivedStartup.lowerWord :: cache q.memory ++ rho} := gschedule
   have hcanonical := SStartupPremises.scheduled_canonical s input i h ctx
   have gstartup := PairedAllInlineBoundarySites.gasSteps_startup q (cache q.memory ++ rho) hcstack qrun qactive
     hcanonical.1 hcanonical.2.1 hcanonical.2.2.1 hcanonical.2.2.2.1 hcanonical.2.2.2.2
@@ -98,8 +98,8 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
   have gcore := PairedAllInlineCoreSites.gasSteps_core_prefix q initial rho
     hstack qrun qactive qcode qfork qnp
   have hentry :
-      {q with pc := UInt256.ofNat 713, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] ⟨PairedLaneWordRound.packCrypto lane lane, 0⟩ (cache q.memory ++ rho)} =
-      {q with pc := UInt256.ofNat 713, stack := PairedStartupTrace.resultStack q.memory (cache q.memory ++ rho)} := by
+      {q with pc := UInt256.ofNat 893, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] ⟨PairedLaneWordRound.packCrypto lane lane, 0⟩ (cache q.memory ++ rho)} =
+      {q with pc := UInt256.ofNat 893, stack := PairedStartupTrace.resultStack q.memory (cache q.memory ++ rho)} := by
     rw [startup_stack, scheduled_readLane]
   have hterminal : TerminalRound.canonicalFrame q.memory terminal.frame =
       resultFrame s input i := by
@@ -113,11 +113,11 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
       PairedTailTrace.resultMemory q.memory (resultFrame s input i) := by
     rw [TerminalRound.resultMemory_modified_eq_canonical _ _ rfl rfl, hterminal]
   have gsuffix := TerminalRoundSite.gasSteps_suffix q terminal.frame
-    (UInt256.ofNat 370) (driverRest input i) hstack qrun qactive
+    (UInt256.ofNat 589) (driverRest input i) hstack qrun qactive
     (valid_return q qcode) qcode qfork qnp
   rw [hmemory] at gsuffix
   have gsuffix' : GasSteps
-      {q with pc := UInt256.ofNat 4574, stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] terminal (cache q.memory ++ rho)}
+      {q with pc := UInt256.ofNat 4804, stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] terminal (cache q.memory ++ rho)}
       (DriverTrace.compressReturned (resultState s input i) input i) := gsuffix
   exact gschedule'.trans (gstartup.trans ((gcore.cast hentry rfl).trans gsuffix'))
 

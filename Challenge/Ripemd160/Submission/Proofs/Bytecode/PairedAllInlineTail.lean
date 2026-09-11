@@ -18,7 +18,7 @@ def template : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 128),
    .op .SHR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 576),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 64),
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨9, by decide⟩),
@@ -28,7 +28,7 @@ def template : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 128),
    .op .SHR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 608),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 96),
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨10, by decide⟩),
@@ -38,7 +38,7 @@ def template : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 128),
    .op .SHR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 640),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 128),
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨11, by decide⟩),
@@ -48,7 +48,7 @@ def template : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 128),
    .op .SHR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 672),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 160),
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨12, by decide⟩),
@@ -58,20 +58,20 @@ def template : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 128),
    .op .SHR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 544),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 32),
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨13, by decide⟩),
    .op .AND,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 672),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 160),
    .op .MSTORE,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 640),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 128),
    .op .MSTORE,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 608),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 96),
    .op .MSTORE,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 576),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 64),
    .op .MSTORE,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 544),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 32),
    .op .MSTORE,
    .op .POP,
    .op .POP,
@@ -89,7 +89,7 @@ theorem tail_template_length : template.length = 70 := by
 
 #print axioms tail_template_length
 
-theorem tail_template_bytes : (template.map Instr.size).sum = 95 := by
+theorem tail_template_bytes : (template.map Instr.size).sum = 85 := by
   norm_num [template, Instr.size]
 
 #print axioms tail_template_bytes
@@ -101,7 +101,7 @@ theorem run_tail_template (s : State) (pc ret : UInt256) (q : PairedTailTrace.Fr
     runInstrSeq template {s with pc := pc, stack := entryStack q ret rho} =
       some {s with pc := ret, stack := rho, memory := resultMemory s.memory q} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
-  have hactiveAt (address : Nat) (haddress : address ≤ 672) :
+  have hactiveAt (address : Nat) (haddress : address ≤ 160) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := PairedStartupTrace.active_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [template, entryStack, combine,
@@ -122,7 +122,7 @@ def prefixTemplate : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 128),
    .op .SHR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 576),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 64),
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨9, by decide⟩),
@@ -132,7 +132,7 @@ def prefixTemplate : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 128),
    .op .SHR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 608),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 96),
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨10, by decide⟩),
@@ -142,7 +142,7 @@ def prefixTemplate : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 128),
    .op .SHR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 640),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 128),
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨11, by decide⟩),
@@ -152,7 +152,7 @@ def prefixTemplate : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 128),
    .op .SHR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 672),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 160),
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨12, by decide⟩),
@@ -162,20 +162,20 @@ def prefixTemplate : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 128),
    .op .SHR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 544),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 32),
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨13, by decide⟩),
    .op .AND,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 672),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 160),
    .op .MSTORE,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 640),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 128),
    .op .MSTORE,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 608),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 96),
    .op .MSTORE,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 576),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 64),
    .op .MSTORE,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 544),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 32),
    .op .MSTORE,
    .op .POP,
    .op .POP,
@@ -201,7 +201,7 @@ theorem run_tail_prefix (s : State) (pc ret : UInt256) (q : PairedTailTrace.Fram
         stack := ret :: rho
         memory := resultMemory s.memory q} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
-  have hactiveAt (address : Nat) (haddress : address ≤ 672) :
+  have hactiveAt (address : Nat) (haddress : address ≤ 160) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := PairedStartupTrace.active_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [prefixTemplate, entryStack, combine,
