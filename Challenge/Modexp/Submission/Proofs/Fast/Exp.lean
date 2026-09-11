@@ -1430,20 +1430,21 @@ theorem run_ebLoad (s : State) (mem : ByteArray)
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
-/-- `LZBASE`'s test, pc 4121, with a zero leading byte: take the untouched arm. -/
+/-- `LZBASE`'s test, pc 4121, with a zero leading byte: jump straight to the
+loop head at pc 1634, bypassing the `pc 3319` forwarder. -/
 theorem run_lzBase_zero (s : State) (mem : ByteArray)
     (n bsize esize msize i w mask : Nat) (hw : w = 0)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk2557
       (Lz.lzBase s mem i w mask (outer n bsize esize msize)) =
-      some (lzBaseSkip s mem n bsize esize msize i w mask) := by
+      some (ebitHead s mem n bsize esize msize i w mask) := by
   subst hw
   have hz : UInt256.isZero (UInt256.ofNat 0) = UInt256.ofNat 1 := by decide
   simp (config := { maxSteps := 400000 }) [blk2557, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    Lz.lzBase, lzBaseSkip, bitStack, hrun, hcode, hz, jumpDest3851,
+    Lz.lzBase, ebitHead, bitStack, hrun, hcode, hz, jumpDest1715,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -1834,22 +1835,13 @@ def gasSteps_ebLoad (s : State) (mem input : ByteArray)
     have g3 : Challenge.EvmProof.GasSteps
         (Lz.lzBase s mem i (expByte input bsize i)
           (Lz.topBit (expByte input bsize i)) (outer n bsize esize msize))
-        (lzBaseSkip s mem n bsize esize msize i (expByte input bsize i)
+        (ebitHead s mem n bsize esize msize i (expByte input bsize i)
           (Lz.topBit (expByte input bsize i))) :=
       Challenge.EvmProof.Stepper.runLocatedBlock_sound
         Artifact.submissionArtifact .Osaka blk2557 hcode hfork
         (run_lzBase_zero s mem n bsize esize msize i (expByte input bsize i)
           (Lz.topBit (expByte input bsize i)) hw0 hcode hrun) hrun hnp
-    have g4 : Challenge.EvmProof.GasSteps
-        (lzBaseSkip s mem n bsize esize msize i (expByte input bsize i)
-          (Lz.topBit (expByte input bsize i)))
-        (ebitHead s mem n bsize esize msize i (expByte input bsize i)
-          (Lz.topBit (expByte input bsize i))) :=
-      Challenge.EvmProof.Stepper.runLocatedBlock_sound
-        Artifact.submissionArtifact .Osaka blk2569 hcode hfork
-        (run_lzBaseSkip s mem n bsize esize msize i (expByte input bsize i)
-          (Lz.topBit (expByte input bsize i)) hcode hrun) hrun hnp
-    Challenge.EvmProof.GasSteps.cast ((((g0.trans g1).trans g2).trans g3).trans g4)
+    Challenge.EvmProof.GasSteps.cast (((g0.trans g1).trans g2).trans g3)
       rfl (by simp only [lzMask, if_pos h])
   else
     have g1 : Challenge.EvmProof.GasSteps
