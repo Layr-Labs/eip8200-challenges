@@ -123,7 +123,7 @@ def expLoadPath :
 /-- The loop head now pushes the unrolled block and jumps to it. -/
 def bitEntryPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 481 .JUMPDEST, pushAt 482 2 3330]
+  [opAt 481 .JUMPDEST, pushAt 482 2 3130]
 
 def bitJumpPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -132,14 +132,13 @@ def bitJumpPath :
 /-- The head of the unrolled block derives `base - 1` for the eight copies. -/
 def bitHeadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2558 .JUMPDEST, pushAt 2559 2 3130, opAt 2560 .JUMP,
-    opAt 2398 .JUMPDEST, pushAt 2399 1 1,
-   opAt 2400 (.Dup ⟨6, by decide⟩), opAt 2401 .SUB]
+  [opAt 2396 .JUMPDEST, pushAt 2397 1 1,
+   opAt 2398 (.Dup ⟨6, by decide⟩), opAt 2399 .SUB]
 
 /-- Its tail drops `base - 1` and rejoins the byte loop. -/
 def bitExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2536 .POP, pushAt 2537 2 628, opAt 2538 .JUMP]
+  [opAt 2534 .POP, pushAt 2535 2 628, opAt 2536 .JUMP]
 
 /-- Byte offset of the copy of the unrolled body that handles exponent bit `j`. -/
 def bitPC (j : Nat) : Nat := if j = 8 then 3292 else 3135 + 20 * j
@@ -344,12 +343,12 @@ def bitPushState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
 
 def bitHeadState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
-  WordStep.stW (bitLoopState input outer 0 byte offset acc base) 3330
+  WordStep.stW (bitLoopState input outer 0 byte offset acc base) 3130
     ([UInt256.ofNat 0, byte, offset, UInt256.ofNat outer, acc, base,
       UInt256.ofNat (modulusValue input)] ++ bitTail input)
 
-theorem jump3695 : Decode.isValidJumpDest submissionBytecode 3330 = true :=
-  Artifact.isValidJumpDest_index 2558 (by rfl)
+theorem jump3695 : Decode.isValidJumpDest submissionBytecode 3130 = true :=
+  Artifact.isValidJumpDest_index 2396 (by rfl)
 
 /-- The loop head jumps into the unrolled block. -/
 def gasSteps_bitEntry (input : ByteArray) (outer : Nat)

@@ -67,7 +67,7 @@ theorem handled_of_rrDone (input : ByteArray) (s : State) (mem : ByteArray)
       · exact Csub.fastRepresents_mcopy_disjoint _ 4096 1024 (32 * n) 3072 n 0
           (by omega) hone0
     obtain ⟨final, ⟨tr⟩, hdone, hres⟩ :=
-      FixedDirectCorrect.handled_of_bDoneConcrete input s mem
+      FixedDirectCorrect.handled_of_entryStateConcrete input s mem
         n 0 esize msize mm minv 0 sub spec
         hcode hfork hrun hnp hdata hstack hact hn hn32 (by omega) he hmz hm32
         hbsize hesize hmsz hmm hodd hradix hmpos
