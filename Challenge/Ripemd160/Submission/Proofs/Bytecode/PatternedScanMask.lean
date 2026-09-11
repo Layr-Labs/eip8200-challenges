@@ -314,9 +314,8 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.TailProjectionInstances
 open EvmSemantics
 
 def rawShift (length : Nat) (offset : UInt256) : UInt256 :=
-  let remaining := UInt256.ofNat length - offset
-  let missing := UInt256.ofNat 32 - remaining
-  UInt256.shiftLeft (UInt256.mul (UInt256.sgt missing 0) missing) (UInt256.ofNat 3)
+  UInt256.land (UInt256.ofNat 248)
+    (UInt256.shiftRight (UInt256.ofNat 0x01090307c0) (UInt256.xor 2 (UInt256.ofNat length - offset)))
 
 theorem rawShift_376 (k : Nat) (hk : k < 12) :
     rawShift 376 (UInt256.ofNat (32 * k)) = wordShift 376 k := by

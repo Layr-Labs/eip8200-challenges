@@ -32,109 +32,113 @@ private abbrev Located :=
   Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka
 
 def prefixPath : List Located :=
-  [⟨227, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨228, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨223, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨224, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨225, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨226, .push ⟨1, by decide⟩ (UInt256.ofNat 0x20), by rfl, by decide⟩,
+   ⟨227, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨228, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨229, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨230, .push ⟨1, by decide⟩ (UInt256.ofNat 0x20), by rfl, by decide⟩,
-   ⟨231, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨230, .push ⟨1, by decide⟩ (UInt256.ofNat 0x40), by rfl, by decide⟩,
+   ⟨231, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨232, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨233, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨234, .push ⟨1, by decide⟩ (UInt256.ofNat 0x40), by rfl, by decide⟩,
-   ⟨235, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨236, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨237, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨238, .push ⟨1, by decide⟩ (UInt256.ofNat 0x60), by rfl, by decide⟩,
-   ⟨240, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨234, .push ⟨1, by decide⟩ (UInt256.ofNat 0x60), by rfl, by decide⟩,
+   ⟨236, .op (.Dup ⟨4, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨237, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨238, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨239, .push ⟨1, by decide⟩ (UInt256.ofNat 0x80), by rfl, by decide⟩,
+   ⟨240, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨241, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨242, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨243, .push ⟨1, by decide⟩ (UInt256.ofNat 0x80), by rfl, by decide⟩,
-   ⟨244, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨245, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨246, .op .MLOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨247, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
-   ⟨248, .op (.Dup ⟨10, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨249, .push ⟨2, by decide⟩ (UInt256.ofNat 0x13a), by rfl, by decide⟩,
-   ⟨250, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨251, .op (.Dup ⟨11, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨252, .push ⟨2, by decide⟩ (UInt256.ofNat 0x4b), by rfl, by decide⟩,
-   ⟨258, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨243, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨244, .op (.Dup ⟨10, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨245, .push ⟨2, by decide⟩ (UInt256.ofNat 0x13a), by rfl, by decide⟩,
+   ⟨246, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨247, .op (.Dup ⟨11, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨248, .push ⟨2, by decide⟩ (UInt256.ofNat 0x4b), by rfl, by decide⟩,
+   ⟨254, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def afterXPath : List Located :=
-  [⟨260, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨261, .push ⟨2, by decide⟩ (UInt256.ofNat 0x147), by rfl, by decide⟩,
-   ⟨262, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨263, .op (.Dup ⟨6, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨264, .op (.Dup ⟨8, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨265, .op (.Dup ⟨10, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨266, .op (.Dup ⟨14, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨267, .push ⟨2, by decide⟩ (UInt256.ofNat 0x47a), by rfl, by decide⟩,
-   ⟨268, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨256, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨257, .push ⟨2, by decide⟩ (UInt256.ofNat 0x147), by rfl, by decide⟩,
+   ⟨258, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨259, .op (.Dup ⟨6, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨260, .op (.Dup ⟨8, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨261, .op (.Dup ⟨10, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨262, .op (.Dup ⟨14, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨263, .push ⟨2, by decide⟩ (UInt256.ofNat 0x47a), by rfl, by decide⟩,
+   ⟨264, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def afterFPath : List Located :=
-  [⟨269, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨270, .op (.Dup ⟨8, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨271, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨272, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨273, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨274, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨275, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
-   ⟨276, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨277, .push ⟨2, by decide⟩ (UInt256.ofNat 0x15d), by rfl, by decide⟩,
-   ⟨278, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨279, .op (.Dup ⟨13, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨280, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨281, .push ⟨2, by decide⟩ (UInt256.ofNat 4), by rfl, by decide⟩,
-   ⟨282, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨265, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨266, .op (.Dup ⟨8, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨267, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨268, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨269, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨270, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨271, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨272, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨273, .push ⟨2, by decide⟩ (UInt256.ofNat 0x15d), by rfl, by decide⟩,
+   ⟨274, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨275, .op (.Dup ⟨13, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨276, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨277, .push ⟨2, by decide⟩ (UInt256.ofNat 4), by rfl, by decide⟩,
+   ⟨278, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def afterRot1Path : List Located :=
-  [⟨283, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨284, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨285, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨286, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨287, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨288, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
-   ⟨289, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨290, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨291, .op (.Dup ⟨7, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨292, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨293, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
-   ⟨294, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨295, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨296, .push ⟨1, by decide⟩ (UInt256.ofNat 0x80), by rfl, by decide⟩,
-   ⟨297, .op (.Dup ⟨8, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨298, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨299, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨300, .push ⟨2, by decide⟩ (UInt256.ofNat 0x18d), by rfl, by decide⟩,
-   ⟨301, .push ⟨2, by decide⟩ (UInt256.ofNat 0x185), by rfl, by decide⟩,
-   ⟨302, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨303, .push ⟨1, by decide⟩ (UInt256.ofNat 10), by rfl, by decide⟩,
-   ⟨304, .op (.Dup ⟨7, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨305, .push ⟨2, by decide⟩ (UInt256.ofNat 4), by rfl, by decide⟩,
-   ⟨306, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨279, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨280, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨281, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨282, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨283, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨284, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨285, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨286, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨287, .op (.Dup ⟨7, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨288, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨289, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨290, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨291, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨292, .push ⟨1, by decide⟩ (UInt256.ofNat 0x80), by rfl, by decide⟩,
+   ⟨293, .op (.Dup ⟨8, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨294, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨295, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨296, .push ⟨2, by decide⟩ (UInt256.ofNat 0x18d), by rfl, by decide⟩,
+   ⟨297, .push ⟨2, by decide⟩ (UInt256.ofNat 0x185), by rfl, by decide⟩,
+   ⟨298, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨299, .push ⟨1, by decide⟩ (UInt256.ofNat 10), by rfl, by decide⟩,
+   ⟨300, .op (.Dup ⟨7, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨301, .push ⟨2, by decide⟩ (UInt256.ofNat 4), by rfl, by decide⟩,
+   ⟨302, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def afterRot2Path : List Located :=
-  [⟨307, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨308, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
-   ⟨309, .op (.Dup ⟨9, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨310, .push ⟨2, by decide⟩ (UInt256.ofNat 0x33), by rfl, by decide⟩,
-   ⟨311, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨303, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨304, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
+   ⟨305, .op (.Dup ⟨9, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨306, .push ⟨2, by decide⟩ (UInt256.ofNat 0x33), by rfl, by decide⟩,
+   ⟨307, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def suffixPath : List Located :=
-  [⟨312, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨313, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
-   ⟨314, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨315, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨316, .push ⟨1, by decide⟩ (UInt256.ofNat 0x40), by rfl, by decide⟩,
-   ⟨317, .op (.Dup ⟨8, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨318, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨319, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨320, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
-   ⟨321, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨322, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨323, .push ⟨1, by decide⟩ (UInt256.ofNat 0x20), by rfl, by decide⟩,
-   ⟨324, .op (.Dup ⟨8, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨325, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨326, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨308, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨309, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨310, .op (.Dup ⟨5, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨311, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨312, .push ⟨1, by decide⟩ (UInt256.ofNat 0x40), by rfl, by decide⟩,
+   ⟨313, .op (.Dup ⟨8, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨314, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨315, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨316, .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), by rfl, by decide⟩,
+   ⟨317, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨318, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨319, .push ⟨1, by decide⟩ (UInt256.ofNat 0x20), by rfl, by decide⟩,
+   ⟨320, .op (.Dup ⟨8, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨321, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨322, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨323, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨324, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨325, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨326, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨327, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨328, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨329, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -142,11 +146,7 @@ def suffixPath : List Located :=
    ⟨331, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨332, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨333, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨334, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨335, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨336, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨337, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨338, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨334, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 private def roundPCs : List Nat :=
   [276, 277, 278, 279, 281, 282, 283, 284, 286, 287, 288, 289,
@@ -389,27 +389,27 @@ def setCallState (s : State) (base : UInt256) (j : Nat)
 
 @[simp] private theorem valid687 :
     Decode.isValidJumpDest submissionBytecode 0x48b = true := by
-  exact Artifact.submissionArtifact.isValidJumpDest_index 791 (by rfl)
+  exact Artifact.submissionArtifact.isValidJumpDest_index 787 (by rfl)
 
 @[simp] private theorem valid13A :
     Decode.isValidJumpDest submissionBytecode 0x1d1 = true := by
-  exact Artifact.submissionArtifact.isValidJumpDest_index 260 (by rfl)
+  exact Artifact.submissionArtifact.isValidJumpDest_index 256 (by rfl)
 
 @[simp] private theorem valid147 :
     Decode.isValidJumpDest submissionBytecode 0x1db = true := by
-  exact Artifact.submissionArtifact.isValidJumpDest_index 269 (by rfl)
+  exact Artifact.submissionArtifact.isValidJumpDest_index 265 (by rfl)
 
 @[simp] private theorem valid15D :
     Decode.isValidJumpDest submissionBytecode 0x1f6 = true := by
-  exact Artifact.submissionArtifact.isValidJumpDest_index 283 (by rfl)
+  exact Artifact.submissionArtifact.isValidJumpDest_index 279 (by rfl)
 
 @[simp] private theorem valid185 :
     Decode.isValidJumpDest submissionBytecode 0x22b = true := by
-  exact Artifact.submissionArtifact.isValidJumpDest_index 307 (by rfl)
+  exact Artifact.submissionArtifact.isValidJumpDest_index 303 (by rfl)
 
 @[simp] private theorem valid18D :
     Decode.isValidJumpDest submissionBytecode 0x230 = true := by
-  exact Artifact.submissionArtifact.isValidJumpDest_index 312 (by rfl)
+  exact Artifact.submissionArtifact.isValidJumpDest_index 308 (by rfl)
 
 private theorem cap (rest : List UInt256) (h : rest.length < 980)
     (n : Nat) (hn : n ≤ 40) : rest.length + n < 1024 := by omega

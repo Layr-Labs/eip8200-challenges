@@ -29,22 +29,22 @@ private theorem bodyValid (i : Nat) (hi : i < 16) :
         0x1aa2, 0x1acd][i]!) = true := by
   interval_cases i <;>
     first
-    | exact Artifact.submissionArtifact.isValidJumpDest_index 3089 (by rfl)
-    | exact Artifact.submissionArtifact.isValidJumpDest_index 3107 (by rfl)
-    | exact Artifact.submissionArtifact.isValidJumpDest_index 3125 (by rfl)
-    | exact Artifact.submissionArtifact.isValidJumpDest_index 3143 (by rfl)
-    | exact Artifact.submissionArtifact.isValidJumpDest_index 3161 (by rfl)
-    | exact Artifact.submissionArtifact.isValidJumpDest_index 3179 (by rfl)
-    | exact Artifact.submissionArtifact.isValidJumpDest_index 3197 (by rfl)
-    | exact Artifact.submissionArtifact.isValidJumpDest_index 3215 (by rfl)
-    | exact Artifact.submissionArtifact.isValidJumpDest_index 3233 (by rfl)
-    | exact Artifact.submissionArtifact.isValidJumpDest_index 3251 (by rfl)
-    | exact Artifact.submissionArtifact.isValidJumpDest_index 3269 (by rfl)
-    | exact Artifact.submissionArtifact.isValidJumpDest_index 3287 (by rfl)
-    | exact Artifact.submissionArtifact.isValidJumpDest_index 3305 (by rfl)
-    | exact Artifact.submissionArtifact.isValidJumpDest_index 3323 (by rfl)
-    | exact Artifact.submissionArtifact.isValidJumpDest_index 3341 (by rfl)
-    | exact Artifact.submissionArtifact.isValidJumpDest_index 3359 (by rfl)
+    | exact Artifact.submissionArtifact.isValidJumpDest_index 3085 (by rfl)
+    | exact Artifact.submissionArtifact.isValidJumpDest_index 3103 (by rfl)
+    | exact Artifact.submissionArtifact.isValidJumpDest_index 3121 (by rfl)
+    | exact Artifact.submissionArtifact.isValidJumpDest_index 3139 (by rfl)
+    | exact Artifact.submissionArtifact.isValidJumpDest_index 3157 (by rfl)
+    | exact Artifact.submissionArtifact.isValidJumpDest_index 3175 (by rfl)
+    | exact Artifact.submissionArtifact.isValidJumpDest_index 3193 (by rfl)
+    | exact Artifact.submissionArtifact.isValidJumpDest_index 3211 (by rfl)
+    | exact Artifact.submissionArtifact.isValidJumpDest_index 3229 (by rfl)
+    | exact Artifact.submissionArtifact.isValidJumpDest_index 3247 (by rfl)
+    | exact Artifact.submissionArtifact.isValidJumpDest_index 3265 (by rfl)
+    | exact Artifact.submissionArtifact.isValidJumpDest_index 3283 (by rfl)
+    | exact Artifact.submissionArtifact.isValidJumpDest_index 3301 (by rfl)
+    | exact Artifact.submissionArtifact.isValidJumpDest_index 3319 (by rfl)
+    | exact Artifact.submissionArtifact.isValidJumpDest_index 3337 (by rfl)
+    | exact Artifact.submissionArtifact.isValidJumpDest_index 3355 (by rfl)
 
 theorem run_selector (s : State) (i : Nat) (hi : i < 16)
     (hcode : s.executionEnv.code = submissionBytecode)
@@ -78,7 +78,7 @@ theorem run_body (s : State) (i : Nat) (hi : i < 16)
     run (bodyPath i) (bodyEntry s KnownInputData.targetInput i) =
       some (resultState s KnownInputData.targetInput i) := by
   have hdest : Decode.isValidJumpDest submissionBytecode 0x453 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 743 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 739 (by rfl)
   interval_cases i <;>
     simp (config := { maxSteps := 1000000 })
       [bodyPath, bodyPath0, bodyPath1, bodyPath2, bodyPath3, bodyPath4,

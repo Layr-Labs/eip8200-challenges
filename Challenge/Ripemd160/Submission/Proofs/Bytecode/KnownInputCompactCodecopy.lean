@@ -27,13 +27,13 @@ def gasSteps_codecopy (s : State) (input : ByteArray) (i : Nat)
     change s.executionEnv.code = submissionBytecode
     exact hcode
   have hpc : (withGas pre gas).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 2898 := by
+      Artifact.submissionArtifact.instructionPC 2894 := by
     change (UInt256.ofNat 0x132e).toNat =
-      Artifact.submissionArtifact.instructionPC 2898
+      Artifact.submissionArtifact.instructionPC 2894
     rw [KnownInputCompactPaths.pc2876]
     decide
   have hdec := Challenge.EvmProof.Stepper.decodes_of_artifact
-    Artifact.submissionArtifact (withGas pre gas) 2868 (.op .CODECOPY)
+    Artifact.submissionArtifact (withGas pre gas) 2864 (.op .CODECOPY)
     hcode' hpc (by rfl) (by exact ⟨by decide, trivial, rfl⟩)
   change (withGas pre gas).decodedOp = some .CODECOPY at hdec
   apply EVM.Step.running

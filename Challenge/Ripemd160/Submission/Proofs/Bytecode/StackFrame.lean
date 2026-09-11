@@ -54,13 +54,13 @@ private def wfOp {op : Operation}
 (index 324, pc 0x293).  The removed call prefix and the removed inner-return
 JUMPDEST are no longer live instructions. -/
 def exitPath : List Located :=
-  [⟨349, .push ⟨4, by decide⟩ mask, by rfl, by decide⟩,
-   ⟨350, .push ⟨5, by decide⟩ QuadRoundTemplate.factor, by rfl, by decide⟩]
+  [⟨345, .push ⟨4, by decide⟩ mask, by rfl, by decide⟩,
+   ⟨346, .push ⟨5, by decide⟩ QuadRoundTemplate.factor, by rfl, by decide⟩]
 
 def loadSite987 : GenericRoundSite Artifact.submissionArtifact .Osaka
     StackLoadTrace.loadTemplate :=
   StackSiteBuilder.ofSlice (artifact := Artifact.submissionArtifact) (fork := .Osaka)
-    StackLoadTrace.loadTemplate 329 (by rfl) (by decide)
+    StackLoadTrace.loadTemplate 325 (by rfl) (by decide)
     QuadLayout.code_bound
     (StackRoundData.templateWellFormed_mem
       (instructions := StackLoadTrace.loadTemplate) (by decide))
@@ -163,8 +163,8 @@ theorem run_exit (s : State) (input : ByteArray) (i : Nat)
     (hrun : s.halt = .Running) :
     Stepper.runLocatedBlock exitPath (frameSeam s input i) =
       some (frameLoadEntry s input i) := by
-  have hpc940 : Artifact.submissionArtifact.instructionPC 349 = 0x264 := by rfl
-  have hpc941 : Artifact.submissionArtifact.instructionPC 350 = 0x265 := by rfl
+  have hpc940 : Artifact.submissionArtifact.instructionPC 345 = 0x264 := by rfl
+  have hpc941 : Artifact.submissionArtifact.instructionPC 346 = 0x265 := by rfl
   simp [exitPath, Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
     frameSeam, frameLoadEntry, StackBlockModel.scheduledState,
     StackBlockModel.withMemory, StackBlockModel.withActiveWords,

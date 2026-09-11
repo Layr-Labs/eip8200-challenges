@@ -197,6 +197,12 @@ theorem correct : Correct submissionBytecode := by
             (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
         · exact StackCorrect.correct input hfit
             (gasSteps_fallback input hfit h hp (Or.inr hbyte) h256 hshort)
+      by_cases hsize119 : input.size = 119
+      · by_cases hbyte : firstByte input = 7
+        · exact ShortPatternCorrect.correct119_from_patternedEntry input hfit hsize119 hbyte
+            (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
+        · exact StackCorrect.correct input hfit
+            (gasSteps_fallback input hfit h hp (Or.inr hbyte) h256 hshort)
       by_cases hsize63 : input.size = 63
       · by_cases hbyte : firstByte input = 7
         · exact Patterned128Correct.correct_from_patternedEntry input hfit hsize63 hbyte
@@ -218,12 +224,6 @@ theorem correct : Correct submissionBytecode := by
       by_cases hsize128 : input.size = 128
       · by_cases hbyte : firstByte input = 7
         · exact ShortPatternCorrect.correct128_from_patternedEntry input hfit hsize128 hbyte
-            (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
-        · exact StackCorrect.correct input hfit
-            (gasSteps_fallback input hfit h hp (Or.inr hbyte) h256 hshort)
-      by_cases hsize119 : input.size = 119
-      · by_cases hbyte : firstByte input = 7
-        · exact ShortPatternCorrect.correct119_from_patternedEntry input hfit hsize119 hbyte
             (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
         · exact StackCorrect.correct input hfit
             (gasSteps_fallback input hfit h hp (Or.inr hbyte) h256 hshort)

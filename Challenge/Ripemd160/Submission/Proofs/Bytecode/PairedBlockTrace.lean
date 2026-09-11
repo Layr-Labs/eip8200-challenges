@@ -48,19 +48,19 @@ theorem tail_stack (s : State) (input : ByteArray) (i : Nat) :
     coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower]
       (coreCryptoResult (blockWords input i) (PairedBlockMath.readLane s.memory)
         (PairedBlockMath.readLane s.memory))
-      (UInt256.ofNat 461 :: driverRest input i) =
+      (UInt256.ofNat 464 :: driverRest input i) =
       PairedAllInlineTail.entryStack (resultFrame s input i)
-        (UInt256.ofNat 461) (driverRest input i) := by
+        (UInt256.ofNat 464) (driverRest input i) := by
   rfl
 
 theorem valid_return (s : State) (hcode : s.executionEnv.code = submissionBytecode) :
-    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 461).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 265 = 461 := by
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 464).toNat = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 263 = 464 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 265 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 263 (by rfl)
   rw [hpc] at h
-  change Decode.isValidJumpDest s.executionEnv.code 461 = true
+  change Decode.isValidJumpDest s.executionEnv.code 464 = true
   rw [hcode]
   exact h
 
@@ -74,7 +74,7 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     GasSteps (DriverTrace.compressEntry s input i)
       (DriverTrace.compressReturned (resultState s input i) input i) := by
   let q := scheduledState s i
-  let rho := UInt256.ofNat 461 :: driverRest input i
+  let rho := UInt256.ofNat 464 :: driverRest input i
   let lane := PairedBlockMath.readLane s.memory
   have qactive : 23 ≤ q.activeWords.toNat := scheduled_active s input i hfit hi
   have qcode : q.executionEnv.code = submissionBytecode := hcode
@@ -83,11 +83,11 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
   have qnp : Precompile.isPrecompileWithConfig q.executionEnv.precompileConfig
       q.executionEnv.fork q.executionEnv.codeAddr = false := hnp
   have hstack : rho.length ≤ 1002 := by simp [rho, driverRest]
-  have gschedule := PairedAllInlineBoundarySites.gasSteps_schedule s (UInt256.ofNat 461)
+  have gschedule := PairedAllInlineBoundarySites.gasSteps_schedule s (UInt256.ofNat 464)
     (messagePointer i) (driverRest input i) (by simp [driverRest]) hrun
     (messagePointer_lower i) (messagePointer_bound input hfit i hi) hcode hfork hnp
   have gschedule' : GasSteps (DriverTrace.compressEntry s input i)
-      {q with pc := UInt256.ofNat 763, stack := rho} := gschedule
+      {q with pc := UInt256.ofNat 766, stack := rho} := gschedule
   have hcanonical := SStartupPremises.scheduled_canonical s input i h ctx
   have gstartup := PairedAllInlineBoundarySites.gasSteps_startup q rho hstack qrun qactive
     hcanonical.1 hcanonical.2.1 hcanonical.2.2.1 hcanonical.2.2.2.1 hcanonical.2.2.2.2
@@ -98,10 +98,10 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     hstack qrun qactive qcode qfork qnp
   have hentry :
       {q with
-        pc := UInt256.ofNat 811
+        pc := UInt256.ofNat 814
         stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower]
           ⟨PairedLaneWordRound.packCrypto lane lane, 0⟩ rho} =
-      {q with pc := UInt256.ofNat 811, stack := PairedStartupTrace.resultStack q.memory rho} := by
+      {q with pc := UInt256.ofNat 814, stack := PairedStartupTrace.resultStack q.memory rho} := by
     rw [startup_stack, scheduled_readLane]
   have hterminal : TerminalRound.canonicalFrame q.memory terminal.frame =
       resultFrame s input i := by
@@ -115,12 +115,12 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
       PairedTailTrace.resultMemory q.memory (resultFrame s input i) := by
     rw [TerminalRound.resultMemory_modified_eq_canonical _ _ rfl rfl, hterminal]
   have gsuffix := TerminalRoundSite.gasSteps_suffix q terminal.frame
-    (UInt256.ofNat 461) (driverRest input i) hstack qrun qactive
+    (UInt256.ofNat 464) (driverRest input i) hstack qrun qactive
     (valid_return q qcode) qcode qfork qnp
   rw [hmemory] at gsuffix
   have gsuffix' : GasSteps
       {q with
-        pc := UInt256.ofNat 4811
+        pc := UInt256.ofNat 4828
         stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower]
           terminal rho}
       (DriverTrace.compressReturned (resultState s input i) input i) := gsuffix
