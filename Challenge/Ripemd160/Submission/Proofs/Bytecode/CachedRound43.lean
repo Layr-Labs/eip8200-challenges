@@ -47,16 +47,16 @@ def actualTemplate : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND ]
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 2420).take actualTemplate.length = actualTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2419).take actualTemplate.length = actualTemplate := by rfl
 def actualSite : GenericRoundSite Artifact.submissionArtifact .Osaka actualTemplate :=
-  StackSiteBuilder.ofSlice actualTemplate 2420 actual_slice
-    (by change 2420 + actualTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice actualTemplate 2419 actual_slice
+    (by change 2419 + actualTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := actualTemplate) (by decide))
     (by decide)
 theorem actual_pc : actualSite.startPC = UInt256.ofNat 3025 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2420) = UInt256.ofNat 3025
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2419) = UInt256.ofNat 3025
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem actual_advances : ∀ instruction ∈ actualTemplate.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound

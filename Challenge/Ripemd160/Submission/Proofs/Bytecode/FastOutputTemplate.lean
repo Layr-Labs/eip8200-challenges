@@ -119,7 +119,7 @@ def staticGas (instructions : List Instr) : Nat :=
   (instructions.map
     (Challenge.EvmProof.Meter.instrStaticCost .Osaka)).sum
 
-theorem fastOutputTemplate_staticGas : staticGas fastOutputTemplate = 167 := by
+theorem fastOutputTemplate_staticGas : staticGas fastOutputTemplate = 163 := by
   norm_num [staticGas, fastOutputTemplate, fastOutputBeforeReturnTemplate,
     fastPackTemplate, fastLoad0, fastPackStep, fastEndianStage8,
     fastEndianStage16, ClosedEndianReuse.code,

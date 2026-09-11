@@ -1,10 +1,11 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.SentinelCore
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedCoreCommon
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedDivMaskCache
 /-!
 The decoder retains six schedule words below the core's working registers.
 `originalLower` is a virtual execution model: its PC 599 is used only to
 identify written memory with the established store contract. The actual
-lower sequence starts at PC 763, and the complete physical decoder at 609.
+lower sequence starts at PC 761, and the complete physical decoder at 607.
 The located-site certificate is supplied by PairedAllInlineBoundarySites.
 -/
 set_option warningAsError true
@@ -16,7 +17,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedSchedule
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate PairedHelperBooleanTrace
 open DenseScheduleTemplate PairedScheduleMemory PairedScheduleHalves PairedScheduleCombined
-open PairedMask32Cache PairedScheduleContract CachedCoreCommon
+open PairedMask32Cache PairedScheduleContract CachedCoreCommon SentinelCore
 def originalLower : List Instr :=
   [ .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 224),
@@ -134,9 +135,8 @@ def actualLower : List Instr :=
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 416),
     .op .MSTORE,
-    .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 704),
-    .op .MSTORE,
+    .push ⟨3, by decide⟩ (UInt256.ofNat 704),
+    .op .POP,
     .op (.Swap ⟨5, by decide⟩),
     .op .POP,
     .op (.Swap ⟨6, by decide⟩),
@@ -144,6 +144,21 @@ def actualLower : List Instr :=
     .op (.Swap ⟨4, by decide⟩) ]
 def rawMemory (memory : ByteArray) (value : UInt256) : ByteArray :=
   (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 192 (UInt256.shiftRight value (UInt256.ofNat 224))) 224 (UInt256.land maskWord (UInt256.shiftRight value (UInt256.ofNat 192)))) 256 (UInt256.land maskWord (UInt256.shiftRight value (UInt256.ofNat 160)))) 288 (UInt256.land maskWord (UInt256.shiftRight value (UInt256.ofNat 128)))) 320 (UInt256.land maskWord (UInt256.shiftRight value (UInt256.ofNat 96)))) 352 (UInt256.land maskWord (UInt256.shiftRight value (UInt256.ofNat 64)))) 384 (UInt256.land maskWord (UInt256.shiftRight value (UInt256.ofNat 32)))) 416 (UInt256.land maskWord value)) 704 (UInt256.ofNat 0))
+private def lowerMemory (memory : ByteArray) (value : UInt256) : ByteArray :=
+  (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 192 (UInt256.shiftRight value (UInt256.ofNat 224))) 224 (UInt256.land maskWord (UInt256.shiftRight value (UInt256.ofNat 192)))) 256 (UInt256.land maskWord (UInt256.shiftRight value (UInt256.ofNat 160)))) 288 (UInt256.land maskWord (UInt256.shiftRight value (UInt256.ofNat 128)))) 320 (UInt256.land maskWord (UInt256.shiftRight value (UInt256.ofNat 96)))) 352 (UInt256.land maskWord (UInt256.shiftRight value (UInt256.ofNat 64)))) 384 (UInt256.land maskWord (UInt256.shiftRight value (UInt256.ofNat 32)))) 416 (UInt256.land maskWord value))
+
+private theorem lowerMemory_sentinel (memory : ByteArray) (value : UInt256)
+    (hs : SentinelOK memory) : SentinelOK (lowerMemory memory value) := by
+  unfold lowerMemory
+  repeat first
+    | exact hs
+    | apply sentinel_writeWord_disjoint _ _ _ (by decide)
+
+private theorem rawMemory_eq_lowerMemory (memory : ByteArray) (value : UInt256)
+    (hs : SentinelOK memory) : rawMemory memory value = lowerMemory memory value := by
+  have h := lowerMemory_sentinel memory value hs
+  exact writeWord_zero_noop (lowerMemory memory value) 704 h.1 h.2
+
 def rawCache (value : UInt256) : List UInt256 :=
   [(UInt256.land maskWord (UInt256.shiftRight value (UInt256.ofNat 128))),
    (UInt256.land maskWord (UInt256.shiftRight value (UInt256.ofNat 160))),
@@ -171,14 +186,15 @@ theorem run_original_raw (s : State) (value returnPC : UInt256) (rest : List UIn
   all_goals repeat first | apply And.intro | rfl
 theorem run_actual_raw (s : State) (value returnPC : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 996) (hrun : s.halt = .Running)
-    (hactive : 23 ≤ s.activeWords.toNat) :
+    (hactive : 23 ≤ s.activeWords.toNat) (hsentinel : SentinelOK s.memory) :
     runInstrSeq actualLower {s with pc := (UInt256.ofNat 763), stack := value :: mask8 :: maskWord :: mask16 :: returnPC :: rest} =
       some {s with pc := pcAfter (UInt256.ofNat 763) actualLower, stack := maskWord :: rawCache value ++ (returnPC :: rest), memory := rawMemory s.memory value} := by
+  rw [rawMemory_eq_lowerMemory s.memory value hsentinel]
   have hcap (n : Nat) (hn : n ≤ 26) : rest.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     active_schedule_preserved s.activeWords address hactive haddress
-  simp (discharger := omega) [actualLower, rawMemory, rawCache, writeWord,
+  simp (discharger := omega) [actualLower, lowerMemory, rawCache, writeWord,
     runInstrSeq, Stepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
     State.activeWordsAfterUInt256, hactiveAt, Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -209,14 +225,14 @@ theorem run_original_model (s : State) (pc value returnPC : UInt256) (rest : Lis
 
 theorem run_actual_lower (s : State) (value returnPC : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 996) (hrun : s.halt = .Running)
-    (hactive : 23 ≤ s.activeWords.toNat) :
+    (hactive : 23 ≤ s.activeWords.toNat) (hsentinel : SentinelOK s.memory) :
     runInstrSeq actualLower {s with pc := UInt256.ofNat 763, stack := value :: mask8 :: maskWord :: mask16 :: returnPC :: rest} =
       some {s with pc := pcAfter (UInt256.ofNat 763) actualLower, stack := maskWord :: cache (modelMemory s.memory value) ++ (returnPC :: rest), memory := modelMemory s.memory value} := by
   have hmem : rawMemory s.memory value = modelMemory s.memory value :=
     congrArg (fun t : State => t.memory) (Option.some.inj
       ((run_original_raw s value returnPC rest hstack hrun hactive).symm.trans
         (run_original_model s (UInt256.ofNat 599) value returnPC rest hstack hrun hactive)))
-  have h := run_actual_raw s value returnPC rest hstack hrun hactive
+  have h := run_actual_raw s value returnPC rest hstack hrun hactive hsentinel
   rw [← cache_rawMemory s.memory value, hmem] at h
   exact h
 
@@ -275,7 +291,8 @@ def fullTemplate : List Instr :=
 
 theorem run_fullTemplate (s : State) (messageOffset returnPC : UInt256)
     (rest : List UInt256) (hstack : rest.length ≤ 996) (hrun : s.halt = .Running)
-    (hactive : 23 ≤ (loadedActiveWords s messageOffset).toNat) :
+    (hactive : 23 ≤ (loadedActiveWords s messageOffset).toNat)
+    (hsentinel : SentinelOK s.memory) :
     runInstrSeq fullTemplate (scheduleEntry s (UInt256.ofNat 609) messageOffset returnPC rest) =
       some {s with pc := pcAfter (UInt256.ofNat 609) fullTemplate, stack := maskWord :: cache (normalizedMemory s.memory (scheduleWords s messageOffset)) ++ (returnPC :: rest), memory := normalizedMemory s.memory (scheduleWords s messageOffset), activeWords := loadedActiveWords s messageOffset} := by
   have h1 := run_initialTemplate s messageOffset returnPC rest (by omega) hrun
@@ -295,6 +312,8 @@ theorem run_fullTemplate (s : State) (messageOffset returnPC : UInt256)
   have h3 := run_actual_lower
     {s with activeWords := loadedActiveWords s messageOffset, memory := storeCells s.memory (halfWords (packedInput1 s messageOffset) 8) 8 8}
     (packedInput0 s messageOffset) returnPC rest hstack hrun hactive
+    (sentinel_storeCells s.memory (halfWords (packedInput1 s messageOffset) 8)
+      8 8 (by decide) hsentinel)
   have h := DenseScheduleTrace.runInstrSeq_append_running h12e hrun h3
   unfold modelMemory at h
   rw [store_upper_schedule, store_lower_schedule] at h
@@ -305,11 +324,12 @@ theorem run_fullTemplate (s : State) (messageOffset returnPC : UInt256)
 
 theorem run_fullTemplate_natural (s : State) (returnPC : UInt256)
     (p : Nat) (rest : List UInt256) (hstack : rest.length ≤ 996) (hrun : s.halt = .Running)
-    (hp : 736 ≤ p) (hbound : p + 64 < 2 ^ 256) :
+    (hp : 736 ≤ p) (hbound : p + 64 < 2 ^ 256)
+    (hsentinel : SentinelOK s.memory) :
     runInstrSeq fullTemplate (scheduleEntry s (UInt256.ofNat 609) (UInt256.ofNat p) returnPC rest) =
       some {s with pc := pcAfter (UInt256.ofNat 609) fullTemplate, stack := maskWord :: cache (normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p)) ++ (returnPC :: rest), memory := normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p), activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
   have h := run_fullTemplate s (UInt256.ofNat p) returnPC rest hstack hrun
-    (loaded_active_ge23 s p hp hbound)
+    (loaded_active_ge23 s p hp hbound) hsentinel
   rw [normalizedMemory_congr s.memory (scheduleWords s (UInt256.ofNat p))
     (PairedScheduleData.extractedWord s.memory p)
     (fun i hi => scheduleWords_eq_extracted s p i hi hbound)] at h
