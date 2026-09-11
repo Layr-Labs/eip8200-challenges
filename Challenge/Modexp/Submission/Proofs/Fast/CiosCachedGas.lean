@@ -117,7 +117,7 @@ opaque gasSteps_tailLast (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (CiosReadonly.run_exit { s with memory := tailCarry mem c bi }
       (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) (UInt256.ofNat pa)
       (UInt256.ofNat (pb-32)) (l1Target n) (l2Target n) tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap
-      (by rw [hcode]; exact jumpDest2220)))
+      (by rw [hcode]; exact jumpDestCsubDirect)))
 
 opaque gasSteps_l1Mac (pc : Nat) (off t : UInt256)
     (block : Block Artifact.submissionArtifact .Osaka pc (l1Program off t))

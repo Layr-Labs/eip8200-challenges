@@ -59,6 +59,9 @@ def blk1662 :
    opAt 1571 .POP,
    opAt 1572 .POP,
    pushAt 1573 2 8224,
-   opAt 1574 .MSTORE]
+   opAt 1574 .MSTORE,
+   opAt 1575 .JUMPDEST,
+   pushAt 1576 2 4973,
+   opAt 1577 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast
