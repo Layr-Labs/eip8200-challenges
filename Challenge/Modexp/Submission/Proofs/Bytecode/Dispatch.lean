@@ -44,10 +44,10 @@ private theorem blockCost_of_static
 
 private theorem gasSteps_zeroSetup_cost (input : ByteArray)
     (hzero : modulusSize input = 0) :
-    (gasSteps_zeroSetup input hzero).cost = 21 := by
+    (gasSteps_zeroSetup input hzero).cost = 20 := by
   change Challenge.EvmProof.Stepper.runLocatedBlockCost zeroSetupPath
-    (Main.headerState input) = 21
-  exact blockCost_of_static zeroSetupPath 21 (run_zeroSetup input hzero)
+    (Main.headerState input) = 20
+  exact blockCost_of_static zeroSetupPath 20 (run_zeroSetup input hzero)
     rfl (by decide) rfl rfl
 
 @[simp] private theorem gasSteps_zeroReturn_cost (input : ByteArray) :
@@ -65,7 +65,7 @@ def gasSteps_zeroSize (input : ByteArray) (hzero : modulusSize input = 0) :
 set_option maxHeartbeats 5000000 in
 theorem gasSteps_zeroSize_cost (input : ByteArray)
     (hzero : modulusSize input = 0) :
-    (gasSteps_zeroSize input hzero).cost = 21 := by
+    (gasSteps_zeroSize input hzero).cost = 20 := by
   simp [gasSteps_zeroSize, gasSteps_zeroSetup_cost]
 
 private def gasSteps_wordJump (input : ByteArray) (hvalid : ValidInput input)
@@ -109,10 +109,10 @@ private def gasSteps_wordTail (input : ByteArray) :
     rfl (by decide) rfl rfl
 
 @[simp] private theorem gasSteps_wordTail_cost (input : ByteArray) :
-    (gasSteps_wordTail input).cost = 32 := by
+    (gasSteps_wordTail input).cost = 31 := by
   change Challenge.EvmProof.Stepper.runLocatedBlockCost wordTailPath
-    (wordCheckedState input) = 32
-  exact blockCost_of_static wordTailPath 32 (run_wordTail input)
+    (wordCheckedState input) = 31
+  exact blockCost_of_static wordTailPath 31 (run_wordTail input)
     rfl (by decide) rfl rfl
 
 def gasSteps_wordRouteEnter (input : ByteArray) (hvalid : ValidInput input)
@@ -126,7 +126,7 @@ set_option maxHeartbeats 5000000 in
 theorem gasSteps_wordRouteEnter_cost (input : ByteArray)
     (hvalid : ValidInput input)
     (hpositive : 0 < modulusSize input) (hword : modulusSize input ≤ 32) :
-    (gasSteps_wordRouteEnter input hvalid hpositive hword).cost = 90 := by
+    (gasSteps_wordRouteEnter input hvalid hpositive hword).cost = 89 := by
   simp [gasSteps_wordRouteEnter]
 
 /-- Complete trace and exact minimum gas for zero-width results. -/

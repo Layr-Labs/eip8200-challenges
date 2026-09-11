@@ -71,7 +71,7 @@ theorem run_checkThree_hit (s : State) (memory input : ByteArray)
       Challenge.EvmProof.Stepper.runInstr,
       FixedDirectStates.checkThree, FixedDirectStates.special, Exp.outer,
       hdata, hcode, hrun, heoff, hfix, haddr, hread, hxor,
-      Exp.not_isTrue_zero, jumpDest3952,
+      Exp.not_isTrue_zero, jumpDest3953,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
