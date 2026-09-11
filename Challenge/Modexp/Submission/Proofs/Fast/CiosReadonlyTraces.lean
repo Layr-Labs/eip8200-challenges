@@ -100,11 +100,11 @@ theorem run_middle (s : State) (mem : ByteArray) (c bi : UInt256)
 
 theorem run_exit (s : State) (pbi paEnd pbEnd flag target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 3811 = true) :
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 3847 = true) :
     runInstructions fullExitProgram
       (framed s (UInt256.ofNat 4870)
         ([pbi,paEnd,pbEnd,flag,negative32,allOnes,target2,inv,m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest)) =
-    some (framed s (UInt256.ofNat 3811) ([dst,ret] ++ rest)) := by
+    some (framed s (UInt256.ofNat 3847) ([dst,ret] ++ rest)) := by
   have hc2 : rest.length+2 < 1024 := by omega
   have hc3 : rest.length+3 < 1024 := by omega
   have hc4 : rest.length+4 < 1024 := by omega

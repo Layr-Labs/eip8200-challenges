@@ -9,7 +9,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
-def startIndex : Nat := 3099
+def startIndex : Nat := 3101
 
 /-- A bounded, cached instruction slice.  This keeps concrete reduction local. -/
 private def template : List Instr :=
@@ -50,7 +50,7 @@ private theorem instructionPC_add
 
 /-- Exact program-counter table for the bounded dispatcher slice. -/
 @[simp] theorem dispatchPC (i : Nat) (hi : startIndex ≤ i)
-    (hii : i ≤ 3112) :
+    (hii : i ≤ 3114) :
     Artifact.submissionArtifact.instructionPC i =
       [4140,4141,4144,4145,4146,4148,4149,4150,4153,4154,4155,4158,4159,4162][i - startIndex]! := by
   calc
@@ -84,7 +84,7 @@ def pushAt (offset : Nat) (width : Fin 33) (value : UInt256)
     Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
   ⟨startIndex + offset, .push width value, (getElem_slice offset hoffset).trans hget, hwf⟩
 
-/-- The common dispatcher prefix through `JUMPI` (indices 2670..2681). -/
+/-- The common dispatcher prefix through `JUMPI` (indices 3101..3112). -/
 def cios2DispatchGuard :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 0 .JUMPDEST,
@@ -100,7 +100,7 @@ def cios2DispatchGuard :
    pushAt 10 2 4163,
    opAt 11 .JUMPI]
 
-/-- Full fallback path (indices 2670..2683, pc 4479..4501). -/
+/-- Full fallback path (indices 3101..3114, pc 4140..4162). -/
 def cios2Dispatch :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   cios2DispatchGuard ++

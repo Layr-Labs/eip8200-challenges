@@ -35,11 +35,11 @@ def specializedEntryState (s : State) (mem : ByteArray) (pa pb : Nat)
 
 theorem jumpDest4012 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4140 = true := by
-  exact Artifact.isValidJumpDest_index 3099 (by rfl)
+  exact Artifact.isValidJumpDest_index 3101 (by rfl)
 
 theorem jumpDest4035 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4163 = true := by
-  exact Artifact.isValidJumpDest_index 3113 (by rfl)
+  exact Artifact.isValidJumpDest_index 3115 (by rfl)
 
 private theorem activeWords9344 (s : State) (hact : 296 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 9344 32) =
