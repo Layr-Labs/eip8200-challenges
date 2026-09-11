@@ -29,7 +29,7 @@ def blk1781 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1667 .JUMPDEST,
    opAt 1668 (.Dup ⟨0, by decide⟩),
-   pushAt 1669 2 9472,
+   pushAt 1669 2 2912,
    opAt 1670 .MLOAD,
    opAt 1671 .ADD,
    opAt 1672 .CALLDATALOAD,

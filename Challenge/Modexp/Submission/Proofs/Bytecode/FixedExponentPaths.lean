@@ -25,19 +25,12 @@ abbrev Located :=
 
 @[simp] theorem fixedPC0 (i : Nat) (hi : 2405 ≤ i) (hii : i ≤ 2441) :
     Artifact.submissionArtifact.instructionPC i =
-      [3257,3258,3261,3262,3263,3264,3266,3267,3268,3269,3270,3271,3272,
-       3274,3275,3276,3277,3278,3279,3280,3281,3282,3284,3285,
-       3286,3287,3288,3290,3291,3292,3294,3295,3298,3299,3302,
-       3305,3306][i - 2405]! := by
+      [3142,3143,3144,3145,3147,3148,3149,3150,3151,3152,3153,3154,3155,3156,3158,3159,3161,3162,3163,3164,3165,3167,3168,3169,3170,3171,3172,3173,3174,3175,3176,3178,3179,3181,3182,3183,3184][i - 2405]! := by
   interval_cases i <;> decide
 
 @[simp] theorem fixedPC1 (i : Nat) (hi : 2442 ≤ i) (hii : i ≤ 2490) :
     Artifact.submissionArtifact.instructionPC i =
-      [3307,3309,3310,3311,3313,3314,3315,3317,3318,3319,3321,3322,3323,
-       3324,3325,3328,3329,3330,3331,3332,3333,3334,3335,3337,
-       3338,3339,3340,3343,3344,3345,3347,3350,3351,3354,3357,
-       3360,3363,3366,3367,3368,3371,3374,3377,3380,3383,3384,
-       3385,3386,3388][i - 2442]! := by
+      [3185,3187,3188,3189,3190,3191,3192,3193,3194,3195,3196,3198,3199,3201,3202,3203,3204,3205,3207,3208,3209,3210,3211,3212,3213,3214,3215,3216,3218,3219,3221,3222,3223,3224,3225,3227,3228,3229,3230,3231,3232,3233,3234,3235,3236,3238,3239,3241,3242][i - 2442]! := by
   interval_cases i <;> decide
 
 def entryPrefix : List Located :=
@@ -62,19 +55,19 @@ def threeHit : List Located :=
 def check65537 : List Located :=
   [opAt 2430 .JUMPDEST, pushAt 2431 1 32, opAt 2432 .MLOAD,
    opAt 2433 .CALLDATALOAD, pushAt 2434 1 0, opAt 2435 .SHR,
-   pushAt 2436 2 9344, opAt 2437 .EQ, opAt 2438 .ISZERO,
-   pushAt 2439 2 6144, opAt 2440 .JUMPI]
+   pushAt 2436 2 2784, opAt 2437 .EQ, opAt 2438 .ISZERO,
+   pushAt 2439 2 1536, opAt 2440 .JUMPI]
 
 def fermatHit : List Located :=
   [pushAt 2441 1 16]
 
 def start : List Located :=
   [opAt 2442 .JUMPDEST, opAt 2443 (.Dup ⟨1, by decide⟩),
-   pushAt 2444 2 2048, pushAt 2445 1 7, opAt 2446 .MCOPY]
+   pushAt 2444 2 512, pushAt 2445 1 7, opAt 2446 .MCOPY]
 
 def squareCall : List Located :=
-  [opAt 2447 .JUMPDEST, pushAt 2448 1 15, pushAt 2449 2 1024,
-   pushAt 2450 2 1024, pushAt 2451 1 31, pushAt 2452 2 1930,
+  [opAt 2447 .JUMPDEST, pushAt 2448 1 15, pushAt 2449 2 256,
+   pushAt 2450 2 256, pushAt 2451 1 31, pushAt 2452 2 1930,
    opAt 2453 .JUMP]
 
 def squareReturn : List Located :=
@@ -83,15 +76,15 @@ def squareReturn : List Located :=
    pushAt 2459 2 3764, opAt 2460 .JUMPI]
 
 def product : List Located :=
-  [opAt 2461 .POP, pushAt 2462 0 0, pushAt 2463 2 1024,
-   pushAt 2464 1 255, pushAt 2465 2 1024, pushAt 2466 2 1930,
+  [opAt 2461 .POP, pushAt 2462 0 0, pushAt 2463 2 256,
+   pushAt 2464 1 255, pushAt 2465 2 256, pushAt 2466 2 1930,
    opAt 2467 .JUMP]
 
 def decode : List Located :=
   [opAt 2468 .JUMPDEST, pushAt 2469 1 1,
    opAt 2470 (.Dup ⟨1, by decide⟩), pushAt 2471 1 96,
    opAt 2472 .ADD, opAt 2473 .MSTORE, pushAt 2474 2 1746,
-   pushAt 2475 2 2048, pushAt 2476 2 1024, pushAt 2477 2 6144,
+   pushAt 2475 2 512, pushAt 2476 2 256, pushAt 2477 2 1536,
    pushAt 2478 2 4425, opAt 2479 .JUMP]
 
 def finish : List Located :=
@@ -99,7 +92,7 @@ def finish : List Located :=
 
 def fallback : List Located :=
   [opAt 2483 .JUMPDEST, opAt 2484 (.Dup ⟨0, by decide⟩),
-   pushAt 2485 2 4425, pushAt 2486 2 1024, opAt 2487 .MCOPY,
+   pushAt 2485 2 4425, pushAt 2486 2 256, opAt 2487 .MCOPY,
    pushAt 2488 0 0, pushAt 2489 1 31, opAt 2490 .JUMP]
 
 theorem jumpDest3659 :

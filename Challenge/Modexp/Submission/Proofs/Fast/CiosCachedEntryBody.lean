@@ -14,12 +14,12 @@ open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 theorem run_entryBody (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005) (_hrun : s.halt = .Running)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (_hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32*n ≤ 9472)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32*n ≤ 9472)
+    (hact : 91 ≤ s.activeWords.toNat)
+    (_hn : 2 ≤ n) (hn32 : n ≤ 8)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32*n ≤ 2912)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32*n ≤ 2912)
     (hcds : s.executionEnv.calldata.size < 2^256)
-    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32*n)) :
+    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32*n)) :
     runInstructions entryBodyProgram (cachedEntryState s mem pa pb n pdst ret rest) =
       some (outState s (mpZeroed s mem n) pa pb n 0 pdst ret rest) := by
   rw [entryBody_split]

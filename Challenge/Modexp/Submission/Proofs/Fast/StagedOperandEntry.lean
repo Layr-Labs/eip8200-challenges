@@ -15,18 +15,18 @@ def fullEntryProgram : List Instr :=
 theorem run_entry (s : State) (mem : ByteArray) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (_hrun : s.halt = .Running)
-    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
-    (hpa : 32 ≤ pa) (hpaFit : pa+32*n ≤ 9472)
-    (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 9472)
+    (hact : 91 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
+    (hpa : 32 ≤ pa) (hpaFit : pa+32*n ≤ 2912)
+    (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 2912)
     (hcds : s.executionEnv.calldata.size < 2^256)
-    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32*n))
-    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32*n-32)) :
+    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32*n))
+    (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32*n-32)) :
     runInstructions fullEntryProgram (entryState s mem pa pb dst ret rest) =
     some {outState s (mpZeroed s (stage mem pa n) n) pa pb n 0
-      (MachineState.readWord mem 9376) (MachineState.readWord mem (32*n-32))
-      (MachineState.readWord mem 9440 :: MachineState.readWord mem 96 :: MachineState.readWord mem 64 :: MachineState.readWord mem 32 :: UInt256.ofNat (pa+32*n-32) :: dst :: ret :: rest) with pc := UInt256.ofNat 4168} := by
-  let tl := MachineState.readWord mem 9440
-  let inv := MachineState.readWord mem 9376
+      (MachineState.readWord mem 2816) (MachineState.readWord mem (32*n-32))
+      (MachineState.readWord mem 2880 :: MachineState.readWord mem 96 :: MachineState.readWord mem 64 :: MachineState.readWord mem 32 :: UInt256.ofNat (pa+32*n-32) :: dst :: ret :: rest) with pc := UInt256.ofNat 4168} := by
+  let tl := MachineState.readWord mem 2880
+  let inv := MachineState.readWord mem 2816
   let m0 := MachineState.readWord mem (32*n-32)
   let aEnd := UInt256.ofNat (pa+32*n-32)
   let m96 := MachineState.readWord mem 96

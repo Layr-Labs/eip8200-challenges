@@ -12,7 +12,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 
 def loadProgram (off : UInt256) : List Instr :=
-  [.op .JUMPDEST, .push 2 (UInt256.ofNat 8960 + off), .op .MLOAD, .op (.Dup ⟨8, by decide⟩)]
+  [.op .JUMPDEST, .push 2 (UInt256.ofNat 2400 + off), .op .MLOAD, .op (.Dup ⟨8, by decide⟩)]
 
 def l1Program (off t : UInt256) : List Instr :=
   (loadProgram off ++ L2.productProgram) ++ L2.finishProgram t t
@@ -21,12 +21,12 @@ theorem run_load (template : State)
     (pc off carry bi pbi paBase pbEnd flag destination returnPC : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
     (hactive : UInt256.ofNat (MachineState.activeWordsAfter
-      template.activeWords.toNat (UInt256.ofNat 8960 + off).toNat 32) = template.activeWords) :
+      template.activeWords.toNat (UInt256.ofNat 2400 + off).toNat 32) = template.activeWords) :
     runInstructions (loadProgram off)
       (framed template pc
         ([carry, bi, pbi, paBase, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)) =
     some (framed template (pc + UInt256.ofNat 6)
-      ([maxWord, MachineState.readWord template.memory (UInt256.ofNat 8960 + off).toNat,
+      ([maxWord, MachineState.readWord template.memory (UInt256.ofNat 2400 + off).toNat,
         carry, bi, pbi, paBase, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)) := by
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
@@ -42,39 +42,39 @@ theorem run_load (template : State)
 theorem run_step (template : State) (pc : UInt256) (mem : ByteArray)
     (bi : UInt256) (pa n j : Nat) (off t : UInt256)
     (hoff : off.toNat = 32 * (n - 1 - j))
-    (ht : t.toNat = 8256 + 32 * (n - 1 - j))
+    (ht : t.toNat = 2112 + 32 * (n - 1 - j))
     (pbi pbEnd flag destination returnPC : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
-    (hactive : 296 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
-    (_hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 8192) (hsnapshot : Snapshot mem pa n) :
+    (hactive : 91 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
+    (_hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 2048) (hsnapshot : Snapshot mem pa n) :
     runInstructions (l1Program off t)
       (CiosCachedL1.state template pc mem bi pa n j pbi pbEnd flag destination returnPC rest) =
     some (CiosCachedL1.state template (pc + UInt256.ofNat 38) mem bi pa n (j+1)
       pbi pbEnd flag destination returnPC rest) := by
   have haddr : (UInt256.ofNat pa + off).toNat = pa + 32*(n-1-j) := by
     rw [CiosCachedL1.base_offset_toNat pa off (by omega), hoff]
-  have hsaddr : (UInt256.ofNat 8960 + off).toNat = 8960 + 32*(n-1-j) := by
-    rw [CiosCachedL1.base_offset_toNat 8960 off (by omega), hoff]
+  have hsaddr : (UInt256.ofNat 2400 + off).toNat = 2400 + 32*(n-1-j) := by
+    rw [CiosCachedL1.base_offset_toNat 2400 off (by omega), hoff]
   have hsread : MachineState.readWord (l1Step mem bi pa n j).memory
-      (UInt256.ofNat 8960 + off).toNat =
+      (UInt256.ofNat 2400 + off).toNat =
       MachineState.readWord (l1Step mem bi pa n j).memory (UInt256.ofNat pa + off).toNat := by
     rw [hsaddr, haddr]
     exact (hsnapshot.l1 bi j hn hpaFit) (n-1-j) (by omega)
   have hactA : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
-      (8960 + 32*(n-1-j)) 32) = template.activeWords :=
+      (2400 + 32*(n-1-j)) 32) = template.activeWords :=
     activeWords_fix template _ 32 (by decide) (by omega) hactive
   have hactT : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
-      (8256 + 32*(n-1-j)) 32) = template.activeWords :=
+      (2112 + 32*(n-1-j)) 32) = template.activeWords :=
     activeWords_fix template _ 32 (by decide) (by omega) hactive
   let st : State := { template with memory := (l1Step mem bi pa n j).memory }
   have hA : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat
-      (UInt256.ofNat 8960 + off).toNat 32) = st.activeWords := by
+      (UInt256.ofNat 2400 + off).toNat 32) = st.activeWords := by
     simpa only [st, hsaddr] using hactA
   have hT : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat t.toNat 32) =
       st.activeWords := by simpa only [st, ht] using hactT
   have hl := run_load st pc off (l1Step mem bi pa n j).carry bi pbi (UInt256.ofNat pa)
     pbEnd flag destination returnPC rest hrest hA
-  rw [show MachineState.readWord st.memory (UInt256.ofNat 8960 + off).toNat =
+  rw [show MachineState.readWord st.memory (UInt256.ofNat 2400 + off).toNat =
     MachineState.readWord st.memory (UInt256.ofNat pa + off).toNat from hsread] at hl
   have hp := L2.run_product st (pc + UInt256.ofNat 6)
     (MachineState.readWord st.memory (UInt256.ofNat pa + off).toNat) bi
@@ -97,10 +97,10 @@ theorem run_step (template : State) (pc : UInt256) (mem : ByteArray)
 
 theorem run_l1Mac (pc : Nat) (off t : UInt256) (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb n i j : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hact : 296 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 1005) (hact : 91 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 8) (hj : j < n) (hoff : off.toNat = 32 * (n - 1 - j))
-    (ht : t.toNat = 8256 + 32 * (n - 1 - j))
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32*n ≤ 8192) (hsnapshot : Snapshot mem pa n) :
+    (ht : t.toNat = 2112 + 32 * (n - 1 - j))
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32*n ≤ 2048) (hsnapshot : Snapshot mem pa n) :
     runInstructions (l1Program off t) (l1At pc s mem bi pa pb n i j pdst ret rest) =
       some (l1At (pc+38) s mem bi pa pb n i (j+1) pdst ret rest) := by
   have h := run_step s (UInt256.ofNat pc) mem bi pa n j off t hoff ht

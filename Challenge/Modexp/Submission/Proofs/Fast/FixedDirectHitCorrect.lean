@@ -31,8 +31,8 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hstack : s.callStack = []) (hactive : 298 ≤ s.activeWords.toNat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmz : 32 < msize)
+    (hstack : s.callStack = []) (hactive : 93 ≤ s.activeWords.toNat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmz : 32 < msize)
     (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
@@ -47,16 +47,16 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
       2 ^ count + 1)
     (hframe : Exp.Frame memory n bsize minv)
     (hmod : Model.FastRepresents memory 0 n mm)
-    (hbase : Model.FastRepresents memory 2048 n bM)
-    (hrawAcc : Model.FastRepresents memory 1024 n rawBase)
+    (hbase : Model.FastRepresents memory 512 n bM)
+    (hrawAcc : Model.FastRepresents memory 256 n rawBase)
     (hone : ∃ one, one < Limbs.radix ∧
-      Model.FastRepresents memory 3072 n one) :
+      Model.FastRepresents memory 768 n one) :
     FixedExponentRoute.Handled input
       (special s memory n bsize esize msize count) := by
   let memSq := fixedDirectMems sub.mpMem memory count
   let sqVal := fixedDirectValue mm R bM count
   let prodVal := Model.montMul mm R sqVal rawBase
-  let memOut := sub.mpMem 2048 1024 1024 memSq
+  let memOut := sub.mpMem 512 256 256 memSq
   have hsqInv : Inv memSq n mm rawBase sqVal := by
     simpa [memSq, sqVal] using
       fixedDirectMems_inv sub spec memory hm hn32 hbMlt hframe
@@ -70,27 +70,25 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
     hframe hmod hbase hrawAcc hone hcode hfork hrun hnp
   have htraceProdCall := FixedDirectChainTrace.gasSteps_product
     s memSq n bsize esize msize hcode hfork hrun hnp
-  have htraceProdMp := sub.monpro 2048 1024 1024 (UInt256.ofNat 3436)
+  have htraceProdMp := sub.monpro 512 256 256 (UInt256.ofNat 1721)
     (Exp.outer n bsize esize msize) memSq sqVal rawBase
     (by simp [Exp.outer]) (by omega) (by omega) (by omega) (by omega)
     (by omega) jumpD3997 hframeSq hsqInv.modulus hsqInv.squareBase
     hsqInv.rawAcc hsqLt
   have htraceProd : Challenge.EvmProof.GasSteps
       (product s memSq n bsize esize msize)
-      (finish s memOut n bsize esize msize) :=
+      (Exp.finHead s memOut n bsize esize msize) :=
     htraceProdCall.trans htraceProdMp
-  have houtRep : Model.FastRepresents memOut 1024 n prodVal :=
-    spec.mpValueRaw 2048 1024 1024 memSq sqVal rawBase
+  have houtRep : Model.FastRepresents memOut 256 n prodVal :=
+    spec.mpValueRaw 512 256 256 memSq sqVal rawBase
       (by omega) (by omega) (by omega) hsqInv.modulus hframeSq.minvW
       hsqInv.squareBase hsqInv.rawAcc hsqLt
-  have htraceFinish := FixedDirectChainTrace.gasSteps_finish
-    s memOut n bsize esize msize hcode hfork hrun hnp
   have htraceReturn := Exp.gasSteps_return s memOut n bsize esize msize
     hn hn32 hmz hm32 hactive hcode hfork hrun hnp
   have htrace : Challenge.EvmProof.GasSteps
       (special s memory n bsize esize msize count)
       (Exp.returnedState s memOut n bsize esize msize) :=
-    ((htraceSq.trans htraceProd).trans htraceFinish).trans htraceReturn
+    (htraceSq.trans htraceProd).trans htraceReturn
   have houtEq : prodVal =
       Precompile.bytesToNatPadded input 96 bsize ^ (2 ^ count + 1) % mm :=
     directProduct_value hm hcop hbMform hrawForm

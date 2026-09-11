@@ -38,15 +38,15 @@ opaque gasSteps_l1Four (s : State) (mem : ByteArray) (bi : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 8192) (hsnapshot : StagedOperand.Snapshot mem pa 4) :
+    (hact : 91 ≤ s.activeWords.toNat)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 2048) (hsnapshot : StagedOperand.Snapshot mem pa 4) :
     Challenge.EvmProof.GasSteps
       (l1At 4202 s mem bi pa pb 4 i 1 pdst ret rest)
       (midState s (l1Step mem bi pa 4 4).memory (l1Step mem bi pa 4 4).carry bi
         pa pb 4 i pdst ret rest) :=
   (gasSteps_l1Dispatch4 s mem bi pa pb i 1 pdst ret rest hcap hrun hcode hfork hnp).trans <|
-  (gasSteps_l1Mac 4356 64 8320 l1Mac5 s mem bi pa pb 4 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
-  (gasSteps_l1Mac 4394 32 8288 l1Mac6 s mem bi pa pb 4 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4356 64 2176 l1Mac5 s mem bi pa pb 4 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4394 32 2144 l1Mac6 s mem bi pa pb 4 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
   gasSteps_l1Last s mem bi pa pb 4 i pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa (by omega) hsnapshot
 
 opaque gasSteps_l1Eight (s : State) (mem : ByteArray) (bi : UInt256)
@@ -56,19 +56,19 @@ opaque gasSteps_l1Eight (s : State) (mem : ByteArray) (bi : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 8 ≤ 8192) (hsnapshot : StagedOperand.Snapshot mem pa 8) :
+    (hact : 91 ≤ s.activeWords.toNat)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 8 ≤ 2048) (hsnapshot : StagedOperand.Snapshot mem pa 8) :
     Challenge.EvmProof.GasSteps
       (l1At 4202 s mem bi pa pb 8 i 1 pdst ret rest)
       (midState s (l1Step mem bi pa 8 8).memory (l1Step mem bi pa 8 8).carry bi
         pa pb 8 i pdst ret rest) :=
   (gasSteps_l1Dispatch8 s mem bi pa pb i 1 pdst ret rest hcap hrun hcode hfork hnp).trans <|
-  (gasSteps_l1Mac 4204 192 8448 l1Mac1 s mem bi pa pb 8 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
-  (gasSteps_l1Mac 4242 160 8416 l1Mac2 s mem bi pa pb 8 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
-  (gasSteps_l1Mac 4280 128 8384 l1Mac3 s mem bi pa pb 8 i 3 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
-  (gasSteps_l1Mac 4318 96 8352 l1Mac4 s mem bi pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
-  (gasSteps_l1Mac 4356 64 8320 l1Mac5 s mem bi pa pb 8 i 5 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
-  (gasSteps_l1Mac 4394 32 8288 l1Mac6 s mem bi pa pb 8 i 6 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4204 192 2304 l1Mac1 s mem bi pa pb 8 i 1 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4242 160 2272 l1Mac2 s mem bi pa pb 8 i 2 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4280 128 2240 l1Mac3 s mem bi pa pb 8 i 3 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4318 96 2208 l1Mac4 s mem bi pa pb 8 i 4 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4356 64 2176 l1Mac5 s mem bi pa pb 8 i 5 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
+  (gasSteps_l1Mac 4394 32 2144 l1Mac6 s mem bi pa pb 8 i 6 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) hpa (by omega) hsnapshot).trans <|
   gasSteps_l1Last s mem bi pa pb 8 i pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) hpa (by omega) hsnapshot
 
 opaque gasSteps_l2Four (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
@@ -78,7 +78,7 @@ opaque gasSteps_l2Four (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
+    (hact : 91 ≤ s.activeWords.toNat)
     (hc : CiosReadonlyExtra.ExtraCache mid m96 m64 m32) :
     Challenge.EvmProof.GasSteps
       (l2At 4516 s mid bi mu c0 pa pb 4 i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
@@ -88,8 +88,8 @@ opaque gasSteps_l2Four (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     simp only [List.length_cons]; omega
   exact (gasSteps_l2Dispatch4 s mid bi mu c0 pa pb i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp).trans <|
   (gasSteps_l2Join s mid bi mu c0 pa pb 4 i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp).trans <|
-  (gasSteps_extraL2 1 4662 64 8320 8352 l2Mac4 s mid bi mu c0 pa pb 4 i 0 tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
-  (gasSteps_extraL2 2 4696 32 8288 8320 l2Mac5 s mid bi mu c0 pa pb 4 i 1 tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
+  (gasSteps_extraL2 1 4662 64 2176 2208 l2Mac4 s mid bi mu c0 pa pb 4 i 0 tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
+  (gasSteps_extraL2 2 4696 32 2144 2176 l2Mac5 s mid bi mu c0 pa pb 4 i 1 tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
   gasSteps_l2Final s mid bi mu c0 pa pb 4 i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide)
 
 opaque gasSteps_l2Eight (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
@@ -99,7 +99,7 @@ opaque gasSteps_l2Eight (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
+    (hact : 91 ≤ s.activeWords.toNat)
     (hc : CiosReadonlyExtra.ExtraCache mid m96 m64 m32) :
     Challenge.EvmProof.GasSteps
       (l2At 4516 s mid bi mu c0 pa pb 8 i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
@@ -108,13 +108,13 @@ opaque gasSteps_l2Eight (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
   have hcap' : (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest).length ≤ 1005 := by
     simp only [List.length_cons]; omega
   exact (gasSteps_l2Dispatch8 s mid bi mu c0 pa pb i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp).trans <|
-(gasSteps_l2Mac 4519 1 192 8448 8480 l2Mac0 s mid bi mu c0 pa pb 8 i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
-  (gasSteps_l2Mac 4555 1 160 8416 8448 l2Mac1 s mid bi mu c0 pa pb 8 i 1 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
-  (gasSteps_l2Mac 4591 1 128 8384 8416 l2Mac2 s mid bi mu c0 pa pb 8 i 2 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
-  (gasSteps_extraL2 0 4627 96 8352 8384 l2Mac3 s mid bi mu c0 pa pb 8 i 3 tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
+(gasSteps_l2Mac 4519 1 192 2304 2336 l2Mac0 s mid bi mu c0 pa pb 8 i 0 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Mac 4555 1 160 2272 2304 l2Mac1 s mid bi mu c0 pa pb 8 i 1 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Mac 4591 1 128 2240 2272 l2Mac2 s mid bi mu c0 pa pb 8 i 2 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_extraL2 0 4627 96 2208 2240 l2Mac3 s mid bi mu c0 pa pb 8 i 3 tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
   (gasSteps_l2Join s mid bi mu c0 pa pb 8 i 4 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp).trans <|
-  (gasSteps_extraL2 1 4662 64 8320 8352 l2Mac4 s mid bi mu c0 pa pb 8 i 4 tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
-  (gasSteps_extraL2 2 4696 32 8288 8320 l2Mac5 s mid bi mu c0 pa pb 8 i 5 tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
+  (gasSteps_extraL2 1 4662 64 2176 2208 l2Mac4 s mid bi mu c0 pa pb 8 i 4 tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
+  (gasSteps_extraL2 2 4696 32 2144 2176 l2Mac5 s mid bi mu c0 pa pb 8 i 5 tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
   gasSteps_l2Final s mid bi mu c0 pa pb 8 i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide)
 
 /-- One complete four-limb row, stopping at the common tail block. -/
@@ -125,11 +125,11 @@ opaque gasSteps_rowFourToTail (s : State) (mem : ByteArray) (pa pb i : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hi : i < 4)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 8192)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 4 ≤ 9472)
-    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * 4))
-    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * 4 - 32))
+    (hact : 91 ≤ s.activeWords.toNat) (hi : i < 4)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 2048)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 4 ≤ 2912)
+    (htl : MachineState.readWord mem 2880 = UInt256.ofNat (2080 + 32 * 4))
+    (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32 * 4 - 32))
     (hminv : inverseInvariant mem 4)
     (hc : CiosReadonly.ReadonlyCache mem 4 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
@@ -144,14 +144,14 @@ opaque gasSteps_rowFourToTail (s : State) (mem : ByteArray) (pa pb i : Nat)
         (rowOverflow mem pa pb 4 i) pa pb 4 i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) := by
   have hcap' : (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest).length ≤ 1005 := by simp only [List.length_cons]; omega
   have hml4 : MachineState.readWord
-      (l1Step mem (rowBi mem pb 4 i) pa 4 4).memory 9408 =
+      (l1Step mem (rowBi mem pb 4 i) pa 4 4).memory 2848 =
       UInt256.ofNat (32 * 4 - 32) :=
-    (readWord_l1Step mem (rowBi mem pb 4 i) pa 4 9408 4 (by decide)
+    (readWord_l1Step mem (rowBi mem pb 4 i) pa 4 2848 4 (by decide)
       (by omega)).trans hml
   have htl4 : MachineState.readWord
-      (l1Step mem (rowBi mem pb 4 i) pa 4 4).memory 9440 =
-      UInt256.ofNat (8224 + 32 * 4) :=
-    (readWord_l1Step mem (rowBi mem pb 4 i) pa 4 9440 4 (by decide)
+      (l1Step mem (rowBi mem pb 4 i) pa 4 4).memory 2880 =
+      UInt256.ofNat (2080 + 32 * 4) :=
+    (readWord_l1Step mem (rowBi mem pb 4 i) pa 4 2880 4 (by decide)
       (by omega)).trans htl
   have hminv4 := inverse_l1Step mem (rowBi mem pb 4 i) pa 4 4 (by decide) hminv
   refine (gasSteps_out s mem pa pb 4 i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp
@@ -165,7 +165,7 @@ opaque gasSteps_rowFourToTail (s : State) (mem : ByteArray) (pa pb i : Nat)
     (l1Step mem (rowBi mem pb 4 i) pa 4 4).carry (rowBi mem pb 4 i)
     pa pb 4 i tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide)
     (by decide) hml4 htl4 hminv4 (hc.l1 (by decide) (rowBi mem pb 4 i) pa 4)
-    ((CarryControl.read_l1 mem (rowBi mem pb 4 i) pa 4 8928 (by decide)
+    ((CarryControl.read_l1 mem (rowBi mem pb 4 i) pa 4 2368 (by decide)
       (Or.inr (by decide)) 4).trans hcontrol.zero)).trans ?_
   simpa only [rowL1, rowMidCarry, rowL2Carry, rowOverflow] using
     gasSteps_l2Four s
@@ -186,11 +186,11 @@ opaque gasSteps_rowEightToTail (s : State) (mem : ByteArray) (pa pb i : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hi : i < 8)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 8 ≤ 8192)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 8 ≤ 9472)
-    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * 8))
-    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * 8 - 32))
+    (hact : 91 ≤ s.activeWords.toNat) (hi : i < 8)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 8 ≤ 2048)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 8 ≤ 2912)
+    (htl : MachineState.readWord mem 2880 = UInt256.ofNat (2080 + 32 * 8))
+    (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32 * 8 - 32))
     (hminv : inverseInvariant mem 8)
     (hc : CiosReadonly.ReadonlyCache mem 8 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
@@ -205,14 +205,14 @@ opaque gasSteps_rowEightToTail (s : State) (mem : ByteArray) (pa pb i : Nat)
         (rowOverflow mem pa pb 8 i) pa pb 8 i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) := by
   have hcap' : (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest).length ≤ 1005 := by simp only [List.length_cons]; omega
   have hml8 : MachineState.readWord
-      (l1Step mem (rowBi mem pb 8 i) pa 8 8).memory 9408 =
+      (l1Step mem (rowBi mem pb 8 i) pa 8 8).memory 2848 =
       UInt256.ofNat (32 * 8 - 32) :=
-    (readWord_l1Step mem (rowBi mem pb 8 i) pa 8 9408 8 (by decide)
+    (readWord_l1Step mem (rowBi mem pb 8 i) pa 8 2848 8 (by decide)
       (by omega)).trans hml
   have htl8 : MachineState.readWord
-      (l1Step mem (rowBi mem pb 8 i) pa 8 8).memory 9440 =
-      UInt256.ofNat (8224 + 32 * 8) :=
-    (readWord_l1Step mem (rowBi mem pb 8 i) pa 8 9440 8 (by decide)
+      (l1Step mem (rowBi mem pb 8 i) pa 8 8).memory 2880 =
+      UInt256.ofNat (2080 + 32 * 8) :=
+    (readWord_l1Step mem (rowBi mem pb 8 i) pa 8 2880 8 (by decide)
       (by omega)).trans htl
   have hminv8 := inverse_l1Step mem (rowBi mem pb 8 i) pa 8 8 (by decide) hminv
   refine (gasSteps_out s mem pa pb 8 i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp
@@ -226,7 +226,7 @@ opaque gasSteps_rowEightToTail (s : State) (mem : ByteArray) (pa pb i : Nat)
     (l1Step mem (rowBi mem pb 8 i) pa 8 8).carry (rowBi mem pb 8 i)
     pa pb 8 i tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide)
     (by decide) hml8 htl8 hminv8 (hc.l1 (by decide) (rowBi mem pb 8 i) pa 8)
-    ((CarryControl.read_l1 mem (rowBi mem pb 8 i) pa 8 8928 (by decide)
+    ((CarryControl.read_l1 mem (rowBi mem pb 8 i) pa 8 2368 (by decide)
       (Or.inr (by decide)) 8).trans hcontrol.zero)).trans ?_
   simpa only [rowL1, rowMidCarry, rowL2Carry, rowOverflow] using
     gasSteps_l2Eight s
@@ -246,12 +246,12 @@ opaque gasSteps_rowFourNext (s : State) (mem : ByteArray) (pa pb i : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hi : i + 1 < 4)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 8192)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 4 ≤ 9472)
-    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * 4))
-    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * 4))
-    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * 4 - 32))
+    (hact : 91 ≤ s.activeWords.toNat) (hi : i + 1 < 4)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 2048)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 4 ≤ 2912)
+    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32 * 4))
+    (htl : MachineState.readWord mem 2880 = UInt256.ofNat (2080 + 32 * 4))
+    (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32 * 4 - 32))
     (hminv : inverseInvariant mem 4)
     (hc : CiosReadonly.ReadonlyCache mem 4 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
@@ -269,7 +269,7 @@ opaque gasSteps_rowFourNext (s : State) (mem : ByteArray) (pa pb i : Nat)
         (rowMu (rowL1 mem pa pb 4 i).memory 4) (rowOverflow mem pa pb 4 i)
         pa pb 4 i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) (by simp only [List.length_cons]; omega) hrun hcode hfork hnp hact (by decide)
         hi hpb hpbFit
-        ((CarryControl.read_rowL2 mem pa pb 4 i 9280 (by decide) (by decide)).trans hcontrol.route)
+        ((CarryControl.read_rowL2 mem pa pb 4 i 2720 (by decide) (by decide)).trans hcontrol.route)
 
 opaque gasSteps_rowFourLast (s : State) (mem : ByteArray) (pa pb i : Nat)
     (tl inv m0 aEnd m96 m64 m32 pdst ret : UInt256) (rest : List UInt256)
@@ -278,12 +278,12 @@ opaque gasSteps_rowFourLast (s : State) (mem : ByteArray) (pa pb i : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hi : i + 1 = 4)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 8192)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 4 ≤ 9472)
-    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * 4))
-    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * 4))
-    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * 4 - 32))
+    (hact : 91 ≤ s.activeWords.toNat) (hi : i + 1 = 4)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 2048)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 4 ≤ 2912)
+    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32 * 4))
+    (htl : MachineState.readWord mem 2880 = UInt256.ofNat (2080 + 32 * 4))
+    (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32 * 4 - 32))
     (hminv : inverseInvariant mem 4)
     (hc : CiosReadonly.ReadonlyCache mem 4 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
@@ -301,7 +301,7 @@ opaque gasSteps_rowFourLast (s : State) (mem : ByteArray) (pa pb i : Nat)
         (rowMu (rowL1 mem pa pb 4 i).memory 4) (rowOverflow mem pa pb 4 i)
         pa pb 4 i tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide)
         hi hpb hpbFit
-        ((CarryControl.read_rowL2 mem pa pb 4 i 9280 (by decide) (by decide)).trans hcontrol.route)
+        ((CarryControl.read_rowL2 mem pa pb 4 i 2720 (by decide) (by decide)).trans hcontrol.route)
 
 opaque gasSteps_rowEightNext (s : State) (mem : ByteArray) (pa pb i : Nat)
     (tl inv m0 aEnd m96 m64 m32 pdst ret : UInt256) (rest : List UInt256)
@@ -310,12 +310,12 @@ opaque gasSteps_rowEightNext (s : State) (mem : ByteArray) (pa pb i : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hi : i + 1 < 8)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 8 ≤ 8192)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 8 ≤ 9472)
-    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * 8))
-    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * 8))
-    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * 8 - 32))
+    (hact : 91 ≤ s.activeWords.toNat) (hi : i + 1 < 8)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 8 ≤ 2048)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 8 ≤ 2912)
+    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32 * 8))
+    (htl : MachineState.readWord mem 2880 = UInt256.ofNat (2080 + 32 * 8))
+    (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32 * 8 - 32))
     (hminv : inverseInvariant mem 8)
     (hc : CiosReadonly.ReadonlyCache mem 8 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
@@ -333,7 +333,7 @@ opaque gasSteps_rowEightNext (s : State) (mem : ByteArray) (pa pb i : Nat)
         (rowMu (rowL1 mem pa pb 8 i).memory 8) (rowOverflow mem pa pb 8 i)
         pa pb 8 i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) (by simp only [List.length_cons]; omega) hrun hcode hfork hnp hact (by decide)
         hi hpb hpbFit
-        ((CarryControl.read_rowL2 mem pa pb 8 i 9280 (by decide) (by decide)).trans hcontrol.route)
+        ((CarryControl.read_rowL2 mem pa pb 8 i 2720 (by decide) (by decide)).trans hcontrol.route)
 
 opaque gasSteps_rowEightLast (s : State) (mem : ByteArray) (pa pb i : Nat)
     (tl inv m0 aEnd m96 m64 m32 pdst ret : UInt256) (rest : List UInt256)
@@ -342,12 +342,12 @@ opaque gasSteps_rowEightLast (s : State) (mem : ByteArray) (pa pb i : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hi : i + 1 = 8)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 8 ≤ 8192)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 8 ≤ 9472)
-    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * 8))
-    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * 8))
-    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * 8 - 32))
+    (hact : 91 ≤ s.activeWords.toNat) (hi : i + 1 = 8)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 8 ≤ 2048)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 8 ≤ 2912)
+    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32 * 8))
+    (htl : MachineState.readWord mem 2880 = UInt256.ofNat (2080 + 32 * 8))
+    (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32 * 8 - 32))
     (hminv : inverseInvariant mem 8)
     (hc : CiosReadonly.ReadonlyCache mem 8 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
@@ -365,6 +365,6 @@ opaque gasSteps_rowEightLast (s : State) (mem : ByteArray) (pa pb i : Nat)
         (rowMu (rowL1 mem pa pb 8 i).memory 8) (rowOverflow mem pa pb 8 i)
         pa pb 8 i tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide)
         hi hpb hpbFit
-        ((CarryControl.read_rowL2 mem pa pb 8 i 9280 (by decide) (by decide)).trans hcontrol.route)
+        ((CarryControl.read_rowL2 mem pa pb 8 i 2720 (by decide) (by decide)).trans hcontrol.route)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryRows

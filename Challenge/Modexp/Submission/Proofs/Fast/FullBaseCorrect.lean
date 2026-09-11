@@ -30,9 +30,9 @@ theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 298 ≤ s.activeWords.toNat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (hb0 : 1 ≤ bsize)
-    (he : esize ≤ 1024) (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
+    (hact : 93 ≤ s.activeWords.toNat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hb : bsize ≤ 256) (hb0 : 1 ≤ bsize)
+    (he : esize ≤ 256) (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
     (hmsz : msize = Challenge.Modexp.modulusSize input)
@@ -42,11 +42,11 @@ theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
     (hrrmod : rr ≡ Limbs.radix ^ n * Limbs.radix ^ n [MOD mm])
     (hframe : Frame mem n bsize minv)
     (hmod : Model.FastRepresents mem 0 n mm)
-    (hr1 : Model.FastRepresents mem 4096 n (Limbs.radix ^ n % mm))
-    (hcc : Model.FastRepresents mem 5120 n (Limbs.radix * Limbs.radix ^ n % mm))
-    (hrrb : Model.FastRepresents mem 6144 n rr)
-    (hacc : Model.FastRepresents mem 1024 n 0)
-    (hone : Model.FastRepresents mem 3072 n 0) :
+    (hr1 : Model.FastRepresents mem 1024 n (Limbs.radix ^ n % mm))
+    (hcc : Model.FastRepresents mem 1280 n (Limbs.radix * Limbs.radix ^ n % mm))
+    (hrrb : Model.FastRepresents mem 1536 n rr)
+    (hacc : Model.FastRepresents mem 256 n 0)
+    (hone : Model.FastRepresents mem 768 n 0) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
         (baseHead s mem n bsize esize msize) final) ∧
@@ -72,7 +72,7 @@ theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
         (FullBase.copyState s mem n bsize esize msize) := by
       simpa [hmatch] using hguard
     let copied := FullBase.copyBaseMem mem input n
-    let converted := sub.mpMem 6144 1024 2048 copied
+    let converted := sub.mpMem 1536 256 512 copied
     let base := Precompile.bytesToNatPadded input 96 (32 * n)
     let baseM := base * Limbs.radix ^ n % mm
     have hvalues := FullBase.rawThenMonpro sub spec mem input hn32 hmpos
@@ -87,7 +87,7 @@ theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
         (FullBase.addCallState s mem input n bsize esize msize)
         (FullBase.rejoinState s converted n bsize esize msize) := by
       exact Challenge.EvmProof.GasSteps.cast
-        (sub.monpro 6144 1024 2048 (UInt256.ofNat 1616)
+        (sub.monpro 1536 256 512 (UInt256.ofNat 1616)
           (outer n bsize esize msize) copied rr base
           (by simp [outer]) (by omega) (by omega) (by omega) (by omega) (by omega)
           jumpD1755 hframeCopy hmodCopy hrrCopy hrawCopy hrrlt) rfl rfl
@@ -97,17 +97,17 @@ theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
       exact Challenge.EvmProof.GasSteps.cast
         (gasSteps_bRejoin s converted n bsize esize msize hcode hfork hrun hnp)
         rfl rfl
-    have hEb : EbInv (mcopyMem converted 1024 4096 (32 * n)) n mm baseM
+    have hEb : EbInv (mcopyMem converted 256 1024 (32 * n)) n mm baseM
         (expAcc mm (Limbs.radix ^ n) baseM (expBits input bsize) 0) := by
       refine ⟨?_, ?_, ?_, ?_⟩
-      · exact Csub.fastRepresents_mcopy_disjoint _ 4096 1024 (32 * n) 0 n mm
+      · exact Csub.fastRepresents_mcopy_disjoint _ 1024 256 (32 * n) 0 n mm
           (by omega) hmodConv
-      · exact Csub.fastRepresents_mcopy _ 4096 1024 n
+      · exact Csub.fastRepresents_mcopy _ 1024 256 n
           (Limbs.radix ^ n % mm) (by omega) hr1Conv
-      · exact Csub.fastRepresents_mcopy_disjoint _ 4096 1024 (32 * n) 2048 n
+      · exact Csub.fastRepresents_mcopy_disjoint _ 1024 256 (32 * n) 512 n
           baseM (by omega) hbaseConv
       · exact ⟨0, Limbs.radix_pos,
-          Csub.fastRepresents_mcopy_disjoint _ 4096 1024 (32 * n) 3072 n 0
+          Csub.fastRepresents_mcopy_disjoint _ 1024 256 (32 * n) 768 n 0
             (by omega) honeConv⟩
     have hbaseForm : baseM ≡
         Precompile.bytesToNatPadded input 96 bsize * Limbs.radix ^ n [MOD mm] := by

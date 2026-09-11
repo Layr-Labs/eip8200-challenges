@@ -16,7 +16,7 @@ def target (delta : UInt256) : UInt256 :=
 def guardProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩),
    .op .ISZERO,
-   .push 2 5295,
+   .push 2 5294,
    .op .JUMPI]
 
 def dispatchProgram : List Instr :=
@@ -32,11 +32,11 @@ def dispatchProgram : List Instr :=
 def lastProgram : List Instr :=
   [.op .JUMPDEST,
    .op (.Dup ⟨0, by decide⟩),
-   .push 2 8224,
+   .push 2 2080,
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
-   .push 2 8224,
+   .push 2 2080,
    .op .MSTORE,
    .op .LT,
    .push 2 4497,
@@ -49,10 +49,10 @@ def muProgram : List Instr :=
 
 theorem run_guard (s : State) (c ai pbi pa pb delta : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1015)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 5295 = true) :
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 5294 = true) :
     runInstructions guardProgram
-      (framed s (UInt256.ofNat 5230) ([c,ai,pbi,pa,pb,delta] ++ rest)) =
-    some (framed s (if UInt256.isTrue (UInt256.isZero delta) then UInt256.ofNat 5295 else UInt256.ofNat 5236)
+      (framed s (UInt256.ofNat 5229) ([c,ai,pbi,pa,pb,delta] ++ rest)) =
+    some (framed s (if UInt256.isTrue (UInt256.isZero delta) then UInt256.ofNat 5294 else UInt256.ofNat 5235)
       ([c,ai,pbi,pa,pb,delta] ++ rest)) := by
   have hc6 : rest.length+6 < 1024 := by omega
   have hc7 : rest.length+7 < 1024 := by omega
@@ -67,7 +67,7 @@ theorem run_dispatch (s : State) (c ai pbi pa pb delta : UInt256) (rest : List U
     (hcap : rest.length ≤ 1015)
     (hjump : Decode.isValidJumpDest s.executionEnv.code (target delta).toNat = true) :
     runInstructions dispatchProgram
-      (framed s (UInt256.ofNat 5283) ([c,ai,pbi,pa,pb,delta] ++ rest)) =
+      (framed s (UInt256.ofNat 5282) ([c,ai,pbi,pa,pb,delta] ++ rest)) =
     some (framed s (target delta) ([c,ai,pbi,pa,pb,delta] ++ rest)) := by
   have hc6 : rest.length+6 < 1024 := by omega
   have hc7 : rest.length+7 < 1024 := by omega
@@ -83,17 +83,17 @@ theorem run_dispatch (s : State) (c ai pbi pa pb delta : UInt256) (rest : List U
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 theorem run_last (s : State) (mem : ByteArray) (c ai : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1016) (hact : 296 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 1016) (hact : 91 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest s.executionEnv.code 4497 = true) :
-    runInstructions lastProgram (stateAt s mem 5295 (c :: ai :: rest)) =
-      some (stateAt s (storeWord mem 8224 (MachineState.readWord mem 8224+c)) 4497
-        (UInt256.lt (MachineState.readWord mem 8224+c) c :: ai :: rest)) := by
+    runInstructions lastProgram (stateAt s mem 5294 (c :: ai :: rest)) =
+      some (stateAt s (storeWord mem 2080 (MachineState.readWord mem 2080+c)) 4497
+        (UInt256.lt (MachineState.readWord mem 2080+c) c :: ai :: rest)) := by
   have hc2 : rest.length+2 < 1024 := by omega
   have hc3 : rest.length+3 < 1024 := by omega
   have hc4 : rest.length+4 < 1024 := by omega
   have hc5 : rest.length+5 < 1024 := by omega
-  have ha := EarlyCsub.activeWords_fix s 8224 32 (by decide) (by decide) hact
-  have haddr : (8224 : UInt256).toNat = 8224 := by decide
+  have ha := EarlyCsub.activeWords_fix s 2080 32 (by decide) (by decide) hact
+  have haddr : (2080 : UInt256).toNat = 2080 := by decide
   simp [lastProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     stateAt, storeWord, hc2, hc3, hc4, hc5, ha, haddr, hjump, Nat.add_assoc,
     State.activeWordsAfterUInt256,
@@ -108,17 +108,17 @@ theorem run_mu (s : State) (mem : ByteArray) (f ai : UInt256) (rest : List UInt2
   simp [muProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     stateAt, hc2, List.exchange, Nat.add_assoc, Challenge.EvmProof.Word.succ_ofNat_mod]
 
-def guardBlock : Block Artifact.submissionArtifact .Osaka 5230 guardProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3970 4 5230 guardProgram
+def guardBlock : Block Artifact.submissionArtifact .Osaka 5229 guardProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3971 4 5229 guardProgram
     (by decide) (by rfl) (by rfl) (by decide)
-def dispatchBlock : Block Artifact.submissionArtifact .Osaka 5283 dispatchProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4014 8 5283 dispatchProgram
+def dispatchBlock : Block Artifact.submissionArtifact .Osaka 5282 dispatchProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4015 8 5282 dispatchProgram
     (by decide) (by rfl) (by rfl) (by decide)
-def lastBlock : Block Artifact.submissionArtifact .Osaka 5295 lastProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4022 11 5295 lastProgram
+def lastBlock : Block Artifact.submissionArtifact .Osaka 5294 lastProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4023 11 5294 lastProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def muBlock : Block Artifact.submissionArtifact .Osaka 4497 muProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3426 3 4497 muProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3428 3 4497 muProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem target_index (i : Nat) (hi : i < 7) :

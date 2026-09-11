@@ -26,14 +26,14 @@ def fixedDirectMems
     (mpMem : Nat → Nat → Nat → ByteArray → ByteArray)
     (mem : ByteArray) : Nat → ByteArray
   | 0 => mem
-  | t + 1 => mpMem 2048 2048 2048 (fixedDirectMems mpMem mem t)
+  | t + 1 => mpMem 512 512 512 (fixedDirectMems mpMem mem t)
 
 /-- Moving the first in-place square before the remaining iterations does
 not change the memory reached by the complete chain. -/
 theorem fixedDirectMems_step_add
     (mpMem : Nat → Nat → Nat → ByteArray → ByteArray)
     (mem : ByteArray) (t : Nat) :
-    fixedDirectMems mpMem (mpMem 2048 2048 2048 mem) t =
+    fixedDirectMems mpMem (mpMem 512 512 512 mem) t =
       fixedDirectMems mpMem mem (t + 1) := by
   induction t with
   | zero => rfl
@@ -68,10 +68,10 @@ theorem fixedDirectValue_form {mm R b bM : Nat} (hm : 0 < mm)
 normal-domain residue while BASE is in Montgomery form. -/
 structure Inv (mem : ByteArray) (n mm rawBase squareBase : Nat) : Prop where
   modulus : Model.FastRepresents mem 0 n mm
-  rawAcc : Model.FastRepresents mem 1024 n rawBase
-  squareBase : Model.FastRepresents mem 2048 n squareBase
+  rawAcc : Model.FastRepresents mem 256 n rawBase
+  squareBase : Model.FastRepresents mem 512 n squareBase
   oneBlock : ∃ one, one < Limbs.radix ∧
-    Model.FastRepresents mem 3072 n one
+    Model.FastRepresents mem 768 n one
 
 theorem fixedDirectMems_frame {s : State} {n bsize mm minv : Nat}
     (sub : Exp.Subroutines s n bsize mm minv) (mem : ByteArray)
@@ -80,13 +80,13 @@ theorem fixedDirectMems_frame {s : State} {n bsize mm minv : Nat}
   intro t
   induction t with
   | zero => exact hframe
-  | succ t ih => exact sub.mpFrame 2048 2048 2048 _ (by omega) ih
+  | succ t ih => exact sub.mpFrame 512 512 512 _ (by omega) ih
 
 /-- In-place BASE squaring preserves modulus, raw ACC, and ONE. -/
 theorem fixedDirectMems_inv {s : State} {n bsize mm minv R bM rawBase : Nat}
     (sub : Exp.Subroutines s n bsize mm minv)
     (spec : Exp.SubSpec sub.mpMem sub.amMem n mm R minv)
-    (mem : ByteArray) (hm : 0 < mm) (hn32 : n ≤ 32) (hbM : bM < mm)
+    (mem : ByteArray) (hm : 0 < mm) (hn32 : n ≤ 8) (hbM : bM < mm)
     (hframe : Exp.Frame mem n bsize minv)
     (hinv : Inv mem n mm rawBase bM) :
     ∀ t, Inv (fixedDirectMems sub.mpMem mem t) n mm rawBase
@@ -98,15 +98,15 @@ theorem fixedDirectMems_inv {s : State} {n bsize mm minv R bM rawBase : Nat}
       have hf := fixedDirectMems_frame sub mem hframe t
       obtain ⟨one, honeLt, honeRep⟩ := ih.oneBlock
       refine ⟨?_, ?_, ?_, ⟨one, honeLt, ?_⟩⟩
-      · exact spec.mpFrame 2048 2048 2048 0 mm _ (by omega)
+      · exact spec.mpFrame 512 512 512 0 mm _ (by omega)
           (Or.inr (by omega)) ih.modulus
-      · exact spec.mpFrame 2048 2048 2048 1024 rawBase _ (by omega)
+      · exact spec.mpFrame 512 512 512 256 rawBase _ (by omega)
           (Or.inr (by omega)) ih.rawAcc
-      · exact spec.mpValue 2048 2048 2048 _ _ _
+      · exact spec.mpValue 512 512 512 _ _ _
           (by omega) (by omega) (by omega) ih.modulus hf.minvW
           ih.squareBase ih.squareBase
           (fixedDirectValue_lt hm hbM t) (fixedDirectValue_lt hm hbM t)
-      · exact spec.mpFrame 2048 2048 2048 3072 one _ (by omega)
+      · exact spec.mpFrame 512 512 512 768 one _ (by omega)
           (Or.inl (by omega)) honeRep
 
 /-- A Montgomery-form left operand times a normal-form right operand is a

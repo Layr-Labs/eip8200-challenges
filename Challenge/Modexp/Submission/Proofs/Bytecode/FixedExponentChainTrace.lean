@@ -22,8 +22,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.FixedExponentPaths
 
 set_option linter.unusedSimpArgs false in
 theorem run_start (s : State) (memory : ByteArray)
-    (n bsize esize msize count : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hactive : 298 ≤ s.activeWords.toNat)
+    (n bsize esize msize count : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
+    (hactive : 93 ≤ s.activeWords.toNat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedExponentPaths.start
       (FixedExponentStates.special s memory n bsize esize msize count) =
@@ -53,7 +53,7 @@ theorem run_squareCall (s : State) (memory : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedExponentPaths.squareCall
       (FixedExponentStates.square s memory n bsize esize msize count) =
-      some (Exp.mpCall s memory 1024 1024 1024 (UInt256.ofNat 3785)
+      some (Exp.mpCall s memory 256 256 256 (UInt256.ofNat 3785)
         (UInt256.ofNat count :: Exp.outer n bsize esize msize)) := by
   simp (config := { maxSteps := 400000 })
     [FixedExponentPaths.squareCall, opAt, pushAt, wfOp,
@@ -122,7 +122,7 @@ theorem run_product (s : State) (memory : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedExponentPaths.product
       (FixedExponentStates.product s memory n bsize esize msize) =
-      some (Exp.mpCall s memory 1024 2048 1024 (UInt256.ofNat 3812)
+      some (Exp.mpCall s memory 256 512 256 (UInt256.ofNat 3812)
         (Exp.outer n bsize esize msize)) := by
   simp (config := { maxSteps := 400000 })
     [FixedExponentPaths.product, opAt, pushAt, wfOp,
@@ -138,15 +138,15 @@ theorem run_product (s : State) (memory : ByteArray)
 
 set_option linter.unusedSimpArgs false in
 theorem run_decode (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat) (hn32 : n ≤ 32)
-    (hactive : 298 ≤ s.activeWords.toNat)
+    (n bsize esize msize : Nat) (hn32 : n ≤ 8)
+    (hactive : 93 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedExponentPaths.decode
       (FixedExponentStates.decode s memory n bsize esize msize) =
       some (Exp.mpCall s
-        (Exp.storeWord memory (3040 + 32 * n) (UInt256.ofNat 1))
-        1024 3072 1024 (UInt256.ofNat 3837)
+        (Exp.storeWord memory (736 + 32 * n) (UInt256.ofNat 1))
+        256 768 256 (UInt256.ofNat 3837)
         (Exp.outer n bsize esize msize)) := by
   rw [show Challenge.EvmProof.Stepper.runLocatedBlock FixedExponentPaths.decode
       (FixedExponentStates.decode s memory n bsize esize msize) =
@@ -199,8 +199,8 @@ private def sound {s t : State}
     Artifact.submissionArtifact .Osaka path hcode hfork h hrun hnp
 
 def gasSteps_start (s : State) (memory : ByteArray)
-    (n bsize esize msize count : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hactive : 298 ≤ s.activeWords.toNat)
+    (n bsize esize msize count : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
+    (hactive : 93 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -221,7 +221,7 @@ def gasSteps_squareCall (s : State) (memory : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (FixedExponentStates.square s memory n bsize esize msize count)
-      (Exp.mpCall s memory 1024 1024 1024 (UInt256.ofNat 3785)
+      (Exp.mpCall s memory 256 256 256 (UInt256.ofNat 3785)
         (UInt256.ofNat count :: Exp.outer n bsize esize msize)) :=
   sound FixedExponentPaths.squareCall
     (run_squareCall s memory n bsize esize msize count hcode hrun)
@@ -261,15 +261,15 @@ def gasSteps_product (s : State) (memory : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (FixedExponentStates.product s memory n bsize esize msize)
-      (Exp.mpCall s memory 1024 2048 1024 (UInt256.ofNat 3812)
+      (Exp.mpCall s memory 256 512 256 (UInt256.ofNat 3812)
         (Exp.outer n bsize esize msize)) :=
   sound FixedExponentPaths.product
     (run_product s memory n bsize esize msize hcode hrun)
     hcode hfork hrun hnp
 
 def gasSteps_decode (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat) (hn32 : n ≤ 32)
-    (hactive : 298 ≤ s.activeWords.toNat)
+    (n bsize esize msize : Nat) (hn32 : n ≤ 8)
+    (hactive : 93 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -277,8 +277,8 @@ def gasSteps_decode (s : State) (memory : ByteArray)
     Challenge.EvmProof.GasSteps
       (FixedExponentStates.decode s memory n bsize esize msize)
       (Exp.mpCall s
-        (Exp.storeWord memory (3040 + 32 * n) (UInt256.ofNat 1))
-        1024 3072 1024 (UInt256.ofNat 3837)
+        (Exp.storeWord memory (736 + 32 * n) (UInt256.ofNat 1))
+        256 768 256 (UInt256.ofNat 3837)
         (Exp.outer n bsize esize msize)) :=
   sound FixedExponentPaths.decode
     (run_decode s memory n bsize esize msize hn32 hactive hcode hrun)

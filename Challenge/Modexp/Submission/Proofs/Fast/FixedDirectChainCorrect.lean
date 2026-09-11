@@ -26,15 +26,15 @@ theorem jumpD3970 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
   Exp.jumpD 3409 (by decide) FixedDirectPaths.jumpDest3970
 
 theorem jumpD3997 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 3436).toNat = true :=
-  Exp.jumpD 3436 (by decide) FixedDirectPaths.jumpDest3954
+    (UInt256.ofNat 1721).toNat = true :=
+  Exp.jumpD 1721 (by decide) jumpDest1802
 
 /-- Execute the remaining positive number of in-place BASE squares. -/
 def gasSteps_squareLoop (s : State) {n bsize mm minv R : Nat}
     (sub : Exp.Subroutines s n bsize mm minv)
     (spec : Exp.SubSpec sub.mpMem sub.amMem n mm R minv)
     (memory : ByteArray) (esize msize count bM rawBase : Nat)
-    (hm : 0 < mm) (hn32 : n ≤ 32) (hcount : 1 ≤ count)
+    (hm : 0 < mm) (hn32 : n ≤ 8) (hcount : 1 ≤ count)
     (hcount16 : count ≤ 16) (hbM : bM < mm)
     (hframe : Exp.Frame memory n bsize minv)
     (hinv : Inv memory n mm rawBase bM)
@@ -49,7 +49,7 @@ def gasSteps_squareLoop (s : State) {n bsize mm minv R : Nat}
   induction count generalizing memory bM with
   | zero => omega
   | succ k ih =>
-      have hcall := sub.monpro 2048 2048 2048 (UInt256.ofNat 3409)
+      have hcall := sub.monpro 512 512 512 (UInt256.ofNat 3409)
         (UInt256.ofNat (k + 1) :: Exp.outer n bsize esize msize)
         memory bM bM (by simp [Exp.outer])
         (by omega) (by omega) (by omega) (by omega) (by omega)
@@ -58,25 +58,25 @@ def gasSteps_squareLoop (s : State) {n bsize mm minv R : Nat}
         s memory n bsize esize msize (k + 1) hcode hfork hrun hnp
       have hfirst : Challenge.EvmProof.GasSteps
           (square s memory n bsize esize msize (k + 1))
-          (squareReturn s (sub.mpMem 2048 2048 2048 memory)
+          (squareReturn s (sub.mpMem 512 512 512 memory)
             n bsize esize msize (k + 1)) := hhead.trans hcall
       cases k with
       | zero =>
           exact hfirst.trans
             (FixedDirectChainTrace.gasSteps_squareReturnExit s
-              (sub.mpMem 2048 2048 2048 memory) n bsize esize msize
+              (sub.mpMem 512 512 512 memory) n bsize esize msize
               hcode hfork hrun hnp)
       | succ j =>
           have hnext := FixedDirectChainTrace.gasSteps_squareReturnLoop s
-            (sub.mpMem 2048 2048 2048 memory) n bsize esize msize (j + 1)
+            (sub.mpMem 512 512 512 memory) n bsize esize msize (j + 1)
             (by omega) (by omega) hcode hfork hrun hnp
-          have hframe1 : Exp.Frame (sub.mpMem 2048 2048 2048 memory)
+          have hframe1 : Exp.Frame (sub.mpMem 512 512 512 memory)
               n bsize minv :=
-            sub.mpFrame 2048 2048 2048 memory (by omega) hframe
+            sub.mpFrame 512 512 512 memory (by omega) hframe
           have hinv1 := fixedDirectMems_inv sub spec memory hm hn32 hbM
             hframe hinv 1
           simp only [fixedDirectMems, fixedDirectValue] at hinv1
-          have hrec := ih (memory := sub.mpMem 2048 2048 2048 memory)
+          have hrec := ih (memory := sub.mpMem 512 512 512 memory)
             (bM := Model.montMul mm R bM bM) (by omega) (by omega)
             (Model.montMul_lt hm R bM bM) hframe1 hinv1
           have hall := (hfirst.trans hnext).trans hrec
@@ -88,15 +88,15 @@ def gasSteps_fixedSquares (s : State) {n bsize mm minv R : Nat}
     (sub : Exp.Subroutines s n bsize mm minv)
     (spec : Exp.SubSpec sub.mpMem sub.amMem n mm R minv)
     (memory : ByteArray) (esize msize count bM rawBase : Nat)
-    (hm : 0 < mm) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hm : 0 < mm) (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hcount : 1 ≤ count) (hcount16 : count ≤ 16) (hbM : bM < mm)
-    (hactive : 298 ≤ s.activeWords.toNat)
+    (hactive : 93 ≤ s.activeWords.toNat)
     (hframe : Exp.Frame memory n bsize minv)
     (hmod : Model.FastRepresents memory 0 n mm)
-    (hbase : Model.FastRepresents memory 2048 n bM)
-    (hrawAcc : Model.FastRepresents memory 1024 n rawBase)
+    (hbase : Model.FastRepresents memory 512 n bM)
+    (hrawAcc : Model.FastRepresents memory 256 n rawBase)
     (hone : ∃ one, one < Limbs.radix ∧
-      Model.FastRepresents memory 3072 n one)
+      Model.FastRepresents memory 768 n one)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig

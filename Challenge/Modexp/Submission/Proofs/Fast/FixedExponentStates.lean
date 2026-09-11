@@ -90,7 +90,7 @@ def fallback (s : State) (mem : ByteArray)
 
 /-- Memory at the first square call. -/
 def initialSquareMem (mem : ByteArray) (n : Nat) : ByteArray :=
-  Exp.mcopyMem mem 1024 2048 (32 * n)
+  Exp.mcopyMem mem 256 512 (32 * n)
 
 theorem initialSquareMem_eq (mem : ByteArray) (n : Nat) :
     initialSquareMem mem n =

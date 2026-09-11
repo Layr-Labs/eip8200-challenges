@@ -76,9 +76,9 @@ def exitState (s : State) (mem : ByteArray) (px n : Nat) (ret : UInt256)
 
 set_option linter.unusedSimpArgs false in
 theorem run_entry (s : State) (mem : ByteArray) (px n : Nat) (ret : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1008) (hn32 : n ≤ 32)
-    (hsize : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
-    (hact : 296 ≤ s.activeWords.toNat) (hrun : s.halt = .Running) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1008) (hn32 : n ≤ 8)
+    (hsize : MachineState.readWord mem 2784 = UInt256.ofNat (32 * n))
+    (hact : 91 ≤ s.activeWords.toNat) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock entryPath (entryState s mem px ret rest) =
       some (loopState s mem px n (doubles n) ret rest) := by
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -99,12 +99,12 @@ theorem run_entry (s : State) (mem : ByteArray) (px n : Nat) (ret : UInt256)
       decide
     · simp only [flag, doubles, if_neg h]
       decide
-  have hactN : MachineState.activeWordsAfter s.activeWords.toNat 9344 32 =
+  have hactN : MachineState.activeWordsAfter s.activeWords.toNat 2784 32 =
       s.activeWords.toNat := by
     unfold MachineState.activeWordsAfter
     simp only [show (32 : Nat) ≠ 0 by decide, if_false]
     exact Nat.max_eq_left (by omega)
-  have hactW : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 9344 32) =
+  have hactW : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2784 32) =
       s.activeWords := by
     rw [hactN]
     exact (Challenge.EvmProof.Word.word_eq_ofNat_toNat _).symm
@@ -229,9 +229,9 @@ theorem run_finish (s : State) (mem : ByteArray) (px n : Nat) (ret : UInt256)
      Challenge.EvmProof.Word.word_toNat_ofNat]
 
 def gasSteps_entry (s : State) (mem : ByteArray) (px n : Nat) (ret : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1008) (hn32 : n ≤ 32)
-    (hsize : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
-    (hact : 296 ≤ s.activeWords.toNat)
+    (rest : List UInt256) (hcap : rest.length ≤ 1008) (hn32 : n ≤ 8)
+    (hsize : MachineState.readWord mem 2784 = UInt256.ofNat (32 * n))
+    (hact : 91 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -356,9 +356,9 @@ def gasSteps_ccb (s : State) (px n : Nat) (ret : UInt256) (rest : List UInt256)
     (monpro : ∀ i, i < squares n →
       Challenge.EvmProof.GasSteps (Ccb.mpCallState s (squareMems i) px (squares n - i) ret rest)
         (Ccb.retState s (squareMems (i + 1)) px (squares n - i) ret rest))
-    (hcap : rest.length ≤ 1008) (hn32 : n ≤ 32)
-    (hsize : MachineState.readWord (seedMems 0) 9344 = UInt256.ofNat (32 * n))
-    (hact : 296 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 1008) (hn32 : n ≤ 8)
+    (hsize : MachineState.readWord (seedMems 0) 2784 = UInt256.ofNat (32 * n))
+    (hact : 91 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)

@@ -1,6 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CarryFullFallback
 import Challenge.Modexp.Submission.Proofs.Fast.CarryFullSquare
-import Challenge.Modexp.Submission.Proofs.Fast.CarryFullSquareFour
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -18,7 +17,7 @@ open Challenge.Modexp.Submission.Proofs.Fast.CarryRows
 open CarryRowModel CarryResult StagedOperand
 
 attribute [local irreducible] SquarePrepared.prepared SquarePrepared.before Monpro.mpZeroed
-  SquareRowsModel.rows SquareFourRowsModel.rows CarryRowModel.rowsCarry Monpro.rowsMem
+  SquareRowsModel.rows CarryRowModel.rowsCarry Monpro.rowsMem
 
 opaque gasSteps_toCsub (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
@@ -27,30 +26,23 @@ opaque gasSteps_toCsub (s : State) (mem : ByteArray) (pa pb n : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 8192)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 8192)
+    (hact : 91 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 2048)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2048)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
-    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n))
-    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * n - 32))
+    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32 * n))
+    (htl : MachineState.readWord mem 2880 = UInt256.ofNat (2080 + 32 * n))
+    (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32 * n - 32))
     (hminv : inverseInvariant mem n) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
       (mpCsubState s (selectedRows (SquarePrepared.prepared s mem pa pb n) pa pb n n) pdst ret rest) := by
   by_cases hn4 : n = 4
   · subst n
-    by_cases hp : pa=pb
-    · subst pb
-      rw [selectedRows, if_neg (by simp : ¬(4=8 ∧ pa=pa)), if_pos ⟨rfl,rfl⟩]
-      exact gasSteps_square_four s mem pa pdst ret rest hcap hact hpa hpaFit hcds hs32 htl hml hminv
-        (EarlyCsub.environment s hcode hfork hrun hnp)
-    · rw [SquarePrepared.prepared, if_neg (show ¬(4=8 ∧ pa=pb) by simp),
-        if_neg (show ¬(4=4 ∧ pa=pb) by simp [hp]),
-        selectedRows, if_neg (show ¬(4=8 ∧ pa=pb) by simp),
-        if_neg (show ¬(4=4 ∧ pa=pb) by simp [hp]), if_pos (show 4=4 ∨ 4=8 from Or.inl rfl)]
-      exact gasSteps_specializedFour s mem pa pb pdst ret rest hcap hrun hcode hfork hnp hact
-        hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv hp
+    rw [SquarePrepared.prepared, if_neg (show ¬(4=8 ∧ pa=pb) by simp),
+      selectedRows, if_neg (show ¬(4=8 ∧ pa=pb) by simp), if_pos (show 4=4 ∨ 4=8 from Or.inl rfl)]
+    exact gasSteps_specializedFour s mem pa pb pdst ret rest hcap hrun hcode hfork hnp hact
+      hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv
   by_cases hn8 : n = 8
   · subst n
     by_cases hp : pa=pb
@@ -59,13 +51,10 @@ opaque gasSteps_toCsub (s : State) (mem : ByteArray) (pa pb n : Nat)
       exact gasSteps_square s mem pa pdst ret rest hcap hact hpa hpaFit hcds hs32 htl hml hminv
         (EarlyCsub.environment s hcode hfork hrun hnp)
     · rw [SquarePrepared.prepared, if_neg (show ¬(8=8 ∧ pa=pb) by simp [hp]),
-        if_neg (by simp : ¬(8=4 ∧ pa=pb)),
-        selectedRows, if_neg (show ¬(8=8 ∧ pa=pb) by simp [hp]),
-        if_neg (by simp : ¬(8=4 ∧ pa=pb)), if_pos (show 8=4 ∨ 8=8 from Or.inr rfl)]
+        selectedRows, if_neg (show ¬(8=8 ∧ pa=pb) by simp [hp]), if_pos (show 8=4 ∨ 8=8 from Or.inr rfl)]
       exact gasSteps_specializedEight s mem pa pb pdst ret rest hcap hrun hcode hfork hnp hact
         hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv hp
   rw [SquarePrepared.prepared, if_neg (show ¬(n=8 ∧ pa=pb) by simp [hn8]),
-    if_neg (show ¬(n=4 ∧ pa=pb) by simp [hn4]),
     SquarePrepared.before, SquarePrepared.selected, inputMemory,
     if_neg (show ¬(n=4 ∨ n=8) by simp [hn4, hn8]),
     if_neg (show ¬(n=4 ∨ n=8) by simp [hn4, hn8])]

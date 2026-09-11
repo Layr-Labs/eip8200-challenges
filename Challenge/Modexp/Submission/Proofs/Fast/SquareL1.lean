@@ -17,17 +17,17 @@ open _root_.Challenge.Modexp.Submission.Proofs.Fast.SquareDiagonal (base)
 theorem run_cell (s : State) (pc off t c ai pbi pa pb delta dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006)
     (ha : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
-      (UInt256.ofNat 8960+off).toNat 32) = s.activeWords)
+      (UInt256.ofNat 2400+off).toNat 32) = s.activeWords)
     (ht : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat t.toNat 32) = s.activeWords) :
     runInstructions (StagedOperand.l1Program off t)
       (framed s pc ([c,ai] ++ base pbi pa pb delta dst ret rest)) =
       some (framed {s with memory := (storeWord s.memory t.toNat
-        (macSum (MachineState.readWord s.memory (UInt256.ofNat 8960+off).toNat)
+        (macSum (MachineState.readWord s.memory (UInt256.ofNat 2400+off).toNat)
           ai (MachineState.readWord s.memory t.toNat) c))}
         (pc+UInt256.ofNat 38)
-        ([macCarry (MachineState.readWord s.memory (UInt256.ofNat 8960+off).toNat)
+        ([macCarry (MachineState.readWord s.memory (UInt256.ofNat 2400+off).toNat)
           ai (MachineState.readWord s.memory t.toNat) c,ai] ++ base pbi pa pb delta dst ret rest)) := by
-  let x := MachineState.readWord s.memory (UInt256.ofNat 8960+off).toNat
+  let x := MachineState.readWord s.memory (UInt256.ofNat 2400+off).toNat
   have hl := StagedOperand.run_load s pc off c ai pbi pa pb delta dst ret rest hcap ha
   have hp := L2.run_product s (pc+UInt256.ofNat 6) x ai c
     (base pbi pa pb delta dst ret rest)
@@ -61,25 +61,25 @@ def cellBlock (j : Nat) (hj : 1 ≤ j) (hj8 : j < 8) :
 
 theorem run_part (s : State) (mem : ByteArray) (ai : UInt256) (i k : Nat)
     (pbi pa pb delta dst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 1006) (hact : 91 ≤ s.activeWords.toNat)
     (hk : 2 ≤ k) (hjk : i+k < 8) :
     runInstructions (StagedOperand.l1Program (UInt256.ofNat (32*(7-(i+k))))
         (UInt256.ofNat (tAddr 8 (i+k))))
       (partState s mem ai i k (4166+38*(i+k)) pbi pa pb delta dst ret rest) =
       some (partState s mem ai i (k+1) (4166+38*(i+(k+1))) pbi pa pb delta dst ret rest) := by
   let p := products mem (coefficient mem ai i) ai i k
-  have hD : (UInt256.ofNat 8960+UInt256.ofNat (32*(7-(i+k)))).toNat = 8928+32*(8-(i+k)) := by
+  have hD : (UInt256.ofNat 2400+UInt256.ofNat (32*(7-(i+k)))).toNat = 2368+32*(8-(i+k)) := by
     rw [Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt (by omega)]
     omega
   have hT : (UInt256.ofNat (tAddr 8 (i+k))).toNat = tAddr 8 (i+k) := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
     simp only [tAddr]; omega
-  have hread : MachineState.readWord p.memory (8928+32*(8-(i+k))) = coefficient mem ai i (i+k) := by
+  have hread : MachineState.readWord p.memory (2368+32*(8-(i+k))) = coefficient mem ai i (i+k) := by
     rw [read_products_outside _ _ _ _ _ (Or.inr (by omega)) k (by omega)]
     simp only [coefficient, if_neg (show i+k ≠ i by omega), if_neg (show i+k ≠ i+1 by omega), dWord]
   have ha : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
-      (8928+32*(8-(i+k))) 32) = s.activeWords :=
+      (2368+32*(8-(i+k))) 32) = s.activeWords :=
     EarlyCsub.activeWords_fix s _ 32 (by decide) (by omega) hact
   have ht : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (tAddr 8 (i+k)) 32) = s.activeWords :=
@@ -93,7 +93,7 @@ theorem run_part (s : State) (mem : ByteArray) (ai : UInt256) (i k : Nat)
 
 def gasSteps_part (s : State) (mem : ByteArray) (ai : UInt256) (i k : Nat)
     (pbi pa pb delta dst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 1006) (hact : 91 ≤ s.activeWords.toNat)
     (hk : 2 ≤ k) (hjk : i+k < 8)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -109,7 +109,7 @@ def gasSteps_part (s : State) (mem : ByteArray) (ai : UInt256) (i k : Nat)
 
 def gasSteps_suffix (s : State) (mem : ByteArray) (ai : UInt256) (i : Nat)
     (pbi pa pb delta dst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat) (hi : i < 7)
+    (hcap : rest.length ≤ 1006) (hact : 91 ≤ s.activeWords.toNat) (hi : i < 7)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig

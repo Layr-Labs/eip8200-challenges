@@ -32,9 +32,9 @@ def blk1216 :
 def blk1223 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1144 2 1554,
-   pushAt 1145 2 1024,
-   pushAt 1146 2 5120,
-   pushAt 1147 2 1024,
+   pushAt 1145 2 256,
+   pushAt 1146 2 1280,
+   pushAt 1147 2 256,
    pushAt 1148 2 4053,
    opAt 1149 .JUMP]
 
@@ -53,13 +53,13 @@ def blk1229 :
    opAt 1159 .ADD,
    opAt 1160 .CALLDATALOAD,
    opAt 1161 (.Dup ⟨3, by decide⟩),
-   pushAt 1162 2 3040,
+   pushAt 1162 2 736,
    opAt 1163 .ADD,
    opAt 1164 .MSTORE,
    pushAt 1165 2 1589,
-   pushAt 1166 2 1024,
-   pushAt 1167 2 3072,
-   pushAt 1168 2 1024,
+   pushAt 1166 2 256,
+   pushAt 1167 2 768,
+   pushAt 1168 2 256,
    pushAt 1169 2 2056,
    opAt 1170 .JUMP]
 

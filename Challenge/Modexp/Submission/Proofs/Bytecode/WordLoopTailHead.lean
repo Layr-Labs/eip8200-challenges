@@ -27,7 +27,7 @@ def bitFinishTailMidState (input : ByteArray) (outer : Nat)
       UInt256.ofNat (modulusValue input), UInt256.ofNat (baseSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (modulusSize input),
       UInt256.ofNat 96, UInt256.ofNat (expOffset input),
-      UInt256.ofNat (modulusOffset input), UInt256.ofNat 1186] ++ callerRest input }
+      UInt256.ofNat (modulusOffset input), UInt256.ofNat 0] ++ callerRest input }
 
 @[simp] private theorem exitPCs (i : Nat)
     (hi : 518 ≤ i) (hii : i ≤ 539) :
