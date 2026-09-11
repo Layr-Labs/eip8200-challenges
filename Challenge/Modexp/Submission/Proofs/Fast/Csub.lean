@@ -173,12 +173,11 @@ theorem run_amEntry (s : State) (memory : ByteArray) (pa pb n : Nat)
   have hactB : UInt256.ofNat
       (MachineState.activeWordsAfter s.activeWords.toNat 9440 32) =
       s.activeWords := activeWords_fix s 9440 32 (by decide) (by omega) hact
-  have hsuba : UInt256.ofNat (pa + 32 * n) - UInt256.ofNat 32 =
-      UInt256.ofNat (pa + 32 * n - 32) :=
+  have hml : UInt256.ofNat (32 * n) - UInt256.ofNat 32 =
+      UInt256.ofNat (32 * n - 32) :=
     Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)
-  have hsubb : UInt256.ofNat (pb + 32 * n) - UInt256.ofNat 32 =
-      UInt256.ofNat (pb + 32 * n - 32) :=
-    Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)
+  have hpa'' : pa + (32 * n - 32) = pa + 32 * n - 32 := by omega
+  have hpb'' : pb + (32 * n - 32) = pb + 32 * n - 32 := by omega
   simp (config := { maxSteps := 800000 })
     [blk1600, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -186,7 +185,7 @@ theorem run_amEntry (s : State) (memory : ByteArray) (pa pb n : Nat)
       Challenge.EvmProof.Stepper.runInstr,
       amEntryState, amLoopState, amStep, fastPC14, fastPC15, fastPC16, fastPC17, fastPC18, fastPC19,
       hc4, hc5, hc6, hc7, hc8, hrun, h32, h9344, h9440, hzero,
-      hs32, htl, hactA, hactB, hsuba, hsubb,
+      hs32, htl, hactA, hactB, hml, hpa'', hpb'',
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
