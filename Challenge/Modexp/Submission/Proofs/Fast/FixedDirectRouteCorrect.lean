@@ -113,6 +113,10 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
           (by omega) (by omega)
           (by simpa [exponentValue] using hvalue)
           hframe hmod hbase hrawRep hone
+          (FixedDirectStates.square s memory n bsize 1 msize 1)
+          (FixedDirectChainCorrect.gasSteps_squareLoop s sub spec memory
+            1 msize 1 bM rawBase hm hn32 (by omega) (by omega) hbMlt hframe
+            ⟨hmod, hrawRep, hbase, hone⟩ hcode hfork hrun hnp)
         exact prepend htoSpecial hfixed
     | fermat hsize hvalue =>
         cases hsize
@@ -133,6 +137,10 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
           (by omega) (by omega)
           (by simpa [exponentValue] using hvalue)
           hframe hmod hbase hrawRep hone
+          (FixedDirectStates.special s memory n bsize 3 msize 16)
+          (FixedDirectChainCorrect.gasSteps_fixedSquares s sub spec memory
+            3 msize 16 bM rawBase hm hn hn32 (by omega) (by omega) hbMlt
+            hactive hframe hmod hbase hrawRep hone hcode hfork hrun hnp)
         exact prepend htoSpecial hfixed
 
 end Challenge.Modexp.Submission.Proofs.Fast.FixedDirectRouteCorrect

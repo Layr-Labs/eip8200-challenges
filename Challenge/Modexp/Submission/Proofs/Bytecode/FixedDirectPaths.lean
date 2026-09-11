@@ -63,7 +63,7 @@ def checkThree : List Located :=
 
 def threeHit : List Located :=
   [pushAt 2578 1 1,
-   pushAt 2579 2 3391,
+   pushAt 2579 2 3392,
    opAt 2580 .JUMP]
 
 def check65537 : List Located :=

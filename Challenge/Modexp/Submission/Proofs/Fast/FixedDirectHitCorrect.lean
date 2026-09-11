@@ -50,9 +50,12 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
     (hbase : Model.FastRepresents memory 2048 n bM)
     (hrawAcc : Model.FastRepresents memory 1024 n rawBase)
     (hone : ∃ one, one < Limbs.radix ∧
-      Model.FastRepresents memory 3072 n one) :
-    FixedExponentRoute.Handled input
-      (special s memory n bsize esize msize count) := by
+      Model.FastRepresents memory 3072 n one)
+    (entry : State)
+    (htraceSq : Challenge.EvmProof.GasSteps entry
+      (product s (fixedDirectMems sub.mpMem memory count)
+        n bsize esize msize)) :
+    FixedExponentRoute.Handled input entry := by
   let memSq := fixedDirectMems sub.mpMem memory count
   let sqVal := fixedDirectValue mm R bM count
   let prodVal := Model.montMul mm R sqVal rawBase
@@ -65,9 +68,6 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
     simpa [memSq] using fixedDirectMems_frame sub memory hframe count
   have hsqLt : sqVal < mm := by
     simpa [sqVal] using fixedDirectValue_lt hm hbMlt count
-  have htraceSq := gasSteps_fixedSquares s sub spec memory esize msize count
-    bM rawBase hm hn hn32 hcount hcount16 hbMlt hactive
-    hframe hmod hbase hrawAcc hone hcode hfork hrun hnp
   have htraceProdCall := FixedDirectChainTrace.gasSteps_product
     s memSq n bsize esize msize hcode hfork hrun hnp
   have htraceProdMp := sub.monpro 2048 1024 1024 (UInt256.ofNat 3436)
@@ -87,15 +87,14 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
     s memOut n bsize esize msize hcode hfork hrun hnp
   have htraceReturn := Exp.gasSteps_return s memOut n bsize esize msize
     hn hn32 hmz hm32 hactive hcode hfork hrun hnp
-  have htrace : Challenge.EvmProof.GasSteps
-      (special s memory n bsize esize msize count)
+  have htrace : Challenge.EvmProof.GasSteps entry
       (Exp.returnedState s memOut n bsize esize msize) :=
     ((htraceSq.trans htraceProd).trans htraceFinish).trans htraceReturn
   have houtEq : prodVal =
       Precompile.bytesToNatPadded input 96 bsize ^ (2 ^ count + 1) % mm :=
     directProduct_value hm hcop hbMform hrawForm
   refine Exp.handled_of_trace input
-    (special s memory n bsize esize msize count) s memOut
+    entry s memOut
     n bsize esize msize prodVal hstack htrace hn hm32 (by omega)
     hbsize hesize hmsz houtRep ?_
   rw [← hmm, Model.modPow_eq_pow_mod hm, hexp]

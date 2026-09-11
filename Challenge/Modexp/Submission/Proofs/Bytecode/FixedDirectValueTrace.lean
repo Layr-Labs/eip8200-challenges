@@ -48,7 +48,7 @@ theorem run_checkThree_hit (s : State) (memory input : ByteArray)
     Challenge.EvmProof.Stepper.runLocatedBlock
       (FixedDirectPaths.checkThree ++ FixedDirectPaths.threeHit)
       (FixedDirectStates.checkThree s memory n bsize 1 msize) =
-      some (FixedDirectStates.special s memory n bsize 1 msize 1) := by
+      some (FixedDirectStates.square s memory n bsize 1 msize 1) := by
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter
       s.activeWords.toNat 9472 32) = s.activeWords :=
     Exp.activeWords_fix s 9472 32 (by omega) (by omega) hactive
@@ -69,9 +69,9 @@ theorem run_checkThree_hit (s : State) (memory input : ByteArray)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      FixedDirectStates.checkThree, FixedDirectStates.special, Exp.outer,
+      FixedDirectStates.checkThree, FixedDirectStates.square, Exp.outer,
       hdata, hcode, hrun, heoff, hfix, haddr, hread, hxor,
-      Exp.not_isTrue_zero, jumpDest3952,
+      Exp.not_isTrue_zero, jumpDest3953,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -261,7 +261,7 @@ def gasSteps_checkThree_hit (s : State) (memory input : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (FixedDirectStates.checkThree s memory n bsize 1 msize)
-      (FixedDirectStates.special s memory n bsize 1 msize 1) :=
+      (FixedDirectStates.square s memory n bsize 1 msize 1) :=
   sound (FixedDirectPaths.checkThree ++ FixedDirectPaths.threeHit)
     (run_checkThree_hit s memory input n bsize msize hb hvalue hdata hactive
       heoff hcode hrun)
