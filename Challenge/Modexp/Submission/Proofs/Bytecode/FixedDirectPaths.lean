@@ -104,7 +104,7 @@ def squareReturn : List Located :=
 
 def product : List Located :=
   [opAt 2607 .POP,
-   pushAt 2608 2 3436,
+   pushAt 2608 2 1721,
    pushAt 2609 2 1024,
    pushAt 2610 2 1024,
    pushAt 2611 2 2048,

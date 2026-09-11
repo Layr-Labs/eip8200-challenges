@@ -525,7 +525,7 @@ def blk3264 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 3095 .JUMPDEST,
    opAt 3096 .POP,
-   pushAt 3097 2 1617,
+   pushAt 3097 2 3324,
    opAt 3098 .JUMP]
 
 theorem jumpDest4608 :

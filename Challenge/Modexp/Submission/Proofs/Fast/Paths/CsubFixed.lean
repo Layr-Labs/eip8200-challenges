@@ -1816,31 +1816,31 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
       instructionPC_succ Artifact.submissionArtifact 3962 _ (by rfl)
     _ = 5290 := by rw [fixedPC3983]; rfl
 
-@[simp] theorem fixedPC3985 : Artifact.submissionArtifact.instructionPC 3964 = 5293 := by
+@[simp] theorem fixedPC3985 : Artifact.submissionArtifact.instructionPC 3964 = 5291 := by
   calc
     Artifact.submissionArtifact.instructionPC 3964 =
-        Artifact.submissionArtifact.instructionPC 3963 + (YulEvmCompiler.Instr.push 2 1186).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3963 + (YulEvmCompiler.Instr.push 0 0).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3963 _ (by rfl)
-    _ = 5293 := by rw [fixedPC3984]; rfl
+    _ = 5291 := by rw [fixedPC3984]; rfl
 
-@[simp] theorem fixedPC3986 : Artifact.submissionArtifact.instructionPC 3965 = 5294 := by
+@[simp] theorem fixedPC3986 : Artifact.submissionArtifact.instructionPC 3965 = 5292 := by
   calc
     Artifact.submissionArtifact.instructionPC 3965 =
         Artifact.submissionArtifact.instructionPC 3964 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3964 _ (by rfl)
-    _ = 5294 := by rw [fixedPC3985]; rfl
+    _ = 5292 := by rw [fixedPC3985]; rfl
 
-@[simp] theorem fixedPC3987 : Artifact.submissionArtifact.instructionPC 3966 = 5295 := by
+@[simp] theorem fixedPC3987 : Artifact.submissionArtifact.instructionPC 3966 = 5293 := by
   calc
     Artifact.submissionArtifact.instructionPC 3966 =
         Artifact.submissionArtifact.instructionPC 3965 + (YulEvmCompiler.Instr.op (.Dup ⟨3, by decide⟩)).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3965 _ (by rfl)
-    _ = 5295 := by rw [fixedPC3986]; rfl
+    _ = 5293 := by rw [fixedPC3986]; rfl
 
 @[simp] theorem fixedPC3988 : Artifact.submissionArtifact.instructionPC 3967 = 5297 := by
   calc
     Artifact.submissionArtifact.instructionPC 3967 =
-        Artifact.submissionArtifact.instructionPC 3966 + (YulEvmCompiler.Instr.push 1 96).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3966 + (YulEvmCompiler.Instr.push 3 96).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3966 _ (by rfl)
     _ = 5297 := by rw [fixedPC3987]; rfl
 

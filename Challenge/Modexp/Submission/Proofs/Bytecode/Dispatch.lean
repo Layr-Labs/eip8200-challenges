@@ -109,10 +109,10 @@ private def gasSteps_wordTail (input : ByteArray) :
     rfl (by decide) rfl rfl
 
 @[simp] private theorem gasSteps_wordTail_cost (input : ByteArray) :
-    (gasSteps_wordTail input).cost = 32 := by
+    (gasSteps_wordTail input).cost = 31 := by
   change Challenge.EvmProof.Stepper.runLocatedBlockCost wordTailPath
-    (wordCheckedState input) = 32
-  exact blockCost_of_static wordTailPath 32 (run_wordTail input)
+    (wordCheckedState input) = 31
+  exact blockCost_of_static wordTailPath 31 (run_wordTail input)
     rfl (by decide) rfl rfl
 
 def gasSteps_wordRouteEnter (input : ByteArray) (hvalid : ValidInput input)
@@ -126,7 +126,7 @@ set_option maxHeartbeats 5000000 in
 theorem gasSteps_wordRouteEnter_cost (input : ByteArray)
     (hvalid : ValidInput input)
     (hpositive : 0 < modulusSize input) (hword : modulusSize input ≤ 32) :
-    (gasSteps_wordRouteEnter input hvalid hpositive hword).cost = 90 := by
+    (gasSteps_wordRouteEnter input hvalid hpositive hword).cost = 89 := by
   simp [gasSteps_wordRouteEnter]
 
 /-- Complete trace and exact minimum gas for zero-width results. -/
