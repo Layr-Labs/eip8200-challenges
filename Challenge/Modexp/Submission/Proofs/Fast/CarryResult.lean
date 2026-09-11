@@ -1,6 +1,5 @@
-/- Adapted from delordemm1 submission 173ec87d-b01c-4a3b-b36a-e0a008eb4d72,
-   commit b07846bed58c2c028c8c9b987eaa0e049ca5587a. -/
 import Challenge.Modexp.Submission.Proofs.Fast.CarryRowModel
+import Challenge.Modexp.Submission.Proofs.Fast.StagedOperandMemory
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -9,7 +8,7 @@ set_option linter.unusedSimpArgs false
 namespace Challenge.Modexp.Submission.Proofs.Fast.CarryResult
 open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Fast
-open Monpro CarryRowModel CarryScratchAgreement
+open Monpro CarryRowModel CarryScratchAgreement StagedOperand
 
 def selectedRows (mem : ByteArray) (pa pb n i : Nat) : ByteArray :=
   if n = 4 ∨ n = 8 then rowsCarry mem pa pb n i else rowsMem mem pa pb n i
@@ -33,16 +32,16 @@ theorem selectedRows_readWord_outside (mem : ByteArray) (pa pb n i addr : Nat)
 
 /-- The memory a whole `MonPro(pa, pb) → pd` call leaves behind. -/
 def monproMem (s : State) (mem : ByteArray) (pa pb n pdst : Nat) : ByteArray :=
-  Csub.csResultMemory (selectedRows (mpZeroed s mem n) pa pb n n) n pdst
+  Csub.csResultMemory (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n pdst
 
 theorem monproMem_def (s : State) (mem : ByteArray) (pa pb n pdst : Nat) :
     monproMem s mem pa pb n pdst =
-      Csub.csResultMemory (selectedRows (mpZeroed s mem n) pa pb n n) n pdst := rfl
+      Csub.csResultMemory (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n pdst := rfl
 
 /-- `gasSteps_monproFull` ends with exactly this memory. -/
 theorem csReturnedState_memory_monproMem (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256) :
-    (Csub.csReturnedState s (selectedRows (mpZeroed s mem n) pa pb n n) n n pdst ret
+    (Csub.csReturnedState s (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n n pdst ret
       rest).memory = monproMem s mem pa pb n pdst.toNat := rfl
 
 /-- Every word outside `SUBB`, outside the CIOS scratch `[8192, 9280)` and
@@ -57,7 +56,8 @@ theorem monproMem_readWord_outside (s : State) (mem : ByteArray)
   rw [monproMem_def,
     csResultMemory_readWord_outside _ n pdst addr hn hsubb hdst,
     selectedRows_readWord_outside _ pa pb n n addr hn32 hscratch,
-    mpZeroed_readWord_outside s mem n addr (by omega)]
+    mpZeroed_readWord_outside s (inputMemory mem pa n) n addr (by omega),
+    read_inputMemory_outside mem pa n addr hscratch]
 
 /-- Everything at or above `9280` survives, given only that the destination is
 one of the named blocks below `T_ = 8192`. -/
@@ -117,11 +117,23 @@ theorem monproMem_represents (s : State) (mem : ByteArray) (pa pb p pdst : Nat)
       (MachineState.readWord mem 9376).toNat + 1) % 2^256 = 0) :
     Model.FastRepresents (monproMem s mem pa pb (p+2) pdst) pdst (p+2)
       (Model.montMul mm (Limbs.radix^(p+2)) a b) := by
-  have hrow := selectedRows_agree (mpZeroed s mem (p+2)) pa pb (p+2) (p+2)
+  let prepared := inputMemory mem pa (p+2)
+  have ha' : Model.FastRepresents prepared pa (p+2) a :=
+    (fastRepresents_inputMemory mem pa (p+2) pa (p+2) a hpa).2 ha
+  have hb' : Model.FastRepresents prepared pb (p+2) b :=
+    (fastRepresents_inputMemory mem pa (p+2) pb (p+2) b hpb).2 hb
+  have hm' : Model.FastRepresents prepared 0 (p+2) mm :=
+    (fastRepresents_inputMemory mem pa (p+2) 0 (p+2) mm (by omega)).2 hm
+  have hminv' : ((MachineState.readWord prepared (32*(p+2)-32)).toNat *
+      (MachineState.readWord prepared 9376).toNat + 1) % 2^256 = 0 := by
+    simpa only [prepared,
+      read_inputMemory_outside mem pa (p+2) (32*(p+2)-32) (Or.inl (by omega)),
+      read_inputMemory_outside mem pa (p+2) 9376 (Or.inr (by decide))] using hminv
+  have hrow := selectedRows_agree (mpZeroed s prepared (p+2)) pa pb (p+2) (p+2)
     hpa hpb (by omega) hn32 (by omega)
-  have htn := Monpro.monpro_tn_le_one s mem pa pb p a b mm hn32 hpa hpb ha hb hm ham (by omega) hminv
+  have htn := Monpro.monpro_tn_le_one s prepared pa pb p a b mm hn32 hpa hpb ha' hb' hm' ham (by omega) hminv'
   have hres := csResult_agree _ _ hrow (p+2) pdst (by omega) hn32 htn
-  have hrep := Monpro.monproMem_represents s mem pa pb p pdst a b mm hn32 hpa hpb ha hb hm hodd ham hminv
+  have hrep := Monpro.monproMem_represents s prepared pa pb p pdst a b mm hn32 hpa hpb ha' hb' hm' hodd ham hminv'
   exact (fastRepresents_iff _ _ hres pdst (p+2) _ (Or.inl hpd)).2 hrep
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryResult

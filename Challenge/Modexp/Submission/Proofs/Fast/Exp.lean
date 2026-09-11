@@ -1,4 +1,4 @@
-import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedFull
+import Challenge.Modexp.Submission.Proofs.Fast.CarryFull
 import Challenge.Modexp.Submission.Proofs.Fast.Model
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P3
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P4
@@ -260,7 +260,7 @@ theorem monproMem_frame' {s : State} {mem : ByteArray} {n bsize minv : Nat}
    by rw [key.2.2.2.2]; exact hf.eoff⟩
 
 /-- The two subroutines this module calls, as abstract single-step contracts
-carrying exactly the side conditions `Fast.CiosCachedFull.gasSteps_monproFull` and
+carrying exactly the side conditions `Fast.CarryFull.gasSteps_monproFull` and
 `Fast.Csub.gasSteps_addmod`/`gasSteps_csub` require: the configuration words
 (`Frame`), the pointer bounds, the return-address jump destination, and — for
 `MONPRO` — the values of the two operand blocks. -/
@@ -4845,7 +4845,7 @@ theorem handled_of_rrHead (input : ByteArray) (s : State) (mem : ByteArray)
 
 /-! ## The concrete subroutine instance
 
-`MONPRO` comes from `Fast.CiosCachedFull.gasSteps_monproFull`, `ADDMOD` from the pair
+`MONPRO` comes from `Fast.CarryFull.gasSteps_monproFull`, `ADDMOD` from the pair
 `Fast.Csub.gasSteps_addmod` / `gasSteps_csub` packaged as `gasSteps_addmodFull`. -/
 
 /-- The `MONPRO` step of the concrete instance. -/
@@ -4886,7 +4886,7 @@ def subsMonpro (s : State) (n bsize mm minv : Nat)
       have hmi : (MachineState.readWord mem 9376).toNat = minv := by
         rw [hf.minvW, toNat_ofNat_self hminvlt]
       exact Challenge.EvmProof.GasSteps.cast
-        (CiosCachedFull.gasSteps_monproFull s mem pa pb p a b mm (UInt256.ofNat pd) ret tail
+        (CarryFull.gasSteps_monproFull s mem pa pb p a b mm (UInt256.ofNat pd) ret tail
           (by omega) hrun hcode hfork hnp hact hn32 hpa hpaFit hpb hpbFit hcds
           hf.s32 hf.tl hf.ml hjump (by omega) ha hb hm ham hmpos
           (by rw [hlow, hmi]; exact hminvA))

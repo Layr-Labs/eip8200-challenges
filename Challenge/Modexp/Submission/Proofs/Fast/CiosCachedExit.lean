@@ -19,7 +19,7 @@ theorem run_exit (s : State) (pbi paEnd pbEnd flag target2 dst ret : UInt256) (r
     (hcap : rest.length ≤ 1006)
     (htarget : Decode.isValidJumpDest s.executionEnv.code 2139 = true) :
     runInstructions exitProgram
-      (framed s (UInt256.ofNat 4865) ([pbi, paEnd, pbEnd, flag, negative32, allOnes, target2, dst, ret] ++ rest)) =
+      (framed s (UInt256.ofNat 4870) ([pbi, paEnd, pbEnd, flag, negative32, allOnes, target2, dst, ret] ++ rest)) =
     some (framed s (UInt256.ofNat 2139) ([dst, ret] ++ rest)) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega

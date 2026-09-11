@@ -17,7 +17,7 @@ theorem entryBody_split : entryBodyProgram = zeroProgram ++ pointersProgram := r
 
 def clearedState (s : State) (mem : ByteArray) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4241
+  { s with pc := UInt256.ofNat 4239
            stack := [UInt256.ofNat (32*n), UInt256.ofNat pa, UInt256.ofNat pb,
              l1Target n, negative32, allOnes, l2Target n, dst, ret] ++ rest
            memory := mpZeroed s mem n }
