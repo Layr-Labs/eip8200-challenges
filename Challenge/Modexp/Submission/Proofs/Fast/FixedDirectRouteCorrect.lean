@@ -104,7 +104,8 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
             hcode hfork hrun hnp)
         have hfixed := FixedDirectHitCorrect.handled_of_fixed input s memory
           n bsize 1 msize mm minv (Limbs.radix ^ n) bM
-          rawBase 1 sub spec
+          rawBase 1 (FixedDirectStates.square s memory n bsize 1 msize 1)
+          sub spec
           hcode hfork hrun hnp hstack hactive hn hn32 hmz hm32
           hbsize hesize hmsz hmm
           (lt_of_lt_of_le Limbs.radix_pos hradix)
@@ -113,6 +114,11 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
           (by omega) (by omega)
           (by simpa [exponentValue] using hvalue)
           hframe hmod hbase hrawRep hone
+          (FixedDirectChainCorrect.gasSteps_squareLoop s sub spec memory
+            1 msize 1 bM rawBase
+            (lt_of_lt_of_le Limbs.radix_pos hradix) hn32
+            (by omega) (by omega) hbMlt hframe
+            ⟨hmod, hrawRep, hbase, hone⟩ hcode hfork hrun hnp)
         exact prepend htoSpecial hfixed
     | fermat hsize hvalue =>
         cases hsize
@@ -124,7 +130,8 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
             hcode hfork hrun hnp)
         have hfixed := FixedDirectHitCorrect.handled_of_fixed input s memory
           n bsize 3 msize mm minv (Limbs.radix ^ n) bM
-          rawBase 16 sub spec
+          rawBase 16 (FixedDirectStates.special s memory n bsize 3 msize 16)
+          sub spec
           hcode hfork hrun hnp hstack hactive hn hn32 hmz hm32
           hbsize hesize hmsz hmm
           (lt_of_lt_of_le Limbs.radix_pos hradix)
@@ -133,6 +140,11 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
           (by omega) (by omega)
           (by simpa [exponentValue] using hvalue)
           hframe hmod hbase hrawRep hone
+          (FixedDirectChainCorrect.gasSteps_fixedSquares s sub spec memory
+            3 msize 16 bM rawBase
+            (lt_of_lt_of_le Limbs.radix_pos hradix) hn hn32
+            (by omega) (by omega) hbMlt hactive hframe
+            hmod hbase hrawRep hone hcode hfork hrun hnp)
         exact prepend htoSpecial hfixed
 
 end Challenge.Modexp.Submission.Proofs.Fast.FixedDirectRouteCorrect

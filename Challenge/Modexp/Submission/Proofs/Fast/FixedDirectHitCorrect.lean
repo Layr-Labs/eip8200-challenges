@@ -24,7 +24,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 
 /-- Exact correctness for either fixed chain, with arbitrary valid operands. -/
 theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
-    (n bsize esize msize mm minv R bM rawBase count : Nat)
+    (n bsize esize msize mm minv R bM rawBase count : Nat) (entry : State)
     (sub : Exp.Subroutines s n bsize mm minv)
     (spec : Exp.SubSpec sub.mpMem sub.amMem n mm R minv)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -42,7 +42,7 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
     (hbMlt : bM < mm)
     (hbMform : bM ≡ Precompile.bytesToNatPadded input 96 bsize * R [MOD mm])
     (hrawForm : rawBase ≡ Precompile.bytesToNatPadded input 96 bsize [MOD mm])
-    (hcount : 1 ≤ count) (hcount16 : count ≤ 16)
+    (_hcount : 1 ≤ count) (_hcount16 : count ≤ 16)
     (hexp : Precompile.bytesToNatPadded input (96 + bsize) esize =
       2 ^ count + 1)
     (hframe : Exp.Frame memory n bsize minv)
@@ -50,9 +50,11 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
     (hbase : Model.FastRepresents memory 2048 n bM)
     (hrawAcc : Model.FastRepresents memory 1024 n rawBase)
     (hone : ∃ one, one < Limbs.radix ∧
-      Model.FastRepresents memory 3072 n one) :
-    FixedExponentRoute.Handled input
-      (special s memory n bsize esize msize count) := by
+      Model.FastRepresents memory 3072 n one)
+    (htraceSq : Challenge.EvmProof.GasSteps entry
+      (product s (fixedDirectMems sub.mpMem memory count)
+        n bsize esize msize)) :
+    FixedExponentRoute.Handled input entry := by
   let memSq := fixedDirectMems sub.mpMem memory count
   let sqVal := fixedDirectValue mm R bM count
   let prodVal := Model.montMul mm R sqVal rawBase
@@ -65,9 +67,6 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
     simpa [memSq] using fixedDirectMems_frame sub memory hframe count
   have hsqLt : sqVal < mm := by
     simpa [sqVal] using fixedDirectValue_lt hm hbMlt count
-  have htraceSq := gasSteps_fixedSquares s sub spec memory esize msize count
-    bM rawBase hm hn hn32 hcount hcount16 hbMlt hactive
-    hframe hmod hbase hrawAcc hone hcode hfork hrun hnp
   have htraceProdCall := FixedDirectChainTrace.gasSteps_product
     s memSq n bsize esize msize hcode hfork hrun hnp
   have htraceProdMp := sub.monpro 2048 1024 1024 (UInt256.ofNat 3436)
@@ -87,16 +86,13 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
     s memOut n bsize esize msize hcode hfork hrun hnp
   have htraceReturn := Exp.gasSteps_return s memOut n bsize esize msize
     hn hn32 hmz hm32 hactive hcode hfork hrun hnp
-  have htrace : Challenge.EvmProof.GasSteps
-      (special s memory n bsize esize msize count)
+  have htrace : Challenge.EvmProof.GasSteps entry
       (Exp.returnedState s memOut n bsize esize msize) :=
     ((htraceSq.trans htraceProd).trans htraceFinish).trans htraceReturn
   have houtEq : prodVal =
       Precompile.bytesToNatPadded input 96 bsize ^ (2 ^ count + 1) % mm :=
     directProduct_value hm hcop hbMform hrawForm
-  refine Exp.handled_of_trace input
-    (special s memory n bsize esize msize count) s memOut
-    n bsize esize msize prodVal hstack htrace hn hm32 (by omega)
+  refine Exp.handled_of_trace input entry s memOut
     hbsize hesize hmsz houtRep ?_
   rw [← hmm, Model.modPow_eq_pow_mod hm, hexp]
   exact houtEq
