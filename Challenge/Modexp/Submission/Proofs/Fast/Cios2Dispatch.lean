@@ -23,7 +23,7 @@ open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
 def dispatchState (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4053
+  { s with pc := UInt256.ofNat 4049
            stack := [UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
@@ -34,12 +34,12 @@ def specializedEntryState (s : State) (mem : ByteArray) (pa pb : Nat)
            memory := mem }
 
 theorem jumpDest4012 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4053 = true := by
-  exact Artifact.isValidJumpDest_index 3069 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4049 = true := by
+  exact Artifact.isValidJumpDest_index 3068 (by rfl)
 
 theorem jumpDest4035 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5007 = true := by
-  exact Artifact.isValidJumpDest_index 3815 (by rfl)
+  exact Artifact.isValidJumpDest_index 3810 (by rfl)
 
 private theorem activeWords9344 (s : State) (hact : 296 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 9344 32) =

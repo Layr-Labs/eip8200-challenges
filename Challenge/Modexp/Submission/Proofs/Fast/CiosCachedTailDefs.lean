@@ -46,7 +46,7 @@ def stored (s : State) (c pbi paEnd pbEnd flag dst ret : UInt256) (rest : List U
 
 def result (s : State) (c pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : State :=
   framed { s with memory := tailMem s.memory c }
-    (if UInt256.isTrue (UInt256.gt (negative32+pbi) pbEnd) then UInt256.ofNat 4173
+    (if UInt256.isTrue (UInt256.gt (negative32+pbi) pbEnd) then UInt256.ofNat 4164
       else UInt256.ofNat 4794)
     (baseStack (negative32+pbi) paEnd pbEnd flag dst ret rest)
 

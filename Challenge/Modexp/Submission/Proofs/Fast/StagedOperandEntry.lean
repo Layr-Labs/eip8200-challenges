@@ -24,7 +24,7 @@ theorem run_entry (s : State) (mem : ByteArray) (pa pb n : Nat)
     runInstructions fullEntryProgram (entryState s mem pa pb dst ret rest) =
     some {outState s (mpZeroed s (stage mem pa n) n) pa pb n 0
       (MachineState.readWord mem 9376) (MachineState.readWord mem (32*n-32))
-      (MachineState.readWord mem 9440 :: MachineState.readWord mem 96 :: MachineState.readWord mem 64 :: MachineState.readWord mem 32 :: UInt256.ofNat (pa+32*n-32) :: dst :: ret :: rest) with pc := UInt256.ofNat 4168} := by
+      (MachineState.readWord mem 9440 :: MachineState.readWord mem 96 :: MachineState.readWord mem 64 :: MachineState.readWord mem 32 :: UInt256.ofNat (pa+32*n-32) :: dst :: ret :: rest) with pc := UInt256.ofNat 4159} := by
   let tl := MachineState.readWord mem 9440
   let inv := MachineState.readWord mem 9376
   let m0 := MachineState.readWord mem (32*n-32)
@@ -50,7 +50,7 @@ theorem run_entry (s : State) (mem : ByteArray) (pa pb n : Nat)
       runInstructions (EntryPrefix.loadProgram ++ EntryPrefix.shuffleProgram)
         (entryState s mem pa pb dst ret rest) =
       some {cachedEntryState s mem pa pb n inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest) with pc := UInt256.ofNat 4138} := by
+        (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest) with pc := UInt256.ofNat 4129} := by
     simpa only [entryState, cachedEntryState, EntryPrefix.displacement,
       hs32, l1Target, l2Target, isFour, tl, inv, m0, aEnd, m96, m64, m32,
       List.cons_append, List.nil_append] using hprefix

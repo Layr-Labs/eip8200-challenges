@@ -10,7 +10,7 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CarryRowModel SquareInit
 
 structure Control (mem : ByteArray) : Prop where
   zero : MachineState.readWord mem 8928 = UInt256.ofNat 0
-  route : MachineState.readWord mem 9280 = UInt256.ofNat 4173
+  route : MachineState.readWord mem 9280 = UInt256.ofNat 4164
 
 theorem read_l1 (mem : ByteArray) (bi : UInt256) (pa n addr : Nat) (hn : n ≤ 8)
     (hd : addr+32 ≤ 8256 ∨ 8512 ≤ addr) :

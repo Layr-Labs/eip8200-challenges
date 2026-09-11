@@ -9,7 +9,7 @@ set_option maxHeartbeats 4000000
 # Exact located blocks for the fixed-exponent dispatcher
 
 The inherited program ends at pc 3694.  The appended handler occupies
-pc 3695..3824 and instruction indices 2414..2499.  These definitions are the
+pc 3695..3820 and instruction indices 2414..2499.  These definitions are the
 artifact-dependent boundary of the fixed-exponent proof; the regenerated
 artifact must discharge the PC and jump-destination certificates below.
 -/
@@ -53,7 +53,7 @@ def oneWidth : List Located :=
 def checkThree : List Located :=
   [pushAt 2417 1 32, opAt 2418 .MLOAD, opAt 2419 .CALLDATALOAD,
    pushAt 2420 0 0, opAt 2421 .BYTE, pushAt 2422 1 3,
-   opAt 2423 .EQ, opAt 2424 .ISZERO, pushAt 2425 2 3811,
+   opAt 2423 .EQ, opAt 2424 .ISZERO, pushAt 2425 2 3807,
    opAt 2426 .JUMPI]
 
 def threeHit : List Located :=
@@ -92,14 +92,14 @@ def decode : List Located :=
    opAt 2470 (.Dup ⟨1, by decide⟩), pushAt 2471 1 96,
    opAt 2472 .ADD, opAt 2473 .MSTORE, pushAt 2474 2 1746,
    pushAt 2475 2 2048, pushAt 2476 2 1024, pushAt 2477 2 6144,
-   pushAt 2478 2 4425, opAt 2479 .JUMP]
+   pushAt 2478 2 4416, opAt 2479 .JUMP]
 
 def finish : List Located :=
   [opAt 2480 .JUMPDEST, pushAt 2481 2 1746, opAt 2482 .JUMP]
 
 def fallback : List Located :=
   [opAt 2483 .JUMPDEST, opAt 2484 (.Dup ⟨0, by decide⟩),
-   pushAt 2485 2 4425, pushAt 2486 2 1024, opAt 2487 .MCOPY,
+   pushAt 2485 2 4416, pushAt 2486 2 1024, opAt 2487 .MCOPY,
    pushAt 2488 0 0, pushAt 2489 1 31, opAt 2490 .JUMP]
 
 theorem jumpDest3659 :
@@ -119,7 +119,7 @@ theorem jumpDest3764 :
   Artifact.isValidJumpDest_index 2447 (by rfl)
 
 theorem jumpDest3781 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3785 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3781 = true :=
   Artifact.isValidJumpDest_index 2454 (by rfl)
 
 theorem jumpDest3772 :
@@ -127,11 +127,11 @@ theorem jumpDest3772 :
   Artifact.isValidJumpDest_index 2468 (by rfl)
 
 theorem jumpDest3833 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3837 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3833 = true :=
   Artifact.isValidJumpDest_index 2480 (by rfl)
 
 theorem jumpDest3802 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3806 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3802 = true :=
   Artifact.isValidJumpDest_index 2483 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.FixedExponentPaths

@@ -41,10 +41,10 @@ def loopState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
            stack := loopStack px k ret rest
            memory := mem }
 
-/-- The `MONPRO` call, pc 4146, with the frame `[px, px, px, 2310]` pushed. -/
+/-- The `MONPRO` call, pc 4137, with the frame `[px, px, px, 2310]` pushed. -/
 def mpCallState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4053
+  { s with pc := UInt256.ofNat 4049
            stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
                      UInt256.ofNat 2229] ++ loopStack px k ret rest
            memory := mem }
@@ -73,7 +73,7 @@ def doneState (s : State) (mem : ByteArray) (ret : UInt256)
 /-! ## Block reductions -/
 
 set_option linter.unusedSimpArgs false in
-/-- `blk1751` (pc 2299..2309): push the `MONPRO` frame and jump to pc 4146. -/
+/-- `blk1751` (pc 2299..2309): push the `MONPRO` frame and jump to pc 4137. -/
 theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -88,8 +88,8 @@ theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have h2888 : (2229 : UInt256) = UInt256.ofNat 2229 := by decide
-  have h1939 : (4053 : UInt256) = UInt256.ofNat 4053 := by decide
-  have h1939Nat : (UInt256.ofNat 4053).toNat = 4053 := by decide
+  have h1939 : (4049 : UInt256) = UInt256.ofNat 4049 := by decide
+  have h1939Nat : (UInt256.ofNat 4049).toNat = 4049 := by decide
   simp (config := { maxSteps := 400000 }) [blk1751, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,

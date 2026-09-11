@@ -117,11 +117,13 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
     | fermat hsize hvalue =>
         cases hsize
         have htoSpecial :=
-          (FixedDirectDispatchTrace.gasSteps_entry_three s memory
+          ((FixedDirectDispatchTrace.gasSteps_entry_three s memory
             n bsize msize hcode hfork hrun hnp).trans
           (FixedDirectValueTrace.gasSteps_check65537_hit s memory input
             n bsize msize hb hvalue hdata hactive hframe.eoff
-            hcode hfork hrun hnp)
+            hcode hfork hrun hnp)).trans
+          (FixedDirectChainTrace.gasSteps_start s memory
+            n bsize 3 msize 16 hn hn32 hactive hcode hfork hrun hnp)
         have hfixed := FixedDirectHitCorrect.handled_of_fixed input s memory
           n bsize 3 msize mm minv (Limbs.radix ^ n) bM
           rawBase 16 sub spec

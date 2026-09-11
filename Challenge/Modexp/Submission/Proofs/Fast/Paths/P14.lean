@@ -33,7 +33,7 @@ def blk1751 :
    opAt 1639 (.Dup ⟨2, by decide⟩),
    opAt 1640 (.Dup ⟨0, by decide⟩),
    opAt 1641 (.Dup ⟨0, by decide⟩),
-   pushAt 1642 2 4053,
+   pushAt 1642 2 4049,
    opAt 1643 .JUMP]
 
 /-- Instructions 1758..1764, pc 2526..2535: decrement and loop back. -/

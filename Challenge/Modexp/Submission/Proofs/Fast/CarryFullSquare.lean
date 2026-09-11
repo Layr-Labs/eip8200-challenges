@@ -31,18 +31,17 @@ opaque gasSteps_square (s : State) (mem : ByteArray) (pa : Nat) (dst ret : UInt2
       List.length_append, List.length_cons, List.length_nil]
     omega
   have hg : UInt256.isTrue (SquareSelect.guard mem (UInt256.ofNat pa) (UInt256.ofNat pa)) :=
-    (SquareEntry.guard_iff mem pa pa 8 (by decide) (by omega) (by omega) hs32).2 rfl
-  have hr : MachineState.readWord initial 9280 = UInt256.ofNat 5040 := by
+    (SquareEntry.guard_iff mem pa pa 8 (by decide) (by omega) (by omega) hs32).2 ⟨rfl,rfl⟩
+  have hr : MachineState.readWord initial 9280 = UInt256.ofNat 5049 := by
     rw [mpZeroed_readWord_outside s _ 8 9280 (Or.inr (by decide))]
     simp only [before, inputMemory, selected, if_pos (show 8=4 ∨ 8=8 from Or.inr rfl),
       or_true, ite_true, SquareSelect.selectedMemory, if_pos hg]
     rw [read_stage_outside _ _ _ _ (Or.inr (by decide)), read_storeWord]
   have hheader := SquareEntry.gasSteps_header s mem pa pa 8 dst ret rest hcap hact (Or.inr rfl)
     hpa hpafit hpa hpafit hcds hs32 hml env
-  have hroute := SquareEntry.gasSteps_route s initial (UInt256.ofNat 5040) start.stack
+  have hroute := SquareEntry.gasSteps_route s initial (UInt256.ofNat 5049) start.stack
     (by omega) hact hr SquareParts.jump_init env
   have hinit := gasSteps_init s initial start.stack hlen hact env.code env.forkEq env.running env.noPrecompile
-    (by rfl)
   have hentry : Challenge.EvmProof.GasSteps (Cios2Dispatch.dispatchState s mem pa pa dst ret rest)
       (SquareRowsGas.state s (prepared s mem pa pa 8) pa 0
         (MachineState.readWord mem 9440) (MachineState.readWord mem 9376) (MachineState.readWord mem 224)
@@ -52,7 +51,7 @@ opaque gasSteps_square (s : State) (mem : ByteArray) (pa : Nat) (dst ret : UInt2
     simpa only [SquareRowsGas.state, SquareRowsGas.tag, prepared, if_pos (show 8=8 ∧ pa=pa from ⟨rfl,rfl⟩),
       initial, start, SquareEntry.out, CiosCached.outState, SquareEntry.args, Nat.reduceLT,
       ite_true, true_and, Nat.reduceMul, Nat.reduceSub, Nat.reduceAdd, hpadd,
-      ptrAt_zero, show l2Target 8 = UInt256.ofNat 4518 by decide, SquareDiagonal.base, stateAt, List.cons_append, List.nil_append] using
+      ptrAt_zero, show l2Target 8 = UInt256.ofNat 4509 by decide, SquareDiagonal.base, stateAt, List.cons_append, List.nil_append] using
       hheader.trans (hroute.trans hinit)
   have hread (addr : Nat) (hd : addr+32 ≤ 8192 ∨ 9312 ≤ addr) := read_prepared_outside s mem pa pa 8 addr (by decide) hd
   refine hentry.trans <| SquareRowsGas.gasSteps_rows s (prepared s mem pa pa 8) pa

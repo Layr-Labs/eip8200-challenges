@@ -89,8 +89,8 @@ def wordTailPath := wordRestPath.drop 12
 set_option maxRecDepth 20000 in
 @[simp] theorem jump3000 :
     Decode.isValidJumpDest submissionBytecode 2525 = true := by
-  have hpc : Artifact.instructionPC 1860 = 2525 := by decide
-  simpa only [hpc] using Artifact.isValidJumpDest_index 1860 (by rfl)
+  have hpc : Artifact.instructionPC 1862 = 2525 := by decide
+  simpa only [hpc] using Artifact.isValidJumpDest_index 1862 (by rfl)
 
 def zeroSizeFinalState (input : ByteArray) : State :=
   { Main.headerState input with

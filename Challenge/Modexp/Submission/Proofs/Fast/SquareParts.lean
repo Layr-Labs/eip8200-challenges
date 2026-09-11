@@ -17,20 +17,20 @@ open _root_.Challenge.Modexp.Submission.Proofs.Fast.SquareDiagonal (base)
 
 def headProgram := SquareDiagonal.headProgram ++ SquareDiagonal.diagProgram
 
-def headBlock : Block Artifact.submissionArtifact .Osaka 5191 headProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3935 35 5191 headProgram
+def headBlock : Block Artifact.submissionArtifact .Osaka 5190 headProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3929 35 5190 headProgram
     (by decide) (by rfl) (by rfl) (by decide)
-def crossBlock : Block Artifact.submissionArtifact .Osaka 5236 SquareCross.crossProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3974 40 5236 SquareCross.crossProgram
+def crossBlock : Block Artifact.submissionArtifact .Osaka 5235 SquareCross.crossProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3968 40 5235 SquareCross.crossProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-theorem jump_last : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5295 = true :=
-  Artifact.isValidJumpDest_index 4022 (by rfl)
-theorem jump_mu : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4497 = true :=
-  Artifact.isValidJumpDest_index 3426 (by rfl)
-theorem jump_row : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5191 = true :=
-  Artifact.isValidJumpDest_index 3935 (by rfl)
-theorem jump_init : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5040 = true :=
+theorem jump_last : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5294 = true :=
+  Artifact.isValidJumpDest_index 4016 (by rfl)
+theorem jump_mu : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4488 = true :=
+  Artifact.isValidJumpDest_index 3421 (by rfl)
+theorem jump_row : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5190 = true :=
+  Artifact.isValidJumpDest_index 3929 (by rfl)
+theorem jump_init : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5049 = true :=
   Artifact.isValidJumpDest_index 3834 (by rfl)
 
 def delta (i : Nat) : UInt256 := UInt256.ofNat (32*(7-i))
@@ -45,8 +45,8 @@ theorem run_head (s : State) (mem : ByteArray) (ai : UInt256) (i : Nat)
     (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat) (hi : i < 8)
     (hpbi : pbi.toNat+32 ≤ 9472) (hdelta : pbi-pa = delta i)
     (hai : MachineState.readWord mem pbi.toNat = ai) :
-    runInstructions headProgram (stateAt s mem 5191 (base pbi pa pb tag dst ret rest)) =
-      some (partState s mem ai i 1 5230 pbi pa pb (delta i) dst ret rest) := by
+    runInstructions headProgram (stateAt s mem 5190 (base pbi pa pb tag dst ret rest)) =
+      some (partState s mem ai i 1 5229 pbi pa pb (delta i) dst ret rest) := by
   have haddr : (UInt256.ofNat 8256+delta i).toNat = tAddr 8 i := by
     rw [addr 8256 i (by decide)]; rfl
   have ha : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
@@ -67,8 +67,8 @@ def gasSteps_head (s : State) (mem : ByteArray) (ai : UInt256) (i : Nat)
     (hpbi : pbi.toNat+32 ≤ 9472) (hdelta : pbi-pa = delta i)
     (hai : MachineState.readWord mem pbi.toNat = ai)
     (env : Environment Artifact.submissionArtifact .Osaka s) :
-    Challenge.EvmProof.GasSteps (stateAt s mem 5191 (base pbi pa pb tag dst ret rest))
-      (partState s mem ai i 1 5230 pbi pa pb (delta i) dst ret rest) :=
+    Challenge.EvmProof.GasSteps (stateAt s mem 5190 (base pbi pa pb tag dst ret rest))
+      (partState s mem ai i 1 5229 pbi pa pb (delta i) dst ret rest) :=
   headBlock.steps (env.transfer rfl rfl) rfl
     (run_head s mem ai i pbi pa pb tag dst ret rest hcap hact hi hpbi hdelta hai)
 
@@ -76,8 +76,8 @@ theorem run_cross (s : State) (mem : ByteArray) (ai : UInt256) (i : Nat)
     (pbi pa pb dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat) (hi : i < 7) :
     runInstructions SquareCross.crossProgram
-      (partState s mem ai i 1 5236 pbi pa pb (delta i) dst ret rest) =
-      some (partState s mem ai i 2 5283 pbi pa pb (delta i) dst ret rest) := by
+      (partState s mem ai i 1 5235 pbi pa pb (delta i) dst ret rest) =
+      some (partState s mem ai i 2 5282 pbi pa pb (delta i) dst ret rest) := by
   let p := products mem (coefficient mem ai i) ai i 1
   have hD : (UInt256.ofNat 8928+delta i).toNat = 8928+32*(8-(i+1)) := by
     rw [addr 8928 i (by decide)]; omega
@@ -103,8 +103,8 @@ def gasSteps_cross (s : State) (mem : ByteArray) (ai : UInt256) (i : Nat)
     (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat) (hi : i < 7)
     (env : Environment Artifact.submissionArtifact .Osaka s) :
     Challenge.EvmProof.GasSteps
-      (partState s mem ai i 1 5236 pbi pa pb (delta i) dst ret rest)
-      (partState s mem ai i 2 5283 pbi pa pb (delta i) dst ret rest) :=
+      (partState s mem ai i 1 5235 pbi pa pb (delta i) dst ret rest)
+      (partState s mem ai i 2 5282 pbi pa pb (delta i) dst ret rest) :=
   crossBlock.steps (env.transfer rfl rfl) rfl
     (run_cross s mem ai i pbi pa pb dst ret rest hcap hact hi)
 
