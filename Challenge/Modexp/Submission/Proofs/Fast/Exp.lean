@@ -221,7 +221,7 @@ def gasSteps_addmodFull (s : State) (mem : ByteArray) (pa pb n pd : Nat)
   have hdstFit : (UInt256.ofNat pd).toNat + 32 * n ≤ 9472 := by rw [hpdN]; omega
   Challenge.EvmProof.GasSteps.cast
     ((Csub.gasSteps_addmod s mem pa pb n (UInt256.ofNat pd) ret tail hcap hcode hfork
-        hrun hnp hact hn hn32 hpa (by omega) hpb (by omega) hs32 htl).trans
+        hrun hnp hact hn hn32 hpa (by omega) hpb (by omega) hml htl).trans
       (Csub.gasSteps_csub s (Csub.amResultMemory mem pa pb n) n (UInt256.ofNat pd) ret
         tail hcap hcode hfork hrun hnp hact hn hn32 hjump hml' htl' hs32' hdstFit htn))
     rfl (by simp only [Csub.csReturnedState, retTo, amMemOf, Csub.csResultMemory, hpdN])

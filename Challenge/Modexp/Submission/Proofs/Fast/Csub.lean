@@ -150,10 +150,11 @@ set_option linter.unusedSimpArgs false in
 theorem run_amEntry (s : State) (memory : ByteArray) (pa pb n : Nat)
     (pd ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hact : 296 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472)
-    (hs32 : MachineState.readWord memory 9344 = UInt256.ofNat (32 * n))
+    (hml : MachineState.readWord memory 9408 = UInt256.ofNat (32 * n - 32))
     (htl : MachineState.readWord memory 9440 = UInt256.ofNat (8224 + 32 * n)) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1600
       (amEntryState s memory pa pb pd ret rest) =
@@ -163,30 +164,37 @@ theorem run_amEntry (s : State) (memory : ByteArray) (pa pb n : Nat)
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
-  have h32 : (32 : UInt256) = UInt256.ofNat 32 := by decide
-  have h9344 : (9344 : UInt256).toNat = 9344 := by decide
+  have h9408 : (9408 : UInt256).toNat = 9408 := by decide
   have h9440 : (9440 : UInt256).toNat = 9440 := by decide
   have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
+  have h2087 : (2087 : UInt256).toNat = 2087 := by decide
+  have h2087' : (2087 : UInt256) = UInt256.ofNat 2087 := by decide
+  have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
+      (2087 : UInt256).toNat = true := by
+    rw [h2087]; exact jumpDest2168
   have hactA : UInt256.ofNat
-      (MachineState.activeWordsAfter s.activeWords.toNat 9344 32) =
-      s.activeWords := activeWords_fix s 9344 32 (by decide) (by omega) hact
+      (MachineState.activeWordsAfter s.activeWords.toNat 9408 32) =
+      s.activeWords := activeWords_fix s 9408 32 (by decide) (by omega) hact
   have hactB : UInt256.ofNat
       (MachineState.activeWordsAfter s.activeWords.toNat 9440 32) =
       s.activeWords := activeWords_fix s 9440 32 (by decide) (by omega) hact
-  have hsuba : UInt256.ofNat (pa + 32 * n) - UInt256.ofNat 32 =
-      UInt256.ofNat (pa + 32 * n - 32) :=
-    Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)
-  have hsubb : UInt256.ofNat (pb + 32 * n) - UInt256.ofNat 32 =
-      UInt256.ofNat (pb + 32 * n - 32) :=
-    Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)
+  have hadda : UInt256.ofNat pa + UInt256.ofNat (32 * n - 32) =
+      UInt256.ofNat (pa + 32 * n - 32) := by
+    rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)]
+    congr 1; omega
+  have haddb : UInt256.ofNat pb + UInt256.ofNat (32 * n - 32) =
+      UInt256.ofNat (pb + 32 * n - 32) := by
+    rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)]
+    congr 1; omega
   simp (config := { maxSteps := 800000 })
     [blk1600, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       amEntryState, amLoopState, amStep, fastPC14, fastPC15, fastPC16, fastPC17, fastPC18, fastPC19,
-      hc4, hc5, hc6, hc7, hc8, hrun, h32, h9344, h9440, hzero,
-      hs32, htl, hactA, hactB, hsuba, hsubb,
+      hc4, hc5, hc6, hc7, hc8, hrun, hcode, h9408, h9440, hzero,
+      h2087, h2087', hjump, jumpDest2168,
+      hml, htl, hactA, hactB, hadda, haddb,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
@@ -1122,10 +1130,7 @@ def gasSteps_amEntry (s : State) (memory : ByteArray) (pa pb n : Nat)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hn : 2 ≤ n) (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472)
-    (hs32 : MachineState.readWord memory 9344 = UInt256.ofNat (32 * n))
+    (hml : MachineState.readWord memory 9408 = UInt256.ofNat (32 * n - 32))
     (htl : MachineState.readWord memory 9440 = UInt256.ofNat (8224 + 32 * n)) :
     Challenge.EvmProof.GasSteps (amEntryState s memory pa pb pd ret rest)
       (amLoopState s memory pa pb n 0 pd ret rest) :=
@@ -1133,8 +1138,8 @@ def gasSteps_amEntry (s : State) (memory : ByteArray) (pa pb n : Nat)
     Artifact.submissionArtifact .Osaka blk1600
     (by simpa [amEntryState, Artifact.submissionArtifact] using hcode)
     (by simpa [amEntryState, State.fork] using hfork)
-    (run_amEntry s memory pa pb n pd ret rest hcap hrun hact hn hpa hpaFit hpb hpbFit
-      hs32 htl)
+    (run_amEntry s memory pa pb n pd ret rest hcap hrun hcode hact hn hpa hpaFit hpb hpbFit
+      hml htl)
     (by simpa [amEntryState] using hrun)
     (by simpa [amEntryState, State.fork] using hnp)
 
@@ -1233,7 +1238,7 @@ def gasSteps_addmod (s : State) (memory : ByteArray) (pa pb n : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472)
-    (hs32 : MachineState.readWord memory 9344 = UInt256.ofNat (32 * n))
+    (hml : MachineState.readWord memory 9408 = UInt256.ofNat (32 * n - 32))
     (htl : MachineState.readWord memory 9440 = UInt256.ofNat (8224 + 32 * n)) :
     Challenge.EvmProof.GasSteps (amEntryState s memory pa pb pd ret rest)
       (csEntryState s (MachineState.writeBytes (amStep memory pa pb n n).memory
@@ -1242,7 +1247,7 @@ def gasSteps_addmod (s : State) (memory : ByteArray) (pa pb n : Nat)
   have hnn : n - 1 + 1 = n := by omega
   exact Challenge.EvmProof.GasSteps.cast
     ((((gasSteps_amEntry s memory pa pb n pd ret rest hcap hcode hfork hrun hnp hact
-          hn hpa hpaFit hpb hpbFit hs32 htl).trans
+          hn hpa hpaFit hpb hpbFit hml htl).trans
         (gasSteps_amLoop s memory pa pb n pd ret rest hcap hcode hfork hrun hnp hact
           hn32 hpa hpaFit hpb hpbFit)).trans
       (gasSteps_amExit s memory pa pb n pd ret rest hcap hcode hfork hrun hnp hact

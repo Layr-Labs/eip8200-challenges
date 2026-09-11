@@ -545,7 +545,7 @@ def gasSteps_addmodStep (s : State) (mem : ByteArray) (px n : Nat) (ret' : UInt2
       Nat.mod_eq_of_lt (Nat.lt_of_le_of_lt (show px ≤ 8192 by omega) (by norm_num))]
     omega
   (Csub.gasSteps_addmod s mem px px n (UInt256.ofNat px) ret' tail hcap hcode hfork hrun
-      hnp hact hn hn32 hpx (by omega) hpx (by omega) hv.s32 hv.tl).trans
+      hnp hact hn hn32 hpx (by omega) hpx (by omega) hv.ml hv.tl).trans
     (Csub.gasSteps_csub s (Csub.amResultMemory mem px px n) n (UInt256.ofNat px) ret' tail
       hcap hcode hfork hrun hnp hact hn hn32 hjump hml htl hs32' hdstFit htn)
 
