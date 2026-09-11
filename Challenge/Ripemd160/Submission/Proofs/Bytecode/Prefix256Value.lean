@@ -41,7 +41,7 @@ theorem selected_short (input : ByteArray) (hsize : input.size = 256) :
   decide
 
 def template : List Instr :=
-  [.op .CALLDATASIZE, .op (.Dup ⟨0, by decide⟩),
+  [.op .CALLDATASIZE, .op .CALLDATASIZE,
    .push ⟨2, by decide⟩ 376, .op .EQ,
    .push ⟨20, by decide⟩ digestDifference, .op .MUL,
    .op (.Swap ⟨0, by decide⟩), .push ⟨2, by decide⟩ 256, .op .EQ,
