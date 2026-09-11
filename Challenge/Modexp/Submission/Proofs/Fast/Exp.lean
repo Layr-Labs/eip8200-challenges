@@ -798,9 +798,10 @@ def blExit (s : State) (mem : ByteArray) (n bsize esize msize pb j : Nat) : Stat
            stack := UInt256.ofNat j :: UInt256.ofNat pb :: outer n bsize esize msize
            memory := mem }
 
-/-- pc 1697, back from `BASE := MonPro(ACC, RR)`. -/
+/-- pc 1697, back from `BASE := MonPro(ACC, RR)`.  The return lands on the
+second of the adjacent pads, so this state is definitionally `bDone`. -/
 def bRejoin (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 1616
+  { s with pc := UInt256.ofNat 1617
            stack := outer n bsize esize msize
            memory := mem }
 
@@ -897,7 +898,7 @@ theorem run_blExit (s : State) (mem : ByteArray) (n bsize esize msize pb j : Nat
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1255
       (blExit s mem n bsize esize msize pb j) =
-      some (mpCall s mem 1024 6144 2048 (UInt256.ofNat 1616)
+      some (mpCall s mem 1024 6144 2048 (UInt256.ofNat 1617)
         (outer n bsize esize msize)) := by
   have h1939Nat : (UInt256.ofNat 4049).toNat = 4049 := by decide
   simp (config := { maxSteps := 400000 }) [blk1255, opAt, pushAt, wfOp,
@@ -1232,7 +1233,7 @@ def gasSteps_blExit (s : State) (mem : ByteArray) (n bsize esize msize pb j : Na
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (blExit s mem n bsize esize msize pb j)
-      (mpCall s mem 1024 6144 2048 (UInt256.ofNat 1616)
+      (mpCall s mem 1024 6144 2048 (UInt256.ofNat 1617)
         (outer n bsize esize msize)) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1255 hcode hfork
@@ -1327,10 +1328,11 @@ def ebitMul (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat) :
            stack := bitStack n bsize esize msize i w mask
            memory := mem }
 
-/-- pc 1831, back from the multiply. -/
+/-- pc 1831, back from the multiply.  The return lands on the second of the
+adjacent pads, so this state is definitionally `ebitNext`. -/
 def ebitJoin (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 1676
+  { s with pc := UInt256.ofNat 1677
            stack := bitStack n bsize esize msize i w mask
            memory := mem }
 
@@ -1604,7 +1606,7 @@ theorem run_ebitMul (s : State) (mem : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1301
       (ebitMul s mem n bsize esize msize i w mask) =
-      some (mpCall s mem 1024 2048 1024 (UInt256.ofNat 1676)
+      some (mpCall s mem 1024 2048 1024 (UInt256.ofNat 1677)
         (bitStack n bsize esize msize i w mask)) := by
   have h1939Nat : (UInt256.ofNat 4049).toNat = 4049 := by decide
   simp (config := { maxSteps := 400000 }) [blk1301, opAt, pushAt, wfOp,
@@ -1984,7 +1986,7 @@ def gasSteps_ebitMul (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (ebitMul s mem n bsize esize msize i w mask)
-      (mpCall s mem 1024 2048 1024 (UInt256.ofNat 1676)
+      (mpCall s mem 1024 2048 1024 (UInt256.ofNat 1677)
         (bitStack n bsize esize msize i w mask)) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1301 hcode hfork
@@ -3699,13 +3701,13 @@ theorem jumpD1728 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 1589).toNat = true := jumpD 1589 (by decide) jumpDest1670
 
 theorem jumpD1755 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 1616).toNat = true := jumpD 1616 (by decide) jumpDest1697
+    (UInt256.ofNat 1617).toNat = true := jumpD 1617 (by decide) jumpDest1698
 
 theorem jumpD1806 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 1651).toNat = true := jumpD 1651 (by decide) jumpDest1732
 
 theorem jumpD1831 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 1676).toNat = true := jumpD 1676 (by decide) jumpDest1757
+    (UInt256.ofNat 1677).toNat = true := jumpD 1677 (by decide) jumpDest1758
 
 theorem jumpD1533 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 1445).toNat = true := jumpD 1445 (by decide) jumpDest1526
@@ -4059,7 +4061,7 @@ def gasSteps_baseChain_fallback (s : State) {n bsize mm minv R : Nat}
           (storeWord mem (992 + 32 * n) (UInt256.ofNat (topLimbOf input bsize)))
           (pbOf bsize - 1))
         n bsize esize msize (pbOf bsize) (pbOf bsize) hcode hfork hrun hnp))).trans
-    ((sub.monpro 1024 6144 2048 (UInt256.ofNat 1616) (outer n bsize esize msize)
+    ((sub.monpro 1024 6144 2048 (UInt256.ofNat 1617) (outer n bsize esize msize)
         (blMems sub.mpMem sub.amMem input n bsize (pbOf bsize)
           (storeWord mem (992 + 32 * n) (UInt256.ofNat (topLimbOf input bsize)))
           (pbOf bsize - 1))
@@ -4180,7 +4182,7 @@ def gasSteps_bitStep (s : State) {n bsize mm minv R : Nat}
           (2 ^ r) hmask hw256 hne hcode hfork hrun hnp)).trans
         ((gasSteps_ebitMul s (sub.mpMem 1024 1024 1024 mem) n bsize esize msize i w
             (2 ^ r) hcode hfork hrun hnp).trans
-          (sub.monpro 1024 2048 1024 (UInt256.ofNat 1676)
+          (sub.monpro 1024 2048 1024 (UInt256.ofNat 1677)
             (bitStack n bsize esize msize i w (2 ^ r))
             (sub.mpMem 1024 1024 1024 mem) (Model.montMul mm R acc acc) bM
             (by simp [bitStack]) (by omega) (by omega) (by omega) (by omega)

@@ -16,17 +16,18 @@ def blk1255 :
   [opAt 1176 .JUMPDEST,
    opAt 1177 .POP,
    opAt 1178 .POP,
-   pushAt 1179 2 1616,
+   pushAt 1179 2 1617,
    pushAt 1180 2 2048,
    pushAt 1181 2 6144,
    pushAt 1182 2 1024,
    pushAt 1183 2 4049,
    opAt 1184 .JUMP]
 
-/-- Instructions 1264..1264, pc 1755..1755. -/
+/-- Instructions 1264..1264, pc 1755..1755.  The pad is skipped: both call
+sites now return directly to pc 1756. -/
 def blk1264 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1185 .JUMPDEST]
+  []
 
 /-- Instructions 1265..1267, pc 1756..1760. The fixed-exponent candidate
 redirects `BDONE` to its appended dispatcher; indices 1268..1271 are inert
@@ -78,17 +79,18 @@ def blk1294 :
 /-- Instructions 1301..1306, pc 1815..1830. -/
 def blk1301 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1211 2 1676,
+  [pushAt 1211 2 1677,
    pushAt 1212 2 1024,
    pushAt 1213 2 2048,
    pushAt 1214 2 1024,
    pushAt 1215 2 4049,
    opAt 1216 .JUMP]
 
-/-- Instructions 1307..1307, pc 1831..1831. -/
+/-- Instructions 1307..1307, pc 1831..1831.  The pad is skipped: the multiply
+returns directly to pc 1832. -/
 def blk1307 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1217 .JUMPDEST]
+  []
 
 /-- Instructions 1308..1313, pc 1832..1840. -/
 def blk1308 :
