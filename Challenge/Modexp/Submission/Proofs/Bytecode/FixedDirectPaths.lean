@@ -63,7 +63,7 @@ def checkThree : List Located :=
 
 def threeHit : List Located :=
   [pushAt 2578 1 1,
-   pushAt 2579 2 3392,
+   pushAt 2579 2 3391,
    opAt 2580 .JUMP]
 
 def check65537 : List Located :=
@@ -79,10 +79,10 @@ def check65537 : List Located :=
    opAt 2590 .JUMPI]
 
 def fermatHit : List Located :=
-  [pushAt 2591 1 16, opAt 2592 .JUMPDEST]
+  [pushAt 2591 1 16]
 
 def start : List Located :=
-  []
+  [opAt 2592 .JUMPDEST]
 
 def squareCall : List Located :=
   [opAt 2593 .JUMPDEST,
@@ -104,7 +104,7 @@ def squareReturn : List Located :=
 
 def product : List Located :=
   [opAt 2607 .POP,
-   pushAt 2608 2 1721,
+   pushAt 2608 2 3436,
    pushAt 2609 2 1024,
    pushAt 2610 2 1024,
    pushAt 2611 2 2048,

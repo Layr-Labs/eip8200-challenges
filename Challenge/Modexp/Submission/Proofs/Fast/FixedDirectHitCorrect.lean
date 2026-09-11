@@ -70,25 +70,27 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
     hframe hmod hbase hrawAcc hone hcode hfork hrun hnp
   have htraceProdCall := FixedDirectChainTrace.gasSteps_product
     s memSq n bsize esize msize hcode hfork hrun hnp
-  have htraceProdMp := sub.monpro 2048 1024 1024 (UInt256.ofNat 1721)
+  have htraceProdMp := sub.monpro 2048 1024 1024 (UInt256.ofNat 3436)
     (Exp.outer n bsize esize msize) memSq sqVal rawBase
     (by simp [Exp.outer]) (by omega) (by omega) (by omega) (by omega)
     (by omega) jumpD3997 hframeSq hsqInv.modulus hsqInv.squareBase
     hsqInv.rawAcc hsqLt
   have htraceProd : Challenge.EvmProof.GasSteps
       (product s memSq n bsize esize msize)
-      (Exp.finHead s memOut n bsize esize msize) :=
+      (finish s memOut n bsize esize msize) :=
     htraceProdCall.trans htraceProdMp
   have houtRep : Model.FastRepresents memOut 1024 n prodVal :=
     spec.mpValueRaw 2048 1024 1024 memSq sqVal rawBase
       (by omega) (by omega) (by omega) hsqInv.modulus hframeSq.minvW
       hsqInv.squareBase hsqInv.rawAcc hsqLt
+  have htraceFinish := FixedDirectChainTrace.gasSteps_finish
+    s memOut n bsize esize msize hcode hfork hrun hnp
   have htraceReturn := Exp.gasSteps_return s memOut n bsize esize msize
     hn hn32 hmz hm32 hactive hcode hfork hrun hnp
   have htrace : Challenge.EvmProof.GasSteps
       (special s memory n bsize esize msize count)
       (Exp.returnedState s memOut n bsize esize msize) :=
-    (htraceSq.trans htraceProd).trans htraceReturn
+    ((htraceSq.trans htraceProd).trans htraceFinish).trans htraceReturn
   have houtEq : prodVal =
       Precompile.bytesToNatPadded input 96 bsize ^ (2 ^ count + 1) % mm :=
     directProduct_value hm hcop hbMform hrawForm

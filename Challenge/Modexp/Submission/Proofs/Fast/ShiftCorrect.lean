@@ -232,7 +232,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
       simp only [base, hbEq]
       exact Nat.ModEq.refl _
     obtain ⟨fin, ⟨tr⟩, hdone, hres⟩ :=
-      FixedDirectCorrect.handled_of_entryStateConcrete input s final
+      FixedDirectCorrect.handled_of_bDoneConcrete input s final
         n bsize esize msize mm minv baseM sub hspec
         hcode hfork hrun hnp hdata hstack hact hn hn32 hb he hmz hm32 hbsize hesize
         hmsz hmm hodd hradix (Nat.mod_lt _ hmpos) hbaseForm hframeF hmodF
