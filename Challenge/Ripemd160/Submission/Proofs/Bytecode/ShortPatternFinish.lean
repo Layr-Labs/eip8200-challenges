@@ -50,7 +50,7 @@ def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
   have hc := Artifact.submissionArtifact.decodeAt_op_index 4071 .CODECOPY
     (by rfl) (by decide) trivial
   have hpc : (copyReadyState n input sv ov).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 4071 := by rw [pc4870]; rfl
+      Artifact.submissionArtifact.instructionPC 4071 := by rw [pc4868]; rfl
   have hcopy : (copyReadyState n input sv ov).decodedOp = some .CODECOPY :=
     Artifact.submissionArtifact.state_decodedOp_of (copyReadyState n input sv ov) 4071
       (by rfl) hpc .CODECOPY none hc (by rfl)
@@ -64,7 +64,7 @@ def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
     rw [Word.word_toNat_ofNat]
     apply Nat.mod_eq_of_lt
     unfold tableOffset
-    have hlt := Nat.mod_lt (((1015 * n + 9) / 256)) (by decide : 0 < 14)
+    have hlt := Nat.mod_lt (((1277 * n + 1632) / 256)) (by decide : 0 < 16)
     omega
   have gc : GasSteps (copyReadyState n input sv ov) (storedState n input sv ov) := by
     simpa [copyReadyState, storedState, stS, initialState, hoff,
