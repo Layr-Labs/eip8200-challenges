@@ -47,12 +47,12 @@ def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
     GasSteps (selectorState n input sv ov) (returnedState n input sv ov) := by
   have gselect := sound selectorPath (run_selector n input sv ov)
   have gstore := sound digestStorePath (run_store n input sv ov hn hsize)
-  have hc := Artifact.submissionArtifact.decodeAt_op_index 4073 .CODECOPY
+  have hc := Artifact.submissionArtifact.decodeAt_op_index 4072 .CODECOPY
     (by rfl) (by decide) trivial
   have hpc : (copyReadyState n input sv ov).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 4073 := by rw [pc4870]; rfl
+      Artifact.submissionArtifact.instructionPC 4072 := by rw [pc4870]; rfl
   have hcopy : (copyReadyState n input sv ov).decodedOp = some .CODECOPY :=
-    Artifact.submissionArtifact.state_decodedOp_of (copyReadyState n input sv ov) 4073
+    Artifact.submissionArtifact.state_decodedOp_of (copyReadyState n input sv ov) 4072
       (by rfl) hpc .CODECOPY none hc (by rfl)
   have gcraw := Codecopy.step (s := copyReadyState n input sv ov)
     12 (UInt256.ofNat (tableOffset n)) 20 (returnRest sv ov)
@@ -76,14 +76,14 @@ def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
       show MachineState.writeBytes ByteArray.empty
         (MachineState.readPadded submissionBytecode (tableOffset n) 20) 12 = answerMemory n
         from tableMemory_eq n hn] using gcraw
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 4074 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 4073 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedState n input sv ov).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 4074 := by
+      Artifact.submissionArtifact.instructionPC 4073 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
   have hop : (storedState n input sv ov).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedState n input sv ov) 4074
+    Artifact.submissionArtifact.state_decodedOp_of (storedState n input sv ov) 4073
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop
     (by simp [storedState, returnRest, stS, initialState])
