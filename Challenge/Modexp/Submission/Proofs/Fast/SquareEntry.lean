@@ -28,7 +28,7 @@ theorem guard_iff (mem : ByteArray) (pa pb n : Nat) (hn : n ≤ 32)
 
 def args (mem : ByteArray) (pa n : Nat) (dst ret : UInt256) (rest : List UInt256) : List UInt256 :=
   MachineState.readWord mem 9440 :: MachineState.readWord mem 96 :: MachineState.readWord mem 64 ::
-    MachineState.readWord mem 32 :: UInt256.ofNat (pa+32*n-32) :: dst :: ret :: rest
+    MachineState.readWord mem 32 :: MachineState.readWord mem (pa+32*n-32) :: dst :: ret :: rest
 
 def out (s : State) (mem : ByteArray) (pa pb n : Nat) (dst ret : UInt256) (rest : List UInt256) : State :=
   outState s (mpZeroed s (before mem pa pb n) n) pa pb n 0
@@ -43,7 +43,7 @@ def gasSteps_header (s : State) (mem : ByteArray) (pa pb n : Nat) (dst ret : UIn
     (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32*n-32))
     (env : Environment Artifact.submissionArtifact .Osaka s) :
     Challenge.EvmProof.GasSteps (Cios2Dispatch.dispatchState s mem pa pb dst ret rest)
-      {out s mem pa pb n dst ret rest with pc := UInt256.ofNat 4159} := by
+      {out s mem pa pb n dst ret rest with pc := UInt256.ofNat 4160} := by
   have hn8 : n ≤ 8 := by rcases hn with rfl | rfl <;> decide
   have hn2 : 2 ≤ n := by rcases hn with rfl | rfl <;> decide
   have hdispatch : Challenge.EvmProof.GasSteps (Cios2Dispatch.dispatchState s mem pa pb dst ret rest)
@@ -63,10 +63,11 @@ def gasSteps_header (s : State) (mem : ByteArray) (pa pb n : Nat) (dst ret : UIn
   simpa only [out, args, before, inputMemory, selected, if_pos hn, CiosCached.entryState, stateAt,
     hread 9376 (Or.inr (by decide)), hread (32*n-32) (Or.inl (by omega)),
     hread 9440 (Or.inr (by decide)), hread 96 (Or.inl (by decide)),
-    hread 64 (Or.inl (by decide)), hread 32 (Or.inl (by decide))] using he
+    hread 64 (Or.inl (by decide)), hread 32 (Or.inl (by decide)),
+    hread (pa+32*n-32) (Or.inl (by omega))] using he
 
-def routerBlock : Block Artifact.submissionArtifact .Osaka 4159 SquareRoute.headerProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3141 3 4159 SquareRoute.headerProgram
+def routerBlock : Block Artifact.submissionArtifact .Osaka 4160 SquareRoute.headerProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3141 3 4160 SquareRoute.headerProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def gasSteps_route (s : State) (mem : ByteArray) (route : UInt256) (rest : List UInt256)
@@ -74,7 +75,7 @@ def gasSteps_route (s : State) (mem : ByteArray) (route : UInt256) (rest : List 
     (hr : MachineState.readWord mem 9280 = route)
     (hj : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode route.toNat = true)
     (env : Environment Artifact.submissionArtifact .Osaka s) :
-    Challenge.EvmProof.GasSteps (stateAt s mem 4159 rest) (framed {s with memory := mem} route rest) :=
+    Challenge.EvmProof.GasSteps (stateAt s mem 4160 rest) (framed {s with memory := mem} route rest) :=
   routerBlock.steps (env.transfer rfl rfl) rfl
     (SquareRoute.run_header s mem route rest hcap hact hr (by rw [env.code]; exact hj))
 

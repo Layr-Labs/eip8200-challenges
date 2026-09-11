@@ -133,7 +133,7 @@ opaque gasSteps_rowFourToTail (s : State) (mem : ByteArray) (pa pb i : Nat)
     (hminv : inverseInvariant mem 4)
     (hc : CiosReadonly.ReadonlyCache mem 4 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
-    (hAend : aEnd = UInt256.ofNat (pa+32*4-32))
+    (hAend : aEnd = MachineState.readWord mem (pa+32*4-32))
     (hsnapshot : StagedOperand.Snapshot mem pa 4)
     (hcontrol : CarryControl.Control mem) :
     Challenge.EvmProof.GasSteps
@@ -194,7 +194,7 @@ opaque gasSteps_rowEightToTail (s : State) (mem : ByteArray) (pa pb i : Nat)
     (hminv : inverseInvariant mem 8)
     (hc : CiosReadonly.ReadonlyCache mem 8 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
-    (hAend : aEnd = UInt256.ofNat (pa+32*8-32))
+    (hAend : aEnd = MachineState.readWord mem (pa+32*8-32))
     (hsnapshot : StagedOperand.Snapshot mem pa 8)
     (hcontrol : CarryControl.Control mem) :
     Challenge.EvmProof.GasSteps
@@ -255,7 +255,7 @@ opaque gasSteps_rowFourNext (s : State) (mem : ByteArray) (pa pb i : Nat)
     (hminv : inverseInvariant mem 4)
     (hc : CiosReadonly.ReadonlyCache mem 4 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
-    (hAend : aEnd = UInt256.ofNat (pa+32*4-32))
+    (hAend : aEnd = MachineState.readWord mem (pa+32*4-32))
     (hsnapshot : StagedOperand.Snapshot mem pa 4)
     (hcontrol : CarryControl.Control mem) :
     Challenge.EvmProof.GasSteps
@@ -287,7 +287,7 @@ opaque gasSteps_rowFourLast (s : State) (mem : ByteArray) (pa pb i : Nat)
     (hminv : inverseInvariant mem 4)
     (hc : CiosReadonly.ReadonlyCache mem 4 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
-    (hAend : aEnd = UInt256.ofNat (pa+32*4-32))
+    (hAend : aEnd = MachineState.readWord mem (pa+32*4-32))
     (hsnapshot : StagedOperand.Snapshot mem pa 4)
     (hcontrol : CarryControl.Control mem) :
     Challenge.EvmProof.GasSteps
@@ -319,7 +319,7 @@ opaque gasSteps_rowEightNext (s : State) (mem : ByteArray) (pa pb i : Nat)
     (hminv : inverseInvariant mem 8)
     (hc : CiosReadonly.ReadonlyCache mem 8 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
-    (hAend : aEnd = UInt256.ofNat (pa+32*8-32))
+    (hAend : aEnd = MachineState.readWord mem (pa+32*8-32))
     (hsnapshot : StagedOperand.Snapshot mem pa 8)
     (hcontrol : CarryControl.Control mem) :
     Challenge.EvmProof.GasSteps
@@ -351,7 +351,7 @@ opaque gasSteps_rowEightLast (s : State) (mem : ByteArray) (pa pb i : Nat)
     (hminv : inverseInvariant mem 8)
     (hc : CiosReadonly.ReadonlyCache mem 8 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
-    (hAend : aEnd = UInt256.ofNat (pa+32*8-32))
+    (hAend : aEnd = MachineState.readWord mem (pa+32*8-32))
     (hsnapshot : StagedOperand.Snapshot mem pa 8)
     (hcontrol : CarryControl.Control mem) :
     Challenge.EvmProof.GasSteps

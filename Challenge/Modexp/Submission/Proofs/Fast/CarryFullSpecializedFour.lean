@@ -54,9 +54,9 @@ opaque gasSteps_specializedFour (s : State) (mem : ByteArray) (pa pb : Nat)
   refine (SquareEntry.gasSteps_header s mem pa pb 4 pdst ret rest hcap hact (Or.inl rfl)
     hpa hpaFit hpb hpbFit hcds hs32 hml env).trans ?_
   have hr : Challenge.EvmProof.GasSteps
-      {SquareEntry.out s mem pa pb 4 pdst ret rest with pc := UInt256.ofNat 4159}
+      {SquareEntry.out s mem pa pb 4 pdst ret rest with pc := UInt256.ofNat 4160}
       (SquareEntry.out s mem pa pb 4 pdst ret rest) := by
-    exact SquareEntry.gasSteps_route s (mpZeroed s (before mem pa pb 4) 4) (UInt256.ofNat 4164)
+    exact SquareEntry.gasSteps_route s (mpZeroed s (before mem pa pb 4) 4) (UInt256.ofNat 4165)
       (SquareEntry.out s mem pa pb 4 pdst ret rest).stack
       (by simp only [SquareEntry.out, outState, SquareEntry.args, List.length_append, List.length_cons, List.length_nil]; omega)
       hact (hctrl.zeroed s 4 (by decide)).route
@@ -64,7 +64,7 @@ opaque gasSteps_specializedFour (s : State) (mem : ByteArray) (pa pb : Nat)
   refine hr.trans ?_
   exact gasSteps_rowsFour s (before mem pa pb 4) pa pb
     (MachineState.readWord mem 9440) (MachineState.readWord mem 9376)
-    (MachineState.readWord mem (32*4-32)) (UInt256.ofNat (pa+32*4-32))
+    (MachineState.readWord mem (32*4-32)) (MachineState.readWord mem (pa+32*4-32))
     (MachineState.readWord mem 96) (MachineState.readWord mem 64)
     (MachineState.readWord mem 32) pdst ret rest hcap hrun hcode hfork hnp hact
     hpa hpaFit hpb (by omega)
@@ -75,6 +75,7 @@ opaque gasSteps_specializedFour (s : State) (mem : ByteArray) (pa pb : Nat)
       (hread (32*4-32) (Or.inl (by decide))).symm⟩
     ⟨(hread 96 (Or.inl (by decide))).symm,
       (hread 64 (Or.inl (by decide))).symm,
-      (hread 32 (Or.inl (by decide))).symm⟩ rfl hsz hctrl
+      (hread 32 (Or.inl (by decide))).symm⟩
+    (hread (pa+32*4-32) (Or.inl (by omega))).symm hsz hctrl
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryFull

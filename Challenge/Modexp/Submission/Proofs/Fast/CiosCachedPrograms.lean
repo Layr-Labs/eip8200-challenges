@@ -182,7 +182,7 @@ def tailProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),
    .op .GT,
-   .push 2 4164,
+   .push 2 4165,
    .op .JUMPI,
    .op .POP,
    .op .POP,

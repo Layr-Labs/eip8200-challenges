@@ -45,7 +45,7 @@ opaque gasSteps_square (s : State) (mem : ByteArray) (pa : Nat) (dst ret : UInt2
   have hentry : Challenge.EvmProof.GasSteps (Cios2Dispatch.dispatchState s mem pa pa dst ret rest)
       (SquareRowsGas.state s (prepared s mem pa pa 8) pa 0
         (MachineState.readWord mem 9440) (MachineState.readWord mem 9376) (MachineState.readWord mem 224)
-        (UInt256.ofNat (pa+224)) (MachineState.readWord mem 96) (MachineState.readWord mem 64)
+        (MachineState.readWord mem (pa+224)) (MachineState.readWord mem 96) (MachineState.readWord mem 64)
         (MachineState.readWord mem 32) dst ret rest) := by
     have hpadd : pa+32*8-32 = pa+224 := by omega
     simpa only [SquareRowsGas.state, SquareRowsGas.tag, prepared, if_pos (show 8=8 ∧ pa=pa from ⟨rfl,rfl⟩),
@@ -56,7 +56,7 @@ opaque gasSteps_square (s : State) (mem : ByteArray) (pa : Nat) (dst ret : UInt2
   have hread (addr : Nat) (hd : addr+32 ≤ 8192 ∨ 9312 ≤ addr) := read_prepared_outside s mem pa pa 8 addr (by decide) hd
   refine hentry.trans <| SquareRowsGas.gasSteps_rows s (prepared s mem pa pa 8) pa
     (MachineState.readWord mem 9440) (MachineState.readWord mem 9376) (MachineState.readWord mem 224)
-    (UInt256.ofNat (pa+224)) (MachineState.readWord mem 96) (MachineState.readWord mem 64)
+    (MachineState.readWord mem (pa+224)) (MachineState.readWord mem 96) (MachineState.readWord mem 64)
     (MachineState.readWord mem 32) dst ret rest hcap hact hpa hpafit
     ⟨htl, (hread 9376 (Or.inr (by decide))).symm, (hread 224 (Or.inl (by decide))).symm⟩
     ⟨(hread 96 (Or.inl (by decide))).symm, (hread 64 (Or.inl (by decide))).symm,

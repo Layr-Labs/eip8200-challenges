@@ -23,29 +23,29 @@ def checkProgram : List Instr :=
    .push 2 9344, .op .MLOAD, .push 2 256, .op .EQ, .op .AND,
    .push 2 5036, .op .JUMPI]
 def normalProgram : List Instr :=
-  [.push 0 0, .push 2 8928, .op .MSTORE, .push 2 4164, .push 2 5040, .op .JUMP]
+  [.push 0 0, .push 2 8928, .op .MSTORE, .push 2 4165, .push 2 5040, .op .JUMP]
 def squareProgram : List Instr := [.op .JUMPDEST, .push 2 5049]
 def storeProgram : List Instr :=
   [.op .JUMPDEST, .push 2 9280, .op .MSTORE, .push 2 4072, .op .JUMP]
 
 theorem destSquare : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5036 = true :=
-  Artifact.isValidJumpDest_index 3826 (by rfl)
+  Artifact.isValidJumpDest_index 3825 (by rfl)
 theorem destStore : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5040 = true :=
-  Artifact.isValidJumpDest_index 3828 (by rfl)
+  Artifact.isValidJumpDest_index 3827 (by rfl)
 theorem destHeader : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4072 = true :=
-  Artifact.isValidJumpDest_index 3081 (by rfl)
+  Artifact.isValidJumpDest_index 3080 (by rfl)
 
 def checkBlock : Block Artifact.submissionArtifact .Osaka 5007 checkProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3809 11 5007 checkProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3808 11 5007 checkProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def normalBlock : Block Artifact.submissionArtifact .Osaka 5024 normalProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3820 6 5024 normalProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3819 6 5024 normalProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def squareBlock : Block Artifact.submissionArtifact .Osaka 5036 squareProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3826 2 5036 squareProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3825 2 5036 squareProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def storeBlock : Block Artifact.submissionArtifact .Osaka 5040 storeProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3828 5 5040 storeProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3827 5 5040 storeProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem run_check (s : State) (mem : ByteArray) (pa pb dst ret : UInt256)
@@ -72,7 +72,7 @@ theorem run_normal (s : State) (mem : ByteArray) (rest : List UInt256)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
     runInstructions normalProgram (stateAt s mem 5024 rest) =
       some (stateAt s (storeWord mem 8928 (UInt256.ofNat 0)) 5040
-        (UInt256.ofNat 4164 :: rest)) := by
+        (UInt256.ofNat 4165 :: rest)) := by
   have hc0 : rest.length < 1024 := by omega
   have hc1 : rest.length+1 < 1024 := by omega
   have hc2 : rest.length+2 < 1024 := by omega
@@ -80,7 +80,7 @@ theorem run_normal (s : State) (mem : ByteArray) (rest : List UInt256)
   have hd : (8928 : UInt256).toNat = 8928 := by decide
   have hp : (5040 : UInt256).toNat = 5040 := by decide
   have hep : (5040 : UInt256) = UInt256.ofNat 5040 := by decide
-  have hv : (4164 : UInt256) = UInt256.ofNat 4164 := by decide
+  have hv : (4165 : UInt256) = UInt256.ofNat 4165 := by decide
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := by decide
   simp [normalProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr, stateAt,
     storeWord, hc0, hc1, hc2, ha, hd, hp, hep, hv, hz, hcode, destStore,
@@ -112,7 +112,7 @@ theorem run_store (s : State) (mem : ByteArray) (route : UInt256) (rest : List U
 
 def selectedMemory (mem : ByteArray) (pa pb : UInt256) : ByteArray :=
   if UInt256.isTrue (guard mem pa pb) then storeWord mem 9280 (UInt256.ofNat 5049)
-  else storeWord (storeWord mem 8928 (UInt256.ofNat 0)) 9280 (UInt256.ofNat 4164)
+  else storeWord (storeWord mem 8928 (UInt256.ofNat 0)) 9280 (UInt256.ofNat 4165)
 
 def gasSteps_select (s : State) (mem : ByteArray) (pa pb dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008) (hact : 296 ≤ s.activeWords.toNat)
@@ -136,8 +136,8 @@ def gasSteps_select (s : State) (mem : ByteArray) (pa pb dst ret : UInt256)
   · rw [if_neg hs] at check
     have normal := normalBlock.steps (EarlyCsub.environment (stateAt s mem 5024 args) hcode hfork hrun hnp) rfl
       (run_normal s mem args hargs hact hcode)
-    have put := storeBlock.steps (EarlyCsub.environment (stateAt s (storeWord mem 8928 (UInt256.ofNat 0)) 5040 (UInt256.ofNat 4164 :: args)) hcode hfork hrun hnp) rfl
-      (run_store s (storeWord mem 8928 (UInt256.ofNat 0)) (UInt256.ofNat 4164)
+    have put := storeBlock.steps (EarlyCsub.environment (stateAt s (storeWord mem 8928 (UInt256.ofNat 0)) 5040 (UInt256.ofNat 4165 :: args)) hcode hfork hrun hnp) rfl
+      (run_store s (storeWord mem 8928 (UInt256.ofNat 0)) (UInt256.ofNat 4165)
         args hargs hact hcode)
     simpa only [selectedMemory, if_neg hs] using check.trans (normal.trans put)
 

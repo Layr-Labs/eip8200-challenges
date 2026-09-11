@@ -18,7 +18,6 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
-open Challenge.Modexp.Submission.Proofs.Fast.CiosCached (negative32)
 
 abbrev outer := Exp.outer
 
@@ -38,10 +37,10 @@ def pcShiftLoop : Nat := 3690
 def pcShiftBody : Nat := 3697
 def pcEstimate : Nat := 3711
 def pcMacSetup : Nat := 3789
-def pcMacLoop : Nat := 3805
-def pcMid : Nat := 3853
+def pcMacLoop : Nat := 3802
+def pcMid : Nat := 3854
 /-- The limb-pass body after the pointer steps, before the exit test. -/
-def pcMacTail : Nat := 3844
+def pcMacTail : Nat := 3845
 def pcAddLoop : Nat := 3888
 def pcAddInner : Nat := 3894
 def pcAddTail : Nat := 3937
@@ -139,24 +138,22 @@ def macSetupState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : 
            stack := qhatOf (uMem mem n) :: UInt256.ofNat k :: outer n bsize esize msize
            memory := uMem mem n }
 
-/-- The limb-pass loop head after `j` limbs, over the `u` memory `um` and guess `q`.
-`negative32` is the loop-invariant `~31` hoisted out of the body by `MAC_SETUP`. -/
+/-- The limb-pass loop head after `j` limbs, over the `u` memory `um` and guess `q`. -/
 def macLoopState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k j : Nat) :
     State :=
   { s with pc := UInt256.ofNat pcMacLoop
            stack := UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) j) ::
-             UInt256.ofNat (Monpro.ptrAt (8224 + 32 * n) j) :: negative32 ::
+             UInt256.ofNat (Monpro.ptrAt (8224 + 32 * n) j) ::
              (Monpro.l1Step um q NEG n j).carry :: q :: UInt256.ofNat k ::
              outer n bsize esize msize
            memory := (Monpro.l1Step um q NEG n j).memory }
 
-/-- The middle block entry: the two spent pointers and the hoisted constant
-still on the stack. -/
+/-- The middle block entry: the two spent pointers still on the stack. -/
 def midState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat) :
     State :=
   { s with pc := UInt256.ofNat pcMid
            stack := UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) n) ::
-             UInt256.ofNat (Monpro.ptrAt (8224 + 32 * n) n) :: negative32 ::
+             UInt256.ofNat (Monpro.ptrAt (8224 + 32 * n) n) ::
              (Monpro.l1Step um q NEG n n).carry :: q :: UInt256.ofNat k ::
              outer n bsize esize msize
            memory := (Monpro.l1Step um q NEG n n).memory }

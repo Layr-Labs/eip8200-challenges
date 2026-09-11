@@ -39,7 +39,7 @@ opaque gasSteps_entry (s : State) (mem : ByteArray) (pa pb n : Nat)
       (entryState s mem pa pb pdst ret rest)
       {outState s (mpZeroed s (StagedOperand.stage mem pa n) n) pa pb n 0
         (MachineState.readWord mem 9376) (MachineState.readWord mem (32*n-32))
-        (MachineState.readWord mem 9440 :: MachineState.readWord mem 96 :: MachineState.readWord mem 64 :: MachineState.readWord mem 32 :: UInt256.ofNat (pa+32*n-32) :: pdst :: ret :: rest) with pc := UInt256.ofNat 4159} :=
+        (MachineState.readWord mem 9440 :: MachineState.readWord mem 96 :: MachineState.readWord mem 64 :: MachineState.readWord mem 32 :: MachineState.readWord mem (pa+32*n-32) :: pdst :: ret :: rest) with pc := UInt256.ofNat 4160} :=
   CarryRowBlocks.entry.steps (environment (entryState s mem pa pb pdst ret rest) hcode hfork hrun hnp) rfl
     (StagedOperand.run_entry s mem pa pb n pdst ret rest hcap hrun hact hn hn32
       hpa hpaFit hpb hpbFit hcds hs32 hml)
@@ -57,7 +57,7 @@ opaque gasSteps_out (s : State) (mem : ByteArray) (pa pb n i : Nat)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472) :
     Challenge.EvmProof.GasSteps
       (outState s mem pa pb n i pdst ret rest)
-      (firstAt 4167 s mem (rowBi mem pb n i) pa pb n i pdst ret rest) :=
+      (firstAt 4168 s mem (rowBi mem pb n i) pa pb n i pdst ret rest) :=
   CarryRowBlocks.out.steps (environment (outState s mem pa pb n i pdst ret rest) hcode hfork hrun hnp) rfl
     (run_out s mem pa pb n i pdst ret rest hcap hrun hact hn hn32 hi
       hpa hpaFit hpb hpbFit)
@@ -92,7 +92,7 @@ opaque gasSteps_tailNext (s : State) (mem : ByteArray) (c mu bi : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) (_hn32 : n ≤ 32) (hi : i + 1 < n)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472)
-    (hroute : MachineState.readWord mem 9280 = UInt256.ofNat 4164) :
+    (hroute : MachineState.readWord mem 9280 = UInt256.ofNat 4165) :
     Challenge.EvmProof.GasSteps
       (tailState s mem c mu bi pa pb n i pdst ret rest)
       (outState s (tailCarry mem c bi) pa pb n (i + 1) pdst ret rest) :=
@@ -109,7 +109,7 @@ opaque gasSteps_tailLast (s : State) (mem : ByteArray) (c mu bi : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 296 ≤ s.activeWords.toNat) (_hn32 : n ≤ 32) (hi : i + 1 = n)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472)
-    (hroute : MachineState.readWord mem 9280 = UInt256.ofNat 4164) :
+    (hroute : MachineState.readWord mem 9280 = UInt256.ofNat 4165) :
     Challenge.EvmProof.GasSteps
       (tailState s mem c mu bi pa pb n i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (mpCsubState s (tailCarry mem c bi) pdst ret rest) :=
@@ -152,9 +152,9 @@ opaque gasSteps_commonFirst (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat) (hn : n ≤ 32) (hpos : 0 < n)
     (hpaFit : pa+32*n ≤ 9472)
     (htl : tl = UInt256.ofNat (8224+32*n))
-    (hAend : aEnd = UInt256.ofNat (pa+32*n-32)) :
+    (hAend : aEnd = MachineState.readWord mem (pa+32*n-32)) :
     Challenge.EvmProof.GasSteps
-      (firstAt 4167 s mem bi pa pb n i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (firstAt 4168 s mem bi pa pb n i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (l1At 4193 s mem bi pa pb n i 1 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) :=
   l1Mac0.steps (environment _ hcode hfork hrun hnp) rfl
     (CiosCommonFirst.run_commonFirst s mem bi pa pb n i tl inv m0 aEnd m96 m64 m32 pdst ret rest

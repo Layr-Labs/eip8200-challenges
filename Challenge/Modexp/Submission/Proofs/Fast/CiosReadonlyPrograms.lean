@@ -17,9 +17,9 @@ def fullExitProgram : List Instr :=
     (CiosCached.tailProgram.drop 30)
 
 
-/-- First operand and accumulator pointers remain cached across every row. -/
+/-- The final operand word and accumulator pointer remain cached across every row. -/
 def commonFirstLoad : List Instr :=
-  [.op (.Dup ⟨14, by decide⟩), .op .MLOAD, .op (.Dup ⟨7, by decide⟩)]
+  [.op (.Dup ⟨14, by decide⟩), .op (.Dup ⟨7, by decide⟩)]
 
 def commonFinishLoad : List Instr :=
   [.op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),

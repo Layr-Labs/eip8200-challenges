@@ -12,23 +12,23 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore CiosReadonly
 
+/-- The existing `aEnd` frame slot now contains the source word, not its address. -/
 def tail (pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) : List UInt256 :=
   [pbi,pa,pb,flag,negative32,allOnes,target2,inv,m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest
 
 theorem run_load (s : State) (pc bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 998)
-    (hactive : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat aEnd.toNat 32) = s.activeWords) :
+    (rest : List UInt256) (hcap : rest.length ≤ 998) :
     runInstructions commonFirstLoad
       (framed s pc ([bi] ++ tail pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
-    some (framed s (advancePC 3 pc)
-      ([maxWord,MachineState.readWord s.memory aEnd.toNat,bi] ++
+    some (framed s (advancePC 2 pc)
+      ([maxWord,aEnd,bi] ++
         tail pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
   have hc17 : rest.length+17 < 1024 := by omega
   have hc18 : rest.length+18 < 1024 := by omega
   have hc19 : rest.length+19 < 1024 := by omega
   simp [commonFirstLoad,runInstructions,Challenge.EvmProof.Stepper.runInstr,
-    framed,tail,hc17,hc18,hc19,State.activeWordsAfterUInt256,hactive,advancePC,allOnes_value]
+    framed,tail,hc17,hc18,hc19,advancePC,allOnes_value]
 
 theorem run_finishLoad (s : State)
     (pc part sum bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
@@ -92,49 +92,43 @@ theorem run_commonFirst (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb n i : Nat) (tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)
     (hact : 296 ≤ s.activeWords.toNat) (hn : n ≤ 32) (hpos : 0 < n)
-    (hpaFit : pa+32*n ≤ 9472)
+    (_hpaFit : pa+32*n ≤ 9472)
     (htl : tl = UInt256.ofNat (8224+32*n))
-    (hAend : aEnd = UInt256.ofNat (pa+32*n-32)) :
+    (hAend : aEnd = MachineState.readWord mem (pa+32*n-32)) :
     runInstructions commonFirstProgram
-      (firstAt 4167 s mem bi pa pb n i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
+      (firstAt 4168 s mem bi pa pb n i inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
     some (l1At 4193 s mem bi pa pb n i 1 inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) := by
-  have ha : aEnd.toNat = pa+32*(n-1) := by
-    rw [hAend,Challenge.EvmProof.Word.word_toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
-    omega
+  have ha : pa+32*n-32 = pa+32*(n-1) := by omega
   have ht : tl.toNat = 8256+32*(n-1) := by
     rw [htl,Challenge.EvmProof.Word.word_toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
     omega
   let st : State := {s with memory := mem}
-  have hA : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat aEnd.toNat 32) = st.activeWords := by
-    rw [ha]
-    exact activeWords_fix st _ 32 (by decide) (by omega) hact
   have hT : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat tl.toNat 32) = st.activeWords := by
     rw [ht]
     exact activeWords_fix st _ 32 (by decide) (by omega) hact
   let pbi := UInt256.ofNat (ptrAt (pb+32*n-32) i)
   let frame := tail pbi (UInt256.ofNat pa) (UInt256.ofNat (pb-32))
     (l1Target n) (l2Target n) tl inv m0 aEnd m96 m64 m32 dst ret rest
-  have hl := run_load st (UInt256.ofNat 4167) bi pbi (UInt256.ofNat pa) (UInt256.ofNat (pb-32))
-    (l1Target n) (l2Target n) tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hA
-  have hp := CiosNoDummyCarry.run_product st (advancePC 3 (UInt256.ofNat 4167))
-    (MachineState.readWord mem aEnd.toNat) bi frame
+  have hl := run_load st (UInt256.ofNat 4168) bi pbi (UInt256.ofNat pa) (UInt256.ofNat (pb-32))
+    (l1Target n) (l2Target n) tl inv m0 aEnd m96 m64 m32 dst ret rest hcap
+  have hp := CiosNoDummyCarry.run_product st (advancePC 2 (UInt256.ofNat 4168))
+    aEnd bi frame
     (by simp only [frame,tail,List.length_append,List.length_cons,List.length_nil]; omega)
-  have hf := run_finish st (advancePC 13 (advancePC 3 (UInt256.ofNat 4167)))
-    (MachineState.readWord mem aEnd.toNat) bi pbi (UInt256.ofNat pa) (UInt256.ofNat (pb-32))
+  have hf := run_finish st (advancePC 13 (advancePC 2 (UInt256.ofNat 4168)))
+    aEnd bi pbi (UInt256.ofNat pa) (UInt256.ofNat (pb-32))
     (l1Target n) (l2Target n) tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hT
-  have hz : MachineState.readWord mem aEnd.toNat * bi + UInt256.ofNat 0 =
-      MachineState.readWord mem aEnd.toNat * bi := by
+  have hz : aEnd * bi + UInt256.ofNat 0 = aEnd * bi := by
     apply Challenge.EvmProof.Word.word_ext
     simp only [Challenge.EvmProof.Word.word_toNat_add,
       Challenge.EvmProof.Word.word_toNat_ofNat,Nat.zero_mod,Nat.add_zero]
-    exact Nat.mod_eq_of_lt (MachineState.readWord mem aEnd.toNat * bi).val.isLt
+    exact Nat.mod_eq_of_lt (aEnd * bi).val.isLt
   simp only [show (0 : UInt256) = UInt256.ofNat 0 from by decide] at hf
   rw [hz] at hf
   have both := runInstructions_append_some _ _ _ _ _ hl hp
   have hall := runInstructions_append_some _ _ _ _ _ both hf
-  have hpc : advancePC 13 (advancePC 3 (UInt256.ofNat 4167))+UInt256.ofNat 10 = UInt256.ofNat 4193 := by decide
+  have hpc : advancePC 13 (advancePC 2 (UInt256.ofNat 4168))+UInt256.ofNat 10 = UInt256.ofNat 4193 := by decide
   simpa only [commonFirstProgram,L2.multiplyProgram,L2.zeroCarryProgram,
     macZeroProductProgram,show (0 : UInt256) = UInt256.ofNat 0 from by decide,st,frame,pbi,tail,firstAt,l1At,l1Step,
-    framed,ha,ht,hpc,Nat.sub_zero,List.cons_append,List.nil_append] using hall
+    framed,hAend,ha,ht,hpc,Nat.sub_zero,List.cons_append,List.nil_append] using hall
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCommonFirst

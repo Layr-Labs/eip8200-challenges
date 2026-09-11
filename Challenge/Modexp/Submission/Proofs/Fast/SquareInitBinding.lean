@@ -10,7 +10,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
 
 /-- The exact 141 bytes of the submitted candidate's doubling initializer. -/
 def initBlock : Block Artifact.submissionArtifact .Osaka 5049 initProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3833 95 5049 initProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3832 95 5049 initProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def gasSteps_init (s : State) (mem : ByteArray) (rest : List UInt256)
