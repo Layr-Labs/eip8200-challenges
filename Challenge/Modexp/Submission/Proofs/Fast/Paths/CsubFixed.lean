@@ -144,105 +144,104 @@ def csFixedStep8_3 : List (Challenge.EvmProof.Stepper.Located Artifact.submissio
    opAt 3838 .MSTORE]
 
 def csFixedStep8_4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 3839 .JUMPDEST,
-   pushAt 3840 2 8352,
-   opAt 3841 .MLOAD,
-   pushAt 3842 1 96,
-   opAt 3843 .MLOAD,
+  [pushAt 3839 3 8352,
+   opAt 3840 .MLOAD,
+   pushAt 3841 1 96,
+   opAt 3842 .MLOAD,
+   opAt 3843 (.Dup ⟨1, by decide⟩),
    opAt 3844 (.Dup ⟨1, by decide⟩),
-   opAt 3845 (.Dup ⟨1, by decide⟩),
-   opAt 3846 .GT,
-   opAt 3847 (.Swap ⟨1, by decide⟩),
-   opAt 3848 .SUB,
-   opAt 3849 (.Dup ⟨2, by decide⟩),
-   opAt 3850 (.Dup ⟨1, by decide⟩),
-   opAt 3851 .SUB,
-   opAt 3852 (.Swap ⟨2, by decide⟩),
-   opAt 3853 .GT,
-   opAt 3854 .OR,
-   opAt 3855 (.Swap ⟨0, by decide⟩),
-   pushAt 3856 2 7264,
-   opAt 3857 .MSTORE]
+   opAt 3845 .GT,
+   opAt 3846 (.Swap ⟨1, by decide⟩),
+   opAt 3847 .SUB,
+   opAt 3848 (.Dup ⟨2, by decide⟩),
+   opAt 3849 (.Dup ⟨1, by decide⟩),
+   opAt 3850 .SUB,
+   opAt 3851 (.Swap ⟨2, by decide⟩),
+   opAt 3852 .GT,
+   opAt 3853 .OR,
+   opAt 3854 (.Swap ⟨0, by decide⟩),
+   pushAt 3855 2 7264,
+   opAt 3856 .MSTORE]
 
 def csFixedStep8_5 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 3858 .JUMPDEST,
-   pushAt 3859 2 8320,
-   opAt 3860 .MLOAD,
-   pushAt 3861 1 64,
-   opAt 3862 .MLOAD,
+  [opAt 3857 .JUMPDEST,
+   pushAt 3858 2 8320,
+   opAt 3859 .MLOAD,
+   pushAt 3860 1 64,
+   opAt 3861 .MLOAD,
+   opAt 3862 (.Dup ⟨1, by decide⟩),
    opAt 3863 (.Dup ⟨1, by decide⟩),
-   opAt 3864 (.Dup ⟨1, by decide⟩),
-   opAt 3865 .GT,
-   opAt 3866 (.Swap ⟨1, by decide⟩),
-   opAt 3867 .SUB,
-   opAt 3868 (.Dup ⟨2, by decide⟩),
-   opAt 3869 (.Dup ⟨1, by decide⟩),
-   opAt 3870 .SUB,
-   opAt 3871 (.Swap ⟨2, by decide⟩),
-   opAt 3872 .GT,
-   opAt 3873 .OR,
-   opAt 3874 (.Swap ⟨0, by decide⟩),
-   pushAt 3875 2 7232,
-   opAt 3876 .MSTORE]
+   opAt 3864 .GT,
+   opAt 3865 (.Swap ⟨1, by decide⟩),
+   opAt 3866 .SUB,
+   opAt 3867 (.Dup ⟨2, by decide⟩),
+   opAt 3868 (.Dup ⟨1, by decide⟩),
+   opAt 3869 .SUB,
+   opAt 3870 (.Swap ⟨2, by decide⟩),
+   opAt 3871 .GT,
+   opAt 3872 .OR,
+   opAt 3873 (.Swap ⟨0, by decide⟩),
+   pushAt 3874 2 7232,
+   opAt 3875 .MSTORE]
 
 def csFixedStep8_6 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 3877 2 8288,
-   opAt 3878 .MLOAD,
-   pushAt 3879 1 32,
-   opAt 3880 .MLOAD,
+  [pushAt 3876 2 8288,
+   opAt 3877 .MLOAD,
+   pushAt 3878 1 32,
+   opAt 3879 .MLOAD,
+   opAt 3880 (.Dup ⟨1, by decide⟩),
    opAt 3881 (.Dup ⟨1, by decide⟩),
-   opAt 3882 (.Dup ⟨1, by decide⟩),
-   opAt 3883 .GT,
-   opAt 3884 (.Swap ⟨1, by decide⟩),
-   opAt 3885 .SUB,
-   opAt 3886 (.Dup ⟨2, by decide⟩),
-   opAt 3887 (.Dup ⟨1, by decide⟩),
-   opAt 3888 .SUB,
-   opAt 3889 (.Swap ⟨2, by decide⟩),
-   opAt 3890 .GT,
-   opAt 3891 .OR,
-   opAt 3892 (.Swap ⟨0, by decide⟩),
-   pushAt 3893 2 7200,
-   opAt 3894 .MSTORE]
+   opAt 3882 .GT,
+   opAt 3883 (.Swap ⟨1, by decide⟩),
+   opAt 3884 .SUB,
+   opAt 3885 (.Dup ⟨2, by decide⟩),
+   opAt 3886 (.Dup ⟨1, by decide⟩),
+   opAt 3887 .SUB,
+   opAt 3888 (.Swap ⟨2, by decide⟩),
+   opAt 3889 .GT,
+   opAt 3890 .OR,
+   opAt 3891 (.Swap ⟨0, by decide⟩),
+   pushAt 3892 2 7200,
+   opAt 3893 .MSTORE]
 
 def csFixedStep8_7 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 3895 2 8256,
-   opAt 3896 .MLOAD,
-   pushAt 3897 0 0,
-   opAt 3898 .MLOAD,
+  [pushAt 3894 2 8256,
+   opAt 3895 .MLOAD,
+   pushAt 3896 0 0,
+   opAt 3897 .MLOAD,
+   opAt 3898 (.Dup ⟨1, by decide⟩),
    opAt 3899 (.Dup ⟨1, by decide⟩),
-   opAt 3900 (.Dup ⟨1, by decide⟩),
-   opAt 3901 .GT,
-   opAt 3902 (.Swap ⟨1, by decide⟩),
-   opAt 3903 .SUB,
-   opAt 3904 (.Dup ⟨2, by decide⟩),
-   opAt 3905 (.Dup ⟨1, by decide⟩),
-   opAt 3906 .SUB,
-   opAt 3907 (.Swap ⟨2, by decide⟩),
-   opAt 3908 .GT,
-   opAt 3909 .OR,
-   opAt 3910 (.Swap ⟨0, by decide⟩),
-   pushAt 3911 2 7168,
-   opAt 3912 .MSTORE]
+   opAt 3900 .GT,
+   opAt 3901 (.Swap ⟨1, by decide⟩),
+   opAt 3902 .SUB,
+   opAt 3903 (.Dup ⟨2, by decide⟩),
+   opAt 3904 (.Dup ⟨1, by decide⟩),
+   opAt 3905 .SUB,
+   opAt 3906 (.Swap ⟨2, by decide⟩),
+   opAt 3907 .GT,
+   opAt 3908 .OR,
+   opAt 3909 (.Swap ⟨0, by decide⟩),
+   pushAt 3910 2 7168,
+   opAt 3911 .MSTORE]
 
 def csFixedTail8 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 3913 .ISZERO,
-   pushAt 3914 2 8224,
-   opAt 3915 .MLOAD,
-   opAt 3916 .OR,
-   pushAt 3917 2 1087,
-   opAt 3918 .NOT,
-   pushAt 3919 2 5243,
-   opAt 3920 .JUMP,
-   opAt 3928 .JUMPDEST,
-   opAt 3929 .MUL,
-   pushAt 3930 2 8256,
-   opAt 3931 .ADD,
-   pushAt 3932 2 9344,
-   opAt 3933 .MLOAD,
-   opAt 3934 (.Swap ⟨1, by decide⟩),
-   opAt 3935 .MCOPY,
-   opAt 3936 .JUMP]
+  [opAt 3912 .ISZERO,
+   pushAt 3913 2 8224,
+   opAt 3914 .MLOAD,
+   opAt 3915 .OR,
+   pushAt 3916 2 1087,
+   opAt 3917 .NOT,
+   pushAt 3918 2 5243,
+   opAt 3919 .JUMP,
+   opAt 3927 .JUMPDEST,
+   opAt 3928 .MUL,
+   pushAt 3929 2 8256,
+   opAt 3930 .ADD,
+   pushAt 3931 2 9344,
+   opAt 3932 .MLOAD,
+   opAt 3933 (.Swap ⟨1, by decide⟩),
+   opAt 3934 .MCOPY,
+   opAt 3935 .JUMP]
 
 def csFixedStep4_0 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 2931 2 8352,
@@ -260,84 +259,84 @@ def csFixedStep4_0 : List (Challenge.EvmProof.Stepper.Located Artifact.submissio
    opAt 2943 .JUMP]
 
 def csFixedStep4_1 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 3858 .JUMPDEST,
-   pushAt 3859 2 8320,
-   opAt 3860 .MLOAD,
-   pushAt 3861 1 64,
-   opAt 3862 .MLOAD,
+  [opAt 3857 .JUMPDEST,
+   pushAt 3858 2 8320,
+   opAt 3859 .MLOAD,
+   pushAt 3860 1 64,
+   opAt 3861 .MLOAD,
+   opAt 3862 (.Dup ⟨1, by decide⟩),
    opAt 3863 (.Dup ⟨1, by decide⟩),
-   opAt 3864 (.Dup ⟨1, by decide⟩),
-   opAt 3865 .GT,
-   opAt 3866 (.Swap ⟨1, by decide⟩),
-   opAt 3867 .SUB,
-   opAt 3868 (.Dup ⟨2, by decide⟩),
-   opAt 3869 (.Dup ⟨1, by decide⟩),
-   opAt 3870 .SUB,
-   opAt 3871 (.Swap ⟨2, by decide⟩),
-   opAt 3872 .GT,
-   opAt 3873 .OR,
-   opAt 3874 (.Swap ⟨0, by decide⟩),
-   pushAt 3875 2 7232,
-   opAt 3876 .MSTORE]
+   opAt 3864 .GT,
+   opAt 3865 (.Swap ⟨1, by decide⟩),
+   opAt 3866 .SUB,
+   opAt 3867 (.Dup ⟨2, by decide⟩),
+   opAt 3868 (.Dup ⟨1, by decide⟩),
+   opAt 3869 .SUB,
+   opAt 3870 (.Swap ⟨2, by decide⟩),
+   opAt 3871 .GT,
+   opAt 3872 .OR,
+   opAt 3873 (.Swap ⟨0, by decide⟩),
+   pushAt 3874 2 7232,
+   opAt 3875 .MSTORE]
 
 def csFixedStep4_2 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 3877 2 8288,
-   opAt 3878 .MLOAD,
-   pushAt 3879 1 32,
-   opAt 3880 .MLOAD,
+  [pushAt 3876 2 8288,
+   opAt 3877 .MLOAD,
+   pushAt 3878 1 32,
+   opAt 3879 .MLOAD,
+   opAt 3880 (.Dup ⟨1, by decide⟩),
    opAt 3881 (.Dup ⟨1, by decide⟩),
-   opAt 3882 (.Dup ⟨1, by decide⟩),
-   opAt 3883 .GT,
-   opAt 3884 (.Swap ⟨1, by decide⟩),
-   opAt 3885 .SUB,
-   opAt 3886 (.Dup ⟨2, by decide⟩),
-   opAt 3887 (.Dup ⟨1, by decide⟩),
-   opAt 3888 .SUB,
-   opAt 3889 (.Swap ⟨2, by decide⟩),
-   opAt 3890 .GT,
-   opAt 3891 .OR,
-   opAt 3892 (.Swap ⟨0, by decide⟩),
-   pushAt 3893 2 7200,
-   opAt 3894 .MSTORE]
+   opAt 3882 .GT,
+   opAt 3883 (.Swap ⟨1, by decide⟩),
+   opAt 3884 .SUB,
+   opAt 3885 (.Dup ⟨2, by decide⟩),
+   opAt 3886 (.Dup ⟨1, by decide⟩),
+   opAt 3887 .SUB,
+   opAt 3888 (.Swap ⟨2, by decide⟩),
+   opAt 3889 .GT,
+   opAt 3890 .OR,
+   opAt 3891 (.Swap ⟨0, by decide⟩),
+   pushAt 3892 2 7200,
+   opAt 3893 .MSTORE]
 
 def csFixedStep4_3 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 3895 2 8256,
-   opAt 3896 .MLOAD,
-   pushAt 3897 0 0,
-   opAt 3898 .MLOAD,
+  [pushAt 3894 2 8256,
+   opAt 3895 .MLOAD,
+   pushAt 3896 0 0,
+   opAt 3897 .MLOAD,
+   opAt 3898 (.Dup ⟨1, by decide⟩),
    opAt 3899 (.Dup ⟨1, by decide⟩),
-   opAt 3900 (.Dup ⟨1, by decide⟩),
-   opAt 3901 .GT,
-   opAt 3902 (.Swap ⟨1, by decide⟩),
-   opAt 3903 .SUB,
-   opAt 3904 (.Dup ⟨2, by decide⟩),
-   opAt 3905 (.Dup ⟨1, by decide⟩),
-   opAt 3906 .SUB,
-   opAt 3907 (.Swap ⟨2, by decide⟩),
-   opAt 3908 .GT,
-   opAt 3909 .OR,
-   opAt 3910 (.Swap ⟨0, by decide⟩),
-   pushAt 3911 2 7168,
-   opAt 3912 .MSTORE]
+   opAt 3900 .GT,
+   opAt 3901 (.Swap ⟨1, by decide⟩),
+   opAt 3902 .SUB,
+   opAt 3903 (.Dup ⟨2, by decide⟩),
+   opAt 3904 (.Dup ⟨1, by decide⟩),
+   opAt 3905 .SUB,
+   opAt 3906 (.Swap ⟨2, by decide⟩),
+   opAt 3907 .GT,
+   opAt 3908 .OR,
+   opAt 3909 (.Swap ⟨0, by decide⟩),
+   pushAt 3910 2 7168,
+   opAt 3911 .MSTORE]
 
 def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 3913 .ISZERO,
-   pushAt 3914 2 8224,
-   opAt 3915 .MLOAD,
-   opAt 3916 .OR,
-   pushAt 3917 2 1087,
-   opAt 3918 .NOT,
-   pushAt 3919 2 5243,
-   opAt 3920 .JUMP,
-   opAt 3928 .JUMPDEST,
-   opAt 3929 .MUL,
-   pushAt 3930 2 8256,
-   opAt 3931 .ADD,
-   pushAt 3932 2 9344,
-   opAt 3933 .MLOAD,
-   opAt 3934 (.Swap ⟨1, by decide⟩),
-   opAt 3935 .MCOPY,
-   opAt 3936 .JUMP]
+  [opAt 3912 .ISZERO,
+   pushAt 3913 2 8224,
+   opAt 3914 .MLOAD,
+   opAt 3915 .OR,
+   pushAt 3916 2 1087,
+   opAt 3917 .NOT,
+   pushAt 3918 2 5243,
+   opAt 3919 .JUMP,
+   opAt 3927 .JUMPDEST,
+   opAt 3928 .MUL,
+   pushAt 3929 2 8256,
+   opAt 3930 .ADD,
+   pushAt 3931 2 9344,
+   opAt 3932 .MLOAD,
+   opAt 3933 (.Swap ⟨1, by decide⟩),
+   opAt 3934 .MCOPY,
+   opAt 3935 .JUMP]
 
 @[simp] theorem fixedPC1617 : Artifact.submissionArtifact.instructionPC 1575 = 2139 := by rfl
 
@@ -1017,904 +1016,894 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
       instructionPC_succ Artifact.submissionArtifact 3838 _ (by rfl)
     _ = 5112 := by rw [fixedPC3869]; rfl
 
-@[simp] theorem fixedJump5109 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5112 = true := by
-  simpa only [Artifact.instructionPC, fixedPC3870] using Artifact.isValidJumpDest_index 3839 (by rfl)
-
-@[simp] theorem fixedPC3871 : Artifact.submissionArtifact.instructionPC 3840 = 5113 := by
+@[simp] theorem fixedPC3872 : Artifact.submissionArtifact.instructionPC 3840 = 5116 := by
   calc
     Artifact.submissionArtifact.instructionPC 3840 =
-        Artifact.submissionArtifact.instructionPC 3839 + (YulEvmCompiler.Instr.op .JUMPDEST).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3839 + (YulEvmCompiler.Instr.push 3 8352).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3839 _ (by rfl)
-    _ = 5113 := by rw [fixedPC3870]; rfl
+    _ = 5116 := by rw [fixedPC3870]; rfl
 
-@[simp] theorem fixedPC3872 : Artifact.submissionArtifact.instructionPC 3841 = 5116 := by
+@[simp] theorem fixedPC3873 : Artifact.submissionArtifact.instructionPC 3841 = 5117 := by
   calc
     Artifact.submissionArtifact.instructionPC 3841 =
-        Artifact.submissionArtifact.instructionPC 3840 + (YulEvmCompiler.Instr.push 2 8352).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3840 + (YulEvmCompiler.Instr.op .MLOAD).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3840 _ (by rfl)
-    _ = 5116 := by rw [fixedPC3871]; rfl
-
-@[simp] theorem fixedPC3873 : Artifact.submissionArtifact.instructionPC 3842 = 5117 := by
-  calc
-    Artifact.submissionArtifact.instructionPC 3842 =
-        Artifact.submissionArtifact.instructionPC 3841 + (YulEvmCompiler.Instr.op .MLOAD).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3841 _ (by rfl)
     _ = 5117 := by rw [fixedPC3872]; rfl
 
-@[simp] theorem fixedPC3874 : Artifact.submissionArtifact.instructionPC 3843 = 5119 := by
+@[simp] theorem fixedPC3874 : Artifact.submissionArtifact.instructionPC 3842 = 5119 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3843 =
-        Artifact.submissionArtifact.instructionPC 3842 + (YulEvmCompiler.Instr.push 1 96).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3842 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3842 =
+        Artifact.submissionArtifact.instructionPC 3841 + (YulEvmCompiler.Instr.push 1 96).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3841 _ (by rfl)
     _ = 5119 := by rw [fixedPC3873]; rfl
 
-@[simp] theorem fixedPC3875 : Artifact.submissionArtifact.instructionPC 3844 = 5120 := by
+@[simp] theorem fixedPC3875 : Artifact.submissionArtifact.instructionPC 3843 = 5120 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3844 =
-        Artifact.submissionArtifact.instructionPC 3843 + (YulEvmCompiler.Instr.op .MLOAD).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3843 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3843 =
+        Artifact.submissionArtifact.instructionPC 3842 + (YulEvmCompiler.Instr.op .MLOAD).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3842 _ (by rfl)
     _ = 5120 := by rw [fixedPC3874]; rfl
 
-@[simp] theorem fixedPC3876 : Artifact.submissionArtifact.instructionPC 3845 = 5121 := by
+@[simp] theorem fixedPC3876 : Artifact.submissionArtifact.instructionPC 3844 = 5121 := by
+  calc
+    Artifact.submissionArtifact.instructionPC 3844 =
+        Artifact.submissionArtifact.instructionPC 3843 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3843 _ (by rfl)
+    _ = 5121 := by rw [fixedPC3875]; rfl
+
+@[simp] theorem fixedPC3877 : Artifact.submissionArtifact.instructionPC 3845 = 5122 := by
   calc
     Artifact.submissionArtifact.instructionPC 3845 =
         Artifact.submissionArtifact.instructionPC 3844 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3844 _ (by rfl)
-    _ = 5121 := by rw [fixedPC3875]; rfl
-
-@[simp] theorem fixedPC3877 : Artifact.submissionArtifact.instructionPC 3846 = 5122 := by
-  calc
-    Artifact.submissionArtifact.instructionPC 3846 =
-        Artifact.submissionArtifact.instructionPC 3845 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3845 _ (by rfl)
     _ = 5122 := by rw [fixedPC3876]; rfl
 
-@[simp] theorem fixedPC3878 : Artifact.submissionArtifact.instructionPC 3847 = 5123 := by
+@[simp] theorem fixedPC3878 : Artifact.submissionArtifact.instructionPC 3846 = 5123 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3847 =
-        Artifact.submissionArtifact.instructionPC 3846 + (YulEvmCompiler.Instr.op .GT).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3846 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3846 =
+        Artifact.submissionArtifact.instructionPC 3845 + (YulEvmCompiler.Instr.op .GT).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3845 _ (by rfl)
     _ = 5123 := by rw [fixedPC3877]; rfl
 
-@[simp] theorem fixedPC3879 : Artifact.submissionArtifact.instructionPC 3848 = 5124 := by
+@[simp] theorem fixedPC3879 : Artifact.submissionArtifact.instructionPC 3847 = 5124 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3848 =
-        Artifact.submissionArtifact.instructionPC 3847 + (YulEvmCompiler.Instr.op (.Swap ⟨1, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3847 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3847 =
+        Artifact.submissionArtifact.instructionPC 3846 + (YulEvmCompiler.Instr.op (.Swap ⟨1, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3846 _ (by rfl)
     _ = 5124 := by rw [fixedPC3878]; rfl
 
-@[simp] theorem fixedPC3880 : Artifact.submissionArtifact.instructionPC 3849 = 5125 := by
+@[simp] theorem fixedPC3880 : Artifact.submissionArtifact.instructionPC 3848 = 5125 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3849 =
-        Artifact.submissionArtifact.instructionPC 3848 + (YulEvmCompiler.Instr.op .SUB).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3848 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3848 =
+        Artifact.submissionArtifact.instructionPC 3847 + (YulEvmCompiler.Instr.op .SUB).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3847 _ (by rfl)
     _ = 5125 := by rw [fixedPC3879]; rfl
 
-@[simp] theorem fixedPC3881 : Artifact.submissionArtifact.instructionPC 3850 = 5126 := by
+@[simp] theorem fixedPC3881 : Artifact.submissionArtifact.instructionPC 3849 = 5126 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3850 =
-        Artifact.submissionArtifact.instructionPC 3849 + (YulEvmCompiler.Instr.op (.Dup ⟨2, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3849 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3849 =
+        Artifact.submissionArtifact.instructionPC 3848 + (YulEvmCompiler.Instr.op (.Dup ⟨2, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3848 _ (by rfl)
     _ = 5126 := by rw [fixedPC3880]; rfl
 
-@[simp] theorem fixedPC3882 : Artifact.submissionArtifact.instructionPC 3851 = 5127 := by
+@[simp] theorem fixedPC3882 : Artifact.submissionArtifact.instructionPC 3850 = 5127 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3851 =
-        Artifact.submissionArtifact.instructionPC 3850 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3850 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3850 =
+        Artifact.submissionArtifact.instructionPC 3849 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3849 _ (by rfl)
     _ = 5127 := by rw [fixedPC3881]; rfl
 
-@[simp] theorem fixedPC3883 : Artifact.submissionArtifact.instructionPC 3852 = 5128 := by
+@[simp] theorem fixedPC3883 : Artifact.submissionArtifact.instructionPC 3851 = 5128 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3852 =
-        Artifact.submissionArtifact.instructionPC 3851 + (YulEvmCompiler.Instr.op .SUB).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3851 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3851 =
+        Artifact.submissionArtifact.instructionPC 3850 + (YulEvmCompiler.Instr.op .SUB).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3850 _ (by rfl)
     _ = 5128 := by rw [fixedPC3882]; rfl
 
-@[simp] theorem fixedPC3884 : Artifact.submissionArtifact.instructionPC 3853 = 5129 := by
+@[simp] theorem fixedPC3884 : Artifact.submissionArtifact.instructionPC 3852 = 5129 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3853 =
-        Artifact.submissionArtifact.instructionPC 3852 + (YulEvmCompiler.Instr.op (.Swap ⟨2, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3852 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3852 =
+        Artifact.submissionArtifact.instructionPC 3851 + (YulEvmCompiler.Instr.op (.Swap ⟨2, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3851 _ (by rfl)
     _ = 5129 := by rw [fixedPC3883]; rfl
 
-@[simp] theorem fixedPC3885 : Artifact.submissionArtifact.instructionPC 3854 = 5130 := by
+@[simp] theorem fixedPC3885 : Artifact.submissionArtifact.instructionPC 3853 = 5130 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3854 =
-        Artifact.submissionArtifact.instructionPC 3853 + (YulEvmCompiler.Instr.op .GT).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3853 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3853 =
+        Artifact.submissionArtifact.instructionPC 3852 + (YulEvmCompiler.Instr.op .GT).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3852 _ (by rfl)
     _ = 5130 := by rw [fixedPC3884]; rfl
 
-@[simp] theorem fixedPC3886 : Artifact.submissionArtifact.instructionPC 3855 = 5131 := by
+@[simp] theorem fixedPC3886 : Artifact.submissionArtifact.instructionPC 3854 = 5131 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3855 =
-        Artifact.submissionArtifact.instructionPC 3854 + (YulEvmCompiler.Instr.op .OR).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3854 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3854 =
+        Artifact.submissionArtifact.instructionPC 3853 + (YulEvmCompiler.Instr.op .OR).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3853 _ (by rfl)
     _ = 5131 := by rw [fixedPC3885]; rfl
 
-@[simp] theorem fixedPC3887 : Artifact.submissionArtifact.instructionPC 3856 = 5132 := by
+@[simp] theorem fixedPC3887 : Artifact.submissionArtifact.instructionPC 3855 = 5132 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3856 =
-        Artifact.submissionArtifact.instructionPC 3855 + (YulEvmCompiler.Instr.op (.Swap ⟨0, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3855 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3855 =
+        Artifact.submissionArtifact.instructionPC 3854 + (YulEvmCompiler.Instr.op (.Swap ⟨0, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3854 _ (by rfl)
     _ = 5132 := by rw [fixedPC3886]; rfl
 
-@[simp] theorem fixedPC3888 : Artifact.submissionArtifact.instructionPC 3857 = 5135 := by
+@[simp] theorem fixedPC3888 : Artifact.submissionArtifact.instructionPC 3856 = 5135 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3857 =
-        Artifact.submissionArtifact.instructionPC 3856 + (YulEvmCompiler.Instr.push 2 7264).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3856 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3856 =
+        Artifact.submissionArtifact.instructionPC 3855 + (YulEvmCompiler.Instr.push 2 7264).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3855 _ (by rfl)
     _ = 5135 := by rw [fixedPC3887]; rfl
 
-@[simp] theorem fixedPC3889 : Artifact.submissionArtifact.instructionPC 3858 = 5136 := by
+@[simp] theorem fixedPC3889 : Artifact.submissionArtifact.instructionPC 3857 = 5136 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3858 =
-        Artifact.submissionArtifact.instructionPC 3857 + (YulEvmCompiler.Instr.op .MSTORE).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3857 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3857 =
+        Artifact.submissionArtifact.instructionPC 3856 + (YulEvmCompiler.Instr.op .MSTORE).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3856 _ (by rfl)
     _ = 5136 := by rw [fixedPC3888]; rfl
 
 @[simp] theorem fixedJump5133 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5136 = true := by
-  simpa only [Artifact.instructionPC, fixedPC3889] using Artifact.isValidJumpDest_index 3858 (by rfl)
+  simpa only [Artifact.instructionPC, fixedPC3889] using Artifact.isValidJumpDest_index 3857 (by rfl)
 
-@[simp] theorem fixedPC3890 : Artifact.submissionArtifact.instructionPC 3859 = 5137 := by
+@[simp] theorem fixedPC3890 : Artifact.submissionArtifact.instructionPC 3858 = 5137 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3859 =
-        Artifact.submissionArtifact.instructionPC 3858 + (YulEvmCompiler.Instr.op .JUMPDEST).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3858 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3858 =
+        Artifact.submissionArtifact.instructionPC 3857 + (YulEvmCompiler.Instr.op .JUMPDEST).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3857 _ (by rfl)
     _ = 5137 := by rw [fixedPC3889]; rfl
 
-@[simp] theorem fixedPC3891 : Artifact.submissionArtifact.instructionPC 3860 = 5140 := by
+@[simp] theorem fixedPC3891 : Artifact.submissionArtifact.instructionPC 3859 = 5140 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3860 =
-        Artifact.submissionArtifact.instructionPC 3859 + (YulEvmCompiler.Instr.push 2 8320).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3859 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3859 =
+        Artifact.submissionArtifact.instructionPC 3858 + (YulEvmCompiler.Instr.push 2 8320).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3858 _ (by rfl)
     _ = 5140 := by rw [fixedPC3890]; rfl
 
-@[simp] theorem fixedPC3892 : Artifact.submissionArtifact.instructionPC 3861 = 5141 := by
+@[simp] theorem fixedPC3892 : Artifact.submissionArtifact.instructionPC 3860 = 5141 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3861 =
-        Artifact.submissionArtifact.instructionPC 3860 + (YulEvmCompiler.Instr.op .MLOAD).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3860 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3860 =
+        Artifact.submissionArtifact.instructionPC 3859 + (YulEvmCompiler.Instr.op .MLOAD).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3859 _ (by rfl)
     _ = 5141 := by rw [fixedPC3891]; rfl
 
-@[simp] theorem fixedPC3893 : Artifact.submissionArtifact.instructionPC 3862 = 5143 := by
+@[simp] theorem fixedPC3893 : Artifact.submissionArtifact.instructionPC 3861 = 5143 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3862 =
-        Artifact.submissionArtifact.instructionPC 3861 + (YulEvmCompiler.Instr.push 1 64).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3861 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3861 =
+        Artifact.submissionArtifact.instructionPC 3860 + (YulEvmCompiler.Instr.push 1 64).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3860 _ (by rfl)
     _ = 5143 := by rw [fixedPC3892]; rfl
 
-@[simp] theorem fixedPC3894 : Artifact.submissionArtifact.instructionPC 3863 = 5144 := by
+@[simp] theorem fixedPC3894 : Artifact.submissionArtifact.instructionPC 3862 = 5144 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3863 =
-        Artifact.submissionArtifact.instructionPC 3862 + (YulEvmCompiler.Instr.op .MLOAD).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3862 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3862 =
+        Artifact.submissionArtifact.instructionPC 3861 + (YulEvmCompiler.Instr.op .MLOAD).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3861 _ (by rfl)
     _ = 5144 := by rw [fixedPC3893]; rfl
 
-@[simp] theorem fixedPC3895 : Artifact.submissionArtifact.instructionPC 3864 = 5145 := by
+@[simp] theorem fixedPC3895 : Artifact.submissionArtifact.instructionPC 3863 = 5145 := by
+  calc
+    Artifact.submissionArtifact.instructionPC 3863 =
+        Artifact.submissionArtifact.instructionPC 3862 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3862 _ (by rfl)
+    _ = 5145 := by rw [fixedPC3894]; rfl
+
+@[simp] theorem fixedPC3896 : Artifact.submissionArtifact.instructionPC 3864 = 5146 := by
   calc
     Artifact.submissionArtifact.instructionPC 3864 =
         Artifact.submissionArtifact.instructionPC 3863 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3863 _ (by rfl)
-    _ = 5145 := by rw [fixedPC3894]; rfl
-
-@[simp] theorem fixedPC3896 : Artifact.submissionArtifact.instructionPC 3865 = 5146 := by
-  calc
-    Artifact.submissionArtifact.instructionPC 3865 =
-        Artifact.submissionArtifact.instructionPC 3864 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3864 _ (by rfl)
     _ = 5146 := by rw [fixedPC3895]; rfl
 
-@[simp] theorem fixedPC3897 : Artifact.submissionArtifact.instructionPC 3866 = 5147 := by
+@[simp] theorem fixedPC3897 : Artifact.submissionArtifact.instructionPC 3865 = 5147 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3866 =
-        Artifact.submissionArtifact.instructionPC 3865 + (YulEvmCompiler.Instr.op .GT).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3865 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3865 =
+        Artifact.submissionArtifact.instructionPC 3864 + (YulEvmCompiler.Instr.op .GT).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3864 _ (by rfl)
     _ = 5147 := by rw [fixedPC3896]; rfl
 
-@[simp] theorem fixedPC3898 : Artifact.submissionArtifact.instructionPC 3867 = 5148 := by
+@[simp] theorem fixedPC3898 : Artifact.submissionArtifact.instructionPC 3866 = 5148 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3867 =
-        Artifact.submissionArtifact.instructionPC 3866 + (YulEvmCompiler.Instr.op (.Swap ⟨1, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3866 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3866 =
+        Artifact.submissionArtifact.instructionPC 3865 + (YulEvmCompiler.Instr.op (.Swap ⟨1, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3865 _ (by rfl)
     _ = 5148 := by rw [fixedPC3897]; rfl
 
-@[simp] theorem fixedPC3899 : Artifact.submissionArtifact.instructionPC 3868 = 5149 := by
+@[simp] theorem fixedPC3899 : Artifact.submissionArtifact.instructionPC 3867 = 5149 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3868 =
-        Artifact.submissionArtifact.instructionPC 3867 + (YulEvmCompiler.Instr.op .SUB).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3867 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3867 =
+        Artifact.submissionArtifact.instructionPC 3866 + (YulEvmCompiler.Instr.op .SUB).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3866 _ (by rfl)
     _ = 5149 := by rw [fixedPC3898]; rfl
 
-@[simp] theorem fixedPC3900 : Artifact.submissionArtifact.instructionPC 3869 = 5150 := by
+@[simp] theorem fixedPC3900 : Artifact.submissionArtifact.instructionPC 3868 = 5150 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3869 =
-        Artifact.submissionArtifact.instructionPC 3868 + (YulEvmCompiler.Instr.op (.Dup ⟨2, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3868 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3868 =
+        Artifact.submissionArtifact.instructionPC 3867 + (YulEvmCompiler.Instr.op (.Dup ⟨2, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3867 _ (by rfl)
     _ = 5150 := by rw [fixedPC3899]; rfl
 
-@[simp] theorem fixedPC3901 : Artifact.submissionArtifact.instructionPC 3870 = 5151 := by
+@[simp] theorem fixedPC3901 : Artifact.submissionArtifact.instructionPC 3869 = 5151 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3870 =
-        Artifact.submissionArtifact.instructionPC 3869 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3869 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3869 =
+        Artifact.submissionArtifact.instructionPC 3868 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3868 _ (by rfl)
     _ = 5151 := by rw [fixedPC3900]; rfl
 
-@[simp] theorem fixedPC3902 : Artifact.submissionArtifact.instructionPC 3871 = 5152 := by
+@[simp] theorem fixedPC3902 : Artifact.submissionArtifact.instructionPC 3870 = 5152 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3871 =
-        Artifact.submissionArtifact.instructionPC 3870 + (YulEvmCompiler.Instr.op .SUB).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3870 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3870 =
+        Artifact.submissionArtifact.instructionPC 3869 + (YulEvmCompiler.Instr.op .SUB).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3869 _ (by rfl)
     _ = 5152 := by rw [fixedPC3901]; rfl
 
-@[simp] theorem fixedPC3903 : Artifact.submissionArtifact.instructionPC 3872 = 5153 := by
+@[simp] theorem fixedPC3903 : Artifact.submissionArtifact.instructionPC 3871 = 5153 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3872 =
-        Artifact.submissionArtifact.instructionPC 3871 + (YulEvmCompiler.Instr.op (.Swap ⟨2, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3871 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3871 =
+        Artifact.submissionArtifact.instructionPC 3870 + (YulEvmCompiler.Instr.op (.Swap ⟨2, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3870 _ (by rfl)
     _ = 5153 := by rw [fixedPC3902]; rfl
 
-@[simp] theorem fixedPC3904 : Artifact.submissionArtifact.instructionPC 3873 = 5154 := by
+@[simp] theorem fixedPC3904 : Artifact.submissionArtifact.instructionPC 3872 = 5154 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3873 =
-        Artifact.submissionArtifact.instructionPC 3872 + (YulEvmCompiler.Instr.op .GT).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3872 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3872 =
+        Artifact.submissionArtifact.instructionPC 3871 + (YulEvmCompiler.Instr.op .GT).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3871 _ (by rfl)
     _ = 5154 := by rw [fixedPC3903]; rfl
 
-@[simp] theorem fixedPC3905 : Artifact.submissionArtifact.instructionPC 3874 = 5155 := by
+@[simp] theorem fixedPC3905 : Artifact.submissionArtifact.instructionPC 3873 = 5155 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3874 =
-        Artifact.submissionArtifact.instructionPC 3873 + (YulEvmCompiler.Instr.op .OR).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3873 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3873 =
+        Artifact.submissionArtifact.instructionPC 3872 + (YulEvmCompiler.Instr.op .OR).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3872 _ (by rfl)
     _ = 5155 := by rw [fixedPC3904]; rfl
 
-@[simp] theorem fixedPC3906 : Artifact.submissionArtifact.instructionPC 3875 = 5156 := by
+@[simp] theorem fixedPC3906 : Artifact.submissionArtifact.instructionPC 3874 = 5156 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3875 =
-        Artifact.submissionArtifact.instructionPC 3874 + (YulEvmCompiler.Instr.op (.Swap ⟨0, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3874 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3874 =
+        Artifact.submissionArtifact.instructionPC 3873 + (YulEvmCompiler.Instr.op (.Swap ⟨0, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3873 _ (by rfl)
     _ = 5156 := by rw [fixedPC3905]; rfl
 
-@[simp] theorem fixedPC3907 : Artifact.submissionArtifact.instructionPC 3876 = 5159 := by
+@[simp] theorem fixedPC3907 : Artifact.submissionArtifact.instructionPC 3875 = 5159 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3876 =
-        Artifact.submissionArtifact.instructionPC 3875 + (YulEvmCompiler.Instr.push 2 7232).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3875 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3875 =
+        Artifact.submissionArtifact.instructionPC 3874 + (YulEvmCompiler.Instr.push 2 7232).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3874 _ (by rfl)
     _ = 5159 := by rw [fixedPC3906]; rfl
 
-@[simp] theorem fixedPC3908 : Artifact.submissionArtifact.instructionPC 3877 = 5160 := by
+@[simp] theorem fixedPC3908 : Artifact.submissionArtifact.instructionPC 3876 = 5160 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3877 =
-        Artifact.submissionArtifact.instructionPC 3876 + (YulEvmCompiler.Instr.op .MSTORE).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3876 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3876 =
+        Artifact.submissionArtifact.instructionPC 3875 + (YulEvmCompiler.Instr.op .MSTORE).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3875 _ (by rfl)
     _ = 5160 := by rw [fixedPC3907]; rfl
 
-@[simp] theorem fixedPC3909 : Artifact.submissionArtifact.instructionPC 3878 = 5163 := by
+@[simp] theorem fixedPC3909 : Artifact.submissionArtifact.instructionPC 3877 = 5163 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3878 =
-        Artifact.submissionArtifact.instructionPC 3877 + (YulEvmCompiler.Instr.push 2 8288).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3877 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3877 =
+        Artifact.submissionArtifact.instructionPC 3876 + (YulEvmCompiler.Instr.push 2 8288).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3876 _ (by rfl)
     _ = 5163 := by rw [fixedPC3908]; rfl
 
-@[simp] theorem fixedPC3910 : Artifact.submissionArtifact.instructionPC 3879 = 5164 := by
+@[simp] theorem fixedPC3910 : Artifact.submissionArtifact.instructionPC 3878 = 5164 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3879 =
-        Artifact.submissionArtifact.instructionPC 3878 + (YulEvmCompiler.Instr.op .MLOAD).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3878 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3878 =
+        Artifact.submissionArtifact.instructionPC 3877 + (YulEvmCompiler.Instr.op .MLOAD).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3877 _ (by rfl)
     _ = 5164 := by rw [fixedPC3909]; rfl
 
-@[simp] theorem fixedPC3911 : Artifact.submissionArtifact.instructionPC 3880 = 5166 := by
+@[simp] theorem fixedPC3911 : Artifact.submissionArtifact.instructionPC 3879 = 5166 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3880 =
-        Artifact.submissionArtifact.instructionPC 3879 + (YulEvmCompiler.Instr.push 1 32).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3879 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3879 =
+        Artifact.submissionArtifact.instructionPC 3878 + (YulEvmCompiler.Instr.push 1 32).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3878 _ (by rfl)
     _ = 5166 := by rw [fixedPC3910]; rfl
 
-@[simp] theorem fixedPC3912 : Artifact.submissionArtifact.instructionPC 3881 = 5167 := by
+@[simp] theorem fixedPC3912 : Artifact.submissionArtifact.instructionPC 3880 = 5167 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3881 =
-        Artifact.submissionArtifact.instructionPC 3880 + (YulEvmCompiler.Instr.op .MLOAD).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3880 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3880 =
+        Artifact.submissionArtifact.instructionPC 3879 + (YulEvmCompiler.Instr.op .MLOAD).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3879 _ (by rfl)
     _ = 5167 := by rw [fixedPC3911]; rfl
 
-@[simp] theorem fixedPC3913 : Artifact.submissionArtifact.instructionPC 3882 = 5168 := by
+@[simp] theorem fixedPC3913 : Artifact.submissionArtifact.instructionPC 3881 = 5168 := by
+  calc
+    Artifact.submissionArtifact.instructionPC 3881 =
+        Artifact.submissionArtifact.instructionPC 3880 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3880 _ (by rfl)
+    _ = 5168 := by rw [fixedPC3912]; rfl
+
+@[simp] theorem fixedPC3914 : Artifact.submissionArtifact.instructionPC 3882 = 5169 := by
   calc
     Artifact.submissionArtifact.instructionPC 3882 =
         Artifact.submissionArtifact.instructionPC 3881 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3881 _ (by rfl)
-    _ = 5168 := by rw [fixedPC3912]; rfl
-
-@[simp] theorem fixedPC3914 : Artifact.submissionArtifact.instructionPC 3883 = 5169 := by
-  calc
-    Artifact.submissionArtifact.instructionPC 3883 =
-        Artifact.submissionArtifact.instructionPC 3882 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3882 _ (by rfl)
     _ = 5169 := by rw [fixedPC3913]; rfl
 
-@[simp] theorem fixedPC3915 : Artifact.submissionArtifact.instructionPC 3884 = 5170 := by
+@[simp] theorem fixedPC3915 : Artifact.submissionArtifact.instructionPC 3883 = 5170 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3884 =
-        Artifact.submissionArtifact.instructionPC 3883 + (YulEvmCompiler.Instr.op .GT).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3883 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3883 =
+        Artifact.submissionArtifact.instructionPC 3882 + (YulEvmCompiler.Instr.op .GT).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3882 _ (by rfl)
     _ = 5170 := by rw [fixedPC3914]; rfl
 
-@[simp] theorem fixedPC3916 : Artifact.submissionArtifact.instructionPC 3885 = 5171 := by
+@[simp] theorem fixedPC3916 : Artifact.submissionArtifact.instructionPC 3884 = 5171 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3885 =
-        Artifact.submissionArtifact.instructionPC 3884 + (YulEvmCompiler.Instr.op (.Swap ⟨1, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3884 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3884 =
+        Artifact.submissionArtifact.instructionPC 3883 + (YulEvmCompiler.Instr.op (.Swap ⟨1, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3883 _ (by rfl)
     _ = 5171 := by rw [fixedPC3915]; rfl
 
-@[simp] theorem fixedPC3917 : Artifact.submissionArtifact.instructionPC 3886 = 5172 := by
+@[simp] theorem fixedPC3917 : Artifact.submissionArtifact.instructionPC 3885 = 5172 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3886 =
-        Artifact.submissionArtifact.instructionPC 3885 + (YulEvmCompiler.Instr.op .SUB).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3885 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3885 =
+        Artifact.submissionArtifact.instructionPC 3884 + (YulEvmCompiler.Instr.op .SUB).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3884 _ (by rfl)
     _ = 5172 := by rw [fixedPC3916]; rfl
 
-@[simp] theorem fixedPC3918 : Artifact.submissionArtifact.instructionPC 3887 = 5173 := by
+@[simp] theorem fixedPC3918 : Artifact.submissionArtifact.instructionPC 3886 = 5173 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3887 =
-        Artifact.submissionArtifact.instructionPC 3886 + (YulEvmCompiler.Instr.op (.Dup ⟨2, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3886 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3886 =
+        Artifact.submissionArtifact.instructionPC 3885 + (YulEvmCompiler.Instr.op (.Dup ⟨2, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3885 _ (by rfl)
     _ = 5173 := by rw [fixedPC3917]; rfl
 
-@[simp] theorem fixedPC3919 : Artifact.submissionArtifact.instructionPC 3888 = 5174 := by
+@[simp] theorem fixedPC3919 : Artifact.submissionArtifact.instructionPC 3887 = 5174 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3888 =
-        Artifact.submissionArtifact.instructionPC 3887 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3887 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3887 =
+        Artifact.submissionArtifact.instructionPC 3886 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3886 _ (by rfl)
     _ = 5174 := by rw [fixedPC3918]; rfl
 
-@[simp] theorem fixedPC3920 : Artifact.submissionArtifact.instructionPC 3889 = 5175 := by
+@[simp] theorem fixedPC3920 : Artifact.submissionArtifact.instructionPC 3888 = 5175 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3889 =
-        Artifact.submissionArtifact.instructionPC 3888 + (YulEvmCompiler.Instr.op .SUB).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3888 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3888 =
+        Artifact.submissionArtifact.instructionPC 3887 + (YulEvmCompiler.Instr.op .SUB).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3887 _ (by rfl)
     _ = 5175 := by rw [fixedPC3919]; rfl
 
-@[simp] theorem fixedPC3921 : Artifact.submissionArtifact.instructionPC 3890 = 5176 := by
+@[simp] theorem fixedPC3921 : Artifact.submissionArtifact.instructionPC 3889 = 5176 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3890 =
-        Artifact.submissionArtifact.instructionPC 3889 + (YulEvmCompiler.Instr.op (.Swap ⟨2, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3889 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3889 =
+        Artifact.submissionArtifact.instructionPC 3888 + (YulEvmCompiler.Instr.op (.Swap ⟨2, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3888 _ (by rfl)
     _ = 5176 := by rw [fixedPC3920]; rfl
 
-@[simp] theorem fixedPC3922 : Artifact.submissionArtifact.instructionPC 3891 = 5177 := by
+@[simp] theorem fixedPC3922 : Artifact.submissionArtifact.instructionPC 3890 = 5177 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3891 =
-        Artifact.submissionArtifact.instructionPC 3890 + (YulEvmCompiler.Instr.op .GT).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3890 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3890 =
+        Artifact.submissionArtifact.instructionPC 3889 + (YulEvmCompiler.Instr.op .GT).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3889 _ (by rfl)
     _ = 5177 := by rw [fixedPC3921]; rfl
 
-@[simp] theorem fixedPC3923 : Artifact.submissionArtifact.instructionPC 3892 = 5178 := by
+@[simp] theorem fixedPC3923 : Artifact.submissionArtifact.instructionPC 3891 = 5178 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3892 =
-        Artifact.submissionArtifact.instructionPC 3891 + (YulEvmCompiler.Instr.op .OR).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3891 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3891 =
+        Artifact.submissionArtifact.instructionPC 3890 + (YulEvmCompiler.Instr.op .OR).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3890 _ (by rfl)
     _ = 5178 := by rw [fixedPC3922]; rfl
 
-@[simp] theorem fixedPC3924 : Artifact.submissionArtifact.instructionPC 3893 = 5179 := by
+@[simp] theorem fixedPC3924 : Artifact.submissionArtifact.instructionPC 3892 = 5179 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3893 =
-        Artifact.submissionArtifact.instructionPC 3892 + (YulEvmCompiler.Instr.op (.Swap ⟨0, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3892 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3892 =
+        Artifact.submissionArtifact.instructionPC 3891 + (YulEvmCompiler.Instr.op (.Swap ⟨0, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3891 _ (by rfl)
     _ = 5179 := by rw [fixedPC3923]; rfl
 
-@[simp] theorem fixedPC3925 : Artifact.submissionArtifact.instructionPC 3894 = 5182 := by
+@[simp] theorem fixedPC3925 : Artifact.submissionArtifact.instructionPC 3893 = 5182 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3894 =
-        Artifact.submissionArtifact.instructionPC 3893 + (YulEvmCompiler.Instr.push 2 7200).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3893 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3893 =
+        Artifact.submissionArtifact.instructionPC 3892 + (YulEvmCompiler.Instr.push 2 7200).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3892 _ (by rfl)
     _ = 5182 := by rw [fixedPC3924]; rfl
 
-@[simp] theorem fixedPC3926 : Artifact.submissionArtifact.instructionPC 3895 = 5183 := by
+@[simp] theorem fixedPC3926 : Artifact.submissionArtifact.instructionPC 3894 = 5183 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3895 =
-        Artifact.submissionArtifact.instructionPC 3894 + (YulEvmCompiler.Instr.op .MSTORE).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3894 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3894 =
+        Artifact.submissionArtifact.instructionPC 3893 + (YulEvmCompiler.Instr.op .MSTORE).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3893 _ (by rfl)
     _ = 5183 := by rw [fixedPC3925]; rfl
 
-@[simp] theorem fixedPC3927 : Artifact.submissionArtifact.instructionPC 3896 = 5186 := by
+@[simp] theorem fixedPC3927 : Artifact.submissionArtifact.instructionPC 3895 = 5186 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3896 =
-        Artifact.submissionArtifact.instructionPC 3895 + (YulEvmCompiler.Instr.push 2 8256).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3895 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3895 =
+        Artifact.submissionArtifact.instructionPC 3894 + (YulEvmCompiler.Instr.push 2 8256).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3894 _ (by rfl)
     _ = 5186 := by rw [fixedPC3926]; rfl
 
-@[simp] theorem fixedPC3928 : Artifact.submissionArtifact.instructionPC 3897 = 5187 := by
+@[simp] theorem fixedPC3928 : Artifact.submissionArtifact.instructionPC 3896 = 5187 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3897 =
-        Artifact.submissionArtifact.instructionPC 3896 + (YulEvmCompiler.Instr.op .MLOAD).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3896 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3896 =
+        Artifact.submissionArtifact.instructionPC 3895 + (YulEvmCompiler.Instr.op .MLOAD).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3895 _ (by rfl)
     _ = 5187 := by rw [fixedPC3927]; rfl
 
-@[simp] theorem fixedPC3929 : Artifact.submissionArtifact.instructionPC 3898 = 5188 := by
+@[simp] theorem fixedPC3929 : Artifact.submissionArtifact.instructionPC 3897 = 5188 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3898 =
-        Artifact.submissionArtifact.instructionPC 3897 + (YulEvmCompiler.Instr.push 0 0).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3897 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3897 =
+        Artifact.submissionArtifact.instructionPC 3896 + (YulEvmCompiler.Instr.push 0 0).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3896 _ (by rfl)
     _ = 5188 := by rw [fixedPC3928]; rfl
 
-@[simp] theorem fixedPC3930 : Artifact.submissionArtifact.instructionPC 3899 = 5189 := by
+@[simp] theorem fixedPC3930 : Artifact.submissionArtifact.instructionPC 3898 = 5189 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3899 =
-        Artifact.submissionArtifact.instructionPC 3898 + (YulEvmCompiler.Instr.op .MLOAD).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3898 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3898 =
+        Artifact.submissionArtifact.instructionPC 3897 + (YulEvmCompiler.Instr.op .MLOAD).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3897 _ (by rfl)
     _ = 5189 := by rw [fixedPC3929]; rfl
 
-@[simp] theorem fixedPC3931 : Artifact.submissionArtifact.instructionPC 3900 = 5190 := by
+@[simp] theorem fixedPC3931 : Artifact.submissionArtifact.instructionPC 3899 = 5190 := by
+  calc
+    Artifact.submissionArtifact.instructionPC 3899 =
+        Artifact.submissionArtifact.instructionPC 3898 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3898 _ (by rfl)
+    _ = 5190 := by rw [fixedPC3930]; rfl
+
+@[simp] theorem fixedPC3932 : Artifact.submissionArtifact.instructionPC 3900 = 5191 := by
   calc
     Artifact.submissionArtifact.instructionPC 3900 =
         Artifact.submissionArtifact.instructionPC 3899 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3899 _ (by rfl)
-    _ = 5190 := by rw [fixedPC3930]; rfl
-
-@[simp] theorem fixedPC3932 : Artifact.submissionArtifact.instructionPC 3901 = 5191 := by
-  calc
-    Artifact.submissionArtifact.instructionPC 3901 =
-        Artifact.submissionArtifact.instructionPC 3900 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3900 _ (by rfl)
     _ = 5191 := by rw [fixedPC3931]; rfl
 
-@[simp] theorem fixedPC3933 : Artifact.submissionArtifact.instructionPC 3902 = 5192 := by
+@[simp] theorem fixedPC3933 : Artifact.submissionArtifact.instructionPC 3901 = 5192 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3902 =
-        Artifact.submissionArtifact.instructionPC 3901 + (YulEvmCompiler.Instr.op .GT).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3901 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3901 =
+        Artifact.submissionArtifact.instructionPC 3900 + (YulEvmCompiler.Instr.op .GT).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3900 _ (by rfl)
     _ = 5192 := by rw [fixedPC3932]; rfl
 
-@[simp] theorem fixedPC3934 : Artifact.submissionArtifact.instructionPC 3903 = 5193 := by
+@[simp] theorem fixedPC3934 : Artifact.submissionArtifact.instructionPC 3902 = 5193 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3903 =
-        Artifact.submissionArtifact.instructionPC 3902 + (YulEvmCompiler.Instr.op (.Swap ⟨1, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3902 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3902 =
+        Artifact.submissionArtifact.instructionPC 3901 + (YulEvmCompiler.Instr.op (.Swap ⟨1, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3901 _ (by rfl)
     _ = 5193 := by rw [fixedPC3933]; rfl
 
-@[simp] theorem fixedPC3935 : Artifact.submissionArtifact.instructionPC 3904 = 5194 := by
+@[simp] theorem fixedPC3935 : Artifact.submissionArtifact.instructionPC 3903 = 5194 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3904 =
-        Artifact.submissionArtifact.instructionPC 3903 + (YulEvmCompiler.Instr.op .SUB).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3903 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3903 =
+        Artifact.submissionArtifact.instructionPC 3902 + (YulEvmCompiler.Instr.op .SUB).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3902 _ (by rfl)
     _ = 5194 := by rw [fixedPC3934]; rfl
 
-@[simp] theorem fixedPC3936 : Artifact.submissionArtifact.instructionPC 3905 = 5195 := by
+@[simp] theorem fixedPC3936 : Artifact.submissionArtifact.instructionPC 3904 = 5195 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3905 =
-        Artifact.submissionArtifact.instructionPC 3904 + (YulEvmCompiler.Instr.op (.Dup ⟨2, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3904 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3904 =
+        Artifact.submissionArtifact.instructionPC 3903 + (YulEvmCompiler.Instr.op (.Dup ⟨2, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3903 _ (by rfl)
     _ = 5195 := by rw [fixedPC3935]; rfl
 
-@[simp] theorem fixedPC3937 : Artifact.submissionArtifact.instructionPC 3906 = 5196 := by
+@[simp] theorem fixedPC3937 : Artifact.submissionArtifact.instructionPC 3905 = 5196 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3906 =
-        Artifact.submissionArtifact.instructionPC 3905 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3905 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3905 =
+        Artifact.submissionArtifact.instructionPC 3904 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3904 _ (by rfl)
     _ = 5196 := by rw [fixedPC3936]; rfl
 
-@[simp] theorem fixedPC3938 : Artifact.submissionArtifact.instructionPC 3907 = 5197 := by
+@[simp] theorem fixedPC3938 : Artifact.submissionArtifact.instructionPC 3906 = 5197 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3907 =
-        Artifact.submissionArtifact.instructionPC 3906 + (YulEvmCompiler.Instr.op .SUB).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3906 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3906 =
+        Artifact.submissionArtifact.instructionPC 3905 + (YulEvmCompiler.Instr.op .SUB).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3905 _ (by rfl)
     _ = 5197 := by rw [fixedPC3937]; rfl
 
-@[simp] theorem fixedPC3939 : Artifact.submissionArtifact.instructionPC 3908 = 5198 := by
+@[simp] theorem fixedPC3939 : Artifact.submissionArtifact.instructionPC 3907 = 5198 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3908 =
-        Artifact.submissionArtifact.instructionPC 3907 + (YulEvmCompiler.Instr.op (.Swap ⟨2, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3907 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3907 =
+        Artifact.submissionArtifact.instructionPC 3906 + (YulEvmCompiler.Instr.op (.Swap ⟨2, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3906 _ (by rfl)
     _ = 5198 := by rw [fixedPC3938]; rfl
 
-@[simp] theorem fixedPC3940 : Artifact.submissionArtifact.instructionPC 3909 = 5199 := by
+@[simp] theorem fixedPC3940 : Artifact.submissionArtifact.instructionPC 3908 = 5199 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3909 =
-        Artifact.submissionArtifact.instructionPC 3908 + (YulEvmCompiler.Instr.op .GT).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3908 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3908 =
+        Artifact.submissionArtifact.instructionPC 3907 + (YulEvmCompiler.Instr.op .GT).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3907 _ (by rfl)
     _ = 5199 := by rw [fixedPC3939]; rfl
 
-@[simp] theorem fixedPC3941 : Artifact.submissionArtifact.instructionPC 3910 = 5200 := by
+@[simp] theorem fixedPC3941 : Artifact.submissionArtifact.instructionPC 3909 = 5200 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3910 =
-        Artifact.submissionArtifact.instructionPC 3909 + (YulEvmCompiler.Instr.op .OR).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3909 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3909 =
+        Artifact.submissionArtifact.instructionPC 3908 + (YulEvmCompiler.Instr.op .OR).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3908 _ (by rfl)
     _ = 5200 := by rw [fixedPC3940]; rfl
 
-@[simp] theorem fixedPC3942 : Artifact.submissionArtifact.instructionPC 3911 = 5201 := by
+@[simp] theorem fixedPC3942 : Artifact.submissionArtifact.instructionPC 3910 = 5201 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3911 =
-        Artifact.submissionArtifact.instructionPC 3910 + (YulEvmCompiler.Instr.op (.Swap ⟨0, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3910 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3910 =
+        Artifact.submissionArtifact.instructionPC 3909 + (YulEvmCompiler.Instr.op (.Swap ⟨0, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3909 _ (by rfl)
     _ = 5201 := by rw [fixedPC3941]; rfl
 
-@[simp] theorem fixedPC3943 : Artifact.submissionArtifact.instructionPC 3912 = 5204 := by
+@[simp] theorem fixedPC3943 : Artifact.submissionArtifact.instructionPC 3911 = 5204 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3912 =
-        Artifact.submissionArtifact.instructionPC 3911 + (YulEvmCompiler.Instr.push 2 7168).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3911 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3911 =
+        Artifact.submissionArtifact.instructionPC 3910 + (YulEvmCompiler.Instr.push 2 7168).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3910 _ (by rfl)
     _ = 5204 := by rw [fixedPC3942]; rfl
 
-@[simp] theorem fixedPC3944 : Artifact.submissionArtifact.instructionPC 3913 = 5205 := by
+@[simp] theorem fixedPC3944 : Artifact.submissionArtifact.instructionPC 3912 = 5205 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3913 =
-        Artifact.submissionArtifact.instructionPC 3912 + (YulEvmCompiler.Instr.op .MSTORE).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3912 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3912 =
+        Artifact.submissionArtifact.instructionPC 3911 + (YulEvmCompiler.Instr.op .MSTORE).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3911 _ (by rfl)
     _ = 5205 := by rw [fixedPC3943]; rfl
 
-@[simp] theorem fixedPC3945 : Artifact.submissionArtifact.instructionPC 3914 = 5206 := by
+@[simp] theorem fixedPC3945 : Artifact.submissionArtifact.instructionPC 3913 = 5206 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3914 =
-        Artifact.submissionArtifact.instructionPC 3913 + (YulEvmCompiler.Instr.op .ISZERO).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3913 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3913 =
+        Artifact.submissionArtifact.instructionPC 3912 + (YulEvmCompiler.Instr.op .ISZERO).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3912 _ (by rfl)
     _ = 5206 := by rw [fixedPC3944]; rfl
 
-@[simp] theorem fixedPC3946 : Artifact.submissionArtifact.instructionPC 3915 = 5209 := by
+@[simp] theorem fixedPC3946 : Artifact.submissionArtifact.instructionPC 3914 = 5209 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3915 =
-        Artifact.submissionArtifact.instructionPC 3914 + (YulEvmCompiler.Instr.push 2 8224).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3914 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3914 =
+        Artifact.submissionArtifact.instructionPC 3913 + (YulEvmCompiler.Instr.push 2 8224).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3913 _ (by rfl)
     _ = 5209 := by rw [fixedPC3945]; rfl
 
-@[simp] theorem fixedPC3947 : Artifact.submissionArtifact.instructionPC 3916 = 5210 := by
+@[simp] theorem fixedPC3947 : Artifact.submissionArtifact.instructionPC 3915 = 5210 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3916 =
-        Artifact.submissionArtifact.instructionPC 3915 + (YulEvmCompiler.Instr.op .MLOAD).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3915 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3915 =
+        Artifact.submissionArtifact.instructionPC 3914 + (YulEvmCompiler.Instr.op .MLOAD).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3914 _ (by rfl)
     _ = 5210 := by rw [fixedPC3946]; rfl
 
-@[simp] theorem fixedPC3948 : Artifact.submissionArtifact.instructionPC 3917 = 5211 := by
+@[simp] theorem fixedPC3948 : Artifact.submissionArtifact.instructionPC 3916 = 5211 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3917 =
-        Artifact.submissionArtifact.instructionPC 3916 + (YulEvmCompiler.Instr.op .OR).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3916 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3916 =
+        Artifact.submissionArtifact.instructionPC 3915 + (YulEvmCompiler.Instr.op .OR).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3915 _ (by rfl)
     _ = 5211 := by rw [fixedPC3947]; rfl
 
-@[simp] theorem fixedPC3949 : Artifact.submissionArtifact.instructionPC 3929 = 5244 := by
+@[simp] theorem fixedPC3949 : Artifact.submissionArtifact.instructionPC 3928 = 5244 := by
   decide
 
-@[simp] theorem fixedPC3950 : Artifact.submissionArtifact.instructionPC 3929 = 5244 :=
+@[simp] theorem fixedPC3950 : Artifact.submissionArtifact.instructionPC 3928 = 5244 :=
   fixedPC3949
 
-@[simp] theorem fixedPC3951 : Artifact.submissionArtifact.instructionPC 3930 = 5245 := by
+@[simp] theorem fixedPC3951 : Artifact.submissionArtifact.instructionPC 3929 = 5245 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3930 =
-        Artifact.submissionArtifact.instructionPC 3929 + (YulEvmCompiler.Instr.op .MUL).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3929 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3929 =
+        Artifact.submissionArtifact.instructionPC 3928 + (YulEvmCompiler.Instr.op .MUL).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3928 _ (by rfl)
     _ = 5245 := by rw [fixedPC3950]; rfl
 
-@[simp] theorem fixedPC3952 : Artifact.submissionArtifact.instructionPC 3931 = 5248 := by
+@[simp] theorem fixedPC3952 : Artifact.submissionArtifact.instructionPC 3930 = 5248 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3931 =
-        Artifact.submissionArtifact.instructionPC 3930 + (YulEvmCompiler.Instr.push 2 8256).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3930 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3930 =
+        Artifact.submissionArtifact.instructionPC 3929 + (YulEvmCompiler.Instr.push 2 8256).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3929 _ (by rfl)
     _ = 5248 := by rw [fixedPC3951]; rfl
 
-@[simp] theorem fixedPC3953 : Artifact.submissionArtifact.instructionPC 3932 = 5249 := by
+@[simp] theorem fixedPC3953 : Artifact.submissionArtifact.instructionPC 3931 = 5249 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3932 =
-        Artifact.submissionArtifact.instructionPC 3931 + (YulEvmCompiler.Instr.op .ADD).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3931 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3931 =
+        Artifact.submissionArtifact.instructionPC 3930 + (YulEvmCompiler.Instr.op .ADD).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3930 _ (by rfl)
     _ = 5249 := by rw [fixedPC3952]; rfl
 
-@[simp] theorem fixedPC3954 : Artifact.submissionArtifact.instructionPC 3933 = 5252 := by
+@[simp] theorem fixedPC3954 : Artifact.submissionArtifact.instructionPC 3932 = 5252 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3933 =
-        Artifact.submissionArtifact.instructionPC 3932 + (YulEvmCompiler.Instr.push 2 9344).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3932 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3932 =
+        Artifact.submissionArtifact.instructionPC 3931 + (YulEvmCompiler.Instr.push 2 9344).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3931 _ (by rfl)
     _ = 5252 := by rw [fixedPC3953]; rfl
 
-@[simp] theorem fixedPC3955 : Artifact.submissionArtifact.instructionPC 3934 = 5253 := by
+@[simp] theorem fixedPC3955 : Artifact.submissionArtifact.instructionPC 3933 = 5253 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3934 =
-        Artifact.submissionArtifact.instructionPC 3933 + (YulEvmCompiler.Instr.op .MLOAD).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3933 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3933 =
+        Artifact.submissionArtifact.instructionPC 3932 + (YulEvmCompiler.Instr.op .MLOAD).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3932 _ (by rfl)
     _ = 5253 := by rw [fixedPC3954]; rfl
 
-@[simp] theorem fixedPC3956 : Artifact.submissionArtifact.instructionPC 3935 = 5254 := by
+@[simp] theorem fixedPC3956 : Artifact.submissionArtifact.instructionPC 3934 = 5254 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3935 =
-        Artifact.submissionArtifact.instructionPC 3934 + (YulEvmCompiler.Instr.op (.Swap ⟨1, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3934 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3934 =
+        Artifact.submissionArtifact.instructionPC 3933 + (YulEvmCompiler.Instr.op (.Swap ⟨1, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3933 _ (by rfl)
     _ = 5254 := by rw [fixedPC3955]; rfl
 
-@[simp] theorem fixedPC3957 : Artifact.submissionArtifact.instructionPC 3936 = 5255 := by
+@[simp] theorem fixedPC3957 : Artifact.submissionArtifact.instructionPC 3935 = 5255 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3936 =
-        Artifact.submissionArtifact.instructionPC 3935 + (YulEvmCompiler.Instr.op .MCOPY).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3935 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3935 =
+        Artifact.submissionArtifact.instructionPC 3934 + (YulEvmCompiler.Instr.op .MCOPY).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3934 _ (by rfl)
     _ = 5255 := by rw [fixedPC3956]; rfl
 
-@[simp] theorem fixedPC3958 : Artifact.submissionArtifact.instructionPC 3937 = 5256 := by
+@[simp] theorem fixedPC3958 : Artifact.submissionArtifact.instructionPC 3936 = 5256 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3937 =
-        Artifact.submissionArtifact.instructionPC 3936 + (YulEvmCompiler.Instr.op .JUMP).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3936 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3936 =
+        Artifact.submissionArtifact.instructionPC 3935 + (YulEvmCompiler.Instr.op .JUMP).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3935 _ (by rfl)
     _ = 5256 := by rw [fixedPC3957]; rfl
 
 @[simp] theorem fixedJump5224 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5256 = true := by
-  simpa only [Artifact.instructionPC, fixedPC3958] using Artifact.isValidJumpDest_index 3937 (by rfl)
+  simpa only [Artifact.instructionPC, fixedPC3958] using Artifact.isValidJumpDest_index 3936 (by rfl)
 
-@[simp] theorem fixedPC3959 : Artifact.submissionArtifact.instructionPC 3938 = 5257 := by
+@[simp] theorem fixedPC3959 : Artifact.submissionArtifact.instructionPC 3937 = 5257 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3938 =
-        Artifact.submissionArtifact.instructionPC 3937 + (YulEvmCompiler.Instr.op .JUMPDEST).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3937 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3937 =
+        Artifact.submissionArtifact.instructionPC 3936 + (YulEvmCompiler.Instr.op .JUMPDEST).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3936 _ (by rfl)
     _ = 5257 := by rw [fixedPC3958]; rfl
 
-@[simp] theorem fixedPC3960 : Artifact.submissionArtifact.instructionPC 3939 = 5258 := by
+@[simp] theorem fixedPC3960 : Artifact.submissionArtifact.instructionPC 3938 = 5258 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3939 =
-        Artifact.submissionArtifact.instructionPC 3938 + (YulEvmCompiler.Instr.push 0 0).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3938 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3938 =
+        Artifact.submissionArtifact.instructionPC 3937 + (YulEvmCompiler.Instr.push 0 0).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3937 _ (by rfl)
     _ = 5258 := by rw [fixedPC3959]; rfl
 
-@[simp] theorem fixedPC3961 : Artifact.submissionArtifact.instructionPC 3940 = 5259 := by
+@[simp] theorem fixedPC3961 : Artifact.submissionArtifact.instructionPC 3939 = 5259 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3940 =
-        Artifact.submissionArtifact.instructionPC 3939 + (YulEvmCompiler.Instr.op .CALLDATALOAD).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3939 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3939 =
+        Artifact.submissionArtifact.instructionPC 3938 + (YulEvmCompiler.Instr.op .CALLDATALOAD).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3938 _ (by rfl)
     _ = 5259 := by rw [fixedPC3960]; rfl
 
-@[simp] theorem fixedPC3962 : Artifact.submissionArtifact.instructionPC 3941 = 5261 := by
+@[simp] theorem fixedPC3962 : Artifact.submissionArtifact.instructionPC 3940 = 5261 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3941 =
-        Artifact.submissionArtifact.instructionPC 3940 + (YulEvmCompiler.Instr.push 1 32).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3940 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3940 =
+        Artifact.submissionArtifact.instructionPC 3939 + (YulEvmCompiler.Instr.push 1 32).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3939 _ (by rfl)
     _ = 5261 := by rw [fixedPC3961]; rfl
 
-@[simp] theorem fixedPC3963 : Artifact.submissionArtifact.instructionPC 3942 = 5262 := by
+@[simp] theorem fixedPC3963 : Artifact.submissionArtifact.instructionPC 3941 = 5262 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3942 =
-        Artifact.submissionArtifact.instructionPC 3941 + (YulEvmCompiler.Instr.op .CALLDATALOAD).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3941 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3941 =
+        Artifact.submissionArtifact.instructionPC 3940 + (YulEvmCompiler.Instr.op .CALLDATALOAD).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3940 _ (by rfl)
     _ = 5262 := by rw [fixedPC3962]; rfl
 
-@[simp] theorem fixedPC3964 : Artifact.submissionArtifact.instructionPC 3943 = 5264 := by
+@[simp] theorem fixedPC3964 : Artifact.submissionArtifact.instructionPC 3942 = 5264 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3943 =
-        Artifact.submissionArtifact.instructionPC 3942 + (YulEvmCompiler.Instr.push 1 64).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3942 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3942 =
+        Artifact.submissionArtifact.instructionPC 3941 + (YulEvmCompiler.Instr.push 1 64).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3941 _ (by rfl)
     _ = 5264 := by rw [fixedPC3963]; rfl
 
-@[simp] theorem fixedPC3965 : Artifact.submissionArtifact.instructionPC 3944 = 5265 := by
+@[simp] theorem fixedPC3965 : Artifact.submissionArtifact.instructionPC 3943 = 5265 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3944 =
-        Artifact.submissionArtifact.instructionPC 3943 + (YulEvmCompiler.Instr.op .CALLDATALOAD).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3943 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3943 =
+        Artifact.submissionArtifact.instructionPC 3942 + (YulEvmCompiler.Instr.op .CALLDATALOAD).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3942 _ (by rfl)
     _ = 5265 := by rw [fixedPC3964]; rfl
 
-@[simp] theorem fixedPC3966 : Artifact.submissionArtifact.instructionPC 3945 = 5267 := by
+@[simp] theorem fixedPC3966 : Artifact.submissionArtifact.instructionPC 3944 = 5267 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3945 =
-        Artifact.submissionArtifact.instructionPC 3944 + (YulEvmCompiler.Instr.push 1 32).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3944 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3944 =
+        Artifact.submissionArtifact.instructionPC 3943 + (YulEvmCompiler.Instr.push 1 32).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3943 _ (by rfl)
     _ = 5267 := by rw [fixedPC3965]; rfl
 
-@[simp] theorem fixedPC3967 : Artifact.submissionArtifact.instructionPC 3946 = 5268 := by
+@[simp] theorem fixedPC3967 : Artifact.submissionArtifact.instructionPC 3945 = 5268 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3946 =
-        Artifact.submissionArtifact.instructionPC 3945 + (YulEvmCompiler.Instr.op (.Dup ⟨3, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3945 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3945 =
+        Artifact.submissionArtifact.instructionPC 3944 + (YulEvmCompiler.Instr.op (.Dup ⟨3, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3944 _ (by rfl)
     _ = 5268 := by rw [fixedPC3966]; rfl
 
-@[simp] theorem fixedPC3968 : Artifact.submissionArtifact.instructionPC 3947 = 5269 := by
+@[simp] theorem fixedPC3968 : Artifact.submissionArtifact.instructionPC 3946 = 5269 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3947 =
-        Artifact.submissionArtifact.instructionPC 3946 + (YulEvmCompiler.Instr.op .GT).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3946 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3946 =
+        Artifact.submissionArtifact.instructionPC 3945 + (YulEvmCompiler.Instr.op .GT).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3945 _ (by rfl)
     _ = 5269 := by rw [fixedPC3967]; rfl
 
-@[simp] theorem fixedPC3969 : Artifact.submissionArtifact.instructionPC 3948 = 5270 := by
+@[simp] theorem fixedPC3969 : Artifact.submissionArtifact.instructionPC 3947 = 5270 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3948 =
-        Artifact.submissionArtifact.instructionPC 3947 + (YulEvmCompiler.Instr.op (.Dup ⟨2, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3947 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3947 =
+        Artifact.submissionArtifact.instructionPC 3946 + (YulEvmCompiler.Instr.op (.Dup ⟨2, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3946 _ (by rfl)
     _ = 5270 := by rw [fixedPC3968]; rfl
 
-@[simp] theorem fixedPC3970 : Artifact.submissionArtifact.instructionPC 3949 = 5272 := by
+@[simp] theorem fixedPC3970 : Artifact.submissionArtifact.instructionPC 3948 = 5272 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3949 =
-        Artifact.submissionArtifact.instructionPC 3948 + (YulEvmCompiler.Instr.push 1 32).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3948 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3948 =
+        Artifact.submissionArtifact.instructionPC 3947 + (YulEvmCompiler.Instr.push 1 32).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3947 _ (by rfl)
     _ = 5272 := by rw [fixedPC3969]; rfl
 
-@[simp] theorem fixedPC3971 : Artifact.submissionArtifact.instructionPC 3950 = 5273 := by
+@[simp] theorem fixedPC3971 : Artifact.submissionArtifact.instructionPC 3949 = 5273 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3950 =
-        Artifact.submissionArtifact.instructionPC 3949 + (YulEvmCompiler.Instr.op .XOR).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3949 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3949 =
+        Artifact.submissionArtifact.instructionPC 3948 + (YulEvmCompiler.Instr.op .XOR).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3948 _ (by rfl)
     _ = 5273 := by rw [fixedPC3970]; rfl
 
-@[simp] theorem fixedPC3972 : Artifact.submissionArtifact.instructionPC 3951 = 5274 := by
+@[simp] theorem fixedPC3972 : Artifact.submissionArtifact.instructionPC 3950 = 5274 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3951 =
-        Artifact.submissionArtifact.instructionPC 3950 + (YulEvmCompiler.Instr.op .OR).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3950 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3950 =
+        Artifact.submissionArtifact.instructionPC 3949 + (YulEvmCompiler.Instr.op .OR).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3949 _ (by rfl)
     _ = 5274 := by rw [fixedPC3971]; rfl
 
-@[simp] theorem fixedPC3973 : Artifact.submissionArtifact.instructionPC 3952 = 5275 := by
+@[simp] theorem fixedPC3973 : Artifact.submissionArtifact.instructionPC 3951 = 5275 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3952 =
-        Artifact.submissionArtifact.instructionPC 3951 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3951 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3951 =
+        Artifact.submissionArtifact.instructionPC 3950 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3950 _ (by rfl)
     _ = 5275 := by rw [fixedPC3972]; rfl
 
-@[simp] theorem fixedPC3974 : Artifact.submissionArtifact.instructionPC 3953 = 5277 := by
+@[simp] theorem fixedPC3974 : Artifact.submissionArtifact.instructionPC 3952 = 5277 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3953 =
-        Artifact.submissionArtifact.instructionPC 3952 + (YulEvmCompiler.Instr.push 1 32).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3952 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3952 =
+        Artifact.submissionArtifact.instructionPC 3951 + (YulEvmCompiler.Instr.push 1 32).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3951 _ (by rfl)
     _ = 5277 := by rw [fixedPC3973]; rfl
 
-@[simp] theorem fixedPC3975 : Artifact.submissionArtifact.instructionPC 3954 = 5278 := by
+@[simp] theorem fixedPC3975 : Artifact.submissionArtifact.instructionPC 3953 = 5278 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3954 =
-        Artifact.submissionArtifact.instructionPC 3953 + (YulEvmCompiler.Instr.op .XOR).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3953 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3953 =
+        Artifact.submissionArtifact.instructionPC 3952 + (YulEvmCompiler.Instr.op .XOR).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3952 _ (by rfl)
     _ = 5278 := by rw [fixedPC3974]; rfl
 
-@[simp] theorem fixedPC3976 : Artifact.submissionArtifact.instructionPC 3955 = 5279 := by
+@[simp] theorem fixedPC3976 : Artifact.submissionArtifact.instructionPC 3954 = 5279 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3955 =
-        Artifact.submissionArtifact.instructionPC 3954 + (YulEvmCompiler.Instr.op .OR).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3954 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3954 =
+        Artifact.submissionArtifact.instructionPC 3953 + (YulEvmCompiler.Instr.op .OR).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3953 _ (by rfl)
     _ = 5279 := by rw [fixedPC3975]; rfl
 
-@[simp] theorem fixedPC3977 : Artifact.submissionArtifact.instructionPC 3956 = 5282 := by
+@[simp] theorem fixedPC3977 : Artifact.submissionArtifact.instructionPC 3955 = 5282 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3956 =
-        Artifact.submissionArtifact.instructionPC 3955 + (YulEvmCompiler.Instr.push 2 5304).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3955 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3955 =
+        Artifact.submissionArtifact.instructionPC 3954 + (YulEvmCompiler.Instr.push 2 5304).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3954 _ (by rfl)
     _ = 5282 := by rw [fixedPC3976]; rfl
 
-@[simp] theorem fixedPC3978 : Artifact.submissionArtifact.instructionPC 3957 = 5283 := by
+@[simp] theorem fixedPC3978 : Artifact.submissionArtifact.instructionPC 3956 = 5283 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3957 =
-        Artifact.submissionArtifact.instructionPC 3956 + (YulEvmCompiler.Instr.op .JUMPI).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3956 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3956 =
+        Artifact.submissionArtifact.instructionPC 3955 + (YulEvmCompiler.Instr.op .JUMPI).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3955 _ (by rfl)
     _ = 5283 := by rw [fixedPC3977]; rfl
 
-@[simp] theorem fixedPC3979 : Artifact.submissionArtifact.instructionPC 3958 = 5284 := by
+@[simp] theorem fixedPC3979 : Artifact.submissionArtifact.instructionPC 3957 = 5284 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3958 =
-        Artifact.submissionArtifact.instructionPC 3957 + (YulEvmCompiler.Instr.op (.Dup ⟨2, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3957 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3957 =
+        Artifact.submissionArtifact.instructionPC 3956 + (YulEvmCompiler.Instr.op (.Dup ⟨2, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3956 _ (by rfl)
     _ = 5284 := by rw [fixedPC3978]; rfl
 
-@[simp] theorem fixedPC3980 : Artifact.submissionArtifact.instructionPC 3959 = 5286 := by
+@[simp] theorem fixedPC3980 : Artifact.submissionArtifact.instructionPC 3958 = 5286 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3959 =
-        Artifact.submissionArtifact.instructionPC 3958 + (YulEvmCompiler.Instr.push 1 96).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3958 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3958 =
+        Artifact.submissionArtifact.instructionPC 3957 + (YulEvmCompiler.Instr.push 1 96).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3957 _ (by rfl)
     _ = 5286 := by rw [fixedPC3979]; rfl
 
-@[simp] theorem fixedPC3981 : Artifact.submissionArtifact.instructionPC 3960 = 5287 := by
+@[simp] theorem fixedPC3981 : Artifact.submissionArtifact.instructionPC 3959 = 5287 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3960 =
-        Artifact.submissionArtifact.instructionPC 3959 + (YulEvmCompiler.Instr.op .ADD).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3959 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3959 =
+        Artifact.submissionArtifact.instructionPC 3958 + (YulEvmCompiler.Instr.op .ADD).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3958 _ (by rfl)
     _ = 5287 := by rw [fixedPC3980]; rfl
 
-@[simp] theorem fixedPC3982 : Artifact.submissionArtifact.instructionPC 3961 = 5288 := by
+@[simp] theorem fixedPC3982 : Artifact.submissionArtifact.instructionPC 3960 = 5288 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3961 =
-        Artifact.submissionArtifact.instructionPC 3960 + (YulEvmCompiler.Instr.op (.Dup ⟨2, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3960 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3960 =
+        Artifact.submissionArtifact.instructionPC 3959 + (YulEvmCompiler.Instr.op (.Dup ⟨2, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3959 _ (by rfl)
     _ = 5288 := by rw [fixedPC3981]; rfl
 
-@[simp] theorem fixedPC3983 : Artifact.submissionArtifact.instructionPC 3962 = 5289 := by
+@[simp] theorem fixedPC3983 : Artifact.submissionArtifact.instructionPC 3961 = 5289 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3962 =
-        Artifact.submissionArtifact.instructionPC 3961 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3961 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3961 =
+        Artifact.submissionArtifact.instructionPC 3960 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3960 _ (by rfl)
     _ = 5289 := by rw [fixedPC3982]; rfl
 
-@[simp] theorem fixedPC3984 : Artifact.submissionArtifact.instructionPC 3963 = 5290 := by
+@[simp] theorem fixedPC3984 : Artifact.submissionArtifact.instructionPC 3962 = 5290 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3963 =
-        Artifact.submissionArtifact.instructionPC 3962 + (YulEvmCompiler.Instr.op .ADD).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3962 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3962 =
+        Artifact.submissionArtifact.instructionPC 3961 + (YulEvmCompiler.Instr.op .ADD).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3961 _ (by rfl)
     _ = 5290 := by rw [fixedPC3983]; rfl
 
-@[simp] theorem fixedPC3985 : Artifact.submissionArtifact.instructionPC 3964 = 5293 := by
+@[simp] theorem fixedPC3985 : Artifact.submissionArtifact.instructionPC 3963 = 5291 := by
+  calc
+    Artifact.submissionArtifact.instructionPC 3963 =
+        Artifact.submissionArtifact.instructionPC 3962 + (YulEvmCompiler.Instr.push 0 0).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3962 _ (by rfl)
+    _ = 5291 := by rw [fixedPC3984]; rfl
+
+@[simp] theorem fixedPC3986 : Artifact.submissionArtifact.instructionPC 3964 = 5292 := by
   calc
     Artifact.submissionArtifact.instructionPC 3964 =
-        Artifact.submissionArtifact.instructionPC 3963 + (YulEvmCompiler.Instr.push 2 1186).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3963 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3963 _ (by rfl)
-    _ = 5293 := by rw [fixedPC3984]; rfl
+    _ = 5292 := by rw [fixedPC3985]; rfl
 
-@[simp] theorem fixedPC3986 : Artifact.submissionArtifact.instructionPC 3965 = 5294 := by
+@[simp] theorem fixedPC3987 : Artifact.submissionArtifact.instructionPC 3965 = 5293 := by
   calc
     Artifact.submissionArtifact.instructionPC 3965 =
-        Artifact.submissionArtifact.instructionPC 3964 + (YulEvmCompiler.Instr.op (.Dup ⟨1, by decide⟩)).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3964 + (YulEvmCompiler.Instr.op (.Dup ⟨3, by decide⟩)).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3964 _ (by rfl)
-    _ = 5294 := by rw [fixedPC3985]; rfl
+    _ = 5293 := by rw [fixedPC3986]; rfl
 
-@[simp] theorem fixedPC3987 : Artifact.submissionArtifact.instructionPC 3966 = 5295 := by
+@[simp] theorem fixedPC3988 : Artifact.submissionArtifact.instructionPC 3966 = 5297 := by
   calc
     Artifact.submissionArtifact.instructionPC 3966 =
-        Artifact.submissionArtifact.instructionPC 3965 + (YulEvmCompiler.Instr.op (.Dup ⟨3, by decide⟩)).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3965 + (YulEvmCompiler.Instr.push 3 96).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3965 _ (by rfl)
-    _ = 5295 := by rw [fixedPC3986]; rfl
-
-@[simp] theorem fixedPC3988 : Artifact.submissionArtifact.instructionPC 3967 = 5297 := by
-  calc
-    Artifact.submissionArtifact.instructionPC 3967 =
-        Artifact.submissionArtifact.instructionPC 3966 + (YulEvmCompiler.Instr.push 1 96).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3966 _ (by rfl)
     _ = 5297 := by rw [fixedPC3987]; rfl
 
-@[simp] theorem fixedPC3989 : Artifact.submissionArtifact.instructionPC 3968 = 5298 := by
+@[simp] theorem fixedPC3989 : Artifact.submissionArtifact.instructionPC 3967 = 5298 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3968 =
-        Artifact.submissionArtifact.instructionPC 3967 + (YulEvmCompiler.Instr.op (.Dup ⟨6, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3967 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3967 =
+        Artifact.submissionArtifact.instructionPC 3966 + (YulEvmCompiler.Instr.op (.Dup ⟨6, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3966 _ (by rfl)
     _ = 5298 := by rw [fixedPC3988]; rfl
 
-@[simp] theorem fixedPC3990 : Artifact.submissionArtifact.instructionPC 3969 = 5299 := by
+@[simp] theorem fixedPC3990 : Artifact.submissionArtifact.instructionPC 3968 = 5299 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3969 =
-        Artifact.submissionArtifact.instructionPC 3968 + (YulEvmCompiler.Instr.op (.Dup ⟨8, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3968 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3968 =
+        Artifact.submissionArtifact.instructionPC 3967 + (YulEvmCompiler.Instr.op (.Dup ⟨8, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3967 _ (by rfl)
     _ = 5299 := by rw [fixedPC3989]; rfl
 
-@[simp] theorem fixedPC3991 : Artifact.submissionArtifact.instructionPC 3970 = 5300 := by
+@[simp] theorem fixedPC3991 : Artifact.submissionArtifact.instructionPC 3969 = 5300 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3970 =
-        Artifact.submissionArtifact.instructionPC 3969 + (YulEvmCompiler.Instr.op (.Dup ⟨10, by decide⟩)).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3969 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3969 =
+        Artifact.submissionArtifact.instructionPC 3968 + (YulEvmCompiler.Instr.op (.Dup ⟨10, by decide⟩)).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3968 _ (by rfl)
     _ = 5300 := by rw [fixedPC3990]; rfl
 
-@[simp] theorem fixedPC3992 : Artifact.submissionArtifact.instructionPC 3971 = 5303 := by
+@[simp] theorem fixedPC3992 : Artifact.submissionArtifact.instructionPC 3970 = 5303 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3971 =
-        Artifact.submissionArtifact.instructionPC 3970 + (YulEvmCompiler.Instr.push 2 4888).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3970 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3970 =
+        Artifact.submissionArtifact.instructionPC 3969 + (YulEvmCompiler.Instr.push 2 4888).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3969 _ (by rfl)
     _ = 5303 := by rw [fixedPC3991]; rfl
 
-@[simp] theorem fixedPC3993 : Artifact.submissionArtifact.instructionPC 3972 = 5304 := by
+@[simp] theorem fixedPC3993 : Artifact.submissionArtifact.instructionPC 3971 = 5304 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3972 =
-        Artifact.submissionArtifact.instructionPC 3971 + (YulEvmCompiler.Instr.op .JUMP).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3971 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3971 =
+        Artifact.submissionArtifact.instructionPC 3970 + (YulEvmCompiler.Instr.op .JUMP).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3970 _ (by rfl)
     _ = 5304 := by rw [fixedPC3992]; rfl
 
 @[simp] theorem fixedJump5272 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5304 = true := by
-  simpa only [Artifact.instructionPC, fixedPC3993] using Artifact.isValidJumpDest_index 3972 (by rfl)
+  simpa only [Artifact.instructionPC, fixedPC3993] using Artifact.isValidJumpDest_index 3971 (by rfl)
 
-@[simp] theorem fixedPC3994 : Artifact.submissionArtifact.instructionPC 3973 = 5305 := by
+@[simp] theorem fixedPC3994 : Artifact.submissionArtifact.instructionPC 3972 = 5305 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3973 =
-        Artifact.submissionArtifact.instructionPC 3972 + (YulEvmCompiler.Instr.op .JUMPDEST).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3972 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3972 =
+        Artifact.submissionArtifact.instructionPC 3971 + (YulEvmCompiler.Instr.op .JUMPDEST).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3971 _ (by rfl)
     _ = 5305 := by rw [fixedPC3993]; rfl
 
-@[simp] theorem fixedPC3995 : Artifact.submissionArtifact.instructionPC 3974 = 5306 := by
+@[simp] theorem fixedPC3995 : Artifact.submissionArtifact.instructionPC 3973 = 5306 := by
+  calc
+    Artifact.submissionArtifact.instructionPC 3973 =
+        Artifact.submissionArtifact.instructionPC 3972 + (YulEvmCompiler.Instr.op .POP).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3972 _ (by rfl)
+    _ = 5306 := by rw [fixedPC3994]; rfl
+
+@[simp] theorem fixedPC3996 : Artifact.submissionArtifact.instructionPC 3974 = 5307 := by
   calc
     Artifact.submissionArtifact.instructionPC 3974 =
         Artifact.submissionArtifact.instructionPC 3973 + (YulEvmCompiler.Instr.op .POP).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3973 _ (by rfl)
-    _ = 5306 := by rw [fixedPC3994]; rfl
+    _ = 5307 := by rw [fixedPC3995]; rfl
 
-@[simp] theorem fixedPC3996 : Artifact.submissionArtifact.instructionPC 3975 = 5307 := by
+@[simp] theorem fixedPC3997 : Artifact.submissionArtifact.instructionPC 3975 = 5308 := by
   calc
     Artifact.submissionArtifact.instructionPC 3975 =
         Artifact.submissionArtifact.instructionPC 3974 + (YulEvmCompiler.Instr.op .POP).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3974 _ (by rfl)
-    _ = 5307 := by rw [fixedPC3995]; rfl
-
-@[simp] theorem fixedPC3997 : Artifact.submissionArtifact.instructionPC 3976 = 5308 := by
-  calc
-    Artifact.submissionArtifact.instructionPC 3976 =
-        Artifact.submissionArtifact.instructionPC 3975 + (YulEvmCompiler.Instr.op .POP).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3975 _ (by rfl)
     _ = 5308 := by rw [fixedPC3996]; rfl
 
-@[simp] theorem fixedPC3998 : Artifact.submissionArtifact.instructionPC 3977 = 5311 := by
+@[simp] theorem fixedPC3998 : Artifact.submissionArtifact.instructionPC 3976 = 5311 := by
   calc
-    Artifact.submissionArtifact.instructionPC 3977 =
-        Artifact.submissionArtifact.instructionPC 3976 + (YulEvmCompiler.Instr.push 2 1233).bytes.length :=
-      instructionPC_succ Artifact.submissionArtifact 3976 _ (by rfl)
+    Artifact.submissionArtifact.instructionPC 3976 =
+        Artifact.submissionArtifact.instructionPC 3975 + (YulEvmCompiler.Instr.push 2 1233).bytes.length :=
+      instructionPC_succ Artifact.submissionArtifact 3975 _ (by rfl)
     _ = 5311 := by rw [fixedPC3997]; rfl
 
 @[simp] theorem fixedPC3999 : Artifact.submissionArtifact.instructionPC 2930 = 3877 := by
@@ -2051,15 +2040,15 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem earlyExtraPC2942 : Artifact.submissionArtifact.instructionPC 2942 = 3894 := by rfl
 @[simp] theorem earlyExtraPC2943 : Artifact.submissionArtifact.instructionPC 2943 = 3897 := by rfl
 @[simp] theorem earlyExtraPC2944 : Artifact.submissionArtifact.instructionPC 2944 = 3898 := by rfl
-@[simp] theorem earlyExtraPC3918 : Artifact.submissionArtifact.instructionPC 3918 = 5214 := by rfl
-@[simp] theorem earlyExtraPC3919 : Artifact.submissionArtifact.instructionPC 3919 = 5215 := by rfl
-@[simp] theorem earlyExtraPC3920 : Artifact.submissionArtifact.instructionPC 3920 = 5218 := by rfl
-@[simp] theorem earlyExtraPC3921 : Artifact.submissionArtifact.instructionPC 3921 = 5219 := by rfl
-@[simp] theorem earlyExtraPC3922 : Artifact.submissionArtifact.instructionPC 3922 = 5220 := by rfl
-@[simp] theorem earlyExtraPC3923 : Artifact.submissionArtifact.instructionPC 3923 = 5236 := by rfl
-@[simp] theorem earlyExtraPC3924 : Artifact.submissionArtifact.instructionPC 3924 = 5239 := by rfl
-@[simp] theorem earlyExtraPC3925 : Artifact.submissionArtifact.instructionPC 3925 = 5240 := by rfl
-@[simp] theorem earlyExtraPC3926 : Artifact.submissionArtifact.instructionPC 3926 = 5241 := by rfl
-@[simp] theorem earlyExtraPC3927 : Artifact.submissionArtifact.instructionPC 3927 = 5242 := by rfl
-@[simp] theorem earlyExtraPC3928 : Artifact.submissionArtifact.instructionPC 3928 = 5243 := by rfl
+@[simp] theorem earlyExtraPC3918 : Artifact.submissionArtifact.instructionPC 3917 = 5214 := by rfl
+@[simp] theorem earlyExtraPC3919 : Artifact.submissionArtifact.instructionPC 3918 = 5215 := by rfl
+@[simp] theorem earlyExtraPC3920 : Artifact.submissionArtifact.instructionPC 3919 = 5218 := by rfl
+@[simp] theorem earlyExtraPC3921 : Artifact.submissionArtifact.instructionPC 3920 = 5219 := by rfl
+@[simp] theorem earlyExtraPC3922 : Artifact.submissionArtifact.instructionPC 3921 = 5220 := by rfl
+@[simp] theorem earlyExtraPC3923 : Artifact.submissionArtifact.instructionPC 3922 = 5236 := by rfl
+@[simp] theorem earlyExtraPC3924 : Artifact.submissionArtifact.instructionPC 3923 = 5239 := by rfl
+@[simp] theorem earlyExtraPC3925 : Artifact.submissionArtifact.instructionPC 3924 = 5240 := by rfl
+@[simp] theorem earlyExtraPC3926 : Artifact.submissionArtifact.instructionPC 3925 = 5241 := by rfl
+@[simp] theorem earlyExtraPC3927 : Artifact.submissionArtifact.instructionPC 3926 = 5242 := by rfl
+@[simp] theorem earlyExtraPC3928 : Artifact.submissionArtifact.instructionPC 3927 = 5243 := by rfl
 end Challenge.Modexp.Submission.Proofs.Fast

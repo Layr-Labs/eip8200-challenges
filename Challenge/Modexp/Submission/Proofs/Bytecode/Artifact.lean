@@ -504,7 +504,7 @@ def submissionInstructions : List Instr :=
  .op .BYTE,
  .push 0 0,
  .op .JUMPDEST,
- .push 2 3330,
+ .push 2 3130,
  .op .JUMP,
  .op .JUMPDEST,
  .op .JUMPDEST,
@@ -920,14 +920,14 @@ def submissionInstructions : List Instr :=
  .op .GT,
  .push 2 1187,
  .op .JUMPI,
- .push 2 1186,
+ .push 0 0,
  .op (.Dup { idx := 1 }),
  .op (.Dup { idx := 3 }),
- .push 1 96,
+ .push 3 96,
  .op (.Dup { idx := 6 }),
  .op (.Dup { idx := 8 }),
  .op (.Dup { idx := 10 }),
- .push 2 2525,
+ .push 2 2335,
  .op .JUMP,
  .op .JUMPDEST,
  .op .JUMPDEST,
@@ -2630,7 +2630,7 @@ def submissionInstructions : List Instr :=
  .push 2 3392,
  .op .JUMPI,
  .op .POP,
- .push 2 3436,
+ .push 2 1721,
  .push 2 1024,
  .push 2 1024,
  .push 2 2048,
@@ -3119,7 +3119,7 @@ def submissionInstructions : List Instr :=
  .op .JUMP,
  .op .JUMPDEST,
  .op .POP,
- .push 2 1617,
+ .push 2 3324,
  .op .JUMP,
  .op .JUMPDEST,
  .push 2 9344,
@@ -3861,8 +3861,7 @@ def submissionInstructions : List Instr :=
  .op (.Swap { idx := 0 }),
  .push 2 7296,
  .op .MSTORE,
- .op .JUMPDEST,
- .push 2 8352,
+ .push 3 8352,
  .op .MLOAD,
  .push 1 96,
  .op .MLOAD,
@@ -3985,10 +3984,10 @@ def submissionInstructions : List Instr :=
  .op (.Dup { idx := 2 }),
  .op (.Dup { idx := 1 }),
  .op .ADD,
- .push 2 1186,
+ .push 0 0,
  .op (.Dup { idx := 1 }),
  .op (.Dup { idx := 3 }),
- .push 1 96,
+ .push 3 96,
  .op (.Dup { idx := 6 }),
  .op (.Dup { idx := 8 }),
  .op (.Dup { idx := 10 }),
@@ -4002,7 +4001,7 @@ def submissionInstructions : List Instr :=
  .op .JUMP]
 
 
-theorem submissionInstructions_count : submissionInstructions.length = 3978 := by
+theorem submissionInstructions_count : submissionInstructions.length = 3977 := by
   decide
 
 theorem assemble_submissionInstructions :
