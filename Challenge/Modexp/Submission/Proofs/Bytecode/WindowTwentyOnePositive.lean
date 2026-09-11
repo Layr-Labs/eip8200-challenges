@@ -22,7 +22,7 @@ def modulusOffset (input : ByteArray) : UInt256 :=
 def routeStack (input : ByteArray) : List UInt256 :=
   [UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
    UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
-   exponentOffset input, modulusOffset input, UInt256.ofNat 1186,
+   exponentOffset input, modulusOffset input, UInt256.ofNat 0,
    modulusOffset input, exponentOffset input, UInt256.ofNat (modulusSize input),
    UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)]
 

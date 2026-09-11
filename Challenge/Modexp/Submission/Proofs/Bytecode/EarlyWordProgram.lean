@@ -28,8 +28,8 @@ def offsetsProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .ADD]
 
 def frameProgram : List Instr :=
-  [.push 2 1186, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨3, by decide⟩),
-   .push 1 96, .op (.Dup ⟨6, by decide⟩), .op (.Dup ⟨8, by decide⟩),
+  [.push 0 0, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨3, by decide⟩),
+   .push 3 96, .op (.Dup ⟨6, by decide⟩), .op (.Dup ⟨8, by decide⟩),
    .op (.Dup ⟨10, by decide⟩), .push 2 4812, .op .JUMP]
 
 /-- Fifteen instructions at pc 5251, with the canonical return frame. -/
@@ -133,8 +133,9 @@ theorem run_frame (template : State) (b e m x y : UInt256)
     (hjump : Decode.isValidJumpDest template.executionEnv.code 4812 = true) :
     runInstructions frameProgram (framed template (UInt256.ofNat 4985) [y, x, m, e, b]) =
       some (framed template (UInt256.ofNat 4812)
-        [b, e, m, UInt256.ofNat 96, x, y, UInt256.ofNat 1186, y, x, m, e, b]) := by
-  simp [frameProgram, runInstructions, framed, Stepper.runInstr, hjump,
+        [b, e, m, UInt256.ofNat 96, x, y, UInt256.ofNat 0, y, x, m, e, b]) := by
+  have hzeroRaw : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
+  simp [frameProgram, runInstructions, framed, Stepper.runInstr, hjump, hzeroRaw,
     Word.literal_eq_ofNat, Word.word_toNat_ofNat,
     Word.succ_ofNat_mod, Word.ofNat_add_mod]
 

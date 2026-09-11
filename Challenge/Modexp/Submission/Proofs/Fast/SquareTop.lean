@@ -83,7 +83,7 @@ theorem flag_zero (mem : ByteArray) (c : UInt256) :
 
 /-- The exact shared TOP block, including its common MU cleanup. -/
 def topBlock : Block Artifact.submissionArtifact .Osaka 4461 CarryRowPrograms.middleStore :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3398 24 4461 CarryRowPrograms.middleStore
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3399 24 4461 CarryRowPrograms.middleStore
     (by decide) (by rfl) (by rfl) (by decide)
 
 def firstProgram : List Instr := CarryRowPrograms.middleStore.take 12

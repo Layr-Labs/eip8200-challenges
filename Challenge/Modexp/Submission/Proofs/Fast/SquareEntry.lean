@@ -66,7 +66,7 @@ def gasSteps_header (s : State) (mem : ByteArray) (pa pb n : Nat) (dst ret : UIn
     hread 64 (Or.inl (by decide)), hread 32 (Or.inl (by decide))] using he
 
 def routerBlock : Block Artifact.submissionArtifact .Osaka 4159 SquareRoute.headerProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3140 3 4159 SquareRoute.headerProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3141 3 4159 SquareRoute.headerProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def gasSteps_route (s : State) (mem : ByteArray) (route : UInt256) (rest : List UInt256)
