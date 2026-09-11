@@ -23,7 +23,7 @@ def selectorPath : List Located :=
   [opAt 160 .CALLDATASIZE,
    pushAt 161 1 129,
    opAt 162 .GT,
-   pushAt 163 2 5206,
+   pushAt 163 2 5198,
    opAt 164 .JUMPI]
 
 @[simp] private theorem selectorPC166 :
