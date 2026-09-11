@@ -16,19 +16,26 @@ open PatternedScan PatternedSwar
 @[simp] private theorem cleanupDupPC : Artifact.submissionArtifact.instructionPC 165 = 260 := rfl
 @[simp] private theorem cleanupDest : Decode.isValidJumpDest submissionBytecode 259 = true :=
   Artifact.submissionArtifact.isValidJumpDest_index 164 (by rfl)
-@[simp] private theorem fallbackDest : Decode.isValidJumpDest submissionBytecode 393 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 253 (by rfl)
+@[simp] private theorem fallbackDest : Decode.isValidJumpDest submissionBytecode 268 = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 173 (by rfl)
+
+@[simp] private theorem e4PC164 : Artifact.submissionArtifact.instructionPC 164 = 259 := rfl
+@[simp] private theorem e4PC165 : Artifact.submissionArtifact.instructionPC 165 = 260 := rfl
+@[simp] private theorem e4PC166 : Artifact.submissionArtifact.instructionPC 166 = 261 := rfl
+@[simp] private theorem e4PC167 : Artifact.submissionArtifact.instructionPC 167 = 262 := rfl
+@[simp] private theorem e4PC168 : Artifact.submissionArtifact.instructionPC 168 = 263 := rfl
+@[simp] private theorem e4PC169 : Artifact.submissionArtifact.instructionPC 169 = 264 := rfl
+@[simp] private theorem e4PC170 : Artifact.submissionArtifact.instructionPC 170 = 265 := rfl
+@[simp] private theorem e4PC171 : Artifact.submissionArtifact.instructionPC 171 = 266 := rfl
+@[simp] private theorem e4PC172 : Artifact.submissionArtifact.instructionPC 172 = 267 := rfl
+@[simp] private theorem e4PC173 : Artifact.submissionArtifact.instructionPC 173 = 268 := rfl
 
 def branchPath : List Located :=
   [opAt 159 (.Dup ⟨2, by decide⟩), pushAt 160 2 259, opAt 161 .JUMPI]
 
 def cleanupPath : List Located :=
-  [opAt 164 .JUMPDEST, opAt 165 (.Dup ⟨2, by decide⟩),
-   opAt 166 (.Swap ⟨2, by decide⟩), opAt 167 .POP,
-   opAt 168 (.Swap ⟨1, by decide⟩), opAt 169 (.Swap ⟨6, by decide⟩),
-   opAt 170 .POP, opAt 171 .POP, opAt 172 .POP, opAt 173 .POP,
-   opAt 174 .POP, opAt 175 .POP, opAt 176 .POP,
-   pushAt 177 2 393, opAt 178 .JUMPI]
+  [opAt 164 .JUMPDEST, opAt 165 .POP, opAt 166 .POP, opAt 167 .POP,
+   opAt 168 .POP, opAt 169 .POP, opAt 170 .POP, opAt 171 .POP, opAt 172 .POP]
 
 theorem run_branch (input : ByteArray) (sv ov acc : UInt256) :
     run branchPath (stS input 250 [sv, ov, acc, P7, M, m7, P, m8]) =
@@ -43,11 +50,11 @@ theorem run_branch (input : ByteArray) (sv ov acc : UInt256) :
        Word.word_toNat_ofNat]
 
 theorem run_cleanup (input : ByteArray) (sv ov acc : UInt256)
-    (hc : UInt256.isTrue acc) :
+    (_hc : UInt256.isTrue acc) :
     run cleanupPath (stS input 259 [sv, ov, acc, P7, M, m7, P, m8]) =
       some (fallbackState input) := by
   simp (config := { maxSteps := 400000 })
-    [cleanupPath, opAt, pushAt, stS, fallbackState, atPC, List.exchange, hc,
+    [cleanupPath, opAt, pushAt, stS, fallbackState, atPC, List.exchange,
      Challenge.Ripemd160.initialState_stack,
      Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
      Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod,

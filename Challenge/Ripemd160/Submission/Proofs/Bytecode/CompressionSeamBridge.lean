@@ -47,6 +47,7 @@ structure CompressionRun (input : ByteArray) where
   /-- The first dispatcher execution consumes blocks 0 and 1 together. -/
   double : Bool
   initial : DriverTrace.setupEntry (states 0) input = PaddingTrace.padReturned input
+  positive : 0 < input.size
   code : ∀ i, i ≤ DriverTrace.blockCount input →
     (states i).executionEnv.code = submissionBytecode
   fork : ∀ i, i ≤ DriverTrace.blockCount input →
@@ -83,6 +84,7 @@ def toCompressionSeam (run : CompressionRun input) :
   states := run.states
   double := run.double
   initial := run.initial
+  positive := run.positive
   code := run.code
   fork := run.fork
   running := run.running

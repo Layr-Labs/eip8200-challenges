@@ -25,11 +25,11 @@ open Challenge.Ripemd160 EvmSemantics EvmSemantics.EVM
 
 /-- The five scheduled hash loads the S multiply startup consumes. -/
 def CanonicalHashLoads (memory : ByteArray) : Prop :=
-  (MachineState.readWord memory 32).toNat < 2 ^ 32 ∧
-  (MachineState.readWord memory 64).toNat < 2 ^ 32 ∧
-  (MachineState.readWord memory 96).toNat < 2 ^ 32 ∧
-  (MachineState.readWord memory 128).toNat < 2 ^ 32 ∧
-  (MachineState.readWord memory 160).toNat < 2 ^ 32
+  (MachineState.readWord memory 544).toNat < 2 ^ 32 ∧
+  (MachineState.readWord memory 576).toNat < 2 ^ 32 ∧
+  (MachineState.readWord memory 608).toNat < 2 ^ 32 ∧
+  (MachineState.readWord memory 640).toNat < 2 ^ 32 ∧
+  (MachineState.readWord memory 672).toNat < 2 ^ 32
 
 /-- Scheduled memory preserves the caller's embedded hash. -/
 theorem scheduled_embed (s : State) (input : ByteArray) (i : Nat)
@@ -43,7 +43,7 @@ theorem scheduled_embed (s : State) (input : ByteArray) (i : Nat)
 theorem scheduled_word32 (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState)
     (ctx : StackRunBridge.BlockContext s input i h) :
-    MachineState.readWord (PairedBlockModel.scheduledState s i).memory 32 =
+    MachineState.readWord (PairedBlockModel.scheduledState s i).memory 544 =
       Challenge.EvmProof.Word.ofUInt32 h.h0 :=
   congrArg Compression.EvmHashState.h0 (scheduled_embed s input i h ctx)
 
@@ -51,7 +51,7 @@ theorem scheduled_word32 (s : State) (input : ByteArray) (i : Nat)
 theorem scheduled_word64 (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState)
     (ctx : StackRunBridge.BlockContext s input i h) :
-    MachineState.readWord (PairedBlockModel.scheduledState s i).memory 64 =
+    MachineState.readWord (PairedBlockModel.scheduledState s i).memory 576 =
       Challenge.EvmProof.Word.ofUInt32 h.h1 :=
   congrArg Compression.EvmHashState.h1 (scheduled_embed s input i h ctx)
 
@@ -59,7 +59,7 @@ theorem scheduled_word64 (s : State) (input : ByteArray) (i : Nat)
 theorem scheduled_word96 (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState)
     (ctx : StackRunBridge.BlockContext s input i h) :
-    MachineState.readWord (PairedBlockModel.scheduledState s i).memory 96 =
+    MachineState.readWord (PairedBlockModel.scheduledState s i).memory 608 =
       Challenge.EvmProof.Word.ofUInt32 h.h2 :=
   congrArg Compression.EvmHashState.h2 (scheduled_embed s input i h ctx)
 
@@ -67,7 +67,7 @@ theorem scheduled_word96 (s : State) (input : ByteArray) (i : Nat)
 theorem scheduled_word128 (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState)
     (ctx : StackRunBridge.BlockContext s input i h) :
-    MachineState.readWord (PairedBlockModel.scheduledState s i).memory 128 =
+    MachineState.readWord (PairedBlockModel.scheduledState s i).memory 640 =
       Challenge.EvmProof.Word.ofUInt32 h.h3 :=
   congrArg Compression.EvmHashState.h3 (scheduled_embed s input i h ctx)
 
@@ -75,14 +75,14 @@ theorem scheduled_word128 (s : State) (input : ByteArray) (i : Nat)
 theorem scheduled_word160 (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState)
     (ctx : StackRunBridge.BlockContext s input i h) :
-    MachineState.readWord (PairedBlockModel.scheduledState s i).memory 160 =
+    MachineState.readWord (PairedBlockModel.scheduledState s i).memory 672 =
       Challenge.EvmProof.Word.ofUInt32 h.h4 :=
   congrArg Compression.EvmHashState.h4 (scheduled_embed s input i h ctx)
 
 theorem scheduled_canonical32 (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState)
     (ctx : StackRunBridge.BlockContext s input i h) :
-    (MachineState.readWord (PairedBlockModel.scheduledState s i).memory 32).toNat <
+    (MachineState.readWord (PairedBlockModel.scheduledState s i).memory 544).toNat <
       2 ^ 32 := by
   rw [scheduled_word32 s input i h ctx,
     Challenge.EvmProof.Word.ofUInt32_toNat]
@@ -91,7 +91,7 @@ theorem scheduled_canonical32 (s : State) (input : ByteArray) (i : Nat)
 theorem scheduled_canonical64 (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState)
     (ctx : StackRunBridge.BlockContext s input i h) :
-    (MachineState.readWord (PairedBlockModel.scheduledState s i).memory 64).toNat <
+    (MachineState.readWord (PairedBlockModel.scheduledState s i).memory 576).toNat <
       2 ^ 32 := by
   rw [scheduled_word64 s input i h ctx,
     Challenge.EvmProof.Word.ofUInt32_toNat]
@@ -100,7 +100,7 @@ theorem scheduled_canonical64 (s : State) (input : ByteArray) (i : Nat)
 theorem scheduled_canonical96 (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState)
     (ctx : StackRunBridge.BlockContext s input i h) :
-    (MachineState.readWord (PairedBlockModel.scheduledState s i).memory 96).toNat <
+    (MachineState.readWord (PairedBlockModel.scheduledState s i).memory 608).toNat <
       2 ^ 32 := by
   rw [scheduled_word96 s input i h ctx,
     Challenge.EvmProof.Word.ofUInt32_toNat]
@@ -109,7 +109,7 @@ theorem scheduled_canonical96 (s : State) (input : ByteArray) (i : Nat)
 theorem scheduled_canonical128 (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState)
     (ctx : StackRunBridge.BlockContext s input i h) :
-    (MachineState.readWord (PairedBlockModel.scheduledState s i).memory 128).toNat <
+    (MachineState.readWord (PairedBlockModel.scheduledState s i).memory 640).toNat <
       2 ^ 32 := by
   rw [scheduled_word128 s input i h ctx,
     Challenge.EvmProof.Word.ofUInt32_toNat]
@@ -118,7 +118,7 @@ theorem scheduled_canonical128 (s : State) (input : ByteArray) (i : Nat)
 theorem scheduled_canonical160 (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState)
     (ctx : StackRunBridge.BlockContext s input i h) :
-    (MachineState.readWord (PairedBlockModel.scheduledState s i).memory 160).toNat <
+    (MachineState.readWord (PairedBlockModel.scheduledState s i).memory 672).toNat <
       2 ^ 32 := by
   rw [scheduled_word160 s input i h ctx,
     Challenge.EvmProof.Word.ofUInt32_toNat]
@@ -139,7 +139,7 @@ theorem scheduled_proj32 (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState)
     (ctx : StackRunBridge.BlockContext s input i h) :
     Challenge.EvmProof.Word.toUInt32
-        (MachineState.readWord (PairedBlockModel.scheduledState s i).memory 32) =
+        (MachineState.readWord (PairedBlockModel.scheduledState s i).memory 544) =
       h.h0 := by
   rw [scheduled_word32 s input i h ctx,
     Challenge.EvmProof.Word.toUInt32_ofUInt32]
@@ -148,7 +148,7 @@ theorem scheduled_proj64 (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState)
     (ctx : StackRunBridge.BlockContext s input i h) :
     Challenge.EvmProof.Word.toUInt32
-        (MachineState.readWord (PairedBlockModel.scheduledState s i).memory 64) =
+        (MachineState.readWord (PairedBlockModel.scheduledState s i).memory 576) =
       h.h1 := by
   rw [scheduled_word64 s input i h ctx,
     Challenge.EvmProof.Word.toUInt32_ofUInt32]
@@ -157,7 +157,7 @@ theorem scheduled_proj96 (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState)
     (ctx : StackRunBridge.BlockContext s input i h) :
     Challenge.EvmProof.Word.toUInt32
-        (MachineState.readWord (PairedBlockModel.scheduledState s i).memory 96) =
+        (MachineState.readWord (PairedBlockModel.scheduledState s i).memory 608) =
       h.h2 := by
   rw [scheduled_word96 s input i h ctx,
     Challenge.EvmProof.Word.toUInt32_ofUInt32]
@@ -166,7 +166,7 @@ theorem scheduled_proj128 (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState)
     (ctx : StackRunBridge.BlockContext s input i h) :
     Challenge.EvmProof.Word.toUInt32
-        (MachineState.readWord (PairedBlockModel.scheduledState s i).memory 128) =
+        (MachineState.readWord (PairedBlockModel.scheduledState s i).memory 640) =
       h.h3 := by
   rw [scheduled_word128 s input i h ctx,
     Challenge.EvmProof.Word.toUInt32_ofUInt32]
@@ -175,7 +175,7 @@ theorem scheduled_proj160 (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState)
     (ctx : StackRunBridge.BlockContext s input i h) :
     Challenge.EvmProof.Word.toUInt32
-        (MachineState.readWord (PairedBlockModel.scheduledState s i).memory 160) =
+        (MachineState.readWord (PairedBlockModel.scheduledState s i).memory 672) =
       h.h4 := by
   rw [scheduled_word160 s input i h ctx,
     Challenge.EvmProof.Word.toUInt32_ofUInt32]

@@ -21,14 +21,14 @@ def cacheTemplate : List Instr :=
    .push ⟨5, by decide⟩ factorWord]
 
 def loadTemplate (address : Nat) (dup : Operation.DupOp) : List Instr :=
-  [push1 (UInt256.ofNat address), .op .MLOAD, .op (.Dup dup), .op .AND,
+  [push2 (UInt256.ofNat address), .op .MLOAD, .op (.Dup dup), .op .AND,
    dup1, push1 (UInt256.ofNat 128), .op .SHL, .op .OR]
 
 /-- Exact physical instructions 857..960 of the frozen 5315-byte candidate. -/
 def template : List Instr :=
-  cacheTemplate ++ loadTemplate 160 ⟨4, by decide⟩ ++
-    loadTemplate 128 ⟨5, by decide⟩ ++ loadTemplate 96 ⟨6, by decide⟩ ++
-    loadTemplate 64 ⟨7, by decide⟩ ++ loadTemplate 32 ⟨8, by decide⟩
+  cacheTemplate ++ loadTemplate 672 ⟨4, by decide⟩ ++
+    loadTemplate 640 ⟨5, by decide⟩ ++ loadTemplate 608 ⟨6, by decide⟩ ++
+    loadTemplate 576 ⟨7, by decide⟩ ++ loadTemplate 544 ⟨8, by decide⟩
 
 /-- Arbitrary 256-bit words are explicitly normalized before duplicating lanes. -/
 def packedHash (memory : ByteArray) (address : Nat) : UInt256 :=
@@ -36,12 +36,12 @@ def packedHash (memory : ByteArray) (address : Nat) : UInt256 :=
   UInt256.lor (UInt256.shiftLeft value (UInt256.ofNat 128)) value
 
 def resultStack (memory : ByteArray) (rho : List UInt256) : List UInt256 :=
-  [packedHash memory 32, packedHash memory 64, packedHash memory 96,
-    packedHash memory 128, packedHash memory 160,
+  [packedHash memory 544, packedHash memory 576, packedHash memory 608,
+    packedHash memory 640, packedHash memory 672,
     factorWord, pairWord, upperWord, lowerWord] ++ rho
 
 theorem active_preserved (current : UInt256) (address : Nat)
-    (hcurrent : 23 ≤ current.toNat) (haddress : address ≤ 160) :
+    (hcurrent : 23 ≤ current.toNat) (haddress : address ≤ 672) :
     UInt256.ofNat (MachineState.activeWordsAfter current.toNat address 32) = current := by
   have hwords : (address + 32 - 1) / 32 + 1 ≤ current.toNat := by omega
   simp only [MachineState.activeWordsAfter, if_neg (by decide : (32 : Nat) ≠ 0)]
@@ -52,8 +52,8 @@ theorem active_preserved (current : UInt256) (address : Nat)
 theorem template_length : template.length = 44 := by
   norm_num [template, cacheTemplate, loadTemplate]
 
-theorem template_bytes : (template.map Instr.size).sum = 103 := by
-  norm_num [template, cacheTemplate, loadTemplate, push1, dup1, Instr.size]
+theorem template_bytes : (template.map Instr.size).sum = 108 := by
+  norm_num [template, cacheTemplate, loadTemplate, push1, push2, dup1, Instr.size]
 
 theorem run_template (s : State) (pc : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
@@ -62,10 +62,10 @@ theorem run_template (s : State) (pc : UInt256) (rho : List UInt256)
       some {s with pc := pcAfter pc template, stack := resultStack s.memory rho} := by
   have hcap (n : Nat) (hn : n ≤ 11) : rho.length + n < 1024 := by omega
   have h0 : rho.length < 1024 := by omega
-  have hactiveAt (address : Nat) (haddress : address ≤ 160) :
+  have hactiveAt (address : Nat) (haddress : address ≤ 672) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := active_preserved s.activeWords address hactive haddress
-  simp (discharger := omega) [template, cacheTemplate, loadTemplate, push1, dup1,
+  simp (discharger := omega) [template, cacheTemplate, loadTemplate, push1, push2, dup1,
     packedHash, resultStack, runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, hrun, hcap, h0, Nat.add_assoc,
     List.getElem?_cons_zero, State.activeWordsAfterUInt256, hactiveAt,
@@ -85,7 +85,7 @@ def frozenInstructions : List Instr :=
    .push ⟨20, by decide⟩ (UInt256.ofNat 0xffffffff00000000000000000000000000000000),
    .push ⟨20, by decide⟩ (UInt256.ofNat 0xffffffff000000000000000000000000ffffffff),
    .push ⟨5, by decide⟩ (UInt256.ofNat 0x0100000001),
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0xa0),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x2a0),
    .op .MLOAD,
    .op (.Dup ⟨4, by decide⟩),
    .op .AND,
@@ -93,7 +93,7 @@ def frozenInstructions : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHL,
    .op .OR,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x280),
    .op .MLOAD,
    .op (.Dup ⟨5, by decide⟩),
    .op .AND,
@@ -101,7 +101,7 @@ def frozenInstructions : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHL,
    .op .OR,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x60),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x260),
    .op .MLOAD,
    .op (.Dup ⟨6, by decide⟩),
    .op .AND,
@@ -109,7 +109,7 @@ def frozenInstructions : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHL,
    .op .OR,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x40),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x240),
    .op .MLOAD,
    .op (.Dup ⟨7, by decide⟩),
    .op .AND,
@@ -117,7 +117,7 @@ def frozenInstructions : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHL,
    .op .OR,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x20),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x220),
    .op .MLOAD,
    .op (.Dup ⟨8, by decide⟩),
    .op .AND,
@@ -207,19 +207,19 @@ def combine (memory : ByteArray) (address : Nat) (lower left right : UInt256) : 
   UInt256.land lower (UInt256.add (MachineState.readWord memory address)
     (UInt256.add (UInt256.shiftRight right (UInt256.ofNat 128)) left))
 
-def result0 (memory : ByteArray) (q : Frame) : UInt256 := combine memory 64 q.lower q.c q.d
-def result1 (memory : ByteArray) (q : Frame) : UInt256 := combine memory 96 q.lower q.d q.e
-def result2 (memory : ByteArray) (q : Frame) : UInt256 := combine memory 128 q.lower q.e q.a
-def result3 (memory : ByteArray) (q : Frame) : UInt256 := combine memory 160 q.lower q.a q.b
-def result4 (memory : ByteArray) (q : Frame) : UInt256 := combine memory 32 q.lower q.b q.c
+def result0 (memory : ByteArray) (q : Frame) : UInt256 := combine memory 576 q.lower q.c q.d
+def result1 (memory : ByteArray) (q : Frame) : UInt256 := combine memory 608 q.lower q.d q.e
+def result2 (memory : ByteArray) (q : Frame) : UInt256 := combine memory 640 q.lower q.e q.a
+def result3 (memory : ByteArray) (q : Frame) : UInt256 := combine memory 672 q.lower q.a q.b
+def result4 (memory : ByteArray) (q : Frame) : UInt256 := combine memory 544 q.lower q.b q.c
 
 def writeWord (memory : ByteArray) (address : Nat) (value : UInt256) : ByteArray :=
   MachineState.writeBytes memory (Data.Bytes.natToBytesPadded value.toNat 32) address
 
 def resultMemory (memory : ByteArray) (q : Frame) : ByteArray :=
   writeWord (writeWord (writeWord (writeWord (writeWord memory
-    160 (result4 memory q)) 128 (result3 memory q)) 96 (result2 memory q))
-    64 (result1 memory q)) 32 (result0 memory q)
+    672 (result4 memory q)) 640 (result3 memory q)) 608 (result2 memory q))
+    576 (result1 memory q)) 544 (result0 memory q)
 
 /-- Exact physical bytes5083..5231 (or relocated5068..5153), including the final indirect return. -/
 def template : List Instr :=
@@ -228,7 +228,7 @@ def template : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x40),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x240),
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨9, by decide⟩),
@@ -238,7 +238,7 @@ def template : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x60),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x260),
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨10, by decide⟩),
@@ -248,7 +248,7 @@ def template : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x280),
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨11, by decide⟩),
@@ -258,7 +258,7 @@ def template : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0xa0),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x2a0),
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨12, by decide⟩),
@@ -268,20 +268,20 @@ def template : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x20),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x220),
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨13, by decide⟩),
    .op .AND,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0xa0),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x2a0),
    .op .MSTORE,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x280),
    .op .MSTORE,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x60),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x260),
    .op .MSTORE,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x40),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x240),
    .op .MSTORE,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x20),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x220),
    .op .MSTORE,
    .op .POP,
    .op .POP,
@@ -297,7 +297,7 @@ def template : List Instr :=
 theorem tail_template_length : template.length = 70 := by
   norm_num [template]
 
-theorem tail_template_bytes : (template.map Instr.size).sum = 85 := by
+theorem tail_template_bytes : (template.map Instr.size).sum = 95 := by
   norm_num [template, Instr.size]
 
 theorem run_tail_template (s : State) (pc ret : UInt256) (q : Frame)
@@ -307,7 +307,7 @@ theorem run_tail_template (s : State) (pc ret : UInt256) (q : Frame)
     runInstrSeq template {s with pc := pc, stack := entryStack q ret rho} =
       some {s with pc := ret, stack := rho, memory := resultMemory s.memory q} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
-  have hactiveAt (address : Nat) (haddress : address ≤ 160) :
+  have hactiveAt (address : Nat) (haddress : address ≤ 672) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := PairedStartupTrace.active_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [template, entryStack, combine,
@@ -338,11 +338,11 @@ theorem tail_read_writeWord_disjoint (memory : ByteArray) (readStart writeStart 
   simpa only [YulEvmCompiler.BytesLemmas.natToBytesPadded_size] using hdisjoint
 
 theorem tail_read_results (memory : ByteArray) (q : Frame) :
-    MachineState.readWord (resultMemory memory q) 32 = result0 memory q ∧
-    MachineState.readWord (resultMemory memory q) 64 = result1 memory q ∧
-    MachineState.readWord (resultMemory memory q) 96 = result2 memory q ∧
-    MachineState.readWord (resultMemory memory q) 128 = result3 memory q ∧
-    MachineState.readWord (resultMemory memory q) 160 = result4 memory q := by
+    MachineState.readWord (resultMemory memory q) 544 = result0 memory q ∧
+    MachineState.readWord (resultMemory memory q) 576 = result1 memory q ∧
+    MachineState.readWord (resultMemory memory q) 608 = result2 memory q ∧
+    MachineState.readWord (resultMemory memory q) 640 = result3 memory q ∧
+    MachineState.readWord (resultMemory memory q) 672 = result4 memory q := by
   refine ⟨?_, ?_, ?_, ?_, ?_⟩
   all_goals simp (discharger := omega)
     [resultMemory, tail_read_writeWord, tail_read_writeWord_disjoint]
@@ -356,7 +356,7 @@ theorem tail_readPadded_writeWord_disjoint (memory : ByteArray)
   simpa only [YulEvmCompiler.BytesLemmas.natToBytesPadded_size] using hdisjoint
 
 theorem tail_readPadded_outside (memory : ByteArray) (q : Frame) (address size : Nat)
-    (houtside : address + size ≤ 32 ∨ 192 ≤ address) :
+    (houtside : address + size ≤ 544 ∨ 704 ≤ address) :
     MachineState.readPadded (resultMemory memory q) address size =
       MachineState.readPadded memory address size := by
   simp (discharger := omega) [resultMemory, tail_readPadded_writeWord_disjoint]
@@ -369,7 +369,7 @@ theorem tail_getD_writeWord_outside (memory : ByteArray) (readAt writeAt : Nat)
   rw [if_neg (by omega)]
 
 theorem tail_getD_outside (memory : ByteArray) (q : Frame) (address : Nat)
-    (houtside : address < 32 ∨ 192 ≤ address) :
+    (houtside : address < 544 ∨ 704 ≤ address) :
     (resultMemory memory q)[address]?.getD 0 = memory[address]?.getD 0 := by
   simp (discharger := omega) [resultMemory, tail_getD_writeWord_outside]
 
@@ -380,12 +380,12 @@ theorem tail_writeWord_size (memory : ByteArray) (address : Nat) (value : UInt25
     if_neg (by decide : (32 : Nat) ≠ 0)]
 
 theorem tail_resultMemory_size (memory : ByteArray) (q : Frame) :
-    (resultMemory memory q).size = max memory.size 192 := by
+    (resultMemory memory q).size = max memory.size 704 := by
   simp only [resultMemory, tail_writeWord_size]
   omega
 
 theorem tail_resultMemory_size_of_ge (memory : ByteArray) (q : Frame)
-    (hsize : 192 ≤ memory.size) : (resultMemory memory q).size = memory.size := by
+    (hsize : 704 ≤ memory.size) : (resultMemory memory q).size = memory.size := by
   rw [tail_resultMemory_size, Nat.max_eq_left hsize]
 
 theorem tail_combine_normalized (memory : ByteArray) (address : Nat) (left right : UInt256) :
@@ -423,7 +423,7 @@ def prefixTemplate : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x40),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x240),
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨9, by decide⟩),
@@ -433,7 +433,7 @@ def prefixTemplate : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x60),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x260),
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨10, by decide⟩),
@@ -443,7 +443,7 @@ def prefixTemplate : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x280),
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨11, by decide⟩),
@@ -453,7 +453,7 @@ def prefixTemplate : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0xa0),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x2a0),
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨12, by decide⟩),
@@ -463,20 +463,20 @@ def prefixTemplate : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
    .op .SHR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x20),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x220),
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨13, by decide⟩),
    .op .AND,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0xa0),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x2a0),
    .op .MSTORE,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x80),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x280),
    .op .MSTORE,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x60),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x260),
    .op .MSTORE,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x40),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x240),
    .op .MSTORE,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 0x20),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 0x220),
    .op .MSTORE,
    .op .POP,
    .op .POP,
@@ -500,7 +500,7 @@ theorem run_tail_prefix (s : State) (pc ret : UInt256) (q : Frame)
         stack := ret :: rho
         memory := resultMemory s.memory q} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
-  have hactiveAt (address : Nat) (haddress : address ≤ 160) :
+  have hactiveAt (address : Nat) (haddress : address ≤ 672) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := PairedStartupTrace.active_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [prefixTemplate, entryStack, combine,

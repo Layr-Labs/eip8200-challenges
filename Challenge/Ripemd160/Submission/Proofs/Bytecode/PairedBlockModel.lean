@@ -76,7 +76,8 @@ theorem scheduled_ready (s : State) (input : ByteArray) (i : Nat)
   · intro k hk
     change MachineState.readWord
       (PairedScheduleMemory.normalizedMemory s.memory
-        (PairedScheduleData.extractedWord s.memory (messagePointer i))) (208 + 32 * k) = _
+        (PairedScheduleData.extractedWord s.memory (messagePointer i)))
+        (PairedScheduleMemory.cell k + 16) = _
     rw [PairedScheduleData.read_normalized_extracted_upper _ _ _ hk,
       ← PairedScheduleData.extractedWord_eq_littleWord,
       extracted_words s input i h hfit hi ctx k hk]
@@ -84,12 +85,10 @@ theorem scheduled_ready (s : State) (input : ByteArray) (i : Nat)
 
 theorem scheduled_hashWords (s : State) (i : Nat) :
     PairedBlockMath.hashWords (scheduledState s i).memory = PairedBlockMath.hashWords s.memory := by
-  simp only [scheduledState, PairedBlockMath.hashWords]
-  rw [PairedScheduleMemory.read_normalized_outside _ _ 32 (Or.inl (by decide)),
-    PairedScheduleMemory.read_normalized_outside _ _ 64 (Or.inl (by decide)),
-    PairedScheduleMemory.read_normalized_outside _ _ 96 (Or.inl (by decide)),
-    PairedScheduleMemory.read_normalized_outside _ _ 128 (Or.inl (by decide)),
-    PairedScheduleMemory.read_normalized_outside _ _ 160 (Or.inl (by decide))]
+  -- the chaining state lies above the schedule cells (read_normalized_outside: 544 ≤ address);
+  -- stated address-generically so it follows the relocated hashWords literals.
+  simp (disch := decide) only [scheduledState, PairedBlockMath.hashWords,
+    PairedScheduleMemory.read_normalized_outside]
 
 def leftFold (words : Nat → UInt32) : Nat → CryptoLane → CryptoLane :=
   scalarLeftFold (fun i => i / 16) (fun i => Crypto.Ripemd160.s[i]!)
@@ -125,7 +124,7 @@ theorem resultState_word_above (s : State) (input : ByteArray) (i address : Nat)
   unfold MachineState.readWord
   rw [PairedTailTrace.tail_readPadded_outside _ _ _ _ (Or.inr (by omega))]
   change MachineState.readWord (scheduledState s i).memory address = MachineState.readWord s.memory address
-  exact PairedScheduleMemory.read_normalized_outside _ _ address (Or.inr haddress)
+  exact PairedScheduleMemory.read_normalized_outside _ _ address (by omega)
 
 theorem resultState_hash (s : State) (input : ByteArray) (i : Nat) (h : Compression.HashState)
     (ctx : StackRunBridge.BlockContext s input i h) :

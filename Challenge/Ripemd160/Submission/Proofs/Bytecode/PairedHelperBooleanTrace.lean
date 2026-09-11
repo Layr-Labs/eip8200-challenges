@@ -3,6 +3,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedLaneWordRound
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleLift
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.ScheduleLayout
 
 set_option warningAsError true
 
@@ -527,6 +528,9 @@ theorem active_schedule_preserved (current : UInt256) (address : Nat)
   rw [Nat.max_eq_left hwords]
   exact (Challenge.EvmProof.Word.word_eq_ofNat_toNat current).symm
 
+/-- `PUSH0` pushes the literal `⟨0⟩`; schedule loads from cell 0 need its address as `0`. -/
+theorem push0_toNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
+
 theorem rawSum_of_boolean (q : Frame) (j : Nat) (hpair : q.pair = pairWord) :
     rawSum q (booleanPair j q.b q.c q.d) =
       PairedLaneWordRound.wordSum j q.a q.b q.c q.d q.message0 q.k := by
@@ -772,7 +776,7 @@ def inline0Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 192),
+   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
    .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 368),
    .op .MLOAD,
@@ -808,7 +812,7 @@ def inline0Template : List Instr :=
    .op .AND]
 
 def inline0Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 368) (MachineState.readWord memory 192), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 24}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 368) (MachineState.readWord memory 0), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 24}
 
 def inline0Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.k, q.a, q.b, q.c, q.d, q.e, q.factor, q.pair, q.upper, q.lower] ++ rho
@@ -827,7 +831,7 @@ theorem run_inline0Template (s : State) (pc : UInt256) (q : Frame)
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
-  simp (discharger := omega) [inline0Template, inline0Entry, inline0Output,
+  simp (discharger := omega) [push0_toNat, inline0Template, inline0Entry, inline0Output,
     inlineT, inlineRotation, inline0Frame, inline0Boolean, inlineProduct, rawC10,
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
@@ -854,9 +858,9 @@ def inline1Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 32),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 656),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 464),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -890,7 +894,7 @@ def inline1Template : List Instr :=
    .op .AND]
 
 def inline1Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 656) (MachineState.readWord memory 224), leftShift0 := UInt256.ofNat 18, rightShift0 := UInt256.ofNat 23}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 464) (MachineState.readWord memory 32), leftShift0 := UInt256.ofNat 18, rightShift0 := UInt256.ofNat 23}
 
 def inline1Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.c, q.b, q.e, q.a, q.factor, q.pair, q.upper, q.lower] ++ rho
@@ -1020,7 +1024,7 @@ def inline3Template : List Instr :=
    .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 288),
    .op .MLOAD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 208),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 16),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -1054,7 +1058,7 @@ def inline3Template : List Instr :=
    .op .AND]
 
 def inline3Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 208) (MachineState.readWord memory 288), leftShift0 := UInt256.ofNat 20, rightShift0 := UInt256.ofNat 21}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 16) (MachineState.readWord memory 288), leftShift0 := UInt256.ofNat 20, rightShift0 := UInt256.ofNat 21}
 
 def inline3Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.c, q.b, q.e, q.a, q.factor, q.pair, q.upper, q.lower] ++ rho
@@ -1102,7 +1106,7 @@ def inline4Template : List Instr :=
    .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 320),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 496),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 112),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -1136,7 +1140,7 @@ def inline4Template : List Instr :=
    .op .AND]
 
 def inline4Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 496) (MachineState.readWord memory 320), leftShift0 := UInt256.ofNat 27, rightShift0 := UInt256.ofNat 19}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 112) (MachineState.readWord memory 320), leftShift0 := UInt256.ofNat 27, rightShift0 := UInt256.ofNat 19}
 
 def inline4Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.b, q.c, q.a, q.e, q.factor, q.pair, q.upper, q.lower] ++ rho
@@ -1266,7 +1270,7 @@ def inline6Template : List Instr :=
    .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 384),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 560),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 176),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -1300,7 +1304,7 @@ def inline6Template : List Instr :=
    .op .AND]
 
 def inline6Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 560) (MachineState.readWord memory 384), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 17}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 176) (MachineState.readWord memory 384), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 17}
 
 def inline6Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.b, q.c, q.a, q.e, q.factor, q.pair, q.upper, q.lower] ++ rho
@@ -1428,9 +1432,9 @@ def inline8Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 448),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 64),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 624),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 240),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -1464,7 +1468,7 @@ def inline8Template : List Instr :=
    .op .AND]
 
 def inline8Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 624) (MachineState.readWord memory 448), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 25}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 240) (MachineState.readWord memory 64), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 25}
 
 def inline8Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.b, q.c, q.a, q.e, q.factor, q.pair, q.upper, q.lower] ++ rho
@@ -1510,7 +1514,7 @@ def inline9Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 480),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 96),
    .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 400),
    .op .MLOAD,
@@ -1546,7 +1550,7 @@ def inline9Template : List Instr :=
    .op .AND]
 
 def inline9Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 400) (MachineState.readWord memory 480), leftShift0 := UInt256.ofNat 19, rightShift0 := UInt256.ofNat 25}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 400) (MachineState.readWord memory 96), leftShift0 := UInt256.ofNat 19, rightShift0 := UInt256.ofNat 25}
 
 def inline9Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.c, q.b, q.e, q.a, q.factor, q.pair, q.upper, q.lower] ++ rho
@@ -1592,9 +1596,9 @@ def inline10Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 512),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 128),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 688),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 496),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -1628,7 +1632,7 @@ def inline10Template : List Instr :=
    .op .AND]
 
 def inline10Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 688) (MachineState.readWord memory 512), leftShift0 := UInt256.ofNat 18, rightShift0 := UInt256.ofNat 24}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 496) (MachineState.readWord memory 128), leftShift0 := UInt256.ofNat 18, rightShift0 := UInt256.ofNat 24}
 
 def inline10Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.b, q.c, q.a, q.e, q.factor, q.pair, q.upper, q.lower] ++ rho
@@ -1674,9 +1678,9 @@ def inline11Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 544),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 160),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 464),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 80),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -1710,7 +1714,7 @@ def inline11Template : List Instr :=
    .op .AND]
 
 def inline11Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 464) (MachineState.readWord memory 544), leftShift0 := UInt256.ofNat 17, rightShift0 := UInt256.ofNat 21}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 80) (MachineState.readWord memory 160), leftShift0 := UInt256.ofNat 17, rightShift0 := UInt256.ofNat 21}
 
 def inline11Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.c, q.b, q.e, q.a, q.factor, q.pair, q.upper, q.lower] ++ rho
@@ -1756,9 +1760,9 @@ def inline12Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 576),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 192),
    .op .MLOAD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 240),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 48),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -1792,7 +1796,7 @@ def inline12Template : List Instr :=
    .op .AND]
 
 def inline12Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 240) (MachineState.readWord memory 576), leftShift0 := UInt256.ofNat 26, rightShift0 := UInt256.ofNat 18}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 48) (MachineState.readWord memory 192), leftShift0 := UInt256.ofNat 26, rightShift0 := UInt256.ofNat 18}
 
 def inline12Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.b, q.c, q.a, q.e, q.factor, q.pair, q.upper, q.lower] ++ rho
@@ -1838,9 +1842,9 @@ def inline13Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 608),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 224),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 528),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -1874,7 +1878,7 @@ def inline13Template : List Instr :=
    .op .AND]
 
 def inline13Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 528) (MachineState.readWord memory 608), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 18}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 144) (MachineState.readWord memory 224), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 18}
 
 def inline13Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.c, q.b, q.e, q.a, q.factor, q.pair, q.upper, q.lower] ++ rho
@@ -1920,7 +1924,7 @@ def inline14Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 640),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 448),
    .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 304),
    .op .MLOAD,
@@ -1956,7 +1960,7 @@ def inline14Template : List Instr :=
    .op .AND]
 
 def inline14Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 304) (MachineState.readWord memory 640), leftShift0 := UInt256.ofNat 23, rightShift0 := UInt256.ofNat 20}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 304) (MachineState.readWord memory 448), leftShift0 := UInt256.ofNat 23, rightShift0 := UInt256.ofNat 20}
 
 def inline14Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.b, q.c, q.a, q.e, q.factor, q.pair, q.upper, q.lower] ++ rho
@@ -2002,9 +2006,9 @@ def inline15Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 672),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 480),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 592),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 208),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -2038,7 +2042,7 @@ def inline15Template : List Instr :=
    .op .AND]
 
 def inline15Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 592) (MachineState.readWord memory 672), leftShift0 := UInt256.ofNat 24, rightShift0 := UInt256.ofNat 26}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 208) (MachineState.readWord memory 480), leftShift0 := UInt256.ofNat 24, rightShift0 := UInt256.ofNat 26}
 
 def inline15Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.c, q.b, q.e, q.a, q.factor, q.pair, q.upper, q.lower] ++ rho
@@ -2089,7 +2093,7 @@ def inline18Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 608),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 224),
    .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 304),
    .op .MLOAD,
@@ -2125,7 +2129,7 @@ def inline18Template : List Instr :=
    .op .AND]
 
 def inline18Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 304) (MachineState.readWord memory 608), leftShift0 := UInt256.ofNat 24, rightShift0 := UInt256.ofNat 17}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 304) (MachineState.readWord memory 224), leftShift0 := UInt256.ofNat 24, rightShift0 := UInt256.ofNat 17}
 
 def inline18Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.a, q.d, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -2177,7 +2181,7 @@ def inline19Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 32),
    .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 432),
    .op .MLOAD,
@@ -2213,7 +2217,7 @@ def inline19Template : List Instr :=
    .op .AND]
 
 def inline19Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 432) (MachineState.readWord memory 224), leftShift0 := UInt256.ofNat 19, rightShift0 := UInt256.ofNat 25}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 432) (MachineState.readWord memory 32), leftShift0 := UInt256.ofNat 19, rightShift0 := UInt256.ofNat 25}
 
 def inline19Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.e, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -2264,9 +2268,9 @@ def inline24Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 576),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 192),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 656),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 464),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -2291,7 +2295,7 @@ def inline24Template : List Instr :=
    .op .AND]
 
 def inline24Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 656) (MachineState.readWord memory 576), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 25}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 464) (MachineState.readWord memory 192), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 25}
 
 def inline24Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.a, q.d, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -2343,9 +2347,9 @@ def inline25Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 192),
+   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 688),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 496),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -2379,7 +2383,7 @@ def inline25Template : List Instr :=
    .op .AND]
 
 def inline25Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 688) (MachineState.readWord memory 192), leftShift0 := UInt256.ofNat 20, rightShift0 := UInt256.ofNat 25}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 496) (MachineState.readWord memory 0), leftShift0 := UInt256.ofNat 20, rightShift0 := UInt256.ofNat 25}
 
 def inline25Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.e, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -2398,7 +2402,7 @@ theorem run_inline25Template (s : State) (pc : UInt256) (q : Frame)
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
-  simp (discharger := omega) [inline25Template, inline25Entry, inline25Output,
+  simp (discharger := omega) [push0_toNat, inline25Template, inline25Entry, inline25Output,
     inlineT, inlineRotation, inline25Frame, rawBoolean, inlineProduct, rawC10,
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
@@ -2430,9 +2434,9 @@ def inline30Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 544),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 160),
    .op .MLOAD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 240),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 48),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -2457,7 +2461,7 @@ def inline30Template : List Instr :=
    .op .AND]
 
 def inline30Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 240) (MachineState.readWord memory 544), leftShift0 := UInt256.ofNat 19, rightShift0 := UInt256.ofNat 19}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 48) (MachineState.readWord memory 160), leftShift0 := UInt256.ofNat 19, rightShift0 := UInt256.ofNat 19}
 
 def inline30Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.a, q.d, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -2509,7 +2513,7 @@ def inline31Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 448),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 64),
    .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 272),
    .op .MLOAD,
@@ -2545,7 +2549,7 @@ def inline31Template : List Instr :=
    .op .AND]
 
 def inline31Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 272) (MachineState.readWord memory 448), leftShift0 := UInt256.ofNat 20, rightShift0 := UInt256.ofNat 21}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 272) (MachineState.readWord memory 64), leftShift0 := UInt256.ofNat 20, rightShift0 := UInt256.ofNat 21}
 
 def inline31Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.e, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -2588,7 +2592,7 @@ def inline32Template : List Instr :=
    .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 288),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 688),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 496),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -2622,7 +2626,7 @@ def inline32Template : List Instr :=
    .op .AND]
 
 def inline32Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 688) (MachineState.readWord memory 288), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 23}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 496) (MachineState.readWord memory 288), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 23}
 
 def inline32Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.k, q.a, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.d, q.lower] ++ rho
@@ -2663,7 +2667,7 @@ def inline33Template : List Instr :=
    .op (.Dup ⟨6, by decide⟩),
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 512),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 128),
    .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 368),
    .op .MLOAD,
@@ -2699,7 +2703,7 @@ def inline33Template : List Instr :=
    .op .AND]
 
 def inline33Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 368) (MachineState.readWord memory 512), leftShift0 := UInt256.ofNat 19, rightShift0 := UInt256.ofNat 25}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 368) (MachineState.readWord memory 128), leftShift0 := UInt256.ofNat 19, rightShift0 := UInt256.ofNat 25}
 
 def inline33Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.e, q.lower] ++ rho
@@ -2740,9 +2744,9 @@ def inline34Template : List Instr :=
    .op (.Dup ⟨9, by decide⟩),
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 640),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 448),
    .op .MLOAD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 240),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 48),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -2776,7 +2780,7 @@ def inline34Template : List Instr :=
    .op .AND]
 
 def inline34Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 240) (MachineState.readWord memory 640), leftShift0 := UInt256.ofNat 26, rightShift0 := UInt256.ofNat 17}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 48) (MachineState.readWord memory 448), leftShift0 := UInt256.ofNat 26, rightShift0 := UInt256.ofNat 17}
 
 def inline34Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.a, q.lower] ++ rho
@@ -2894,7 +2898,7 @@ def inline36Template : List Instr :=
    .op (.Dup ⟨9, by decide⟩),
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 480),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 96),
    .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 432),
    .op .MLOAD,
@@ -2930,7 +2934,7 @@ def inline36Template : List Instr :=
    .op .AND]
 
 def inline36Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 432) (MachineState.readWord memory 480), leftShift0 := UInt256.ofNat 18, rightShift0 := UInt256.ofNat 24}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 432) (MachineState.readWord memory 96), leftShift0 := UInt256.ofNat 18, rightShift0 := UInt256.ofNat 24}
 
 def inline36Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.a, q.lower] ++ rho
@@ -2971,9 +2975,9 @@ def inline37Template : List Instr :=
    .op (.Dup ⟨6, by decide⟩),
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 672),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 480),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 656),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 464),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -3007,7 +3011,7 @@ def inline37Template : List Instr :=
    .op .AND]
 
 def inline37Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 656) (MachineState.readWord memory 672), leftShift0 := UInt256.ofNat 23, rightShift0 := UInt256.ofNat 26}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 464) (MachineState.readWord memory 480), leftShift0 := UInt256.ofNat 23, rightShift0 := UInt256.ofNat 26}
 
 def inline37Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.e, q.lower] ++ rho
@@ -3048,7 +3052,7 @@ def inline38Template : List Instr :=
    .op (.Dup ⟨9, by decide⟩),
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 448),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 64),
    .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 400),
    .op .MLOAD,
@@ -3084,7 +3088,7 @@ def inline38Template : List Instr :=
    .op .AND]
 
 def inline38Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 400) (MachineState.readWord memory 448), leftShift0 := UInt256.ofNat 19, rightShift0 := UInt256.ofNat 26}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 400) (MachineState.readWord memory 64), leftShift0 := UInt256.ofNat 19, rightShift0 := UInt256.ofNat 26}
 
 def inline38Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.a, q.lower] ++ rho
@@ -3125,9 +3129,9 @@ def inline39Template : List Instr :=
    .op (.Dup ⟨6, by decide⟩),
    .op .XOR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 32),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 496),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 112),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -3161,7 +3165,7 @@ def inline39Template : List Instr :=
    .op .AND]
 
 def inline39Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 496) (MachineState.readWord memory 224), leftShift0 := UInt256.ofNat 17, rightShift0 := UInt256.ofNat 18}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 112) (MachineState.readWord memory 32), leftShift0 := UInt256.ofNat 17, rightShift0 := UInt256.ofNat 18}
 
 def inline39Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.e, q.lower] ++ rho
@@ -3204,7 +3208,7 @@ def inline40Template : List Instr :=
    .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 256),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 560),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 176),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -3238,7 +3242,7 @@ def inline40Template : List Instr :=
    .op .AND]
 
 def inline40Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 560) (MachineState.readWord memory 256), leftShift0 := UInt256.ofNat 18, rightShift0 := UInt256.ofNat 20}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 176) (MachineState.readWord memory 256), leftShift0 := UInt256.ofNat 18, rightShift0 := UInt256.ofNat 20}
 
 def inline40Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.a, q.lower] ++ rho
@@ -3281,7 +3285,7 @@ def inline41Template : List Instr :=
    .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 416),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 464),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 80),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -3315,7 +3319,7 @@ def inline41Template : List Instr :=
    .op .AND]
 
 def inline41Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 464) (MachineState.readWord memory 416), leftShift0 := UInt256.ofNat 24, rightShift0 := UInt256.ofNat 19}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 80) (MachineState.readWord memory 416), leftShift0 := UInt256.ofNat 24, rightShift0 := UInt256.ofNat 19}
 
 def inline41Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.e, q.lower] ++ rho
@@ -3356,9 +3360,9 @@ def inline42Template : List Instr :=
    .op (.Dup ⟨9, by decide⟩),
    .op .XOR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 192),
+   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 592),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 208),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -3392,7 +3396,7 @@ def inline42Template : List Instr :=
    .op .AND]
 
 def inline42Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 592) (MachineState.readWord memory 192), leftShift0 := UInt256.ofNat 19, rightShift0 := UInt256.ofNat 27}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 208) (MachineState.readWord memory 0), leftShift0 := UInt256.ofNat 19, rightShift0 := UInt256.ofNat 27}
 
 def inline42Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.a, q.lower] ++ rho
@@ -3411,7 +3415,7 @@ theorem run_inline42Template (s : State) (pc : UInt256) (q : Frame)
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
-  simp (discharger := omega) [inline42Template, inline42Entry, inline42Output,
+  simp (discharger := omega) [push0_toNat, inline42Template, inline42Entry, inline42Output,
     inlineT, inlineRotation, inline42Frame, inline2Boolean, inlineProduct, rawC10,
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
@@ -3510,9 +3514,9 @@ def inline44Template : List Instr :=
    .op (.Dup ⟨9, by decide⟩),
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 608),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 224),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 528),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -3546,7 +3550,7 @@ def inline44Template : List Instr :=
    .op .AND]
 
 def inline44Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 528) (MachineState.readWord memory 608), leftShift0 := UInt256.ofNat 27, rightShift0 := UInt256.ofNat 19}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 144) (MachineState.readWord memory 224), leftShift0 := UInt256.ofNat 27, rightShift0 := UInt256.ofNat 19}
 
 def inline44Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.a, q.lower] ++ rho
@@ -3587,9 +3591,9 @@ def inline45Template : List Instr :=
    .op (.Dup ⟨6, by decide⟩),
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 544),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 160),
    .op .MLOAD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 208),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 16),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -3623,7 +3627,7 @@ def inline45Template : List Instr :=
    .op .AND]
 
 def inline45Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 208) (MachineState.readWord memory 544), leftShift0 := UInt256.ofNat 20, rightShift0 := UInt256.ofNat 19}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 16) (MachineState.readWord memory 160), leftShift0 := UInt256.ofNat 20, rightShift0 := UInt256.ofNat 19}
 
 def inline45Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.e, q.lower] ++ rho
@@ -3732,9 +3736,9 @@ def inline47Template : List Instr :=
    .op (.Dup ⟨6, by decide⟩),
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 576),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 192),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 624),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 240),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -3759,7 +3763,7 @@ def inline47Template : List Instr :=
    .op .AND]
 
 def inline47Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 624) (MachineState.readWord memory 576), leftShift0 := UInt256.ofNat 27, rightShift0 := UInt256.ofNat 27}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 240) (MachineState.readWord memory 192), leftShift0 := UInt256.ofNat 27, rightShift0 := UInt256.ofNat 27}
 
 def inline47Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.e, q.lower] ++ rho
@@ -3811,9 +3815,9 @@ def inline48Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 32),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 464),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 80),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -3847,7 +3851,7 @@ def inline48Template : List Instr :=
    .op .AND]
 
 def inline48Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 464) (MachineState.readWord memory 224), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 17}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 80) (MachineState.readWord memory 32), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 17}
 
 def inline48Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.k, q.d, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.a, q.lower] ++ rho
@@ -3899,7 +3903,7 @@ def inline49Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 480),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 96),
    .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 400),
    .op .MLOAD,
@@ -3935,7 +3939,7 @@ def inline49Template : List Instr :=
    .op .AND]
 
 def inline49Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 400) (MachineState.readWord memory 480), leftShift0 := UInt256.ofNat 20, rightShift0 := UInt256.ofNat 27}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 400) (MachineState.readWord memory 96), leftShift0 := UInt256.ofNat 20, rightShift0 := UInt256.ofNat 27}
 
 def inline49Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.e, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -3987,7 +3991,7 @@ def inline50Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 544),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 160),
    .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 336),
    .op .MLOAD,
@@ -4023,7 +4027,7 @@ def inline50Template : List Instr :=
    .op .AND]
 
 def inline50Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 336) (MachineState.readWord memory 544), leftShift0 := UInt256.ofNat 18, rightShift0 := UInt256.ofNat 24}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 336) (MachineState.readWord memory 160), leftShift0 := UInt256.ofNat 18, rightShift0 := UInt256.ofNat 24}
 
 def inline50Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.a, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -4075,9 +4079,9 @@ def inline51Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 512),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 128),
    .op .MLOAD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 240),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 48),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -4111,7 +4115,7 @@ def inline51Template : List Instr :=
    .op .AND]
 
 def inline51Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 240) (MachineState.readWord memory 512), leftShift0 := UInt256.ofNat 17, rightShift0 := UInt256.ofNat 21}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 48) (MachineState.readWord memory 128), leftShift0 := UInt256.ofNat 17, rightShift0 := UInt256.ofNat 21}
 
 def inline51Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.e, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -4163,7 +4167,7 @@ def inline52Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 192),
+   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
    .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 304),
    .op .MLOAD,
@@ -4190,7 +4194,7 @@ def inline52Template : List Instr :=
    .op .AND]
 
 def inline52Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 304) (MachineState.readWord memory 192), leftShift0 := UInt256.ofNat 18, rightShift0 := UInt256.ofNat 18}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 304) (MachineState.readWord memory 0), leftShift0 := UInt256.ofNat 18, rightShift0 := UInt256.ofNat 18}
 
 def inline52Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.a, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -4209,7 +4213,7 @@ theorem run_inline52Template (s : State) (pc : UInt256) (q : Frame)
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
-  simp (discharger := omega) [inline52Template, inline52Entry, inline52Output,
+  simp (discharger := omega) [push0_toNat, inline52Template, inline52Entry, inline52Output,
     singleT, inline52Frame, inline3Boolean, inlineProduct, rawC10,
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
@@ -4242,9 +4246,9 @@ def inline53Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 448),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 64),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 560),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 176),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -4278,7 +4282,7 @@ def inline53Template : List Instr :=
    .op .AND]
 
 def inline53Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 560) (MachineState.readWord memory 448), leftShift0 := UInt256.ofNat 17, rightShift0 := UInt256.ofNat 18}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 176) (MachineState.readWord memory 64), leftShift0 := UInt256.ofNat 17, rightShift0 := UInt256.ofNat 18}
 
 def inline53Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.e, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -4330,9 +4334,9 @@ def inline54Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 576),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 192),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 688),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 496),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -4366,7 +4370,7 @@ def inline54Template : List Instr :=
    .op .AND]
 
 def inline54Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 688) (MachineState.readWord memory 576), leftShift0 := UInt256.ofNat 23, rightShift0 := UInt256.ofNat 26}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 496) (MachineState.readWord memory 192), leftShift0 := UInt256.ofNat 23, rightShift0 := UInt256.ofNat 26}
 
 def inline54Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.a, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -4420,7 +4424,7 @@ def inline55Template : List Instr :=
    .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 320),
    .op .MLOAD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 208),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 16),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -4454,7 +4458,7 @@ def inline55Template : List Instr :=
    .op .AND]
 
 def inline55Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 208) (MachineState.readWord memory 320), leftShift0 := UInt256.ofNat 24, rightShift0 := UInt256.ofNat 18}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 16) (MachineState.readWord memory 320), leftShift0 := UInt256.ofNat 24, rightShift0 := UInt256.ofNat 18}
 
 def inline55Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.e, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -4506,7 +4510,7 @@ def inline56Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 608),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 224),
    .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 368),
    .op .MLOAD,
@@ -4542,7 +4546,7 @@ def inline56Template : List Instr :=
    .op .AND]
 
 def inline56Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 368) (MachineState.readWord memory 608), leftShift0 := UInt256.ofNat 23, rightShift0 := UInt256.ofNat 26}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 368) (MachineState.readWord memory 224), leftShift0 := UInt256.ofNat 23, rightShift0 := UInt256.ofNat 26}
 
 def inline56Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.a, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -4596,7 +4600,7 @@ def inline57Template : List Instr :=
    .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 288),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 592),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 208),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -4630,7 +4634,7 @@ def inline57Template : List Instr :=
    .op .AND]
 
 def inline57Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 592) (MachineState.readWord memory 288), leftShift0 := UInt256.ofNat 18, rightShift0 := UInt256.ofNat 23}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 208) (MachineState.readWord memory 288), leftShift0 := UInt256.ofNat 18, rightShift0 := UInt256.ofNat 23}
 
 def inline57Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.e, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -4770,9 +4774,9 @@ def inline59Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 672),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 480),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 624),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 240),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -4806,7 +4810,7 @@ def inline59Template : List Instr :=
    .op .AND]
 
 def inline59Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 624) (MachineState.readWord memory 672), leftShift0 := UInt256.ofNat 26, rightShift0 := UInt256.ofNat 23}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 240) (MachineState.readWord memory 480), leftShift0 := UInt256.ofNat 26, rightShift0 := UInt256.ofNat 23}
 
 def inline59Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.e, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -4858,9 +4862,9 @@ def inline60Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 640),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 448),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 496),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 112),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -4894,7 +4898,7 @@ def inline60Template : List Instr :=
    .op .AND]
 
 def inline60Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 496) (MachineState.readWord memory 640), leftShift0 := UInt256.ofNat 24, rightShift0 := UInt256.ofNat 20}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 112) (MachineState.readWord memory 448), leftShift0 := UInt256.ofNat 24, rightShift0 := UInt256.ofNat 20}
 
 def inline60Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.a, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -5036,7 +5040,7 @@ def inline62Template : List Instr :=
    .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 384),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 528),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -5070,7 +5074,7 @@ def inline62Template : List Instr :=
    .op .AND]
 
 def inline62Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 528) (MachineState.readWord memory 384), leftShift0 := UInt256.ofNat 27, rightShift0 := UInt256.ofNat 17}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 144) (MachineState.readWord memory 384), leftShift0 := UInt256.ofNat 27, rightShift0 := UInt256.ofNat 17}
 
 def inline62Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.a, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -5124,7 +5128,7 @@ def inline63Template : List Instr :=
    .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 256),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 656),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 464),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -5158,7 +5162,7 @@ def inline63Template : List Instr :=
    .op .AND]
 
 def inline63Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 656) (MachineState.readWord memory 256), leftShift0 := UInt256.ofNat 20, rightShift0 := UInt256.ofNat 24}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 464) (MachineState.readWord memory 256), leftShift0 := UInt256.ofNat 20, rightShift0 := UInt256.ofNat 24}
 
 def inline63Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.e, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -5206,7 +5210,7 @@ def inline64Template : List Instr :=
    .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 320),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 592),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 208),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -5240,7 +5244,7 @@ def inline64Template : List Instr :=
    .op .AND]
 
 def inline64Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 592) (MachineState.readWord memory 320), leftShift0 := UInt256.ofNat 23, rightShift0 := UInt256.ofNat 24}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 208) (MachineState.readWord memory 320), leftShift0 := UInt256.ofNat 23, rightShift0 := UInt256.ofNat 24}
 
 def inline64Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.k, q.a, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.d, q.lower] ++ rho
@@ -5286,9 +5290,9 @@ def inline65Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 192),
+   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 688),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 496),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -5322,7 +5326,7 @@ def inline65Template : List Instr :=
    .op .AND]
 
 def inline65Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 688) (MachineState.readWord memory 192), leftShift0 := UInt256.ofNat 17, rightShift0 := UInt256.ofNat 27}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 496) (MachineState.readWord memory 0), leftShift0 := UInt256.ofNat 17, rightShift0 := UInt256.ofNat 27}
 
 def inline65Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.e, q.lower] ++ rho
@@ -5341,7 +5345,7 @@ theorem run_inline65Template (s : State) (pc : UInt256) (q : Frame)
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
-  simp (discharger := omega) [inline65Template, inline65Entry, inline65Output,
+  simp (discharger := omega) [push0_toNat, inline65Template, inline65Entry, inline65Output,
     inlineT, inlineRotation, inline65Frame, inline4Boolean, inlineProduct, rawC10,
     runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
@@ -5370,7 +5374,7 @@ def inline66Template : List Instr :=
    .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 352),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 528),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -5404,7 +5408,7 @@ def inline66Template : List Instr :=
    .op .AND]
 
 def inline66Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 528) (MachineState.readWord memory 352), leftShift0 := UInt256.ofNat 27, rightShift0 := UInt256.ofNat 20}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 144) (MachineState.readWord memory 352), leftShift0 := UInt256.ofNat 27, rightShift0 := UInt256.ofNat 20}
 
 def inline66Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.a, q.lower] ++ rho
@@ -5450,7 +5454,7 @@ def inline67Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 480),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 96),
    .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 336),
    .op .MLOAD,
@@ -5486,7 +5490,7 @@ def inline67Template : List Instr :=
    .op .AND]
 
 def inline67Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 336) (MachineState.readWord memory 480), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 23}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 336) (MachineState.readWord memory 96), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 23}
 
 def inline67Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.e, q.lower] ++ rho
@@ -5534,7 +5538,7 @@ def inline68Template : List Instr :=
    .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 416),
    .op .MLOAD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 240),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 48),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -5568,7 +5572,7 @@ def inline68Template : List Instr :=
    .op .AND]
 
 def inline68Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 240) (MachineState.readWord memory 416), leftShift0 := UInt256.ofNat 26, rightShift0 := UInt256.ofNat 20}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 48) (MachineState.readWord memory 416), leftShift0 := UInt256.ofNat 26, rightShift0 := UInt256.ofNat 20}
 
 def inline68Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.a, q.lower] ++ rho
@@ -5614,7 +5618,7 @@ def inline69Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 576),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 192),
    .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 368),
    .op .MLOAD,
@@ -5650,7 +5654,7 @@ def inline69Template : List Instr :=
    .op .AND]
 
 def inline69Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 368) (MachineState.readWord memory 576), leftShift0 := UInt256.ofNat 24, rightShift0 := UInt256.ofNat 27}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 368) (MachineState.readWord memory 192), leftShift0 := UInt256.ofNat 24, rightShift0 := UInt256.ofNat 27}
 
 def inline69Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.e, q.lower] ++ rho
@@ -5698,7 +5702,7 @@ def inline70Template : List Instr :=
    .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 256),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 464),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 80),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -5732,7 +5736,7 @@ def inline70Template : List Instr :=
    .op .AND]
 
 def inline70Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 464) (MachineState.readWord memory 256), leftShift0 := UInt256.ofNat 19, rightShift0 := UInt256.ofNat 18}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 80) (MachineState.readWord memory 256), leftShift0 := UInt256.ofNat 19, rightShift0 := UInt256.ofNat 18}
 
 def inline70Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.a, q.lower] ++ rho
@@ -5778,7 +5782,7 @@ def inline71Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 512),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 128),
    .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 432),
    .op .MLOAD,
@@ -5814,7 +5818,7 @@ def inline71Template : List Instr :=
    .op .AND]
 
 def inline71Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 432) (MachineState.readWord memory 512), leftShift0 := UInt256.ofNat 20, rightShift0 := UInt256.ofNat 26}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 432) (MachineState.readWord memory 128), leftShift0 := UInt256.ofNat 20, rightShift0 := UInt256.ofNat 26}
 
 def inline71Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.e, q.lower] ++ rho
@@ -5860,7 +5864,7 @@ def inline72Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 640),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 448),
    .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 400),
    .op .MLOAD,
@@ -5896,7 +5900,7 @@ def inline72Template : List Instr :=
    .op .AND]
 
 def inline72Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 400) (MachineState.readWord memory 640), leftShift0 := UInt256.ofNat 27, rightShift0 := UInt256.ofNat 24}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 400) (MachineState.readWord memory 448), leftShift0 := UInt256.ofNat 27, rightShift0 := UInt256.ofNat 24}
 
 def inline72Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.a, q.lower] ++ rho
@@ -5942,7 +5946,7 @@ def inline73Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 32),
    .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 272),
    .op .MLOAD,
@@ -5978,7 +5982,7 @@ def inline73Template : List Instr :=
    .op .AND]
 
 def inline73Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 272) (MachineState.readWord memory 224), leftShift0 := UInt256.ofNat 20, rightShift0 := UInt256.ofNat 19}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 272) (MachineState.readWord memory 32), leftShift0 := UInt256.ofNat 20, rightShift0 := UInt256.ofNat 19}
 
 def inline73Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.e, q.lower] ++ rho
@@ -6026,7 +6030,7 @@ def inline74Template : List Instr :=
    .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 288),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 624),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 240),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -6060,7 +6064,7 @@ def inline74Template : List Instr :=
    .op .AND]
 
 def inline74Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 624) (MachineState.readWord memory 288), leftShift0 := UInt256.ofNat 19, rightShift0 := UInt256.ofNat 26}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 240) (MachineState.readWord memory 288), leftShift0 := UInt256.ofNat 19, rightShift0 := UInt256.ofNat 26}
 
 def inline74Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.a, q.lower] ++ rho
@@ -6106,9 +6110,9 @@ def inline75Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 448),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 64),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 656),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 464),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -6142,7 +6146,7 @@ def inline75Template : List Instr :=
    .op .AND]
 
 def inline75Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 656) (MachineState.readWord memory 448), leftShift0 := UInt256.ofNat 18, rightShift0 := UInt256.ofNat 27}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 464) (MachineState.readWord memory 64), leftShift0 := UInt256.ofNat 18, rightShift0 := UInt256.ofNat 27}
 
 def inline75Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.e, q.lower] ++ rho
@@ -6188,9 +6192,9 @@ def inline76Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 544),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 160),
    .op .MLOAD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 208),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 16),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -6224,7 +6228,7 @@ def inline76Template : List Instr :=
    .op .AND]
 
 def inline76Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 208) (MachineState.readWord memory 544), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 17}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 16) (MachineState.readWord memory 160), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 17}
 
 def inline76Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.a, q.lower] ++ rho
@@ -6352,9 +6356,9 @@ def inline78Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 672),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 480),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 496),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 112),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -6388,7 +6392,7 @@ def inline78Template : List Instr :=
    .op .AND]
 
 def inline78Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 496) (MachineState.readWord memory 672), leftShift0 := UInt256.ofNat 27, rightShift0 := UInt256.ofNat 21}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 112) (MachineState.readWord memory 480), leftShift0 := UInt256.ofNat 27, rightShift0 := UInt256.ofNat 21}
 
 def inline78Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.a, q.lower] ++ rho
@@ -6434,9 +6438,9 @@ def inline79Template : List Instr :=
    .op .AND,
    .op .XOR,
    .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 608),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 224),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 560),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 176),
    .op .MLOAD,
    .op .OR,
    .op .ADD,
@@ -6470,7 +6474,7 @@ def inline79Template : List Instr :=
    .op .AND]
 
 def inline79Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 560) (MachineState.readWord memory 608), leftShift0 := UInt256.ofNat 26, rightShift0 := UInt256.ofNat 21}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 176) (MachineState.readWord memory 224), leftShift0 := UInt256.ofNat 26, rightShift0 := UInt256.ofNat 21}
 
 def inline79Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.k, q.c, q.b, q.upper, q.a, q.factor, q.pair, q.e, q.lower] ++ rho
@@ -6505,14 +6509,14 @@ def call16Template : List Instr :=
   [.op (.Swap ⟨7, by decide⟩),
    .op (.Swap ⟨3, by decide⟩),
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 1920),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 1906),
    .op (.Swap ⟨1, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 19),
    .push ⟨1, by decide⟩ (UInt256.ofNat 26),
    .op (.Swap ⟨1, by decide⟩),
    .push ⟨2, by decide⟩ (UInt256.ofNat 320),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 560),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 176),
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
@@ -6524,11 +6528,11 @@ def call16Template : List Instr :=
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 5168),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 5103),
    .op .JUMP]
 
 def call16Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 400) (MachineState.readWord memory 416), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 23, message1 := UInt256.lor (MachineState.readWord memory 560) (MachineState.readWord memory 320), leftShift1 := UInt256.ofNat 26, rightShift1 := UInt256.ofNat 19, ret := UInt256.ofNat 1920}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 400) (MachineState.readWord memory 416), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 23, message1 := UInt256.lor (MachineState.readWord memory 176) (MachineState.readWord memory 320), leftShift1 := UInt256.ofNat 26, rightShift1 := UInt256.ofNat 19, ret := UInt256.ofNat 1906}
 
 def call16Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.k, q.d, q.b, q.c, q.a, q.e, q.factor, q.pair, q.upper, q.lower] ++ rho
@@ -6538,9 +6542,9 @@ theorem call16Template_length : call16Template.length = 24 := rfl
 theorem run_call16Template (s : State) (pc : UInt256) (q : Frame)
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5168 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5103 = true) :
     runInstrSeq call16Template {s with pc := pc, stack := call16Entry q rho} =
-      some {s with pc := UInt256.ofNat 5168, stack := entryStack (call16Frame s.memory q) rho} := by
+      some {s with pc := UInt256.ofNat 5103, stack := entryStack (call16Frame s.memory q) rho} := by
   have hcap (n : Nat) (hn : n ≤ 18) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
@@ -6552,30 +6556,30 @@ theorem run_call16Template (s : State) (pc : UInt256) (q : Frame)
     Challenge.EvmProof.Word.word_toNat_ofNat, hvalid]
 
 def call20Template : List Instr :=
-  [.push ⟨2, by decide⟩ (UInt256.ofNat 2077),
+  [.push ⟨2, by decide⟩ (UInt256.ofNat 2060),
    .op (.Swap ⟨1, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 24),
    .push ⟨1, by decide⟩ (UInt256.ofNat 23),
    .op (.Swap ⟨1, by decide⟩),
    .push ⟨2, by decide⟩ (UInt256.ofNat 384),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 624),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 240),
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 20),
    .push ⟨1, by decide⟩ (UInt256.ofNat 21),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 512),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 128),
    .op .MLOAD,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 208),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 16),
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 5168),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 5103),
    .op .JUMP]
 
 def call20Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 208) (MachineState.readWord memory 512), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 20, message1 := UInt256.lor (MachineState.readWord memory 624) (MachineState.readWord memory 384), leftShift1 := UInt256.ofNat 23, rightShift1 := UInt256.ofNat 24, ret := UInt256.ofNat 2077}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 16) (MachineState.readWord memory 128), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 20, message1 := UInt256.lor (MachineState.readWord memory 240) (MachineState.readWord memory 384), leftShift1 := UInt256.ofNat 23, rightShift1 := UInt256.ofNat 24, ret := UInt256.ofNat 2060}
 
 def call20Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.a, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -6585,9 +6589,9 @@ theorem call20Template_length : call20Template.length = 21 := rfl
 theorem run_call20Template (s : State) (pc : UInt256) (q : Frame)
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5168 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5103 = true) :
     runInstrSeq call20Template {s with pc := pc, stack := call20Entry q rho} =
-      some {s with pc := UInt256.ofNat 5168, stack := entryStack (call20Frame s.memory q) rho} := by
+      some {s with pc := UInt256.ofNat 5103, stack := entryStack (call20Frame s.memory q) rho} := by
   have hcap (n : Nat) (hn : n ≤ 18) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
@@ -6601,30 +6605,30 @@ theorem run_call20Template (s : State) (pc : UInt256) (q : Frame)
 def call22Template : List Instr :=
   [.op .JUMPDEST,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 2116),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 2098),
    .op (.Swap ⟨1, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 21),
    .push ⟨1, by decide⟩ (UInt256.ofNat 17),
    .op (.Swap ⟨1, by decide⟩),
    .push ⟨2, by decide⟩ (UInt256.ofNat 288),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 528),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 23),
    .push ⟨1, by decide⟩ (UInt256.ofNat 25),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 672),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 480),
    .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 368),
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 5168),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 5103),
    .op .JUMP]
 
 def call22Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 368) (MachineState.readWord memory 672), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 23, message1 := UInt256.lor (MachineState.readWord memory 528) (MachineState.readWord memory 288), leftShift1 := UInt256.ofNat 17, rightShift1 := UInt256.ofNat 21, ret := UInt256.ofNat 2116}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 368) (MachineState.readWord memory 480), leftShift0 := UInt256.ofNat 25, rightShift0 := UInt256.ofNat 23, message1 := UInt256.lor (MachineState.readWord memory 144) (MachineState.readWord memory 288), leftShift1 := UInt256.ofNat 17, rightShift1 := UInt256.ofNat 21, ret := UInt256.ofNat 2098}
 
 def call22Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.a, q.d, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -6634,9 +6638,9 @@ theorem call22Template_length : call22Template.length = 23 := rfl
 theorem run_call22Template (s : State) (pc : UInt256) (q : Frame)
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5168 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5103 = true) :
     runInstrSeq call22Template {s with pc := pc, stack := call22Entry q rho} =
-      some {s with pc := UInt256.ofNat 5168, stack := entryStack (call22Frame s.memory q) rho} := by
+      some {s with pc := UInt256.ofNat 5103, stack := entryStack (call22Frame s.memory q) rho} := by
   have hcap (n : Nat) (hn : n ≤ 18) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
@@ -6648,30 +6652,30 @@ theorem run_call22Template (s : State) (pc : UInt256) (q : Frame)
     Challenge.EvmProof.Word.word_toNat_ofNat, hvalid]
 
 def call26Template : List Instr :=
-  [.push ⟨2, by decide⟩ (UInt256.ofNat 2264),
+  [.push ⟨2, by decide⟩ (UInt256.ofNat 2241),
    .op (.Swap ⟨1, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 25),
    .push ⟨1, by decide⟩ (UInt256.ofNat 23),
    .op (.Swap ⟨1, by decide⟩),
    .push ⟨2, by decide⟩ (UInt256.ofNat 352),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 592),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 208),
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 20),
    .push ⟨1, by decide⟩ (UInt256.ofNat 17),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 480),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 96),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 464),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 80),
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 5168),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 5103),
    .op .JUMP]
 
 def call26Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 464) (MachineState.readWord memory 480), leftShift0 := UInt256.ofNat 17, rightShift0 := UInt256.ofNat 20, message1 := UInt256.lor (MachineState.readWord memory 592) (MachineState.readWord memory 352), leftShift1 := UInt256.ofNat 23, rightShift1 := UInt256.ofNat 25, ret := UInt256.ofNat 2264}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 80) (MachineState.readWord memory 96), leftShift0 := UInt256.ofNat 17, rightShift0 := UInt256.ofNat 20, message1 := UInt256.lor (MachineState.readWord memory 208) (MachineState.readWord memory 352), leftShift1 := UInt256.ofNat 23, rightShift1 := UInt256.ofNat 25, ret := UInt256.ofNat 2241}
 
 def call26Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.d, q.a, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -6681,9 +6685,9 @@ theorem call26Template_length : call26Template.length = 21 := rfl
 theorem run_call26Template (s : State) (pc : UInt256) (q : Frame)
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5168 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5103 = true) :
     runInstrSeq call26Template {s with pc := pc, stack := call26Entry q rho} =
-      some {s with pc := UInt256.ofNat 5168, stack := entryStack (call26Frame s.memory q) rho} := by
+      some {s with pc := UInt256.ofNat 5103, stack := entryStack (call26Frame s.memory q) rho} := by
   have hcap (n : Nat) (hn : n ≤ 18) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
@@ -6697,14 +6701,14 @@ theorem run_call26Template (s : State) (pc : UInt256) (q : Frame)
 def call28Template : List Instr :=
   [.op .JUMPDEST,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 2303),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 2279),
    .op (.Swap ⟨1, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 17),
    .push ⟨1, by decide⟩ (UInt256.ofNat 25),
    .op (.Swap ⟨1, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 640),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 448),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 496),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 112),
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
@@ -6716,11 +6720,11 @@ def call28Template : List Instr :=
    .op .MLOAD,
    .op .OR,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 5168),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 5103),
    .op .JUMP]
 
 def call28Frame (memory : ByteArray) (q : Frame) : Frame :=
-  {q with message0 := UInt256.lor (MachineState.readWord memory 336) (MachineState.readWord memory 256), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 26, message1 := UInt256.lor (MachineState.readWord memory 496) (MachineState.readWord memory 640), leftShift1 := UInt256.ofNat 25, rightShift1 := UInt256.ofNat 17, ret := UInt256.ofNat 2303}
+  {q with message0 := UInt256.lor (MachineState.readWord memory 336) (MachineState.readWord memory 256), leftShift0 := UInt256.ofNat 21, rightShift0 := UInt256.ofNat 26, message1 := UInt256.lor (MachineState.readWord memory 112) (MachineState.readWord memory 448), leftShift1 := UInt256.ofNat 25, rightShift1 := UInt256.ofNat 17, ret := UInt256.ofNat 2279}
 
 def call28Entry (q : Frame) (rho : List UInt256) : List UInt256 :=
   [q.a, q.d, q.b, q.c, q.upper, q.e, q.factor, q.pair, q.k, q.lower] ++ rho
@@ -6730,9 +6734,9 @@ theorem call28Template_length : call28Template.length = 23 := rfl
 theorem run_call28Template (s : State) (pc : UInt256) (q : Frame)
     (rho : List UInt256) (hstack : rho.length ≤ 1002) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5168 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5103 = true) :
     runInstrSeq call28Template {s with pc := pc, stack := call28Entry q rho} =
-      some {s with pc := UInt256.ofNat 5168, stack := entryStack (call28Frame s.memory q) rho} := by
+      some {s with pc := UInt256.ofNat 5103, stack := entryStack (call28Frame s.memory q) rho} := by
   have hcap (n : Nat) (hn : n ≤ 18) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
@@ -7013,238 +7017,238 @@ def group0Block : CoreBlock 960 981 [.a, .b, .c, .d, .e, .factor, .pair, .upper,
     exact h
 
 
-theorem inline0Template_pc : pcAfter (UInt256.ofNat 981) inline0Template = UInt256.ofNat 1035 := rfl
+theorem inline0Template_pc : pcAfter (UInt256.ofNat 981) inline0Template = UInt256.ofNat 1034 := rfl
 
-theorem inline1Template_pc : pcAfter (UInt256.ofNat 1035) inline1Template = UInt256.ofNat 1089 := rfl
+theorem inline1Template_pc : pcAfter (UInt256.ofNat 1034) inline1Template = UInt256.ofNat 1088 := rfl
 
-theorem inline2Template_pc : pcAfter (UInt256.ofNat 1089) inline2Template = UInt256.ofNat 1144 := rfl
+theorem inline2Template_pc : pcAfter (UInt256.ofNat 1088) inline2Template = UInt256.ofNat 1143 := rfl
 
-theorem inline3Template_pc : pcAfter (UInt256.ofNat 1144) inline3Template = UInt256.ofNat 1198 := rfl
+theorem inline3Template_pc : pcAfter (UInt256.ofNat 1143) inline3Template = UInt256.ofNat 1197 := rfl
 
-theorem inline4Template_pc : pcAfter (UInt256.ofNat 1198) inline4Template = UInt256.ofNat 1253 := rfl
+theorem inline4Template_pc : pcAfter (UInt256.ofNat 1197) inline4Template = UInt256.ofNat 1251 := rfl
 
-theorem inline5Template_pc : pcAfter (UInt256.ofNat 1253) inline5Template = UInt256.ofNat 1308 := rfl
+theorem inline5Template_pc : pcAfter (UInt256.ofNat 1251) inline5Template = UInt256.ofNat 1306 := rfl
 
-theorem inline6Template_pc : pcAfter (UInt256.ofNat 1308) inline6Template = UInt256.ofNat 1363 := rfl
+theorem inline6Template_pc : pcAfter (UInt256.ofNat 1306) inline6Template = UInt256.ofNat 1360 := rfl
 
-theorem inline7Template_pc : pcAfter (UInt256.ofNat 1363) inline7Template = UInt256.ofNat 1418 := rfl
+theorem inline7Template_pc : pcAfter (UInt256.ofNat 1360) inline7Template = UInt256.ofNat 1415 := rfl
 
-theorem inline8Template_pc : pcAfter (UInt256.ofNat 1418) inline8Template = UInt256.ofNat 1473 := rfl
+theorem inline8Template_pc : pcAfter (UInt256.ofNat 1415) inline8Template = UInt256.ofNat 1468 := rfl
 
-theorem inline9Template_pc : pcAfter (UInt256.ofNat 1473) inline9Template = UInt256.ofNat 1528 := rfl
+theorem inline9Template_pc : pcAfter (UInt256.ofNat 1468) inline9Template = UInt256.ofNat 1522 := rfl
 
-theorem inline10Template_pc : pcAfter (UInt256.ofNat 1528) inline10Template = UInt256.ofNat 1583 := rfl
+theorem inline10Template_pc : pcAfter (UInt256.ofNat 1522) inline10Template = UInt256.ofNat 1576 := rfl
 
-theorem inline11Template_pc : pcAfter (UInt256.ofNat 1583) inline11Template = UInt256.ofNat 1638 := rfl
+theorem inline11Template_pc : pcAfter (UInt256.ofNat 1576) inline11Template = UInt256.ofNat 1629 := rfl
 
-theorem inline12Template_pc : pcAfter (UInt256.ofNat 1638) inline12Template = UInt256.ofNat 1692 := rfl
+theorem inline12Template_pc : pcAfter (UInt256.ofNat 1629) inline12Template = UInt256.ofNat 1682 := rfl
 
-theorem inline13Template_pc : pcAfter (UInt256.ofNat 1692) inline13Template = UInt256.ofNat 1747 := rfl
+theorem inline13Template_pc : pcAfter (UInt256.ofNat 1682) inline13Template = UInt256.ofNat 1735 := rfl
 
-theorem inline14Template_pc : pcAfter (UInt256.ofNat 1747) inline14Template = UInt256.ofNat 1802 := rfl
+theorem inline14Template_pc : pcAfter (UInt256.ofNat 1735) inline14Template = UInt256.ofNat 1790 := rfl
 
-theorem inline15Template_pc : pcAfter (UInt256.ofNat 1802) inline15Template = UInt256.ofNat 1857 := rfl
+theorem inline15Template_pc : pcAfter (UInt256.ofNat 1790) inline15Template = UInt256.ofNat 1844 := rfl
 
-theorem group16Template_pc : pcAfter (UInt256.ofNat 1857) group16Template = UInt256.ofNat 1880 := rfl
+theorem group16Template_pc : pcAfter (UInt256.ofNat 1844) group16Template = UInt256.ofNat 1867 := rfl
 
-def group16Block : CoreBlock 1857 1880 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.k, .d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
+def group16Block : CoreBlock 1844 1867 [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] [.k, .d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] where
   code := group16Template
   eval := fun _memory f => {f with k := UInt256.ofNat 526962527014005041256681316140890030896371104153}
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_group16Template s (UInt256.ofNat 1857) f.frame rho hstack hrun
+    have h := run_group16Template s (UInt256.ofNat 1844) f.frame rho hstack hrun
     rw [group16Template_pc] at h
     exact h
 
 
-theorem return18Template_pc : pcAfter (UInt256.ofNat 1920) return18Template = UInt256.ofNat 1921 := rfl
+theorem return18Template_pc : pcAfter (UInt256.ofNat 1906) return18Template = UInt256.ofNat 1907 := rfl
 
-def return18Block : CoreBlock 1920 1921 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def return18Block : CoreBlock 1906 1907 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := return18Template
   eval := fun _memory f => f
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_return18Template s (UInt256.ofNat 1920) f.frame rho hstack hrun
+    have h := run_return18Template s (UInt256.ofNat 1906) f.frame rho hstack hrun
     rw [return18Template_pc] at h
     exact h
 
 
-theorem inline18Template_pc : pcAfter (UInt256.ofNat 1921) inline18Template = UInt256.ofNat 1981 := rfl
+theorem inline18Template_pc : pcAfter (UInt256.ofNat 1907) inline18Template = UInt256.ofNat 1966 := rfl
 
-theorem inline19Template_pc : pcAfter (UInt256.ofNat 1981) inline19Template = UInt256.ofNat 2041 := rfl
+theorem inline19Template_pc : pcAfter (UInt256.ofNat 1966) inline19Template = UInt256.ofNat 2026 := rfl
 
-theorem return24Template_pc : pcAfter (UInt256.ofNat 2116) return24Template = UInt256.ofNat 2117 := rfl
+theorem return24Template_pc : pcAfter (UInt256.ofNat 2098) return24Template = UInt256.ofNat 2099 := rfl
 
-def return24Block : CoreBlock 2116 2117 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def return24Block : CoreBlock 2098 2099 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := return24Template
   eval := fun _memory f => f
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_return24Template s (UInt256.ofNat 2116) f.frame rho hstack hrun
+    have h := run_return24Template s (UInt256.ofNat 2098) f.frame rho hstack hrun
     rw [return24Template_pc] at h
     exact h
 
 
-theorem inline24Template_pc : pcAfter (UInt256.ofNat 2117) inline24Template = UInt256.ofNat 2167 := rfl
+theorem inline24Template_pc : pcAfter (UInt256.ofNat 2099) inline24Template = UInt256.ofNat 2148 := rfl
 
-theorem inline25Template_pc : pcAfter (UInt256.ofNat 2167) inline25Template = UInt256.ofNat 2227 := rfl
+theorem inline25Template_pc : pcAfter (UInt256.ofNat 2148) inline25Template = UInt256.ofNat 2207 := rfl
 
-theorem return30Template_pc : pcAfter (UInt256.ofNat 2303) return30Template = UInt256.ofNat 2304 := rfl
+theorem return30Template_pc : pcAfter (UInt256.ofNat 2279) return30Template = UInt256.ofNat 2280 := rfl
 
-def return30Block : CoreBlock 2303 2304 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
+def return30Block : CoreBlock 2279 2280 [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.a, .d, .b, .c, .upper, .e, .factor, .pair, .k, .lower] where
   code := return30Template
   eval := fun _memory f => f
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_return30Template s (UInt256.ofNat 2303) f.frame rho hstack hrun
+    have h := run_return30Template s (UInt256.ofNat 2279) f.frame rho hstack hrun
     rw [return30Template_pc] at h
     exact h
 
 
-theorem inline30Template_pc : pcAfter (UInt256.ofNat 2304) inline30Template = UInt256.ofNat 2353 := rfl
+theorem inline30Template_pc : pcAfter (UInt256.ofNat 2280) inline30Template = UInt256.ofNat 2328 := rfl
 
-theorem inline31Template_pc : pcAfter (UInt256.ofNat 2353) inline31Template = UInt256.ofNat 2414 := rfl
+theorem inline31Template_pc : pcAfter (UInt256.ofNat 2328) inline31Template = UInt256.ofNat 2388 := rfl
 
-theorem group32Template_pc : pcAfter (UInt256.ofNat 2414) group32Template = UInt256.ofNat 2437 := rfl
+theorem group32Template_pc : pcAfter (UInt256.ofNat 2388) group32Template = UInt256.ofNat 2411 := rfl
 
-def group32Block : CoreBlock 2414 2437 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.k, .a, .b, .c, .upper, .e, .factor, .pair, .d, .lower] where
+def group32Block : CoreBlock 2388 2411 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.k, .a, .b, .c, .upper, .e, .factor, .pair, .d, .lower] where
   code := group32Template
   eval := fun _memory f => {f with k := UInt256.ofNat 624783161132376868856603395408315258898134723489}
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_group32Template s (UInt256.ofNat 2414) f.frame rho hstack hrun
+    have h := run_group32Template s (UInt256.ofNat 2388) f.frame rho hstack hrun
     rw [group32Template_pc] at h
     exact h
 
 
-theorem inline32Template_pc : pcAfter (UInt256.ofNat 2437) inline32Template = UInt256.ofNat 2487 := rfl
+theorem inline32Template_pc : pcAfter (UInt256.ofNat 2411) inline32Template = UInt256.ofNat 2461 := rfl
 
-theorem inline33Template_pc : pcAfter (UInt256.ofNat 2487) inline33Template = UInt256.ofNat 2537 := rfl
+theorem inline33Template_pc : pcAfter (UInt256.ofNat 2461) inline33Template = UInt256.ofNat 2510 := rfl
 
-theorem inline34Template_pc : pcAfter (UInt256.ofNat 2537) inline34Template = UInt256.ofNat 2586 := rfl
+theorem inline34Template_pc : pcAfter (UInt256.ofNat 2510) inline34Template = UInt256.ofNat 2559 := rfl
 
-theorem inline35Template_pc : pcAfter (UInt256.ofNat 2586) inline35Template = UInt256.ofNat 2636 := rfl
+theorem inline35Template_pc : pcAfter (UInt256.ofNat 2559) inline35Template = UInt256.ofNat 2609 := rfl
 
-theorem inline36Template_pc : pcAfter (UInt256.ofNat 2636) inline36Template = UInt256.ofNat 2686 := rfl
+theorem inline36Template_pc : pcAfter (UInt256.ofNat 2609) inline36Template = UInt256.ofNat 2658 := rfl
 
-theorem inline37Template_pc : pcAfter (UInt256.ofNat 2686) inline37Template = UInt256.ofNat 2736 := rfl
+theorem inline37Template_pc : pcAfter (UInt256.ofNat 2658) inline37Template = UInt256.ofNat 2708 := rfl
 
-theorem inline38Template_pc : pcAfter (UInt256.ofNat 2736) inline38Template = UInt256.ofNat 2786 := rfl
+theorem inline38Template_pc : pcAfter (UInt256.ofNat 2708) inline38Template = UInt256.ofNat 2757 := rfl
 
-theorem inline39Template_pc : pcAfter (UInt256.ofNat 2786) inline39Template = UInt256.ofNat 2835 := rfl
+theorem inline39Template_pc : pcAfter (UInt256.ofNat 2757) inline39Template = UInt256.ofNat 2805 := rfl
 
-theorem inline40Template_pc : pcAfter (UInt256.ofNat 2835) inline40Template = UInt256.ofNat 2885 := rfl
+theorem inline40Template_pc : pcAfter (UInt256.ofNat 2805) inline40Template = UInt256.ofNat 2854 := rfl
 
-theorem inline41Template_pc : pcAfter (UInt256.ofNat 2885) inline41Template = UInt256.ofNat 2935 := rfl
+theorem inline41Template_pc : pcAfter (UInt256.ofNat 2854) inline41Template = UInt256.ofNat 2903 := rfl
 
-theorem inline42Template_pc : pcAfter (UInt256.ofNat 2935) inline42Template = UInt256.ofNat 2984 := rfl
+theorem inline42Template_pc : pcAfter (UInt256.ofNat 2903) inline42Template = UInt256.ofNat 2950 := rfl
 
-theorem inline43Template_pc : pcAfter (UInt256.ofNat 2984) inline43Template = UInt256.ofNat 3034 := rfl
+theorem inline43Template_pc : pcAfter (UInt256.ofNat 2950) inline43Template = UInt256.ofNat 3000 := rfl
 
-theorem inline44Template_pc : pcAfter (UInt256.ofNat 3034) inline44Template = UInt256.ofNat 3084 := rfl
+theorem inline44Template_pc : pcAfter (UInt256.ofNat 3000) inline44Template = UInt256.ofNat 3048 := rfl
 
-theorem inline45Template_pc : pcAfter (UInt256.ofNat 3084) inline45Template = UInt256.ofNat 3133 := rfl
+theorem inline45Template_pc : pcAfter (UInt256.ofNat 3048) inline45Template = UInt256.ofNat 3096 := rfl
 
-theorem inline46Template_pc : pcAfter (UInt256.ofNat 3133) inline46Template = UInt256.ofNat 3173 := rfl
+theorem inline46Template_pc : pcAfter (UInt256.ofNat 3096) inline46Template = UInt256.ofNat 3136 := rfl
 
-theorem inline47Template_pc : pcAfter (UInt256.ofNat 3173) inline47Template = UInt256.ofNat 3213 := rfl
+theorem inline47Template_pc : pcAfter (UInt256.ofNat 3136) inline47Template = UInt256.ofNat 3174 := rfl
 
-theorem group48Template_pc : pcAfter (UInt256.ofNat 3213) group48Template = UInt256.ofNat 3236 := rfl
+theorem group48Template_pc : pcAfter (UInt256.ofNat 3174) group48Template = UInt256.ofNat 3197 := rfl
 
-def group48Block : CoreBlock 3213 3236 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.k, .d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def group48Block : CoreBlock 3174 3197 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.k, .d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := group48Template
   eval := fun _memory f => {f with k := UInt256.ofNat 698938013802679700166637234969497128417458109660}
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_group48Template s (UInt256.ofNat 3213) f.frame rho hstack hrun
+    have h := run_group48Template s (UInt256.ofNat 3174) f.frame rho hstack hrun
     rw [group48Template_pc] at h
     exact h
 
 
-theorem inline48Template_pc : pcAfter (UInt256.ofNat 3236) inline48Template = UInt256.ofNat 3296 := rfl
+theorem inline48Template_pc : pcAfter (UInt256.ofNat 3197) inline48Template = UInt256.ofNat 3256 := rfl
 
-theorem inline49Template_pc : pcAfter (UInt256.ofNat 3296) inline49Template = UInt256.ofNat 3357 := rfl
+theorem inline49Template_pc : pcAfter (UInt256.ofNat 3256) inline49Template = UInt256.ofNat 3316 := rfl
 
-theorem inline50Template_pc : pcAfter (UInt256.ofNat 3357) inline50Template = UInt256.ofNat 3418 := rfl
+theorem inline50Template_pc : pcAfter (UInt256.ofNat 3316) inline50Template = UInt256.ofNat 3376 := rfl
 
-theorem inline51Template_pc : pcAfter (UInt256.ofNat 3418) inline51Template = UInt256.ofNat 3478 := rfl
+theorem inline51Template_pc : pcAfter (UInt256.ofNat 3376) inline51Template = UInt256.ofNat 3435 := rfl
 
-theorem inline52Template_pc : pcAfter (UInt256.ofNat 3478) inline52Template = UInt256.ofNat 3528 := rfl
+theorem inline52Template_pc : pcAfter (UInt256.ofNat 3435) inline52Template = UInt256.ofNat 3484 := rfl
 
-theorem inline53Template_pc : pcAfter (UInt256.ofNat 3528) inline53Template = UInt256.ofNat 3589 := rfl
+theorem inline53Template_pc : pcAfter (UInt256.ofNat 3484) inline53Template = UInt256.ofNat 3543 := rfl
 
-theorem inline54Template_pc : pcAfter (UInt256.ofNat 3589) inline54Template = UInt256.ofNat 3650 := rfl
+theorem inline54Template_pc : pcAfter (UInt256.ofNat 3543) inline54Template = UInt256.ofNat 3603 := rfl
 
-theorem inline55Template_pc : pcAfter (UInt256.ofNat 3650) inline55Template = UInt256.ofNat 3710 := rfl
+theorem inline55Template_pc : pcAfter (UInt256.ofNat 3603) inline55Template = UInt256.ofNat 3663 := rfl
 
-theorem inline56Template_pc : pcAfter (UInt256.ofNat 3710) inline56Template = UInt256.ofNat 3771 := rfl
+theorem inline56Template_pc : pcAfter (UInt256.ofNat 3663) inline56Template = UInt256.ofNat 3723 := rfl
 
-theorem inline57Template_pc : pcAfter (UInt256.ofNat 3771) inline57Template = UInt256.ofNat 3832 := rfl
+theorem inline57Template_pc : pcAfter (UInt256.ofNat 3723) inline57Template = UInt256.ofNat 3783 := rfl
 
-theorem inline58Template_pc : pcAfter (UInt256.ofNat 3832) inline58Template = UInt256.ofNat 3893 := rfl
+theorem inline58Template_pc : pcAfter (UInt256.ofNat 3783) inline58Template = UInt256.ofNat 3844 := rfl
 
-theorem inline59Template_pc : pcAfter (UInt256.ofNat 3893) inline59Template = UInt256.ofNat 3954 := rfl
+theorem inline59Template_pc : pcAfter (UInt256.ofNat 3844) inline59Template = UInt256.ofNat 3904 := rfl
 
-theorem inline60Template_pc : pcAfter (UInt256.ofNat 3954) inline60Template = UInt256.ofNat 4015 := rfl
+theorem inline60Template_pc : pcAfter (UInt256.ofNat 3904) inline60Template = UInt256.ofNat 3964 := rfl
 
-theorem inline61Template_pc : pcAfter (UInt256.ofNat 4015) inline61Template = UInt256.ofNat 4076 := rfl
+theorem inline61Template_pc : pcAfter (UInt256.ofNat 3964) inline61Template = UInt256.ofNat 4025 := rfl
 
-theorem inline62Template_pc : pcAfter (UInt256.ofNat 4076) inline62Template = UInt256.ofNat 4137 := rfl
+theorem inline62Template_pc : pcAfter (UInt256.ofNat 4025) inline62Template = UInt256.ofNat 4085 := rfl
 
-theorem inline63Template_pc : pcAfter (UInt256.ofNat 4137) inline63Template = UInt256.ofNat 4198 := rfl
+theorem inline63Template_pc : pcAfter (UInt256.ofNat 4085) inline63Template = UInt256.ofNat 4146 := rfl
 
-theorem group64Template_pc : pcAfter (UInt256.ofNat 4198) group64Template = UInt256.ofNat 4205 := rfl
+theorem group64Template_pc : pcAfter (UInt256.ofNat 4146) group64Template = UInt256.ofNat 4153 := rfl
 
-def group64Block : CoreBlock 4198 4205 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.k, .a, .b, .c, .upper, .e, .factor, .pair, .d, .lower] where
+def group64Block : CoreBlock 4146 4153 [.d, .a, .b, .c, .upper, .e, .factor, .pair, .k, .lower] [.k, .a, .b, .c, .upper, .e, .factor, .pair, .d, .lower] where
   code := group64Template
   eval := fun _memory f => {f with k := UInt256.ofNat 2840853838}
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_group64Template s (UInt256.ofNat 4198) f.frame rho hstack hrun
+    have h := run_group64Template s (UInt256.ofNat 4146) f.frame rho hstack hrun
     rw [group64Template_pc] at h
     exact h
 
 
-theorem inline64Template_pc : pcAfter (UInt256.ofNat 4205) inline64Template = UInt256.ofNat 4260 := rfl
+theorem inline64Template_pc : pcAfter (UInt256.ofNat 4153) inline64Template = UInt256.ofNat 4207 := rfl
 
-theorem inline65Template_pc : pcAfter (UInt256.ofNat 4260) inline65Template = UInt256.ofNat 4314 := rfl
+theorem inline65Template_pc : pcAfter (UInt256.ofNat 4207) inline65Template = UInt256.ofNat 4260 := rfl
 
-theorem inline66Template_pc : pcAfter (UInt256.ofNat 4314) inline66Template = UInt256.ofNat 4369 := rfl
+theorem inline66Template_pc : pcAfter (UInt256.ofNat 4260) inline66Template = UInt256.ofNat 4314 := rfl
 
-theorem inline67Template_pc : pcAfter (UInt256.ofNat 4369) inline67Template = UInt256.ofNat 4424 := rfl
+theorem inline67Template_pc : pcAfter (UInt256.ofNat 4314) inline67Template = UInt256.ofNat 4368 := rfl
 
-theorem inline68Template_pc : pcAfter (UInt256.ofNat 4424) inline68Template = UInt256.ofNat 4478 := rfl
+theorem inline68Template_pc : pcAfter (UInt256.ofNat 4368) inline68Template = UInt256.ofNat 4422 := rfl
 
-theorem inline69Template_pc : pcAfter (UInt256.ofNat 4478) inline69Template = UInt256.ofNat 4533 := rfl
+theorem inline69Template_pc : pcAfter (UInt256.ofNat 4422) inline69Template = UInt256.ofNat 4476 := rfl
 
-theorem inline70Template_pc : pcAfter (UInt256.ofNat 4533) inline70Template = UInt256.ofNat 4588 := rfl
+theorem inline70Template_pc : pcAfter (UInt256.ofNat 4476) inline70Template = UInt256.ofNat 4530 := rfl
 
-theorem inline71Template_pc : pcAfter (UInt256.ofNat 4588) inline71Template = UInt256.ofNat 4643 := rfl
+theorem inline71Template_pc : pcAfter (UInt256.ofNat 4530) inline71Template = UInt256.ofNat 4584 := rfl
 
-theorem inline72Template_pc : pcAfter (UInt256.ofNat 4643) inline72Template = UInt256.ofNat 4698 := rfl
+theorem inline72Template_pc : pcAfter (UInt256.ofNat 4584) inline72Template = UInt256.ofNat 4639 := rfl
 
-theorem inline73Template_pc : pcAfter (UInt256.ofNat 4698) inline73Template = UInt256.ofNat 4752 := rfl
+theorem inline73Template_pc : pcAfter (UInt256.ofNat 4639) inline73Template = UInt256.ofNat 4693 := rfl
 
-theorem inline74Template_pc : pcAfter (UInt256.ofNat 4752) inline74Template = UInt256.ofNat 4807 := rfl
+theorem inline74Template_pc : pcAfter (UInt256.ofNat 4693) inline74Template = UInt256.ofNat 4747 := rfl
 
-theorem inline75Template_pc : pcAfter (UInt256.ofNat 4807) inline75Template = UInt256.ofNat 4862 := rfl
+theorem inline75Template_pc : pcAfter (UInt256.ofNat 4747) inline75Template = UInt256.ofNat 4801 := rfl
 
-theorem inline76Template_pc : pcAfter (UInt256.ofNat 4862) inline76Template = UInt256.ofNat 4916 := rfl
+theorem inline76Template_pc : pcAfter (UInt256.ofNat 4801) inline76Template = UInt256.ofNat 4854 := rfl
 
-theorem inline77Template_pc : pcAfter (UInt256.ofNat 4916) inline77Template = UInt256.ofNat 4971 := rfl
+theorem inline77Template_pc : pcAfter (UInt256.ofNat 4854) inline77Template = UInt256.ofNat 4909 := rfl
 
-theorem inline78Template_pc : pcAfter (UInt256.ofNat 4971) inline78Template = UInt256.ofNat 5026 := rfl
+theorem inline78Template_pc : pcAfter (UInt256.ofNat 4909) inline78Template = UInt256.ofNat 4963 := rfl
 
-theorem inline79Template_pc : pcAfter (UInt256.ofNat 5026) inline79Template = UInt256.ofNat 5081 := rfl
+theorem inline79Template_pc : pcAfter (UInt256.ofNat 4963) inline79Template = UInt256.ofNat 5016 := rfl
 
-theorem coreExitTemplate_pc : pcAfter (UInt256.ofNat 5081) coreExitTemplate = UInt256.ofNat 5083 := rfl
+theorem coreExitTemplate_pc : pcAfter (UInt256.ofNat 5016) coreExitTemplate = UInt256.ofNat 5018 := rfl
 
-def coreExitBlock : CoreBlock 5081 5083 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
+def coreExitBlock : CoreBlock 5016 5018 [.d, .k, .b, .c, .upper, .e, .factor, .pair, .a, .lower] [.d, .b, .c, .upper, .e, .factor, .pair, .a, .lower] where
   code := coreExitTemplate
   eval := fun _memory f => f
   run := by
     intro s f rho hstack hrun _hactive _hvalid
-    have h := run_coreExitTemplate s (UInt256.ofNat 5081) f.frame rho hstack hrun
+    have h := run_coreExitTemplate s (UInt256.ofNat 5016) f.frame rho hstack hrun
     rw [coreExitTemplate_pc] at h
     exact h
 
@@ -7307,10 +7311,12 @@ def algorithmKey (j : Nat) : UInt256 :=
   | 4 => UInt256.ofNat 2840853838
   | _ => 0
 
+/-- Round `i` reads the upper lane of word `rP[i]` and the lower lane of word `r[i]`;
+word `w` lives in the cell at `32 * ScheduleLayout.perm w` (stride 32, base 0). -/
 def algorithmMessage (memory : ByteArray) (i : Nat) : UInt256 :=
   UInt256.lor
-    (MachineState.readWord memory (208 + 32 * Crypto.Ripemd160.rP[i]!))
-    (MachineState.readWord memory (192 + 32 * Crypto.Ripemd160.r[i]!))
+    (MachineState.readWord memory (32 * ScheduleLayout.perm Crypto.Ripemd160.rP[i]! + 16))
+    (MachineState.readWord memory (32 * ScheduleLayout.perm Crypto.Ripemd160.r[i]!))
 
 def algorithmFold (memory : ByteArray) (start count : Nat)
     (q : PairedLaneWordRound.WordLane) : PairedLaneWordRound.WordLane :=
@@ -7618,9 +7624,12 @@ theorem algorithmIndex_bounds (i : Fin 80) :
     simpa only [he] using h
 
 
+/-- Word `i` of the block sits normalized in its cell `32 * perm i`, and the
+overlapping read 16 bytes further yields it in the upper lane. -/
 def NormalizedScheduleReady (memory : ByteArray) (words : Nat → UInt32) : Prop :=
-  (∀ i < 16, MachineState.readWord memory (192 + 32 * i) = UInt256.ofNat (words i).toNat) ∧
-  (∀ i < 16, MachineState.readWord memory (208 + 32 * i) =
+  (∀ i < 16, MachineState.readWord memory (32 * ScheduleLayout.perm i) =
+    UInt256.ofNat (words i).toNat) ∧
+  (∀ i < 16, MachineState.readWord memory (32 * ScheduleLayout.perm i + 16) =
     UInt256.shiftLeft (UInt256.ofNat (words i).toNat) (UInt256.ofNat 128))
 
 theorem algorithmMessage_of_normalized (memory : ByteArray) (words : Nat → UInt32)
@@ -8367,89 +8376,89 @@ theorem runInstrSeq_append_tail
 structure WholeCoreSites (artifact : ProgramArtifact) (fork : Fork) where
   group0 : {site : GenericRoundSite artifact fork group0Template // site.startPC = UInt256.ofNat 960}
   inline0 : {site : GenericRoundSite artifact fork inline0Template // site.startPC = UInt256.ofNat 981}
-  inline1 : {site : GenericRoundSite artifact fork inline1Template // site.startPC = UInt256.ofNat 1035}
-  inline2 : {site : GenericRoundSite artifact fork inline2Template // site.startPC = UInt256.ofNat 1089}
-  inline3 : {site : GenericRoundSite artifact fork inline3Template // site.startPC = UInt256.ofNat 1144}
-  inline4 : {site : GenericRoundSite artifact fork inline4Template // site.startPC = UInt256.ofNat 1198}
-  inline5 : {site : GenericRoundSite artifact fork inline5Template // site.startPC = UInt256.ofNat 1253}
-  inline6 : {site : GenericRoundSite artifact fork inline6Template // site.startPC = UInt256.ofNat 1308}
-  inline7 : {site : GenericRoundSite artifact fork inline7Template // site.startPC = UInt256.ofNat 1363}
-  inline8 : {site : GenericRoundSite artifact fork inline8Template // site.startPC = UInt256.ofNat 1418}
-  inline9 : {site : GenericRoundSite artifact fork inline9Template // site.startPC = UInt256.ofNat 1473}
-  inline10 : {site : GenericRoundSite artifact fork inline10Template // site.startPC = UInt256.ofNat 1528}
-  inline11 : {site : GenericRoundSite artifact fork inline11Template // site.startPC = UInt256.ofNat 1583}
-  inline12 : {site : GenericRoundSite artifact fork inline12Template // site.startPC = UInt256.ofNat 1638}
-  inline13 : {site : GenericRoundSite artifact fork inline13Template // site.startPC = UInt256.ofNat 1692}
-  inline14 : {site : GenericRoundSite artifact fork inline14Template // site.startPC = UInt256.ofNat 1747}
-  inline15 : {site : GenericRoundSite artifact fork inline15Template // site.startPC = UInt256.ofNat 1802}
-  group16 : {site : GenericRoundSite artifact fork group16Template // site.startPC = UInt256.ofNat 1857}
-  call16 : {site : GenericRoundSite artifact fork call16Template // site.startPC = UInt256.ofNat 1880}
-  return18 : {site : GenericRoundSite artifact fork return18Template // site.startPC = UInt256.ofNat 1920}
-  inline18 : {site : GenericRoundSite artifact fork inline18Template // site.startPC = UInt256.ofNat 1921}
-  inline19 : {site : GenericRoundSite artifact fork inline19Template // site.startPC = UInt256.ofNat 1981}
-  call20 : {site : GenericRoundSite artifact fork call20Template // site.startPC = UInt256.ofNat 2041}
-  call22 : {site : GenericRoundSite artifact fork call22Template // site.startPC = UInt256.ofNat 2077}
-  return24 : {site : GenericRoundSite artifact fork return24Template // site.startPC = UInt256.ofNat 2116}
-  inline24 : {site : GenericRoundSite artifact fork inline24Template // site.startPC = UInt256.ofNat 2117}
-  inline25 : {site : GenericRoundSite artifact fork inline25Template // site.startPC = UInt256.ofNat 2167}
-  call26 : {site : GenericRoundSite artifact fork call26Template // site.startPC = UInt256.ofNat 2227}
-  call28 : {site : GenericRoundSite artifact fork call28Template // site.startPC = UInt256.ofNat 2264}
-  return30 : {site : GenericRoundSite artifact fork return30Template // site.startPC = UInt256.ofNat 2303}
-  inline30 : {site : GenericRoundSite artifact fork inline30Template // site.startPC = UInt256.ofNat 2304}
-  inline31 : {site : GenericRoundSite artifact fork inline31Template // site.startPC = UInt256.ofNat 2353}
-  group32 : {site : GenericRoundSite artifact fork group32Template // site.startPC = UInt256.ofNat 2414}
-  inline32 : {site : GenericRoundSite artifact fork inline32Template // site.startPC = UInt256.ofNat 2437}
-  inline33 : {site : GenericRoundSite artifact fork inline33Template // site.startPC = UInt256.ofNat 2487}
-  inline34 : {site : GenericRoundSite artifact fork inline34Template // site.startPC = UInt256.ofNat 2537}
-  inline35 : {site : GenericRoundSite artifact fork inline35Template // site.startPC = UInt256.ofNat 2586}
-  inline36 : {site : GenericRoundSite artifact fork inline36Template // site.startPC = UInt256.ofNat 2636}
-  inline37 : {site : GenericRoundSite artifact fork inline37Template // site.startPC = UInt256.ofNat 2686}
-  inline38 : {site : GenericRoundSite artifact fork inline38Template // site.startPC = UInt256.ofNat 2736}
-  inline39 : {site : GenericRoundSite artifact fork inline39Template // site.startPC = UInt256.ofNat 2786}
-  inline40 : {site : GenericRoundSite artifact fork inline40Template // site.startPC = UInt256.ofNat 2835}
-  inline41 : {site : GenericRoundSite artifact fork inline41Template // site.startPC = UInt256.ofNat 2885}
-  inline42 : {site : GenericRoundSite artifact fork inline42Template // site.startPC = UInt256.ofNat 2935}
-  inline43 : {site : GenericRoundSite artifact fork inline43Template // site.startPC = UInt256.ofNat 2984}
-  inline44 : {site : GenericRoundSite artifact fork inline44Template // site.startPC = UInt256.ofNat 3034}
-  inline45 : {site : GenericRoundSite artifact fork inline45Template // site.startPC = UInt256.ofNat 3084}
-  inline46 : {site : GenericRoundSite artifact fork inline46Template // site.startPC = UInt256.ofNat 3133}
-  inline47 : {site : GenericRoundSite artifact fork inline47Template // site.startPC = UInt256.ofNat 3173}
-  group48 : {site : GenericRoundSite artifact fork group48Template // site.startPC = UInt256.ofNat 3213}
-  inline48 : {site : GenericRoundSite artifact fork inline48Template // site.startPC = UInt256.ofNat 3236}
-  inline49 : {site : GenericRoundSite artifact fork inline49Template // site.startPC = UInt256.ofNat 3296}
-  inline50 : {site : GenericRoundSite artifact fork inline50Template // site.startPC = UInt256.ofNat 3357}
-  inline51 : {site : GenericRoundSite artifact fork inline51Template // site.startPC = UInt256.ofNat 3418}
-  inline52 : {site : GenericRoundSite artifact fork inline52Template // site.startPC = UInt256.ofNat 3478}
-  inline53 : {site : GenericRoundSite artifact fork inline53Template // site.startPC = UInt256.ofNat 3528}
-  inline54 : {site : GenericRoundSite artifact fork inline54Template // site.startPC = UInt256.ofNat 3589}
-  inline55 : {site : GenericRoundSite artifact fork inline55Template // site.startPC = UInt256.ofNat 3650}
-  inline56 : {site : GenericRoundSite artifact fork inline56Template // site.startPC = UInt256.ofNat 3710}
-  inline57 : {site : GenericRoundSite artifact fork inline57Template // site.startPC = UInt256.ofNat 3771}
-  inline58 : {site : GenericRoundSite artifact fork inline58Template // site.startPC = UInt256.ofNat 3832}
-  inline59 : {site : GenericRoundSite artifact fork inline59Template // site.startPC = UInt256.ofNat 3893}
-  inline60 : {site : GenericRoundSite artifact fork inline60Template // site.startPC = UInt256.ofNat 3954}
-  inline61 : {site : GenericRoundSite artifact fork inline61Template // site.startPC = UInt256.ofNat 4015}
-  inline62 : {site : GenericRoundSite artifact fork inline62Template // site.startPC = UInt256.ofNat 4076}
-  inline63 : {site : GenericRoundSite artifact fork inline63Template // site.startPC = UInt256.ofNat 4137}
-  group64 : {site : GenericRoundSite artifact fork group64Template // site.startPC = UInt256.ofNat 4198}
-  inline64 : {site : GenericRoundSite artifact fork inline64Template // site.startPC = UInt256.ofNat 4205}
-  inline65 : {site : GenericRoundSite artifact fork inline65Template // site.startPC = UInt256.ofNat 4260}
-  inline66 : {site : GenericRoundSite artifact fork inline66Template // site.startPC = UInt256.ofNat 4314}
-  inline67 : {site : GenericRoundSite artifact fork inline67Template // site.startPC = UInt256.ofNat 4369}
-  inline68 : {site : GenericRoundSite artifact fork inline68Template // site.startPC = UInt256.ofNat 4424}
-  inline69 : {site : GenericRoundSite artifact fork inline69Template // site.startPC = UInt256.ofNat 4478}
-  inline70 : {site : GenericRoundSite artifact fork inline70Template // site.startPC = UInt256.ofNat 4533}
-  inline71 : {site : GenericRoundSite artifact fork inline71Template // site.startPC = UInt256.ofNat 4588}
-  inline72 : {site : GenericRoundSite artifact fork inline72Template // site.startPC = UInt256.ofNat 4643}
-  inline73 : {site : GenericRoundSite artifact fork inline73Template // site.startPC = UInt256.ofNat 4698}
-  inline74 : {site : GenericRoundSite artifact fork inline74Template // site.startPC = UInt256.ofNat 4752}
-  inline75 : {site : GenericRoundSite artifact fork inline75Template // site.startPC = UInt256.ofNat 4807}
-  inline76 : {site : GenericRoundSite artifact fork inline76Template // site.startPC = UInt256.ofNat 4862}
-  inline77 : {site : GenericRoundSite artifact fork inline77Template // site.startPC = UInt256.ofNat 4916}
-  inline78 : {site : GenericRoundSite artifact fork inline78Template // site.startPC = UInt256.ofNat 4971}
-  inline79 : {site : GenericRoundSite artifact fork inline79Template // site.startPC = UInt256.ofNat 5026}
-  coreExit : {site : GenericRoundSite artifact fork coreExitTemplate // site.startPC = UInt256.ofNat 5081}
-  helper : {site : GenericRoundSite artifact fork fullTemplate // site.startPC = UInt256.ofNat 5168}
+  inline1 : {site : GenericRoundSite artifact fork inline1Template // site.startPC = UInt256.ofNat 1034}
+  inline2 : {site : GenericRoundSite artifact fork inline2Template // site.startPC = UInt256.ofNat 1088}
+  inline3 : {site : GenericRoundSite artifact fork inline3Template // site.startPC = UInt256.ofNat 1143}
+  inline4 : {site : GenericRoundSite artifact fork inline4Template // site.startPC = UInt256.ofNat 1197}
+  inline5 : {site : GenericRoundSite artifact fork inline5Template // site.startPC = UInt256.ofNat 1251}
+  inline6 : {site : GenericRoundSite artifact fork inline6Template // site.startPC = UInt256.ofNat 1306}
+  inline7 : {site : GenericRoundSite artifact fork inline7Template // site.startPC = UInt256.ofNat 1360}
+  inline8 : {site : GenericRoundSite artifact fork inline8Template // site.startPC = UInt256.ofNat 1415}
+  inline9 : {site : GenericRoundSite artifact fork inline9Template // site.startPC = UInt256.ofNat 1468}
+  inline10 : {site : GenericRoundSite artifact fork inline10Template // site.startPC = UInt256.ofNat 1522}
+  inline11 : {site : GenericRoundSite artifact fork inline11Template // site.startPC = UInt256.ofNat 1576}
+  inline12 : {site : GenericRoundSite artifact fork inline12Template // site.startPC = UInt256.ofNat 1629}
+  inline13 : {site : GenericRoundSite artifact fork inline13Template // site.startPC = UInt256.ofNat 1682}
+  inline14 : {site : GenericRoundSite artifact fork inline14Template // site.startPC = UInt256.ofNat 1735}
+  inline15 : {site : GenericRoundSite artifact fork inline15Template // site.startPC = UInt256.ofNat 1790}
+  group16 : {site : GenericRoundSite artifact fork group16Template // site.startPC = UInt256.ofNat 1844}
+  call16 : {site : GenericRoundSite artifact fork call16Template // site.startPC = UInt256.ofNat 1867}
+  return18 : {site : GenericRoundSite artifact fork return18Template // site.startPC = UInt256.ofNat 1906}
+  inline18 : {site : GenericRoundSite artifact fork inline18Template // site.startPC = UInt256.ofNat 1907}
+  inline19 : {site : GenericRoundSite artifact fork inline19Template // site.startPC = UInt256.ofNat 1966}
+  call20 : {site : GenericRoundSite artifact fork call20Template // site.startPC = UInt256.ofNat 2026}
+  call22 : {site : GenericRoundSite artifact fork call22Template // site.startPC = UInt256.ofNat 2060}
+  return24 : {site : GenericRoundSite artifact fork return24Template // site.startPC = UInt256.ofNat 2098}
+  inline24 : {site : GenericRoundSite artifact fork inline24Template // site.startPC = UInt256.ofNat 2099}
+  inline25 : {site : GenericRoundSite artifact fork inline25Template // site.startPC = UInt256.ofNat 2148}
+  call26 : {site : GenericRoundSite artifact fork call26Template // site.startPC = UInt256.ofNat 2207}
+  call28 : {site : GenericRoundSite artifact fork call28Template // site.startPC = UInt256.ofNat 2241}
+  return30 : {site : GenericRoundSite artifact fork return30Template // site.startPC = UInt256.ofNat 2279}
+  inline30 : {site : GenericRoundSite artifact fork inline30Template // site.startPC = UInt256.ofNat 2280}
+  inline31 : {site : GenericRoundSite artifact fork inline31Template // site.startPC = UInt256.ofNat 2328}
+  group32 : {site : GenericRoundSite artifact fork group32Template // site.startPC = UInt256.ofNat 2388}
+  inline32 : {site : GenericRoundSite artifact fork inline32Template // site.startPC = UInt256.ofNat 2411}
+  inline33 : {site : GenericRoundSite artifact fork inline33Template // site.startPC = UInt256.ofNat 2461}
+  inline34 : {site : GenericRoundSite artifact fork inline34Template // site.startPC = UInt256.ofNat 2510}
+  inline35 : {site : GenericRoundSite artifact fork inline35Template // site.startPC = UInt256.ofNat 2559}
+  inline36 : {site : GenericRoundSite artifact fork inline36Template // site.startPC = UInt256.ofNat 2609}
+  inline37 : {site : GenericRoundSite artifact fork inline37Template // site.startPC = UInt256.ofNat 2658}
+  inline38 : {site : GenericRoundSite artifact fork inline38Template // site.startPC = UInt256.ofNat 2708}
+  inline39 : {site : GenericRoundSite artifact fork inline39Template // site.startPC = UInt256.ofNat 2757}
+  inline40 : {site : GenericRoundSite artifact fork inline40Template // site.startPC = UInt256.ofNat 2805}
+  inline41 : {site : GenericRoundSite artifact fork inline41Template // site.startPC = UInt256.ofNat 2854}
+  inline42 : {site : GenericRoundSite artifact fork inline42Template // site.startPC = UInt256.ofNat 2903}
+  inline43 : {site : GenericRoundSite artifact fork inline43Template // site.startPC = UInt256.ofNat 2950}
+  inline44 : {site : GenericRoundSite artifact fork inline44Template // site.startPC = UInt256.ofNat 3000}
+  inline45 : {site : GenericRoundSite artifact fork inline45Template // site.startPC = UInt256.ofNat 3048}
+  inline46 : {site : GenericRoundSite artifact fork inline46Template // site.startPC = UInt256.ofNat 3096}
+  inline47 : {site : GenericRoundSite artifact fork inline47Template // site.startPC = UInt256.ofNat 3136}
+  group48 : {site : GenericRoundSite artifact fork group48Template // site.startPC = UInt256.ofNat 3174}
+  inline48 : {site : GenericRoundSite artifact fork inline48Template // site.startPC = UInt256.ofNat 3197}
+  inline49 : {site : GenericRoundSite artifact fork inline49Template // site.startPC = UInt256.ofNat 3256}
+  inline50 : {site : GenericRoundSite artifact fork inline50Template // site.startPC = UInt256.ofNat 3316}
+  inline51 : {site : GenericRoundSite artifact fork inline51Template // site.startPC = UInt256.ofNat 3376}
+  inline52 : {site : GenericRoundSite artifact fork inline52Template // site.startPC = UInt256.ofNat 3435}
+  inline53 : {site : GenericRoundSite artifact fork inline53Template // site.startPC = UInt256.ofNat 3484}
+  inline54 : {site : GenericRoundSite artifact fork inline54Template // site.startPC = UInt256.ofNat 3543}
+  inline55 : {site : GenericRoundSite artifact fork inline55Template // site.startPC = UInt256.ofNat 3603}
+  inline56 : {site : GenericRoundSite artifact fork inline56Template // site.startPC = UInt256.ofNat 3663}
+  inline57 : {site : GenericRoundSite artifact fork inline57Template // site.startPC = UInt256.ofNat 3723}
+  inline58 : {site : GenericRoundSite artifact fork inline58Template // site.startPC = UInt256.ofNat 3783}
+  inline59 : {site : GenericRoundSite artifact fork inline59Template // site.startPC = UInt256.ofNat 3844}
+  inline60 : {site : GenericRoundSite artifact fork inline60Template // site.startPC = UInt256.ofNat 3904}
+  inline61 : {site : GenericRoundSite artifact fork inline61Template // site.startPC = UInt256.ofNat 3964}
+  inline62 : {site : GenericRoundSite artifact fork inline62Template // site.startPC = UInt256.ofNat 4025}
+  inline63 : {site : GenericRoundSite artifact fork inline63Template // site.startPC = UInt256.ofNat 4085}
+  group64 : {site : GenericRoundSite artifact fork group64Template // site.startPC = UInt256.ofNat 4146}
+  inline64 : {site : GenericRoundSite artifact fork inline64Template // site.startPC = UInt256.ofNat 4153}
+  inline65 : {site : GenericRoundSite artifact fork inline65Template // site.startPC = UInt256.ofNat 4207}
+  inline66 : {site : GenericRoundSite artifact fork inline66Template // site.startPC = UInt256.ofNat 4260}
+  inline67 : {site : GenericRoundSite artifact fork inline67Template // site.startPC = UInt256.ofNat 4314}
+  inline68 : {site : GenericRoundSite artifact fork inline68Template // site.startPC = UInt256.ofNat 4368}
+  inline69 : {site : GenericRoundSite artifact fork inline69Template // site.startPC = UInt256.ofNat 4422}
+  inline70 : {site : GenericRoundSite artifact fork inline70Template // site.startPC = UInt256.ofNat 4476}
+  inline71 : {site : GenericRoundSite artifact fork inline71Template // site.startPC = UInt256.ofNat 4530}
+  inline72 : {site : GenericRoundSite artifact fork inline72Template // site.startPC = UInt256.ofNat 4584}
+  inline73 : {site : GenericRoundSite artifact fork inline73Template // site.startPC = UInt256.ofNat 4639}
+  inline74 : {site : GenericRoundSite artifact fork inline74Template // site.startPC = UInt256.ofNat 4693}
+  inline75 : {site : GenericRoundSite artifact fork inline75Template // site.startPC = UInt256.ofNat 4747}
+  inline76 : {site : GenericRoundSite artifact fork inline76Template // site.startPC = UInt256.ofNat 4801}
+  inline77 : {site : GenericRoundSite artifact fork inline77Template // site.startPC = UInt256.ofNat 4854}
+  inline78 : {site : GenericRoundSite artifact fork inline78Template // site.startPC = UInt256.ofNat 4909}
+  inline79 : {site : GenericRoundSite artifact fork inline79Template // site.startPC = UInt256.ofNat 4963}
+  coreExit : {site : GenericRoundSite artifact fork coreExitTemplate // site.startPC = UInt256.ofNat 5016}
+  helper : {site : GenericRoundSite artifact fork fullTemplate // site.startPC = UInt256.ofNat 5103}
 
 #print axioms template_length
 #print axioms run_template

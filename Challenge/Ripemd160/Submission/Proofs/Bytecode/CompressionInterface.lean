@@ -27,6 +27,8 @@ structure CompressionSeam (input : ByteArray) where
   /-- The first dispatcher execution consumes blocks 0 and 1 together. -/
   double : Bool
   initial : DriverTrace.setupEntry (states 0) input = PaddingTrace.padReturned input
+  /-- The compression loop is only reached for nonempty calldata. -/
+  positive : 0 < input.size
   code : ∀ i, i ≤ DriverTrace.blockCount input →
     (states i).executionEnv.code = submissionBytecode
   fork : ∀ i, i ≤ DriverTrace.blockCount input →
@@ -59,10 +61,12 @@ noncomputable def gasSteps_driver (input : ByteArray)
   have gloop := DriverTrace.gasSteps_loop_of_compress_double seam.states input hfit
     seam.double seam.code seam.fork seam.running seam.noPrecompile seam.compress
     seam.compressDoubleBlocks seam.compressDouble
-  have hstart : DriverTrace.loopAt (seam.states 0) input 0 =
-      PaddingTrace.padReturned input := by
-    rw [← seam.initial]
-    rfl
-  exact GasSteps.cast gloop hstart rfl
+  have hcalldata : (seam.states 0).executionEnv.calldata = input := by
+    have h := congrArg (fun t : State => t.executionEnv.calldata) seam.initial
+    exact h
+  have genter := DriverTrace.gasSteps_enter (seam.states 0) input hfit seam.positive
+    hcalldata (seam.code 0 (by omega)) (seam.fork 0 (by omega))
+    (seam.running 0 (by omega)) (seam.noPrecompile 0 (by omega))
+  exact GasSteps.cast (genter.trans gloop) seam.initial rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectCorrect

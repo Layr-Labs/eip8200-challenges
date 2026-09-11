@@ -98,7 +98,7 @@ def hitRest : List UInt256 :=
 
 def hitState (input : ByteArray) : State :=
   { atPC input 255 with stack := hitRest }
-def fallbackState (input : ByteArray) : State := atPC input 393
+def fallbackState (input : ByteArray) : State := atPC input 268
 
 def storeWord (memory : ByteArray) (address : Nat) (word : UInt256) : ByteArray :=
   MachineState.writeBytes memory (Data.Bytes.natToBytesPadded word.toNat 32) address
@@ -107,7 +107,7 @@ def answerMemory : ByteArray := storeWord ByteArray.empty 0 paddedDigestWord
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 588
+    pc := UInt256.ofNat 4872
     stack := hitRest
     memory := answerMemory
     activeWords := UInt256.ofNat 1
