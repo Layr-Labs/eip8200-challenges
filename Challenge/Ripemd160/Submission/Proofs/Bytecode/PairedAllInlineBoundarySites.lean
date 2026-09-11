@@ -10,8 +10,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedAllInlineBoundary
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate PairedHelperBooleanTrace PairedAllInlineCoreTrace CachedCoreCommon
 def scheduleTemplate : List Instr :=
-  [ .op .JUMPDEST,
-    .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295),
+  [ .push ⟨5, by decide⟩ (UInt256.ofNat 4294967295),
     .push ⟨2, by decide⟩ (UInt256.ofNat 257),
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .NOT,
@@ -183,16 +182,16 @@ def scheduleTemplate : List Instr :=
     .op (.Swap ⟨5, by decide⟩),
     .op .POP ]
 theorem schedule_slice :
-    (Artifact.submissionArtifact.instructions.drop 257).take scheduleTemplate.length = scheduleTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 258).take scheduleTemplate.length = scheduleTemplate := by rfl
 def scheduleSite : GenericRoundSite Artifact.submissionArtifact .Osaka scheduleTemplate :=
-  StackSiteBuilder.ofSlice scheduleTemplate 257 schedule_slice
-    (by change 257 + scheduleTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice scheduleTemplate 258 schedule_slice
+    (by change 258 + scheduleTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := scheduleTemplate) (by decide))
     (by decide)
 theorem schedule_pc : scheduleSite.startPC = UInt256.ofNat 422 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 257) = UInt256.ofNat 422
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 258) = UInt256.ofNat 422
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem schedule_advances {instruction : Instr} (hmem : instruction ∈ scheduleTemplate)
     {s t : State} (hr : Stepper.runInstr instruction s = some t) :

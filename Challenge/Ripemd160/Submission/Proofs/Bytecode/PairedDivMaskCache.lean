@@ -46,7 +46,7 @@ private theorem add_ofNat_assoc_add (u : UInt256) (a b : Nat) :
   exact word_add_ofNat_assoc u a b
 
 def cachedInitial : List Instr :=
-  [op .JUMPDEST, .push ⟨4, by decide⟩ maskWord,
+  [.push ⟨5, by decide⟩ maskWord,
     push2 (UInt256.ofNat 257), .push 0 0, op .NOT, op .DIV,
     push3 (UInt256.ofNat 65537), .push 0 0, op .NOT, op .DIV,
     .op (.Swap ⟨2, by decide⟩), dup1, op .MLOAD, swap1,
@@ -226,7 +226,7 @@ private theorem cachedInitial_advances :
   intro instruction hmem
   simp only [cachedInitial, List.mem_cons, List.not_mem_nil, or_false] at hmem
   rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+    rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals first
     | exact Or.inr rfl
     | exact Or.inl (Or.inl (Or.inl (StraightLine.push _ _)))
