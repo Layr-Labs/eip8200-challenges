@@ -11,7 +11,7 @@ set_option maxHeartbeats 2000000
 The R0 artifact keeps the square's row frame at the kernel exit: the dispatch at 4630
 sends a square to `sq_exit` (4701), which
 
-* decrements the square counter in memory word 9280 (`0x2440`, written by the caller) and
+* decrements the square counter in memory word 5184 (`0x2440`, written by the caller) and
   stores it back;
 * if it is still non-zero, jumps to `more` (4728), which calls the unchanged final
   conditional subtraction as a **subroutine** (`PUSH2 again DUP16 PUSH2 guard JUMP`, so the
@@ -44,11 +44,11 @@ def pcAgain : Nat := 4755
 
 /-! ## The retained frame -/
 
-/-- The 16-slot row frame of a square (`pb = pa = 2048`, `hd = sq_row`), as it stands at
+/-- The 16-slot row frame of a square (`pb = pa = 512`, `hd = sq_row`), as it stands at
 the kernel exit and through the whole loop. -/
 def frameStack (n : Nat) (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) :
     List UInt256 → List UInt256 := fun rest =>
-  [pbi, UInt256.ofNat 4788, UInt256.ofNat (2048 - 32), ent, negative32, allOnes, l2Target n,
+  [pbi, UInt256.ofNat 4788, UInt256.ofNat (512 - 32), ent, negative32, allOnes, l2Target n,
     inv, m0, tl, m96, m64, m32, aprev, pdst, ret] ++ rest
 
 /-- The loop's states differ only in the program counter and the memory. -/
@@ -62,22 +62,22 @@ def frameAt (pc : Nat) (s : State) (mem : ByteArray) (n : Nat)
 theorem frameAt_eq_sqExitState (s : State) (mem : ByteArray) (n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) :
     frameAt pcSqExit s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest =
-      CiosCachedTailDefs.sqExitState s mem pbi 2048 n (UInt256.ofNat 4788) ent inv m0
+      CiosCachedTailDefs.sqExitState s mem pbi 512 n (UInt256.ofNat 4788) ent inv m0
         (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) := rfl
 
 /-- The `nx` `JUMPDEST` state of the last square. -/
 theorem frameAt_eq_nxJdState (s : State) (mem : ByteArray) (n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) :
     frameAt pcNx s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest =
-      CiosCachedTailDefs.nxJdState s mem pbi 2048 n (UInt256.ofNat 4788) ent inv m0
+      CiosCachedTailDefs.nxJdState s mem pbi 512 n (UInt256.ofNat 4788) ent inv m0
         (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) := rfl
 
 /-! ## Programs -/
 
 /-- `sq_exit` (4701): load the counter, decrement, store it back, branch to `more`. -/
 def sqExitProgram : List Instr :=
-  [.op .JUMPDEST, .push 3 9280, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .JUMPDEST, .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .push 2 9280, .op .MSTORE, .push 2 4739, .op .JUMPI]
+  [.op .JUMPDEST, .push 3 5184, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .JUMPDEST, .op .ADD,
+   .op (.Dup ⟨0, by decide⟩), .push 2 5184, .op .MSTORE, .push 2 4739, .op .JUMPI]
 
 /-- `last` (4719): the frame's `ret` slot becomes `after_sq`, then leave through `nx`. -/
 def lastProgram : List Instr :=
@@ -89,9 +89,9 @@ def moreProgram : List Instr :=
 
 /-- `again` (4737): re-stage, re-zero, reset three frame slots, fall into `sq_row`. -/
 def againProgram : List Instr :=
-  [.op .JUMPDEST, .push 2 9344, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .push 2 2048,
-   .push 2 8960, .op .MCOPY,
-   .op (.Dup ⟨0, by decide⟩), .push 1 64, .op .ADD, .op .CALLDATASIZE, .push 2 8192,
+  [.op .JUMPDEST, .push 2 5248, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .push 2 512,
+   .push 2 4864, .op .MCOPY,
+   .op (.Dup ⟨0, by decide⟩), .push 1 64, .op .ADD, .op .CALLDATASIZE, .push 2 4096,
    .op .CALLDATACOPY,
    .op .ADD, .push 2 299, .op (.Dup ⟨7, by decide⟩), .op .SUB,
    .op (.Swap ⟨3, by decide⟩), .op .POP,
@@ -135,23 +135,23 @@ theorem jumpDest4683 :
 
 /-! ## The counter word -/
 
-/-- The memory after `sq_exit`'s `MSTORE`: the counter word 9280 holds `c`. -/
+/-- The memory after `sq_exit`'s `MSTORE`: the counter word 5184 holds `c`. -/
 def countMem (mem : ByteArray) (c : Nat) : ByteArray :=
-  MachineState.writeBytes mem (Data.Bytes.natToBytesPadded c 32) 9280
+  MachineState.writeBytes mem (Data.Bytes.natToBytesPadded c 32) 5184
 
 theorem readWord_countMem (mem : ByteArray) (c : Nat) (hc : c < 2 ^ 256) :
-    MachineState.readWord (countMem mem c) 9280 = UInt256.ofNat c := by
+    MachineState.readWord (countMem mem c) 5184 = UInt256.ofNat c := by
   have h : (UInt256.ofNat c).toNat = c := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hc]
-  calc MachineState.readWord (countMem mem c) 9280
+  calc MachineState.readWord (countMem mem c) 5184
       = MachineState.readWord
           (MachineState.writeBytes mem
-            (Data.Bytes.natToBytesPadded (UInt256.ofNat c).toNat 32) 9280) 9280 := by
+            (Data.Bytes.natToBytesPadded (UInt256.ofNat c).toNat 32) 5184) 5184 := by
         rw [countMem, h]
-    _ = UInt256.ofNat c := Challenge.EvmProof.Memory.readWord_writeWord mem 9280 (UInt256.ofNat c)
+    _ = UInt256.ofNat c := Challenge.EvmProof.Memory.readWord_writeWord mem 5184 (UInt256.ofNat c)
 
 theorem readWord_countMem_disjoint (mem : ByteArray) (c addr : Nat)
-    (hd : addr + 32 ≤ 9280 ∨ 9312 ≤ addr) :
+    (hd : addr + 32 ≤ 5184 ∨ 5216 ≤ addr) :
     MachineState.readWord (countMem mem c) addr = MachineState.readWord mem addr := by
   simp only [countMem]
   apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint

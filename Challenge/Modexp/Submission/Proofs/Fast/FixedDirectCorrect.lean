@@ -86,9 +86,9 @@ def handled_of_bDoneWithGeneric
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 298 ≤ s.activeWords.toNat)
+    (hact : 170 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hb : bsize ≤ 1024) (he : esize ≤ 1024)
+    (hb : bsize ≤ 256) (he : esize ≤ 256)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
@@ -99,7 +99,7 @@ def handled_of_bDoneWithGeneric
     (hbMform : bM ≡ Precompile.bytesToNatPadded input 96 bsize *
       Limbs.radix ^ n [MOD mm])
     (hframe : Exp.Frame mem n bsize minv)
-    (hEb : Exp.EbInv (Exp.mcopyMem mem 1024 4096 (32 * n)) n mm bM
+    (hEb : Exp.EbInv (Exp.mcopyMem mem 256 1024 (32 * n)) n mm bM
       (Exp.expAcc mm (Limbs.radix ^ n) bM (Exp.expBits input bsize) 0)) :
     BDoneContinuation input s mem n bsize esize msize :=
   handled_of_bDone route
@@ -120,9 +120,9 @@ def handled_of_bDoneConcrete (input : ByteArray) (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 298 ≤ s.activeWords.toNat)
+    (hact : 170 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hb : bsize ≤ 1024) (he : esize ≤ 1024)
+    (hb : bsize ≤ 256) (he : esize ≤ 256)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
@@ -134,12 +134,12 @@ def handled_of_bDoneConcrete (input : ByteArray) (s : State) (mem : ByteArray)
       Limbs.radix ^ n [MOD mm])
     (hframe : Exp.Frame mem n bsize minv)
     (hmod : Model.FastRepresents mem 0 n mm)
-    (hbase : Model.FastRepresents mem 2048 n bM)
+    (hbase : Model.FastRepresents mem 512 n bM)
     (hone : ∃ one, one < Limbs.radix ∧
-      Model.FastRepresents mem 3072 n one)
-    (hEb : Exp.EbInv (Exp.mcopyMem mem 1024 4096 (32 * n)) n mm bM
+      Model.FastRepresents mem 768 n one)
+    (hEb : Exp.EbInv (Exp.mcopyMem mem 256 1024 (32 * n)) n mm bM
       (Exp.expAcc mm (Limbs.radix ^ n) bM (Exp.expBits input bsize) 0))
-    (hraw : ∃ rawBase, Model.FastRepresents mem 1024 n rawBase ∧
+    (hraw : ∃ rawBase, Model.FastRepresents mem 256 n rawBase ∧
       rawBase ≡ Precompile.bytesToNatPadded input 96 bsize [MOD mm]) :
     BDoneContinuation input s mem n bsize esize msize :=
   handled_of_bDoneWithGeneric
@@ -160,9 +160,9 @@ def handled_of_entryStateConcrete (input : ByteArray) (s : State) (mem : ByteArr
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 298 ≤ s.activeWords.toNat)
+    (hact : 170 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hb : bsize ≤ 1024) (he : esize ≤ 1024)
+    (hb : bsize ≤ 256) (he : esize ≤ 256)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
@@ -174,12 +174,12 @@ def handled_of_entryStateConcrete (input : ByteArray) (s : State) (mem : ByteArr
       Limbs.radix ^ n [MOD mm])
     (hframe : Exp.Frame mem n bsize minv)
     (hmod : Model.FastRepresents mem 0 n mm)
-    (hbase : Model.FastRepresents mem 2048 n bM)
+    (hbase : Model.FastRepresents mem 512 n bM)
     (hone : ∃ one, one < Limbs.radix ∧
-      Model.FastRepresents mem 3072 n one)
-    (hEb : Exp.EbInv (Exp.mcopyMem mem 1024 4096 (32 * n)) n mm bM
+      Model.FastRepresents mem 768 n one)
+    (hEb : Exp.EbInv (Exp.mcopyMem mem 256 1024 (32 * n)) n mm bM
       (Exp.expAcc mm (Limbs.radix ^ n) bM (Exp.expBits input bsize) 0))
-    (hraw : ∃ rawBase, Model.FastRepresents mem 1024 n rawBase ∧
+    (hraw : ∃ rawBase, Model.FastRepresents mem 256 n rawBase ∧
       rawBase ≡ Precompile.bytesToNatPadded input 96 bsize [MOD mm]) :
     EntryContinuation input s mem n bsize esize msize :=
   handled_of_entryState
