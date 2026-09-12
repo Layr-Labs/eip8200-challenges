@@ -57,8 +57,7 @@ def headerLoadPath :
    pushAt 816 1 32, opAt 817 .CALLDATALOAD,
    pushAt 818 1 64, opAt 819 .CALLDATALOAD]
 
-/-- Direct jump over the EIP-7823 checks, justified by `Correct`'s valid-input
-precondition. The jump preserves the three loaded length words. -/
+/-- Fall through to the adjacent dispatcher, retaining the legacy PUSH as padding. -/
 def headerCheckPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 820 2 1067, opAt 821 .POP]

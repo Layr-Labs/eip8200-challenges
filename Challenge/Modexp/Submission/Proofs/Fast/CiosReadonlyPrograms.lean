@@ -14,7 +14,7 @@ def fullMidProgram : List Instr :=
 
 def fullExitProgram : List Instr :=
   ((CiosCached.tailProgram.drop 23).take 7 ++ dropCache) ++
-    (CiosCached.tailProgram.drop 30)
+    ((CiosCached.tailProgram.drop 30).take 1 ++ [.op .POP])
 
 
 /-- First operand and accumulator pointers remain cached across every row. -/
