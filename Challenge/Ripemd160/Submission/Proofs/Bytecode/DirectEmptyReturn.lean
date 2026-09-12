@@ -14,7 +14,7 @@ def decisionPath : List (Stepper.Located Artifact.submissionArtifact .Osaka) :=
 
 def bodyEntry (s : State) (input : ByteArray) (_i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 373
+    pc := UInt256.ofNat 377
     stack := [UInt256.ofNat 0, Padding.paddedWord input] }
 
 theorem run_decision_empty (s : State) (input : ByteArray) (i : Nat)
@@ -25,13 +25,13 @@ theorem run_decision_empty (s : State) (input : ByteArray) (i : Nat)
       (DriverTrace.setupEntry s input) = some (bodyEntry s input i) := by
   have hfalse : ¬ UInt256.isTrue (UInt256.ofNat input.size) := by
     simp [hempty, UInt256.isTrue]
-  have hpc231 : Artifact.submissionArtifact.instructionPC 234 = 368 := by
+  have hpc231 : Artifact.submissionArtifact.instructionPC 236 = 372 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have hpc232 : Artifact.submissionArtifact.instructionPC 235 = 369 := by
+  have hpc232 : Artifact.submissionArtifact.instructionPC 237 = 373 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have hpc233 : Artifact.submissionArtifact.instructionPC 236 = 372 := by
+  have hpc233 : Artifact.submissionArtifact.instructionPC 238 = 376 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
   simp [decisionPath, DriverTrace.enterPath, Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -49,16 +49,16 @@ def bodyTemplate : List Instr :=
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .RETURN ]
 theorem body_slice :
-    (Artifact.submissionArtifact.instructions.drop 237).take bodyTemplate.length = bodyTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 239).take bodyTemplate.length = bodyTemplate := by rfl
 def bodySite : GenericRoundSite Artifact.submissionArtifact .Osaka bodyTemplate :=
-  StackSiteBuilder.ofSlice bodyTemplate 237 body_slice
-    (by change 237 + bodyTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice bodyTemplate 239 body_slice
+    (by change 239 + bodyTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := bodyTemplate) (by decide))
     (by decide)
-theorem body_pc : bodySite.startPC = UInt256.ofNat 373 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 237) = UInt256.ofNat 373
+theorem body_pc : bodySite.startPC = UInt256.ofNat 377 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 239) = UInt256.ofNat 377
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem body_advances : ∀ instruction ∈ bodyTemplate.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -67,7 +67,7 @@ def outputMemory (memory : ByteArray) : ByteArray :=
   MachineState.writeBytes memory EmptySpec.emptyOutput 0
 
 def finalState (s : State) (input : ByteArray) (i : Nat) : State :=
-  {bodyEntry s input i with pc := UInt256.ofNat 399, memory := outputMemory s.memory, activeWords := UInt256.ofNat (MachineState.activeWordsAfter
+  {bodyEntry s input i with pc := UInt256.ofNat 403, memory := outputMemory s.memory, activeWords := UInt256.ofNat (MachineState.activeWordsAfter
       (s.activeWordsAfterUInt256 0 32).toNat 0 32), halt := .Returned, hReturn := MachineState.readPadded (outputMemory s.memory) 0 32}
 
 theorem run_body (s : State) (input : ByteArray) (i : Nat) (hrun : s.halt = .Running) :
@@ -97,7 +97,7 @@ def gasSteps_return (s : State) (input : ByteArray) (i : Nat) (hempty : input.si
   exact gd.trans gb
 
 theorem correct_empty (input : ByteArray) (hfit : CalldataFits input) (hempty : input.size = 0)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 272)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 276)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   let s := PaddingTrace.padReturned input

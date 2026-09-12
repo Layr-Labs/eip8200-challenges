@@ -47,8 +47,8 @@ theorem output_eq (memory : ByteArray) (q : WordLane) (k : UInt256) (rho : List 
      (hfork : s.fork = .Osaka)
      (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
        s.executionEnv.fork s.executionEnv.codeAddr = false) :
-     Challenge.EvmProof.GasSteps {s with pc := UInt256.ofNat 2823, stack := stack [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] q k rho}
-       {s with pc := UInt256.ofNat 2862, stack :=
+     Challenge.EvmProof.GasSteps {s with pc := UInt256.ofNat 2825, stack := stack [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] q k rho}
+       {s with pc := UInt256.ofNat 2864, stack :=
           stack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] (eval (MachineState.readWord s.memory 700) k q) (nextKey k) rho} := by
    have gs := Table80RawRound38.gasSteps s (input q k) rho hstack hrun hactive hcode hfork hnp
    have hin : Table80Raw.inputStack (input q k) rho = stack [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] q k rho := rfl

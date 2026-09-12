@@ -18,13 +18,13 @@ def driverRest (input : ByteArray) (i : Nat) : List UInt256 :=
   [DriverTrace.blockOffsetWord i, Padding.paddedWord input]
 
 theorem valid_return (s : State) (hcode : s.executionEnv.code = submissionBytecode) :
-    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 506).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 309 = 506 := by
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 512).toNat = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 312 = 512 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 309 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 312 (by rfl)
   rw [hpc] at h
-  change Decode.isValidJumpDest s.executionEnv.code 506 = true
+  change Decode.isValidJumpDest s.executionEnv.code 512 = true
   rw [hcode]
   exact h
 
@@ -39,7 +39,7 @@ noncomputable def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     GasSteps (DriverTrace.compressEntry s input i)
       (DriverTrace.compressReturned (resultState s input i) input i) := by
   let q := scheduledState s i
-  let ret := UInt256.ofNat 506
+  let ret := UInt256.ofNat 512
   let rho := driverRest input i
   let initial := Table80BootstrapBridge.initialLane h
   let final := Table80Core.physicalFinalLane q.memory initial

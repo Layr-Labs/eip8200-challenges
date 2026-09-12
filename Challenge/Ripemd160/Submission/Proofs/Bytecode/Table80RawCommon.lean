@@ -14,10 +14,10 @@ structure Input where
   v8 : UInt256
   v9 : UInt256
 
-def cache : List UInt256 := [22, 27, 26, 24, 25]
+def cache : List UInt256 := [22, 27, 26, 63, 24, 25]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
   [x.v0, x.v1, x.v2, x.v3, x.v4, x.v5, x.v6, x.v7, x.v8, x.v9] ++ (cache ++ rho)
-@[simp] theorem cache_length : cache.length = 5 := rfl
+@[simp] theorem cache_length : cache.length = 6 := rfl
 theorem active_preserved (current : UInt256) (address : Nat)
     (hcurrent : 34 ≤ current.toNat) (haddress : address ≤ 1056) :
     UInt256.ofNat (MachineState.activeWordsAfter current.toNat address 32) = current := by
