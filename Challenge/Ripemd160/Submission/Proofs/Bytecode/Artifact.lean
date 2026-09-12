@@ -9,7 +9,7 @@ set_option maxHeartbeats 2000000
 # Structural certificate for the frozen RIPEMD-160 artifact
 
 The exact candidate has 5094 bytes, 3960 instructions, and SHA-256
-`b7b083f76c214cc80812703bad3a4a69128a1b320c2068a5a4e97bcd7351e656`. PUSH rows carry their typed width and value.
+`e94d512aca0f61349877e1680680cac7238bc4c5a04603be52514ed0058f9f3b`. PUSH rows carry their typed width and value.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
@@ -228,14 +228,14 @@ private def submissionInstructionsChunk1 : List Instr :=
   op 0x1b,
   .push 1 192,
   op 0x1c,
-  op 0x81,
-  .push 2 1016,
+  .push 3 1016,
+  op 0x82,
   op 0x01,
-  .push 0 0,
-  op 0x81,
-  .push 1 7,
-  op 0x01,
-  op 0x53,
+  op 0x5b,
+  op 0x5b,
+  op 0x5b,
+  op 0x5b,
+  op 0x5b,
   op 0x5b,
   op 0x81,
   op 0x81,
@@ -4164,8 +4164,8 @@ private theorem submissionInstructionsChunk0_assemble : assembleBytes submission
 private theorem submissionInstructionsChunk1_assemble : assembleBytes submissionInstructionsChunk1 = [
   0x36, 0x60, 0x48, 0x01, 0x60, 0x3f, 0x19, 0x16, 0x36, 0x36, 0x5f, 0x61,
   0x04, 0x00, 0x37, 0x60, 0x80, 0x36, 0x61, 0x04, 0x00, 0x01, 0x53, 0x60,
-  0xc3, 0x1b, 0x60, 0xc0, 0x1c, 0x81, 0x61, 0x03, 0xf8, 0x01, 0x5f, 0x81,
-  0x60, 0x07, 0x01, 0x53, 0x5b, 0x81, 0x81, 0x53, 0x60, 0x01, 0x01, 0x90,
+  0xc3, 0x1b, 0x60, 0xc0, 0x1c, 0x62, 0x00, 0x03, 0xf8, 0x82, 0x01, 0x5b,
+  0x5b, 0x5b, 0x5b, 0x5b, 0x5b, 0x81, 0x81, 0x53, 0x60, 0x01, 0x01, 0x90,
   0x60, 0x08, 0x1c, 0x90, 0x81, 0x61, 0x01, 0x39, 0x57, 0x50, 0x63, 0xc3,
   0xd2, 0xe1, 0xf0, 0x63, 0x10, 0x32, 0x54, 0x76, 0x63, 0x98, 0xba, 0xdc,
   0xfe, 0x63, 0xef, 0xcd, 0xab, 0x89, 0x63, 0x67, 0x45, 0x23, 0x01, 0x61,
@@ -5104,18 +5104,18 @@ def initStores : List InitStore := []
   rfl
 
 @[simp] theorem referenceArtifact_pc_429 :
-    submissionArtifact.instructionPC 198 = 303 := by
+    submissionArtifact.instructionPC 198 = 306 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc429 :
-    submissionArtifact.instructionPC 198 = 303 := by
+    submissionArtifact.instructionPC 198 = 306 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc429 :
-    instructionPC 198 = 303 := by
-  change submissionArtifact.instructionPC 198 = 303
+    instructionPC 198 = 306 := by
+  change submissionArtifact.instructionPC 198 = 306
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -5136,66 +5136,66 @@ def initStores : List InitStore := []
   rfl
 
 @[simp] theorem referenceArtifact_pc_431 :
-    submissionArtifact.instructionPC 199 = 306 := by
+    submissionArtifact.instructionPC 199 = 307 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc431 :
-    submissionArtifact.instructionPC 199 = 306 := by
+    submissionArtifact.instructionPC 199 = 307 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc431 :
-    instructionPC 199 = 306 := by
-  change submissionArtifact.instructionPC 199 = 306
+    instructionPC 199 = 307 := by
+  change submissionArtifact.instructionPC 199 = 307
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_432 :
-    submissionArtifact.instructionPC 200 = 307 := by
+    submissionArtifact.instructionPC 200 = 308 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc432 :
-    submissionArtifact.instructionPC 200 = 307 := by
+    submissionArtifact.instructionPC 200 = 308 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc432 :
-    instructionPC 200 = 307 := by
-  change submissionArtifact.instructionPC 200 = 307
+    instructionPC 200 = 308 := by
+  change submissionArtifact.instructionPC 200 = 308
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_433 :
-    submissionArtifact.instructionPC 201 = 308 := by
+    submissionArtifact.instructionPC 201 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc433 :
-    submissionArtifact.instructionPC 201 = 308 := by
+    submissionArtifact.instructionPC 201 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc433 :
-    instructionPC 201 = 308 := by
-  change submissionArtifact.instructionPC 201 = 308
+    instructionPC 201 = 309 := by
+  change submissionArtifact.instructionPC 201 = 309
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_434 :
-    submissionArtifact.instructionPC 202 = 309 := by
+    submissionArtifact.instructionPC 202 = 310 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc434 :
-    submissionArtifact.instructionPC 202 = 309 := by
+    submissionArtifact.instructionPC 202 = 310 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc434 :
-    instructionPC 202 = 309 := by
-  change submissionArtifact.instructionPC 202 = 309
+    instructionPC 202 = 310 := by
+  change submissionArtifact.instructionPC 202 = 310
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -5735,14 +5735,14 @@ def padSetupPath : List
    ⟨194, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨195, .push ⟨1, by decide⟩ (UInt256.ofNat 192), by rfl, by decide⟩,
    ⟨196, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨197, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨198, .push ⟨2, by decide⟩ (UInt256.ofNat 1016), by rfl, by decide⟩,
+   ⟨197, .push ⟨3, by decide⟩ (UInt256.ofNat 1016), by rfl, by decide⟩,
+   ⟨198, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨199, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨200, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨201, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨202, .push ⟨1, by decide⟩ (UInt256.ofNat 7), by rfl, by decide⟩,
-   ⟨203, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨204, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨200, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨201, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨202, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨203, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨204, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨205, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨206, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩]
 
