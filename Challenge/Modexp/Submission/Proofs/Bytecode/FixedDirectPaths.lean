@@ -38,7 +38,7 @@ def entryPrefix : List Located :=
   [opAt 2454 .JUMPDEST,
    opAt 2455 (.Dup ⟨3, by decide⟩),
    pushAt 2456 2 3185,
-   opAt 2457 .JUMP,
+   opAt 2457 .POP,
    opAt 2458 .JUMPDEST,
    pushAt 2459 1 3,
    opAt 2460 .EQ,
