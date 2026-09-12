@@ -44,8 +44,8 @@ def copyState (s : State) (memory : ByteArray)
 def addCallState (s : State) (memory input : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat 3912
-           stack := [UInt256.ofNat 6144, UInt256.ofNat 1024,
-             UInt256.ofNat 2048, UInt256.ofNat 1469] ++
+           stack := [UInt256.ofNat 1536, UInt256.ofNat 256,
+             UInt256.ofNat 512, UInt256.ofNat 1469] ++
              outer n bsize esize msize
            memory := copyBaseMem memory input n }
 

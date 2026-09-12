@@ -26,7 +26,7 @@ def blk2896a :
    opAt 2577 (.Swap ⟨2, by decide⟩),
    opAt 2578 .POP,
    opAt 2579 (.Dup ⟨1, by decide⟩),
-   pushAt 2580 2 5120,
+   pushAt 2580 2 1280,
    opAt 2581 .ADD,
    opAt 2582 .MSTORE]
 
@@ -85,7 +85,7 @@ def blk3077a :
 /-- The exit test of the limb-pass body (`blk3077` instructions 43..47). -/
 def blk3077b :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 2799 2 8224,
+  [pushAt 2799 2 4128,
    opAt 2800 (.Dup ⟨2, by decide⟩),
    opAt 2801 .GT,
    pushAt 2802 2 3624,
@@ -98,7 +98,7 @@ def blk3157a :
    opAt 2837 (.Dup ⟨0, by decide⟩),
    opAt 2838 .MLOAD,
    opAt 2839 (.Dup ⟨1, by decide⟩),
-   pushAt 2840 2 8256,
+   pushAt 2840 2 4160,
    opAt 2841 (.Swap ⟨0, by decide⟩),
    opAt 2842 .SUB,
    opAt 2843 .MLOAD,
@@ -141,7 +141,7 @@ def blk3213a :
   [opAt 2893 .JUMPDEST,
    opAt 2894 (.Dup ⟨0, by decide⟩),
    opAt 2895 .MLOAD,
-   pushAt 2896 2 8256,
+   pushAt 2896 2 4160,
    opAt 2897 (.Dup ⟨2, by decide⟩),
    opAt 2898 .SUB,
    opAt 2899 .MLOAD,
