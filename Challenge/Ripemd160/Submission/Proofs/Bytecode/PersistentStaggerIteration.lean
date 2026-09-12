@@ -86,7 +86,7 @@ theorem states_activeWords (input : ByteArray) (hfit : CalldataFits input) (hpos
     exact (scheduled_active_eq (states input n) input n hfit (by omega)
       (states_context input hfit hpos n (by omega))).trans (ih (by omega))
 
-theorem states_word_above (input : ByteArray) (n address : Nat) (ha : 1152 ≤ address) :
+theorem states_word_above (input : ByteArray) (n address : Nat) (ha : 1120 ≤ address) :
     MachineState.readWord (states input n).memory address =
       MachineState.readWord (PadSkipEntry.entryState input).memory address := by
   induction n with

@@ -50,7 +50,7 @@ def gasSteps (s : State) (h : Compression.HashState) (q : WordLane)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (StaggerCore.suffixState s (initial h).e q
       (StaggerPersistentPackBridge.suffix (initial h) off limit rho))
-      {s with pc := UInt256.ofNat 4732, stack := StaggerPersistentFrame.frame (combine h (StaggerCoreModel.epilogue s.memory q) q) off limit rho} := by
+      {s with pc := UInt256.ofNat 4731, stack := StaggerPersistentFrame.frame (combine h (StaggerCoreModel.epilogue s.memory q) q) off limit rho} := by
   rw [suffix_eq]
   have g := StaggerPersistentTailSite.gasSteps s off limit h
     (tailInput s.memory h (StaggerCoreModel.epilogue s.memory q) q off limit)
