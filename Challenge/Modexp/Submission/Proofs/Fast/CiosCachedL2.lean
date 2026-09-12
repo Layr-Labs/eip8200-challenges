@@ -72,7 +72,7 @@ theorem run_step (w : Fin 33) (template : State) (pc : UInt256) (mem : ByteArray
     (hpush : w.val = 0 → x = UInt256.ofNat 0) :
     runInstructions (l2Program w x tl ts)
       (state template pc mem bi mu c0 n k pbi paEnd pbEnd flag destination returnPC rest) =
-    some (state template (pc + UInt256.ofNat (w.val + 35)) mem bi mu c0 n (k+1)
+    some (state template (pc + UInt256.ofNat (w.val + 34)) mem bi mu c0 n (k+1)
       pbi paEnd pbEnd flag destination returnPC rest) := by
   have hactM : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
       (32*(n-2-k)) 32) = template.activeWords :=
@@ -97,8 +97,8 @@ theorem run_step (w : Fin 33) (template : State) (pc : UInt256) (mem : ByteArray
     ([bi, pbi, paEnd, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) hT hW
   have hall := runInstructions_append_some _ _ _ _ _ hl hf
-  have hpc : (pc + UInt256.ofNat (w.val + 3)) + UInt256.ofNat 32 =
-      pc + UInt256.ofNat (w.val + 35) := by
+  have hpc : (pc + UInt256.ofNat (w.val + 3)) + UInt256.ofNat 31 =
+      pc + UInt256.ofNat (w.val + 34) := by
     simp [word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc]
   simpa only [program_eq, st, state, framed, l2Step, hx, htl, hts, hpc,
     List.cons_append, List.nil_append] using hall

@@ -106,7 +106,7 @@ theorem run_step (template : State) (pc : UInt256) (mem : ByteArray)
     (_hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 5376) :
     runInstructions (l1Program off t)
       (state template pc mem bi pa n j pbi pbEnd flag destination returnPC rest) =
-    some (state template (pc + UInt256.ofNat 38) mem bi pa n (j+1)
+    some (state template (pc + UInt256.ofNat 37) mem bi pa n (j+1)
       pbi pbEnd flag destination returnPC rest) := by
   have haddr : (UInt256.ofNat pa + off).toNat = pa + 32*(n-1-j) := by
     rw [base_offset_toNat pa off (by omega), hoff]
@@ -130,8 +130,8 @@ theorem run_step (template : State) (pc : UInt256) (mem : ByteArray)
     ([pbi, UInt256.ofNat pa, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) hT hT
   have hall := runInstructions_append_some _ _ _ _ _ hl hf
-  have hpc : (pc + UInt256.ofNat 6) + UInt256.ofNat 32 =
-      pc + UInt256.ofNat 38 := by
+  have hpc : (pc + UInt256.ofNat 6) + UInt256.ofNat 31 =
+      pc + UInt256.ofNat 37 := by
     simp [word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
   simpa only [program_eq, st, state, framed, l1Step, haddr, ht, hpc,
     List.cons_append, List.nil_append] using hall
@@ -190,7 +190,7 @@ theorem run_last (template : State) (pc : UInt256) (mem : ByteArray)
     (_hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 5376) :
     runInstructions (l1LastProgram t)
       (state template pc mem bi pa n (n-1) pbi pbEnd flag destination returnPC rest) =
-    some (doneState template (pc + UInt256.ofNat 35) mem bi pa n
+    some (doneState template (pc + UInt256.ofNat 34) mem bi pa n
       pbi pbEnd flag destination returnPC rest) := by
   have hpaNat : (UInt256.ofNat pa).toNat = pa := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -213,12 +213,12 @@ theorem run_last (template : State) (pc : UInt256) (mem : ByteArray)
     ([pbi, UInt256.ofNat pa, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) hT hT
   have hall := runInstructions_append_some _ _ _ _ _ hl hf
-  have hpc : advancePC 3 pc + UInt256.ofNat 32 = pc + UInt256.ofNat 35 := by
+  have hpc : advancePC 3 pc + UInt256.ofNat 31 = pc + UInt256.ofNat 34 := by
     simp [advancePC, succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
   have hnn : n-1+1 = n := by omega
   have hfinal : runInstructions (l1LastProgram t)
       (state template pc mem bi pa n (n-1) pbi pbEnd flag destination returnPC rest) =
-      some (state template (pc + UInt256.ofNat 35) mem bi pa n (n-1+1)
+      some (state template (pc + UInt256.ofNat 34) mem bi pa n (n-1+1)
         pbi pbEnd flag destination returnPC rest) := by
     simpa only [last_eq, st, state, framed, l1Step, hpaNat, ht, hpc,
       Nat.sub_self, Nat.mul_zero, Nat.add_zero, List.cons_append, List.nil_append] using hall

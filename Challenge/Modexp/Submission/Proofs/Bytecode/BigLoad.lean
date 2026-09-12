@@ -329,11 +329,10 @@ theorem run_loadToByte (s : State) (offset length : Nat) (dst returnDest : UInt2
   have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
   have hthree : (3 : UInt256) = UInt256.ofNat 3 := by decide
-  have hfour : (4 : UInt256) = UInt256.ofNat 4 := by decide
+  have hfour : (135 : UInt256) = UInt256.ofNat 135 := by decide
   have hfive : (5 : UInt256) = UInt256.ofNat 5 := by decide
   have hthirtyOne : (31 : UInt256) = UInt256.ofNat 31 := by decide
   have h484 : (578 : UInt256) = UInt256.ofNat 578 := by decide
-  have hhelper : (135 : UInt256) = UInt256.ofNat 135 := by decide
   simp (config := { maxSteps := 600000 }) (disch := omega)
     [loadToBytePath, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -345,7 +344,7 @@ theorem run_loadToByte (s : State) (offset length : Nat) (dst returnDest : UInt2
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
       UInt256.lt, UInt256.isTrue, List.exchange, Nat.add_assoc, hc,
       hoffset, hlength, hzero, hone, hthree, hfour, hfive, hthirtyOne,
-      h484, hhelper]
+      h484]
 
 set_option linter.unusedSimpArgs false in
 theorem run_loadAfterByte (s : State) (offset length : Nat)

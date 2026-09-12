@@ -10,7 +10,7 @@ open EvmSemantics.EVM
 open Word
 
 /-- The unrolled block leaves the bit counter at the value the loop head was
-entered with; the tail at pc 655 pops it. -/
+entered with; the tail at pc 790 pops it. -/
 def bitFinishDispatchState (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) : State :=
   { bitLoopState input outer 0 byte offset acc base with pc := UInt256.ofNat 692 }

@@ -44,6 +44,20 @@ def soundEnv (blk : List (Challenge.EvmProof.Stepper.Located Artifact.submission
     (by rw [hhalt]; exact e.run)
     (by rw [henv]; exact e.np)
 
+/-- Environment certificate for an unlocated program with a proved binding. -/
+def bindingEnv {s st : State} (e : Env s)
+    (henv : st.executionEnv = s.executionEnv := by rfl)
+    (hforkEq : st.fork = s.fork := by rfl) (hhalt : st.halt = s.halt := by rfl) :
+    WindowTwentyOneBinding.Environment Artifact.submissionArtifact .Osaka st where
+  sizeBound := by
+    change Challenge.Modexp.submissionBytecode.size < 2 ^ 256
+    rw [Challenge.Modexp.submissionBytecode_size]
+    decide
+  code := by rw [henv]; exact e.code
+  forkEq := by rw [hforkEq]; exact e.fork
+  running := by rw [hhalt]; exact e.run
+  noPrecompile := by rw [henv]; exact e.np
+
 theorem Env.act296 {s : State} (e : Env s) : 168 ≤ s.activeWords.toNat :=
   Nat.le_trans (by norm_num) e.act
 
@@ -56,11 +70,11 @@ def gasSteps_negIter (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
       (negLoopState s mem n bsize esize msize (j + 1)) :=
   ((soundEnv blk2896a e
       (run_negBodyA s mem (UInt256.ofNat (Monpro.ptrAt (32 * n - 32) j)) n bsize esize msize j
-        hn32 (by omega) (negPtr_toNat n j (by omega) (by omega)) e.act296 e.code e.run)).trans
+        hn32 (by omega) (negPtr_toNat n j hn32 (by omega)) e.act296 e.code e.run)).trans
     (soundEnv blk2896b e
       (run_negTail s (negStep mem n (j + 1)).memory
         (UInt256.ofNat (Monpro.ptrAt (32 * n - 32) j)) (negStep mem n (j + 1)).flag
-        n bsize esize msize (negPtr_ne_zero n j (by omega) hj) e.code e.run))).trans
+        n bsize esize msize (negPtr_ne_zero n j hn32 hj) e.code e.run))).trans
     (soundEnv blk2915 e
       (run_negNext s mem n bsize esize msize j e.code e.run))
 
@@ -78,8 +92,8 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s)
     (hml : MachineState.readWord mem 5312 = UInt256.ofNat (32 * n - 32)) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
-      (shiftLoopState s (preMem (negStep mem n n).memory) n bsize esize msize n) :=
-  ((((soundEnv blk2892 e
+      (shiftLoopState s (ShiftCacheModel.cacheMem (preMem (negStep mem n n).memory) n) n bsize esize msize n) :=
+  (  ((((soundEnv blk2892 e
       (run_negEntry s mem n bsize esize msize hn hn32 e.act296 hml e.code e.run)).trans
     (gasSteps_negLoop s mem n bsize esize msize hn hn32 e)).trans
     (soundEnv blk2919 e
@@ -87,51 +101,108 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (soundEnv blk2956 e
       (run_preNewton s (negStep mem n n).memory n bsize esize msize e.code e.run))).trans
     (soundEnv blk2982 e
-      (run_newtonB s (negStep mem n n).memory n bsize esize msize e.act296 e.code e.run))
+      (run_newtonB s (negStep mem n n).memory n bsize esize msize e.act296 e.code e.run))).trans
+    (ShiftUnrollBindings.cache.steps (bindingEnv e) rfl
+      (ShiftCacheTrace.run_cache s (preMem (negStep mem n n).memory)
+        n bsize esize msize e.act296))
 
 /-! ## The limb pass -/
 
-/-- One limb-pass iteration with limbs to go. -/
+/-- State after one cell, before the test which exists only after cell3. -/
+def macAfterCellState (s : State) (um : ByteArray) (q : UInt256)
+    (n bsize esize msize k j : Nat) : State :=
+  { macLoopState s um q n bsize esize msize k (j + 1) with
+      pc := UInt256.ofNat (pcMacLoop + 39 * (ShiftUnrollEntry.cellIndex n j + 1)) }
+
+/-- Each selected cell performs exactly one limb step. -/
+def gasSteps_macCell (s : State) (um : ByteArray) (q : UInt256)
+    (n bsize esize msize k j : Nat) (hn32 : n ≤ 8) (hj : j < n) (e : Env s) :
+    Challenge.EvmProof.GasSteps (macLoopState s um q n bsize esize msize k j)
+      (macAfterCellState s um q n bsize esize msize k j) := by
+  have hi := ShiftUnrollEntry.index_lt n j
+  generalize hidx : ShiftUnrollEntry.cellIndex n j = i at hi
+  interval_cases i
+  · simpa only [macLoopState, macAfterCellState, pcMacLoop, hidx] using
+      (soundEnv blk3077a e
+        (ShiftCell0.run_cell0 s um q
+          (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) j))
+          (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) j))
+          (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (j + 1)))
+          (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (j + 1)))
+          n bsize esize msize k j e.run e.code e.act296 hn32 hj
+          (aPtr_toNat n j hn32 hj) (tPtr_toNat n j hn32 hj)
+          (ptrAt_step _ _) (ptrAt_step _ _)))
+  · simpa only [macLoopState, macAfterCellState, pcMacLoop, hidx] using
+      (soundEnv ShiftCell1.cellPath e
+        (ShiftCell1.run_cell1 s um q
+          (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) j))
+          (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) j))
+          (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (j + 1)))
+          (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (j + 1)))
+          n bsize esize msize k j e.run e.code e.act296 hn32 hj
+          (aPtr_toNat n j hn32 hj) (tPtr_toNat n j hn32 hj)
+          (ptrAt_step _ _) (ptrAt_step _ _)))
+  · simpa only [macLoopState, macAfterCellState, pcMacLoop, hidx] using
+      (soundEnv ShiftCell2.cellPath e
+        (ShiftCell2.run_cell2 s um q
+          (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) j))
+          (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) j))
+          (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (j + 1)))
+          (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (j + 1)))
+          n bsize esize msize k j e.run e.code e.act296 hn32 hj
+          (aPtr_toNat n j hn32 hj) (tPtr_toNat n j hn32 hj)
+          (ptrAt_step _ _) (ptrAt_step _ _)))
+  · simpa only [macLoopState, macAfterCellState, pcMacLoop, hidx] using
+      (soundEnv ShiftCell3.cellPath e
+        (ShiftCell3.run_cell3 s um q
+          (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) j))
+          (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) j))
+          (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (j + 1)))
+          (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (j + 1)))
+          n bsize esize msize k j e.run e.code e.act296 hn32 hj
+          (aPtr_toNat n j hn32 hj) (tPtr_toNat n j hn32 hj)
+          (ptrAt_step _ _) (ptrAt_step _ _)))
+
+/-- Fall through within an unrolled group, or test and return after cell3. -/
 def gasSteps_macIter (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k j : Nat)
     (hn32 : n ≤ 8) (hj : j + 1 < n) (e : Env s) :
     Challenge.EvmProof.GasSteps (macLoopState s um q n bsize esize msize k j)
-      (macLoopState s um q n bsize esize msize k (j + 1)) :=
-  (soundEnv blk3077a e
-      (run_macBodyA s um q (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) j))
-        (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) j))
-        (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (j + 1)))
-        (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (j + 1)))
-        n bsize esize msize k j e.run e.code e.act296 hn32 (by omega)
-        (aPtr_toNat n j (by omega) (by omega)) (tPtr_toNat n j (by omega) (by omega))
-        (ptrAt_step _ _) (ptrAt_step _ _))).trans
-    (soundEnv blk3077b e
+      (macLoopState s um q n bsize esize msize k (j + 1)) := by
+  have cell := gasSteps_macCell s um q n bsize esize msize k j hn32 (by omega) e
+  by_cases hlt : ShiftUnrollEntry.cellIndex n j < 3
+  · exact cell.cast rfl (by
+      simp only [macAfterCellState, macLoopState,
+        ShiftUnrollEntry.index_next n j hlt])
+  · have h3 : ShiftUnrollEntry.cellIndex n j = 3 := by
+      have hi := ShiftUnrollEntry.index_lt n j
+      omega
+    have tail := soundEnv blk3077b e
       (run_macTail_go s (Monpro.l1Step um q NEG n (j + 1)).memory
         (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (j + 1)))
         (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (j + 1)))
         (Monpro.l1Step um q NEG n (j + 1)).carry q n bsize esize msize k
-        (tPtr_gt_8224 n (j + 1) (by omega) hj) e.code e.run))
+        (tPtr_gt_8224 n (j + 1) hn32 hj) e.code e.run)
+    exact (cell.cast rfl (by
+      simp only [macAfterCellState, macLoopState, pcMacLoop, pcMacTail, h3])).trans
+      (tail.cast rfl (by
+        simp only [macLoopState, pcMacLoop, ShiftUnrollEntry.index_wrap n j h3]))
 
-/-- The last limb-pass iteration, falling into the middle block. -/
+/-- The last limb is always cell3, whose failed test reaches the middle block. -/
 def gasSteps_macLast (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s) :
     Challenge.EvmProof.GasSteps (macLoopState s um q n bsize esize msize k (n - 1))
-      (midState s um q n bsize esize msize k) :=
-  Challenge.EvmProof.GasSteps.cast
-    ((soundEnv blk3077a e
-        (run_macBodyA s um q (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (n - 1)))
-          (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (n - 1)))
-          (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (n - 1 + 1)))
-          (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (n - 1 + 1)))
-          n bsize esize msize k (n - 1) e.run e.code e.act296 hn32 (by omega)
-          (aPtr_toNat n (n - 1) (by omega) (by omega)) (tPtr_toNat n (n - 1) (by omega) (by omega))
-          (ptrAt_step _ _) (ptrAt_step _ _))).trans
-      (soundEnv blk3077b e
-        (run_macTail_exit s (Monpro.l1Step um q NEG n (n - 1 + 1)).memory
-          (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (n - 1 + 1)))
-          (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (n - 1 + 1)))
-          (Monpro.l1Step um q NEG n (n - 1 + 1)).carry q n bsize esize msize k
-          (by rw [Nat.sub_add_cancel hn]; exact tPtr_toNat_last n (by omega)) e.code e.run)))
-    rfl (by rw [Nat.sub_add_cancel hn]; rfl)
+      (midState s um q n bsize esize msize k) := by
+  have cell := gasSteps_macCell s um q n bsize esize msize k (n - 1) hn32 (by omega) e
+  have h3 := ShiftUnrollEntry.index_last n hn hn32
+  have tail := soundEnv blk3077b e
+    (run_macTail_exit s (Monpro.l1Step um q NEG n (n - 1 + 1)).memory
+      (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (n - 1 + 1)))
+      (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (n - 1 + 1)))
+      (Monpro.l1Step um q NEG n (n - 1 + 1)).carry q n bsize esize msize k
+      (by rw [Nat.sub_add_cancel hn]; exact tPtr_toNat_last n hn32) e.code e.run)
+  exact (cell.cast rfl (by
+    simp only [macAfterCellState, macLoopState, pcMacLoop, pcMacTail, h3])).trans
+    (tail.cast rfl (by rw [Nat.sub_add_cancel hn]; rfl))
 
 def gasSteps_macLoop (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s) :
@@ -151,12 +222,12 @@ def gasSteps_addIter (s : State) (mem : ByteArray) (n bsize esize msize k j : Na
       (addInnerState s mem n bsize esize msize k (j + 1)) :=
   (soundEnv blk3157a e
       (run_addBodyA s mem (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) j)) n bsize esize msize k j
-        hn32 (by omega) (tPtr_toNat n j (by omega) (by omega)) e.act296 e.code e.run)).trans
+        hn32 (by omega) (tPtr_toNat n j hn32 (by omega)) e.act296 e.code e.run)).trans
     (soundEnv blk3157b e
       (run_addTail_go s (addStep mem n (j + 1)).memory (addStep mem n (j + 1)).flag
         (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) j))
         (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (j + 1))) n bsize esize msize k
-        (ptrAt_step _ _) (tPtr_gt_8255 n (j + 1) (by omega) hj) e.code e.run))
+        (ptrAt_step _ _) (tPtr_gt_8255 n (j + 1) hn32 hj) e.code e.run))
 
 /-- The last add-pass iteration, falling into the add tail. -/
 def gasSteps_addLastIter (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
@@ -166,13 +237,13 @@ def gasSteps_addLastIter (s : State) (mem : ByteArray) (n bsize esize msize k : 
   Challenge.EvmProof.GasSteps.cast
     ((soundEnv blk3157a e
         (run_addBodyA s mem (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (n - 1))) n bsize esize
-          msize k (n - 1) hn32 (by omega) (tPtr_toNat n (n - 1) (by omega) (by omega)) e.act296 e.code
+          msize k (n - 1) hn32 (by omega) (tPtr_toNat n (n - 1) hn32 (by omega)) e.act296 e.code
           e.run)).trans
       (soundEnv blk3157b e
         (run_addTail_last s (addStep mem n (n - 1 + 1)).memory (addStep mem n (n - 1 + 1)).flag
           (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (n - 1)))
           (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (n - 1 + 1))) n bsize esize msize k
-          (ptrAt_step _ _) (by rw [Nat.sub_add_cancel hn]; exact tPtr_toNat_last n (by omega))
+          (ptrAt_step _ _) (by rw [Nat.sub_add_cancel hn]; exact tPtr_toNat_last n hn32)
           e.code e.run)))
     rfl (by rw [Nat.sub_add_cancel hn]; rfl)
 
@@ -241,13 +312,13 @@ def gasSteps_subIter (s : State) (mem : ByteArray) (n bsize esize msize k j : Na
       (subInnerState s mem n bsize esize msize k (j + 1)) :=
   (soundEnv blk3213a e
       (run_subBodyA s mem (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) j)) n bsize esize msize k j
-        hn32 (by omega) (tPtr_toNat n j (by omega) (by omega)) e.act296 e.code e.run)).trans
+        hn32 (by omega) (tPtr_toNat n j hn32 (by omega)) e.act296 e.code e.run)).trans
     (soundEnv blk3213b e
       (run_subTail_go s (subStep mem n (j + 1)).memory (subStep mem n (j + 1)).flag
         (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) j))
         (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (j + 1))) (subStep mem n j).flag
         n bsize esize msize k
-        (ptrAt_step _ _) (tPtr_gt_8255 n (j + 1) (by omega) hj) e.code e.run))
+        (ptrAt_step _ _) (tPtr_gt_8255 n (j + 1) hn32 hj) e.code e.run))
 
 /-- The last subtract-pass iteration, falling into the subtract tail. -/
 def gasSteps_subLastIter (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
@@ -257,14 +328,14 @@ def gasSteps_subLastIter (s : State) (mem : ByteArray) (n bsize esize msize k : 
   Challenge.EvmProof.GasSteps.cast
     ((soundEnv blk3213a e
         (run_subBodyA s mem (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (n - 1))) n bsize esize
-          msize k (n - 1) hn32 (by omega) (tPtr_toNat n (n - 1) (by omega) (by omega)) e.act296 e.code
+          msize k (n - 1) hn32 (by omega) (tPtr_toNat n (n - 1) hn32 (by omega)) e.act296 e.code
           e.run)).trans
       (soundEnv blk3213b e
         (run_subTail_last s (subStep mem n (n - 1 + 1)).memory (subStep mem n (n - 1 + 1)).flag
           (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (n - 1)))
           (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (n - 1 + 1))) (subStep mem n (n - 1)).flag
           n bsize esize msize k
-          (ptrAt_step _ _) (by rw [Nat.sub_add_cancel hn]; exact tPtr_toNat_last n (by omega))
+          (ptrAt_step _ _) (by rw [Nat.sub_add_cancel hn]; exact tPtr_toNat_last n hn32)
           e.code e.run)))
     rfl (by rw [Nat.sub_add_cancel hn]; rfl)
 
@@ -397,6 +468,7 @@ structure StepInv (mem : ByteArray) (n bsize mm minv : Nat) : Prop where
   frame : Exp.Frame mem n bsize minv
   modulus : Model.FastRepresents mem 0 n mm
   neg : Model.FastRepresents mem NEG n (Limbs.radix ^ n - mm)
+  cache : MachineState.readWord mem 1696 = ShiftCacheModel.entryWord n
 
 theorem negOf_cases (mem : ByteArray) (c q : UInt256) :
     negOf mem c q = UInt256.ofNat 0 ∨ negOf mem c q = UInt256.ofNat 1 := by
@@ -456,7 +528,7 @@ def gasSteps_step (s : State) (mem : ByteArray) (n bsize esize msize k mm minv :
   -- the chain
   have g1 : Challenge.EvmProof.GasSteps (shiftLoopState s mem n bsize esize msize k)
       (macLoopState s (stepU mem n) (stepQ mem n) n bsize esize msize k 0) :=
-    (((soundEnv blk3013 e
+    (    (((soundEnv blk3013 e
         (run_shiftHead_go s mem n bsize esize msize k (by omega) hk32 e.code e.run)).trans
       (soundEnv blk3018 e
         (run_shiftBody s mem n bsize esize msize k hn hn32 e.act htl0 e.code e.run))).trans
@@ -465,7 +537,11 @@ def gasSteps_step (s : State) (mem : ByteArray) (n bsize esize msize k mm minv :
       (soundEnv blk3069 e
         (run_macSetup s mem n bsize esize msize k (by omega) hn32 e.act296
           (by rw [hhighU 5344 (by omega)]; exact htl0)
-          (by rw [hhighU 5312 (by omega)]; exact hml0) e.code e.run))
+          (by rw [hhighU 5312 (by omega)]; exact hml0) e.code e.run))).trans
+      (ShiftUnrollBindings.dispatch.steps (bindingEnv e) rfl
+        (ShiftDispatchTrace.run_dispatch s (stepU mem n) (stepQ mem n)
+          n bsize esize msize k (by omega) hn32 e.act296
+          (ShiftCacheModel.cache_survives_u mem n inv.cache) e.code))
   have g2 : Challenge.EvmProof.GasSteps
       (macLoopState s (stepU mem n) (stepQ mem n) n bsize esize msize k 0)
       (midState s (stepU mem n) (stepQ mem n) n bsize esize msize k) :=

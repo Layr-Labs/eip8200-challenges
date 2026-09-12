@@ -119,15 +119,15 @@ def gasSteps_bigJump (input : ByteArray) (hvalid : ValidInput input)
 
 theorem gasSteps_bigJump_cost (input : ByteArray) (hvalid : ValidInput input)
     (hpositive : 0 < modulusSize input) :
-    (gasSteps_bigJump input hvalid hpositive).cost = 17 := by
+    (gasSteps_bigJump input hvalid hpositive).cost = 16 := by
   have hmeter := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    Dispatch.wordJumpPath 17 (Dispatch.run_wordJump input hvalid hpositive)
+    Dispatch.wordJumpPath 16 (Dispatch.run_wordJump input hvalid hpositive)
       (by rfl) (by decide) (by decide)
   have hactive : (Main.headerState input).activeWords =
       (Dispatch.wordDispatchState input).activeWords := by rfl
   rw [hactive] at hmeter
   have hcost : Challenge.EvmProof.Stepper.runLocatedBlockCost
-      Dispatch.wordJumpPath (Main.headerState input) = 17 := by omega
+      Dispatch.wordJumpPath (Main.headerState input) = 16 := by omega
   simpa [gasSteps_bigJump] using hcost
 
 def gasSteps_bigEntry (input : ByteArray) (hvalid : ValidInput input)
@@ -138,7 +138,7 @@ def gasSteps_bigEntry (input : ByteArray) (hvalid : ValidInput input)
 
 theorem gasSteps_bigEntry_cost (input : ByteArray) (hvalid : ValidInput input)
     (hpositive : 0 < modulusSize input) (hbig : 32 < modulusSize input) :
-    (gasSteps_bigEntry input hvalid hpositive hbig).cost = 91 := by
+    (gasSteps_bigEntry input hvalid hpositive hbig).cost = 90 := by
   simp [gasSteps_bigEntry, gasSteps_bigJump_cost, gasSteps_bigCheck_cost,
     gasSteps_bigTail_cost]
 

@@ -75,7 +75,7 @@ def macFusedPostProgram (tl ts : UInt256) : List Instr :=
    .op (.Dup ⟨1, by decide⟩),
    .op (.Dup ⟨3, by decide⟩),
    .op .ADD,
-   .push 3 tl,
+   .push 2 tl,
    .op .MLOAD,
    .op (.Dup ⟨1, by decide⟩),
    .op .ADD,
@@ -122,9 +122,9 @@ def entryProgram : List Instr :=
    .op .MLOAD,
    .push 1 128,
    .op .EQ,
-   .push 1 285,
+   .push 1 153,
    .op .MUL,
-   .push 2 4195,
+   .push 2 4283,
    .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
    .push 3 416,
@@ -219,8 +219,6 @@ def tailProgram : List Instr :=
    .op .POP,
    .op .POP,
    .op .POP,
-   .op .POP,
-   .push 2 4669,
    .op .POP]
 
 def l1DispatchProgram : List Instr :=

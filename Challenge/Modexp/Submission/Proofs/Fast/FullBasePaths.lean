@@ -7,7 +7,7 @@ set_option maxHeartbeats 4000000
 
 The helper is appended after the fixed-window and direct-RR helpers. Its miss
 path reproduces the original base-head computation before jumping to the
-unchanged base loop at pc 1668.
+unchanged base loop at pc 1798.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast
@@ -19,59 +19,59 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- Located block in the selected full-width-base helper. -/
 def blkFullBaseGuard :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2281 .JUMPDEST,
-   opAt 2282 (.Dup ⟨0, by decide⟩),
-   opAt 2283 (.Dup ⟨3, by decide⟩),
-   opAt 2284 .EQ,
-   pushAt 2285 0 0,
-   opAt 2286 .MLOAD,
-   pushAt 2287 1 255,
-   opAt 2288 .SHR,
-   opAt 2289 .AND,
-   opAt 2290 .ISZERO,
-   pushAt 2291 2 3045,
-   opAt 2292 .JUMPI]
+  [opAt 2296 .JUMPDEST,
+   opAt 2297 (.Dup ⟨0, by decide⟩),
+   opAt 2298 (.Dup ⟨3, by decide⟩),
+   opAt 2299 .EQ,
+   pushAt 2300 0 0,
+   opAt 2301 .MLOAD,
+   pushAt 2302 1 255,
+   opAt 2303 .SHR,
+   opAt 2304 .AND,
+   opAt 2305 .ISZERO,
+   pushAt 2306 2 3033,
+   opAt 2307 .JUMPI]
 
 /-- Located block in the selected full-width-base helper. -/
 def blkFullBaseCopyAdd :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2293 (.Dup ⟨0, by decide⟩),
-   pushAt 2294 1 96,
-   pushAt 2295 2 256,
-   opAt 2296 .CALLDATACOPY,
-   pushAt 2297 2 1604,
-   pushAt 2298 2 512,
-   pushAt 2299 2 256,
-   pushAt 2300 2 1536,
-   pushAt 2301 2 4047,
-   opAt 2302 .JUMP]
+  [opAt 2308 (.Dup ⟨0, by decide⟩),
+   pushAt 2309 1 96,
+   pushAt 2310 2 256,
+   opAt 2311 .CALLDATACOPY,
+   pushAt 2312 2 1599,
+   pushAt 2313 2 512,
+   pushAt 2314 2 256,
+   pushAt 2315 2 1536,
+   pushAt 2316 2 4137,
+   opAt 2317 .JUMP]
 
 /-- Located block in the selected full-width-base helper. -/
 def blkFullBaseFallback :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2303 .JUMPDEST,
-   opAt 2304 (.Dup ⟨2, by decide⟩),
-   pushAt 2305 1 31,
-   opAt 2306 .ADD,
-   pushAt 2307 1 5,
-   opAt 2308 .SHR,
-   opAt 2309 (.Dup ⟨3, by decide⟩),
-   opAt 2310 (.Dup ⟨1, by decide⟩),
-   pushAt 2311 1 5,
-   opAt 2312 .SHL,
-   opAt 2313 .SUB,
-   pushAt 2314 1 3,
-   opAt 2315 .SHL,
-   pushAt 2316 1 96,
-   opAt 2317 .CALLDATALOAD,
-   opAt 2318 (.Swap ⟨0, by decide⟩),
-   opAt 2319 .SHR,
-   opAt 2320 (.Dup ⟨2, by decide⟩),
-   pushAt 2321 2 224,
-   opAt 2322 .ADD,
-   opAt 2323 .MSTORE,
-   pushAt 2324 1 1,
-   pushAt 2325 2 1518,
-   opAt 2326 .JUMP]
+  [opAt 2318 .JUMPDEST,
+   opAt 2319 (.Dup ⟨2, by decide⟩),
+   pushAt 2320 1 31,
+   opAt 2321 .ADD,
+   pushAt 2322 1 5,
+   opAt 2323 .SHR,
+   opAt 2324 (.Dup ⟨3, by decide⟩),
+   opAt 2325 (.Dup ⟨1, by decide⟩),
+   pushAt 2326 1 5,
+   opAt 2327 .SHL,
+   opAt 2328 .SUB,
+   pushAt 2329 1 3,
+   opAt 2330 .SHL,
+   pushAt 2331 1 96,
+   opAt 2332 .CALLDATALOAD,
+   opAt 2333 (.Swap ⟨0, by decide⟩),
+   opAt 2334 .SHR,
+   opAt 2335 (.Dup ⟨2, by decide⟩),
+   pushAt 2336 2 224,
+   opAt 2337 .ADD,
+   opAt 2338 .MSTORE,
+   pushAt 2339 1 1,
+   pushAt 2340 2 1513,
+   opAt 2341 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

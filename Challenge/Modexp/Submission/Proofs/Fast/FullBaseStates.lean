@@ -22,44 +22,44 @@ def outer (n bsize esize msize : Nat) : List UInt256 :=
 /-- The inherited base-chain head, a two-instruction redirect at pc1607. -/
 def redirectState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 1514
+  { s with pc := UInt256.ofNat 1509
            stack := outer n bsize esize msize
            memory := memory }
 
 /-- Redirected base-chain head, pc3146. -/
 def entryState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3007
+  { s with pc := UInt256.ofNat 2995
            stack := outer n bsize esize msize
            memory := memory }
 
 /-- Guard hit, immediately before the calldata copy, pc3161. -/
 def copyState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3022
+  { s with pc := UInt256.ofNat 3010
            stack := outer n bsize esize msize
            memory := memory }
 
 /-- RR-first Montgomery entry after copying the normal-domain base to ACC. -/
 def addCallState (s : State) (memory input : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 4047
+  { s with pc := UInt256.ofNat 4137
            stack := [UInt256.ofNat 1536, UInt256.ofNat 256,
-             UInt256.ofNat 512, UInt256.ofNat 1604] ++
+             UInt256.ofNat 512, UInt256.ofNat 1599] ++
              outer n bsize esize msize
            memory := copyBaseMem memory input n }
 
 /-- Return from the conversion, immediately before inherited `bDone`. -/
 def rejoinState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 1604
+  { s with pc := UInt256.ofNat 1599
            stack := outer n bsize esize msize
            memory := memory }
 
 /-- Guard miss, pc3184, with the original stack and memory. -/
 def fallbackState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3045
+  { s with pc := UInt256.ofNat 3033
            stack := outer n bsize esize msize
            memory := memory }
 

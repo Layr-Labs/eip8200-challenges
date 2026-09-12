@@ -26,7 +26,7 @@ open EvmSemantics.EVM
 /-- The exact declared-width predicate tested by the appended route. -/
 abbrev Matches := WindowTwentyOneInput.Matches
 
-/-- State immediately after entering the appended route at pc 2633. -/
+/-- State immediately after entering the appended route at pc 2756. -/
 abbrev entryState (input : ByteArray) : State :=
   Dispatch.wordRouteEntryState input
 
@@ -41,7 +41,7 @@ abbrev Handled (input : ByteArray) : Prop :=
 
 `enter` covers the changed tail of the old one-word dispatcher.  `miss` is the
 critical fallback invariant: stack and memory are restored exactly to the
-already-proved state at pc 517.
+already-proved state at pc 599.
 -/
 structure Control where
   enter : ∀ input : ByteArray, ValidInput input →

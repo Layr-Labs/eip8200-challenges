@@ -1,6 +1,6 @@
-/- Kernel `setup` (pc 3948, 0x0f6c) of sqCP1m: the 3-slot variant of the entry permutation
+/- Kernel `setup` (pc 4173, 0x0f6c) of sqCP1m: the 3-slot variant of the entry permutation
 inherited from ercumentyildirim submission 9294f30d; the row head `hd` stays on top of the
-call frame and becomes frame slot 2.  The 299 literal uses PUSH2 to fund the operand snapshot. -/
+call frame and becomes frame slot 2.  The 292 literal uses PUSH2 to fund the operand snapshot. -/
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedRowFrames
 
 set_option warningAsError true
@@ -23,14 +23,14 @@ def loadProgram : List Instr :=
    .push 2 5312, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .ADD,
    .push 1 32, .op .MLOAD,
    .push 1 31, .op .NOT, .push 2 5248, .op .MLOAD,
-   .push 1 128, .op .EQ, .push 1 152, .op .MUL]
+   .push 1 128, .op .EQ, .push 1 148, .op .MUL]
 
 def shuffleProgram : List Instr :=
   [
-   .push 2 4195,
+   .push 2 4283,
    .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
-   .push 2 299,
+   .push 2 292,
    .op .ADD,
    .op (.Swap ⟨3, by decide⟩),
    .op (.Swap ⟨10, by decide⟩),
@@ -44,7 +44,7 @@ def lowProgram : List Instr :=
   [.push 1 64, .op .MLOAD, .op (.Swap ⟨10, by decide⟩)]
 
 def displacement (mem : ByteArray) : UInt256 :=
-  UInt256.ofNat 152 * UInt256.eq (UInt256.ofNat 128) (MachineState.readWord mem 5248)
+  UInt256.ofNat 148 * UInt256.eq (UInt256.ofNat 128) (MachineState.readWord mem 5248)
 
 def readsProgram : List Instr := loadProgram.take 16
 def setupProgram : List Instr := loadProgram.drop 16
@@ -54,9 +54,9 @@ theorem run_reads (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     (haddr : addr + 32 ≤ 5376)
     (hml : MachineState.readWord s.memory 5312 = UInt256.ofNat addr) :
     runInstructions readsProgram
-      {s with pc := UInt256.ofNat 4075, stack := [hd, pa, pb, dst, ret] ++ rest} =
+      {s with pc := UInt256.ofNat 4165, stack := [hd, pa, pb, dst, ret] ++ rest} =
     some {s with
-        pc := UInt256.ofNat 4101
+        pc := UInt256.ofNat 4191
         stack := [MachineState.readWord s.memory 32, (pa + UInt256.ofNat addr), MachineState.readWord s.memory 5280, MachineState.readWord s.memory addr, MachineState.readWord s.memory 5344, MachineState.readWord s.memory 96, hd, pa, pb, dst, ret] ++ rest} := by
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
@@ -102,10 +102,10 @@ theorem run_setup (s : State) (hd pa pb dst ret value inverse aEnd tailPointer l
     (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 168 ≤ s.activeWords.toNat) :
     runInstructions setupProgram
       {s with
-        pc := UInt256.ofNat 4101
+        pc := UInt256.ofNat 4191
         stack := [low32, aEnd, inverse, value, tailPointer, low96, hd, pa, pb, dst, ret] ++ rest} =
     some {s with
-      pc := UInt256.ofNat 4114
+      pc := UInt256.ofNat 4204
       stack := [displacement s.memory, negative32,
         low32, aEnd, inverse, value, tailPointer, low96, hd, pa, pb, dst, ret] ++ rest} := by
   have hc4 : rest.length + 4 < 1024 := by omega
@@ -134,9 +134,9 @@ theorem run_load (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     (haddr : addr + 32 ≤ 5376)
     (hml : MachineState.readWord s.memory 5312 = UInt256.ofNat addr) :
     runInstructions loadProgram
-      {s with pc := UInt256.ofNat 4075, stack := [hd, pa, pb, dst, ret] ++ rest} =
+      {s with pc := UInt256.ofNat 4165, stack := [hd, pa, pb, dst, ret] ++ rest} =
     some {s with
-        pc := UInt256.ofNat 4114
+        pc := UInt256.ofNat 4204
         stack := [displacement s.memory, negative32,
         MachineState.readWord s.memory 32, (pa + UInt256.ofNat addr), MachineState.readWord s.memory 5280, MachineState.readWord s.memory addr, MachineState.readWord s.memory 5344, MachineState.readWord s.memory 96, hd, pa, pb, dst, ret] ++ rest} := by
   change runInstructions (readsProgram ++ setupProgram) _ = _
@@ -148,18 +148,18 @@ theorem run_load (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
   exact runInstructions_append_some _ _ _ _ _ hr hs
 
 /-- `PUSH2 0x0fe4; ADD; DUP1; PUSH2 0x12b; ADD; SWAP4; SWAP11; PUSH0; NOT; SWAP4; SWAP11`
-(pc 3987 → 4002): `ent = 4068 + delta` and `l2T = 299 + ent` enter the frame; `hd`
+(pc 4212 → 4227): `ent = 4291 + delta` and `l2T = 292 + ent` enter the frame; `hd`
 moves down to slot 10 (it is swapped back up by `lowProgram`). -/
 theorem run_shuffle (s : State) (hd pa pb dst ret value inverse aEnd tailPointer low96 low32 delta : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) :
     runInstructions shuffleProgram
       {s with
-        pc := UInt256.ofNat 4114
+        pc := UInt256.ofNat 4204
         stack := [delta, negative32, low32, aEnd, inverse, value, tailPointer, low96, hd, pa, pb, dst, ret] ++ rest} =
     some {s with
-        pc := UInt256.ofNat 4129
-        stack := [pa, pb, UInt256.ofNat 4195 + delta, negative32, allOnes,
-        UInt256.ofNat 4494 + delta, inverse, value, tailPointer, low96, hd, low32, aEnd, dst, ret] ++ rest} := by
+        pc := UInt256.ofNat 4219
+        stack := [pa, pb, UInt256.ofNat 4283 + delta, negative32, allOnes,
+        UInt256.ofNat 4575 + delta, inverse, value, tailPointer, low96, hd, low32, aEnd, dst, ret] ++ rest} := by
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
@@ -182,10 +182,10 @@ theorem run_low (s : State) (hd pa pb l1 l2 dst ret value inverse aEnd tailPoint
     (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 168 ≤ s.activeWords.toNat) :
     runInstructions lowProgram
       {s with
-        pc := UInt256.ofNat 4129
+        pc := UInt256.ofNat 4219
         stack := [pa, pb, l1, negative32, allOnes, l2, inverse, value, tailPointer, low96, hd, low32, aEnd, dst, ret] ++ rest} =
     some {s with
-        pc := UInt256.ofNat 4133
+        pc := UInt256.ofNat 4223
         stack := [hd, pa, pb, l1, negative32, allOnes, l2, inverse, value, tailPointer, low96,
           MachineState.readWord s.memory 64, low32, aEnd, dst, ret] ++ rest} := by
   have hc15 : rest.length + 15 < 1024 := by omega

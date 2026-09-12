@@ -20,10 +20,10 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.FullBase
 
-/-- The multiply entry `JUMPDEST` at pc 3920 (0x0f50, instruction 2961), the `MONPRO` call target. -/
+/-- The multiply entry `JUMPDEST` at pc 4063 (0x0f50, instruction 3084), the `MONPRO` call target. -/
 private theorem jumpDestMulEntry :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4047 = true :=
-  Artifact.isValidJumpDest_index 3006 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4137 = true :=
+  Artifact.isValidJumpDest_index 3151 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_redirect (s : State) (memory : ByteArray)

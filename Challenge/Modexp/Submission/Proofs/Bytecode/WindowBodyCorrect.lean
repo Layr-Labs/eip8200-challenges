@@ -24,7 +24,7 @@ abbrev Handled (input : ByteArray) : Prop :=
       (initialState submissionBytecode input 0) final) ∧
       final.isDone = true ∧ final.toResult = .returned (spec input)
 
-/-- The old nonzero one-word proof, factored at pc 517 so it can follow a miss
+/-- The old nonzero one-word proof, factored at pc 599 so it can follow a miss
 from the appended route.  Every lemma used below is inherited unchanged from
 `WordCorrect`. -/
 def gasSteps_wordNonzeroFromEntry (input : ByteArray)
@@ -56,7 +56,7 @@ def gasSteps_wordNonzeroFromEntry (input : ByteArray)
   exact (((((start.trans setup).trans baseLoop).trans baseFinish).trans
     exponentLoop).trans finish)
 
-/-- The old one-word implementation is a complete fallback from pc 517. -/
+/-- The old one-word implementation is a complete fallback from pc 599. -/
 def legacyWordHandled (input : ByteArray) (hvalid : ValidInput input)
     (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32) :
     ∃ final : State,

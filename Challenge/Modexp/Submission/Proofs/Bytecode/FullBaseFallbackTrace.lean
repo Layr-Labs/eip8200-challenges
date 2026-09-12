@@ -22,18 +22,18 @@ open Challenge.Modexp.Submission.Proofs.Fast.FullBase
 
 private def fallbackCountPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2303 .JUMPDEST, opAt 2304 (.Dup ⟨2, by decide⟩),
-   pushAt 2305 1 31, opAt 2306 .ADD, pushAt 2307 1 5, opAt 2308 .SHR]
+  [opAt 2318 .JUMPDEST, opAt 2319 (.Dup ⟨2, by decide⟩),
+   pushAt 2320 1 31, opAt 2321 .ADD, pushAt 2322 1 5, opAt 2323 .SHR]
 private def fallbackWordPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2309 (.Dup ⟨3, by decide⟩), opAt 2310 (.Dup ⟨1, by decide⟩),
-   pushAt 2311 1 5, opAt 2312 .SHL, opAt 2313 .SUB, pushAt 2314 1 3,
-   opAt 2315 .SHL, pushAt 2316 1 96, opAt 2317 .CALLDATALOAD,
-   opAt 2318 (.Swap ⟨0, by decide⟩), opAt 2319 .SHR]
+  [opAt 2324 (.Dup ⟨3, by decide⟩), opAt 2325 (.Dup ⟨1, by decide⟩),
+   pushAt 2326 1 5, opAt 2327 .SHL, opAt 2328 .SUB, pushAt 2329 1 3,
+   opAt 2330 .SHL, pushAt 2331 1 96, opAt 2332 .CALLDATALOAD,
+   opAt 2333 (.Swap ⟨0, by decide⟩), opAt 2334 .SHR]
 private def fallbackStorePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2320 (.Dup ⟨2, by decide⟩), pushAt 2321 2 224, opAt 2322 .ADD,
-   opAt 2323 .MSTORE, pushAt 2324 1 1, pushAt 2325 2 1518, opAt 2326 .JUMP]
+  [opAt 2335 (.Dup ⟨2, by decide⟩), pushAt 2336 2 224, opAt 2337 .ADD,
+   opAt 2338 .MSTORE, pushAt 2339 1 1, pushAt 2340 2 1513, opAt 2341 .JUMP]
 
 private theorem shr_ofNat (value shift : Nat) (hv : value < 2 ^ 256)
     (hs : shift < 256) :
@@ -72,7 +72,7 @@ theorem run_fallback (s : State) (mem input : ByteArray)
         (FullBase.storeWord mem (224 + 32 * n)
           (UInt256.ofNat (FullBase.topLimbOf input bsize)))
         n bsize esize msize (FullBase.pbOf bsize) 1) := by
-  have hjump : Decode.isValidJumpDest s.executionEnv.code 1518 = true := by
+  have hjump : Decode.isValidJumpDest s.executionEnv.code 1513 = true := by
     simpa [hcode] using jumpDest1611
   have hpb1 : 1 ≤ pbOf bsize := by unfold pbOf; omega
   have hpbLe : pbOf bsize ≤ 32 := by unfold pbOf; omega
@@ -84,7 +84,7 @@ theorem run_fallback (s : State) (mem input : ByteArray)
     unfold topWidth; omega
   have hshr : UInt256.shiftRight (UInt256.ofNat (31 + bsize)) (UInt256.ofNat 5) =
       UInt256.ofNat ((31 + bsize) / 2 ^ 5) :=
-    shr_ofNat _ 5 (Nat.lt_of_le_of_lt (show 31 + bsize ≤ 1055 by omega) (by norm_num))
+    shr_ofNat _ 5 (Nat.lt_of_le_of_lt (show 31 + bsize ≤ 1190 by omega) (by norm_num))
       (by omega)
   have hpb : (31 + bsize) / 32 = pbOf bsize := rfl
   have hshl : UInt256.shiftLeft (UInt256.ofNat (pbOf bsize)) (UInt256.ofNat 5) =

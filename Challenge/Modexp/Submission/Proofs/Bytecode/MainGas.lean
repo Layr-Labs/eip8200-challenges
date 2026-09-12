@@ -50,9 +50,9 @@ private def gasSteps_headerCheck (input : ByteArray) :
 
 -- `JUMPDEST ; JUMPDEST` costs 1 + 1 (was `PUSH2 ; POP` = 3 + 2).
 @[simp] private theorem gasSteps_headerCheck_cost (input : ByteArray) :
-    (gasSteps_headerCheck input).cost = 2 := by rfl
+    (gasSteps_headerCheck input).cost = 0 := by rfl
 
-/-- The header block starting from the body `JUMPDEST` at pc 1196 rather than
+/-- The header block starting from the body `JUMPDEST` at pc 1326 rather than
 from the entry.  The appended fast path reaches that pc itself, so the entry hop
 is factored out. -/
 def gasSteps_headerFromBody (input : ByteArray) :
@@ -61,13 +61,13 @@ def gasSteps_headerFromBody (input : ByteArray) :
   exact (gasSteps_tramp7Dest input).trans <|
     (gasSteps_headerLoad input).trans (gasSteps_headerCheck input)
 
-/-- Direct entry to the early-word dispatcher, with no executed hop. -/
+/-- The total initial hop to the early-word dispatcher. -/
 def gasSteps_entryHop (input : ByteArray) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (trampolineState input 0) := gasSteps_tramp0 input
 
 /-- The reference header block, prefixed by whatever trace reaches the body
-`JUMPDEST` at pc 1196.  The appended fast path supplies that prefix on the
+`JUMPDEST` at pc 1326.  The appended fast path supplies that prefix on the
 inputs it declines. -/
 def gasSteps_header (input : ByteArray) (_hvalid : ValidInput input)
     (entry : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)

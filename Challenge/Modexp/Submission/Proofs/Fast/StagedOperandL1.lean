@@ -11,7 +11,7 @@ set_option maxHeartbeats 2000000
 /-!
 # The uniform first-loop block of the kernel
 
-Every first-loop block `k = 1..7` of the sqCP1m kernel is the 38-byte
+Every first-loop block `k = 1..7` of the sqCP1m kernel is the 37-byte
 `JUMPDEST; PUSH2 (0x2300 + 32(7-k)); MLOAD; DUP9; <product>; <finish t>` (the
 last block included: its load is the generic staged load with offset 0).  The
 limb `a_j` is read from the staged copy at `4864 + 32(n-1-j)`, which the
@@ -36,7 +36,7 @@ def loadProgram (off : UInt256) : List Instr :=
 def l1Program (off t : UInt256) : List Instr :=
   loadProgram off ++ CiosCached.macFusedProgram t t
 
-/-- One uniform 38-byte first-loop block, including its leading `JUMPDEST`. -/
+/-- One uniform 37-byte first-loop block, including its leading `JUMPDEST`. -/
 def stepProgram (off t : UInt256) : List Instr :=
   [.op .JUMPDEST] ++ l1Program off t
 
@@ -87,7 +87,7 @@ theorem run_l1 (template : State) (pc : UInt256) (q : MacState)
     (hsnapshot : Snapshot q.memory pa n) :
     runInstructions (l1Program off t)
       (qState template pc q bi pbi hd pbEnd flag destination returnPC rest) =
-    some (qState template (pc + UInt256.ofNat 37) (SquareModel.l1StepOn q bi pa n j)
+    some (qState template (pc + UInt256.ofNat 36) (SquareModel.l1StepOn q bi pa n j)
       bi pbi hd pbEnd flag destination returnPC rest) := by
   have hsaddr : (UInt256.ofNat 4864 + off).toNat = 4864 + 32*(n-1-j) := by
     rw [CiosCachedL1.base_offset_toNat 4864 off (by omega), hoff]
@@ -116,13 +116,13 @@ theorem run_l1 (template : State) (pc : UInt256) (q : MacState)
     ([pbi, hd, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) hT hT
   have hall := runInstructions_append_some _ _ _ _ _ hl hf
-  have hpc : (pc + UInt256.ofNat 5) + UInt256.ofNat 32 =
-      pc + UInt256.ofNat 37 := by
+  have hpc : (pc + UInt256.ofNat 5) + UInt256.ofNat 31 =
+      pc + UInt256.ofNat 36 := by
     simp [word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
   simpa only [l1Program, st, qState, framed, SquareModel.l1StepOn, ht, hpc,
     List.cons_append, List.nil_append] using hall
 
-/-- The whole uniform block, `JUMPDEST` included (38 bytes). -/
+/-- The whole uniform block, `JUMPDEST` included (37 bytes). -/
 theorem run_step (template : State) (pc : UInt256) (q : MacState)
     (bi : UInt256) (pa n j : Nat) (off t : UInt256)
     (hoff : off.toNat = 32 * (n - 1 - j))
@@ -133,7 +133,7 @@ theorem run_step (template : State) (pc : UInt256) (q : MacState)
     (hsnapshot : Snapshot q.memory pa n) :
     runInstructions (stepProgram off t)
       (qState template pc q bi pbi hd pbEnd flag destination returnPC rest) =
-    some (qState template (pc + UInt256.ofNat 38) (SquareModel.l1StepOn q bi pa n j)
+    some (qState template (pc + UInt256.ofNat 37) (SquareModel.l1StepOn q bi pa n j)
       bi pbi hd pbEnd flag destination returnPC rest) := by
   have hc : rest.length + 10 < 1024 := by omega
   have hjd : runInstructions [.op .JUMPDEST]
@@ -143,7 +143,7 @@ theorem run_step (template : State) (pc : UInt256) (q : MacState)
   have hl := run_l1 template (pc + UInt256.ofNat 1) q bi pa n j off t hoff ht
     pbi hd pbEnd flag destination returnPC rest hrest hactive hn hj hsnapshot
   have h := runInstructions_append_some _ _ _ _ _ hjd hl
-  have hpc : pc + UInt256.ofNat 1 + UInt256.ofNat 37 = pc + UInt256.ofNat 38 := by
+  have hpc : pc + UInt256.ofNat 1 + UInt256.ofNat 36 = pc + UInt256.ofNat 37 := by
     rw [word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
   rw [hpc] at h
   exact h
@@ -156,7 +156,7 @@ theorem run_stepQ (pc : Nat) (off t : UInt256) (s : State) (q : MacState) (bi : 
     (ht : t.toNat = 4160 + 32 * (n - 1 - j))
     (hsnapshot : Snapshot q.memory pa n) :
     runInstructions (stepProgram off t) (l1Q pc s q bi pb n i hd ent pdst ret rest) =
-      some (l1Q (pc+38) s (SquareModel.l1StepOn q bi pa n j) bi pb n i hd ent pdst ret rest) := by
+      some (l1Q (pc+37) s (SquareModel.l1StepOn q bi pa n j) bi pb n i hd ent pdst ret rest) := by
   have h := run_step s (UInt256.ofNat pc) q bi pa n j off t hoff ht
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) hd
     (UInt256.ofNat (pb-32)) ent (l2Target n) pdst (ret :: rest)

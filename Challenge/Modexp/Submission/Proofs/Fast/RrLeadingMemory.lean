@@ -100,7 +100,7 @@ theorem copiedMemory_exponentPtrWord (mem : ByteArray) (n : Nat) (hn32 : n ≤ 8
       MachineState.readWord mem 5376 :=
   copiedMemory_readWord_above mem n 5376 hn32 (by omega)
 
-/-- An entire byte range ending before the RR destination is unchanged. -/
+
 theorem copiedMemory_readPadded_before (mem : ByteArray)
     (n ptr count : Nat) (hbefore : ptr + count ≤ 1536) :
     MachineState.readPadded (copiedMemory mem n) ptr count =

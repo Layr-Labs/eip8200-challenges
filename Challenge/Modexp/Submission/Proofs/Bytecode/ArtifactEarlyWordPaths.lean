@@ -16,6 +16,6 @@ def earlyWordPaths : EarlyWordProgram.Paths submissionArtifact .Osaka where
   hit := earlyWord_hit
   miss := earlyWord_miss
   missJump := by exact isValidJumpDest_index 71 (by rfl)
-  legacyJump := by exact isValidJumpDest_index 935 (by rfl)
+  legacyJump := by exact isValidJumpDest_index 932 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Artifact

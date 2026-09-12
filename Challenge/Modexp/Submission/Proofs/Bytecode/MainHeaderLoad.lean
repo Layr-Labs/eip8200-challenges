@@ -15,17 +15,17 @@ theorem run_headerLoad (input : ByteArray) :
   have hs1197 := Challenge.EvmProof.Word.succ_ofNat
     (n := 1190) (by norm_num : 1190 + 1 < 2 ^ 256)
   have hs1198 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1136) (by norm_num : 1136 + 1 < 2 ^ 256)
+    (n := 1184) (by norm_num : 1184 + 1 < 2 ^ 256)
   have ha1199 := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 1137) (b := 2) (by norm_num : 1137 + 2 < 2 ^ 256)
+    (a := 1271) (b := 2) (by norm_num : 1271 + 2 < 2 ^ 256)
   have hs1201 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1139) (by norm_num : 1139 + 1 < 2 ^ 256)
+    (n := 1273) (by norm_num : 1273 + 1 < 2 ^ 256)
   have ha1202 := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 1140) (b := 2) (by norm_num : 1140 + 2 < 2 ^ 256)
+    (a := 1222) (b := 2) (by norm_num : 1222 + 2 < 2 ^ 256)
   have hs1204 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1142) (by norm_num : 1142 + 1 < 2 ^ 256)
+    (n := 1276) (by norm_num : 1276 + 1 < 2 ^ 256)
   have ha1060 := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 1060) (b := 4) (by norm_num : 1060 + 4 < 2 ^ 256)
+    (a := 1195) (b := 4) (by norm_num : 1195 + 4 < 2 ^ 256)
   have h0 : (0 : UInt256).toNat = 0 := by decide
   have h32 : (32 : UInt256).toNat = 32 := by decide
   have h64 : (64 : UInt256).toNat = 64 := by decide

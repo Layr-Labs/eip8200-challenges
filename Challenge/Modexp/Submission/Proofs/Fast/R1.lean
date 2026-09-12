@@ -6,14 +6,14 @@ set_option maxHeartbeats 4000000
 /-!
 # The `R1B` guard of the appended Montgomery path
 
-`R1B` occupies instruction indices 1768..1780 (pc 2539..2921).  It is entered
-at pc 2539 with stack `[px, ret]`, exactly the calling convention of
+`R1B` occupies instruction indices 1898..1910 (pc 2662..3003).  It is entered
+at pc 2662 with stack `[px, ret]`, exactly the calling convention of
 `DOUBLE256`, and it dispatches:
 
 * when the modulus's most significant bit is clear it jumps straight to
-  `DOUBLE256` (pc 1911) with the stack and memory untouched, so that path is
+  `DOUBLE256` (pc 2041) with the stack and memory untouched, so that path is
   literally the old one;
-* otherwise it stores `1` at `TN = 0x2020` and jumps to `CSUB` (pc 2309) with
+* otherwise it stores `1` at `TN = 0x2020` and jumps to `CSUB` (pc 2436) with
   the same `[px, ret]` frame.
 
 The second branch is the point.  `CSUB` computes `t[n] * radix ^ n + t_low`
@@ -84,34 +84,34 @@ def tnMem (mem : ByteArray) : ByteArray :=
 
 /-! ## States at the block boundaries -/
 
-/-- Subroutine entry, pc 2539, stack `[px, ret]`. -/
+/-- Subroutine entry, pc 2662, stack `[px, ret]`. -/
 def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2216
+  { s with pc := UInt256.ofNat 2211
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
-/-- The fall-back target, pc 1911: `DOUBLE256`'s own entry, reached with the
+/-- The fall-back target, pc 2041: `DOUBLE256`'s own entry, reached with the
 stack and memory exactly as they arrived. -/
 def dblState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1733
+  { s with pc := UInt256.ofNat 1728
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
-/-- Between the test and the store, pc 2550. -/
+/-- Between the test and the store, pc 2673. -/
 def fastState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2227
+  { s with pc := UInt256.ofNat 2222
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
-/-- The `CSUB` entry, pc 2309, stack `[px, ret]`, with `t[n] = 1` stored.
+/-- The `CSUB` entry, pc 2436, stack `[px, ret]`, with `t[n] = 1` stored.
 `TN = 0x2020` lies below the `296` words the caller already holds, so the
 store does not grow memory. -/
 def csubState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4804
+  { s with pc := UInt256.ofNat 4874
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := tnMem mem }
 

@@ -364,7 +364,7 @@ private theorem neg_algebra {L S F M x c P R : Nat}
 
 /-- `I_NEG(j)`: the low `j` limbs of `NEG` plus the carry complement the low
 `j` limbs of `m` to `radix ^ j`. -/
-theorem negStep_invariant (mem : ByteArray) (n : Nat) (hn32 : n ≤ 32) :
+theorem negStep_invariant (mem : ByteArray) (n : Nat) (hn32 : n ≤ 8) :
     ∀ j, j ≤ n →
       Csub.lowValue (negStep mem n j).memory NEG n j +
           (negStep mem n j).flag.toNat * Limbs.radix ^ j +
@@ -402,7 +402,7 @@ theorem negStep_invariant (mem : ByteArray) (n : Nat) (hn32 : n ≤ 32) :
         rw [radix_eq] at hspec ⊢; omega
       exact neg_algebra hspec' ihEq
 
-theorem neg_represents (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32)
+theorem neg_represents (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hmpos : 0 < mm) (hmod : Model.FastRepresents mem 0 n mm) :
     Model.FastRepresents (negStep mem n n).memory NEG n (Limbs.radix ^ n - mm) := by
   obtain ⟨hinv, hle⟩ := negStep_invariant mem n hn32 n le_rfl
@@ -512,7 +512,7 @@ theorem uMem_lowValue (mem : ByteArray) (n r : Nat) (hn : 1 ≤ n)
       rw [pow_succ, Nat.mod_mul]
       ring
 
-theorem uMem_tv (mem : ByteArray) (n r : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+theorem uMem_tv (mem : ByteArray) (n r : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hrep : Model.FastRepresents mem 512 n r) :
     tv (uMem mem n) n = r * Limbs.radix := by
   rw [tv_def, uMem_readWord_tn mem n (by omega)]
@@ -537,12 +537,12 @@ theorem uMem_tv (mem : ByteArray) (n r : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
 
 /-! ## The limb pass -/
 
-theorem mac_value (mem : ByteArray) (n : Nat) (q : UInt256) (a : Nat) (hn32 : n ≤ 32)
+theorem mac_value (mem : ByteArray) (n : Nat) (q : UInt256) (a : Nat) (hn32 : n ≤ 8)
     (hneg : Model.FastRepresents mem NEG n a) :
     Csub.lowValue (macOf mem n q).memory 4160 n n +
         (macOf mem n q).carry.toNat * Limbs.radix ^ n =
       Csub.lowValue mem 4160 n n + q.toNat * a := by
-  have h := Monpro.l1_row mem q NEG n (Csub.lowValue mem 4160 n n) a hn32
+  have h := Monpro.l1_row mem q NEG n (Csub.lowValue mem 4160 n n) a (by omega)
     (by unfold NEG; omega) hneg (Csub.fastRepresents_lowValue mem 4160 n)
   have hsum : Monpro.limbSum (fun k => (Monpro.l1Val mem q NEG n k).toNat) n =
       Csub.lowValue (Monpro.l1Step mem q NEG n n).memory 4160 n n := by
@@ -550,7 +550,7 @@ theorem mac_value (mem : ByteArray) (n : Nat) (q : UInt256) (a : Nat) (hn32 : n 
     apply Monpro.limbSum_congr
     intro k hk
     rw [show 4160 + 32 * (n - 1 - k) = Monpro.tAddr n k from rfl,
-      Monpro.readWord_l1Step_val mem q NEG n k hn32 hk (by unfold NEG; omega) n hk le_rfl]
+      Monpro.readWord_l1Step_val mem q NEG n k (by omega) hk (by unfold NEG; omega) n hk le_rfl]
   unfold macOf
   rw [← hsum]
   exact h
@@ -574,7 +574,7 @@ theorem mac_readWord_disjoint (mem : ByteArray) (n addr : Nat) (q : UInt256)
 
 /-- The middle block: the signed relation `u + neg * radix^(n+1) = q * m + t`. -/
 theorem mid_relation (mem : ByteArray) (n mm : Nat) (q : UInt256) (u : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmm : mm < Limbs.radix ^ n)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmm : mm < Limbs.radix ^ n)
     (hmod : Model.FastRepresents mem 0 n mm)
     (hneg : Model.FastRepresents mem NEG n (Limbs.radix ^ n - mm))
     (hu : tv mem n = u) (hulo : u < Limbs.radix ^ (n + 1)) :
@@ -734,7 +734,7 @@ theorem addLimb_spec' (t md c : UInt256) (hc : c.toNat ≤ 1) :
   · split_ifs <;> omega
   · split_ifs <;> omega
 
-theorem addStep_invariant (mem : ByteArray) (n : Nat) (hn32 : n ≤ 32) :
+theorem addStep_invariant (mem : ByteArray) (n : Nat) (hn32 : n ≤ 8) :
     ∀ j, j ≤ n →
       Csub.lowValue (addStep mem n j).memory 4160 n j +
           (addStep mem n j).flag.toNat * Limbs.radix ^ j =
@@ -761,7 +761,7 @@ theorem addStep_invariant (mem : ByteArray) (n : Nat) (hn32 : n ≤ 32) :
       simp only [Nat.zero_add, hxt, hxm]
       exact ⟨Csub.am_algebra _ _ _ _ _ _ _ _ _ _ hlimb.1 ihEq, hlimb.2⟩
 
-theorem addRound_value (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32)
+theorem addRound_value (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hmod : Model.FastRepresents mem 0 n mm) :
     tv (addRoundMem mem n) n + (addOut mem n).toNat * Limbs.radix ^ (n + 1) =
       tv mem n + mm ∧ (addOut mem n).toNat ≤ 1 := by
@@ -877,7 +877,7 @@ theorem subLimb_spec' (x y b : UInt256) (hb : b.toNat ≤ 1) :
   · split_ifs <;> omega
   · split_ifs <;> omega
 
-theorem subStep_invariant (mem : ByteArray) (n : Nat) (hn32 : n ≤ 32) :
+theorem subStep_invariant (mem : ByteArray) (n : Nat) (hn32 : n ≤ 8) :
     ∀ j, j ≤ n →
       Csub.lowValue (subStep mem n j).memory 4160 n j + Csub.lowValue mem 0 n j =
         Csub.lowValue mem 4160 n j + (subStep mem n j).flag.toNat * Limbs.radix ^ j ∧
@@ -903,7 +903,7 @@ theorem subStep_invariant (mem : ByteArray) (n : Nat) (hn32 : n ≤ 32) :
       simp only [Nat.zero_add, hxt, hxm]
       exact ⟨Csub.cs_algebra _ _ _ _ _ _ _ _ _ _ hlimb.1 ihEq, hlimb.2⟩
 
-theorem subRound_value (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32)
+theorem subRound_value (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hmod : Model.FastRepresents mem 0 n mm)
     (htn : (MachineState.readWord mem 4128).toNat ≠ 0) :
     tv (subRoundMem mem n) n + mm = tv mem n := by
@@ -979,7 +979,7 @@ theorem fastRepresents_subRounds (mem : ByteArray) (n ptr cnt v : Nat)
   exact subRounds_readWord_disjoint mem n _ (by omega) k
 
 /-- Add rounds without a carry out: the value grows by `m` each round. -/
-theorem addRounds_value (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32)
+theorem addRounds_value (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hmod : Model.FastRepresents mem 0 n mm) :
     ∀ i, tv mem n + i * mm < Limbs.radix ^ (n + 1) →
       tv (addRounds mem n i) n = tv mem n + i * mm ∧
@@ -1014,7 +1014,7 @@ theorem addRounds_value (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n 
         · subst h; exact hout0'
 
 /-- The final add round overflows and leaves `tv + k m - radix^(n+1)`. -/
-theorem addRounds_last (mem : ByteArray) (n mm k : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32)
+theorem addRounds_last (mem : ByteArray) (n mm k : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hmod : Model.FastRepresents mem 0 n mm)
     (hlt : tv mem n + k * mm < Limbs.radix ^ (n + 1))
     (hge : Limbs.radix ^ (n + 1) ≤ tv mem n + (k + 1) * mm) :
@@ -1045,7 +1045,7 @@ theorem addRounds_last (mem : ByteArray) (n mm k : Nat) (hn : 1 ≤ n) (hn32 : n
 
 /-- Subtract rounds: the value drops by `m` each round while the top limb is
 nonzero. -/
-theorem subRounds_value (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32)
+theorem subRounds_value (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hmod : Model.FastRepresents mem 0 n mm) :
     ∀ i, (∀ j, j < i → Limbs.radix ^ n + j * mm ≤ tv mem n) →
       tv (subRounds mem n i) n + i * mm = tv mem n := by
@@ -1081,7 +1081,7 @@ structure RepairFacts (mid : ByteArray) (n mm : Nat) (neg : UInt256) : Prop wher
 
 /-- The subtract phase from a non-negative value: rounds while the top limb is
 nonzero, ending below `radix ^ n`. -/
-theorem subPhase_spec (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32)
+theorem subPhase_spec (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hmpos : 0 < mm) (hmod : Model.FastRepresents mem 0 n mm) :
     (∀ i, i < subCount mem n mm →
       (MachineState.readWord (subRounds mem n i) 4128).toNat ≠ 0) ∧
@@ -1126,7 +1126,7 @@ theorem addRounds_zero (mem : ByteArray) (n : Nat) : addRounds mem n 0 = mem := 
 /-- After the repair rounds the value is `u`-congruent, below `radix ^ n`,
 and `TN` is zero; and the loop facts hold. -/
 theorem repair_spec (mem : ByteArray) (n mm : Nat) (neg : UInt256) (u q : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 32) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (hmod : Model.FastRepresents mem 0 n mm)
     (hrel : u + neg.toNat * Limbs.radix ^ (n + 1) = q * mm + tv mem n)
     (hlt : tv mem n < Limbs.radix ^ (n + 1)) (hneg : neg.toNat ≤ 1) :
@@ -1227,7 +1227,7 @@ theorem repair_spec (mem : ByteArray) (n mm : Nat) (neg : UInt256) (u q : Nat)
     · rw [hfix]; exact htn0
 
 theorem fixMem_value (mem : ByteArray) (n mm : Nat) (neg : UInt256) (u q : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 32) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (hmod : Model.FastRepresents mem 0 n mm)
     (hrel : u + neg.toNat * Limbs.radix ^ (n + 1) = q * mm + tv mem n)
     (hlt : tv mem n < Limbs.radix ^ (n + 1)) (hneg : neg.toNat ≤ 1) :
@@ -1272,7 +1272,7 @@ theorem fastRepresents_stepMem (mem : ByteArray) (n mm ptr cnt v : Nat) (hn : 1 
 
 /-- The value-side facts of one step: the repair facts and the result. -/
 theorem step_spec (mem : ByteArray) (n mm r : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (htop : Limbs.radix ^ n < 2 * mm)
     (hmod : Model.FastRepresents mem 0 n mm)
     (hneg : Model.FastRepresents mem NEG n (Limbs.radix ^ n - mm))
@@ -1335,13 +1335,13 @@ theorem step_spec (mem : ByteArray) (n mm r : Nat)
   have hbound : 0 * Limbs.radix ^ n + Csub.lowValue fix 4160 n n < 2 * mm := by
     rw [Nat.zero_mul, Nat.zero_add, ← htvFix]
     exact lt_trans hltP htop
-  have hres := Csub.csub_correct fix n _ mm 0 512 hn hn32 hlowFix hmodFix htn
+  have hres := Csub.csub_correct fix n _ mm 0 512 hn (by omega) hlowFix hmodFix htn
     (Nat.zero_le 1) hmpos hbound
   rw [Nat.zero_mul, Nat.zero_add, ← htvFix, hcong] at hres
   exact hres
 
 theorem stepMem_represents (mem : ByteArray) (n mm r : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (htop : Limbs.radix ^ n < 2 * mm)
     (hmod : Model.FastRepresents mem 0 n mm)
     (hneg : Model.FastRepresents mem NEG n (Limbs.radix ^ n - mm))

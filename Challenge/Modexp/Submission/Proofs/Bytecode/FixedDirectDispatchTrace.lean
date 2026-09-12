@@ -41,7 +41,7 @@ theorem run_entry_three (s : State) (memory : ByteArray)
   have heq : UInt256.eq (UInt256.ofNat 3) (UInt256.ofNat 3) =
       UInt256.ofNat 1 := by decide
   simp (config := { maxSteps := 400000 })
-    [entryPrefix, opAt, pushAt, wfOp, jumpBridge3423,
+    [entryPrefix, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
@@ -56,9 +56,6 @@ theorem run_entry_three (s : State) (memory : ByteArray)
 set_option linter.unusedSimpArgs false in
 theorem run_entry_other (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) (hne : esize ≠ 3) (he : esize ≤ 1024)
-    -- With the block ending in a discard rather than a jump, nothing in this proof reads the
-    -- code any more; the premise is kept so the call sites keep their arity, and named `_`
-    -- because this module sets `warningAsError`, where an unused binder is fatal.
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock entryPrefix
@@ -70,7 +67,7 @@ theorem run_entry_other (s : State) (memory : ByteArray)
       Exp.toNat_ofNat_self (Nat.lt_of_le_of_lt he (by norm_num)),
       if_neg hne.symm]
   simp (config := { maxSteps := 400000 })
-    [entryPrefix, opAt, pushAt, wfOp, jumpBridge3423,
+    [entryPrefix, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,

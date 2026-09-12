@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Fast.ShiftCacheTrace
 import Challenge.Modexp.Submission.Proofs.Fast.CompactConstants
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftStates
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftPaths
@@ -87,7 +88,7 @@ theorem run_dispatch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
         Challenge.EvmProof.Word.ofNat_add_mod]
 
 /-- `blk2889`: the miss arm seeds `R1 = 0x0400` with the word 1 and calls the
-Montgomery-form conversion (pc 2081) with return address 1300, the old `r0` block.
+Montgomery-form conversion (pc 2211) with return address 1430, the old `r0` block.
 
 This call does not sit on the shared setup path, which every fast route runs.  It sits
 here, so it runs only on the recogniser-miss route -- the only route that reads `R1`; the
@@ -100,7 +101,7 @@ theorem run_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock blk2889
       (missState s mem n bsize esize msize) =
       some (Exp.r1Call s (Exp.storeWord mem 1024 (UInt256.ofNat 1)) 1024
-        (UInt256.ofNat 1435) n bsize esize msize) := by
+        (UInt256.ofNat 1430) n bsize esize msize) := by
   have haw : UInt256.ofNat
       (MachineState.activeWordsAfter s.activeWords.toNat 1024 32) = s.activeWords :=
     Monpro.activeWords_fix s 1024 32 (by decide) (by omega) (by omega)
@@ -364,7 +365,7 @@ theorem run_newtonB (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk2982
       (newtonBState s mem n bsize esize msize) =
-      some (shiftLoopState s (preMem mem) n bsize esize msize n) := by
+      some (cacheSetupState s (preMem mem) n bsize esize msize) := by
   have haw : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1664 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 600000 })
@@ -372,7 +373,7 @@ theorem run_newtonB (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      newtonBState, preNewtonState, shiftLoopState, kState, pcNewtonB, pcShiftLoop,
+      newtonBState, preNewtonState, cacheSetupState, kState, pcNewtonB,
       preMem, preMemOf, preDinv, newton8W, newtonW, PRE_DINV, Exp.storeWord,
       outer, Exp.outer, hcode, hrun, haw,
       State.activeWordsAfterUInt256,
