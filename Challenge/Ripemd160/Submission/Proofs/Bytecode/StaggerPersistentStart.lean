@@ -31,40 +31,40 @@ theorem run_initial (s : State) (pc off limit : UInt256) (rho : List UInt256)
 
 
 theorem initial_slice :
-    (Artifact.submissionArtifact.instructions.drop 264).take initialTemplate.length = initialTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 262).take initialTemplate.length = initialTemplate := by rfl
 
 def initialSite : GenericRoundSite Artifact.submissionArtifact .Osaka initialTemplate :=
-  StackSiteBuilder.ofSlice initialTemplate 264 initial_slice
-    (by change 264 + initialTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice initialTemplate 262 initial_slice
+    (by change 262 + initialTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := initialTemplate) (by decide)) (by decide)
 
 theorem initial_pc : initialSite.startPC = UInt256.ofNat 382 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 264) = UInt256.ofNat 382
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 262) = UInt256.ofNat 382
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def jumpCode := PadJump.template 519
 
 theorem jump_slice :
-    (Artifact.submissionArtifact.instructions.drop 269).take jumpCode.length = jumpCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 267).take jumpCode.length = jumpCode := by rfl
 
 def jumpSite : GenericRoundSite Artifact.submissionArtifact .Osaka jumpCode :=
-  StackSiteBuilder.ofSlice jumpCode 269 jump_slice
-    (by change 269 + jumpCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice jumpCode 267 jump_slice
+    (by change 267 + jumpCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := jumpCode) (by decide)) (by decide)
 
 theorem jump_pc : jumpSite.startPC = UInt256.ofNat 407 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 269) = UInt256.ofNat 407
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 267) = UInt256.ofNat 407
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_loop (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 519).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 330 = 519 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 328 = 519 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 330 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 328 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 519 = true
   rw [hcode]

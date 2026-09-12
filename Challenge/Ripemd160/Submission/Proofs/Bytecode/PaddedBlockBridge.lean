@@ -533,9 +533,8 @@ private theorem loadOffsetWord_eq (input : ByteArray) (blockOff k : Nat)
 exact little-endian reader seam required by the generic schedule proof. -/
 theorem paddedBlockAt (s : State) (base input : ByteArray)
     (msgOff : UInt256) (blockOff : Nat)
-    (hmemory : ∀ a : Nat,
-      MachineState.readWord s.memory a =
-        MachineState.readWord (paddedMemory base input) a)
+    (hbytes : ∀ a : Nat, a < messageOffset + paddedLength input.size →
+      s.memory[a]?.getD 0 = (paddedMemory base input)[a]?.getD 0)
     (hbase : base.size ≤ messageOffset)
     (hmsgOff : msgOff = UInt256.ofNat (messageOffset + blockOff))
     (hfit : Challenge.Ripemd160.CalldataFits input)
@@ -559,7 +558,31 @@ theorem paddedBlockAt (s : State) (base input : ByteArray)
         Schedule.readLEWord (paddedMemory base input)
           (UInt256.ofNat (messageOffset + (blockOff + k * 4))) := by
     unfold Schedule.readLEWord
-    rw [hmemory]
+    have hoff : (UInt256.ofNat (messageOffset + (blockOff + k * 4))).toNat =
+        messageOffset + (blockOff + k * 4) := by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt haddr]
+    simp only [hoff]
+    have hb : ∀ i : Nat, i < 4 →
+        (s.memory[messageOffset + (blockOff + k * 4) + i]?.getD 0) =
+          (paddedMemory base input)[messageOffset + (blockOff + k * 4) + i]?.getD 0 := by
+      intro i hi
+      exact hbytes _ (by omega)
+    have h0 := byteAt_readWord s.memory (messageOffset + (blockOff + k * 4)) 0 (by omega)
+    have h1 := byteAt_readWord s.memory (messageOffset + (blockOff + k * 4)) 1 (by omega)
+    have h2 := byteAt_readWord s.memory (messageOffset + (blockOff + k * 4)) 2 (by omega)
+    have h3 := byteAt_readWord s.memory (messageOffset + (blockOff + k * 4)) 3 (by omega)
+    have h0' := byteAt_readWord (paddedMemory base input)
+      (messageOffset + (blockOff + k * 4)) 0 (by omega)
+    have h1' := byteAt_readWord (paddedMemory base input)
+      (messageOffset + (blockOff + k * 4)) 1 (by omega)
+    have h2' := byteAt_readWord (paddedMemory base input)
+      (messageOffset + (blockOff + k * 4)) 2 (by omega)
+    have h3' := byteAt_readWord (paddedMemory base input)
+      (messageOffset + (blockOff + k * 4)) 3 (by omega)
+    have hz : UInt256.ofNat 0 = (⟨0⟩ : UInt256) := rfl
+    rw [hz] at h0 h0'
+    rw [h0, h1, h2, h3, h0', h1', h2', h3',
+      hb 0 (by omega), hb 1 (by omega), hb 2 (by omega), hb 3 (by omega)]
   change Challenge.EvmProof.Word.mask32
       (Schedule.readLEWord s.memory
         (UInt256.ofNat (messageOffset + (blockOff + k * 4)))) = _
@@ -610,7 +633,8 @@ theorem padReturned_paddedBlockAt (input : ByteArray)
       (paddedMessage input) blockOff := by
   apply paddedBlockAt (PaddingTrace.padReturned input)
     (PaddingTrace.padLengthReady input).memory input
-  · exact PaddingTrace.padReturned_readWord input hfit
+  · intro a ha
+    exact PaddingTrace.padReturned_getD_window input hfit a ha
   · exact padBase_size input
   · rfl
   · exact hfit

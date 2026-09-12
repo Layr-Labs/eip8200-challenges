@@ -290,7 +290,10 @@ private theorem padReturned_word_below (input : ByteArray)
     wordAt (PaddingTrace.padReturned input) address =
       wordAt (Main.initializedState input) address := by
   unfold wordAt
-  rw [PaddingTrace.padReturned_readWord input hfit address]
+  rw [PaddingTrace.padReturned_readWord input hfit address (by
+    have hpadded := Padding.input_and_footer_fit input.size
+    unfold Padding.messageOffset at haddress ⊢
+    omega)]
   unfold Padding.paddedMemory Padding.sentinelMemory Padding.copiedMemory
   have hpadded := Padding.input_and_footer_fit input.size
   rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint,
