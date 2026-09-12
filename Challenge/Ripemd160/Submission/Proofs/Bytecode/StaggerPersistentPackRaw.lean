@@ -60,8 +60,8 @@ def template : List Instr := [
   .op (.Dup ⟨7, by decide⟩),
   .op (.Dup ⟨1, by decide⟩),
   .op .OR ]
-def inputStack (x : Input) (rho : List UInt256) : List UInt256 := [x.rd, x.k, x.rc, x.rb, x.re, x.ra, x.factor, x.lower, x.cache140, x.cache190, x.cache310, x.cache350, x.h4, x.h1, x.h2, x.h3, x.h0, x.off, x.limit] ++ rho
-def outputStack (x : Input) (rho : List UInt256) : List UInt256 := [(UInt256.lor x.lower (UInt256.shiftLeft x.lower (UInt256.ofNat 144))), (UInt256.shiftLeft x.lower (UInt256.ofNat 144)), (UInt256.lor x.h4 (UInt256.shiftLeft x.re (UInt256.ofNat 144))), (UInt256.lor x.h1 (UInt256.shiftLeft x.rb (UInt256.ofNat 144))), (UInt256.lor x.h0 (UInt256.shiftLeft x.ra (UInt256.ofNat 144))), (UInt256.lor x.h3 (UInt256.shiftLeft x.rd (UInt256.ofNat 144))), (UInt256.lor x.h2 (UInt256.shiftLeft x.rc (UInt256.ofNat 144))), x.factor, x.lower, x.cache140, x.cache190, x.cache310, x.cache350, x.h4, x.h1, x.h2, x.h3, x.h0, x.off, x.limit] ++ rho
+def inputStack (x : Input) (rho : List UInt256) : List UInt256 := [x.rd, x.k, x.rc, x.rb, x.re, x.ra, x.factor, x.lower, x.cache140, x.cache350, x.cache310, x.cache190, x.h4, x.h1, x.h2, x.h3, x.h0, x.off, x.limit] ++ rho
+def outputStack (x : Input) (rho : List UInt256) : List UInt256 := [ (UInt256.lor (UInt256.shiftLeft x.lower (UInt256.ofNat 144)) x.lower), (UInt256.shiftLeft x.lower (UInt256.ofNat 144)), (UInt256.lor x.h4 (UInt256.shiftLeft x.re (UInt256.ofNat 144))), (UInt256.lor x.h1 (UInt256.shiftLeft x.rb (UInt256.ofNat 144))), (UInt256.lor x.h0 (UInt256.shiftLeft x.ra (UInt256.ofNat 144))), (UInt256.lor x.h3 (UInt256.shiftLeft x.rd (UInt256.ofNat 144))), (UInt256.lor x.h2 (UInt256.shiftLeft x.rc (UInt256.ofNat 144))), x.factor, x.lower, x.cache140, x.cache350, x.cache310, x.cache190, x.h4, x.h1, x.h2, x.h3, x.h0, x.off, x.limit ] ++ rho
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running) :
     runInstrSeq template {s with pc := pc, stack := inputStack x rho} =

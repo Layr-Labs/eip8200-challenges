@@ -14,23 +14,42 @@ structure Input where
   h4 : UInt256
   off : UInt256
   limit : UInt256
-def template : List Instr := [
-  .op .JUMPDEST,
-  .op (.Swap ⟨3, by decide⟩),
-  .push ⟨14, by decide⟩ (UInt256.ofNat 20282409608374036906851256238088),
-  .push ⟨14, by decide⟩ (UInt256.ofNat 162259276866992295254539466964993),
-  .push ⟨14, by decide⟩ (UInt256.ofNat 81129638433496147627271880966145),
-  .push ⟨13, by decide⟩ (UInt256.ofNat 20282409598929303941081901039615),
-  .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295),
-  .push ⟨14, by decide⟩ (UInt256.ofNat 20282409608374036907091774406720),
-  .op (.Dup ⟨6, by decide⟩),
-  .op (.Dup ⟨10, by decide⟩),
-  .op (.Dup ⟨10, by decide⟩),
-  .op (.Dup ⟨10, by decide⟩),
-  .op (.Dup ⟨14, by decide⟩),
-  .push ⟨4, by decide⟩ (UInt256.ofNat 1352829926) ]
+def template : List Instr :=
+  [ .op .JUMPDEST,
+    .op (.Swap ⟨3, by decide⟩),
+    .push ⟨14, by decide⟩ (UInt256.ofNat 81129638433496147627271880966145),
+    .push ⟨14, by decide⟩ (UInt256.ofNat 162259276866992295254539466964993),
+    .push ⟨14, by decide⟩ (UInt256.ofNat 20282409608374036906851256238088),
+    .push ⟨13, by decide⟩ (UInt256.ofNat 20282409598929303941081901039615),
+    .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295),
+    .push ⟨14, by decide⟩ (UInt256.ofNat 20282409608374036907091774406720),
+    .op (.Dup ⟨6, by decide⟩),
+    .op (.Dup ⟨10, by decide⟩),
+    .op (.Dup ⟨10, by decide⟩),
+    .op (.Dup ⟨10, by decide⟩),
+    .op (.Dup ⟨14, by decide⟩),
+    .push ⟨4, by decide⟩ (UInt256.ofNat 1352829926) ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 := [x.h0, x.h1, x.h2, x.h3, x.h4, x.off, x.limit] ++ rho
-def outputStack (_memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 := [(UInt256.ofNat 1352829926), x.h0, x.h1, x.h2, x.h3, x.h4, (UInt256.ofNat 20282409608374036907091774406720), (UInt256.ofNat 4294967295), (UInt256.ofNat 20282409598929303941081901039615), (UInt256.ofNat 81129638433496147627271880966145), (UInt256.ofNat 162259276866992295254539466964993), (UInt256.ofNat 20282409608374036906851256238088), x.h4, x.h1, x.h2, x.h3, x.h0, x.off, x.limit] ++ rho
+def outputStack (_memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
+  [ (UInt256.ofNat 1352829926),
+    x.h0,
+    x.h1,
+    x.h2,
+    x.h3,
+    x.h4,
+    (UInt256.ofNat 20282409608374036907091774406720),
+    (UInt256.ofNat 4294967295),
+    (UInt256.ofNat 20282409598929303941081901039615),
+    (UInt256.ofNat 20282409608374036906851256238088),
+    (UInt256.ofNat 162259276866992295254539466964993),
+    (UInt256.ofNat 81129638433496147627271880966145),
+    x.h4,
+    x.h1,
+    x.h2,
+    x.h3,
+    x.h0,
+    x.off,
+    x.limit ] ++ rho
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat) :

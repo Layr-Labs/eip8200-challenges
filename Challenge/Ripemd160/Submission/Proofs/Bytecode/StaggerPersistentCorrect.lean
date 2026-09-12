@@ -25,7 +25,7 @@ theorem limit_eq (input : ByteArray) (hfit : CalldataFits input) :
   rw [DriverTrace.paddedLength_eq_blockCount]
 
 noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 272)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 335)) :
     GasSteps (initialState submissionBytecode input 0)
       (loopState (PaddingTrace.padReturned input) StackRunBridge.initialHashState 0
         (DriverTrace.blockCount input) []) := by
@@ -38,7 +38,7 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
     (StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 0) (Padding.paddedWord input) [])
     (by simp [StaggerPersistentFrame.frame]) (PaddingTrace.padReturned_halt input) (PaddingTrace.padReturned_code input)
     (PaddingTrace.padReturned_fork input) (PaddingTrace.padReturned_noPrecompile input)
-  have gs : s = {s with pc := UInt256.ofNat 325, stack := [UInt256.ofNat 0, Padding.paddedWord input]} := rfl
+  have gs : s = {s with pc := UInt256.ofNat 388, stack := [UInt256.ofNat 0, Padding.paddedWord input]} := rfl
   rw [← gs] at gi
   have g := gp.trans (gi.trans gj)
   simpa only [loopState, offsetWord, Nat.zero_mul, limit_eq input hfit] using g
@@ -56,7 +56,7 @@ noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input)
     (hblock : ∀ i, i < DriverTrace.blockCount input →
       GasSteps (loopState (states i) (hashes i) i (DriverTrace.blockCount input) [])
         (postState (states (i + 1)) (hashes (i + 1)) i (DriverTrace.blockCount input) []))
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 272)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 335)) :
     GasSteps (initialState submissionBytecode input 0) (result input states hashes) := by
   have gs := gasSteps_start input hfit entryPrefix
   have gb := run_blocks states hashes (DriverTrace.blockCount input) []
@@ -79,7 +79,7 @@ theorem correct_of_blocks (input : ByteArray) (hfit : CalldataFits input)
     (hfinal : CompressionCorrect.hashArray (hashes (DriverTrace.blockCount input)) =
       CompressionSeamBridge.hashAfter input (DriverTrace.blockCount input))
     (hcalls : (states (DriverTrace.blockCount input)).callStack = [])
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 272)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 335)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   let trace := fullTrace input hfit states hashes hszero hhzero hambient hblock entryPrefix

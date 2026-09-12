@@ -4,7 +4,7 @@ set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 2000000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.GuardInstructionWindow
-open EvmSemantics YulEvmCompiler Challenge.EvmProof ArtifactByteLength
+open YulEvmCompiler Challenge.EvmProof ArtifactByteLength
 open Artifact (op)
 def tail : List Instr :=
 [
@@ -68,7 +68,7 @@ def tail : List Instr :=
   op 0x86,
   op 0x14,
   op 0x15,
-  .push 2 465,
+  .push 2 527,
   op 0x57,
   op 0x5b,
   .push 1 32,
@@ -89,7 +89,10 @@ def tail : List Instr :=
   .push 1 8,
   op 0x1c,
   op 0x18,
-  .push 19 5686776798952929642815894290724836652357714175,
+  op 0x81,
+  .push 0 0,
+  op 0x19,
+  op 0x04,
   op 0x16,
   op 0x02,
   op 0x18,
@@ -118,7 +121,7 @@ def tail : List Instr :=
   op 0x1a,
   .push 1 7,
   op 0x18,
-  .push 2 5148,
+  .push 2 5112,
   op 0x57,
   .push 0 0,
   .push 17 342276208914615837337402008677671501826,
@@ -129,7 +132,7 @@ def tail : List Instr :=
   .push 1 106,
   op 0x57,
   op 0x50,
-  .push 2 272,
+  .push 2 335,
   op 0x56,
   op 0x5b,
   .push 1 20,
@@ -140,7 +143,7 @@ def tail : List Instr :=
   op 0x06,
   .push 1 21,
   op 0x02,
-  .push 2 4855,
+  .push 2 4819,
   op 0x01,
   .push 1 12,
   op 0x39,
@@ -165,7 +168,7 @@ def tail : List Instr :=
   op 0x36,
   .push 1 2,
   op 0x1c,
-  .push 2 272,
+  .push 2 335,
   op 0x57,
   .push 3 2127393,
   op 0x36,
@@ -175,26 +178,26 @@ def tail : List Instr :=
   .push 1 232,
   op 0x1c,
   op 0x18,
-  .push 2 272,
+  .push 2 335,
   op 0x57,
   .push 20 890993315260586290631548281360202943075753233713,
   op 0x36,
-  .push 2 354,
+  .push 2 417,
   op 0x56
 ]
-theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3719 = tail := by rfl
+theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3779 = tail := by rfl
 
-theorem pc_base : Artifact.submissionArtifact.instructionPC 3719 = 4643 := by
+theorem pc_base : Artifact.submissionArtifact.instructionPC 3779 = 4623 := by
   rw [instructionPC_eq_byteLength]
   rfl
 
 theorem get (index : Nat) :
-    Artifact.submissionArtifact.instructions[3719 + index]? = tail[index]? := by
+    Artifact.submissionArtifact.instructions[3779 + index]? = tail[index]? := by
   rw [← InstructionWindow.get_drop, tail_eq]
 
 theorem pc (index : Nat) :
-    Artifact.submissionArtifact.instructionPC (3719 + index) =
-      4643 + byteLength (tail.take index) := by
+    Artifact.submissionArtifact.instructionPC (3779 + index) =
+      4623 + byteLength (tail.take index) := by
   rw [InstructionWindow.pc_drop, pc_base, tail_eq]
 
 #print axioms get

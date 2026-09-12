@@ -3,7 +3,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.ExactGuardSpec
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputCompactLogic
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedInputData
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedGuardSpec
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionEntryPrelude
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Execution
 import Challenge.EvmProof.Memory
 
@@ -54,7 +54,7 @@ def sizePath : List Located :=
    opAt 14 .OR,
    opAt 15 .OR,
    opAt 16 .ISZERO,
-   pushAt 17 2 4785,
+   pushAt 17 2 4749,
    opAt 18 .JUMPI]
 
 def checkEntryPath : List Located :=
@@ -85,7 +85,7 @@ def tailPath : List Located :=
   [opAt 48 .CALLDATALOAD, opAt 49 (.Dup ⟨2, by decide⟩),
    opAt 50 .XOR, pushAt 51 1 192, opAt 52 .SHR, opAt 53 .OR,
    opAt 54 (.Swap ⟨0, by decide⟩), opAt 55 .POP,
-   pushAt 56 2 272, opAt 57 .JUMPI]
+   pushAt 56 2 335, opAt 57 .JUMPI]
 
 def returnPath : List Located :=
   [pushAt 58 20 972889429405991776604892044862621566948497025487,
@@ -117,7 +117,7 @@ attribute [simp] Challenge.Ripemd160.initialState_stack
   Challenge.Ripemd160.initialState_calldata
 
 def sizeMatched (input : ByteArray) : State := atPC input 30
-def fallbackState (input : ByteArray) : State := atPC input 272
+def fallbackState (input : ByteArray) : State := atPC input 335
 
 def loopState (input : ByteArray) (n : Nat) : State :=
   { initialState submissionBytecode input 0 with
