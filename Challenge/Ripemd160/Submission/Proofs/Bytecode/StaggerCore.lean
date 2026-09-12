@@ -8,7 +8,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCore
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open Paired80WordRound StaggerCoreCommon StaggerCoreModel
 open StaggerAlgorithm (step fold physicalKey)
-def pcs : Array Nat := #[1144, 1195, 1238, 1274, 1320, 1358, 1401, 1439, 1482, 1521, 1564, 1603, 1649, 1687, 1751, 1799, 1847, 1902, 1950, 1988, 2036, 2077, 2124, 2165, 2213, 2253, 2301, 2342, 2389, 2427, 2491, 2538, 2586, 2638, 2678, 2709, 2746, 2780, 2820, 2854, 2895, 2926, 2966, 2997, 3034, 3065, 3132, 3181, 3229, 3286, 3334, 3374, 3423, 3461, 3510, 3550, 3597, 3635, 3683, 3721, 3770, 3808, 3862, 3903, 3943, 3988, 4034, 4072, 4118, 4154, 4192, 4228, 4273, 4309, 4355, 4394, 4440, 4478]
+def pcs : Array Nat := #[1130, 1181, 1224, 1260, 1306, 1344, 1387, 1425, 1468, 1507, 1550, 1589, 1635, 1673, 1737, 1785, 1833, 1888, 1936, 1974, 2022, 2063, 2110, 2151, 2199, 2239, 2287, 2328, 2375, 2413, 2477, 2524, 2572, 2624, 2664, 2695, 2732, 2766, 2806, 2840, 2881, 2912, 2952, 2983, 3020, 3051, 3118, 3167, 3215, 3272, 3320, 3360, 3409, 3447, 3496, 3536, 3583, 3621, 3669, 3707, 3756, 3794, 3848, 3889, 3929, 3974, 4020, 4058, 4104, 4140, 4178, 4214, 4259, 4295, 4341, 4380, 4426, 4464]
 def shapes : Array (List Reg) := #[
   [ .pair, .upper, .e, .b, .a, .d, .c, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ],
   [ .d, .pair, .upper, .a, .c, .k, .e, .b, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ],
@@ -196,8 +196,8 @@ def gasSteps_core (s : State) (rho : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 940, stack := rho}
-      {s with pc := UInt256.ofNat 4689, stack := rho, memory := resultMemory s.memory} := by
+    GasSteps {s with pc := UInt256.ofNat 926, stack := rho}
+      {s with pc := UInt256.ofNat 4675, stack := rho, memory := resultMemory s.memory} := by
   let q0 := initial s.memory
   let q1 := right0 s.memory q0
   let q2 := right1 s.memory q1
