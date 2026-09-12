@@ -8,8 +8,8 @@ set_option maxHeartbeats 2000000
 /-!
 # Structural certificate for the frozen RIPEMD-160 artifact
 
-The exact candidate has 5251 bytes, 3921 instructions, and SHA-256
-`5f8a3376d426f84607c830e213199b4a9e6b80a323791ab58396420de414cb2d`. PUSH rows carry their typed width and value.
+The exact candidate has 5251 bytes, 3920 instructions, and SHA-256
+`c3b2f4e4b7c2fa480402ce1125ecc8cb7d850bb5ecb088dd8c189b83527d2e7f`. PUSH rows carry their typed width and value.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
@@ -3896,10 +3896,11 @@ private def submissionInstructionsChunk19 : List Instr :=
 
 private def submissionInstructionsChunk20 : List Instr :=
 [
-  op 0x98,
-  .push 1 144,
+  op 0x93,
+  op 0x50,
+  op 0x97,
+  .push 2 144,
   op 0x1c,
-  op 0x01,
   op 0x98,
   .push 1 144,
   op 0x1c,
@@ -3908,28 +3909,26 @@ private def submissionInstructionsChunk20 : List Instr :=
   .push 1 144,
   op 0x1c,
   op 0x01,
-  op 0x92,
-  op 0x50,
-  op 0x50,
-  op 0x50,
+  op 0x97,
+  .push 1 144,
+  op 0x1c,
   op 0x94,
   .push 1 144,
   op 0x1c,
   op 0x01,
   op 0x91,
-  op 0x90,
-  .push 1 144,
-  op 0x1c,
+  op 0x50,
+  op 0x9f,
   op 0x01,
-  op 0x8d,
+  op 0x88,
+  op 0x16,
+  op 0x9d,
+  op 0x01,
   op 0x01,
   op 0x86,
   op 0x16,
-  op 0x9b,
+  op 0x9e,
   op 0x01,
-  op 0x85,
-  op 0x16,
-  op 0x9d,
   op 0x01,
   op 0x84,
   op 0x16,
@@ -4068,7 +4067,7 @@ private def submissionInstructionsChunk20 : List Instr :=
   op 0x56,
 ]
 
-@[simp] private theorem submissionInstructionsChunk20_length : submissionInstructionsChunk20.length = 170 := by rfl
+@[simp] private theorem submissionInstructionsChunk20_length : submissionInstructionsChunk20.length = 169 := by rfl
 
 def submissionInstructions : List Instr :=
 submissionInstructionsChunk0
@@ -4093,7 +4092,7 @@ submissionInstructionsChunk0
  ++ submissionInstructionsChunk19
  ++ submissionInstructionsChunk20
 
-theorem referenceInstructions_count : submissionInstructions.length = 3921 := by
+theorem referenceInstructions_count : submissionInstructions.length = 3920 := by
   simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length, submissionInstructionsChunk20_length]
 
 private theorem submissionInstructionsChunk0_assemble : assembleBytes submissionInstructionsChunk0 = [
@@ -4556,10 +4555,10 @@ private theorem submissionInstructionsChunk19_assemble : assembleBytes submissio
 ] := by decide
 
 private theorem submissionInstructionsChunk20_assemble : assembleBytes submissionInstructionsChunk20 = [
-  0x98, 0x60, 0x90, 0x1c, 0x01, 0x98, 0x60, 0x90, 0x1c, 0x01, 0x99, 0x60,
-  0x90, 0x1c, 0x01, 0x92, 0x50, 0x50, 0x50, 0x94, 0x60, 0x90, 0x1c, 0x01,
-  0x91, 0x90, 0x60, 0x90, 0x1c, 0x01, 0x8d, 0x01, 0x86, 0x16, 0x9b, 0x01,
-  0x85, 0x16, 0x9d, 0x01, 0x84, 0x16, 0x98, 0x01, 0x83, 0x16, 0x9a, 0x01,
+  0x93, 0x50, 0x97, 0x61, 0x00, 0x90, 0x1c, 0x98, 0x60, 0x90, 0x1c, 0x01,
+  0x99, 0x60, 0x90, 0x1c, 0x01, 0x97, 0x60, 0x90, 0x1c, 0x94, 0x60, 0x90,
+  0x1c, 0x01, 0x91, 0x50, 0x9f, 0x01, 0x88, 0x16, 0x9d, 0x01, 0x01, 0x86,
+  0x16, 0x9e, 0x01, 0x01, 0x84, 0x16, 0x98, 0x01, 0x83, 0x16, 0x9a, 0x01,
   0x82, 0x16, 0x98, 0x50, 0x9a, 0x60, 0x40, 0x01, 0x9a, 0x8c, 0x8c, 0x18,
   0x61, 0x02, 0x57, 0x57, 0x50, 0x50, 0x50, 0x50, 0x50, 0x50, 0x93, 0x60,
   0x20, 0x1b, 0x17, 0x60, 0x20, 0x1b, 0x17, 0x60, 0x20, 0x1b, 0x17, 0x60,
