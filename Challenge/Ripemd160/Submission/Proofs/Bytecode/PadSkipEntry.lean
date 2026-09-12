@@ -74,7 +74,7 @@ private theorem skip_active_toNat (input : ByteArray) (hfit : CalldataFits input
     omega
 
 theorem entryState_active (input : ByteArray) (hfit : CalldataFits input)
-    (hpos : 0 < input.size) : 38 ≤ (entryState input).activeWords.toNat := by
+    (hpos : 0 < input.size) : 37 ≤ (entryState input).activeWords.toNat := by
   unfold entryState PaddingTrace.entryState
   split
   · next hz =>

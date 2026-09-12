@@ -100,7 +100,7 @@ theorem pad_end : pcAfter (UInt256.ofNat 522) StaggerPad.padTemplate = UInt256.o
 
 def gasSteps_normal (s : State) (ret : UInt256) (p : Nat) (rest : List UInt256)
     (hstack : rest.length ≤ 896) (hrun : s.halt = .Running)
-    (hp : 1152 ≤ p) (hbound : p + 64 < 2 ^ 256)
+    (hp : 1120 ≤ p) (hbound : p + 64 < 2 ^ 256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :

@@ -22,7 +22,7 @@ theorem pointer_eq (input : ByteArray) (i : Nat) (hfit : CalldataFits input)
     (hi : i < DriverTrace.blockCount input) :
     StaggerPersistentEntryRaw.pointer (DriverTrace.blockOffsetWord i) = UInt256.ofNat (messagePointer i) := by
   have hb := messagePointer_bound input hfit i hi
-  change UInt256.ofNat 1152 + UInt256.ofNat (DriverTrace.blockOffset i) = _
+  change UInt256.ofNat 1120 + UInt256.ofNat (DriverTrace.blockOffset i) = _
   rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb; omega)]
   rfl
 
@@ -48,7 +48,7 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     have gp := StaggerPersistentPadPrefix.gasSteps_prefix s (frame h off limit rho)
       (by simp only [frame, List.length_append, List.length_cons, List.length_nil]; omega)
       hr hcode hfork hnp
-    have ha : 38 ≤ s.activeWords.toNat := ctx.active
+    have ha : 37 ≤ s.activeWords.toNat := ctx.active
     have gb := StaggerSetupSites.gasSteps_pad s Paired144WordRound.factorWord r hrs hr (by omega) hf hcode hfork hnp
     have hhs : s.executionEnv.calldata.size = DriverTrace.blockOffset i := by rw [ctx.calldata]; exact hh
     rw [scheduledState_hit s i hhs]

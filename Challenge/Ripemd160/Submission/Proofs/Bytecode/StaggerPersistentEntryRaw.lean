@@ -48,8 +48,8 @@ theorem run_hit (s : State) (pc off limit : UInt256) (h : Compression.HashState)
     hrun, hcap, heq, List.length_cons, List.getElem?_cons_zero, Nat.add_assoc, hvalid, Word.literal_eq_ofNat, UInt256.isTrue]
 
 def callTemplate : List Instr :=
-  [.op (.Dup ⟨11, by decide⟩), .push ⟨2, by decide⟩ (UInt256.ofNat 1152), .op .ADD]
-def pointer (off : UInt256) : UInt256 := UInt256.add (UInt256.ofNat 1152) off
+  [.op (.Dup ⟨11, by decide⟩), .push ⟨2, by decide⟩ (UInt256.ofNat 1120), .op .ADD]
+def pointer (off : UInt256) : UInt256 := UInt256.add (UInt256.ofNat 1120) off
 
 theorem run_call (s : State) (pc off limit : UInt256) (h : Compression.HashState)
     (rho : List UInt256) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running) :
