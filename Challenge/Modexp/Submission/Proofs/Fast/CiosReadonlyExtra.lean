@@ -1,4 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CiosReadonlyComponents
+import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedFused
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedL2
 
 set_option warningAsError true
@@ -93,7 +94,7 @@ theorem ExtraCache.choose {mem : ByteArray} {m96 m64 m32 : UInt256}
   · exact hc.word32
 
 def extraProgram (slot : Fin 3) (tl ts : UInt256) : List Instr :=
-  (extraLoad slot ++ L2.productProgram) ++ L2.finishProgram tl ts
+  extraLoad slot ++ CiosCached.macFusedProgram tl ts
 
 theorem run_extraStep (slot : Fin 3) (template : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat) (x loadAddr storeAddr : UInt256)
@@ -130,21 +131,15 @@ theorem run_extraStep (slot : Fin 3) (template : State) (pc : UInt256) (mem : By
   have hpc2 : pc.succ.succ = pc+UInt256.ofNat 2 := by
     simp [succ_eq_add,word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod]
   rw [hpc2] at hl
-  have hp := L2.run_product st (pc+UInt256.ofNat 2)
-    (MachineState.readWord st.memory x.toNat) mu (l2Step mem mu c0 n k).carry
-    ([bi,pbi,paEnd,pbEnd,flag,negative32,allOnes,target2,inv,m0] ++
-      (cachedTL :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))
-    (by simp only [List.length_append,List.length_cons,List.length_nil]; omega)
-  have hf := L2.run_finish st (advancePC 18 (pc+UInt256.ofNat 2))
+  have hf := CiosCachedFused.run_fused st (pc+UInt256.ofNat 2)
     (MachineState.readWord st.memory x.toNat) mu (l2Step mem mu c0 n k).carry loadAddr storeAddr
     ([bi,pbi,paEnd,pbEnd,flag,negative32,allOnes,target2,inv,m0] ++
       (cachedTL :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))
     (by simp only [List.length_append,List.length_cons,List.length_nil]; omega) hT hW
-  have both := runInstructions_append_some _ _ _ _ _ hl hp
-  have hall := runInstructions_append_some _ _ _ _ _ both hf
-  have hpc : advancePC 18 (pc+UInt256.ofNat 2)+UInt256.ofNat 14 = pc+UInt256.ofNat 34 := by
-    simp [advancePC,succ_eq_add,word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod]
-  change runInstructions ((extraLoad slot ++ L2.productProgram) ++ L2.finishProgram loadAddr storeAddr) _ = _
+  have hall := runInstructions_append_some _ _ _ _ _ hl hf
+  have hpc : (pc+UInt256.ofNat 2)+UInt256.ofNat 32 = pc+UInt256.ofNat 34 := by
+    simp [word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod]
+  change runInstructions (extraLoad slot ++ CiosCached.macFusedProgram loadAddr storeAddr) _ = _
   simpa only [st,CiosCachedL2.state,framed,extendedStack,l2Step,hx,hloadAddr,hstoreAddr,hpc,
     List.cons_append,List.nil_append] using hall
 
