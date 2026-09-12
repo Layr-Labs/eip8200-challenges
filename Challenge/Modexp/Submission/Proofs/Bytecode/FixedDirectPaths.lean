@@ -27,7 +27,7 @@ abbrev Located :=
 
 @[simp] theorem directPC0 (i : Nat) (hi : 2430 ≤ i) (hii : i ≤ 2466) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3138,3139,3140,3143,3144,3145,3147,3148,3151,3152,3153,3155,3156,3159,3160,3163,3164,3165,3166,3167,3169,3170,3173,3174,3176,3179,3180,3181,3184,3185,3186,3188,3189,3193,3194,3197,3198] : List Nat)[i - 2430]! := by
+      ([3138,3139,3140,3141,3142,3143,3147,3148,3151,3152,3153,3155,3156,3159,3160,3163,3164,3165,3166,3167,3169,3170,3173,3174,3176,3179,3180,3181,3184,3185,3186,3188,3189,3193,3194,3197,3198] : List Nat)[i - 2430]! := by
   interval_cases i <;> decide
 
 @[simp] theorem directPC1 (i : Nat) (hi : 2467 ≤ i) (hii : i ≤ 2500) :
@@ -36,17 +36,14 @@ abbrev Located :=
   interval_cases i <;> decide
 
 
--- At index 2433 the pushed target 3144 IS the fall-through pc, and the `JUMPDEST` at
--- 3144 is the next element of this very list, so `POP` lands where `JUMP` did with an
--- identical stack and pc.  Keep this note OUTSIDE the list: a comment between entries is
--- legal Lean, but a line-oriented reader of this list sees the entry as missing.
+-- Fall-through on tip 048082eb: PUSH2 3144; POP -> three JUMPDESTs; PUSH1 3 -> PUSH3 3.
 def entryPrefix : List Located :=
   [opAt 2430 .JUMPDEST,
    opAt 2431 (.Dup ⟨3, by decide⟩),
-   pushAt 2432 2 3144,
-   opAt 2433 .POP,
+   opAt 2432 .JUMPDEST,
+   opAt 2433 .JUMPDEST,
    opAt 2434 .JUMPDEST,
-   pushAt 2435 1 3,
+   pushAt 2435 3 3,
    opAt 2436 .EQ,
    pushAt 2437 2 3180,
    opAt 2438 .JUMPI]
@@ -172,7 +169,7 @@ theorem jumpDestSqCommon :
 
 /-- Target of the (now contiguous) jump from `0x0c6d` to `0x0c71`. -/
 theorem jumpBridge3423 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3144 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3142 = true :=
   Artifact.isValidJumpDest_index 2434 (by rfl)
 
 /-- `after_sq` (pc 3243): the target the in-kernel square loop rewrites the
