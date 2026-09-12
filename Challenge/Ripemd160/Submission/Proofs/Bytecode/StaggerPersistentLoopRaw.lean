@@ -16,7 +16,6 @@ private theorem word_toNat_xor (a b : UInt256) :
   exact Nat.lt_of_lt_of_le
     (Nat.xor_lt_two_pow a.val.isLt b.val.isLt) (by rfl)
 
-
 private theorem add_eq_hAdd (x y : UInt256) : UInt256.add x y = x + y := rfl
 
 private theorem add64 (off : UInt256) :
@@ -24,8 +23,8 @@ private theorem add64 (off : UInt256) :
 
 def template (dest : Nat) : List Instr :=
   [.op (.Swap ⟨4, by decide⟩),
-   .push ⟨1, by decide⟩ (UInt256.ofNat 64), .op .ADD, .op (.Swap ⟨4, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩), .op (.Dup ⟨6, by decide⟩), .op .XOR, .op .JUMPDEST,
+   .push ⟨2, by decide⟩ (UInt256.ofNat 64), .op .ADD, .op (.Swap ⟨4, by decide⟩),
+   .op (.Dup ⟨6, by decide⟩), .op (.Dup ⟨6, by decide⟩), .op .XOR,
    .push ⟨2, by decide⟩ (UInt256.ofNat dest), .op .JUMPI]
 
 def nextOffset (off : UInt256) : UInt256 := off + UInt256.ofNat 64
