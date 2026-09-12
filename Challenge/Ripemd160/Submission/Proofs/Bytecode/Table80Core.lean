@@ -10,7 +10,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80Core
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Paired80WordRound Paired80Algorithm Table80CoreCommon
 
-def pcs : Array Nat := #[1141, 1185, 1229, 1273, 1315, 1359, 1403, 1447, 1490, 1533, 1575, 1617, 1661, 1705, 1748, 1793, 1851, 1897, 1943, 1988, 2033, 2077, 2119, 2165, 2211, 2250, 2296, 2343, 2389, 2435, 2480, 2519, 2581, 2620, 2658, 2698, 2736, 2774, 2812, 2851, 2888, 2928, 2967, 3006, 3045, 3083, 3120, 3152, 3198, 3244, 3289, 3334, 3380, 3420, 3463, 3509, 3554, 3600, 3647, 3693, 3738, 3783, 3826, 3873, 3926, 3967, 4012, 4056, 4101, 4144, 4188, 4230, 4272, 4315, 4357, 4400, 4445, 4490, 4533, 4572, 4610]
+def pcs : Array Nat := #[1134, 1178, 1222, 1266, 1308, 1352, 1396, 1440, 1483, 1526, 1568, 1610, 1654, 1698, 1741, 1786, 1844, 1890, 1936, 1981, 2026, 2070, 2112, 2158, 2204, 2243, 2289, 2336, 2382, 2428, 2473, 2512, 2574, 2613, 2651, 2691, 2729, 2767, 2805, 2844, 2881, 2921, 2960, 2999, 3038, 3076, 3113, 3145, 3191, 3237, 3282, 3327, 3373, 3413, 3456, 3502, 3547, 3593, 3640, 3686, 3731, 3776, 3819, 3866, 3919, 3960, 4005, 4049, 4094, 4137, 4181, 4223, 4265, 4308, 4350, 4393, 4438, 4483, 4526, 4565, 4603]
 def shapes : Array (List Reg) := #[
   [.k, .a, .b, .c, .d, .e, .factor, .pair, .upper, .lower],
   [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower],
@@ -448,7 +448,7 @@ def gasSteps_core (s : State) (q : WordLane) (ret : UInt256) (rho : List UInt256
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (atRound s 0 q (ret :: rho))
-      {s with pc := UInt256.ofNat 4610, stack := Table80Tail.entryStack (finalLane s.memory q) ret rho} := by
+      {s with pc := UInt256.ofNat 4603, stack := Table80Tail.entryStack (finalLane s.memory q) ret rho} := by
   have hs : (ret :: rho).length ≤ 996 := by simp only [List.length_cons]; omega
   let q78 := fold (message s.memory) 78 q
   let q79 := Table80CoreRound78.eval (message s.memory 78) (physicalKey 78) q78

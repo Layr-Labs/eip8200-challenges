@@ -24,48 +24,48 @@ theorem stepS_lt (input : ByteArray) (pc : Nat) (a b : UInt256) (rest : List UIn
 
 def gasSteps_size_test (input : ByteArray) (sv ov : UInt256) (rest : List UInt256)
     (hlen : rest.length < 1020) :
-    GasSteps (stS input 252 (sv :: ov :: rest))
-      (stS input 257 ((160 : UInt256) ::
+    GasSteps (stS input 244 (sv :: ov :: rest))
+      (stS input 249 ((152 : UInt256) ::
         UInt256.lt ov (UInt256.ofNat input.size) :: sv :: ov :: rest)) := by
-  have a := soundS (opAt 159 .CALLDATASIZE)
-    (blockOfS _ (pcFactS input 159 252 _ (by norm_num) (by rfl))
-      (stepS_calldatasize input 252 (sv :: ov :: rest) (by simp; omega) (by norm_num)))
-  have b := soundS (opAt 160 (.Dup ⟨2, by decide⟩))
-    (blockOfS _ (pcFactS input 160 253 _ (by norm_num) (by rfl))
-      (stepS_dup input 253 2 (by decide)
+  have a := soundS (opAt 154 .CALLDATASIZE)
+    (blockOfS _ (pcFactS input 154 244 _ (by norm_num) (by rfl))
+      (stepS_calldatasize input 244 (sv :: ov :: rest) (by simp; omega) (by norm_num)))
+  have b := soundS (opAt 155 (.Dup ⟨2, by decide⟩))
+    (blockOfS _ (pcFactS input 155 245 _ (by norm_num) (by rfl))
+      (stepS_dup input 245 2 (by decide)
         (UInt256.ofNat input.size :: sv :: ov :: rest) ov
         (by rfl) (by simp; omega) (by norm_num)))
-  have c := soundS (opAt 161 .LT)
-    (blockOfS _ (pcFactS input 161 254 _ (by norm_num) (by rfl))
-      (stepS_lt input 254 ov (UInt256.ofNat input.size) (sv :: ov :: rest)
+  have c := soundS (opAt 156 .LT)
+    (blockOfS _ (pcFactS input 156 246 _ (by norm_num) (by rfl))
+      (stepS_lt input 246 ov (UInt256.ofNat input.size) (sv :: ov :: rest)
         (by simp; omega) (by norm_num)))
-  have d := soundS (pushAt 162 1 160)
-    (blockOfS _ (pcFactS input 162 255 _ (by norm_num) (by rfl))
-      (stepS_push input 255 1 160
+  have d := soundS (pushAt 157 1 152)
+    (blockOfS _ (pcFactS input 157 247 _ (by norm_num) (by rfl))
+      (stepS_push input 247 1 152
         (UInt256.lt ov (UInt256.ofNat input.size) :: sv :: ov :: rest)
         (by simp; omega) (by decide) (by decide) (by norm_num)))
   exact a.trans (b.trans (c.trans d))
 
 def gasSteps_size_more (input : ByteArray) (sv ov : UInt256) (rest : List UInt256)
     (hlen : rest.length < 1020) (hc : UInt256.isTrue (UInt256.lt ov (UInt256.ofNat input.size))) :
-    GasSteps (stS input 252 (sv :: ov :: rest))
-      (stS input 160 (sv :: ov :: rest)) := by
-  have hd : Decode.isValidJumpDest submissionBytecode 160 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 84 (by rfl)
+    GasSteps (stS input 244 (sv :: ov :: rest))
+      (stS input 152 (sv :: ov :: rest)) := by
+  have hd : Decode.isValidJumpDest submissionBytecode 152 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 79 (by rfl)
   exact (gasSteps_size_test input sv ov rest hlen).trans
-    (soundS (opAt 163 .JUMPI)
-      (blockOfS _ (pcFactS input 163 257 _ (by norm_num) (by rfl))
-        (stepS_jumpi_taken input 257 160 160 (UInt256.lt ov (UInt256.ofNat input.size))
+    (soundS (opAt 158 .JUMPI)
+      (blockOfS _ (pcFactS input 158 249 _ (by norm_num) (by rfl))
+        (stepS_jumpi_taken input 249 152 152 (UInt256.lt ov (UInt256.ofNat input.size))
           (sv :: ov :: rest) (by simp; omega) (by norm_num) rfl hc hd)))
 
 def gasSteps_size_end (input : ByteArray) (sv ov : UInt256) (rest : List UInt256)
     (hlen : rest.length < 1020) (hc : ¬ UInt256.isTrue (UInt256.lt ov (UInt256.ofNat input.size))) :
-    GasSteps (stS input 252 (sv :: ov :: rest))
-      (stS input 258 (sv :: ov :: rest)) := by
+    GasSteps (stS input 244 (sv :: ov :: rest))
+      (stS input 250 (sv :: ov :: rest)) := by
   exact (gasSteps_size_test input sv ov rest hlen).trans
-    (soundS (opAt 163 .JUMPI)
-      (blockOfS _ (pcFactS input 163 257 _ (by norm_num) (by rfl))
-        (stepS_jumpi_fall input 257 160 (UInt256.lt ov (UInt256.ofNat input.size))
+    (soundS (opAt 158 .JUMPI)
+      (blockOfS _ (pcFactS input 158 249 _ (by norm_num) (by rfl))
+        (stepS_jumpi_fall input 249 152 (UInt256.lt ov (UInt256.ofNat input.size))
           (sv :: ov :: rest) (by simp; omega) (by norm_num) hc)))
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan
