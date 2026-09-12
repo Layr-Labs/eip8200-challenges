@@ -56,10 +56,9 @@ def positive_steps {artifact : ProgramArtifact} {fork : Fork}
   have ec := context_env template env input
   have hb := WindowTwentyOneEntry.run_base ctx (WindowTwentyOneInput.modulusWord input)
     (routeStack input) (by simp [routeStack])
-  have hm := WindowTwentyOneEntry.run_modulus ctx (modulusOffset input)
-    (routeStack input) (by simp [routeStack]) rfl (jump_env ec paths.zeroJump)
-  dsimp only at hm
-  rw [modulus_at template input hmatch, if_neg (Nat.ne_of_gt hmodulus)] at hm
+  have hm := WindowTwentyOneEntry.run_modulus ctx (WindowTwentyOneInput.modulusWord input)
+    (routeStack input) (by simp [routeStack]) (jump_env ec paths.zeroJump)
+  rw [if_neg (Nat.ne_of_gt hmodulus)] at hm
   have hn := WindowTwentyOneEntry.run_normalize ctx (WindowTwentyOneInput.modulusWord input)
     (UInt256.ofNat 96) (baseSize input) hmatch.1 (routeStack input) (by simp [routeStack]) rfl rfl
   have hn' : runInstructions WindowTwentyOneEntry.normalizeProgram
@@ -94,10 +93,9 @@ def zero_handled {artifact : ProgramArtifact} {fork : Fork}
   have ec := context_env template env input
   have hb := WindowTwentyOneEntry.run_base ctx (WindowTwentyOneInput.modulusWord input)
     (routeStack input) (by simp [routeStack])
-  have hm := WindowTwentyOneEntry.run_modulus ctx (modulusOffset input)
-    (routeStack input) (by simp [routeStack]) rfl (jump_env ec paths.zeroJump)
-  dsimp only at hm
-  rw [modulus_at template input hmatch, if_pos hmodulus] at hm
+  have hm := WindowTwentyOneEntry.run_modulus ctx (WindowTwentyOneInput.modulusWord input)
+    (routeStack input) (by simp [routeStack]) (jump_env ec paths.zeroJump)
+  rw [if_pos hmodulus] at hm
   have hr := WindowTwentyOneReturn.run_zero ctx 0 (by decide) rfl
     (WindowTwentyOneInput.modulusWord input :: routeStack input) (by simp [routeStack])
   let final := WindowTwentyOneReturn.returned ctx (UInt256.ofNat 2877) (UInt256.ofNat 0)
