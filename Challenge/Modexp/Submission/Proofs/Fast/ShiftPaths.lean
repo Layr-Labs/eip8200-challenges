@@ -42,7 +42,7 @@ def blk2874 :
    opAt 2556 .MSTORE,
    pushAt 2557 2 3363,
    pushAt 2558 2 2048,
-   pushAt 2559 2 4658,
+   pushAt 2559 2 4626,
    opAt 2560 .JUMP]
 
 /-- Located block of the selected shift-reduce program. -/
@@ -198,7 +198,7 @@ def blk3013 :
   [opAt 2680 .JUMPDEST,
    opAt 2681 (.Dup ⟨0, by decide⟩),
    opAt 2682 .ISZERO,
-   pushAt 2683 2 3895,
+   pushAt 2683 2 3865,
    opAt 2684 .JUMPI]
 
 /-- Located block of the selected shift-reduce program. -/
@@ -280,249 +280,251 @@ def blk3026 :
 def blk3069 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 2752 0 0,
-   pushAt 2753 2 9440,
-   opAt 2754 .MLOAD,
-   pushAt 2755 2 9408,
+   pushAt 2753 1 31,
+   opAt 2754 .NOT,
+   pushAt 2755 2 9440,
    opAt 2756 .MLOAD,
-   pushAt 2757 2 5120,
-   opAt 2758 .ADD]
+   pushAt 2757 2 9408,
+   opAt 2758 .MLOAD,
+   pushAt 2759 2 5120,
+   opAt 2760 .ADD]
 
 /-- Located block of the selected shift-reduce program. -/
 def blk3077 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2759 .JUMPDEST,
-   opAt 2760 (.Dup ⟨0, by decide⟩),
-   opAt 2761 .MLOAD,
-   pushAt 2762 0 0,
-   opAt 2763 .NOT,
-   opAt 2764 (.Dup ⟨5, by decide⟩),
-   opAt 2765 (.Dup ⟨2, by decide⟩),
-   opAt 2766 .MUL,
-   opAt 2767 (.Swap ⟨1, by decide⟩),
-   opAt 2768 (.Dup ⟨6, by decide⟩),
-   opAt 2769 .MULMOD,
-   opAt 2770 (.Dup ⟨1, by decide⟩),
-   opAt 2771 (.Dup ⟨1, by decide⟩),
-   opAt 2772 .LT,
-   opAt 2773 .SUB,
-   opAt 2774 (.Dup ⟨4, by decide⟩),
-   opAt 2775 (.Dup ⟨2, by decide⟩),
-   opAt 2776 .ADD,
-   opAt 2777 (.Dup ⟨0, by decide⟩),
-   opAt 2778 (.Swap ⟨5, by decide⟩),
-   opAt 2779 .GT,
-   opAt 2780 .SUB,
-   opAt 2781 .SUB,
-   opAt 2782 (.Dup ⟨3, by decide⟩),
-   opAt 2783 (.Dup ⟨3, by decide⟩),
-   opAt 2784 .MLOAD,
-   opAt 2785 .ADD,
-   opAt 2786 (.Dup ⟨0, by decide⟩),
-   opAt 2787 (.Swap ⟨4, by decide⟩),
-   opAt 2788 .GT,
-   opAt 2789 .ADD,
-   opAt 2790 (.Swap ⟨2, by decide⟩),
-   opAt 2791 (.Dup ⟨2, by decide⟩),
-   pushAt 2792 1 31,
-   opAt 2793 .NOT,
-   opAt 2794 .ADD,
-   opAt 2795 (.Swap ⟨2, by decide⟩),
-   opAt 2796 .MSTORE,
-   pushAt 2797 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   opAt 2798 .ADD,
-   pushAt 2799 2 8224,
-   opAt 2800 (.Dup ⟨2, by decide⟩),
-   opAt 2801 .GT,
-   pushAt 2802 2 3624,
-   opAt 2803 .JUMPI]
+  [opAt 2761 .JUMPDEST,
+   opAt 2762 (.Dup ⟨0, by decide⟩),
+   opAt 2763 .MLOAD,
+   pushAt 2764 0 0,
+   opAt 2765 .NOT,
+   opAt 2766 (.Dup ⟨6, by decide⟩),
+   opAt 2767 (.Dup ⟨2, by decide⟩),
+   opAt 2768 .MUL,
+   opAt 2769 (.Swap ⟨1, by decide⟩),
+   opAt 2770 (.Dup ⟨7, by decide⟩),
+   opAt 2771 .MULMOD,
+   opAt 2772 (.Dup ⟨1, by decide⟩),
+   opAt 2773 (.Dup ⟨1, by decide⟩),
+   opAt 2774 .LT,
+   opAt 2775 .SUB,
+   opAt 2776 (.Dup ⟨5, by decide⟩),
+   opAt 2777 (.Dup ⟨2, by decide⟩),
+   opAt 2778 .ADD,
+   opAt 2779 (.Dup ⟨0, by decide⟩),
+   opAt 2780 (.Swap ⟨6, by decide⟩),
+   opAt 2781 .GT,
+   opAt 2782 .SUB,
+   opAt 2783 .SUB,
+   opAt 2784 (.Dup ⟨4, by decide⟩),
+   opAt 2785 (.Dup ⟨3, by decide⟩),
+   opAt 2786 .MLOAD,
+   opAt 2787 .ADD,
+   opAt 2788 (.Dup ⟨0, by decide⟩),
+   opAt 2789 (.Swap ⟨5, by decide⟩),
+   opAt 2790 .GT,
+   opAt 2791 .ADD,
+   opAt 2792 (.Swap ⟨3, by decide⟩),
+   opAt 2793 (.Dup ⟨2, by decide⟩),
+   opAt 2794 (.Dup ⟨4, by decide⟩),
+   opAt 2795 .ADD,
+   opAt 2796 (.Swap ⟨2, by decide⟩),
+   opAt 2797 .MSTORE,
+   opAt 2798 (.Dup ⟨2, by decide⟩),
+   opAt 2799 .ADD,
+   pushAt 2800 2 8224,
+   opAt 2801 (.Dup ⟨2, by decide⟩),
+   opAt 2802 .GT,
+   pushAt 2803 2 3627,
+   opAt 2804 .JUMPI]
 
 /-- Located block of the selected shift-reduce program. -/
 def blk3125 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2804 .POP,
-   opAt 2805 .POP,
-   pushAt 2806 2 8224,
-   opAt 2807 .MLOAD,
-   opAt 2808 (.Dup ⟨1, by decide⟩),
-   opAt 2809 .ADD,
+  [opAt 2805 .POP,
+   opAt 2806 .POP,
+   opAt 2807 .POP,
+   pushAt 2808 2 8224,
+   opAt 2809 .MLOAD,
    opAt 2810 (.Dup ⟨1, by decide⟩),
-   opAt 2811 (.Dup ⟨1, by decide⟩),
-   opAt 2812 .LT,
-   opAt 2813 (.Swap ⟨1, by decide⟩),
-   opAt 2814 .POP,
-   opAt 2815 (.Dup ⟨2, by decide⟩),
-   opAt 2816 (.Dup ⟨1, by decide⟩),
-   opAt 2817 .LT,
-   opAt 2818 (.Swap ⟨0, by decide⟩),
-   opAt 2819 (.Dup ⟨3, by decide⟩),
+   opAt 2811 .ADD,
+   opAt 2812 (.Dup ⟨1, by decide⟩),
+   opAt 2813 (.Dup ⟨1, by decide⟩),
+   opAt 2814 .LT,
+   opAt 2815 (.Swap ⟨1, by decide⟩),
+   opAt 2816 .POP,
+   opAt 2817 (.Dup ⟨2, by decide⟩),
+   opAt 2818 (.Dup ⟨1, by decide⟩),
+   opAt 2819 .LT,
    opAt 2820 (.Swap ⟨0, by decide⟩),
-   opAt 2821 .SUB,
-   opAt 2822 (.Dup ⟨0, by decide⟩),
-   pushAt 2823 2 8224,
-   opAt 2824 .MSTORE,
-   opAt 2825 .POP,
-   opAt 2826 .GT,
-   opAt 2827 (.Swap ⟨0, by decide⟩),
-   opAt 2828 .POP,
-   opAt 2829 .ISZERO,
-   pushAt 2830 2 3807,
-   opAt 2831 .JUMPI]
+   opAt 2821 (.Dup ⟨3, by decide⟩),
+   opAt 2822 (.Swap ⟨0, by decide⟩),
+   opAt 2823 .SUB,
+   opAt 2824 (.Dup ⟨0, by decide⟩),
+   pushAt 2825 2 8224,
+   opAt 2826 .MSTORE,
+   opAt 2827 .POP,
+   opAt 2828 .GT,
+   opAt 2829 (.Swap ⟨0, by decide⟩),
+   opAt 2830 .POP,
+   opAt 2831 .ISZERO,
+   pushAt 2832 2 3777,
+   opAt 2833 .JUMPI]
 
 /-- Located block of the selected shift-reduce program. -/
 def blk3153 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2832 .JUMPDEST,
-   pushAt 2833 0 0,
-   pushAt 2834 2 9440,
-   opAt 2835 .MLOAD]
+  [opAt 2834 .JUMPDEST,
+   pushAt 2835 0 0,
+   pushAt 2836 2 9440,
+   opAt 2837 .MLOAD]
 
 /-- Located block of the selected shift-reduce program. -/
 def blk3157 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2836 .JUMPDEST,
-   opAt 2837 (.Dup ⟨0, by decide⟩),
-   opAt 2838 .MLOAD,
-   opAt 2839 (.Dup ⟨1, by decide⟩),
-   pushAt 2840 2 8256,
-   opAt 2841 (.Swap ⟨0, by decide⟩),
-   opAt 2842 .SUB,
-   opAt 2843 .MLOAD,
-   opAt 2844 (.Dup ⟨1, by decide⟩),
-   opAt 2845 .ADD,
-   opAt 2846 (.Dup ⟨0, by decide⟩),
-   opAt 2847 (.Dup ⟨2, by decide⟩),
-   opAt 2848 .GT,
-   opAt 2849 (.Swap ⟨1, by decide⟩),
-   opAt 2850 .POP,
-   opAt 2851 (.Dup ⟨3, by decide⟩),
-   opAt 2852 .ADD,
-   opAt 2853 (.Dup ⟨0, by decide⟩),
-   opAt 2854 (.Dup ⟨4, by decide⟩),
-   opAt 2855 .GT,
-   opAt 2856 (.Swap ⟨3, by decide⟩),
-   opAt 2857 .POP,
-   opAt 2858 (.Dup ⟨2, by decide⟩),
-   opAt 2859 .MSTORE,
-   opAt 2860 (.Swap ⟨0, by decide⟩),
-   opAt 2861 (.Swap ⟨1, by decide⟩),
-   opAt 2862 .OR,
-   opAt 2863 (.Swap ⟨0, by decide⟩),
-   pushAt 2864 1 31,
-   opAt 2865 .NOT,
-   opAt 2866 .ADD,
-   pushAt 2867 2 8255,
-   opAt 2868 (.Dup ⟨1, by decide⟩),
-   opAt 2869 .GT,
-   pushAt 2870 2 3746,
-   opAt 2871 .JUMPI]
+  [opAt 2838 .JUMPDEST,
+   opAt 2839 (.Dup ⟨0, by decide⟩),
+   opAt 2840 .MLOAD,
+   opAt 2841 (.Dup ⟨1, by decide⟩),
+   pushAt 2842 2 8256,
+   opAt 2843 (.Swap ⟨0, by decide⟩),
+   opAt 2844 .SUB,
+   opAt 2845 .MLOAD,
+   opAt 2846 (.Dup ⟨1, by decide⟩),
+   opAt 2847 .ADD,
+   opAt 2848 (.Dup ⟨0, by decide⟩),
+   opAt 2849 (.Dup ⟨2, by decide⟩),
+   opAt 2850 .GT,
+   opAt 2851 (.Swap ⟨1, by decide⟩),
+   opAt 2852 .POP,
+   opAt 2853 (.Dup ⟨3, by decide⟩),
+   opAt 2854 .ADD,
+   opAt 2855 (.Dup ⟨0, by decide⟩),
+   opAt 2856 (.Dup ⟨4, by decide⟩),
+   opAt 2857 .GT,
+   opAt 2858 (.Swap ⟨3, by decide⟩),
+   opAt 2859 .POP,
+   opAt 2860 (.Dup ⟨2, by decide⟩),
+   opAt 2861 .MSTORE,
+   opAt 2862 (.Swap ⟨0, by decide⟩),
+   opAt 2863 (.Swap ⟨1, by decide⟩),
+   opAt 2864 .OR,
+   opAt 2865 (.Swap ⟨0, by decide⟩),
+   pushAt 2866 1 31,
+   opAt 2867 .NOT,
+   opAt 2868 .ADD,
+   pushAt 2869 2 8255,
+   opAt 2870 (.Dup ⟨1, by decide⟩),
+   opAt 2871 .GT,
+   pushAt 2872 2 3716,
+   opAt 2873 .JUMPI]
 
 /-- Located block of the selected shift-reduce program. -/
 def blk3192 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2872 .POP,
-   pushAt 2873 2 8224,
-   opAt 2874 .MLOAD,
-   opAt 2875 (.Dup ⟨1, by decide⟩),
-   opAt 2876 .ADD,
-   opAt 2877 (.Dup ⟨0, by decide⟩),
-   pushAt 2878 2 8224,
-   opAt 2879 .MSTORE,
-   opAt 2880 .LT,
-   opAt 2881 .ISZERO,
-   pushAt 2882 2 3740,
-   opAt 2883 .JUMPI]
+  [opAt 2874 .POP,
+   pushAt 2875 2 8224,
+   opAt 2876 .MLOAD,
+   opAt 2877 (.Dup ⟨1, by decide⟩),
+   opAt 2878 .ADD,
+   opAt 2879 (.Dup ⟨0, by decide⟩),
+   pushAt 2880 2 8224,
+   opAt 2881 .MSTORE,
+   opAt 2882 .LT,
+   opAt 2883 .ISZERO,
+   pushAt 2884 2 3710,
+   opAt 2885 .JUMPI]
 
 /-- Located block of the selected shift-reduce program. -/
 def blk3204 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2884 .JUMPDEST,
-   pushAt 2885 2 8224,
-   opAt 2886 .MLOAD,
-   opAt 2887 .ISZERO,
-   pushAt 2888 2 3875,
-   opAt 2889 .JUMPI]
+  [opAt 2886 .JUMPDEST,
+   pushAt 2887 2 8224,
+   opAt 2888 .MLOAD,
+   opAt 2889 .ISZERO,
+   pushAt 2890 2 3845,
+   opAt 2891 .JUMPI]
 
 /-- Located block of the selected shift-reduce program. -/
 def blk3210 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 2890 0 0,
-   pushAt 2891 2 9440,
-   opAt 2892 .MLOAD]
+  [pushAt 2892 0 0,
+   pushAt 2893 2 9440,
+   opAt 2894 .MLOAD]
 
 /-- Located block of the selected shift-reduce program. -/
 def blk3213 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2893 .JUMPDEST,
-   opAt 2894 (.Dup ⟨0, by decide⟩),
-   opAt 2895 .MLOAD,
-   pushAt 2896 2 8256,
-   opAt 2897 (.Dup ⟨2, by decide⟩),
-   opAt 2898 .SUB,
-   opAt 2899 .MLOAD,
-   opAt 2900 (.Dup ⟨1, by decide⟩),
-   opAt 2901 (.Dup ⟨1, by decide⟩),
-   opAt 2902 .GT,
-   opAt 2903 (.Swap ⟨1, by decide⟩),
-   opAt 2904 .SUB,
-   opAt 2905 (.Dup ⟨3, by decide⟩),
-   opAt 2906 (.Dup ⟨1, by decide⟩),
-   opAt 2907 .LT,
-   opAt 2908 (.Swap ⟨0, by decide⟩),
-   opAt 2909 (.Dup ⟨4, by decide⟩),
+  [opAt 2895 .JUMPDEST,
+   opAt 2896 (.Dup ⟨0, by decide⟩),
+   opAt 2897 .MLOAD,
+   pushAt 2898 2 8256,
+   opAt 2899 (.Dup ⟨2, by decide⟩),
+   opAt 2900 .SUB,
+   opAt 2901 .MLOAD,
+   opAt 2902 (.Dup ⟨1, by decide⟩),
+   opAt 2903 (.Dup ⟨1, by decide⟩),
+   opAt 2904 .GT,
+   opAt 2905 (.Swap ⟨1, by decide⟩),
+   opAt 2906 .SUB,
+   opAt 2907 (.Dup ⟨3, by decide⟩),
+   opAt 2908 (.Dup ⟨1, by decide⟩),
+   opAt 2909 .LT,
    opAt 2910 (.Swap ⟨0, by decide⟩),
-   opAt 2911 .SUB,
-   opAt 2912 (.Dup ⟨3, by decide⟩),
-   opAt 2913 .MSTORE,
-   opAt 2914 .OR,
-   opAt 2915 (.Swap ⟨1, by decide⟩),
-   opAt 2916 .POP,
-   pushAt 2917 1 31,
-   opAt 2918 .NOT,
-   opAt 2919 .ADD,
-   pushAt 2920 2 8255,
-   opAt 2921 (.Dup ⟨1, by decide⟩),
-   opAt 2922 .GT,
-   pushAt 2923 2 3822,
-   opAt 2924 .JUMPI]
+   opAt 2911 (.Dup ⟨4, by decide⟩),
+   opAt 2912 (.Swap ⟨0, by decide⟩),
+   opAt 2913 .SUB,
+   opAt 2914 (.Dup ⟨3, by decide⟩),
+   opAt 2915 .MSTORE,
+   opAt 2916 .OR,
+   opAt 2917 (.Swap ⟨1, by decide⟩),
+   opAt 2918 .POP,
+   pushAt 2919 1 31,
+   opAt 2920 .NOT,
+   opAt 2921 .ADD,
+   pushAt 2922 2 8255,
+   opAt 2923 (.Dup ⟨1, by decide⟩),
+   opAt 2924 .GT,
+   pushAt 2925 2 3792,
+   opAt 2926 .JUMPI]
 
 /-- Located block of the selected shift-reduce program. -/
 def blk3245 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2925 .POP,
-   pushAt 2926 2 8224,
-   opAt 2927 .MLOAD,
-   opAt 2928 .SUB,
-   pushAt 2929 2 8224,
-   opAt 2930 .MSTORE,
-   pushAt 2931 2 3807,
-   opAt 2932 .JUMP]
+  [opAt 2927 .POP,
+   pushAt 2928 2 8224,
+   opAt 2929 .MLOAD,
+   opAt 2930 .SUB,
+   pushAt 2931 2 8224,
+   opAt 2932 .MSTORE,
+   pushAt 2933 2 3777,
+   opAt 2934 .JUMP]
 
 /-- Located block of the selected shift-reduce program. -/
 def blk3253 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2933 .JUMPDEST,
-   pushAt 2934 2 3886,
-   pushAt 2935 2 2048,
-   pushAt 2936 2 4658,
-   opAt 2937 .JUMP]
+  [opAt 2935 .JUMPDEST,
+   pushAt 2936 2 3856,
+   pushAt 2937 2 2048,
+   pushAt 2938 2 4626,
+   opAt 2939 .JUMP]
 
 /-- Located block of the selected shift-reduce program. -/
 def blk3258 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2938 .JUMPDEST,
-   pushAt 2939 1 1,
-   opAt 2940 (.Swap ⟨0, by decide⟩),
-   opAt 2941 .SUB,
-   pushAt 2942 2 3508,
-   opAt 2943 .JUMP]
+  [opAt 2940 .JUMPDEST,
+   pushAt 2941 1 1,
+   opAt 2942 (.Swap ⟨0, by decide⟩),
+   opAt 2943 .SUB,
+   pushAt 2944 2 3508,
+   opAt 2945 .JUMP]
 
 /-- Located block of the selected shift-reduce program. -/
 def blk3264 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2944 .JUMPDEST,
-   opAt 2945 .POP,
-   pushAt 2946 2 3150,
-   opAt 2947 .JUMP]
+  [opAt 2946 .JUMPDEST,
+   opAt 2947 .POP,
+   pushAt 2948 2 3150,
+   opAt 2949 .JUMP]
 
 theorem jumpDest4608 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3314 = true :=
@@ -549,35 +551,35 @@ theorem jumpDest4839 :
   Artifact.isValidJumpDest_index 2680 (by rfl)
 
 theorem jumpDest4933 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3624 = true :=
-  Artifact.isValidJumpDest_index 2759 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3627 = true :=
+  Artifact.isValidJumpDest_index 2761 (by rfl)
 
 theorem jumpDest5115 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3740 = true :=
-  Artifact.isValidJumpDest_index 2832 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3710 = true :=
+  Artifact.isValidJumpDest_index 2834 (by rfl)
 
 theorem jumpDest5121 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3746 = true :=
-  Artifact.isValidJumpDest_index 2836 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3716 = true :=
+  Artifact.isValidJumpDest_index 2838 (by rfl)
 
 theorem jumpDest5247 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3807 = true :=
-  Artifact.isValidJumpDest_index 2884 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3777 = true :=
+  Artifact.isValidJumpDest_index 2886 (by rfl)
 
 theorem jumpDest5227 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3822 = true :=
-  Artifact.isValidJumpDest_index 2893 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3792 = true :=
+  Artifact.isValidJumpDest_index 2895 (by rfl)
 
 theorem jumpDest5311 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3875 = true :=
-  Artifact.isValidJumpDest_index 2933 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3845 = true :=
+  Artifact.isValidJumpDest_index 2935 (by rfl)
 
 theorem jumpDest5322 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3886 = true :=
-  Artifact.isValidJumpDest_index 2938 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3856 = true :=
+  Artifact.isValidJumpDest_index 2940 (by rfl)
 
 theorem jumpDest5366 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3895 = true :=
-  Artifact.isValidJumpDest_index 2944 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3865 = true :=
+  Artifact.isValidJumpDest_index 2946 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

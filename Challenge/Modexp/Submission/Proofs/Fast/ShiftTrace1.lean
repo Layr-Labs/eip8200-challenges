@@ -86,7 +86,7 @@ theorem run_dispatch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
         Challenge.EvmProof.Word.succ_ofNat_mod,
         Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- `blk2889`: the miss arm jumps to the old `r0` block at pc 1533. -/
+/-- `blk2889`: the miss arm jumps to the old `r0` block at pc 1512. -/
 theorem run_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :

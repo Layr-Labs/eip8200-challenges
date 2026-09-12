@@ -15,7 +15,7 @@ structure Paths (artifact : ProgramArtifact) (fork : Fork) extends WindowTwentyO
   modulus : Block artifact fork 2213 WindowTwentyOneEntry.modulusProgram
   normalize : Block artifact fork 2221 WindowTwentyOneEntry.normalizeProgram
   zeroReturn : Block artifact fork 2841 WindowTwentyOneReturn.zeroProgram
-  hitJump : Decode.isValidJumpDest artifact.code 4830 = true
+  hitJump : Decode.isValidJumpDest artifact.code 4798 = true
   zeroJump : Decode.isValidJumpDest artifact.code 2841 = true
   loopJump : Decode.isValidJumpDest artifact.code 2372 = true
   missJump : Decode.isValidJumpDest artifact.code 471 = true
@@ -134,10 +134,10 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
 private def widthTail (input : ByteArray) : List UInt256 := (routeStack input).drop 3
 
 private theorem width_raw (template : State) (input : ByteArray)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 4830 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 4798 = true) :
     runInstructions WindowTwentyOneEntry.widthProgram (state template input (UInt256.ofNat 2187)) =
     some (state template input
-      (if (WindowTwentyOneInput.guardDiff input).toNat = 0 then UInt256.ofNat 4830 else UInt256.ofNat 2207)) := by
+      (if (WindowTwentyOneInput.guardDiff input).toNat = 0 then UInt256.ofNat 4798 else UInt256.ofNat 2207)) := by
   have h := WindowTwentyOneEntry.run_width (context template input)
     (UInt256.ofNat (baseSize input)) (UInt256.ofNat (exponentSize input)) (UInt256.ofNat (modulusSize input))
     (widthTail input) (by simp [widthTail, routeStack]) hjump
@@ -162,7 +162,7 @@ private theorem guard_zero_iff (input : ByteArray) :
 def steps_hit {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
-    GasSteps (state template input (UInt256.ofNat 2187)) (state template input (UInt256.ofNat 4830)) := by
+    GasSteps (state template input (UInt256.ofNat 2187)) (state template input (UInt256.ofNat 4798)) := by
   have h := width_raw template input (jump_env env paths.hitJump)
   rw [if_pos ((guard_zero_iff input).mpr hmatch)] at h
   exact lift paths.width h ((context_env template env input).transfer rfl rfl) rfl

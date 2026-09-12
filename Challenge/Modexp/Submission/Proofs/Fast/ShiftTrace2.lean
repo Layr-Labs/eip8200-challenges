@@ -226,11 +226,11 @@ theorem run_macBodyA (s : State) (um : ByteArray) (q pa pt pa' pt' : UInt256)
     (hpt' : UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 + pt = pt') :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3077a
       { s with pc := UInt256.ofNat pcMacLoop
-               stack := pa :: pt :: (Monpro.l1Step um q NEG n j).carry :: q :: UInt256.ofNat k ::
+               stack := pa :: pt :: UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 :: (Monpro.l1Step um q NEG n j).carry :: q :: UInt256.ofNat k ::
                  outer n bsize esize msize
                memory := (Monpro.l1Step um q NEG n j).memory } =
       some { s with pc := UInt256.ofNat pcMacTail
-                    stack := pa' :: pt' :: (Monpro.l1Step um q NEG n (j + 1)).carry :: q ::
+                    stack := pa' :: pt' :: UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 :: (Monpro.l1Step um q NEG n (j + 1)).carry :: q ::
                       UInt256.ofNat k :: outer n bsize esize msize
                     memory := (Monpro.l1Step um q NEG n (j + 1)).memory } := by
   have hactA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
@@ -263,10 +263,10 @@ theorem run_macTail_go (s : State) (mm : ByteArray) (pa pt c q : UInt256)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3077b
       { s with pc := UInt256.ofNat pcMacTail
-               stack := pa :: pt :: c :: q :: UInt256.ofNat k :: outer n bsize esize msize
+               stack := pa :: pt :: UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 :: c :: q :: UInt256.ofNat k :: outer n bsize esize msize
                memory := mm } =
       some { s with pc := UInt256.ofNat pcMacLoop
-                    stack := pa :: pt :: c :: q :: UInt256.ofNat k :: outer n bsize esize msize
+                    stack := pa :: pt :: UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 :: c :: q :: UInt256.ofNat k :: outer n bsize esize msize
                     memory := mm } := by
   simp (config := { maxSteps := 200000 })
     [blk3077b, opAt, pushAt, wfOp,
@@ -287,10 +287,10 @@ theorem run_macTail_exit (s : State) (mm : ByteArray) (pa pt c q : UInt256)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3077b
       { s with pc := UInt256.ofNat pcMacTail
-               stack := pa :: pt :: c :: q :: UInt256.ofNat k :: outer n bsize esize msize
+               stack := pa :: pt :: UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 :: c :: q :: UInt256.ofNat k :: outer n bsize esize msize
                memory := mm } =
       some { s with pc := UInt256.ofNat pcMid
-                    stack := pa :: pt :: c :: q :: UInt256.ofNat k :: outer n bsize esize msize
+                    stack := pa :: pt :: UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 :: c :: q :: UInt256.ofNat k :: outer n bsize esize msize
                     memory := mm } := by
   simp (config := { maxSteps := 200000 })
     [blk3077b, opAt, pushAt, wfOp,

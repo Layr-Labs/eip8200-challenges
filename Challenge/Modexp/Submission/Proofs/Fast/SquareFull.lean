@@ -8,9 +8,9 @@ set_option maxHeartbeats 4000000
 /-!
 # `SQUARE(2048) → 2048` through the sqCP1m kernel
 
-The fixed-exponent caller enters the kernel's `common` block (pc 3924) with the row
-head `hd = sq_row = 4710` on top of the call frame `[2048, 2048, 2048, ret]`
-(`Cios2Dispatch.commonState s mem 4710 2048 2048 (ofNat 2048) ret rest`, definitionally
+The fixed-exponent caller enters the kernel's `common` block (pc 3894) with the row
+head `hd = sq_row = 4678` on top of the call frame `[2048, 2048, 2048, ret]`
+(`Cios2Dispatch.commonState s mem 4678 2048 2048 (ofNat 2048) ret rest`, definitionally
 WP-C's `Exp.sqCall`).
 
 * `n ∈ {4, 8}`: the call does **not** return to `ret` on the R0 artifact — the kernel keeps
@@ -64,10 +64,10 @@ def gasSteps_squareFull (s : State) (mem : ByteArray) (p a mm : Nat)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
         (MachineState.readWord mem 9376).toNat + 1) % 2 ^ 256 = 0) :
     Challenge.EvmProof.GasSteps
-      (Cios2Dispatch.commonState s mem 4777 2048 2048 (UInt256.ofNat 2048) ret rest)
+      (Cios2Dispatch.commonState s mem 4745 2048 2048 (UInt256.ofNat 2048) ret rest)
       { s with pc := ret, stack := rest, memory := SquareResult.sqMem s mem (p + 2) } := by
   -- the generic MONPRO fallback (the kernel path is `SquareLoop.gasSteps_squareLoop`)
-  have g1 := Cios2Dispatch.gasSteps_commonFallbackOfWidth s mem 4777 2048 2048 (p + 2)
+  have g1 := Cios2Dispatch.gasSteps_commonFallbackOfWidth s mem 4745 2048 2048 (p + 2)
     (UInt256.ofNat 2048) ret rest (by omega) hrun hcode hfork hnp hact hn32 hs32
     (fun h => hslow (Or.inl h)) (fun h => hslow (Or.inr h))
   have g2 := Monpro.gasSteps_monproCsub s mem 2048 2048 (p + 2) (UInt256.ofNat 2048) ret rest

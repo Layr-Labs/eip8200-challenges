@@ -20,6 +20,6 @@ theorem run_headerCheck (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     headerLoadedState, headerState, initialState, hadd, hdest, hdestWord,
-    Challenge.EvmProof.Word.word_toNat_ofNat]
+    Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod]
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Main

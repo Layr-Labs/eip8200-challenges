@@ -26,10 +26,10 @@ open Challenge.Modexp.Submission.Proofs.Fast
 -- reduce inside the block-reduction `simp` calls without it.
 attribute [local simp] List.getElem?_cons_zero
 
-/-- The multiply entry `JUMPDEST` at pc 3920 (0x0f50, instruction 2961), the target of every `MONPRO` call. -/
+/-- The multiply entry `JUMPDEST` at pc 3890 (0x0f50, instruction 2961), the target of every `MONPRO` call. -/
 theorem jumpDestMulEntry :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3901 = true :=
-  Artifact.isValidJumpDest_index 2948 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3871 = true :=
+  Artifact.isValidJumpDest_index 2950 (by rfl)
 
 /-! ## States at the block boundaries -/
 
@@ -45,10 +45,10 @@ def loopState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
            stack := loopStack px k ret rest
            memory := mem }
 
-/-- The `MONPRO` call, pc 4137, with the frame `[px, px, px, 2310]` pushed. -/
+/-- The `MONPRO` call, pc 4105, with the frame `[px, px, px, 2310]` pushed. -/
 def mpCallState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3901
+  { s with pc := UInt256.ofNat 3871
            stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
                      UInt256.ofNat 2081] ++ loopStack px k ret rest
            memory := mem }
@@ -77,7 +77,7 @@ def doneState (s : State) (mem : ByteArray) (ret : UInt256)
 /-! ## Block reductions -/
 
 set_option linter.unusedSimpArgs false in
-/-- `blk1751` (pc 2299..2309): push the `MONPRO` frame and jump to pc 4137. -/
+/-- `blk1751` (pc 2299..2309): push the `MONPRO` frame and jump to pc 4105. -/
 theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -92,8 +92,8 @@ theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have h2888 : (2081 : UInt256) = UInt256.ofNat 2081 := by decide
-  have h1939 : (3901 : UInt256) = UInt256.ofNat 3901 := by decide
-  have h1939Nat : (UInt256.ofNat 3901).toNat = 3901 := by decide
+  have h1939 : (3871 : UInt256) = UInt256.ofNat 3871 := by decide
+  have h1939Nat : (UInt256.ofNat 3871).toNat = 3871 := by decide
   simp (config := { maxSteps := 400000 }) [blk1751, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,

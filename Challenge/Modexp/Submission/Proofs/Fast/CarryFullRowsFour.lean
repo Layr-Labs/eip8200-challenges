@@ -16,7 +16,7 @@ open CiosCached CiosCachedMidMemory CarryIface
 open Challenge.Modexp.Submission.Proofs.Fast.CarryRows
 open CarryRowModel CarryResult
 
-/-- The four rows of a four-limb multiply, from the row-0 head (`hd = 4037`) to the final
+/-- The four rows of a four-limb multiply, from the row-0 head (`hd = 4005`) to the final
 subtraction. -/
 opaque gasSteps_rowsFour (L : RowLemmas) (s : State) (mem : ByteArray) (pa pb : Nat)
     (tl inv m0 aEnd m96 m64 m32 pdst ret : UInt256) (rest : List UInt256)
@@ -34,7 +34,7 @@ opaque gasSteps_rowsFour (L : RowLemmas) (s : State) (mem : ByteArray) (pa pb : 
     (hAend : aEnd = UInt256.ofNat (pa+32*4-32))
     (hsnapshot : StagedOperand.Snapshot mem pa 4) :
     Challenge.EvmProof.GasSteps
-      (outState s (mpZeroed s mem 4) pb 4 0 (UInt256.ofNat 4018) (l1Target 4) inv m0
+      (outState s (mpZeroed s mem 4) pb 4 0 (UInt256.ofNat 3986) (l1Target 4) inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (mpCsubState s (rowsCarry (mpZeroed s mem 4) pa pb 4 4) pdst ret rest) := by
   have hsz := hsnapshot.zeroed s (by decide) hpaFit
@@ -43,7 +43,7 @@ opaque gasSteps_rowsFour (L : RowLemmas) (s : State) (mem : ByteArray) (pa pb : 
   have hez := he.zeroed s 4 (by decide)
   refine (Challenge.EvmProof.GasSteps.iterateBounded
     (I := fun i => outState s (rowsCarry (mpZeroed s mem 4) pa pb 4 i)
-      pb 4 i (UInt256.ofNat 4018) (l1Target 4) inv m0
+      pb 4 i (UInt256.ofNat 3986) (l1Target 4) inv m0
       (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) 3 ?_).trans ?_
   · intro i hi
     exact gasSteps_rowFourNext L s (rowsCarry (mpZeroed s mem 4) pa pb 4 i) pa pb i

@@ -32,7 +32,7 @@ abbrev Located :=
 
 @[simp] theorem directPC1 (i : Nat) (hi : 2472 ≤ i) (hii : i ≤ 2505) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3212,3213,3214,3217,3218,3221,3224,3225,3226,3229,3232,3233,3234,3235,3236,3237,3238,3242,3243,3244,3245,3248,3251,3252,3255,3258,3259,3260,3261,3264,3267,3268,3269,3272] : List Nat)[i - 2472]! := by
+      ([3212,3213,3214,3217,3218,3221,3224,3225,3226,3229,3232,3233,3234,3236,3237,3238,3239,3242,3243,3244,3245,3248,3251,3252,3255,3258,3259,3260,3261,3264,3267,3268,3269,3272] : List Nat)[i - 2472]! := by
   interval_cases i <;> decide
 
 
@@ -100,17 +100,17 @@ def squareCall : List Located :=
    pushAt 2477 2 2048,
    opAt 2478 (.Dup ⟨0, by decide⟩),
    opAt 2479 (.Dup ⟨0, by decide⟩),
-   pushAt 2480 2 4777,
-   pushAt 2481 2 3905,
+   pushAt 2480 2 4745,
+   pushAt 2481 2 3875,
    opAt 2482 .JUMP]
 
 def squareReturn : List Located :=
   [opAt 2483 .JUMPDEST,
-   pushAt 2484 0 0,
-   opAt 2485 .NOT,
-   opAt 2486 .ADD,
+   pushAt 2484 1 1,
+   opAt 2485 (.Swap ⟨0, by decide⟩),
+   opAt 2486 .SUB,
    opAt 2487 (.Dup ⟨0, by decide⟩),
-   pushAt 2488 3 3212,
+   pushAt 2488 2 3212,
    opAt 2489 .JUMPI]
 
 /-- `after_sq` (pc 3243): both the in-kernel loop's return target and the
@@ -123,7 +123,7 @@ def product : List Located :=
    pushAt 2493 2 1024,
    opAt 2494 (.Dup ⟨0, by decide⟩),
    pushAt 2495 2 2048,
-   pushAt 2496 2 3901,
+   pushAt 2496 2 3871,
    opAt 2497 .JUMP]
 
 def fallback : List Located :=
@@ -158,13 +158,13 @@ theorem jumpDest3959 :
 
 /-- The kernel's multiply entry `0x0f50` (the final mixed-domain product). -/
 theorem jumpDestSqMulEntry :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3901 = true :=
-  Artifact.isValidJumpDest_index 2948 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3871 = true :=
+  Artifact.isValidJumpDest_index 2950 (by rfl)
 
 /-- The kernel's shared `common` block `0x0f54` (entered by the square call). -/
 theorem jumpDestSqCommon :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3905 = true :=
-  Artifact.isValidJumpDest_index 2950 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3875 = true :=
+  Artifact.isValidJumpDest_index 2952 (by rfl)
 
 /-- Target of the (now contiguous) jump from `0x0c6d` to `0x0c71`. -/
 theorem jumpBridge3423 :

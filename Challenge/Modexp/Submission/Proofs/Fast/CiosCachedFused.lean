@@ -8,7 +8,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMacCore
 -3 gas per cell).  This file is the execution lemma for it.
 
 **Provenance.** Ported from terrapinelf's promoted MODEXP submission
-8c2efe8b-0254-4026-a953-9fdcd1730771 (public repo commit c8f510f, co-authors
+8c2efe8b-0254-3994-a953-9fdcd1730771 (public repo commit c8f510f, co-authors
 terrapinelf, ercumentyildirim, Akashneelesh), file
 `Challenge/Modexp/Submission/Proofs/Fast/CiosCachedFused.lean`, adapted to this
 artifact's cell frame.  The arithmetic identities it uses (`carry_eq`, `sum_eq`,

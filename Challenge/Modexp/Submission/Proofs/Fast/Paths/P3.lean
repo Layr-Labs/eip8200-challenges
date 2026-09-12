@@ -37,7 +37,7 @@ def blk1155 :
    pushAt 1014 2 6144,
    opAt 1015 (.Dup ⟨0, by decide⟩),
    pushAt 1016 2 6144,
-   pushAt 1017 2 3901,
+   pushAt 1017 2 3871,
    opAt 1018 .JUMP]
 
 /-- Instructions 1162..1173, pc 1586..1604. -/

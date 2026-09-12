@@ -11,8 +11,8 @@ set_option maxHeartbeats 4000000
 # The `ADDMOD` and `CSUB` subroutines of the appended Montgomery path
 
 `ADDMOD` starts at PC 2137 and falls through into `CSUB` at PC 2220.
-`CSUB` dispatches at PC 4975 to the generic loop at PC 2225 or the fixed
-eight/four-limb paths. The fixed paths share the suffix beginning at PC 5133.
+`CSUB` dispatches at PC 4943 to the generic loop at PC 2225 or the fixed
+eight/four-limb paths. The fixed paths share the suffix beginning at PC 5101.
 
 `ADDMOD` is entered with stack `[pa, pb, pd, ret]`.  It adds the `n`-limb
 big-endian blocks at `pa` and `pb` limb by limb from the least significant
@@ -291,14 +291,14 @@ def amTailState (s : State) (memory : ByteArray) (pa pb n j : Nat)
 /-- Entry of `CSUB` (pc 2220) with stack `[pd, ret]`. -/
 def subEntryState (s : State) (memory : ByteArray) (pdst ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4914
+  { s with pc := UInt256.ofNat 4882
            stack := [pdst, ret] ++ rest
            memory := memory }
 
 /-- Entry of the high-limb guard with the original destination and return stack. -/
 def csEntryState (s : State) (memory : ByteArray) (pdst ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4658, stack := [pdst, ret] ++ rest, memory := memory }
+  { s with pc := UInt256.ofNat 4626, stack := [pdst, ret] ++ rest, memory := memory }
 
 set_option linter.unusedSimpArgs false in
 theorem run_amLoopExit (s : State) (memory : ByteArray) (pa pb n j : Nat)
@@ -380,8 +380,8 @@ theorem run_amTail (s : State) (memory : ByteArray) (pa pb n j : Nat)
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
   have hactT : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 8224 32) =
       s.activeWords := activeWords_fix s 8224 32 (by decide) (by omega) hact
-  have h3811 : (4658 : UInt256).toNat = 4658 := by decide
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 4658 = true := by
+  have h3811 : (4626 : UInt256).toNat = 4626 := by decide
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 4626 = true := by
     rw [hcode]; exact jumpDest4976
   simp (config := { maxSteps := 400000 })
     [blk1662, opAt, pushAt, wfOp,
@@ -480,13 +480,13 @@ theorem run_csEntry (s : State) (memory : ByteArray) (n : Nat)
   have hword9344 : (9344 : UInt256).toNat = 9344 := by decide
   have hword128 : (128 : UInt256).toNat = 128 := by decide
   have hword256 : (256 : UInt256).toNat = 256 := by decide
-  have hword4972 : (4914 : UInt256).toNat = 4914 := by decide
-  have hword5022 : (4962 : UInt256).toNat = 4962 := by decide
-  have hword5131 : (5048 : UInt256).toNat = 5048 := by decide
+  have hword4972 : (4882 : UInt256).toNat = 4882 := by decide
+  have hword5022 : (4930 : UInt256).toNat = 4930 := by decide
+  have hword5131 : (5016 : UInt256).toNat = 5016 := by decide
   have hword2225 : (1997 : UInt256).toNat = 1997 := by decide
-  have hwordEq4972 : (4914 : UInt256) = UInt256.ofNat 4914 := by decide
-  have hwordEq5022 : (4962 : UInt256) = UInt256.ofNat 4962 := by decide
-  have hwordEq5131 : (5048 : UInt256) = UInt256.ofNat 5048 := by decide
+  have hwordEq4972 : (4882 : UInt256) = UInt256.ofNat 4882 := by decide
+  have hwordEq5022 : (4930 : UInt256) = UInt256.ofNat 4930 := by decide
+  have hwordEq5131 : (5016 : UInt256) = UInt256.ofNat 5016 := by decide
   have hwordEq2225 : (1997 : UInt256) = UInt256.ofNat 1997 := by decide
   have hwordZero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   simp (config := { maxSteps := 400000 })
@@ -1395,7 +1395,7 @@ theorem run_csFixedEntry8 (s : State) (memory : ByteArray) (pdst ret : UInt256) 
     (hs32 : MachineState.readWord memory 9344 = UInt256.ofNat (32 * 8)) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedEntry8
       (subEntryState s memory pdst ret rest) =
-      some (csFixedState s memory 8 0 4963 pdst ret rest) := by
+      some (csFixedState s memory 8 0 4931 pdst ret rest) := by
   have hactS := activeWords_fix s 9344 32 (by decide) (by decide) hact
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
@@ -1404,13 +1404,13 @@ theorem run_csFixedEntry8 (s : State) (memory : ByteArray) (pdst ret : UInt256) 
   have hword9344 : (9344 : UInt256).toNat = 9344 := by decide
   have hword128 : (128 : UInt256).toNat = 128 := by decide
   have hword256 : (256 : UInt256).toNat = 256 := by decide
-  have hword4972 : (4914 : UInt256).toNat = 4914 := by decide
-  have hword5022 : (4962 : UInt256).toNat = 4962 := by decide
-  have hword5131 : (5048 : UInt256).toNat = 5048 := by decide
+  have hword4972 : (4882 : UInt256).toNat = 4882 := by decide
+  have hword5022 : (4930 : UInt256).toNat = 4930 := by decide
+  have hword5131 : (5016 : UInt256).toNat = 5016 := by decide
   have hword2225 : (1997 : UInt256).toNat = 1997 := by decide
-  have hwordEq4972 : (4914 : UInt256) = UInt256.ofNat 4914 := by decide
-  have hwordEq5022 : (4962 : UInt256) = UInt256.ofNat 4962 := by decide
-  have hwordEq5131 : (5048 : UInt256) = UInt256.ofNat 5048 := by decide
+  have hwordEq4972 : (4882 : UInt256) = UInt256.ofNat 4882 := by decide
+  have hwordEq5022 : (4930 : UInt256) = UInt256.ofNat 4930 := by decide
+  have hwordEq5131 : (5016 : UInt256) = UInt256.ofNat 5016 := by decide
   have hwordEq2225 : (1997 : UInt256) = UInt256.ofNat 1997 := by decide
   have hwordZero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   simp (config := { maxSteps := 800000 })
@@ -1428,8 +1428,8 @@ theorem run_csFixedStep8_0 (s : State) (memory : ByteArray) (pdst ret : UInt256)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep8_0
-      (csFixedState s memory 8 0 4963 pdst ret rest) =
-      some (csFixedState s memory 8 1 4979 pdst ret rest) := by
+      (csFixedState s memory 8 0 4931 pdst ret rest) =
+      some (csFixedState s memory 8 1 4947 pdst ret rest) := by
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
@@ -1469,8 +1469,8 @@ theorem run_csFixedStep8_1 (s : State) (memory : ByteArray) (pdst ret : UInt256)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep8_1
-      (csFixedState s memory 8 1 4979 pdst ret rest) =
-      some (csFixedState s memory 8 2 5002 pdst ret rest) := by
+      (csFixedState s memory 8 1 4947 pdst ret rest) =
+      some (csFixedState s memory 8 2 4970 pdst ret rest) := by
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
@@ -1508,8 +1508,8 @@ theorem run_csFixedStep8_2 (s : State) (memory : ByteArray) (pdst ret : UInt256)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep8_2
-      (csFixedState s memory 8 2 5002 pdst ret rest) =
-      some (csFixedState s memory 8 3 5025 pdst ret rest) := by
+      (csFixedState s memory 8 2 4970 pdst ret rest) =
+      some (csFixedState s memory 8 3 4993 pdst ret rest) := by
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
@@ -1547,8 +1547,8 @@ theorem run_csFixedStep8_3 (s : State) (memory : ByteArray) (pdst ret : UInt256)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep8_3
-      (csFixedState s memory 8 3 5025 pdst ret rest) =
-      some (csFixedState s memory 8 4 5048 pdst ret rest) := by
+      (csFixedState s memory 8 3 4993 pdst ret rest) =
+      some (csFixedState s memory 8 4 5016 pdst ret rest) := by
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
@@ -1586,8 +1586,8 @@ theorem run_csFixedStep8_4 (s : State) (memory : ByteArray) (pdst ret : UInt256)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep8_4
-      (csFixedState s memory 8 4 5048 pdst ret rest) =
-      some (csFixedState s memory 8 5 5071 pdst ret rest) := by
+      (csFixedState s memory 8 4 5016 pdst ret rest) =
+      some (csFixedState s memory 8 5 5039 pdst ret rest) := by
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
@@ -1625,8 +1625,8 @@ theorem run_csFixedStep8_5 (s : State) (memory : ByteArray) (pdst ret : UInt256)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep8_5
-      (csFixedState s memory 8 5 5071 pdst ret rest) =
-      some (csFixedState s memory 8 6 5095 pdst ret rest) := by
+      (csFixedState s memory 8 5 5039 pdst ret rest) =
+      some (csFixedState s memory 8 6 5063 pdst ret rest) := by
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
@@ -1664,8 +1664,8 @@ theorem run_csFixedStep8_6 (s : State) (memory : ByteArray) (pdst ret : UInt256)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep8_6
-      (csFixedState s memory 8 6 5095 pdst ret rest) =
-      some (csFixedState s memory 8 7 5118 pdst ret rest) := by
+      (csFixedState s memory 8 6 5063 pdst ret rest) =
+      some (csFixedState s memory 8 7 5086 pdst ret rest) := by
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
@@ -1703,8 +1703,8 @@ theorem run_csFixedStep8_7 (s : State) (memory : ByteArray) (pdst ret : UInt256)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep8_7
-      (csFixedState s memory 8 7 5118 pdst ret rest) =
-      some (csFixedState s memory 8 8 5140 pdst ret rest) := by
+      (csFixedState s memory 8 7 5086 pdst ret rest) =
+      some (csFixedState s memory 8 8 5108 pdst ret rest) := by
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
@@ -1749,10 +1749,10 @@ theorem run_csFixedTail8 (s : State) (memory : ByteArray)
     (hdstFit : pdst.toNat + 32 * 8 ≤ 9472)
     (hsrcFit : (csSrc memory 8 8).toNat + 32 * 8 ≤ 9472) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedTail8
-      (csFixedState s memory 8 8 5140 pdst ret rest) =
+      (csFixedState s memory 8 8 5108 pdst ret rest) =
       some (subReturnedState s memory 8 8 pdst ret rest) := by
-  have h5243 : (5165 : UInt256).toNat = 5165 := by decide
-  have heq5243 : (5165 : UInt256) = UInt256.ofNat 5165 := by decide
+  have h5243 : (5133 : UInt256).toNat = 5133 := by decide
+  have heq5243 : (5133 : UInt256) = UInt256.ofNat 5133 := by decide
   have hbig : (20000 : Nat) < 2 ^ 256 := by norm_num
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -1899,7 +1899,7 @@ theorem run_csFixedEntry4 (s : State) (memory : ByteArray) (pdst ret : UInt256) 
     (hs32 : MachineState.readWord memory 9344 = UInt256.ofNat (32 * 4)) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedEntry4
       (subEntryState s memory pdst ret rest) =
-      some (csFixedState s memory 4 0 4681 pdst ret rest) := by
+      some (csFixedState s memory 4 0 4649 pdst ret rest) := by
   have hactS := activeWords_fix s 9344 32 (by decide) (by decide) hact
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
@@ -1908,13 +1908,13 @@ theorem run_csFixedEntry4 (s : State) (memory : ByteArray) (pdst ret : UInt256) 
   have hword9344 : (9344 : UInt256).toNat = 9344 := by decide
   have hword128 : (128 : UInt256).toNat = 128 := by decide
   have hword256 : (256 : UInt256).toNat = 256 := by decide
-  have hword4972 : (4914 : UInt256).toNat = 4914 := by decide
-  have hword5022 : (4962 : UInt256).toNat = 4962 := by decide
-  have hword5131 : (4680 : UInt256).toNat = 4680 := by decide
+  have hword4972 : (4882 : UInt256).toNat = 4882 := by decide
+  have hword5022 : (4930 : UInt256).toNat = 4930 := by decide
+  have hword5131 : (4648 : UInt256).toNat = 4648 := by decide
   have hword2225 : (1997 : UInt256).toNat = 1997 := by decide
-  have hwordEq4972 : (4914 : UInt256) = UInt256.ofNat 4914 := by decide
-  have hwordEq5022 : (4962 : UInt256) = UInt256.ofNat 4962 := by decide
-  have hwordEq5131 : (4680 : UInt256) = UInt256.ofNat 4680 := by decide
+  have hwordEq4972 : (4882 : UInt256) = UInt256.ofNat 4882 := by decide
+  have hwordEq5022 : (4930 : UInt256) = UInt256.ofNat 4930 := by decide
+  have hwordEq5131 : (4648 : UInt256) = UInt256.ofNat 4648 := by decide
   have hwordEq2225 : (1997 : UInt256) = UInt256.ofNat 1997 := by decide
   have hwordZero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   simp (config := { maxSteps := 800000 })
@@ -1932,8 +1932,8 @@ theorem run_csFixedStep4_0 (s : State) (memory : ByteArray) (pdst ret : UInt256)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep4_0
-      (csFixedState s memory 4 0 4681 pdst ret rest) =
-      some (csFixedState s memory 4 1 5071 pdst ret rest) := by
+      (csFixedState s memory 4 0 4649 pdst ret rest) =
+      some (csFixedState s memory 4 1 5039 pdst ret rest) := by
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
@@ -1957,8 +1957,8 @@ theorem run_csFixedStep4_0 (s : State) (memory : ByteArray) (pdst ret : UInt256)
   have hword96 : (96 : UInt256).toNat = 96 := by decide
   have hword8352 : (8352 : UInt256).toNat = 8352 := by decide
   have hword7264 : (7264 : UInt256).toNat = 7264 := by decide
-  have hword5117 : (5071 : UInt256).toNat = 5071 := by decide
-  have hwordEq5117 : (5071 : UInt256) = UInt256.ofNat 5071 := by decide
+  have hword5117 : (5039 : UInt256).toNat = 5039 := by decide
+  have hwordEq5117 : (5039 : UInt256) = UInt256.ofNat 5039 := by decide
   simp (config := { maxSteps := 800000 })
     [csFixedStep4_0, csFixedState, fixedOrComm, hstep, csStep, fixedSubtractZero, hrun, hcode,
       hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, ha0, ha1, ha2, UInt256.gt, UInt256.lt,
@@ -1975,8 +1975,8 @@ theorem run_csFixedStep4_1 (s : State) (memory : ByteArray) (pdst ret : UInt256)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep4_1
-      (csFixedState s memory 4 1 5071 pdst ret rest) =
-      some (csFixedState s memory 4 2 5095 pdst ret rest) := by
+      (csFixedState s memory 4 1 5039 pdst ret rest) =
+      some (csFixedState s memory 4 2 5063 pdst ret rest) := by
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
@@ -2014,8 +2014,8 @@ theorem run_csFixedStep4_2 (s : State) (memory : ByteArray) (pdst ret : UInt256)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep4_2
-      (csFixedState s memory 4 2 5095 pdst ret rest) =
-      some (csFixedState s memory 4 3 5118 pdst ret rest) := by
+      (csFixedState s memory 4 2 5063 pdst ret rest) =
+      some (csFixedState s memory 4 3 5086 pdst ret rest) := by
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
@@ -2053,8 +2053,8 @@ theorem run_csFixedStep4_3 (s : State) (memory : ByteArray) (pdst ret : UInt256)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep4_3
-      (csFixedState s memory 4 3 5118 pdst ret rest) =
-      some (csFixedState s memory 4 4 5140 pdst ret rest) := by
+      (csFixedState s memory 4 3 5086 pdst ret rest) =
+      some (csFixedState s memory 4 4 5108 pdst ret rest) := by
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
@@ -2099,10 +2099,10 @@ theorem run_csFixedTail4 (s : State) (memory : ByteArray)
     (hdstFit : pdst.toNat + 32 * 4 ≤ 9472)
     (hsrcFit : (csSrc memory 4 4).toNat + 32 * 4 ≤ 9472) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedTail4
-      (csFixedState s memory 4 4 5140 pdst ret rest) =
+      (csFixedState s memory 4 4 5108 pdst ret rest) =
       some (subReturnedState s memory 4 4 pdst ret rest) := by
-  have h5243 : (5165 : UInt256).toNat = 5165 := by decide
-  have heq5243 : (5165 : UInt256) = UInt256.ofNat 5165 := by decide
+  have h5243 : (5133 : UInt256).toNat = 5133 := by decide
+  have heq5243 : (5133 : UInt256) = UInt256.ofNat 5133 := by decide
   have hbig : (20000 : Nat) < 2 ^ 256 := by norm_num
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega

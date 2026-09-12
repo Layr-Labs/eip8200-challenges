@@ -390,7 +390,7 @@ def gasSteps_squareLoop (s : State) (mem : ByteArray) (p a mm k : Nat)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
         (MachineState.readWord mem 9376).toNat + 1) % 2 ^ 256 = 0) :
     Challenge.EvmProof.GasSteps
-      (Cios2Dispatch.commonState s mem 4777 2048 2048 (UInt256.ofNat 2048) ret rest)
+      (Cios2Dispatch.commonState s mem 4745 2048 2048 (UInt256.ofNat 2048) ret rest)
       { s with pc := UInt256.ofNat 3243, stack := rest,
                memory := sqLoopMem s (p + 2) k mem } := by
   have hentry : Entry s mem p a mm (MachineState.readWord mem 9440)
@@ -398,7 +398,7 @@ def gasSteps_squareLoop (s : State) (mem : ByteArray) (p a mm k : Nat)
       (MachineState.readWord mem 96) (MachineState.readWord mem 64)
       (MachineState.readWord mem 32) :=
     ⟨hs32, rfl, htl, hml, rfl, rfl, rfl, rfl, rfl, hminv, ha, hm, ham⟩
-  have g1 := Cios2Dispatch.gasSteps_commonSetupInput s mem (UInt256.ofNat 4777) 2048 2048 (p + 2)
+  have g1 := Cios2Dispatch.gasSteps_commonSetupInput s mem (UInt256.ofNat 4745) 2048 2048 (p + 2)
     (UInt256.ofNat 2048) ret rest (by omega) hrun hcode hfork hnp hact hfast (by omega)
     (by decide) (by omega) hcds hs32 hml Cios2Dispatch.jumpDestSqRow'
   rw [l1Target_eq_sqEnt (p + 2) hfast, rowZero_eq_input s mem (p + 2) hfast] at g1

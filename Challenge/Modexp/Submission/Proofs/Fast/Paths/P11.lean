@@ -46,7 +46,7 @@ def blk1595 :
   [opAt 1407 .POP,
    opAt 1408 .POP,
    opAt 1409 .POP,
-   pushAt 1410 2 4658,
+   pushAt 1410 2 4626,
    opAt 1411 .JUMP]
 
 /-- Instructions 1600..1626, pc 2224..2256. -/
