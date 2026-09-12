@@ -56,9 +56,6 @@ theorem run_entry_three (s : State) (memory : ByteArray)
 set_option linter.unusedSimpArgs false in
 theorem run_entry_other (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) (hne : esize ≠ 3) (he : esize ≤ 1024)
-    -- With the block ending in a discard rather than a jump, nothing in this proof reads the
-    -- code any more; the premise is kept so the call sites keep their arity, and named `_`
-    -- because this module sets `warningAsError`, where an unused binder is fatal.
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock entryPrefix

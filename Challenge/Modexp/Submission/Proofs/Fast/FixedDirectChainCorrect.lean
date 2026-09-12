@@ -14,11 +14,11 @@ memory word `0x2440 = 9280` and calls the kernel; from there the chain runs one
 of two ways, and `Chain` is what both of them hand to the final product:
 
 * `n ∈ {4, 8}`: the kernel keeps its row frame and performs all `count` squares
-  itself (`Exp.Subroutines.squareLoop`), returning once to `after_sq` (pc 3243)
+  itself (`Exp.Subroutines.squareLoop`), returning once to `after_sq` (pc 3234)
   with the pushed count still on the stack;
 * other widths: the kernel returns after every square
-  (`Exp.Subroutines.square`) and the caller's own loop at pc 3212 counts down,
-  falling through to pc 3243 with the count at `0`.
+  (`Exp.Subroutines.square`) and the caller's own loop at pc 3204 counts down,
+  falling through to pc 3234 with the count at `0`.
 
 The final mixed-domain multiplication is composed in `FixedDirectHitCorrect`.
 -/
@@ -33,12 +33,12 @@ open Challenge.Modexp.Submission.Proofs.Fast.FixedDirectStates
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
 theorem jumpD3970 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 3221).toNat = true :=
-  Exp.jumpD 3221 (by decide) FixedDirectPaths.jumpDest3970
+    (UInt256.ofNat 3225).toNat = true :=
+  Exp.jumpD 3225 (by decide) FixedDirectPaths.jumpDest3970
 
 theorem jumpD3997 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 1571).toNat = true :=
-  Exp.jumpD 1571 (by decide) jumpDest1802
+    (UInt256.ofNat 1583).toNat = true :=
+  Exp.jumpD 1583 (by decide) jumpDest1802
 
 /-- The memory word the loop head writes holds the remaining square count. -/
 theorem readWord_countStore (mem : ByteArray) (count : Nat) :
@@ -70,7 +70,7 @@ def gasSteps_squareLoop (s : State) {n bsize mm minv : Nat}
   | succ k ih =>
       have hframe0 := countStore_frame (k + 1) hframe
       have hinv0 := countStore_inv (k + 1) hn32 hinv
-      have hcall := sub.square (UInt256.ofNat 3221)
+      have hcall := sub.square (UInt256.ofNat 3225)
         (UInt256.ofNat (k + 1) :: Exp.outer n bsize esize msize)
         (Exp.storeWord memory 9280 (UInt256.ofNat (k + 1))) bM
         hslow (by simp [Exp.outer])
@@ -134,14 +134,14 @@ def gasSteps_squareLoopFast (s : State) {n bsize mm minv : Nat}
   have hinv0 := countStore_inv count hn32 hinv
   (FixedDirectChainTrace.gasSteps_squareCall s memory
       n bsize esize msize count hactive hcode hfork hrun hnp).trans
-    (sub.squareLoop count (UInt256.ofNat 3221)
+    (sub.squareLoop count (UInt256.ofNat 3225)
       (UInt256.ofNat count :: Exp.outer n bsize esize msize)
       (Exp.storeWord memory 9280 (UInt256.ofNat count)) bM
       hfast hcount hcount16 (by simp [Exp.outer])
       (readWord_countStore memory count)
       (countStore_frame count hframe) hinv0.modulus hinv0.squareBase hbM)
 
-/-- What either square chain delivers at `after_sq` (pc 3243): the memory, the
+/-- What either square chain delivers at `after_sq` (pc 3234): the memory, the
 square count still on the stack, the certified trace from the dispatcher's
 `special` state, and the block invariant at the `count`-fold Montgomery square
 of BASE. -/

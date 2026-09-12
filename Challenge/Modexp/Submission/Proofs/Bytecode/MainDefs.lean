@@ -43,7 +43,7 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 /-- First half of the compiler trampoline chain. -/
 def trampoline1Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 0 2 5189, opAt 1 .JUMP]
+  [pushAt 0 2 5125, opAt 1 .JUMP]
 
 /-- Second half of the compiler trampoline chain. -/
 def trampoline2Path :
@@ -57,11 +57,8 @@ def headerLoadPath :
    pushAt 816 1 32, opAt 817 .CALLDATALOAD,
    pushAt 818 1 64, opAt 819 .CALLDATALOAD]
 
-/-- Direct hop over the EIP-7823 checks, justified by `Correct`'s valid-input
-precondition. The pushed target equals the fall-through pc, so `POP` reaches the same
-instruction as `JUMP` did at 6 gas less, with an identical stack and pc; the `JUMPDEST` at 1067
-stays in the code, so nothing else that targets it is affected. The hop preserves the three
-loaded length words. -/
+/-- Direct jump over the EIP-7823 checks, justified by `Correct`'s valid-input
+precondition. The jump preserves the three loaded length words. -/
 def headerCheckPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 820 2 1067, opAt 821 .POP]
@@ -71,7 +68,7 @@ retained as a single audit-friendly path. -/
 def headerPath := trampoline1Path ++ trampoline2Path ++
   headerLoadPath ++ headerCheckPath
 
-def tramp0Path := [pushAt 0 2 5189, opAt 1 .JUMP]
+def tramp0Path := [pushAt 0 2 5125, opAt 1 .JUMP]
 def tramp7DestPath := [opAt 813 .JUMPDEST]
 
 def trampolineState (input : ByteArray) (pc : Nat) : State :=

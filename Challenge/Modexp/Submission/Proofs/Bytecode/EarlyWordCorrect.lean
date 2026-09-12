@@ -10,7 +10,7 @@ set_option warningAsError true
 # Total initial dispatch through the early one-word wrapper
 
 The initial hop always reaches pc 5224. Matching headers enter the existing
-Fermat/window proof at pc 4885. Every other header restores the exact legacy
+Fermat/window proof at pc 4832. Every other header restores the exact legacy
 entry at pc 1314 with an empty stack and unchanged memory and environment.
 -/
 
@@ -43,7 +43,7 @@ def legacy (input : ByteArray) (hmiss : ¬ WindowTwentyOneInput.Matches input) :
       (Main.trampolineState input 1121) := by
   have tail := EarlyWordGas.steps_miss Artifact.earlyWordPaths
     (initialState submissionBytecode input 0) (environment input) input rfl hmiss
-  change Challenge.EvmProof.GasSteps (Main.trampolineState input 5189)
+  change Challenge.EvmProof.GasSteps (Main.trampolineState input 5125)
     (Main.trampolineState input 1121) at tail
   exact (Main.gasSteps_entryHop input).trans tail
 
@@ -56,8 +56,8 @@ def hit (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
     (by exact PrimeCertificates.bn254P_prime) (by exact PrimeCertificates.secpP_prime)
   have entrySteps := EarlyWordGas.steps_hit Artifact.earlyWordPaths
     (initialState submissionBytecode input 0) (environment input) input rfl hmatch
-  change Challenge.EvmProof.GasSteps (Main.trampolineState input 5189)
-    (state (initialState submissionBytecode input 0) input (UInt256.ofNat 4841)) at entrySteps
+  change Challenge.EvmProof.GasSteps (Main.trampolineState input 5125)
+    (state (initialState submissionBytecode input 0) input (UInt256.ofNat 4777)) at entrySteps
   exact ⟨final, ⟨(Main.gasSteps_entryHop input).trans (entrySteps.trans tail)⟩,
     done, result⟩
 

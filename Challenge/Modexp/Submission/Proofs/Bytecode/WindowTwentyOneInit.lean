@@ -158,44 +158,24 @@ theorem run_frame (template : State) (pc base modulus exponent modulusOffset acc
     WindowTwentyOneTable.framed, WindowTableMemory.tableMemory, List.replicate_zero,
     List.nil_append, List.cons_append, ← advancePC_add, show 7 + 3 = 10 by decide] using both
 
--- The pushed target 2360 is the fall-through pc and the `JUMPDEST` at 2360 is the first
--- instruction of the loop's `iterationProgram`, so `POP` reaches it with the same stack and pc
--- at 6 gas less.  The `JUMPDEST` stays in the code, so the loop's own back-edge to 2360 -- and
--- the `hjump` witness the loop lemmas still take -- are unaffected.
-def program : List Instr := lookupProgram ++ frameProgram ++ [.push 2 2360, .op .POP]
+def program : List Instr := lookupProgram ++ frameProgram
 
 theorem run_enter (template : State) (base modulus exponent modulusOffset : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (hoffset : rest[5]? = some modulusOffset)
-    (hmodulus : MachineState.readWord template.executionEnv.calldata modulusOffset.toNat = modulus) :
+    (hmodulus : MachineState.readWord template.executionEnv.calldata modulusOffset.toNat = modulus)
+    (_hjump : Decode.isValidJumpDest template.executionEnv.code 2368 = true) :
     runInstructions program
-      (WindowTwentyOneTable.framed template (UInt256.ofNat 2335) base modulus 16 ([base, exponent] ++ rest)) =
-    some (WindowTwentyOneGroup.state template (UInt256.ofNat 2360) base modulus
+      (WindowTwentyOneTable.framed template (UInt256.ofNat 2347) base modulus 16 ([base, exponent] ++ rest)) =
+    some (WindowTwentyOneGroup.state template (UInt256.ofNat 2368) base modulus
       (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat)
       (UInt256.shiftLeft exponent (UInt256.ofNat 4)) (UInt256.ofNat 2) 0 rest) := by
-  have hl := run_lookup template (UInt256.ofNat 2335) base modulus exponent rest hrest
-  have hf := run_frame template (advancePC 11 (UInt256.ofNat 2335)) base modulus exponent modulusOffset
+  have hl := run_lookup template (UInt256.ofNat 2347) base modulus exponent rest hrest
+  have hf := run_frame template (advancePC 11 (UInt256.ofNat 2347)) base modulus exponent modulusOffset
     (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat) rest hrest hoffset hmodulus
   have both := runInstructions_append_some _ _ _ _ _ hl hf
-  have hpc : advancePC 10 (advancePC 11 (UInt256.ofNat 2335)) = UInt256.ofNat 2356 := by decide
+  have hpc : advancePC 10 (advancePC 11 (UInt256.ofNat 2347)) = UInt256.ofNat 2368 := by decide
   rw [hpc] at both
-  have hbranch : runInstructions [.push 2 2360, .op .POP]
-      (WindowTwentyOneGroup.state template (UInt256.ofNat 2356) base modulus
-        (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat)
-        (UInt256.shiftLeft exponent (UInt256.ofNat 4)) (UInt256.ofNat 2) 0 rest) =
-      some (WindowTwentyOneGroup.state template (UInt256.ofNat 2360) base modulus
-        (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat)
-        (UInt256.shiftLeft exponent (UInt256.ofNat 4)) (UInt256.ofNat 2) 0 rest) := by
-    have hcap5 : rest.length + 5 < 1024 := by omega
-    have hcap6 : rest.length + 6 < 1024 := by omega
-    -- The block's last step is `POP` rather than `JUMP`, so the pc advances by the
-    -- PUSH's 3 and then by one more instead of being replaced by the pushed target.  The composite
-    -- `(ofNat 2356 + ofNat 3).succ` is a closed term and `succ_ofNat_mod` never fires on it,
-    -- because simp has to normalise the sum first; settle it directly.
-    have hstep : (UInt256.ofNat 2356 + UInt256.ofNat 3).succ = UInt256.ofNat 2360 := by decide
-    simp [runInstructions, WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
-      Challenge.EvmProof.Stepper.runInstr, hcap5, hcap6, Nat.add_assoc,
-      Challenge.EvmProof.Word.literal_eq_ofNat, hstep]
-  exact runInstructions_append_some _ _ _ _ _ both hbranch
+  simpa only [program] using both
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneInit

@@ -114,7 +114,7 @@ def qhatOf (mem : ByteArray) : UInt256 :=
   -- Saturate a quotient that would wrap at the word radix. The generic
   -- correction proof below accepts every UInt256 quotient, including this one.
   let overflow := UInt256.isZero (UInt256.lt hi dodd)
-  -- Record-style refinement: decrement only when
+  -- Record-style refinement (rider R-KNUTH): decrement only when
   -- `(q >> 128) * (N1 >> 128) > r̂`, which implies `q * N1 > r̂ * radix`.
   UInt256.lor (UInt256.ofNat 0 - overflow)
     (q - UInt256.gt

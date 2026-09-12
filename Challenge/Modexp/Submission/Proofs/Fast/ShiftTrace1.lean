@@ -86,31 +86,20 @@ theorem run_dispatch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
         Challenge.EvmProof.Word.succ_ofNat_mod,
         Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- `blk2889`: the miss arm seeds `R1 = 0x1000` with the word 1 and calls the
-Montgomery-form conversion (pc 2081) with return address 1300, the old `r0` block.
-
-This call does not sit on the shared setup path, which every fast route runs.  It sits
-here, so it runs only on the recogniser-miss route -- the only route that reads `R1`; the
-recogniser-hit routes set up what they need themselves.  The conversion's own exit copies
-its result into `R1` (`ShiftTrace3.run_shiftDone`). -/
+/-- `blk2889`: the miss arm jumps to the old `r0` block at pc 1512. -/
 theorem run_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hact : 296 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk2889
       (missState s mem n bsize esize msize) =
-      some (Exp.r1Call s (Exp.storeWord mem 4096 (UInt256.ofNat 1)) 4096
-        (UInt256.ofNat 1300) n bsize esize msize) := by
-  have haw : UInt256.ofNat
-      (MachineState.activeWordsAfter s.activeWords.toNat 4096 32) = s.activeWords :=
-    Monpro.activeWords_fix s 4096 32 (by decide) (by omega) (by omega)
-  simp (config := { maxSteps := 400000 })
+      some (Exp.r0State s mem n bsize esize msize) := by
+  simp (config := { maxSteps := 100000 })
     [blk2889, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      missState, frameState, pcMiss, Exp.r1Call, Exp.storeWord, outer, Exp.outer,
-      hcode, hrun, jumpDest2322, haw, State.activeWordsAfterUInt256,
+      missState, frameState, pcMiss, Exp.r0State, outer, Exp.outer,
+      hcode, hrun, jumpDest1526,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,

@@ -13,7 +13,7 @@ def middleStore : List Instr :=
 
 def middle : List Instr := middleStore ++ CiosReadonly.cachedProduct
 
-/-- The middle block with its leading `JUMPDEST` (pc 4334, the empty-chain entry). -/
+/-- The middle block with its leading `JUMPDEST` (pc 4293, the empty-chain entry). -/
 def middleBlock : List Instr := [.op .JUMPDEST] ++ middle
 
 def tailStore : List Instr :=

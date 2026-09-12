@@ -44,7 +44,7 @@ def handled_of_bDone (route : FixedExponentRoute.Route s mem input
 
 /-- Route-aware replacement for the outer case split at the dispatcher entry.
 
-`run_rrDone_skip` and `run_shiftDone` now jump straight to pc 3179, so their
+`run_rrDone_skip` and `run_shiftDone` now jump straight to pc 3171, so their
 traces end at `entryState` rather than `bDone`; the `enter` trampoline step is
 already consumed and must not be prepended again. -/
 def handled_of_entryState (route : FixedExponentRoute.Route s mem input
@@ -150,7 +150,7 @@ def handled_of_bDoneConcrete (input : ByteArray) (s : State) (mem : ByteArray)
     hmz hm32 hbsize hesize hmsz hmm hodd hradix hbMlt hbMform hframe hEb
 
 /-- Fully instantiated adapter for traces that land on the dispatcher entry
-at pc 3179 directly (the `bsize = 0` RR-skip and the shift-reduce hit). -/
+at pc 3171 directly (the `bsize = 0` RR-skip and the shift-reduce hit). -/
 def handled_of_entryStateConcrete (input : ByteArray) (s : State) (mem : ByteArray)
     (n bsize esize msize mm minv bM : Nat)
     (sub : Exp.Subroutines s n bsize mm minv)

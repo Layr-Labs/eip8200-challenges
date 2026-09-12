@@ -22,18 +22,18 @@ open Challenge.Modexp.Submission.Proofs.Fast.FullBase
 
 private def fallbackCountPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2250 .JUMPDEST, opAt 2251 (.Dup ⟨2, by decide⟩),
-   pushAt 2252 1 31, opAt 2253 .ADD, pushAt 2254 1 5, opAt 2255 .SHR]
+  [opAt 2253 .JUMPDEST, opAt 2254 (.Dup ⟨2, by decide⟩),
+   pushAt 2255 1 31, opAt 2256 .ADD, pushAt 2257 1 5, opAt 2258 .SHR]
 private def fallbackWordPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2256 (.Dup ⟨3, by decide⟩), opAt 2257 (.Dup ⟨1, by decide⟩),
-   pushAt 2258 1 5, opAt 2259 .SHL, opAt 2260 .SUB, pushAt 2261 1 3,
-   opAt 2262 .SHL, pushAt 2263 1 96, opAt 2264 .CALLDATALOAD,
-   opAt 2265 (.Swap ⟨0, by decide⟩), opAt 2266 .SHR]
+  [opAt 2259 (.Dup ⟨3, by decide⟩), opAt 2260 (.Dup ⟨1, by decide⟩),
+   pushAt 2261 1 5, opAt 2262 .SHL, opAt 2263 .SUB, pushAt 2264 1 3,
+   opAt 2265 .SHL, pushAt 2266 1 96, opAt 2267 .CALLDATALOAD,
+   opAt 2268 (.Swap ⟨0, by decide⟩), opAt 2269 .SHR]
 private def fallbackStorePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2267 (.Dup ⟨2, by decide⟩), pushAt 2268 2 992, opAt 2269 .ADD,
-   opAt 2270 .MSTORE, pushAt 2271 1 1, pushAt 2272 2 1383, opAt 2273 .JUMP]
+  [opAt 2270 (.Dup ⟨2, by decide⟩), pushAt 2271 2 992, opAt 2272 .ADD,
+   opAt 2273 .MSTORE, pushAt 2274 1 1, pushAt 2275 2 1395, opAt 2276 .JUMP]
 
 private theorem shr_ofNat (value shift : Nat) (hv : value < 2 ^ 256)
     (hs : shift < 256) :
@@ -72,7 +72,7 @@ theorem run_fallback (s : State) (mem input : ByteArray)
         (FullBase.storeWord mem (992 + 32 * n)
           (UInt256.ofNat (FullBase.topLimbOf input bsize)))
         n bsize esize msize (FullBase.pbOf bsize) 1) := by
-  have hjump : Decode.isValidJumpDest s.executionEnv.code 1383 = true := by
+  have hjump : Decode.isValidJumpDest s.executionEnv.code 1395 = true := by
     simpa [hcode] using jumpDest1611
   have hpb1 : 1 ≤ pbOf bsize := by unfold pbOf; omega
   have hpbLe : pbOf bsize ≤ 32 := by unfold pbOf; omega

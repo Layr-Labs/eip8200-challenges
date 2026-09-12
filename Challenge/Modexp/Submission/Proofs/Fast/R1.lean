@@ -6,8 +6,8 @@ set_option maxHeartbeats 4000000
 /-!
 # The `R1B` guard of the appended Montgomery path
 
-`R1B` occupies instruction indices 1768..1780 (pc 2539..2921).  It is entered
-at pc 2539 with stack `[px, ret]`, exactly the calling convention of
+`R1B` occupies instruction indices 1768..1780 (pc 2535..2917).  It is entered
+at pc 2535 with stack `[px, ret]`, exactly the calling convention of
 `DOUBLE256`, and it dispatches:
 
 * when the modulus's most significant bit is clear it jumps straight to
@@ -84,10 +84,10 @@ def tnMem (mem : ByteArray) : ByteArray :=
 
 /-! ## States at the block boundaries -/
 
-/-- Subroutine entry, pc 2539, stack `[px, ret]`. -/
+/-- Subroutine entry, pc 2535, stack `[px, ret]`. -/
 def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2081
+  { s with pc := UInt256.ofNat 2093
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
@@ -95,14 +95,14 @@ def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
 stack and memory exactly as they arrived. -/
 def dblState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1598
+  { s with pc := UInt256.ofNat 1610
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
-/-- Between the test and the store, pc 2550. -/
+/-- Between the test and the store, pc 2546. -/
 def fastState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2092
+  { s with pc := UInt256.ofNat 2104
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
@@ -111,7 +111,7 @@ def fastState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
 store does not grow memory. -/
 def csubState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4669
+  { s with pc := UInt256.ofNat 4613
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := tnMem mem }
 
