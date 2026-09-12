@@ -1,4 +1,3 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80CoreCommon
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80Cleanup
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80TerminalTail
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80FinalBridgeMemory
@@ -102,9 +101,11 @@ def template : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 80),
     .op .SHR,
     .op (.Swap ⟨0, by decide⟩),
-    .push ⟨3, by decide⟩ (UInt256.ofNat 80),
-    .op .SHR,
+    .op (.Swap ⟨1, by decide⟩),
     .op .ADD,
+    .op (.Swap ⟨0, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 80),
+    .op .SHR,
     .op .ADD,
     .push ⟨2, by decide⟩ (UInt256.ofNat 832),
     .op .MLOAD,
@@ -126,7 +127,7 @@ def template : List Instr :=
 
 def prefixTemplate : List Instr := template.dropLast
 
-theorem template_length : template.length = 72 := by decide
+theorem template_length : template.length = 74 := by decide
 theorem template_bytes : (template.map Instr.size).sum = 100 := by decide
 theorem prefix_bytes : (prefixTemplate.map Instr.size).sum = 99 := by decide
 
@@ -190,10 +191,12 @@ private def chunk4 : List Instr :=
   [.push ⟨1, by decide⟩ (UInt256.ofNat 80),
    .op .SHR,
    .op (.Swap ⟨0, by decide⟩),
-   .push ⟨3, by decide⟩ (UInt256.ofNat 80),
-    .op .SHR,
-    .op .ADD,
-    .op .ADD,
+   .op (.Swap ⟨1, by decide⟩),
+   .op .ADD,
+   .op (.Swap ⟨0, by decide⟩),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 80),
+   .op .SHR,
+   .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 832),
    .op .MLOAD,
    .op .ADD,
@@ -312,18 +315,6 @@ private theorem run_chunk3 (s : State) (pc ret : UInt256) (q : WordLane) (factor
   all_goals repeat first | apply And.intro | rfl
 #print axioms run_chunk3
 
-private theorem tail_add_comm (a b : UInt256) : a + b = b + a :=
-  Table80CoreCommon.add_comm a b
-private theorem tail_add_assoc (a b c : UInt256) : (a + b) + c = a + (b + c) :=
-  Table80CoreCommon.add_assoc a b c
-private theorem tail_add_left_comm (a b c : UInt256) : a + (b + c) = b + (a + c) :=
-  Table80CoreCommon.add_left_comm a b c
-
-private theorem tail_pc_fix (pc : UInt256) :
-    pc + (UInt256.ofNat 2).add (UInt256.ofNat 1) =
-      (pc + UInt256.ofNat 2) + UInt256.ofNat 1 :=
-  (tail_add_assoc pc (UInt256.ofNat 2) (UInt256.ofNat 1)).symm
-
 private theorem run_chunk4 (s : State) (pc ret : UInt256) (q : WordLane) (factor r0 : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 996)
     (hrun : s.halt = .Running) (hactive : 34 ≤ s.activeWords.toNat) :
@@ -336,18 +327,12 @@ private theorem run_chunk4 (s : State) (pc ret : UInt256) (q : WordLane) (factor
   have hactiveAt (address : Nat) (haddress : address ≤ 1056) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := Table80Raw.active_preserved s.activeWords address hactive haddress
-  have hsum : (UInt256.shiftRight q.c (UInt256.ofNat 80) +
-      UInt256.shiftRight q.b (UInt256.ofNat 80)) + q.a =
-      UInt256.shiftRight q.c (UInt256.ofNat 80) +
-        (q.a + UInt256.shiftRight q.b (UInt256.ofNat 80)) := by
-    rw [tail_add_assoc, tail_add_comm (UInt256.shiftRight q.b (UInt256.ofNat 80)) q.a]
   simp (discharger := omega) [chunk4, stack5, stack4, Table80Raw.cache,
     combineWord, result0, result1, result2, result3, result4, writeWord,
     runInstrSeq, Stepper.runInstr, UInt256.succ, pcAfter, Instr.size,
     hrun, hcap, Nat.add_assoc, List.getElem?_cons_zero, List.exchange,
     State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals simp only [hsum, tail_pc_fix]
-  all_goals trivial
+  all_goals repeat first | apply And.intro | rfl
 #print axioms run_chunk4
 
 private theorem run_chunk5 (s : State) (pc ret : UInt256) (q : WordLane) (factor r0 : UInt256)
