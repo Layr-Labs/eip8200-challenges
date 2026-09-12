@@ -44,7 +44,7 @@ def gasSteps_target :
     simpa [referenceWord, KnownInputData.expectedWord] using
       (KnownInputData.targetInput_readWord 0 (by decide))
   (Execution.gasSteps_start KnownInputData.targetInput).trans
-    ((sound (sizeDispatchPath KnownInputData.targetInput) (run_size_match KnownInputData.targetInput
+    ((sound sizePath (run_size_match KnownInputData.targetInput
       KnownInputData.targetInput_size)).trans
       ((sound checkEntryPath (run_checkEntry KnownInputData.targetInput href)).trans
         ((gasSteps_loop KnownInputData.targetInput).trans
@@ -61,16 +61,16 @@ def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
   by_cases hsize : input.size = 1000
   · by_cases href : referenceWord input = KnownInputData.fullWord
     · exact (Execution.gasSteps_start input).trans
-        ((sound (sizeDispatchPath input) (run_size_match input hsize)).trans
+        ((sound sizePath (run_size_match input hsize)).trans
           ((sound checkEntryPath (run_checkEntry input href)).trans
             ((gasSteps_loop input).trans
               (sound tailPath (run_tail_fallback input hsize hne)))))
     · exact (Execution.gasSteps_start input).trans
-        ((sound (sizeDispatchPath input) (run_size_match input hsize)).trans
+        ((sound sizePath (run_size_match input hsize)).trans
           ((gasSteps_checkEarly input href).trans
             (PatternedScan.gasSteps_patterned_miss input hsize hpne)))
   · exact (Execution.gasSteps_start input).trans
-      ((sound (sizeDispatchPath input) (run_size_fail input hfit hsize h256 hshort)).trans
+      ((sound sizePath (run_size_fail input hfit hsize h256 hshort)).trans
         (Patterned128Entry.gasSteps_fail input hfit hnabc hbad))
 
 private theorem answerMemory_read :
@@ -126,7 +126,7 @@ private def gasSteps_fallback256 (input : ByteArray) (hsize : input.size = 376)
     (href : KnownInputCompactState.referenceWord input = KnownInputData.fullWord) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) :=
   (Execution.gasSteps_start input).trans
-    ((sound (sizeDispatchPath input) (run_size_match_256 input hsize)).trans
+    ((sound sizePath (run_size_match_256 input hsize)).trans
       ((sound checkEntryPath (run_checkEntry input href)).trans
         ((gasSteps_loop input).trans
           (sound tailPath (run_tail_fallback_acc input
@@ -136,7 +136,7 @@ private def gasSteps_fallback_short (input : ByteArray) (hsize : input.size = 25
     (href : KnownInputCompactState.referenceWord input = KnownInputData.fullWord) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) :=
   (Execution.gasSteps_start input).trans
-    ((sound (sizeDispatchPath input) (run_size_match_short input hsize)).trans
+    ((sound sizePath (run_size_match_short input hsize)).trans
       ((sound checkEntryPath (run_checkEntry input href)).trans
         ((gasSteps_loop input).trans
           (sound tailPath (run_tail_fallback_acc input
@@ -178,7 +178,7 @@ theorem correct : Correct submissionBytecode := by
       have hsize := PatternedInputData.patternedInput_size
       let trace :=
         (Execution.gasSteps_start PatternedInputData.patternedInput).trans
-          ((sound (sizeDispatchPath PatternedInputData.patternedInput) (run_size_match PatternedInputData.patternedInput hsize)).trans
+          ((sound sizePath (run_size_match PatternedInputData.patternedInput hsize)).trans
             ((gasSteps_checkEarly PatternedInputData.patternedInput href).trans
               PatternedScan.gasSteps_patterned))
       refine ⟨trace.cost, fun gas hgas => ?_⟩

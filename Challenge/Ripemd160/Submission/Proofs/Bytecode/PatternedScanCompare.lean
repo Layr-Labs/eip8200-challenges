@@ -6,8 +6,8 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedInputData PatternedDigest PatternedGuardSpec PatternedSwar
 def gasSteps_compare_fold (input : ByteArray) (W S sv ov acc : UInt256) :
-    GasSteps (stS input 215 [W, S, sv, ov, acc, P7, M, m7, P, m8])
-      (stS input 252 [UInt256.land 255 (160 + sv), 32 + ov,
+    GasSteps (stS input 207 [W, S, sv, ov, acc, P7, M, m7, P, m8])
+      (stS input 244 [UInt256.land 255 (160 + sv), 32 + ov,
         UInt256.lor acc (UInt256.shiftRight (UInt256.xor (MachineState.readWord input ov.toNat) W)
           (maskShift input ov)), P7, M, m7, P, m8]) := by
   let v0 : UInt256 := MachineState.readWord input (ov).toNat
@@ -22,141 +22,141 @@ def gasSteps_compare_fold (input : ByteArray) (W S sv ov acc : UInt256) :
   let v8 : UInt256 := ((160 : UInt256) + sv)
   let v9 : UInt256 := UInt256.land (255 : UInt256) v8
   let v10 : UInt256 := ((32 : UInt256) + ov)
-  have pos200 : Artifact.submissionArtifact.instructionPC 132 = 215 := by
+  have pos200 : Artifact.submissionArtifact.instructionPC 127 = 207 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step200 := soundS (opAt 132 .JUMPDEST)
-    (blockOfS _ (pcFactS input 132 215 [W, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos200)
-      (stepS_jumpdest input 215 [W, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have pos201 : Artifact.submissionArtifact.instructionPC 133 = 216 := by
+  have step200 := soundS (opAt 127 .JUMPDEST)
+    (blockOfS _ (pcFactS input 127 207 [W, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos200)
+      (stepS_jumpdest input 207 [W, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have pos201 : Artifact.submissionArtifact.instructionPC 128 = 208 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step201 := soundS (opAt 133 (.Dup ⟨3, by decide⟩))
-    (blockOfS _ (pcFactS input 133 216 [W, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos201)
-      (stepS_dup input 216 3 (by decide) [W, S, sv, ov, acc, P7, M, m7, P, m8] ov (by rfl) (by simp) (by norm_num)))
-  have pos202 : Artifact.submissionArtifact.instructionPC 134 = 217 := by
+  have step201 := soundS (opAt 128 (.Dup ⟨3, by decide⟩))
+    (blockOfS _ (pcFactS input 128 208 [W, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos201)
+      (stepS_dup input 208 3 (by decide) [W, S, sv, ov, acc, P7, M, m7, P, m8] ov (by rfl) (by simp) (by norm_num)))
+  have pos202 : Artifact.submissionArtifact.instructionPC 129 = 209 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step202 := soundS (opAt 134 .CALLDATALOAD)
-    (blockOfS _ (pcFactS input 134 217 [ov, W, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos202)
-      (stepS_calldataload input 217 ov [W, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have pos203 : Artifact.submissionArtifact.instructionPC 135 = 218 := by
+  have step202 := soundS (opAt 129 .CALLDATALOAD)
+    (blockOfS _ (pcFactS input 129 209 [ov, W, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos202)
+      (stepS_calldataload input 209 ov [W, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have pos203 : Artifact.submissionArtifact.instructionPC 130 = 210 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step203 := soundS (opAt 135 .XOR)
-    (blockOfS _ (pcFactS input 135 218 [v0, W, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos203)
-      (stepS_xor input 218 v0 W [S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have pos204 : Artifact.submissionArtifact.instructionPC 136 = 219 := by
+  have step203 := soundS (opAt 130 .XOR)
+    (blockOfS _ (pcFactS input 130 210 [v0, W, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos203)
+      (stepS_xor input 210 v0 W [S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have pos204 : Artifact.submissionArtifact.instructionPC 131 = 211 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step204 := soundS (pushAt 136 5 4446160832)
-    (blockOfS _ (pcFactS input 136 219 [v1, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos204)
-      (stepS_push input 219 5 (4446160832 : UInt256) [v1, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
-  have pos205 : Artifact.submissionArtifact.instructionPC 137 = 225 := by
+  have step204 := soundS (pushAt 131 5 4446160832)
+    (blockOfS _ (pcFactS input 131 211 [v1, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos204)
+      (stepS_push input 211 5 (4446160832 : UInt256) [v1, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
+  have pos205 : Artifact.submissionArtifact.instructionPC 132 = 217 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step205 := soundS (opAt 137 (.Dup ⟨4, by decide⟩))
-    (blockOfS _ (pcFactS input 137 225 [(4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos205)
-      (stepS_dup input 225 4 (by decide) [(4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] ov (by rfl) (by simp) (by norm_num)))
-  have pos206 : Artifact.submissionArtifact.instructionPC 138 = 226 := by
+  have step205 := soundS (opAt 132 (.Dup ⟨4, by decide⟩))
+    (blockOfS _ (pcFactS input 132 217 [(4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos205)
+      (stepS_dup input 217 4 (by decide) [(4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] ov (by rfl) (by simp) (by norm_num)))
+  have pos206 : Artifact.submissionArtifact.instructionPC 133 = 218 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step206 := soundS (opAt 138 .CALLDATASIZE)
-    (blockOfS _ (pcFactS input 138 226 [ov, (4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos206)
-      (stepS_calldatasize input 226 [ov, (4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have pos207 : Artifact.submissionArtifact.instructionPC 139 = 227 := by
+  have step206 := soundS (opAt 133 .CALLDATASIZE)
+    (blockOfS _ (pcFactS input 133 218 [ov, (4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos206)
+      (stepS_calldatasize input 218 [ov, (4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have pos207 : Artifact.submissionArtifact.instructionPC 134 = 219 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step207 := soundS (opAt 139 .SUB)
-    (blockOfS _ (pcFactS input 139 227 [v2, ov, (4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos207)
-      (stepS_sub input 227 v2 ov [(4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have posX0 : Artifact.submissionArtifact.instructionPC 140 = 228 := by
+  have step207 := soundS (opAt 134 .SUB)
+    (blockOfS _ (pcFactS input 134 219 [v2, ov, (4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos207)
+      (stepS_sub input 219 v2 ov [(4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have posX0 : Artifact.submissionArtifact.instructionPC 135 = 220 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have stepX0 := soundS (pushAt 140 1 2)
-    (blockOfS _ (pcFactS input 140 228 [v3, (4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) posX0)
-      (stepS_push input 228 1 2 [v3, (4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
-  have posX1 : Artifact.submissionArtifact.instructionPC 141 = 230 := by
+  have stepX0 := soundS (pushAt 135 1 2)
+    (blockOfS _ (pcFactS input 135 220 [v3, (4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) posX0)
+      (stepS_push input 220 1 2 [v3, (4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
+  have posX1 : Artifact.submissionArtifact.instructionPC 136 = 222 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have stepX1 := soundS (opAt 141 .XOR)
-    (blockOfS _ (pcFactS input 141 230 [2, v3, (4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) posX1)
-      (stepS_xor input 230 2 v3 [(4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have pos208 : Artifact.submissionArtifact.instructionPC 142 = 231 := by
+  have stepX1 := soundS (opAt 136 .XOR)
+    (blockOfS _ (pcFactS input 136 222 [2, v3, (4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) posX1)
+      (stepS_xor input 222 2 v3 [(4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have pos208 : Artifact.submissionArtifact.instructionPC 137 = 223 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step208 := soundS (opAt 142 .SHR)
-    (blockOfS _ (pcFactS input 142 231 [vx, (4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos208)
-      (stepS_shr input 231 vx (4446160832 : UInt256) [v1, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have pos209 : Artifact.submissionArtifact.instructionPC 143 = 232 := by
+  have step208 := soundS (opAt 137 .SHR)
+    (blockOfS _ (pcFactS input 137 223 [vx, (4446160832 : UInt256), v1, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos208)
+      (stepS_shr input 223 vx (4446160832 : UInt256) [v1, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have pos209 : Artifact.submissionArtifact.instructionPC 138 = 224 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step209 := soundS (pushAt 143 1 248)
-    (blockOfS _ (pcFactS input 143 232 [v4, v1, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos209)
-      (stepS_push input 232 1 (248 : UInt256) [v4, v1, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
-  have pos210 : Artifact.submissionArtifact.instructionPC 144 = 234 := by
+  have step209 := soundS (pushAt 138 1 248)
+    (blockOfS _ (pcFactS input 138 224 [v4, v1, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos209)
+      (stepS_push input 224 1 (248 : UInt256) [v4, v1, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
+  have pos210 : Artifact.submissionArtifact.instructionPC 139 = 226 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step210 := soundS (opAt 144 .AND)
-    (blockOfS _ (pcFactS input 144 234 [(248 : UInt256), v4, v1, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos210)
-      (stepS_and input 234 (248 : UInt256) v4 [v1, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have pos211 : Artifact.submissionArtifact.instructionPC 145 = 235 := by
+  have step210 := soundS (opAt 139 .AND)
+    (blockOfS _ (pcFactS input 139 226 [(248 : UInt256), v4, v1, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos210)
+      (stepS_and input 226 (248 : UInt256) v4 [v1, S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have pos211 : Artifact.submissionArtifact.instructionPC 140 = 227 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step211 := soundS (opAt 145 .SHR)
-    (blockOfS _ (pcFactS input 145 235 [v5, v1, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos211)
-      (stepS_shr input 235 v5 v1 [S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have pos212 : Artifact.submissionArtifact.instructionPC 146 = 236 := by
+  have step211 := soundS (opAt 140 .SHR)
+    (blockOfS _ (pcFactS input 140 227 [v5, v1, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos211)
+      (stepS_shr input 227 v5 v1 [S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have pos212 : Artifact.submissionArtifact.instructionPC 141 = 228 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step212 := soundS (opAt 146 (.Dup ⟨4, by decide⟩))
-    (blockOfS _ (pcFactS input 146 236 [v6, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos212)
-      (stepS_dup input 236 4 (by decide) [v6, S, sv, ov, acc, P7, M, m7, P, m8] acc (by rfl) (by simp) (by norm_num)))
-  have pos213 : Artifact.submissionArtifact.instructionPC 147 = 237 := by
+  have step212 := soundS (opAt 141 (.Dup ⟨4, by decide⟩))
+    (blockOfS _ (pcFactS input 141 228 [v6, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos212)
+      (stepS_dup input 228 4 (by decide) [v6, S, sv, ov, acc, P7, M, m7, P, m8] acc (by rfl) (by simp) (by norm_num)))
+  have pos213 : Artifact.submissionArtifact.instructionPC 142 = 229 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step213 := soundS (opAt 147 .OR)
-    (blockOfS _ (pcFactS input 147 237 [acc, v6, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos213)
-      (stepS_or input 237 acc v6 [S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have pos214 : Artifact.submissionArtifact.instructionPC 148 = 238 := by
+  have step213 := soundS (opAt 142 .OR)
+    (blockOfS _ (pcFactS input 142 229 [acc, v6, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos213)
+      (stepS_or input 229 acc v6 [S, sv, ov, acc, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have pos214 : Artifact.submissionArtifact.instructionPC 143 = 230 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step214 := soundS (opAt 148 (.Swap ⟨3, by decide⟩))
-    (blockOfS _ (pcFactS input 148 238 [v7, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos214)
-      (stepS_swap input 238 3 (by decide) [v7, S, sv, ov, acc, P7, M, m7, P, m8] [acc, S, sv, ov, v7, P7, M, m7, P, m8] (by rfl) (by simp) (by norm_num)))
-  have pos215 : Artifact.submissionArtifact.instructionPC 149 = 239 := by
+  have step214 := soundS (opAt 143 (.Swap ⟨3, by decide⟩))
+    (blockOfS _ (pcFactS input 143 230 [v7, S, sv, ov, acc, P7, M, m7, P, m8] (by norm_num) pos214)
+      (stepS_swap input 230 3 (by decide) [v7, S, sv, ov, acc, P7, M, m7, P, m8] [acc, S, sv, ov, v7, P7, M, m7, P, m8] (by rfl) (by simp) (by norm_num)))
+  have pos215 : Artifact.submissionArtifact.instructionPC 144 = 231 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step215 := soundS (opAt 149 .POP)
-    (blockOfS _ (pcFactS input 149 239 [acc, S, sv, ov, v7, P7, M, m7, P, m8] (by norm_num) pos215)
-      (stepS_pop input 239 acc [S, sv, ov, v7, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have pos216 : Artifact.submissionArtifact.instructionPC 150 = 240 := by
+  have step215 := soundS (opAt 144 .POP)
+    (blockOfS _ (pcFactS input 144 231 [acc, S, sv, ov, v7, P7, M, m7, P, m8] (by norm_num) pos215)
+      (stepS_pop input 231 acc [S, sv, ov, v7, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have pos216 : Artifact.submissionArtifact.instructionPC 145 = 232 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step216 := soundS (opAt 150 .POP)
-    (blockOfS _ (pcFactS input 150 240 [S, sv, ov, v7, P7, M, m7, P, m8] (by norm_num) pos216)
-      (stepS_pop input 240 S [sv, ov, v7, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have pos217 : Artifact.submissionArtifact.instructionPC 151 = 241 := by
+  have step216 := soundS (opAt 145 .POP)
+    (blockOfS _ (pcFactS input 145 232 [S, sv, ov, v7, P7, M, m7, P, m8] (by norm_num) pos216)
+      (stepS_pop input 232 S [sv, ov, v7, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have pos217 : Artifact.submissionArtifact.instructionPC 146 = 233 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step217 := soundS (pushAt 151 1 160)
-    (blockOfS _ (pcFactS input 151 241 [sv, ov, v7, P7, M, m7, P, m8] (by norm_num) pos217)
-      (stepS_push input 241 1 (160 : UInt256) [sv, ov, v7, P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
-  have pos218 : Artifact.submissionArtifact.instructionPC 152 = 243 := by
+  have step217 := soundS (pushAt 146 1 160)
+    (blockOfS _ (pcFactS input 146 233 [sv, ov, v7, P7, M, m7, P, m8] (by norm_num) pos217)
+      (stepS_push input 233 1 (160 : UInt256) [sv, ov, v7, P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
+  have pos218 : Artifact.submissionArtifact.instructionPC 147 = 235 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step218 := soundS (opAt 152 .ADD)
-    (blockOfS _ (pcFactS input 152 243 [(160 : UInt256), sv, ov, v7, P7, M, m7, P, m8] (by norm_num) pos218)
-      (stepS_add input 243 (160 : UInt256) sv [ov, v7, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have pos219 : Artifact.submissionArtifact.instructionPC 153 = 244 := by
+  have step218 := soundS (opAt 147 .ADD)
+    (blockOfS _ (pcFactS input 147 235 [(160 : UInt256), sv, ov, v7, P7, M, m7, P, m8] (by norm_num) pos218)
+      (stepS_add input 235 (160 : UInt256) sv [ov, v7, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have pos219 : Artifact.submissionArtifact.instructionPC 148 = 236 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step219 := soundS (pushAt 153 1 255)
-    (blockOfS _ (pcFactS input 153 244 [v8, ov, v7, P7, M, m7, P, m8] (by norm_num) pos219)
-      (stepS_push input 244 1 (255 : UInt256) [v8, ov, v7, P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
-  have pos220 : Artifact.submissionArtifact.instructionPC 154 = 246 := by
+  have step219 := soundS (pushAt 148 1 255)
+    (blockOfS _ (pcFactS input 148 236 [v8, ov, v7, P7, M, m7, P, m8] (by norm_num) pos219)
+      (stepS_push input 236 1 (255 : UInt256) [v8, ov, v7, P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
+  have pos220 : Artifact.submissionArtifact.instructionPC 149 = 238 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step220 := soundS (opAt 154 .AND)
-    (blockOfS _ (pcFactS input 154 246 [(255 : UInt256), v8, ov, v7, P7, M, m7, P, m8] (by norm_num) pos220)
-      (stepS_and input 246 (255 : UInt256) v8 [ov, v7, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have pos221 : Artifact.submissionArtifact.instructionPC 155 = 247 := by
+  have step220 := soundS (opAt 149 .AND)
+    (blockOfS _ (pcFactS input 149 238 [(255 : UInt256), v8, ov, v7, P7, M, m7, P, m8] (by norm_num) pos220)
+      (stepS_and input 238 (255 : UInt256) v8 [ov, v7, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have pos221 : Artifact.submissionArtifact.instructionPC 150 = 239 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step221 := soundS (opAt 155 (.Swap ⟨0, by decide⟩))
-    (blockOfS _ (pcFactS input 155 247 [v9, ov, v7, P7, M, m7, P, m8] (by norm_num) pos221)
-      (stepS_swap input 247 0 (by decide) [v9, ov, v7, P7, M, m7, P, m8] [ov, v9, v7, P7, M, m7, P, m8] (by rfl) (by simp) (by norm_num)))
-  have pos222 : Artifact.submissionArtifact.instructionPC 156 = 248 := by
+  have step221 := soundS (opAt 150 (.Swap ⟨0, by decide⟩))
+    (blockOfS _ (pcFactS input 150 239 [v9, ov, v7, P7, M, m7, P, m8] (by norm_num) pos221)
+      (stepS_swap input 239 0 (by decide) [v9, ov, v7, P7, M, m7, P, m8] [ov, v9, v7, P7, M, m7, P, m8] (by rfl) (by simp) (by norm_num)))
+  have pos222 : Artifact.submissionArtifact.instructionPC 151 = 240 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step222 := soundS (pushAt 156 1 32)
-    (blockOfS _ (pcFactS input 156 248 [ov, v9, v7, P7, M, m7, P, m8] (by norm_num) pos222)
-      (stepS_push input 248 1 (32 : UInt256) [ov, v9, v7, P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
-  have pos223 : Artifact.submissionArtifact.instructionPC 157 = 250 := by
+  have step222 := soundS (pushAt 151 1 32)
+    (blockOfS _ (pcFactS input 151 240 [ov, v9, v7, P7, M, m7, P, m8] (by norm_num) pos222)
+      (stepS_push input 240 1 (32 : UInt256) [ov, v9, v7, P7, M, m7, P, m8] (by simp) (by decide) (by decide) (by norm_num)))
+  have pos223 : Artifact.submissionArtifact.instructionPC 152 = 242 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step223 := soundS (opAt 157 .ADD)
-    (blockOfS _ (pcFactS input 157 250 [(32 : UInt256), ov, v9, v7, P7, M, m7, P, m8] (by norm_num) pos223)
-      (stepS_add input 250 (32 : UInt256) ov [v9, v7, P7, M, m7, P, m8] (by simp) (by norm_num)))
-  have pos224 : Artifact.submissionArtifact.instructionPC 158 = 251 := by
+  have step223 := soundS (opAt 152 .ADD)
+    (blockOfS _ (pcFactS input 152 242 [(32 : UInt256), ov, v9, v7, P7, M, m7, P, m8] (by norm_num) pos223)
+      (stepS_add input 242 (32 : UInt256) ov [v9, v7, P7, M, m7, P, m8] (by simp) (by norm_num)))
+  have pos224 : Artifact.submissionArtifact.instructionPC 153 = 243 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have step224 := soundS (opAt 158 (.Swap ⟨0, by decide⟩))
-    (blockOfS _ (pcFactS input 158 251 [v10, v9, v7, P7, M, m7, P, m8] (by norm_num) pos224)
-      (stepS_swap input 251 0 (by decide) [v10, v9, v7, P7, M, m7, P, m8] [v9, v10, v7, P7, M, m7, P, m8] (by rfl) (by simp) (by norm_num)))
+  have step224 := soundS (opAt 153 (.Swap ⟨0, by decide⟩))
+    (blockOfS _ (pcFactS input 153 243 [v10, v9, v7, P7, M, m7, P, m8] (by norm_num) pos224)
+      (stepS_swap input 243 0 (by decide) [v10, v9, v7, P7, M, m7, P, m8] [v9, v10, v7, P7, M, m7, P, m8] (by rfl) (by simp) (by norm_num)))
   exact step200.trans (step201.trans (step202.trans (step203.trans (step204.trans (step205.trans (step206.trans (step207.trans ((stepX0.trans stepX1).trans (step208.trans (step209.trans (step210.trans (step211.trans (step212.trans (step213.trans (step214.trans (step215.trans (step216.trans (step217.trans (step218.trans (step219.trans (step220.trans (step221.trans (step222.trans (step223.trans (step224)))))))))))))))))))))))) )
 
 /-- The offset advances by a word. -/
@@ -184,12 +184,12 @@ def nextAcc (input : ByteArray) (k : Nat) (a : UInt256) : UInt256 :=
     (maskShift input (UInt256.ofNat (32 * k))))
 
 def exitState (input : ByteArray) (k : Nat) (a : UInt256) :=
-  stS input 258 [UInt256.ofNat (scalarAt k), UInt256.ofNat (32 * k), a, P7, M, m7, P, m8]
+  stS input 250 [UInt256.ofNat (scalarAt k), UInt256.ofNat (32 * k), a, P7, M, m7, P, m8]
 
 def gasSteps_compare_more_sym (input : ByteArray) (W S sv ov acc : UInt256)
     (hc : UInt256.isTrue (UInt256.lt ((32 : UInt256) + ov) (UInt256.ofNat input.size))) :
-    GasSteps (stS input 215 [W, S, sv, ov, acc, P7, M, m7, P, m8])
-      (stS input 160 [UInt256.land 255 (160 + sv), 32 + ov,
+    GasSteps (stS input 207 [W, S, sv, ov, acc, P7, M, m7, P, m8])
+      (stS input 152 [UInt256.land 255 (160 + sv), 32 + ov,
         UInt256.lor acc (UInt256.shiftRight
           (UInt256.xor (MachineState.readWord input ov.toNat) W) (maskShift input ov)),
         P7, M, m7, P, m8]) := by
@@ -202,8 +202,8 @@ def gasSteps_compare_more_sym (input : ByteArray) (W S sv ov acc : UInt256)
 
 def gasSteps_compare_end_sym (input : ByteArray) (W S sv ov acc : UInt256)
     (hc : ¬ UInt256.isTrue (UInt256.lt ((32 : UInt256) + ov) (UInt256.ofNat input.size))) :
-    GasSteps (stS input 215 [W, S, sv, ov, acc, P7, M, m7, P, m8])
-      (stS input 258 [UInt256.land 255 (160 + sv), 32 + ov,
+    GasSteps (stS input 207 [W, S, sv, ov, acc, P7, M, m7, P, m8])
+      (stS input 250 [UInt256.land 255 (160 + sv), 32 + ov,
         UInt256.lor acc (UInt256.shiftRight
           (UInt256.xor (MachineState.readWord input ov.toNat) W) (maskShift input ov)),
         P7, M, m7, P, m8]) := by
