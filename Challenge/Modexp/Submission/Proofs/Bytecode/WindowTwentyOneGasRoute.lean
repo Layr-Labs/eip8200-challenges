@@ -17,7 +17,8 @@ structure Paths (artifact : ProgramArtifact) (fork : Fork) extends WindowTwentyO
   zeroReturn : Block artifact fork 2964 WindowTwentyOneReturn.zeroProgram
   hitJump : Decode.isValidJumpDest artifact.code 43 = true
   zeroJump : Decode.isValidJumpDest artifact.code 2964 = true
-  loopJump : Decode.isValidJumpDest artifact.code 2495 = true
+  trampJump : Decode.isValidJumpDest artifact.code 5240 = true
+  bodyJump : Decode.isValidJumpDest artifact.code 2500 = true
   missJump : Decode.isValidJumpDest artifact.code 606 = true
 
 def context_env {artifact : ProgramArtifact} {fork : Fork} (template : State)
@@ -74,7 +75,8 @@ def positive_steps {artifact : ProgramArtifact} {fork : Fork}
   have gc := WindowTwentyOneGasCore.steps_core paths.toPaths ctx ec
     (WindowTwentyOneInput.baseWord input) (WindowTwentyOneInput.modulusWord input)
     (exponentOffset input) (modulusOffset input) (routeStack input)
-    (by simp [routeStack]) rfl rfl (modulus_at template input hmatch) (jump_env ec paths.loopJump)
+    (by simp [routeStack]) rfl rfl (modulus_at template input hmatch) (jump_env ec paths.trampJump)
+    (jump_env ec paths.bodyJump)
   have gc' : GasSteps (normalized template input) (returned template input) := by
     simpa only [normalized, returned, ctx, exponent_at template input hmatch.1] using gc
   exact ((gb.trans gm).trans gn).trans gc'

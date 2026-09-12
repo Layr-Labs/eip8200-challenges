@@ -64,7 +64,7 @@ structure RowLemmas : Type where
     (hAend : aEnd = UInt256.ofNat (pa+32*n-32)),
     Challenge.EvmProof.GasSteps
       (firstAt 4167 s mem bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
-      (l1At 4193 s mem bi pa pb n i 1 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (l1At 4191 s mem bi pa pb n i 1 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
   /-- Statement of WP-K `CarryRowGas.gasSteps_l1MulFour`. -/
   gasSteps_l1MulFour : ∀ (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb i : Nat) (hd pdst ret : UInt256) (rest : List UInt256)
@@ -76,7 +76,7 @@ structure RowLemmas : Type where
     (hact : 168 ≤ s.activeWords.toNat)
     (hpaFit : pa + 32 * 4 ≤ 4096) (hsnapshot : StagedOperand.Snapshot mem pa 4),
     Challenge.EvmProof.GasSteps
-      (l1At 4193 s mem bi pa pb 4 i 1 hd (l1Target 4) pdst ret rest)
+      (l1At 4191 s mem bi pa pb 4 i 1 hd (l1Target 4) pdst ret rest)
       (midState s (l1Step mem bi pa 4 4).memory (l1Step mem bi pa 4 4).carry bi
         pb 4 i hd (l1Target 4) pdst ret rest)
   /-- Statement of WP-K `CarryRowGas.gasSteps_l1MulEight`. -/
@@ -90,7 +90,7 @@ structure RowLemmas : Type where
     (hact : 168 ≤ s.activeWords.toNat)
     (hpaFit : pa + 32 * 8 ≤ 4096) (hsnapshot : StagedOperand.Snapshot mem pa 8),
     Challenge.EvmProof.GasSteps
-      (l1At 4193 s mem bi pa pb 8 i 1 hd (l1Target 8) pdst ret rest)
+      (l1At 4191 s mem bi pa pb 8 i 1 hd (l1Target 8) pdst ret rest)
       (midState s (l1Step mem bi pa 8 8).memory (l1Step mem bi pa 8 8).carry bi
         pb 8 i hd (l1Target 8) pdst ret rest)
   /-- Statement of WP-K `CarryRowGas.gasSteps_mid`. -/
@@ -224,6 +224,6 @@ structure EntryLemmas : Type where
 theorem jumpDest_rowHead :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 4164).toNat = true := by
   rw [show (UInt256.ofNat 4164).toNat = 4164 from by decide]
-  exact Artifact.isValidJumpDest_index 3108 (by rfl)
+  exact Artifact.isValidJumpDest_index 3085 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryIface

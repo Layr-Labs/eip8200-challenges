@@ -70,10 +70,13 @@ private theorem pcA1737 : Artifact.submissionArtifact.instructionPC 1813 = 2470 
 private theorem pcA1755 : Artifact.submissionArtifact.instructionPC 1831 = 2495 := by
   rw [show (1831 : Nat) = 1813 + 18 from rfl, instructionPC_add, pcA1737]; rfl
 
-private theorem pcA2193 : Artifact.submissionArtifact.instructionPC 2269 = 2958 := by rfl
+private theorem pcA1758 : Artifact.submissionArtifact.instructionPC 1834 = 2500 := by
+  rw [show (1834 : Nat) = 1831 + 3 from rfl, instructionPC_add, pcA1755]; rfl
 
-private theorem pcA2198 : Artifact.submissionArtifact.instructionPC 2274 = 2964 := by
-  rw [show (2274 : Nat) = 2269 + 5 from rfl, instructionPC_add, pcA2193]; rfl
+private theorem pcA2193 : Artifact.submissionArtifact.instructionPC 2246 = 2958 := by rfl
+
+private theorem pcA2198 : Artifact.submissionArtifact.instructionPC 2251 = 2964 := by
+  rw [show (2251 : Nat) = 2246 + 5 from rfl, instructionPC_add, pcA2193]; rfl
 
 private theorem pcA3688 : Artifact.submissionArtifact.instructionPC 32 = 43 := by rfl
 
@@ -82,6 +85,8 @@ private theorem pcA3702 : Artifact.submissionArtifact.instructionPC 46 = 96 := b
 
 private theorem pcA3711 : Artifact.submissionArtifact.instructionPC 55 = 108 := by
   rw [show (55 : Nat) = 46 + 9 from rfl, instructionPC_add, pcA3702]; rfl
+
+private theorem pcA3935 : Artifact.submissionArtifact.instructionPC 3931 = 5240 := by rfl
 
 
 private def nine_width :
@@ -126,21 +131,33 @@ private def nine_init :
     (by decide) pcA1737
     (by rw [locations_map_instruction]; rfl) (by decide)
 
-private def nine_iteration :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2495 WindowTwentyOneLoop.iterationProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1831 438 2495 WindowTwentyOneLoop.iterationProgram
+private def nine_entry :
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2495 WindowTwentyOneLoop.entryProgram :=
+  WindowTwentyOneSlice.block allWellFormed 1831 2 2495 WindowTwentyOneLoop.entryProgram
     (by decide) pcA1755
+    (by rw [locations_map_instruction]; rfl) (by decide)
+
+private def nine_body :
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2500 WindowTwentyOneLoop.bodyProgram :=
+  WindowTwentyOneSlice.block allWellFormed 1834 412 2500 WindowTwentyOneLoop.bodyProgram
+    (by decide) pcA1758
+    (by rw [locations_map_instruction]; rfl) (by decide)
+
+private def nine_trampoline :
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 5240 WindowTwentyOneLoop.trampolineProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3931 18 5240 WindowTwentyOneLoop.trampolineProgram
+    (by decide) pcA3935
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_finish :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 2958 WindowTwentyOneReturn.program :=
-  WindowTwentyOneSlice.block allWellFormed 2269 5 2958 WindowTwentyOneReturn.program
+  WindowTwentyOneSlice.block allWellFormed 2246 5 2958 WindowTwentyOneReturn.program
     (by decide) pcA2193
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_zeroReturn :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 2964 WindowTwentyOneReturn.zeroProgram :=
-  WindowTwentyOneSlice.block allWellFormed 2274 7 2964 WindowTwentyOneReturn.zeroProgram
+  WindowTwentyOneSlice.block allWellFormed 2251 7 2964 WindowTwentyOneReturn.zeroProgram
     (by decide) pcA2198
     (by rw [locations_map_instruction]; rfl) (by decide)
 
@@ -167,17 +184,22 @@ def twentyOnePaths : WindowTwentyOneGasRoute.Paths submissionArtifact .Osaka whe
   normalize := nine_normalize
   table := nine_table
   init := nine_init
-  iteration := nine_iteration
+  entry := nine_entry
+  trampoline := nine_trampoline
+  body := nine_body
   finish := nine_finish
   zeroReturn := nine_zeroReturn
   hitJump := by
     have h := isValidJumpDest_index 32 (by rfl)
     exact h
   zeroJump := by
-    have h := isValidJumpDest_index 2274 (by rfl)
+    have h := isValidJumpDest_index 2251 (by rfl)
     exact h
-  loopJump := by
-    have h := isValidJumpDest_index 1831 (by rfl)
+  trampJump := by
+    have h := isValidJumpDest_index 3931 (by rfl)
+    exact h
+  bodyJump := by
+    have h := isValidJumpDest_index 1834 (by rfl)
     exact h
   missJump := by
     have h := isValidJumpDest_index 472 (by rfl)
