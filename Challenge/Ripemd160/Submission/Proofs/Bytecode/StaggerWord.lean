@@ -1,5 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRound
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Paired144WordCrypto
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Paired80Compression
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
 set_option maxHeartbeats 4000000
@@ -53,6 +54,52 @@ def t (mode r s : Nat) (message rawKey : UInt256) (q : WordLane) : UInt256 :=
 
 def step (mode r s : Nat) (message rawKey : UInt256) (q : WordLane) : WordLane :=
   ⟨q.e, t mode r s message rawKey q, q.b, UInt256.land (wordShift q.c 28) pairWord, q.d⟩
+
+/-- The last packed update leaves the rotated-C cell unnormalized: no later
+packed round consumes it, and every downstream reader projects through the
+low 32 bits or the cell at bit 144. -/
+def stepFinal (mode r s : Nat) (message rawKey : UInt256) (q : WordLane) : WordLane :=
+  ⟨q.e, t mode r s message rawKey q, q.b, wordShift q.c 28, q.d⟩
+
+def highCell (x : UInt256) : UInt32 := Paired80Compression.low32 (UInt256.shiftRight x (UInt256.ofNat 144))
+
+def unpackRightLane (q : WordLane) : CryptoLane :=
+  ⟨highCell q.a, highCell q.b, highCell q.c, highCell q.d, highCell q.e⟩
+
+theorem low32_land_pairWord (x : UInt256) :
+    Paired80Compression.low32 (UInt256.land x pairWord) = Paired80Compression.low32 x := by
+  apply UInt32.eq_of_toBitVec_eq
+  change (bits (UInt256.land x pairWord)).setWidth 32 = (bits x).setWidth 32
+  rw [bits_land, pairWord, bits_word, ← normalize_eq_and]
+  simp only [BitVec.setWidth_eq_extractLsb', normalize, low_pack]
+
+theorem highCell_land_pairWord (x : UInt256) :
+    highCell (UInt256.land x pairWord) = highCell x := by
+  apply UInt32.eq_of_toBitVec_eq
+  change (bits (UInt256.shiftRight (UInt256.land x pairWord) (UInt256.ofNat 144))).setWidth 32 =
+    (bits (UInt256.shiftRight x (UInt256.ofNat 144))).setWidth 32
+  rw [bits_shr _ 144 (by decide), bits_shr _ 144 (by decide), bits_land, pairWord, bits_word,
+    ← normalize_eq_and]
+  simp only [BitVec.setWidth_ushiftRight_eq_extractLsb, normalize, high_pack]
+
+theorem unpackLeft_stepFinal (mode r s : Nat) (message rawKey : UInt256) (q : WordLane) :
+    Paired80Compression.unpackLeft (stepFinal mode r s message rawKey q) =
+      Paired80Compression.unpackLeft (step mode r s message rawKey q) := by
+  simp only [stepFinal, step, Paired80Compression.unpackLeft, low32_land_pairWord]
+
+theorem unpackRightLane_stepFinal (mode r s : Nat) (message rawKey : UInt256) (q : WordLane) :
+    unpackRightLane (stepFinal mode r s message rawKey q) =
+      unpackRightLane (step mode r s message rawKey q) := by
+  simp only [stepFinal, step, unpackRightLane, highCell_land_pairWord]
+
+theorem unpackRightLane_packCrypto (l q : CryptoLane) : unpackRightLane (packCrypto l q) = q := by
+  cases l; cases q
+  simp only [unpackRightLane, packCrypto, highCell]
+  congr 1 <;>
+    (apply UInt32.eq_of_toBitVec_eq
+     change (bits (UInt256.shiftRight (word (pack _ _)) (UInt256.ofNat 144))).setWidth 32 = _
+     rw [bits_shr _ 144 (by decide), bits_word, BitVec.setWidth_ushiftRight_eq_extractLsb]
+     exact high_pack _ _)
 
 theorem sum_inputs (mode : Nat) (hm : mode < 9) (l q : CryptoLane)
     (wl wr kl kr : UInt32) (message : UInt256)

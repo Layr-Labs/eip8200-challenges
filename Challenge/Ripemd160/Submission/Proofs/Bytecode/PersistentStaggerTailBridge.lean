@@ -36,7 +36,7 @@ theorem suffix_eq (s : State) (h : Compression.HashState) (q : WordLane)
     (off limit : UInt256) (rho : List UInt256) :
     StaggerCore.suffixState s (initial h).e q
       (StaggerPersistentPackBridge.suffix (initial h) off limit rho) =
-    {s with pc := UInt256.ofNat 4672, stack := StaggerPersistentTailRaw.stack0 (StaggerPersistentFrame.bind h
+    {s with pc := UInt256.ofNat 4670, stack := StaggerPersistentTailRaw.stack0 (StaggerPersistentFrame.bind h
         (tailInput s.memory h (StaggerCoreModel.epilogue s.memory q) q off limit)) rho} := by
   rw [initial_eq]
   rfl
@@ -49,7 +49,7 @@ def gasSteps (s : State) (h : Compression.HashState) (q : WordLane)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (StaggerCore.suffixState s (initial h).e q
       (StaggerPersistentPackBridge.suffix (initial h) off limit rho))
-      {s with pc := UInt256.ofNat 4737, stack := StaggerPersistentFrame.frame (combine h (StaggerCoreModel.epilogue s.memory q) q) off limit rho} := by
+      {s with pc := UInt256.ofNat 4735, stack := StaggerPersistentFrame.frame (combine h (StaggerCoreModel.epilogue s.memory q) q) off limit rho} := by
   rw [suffix_eq]
   have g := StaggerPersistentTailSite.gasSteps s off limit h
     (tailInput s.memory h (StaggerCoreModel.epilogue s.memory q) q off limit)

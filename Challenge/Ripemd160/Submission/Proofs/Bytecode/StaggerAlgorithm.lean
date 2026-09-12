@@ -29,6 +29,34 @@ def step (i : Nat) (message : UInt256) (q : WordLane) : WordLane :=
   StaggerWord.step (mode i) Crypto.Ripemd160.s[i]! Crypto.Ripemd160.sP[i + 3]!
     message (physicalKey i) q
 
+def stepFinal (i : Nat) (message : UInt256) (q : WordLane) : WordLane :=
+  StaggerWord.stepFinal (mode i) Crypto.Ripemd160.s[i]! Crypto.Ripemd160.sP[i + 3]!
+    message (physicalKey i) q
+
+theorem stepFinal_left_of_crypto (words : Nat → UInt32) (i : Nat) (hi : i < 77)
+    (message : UInt256) (l q : CryptoLane)
+    (hm : bits message =
+      (pack (words Crypto.Ripemd160.r[i]!).toBitVec (words Crypto.Ripemd160.rP[i + 3]!).toBitVec)) :
+    Paired80Compression.unpackLeft (stepFinal i message (packCrypto l q)) =
+      cryptoStep (i / 16) Crypto.Ripemd160.s[i]!
+        (words Crypto.Ripemd160.r[i]!) Crypto.Ripemd160.K[i / 16]! l := by
+  unfold stepFinal
+  rw [StaggerWord.unpackLeft_stepFinal]
+  change Paired80Compression.unpackLeft (step i message (packCrypto l q)) = _
+  rw [step_of_crypto words i hi message l q hm, Paired80Compression.unpackLeft_packCrypto]
+
+theorem stepFinal_right_of_crypto (words : Nat → UInt32) (i : Nat) (hi : i < 77)
+    (message : UInt256) (l q : CryptoLane)
+    (hm : bits message =
+      (pack (words Crypto.Ripemd160.r[i]!).toBitVec (words Crypto.Ripemd160.rP[i + 3]!).toBitVec)) :
+    StaggerWord.unpackRightLane (stepFinal i message (packCrypto l q)) =
+      cryptoStep (4 - (i + 3) / 16) Crypto.Ripemd160.sP[i + 3]!
+        (words Crypto.Ripemd160.rP[i + 3]!) Crypto.Ripemd160.KP[(i + 3) / 16]! q := by
+  unfold stepFinal
+  rw [StaggerWord.unpackRightLane_stepFinal]
+  change StaggerWord.unpackRightLane (step i message (packCrypto l q)) = _
+  rw [step_of_crypto words i hi message l q hm, StaggerWord.unpackRightLane_packCrypto]
+
 def fold (message : Nat → UInt256) : Nat → WordLane → WordLane
   | 0, q => q
   | i + 1, q => step i (message i) (fold message i q)

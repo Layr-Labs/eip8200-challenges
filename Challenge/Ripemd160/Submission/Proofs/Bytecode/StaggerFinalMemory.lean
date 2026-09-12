@@ -86,11 +86,20 @@ theorem resultMemory_eq_folds (memory : ByteArray) (words : Nat → UInt32)
         (Paired80Algorithm.leftFold words 80 (StaggerRepresentation.initialCrypto h))
         (Paired80Algorithm.rightFold words 80 (StaggerRepresentation.initialCrypto h)))) := by
   unfold resultMemory
+  have hc0 : StaggerScalarLow54.Low54 (PairedLaneUInt256Bridge.bits
+      (paired memory (StaggerScalarWord.embed (StaggerRepresentation.initialCrypto h))).c) :=
+    StaggerScalarLow54.pairMask_low54 _
+  have hc1 : StaggerScalarLow54.Low54 (PairedLaneUInt256Bridge.bits
+      (paired memory (StaggerScalarWord.embed (StaggerRepresentation.initialCrypto h))).b) :=
+    StaggerScalarLow54.pairMask_low54 _
   rw [StaggerRepresentation.initial_eq memory h hh,
-    StaggerCoreCorrect.paired_crypto memory words _ hm,
     tailMemory_eq_storeRaw, rawHash_eq_combine _ _ _ h hh,
-    StaggerCoreCorrect.epilogue_crypto memory words _ _ hm,
-    unpackRight_packCrypto, StaggerCoreCorrect.leftFinish_fold]
+    StaggerCoreCorrect.epilogue_crypto memory words _ hc0 hc1 hm,
+    StaggerCoreCorrect.paired_left memory words _ hm,
+    show unpackRight (paired memory (StaggerScalarWord.embed (StaggerRepresentation.initialCrypto h))) =
+      StaggerWord.unpackRightLane (paired memory (StaggerScalarWord.embed (StaggerRepresentation.initialCrypto h))) from rfl,
+    StaggerCoreCorrect.paired_right memory words _ hm,
+    StaggerCoreCorrect.leftFinish_fold]
 
 #print axioms tailMemory_eq_storeRaw
 #print axioms addResult_normalized

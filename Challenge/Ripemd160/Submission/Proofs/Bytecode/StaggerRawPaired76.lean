@@ -41,13 +41,11 @@ def template : List Instr :=
     .op (.Dup ⟨8, by decide⟩),
     .op .MUL,
     .push ⟨1, by decide⟩ (UInt256.ofNat 28),
-    .op .SHR,
-    .op (.Dup ⟨1, by decide⟩),
-    .op .AND ]
+    .op .SHR ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
   [ x.v0, x.v1, x.v2, x.v3, x.v4, x.v5, x.v6, x.v7, x.v8, x.v9, x.v10, x.v11, x.v12, x.v13, x.v14 ] ++ rho
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ (UInt256.land x.v1 (UInt256.shiftRight (UInt256.mul x.v8 x.v7) (UInt256.ofNat 28))),
+  [ (UInt256.shiftRight (UInt256.mul x.v8 x.v7) (UInt256.ofNat 28)),
     x.v1,
     x.v2,
     x.v0,
@@ -103,9 +101,9 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 4530, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 4568, stack := outputStack s.memory x rho} := by
+      {s with pc := UInt256.ofNat 4566, stack := outputStack s.memory x rho} := by
   have hraw := run_actual s (UInt256.ofNat 4530) x rho hstack hrun hactive
-  have hend : pcAfter (UInt256.ofNat 4530) template = UInt256.ofNat 4568 := by decide
+  have hend : pcAfter (UInt256.ofNat 4530) template = UInt256.ofNat 4566 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps

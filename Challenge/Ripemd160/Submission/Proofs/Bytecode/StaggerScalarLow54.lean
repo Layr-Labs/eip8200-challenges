@@ -80,6 +80,11 @@ theorem clean_low54 (c : UInt256) (hc : mask c = c) : Low54 (bits c) := by
   rw [bits_mask, StaggerScalar.mask_eq] at h
   exact congrArg (fun x : BitVec 256 => x.setWidth 54) h.symm
 
+theorem pairMask_low54 (x : UInt256) :
+    Low54 (bits (UInt256.land x Paired144WordRound.pairWord)) := by
+  rw [bits_land, Paired144WordRound.pairWord, bits_word, ← Paired144Core.normalize_eq_and]
+  exact pack_low54 _ _
+
 theorem project_step (maskB maskD : Bool) (j r : Nat) (hr0 : 0 < r) (hr : r < 17)
     (message k : UInt256) (q : WordLane) (hc : Low54 (bits q.c)) :
     unpackLeft (step maskB maskD j r message k q) =
