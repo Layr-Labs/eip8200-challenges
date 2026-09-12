@@ -224,6 +224,6 @@ structure EntryLemmas : Type where
 theorem jumpDest_rowHead :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 4029).toNat = true := by
   rw [show (UInt256.ofNat 4029).toNat = 4029 from by decide]
-  exact Artifact.isValidJumpDest_index 3032 (by rfl)
+  exact Artifact.isValidJumpDest_index 2928 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryIface

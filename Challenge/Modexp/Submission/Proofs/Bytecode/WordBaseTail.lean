@@ -20,8 +20,8 @@ theorem run_baseTail_head (input : ByteArray) (i : Nat) (base : UInt256)
         some (baseTailMidState input i base) := by
   rcases hvalid with ⟨_, hb, he, hm⟩
   have hi256 : i < 2 ^ 256 := by omega
-  have h562 : (513 : UInt256).toNat = 513 := by decide
-  have h562Word : (513 : UInt256) = UInt256.ofNat 513 := by decide
+  have h562 : (559 : UInt256).toNat = 559 := by decide
+  have h562Word : (559 : UInt256) = UInt256.ofNat 559 := by decide
   have h256Word : (256 : UInt256) = UInt256.ofNat 256 := by decide
   simp (config := { maxSteps := 150000 })
     [baseTailHeadPath, opAt, pushAt,
@@ -66,8 +66,8 @@ theorem run_baseTail_finish (input : ByteArray) (i : Nat) (base : UInt256)
         some (baseLoopState input (i + 1) (baseStep input i base)) := by
   rcases hvalid with ⟨_, hb, he, hm⟩
   have hi256 : i < 2 ^ 256 := by omega
-  have h541 : (493 : UInt256).toNat = 493 := by decide
-  have h541Word : (493 : UInt256) = UInt256.ofNat 493 := by decide
+  have h541 : (539 : UInt256).toNat = 539 := by decide
+  have h541Word : (539 : UInt256) = UInt256.ofNat 539 := by decide
   have hisucc' := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := i) (b := 1) (by omega : i + 1 < 2 ^ 256)
   have hincLeft : UInt256.ofNat 1 + UInt256.ofNat i =
@@ -111,11 +111,11 @@ def gasSteps_baseIteration (input : ByteArray) (i : Nat) (base : UInt256)
     (hvalid : ValidInput input) (hi : i < baseSize input) :
     Challenge.EvmProof.GasSteps (baseLoopState input i base)
       (baseLoopState input (i + 1) (baseStep input i base)) := by
-  have h562 : (513 : UInt256).toNat = 513 := by decide
+  have h562 : (559 : UInt256).toNat = 559 := by decide
   have hcap : (baseRest input i base).length < 1017 := by
     simp [baseRest, callerRest]
   have hjump : Decode.isValidJumpDest submissionBytecode
-      (513 : UInt256).toNat = true := by
+      (559 : UInt256).toNat = true := by
     rw [h562]
     exact jump562
   exact (Challenge.EvmProof.Stepper.runLocatedBlock_sound

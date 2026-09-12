@@ -23,7 +23,7 @@ def zeroProgram : List Instr :=
 /-- After `lowProgram`: `hd` above the operand pointers and the row frame. -/
 def cachedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3998
+  { s with pc := UInt256.ofNat 3865
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb,
              l1Target n, negative32, allOnes, l2Target n, dst, ret] ++ rest
            memory := mem }
@@ -31,7 +31,7 @@ def cachedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
 /-- After staging and zeroing: `hd` above the width word. -/
 def clearedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4018
+  { s with pc := UInt256.ofNat 3885
            stack := [hd, UInt256.ofNat (32*n), UInt256.ofNat pb,
              l1Target n, negative32, allOnes, l2Target n, dst, ret] ++ rest
            memory := mpZeroed s mem n }

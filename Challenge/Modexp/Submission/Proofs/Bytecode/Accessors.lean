@@ -25,16 +25,16 @@ private def wfOp {op : Operation}
 
 def calldataBytePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨2, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4, .op .CALLDATALOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨6, .op .BYTE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨7, .op (.Swap ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨8, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨9, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨10, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨11, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨35, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨36, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨37, .op .CALLDATALOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨38, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
+   ⟨39, .op .BYTE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨40, .op (.Swap ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨41, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨42, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨43, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨44, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def calldataByteValue (s : State) (offset : UInt256) : UInt256 :=
   UInt256.byteAt ⟨0⟩ (MachineState.readWord s.executionEnv.calldata offset.toNat)
@@ -42,7 +42,7 @@ def calldataByteValue (s : State) (offset : UInt256) : UInt256 :=
 def calldataByteEntry (s : State) (offset output returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 4
+    pc := UInt256.ofNat 48
     stack := [offset, output, returnDest] ++ rest }
 
 def calldataByteReturned (s : State) (offset returnDest : UInt256)
@@ -52,12 +52,12 @@ def calldataByteReturned (s : State) (offset returnDest : UInt256)
     stack := calldataByteValue s offset :: rest }
 
 @[simp] private theorem helperPCs (i : Nat)
-    (hi : 2 ≤ i) (hii : i ≤ 11) :
+    (hi : 35 ≤ i) (hii : i ≤ 44) :
     Artifact.submissionArtifact.instructionPC i =
-      ([4,5,6,7,8,9,10,11,12,13] : List Nat)[i - 2]! := by
+      ([48,49,50,51,52,53,54,55,56,57] : List Nat)[i - 35]! := by
   interval_cases i <;> decide
 
-@[simp] private theorem helperNext (i : Nat) (hi : 4 ≤ i) (hii : i ≤ 13) :
+@[simp] private theorem helperNext (i : Nat) (hi : 48 ≤ i) (hii : i ≤ 57) :
     (UInt256.ofNat i).succ = UInt256.ofNat (i + 1) := by
   exact Challenge.EvmProof.Word.succ_ofNat (by omega)
 

@@ -50,7 +50,7 @@ theorem run_squareCall (s : State) (memory : ByteArray)
     Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.squareCall
       (FixedDirectStates.square s memory n bsize esize msize count) =
       some (Exp.sqCall s (Exp.storeWord memory 9280 (UInt256.ofNat count))
-        (UInt256.ofNat 3221)
+        (UInt256.ofNat 3088)
         (UInt256.ofNat count :: Exp.outer n bsize esize msize)) := by
   have haddr : (UInt256.ofNat 9280).toNat = 9280 := by decide
   have hfix : UInt256.ofNat
@@ -126,7 +126,7 @@ theorem run_product (s : State) (memory : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.product
       (FixedDirectStates.product s memory n bsize esize msize count) =
-      some (Exp.mpCall s memory 2048 1024 1024 (UInt256.ofNat 1571)
+      some (Exp.mpCall s memory 2048 1024 1024 (UInt256.ofNat 1438)
         (Exp.outer n bsize esize msize)) := by
   simp (config := { maxSteps := 400000 })
     [FixedDirectPaths.product, opAt, pushAt, wfOp,
@@ -177,7 +177,7 @@ def gasSteps_squareCall (s : State) (memory : ByteArray)
     Challenge.EvmProof.GasSteps
       (FixedDirectStates.square s memory n bsize esize msize count)
       (Exp.sqCall s (Exp.storeWord memory 9280 (UInt256.ofNat count))
-        (UInt256.ofNat 3221)
+        (UInt256.ofNat 3088)
         (UInt256.ofNat count :: Exp.outer n bsize esize msize)) :=
   sound FixedDirectPaths.squareCall
     (run_squareCall s memory n bsize esize msize count hactive hcode hrun)
@@ -217,7 +217,7 @@ def gasSteps_product (s : State) (memory : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (FixedDirectStates.product s memory n bsize esize msize count)
-      (Exp.mpCall s memory 2048 1024 1024 (UInt256.ofNat 1571)
+      (Exp.mpCall s memory 2048 1024 1024 (UInt256.ofNat 1438)
         (Exp.outer n bsize esize msize)) :=
   sound FixedDirectPaths.product
     (run_product s memory n bsize esize msize count hcode hrun)

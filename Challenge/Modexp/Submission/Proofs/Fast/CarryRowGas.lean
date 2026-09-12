@@ -361,12 +361,12 @@ private theorem toNat_ne_of_ne {a b : UInt256} (h : a ≠ b) : a.toNat ≠ b.toN
       exact Fin.ext hab
 
 theorem jumpDest4726 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4712 = true :=
-  Artifact.isValidJumpDest_index 3588 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4623 = true :=
+  Artifact.isValidJumpDest_index 3509 (by rfl)
 
 theorem jumpDest4664 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4650 = true :=
-  Artifact.isValidJumpDest_index 3543 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4517 = true :=
+  Artifact.isValidJumpDest_index 3439 (by rfl)
 
 /-! ## R0: the kernel-exit dispatch (pc 4630)
 
@@ -375,18 +375,18 @@ theorem jumpDest4664 :
 falls through the `JUMPI` into the `nx` `JUMPDEST` (4639) and on to the 14 `POP`s. -/
 
 def dispatchProgram : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .push 2 4788, .op .EQ, .push 2 4712, .op .JUMPI]
+  [.op (.Dup ⟨1, by decide⟩), .push 2 4788, .op .EQ, .push 2 4623, .op .JUMPI]
 
 /-- The dispatch block: the `JUMPI` ends it, taken for a square and not taken for a
 multiply (which then continues at the `nx` `JUMPDEST` 4639). -/
-def dispatchBlock : Block Artifact.submissionArtifact .Osaka 4641 dispatchProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3538 5 4641 dispatchProgram
+def dispatchBlock : Block Artifact.submissionArtifact .Osaka 4508 dispatchProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3434 5 4508 dispatchProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The `nx` `JUMPDEST` (reached by the dispatch's fall-through and by `sq_exit`'s last
 square). -/
-def nxJd : Block Artifact.submissionArtifact .Osaka 4650 [.op .JUMPDEST] :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3543 1 4650 [.op .JUMPDEST]
+def nxJd : Block Artifact.submissionArtifact .Osaka 4517 [.op .JUMPDEST] :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3439 1 4517 [.op .JUMPDEST]
     (by decide) (by rfl) (by rfl) (by decide)
 
 set_option linter.unusedSimpArgs false in
@@ -422,7 +422,7 @@ theorem run_dispatchSq (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
   have hcond : UInt256.isTrue ((UInt256.ofNat 4788).eq (UInt256.ofNat 4788)) := by decide
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 4712 = true := by
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 4623 = true := by
     rw [hcode]; exact jumpDest4726
   simp [dispatchProgram, runInstructions,
     Challenge.EvmProof.Stepper.runInstr, CiosCachedTailDefs.exitState,

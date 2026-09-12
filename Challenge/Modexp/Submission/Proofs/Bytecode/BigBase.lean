@@ -35,70 +35,70 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def toClearDoublePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 555 .JUMPDEST, pushAt 556 2 698,
-   opAt 557 (.Dup ⟨2, by decide⟩), pushAt 558 2 3072,
-   pushAt 559 1 14, opAt 560 .JUMP]
+  [opAt 588 .JUMPDEST, pushAt 589 2 744,
+   opAt 590 (.Dup ⟨2, by decide⟩), pushAt 591 2 3072,
+   pushAt 592 1 58, opAt 593 .JUMP]
 
 def startBaseLoopPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 561 .JUMPDEST, pushAt 562 1 1, pushAt 563 2 3072,
-   opAt 564 .MSTORE, pushAt 565 0 0]
+  [opAt 594 .JUMPDEST, pushAt 595 1 1, pushAt 596 2 3072,
+   opAt 597 .MSTORE, pushAt 598 0 0]
 
 def outerGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 566 .JUMPDEST, opAt 567 (.Dup ⟨3, by decide⟩),
-   opAt 568 (.Dup ⟨1, by decide⟩), opAt 569 .LT, opAt 570 .ISZERO,
-   pushAt 571 2 796, opAt 572 .JUMPI]
+  [opAt 599 .JUMPDEST, opAt 600 (.Dup ⟨3, by decide⟩),
+   opAt 601 (.Dup ⟨1, by decide⟩), opAt 602 .LT, opAt 603 .ISZERO,
+   pushAt 604 2 842, opAt 605 .JUMPI]
 
 def outerToInnerPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 573 (.Dup ⟨0, by decide⟩), opAt 574 (.Dup ⟨7, by decide⟩),
-   opAt 575 .ADD, opAt 576 (.Dup ⟨0, by decide⟩),
-   opAt 577 .CALLDATALOAD, pushAt 578 0 0, opAt 579 .BYTE,
-   pushAt 580 0 0]
+  [opAt 606 (.Dup ⟨0, by decide⟩), opAt 607 (.Dup ⟨7, by decide⟩),
+   opAt 608 .ADD, opAt 609 (.Dup ⟨0, by decide⟩),
+   opAt 610 .CALLDATALOAD, pushAt 611 0 0, opAt 612 .BYTE,
+   pushAt 613 0 0]
 
 def innerGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 581 .JUMPDEST, pushAt 582 1 8, opAt 583 (.Dup ⟨1, by decide⟩),
-   opAt 584 .LT, opAt 585 .ISZERO, pushAt 586 2 782,
-   opAt 587 .JUMPI]
+  [opAt 614 .JUMPDEST, pushAt 615 1 8, opAt 616 (.Dup ⟨1, by decide⟩),
+   opAt 617 .LT, opAt 618 .ISZERO, pushAt 619 2 828,
+   opAt 620 .JUMPI]
 
 def innerToDoublePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 588 2 747, opAt 589 (.Dup ⟨6, by decide⟩),
-   pushAt 590 0 0, pushAt 591 1 1, pushAt 592 2 1024,
-   opAt 593 (.Dup ⟨0, by decide⟩), pushAt 594 1 85, opAt 595 .JUMP]
+  [pushAt 621 2 793, opAt 622 (.Dup ⟨6, by decide⟩),
+   pushAt 623 0 0, pushAt 624 1 1, pushAt 625 2 1024,
+   opAt 626 (.Dup ⟨0, by decide⟩), pushAt 627 1 129, opAt 628 .JUMP]
 
 def innerToAddBitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 596 .JUMPDEST, pushAt 597 2 771,
-   opAt 598 (.Dup ⟨6, by decide⟩), pushAt 599 0 0,
-   pushAt 600 1 1, opAt 601 (.Dup ⟨5, by decide⟩),
-   opAt 602 (.Dup ⟨5, by decide⟩), pushAt 603 1 7,
-   opAt 604 .SUB, opAt 605 .SHR, opAt 606 .AND,
-   pushAt 607 2 3072, pushAt 608 2 1024,
-   pushAt 609 1 85, opAt 610 .JUMP]
+  [opAt 629 .JUMPDEST, pushAt 630 2 817,
+   opAt 631 (.Dup ⟨6, by decide⟩), pushAt 632 0 0,
+   pushAt 633 1 1, opAt 634 (.Dup ⟨5, by decide⟩),
+   opAt 635 (.Dup ⟨5, by decide⟩), pushAt 636 1 7,
+   opAt 637 .SUB, opAt 638 .SHR, opAt 639 .AND,
+   pushAt 640 2 3072, pushAt 641 2 1024,
+   pushAt 642 1 129, opAt 643 .JUMP]
 
 def innerAfterBitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 611 .JUMPDEST, pushAt 612 1 1,
-   opAt 613 (.Dup ⟨1, by decide⟩), opAt 614 .ADD,
-   opAt 615 (.Swap ⟨0, by decide⟩), opAt 616 .POP,
-   pushAt 617 2 723, opAt 618 .JUMP]
+  [opAt 644 .JUMPDEST, pushAt 645 1 1,
+   opAt 646 (.Dup ⟨1, by decide⟩), opAt 647 .ADD,
+   opAt 648 (.Swap ⟨0, by decide⟩), opAt 649 .POP,
+   pushAt 650 2 769, opAt 651 .JUMP]
 
 def innerFinishPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 619 .JUMPDEST, opAt 620 .POP, opAt 621 .POP, opAt 622 .POP,
-   pushAt 623 1 1, opAt 624 (.Dup ⟨1, by decide⟩), opAt 625 .ADD,
-   opAt 626 (.Swap ⟨0, by decide⟩), opAt 627 .POP,
-   pushAt 628 2 706, opAt 629 .JUMP]
+  [opAt 652 .JUMPDEST, opAt 653 .POP, opAt 654 .POP, opAt 655 .POP,
+   pushAt 656 1 1, opAt 657 (.Dup ⟨1, by decide⟩), opAt 658 .ADD,
+   opAt 659 (.Swap ⟨0, by decide⟩), opAt 660 .POP,
+   pushAt 661 2 752, opAt 662 .JUMP]
 
 def outerFinishToAccumulatorPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 630 .JUMPDEST, opAt 631 .POP, pushAt 632 2 814,
-   opAt 633 (.Dup ⟨2, by decide⟩), pushAt 634 0 0,
-   pushAt 635 1 1, pushAt 636 2 3072, pushAt 637 2 2048,
-   pushAt 638 1 85, opAt 639 .JUMP]
+  [opAt 663 .JUMPDEST, opAt 664 .POP, pushAt 665 2 860,
+   opAt 666 (.Dup ⟨2, by decide⟩), pushAt 667 0 0,
+   pushAt 668 1 1, pushAt 669 2 3072, pushAt 670 2 2048,
+   pushAt 671 1 129, opAt 672 .JUMP]
 
 def frame (accumulator : UInt256) (count : Nat)
     (rest : List UInt256) : List UInt256 :=
@@ -113,7 +113,7 @@ def baseLoopEntry (s : State) (accumulator : UInt256) (count : Nat)
     (rest : List UInt256) : State :=
   let cleared := afterClearDouble s accumulator count rest
   { cleared with
-    pc := UInt256.ofNat 706
+    pc := UInt256.ofNat 752
     stack := [0, accumulator, UInt256.ofNat count] ++ rest
     memory := MachineState.writeBytes cleared.memory
       (Data.Bytes.natToBytesPadded 1 32) 3072
@@ -183,37 +183,37 @@ def baseProgress (count baseOff : Nat) : Nat → State → State
 
 def outerLoop (s : State) (accumulator : UInt256) (count baseSize : Nat)
     (rest : List UInt256) (i : Nat) : State :=
-  { s with pc := UInt256.ofNat 706
+  { s with pc := UInt256.ofNat 752
            stack := [UInt256.ofNat i, accumulator, UInt256.ofNat count,
              UInt256.ofNat baseSize] ++ rest }
 
 def outerBody (s : State) (accumulator : UInt256) (count baseSize : Nat)
     (rest : List UInt256) (i : Nat) : State :=
   { outerLoop s accumulator count baseSize rest i with
-      pc := UInt256.ofNat 715 }
+      pc := UInt256.ofNat 761 }
 
 def innerLoop (s : State) (accumulator : UInt256) (count baseSize i : Nat)
     (offset byte : UInt256) (rest : List UInt256) (j : Nat) : State :=
   let progress := bitProgress count byte j s
   { progress with
-    pc := UInt256.ofNat 723
+    pc := UInt256.ofNat 769
     stack := [UInt256.ofNat j, byte, offset, UInt256.ofNat i, accumulator,
       UInt256.ofNat count, UInt256.ofNat baseSize] ++ rest }
 
 def innerBody (s : State) (accumulator : UInt256) (count baseSize i : Nat)
     (offset byte : UInt256) (rest : List UInt256) (j : Nat) : State :=
   { innerLoop s accumulator count baseSize i offset byte rest j with
-      pc := UInt256.ofNat 733 }
+      pc := UInt256.ofNat 779 }
 
 def innerExit (s : State) (accumulator : UInt256) (count baseSize i : Nat)
     (offset byte : UInt256) (rest : List UInt256) : State :=
   { innerLoop s accumulator count baseSize i offset byte rest 8 with
-      pc := UInt256.ofNat 782 }
+      pc := UInt256.ofNat 828 }
 
 def outerExit (s : State) (accumulator : UInt256) (count baseSize : Nat)
     (rest : List UInt256) : State :=
   { outerLoop s accumulator count baseSize rest baseSize with
-      pc := UInt256.ofNat 796 }
+      pc := UInt256.ofNat 842 }
 
 def innerFrame (accumulator : UInt256) (count baseSize i j : Nat)
     (offset byte : UInt256) (rest : List UInt256) : List UInt256 :=
@@ -237,56 +237,56 @@ def bitReturned (s : State) (accumulator : UInt256)
     (innerFrame accumulator count baseSize i j offset byte rest)
 
 @[simp] private theorem baseSetupPCs (i : Nat)
-    (hi : 555 ≤ i) (hii : i ≤ 565) :
+    (hi : 588 ≤ i) (hii : i ≤ 598) :
     Artifact.submissionArtifact.instructionPC i =
-      ([687,688,691,692,695,697,698,699,701,704,705] : List Nat)[i - 555]! := by
+      ([733,734,737,738,741,743,744,745,747,750,751] : List Nat)[i - 588]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem baseLoopPCs (i : Nat)
-    (hi : 566 ≤ i) (hii : i ≤ 639) :
+    (hi : 599 ≤ i) (hii : i ≤ 672) :
     Artifact.submissionArtifact.instructionPC i =
-      ([706,707,708,709,710,711,714,715,716,717,718,719,720,721,722,723,724,726,727,728,729,732,733,736,737,738,740,743,744,746,747,748,751,752,753,755,756,757,759,760,761,762,765,768,770,771,772,774,775,776,777,778,781,782,783,784,785,786,788,789,790,791,792,795,796,797,798,801,802,803,805,808,811,813] : List Nat)[i - 566]! := by
+      ([752,753,754,755,756,757,760,761,762,763,764,765,766,767,768,769,770,772,773,774,775,778,779,782,783,784,786,789,790,792,793,794,797,798,799,801,802,803,805,806,807,808,811,814,816,817,818,820,821,822,823,824,827,828,829,830,831,832,834,835,836,837,838,841,842,843,844,847,848,849,851,854,857,859] : List Nat)[i - 599]! := by
   interval_cases i <;> decide
 
 private theorem jump104 :
-    Decode.isValidJumpDest submissionBytecode 85 = true :=
-  Artifact.isValidJumpDest_index 74 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 129 = true :=
+  Artifact.isValidJumpDest_index 107 (by rfl)
 
 private theorem jump831 :
-    Decode.isValidJumpDest submissionBytecode 706 = true :=
-  Artifact.isValidJumpDest_index 566 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 752 = true :=
+  Artifact.isValidJumpDest_index 599 (by rfl)
 
 private theorem jump848 :
-    Decode.isValidJumpDest submissionBytecode 723 = true :=
-  Artifact.isValidJumpDest_index 581 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 769 = true :=
+  Artifact.isValidJumpDest_index 614 (by rfl)
 
 private theorem jump875 :
-    Decode.isValidJumpDest submissionBytecode 747 = true :=
-  Artifact.isValidJumpDest_index 596 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 793 = true :=
+  Artifact.isValidJumpDest_index 629 (by rfl)
 
 private theorem jump900 :
-    Decode.isValidJumpDest submissionBytecode 771 = true :=
-  Artifact.isValidJumpDest_index 611 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 817 = true :=
+  Artifact.isValidJumpDest_index 644 (by rfl)
 
 private theorem jump911 :
-    Decode.isValidJumpDest submissionBytecode 782 = true :=
-  Artifact.isValidJumpDest_index 619 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 828 = true :=
+  Artifact.isValidJumpDest_index 652 (by rfl)
 
 private theorem jump925 :
-    Decode.isValidJumpDest submissionBytecode 796 = true :=
-  Artifact.isValidJumpDest_index 630 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 842 = true :=
+  Artifact.isValidJumpDest_index 663 (by rfl)
 
 private theorem jump944 :
-    Decode.isValidJumpDest submissionBytecode 814 = true :=
-  Artifact.isValidJumpDest_index 640 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 860 = true :=
+  Artifact.isValidJumpDest_index 673 (by rfl)
 
 private theorem jump19 :
-    Decode.isValidJumpDest submissionBytecode 14 = true :=
-  Artifact.isValidJumpDest_index 12 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 58 = true :=
+  Artifact.isValidJumpDest_index 45 (by rfl)
 
 private theorem jump823 :
-    Decode.isValidJumpDest submissionBytecode 698 = true :=
-  Artifact.isValidJumpDest_index 561 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 744 = true :=
+  Artifact.isValidJumpDest_index 594 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_toClearDouble (s : State) (accumulator : UInt256)
@@ -325,8 +325,8 @@ theorem run_startBaseLoop (s : State) (accumulator : UInt256)
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
-  have h823 : (698 : UInt256).toNat = 698 := by decide
-  have h823Word : (698 : UInt256) = UInt256.ofNat 698 := by decide
+  have h823 : (744 : UInt256).toNat = 744 := by decide
+  have h823Word : (744 : UInt256) = UInt256.ofNat 744 := by decide
   have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   have h0Word : (0 : UInt256) = UInt256.ofNat 0 := by decide
   have h1Nat : (1 : UInt256).toNat = 1 := by decide
@@ -485,8 +485,8 @@ theorem run_innerToAddBit (s : State) (accumulator : UInt256)
   have hc14 : rest.length + 14 < 1024 := by omega
   have h104 : (85 : UInt256).toNat = 85 := by decide
   have h104Word : (85 : UInt256) = UInt256.ofNat 85 := by decide
-  have h875 : (747 : UInt256).toNat = 747 := by decide
-  have h875Word : (747 : UInt256) = UInt256.ofNat 747 := by decide
+  have h875 : (793 : UInt256).toNat = 793 := by decide
+  have h875Word : (793 : UInt256) = UInt256.ofNat 793 := by decide
   have hzero : ({ val := 0 } : UInt256) = 0 := by decide
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
   have hseven : (7 : UInt256) = UInt256.ofNat 7 := by decide
@@ -515,10 +515,10 @@ theorem run_innerAfterBit (s : State) (accumulator : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
-  have h848 : (723 : UInt256).toNat = 723 := by decide
-  have h848Word : (723 : UInt256) = UInt256.ofNat 723 := by decide
-  have h900 : (771 : UInt256).toNat = 771 := by decide
-  have h900Word : (771 : UInt256) = UInt256.ofNat 771 := by decide
+  have h848 : (769 : UInt256).toNat = 769 := by decide
+  have h848Word : (769 : UInt256) = UInt256.ofNat 769 := by decide
+  have h900 : (817 : UInt256).toNat = 817 := by decide
+  have h900Word : (817 : UInt256) = UInt256.ofNat 817 := by decide
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
   simp [innerAfterBitPath, opAt, pushAt, wfOp, bitReturned,
     doubledReturned, innerBody, innerLoop, innerFrame, bitProgress,
@@ -542,8 +542,8 @@ theorem run_innerFinishGuard (s : State) (accumulator : UInt256)
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
-  have h911 : (782 : UInt256).toNat = 782 := by decide
-  have h911Word : (782 : UInt256) = UInt256.ofNat 782 := by decide
+  have h911 : (828 : UInt256).toNat = 828 := by decide
+  have h911Word : (828 : UInt256) = UInt256.ofNat 828 := by decide
   have h8Nat : (8 : UInt256).toNat = 8 := by decide
   simp [innerGuardPath, opAt, pushAt, wfOp, innerLoop, innerExit,
     baseLoopPCs, hcode, hrun, jump911, hzeroFalse, h911, h911Word,
@@ -571,10 +571,10 @@ theorem run_innerFinish (s : State) (accumulator : UInt256)
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
-  have h831 : (706 : UInt256).toNat = 706 := by decide
-  have h831Word : (706 : UInt256) = UInt256.ofNat 706 := by decide
-  have h911 : (782 : UInt256).toNat = 782 := by decide
-  have h911Word : (782 : UInt256) = UInt256.ofNat 782 := by decide
+  have h831 : (752 : UInt256).toNat = 752 := by decide
+  have h831Word : (752 : UInt256) = UInt256.ofNat 752 := by decide
+  have h911 : (828 : UInt256).toNat = 828 := by decide
+  have h911Word : (828 : UInt256) = UInt256.ofNat 828 := by decide
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
   simp [innerFinishPath, opAt, pushAt, wfOp, innerExit, innerLoop,
     outerLoop, baseLoopPCs, hcode, hrun, jump831, hinc,
@@ -598,8 +598,8 @@ theorem run_outerFinishGuard (s : State) (accumulator : UInt256)
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
   have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
-  have h925 : (796 : UInt256).toNat = 796 := by decide
-  have h925Word : (796 : UInt256) = UInt256.ofNat 796 := by decide
+  have h925 : (842 : UInt256).toNat = 842 := by decide
+  have h925Word : (842 : UInt256) = UInt256.ofNat 842 := by decide
   simp [outerGuardPath, opAt, pushAt, wfOp, outerLoop, outerExit,
     baseLoopPCs, hcode, hrun, jump925, hzeroFalse, h925, h925Word,
     hc4, hc5, hc6, UInt256.lt, UInt256.isTrue,
@@ -629,9 +629,9 @@ theorem run_outerFinishToAccumulator (s : State) (accumulator : UInt256)
   have hc10 : rest.length + 10 < 1024 := by omega
   have h104 : (85 : UInt256).toNat = 85 := by decide
   have h104Word : (85 : UInt256) = UInt256.ofNat 85 := by decide
-  have h925 : (796 : UInt256).toNat = 796 := by decide
-  have h925Word : (796 : UInt256) = UInt256.ofNat 796 := by decide
-  have h944Word : (814 : UInt256) = UInt256.ofNat 814 := by decide
+  have h925 : (842 : UInt256).toNat = 842 := by decide
+  have h925Word : (842 : UInt256) = UInt256.ofNat 842 := by decide
+  have h944Word : (860 : UInt256) = UInt256.ofNat 860 := by decide
   have hzero : ({ val := 0 } : UInt256) = 0 := by decide
   simp [outerFinishToAccumulatorPath, opAt, pushAt, wfOp, outerExit,
     outerLoop, BigHelpers.addEntry, baseLoopPCs, hcode, hrun, jump104,

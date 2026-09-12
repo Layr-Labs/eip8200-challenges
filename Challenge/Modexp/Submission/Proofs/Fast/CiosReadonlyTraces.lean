@@ -12,13 +12,13 @@ set_option linter.unusedSimpArgs false in
 theorem run_exit (s : State) (pbi paEnd pbEnd flag target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) :
     runInstructions fullExitProgram
-      (framed s (UInt256.ofNat 4651)
+      (framed s (UInt256.ofNat 4518)
         ([pbi,paEnd,pbEnd,flag,negative32,allOnes,target2,inv,m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest)) =
-    some (framed s (UInt256.ofNat 4669) ([dst,ret] ++ rest)) := by
+    some (framed s (UInt256.ofNat 4536) ([dst,ret] ++ rest)) := by
   -- The block's last step is a discard rather than a jump, so the final pc is the PUSH's
   -- `+ 3` followed by one more step.  That is a CLOSED term, and `succ_ofNat_mod` cannot
   -- fire until the sum is normalised, so settle the whole equation directly.
-  have hstep : (UInt256.ofNat 4665 + UInt256.ofNat 3).succ = UInt256.ofNat 4669 := by decide
+  have hstep : (UInt256.ofNat 4532 + UInt256.ofNat 3).succ = UInt256.ofNat 4536 := by decide
   have hc2 : rest.length+2 < 1024 := by omega
   have hc3 : rest.length+3 < 1024 := by omega
   have hc4 : rest.length+4 < 1024 := by omega

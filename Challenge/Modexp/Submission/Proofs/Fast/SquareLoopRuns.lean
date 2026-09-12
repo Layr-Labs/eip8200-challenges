@@ -61,7 +61,7 @@ theorem run_sqExit_more (s : State) (mem : ByteArray) (n c : Nat)
   have htrue : UInt256.isTrue (UInt256.ofNat c) := by
     show (UInt256.ofNat c).toNat ≠ 0
     rw [hcNat]; omega
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 4739 = true := by
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 4650 = true := by
     rw [hcode]; exact jumpDest4753
   have h9280 : (9280 : UInt256).toNat = 9280 := by decide
   simp [sqExitProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
@@ -106,7 +106,7 @@ theorem run_last (s : State) (mem : ByteArray) (n : Nat)
       (UInt256.ofNat 3231) rest) := by
   have hc16' : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 4650 = true := by
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 4517 = true := by
     rw [hcode]; exact CarryRowGas.jumpDest4664
   simp [lastProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     frameAt, frameStack, pcLast, pcNx, hjd, hc16', hc17, List.exchange,
@@ -126,7 +126,7 @@ theorem run_more (s : State) (mem : ByteArray) (n : Nat)
   have hc16' : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 4669 = true := by
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 4536 = true := by
     rw [hcode]; exact jumpDest4683
   have hc19 : rest.length + 19 < 1024 := by omega
   simp [moreProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,

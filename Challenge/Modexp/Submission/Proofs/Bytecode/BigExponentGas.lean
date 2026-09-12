@@ -10,16 +10,16 @@ open EvmSemantics
 open EvmSemantics.EVM
 
 private theorem jump1000 :
-    Decode.isValidJumpDest submissionBytecode 868 = true :=
-  Artifact.isValidJumpDest_index 679 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 914 = true :=
+  Artifact.isValidJumpDest_index 712 (by rfl)
 
 private theorem jump1015 :
-    Decode.isValidJumpDest submissionBytecode 882 = true :=
-  Artifact.isValidJumpDest_index 686 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 928 = true :=
+  Artifact.isValidJumpDest_index 719 (by rfl)
 
 private theorem jump1034 :
-    Decode.isValidJumpDest submissionBytecode 901 = true :=
-  Artifact.isValidJumpDest_index 695 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 947 = true :=
+  Artifact.isValidJumpDest_index 728 (by rfl)
 
 def gasSteps_selectIteration (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j k : Nat) (offset byte : UInt256)

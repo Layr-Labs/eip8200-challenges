@@ -29,7 +29,7 @@ theorem run_copyAdd (s : State) (memory input : ByteArray)
     (n bsize esize msize : Nat) (hn32 : n ≤ 32)
     (hactive : 298 ≤ s.activeWords.toNat)
     (hdata : s.executionEnv.calldata = input)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 3912 = true) :
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 3779 = true) :
     runInstructions copyAddProgram (copyState s memory n bsize esize msize) =
       some (addCallState s memory input n bsize esize msize) := by
   have hsize : (UInt256.ofNat (32 * n)).toNat = 32 * n := by

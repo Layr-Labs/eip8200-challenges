@@ -159,7 +159,7 @@ theorem gasSteps_bitExit_cost (input : ByteArray) (outer : Nat)
     (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
     (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
-    (by exact Artifact.isValidJumpDest_index 464 (by rfl))
+    (by exact Artifact.isValidJumpDest_index 497 (by rfl))
 
 theorem gasSteps_bitCopy0_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
