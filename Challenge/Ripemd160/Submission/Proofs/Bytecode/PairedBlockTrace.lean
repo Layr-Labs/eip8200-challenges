@@ -55,9 +55,9 @@ noncomputable def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     hrun hactive (valid_return q hcode) hcode hfork hnp
   have gall := gp.trans (gb.trans (gc.trans gt))
   apply gall.cast rfl
-  have hm : Table80Tail.resultMemory q.memory final = (resultState s input i).memory :=
+  have hm : Table80Tail.cleanedResultMemory q.memory final = (resultState s input i).memory :=
     Table80FinalBridge.resultMemory_model s input i h hfit hi ctx
-  change {q with pc := ret, stack := rho, memory := Table80Tail.resultMemory q.memory final} = _
+  change {q with pc := ret, stack := rho, memory := Table80Tail.cleanedResultMemory q.memory final} = _
   rw [hm]
   rfl
 

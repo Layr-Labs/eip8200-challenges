@@ -26,20 +26,20 @@ theorem prefix_pc : prefixSite.startPC = UInt256.ofNat 4610 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3926) = UInt256.ofNat 4610
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
-theorem prefix_endPC : prefixSite.endPC = UInt256.ofNat 4710 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 4001) = UInt256.ofNat 4710
+theorem prefix_endPC : prefixSite.endPC = UInt256.ofNat 4707 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3998) = UInt256.ofNat 4707
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def jumpSite : LocatedSite Artifact.submissionArtifact .Osaka where
   located := {
-    index := 4001
+    index := 3998
     instruction := .op .JUMP
     atIndex := by rfl
     wellFormed := StackRoundData.templateWellFormed_mem
       (instructions := [.op .JUMP]) (by decide) _ (by simp) }
-  pc := UInt256.ofNat 4710
+  pc := UInt256.ofNat 4707
   pc_eq := by
-    change (UInt256.ofNat 4710).toNat = Artifact.submissionArtifact.instructionPC 4001
+    change (UInt256.ofNat 4707).toNat = Artifact.submissionArtifact.instructionPC 3998
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def site : TailSite Artifact.submissionArtifact .Osaka where
@@ -56,10 +56,10 @@ def gasSteps (s : State) (ret : UInt256) (q : WordLane)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 4610, stack := entryStack q ret rho}
-      {s with pc := ret, stack := rho, memory := resultMemory s.memory q} := by
+      {s with pc := ret, stack := rho, memory := cleanedResultMemory s.memory q} := by
   have g := gasSteps_tail site s ret q rho hstack hrun hactive hvalid hcode hfork hnp
   change GasSteps {s with pc := prefixSite.startPC, stack := entryStack q ret rho}
-    {s with pc := ret, stack := rho, memory := resultMemory s.memory q} at g
+    {s with pc := ret, stack := rho, memory := cleanedResultMemory s.memory q} at g
   simpa only [prefix_pc] using g
 
 #print axioms prefix_slice

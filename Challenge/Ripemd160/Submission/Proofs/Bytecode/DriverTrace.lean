@@ -46,7 +46,7 @@ def postCheckPath : List Located :=
    ⟨315, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨316, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨317, .op .EQ, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨318, .push ⟨2, by decide⟩ (UInt256.ofNat 4711), by rfl, by decide⟩,
+   ⟨318, .push ⟨2, by decide⟩ (UInt256.ofNat 4708), by rfl, by decide⟩,
    ⟨319, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 /-- The one-time empty-input test at the driver entry (pc 364): nonempty
@@ -123,7 +123,7 @@ def afterIteration (s : State) (input : ByteArray) (i : Nat) : State :=
 
 def afterExit (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 4711
+    pc := UInt256.ofNat 4708
     stack := [blockOffsetWord (blockCount input), Padding.paddedWord input] }
 
 def iterationEnd (s : State) (input : ByteArray) (i : Nat) : State :=
@@ -305,8 +305,8 @@ theorem run_postCheck_exit (s : State) (input : ByteArray)
   have heq := offset_eq_total input hfit
   have htrue : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have honeNat : UInt256.toNat (1 : UInt256) = 1 := by decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 4711 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 4002 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 4708 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 3999 (by rfl)
   simp [postCheckPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     compressReturned, afterExit, hrun, hcode, hadd, hlast, heq,

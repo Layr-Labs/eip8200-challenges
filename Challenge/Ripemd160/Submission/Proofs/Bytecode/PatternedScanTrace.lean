@@ -107,7 +107,7 @@ def answerMemory : ByteArray := storeWord ByteArray.empty 0 paddedDigestWord
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4865
+    pc := UInt256.ofNat 4862
     stack := hitRest
     memory := answerMemory
     activeWords := UInt256.ofNat 1
