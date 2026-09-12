@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80Cleanup
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80RawCommon
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Paired80FinalWord
 import Challenge.EvmProof.Memory
@@ -31,7 +32,10 @@ def resultMemory (memory : ByteArray) (q : WordLane) : ByteArray :=
     960 (result4 memory q)) 928 (result3 memory q)) 896 (result2 memory q))
     864 (result1 memory q)) 832 (result0 memory q)
 
-/-- Exact raw byte interval4603..4704; JUMP is at4703. -/
+def cleanedResultMemory (memory : ByteArray) (q : WordLane) : ByteArray :=
+  Table80Cleanup.memory (resultMemory memory q)
+
+/-- Exact raw byte interval4603..4701; JUMP is at4703. -/
 def template : List Instr :=
   [ .op (.Dup ⟨2, by decide⟩),
     .op (.Dup ⟨1, by decide⟩),
@@ -102,19 +106,16 @@ def template : List Instr :=
     .op .POP,
     .op .POP,
     .op .POP,
-    .op .POP,
-    .op .POP,
-    .op .POP,
-    .op .POP,
-    .op .POP,
-    .op .POP,
+    .op .MSTORE,
+    .op .MSTORE,
+    .op .MSTORE,
     .op .JUMP ]
 
 def prefixTemplate : List Instr := template.dropLast
 
-theorem template_length : template.length = 76 := by decide
-theorem template_bytes : (template.map Instr.size).sum = 101 := by decide
-theorem prefix_bytes : (prefixTemplate.map Instr.size).sum = 100 := by decide
+theorem template_length : template.length = 73 := by decide
+theorem template_bytes : (template.map Instr.size).sum = 98 := by decide
+theorem prefix_bytes : (prefixTemplate.map Instr.size).sum = 97 := by decide
 
 theorem run_prefix (s : State) (pc ret : UInt256) (q : WordLane)
     (rho : List UInt256) (hstack : rho.length ≤ 996)
@@ -123,13 +124,14 @@ theorem run_prefix (s : State) (pc ret : UInt256) (q : WordLane)
       some {s with
         pc := pcAfter pc prefixTemplate
         stack := ret :: rho
-        memory := resultMemory s.memory q} := by
+        memory := cleanedResultMemory s.memory q} := by
   have hcap (n : Nat) (hn : n ≤ 27) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 1056) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := Table80Raw.active_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [template, prefixTemplate, entryStack, Table80Raw.cache, combineWord,
-    result0, result1, result2, result3, result4, resultMemory, writeWord,
+    result0, result1, result2, result3, result4, cleanedResultMemory, resultMemory, writeWord,
+    Table80Cleanup.memory, Table80Cleanup.write,
     runInstrSeq, Stepper.runInstr, UInt256.succ, pcAfter, Instr.size,
     hrun, hcap, Nat.add_assoc, List.getElem?_cons_zero,
     State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
@@ -140,13 +142,14 @@ theorem run_template (s : State) (pc ret : UInt256) (q : WordLane)
     (hrun : s.halt = .Running) (hactive : 34 ≤ s.activeWords.toNat)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     runInstrSeq template {s with pc := pc, stack := entryStack q ret rho} =
-      some {s with pc := ret, stack := rho, memory := resultMemory s.memory q} := by
+      some {s with pc := ret, stack := rho, memory := cleanedResultMemory s.memory q} := by
   have hcap (n : Nat) (hn : n ≤ 27) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 1056) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := Table80Raw.active_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [template, entryStack, Table80Raw.cache, combineWord,
-    result0, result1, result2, result3, result4, resultMemory, writeWord,
+    result0, result1, result2, result3, result4, cleanedResultMemory, resultMemory, writeWord,
+    Table80Cleanup.memory, Table80Cleanup.write,
     runInstrSeq, Stepper.runInstr, UInt256.succ, Instr.size,
     hrun, hcap, Nat.add_assoc, List.getElem?_cons_zero,
     State.activeWordsAfterUInt256, hactiveAt, hvalid, Word.word_toNat_ofNat, Word.literal_eq_ofNat]

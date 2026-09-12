@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80Cleanup
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80TerminalTail
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80FinalBridgeMemory
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Paired80FinalWord
@@ -39,12 +40,15 @@ theorem writeWord_comm (memory : ByteArray) (a b : Nat) (va vb : UInt256)
   Table80FinalBridge.writeWord_comm memory a b va vb hab
 
 
-def resultMemory (memory : ByteArray) (q : WordLane) : ByteArray :=
+def storedMemory (memory : ByteArray) (q : WordLane) : ByteArray :=
   writeWord (writeWord (writeWord (writeWord (writeWord memory
     864 (result1 memory q)) 896 (result2 memory q)) 928 (result3 memory q))
     960 (result4 memory q)) 832 (result0 memory q)
 
-/-- Last-use consumed tail, exact103 bytes. -/
+def resultMemory (memory : ByteArray) (q : WordLane) : ByteArray :=
+  Table80Cleanup.memory (storedMemory memory q)
+
+/-- Last-use consumed tail, exact100 bytes. -/
 def template : List Instr :=
   [ .op (.Dup ⟨2, by decide⟩),
     .op (.Dup ⟨1, by decide⟩),
@@ -116,19 +120,16 @@ def template : List Instr :=
     .op .POP,
     .op .POP,
     .op .POP,
-    .op .POP,
-    .op .POP,
-    .op .POP,
-    .op .POP,
-    .op .POP,
-    .op .POP,
+    .op .MSTORE,
+    .op .MSTORE,
+    .op .MSTORE,
     .op .JUMP ]
 
 def prefixTemplate : List Instr := template.dropLast
 
-theorem template_length : template.length = 77 := by decide
-theorem template_bytes : (template.map Instr.size).sum = 103 := by decide
-theorem prefix_bytes : (prefixTemplate.map Instr.size).sum = 102 := by decide
+theorem template_length : template.length = 74 := by decide
+theorem template_bytes : (template.map Instr.size).sum = 100 := by decide
+theorem prefix_bytes : (prefixTemplate.map Instr.size).sum = 99 := by decide
 
 private def chunk0 : List Instr :=
   [.op (.Dup ⟨2, by decide⟩),
@@ -211,12 +212,9 @@ private def chunk5 : List Instr :=
    .op .POP,
    .op .POP,
    .op .POP,
-   .op .POP,
-   .op .POP,
-   .op .POP,
-   .op .POP,
-   .op .POP,
-   .op .POP]
+   .op .MSTORE,
+   .op .MSTORE,
+   .op .MSTORE]
 
 private def stack1 (q : WordLane) (factor ret r0 : UInt256) (rho : List UInt256) : List UInt256 :=
   [r0, q.d, q.b, q.c, q.a, q.e, factor, pairWord, upperWord, lowerWord] ++ (Table80Raw.cache ++ ret :: rho)
@@ -343,12 +341,12 @@ private theorem run_chunk5 (s : State) (pc ret : UInt256) (q : WordLane) (factor
     runInstrSeq chunk5 {s with pc := pc, stack := stack5 q factor ret r0 rho} =
       some {s with
         pc := pcAfter pc chunk5
-        stack := stack6 q factor ret r0 rho} := by
+        stack := stack6 q factor ret r0 rho, memory := Table80Cleanup.memory s.memory} := by
   have hcap (n : Nat) (hn : n ≤ 27) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 1056) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := Table80Raw.active_preserved s.activeWords address hactive haddress
-  simp (discharger := omega) [chunk5, stack6, stack5, Table80Raw.cache,
+  simp (discharger := omega) [chunk5, stack6, stack5, Table80Raw.cache, Table80Cleanup.memory, Table80Cleanup.write,
     combineWord, result0, result1, result2, result3, result4, writeWord,
     runInstrSeq, Stepper.runInstr, UInt256.succ, pcAfter, Instr.size,
     hrun, hcap, Nat.add_assoc, List.getElem?_cons_zero, List.exchange,
@@ -445,7 +443,7 @@ theorem run_prefix (s : State) (pc ret : UInt256) (q : WordLane) (factor : UInt2
   let s2 : State := {s with pc := pcAfter s1.pc chunk1, stack := stack2 q factor ret r0 rho, memory := memory1 s.memory q}
   let s3 : State := {s with pc := pcAfter s2.pc chunk2, stack := stack3 q factor ret r0 rho, memory := memory2 s.memory q}
   let s4 : State := {s with pc := pcAfter s3.pc chunk3, stack := stack4 q factor ret r0 rho, memory := memory3 s.memory q}
-  let s5 : State := {s with pc := pcAfter s4.pc chunk4, stack := stack5 q factor ret r0 rho, memory := resultMemory s.memory q}
+  let s5 : State := {s with pc := pcAfter s4.pc chunk4, stack := stack5 q factor ret r0 rho, memory := storedMemory s.memory q}
   have h0 : runInstrSeq chunk0 {s with pc := pc, stack := entryStack factor q ret rho} = some s1 :=
     run_chunk0 s pc ret q factor r0 rho hstack hrun hactive
   have h1 : runInstrSeq chunk1 s1 = some s2 :=
@@ -475,7 +473,7 @@ theorem run_prefix (s : State) (pc ret : UInt256) (q : WordLane) (factor : UInt2
   have h01234 := runInstrSeq_append_running h0123 hrun h4
   have h012345 := runInstrSeq_append_running h01234 hrun h5
   rw [prefix_split]
-  simpa only [pcAfter_append, s1, s2, s3, s4, s5, stack6] using h012345
+  simpa only [pcAfter_append, s1, s2, s3, s4, s5, stack6, resultMemory] using h012345
 
 theorem run_template (s : State) (pc ret : UInt256) (q : WordLane) (factor : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 996)
@@ -541,9 +539,9 @@ theorem result4_eq (memory : ByteArray) (q : WordLane) :
   rw [UInt32.add_comm (low32 q.a)]
 
 /-- Entire output memory, with no normalization or bounds premise on q. -/
-theorem resultMemory_eq (memory : ByteArray) (q : WordLane) :
-    resultMemory memory q = Table80Tail.resultMemory memory (normalLane q) := by
-  unfold resultMemory
+theorem storedMemory_eq (memory : ByteArray) (q : WordLane) :
+    storedMemory memory q = Table80Tail.resultMemory memory (normalLane q) := by
+  unfold storedMemory
   rw [writeWord_comm _ 864 896 _ _ (Or.inl (by decide)),
     writeWord_comm _ 864 928 _ _ (Or.inl (by decide)),
     writeWord_comm _ 864 960 _ _ (Or.inl (by decide)),
@@ -552,6 +550,10 @@ theorem resultMemory_eq (memory : ByteArray) (q : WordLane) :
     writeWord_comm _ 928 960 _ _ (Or.inl (by decide))]
   simp only [Table80Tail.resultMemory, result3_eq, result4_eq]
   rfl
+
+theorem resultMemory_eq (memory : ByteArray) (q : WordLane) :
+    resultMemory memory q = Table80Tail.cleanedResultMemory memory (normalLane q) := by
+  exact congrArg Table80Cleanup.memory (storedMemory_eq memory q)
 
 #print axioms resultMemory_eq
 
