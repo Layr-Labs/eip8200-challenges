@@ -12,7 +12,7 @@ open PatternedScan PatternedSwar
 
 @[simp] private theorem branchPC0 : Artifact.submissionArtifact.instructionPC 164 = 258 := rfl
 @[simp] private theorem branchPC1 : Artifact.submissionArtifact.instructionPC 165 = 259 := rfl
-@[simp] private theorem branchPC2 : Artifact.submissionArtifact.instructionPC 166 = 260 := rfl
+@[simp] private theorem branchPC2 : Artifact.submissionArtifact.instructionPC 166 = 262 := rfl
 @[simp] private theorem cleanupDupPC : Artifact.submissionArtifact.instructionPC 170 = 268 := rfl
 @[simp] private theorem cleanupDest : Decode.isValidJumpDest submissionBytecode 267 = true :=
   Artifact.submissionArtifact.isValidJumpDest_index 169 (by rfl)
@@ -30,30 +30,20 @@ open PatternedScan PatternedSwar
 @[simp] private theorem e4PC172 : Artifact.submissionArtifact.instructionPC 177 = 275 := rfl
 @[simp] private theorem e4PC173 : Artifact.submissionArtifact.instructionPC 178 = 276 := rfl
 
-@[simp] private theorem branchJumpPC : Artifact.submissionArtifact.instructionPC 167 = 265 := rfl
-@[simp] private theorem cleanupEntryPC : Artifact.submissionArtifact.instructionPC 168 = 266 := rfl
-@[simp] private theorem selectorDest : Decode.isValidJumpDest submissionBytecode 4835 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 4065 (by rfl)
-
 def branchPath : List Located :=
-  [opAt 164 (.Dup ⟨2, by decide⟩), opAt 165 .ISZERO,
-   pushAt 166 4 4835, opAt 167 .JUMPI]
+  [opAt 164 (.Dup ⟨2, by decide⟩), pushAt 165 2 267, opAt 166 .JUMPI]
 
 def cleanupPath : List Located :=
-  [opAt 168 .JUMPDEST, opAt 169 .JUMPDEST, opAt 170 .POP, opAt 171 .POP, opAt 172 .POP,
+  [opAt 169 .JUMPDEST, opAt 170 .POP, opAt 171 .POP, opAt 172 .POP,
    opAt 173 .POP, opAt 174 .POP, opAt 175 .POP, opAt 176 .POP, opAt 177 .POP]
 
 theorem run_branch (input : ByteArray) (sv ov acc : UInt256) :
     run branchPath (stS input 258 [sv, ov, acc, P7, M, m7, P, m8]) =
-      some (stS input (if UInt256.isTrue acc then 266 else 4835)
+      some (stS input (if UInt256.isTrue acc then 267 else 263)
         [sv, ov, acc, P7, M, m7, P, m8]) := by
-  have ht : acc.isTrue ↔ acc.toNat ≠ 0 := Iff.rfl
-  have hz : (UInt256.isZero acc).isTrue ↔ acc.toNat = 0 := by
-    by_cases h : acc.toNat = 0 <;>
-      simp [UInt256.isZero, UInt256.isTrue, h, Word.word_toNat_ofNat]
-  by_cases hc : acc.toNat = 0 <;>
+  by_cases hc : UInt256.isTrue acc <;>
     simp (config := { maxSteps := 400000 })
-      [branchPath, opAt, pushAt, stS, atPC, hc, ht, hz,
+      [branchPath, opAt, pushAt, stS, atPC, hc,
        Challenge.Ripemd160.initialState_stack,
        Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
        Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod,
@@ -61,7 +51,7 @@ theorem run_branch (input : ByteArray) (sv ov acc : UInt256) :
 
 theorem run_cleanup (input : ByteArray) (sv ov acc : UInt256)
     (_hc : UInt256.isTrue acc) :
-    run cleanupPath (stS input 266 [sv, ov, acc, P7, M, m7, P, m8]) =
+    run cleanupPath (stS input 267 [sv, ov, acc, P7, M, m7, P, m8]) =
       some (fallbackState input) := by
   simp (config := { maxSteps := 400000 })
     [cleanupPath, opAt, pushAt, stS, fallbackState, atPC, List.exchange,
@@ -88,7 +78,7 @@ def gasSteps_miss (input : ByteArray) (sv ov acc : UInt256) (hne : acc ≠ 0) :
 
 def gasSteps_hit (input : ByteArray) (sv ov : UInt256) :
     GasSteps (stS input 258 [sv, ov, 0, P7, M, m7, P, m8])
-      (stS input 4835 [sv, ov, 0, P7, M, m7, P, m8]) := by
+      (stS input 263 [sv, ov, 0, P7, M, m7, P, m8]) := by
   have h := run_branch input sv ov 0
   rw [if_neg (by decide)] at h
   exact Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka branchPath
