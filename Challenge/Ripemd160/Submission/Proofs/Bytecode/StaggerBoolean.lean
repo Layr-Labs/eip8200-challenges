@@ -1,12 +1,16 @@
 import Mathlib.Tactic.IntervalCases
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Paired80GroupTwoHoist
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Paired80WordRound
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Paired144Boolean
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedLaneGroupTwoHoist
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Paired144WordRound
 set_option warningAsError true
 set_option linter.unusedVariables false
 set_option linter.unusedSimpArgs false
 set_option maxHeartbeats 4000000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerBoolean
-open Paired80Core Paired80Boolean Paired80GroupTwoHoist
+open Paired144Core Paired144Boolean PairedLaneGroupTwoHoist
+theorem pack_supported (a b : BitVec 32) : Supported pairMask (pack a b) := by
+  simp only [Supported, pairMask, pack_and, BitVec.and_allOnes]
+
 def raw (mode : Nat) (mask selector b c d : BitVec w) : BitVec w :=
   match mode with
   | 0 => (((b ^^^ c) ^^^ selector) ^^^ (d ||| (c &&& selector)))

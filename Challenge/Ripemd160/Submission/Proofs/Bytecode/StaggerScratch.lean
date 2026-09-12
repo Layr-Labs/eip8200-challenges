@@ -84,7 +84,7 @@ theorem erase_scratch (memory : ByteArray) (words : Nat → UInt256)
     omega
   · intro address hA hB
     rw [← Memory.getD0_eq_getElem _ _ hA, ← Memory.getD0_eq_getElem _ _ hB]
-    by_cases hin : address < 632
+    by_cases hin : address < 1112
     · exact getD_storeDescending_inside _ _ _ _ _ _ (by omega) (by omega) (by simpa using hin)
     · rw [getD_table_outside _ _ _ (by omega), getD_table_outside _ _ _ (by omega)]
       simp only [scratchMemory, writeWord, MachineState.writeBytes_getElem?_getD,

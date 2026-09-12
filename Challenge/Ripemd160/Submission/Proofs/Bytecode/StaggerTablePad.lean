@@ -47,7 +47,7 @@ theorem resultMemory_eq_table (memory : ByteArray) (n : UInt256) :
       if_neg (show slots[j]! ≠ 15 by omega)]
 
 theorem readPadded_end (input : ByteArray) :
-    MachineState.readPadded input input.size 632 = StaggerTableSparse.zeroBytes := by
+    MachineState.readPadded input input.size 1112 = StaggerTableSparse.zeroBytes := by
   simp [MachineState.readPadded, StaggerTableSparse.zeroBytes]
 
 #print axioms padWords_bound

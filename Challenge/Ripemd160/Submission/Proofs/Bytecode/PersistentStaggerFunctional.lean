@@ -1,9 +1,11 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCoreCorrect
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerFinalMemory
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedCompressionBridge
 set_option warningAsError true
 set_option maxRecDepth 20000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PersistentStaggerFunctional
-open EvmSemantics Paired80WordRound Paired80Compression StaggerCoreModel
+open EvmSemantics Paired144WordRound StaggerCoreModel
+open Paired80Compression (unpackLeft)
+open StaggerFinalMemory (unpackRight unpackRight_packCrypto)
 open StaggerRepresentation Paired80Algorithm
 
 def initial (h : Compression.HashState) : WordLane :=

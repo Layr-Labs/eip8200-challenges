@@ -97,7 +97,7 @@ theorem states_active_ge34 (input : ByteArray) (hfit : CalldataFits input)
   unfold Padding.messageOffset at ha
   omega
 
-theorem states_word_above (input : ByteArray) (n address : Nat) (ha : 1024 ≤ address) :
+theorem states_word_above (input : ByteArray) (n address : Nat) (ha : 1152 ≤ address) :
     MachineState.readWord (states input n).memory address =
       MachineState.readWord (PaddingTrace.padReturned input).memory address := by
   induction n with

@@ -24,8 +24,8 @@ def resultMemory (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
 
 theorem read_round (memory : ByteArray) (words : Nat → UInt256)
     (r : Nat) (hr : r < 77) (hwords : ∀ i, i < 16 → (words i).toNat < 2 ^ 32) :
-    (MachineState.readWord (resultMemory memory words) (10 * pairIndices[r]!)).toNat % 2 ^ 112 =
-      (words Crypto.Ripemd160.r[r]!).toNat + (words Crypto.Ripemd160.rP[r + 3]!).toNat * 2 ^ 80 := by
+    (MachineState.readWord (resultMemory memory words) (18 * pairIndices[r]!)).toNat =
+      (words Crypto.Ripemd160.r[r]!).toNat + (words Crypto.Ripemd160.rP[r + 3]!).toNat * 2 ^ 144 := by
   obtain ⟨hpos, hlt, hleft, hright⟩ := layout_valid ⟨r, hr⟩
   change 1 ≤ pairIndices[r]! at hpos
   change pairIndices[r]! < 61 at hlt
@@ -35,18 +35,18 @@ theorem read_round (memory : ByteArray) (words : Nat → UInt256)
   simpa only [resultMemory, tableWords, hleft, hright] using h
 
 theorem resultMemory_size (memory : ByteArray) (words : Nat → UInt256) :
-    (resultMemory memory words).size = max memory.size 632 := by
+    (resultMemory memory words).size = max memory.size 1112 := by
   exact storeDescending_size _ _ _ _ (by decide)
 
 theorem read_resultMemory_outside (memory : ByteArray) (words : Nat → UInt256)
-    (address : Nat) (ha : 632 ≤ address) :
+    (address : Nat) (ha : 1112 ≤ address) :
     MachineState.readWord (resultMemory memory words) address = MachineState.readWord memory address :=
   read_table_outside _ _ _ ha
 
 
 theorem read_slot_low (memory : ByteArray) (words : Nat → UInt256)
     (j : Nat) (hj : j < 61) (hwords : ∀ i, i < 16 → (words i).toNat < 2 ^ 32) :
-    (MachineState.readWord (resultMemory memory words) (10 * j)).toNat % 2 ^ 32 =
+    (MachineState.readWord (resultMemory memory words) (18 * j)).toNat % 2 ^ 32 =
       (words slots[j]!).toNat := by
   by_cases hz : j = 0
   · subst j
@@ -57,9 +57,8 @@ theorem read_slot_low (memory : ByteArray) (words : Nat → UInt256)
   · have h := read_pair memory (tableWords words) 0 61 j (by omega) (by omega)
       (hwords _ (slots_lt _ hj)) (hwords _ (slots_lt _ (by omega)))
     have hm := congrArg (fun n : Nat => n % 2 ^ 32) h
-    rw [Nat.mod_mod_of_dvd _ (by norm_num : (2:Nat)^32 ∣ 2^112)] at hm
     simpa only [resultMemory, tableWords, Nat.add_mod, Nat.mul_mod,
-      show (2:Nat)^80 % 2^32 = 0 by norm_num, Nat.mul_zero, Nat.add_zero,
+      show (2:Nat)^144 % 2^32 = 0 by norm_num, Nat.mul_zero, Nat.add_zero,
       Nat.zero_mod, Nat.mod_eq_of_lt (hwords _ (slots_lt _ hj))] using hm
 
 #print axioms layout_valid

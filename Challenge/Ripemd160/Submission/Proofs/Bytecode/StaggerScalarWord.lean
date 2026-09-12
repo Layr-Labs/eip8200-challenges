@@ -4,8 +4,11 @@ set_option warningAsError true
 set_option maxRecDepth 10000
 set_option linter.unusedSimpArgs false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerScalarWord
-open EvmSemantics PairedLaneUInt256Bridge Paired80Core Paired80WordRound
-open Paired80WordBoolean Paired80WordRotate Paired80Compression
+open EvmSemantics PairedLaneUInt256Bridge Paired144Core
+open Paired80WordRound (WordLane bitLane liftLane bitLane_liftLane bitLane_injective)
+open Paired144WordRound (packCrypto lowerWord wordShift)
+open Paired80Compression (low32 unpackLeft)
+open StaggerScalarWide (bits_wordShift)
 open Paired80CryptoBridge (CryptoLane)
 
 def rawF (j : Nat) (b c d : UInt256) : UInt256 :=
@@ -29,15 +32,15 @@ def sum (j : Nat) (a b c d message k : UInt256) : UInt256 :=
   mask (UInt256.add (UInt256.add (UInt256.add a (rawF j b c d)) message) k)
 
 def t (maskB : Bool) (j r : Nat) (message k : UInt256) (q : WordLane) : UInt256 :=
-  let raw := UInt256.add (wordShift (sum j q.a q.b q.c q.d message k) (32 - r)) q.e
+  let raw := UInt256.add (wordShift (sum j q.a q.b q.c q.d message k) (38 - r)) q.e
   if maskB then mask raw else raw
 
 def step (maskB maskD : Bool) (j r : Nat) (message k : UInt256) (q : WordLane) : WordLane :=
   ⟨q.e, t maskB j r message k q, q.b,
-    if maskD then mask (wordShift q.c 22) else wordShift q.c 22, q.d⟩
+    if maskD then mask (wordShift q.c 28) else wordShift q.c 28, q.d⟩
 
 theorem bits_mask (x : UInt256) : bits (mask x) = StaggerScalar.mask (bits x) := by
-  simp only [mask, StaggerScalar.mask, bits_land, lowerWord, bits_word]
+  simp only [mask, StaggerScalar.mask, bits_land, Paired144WordRound.lowerWord, bits_word]
 
 theorem bits_sum (j : Nat) (a b c d message k : UInt256) :
     bits (sum j a b c d message k) =
@@ -49,7 +52,7 @@ theorem bits_t (maskB : Bool) (j r : Nat) (message k : UInt256) (q : WordLane) :
       StaggerScalar.t maskB j r (bits message) (bits k) (bitLane q) := by
   cases maskB <;>
     simp only [t, StaggerScalar.t, Bool.false_eq_true, ite_true, ite_false,
-      bits_mask, bits_add, bits_wordShift _ (32-r) (Nat.lt_of_le_of_lt (Nat.sub_le 32 r) (by decide)), bits_sum, bitLane]
+      bits_mask, bits_add, bits_wordShift _ (38-r) (Nat.lt_of_le_of_lt (Nat.sub_le 38 r) (by decide)), bits_sum, bitLane]
 
 
 def embed (q : CryptoLane) : WordLane := packCrypto q ⟨0,0,0,0,0⟩
@@ -80,14 +83,14 @@ theorem low_t_bits (maskB : Bool) (j r : Nat) (hr0 : 0 < r) (hr : r < 17)
 #print axioms low_t_bits
 
 theorem low_c_rotate (c : UInt256) (hc : mask c = c) :
-    low (bits (wordShift c 22)) = (low (bits c)).rotateLeft 10 := by
+    low (bits (wordShift c 28)) = (low (bits c)).rotateLeft 10 := by
   have hqc : bits c = pack (low (bits c)) 0#32 := by
     have h := congrArg bits hc
     rw [bits_mask, StaggerScalar.mask_eq] at h
     exact h.symm
-  rw [bits_wordShift _ 22 (by decide)]
+  rw [bits_wordShift _ 28 (by decide)]
   conv_lhs => rw [hqc]
-  exact Paired80Rotate.low_rotate_product _ _ 10 (by decide) (by decide)
+  exact StaggerScalarWide.low_rotate (low (bits c)) 0#32 10 (by decide) (by decide)
 #print axioms low_c_rotate
 
 theorem low_optional_mask (flag : Bool) (x : UInt256) :
@@ -102,7 +105,7 @@ theorem project_step (maskB maskD : Bool) (j r : Nat) (hr0 : 0 < r) (hr : r < 17
     unpackLeft (step maskB maskD j r message k q) =
       Paired80CryptoBridge.cryptoStep j r (low32 message) (low32 k) (unpackLeft q) := by
   have ht := low_t_bits maskB j r hr0 hr message k q
-  have hd := (low_optional_mask maskD (wordShift q.c 22)).trans (low_c_rotate q.c hc)
+  have hd := (low_optional_mask maskD (wordShift q.c 28)).trans (low_c_rotate q.c hc)
   apply crypto_bits_inj
   rw [Paired80CryptoBridge.cryptoStep_bits j r hr0 hr]
   exact congrArg₂ (fun b d : BitVec 32 =>
@@ -137,10 +140,19 @@ theorem clean_eq_embed (q : WordLane) (hq : Clean q) : q = embed (unpackLeft q) 
   rw [StaggerScalar.mask_eq] at ha hb hc hd he
   cases q
   simp only [bitLane] at ha hb hc hd he
-  simp only [embed, unpackLeft, packCrypto, bitLane_liftLane, Paired80RoundSemantic.packLane,
-    Paired80CryptoBridge.bits, PairedLaneCryptoBridge.bits]
-  simp only [bitLane]
+  simp only [embed, unpackLeft, Paired144WordRound.packCrypto, bitLane, bits_word]
   congr 1 <;> first | exact ha.symm | exact hb.symm | exact hc.symm | exact hd.symm | exact he.symm
+
+theorem low32_packWord (a b : UInt32) : low32 (word (pack a.toBitVec b.toBitVec)) = a := by
+  apply UInt32.eq_of_toBitVec_eq
+  change low (bits (word (pack a.toBitVec b.toBitVec))) = a.toBitVec
+  rw [bits_word, low_pack]
+
+theorem unpackLeft_packCrypto (l r : CryptoLane) : unpackLeft (packCrypto l r) = l := by
+  cases l; cases r
+  simp only [unpackLeft, Paired144WordRound.packCrypto, low32_packWord]
+
+#print axioms unpackLeft_packCrypto
 
 #print axioms project_step
 #print axioms clean_eq_embed

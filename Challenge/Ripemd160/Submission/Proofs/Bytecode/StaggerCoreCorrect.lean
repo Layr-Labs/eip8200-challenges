@@ -5,18 +5,20 @@ set_option warningAsError true
 set_option maxRecDepth 10000
 set_option linter.unusedSimpArgs false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCoreCorrect
-open EvmSemantics EvmSemantics.EVM Paired80WordRound Paired80Compression
+open EvmSemantics EvmSemantics.EVM
+open Paired144WordRound (packCrypto)
+open Paired80Compression (low32 unpackLeft)
 open Paired80CryptoBridge (CryptoLane cryptoStep)
 open Paired80Algorithm (leftFold rightFold)
 open StaggerCoreModel StaggerRepresentation
-open StaggerScalarWord (embed)
+open StaggerScalarWord (embed unpackLeft_packCrypto)
 
 theorem prologue_crypto (memory : ByteArray) (words : Nat → UInt32) (q : CryptoLane)
     (hm : StaggerMessage.Ready memory words) :
     prologue memory (embed q) = embed (rightFold words 3 q) := by
-  have hm0 : low32 (MachineState.readWord memory 50) = words 5 := hm.scalar 5 (by decide)
-  have hm1 : low32 (MachineState.readWord memory 310) = words 14 := hm.scalar 31 (by decide)
-  have hm2 : low32 (MachineState.readWord memory 350) = words 7 := hm.scalar 35 (by decide)
+  have hm0 : low32 (MachineState.readWord memory 90) = words 5 := hm.scalar 5 (by decide)
+  have hm1 : low32 (MachineState.readWord memory 558) = words 14 := hm.scalar 31 (by decide)
+  have hm2 : low32 (MachineState.readWord memory 630) = words 7 := hm.scalar 35 (by decide)
   unfold prologue right0 right1 right2
   rw [clean_step_of_crypto 4 8 (by decide) (by decide),
     clean_step_of_crypto 4 9 (by decide) (by decide),
@@ -41,8 +43,8 @@ theorem epilogue_crypto (memory : ByteArray) (words : Nat → UInt32) (l r : Cry
     (hm : StaggerMessage.Ready memory words) :
     unpackLeft (epilogue memory (packCrypto l r)) = leftFinish words l := by
   have hm0 : low32 (MachineState.readWord memory 0) = words 6 := hm.scalar 0 (by decide)
-  have hm1 : low32 (MachineState.readWord memory 80) = words 15 := hm.scalar 8 (by decide)
-  have hm2 : low32 (MachineState.readWord memory 140) = words 13 := hm.scalar 14 (by decide)
+  have hm1 : low32 (MachineState.readWord memory 144) = words 15 := hm.scalar 8 (by decide)
+  have hm2 : low32 (MachineState.readWord memory 252) = words 13 := hm.scalar 14 (by decide)
   have hpacked := StaggerScalarLow54.packCrypto_low54 l r
   have h0 := hpacked.2.2.1
   have h1 : StaggerScalarLow54.Low54
@@ -55,9 +57,9 @@ theorem epilogue_crypto (memory : ByteArray) (words : Nat → UInt32) (l r : Cry
   have p0 := StaggerScalarLow54.project_step true false 4 8 (by decide) (by decide)
     (MachineState.readWord memory 0) (UInt256.ofNat 2840853838) (packCrypto l r) h0
   have p1 := StaggerScalarLow54.project_step false false 4 5 (by decide) (by decide)
-    (MachineState.readWord memory 80) (UInt256.ofNat 2840853838) (left77 memory (packCrypto l r)) h1
+    (MachineState.readWord memory 144) (UInt256.ofNat 2840853838) (left77 memory (packCrypto l r)) h1
   have p2 := StaggerScalarLow54.project_step false false 4 6 (by decide) (by decide)
-    (MachineState.readWord memory 140) (UInt256.ofNat 2840853838)
+    (MachineState.readWord memory 252) (UInt256.ofNat 2840853838)
       (left78 memory (left77 memory (packCrypto l r))) h2
   unfold epilogue
   rw [left_packCrypto]

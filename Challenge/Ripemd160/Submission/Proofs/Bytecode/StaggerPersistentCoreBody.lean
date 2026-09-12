@@ -3,11 +3,11 @@ set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentCoreBody
-open EvmSemantics EvmSemantics.EVM Challenge.EvmProof Paired80WordRound
+open EvmSemantics EvmSemantics.EVM Challenge.EvmProof Paired144WordRound
 open StaggerPersistentPackBridge (suffix)
 
 def gasSteps (s : State) (h : WordLane) (off limit : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 894) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 894) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :

@@ -9,7 +9,7 @@ set_option linter.unusedTactic false
 set_option linter.unreachableTactic false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCoreCommon
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof PairedLaneUInt256Bridge
-open Paired80WordRound Paired80WordRotate Paired80WordBoolean
+open Paired144WordRound Paired144WordRotation
 inductive Reg where
   | a | b | c | d | e | ar | br | cr | dr | er | factor | pair | upper | lower | k
   | cache (address : Nat)
@@ -19,7 +19,13 @@ def word (memory : ByteArray) (h4 : UInt256) (r : Reg) (q right : WordLane) (k :
   | .a => q.a | .b => q.b | .c => q.c | .d => q.d | .e => q.e
   | .ar => right.a | .br => right.b | .cr => right.c | .dr => right.d | .er => right.e
   | .factor => factorWord | .pair => pairWord | .upper => upperWord | .lower => lowerWord | .k => k
-  | .cache address => if address = 500 then h4 else MachineState.readWord memory address
+  | .cache address => match address with
+    | 140 => compactMaskWord
+    | 190 => coefficientWord 0 2
+    | 310 => coefficientWord 0 3
+    | 350 => coefficientWord 3 0
+    | 500 => h4
+    | _ => MachineState.readWord memory (address / 10 * 18)
 
 def stack (memory : ByteArray) (h4 : UInt256) (shape : List Reg) (q right : WordLane) (k : UInt256)
     (rho : List UInt256) : List UInt256 :=

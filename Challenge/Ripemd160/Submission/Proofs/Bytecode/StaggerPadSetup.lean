@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Stagger144Active
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerTablePad
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80Setup
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadShiftDiet
@@ -11,7 +12,7 @@ open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory
 open PairTableActive StaggerTableSparse StaggerTableLayout
 
 def padTemplate : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 632),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 1112),
     .op .CALLDATASIZE,
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .CALLDATACOPY,
@@ -27,50 +28,50 @@ def padTemplate : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 224),
     .op .SHR,
     .op (.Dup ⟨0, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 580),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 1044),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 550),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 990),
     .op .MSTORE,
     .op (.Dup ⟨2, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 500),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 900),
     .op .MSTORE,
     .op (.Dup ⟨2, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 490),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 882),
     .op .MSTORE,
     .op (.Swap ⟨1, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 470),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 846),
     .op .MSTORE,
     .op (.Dup ⟨1, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 330),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 594),
     .op .MSTORE,
     .op (.Dup ⟨1, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 320),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 576),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 310),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 558),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 300),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 540),
     .op .MSTORE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 90),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 162),
     .op .MSTORE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 80),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .MSTORE ]
 private theorem add_eq_hAdd (x y : UInt256) : UInt256.add x y = x + y := rfl
 
 theorem run_pad (s : State) (pc returnPC : UInt256) (rest : List UInt256)
-    (hstack : rest.length ≤ 996) (hrun : s.halt = .Running) (hactive : 34 ≤ s.activeWords.toNat)
+    (hstack : rest.length ≤ 996) (hrun : s.halt = .Running) (hactive : 35 ≤ s.activeWords.toNat)
     (hfit : s.executionEnv.calldata.size < 2 ^ 256) :
     runInstrSeq padTemplate {s with pc := pc, stack := returnPC :: rest} =
       some {s with pc := pcAfter pc padTemplate, stack := returnPC :: rest, memory := StaggerTablePad.resultMemory s.memory (UInt256.ofNat s.executionEnv.calldata.size)} := by
   have hcap (n : Nat) (hn : n ≤ 27) : rest.length + n < 1024 := by omega
-  have hactiveAt (address : Nat) (ha : address ≤ 1056) :
+  have hactiveAt (address : Nat) (ha : address ≤ 1088) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
-    word_active_preserved _ _ hactive ha
-  have hcopyActive : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 0 632) = s.activeWords := by
-    have he : MachineState.activeWordsAfter s.activeWords.toNat 0 632 = s.activeWords.toNat := by
-      simp only [MachineState.activeWordsAfter, if_neg (by decide : (632 : Nat) ≠ 0)]
+    Stagger144Active.word_active_preserved _ _ hactive ha
+  have hcopyActive : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 0 1112) = s.activeWords := by
+    have he : MachineState.activeWordsAfter s.activeWords.toNat 0 1112 = s.activeWords.toNat := by
+      simp only [MachineState.activeWordsAfter, if_neg (by decide : (1112 : Nat) ≠ 0)]
       apply Nat.max_eq_left
       omega
     rw [he]

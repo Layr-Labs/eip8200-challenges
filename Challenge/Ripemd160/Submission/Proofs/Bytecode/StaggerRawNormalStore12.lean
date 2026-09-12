@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Stagger144Active
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawCommon
 set_option warningAsError true
 set_option maxRecDepth 100000
@@ -9,33 +10,33 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
 def template : List Instr :=
   [ .op (.Dup ⟨7, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 120),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 216),
     .op .MSTORE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 110),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 198),
     .op .MSTORE,
     .op (.Dup ⟨6, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 100),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 180),
+    .op .MSTORE,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 162),
+    .op .MSTORE,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+    .op .MSTORE,
+    .op (.Dup ⟨0, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 126),
+    .op .MSTORE,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 108),
     .op .MSTORE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 90),
     .op .MSTORE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 80),
+    .op (.Dup ⟨0, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 72),
+    .op .MSTORE,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 54),
+    .op .MSTORE,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 36),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 70),
-    .op .MSTORE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 60),
-    .op .MSTORE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 50),
-    .op .MSTORE,
-    .op (.Dup ⟨0, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 40),
-    .op .MSTORE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 30),
-    .op .MSTORE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 20),
-    .op .MSTORE,
-    .op (.Dup ⟨0, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 10),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 18),
     .op .MSTORE,
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .MSTORE ]
@@ -44,18 +45,18 @@ def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [  ] ++ rho
 def outputMemory (memory : ByteArray) (x : Input) : ByteArray :=
-  (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord memory 120 x.v7) 110 x.v0) 100 x.v7) 90 x.v1) 80 x.v2) 70 x.v3) 60 x.v3) 50 x.v4) 40 x.v5) 30 x.v5) 20 x.v6) 10 x.v7) 0 x.v7)
+  (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord memory 216 x.v7) 198 x.v0) 180 x.v7) 162 x.v1) 144 x.v2) 126 x.v3) 108 x.v3) 90 x.v4) 72 x.v5) 54 x.v5) 36 x.v6) 18 x.v7) 0 x.v7)
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat) :
+    (hactive : 35 ≤ s.activeWords.toNat) :
     runInstrSeq template {s with pc := pc, stack := inputStack x rho} =
       some {s with pc := pcAfter pc template, stack := outputStack s.memory x rho, memory := outputMemory s.memory x} := by
   have hbase : rho.length < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
   have hcap (n : Nat) (hn : n ≤ 12) : rho.length + n < 1024 := by omega
-  have hactiveAt (address : Nat) (haddress : address ≤ 1056) :
+  have hactiveAt (address : Nat) (haddress : address ≤ 1088) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
-    Table80Raw.active_preserved s.activeWords address hactive haddress
+    Stagger144Active.word_active_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [template, inputStack, outputStack, outputMemory, PairedScheduleMemory.writeWord,
     runInstrSeq, Stepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
@@ -71,8 +72,8 @@ def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osak
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 871 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 558) = UInt256.ofNat 871
+theorem site_pc : site.startPC = UInt256.ofNat 882 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 558) = UInt256.ofNat 882
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound
@@ -80,15 +81,15 @@ theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances inst
 
 def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat)
+    (hactive : 35 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 871, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 914, stack := outputStack s.memory x rho, memory := outputMemory s.memory x} := by
-  have hraw := run_actual s (UInt256.ofNat 871) x rho hstack hrun hactive
-  have hend : pcAfter (UInt256.ofNat 871) template = UInt256.ofNat 914 := by decide
+    GasSteps {s with pc := UInt256.ofNat 882, stack := inputStack x rho}
+      {s with pc := UInt256.ofNat 925, stack := outputStack s.memory x rho, memory := outputMemory s.memory x} := by
+  have hraw := run_actual s (UInt256.ofNat 882) x rho hstack hrun hactive
+  have hend : pcAfter (UInt256.ofNat 882) template = UInt256.ofNat 925 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps

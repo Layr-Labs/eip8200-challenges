@@ -39,7 +39,7 @@ theorem NormalStore60_memory (memory : ByteArray) (words : Nat → UInt256) :
       storeDescending memory (tableWords words) 45 16 := by rfl
 
 theorem run_NormalStore60 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat) :
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat) :
     runInstrSeq StaggerRawNormalStore60.template {s with pc := pc, stack := [ words 0, words 9, words 3, words 8, words 2, words 7, words 10, words 13, words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6 ] ++ rho} =
       some {s with pc := pcAfter pc StaggerRawNormalStore60.template, stack := [ words 9, words 3, words 8, words 2, words 7, words 10, words 13, words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6 ] ++ rho, memory := storeDescending s.memory (tableWords words) 45 16} := by
   have h := StaggerRawNormalStore60.run_actual s pc (NormalStore60Input words) rho hs hr ha
@@ -55,7 +55,7 @@ theorem NormalStore44_memory (memory : ByteArray) (words : Nat → UInt256) :
       storeDescending memory (tableWords words) 29 16 := by rfl
 
 theorem run_NormalStore44 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat) :
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat) :
     runInstrSeq StaggerRawNormalStore44.template {s with pc := pc, stack := [ words 9, words 3, words 8, words 2, words 7, words 10, words 13, words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6 ] ++ rho} =
       some {s with pc := pcAfter pc StaggerRawNormalStore44.template, stack := [ words 3, words 8, words 2, words 7, words 10, words 13, words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6 ] ++ rho, memory := storeDescending s.memory (tableWords words) 29 16} := by
   have h := StaggerRawNormalStore44.run_actual s pc (NormalStore44Input words) rho hs hr ha
@@ -71,7 +71,7 @@ theorem NormalStore28_memory (memory : ByteArray) (words : Nat → UInt256) :
       storeDescending memory (tableWords words) 13 16 := by rfl
 
 theorem run_NormalStore28 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat) :
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat) :
     runInstrSeq StaggerRawNormalStore28.template {s with pc := pc, stack := [ words 3, words 8, words 2, words 7, words 10, words 13, words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6 ] ++ rho} =
       some {s with pc := pcAfter pc StaggerRawNormalStore28.template, stack := [ words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6 ] ++ rho, memory := storeDescending s.memory (tableWords words) 13 16} := by
   have h := StaggerRawNormalStore28.run_actual s pc (NormalStore28Input words) rho hs hr ha
@@ -87,7 +87,7 @@ theorem NormalStore12_memory (memory : ByteArray) (words : Nat → UInt256) :
       storeDescending memory (tableWords words) 0 13 := by rfl
 
 theorem run_NormalStore12 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat) :
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat) :
     runInstrSeq StaggerRawNormalStore12.template {s with pc := pc, stack := [ words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6 ] ++ rho} =
       some {s with pc := pcAfter pc StaggerRawNormalStore12.template, stack := [  ] ++ rho, memory := storeDescending s.memory (tableWords words) 0 13} := by
   have h := StaggerRawNormalStore12.run_actual s pc (NormalStore12Input words) rho hs hr ha
@@ -95,7 +95,7 @@ theorem run_NormalStore12 (s : State) (pc : UInt256) (words : Nat → UInt256) (
   exact h
 def storesTemplate : List Instr := StaggerRawNormalStore60.template ++ StaggerRawNormalStore44.template ++ StaggerRawNormalStore28.template ++ StaggerRawNormalStore12.template
 theorem run_stores (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat) :
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat) :
     runInstrSeq storesTemplate {s with pc := pc, stack := poolStack words ++ rho} =
       some {s with pc := pcAfter pc storesTemplate, stack := rho, memory := resultMemory s.memory words} := by
   let s0 := s

@@ -5,32 +5,32 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackMemory
 set_option warningAsError true
 set_option maxRecDepth 10000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCoreModel
-open EvmSemantics EvmSemantics.EVM PairedLaneUInt256Bridge Paired80WordRound
-open Paired80WordBoolean Paired80WordRotate
+open EvmSemantics EvmSemantics.EVM PairedLaneUInt256Bridge Paired144WordRound
+open Paired144WordRotation
 
 def initial (memory : ByteArray) : WordLane :=
   ⟨MachineState.readWord memory 832, MachineState.readWord memory 864,
     MachineState.readWord memory 896, MachineState.readWord memory 928, MachineState.readWord memory 960⟩
 
-def pairWord (l r : UInt256) : UInt256 := UInt256.lor (UInt256.shiftLeft r (UInt256.ofNat 80)) l
+def pairWord (l r : UInt256) : UInt256 := UInt256.lor (UInt256.shiftLeft r (UInt256.ofNat 144)) l
 def pair (l r : WordLane) : WordLane :=
   ⟨pairWord l.a r.a, pairWord l.b r.b, pairWord l.c r.c, pairWord l.d r.d, pairWord l.e r.e⟩
 def left (q : WordLane) : WordLane := q
 
 def message (memory : ByteArray) (i : Nat) : UInt256 :=
-  MachineState.readWord memory (10 * StaggerTableLayout.pairIndices[i]!)
+  MachineState.readWord memory (18 * StaggerTableLayout.pairIndices[i]!)
 def right0 (memory : ByteArray) (q : WordLane) : WordLane :=
-  StaggerScalarWord.step true true 4 8 (MachineState.readWord memory 50) (UInt256.ofNat 1352829926) q
+  StaggerScalarWord.step true true 4 8 (MachineState.readWord memory 90) (UInt256.ofNat 1352829926) q
 def right1 (memory : ByteArray) (q : WordLane) : WordLane :=
-  StaggerScalarWord.step true true 4 9 (MachineState.readWord memory 310) (UInt256.ofNat 1352829926) q
+  StaggerScalarWord.step true true 4 9 (MachineState.readWord memory 558) (UInt256.ofNat 1352829926) q
 def right2 (memory : ByteArray) (q : WordLane) : WordLane :=
-  StaggerScalarWord.step true true 4 9 (MachineState.readWord memory 350) (UInt256.ofNat 1352829926) q
+  StaggerScalarWord.step true true 4 9 (MachineState.readWord memory 630) (UInt256.ofNat 1352829926) q
 def left77 (memory : ByteArray) (q : WordLane) : WordLane :=
   StaggerScalarWord.step true false 4 8 (MachineState.readWord memory 0) (UInt256.ofNat 2840853838) q
 def left78 (memory : ByteArray) (q : WordLane) : WordLane :=
-  StaggerScalarWord.step false false 4 5 (MachineState.readWord memory 80) (UInt256.ofNat 2840853838) q
+  StaggerScalarWord.step false false 4 5 (MachineState.readWord memory 144) (UInt256.ofNat 2840853838) q
 def left79 (memory : ByteArray) (q : WordLane) : WordLane :=
-  StaggerScalarWord.step false false 4 6 (MachineState.readWord memory 140) (UInt256.ofNat 2840853838) q
+  StaggerScalarWord.step false false 4 6 (MachineState.readWord memory 252) (UInt256.ofNat 2840853838) q
 
 def prologue (memory : ByteArray) (q : WordLane) : WordLane :=
   right2 memory (right1 memory (right0 memory q))
@@ -41,7 +41,7 @@ def epilogue (memory : ByteArray) (q : WordLane) : WordLane :=
 
 def addResult (memory : ByteArray) (l r : UInt256) (haddr : Nat) : UInt256 :=
   StaggerScalarWord.mask (UInt256.add (UInt256.add l
-    (UInt256.shiftRight r (UInt256.ofNat 80))) (MachineState.readWord memory haddr))
+    (UInt256.shiftRight r (UInt256.ofNat 144))) (MachineState.readWord memory haddr))
 def rawHash (memory : ByteArray) (l r : WordLane) : Compression.EvmHashState :=
   ⟨addResult memory l.c r.d 864, addResult memory l.d r.e 896,
     addResult memory l.e r.a 928, addResult memory l.a r.b 960, addResult memory l.b r.c 832⟩

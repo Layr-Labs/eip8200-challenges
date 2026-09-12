@@ -6,16 +6,16 @@ set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentCoreRight
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
-open Paired80WordRound StaggerCoreCommon StaggerCoreModel
+open Paired144WordRound StaggerCoreCommon StaggerCoreModel
 
 def initialState (s : State) (h4 : UInt256) (q : WordLane) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 951, stack := stack s.memory h4 [ .k, .a, .b, .c, .d, .e, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] q q (UInt256.ofNat 1352829926) rho}
+  {s with pc := UInt256.ofNat 1016, stack := stack s.memory h4 [ .k, .a, .b, .c, .d, .e, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] q q (UInt256.ofNat 1352829926) rho}
 
 def finalState (s : State) (h4 : UInt256) (q : WordLane) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 1046, stack := stack s.memory h4 [ .d, .k, .c, .b, .e, .a, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] (prologue s.memory q) q (UInt256.ofNat 1352829926) rho}
+  {s with pc := UInt256.ofNat 1117, stack := stack s.memory h4 [ .d, .k, .c, .b, .e, .a, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] (prologue s.memory q) q (UInt256.ofNat 1352829926) rho}
 
 def gasSteps (s : State) (h4 : UInt256) (q : WordLane) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :

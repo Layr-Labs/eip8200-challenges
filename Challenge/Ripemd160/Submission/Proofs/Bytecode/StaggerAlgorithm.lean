@@ -3,9 +3,18 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.Paired80Algorithm
 set_option warningAsError true
 set_option maxRecDepth 10000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerAlgorithm
-open EvmSemantics PairedLaneUInt256Bridge Paired80Core Paired80WordRound
-open Paired80Algorithm (leftFold rightFold packed32 rotation_bounds)
-open Paired80CryptoBridge (CryptoLane cryptoStep)
+open EvmSemantics PairedLaneUInt256Bridge Paired144Core Paired144WordRound
+open Paired80Algorithm (leftFold rightFold)
+open Paired80CryptoBridge (cryptoStep)
+
+def packed32 (lo hi : UInt32) : UInt256 := word (pack lo.toBitVec hi.toBitVec)
+
+theorem rotation_bounds (i : Fin 80) :
+    5 ≤ Crypto.Ripemd160.s[i.val]! ∧ Crypto.Ripemd160.s[i.val]! ≤ 15 ∧
+    5 ≤ Crypto.Ripemd160.sP[i.val]! ∧ Crypto.Ripemd160.sP[i.val]! ≤ 15 := by
+  have h : ∀ j : Fin 80, 5 ≤ Crypto.Ripemd160.s[j.val]! ∧ Crypto.Ripemd160.s[j.val]! ≤ 15 ∧
+    5 ≤ Crypto.Ripemd160.sP[j.val]! ∧ Crypto.Ripemd160.sP[j.val]! ≤ 15 := by decide
+  exact h i
 
 def mode (i : Nat) : Nat :=
   if i < 13 then 0 else if i < 16 then 5 else
@@ -33,12 +42,12 @@ theorem mode_valid (i : Fin 77) : mode i.val < 9 ∧
   exact h i
 
 def MessageReady (message : Nat → UInt256) (words : Nat → UInt32) (count : Nat) : Prop :=
-  ∀ i < count, Paired80Message.Eq112 (bits (message i))
+  ∀ i < count, bits (message i) =
     (pack (words Crypto.Ripemd160.r[i]!).toBitVec (words Crypto.Ripemd160.rP[i + 3]!).toBitVec)
 
 theorem step_of_crypto (words : Nat → UInt32) (i : Nat) (hi : i < 77)
     (message : UInt256) (l q : CryptoLane)
-    (hm : Paired80Message.Eq112 (bits message)
+    (hm : bits message =
       (pack (words Crypto.Ripemd160.r[i]!).toBitVec (words Crypto.Ripemd160.rP[i + 3]!).toBitVec)) :
     step i message (packCrypto l q) =
       packCrypto

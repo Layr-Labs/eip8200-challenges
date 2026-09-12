@@ -3,8 +3,30 @@ import Challenge.EvmProof.Word
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerFinalMemory
-open EvmSemantics Challenge.EvmProof Paired80WordRound Paired80Compression StaggerCoreModel
+open EvmSemantics Challenge.EvmProof Paired144WordRound StaggerCoreModel
+open Paired80Compression (low32 unpackLeft)
 open PairedScheduleMemory
+
+def high32 (x : UInt256) : UInt32 := low32 (UInt256.shiftRight x (UInt256.ofNat 144))
+def unpackRight (q : WordLane) : CryptoLane :=
+  ⟨high32 q.a, high32 q.b, high32 q.c, high32 q.d, high32 q.e⟩
+
+theorem high32_packWord (a b : UInt32) :
+    high32 (PairedLaneUInt256Bridge.word (Paired144Core.pack a.toBitVec b.toBitVec)) = b := by
+  apply UInt32.eq_of_toBitVec_eq
+  change (PairedLaneUInt256Bridge.bits
+    (UInt256.shiftRight (PairedLaneUInt256Bridge.word
+      (Paired144Core.pack a.toBitVec b.toBitVec)) (UInt256.ofNat 144))).setWidth 32 = _
+  rw [PairedLaneUInt256Bridge.bits_shr _ 144 (by decide),
+    PairedLaneUInt256Bridge.bits_word, BitVec.setWidth_ushiftRight_eq_extractLsb]
+  exact Paired144Core.high_pack a.toBitVec b.toBitVec
+
+theorem unpackRight_packCrypto (l r : CryptoLane) : unpackRight (packCrypto l r) = r := by
+  cases l; cases r
+  simp only [unpackRight, packCrypto, high32_packWord]
+
+#print axioms high32_packWord
+#print axioms unpackRight_packCrypto
 
 theorem writeWord_comm (memory : ByteArray) (a b : Nat) (va vb : UInt256)
     (hab : a + 32 ≤ b ∨ b + 32 ≤ a) :
@@ -36,7 +58,7 @@ theorem tailMemory_eq_storeRaw (memory : ByteArray) (l r : WordLane) :
 theorem addResult_normalized (memory : ByteArray) (l r : UInt256) (a : Nat) :
     addResult memory l r a = Word.ofUInt32
       (Word.toUInt32 (MachineState.readWord memory a) + (high32 r + low32 l)) := by
-  change Word.mask32 ((l + UInt256.shiftRight r (UInt256.ofNat 80)) +
+  change Word.mask32 ((l + UInt256.shiftRight r (UInt256.ofNat 144)) +
     MachineState.readWord memory a) = _
   rw [Word.mask32_eq_ofUInt32, Word.toUInt32_add, Word.toUInt32_add]
   apply congrArg Word.ofUInt32

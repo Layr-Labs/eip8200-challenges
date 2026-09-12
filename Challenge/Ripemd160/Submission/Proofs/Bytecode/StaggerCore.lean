@@ -6,9 +6,9 @@ set_option maxHeartbeats 10000000
 set_option linter.unusedSimpArgs false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCore
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
-open Paired80WordRound StaggerCoreCommon StaggerCoreModel
+open Paired144WordRound StaggerCoreCommon StaggerCoreModel
 open StaggerAlgorithm (step fold physicalKey)
-def pcs : Array Nat := #[1085, 1139, 1182, 1218, 1264, 1302, 1345, 1383, 1426, 1465, 1508, 1547, 1593, 1631, 1695, 1743, 1791, 1846, 1894, 1932, 1980, 2021, 2068, 2109, 2157, 2197, 2245, 2286, 2333, 2371, 2435, 2482, 2530, 2582, 2622, 2653, 2690, 2724, 2764, 2798, 2839, 2870, 2910, 2944, 2981, 3012, 3079, 3128, 3176, 3233, 3281, 3321, 3370, 3411, 3460, 3500, 3547, 3585, 3633, 3671, 3720, 3758, 3812, 3853, 3893, 3938, 3984, 4022, 4068, 4104, 4142, 4178, 4223, 4259, 4305, 4344, 4390, 4428]
+def pcs : Array Nat := #[1156, 1218, 1261, 1300, 1344, 1383, 1426, 1464, 1507, 1546, 1589, 1628, 1672, 1711, 1781, 1829, 1877, 1943, 1991, 2031, 2079, 2120, 2167, 2208, 2254, 2295, 2341, 2382, 2429, 2470, 2540, 2585, 2631, 2691, 2732, 2766, 2803, 2837, 2875, 2909, 2950, 2984, 3025, 3059, 3096, 3129, 3202, 3251, 3298, 3363, 3409, 3449, 3498, 3539, 3588, 3629, 3677, 3717, 3765, 3806, 3855, 3896, 3949, 3990, 4031, 4077, 4121, 4160, 4204, 4243, 4281, 4320, 4364, 4403, 4447, 4486, 4530, 4568]
 def shapes : Array (List Reg) := #[
   [ .pair, .upper, .e, .b, .a, .d, .c, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ],
   [ .d, .pair, .upper, .a, .c, .k, .e, .b, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ],
@@ -92,7 +92,7 @@ def atRound (s : State) (h4 : UInt256) (i : Nat) (q right : WordLane) (rho : Lis
   {s with pc := UInt256.ofNat pcs[i]!, stack := stack s.memory h4 shapes[i]! q right (physicalKey (i-1)) rho}
 
 def gasSteps_step (s : State) (h4 : UInt256) (i : Fin 77) (q right : WordLane) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
@@ -179,7 +179,7 @@ def gasSteps_step (s : State) (h4 : UInt256) (i : Fin 77) (q right : WordLane) (
   | ⟨n+77, hi⟩ => exact False.elim (by omega)
 
 def gasSteps_prefix (s : State) (h4 : UInt256) (n : Nat) (hn : n ≤ 77) (q right : WordLane) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
@@ -193,10 +193,10 @@ def gasSteps_prefix (s : State) (h4 : UInt256) (n : Nat) (hn : n ≤ 77) (q righ
 
 
 def suffixState (s : State) (h4 : UInt256) (q : WordLane) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 4530, stack := stack s.memory h4 [ .d, .b, .e, .a, .k, .c, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] (epilogue s.memory q) q (UInt256.ofNat 2840853838) rho}
+  {s with pc := UInt256.ofNat 4672, stack := stack s.memory h4 [ .d, .b, .e, .a, .k, .c, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] (epilogue s.memory q) q (UInt256.ofNat 2840853838) rho}
 
 def gasSteps_suffix (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
@@ -208,7 +208,7 @@ def gasSteps_suffix (s : State) (h4 : UInt256) (q right : WordLane) (rho : List 
   exact gu.trans (g1.trans (g2.trans g3))
 
 def gasSteps_pairedSuffix (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
