@@ -28,7 +28,7 @@ structure Env (s : State) : Prop where
   run : s.halt = .Running
   np : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
     s.executionEnv.fork s.executionEnv.codeAddr = false
-  act : 298 ≤ s.activeWords.toNat
+  act : 297 ≤ s.activeWords.toNat
 
 /-- Lift a block reduction to a trace.  Every state of the routine is a record
 update of the carrier `s` on `pc`, `stack` and `memory`, so the environment,

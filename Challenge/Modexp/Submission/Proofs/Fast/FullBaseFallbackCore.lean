@@ -93,7 +93,7 @@ private theorem mod_word_self {a : Nat} (ha : a < 2 ^ 256) :
     a % 2 ^ 256 = a := Nat.mod_eq_of_lt ha
 
 private theorem activeWords_fix (s : State) (offset size : Nat) (hsz : size ≠ 0)
-    (hend : offset + size ≤ 9536) (hactive : 298 ≤ s.activeWords.toNat) :
+    (hend : offset + size ≤ 9504) (hactive : 297 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat offset size) =
       s.activeWords := by
   have hnat : MachineState.activeWordsAfter s.activeWords.toNat offset size =
@@ -111,7 +111,7 @@ theorem run_fallback (s : State) (mem input : ByteArray)
     (n bsize esize msize : Nat)
     (hdata : s.executionEnv.calldata = input)
     (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (hb0 : 1 ≤ bsize)
-    (hact : 298 ≤ s.activeWords.toNat)
+    (hact : 297 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest s.executionEnv.code 1383 = true) :
     runInstructions fallbackProgram (fallbackState s mem n bsize esize msize) =
       some (legacyLoopState s (storeWord mem (992 + 32 * n)

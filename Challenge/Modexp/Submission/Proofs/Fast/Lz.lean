@@ -37,14 +37,14 @@ attribute [local simp] List.getElem?_cons_zero
 restated here for the `V_EOFF` load. -/
 
 theorem activeWordsAfter_fix (curr off sz : Nat) (hsz : sz ≠ 0)
-    (hoff : off + sz ≤ 9536) (hcurr : 298 ≤ curr) :
+    (hoff : off + sz ≤ 9504) (hcurr : 297 ≤ curr) :
     MachineState.activeWordsAfter curr off sz = curr := by
   unfold MachineState.activeWordsAfter
   simp only [hsz, if_false]
   exact Nat.max_eq_left (by omega)
 
 theorem activeWords_fix (s : State) (off sz : Nat) (hsz : sz ≠ 0)
-    (hoff : off + sz ≤ 9536) (hact : 298 ≤ s.activeWords.toNat) :
+    (hoff : off + sz ≤ 9504) (hact : 297 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat off sz) =
       s.activeWords := by
   rw [activeWordsAfter_fix _ off sz hsz hoff hact]
@@ -124,7 +124,7 @@ does not need `Fast.Exp`'s `expByte`. -/
 theorem run_lzHead_first (s : State) (mem input : ByteArray) (bsize i w : Nat)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hdata : s.executionEnv.calldata = input)
-    (hb : bsize ≤ 1024) (hi : i ≤ 1024) (hact : 298 ≤ s.activeWords.toNat)
+    (hb : bsize ≤ 1024) (hi : i ≤ 1024) (hact : 297 ≤ s.activeWords.toNat)
     (heoff : MachineState.readWord mem 9472 = UInt256.ofNat (96 + bsize))
     (hbyte : UInt256.byteAt ⟨0⟩ (MachineState.readWord input (96 + bsize + i)) =
       UInt256.ofNat w)
@@ -162,7 +162,7 @@ theorem run_lzHead_first (s : State) (mem input : ByteArray) (bsize i w : Nat)
 theorem run_lzHead_other (s : State) (mem input : ByteArray) (bsize i w : Nat)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hdata : s.executionEnv.calldata = input)
-    (hb : bsize ≤ 1024) (hi : i ≤ 1024) (hact : 298 ≤ s.activeWords.toNat)
+    (hb : bsize ≤ 1024) (hi : i ≤ 1024) (hact : 297 ≤ s.activeWords.toNat)
     (heoff : MachineState.readWord mem 9472 = UInt256.ofNat (96 + bsize))
     (hbyte : UInt256.byteAt ⟨0⟩ (MachineState.readWord input (96 + bsize + i)) =
       UInt256.ofNat w)

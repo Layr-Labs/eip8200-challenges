@@ -118,7 +118,7 @@ theorem run_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 
 /-- `blk2874`: copy the raw base to `ACC` and `TS`, clear `TN`, call `CSUB`. -/
 theorem run_hit (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 32) (hact : 298 ≤ s.activeWords.toNat)
+    (hn : 1 ≤ n) (hn32 : n ≤ 32) (hact : 297 ≤ s.activeWords.toNat)
     (hdata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :

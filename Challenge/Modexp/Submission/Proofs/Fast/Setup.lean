@@ -884,8 +884,8 @@ def mstoreAt (mem : ByteArray) (addr value : Nat) : ByteArray :=
 
 /-- Memory after the five variable stores. -/
 def varsMem (mem : ByteArray) (input : ByteArray) : ByteArray :=
-  mstoreAt (mstoreAt (mstoreAt (mstoreAt (mstoreAt mem 9344 (s32 input))
-    9504 (limbs input)) 9472 (96 + baseSize input)) 9408 (s32 input - 32))
+  mstoreAt (mstoreAt (mstoreAt (mstoreAt mem 9344 (s32 input))
+    9472 (96 + baseSize input)) 9408 (s32 input - 32))
     9440 (8224 + s32 input)
 
 /-- Memory after the two `CALLDATACOPY`s: the block at `0x0000` is zeroed and
@@ -907,8 +907,8 @@ def awNext (w off sz : Nat) : Nat :=
 
 /-- `activeWords` after the variable stores, the copies and the `MLOAD`. -/
 def loadWords (w : UInt256) (input : ByteArray) : UInt256 :=
-  UInt256.ofNat (awNext (awNext (awNext (awNext (awNext (awNext (awNext
-    (MachineState.activeWordsAfter w.toNat 9344 32) 9504 32) 9472 32) 9408 32)
+  UInt256.ofNat (awNext (awNext (awNext (awNext (awNext (awNext
+    (MachineState.activeWordsAfter w.toNat 9344 32) 9472 32) 9408 32)
     9440 32) 0 (s32 input)) (s32 input - modulusSize input) (modulusSize input))
     (s32 input - 32) 32)
 
@@ -923,9 +923,9 @@ def setupPathA :
   [opAt 908 (.Dup ⟨1, by decide⟩),
    pushAt 909 2 9344,
    opAt 910 .MSTORE,
-   opAt 911 (.Dup ⟨2, by decide⟩),
-   pushAt 912 2 9504,
-   opAt 913 .MSTORE,
+   pushAt 911 2 9504,
+   opAt 912 .POP,
+   opAt 913 .JUMPDEST,
    opAt 914 (.Dup ⟨3, by decide⟩),
    pushAt 915 1 96,
    opAt 916 .ADD,
@@ -1235,19 +1235,7 @@ theorem readWord_V_S32 (mem : ByteArray) (input : ByteArray) (m0 : Nat)
   rw [readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
-    readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     readWord_mstoreAt_self _ _ _ (s32_lt input hm)]
-
-theorem readWord_V_N (mem : ByteArray) (input : ByteArray) (m0 : Nat)
-    (hm : modulusSize input ≤ 1024) :
-    MachineState.readWord (setupMem mem input m0) 9504 =
-      UInt256.ofNat (limbs input) := by
-  rw [readWord_setupMem_var mem input m0 9504 hm (by omega) (Or.inr (by omega))]
-  unfold varsMem
-  rw [readWord_mstoreAt_ne _ _ _ _ (Or.inr (by omega)),
-    readWord_mstoreAt_ne _ _ _ _ (Or.inr (by omega)),
-    readWord_mstoreAt_ne _ _ _ _ (Or.inr (by omega)),
-    readWord_mstoreAt_self _ _ _ (limbs_lt input hm)]
 
 theorem readWord_V_EOFF (mem : ByteArray) (input : ByteArray) (m0 : Nat)
     (hm : modulusSize input ≤ 1024) (hb : baseSize input ≤ 1024) :
@@ -1409,7 +1397,6 @@ theorem readWord_setupMem_high (input : ByteArray) (m0 target : Nat)
     readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
-    readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     readWord_empty]
 
 /-- The setup block does not seed `R1 = 0x1000`; the word block there is untouched,
@@ -1559,10 +1546,6 @@ theorem fastSetup_V_S32 (input : ByteArray) (hpath : FastPath input) :
     MachineState.readWord (fastSetupMemory input) 9344 = UInt256.ofNat (s32 input) :=
   readWord_V_S32 ByteArray.empty input (lowLimb input) hpath.2.1.2.2
 
-theorem fastSetup_V_N (input : ByteArray) (hpath : FastPath input) :
-    MachineState.readWord (fastSetupMemory input) 9504 = UInt256.ofNat (limbs input) :=
-  readWord_V_N ByteArray.empty input (lowLimb input) hpath.2.1.2.2
-
 theorem fastSetup_V_ML (input : ByteArray) (hpath : FastPath input) :
     MachineState.readWord (fastSetupMemory input) 9408 =
       UInt256.ofNat (s32 input - 32) :=
@@ -1620,7 +1603,7 @@ theorem fastSetup_modulus_eq (input : ByteArray) :
 /-! ## The memory high-water mark the later subroutines assume
 
 Every address the fast path touches lies below `0x2500`; the setup block's
-`MSTORE V_N` at `0x2520` makes 298 words active, and nothing afterwards
+the variable stores reach `0x24e0`, leaving 297 words active, and nothing afterwards
 extends the mark.  `Fast.Csub`, `Fast.Double` and `Fast.Monpro` take
 `296 ≤ s.activeWords.toNat` as a hypothesis and rely on this. -/
 
@@ -1631,7 +1614,7 @@ theorem activeWordsAfter_eq (curr off sz : Nat) (hsz : sz ≠ 0) :
 
 theorem setupWords_initial (input : ByteArray) (hm : modulusSize input ≤ 1024)
     (h32 : 32 < modulusSize input) :
-    setupWords (UInt256.ofNat 0) input = UInt256.ofNat 298 := by
+    setupWords (UInt256.ofNat 0) input = UInt256.ofNat 297 := by
   have hn2 := limbs_ge_two input h32
   have hS := s32_le_1024 input hm
   have hSge : 32 ≤ s32 input := by unfold s32; omega
@@ -1646,16 +1629,16 @@ theorem setupWords_initial (input : ByteArray) (hm : modulusSize input ≤ 1024)
   congr 1
   omega
 
-/-- After the setup block exactly 298 words are active. -/
+/-- After the setup block exactly 297 words are active. -/
 theorem fastSetup_activeWords (input : ByteArray) (hpath : FastPath input) :
-    (fastSetupState input).activeWords = UInt256.ofNat 298 :=
+    (fastSetupState input).activeWords = UInt256.ofNat 297 :=
   setupWords_initial input hpath.2.1.2.2 hpath.1
 
 /-- The high-water bound the three subroutine modules assume. -/
 theorem fastSetup_activeWords_ge (input : ByteArray) (hpath : FastPath input) :
     296 ≤ (fastSetupState input).activeWords.toNat := by
   rw [fastSetup_activeWords input hpath,
-    toNat_ofNat_self (show (298 : Nat) < 2 ^ 256 by norm_num)]
+    toNat_ofNat_self (show (297 : Nat) < 2 ^ 256 by norm_num)]
   omega
 
 /-- The fast-path precondition is decided, as `Fast.Correct`'s `decide` field

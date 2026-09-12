@@ -514,7 +514,7 @@ theorem run_shiftDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   -- cannot close that, because the nesting is `activeWordsAfter (activeWordsAfter (... % 2^256))`
   -- and simp meets the layers one at a time.  So give it NAT-level rewrites -- the same shape
   -- `StagedOperandEntryZero` already uses -- and one identity to finish.  `Exp.activeWords_fix2`
-  -- is the ready-made two-region lemma but wants `298 <= activeWords` where this block has 296;
+  -- is the ready-made two-region lemma but wants `297 <= activeWords` where this block has 296;
   -- `Monpro.activeWordsAfter_fix` carries the 296 bound.
   have hactN : s.activeWords.toNat %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
