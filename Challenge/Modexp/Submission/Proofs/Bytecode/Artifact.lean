@@ -843,7 +843,7 @@ def submissionInstructions : List Instr :=
  .push 1 64,
  .op .CALLDATALOAD,
  .push 2 1067,
- .op .JUMP,
+ .op .POP,
  .op .JUMPDEST,
  .op (.Dup { idx := 0 }),
  .push 2 1076,
