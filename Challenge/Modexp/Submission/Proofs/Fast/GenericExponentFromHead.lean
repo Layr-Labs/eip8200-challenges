@@ -99,7 +99,7 @@ def gasSteps_ebChainFromHead (s : State) {n bsize mm minv R : Nat}
       (Exp.ebMems sub.mpMem input bsize n
         (Exp.mcopyMem mem 1024 4096 (32 * n)) esize)
       n bsize esize msize esize hn hn32 hact hcode hfork hrun hnp).trans
-    (sub.monpro 1024 3072 1024 (UInt256.ofNat 1604)
+    (sub.monpro 1024 3072 1024 (UInt256.ofNat 1583)
       (Exp.outer n bsize esize msize)
       (Exp.storeWord
         (Exp.ebMems sub.mpMem input bsize n

@@ -2,6 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.Exp
 import Challenge.Modexp.Submission.Proofs.Fast.CarryFull
 import Challenge.Modexp.Submission.Proofs.Fast.SquareResult
 import Challenge.Modexp.Submission.Proofs.Fast.SquareFull
+import Challenge.Modexp.Submission.Proofs.Fast.SquareLoop
 
 -- Keep the caller proofs in their original word normal form.
 set_option warningAsError true
@@ -16,6 +17,8 @@ set_option maxHeartbeats 4000000
 instantiates it: `MONPRO` from `Fast.CarryFull.gasSteps_monproFull`, `ADDMOD`
 from the pair `Fast.Csub.gasSteps_addmod` / `gasSteps_csub` (packaged in `Exp`
 as `gasSteps_addmodFull`), and `SQUARE` from `Fast.SquareFull.gasSteps_squareFull`
+(the widths the kernel does not accelerate) together with
+`Fast.SquareLoop.gasSteps_squareLoop` (the in-kernel square loop for `n ∈ {4, 8}`),
 with the arithmetic of `Fast.SquareResult`.  Keeping the instance out of `Exp`
 means that `Exp` and every abstract consumer (the fixed-exponent chain, the
 shift / RR-leading / full-base continuations) compile without the kernel
@@ -111,9 +114,9 @@ theorem sqMem_frame' {s : State} {mem : ByteArray} {n bsize minv : Nat}
    by rw [key.2.2.1]; exact hf.ml, by rw [key.2.2.2.1]; exact hf.tl,
    by rw [key.2.2.2.2]; exact hf.eoff⟩
 
-/-- The `SQUARE` step of the concrete instance: `common` (pc 3924) with
-`hd = sq_row` runs the square rows for `n ∈ {4, 8}` and falls back to the
-generic `MONPRO` otherwise (`Fast.SquareFull.gasSteps_squareFull`). -/
+/-- The `SQUARE` step of the concrete instance, for the widths the kernel does
+not accelerate: `common` with `hd = sq_row` falls back to the generic `MONPRO`
+(`Fast.SquareFull.gasSteps_squareFull`). -/
 def subsSquare (s : State) (n bsize mm minv : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -124,13 +127,13 @@ def subsSquare (s : State) (n bsize mm minv : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
     ∀ (ret : UInt256) (tail : List UInt256) (mem : ByteArray) (a : Nat),
-      tail.length ≤ 998 →
+      ¬ (n = 4 ∨ n = 8) → tail.length ≤ 998 →
       Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true →
       Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
       Model.FastRepresents mem 2048 n a → a < mm →
       Challenge.EvmProof.GasSteps (sqCall s mem ret tail)
         (retTo s (SquareResult.sqMem s mem n) ret tail) := by
-  intro ret tail mem a hcap hjump hf hm ha ham
+  intro ret tail mem a hslow hcap hjump hf hm ha ham
   -- `GasSteps` lives in `Type`, so the limb count has to be split by `cases`.
   cases n with
   | zero => exact absurd hn (by omega)
@@ -148,8 +151,60 @@ def subsSquare (s : State) (n bsize mm minv : Nat)
         rw [hf.minvW, toNat_ofNat_self hminvlt]
       exact Challenge.EvmProof.GasSteps.cast
         (SquareFull.gasSteps_squareFull s mem p a mm ret tail hcap hrun hcode hfork hnp
-          hact hn32 hcds hf.s32 hf.tl hf.ml hjump ha hm ham hmpos
+          hact hn32 hslow hcds hf.s32 hf.tl hf.ml hjump ha hm ham hmpos
           (by rw [hlow, hmi]; exact hminvA))
+        rfl rfl
+
+/-- The in-kernel square loop writes only below `9312`, so the configuration
+words survive. -/
+theorem sqLoopMem_frame' {s : State} {mem : ByteArray} {n bsize minv : Nat} (k : Nat)
+    (hfast : n = 4 ∨ n = 8) (hn : 1 ≤ n) (hn32 : n ≤ 32)
+    (hf : Frame mem n bsize minv) :
+    Frame (SquareLoop.sqLoopMem s n k mem) n bsize minv :=
+  have key := SquareLoop.sqLoopMem_frame s mem n k hfast hn hn32
+  ⟨by rw [key.1]; exact hf.s32, by rw [key.2.1]; exact hf.minvW,
+   by rw [key.2.2.1]; exact hf.ml, by rw [key.2.2.2.1]; exact hf.tl,
+   by rw [key.2.2.2.2]; exact hf.eoff⟩
+
+/-- The in-kernel square-loop step of the concrete instance: for `n ∈ {4, 8}`
+the kernel performs all `k` squares without leaving its row frame and returns to
+the caller's `after_sq` (pc 3243) (`Fast.SquareLoop.gasSteps_squareLoop`). -/
+def subsSquareLoop (s : State) (n bsize mm minv : Nat)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 296 ≤ s.activeWords.toNat)
+    (hcds : s.executionEnv.calldata.size < 2 ^ 256)
+    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
+    (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
+    ∀ (k : Nat) (ret : UInt256) (tail : List UInt256) (mem : ByteArray) (a : Nat),
+      n = 4 ∨ n = 8 → 1 ≤ k → k ≤ 16 → tail.length ≤ 982 →
+      MachineState.readWord mem 9280 = UInt256.ofNat k →
+      Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
+      Model.FastRepresents mem 2048 n a → a < mm →
+      Challenge.EvmProof.GasSteps (sqCall s mem ret tail)
+        (retTo s (SquareLoop.sqLoopMem s n k mem) (UInt256.ofNat 3243) tail) := by
+  intro k ret tail mem a hfast hk hk16 hcap hcount hf hm ha ham
+  -- `GasSteps` lives in `Type`, so the limb count has to be split by `cases`.
+  cases n with
+  | zero => exact absurd hn (by omega)
+  | succ n1 =>
+    cases n1 with
+    | zero => exact absurd hn (by omega)
+    | succ p =>
+      have hlow : (MachineState.readWord mem (32 * (p + 2) - 32)).toNat =
+          mm % Limbs.radix := by
+        have h := Model.readWord_of_fastRepresents hm (j := p + 1) (by omega)
+        rw [show (0 : Nat) + 32 * (p + 1) = 32 * (p + 2) - 32 from by omega,
+          show p + 1 + 1 - 1 - (p + 1) = 0 from by omega, pow_zero, Nat.div_one] at h
+        exact h
+      have hmi : (MachineState.readWord mem 9376).toNat = minv := by
+        rw [hf.minvW, toNat_ofNat_self hminvlt]
+      exact Challenge.EvmProof.GasSteps.cast
+        (SquareLoop.gasSteps_squareLoop s mem p a mm k ret tail hcap hrun hcode hfork
+          hnp hact hn32 hfast hk hk16 hcount hcds hf.s32 hf.tl hf.ml ha hm ham hmpos
+          (odd_of_minvA hminvA) (by rw [hlow, hmi]; exact hminvA))
         rfl rfl
 
 /-- The concrete subroutine contracts. -/
@@ -188,6 +243,24 @@ def subs (s : State) (n bsize mm minv : Nat)
   sqKeep ptr v mem hptr hdisj hrep :=
     SquareResult.sqMem_fastRepresents_outside s mem n ptr n v (by omega) hn32
       (Or.inl hptr) (Or.inl (by omega)) hdisj.symm hrep
+  sqLoopMem k mem := SquareLoop.sqLoopMem s n k mem
+  sqLoopFrame k _ hfast hf := sqLoopMem_frame' k hfast (by omega) hn32 hf
+  squareLoop := subsSquareLoop s n bsize mm minv hcode hfork hrun hnp hact hcds hn
+    hn32 hmpos hminvlt hminvA
+  sqLoopValue k mem a hfast hf hm ha ham := by
+    have hlow : (MachineState.readWord mem (32 * n - 32)).toNat = mm % Limbs.radix := by
+      have h := Model.readWord_of_fastRepresents hm (j := n - 1) (by omega)
+      rw [show (0 : Nat) + 32 * (n - 1) = 32 * n - 32 from by omega,
+        show n - 1 - (n - 1) = 0 from by omega, pow_zero, Nat.div_one] at h
+      exact h
+    have hmi : (MachineState.readWord mem 9376).toNat = minv := by
+      rw [hf.minvW, toNat_ofNat_self hminvlt]
+    obtain ⟨p, rfl⟩ : ∃ p, n = p + 2 := ⟨n - 2, by omega⟩
+    exact SquareLoop.sqLoopMem_represents s mem p a mm k hfast hn32 ha hm
+      (odd_of_minvA hminvA) ham hmpos (by rw [hlow, hmi]; exact hminvA)
+  sqLoopKeep k ptr v mem hfast hptr hdisj hrep :=
+    SquareLoop.sqLoopMem_fastRepresents_outside s mem n k ptr n v hfast (by omega)
+      hn32 (Or.inl hptr) (Or.inl (by omega)) hdisj.symm hrep
 
 /-- The value-level contract the concrete pair satisfies. -/
 theorem specOf (s : State) (n mm minv : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)

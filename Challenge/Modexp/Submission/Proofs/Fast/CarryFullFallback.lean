@@ -51,7 +51,7 @@ opaque gasSteps_fallback (E : EntryLemmas) (s : State) (mem : ByteArray) (pa pb 
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by norm_num)] at hnat
     exact hn8 (by omega)
   have hf := ((E.gasSteps_mulEntry s mem pa pb pdst ret rest (by omega) hrun hcode hfork hnp).trans
-    (E.gasSteps_commonFallback s mem (UInt256.ofNat 4041) pa pb pdst ret rest (by omega) hrun
+    (E.gasSteps_commonFallback s mem (UInt256.ofNat 4018) pa pb pdst ret rest (by omega) hrun
       hcode hfork hnp hact h128 h256)).trans
     (gasSteps_monpro s mem pa pb n pdst ret rest (by omega) hrun hcode hfork hnp hact
       hn hn32 hpa hpaFit hpb hpbFit hcds hs32 htl hml)
