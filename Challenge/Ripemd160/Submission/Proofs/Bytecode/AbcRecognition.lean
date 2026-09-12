@@ -21,7 +21,7 @@ statement, and it does not depend on how control reached the arm.
 Provenance: `byteFrom_toList_getElem`, `byte_eq_of_readWord_eq`,
 `byteArray_eq_of_readWord_cover` and `input_eq_abc` are lifted from
 `Challenge/Ripemd160/Submission/H39Memo/{Logic,Correct}.lean` at commit
-`3dad8ba6`, submission `cf170158-635a-4916-a3ca-220a0d3a4099`, co-authored by
+`3dad8ba6`, submission `cf170158-635a-4913-a3ca-220a0d3a4099`, co-authored by
 Amal-David.  They are artifact-independent (no program counter, instruction
 index or bytecode constant occurs in them), which is why they transfer verbatim
 from that 4,178-byte artifact to this 5,306-byte one.

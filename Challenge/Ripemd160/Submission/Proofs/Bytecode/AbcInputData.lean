@@ -12,7 +12,7 @@ value of the `PUSH32` at instruction index 4099 (pc `0x147a`) in the artifact.
 
 Provenance: `abcInput` / `abcExpected` and the block constants `abcBlock` /
 `abcFinalState` are taken from submission
-`cf170158-635a-4916-a3ca-220a0d3a4099` (commit `3dad8ba6`,
+`cf170158-635a-4913-a3ca-220a0d3a4099` (commit `3dad8ba6`,
 `Challenge/Ripemd160/Submission/H39Memo/{InputData,DigestData}.lean`,
 co-authored by Amal-David), whose `abc` memo arm was removed by the platform
 reset `bb1c49d0` rather than for any technical reason.

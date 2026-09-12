@@ -9,7 +9,7 @@ theorem tail_prefix_advances :
     ∀ instruction ∈ prefixTemplate, DenseScheduleLift.Advances instruction := by
   intro instruction hmem
   simp only [prefixTemplate, template, List.dropLast_cons_cons, List.dropLast_singleton, List.mem_cons, List.not_mem_nil, or_false] at hmem
-  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals first
     | exact Or.inl (Or.inl (StraightLine.push _ _))
     | exact Or.inl (Or.inl StraightLine.add)
@@ -26,7 +26,7 @@ theorem runLocatedBlock_tail_prefix {artifact : ProgramArtifact} {fork : Fork}
     (hstack : rho.length ≤ 996) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat) :
     Stepper.runLocatedBlock site.path {s with pc := site.startPC, stack := entryStack q ret rho} =
-      some {s with pc := site.endPC, stack := ret :: rho, memory := resultMemory s.memory q} := by
+      some {s with pc := site.endPC, stack := ret :: rho, memory := cleanedResultMemory s.memory q} := by
   have hend : site.endPC = pcAfter site.startPC prefixTemplate := by
     have h := endPC_eq_pcAfter_sites site.sites site.startPC site.endPC
       site.head_eq site.end_eq site.contiguous
@@ -54,16 +54,16 @@ theorem runLocatedBlock_tail {artifact : ProgramArtifact} {fork : Fork}
     (hvalid : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     Stepper.runLocatedBlock site.path
       {s with pc := site.prefixSite.startPC, stack := entryStack q ret rho} =
-      some {s with pc := ret, stack := rho, memory := resultMemory s.memory q} := by
+      some {s with pc := ret, stack := rho, memory := cleanedResultMemory s.memory q} := by
   apply Stepper.runLocatedBlock_append site.prefixSite.path [site.jump.located]
     _ {s with
       pc := site.prefixSite.endPC
       stack := ret :: rho
-      memory := resultMemory s.memory q}
+      memory := cleanedResultMemory s.memory q}
   · exact runLocatedBlock_tail_prefix site.prefixSite s ret q rho hstack hrun hactive
   · exact hrun
   · have h := SharedCallTrace.runLocated_jump site.jump site.jump_instr
-      {s with memory := resultMemory s.memory q} ret rho (by omega) hvalid
+      {s with memory := cleanedResultMemory s.memory q} ret rho (by omega) hvalid
     rw [site.jump_pc] at h
     simp only [Stepper.runLocatedBlock, h]
 
@@ -76,7 +76,7 @@ def gasSteps_tail {artifact : ProgramArtifact} {fork : Fork}
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := site.prefixSite.startPC, stack := entryStack q ret rho}
-      {s with pc := ret, stack := rho, memory := resultMemory s.memory q} := by
+      {s with pc := ret, stack := rho, memory := cleanedResultMemory s.memory q} := by
   apply Stepper.runLocatedBlock_sound artifact fork site.path
   · exact hcode
   · exact hfork
