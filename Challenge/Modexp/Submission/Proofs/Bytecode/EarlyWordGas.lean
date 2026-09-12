@@ -20,10 +20,10 @@ def steps_hit {artifact : ProgramArtifact} {fork : Fork}
     (input : ByteArray) (hdata : template.executionEnv.calldata = input)
     (hmatch : WindowTwentyOneInput.Matches input) :
     GasSteps (framed template (UInt256.ofNat 0) [])
-      (framed template (UInt256.ofNat 43) (WindowTwentyOnePositive.routeStack input)) := by
+      (framed template (UInt256.ofNat 4955) (WindowTwentyOnePositive.routeStack input)) := by
   have hg := run_guard template input hdata (jump_env env paths.missJump)
   rw [if_pos ((guard_zero_iff input).mpr hmatch)] at hg
-  have hh := run_hit template input
+  have hh := run_hit template input (jump_env env paths.hitJump)
   exact (paths.guard.steps
     (env.transfer (t := framed template (UInt256.ofNat 0) []) rfl rfl) rfl hg).trans
     (paths.hit.steps
@@ -34,7 +34,7 @@ def steps_miss {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (input : ByteArray) (hdata : template.executionEnv.calldata = input)
     (hmatch : ¬ WindowTwentyOneInput.Matches input) :
-    GasSteps (framed template (UInt256.ofNat 0) []) (framed template (UInt256.ofNat 1256) []) := by
+    GasSteps (framed template (UInt256.ofNat 0) []) (framed template (UInt256.ofNat 1169) []) := by
   have hg := run_guard template input hdata (jump_env env paths.missJump)
   have hn : (WindowTwentyOneInput.guardDiff input).toNat ≠ 0 := by
     intro hz
@@ -44,6 +44,6 @@ def steps_miss {artifact : ProgramArtifact} {fork : Fork}
   exact (paths.guard.steps
     (env.transfer (t := framed template (UInt256.ofNat 0) []) rfl rfl) rfl hg).trans
     (paths.miss.steps
-      (env.transfer (t := framed template (UInt256.ofNat 127) (headerStack input)) rfl rfl) rfl hm)
+      (env.transfer (t := framed template (UInt256.ofNat 47) (headerStack input)) rfl rfl) rfl hm)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.EarlyWordGas

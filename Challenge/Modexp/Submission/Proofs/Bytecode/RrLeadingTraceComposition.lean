@@ -12,8 +12,8 @@ open YulEvmCompiler
 /-- Complete artifact-independent helper trace, composed from opaque leaves. -/
 theorem run_helper (template : State) (mem : ByteArray)
     (n bsize esize msize : Nat) (hn2 : 2 ≤ n) (hn32 : n ≤ 32)
-    (hsize : MachineState.readWord mem 5248 = UInt256.ofNat (32 * n))
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 1457 = true) :
+    (hsize : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 1370 = true) :
     runInstructions helperProgram (entryState template mem n bsize esize msize) =
       some (exitState template mem n bsize esize msize) := by
   unfold helperProgram

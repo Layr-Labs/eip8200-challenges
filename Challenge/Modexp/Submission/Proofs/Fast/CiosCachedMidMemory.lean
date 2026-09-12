@@ -12,23 +12,23 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
 theorem read_two_stores (mem : ByteArray) (v w r : Nat)
-    (hr : r+32 ≤ 4096 ∨ 4160 ≤ r) :
+    (hr : r+32 ≤ 8192 ∨ 8256 ≤ r) :
     MachineState.readWord
       (MachineState.writeBytes
-        (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 4128)
-        (Data.Bytes.natToBytesPadded w 32) 4096) r =
+        (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 8224)
+        (Data.Bytes.natToBytesPadded w 32) 8192) r =
       MachineState.readWord mem r := by
   have h1 : MachineState.readWord
       (MachineState.writeBytes
-        (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 4128)
-        (Data.Bytes.natToBytesPadded w 32) 4096) r =
+        (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 8224)
+        (Data.Bytes.natToBytesPadded w 32) 8192) r =
       MachineState.readWord
-        (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 4128) r := by
+        (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 8224) r := by
     apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
     rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
     omega
   have h2 : MachineState.readWord
-      (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 4128) r =
+      (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 8224) r =
       MachineState.readWord mem r := by
     apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
     rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
@@ -36,15 +36,15 @@ theorem read_two_stores (mem : ByteArray) (v w r : Nat)
   rw [h1, h2]
 
 theorem read_mid (mem : ByteArray) (c : UInt256) (r : Nat)
-    (hr : r+32 ≤ 4096 ∨ 4160 ≤ r) :
+    (hr : r+32 ≤ 8192 ∨ 8256 ≤ r) :
     MachineState.readWord (midMem mem c) r = MachineState.readWord mem r :=
   read_two_stores mem _ _ r hr
 
 theorem rowMu_mid (mem : ByteArray) (c : UInt256) (n : Nat) (hn : 2 ≤ n) :
     rowMu (midMem mem c) n = rowMu mem n := by
   unfold rowMu
-  rw [read_mid mem c 5280 (Or.inr (by decide)),
-    read_mid mem c (4128+32*n) (Or.inr (by omega))]
+  rw [read_mid mem c 9376 (Or.inr (by decide)),
+    read_mid mem c (8224+32*n) (Or.inr (by omega))]
 
 theorem rowC0_mid (mem : ByteArray) (c : UInt256) (n : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) :
@@ -55,14 +55,14 @@ theorem rowC0_mid (mem : ByteArray) (c : UInt256) (n : Nat)
 /-- The row-head inverse relation belongs to the logical memory state. -/
 def inverseInvariant (mem : ByteArray) (n : Nat) : Prop :=
   ((MachineState.readWord mem (32*n-32)).toNat *
-    (MachineState.readWord mem 5280).toNat + 1) % 2 ^ 256 = 0
+    (MachineState.readWord mem 9376).toNat + 1) % 2 ^ 256 = 0
 
 opaque inverse_mpZeroed (s : State) (mem : ByteArray) (n : Nat)
     (hn : n ≤ 32) (hminv : inverseInvariant mem n) :
     inverseInvariant (mpZeroed s mem n) n := by
   unfold inverseInvariant at *
   rw [readWord_mpZeroed s mem n (32*n-32) hn (Or.inl (by omega)),
-    readWord_mpZeroed s mem n 5280 hn (Or.inr (by decide))]
+    readWord_mpZeroed s mem n 9376 hn (Or.inr (by decide))]
   exact hminv
 
 opaque inverse_rowsMem (mem : ByteArray) (pa pb n i : Nat)
@@ -70,7 +70,7 @@ opaque inverse_rowsMem (mem : ByteArray) (pa pb n i : Nat)
     inverseInvariant (rowsMem mem pa pb n i) n := by
   unfold inverseInvariant at *
   rw [readWord_rowsMem mem pa pb n (32*n-32) hn (Or.inl (by omega)) i,
-    readWord_rowsMem mem pa pb n 5280 hn (Or.inr (by decide)) i]
+    readWord_rowsMem mem pa pb n 9376 hn (Or.inr (by decide)) i]
   exact hminv
 
 opaque inverse_l1Step (mem : ByteArray) (bi : UInt256) (pa n j : Nat)
@@ -78,7 +78,7 @@ opaque inverse_l1Step (mem : ByteArray) (bi : UInt256) (pa n j : Nat)
     inverseInvariant (l1Step mem bi pa n j).memory n := by
   unfold inverseInvariant at *
   rw [readWord_l1Step mem bi pa n (32*n-32) j hn (Or.inl (by omega)),
-    readWord_l1Step mem bi pa n 5280 j hn (Or.inr (by decide))]
+    readWord_l1Step mem bi pa n 9376 j hn (Or.inr (by decide))]
   exact hminv
 
 opaque inverse_midMem (mem : ByteArray) (c : UInt256) (n : Nat)
@@ -86,7 +86,7 @@ opaque inverse_midMem (mem : ByteArray) (c : UInt256) (n : Nat)
     inverseInvariant (midMem mem c) n := by
   unfold inverseInvariant at *
   rw [read_mid mem c (32*n-32) (Or.inl (by omega)),
-    read_mid mem c 5280 (Or.inr (by decide))]
+    read_mid mem c 9376 (Or.inr (by decide))]
   exact hminv
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMidMemory

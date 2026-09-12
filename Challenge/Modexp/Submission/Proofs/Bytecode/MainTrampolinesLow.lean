@@ -9,7 +9,6 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.Main
 open EvmSemantics
 open EvmSemantics.EVM
 
-/-- Direct entry has no initial trampoline instructions. -/
 theorem run_tramp0 (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp0Path
       (initialState submissionBytecode input 0) = some (trampolineState input 0) := by

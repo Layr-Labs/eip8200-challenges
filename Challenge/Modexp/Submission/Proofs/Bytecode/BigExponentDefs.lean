@@ -42,99 +42,99 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def startExponentPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 715 .JUMPDEST, pushAt 716 0 0]
+  [opAt 678 .JUMPDEST, pushAt 679 0 0]
 
 def outerGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 717 .JUMPDEST, opAt 718 (.Dup ⟨4, by decide⟩),
-   opAt 719 (.Dup ⟨1, by decide⟩), opAt 720 .LT, opAt 721 .ISZERO,
-   pushAt 722 2 1120, opAt 723 .JUMPI]
+  [opAt 680 .JUMPDEST, opAt 681 (.Dup ⟨4, by decide⟩),
+   opAt 682 (.Dup ⟨1, by decide⟩), opAt 683 .LT, opAt 684 .ISZERO,
+   pushAt 685 2 1038, opAt 686 .JUMPI]
 
 def outerToInnerPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 724 (.Dup ⟨0, by decide⟩), opAt 725 (.Dup ⟨8, by decide⟩),
-   opAt 726 .ADD, opAt 727 (.Dup ⟨0, by decide⟩),
-   opAt 728 .CALLDATALOAD, pushAt 729 0 0, opAt 730 .BYTE,
-   pushAt 731 0 0]
+  [opAt 687 (.Dup ⟨0, by decide⟩), opAt 688 (.Dup ⟨8, by decide⟩),
+   opAt 689 .ADD, opAt 690 (.Dup ⟨0, by decide⟩),
+   opAt 691 .CALLDATALOAD, pushAt 692 0 0, opAt 693 .BYTE,
+   pushAt 694 0 0]
 
 def innerGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 732 .JUMPDEST, pushAt 733 1 8, opAt 734 (.Dup ⟨1, by decide⟩),
-   opAt 735 .LT, opAt 736 .ISZERO, pushAt 737 2 1106,
-   opAt 738 .JUMPI]
+  [opAt 695 .JUMPDEST, pushAt 696 1 8, opAt 697 (.Dup ⟨1, by decide⟩),
+   opAt 698 .LT, opAt 699 .ISZERO, pushAt 700 2 1024,
+   opAt 701 .JUMPI]
 
 def innerToSquarePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 739 1 1, opAt 740 (.Dup ⟨2, by decide⟩),
-   opAt 741 (.Dup ⟨2, by decide⟩), pushAt 742 1 7,
-   opAt 743 .SUB, opAt 744 .SHR, opAt 745 .AND,
-   pushAt 746 2 1003, opAt 747 (.Dup ⟨7, by decide⟩),
-   pushAt 748 0 0, pushAt 749 2 3072, pushAt 750 2 2048,
-   opAt 751 (.Dup ⟨0, by decide⟩), pushAt 752 2 416, opAt 753 .JUMP]
+  [pushAt 702 1 1, opAt 703 (.Dup ⟨2, by decide⟩),
+   opAt 704 (.Dup ⟨2, by decide⟩), pushAt 705 1 7,
+   opAt 706 .SUB, opAt 707 .SHR, opAt 708 .AND,
+   pushAt 709 2 921, opAt 710 (.Dup ⟨7, by decide⟩),
+   pushAt 711 0 0, pushAt 712 2 3072, pushAt 713 2 2048,
+   opAt 714 (.Dup ⟨0, by decide⟩), pushAt 715 2 334, opAt 716 .JUMP]
 
 def squareToCopyPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 754 .JUMPDEST, pushAt 755 2 1017,
-   opAt 756 (.Dup ⟨7, by decide⟩), pushAt 757 2 3072,
-   pushAt 758 2 2048, pushAt 759 1 177, opAt 760 .JUMP]
+  [opAt 717 .JUMPDEST, pushAt 718 2 935,
+   opAt 719 (.Dup ⟨7, by decide⟩), pushAt 720 2 3072,
+   pushAt 721 2 2048, pushAt 722 1 97, opAt 723 .JUMP]
 
 def copyToProductPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 761 .JUMPDEST, pushAt 762 2 1036,
-   opAt 763 (.Dup ⟨7, by decide⟩), pushAt 764 0 0,
-   pushAt 765 2 3072, pushAt 766 2 1024, pushAt 767 2 2048,
-   pushAt 768 2 416, opAt 769 .JUMP]
+  [opAt 724 .JUMPDEST, pushAt 725 2 954,
+   opAt 726 (.Dup ⟨7, by decide⟩), pushAt 727 0 0,
+   pushAt 728 2 3072, pushAt 729 2 1024, pushAt 730 2 2048,
+   pushAt 731 2 334, opAt 732 .JUMP]
 
 def productToSelectPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 770 .JUMPDEST, opAt 771 (.Dup ⟨0, by decide⟩),
-   pushAt 772 0 0, opAt 773 .SUB, pushAt 774 0 0]
+  [opAt 733 .JUMPDEST, opAt 734 (.Dup ⟨0, by decide⟩),
+   pushAt 735 0 0, opAt 736 .SUB, pushAt 737 0 0]
 
 def selectGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 775 .JUMPDEST, opAt 776 (.Dup ⟨8, by decide⟩),
-   opAt 777 (.Dup ⟨1, by decide⟩), opAt 778 .LT, opAt 779 .ISZERO,
-   pushAt 780 2 1092, opAt 781 .JUMPI]
+  [opAt 738 .JUMPDEST, opAt 739 (.Dup ⟨8, by decide⟩),
+   opAt 740 (.Dup ⟨1, by decide⟩), opAt 741 .LT, opAt 742 .ISZERO,
+   pushAt 743 2 1010, opAt 744 .JUMPI]
 
 def selectBodyPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 782 (.Dup ⟨0, by decide⟩), pushAt 783 1 5, opAt 784 .SHL,
-   opAt 785 (.Dup ⟨0, by decide⟩), pushAt 786 2 2048, opAt 787 .ADD,
-   opAt 788 .MLOAD, opAt 789 (.Dup ⟨1, by decide⟩),
-   pushAt 790 2 3072, opAt 791 .ADD, opAt 792 .MLOAD,
-   opAt 793 (.Dup ⟨4, by decide⟩), opAt 794 (.Dup ⟨1, by decide⟩),
-   opAt 795 (.Dup ⟨3, by decide⟩), opAt 796 .XOR, opAt 797 .AND,
-   opAt 798 (.Dup ⟨2, by decide⟩), opAt 799 .XOR,
-   opAt 800 (.Dup ⟨3, by decide⟩), pushAt 801 2 2048,
-   opAt 802 .ADD, opAt 803 .MSTORE, opAt 804 .POP, opAt 805 .POP,
-   opAt 806 .POP, pushAt 807 1 1, opAt 808 (.Dup ⟨1, by decide⟩),
-   opAt 809 .ADD, opAt 810 (.Swap ⟨0, by decide⟩), opAt 811 .POP,
-   pushAt 812 2 1041, opAt 813 .JUMP]
+  [opAt 745 (.Dup ⟨0, by decide⟩), pushAt 746 1 5, opAt 747 .SHL,
+   opAt 748 (.Dup ⟨0, by decide⟩), pushAt 749 2 2048, opAt 750 .ADD,
+   opAt 751 .MLOAD, opAt 752 (.Dup ⟨1, by decide⟩),
+   pushAt 753 2 3072, opAt 754 .ADD, opAt 755 .MLOAD,
+   opAt 756 (.Dup ⟨4, by decide⟩), opAt 757 (.Dup ⟨1, by decide⟩),
+   opAt 758 (.Dup ⟨3, by decide⟩), opAt 759 .XOR, opAt 760 .AND,
+   opAt 761 (.Dup ⟨2, by decide⟩), opAt 762 .XOR,
+   opAt 763 (.Dup ⟨3, by decide⟩), pushAt 764 2 2048,
+   opAt 765 .ADD, opAt 766 .MSTORE, opAt 767 .POP, opAt 768 .POP,
+   opAt 769 .POP, pushAt 770 1 1, opAt 771 (.Dup ⟨1, by decide⟩),
+   opAt 772 .ADD, opAt 773 (.Swap ⟨0, by decide⟩), opAt 774 .POP,
+   pushAt 775 2 959, opAt 776 .JUMP]
 
 def selectFinishPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 814 .JUMPDEST, opAt 815 .POP, opAt 816 .POP, opAt 817 .POP,
-   pushAt 818 1 1, opAt 819 (.Dup ⟨1, by decide⟩), opAt 820 .ADD,
-   opAt 821 (.Swap ⟨0, by decide⟩), opAt 822 .POP,
-   pushAt 823 2 968, opAt 824 .JUMP]
+  [opAt 777 .JUMPDEST, opAt 778 .POP, opAt 779 .POP, opAt 780 .POP,
+   pushAt 781 1 1, opAt 782 (.Dup ⟨1, by decide⟩), opAt 783 .ADD,
+   opAt 784 (.Swap ⟨0, by decide⟩), opAt 785 .POP,
+   pushAt 786 2 886, opAt 787 .JUMP]
 
 def innerFinishPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 825 .JUMPDEST, opAt 826 .POP, opAt 827 .POP, opAt 828 .POP,
-   pushAt 829 1 1, opAt 830 (.Dup ⟨1, by decide⟩), opAt 831 .ADD,
-   opAt 832 (.Swap ⟨0, by decide⟩), opAt 833 .POP,
-   pushAt 834 2 951, opAt 835 .JUMP]
+  [opAt 788 .JUMPDEST, opAt 789 .POP, opAt 790 .POP, opAt 791 .POP,
+   pushAt 792 1 1, opAt 793 (.Dup ⟨1, by decide⟩), opAt 794 .ADD,
+   opAt 795 (.Swap ⟨0, by decide⟩), opAt 796 .POP,
+   pushAt 797 2 869, opAt 798 .JUMP]
 
 def exponentEntry (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 949
+  { s with pc := UInt256.ofNat 867
            stack := [accumulatorWord, UInt256.ofNat count, UInt256.ofNat b,
              UInt256.ofNat e, UInt256.ofNat m, UInt256.ofNat baseOff,
              UInt256.ofNat expOff] ++ rest }
 
 def outerLoop (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256) (i : Nat) : State :=
-  { s with pc := UInt256.ofNat 951
+  { s with pc := UInt256.ofNat 869
            stack := [UInt256.ofNat i, accumulatorWord, UInt256.ofNat count,
              UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
              UInt256.ofNat baseOff, UInt256.ofNat expOff] ++ rest }
@@ -142,7 +142,7 @@ def outerLoop (s : State) (accumulatorWord : UInt256)
 def outerBody (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256) (i : Nat) : State :=
   { outerLoop s accumulatorWord count b e m baseOff expOff rest i with
-      pc := UInt256.ofNat 960 }
+      pc := UInt256.ofNat 878 }
 
 def loadedExponentByte (s : State) (expOff i : Nat) : UInt256 :=
   UInt256.byteAt 0 (MachineState.readWord s.executionEnv.calldata (expOff + i))
@@ -150,7 +150,7 @@ def loadedExponentByte (s : State) (expOff i : Nat) : UInt256 :=
 def innerLoop (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
     (rest : List UInt256) (j : Nat) : State :=
-  { s with pc := UInt256.ofNat 968
+  { s with pc := UInt256.ofNat 886
            stack := [UInt256.ofNat j, byte, offset, UInt256.ofNat i,
              accumulatorWord, UInt256.ofNat count, UInt256.ofNat b,
              UInt256.ofNat e, UInt256.ofNat m, UInt256.ofNat baseOff,
@@ -160,7 +160,7 @@ def innerBody (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
     (rest : List UInt256) (j : Nat) : State :=
   { innerLoop s accumulatorWord count b e m baseOff expOff i offset byte rest j with
-      pc := UInt256.ofNat 978 }
+      pc := UInt256.ofNat 896 }
 
 def exponentBit (byte : UInt256) (j : Nat) : UInt256 :=
   UInt256.land (UInt256.shiftRight byte (UInt256.ofNat (7 - j))) 1
@@ -177,7 +177,7 @@ def squareEntry (s : State) (accumulatorWord : UInt256)
     (rest : List UInt256) : State :=
   BigMul.mulEntry
     (innerBody s accumulatorWord count b e m baseOff expOff i offset byte rest j)
-    2048 2048 3072 0 count 1003
+    2048 2048 3072 0 count 921
     (bitFrame accumulatorWord count b e m baseOff expOff i j offset byte
       (exponentBit byte j) rest)
 
@@ -216,7 +216,7 @@ def squareReturned (s : State) (accumulatorWord : UInt256)
     (rest : List UInt256) : State :=
   mulResult
     (innerBody s accumulatorWord count b e m baseOff expOff i offset byte rest j)
-    2048 2048 3072 0 count 1003
+    2048 2048 3072 0 count 921
     (bitFrame accumulatorWord count b e m baseOff expOff i j offset byte
       (exponentBit byte j) rest)
 
@@ -226,7 +226,7 @@ def copiedSquare (s : State) (accumulatorWord : UInt256)
   BigHelpers.copyReturned
     (squareReturned s accumulatorWord count b e m baseOff expOff i j
       offset byte rest)
-    2048 3072 count 1017
+    2048 3072 count 935
     (bitFrame accumulatorWord count b e m baseOff expOff i j offset byte
       (exponentBit byte j) rest)
 
@@ -234,8 +234,8 @@ def copiedSquare (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
     (rest : List UInt256) :
     (squareReturned s accumulatorWord count b e m baseOff expOff i j
-      offset byte rest).pc = UInt256.ofNat 1003 := by
-  have h1000 : (1003 : UInt256) = UInt256.ofNat 1003 := by decide
+      offset byte rest).pc = UInt256.ofNat 921 := by
+  have h1000 : (921 : UInt256) = UInt256.ofNat 921 := by decide
   simpa [squareReturned] using h1000
 
 @[simp] theorem squareReturned_stack (s : State) (accumulatorWord : UInt256)
@@ -253,7 +253,7 @@ def productReturned (s : State) (accumulatorWord : UInt256)
   mulResult
     (copiedSquare s accumulatorWord count b e m baseOff expOff i j
       offset byte rest)
-    2048 1024 3072 0 count 1036
+    2048 1024 3072 0 count 954
     (bitFrame accumulatorWord count b e m baseOff expOff i j offset byte
       (exponentBit byte j) rest)
 
@@ -371,7 +371,7 @@ def selectLoop (s : State) (accumulatorWord : UInt256)
     (rest : List UInt256) : State :=
   { selectProgress s accumulatorWord count b e m baseOff expOff i j
       offset byte rest k with
-    pc := UInt256.ofNat 1041
+    pc := UInt256.ofNat 959
     stack := [UInt256.ofNat k, selectMask byte j, exponentBit byte j,
       UInt256.ofNat j, byte, offset, UInt256.ofNat i, accumulatorWord,
       UInt256.ofNat count, UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
@@ -381,13 +381,13 @@ def selectBody (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j k : Nat) (offset byte : UInt256)
     (rest : List UInt256) : State :=
   { selectLoop s accumulatorWord count b e m baseOff expOff i j k offset byte
-      rest with pc := UInt256.ofNat 1050 }
+      rest with pc := UInt256.ofNat 968 }
 
 def selectExit (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
     (rest : List UInt256) : State :=
   { selectLoop s accumulatorWord count b e m baseOff expOff i j count offset
-      byte rest with pc := UInt256.ofNat 1092 }
+      byte rest with pc := UInt256.ofNat 1010 }
 
 def afterSelectedBit (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j : Nat) (offset byte : UInt256)
@@ -401,6 +401,6 @@ def innerExit (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i : Nat) (offset byte : UInt256)
     (rest : List UInt256) : State :=
   { innerLoop s accumulatorWord count b e m baseOff expOff i offset byte rest 8
-      with pc := UInt256.ofNat 1106 }
+      with pc := UInt256.ofNat 1024 }
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigExponent

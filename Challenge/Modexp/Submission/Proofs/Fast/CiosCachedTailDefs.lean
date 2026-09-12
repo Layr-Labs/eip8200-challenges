@@ -18,33 +18,33 @@ open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 def tailLoopProgram : List Instr := CiosCached.tailProgram.take 23
 def exitProgram : List Instr := CiosCached.tailProgram.drop 23
 
-/-- The row loop's `JUMPI` (pc 4629) falls through into the R0 kernel-exit **dispatch**
-(pc 4630), which sends a square (`hd = sq_row`) to `sq_exit` and lets every multiply
-fall through to `nx` (pc 4639). -/
+/-- The row loop's `JUMPI` (pc 4756) falls through into the R0 kernel-exit **dispatch**
+(pc 4757), which sends a square (`hd = sq_row`) to `sq_exit` and lets every multiply
+fall through to `nx` (pc 4766). -/
 def exitState (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat)
     (hd ent dst ret : UInt256) (rest : List UInt256) : State :=
-  framed { s with memory := mem } (UInt256.ofNat 4776)
+  framed { s with memory := mem } (UInt256.ofNat 4768)
     ([pbi, hd, UInt256.ofNat (pb-32),
       ent, negative32, allOnes, l2Target n, dst, ret] ++ rest)
 
-/-- The `nx` side of the R0 dispatch (pc 4640): the 14 `POP`s that drop the row frame. -/
+/-- The `nx` side of the R0 dispatch (pc 4767): the 14 `POP`s that drop the row frame. -/
 def nxState (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat)
     (hd ent dst ret : UInt256) (rest : List UInt256) : State :=
-  framed { s with memory := mem } (UInt256.ofNat 4786)
+  framed { s with memory := mem } (UInt256.ofNat 4778)
     ([pbi, hd, UInt256.ofNat (pb-32),
       ent, negative32, allOnes, l2Target n, dst, ret] ++ rest)
 
-/-- The `nx` `JUMPDEST` itself (pc 4639): the last square jumps here from `sq_exit`. -/
+/-- The `nx` `JUMPDEST` itself (pc 4766): the last square jumps here from `sq_exit`. -/
 def nxJdState (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat)
     (hd ent dst ret : UInt256) (rest : List UInt256) : State :=
-  framed { s with memory := mem } (UInt256.ofNat 4785)
+  framed { s with memory := mem } (UInt256.ofNat 4777)
     ([pbi, hd, UInt256.ofNat (pb-32),
       ent, negative32, allOnes, l2Target n, dst, ret] ++ rest)
 
-/-- `sq_exit` (pc 4701): the in-kernel squaring loop keeps the row frame. -/
+/-- `sq_exit` (pc 4824): the in-kernel squaring loop keeps the row frame. -/
 def sqExitState (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat)
     (hd ent dst ret : UInt256) (rest : List UInt256) : State :=
-  framed { s with memory := mem } (UInt256.ofNat 4847)
+  framed { s with memory := mem } (UInt256.ofNat 4835)
     ([pbi, hd, UInt256.ofNat (pb-32),
       ent, negative32, allOnes, l2Target n, dst, ret] ++ rest)
 
@@ -59,19 +59,19 @@ def baseStack (pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : L
 
 def input (s : State) (c mu bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=
-  framed s (UInt256.ofNat 4750) ([c, mu, bi] ++ baseStack pbi paEnd pbEnd flag dst ret rest)
+  framed s (UInt256.ofNat 4742) ([c, mu, bi] ++ baseStack pbi paEnd pbEnd flag dst ret rest)
 
 def cleaned (s : State) (c pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : State :=
-  framed s (UInt256.ofNat 4753) ([c] ++ baseStack pbi paEnd pbEnd flag dst ret rest)
+  framed s (UInt256.ofNat 4748) ([c] ++ baseStack pbi paEnd pbEnd flag dst ret rest)
 
 def stored (s : State) (c pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : State :=
-  framed { s with memory := tailMem s.memory c } (UInt256.ofNat 4769)
+  framed { s with memory := tailMem s.memory c } (UInt256.ofNat 4761)
     (baseStack pbi paEnd pbEnd flag dst ret rest)
 
 def result (s : State) (c pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : State :=
   framed { s with memory := tailMem s.memory c }
     (if UInt256.isTrue (UInt256.gt (negative32+pbi) pbEnd) then paEnd
-      else UInt256.ofNat 4776)
+      else UInt256.ofNat 4768)
     (baseStack (negative32+pbi) paEnd pbEnd flag dst ret rest)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedTailDefs

@@ -9,9 +9,9 @@ set_option warningAsError true
 /-!
 # Total initial dispatch through the early one-word wrapper
 
-The initial header reader starts directly at byte zero. Matching headers fall
-through to the Fermat/window proof at pc 43. Every other header restores the
-legacy entry at pc 1256 with an empty stack and unchanged memory and environment.
+The initial hop always reaches pc 5224. Matching headers enter the existing
+Fermat/window proof at pc 4885. Every other header restores the exact legacy
+entry at pc 1314 with an empty stack and unchanged memory and environment.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.EarlyWordCorrect
@@ -40,11 +40,11 @@ private def environment (input : ByteArray) :
 /-- Every non-matching header reaches the unchanged legacy entry exactly. -/
 def legacy (input : ByteArray) (hmiss : ¬ WindowTwentyOneInput.Matches input) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Main.trampolineState input 1256) := by
+      (Main.trampolineState input 1169) := by
   have tail := EarlyWordGas.steps_miss Artifact.earlyWordPaths
     (initialState submissionBytecode input 0) (environment input) input rfl hmiss
   change Challenge.EvmProof.GasSteps (Main.trampolineState input 0)
-    (Main.trampolineState input 1256) at tail
+    (Main.trampolineState input 1169) at tail
   exact (Main.gasSteps_entryHop input).trans tail
 
 /-- Every matching header has a complete initial-state correctness trace. -/
@@ -57,7 +57,7 @@ def hit (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
   have entrySteps := EarlyWordGas.steps_hit Artifact.earlyWordPaths
     (initialState submissionBytecode input 0) (environment input) input rfl hmatch
   change Challenge.EvmProof.GasSteps (Main.trampolineState input 0)
-    (state (initialState submissionBytecode input 0) input (UInt256.ofNat 43)) at entrySteps
+    (state (initialState submissionBytecode input 0) input (UInt256.ofNat 4955)) at entrySteps
   exact ⟨final, ⟨(Main.gasSteps_entryHop input).trans (entrySteps.trans tail)⟩,
     done, result⟩
 

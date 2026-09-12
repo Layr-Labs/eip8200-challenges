@@ -12,7 +12,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_headerCheck (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock headerCheckPath
       (headerLoadedState input) = some (headerState input) := by
-  -- The block is two `JUMPDEST`s: a pure fall-through to 1067.
+  -- The block is two `JUMPDEST`s: a pure fall-through to 1116.
   -- `hdest`/`hdestWord` justified the jump target as a word and are now unreachable -- and this
   -- module sets `warningAsError true`, so an unused `have` is fatal rather than untidy.
   simp [headerCheckPath, opAt, pushAt,

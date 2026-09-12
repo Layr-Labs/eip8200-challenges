@@ -8,7 +8,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMacCore
 -3 gas per cell).  This file is the execution lemma for it.
 
 **Provenance.** Ported from terrapinelf's promoted MODEXP submission
-8c2efe8b-0254-4026-a953-9fdcd1730771 (public repo commit c8f510f, co-authors
+8c2efe8b-0254-4168-a953-9fdcd1730771 (public repo commit c8f510f, co-authors
 terrapinelf, ercumentyildirim, Akashneelesh), file
 `Challenge/Modexp/Submission/Proofs/Fast/CiosCachedFused.lean`, adapted to this
 artifact's cell frame.  The arithmetic identities it uses (`carry_eq`, `sum_eq`,
@@ -38,7 +38,7 @@ private def headProgram : List Instr :=
    .op (.Dup ⟨3, by decide⟩), .op .ADD]
 
 private def memoryProgram (tl ts : UInt256) : List Instr :=
-  [.push 3 tl, .op .MLOAD, .op (.Dup ⟨1, by decide⟩), .op .ADD,
+  [.push 2 tl, .op .MLOAD, .op (.Dup ⟨1, by decide⟩), .op .ADD,
    .op (.Dup ⟨0, by decide⟩), .push 2 ts, .op .MSTORE,
    .op (.Dup ⟨1, by decide⟩), .op .GT]
 
@@ -65,9 +65,9 @@ private theorem run_load_word (template : State) (pc sum borrow lo c y tl : UInt
     (rest : List UInt256) (hrest : rest.length + 8 < 1024)
     (hload : UInt256.ofNat (MachineState.activeWordsAfter
       template.activeWords.toNat tl.toNat 32) = template.activeWords) :
-    runInstructions [.push 3 tl, .op .MLOAD]
+    runInstructions [.push 2 tl, .op .MLOAD]
       (framed template pc ([sum, borrow, lo, c, y] ++ rest)) =
-    some (framed template (pc + UInt256.ofNat 5)
+    some (framed template (pc + UInt256.ofNat 4)
       ([MachineState.readWord template.memory tl.toNat, sum, borrow, lo, c, y] ++ rest)) := by
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
@@ -120,13 +120,13 @@ private theorem run_memory (template : State) (pc sum borrow lo c y tl ts : UInt
         memory := MachineState.writeBytes template.memory
           (Data.Bytes.natToBytesPadded
             (sum + MachineState.readWord template.memory tl.toNat).toNat 32) ts.toNat }
-      (pc + UInt256.ofNat 14)
+      (pc + UInt256.ofNat 13)
       ([UInt256.lt (sum + MachineState.readWord template.memory tl.toNat)
           sum, sum, borrow, lo, c, y] ++ rest)) := by
   have hl := run_load_word template pc sum borrow lo c y tl rest hrest hload
-  have hs := run_form_sum template (pc + UInt256.ofNat 5)
+  have hs := run_form_sum template (pc + UInt256.ofNat 4)
     (MachineState.readWord template.memory tl.toNat) sum borrow lo c y rest hrest
-  have hw := run_store_word template ((pc + UInt256.ofNat 5) + UInt256.ofNat 2)
+  have hw := run_store_word template ((pc + UInt256.ofNat 4) + UInt256.ofNat 2)
     (sum + MachineState.readWord template.memory tl.toNat)
     sum borrow lo c y ts rest hrest hstore
   have both := runInstructions_append_some _ _ _ _ _ hl hs
@@ -159,7 +159,7 @@ private theorem run_post (template : State) (pc mm lo c y tl ts : UInt256)
           (Data.Bytes.natToBytesPadded
             ((lo + c) + MachineState.readWord template.memory tl.toNat).toNat 32)
           ts.toNat }
-      (pc + UInt256.ofNat 26)
+      (pc + UInt256.ofNat 25)
       ([((UInt256.gt c (lo + c) - (UInt256.lt mm lo - mm)) - lo) +
           UInt256.lt ((lo + c) + MachineState.readWord template.memory tl.toNat)
             (lo + c), y] ++ rest)) := by
@@ -171,7 +171,7 @@ private theorem run_post (template : State) (pc mm lo c y tl ts : UInt256)
   have hh := run_head template pc mm lo c y rest hrest
   have hm := run_memory template (pc + UInt256.ofNat 7)
     (lo + c) (UInt256.lt mm lo - mm) lo c y tl ts rest hrest hload hstore
-  have ht := run_tail stored ((pc + UInt256.ofNat 7) + UInt256.ofNat 14)
+  have ht := run_tail stored ((pc + UInt256.ofNat 7) + UInt256.ofNat 13)
     (UInt256.lt ((lo + c) + t) (lo + c)) (lo + c) (UInt256.lt mm lo - mm) lo c y rest hrest
   have both := runInstructions_append_some _ _ _ _ _ hh hm
   have all := runInstructions_append_some _ _ _ _ _ both ht
@@ -192,7 +192,7 @@ theorem run_fused (template : State) (pc x y c tl ts : UInt256)
           (Data.Bytes.natToBytesPadded
             (macSum x y (MachineState.readWord template.memory tl.toNat) c).toNat 32)
           ts.toNat }
-      (pc + UInt256.ofNat 32)
+      (pc + UInt256.ofNat 31)
       ([macCarry x y (MachineState.readWord template.memory tl.toNat) c, y] ++ rest)) := by
   have hm := L2.run_multiply template pc x y c rest (by omega)
   have hp := run_post template (advancePC 6 pc)
@@ -216,7 +216,7 @@ theorem run_fused (template : State) (pc x y c tl ts : UInt256)
     some (framed _ _ ([partialCarry x y c + _, y] ++ rest)) at hp
   rw [hc, hs] at hp
   have both := runInstructions_append_some _ _ _ _ _ hm hp
-  have hpc : advancePC 6 pc + UInt256.ofNat 26 = pc + UInt256.ofNat 32 := by
+  have hpc : advancePC 6 pc + UInt256.ofNat 25 = pc + UInt256.ofNat 31 := by
     simp [advancePC, succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
   simpa only [macFusedProgram, macProductProgram, L2.multiplyProgram, List.take,
     hpc] using both

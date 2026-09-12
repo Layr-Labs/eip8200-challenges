@@ -2,7 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.Defs
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
-/-! Basic-block instruction paths, group 12 (instructions 1627..1682). -/
+/-! Basic-block instruction paths, group 12 (instructions 1675..1730). -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast
 
@@ -10,58 +10,58 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 1627..1661, pc 2257..2634. -/
+/-- Instructions 1675..1709, pc 2302..2675. -/
 def blk1627 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1508 .JUMPDEST,
-   opAt 1509 (.Dup ⟨1, by decide⟩),
-   opAt 1510 .MLOAD,
-   opAt 1511 (.Dup ⟨3, by decide⟩),
-   opAt 1512 .MLOAD,
-   opAt 1513 (.Dup ⟨1, by decide⟩),
-   opAt 1514 .ADD,
-   opAt 1515 (.Swap ⟨0, by decide⟩),
-   opAt 1516 (.Dup ⟨1, by decide⟩),
-   opAt 1517 .LT,
-   opAt 1518 (.Swap ⟨0, by decide⟩),
-   opAt 1519 (.Dup ⟨5, by decide⟩),
-   opAt 1520 .ADD,
-   opAt 1521 (.Swap ⟨4, by decide⟩),
-   opAt 1522 (.Dup ⟨5, by decide⟩),
-   opAt 1523 .LT,
-   opAt 1524 .OR,
-   opAt 1525 (.Swap ⟨3, by decide⟩),
-   opAt 1526 (.Dup ⟨1, by decide⟩),
-   opAt 1527 .MSTORE,
-   pushAt 1528 1 31,
-   opAt 1529 .NOT,
-   opAt 1530 .ADD,
-   opAt 1531 (.Swap ⟨0, by decide⟩),
-   pushAt 1532 1 31,
-   opAt 1533 .NOT,
-   opAt 1534 .ADD,
-   opAt 1535 (.Swap ⟨0, by decide⟩),
-   opAt 1536 (.Swap ⟨1, by decide⟩),
-   pushAt 1537 1 31,
-   opAt 1538 .NOT,
-   opAt 1539 .ADD,
-   opAt 1540 (.Swap ⟨1, by decide⟩),
-   pushAt 1541 2 4128,
-   opAt 1542 (.Dup ⟨1, by decide⟩),
-   opAt 1543 .GT,
-   pushAt 1544 2 2064,
-   opAt 1545 .JUMPI]
+  [opAt 1467 .JUMPDEST,
+   opAt 1468 (.Dup ⟨1, by decide⟩),
+   opAt 1469 .MLOAD,
+   opAt 1470 (.Dup ⟨3, by decide⟩),
+   opAt 1471 .MLOAD,
+   opAt 1472 (.Dup ⟨1, by decide⟩),
+   opAt 1473 .ADD,
+   opAt 1474 (.Swap ⟨0, by decide⟩),
+   opAt 1475 (.Dup ⟨1, by decide⟩),
+   opAt 1476 .LT,
+   opAt 1477 (.Swap ⟨0, by decide⟩),
+   opAt 1478 (.Dup ⟨5, by decide⟩),
+   opAt 1479 .ADD,
+   opAt 1480 (.Swap ⟨4, by decide⟩),
+   opAt 1481 (.Dup ⟨5, by decide⟩),
+   opAt 1482 .LT,
+   opAt 1483 .OR,
+   opAt 1484 (.Swap ⟨3, by decide⟩),
+   opAt 1485 (.Dup ⟨1, by decide⟩),
+   opAt 1486 .MSTORE,
+   pushAt 1487 1 31,
+   opAt 1488 .NOT,
+   opAt 1489 .ADD,
+   opAt 1490 (.Swap ⟨0, by decide⟩),
+   pushAt 1491 1 31,
+   opAt 1492 .NOT,
+   opAt 1493 .ADD,
+   opAt 1494 (.Swap ⟨0, by decide⟩),
+   opAt 1495 (.Swap ⟨1, by decide⟩),
+   pushAt 1496 1 31,
+   opAt 1497 .NOT,
+   opAt 1498 .ADD,
+   opAt 1499 (.Swap ⟨1, by decide⟩),
+   pushAt 1500 2 8224,
+   opAt 1501 (.Dup ⟨1, by decide⟩),
+   opAt 1502 .GT,
+   pushAt 1503 2 1977,
+   opAt 1504 .JUMPI]
 
-/-- Instructions 1662..1666, pc 2635..2308. -/
+/-- Instructions 1710..1666, pc 2676..2353. -/
 def blk1662 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1546 .POP,
-   opAt 1547 .POP,
-   opAt 1548 .POP,
-   pushAt 1549 2 4128,
-   opAt 1550 .MSTORE,
+  [opAt 1505 .POP,
+   opAt 1506 .POP,
+   opAt 1507 .POP,
+   pushAt 1508 2 8224,
+   opAt 1509 .MSTORE,
 
-   pushAt 1551 2 4804,
-   opAt 1552 .JUMP]
+   pushAt 1510 2 4792,
+   opAt 1511 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

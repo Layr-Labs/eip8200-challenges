@@ -20,8 +20,8 @@ theorem run_baseTail_head (input : ByteArray) (i : Nat) (base : UInt256)
         some (baseTailMidState input i base) := by
   rcases hvalid with ⟨_, hb, he, hm⟩
   have hi256 : i < 2 ^ 256 := by omega
-  have h562 : (648 : UInt256).toNat = 648 := by decide
-  have h562Word : (648 : UInt256) = UInt256.ofNat 648 := by decide
+  have h562 : (566 : UInt256).toNat = 566 := by decide
+  have h562Word : (566 : UInt256) = UInt256.ofNat 566 := by decide
   have h256Word : (256 : UInt256) = UInt256.ofNat 256 := by decide
   simp (config := { maxSteps := 150000 })
     [baseTailHeadPath, opAt, pushAt,
@@ -66,8 +66,8 @@ theorem run_baseTail_finish (input : ByteArray) (i : Nat) (base : UInt256)
         some (baseLoopState input (i + 1) (baseStep input i base)) := by
   rcases hvalid with ⟨_, hb, he, hm⟩
   have hi256 : i < 2 ^ 256 := by omega
-  have h541 : (628 : UInt256).toNat = 628 := by decide
-  have h541Word : (628 : UInt256) = UInt256.ofNat 628 := by decide
+  have h541 : (546 : UInt256).toNat = 546 := by decide
+  have h541Word : (546 : UInt256) = UInt256.ofNat 546 := by decide
   have hisucc' := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := i) (b := 1) (by omega : i + 1 < 2 ^ 256)
   have hincLeft : UInt256.ofNat 1 + UInt256.ofNat i =
@@ -111,11 +111,11 @@ def gasSteps_baseIteration (input : ByteArray) (i : Nat) (base : UInt256)
     (hvalid : ValidInput input) (hi : i < baseSize input) :
     Challenge.EvmProof.GasSteps (baseLoopState input i base)
       (baseLoopState input (i + 1) (baseStep input i base)) := by
-  have h562 : (648 : UInt256).toNat = 648 := by decide
+  have h562 : (566 : UInt256).toNat = 566 := by decide
   have hcap : (baseRest input i base).length < 1017 := by
     simp [baseRest, callerRest]
   have hjump : Decode.isValidJumpDest submissionBytecode
-      (648 : UInt256).toNat = true := by
+      (566 : UInt256).toNat = true := by
     rw [h562]
     exact jump562
   exact (Challenge.EvmProof.Stepper.runLocatedBlock_sound
@@ -127,7 +127,7 @@ def gasSteps_baseIteration (input : ByteArray) (i : Nat) (base : UInt256)
         (run_baseCall input i base hvalid hi) rfl
         deployAddress_not_precompile).trans <|
     (Accessors.gasSteps_calldataByte (baseLoopState input i base)
-      (UInt256.ofNat (96 + i)) 0 648 (baseRest input i base)
+      (UInt256.ofNat (96 + i)) 0 566 (baseRest input i base)
       hcap rfl rfl rfl deployAddress_not_precompile hjump).trans <|
     Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.submissionArtifact .Osaka baseTailPath rfl rfl

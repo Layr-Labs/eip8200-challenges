@@ -23,8 +23,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths
 
 set_option linter.unusedSimpArgs false in
 theorem run_fallback (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
-    (hactive : 169 ≤ s.activeWords.toNat)
+    (n bsize esize msize : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hactive : 298 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.fallback
@@ -50,8 +50,8 @@ theorem run_fallback (s : State) (memory : ByteArray)
     (by simpa [hcode] using jumpDest1703) hrun
 
 def gasSteps_fallback (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
-    (hactive : 169 ≤ s.activeWords.toNat)
+    (n bsize esize msize : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hactive : 298 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig

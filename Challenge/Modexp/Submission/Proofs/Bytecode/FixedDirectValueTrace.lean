@@ -41,8 +41,8 @@ theorem run_checkThree_hit (s : State) (memory input : ByteArray)
     (n bsize msize : Nat) (hb : bsize ≤ 1024)
     (hvalue : exponentValue input bsize 1 = 3)
     (hdata : s.executionEnv.calldata = input)
-    (hactive : 169 ≤ s.activeWords.toNat)
-    (heoff : MachineState.readWord memory 5376 = UInt256.ofNat (96 + bsize))
+    (hactive : 298 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord memory 9472 = UInt256.ofNat (96 + bsize))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock
@@ -50,8 +50,8 @@ theorem run_checkThree_hit (s : State) (memory input : ByteArray)
       (FixedDirectStates.checkThree s memory n bsize 1 msize) =
       some (FixedDirectStates.special s memory n bsize 1 msize 1) := by
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter
-      s.activeWords.toNat 5376 32) = s.activeWords :=
-    Exp.activeWords_fix s 5376 32 (by omega) (by omega) hactive
+      s.activeWords.toNat 9472 32) = s.activeWords :=
+    Exp.activeWords_fix s 9472 32 (by omega) (by omega) hactive
   have haddr : (96 + bsize) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       96 + bsize := by
@@ -83,16 +83,16 @@ theorem run_checkThree_miss (s : State) (memory input : ByteArray)
     (n bsize msize : Nat) (hb : bsize ≤ 1024)
     (hvalue : exponentValue input bsize 1 ≠ 3)
     (hdata : s.executionEnv.calldata = input)
-    (hactive : 169 ≤ s.activeWords.toNat)
-    (heoff : MachineState.readWord memory 5376 = UInt256.ofNat (96 + bsize))
+    (hactive : 298 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord memory 9472 = UInt256.ofNat (96 + bsize))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.checkThree
       (FixedDirectStates.checkThree s memory n bsize 1 msize) =
       some (FixedDirectStates.fallback s memory n bsize 1 msize) := by
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter
-      s.activeWords.toNat 5376 32) = s.activeWords :=
-    Exp.activeWords_fix s 5376 32 (by omega) (by omega) hactive
+      s.activeWords.toNat 9472 32) = s.activeWords :=
+    Exp.activeWords_fix s 9472 32 (by omega) (by omega) hactive
   have haddr : (96 + bsize) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       96 + bsize := by
@@ -141,16 +141,16 @@ theorem run_check65537_hit (s : State) (memory input : ByteArray)
     (n bsize msize : Nat) (hb : bsize ≤ 1024)
     (hvalue : exponentValue input bsize 3 = 65537)
     (hdata : s.executionEnv.calldata = input)
-    (hactive : 169 ≤ s.activeWords.toNat)
-    (heoff : MachineState.readWord memory 5376 = UInt256.ofNat (96 + bsize))
+    (hactive : 298 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord memory 9472 = UInt256.ofNat (96 + bsize))
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock
       (FixedDirectPaths.check65537 ++ FixedDirectPaths.fermatHit)
       (FixedDirectStates.check65537 s memory n bsize 3 msize) =
       some (FixedDirectStates.special s memory n bsize 3 msize 16) := by
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter
-      s.activeWords.toNat 5376 32) = s.activeWords :=
-    Exp.activeWords_fix s 5376 32 (by omega) (by omega) hactive
+      s.activeWords.toNat 9472 32) = s.activeWords :=
+    Exp.activeWords_fix s 9472 32 (by omega) (by omega) hactive
   have haddr : (96 + bsize) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       96 + bsize := by
@@ -183,16 +183,16 @@ theorem run_check65537_miss (s : State) (memory input : ByteArray)
     (n bsize msize : Nat) (hb : bsize ≤ 1024)
     (hvalue : exponentValue input bsize 3 ≠ 65537)
     (hdata : s.executionEnv.calldata = input)
-    (hactive : 169 ≤ s.activeWords.toNat)
-    (heoff : MachineState.readWord memory 5376 = UInt256.ofNat (96 + bsize))
+    (hactive : 298 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord memory 9472 = UInt256.ofNat (96 + bsize))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.check65537
       (FixedDirectStates.check65537 s memory n bsize 3 msize) =
       some (FixedDirectStates.fallback s memory n bsize 3 msize) := by
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter
-      s.activeWords.toNat 5376 32) = s.activeWords :=
-    Exp.activeWords_fix s 5376 32 (by omega) (by omega) hactive
+      s.activeWords.toNat 9472 32) = s.activeWords :=
+    Exp.activeWords_fix s 9472 32 (by omega) (by omega) hactive
   have haddr : (96 + bsize) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       96 + bsize := by
@@ -253,8 +253,8 @@ def gasSteps_checkThree_hit (s : State) (memory input : ByteArray)
     (n bsize msize : Nat) (hb : bsize ≤ 1024)
     (hvalue : exponentValue input bsize 1 = 3)
     (hdata : s.executionEnv.calldata = input)
-    (hactive : 169 ≤ s.activeWords.toNat)
-    (heoff : MachineState.readWord memory 5376 = UInt256.ofNat (96 + bsize))
+    (hactive : 298 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord memory 9472 = UInt256.ofNat (96 + bsize))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -274,8 +274,8 @@ def gasSteps_checkThree_miss (s : State) (memory input : ByteArray)
     (n bsize msize : Nat) (hb : bsize ≤ 1024)
     (hvalue : exponentValue input bsize 1 ≠ 3)
     (hdata : s.executionEnv.calldata = input)
-    (hactive : 169 ≤ s.activeWords.toNat)
-    (heoff : MachineState.readWord memory 5376 = UInt256.ofNat (96 + bsize))
+    (hactive : 298 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord memory 9472 = UInt256.ofNat (96 + bsize))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -295,8 +295,8 @@ def gasSteps_check65537_hit (s : State) (memory input : ByteArray)
     (n bsize msize : Nat) (hb : bsize ≤ 1024)
     (hvalue : exponentValue input bsize 3 = 65537)
     (hdata : s.executionEnv.calldata = input)
-    (hactive : 169 ≤ s.activeWords.toNat)
-    (heoff : MachineState.readWord memory 5376 = UInt256.ofNat (96 + bsize))
+    (hactive : 298 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord memory 9472 = UInt256.ofNat (96 + bsize))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -316,8 +316,8 @@ def gasSteps_check65537_miss (s : State) (memory input : ByteArray)
     (n bsize msize : Nat) (hb : bsize ≤ 1024)
     (hvalue : exponentValue input bsize 3 ≠ 65537)
     (hdata : s.executionEnv.calldata = input)
-    (hactive : 169 ≤ s.activeWords.toNat)
-    (heoff : MachineState.readWord memory 5376 = UInt256.ofNat (96 + bsize))
+    (hactive : 298 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord memory 9472 = UInt256.ofNat (96 + bsize))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
