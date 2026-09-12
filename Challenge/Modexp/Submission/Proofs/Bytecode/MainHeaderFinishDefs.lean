@@ -13,13 +13,13 @@ def headerCheckJumpPath := [pushAt 918 2 1228, opAt 919 .JUMPI]
 
 def headerChecksCombinedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 1222
+    pc := UInt256.ofNat 1201
     stack := [0, UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 def headerCheckPassedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 1223
+    pc := UInt256.ofNat 1202
     stack := [1, UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 

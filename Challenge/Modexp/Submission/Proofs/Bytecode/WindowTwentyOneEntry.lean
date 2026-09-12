@@ -50,8 +50,8 @@ def widthValueProgram : List Instr :=
 theorem run_width_value (template : State) (baseSize exponentSize modulusSize : UInt256)
     (tail : List UInt256) (htail : tail.length ≤ 997) :
     runInstructions widthValueProgram
-      (framed template (UInt256.ofNat 2216) ([baseSize, exponentSize, modulusSize] ++ tail)) =
-    some (framed template (UInt256.ofNat 2231)
+      (framed template (UInt256.ofNat 2187) ([baseSize, exponentSize, modulusSize] ++ tail)) =
+    some (framed template (UInt256.ofNat 2202)
       (widthDiff baseSize exponentSize modulusSize :: [baseSize, exponentSize, modulusSize] ++ tail)) := by
   have hcap3 : tail.length + 3 < 1024 := by omega
   have hcap4 : tail.length + 4 < 1024 := by omega
@@ -62,30 +62,30 @@ theorem run_width_value (template : State) (baseSize exponentSize modulusSize : 
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod]
 
-def widthProgram : List Instr := widthValueProgram ++ testProgram (UInt256.ofNat 4767)
+def widthProgram : List Instr := widthValueProgram ++ testProgram (UInt256.ofNat 4738)
 
 theorem run_width (template : State) (baseSize exponentSize modulusSize : UInt256)
     (tail : List UInt256) (htail : tail.length ≤ 997)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 4767 = true) :
+    (htarget : Decode.isValidJumpDest template.executionEnv.code 4738 = true) :
     runInstructions widthProgram
-      (framed template (UInt256.ofNat 2216) ([baseSize, exponentSize, modulusSize] ++ tail)) =
+      (framed template (UInt256.ofNat 2187) ([baseSize, exponentSize, modulusSize] ++ tail)) =
     some (framed template
       (if (widthDiff baseSize exponentSize modulusSize).toNat = 0
-        then UInt256.ofNat 4767 else UInt256.ofNat 2236)
+        then UInt256.ofNat 4738 else UInt256.ofNat 2207)
       ([baseSize, exponentSize, modulusSize] ++ tail)) := by
   have hv := run_width_value template baseSize exponentSize modulusSize tail htail
-  have ht := run_test template (UInt256.ofNat 2231) (UInt256.ofNat 4767)
+  have ht := run_test template (UInt256.ofNat 2202) (UInt256.ofNat 4738)
     (widthDiff baseSize exponentSize modulusSize) ([baseSize, exponentSize, modulusSize] ++ tail)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) htarget
   have both := runInstructions_append_some _ _ _ _ _ hv ht
-  have hpc : advancePC 5 (UInt256.ofNat 2231) = UInt256.ofNat 2236 := by decide
+  have hpc : advancePC 5 (UInt256.ofNat 2202) = UInt256.ofNat 2207 := by decide
   simpa only [widthProgram, framed, hpc] using both
 
 def missProgram : List Instr := [.push 2 471, .op .JUMP]
 
 theorem run_miss (template : State) (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (htarget : Decode.isValidJumpDest template.executionEnv.code 471 = true) :
-    runInstructions missProgram (framed template (UInt256.ofNat 2236) rest) =
+    runInstructions missProgram (framed template (UInt256.ofNat 2207) rest) =
     some (framed template (UInt256.ofNat 471) rest) := by
   have hcap0 : rest.length < 1024 := by omega
   have hcap1 : rest.length + 1 < 1024 := by omega
@@ -102,36 +102,36 @@ def baseProgram : List Instr :=
 
 theorem run_base (template : State) (value : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions baseProgram (framed template (UInt256.ofNat 2240) (value :: rest)) =
-    some (framed template (UInt256.ofNat 2242) rest) := by
+    runInstructions baseProgram (framed template (UInt256.ofNat 2211) (value :: rest)) =
+    some (framed template (UInt256.ofNat 2213) rest) := by
   have hcap1 : rest.length + 1 < 1024 := by omega
   simp [runInstructions, baseProgram, framed, Challenge.EvmProof.Stepper.runInstr,
     hcap1, Challenge.EvmProof.Word.succ_ofNat_mod]
 
 def modulusProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op .CALLDATALOAD, .op (.Dup ⟨0, by decide⟩)] ++
-    testProgram (UInt256.ofNat 2870)
+    testProgram (UInt256.ofNat 2841)
 
 theorem run_modulus (template : State) (modulusOffset : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 999)
     (hoffset : rest[5]? = some modulusOffset)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 2870 = true) :
+    (htarget : Decode.isValidJumpDest template.executionEnv.code 2841 = true) :
     let modulus := MachineState.readWord template.executionEnv.calldata modulusOffset.toNat
-    runInstructions modulusProgram (framed template (UInt256.ofNat 2242) rest) =
-    some (framed template (if modulus.toNat = 0 then UInt256.ofNat 2870 else UInt256.ofNat 2250)
+    runInstructions modulusProgram (framed template (UInt256.ofNat 2213) rest) =
+    some (framed template (if modulus.toNat = 0 then UInt256.ofNat 2841 else UInt256.ofNat 2221)
       (modulus :: rest)) := by
   let modulus := MachineState.readWord template.executionEnv.calldata modulusOffset.toNat
   have hcap0 : rest.length < 1024 := by omega
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hh : runInstructions [.op (.Dup ⟨5, by decide⟩), .op .CALLDATALOAD, .op (.Dup ⟨0, by decide⟩)]
-      (framed template (UInt256.ofNat 2242) rest) =
-      some (framed template (UInt256.ofNat 2245) (modulus :: modulus :: rest)) := by
+      (framed template (UInt256.ofNat 2213) rest) =
+      some (framed template (UInt256.ofNat 2216) (modulus :: modulus :: rest)) := by
     simp [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr, hcap0, hcap1,
       hoffset, modulus, Challenge.EvmProof.Word.succ_ofNat_mod]
-  have ht := run_test template (UInt256.ofNat 2245) (UInt256.ofNat 2870) modulus
+  have ht := run_test template (UInt256.ofNat 2216) (UInt256.ofNat 2841) modulus
     (modulus :: rest) (by simp only [List.length_cons]; omega) htarget
   have both := runInstructions_append_some _ _ _ _ _ hh ht
-  have hpc : advancePC 5 (UInt256.ofNat 2245) = UInt256.ofNat 2250 := by decide
+  have hpc : advancePC 5 (UInt256.ofNat 2216) = UInt256.ofNat 2221 := by decide
   simpa only [modulusProgram, framed, hpc, modulus] using both
 
 def normalizeProgram : List Instr :=
@@ -144,8 +144,8 @@ theorem run_normalize (template : State) (modulus baseOffset : UInt256)
     (hbase : rest[0]? = some (UInt256.ofNat baseSize))
     (hoffset : rest[3]? = some baseOffset) :
     runInstructions normalizeProgram
-      (framed template (UInt256.ofNat 2250) (modulus :: rest)) =
-    some (framed template (UInt256.ofNat 2260)
+      (framed template (UInt256.ofNat 2221) (modulus :: rest)) =
+    some (framed template (UInt256.ofNat 2231)
       (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata baseOffset.toNat)
         (UInt256.ofNat ((32 - baseSize) * 8)) :: modulus :: rest)) := by
   have hcap1 : rest.length + 1 < 1024 := by omega

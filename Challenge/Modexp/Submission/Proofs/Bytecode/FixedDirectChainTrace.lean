@@ -47,7 +47,7 @@ theorem run_squareCall (s : State) (memory : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.squareCall
       (FixedDirectStates.square s memory n bsize esize msize count) =
-      some (Exp.sqCall s memory (UInt256.ofNat 3257)
+      some (Exp.sqCall s memory (UInt256.ofNat 3228)
         (UInt256.ofNat count :: Exp.outer n bsize esize msize)) := by
   simp (config := { maxSteps := 400000 })
     [FixedDirectPaths.squareCall, opAt, pushAt, wfOp,
@@ -117,7 +117,7 @@ theorem run_product (s : State) (memory : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.product
       (FixedDirectStates.product s memory n bsize esize msize) =
-      some (Exp.mpCall s memory 2048 1024 1024 (UInt256.ofNat 1604)
+      some (Exp.mpCall s memory 2048 1024 1024 (UInt256.ofNat 1583)
         (Exp.outer n bsize esize msize)) := by
   simp (config := { maxSteps := 400000 })
     [FixedDirectPaths.product, opAt, pushAt, wfOp,
@@ -166,7 +166,7 @@ def gasSteps_squareCall (s : State) (memory : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (FixedDirectStates.square s memory n bsize esize msize count)
-      (Exp.sqCall s memory (UInt256.ofNat 3257)
+      (Exp.sqCall s memory (UInt256.ofNat 3228)
         (UInt256.ofNat count :: Exp.outer n bsize esize msize)) :=
   sound FixedDirectPaths.squareCall
     (run_squareCall s memory n bsize esize msize count hcode hrun)
@@ -206,7 +206,7 @@ def gasSteps_product (s : State) (memory : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (FixedDirectStates.product s memory n bsize esize msize)
-      (Exp.mpCall s memory 2048 1024 1024 (UInt256.ofNat 1604)
+      (Exp.mpCall s memory 2048 1024 1024 (UInt256.ofNat 1583)
         (Exp.outer n bsize esize msize)) :=
   sound FixedDirectPaths.product
     (run_product s memory n bsize esize msize hcode hrun)

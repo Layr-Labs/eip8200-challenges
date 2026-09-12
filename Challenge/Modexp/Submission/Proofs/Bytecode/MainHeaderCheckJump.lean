@@ -17,7 +17,7 @@ theorem run_headerCheckJump (input : ByteArray) :
   have ha1223 := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := 1223) (b := 3) (by norm_num : 1223 + 3 < 2 ^ 256)
   have hdest : (1228 : UInt256).toNat = 1228 := by decide
-  have hdestWord : (1228 : UInt256) = UInt256.ofNat 1228 := by decide
+  have hdestWord : (1228 : UInt256) = UInt256.ofNat 1207 := by decide
   simp (config := { maxSteps := 40000 })
     [headerCheckJumpPath, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,

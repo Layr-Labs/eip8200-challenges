@@ -20,7 +20,7 @@ def exitProgram : List Instr := CiosCached.tailProgram.drop 23
 
 def exitState (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat)
     (hd ent dst ret : UInt256) (rest : List UInt256) : State :=
-  framed { s with memory := mem } (UInt256.ofNat 4653)
+  framed { s with memory := mem } (UInt256.ofNat 4624)
     ([pbi, hd, UInt256.ofNat (pb-32),
       ent, negative32, allOnes, l2Target n, dst, ret] ++ rest)
 
@@ -35,19 +35,19 @@ def baseStack (pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : L
 
 def input (s : State) (c mu bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=
-  framed s (UInt256.ofNat 4627) ([c, mu, bi] ++ baseStack pbi paEnd pbEnd flag dst ret rest)
+  framed s (UInt256.ofNat 4598) ([c, mu, bi] ++ baseStack pbi paEnd pbEnd flag dst ret rest)
 
 def cleaned (s : State) (c pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : State :=
-  framed s (UInt256.ofNat 4630) ([c] ++ baseStack pbi paEnd pbEnd flag dst ret rest)
+  framed s (UInt256.ofNat 4601) ([c] ++ baseStack pbi paEnd pbEnd flag dst ret rest)
 
 def stored (s : State) (c pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : State :=
-  framed { s with memory := tailMem s.memory c } (UInt256.ofNat 4646)
+  framed { s with memory := tailMem s.memory c } (UInt256.ofNat 4617)
     (baseStack pbi paEnd pbEnd flag dst ret rest)
 
 def result (s : State) (c pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : State :=
   framed { s with memory := tailMem s.memory c }
     (if UInt256.isTrue (UInt256.gt (negative32+pbi) pbEnd) then paEnd
-      else UInt256.ofNat 4653)
+      else UInt256.ofNat 4624)
     (baseStack (negative32+pbi) paEnd pbEnd flag dst ret rest)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedTailDefs

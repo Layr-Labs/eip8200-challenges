@@ -12,7 +12,7 @@ open WindowControlDefs WindowHitStates WindowHitPaths
 
 /-- RETURN retains its own pc; the output-memory bridge is pc-independent. -/
 def normalReturnedState (input : ByteArray) (word : UInt256) : State :=
-  { returnedState input word with pc := UInt256.ofNat 3043 }
+  { returnedState input word with pc := UInt256.ofNat 3014 }
 
 private def framed (template : State) (pc : Nat) (stack : List UInt256) : State :=
   { template with pc := UInt256.ofNat pc, stack := stack }

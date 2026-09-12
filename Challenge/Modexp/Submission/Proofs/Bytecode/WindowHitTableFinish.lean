@@ -23,7 +23,7 @@ open WindowHitStates
 private def tableEndState (template : State) (base modulus : UInt256)
     (rest : List UInt256) : State :=
   { template with
-    pc := UInt256.ofNat 2802
+    pc := UInt256.ofNat 2773
     stack := [WindowMath.tableWord base modulus 15, base, modulus] ++ rest
     memory := WindowTableMemory.tableMemory base modulus
     activeWords := UInt256.ofNat 16 }
@@ -31,7 +31,7 @@ private def tableEndState (template : State) (base modulus : UInt256)
 private def loopHeadState (template : State) (base modulus : UInt256)
     (rest : List UInt256) : State :=
   { template with
-    pc := UInt256.ofNat 2808
+    pc := UInt256.ofNat 2779
     stack := [UInt256.ofNat 128, UInt256.ofNat 1, modulus] ++ rest
     memory := WindowTableMemory.tableMemory base modulus
     activeWords := UInt256.ofNat 16 }
@@ -53,12 +53,12 @@ private theorem run_tableFinish_generic (template : State)
   have h2 : rest.length + 2 < 1024 := by omega
   have h3 : rest.length + 3 < 1024 := by omega
   have h4 : rest.length + 4 < 1024 := by omega
-  have hpc3192 : (UInt256.ofNat 2803).toNat = 2803 := by decide
-  have hpc3193 : (UInt256.ofNat 2804).toNat = 2804 := by decide
-  have hpc3195 : (UInt256.ofNat 2806).toNat = 2806 := by decide
-  have hsucc3192 : (UInt256.ofNat 2825).succ = UInt256.ofNat 2826 := by decide
-  have hadd3193 : UInt256.ofNat 2826 + UInt256.ofNat 2 = UInt256.ofNat 2828 := by decide
-  have hadd3195 : UInt256.ofNat 2828 + UInt256.ofNat 2 = UInt256.ofNat 2830 := by decide
+  have hpc3192 : (UInt256.ofNat 2774).toNat = 2803 := by decide
+  have hpc3193 : (UInt256.ofNat 2775).toNat = 2804 := by decide
+  have hpc3195 : (UInt256.ofNat 2777).toNat = 2806 := by decide
+  have hsucc3192 : (UInt256.ofNat 2796).succ = UInt256.ofNat 2797 := by decide
+  have hadd3193 : UInt256.ofNat 2797 + UInt256.ofNat 2 = UInt256.ofNat 2828 := by decide
+  have hadd3195 : UInt256.ofNat 2828 + UInt256.ofNat 2 = UInt256.ofNat 2801 := by decide
   simp (disch := omega) [tableFinishPath, Main.opAt, Main.pushAt, Main.wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated,

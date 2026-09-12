@@ -28,7 +28,7 @@ theorem run_byte0_highSquareLookup (template : State) (base modulus : UInt256)
     runLocatedBlock (highSquareLookupPath 0)
       (nibbleState { template with halt := .Running } (UInt256.ofNat 2848)
         base modulus nibble byte word pointer accumulator rest) =
-    some (forwardedNibbleState { template with halt := .Running } (UInt256.ofNat 2868)
+    some (forwardedNibbleState { template with halt := .Running } (UInt256.ofNat 2839)
       base modulus nibble byte word pointer accumulator
       (WindowMath.nibbleWordStep modulus base accumulator nibble) rest) := by
   have hshift := shift_nibble nibble hnibble

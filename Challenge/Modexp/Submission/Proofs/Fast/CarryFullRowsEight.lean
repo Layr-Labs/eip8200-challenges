@@ -34,7 +34,7 @@ opaque gasSteps_rowsEight (L : RowLemmas) (s : State) (mem : ByteArray) (pa pb :
     (hAend : aEnd = UInt256.ofNat (pa+32*8-32))
     (hsnapshot : StagedOperand.Snapshot mem pa 8) :
     Challenge.EvmProof.GasSteps
-      (outState s (mpZeroed s mem 8) pb 8 0 (UInt256.ofNat 4041) (l1Target 8) inv m0
+      (outState s (mpZeroed s mem 8) pb 8 0 (UInt256.ofNat 4012) (l1Target 8) inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (mpCsubState s (rowsCarry (mpZeroed s mem 8) pa pb 8 8) pdst ret rest) := by
   have hsz := hsnapshot.zeroed s (by decide) hpaFit
@@ -43,7 +43,7 @@ opaque gasSteps_rowsEight (L : RowLemmas) (s : State) (mem : ByteArray) (pa pb :
   have hez := he.zeroed s 8 (by decide)
   refine (Challenge.EvmProof.GasSteps.iterateBounded
     (I := fun i => outState s (rowsCarry (mpZeroed s mem 8) pa pb 8 i)
-      pb 8 i (UInt256.ofNat 4041) (l1Target 8) inv m0
+      pb 8 i (UInt256.ofNat 4012) (l1Target 8) inv m0
       (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) 7 ?_).trans ?_
   · intro i hi
     exact gasSteps_rowEightNext L s (rowsCarry (mpZeroed s mem 8) pa pb 8 i) pa pb i

@@ -15,7 +15,7 @@ open WindowHitPaths
 private def startState (template : State) (modulus : UInt256)
     (rest : List UInt256) : State :=
   { template with
-    pc := UInt256.ofNat 2647
+    pc := UInt256.ofNat 2618
     stack := modulus :: rest
     memory := ByteArray.empty
     activeWords := UInt256.ofNat 0 }
@@ -23,7 +23,7 @@ private def startState (template : State) (modulus : UInt256)
 private def endState (template : State) (base modulus : UInt256)
     (rest : List UInt256) : State :=
   { template with
-    pc := UInt256.ofNat 2666
+    pc := UInt256.ofNat 2637
     stack := [WindowMath.tableWord base modulus 2, base, modulus] ++ rest
     memory := WindowTableMemory.tableMemoryThrough base modulus 3
     activeWords := UInt256.ofNat 3 }
