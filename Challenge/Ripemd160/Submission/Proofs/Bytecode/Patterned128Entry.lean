@@ -97,7 +97,7 @@ private def bytePrefix : List Located :=
    DirectGuard.opAt 4049 .BYTE,
    DirectGuard.pushAt 4050 1 7,
    DirectGuard.opAt 4051 .XOR,
-   DirectGuard.pushAt 4052 2 5159]
+   DirectGuard.pushAt 4052 2 5154]
 
 private def sizePrefix : List Located :=
   [DirectGuard.pushAt 4054 0 0,
@@ -119,7 +119,7 @@ private def guardMatchTail : List Located :=
 
 private theorem run_byte_prefix (input : ByteArray) :
     DirectGuard.run bytePrefix (PatternedScan.stS input 4791 []) =
-      some (PatternedScan.stS input 4802 [5159, byteValue input]) := by
+      some (PatternedScan.stS input 4802 [5154, byteValue input]) := by
   let w := MachineState.readWord input 0
   let b := UInt256.byteAt 0 w
   let v := UInt256.xor 7 b
@@ -158,11 +158,11 @@ private theorem run_byte_prefix (input : ByteArray) :
     (PatternedScan.pcFactS input 4051 4798 [7, b] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
     (PatternedScan.stepS_xor input 4798 7 b [] (by simp) (by norm_num))
-  let l7 : Located := DirectGuard.pushAt 4052 2 5159
+  let l7 : Located := DirectGuard.pushAt 4052 2 5154
   have h7 := PatternedScan.blockOfS l7
     (PatternedScan.pcFactS input 4052 4799 [v] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_push input 4799 2 5159 [v] (by simp) (by decide) (by decide) (by norm_num))
+    (PatternedScan.stepS_push input 4799 2 5154 [v] (by simp) (by decide) (by decide) (by norm_num))
   have hseq1 := Stepper.runLocatedBlock_append [l0] [l1] _ _ _ h0 rfl h1
   have hseq2 := Stepper.runLocatedBlock_append [l0, l1] [l2] _ _ _ hseq1 rfl h2
   have hseq3 := Stepper.runLocatedBlock_append [l0, l1, l2] [l3] _ _ _ hseq2 rfl h3
@@ -227,21 +227,21 @@ private theorem run_size_prefix (input : ByteArray) :
 
 private theorem run_byte_fail (input : ByteArray)
     (hbyte : DirectGuard.firstByte input ≠ 7) :
-    DirectGuard.run [DirectGuard.opAt 4053 .JUMPI] (PatternedScan.stS input 4802 [5159, byteValue input]) =
+    DirectGuard.run [DirectGuard.opAt 4053 .JUMPI] (PatternedScan.stS input 4802 [5154, byteValue input]) =
       some (AbcArm.armEntry input) := by
   exact PatternedScan.blockOfS (DirectGuard.opAt 4053 .JUMPI)
-    (PatternedScan.pcFactS input 4053 4802 [5159, byteValue input] (by norm_num) (by
+    (PatternedScan.pcFactS input 4053 4802 [5154, byteValue input] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_jumpi_taken input 4802 5159 5159 (byteValue input) []
-      (by simp) (by norm_num) (by simpa using Word.literal_eq_ofNat 5159) (byteValue_true input hbyte) AbcArm.arm_dest)
+    (PatternedScan.stepS_jumpi_taken input 4802 5154 5154 (byteValue input) []
+      (by simp) (by norm_num) (by simpa using Word.literal_eq_ofNat 5154) (byteValue_true input hbyte) AbcArm.arm_dest)
 
 private theorem run_byte_fall (input : ByteArray) :
-    DirectGuard.run [DirectGuard.opAt 4053 .JUMPI] (PatternedScan.stS input 4802 [5159, UInt256.ofNat 0]) =
+    DirectGuard.run [DirectGuard.opAt 4053 .JUMPI] (PatternedScan.stS input 4802 [5154, UInt256.ofNat 0]) =
       some (PatternedScan.stS input 4803 []) := by
   exact PatternedScan.blockOfS (DirectGuard.opAt 4053 .JUMPI)
-    (PatternedScan.pcFactS input 4053 4802 [5159, UInt256.ofNat 0] (by norm_num) (by
+    (PatternedScan.pcFactS input 4053 4802 [5154, UInt256.ofNat 0] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_jumpi_fall input 4802 5159 (UInt256.ofNat 0) []
+    (PatternedScan.stepS_jumpi_fall input 4802 5154 (UInt256.ofNat 0) []
       (by simp) (by norm_num) (by decide))
 
 private theorem run_size_match (input : ByteArray) (hc : UInt256.isTrue (sizeBit input)) :
