@@ -114,12 +114,12 @@ theorem run_commonFirst (s : State) (mem : ByteArray) (bi : UInt256)
   let pbi := UInt256.ofNat (ptrAt (pb+32*n-32) i)
   let frame := tail pbi hd (UInt256.ofNat (pb-32))
     ent (l2Target n) tl inv m0 aEnd m96 m64 m32 dst ret rest
-  have hl := run_load st (UInt256.ofNat 4032) bi pbi hd (UInt256.ofNat (pb-32))
+  have hl := run_load st (UInt256.ofNat 4020) bi pbi hd (UInt256.ofNat (pb-32))
     ent (l2Target n) tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hA
-  have hp := CiosNoDummyCarry.run_product st (advancePC 3 (UInt256.ofNat 4032))
+  have hp := CiosNoDummyCarry.run_product st (advancePC 3 (UInt256.ofNat 4020))
     (MachineState.readWord mem aEnd.toNat) bi frame
     (by simp only [frame,tail,List.length_append,List.length_cons,List.length_nil]; omega)
-  have hf := run_finish st (advancePC 13 (advancePC 3 (UInt256.ofNat 4032)))
+  have hf := run_finish st (advancePC 13 (advancePC 3 (UInt256.ofNat 4020)))
     (MachineState.readWord mem aEnd.toNat) bi pbi hd (UInt256.ofNat (pb-32))
     ent (l2Target n) tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hT
   have hz : MachineState.readWord mem aEnd.toNat * bi + UInt256.ofNat 0 =
@@ -132,7 +132,7 @@ theorem run_commonFirst (s : State) (mem : ByteArray) (bi : UInt256)
   rw [hz] at hf
   have both := runInstructions_append_some _ _ _ _ _ hl hp
   have hall := runInstructions_append_some _ _ _ _ _ both hf
-  have hpc : advancePC 13 (advancePC 3 (UInt256.ofNat 4032))+UInt256.ofNat 10 = UInt256.ofNat 4058 := by decide
+  have hpc : advancePC 13 (advancePC 3 (UInt256.ofNat 4020))+UInt256.ofNat 10 = UInt256.ofNat 4046 := by decide
   simpa only [commonFirstProgram,L2.multiplyProgram,L2.zeroCarryProgram,
     macZeroProductProgram,show (0 : UInt256) = UInt256.ofNat 0 from by decide,st,frame,pbi,tail,firstAt,l1At,l1Q,l1Step,
     framed,ha,ht,hpc,Nat.sub_zero,List.cons_append,List.nil_append] using hall

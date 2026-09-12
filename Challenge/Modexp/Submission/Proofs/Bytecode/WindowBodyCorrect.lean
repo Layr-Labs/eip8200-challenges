@@ -2,8 +2,8 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.SubmissionCorrect
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowRoute
 
 set_option warningAsError true
-set_option maxRecDepth 20000
-set_option maxHeartbeats 5000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 
 /-!
 # Reference-body correctness with the fixed-width route

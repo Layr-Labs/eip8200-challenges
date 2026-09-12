@@ -3,8 +3,8 @@ import Challenge.EvmProof.Bytes
 import Mathlib.Tactic.Ring
 
 set_option warningAsError true
-set_option maxRecDepth 10000
-set_option maxHeartbeats 2000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 
 /-!
 # Four-bit window arithmetic

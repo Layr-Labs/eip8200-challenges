@@ -1,7 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatchDefs
 set_option warningAsError true
-set_option maxRecDepth 10000
-set_option maxHeartbeats 1000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatch
 
@@ -15,7 +15,7 @@ theorem run_bigCheckJump (input : ByteArray) :
   have htrue : UInt256.isTrue 1 := by decide
   have h1 : (1 : UInt256).toNat = 1 := by decide
   have h1268 : (1106 : UInt256).toNat = 1106 := by decide
-  have h1268Word : (1106 : UInt256) = UInt256.ofNat 1106 := by decide
+  have h1268Word : (1106 : UInt256) = UInt256.ofNat 1102 := by decide
   simp (config := { maxSteps := 50000 })
     [bigCheckJumpPath, pushAt, opAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,

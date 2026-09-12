@@ -48,8 +48,8 @@ structure RowLemmas : Type where
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hi : i < n)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472),
     Challenge.EvmProof.GasSteps
-      (outState s mem pb n i (UInt256.ofNat 4029) ent pdst ret rest)
-      (firstAt 4032 s mem (rowBi mem pb n i) pb n i (UInt256.ofNat 4029) ent pdst ret rest)
+      (outState s mem pb n i (UInt256.ofNat 4017) ent pdst ret rest)
+      (firstAt 4032 s mem (rowBi mem pb n i) pb n i (UInt256.ofNat 4017) ent pdst ret rest)
   /-- Statement of WP-K `CarryRowGas.gasSteps_commonFirst`. -/
   gasSteps_commonFirst : ∀ (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb n i : Nat) (hd ent tl inv m0 aEnd m96 m64 m32 pdst ret : UInt256)
@@ -161,7 +161,7 @@ structure RowLemmas : Type where
     (hact : 296 ≤ s.activeWords.toNat) (hi : i + 1 = n)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472)
     (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode hd.toNat = true)
-    (hne : hd ≠ UInt256.ofNat 4788),
+    (hne : hd ≠ UInt256.ofNat 4772),
     Challenge.EvmProof.GasSteps
       (tailState s mem c mu bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (mpCsubState s (tailCarry mem c bi) pdst ret rest)
@@ -180,7 +180,7 @@ structure EntryLemmas : Type where
       s.executionEnv.fork s.executionEnv.codeAddr = false),
     Challenge.EvmProof.GasSteps
       (Cios2Dispatch.dispatchState s mem pa pb pdst ret rest)
-      (Cios2Dispatch.commonState s mem (UInt256.ofNat 4029) pa pb pdst ret rest)
+      (Cios2Dispatch.commonState s mem (UInt256.ofNat 4017) pa pb pdst ret rest)
   /-- Statement of WP-K2 `Cios2Dispatch.gasSteps_commonSetup`: `common` → `setup` →
   row 0 at `hd` (widths four and eight limbs). -/
   gasSteps_commonSetup : ∀ (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
@@ -222,8 +222,8 @@ structure EntryLemmas : Type where
 
 /-- The multiply row head `hd = 4037` (instruction 3040, pc 0x0fc5) is a jump destination. -/
 theorem jumpDest_rowHead :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 4029).toNat = true := by
-  rw [show (UInt256.ofNat 4029).toNat = 4029 from by decide]
-  exact Artifact.isValidJumpDest_index 3032 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 4017).toNat = true := by
+  rw [show (UInt256.ofNat 4017).toNat = 4029 from by decide]
+  exact Artifact.isValidJumpDest_index 3026 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryIface

@@ -1,7 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.WordExit
 set_option warningAsError true
-set_option maxRecDepth 10000
-set_option maxHeartbeats 1000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 /-!
 # Correctness of the one-word MODEXP arithmetic
 

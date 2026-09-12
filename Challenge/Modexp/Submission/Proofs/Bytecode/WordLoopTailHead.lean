@@ -1,7 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.WordLoopGuard
 set_option warningAsError true
-set_option maxRecDepth 10000
-set_option maxHeartbeats 1000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.WordLoops
 
@@ -27,7 +27,7 @@ def bitFinishTailMidState (input : ByteArray) (outer : Nat)
       UInt256.ofNat (modulusValue input), UInt256.ofNat (baseSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (modulusSize input),
       UInt256.ofNat 96, UInt256.ofNat (expOffset input),
-      UInt256.ofNat (modulusOffset input), UInt256.ofNat 1186] ++ callerRest input }
+      UInt256.ofNat (modulusOffset input), UInt256.ofNat 1182] ++ callerRest input }
 
 @[simp] private theorem exitPCs (i : Nat)
     (hi : 464 ≤ i) (hii : i ≤ 485) :

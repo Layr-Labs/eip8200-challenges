@@ -1,8 +1,8 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.Accessors
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigHelpers
 set_option warningAsError true
-set_option maxRecDepth 20000
-set_option maxHeartbeats 2000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 /-!
 # Certified big-endian operand loading
 

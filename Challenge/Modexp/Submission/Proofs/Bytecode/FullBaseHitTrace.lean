@@ -2,8 +2,8 @@ import Challenge.Modexp.Submission.Proofs.Fast.FullBaseGuardCore
 import Challenge.Modexp.Submission.Proofs.Fast.FullBasePaths
 
 set_option warningAsError true
-set_option maxRecDepth 40000
-set_option maxHeartbeats 4000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 
 /-!
 # Concrete located traces for the full-width-base hit branch
@@ -22,8 +22,8 @@ open Challenge.Modexp.Submission.Proofs.Fast.FullBase
 
 /-- The multiply entry `JUMPDEST` at pc 3920 (0x0f50, instruction 2961), the `MONPRO` call target. -/
 private theorem jumpDestMulEntry :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3912 = true :=
-  Artifact.isValidJumpDest_index 2953 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3900 = true :=
+  Artifact.isValidJumpDest_index 2947 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_redirect (s : State) (memory : ByteArray)

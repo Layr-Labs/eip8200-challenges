@@ -100,7 +100,7 @@ theorem run_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock blk2889
       (missState s mem n bsize esize msize) =
       some (Exp.r1Call s (Exp.storeWord mem 4096 (UInt256.ofNat 1)) 4096
-        (UInt256.ofNat 1300) n bsize esize msize) := by
+        (UInt256.ofNat 1296) n bsize esize msize) := by
   have haw : UInt256.ofNat
       (MachineState.activeWordsAfter s.activeWords.toNat 4096 32) = s.activeWords :=
     Monpro.activeWords_fix s 4096 32 (by decide) (by omega) (by omega)

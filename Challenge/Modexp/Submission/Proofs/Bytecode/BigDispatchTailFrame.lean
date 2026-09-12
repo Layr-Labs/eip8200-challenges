@@ -1,7 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatchDefs
 set_option warningAsError true
-set_option maxRecDepth 10000
-set_option maxHeartbeats 1000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatch
 
@@ -12,7 +12,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_bigTailFrame (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock bigTailFramePath
       (bigCheckedState input) = some (bigTailFrameState input) := by
-  have h1283Word : (1202 : UInt256) = UInt256.ofNat 1202 := by decide
+  have h1283Word : (1202 : UInt256) = UInt256.ofNat 1198 := by decide
   simp (config := { maxSteps := 80000 })
     [bigTailFramePath, opAt, pushAt, wfOp, bigCheckedState,
       Dispatch.wordCheckedState, bigTailFrameState, Main.headerState,

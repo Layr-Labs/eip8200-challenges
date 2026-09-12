@@ -2,8 +2,8 @@ import Challenge.Modexp.ProofSupport
 import Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
 import Challenge.EvmProof.Word
 set_option warningAsError true
-set_option maxRecDepth 10000
-set_option maxHeartbeats 2000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 /-!
 # MODEXP bytecode entry and header parsing
 
@@ -43,7 +43,7 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 /-- First half of the compiler trampoline chain. -/
 def trampoline1Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 0 2 5189, opAt 1 .JUMP]
+  [pushAt 0 2 5169, opAt 1 .JUMP]
 
 /-- Second half of the compiler trampoline chain. -/
 def trampoline2Path :
@@ -64,14 +64,14 @@ stays in the code, so nothing else that targets it is affected. The hop preserve
 loaded length words. -/
 def headerCheckPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 820 2 1067, opAt 821 .POP]
+  []
 
 /-- Reachable instructions from byte zero through optimized header parsing,
 retained as a single audit-friendly path. -/
 def headerPath := trampoline1Path ++ trampoline2Path ++
   headerLoadPath ++ headerCheckPath
 
-def tramp0Path := [pushAt 0 2 5189, opAt 1 .JUMP]
+def tramp0Path := [pushAt 0 2 5169, opAt 1 .JUMP]
 def tramp7DestPath := [opAt 813 .JUMPDEST]
 
 def trampolineState (input : ByteArray) (pc : Nat) : State :=
@@ -90,26 +90,26 @@ def headerLoadedState (input : ByteArray) : State :=
 
 def headerModulusCheckedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 1067
+    pc := UInt256.ofNat 1063
     stack := [0, UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 def headerExponentCheckedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 1067
+    pc := UInt256.ofNat 1063
     stack := [0, 0, UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 def headerBaseCheckedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 1067
+    pc := UInt256.ofNat 1063
     stack := [0, 0, 0, UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 /-- Gas-erased state immediately after the successful size-check jump. -/
 def headerState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 1067
+    pc := UInt256.ofNat 1063
     stack := [UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
@@ -144,8 +144,8 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
   Artifact.isValidJumpDest_index 813 (by rfl)
 
 @[simp] theorem jump1228 :
-    Decode.isValidJumpDest submissionBytecode 1067 = true :=
-  Artifact.isValidJumpDest_index 822 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 1063 = true :=
+  Artifact.isValidJumpDest_index 820 (by rfl)
 
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Main

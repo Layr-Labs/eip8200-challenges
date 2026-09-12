@@ -1,14 +1,14 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.DispatchDefs
 set_option warningAsError true
-set_option maxRecDepth 10000
-set_option maxHeartbeats 1000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.Dispatch
 
 open EvmSemantics
 open EvmSemantics.EVM
 
-set_option maxHeartbeats 5000000 in
+set_option maxHeartbeats 16000000 in
 set_option linter.unusedSimpArgs false in
 theorem run_wordJump (input : ByteArray) (hvalid : ValidInput input)
     (hpositive : 0 < modulusSize input) :
@@ -21,7 +21,7 @@ theorem run_wordJump (input : ByteArray) (hvalid : ValidInput input)
     omega
   norm_num at hmodNat
   have h1237 : (1076 : UInt256).toNat = 1076 := by decide
-  have h1237Word : (1076 : UInt256) = UInt256.ofNat 1076 := by decide
+  have h1237Word : (1076 : UInt256) = UInt256.ofNat 1072 := by decide
   have htrue : UInt256.isTrue (UInt256.ofNat (modulusSize input)) := by
     exact hmodNat
   simp only [wordDispatchState, Main.headerState]

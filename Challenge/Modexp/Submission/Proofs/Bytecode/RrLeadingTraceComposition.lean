@@ -1,7 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.RrLeadingTraceJump
 
 set_option warningAsError true
-set_option maxHeartbeats 4000000
+set_option maxHeartbeats 16000000
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.RrLeadingTraceCore
 
@@ -13,7 +13,7 @@ open YulEvmCompiler
 theorem run_helper (template : State) (mem : ByteArray)
     (n bsize esize msize : Nat) (hn2 : 2 ≤ n) (hn32 : n ≤ 32)
     (hsize : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 1322 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 1318 = true) :
     runInstructions helperProgram (entryState template mem n bsize esize msize) =
       some (exitState template mem n bsize esize msize) := by
   unfold helperProgram

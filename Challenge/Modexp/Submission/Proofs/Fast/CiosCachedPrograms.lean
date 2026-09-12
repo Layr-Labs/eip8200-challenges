@@ -219,8 +219,6 @@ def tailProgram : List Instr :=
    .op .POP,
    .op .POP,
    .op .POP,
-   .op .POP,
-   .push 2 4669,
    .op .POP]
 
 def l1DispatchProgram : List Instr :=

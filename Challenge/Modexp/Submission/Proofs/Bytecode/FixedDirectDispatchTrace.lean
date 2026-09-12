@@ -3,8 +3,8 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.WindowGuardLogic
 import Challenge.Modexp.Submission.Proofs.Fast.FixedDirectStates
 
 set_option warningAsError true
-set_option maxRecDepth 40000
-set_option maxHeartbeats 4000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 
 /-!
 # Located width-dispatch traces for fixed public exponents

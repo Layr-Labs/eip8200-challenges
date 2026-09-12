@@ -48,7 +48,7 @@ def pcAgain : Nat := 4748
 the kernel exit and through the whole loop. -/
 def frameStack (n : Nat) (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) :
     List UInt256 → List UInt256 := fun rest =>
-  [pbi, UInt256.ofNat 4788, UInt256.ofNat (2048 - 32), ent, negative32, allOnes, l2Target n,
+  [pbi, UInt256.ofNat 4772, UInt256.ofNat (2048 - 32), ent, negative32, allOnes, l2Target n,
     inv, m0, tl, m96, m64, m32, aprev, pdst, ret] ++ rest
 
 /-- The loop's states differ only in the program counter and the memory. -/
@@ -62,14 +62,14 @@ def frameAt (pc : Nat) (s : State) (mem : ByteArray) (n : Nat)
 theorem frameAt_eq_sqExitState (s : State) (mem : ByteArray) (n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) :
     frameAt pcSqExit s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest =
-      CiosCachedTailDefs.sqExitState s mem pbi 2048 n (UInt256.ofNat 4788) ent inv m0
+      CiosCachedTailDefs.sqExitState s mem pbi 2048 n (UInt256.ofNat 4772) ent inv m0
         (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) := rfl
 
 /-- The `nx` `JUMPDEST` state of the last square. -/
 theorem frameAt_eq_nxJdState (s : State) (mem : ByteArray) (n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) :
     frameAt pcNx s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest =
-      CiosCachedTailDefs.nxJdState s mem pbi 2048 n (UInt256.ofNat 4788) ent inv m0
+      CiosCachedTailDefs.nxJdState s mem pbi 2048 n (UInt256.ofNat 4772) ent inv m0
         (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) := rfl
 
 /-! ## Programs -/
@@ -101,39 +101,39 @@ def againProgram : List Instr :=
 
 /-! ## Located blocks -/
 
-def sqExitBlock : Block Artifact.submissionArtifact .Osaka 4712 sqExitProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3588 11 4712 sqExitProgram
+def sqExitBlock : Block Artifact.submissionArtifact .Osaka 4696 sqExitProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3580 11 4696 sqExitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def lastBlock : Block Artifact.submissionArtifact .Osaka 4730 lastProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3599 5 4730 lastProgram
+def lastBlock : Block Artifact.submissionArtifact .Osaka 4714 lastProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3591 5 4714 lastProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def moreBlock : Block Artifact.submissionArtifact .Osaka 4739 moreProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3604 5 4739 moreProgram
+def moreBlock : Block Artifact.submissionArtifact .Osaka 4723 moreProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3596 5 4723 moreProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def againBlock : Block Artifact.submissionArtifact .Osaka 4748 againProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3609 29 4748 againProgram
+def againBlock : Block Artifact.submissionArtifact .Osaka 4732 againProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3601 29 4732 againProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-! ## Jump destinations of the loop -/
 
 theorem jumpDest4753 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4739 = true :=
-  Artifact.isValidJumpDest_index 3604 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4723 = true :=
+  Artifact.isValidJumpDest_index 3596 (by rfl)
 
 theorem jumpDest4762 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4748 = true :=
-  Artifact.isValidJumpDest_index 3609 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4732 = true :=
+  Artifact.isValidJumpDest_index 3601 (by rfl)
 
 theorem jumpDest3272 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3231 = true :=
-  Artifact.isValidJumpDest_index 2485 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3219 = true :=
+  Artifact.isValidJumpDest_index 2479 (by rfl)
 
 theorem jumpDest4683 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4669 = true :=
-  Artifact.isValidJumpDest_index 3560 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4653 = true :=
+  Artifact.isValidJumpDest_index 3552 (by rfl)
 
 /-! ## The counter word -/
 

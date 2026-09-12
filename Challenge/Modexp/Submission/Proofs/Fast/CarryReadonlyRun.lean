@@ -43,7 +43,7 @@ theorem run_middle (s : State) (mem : ByteArray) (c bi : UInt256)
   have hjd : runInstructions [.op .JUMPDEST]
       (CiosCached.midState s mem c bi pb n i hd ent inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
-      some (framed {s with memory := mem} (UInt256.ofNat 4327)
+      some (framed {s with memory := mem} (UInt256.ofNat 4315)
         ([c,bi,UInt256.ofNat (ptrAt (pb+32*n-32) i),hd,
           UInt256.ofNat (pb-32),ent,negative32,allOnes,l2Target n,inv] ++
           (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))) := by

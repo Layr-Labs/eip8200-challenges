@@ -46,10 +46,10 @@ opaque gasSteps_out (s : State) (mem : ByteArray) (pb n i : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hi : i < n)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472) :
     Challenge.EvmProof.GasSteps
-      (outState s mem pb n i (UInt256.ofNat 4029) ent pdst ret rest)
-      (firstAt 4032 s mem (rowBi mem pb n i) pb n i (UInt256.ofNat 4029) ent pdst ret rest) :=
+      (outState s mem pb n i (UInt256.ofNat 4017) ent pdst ret rest)
+      (firstAt 4032 s mem (rowBi mem pb n i) pb n i (UInt256.ofNat 4017) ent pdst ret rest) :=
   CarryRowBlocks.out.steps
-    (environment (outState s mem pb n i (UInt256.ofNat 4029) ent pdst ret rest) hcode hfork hrun hnp)
+    (environment (outState s mem pb n i (UInt256.ofNat 4017) ent pdst ret rest) hcode hfork hrun hnp)
     rfl
     (run_out s mem pb n i ent pdst ret rest hcap hrun hact hn hn32 hi hpb hpbFit)
 
@@ -361,12 +361,12 @@ private theorem toNat_ne_of_ne {a b : UInt256} (h : a ≠ b) : a.toNat ≠ b.toN
       exact Fin.ext hab
 
 theorem jumpDest4726 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4712 = true :=
-  Artifact.isValidJumpDest_index 3588 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4696 = true :=
+  Artifact.isValidJumpDest_index 3580 (by rfl)
 
 theorem jumpDest4664 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4650 = true :=
-  Artifact.isValidJumpDest_index 3543 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4638 = true :=
+  Artifact.isValidJumpDest_index 3537 (by rfl)
 
 /-! ## R0: the kernel-exit dispatch (pc 4630)
 
@@ -379,28 +379,28 @@ def dispatchProgram : List Instr :=
 
 /-- The dispatch block: the `JUMPI` ends it, taken for a square and not taken for a
 multiply (which then continues at the `nx` `JUMPDEST` 4639). -/
-def dispatchBlock : Block Artifact.submissionArtifact .Osaka 4641 dispatchProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3538 5 4641 dispatchProgram
+def dispatchBlock : Block Artifact.submissionArtifact .Osaka 4629 dispatchProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3532 5 4629 dispatchProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The `nx` `JUMPDEST` (reached by the dispatch's fall-through and by `sq_exit`'s last
 square). -/
-def nxJd : Block Artifact.submissionArtifact .Osaka 4650 [.op .JUMPDEST] :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3543 1 4650 [.op .JUMPDEST]
+def nxJd : Block Artifact.submissionArtifact .Osaka 4638 [.op .JUMPDEST] :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3537 1 4638 [.op .JUMPDEST]
     (by decide) (by rfl) (by rfl) (by decide)
 
 set_option linter.unusedSimpArgs false in
 /-- A multiply falls through the dispatch into the `nx` `JUMPDEST` (4639 → 4640). -/
 theorem run_dispatchMul (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat)
     (hd ent dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1006)
-    (hne : hd ≠ UInt256.ofNat 4788) :
+    (hne : hd ≠ UInt256.ofNat 4772) :
     runInstructions dispatchProgram
       (CiosCachedTailDefs.exitState s mem pbi pb n hd ent dst ret rest) =
     some (CiosCachedTailDefs.nxJdState s mem pbi pb n hd ent dst ret rest) := by
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
-  have hcond : ¬ UInt256.isTrue ((UInt256.ofNat 4788).eq hd) := by
+  have hcond : ¬ UInt256.isTrue ((UInt256.ofNat 4772).eq hd) := by
     rw [UInt256.eq]
     simp only [if_neg (toNat_ne_of_ne (Ne.symm hne))]
     decide
@@ -416,13 +416,13 @@ theorem run_dispatchSq (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat
     (ent dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1006)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
     runInstructions dispatchProgram
-      (CiosCachedTailDefs.exitState s mem pbi pb n (UInt256.ofNat 4788) ent dst ret rest) =
-    some (CiosCachedTailDefs.sqExitState s mem pbi pb n (UInt256.ofNat 4788) ent dst ret rest) := by
+      (CiosCachedTailDefs.exitState s mem pbi pb n (UInt256.ofNat 4772) ent dst ret rest) =
+    some (CiosCachedTailDefs.sqExitState s mem pbi pb n (UInt256.ofNat 4772) ent dst ret rest) := by
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
-  have hcond : UInt256.isTrue ((UInt256.ofNat 4788).eq (UInt256.ofNat 4788)) := by decide
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 4712 = true := by
+  have hcond : UInt256.isTrue ((UInt256.ofNat 4772).eq (UInt256.ofNat 4772)) := by decide
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 4696 = true := by
     rw [hcode]; exact jumpDest4726
   simp [dispatchProgram, runInstructions,
     Challenge.EvmProof.Stepper.runInstr, CiosCachedTailDefs.exitState,
@@ -451,7 +451,7 @@ def gasSteps_dispatchMul (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : N
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hne : hd ≠ UInt256.ofNat 4788) :
+    (hne : hd ≠ UInt256.ofNat 4772) :
     Challenge.EvmProof.GasSteps
       (CiosCachedTailDefs.exitState s mem pbi pb n hd ent dst ret rest)
       (CiosCachedTailDefs.nxJdState s mem pbi pb n hd ent dst ret rest) :=
@@ -469,10 +469,10 @@ def gasSteps_dispatchSq (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Na
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (CiosCachedTailDefs.exitState s mem pbi pb n (UInt256.ofNat 4788) ent dst ret rest)
-      (CiosCachedTailDefs.sqExitState s mem pbi pb n (UInt256.ofNat 4788) ent dst ret rest) :=
+      (CiosCachedTailDefs.exitState s mem pbi pb n (UInt256.ofNat 4772) ent dst ret rest)
+      (CiosCachedTailDefs.sqExitState s mem pbi pb n (UInt256.ofNat 4772) ent dst ret rest) :=
   dispatchBlock.steps
-    (environment (CiosCachedTailDefs.exitState s mem pbi pb n (UInt256.ofNat 4788) ent dst ret rest)
+    (environment (CiosCachedTailDefs.exitState s mem pbi pb n (UInt256.ofNat 4772) ent dst ret rest)
       hcode hfork hrun hnp) rfl
     (run_dispatchSq s mem pbi pb n ent dst ret rest hcap hcode)
 
@@ -504,16 +504,16 @@ def gasSteps_tailLastSq (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat) (hi : i + 1 = n)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472)
     (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (UInt256.ofNat 4788).toNat = true) :
+      (UInt256.ofNat 4772).toNat = true) :
     Challenge.EvmProof.GasSteps
-      (tailState s mem c mu bi pb n i (UInt256.ofNat 4788) ent inv m0
+      (tailState s mem c mu bi pb n i (UInt256.ofNat 4772) ent inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (CiosCachedTailDefs.sqExitState s (tailCarry mem c bi)
-        (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) pb n (UInt256.ofNat 4788) ent inv m0
+        (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) pb n (UInt256.ofNat 4772) ent inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) :=
-  (tailLoop.steps (environment (tailState s mem c mu bi pb n i (UInt256.ofNat 4788) ent inv m0
+  (tailLoop.steps (environment (tailState s mem c mu bi pb n i (UInt256.ofNat 4772) ent inv m0
       (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) hcode hfork hrun hnp) rfl
-    (CarryTailRows.run_last s mem c mu bi pb n i (UInt256.ofNat 4788) ent inv m0
+    (CarryTailRows.run_last s mem c mu bi pb n i (UInt256.ofNat 4772) ent inv m0
       (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)
       (by simp only [List.length_cons]; omega) hact hpb hpbFit hi (by rw [hcode]; exact hhd))).trans
   (gasSteps_dispatchSq { s with memory := tailCarry mem c bi } (tailCarry mem c bi)
@@ -533,7 +533,7 @@ opaque gasSteps_tailLast (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (hact : 296 ≤ s.activeWords.toNat) (hi : i + 1 = n)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472)
     (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode hd.toNat = true)
-    (hne : hd ≠ UInt256.ofNat 4788) :
+    (hne : hd ≠ UInt256.ofNat 4772) :
     Challenge.EvmProof.GasSteps
       (tailState s mem c mu bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (mpCsubState s (tailCarry mem c bi) pdst ret rest) :=

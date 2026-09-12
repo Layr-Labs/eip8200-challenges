@@ -2,8 +2,8 @@ import Challenge.Modexp.ProofSupport.Bytecode
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigZeroCorrect
 import Challenge.Modexp.Submission.Proofs.Bytecode.WordGas
 set_option warningAsError true
-set_option maxRecDepth 20000
-set_option maxHeartbeats 5000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 set_option linter.unusedSimpArgs false
 /-! # End-to-end correctness and exact gas for the submission MODEXP bytecode -/
 
@@ -176,7 +176,7 @@ def bigRest (input : ByteArray) : List UInt256 :=
     UInt256.ofNat (modulusSize input), UInt256.ofNat (exponentSize input),
     UInt256.ofNat (baseSize input)]
 
-def bigReturnDest : UInt256 := UInt256.ofNat 1202
+def bigReturnDest : UInt256 := UInt256.ofNat 1198
 
 def bigCompletedState (input : ByteArray) : State :=
   BigComplete.completedState (Main.headerState input) (baseSize input)

@@ -38,7 +38,7 @@ theorem run_build (template : State) (base modulus exponent : UInt256)
     (count : Nat) (hcount : count ≤ 13)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions (buildProgram count)
-      (WindowTwentyOneTable.state template (UInt256.ofNat 2250) base modulus exponent 2 rest) =
+      (WindowTwentyOneTable.state template (UInt256.ofNat 2246) base modulus exponent 2 rest) =
     some (WindowTwentyOneTable.state template (UInt256.ofNat (tablePC (count + 2)))
       base modulus exponent (count + 2) rest) := by
   induction count with
@@ -56,19 +56,19 @@ theorem run_all (template : State) (base modulus exponentOffset : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (hoffset : rest[4]? = some exponentOffset) :
     runInstructions program
-      (WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 2219) base modulus rest) =
-    some (WindowTwentyOneTable.framed template (UInt256.ofNat 2335) base modulus 16
+      (WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 2215) base modulus rest) =
+    some (WindowTwentyOneTable.framed template (UInt256.ofNat 2331) base modulus 16
       ([base, MachineState.readWord template.executionEnv.calldata exponentOffset.toNat] ++ rest)) := by
-  have hp := WindowTwentyOneTablePrelude.run_prelude template (UInt256.ofNat 2219)
+  have hp := WindowTwentyOneTablePrelude.run_prelude template (UInt256.ofNat 2215)
     base modulus exponentOffset rest hrest hoffset
-  have hpc : WindowTwentyOneTablePrelude.endPC (UInt256.ofNat 2219) = UInt256.ofNat 2250 := by decide
+  have hpc : WindowTwentyOneTablePrelude.endPC (UInt256.ofNat 2215) = UInt256.ofNat 2246 := by decide
   rw [hpc] at hp
   have hb := run_build template base modulus
     (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat) 12 (by decide) rest hrest
   have hl := WindowTwentyOneTable.run_last_update template (UInt256.ofNat (tablePC 14))
     base modulus (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat) rest hrest
   have hlastPC : WindowTwentyOneTable.lastStorePC 2 (advancePC 2 (UInt256.ofNat (tablePC 14))) =
-      UInt256.ofNat 2335 := by decide
+      UInt256.ofNat 2331 := by decide
   rw [hlastPC] at hl
   exact runInstructions_append_some _ _ _ _ _ (runInstructions_append_some _ _ _ _ _ hp hb) hl
 

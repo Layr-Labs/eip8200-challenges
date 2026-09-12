@@ -2,8 +2,8 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.BigLoad
 import Challenge.Modexp.Submission.Proofs.Limbs
 import Mathlib.Data.Nat.Bitwise
 set_option warningAsError true
-set_option maxRecDepth 20000
-set_option maxHeartbeats 2000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 /-!
 # Functional correctness of big-endian operand loading
 

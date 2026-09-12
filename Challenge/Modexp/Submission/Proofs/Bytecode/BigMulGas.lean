@@ -1,7 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigMul
 set_option warningAsError true
-set_option maxRecDepth 20000
-set_option maxHeartbeats 3000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 /-! # Aggregate gas theorem for `mulModBig`
 
 Kept separate so the large execution certificate is opaque while its nested

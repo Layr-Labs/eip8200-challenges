@@ -1,14 +1,14 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.DispatchDefs
 set_option warningAsError true
-set_option maxRecDepth 10000
-set_option maxHeartbeats 1000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.Dispatch
 
 open EvmSemantics
 open EvmSemantics.EVM
 
-set_option maxHeartbeats 5000000 in
+set_option maxHeartbeats 16000000 in
 set_option linter.unusedSimpArgs false in
 theorem run_wordRest (input : ByteArray) (hvalid : ValidInput input)
     (hpositive : 0 < modulusSize input) (hword : modulusSize input ≤ 32) :

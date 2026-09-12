@@ -1,7 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigExponentCorrect
 set_option warningAsError true
-set_option maxRecDepth 20000
-set_option maxHeartbeats 3000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 set_option linter.unusedSimpArgs false
 /-! # Functional correctness of multi-limb base conversion -/
 
@@ -64,7 +64,7 @@ theorem bitProgress_represents (s : State) (count : Nat) (byte : UInt256)
       have h0 : (0 : UInt256) = UInt256.ofNat 0 := by decide
       have h1 : (1 : UInt256) = UInt256.ofNat 1 := by decide
       have h1024 : (1024 : UInt256) = UInt256.ofNat 1024 := by decide
-      have h3072 : (3072 : UInt256) = UInt256.ofNat 3072 := by decide
+      have h3072 : (3072 : UInt256) = UInt256.ofNat 3064 := by decide
       have h875 : (747 : UInt256) = UInt256.ofNat 747 := by decide
       have h900 : (771 : UInt256) = UInt256.ofNat 771 := by decide
       have hbefore := ih (by omega)
@@ -96,7 +96,7 @@ theorem bitProgress_represents (s : State) (count : Nat) (byte : UInt256)
       have hbitWord : baseBit byte steps = UInt256.ofNat bit :=
         Challenge.EvmProof.Word.word_eq_ofNat_toNat _
       have hafterEq : after = BigHelpers.addReturned doubled
-          (UInt256.ofNat 1024) (UInt256.ofNat 3072) (UInt256.ofNat bit)
+          (UInt256.ofNat 1024) (UInt256.ofNat 3064) (UInt256.ofNat bit)
           (UInt256.ofNat 0) count (UInt256.ofNat 771) [] := by
         simp only [after]
         rw [hbitWord, h0, h1024, h3072, h900]
@@ -157,7 +157,7 @@ theorem bitProgress_preserves_2048 (s : State) (count : Nat)
       have h0 : (0 : UInt256) = UInt256.ofNat 0 := by decide
       have h1 : (1 : UInt256) = UInt256.ofNat 1 := by decide
       have h1024 : (1024 : UInt256) = UInt256.ofNat 1024 := by decide
-      have h3072 : (3072 : UInt256) = UInt256.ofNat 3072 := by decide
+      have h3072 : (3072 : UInt256) = UInt256.ofNat 3064 := by decide
       have h875 : (747 : UInt256) = UInt256.ofNat 747 := by decide
       have h900 : (771 : UInt256) = UInt256.ofNat 771 := by decide
       have hdoubled : Limbs.Represents doubled.memory 2048 count value := by
@@ -168,7 +168,7 @@ theorem bitProgress_preserves_2048 (s : State) (count : Nat)
       have hbitWord : baseBit byte steps = UInt256.ofNat bit :=
         Challenge.EvmProof.Word.word_eq_ofNat_toNat _
       have hafterEq : after = BigHelpers.addReturned doubled
-          (UInt256.ofNat 1024) (UInt256.ofNat 3072) (UInt256.ofNat bit)
+          (UInt256.ofNat 1024) (UInt256.ofNat 3064) (UInt256.ofNat bit)
           (UInt256.ofNat 0) count (UInt256.ofNat 771) [] := by
         simp only [after]
         rw [hbitWord, h0, h1024, h3072, h900]
@@ -436,7 +436,7 @@ theorem baseLoopEntry_initial (s : State) (accumulator : UInt256)
   let cleared := BigBase.afterClearDouble s accumulator count rest
   let written := MachineState.writeBytes cleared.memory
     (Data.Bytes.natToBytesPadded 1 32) 3072
-  have h3072 : (3072 : UInt256) = UInt256.ofNat 3072 := by decide
+  have h3072 : (3072 : UInt256) = UInt256.ofNat 3064 := by decide
   have hscannedZero : Limbs.Represents scanned.memory 1024 count 0 := by
     simpa [scanned, BigModulus.scanNonzero] using hzero
   have hscannedModulus : Limbs.Represents scanned.memory 0 count modulusValue := by
@@ -529,7 +529,7 @@ theorem initialAccumulator_represents (s : State) (accumulator : UInt256)
   have h0 : (0 : UInt256) = UInt256.ofNat 0 := by decide
   have h1 : (1 : UInt256) = UInt256.ofNat 1 := by decide
   have h2048 : (2048 : UInt256) = UInt256.ofNat 2048 := by decide
-  have h3072 : (3072 : UInt256) = UInt256.ofNat 3072 := by decide
+  have h3072 : (3072 : UInt256) = UInt256.ofNat 3064 := by decide
   have h944 : (814 : UInt256) = UInt256.ofNat 814 := by decide
   have hprogress := baseProgress_represents s count baseOff baseSize
     modulusValue hcount hmodulusPos hzero hone hmodulus

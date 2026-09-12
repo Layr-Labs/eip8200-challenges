@@ -15,7 +15,7 @@ open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 theorem run_l1Dispatch4 (s : State) (q : MacState) (bi : UInt256)
     (pb i : Nat) (hd pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 4212 = true) :
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 4200 = true) :
     runInstructions l1DispatchProgram (l1Q 4058 s q bi pb 4 i hd (l1Target 4) pdst ret rest) =
       some (l1Q 4212 s q bi pb 4 i hd (l1Target 4) pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
@@ -36,7 +36,7 @@ theorem run_l1Dispatch4 (s : State) (q : MacState) (bi : UInt256)
 theorem run_l1Dispatch8 (s : State) (q : MacState) (bi : UInt256)
     (pb i : Nat) (hd pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 4060 = true) :
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 4048 = true) :
     runInstructions l1DispatchProgram (l1Q 4058 s q bi pb 8 i hd (l1Target 8) pdst ret rest) =
       some (l1Q 4060 s q bi pb 8 i hd (l1Target 8) pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
@@ -58,7 +58,7 @@ theorem run_l1Dispatch8 (s : State) (q : MacState) (bi : UInt256)
 theorem run_l2Dispatch4 (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pb i k : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 4511 = true) :
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 4499 = true) :
     runInstructions l2DispatchProgram (l2At 4357 s mid bi mu c0 pb 4 i k hd ent pdst ret rest) =
       some (l2At 4511 s mid bi mu c0 pb 4 i k hd ent pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
@@ -79,7 +79,7 @@ theorem run_l2Dispatch4 (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
 theorem run_l2Dispatch8 (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pb i k : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 4359 = true) :
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 4347 = true) :
     runInstructions l2DispatchProgram (l2At 4357 s mid bi mu c0 pb 8 i k hd ent pdst ret rest) =
       some (l2At 4359 s mid bi mu c0 pb 8 i k hd ent pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega

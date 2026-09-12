@@ -1,8 +1,8 @@
 import Challenge.Modexp.Submission.Proofs.Fast.Defs
 
 set_option warningAsError true
-set_option maxRecDepth 40000
-set_option maxHeartbeats 4000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 
 /-! Located direct RR helper: indices 2376..2398, bytes 3111..3145. -/
 
@@ -22,7 +22,7 @@ private theorem instructionPC_add
     assembleBytes_append, List.length_append]
 
 private theorem helperPCAnchor :
-    Artifact.submissionArtifact.instructionPC 2205 = 2837 := by rfl
+    Artifact.submissionArtifact.instructionPC 2201 = 2829 := by rfl
 
 @[simp] theorem helperPC (i : Nat) (hlo : 2205 ≤ i) (hhi : i ≤ 2227) :
     Artifact.submissionArtifact.instructionPC i =
@@ -32,32 +32,32 @@ private theorem helperPCAnchor :
 
 def helperPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2205 .JUMPDEST,
-   pushAt 2206 2 9344,
-   opAt 2207 .MLOAD,
-   pushAt 2208 2 5120,
-   pushAt 2209 2 6144,
-   opAt 2210 .MCOPY,
-   opAt 2211 (.Dup ⟨1, by decide⟩),
-   pushAt 2212 1 3,
-   opAt 2213 .LT,
-   opAt 2214 (.Dup ⟨2, by decide⟩),
-   pushAt 2215 1 7,
-   opAt 2216 .LT,
-   opAt 2217 (.Dup ⟨3, by decide⟩),
-   pushAt 2218 1 15,
-   opAt 2219 .LT,
-   opAt 2220 (.Dup ⟨4, by decide⟩),
-   pushAt 2221 1 31,
-   opAt 2222 .LT,
-   opAt 2223 .ADD,
-   opAt 2224 .ADD,
-   opAt 2225 .ADD,
-   pushAt 2226 2 1322,
-   opAt 2227 .JUMP]
+  [opAt 2201 .JUMPDEST,
+   pushAt 2202 2 9344,
+   opAt 2203 .MLOAD,
+   pushAt 2204 2 5120,
+   pushAt 2205 2 6144,
+   opAt 2206 .MCOPY,
+   opAt 2207 (.Dup ⟨1, by decide⟩),
+   pushAt 2208 1 3,
+   opAt 2209 .LT,
+   opAt 2210 (.Dup ⟨2, by decide⟩),
+   pushAt 2211 1 7,
+   opAt 2212 .LT,
+   opAt 2213 (.Dup ⟨3, by decide⟩),
+   pushAt 2214 1 15,
+   opAt 2215 .LT,
+   opAt 2216 (.Dup ⟨4, by decide⟩),
+   pushAt 2217 1 31,
+   opAt 2218 .LT,
+   opAt 2219 .ADD,
+   opAt 2220 .ADD,
+   opAt 2221 .ADD,
+   pushAt 2222 2 1318,
+   opAt 2223 .JUMP]
 
 @[simp] theorem jump1569 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1322 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1318 = true :=
   jumpDest1548
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.RrLeadingPaths

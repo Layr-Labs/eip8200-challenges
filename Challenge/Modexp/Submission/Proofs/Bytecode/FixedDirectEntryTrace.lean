@@ -1,8 +1,8 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectFallbackTrace
 
 set_option warningAsError true
-set_option maxRecDepth 40000
-set_option maxHeartbeats 4000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 
 /-! # Redirect from the inherited `BDONE` to the fixed-exponent dispatcher. -/
 
@@ -16,8 +16,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths
 def entryPath : List (Challenge.EvmProof.Stepper.Located
     Artifact.submissionArtifact .Osaka) :=
   [
-   pushAt 1093 2 3138,
-   opAt 1094 .JUMP]
+   pushAt 1091 2 3130,
+   opAt 1092 .JUMP]
 
 set_option linter.unusedSimpArgs false in
 theorem run_entry (s : State) (memory : ByteArray)

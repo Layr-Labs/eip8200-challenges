@@ -2,8 +2,8 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatch
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigSetup
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigSerialize
 set_option warningAsError true
-set_option maxRecDepth 20000
-set_option maxHeartbeats 3000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 set_option linter.unusedSimpArgs false
 /-! # Complete certified nonzero multi-limb MODEXP path -/
 

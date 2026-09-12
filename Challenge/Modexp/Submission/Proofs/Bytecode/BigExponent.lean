@@ -1,7 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigExponentDefs
 set_option warningAsError true
-set_option maxRecDepth 20000
-set_option maxHeartbeats 3000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 /-! # Certified multi-limb exponentiation path -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.BigExponent

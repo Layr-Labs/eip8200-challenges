@@ -4,7 +4,7 @@ import Challenge.EvmProof.Word
 import Batteries.Data.Nat.Bitwise.Lemmas
 
 set_option warningAsError true
-set_option maxHeartbeats 2000000
+set_option maxHeartbeats 16000000
 
 /-!
 # Fixed-width route guard

@@ -15,61 +15,61 @@ dispatcher. The remaining decoded instructions through index 1215 are
 unreachable padding, preserving the old loop head at index 1216 / pc 1668. -/
 def blk1195 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1043 2 2872,
-   opAt 1044 .JUMP]
+  [pushAt 1041 2 2864,
+   opAt 1042 .JUMP]
 
 /-- Instructions 1216..1222, pc 1668..1676. -/
 def blk1216 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1045 .JUMPDEST,
-   opAt 1046 (.Dup ⟨1, by decide⟩),
-   opAt 1047 (.Dup ⟨1, by decide⟩),
-   opAt 1048 .EQ,
-   pushAt 1049 2 1450,
-   opAt 1050 .JUMPI]
+  [opAt 1043 .JUMPDEST,
+   opAt 1044 (.Dup ⟨1, by decide⟩),
+   opAt 1045 (.Dup ⟨1, by decide⟩),
+   opAt 1046 .EQ,
+   pushAt 1047 2 1446,
+   opAt 1048 .JUMPI]
 
 /-- Instructions 1223..1228, pc 1677..1692. -/
 def blk1223 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1051 2 1407,
+  [pushAt 1049 2 1403,
+   pushAt 1050 2 1024,
+   pushAt 1051 2 5120,
    pushAt 1052 2 1024,
-   pushAt 1053 2 5120,
-   pushAt 1054 2 1024,
-   pushAt 1055 2 3912,
-   opAt 1056 .JUMP]
+   pushAt 1053 2 3900,
+   opAt 1054 .JUMP]
 
 /-- Instructions 1229..1249, pc 1693..1727. -/
 def blk1229 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1057 .JUMPDEST,
-   opAt 1058 (.Dup ⟨0, by decide⟩),
-   opAt 1059 (.Dup ⟨2, by decide⟩),
-   opAt 1060 .SUB,
-   pushAt 1061 1 5,
-   opAt 1062 .SHL,
-   opAt 1063 (.Dup ⟨5, by decide⟩),
-   opAt 1064 .SUB,
-   pushAt 1065 1 96,
-   opAt 1066 .ADD,
-   opAt 1067 .CALLDATALOAD,
-   opAt 1068 (.Dup ⟨3, by decide⟩),
-   pushAt 1069 2 3040,
-   opAt 1070 .ADD,
-   opAt 1071 .MSTORE,
-   pushAt 1072 2 1442,
+  [opAt 1055 .JUMPDEST,
+   opAt 1056 (.Dup ⟨0, by decide⟩),
+   opAt 1057 (.Dup ⟨2, by decide⟩),
+   opAt 1058 .SUB,
+   pushAt 1059 1 5,
+   opAt 1060 .SHL,
+   opAt 1061 (.Dup ⟨5, by decide⟩),
+   opAt 1062 .SUB,
+   pushAt 1063 1 96,
+   opAt 1064 .ADD,
+   opAt 1065 .CALLDATALOAD,
+   opAt 1066 (.Dup ⟨3, by decide⟩),
+   pushAt 1067 2 3040,
+   opAt 1068 .ADD,
+   opAt 1069 .MSTORE,
+   pushAt 1070 2 1438,
+   pushAt 1071 2 1024,
+   pushAt 1072 2 3072,
    pushAt 1073 2 1024,
-   pushAt 1074 2 3072,
-   pushAt 1075 2 1024,
-   pushAt 1076 2 1898,
-   opAt 1077 .JUMP]
+   pushAt 1074 2 1894,
+   opAt 1075 .JUMP]
 
 /-- Instructions 1250..1254, pc 1728..1735. -/
 def blk1250 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1078 .JUMPDEST,
-   pushAt 1079 1 1,
-   opAt 1080 .ADD,
-   pushAt 1081 2 1383,
-   opAt 1082 .JUMP]
+  [opAt 1076 .JUMPDEST,
+   pushAt 1077 1 1,
+   opAt 1078 .ADD,
+   pushAt 1079 2 1379,
+   opAt 1080 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

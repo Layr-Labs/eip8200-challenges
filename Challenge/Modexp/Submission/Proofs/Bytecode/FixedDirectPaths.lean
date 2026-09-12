@@ -2,8 +2,8 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
 import Challenge.Modexp.Submission.Proofs.Fast.Defs
 
 set_option warningAsError true
-set_option maxRecDepth 40000
-set_option maxHeartbeats 4000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 
 /-!
 # Exact located blocks for the direct fixed-exponent handler
@@ -41,53 +41,51 @@ abbrev Located :=
 -- identical stack and pc.  Keep this note OUTSIDE the list: a comment between entries is
 -- legal Lean, but a line-oriented reader of this list sees the entry as missing.
 def entryPrefix : List Located :=
-  [opAt 2430 .JUMPDEST,
-   opAt 2431 (.Dup ⟨3, by decide⟩),
-   pushAt 2432 2 3144,
-   opAt 2433 .POP,
-   opAt 2434 .JUMPDEST,
-   pushAt 2435 1 3,
-   opAt 2436 .EQ,
-   pushAt 2437 2 3180,
-   opAt 2438 .JUMPI]
+  [opAt 2426 .JUMPDEST,
+   opAt 2427 (.Dup ⟨3, by decide⟩),
+   opAt 2428 .JUMPDEST,
+   pushAt 2429 1 3,
+   opAt 2430 .EQ,
+   pushAt 2431 2 3168,
+   opAt 2432 .JUMPI]
 
 def oneWidth : List Located :=
-  [opAt 2439 (.Dup ⟨3, by decide⟩),
-   pushAt 2440 1 1,
-   opAt 2441 .XOR,
-   pushAt 2442 2 3247,
-   opAt 2443 .JUMPI]
+  [opAt 2433 (.Dup ⟨3, by decide⟩),
+   pushAt 2434 1 1,
+   opAt 2435 .XOR,
+   pushAt 2436 2 3235,
+   opAt 2437 .JUMPI]
 
 def checkThree : List Located :=
-  [pushAt 2444 2 9472,
-   opAt 2445 .MLOAD,
-   opAt 2446 .CALLDATALOAD,
-   pushAt 2447 0 0,
-   opAt 2448 .BYTE,
-   pushAt 2449 1 3,
-   opAt 2450 .XOR,
-   pushAt 2451 2 3247,
-   opAt 2452 .JUMPI]
+  [pushAt 2438 2 9472,
+   opAt 2439 .MLOAD,
+   opAt 2440 .CALLDATALOAD,
+   pushAt 2441 0 0,
+   opAt 2442 .BYTE,
+   pushAt 2443 1 3,
+   opAt 2444 .XOR,
+   pushAt 2445 2 3235,
+   opAt 2446 .JUMPI]
 
 def threeHit : List Located :=
-  [pushAt 2453 1 1,
-   pushAt 2454 2 3200,
-   opAt 2455 .JUMP]
+  [pushAt 2447 1 1,
+   pushAt 2448 2 3188,
+   opAt 2449 .JUMP]
 
 def check65537 : List Located :=
-  [opAt 2456 .JUMPDEST,
-   pushAt 2457 2 9472,
-   opAt 2458 .MLOAD,
-   opAt 2459 .CALLDATALOAD,
-   pushAt 2460 1 232,
-   opAt 2461 .SHR,
-   pushAt 2462 3 65537,
-   opAt 2463 .XOR,
-   pushAt 2464 2 3247,
-   opAt 2465 .JUMPI]
+  [opAt 2450 .JUMPDEST,
+   pushAt 2451 2 9472,
+   opAt 2452 .MLOAD,
+   opAt 2453 .CALLDATALOAD,
+   pushAt 2454 1 232,
+   opAt 2455 .SHR,
+   pushAt 2456 3 65537,
+   opAt 2457 .XOR,
+   pushAt 2458 2 3235,
+   opAt 2459 .JUMPI]
 
 def fermatHit : List Located :=
-  [pushAt 2466 1 16]
+  [pushAt 2460 1 16]
 
 def start : List Located :=
   []
@@ -96,89 +94,89 @@ def start : List Located :=
 kernel's in-kernel loop) and call `SQUARE(0x800) → 0x800`, entering the kernel's
 `common` block with `hd = sq_row` and return address 3233. -/
 def squareCall : List Located :=
-  [opAt 2467 .JUMPDEST,
+  [opAt 2461 .JUMPDEST,
+   opAt 2462 (.Dup ⟨0, by decide⟩),
+   pushAt 2463 2 9280,
+   opAt 2464 .MSTORE,
+   pushAt 2465 2 3209,
+   pushAt 2466 2 2048,
+   opAt 2467 (.Dup ⟨0, by decide⟩),
    opAt 2468 (.Dup ⟨0, by decide⟩),
-   pushAt 2469 2 9280,
-   opAt 2470 .MSTORE,
-   pushAt 2471 2 3221,
-   pushAt 2472 2 2048,
-   opAt 2473 (.Dup ⟨0, by decide⟩),
-   opAt 2474 (.Dup ⟨0, by decide⟩),
-   pushAt 2475 2 4788,
-   pushAt 2476 2 3916,
-   opAt 2477 .JUMP]
+   pushAt 2469 2 4772,
+   pushAt 2470 2 3904,
+   opAt 2471 .JUMP]
 
 def squareReturn : List Located :=
-  [opAt 2478 .JUMPDEST,
-   pushAt 2479 1 1,
-   opAt 2480 (.Swap ⟨0, by decide⟩),
-   opAt 2481 .SUB,
-   opAt 2482 (.Dup ⟨0, by decide⟩),
-   pushAt 2483 2 3200,
-   opAt 2484 .JUMPI]
+  [opAt 2472 .JUMPDEST,
+   pushAt 2473 1 1,
+   opAt 2474 (.Swap ⟨0, by decide⟩),
+   opAt 2475 .SUB,
+   opAt 2476 (.Dup ⟨0, by decide⟩),
+   pushAt 2477 2 3188,
+   opAt 2478 .JUMPI]
 
 /-- `after_sq` (pc 3243): both the in-kernel loop's return target and the
 fall-through of the caller loop for the unaccelerated widths.  The square count
 left on the stack is dropped and the final mixed-domain product is called. -/
 def product : List Located :=
-  [opAt 2485 .JUMPDEST,
-   opAt 2486 .POP,
-   pushAt 2487 2 1571,
-   pushAt 2488 2 1024,
-   opAt 2489 (.Dup ⟨0, by decide⟩),
-   pushAt 2490 2 2048,
-   pushAt 2491 2 3912,
-   opAt 2492 .JUMP]
+  [opAt 2479 .JUMPDEST,
+   opAt 2480 .POP,
+   pushAt 2481 2 1567,
+   pushAt 2482 2 1024,
+   opAt 2483 (.Dup ⟨0, by decide⟩),
+   pushAt 2484 2 2048,
+   pushAt 2485 2 3900,
+   opAt 2486 .JUMP]
 
 def fallback : List Located :=
-  [opAt 2493 .JUMPDEST,
-   opAt 2494 (.Dup ⟨0, by decide⟩),
-   pushAt 2495 2 4096,
-   pushAt 2496 2 1024,
-   opAt 2497 .MCOPY,
-   pushAt 2498 0 0,
-   pushAt 2499 2 1474,
-   opAt 2500 .JUMP]
+  [opAt 2487 .JUMPDEST,
+   opAt 2488 (.Dup ⟨0, by decide⟩),
+   pushAt 2489 2 4096,
+   pushAt 2490 2 1024,
+   opAt 2491 .MCOPY,
+   pushAt 2492 0 0,
+   pushAt 2493 2 1470,
+   opAt 2494 .JUMP]
 
 theorem jumpDest3892 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3138 = true :=
-  Artifact.isValidJumpDest_index 2430 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3130 = true :=
+  Artifact.isValidJumpDest_index 2426 (by rfl)
 
 theorem jumpDest3895 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3180 = true :=
-  Artifact.isValidJumpDest_index 2456 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3168 = true :=
+  Artifact.isValidJumpDest_index 2450 (by rfl)
 
 theorem jumpDest3953 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3200 = true :=
-  Artifact.isValidJumpDest_index 2467 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3188 = true :=
+  Artifact.isValidJumpDest_index 2461 (by rfl)
 
 theorem jumpDest3970 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3221 = true :=
-  Artifact.isValidJumpDest_index 2478 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3209 = true :=
+  Artifact.isValidJumpDest_index 2472 (by rfl)
 
 theorem jumpDest3959 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3247 = true :=
-  Artifact.isValidJumpDest_index 2493 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3235 = true :=
+  Artifact.isValidJumpDest_index 2487 (by rfl)
 
 /-- The kernel's multiply entry `0x0f50` (the final mixed-domain product). -/
 theorem jumpDestSqMulEntry :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3912 = true :=
-  Artifact.isValidJumpDest_index 2953 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3900 = true :=
+  Artifact.isValidJumpDest_index 2947 (by rfl)
 
 /-- The kernel's shared `common` block `0x0f54` (entered by the square call). -/
 theorem jumpDestSqCommon :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3916 = true :=
-  Artifact.isValidJumpDest_index 2955 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3904 = true :=
+  Artifact.isValidJumpDest_index 2949 (by rfl)
 
 /-- Target of the (now contiguous) jump from `0x0c6d` to `0x0c71`. -/
 theorem jumpBridge3423 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3144 = true :=
-  Artifact.isValidJumpDest_index 2434 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3132 = true :=
+  Artifact.isValidJumpDest_index 2428 (by rfl)
 
 /-- `after_sq` (pc 3243): the target the in-kernel square loop rewrites the
 kernel frame's return slot to. -/
 theorem jumpDestAfterSq :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3231 = true :=
-  Artifact.isValidJumpDest_index 2485 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3219 = true :=
+  Artifact.isValidJumpDest_index 2479 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths

@@ -2,8 +2,8 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.RrLeadingPaths
 import Challenge.Modexp.Submission.Proofs.Fast.RrLeadingMemory
 
 set_option warningAsError true
-set_option maxRecDepth 40000
-set_option maxHeartbeats 8000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 
 /-!
 # Concrete trace for the direct RR-leading helper

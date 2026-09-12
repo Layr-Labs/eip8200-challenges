@@ -1,7 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigBaseCorrect
 set_option warningAsError true
-set_option maxRecDepth 20000
-set_option maxHeartbeats 3000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 set_option linter.unusedSimpArgs false
 /-! # End-to-end functional correctness of the multi-limb MODEXP arithmetic -/
 

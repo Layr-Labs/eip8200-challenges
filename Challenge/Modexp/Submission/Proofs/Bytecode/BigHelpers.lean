@@ -2,8 +2,8 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
 import Challenge.Modexp.Submission.Proofs.Limbs
 import Challenge.EvmProof.Meter
 set_option warningAsError true
-set_option maxRecDepth 20000
-set_option maxHeartbeats 2000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 /-!
 # Certified multi-limb bytecode helpers
 
@@ -1864,7 +1864,7 @@ def subtractProgress (memory : ByteArray) (activeWords dst modulus : UInt256) :
       let off := UInt256.shiftLeft (UInt256.ofNat i) (UInt256.ofNat 5)
       let dstAt := dst + off
       let modulusAt := modulus + off
-      let candidateAt := UInt256.ofNat 5120 + off
+      let candidateAt := UInt256.ofNat 5100 + off
       let x := MachineState.readWord before.memory dstAt.toNat
       let y := MachineState.readWord before.memory modulusAt.toNat
       let difference := x - y
@@ -2022,7 +2022,7 @@ theorem subtractProgress_matches_nat (memory : ByteArray)
             (UInt256.ofNat 5)).toNat = modulus + 32 * iter :=
         addOffset_toNat modulus iter (by omega)
       have hoffCandidate :
-          (UInt256.ofNat 5120 + UInt256.shiftLeft (UInt256.ofNat iter)
+          (UInt256.ofNat 5100 + UInt256.shiftLeft (UInt256.ofNat iter)
             (UInt256.ofNat 5)).toNat = 5120 + 32 * iter :=
         addOffset_toNat 5120 iter (by omega)
       dsimp only [subtractProgress, subtractNatProgress]
@@ -2224,7 +2224,7 @@ theorem run_subtractBody (s : State) (dst src take modulus : UInt256)
   have hc20 : rest.length + 20 < 1024 := by omega
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
   have hfive : (5 : UInt256) = UInt256.ofNat 5 := by decide
-  have hfiveK : (5120 : UInt256) = UInt256.ofNat 5120 := by decide
+  have hfiveK : (5120 : UInt256) = UInt256.ofNat 5100 := by decide
   have hloop : (153 : UInt256) = UInt256.ofNat 153 := by decide
   have hloopNat : (153 : UInt256).toNat = 153 := by decide
   have hjump : Decode.isValidJumpDest submissionBytecode
@@ -2338,7 +2338,7 @@ def selectProgress (memory : ByteArray) (activeWords dst selectMask : UInt256) :
       let before := selectProgress memory activeWords dst selectMask i
       let off := UInt256.shiftLeft (UInt256.ofNat i) (UInt256.ofNat 5)
       let dstAt := dst + off
-      let candidateAt := UInt256.ofNat 5120 + off
+      let candidateAt := UInt256.ofNat 5100 + off
       let sum := MachineState.readWord before.memory dstAt.toNat
       let reduced := MachineState.readWord before.memory candidateAt.toNat
       let selected := UInt256.lor (UInt256.land reduced selectMask)
@@ -2494,7 +2494,7 @@ theorem selectProgress_memoryLimbs (memory : ByteArray)
             (UInt256.ofNat 5)).toNat = dst + 32 * iter :=
         addOffset_toNat dst iter (by omega)
       have hoffCandidate :
-          (UInt256.ofNat 5120 + UInt256.shiftLeft (UInt256.ofNat iter)
+          (UInt256.ofNat 5100 + UInt256.shiftLeft (UInt256.ofNat iter)
             (UInt256.ofNat 5)).toNat = 5120 + 32 * iter :=
         addOffset_toNat 5120 iter (by omega)
       dsimp only [selectProgress]
@@ -2777,7 +2777,7 @@ theorem run_selectBody (s : State) (dst src take modulus : UInt256)
   have hc17 : rest.length + 17 < 1024 := by omega
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
   have hfive : (5 : UInt256) = UInt256.ofNat 5 := by decide
-  have hfiveK : (5120 : UInt256) = UInt256.ofNat 5120 := by decide
+  have hfiveK : (5120 : UInt256) = UInt256.ofNat 5100 := by decide
   have hloop : (222 : UInt256) = UInt256.ofNat 222 := by decide
   have hloopNat : (222 : UInt256).toNat = 222 := by decide
   have hjump : Decode.isValidJumpDest submissionBytecode

@@ -8,8 +8,8 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.Unroll5
 import Challenge.Modexp.Submission.Proofs.Bytecode.Unroll6
 import Challenge.Modexp.Submission.Proofs.Bytecode.Unroll7
 set_option warningAsError true
-set_option maxRecDepth 10000
-set_option maxHeartbeats 1000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 /-!
 # One-word MODEXP loop composition
 

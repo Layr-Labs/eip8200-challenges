@@ -2,8 +2,8 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.Dispatch
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneInput
 
 set_option warningAsError true
-set_option maxRecDepth 20000
-set_option maxHeartbeats 2000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 
 /-!
 # Contract for the fixed-width word window

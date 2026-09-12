@@ -2,8 +2,8 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.WordCorrect
 import Challenge.Modexp.Submission.Proofs.Bytecode.WordGasSteps
 import Challenge.EvmProof.Meter
 set_option warningAsError true
-set_option maxRecDepth 100000
-set_option maxHeartbeats 0
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 /-!
 # Exact gas use of the one-word MODEXP path
 

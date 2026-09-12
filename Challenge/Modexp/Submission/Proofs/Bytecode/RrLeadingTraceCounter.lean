@@ -1,7 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.RrLeadingTraceCore
 
 set_option warningAsError true
-set_option maxHeartbeats 4000000
+set_option maxHeartbeats 16000000
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.RrLeadingTraceCore
 
@@ -14,9 +14,9 @@ theorem run_counter (template : State) (mem : ByteArray)
     runInstructions counterProgram (copiedState template mem n bsize esize msize) =
       some (counterState template mem n bsize esize msize) := by
   have hpc :
-      (((((UInt256.ofNat 2849).succ + UInt256.ofNat 2).succ.succ +
+      (((((UInt256.ofNat 2841).succ + UInt256.ofNat 2).succ.succ +
           UInt256.ofNat 2).succ.succ + UInt256.ofNat 2).succ.succ +
-          UInt256.ofNat 2).succ.succ.succ.succ = UInt256.ofNat 2868 := by
+          UInt256.ofNat 2).succ.succ.succ.succ = UInt256.ofNat 2860 := by
     decide
   simp [counterProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     copiedState, counterState, outer, counterWord n hn32, hpc]

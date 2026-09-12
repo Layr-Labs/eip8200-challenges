@@ -2,8 +2,8 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectValueTrace
 import Challenge.Modexp.Submission.Proofs.Fast.FixedDirectFallbackCore
 
 set_option warningAsError true
-set_option maxRecDepth 40000
-set_option maxHeartbeats 4000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 
 /-!
 # Generic fallback from the fixed-exponent dispatcher

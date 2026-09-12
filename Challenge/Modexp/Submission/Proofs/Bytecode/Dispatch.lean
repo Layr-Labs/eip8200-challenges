@@ -5,8 +5,8 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.DispatchRunTail
 import Challenge.EvmProof.Meter
 
 set_option warningAsError true
-set_option maxRecDepth 10000
-set_option maxHeartbeats 1000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.Dispatch
 
@@ -62,7 +62,7 @@ def gasSteps_zeroSize (input : ByteArray) (hzero : modulusSize input = 0) :
       (zeroSizeFinalState input) :=
   (gasSteps_zeroSetup input hzero).trans (gasSteps_zeroReturn input)
 
-set_option maxHeartbeats 5000000 in
+set_option maxHeartbeats 16000000 in
 theorem gasSteps_zeroSize_cost (input : ByteArray)
     (hzero : modulusSize input = 0) :
     (gasSteps_zeroSize input hzero).cost = 21 := by
@@ -122,7 +122,7 @@ def gasSteps_wordRouteEnter (input : ByteArray) (hvalid : ValidInput input)
     (gasSteps_wordCheck input hvalid hpositive hword).trans
       (gasSteps_wordTail input)
 
-set_option maxHeartbeats 5000000 in
+set_option maxHeartbeats 16000000 in
 theorem gasSteps_wordRouteEnter_cost (input : ByteArray)
     (hvalid : ValidInput input)
     (hpositive : 0 < modulusSize input) (hword : modulusSize input ≤ 32) :

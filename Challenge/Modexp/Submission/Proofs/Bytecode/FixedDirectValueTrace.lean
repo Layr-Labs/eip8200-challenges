@@ -2,8 +2,8 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectDispatchTrace
 import Challenge.Modexp.Submission.Proofs.Fast.FixedExponentRouteLogic
 
 set_option warningAsError true
-set_option maxRecDepth 40000
-set_option maxHeartbeats 4000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 
 /-!
 # Located exponent-value checks

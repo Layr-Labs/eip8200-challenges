@@ -1,7 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.DispatchDefs
 set_option warningAsError true
-set_option maxRecDepth 10000
-set_option maxHeartbeats 1000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.Dispatch
 
@@ -11,7 +11,7 @@ open EvmSemantics.EVM
 private def framed (template : State) (pc : Nat) (stack : List UInt256) : State :=
   { template with pc := UInt256.ofNat pc, stack := stack }
 
-set_option maxHeartbeats 5000000 in
+set_option maxHeartbeats 16000000 in
 set_option linter.unusedSimpArgs false in
 private theorem run_wordTail_generic (template : State)
     (b e m expOff modOff : UInt256)
@@ -20,12 +20,12 @@ private theorem run_wordTail_generic (template : State)
     Challenge.EvmProof.Stepper.runLocatedBlock wordTailPath
       (framed template 1092 [modOff, expOff, m, e, b]) =
     some (framed template 2175
-      [b, e, m, UInt256.ofNat 96, expOff, modOff, UInt256.ofNat 1186,
+      [b, e, m, UInt256.ofNat 96, expOff, modOff, UInt256.ofNat 1182,
         modOff, expOff, m, e, b]) := by
   have h3000 : (2175 : UInt256).toNat = 2175 := by decide
-  have h3000Word : (2175 : UInt256) = UInt256.ofNat 2175 := by decide
+  have h3000Word : (2175 : UInt256) = UInt256.ofNat 2171 := by decide
   have h96Word : (96 : UInt256) = UInt256.ofNat 96 := by decide
-  have h1267Word : (1186 : UInt256) = UInt256.ofNat 1186 := by decide
+  have h1267Word : (1186 : UInt256) = UInt256.ofNat 1182 := by decide
   simp (config := { maxSteps := 200000 })
     [framed, wordTailPath, wordRestPath, wordEntryPath, opAt, pushAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,

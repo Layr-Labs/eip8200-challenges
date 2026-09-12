@@ -36,14 +36,14 @@ def copyProgram : List Instr :=
   [.op .JUMPDEST, .push 2 8256, .push 2 9344, .op .MLOAD,
    .op (.Swap ⟨1, by decide⟩), .op .MCOPY, .op .JUMP]
 
-def checkBlock : Block Artifact.submissionArtifact .Osaka 4669 checkProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3560 12 4669 checkProgram
+def checkBlock : Block Artifact.submissionArtifact .Osaka 4653 checkProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3552 12 4653 checkProgram
     (by decide) (by rfl) (by rfl) (by decide)
-def jumpBlock : Block Artifact.submissionArtifact .Osaka 4687 jumpProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3572 2 4687 jumpProgram
+def jumpBlock : Block Artifact.submissionArtifact .Osaka 4671 jumpProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3564 2 4671 jumpProgram
     (by decide) (by rfl) (by rfl) (by decide)
-def copyBlock : Block Artifact.submissionArtifact .Osaka 5165 copyProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3901 7 5165 copyProgram
+def copyBlock : Block Artifact.submissionArtifact .Osaka 5145 copyProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3891 7 5145 copyProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def atState (s : State) (mem : ByteArray) (pc : Nat) (dst ret : UInt256)
@@ -60,7 +60,7 @@ def copiedState (s : State) (mem : ByteArray) (n : Nat) (dst ret : UInt256)
 theorem run_check (s : State) (mem : ByteArray) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hact : 296 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
-    runInstructions checkProgram (atState s mem 4669 dst ret rest) =
+    runInstructions checkProgram (atState s mem 4653 dst ret rest) =
       some (atState s mem (if Skip mem then 4687 else 4925) dst ret rest) := by
   have hc1 : rest.length+1 < 1024 := by omega
   have hc2 : rest.length+2 < 1024 := by omega
@@ -70,7 +70,7 @@ theorem run_check (s : State) (mem : ByteArray) (dst ret : UInt256) (rest : List
   have h0 : ({val := 0} : UInt256).toNat = 0 := rfl
   have h8256 : (8256 : UInt256).toNat = 8256 := by decide
   have h8224 : (8224 : UInt256).toNat = 8224 := by decide
-  have heq4978 : (4925 : UInt256) = UInt256.ofNat 4925 := by decide
+  have heq4978 : (4925 : UInt256) = UInt256.ofNat 4909 := by decide
   have h4978 : (4925 : UInt256).toNat = 4925 := by decide
   have ha0 := activeWords_fix s 0 32 (by decide) (by omega) hact
   have haT := activeWords_fix s 8256 32 (by decide) (by omega) hact
@@ -89,12 +89,12 @@ theorem run_check (s : State) (mem : ByteArray) (dst ret : UInt256) (rest : List
 theorem run_jump (s : State) (mem : ByteArray) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
-    runInstructions jumpProgram (atState s mem 4687 dst ret rest) =
-      some (atState s mem 5165 dst ret rest) := by
+    runInstructions jumpProgram (atState s mem 4671 dst ret rest) =
+      some (atState s mem 5145 dst ret rest) := by
   have hc1 : rest.length+1 < 1024 := by omega
   have hc2 : rest.length+2 < 1024 := by omega
   have hc3 : rest.length+3 < 1024 := by omega
-  have heq5219 : (5165 : UInt256) = UInt256.ofNat 5165 := by decide
+  have heq5219 : (5165 : UInt256) = UInt256.ofNat 5145 := by decide
   have h5219 : (5165 : UInt256).toNat = 5165 := by decide
   simp [jumpProgram,runInstructions,Challenge.EvmProof.Stepper.runInstr,
     atState,hc2,hc3,Nat.add_assoc,hcode,h5219,jumpDestEarlyCopy,heq5219]
@@ -106,7 +106,7 @@ theorem run_copy (s : State) (mem : ByteArray) (n : Nat) (dst ret : UInt256) (re
     (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32*n))
     (hdstFit : dst.toNat+32*n ≤ 9472)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true) :
-    runInstructions copyProgram (atState s mem 5165 dst ret rest) =
+    runInstructions copyProgram (atState s mem 5145 dst ret rest) =
       some (copiedState s mem n dst ret rest) := by
   have hc1 : rest.length+1 < 1024 := by omega
   have hc2 : rest.length+2 < 1024 := by omega

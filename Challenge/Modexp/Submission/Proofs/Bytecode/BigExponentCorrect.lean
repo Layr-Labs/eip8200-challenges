@@ -1,8 +1,8 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigComplete
 import Challenge.Modexp.Submission.Proofs.Bytecode.WordCorrect
 set_option warningAsError true
-set_option maxRecDepth 20000
-set_option maxHeartbeats 3000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 set_option linter.unusedSimpArgs false
 /-! # Functional correctness of multi-limb exponentiation -/
 
@@ -51,7 +51,7 @@ theorem selectMemory_zero (memory : ByteArray) (count : Nat)
 theorem selectMemory_one (memory : ByteArray) (count : Nat)
     (hcount : count ≤ 32) :
     selectMemory memory (0 - UInt256.ofNat 1) count =
-      BigHelpers.copyMemory memory (UInt256.ofNat 2048) (UInt256.ofNat 3072)
+      BigHelpers.copyMemory memory (UInt256.ofNat 2048) (UInt256.ofNat 3064)
         count := by
   induction count with
   | zero => rfl
@@ -62,7 +62,7 @@ theorem selectMemory_one (memory : ByteArray) (count : Nat)
       rw [hz]
       rw [WordCorrect.select_one]
       have h2048 : (2048 : UInt256) = UInt256.ofNat 2048 := by decide
-      have h3072 : (3072 : UInt256) = UInt256.ofNat 3072 := by decide
+      have h3072 : (3072 : UInt256) = UInt256.ofNat 3064 := by decide
       rw [h2048, h3072]
       rw [selectOffset_eq 3072 count (by omega),
         BigHelpers.clearOffset_toNat 3072 count (by omega),
@@ -153,13 +153,13 @@ theorem mulOuterProgress_preserves_region (current : State) (a b : UInt256)
       5120 + 32 * count ≤ ptr)
     (hrep : Limbs.Represents current.memory ptr count value) :
     Limbs.Represents
-      (BigMul.mulOuterProgress current a b (UInt256.ofNat 3072)
+      (BigMul.mulOuterProgress current a b (UInt256.ofNat 3064)
         (UInt256.ofNat 0) count returnDest rest steps).memory
       ptr count value := by
   induction steps with
   | zero => simpa [BigMul.mulOuterProgress] using hrep
   | succ steps ih =>
-      let before := BigMul.mulOuterProgress current a b (UInt256.ofNat 3072)
+      let before := BigMul.mulOuterProgress current a b (UInt256.ofNat 3064)
         (UInt256.ofNat 0) count returnDest rest steps
       let loaded := BigMul.mulLoadedState before b steps
       let word := BigMul.mulLoadedWord before b steps
@@ -181,11 +181,11 @@ theorem mulResult_preserves_region (s : State) (a b : UInt256)
       5120 + 32 * count ≤ ptr)
     (hrep : Limbs.Represents s.memory ptr count value) :
     Limbs.Represents
-      (mulResult s a b (UInt256.ofNat 3072) (UInt256.ofNat 0) count
+      (mulResult s a b (UInt256.ofNat 3064) (UInt256.ofNat 0) count
         returnDest rest).memory ptr count value := by
-  let cleared := BigMul.mulAfterClear s a b (UInt256.ofNat 3072)
+  let cleared := BigMul.mulAfterClear s a b (UInt256.ofNat 3064)
     (UInt256.ofNat 0) count returnDest rest
-  let copied := BigMul.mulAfterCopy s a b (UInt256.ofNat 3072)
+  let copied := BigMul.mulAfterCopy s a b (UInt256.ofNat 3064)
     (UInt256.ofNat 0) count returnDest rest
   have hcleared : Limbs.Represents cleared.memory ptr count value := by
     simpa [cleared, BigMul.mulAfterClear] using
@@ -239,7 +239,7 @@ theorem selectProgress_represents_bitStep (s : State)
   have h0 : (0 : UInt256) = UInt256.ofNat 0 := by decide
   have h1024 : (1024 : UInt256) = UInt256.ofNat 1024 := by decide
   have h2048 : (2048 : UInt256) = UInt256.ofNat 2048 := by decide
-  have h3072 : (3072 : UInt256) = UInt256.ofNat 3072 := by decide
+  have h3072 : (3072 : UInt256) = UInt256.ofNat 3064 := by decide
   have h1000 : (868 : UInt256) = UInt256.ofNat 868 := by decide
   have h1015 : (882 : UInt256) = UInt256.ofNat 882 := by decide
   have h1034 : (901 : UInt256) = UInt256.ofNat 901 := by decide

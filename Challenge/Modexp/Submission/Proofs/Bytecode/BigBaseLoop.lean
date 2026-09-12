@@ -1,7 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigBase
 set_option warningAsError true
-set_option maxRecDepth 20000
-set_option maxHeartbeats 3000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 /-! # Certified outer base-conversion loop -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.BigBaseLoop

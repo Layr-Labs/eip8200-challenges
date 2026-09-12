@@ -1,8 +1,8 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.Word
 
 set_option warningAsError true
-set_option maxRecDepth 10000
-set_option maxHeartbeats 1000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.Word
 

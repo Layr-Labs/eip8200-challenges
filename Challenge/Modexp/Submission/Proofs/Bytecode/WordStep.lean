@@ -1,8 +1,8 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.UnrollPCs
 import Challenge.EvmProof.Meter
 set_option warningAsError true
-set_option maxRecDepth 40000
-set_option maxHeartbeats 8000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 /-!
 # One-instruction steps for the unrolled exponent-bit block
 

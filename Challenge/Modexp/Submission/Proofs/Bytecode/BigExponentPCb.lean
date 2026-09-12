@@ -1,7 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
 set_option warningAsError true
-set_option maxRecDepth 40000
-set_option maxHeartbeats 4000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 /-! # Program-counter tables for the multi-limb exponentiation path
 
 Kept in a module with minimal imports: `interval_cases … <;> decide` over these

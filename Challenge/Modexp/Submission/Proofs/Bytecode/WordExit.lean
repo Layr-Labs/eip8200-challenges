@@ -1,8 +1,8 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.WordLoops
 import Challenge.EvmProof.Memory
 set_option warningAsError true
-set_option maxRecDepth 10000
-set_option maxHeartbeats 1000000
+set_option maxRecDepth 160000
+set_option maxHeartbeats 16000000
 /-!
 # One-word MODEXP exit
 
@@ -73,7 +73,7 @@ def wordFinalState (input : ByteArray) (acc base : UInt256) : State :=
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
       UInt256.ofNat (expOffset input), UInt256.ofNat (modulusOffset input),
-      UInt256.ofNat 1186] ++ callerRest input
+      UInt256.ofNat 1182] ++ callerRest input
     memory := outputMemory input acc
     activeWords := UInt256.ofNat (MachineState.activeWordsAfter storedWords.toNat
       0 (modulusSize input))
