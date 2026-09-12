@@ -111,7 +111,7 @@ private theorem fastOutputBeforeReturn_advances
       (fastStoreAndSetup_advances instruction hstore) hrun
 
 private theorem fastOutput_slice :
-    (Artifact.submissionArtifact.instructions.drop 3874).take
+    (Artifact.submissionArtifact.instructions.drop 3867).take
         FastOutputTemplate.fastOutputBeforeReturnTemplate.length =
       FastOutputTemplate.fastOutputBeforeReturnTemplate := by
   rfl
@@ -121,10 +121,10 @@ def fastOutputSite :
       FastOutputTemplate.fastOutputBeforeReturnTemplate :=
   StackSiteBuilder.ofSlice
     (artifact := Artifact.submissionArtifact) (fork := .Osaka)
-    FastOutputTemplate.fastOutputBeforeReturnTemplate 3874
+    FastOutputTemplate.fastOutputBeforeReturnTemplate 3867
     fastOutput_slice
     (by
-      change 3874 + FastOutputTemplate.fastOutputBeforeReturnTemplate.length ≤
+      change 3867 + FastOutputTemplate.fastOutputBeforeReturnTemplate.length ≤
         Artifact.submissionInstructions.length
       rw [FastOutputTemplate.fastOutputBeforeReturnTemplate_length,
         Artifact.referenceInstructions_count]
@@ -136,15 +136,15 @@ def fastOutputSite :
 
 @[simp] theorem fastOutputSite_startPC :
     fastOutputSite.startPC = UInt256.ofNat 4690 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3874) =
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3867) =
     UInt256.ofNat 4690
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 @[simp] theorem fastOutputSite_endPC :
-    fastOutputSite.endPC = UInt256.ofNat 4765 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3927) =
-    UInt256.ofNat 4765
+    fastOutputSite.endPC = UInt256.ofNat 4762 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3920) =
+    UInt256.ofNat 4762
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -168,28 +168,28 @@ private theorem pc_toNat_instructionPC (index : Nat) :
 
 def fastOutputReturn : LocatedSite Artifact.submissionArtifact .Osaka where
   located :=
-    { index := 3927
+    { index := 3920
       instruction := .op .RETURN
       atIndex := by rfl
       wellFormed := ⟨by decide, trivial, rfl⟩ }
-  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3927)
-  pc_eq := pc_toNat_instructionPC 3927
+  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3920)
+  pc_eq := pc_toNat_instructionPC 3920
 
 def fastOutputReturnPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [fastOutputReturn.located]
 
 @[simp] theorem fastOutputReturn_pc :
-    fastOutputReturn.pc = UInt256.ofNat 4765 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3927) =
-    UInt256.ofNat 4765
+    fastOutputReturn.pc = UInt256.ofNat 4762 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3920) =
+    UInt256.ofNat 4762
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 theorem fastOutputReturn_site_end :
     fastOutputReturn.pc = fastOutputSite.endPC := by
   calc
-    fastOutputReturn.pc = UInt256.ofNat 4765 := fastOutputReturn_pc
+    fastOutputReturn.pc = UInt256.ofNat 4762 := fastOutputReturn_pc
     _ = fastOutputSite.endPC := fastOutputSite_endPC.symm
 
 private theorem runLocatedBlock_singleton
@@ -267,12 +267,12 @@ private theorem runFastOutputReturn
           simpa [h] using hret_raw
         subst next
         rfl
-  have hpc_nat : t.pc.toNat = Artifact.submissionArtifact.instructionPC 3927 := by
+  have hpc_nat : t.pc.toNat = Artifact.submissionArtifact.instructionPC 3920 := by
     calc
       t.pc.toNat = fastOutputReturn.pc.toNat := by rw [hpc_t]
       _ = Artifact.submissionArtifact.instructionPC fastOutputReturn.located.index :=
         fastOutputReturn.pc_eq
-      _ = Artifact.submissionArtifact.instructionPC 3927 := by rfl
+      _ = Artifact.submissionArtifact.instructionPC 3920 := by rfl
   have hlocated :
       Stepper.runLocated fastOutputReturn.located t =
         some (FastOutputTrace.afterFastReturn t t.pc rest) := by

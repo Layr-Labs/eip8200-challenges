@@ -8,65 +8,65 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawNormalPool
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
 def template : List Instr :=
-  [ .push ⟨1, by decide⟩ (UInt256.ofNat 48),
+  [ .op (.Dup ⟨0, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 48),
     .op .MLOAD,
-    .op (.Dup ⟨1, by decide⟩),
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 4),
     .op .MLOAD,
     .op (.Dup ⟨2, by decide⟩),
     .op .AND,
+    .op (.Dup ⟨2, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 20),
     .op .MLOAD,
-    .op (.Dup ⟨3, by decide⟩),
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 44),
     .op .MLOAD,
     .op (.Dup ⟨4, by decide⟩),
     .op .AND,
+    .op (.Dup ⟨4, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 60),
     .op .MLOAD,
-    .op (.Dup ⟨5, by decide⟩),
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 56),
     .op .MLOAD,
     .op (.Dup ⟨6, by decide⟩),
     .op .AND,
+    .op (.Dup ⟨6, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 16),
     .op .MLOAD,
-    .op (.Dup ⟨7, by decide⟩),
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 52),
     .op .MLOAD,
     .op (.Dup ⟨8, by decide⟩),
     .op .AND,
+    .op (.Dup ⟨8, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 40),
     .op .MLOAD,
-    .op (.Dup ⟨9, by decide⟩),
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 28),
     .op .MLOAD,
     .op (.Dup ⟨10, by decide⟩),
     .op .AND,
+    .op (.Dup ⟨10, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 8),
     .op .MLOAD,
-    .op (.Dup ⟨11, by decide⟩),
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 32),
     .op .MLOAD,
     .op (.Dup ⟨12, by decide⟩),
     .op .AND,
+    .op (.Dup ⟨12, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 12),
     .op .MLOAD,
-    .op (.Dup ⟨13, by decide⟩),
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 36),
     .op .MLOAD,
     .op (.Dup ⟨14, by decide⟩),
     .op .AND,
+    .op (.Dup ⟨14, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 24),
     .op .MLOAD,
-    .op (.Dup ⟨15, by decide⟩),
     .op .AND,
     .op (.Swap ⟨14, by decide⟩),
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
@@ -77,20 +77,20 @@ def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.land (MachineState.readWord memory 0) x.v0),
     (UInt256.land x.v0 (MachineState.readWord memory 36)),
-    (UInt256.land x.v0 (MachineState.readWord memory 12)),
+    (UInt256.land (MachineState.readWord memory 12) x.v0),
     (UInt256.land x.v0 (MachineState.readWord memory 32)),
-    (UInt256.land x.v0 (MachineState.readWord memory 8)),
+    (UInt256.land (MachineState.readWord memory 8) x.v0),
     (UInt256.land x.v0 (MachineState.readWord memory 28)),
-    (UInt256.land x.v0 (MachineState.readWord memory 40)),
+    (UInt256.land (MachineState.readWord memory 40) x.v0),
     (UInt256.land x.v0 (MachineState.readWord memory 52)),
-    (UInt256.land x.v0 (MachineState.readWord memory 16)),
+    (UInt256.land (MachineState.readWord memory 16) x.v0),
     (UInt256.land x.v0 (MachineState.readWord memory 56)),
-    (UInt256.land x.v0 (MachineState.readWord memory 60)),
+    (UInt256.land (MachineState.readWord memory 60) x.v0),
     (UInt256.land x.v0 (MachineState.readWord memory 44)),
-    (UInt256.land x.v0 (MachineState.readWord memory 20)),
+    (UInt256.land (MachineState.readWord memory 20) x.v0),
     (UInt256.land x.v0 (MachineState.readWord memory 4)),
-    (UInt256.land x.v0 (MachineState.readWord memory 48)),
-    (UInt256.land x.v0 (MachineState.readWord memory 24)) ] ++ rho
+    (UInt256.land (MachineState.readWord memory 48) x.v0),
+    (UInt256.land (MachineState.readWord memory 24) x.v0) ] ++ rho
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat) :
@@ -109,16 +109,16 @@ theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
   all_goals repeat first | apply And.intro | rfl
 #print axioms run_actual
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 406).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 407).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 406 actual_slice
-    (by change 406 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 407 actual_slice
+    (by change 407 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 629 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 406) = UInt256.ofNat 629
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 407) = UInt256.ofNat 629
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound

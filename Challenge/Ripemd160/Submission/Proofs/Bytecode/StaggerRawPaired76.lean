@@ -16,8 +16,8 @@ def template : List Instr :=
     .op (.Dup ⟨12, by decide⟩),
     .op .XOR,
     .op (.Dup ⟨6, by decide⟩),
-    .op (.Dup ⟨11, by decide⟩),
-    .op (.Dup ⟨14, by decide⟩),
+    .op (.Dup ⟨13, by decide⟩),
+    .op (.Dup ⟨12, by decide⟩),
     .op .AND,
     .op .OR,
     .op .XOR,
@@ -76,7 +76,7 @@ theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
   simp (discharger := omega) [template, inputStack, outputStack,
     runInstrSeq, Stepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
-    State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+    State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat, Word.land_comm]
   all_goals repeat first | apply And.intro | rfl
 #print axioms run_actual
 theorem actual_slice :

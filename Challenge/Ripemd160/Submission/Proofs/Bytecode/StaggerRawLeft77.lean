@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedLaneUInt256Bridge
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawCommon
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Stagger144Active
 set_option warningAsError true
@@ -8,12 +9,16 @@ set_option linter.unusedVariables false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawLeft77
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
+private theorem commuteLor (a b : UInt256) : UInt256.lor a b = UInt256.lor b a := by
+  apply PairedLaneUInt256Bridge.bits_injective
+  simp only [PairedLaneUInt256Bridge.bits_lor, BitVec.or_comm]
+
 def template : List Instr :=
   [ .op (.Swap ⟨5, by decide⟩),
     .op (.Dup ⟨7, by decide⟩),
-    .op (.Dup ⟨2, by decide⟩),
-    .op (.Dup ⟨4, by decide⟩),
+    .op (.Dup ⟨3, by decide⟩),
     .op .NOT,
+    .op (.Dup ⟨3, by decide⟩),
     .op .OR,
     .op .XOR,
     .op .ADD,
@@ -74,7 +79,7 @@ theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
   simp (discharger := omega) [template, inputStack, outputStack,
     runInstrSeq, Stepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
-    State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+    State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat, commuteLor]
   all_goals repeat first | apply And.intro | rfl
 #print axioms run_actual
 theorem actual_slice :
