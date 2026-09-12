@@ -10,7 +10,7 @@ set_option maxHeartbeats 1000000
 # The seven uniform first-loop blocks of the sqCP1m kernel (located)
 
 Block `k = 1..7` is instruction `3071 + 32(k-1)`, 32 instructions, pc `4068 + 38(k-1)`,
-program `StagedOperand.stepProgram (32(7-k)) (8256 + 32(7-k))`.  Split from `KernelChain`
+program `StagedOperand.stepProgram (32(7-k)) (4160 + 32(7-k))`.  Split from `KernelChain`
 so that the (slow) located-block certificates are elaborated once.
 -/
 
@@ -29,32 +29,32 @@ def environment (s : State)
   ⟨by change Challenge.Modexp.submissionBytecode.size < 2^256; rw [Challenge.Modexp.submissionBytecode_size]; decide,
     hcode, hfork, hrun, hnp⟩
 
-def l1Block1 : Block Artifact.submissionArtifact .Osaka 4060 (stepProgram 192 8448) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3063 31 4060 (stepProgram 192 8448)
+def l1Block1 : Block Artifact.submissionArtifact .Osaka 4060 (stepProgram 192 4352) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3063 31 4060 (stepProgram 192 4352)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Block2 : Block Artifact.submissionArtifact .Osaka 4098 (stepProgram 160 8416) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3094 31 4098 (stepProgram 160 8416)
+def l1Block2 : Block Artifact.submissionArtifact .Osaka 4098 (stepProgram 160 4320) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3094 31 4098 (stepProgram 160 4320)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Block3 : Block Artifact.submissionArtifact .Osaka 4136 (stepProgram 128 8384) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3125 31 4136 (stepProgram 128 8384)
+def l1Block3 : Block Artifact.submissionArtifact .Osaka 4136 (stepProgram 128 4288) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3125 31 4136 (stepProgram 128 4288)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Block4 : Block Artifact.submissionArtifact .Osaka 4174 (stepProgram 96 8352) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3156 31 4174 (stepProgram 96 8352)
+def l1Block4 : Block Artifact.submissionArtifact .Osaka 4174 (stepProgram 96 4256) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3156 31 4174 (stepProgram 96 4256)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Block5 : Block Artifact.submissionArtifact .Osaka 4212 (stepProgram 64 8320) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3187 31 4212 (stepProgram 64 8320)
+def l1Block5 : Block Artifact.submissionArtifact .Osaka 4212 (stepProgram 64 4224) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3187 31 4212 (stepProgram 64 4224)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Block6 : Block Artifact.submissionArtifact .Osaka 4250 (stepProgram 32 8288) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3218 31 4250 (stepProgram 32 8288)
+def l1Block6 : Block Artifact.submissionArtifact .Osaka 4250 (stepProgram 32 4192) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3218 31 4250 (stepProgram 32 4192)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Block7 : Block Artifact.submissionArtifact .Osaka 4288 (stepProgram 0 8256) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3249 31 4288 (stepProgram 0 8256)
+def l1Block7 : Block Artifact.submissionArtifact .Osaka 4288 (stepProgram 0 4160) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3249 31 4288 (stepProgram 0 4160)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-! ## Jump destinations of the chain entries (block `k` for `k = 1..7`, and the

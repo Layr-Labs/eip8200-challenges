@@ -11,7 +11,7 @@ open Challenge.Modexp.Submission.Proofs.Fast
 leaves `(a + b) mod m` in the block at `pd`. -/
 theorem addmod_csub_correct (memory : ByteArray) (pa pb n a b mm pdst : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hpa : pa + 32 * n ≤ 8192) (hpb : pb + 32 * n ≤ 8192)
+    (hpa : pa + 32 * n ≤ 4096) (hpb : pb + 32 * n ≤ 4096)
     (ha : Model.FastRepresents memory pa n a)
     (hb : Model.FastRepresents memory pb n b)
     (hm : Model.FastRepresents memory 0 n mm) (hmpos : 0 < mm)
@@ -23,23 +23,23 @@ theorem addmod_csub_correct (memory : ByteArray) (pa pb n a b mm pdst : Nat)
   have hts := addmod_represents memory pa pb n
   have hmblk : Model.FastRepresents (amResultMemory memory pa pb n) 0 n mm :=
     addmod_preserves_region memory pa pb n 0 n mm hn (by omega) hm
-  have htn : (MachineState.readWord (amResultMemory memory pa pb n) 8224).toNat =
+  have htn : (MachineState.readWord (amResultMemory memory pa pb n) 4128).toNat =
       (amStep memory pa pb n n).flag.toNat := by
     rw [addmod_tn]
   have hbound : (amStep memory pa pb n n).flag.toNat * Limbs.radix ^ n +
-      lowValue (amStep memory pa pb n n).memory 8256 n n < 2 * mm := by
+      lowValue (amStep memory pa pb n n).memory 4160 n n < 2 * mm := by
     omega
   have h := csub_correct (amResultMemory memory pa pb n) n
-    (lowValue (amStep memory pa pb n n).memory 8256 n n) mm
+    (lowValue (amStep memory pa pb n n).memory 4160 n n) mm
     (amStep memory pa pb n n).flag.toNat pdst hn hn32 hts hmblk htn hcarry hmpos hbound
   rwa [show (amStep memory pa pb n n).flag.toNat * Limbs.radix ^ n +
-      lowValue (amStep memory pa pb n n).memory 8256 n n = a + b from by omega] at h
+      lowValue (amStep memory pa pb n n).memory 4160 n n = a + b from by omega] at h
 
 /-- Region preservation across the whole `ADDMOD`/`CSUB` pair. -/
 theorem addmod_csub_preserves_region (memory : ByteArray) (pa pb n pdst ptr cnt v : Nat)
     (hn : 2 ≤ n)
-    (hdisjT : ptr + 32 * cnt ≤ 8224 ∨ 8256 + 32 * n ≤ ptr)
-    (hdisjSubb : ptr + 32 * cnt ≤ 7168 ∨ 7168 + 32 * n ≤ ptr)
+    (hdisjT : ptr + 32 * cnt ≤ 4128 ∨ 4160 + 32 * n ≤ ptr)
+    (hdisjSubb : ptr + 32 * cnt ≤ 3072 ∨ 3072 + 32 * n ≤ ptr)
     (hdisjDst : pdst + 32 * n ≤ ptr ∨ ptr + 32 * cnt ≤ pdst)
     (hrep : Model.FastRepresents memory ptr cnt v) :
     Model.FastRepresents (csResultMemory (amResultMemory memory pa pb n) n pdst)

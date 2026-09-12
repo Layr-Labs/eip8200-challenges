@@ -119,14 +119,14 @@ theorem serializeMemory_preserves_represents (memory : ByteArray)
         #[UInt8.ofNat ((BigSerialize.serializedByte before m steps).toNat % 256)]
       have hsteps' : steps ≤ m := by omega
       have hbefore := ih hsteps'
-      have haddr : (6144 + UInt256.ofNat steps).toNat = 6144 + steps := by
-        change (UInt256.ofNat 6144 + UInt256.ofNat steps).toNat = 6144 + steps
+      have haddr : (1536 + UInt256.ofNat steps).toNat = 1536 + steps := by
+        change (UInt256.ofNat 1536 + UInt256.ofNat steps).toNat = 1536 + steps
         rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
           Challenge.EvmProof.Word.word_toNat_ofNat,
           Nat.mod_eq_of_lt (by omega)]
       have hmemory : BigSerialize.serializeMemory memory m (steps + 1) =
           MachineState.writeBytes before byte
-            (6144 + UInt256.ofNat steps).toNat := by
+            (1536 + UInt256.ofNat steps).toNat := by
         rfl
       refine ⟨hbefore.1, ?_⟩
       rw [← hbefore.2]
@@ -146,7 +146,7 @@ theorem serializeMemory_outputByte (memory : ByteArray)
     (m steps k value : Nat) (hmBound : m ≤ 1024) (hsteps : steps ≤ m)
     (hk : k < steps)
     (hrep : Limbs.Represents memory 2048 (Limbs.limbCount m) value) :
-    (BigSerialize.serializeMemory memory m steps)[6144 + k]?.getD 0 =
+    (BigSerialize.serializeMemory memory m steps)[1536 + k]?.getD 0 =
       UInt8.ofNat (value / 256 ^ (m - 1 - k) % 256) := by
   induction steps with
   | zero => omega
@@ -155,14 +155,14 @@ theorem serializeMemory_outputByte (memory : ByteArray)
       let byte := ByteArray.mk
         #[UInt8.ofNat ((BigSerialize.serializedByte before m steps).toNat % 256)]
       have hsteps' : steps ≤ m := by omega
-      have haddr : (6144 + UInt256.ofNat steps).toNat = 6144 + steps := by
-        change (UInt256.ofNat 6144 + UInt256.ofNat steps).toNat = 6144 + steps
+      have haddr : (1536 + UInt256.ofNat steps).toNat = 1536 + steps := by
+        change (UInt256.ofNat 1536 + UInt256.ofNat steps).toNat = 1536 + steps
         rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega),
           Challenge.EvmProof.Word.word_toNat_ofNat,
           Nat.mod_eq_of_lt (by omega)]
       have hmemory : BigSerialize.serializeMemory memory m (steps + 1) =
           MachineState.writeBytes before byte
-            (6144 + UInt256.ofNat steps).toNat := by
+            (1536 + UInt256.ofNat steps).toNat := by
         rfl
       rw [hmemory, MachineState.writeBytes_getElem?_getD, haddr]
       by_cases hlast : k = steps
@@ -186,7 +186,7 @@ theorem serializeMemory_outputByte (memory : ByteArray)
 theorem serializeMemory_readPadded (memory : ByteArray) (m value : Nat)
     (hmBound : m ≤ 1024)
     (hrep : Limbs.Represents memory 2048 (Limbs.limbCount m) value) :
-    MachineState.readPadded (BigSerialize.serializeMemory memory m m) 6144 m =
+    MachineState.readPadded (BigSerialize.serializeMemory memory m m) 1536 m =
       Precompile.natToBytes value m := by
   apply ByteArray.ext_getElem
   · rw [Challenge.EvmProof.Memory.readPadded_size, Precompile.natToBytes,
