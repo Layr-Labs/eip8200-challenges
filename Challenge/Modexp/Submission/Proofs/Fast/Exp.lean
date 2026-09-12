@@ -964,7 +964,7 @@ theorem run_blExit (s : State) (mem : ByteArray) (n bsize esize msize pb j : Nat
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1255
       (blExit s mem n bsize esize msize pb j) =
-      some (mpCall s mem 1024 6144 2048 (UInt256.ofNat 1469)
+      some (mpCall s mem 1024 6144 2048 (UInt256.ofNat 3138)
         (outer n bsize esize msize)) := by
   have h1939Nat : (UInt256.ofNat 3912).toNat = 3912 := by decide
   simp (config := { maxSteps := 400000 }) [blk1255, opAt, pushAt, wfOp,
@@ -1299,7 +1299,7 @@ def gasSteps_blExit (s : State) (mem : ByteArray) (n bsize esize msize pb j : Na
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (blExit s mem n bsize esize msize pb j)
-      (mpCall s mem 1024 6144 2048 (UInt256.ofNat 1469)
+      (mpCall s mem 1024 6144 2048 (UInt256.ofNat 3138)
         (outer n bsize esize msize)) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1255 hcode hfork
@@ -3768,6 +3768,9 @@ theorem jumpD1728 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
 theorem jumpD1755 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 1469).toNat = true := jumpD 1469 (by decide) jumpDest1697
 
+theorem jumpD3138 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
+    (UInt256.ofNat 3138).toNat = true := jumpD 3138 (by decide) jumpDest3412
+
 theorem jumpD1806 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 1501).toNat = true := jumpD 1501 (by decide) jumpDest1732
 
@@ -4094,12 +4097,12 @@ def gasSteps_baseChain_fallback (s : State) {n bsize mm minv R : Nat}
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (FullBase.fallbackState s mem n bsize esize msize)
-      (bDone s
+      { bDone s
         (sub.mpMem 1024 6144 2048
           (blMems sub.mpMem sub.amMem input n bsize (pbOf bsize)
             (storeWord mem (992 + 32 * n) (UInt256.ofNat (topLimbOf input bsize)))
             (pbOf bsize - 1)))
-        n bsize esize msize) :=
+        n bsize esize msize with pc := UInt256.ofNat 3138 } :=
   have hframe0 : Frame
       (storeWord mem (992 + 32 * n) (UInt256.ofNat (topLimbOf input bsize)))
       n bsize minv :=
@@ -4126,21 +4129,15 @@ def gasSteps_baseChain_fallback (s : State) {n bsize mm minv R : Nat}
           (storeWord mem (992 + 32 * n) (UInt256.ofNat (topLimbOf input bsize)))
           (pbOf bsize - 1))
         n bsize esize msize (pbOf bsize) (pbOf bsize) hcode hfork hrun hnp))).trans
-    ((sub.monpro 1024 6144 2048 (UInt256.ofNat 1469) (outer n bsize esize msize)
+    ((sub.monpro 1024 6144 2048 (UInt256.ofNat 3138) (outer n bsize esize msize)
         (blMems sub.mpMem sub.amMem input n bsize (pbOf bsize)
           (storeWord mem (992 + 32 * n) (UInt256.ofNat (topLimbOf input bsize)))
           (pbOf bsize - 1))
         (blValue mm (Precompile.bytesToNatPadded input 96 bsize) (pbOf bsize)
           (pbOf bsize - 1)) rr (by simp) (by omega) (by omega) (by omega) (by omega)
-        (by omega) jumpD1755
+        (by omega) jumpD3138
         (blMems_frame sub hn32 input (pbOf bsize) _ hframe0 (pbOf bsize - 1))
-        hfinal.modulus hfinal.accBlock hfinal.rrBlock (blValue_lt hm _)).trans
-      (gasSteps_bRejoin s
-        (sub.mpMem 1024 6144 2048
-          (blMems sub.mpMem sub.amMem input n bsize (pbOf bsize)
-            (storeWord mem (992 + 32 * n) (UInt256.ofNat (topLimbOf input bsize)))
-            (pbOf bsize - 1)))
-        n bsize esize msize hcode hfork hrun hnp))
+        hfinal.modulus hfinal.accBlock hfinal.rrBlock (blValue_lt hm _))
 
 /-- The configuration words survive one exponent bit. -/
 theorem bitStep_frame {s : State} {n bsize mm minv : Nat}
@@ -4709,7 +4706,8 @@ theorem handled_of_baseFallback (input : ByteArray) (s : State) (mem : ByteArray
       bM ≡ Precompile.bytesToNatPadded input 96 bsize * Limbs.radix ^ n [MOD mm] →
       Model.FastRepresents mem' 1024 n
         (Precompile.bytesToNatPadded input 96 bsize % mm) →
-      TailHandled input (bDone s mem' n bsize esize msize)) :
+      TailHandled input { bDone s mem' n bsize esize msize with
+        pc := UInt256.ofNat 3138 }) :
     TailHandled input (FullBase.fallbackState s mem n bsize esize msize) := by
   have hmpos : 0 < mm := lt_of_lt_of_le Limbs.radix_pos hradix
   have hcop : Nat.Coprime (Limbs.radix ^ n) mm := Model.coprime_radix_pow_of_odd hodd n
