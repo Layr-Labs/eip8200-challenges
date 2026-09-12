@@ -11,15 +11,15 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerPersistentFrame
 
 def dispatchTemplate (dest : Nat) : List Instr :=
-  [.op (.Dup ⟨6, by decide⟩), .op .CALLDATASIZE, .op .EQ,
+  [.op (.Dup ⟨5, by decide⟩), .op .CALLDATASIZE, .op .EQ,
    .push ⟨2, by decide⟩ (UInt256.ofNat dest), .op .JUMPI]
 
-theorem run_miss (s : State) (pc ptr off limit : UInt256) (h : Compression.HashState) (rho : List UInt256)
+theorem run_miss (s : State) (pc off limit : UInt256) (h : Compression.HashState) (rho : List UInt256)
     (dest : Nat) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hfit : s.executionEnv.calldata.size < 2 ^ 256)
     (hmiss : s.executionEnv.calldata.size ≠ off.toNat) :
-    runInstrSeq (dispatchTemplate dest) {s with pc := pc, stack := ptr :: frame h off limit rho} =
-      some {s with pc := pcAfter pc (dispatchTemplate dest), stack := ptr :: frame h off limit rho} := by
+    runInstrSeq (dispatchTemplate dest) {s with pc := pc, stack := frame h off limit rho} =
+      some {s with pc := pcAfter pc (dispatchTemplate dest), stack := frame h off limit rho} := by
   have hcap (n : Nat) (hn : n ≤ 100) : rho.length + n < 1024 := by omega
   have heq : UInt256.eq (UInt256.ofNat s.executionEnv.calldata.size) off = UInt256.ofNat 0 := by
     unfold UInt256.eq
@@ -30,13 +30,13 @@ theorem run_miss (s : State) (pc ptr off limit : UInt256) (h : Compression.HashS
     Word.literal_eq_ofNat, UInt256.isTrue]
   rfl
 
-theorem run_hit (s : State) (pc ptr off limit : UInt256) (h : Compression.HashState) (rho : List UInt256)
+theorem run_hit (s : State) (pc off limit : UInt256) (h : Compression.HashState) (rho : List UInt256)
     (dest : Nat) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hfit : s.executionEnv.calldata.size < 2 ^ 256)
     (hhit : s.executionEnv.calldata.size = off.toNat)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat dest).toNat = true) :
-    runInstrSeq (dispatchTemplate dest) {s with pc := pc, stack := ptr :: frame h off limit rho} =
-      some {s with pc := UInt256.ofNat dest, stack := ptr :: frame h off limit rho} := by
+    runInstrSeq (dispatchTemplate dest) {s with pc := pc, stack := frame h off limit rho} =
+      some {s with pc := UInt256.ofNat dest, stack := frame h off limit rho} := by
   have hcap (n : Nat) (hn : n ≤ 100) : rho.length + n < 1024 := by omega
   have heq : UInt256.eq (UInt256.ofNat s.executionEnv.calldata.size) off = UInt256.ofNat 1 := by
     unfold UInt256.eq

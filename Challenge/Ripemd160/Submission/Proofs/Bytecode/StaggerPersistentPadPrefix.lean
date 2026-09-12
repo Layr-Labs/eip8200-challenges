@@ -5,7 +5,7 @@ set_option maxRecDepth 30000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentPadPrefix
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate
-def prefixTemplate : List Instr := [.op .JUMPDEST, .op .POP]
+def prefixTemplate : List Instr := [.op .JUMPDEST, .op .JUMPDEST]
 theorem prefix_slice :
     (Artifact.submissionArtifact.instructions.drop 285).take prefixTemplate.length = prefixTemplate := by rfl
 def prefixSite : GenericRoundSite Artifact.submissionArtifact .Osaka prefixTemplate :=
@@ -22,21 +22,20 @@ theorem prefix_advances : ∀ instruction ∈ prefixTemplate.dropLast, PadLift.A
   apply PadLift.advancesAll_sound
   decide
 
-def gasSteps_prefix (s : State) (ret : UInt256) (p : Nat) (rest : List UInt256)
-    (hstack : rest.length ≤ 1019) (hrun : s.halt = .Running)
+def gasSteps_prefix (s : State) (stack : List UInt256)
+    (hstack : stack.length ≤ 1019) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 448, stack := UInt256.ofNat p :: ret :: rest}
-      {s with pc := UInt256.ofNat 450, stack := ret :: rest} := by
-  apply PadLift.gasSteps_of_raw prefixSite {s with pc := UInt256.ofNat 448, stack := UInt256.ofNat p :: ret :: rest} _ hcode hfork hrun hnp prefix_pc.symm prefix_advances
-  have h : runInstrSeq prefixTemplate {s with pc := UInt256.ofNat 448, stack := UInt256.ofNat p :: ret :: rest} =
-      some {s with pc := pcAfter (UInt256.ofNat 448) prefixTemplate, stack := ret :: rest} := by
-    have hcap (n : Nat) (hn : n ≤ 4) : rest.length + n < 1024 := by omega
-    simp (discharger := omega) [prefixTemplate, runInstrSeq, Stepper.runInstr, pcAfter,
-      UInt256.succ, Instr.size, hrun, hcap, List.length_cons, Nat.add_assoc]
-    rfl
-  have hp : pcAfter (UInt256.ofNat 448) (prefixTemplate) = UInt256.ofNat 450 := by rfl
+    GasSteps {s with pc := UInt256.ofNat 448, stack := stack}
+      {s with pc := UInt256.ofNat 450, stack := stack} := by
+  apply PadLift.gasSteps_of_raw prefixSite {s with pc := UInt256.ofNat 448, stack := stack} _ hcode hfork hrun hnp prefix_pc.symm prefix_advances
+  have h1 : stack.length < 1024 := by omega
+  have h : runInstrSeq prefixTemplate {s with pc := UInt256.ofNat 448, stack := stack} =
+      some {s with pc := pcAfter (UInt256.ofNat 448) prefixTemplate, stack := stack} := by
+    simp [prefixTemplate, runInstrSeq, Stepper.runInstr, if_pos h1, hrun]
+    decide
+  have hp : pcAfter (UInt256.ofNat 448) prefixTemplate = UInt256.ofNat 450 := by rfl
   rw [hp] at h
   exact h
 
