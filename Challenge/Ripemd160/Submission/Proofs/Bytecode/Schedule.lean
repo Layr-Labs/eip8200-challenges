@@ -59,7 +59,7 @@ def readEntry (s : State) (msgOff returnDest : UInt256)
 
 def afterRead (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (i : Nat) : State :=
-  { s with pc := UInt256.ofNat 561
+  { s with pc := UInt256.ofNat 571
            stack := [readLEWord s.memory (loadOffsetWord msgOff i),
              UInt256.ofNat 0x259, UInt256.ofNat i, msgOff, returnDest] ++ rest
            activeWords := s.activeWordsAfterUInt256
