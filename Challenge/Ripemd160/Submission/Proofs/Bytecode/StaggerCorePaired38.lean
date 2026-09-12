@@ -11,13 +11,13 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCorePaired38
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof PairedLaneUInt256Bridge
 open Paired144WordRound Paired144WordRotation StaggerCoreCommon
 def input (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (k : UInt256) : StaggerRaw.Input :=
-  ⟨word memory h4 (.d) q right k, word memory h4 (.pair) q right k, word memory h4 (.upper) q right k, word memory h4 (.k) q right k, word memory h4 (.b) q right k, word memory h4 (.a) q right k, word memory h4 (.e) q right k, word memory h4 (.c) q right k, word memory h4 (.factor) q right k, word memory h4 (.lower) q right k, word memory h4 (.cache 140) q right k, word memory h4 (.cache 190) q right k, word memory h4 (.cache 310) q right k, word memory h4 (.cache 350) q right k, word memory h4 (.cache 500) q right k, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
+  ⟨word memory h4 (.d) q right k, word memory h4 (.late) q right k, word memory h4 (.pair) q right k, word memory h4 (.upper) q right k, word memory h4 (.k) q right k, word memory h4 (.b) q right k, word memory h4 (.a) q right k, word memory h4 (.e) q right k, word memory h4 (.c) q right k, word memory h4 (.factor) q right k, word memory h4 (.lower) q right k, word memory h4 (.cache 140) q right k, word memory h4 (.cache 190) q right k, word memory h4 (.cache 310) q right k, word memory h4 (.cache 350) q right k, word memory h4 (.cache 500) q right k, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
 def eval (memory : ByteArray) (q : WordLane) : WordLane :=
   StaggerAlgorithm.step 38 (MachineState.readWord memory 756) q
 
 theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho : List UInt256) :
     StaggerRawPaired38.outputStack memory (input memory h4 q right (StaggerAlgorithm.physicalKey 37)) rho =
-      stack memory h4 [ .d, .pair, .upper, .k, .c, .e, .a, .b, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] (eval memory q) right (StaggerAlgorithm.physicalKey 38) rho := by
+      stack memory h4 [ .d, .late, .pair, .upper, .k, .c, .e, .a, .b, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] (eval memory q) right (StaggerAlgorithm.physicalKey 38) rho := by
   have hkb : StaggerAlgorithm.physicalKey 37 = UInt256.ofNat 136726760529788758926252426176837954510549114783656865 := by decide
   have hka : StaggerAlgorithm.physicalKey 38 = UInt256.ofNat 136726760529788758926252426176837954510549114783656865 := by decide
   have hm : StaggerAlgorithm.mode 38 = 2 := by decide
@@ -46,8 +46,8 @@ def gasSteps (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 2875, stack := stack s.memory h4 [ .d, .pair, .upper, .k, .b, .a, .e, .c, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] q right (StaggerAlgorithm.physicalKey 37) rho}
-      {s with pc := UInt256.ofNat 2909, stack := stack s.memory h4 [ .d, .pair, .upper, .k, .c, .e, .a, .b, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] (eval s.memory q) right (StaggerAlgorithm.physicalKey 38) rho} := by
+    GasSteps {s with pc := UInt256.ofNat 2876, stack := stack s.memory h4 [ .d, .late, .pair, .upper, .k, .b, .a, .e, .c, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] q right (StaggerAlgorithm.physicalKey 37) rho}
+      {s with pc := UInt256.ofNat 2910, stack := stack s.memory h4 [ .d, .late, .pair, .upper, .k, .c, .e, .a, .b, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] (eval s.memory q) right (StaggerAlgorithm.physicalKey 38) rho} := by
   have g := StaggerRawPaired38.gasSteps s (input s.memory h4 q right (StaggerAlgorithm.physicalKey 37))
     rho hstack hrun hactive hcode hfork hnp
   rw [output_eq] at g

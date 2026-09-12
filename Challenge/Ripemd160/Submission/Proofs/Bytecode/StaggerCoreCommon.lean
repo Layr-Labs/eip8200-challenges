@@ -12,6 +12,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof PairedLaneU
 open Paired144WordRound Paired144WordRotation
 inductive Reg where
   | a | b | c | d | e | ar | br | cr | dr | er | factor | pair | upper | lower | k
+  | late
   | cache (address : Nat)
   deriving DecidableEq
 
@@ -19,6 +20,7 @@ def word (memory : ByteArray) (h4 : UInt256) (r : Reg) (q right : WordLane) (k :
   | .a => q.a | .b => q.b | .c => q.c | .d => q.d | .e => q.e
   | .ar => right.a | .br => right.b | .cr => right.c | .dr => right.d | .er => right.e
   | .factor => factorWord | .pair => pairWord | .upper => upperWord | .lower => lowerWord | .k => k
+  | .late => MachineState.readWord memory 900
   | .cache address => match address with
     | 140 => compactMaskWord
     | 190 => coefficientWord 0 2
