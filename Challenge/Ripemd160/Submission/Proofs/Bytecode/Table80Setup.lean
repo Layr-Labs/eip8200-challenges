@@ -1,7 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairTableScratch
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairTablePad
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairTableActive
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedDivMaskCache
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.NormalLiteralMask16
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80RawCommon
 set_option warningAsError true
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80Setup
@@ -13,10 +13,7 @@ def initialTemplate : List Instr :=
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .NOT,
     .op .DIV,
-    .push ⟨3, by decide⟩ (UInt256.ofNat 65537),
-    .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-    .op .NOT,
-    .op .DIV,
+    .push ⟨30, by decide⟩ DenseScheduleTemplate.mask16,
     .op (.Swap ⟨2, by decide⟩),
     .op (.Dup ⟨0, by decide⟩),
     .op .MLOAD,

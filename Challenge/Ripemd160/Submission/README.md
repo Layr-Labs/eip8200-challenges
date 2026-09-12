@@ -18,20 +18,25 @@ authorship is not reassigned.
 
 ## Current compressor
 
-The current implementation builds on the local 744,387-gas baseline at
-`7cb007b8cf139ef1fd836e6216a5dc313f1cf068`. Its two RIPEMD-160 lanes are
-scheduled three rounds apart: right rounds 0–2, then 77 packed pairs of
-left round i and right round i+3, then left rounds 77–79. This increases
-pairs with equal rotations from 5 to 38 and reduces the message table from
-78 to 61 stored words. Five frequently used message pairs are cached on
-the stack. The scalar epilogue uses a proved low-32-bit projection to omit
-four masks that are redundant before the final masked hash combination.
+The current parent is promoted `7a72a7e8`, submission
+`b0cafa1f-5ffe-48f3-9a7c-b4cebcb75e91` by Meganpark980320. Its 144-bit-spaced lanes are
+scheduled three rounds apart, with 77 paired rounds and a 61-slot message
+table. The parent's late caches at addresses 342 and 252, terminal75/76
+mask omissions, scalar projections, optimized final-addition/cleanup tail,
+and earlier public contributions are retained.
 
-The exact runtime is 5,180 bytes with SHA-256
-`64a265b22f78c191eba3f2c45d5e495c9d78d11b894f0d4f622ac576b957e5fb`.
-The local protected native scorer reports 723,618 gas in both memory
-configurations. On the same local corpus, frontier `d17577a6` takes
-743,414 gas, a saving of 19,796 gas. Official results are recorded by Yukon.
+This increment replaces the normal 16-bit endian-mask quotient with its
+exact PUSH30 literal. Gas-neutral operand reorderings make the resulting
+encoding fit the unchanged protected artifact compiler. This technique
+builds on Meganpark980320's public operand-order notes; inherited core
+work by i34-9 and the earlier contributor lineage remains attributed.
+
+The runtime is 5,207 bytes, with SHA-256
+`7759443cee0548a9e541a330c494c1b920383c0cc6e2d53abfb51c82546c8b7c`.
+The protected native scorer reports 705,109 gas in both memory frames,
+versus 705,529 for the independently reproduced parent: a 420-gas saving.
+Full exact-artifact and secure benchmark validation must pass before submission.
+Official acceptance, scoring and promotion are separate platform outcomes.
 
 The new proof is organized as `StaggerTable*` and `StaggerNormal*` for
 message preparation, `StaggerBoolean`, `StaggerRound`, `StaggerWord` and
@@ -42,6 +47,6 @@ Inherited recognition and digest paths keep their behavior and have their
 concrete instruction addresses adjusted to the new artifact.
 
 The universal theorem in `Solution.lean` is stated for the exact submitted
-bytes and depends only on `propext`, `Classical.choice` and `Quot.sound`.
+bytes. Validation permits only `propext`, `Classical.choice` and `Quot.sound`.
 Official validation, scoring and promotion status are recorded by the
 platform.
