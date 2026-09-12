@@ -59,7 +59,7 @@ def serializerBodyPath :
    opAt 785 (.Dup ⟨2, by decide⟩), pushAt 786 1 5, opAt 787 .SHL,
    pushAt 788 2 2048, opAt 789 .ADD, opAt 790 .MLOAD,
    opAt 791 (.Dup ⟨2, by decide⟩), opAt 792 .SHR, opAt 793 .AND,
-   opAt 794 (.Dup ⟨4, by decide⟩), pushAt 795 2 6144,
+   opAt 794 (.Dup ⟨4, by decide⟩), pushAt 795 2 1536,
    opAt 796 .ADD, opAt 797 .MSTORE8, opAt 798 .POP, opAt 799 .POP,
    opAt 800 .POP, pushAt 801 1 1, opAt 802 (.Dup ⟨1, by decide⟩),
    opAt 803 .ADD, opAt 804 (.Swap ⟨0, by decide⟩), opAt 805 .POP,
@@ -68,7 +68,7 @@ def serializerBodyPath :
 def serializerReturnPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 808 .JUMPDEST, opAt 809 .POP, opAt 810 (.Dup ⟨4, by decide⟩),
-   pushAt 811 2 6144, opAt 812 .RETURN]
+   pushAt 811 2 1536, opAt 812 .RETURN]
 
 def exponentOuterExit (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff : Nat) (rest : List UInt256) : State :=
@@ -104,7 +104,7 @@ def serializeMemory (memory : ByteArray) (m : Nat) : Nat → ByteArray
       let before := serializeMemory memory m k
       MachineState.writeBytes before
         (ByteArray.mk #[UInt8.ofNat ((serializedByte before m k).toNat % 256)])
-        (6144 + UInt256.ofNat k).toNat
+        (1536 + UInt256.ofNat k).toNat
 
 def serializeWords (active : UInt256) (m : Nat) : Nat → UInt256
   | 0 => active
@@ -113,7 +113,7 @@ def serializeWords (active : UInt256) (m : Nat) : Nat → UInt256
       let loaded := UInt256.ofNat (MachineState.activeWordsAfter before.toNat
         (2048 + UInt256.shiftLeft (serializerLimb m k) (UInt256.ofNat 5)).toNat 32)
       UInt256.ofNat (MachineState.activeWordsAfter loaded.toNat
-        (6144 + UInt256.ofNat k).toNat 1)
+        (1536 + UInt256.ofNat k).toNat 1)
 
 def serializeProgress (s : State) (m : Nat) (k : Nat) : State :=
   { s with memory := serializeMemory s.memory m k
@@ -154,9 +154,9 @@ def bigReturned (s : State) (accumulatorWord : UInt256)
       UInt256.ofNat e, UInt256.ofNat m, UInt256.ofNat baseOff,
       UInt256.ofNat expOff] ++ rest
     halt := .Returned
-    hReturn := MachineState.readPadded current.memory 6144 m
+    hReturn := MachineState.readPadded current.memory 1536 m
     activeWords := UInt256.ofNat
-      (MachineState.activeWordsAfter current.activeWords.toNat 6144 m) }
+      (MachineState.activeWordsAfter current.activeWords.toNat 1536 m) }
 
 @[simp] private theorem outerFinishPCs (i : Nat)
     (hi : 642 ≤ i) (hii : i ≤ 648) :
@@ -341,7 +341,7 @@ theorem run_serializerReturn (s : State) (accumulatorWord : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
-  have h6144 : (6144 : UInt256).toNat = 6144 := by decide
+  have h6144 : (1536 : UInt256).toNat = 1536 := by decide
   have hmNat : (UInt256.ofNat m).toNat = m := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hm]
   simp [serializerReturnPath, opAt, pushAt, wfOp, serializerExit,
