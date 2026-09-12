@@ -26,8 +26,6 @@ structure Input where
   cache190 : UInt256
   cache310 : UInt256
   cache350 : UInt256
-  late342 : UInt256
-  late252 : UInt256
   h4 : UInt256
   h1 : UInt256
   h2 : UInt256
@@ -36,22 +34,21 @@ structure Input where
   off : UInt256
   limit : UInt256
 
-def stack0 (q : Input) (rho : List UInt256) : List UInt256 := [ q.ld, q.lb, q.le, q.la, q.late252, q.late342, q.k, q.lc, q.re, q.rc, q.ra, q.rd, q.rb, q.factor, q.lower, q.cache140, q.cache190, q.cache310, q.cache350, q.h4, q.h1, q.h2, q.h3, q.h0, q.off, q.limit ] ++ rho
+def stack0 (q : Input) (rho : List UInt256) : List UInt256 := [q.ld, q.lb, q.le, q.la, q.k, q.lc, q.re, q.rc, q.ra, q.rd, q.rb, q.factor, q.lower, q.cache140, q.cache190, q.cache310, q.cache350, q.h4, q.h1, q.h2, q.h3, q.h0, q.off, q.limit] ++ rho
 
-def chunk0 : List Instr := [ .op (.Swap ⟨15, by decide⟩),
-    .op .POP,
-    .op (.Swap ⟨11, by decide⟩),
-    .op .POP,
-    .op (.Swap ⟨15, by decide⟩),
-    .op .POP,
-    .op (.Swap ⟨13, by decide⟩),
-    .op .POP,
-    .op .POP,
-    .op .POP,
-    .op .POP,
-    .op (.Swap ⟨7, by decide⟩),
-    .op .POP,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 144) ]
+def chunk0 : List Instr := [
+  .op (.Swap ⟨13, by decide⟩),
+  .op .POP,
+  .op (.Swap ⟨9, by decide⟩),
+  .op .POP,
+  .op (.Swap ⟨13, by decide⟩),
+  .op .POP,
+  .op (.Swap ⟨11, by decide⟩),
+  .op .POP,
+  .op .POP,
+  .op (.Swap ⟨7, by decide⟩),
+  .op .POP,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 144) ]
 
 def stack1 (q : Input) (rho : List UInt256) : List UInt256 := [(UInt256.ofNat 144), q.re, q.rc, q.ra, q.rd, q.rb, q.lb, q.lower, q.lc, q.ld, q.la, q.le, q.h4, q.h1, q.h2, q.h3, q.h0, q.off, q.limit] ++ rho
 theorem run_chunk0 (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
@@ -101,7 +98,7 @@ def chunk2 : List Instr := [
   .op (.Swap ⟨11, by decide⟩),
   .op .ADD,
   .op (.Swap ⟨0, by decide⟩),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+  .push ⟨3, by decide⟩ (UInt256.ofNat 144),
   .op .SHR,
   .op (.Swap ⟨6, by decide⟩),
   .op .ADD,
@@ -154,12 +151,10 @@ def chunk4 : List Instr := [
   .op .ADD,
   .op (.Dup ⟨5, by decide⟩),
   .op .AND,
-  .op (.Swap ⟨4, by decide⟩),
-  .op .POP,
-  .op (.Swap ⟨0, by decide⟩),
   .op (.Swap ⟨3, by decide⟩),
-  .op (.Swap ⟨2, by decide⟩),
-  .op (.Swap ⟨0, by decide⟩) ]
+  .op (.Swap ⟨1, by decide⟩),
+  .op (.Swap ⟨4, by decide⟩),
+  .op .POP ]
 
 def stack5 (q : Input) (rho : List UInt256) : List UInt256 := [(UInt256.land q.lower (UInt256.add (UInt256.add q.h1 q.lc) (UInt256.shiftRight q.rd (UInt256.ofNat 144)))), (UInt256.land q.lower (UInt256.add q.ld (UInt256.add q.h2 (UInt256.shiftRight q.re (UInt256.ofNat 144))))), (UInt256.land q.lower (UInt256.add q.le (UInt256.add q.h3 (UInt256.shiftRight q.ra (UInt256.ofNat 144))))), (UInt256.land q.lower (UInt256.add (UInt256.add q.h4 q.la) (UInt256.shiftRight q.rb (UInt256.ofNat 144)))), (UInt256.land q.lower (UInt256.add q.h0 (UInt256.add (UInt256.shiftRight q.rc (UInt256.ofNat 144)) q.lb))), q.off, q.limit] ++ rho
 theorem run_chunk4 (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
