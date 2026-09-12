@@ -27,7 +27,7 @@ def blk2557 :
   [opAt 2415 .JUMPDEST,
    opAt 2416 (.Dup ⟨1, by decide⟩),
    opAt 2417 .ISZERO,
-   pushAt 2418 2 3133,
+   pushAt 2418 2 1486,
    opAt 2419 .JUMPI]
 
 /-- Instructions 2562..2568, pc 3872..3650: `ACC := BASE`, then the shift. -/

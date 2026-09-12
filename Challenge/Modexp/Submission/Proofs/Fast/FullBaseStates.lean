@@ -40,19 +40,21 @@ def copyState (s : State) (memory : ByteArray)
            stack := outer n bsize esize msize
            memory := memory }
 
-/-- RR-first Montgomery entry after copying the normal-domain base to ACC. -/
+/-- RR-first Montgomery entry after copying the normal-domain base to ACC.
+The return address is the appended dispatcher entry at pc 3138, reached
+directly so the pc1469 forwarder is skipped. -/
 def addCallState (s : State) (memory input : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat 3912
            stack := [UInt256.ofNat 6144, UInt256.ofNat 1024,
-             UInt256.ofNat 2048, UInt256.ofNat 1469] ++
+             UInt256.ofNat 2048, UInt256.ofNat 3138] ++
              outer n bsize esize msize
            memory := copyBaseMem memory input n }
 
-/-- Return from the conversion, immediately before inherited `bDone`. -/
+/-- Return from the conversion, landing on the dispatcher entry at pc 3138. -/
 def rejoinState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 1469
+  { s with pc := UInt256.ofNat 3138
            stack := outer n bsize esize msize
            memory := memory }
 
