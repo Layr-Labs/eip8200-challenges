@@ -27,11 +27,12 @@ pairs with equal rotations from 5 to 38 and reduces the message table from
 the stack. The scalar epilogue uses a proved low-32-bit projection to omit
 four masks that are redundant before the final masked hash combination.
 
-The exact runtime is 5,180 bytes with SHA-256
-`64a265b22f78c191eba3f2c45d5e495c9d78d11b894f0d4f622ac576b957e5fb`.
-The local protected native scorer reports 723,618 gas in both memory
-configurations. On the same local corpus, frontier `d17577a6` takes
-743,414 gas, a saving of 19,796 gas. Official results are recorded by Yukon.
+The exact runtime is 5,176 bytes with SHA-256
+`3f6459f348b93933be3c8f93b6c5869f3391e5a8064f766ba98bc514cf7e123e`.
+Left-lane round 78 omits the post add-e pair-mask AND (JUMPDEST nops).
+The following masked left-79 / hash combination still projects to 32 bits.
+Local scoring over the 49-vector corpus reports 722,799 gas
+(252 below live board 723,051). Official results are recorded by Yukon.
 
 The new proof is organized as `StaggerTable*` and `StaggerNormal*` for
 message preparation, `StaggerBoolean`, `StaggerRound`, `StaggerWord` and
