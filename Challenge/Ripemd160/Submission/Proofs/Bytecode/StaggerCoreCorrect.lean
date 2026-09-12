@@ -94,13 +94,13 @@ theorem pair_near (l r r' : Paired144WordRound.WordLane) (h : unpackLeft r=unpac
 
 theorem paired_crypto (memory : ByteArray) (words : Nat → UInt32) (q : CryptoLane)
     (hm : StaggerMessage.Ready memory words) :
-    ∃ d d' : UInt256,
+    ∃ dd de : UInt256,
       paired memory (embed q) =
-        {packCrypto (leftFold words 77 q) (rightFold words 80 q) with e:=d, d:=d'} ∧
-      UInt256.land d Paired144WordRound.pairWord =
-        (packCrypto (leftFold words 77 q) (rightFold words 80 q)).e ∧
-      UInt256.land d' Paired144WordRound.pairWord =
-        (packCrypto (leftFold words 77 q) (rightFold words 80 q)).d := by
+        {packCrypto (leftFold words 77 q) (rightFold words 80 q) with d:=dd, e:=de} ∧
+      UInt256.land dd Paired144WordRound.pairWord =
+        (packCrypto (leftFold words 77 q) (rightFold words 80 q)).d ∧
+      UInt256.land de Paired144WordRound.pairWord =
+        (packCrypto (leftFold words 77 q) (rightFold words 80 q)).e := by
   have hp : unpackLeft (prologue memory (embed q)) = unpackLeft (embed (rightFold words 3 q)) :=
     (prologue_crypto memory words q hm).trans (unpackLeft_packCrypto _ _).symm
   have hbc := prologue_bc memory words q hm
@@ -165,23 +165,18 @@ theorem low32_pairMask (x : UInt256) :
     PairedLaneUInt256Bridge.bits_word,←Paired144Core.normalize_eq_and]
   exact Paired144Core.low_pack _ _
 
-theorem unpackLeft_dirtyE (l r : CryptoLane) (d d' : UInt256)
-    (he : UInt256.land d Paired144WordRound.pairWord = (packCrypto l r).e)
-    (hd : UInt256.land d' Paired144WordRound.pairWord = (packCrypto l r).d) :
-    unpackLeft {packCrypto l r with e:=d, d:=d'} = l := by
-  have hlow : low32 d = low32 (packCrypto l r).e :=
-    (low32_pairMask d).symm.trans (congrArg low32 he)
-  have hlowd : low32 d' = low32 (packCrypto l r).d :=
-    (low32_pairMask d').symm.trans (congrArg low32 hd)
-  have h1 := congrArg (fun e : UInt32 =>
-      (⟨low32 (packCrypto l r).a,low32 (packCrypto l r).b,low32 (packCrypto l r).c,
-        low32 d',e⟩ : CryptoLane)) hlow
-  have h2 := congrArg (fun x : UInt32 =>
-      (⟨low32 (packCrypto l r).a,low32 (packCrypto l r).b,low32 (packCrypto l r).c,
-        x,low32 (packCrypto l r).e⟩ : CryptoLane)) hlowd
-  have h : unpackLeft {packCrypto l r with e:=d, d:=d'} = unpackLeft (packCrypto l r) :=
-    h1.trans h2
-  exact h.trans (unpackLeft_packCrypto l r)
+theorem unpackLeft_dirtyDE (l r : CryptoLane) (dd de : UInt256)
+    (hd : UInt256.land dd Paired144WordRound.pairWord = (packCrypto l r).d)
+    (he : UInt256.land de Paired144WordRound.pairWord = (packCrypto l r).e) :
+    unpackLeft {packCrypto l r with d:=dd, e:=de} = l := by
+  have hlowd : low32 dd = low32 (packCrypto l r).d :=
+    (low32_pairMask dd).symm.trans (congrArg low32 hd)
+  have hlowe : low32 de = low32 (packCrypto l r).e :=
+    (low32_pairMask de).symm.trans (congrArg low32 he)
+  change (⟨low32 (packCrypto l r).a, low32 (packCrypto l r).b, low32 (packCrypto l r).c,
+    low32 dd, low32 de⟩ : CryptoLane) = l
+  rw [hlowd, hlowe]
+  exact unpackLeft_packCrypto l r
 
 theorem epilogue_crypto (memory : ByteArray) (words : Nat → UInt32) (l r : CryptoLane)
     (hm : StaggerMessage.Ready memory words) :
@@ -190,17 +185,17 @@ theorem epilogue_crypto (memory : ByteArray) (words : Nat → UInt32) (l r : Cry
   rw [epilogue_project memory words (packCrypto l r) hm hp.2.1 hp.2.2.1,
     unpackLeft_packCrypto]
 
-theorem epilogue_dirtyE (memory : ByteArray) (words : Nat → UInt32) (l r : CryptoLane)
-    (hm : StaggerMessage.Ready memory words) (d d' : UInt256)
-    (he : UInt256.land d Paired144WordRound.pairWord = (packCrypto l r).e)
-    (hd : UInt256.land d' Paired144WordRound.pairWord = (packCrypto l r).d) :
-    unpackLeft (epilogue memory {packCrypto l r with e:=d, d:=d'}) = leftFinish words l := by
+theorem epilogue_dirtyDE (memory : ByteArray) (words : Nat → UInt32) (l r : CryptoLane)
+    (hm : StaggerMessage.Ready memory words) (dd de : UInt256)
+    (hd : UInt256.land dd Paired144WordRound.pairWord = (packCrypto l r).d)
+    (he : UInt256.land de Paired144WordRound.pairWord = (packCrypto l r).e) :
+    unpackLeft (epilogue memory {packCrypto l r with d:=dd, e:=de}) = leftFinish words l := by
   have hp:=StaggerScalarLow54.packCrypto_low54 l r
-  rw [epilogue_project memory words {packCrypto l r with e:=d, d:=d'} hm hp.2.1 hp.2.2.1,
-    unpackLeft_dirtyE l r d d' he hd]
+  rw [epilogue_project memory words {packCrypto l r with d:=dd, e:=de} hm hp.2.1 hp.2.2.1,
+    unpackLeft_dirtyDE l r dd de hd he]
 
 #print axioms prologue_crypto
 #print axioms paired_crypto
 #print axioms epilogue_crypto
-#print axioms epilogue_dirtyE
+#print axioms epilogue_dirtyDE
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCoreCorrect

@@ -38,25 +38,20 @@ theorem high32_pairMask (x : UInt256) :
     PairedLaneUInt256Bridge.bits_word,←Paired144Core.normalize_eq_and]
   exact Paired144Core.high_pack _ _
 
-theorem unpackRight_dirtyE (l r : CryptoLane) (d d' : UInt256)
-    (he : UInt256.land d Paired144WordRound.pairWord = (packCrypto l r).e)
-    (hd : UInt256.land d' Paired144WordRound.pairWord = (packCrypto l r).d) :
-    unpackRight {packCrypto l r with e:=d, d:=d'} = r := by
-  have hhigh : high32 d = high32 (packCrypto l r).e :=
-    (high32_pairMask d).symm.trans (congrArg high32 he)
-  have hhighd : high32 d' = high32 (packCrypto l r).d :=
-    (high32_pairMask d').symm.trans (congrArg high32 hd)
-  have h1 := congrArg (fun e : UInt32 =>
-      (⟨high32 (packCrypto l r).a,high32 (packCrypto l r).b,high32 (packCrypto l r).c,
-        high32 d',e⟩ : CryptoLane)) hhigh
-  have h2 := congrArg (fun x : UInt32 =>
-      (⟨high32 (packCrypto l r).a,high32 (packCrypto l r).b,high32 (packCrypto l r).c,
-        x,high32 (packCrypto l r).e⟩ : CryptoLane)) hhighd
-  have h : unpackRight {packCrypto l r with e:=d, d:=d'} = unpackRight (packCrypto l r) :=
-    h1.trans h2
-  exact h.trans (unpackRight_packCrypto l r)
+theorem unpackRight_dirtyDE (l r : CryptoLane) (dd de : UInt256)
+    (hd : UInt256.land dd Paired144WordRound.pairWord = (packCrypto l r).d)
+    (he : UInt256.land de Paired144WordRound.pairWord = (packCrypto l r).e) :
+    unpackRight {packCrypto l r with d:=dd, e:=de} = r := by
+  have hhighd : high32 dd = high32 (packCrypto l r).d :=
+    (high32_pairMask dd).symm.trans (congrArg high32 hd)
+  have hhighe : high32 de = high32 (packCrypto l r).e :=
+    (high32_pairMask de).symm.trans (congrArg high32 he)
+  change (⟨high32 (packCrypto l r).a, high32 (packCrypto l r).b, high32 (packCrypto l r).c,
+    high32 dd, high32 de⟩ : CryptoLane) = r
+  rw [hhighd, hhighe]
+  exact unpackRight_packCrypto l r
 
-#print axioms unpackRight_dirtyE
+#print axioms unpackRight_dirtyDE
 
 #print axioms high32_packWord
 #print axioms unpackRight_packCrypto
@@ -118,13 +113,13 @@ theorem resultMemory_eq_folds (memory : ByteArray) (words : Nat → UInt32)
       (PairedCompressionBridge.combineLanes h
         (Paired80Algorithm.leftFold words 80 (StaggerRepresentation.initialCrypto h))
         (Paired80Algorithm.rightFold words 80 (StaggerRepresentation.initialCrypto h)))) := by
-  obtain ⟨d,d',hp,he,hd⟩ := StaggerCoreCorrect.paired_crypto memory words
+  obtain ⟨dd,de,hp,hd,he⟩ := StaggerCoreCorrect.paired_crypto memory words
     (StaggerRepresentation.initialCrypto h) hm
   unfold resultMemory
   rw [StaggerRepresentation.initial_eq memory h hh,hp,
     tailMemory_eq_storeRaw,rawHash_eq_combine _ _ _ h hh,
-    StaggerCoreCorrect.epilogue_dirtyE memory words _ _ hm d d' he hd,
-    unpackRight_dirtyE _ _ d d' he hd,StaggerCoreCorrect.leftFinish_fold]
+    StaggerCoreCorrect.epilogue_dirtyDE memory words _ _ hm dd de hd he,
+    unpackRight_dirtyDE _ _ dd de hd he,StaggerCoreCorrect.leftFinish_fold]
 
 #print axioms tailMemory_eq_storeRaw
 #print axioms addResult_normalized

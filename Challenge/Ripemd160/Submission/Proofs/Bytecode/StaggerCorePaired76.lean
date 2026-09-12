@@ -26,7 +26,7 @@ theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho 
   have hr : Crypto.Ripemd160.sP[79]! = 11 := by rfl
   simp only [StaggerRawPaired76.outputStack, input, stack, List.map_cons, List.map_nil,
     List.cons_append, List.nil_append, StaggerCoreCommon.word, eval,
-    StaggerTerminal75.step, if_neg (show ¬ (76 = 75) by decide), if_pos rfl,
+    StaggerTerminal75.step, if_neg (by decide : ¬76=75), if_pos rfl,
     StaggerAlgorithm.step, hkb, hka, hm, hl, hr,
     upperWord, lowerWord, StaggerWord.step, StaggerWord.t, StaggerWord.sum,
     StaggerWord.raw, StaggerWord.selector, StaggerWord.key, StaggerBoolean.selector,

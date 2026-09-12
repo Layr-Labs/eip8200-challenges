@@ -8,7 +8,7 @@ set_option maxHeartbeats 2000000
 /-!
 # Structural certificate for the frozen RIPEMD-160 artifact
 
-The exact candidate has 5206 bytes, 3909 instructions, and SHA-256
+The exact candidate has 5206 bytes, 3932 instructions, and SHA-256
 `6a306fe2ba72feede43d774f5c1c17e124df354ebb91c5e4e31e7b9ce33ec181`. PUSH rows carry their typed width and value.
 -/
 
