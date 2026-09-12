@@ -91,11 +91,11 @@ def gasSteps_exit (s : State) (h : Compression.HashState) (off limit : UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 4728, stack := StaggerPersistentFrame.frame h off limit rho}
-      {s with pc := UInt256.ofNat 4741, stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
+      {s with pc := UInt256.ofNat 4740, stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
   apply PersistentLoopLift.gasSteps_of_raw postSite {s with pc := UInt256.ofNat 4728, stack := StaggerPersistentFrame.frame h off limit rho} _ hcode hfork hrun hnp post_pc.symm
   · exact PersistentLoopLift.advancesAll_sound _ (by decide)
   · have hr := run_exit s (UInt256.ofNat 4728) h off limit rho 527 hstack hrun hhit
-    have he : pcAfter (UInt256.ofNat 4728) (StaggerPersistentLoopRaw.template 527) = UInt256.ofNat 4741 := by decide
+    have he : pcAfter (UInt256.ofNat 4728) (StaggerPersistentLoopRaw.template 527) = UInt256.ofNat 4740 := by decide
     rw [he] at hr
     exact hr
 #print axioms gasSteps_continue
