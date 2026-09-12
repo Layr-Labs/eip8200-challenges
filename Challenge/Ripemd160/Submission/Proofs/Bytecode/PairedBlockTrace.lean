@@ -132,19 +132,19 @@ theorem tail_stack (s : State) (input : ByteArray) (i : Nat) :
     coreStack [.d, .b, .c, .a, .e, .factor, .pair, .upper, .lower]
       (coreCryptoResult (blockWords input i) (PairedBlockMath.readLane s.memory)
         (PairedBlockMath.readLane s.memory))
-      (UInt256.ofNat 456 :: driverRest input i) =
+      (UInt256.ofNat 461 :: driverRest input i) =
       PairedAllInlineTail.entryStack (resultFrame s input i)
-        (UInt256.ofNat 456) (driverRest input i) := by
+        (UInt256.ofNat 461) (driverRest input i) := by
   rfl
 
 theorem valid_return (s : State) (hcode : s.executionEnv.code = submissionBytecode) :
-    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 456).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 279 = 456 := by
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 461).toNat = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 280 = 461 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 279 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 280 (by rfl)
   rw [hpc] at h
-  change Decode.isValidJumpDest s.executionEnv.code 456 = true
+  change Decode.isValidJumpDest s.executionEnv.code 461 = true
   rw [hcode]
   exact h
 
@@ -156,9 +156,9 @@ opaque gasSteps_prepare (s : State) (input : ByteArray) (i : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (DriverTrace.compressEntry s input i)
-      {scheduledState s i with pc := UInt256.ofNat 709, stack := cache (scheduledState s i).memory ++ (UInt256.ofNat 456 :: driverRest input i)} := by
+      {scheduledState s i with pc := UInt256.ofNat 714, stack := PairedDerivedStartup.lowerWord :: (cache (scheduledState s i).memory ++ (UInt256.ofNat 461 :: driverRest input i))} := by
   let q := scheduledState s i
-  let rho := UInt256.ofNat 456 :: driverRest input i
+  let rho := UInt256.ofNat 461 :: driverRest input i
   have qactive : 23 ≤ q.activeWords.toNat := scheduled_active s input i hfit hi
   have qcode : q.executionEnv.code = submissionBytecode := hcode
   have qfork : q.fork = .Osaka := hfork
@@ -168,30 +168,30 @@ opaque gasSteps_prepare (s : State) (input : ByteArray) (i : Nat)
   have hstack : rho.length ≤ 996 := by simp [rho, driverRest]
   have hcstack : (cache q.memory ++ rho).length ≤ 1002 := by simp only [List.length_append, cache_length]; omega
   have gschedule' : GasSteps (DriverTrace.compressEntry s input i)
-      {q with pc := UInt256.ofNat 709, stack := cache q.memory ++ rho} := by
-    have gmerge := PadSites.gasSteps_merge q (cache q.memory ++ rho)
-      (by simp only [List.length_append, cache_length]; omega) qrun qcode qfork qnp
+      {q with pc := UInt256.ofNat 714, stack := PairedDerivedStartup.lowerWord :: (cache q.memory ++ rho)} := by
+    have gmerge := PadSites.gasSteps_merge q (PairedDerivedStartup.lowerWord :: (cache q.memory ++ rho))
+      (by simp only [List.length_cons, List.length_append, cache_length]; omega) qrun qcode qfork qnp
     have hfit256 : s.executionEnv.calldata.size < 2^256 := by
       rw [ctx.calldata]
       exact PadBlockModel.calldata_lt_uint256 input hfit
     have hoff := PadBlockModel.blockOffsetWord_toNat input hfit i hi
     have gprefix : GasSteps (DriverTrace.compressEntry s input i)
-        {q with pc := UInt256.ofNat 708, stack := cache q.memory ++ rho} := by
+        {q with pc := UInt256.ofNat 713, stack := PairedDerivedStartup.lowerWord :: (cache q.memory ++ rho)} := by
       by_cases hhit : input.size = DriverTrace.blockOffset i
       · have heq : s.executionEnv.calldata.size = (DriverTrace.blockOffsetWord i).toNat := by
           rw [ctx.calldata, hoff]
           exact hhit
         have ghit := PadSites.gasSteps_hit s (DriverTrace.messageOffsetWord i)
-          (UInt256.ofNat 456) (DriverTrace.blockOffsetWord i) [Padding.paddedWord input]
+          (UInt256.ofNat 461) (DriverTrace.blockOffsetWord i) [Padding.paddedWord input]
           (by simp) hrun hfit256 heq hcode hfork hnp
-        have gtouch := PadSites.gasSteps_prefix s (UInt256.ofNat 456) (messagePointer i)
+        have gtouch := PadSites.gasSteps_prefix s (UInt256.ofNat 461) (messagePointer i)
           (driverRest input i) (by simp [driverRest]) hrun
           (messagePointer_bound input hfit i hi) (PadBlockModel.messagePointer_aligned i)
           hcode hfork hnp
         let a : State := {s with activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat (messagePointer i))}
         have ga : GasSteps (DriverTrace.compressEntry s input i)
             {a with pc := UInt256.ofNat 410, stack := rho} := ghit.trans gtouch
-        have gbody := PadSites.gasSteps_body a (UInt256.ofNat 456) (driverRest input i)
+        have gbody := PadSites.gasSteps_body a (UInt256.ofNat 461) (driverRest input i)
           (by simp [driverRest]) hrun qactive hfit256 hcode hfork hnp
         have hmem : PadOnlySchedule.resultMemory a.memory
             (UInt256.ofNat a.executionEnv.calldata.size) = q.memory :=
@@ -211,17 +211,17 @@ opaque gasSteps_prepare (s : State) (input : ByteArray) (i : Nat)
           rw [ctx.calldata, hoff]
           exact hhit
         have gmiss := PadSites.gasSteps_miss s (DriverTrace.messageOffsetWord i)
-          (UInt256.ofNat 456) (DriverTrace.blockOffsetWord i) [Padding.paddedWord input]
+          (UInt256.ofNat 461) (DriverTrace.blockOffsetWord i) [Padding.paddedWord input]
           (by simp) hrun hfit256 hne hcode hfork hnp
-        have gold := PairedAllInlineBoundarySites.gasSteps_schedule s (UInt256.ofNat 456)
+        have gold := PairedAllInlineBoundarySites.gasSteps_schedule s (UInt256.ofNat 461)
           (messagePointer i) (driverRest input i) (by simp [driverRest]) hrun
           (messagePointer_lower i) (messagePointer_bound input hfit i hi) hcode hfork hnp ctx.sentinel
         have hdirty : s.executionEnv.calldata.size ≠ DriverTrace.blockOffset i := by
           rw [ctx.calldata]
           exact hhit
         have gold' : GasSteps
-            {s with pc := UInt256.ofNat 483, stack := DriverTrace.messageOffsetWord i :: rho}
-            {q with pc := UInt256.ofNat 708, stack := cache q.memory ++ rho} := by
+            {s with pc := UInt256.ofNat 488, stack := DriverTrace.messageOffsetWord i :: rho}
+            {q with pc := UInt256.ofNat 713, stack := PairedDerivedStartup.lowerWord :: (cache q.memory ++ rho)} := by
           apply gold.cast rfl
           simp only [q, scheduledState, selectedWords, if_neg hdirty]
           all_goals rfl
@@ -240,7 +240,7 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     GasSteps (DriverTrace.compressEntry s input i)
       (DriverTrace.compressReturned (resultState s input i) input i) := by
   let q := scheduledState s i
-  let rho := UInt256.ofNat 456 :: driverRest input i
+  let rho := UInt256.ofNat 461 :: driverRest input i
   let lane := PairedBlockMath.readLane s.memory
   have qactive : 23 ≤ q.activeWords.toNat := scheduled_active s input i hfit hi
   have qcode : q.executionEnv.code = submissionBytecode := hcode
@@ -285,7 +285,7 @@ def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
   have gstrip := Strip78Site.gasSteps q before78 rho
     hstack qrun qactive qcode qfork qnp
   have gsuffix := TerminalRoundSite.gasSteps_suffix q dirty
-    (UInt256.ofNat 456) (driverRest input i) hstack qrun qactive
+    (UInt256.ofNat 461) (driverRest input i) hstack qrun qactive
     (valid_return q qcode) qcode qfork qnp
   have gsuffix' : GasSteps
       {q with pc := UInt256.ofNat 4568, stack := PairedAllInlineCoreTrace.inline79Entry dirty (cache q.memory ++ rho)}

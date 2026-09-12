@@ -7,19 +7,20 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate PairedHelperBooleanTrace
 
 def template (dest : Nat) : List Instr :=
-  [.push ⟨2, by decide⟩ (UInt256.ofNat dest), .op .JUMP]
+  [.push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), .push ⟨2, by decide⟩ (UInt256.ofNat dest), .op .JUMP]
 
 theorem run_template (s : State) (pc : UInt256) (rho : List UInt256) (dest : Nat)
-    (hstack : rho.length ≤ 1022) (hrun : s.halt = .Running)
+    (hstack : rho.length ≤ 1021) (hrun : s.halt = .Running)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat dest).toNat = true) :
     runInstrSeq (template dest) {s with pc := pc, stack := rho} =
-      some {s with pc := UInt256.ofNat dest, stack := rho} := by
+      some {s with pc := UInt256.ofNat dest, stack := UInt256.ofNat 4294967295 :: rho} := by
   have hcap : rho.length < 1024 := by omega
   have hcap1 : rho.length + 1 < 1024 := by omega
+  have hcap2 : rho.length + 2 < 1024 := by omega
   simp only [Word.word_toNat_ofNat] at hvalid
   norm_num only at hvalid
   simp (discharger := omega) [template, runInstrSeq, Stepper.runInstr, hrun,
-    hcap, hcap1, hvalid, List.length_cons]
+    hcap, hcap1, hcap2, hvalid, List.length_cons]
 
 theorem run_merge (s : State) (pc : UInt256) (rho : List UInt256)
     (hstack : rho.length < 1024) (hrun : s.halt = .Running) :
