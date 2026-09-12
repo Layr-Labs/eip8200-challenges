@@ -62,9 +62,9 @@ theorem jump_pc : jumpSite.startPC = UInt256.ofNat 414 := by
 
 theorem valid_loop (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 528).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 335 = 528 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 334 = 528 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 335 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 334 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 528 = true
   rw [hcode]
