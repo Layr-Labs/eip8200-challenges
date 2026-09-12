@@ -16,10 +16,10 @@ theorem run_test (s : State) (pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006)
     (htarget : Decode.isValidJumpDest s.executionEnv.code paEnd.toNat = true) :
     runInstructions testProgram
-      (framed s (UInt256.ofNat 4634) (baseStack pbi paEnd pbEnd flag dst ret rest)) =
+      (framed s (UInt256.ofNat 4593) (baseStack pbi paEnd pbEnd flag dst ret rest)) =
     some (framed s
       (if UInt256.isTrue (UInt256.gt (negative32+pbi) pbEnd) then paEnd
-        else UInt256.ofNat 4641)
+        else UInt256.ofNat 4600)
       (baseStack (negative32+pbi) paEnd pbEnd flag dst ret rest)) := by
   have hc7 : rest.length+8 < 1024 := by omega
   have hc8 : rest.length+9 < 1024 := by omega

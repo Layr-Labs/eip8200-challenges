@@ -29,21 +29,21 @@ def redirectState (s : State) (memory : ByteArray)
 /-- Redirected base-chain head, pc3146. -/
 def entryState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2872
+  { s with pc := UInt256.ofNat 2868
            stack := outer n bsize esize msize
            memory := memory }
 
 /-- Guard hit, immediately before the calldata copy, pc3161. -/
 def copyState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2887
+  { s with pc := UInt256.ofNat 2883
            stack := outer n bsize esize msize
            memory := memory }
 
 /-- RR-first Montgomery entry after copying the normal-domain base to ACC. -/
 def addCallState (s : State) (memory input : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3912
+  { s with pc := UInt256.ofNat 3873
            stack := [UInt256.ofNat 6144, UInt256.ofNat 1024,
              UInt256.ofNat 2048, UInt256.ofNat 1469] ++
              outer n bsize esize msize
@@ -59,7 +59,7 @@ def rejoinState (s : State) (memory : ByteArray)
 /-- Guard miss, pc3184, with the original stack and memory. -/
 def fallbackState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2910
+  { s with pc := UInt256.ofNat 2906
            stack := outer n bsize esize msize
            memory := memory }
 

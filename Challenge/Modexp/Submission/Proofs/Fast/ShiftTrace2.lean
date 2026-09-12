@@ -26,6 +26,58 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs
 
+@[simp] private theorem compactLoopPC2749 : Artifact.submissionArtifact.instructionPC 2749 = 3603 := by rfl
+@[simp] private theorem compactLoopPC2750 : Artifact.submissionArtifact.instructionPC 2750 = 3605 := by rfl
+@[simp] private theorem compactLoopPC2751 : Artifact.submissionArtifact.instructionPC 2751 = 3606 := by rfl
+@[simp] private theorem compactLoopPC2752 : Artifact.submissionArtifact.instructionPC 2752 = 3609 := by rfl
+@[simp] private theorem compactLoopPC2753 : Artifact.submissionArtifact.instructionPC 2753 = 3610 := by rfl
+@[simp] private theorem compactLoopPC2754 : Artifact.submissionArtifact.instructionPC 2754 = 3613 := by rfl
+@[simp] private theorem compactLoopPC2755 : Artifact.submissionArtifact.instructionPC 2755 = 3614 := by rfl
+@[simp] private theorem compactLoopPC2756 : Artifact.submissionArtifact.instructionPC 2756 = 3617 := by rfl
+@[simp] private theorem compactLoopPC2758 : Artifact.submissionArtifact.instructionPC 2758 = 3619 := by rfl
+@[simp] private theorem compactLoopPC2759 : Artifact.submissionArtifact.instructionPC 2759 = 3620 := by rfl
+@[simp] private theorem compactLoopPC2760 : Artifact.submissionArtifact.instructionPC 2760 = 3621 := by rfl
+@[simp] private theorem compactLoopPC2761 : Artifact.submissionArtifact.instructionPC 2761 = 3622 := by rfl
+@[simp] private theorem compactLoopPC2762 : Artifact.submissionArtifact.instructionPC 2762 = 3623 := by rfl
+@[simp] private theorem compactLoopPC2763 : Artifact.submissionArtifact.instructionPC 2763 = 3624 := by rfl
+@[simp] private theorem compactLoopPC2764 : Artifact.submissionArtifact.instructionPC 2764 = 3625 := by rfl
+@[simp] private theorem compactLoopPC2765 : Artifact.submissionArtifact.instructionPC 2765 = 3626 := by rfl
+@[simp] private theorem compactLoopPC2766 : Artifact.submissionArtifact.instructionPC 2766 = 3627 := by rfl
+@[simp] private theorem compactLoopPC2767 : Artifact.submissionArtifact.instructionPC 2767 = 3628 := by rfl
+@[simp] private theorem compactLoopPC2768 : Artifact.submissionArtifact.instructionPC 2768 = 3629 := by rfl
+@[simp] private theorem compactLoopPC2769 : Artifact.submissionArtifact.instructionPC 2769 = 3630 := by rfl
+@[simp] private theorem compactLoopPC2770 : Artifact.submissionArtifact.instructionPC 2770 = 3631 := by rfl
+@[simp] private theorem compactLoopPC2771 : Artifact.submissionArtifact.instructionPC 2771 = 3632 := by rfl
+@[simp] private theorem compactLoopPC2772 : Artifact.submissionArtifact.instructionPC 2772 = 3633 := by rfl
+@[simp] private theorem compactLoopPC2773 : Artifact.submissionArtifact.instructionPC 2773 = 3634 := by rfl
+@[simp] private theorem compactLoopPC2774 : Artifact.submissionArtifact.instructionPC 2774 = 3635 := by rfl
+@[simp] private theorem compactLoopPC2775 : Artifact.submissionArtifact.instructionPC 2775 = 3636 := by rfl
+@[simp] private theorem compactLoopPC2776 : Artifact.submissionArtifact.instructionPC 2776 = 3637 := by rfl
+@[simp] private theorem compactLoopPC2777 : Artifact.submissionArtifact.instructionPC 2777 = 3638 := by rfl
+@[simp] private theorem compactLoopPC2778 : Artifact.submissionArtifact.instructionPC 2778 = 3639 := by rfl
+@[simp] private theorem compactLoopPC2779 : Artifact.submissionArtifact.instructionPC 2779 = 3640 := by rfl
+@[simp] private theorem compactLoopPC2780 : Artifact.submissionArtifact.instructionPC 2780 = 3641 := by rfl
+@[simp] private theorem compactLoopPC2781 : Artifact.submissionArtifact.instructionPC 2781 = 3642 := by rfl
+@[simp] private theorem compactLoopPC2782 : Artifact.submissionArtifact.instructionPC 2782 = 3643 := by rfl
+@[simp] private theorem compactLoopPC2783 : Artifact.submissionArtifact.instructionPC 2783 = 3644 := by rfl
+@[simp] private theorem compactLoopPC2784 : Artifact.submissionArtifact.instructionPC 2784 = 3645 := by rfl
+@[simp] private theorem compactLoopPC2785 : Artifact.submissionArtifact.instructionPC 2785 = 3646 := by rfl
+@[simp] private theorem compactLoopPC2786 : Artifact.submissionArtifact.instructionPC 2786 = 3647 := by rfl
+@[simp] private theorem compactLoopPC2787 : Artifact.submissionArtifact.instructionPC 2787 = 3648 := by rfl
+@[simp] private theorem compactLoopPC2788 : Artifact.submissionArtifact.instructionPC 2788 = 3649 := by rfl
+@[simp] private theorem compactLoopPC2789 : Artifact.submissionArtifact.instructionPC 2789 = 3650 := by rfl
+@[simp] private theorem compactLoopPC2790 : Artifact.submissionArtifact.instructionPC 2790 = 3651 := by rfl
+@[simp] private theorem compactLoopPC2791 : Artifact.submissionArtifact.instructionPC 2791 = 3652 := by rfl
+@[simp] private theorem compactLoopPC2792 : Artifact.submissionArtifact.instructionPC 2792 = 3653 := by rfl
+@[simp] private theorem compactLoopPC2793 : Artifact.submissionArtifact.instructionPC 2793 = 3654 := by rfl
+@[simp] private theorem compactLoopPC2794 : Artifact.submissionArtifact.instructionPC 2794 = 3655 := by rfl
+@[simp] private theorem compactLoopPC2795 : Artifact.submissionArtifact.instructionPC 2795 = 3656 := by rfl
+@[simp] private theorem compactLoopPC2797 : Artifact.submissionArtifact.instructionPC 2797 = 3660 := by rfl
+@[simp] private theorem compactLoopPC2798 : Artifact.submissionArtifact.instructionPC 2798 = 3661 := by rfl
+@[simp] private theorem compactLoopPC2799 : Artifact.submissionArtifact.instructionPC 2799 = 3662 := by rfl
+@[simp] private theorem compactLoopPC2800 : Artifact.submissionArtifact.instructionPC 2800 = 3665 := by rfl
+@[simp] private theorem compactLoopPC2803 : Artifact.submissionArtifact.instructionPC 2803 = 3668 := by rfl
+
 /-- `blk3013` with steps to go: fall into the body. -/
 theorem run_shiftHead_go (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hk : k ≠ 0) (hk32 : k ≤ 32)
@@ -125,23 +177,23 @@ private theorem addMod_comm (a b m : UInt256) :
     UInt256.addMod a b m = UInt256.addMod b a m := by
   simp only [UInt256.addMod, Nat.add_comm]
 
-@[simp] private theorem newEstimatePC2960 : Artifact.submissionArtifact.instructionPC 2727 = 3579 := by rfl
-@[simp] private theorem newEstimatePC2961 : Artifact.submissionArtifact.instructionPC 2728 = 3580 := by rfl
-@[simp] private theorem newEstimatePC2962 : Artifact.submissionArtifact.instructionPC 2729 = 3581 := by rfl
-@[simp] private theorem newEstimatePC2963 : Artifact.submissionArtifact.instructionPC 2730 = 3582 := by rfl
-@[simp] private theorem newEstimatePC2964 : Artifact.submissionArtifact.instructionPC 2731 = 3585 := by rfl
-@[simp] private theorem newEstimatePC2965 : Artifact.submissionArtifact.instructionPC 2732 = 3586 := by rfl
-@[simp] private theorem newEstimatePC2966 : Artifact.submissionArtifact.instructionPC 2733 = 3587 := by rfl
-@[simp] private theorem newEstimatePC2967 : Artifact.submissionArtifact.instructionPC 2734 = 3589 := by rfl
-@[simp] private theorem newEstimatePCk2750 : Artifact.submissionArtifact.instructionPC 2735 = 3590 := by rfl
-@[simp] private theorem newEstimatePCk2751 : Artifact.submissionArtifact.instructionPC 2736 = 3592 := by rfl
-@[simp] private theorem newEstimatePCk2752 : Artifact.submissionArtifact.instructionPC 2737 = 3593 := by rfl
-@[simp] private theorem newEstimatePCk2753 : Artifact.submissionArtifact.instructionPC 2738 = 3594 := by rfl
-@[simp] private theorem newEstimatePCk2754 : Artifact.submissionArtifact.instructionPC 2739 = 3596 := by rfl
-@[simp] private theorem newEstimatePCk2755 : Artifact.submissionArtifact.instructionPC 2740 = 3597 := by rfl
-@[simp] private theorem newEstimatePCk2756 : Artifact.submissionArtifact.instructionPC 2741 = 3598 := by rfl
-@[simp] private theorem newEstimatePCk2757 : Artifact.submissionArtifact.instructionPC 2742 = 3599 := by rfl
-@[simp] private theorem newEstimatePCk2758 : Artifact.submissionArtifact.instructionPC 2743 = 3600 := by rfl
+@[simp] private theorem newEstimatePC2960 : Artifact.submissionArtifact.instructionPC 2723 = 3570 := by rfl
+@[simp] private theorem newEstimatePC2961 : Artifact.submissionArtifact.instructionPC 2724 = 3571 := by rfl
+@[simp] private theorem newEstimatePC2962 : Artifact.submissionArtifact.instructionPC 2725 = 3572 := by rfl
+@[simp] private theorem newEstimatePC2963 : Artifact.submissionArtifact.instructionPC 2726 = 3573 := by rfl
+@[simp] private theorem newEstimatePC2964 : Artifact.submissionArtifact.instructionPC 2727 = 3576 := by rfl
+@[simp] private theorem newEstimatePC2965 : Artifact.submissionArtifact.instructionPC 2728 = 3577 := by rfl
+@[simp] private theorem newEstimatePC2966 : Artifact.submissionArtifact.instructionPC 2729 = 3578 := by rfl
+@[simp] private theorem newEstimatePC2967 : Artifact.submissionArtifact.instructionPC 2730 = 3580 := by rfl
+@[simp] private theorem newEstimatePCk2750 : Artifact.submissionArtifact.instructionPC 2731 = 3581 := by rfl
+@[simp] private theorem newEstimatePCk2751 : Artifact.submissionArtifact.instructionPC 2732 = 3583 := by rfl
+@[simp] private theorem newEstimatePCk2752 : Artifact.submissionArtifact.instructionPC 2733 = 3584 := by rfl
+@[simp] private theorem newEstimatePCk2753 : Artifact.submissionArtifact.instructionPC 2734 = 3585 := by rfl
+@[simp] private theorem newEstimatePCk2754 : Artifact.submissionArtifact.instructionPC 2735 = 3587 := by rfl
+@[simp] private theorem newEstimatePCk2755 : Artifact.submissionArtifact.instructionPC 2736 = 3588 := by rfl
+@[simp] private theorem newEstimatePCk2756 : Artifact.submissionArtifact.instructionPC 2737 = 3589 := by rfl
+@[simp] private theorem newEstimatePCk2757 : Artifact.submissionArtifact.instructionPC 2738 = 3590 := by rfl
+@[simp] private theorem newEstimatePCk2758 : Artifact.submissionArtifact.instructionPC 2739 = 3591 := by rfl
 
 /-- `blk3026`: quotient estimate with a branchless saturation mask. -/
 theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
@@ -226,11 +278,11 @@ theorem run_macBodyA (s : State) (um : ByteArray) (q pa pt pa' pt' : UInt256)
     (hpt' : UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 + pt = pt') :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3077a
       { s with pc := UInt256.ofNat pcMacLoop
-               stack := pa :: pt :: (Monpro.l1Step um q NEG n j).carry :: q :: UInt256.ofNat k ::
+               stack := pa :: pt :: UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 :: (Monpro.l1Step um q NEG n j).carry :: q :: UInt256.ofNat k ::
                  outer n bsize esize msize
                memory := (Monpro.l1Step um q NEG n j).memory } =
       some { s with pc := UInt256.ofNat pcMacTail
-                    stack := pa' :: pt' :: (Monpro.l1Step um q NEG n (j + 1)).carry :: q ::
+                    stack := pa' :: pt' :: UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 :: (Monpro.l1Step um q NEG n (j + 1)).carry :: q ::
                       UInt256.ofNat k :: outer n bsize esize msize
                     memory := (Monpro.l1Step um q NEG n (j + 1)).memory } := by
   have hactA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
@@ -253,8 +305,9 @@ theorem run_macBodyA (s : State) (um : ByteArray) (q pa pt pa' pt' : UInt256)
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
       List.exchange]
-  refine ⟨?_, Monpro.MacAlt.macCarryFix _ _ _ _⟩
-  rw [Monpro.MacAlt.macSumNat]
+  first
+  | rfl
+  | exact ⟨by rw [Monpro.MacAlt.macSumNat], Monpro.MacAlt.macCarryFix _ _ _ _⟩
 
 /-- `blk3077b` with limbs to go: back to the loop head. -/
 theorem run_macTail_go (s : State) (mm : ByteArray) (pa pt c q : UInt256)
@@ -263,10 +316,10 @@ theorem run_macTail_go (s : State) (mm : ByteArray) (pa pt c q : UInt256)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3077b
       { s with pc := UInt256.ofNat pcMacTail
-               stack := pa :: pt :: c :: q :: UInt256.ofNat k :: outer n bsize esize msize
+               stack := pa :: pt :: UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 :: c :: q :: UInt256.ofNat k :: outer n bsize esize msize
                memory := mm } =
       some { s with pc := UInt256.ofNat pcMacLoop
-                    stack := pa :: pt :: c :: q :: UInt256.ofNat k :: outer n bsize esize msize
+                    stack := pa :: pt :: UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 :: c :: q :: UInt256.ofNat k :: outer n bsize esize msize
                     memory := mm } := by
   simp (config := { maxSteps := 200000 })
     [blk3077b, opAt, pushAt, wfOp,
@@ -287,10 +340,10 @@ theorem run_macTail_exit (s : State) (mm : ByteArray) (pa pt c q : UInt256)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3077b
       { s with pc := UInt256.ofNat pcMacTail
-               stack := pa :: pt :: c :: q :: UInt256.ofNat k :: outer n bsize esize msize
+               stack := pa :: pt :: UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 :: c :: q :: UInt256.ofNat k :: outer n bsize esize msize
                memory := mm } =
       some { s with pc := UInt256.ofNat pcMid
-                    stack := pa :: pt :: c :: q :: UInt256.ofNat k :: outer n bsize esize msize
+                    stack := pa :: pt :: UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 :: c :: q :: UInt256.ofNat k :: outer n bsize esize msize
                     memory := mm } := by
   simp (config := { maxSteps := 200000 })
     [blk3077b, opAt, pushAt, wfOp,

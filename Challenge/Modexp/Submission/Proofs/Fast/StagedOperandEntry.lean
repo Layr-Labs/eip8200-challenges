@@ -5,10 +5,10 @@ set_option warningAsError true
 set_option maxHeartbeats 1000000
 
 /-!
-# The kernel `setup` (pc 3948 = 0x0f6c, instructions 2978..3039, 62 instructions)
+# The kernel setup entry (60 instructions)
 
 `load` (24) · `shuffle` (11) · `low` (3) · `zero` (13: `MCOPY` staging + `CALLDATACOPY`
-zeroing) · `pointersJump` (11, ending `DUP2; JUMP` to the row head `hd`).
+zeroing) · `pointersJump` (9, ending `DUP2; JUMP` to the row head `hd`).
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.StagedOperand
@@ -20,9 +20,9 @@ def fullEntryProgram : List Instr :=
   ((EntryPrefix.loadProgram ++ EntryPrefix.shuffleProgram) ++ EntryPrefix.lowProgram) ++
     (zeroProgram ++ pointersJumpProgram)
 
-theorem fullEntryProgram_length : fullEntryProgram.length = 62 := rfl
+theorem fullEntryProgram_length : fullEntryProgram.length = 60 := rfl
 
-/-- The whole `setup`: from `setupState` (pc 3948, `[hd, pa, pb, dst, ret] ++ rest`) to the
+/-- The whole `setup`: from `setupState` (pc 3909, `[hd, pa, pb, dst, ret] ++ rest`) to the
 row-0 head at `hd` with the staged, zeroed memory and `ent = l1Target n`. -/
 theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256)
@@ -63,8 +63,8 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (EntryPrefix.displacement mem) rest hcap
   have hlow := EntryPrefix.run_low { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb)
-    (UInt256.ofNat 4060 + EntryPrefix.displacement mem)
-    (UInt256.ofNat 4359 + EntryPrefix.displacement mem)
+    (UInt256.ofNat 4019 + EntryPrefix.displacement mem)
+    (UInt256.ofNat 4318 + EntryPrefix.displacement mem)
     dst ret m0 inv aEnd tl m96 m32 rest hcap hact
   have hprefix := runInstructions_append_some _ _ _ _ _
     (runInstructions_append_some _ _ _ _ _ hreads hshuffle) hlow

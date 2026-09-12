@@ -15,7 +15,7 @@ dispatcher. The remaining decoded instructions through index 1215 are
 unreachable padding, preserving the old loop head at index 1216 / pc 1668. -/
 def blk1195 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1043 2 2872,
+  [pushAt 1043 2 2868,
    opAt 1044 .JUMP]
 
 /-- Instructions 1216..1222, pc 1668..1676. -/
@@ -35,7 +35,7 @@ def blk1223 :
    pushAt 1052 2 1024,
    pushAt 1053 2 5120,
    pushAt 1054 2 1024,
-   pushAt 1055 2 3912,
+   pushAt 1055 2 3873,
    opAt 1056 .JUMP]
 
 /-- Instructions 1229..1249, pc 1693..1727. -/

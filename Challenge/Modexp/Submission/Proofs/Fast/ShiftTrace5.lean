@@ -236,7 +236,7 @@ def gasSteps_hitPath (s : State) (mem input : ByteArray) (n bsize esize msize mm
     (hmod : Model.FastRepresents mem 0 n mm) :
     Challenge.EvmProof.GasSteps (dispState s mem n bsize esize msize)
       { Exp.bDone s (Exp.mcopyMem (hitFinalMem mem input n mm) 4096 5120 (32 * n))
-          n bsize esize msize with pc := UInt256.ofNat 3138 } := by
+          n bsize esize msize with pc := UInt256.ofNat 3134 } := by
   have htop : Limbs.radix ^ n < 2 * mm := R1.radix_pow_lt_two_mul (by omega) hodd hmod hmatch.2
   have hguard : Challenge.EvmProof.GasSteps (dispState s mem n bsize esize msize)
       (hitState s mem n bsize esize msize) := by
@@ -291,7 +291,7 @@ def gasSteps_hitPath (s : State) (mem input : ByteArray) (n bsize esize msize mm
   have hexit : Challenge.EvmProof.GasSteps
       (shiftLoopState s (hitFinalMem mem input n mm) n bsize esize msize 0)
       { Exp.bDone s (Exp.mcopyMem (hitFinalMem mem input n mm) 4096 5120 (32 * n))
-          n bsize esize msize with pc := UInt256.ofNat 3138 } :=
+          n bsize esize msize with pc := UInt256.ofNat 3134 } :=
     (soundEnv blk3013 e
       (run_shiftHead_done s _ n bsize esize msize e.code e.run)).trans
     (soundEnv blk3264 e

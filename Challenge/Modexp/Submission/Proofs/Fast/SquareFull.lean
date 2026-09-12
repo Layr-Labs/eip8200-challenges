@@ -8,14 +8,14 @@ set_option maxHeartbeats 4000000
 /-!
 # `SQUARE(2048) → 2048` through the sqCP1m kernel
 
-The fixed-exponent caller enters the kernel's `common` block (pc 3924) with the row
+The fixed-exponent caller enters the kernel's `common` block (pc 3885) with the row
 head `hd = sq_row = 4710` on top of the call frame `[2048, 2048, 2048, ret]`
 (`Cios2Dispatch.commonState s mem 4710 2048 2048 (ofNat 2048) ret rest`, definitionally
 `Exp.sqCall`).
 
 * `n ∈ {4, 8}`: the call does **not** return to `ret` on the R0 artifact — the kernel keeps
   its frame, loops over the counter in memory word 9280 and leaves through `after_sq`
-  (3243).  That path is `SquareLoop.gasSteps_squareLoop`; this lemma therefore carries
+  (3234).  That path is `SquareLoop.gasSteps_squareLoop`; this lemma therefore carries
   `hslow : ¬(n = 4 ∨ n = 8)`.
 * other widths: `common` falls back (`POP PUSH2 0x683 JUMP`) to the generic `MONPRO`
   at 1667 (`Cios2Dispatch.gasSteps_commonFallbackOfWidth`, `Monpro.gasSteps_monproCsub`),
@@ -64,10 +64,10 @@ def gasSteps_squareFull (s : State) (mem : ByteArray) (p a mm : Nat)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
         (MachineState.readWord mem 9376).toNat + 1) % 2 ^ 256 = 0) :
     Challenge.EvmProof.GasSteps
-      (Cios2Dispatch.commonState s mem 4788 2048 2048 (UInt256.ofNat 2048) ret rest)
+      (Cios2Dispatch.commonState s mem 4734 2048 2048 (UInt256.ofNat 2048) ret rest)
       { s with pc := ret, stack := rest, memory := SquareResult.sqMem s mem (p + 2) } := by
   -- the generic MONPRO fallback (the kernel path is `SquareLoop.gasSteps_squareLoop`)
-  have g1 := Cios2Dispatch.gasSteps_commonFallbackOfWidth s mem 4788 2048 2048 (p + 2)
+  have g1 := Cios2Dispatch.gasSteps_commonFallbackOfWidth s mem 4734 2048 2048 (p + 2)
     (UInt256.ofNat 2048) ret rest (by omega) hrun hcode hfork hnp hact hn32 hs32
     (fun h => hslow (Or.inl h)) (fun h => hslow (Or.inr h))
   have g2 := Monpro.gasSteps_monproCsub s mem 2048 2048 (p + 2) (UInt256.ofNat 2048) ret rest

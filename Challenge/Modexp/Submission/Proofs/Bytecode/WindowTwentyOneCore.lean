@@ -17,7 +17,7 @@ def program : List Instr :=
 def returnedState (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) : State :=
   let finish := WindowTwentyOneLoop.finishState template base modulus exponent rest
-  WindowTwentyOneReturn.returned finish (UInt256.ofNat 2828)
+  WindowTwentyOneReturn.returned finish (UInt256.ofNat 2824)
     (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 16 finish.stack.tail
 
 theorem run_finish (template : State) (base modulus exponent : UInt256)
@@ -31,10 +31,10 @@ theorem run_finish (template : State) (base modulus exponent : UInt256)
       WindowTwentyOneLookup.framed, List.replicate_zero, List.nil_append, List.cons_append,
       List.tail_cons, List.length_cons]
     omega
-  have h := WindowTwentyOneReturn.run_return finish (UInt256.ofNat 2823)
+  have h := WindowTwentyOneReturn.run_return finish (UInt256.ofNat 2819)
     (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 16 (by decide) rfl
     finish.stack.tail htail
-  have hpc : advancePC 5 (UInt256.ofNat 2823) = UInt256.ofNat 2828 := by decide
+  have hpc : advancePC 5 (UInt256.ofNat 2819) = UInt256.ofNat 2824 := by decide
   simpa only [returnedState, finish, WindowTwentyOneReturn.framed, WindowTwentyOneLoop.finishState,
     WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed, List.replicate_zero,
     List.nil_append, List.cons_append, List.tail_cons, hpc] using h
@@ -45,7 +45,7 @@ theorem run_core (template : State) (base modulus exponentOffset modulusOffset :
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (he : rest[4]? = some exponentOffset) (hm : rest[5]? = some modulusOffset)
     (hmodulus : MachineState.readWord template.executionEnv.calldata modulusOffset.toNat = modulus)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 2360 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 2356 = true) :
     runInstructions program
       (WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 2219) base modulus rest) =
     some (returnedState template base modulus

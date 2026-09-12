@@ -14,10 +14,10 @@ structure Paths (artifact : ProgramArtifact) (fork : Fork) extends WindowTwentyO
   base : Block artifact fork 2199 WindowTwentyOneEntry.baseProgram
   modulus : Block artifact fork 2201 WindowTwentyOneEntry.modulusProgram
   normalize : Block artifact fork 2209 WindowTwentyOneEntry.normalizeProgram
-  zeroReturn : Block artifact fork 2829 WindowTwentyOneReturn.zeroProgram
-  hitJump : Decode.isValidJumpDest artifact.code 4841 = true
-  zeroJump : Decode.isValidJumpDest artifact.code 2829 = true
-  loopJump : Decode.isValidJumpDest artifact.code 2360 = true
+  zeroReturn : Block artifact fork 2825 WindowTwentyOneReturn.zeroProgram
+  hitJump : Decode.isValidJumpDest artifact.code 4787 = true
+  zeroJump : Decode.isValidJumpDest artifact.code 2825 = true
+  loopJump : Decode.isValidJumpDest artifact.code 2356 = true
   missJump : Decode.isValidJumpDest artifact.code 471 = true
 
 def context_env {artifact : ProgramArtifact} {fork : Fork} (template : State)
@@ -98,7 +98,7 @@ def zero_handled {artifact : ProgramArtifact} {fork : Fork}
   rw [if_pos hmodulus] at hm
   have hr := WindowTwentyOneReturn.run_zero ctx 0 (by decide) rfl
     (WindowTwentyOneInput.modulusWord input :: routeStack input) (by simp [routeStack])
-  let final := WindowTwentyOneReturn.returned ctx (UInt256.ofNat 2836) (UInt256.ofNat 0)
+  let final := WindowTwentyOneReturn.returned ctx (UInt256.ofNat 2832) (UInt256.ofNat 0)
     0 (WindowTwentyOneInput.modulusWord input :: routeStack input)
   have gas := ((lift paths.base hb (ec.transfer rfl rfl) rfl).trans
     (lift paths.modulus hm (ec.transfer rfl rfl) rfl)).trans
@@ -132,10 +132,10 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
 private def widthTail (input : ByteArray) : List UInt256 := (routeStack input).drop 3
 
 private theorem width_raw (template : State) (input : ByteArray)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 4841 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 4787 = true) :
     runInstructions WindowTwentyOneEntry.widthProgram (state template input (UInt256.ofNat 2175)) =
     some (state template input
-      (if (WindowTwentyOneInput.guardDiff input).toNat = 0 then UInt256.ofNat 4841 else UInt256.ofNat 2195)) := by
+      (if (WindowTwentyOneInput.guardDiff input).toNat = 0 then UInt256.ofNat 4787 else UInt256.ofNat 2195)) := by
   have h := WindowTwentyOneEntry.run_width (context template input)
     (UInt256.ofNat (baseSize input)) (UInt256.ofNat (exponentSize input)) (UInt256.ofNat (modulusSize input))
     (widthTail input) (by simp [widthTail, routeStack]) hjump
@@ -160,7 +160,7 @@ private theorem guard_zero_iff (input : ByteArray) :
 def steps_hit {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
-    GasSteps (state template input (UInt256.ofNat 2175)) (state template input (UInt256.ofNat 4841)) := by
+    GasSteps (state template input (UInt256.ofNat 2175)) (state template input (UInt256.ofNat 4787)) := by
   have h := width_raw template input (jump_env env paths.hitJump)
   rw [if_pos ((guard_zero_iff input).mpr hmatch)] at h
   exact lift paths.width h ((context_env template env input).transfer rfl rfl) rfl

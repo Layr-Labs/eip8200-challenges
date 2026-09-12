@@ -168,7 +168,7 @@ theorem sqLoopMem_frame' {s : State} {mem : ByteArray} {n bsize minv : Nat} (k :
 
 /-- The in-kernel square-loop step of the concrete instance: for `n ∈ {4, 8}`
 the kernel performs all `k` squares without leaving its row frame and returns to
-the caller's `after_sq` (pc 3243) (`Fast.SquareLoop.gasSteps_squareLoop`). -/
+the caller's `after_sq` (pc 3234) (`Fast.SquareLoop.gasSteps_squareLoop`). -/
 def subsSquareLoop (s : State) (n bsize mm minv : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -184,7 +184,7 @@ def subsSquareLoop (s : State) (n bsize mm minv : Nat)
       Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
       Model.FastRepresents mem 2048 n a → a < mm →
       Challenge.EvmProof.GasSteps (sqCall s mem ret tail)
-        (retTo s (SquareLoop.sqLoopMem s n k mem) (UInt256.ofNat 3231) tail) := by
+        (retTo s (SquareLoop.sqLoopMem s n k mem) (UInt256.ofNat 3222) tail) := by
   intro k ret tail mem a hfast hk hk16 hcap hcount hf hm ha ham
   -- `GasSteps` lives in `Type`, so the limb count has to be split by `cases`.
   cases n with

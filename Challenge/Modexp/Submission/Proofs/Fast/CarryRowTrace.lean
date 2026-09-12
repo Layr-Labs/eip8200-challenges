@@ -18,9 +18,9 @@ open Monpro CiosCached CiosCachedMacCore CarryRowModel
 theorem run_middleStore (s : State) (c bi pbi pa pb flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat) :
     runInstructions CarryRowPrograms.middleStore
-      (framed s (UInt256.ofNat 4327)
+      (framed s (UInt256.ofNat 4286)
         ([c,bi,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) =
-    some (framed {s with memory := midMem1 s.memory c} (UInt256.ofNat 4341)
+    some (framed {s with memory := midMem1 s.memory c} (UInt256.ofNat 4300)
       ([overflow s.memory c,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) := by
   have hc8 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hc9 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
@@ -39,9 +39,9 @@ theorem run_middleStore (s : State) (c bi pbi pa pb flag dst ret : UInt256)
 theorem run_tailStore (s : State) (c mu f pbi pa pb flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat) :
     runInstructions CarryRowPrograms.tailStore
-      (framed s (UInt256.ofNat 4615)
+      (framed s (UInt256.ofNat 4574)
         ([c,mu,f,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) =
-    some (framed {s with memory := tailCarry s.memory c f} (UInt256.ofNat 4634)
+    some (framed {s with memory := tailCarry s.memory c f} (UInt256.ofNat 4593)
       ([pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) := by
   have hc8 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hc9 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega

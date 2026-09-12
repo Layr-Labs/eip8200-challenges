@@ -66,7 +66,7 @@ opaque gasSteps_monproFullOf (L : RowLemmas) (E : EntryLemmas) (s : State) (mem 
       exact Monpro.monpro_tn_le_one s prepared pa pb p a b mm hn32 hpaFit hpbFit ha' hb' hm' ham
         hmpos hminv')
 
-/-- **The sqCP1m multiply kernel** (`MonPro(pa, pb) → pdst`): from the `mul entry` (pc 3920) to the
+/-- **The sqCP1m multiply kernel** (`MonPro(pa, pb) → pdst`): from the `mul entry` (pc 3881) to the
 return of the final subtraction, for every width (four and eight limbs through the kernel
 rows, every other width through the generic `MONPRO`).  Statement unchanged from the base. -/
 opaque gasSteps_monproFull (s : State) (mem : ByteArray) (pa pb p : Nat)

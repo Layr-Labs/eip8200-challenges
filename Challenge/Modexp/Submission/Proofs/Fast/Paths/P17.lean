@@ -4,14 +4,14 @@ set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
 /-! Basic-block instruction paths, group 17 (instructions 1816..1830).
 
-`RRSEL` (pc 2609) sits between the `RR` chain's selector and its multiply.
+`RRSEL` (pc 2605) sits between the `RR` chain's selector and its multiply.
 The selector is `R1` when the corresponding bit of `n` is clear, and `R1` is
 the Montgomery form of one, so that multiply is the identity; this block skips
 the call in that case and rejoins at pc 1615 with the stack untouched.
 
-* `blk1816` (idx 1816..1821, pc 2609..2980) — the `selOf = R1` test;
-* `blk1822` (idx 1822..1827, pc 2981..2632) — the `MONPRO` call frame;
-* `blk1828` (idx 1828..1830, pc 2633..2637) — the skip, straight to pc 1615. -/
+* `blk1816` (idx 1816..1821, pc 2605..2980) — the `selOf = R1` test;
+* `blk1822` (idx 1822..1827, pc 2977..2628) — the `MONPRO` call frame;
+* `blk1828` (idx 1828..1830, pc 2629..2633) — the skip, straight to pc 1615. -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast
 
@@ -19,7 +19,7 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 1816..1821, pc 2609..2980. -/
+/-- Instructions 1816..1821, pc 2605..2980. -/
 def blk1816 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1600 .JUMPDEST,
@@ -29,17 +29,17 @@ def blk1816 :
    pushAt 1604 2 1356,
    opAt 1605 .JUMPI]
 
-/-- Instructions 1822..1827, pc 2981..2632: the multiply's call frame. -/
+/-- Instructions 1822..1827, pc 2977..2628: the multiply's call frame. -/
 def blk1822 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1606 2 1356,
    pushAt 1607 2 6144,
    opAt 1608 (.Dup ⟨2, by decide⟩),
    pushAt 1609 2 6144,
-   pushAt 1610 2 3912,
+   pushAt 1610 2 3873,
    opAt 1611 .JUMP]
 
-/-- Instructions 1828..1830, pc 2633..2637: the skip. -/
+/-- Instructions 1828..1830, pc 2629..2633: the skip. -/
 def blk1828 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   []
