@@ -66,7 +66,7 @@ def gasSteps_squareFull (s : State) (mem : ByteArray) (p a mm : Nat)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
         (MachineState.readWord mem 9376).toNat + 1) % 2 ^ 256 = 0) :
     Challenge.EvmProof.GasSteps
-      (Cios2Dispatch.commonState s mem 4714 2048 2048 (UInt256.ofNat 2048) ret rest)
+      (Cios2Dispatch.commonState s mem 4710 2048 2048 (UInt256.ofNat 2048) ret rest)
       { s with pc := ret, stack := rest, memory := SquareResult.sqMem s mem (p + 2) } := by
   by_cases hfast : p + 2 = 4 ∨ p + 2 = 8
   · -- the square kernel
@@ -77,7 +77,7 @@ def gasSteps_squareFull (s : State) (mem : ByteArray) (p a mm : Nat)
       (readWord_mpZeroed s _ (p + 2) addr hn32 hd).trans
         (read_inputMemory_outside mem 2048 (p + 2) addr hd)
     -- setup: row head 0 of the square rows
-    have g1 := Cios2Dispatch.gasSteps_commonSetupInput s mem (UInt256.ofNat 4714) 2048 2048 (p + 2)
+    have g1 := Cios2Dispatch.gasSteps_commonSetupInput s mem (UInt256.ofNat 4710) 2048 2048 (p + 2)
       (UInt256.ofNat 2048) ret rest hcap hrun hcode hfork hnp hact hfast (by omega) (by decide)
       (by omega) hcds hs32 hml Cios2Dispatch.jumpDestSqRow'
     rw [l1Target_eq_sqEnt (p + 2) hfast] at g1
@@ -138,7 +138,7 @@ def gasSteps_squareFull (s : State) (mem : ByteArray) (p a mm : Nat)
     refine (g1.trans (g2.trans g3)).cast rfl ?_
     rw [csReturnedState_eq, sqMem_of_fast s mem (p + 2) hfast, word2048_toNat]
   · -- the generic MONPRO fallback
-    have g1 := Cios2Dispatch.gasSteps_commonFallbackOfWidth s mem 4714 2048 2048 (p + 2)
+    have g1 := Cios2Dispatch.gasSteps_commonFallbackOfWidth s mem 4710 2048 2048 (p + 2)
       (UInt256.ofNat 2048) ret rest (by omega) hrun hcode hfork hnp hact hn32 hs32
       (fun h => hfast (Or.inl h)) (fun h => hfast (Or.inr h))
     have g2 := Monpro.gasSteps_monproCsub s mem 2048 2048 (p + 2) (UInt256.ofNat 2048) ret rest

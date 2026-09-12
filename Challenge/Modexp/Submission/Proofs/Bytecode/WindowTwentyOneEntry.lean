@@ -62,19 +62,19 @@ theorem run_width_value (template : State) (baseSize exponentSize modulusSize : 
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod]
 
-def widthProgram : List Instr := widthValueProgram ++ testProgram (UInt256.ofNat 4767)
+def widthProgram : List Instr := widthValueProgram ++ testProgram (UInt256.ofNat 4763)
 
 theorem run_width (template : State) (baseSize exponentSize modulusSize : UInt256)
     (tail : List UInt256) (htail : tail.length ≤ 997)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 4767 = true) :
+    (htarget : Decode.isValidJumpDest template.executionEnv.code 4763 = true) :
     runInstructions widthProgram
       (framed template (UInt256.ofNat 2216) ([baseSize, exponentSize, modulusSize] ++ tail)) =
     some (framed template
       (if (widthDiff baseSize exponentSize modulusSize).toNat = 0
-        then UInt256.ofNat 4767 else UInt256.ofNat 2236)
+        then UInt256.ofNat 4763 else UInt256.ofNat 2236)
       ([baseSize, exponentSize, modulusSize] ++ tail)) := by
   have hv := run_width_value template baseSize exponentSize modulusSize tail htail
-  have ht := run_test template (UInt256.ofNat 2231) (UInt256.ofNat 4767)
+  have ht := run_test template (UInt256.ofNat 2231) (UInt256.ofNat 4763)
     (widthDiff baseSize exponentSize modulusSize) ([baseSize, exponentSize, modulusSize] ++ tail)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) htarget
   have both := runInstructions_append_some _ _ _ _ _ hv ht

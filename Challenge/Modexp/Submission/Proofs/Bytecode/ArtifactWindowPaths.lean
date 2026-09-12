@@ -63,12 +63,12 @@ private def nine_zeroReturn :
   WindowTwentyOneSlice.block allWellFormed 2222 7 2870 WindowTwentyOneReturn.zeroProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-private def fermat_prime : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4767 FermatProgram.primeProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3642 14 4767 FermatProgram.primeProgram (by decide) (by rfl) (by rfl) (by decide)
-private def fermat_exponent : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4820 FermatProgram.exponentProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3656 9 4820 FermatProgram.exponentProgram (by decide) (by rfl) (by rfl) (by decide)
-private def fermat_result : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4832 FermatProgram.returnProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3665 16 4832 FermatProgram.returnProgram (by decide) (by rfl) (by rfl) (by decide)
+private def fermat_prime : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4763 FermatProgram.primeProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3654 14 4763 FermatProgram.primeProgram (by decide) (by rfl) (by rfl) (by decide)
+private def fermat_exponent : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4816 FermatProgram.exponentProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3668 9 4816 FermatProgram.exponentProgram (by decide) (by rfl) (by rfl) (by decide)
+private def fermat_result : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4828 FermatProgram.returnProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3677 16 4828 FermatProgram.returnProgram (by decide) (by rfl) (by rfl) (by decide)
 def fermatPaths : FermatProgram.Paths submissionArtifact .Osaka where
   prime := fermat_prime
   exponent := fermat_exponent
@@ -87,7 +87,7 @@ def twentyOnePaths : WindowTwentyOneGasRoute.Paths submissionArtifact .Osaka whe
   finish := nine_finish
   zeroReturn := nine_zeroReturn
   hitJump := by
-    have h := isValidJumpDest_index 3642 (by rfl)
+    have h := isValidJumpDest_index 3654 (by rfl)
     exact h
   zeroJump := by
     have h := isValidJumpDest_index 2222 (by rfl)

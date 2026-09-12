@@ -52,7 +52,7 @@ theorem run_core (template : State) (base modulus exponentOffset modulusOffset :
       (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat) rest) := by
   let exponent := MachineState.readWord template.executionEnv.calldata exponentOffset.toNat
   have ht := WindowTwentyOneTableBuild.run_all template base modulus exponentOffset rest hrest he
-  have hi := WindowTwentyOneInit.run_enter template base modulus exponent modulusOffset rest hrest hm hmodulus hjump
+  have hi := WindowTwentyOneInit.run_enter template base modulus exponent modulusOffset rest hrest hm hmodulus
   have hl := WindowTwentyOneLoop.run_three template base modulus exponent rest hrest hjump
   have hr := run_finish template base modulus exponent rest hrest
   have hi' : runInstructions WindowTwentyOneInit.program

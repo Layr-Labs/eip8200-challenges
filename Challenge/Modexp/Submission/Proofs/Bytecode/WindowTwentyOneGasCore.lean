@@ -62,7 +62,7 @@ def steps_core {artifact : ProgramArtifact} {fork : Fork}
     (s := WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 2260) base modulus rest)
     (env.transfer rfl rfl) rfl
     (WindowTwentyOneTableBuild.run_all template base modulus exponentOffset rest hrest he)
-  have hi := WindowTwentyOneInit.run_enter template base modulus exponent modulusOffset rest hrest hm hmodulus hjump
+  have hi := WindowTwentyOneInit.run_enter template base modulus exponent modulusOffset rest hrest hm hmodulus
   have hi' : runInstructions WindowTwentyOneInit.program
       (WindowTwentyOneTable.framed template (UInt256.ofNat 2376) base modulus 16 ([base, exponent] ++ rest)) =
       some (WindowTwentyOneLoop.loopState template base modulus exponent 0 rest) := by

@@ -64,54 +64,25 @@ def macFinishProgram (tl ts : UInt256) : List Instr :=
    .push 2 tl, .op .MLOAD, .op .ADD, .op (.Dup ⟨0, by decide⟩),
    .push 2 ts, .op .MSTORE, .op .LT, .op .ADD]
 
-/-- Combine both carry tests while storing the low word before the final carry.
-Ported from terrapinelf's promoted submission 8c2efe8b (commit c8f510f); same 26 bytes
-as `macProductProgram`'s tail plus `macFinishProgram`, one instruction fewer, -3 gas. -/
-def macFusedPostProgram (tl ts : UInt256) : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
-   .op .GT,
-   .op .SUB,
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
-   .op .ADD,
-   .push 3 tl,
-   .op .MLOAD,
-   .op (.Dup ⟨1, by decide⟩),
-   .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .push 2 ts,
-   .op .MSTORE,
-   .op (.Dup ⟨1, by decide⟩),
-   .op .GT,
-   .op (.Swap ⟨3, by decide⟩),
-   .op .GT,
-   .op .SUB,
-   .op .SUB,
-   .op .ADD]
-
-def macFusedProgram (tl ts : UInt256) : List Instr :=
-  macProductProgram.take 6 ++ macFusedPostProgram tl ts
-
 /-- Load at the cached base plus an immediate byte offset. -/
 def l1LoadProgram (off : UInt256) : List Instr :=
   [.push 1 off, .op (.Dup ⟨4, by decide⟩), .op .ADD,
    .op .MLOAD, .op (.Dup ⟨8, by decide⟩)]
 
 def l1Program (off t : UInt256) : List Instr :=
-  l1LoadProgram off ++ macFusedProgram t t
+  (l1LoadProgram off ++ macProductProgram) ++ macFinishProgram t t
 
 def l1FirstProgram (off t : UInt256) : List Instr :=
   (l1LoadProgram off ++ macZeroProductProgram) ++ macFinishProgram t t
 
 def l1LastProgram (t : UInt256) : List Instr :=
-  [.op (.Dup ⟨3, by decide⟩), .op .MLOAD, .op (.Dup ⟨8, by decide⟩)] ++
-    macFusedProgram t t
+  ([.op (.Dup ⟨3, by decide⟩), .op .MLOAD, .op (.Dup ⟨8, by decide⟩)] ++
+    macProductProgram) ++ macFinishProgram t t
 
 /-- The width is one for positive modulus offsets, zero for the final cell. -/
 def l2Program (w : Fin 33) (x tl ts : UInt256) : List Instr :=
-  [.push w x, .op .MLOAD, .op (.Dup ⟨9, by decide⟩)] ++
-    macFusedProgram tl ts
+  ([.push w x, .op .MLOAD, .op (.Dup ⟨9, by decide⟩)] ++
+    macProductProgram) ++ macFinishProgram tl ts
 
 def entryProgram : List Instr :=
   [
@@ -124,7 +95,7 @@ def entryProgram : List Instr :=
    .op .EQ,
    .push 1 153,
    .op .MUL,
-   .push 2 4072,
+   .push 2 4068,
    .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
    .push 3 281,
@@ -220,7 +191,7 @@ def tailProgram : List Instr :=
    .op .POP,
    .op .POP,
    .op .POP,
-   .push 2 4671,
+   .push 2 4667,
    .op .JUMP]
 
 def l1DispatchProgram : List Instr :=
