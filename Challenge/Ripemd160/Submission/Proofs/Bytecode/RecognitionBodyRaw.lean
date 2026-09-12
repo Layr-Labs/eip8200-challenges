@@ -1,4 +1,3 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.RawExpressionAC
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionRecurrence
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
 
@@ -47,15 +46,15 @@ def normalTemplate : List Instr := [
   .push ⟨1, by decide⟩ (UInt256.ofNat 32),
   .op .ADD,
   .op (.Swap ⟨0, by decide⟩),
-  .op (.Dup ⟨6, by decide⟩),
-  .op (.Dup ⟨3, by decide⟩),
-  .op .AND,
-  .op (.Dup ⟨6, by decide⟩),
-  .op .ADD,
+  .op (.Dup ⟨7, by decide⟩),
   .op (.Dup ⟨3, by decide⟩),
   .op .NOT,
+  .op .AND,
+  .op (.Dup ⟨6, by decide⟩),
+  .op (.Dup ⟨4, by decide⟩),
   .op (.Dup ⟨9, by decide⟩),
   .op .AND,
+  .op .ADD,
   .op .XOR,
   .op (.Swap ⟨2, by decide⟩),
   .op .POP]
@@ -78,7 +77,7 @@ theorem run_normal (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
     advance, runInstrSeq, Stepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hcap,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals simp only [hadd_eq, hmul_eq, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
+  all_goals simp only [hadd_eq, hmul_eq, land_comm, xor_comm, add_comm, mul_comm]
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 
 def boundaryTemplate : List Instr := [
@@ -106,17 +105,17 @@ def boundaryTemplate : List Instr := [
   .op .XOR,
   .op .XOR,
   .op .OR,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 43),
-  .op (.Dup ⟨9, by decide⟩),
-  .op .MUL,
+  .op (.Dup ⟨7, by decide⟩),
   .op (.Dup ⟨3, by decide⟩),
-  .op (.Dup ⟨8, by decide⟩),
-  .op .AND,
-  .op .ADD,
-  .op (.Dup ⟨8, by decide⟩),
-  .op (.Dup ⟨4, by decide⟩),
   .op .NOT,
   .op .AND,
+  .op (.Dup ⟨9, by decide⟩),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 43),
+  .op .MUL,
+  .op (.Dup ⟨4, by decide⟩),
+  .op (.Dup ⟨9, by decide⟩),
+  .op .AND,
+  .op .ADD,
   .op .XOR,
   .op (.Swap ⟨2, by decide⟩),
   .op .POP,
@@ -152,7 +151,7 @@ theorem run_boundary (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
     advance, correction, PatternedSwar.straddleAdd, runInstrSeq, Stepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals simp only [hadd_eq, hmul_eq, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
+  all_goals simp only [hadd_eq, hmul_eq, land_comm, xor_comm, add_comm, mul_comm]
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 
 #print axioms run_normal
