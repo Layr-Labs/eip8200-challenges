@@ -145,7 +145,7 @@ private def gasSteps_fallback_short (input : ByteArray) (hsize : input.size = 25
 theorem correct : Correct submissionBytecode := by
   intro input hfit
   by_cases habc : input = AbcInputData.abcInput
-  · exact AbcArm.correct_abc input hfit habc
+  · exact StackCorrect.correct input hfit
       (Patterned128Entry.gasSteps_abc_entry input hfit habc)
   by_cases h256 : input.size = 376
   · by_cases href : KnownInputCompactState.referenceWord input =
