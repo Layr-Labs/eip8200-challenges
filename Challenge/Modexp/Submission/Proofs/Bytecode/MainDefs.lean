@@ -61,7 +61,7 @@ def headerLoadPath :
 precondition. The jump preserves the three loaded length words. -/
 def headerCheckPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 820 2 1067, opAt 821 .POP]
+  [pushAt 820 2 1067, opAt 821 .JUMP]
 
 /-- Reachable instructions from byte zero through optimized header parsing,
 retained as a single audit-friendly path. -/
