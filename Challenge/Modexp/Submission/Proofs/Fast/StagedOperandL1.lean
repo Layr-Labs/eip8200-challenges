@@ -1,5 +1,4 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedL1
-import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedFused
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedRowFrames
 import Challenge.Modexp.Submission.Proofs.Fast.StagedOperandSnapshot
 import Challenge.Modexp.Submission.Proofs.Fast.SquareModel
@@ -34,7 +33,7 @@ def loadProgram (off : UInt256) : List Instr :=
   [.push 2 (UInt256.ofNat 8960 + off), .op .MLOAD, .op (.Dup ⟨8, by decide⟩)]
 
 def l1Program (off t : UInt256) : List Instr :=
-  loadProgram off ++ CiosCached.macFusedProgram t t
+  (loadProgram off ++ L2.productProgram) ++ L2.finishProgram t t
 
 /-- One uniform 38-byte first-loop block, including its leading `JUMPDEST`. -/
 def stepProgram (off t : UInt256) : List Instr :=
@@ -111,14 +110,19 @@ theorem run_l1 (template : State) (pc : UInt256) (q : MacState)
     pbEnd flag destination returnPC rest hrest hA
   rw [show MachineState.readWord st.memory (UInt256.ofNat 8960 + off).toNat =
     MachineState.readWord q.memory (pa + 32*(n-1-j)) from hsread] at hl
-  have hf := CiosCachedFused.run_fused st (pc + UInt256.ofNat 5)
+  have hp := L2.run_product st (pc + UInt256.ofNat 5)
+    (MachineState.readWord q.memory (pa + 32*(n-1-j))) bi q.carry
+    ([pbi, hd, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)
+    (by simp only [List.length_append, List.length_cons, List.length_nil]; omega)
+  have hf := L2.run_finish st (advancePC 18 (pc + UInt256.ofNat 5))
     (MachineState.readWord q.memory (pa + 32*(n-1-j))) bi q.carry t t
     ([pbi, hd, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) hT hT
-  have hall := runInstructions_append_some _ _ _ _ _ hl hf
-  have hpc : (pc + UInt256.ofNat 5) + UInt256.ofNat 32 =
+  have both := runInstructions_append_some _ _ _ _ _ hl hp
+  have hall := runInstructions_append_some _ _ _ _ _ both hf
+  have hpc : advancePC 18 (pc + UInt256.ofNat 5) + UInt256.ofNat 14 =
       pc + UInt256.ofNat 37 := by
-    simp [word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
+    simp [advancePC, succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
   simpa only [l1Program, st, qState, framed, SquareModel.l1StepOn, ht, hpc,
     List.cons_append, List.nil_append] using hall
 

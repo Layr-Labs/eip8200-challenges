@@ -30,31 +30,31 @@ def environment (s : State)
     hcode, hfork, hrun, hnp⟩
 
 def l1Block1 : Block Artifact.submissionArtifact .Osaka 4072 (stepProgram 192 8448) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3073 31 4072 (stepProgram 192 8448)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3073 32 4072 (stepProgram 192 8448)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block2 : Block Artifact.submissionArtifact .Osaka 4110 (stepProgram 160 8416) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3104 31 4110 (stepProgram 160 8416)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3105 32 4110 (stepProgram 160 8416)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block3 : Block Artifact.submissionArtifact .Osaka 4148 (stepProgram 128 8384) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3135 31 4148 (stepProgram 128 8384)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3137 32 4148 (stepProgram 128 8384)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block4 : Block Artifact.submissionArtifact .Osaka 4186 (stepProgram 96 8352) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3166 31 4186 (stepProgram 96 8352)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3169 32 4186 (stepProgram 96 8352)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block5 : Block Artifact.submissionArtifact .Osaka 4224 (stepProgram 64 8320) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3197 31 4224 (stepProgram 64 8320)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3201 32 4224 (stepProgram 64 8320)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block6 : Block Artifact.submissionArtifact .Osaka 4262 (stepProgram 32 8288) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3228 31 4262 (stepProgram 32 8288)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3233 32 4262 (stepProgram 32 8288)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block7 : Block Artifact.submissionArtifact .Osaka 4300 (stepProgram 0 8256) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3259 31 4300 (stepProgram 0 8256)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3265 32 4300 (stepProgram 0 8256)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-! ## Jump destinations of the chain entries (block `k` for `k = 1..7`, and the
@@ -63,19 +63,19 @@ middle `JUMPDEST` = entry `k = 8`) -/
 theorem jumpDest4068 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4072 = true :=
   Artifact.isValidJumpDest_index 3073 (by rfl)
 theorem jumpDest4106 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4110 = true :=
-  Artifact.isValidJumpDest_index 3104 (by rfl)
+  Artifact.isValidJumpDest_index 3105 (by rfl)
 theorem jumpDest4144 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4148 = true :=
-  Artifact.isValidJumpDest_index 3135 (by rfl)
+  Artifact.isValidJumpDest_index 3137 (by rfl)
 theorem jumpDest4182 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4186 = true :=
-  Artifact.isValidJumpDest_index 3166 (by rfl)
+  Artifact.isValidJumpDest_index 3169 (by rfl)
 theorem jumpDest4220 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4224 = true :=
-  Artifact.isValidJumpDest_index 3197 (by rfl)
+  Artifact.isValidJumpDest_index 3201 (by rfl)
 theorem jumpDest4258 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4262 = true :=
-  Artifact.isValidJumpDest_index 3228 (by rfl)
+  Artifact.isValidJumpDest_index 3233 (by rfl)
 theorem jumpDest4296 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4300 = true :=
-  Artifact.isValidJumpDest_index 3259 (by rfl)
+  Artifact.isValidJumpDest_index 3265 (by rfl)
 theorem jumpDest4334 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4338 = true :=
-  Artifact.isValidJumpDest_index 3290 (by rfl)
+  Artifact.isValidJumpDest_index 3297 (by rfl)
 
 /-- Every chain entry `4068 + 38(k-1)`, `1 ≤ k ≤ 8`, is a valid jump destination. -/
 theorem jumpDest_l1Entry (k : Nat) (hk1 : 1 ≤ k) (hk8 : k ≤ 8) :
