@@ -11,13 +11,13 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCorePaired69
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof PairedLaneUInt256Bridge
 open Paired80WordRound Paired80WordRotate Paired80WordBoolean StaggerCoreCommon
 def input (memory : ByteArray) (q right : WordLane) (k : UInt256) : StaggerRaw.Input :=
-  ⟨word memory (.d) q right k, word memory (.pair) q right k, word memory (.upper) q right k, word memory (.e) q right k, word memory (.c) q right k, word memory (.a) q right k, word memory (.k) q right k, word memory (.b) q right k, word memory (.factor) q right k, word memory (.lower) q right k, word memory (.cache 140) q right k, word memory (.cache 190) q right k, word memory (.cache 310) q right k, word memory (.cache 350) q right k, word memory (.cache 500) q right k, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
+  ⟨word memory (.d) q right k, word memory (.pair) q right k, word memory (.upper) q right k, word memory (.e) q right k, word memory (.c) q right k, word memory (.a) q right k, word memory (.k) q right k, word memory (.b) q right k, word memory (.factor) q right k, word memory (.lower) q right k, word memory (.cache 140) q right k, word memory (.cache 190) q right k, word memory (.cache 310) q right k, word memory (.cache 350) q right k, word memory (.cache 500) q right k, word memory (.cache 230) q right k, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
 def eval (memory : ByteArray) (q : WordLane) : WordLane :=
   StaggerAlgorithm.step 69 (MachineState.readWord memory 20) q
 
 theorem output_eq (memory : ByteArray) (q right : WordLane) (rho : List UInt256) :
     StaggerRawPaired69.outputStack memory (input memory q right (StaggerAlgorithm.physicalKey 68)) rho =
-      stack memory [ .d, .pair, .upper, .a, .b, .e, .k, .c, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] (eval memory q) right (StaggerAlgorithm.physicalKey 69) rho := by
+      stack memory [ .d, .pair, .upper, .a, .b, .e, .k, .c, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500, .cache 230 ] (eval memory q) right (StaggerAlgorithm.physicalKey 69) rho := by
   have hkb : StaggerAlgorithm.physicalKey 68 = UInt256.ofNat 2840853838 := by decide
   have hka : StaggerAlgorithm.physicalKey 69 = UInt256.ofNat 2840853838 := by decide
   have hm : StaggerAlgorithm.mode 69 = 4 := by decide
@@ -46,8 +46,8 @@ def gasSteps (s : State) (q right : WordLane) (rho : List UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4140, stack := stack s.memory [ .d, .pair, .upper, .e, .c, .a, .k, .b, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] q right (StaggerAlgorithm.physicalKey 68) rho}
-      {s with pc := UInt256.ofNat 4178, stack := stack s.memory [ .d, .pair, .upper, .a, .b, .e, .k, .c, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] (eval s.memory q) right (StaggerAlgorithm.physicalKey 69) rho} := by
+    GasSteps {s with pc := UInt256.ofNat 4151, stack := stack s.memory [ .d, .pair, .upper, .e, .c, .a, .k, .b, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500, .cache 230 ] q right (StaggerAlgorithm.physicalKey 68) rho}
+      {s with pc := UInt256.ofNat 4189, stack := stack s.memory [ .d, .pair, .upper, .a, .b, .e, .k, .c, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500, .cache 230 ] (eval s.memory q) right (StaggerAlgorithm.physicalKey 69) rho} := by
   have g := StaggerRawPaired69.gasSteps s (input s.memory q right (StaggerAlgorithm.physicalKey 68))
     rho hstack hrun hactive hcode hfork hnp
   rw [output_eq] at g

@@ -12,10 +12,10 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCorePack
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof PairedLaneUInt256Bridge
 open Paired80WordRound Paired80WordRotate Paired80WordBoolean StaggerCoreCommon
 def input (memory : ByteArray) (q right : WordLane) (k : UInt256) : StaggerRaw.Input :=
-  ⟨word memory (.d) q right k, word memory (.k) q right k, word memory (.c) q right k, word memory (.b) q right k, word memory (.e) q right k, word memory (.a) q right k, word memory (.factor) q right k, word memory (.lower) q right k, word memory (.cache 140) q right k, word memory (.cache 190) q right k, word memory (.cache 310) q right k, word memory (.cache 350) q right k, word memory (.cache 500) q right k, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
+  ⟨word memory (.d) q right k, word memory (.k) q right k, word memory (.c) q right k, word memory (.b) q right k, word memory (.e) q right k, word memory (.a) q right k, word memory (.factor) q right k, word memory (.lower) q right k, word memory (.cache 140) q right k, word memory (.cache 190) q right k, word memory (.cache 310) q right k, word memory (.cache 350) q right k, word memory (.cache 500) q right k, word memory (.cache 230) q right k, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
 theorem output_eq (memory : ByteArray) (q right : WordLane) (rho : List UInt256) :
     StaggerRawPack.outputStack memory (input memory q right (UInt256.ofNat 1352829926)) rho =
-      stack memory [ .pair, .upper, .e, .b, .a, .d, .c, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] (StaggerCoreModel.pair (StaggerCoreModel.initial memory) q) (right) (UInt256.ofNat 0) rho := by
+      stack memory [ .pair, .upper, .e, .b, .a, .d, .c, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500, .cache 230 ] (StaggerCoreModel.pair (StaggerCoreModel.initial memory) q) (right) (UInt256.ofNat 0) rho := by
   simp only [StaggerRawPack.outputStack, input, stack, List.map_cons, List.map_nil,
     List.cons_append, List.nil_append, StaggerCoreCommon.word,
     StaggerCoreModel.initial, StaggerCoreModel.pair, StaggerCoreModel.pairWord, StaggerCoreModel.left,
@@ -35,8 +35,8 @@ def gasSteps (s : State) (q right : WordLane) (rho : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 1076, stack := stack s.memory [ .d, .k, .c, .b, .e, .a, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] q right (UInt256.ofNat 1352829926) rho}
-      {s with pc := UInt256.ofNat 1130, stack := stack s.memory [ .pair, .upper, .e, .b, .a, .d, .c, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] (StaggerCoreModel.pair (StaggerCoreModel.initial s.memory) q) (right) (UInt256.ofNat 0) rho} := by
+    GasSteps {s with pc := UInt256.ofNat 1093, stack := stack s.memory [ .d, .k, .c, .b, .e, .a, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500, .cache 230 ] q right (UInt256.ofNat 1352829926) rho}
+      {s with pc := UInt256.ofNat 1147, stack := stack s.memory [ .pair, .upper, .e, .b, .a, .d, .c, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500, .cache 230 ] (StaggerCoreModel.pair (StaggerCoreModel.initial s.memory) q) (right) (UInt256.ofNat 0) rho} := by
   have h := StaggerRawPack.gasSteps s (input s.memory q right (UInt256.ofNat 1352829926)) rho hs hr ha hcode hfork hnp
   rw [output_eq] at h
   exact h

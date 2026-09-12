@@ -16,9 +16,9 @@ opaque gasSteps_prepare_hit (s : State) (input : ByteArray) (i : Nat)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hhit : input.size = DriverTrace.blockOffset i) :
     GasSteps (DriverTrace.compressEntry s input i)
-      {scheduledState s i with pc := UInt256.ofNat 926, stack := (driverRest input i)} := by
+      {scheduledState s i with pc := UInt256.ofNat 940, stack := (UInt256.ofNat 483 :: driverRest input i)} := by
   let q := scheduledState s i
-  let rho := driverRest input i
+  let rho := UInt256.ofNat 483 :: driverRest input i
   have hfit256 : s.executionEnv.calldata.size < 2^256 := by
     rw [ctx.calldata]
     exact calldata_lt_uint256 input hfit
@@ -26,10 +26,10 @@ opaque gasSteps_prepare_hit (s : State) (input : ByteArray) (i : Nat)
     rw [ctx.calldata, blockOffsetWord_toNat input hfit i hi]
     exact hhit
   have ghit := StaggerDispatch.gasSteps_hit s (DriverTrace.messageOffsetWord i)
-    (DriverTrace.blockOffsetWord i) [Padding.paddedWord input]
+    (UInt256.ofNat 483) (DriverTrace.blockOffsetWord i) [Padding.paddedWord input]
     (by simp) hrun hfit256 heq hcode hfork hnp
-  have gtouch := StaggerDispatch.gasSteps_prefix s (DriverTrace.blockOffsetWord i) (messagePointer i)
-    [Padding.paddedWord input] (by simp) hrun
+  have gtouch := StaggerDispatch.gasSteps_prefix s (UInt256.ofNat 483) (messagePointer i)
+    (driverRest input i) (by simp [driverRest]) hrun
     hcode hfork hnp
   let a : State := {s with activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat (messagePointer i))}
   have ha : a = s := by
@@ -39,8 +39,8 @@ opaque gasSteps_prepare_hit (s : State) (input : ByteArray) (i : Nat)
       {a with pc := UInt256.ofNat 406, stack := rho} := by
     rw [ha]
     exact ghit.trans gtouch
-  have gbody := StaggerSetupSites.gasSteps_pad a (DriverTrace.blockOffsetWord i) [Padding.paddedWord input]
-    (by simp) hrun (scheduled_active s input i hfit hi) hfit256 hcode hfork hnp
+  have gbody := StaggerSetupSites.gasSteps_pad a (UInt256.ofNat 483) (driverRest input i)
+    (by simp [driverRest]) hrun (scheduled_active s input i hfit hi) hfit256 hcode hfork hnp
   have hmem : StaggerTablePad.resultMemory a.memory
       (UInt256.ofNat a.executionEnv.calldata.size) = q.memory :=
     scheduled_memory_calldata s input i h hfit hi ctx hhit
@@ -62,7 +62,7 @@ opaque gasSteps_prepare_miss (s : State) (input : ByteArray) (i : Nat)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hmiss : input.size ≠ DriverTrace.blockOffset i) :
     GasSteps (DriverTrace.compressEntry s input i)
-      {scheduledState s i with pc := UInt256.ofNat 926, stack := (driverRest input i)} := by
+      {scheduledState s i with pc := UInt256.ofNat 940, stack := (UInt256.ofNat 483 :: driverRest input i)} := by
   have hfit256 : s.executionEnv.calldata.size < 2^256 := by
     rw [ctx.calldata]
     exact calldata_lt_uint256 input hfit
@@ -70,10 +70,10 @@ opaque gasSteps_prepare_miss (s : State) (input : ByteArray) (i : Nat)
     rw [ctx.calldata, blockOffsetWord_toNat input hfit i hi]
     exact hmiss
   have gmiss := StaggerDispatch.gasSteps_miss s (DriverTrace.messageOffsetWord i)
-    (DriverTrace.blockOffsetWord i) [Padding.paddedWord input]
+    (UInt256.ofNat 483) (DriverTrace.blockOffsetWord i) [Padding.paddedWord input]
     (by simp) hrun hfit256 hne hcode hfork hnp
-  have gnormal := StaggerSetupSites.gasSteps_normal s (DriverTrace.blockOffsetWord i)
-    (messagePointer i) [Padding.paddedWord input] (by simp) hrun
+  have gnormal := StaggerSetupSites.gasSteps_normal s (UInt256.ofNat 483)
+    (messagePointer i) (driverRest input i) (by simp [driverRest]) hrun
     (messagePointer_lower i) (messagePointer_bound input hfit i hi) hcode hfork hnp
   exact gmiss.trans gnormal
 
@@ -85,7 +85,7 @@ opaque gasSteps_prepare (s : State) (input : ByteArray) (i : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (DriverTrace.compressEntry s input i)
-      {scheduledState s i with pc := UInt256.ofNat 926, stack := (driverRest input i)} := by
+      {scheduledState s i with pc := UInt256.ofNat 940, stack := (UInt256.ofNat 483 :: driverRest input i)} := by
   by_cases hhit : input.size = DriverTrace.blockOffset i
   · exact gasSteps_prepare_hit s input i h hfit hi ctx hcode hfork hrun hnp hhit
   · exact gasSteps_prepare_miss s input i h hfit hi ctx hcode hfork hrun hnp hhit

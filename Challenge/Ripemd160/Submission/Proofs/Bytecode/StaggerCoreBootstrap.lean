@@ -15,7 +15,7 @@ def input (memory : ByteArray) (q right : WordLane) (k : UInt256) : StaggerRaw.I
   ⟨UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
 theorem output_eq (memory : ByteArray) (q right : WordLane) (rho : List UInt256) :
     StaggerRawBootstrap.outputStack memory (input memory q right (UInt256.ofNat 1352829926)) rho =
-      stack memory [ .k, .a, .b, .c, .d, .e, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] (StaggerCoreModel.initial memory) (right) (UInt256.ofNat 1352829926) rho := by
+      stack memory [ .k, .a, .b, .c, .d, .e, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500, .cache 230 ] (StaggerCoreModel.initial memory) (right) (UInt256.ofNat 1352829926) rho := by
   simp only [StaggerRawBootstrap.outputStack, input, stack, List.map_cons, List.map_nil,
     List.cons_append, List.nil_append, StaggerCoreCommon.word,
     StaggerCoreModel.initial, StaggerCoreModel.pair, StaggerCoreModel.pairWord, StaggerCoreModel.left,
@@ -35,8 +35,8 @@ def gasSteps (s : State) (q right : WordLane) (rho : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 926, stack := stack s.memory [  ] q right (UInt256.ofNat 1352829926) rho}
-      {s with pc := UInt256.ofNat 981, stack := stack s.memory [ .k, .a, .b, .c, .d, .e, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] (StaggerCoreModel.initial s.memory) (right) (UInt256.ofNat 1352829926) rho} := by
+    GasSteps {s with pc := UInt256.ofNat 940, stack := stack s.memory [  ] q right (UInt256.ofNat 1352829926) rho}
+      {s with pc := UInt256.ofNat 998, stack := stack s.memory [ .k, .a, .b, .c, .d, .e, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500, .cache 230 ] (StaggerCoreModel.initial s.memory) (right) (UInt256.ofNat 1352829926) rho} := by
   have h := StaggerRawBootstrap.gasSteps s (input s.memory q right (UInt256.ofNat 1352829926)) rho hs hr ha hcode hfork hnp
   rw [output_eq] at h
   exact h

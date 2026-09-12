@@ -12,7 +12,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCoreTail
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof PairedLaneUInt256Bridge
 open Paired80WordRound Paired80WordRotate Paired80WordBoolean StaggerCoreCommon
 def input (memory : ByteArray) (q right : WordLane) (k : UInt256) : StaggerRaw.Input :=
-  ⟨word memory (.d) q right k, word memory (.b) q right k, word memory (.e) q right k, word memory (.a) q right k, word memory (.k) q right k, word memory (.c) q right k, word memory (.er) q right k, word memory (.cr) q right k, word memory (.ar) q right k, word memory (.dr) q right k, word memory (.br) q right k, word memory (.factor) q right k, word memory (.lower) q right k, word memory (.cache 140) q right k, word memory (.cache 190) q right k, word memory (.cache 310) q right k, word memory (.cache 350) q right k, word memory (.cache 500) q right k, UInt256.ofNat 0, UInt256.ofNat 0⟩
+  ⟨word memory (.d) q right k, word memory (.b) q right k, word memory (.e) q right k, word memory (.a) q right k, word memory (.k) q right k, word memory (.c) q right k, word memory (.er) q right k, word memory (.cr) q right k, word memory (.ar) q right k, word memory (.dr) q right k, word memory (.br) q right k, word memory (.factor) q right k, word memory (.lower) q right k, word memory (.cache 140) q right k, word memory (.cache 190) q right k, word memory (.cache 310) q right k, word memory (.cache 350) q right k, word memory (.cache 500) q right k, word memory (.cache 230) q right k, UInt256.ofNat 0⟩
 theorem output_eq (memory : ByteArray) (q right : WordLane) (rho : List UInt256) :
     StaggerRawTail.outputStack memory (input memory q right (UInt256.ofNat 2840853838)) rho =
       stack memory [  ] (q) (right) (UInt256.ofNat 0) rho := by
@@ -44,8 +44,8 @@ def gasSteps (s : State) (q right : WordLane) (rho : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4578, stack := stack s.memory [ .d, .b, .e, .a, .k, .c, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] q right (UInt256.ofNat 2840853838) rho}
-      {s with pc := UInt256.ofNat 4675, stack := stack s.memory [  ] (q) (right) (UInt256.ofNat 0) rho, memory := StaggerCoreModel.tailMemory s.memory q right} := by
+    GasSteps {s with pc := UInt256.ofNat 4579, stack := stack s.memory [ .d, .b, .e, .a, .k, .c, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500, .cache 230 ] q right (UInt256.ofNat 2840853838) rho}
+      {s with pc := UInt256.ofNat 4677, stack := stack s.memory [  ] (q) (right) (UInt256.ofNat 0) rho, memory := StaggerCoreModel.tailMemory s.memory q right} := by
   have h := StaggerRawTail.gasSteps s (input s.memory q right (UInt256.ofNat 2840853838)) rho hs hr ha hcode hfork hnp
   rw [output_eq, memory_eq] at h
   exact h
