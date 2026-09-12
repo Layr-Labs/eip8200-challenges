@@ -36,7 +36,7 @@ def resultMemory (memory : ByteArray) (q : WordLane) : ByteArray :=
     960 (result4 memory q)) 928 (result3 memory q)) 896 (result2 memory q))
     864 (result1 memory q)) 832 (result0 memory q)
 
-/-- Generic tail with deferred final addition; exact 108 bytes. -/
+/-- Generic tail with deferred final addition; exact 107 bytes. -/
 def template : List Instr :=
   [ .op (.Dup ⟨2, by decide⟩),
     .op (.Dup ⟨1, by decide⟩),
@@ -118,14 +118,13 @@ def template : List Instr :=
     .op .POP,
     .op .POP,
     .op .POP,
-    .op .POP,
     .op .JUMP ]
 
 def prefixTemplate : List Instr := template.dropLast
 
-theorem template_length : template.length = 82 := by decide
-theorem template_bytes : (template.map Instr.size).sum = 108 := by decide
-theorem prefix_bytes : (prefixTemplate.map Instr.size).sum = 107 := by decide
+theorem template_length : template.length = 81 := by decide
+theorem template_bytes : (template.map Instr.size).sum = 107 := by decide
+theorem prefix_bytes : (prefixTemplate.map Instr.size).sum = 106 := by decide
 
 theorem run_prefix (s : State) (pc ret : UInt256) (q : WordLane) (factor : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 996)
