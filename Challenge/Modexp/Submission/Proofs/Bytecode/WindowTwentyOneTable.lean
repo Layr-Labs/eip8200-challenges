@@ -1,11 +1,12 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneStage
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneMsize
 
 set_option warningAsError true
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneTable
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
-open WindowNibbleKernel
+open WindowNibbleKernel WindowTwentyOneMsize
 
 def framed (template : State) (pc base modulus : UInt256)
     (count : Nat) (stack : List UInt256) : State :=
@@ -148,5 +149,112 @@ theorem run_last_update (template : State) (pc base modulus exponent : UInt256)
     2 (by decide) ([base, exponent] ++ rest) (by simp; omega)
   simp only [show 14 - 14 = 0 by decide, List.replicate_zero] at hm
   exact runInstructions_append_some _ _ _ _ _ hm hs
+
+/-! ## `MSIZE`-addressed table stores
+
+Every table store extends the active memory by exactly one word, so the store
+address equals `MSIZE` at the store.  These programs replace the pushed address
+constants; the symbolic runs use the `MSIZE`-extended evaluator. -/
+
+def storeProgramM : List Instr :=
+  [.op (.Dup ⟨0, by decide⟩), .op .MSIZE, .op .MSTORE]
+
+def storePCM (pc : UInt256) : UInt256 := pc.succ.succ.succ
+
+theorem run_storeM (template : State) (pc base modulus : UInt256)
+    (count : Nat) (hcount : count < 16)
+    (tail : List UInt256) (hcap : tail.length + 3 < 1024) :
+    runInstructionsX storeProgramM
+      (framed template pc base modulus count
+        (WindowMath.tableWord base modulus count :: tail)) =
+    some (framed template (storePCM pc) base modulus (count + 1)
+      (WindowMath.tableWord base modulus count :: tail)) := by
+  have hcap1 : tail.length + 1 < 1024 := by omega
+  have hcap2 : tail.length + 2 < 1024 := by omega
+  have hcountWord : (UInt256.ofNat count).toNat = count := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  have hoffsetWord : (UInt256.ofNat (32 * count)).toNat = 32 * count := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  have hactive : MachineState.activeWordsAfter count (32 * count) 32 = count + 1 := by
+    cases count with
+    | zero => decide
+    | succ count => exact WindowTableMemory.activeWordsAfter_table count
+  simp [runInstructionsX, runInstrX_msize, storeProgramM, storePCM, framed,
+    Challenge.EvmProof.Stepper.runInstr, hcap, hcap1, hcap2,
+    hcountWord, hoffsetWord, hactive, State.activeWordsAfterUInt256,
+    WindowTableMemory.tableMemoryThrough_succ, WindowTableMemory.storeWord]
+
+def lastStoreProgramM : List Instr := [.op .MSIZE, .op .MSTORE]
+
+def lastStorePCM (pc : UInt256) : UInt256 := pc.succ.succ
+
+theorem run_store_lastM (template : State) (pc base modulus : UInt256)
+    (count : Nat) (hcount : count < 16)
+    (tail : List UInt256) (hcap : tail.length + 2 < 1024) :
+    runInstructionsX lastStoreProgramM
+      (framed template pc base modulus count
+        (WindowMath.tableWord base modulus count :: tail)) =
+    some (framed template (lastStorePCM pc) base modulus (count + 1) tail) := by
+  have hcap1 : tail.length + 1 < 1024 := by omega
+  have hcountWord : (UInt256.ofNat count).toNat = count := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  have hoffsetWord : (UInt256.ofNat (32 * count)).toNat = 32 * count := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  have hactive : MachineState.activeWordsAfter count (32 * count) 32 = count + 1 := by
+    cases count with
+    | zero => decide
+    | succ count => exact WindowTableMemory.activeWordsAfter_table count
+  simp [runInstructionsX, runInstrX_msize, lastStoreProgramM, lastStorePCM, framed,
+    Challenge.EvmProof.Stepper.runInstr, hcap, hcap1,
+    hcountWord, hoffsetWord, hactive, State.activeWordsAfterUInt256,
+    WindowTableMemory.tableMemoryThrough_succ, WindowTableMemory.storeWord]
+
+theorem hasMsize_multiply (power : Nat) (hpower : 2 ≤ power) :
+    hasMsize (multiplyProgram power hpower) = false := by
+  simp [multiplyProgram, hasMsize]
+
+theorem run_multiplyX (template : State) (pc base modulus exponent : UInt256)
+    (power : Nat) (hpower : 2 ≤ power) (hmax : power < 15)
+    (rest : List UInt256) (hrest : rest.length ≤ 1000) :
+    runInstructionsX (multiplyProgram power hpower)
+      (state template pc base modulus exponent power rest) =
+    some (framed template (advancePC 2 pc) base modulus (power + 1)
+      (WindowMath.tableWord base modulus (power + 1) ::
+        List.replicate (14 - power) modulus ++ ([base, exponent] ++ rest))) := by
+  rw [runInstructionsX_eq _ (hasMsize_multiply power hpower)]
+  exact run_multiply template pc base modulus exponent power hpower hmax rest hrest
+
+def updateProgramM (power : Nat) (hpower : 2 ≤ power) : List Instr :=
+  multiplyProgram power hpower ++ storeProgramM
+
+theorem run_updateM (template : State) (pc base modulus exponent : UInt256)
+    (power : Nat) (hpower : 2 ≤ power) (hmax : power < 15)
+    (rest : List UInt256) (hrest : rest.length ≤ 1000) :
+    runInstructionsX (updateProgramM power hpower)
+      (state template pc base modulus exponent power rest) =
+    some (state template (storePCM (advancePC 2 pc)) base modulus exponent
+      (power + 1) rest) := by
+  have hm := run_multiplyX template pc base modulus exponent power hpower hmax rest hrest
+  have hs := run_storeM template (advancePC 2 pc) base modulus (power + 1) (by omega)
+    (List.replicate (14 - power) modulus ++ ([base, exponent] ++ rest))
+    (by simp only [List.length_append, List.length_replicate, List.length_cons, List.length_nil]; omega)
+  have both := runInstructionsX_append_some _ _ _ _ _ hm hs
+  simpa only [updateProgramM, state, List.cons_append,
+    show 15 - (power + 1) = 14 - power by omega] using both
+
+def lastUpdateProgramM : List Instr :=
+  multiplyProgram 14 (by decide) ++ lastStoreProgramM
+
+theorem run_last_updateM (template : State) (pc base modulus exponent : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1000) :
+    runInstructionsX lastUpdateProgramM
+      (state template pc base modulus exponent 14 rest) =
+    some (framed template (lastStorePCM (advancePC 2 pc)) base modulus 16
+      ([base, exponent] ++ rest)) := by
+  have hm := run_multiplyX template pc base modulus exponent 14 (by decide) (by decide) rest hrest
+  have hs := run_store_lastM template (advancePC 2 pc) base modulus 15 (by decide)
+    ([base, exponent] ++ rest) (by simp; omega)
+  simp only [show 14 - 14 = 0 by decide, List.replicate_zero] at hm
+  exact runInstructionsX_append_some _ _ _ _ _ hm hs
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneTable
