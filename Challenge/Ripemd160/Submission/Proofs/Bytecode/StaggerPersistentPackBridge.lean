@@ -38,12 +38,11 @@ theorem output_eq (memory : ByteArray) (h q : WordLane) (off limit : UInt256)
         .cache 140, .cache 350, .cache 310, .cache 190, .cache 500]
         (StaggerCoreModel.pair h q) h (StaggerAlgorithm.physicalKey 0)
         (suffix h off limit rho) := by
-  have hm : UInt256.lor lowerWord (UInt256.shiftLeft lowerWord (UInt256.ofNat 144)) =
+  have hm : UInt256.ofNat 95780971281817308448866066055358605703522837925462015 =
       Paired144WordRound.pairWord := by decide
-  have hu : UInt256.shiftLeft lowerWord (UInt256.ofNat 144) = upperWord := by decide
+  have hu : UInt256.ofNat 95780971281817308448866066055358605703522833630494720 = upperWord := by decide
   simp [StaggerPersistentPackRaw.outputStack, input, stack, StaggerCoreCommon.word,
     StaggerCoreModel.pair, StaggerCoreModel.pairWord, suffix, hm, hu, StaggerCoreCommon.lor_comm]
-  decide
 
 #print axioms input_eq
 #print axioms output_eq
@@ -74,11 +73,11 @@ def gasSteps (s : State) (h q : WordLane) (off limit : UInt256) (rho : List UInt
       (StaggerCore.atRound s h.e 0 (StaggerCoreModel.pair h q) h (suffix h off limit rho)) := by
   have raw := StaggerPersistentPackRaw.run_actual s (UInt256.ofNat 1167)
     (input s.memory h q off limit) rho hs hr
-  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 1167) template = UInt256.ofNat 1206 := by decide
+  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 1167) template = UInt256.ofNat 1245 := by decide
   rw [hend] at raw
   have g := DenseScheduleLift.gasSteps_of_raw site
     {s with pc := UInt256.ofNat 1167, stack := StaggerPersistentPackRaw.inputStack (input s.memory h q off limit) rho}
-    {s with pc := UInt256.ofNat 1206, stack := StaggerPersistentPackRaw.outputStack (input s.memory h q off limit) rho}
+    {s with pc := UInt256.ofNat 1245, stack := StaggerPersistentPackRaw.outputStack (input s.memory h q off limit) rho}
     hcode hfork hr hnp site_pc.symm advances raw
   rw [input_eq, output_eq] at g
   exact g
