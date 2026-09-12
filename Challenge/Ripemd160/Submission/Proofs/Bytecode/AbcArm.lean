@@ -36,72 +36,72 @@ abbrev Located := Stepper.Located Artifact.submissionArtifact .Osaka
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_245 : Artifact.submissionArtifact.instructionPC 245 = 403 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4089 : Artifact.submissionArtifact.instructionPC 4087 = 5157 := by
+@[simp] theorem pc_4089 : Artifact.submissionArtifact.instructionPC 4085 = 5157 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4090 : Artifact.submissionArtifact.instructionPC 4088 = 5158 := by
+@[simp] theorem pc_4090 : Artifact.submissionArtifact.instructionPC 4086 = 5158 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4091 : Artifact.submissionArtifact.instructionPC 4089 = 5159 := by
+@[simp] theorem pc_4091 : Artifact.submissionArtifact.instructionPC 4087 = 5159 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4092 : Artifact.submissionArtifact.instructionPC 4090 = 5161 := by
+@[simp] theorem pc_4092 : Artifact.submissionArtifact.instructionPC 4088 = 5161 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4093 : Artifact.submissionArtifact.instructionPC 4091 = 5162 := by
+@[simp] theorem pc_4093 : Artifact.submissionArtifact.instructionPC 4089 = 5162 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4094 : Artifact.submissionArtifact.instructionPC 4092 = 5165 := by
+@[simp] theorem pc_4094 : Artifact.submissionArtifact.instructionPC 4090 = 5165 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4095 : Artifact.submissionArtifact.instructionPC 4093 = 5166 := by
+@[simp] theorem pc_4095 : Artifact.submissionArtifact.instructionPC 4091 = 5166 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4096 : Artifact.submissionArtifact.instructionPC 4094 = 5170 := by
+@[simp] theorem pc_4096 : Artifact.submissionArtifact.instructionPC 4092 = 5170 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4097 : Artifact.submissionArtifact.instructionPC 4095 = 5171 := by
+@[simp] theorem pc_4097 : Artifact.submissionArtifact.instructionPC 4093 = 5171 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4098 : Artifact.submissionArtifact.instructionPC 4096 = 5172 := by
+@[simp] theorem pc_4098 : Artifact.submissionArtifact.instructionPC 4094 = 5172 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4099 : Artifact.submissionArtifact.instructionPC 4097 = 5173 := by
+@[simp] theorem pc_4099 : Artifact.submissionArtifact.instructionPC 4095 = 5173 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4100 : Artifact.submissionArtifact.instructionPC 4098 = 5174 := by
+@[simp] theorem pc_4100 : Artifact.submissionArtifact.instructionPC 4096 = 5174 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4101 : Artifact.submissionArtifact.instructionPC 4099 = 5176 := by
+@[simp] theorem pc_4101 : Artifact.submissionArtifact.instructionPC 4097 = 5176 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4102 : Artifact.submissionArtifact.instructionPC 4100 = 5177 := by
+@[simp] theorem pc_4102 : Artifact.submissionArtifact.instructionPC 4098 = 5177 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4103 : Artifact.submissionArtifact.instructionPC 4101 = 5178 := by
+@[simp] theorem pc_4103 : Artifact.submissionArtifact.instructionPC 4099 = 5178 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4104 : Artifact.submissionArtifact.instructionPC 4102 = 5181 := by
+@[simp] theorem pc_4104 : Artifact.submissionArtifact.instructionPC 4100 = 5181 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4105 : Artifact.submissionArtifact.instructionPC 4103 = 5182 := by
+@[simp] theorem pc_4105 : Artifact.submissionArtifact.instructionPC 4101 = 5182 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4106 : Artifact.submissionArtifact.instructionPC 4104 = 5203 := by
+@[simp] theorem pc_4106 : Artifact.submissionArtifact.instructionPC 4102 = 5203 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4107 : Artifact.submissionArtifact.instructionPC 4105 = 5204 := by
+@[simp] theorem pc_4107 : Artifact.submissionArtifact.instructionPC 4103 = 5204 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4108 : Artifact.submissionArtifact.instructionPC 4106 = 5207 := by
+@[simp] theorem pc_4108 : Artifact.submissionArtifact.instructionPC 4104 = 5207 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 def sizePath : List Located :=
-  [⟨4087, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨4088, .op .CALLDATASIZE, by rfl, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨4089, .push ⟨1, by decide⟩ (UInt256.ofNat 2), by rfl, by decide⟩,
-   ⟨4090, .op .SHR, by rfl, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨4091, .push ⟨2, by decide⟩ (UInt256.ofNat 272), by rfl, by decide⟩,
-   ⟨4092, .op .JUMPI, by rfl, ⟨by decide, trivial, rfl⟩⟩]
+  [⟨4085, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨4086, .op .CALLDATASIZE, by rfl, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨4087, .push ⟨1, by decide⟩ (UInt256.ofNat 2), by rfl, by decide⟩,
+   ⟨4088, .op .SHR, by rfl, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨4089, .push ⟨2, by decide⟩ (UInt256.ofNat 272), by rfl, by decide⟩,
+   ⟨4090, .op .JUMPI, by rfl, ⟨by decide, trivial, rfl⟩⟩]
 
 def wordPath : List Located :=
-  [⟨4093, .push ⟨3, by decide⟩ (UInt256.ofNat 2127393), by rfl, by decide⟩,
-   ⟨4094, .op .CALLDATASIZE, by rfl, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨4095, .op .MUL, by rfl, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨4096, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨4097, .op .CALLDATALOAD, by rfl, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨4098, .push ⟨1, by decide⟩ (UInt256.ofNat 232), by rfl, by decide⟩,
-   ⟨4099, .op .SHR, by rfl, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨4100, .op .XOR, by rfl, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨4101, .push ⟨2, by decide⟩ (UInt256.ofNat 272), by rfl, by decide⟩,
-   ⟨4102, .op .JUMPI, by rfl, ⟨by decide, trivial, rfl⟩⟩]
+  [⟨4091, .push ⟨3, by decide⟩ (UInt256.ofNat 2127393), by rfl, by decide⟩,
+   ⟨4092, .op .CALLDATASIZE, by rfl, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨4093, .op .MUL, by rfl, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨4094, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨4095, .op .CALLDATALOAD, by rfl, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨4096, .push ⟨1, by decide⟩ (UInt256.ofNat 232), by rfl, by decide⟩,
+   ⟨4097, .op .SHR, by rfl, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨4098, .op .XOR, by rfl, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨4099, .push ⟨2, by decide⟩ (UInt256.ofNat 272), by rfl, by decide⟩,
+   ⟨4100, .op .JUMPI, by rfl, ⟨by decide, trivial, rfl⟩⟩]
 
 def storePath : List Located :=
-  [⟨4103, .push ⟨20, by decide⟩ (UInt256.ofNat 890993315260586290631548281360202943075753233713), by rfl, by decide⟩,
-   ⟨4104, .op .CALLDATASIZE, by rfl, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨4105, .push ⟨2, by decide⟩ (UInt256.ofNat 372), by rfl, by decide⟩,
-   ⟨4106, .op .JUMP, by rfl, ⟨by decide, trivial, rfl⟩⟩,
+  [⟨4101, .push ⟨20, by decide⟩ (UInt256.ofNat 890993315260586290631548281360202943075753233713), by rfl, by decide⟩,
+   ⟨4102, .op .CALLDATASIZE, by rfl, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨4103, .push ⟨2, by decide⟩ (UInt256.ofNat 372), by rfl, by decide⟩,
+   ⟨4104, .op .JUMP, by rfl, ⟨by decide, trivial, rfl⟩⟩,
    ⟨236, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩,
    ⟨237, .push ⟨22, by decide⟩ (UInt256.ofNat 25448770637332498804579667936807160623886401639), by rfl, by decide⟩,
    ⟨238, .op .MUL, by rfl, ⟨by decide, trivial, rfl⟩⟩,
@@ -159,7 +159,7 @@ private theorem true_of_ne_zero (w : UInt256) (h : w ≠ 0) : UInt256.isTrue w =
   simpa using ht
 
 theorem arm_dest : Decode.isValidJumpDest submissionBytecode 5157 = true := by
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 4087 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 4085 (by rfl)
   rw [pc_4089] at h
   exact h
 private theorem valid_generic : Decode.isValidJumpDest submissionBytecode 272 = true := by

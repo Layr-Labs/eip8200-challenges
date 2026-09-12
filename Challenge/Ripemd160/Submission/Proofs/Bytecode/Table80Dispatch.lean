@@ -8,18 +8,18 @@ set_option linter.unusedSimpArgs false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80Dispatch
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate PairedHelperBooleanTrace
-def dispatchTemplate : List Instr := PadDispatch.template 404
+def dispatchTemplate : List Instr := PadDispatch.template1 404
 theorem dispatch_slice :
-    (Artifact.submissionArtifact.instructions.drop 322).take dispatchTemplate.length = dispatchTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 313).take dispatchTemplate.length = dispatchTemplate := by rfl
 def dispatchSite : GenericRoundSite Artifact.submissionArtifact .Osaka dispatchTemplate :=
-  StackSiteBuilder.ofSlice dispatchTemplate 322 dispatch_slice
-    (by change 322 + dispatchTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice dispatchTemplate 313 dispatch_slice
+    (by change 313 + dispatchTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := dispatchTemplate) (by decide))
     (by decide)
-theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 526 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 322) = UInt256.ofNat 526
+theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 516 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 313) = UInt256.ofNat 516
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem dispatch_advances : ∀ instruction ∈ dispatchTemplate.dropLast, PadLift.Advances instruction := by
   apply PadLift.advancesAll_sound
@@ -52,32 +52,32 @@ theorem valid_pad (s : State) (hcode : s.executionEnv.code = Artifact.submission
   rw [hcode]
   exact h
 
-def gasSteps_miss (s : State) (ptr ret off : UInt256) (rho : List UInt256)
-    (hstack : rho.length ≤ 1017) (hrun : s.halt = .Running)
+def gasSteps_miss (s : State) (ptr off : UInt256) (rho : List UInt256)
+    (hstack : rho.length ≤ 1018) (hrun : s.halt = .Running)
     (hfit : s.executionEnv.calldata.size < 2^256)
     (hmiss : s.executionEnv.calldata.size ≠ off.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 526, stack := ptr :: ret :: off :: rho}
-      {s with pc := UInt256.ofNat 533, stack := ptr :: ret :: off :: rho} := by
-  apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 526, stack := ptr :: ret :: off :: rho} _ hcode hfork hrun hnp dispatch_pc.symm dispatch_advances
-  have h := PadDispatch.run_miss s (UInt256.ofNat 526) ptr ret off rho 404 hstack hrun hfit hmiss
-  have hp : pcAfter (UInt256.ofNat 526) (PadDispatch.template 404) = UInt256.ofNat 533 := by rfl
+    GasSteps {s with pc := UInt256.ofNat 516, stack := ptr :: off :: rho}
+      {s with pc := UInt256.ofNat 523, stack := ptr :: off :: rho} := by
+  apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 516, stack := ptr :: off :: rho} _ hcode hfork hrun hnp dispatch_pc.symm dispatch_advances
+  have h := PadDispatch.run_miss1 s (UInt256.ofNat 516) ptr off rho 404 hstack hrun hfit hmiss
+  have hp : pcAfter (UInt256.ofNat 516) (PadDispatch.template1 404) = UInt256.ofNat 523 := by rfl
   rw [hp] at h
   exact h
 
-def gasSteps_hit (s : State) (ptr ret off : UInt256) (rho : List UInt256)
-    (hstack : rho.length ≤ 1017) (hrun : s.halt = .Running)
+def gasSteps_hit (s : State) (ptr off : UInt256) (rho : List UInt256)
+    (hstack : rho.length ≤ 1018) (hrun : s.halt = .Running)
     (hfit : s.executionEnv.calldata.size < 2^256)
     (hhit : s.executionEnv.calldata.size = off.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 526, stack := ptr :: ret :: off :: rho}
-      {s with pc := UInt256.ofNat 404, stack := ptr :: ret :: off :: rho} := by
-  apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 526, stack := ptr :: ret :: off :: rho} _ hcode hfork hrun hnp dispatch_pc.symm dispatch_advances
-  have h := PadDispatch.run_hit s (UInt256.ofNat 526) ptr ret off rho 404 hstack hrun hfit hhit (valid_pad s hcode)
+    GasSteps {s with pc := UInt256.ofNat 516, stack := ptr :: off :: rho}
+      {s with pc := UInt256.ofNat 404, stack := ptr :: off :: rho} := by
+  apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 516, stack := ptr :: off :: rho} _ hcode hfork hrun hnp dispatch_pc.symm dispatch_advances
+  have h := PadDispatch.run_hit1 s (UInt256.ofNat 516) ptr off rho 404 hstack hrun hfit hhit (valid_pad s hcode)
   exact h
 
 def gasSteps_prefix (s : State) (ret : UInt256) (p : Nat) (rest : List UInt256)
