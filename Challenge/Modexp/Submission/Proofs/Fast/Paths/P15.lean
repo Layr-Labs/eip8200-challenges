@@ -2,9 +2,9 @@ import Challenge.Modexp.Submission.Proofs.Fast.Defs
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
-/-! Basic-block instruction paths, group 15 (instructions 1768..1780).
+/-! Basic-block instruction paths, group 15 (instructions 1816..1828).
 
-`R1B` (pc 2539) sits in front of the first `DOUBLE256` call.  When the
+`R1B` (pc 2580) sits in front of the first `DOUBLE256` call.  When the
 modulus's most significant bit is set, `radix ^ n < 2 * m`, so `R mod m` is
 just `radix ^ n - m` — one borrow-propagating subtraction.  `CSUB` already
 computes `t[n] * radix ^ n + t_low - m` selected against `m`, so storing
@@ -15,10 +15,10 @@ doublings `DOUBLE256` performs.  Every other modulus falls through to
 
 The two basic blocks are
 
-* `blk1768` (idx 1768..1775, pc 2539..2911) — `JUMPDEST`, the top-bit test
+* `blk1768` (idx 1816..1823, pc 2580..2952) — `JUMPDEST`, the top-bit test
   `MLOAD 0; PUSH1 255; SHR; ISZERO` and the `JUMPI` back to `DOUBLE256`;
-* `blk1776` (idx 1776..1780, pc 2550..2921) — `MSTORE TN 1` and the tail call
-  into `CSUB` (pc 2309).
+* `blk1776` (idx 1824..1828, pc 2591..2921) — `MSTORE TN 1` and the tail call
+  into `CSUB` (pc 2354).
 
 Both leave the incoming stack `[px, ret]` exactly as `DOUBLE256` and `CSUB`
 expect it, so neither call site moves. -/
@@ -29,27 +29,27 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 1768..1775, pc 2539..2911: the top-bit test and the branch
+/-- Instructions 1816..1823, pc 2580..2952: the top-bit test and the branch
 back into `DOUBLE256`. -/
 def blk1768 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1628 .JUMPDEST,
-   pushAt 1629 0 0,
-   opAt 1630 .MLOAD,
-   pushAt 1631 1 255,
-   opAt 1632 .SHR,
-   opAt 1633 .ISZERO,
-   pushAt 1634 2 1733,
-   opAt 1635 .JUMPI]
+  [opAt 1587 .JUMPDEST,
+   pushAt 1588 0 0,
+   opAt 1589 .MLOAD,
+   pushAt 1590 1 255,
+   opAt 1591 .SHR,
+   opAt 1592 .ISZERO,
+   pushAt 1593 2 1646,
+   opAt 1594 .JUMPI]
 
-/-- Instructions 1776..1780, pc 2550..2921: `t[n] := 1` and the tail call into
+/-- Instructions 1824..1828, pc 2591..2921: `t[n] := 1` and the tail call into
 `CSUB`. -/
 def blk1776 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1636 1 1,
-   pushAt 1637 2 4128,
-   opAt 1638 .MSTORE,
-   pushAt 1639 2 4804,
-   opAt 1640 .JUMP]
+  [pushAt 1595 1 1,
+   pushAt 1596 2 8224,
+   opAt 1597 .MSTORE,
+   pushAt 1598 2 4792,
+   opAt 1599 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

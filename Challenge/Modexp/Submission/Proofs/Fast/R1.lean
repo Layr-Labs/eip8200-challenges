@@ -6,14 +6,14 @@ set_option maxHeartbeats 4000000
 /-!
 # The `R1B` guard of the appended Montgomery path
 
-`R1B` occupies instruction indices 1768..1780 (pc 2539..2921).  It is entered
-at pc 2539 with stack `[px, ret]`, exactly the calling convention of
+`R1B` occupies instruction indices 1816..1828 (pc 2580..2921).  It is entered
+at pc 2580 with stack `[px, ret]`, exactly the calling convention of
 `DOUBLE256`, and it dispatches:
 
 * when the modulus's most significant bit is clear it jumps straight to
-  `DOUBLE256` (pc 1911) with the stack and memory untouched, so that path is
+  `DOUBLE256` (pc 1959) with the stack and memory untouched, so that path is
   literally the old one;
-* otherwise it stores `1` at `TN = 0x2020` and jumps to `CSUB` (pc 2309) with
+* otherwise it stores `1` at `TN = 0x2020` and jumps to `CSUB` (pc 2354) with
   the same `[px, ret]` frame.
 
 The second branch is the point.  `CSUB` computes `t[n] * radix ^ n + t_low`
@@ -80,38 +80,38 @@ theorem radix_pow_lt_two_mul {mem : ByteArray} {n mm : Nat} (hn : 1 ≤ n)
 
 /-- `t[n] := 1` at `TN = 0x2020`, the only memory the guard block writes. -/
 def tnMem (mem : ByteArray) : ByteArray :=
-  MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 1 32) 4128
+  MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 1 32) 8224
 
 /-! ## States at the block boundaries -/
 
-/-- Subroutine entry, pc 2539, stack `[px, ret]`. -/
+/-- Subroutine entry, pc 2580, stack `[px, ret]`. -/
 def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2216
+  { s with pc := UInt256.ofNat 2129
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
-/-- The fall-back target, pc 1911: `DOUBLE256`'s own entry, reached with the
+/-- The fall-back target, pc 1959: `DOUBLE256`'s own entry, reached with the
 stack and memory exactly as they arrived. -/
 def dblState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1733
+  { s with pc := UInt256.ofNat 1646
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
-/-- Between the test and the store, pc 2550. -/
+/-- Between the test and the store, pc 2591. -/
 def fastState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2227
+  { s with pc := UInt256.ofNat 2140
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
-/-- The `CSUB` entry, pc 2309, stack `[px, ret]`, with `t[n] = 1` stored.
+/-- The `CSUB` entry, pc 2354, stack `[px, ret]`, with `t[n] = 1` stored.
 `TN = 0x2020` lies below the `296` words the caller already holds, so the
 store does not grow memory. -/
 def csubState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4804
+  { s with pc := UInt256.ofNat 4792
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := tnMem mem }
 
@@ -121,7 +121,7 @@ def csubState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
 theorem run_test_fast (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hrun : s.halt = .Running) (hact : 168 ≤ s.activeWords.toNat)
+    (hrun : s.halt = .Running) (hact : 296 ≤ s.activeWords.toNat)
     (htop : TopBitSet mem) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1768
       (entryState s mem px ret rest) =
@@ -167,7 +167,7 @@ theorem run_test_fast (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
 theorem run_test_fallback (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hrun : s.halt = .Running) (hact : 168 ≤ s.activeWords.toNat)
+    (hrun : s.halt = .Running) (hact : 296 ≤ s.activeWords.toNat)
     (htop : ¬ TopBitSet mem) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1768
       (entryState s mem px ret rest) =
@@ -211,18 +211,18 @@ theorem run_test_fallback (s : State) (mem : ByteArray) (px : Nat) (ret : UInt25
 theorem run_fast (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hrun : s.halt = .Running) (hact : 168 ≤ s.activeWords.toNat) :
+    (hrun : s.halt = .Running) (hact : 296 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1776
       (fastState s mem px ret rest) =
       some (csubState s mem px ret rest) := by
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
-  have haw : MachineState.activeWordsAfter s.activeWords.toNat 4128 32 =
+  have haw : MachineState.activeWordsAfter s.activeWords.toNat 8224 32 =
       s.activeWords.toNat := by
     simp only [MachineState.activeWordsAfter, if_neg (by decide : ¬(32 = 0))]
     exact Nat.max_eq_left (by omega)
-  have haw' : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 4128 32) =
+  have haw' : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 8224 32) =
       s.activeWords := by
     rw [haw]; exact (Challenge.EvmProof.Word.word_eq_ofNat_toNat _).symm
   simp (config := { maxSteps := 400000 }) [blk1776, opAt, pushAt,

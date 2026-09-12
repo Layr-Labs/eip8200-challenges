@@ -13,7 +13,7 @@ def guardProgram : List Instr :=
    .push ⟨0, by decide⟩ (UInt256.ofNat 0), .op .MLOAD,
    .push ⟨1, by decide⟩ (UInt256.ofNat 255), .op .SHR,
    .op .AND, .op .ISZERO,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 3045), .op .JUMPI]
+   .push ⟨2, by decide⟩ (UInt256.ofNat 2951), .op .JUMPI]
 
 def guardWord (memory : ByteArray) (n bsize : Nat) : UInt256 :=
   UInt256.isZero (UInt256.land
@@ -31,11 +31,11 @@ theorem topShift_toNat (memory : ByteArray) :
   split <;> omega
 
 theorem guardWord_eq (memory : ByteArray) (n bsize : Nat)
-    (hn32 : n ≤ 8) (hb : bsize < 2 ^ 256) :
+    (hn32 : n ≤ 32) (hb : bsize < 2 ^ 256) :
     guardWord memory n bsize =
       if Matches memory n bsize then UInt256.ofNat 0 else UInt256.ofNat 1 := by
   have hsize : 32 * n < 2 ^ 256 :=
-    lt_of_le_of_lt (show 32 * n ≤ 256 by omega) (by decide)
+    lt_of_le_of_lt (show 32 * n ≤ 1024 by omega) (by decide)
   unfold guardWord UInt256.isZero
   rw [Challenge.EvmProof.Word.word_toNat_land, topShift_toNat]
   simp only [UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -44,8 +44,8 @@ theorem guardWord_eq (memory : ByteArray) (n bsize : Nat)
     simp [Matches, heq, htop, Challenge.EvmProof.Word.word_toNat_ofNat]
 
 theorem run_guard_word (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat) (hactive : 169 ≤ s.activeWords.toNat)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 3045 = true) :
+    (n bsize esize msize : Nat) (hactive : 298 ≤ s.activeWords.toNat)
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 2951 = true) :
     runInstructions guardProgram (entryState s memory n bsize esize msize) =
       some (if UInt256.isTrue (guardWord memory n bsize)
         then fallbackState s memory n bsize esize msize
@@ -66,9 +66,9 @@ theorem run_guard_word (s : State) (memory : ByteArray)
   split <;> rfl
 
 theorem run_guard (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat) (hn32 : n ≤ 8)
-    (hb : bsize < 2 ^ 256) (hactive : 169 ≤ s.activeWords.toNat)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 3045 = true) :
+    (n bsize esize msize : Nat) (hn32 : n ≤ 32)
+    (hb : bsize < 2 ^ 256) (hactive : 298 ≤ s.activeWords.toNat)
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 2951 = true) :
     runInstructions guardProgram (entryState s memory n bsize esize msize) =
       some (if Matches memory n bsize
         then copyState s memory n bsize esize msize

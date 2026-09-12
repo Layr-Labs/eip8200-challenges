@@ -20,7 +20,7 @@ private def gasSteps_tramp0 (input : ByteArray) :
 
 /-- The body's own `JUMPDEST`, reached when the legacy fast path declines. -/
 private def gasSteps_tramp7Dest (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (trampolineState input 1189)
+    Challenge.EvmProof.GasSteps (trampolineState input 1107)
       (headerEntryState input) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka tramp7DestPath rfl rfl
@@ -50,28 +50,28 @@ private def gasSteps_headerCheck (input : ByteArray) :
 
 -- `JUMPDEST ; JUMPDEST` costs 1 + 1 (was `PUSH2 ; POP` = 3 + 2).
 @[simp] private theorem gasSteps_headerCheck_cost (input : ByteArray) :
-    (gasSteps_headerCheck input).cost = 2 := by rfl
+    (gasSteps_headerCheck input).cost = 0 := by rfl
 
-/-- The header block starting from the body `JUMPDEST` at pc 1196 rather than
+/-- The header block starting from the body `JUMPDEST` at pc 1244 rather than
 from the entry.  The appended fast path reaches that pc itself, so the entry hop
 is factored out. -/
 def gasSteps_headerFromBody (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (trampolineState input 1189)
+    Challenge.EvmProof.GasSteps (trampolineState input 1107)
       (headerState input) := by
   exact (gasSteps_tramp7Dest input).trans <|
     (gasSteps_headerLoad input).trans (gasSteps_headerCheck input)
 
-/-- Direct entry to the early-word dispatcher, with no executed hop. -/
+/-- The total initial hop to the early-word dispatcher. -/
 def gasSteps_entryHop (input : ByteArray) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (trampolineState input 0) := gasSteps_tramp0 input
 
 /-- The reference header block, prefixed by whatever trace reaches the body
-`JUMPDEST` at pc 1196.  The appended fast path supplies that prefix on the
+`JUMPDEST` at pc 1244.  The appended fast path supplies that prefix on the
 inputs it declines. -/
 def gasSteps_header (input : ByteArray) (_hvalid : ValidInput input)
     (entry : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (trampolineState input 1189)) :
+      (trampolineState input 1107)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (headerState input) :=
   entry.trans (gasSteps_headerFromBody input)

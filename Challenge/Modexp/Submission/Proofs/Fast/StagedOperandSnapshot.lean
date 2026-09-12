@@ -11,7 +11,7 @@ open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Fast Monpro
 
 theorem read_l1_high (mem : ByteArray) (bi : UInt256) (pa n addr j : Nat)
-    (hn : n ≤ 8) (ha : 4864 ≤ addr) :
+    (hn : n ≤ 8) (ha : 8960 ≤ addr) :
     MachineState.readWord (l1Step mem bi pa n j).memory addr =
       MachineState.readWord mem addr := by
   induction j with
@@ -24,7 +24,7 @@ theorem read_l1_high (mem : ByteArray) (bi : UInt256) (pa n addr j : Nat)
       omega
 
 theorem read_l2_high (mem : ByteArray) (mu c0 : UInt256) (n addr j : Nat)
-    (hn : n ≤ 8) (ha : 4864 ≤ addr) :
+    (hn : n ≤ 8) (ha : 8960 ≤ addr) :
     MachineState.readWord (l2Step mem mu c0 n j).memory addr =
       MachineState.readWord mem addr := by
   induction j with
@@ -37,7 +37,7 @@ theorem read_l2_high (mem : ByteArray) (mu c0 : UInt256) (n addr j : Nat)
       omega
 
 theorem Snapshot.l1 {mem : ByteArray} {pa n : Nat} (h : Snapshot mem pa n)
-    (bi : UInt256) (j : Nat) (hn : n ≤ 8) (hpa : pa+32*n ≤ 4096) :
+    (bi : UInt256) (j : Nat) (hn : n ≤ 8) (hpa : pa+32*n ≤ 8192) :
     Snapshot (l1Step mem bi pa n j).memory pa n := by
   intro k hk
   rw [read_l1_high _ _ _ _ _ _ hn (by omega),
@@ -45,7 +45,7 @@ theorem Snapshot.l1 {mem : ByteArray} {pa n : Nat} (h : Snapshot mem pa n)
   exact h k hk
 
 theorem read_zeroed_high (s : State) (mem : ByteArray) (n addr : Nat)
-    (hn : n ≤ 8) (ha : 4864 ≤ addr) :
+    (hn : n ≤ 8) (ha : 8960 ≤ addr) :
     MachineState.readWord (mpZeroed s mem n) addr = MachineState.readWord mem addr := by
   unfold mpZeroed
   apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
@@ -53,7 +53,7 @@ theorem read_zeroed_high (s : State) (mem : ByteArray) (n addr : Nat)
   omega
 
 theorem Snapshot.zeroed {mem : ByteArray} {pa n : Nat} (h : Snapshot mem pa n)
-    (s : State) (hn : n ≤ 8) (hpa : pa+32*n ≤ 4096) :
+    (s : State) (hn : n ≤ 8) (hpa : pa+32*n ≤ 8192) :
     Snapshot (mpZeroed s mem n) pa n := by
   intro k hk
   rw [read_zeroed_high _ _ _ _ hn (by omega),

@@ -13,8 +13,8 @@ set_option maxHeartbeats 4000000
 `CarryRows` / `CarryFull*` compose the sqCP1m multiply kernel out of the block traces of
 WP-K (one kernel row, `CarryRowGas`) and WP-K2 (the kernel entry: `mul entry`, `common`,
 `setup`, fallback; `Cios2Dispatch`).  The composition is written generically over the two
-bundles below, whose fields are exactly the statements of those lemmas (ordinary
-theorem hypotheses).  They are instantiated with the real lemmas by
+bundles below, whose fields are exactly the statements of those lemmas (explicit
+hypotheses — no axiom, no `sorry`).  They are instantiated with the real lemmas by
 `CarryIface.rowLemmas` (`CarryRowLemmas`) and `CarryIface.entryLemmas` (`CarryEntryLemmas`),
 and `CarryFull.gasSteps_monproFull` (`CarryFullMonproFinal`) applies the generic composition
 `CarryFull.gasSteps_monproFullOf` to them.
@@ -44,12 +44,12 @@ structure RowLemmas : Type where
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 168 ≤ s.activeWords.toNat)
+    (hact : 296 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hi : i < n)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 5376),
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472),
     Challenge.EvmProof.GasSteps
-      (outState s mem pb n i (UInt256.ofNat 4164) ent pdst ret rest)
-      (firstAt 4167 s mem (rowBi mem pb n i) pb n i (UInt256.ofNat 4164) ent pdst ret rest)
+      (outState s mem pb n i (UInt256.ofNat 4170) ent pdst ret rest)
+      (firstAt 4173 s mem (rowBi mem pb n i) pb n i (UInt256.ofNat 4170) ent pdst ret rest)
   /-- Statement of WP-K `CarryRowGas.gasSteps_commonFirst`. -/
   gasSteps_commonFirst : ∀ (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb n i : Nat) (hd ent tl inv m0 aEnd m96 m64 m32 pdst ret : UInt256)
@@ -58,13 +58,13 @@ structure RowLemmas : Type where
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 168 ≤ s.activeWords.toNat) (hn : n ≤ 32) (hpos : 0 < n)
-    (hpaFit : pa+32*n ≤ 5376)
-    (htl : tl = UInt256.ofNat (4128+32*n))
+    (hact : 296 ≤ s.activeWords.toNat) (hn : n ≤ 32) (hpos : 0 < n)
+    (hpaFit : pa+32*n ≤ 9472)
+    (htl : tl = UInt256.ofNat (8224+32*n))
     (hAend : aEnd = UInt256.ofNat (pa+32*n-32)),
     Challenge.EvmProof.GasSteps
-      (firstAt 4167 s mem bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
-      (l1At 4193 s mem bi pa pb n i 1 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (firstAt 4173 s mem bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (l1At 4199 s mem bi pa pb n i 1 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
   /-- Statement of WP-K `CarryRowGas.gasSteps_l1MulFour`. -/
   gasSteps_l1MulFour : ∀ (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb i : Nat) (hd pdst ret : UInt256) (rest : List UInt256)
@@ -73,10 +73,10 @@ structure RowLemmas : Type where
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 168 ≤ s.activeWords.toNat)
-    (hpaFit : pa + 32 * 4 ≤ 4096) (hsnapshot : StagedOperand.Snapshot mem pa 4),
+    (hact : 296 ≤ s.activeWords.toNat)
+    (hpaFit : pa + 32 * 4 ≤ 8192) (hsnapshot : StagedOperand.Snapshot mem pa 4),
     Challenge.EvmProof.GasSteps
-      (l1At 4193 s mem bi pa pb 4 i 1 hd (l1Target 4) pdst ret rest)
+      (l1At 4199 s mem bi pa pb 4 i 1 hd (l1Target 4) pdst ret rest)
       (midState s (l1Step mem bi pa 4 4).memory (l1Step mem bi pa 4 4).carry bi
         pb 4 i hd (l1Target 4) pdst ret rest)
   /-- Statement of WP-K `CarryRowGas.gasSteps_l1MulEight`. -/
@@ -87,10 +87,10 @@ structure RowLemmas : Type where
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 168 ≤ s.activeWords.toNat)
-    (hpaFit : pa + 32 * 8 ≤ 4096) (hsnapshot : StagedOperand.Snapshot mem pa 8),
+    (hact : 296 ≤ s.activeWords.toNat)
+    (hpaFit : pa + 32 * 8 ≤ 8192) (hsnapshot : StagedOperand.Snapshot mem pa 8),
     Challenge.EvmProof.GasSteps
-      (l1At 4193 s mem bi pa pb 8 i 1 hd (l1Target 8) pdst ret rest)
+      (l1At 4199 s mem bi pa pb 8 i 1 hd (l1Target 8) pdst ret rest)
       (midState s (l1Step mem bi pa 8 8).memory (l1Step mem bi pa 8 8).carry bi
         pb 8 i hd (l1Target 8) pdst ret rest)
   /-- Statement of WP-K `CarryRowGas.gasSteps_mid`. -/
@@ -101,12 +101,12 @@ structure RowLemmas : Type where
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 168 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hminv : inverseInvariant mem n)
     (hc : CiosReadonly.ReadonlyCache mem n tl inv m0),
     Challenge.EvmProof.GasSteps
       (midState s mem c bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
-      (l2At 4492 s (midMem1 mem c) (overflow mem c) (rowMu mem n)
+      (l2At 4491 s (midMem1 mem c) (overflow mem c) (rowMu mem n)
         (rowC0 mem n) pb n i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
   /-- Statement of WP-K `CarryRowGas.gasSteps_l2Four`. -/
   gasSteps_l2Four : ∀ (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
@@ -116,10 +116,10 @@ structure RowLemmas : Type where
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 168 ≤ s.activeWords.toNat)
+    (hact : 296 ≤ s.activeWords.toNat)
     (hc : CiosReadonlyExtra.ExtraCache mid m96 m64 m32),
     Challenge.EvmProof.GasSteps
-      (l2At 4492 s mid bi mu c0 pb 4 i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (l2At 4491 s mid bi mu c0 pb 4 i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (tailState s (l2Step mid mu c0 4 3).memory
         (l2Step mid mu c0 4 3).carry mu bi pb 4 i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
   /-- Statement of WP-K `CarryRowGas.gasSteps_l2Eight`. -/
@@ -130,10 +130,10 @@ structure RowLemmas : Type where
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 168 ≤ s.activeWords.toNat)
+    (hact : 296 ≤ s.activeWords.toNat)
     (hc : CiosReadonlyExtra.ExtraCache mid m96 m64 m32),
     Challenge.EvmProof.GasSteps
-      (l2At 4492 s mid bi mu c0 pb 8 i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (l2At 4491 s mid bi mu c0 pb 8 i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (tailState s (l2Step mid mu c0 8 7).memory
         (l2Step mid mu c0 8 7).carry mu bi pb 8 i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
   /-- Statement of WP-K `CarryRowGas.gasSteps_tailNext`. -/
@@ -144,8 +144,8 @@ structure RowLemmas : Type where
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 168 ≤ s.activeWords.toNat) (hi : i + 1 < n)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 5376)
+    (hact : 296 ≤ s.activeWords.toNat) (hi : i + 1 < n)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472)
     (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode hd.toNat = true),
     Challenge.EvmProof.GasSteps
       (tailState s mem c mu bi pb n i hd ent pdst ret rest)
@@ -158,10 +158,10 @@ structure RowLemmas : Type where
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 168 ≤ s.activeWords.toNat) (hi : i + 1 = n)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 5376)
+    (hact : 296 ≤ s.activeWords.toNat) (hi : i + 1 = n)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472)
     (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode hd.toNat = true)
-    (hne : hd ≠ UInt256.ofNat 4923),
+    (hne : hd ≠ UInt256.ofNat 4902),
     Challenge.EvmProof.GasSteps
       (tailState s mem c mu bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (mpCsubState s (tailCarry mem c bi) pdst ret rest)
@@ -169,8 +169,8 @@ structure RowLemmas : Type where
 set_option linter.unusedVariables false in
 /-- The kernel entry (WP-K2, `Cios2Dispatch`).  Instantiated by `entryLemmas` (`CarryEntryLemmas`). -/
 structure EntryLemmas : Type where
-  /-- Statement of WP-K2 `Cios2Dispatch.gasSteps_mulEntry`: `mul entry` (pc 3920) →
-  `common` (pc 3924) with the multiply row head `hd = 4037`. -/
+  /-- Statement of WP-K2 `Cios2Dispatch.gasSteps_mulEntry`: `mul entry` (pc 4063) →
+  `common` (pc 4067) with the multiply row head `hd = 4178`. -/
   gasSteps_mulEntry : ∀ (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
@@ -180,7 +180,7 @@ structure EntryLemmas : Type where
       s.executionEnv.fork s.executionEnv.codeAddr = false),
     Challenge.EvmProof.GasSteps
       (Cios2Dispatch.dispatchState s mem pa pb pdst ret rest)
-      (Cios2Dispatch.commonState s mem (UInt256.ofNat 4164) pa pb pdst ret rest)
+      (Cios2Dispatch.commonState s mem (UInt256.ofNat 4170) pa pb pdst ret rest)
   /-- Statement of WP-K2 `Cios2Dispatch.gasSteps_commonSetup`: `common` → `setup` →
   row 0 at `hd` (widths four and eight limbs). -/
   gasSteps_commonSetup : ∀ (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
@@ -190,18 +190,18 @@ structure EntryLemmas : Type where
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 168 ≤ s.activeWords.toNat) (hn : n = 4 ∨ n = 8)
-    (hpaFit : pa + 32 * n ≤ 5376)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 5376)
+    (hact : 296 ≤ s.activeWords.toNat) (hn : n = 4 ∨ n = 8)
+    (hpaFit : pa + 32 * n ≤ 9472)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hs32 : MachineState.readWord mem 5248 = UInt256.ofNat (32 * n))
-    (hml : MachineState.readWord mem 5312 = UInt256.ofNat (32 * n - 32))
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
+    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * n - 32))
     (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode hd.toNat = true),
     Challenge.EvmProof.GasSteps
       (Cios2Dispatch.commonState s mem hd pa pb pdst ret rest)
       (outState s (mpZeroed s (StagedOperand.stage mem pa n) n) pb n 0 hd (l1Target n)
-        (MachineState.readWord mem 5280) (MachineState.readWord mem (32*n-32))
-        (MachineState.readWord mem 5344 :: MachineState.readWord mem 96 ::
+        (MachineState.readWord mem 9376) (MachineState.readWord mem (32*n-32))
+        (MachineState.readWord mem 9440 :: MachineState.readWord mem 96 ::
           MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
           UInt256.ofNat (pa+32*n-32) :: pdst :: ret :: rest))
   /-- Statement of WP-K2 `Cios2Dispatch.gasSteps_commonFallback`: every other width
@@ -213,17 +213,17 @@ structure EntryLemmas : Type where
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 168 ≤ s.activeWords.toNat)
-    (h128 : MachineState.readWord mem 5248 ≠ UInt256.ofNat 128)
-    (h256 : MachineState.readWord mem 5248 ≠ UInt256.ofNat 256),
+    (hact : 296 ≤ s.activeWords.toNat)
+    (h128 : MachineState.readWord mem 9344 ≠ UInt256.ofNat 128)
+    (h256 : MachineState.readWord mem 9344 ≠ UInt256.ofNat 256),
     Challenge.EvmProof.GasSteps
       (Cios2Dispatch.commonState s mem hd pa pb pdst ret rest)
       (mpEntryState s mem pa pb pdst ret rest)
 
-/-- The multiply row head `hd = 4037` (instruction 3040, pc 0x0fc5) is a jump destination. -/
+/-- The multiply row head `hd = 4178` (instruction 3040, pc 0x0fc5) is a jump destination. -/
 theorem jumpDest_rowHead :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 4164).toNat = true := by
-  rw [show (UInt256.ofNat 4164).toNat = 4164 from by decide]
-  exact Artifact.isValidJumpDest_index 3108 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 4170).toNat = true := by
+  rw [show (UInt256.ofNat 4170).toNat = 4170 from by decide]
+  exact Artifact.isValidJumpDest_index 3190 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryIface

@@ -38,35 +38,35 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def zeroSizePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 897 .JUMPDEST, opAt 898 (.Dup ⟨0, by decide⟩),
-   pushAt 899 2 1211, opAt 900 .JUMPI,
-   pushAt 901 0 0, pushAt 902 0 0, opAt 903 .RETURN]
+  [opAt 858 (.Dup ⟨0, by decide⟩),
+   pushAt 859 2 1124, opAt 860 .JUMPI,
+   pushAt 861 0 0, pushAt 862 0 0, opAt 863 .RETURN]
 
 def wordEntryPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 897 .JUMPDEST, opAt 898 (.Dup ⟨0, by decide⟩),
-   pushAt 899 2 1211, opAt 900 .JUMPI,
-   opAt 904 .JUMPDEST, opAt 905 (.Dup ⟨2, by decide⟩),
-   pushAt 906 1 96, opAt 907 .ADD,
-   opAt 908 (.Dup ⟨2, by decide⟩), opAt 909 (.Dup ⟨1, by decide⟩),
-   opAt 910 .ADD, pushAt 911 1 32, opAt 912 (.Dup ⟨3, by decide⟩),
-   opAt 913 .GT, pushAt 914 2 1241, opAt 915 .JUMPI,
-   pushAt 916 2 1186, opAt 917 (.Dup ⟨1, by decide⟩),
-   opAt 918 (.Dup ⟨3, by decide⟩), pushAt 919 1 96,
-   opAt 920 (.Dup ⟨6, by decide⟩), opAt 921 (.Dup ⟨8, by decide⟩),
-   opAt 922 (.Dup ⟨10, by decide⟩), pushAt 923 2 2310, opAt 924 .JUMP]
+  [opAt 858 (.Dup ⟨0, by decide⟩),
+   pushAt 859 2 1124, opAt 860 .JUMPI,
+   opAt 864 .JUMPDEST, opAt 865 (.Dup ⟨2, by decide⟩),
+   pushAt 866 1 96, opAt 867 .ADD,
+   opAt 868 (.Dup ⟨2, by decide⟩), opAt 869 (.Dup ⟨1, by decide⟩),
+   opAt 870 .ADD, pushAt 871 1 32, opAt 872 (.Dup ⟨3, by decide⟩),
+   opAt 873 .GT, pushAt 874 2 1154, opAt 875 .JUMPI,
+   pushAt 876 2 1186, opAt 877 (.Dup ⟨1, by decide⟩),
+   opAt 878 (.Dup ⟨3, by decide⟩), pushAt 879 1 96,
+   opAt 880 (.Dup ⟨6, by decide⟩), opAt 881 (.Dup ⟨8, by decide⟩),
+   opAt 882 (.Dup ⟨10, by decide⟩), pushAt 883 2 2223, opAt 884 .JUMP]
 
-def zeroSetupPath := zeroSizePath.take 6
-def zeroReturnPath := [opAt 903 .RETURN]
-def wordJumpPath := wordEntryPath.take 4
-def wordRestPath := wordEntryPath.drop 4
+def zeroSetupPath := zeroSizePath.take 5
+def zeroReturnPath := [opAt 863 .RETURN]
+def wordJumpPath := wordEntryPath.take 3
+def wordRestPath := wordEntryPath.drop 3
 def wordCheckPath := wordRestPath.take 12
 def wordTailPath := wordRestPath.drop 12
 
 @[simp] theorem dispatchPCs (i : Nat)
-    (hi : 897 ≤ i) (hii : i ≤ 924) :
+    (hi : 858 ≤ i) (hii : i ≤ 884) :
     Artifact.submissionArtifact.instructionPC i =
-      ([1202,1203,1204,1207,1208,1209,1210,1211,1212,1213,1215,1216,1217,1218,1219,1221,1222,1223,1226,1227,1230,1231,1232,1234,1235,1236,1237,1240] : List Nat)[i - 897]! := by
+      ([1116,1117,1120,1121,1122,1123,1124,1125,1126,1128,1129,1130,1131,1132,1134,1135,1136,1139,1140,1143,1144,1145,1147,1148,1149,1150,1153] : List Nat)[i - 858]! := by
   interval_cases i <;> decide
 
 @[simp] theorem activeWordsAfterUInt256_zero (s : State) (offset : Nat) :
@@ -79,22 +79,22 @@ def wordTailPath := wordRestPath.drop 12
   simp [MachineState.readPadded]
 
 @[simp] theorem jump1237 :
-    Decode.isValidJumpDest submissionBytecode 1211 = true :=
-  Artifact.isValidJumpDest_index 904 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 1124 = true :=
+  Artifact.isValidJumpDest_index 864 (by rfl)
 
 @[simp] theorem jump517 :
-    Decode.isValidJumpDest submissionBytecode 606 = true :=
-  Artifact.isValidJumpDest_index 472 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 524 = true :=
+  Artifact.isValidJumpDest_index 435 (by rfl)
 
 set_option maxRecDepth 20000 in
 @[simp] theorem jump3000 :
-    Decode.isValidJumpDest submissionBytecode 2310 = true := by
-  have hpc : Artifact.instructionPC 1688 = 2310 := by decide
-  simpa only [hpc] using Artifact.isValidJumpDest_index 1688 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 2223 = true := by
+  have hpc : Artifact.instructionPC 1647 = 2223 := by decide
+  simpa only [hpc] using Artifact.isValidJumpDest_index 1647 (by rfl)
 
 def zeroSizeFinalState (input : ByteArray) : State :=
   { Main.headerState input with
-    pc := UInt256.ofNat 1210
+    pc := UInt256.ofNat 1123
     stack := [UInt256.ofNat 0, UInt256.ofNat (exponentSize input),
       UInt256.ofNat (baseSize input)]
     halt := .Returned
@@ -102,19 +102,19 @@ def zeroSizeFinalState (input : ByteArray) : State :=
 
 def zeroSetupState (input : ByteArray) : State :=
   { Main.headerState input with
-    pc := UInt256.ofNat 1210
+    pc := UInt256.ofNat 1123
     stack := [0, 0, UInt256.ofNat 0, UInt256.ofNat (exponentSize input),
       UInt256.ofNat (baseSize input)] }
 
 def wordDispatchState (input : ByteArray) : State :=
   { Main.headerState input with
-    pc := UInt256.ofNat 1211
+    pc := UInt256.ofNat 1124
     stack := [UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 def wordCheckedState (input : ByteArray) : State :=
   { Main.headerState input with
-    pc := UInt256.ofNat 1227
+    pc := UInt256.ofNat 1140
     stack := [UInt256.ofNat (96 + (baseSize input + exponentSize input)),
       UInt256.ofNat (96 + baseSize input), UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
@@ -127,7 +127,7 @@ def wordEntryState (input : ByteArray) : State :=
   let expOff := 96 + b
   let modOff := expOff + e
   { Main.headerState input with
-    pc := UInt256.ofNat 606
+    pc := UInt256.ofNat 524
     stack := [UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
       UInt256.ofNat 96, UInt256.ofNat expOff, UInt256.ofNat modOff,
       UInt256.ofNat 1186, UInt256.ofNat modOff, UInt256.ofNat expOff,
@@ -147,7 +147,7 @@ submission artifact has been regenerated.
 
 /-- State reached by the retargeted one-word dispatcher at the appended route. -/
 def wordRouteEntryState (input : ByteArray) : State :=
-  { wordEntryState input with pc := UInt256.ofNat 2310 }
+  { wordEntryState input with pc := UInt256.ofNat 2223 }
 
 /-- The unchanged dispatcher prefix followed by its retargeted final jump. -/
 abbrev WordRouteEnter (input : ByteArray) : Type :=

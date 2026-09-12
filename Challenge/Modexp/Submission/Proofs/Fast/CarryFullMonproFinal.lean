@@ -24,21 +24,21 @@ opaque gasSteps_monproFullOf (L : RowLemmas) (E : EntryLemmas) (s : State) (mem 
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 168 ≤ s.activeWords.toNat) (hn32 : p + 2 ≤ 32)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * (p + 2) ≤ 4096)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * (p + 2) ≤ 4096)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : p + 2 ≤ 32)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * (p + 2) ≤ 8192)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * (p + 2) ≤ 8192)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hs32 : MachineState.readWord mem 5248 = UInt256.ofNat (32 * (p + 2)))
-    (htl : MachineState.readWord mem 5344 = UInt256.ofNat (4128 + 32 * (p + 2)))
-    (hml : MachineState.readWord mem 5312 = UInt256.ofNat (32 * (p + 2) - 32))
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * (p + 2)))
+    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * (p + 2)))
+    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * (p + 2) - 32))
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
-    (hdstFit : pdst.toNat + 32 * (p + 2) ≤ 5376)
+    (hdstFit : pdst.toNat + 32 * (p + 2) ≤ 9472)
     (ha : Model.FastRepresents mem pa (p + 2) a)
     (hb : Model.FastRepresents mem pb (p + 2) b)
     (hm : Model.FastRepresents mem 0 (p + 2) mm)
     (ham : a < mm) (hmpos : 0 < mm)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
-        (MachineState.readWord mem 5280).toNat + 1) % 2 ^ 256 = 0) :
+        (MachineState.readWord mem 9376).toNat + 1) % 2 ^ 256 = 0) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
       (Csub.csReturnedState s
@@ -56,17 +56,17 @@ opaque gasSteps_monproFullOf (L : RowLemmas) (E : EntryLemmas) (s : State) (mem 
       have hm' : Model.FastRepresents prepared 0 (p+2) mm :=
         (fastRepresents_inputMemory mem pa (p+2) 0 (p+2) mm (by omega)).2 hm
       have hminv' : ((MachineState.readWord prepared (32*(p+2)-32)).toNat *
-          (MachineState.readWord prepared 5280).toNat + 1) % 2^256 = 0 := by
+          (MachineState.readWord prepared 9376).toNat + 1) % 2^256 = 0 := by
         simpa only [prepared,
           read_inputMemory_outside mem pa (p+2) (32*(p+2)-32) (Or.inl (by omega)),
-          read_inputMemory_outside mem pa (p+2) 5280 (Or.inr (by decide))] using hminv
+          read_inputMemory_outside mem pa (p+2) 9376 (Or.inr (by decide))] using hminv
       have hr := selectedRows_agree (mpZeroed s prepared (p+2)) pa pb (p+2) (p+2)
         hpaFit hpbFit (by omega) hn32 (by omega)
-      rw [CarryScratchAgreement.readWord_eq hr 4128 (Or.inr (by decide))]
+      rw [CarryScratchAgreement.readWord_eq hr 8224 (Or.inr (by decide))]
       exact Monpro.monpro_tn_le_one s prepared pa pb p a b mm hn32 hpaFit hpbFit ha' hb' hm' ham
         hmpos hminv')
 
-/-- **The sqCP1m multiply kernel** (`MonPro(pa, pb) → pdst`): from the `mul entry` (pc 3920) to the
+/-- **The sqCP1m multiply kernel** (`MonPro(pa, pb) → pdst`): from the `mul entry` (pc 4063) to the
 return of the final subtraction, for every width (four and eight limbs through the kernel
 rows, every other width through the generic `MONPRO`).  Statement unchanged from the base. -/
 opaque gasSteps_monproFull (s : State) (mem : ByteArray) (pa pb p : Nat)
@@ -76,21 +76,21 @@ opaque gasSteps_monproFull (s : State) (mem : ByteArray) (pa pb p : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 168 ≤ s.activeWords.toNat) (hn32 : p + 2 ≤ 32)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * (p + 2) ≤ 4096)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * (p + 2) ≤ 4096)
+    (hact : 296 ≤ s.activeWords.toNat) (hn32 : p + 2 ≤ 32)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * (p + 2) ≤ 8192)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * (p + 2) ≤ 8192)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hs32 : MachineState.readWord mem 5248 = UInt256.ofNat (32 * (p + 2)))
-    (htl : MachineState.readWord mem 5344 = UInt256.ofNat (4128 + 32 * (p + 2)))
-    (hml : MachineState.readWord mem 5312 = UInt256.ofNat (32 * (p + 2) - 32))
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * (p + 2)))
+    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * (p + 2)))
+    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * (p + 2) - 32))
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
-    (hdstFit : pdst.toNat + 32 * (p + 2) ≤ 5376)
+    (hdstFit : pdst.toNat + 32 * (p + 2) ≤ 9472)
     (ha : Model.FastRepresents mem pa (p + 2) a)
     (hb : Model.FastRepresents mem pb (p + 2) b)
     (hm : Model.FastRepresents mem 0 (p + 2) mm)
     (ham : a < mm) (hmpos : 0 < mm)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
-        (MachineState.readWord mem 5280).toNat + 1) % 2 ^ 256 = 0) :
+        (MachineState.readWord mem 9376).toNat + 1) % 2 ^ 256 = 0) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
       (Csub.csReturnedState s

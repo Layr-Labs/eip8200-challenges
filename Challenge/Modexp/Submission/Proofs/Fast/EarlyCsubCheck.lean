@@ -11,22 +11,22 @@ open Challenge.EvmProof.Word
 
 /-- Nonzero exactly when the high-limb test cannot rule out subtraction. -/
 def guardWord (mem : ByteArray) : UInt256 :=
-  UInt256.lor (MachineState.readWord mem 4128)
-    (UInt256.isZero (UInt256.lt (MachineState.readWord mem 4160) (MachineState.readWord mem 0)))
+  UInt256.lor (MachineState.readWord mem 8224)
+    (UInt256.isZero (UInt256.lt (MachineState.readWord mem 8256) (MachineState.readWord mem 0)))
 
 theorem guardWord_eq (mem : ByteArray) : guardWord mem =
-    UInt256.lor (MachineState.readWord mem 4128)
-      (UInt256.isZero (UInt256.lt (MachineState.readWord mem 4160) (MachineState.readWord mem 0))) := rfl
+    UInt256.lor (MachineState.readWord mem 8224)
+      (UInt256.isZero (UInt256.lt (MachineState.readWord mem 8256) (MachineState.readWord mem 0))) := rfl
 
 def Skip (mem : ByteArray) : Prop := (guardWord mem).toNat = 0
 instance (mem : ByteArray) : Decidable (Skip mem) := inferInstanceAs (Decidable (_ = 0))
 
 theorem skip_iff (mem : ByteArray) : Skip mem ↔
-    (MachineState.readWord mem 4128).toNat = 0 ∧
-    (MachineState.readWord mem 4160).toNat < (MachineState.readWord mem 0).toNat := by
+    (MachineState.readWord mem 8224).toNat = 0 ∧
+    (MachineState.readWord mem 8256).toNat < (MachineState.readWord mem 0).toNat := by
   unfold Skip guardWord
   rw [word_toNat_lor, word_toNat_isZero, word_toNat_lt]
-  by_cases h : (MachineState.readWord mem 4160).toNat < (MachineState.readWord mem 0).toNat
+  by_cases h : (MachineState.readWord mem 8256).toNat < (MachineState.readWord mem 0).toNat
   · simp [h]
   · simp [h]
     intro hz
@@ -35,12 +35,12 @@ theorem skip_iff (mem : ByteArray) : Skip mem ↔
 
 /-- The flipped guard's jump condition: nonzero exactly when the subtraction is skipped. -/
 def jumpWord (mem : ByteArray) : UInt256 :=
-  UInt256.land (UInt256.isZero (MachineState.readWord mem 4128))
-    (UInt256.lt (MachineState.readWord mem 4160) (MachineState.readWord mem 0))
+  UInt256.land (UInt256.isZero (MachineState.readWord mem 8224))
+    (UInt256.lt (MachineState.readWord mem 8256) (MachineState.readWord mem 0))
 
 theorem jumpWord_eq (mem : ByteArray) : jumpWord mem =
-    UInt256.land (UInt256.isZero (MachineState.readWord mem 4128))
-      (UInt256.lt (MachineState.readWord mem 4160) (MachineState.readWord mem 0)) := rfl
+    UInt256.land (UInt256.isZero (MachineState.readWord mem 8224))
+      (UInt256.lt (MachineState.readWord mem 8256) (MachineState.readWord mem 0)) := rfl
 
 theorem jumpWord_toNat (mem : ByteArray) :
     (jumpWord mem).toNat = if Skip mem then 1 else 0 := by
@@ -52,17 +52,17 @@ theorem jumpWord_toNat (mem : ByteArray) :
     rw [if_pos h2, if_pos h1]; rfl
   · rw [if_neg h]
     rw [skip_iff] at h
-    by_cases h2 : (MachineState.readWord mem 4160).toNat < (MachineState.readWord mem 0).toNat
-    · have h1 : ¬ (MachineState.readWord mem 4128).toNat = 0 := fun h1 => h ⟨h1, h2⟩
+    by_cases h2 : (MachineState.readWord mem 8256).toNat < (MachineState.readWord mem 0).toNat
+    · have h1 : ¬ (MachineState.readWord mem 8224).toNat = 0 := fun h1 => h ⟨h1, h2⟩
       rw [if_pos h2, if_neg h1]; rfl
     · rw [if_neg h2]; split <;> rfl
 
 /-- For equal-width big-endian arrays, a strict high-limb comparison orders
     the represented integers regardless of all lower limbs. -/
 theorem high_limb_lt {mem : ByteArray} {n t m : Nat}
-    (hn : 1 ≤ n) (ht : Model.FastRepresents mem 4160 n t)
+    (hn : 1 ≤ n) (ht : Model.FastRepresents mem 8256 n t)
     (hm : Model.FastRepresents mem 0 n m)
-    (h : (MachineState.readWord mem 4160).toNat < (MachineState.readWord mem 0).toNat) :
+    (h : (MachineState.readWord mem 8256).toNat < (MachineState.readWord mem 0).toNat) :
     t < m := by
   have ht0 := Model.readWord_of_fastRepresents ht (j := 0) (by omega)
   have hm0 := Model.readWord_of_fastRepresents hm (j := 0) (by omega)

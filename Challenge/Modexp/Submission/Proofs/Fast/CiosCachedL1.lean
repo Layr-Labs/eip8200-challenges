@@ -48,7 +48,7 @@ theorem last_eq (t : UInt256) :
     l1LastProgram t = lastLoadProgram ++ macFusedProgram t t := rfl
 
 /-- Keep symbolic word conversion outside the large execution proof. -/
-theorem base_offset_toNat (pa : Nat) (off : UInt256) (hfit : pa + off.toNat ≤ 5376) :
+theorem base_offset_toNat (pa : Nat) (off : UInt256) (hfit : pa + off.toNat ≤ 9472) :
     (UInt256.ofNat pa + off).toNat = pa + off.toNat := by
   have hpa : pa < 2 ^ 256 := by omega
   have hsum : pa + off.toNat < 2 ^ 256 := by omega
@@ -99,14 +99,14 @@ theorem run_last_load (template : State)
 theorem run_step (template : State) (pc : UInt256) (mem : ByteArray)
     (bi : UInt256) (pa n j : Nat) (off t : UInt256)
     (hoff : off.toNat = 32 * (n - 1 - j))
-    (ht : t.toNat = 4160 + 32 * (n - 1 - j))
+    (ht : t.toNat = 8256 + 32 * (n - 1 - j))
     (pbi pbEnd flag destination returnPC : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
-    (hactive : 168 ≤ template.activeWords.toNat) (hn : n ≤ 32) (hj : j < n)
-    (_hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 5376) :
+    (hactive : 296 ≤ template.activeWords.toNat) (hn : n ≤ 32) (hj : j < n)
+    (_hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     runInstructions (l1Program off t)
       (state template pc mem bi pa n j pbi pbEnd flag destination returnPC rest) =
-    some (state template (pc + UInt256.ofNat 38) mem bi pa n (j+1)
+    some (state template (pc + UInt256.ofNat 37) mem bi pa n (j+1)
       pbi pbEnd flag destination returnPC rest) := by
   have haddr : (UInt256.ofNat pa + off).toNat = pa + 32*(n-1-j) := by
     rw [base_offset_toNat pa off (by omega), hoff]
@@ -114,7 +114,7 @@ theorem run_step (template : State) (pc : UInt256) (mem : ByteArray)
       (pa + 32*(n-1-j)) 32) = template.activeWords :=
     activeWords_fix template _ 32 (by decide) (by omega) hactive
   have hactT : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
-      (4160 + 32*(n-1-j)) 32) = template.activeWords :=
+      (8256 + 32*(n-1-j)) 32) = template.activeWords :=
     activeWords_fix template _ 32 (by decide) (by omega) hactive
   let st : State := { template with memory := (l1Step mem bi pa n j).memory }
   have hA : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat
@@ -130,8 +130,8 @@ theorem run_step (template : State) (pc : UInt256) (mem : ByteArray)
     ([pbi, UInt256.ofNat pa, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) hT hT
   have hall := runInstructions_append_some _ _ _ _ _ hl hf
-  have hpc : (pc + UInt256.ofNat 6) + UInt256.ofNat 32 =
-      pc + UInt256.ofNat 38 := by
+  have hpc : (pc + UInt256.ofNat 6) + UInt256.ofNat 31 =
+      pc + UInt256.ofNat 37 := by
     simp [word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
   simpa only [program_eq, st, state, framed, l1Step, haddr, ht, hpc,
     List.cons_append, List.nil_append] using hall
@@ -139,11 +139,11 @@ theorem run_step (template : State) (pc : UInt256) (mem : ByteArray)
 /-- The first cell of a row has zero carry by definition, not by a new caller assumption. -/
 theorem run_first (template : State) (pc : UInt256) (mem : ByteArray)
     (bi : UInt256) (pa n : Nat) (off t : UInt256)
-    (hoff : off.toNat = 32 * (n - 1)) (ht : t.toNat = 4160 + 32 * (n - 1))
+    (hoff : off.toNat = 32 * (n - 1)) (ht : t.toNat = 8256 + 32 * (n - 1))
     (pbi pbEnd flag destination returnPC : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
-    (hactive : 168 ≤ template.activeWords.toNat) (hn : n ≤ 32) (hpos : 0 < n)
-    (_hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 5376) :
+    (hactive : 296 ≤ template.activeWords.toNat) (hn : n ≤ 32) (hpos : 0 < n)
+    (_hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     runInstructions (l1FirstProgram off t)
       (state template pc mem bi pa n 0 pbi pbEnd flag destination returnPC rest) =
     some (state template (pc + UInt256.ofNat 35) mem bi pa n 1
@@ -154,7 +154,7 @@ theorem run_first (template : State) (pc : UInt256) (mem : ByteArray)
       (pa + 32*(n-1)) 32) = template.activeWords :=
     activeWords_fix template _ 32 (by decide) (by omega) hactive
   have hactT : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
-      (4160 + 32*(n-1)) 32) = template.activeWords :=
+      (8256 + 32*(n-1)) 32) = template.activeWords :=
     activeWords_fix template _ 32 (by decide) (by omega) hactive
   let st : State := { template with memory := mem }
   have hA : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat
@@ -183,21 +183,21 @@ theorem run_first (template : State) (pc : UInt256) (mem : ByteArray)
 
 /-- Terminal cell loads directly at the cached base. -/
 theorem run_last (template : State) (pc : UInt256) (mem : ByteArray)
-    (bi : UInt256) (pa n : Nat) (t : UInt256) (ht : t.toNat = 4160)
+    (bi : UInt256) (pa n : Nat) (t : UInt256) (ht : t.toNat = 8256)
     (pbi pbEnd flag destination returnPC : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
-    (hactive : 168 ≤ template.activeWords.toNat) (hn : n ≤ 32) (hpos : 0 < n)
-    (_hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 5376) :
+    (hactive : 296 ≤ template.activeWords.toNat) (hn : n ≤ 32) (hpos : 0 < n)
+    (_hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472) :
     runInstructions (l1LastProgram t)
       (state template pc mem bi pa n (n-1) pbi pbEnd flag destination returnPC rest) =
-    some (doneState template (pc + UInt256.ofNat 35) mem bi pa n
+    some (doneState template (pc + UInt256.ofNat 34) mem bi pa n
       pbi pbEnd flag destination returnPC rest) := by
   have hpaNat : (UInt256.ofNat pa).toNat = pa := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat]
     exact Nat.mod_eq_of_lt (by omega)
   have hactA : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat pa 32) =
       template.activeWords := activeWords_fix template _ 32 (by decide) (by omega) hactive
-  have hactT : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat 4160 32) =
+  have hactT : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat 8256 32) =
       template.activeWords := activeWords_fix template _ 32 (by decide) (by omega) hactive
   let st : State := { template with memory := (l1Step mem bi pa n (n-1)).memory }
   have hA : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat
@@ -213,12 +213,12 @@ theorem run_last (template : State) (pc : UInt256) (mem : ByteArray)
     ([pbi, UInt256.ofNat pa, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) hT hT
   have hall := runInstructions_append_some _ _ _ _ _ hl hf
-  have hpc : advancePC 3 pc + UInt256.ofNat 32 = pc + UInt256.ofNat 35 := by
+  have hpc : advancePC 3 pc + UInt256.ofNat 31 = pc + UInt256.ofNat 34 := by
     simp [advancePC, succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
   have hnn : n-1+1 = n := by omega
   have hfinal : runInstructions (l1LastProgram t)
       (state template pc mem bi pa n (n-1) pbi pbEnd flag destination returnPC rest) =
-      some (state template (pc + UInt256.ofNat 35) mem bi pa n (n-1+1)
+      some (state template (pc + UInt256.ofNat 34) mem bi pa n (n-1+1)
         pbi pbEnd flag destination returnPC rest) := by
     simpa only [last_eq, st, state, framed, l1Step, hpaNat, ht, hpc,
       Nat.sub_self, Nat.mul_zero, Nat.add_zero, List.cons_append, List.nil_append] using hall

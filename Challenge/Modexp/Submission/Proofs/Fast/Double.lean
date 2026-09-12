@@ -8,18 +8,18 @@ set_option maxHeartbeats 4000000
 /-!
 # The `DOUBLE256` subroutine of the appended Montgomery path
 
-`DOUBLE256` occupies instruction indices 1360..1378 (pc 1911..1938).  It is
-entered at pc 1911 with stack `[px, ret]` and calls `ADDMOD(px, px, px)` 256
+`DOUBLE256` occupies instruction indices 1408..1426 (pc 1959..1986).  It is
+entered at pc 1959 with stack `[px, ret]` and calls `ADDMOD(px, px, px)` 256
 times, so the `n`-limb block at `px` goes from `x` to `x * radix mod m`.
 
 The four basic blocks are
 
-* `blk1360` (idx 1360..1361, pc 1911..1912) — `JUMPDEST; PUSH2 256`;
-* `blk1362` (idx 1362..1368, pc 1841..1925) — the loop head `DBL`, which
-  pushes the call frame `[px, px, px, 1852]` and jumps to `ADDMOD` (pc 2224);
-* `blk1369` (idx 1369..1375, pc 1852..1935) — the return point, which
-  decrements the counter and jumps back to pc 1841 while it is nonzero;
-* `blk1376` (idx 1376..1378, pc 1936..1938) — `POP; POP; JUMP ret`.
+* `blk1360` (idx 1408..1361, pc 1959..1960) — `JUMPDEST; PUSH2 256`;
+* `blk1362` (idx 1362..1368, pc 1889..1973) — the loop head `DBL`, which
+  pushes the call frame `[px, px, px, 1852]` and jumps to `ADDMOD` (pc 2269);
+* `blk1369` (idx 1369..1423, pc 1852..1983) — the return point, which
+  decrements the counter and jumps back to pc 1889 while it is nonzero;
+* `blk1376` (idx 1376..1426, pc 1984..1986) — `POP; POP; JUMP ret`.
 
 The `ADDMOD` subroutine itself is developed in `Fast.Csub`; here it enters
 only through an abstract single-step contract, so this module does not depend
@@ -51,39 +51,39 @@ and the caller's return address. -/
 def loopStack (px k : Nat) (ret : UInt256) (rest : List UInt256) : List UInt256 :=
   [UInt256.ofNat k, UInt256.ofNat px, ret] ++ rest
 
-/-- Subroutine entry, pc 1911, stack `[px, ret]`. -/
+/-- Subroutine entry, pc 1959, stack `[px, ret]`. -/
 def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1733
+  { s with pc := UInt256.ofNat 1646
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
-/-- The loop head `DBL`, pc 1841, with the counter at `k`. -/
+/-- The loop head `DBL`, pc 1889, with the counter at `k`. -/
 def loopState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1737
+  { s with pc := UInt256.ofNat 1650
            stack := loopStack px k ret rest
            memory := mem }
 
-/-- The `ADDMOD` call, pc 2224, with the frame `[px, px, px, 1852]` pushed. -/
+/-- The `ADDMOD` call, pc 2269, with the frame `[px, px, px, 1852]` pushed. -/
 def callState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2033
+  { s with pc := UInt256.ofNat 1946
            stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
-                     UInt256.ofNat 1748] ++ loopStack px k ret rest
+                     UInt256.ofNat 1661] ++ loopStack px k ret rest
            memory := mem }
 
 /-- The return point, pc 1852, with the counter still at `k`. -/
 def retState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1748
+  { s with pc := UInt256.ofNat 1661
            stack := loopStack px k ret rest
            memory := mem }
 
-/-- The loop exit, pc 1936, with the counter at zero. -/
+/-- The loop exit, pc 1984, with the counter at zero. -/
 def exitState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1758
+  { s with pc := UInt256.ofNat 1671
            stack := loopStack px 0 ret rest
            memory := mem }
 
@@ -97,7 +97,7 @@ def doneState (s : State) (mem : ByteArray) (ret : UInt256)
 /-! ## Block reductions -/
 
 set_option linter.unusedSimpArgs false in
-/-- `blk1360` (pc 1911..1912): the subroutine prologue pushes the counter. -/
+/-- `blk1360` (pc 1959..1960): the subroutine prologue pushes the counter. -/
 theorem run_entry (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1360
@@ -115,8 +115,8 @@ theorem run_entry (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
-/-- `blk1362` (pc 1841..1925): the loop head pushes the `ADDMOD` frame
-`[px, px, px, 1852]` and jumps to pc 2224. -/
+/-- `blk1362` (pc 1889..1973): the loop head pushes the `ADDMOD` frame
+`[px, px, px, 1852]` and jumps to pc 2269. -/
 theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -130,9 +130,9 @@ theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
-  have h1926 : (1748 : UInt256) = UInt256.ofNat 1748 := by decide
-  have h2467 : (2033 : UInt256) = UInt256.ofNat 2033 := by decide
-  have h2467Nat : (UInt256.ofNat 2033).toNat = 2033 := by decide
+  have h1926 : (1661 : UInt256) = UInt256.ofNat 1661 := by decide
+  have h2467 : (1946 : UInt256) = UInt256.ofNat 1946 := by decide
+  have h2467Nat : (UInt256.ofNat 1946).toNat = 1946 := by decide
   simp (config := { maxSteps := 400000 }) [blk1362, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -145,7 +145,7 @@ theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
-/-- `blk1369` (pc 1852..1935), counter above one: decrement and loop. -/
+/-- `blk1369` (pc 1852..1983), counter above one: decrement and loop. -/
 theorem run_ret (s : State) (mem : ByteArray) (px k k' : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hk : k = k' + 1) (hk' : 1 ≤ k') (hk256 : k ≤ 256)
@@ -159,8 +159,8 @@ theorem run_ret (s : State) (mem : ByteArray) (px k k' : Nat) (ret : UInt256)
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
-  have h1915 : (1737 : UInt256) = UInt256.ofNat 1737 := by decide
-  have h1915Nat : (UInt256.ofNat 1737).toNat = 1737 := by decide
+  have h1915 : (1650 : UInt256) = UInt256.ofNat 1650 := by decide
+  have h1915Nat : (UInt256.ofNat 1650).toNat = 1650 := by decide
   have hsub : UInt256.ofNat (k' + 1) - UInt256.ofNat 1 = UInt256.ofNat k' := by
     have h := Challenge.EvmProof.Word.ofNat_sub_ofNat
       (a := k' + 1) (b := 1) (by omega) (by omega)
@@ -180,7 +180,7 @@ theorem run_ret (s : State) (mem : ByteArray) (px k k' : Nat) (ret : UInt256)
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
-/-- `blk1369` (pc 1852..1935), counter one: fall through to the exit. -/
+/-- `blk1369` (pc 1852..1983), counter one: fall through to the exit. -/
 theorem run_retLast (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1369
@@ -190,7 +190,7 @@ theorem run_retLast (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
-  have h1915 : (1737 : UInt256) = UInt256.ofNat 1737 := by decide
+  have h1915 : (1650 : UInt256) = UInt256.ofNat 1650 := by decide
   have hsub : UInt256.ofNat 1 - UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
   have hfalse : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
   simp (config := { maxSteps := 400000 }) [blk1369, opAt, pushAt, wfOp,
@@ -204,7 +204,7 @@ theorem run_retLast (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
-/-- `blk1376` (pc 1936..1938): pop the frame and return to the caller. -/
+/-- `blk1376` (pc 1984..1986): pop the frame and return to the caller. -/
 theorem run_exit (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -357,7 +357,7 @@ def gasSteps_loop (s : State) (px : Nat) (ret : UInt256) (rest : List UInt256)
     (fun i hi => gasSteps_iteration s px ret rest mems addmod hcap hcode hfork hrun
       hnp i hi)
 
-/-- **Execution certificate for `DOUBLE256`.**  Entering pc 1911 with stack
+/-- **Execution certificate for `DOUBLE256`.**  Entering pc 1959 with stack
 `[px, ret]` runs 256 `ADDMOD(px, px, px)` calls and returns to `ret` with the
 frame popped. -/
 def gasSteps_double256 (s : State) (px : Nat) (ret : UInt256)
@@ -433,8 +433,8 @@ theorem iterMem_preserves (f : ByteArray → ByteArray) (mem : ByteArray)
 
 /-! ## Wiring in the concrete `ADDMOD` subroutine
 
-`Fast.Csub` proves `ADDMOD` from its entry at pc 2224 down to the `CSUB` entry
-at pc 2309, and `CSUB` from there to the return jump.  Composing the two gives
+`Fast.Csub` proves `ADDMOD` from its entry at pc 2269 down to the `CSUB` entry
+at pc 2354, and `CSUB` from there to the return jump.  Composing the two gives
 the indexed contract the loop above consumes, with memory transformer
 `dblStep px n`. -/
 
@@ -445,9 +445,9 @@ def dblStep (px n : Nat) (mem : ByteArray) : ByteArray :=
 /-- The three derived variables `ADDMOD` and `CSUB` read: `V_S32 = 0x2480`,
 `V_ML = 0x24C0` and `V_TL = 0x24E0`. -/
 structure Vars (mem : ByteArray) (n : Nat) : Prop where
-  s32 : MachineState.readWord mem 5248 = UInt256.ofNat (32 * n)
-  ml : MachineState.readWord mem 5312 = UInt256.ofNat (32 * n - 32)
-  tl : MachineState.readWord mem 5344 = UInt256.ofNat (4128 + 32 * n)
+  s32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n)
+  ml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * n - 32)
+  tl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n)
 
 theorem loopStack_length (px k : Nat) (ret : UInt256) (rest : List UInt256) :
     (loopStack px k ret rest).length = rest.length + 3 := by
@@ -455,7 +455,7 @@ theorem loopStack_length (px k : Nat) (ret : UInt256) (rest : List UInt256) :
 
 /-- `ADDMOD` touches nothing at or above `0x2480`. -/
 theorem readWord_amResultMemory_high (mem : ByteArray) (pa pb n addr : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 32) (haddr : 5248 ≤ addr) :
+    (hn : 1 ≤ n) (hn32 : n ≤ 32) (haddr : 9344 ≤ addr) :
     MachineState.readWord (Csub.amResultMemory mem pa pb n) addr =
       MachineState.readWord mem addr := by
   rw [Csub.amResultMemory_def,
@@ -465,27 +465,27 @@ theorem readWord_amResultMemory_high (mem : ByteArray) (pa pb n addr : Nat)
 /-- `CSUB` touches nothing at or above `0x2480` either, as long as its
 destination block stays below. -/
 theorem readWord_csResultMemory_high (mem : ByteArray) (n pdst addr : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 32) (hpdst : pdst + 32 * n ≤ 5248) (haddr : 5248 ≤ addr) :
+    (hn : 1 ≤ n) (hn32 : n ≤ 32) (hpdst : pdst + 32 * n ≤ 9344) (haddr : 9344 ≤ addr) :
     MachineState.readWord (Csub.csResultMemory mem n pdst) addr =
       MachineState.readWord mem addr :=
   Csub.guarded_readWord_outside mem n pdst addr hn (Or.inr (by omega))
     (Or.inr (by omega))
 
 theorem vars_dblStep (mem : ByteArray) (px n : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hpxFit : px + 32 * n ≤ 4096) (hv : Vars mem n) : Vars (dblStep px n mem) n := by
+    (hpxFit : px + 32 * n ≤ 8192) (hv : Vars mem n) : Vars (dblStep px n mem) n := by
   refine ⟨?_, ?_, ?_⟩
-  · rw [dblStep, readWord_csResultMemory_high _ n px 5248 (by omega) hn32 (by omega)
-      (by omega), readWord_amResultMemory_high _ px px n 5248 (by omega) hn32 (by omega)]
+  · rw [dblStep, readWord_csResultMemory_high _ n px 9344 (by omega) hn32 (by omega)
+      (by omega), readWord_amResultMemory_high _ px px n 9344 (by omega) hn32 (by omega)]
     exact hv.s32
-  · rw [dblStep, readWord_csResultMemory_high _ n px 5312 (by omega) hn32 (by omega)
-      (by omega), readWord_amResultMemory_high _ px px n 5312 (by omega) hn32 (by omega)]
+  · rw [dblStep, readWord_csResultMemory_high _ n px 9408 (by omega) hn32 (by omega)
+      (by omega), readWord_amResultMemory_high _ px px n 9408 (by omega) hn32 (by omega)]
     exact hv.ml
-  · rw [dblStep, readWord_csResultMemory_high _ n px 5344 (by omega) hn32 (by omega)
-      (by omega), readWord_amResultMemory_high _ px px n 5344 (by omega) hn32 (by omega)]
+  · rw [dblStep, readWord_csResultMemory_high _ n px 9440 (by omega) hn32 (by omega)
+      (by omega), readWord_amResultMemory_high _ px px n 9440 (by omega) hn32 (by omega)]
     exact hv.tl
 
 theorem vars_iterMem (mem : ByteArray) (px n : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hpxFit : px + 32 * n ≤ 4096) (hv : Vars mem n) (i : Nat) :
+    (hpxFit : px + 32 * n ≤ 8192) (hv : Vars mem n) (i : Nat) :
     Vars (iterMem (dblStep px n) mem i) n := by
   induction i with
   | zero => exact hv
@@ -495,7 +495,7 @@ theorem vars_iterMem (mem : ByteArray) (px n : Nat) (hn : 2 ≤ n) (hn32 : n ≤
 theorem csReturned_eq (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt256)
     (rest : List UInt256) (hpx : px < 2 ^ 256) :
     Csub.csReturnedState s (Csub.amResultMemory mem px px n) n n (UInt256.ofNat px)
-        (UInt256.ofNat 1748) (loopStack px k ret rest) =
+        (UInt256.ofNat 1661) (loopStack px k ret rest) =
       retState s (dblStep px n mem) px k ret rest := by
   have hpxN : (UInt256.ofNat px).toNat = px := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hpx]
@@ -508,36 +508,36 @@ def gasSteps_addmodStep (s : State) (mem : ByteArray) (px n : Nat) (ret' : UInt2
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 168 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hpx : 32 ≤ px) (hpxFit : px + 32 * n ≤ 4096)
+    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hpx : 32 ≤ px) (hpxFit : px + 32 * n ≤ 8192)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret'.toNat = true)
     (hv : Vars mem n) :
     Challenge.EvmProof.GasSteps
       (Csub.amEntryState s mem px px (UInt256.ofNat px) ret' tail)
       (Csub.csReturnedState s (Csub.amResultMemory mem px px n) n n
         (UInt256.ofNat px) ret' tail) :=
-  have hml : MachineState.readWord (Csub.amResultMemory mem px px n) 5312 =
+  have hml : MachineState.readWord (Csub.amResultMemory mem px px n) 9408 =
       UInt256.ofNat (32 * n - 32) := by
-    rw [readWord_amResultMemory_high _ px px n 5312 (by omega) hn32 (by omega)]
+    rw [readWord_amResultMemory_high _ px px n 9408 (by omega) hn32 (by omega)]
     exact hv.ml
-  have htl : MachineState.readWord (Csub.amResultMemory mem px px n) 5344 =
-      UInt256.ofNat (4128 + 32 * n) := by
-    rw [readWord_amResultMemory_high _ px px n 5344 (by omega) hn32 (by omega)]
+  have htl : MachineState.readWord (Csub.amResultMemory mem px px n) 9440 =
+      UInt256.ofNat (8224 + 32 * n) := by
+    rw [readWord_amResultMemory_high _ px px n 9440 (by omega) hn32 (by omega)]
     exact hv.tl
   have hs32' : MachineState.readWord
-      (Csub.csStep (Csub.amResultMemory mem px px n) n n).memory 5248 =
+      (Csub.csStep (Csub.amResultMemory mem px px n) n n).memory 9344 =
       UInt256.ofNat (32 * n) := by
-    rw [Csub.csStep_readWord_disjoint _ n 5248 (by omega) (Or.inr (by omega)) n le_rfl,
-      readWord_amResultMemory_high _ px px n 5248 (by omega) hn32 (by omega)]
+    rw [Csub.csStep_readWord_disjoint _ n 9344 (by omega) (Or.inr (by omega)) n le_rfl,
+      readWord_amResultMemory_high _ px px n 9344 (by omega) hn32 (by omega)]
     exact hv.s32
   have htn : (MachineState.readWord
-      (Csub.csStep (Csub.amResultMemory mem px px n) n n).memory 4128).toNat ≤ 1 := by
-    rw [Csub.csStep_readWord_disjoint _ n 4128 (by omega) (Or.inr (by omega)) n le_rfl,
+      (Csub.csStep (Csub.amResultMemory mem px px n) n n).memory 8224).toNat ≤ 1 := by
+    rw [Csub.csStep_readWord_disjoint _ n 8224 (by omega) (Or.inr (by omega)) n le_rfl,
       Csub.addmod_tn]
     exact Csub.addmod_carry_le_one mem px px n hn (by omega) (by omega)
-  have hdstFit : (UInt256.ofNat px).toNat + 32 * n ≤ 5376 := by
+  have hdstFit : (UInt256.ofNat px).toNat + 32 * n ≤ 9472 := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt (Nat.lt_of_le_of_lt (show px ≤ 4096 by omega) (by norm_num))]
+      Nat.mod_eq_of_lt (Nat.lt_of_le_of_lt (show px ≤ 8192 by omega) (by norm_num))]
     omega
   (Csub.gasSteps_addmod s mem px px n (UInt256.ofNat px) ret' tail hcap hcode hfork hrun
       hnp hact hn hn32 hpx (by omega) hpx (by omega) hv.s32 hv.tl).trans
@@ -546,12 +546,12 @@ def gasSteps_addmodStep (s : State) (mem : ByteArray) (px n : Nat) (ret' : UInt2
 
 theorem jump1926 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (UInt256.ofNat 1748).toNat = true := by
-  rw [show (UInt256.ofNat 1748).toNat = 1748 by decide]
+      (UInt256.ofNat 1661).toNat = true := by
+  rw [show (UInt256.ofNat 1661).toNat = 1661 by decide]
   exact jumpDest1852
 
 /-- **`DOUBLE256` against the real `ADDMOD`.**  With the derived variables in
-place, entering pc 1911 with `[px, ret]` returns to `ret` with the block at
+place, entering pc 1959 with `[px, ret]` returns to `ret` with the block at
 `px` doubled 256 times. -/
 def gasSteps_double256_addmod (s : State) (mem : ByteArray) (px n : Nat)
     (ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1000)
@@ -560,19 +560,19 @@ def gasSteps_double256_addmod (s : State) (mem : ByteArray) (px n : Nat)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 168 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hpx : 32 ≤ px) (hpxFit : px + 32 * n ≤ 4096) (hv : Vars mem n) :
+    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hpx : 32 ≤ px) (hpxFit : px + 32 * n ≤ 8192) (hv : Vars mem n) :
     Challenge.EvmProof.GasSteps (entryState s mem px ret rest)
       (doneState s (iterMem (dblStep px n) mem 256) ret rest) :=
   gasSteps_double256 s px ret rest (iterMem (dblStep px n) mem)
     (fun i _ => Challenge.EvmProof.GasSteps.cast
-      (gasSteps_addmodStep s (iterMem (dblStep px n) mem i) px n (UInt256.ofNat 1748)
+      (gasSteps_addmodStep s (iterMem (dblStep px n) mem i) px n (UInt256.ofNat 1661)
         (loopStack px (256 - i) ret rest)
         (by rw [loopStack_length]; omega) hcode hfork hrun hnp hact hn hn32 hpx hpxFit
         jump1926 (vars_iterMem mem px n hn hn32 hpxFit hv i))
       rfl
       (csReturned_eq s (iterMem (dblStep px n) mem i) px n (256 - i) ret rest
-        (Nat.lt_of_le_of_lt (show px ≤ 4096 by omega) (by norm_num))))
+        (Nat.lt_of_le_of_lt (show px ≤ 8192 by omega) (by norm_num))))
     (by omega) hcode hjump hfork hrun hnp
 
 
@@ -580,7 +580,7 @@ def gasSteps_double256_addmod (s : State) (mem : ByteArray) (px n : Nat)
 
 /-- One `ADDMOD(px, px, px)` call doubles the block at `px` modulo `m`. -/
 theorem dblStep_represents (mem : ByteArray) (px n mm x : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hpxFit : px + 32 * n ≤ 4096) (_hpxLow : 32 * n ≤ px)
+    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hpxFit : px + 32 * n ≤ 8192) (_hpxLow : 32 * n ≤ px)
     (hm : Model.FastRepresents mem 0 n mm) (hmpos : 0 < mm)
     (hx : Model.FastRepresents mem px n x) (hxlt : x < mm) :
     Model.FastRepresents (dblStep px n mem) px n ((x + x) % mm) :=
@@ -590,8 +590,8 @@ theorem dblStep_represents (mem : ByteArray) (px n mm x : Nat)
 /-- One `ADDMOD(px, px, px)` call leaves every block outside the `t`, `SUBB`
 and destination areas alone. -/
 theorem dblStep_preserves (mem : ByteArray) (px n ptr cnt v : Nat) (hn : 2 ≤ n)
-    (hdisjT : ptr + 32 * cnt ≤ 4128 ∨ 4160 + 32 * n ≤ ptr)
-    (hdisjSubb : ptr + 32 * cnt ≤ 3072 ∨ 3072 + 32 * n ≤ ptr)
+    (hdisjT : ptr + 32 * cnt ≤ 8224 ∨ 8256 + 32 * n ≤ ptr)
+    (hdisjSubb : ptr + 32 * cnt ≤ 7168 ∨ 7168 + 32 * n ≤ ptr)
     (hdisjDst : px + 32 * n ≤ ptr ∨ ptr + 32 * cnt ≤ px)
     (hrep : Model.FastRepresents mem ptr cnt v) :
     Model.FastRepresents (dblStep px n mem) ptr cnt v :=
@@ -601,7 +601,7 @@ theorem dblStep_preserves (mem : ByteArray) (px n ptr cnt v : Nat) (hn : 2 ≤ n
 /-- **The loop invariant.**  After `i` calls the modulus block is intact and
 the block at `px` holds `x * 2 ^ i mod m`. -/
 theorem iterMem_dblStep_invariant (mem : ByteArray) (px n mm x : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hpxFit : px + 32 * n ≤ 4096) (hpxLow : 32 * n ≤ px)
+    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hpxFit : px + 32 * n ≤ 8192) (hpxLow : 32 * n ≤ px)
     (hmpos : 0 < mm) (hm : Model.FastRepresents mem 0 n mm)
     (hx : Model.FastRepresents mem px n x) (hxlt : x < mm) (i : Nat) :
     Model.FastRepresents (iterMem (dblStep px n) mem i) 0 n mm ∧
@@ -620,7 +620,7 @@ theorem iterMem_dblStep_invariant (mem : ByteArray) (px n mm x : Nat)
 /-- **Functional postcondition of `DOUBLE256`.**  The block at `px` goes from
 `x` to `x * radix mod m`. -/
 theorem double256_addmod_represents (mem : ByteArray) (px n mm x : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hpxFit : px + 32 * n ≤ 4096) (hpxLow : 32 * n ≤ px)
+    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hpxFit : px + 32 * n ≤ 8192) (hpxLow : 32 * n ≤ px)
     (hmpos : 0 < mm) (hm : Model.FastRepresents mem 0 n mm)
     (hx : Model.FastRepresents mem px n x) (hxlt : x < mm) :
     Model.FastRepresents (iterMem (dblStep px n) mem 256) px n
@@ -631,7 +631,7 @@ theorem double256_addmod_represents (mem : ByteArray) (px n mm x : Nat)
 
 /-- The modulus block survives the whole subroutine. -/
 theorem double256_addmod_modulus (mem : ByteArray) (px n mm x : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hpxFit : px + 32 * n ≤ 4096) (hpxLow : 32 * n ≤ px)
+    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hpxFit : px + 32 * n ≤ 8192) (hpxLow : 32 * n ≤ px)
     (hmpos : 0 < mm) (hm : Model.FastRepresents mem 0 n mm)
     (hx : Model.FastRepresents mem px n x) (hxlt : x < mm) :
     Model.FastRepresents (iterMem (dblStep px n) mem 256) 0 n mm :=
@@ -641,8 +641,8 @@ theorem double256_addmod_modulus (mem : ByteArray) (px n mm x : Nat)
 `px` itself survives all 256 iterations. -/
 theorem double256_addmod_preserves (mem : ByteArray) (px n ptr cnt v : Nat)
     (hn : 2 ≤ n)
-    (hdisjT : ptr + 32 * cnt ≤ 4128 ∨ 4160 + 32 * n ≤ ptr)
-    (hdisjSubb : ptr + 32 * cnt ≤ 3072 ∨ 3072 + 32 * n ≤ ptr)
+    (hdisjT : ptr + 32 * cnt ≤ 8224 ∨ 8256 + 32 * n ≤ ptr)
+    (hdisjSubb : ptr + 32 * cnt ≤ 7168 ∨ 7168 + 32 * n ≤ ptr)
     (hdisjDst : px + 32 * n ≤ ptr ∨ ptr + 32 * cnt ≤ px)
     (hrep : Model.FastRepresents mem ptr cnt v) (i : Nat) :
     Model.FastRepresents (iterMem (dblStep px n) mem i) ptr cnt v := by

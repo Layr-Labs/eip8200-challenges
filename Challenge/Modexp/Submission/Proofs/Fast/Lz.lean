@@ -8,8 +8,8 @@ set_option maxHeartbeats 4000000
 /-!
 # The `LZ` head of the exponent-byte loop
 
-`LZ` occupies instruction indices 1781..1815 (pc 2560..2970).  It is entered
-at pc 2560 with the byte index `i` on top of the driver frame, loads exponent
+`LZ` occupies instruction indices 1829..1863 (pc 2601..3011).  It is entered
+at pc 2601 with the byte index `i` on top of the driver frame, loads exponent
 byte `i` exactly as the code it replaces did, and then chooses the mask the
 inner bit loop starts from:
 
@@ -17,7 +17,7 @@ inner bit loop starts from:
 * for `i = 0` it is the highest set bit of the byte, so the bit loop starts at
   the exponent's leading one instead of at bit 7.
 
-Both arms rejoin the bit loop at pc 1789.
+Both arms rejoin the bit loop at pc 1837.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.Lz
@@ -37,14 +37,14 @@ attribute [local simp] List.getElem?_cons_zero
 restated here for the `V_EOFF` load. -/
 
 theorem activeWordsAfter_fix (curr off sz : Nat) (hsz : sz ≠ 0)
-    (hoff : off + sz ≤ 5408) (hcurr : 169 ≤ curr) :
+    (hoff : off + sz ≤ 9536) (hcurr : 298 ≤ curr) :
     MachineState.activeWordsAfter curr off sz = curr := by
   unfold MachineState.activeWordsAfter
   simp only [hsz, if_false]
   exact Nat.max_eq_left (by omega)
 
 theorem activeWords_fix (s : State) (off sz : Nat) (hsz : sz ≠ 0)
-    (hoff : off + sz ≤ 5408) (hact : 169 ≤ s.activeWords.toNat) :
+    (hoff : off + sz ≤ 9536) (hact : 298 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat off sz) =
       s.activeWords := by
   rw [activeWordsAfter_fix _ off sz hsz hoff hact]
@@ -82,36 +82,36 @@ theorem topExp_le (w : Nat) (hw : w < 256) (hne : w ≠ 0) : 2 ^ topExp w ≤ w 
 
 /-! ## States at the block boundaries -/
 
-/-- The `LZ` entry, pc 2560.  The driver frame below the byte index is left
+/-- The `LZ` entry, pc 2601.  The driver frame below the byte index is left
 abstract so that this module does not depend on `Fast.Exp`. -/
 def lzEntry (s : State) (mem : ByteArray) (i : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2237
+  { s with pc := UInt256.ofNat 2150
            stack := UInt256.ofNat i :: rest
            memory := mem }
 
-/-- pc 2576, the arm every byte after the first takes. -/
+/-- pc 2617, the arm every byte after the first takes. -/
 def lzOther (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2253
+  { s with pc := UInt256.ofNat 2166
            stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
-/-- pc 2582, the arm byte `0` takes. -/
+/-- pc 2623, the arm byte `0` takes. -/
 def lzFirst (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2259
+  { s with pc := UInt256.ofNat 2172
            stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
-/-- The bit-loop head both arms rejoin, pc 1789. -/
+/-- The bit-loop head both arms rejoin, pc 1837. -/
 def lzJoin (s : State) (mem : ByteArray) (i w mask : Nat)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1621
+  { s with pc := UInt256.ofNat 1534
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
 /-- The state handed to the relocated leading-bit shortcut at pc3865. -/
 def lzBase (s : State) (mem : ByteArray) (i w mask : Nat)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3246
+  { s with pc := UInt256.ofNat 3152
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
@@ -120,12 +120,12 @@ def lzBase (s : State) (mem : ByteArray) (i w mask : Nat)
 The byte the block loads is left abstract, as `hbyte`, so that this module
 does not need `Fast.Exp`'s `expByte`. -/
 
-/-- Instructions 1781..1792 with `i = 0`: load the byte, take the first-byte arm. -/
+/-- Instructions 1829..1792 with `i = 0`: load the byte, take the first-byte arm. -/
 theorem run_lzHead_first (s : State) (mem input : ByteArray) (bsize i w : Nat)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hdata : s.executionEnv.calldata = input)
-    (hb : bsize ≤ 1024) (hi : i ≤ 1024) (hact : 169 ≤ s.activeWords.toNat)
-    (heoff : MachineState.readWord mem 5376 = UInt256.ofNat (96 + bsize))
+    (hb : bsize ≤ 1024) (hi : i ≤ 1024) (hact : 298 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord mem 9472 = UInt256.ofNat (96 + bsize))
     (hbyte : UInt256.byteAt ⟨0⟩ (MachineState.readWord input (96 + bsize + i)) =
       UInt256.ofNat w)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -139,8 +139,8 @@ theorem run_lzHead_first (s : State) (mem input : ByteArray) (bsize i w : Nat)
     Setup.mod_word_self (Nat.lt_of_le_of_lt (show 96 + bsize + 0 ≤ 2144 by omega)
       (by norm_num))
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
-      5376 32) = s.activeWords :=
-    activeWords_fix s 5376 32 (by omega) (by omega) hact
+      9472 32) = s.activeWords :=
+    activeWords_fix s 9472 32 (by omega) (by omega) hact
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
@@ -158,12 +158,12 @@ theorem run_lzHead_first (s : State) (mem input : ByteArray) (bsize i w : Nat)
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
-/-- Instructions 1781..1792 with `i ≠ 0`: load the byte, fall through. -/
+/-- Instructions 1829..1792 with `i ≠ 0`: load the byte, fall through. -/
 theorem run_lzHead_other (s : State) (mem input : ByteArray) (bsize i w : Nat)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hdata : s.executionEnv.calldata = input)
-    (hb : bsize ≤ 1024) (hi : i ≤ 1024) (hact : 169 ≤ s.activeWords.toNat)
-    (heoff : MachineState.readWord mem 5376 = UInt256.ofNat (96 + bsize))
+    (hb : bsize ≤ 1024) (hi : i ≤ 1024) (hact : 298 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord mem 9472 = UInt256.ofNat (96 + bsize))
     (hbyte : UInt256.byteAt ⟨0⟩ (MachineState.readWord input (96 + bsize + i)) =
       UInt256.ofNat w)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -176,8 +176,8 @@ theorem run_lzHead_other (s : State) (mem input : ByteArray) (bsize i w : Nat)
     Setup.mod_word_self (Nat.lt_of_le_of_lt (show 96 + bsize + i ≤ 2144 by omega)
       (by norm_num))
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
-      5376 32) = s.activeWords :=
-    activeWords_fix s 5376 32 (by omega) (by omega) hact
+      9472 32) = s.activeWords :=
+    activeWords_fix s 9472 32 (by omega) (by omega) hact
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
@@ -224,7 +224,7 @@ theorem sm_lt (w : Nat) (hw : w < 256) :
 
 /-! ## The two rejoining arms -/
 
-/-- Instructions 1793..1795: every byte after the first starts the bit loop at
+/-- Instructions 1793..1843: every byte after the first starts the bit loop at
 `0x80`, exactly as the code this replaces did. -/
 theorem run_lzOther (s : State) (mem : ByteArray) (i w : Nat)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
@@ -243,7 +243,7 @@ theorem run_lzOther (s : State) (mem : ByteArray) (i w : Nat)
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
-/-- Instructions 1796..1815: byte `0` starts the bit loop at its highest set
+/-- Instructions 1796..1863: byte `0` starts the bit loop at its highest set
 bit, so the exponent's leading zeros are never squared over. -/
 theorem run_lzFirst (s : State) (mem : ByteArray) (i w : Nat)
     (rest : List UInt256) (hcap : rest.length ≤ 1008) (hw : w < 256)

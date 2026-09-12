@@ -44,10 +44,10 @@ private theorem blockCost_of_static
 
 private theorem gasSteps_zeroSetup_cost (input : ByteArray)
     (hzero : modulusSize input = 0) :
-    (gasSteps_zeroSetup input hzero).cost = 21 := by
+    (gasSteps_zeroSetup input hzero).cost = 20 := by
   change Challenge.EvmProof.Stepper.runLocatedBlockCost zeroSetupPath
-    (Main.headerState input) = 21
-  exact blockCost_of_static zeroSetupPath 21 (run_zeroSetup input hzero)
+    (Main.headerState input) = 20
+  exact blockCost_of_static zeroSetupPath 20 (run_zeroSetup input hzero)
     rfl (by decide) rfl rfl
 
 @[simp] private theorem gasSteps_zeroReturn_cost (input : ByteArray) :
@@ -65,7 +65,7 @@ def gasSteps_zeroSize (input : ByteArray) (hzero : modulusSize input = 0) :
 set_option maxHeartbeats 5000000 in
 theorem gasSteps_zeroSize_cost (input : ByteArray)
     (hzero : modulusSize input = 0) :
-    (gasSteps_zeroSize input hzero).cost = 21 := by
+    (gasSteps_zeroSize input hzero).cost = 20 := by
   simp [gasSteps_zeroSize, gasSteps_zeroSetup_cost]
 
 private def gasSteps_wordJump (input : ByteArray) (hvalid : ValidInput input)
@@ -93,10 +93,10 @@ private def gasSteps_wordTail (input : ByteArray) :
 
 @[simp] private theorem gasSteps_wordJump_cost (input : ByteArray)
     (hvalid : ValidInput input) (hpositive : 0 < modulusSize input) :
-    (gasSteps_wordJump input hvalid hpositive).cost = 17 := by
+    (gasSteps_wordJump input hvalid hpositive).cost = 16 := by
   change Challenge.EvmProof.Stepper.runLocatedBlockCost wordJumpPath
-    (Main.headerState input) = 17
-  exact blockCost_of_static wordJumpPath 17 (run_wordJump input hvalid hpositive)
+    (Main.headerState input) = 16
+  exact blockCost_of_static wordJumpPath 16 (run_wordJump input hvalid hpositive)
     rfl (by decide) rfl rfl
 
 @[simp] private theorem gasSteps_wordCheck_cost (input : ByteArray)
@@ -126,14 +126,14 @@ set_option maxHeartbeats 5000000 in
 theorem gasSteps_wordRouteEnter_cost (input : ByteArray)
     (hvalid : ValidInput input)
     (hpositive : 0 < modulusSize input) (hword : modulusSize input ≤ 32) :
-    (gasSteps_wordRouteEnter input hvalid hpositive hword).cost = 90 := by
+    (gasSteps_wordRouteEnter input hvalid hpositive hword).cost = 89 := by
   simp [gasSteps_wordRouteEnter]
 
 /-- Complete trace and exact minimum gas for zero-width results. -/
 def gasSteps_zeroSize_total (input : ByteArray) (hvalid : ValidInput input)
     (hzero : modulusSize input = 0)
     (entry : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Main.trampolineState input 1189)) :
+      (Main.trampolineState input 1107)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (zeroSizeFinalState input) :=
   (Main.gasSteps_header input hvalid entry).trans (gasSteps_zeroSize input hzero)
