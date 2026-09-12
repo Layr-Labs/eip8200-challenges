@@ -39,7 +39,7 @@ def blkFullBaseCopyAdd :
    pushAt 2317 1 96,
    pushAt 2318 2 256,
    opAt 2319 .CALLDATACOPY,
-   pushAt 2320 2 1604,
+   pushAt 2320 2 3273,
    pushAt 2321 2 512,
    pushAt 2322 2 256,
    pushAt 2323 2 1536,
