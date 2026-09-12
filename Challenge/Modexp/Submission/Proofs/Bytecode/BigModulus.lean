@@ -54,8 +54,9 @@ def scanBodyPath :
   [opAt 607 (.Dup ⟨0, by decide⟩), pushAt 608 1 5,
    opAt 609 .SHL, opAt 610 .MLOAD, opAt 611 (.Dup ⟨2, by decide⟩),
    opAt 612 .OR, opAt 613 (.Swap ⟨1, by decide⟩), opAt 614 .POP,
-   pushAt 615 1 1, opAt 616 (.Dup ⟨1, by decide⟩), opAt 617 .ADD,
-   opAt 618 (.Swap ⟨0, by decide⟩), opAt 619 .POP,
+   pushAt 615 1 1, opAt 616 .ADD,
+   opAt 617 .JUMPDEST, opAt 618 .JUMPDEST,
+   opAt 619 .JUMPDEST,
    pushAt 620 2 782, opAt 621 .JUMP]
 
 def scanNonzeroPath :
@@ -390,14 +391,14 @@ theorem gasSteps_scanIteration_cost_potential (s : State) (count i : Nat)
     (gasSteps_scanIteration s count i rest hcap hcount hi hcode hfork hrun
         hnp).cost + MachineState.memCost
           (scanLoop s count i rest).activeWords.toNat =
-      74 + MachineState.memCost
+      69 + MachineState.memCost
         (scanLoop s count (i + 1) rest).activeWords.toNat := by
   have hg := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     scanGuardPath 26 (run_scanGuard s count i rest hcap (by omega) hi hrun)
       (by simpa [scanLoop, State.fork] using hfork)
       (by decide) (by decide)
   have hb := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    scanBodyPath 48
+    scanBodyPath 43
       (run_scanBody s count i rest hcap hcount hi hcode hrun)
       (by simpa [scanBody, scanLoop, State.fork] using hfork)
       (by decide) (by decide)
@@ -416,7 +417,7 @@ theorem gasSteps_scanIteration_cost_potential (s : State) (count i : Nat)
         (run_scanBody s count i rest hcap hcount hi hcode hrun)
         (by simpa [scanBody, scanLoop] using hrun)
         (by simpa [scanBody, scanLoop, State.fork] using hnp))
-    26 48 hg hb
+    26 43 hg hb
   simpa [gasSteps_scanIteration] using ht
 
 theorem gasSteps_scanLoop_cost_potential (s : State) (count : Nat)
@@ -428,7 +429,7 @@ theorem gasSteps_scanLoop_cost_potential (s : State) (count : Nat)
       s.executionEnv.codeAddr = false) :
     (gasSteps_scanLoop s count rest hcap hcount hcode hfork hrun hnp).cost +
         MachineState.memCost (scanLoop s count 0 rest).activeWords.toNat =
-      count * 74 + MachineState.memCost
+      count * 69 + MachineState.memCost
         (scanLoop s count count rest).activeWords.toNat := by
   unfold gasSteps_scanLoop
   apply Challenge.EvmProof.Meter.iterateBounded_cost_potential_add
@@ -445,7 +446,7 @@ theorem gasSteps_scanNonzeroTotal_cost_potential (s : State) (count : Nat)
       s.executionEnv.codeAddr = false) :
     (gasSteps_scanNonzeroTotal s count rest hcap hcount hor hcode hfork hrun
         hnp).cost + MachineState.memCost s.activeWords.toNat =
-      (50 + count * 74) + MachineState.memCost
+      (50 + count * 69) + MachineState.memCost
         (scanNonzero s count rest).activeWords.toNat := by
   have hs := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
     scanSetupPath 5 (run_scanSetup s count rest hcap hrun)
@@ -517,7 +518,7 @@ theorem gasSteps_scanZeroTotal_cost_potential (s : State)
     (gasSteps_scanZeroTotal s count b e m baseOff expOff modOff returnDest
         rest hcap hcount hm hor hcode hfork hrun hnp).cost +
         MachineState.memCost s.activeWords.toNat =
-      (56 + count * 74) + MachineState.memCost
+      (56 + count * 69) + MachineState.memCost
         (scanZeroFinal s count b e m baseOff expOff modOff returnDest rest).activeWords.toNat := by
   let caller := [UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
     UInt256.ofNat baseOff, UInt256.ofNat expOff, UInt256.ofNat modOff,

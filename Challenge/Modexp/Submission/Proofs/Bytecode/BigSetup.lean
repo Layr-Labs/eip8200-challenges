@@ -711,7 +711,7 @@ theorem gasSteps_setup_cost_potential (s : State)
     (gasSteps_setup s b e m baseOff expOff modOff returnDest rest hmBound
         hmodOff hinputFit hcap hcode hfork hrun hnp).cost +
         MachineState.memCost s.activeWords.toNat =
-      (343 + Limbs.limbCount m * 284 + m * 190) +
+      (343 + Limbs.limbCount m * 264 + m * 185) +
         MachineState.memCost
           (setupReturned s b e m baseOff expOff modOff returnDest rest).activeWords.toNat := by
   let frame := saved b e m baseOff expOff modOff returnDest rest

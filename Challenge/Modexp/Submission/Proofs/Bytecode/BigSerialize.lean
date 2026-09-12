@@ -61,8 +61,9 @@ def serializerBodyPath :
    opAt 866 (.Dup ⟨2, by decide⟩), opAt 867 .SHR, opAt 868 .AND,
    opAt 869 (.Dup ⟨4, by decide⟩), pushAt 870 2 6144,
    opAt 871 .ADD, opAt 872 .MSTORE8, opAt 873 .POP, opAt 874 .POP,
-   opAt 875 .POP, pushAt 876 1 1, opAt 877 (.Dup ⟨1, by decide⟩),
-   opAt 878 .ADD, opAt 879 (.Swap ⟨0, by decide⟩), opAt 880 .POP,
+   opAt 875 .POP, pushAt 876 1 1, opAt 877 .ADD,
+   opAt 878 .JUMPDEST, opAt 879 .JUMPDEST,
+   opAt 880 .JUMPDEST,
    pushAt 881 2 1123, opAt 882 .JUMP]
 
 def serializerReturnPath :
@@ -396,7 +397,7 @@ theorem gasSteps_serializerIteration_cost_potential (s : State)
         MachineState.memCost
           (serializerLoop s accumulatorWord count b e m baseOff expOff rest
             k).activeWords.toNat =
-      138 + MachineState.memCost
+      133 + MachineState.memCost
         (serializerLoop s accumulatorWord count b e m baseOff expOff rest
           (k + 1)).activeWords.toNat := by
   have hguard :=
@@ -408,7 +409,7 @@ theorem gasSteps_serializerIteration_cost_potential (s : State)
         (by decide) (by decide)
   have hbody :=
     Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-      serializerBodyPath 112
+      serializerBodyPath 107
         (run_serializerBody s accumulatorWord count b e m baseOff expOff k
           rest (by omega) hm hk hcode hrun)
         (by simpa [serializerBody, serializerLoop, State.fork] using hfork)
@@ -445,7 +446,7 @@ theorem gasSteps_serializerLoop_cost_potential (s : State)
         MachineState.memCost
           (serializerLoop s accumulatorWord count b e m baseOff expOff rest
             0).activeWords.toNat =
-      m * 138 + MachineState.memCost
+      m * 133 + MachineState.memCost
         (serializerLoop s accumulatorWord count b e m baseOff expOff rest
           m).activeWords.toNat := by
   unfold gasSteps_serializerLoop
@@ -564,7 +565,7 @@ theorem gasSteps_serializeResult_cost_potential (s : State)
         MachineState.memCost
           (outerLoop s accumulatorWord count b e m baseOff expOff rest
             e).activeWords.toNat =
-      (66 + m * 138) + MachineState.memCost
+      (66 + m * 133) + MachineState.memCost
         (bigReturned s accumulatorWord count b e m baseOff expOff rest).activeWords.toNat := by
   have hguard :=
     Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree

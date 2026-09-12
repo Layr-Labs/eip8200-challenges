@@ -65,7 +65,7 @@ theorem gasSteps_selectIteration_cost_potential (s : State)
         MachineState.memCost
           (selectLoop s accumulatorWord count b e m baseOff expOff i j k
             offset byte rest).activeWords.toNat =
-      123 + MachineState.memCost
+      118 + MachineState.memCost
         (selectLoop s accumulatorWord count b e m baseOff expOff i j (k + 1)
           offset byte rest).activeWords.toNat := by
   have hguard :=
@@ -77,7 +77,7 @@ theorem gasSteps_selectIteration_cost_potential (s : State)
         (by decide) (by decide)
   have hbody :=
     Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-      selectBodyPath 97
+      selectBodyPath 92
         (run_selectBody s accumulatorWord count b e m baseOff expOff i j k
           offset byte rest (by omega) (by omega) hcode hrun)
         (by simpa [selectBody, selectLoop, State.fork] using hfork)
@@ -118,7 +118,7 @@ theorem gasSteps_selectLoop_cost_potential (s : State)
         MachineState.memCost
           (selectLoop s accumulatorWord count b e m baseOff expOff i j 0
             offset byte rest).activeWords.toNat =
-      count * 123 + MachineState.memCost
+      count * 118 + MachineState.memCost
         (selectLoop s accumulatorWord count b e m baseOff expOff i j count
           offset byte rest).activeWords.toNat := by
   unfold gasSteps_selectLoop
@@ -172,7 +172,7 @@ theorem gasSteps_selectFinish_cost_potential (s : State)
         MachineState.memCost
           (selectLoop s accumulatorWord count b e m baseOff expOff i j count
             offset byte rest).activeWords.toNat =
-      58 + MachineState.memCost
+      53 + MachineState.memCost
         (afterSelectedBit s accumulatorWord count b e m baseOff expOff i j
           offset byte rest).activeWords.toNat := by
   have hguard :=
@@ -184,7 +184,7 @@ theorem gasSteps_selectFinish_cost_potential (s : State)
         (by decide) (by decide)
   have hfinish :=
     Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-      selectFinishPath 32
+      selectFinishPath 27
         (run_selectFinish s accumulatorWord count b e m baseOff expOff i j
           offset byte rest (by omega) hj hcode hrun)
         (by simpa [selectExit, selectLoop, State.fork] using hfork)
@@ -226,7 +226,7 @@ theorem gasSteps_selection_cost_potential (s : State)
         MachineState.memCost
           (selectLoop s accumulatorWord count b e m baseOff expOff i j 0
             offset byte rest).activeWords.toNat =
-      (count * 123 + 58) + MachineState.memCost
+      (count * 118 + 53) + MachineState.memCost
         (afterSelectedBit s accumulatorWord count b e m baseOff expOff i j
           offset byte rest).activeWords.toNat := by
   exact Challenge.EvmProof.Meter.gasSteps_trans_cost_potential
@@ -234,7 +234,7 @@ theorem gasSteps_selection_cost_potential (s : State)
       offset byte rest hcap hcount hcode hfork hrun hnp)
     (gasSteps_selectFinish s accumulatorWord count b e m baseOff expOff i j
       offset byte rest hcap hcount hj hcode hfork hrun hnp)
-    (count * 123) 58
+    (count * 118) 53
     (gasSteps_selectLoop_cost_potential s accumulatorWord count b e m baseOff
       expOff i j offset byte rest hcap hcount hcode hfork hrun hnp)
     (gasSteps_selectFinish_cost_potential s accumulatorWord count b e m baseOff
@@ -354,8 +354,8 @@ theorem gasSteps_exponentBit_cost_potential (s : State)
         MachineState.memCost
           (innerLoop s accumulatorWord count b e m baseOff expOff i offset byte
             rest j).activeWords.toNat =
-      (613 + count * 526 +
-          2 * (count * (102 + 256 * (426 + count * 906)))) +
+      (608 + count * 496 +
+          2 * (count * (97 + 256 * (421 + count * 876)))) +
         MachineState.memCost
           (afterSelectedBit s accumulatorWord count b e m baseOff expOff i j
             offset byte rest).activeWords.toNat := by
@@ -502,8 +502,8 @@ theorem gasSteps_exponentBitAt_cost_potential (s : State)
         MachineState.memCost
           (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
             offset byte rest j).activeWords.toNat =
-      (613 + count * 526 +
-          2 * (count * (102 + 256 * (426 + count * 906)))) +
+      (608 + count * 496 +
+          2 * (count * (97 + 256 * (421 + count * 876)))) +
         MachineState.memCost
           (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
             offset byte rest (j + 1)).activeWords.toNat := by
@@ -548,8 +548,8 @@ theorem gasSteps_exponentBits_cost_potential (s : State)
         MachineState.memCost
           (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
             offset byte rest 0).activeWords.toNat =
-      8 * (613 + count * 526 +
-          2 * (count * (102 + 256 * (426 + count * 906)))) +
+      8 * (608 + count * 496 +
+          2 * (count * (97 + 256 * (421 + count * 876)))) +
         MachineState.memCost
           (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
             offset byte rest 8).activeWords.toNat := by
@@ -620,7 +620,7 @@ theorem gasSteps_exponentByteFinish_cost_potential (s : State)
         MachineState.memCost
           (exponentBitLoopState s accumulatorWord count b e m baseOff expOff i
             offset byte rest 8).activeWords.toNat =
-      58 + MachineState.memCost
+      53 + MachineState.memCost
         (afterExponentByte s accumulatorWord count b e m baseOff expOff i offset
           byte rest).activeWords.toNat := by
   let current := exponentBitProgress s accumulatorWord count b e m baseOff
@@ -636,7 +636,7 @@ theorem gasSteps_exponentByteFinish_cost_potential (s : State)
         (by decide) (by decide)
   have hfinish :=
     Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-      innerFinishPath 32
+      innerFinishPath 27
         (run_innerFinish current accumulatorWord count b e m baseOff expOff i
           offset byte rest (by omega) hi (by simpa [current] using hcode)
           (by simpa [current] using hrun))
@@ -701,8 +701,8 @@ theorem gasSteps_exponentByte_cost_potential (s : State)
       hcap hcount he hi hoff hcode hfork hrun hnp).cost +
         MachineState.memCost
           (outerLoop s accumulatorWord count b e m baseOff expOff rest i).activeWords.toNat =
-      (106 + 8 * (613 + count * 526 +
-          2 * (count * (102 + 256 * (426 + count * 906))))) +
+      (101 + 8 * (608 + count * 496 +
+          2 * (count * (97 + 256 * (421 + count * 876))))) +
         MachineState.memCost
           (afterExponentByte s accumulatorWord count b e m baseOff expOff i
             (UInt256.ofNat (expOff + i)) (loadedExponentByte s expOff i)
@@ -808,8 +808,8 @@ theorem gasSteps_exponentByteAt_cost_potential (s : State)
         MachineState.memCost
           (exponentOuterState s accumulatorWord count b e m baseOff expOff rest
             i).activeWords.toNat =
-      (106 + 8 * (613 + count * 526 +
-          2 * (count * (102 + 256 * (426 + count * 906))))) +
+      (101 + 8 * (608 + count * 496 +
+          2 * (count * (97 + 256 * (421 + count * 876))))) +
         MachineState.memCost
           (exponentOuterState s accumulatorWord count b e m baseOff expOff rest
             (i + 1)).activeWords.toNat := by
@@ -853,8 +853,8 @@ theorem gasSteps_exponentLoop_cost_potential (s : State)
         MachineState.memCost
           (exponentOuterState s accumulatorWord count b e m baseOff expOff rest
             0).activeWords.toNat =
-      e * (106 + 8 * (613 + count * 526 +
-          2 * (count * (102 + 256 * (426 + count * 906))))) +
+      e * (101 + 8 * (608 + count * 496 +
+          2 * (count * (97 + 256 * (421 + count * 876))))) +
         MachineState.memCost
           (exponentOuterState s accumulatorWord count b e m baseOff expOff rest
             e).activeWords.toNat := by
