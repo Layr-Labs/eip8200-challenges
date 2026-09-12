@@ -54,7 +54,7 @@ def sizePath : List Located :=
    opAt 14 .OR,
    opAt 15 .OR,
    opAt 16 .ISZERO,
-   pushAt 17 2 4792,
+   pushAt 17 2 4842,
    opAt 18 .JUMPI]
 
 def checkEntryPath : List Located :=

@@ -166,8 +166,8 @@ theorem cache_rawMemory (memory : ByteArray) (value : UInt256) :
 theorem run_original_raw (s : State) (value returnPC : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 996) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat) :
-    runInstrSeq originalLower {s with pc := (UInt256.ofNat 599), stack := value :: mask8 :: maskWord :: mask16 :: returnPC :: rest} =
-      some {s with pc := pcAfter (UInt256.ofNat 599) originalLower, stack := (returnPC :: rest), memory := rawMemory s.memory value} := by
+    runInstrSeq originalLower {s with pc := (UInt256.ofNat 649), stack := value :: mask8 :: maskWord :: mask16 :: returnPC :: rest} =
+      some {s with pc := pcAfter (UInt256.ofNat 649) originalLower, stack := (returnPC :: rest), memory := rawMemory s.memory value} := by
   have hcap (n : Nat) (hn : n ≤ 26) : rest.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
@@ -180,8 +180,8 @@ theorem run_original_raw (s : State) (value returnPC : UInt256) (rest : List UIn
 theorem run_actual_raw (s : State) (value returnPC : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 996) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat) (hsentinel : SentinelOK s.memory) :
-    runInstrSeq actualLower {s with pc := (UInt256.ofNat 620), stack := value :: mask8 :: maskWord :: mask16 :: returnPC :: rest} =
-      some {s with pc := pcAfter (UInt256.ofNat 620) actualLower, stack := rawCache value ++ (returnPC :: rest), memory := rawMemory s.memory value} := by
+    runInstrSeq actualLower {s with pc := (UInt256.ofNat 670), stack := value :: mask8 :: maskWord :: mask16 :: returnPC :: rest} =
+      some {s with pc := pcAfter (UInt256.ofNat 670) actualLower, stack := rawCache value ++ (returnPC :: rest), memory := rawMemory s.memory value} := by
   rw [rawMemory_eq_lowerMemory s.memory value hsentinel]
   have hcap (n : Nat) (hn : n ≤ 26) : rest.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 704) :
@@ -219,12 +219,12 @@ theorem run_original_model (s : State) (pc value returnPC : UInt256) (rest : Lis
 theorem run_actual_lower (s : State) (value returnPC : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 996) (hrun : s.halt = .Running)
     (hactive : 23 ≤ s.activeWords.toNat) (hsentinel : SentinelOK s.memory) :
-    runInstrSeq actualLower {s with pc := UInt256.ofNat 620, stack := value :: mask8 :: maskWord :: mask16 :: returnPC :: rest} =
-      some {s with pc := pcAfter (UInt256.ofNat 620) actualLower, stack := cache (modelMemory s.memory value) ++ (returnPC :: rest), memory := modelMemory s.memory value} := by
+    runInstrSeq actualLower {s with pc := UInt256.ofNat 670, stack := value :: mask8 :: maskWord :: mask16 :: returnPC :: rest} =
+      some {s with pc := pcAfter (UInt256.ofNat 670) actualLower, stack := cache (modelMemory s.memory value) ++ (returnPC :: rest), memory := modelMemory s.memory value} := by
   have hmem : rawMemory s.memory value = modelMemory s.memory value :=
     congrArg (fun t : State => t.memory) (Option.some.inj
       ((run_original_raw s value returnPC rest hstack hrun hactive).symm.trans
-        (run_original_model s (UInt256.ofNat 599) value returnPC rest hstack hrun hactive)))
+        (run_original_model s (UInt256.ofNat 649) value returnPC rest hstack hrun hactive)))
   have h := run_actual_raw s value returnPC rest hstack hrun hactive hsentinel
   rw [← cache_rawMemory s.memory value, hmem] at h
   exact h

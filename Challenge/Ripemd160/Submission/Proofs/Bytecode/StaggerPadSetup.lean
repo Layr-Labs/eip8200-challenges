@@ -12,7 +12,7 @@ open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory
 open PairTableActive StaggerTableSparse StaggerTableLayout
 
 def padTemplate : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 1112),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 1162),
     .op .CALLDATASIZE,
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .CALLDATACOPY,

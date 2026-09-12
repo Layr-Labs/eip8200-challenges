@@ -26,7 +26,7 @@ theorem run_normal (s : State) (pc returnPC : UInt256) (p : Nat) (rest : List UI
   have ha : 34 ≤ s1.activeWords.toNat := loaded_active_ge34 s p hp hbound
   have hptr : (UInt256.ofNat p).toNat = p := by
     rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
-  have h1 := PairedDivMaskCache.run_cachedInitial s pc (UInt256.ofNat p) returnPC rest (by omega) hrun
+  have h1 := PairedMask32Cache.run_cachedInitial s pc (UInt256.ofNat p) returnPC rest (by omega) hrun
   rw [← initial_eq_cached] at h1
   simp only [inputWord0, inputWord1, hptr, PairedScheduleContract.pointer_add32_toNat p hbound] at h1
   have h2 := run_endian s1 (pcAfter pc initialTemplate)

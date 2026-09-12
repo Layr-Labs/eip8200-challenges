@@ -76,7 +76,7 @@ private def normal_gasSteps_of_raw (s t : State)
   · exact hrun
   · exact hnp
 
-theorem normal_end : pcAfter (UInt256.ofNat 478) actualNormalTemplate = UInt256.ofNat 919 := by decide
+theorem normal_end : pcAfter (UInt256.ofNat 478) actualNormalTemplate = UInt256.ofNat 969 := by decide
 
 theorem pad_slice :
     (Artifact.submissionArtifact.instructions.drop 233).take StaggerPad.padTemplate.length = StaggerPad.padTemplate := by rfl
@@ -105,11 +105,11 @@ def gasSteps_normal (s : State) (ret : UInt256) (p : Nat) (rest : List UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 478, stack := UInt256.ofNat p :: ret :: rest}
-      {s with pc := UInt256.ofNat 919, stack := ret :: rest, memory := StaggerTableLayout.resultMemory s.memory (PairedScheduleData.extractedWord s.memory p), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat p)} := by
+      {s with pc := UInt256.ofNat 969, stack := ret :: rest, memory := StaggerTableLayout.resultMemory s.memory (PairedScheduleData.extractedWord s.memory p), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat p)} := by
   apply normal_gasSteps_of_raw {s with pc := UInt256.ofNat 478, stack := UInt256.ofNat p :: ret :: rest} _ hcode hfork hrun hnp normal_pc.symm
   have h := StaggerNormal.run_normal s (UInt256.ofNat 477) ret p rest hstack hrun hp hbound
   have hfull : StaggerNormal.normalTemplate = .op .JUMPDEST :: actualNormalTemplate := by rfl
-  have hend : pcAfter (UInt256.ofNat 477) StaggerNormal.normalTemplate = UInt256.ofNat 919 := by decide
+  have hend : pcAfter (UInt256.ofNat 477) StaggerNormal.normalTemplate = UInt256.ofNat 969 := by decide
   rw [hend, hfull] at h
   have ht := run_without_jumpdest actualNormalTemplate
     (DenseScheduleTemplate.scheduleEntry s (UInt256.ofNat 477) (UInt256.ofNat p) ret rest) _ (by decide)

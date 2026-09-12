@@ -8,7 +8,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace DenseScheduleTemplate PairedMask32Cache PairedScheduleMemory
 open PairTableMemory PairTableActive
 
-theorem initial_eq_cached : initialTemplate = PairedDivMaskCache.cachedInitial := by rfl
+theorem initial_eq_cached : initialTemplate = PairedMask32Cache.cachedInitial := by rfl
 
 def reverseTemplate (slot8 slot16 : Fin 16) : List Instr :=
   cachedStage 8 slot8 ++ cachedStage 16 slot16
