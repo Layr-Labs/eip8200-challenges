@@ -48,17 +48,17 @@ theorem output_eq (memory : ByteArray) (h q : WordLane) (off limit : UInt256)
 #print axioms output_eq
 
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 727).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 725).take template.length = template := by rfl
 
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 727 actual_slice
-    (by change 727 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 725 actual_slice
+    (by change 725 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 1184 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 727) = UInt256.ofNat 1184
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 725) = UInt256.ofNat 1184
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound
