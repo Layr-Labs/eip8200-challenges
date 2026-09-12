@@ -16,7 +16,7 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro CiosCached CiosCachedMacCore CarryRowModel
 
 theorem run_middleStore (s : State) (c bi pbi pa pb flag dst ret : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 168 ≤ s.activeWords.toNat) :
     runInstructions CarryRowPrograms.middleStore
       (framed s (UInt256.ofNat 4462)
         ([c,bi,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) =
@@ -28,8 +28,8 @@ theorem run_middleStore (s : State) (c bi pbi pa pb flag dst ret : UInt256)
   have hc11 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hc12 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hc13 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
-  have hactN := activeWords_fix s 8224 32 (by decide) (by omega) hact
-  have haddr : (8224 : UInt256).toNat = 8224 := by decide
+  have hactN := activeWords_fix s 4128 32 (by decide) (by omega) hact
+  have haddr : (4128 : UInt256).toNat = 4128 := by decide
   simp (config := {maxSteps := 100000}) [ CarryRowPrograms.middleStore, runInstructions, framed,
     Challenge.EvmProof.Stepper.runInstr, hc8, hc9, hc10, hc11, hc12, hc13, midMem1, overflow,
     haddr, hactN, State.activeWordsAfterUInt256, List.exchange,
@@ -37,7 +37,7 @@ theorem run_middleStore (s : State) (c bi pbi pa pb flag dst ret : UInt256)
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem run_tailStore (s : State) (c f pbi pa pb flag dst ret : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 168 ≤ s.activeWords.toNat) :
     runInstructions CarryRowPrograms.tailStore
       (framed s (UInt256.ofNat 4750)
         ([c,f,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) =
@@ -49,10 +49,10 @@ theorem run_tailStore (s : State) (c f pbi pa pb flag dst ret : UInt256)
   have hc11 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hc12 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hc13 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
-  have hactN := activeWords_fix s 8224 32 (by decide) (by omega) hact
-  have hactT := activeWords_fix s 8256 32 (by decide) (by omega) hact
-  have hn : (8224 : UInt256).toNat = 8224 := by decide
-  have ht : (8256 : UInt256).toNat = 8256 := by decide
+  have hactN := activeWords_fix s 4128 32 (by decide) (by omega) hact
+  have hactT := activeWords_fix s 4160 32 (by decide) (by omega) hact
+  have hn : (4128 : UInt256).toNat = 4128 := by decide
+  have ht : (4160 : UInt256).toNat = 4160 := by decide
   simp (config := {maxSteps := 100000}) [ CarryRowPrograms.tailStore, runInstructions, framed,
     Challenge.EvmProof.Stepper.runInstr, hc8, hc9, hc10, hc11, hc12, hc13, tailCarry, tailMem1,
     hn, ht, hactN, hactT, State.activeWordsAfterUInt256, List.exchange,

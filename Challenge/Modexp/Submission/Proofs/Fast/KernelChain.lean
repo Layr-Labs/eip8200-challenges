@@ -9,7 +9,7 @@ set_option maxHeartbeats 1000000
 
 The seven uniform first-loop blocks `k = 1..7` sit at instruction `3071 + 32(k-1)`,
 pc `4068 + 38(k-1)`; block `k` performs limb step `j = k + n - 8` (offset
-`32(7-k)`, accumulator word `8256 + 32(7-k)`, for both admitted widths).  The
+`32(7-k)`, accumulator word `4160 + 32(7-k)`, for both admitted widths).  The
 middle block starts with a `JUMPDEST` at pc 4334 (instruction 3295), the entry of the
 empty chain.
 
@@ -40,7 +40,7 @@ def gasSteps_l1Step (k : Nat) (hk1 : 1 ≤ k) (hk7 : k ≤ 7)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hjk : j + 8 = k + n)
+    (hact : 168 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hjk : j + 8 = k + n)
     (hsnapshot : Snapshot q.memory pa n) :
     Challenge.EvmProof.GasSteps
       (l1Q (4195 + 38 * (k - 1)) s q bi pb n i hd ent pdst ret rest)
@@ -48,24 +48,24 @@ def gasSteps_l1Step (k : Nat) (hk1 : 1 ≤ k) (hk7 : k ≤ 7)
   have hj : j < n := by omega
   have ho := off_eq k n j hk7 hjk
   have hrunQ := fun (pc : Nat) (off t : UInt256) (hoff : off.toNat = 32 * (7 - k))
-      (ht : t.toNat = 8256 + 32 * (7 - k)) =>
+      (ht : t.toNat = 4160 + 32 * (7 - k)) =>
     run_stepQ pc off t s q bi pa pb n i j hd ent pdst ret rest hcap hact hn hj
       (by rw [ho]; exact hoff) (by rw [ho]; exact ht) hsnapshot
   interval_cases k
   · exact l1Block1.steps (environment (l1Q 4195 s q bi pb n i hd ent pdst ret rest)
-      hcode hfork hrun hnp) rfl (hrunQ 4195 192 8448 (by decide) (by decide))
+      hcode hfork hrun hnp) rfl (hrunQ 4195 192 4352 (by decide) (by decide))
   · exact l1Block2.steps (environment (l1Q 4233 s q bi pb n i hd ent pdst ret rest)
-      hcode hfork hrun hnp) rfl (hrunQ 4233 160 8416 (by decide) (by decide))
+      hcode hfork hrun hnp) rfl (hrunQ 4233 160 4320 (by decide) (by decide))
   · exact l1Block3.steps (environment (l1Q 4271 s q bi pb n i hd ent pdst ret rest)
-      hcode hfork hrun hnp) rfl (hrunQ 4271 128 8384 (by decide) (by decide))
+      hcode hfork hrun hnp) rfl (hrunQ 4271 128 4288 (by decide) (by decide))
   · exact l1Block4.steps (environment (l1Q 4309 s q bi pb n i hd ent pdst ret rest)
-      hcode hfork hrun hnp) rfl (hrunQ 4309 96 8352 (by decide) (by decide))
+      hcode hfork hrun hnp) rfl (hrunQ 4309 96 4256 (by decide) (by decide))
   · exact l1Block5.steps (environment (l1Q 4347 s q bi pb n i hd ent pdst ret rest)
-      hcode hfork hrun hnp) rfl (hrunQ 4347 64 8320 (by decide) (by decide))
+      hcode hfork hrun hnp) rfl (hrunQ 4347 64 4224 (by decide) (by decide))
   · exact l1Block6.steps (environment (l1Q 4385 s q bi pb n i hd ent pdst ret rest)
-      hcode hfork hrun hnp) rfl (hrunQ 4385 32 8288 (by decide) (by decide))
+      hcode hfork hrun hnp) rfl (hrunQ 4385 32 4192 (by decide) (by decide))
   · exact l1Block7.steps (environment (l1Q 4423 s q bi pb n i hd ent pdst ret rest)
-      hcode hfork hrun hnp) rfl (hrunQ 4423 0 8256 (by decide) (by decide))
+      hcode hfork hrun hnp) rfl (hrunQ 4423 0 4160 (by decide) (by decide))
 
 /-! ## The chain suffix -/
 
@@ -88,7 +88,7 @@ def gasSteps_l1Run : (m k : Nat) → 1 ≤ k → k + m = 8 →
     s.fork = .Osaka →
     Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false →
-    296 ≤ s.activeWords.toNat → n ≤ 8 → pa + 32 * n ≤ 8192 → j + 8 = k + n →
+    168 ≤ s.activeWords.toNat → n ≤ 8 → pa + 32 * n ≤ 4096 → j + 8 = k + n →
     Snapshot q.memory pa n →
     Challenge.EvmProof.GasSteps
       (l1Q (4195 + 38 * (k - 1)) s q bi pb n i hd ent pdst ret rest)
@@ -120,7 +120,7 @@ def gasSteps_l1Suffix (k : Nat) (hk1 : 1 ≤ k) (hk8 : k ≤ 8)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hpaFit : pa + 32 * n ≤ 8192)
+    (hact : 168 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hpaFit : pa + 32 * n ≤ 4096)
     (hjk : j + 8 = k + n)
     (hsnapshot : Snapshot q.memory pa n) :
     Challenge.EvmProof.GasSteps
@@ -139,7 +139,7 @@ def gasSteps_l1SuffixMul (k : Nat) (hk1 : 1 ≤ k) (hk8 : k ≤ 8)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hpaFit : pa + 32 * n ≤ 8192)
+    (hact : 168 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hpaFit : pa + 32 * n ≤ 4096)
     (hjk : j + 8 = k + n)
     (hsnapshot : Snapshot mem pa n) :
     Challenge.EvmProof.GasSteps

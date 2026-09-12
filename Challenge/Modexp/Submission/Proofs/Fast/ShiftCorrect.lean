@@ -32,36 +32,36 @@ theorem jumpD4643 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
 
 /-! ## Facts at `BDONE` on the hit path -/
 
-theorem hitMem_acc (mem input : ByteArray) (n : Nat) (hn32 : n ≤ 32) :
-    Model.FastRepresents (hitMem mem input n) 1024 n
+theorem hitMem_acc (mem input : ByteArray) (n : Nat) (hn32 : n ≤ 8) :
+    Model.FastRepresents (hitMem mem input n) 256 n
       (Precompile.bytesToNatPadded input 96 (32 * n)) := by
   unfold hitMem Exp.storeWord
-  refine Model.fastRepresents_writeWord_disjoint _ 8224 1024 n _ _ (Or.inr (by omega)) ?_
-  refine Model.fastRepresents_writeBytes_disjoint _ _ 8256 1024 n _
+  refine Model.fastRepresents_writeWord_disjoint _ 4128 256 n _ _ (Or.inr (by omega)) ?_
+  refine Model.fastRepresents_writeBytes_disjoint _ _ 4160 256 n _
     (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega) ?_
   exact FullBase.copyBaseMem_represents mem input n
 
 /-- The words the whole hit path leaves alone: everything outside `ACC`, `BASE`,
 `NEG`, the estimator words, `SUBB` and the `t` area. -/
-theorem hitFinal_readWord_disjoint (mem input : ByteArray) (n mm addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32)
-    (hdisj : (addr + 32 ≤ 1024 ∨ 1024 + 32 * n ≤ addr) ∧
-      (addr + 32 ≤ 2048 ∨ 2048 + 32 * n ≤ addr) ∧
+theorem hitFinal_readWord_disjoint (mem input : ByteArray) (n mm addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
+    (hdisj : (addr + 32 ≤ 256 ∨ 256 + 32 * n ≤ addr) ∧
+      (addr + 32 ≤ 512 ∨ 512 + 32 * n ≤ addr) ∧
       (addr + 32 ≤ NEG ∨ NEG + 32 * n ≤ addr) ∧
       (addr + 32 ≤ PRE_L ∨ PRE_DINV + 32 ≤ addr) ∧
-      (addr + 32 ≤ 7168 ∨ 7168 + 32 * n ≤ addr) ∧
-      (addr + 32 ≤ 8224 ∨ 8256 + 32 * n ≤ addr)) :
+      (addr + 32 ≤ 3072 ∨ 3072 + 32 * n ≤ addr) ∧
+      (addr + 32 ≤ 4128 ∨ 4160 + 32 * n ≤ addr)) :
     MachineState.readWord (hitFinalMem mem input n mm) addr = MachineState.readWord mem addr := by
   unfold hitFinalMem
   rw [stepMems_readWord_disjoint _ n mm addr hn ⟨hdisj.2.1, hdisj.2.2.2.2.1, hdisj.2.2.2.2.2⟩ n]
   exact m2_readWord_disjoint mem input n addr hn hn32 hdisj
 
-theorem hitFinal_preserves (mem input : ByteArray) (n mm ptr cnt v : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32)
-    (hdisj : (ptr + 32 * cnt ≤ 1024 ∨ 1024 + 32 * n ≤ ptr) ∧
-      (ptr + 32 * cnt ≤ 2048 ∨ 2048 + 32 * n ≤ ptr) ∧
+theorem hitFinal_preserves (mem input : ByteArray) (n mm ptr cnt v : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
+    (hdisj : (ptr + 32 * cnt ≤ 256 ∨ 256 + 32 * n ≤ ptr) ∧
+      (ptr + 32 * cnt ≤ 512 ∨ 512 + 32 * n ≤ ptr) ∧
       (ptr + 32 * cnt ≤ NEG ∨ NEG + 32 * n ≤ ptr) ∧
       (ptr + 32 * cnt ≤ PRE_L ∨ PRE_DINV + 32 ≤ ptr) ∧
-      (ptr + 32 * cnt ≤ 7168 ∨ 7168 + 32 * n ≤ ptr) ∧
-      (ptr + 32 * cnt ≤ 8224 ∨ 8256 + 32 * n ≤ ptr))
+      (ptr + 32 * cnt ≤ 3072 ∨ 3072 + 32 * n ≤ ptr) ∧
+      (ptr + 32 * cnt ≤ 4128 ∨ 4160 + 32 * n ≤ ptr))
     (hrep : Model.FastRepresents mem ptr cnt v) :
     Model.FastRepresents (hitFinalMem mem input n mm) ptr cnt v := by
   refine (Model.fastRepresents_congr ?_ v).2 hrep
@@ -69,24 +69,24 @@ theorem hitFinal_preserves (mem input : ByteArray) (n mm ptr cnt v : Nat) (hn : 
   exact hitFinal_readWord_disjoint mem input n mm _ hn hn32 (by omega)
 
 /-- `ACC` still holds the raw base at `BDONE`. -/
-theorem hitFinal_acc (mem input : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32) :
-    Model.FastRepresents (hitFinalMem mem input n mm) 1024 n
+theorem hitFinal_acc (mem input : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8) :
+    Model.FastRepresents (hitFinalMem mem input n mm) 256 n
       (Precompile.bytesToNatPadded input 96 (32 * n)) := by
-  have h1 : Model.FastRepresents (m1Of mem input n) 1024 n
+  have h1 : Model.FastRepresents (m1Of mem input n) 256 n
       (Precompile.bytesToNatPadded input 96 (32 * n)) := by
     unfold m1Of Csub.csResultMemory
     split
-    · exact Csub.fastRepresents_mcopy_disjoint _ _ 2048 (32*n) 1024 n _
+    · exact Csub.fastRepresents_mcopy_disjoint _ _ 512 (32*n) 256 n _
         (Or.inr (by omega)) (hitMem_acc mem input n hn32)
     · unfold Csub.subResultMemory
-      refine Csub.fastRepresents_mcopy_disjoint _ _ 2048 (32*n) 1024 n _ (Or.inr (by omega)) ?_
-      exact Csub.fastRepresents_csStep _ n 1024 n _ (by omega) (Or.inl (by omega))
+      refine Csub.fastRepresents_mcopy_disjoint _ _ 512 (32*n) 256 n _ (Or.inr (by omega)) ?_
+      exact Csub.fastRepresents_csStep _ n 256 n _ (by omega) (Or.inl (by omega))
         (hitMem_acc mem input n hn32) n le_rfl
-  have h2 : Model.FastRepresents (m2Of mem input n) 1024 n
+  have h2 : Model.FastRepresents (m2Of mem input n) 256 n
       (Precompile.bytesToNatPadded input 96 (32 * n)) := by
     unfold m2Of preMem
-    exact fastRepresents_preMemOf _ _ 1024 n _ (Or.inl (by unfold PRE_L; omega))
-      (fastRepresents_negStep _ n 1024 n _ (Or.inl (by unfold NEG; omega)) h1 n le_rfl)
+    exact fastRepresents_preMemOf _ _ 256 n _ (Or.inl (by unfold PRE_L; omega))
+      (fastRepresents_negStep _ n 256 n _ (Or.inl (by unfold NEG; omega)) h1 n le_rfl)
   unfold hitFinalMem
   refine (Model.fastRepresents_congr ?_ _).2 h2
   intro i hi
@@ -95,10 +95,10 @@ theorem hitFinal_acc (mem input : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 :
 
 /-- `BASE` holds the Montgomery residue of the base at `BDONE`. -/
 theorem hitFinal_base (mem input : ByteArray) (n mm : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 0 < mm) (hodd : mm % 2 = 1)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hodd : mm % 2 = 1)
     (hmm : mm < Limbs.radix ^ n) (htop : R1.TopBitSet mem)
     (hmod : Model.FastRepresents mem 0 n mm) :
-    Model.FastRepresents (hitFinalMem mem input n mm) 2048 n
+    Model.FastRepresents (hitFinalMem mem input n mm) 512 n
       (Precompile.bytesToNatPadded input 96 (32 * n) % mm * Limbs.radix ^ n % mm) := by
   have htop' : Limbs.radix ^ n < 2 * mm := R1.radix_pow_lt_two_mul (by omega) hodd hmod htop
   have hmod1 : Model.FastRepresents (m1Of mem input n) 0 n mm := by
@@ -113,27 +113,58 @@ theorem hitFinal_base (mem input : ByteArray) (n mm : Nat)
   have hneg2 : Model.FastRepresents (m2Of mem input n) NEG n (Limbs.radix ^ n - mm) := by
     unfold m2Of preMem
     exact fastRepresents_preMemOf _ _ NEG n _ (Or.inl (by unfold NEG PRE_L; omega))
-      (neg_represents (m1Of mem input n) n mm (by omega) hn32 hmpos hmod1)
-  have hbase2 : Model.FastRepresents (m2Of mem input n) 2048 n
+      (neg_represents (m1Of mem input n) n mm (by omega) (by omega) hmpos hmod1)
+  have hbase2 : Model.FastRepresents (m2Of mem input n) 512 n
       (Precompile.bytesToNatPadded input 96 (32 * n) % mm) := by
     unfold m2Of preMem
-    exact fastRepresents_preMemOf _ _ 2048 n _ (Or.inl (by unfold PRE_L; omega))
-      (fastRepresents_negStep _ n 2048 n _ (Or.inl (by unfold NEG; omega))
+    exact fastRepresents_preMemOf _ _ 512 n _ (Or.inl (by unfold PRE_L; omega))
+      (fastRepresents_negStep _ n 512 n _ (Or.inl (by unfold NEG; omega))
         (m1_base mem input n mm hn hn32 hmpos hodd hmod htop) n le_rfl)
   exact stepMems_represents (m2Of mem input n) n mm _ hn hn32 hmpos hmm htop' hmod2 hneg2
     hbase2 (Nat.mod_lt _ hmpos) n
 
-/-- The seed store: writing the word 1 at `R1 = 0x1000` over a zeroed block represents
+private theorem readWord_setupMem_operand (input : ByteArray) (m0 target : Nat)
+    (hm : Challenge.Modexp.modulusSize input ≤ 256)
+    (hlo : 256 ≤ target) (hhi : target + 32 ≤ 5248) :
+    MachineState.readWord (Setup.setupMem ByteArray.empty input m0) target =
+      UInt256.ofNat 0 := by
+  have hS := Setup.s32_le_256 input hm
+  have hms := Setup.modulusSize_le_s32 input
+  unfold Setup.setupMem Setup.modulusMem Setup.varsMem
+  -- `setupMem` does not store the R1 seed, so this read-through peels one
+  -- `mstoreAt` fewer before the two `writeBytes`.
+  rw [Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
+    Setup.readWord_writeBytes_ne _ _ _ _
+      (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)),
+    Setup.readWord_writeBytes_ne _ _ _ _
+      (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)),
+    Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
+    Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
+    Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
+    Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
+    Setup.readWord_empty]
+
+private theorem fastSetup_R1_zero_compact (input : ByteArray) (hpath : Setup.FastPath input) :
+    Model.FastRepresents (Setup.fastSetupMemory input) 1024 (Setup.limbs input) 0 := by
+  have hn := Setup.fastSetup_limbs_le_8 input hpath
+  rw [Model.fastRepresents_zero_iff]
+  intro j hj
+  rw [Setup.fastSetupMemory,
+    readWord_setupMem_operand input (Setup.lowLimb input) (1024 + 32 * j)
+      hpath.2.1.2.2 (by omega) (by omega),
+    Exp.toNat_ofNat_self (by norm_num)]
+
+/-- The seed store: writing the word 1 at `R1 = 0x0400` over a zeroed block represents
 `radix^(n-1)`, which is the Montgomery-form conversion's precondition.  In the previous layout this
 fact came from the store the setup path made (`Setup.fastSetup_R1`); the store now happens in the
 recogniser-miss arm, so the fact is established here. -/
-theorem fastRepresents_seed (mem : ByteArray) (n : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32)
-    (hz : Model.FastRepresents mem 4096 n 0) :
-    Model.FastRepresents (Exp.storeWord mem 4096 (UInt256.ofNat 1)) 4096 n
+theorem fastRepresents_seed (mem : ByteArray) (n : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
+    (hz : Model.FastRepresents mem 1024 n 0) :
+    Model.FastRepresents (Exp.storeWord mem 1024 (UInt256.ofNat 1)) 1024 n
       (Limbs.radix ^ (n - 1)) := by
-  have hzero := (Model.fastRepresents_zero_iff mem 4096 n).1 hz
+  have hzero := (Model.fastRepresents_zero_iff mem 1024 n).1 hz
   have hrpos : 0 < Limbs.radix := Limbs.radix_pos
-  have hsw : Exp.storeWord mem 4096 (UInt256.ofNat 1) = Setup.mstoreAt mem 4096 1 := by
+  have hsw : Exp.storeWord mem 1024 (UInt256.ofNat 1) = Setup.mstoreAt mem 1024 1 := by
     unfold Exp.storeWord Setup.mstoreAt
     rw [Exp.toNat_ofNat_self (show (1 : Nat) < 2 ^ 256 by norm_num)]
   apply Model.fastRepresents_of_limbs
@@ -149,7 +180,7 @@ theorem fastRepresents_seed (mem : ByteArray) (n : Nat) (hn : 1 ≤ n) (hn32 : n
       have hz0 : Limbs.radix ^ (n - 1 - k) % Limbs.radix = 0 := by
         obtain ⟨j, hj⟩ := Nat.exists_eq_add_of_le hjpos
         rw [hj, pow_add, pow_one, Nat.mul_mod_right]
-      rw [Exp.storeWord_readWord_disjoint mem 4096 (4096 + 32 * (n - 1 - k))
+      rw [Exp.storeWord_readWord_disjoint mem 1024 (1024 + 32 * (n - 1 - k))
           (UInt256.ofNat 1) (Or.inr (by omega)),
         hzero (n - 1 - k) (by omega),
         Nat.pow_div (show k ≤ n - 1 by omega) hrpos, hz0]
@@ -164,9 +195,9 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 297 ≤ s.activeWords.toNat)
+    (hact : 169 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
@@ -178,18 +209,18 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     (hxlt : Limbs.radix ^ (n - 1) < mm)
     (hframe0 : Exp.Frame mem n bsize minv)
     (hmod0 : Model.FastRepresents mem 0 n mm)
-    (hr1z : Model.FastRepresents mem 4096 n 0)
-    (hacc0 : Model.FastRepresents mem 1024 n 0)
-    (hbase0 : Model.FastRepresents mem 2048 n 0)
-    (hone0 : Model.FastRepresents mem 3072 n 0)
-    (htz : Model.FastRepresents mem 8256 n 0) :
+    (hr1z : Model.FastRepresents mem 1024 n 0)
+    (hacc0 : Model.FastRepresents mem 256 n 0)
+    (hbase0 : Model.FastRepresents mem 512 n 0)
+    (hone0 : Model.FastRepresents mem 768 n 0)
+    (htz : Model.FastRepresents mem 4160 n 0) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
         (dispState s mem n bsize esize msize) final) ∧
         final.isDone = true ∧
         final.toResult = .returned (Challenge.Modexp.spec input) := by
-  have hact296 : 296 ≤ s.activeWords.toNat :=
-    Nat.le_trans (show 296 ≤ 297 by norm_num) hact
+  have hact296 : 168 ≤ s.activeWords.toNat :=
+    Nat.le_trans (show 168 ≤ 169 by norm_num) hact
   have e : Env s := ⟨hcode, hfork, hrun, hnp, hact⟩
   let sub := Exp.subs s n bsize mm minv hcode hfork hrun hnp hact296 hcds hn hn32 hmpos
     hminvlt hminvA
@@ -200,7 +231,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
   have hbword : bsize < 2 ^ 256 := lt_of_le_of_lt hb (by norm_num)
   have hmmlt : mm < Limbs.radix ^ n := Model.fastRepresents_lt hmod0
   -- The setup path reaches the dispatcher WITHOUT converting, so the dispatcher's
-  -- case split is on the unconverted memory and each arm establishes `R1 = 0x1000` itself --
+  -- case split is on the unconverted memory and each arm establishes `R1 = 0x0400` itself --
   -- the hit arm from `NEG` through the shift loop's own `MCOPY` (sound because that arm
   -- carries `TopBitSet`), the miss arm by making the conversion call the setup path used to
   -- make.  In the previous layout both arms inherited `R1` from one call before the split.
@@ -214,7 +245,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     have hmodEq : Limbs.radix ^ n % mm = Limbs.radix ^ n - mm := by
       rw [Nat.mod_eq_sub_mod (le_of_lt hmmlt), Nat.mod_eq_of_lt (by omega)]
     set fin0 := hitFinalMem mem input n mm with hfin0
-    set final := Exp.mcopyMem fin0 4096 5120 (32 * n) with hfinal
+    set final := Exp.mcopyMem fin0 1024 1280 (32 * n) with hfinal
     have htrace := gasSteps_hitPath s mem input n bsize esize msize mm minv hn hn32 e hdata
       hbword hmatch hmpos hodd hmmlt hframe0 hmod0
     let base := Precompile.bytesToNatPadded input 96 (32 * n)
@@ -229,39 +260,39 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
         ⟨Or.inl (by omega), Or.inl (by omega), Or.inl (by unfold NEG; omega),
           Or.inl (by unfold PRE_L; omega), Or.inl (by omega), Or.inl (by omega)⟩ hmod0
     have hmodF : Model.FastRepresents final 0 n mm :=
-      Exp.fastRepresents_mcopyMem_disjoint fin0 4096 5120 (32 * n) 0 n mm
+      Exp.fastRepresents_mcopyMem_disjoint fin0 1024 1280 (32 * n) 0 n mm
         (Or.inr (by omega)) hmod0F
-    have hbase0F : Model.FastRepresents fin0 2048 n baseM :=
+    have hbase0F : Model.FastRepresents fin0 512 n baseM :=
       hitFinal_base mem input n mm hn hn32 hmpos hodd hmmlt hmatch.2 hmod0
-    have hbaseF : Model.FastRepresents final 2048 n baseM :=
-      Exp.fastRepresents_mcopyMem_disjoint fin0 4096 5120 (32 * n) 2048 n baseM
+    have hbaseF : Model.FastRepresents final 512 n baseM :=
+      Exp.fastRepresents_mcopyMem_disjoint fin0 1024 1280 (32 * n) 512 n baseM
         (Or.inr (by omega)) hbase0F
-    have hone0F : Model.FastRepresents fin0 3072 n 0 :=
-      hitFinal_preserves mem input n mm 3072 n 0 (by omega) hn32
+    have hone0F : Model.FastRepresents fin0 768 n 0 :=
+      hitFinal_preserves mem input n mm 768 n 0 (by omega) hn32
         ⟨Or.inr (by omega), Or.inr (by omega), Or.inl (by unfold NEG; omega),
           Or.inl (by unfold PRE_L; omega), Or.inl (by omega), Or.inl (by omega)⟩ hone0
-    have honeF : Model.FastRepresents final 3072 n 0 :=
-      Exp.fastRepresents_mcopyMem_disjoint fin0 4096 5120 (32 * n) 3072 n 0
+    have honeF : Model.FastRepresents final 768 n 0 :=
+      Exp.fastRepresents_mcopyMem_disjoint fin0 1024 1280 (32 * n) 768 n 0
         (Or.inr (by omega)) hone0F
-    have hnegF : Model.FastRepresents fin0 5120 n (Limbs.radix ^ n - mm) := by
+    have hnegF : Model.FastRepresents fin0 1280 n (Limbs.radix ^ n - mm) := by
       simpa only [NEG] using hitFinal_neg mem input n mm hn hn32 hmpos hmod0
-    have hr1F : Model.FastRepresents final 4096 n (Limbs.radix ^ n % mm) := by
+    have hr1F : Model.FastRepresents final 1024 n (Limbs.radix ^ n % mm) := by
       rw [hmodEq, hfinal]
-      exact Exp.fastRepresents_mcopyMem fin0 4096 5120 n (Limbs.radix ^ n - mm)
+      exact Exp.fastRepresents_mcopyMem fin0 1024 1280 n (Limbs.radix ^ n - mm)
         (by omega) hnegF
-    have hacc0F : Model.FastRepresents fin0 1024 n base := hitFinal_acc mem input n mm (by omega) hn32
-    have haccF : Model.FastRepresents final 1024 n base :=
-      Exp.fastRepresents_mcopyMem_disjoint fin0 4096 5120 (32 * n) 1024 n base
+    have hacc0F : Model.FastRepresents fin0 256 n base := hitFinal_acc mem input n mm (by omega) hn32
+    have haccF : Model.FastRepresents final 256 n base :=
+      Exp.fastRepresents_mcopyMem_disjoint fin0 1024 1280 (32 * n) 256 n base
         (Or.inr (by omega)) hacc0F
-    have hEb : Exp.EbInv (Exp.mcopyMem final 1024 4096 (32 * n)) n mm baseM
+    have hEb : Exp.EbInv (Exp.mcopyMem final 256 1024 (32 * n)) n mm baseM
         (Exp.expAcc mm (Limbs.radix ^ n) baseM (Exp.expBits input bsize) 0) := by
       refine ⟨?_, ?_, ?_, ?_⟩
-      · exact Csub.fastRepresents_mcopy_disjoint _ 4096 1024 (32 * n) 0 n mm (by omega) hmodF
-      · exact Csub.fastRepresents_mcopy _ 4096 1024 n (Limbs.radix ^ n % mm) (by omega) hr1F
-      · exact Csub.fastRepresents_mcopy_disjoint _ 4096 1024 (32 * n) 2048 n baseM
+      · exact Csub.fastRepresents_mcopy_disjoint _ 1024 256 (32 * n) 0 n mm (by omega) hmodF
+      · exact Csub.fastRepresents_mcopy _ 1024 256 n (Limbs.radix ^ n % mm) (by omega) hr1F
+      · exact Csub.fastRepresents_mcopy_disjoint _ 1024 256 (32 * n) 512 n baseM
           (by omega) hbaseF
       · exact ⟨0, Limbs.radix_pos,
-          Csub.fastRepresents_mcopy_disjoint _ 4096 1024 (32 * n) 3072 n 0 (by omega) honeF⟩
+          Csub.fastRepresents_mcopy_disjoint _ 1024 256 (32 * n) 768 n 0 (by omega) honeF⟩
     have hbaseForm : baseM ≡
         Precompile.bytesToNatPadded input 96 bsize * Limbs.radix ^ n [MOD mm] := by
       dsimp only [baseM, base]
@@ -283,38 +314,38 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
   · -- the miss: `R1` is seeded and converted here, then the unchanged RR-leading chain
     -- from `r0`.  `mem0` is the memory after the seed store, `mem1` after the conversion.
     have hmiss := gasSteps_missPath s mem n bsize esize msize hn32 e hbword hmatch
-    set mem0 := Exp.storeWord mem 4096 (UInt256.ofNat 1) with hmem0
-    have hr10 : Model.FastRepresents mem0 4096 n (Limbs.radix ^ (n - 1)) :=
+    set mem0 := Exp.storeWord mem 1024 (UInt256.ofNat 1) with hmem0
+    have hr10 : Model.FastRepresents mem0 1024 n (Limbs.radix ^ (n - 1)) :=
       fastRepresents_seed mem n (by omega) hn32 hr1z
     have hframeS : Exp.Frame mem0 n bsize minv :=
       Exp.frame_storeWord (UInt256.ofNat 1) (by omega) hframe0
     have hmodS : Model.FastRepresents mem0 0 n mm :=
-      Exp.storeWord_frame mem 4096 0 n mm (UInt256.ofNat 1) (Or.inr (by omega)) hmod0
-    have haccS : Model.FastRepresents mem0 1024 n 0 :=
-      Exp.storeWord_frame mem 4096 1024 n 0 (UInt256.ofNat 1) (Or.inr (by omega)) hacc0
-    have hbaseS : Model.FastRepresents mem0 2048 n 0 :=
-      Exp.storeWord_frame mem 4096 2048 n 0 (UInt256.ofNat 1) (Or.inr (by omega)) hbase0
-    have honeS : Model.FastRepresents mem0 3072 n 0 :=
-      Exp.storeWord_frame mem 4096 3072 n 0 (UInt256.ofNat 1) (Or.inr (by omega)) hone0
-    have htzS : Model.FastRepresents mem0 8256 n 0 :=
-      Exp.storeWord_frame mem 4096 8256 n 0 (UInt256.ofNat 1) (Or.inl (by omega)) htz
-    set mem1 := Exp.r1Mem n 4096 mem0 with hmem1
+      Exp.storeWord_frame mem 1024 0 n mm (UInt256.ofNat 1) (Or.inr (by omega)) hmod0
+    have haccS : Model.FastRepresents mem0 256 n 0 :=
+      Exp.storeWord_frame mem 1024 256 n 0 (UInt256.ofNat 1) (Or.inr (by omega)) hacc0
+    have hbaseS : Model.FastRepresents mem0 512 n 0 :=
+      Exp.storeWord_frame mem 1024 512 n 0 (UInt256.ofNat 1) (Or.inr (by omega)) hbase0
+    have honeS : Model.FastRepresents mem0 768 n 0 :=
+      Exp.storeWord_frame mem 1024 768 n 0 (UInt256.ofNat 1) (Or.inr (by omega)) hone0
+    have htzS : Model.FastRepresents mem0 4160 n 0 :=
+      Exp.storeWord_frame mem 1024 4160 n 0 (UInt256.ofNat 1) (Or.inl (by omega)) htz
+    set mem1 := Exp.r1Mem n 1024 mem0 with hmem1
     have hframe1 : Exp.Frame mem1 n bsize minv := Exp.r1Mem_frame hn hn32 hframeS
     have hconv : Challenge.EvmProof.GasSteps
-        (Exp.r1Call s mem0 4096 (UInt256.ofNat 1435) n bsize esize msize)
+        (Exp.r1Call s mem0 1024 (UInt256.ofNat 1435) n bsize esize msize)
         (Exp.r0State s mem1 n bsize esize msize) :=
       Exp.gasSteps_r1Block s esize msize hcode hfork hrun hnp hact296 hn hn32
         (UInt256.ofNat 1435) mem0 jumpDest1526 hframeS
     let directMem := Exp.setupToDirectMem (Exp.r1Mem n) (Exp.ccbMem n sub.mpMem sub.amMem) n mem0
-    have hf2 : Exp.Frame (Exp.mcopyMem mem1 5120 4096 (32 * n)) n bsize minv :=
+    have hf2 : Exp.Frame (Exp.mcopyMem mem1 1280 1024 (32 * n)) n bsize minv :=
       Exp.frame_mcopyMem (by omega) hframe1
     have hcc := Exp.setupToCC_facts n mm hn hn32 hmpos hodd mem0 hmodS hr10 hxlt htzS
     have hr0 : Challenge.EvmProof.GasSteps (Exp.r0State s mem1 n bsize esize msize)
         (entryState s directMem n bsize esize msize) :=
       (Exp.gasSteps_r0 s mem1 n bsize esize msize hn hn32 hact hframe1.s32 hcode hfork hrun
         hnp).trans
-      (Exp.gasSteps_ccbFull s sub hspec esize msize hmpos hn hn32 5120 (by omega) (by omega)
-        (UInt256.ofNat 2972) (Exp.mcopyMem mem1 5120 4096 (32 * n)) (Limbs.radix ^ n % mm)
+      (Exp.gasSteps_ccbFull s sub hspec esize msize hmpos hn hn32 1280 (by omega) (by omega)
+        (UInt256.ofNat 2972) (Exp.mcopyMem mem1 1280 1024 (32 * n)) (Limbs.radix ^ n % mm)
         Exp.jumpD3571 hf2 hcc.1 hcc.2 (Nat.mod_lt _ hmpos) hact296 hcode hfork hrun hnp)
     have hframeDirect : Exp.Frame directMem n bsize minv := by
       dsimp only [directMem]
@@ -323,25 +354,25 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
       hmodS hr10 hxlt htzS
     have hmodDirect : Model.FastRepresents directMem 0 n mm := by
       simpa only [directMem] using hdirect.1
-    have hr1Direct : Model.FastRepresents directMem 4096 n (Limbs.radix ^ n % mm) := by
+    have hr1Direct : Model.FastRepresents directMem 1024 n (Limbs.radix ^ n % mm) := by
       simpa only [directMem] using hdirect.2.1
-    have hccDirect : Model.FastRepresents directMem 5120 n
+    have hccDirect : Model.FastRepresents directMem 1280 n
         (Limbs.radix * Limbs.radix ^ n % mm) := by
       simpa only [directMem] using hdirect.2.2
-    have haccDirect : Model.FastRepresents directMem 1024 n 0 := by
+    have haccDirect : Model.FastRepresents directMem 256 n 0 := by
       dsimp only [directMem]
-      exact Exp.setupToDirect_preserves sub hspec 1024 0 hn hn32 (by omega) (by omega) mem0
+      exact Exp.setupToDirect_preserves sub hspec 256 0 hn hn32 (by omega) (by omega) mem0
         haccS
-    have hbaseDirect : Model.FastRepresents directMem 2048 n 0 := by
+    have hbaseDirect : Model.FastRepresents directMem 512 n 0 := by
       dsimp only [directMem]
-      exact Exp.setupToDirect_preserves sub hspec 2048 0 hn hn32 (by omega) (by omega) mem0
+      exact Exp.setupToDirect_preserves sub hspec 512 0 hn hn32 (by omega) (by omega) mem0
         hbaseS
-    have honeDirect : Model.FastRepresents directMem 3072 n 0 := by
+    have honeDirect : Model.FastRepresents directMem 768 n 0 := by
       dsimp only [directMem]
-      exact Exp.setupToDirect_preserves sub hspec 3072 0 hn hn32 (by omega) (by omega) mem0
+      exact Exp.setupToDirect_preserves sub hspec 768 0 hn hn32 (by omega) (by omega) mem0
         honeS
     have hhelper :=
-      Bytecode.RrLeadingTrace.gasSteps_helper s directMem n bsize esize msize hn hn32
+      Bytecode.RrLeadingTrace.gasSteps_helper s directMem n bsize esize msize hn (by omega)
         hact hframeDirect.s32 hcode hfork hrun hnp
     obtain ⟨hexit, hframeCopy, hinvCopy, haccCopy, hbaseCopy, honeCopy, _⟩ :=
       RrLeadingExpBridge.direct_rejoin_facts s directMem n bsize esize msize mm
@@ -371,7 +402,7 @@ theorem gasSteps_handled (input : ByteArray)
         final.toResult = .returned (Challenge.Modexp.spec input) := by
   have hsize : input.size < 2 ^ 256 := lt_trans hvalid.1 (by norm_num)
   have hn : 2 ≤ Setup.limbs input := Setup.limbs_ge_two input hpath.1
-  have hn32 : Setup.limbs input ≤ 32 := Setup.fastSetup_limbs_le_32 input hpath
+  have hn32 : Setup.limbs input ≤ 8 := Setup.fastSetup_limbs_le_8 input hpath
   have hodd : Setup.modulus input % 2 = 1 := hpath.2.2.2
   have hradix : Limbs.radix ≤ Setup.modulus input := by
     have h1 : Limbs.radix ^ 1 ≤ Limbs.radix ^ (Setup.limbs input - 1) :=
@@ -388,7 +419,7 @@ theorem gasSteps_handled (input : ByteArray)
     exact h
   have hxlt : Limbs.radix ^ (Setup.limbs input - 1) < Setup.modulus input :=
     Model.radix_pow_lt_of_odd hn hpath.2.2.1 hodd
-  have hact : 297 ≤ (Setup.fastSetupState input).activeWords.toNat := by
+  have hact : 169 ≤ (Setup.fastSetupState input).activeWords.toNat := by
     rw [Setup.fastSetup_activeWords input hpath, Exp.toNat_ofNat_self (by norm_num)]
   have hcds : (Setup.fastSetupState input).executionEnv.calldata.size < 2 ^ 256 := by
     rw [Exp.fastSetup_calldata input]
@@ -406,10 +437,10 @@ theorem gasSteps_handled (input : ByteArray)
       ⟨Setup.fastSetup_V_S32 input hpath, Setup.fastSetup_V_MINV input,
        Setup.fastSetup_V_ML input hpath, Setup.fastSetup_V_TL input hpath,
        Setup.fastSetup_V_EOFF input hpath⟩
-      (Setup.fastSetup_modulus input hpath) (Setup.fastSetup_R1_zero input hpath)
-      (Exp.fastSetup_zero_block input hpath 1024 (by omega) (by omega))
-      (Exp.fastSetup_zero_block input hpath 2048 (by omega) (by omega))
-      (Exp.fastSetup_zero_block input hpath 3072 (by omega) (by omega))
+      (Setup.fastSetup_modulus input hpath) (fastSetup_R1_zero_compact input hpath)
+      (Exp.fastSetup_zero_block input hpath 256 (by omega) (by omega))
+      (Exp.fastSetup_zero_block input hpath 512 (by omega) (by omega))
+      (Exp.fastSetup_zero_block input hpath 768 (by omega) (by omega))
       (Exp.fastSetup_tblock_zero input hpath hn32)
   exact ⟨final, ⟨(Challenge.EvmProof.GasSteps.cast
     (Setup.gasSteps_fastSetup input hsize hpath) rfl (Exp.fastSetup_entry_eq input)).trans

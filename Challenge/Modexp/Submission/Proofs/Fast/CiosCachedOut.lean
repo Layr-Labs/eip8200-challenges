@@ -18,9 +18,9 @@ set_option linter.unusedSimpArgs false in
 theorem run_out (s : State) (mem : ByteArray) (pb n i : Nat)
     (ent pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005) (hrun : s.halt = .Running)
-    (hact : 296 ≤ s.activeWords.toNat)
+    (hact : 168 ≤ s.activeWords.toNat)
     (_hn : 2 ≤ n) (_hn32 : n ≤ 32) (hi : i < n)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472) :
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 5376) :
     runInstructions outProgram
       (outState s mem pb n i (UInt256.ofNat 4164) ent pdst ret rest) =
       some (firstAt 4167 s mem (rowBi mem pb n i) pb n i (UInt256.ofNat 4164) ent pdst ret rest) := by

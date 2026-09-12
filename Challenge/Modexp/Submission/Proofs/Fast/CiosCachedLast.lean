@@ -239,11 +239,11 @@ def lastState (template : State) (pc : UInt256) (mem : ByteArray)
 /-- The last second-loop copy (cf. `CiosCachedL2.run_step`). -/
 theorem run_stepLast (w : Fin 33) (template : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat) (x tl ts : UInt256)
-    (hx : x.toNat = 32 * (n - 2 - k)) (htl : tl.toNat = 8256 + 32 * (n - 2 - k))
-    (hts : ts.toNat = 8256 + 32 * (n - 1 - k))
+    (hx : x.toNat = 32 * (n - 2 - k)) (htl : tl.toNat = 4160 + 32 * (n - 2 - k))
+    (hts : ts.toNat = 4160 + 32 * (n - 1 - k))
     (pbi paEnd pbEnd flag destination returnPC : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
-    (hactive : 296 ≤ template.activeWords.toNat) (hn : n ≤ 32) (hk : k+1 < n)
+    (hactive : 168 ≤ template.activeWords.toNat) (hn : n ≤ 32) (hk : k+1 < n)
     (hpush : w.val = 0 → x = UInt256.ofNat 0) :
     runInstructions (l2LastProgram w x tl ts)
       (CiosCachedL2.state template pc mem bi mu c0 n k pbi paEnd pbEnd flag destination returnPC rest) =
@@ -253,10 +253,10 @@ theorem run_stepLast (w : Fin 33) (template : State) (pc : UInt256) (mem : ByteA
       (32*(n-2-k)) 32) = template.activeWords :=
     activeWords_fix template _ 32 (by decide) (by omega) hactive
   have hactT : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
-      (8256 + 32*(n-2-k)) 32) = template.activeWords :=
+      (4160 + 32*(n-2-k)) 32) = template.activeWords :=
     activeWords_fix template _ 32 (by decide) (by omega) hactive
   have hactW : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
-      (8256 + 32*(n-1-k)) 32) = template.activeWords :=
+      (4160 + 32*(n-1-k)) 32) = template.activeWords :=
     activeWords_fix template _ 32 (by decide) (by omega) hactive
   let st : State := { template with memory := (l2Step mem mu c0 n k).memory }
   have hM : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat x.toNat 32) =
@@ -281,13 +281,13 @@ theorem run_stepLast (w : Fin 33) (template : State) (pc : UInt256) (mem : ByteA
 /-- On the row frame: the last copy of row `i` lands on the row tail frame (pc 4750). -/
 theorem run_l2Last (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hact : 296 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 1005) (hact : 168 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hn : 2 ≤ n) :
-    runInstructions (l2LastProgram 0 0 8256 8288)
+    runInstructions (l2LastProgram 0 0 4160 4192)
       (l2At 4715 s mid bi mu c0 pb n i (n-2) hd ent pdst ret rest) =
       some (tailState s (l2Step mid mu c0 n (n-1)).memory
         (l2Step mid mu c0 n (n-1)).carry mu bi pb n i hd ent pdst ret rest) := by
-  have h := run_stepLast 0 s (UInt256.ofNat 4715) mid bi mu c0 n (n-2) 0 8256 8288
+  have h := run_stepLast 0 s (UInt256.ofNat 4715) mid bi mu c0 n (n-2) 0 4160 4192
     (by rw [show n - 2 - (n - 2) = 0 by omega]; decide)
     (by rw [show n - 2 - (n - 2) = 0 by omega]; decide)
     (by rw [show n - 1 - (n - 2) = 1 by omega]; decide)

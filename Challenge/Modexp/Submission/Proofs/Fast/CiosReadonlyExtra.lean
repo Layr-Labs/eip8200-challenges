@@ -100,11 +100,11 @@ theorem run_extraStep (slot : Fin 3) (template : State) (pc : UInt256) (mem : By
     (bi mu c0 : UInt256) (n k : Nat) (x loadAddr storeAddr : UInt256)
     (hx : x.toNat = 32*(n-2-k))
     (hselect : x.toNat = cacheAddress slot)
-    (hloadAddr : loadAddr.toNat = 8256+32*(n-2-k))
-    (hstoreAddr : storeAddr.toNat = 8256+32*(n-1-k))
+    (hloadAddr : loadAddr.toNat = 4160+32*(n-2-k))
+    (hstoreAddr : storeAddr.toNat = 4160+32*(n-1-k))
     (pbi paEnd pbEnd flag target2 cachedTL inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 998)
-    (hactive : 296 ≤ template.activeWords.toNat) (hn : n ≤ 32) (hk : k+1 < n)
+    (hactive : 168 ≤ template.activeWords.toNat) (hn : n ≤ 32) (hk : k+1 < n)
     (hc : ExtraCache mem m96 m64 m32) :
     runInstructions (extraProgram slot loadAddr storeAddr)
       (CiosCachedL2.state template pc mem bi mu c0 n k pbi paEnd pbEnd flag target2 inv
@@ -112,10 +112,10 @@ theorem run_extraStep (slot : Fin 3) (template : State) (pc : UInt256) (mem : By
     some (CiosCachedL2.state template (pc+UInt256.ofNat 34) mem bi mu c0 n (k+1)
       pbi paEnd pbEnd flag target2 inv (m0 :: cachedTL :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) := by
   have hactT : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
-      (8256+32*(n-2-k)) 32) = template.activeWords :=
+      (4160+32*(n-2-k)) 32) = template.activeWords :=
     activeWords_fix template _ 32 (by decide) (by omega) hactive
   have hactW : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
-      (8256+32*(n-1-k)) 32) = template.activeWords :=
+      (4160+32*(n-1-k)) 32) = template.activeWords :=
     activeWords_fix template _ 32 (by decide) (by omega) hactive
   let st : State := { template with memory := (l2Step mem mu c0 n k).memory }
   have hT : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat loadAddr.toNat 32) =
