@@ -45,17 +45,11 @@ private theorem ptr_wrap (base n : Nat) :
     simp only [ptrAt, hpow]; omega
   rw [h, Nat.add_mul_mod_self_left]
 
+-- Adapt the retained-reduction-entry idea from public submission 95c3fcc.
+-- A PUSH5 zero and POP retain the old byte width with five fewer instructions.
 private theorem ent_back (n : Nat) (hn : n = 4 ∨ n = 8) :
-    UInt256.ofNat (sqEnt n n) - UInt256.ofNat (38 * n) = UInt256.ofNat (sqEnt n 0) := by
+    l2Target n - UInt256.ofNat 299 = UInt256.ofNat (sqEnt n 0) := by
   rcases hn with rfl | rfl <;> decide
-
-private theorem shr_five (n : Nat) (hn : n ≤ 8) :
-    UInt256.shiftRight (UInt256.ofNat (32 * n)) (UInt256.ofNat 5) = UInt256.ofNat n := by
-  interval_cases n <;> decide
-
-private theorem mul_thirtyEight (n : Nat) (hn : n ≤ 8) :
-    UInt256.ofNat 38 * UInt256.ofNat n = UInt256.ofNat (38 * n) := by
-  interval_cases n <;> decide
 
 /-! ## The two halves of `again` -/
 
@@ -143,21 +137,22 @@ theorem run_againFix (s : State) (mem : ByteArray) (n : Nat)
     some (outState s (mpZeroed s (StagedOperand.stage mem 2048 n) n) 2048 n 0
       (UInt256.ofNat 4788) (UInt256.ofNat (sqEnt n 0)) inv m0
       (tl :: m96 :: m64 :: m32 :: UInt256.ofNat 0 :: pdst :: ret :: rest)) := by
-  have hn8 : n ≤ 8 := by omega
   have hc16' : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc19 : rest.length + 19 < 1024 := by omega
   have hc20 : rest.length + 20 < 1024 := by omega
-  have hptr := ptr_wrap (2048 + 32 * n - 32) n
+  have hptr : UInt256.ofNat (32 * n) +
+      UInt256.ofNat (ptrAt (2048 + 32 * n - 32) n) =
+      UInt256.ofNat (2048 + 32 * n - 32) := by
+    rw [Challenge.EvmProof.Word.word_add_comm]
+    exact ptr_wrap (2048 + 32 * n - 32) n
   have hent := ent_back n hn
-  have hshr := shr_five n hn8
-  have hmul := mul_thirtyEight n hn8
   have hjd : Decode.isValidJumpDest s.executionEnv.code 4788 = true := by
     rw [hcode]; exact hhd
   simp (config := { maxSteps := 200000 })
     [againFixProgram, againProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-      againMidState, frameStack, outState, hptr, hent, hshr, hmul, hjd, ptrAt_zero, push0_eq,
+      againMidState, frameStack, outState, hptr, hent, hjd, ptrAt_zero, push0_eq,
       hc16', hc17, hc18, hc19, hc20, List.exchange,
       Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]

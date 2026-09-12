@@ -45,7 +45,7 @@ theorem sqRowSgt_index : Artifact.submissionInstructions[3644]? = some (.op .SGT
   rfl
 
 /-- ... at program counter 4716 (0x126c). -/
-theorem sqRowSgt_pc : Artifact.submissionArtifact.instructionPC 3644 = 4794 := by
+theorem sqRowSgt_pc : Artifact.submissionArtifact.instructionPC 3639 = 4794 := by
   rfl
 
 /-- Decoder fact at pc 4716 of the submission bytecode. -/
@@ -53,7 +53,7 @@ theorem decodedOp_sqRowSgt (s : State)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hpc : s.pc = UInt256.ofNat 4794) :
     s.decodedOp = some .SGT := by
-  have hpcNat : s.pc.toNat = Artifact.submissionArtifact.instructionPC 3644 := by
+  have hpcNat : s.pc.toNat = Artifact.submissionArtifact.instructionPC 3639 := by
     rw [hpc, sqRowSgt_pc]; decide
   have hwf : Stepper.WellFormed s.fork (.op .SGT) := by
     rw [hfork]

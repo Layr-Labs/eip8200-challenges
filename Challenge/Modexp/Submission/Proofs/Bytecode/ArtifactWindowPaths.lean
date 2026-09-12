@@ -75,12 +75,12 @@ private theorem pcA2193 : Artifact.submissionArtifact.instructionPC 2193 = 2823 
 private theorem pcA2198 : Artifact.submissionArtifact.instructionPC 2198 = 2829 := by
   rw [show (2198 : Nat) = 2193 + 5 from rfl, instructionPC_add, pcA2193]; rfl
 
-private theorem pcA3688 : Artifact.submissionArtifact.instructionPC 3688 = 4841 := by rfl
+private theorem pcA3688 : Artifact.submissionArtifact.instructionPC 3683 = 4841 := by rfl
 
-private theorem pcA3702 : Artifact.submissionArtifact.instructionPC 3702 = 4894 := by
+private theorem pcA3702 : Artifact.submissionArtifact.instructionPC 3697 = 4894 := by
   rw [show (3702 : Nat) = 3688 + 14 from rfl, instructionPC_add, pcA3688]; rfl
 
-private theorem pcA3711 : Artifact.submissionArtifact.instructionPC 3711 = 4906 := by
+private theorem pcA3711 : Artifact.submissionArtifact.instructionPC 3706 = 4906 := by
   rw [show (3711 : Nat) = 3702 + 9 from rfl, instructionPC_add, pcA3702]; rfl
 
 
@@ -145,13 +145,13 @@ private def nine_zeroReturn :
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def fermat_prime : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4841 FermatProgram.primeProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3688 14 4841 FermatProgram.primeProgram (by decide) pcA3688
+  WindowTwentyOneSlice.block allWellFormed 3683 14 4841 FermatProgram.primeProgram (by decide) pcA3688
     (by rw [locations_map_instruction]; rfl) (by decide)
 private def fermat_exponent : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4894 FermatProgram.exponentProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3702 9 4894 FermatProgram.exponentProgram (by decide) pcA3702
+  WindowTwentyOneSlice.block allWellFormed 3697 9 4894 FermatProgram.exponentProgram (by decide) pcA3702
     (by rw [locations_map_instruction]; rfl) (by decide)
 private def fermat_result : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4906 FermatProgram.returnProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3711 16 4906 FermatProgram.returnProgram (by decide) pcA3711
+  WindowTwentyOneSlice.block allWellFormed 3706 16 4906 FermatProgram.returnProgram (by decide) pcA3711
     (by rw [locations_map_instruction]; rfl) (by decide)
 def fermatPaths : FermatProgram.Paths submissionArtifact .Osaka where
   prime := fermat_prime
@@ -171,7 +171,7 @@ def twentyOnePaths : WindowTwentyOneGasRoute.Paths submissionArtifact .Osaka whe
   finish := nine_finish
   zeroReturn := nine_zeroReturn
   hitJump := by
-    have h := isValidJumpDest_index 3688 (by rfl)
+    have h := isValidJumpDest_index 3683 (by rfl)
     exact h
   zeroJump := by
     have h := isValidJumpDest_index 2198 (by rfl)

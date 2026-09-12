@@ -840,12 +840,12 @@ theorem jumpDest4976 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecod
   Artifact.isValidJumpDest_index 3560 (by rfl)
 
 theorem jumpDestSub : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4925 = true :=
-  Artifact.isValidJumpDest_index 3727 (by rfl)
+  Artifact.isValidJumpDest_index 3722 (by rfl)
 
 theorem jumpDestCopyResume : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5176 = true :=
-  Artifact.isValidJumpDest_index 3908 (by rfl)
+  Artifact.isValidJumpDest_index 3903 (by rfl)
 
 theorem jumpDestEarlyCopy : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5165 = true :=
-  Artifact.isValidJumpDest_index 3901 (by rfl)
+  Artifact.isValidJumpDest_index 3896 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

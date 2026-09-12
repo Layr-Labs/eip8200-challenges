@@ -93,11 +93,10 @@ def againProgram : List Instr :=
    .push 2 8960, .op .MCOPY,
    .op (.Dup ⟨0, by decide⟩), .push 1 64, .op .ADD, .op .CALLDATASIZE, .push 2 8192,
    .op .CALLDATACOPY,
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩),
-   .op .POP,
-   .push 1 5, .op .SHR, .push 1 38, .op .MUL, .op (.Dup ⟨4, by decide⟩), .op .SUB,
+   .op .ADD, .push 2 299, .op (.Dup ⟨7, by decide⟩), .op .SUB,
    .op (.Swap ⟨3, by decide⟩), .op .POP,
-   .push 0 0, .op (.Swap ⟨13, by decide⟩), .op .POP]
+   .push 0 0, .op (.Swap ⟨13, by decide⟩), .op .POP,
+   .push 5 0, .op .POP]
 
 /-! ## Located blocks -/
 
@@ -114,7 +113,7 @@ def moreBlock : Block Artifact.submissionArtifact .Osaka 4739 moreProgram :=
     (by decide) (by rfl) (by rfl) (by decide)
 
 def againBlock : Block Artifact.submissionArtifact .Osaka 4748 againProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3609 29 4748 againProgram
+WindowTwentyOneSlice.block Artifact.allWellFormed 3609 24 4748 againProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-! ## Jump destinations of the loop -/

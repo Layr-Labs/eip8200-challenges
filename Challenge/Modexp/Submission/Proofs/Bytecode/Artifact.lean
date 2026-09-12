@@ -3644,21 +3644,16 @@ def submissionInstructions : List Instr :=
  .op .CALLDATASIZE,
  .push 2 8192,
  .op .CALLDATACOPY,
- .op (.Dup { idx := 0 }),
- .op (.Dup { idx := 2 }),
  .op .ADD,
- .op (.Swap { idx := 1 }),
- .op .POP,
- .push 1 5,
- .op .SHR,
- .push 1 38,
- .op .MUL,
- .op (.Dup { idx := 4 }),
+ .push 2 299,
+ .op (.Dup { idx := 7 }),
  .op .SUB,
  .op (.Swap { idx := 3 }),
  .op .POP,
  .push 0 0,
  .op (.Swap { idx := 13 }),
+ .op .POP,
+ .push 5 0,
  .op .POP,
  .op .JUMPDEST,
  .op (.Dup { idx := 0 }),
@@ -3982,7 +3977,7 @@ def submissionInstructions : List Instr :=
  .op .JUMP]
 
 
-theorem submissionInstructions_count : submissionInstructions.length = 3958 := by
+theorem submissionInstructions_count : submissionInstructions.length = 3953 := by
   decide
 
 theorem assemble_submissionInstructions :
