@@ -16,8 +16,8 @@ def template : List Instr :=
     .op (.Dup ⟨12, by decide⟩),
     .op .XOR,
     .op (.Dup ⟨6, by decide⟩),
-    .op (.Dup ⟨13, by decide⟩),
-    .op (.Dup ⟨12, by decide⟩),
+    .op (.Dup ⟨11, by decide⟩),
+    .op (.Dup ⟨14, by decide⟩),
     .op .AND,
     .op .OR,
     .op .XOR,
@@ -76,20 +76,20 @@ theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
   simp (discharger := omega) [template, inputStack, outputStack,
     runInstrSeq, Stepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
-    State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat, Word.land_comm]
+    State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl
 #print axioms run_actual
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 3647).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3646).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3647 actual_slice
-    (by change 3647 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3646 actual_slice
+    (by change 3646 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 4535 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3647) = UInt256.ofNat 4535
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3646) = UInt256.ofNat 4535
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound

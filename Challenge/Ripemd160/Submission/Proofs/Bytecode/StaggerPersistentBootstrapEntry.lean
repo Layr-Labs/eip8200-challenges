@@ -36,7 +36,7 @@ theorem output_eq (memory : ByteArray) (h : Compression.HashState) (off limit : 
     (rho : List UInt256) :
     StaggerPersistentBootstrapRaw.outputStack memory (input h off limit) rho =
       stack memory (Word.ofUInt32 h.h4)
-        [.k, .a, .b, .c, .d, .e, .factor, .lower, .cache 140,
+        [.a, .k, .b, .c, .d, .e, .factor, .lower, .cache 140,
           .cache 350, .cache 310, .cache 190, .cache 500]
         (initial h) (initial h) (UInt256.ofNat 1352829926)
         (StaggerPersistentFrame.coreRest h off limit rho) := by

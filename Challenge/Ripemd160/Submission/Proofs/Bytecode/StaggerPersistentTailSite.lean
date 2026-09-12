@@ -10,17 +10,17 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate
 abbrev template := ScheduledTailRaw.template
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 3772).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3771).take template.length = template := by rfl
 
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3772 actual_slice
-    (by change 3772 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3771 actual_slice
+    (by change 3771 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 
 theorem site_pc : site.startPC = UInt256.ofNat 4671 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3772) = UInt256.ofNat 4671
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3771) = UInt256.ofNat 4671
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction :=
