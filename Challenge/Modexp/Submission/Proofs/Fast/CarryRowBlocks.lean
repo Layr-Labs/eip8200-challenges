@@ -1,5 +1,4 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CarryRowPrograms
-import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedLast
 import Challenge.Modexp.Submission.Proofs.Fast.CiosReadonlyPrograms
 import Challenge.Modexp.Submission.Proofs.Fast.CiosReadonlyExtra
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedPrograms
@@ -78,16 +77,16 @@ def l2Mac5 : Block Artifact.submissionArtifact .Osaka 4546 (CiosReadonlyExtra.ex
   WindowTwentyOneSlice.block Artifact.allWellFormed 3459 29 4546 (CiosReadonlyExtra.extraProgram 2 8288 8320)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Mac6 : Block Artifact.submissionArtifact .Osaka 4580 (CiosCachedLast.l2LastProgram 0 0 8256 8288) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3488 30 4580 (CiosCachedLast.l2LastProgram 0 0 8256 8288)
+def l2Mac6 : Block Artifact.submissionArtifact .Osaka 4580 (l2Program 0 0 8256 8288) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3488 30 4580 (l2Program 0 0 8256 8288)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def tailLoop : Block Artifact.submissionArtifact .Osaka 4615 CarryRowPrograms.tail :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3518 18 4615 CarryRowPrograms.tail
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3518 20 4615 CarryRowPrograms.tail
     (by decide) (by rfl) (by rfl) (by decide)
 
 def exitBlock : Block Artifact.submissionArtifact .Osaka 4651 CiosReadonly.fullExitProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3542 18 4651 CiosReadonly.fullExitProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3544 16 4651 CiosReadonly.fullExitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l2Join8 : Block Artifact.submissionArtifact .Osaka 4359 joinProgram :=

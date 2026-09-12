@@ -34,10 +34,10 @@ def csGenericPath : List (Challenge.EvmProof.Stepper.Located Artifact.submission
    pushAt 3742 2 9408,
    opAt 3743 .MLOAD,
    opAt 3744 (.Dup ⟨0, by decide⟩),
-   pushAt 3745 2 7168,
+   pushAt 3745 4 7168,
    opAt 3746 .ADD,
-   pushAt 3747 2 8256,
-   opAt 3748 .POP,
+   opAt 3747 .JUMPDEST,
+   opAt 3748 .JUMPDEST,
    opAt 3749 (.Swap ⟨0, by decide⟩),
    pushAt 3750 0 0,
    opAt 3751 (.Swap ⟨2, by decide⟩),
@@ -479,31 +479,31 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
       instructionPC_succ Artifact.submissionArtifact 3744 _ (by rfl)
     _ = 4958 := by rw [fixedPC3794]; rfl
 
-@[simp] theorem fixedPC3796 : Artifact.submissionArtifact.instructionPC 3746 = 4961 := by
+@[simp] theorem fixedPC3796 : Artifact.submissionArtifact.instructionPC 3746 = 4963 := by
   calc
     Artifact.submissionArtifact.instructionPC 3746 =
-        Artifact.submissionArtifact.instructionPC 3745 + (YulEvmCompiler.Instr.push 2 7168).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3745 + (YulEvmCompiler.Instr.push 4 7168).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3745 _ (by rfl)
-    _ = 4961 := by rw [fixedPC3795]; rfl
+    _ = 4963 := by rw [fixedPC3795]; rfl
 
-@[simp] theorem fixedPC3797 : Artifact.submissionArtifact.instructionPC 3747 = 4962 := by
+@[simp] theorem fixedPC3797 : Artifact.submissionArtifact.instructionPC 3747 = 4964 := by
   calc
     Artifact.submissionArtifact.instructionPC 3747 =
         Artifact.submissionArtifact.instructionPC 3746 + (YulEvmCompiler.Instr.op .ADD).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3746 _ (by rfl)
-    _ = 4962 := by rw [fixedPC3796]; rfl
+    _ = 4964 := by rw [fixedPC3796]; rfl
 
 @[simp] theorem fixedPC3798 : Artifact.submissionArtifact.instructionPC 3748 = 4965 := by
   calc
     Artifact.submissionArtifact.instructionPC 3748 =
-        Artifact.submissionArtifact.instructionPC 3747 + (YulEvmCompiler.Instr.push 2 8256).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3747 + (YulEvmCompiler.Instr.op .JUMPDEST).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3747 _ (by rfl)
     _ = 4965 := by rw [fixedPC3797]; rfl
 
 @[simp] theorem fixedPC3799 : Artifact.submissionArtifact.instructionPC 3749 = 4966 := by
   calc
     Artifact.submissionArtifact.instructionPC 3749 =
-        Artifact.submissionArtifact.instructionPC 3748 + (YulEvmCompiler.Instr.op .POP).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3748 + (YulEvmCompiler.Instr.op .JUMPDEST).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3748 _ (by rfl)
     _ = 4966 := by rw [fixedPC3798]; rfl
 

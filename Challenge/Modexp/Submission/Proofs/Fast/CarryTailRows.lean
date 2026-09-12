@@ -35,7 +35,7 @@ theorem run_next (s : State) (mem : ByteArray) (c mu bi : UInt256)
   have hcond : UInt256.isTrue
       (UInt256.gt (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) (UInt256.ofNat (pb-32))) :=
     (l1_condition pb n (i+1) hpb hpbFit (by omega)).mpr hi
-  have trace := CarryRowRun.run_tail { s with memory := mem } c bi
+  have trace := CarryRowRun.run_tail { s with memory := mem } c mu bi
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) hd (UInt256.ofNat (pb-32))
     ent (l2Target n) dst (ret :: rest) (by simp only [List.length_cons]; omega) hact htarget
   simpa only [List.cons_append, List.nil_append, input, result, baseStack, framed, CiosCached.tailState,
@@ -55,7 +55,7 @@ theorem run_last (s : State) (mem : ByteArray) (c mu bi : UInt256)
       (UInt256.gt (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) (UInt256.ofNat (pb-32))) := by
     rw [l1_condition pb n (i+1) hpb hpbFit (by omega)]
     omega
-  have trace := CarryRowRun.run_tail { s with memory := mem } c bi
+  have trace := CarryRowRun.run_tail { s with memory := mem } c mu bi
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) hd (UInt256.ofNat (pb-32))
     ent (l2Target n) dst (ret :: rest) (by simp only [List.length_cons]; omega) hact htarget
   simpa only [List.cons_append, List.nil_append, input, result, baseStack, framed, CiosCached.tailState,

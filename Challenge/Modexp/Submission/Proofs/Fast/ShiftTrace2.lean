@@ -69,7 +69,7 @@ theorem run_shiftHead_done (s : State) (mem : ByteArray) (n bsize esize msize : 
 
 /-- `blk3018`: `MCOPY(TN, BASE, s32)` and `t[0] := 0`. -/
 theorem run_shiftBody (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hact : 298 ≤ s.activeWords.toNat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hact : 297 ≤ s.activeWords.toNat)
     (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
