@@ -38,7 +38,7 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
     (StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 0) (Padding.paddedWord input) [])
     (by simp [StaggerPersistentFrame.frame]) (PaddingTrace.padReturned_halt input) (PaddingTrace.padReturned_code input)
     (PaddingTrace.padReturned_fork input) (PaddingTrace.padReturned_noPrecompile input)
-  have gs : s = {s with pc := UInt256.ofNat 325, stack := [UInt256.ofNat 0, Padding.paddedWord input]} := rfl
+  have gs : s = {s with pc := UInt256.ofNat 331, stack := [UInt256.ofNat 0, Padding.paddedWord input]} := rfl
   rw [← gs] at gi
   have g := gp.trans (gi.trans gj)
   simpa only [loopState, offsetWord, Nat.zero_mul, limit_eq input hfit] using g

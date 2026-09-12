@@ -28,8 +28,8 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     (hr : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 466, stack := frame h (DriverTrace.blockOffsetWord i) limit rho}
-      {scheduledState s i with pc := UInt256.ofNat 919, stack := frame h (DriverTrace.blockOffsetWord i) limit rho} := by
+    GasSteps {s with pc := UInt256.ofNat 472, stack := frame h (DriverTrace.blockOffsetWord i) limit rho}
+      {scheduledState s i with pc := UInt256.ofNat 925, stack := frame h (DriverTrace.blockOffsetWord i) limit rho} := by
   let off := DriverTrace.blockOffsetWord i
   let q := scheduledState s i
   let r := rest h off limit rho
@@ -55,8 +55,8 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     have gj := StaggerPadJump.gasSteps_jump q (frame h off limit rho)
       (by simp only [frame, List.length_append, List.length_cons, List.length_nil]; omega)
       hr hcode hfork hnp
-    have gb' : GasSteps {s with pc := UInt256.ofNat 388, stack := frame h off limit rho}
-        {q with pc := UInt256.ofNat 461, stack := frame h off limit rho} := by
+    have gb' : GasSteps {s with pc := UInt256.ofNat 394, stack := frame h off limit rho}
+        {q with pc := UInt256.ofNat 467, stack := frame h off limit rho} := by
       apply gb.cast rfl
       dsimp only [q, scheduledState]
       rw [scheduled_active_eq s input i hfit hi ctx]

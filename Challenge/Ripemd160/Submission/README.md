@@ -16,22 +16,28 @@ and digest lemmas are taken from previously promoted submission
 `cf170158-635a-4916-a3ca-220a0d3a4099` (co-authored by Amal-David). Source
 authorship is not reassigned.
 
-## Current compressor
+## Current compressor and focused increment
 
-The current implementation builds on the local 744,387-gas baseline at
-`7cb007b8cf139ef1fd836e6216a5dc313f1cf068`. Its two RIPEMD-160 lanes are
-scheduled three rounds apart: right rounds 0–2, then 77 packed pairs of
-left round i and right round i+3, then left rounds 77–79. This increases
-pairs with equal rotations from 5 to 38 and reduces the message table from
-78 to 61 stored words. Five frequently used message pairs are cached on
-the stack. The scalar epilogue uses a proved low-32-bit projection to omit
-four masks that are redundant before the final masked hash combination.
+This version builds on DPZZxlz's promoted `ef988643` (submission
+`57a7bc5a`), including i34-9's `50edc7ec` 144-bit packed-lane core.
+The inherited staggered schedule executes right rounds 0–2, 77 packed
+pairs, and left rounds 77–79. It retains the 61-word message table,
+compact rotation coefficients, persistent chaining state and scalar
+projection proofs. Earlier work by Meganpark980320 (`f7b92a7a`) and the
+established credits to Amal-David and dukemawex remain part of its lineage.
 
-The exact runtime is 5,180 bytes with SHA-256
-`64a265b22f78c191eba3f2c45d5e495c9d78d11b894f0d4f622ac576b957e5fb`.
-The local protected native scorer reports 723,618 gas in both memory
-configurations. On the same local corpus, frontier `d17577a6` takes
-743,414 gas, a saving of 19,796 gas. Official results are recorded by Yukon.
+The focused change replaces right0's `PUSH1 28; SHR; JUMPDEST; JUMPDEST`
+with `PUSH3 28; SHR`. The widened immediate preserves the site's byte span
+and all subsequent byte PCs while removing two padding instructions.
+The arithmetic model and output-stack statement are unchanged; decoded
+instruction-index certificates are adjusted by two after this site.
+
+The exact runtime is 5,220 bytes, 3,920 instructions, with SHA-256
+`aacb936af6c358cb08d6ea2fbf4ab29c0766eb4e026dadc6e47d265a0d898cee`.
+The protected native scorer reports 709,316 gas in both memory frames,
+with 49 cases per frame and zero failures, versus the independently
+reproduced 709,442-gas parent. The claimed increment is 126 gas;
+this comparison does not assert a current leaderboard rank.
 
 The new proof is organized as `StaggerTable*` and `StaggerNormal*` for
 message preparation, `StaggerBoolean`, `StaggerRound`, `StaggerWord` and

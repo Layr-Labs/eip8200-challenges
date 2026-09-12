@@ -7,7 +7,7 @@ set_option maxRecDepth 10000
 /-!
 # Structural binding for the frozen raw-EVM RIPEMD-160 artifact
 
-The candidate bytecode has 5206 bytes and SHA-256 `e825b6d0e250e07576a4e993c38f4f8c0f950350e63a363804912fd1e3d4ad35`. The hex file remains the external raw input.
+The candidate bytecode has 5220 bytes and SHA-256 `aacb936af6c358cb08d6ea2fbf4ab29c0766eb4e026dadc6e47d265a0d898cee`. The hex file remains the external raw input.
 -/
 
 namespace Challenge.Ripemd160
@@ -20,7 +20,7 @@ set_option maxRecDepth 50000 in
 def submissionBytecode : ByteArray := submissionBytes
 
 set_option maxRecDepth 50000 in
-@[simp] theorem referenceBytecode_size : submissionBytecode.size = 5206 := by
+@[simp] theorem referenceBytecode_size : submissionBytecode.size = 5220 := by
   simp [submissionBytecode]
 
 set_option maxRecDepth 100000 in
