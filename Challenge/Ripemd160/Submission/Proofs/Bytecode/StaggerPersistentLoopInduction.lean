@@ -21,10 +21,10 @@ def loopState (s : State) (h : Compression.HashState) (i count : Nat) (rho : Lis
   {s with pc := UInt256.ofNat 466, stack := StaggerPersistentFrame.frame h (offsetWord i) (limitWord count) rho}
 
 def postState (s : State) (h : Compression.HashState) (i count : Nat) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 4700, stack := StaggerPersistentFrame.frame h (offsetWord i) (limitWord count) rho}
+  {s with pc := UInt256.ofNat 4721, stack := StaggerPersistentFrame.frame h (offsetWord i) (limitWord count) rho}
 
 def exitState (s : State) (h : Compression.HashState) (count : Nat) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 4713, stack := StaggerPersistentFrame.frame h (limitWord count) (limitWord count) rho}
+  {s with pc := UInt256.ofNat 4734, stack := StaggerPersistentFrame.frame h (limitWord count) (limitWord count) rho}
 
 theorem next_offset (i count : Nat) (hi : i < count) (hbound : count * 64 < 2^256) :
     nextOffset (offsetWord i) = offsetWord (i + 1) := by

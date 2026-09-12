@@ -8,14 +8,13 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PersistentStaggerTailBr
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof Paired144WordRound
 open PersistentStaggerFunctional
 
-def tailInput (memory : ByteArray) (h : Compression.HashState) (l r : WordLane)
+def tailInput (_memory : ByteArray) (h : Compression.HashState) (l r : WordLane)
     (off limit : UInt256) : StaggerPersistentTailRaw.Input :=
   {ld := l.d, lb := l.b, le := l.e, la := l.a, k := UInt256.ofNat 2840853838,
    lc := l.c, re := r.e, rc := r.c, ra := r.a, rd := r.d, rb := r.b,
    factor := factorWord, lower := UInt256.ofNat 4294967295,
    cache140 := compactMaskWord, cache190 := coefficientWord 0 2,
    cache310 := coefficientWord 0 3, cache350 := coefficientWord 3 0,
-   late342 := MachineState.readWord memory 342, late252 := MachineState.readWord memory 252,
    h4 := Word.ofUInt32 h.h4, h1 := Word.ofUInt32 h.h1, h2 := Word.ofUInt32 h.h2,
    h3 := Word.ofUInt32 h.h3, h0 := Word.ofUInt32 h.h0, off := off, limit := limit}
 
@@ -37,7 +36,7 @@ theorem suffix_eq (s : State) (h : Compression.HashState) (q : WordLane)
     (off limit : UInt256) (rho : List UInt256) :
     StaggerCore.suffixState s (initial h).e q
       (StaggerPersistentPackBridge.suffix (initial h) off limit rho) =
-    {s with pc := UInt256.ofNat 4643, stack := StaggerPersistentTailRaw.stack0 (StaggerPersistentFrame.bind h
+    {s with pc := UInt256.ofNat 4656, stack := StaggerPersistentTailRaw.stack0 (StaggerPersistentFrame.bind h
         (tailInput s.memory h (StaggerCoreModel.epilogue s.memory q) q off limit)) rho} := by
   rw [initial_eq]
   rfl
@@ -50,7 +49,7 @@ def gasSteps (s : State) (h : Compression.HashState) (q : WordLane)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (StaggerCore.suffixState s (initial h).e q
       (StaggerPersistentPackBridge.suffix (initial h) off limit rho))
-      {s with pc := UInt256.ofNat 4700, stack := StaggerPersistentFrame.frame (combine h (StaggerCoreModel.epilogue s.memory q) q) off limit rho} := by
+      {s with pc := UInt256.ofNat 4721, stack := StaggerPersistentFrame.frame (combine h (StaggerCoreModel.epilogue s.memory q) q) off limit rho} := by
   rw [suffix_eq]
   have g := StaggerPersistentTailSite.gasSteps s off limit h
     (tailInput s.memory h (StaggerCoreModel.epilogue s.memory q) q off limit)
