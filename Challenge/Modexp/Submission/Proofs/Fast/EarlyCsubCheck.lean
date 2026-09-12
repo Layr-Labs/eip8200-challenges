@@ -33,6 +33,30 @@ theorem skip_iff (mem : ByteArray) : Skip mem ↔
     have hb := congrArg (fun k : Nat => k.testBit 0) hz
     simp at hb
 
+/-- The flipped guard's jump condition: nonzero exactly when the subtraction is skipped. -/
+def jumpWord (mem : ByteArray) : UInt256 :=
+  UInt256.land (UInt256.isZero (MachineState.readWord mem 8224))
+    (UInt256.lt (MachineState.readWord mem 8256) (MachineState.readWord mem 0))
+
+theorem jumpWord_eq (mem : ByteArray) : jumpWord mem =
+    UInt256.land (UInt256.isZero (MachineState.readWord mem 8224))
+      (UInt256.lt (MachineState.readWord mem 8256) (MachineState.readWord mem 0)) := rfl
+
+theorem jumpWord_toNat (mem : ByteArray) :
+    (jumpWord mem).toNat = if Skip mem then 1 else 0 := by
+  unfold jumpWord
+  rw [word_toNat_land, word_toNat_lt, word_toNat_isZero]
+  by_cases h : Skip mem
+  · rw [if_pos h]
+    obtain ⟨h1, h2⟩ := (skip_iff mem).1 h
+    rw [if_pos h2, if_pos h1]; rfl
+  · rw [if_neg h]
+    rw [skip_iff] at h
+    by_cases h2 : (MachineState.readWord mem 8256).toNat < (MachineState.readWord mem 0).toNat
+    · have h1 : ¬ (MachineState.readWord mem 8224).toNat = 0 := fun h1 => h ⟨h1, h2⟩
+      rw [if_pos h2, if_neg h1]; rfl
+    · rw [if_neg h2]; split <;> rfl
+
 /-- For equal-width big-endian arrays, a strict high-limb comparison orders
     the represented integers regardless of all lower limbs. -/
 theorem high_limb_lt {mem : ByteArray} {n t m : Nat}

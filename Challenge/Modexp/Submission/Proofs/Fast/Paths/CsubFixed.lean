@@ -2003,7 +2003,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem earlyExtraPC2887 : Artifact.submissionArtifact.instructionPC 3564 = 4675 := by rfl
 @[simp] theorem earlyExtraPC2888 : Artifact.submissionArtifact.instructionPC 3565 = 4676 := by rfl
 @[simp] theorem earlyExtraPC2889 : Artifact.submissionArtifact.instructionPC 3566 = 4677 := by rfl
-@[simp] theorem earlyExtraPC2890 : Artifact.submissionArtifact.instructionPC 3567 = 4678 := by rfl
+@[simp] theorem earlyExtraPC2890 : Artifact.submissionArtifact.instructionPC 3567 = 4680 := by rfl
 @[simp] theorem earlyExtraPC2891 : Artifact.submissionArtifact.instructionPC 3568 = 4681 := by rfl
 @[simp] theorem earlyExtraPC2892 : Artifact.submissionArtifact.instructionPC 3569 = 4682 := by rfl
 @[simp] theorem earlyExtraPC2893 : Artifact.submissionArtifact.instructionPC 3570 = 4683 := by rfl

@@ -40,7 +40,7 @@ def pcNx : Nat := 4650
 def pcSqExit : Nat := 4712
 def pcLast : Nat := 4730
 def pcMore : Nat := 4739
-def pcAgain : Nat := 4748
+def pcAgain : Nat := 4755
 
 /-! ## The retained frame -/
 
@@ -85,7 +85,7 @@ def lastProgram : List Instr :=
 
 /-- `more` (4728): call the CSUB as a subroutine returning to `again`. -/
 def moreProgram : List Instr :=
-  [.op .JUMPDEST, .push 2 4748, .op (.Dup ⟨15, by decide⟩), .push 2 4669, .op .JUMP]
+  [.op .JUMPDEST, .push 2 4755, .op (.Dup ⟨15, by decide⟩), .push 2 4669, .op .JUMP]
 
 /-- `again` (4737): re-stage, re-zero, reset three frame slots, fall into `sq_row`. -/
 def againProgram : List Instr :=
@@ -93,9 +93,7 @@ def againProgram : List Instr :=
    .push 2 8960, .op .MCOPY,
    .op (.Dup ⟨0, by decide⟩), .push 1 64, .op .ADD, .op .CALLDATASIZE, .push 2 8192,
    .op .CALLDATACOPY,
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩),
-   .op .POP,
-   .push 1 5, .op .SHR, .push 1 38, .op .MUL, .op (.Dup ⟨4, by decide⟩), .op .SUB,
+   .op .ADD, .push 2 299, .op (.Dup ⟨7, by decide⟩), .op .SUB,
    .op (.Swap ⟨3, by decide⟩), .op .POP,
    .push 0 0, .op (.Swap ⟨13, by decide⟩), .op .POP]
 
@@ -113,8 +111,8 @@ def moreBlock : Block Artifact.submissionArtifact .Osaka 4739 moreProgram :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 3604 5 4739 moreProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def againBlock : Block Artifact.submissionArtifact .Osaka 4748 againProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3609 29 4748 againProgram
+def againBlock : Block Artifact.submissionArtifact .Osaka 4755 againProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3616 22 4755 againProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-! ## Jump destinations of the loop -/
@@ -124,8 +122,8 @@ theorem jumpDest4753 :
   Artifact.isValidJumpDest_index 3604 (by rfl)
 
 theorem jumpDest4762 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4748 = true :=
-  Artifact.isValidJumpDest_index 3609 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4755 = true :=
+  Artifact.isValidJumpDest_index 3616 (by rfl)
 
 theorem jumpDest3272 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3231 = true :=

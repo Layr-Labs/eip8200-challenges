@@ -121,7 +121,7 @@ theorem run_more (s : State) (mem : ByteArray) (n : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
     runInstructions moreProgram
       (frameAt pcMore s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
-    some (mpCsubState s mem pdst (UInt256.ofNat 4748)
+    some (mpCsubState s mem pdst (UInt256.ofNat 4755)
       (frameStack n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)) := by
   have hc16' : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
@@ -200,7 +200,7 @@ def gasSteps_more (s : State) (mem : ByteArray) (n : Nat)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (frameAt pcMore s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
-      (mpCsubState s mem pdst (UInt256.ofNat 4748)
+      (mpCsubState s mem pdst (UInt256.ofNat 4755)
         (frameStack n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)) :=
   moreBlock.steps
     (environment (frameAt pcMore s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
