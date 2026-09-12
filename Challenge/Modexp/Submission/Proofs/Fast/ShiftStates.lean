@@ -22,9 +22,16 @@ open Challenge.Modexp.Submission.Proofs.Fast
 abbrev outer := Exp.outer
 
 /-- Program counters of the appended routine. -/
-def pcDispatch : Nat := 3314
-def pcHit : Nat := 3329
-def pcMiss : Nat := 3358
+def pcDispatch : Nat := 3302
+def pcHit : Nat := 3317
+-- 3346, not ticket 4's 3358: the recogniser-miss JUMPDEST is instruction 2556 here (it was 2561),
+-- and this is the one pc in the table the regenerator could not rewrite, because 3358 has no image
+-- in the pc map -- R-ONE2 deleted the instruction it used to sit on, so the map row is empty and
+-- the literal was left standing.  `ShiftPCs.pc2889` states instruction 2556's pc as 3346 by `rfl`,
+-- and `blk2889` is located there, so a stale 3358 makes `runLocatedBlock blk2889 (missState …)`
+-- return `none`.  Nothing but the build checked this def: it is a bare `Nat` with no tie to the
+-- artifact, unlike every `instructionPC`/`opAt`/`pushAt` fact around it.
+def pcMiss : Nat := 3346
 def pcAfterCsub0 : Nat := 3363
 def pcNegLoop : Nat := 3370
 def pcNegNext : Nat := 3393

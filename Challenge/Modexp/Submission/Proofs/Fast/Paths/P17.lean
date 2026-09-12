@@ -22,22 +22,22 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- Instructions 1816..1821, pc 2609..2980. -/
 def blk1816 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1605 .JUMPDEST,
-   opAt 1606 (.Dup ⟨0, by decide⟩),
-   pushAt 1607 2 4096,
-   opAt 1608 .EQ,
-   pushAt 1609 2 1368,
-   opAt 1610 .JUMPI]
+  [opAt 1600 .JUMPDEST,
+   opAt 1601 (.Dup ⟨0, by decide⟩),
+   pushAt 1602 2 4096,
+   opAt 1603 .EQ,
+   pushAt 1604 2 1356,
+   opAt 1605 .JUMPI]
 
 /-- Instructions 1822..1827, pc 2981..2632: the multiply's call frame. -/
 def blk1822 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1611 2 1368,
-   pushAt 1612 2 6144,
-   opAt 1613 (.Dup ⟨2, by decide⟩),
-   pushAt 1614 2 6144,
-   pushAt 1615 2 3901,
-   opAt 1616 .JUMP]
+  [pushAt 1606 2 1356,
+   pushAt 1607 2 6144,
+   opAt 1608 (.Dup ⟨2, by decide⟩),
+   pushAt 1609 2 6144,
+   pushAt 1610 2 3912,
+   opAt 1611 .JUMP]
 
 /-- Instructions 1828..1830, pc 2633..2637: the skip. -/
 def blk1828 :

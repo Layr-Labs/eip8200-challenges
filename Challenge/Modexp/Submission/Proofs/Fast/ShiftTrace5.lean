@@ -108,6 +108,22 @@ def gasSteps_shiftLoop (s : State) (mem : ByteArray) (n bsize esize msize mm min
 def m1Of (mem input : ByteArray) (n : Nat) : ByteArray :=
   Csub.csResultMemory (hitMem mem input n) n 2048
 
+/-- Words at or above `ACC + 32 n` that `hitMem` and the first `CSUB` leave
+alone, apart from `BASE` and `SUBB`. -/
+theorem m1_readWord_disjoint (mem input : ByteArray) (n addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32)
+    (hdisj : (addr + 32 ≤ 1024 ∨ 1024 + 32 * n ≤ addr) ∧
+      (addr + 32 ≤ 2048 ∨ 2048 + 32 * n ≤ addr) ∧
+      (addr + 32 ≤ 7168 ∨ 7168 + 32 * n ≤ addr) ∧
+      (addr + 32 ≤ 8224 ∨ 8256 + 32 * n ≤ addr)) :
+    MachineState.readWord (m1Of mem input n) addr = MachineState.readWord mem addr := by
+  unfold m1Of
+  rw [Monpro.csResultMemory_readWord_outside _ n 2048 addr (by omega) hdisj.2.2.1 hdisj.2.1]
+  unfold hitMem Exp.storeWord
+  rw [Csub.readWord_write_disjoint _ _ _ _ (by omega)]
+  rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _
+    (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)]
+  exact FullBase.copyBaseMem_readWord_disjoint mem input n addr hdisj.1
+
 /-- Memory at the shift loop entry. -/
 def m2Of (mem input : ByteArray) (n : Nat) : ByteArray :=
   preMem (negStep (m1Of mem input n) n n).memory
@@ -115,6 +131,23 @@ def m2Of (mem input : ByteArray) (n : Nat) : ByteArray :=
 /-- Memory at `BDONE`. -/
 def hitFinalMem (mem input : ByteArray) (n mm : Nat) : ByteArray :=
   stepMems (m2Of mem input n) n mm n
+
+/-- The shift-reduce route leaves `NEG` holding `radix^n - mm`: the loop never writes it.
+The `MCOPY` at the loop exit copies that word block into `R1`, and on this route
+`TopBitSet` makes `radix^n - mm` equal to `radix^n % mm`. -/
+theorem hitFinal_neg (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hmpos : 0 < mm) (hmod : Model.FastRepresents mem 0 n mm) :
+    Model.FastRepresents (hitFinalMem mem input n mm) NEG n (Limbs.radix ^ n - mm) := by
+  have hmod1 : Model.FastRepresents (m1Of mem input n) 0 n mm := by
+    refine (Model.fastRepresents_congr ?_ mm).2 hmod
+    intro i hi
+    exact m1_readWord_disjoint mem input n _ (by omega) hn32
+      ⟨Or.inl (by omega), Or.inl (by omega), Or.inl (by omega), Or.inl (by omega)⟩
+  have hneg2 : Model.FastRepresents (m2Of mem input n) NEG n (Limbs.radix ^ n - mm) := by
+    unfold m2Of preMem
+    exact fastRepresents_preMemOf _ _ NEG n _ (Or.inl (by unfold NEG PRE_L; omega))
+      (neg_represents (m1Of mem input n) n mm (by omega) hn32 hmpos hmod1)
+  exact stepMems_neg (m2Of mem input n) n mm (by omega) hn32 hneg2 n
 
 /-- The base value the first `CSUB` leaves in `BASE`: `b mod m`. -/
 theorem m1_base (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
@@ -148,22 +181,6 @@ theorem m1_base (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 : n �
     hmpos hbound
   rw [Nat.zero_mul, Nat.zero_add] at h
   exact h
-
-/-- Words at or above `ACC + 32 n` that `hitMem` and the first `CSUB` leave
-alone, apart from `BASE` and `SUBB`. -/
-theorem m1_readWord_disjoint (mem input : ByteArray) (n addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32)
-    (hdisj : (addr + 32 ≤ 1024 ∨ 1024 + 32 * n ≤ addr) ∧
-      (addr + 32 ≤ 2048 ∨ 2048 + 32 * n ≤ addr) ∧
-      (addr + 32 ≤ 7168 ∨ 7168 + 32 * n ≤ addr) ∧
-      (addr + 32 ≤ 8224 ∨ 8256 + 32 * n ≤ addr)) :
-    MachineState.readWord (m1Of mem input n) addr = MachineState.readWord mem addr := by
-  unfold m1Of
-  rw [Monpro.csResultMemory_readWord_outside _ n 2048 addr (by omega) hdisj.2.2.1 hdisj.2.1]
-  unfold hitMem Exp.storeWord
-  rw [Csub.readWord_write_disjoint _ _ _ _ (by omega)]
-  rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _
-    (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)]
-  exact FullBase.copyBaseMem_readWord_disjoint mem input n addr hdisj.1
 
 theorem m2_readWord_disjoint (mem input : ByteArray) (n addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32)
     (hdisj : (addr + 32 ≤ 1024 ∨ 1024 + 32 * n ≤ addr) ∧
@@ -218,7 +235,8 @@ def gasSteps_hitPath (s : State) (mem input : ByteArray) (n bsize esize msize mm
     (hframe : Exp.Frame mem n bsize minv)
     (hmod : Model.FastRepresents mem 0 n mm) :
     Challenge.EvmProof.GasSteps (dispState s mem n bsize esize msize)
-      { Exp.bDone s (hitFinalMem mem input n mm) n bsize esize msize with pc := UInt256.ofNat 3150 } := by
+      { Exp.bDone s (Exp.mcopyMem (hitFinalMem mem input n mm) 4096 5120 (32 * n))
+          n bsize esize msize with pc := UInt256.ofNat 3138 } := by
   have htop : Limbs.radix ^ n < 2 * mm := R1.radix_pow_lt_two_mul (by omega) hodd hmod hmatch.2
   have hguard : Challenge.EvmProof.GasSteps (dispState s mem n bsize esize msize)
       (hitState s mem n bsize esize msize) := by
@@ -268,24 +286,35 @@ def gasSteps_hitPath (s : State) (mem input : ByteArray) (n bsize esize msize mm
     (by rw [hm1high 9408 (by omega)]; exact hframe.ml)
   have hloop := gasSteps_shiftLoop s (m2Of mem input n) n bsize esize msize mm minv _ hn hn32 e
     hmpos hmm htop inv2 hbase2 (Nat.mod_lt _ hmpos)
+  have hframeFin : Exp.Frame (hitFinalMem mem input n mm) n bsize minv :=
+    (stepInv_stepMems (by omega) hn32 inv2 n).frame
   have hexit : Challenge.EvmProof.GasSteps
       (shiftLoopState s (hitFinalMem mem input n mm) n bsize esize msize 0)
-      { Exp.bDone s (hitFinalMem mem input n mm) n bsize esize msize with pc := UInt256.ofNat 3150 } :=
+      { Exp.bDone s (Exp.mcopyMem (hitFinalMem mem input n mm) 4096 5120 (32 * n))
+          n bsize esize msize with pc := UInt256.ofNat 3138 } :=
     (soundEnv blk3013 e
       (run_shiftHead_done s _ n bsize esize msize e.code e.run)).trans
     (soundEnv blk3264 e
-      (run_shiftDone s _ n bsize esize msize e.code e.run))
+      (run_shiftDone s _ n bsize esize msize (by omega) hn32 e.act296 hframeFin.s32
+        e.code e.run))
   exact (((hguard.trans hcsub0).trans hpro).trans hloop).trans hexit
 
-/-- From the dispatcher entry on a miss to the old `r0` block. -/
+/-- From the dispatcher entry on a miss to the Montgomery-form conversion call.
+
+The miss arm seeds `R1 = 0x1000` with 1 and calls the conversion with the old `r0`
+block (pc 1300) as its return address, so the conversion runs only on this route.  The
+recogniser-hit route instead gets its `R1` from the `MCOPY` at the end of the shift-reduce
+loop (`ShiftTrace3.run_shiftDone`). -/
 def gasSteps_missPath (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn32 : n ≤ 32) (e : Env s) (hb : bsize < 2 ^ 256)
     (hmiss : ¬ FullBase.Matches mem n bsize) :
     Challenge.EvmProof.GasSteps (dispState s mem n bsize esize msize)
-      (Exp.r0State s mem n bsize esize msize) := by
+      (Exp.r1Call s (Exp.storeWord mem 4096 (UInt256.ofNat 1)) 4096 (UInt256.ofNat 1300)
+        n bsize esize msize) := by
   have h := soundEnv blk2862 e
     (run_dispatch s mem n bsize esize msize hn32 hb e.act296 e.code e.run)
   rw [if_neg hmiss] at h
-  exact h.trans (soundEnv blk2889 e (run_miss s mem n bsize esize msize e.code e.run))
+  exact h.trans (soundEnv blk2889 e
+    (run_miss s mem n bsize esize msize e.act296 e.code e.run))
 
 end Challenge.Modexp.Submission.Proofs.Fast.Shift

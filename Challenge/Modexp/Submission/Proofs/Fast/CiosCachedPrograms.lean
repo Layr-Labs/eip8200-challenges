@@ -124,7 +124,7 @@ def entryProgram : List Instr :=
    .op .EQ,
    .push 1 153,
    .op .MUL,
-   .push 2 4049,
+   .push 2 4060,
    .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
    .push 3 281,
@@ -220,8 +220,8 @@ def tailProgram : List Instr :=
    .op .POP,
    .op .POP,
    .op .POP,
-   .push 2 4658,
-   .op .JUMP]
+   .push 2 4669,
+   .op .POP]
 
 def l1DispatchProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op .JUMP]

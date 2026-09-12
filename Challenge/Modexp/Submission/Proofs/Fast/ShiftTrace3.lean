@@ -482,15 +482,57 @@ theorem run_afterCsub (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange]
 
-/-- `blk3264`: drop the counter and jump to the dispatcher. -/
+/-- `blk3264`: drop the counter, copy the conversion's result from `0x1400` into
+`R1 = 0x1000` and jump to the dispatcher.
+
+The `MCOPY` is the conversion's own: it computes into `0x1400`, and in the
+previous layout `R1` was filled by the call `Setup.setupPathD` used to make.  That call now
+happens only on the recogniser-miss route (`ShiftTrace1.run_miss`), so the conversion itself
+re-establishes `R1` here for the generic route that follows.  The copy length is the
+configuration word `V_S32 = 0x2480`, i.e. `32 * n`. -/
 theorem run_shiftDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
+    (hn : 1 ≤ n) (hn32 : n ≤ 32) (hact : 296 ≤ s.activeWords.toNat)
+    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3264
       (shiftDoneState s mem n bsize esize msize) =
-      some { Exp.bDone s mem n bsize esize msize with pc := UInt256.ofNat 3150 } := by
-  simp (config := { maxSteps := 200000 })
-    [blk3264, opAt, pushAt, wfOp,
+      some { Exp.bDone s (Exp.mcopyMem mem 4096 5120 (32 * n)) n bsize esize msize with
+               pc := UInt256.ofNat 3138 } := by
+  have hsize : (UInt256.ofNat (32 * n)).toNat = 32 * n := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
+    exact lt_of_le_of_lt (show 32 * n ≤ 1024 by omega) (by decide)
+  have hawDst : UInt256.ofNat
+      (MachineState.activeWordsAfter s.activeWords.toNat 4096 (32 * n)) = s.activeWords :=
+    Monpro.activeWords_fix s 4096 (32 * n) (by omega) (by omega) (by omega)
+  have hawSrc : UInt256.ofNat
+      (MachineState.activeWordsAfter s.activeWords.toNat 5120 (32 * n)) = s.activeWords :=
+    Monpro.activeWords_fix s 5120 (32 * n) (by omega) (by omega) (by omega)
+  -- This block's high-water mark is fixed THREE times, not once: the `MLOAD` of `V_S32` at 9344
+  -- and then the `MCOPY`'s destination 4096 and source 5120.  A composed `UInt256`-level fact
+  -- cannot close that, because the nesting is `activeWordsAfter (activeWordsAfter (... % 2^256))`
+  -- and simp meets the layers one at a time.  So give it NAT-level rewrites -- the same shape
+  -- `StagedOperandEntryZero` already uses -- and one identity to finish.  `Exp.activeWords_fix2`
+  -- is the ready-made two-region lemma but wants `298 <= activeWords` where this block has 296;
+  -- `Monpro.activeWordsAfter_fix` carries the 296 bound.
+  have hactN : s.activeWords.toNat %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      s.activeWords.toNat := Nat.mod_eq_of_lt s.activeWords.val.isLt
+  have haw9344 : MachineState.activeWordsAfter s.activeWords.toNat 9344 32 =
+      s.activeWords.toNat :=
+    Monpro.activeWordsAfter_fix s.activeWords.toNat 9344 32 (by decide) (by omega) hact
+  have haw4096 : MachineState.activeWordsAfter s.activeWords.toNat 4096 (32 * n) =
+      s.activeWords.toNat :=
+    Monpro.activeWordsAfter_fix s.activeWords.toNat 4096 (32 * n) (by omega) (by omega) hact
+  have haw5120 : MachineState.activeWordsAfter s.activeWords.toNat 5120 (32 * n) =
+      s.activeWords.toNat :=
+    Monpro.activeWordsAfter_fix s.activeWords.toNat 5120 (32 * n) (by omega) (by omega) hact
+  have hawId : UInt256.ofNat s.activeWords.toNat = s.activeWords :=
+    (Challenge.EvmProof.Word.word_eq_ofNat_toNat _).symm
+  simp (config := { maxSteps := 400000 })
+    [blk3264, opAt, pushAt, wfOp, hs32, hsize, hawDst, hawSrc, Exp.mcopyMem,
+      hactN, haw9344, haw4096, haw5120, hawId,
+      State.activeWordsAfterUInt256, State.activeWordsAfterUInt256_2,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,

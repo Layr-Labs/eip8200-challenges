@@ -16,11 +16,20 @@ open CiosCachedTailDefs
 open WindowNibbleKernel CiosCachedMacCore CiosCached CiosCached
 
 theorem run_exit (s : State) (pbi paEnd pbEnd flag target2 dst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1006)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 4658 = true) :
+    (hcap : rest.length ≤ 1006) :
     runInstructions exitProgram
-      (framed s (UInt256.ofNat 4640) ([pbi, paEnd, pbEnd, flag, negative32, allOnes, target2, dst, ret] ++ rest)) =
-    some (framed s (UInt256.ofNat 4658) ([dst, ret] ++ rest)) := by
+      (framed s (UInt256.ofNat 4658) ([pbi, paEnd, pbEnd, flag, negative32, allOnes, target2, dst, ret] ++ rest)) =
+    some (framed s (UInt256.ofNat 4669) ([dst, ret] ++ rest)) := by
+  -- `exitProgram` is `tailProgram.drop 23`: seven discards, a push of the successor's pc, and
+  -- then -- where the program used to jump -- a discard.  The entry pc has to be restated
+  -- from 4651 to 4658 because of that change.  While the fragment ENDED IN A JUMP its final
+  -- pc was the pushed value whatever pc it started from, so the entry was free; a
+  -- fall-through pins it, and 4658 is where these nine instructions actually begin (the
+  -- block's first seven discards precede them).  Seven discards take 4658 to 4665, the push
+  -- to 4668, and the last discard to 4669 -- the same exit as before.  That final equation is
+  -- a closed term on which `succ_ofNat_mod` cannot fire until the sum is normalised, so it is
+  -- settled directly.
+  have hstep : (UInt256.ofNat 4665 + UInt256.ofNat 3).succ = UInt256.ofNat 4669 := by decide
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
   have hExtra11 : rest.length + 11 < 1024 := by omega
@@ -34,8 +43,9 @@ theorem run_exit (s : State) (pbi paEnd pbEnd flag target2 dst ret : UInt256) (r
   have hc7 : rest.length+8 < 1024 := by omega
   have hc2 : rest.length+3 < 1024 := by omega
   have hc2new : rest.length+2 < 1024 := by omega
-  simp [hExtra9, hExtra10, hExtra11, hExtra12, hExtra13, hExtra14, exitProgram, CiosCached.tailProgram, framed, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    hc2new, hc2, hc3, hc4, hc5, hc6, hc7, htarget,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat]
+  simp [hstep, hExtra9, hExtra10, hExtra11, hExtra12, hExtra13, hExtra14, exitProgram, CiosCached.tailProgram, framed, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    hc2new, hc2, hc3, hc4, hc5, hc6, hc7,
+    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedExit

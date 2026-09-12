@@ -45,32 +45,32 @@ def loopStack (px n k : Nat) (ret : UInt256) (rest : List UInt256) : List UInt25
 
 def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3273
+  { s with pc := UInt256.ofNat 3261
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
 def loopState (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3286
+  { s with pc := UInt256.ofNat 3274
            stack := loopStack px n k ret rest
            memory := mem }
 
 def amCallState (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1910
+  { s with pc := UInt256.ofNat 1898
            stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
-                     UInt256.ofNat 3297] ++ loopStack px n k ret rest
+                     UInt256.ofNat 3285] ++ loopStack px n k ret rest
            memory := mem }
 
 def retState (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3297
+  { s with pc := UInt256.ofNat 3285
            stack := loopStack px n k ret rest
            memory := mem }
 
 def exitState (s : State) (mem : ByteArray) (px n : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3306
+  { s with pc := UInt256.ofNat 3294
            stack := loopStack px n 0 ret rest
            memory := mem }
 
@@ -132,7 +132,7 @@ theorem run_call (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
-  have h2467Nat : (UInt256.ofNat 1910).toNat = 1910 := by decide
+  have h2467Nat : (UInt256.ofNat 1898).toNat = 1898 := by decide
   simp (config := { maxSteps := 400000 })
     [callPath, opAt, pushAt, wfOp, seedPC,
      Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -158,7 +158,7 @@ theorem run_ret (s : State) (mem : ByteArray) (px n k k' : Nat) (ret : UInt256)
   have hc6 : rest.length + 6 < 1024 := by omega
   have hk15 : k' ≤ 15 := by omega
   have hzero : (0 : UInt256) = UInt256.ofNat 0 := by decide
-  have h4029Nat : (UInt256.ofNat 3286).toNat = 3286 := by decide
+  have h4029Nat : (UInt256.ofNat 3274).toNat = 3274 := by decide
   have hdec : UInt256.lnot ({ val := 0 } : UInt256) + UInt256.ofNat (k' + 1) =
       UInt256.ofNat k' := by
     interval_cases k' <;> decide
@@ -209,7 +209,7 @@ theorem run_finish (s : State) (mem : ByteArray) (px n : Nat) (ret : UInt256)
       some (Ccb.loopState s mem px (squares n) ret rest) := by
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
-  have h2877Nat : (UInt256.ofNat 2257).toNat = 2257 := by decide
+  have h2877Nat : (UInt256.ofNat 2245).toNat = 2245 := by decide
   have hcount : UInt256.ofNat 5 - UInt256.ofNat (flag n) =
       UInt256.ofNat (squares n) := by
     by_cases h : 128 < 32 * n

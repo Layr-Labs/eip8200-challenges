@@ -27,48 +27,48 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- Instructions 1781..1792, pc 2560..2937: load exponent byte `i`, test `i = 0`. -/
 def blk1781 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1570 .JUMPDEST,
-   opAt 1571 (.Dup ⟨0, by decide⟩),
-   pushAt 1572 2 9472,
-   opAt 1573 .MLOAD,
-   opAt 1574 .ADD,
-   opAt 1575 .CALLDATALOAD,
-   pushAt 1576 0 0,
-   opAt 1577 .BYTE,
-   opAt 1578 (.Dup ⟨1, by decide⟩),
-   opAt 1579 .ISZERO,
-   pushAt 1580 2 2136,
-   opAt 1581 .JUMPI]
+  [opAt 1565 .JUMPDEST,
+   opAt 1566 (.Dup ⟨0, by decide⟩),
+   pushAt 1567 2 9472,
+   opAt 1568 .MLOAD,
+   opAt 1569 .ADD,
+   opAt 1570 .CALLDATALOAD,
+   pushAt 1571 0 0,
+   opAt 1572 .BYTE,
+   opAt 1573 (.Dup ⟨1, by decide⟩),
+   opAt 1574 .ISZERO,
+   pushAt 1575 2 2124,
+   opAt 1576 .JUMPI]
 
 /-- Instructions 1793..1795, pc 2576..2943: every byte after the first. -/
 def blk1793 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1582 1 128,
-   pushAt 1583 2 1498,
-   opAt 1584 .JUMP]
+  [pushAt 1577 1 128,
+   pushAt 1578 2 1486,
+   opAt 1579 .JUMP]
 
 /-- Instructions 1796..1815, pc 2582..2970: the highest set bit of byte `0`. -/
 def blk1796 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1585 .JUMPDEST,
+  [opAt 1580 .JUMPDEST,
+   opAt 1581 (.Dup ⟨0, by decide⟩),
+   opAt 1582 (.Dup ⟨0, by decide⟩),
+   pushAt 1583 1 1,
+   opAt 1584 .SHR,
+   opAt 1585 .OR,
    opAt 1586 (.Dup ⟨0, by decide⟩),
-   opAt 1587 (.Dup ⟨0, by decide⟩),
-   pushAt 1588 1 1,
-   opAt 1589 .SHR,
-   opAt 1590 .OR,
-   opAt 1591 (.Dup ⟨0, by decide⟩),
-   pushAt 1592 1 2,
-   opAt 1593 .SHR,
-   opAt 1594 .OR,
-   opAt 1595 (.Dup ⟨0, by decide⟩),
-   pushAt 1596 1 4,
-   opAt 1597 .SHR,
-   opAt 1598 .OR,
-   pushAt 1599 1 1,
-   opAt 1600 .SHR,
-   pushAt 1601 1 1,
-   opAt 1602 .ADD,
-   pushAt 1603 2 3123,
-   opAt 1604 .JUMP]
+   pushAt 1587 1 2,
+   opAt 1588 .SHR,
+   opAt 1589 .OR,
+   opAt 1590 (.Dup ⟨0, by decide⟩),
+   pushAt 1591 1 4,
+   opAt 1592 .SHR,
+   opAt 1593 .OR,
+   pushAt 1594 1 1,
+   opAt 1595 .SHR,
+   pushAt 1596 1 1,
+   opAt 1597 .ADD,
+   pushAt 1598 2 3111,
+   opAt 1599 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast
