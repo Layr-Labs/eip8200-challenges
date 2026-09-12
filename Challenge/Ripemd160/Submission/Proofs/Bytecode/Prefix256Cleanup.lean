@@ -28,12 +28,12 @@ open PatternedScan PatternedSwar
 @[simp] private theorem e4PC173 : Artifact.submissionArtifact.instructionPC 176 = 272 := rfl
 
 @[simp] private theorem branchJumpPC : Artifact.submissionArtifact.instructionPC 167 = 263 := rfl
-@[simp] private theorem selectorDest : Decode.isValidJumpDest submissionBytecode 4823 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 3855 (by rfl)
+@[simp] private theorem selectorDest : Decode.isValidJumpDest submissionBytecode 4834 = true :=
+  Artifact.submissionArtifact.isValidJumpDest_index 3857 (by rfl)
 
 def branchPath : List Located :=
   [opAt 164 (.Dup ⟨2, by decide⟩), opAt 165 .ISZERO,
-   pushAt 166 2 4823, opAt 167 .JUMPI]
+   pushAt 166 2 4834, opAt 167 .JUMPI]
 
 def cleanupPath : List Located :=
   [opAt 168 .POP, opAt 169 .POP, opAt 170 .POP,
@@ -41,7 +41,7 @@ def cleanupPath : List Located :=
 
 theorem run_branch (input : ByteArray) (sv ov acc : UInt256) :
     run branchPath (stS input 258 [sv, ov, acc, P7, M, m7, P, m8]) =
-      some (stS input (if UInt256.isTrue acc then 264 else 4823)
+      some (stS input (if UInt256.isTrue acc then 264 else 4834)
         [sv, ov, acc, P7, M, m7, P, m8]) := by
   have ht : acc.isTrue ↔ acc.toNat ≠ 0 := Iff.rfl
   have hz : (UInt256.isZero acc).isTrue ↔ acc.toNat = 0 := by
@@ -84,7 +84,7 @@ def gasSteps_miss (input : ByteArray) (sv ov acc : UInt256) (hne : acc ≠ 0) :
 
 def gasSteps_hit (input : ByteArray) (sv ov : UInt256) :
     GasSteps (stS input 258 [sv, ov, 0, P7, M, m7, P, m8])
-      (stS input 4823 [sv, ov, 0, P7, M, m7, P, m8]) := by
+      (stS input 4834 [sv, ov, 0, P7, M, m7, P, m8]) := by
   have h := run_branch input sv ov 0
   rw [if_neg (by decide)] at h
   exact Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka branchPath
