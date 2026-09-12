@@ -67,7 +67,7 @@ def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
   have hc := Artifact.submissionArtifact.decodeAt_op_index 3869 .CODECOPY
     (by rfl) (by decide) trivial
   have hpc : (copyReadyState n input sv ov).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 3869 := by rw [pc4870]; rfl
+      Artifact.submissionArtifact.instructionPC 3868 := by rw [pc4870]; rfl
   have hcopy : (copyReadyState n input sv ov).decodedOp = some .CODECOPY :=
     Artifact.submissionArtifact.state_decodedOp_of (copyReadyState n input sv ov) 3869
       (by rfl) hpc .CODECOPY none hc (by rfl)
@@ -96,7 +96,7 @@ def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
   have hd := Artifact.submissionArtifact.decodeAt_op_index 3870 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedState n input sv ov).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 3870 := by
+      Artifact.submissionArtifact.instructionPC 3869 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
   have hop : (storedState n input sv ov).decodedOp = some .MSIZE :=
