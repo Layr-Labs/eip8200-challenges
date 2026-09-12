@@ -13,42 +13,42 @@ open StackRoundTrace StackRoundTemplate StaggerPersistentLoopRaw
 def postTemplate : List Instr := StaggerPersistentLoopRaw.template 599
 
 theorem post_slice :
-    (Artifact.submissionArtifact.instructions.drop 3799).take postTemplate.length = postTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3798).take postTemplate.length = postTemplate := by rfl
 
 def postSite : GenericRoundSite Artifact.submissionArtifact .Osaka postTemplate :=
-  StackSiteBuilder.ofSlice postTemplate 3799 post_slice
-    (by change 3799 + postTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice postTemplate 3798 post_slice
+    (by change 3798 + postTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := postTemplate) (by decide))
     (by decide)
 
 theorem post_pc : postSite.startPC = UInt256.ofNat 4732 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3799) = UInt256.ofNat 4732
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3798) = UInt256.ofNat 4732
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def joinTemplate : List Instr := [.op .JUMPDEST]
 
 theorem join_slice :
-    (Artifact.submissionArtifact.instructions.drop 334).take joinTemplate.length = joinTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 333).take joinTemplate.length = joinTemplate := by rfl
 
 def joinSite : GenericRoundSite Artifact.submissionArtifact .Osaka joinTemplate :=
-  StackSiteBuilder.ofSlice joinTemplate 334 join_slice
-    (by change 334 + joinTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice joinTemplate 333 join_slice
+    (by change 333 + joinTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := joinTemplate) (by decide))
     (by decide)
 
 theorem join_pc : joinSite.startPC = UInt256.ofNat 599 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 334) = UInt256.ofNat 599
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 333) = UInt256.ofNat 599
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_loop (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 599).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 334 = 599 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 333 = 599 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 334 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 333 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 599 = true
   rw [hcode]
