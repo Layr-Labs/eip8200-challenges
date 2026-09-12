@@ -97,7 +97,7 @@ def hitRest : List UInt256 :=
   UInt256.ofNat (scalarAt 32) :: UInt256.ofNat 1024 :: 0 :: frame
 
 def hitState (input : ByteArray) : State :=
-  { atPC input 263 with stack := hitRest }
+  { atPC input 4835 with stack := hitRest }
 def fallbackState (input : ByteArray) : State := atPC input 276
 
 def storeWord (memory : ByteArray) (address : Nat) (word : UInt256) : ByteArray :=

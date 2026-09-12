@@ -64,7 +64,7 @@ def returnRest (sv ov : UInt256) : List UInt256 :=
   [sv, ov, 0, P7, M, m7, P, m8]
 
 def selectorState (_n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
-  stS input 263 (returnRest sv ov)
+  stS input 4835 (returnRest sv ov)
 
 def digestEntryState (_n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
   stS input 4835 (returnRest sv ov)
@@ -257,8 +257,7 @@ theorem tableMemory_eq (n : Nat) (hn : n = 56 ∨ n = 120 ∨ n = 64 ∨ n = 65 
       List.forIn_pure_yield_eq_foldl, Id.run_pure]
     decide
 
-def selectorPath : List Located :=
-  [pushAt 167 2 4835, opAt 168 .JUMP]
+def selectorPath : List Located := []
 
 def digestStorePrePath : List Located :=
   [ opAt 4065 .JUMPDEST,
@@ -285,10 +284,6 @@ def digestFinishPath : List Located :=
 @[simp] theorem pcE2Length : Artifact.submissionArtifact.instructionPC 4066 = 4836 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
-@[simp] theorem pc255 : Artifact.submissionArtifact.instructionPC 167 = 263 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc258 : Artifact.submissionArtifact.instructionPC 168 = 266 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 @[simp] theorem pc4843 : Artifact.submissionArtifact.instructionPC 4065 = 4835 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 @[simp] theorem pc4844 : Artifact.submissionArtifact.instructionPC 4067 = 4838 := by
@@ -334,23 +329,8 @@ def digestFinishPath : List Located :=
 theorem run_selector (n : Nat) (input : ByteArray) (sv ov : UInt256) :
     run selectorPath (selectorState n input sv ov) =
       some (digestEntryState n input sv ov) := by
-  change run selectorPath (stS input 263 (returnRest sv ov)) =
+  change run selectorPath (stS input 4835 (returnRest sv ov)) =
     some (stS input 4835 (returnRest sv ov))
-  have hdest : Decode.isValidJumpDest submissionBytecode 4835 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 4065 (by rfl)
-  have h0 : Stepper.runLocatedBlock [pushAt 167 2 4835]
-      (stS input 263 (returnRest sv ov)) =
-      some (stS input 266 (4835 :: returnRest sv ov)) := by
-    exact blockOfS _ (pcFactS input 167 263 _ (by norm_num) pc255)
-      (stepS_push input 263 2 4835 (returnRest sv ov)
-        (by simp [returnRest]) (by decide) (by decide) (by norm_num))
-  have h1 : Stepper.runLocatedBlock [opAt 168 .JUMP]
-      (stS input 266 (4835 :: returnRest sv ov)) =
-      some (stS input 4835 (returnRest sv ov)) := by
-    exact blockOfS _ (pcFactS input 168 266 _ (by norm_num) pc258)
-      (stepS_jump input 266 4835 4835 (returnRest sv ov)
-        (by simp [returnRest]) (by norm_num) rfl hdest)
-  exact Stepper.runLocatedBlock_append [pushAt 167 2 4835] [opAt 168 .JUMP]
-    _ _ _ h0 (by rfl) h1
+  rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.ShortPatternFinish
