@@ -24,9 +24,12 @@ open Monpro CiosCached CarryRowBlocks CarryRowModel SquareRows
 
 /-! ## Run lemmas -/
 
-private theorem sub_one (c : Nat) (hc : c + 1 < 2 ^ 256) :
-    UInt256.ofNat (c + 1) - UInt256.ofNat 1 = UInt256.ofNat c := by
-  simpa using Challenge.EvmProof.Word.ofNat_sub_ofNat (a := c + 1) (b := 1) (by omega) hc
+private theorem cached_decrement (c : Nat) :
+    allOnes + UInt256.ofNat (c + 1) = UInt256.ofNat c := by
+  apply Challenge.EvmProof.Word.word_ext
+  simp only [allOnes, Challenge.EvmProof.Word.word_toNat_add,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+  omega
 
 private theorem activeWords9280 (s : State) (hact : 296 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 9280 32) =
@@ -53,8 +56,8 @@ theorem run_sqExit_more (s : State) (mem : ByteArray) (n c : Nat)
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc19 : rest.length + 19 < 1024 := by omega
-  have hsub : UInt256.ofNat (c + 1) - UInt256.ofNat 1 = UInt256.ofNat c :=
-    sub_one c (by omega)
+  have hsub : allOnes + UInt256.ofNat (c + 1) = UInt256.ofNat c :=
+    cached_decrement c
   have hcNat : (UInt256.ofNat c).toNat = c := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
   have htrue : UInt256.isTrue (UInt256.ofNat c) := by
@@ -83,7 +86,7 @@ theorem run_sqExit_last (s : State) (mem : ByteArray) (n : Nat)
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc19 : rest.length + 19 < 1024 := by omega
-  have hsub : UInt256.ofNat 1 - UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
+  have hsub : allOnes + UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
   have hfalse : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
   have h9280 : (9280 : UInt256).toNat = 9280 := by decide
   have hzero : (UInt256.ofNat 0).toNat = 0 := by decide
