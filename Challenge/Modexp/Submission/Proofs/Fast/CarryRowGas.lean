@@ -67,7 +67,7 @@ opaque gasSteps_commonFirst (s : State) (mem : ByteArray) (bi : UInt256)
     (hAend : aEnd = UInt256.ofNat (pa+32*n-32)) :
     Challenge.EvmProof.GasSteps
       (firstAt 4167 s mem bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
-      (l1At 4191 s mem bi pa pb n i 1 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) :=
+      (l1At 4193 s mem bi pa pb n i 1 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) :=
   l1Mac0.steps (environment _ hcode hfork hrun hnp) rfl
     (CiosCommonFirst.run_commonFirst s mem bi pa pb n i hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest
       hcap hact hn hpos hpaFit htl hAend)
@@ -82,9 +82,9 @@ opaque gasSteps_l1Dispatch4 (s : State) (q : MacState) (bi : UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (l1Q 4191 s q bi pb 4 i hd (l1Target 4) pdst ret rest)
+      (l1Q 4193 s q bi pb 4 i hd (l1Target 4) pdst ret rest)
       (l1Q 4347 s q bi pb 4 i hd (l1Target 4) pdst ret rest) :=
-  l1Dispatch.steps (environment (l1Q 4191 s q bi pb 4 i hd (l1Target 4) pdst ret rest) hcode hfork hrun hnp) rfl
+  l1Dispatch.steps (environment (l1Q 4193 s q bi pb 4 i hd (l1Target 4) pdst ret rest) hcode hfork hrun hnp) rfl
     (run_l1Dispatch4 s q bi pb i hd pdst ret rest hcap
       (by rw [hcode]; exact KernelChain.jumpDest4220))
 
@@ -96,9 +96,9 @@ opaque gasSteps_l1Dispatch8 (s : State) (q : MacState) (bi : UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (l1Q 4191 s q bi pb 8 i hd (l1Target 8) pdst ret rest)
+      (l1Q 4193 s q bi pb 8 i hd (l1Target 8) pdst ret rest)
       (l1Q 4195 s q bi pb 8 i hd (l1Target 8) pdst ret rest) :=
-  l1Dispatch.steps (environment (l1Q 4191 s q bi pb 8 i hd (l1Target 8) pdst ret rest) hcode hfork hrun hnp) rfl
+  l1Dispatch.steps (environment (l1Q 4193 s q bi pb 8 i hd (l1Target 8) pdst ret rest) hcode hfork hrun hnp) rfl
     (run_l1Dispatch8 s q bi pb i hd pdst ret rest hcap
       (by rw [hcode]; exact KernelChain.jumpDest4068))
 
@@ -113,7 +113,7 @@ opaque gasSteps_l1MulFour (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 168 ≤ s.activeWords.toNat)
     (hpaFit : pa + 32 * 4 ≤ 4096) (hsnapshot : StagedOperand.Snapshot mem pa 4) :
     Challenge.EvmProof.GasSteps
-      (l1At 4191 s mem bi pa pb 4 i 1 hd (l1Target 4) pdst ret rest)
+      (l1At 4193 s mem bi pa pb 4 i 1 hd (l1Target 4) pdst ret rest)
       (midState s (l1Step mem bi pa 4 4).memory (l1Step mem bi pa 4 4).carry bi
         pb 4 i hd (l1Target 4) pdst ret rest) :=
   (gasSteps_l1Dispatch4 s (l1Step mem bi pa 4 1) bi pb i hd pdst ret rest hcap hrun hcode hfork hnp).trans
@@ -131,7 +131,7 @@ opaque gasSteps_l1MulEight (s : State) (mem : ByteArray) (bi : UInt256)
     (hact : 168 ≤ s.activeWords.toNat)
     (hpaFit : pa + 32 * 8 ≤ 4096) (hsnapshot : StagedOperand.Snapshot mem pa 8) :
     Challenge.EvmProof.GasSteps
-      (l1At 4191 s mem bi pa pb 8 i 1 hd (l1Target 8) pdst ret rest)
+      (l1At 4193 s mem bi pa pb 8 i 1 hd (l1Target 8) pdst ret rest)
       (midState s (l1Step mem bi pa 8 8).memory (l1Step mem bi pa 8 8).carry bi
         pb 8 i hd (l1Target 8) pdst ret rest) :=
   (gasSteps_l1Dispatch8 s (l1Step mem bi pa 8 1) bi pb i hd pdst ret rest hcap hrun hcode hfork hnp).trans
@@ -357,11 +357,11 @@ private theorem toNat_ne_of_ne {a b : UInt256} (h : a ≠ b) : a.toNat ≠ b.toN
 
 theorem jumpDest4726 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4847 = true :=
-  Artifact.isValidJumpDest_index 3641 (by rfl)
+  Artifact.isValidJumpDest_index 3664 (by rfl)
 
 theorem jumpDest4664 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4785 = true :=
-  Artifact.isValidJumpDest_index 3594 (by rfl)
+  Artifact.isValidJumpDest_index 3617 (by rfl)
 
 /-! ## R0: the kernel-exit dispatch (pc 4765)
 
@@ -375,13 +375,13 @@ def dispatchProgram : List Instr :=
 /-- The dispatch block: the `JUMPI` ends it, taken for a square and not taken for a
 multiply (which then continues at the `nx` `JUMPDEST` 4774). -/
 def dispatchBlock : Block Artifact.submissionArtifact .Osaka 4776 dispatchProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3589 5 4776 dispatchProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3612 5 4776 dispatchProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The `nx` `JUMPDEST` (reached by the dispatch's fall-through and by `sq_exit`'s last
 square). -/
 def nxJd : Block Artifact.submissionArtifact .Osaka 4785 [.op .JUMPDEST] :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3594 1 4785 [.op .JUMPDEST]
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3617 1 4785 [.op .JUMPDEST]
     (by decide) (by rfl) (by rfl) (by decide)
 
 set_option linter.unusedSimpArgs false in

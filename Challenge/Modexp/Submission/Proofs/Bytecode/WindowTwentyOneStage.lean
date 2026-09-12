@@ -108,62 +108,6 @@ theorem run_stage (template : State) (pc accumulator modulus exponent mask count
   have hpc : (advancePC 14 pc.succ).succ = advancePC 16 pc := rfl
   simpa only [stageProgram, hpc, List.replicate, List.cons_append, List.nil_append] using hall
 
-/-- The MX trampoline replays the first five staging instructions (`DUP2 DUP1 DUP1 DUP1
-DUP1`) before jumping back into the loop body; the body resumes with the other eleven. -/
-def stageHead : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩)]
-
-def stageRest : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨14, by decide⟩)]
-
-theorem stageProgram_split : stageProgram = stageHead ++ stageRest := rfl
-
-theorem run_stageHead (template : State) (pc accumulator modulus exponent mask counter : UInt256)
-    (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions stageHead
-      (framed template pc ([accumulator, modulus, exponent, mask, counter] ++ rest)) =
-    some (framed template (advancePC 5 pc)
-      (List.replicate 5 modulus ++ ([accumulator, modulus, exponent, mask, counter] ++ rest))) := by
-  have h0 := run_liftModulus template pc accumulator modulus exponent mask counter rest hrest
-  have h1 := run_topCopies template pc.succ modulus
-    ([accumulator, modulus, exponent, mask, counter] ++ rest) 4
-    (by simp only [List.length_append, List.length_cons, List.length_nil]; omega)
-  have hall := runInstructions_append_some _ _ _ _ _ h0 h1
-  have hpc : advancePC 4 pc.succ = advancePC 5 pc := rfl
-  simpa only [stageHead, hpc, List.replicate, List.cons_append, List.nil_append] using hall
-
-theorem run_stageRest (template : State) (pc accumulator modulus exponent mask counter : UInt256)
-    (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions stageRest
-      (framed template pc
-        (List.replicate 5 modulus ++ ([accumulator, modulus, exponent, mask, counter] ++ rest))) =
-    some (framed template (advancePC 11 pc)
-      ((accumulator :: List.replicate 15 modulus) ++
-        [modulus, exponent, mask, counter] ++ rest)) := by
-  have h1 := run_topCopies template pc modulus
-    (List.replicate 4 modulus ++ ([accumulator, modulus, exponent, mask, counter] ++ rest)) 10
-    (by simp only [List.length_append, List.length_cons, List.length_nil,
-          List.length_replicate]; omega)
-  have h2 := run_swap15 template (advancePC 10 pc)
-    accumulator modulus exponent mask counter rest hrest
-  have h1' : runInstructions (List.replicate 10 (.op (.Dup ⟨0, by decide⟩)))
-      (framed template pc
-        (List.replicate 5 modulus ++ ([accumulator, modulus, exponent, mask, counter] ++ rest))) =
-      some (framed template (advancePC 10 pc)
-        (List.replicate 15 modulus ++ [accumulator, modulus, exponent, mask, counter] ++ rest)) := by
-    simpa only [List.replicate_succ, List.cons_append, List.append_assoc, List.nil_append,
-      List.replicate_zero] using h1
-  have hall := runInstructions_append_some _ _ _ _ _ h1' h2
-  have hpc : (advancePC 10 pc).succ = advancePC 11 pc := rfl
-  simpa only [stageRest, hpc, List.replicate, List.cons_append, List.nil_append] using hall
-
 private theorem run_pair (template : State) (pc accumulator modulus : UInt256)
     (tail : List UInt256) (hcap : tail.length + 3 < 1024) :
     runInstructions pairProgram

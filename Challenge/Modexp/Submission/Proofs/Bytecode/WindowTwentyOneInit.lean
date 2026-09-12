@@ -150,7 +150,7 @@ theorem run_frame (template : State) (pc base modulus exponent modulusOffset acc
     runInstructions frameProgram
       (WindowTwentyOneTable.framed template pc base modulus 16
         ([accumulator, UInt256.ofNat 480, exponent] ++ rest)) =
-    some (WindowTwentyOneGroup.state template (advancePC 12 pc) (WindowTableMemory.tableMemory base modulus) 16 modulus accumulator
+    some (WindowTwentyOneGroup.state template (advancePC 12 pc) base modulus accumulator
       (UInt256.shiftLeft exponent (UInt256.ofNat 4)) (UInt256.ofNat 2) 0 rest) := by
   have ha := run_arrange template pc base modulus exponent accumulator rest hrest
   have hl := run_frameLoad template (advancePC 9 pc) base modulus exponent modulusOffset
@@ -160,9 +160,9 @@ theorem run_frame (template : State) (pc base modulus exponent modulusOffset acc
     WindowTwentyOneTable.framed, WindowTableMemory.tableMemory, List.replicate_zero,
     List.nil_append, List.cons_append, ← advancePC_add, show 9 + 3 = 12 by decide] using both
 
--- The pushed target 2495 is the fall-through pc and the `JUMPDEST` at 2495 is the first
+-- The pushed target 2360 is the fall-through pc and the `JUMPDEST` at 2360 is the first
 -- instruction of the loop's `iterationProgram`, so `POP` reaches it with the same stack and pc
--- at 6 gas less.  The `JUMPDEST` stays in the code, so the loop's own back-edge to 2495 -- and
+-- at 6 gas less.  The `JUMPDEST` stays in the code, so the loop's own back-edge to 2360 -- and
 -- the `hjump` witness the loop lemmas still take -- are unaffected.
 /-- Two `JUMPDEST`s (one gas each) fill the two bytes freed by widening the frame's
 `PUSH1 2` to `PUSH3 2`, so the frame falls through into the loop head instead of
@@ -178,7 +178,7 @@ theorem run_enter (template : State) (base modulus exponent modulusOffset : UInt
     (hmodulus : MachineState.readWord template.executionEnv.calldata modulusOffset.toNat = modulus) :
     runInstructions program
       (WindowTwentyOneTable.framed template (UInt256.ofNat 2470) base modulus 16 ([base, exponent] ++ rest)) =
-    some (WindowTwentyOneGroup.state template (UInt256.ofNat 2495) (WindowTableMemory.tableMemory base modulus) 16 modulus
+    some (WindowTwentyOneGroup.state template (UInt256.ofNat 2495) base modulus
       (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat)
       (UInt256.shiftLeft exponent (UInt256.ofNat 4)) (UInt256.ofNat 2) 0 rest) := by
   have hl := run_lookup template (UInt256.ofNat 2470) base modulus exponent rest hrest
@@ -188,10 +188,10 @@ theorem run_enter (template : State) (base modulus exponent modulusOffset : UInt
   have hpc : advancePC 12 (advancePC 11 (UInt256.ofNat 2470)) = UInt256.ofNat 2493 := by decide
   rw [hpc] at both
   have hbranch : runInstructions padProgram
-      (WindowTwentyOneGroup.state template (UInt256.ofNat 2493) (WindowTableMemory.tableMemory base modulus) 16 modulus
+      (WindowTwentyOneGroup.state template (UInt256.ofNat 2493) base modulus
         (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat)
         (UInt256.shiftLeft exponent (UInt256.ofNat 4)) (UInt256.ofNat 2) 0 rest) =
-      some (WindowTwentyOneGroup.state template (UInt256.ofNat 2495) (WindowTableMemory.tableMemory base modulus) 16 modulus
+      some (WindowTwentyOneGroup.state template (UInt256.ofNat 2495) base modulus
         (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat)
         (UInt256.shiftLeft exponent (UInt256.ofNat 4)) (UInt256.ofNat 2) 0 rest) := by
     have hcap5 : rest.length + 5 < 1024 := by omega

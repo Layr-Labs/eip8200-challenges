@@ -87,16 +87,10 @@ theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
         (FullBase.addCallState s mem input n bsize esize msize)
         (FullBase.rejoinState s converted n bsize esize msize) := by
       exact Challenge.EvmProof.GasSteps.cast
-        (sub.monpro 1536 256 512 (UInt256.ofNat 1604)
+        (sub.monpro 1536 256 512 (UInt256.ofNat 3273)
           (outer n bsize esize msize) copied rr base
           (by simp [outer]) (by omega) (by omega) (by omega) (by omega) (by omega)
-          jumpD1755 hframeCopy hmodCopy hrrCopy hrawCopy hrrlt) rfl rfl
-    have hrejoin : Challenge.EvmProof.GasSteps
-        (FullBase.rejoinState s converted n bsize esize msize)
-        (bDone s converted n bsize esize msize) := by
-      exact Challenge.EvmProof.GasSteps.cast
-        (gasSteps_bRejoin s converted n bsize esize msize hcode hfork hrun hnp)
-        rfl rfl
+          jumpD3273 hframeCopy hmodCopy hrrCopy hrawCopy hrrlt) rfl rfl
     have hEb : EbInv (mcopyMem converted 256 1024 (32 * n)) n mm baseM
         (expAcc mm (Limbs.radix ^ n) baseM (expBits input bsize) 0) := by
       refine ⟨?_, ?_, ?_, ?_⟩
@@ -118,7 +112,7 @@ theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
       simp only [base, hbEq]
       exact Nat.ModEq.refl _
     obtain ⟨final, ⟨tr⟩, hdone, hres⟩ :=
-      FixedDirectCorrect.handled_of_bDoneConcrete input s converted
+      FixedDirectCorrect.handled_of_entryStateConcrete input s converted
         n bsize esize msize mm minv baseM sub spec
         hcode hfork hrun hnp hdata hstack hact hn hn32 hb he hmz hm32 hbsize hesize
         hmsz hmm hodd hradix (Nat.mod_lt _ hmpos) hbaseForm hframeConv hmodConv
@@ -126,7 +120,6 @@ theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
     have hroute := hredirect.trans hguardHit
     have hroute := hroute.trans hcopy
     have hroute := hroute.trans hmonpro
-    have hroute := hroute.trans hrejoin
     exact ⟨final, ⟨hroute.trans tr⟩, hdone, hres⟩
   · have hguardMiss : Challenge.EvmProof.GasSteps
         (FullBase.entryState s mem n bsize esize msize)
@@ -137,7 +130,7 @@ theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
         hcode hfork hrun hnp hdata hstack hact hn hn32 hb hb0 he hmz hm32 hbsize
         hesize hmsz hmm hodd hradix hrrlt hrrmod hframe hmod hr1 hcc hrrb hacc hone
         (fun mem' bM hframe' hmod' hbase' hone' hEb' hbMlt' hbMform' hraw' =>
-          FixedDirectCorrect.handled_of_bDoneConcrete input s mem'
+          FixedDirectCorrect.handled_of_entryStateConcrete input s mem'
             n bsize esize msize mm minv bM sub spec hcode hfork hrun hnp hdata
             hstack hact hn hn32 hb he hmz hm32 hbsize hesize hmsz hmm hodd hradix
             hbMlt' hbMform' hframe' hmod' hbase' hone' hEb'
