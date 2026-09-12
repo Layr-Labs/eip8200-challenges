@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerTerminal75
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired76
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCoreCommon
 set_option warningAsError true
@@ -13,7 +14,7 @@ open Paired144WordRound Paired144WordRotation StaggerCoreCommon
 def input (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (k : UInt256) : StaggerRaw.Input :=
   ⟨word memory h4 (.d) q right k, word memory h4 (.pair) q right k, word memory h4 (.upper) q right k, word memory h4 (.a) q right k, word memory h4 (.b) q right k, word memory h4 (.e) q right k, word memory h4 (.k) q right k, word memory h4 (.c) q right k, word memory h4 (.factor) q right k, word memory h4 (.lower) q right k, word memory h4 (.cache 140) q right k, word memory h4 (.cache 190) q right k, word memory h4 (.cache 310) q right k, word memory h4 (.cache 350) q right k, word memory h4 (.cache 500) q right k, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
 def eval (memory : ByteArray) (q : WordLane) : WordLane :=
-  StaggerAlgorithm.step 76 (MachineState.readWord memory 126) q
+  StaggerTerminal75.step 76 (MachineState.readWord memory 126) q
 
 theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho : List UInt256) :
     StaggerRawPaired76.outputStack memory (input memory h4 q right (StaggerAlgorithm.physicalKey 75)) rho =
@@ -25,6 +26,7 @@ theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho 
   have hr : Crypto.Ripemd160.sP[79]! = 11 := by rfl
   simp only [StaggerRawPaired76.outputStack, input, stack, List.map_cons, List.map_nil,
     List.cons_append, List.nil_append, StaggerCoreCommon.word, eval,
+    StaggerTerminal75.step, if_neg (show ¬ (76 = 75) by decide), if_pos rfl,
     StaggerAlgorithm.step, hkb, hka, hm, hl, hr,
     upperWord, lowerWord, StaggerWord.step, StaggerWord.t, StaggerWord.sum,
     StaggerWord.raw, StaggerWord.selector, StaggerWord.key, StaggerBoolean.selector,

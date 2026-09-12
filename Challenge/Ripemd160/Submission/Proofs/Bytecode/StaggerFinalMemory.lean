@@ -38,15 +38,22 @@ theorem high32_pairMask (x : UInt256) :
     PairedLaneUInt256Bridge.bits_word,←Paired144Core.normalize_eq_and]
   exact Paired144Core.high_pack _ _
 
-theorem unpackRight_dirtyE (l r : CryptoLane) (d : UInt256)
-    (he : UInt256.land d Paired144WordRound.pairWord = (packCrypto l r).e) :
-    unpackRight {packCrypto l r with e:=d} = r := by
+theorem unpackRight_dirtyE (l r : CryptoLane) (d d' : UInt256)
+    (he : UInt256.land d Paired144WordRound.pairWord = (packCrypto l r).e)
+    (hd : UInt256.land d' Paired144WordRound.pairWord = (packCrypto l r).d) :
+    unpackRight {packCrypto l r with e:=d, d:=d'} = r := by
   have hhigh : high32 d = high32 (packCrypto l r).e :=
     (high32_pairMask d).symm.trans (congrArg high32 he)
-  have h : unpackRight {packCrypto l r with e:=d} = unpackRight (packCrypto l r) := by
-    exact congrArg (fun e : UInt32 =>
+  have hhighd : high32 d' = high32 (packCrypto l r).d :=
+    (high32_pairMask d').symm.trans (congrArg high32 hd)
+  have h1 := congrArg (fun e : UInt32 =>
       (⟨high32 (packCrypto l r).a,high32 (packCrypto l r).b,high32 (packCrypto l r).c,
-        high32 (packCrypto l r).d,e⟩ : CryptoLane)) hhigh
+        high32 d',e⟩ : CryptoLane)) hhigh
+  have h2 := congrArg (fun x : UInt32 =>
+      (⟨high32 (packCrypto l r).a,high32 (packCrypto l r).b,high32 (packCrypto l r).c,
+        x,high32 (packCrypto l r).e⟩ : CryptoLane)) hhighd
+  have h : unpackRight {packCrypto l r with e:=d, d:=d'} = unpackRight (packCrypto l r) :=
+    h1.trans h2
   exact h.trans (unpackRight_packCrypto l r)
 
 #print axioms unpackRight_dirtyE
@@ -111,13 +118,13 @@ theorem resultMemory_eq_folds (memory : ByteArray) (words : Nat → UInt32)
       (PairedCompressionBridge.combineLanes h
         (Paired80Algorithm.leftFold words 80 (StaggerRepresentation.initialCrypto h))
         (Paired80Algorithm.rightFold words 80 (StaggerRepresentation.initialCrypto h)))) := by
-  obtain ⟨d,hp,he⟩ := StaggerCoreCorrect.paired_crypto memory words
+  obtain ⟨d,d',hp,he,hd⟩ := StaggerCoreCorrect.paired_crypto memory words
     (StaggerRepresentation.initialCrypto h) hm
   unfold resultMemory
   rw [StaggerRepresentation.initial_eq memory h hh,hp,
     tailMemory_eq_storeRaw,rawHash_eq_combine _ _ _ h hh,
-    StaggerCoreCorrect.epilogue_dirtyE memory words _ _ hm d he,
-    unpackRight_dirtyE _ _ d he,StaggerCoreCorrect.leftFinish_fold]
+    StaggerCoreCorrect.epilogue_dirtyE memory words _ _ hm d d' he hd,
+    unpackRight_dirtyE _ _ d d' he hd,StaggerCoreCorrect.leftFinish_fold]
 
 #print axioms tailMemory_eq_storeRaw
 #print axioms addResult_normalized
