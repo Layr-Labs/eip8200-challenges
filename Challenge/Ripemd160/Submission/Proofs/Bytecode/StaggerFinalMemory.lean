@@ -63,12 +63,12 @@ theorem resultMemory_eq_folds (memory : ByteArray) (words : Nat → UInt32)
       (PairedCompressionBridge.combineLanes h
         (Paired80Algorithm.leftFold words 80 (StaggerRepresentation.initialCrypto h))
         (Paired80Algorithm.rightFold words 80 (StaggerRepresentation.initialCrypto h)))) := by
+  have hp := StaggerCoreCorrect.paired_crypto memory words (StaggerRepresentation.initialCrypto h) hm
   unfold resultMemory
   rw [StaggerRepresentation.initial_eq memory h hh,
-    StaggerCoreCorrect.paired_crypto memory words _ hm,
     tailMemory_eq_storeRaw, rawHash_eq_combine _ _ _ h hh,
-    StaggerCoreCorrect.epilogue_crypto memory words _ _ hm,
-    unpackRight_packCrypto, StaggerCoreCorrect.leftFinish_fold]
+    StaggerCoreCorrect.epilogue_crypto memory words _ hm, hp.1, hp.2,
+    StaggerCoreCorrect.leftFinish_fold]
 
 #print axioms tailMemory_eq_storeRaw
 #print axioms addResult_normalized

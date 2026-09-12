@@ -45,10 +45,28 @@ theorem mask_packWord (a b : BitVec 32) :
   apply bits_injective
   rw [StaggerScalarWord.bits_mask, bits_word, bits_word, StaggerScalar.mask_eq, low_pack]
 
-theorem left_packCrypto (a b : CryptoLane) : StaggerCoreModel.left (packCrypto a b) = embed a := by
-  cases a; cases b
-  simp only [StaggerCoreModel.left, embed, packCrypto, liftLane,
-    Paired80RoundSemantic.packLane, Paired80CryptoBridge.bits, PairedLaneCryptoBridge.bits, mask_packWord, show (0:UInt32).toBitVec = 0#32 from rfl]
+theorem scalar_mask_idem (q : UInt256) :
+    StaggerScalarWord.mask (StaggerScalarWord.mask q) = StaggerScalarWord.mask q := by
+  apply bits_injective
+  simp only [StaggerScalarWord.bits_mask, StaggerScalar.mask_eq, low_pack]
+
+theorem left_b_clean (q : WordLane) :
+    StaggerScalarWord.mask (StaggerCoreModel.left q).b = (StaggerCoreModel.left q).b :=
+  scalar_mask_idem q.b
+
+theorem left_c_clean (q : WordLane) :
+    StaggerScalarWord.mask (StaggerCoreModel.left q).c = (StaggerCoreModel.left q).c :=
+  scalar_mask_idem q.c
+
+theorem low32_mask (q : UInt256) : low32 (StaggerScalarWord.mask q) = low32 q := by
+  apply UInt32.toNat_inj.mp
+  change (low (bits (StaggerScalarWord.mask q))).toNat = (low (bits q)).toNat
+  rw [StaggerScalarWord.bits_mask, StaggerScalar.mask_eq, low_pack]
+
+theorem unpackLeft_left (q : WordLane) :
+    unpackLeft (StaggerCoreModel.left q) = unpackLeft q := by
+  cases q
+  simp only [StaggerCoreModel.left, unpackLeft, low32_mask]
 
 theorem clean_c (q : WordLane) (hq : Clean q) : StaggerScalarWord.mask q.c = q.c := by
   apply bits_injective
@@ -86,7 +104,7 @@ theorem initial_eq (memory : ByteArray) (h : Compression.HashState)
   rfl
 
 #print axioms pair_embed
-#print axioms left_packCrypto
+#print axioms unpackLeft_left
 #print axioms clean_step_of_crypto
 #print axioms initial_eq
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRepresentation

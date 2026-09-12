@@ -1,47 +1,40 @@
 # RIPEMD-160 Yukon submission
 
-This directory is the complete editable surface for the `ripemd160` track:
-
-- `bytecode.hex` — one line of lowercase EVM bytecode without a `0x` prefix;
-- `Solution.lean` — `Challenge.Ripemd160.Benchmark.candidate`, proving
-  `Challenge.Ripemd160.Correct bytecode` for the generated artifact;
-- the Lean modules under `Proofs/` imported by `Solution.lean`.
+`bytecode.hex` contains the exact runtime. `Solution.lean` proves
+`Challenge.Ripemd160.Correct bytecode` for that artifact.
 
 ## Provenance
 
-This submission starts from promoted submission
-`1151093f-45e9-4fb6-91f5-7120739684b4` and retains the public source lineage
-of that submission and of every promotion it inherits from. Two recognition
-and digest lemmas are taken from previously promoted submission
-`cf170158-635a-4916-a3ca-220a0d3a4099` (co-authored by Amal-David). Source
-authorship is not reassigned.
+This change starts from promoted frontier
+`3a4f03b7e61d591a48745975f953f153c97815da` (submission
+`719b9945-b078-4537-b1a7-f57374ef8c16`) and retains its public source
+lineage and authorship. The inherited implementation includes recognition
+and digest lemmas from promoted submission
+`cf170158-635a-4916-a3ca-220a0d3a4099`, co-authored by Amal-David.
 
-## Current compressor
+## Change
 
-The current implementation builds on the local 744,387-gas baseline at
-`7cb007b8cf139ef1fd836e6216a5dc313f1cf068`. Its two RIPEMD-160 lanes are
-scheduled three rounds apart: right rounds 0–2, then 77 packed pairs of
-left round i and right round i+3, then left rounds 77–79. This increases
-pairs with equal rotations from 5 to 38 and reduces the message table from
-78 to 61 stored words. Five frequently used message pairs are cached on
-the stack. The scalar epilogue uses a proved low-32-bit projection to omit
-four masks that are redundant before the final masked hash combination.
+The persistent block driver, three-round staggered compression schedule,
+61-slot message table, and stack-resident chaining state are retained.
+Five redundant masks are removed: two from the last paired update
+(left round 76, right round 79), and three from the subsequent left A/D/E
+unpack. Left B and C are still masked before their remaining rotations.
 
-The exact runtime is 5,180 bytes with SHA-256
-`64a265b22f78c191eba3f2c45d5e495c9d78d11b894f0d4f622ac576b957e5fb`.
-The local protected native scorer reports 723,618 gas in both memory
-configurations. On the same local corpus, frontier `d17577a6` takes
-743,414 gas, a saving of 19,796 gas. Official results are recorded by Yukon.
+`StaggerLastStep.project_left` and `project_right` prove that the raw last
+update has the same 32-bit lane projections as the canonical masked update.
+`StaggerRepresentation` and `StaggerCoreCorrect` prove that the scalar suffix
+and final hash combination depend only on those projections. The revised
+core theorem connects to the inherited persistent-state functional proof.
+Exact instruction traces and affected code/data addresses are regenerated
+for the submitted runtime.
 
-The new proof is organized as `StaggerTable*` and `StaggerNormal*` for
-message preparation, `StaggerBoolean`, `StaggerRound`, `StaggerWord` and
-`StaggerScalar*` for arithmetic, and `StaggerRaw*`, `StaggerCore*` and
-`StaggerFinal*` for exact execution and the specification bridge.
-`PairedBlockTrace` connects this compressor to the existing block driver.
-Inherited recognition and digest paths keep their behavior and have their
-concrete instruction addresses adjusted to the new artifact.
+The runtime is 5,084 bytes, SHA-256
+`44f98ff9671a6f7bcba9f2cc0b87ebfb5c8f45fde81a1e79c2becf85ca6a6352`.
+The trusted native runner reports 716,597 gas for both clean and dirty frames
+on the 49-vector local corpus. The exact starting frontier takes 718,487 on
+the same inputs: a saving of 1,890 gas and 10 bytes. This is 30 gas for each
+of the corpus's 63 compression calls.
 
-The universal theorem in `Solution.lean` is stated for the exact submitted
-bytes and depends only on `propext`, `Classical.choice` and `Quot.sound`.
-Official validation, scoring and promotion status are recorded by the
-platform.
+The universal theorem is stated for the exact submitted bytes and uses
+only `propext`, `Classical.choice`, and `Quot.sound`. Platform validation
+and promotion status are recorded separately by Yukon.

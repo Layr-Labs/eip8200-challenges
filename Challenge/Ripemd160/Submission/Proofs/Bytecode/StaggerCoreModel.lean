@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerScalarWord
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerAlgorithm
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerLastStep
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerTableLayout
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackMemory
 set_option warningAsError true
@@ -16,8 +16,7 @@ def pairWord (l r : UInt256) : UInt256 := UInt256.lor (UInt256.shiftLeft r (UInt
 def pair (l r : WordLane) : WordLane :=
   ⟨pairWord l.a r.a, pairWord l.b r.b, pairWord l.c r.c, pairWord l.d r.d, pairWord l.e r.e⟩
 def left (q : WordLane) : WordLane :=
-  ⟨StaggerScalarWord.mask q.a, StaggerScalarWord.mask q.b, StaggerScalarWord.mask q.c,
-    StaggerScalarWord.mask q.d, StaggerScalarWord.mask q.e⟩
+  ⟨q.a, StaggerScalarWord.mask q.b, StaggerScalarWord.mask q.c, q.d, q.e⟩
 
 def message (memory : ByteArray) (i : Nat) : UInt256 :=
   MachineState.readWord memory (10 * StaggerTableLayout.pairIndices[i]!)
@@ -30,14 +29,15 @@ def right2 (memory : ByteArray) (q : WordLane) : WordLane :=
 def left77 (memory : ByteArray) (q : WordLane) : WordLane :=
   StaggerScalarWord.step true false 4 8 (MachineState.readWord memory 0) (UInt256.ofNat 2840853838) q
 def left78 (memory : ByteArray) (q : WordLane) : WordLane :=
-  StaggerScalarWord.step false false 4 5 (MachineState.readWord memory 80) (UInt256.ofNat 2840853838) q
+  StaggerScalarWord.step true false 4 5 (MachineState.readWord memory 80) (UInt256.ofNat 2840853838) q
 def left79 (memory : ByteArray) (q : WordLane) : WordLane :=
   StaggerScalarWord.step false false 4 6 (MachineState.readWord memory 140) (UInt256.ofNat 2840853838) q
 
 def prologue (memory : ByteArray) (q : WordLane) : WordLane :=
   right2 memory (right1 memory (right0 memory q))
 def paired (memory : ByteArray) (q : WordLane) : WordLane :=
-  StaggerAlgorithm.fold (message memory) 77 (pair q (prologue memory q))
+  StaggerLastStep.step (message memory 76)
+    (StaggerAlgorithm.fold (message memory) 76 (pair q (prologue memory q)))
 def epilogue (memory : ByteArray) (q : WordLane) : WordLane :=
   left79 memory (left78 memory (left77 memory (left q)))
 
