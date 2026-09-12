@@ -5,7 +5,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open RecognitionSites RecognitionMovement RecognitionBodyRaw RecognitionLoop RecognitionAccumulator
 
 def hitState (s : State) (n : Nat) (rho : List UInt256) : State :=
-  atState s 4841 (frame (endFrame s n) rho)
+  atState s 4840 (frame (endFrame s n) rho)
 
 def gasSteps_hit (s : State) (e : Env s) (n : Nat) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hn : Allowed n) (hsize : s.executionEnv.calldata.size = n)

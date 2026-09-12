@@ -54,7 +54,7 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     have gj := StaggerPadJump.gasSteps_jump q (frame h off limit rho)
       (by simp only [frame, List.length_append, List.length_cons, List.length_nil]; omega)
       hr hcode hfork hnp
-    have gb' : GasSteps {s with pc := UInt256.ofNat 450, stack := frame h off limit rho}
+    have gb' : GasSteps {s with pc := UInt256.ofNat 449, stack := frame h off limit rho}
         {q with pc := UInt256.ofNat 523, stack := frame h off limit rho} := by
       apply gb.cast rfl
       dsimp only [q, scheduledState]
