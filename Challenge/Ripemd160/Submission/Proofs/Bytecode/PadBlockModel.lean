@@ -33,7 +33,6 @@ theorem scheduled_memory (s : State) (input : ByteArray) (i : Nat)
     (hhit : input.size = DriverTrace.blockOffset i) :
     (PairedBlockModel.scheduledState s i).memory =
       resultMemory s.memory (UInt256.ofNat input.size) := by
-  rw [PairedBlockModel.scheduled_memory_hit s i (by rw [ctx.calldata]; exact hhit)]
   apply normalized_memory s.memory input (PairedBlockModel.messagePointer i) hfit
     (hit_aligned input i hhit) (PairedBlockModel.messagePointer_bound input hfit i hi)
   · rw [hhit]

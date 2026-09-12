@@ -21,12 +21,5 @@ theorem answerMemory_read : MachineState.readPadded answerMemory 0 32 = paddedDi
 @[simp] theorem returnedState_hReturn_size (input : ByteArray) :
     (returnedState input).hReturn.size = 32 := by
   rw [returnedState_hReturn, paddedDigest_size]
-def gasSteps_miss (input : ByteArray) (sv ov acc : UInt256) (hne : acc ≠ 0) :
-    GasSteps (stS input 258 [sv, ov, acc, P7, M, m7, P, m8]) (fallbackState input) :=
-  ShortPatternFinish.gasSteps_miss input sv ov acc hne
-def gasSteps_finish_hit (input : ByteArray) (sv ov acc : UInt256)
-    (hz : acc = 0) (hsize : input.size = 256) :
-    GasSteps (stS input 258 [sv, ov, acc, P7, M, m7, P, m8])
-      (ShortPatternFinish.returnedState 256 input sv ov) :=
-  ShortPatternFinish.gasSteps_finish_hit 256 input sv ov acc hz (by decide) hsize
+
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned256Finish

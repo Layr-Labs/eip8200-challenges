@@ -1,16 +1,15 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Entry
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Scan
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.ShortPatternFinish
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned63Digest
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.ShortPatternLogic
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.ShortPatternFinish
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.VerifierCorrect
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.VerifierLogic
 
 set_option warningAsError true
 set_option maxRecDepth 20000
 set_option maxHeartbeats 20000000
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Correct
-
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedScan PatternedSwar
 
@@ -20,19 +19,16 @@ theorem correct_from_patternedEntry (input : ByteArray) (hfit : CalldataFits inp
       (PatternedScan.patternedEntry input)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  by_cases hz : scanAcc input 2 = 0
-  · have heq := (ShortPatternLogic.scanAcc_zero_iff_eq_63 input hsize).1 hz
+  by_cases hz : verifyAcc input 63 = 0
+  · have heq := (VerifierLogic.verifyAcc_zero_iff_eq input 63 hsize (by decide)).1 hz
     have hspec : spec input = Patterned63Digest.paddedDigest := by
       rw [heq]
       exact Patterned63Digest.spec_data_eq
     let trace := hentry.trans
-      ((Patterned128Scan.gasSteps_scan input hsize).trans
-        (ShortPatternFinish.gasSteps_finish_hit 63 input (UInt256.ofNat (scalarAt 2))
-          64 (scanAcc input 2) hz (by decide) hsize))
+      (VerifierCorrect.gasSteps_verify_hit 63 input (by decide) hsize hz)
     refine ⟨trace.cost, fun gas hgas => ?_⟩
     have heval := eval_of_steps (trace.trace gas hgas) (by
-      simp [withGas, ShortPatternFinish.returnedState,
-        ShortPatternFinish.storedState, ShortPatternFinish.returnRest,
+      simp [withGas, VerifierFinish.vReturned, VerifierFinish.vStored,
         stS, initialState, State.isDone, State.isHalted, State.isRunning])
     rw [State.toResult_returned _ (by rfl)] at heval
     change Eval (withGas (initialState submissionBytecode input 0) gas)
@@ -42,8 +38,6 @@ theorem correct_from_patternedEntry (input : ByteArray) (hfit : CalldataFits inp
     simpa [GasCost.withGas_initialState_zero] using heval
   · exact StackCorrect.correct input hfit
       (hentry.trans
-        ((Patterned128Scan.gasSteps_scan input hsize).trans
-          (ShortPatternFinish.gasSteps_miss input (UInt256.ofNat (scalarAt 2))
-            64 (scanAcc input 2) hz)))
+        (VerifierCorrect.gasSteps_verify_miss 63 input (by decide) hsize hz))
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Correct

@@ -17,16 +17,16 @@ def bodyTemplate : List Instr :=
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .RETURN ]
 theorem body_slice :
-    (Artifact.submissionArtifact.instructions.drop 239).take bodyTemplate.length = bodyTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 234).take bodyTemplate.length = bodyTemplate := by rfl
 def bodySite : GenericRoundSite Artifact.submissionArtifact .Osaka bodyTemplate :=
-  StackSiteBuilder.ofSlice bodyTemplate 239 body_slice
-    (by change 239 + bodyTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice bodyTemplate 234 body_slice
+    (by change 234 + bodyTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := bodyTemplate) (by decide))
     (by decide)
-theorem body_pc : bodySite.startPC = UInt256.ofNat 377 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 239) = UInt256.ofNat 377
+theorem body_pc : bodySite.startPC = UInt256.ofNat 369 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 234) = UInt256.ofNat 369
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem body_advances : ∀ instruction ∈ bodyTemplate.dropLast, DenseScheduleLift.Advances instruction := by
   apply coreAdvancesAll_sound
@@ -35,7 +35,7 @@ def outputMemory (memory : ByteArray) : ByteArray :=
   MachineState.writeBytes memory EmptySpec.emptyOutput 0
 
 def finalState (s : State) (input : ByteArray) (i : Nat) : State :=
-  {FastEmptyBlock.bodyEntry s input i with pc := UInt256.ofNat 403, memory := outputMemory s.memory, activeWords := UInt256.ofNat (MachineState.activeWordsAfter
+  {FastEmptyBlock.bodyEntry s input i with pc := UInt256.ofNat 395, memory := outputMemory s.memory, activeWords := UInt256.ofNat (MachineState.activeWordsAfter
       (s.activeWordsAfterUInt256 0 32).toNat 0 32), halt := .Returned, hReturn := MachineState.readPadded (outputMemory s.memory) 0 32}
 
 theorem run_body (s : State) (input : ByteArray) (i : Nat) (hrun : s.halt = .Running) :
@@ -65,7 +65,7 @@ def gasSteps_return (s : State) (input : ByteArray) (i : Nat) (hempty : input.si
   exact gd.trans gb
 
 theorem correct_empty (input : ByteArray) (hfit : CalldataFits input) (hempty : input.size = 0)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 276)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 268)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   let s := PaddingTrace.padReturned input

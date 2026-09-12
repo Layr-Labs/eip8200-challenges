@@ -46,7 +46,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedShift72
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedShift73
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedShift75
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedShift76
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Strip78Prefix
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedShift78
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedCoreStraight
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedRound2
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedRound3
@@ -93,8 +93,8 @@ def gasSteps_core_prefix (s : State) (f : CoreFrame) (rho : List UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 762, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] f (cache s.memory ++ rho)}
-      {s with pc := UInt256.ofNat 4523, stack := coreStack [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] (Strip78Prefix.corePrefix77Chain.eval s.memory f) (cache s.memory ++ rho)} := by
+    GasSteps {s with pc := UInt256.ofNat 766, stack := coreStack [.a, .b, .c, .d, .e, .factor, .pair, .upper, .lower] f (cache s.memory ++ rho)}
+      {s with pc := UInt256.ofNat 4563, stack := coreStack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] (PairedAllInlineCoreTrace.corePrefixChain.eval s.memory f) (cache s.memory ++ rho)} := by
   have hs : (cache s.memory ++ rho).length ≤ 1002 := by simp only [List.length_append, cache_length]; omega
   let f0 := f
   let f1 := PairedAllInlineCoreTrace.group0Block.eval s.memory f0
@@ -263,7 +263,9 @@ def gasSteps_core_prefix (s : State) (f : CoreFrame) (rho : List UInt256)
   have g81 := CachedShift76.gasSteps s f81 rho hstack hrun hactive hcode hfork hnp
   let f83 := PairedAllInlineCoreTrace.inline77Block.eval s.memory f82
   have g82 := CachedRound77.gasSteps s f82 rho hstack hrun hactive hcode hfork hnp
-  have g := g0.trans (g1.trans (g2.trans (g3.trans (g4.trans (g5.trans (g6.trans (g7.trans (g8.trans (g9.trans (g10.trans (g11.trans (g12.trans (g13.trans (g14.trans (g15.trans (g16.trans (g17.trans (g18.trans (g19.trans (g20.trans (g21.trans (g22.trans (g23.trans (g24.trans (g25.trans (g26.trans (g27.trans (g28.trans (g29.trans (g30.trans (g31.trans (g32.trans (g33.trans (g34.trans (g35.trans (g36.trans (g37.trans (g38.trans (g39.trans (g40.trans (g41.trans (g42.trans (g43.trans (g44.trans (g45.trans (g46.trans (g47.trans (g48.trans (g49.trans (g50.trans (g51.trans (g52.trans (g53.trans (g54.trans (g55.trans (g56.trans (g57.trans (g58.trans (g59.trans (g60.trans (g61.trans (g62.trans (g63.trans (g64.trans (g65.trans (g66.trans (g67.trans (g68.trans (g69.trans (g70.trans (g71.trans (g72.trans (g73.trans (g74.trans (g75.trans (g76.trans (g77.trans (g78.trans (g79.trans (g80.trans (g81.trans (g82))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+  let f84 := PairedAllInlineCoreTrace.inline78Block.eval s.memory f83
+  have g83 := CachedShift78.gasSteps s f83 rho hstack hrun hactive hcode hfork hnp
+  have g := g0.trans (g1.trans (g2.trans (g3.trans (g4.trans (g5.trans (g6.trans (g7.trans (g8.trans (g9.trans (g10.trans (g11.trans (g12.trans (g13.trans (g14.trans (g15.trans (g16.trans (g17.trans (g18.trans (g19.trans (g20.trans (g21.trans (g22.trans (g23.trans (g24.trans (g25.trans (g26.trans (g27.trans (g28.trans (g29.trans (g30.trans (g31.trans (g32.trans (g33.trans (g34.trans (g35.trans (g36.trans (g37.trans (g38.trans (g39.trans (g40.trans (g41.trans (g42.trans (g43.trans (g44.trans (g45.trans (g46.trans (g47.trans (g48.trans (g49.trans (g50.trans (g51.trans (g52.trans (g53.trans (g54.trans (g55.trans (g56.trans (g57.trans (g58.trans (g59.trans (g60.trans (g61.trans (g62.trans (g63.trans (g64.trans (g65.trans (g66.trans (g67.trans (g68.trans (g69.trans (g70.trans (g71.trans (g72.trans (g73.trans (g74.trans (g75.trans (g76.trans (g77.trans (g78.trans (g79.trans (g80.trans (g81.trans (g82.trans (g83)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
   exact g
 #print axioms gasSteps_core_prefix
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedAllInlineCoreSites

@@ -3,8 +3,10 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned256Correct
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Entry
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ShortPatternCorrect
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Correct
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardTail
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Correct
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.VerifierCorrect
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.VerifierLogic
+
 
 set_option warningAsError true
 set_option maxRecDepth 100000
@@ -43,7 +45,7 @@ def gasSteps_target :
     simpa [referenceWord, KnownInputData.expectedWord] using
       (KnownInputData.targetInput_readWord 0 (by decide))
   (Execution.gasSteps_start KnownInputData.targetInput).trans
-    ((sound (sizeDispatchPath KnownInputData.targetInput) (run_size_match KnownInputData.targetInput
+    ((sound sizePath (run_size_match KnownInputData.targetInput
       KnownInputData.targetInput_size)).trans
       ((sound checkEntryPath (run_checkEntry KnownInputData.targetInput href)).trans
         ((gasSteps_loop KnownInputData.targetInput).trans
@@ -60,16 +62,21 @@ def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
   by_cases hsize : input.size = 1000
   · by_cases href : referenceWord input = KnownInputData.fullWord
     · exact (Execution.gasSteps_start input).trans
-        ((sound (sizeDispatchPath input) (run_size_match input hsize)).trans
+        ((sound sizePath (run_size_match input hsize)).trans
           ((sound checkEntryPath (run_checkEntry input href)).trans
             ((gasSteps_loop input).trans
               (sound tailPath (run_tail_fallback input hsize hne)))))
     · exact (Execution.gasSteps_start input).trans
-        ((sound (sizeDispatchPath input) (run_size_match input hsize)).trans
+        ((sound sizePath (run_size_match input hsize)).trans
           ((gasSteps_checkEarly input href).trans
-            (PatternedScan.gasSteps_patterned_miss input hsize hpne)))
+            (VerifierCorrect.gasSteps_verify_miss 1000 input (by decide) hsize
+              (fun hz => hpne
+                ((VerifierLogic.verifyAcc_zero_iff_eq input 1000 hsize (by decide)).1 hz
+                  |> fun h => by
+                    rwa [← PatternedInputData.patternedInput_size,
+                      ByteArray.extract_same] at h)))))
   · exact (Execution.gasSteps_start input).trans
-      ((sound (sizeDispatchPath input) (run_size_fail input hfit hsize h256 hshort)).trans
+      ((sound sizePath (run_size_fail input hfit hsize h256 hshort)).trans
         (Patterned128Entry.gasSteps_fail input hfit hnabc hbad))
 
 private theorem answerMemory_read :
@@ -125,7 +132,7 @@ private def gasSteps_fallback256 (input : ByteArray) (hsize : input.size = 376)
     (href : KnownInputCompactState.referenceWord input = KnownInputData.fullWord) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) :=
   (Execution.gasSteps_start input).trans
-    ((sound (sizeDispatchPath input) (run_size_match_256 input hsize)).trans
+    ((sound sizePath (run_size_match_256 input hsize)).trans
       ((sound checkEntryPath (run_checkEntry input href)).trans
         ((gasSteps_loop input).trans
           (sound tailPath (run_tail_fallback_acc input
@@ -135,7 +142,7 @@ private def gasSteps_fallback_short (input : ByteArray) (hsize : input.size = 25
     (href : KnownInputCompactState.referenceWord input = KnownInputData.fullWord) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) :=
   (Execution.gasSteps_start input).trans
-    ((sound (sizeDispatchPath input) (run_size_match_short input hsize)).trans
+    ((sound sizePath (run_size_match_short input hsize)).trans
       ((sound checkEntryPath (run_checkEntry input href)).trans
         ((gasSteps_loop input).trans
           (sound tailPath (run_tail_fallback_acc input
@@ -174,22 +181,31 @@ theorem correct : Correct submissionBytecode := by
     · subst input
       have href : referenceWord PatternedInputData.patternedInput ≠
           KnownInputData.fullWord := PatternedInputData.patterned_reference_ne
-      have hsize := PatternedInputData.patternedInput_size
       let trace :=
         (Execution.gasSteps_start PatternedInputData.patternedInput).trans
-          ((sound (sizeDispatchPath PatternedInputData.patternedInput) (run_size_match PatternedInputData.patternedInput hsize)).trans
+          ((sound sizePath (run_size_match PatternedInputData.patternedInput hsize)).trans
             ((gasSteps_checkEarly PatternedInputData.patternedInput href).trans
-              PatternedScan.gasSteps_patterned))
+              (VerifierCorrect.gasSteps_verify_hit 1000
+                PatternedInputData.patternedInput (by decide) hsize
+                (VerifierLogic.verifyAcc_of_extract
+                  PatternedInputData.patternedInput 1000 hsize (by decide)
+                  (by rw [← PatternedInputData.patternedInput_size,
+                    ByteArray.extract_same])))))
       refine ⟨trace.cost, fun gas hgas => ?_⟩
       have heval := eval_of_steps (trace.trace gas hgas) (by
-        simp [withGas, PatternedScan.returnedState, initialState,
-          State.isDone, State.isHalted, State.isRunning])
+        simp [withGas, VerifierFinish.vReturned, VerifierFinish.vStored,
+          initialState, State.isDone, State.isHalted, State.isRunning])
       rw [State.toResult_returned _ (by rfl)] at heval
       change Eval (withGas
         (initialState submissionBytecode PatternedInputData.patternedInput 0) gas)
-        (.returned (MachineState.readPadded PatternedScan.answerMemory 0 32)) at heval
-      rw [PatternedScan.answerMemory_read, ← PatternedGuardSpec.spec_patternedInput_eq] at heval
+        (.returned (MachineState.readPadded
+          (ShortPatternFinish.answerMemory 1000) 0 32)) at heval
+      have hdigest : ShortPatternFinish.paddedDigest 1000 =
+          PatternedDigest.paddedDigest := rfl
+      rw [ShortPatternFinish.answerMemory_read, hdigest,
+        ← PatternedGuardSpec.spec_patternedInput_eq] at heval
       simpa [GasCost.withGas_initialState_zero] using heval
+
     · by_cases hsize56 : input.size = 56
       · by_cases hbyte : firstByte input = 7
         · exact ShortPatternCorrect.correct56_from_patternedEntry input hfit hsize56 hbyte

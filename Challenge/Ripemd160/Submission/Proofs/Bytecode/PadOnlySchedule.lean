@@ -1,7 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CachedSchedule
 import Challenge.EvmProof.Memory
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Padding
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadShiftDiet
 
 set_option maxRecDepth 100000
 set_option maxHeartbeats 40000000
@@ -32,8 +31,8 @@ def template : List Instr :=
    .push ⟨0, by decide⟩ (UInt256.ofNat 0), .op .CALLDATACOPY,
    .push ⟨1, by decide⟩ (UInt256.ofNat 128),
    .push ⟨0, by decide⟩ (UInt256.ofNat 0), .op .MSTORE,
-   .op .CALLDATASIZE, .push ⟨1, by decide⟩ (UInt256.ofNat 227), .op .SHL,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 224), .op .SHR,
+   .op .CALLDATASIZE, .push ⟨1, by decide⟩ (UInt256.ofNat 3), .op .SHL,
+   .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), .op .AND,
    .push ⟨2, by decide⟩ (UInt256.ofNat 448), .op .MSTORE,
    .op .CALLDATASIZE, .push ⟨1, by decide⟩ (UInt256.ofNat 29), .op .SHR,
    .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), .op .AND,
@@ -48,15 +47,6 @@ def template : List Instr :=
 theorem readPadded_end (input : ByteArray) :
     MachineState.readPadded input input.size 512 = zeroBytes := by
   simp [MachineState.readPadded, zeroBytes]
-
-theorem lowDiet_eq_lowLength (n : UInt256) :
-    UInt256.shiftRight (UInt256.shiftLeft n (UInt256.ofNat 227)) (UInt256.ofNat 224) =
-      lowLength n := by
-  rw [PadShiftDiet.low]
-  unfold lowLength
-  apply Word.word_ext
-  simp only [Word.word_toNat_land]
-  exact Nat.and_comm _ _
 
 theorem run_template (s : State) (pc returnPC : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 996) (hrun : s.halt = .Running)
@@ -75,7 +65,7 @@ theorem run_template (s : State) (pc returnPC : UInt256) (rest : List UInt256)
   have hsize : (UInt256.ofNat s.executionEnv.calldata.size).toNat = s.executionEnv.calldata.size := by
     rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt hfit]
   simp (discharger := omega) [PairedHelperBooleanTrace.push0_toNat, template, resultMemory,
-    lowDiet_eq_lowLength, lowLength, highLength, writeWord, runInstrSeq, Stepper.runInstr, pcAfter,
+    lowLength, highLength, writeWord, runInstrSeq, Stepper.runInstr, pcAfter,
     UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt, hcopyActive, hsize,
     readPadded_end, Word.word_toNat_ofNat]

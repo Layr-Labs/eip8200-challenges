@@ -46,7 +46,7 @@ private theorem add_ofNat_assoc_add (u : UInt256) (a b : Nat) :
   exact word_add_ofNat_assoc u a b
 
 def cachedInitial : List Instr :=
-  [.push ⟨4, by decide⟩ maskWord,
+  [op .JUMPDEST, .push ⟨4, by decide⟩ maskWord,
     push2 (UInt256.ofNat 257), .push 0 0, op .NOT, op .DIV,
     push3 (UInt256.ofNat 65537), .push 0 0, op .NOT, op .DIV,
     .op (.Swap ⟨2, by decide⟩), dup1, op .MLOAD, swap1,
@@ -97,7 +97,7 @@ theorem run_fullTemplate (s : State) (pc messageOffset returnPC : UInt256)
       some {s with
         pc := pcAfter pc fullTemplate
         stack := returnPC :: rest
-        memory := normalizedMemory s.memory (scheduleWordsG s messageOffset)
+        memory := normalizedMemory s.memory (scheduleWords s messageOffset)
         activeWords := loadedActiveWords s messageOffset} := by
   have h1 := run_cachedInitial s pc messageOffset returnPC rest hstack hrun
   have h2 := run_cachedReversedHalf
@@ -111,7 +111,7 @@ theorem run_fullTemplate (s : State) (pc messageOffset returnPC : UInt256)
   have h3 := run_cachedReversedHalf
     {s with
       activeWords := loadedActiveWords s messageOffset
-      memory := storeCells s.memory (halfWordsG (packedInput1 s messageOffset) 8) 8 8}
+      memory := storeCells s.memory (halfWords (packedInput1 s messageOffset) 8) 8 8}
     (pcAfter (pcAfter pc cachedInitial) upperTemplate)
     (inputWord0 s messageOffset) 0 ⟨2, by decide⟩ ⟨4, by decide⟩ ⟨1, by decide⟩
     (mask8 :: maskWord :: mask16 :: returnPC :: rest)
@@ -122,8 +122,8 @@ theorem run_fullTemplate (s : State) (pc messageOffset returnPC : UInt256)
     {s with
       activeWords := loadedActiveWords s messageOffset
       memory := storeCells
-        (storeCells s.memory (halfWordsG (packedInput1 s messageOffset) 8) 8 8)
-        (halfWordsG (packedInput0 s messageOffset) 0) 0 8}
+        (storeCells s.memory (halfWords (packedInput1 s messageOffset) 8) 8 8)
+        (halfWords (packedInput0 s messageOffset) 0) 0 8}
     (pcAfter (pcAfter (pcAfter pc cachedInitial) upperTemplate) lowerTemplate)
     (mask8 :: maskWord :: mask16 :: returnPC :: rest)
     (by simp only [List.length_cons]; omega) hrun hactive
@@ -132,14 +132,14 @@ theorem run_fullTemplate (s : State) (pc messageOffset returnPC : UInt256)
     {s with
       activeWords := loadedActiveWords s messageOffset
       memory := writeWord
-        (storeCells (storeCells s.memory (halfWordsG (packedInput1 s messageOffset) 8) 8 8)
-          (halfWordsG (packedInput0 s messageOffset) 0) 0 8)
+        (storeCells (storeCells s.memory (halfWords (packedInput1 s messageOffset) 8) 8 8)
+          (halfWords (packedInput0 s messageOffset) 0) 0 8)
         (cell 16) (UInt256.ofNat 0)}
     (pcAfter (pcAfter (pcAfter (pcAfter pc cachedInitial) upperTemplate) lowerTemplate)
       sentinelTemplate) mask8 maskWord mask16 (returnPC :: rest)
     (by simp only [List.length_cons]; omega) hrun
   have hjoin := DenseScheduleTrace.runInstrSeq_append_running h1234 (by exact hrun) h5
-  rw [store_upper_scheduleG, store_lower_scheduleG] at hjoin
+  rw [store_upper_schedule, store_lower_schedule] at hjoin
   simpa only [fullTemplate, upperTemplate, lowerTemplate,
     DenseScheduleTrace.pcAfter_append, normalizedMemory] using hjoin
 
@@ -153,47 +153,46 @@ theorem run_fullTemplate_natural (s : State) (pc returnPC : UInt256)
       some {s with
         pc := pcAfter pc fullTemplate
         stack := returnPC :: rest
-        memory := normalizedMemory s.memory (PairedScheduleData.extractedWordG s.memory p)
+        memory := normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p)
         activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
   have h := run_fullTemplate s pc (UInt256.ofNat p) returnPC rest hstack hrun
     (loaded_active_ge23 s p hp hbound)
-  rw [normalizedMemory_congr s.memory (scheduleWordsG s (UInt256.ofNat p))
-    (PairedScheduleData.extractedWordG s.memory p)
-    (fun i hi => scheduleWordsG_eq_extractedG s p i hi hbound)] at h
+  rw [normalizedMemory_congr s.memory (scheduleWords s (UInt256.ofNat p))
+    (PairedScheduleData.extractedWord s.memory p)
+    (fun i hi => scheduleWords_eq_extracted s p i hi hbound)] at h
   exact h
 
 #print axioms run_fullTemplate_natural
 
 
-theorem fullTemplate_length : fullTemplate.length = 156 := by
+theorem fullTemplate_length : fullTemplate.length = 165 := by
   have hold := PairedMask32Cache.fullTemplate_length
   have hi : PairedMask32Cache.cachedInitial.length = 11 := rfl
-  have hn : cachedInitial.length = 16 := rfl
+  have hn : cachedInitial.length = 17 := rfl
   simp only [PairedMask32Cache.fullTemplate, List.length_append, hi] at hold
   simp only [fullTemplate, List.length_append, hn]
   omega
 
 #print axioms fullTemplate_length
 
-theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 219 := by
+theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 228 := by
   rw [DenseScheduleTemplate.assembleBytes_length]
   norm_num [fullTemplate, cachedInitial, upperTemplate, lowerTemplate, cachedReversedHalf,
     cachedStage, endianFactorPush, endianFactor, PairedMask32Cache.halfTemplate,
     PairedMask32Cache.prefixTemplate, PairedMask32Cache.keepTemplate,
-    PairedScheduleStores.firstTemplate, PairedMask32Cache.middleTemplate, PairedMask32Cache.middleTemplateUnmasked,
-    PairedMask32Cache.unmaskedTemplate,
+    PairedScheduleStores.firstTemplate, PairedMask32Cache.middleTemplate,
     PairedMask32Cache.lastTemplate, maskTemplate,
     PairedSchedulePrimitives.duplicateShiftTemplate, PairedSchedulePrimitives.storeTemplate,
     sentinelTemplate, cleanupTemplate, cell, op, push1, push2, push3, dup1, swap1]
 
 #print axioms fullTemplate_byteLength
 
-theorem fullTemplate_staticGas : staticGas fullTemplate = 473 := by
+theorem fullTemplate_staticGas : staticGas fullTemplate = 498 := by
   have happend (xs ys : List Instr) : staticGas (xs ++ ys) = staticGas xs + staticGas ys := by
     simp only [staticGas, List.map_append, List.sum_append]
   have hold := PairedMask32Cache.fullTemplate_staticGas
   have hi : staticGas PairedMask32Cache.cachedInitial = 31 := by decide
-  have hn : staticGas cachedInitial = 50 := by decide
+  have hn : staticGas cachedInitial = 51 := by decide
   simp only [PairedMask32Cache.fullTemplate, happend, hi] at hold
   simp only [fullTemplate, happend, hn]
   omega
@@ -226,7 +225,7 @@ private theorem cachedInitial_advances :
       DenseScheduleLift.Advances instruction ∨ instruction = .op .DIV := by
   intro instruction hmem
   simp only [cachedInitial, List.mem_cons, List.not_mem_nil, or_false] at hmem
-  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
+  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
     rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals first
     | exact Or.inr rfl
@@ -236,6 +235,7 @@ private theorem cachedInitial_advances :
     | exact Or.inl (Or.inl (Or.inl StraightLine.add))
     | exact Or.inl (Or.inl (Or.inl StraightLine.mload))
     | exact Or.inl (Or.inl (Or.inl StraightLine.not))
+    | exact Or.inl (Or.inl (Or.inr (Or.inr rfl)))
 
 theorem fullTemplate_advances :
     ∀ instruction ∈ fullTemplate,
@@ -283,7 +283,7 @@ theorem runLocatedBlock_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
       some {s with
         pc := site.endPC
         stack := returnPC :: rest
-        memory := normalizedMemory s.memory (PairedScheduleData.extractedWordG s.memory p)
+        memory := normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p)
         activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
   have hend : site.endPC = pcAfter site.startPC fullTemplate := by
     have h := endPC_eq_pcAfter_sites site.sites site.startPC site.endPC
@@ -315,7 +315,7 @@ def gasSteps_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
       {s with
         pc := site.endPC
         stack := returnPC :: rest
-        memory := normalizedMemory s.memory (PairedScheduleData.extractedWordG s.memory p)
+        memory := normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p)
         activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
   apply Stepper.runLocatedBlock_sound artifact fork site.path
   · exact hcode
@@ -330,34 +330,38 @@ def gasSteps_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
 
 theorem fullTemplate_exactBytes : assembleBytes fullTemplate =
   (((([
-    0x63, 0xff, 0xff, 0xff, 0xff, 0x61, 0x01, 0x01, 0x5f, 0x19, 0x04, 0x62, 0x01, 0x00, 0x01,
+    0x5b, 0x63, 0xff, 0xff, 0xff, 0xff, 0x61, 0x01, 0x01, 0x5f, 0x19, 0x04, 0x62, 0x01, 0x00, 0x01,
     0x5f, 0x19, 0x04, 0x92, 0x80, 0x51, 0x90, 0x60, 0x20, 0x01, 0x51] ++ [
     0x80, 0x80, 0x60, 0x08, 0x1c, 0x18, 0x83, 0x16, 0x61, 0x01, 0x01, 0x02, 0x18, 0x80, 0x80, 0x60,
     0x10, 0x1c, 0x18, 0x85, 0x16, 0x62, 0x01, 0x00, 0x01, 0x02, 0x18, 0x80, 0x60, 0xe0, 0x1c, 0x60,
-    0x40, 0x52, 0x80, 0x60, 0xc0, 0x1c, 0x60, 0x60, 0x52, 0x80, 0x60, 0xa0, 0x1c, 0x60, 0x80, 0x52, 0x80, 0x60, 0x80, 0x1c, 0x84, 0x16, 0x60, 0xa0, 0x52, 0x80, 0x60, 0x60,
+    0x40, 0x52, 0x80, 0x60, 0xc0, 0x1c, 0x84, 0x16, 0x60, 0x60, 0x52, 0x80, 0x60, 0xa0, 0x1c, 0x84,
+    0x16, 0x60, 0x80, 0x52, 0x80, 0x60, 0x80, 0x1c, 0x84, 0x16, 0x60, 0xa0, 0x52, 0x80, 0x60, 0x60,
     0x1c, 0x84, 0x16, 0x60, 0xc0, 0x52, 0x80, 0x60, 0x40, 0x1c, 0x84, 0x16, 0x60, 0xe0, 0x52, 0x80,
     0x60, 0x20, 0x1c, 0x84, 0x16, 0x61, 0x01, 0xc0, 0x52, 0x83, 0x16, 0x61, 0x01, 0xe0, 0x52]) ++ [
     0x80, 0x80, 0x60, 0x08, 0x1c, 0x18, 0x82, 0x16, 0x61, 0x01, 0x01, 0x02, 0x18, 0x80, 0x80, 0x60,
     0x10, 0x1c, 0x18, 0x84, 0x16, 0x62, 0x01, 0x00, 0x01, 0x02, 0x18, 0x80, 0x60, 0xe0, 0x1c, 0x5f,
-    0x52, 0x80, 0x60, 0xc0, 0x1c, 0x60, 0x20, 0x52, 0x80, 0x60, 0xa0, 0x1c, 0x61, 0x01, 0x00, 0x52, 0x80, 0x60, 0x80, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x20, 0x52, 0x80, 0x60,
+    0x52, 0x80, 0x60, 0xc0, 0x1c, 0x83, 0x16, 0x60, 0x20, 0x52, 0x80, 0x60, 0xa0, 0x1c, 0x83, 0x16,
+    0x61, 0x01, 0x00, 0x52, 0x80, 0x60, 0x80, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x20, 0x52, 0x80, 0x60,
     0x60, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x40, 0x52, 0x80, 0x60, 0x40, 0x1c, 0x83, 0x16, 0x61, 0x01,
     0x60, 0x52, 0x80, 0x60, 0x20, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x80, 0x52, 0x82, 0x16, 0x61, 0x01,
     0xa0, 0x52]) ++ [
     0x5f, 0x61, 0x02, 0x00, 0x52]) ++ [
     0x50, 0x50, 0x50]) := by
   have h0 : assembleBytes cachedInitial = [
-    0x63, 0xff, 0xff, 0xff, 0xff, 0x61, 0x01, 0x01, 0x5f, 0x19, 0x04, 0x62, 0x01, 0x00, 0x01,
+    0x5b, 0x63, 0xff, 0xff, 0xff, 0xff, 0x61, 0x01, 0x01, 0x5f, 0x19, 0x04, 0x62, 0x01, 0x00, 0x01,
     0x5f, 0x19, 0x04, 0x92, 0x80, 0x51, 0x90, 0x60, 0x20, 0x01, 0x51] := by decide
   have h1 : assembleBytes upperTemplate = [
     0x80, 0x80, 0x60, 0x08, 0x1c, 0x18, 0x83, 0x16, 0x61, 0x01, 0x01, 0x02, 0x18, 0x80, 0x80, 0x60,
     0x10, 0x1c, 0x18, 0x85, 0x16, 0x62, 0x01, 0x00, 0x01, 0x02, 0x18, 0x80, 0x60, 0xe0, 0x1c, 0x60,
-    0x40, 0x52, 0x80, 0x60, 0xc0, 0x1c, 0x60, 0x60, 0x52, 0x80, 0x60, 0xa0, 0x1c, 0x60, 0x80, 0x52, 0x80, 0x60, 0x80, 0x1c, 0x84, 0x16, 0x60, 0xa0, 0x52, 0x80, 0x60, 0x60,
+    0x40, 0x52, 0x80, 0x60, 0xc0, 0x1c, 0x84, 0x16, 0x60, 0x60, 0x52, 0x80, 0x60, 0xa0, 0x1c, 0x84,
+    0x16, 0x60, 0x80, 0x52, 0x80, 0x60, 0x80, 0x1c, 0x84, 0x16, 0x60, 0xa0, 0x52, 0x80, 0x60, 0x60,
     0x1c, 0x84, 0x16, 0x60, 0xc0, 0x52, 0x80, 0x60, 0x40, 0x1c, 0x84, 0x16, 0x60, 0xe0, 0x52, 0x80,
     0x60, 0x20, 0x1c, 0x84, 0x16, 0x61, 0x01, 0xc0, 0x52, 0x83, 0x16, 0x61, 0x01, 0xe0, 0x52] := by decide
   have h2 : assembleBytes lowerTemplate = [
     0x80, 0x80, 0x60, 0x08, 0x1c, 0x18, 0x82, 0x16, 0x61, 0x01, 0x01, 0x02, 0x18, 0x80, 0x80, 0x60,
     0x10, 0x1c, 0x18, 0x84, 0x16, 0x62, 0x01, 0x00, 0x01, 0x02, 0x18, 0x80, 0x60, 0xe0, 0x1c, 0x5f,
-    0x52, 0x80, 0x60, 0xc0, 0x1c, 0x60, 0x20, 0x52, 0x80, 0x60, 0xa0, 0x1c, 0x61, 0x01, 0x00, 0x52, 0x80, 0x60, 0x80, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x20, 0x52, 0x80, 0x60,
+    0x52, 0x80, 0x60, 0xc0, 0x1c, 0x83, 0x16, 0x60, 0x20, 0x52, 0x80, 0x60, 0xa0, 0x1c, 0x83, 0x16,
+    0x61, 0x01, 0x00, 0x52, 0x80, 0x60, 0x80, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x20, 0x52, 0x80, 0x60,
     0x60, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x40, 0x52, 0x80, 0x60, 0x40, 0x1c, 0x83, 0x16, 0x61, 0x01,
     0x60, 0x52, 0x80, 0x60, 0x20, 0x1c, 0x83, 0x16, 0x61, 0x01, 0x80, 0x52, 0x82, 0x16, 0x61, 0x01,
     0xa0, 0x52] := by decide

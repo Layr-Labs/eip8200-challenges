@@ -93,22 +93,22 @@ def decisionPath : List Located := DriverTrace.enterPath
 /-- Empty calldata falls through the entry test into the direct return. -/
 def bodyEntry (s : State) (input : ByteArray) (_i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 377
+    pc := UInt256.ofNat 369
     stack := [UInt256.ofNat 0, Padding.paddedWord input] }
 
 /-- Compression entry after the per-block setup.  The empty-input test runs
 once at the driver entry, so this is already the compressor entry. -/
 def legacyDispatchEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 483
-    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 456,
+    pc := UInt256.ofNat 478
+    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 451,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
 /-- Nonempty dispatcher target: checked first-block helper. -/
 def nonemptyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 483
-    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 456,
+    pc := UInt256.ofNat 478
+    stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 451,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
 private def writeWord (memory : ByteArray) (offset : Nat)
@@ -132,7 +132,7 @@ def emptyActiveWords (s : State) : UInt256 :=
 
 def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 456
+    pc := UInt256.ofNat 451
     stack := [DriverTrace.blockOffsetWord i, Padding.paddedWord input]
     memory := emptyMemory s.memory
     activeWords := emptyActiveWords s }
@@ -222,13 +222,13 @@ theorem run_decision_empty (s : State) (input : ByteArray) (i : Nat)
       (DriverTrace.setupEntry s input) = some (bodyEntry s input i) := by
   have hfalse : ¬ UInt256.isTrue (UInt256.ofNat input.size) := by
     simp [hempty, UInt256.isTrue]
-  have hpc231 : Artifact.submissionArtifact.instructionPC 236 = 372 := by
+  have hpc231 : Artifact.submissionArtifact.instructionPC 231 = 364 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have hpc232 : Artifact.submissionArtifact.instructionPC 237 = 373 := by
+  have hpc232 : Artifact.submissionArtifact.instructionPC 232 = 365 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have hpc233 : Artifact.submissionArtifact.instructionPC 238 = 376 := by
+  have hpc233 : Artifact.submissionArtifact.instructionPC 233 = 368 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
   simp [decisionPath, DriverTrace.enterPath, Challenge.EvmProof.Stepper.runLocatedBlock,
