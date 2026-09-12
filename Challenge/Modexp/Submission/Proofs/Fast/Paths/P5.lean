@@ -17,9 +17,9 @@ def blk1255 :
    opAt 1084 .POP,
    opAt 1085 .POP,
    pushAt 1086 2 1469,
-   pushAt 1087 2 2048,
-   pushAt 1088 2 6144,
-   pushAt 1089 2 1024,
+   pushAt 1087 2 512,
+   pushAt 1088 2 1536,
+   pushAt 1089 2 256,
    pushAt 1090 2 3912,
    opAt 1091 .JUMP]
 
@@ -49,9 +49,9 @@ def blk1287 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1103 .JUMPDEST,
    pushAt 1104 2 1501,
-   pushAt 1105 2 1024,
+   pushAt 1105 2 256,
    opAt 1106 (.Dup ⟨0, by decide⟩),
-   pushAt 1107 2 1024,
+   pushAt 1107 2 256,
    pushAt 1108 2 3912,
    opAt 1109 .JUMP]
 
@@ -70,9 +70,9 @@ def blk1294 :
 def blk1301 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1117 2 1526,
-   pushAt 1118 2 1024,
-   pushAt 1119 2 2048,
-   pushAt 1120 2 1024,
+   pushAt 1118 2 256,
+   pushAt 1119 2 512,
+   pushAt 1120 2 256,
    pushAt 1121 2 3912,
    opAt 1122 .JUMP]
 

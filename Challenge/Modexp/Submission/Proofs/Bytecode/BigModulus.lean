@@ -66,7 +66,7 @@ def scanNonzeroPath :
 def scanZeroPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   scanNonzeroPath ++
-    [opAt 552 (.Dup ⟨4, by decide⟩), pushAt 553 2 6144,
+    [opAt 552 (.Dup ⟨4, by decide⟩), pushAt 553 2 1536,
      opAt 554 .RETURN]
 
 def scanOr (memory : ByteArray) : Nat → UInt256
@@ -107,9 +107,9 @@ def scanZeroFinal (s : State) (count b e m baseOff expOff modOff : Nat)
              UInt256.ofNat e, UInt256.ofNat m, UInt256.ofNat baseOff,
              UInt256.ofNat expOff, UInt256.ofNat modOff, returnDest] ++ rest
            activeWords := UInt256.ofNat (MachineState.activeWordsAfter
-             (scanWords s.activeWords count).toNat 6144 m)
+             (scanWords s.activeWords count).toNat 1536 m)
            halt := .Returned
-           hReturn := MachineState.readPadded s.memory 6144 m }
+           hReturn := MachineState.readPadded s.memory 1536 m }
 
 @[simp] private theorem scanPCs (i : Nat)
     (hi : 522 ≤ i) (hii : i ≤ 554) :
@@ -279,7 +279,7 @@ theorem run_scanZero (s : State) (count b e m baseOff expOff modOff : Nat)
   have hzeroNat : (scanOr s.memory count).toNat = 0 := by rw [hor]; decide
   have hmNat : (UInt256.ofNat m).toNat = m := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hm]
-  have h6144Nat : (6144 : UInt256).toNat = 6144 := by decide
+  have h6144Nat : (1536 : UInt256).toNat = 1536 := by decide
   have h0Nat : (0 : UInt256).toNat = 0 := by decide
   simp [scanZeroPath, scanNonzeroPath, opAt, pushAt, wfOp, scanExit,
     scanLoop, scanZeroFinal, scanPCs, hrun, hor, hzeroNat, hmNat,

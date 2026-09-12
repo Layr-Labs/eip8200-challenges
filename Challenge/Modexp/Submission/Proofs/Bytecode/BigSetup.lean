@@ -64,7 +64,7 @@ def toClear2048Path :
 def toClear6144Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 509 .JUMPDEST, pushAt 510 2 633,
-   opAt 511 (.Dup ⟨1, by decide⟩), pushAt 512 2 6144,
+   opAt 511 (.Dup ⟨1, by decide⟩), pushAt 512 2 1536,
    pushAt 513 1 14, opAt 514 .JUMP]
 
 def toLoadModulusPath :
@@ -109,7 +109,7 @@ def afterClear6144 (s : State) (b e m baseOff expOff modOff : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
   BigHelpers.clearReturned
     (afterClear2048 s b e m baseOff expOff modOff returnDest rest)
-    6144 (Limbs.limbCount m) 633
+    1536 (Limbs.limbCount m) 633
     (saved b e m baseOff expOff modOff returnDest rest)
 
 def setupReturned (s : State) (b e m baseOff expOff modOff : Nat)
@@ -273,7 +273,7 @@ theorem run_toClear6144 (s : State) (b e m baseOff expOff modOff : Nat)
       (afterClear2048 s b e m baseOff expOff modOff returnDest rest) =
         some (BigHelpers.clearEntry
           (afterClear2048 s b e m baseOff expOff modOff returnDest rest)
-          6144 (Limbs.limbCount m) 633
+          1536 (Limbs.limbCount m) 633
           (saved b e m baseOff expOff modOff returnDest rest)) := by
   have h745 : (622 : UInt256).toNat = 622 := by decide
   have h745Word : (622 : UInt256) = UInt256.ofNat 622 := by decide
@@ -413,7 +413,7 @@ def gasSteps_toClear6144 (s : State) (b e m baseOff expOff modOff : Nat)
       (afterClear2048 s b e m baseOff expOff modOff returnDest rest)
       (BigHelpers.clearEntry
         (afterClear2048 s b e m baseOff expOff modOff returnDest rest)
-        6144 (Limbs.limbCount m) 633
+        1536 (Limbs.limbCount m) 633
         (saved b e m baseOff expOff modOff returnDest rest)) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka toClear6144Path
@@ -561,7 +561,7 @@ theorem gasSteps_toClear6144_cost (s : State)
       (afterClear2048 s b e m baseOff expOff modOff returnDest rest).activeWords =
       (BigHelpers.clearEntry
         (afterClear2048 s b e m baseOff expOff modOff returnDest rest)
-        6144 (Limbs.limbCount m) 633
+        1536 (Limbs.limbCount m) 633
         (saved b e m baseOff expOff modOff returnDest rest)).activeWords := by
     rfl
   rw [hactive] at hmeter
@@ -692,7 +692,7 @@ def gasSteps_setup (s : State) (b e m baseOff expOff modOff : Nat)
       hframeClear hn hcode1 hfork1 hrun1 hnp1 jump745).trans <|
     (gasSteps_toClear6144 s b e m baseOff expOff modOff returnDest rest
       hcapSetup hcode hfork hrun hnp).trans <|
-    (BigHelpers.gasSteps_clear s2 6144 (Limbs.limbCount m) 633 frame
+    (BigHelpers.gasSteps_clear s2 1536 (Limbs.limbCount m) 633 frame
       hframeClear hn hcode2 hfork2 hrun2 hnp2 jump757).trans <|
     (gasSteps_toLoadModulus s b e m baseOff expOff modOff returnDest rest
       hm hmodOff hcap hcode hfork hrun hnp).trans <|
@@ -795,7 +795,7 @@ theorem gasSteps_setup_cost_potential (s : State)
     hframeClear hn hcode0 hfork0 hrun0 hnp0 jump733
   have hc2 := BigHelpers.gasSteps_clear_cost_potential s1 2048 n 622 frame
     hframeClear hn hcode1 hfork1 hrun1 hnp1 jump745
-  have hc3 := BigHelpers.gasSteps_clear_cost_potential s2 6144 n 633 frame
+  have hc3 := BigHelpers.gasSteps_clear_cost_potential s2 1536 n 633 frame
     hframeClear hn hcode2 hfork2 hrun2 hnp2 jump757
   have hl := BigLoad.gasSteps_loadBigEndian_cost_potential s3 modOff m 0 644
     frame hframeLoad hmodOff hinputFit hm hcode3 hfork3 hrun3 hnp3 jump768
@@ -825,12 +825,12 @@ theorem setupReturned_modulus_represents (s : State)
   have hfit0 : 0 + 32 * n < 2 ^ 256 := by omega
   have hfit1024 : 1024 + 32 * n < 2 ^ 256 := by omega
   have hfit2048 : 2048 + 32 * n < 2 ^ 256 := by omega
-  have hfit6144 : 6144 + 32 * n < 2 ^ 256 := by omega
+  have hfit6144 : 1536 + 32 * n < 2 ^ 256 := by omega
   have hbefore1024 : 0 + 32 * n ≤ 1024 := by omega
   have h0Word : (0 : UInt256) = UInt256.ofNat 0 := by decide
   have h1024Word : (1024 : UInt256) = UInt256.ofNat 1024 := by decide
   have h2048Word : (2048 : UInt256) = UInt256.ofNat 2048 := by decide
-  have h6144Word : (6144 : UInt256) = UInt256.ofNat 6144 := by decide
+  have h6144Word : (1536 : UInt256) = UInt256.ofNat 1536 := by decide
   let s0 := afterClear0 s b e m baseOff expOff modOff returnDest rest
   let s1 := afterClear1024 s b e m baseOff expOff modOff returnDest rest
   let s2 := afterClear2048 s b e m baseOff expOff modOff returnDest rest
@@ -850,7 +850,7 @@ theorem setupReturned_modulus_represents (s : State)
       h2048Word] using hkeep
   have hz3 : Limbs.Represents s3.memory 0 n 0 := by
     have hkeep := BigHelpers.represents_clearMemory_disjoint_region
-      s2.memory 6144 0 n 0 hfit6144 (Or.inr (by omega)) hz2
+      s2.memory 1536 0 n 0 hfit6144 (Or.inr (by omega)) hz2
     simpa [s3, afterClear6144, s2, n, BigHelpers.clearReturned,
       h6144Word] using hkeep
   have hm : m < 2 ^ 256 := by omega

@@ -385,7 +385,7 @@ theorem setupReturned_base_buffers_zero (s : State)
   have h0 : (0 : UInt256) = UInt256.ofNat 0 := by decide
   have h1024 : (1024 : UInt256) = UInt256.ofNat 1024 := by decide
   have h2048 : (2048 : UInt256) = UInt256.ofNat 2048 := by decide
-  have h6144 : (6144 : UInt256) = UInt256.ofNat 6144 := by decide
+  have h6144 : (1536 : UInt256) = UInt256.ofNat 1536 := by decide
   have hmNat : (UInt256.ofNat m).toNat = m := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hm]
   have hmodOffNat : (UInt256.ofNat modOff).toNat = modOff := by
@@ -400,14 +400,14 @@ theorem setupReturned_base_buffers_zero (s : State)
         0 (by omega) (Or.inr (by omega)) hz1024s1
   have hz1024s3 : Limbs.Represents s3.memory 1024 n 0 := by
     simpa [s3, BigSetup.afterClear6144, BigHelpers.clearReturned, h6144] using
-      BigHelpers.represents_clearMemory_disjoint_region s2.memory 6144 1024 n
+      BigHelpers.represents_clearMemory_disjoint_region s2.memory 1536 1024 n
         0 (by omega) (Or.inr (by omega)) hz1024s2
   have hz2048s2 : Limbs.Represents s2.memory 2048 n 0 := by
     simpa [s2, BigSetup.afterClear2048, BigHelpers.clearReturned, h2048]
       using BigHelpers.clearMemory_represents_zero s1.memory 2048 n (by omega)
   have hz2048s3 : Limbs.Represents s3.memory 2048 n 0 := by
     simpa [s3, BigSetup.afterClear6144, BigHelpers.clearReturned, h6144] using
-      BigHelpers.represents_clearMemory_disjoint_region s2.memory 6144 2048 n
+      BigHelpers.represents_clearMemory_disjoint_region s2.memory 1536 2048 n
         0 (by omega) (Or.inr (by omega)) hz2048s2
   have hz1024 := loadMemory_preserves_region s3.executionEnv.calldata
     s3.memory modOff 0 m m 1024 n 0 (by omega) hm (by omega) (by omega)
