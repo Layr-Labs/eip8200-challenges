@@ -81,7 +81,7 @@ def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
     rw [Word.word_toNat_ofNat]
     apply Nat.mod_eq_of_lt
     unfold tableOffset
-    have hlt := Nat.mod_lt ((203142 / n)) (by decide : 0 < 14)
+    have hlt := Nat.mod_lt ((2377101 / n)) (by decide : 0 < 16)
     omega
   have gc : GasSteps (copyReadyState n input sv ov) (storedState n input sv ov) := by
     simpa [copyReadyState, storedState, stS, initialState, hoff,

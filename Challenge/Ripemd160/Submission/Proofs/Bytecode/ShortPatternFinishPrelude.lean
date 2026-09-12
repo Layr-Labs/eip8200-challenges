@@ -158,12 +158,12 @@ theorem answerMemory_read (n : Nat) :
 @[simp] theorem returnedState_hReturn (n : Nat) (input : ByteArray) (sv ov : UInt256) :
     (returnedState n input sv ov).hReturn = paddedDigest n := answerMemory_read n
 
-def tableOffset (n : Nat) : Nat := 4864 + 21 * ((203142 / n) % 14)
+def tableOffset (n : Nat) : Nat := 4864 + 21 * ((2377101 / n) % 16)
 def copyReadyState (n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
   stS input 4859 ([12, UInt256.ofNat (tableOffset n), 20] ++ returnRest sv ov)
 
 def quotientState (n : Nat) (input : ByteArray) (sv ov : UInt256) : State :=
-  stS input 4849 ([UInt256.div (UInt256.ofNat 203142) (UInt256.ofNat n), 14, 20] ++ returnRest sv ov)
+  stS input 4849 ([UInt256.div (UInt256.ofNat 2377101) (UInt256.ofNat n), 15, 20] ++ returnRest sv ov)
 
 def tableMemory (n : Nat) : ByteArray :=
   MachineState.writeBytes ByteArray.empty (MachineState.readPadded submissionBytecode (tableOffset n) 20) 12
@@ -227,7 +227,7 @@ private theorem codePrefix_size : codePrefix.size = 4731 := by
 private theorem code_split : submissionBytecode = codePrefix ++ submissionByteChunk20 := rfl
 private theorem tableRead (n : Nat) :
     MachineState.readPadded submissionBytecode (tableOffset n) 20 =
-      MachineState.readPadded submissionByteChunk20 (133 + 21 * ((203142 / n) % 14)) 20 := by
+      MachineState.readPadded submissionByteChunk20 (133 + 21 * ((2377101 / n) % 16)) 20 := by
   rw [code_split, readPadded_append_right _ _ _ _ (by rw [codePrefix_size]; unfold tableOffset; omega), codePrefix_size]
   congr 1
   unfold tableOffset
@@ -235,7 +235,7 @@ private theorem tableRead (n : Nat) :
 
 private theorem tablePayload (n : Nat)
     (hn : n = 56 ∨ n = 120 ∨ n = 64 ∨ n = 65 ∨ n = 128 ∨ n = 63 ∨ n = 119 ∨ n = 55 ∨ n = 256 ∨ n = 376 ∨ n = 1000 ∨ n = 1 ∨ n = 31 ∨ n = 32) :
-    MachineState.readPadded submissionByteChunk20 (133 + 21 * ((203142 / n) % 14)) 20 =
+    MachineState.readPadded submissionByteChunk20 (133 + 21 * ((2377101 / n) % 16)) 20 =
       (paddedDigest n).extract 12 32 := by
   rcases hn with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> decide
 
@@ -258,13 +258,13 @@ def selectorPath : List Located := []
 def digestStorePrePath : List Located :=
   [ opAt 4059 .JUMPDEST,
     pushAt 4060 1 20,
-    pushAt 4061 1 14,
+    pushAt 4061 1 15,
     opAt 4062 .CALLDATASIZE,
-    pushAt 4063 3 203142,
+    pushAt 4063 3 2377101,
     opAt 4064 .DIV ]
 
 def digestStorePostPath : List Located :=
-  [ opAt 4065 .MOD,
+  [ opAt 4065 .AND,
     pushAt 4066 1 21,
     opAt 4067 .MUL,
     pushAt 4068 2 4864,
