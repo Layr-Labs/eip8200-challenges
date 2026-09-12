@@ -188,7 +188,7 @@ def bitLengthWord (input : ByteArray) : UInt256 :=
   UInt256.shiftLeft (UInt256.ofNat input.size) (UInt256.ofNat 3)
 
 def lengthOffsetWord (input : ByteArray) : UInt256 :=
-  Padding.paddedWord input + UInt256.ofNat 0x478
+  Padding.paddedWord input + UInt256.ofNat 0x458
 
 def padCopied (input : ByteArray) : State :=
   { padLengthReady input with
@@ -655,7 +655,7 @@ theorem lengthOffsetWord_eq (input : ByteArray) (hfit : CalldataFits input) :
     (lengthOffsetWord input).toNat =
       Padding.messageOffset + Padding.paddedLength input.size - 8 := by
   have hlt := Padding.paddedLength_lt input.size
-  have hsum : Padding.paddedLength input.size + 0x478 < 2 ^ 256 := by
+  have hsum : Padding.paddedLength input.size + 0x458 < 2 ^ 256 := by
     unfold CalldataFits at hfit
     norm_num at hfit ⊢
     omega
@@ -1220,8 +1220,8 @@ set_option maxHeartbeats 400000 in
 private theorem run_lengthFooterSetup (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock lengthFooterSetupPath
       (padSentinel input) = some (lengthLoopState input 0) := by
-  have haddressOrder : UInt256.ofNat 1144 + Padding.paddedWord input =
-      Padding.paddedWord input + UInt256.ofNat 1144 := Challenge.EvmProof.Word.word_add_comm _ _
+  have haddressOrder : UInt256.ofNat 1112 + Padding.paddedWord input =
+      Padding.paddedWord input + UInt256.ofNat 1112 := Challenge.EvmProof.Word.word_add_comm _ _
   simp [lengthFooterSetupPath, lengthSetupPath, Artifact.padSetupPath,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,

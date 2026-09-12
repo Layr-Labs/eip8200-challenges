@@ -8,14 +8,14 @@ open Challenge.Ripemd160 EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PersistentStaggerTable PersistentStaggerFunctional StaggerPersistentFrame
 
 def gasSteps (s : State) (input : ByteArray) (i : Nat) (h : Compression.HashState)
-    (limit : UInt256) (rho : List UInt256) (hs : rho.length ≤ 880)
+    (limit : UInt256) (rho : List UInt256) (hs : rho.length ≤ 890)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input) (ctx : Context s input)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hr : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 600, stack := frame h (DriverTrace.blockOffsetWord i) limit rho}
-      {scheduledState s i with pc := UInt256.ofNat 4732, stack := frame (result (scheduledState s i).memory h) (DriverTrace.blockOffsetWord i) limit rho} := by
+    GasSteps {s with pc := UInt256.ofNat 520, stack := frame h (DriverTrace.blockOffsetWord i) limit rho}
+      {scheduledState s i with pc := UInt256.ofNat 4743, stack := frame (result (scheduledState s i).memory h) (DriverTrace.blockOffsetWord i) limit rho} := by
   let q := scheduledState s i
   let off := DriverTrace.blockOffsetWord i
   have gp := PersistentStaggerPrepare.gasSteps_prepare s input i h limit rho hs hfit hi ctx hcode hfork hr hnp

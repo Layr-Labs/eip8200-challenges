@@ -38,7 +38,7 @@ def readLEWord (memory : ByteArray) (off : UInt256) : UInt256 :=
 
 def scheduleEntry (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 690
+  { s with pc := UInt256.ofNat 610
            stack := [msgOff, returnDest] ++ rest }
 
 def loopAt (s : State) (msgOff returnDest : UInt256)
@@ -53,13 +53,13 @@ def afterCondition (s : State) (msgOff returnDest : UInt256)
 
 def readEntry (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (i : Nat) : State :=
-  { s with pc := UInt256.ofNat 528
+  { s with pc := UInt256.ofNat 448
            stack := [loadOffsetWord msgOff i, 0, UInt256.ofNat 0x253,
              UInt256.ofNat 0x259, UInt256.ofNat i, msgOff, returnDest] ++ rest }
 
 def afterRead (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (i : Nat) : State :=
-  { s with pc := UInt256.ofNat 714
+  { s with pc := UInt256.ofNat 634
            stack := [readLEWord s.memory (loadOffsetWord msgOff i),
              UInt256.ofNat 0x259, UInt256.ofNat i, msgOff, returnDest] ++ rest
            activeWords := s.activeWordsAfterUInt256
@@ -70,7 +70,7 @@ def beforeFirstByte (s : State) (msgOff returnDest : UInt256)
   let off := loadOffsetWord msgOff i
   let w := MachineState.readWord s.memory off.toNat
   { s with
-    pc := UInt256.ofNat 534
+    pc := UInt256.ofNat 454
     stack := [UInt256.ofNat 3, w, w, off, 0, UInt256.ofNat 0x253,
       UInt256.ofNat 0x259, UInt256.ofNat i, msgOff, returnDest] ++ rest
     activeWords := s.activeWordsAfterUInt256 off.toNat 32 }
@@ -90,7 +90,7 @@ def afterStore (s : State) (msgOff returnDest : UInt256)
   let value := UInt256.land (readLEWord s.memory (loadOffsetWord msgOff i))
     (UInt256.ofNat 0xffffffff)
   { loaded with
-    pc := UInt256.ofNat 679
+    pc := UInt256.ofNat 599
     stack := [UInt256.ofNat i, msgOff, returnDest] ++ rest
     memory := MachineState.writeBytes loaded.memory
       (Data.Bytes.natToBytesPadded value.toNat 32) (xSlotWord i).toNat

@@ -19,7 +19,7 @@ structure Context (s : State) (input : ByteArray) : Prop where
     ScheduleCorrect.MessageBlockAt s.memory (DriverTrace.messageOffsetWord i)
       (Padding.paddedMessage input) (DriverTrace.blockOffset i)
   separated : ∀ i, i < DriverTrace.blockCount input → ∀ k, k < 16 →
-    1152 ≤ (Schedule.loadOffsetWord (DriverTrace.messageOffsetWord i) k).toNat
+    1120 ≤ (Schedule.loadOffsetWord (DriverTrace.messageOffsetWord i) k).toNat
 
 def messagePointer (i : Nat) : Nat := Padding.messageOffset + DriverTrace.blockOffset i
 
@@ -32,7 +32,7 @@ theorem blockWords_eq_readLE32 (input : ByteArray) (i k : Nat) (hk : k < 16) :
       (DriverTrace.blockOffset i + k * 4) := by
   interval_cases k <;> simp [blockWords, CompressionCorrect.schedule, List.range']
 
-theorem messagePointer_lower (i : Nat) : 1152 ≤ messagePointer i := by
+theorem messagePointer_lower (i : Nat) : 1120 ≤ messagePointer i := by
   simp only [messagePointer, Padding.messageOffset]
   omega
 
@@ -56,8 +56,8 @@ def scheduledState (s : State) (i : Nat) : State :=
 
 theorem scheduled_active (s : State) (input : ByteArray) (i : Nat)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input) :
-    38 ≤ (scheduledState s i).activeWords.toNat :=
-  Stagger144Active.loaded_active_ge38 s (messagePointer i)
+    37 ≤ (scheduledState s i).activeWords.toNat :=
+  Stagger144Active.loaded_active_ge37 s (messagePointer i)
     (messagePointer_lower i) (messagePointer_bound input hfit i hi)
 
 theorem extracted_words (s : State) (input : ByteArray) (i : Nat)
@@ -76,7 +76,7 @@ theorem ready (s : State) (input : ByteArray) (i : Nat)
   StaggerMessage.ready s.memory (selectedWords s i) (blockWords input i)
     (extracted_words s input i hfit hi ctx)
 
-theorem scheduled_word_above (s : State) (i address : Nat) (ha : 1152 ≤ address) :
+theorem scheduled_word_above (s : State) (i address : Nat) (ha : 1120 ≤ address) :
     MachineState.readWord (scheduledState s i).memory address = MachineState.readWord s.memory address :=
   StaggerTableLayout.read_resultMemory_outside _ _ _ (by omega)
 

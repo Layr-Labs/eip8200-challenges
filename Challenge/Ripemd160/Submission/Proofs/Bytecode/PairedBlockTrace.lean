@@ -13,13 +13,13 @@ def driverRest (input : ByteArray) (i : Nat) : List UInt256 :=
   [DriverTrace.blockOffsetWord i, Padding.paddedWord input]
 
 theorem valid_return (s : State) (hcode : s.executionEnv.code = submissionBytecode) :
-    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 563).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 302 = 563 := by
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 483).toNat = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 294 = 483 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 302 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 294 (by rfl)
   rw [hpc] at h
-  change Decode.isValidJumpDest s.executionEnv.code 563 = true
+  change Decode.isValidJumpDest s.executionEnv.code 483 = true
   rw [hcode]
   exact h
 
@@ -34,7 +34,7 @@ noncomputable def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     GasSteps (DriverTrace.compressEntry s input i)
       (DriverTrace.compressReturned (resultState s input i) input i) := by
   let q := scheduledState s i
-  let ret := UInt256.ofNat 563
+  let ret := UInt256.ofNat 483
   let rho := driverRest input i
   have hactive : 34 ≤ q.activeWords.toNat := scheduled_active s input i hfit hi
   have gp := StaggerPrepare.gasSteps_prepare s input i h hfit hi ctx hcode hfork hrun hnp
