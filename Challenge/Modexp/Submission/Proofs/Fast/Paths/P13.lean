@@ -10,7 +10,7 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 1813..1853, pc 2415..2596. -/
+/-- Instructions 1813..1853, pc 2414..2611. -/
 def blk1683 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1550 .JUMPDEST,
@@ -55,7 +55,7 @@ def blk1683 :
    pushAt 1589 2 2115,
    opAt 1590 .JUMPI]
 
-/-- Live instructions 1854..1869, pc 2848..2983; trailing padding is not executed. -/
+/-- Live instructions 1854..1869, pc 2848..2998; trailing padding is not executed. -/
 def blk1724 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1591 .POP,

@@ -1057,7 +1057,7 @@ def setupPathD :
    opAt 1065 .MSTORE,
    opAt 1066 .POP,
    opAt 1067 .POP,
-   pushAt 1068 2 3419,
+   pushAt 1068 2 3433,
    opAt 1069 .JUMP]
 
 /-- After the variable stores and the modulus load (pc 1579). -/
@@ -1076,10 +1076,10 @@ def newtonState (s : State) (input : ByteArray) (m0 x p : Nat) : State :=
            memory := modulusMem s.memory input
            activeWords := loadWords s.activeWords input }
 
-/-- State at the `R1B` guard entry `JUMPDEST` (pc 2662).  The guard dispatches
+/-- State at the `R1B` guard entry `JUMPDEST` (pc 2677).  The guard dispatches
 to `DOUBLE256` itself when the modulus's top bit is clear. -/
 def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
-  { s with pc := UInt256.ofNat 3419
+  { s with pc := UInt256.ofNat 3433
            stack := outerStack input
            memory := setupMem s.memory input m0
            activeWords := setupWords s.activeWords input }
@@ -1161,11 +1161,11 @@ theorem run_setupC (s : State) (input : ByteArray) (m0 : Nat)
      Challenge.EvmProof.Word.ofNat_add_mod,
      Challenge.EvmProof.Word.word_toNat_ofNat]
 
-/-- The dispatcher entry `JUMPDEST` (instruction 2648, pc 3296).  The setup path jumps
+/-- The dispatcher entry `JUMPDEST` (instruction 2663, pc 3296).  The setup path jumps
 here directly instead of calling the Montgomery-form conversion first. -/
 private theorem jumpDest3296 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3419 = true :=
-  Artifact.isValidJumpDest_index 2594 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3433 = true :=
+  Artifact.isValidJumpDest_index 2583 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupD (s : State) (input : ByteArray) (m0 : Nat)
@@ -1552,7 +1552,7 @@ theorem fastSetupState_memory (input : ByteArray) :
 /-- The setup block hands over at the dispatcher entry with a plain outer stack,
 rather than at the Montgomery-form conversion call with its two argument words. -/
 theorem fastSetupState_pc (input : ByteArray) :
-    (fastSetupState input).pc = UInt256.ofNat 3419 := rfl
+    (fastSetupState input).pc = UInt256.ofNat 3433 := rfl
 
 theorem fastSetupState_stack (input : ByteArray) :
     (fastSetupState input).stack = outerStack input := rfl

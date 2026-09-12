@@ -50,7 +50,7 @@ theorem run_squareCall (s : State) (memory : ByteArray)
     Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.squareCall
       (FixedDirectStates.square s memory n bsize esize msize count) =
       some (Exp.sqCall s (Exp.storeWord memory 5184 (UInt256.ofNat count))
-        (UInt256.ofNat 3339)
+        (UInt256.ofNat 3353)
         (UInt256.ofNat count :: Exp.outer n bsize esize msize)) := by
   have haddr : (UInt256.ofNat 5184).toNat = 5184 := by decide
   have hfix : UInt256.ofNat
@@ -181,7 +181,7 @@ def gasSteps_squareCall (s : State) (memory : ByteArray)
     Challenge.EvmProof.GasSteps
       (FixedDirectStates.square s memory n bsize esize msize count)
       (Exp.sqCall s (Exp.storeWord memory 5184 (UInt256.ofNat count))
-        (UInt256.ofNat 3339)
+        (UInt256.ofNat 3353)
         (UInt256.ofNat count :: Exp.outer n bsize esize msize)) :=
   sound FixedDirectPaths.squareCall
     (run_squareCall s memory n bsize esize msize count hactive hcode hrun)

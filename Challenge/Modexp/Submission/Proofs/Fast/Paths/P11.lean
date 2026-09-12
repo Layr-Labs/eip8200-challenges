@@ -10,7 +10,7 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 1569..1724, pc 2309..2582. -/
+/-- Instructions 1569..1724, pc 2309..2597. -/
 def blk1569 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1449 .POP,
@@ -40,16 +40,16 @@ def blk1569 :
    pushAt 1473 2 1791,
    opAt 1474 .JUMPI]
 
-/-- Instructions 1677..1729, pc 2583..2350. -/
+/-- Instructions 1677..1729, pc 2598..2349. -/
 def blk1595 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1475 .POP,
    opAt 1476 .POP,
    opAt 1477 .POP,
-   pushAt 1478 2 4874,
+   pushAt 1478 2 4885,
    opAt 1479 .JUMP]
 
-/-- Instructions 1600..1756, pc 2351..2383. -/
+/-- Instructions 1600..1756, pc 2350..2382. -/
 def blk1600 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1480 .JUMPDEST,

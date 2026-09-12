@@ -16,7 +16,7 @@ The four basic blocks are
 
 * `blk1360` (idx 1408..1361, pc 2041..2042) — `JUMPDEST; PUSH2 256`;
 * `blk1362` (idx 1362..1368, pc 1971..2055) — the loop head `DBL`, which
-  pushes the call frame `[px, px, px, 1934]` and jumps to `ADDMOD` (pc 2351);
+  pushes the call frame `[px, px, px, 1934]` and jumps to `ADDMOD` (pc 2350);
 * `blk1369` (idx 1451..1505, pc 1934..2065) — the return point, which
   decrements the counter and jumps back to pc 1971 while it is nonzero;
 * `blk1376` (idx 1376..1508, pc 1984..2068) — `POP; POP; JUMP ret`.
@@ -65,7 +65,7 @@ def loopState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
            stack := loopStack px k ret rest
            memory := mem }
 
-/-- The `ADDMOD` call, pc 2351, with the frame `[px, px, px, 1934]` pushed. -/
+/-- The `ADDMOD` call, pc 2350, with the frame `[px, px, px, 1934]` pushed. -/
 def callState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 2028
@@ -116,7 +116,7 @@ theorem run_entry (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
 
 set_option linter.unusedSimpArgs false in
 /-- `blk1362` (pc 1971..2055): the loop head pushes the `ADDMOD` frame
-`[px, px, px, 1934]` and jumps to pc 2351. -/
+`[px, px, px, 1934]` and jumps to pc 2350. -/
 theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -433,8 +433,8 @@ theorem iterMem_preserves (f : ByteArray → ByteArray) (mem : ByteArray)
 
 /-! ## Wiring in the concrete `ADDMOD` subroutine
 
-`Fast.Csub` proves `ADDMOD` from its entry at pc 2351 down to the `CSUB` entry
-at pc 2436, and `CSUB` from there to the return jump.  Composing the two gives
+`Fast.Csub` proves `ADDMOD` from its entry at pc 2350 down to the `CSUB` entry
+at pc 2435, and `CSUB` from there to the return jump.  Composing the two gives
 the indexed contract the loop above consumes, with memory transformer
 `dblStep px n`. -/
 

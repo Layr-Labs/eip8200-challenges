@@ -15,12 +15,12 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 1872..1878, pc 2624..2634: `CCB` entry, `ADDMOD(px, px) → px`. -/
+/-- Instructions 1872..1878, pc 2624..2649: `CCB` entry, `ADDMOD(px, px) → px`. -/
 def blk1742 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   []
 
-/-- Instructions 1881..1887, pc 2560..2648: `MONPRO(px, px) → px`. -/
+/-- Instructions 1881..1887, pc 2560..2663: `MONPRO(px, px) → px`. -/
 def blk1751 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1608 .JUMPDEST,
@@ -28,10 +28,10 @@ def blk1751 :
    opAt 1610 (.Dup ⟨2, by decide⟩),
    opAt 1611 (.Dup ⟨0, by decide⟩),
    opAt 1612 (.Dup ⟨0, by decide⟩),
-   pushAt 1613 2 4137,
+   pushAt 1613 2 4151,
    opAt 1614 .JUMP]
 
-/-- Instructions 1888..1894, pc 2649..2658: decrement and loop back. -/
+/-- Instructions 1888..1894, pc 2664..2673: decrement and loop back. -/
 def blk1758 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1615 .JUMPDEST,
@@ -42,7 +42,7 @@ def blk1758 :
    pushAt 1620 2 2188,
    opAt 1621 .JUMPI]
 
-/-- Instructions 1895..1897, pc 2659..3023: drop the counter and return. -/
+/-- Instructions 1895..1897, pc 2674..3038: drop the counter and return. -/
 def blk1765 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1622 .POP,

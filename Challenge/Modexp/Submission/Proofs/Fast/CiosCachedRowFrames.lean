@@ -12,11 +12,11 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open WindowNibbleKernel
 
-/-- Kernel `setup` entry (pc 4173, 0x0f6c), reached from `common` with the row head
+/-- Kernel `setup` entry (pc 4187, 0x0f6c), reached from `common` with the row head
 `hd` above the call frame. -/
 def setupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4165
+  { s with pc := UInt256.ofNat 4179
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
@@ -28,11 +28,11 @@ def outState (s : State) (mem : ByteArray) (pb n i : Nat)
                      hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
            memory := mem }
 
-/-- After the first loop, at the middle block's `JUMPDEST` (pc 4550): the carry and
+/-- After the first loop, at the middle block's `JUMPDEST` (pc 4563): the carry and
 `b_i` above the row frame. -/
 def midState (s : State) (mem : ByteArray) (c bi : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4542
+  { s with pc := UInt256.ofNat 4555
            stack := [c, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
            memory := mem }
@@ -42,7 +42,7 @@ def midState (s : State) (mem : ByteArray) (c bi : UInt256)
 statement about the row keeps its shape. -/
 def tailState (s : State) (mem : ByteArray) (c _mu bi : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4824
+  { s with pc := UInt256.ofNat 4837
            stack := [c, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
            memory := mem }

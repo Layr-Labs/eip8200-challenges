@@ -17,7 +17,7 @@ of two ways, and `Chain` is what both of them hand to the final product:
   itself (`Exp.Subroutines.squareLoop`), returning once to `after_sq` (pc 3360)
   with the pushed count still on the stack;
 * other widths: the kernel returns after every square
-  (`Exp.Subroutines.square`) and the caller's own loop at pc 3330 counts down,
+  (`Exp.Subroutines.square`) and the caller's own loop at pc 3344 counts down,
   falling through to pc 3360 with the count at `0`.
 
 The final mixed-domain multiplication is composed in `FixedDirectHitCorrect`.
@@ -33,8 +33,8 @@ open Challenge.Modexp.Submission.Proofs.Fast.FixedDirectStates
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
 theorem jumpD3970 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 3339).toNat = true :=
-  Exp.jumpD 3339 (by decide) FixedDirectPaths.jumpDest3970
+    (UInt256.ofNat 3353).toNat = true :=
+  Exp.jumpD 3353 (by decide) FixedDirectPaths.jumpDest3970
 
 theorem jumpD3997 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 1701).toNat = true :=
@@ -70,7 +70,7 @@ def gasSteps_squareLoop (s : State) {n bsize mm minv : Nat}
   | succ k ih =>
       have hframe0 := countStore_frame (k + 1) hframe
       have hinv0 := countStore_inv (k + 1) hn32 hinv
-      have hcall := sub.square (UInt256.ofNat 3339)
+      have hcall := sub.square (UInt256.ofNat 3353)
         (UInt256.ofNat (k + 1) :: Exp.outer n bsize esize msize)
         (Exp.storeWord memory 5184 (UInt256.ofNat (k + 1))) bM
         hslow (by simp [Exp.outer])
@@ -134,7 +134,7 @@ def gasSteps_squareLoopFast (s : State) {n bsize mm minv : Nat}
   have hinv0 := countStore_inv count hn32 hinv
   (FixedDirectChainTrace.gasSteps_squareCall s memory
       n bsize esize msize count hactive hcode hfork hrun hnp).trans
-    (sub.squareLoop count (UInt256.ofNat 3339)
+    (sub.squareLoop count (UInt256.ofNat 3353)
       (UInt256.ofNat count :: Exp.outer n bsize esize msize)
       (Exp.storeWord memory 5184 (UInt256.ofNat count)) bM
       hfast hcount hcount16 (by simp [Exp.outer])

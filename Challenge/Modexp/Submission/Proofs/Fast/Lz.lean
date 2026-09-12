@@ -8,8 +8,8 @@ set_option maxHeartbeats 4000000
 /-!
 # The `LZ` head of the exponent-byte loop
 
-`LZ` occupies instruction indices 1911..1945 (pc 2683..3093).  It is entered
-at pc 2683 with the byte index `i` on top of the driver frame, loads exponent
+`LZ` occupies instruction indices 1911..1945 (pc 2698..3107).  It is entered
+at pc 2698 with the byte index `i` on top of the driver frame, loads exponent
 byte `i` exactly as the code it replaces did, and then chooses the mask the
 inner bit loop starts from:
 
@@ -82,20 +82,20 @@ theorem topExp_le (w : Nat) (hw : w < 256) (hne : w ≠ 0) : 2 ^ topExp w ≤ w 
 
 /-! ## States at the block boundaries -/
 
-/-- The `LZ` entry, pc 2683.  The driver frame below the byte index is left
+/-- The `LZ` entry, pc 2698.  The driver frame below the byte index is left
 abstract so that this module does not depend on `Fast.Exp`. -/
 def lzEntry (s : State) (mem : ByteArray) (i : Nat) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 2232
            stack := UInt256.ofNat i :: rest
            memory := mem }
 
-/-- pc 2699, the arm every byte after the first takes. -/
+/-- pc 2714, the arm every byte after the first takes. -/
 def lzOther (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 2248
            stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
-/-- pc 2705, the arm byte `0` takes. -/
+/-- pc 2720, the arm byte `0` takes. -/
 def lzFirst (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 2254
            stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
@@ -111,7 +111,7 @@ def lzJoin (s : State) (mem : ByteArray) (i w mask : Nat)
 /-- The state handed to the relocated leading-bit shortcut at pc3865. -/
 def lzBase (s : State) (mem : ByteArray) (i w mask : Nat)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3234
+  { s with pc := UInt256.ofNat 3248
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
