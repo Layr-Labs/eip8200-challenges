@@ -40,15 +40,15 @@ theorem run_template (s : State) (pc off limit : UInt256) (h : Compression.HashS
       (ofUInt32 h.h3) (ofUInt32 h.h4) (off :: limit :: rho) hs hrun
 
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 3843).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3833).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3843 actual_slice
-    (by change 3843 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3833 actual_slice
+    (by change 3833 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 4619 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3843) = UInt256.ofNat 4619
+theorem site_pc : site.startPC = UInt256.ofNat 4609 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3833) = UInt256.ofNat 4609
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction :=
   Table80SiteCommon.coreAdvancesAll_sound template (by decide)
@@ -58,14 +58,14 @@ def gasSteps (s : State) (off limit : UInt256) (h : Compression.HashState)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4619, stack := StaggerPersistentFrame.frame h off limit rho}
-      {s with pc := UInt256.ofNat 4635, stack := packedHash h :: off :: limit :: rho} := by
+    GasSteps {s with pc := UInt256.ofNat 4609, stack := StaggerPersistentFrame.frame h off limit rho}
+      {s with pc := UInt256.ofNat 4625, stack := packedHash h :: off :: limit :: rho} := by
   apply DenseScheduleLift.gasSteps_of_raw site
-    {s with pc := UInt256.ofNat 4619, stack := StaggerPersistentFrame.frame h off limit rho}
-    {s with pc := UInt256.ofNat 4635, stack := packedHash h :: off :: limit :: rho}
+    {s with pc := UInt256.ofNat 4609, stack := StaggerPersistentFrame.frame h off limit rho}
+    {s with pc := UInt256.ofNat 4625, stack := packedHash h :: off :: limit :: rho}
     hcode hfork hrun hnp site_pc.symm advances
-  have hraw := run_template s (UInt256.ofNat 4619) off limit h rho hstack hrun
-  have hend : pcAfter (UInt256.ofNat 4619) template = UInt256.ofNat 4635 := by decide
+  have hraw := run_template s (UInt256.ofNat 4609) off limit h rho hstack hrun
+  have hend : pcAfter (UInt256.ofNat 4609) template = UInt256.ofNat 4625 := by decide
   rw [hend] at hraw
   exact hraw
 

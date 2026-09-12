@@ -45,10 +45,8 @@ theorem mask_packWord (a b : BitVec 32) :
   apply bits_injective
   rw [StaggerScalarWord.bits_mask, bits_word, bits_word, StaggerScalar.mask_eq, low_pack]
 
-theorem left_packCrypto (a b : CryptoLane) : StaggerCoreModel.left (packCrypto a b) = embed a := by
-  cases a; cases b
-  simp only [StaggerCoreModel.left, embed, packCrypto, liftLane,
-    Paired80RoundSemantic.packLane, Paired80CryptoBridge.bits, PairedLaneCryptoBridge.bits, mask_packWord, show (0:UInt32).toBitVec = 0#32 from rfl]
+theorem left_packCrypto (a b : CryptoLane) :
+    StaggerCoreModel.left (packCrypto a b) = packCrypto a b := by rfl
 
 theorem clean_c (q : WordLane) (hq : Clean q) : StaggerScalarWord.mask q.c = q.c := by
   apply bits_injective

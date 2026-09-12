@@ -15,9 +15,7 @@ def initial (memory : ByteArray) : WordLane :=
 def pairWord (l r : UInt256) : UInt256 := UInt256.lor (UInt256.shiftLeft r (UInt256.ofNat 80)) l
 def pair (l r : WordLane) : WordLane :=
   ⟨pairWord l.a r.a, pairWord l.b r.b, pairWord l.c r.c, pairWord l.d r.d, pairWord l.e r.e⟩
-def left (q : WordLane) : WordLane :=
-  ⟨StaggerScalarWord.mask q.a, StaggerScalarWord.mask q.b, StaggerScalarWord.mask q.c,
-    StaggerScalarWord.mask q.d, StaggerScalarWord.mask q.e⟩
+def left (q : WordLane) : WordLane := q
 
 def message (memory : ByteArray) (i : Nat) : UInt256 :=
   MachineState.readWord memory (10 * StaggerTableLayout.pairIndices[i]!)
