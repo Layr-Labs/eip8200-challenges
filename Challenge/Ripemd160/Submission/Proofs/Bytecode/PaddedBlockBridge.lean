@@ -1,7 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HashSpecBridge
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ScheduleCorrect
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PaddingTrace
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.InitializationCorrect
 import YulEvmCompiler.BytesLemmas
 
 set_option warningAsError true
@@ -586,42 +585,10 @@ private theorem padBase_memory (input : ByteArray) :
       (Main.initializedState input).memory := by
   rfl
 
-private theorem applyInitStore_size_le (s : State) (w : Artifact.InitStore)
-    (hs : s.memory.size ≤ messageOffset) (hw : w ∈ Artifact.initStores) :
-    (Main.applyInitStore s w).memory.size ≤ messageOffset := by
-  have hoff : w.offset.toNat + 32 ≤ messageOffset := by
-    simp only [Artifact.initStores, List.mem_cons, List.not_mem_nil,
-      or_false] at hw
-    rcases hw with rfl | rfl | rfl | rfl | rfl <;> decide
-  simp only [Main.applyInitStore]
-  rw [MachineState.writeBytes_size, if_neg]
-  · rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
-    exact max_le hs hoff
-  · rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
-    omega
-
 private theorem padBase_size (input : ByteArray) :
     (PaddingTrace.padLengthReady input).memory.size ≤ messageOffset := by
-  rw [padBase_memory]
-  unfold Main.initializedState
-  have hfold : ∀ (ws : List Artifact.InitStore) (s : State),
-      (∀ w, w ∈ ws → w ∈ Artifact.initStores) →
-      s.memory.size ≤ messageOffset →
-      (ws.foldl Main.applyInitStore s).memory.size ≤ messageOffset := by
-    intro ws
-    induction ws with
-    | nil => simp
-    | cons w ws ih =>
-        intro s hmem hs
-        simp only [List.foldl_cons]
-        apply ih (Main.applyInitStore s w)
-        · intro x hx
-          exact hmem x (List.mem_cons_of_mem w hx)
-        · exact applyInitStore_size_le s w hs (hmem w (by simp))
-  apply hfold Artifact.initStores (Execution.mainStart input)
-  · intro w hw
-    exact hw
-  · simp [Execution.mainStart, Execution.atPC, initialState, messageOffset]
+  change 0 ≤ messageOffset
+  exact Nat.zero_le _
 
 /-- The certified padding trace establishes the schedule's mathematical
 message-block precondition for every complete padded block. -/

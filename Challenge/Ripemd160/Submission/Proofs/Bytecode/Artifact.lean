@@ -8,8 +8,8 @@ set_option maxHeartbeats 2000000
 /-!
 # Structural certificate for the frozen RIPEMD-160 artifact
 
-The exact candidate has 5176 bytes, 3996 instructions, and SHA-256
-`0bfc57c1e2ad8270e59e0aa3822695b1d0ea51527109cdc69f43bab47ca98335`. PUSH rows carry their typed width and value.
+The exact candidate has 5094 bytes, 3960 instructions, and SHA-256
+`b7b083f76c214cc80812703bad3a4a69128a1b320c2068a5a4e97bcd7351e656`. PUSH rows carry their typed width and value.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
@@ -28,7 +28,7 @@ private def submissionInstructionsChunk0 : List Instr :=
   op 0x36,
   .push 1 255,
   op 0x11,
-  .push 2 4762,
+  .push 2 4680,
   op 0x57,
   op 0x36,
   .push 2 256,
@@ -42,7 +42,7 @@ private def submissionInstructionsChunk0 : List Instr :=
   op 0x17,
   op 0x17,
   op 0x15,
-  .push 2 4762,
+  .push 2 4680,
   op 0x57,
   .push 0 0,
   op 0x35,
@@ -191,7 +191,7 @@ private def submissionInstructionsChunk0 : List Instr :=
   op 0x57,
   op 0x82,
   op 0x15,
-  .push 2 4806,
+  .push 2 4724,
   op 0x57,
   op 0x50,
   op 0x50,
@@ -201,28 +201,13 @@ private def submissionInstructionsChunk0 : List Instr :=
   op 0x50,
   op 0x50,
   op 0x50,
-  op 0x5b,
-  .push 4 1732584193,
-  .push 2 832,
-  op 0x52,
-  .push 4 4023233417,
-  op 0x59,
-  op 0x52,
-  .push 4 2562383102,
-  op 0x59,
-  op 0x52,
-  .push 4 271733878,
-  op 0x59,
-  op 0x52,
-  .push 4 3285377520
+  op 0x5b
 ]
 
-@[simp] private theorem submissionInstructionsChunk0_length : submissionInstructionsChunk0.length = 190 := by rfl
+@[simp] private theorem submissionInstructionsChunk0_length : submissionInstructionsChunk0.length = 177 := by rfl
 
 private def submissionInstructionsChunk1 : List Instr :=
 [
-  op 0x59,
-  op 0x52,
   op 0x36,
   .push 1 72,
   op 0x01,
@@ -262,10 +247,15 @@ private def submissionInstructionsChunk1 : List Instr :=
   op 0x1c,
   op 0x90,
   op 0x81,
-  .push 2 350,
+  .push 2 313,
   op 0x57,
   op 0x50,
-  .push 2 483,
+  .push 4 3285377520,
+  .push 4 271733878,
+  .push 4 2562383102,
+  .push 4 4023233417,
+  .push 4 1732584193,
+  .push 2 484,
   op 0x56,
   op 0x5b,
   .push 22 25448770637332498804579667936807160623886401639,
@@ -325,16 +315,26 @@ private def submissionInstructionsChunk1 : List Instr :=
   op 0x52,
   .push 1 80,
   op 0x52,
-  .push 2 926,
+  .push 2 927,
   op 0x56,
   op 0x5b,
-  op 0x80,
+  op 0x94,
+  .push 1 64,
+  op 0x01,
+  op 0x94,
+  op 0x86,
+  op 0x86,
+  op 0x14,
+  .push 2 4624,
+  op 0x57,
+  op 0x5b,
+  op 0x85,
   .push 2 1024,
   op 0x01,
-  op 0x81,
+  op 0x86,
   op 0x36,
   op 0x14,
-  .push 2 404,
+  .push 2 392,
   op 0x57,
   .push 4 4294967295,
   .push 2 257,
@@ -404,7 +404,7 @@ private def submissionInstructionsChunk1 : List Instr :=
   op 0x81
 ]
 
-@[simp] private theorem submissionInstructionsChunk1_length : submissionInstructionsChunk1.length = 181 := by rfl
+@[simp] private theorem submissionInstructionsChunk1_length : submissionInstructionsChunk1.length = 194 := by rfl
 
 private def submissionInstructionsChunk2 : List Instr :=
 [
@@ -643,8 +643,7 @@ private def submissionInstructionsChunk3 : List Instr :=
   .push 0 0,
   op 0x52,
   op 0x5b,
-  .push 2 500,
-  op 0x51,
+  op 0x93,
   .push 2 350,
   op 0x51,
   .push 2 310,
@@ -655,16 +654,11 @@ private def submissionInstructionsChunk3 : List Instr :=
   op 0x51,
   .push 4 4294967295,
   .push 5 4294967297,
-  .push 2 960,
-  op 0x51,
-  .push 2 928,
-  op 0x51,
-  .push 2 896,
-  op 0x51,
-  .push 2 864,
-  op 0x51,
-  .push 2 832,
-  op 0x51,
+  op 0x86,
+  op 0x8a,
+  op 0x8a,
+  op 0x8a,
+  op 0x8e,
   .push 4 1352829926,
   op 0x90,
   op 0x82,
@@ -759,32 +753,27 @@ private def submissionInstructionsChunk3 : List Instr :=
   op 0x93,
   .push 1 80,
   op 0x1b,
-  .push 2 832,
-  op 0x51,
+  op 0x8f,
   op 0x17,
   op 0x91,
   .push 1 80,
   op 0x1b,
-  .push 2 864,
-  op 0x51,
+  op 0x8c,
   op 0x17,
   op 0x90,
   .push 1 80,
   op 0x1b,
-  .push 2 896,
-  op 0x51,
+  op 0x8d,
   op 0x17,
   op 0x93,
   .push 1 80,
   op 0x1b,
-  .push 2 928,
-  op 0x51,
+  op 0x8e,
   op 0x17,
   op 0x92,
   .push 1 80,
   op 0x1b,
-  .push 2 960,
-  op 0x51,
+  op 0x8b,
   op 0x17,
   op 0x86,
   .push 1 80,
@@ -797,7 +786,7 @@ private def submissionInstructionsChunk3 : List Instr :=
   op 0x84
 ]
 
-@[simp] private theorem submissionInstructionsChunk3_length : submissionInstructionsChunk3.length = 190 := by rfl
+@[simp] private theorem submissionInstructionsChunk3_length : submissionInstructionsChunk3.length = 179 := by rfl
 
 private def submissionInstructionsChunk4 : List Instr :=
 [
@@ -812,7 +801,8 @@ private def submissionInstructionsChunk4 : List Instr :=
   op 0x17,
   op 0x18,
   op 0x01,
-  op 0x8e,
+  .push 2 500,
+  op 0x51,
   op 0x01,
   op 0x85,
   op 0x01,
@@ -993,7 +983,7 @@ private def submissionInstructionsChunk4 : List Instr :=
   op 0x85
 ]
 
-@[simp] private theorem submissionInstructionsChunk4_length : submissionInstructionsChunk4.length = 190 := by rfl
+@[simp] private theorem submissionInstructionsChunk4_length : submissionInstructionsChunk4.length = 191 := by rfl
 
 private def submissionInstructionsChunk5 : List Instr :=
 [
@@ -2446,7 +2436,8 @@ private def submissionInstructionsChunk12 : List Instr :=
   op 0x86,
   op 0x18,
   op 0x01,
-  op 0x8e,
+  .push 2 500,
+  op 0x51,
   op 0x01,
   op 0x83,
   op 0x01,
@@ -2564,7 +2555,7 @@ private def submissionInstructionsChunk12 : List Instr :=
   op 0x01
 ]
 
-@[simp] private theorem submissionInstructionsChunk12_length : submissionInstructionsChunk12.length = 190 := by rfl
+@[simp] private theorem submissionInstructionsChunk12_length : submissionInstructionsChunk12.length = 191 := by rfl
 
 private def submissionInstructionsChunk13 : List Instr :=
 [
@@ -2855,7 +2846,8 @@ private def submissionInstructionsChunk14 : List Instr :=
   op 0x16,
   op 0x18,
   op 0x01,
-  op 0x8e,
+  .push 2 500,
+  op 0x51,
   op 0x01,
   op 0x85,
   op 0x01,
@@ -2957,7 +2949,7 @@ private def submissionInstructionsChunk14 : List Instr :=
   op 0x81
 ]
 
-@[simp] private theorem submissionInstructionsChunk14_length : submissionInstructionsChunk14.length = 190 := by rfl
+@[simp] private theorem submissionInstructionsChunk14_length : submissionInstructionsChunk14.length = 191 := by rfl
 
 private def submissionInstructionsChunk15 : List Instr :=
 [
@@ -3930,115 +3922,87 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x8b,
   op 0x02,
   .push 1 22,
-  op 0x1c,
-  op 0x93,
-  op 0x50,
-  op 0x95,
-  .push 1 80,
-  op 0x1c,
-  op 0x90
+  op 0x1c
 ]
 
-@[simp] private theorem submissionInstructionsChunk19_length : submissionInstructionsChunk19.length = 190 := by rfl
+@[simp] private theorem submissionInstructionsChunk19_length : submissionInstructionsChunk19.length = 184 := by rfl
 
 private def submissionInstructionsChunk20 : List Instr :=
 [
-  op 0x95,
-  op 0x01,
-  .push 2 832,
-  op 0x51,
-  op 0x01,
-  op 0x8a,
-  op 0x16,
-  op 0x96,
+  op 0x9d,
+  op 0x50,
+  op 0x99,
+  op 0x50,
+  op 0x9d,
+  op 0x50,
+  op 0x9b,
+  op 0x50,
+  op 0x50,
+  op 0x97,
+  op 0x50,
   .push 1 80,
   op 0x1c,
   op 0x90,
-  op 0x92,
+  .push 1 80,
+  op 0x1c,
+  op 0x9c,
   op 0x01,
-  .push 2 864,
-  op 0x51,
+  op 0x90,
+  .push 1 80,
+  op 0x1c,
+  op 0x91,
+  .push 1 80,
+  op 0x1c,
+  op 0x96,
+  op 0x01,
+  op 0x84,
+  op 0x16,
+  op 0x9b,
+  op 0x01,
+  op 0x90,
+  .push 1 80,
+  op 0x1c,
+  op 0x96,
+  op 0x01,
+  op 0x82,
+  op 0x16,
+  op 0x98,
+  op 0x01,
+  op 0x90,
+  op 0x99,
   op 0x01,
   op 0x89,
   op 0x16,
-  .push 2 832,
-  op 0x52,
-  op 0x91,
-  .push 1 80,
-  op 0x1c,
-  op 0x90,
-  op 0x91,
+  op 0x95,
   op 0x01,
-  .push 2 896,
-  op 0x51,
   op 0x01,
   op 0x87,
   op 0x16,
-  .push 2 864,
-  op 0x52,
-  op 0x91,
-  .push 1 80,
-  op 0x1c,
+  op 0x92,
   op 0x01,
-  .push 2 928,
-  op 0x51,
   op 0x01,
   op 0x85,
   op 0x16,
-  .push 2 896,
-  op 0x52,
-  op 0x91,
-  .push 1 80,
-  op 0x1c,
+  op 0x94,
+  op 0x50,
   op 0x90,
-  op 0x91,
-  op 0x01,
-  .push 2 960,
-  op 0x51,
-  op 0x01,
-  op 0x83,
-  op 0x16,
-  .push 2 928,
-  op 0x52,
-  .push 2 960,
-  op 0x52,
-  op 0x50,
-  op 0x50,
-  op 0x50,
-  op 0x50,
-  op 0x50,
-  op 0x50,
-  op 0x50,
-  .push 1 64,
-  op 0x01,
-  op 0x81,
-  op 0x81,
-  op 0x14,
-  op 0x15,
-  .push 2 483,
-  op 0x57,
+  op 0x93,
+  op 0x92,
+  op 0x90,
+  .push 2 471,
+  op 0x56,
   op 0x5b,
-  .push 2 832,
-  op 0x51,
   .push 1 32,
   op 0x1b,
-  .push 2 864,
-  op 0x51,
   op 0x17,
   .push 1 32,
   op 0x1b,
-  .push 2 896,
-  op 0x51,
   op 0x17,
   .push 1 32,
   op 0x1b,
-  .push 2 928,
-  op 0x51,
   op 0x17,
   .push 1 32,
   op 0x1b,
-  .push 2 960,
-  op 0x51,
   op 0x17,
   .push 2 257,
   op 0x81,
@@ -4078,7 +4042,7 @@ private def submissionInstructionsChunk20 : List Instr :=
   op 0x1a,
   .push 1 7,
   op 0x18,
-  .push 2 5125,
+  .push 2 5043,
   op 0x57,
   .push 0 0,
   .push 17 342276208914615837337402008677671501826,
@@ -4100,7 +4064,7 @@ private def submissionInstructionsChunk20 : List Instr :=
   op 0x06,
   .push 1 21,
   op 0x02,
-  .push 2 4832,
+  .push 2 4750,
   op 0x01,
   .push 1 12,
   op 0x39,
@@ -4139,11 +4103,11 @@ private def submissionInstructionsChunk20 : List Instr :=
   op 0x57,
   .push 20 890993315260586290631548281360202943075753233713,
   op 0x36,
-  .push 2 372,
+  .push 2 360,
   op 0x56
 ]
 
-@[simp] private theorem submissionInstructionsChunk20_length : submissionInstructionsChunk20.length = 198 := by rfl
+@[simp] private theorem submissionInstructionsChunk20_length : submissionInstructionsChunk20.length = 176 := by rfl
 
 def submissionInstructions : List Instr :=
 submissionInstructionsChunk0
@@ -4168,13 +4132,13 @@ submissionInstructionsChunk0
  ++ submissionInstructionsChunk19
  ++ submissionInstructionsChunk20
 
-theorem referenceInstructions_count : submissionInstructions.length = 3996 := by
+theorem referenceInstructions_count : submissionInstructions.length = 3960 := by
   simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length, submissionInstructionsChunk20_length]
 
 private theorem submissionInstructionsChunk0_assemble : assembleBytes submissionInstructionsChunk0 = [
-  0x36, 0x60, 0xff, 0x11, 0x61, 0x12, 0x9a, 0x57, 0x36, 0x61, 0x01, 0x00,
+  0x36, 0x60, 0xff, 0x11, 0x61, 0x12, 0x48, 0x57, 0x36, 0x61, 0x01, 0x00,
   0x14, 0x36, 0x61, 0x01, 0x78, 0x14, 0x36, 0x61, 0x03, 0xe8, 0x14, 0x17,
-  0x17, 0x15, 0x61, 0x12, 0x9a, 0x57, 0x5f, 0x35, 0x80, 0x60, 0xff, 0x5f,
+  0x17, 0x15, 0x61, 0x12, 0x48, 0x57, 0x5f, 0x35, 0x80, 0x60, 0xff, 0x5f,
   0x19, 0x04, 0x60, 0x61, 0x02, 0x18, 0x60, 0x6a, 0x57, 0x5f, 0x60, 0x20,
   0x5b, 0x90, 0x81, 0x35, 0x83, 0x18, 0x17, 0x90, 0x60, 0x20, 0x01, 0x61,
   0x03, 0xe0, 0x81, 0x10, 0x60, 0x30, 0x57, 0x35, 0x82, 0x18, 0x60, 0xc0,
@@ -4193,30 +4157,30 @@ private theorem submissionInstructionsChunk0_assemble : assembleBytes submission
   0x83, 0x35, 0x18, 0x64, 0x01, 0x09, 0x03, 0x07, 0xc0, 0x84, 0x36, 0x03,
   0x60, 0x02, 0x18, 0x1c, 0x60, 0xf8, 0x16, 0x1c, 0x84, 0x17, 0x93, 0x50,
   0x50, 0x60, 0xa0, 0x01, 0x60, 0xff, 0x16, 0x90, 0x60, 0x20, 0x01, 0x90,
-  0x36, 0x82, 0x10, 0x60, 0xa0, 0x57, 0x82, 0x15, 0x61, 0x12, 0xc6, 0x57,
-  0x50, 0x50, 0x50, 0x50, 0x50, 0x50, 0x50, 0x50, 0x5b, 0x63, 0x67, 0x45,
-  0x23, 0x01, 0x61, 0x03, 0x40, 0x52, 0x63, 0xef, 0xcd, 0xab, 0x89, 0x59,
-  0x52, 0x63, 0x98, 0xba, 0xdc, 0xfe, 0x59, 0x52, 0x63, 0x10, 0x32, 0x54,
-  0x76, 0x59, 0x52, 0x63, 0xc3, 0xd2, 0xe1, 0xf0
+  0x36, 0x82, 0x10, 0x60, 0xa0, 0x57, 0x82, 0x15, 0x61, 0x12, 0x74, 0x57,
+  0x50, 0x50, 0x50, 0x50, 0x50, 0x50, 0x50, 0x50, 0x5b
 ] := by decide
 
 private theorem submissionInstructionsChunk1_assemble : assembleBytes submissionInstructionsChunk1 = [
-  0x59, 0x52, 0x36, 0x60, 0x48, 0x01, 0x60, 0x3f, 0x19, 0x16, 0x36, 0x36,
-  0x5f, 0x61, 0x04, 0x00, 0x37, 0x60, 0x80, 0x36, 0x61, 0x04, 0x00, 0x01,
-  0x53, 0x60, 0xc3, 0x1b, 0x60, 0xc0, 0x1c, 0x81, 0x61, 0x03, 0xf8, 0x01,
-  0x5f, 0x81, 0x60, 0x07, 0x01, 0x53, 0x5b, 0x81, 0x81, 0x53, 0x60, 0x01,
-  0x01, 0x90, 0x60, 0x08, 0x1c, 0x90, 0x81, 0x61, 0x01, 0x5e, 0x57, 0x50,
-  0x61, 0x01, 0xe3, 0x56, 0x5b, 0x75, 0x00, 0x00, 0x04, 0x75, 0x29, 0x8f,
-  0x4c, 0x84, 0x21, 0x48, 0x97, 0x61, 0x3f, 0x58, 0x4c, 0xb6, 0x16, 0xea,
-  0xea, 0xee, 0x80, 0x67, 0x02, 0x90, 0x03, 0x5f, 0x52, 0x59, 0x5f, 0xf3,
-  0x5b, 0x50, 0x61, 0x02, 0x78, 0x36, 0x5f, 0x37, 0x60, 0x80, 0x36, 0x60,
-  0xe3, 0x1b, 0x60, 0xe0, 0x1c, 0x36, 0x60, 0xc3, 0x1b, 0x60, 0xe0, 0x1c,
-  0x80, 0x61, 0x02, 0x44, 0x52, 0x80, 0x61, 0x02, 0x26, 0x52, 0x82, 0x61,
-  0x01, 0xf4, 0x52, 0x82, 0x61, 0x01, 0xea, 0x52, 0x91, 0x61, 0x01, 0xd6,
-  0x52, 0x81, 0x61, 0x01, 0x4a, 0x52, 0x81, 0x61, 0x01, 0x40, 0x52, 0x80,
-  0x61, 0x01, 0x36, 0x52, 0x80, 0x61, 0x01, 0x2c, 0x52, 0x60, 0x5a, 0x52,
-  0x60, 0x50, 0x52, 0x61, 0x03, 0x9e, 0x56, 0x5b, 0x80, 0x61, 0x04, 0x00,
-  0x01, 0x81, 0x36, 0x14, 0x61, 0x01, 0x94, 0x57, 0x63, 0xff, 0xff, 0xff,
+  0x36, 0x60, 0x48, 0x01, 0x60, 0x3f, 0x19, 0x16, 0x36, 0x36, 0x5f, 0x61,
+  0x04, 0x00, 0x37, 0x60, 0x80, 0x36, 0x61, 0x04, 0x00, 0x01, 0x53, 0x60,
+  0xc3, 0x1b, 0x60, 0xc0, 0x1c, 0x81, 0x61, 0x03, 0xf8, 0x01, 0x5f, 0x81,
+  0x60, 0x07, 0x01, 0x53, 0x5b, 0x81, 0x81, 0x53, 0x60, 0x01, 0x01, 0x90,
+  0x60, 0x08, 0x1c, 0x90, 0x81, 0x61, 0x01, 0x39, 0x57, 0x50, 0x63, 0xc3,
+  0xd2, 0xe1, 0xf0, 0x63, 0x10, 0x32, 0x54, 0x76, 0x63, 0x98, 0xba, 0xdc,
+  0xfe, 0x63, 0xef, 0xcd, 0xab, 0x89, 0x63, 0x67, 0x45, 0x23, 0x01, 0x61,
+  0x01, 0xe4, 0x56, 0x5b, 0x75, 0x00, 0x00, 0x04, 0x75, 0x29, 0x8f, 0x4c,
+  0x84, 0x21, 0x48, 0x97, 0x61, 0x3f, 0x58, 0x4c, 0xb6, 0x16, 0xea, 0xea,
+  0xee, 0x80, 0x67, 0x02, 0x90, 0x03, 0x5f, 0x52, 0x59, 0x5f, 0xf3, 0x5b,
+  0x50, 0x61, 0x02, 0x78, 0x36, 0x5f, 0x37, 0x60, 0x80, 0x36, 0x60, 0xe3,
+  0x1b, 0x60, 0xe0, 0x1c, 0x36, 0x60, 0xc3, 0x1b, 0x60, 0xe0, 0x1c, 0x80,
+  0x61, 0x02, 0x44, 0x52, 0x80, 0x61, 0x02, 0x26, 0x52, 0x82, 0x61, 0x01,
+  0xf4, 0x52, 0x82, 0x61, 0x01, 0xea, 0x52, 0x91, 0x61, 0x01, 0xd6, 0x52,
+  0x81, 0x61, 0x01, 0x4a, 0x52, 0x81, 0x61, 0x01, 0x40, 0x52, 0x80, 0x61,
+  0x01, 0x36, 0x52, 0x80, 0x61, 0x01, 0x2c, 0x52, 0x60, 0x5a, 0x52, 0x60,
+  0x50, 0x52, 0x61, 0x03, 0x9f, 0x56, 0x5b, 0x94, 0x60, 0x40, 0x01, 0x94,
+  0x86, 0x86, 0x14, 0x61, 0x12, 0x10, 0x57, 0x5b, 0x85, 0x61, 0x04, 0x00,
+  0x01, 0x86, 0x36, 0x14, 0x61, 0x01, 0x88, 0x57, 0x63, 0xff, 0xff, 0xff,
   0xff, 0x61, 0x01, 0x01, 0x5f, 0x19, 0x04, 0x62, 0x01, 0x00, 0x01, 0x5f,
   0x19, 0x04, 0x92, 0x80, 0x51, 0x90, 0x60, 0x20, 0x01, 0x51, 0x80, 0x80,
   0x60, 0x08, 0x1c, 0x18, 0x83, 0x16, 0x61, 0x01, 0x01, 0x02, 0x18, 0x80,
@@ -4259,46 +4223,43 @@ private theorem submissionInstructionsChunk3_assemble : assembleBytes submission
   0x60, 0x6e, 0x52, 0x86, 0x60, 0x64, 0x52, 0x60, 0x5a, 0x52, 0x60, 0x50,
   0x52, 0x80, 0x60, 0x46, 0x52, 0x60, 0x3c, 0x52, 0x60, 0x32, 0x52, 0x80,
   0x60, 0x28, 0x52, 0x60, 0x1e, 0x52, 0x60, 0x14, 0x52, 0x80, 0x60, 0x0a,
-  0x52, 0x5f, 0x52, 0x5b, 0x61, 0x01, 0xf4, 0x51, 0x61, 0x01, 0x5e, 0x51,
-  0x61, 0x01, 0x36, 0x51, 0x60, 0xbe, 0x51, 0x60, 0x8c, 0x51, 0x63, 0xff,
-  0xff, 0xff, 0xff, 0x64, 0x01, 0x00, 0x00, 0x00, 0x01, 0x61, 0x03, 0xc0,
-  0x51, 0x61, 0x03, 0xa0, 0x51, 0x61, 0x03, 0x80, 0x51, 0x61, 0x03, 0x60,
-  0x51, 0x61, 0x03, 0x40, 0x51, 0x63, 0x50, 0xa2, 0x8b, 0xe6, 0x90, 0x82,
-  0x84, 0x86, 0x19, 0x17, 0x18, 0x01, 0x60, 0x32, 0x51, 0x01, 0x81, 0x01,
-  0x87, 0x16, 0x86, 0x02, 0x60, 0x18, 0x1c, 0x85, 0x01, 0x87, 0x16, 0x92,
-  0x86, 0x02, 0x60, 0x16, 0x1c, 0x87, 0x16, 0x94, 0x83, 0x83, 0x87, 0x19,
-  0x17, 0x18, 0x01, 0x8a, 0x01, 0x81, 0x01, 0x87, 0x16, 0x86, 0x02, 0x60,
-  0x17, 0x1c, 0x84, 0x01, 0x87, 0x16, 0x91, 0x86, 0x02, 0x60, 0x16, 0x1c,
-  0x87, 0x16, 0x93, 0x82, 0x84, 0x86, 0x19, 0x17, 0x18, 0x01, 0x8b, 0x01,
-  0x81, 0x01, 0x87, 0x16, 0x86, 0x02, 0x60, 0x17, 0x1c, 0x85, 0x01, 0x87,
-  0x16, 0x92, 0x86, 0x02, 0x60, 0x16, 0x1c, 0x87, 0x16, 0x90, 0x50, 0x93,
-  0x60, 0x50, 0x1b, 0x61, 0x03, 0x40, 0x51, 0x17, 0x91, 0x60, 0x50, 0x1b,
-  0x61, 0x03, 0x60, 0x51, 0x17, 0x90, 0x60, 0x50, 0x1b, 0x61, 0x03, 0x80,
-  0x51, 0x17, 0x93, 0x60, 0x50, 0x1b, 0x61, 0x03, 0xa0, 0x51, 0x17, 0x92,
-  0x60, 0x50, 0x1b, 0x61, 0x03, 0xc0, 0x51, 0x17, 0x86, 0x60, 0x50, 0x1b,
-  0x80, 0x88, 0x17, 0x6d, 0x50, 0xa2, 0x8b, 0xe6, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x94, 0x84
+  0x52, 0x5f, 0x52, 0x5b, 0x93, 0x61, 0x01, 0x5e, 0x51, 0x61, 0x01, 0x36,
+  0x51, 0x60, 0xbe, 0x51, 0x60, 0x8c, 0x51, 0x63, 0xff, 0xff, 0xff, 0xff,
+  0x64, 0x01, 0x00, 0x00, 0x00, 0x01, 0x86, 0x8a, 0x8a, 0x8a, 0x8e, 0x63,
+  0x50, 0xa2, 0x8b, 0xe6, 0x90, 0x82, 0x84, 0x86, 0x19, 0x17, 0x18, 0x01,
+  0x60, 0x32, 0x51, 0x01, 0x81, 0x01, 0x87, 0x16, 0x86, 0x02, 0x60, 0x18,
+  0x1c, 0x85, 0x01, 0x87, 0x16, 0x92, 0x86, 0x02, 0x60, 0x16, 0x1c, 0x87,
+  0x16, 0x94, 0x83, 0x83, 0x87, 0x19, 0x17, 0x18, 0x01, 0x8a, 0x01, 0x81,
+  0x01, 0x87, 0x16, 0x86, 0x02, 0x60, 0x17, 0x1c, 0x84, 0x01, 0x87, 0x16,
+  0x91, 0x86, 0x02, 0x60, 0x16, 0x1c, 0x87, 0x16, 0x93, 0x82, 0x84, 0x86,
+  0x19, 0x17, 0x18, 0x01, 0x8b, 0x01, 0x81, 0x01, 0x87, 0x16, 0x86, 0x02,
+  0x60, 0x17, 0x1c, 0x85, 0x01, 0x87, 0x16, 0x92, 0x86, 0x02, 0x60, 0x16,
+  0x1c, 0x87, 0x16, 0x90, 0x50, 0x93, 0x60, 0x50, 0x1b, 0x8f, 0x17, 0x91,
+  0x60, 0x50, 0x1b, 0x8c, 0x17, 0x90, 0x60, 0x50, 0x1b, 0x8d, 0x17, 0x93,
+  0x60, 0x50, 0x1b, 0x8e, 0x17, 0x92, 0x60, 0x50, 0x1b, 0x8b, 0x17, 0x86,
+  0x60, 0x50, 0x1b, 0x80, 0x88, 0x17, 0x6d, 0x50, 0xa2, 0x8b, 0xe6, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x94, 0x84
 ] := by decide
 
 private theorem submissionInstructionsChunk4_assemble : assembleBytes submissionInstructionsChunk4 = [
-  0x88, 0x18, 0x83, 0x18, 0x87, 0x89, 0x85, 0x16, 0x17, 0x18, 0x01, 0x8e,
-  0x01, 0x85, 0x01, 0x81, 0x16, 0x88, 0x02, 0x60, 0x15, 0x1c, 0x83, 0x01,
-  0x81, 0x16, 0x96, 0x88, 0x02, 0x60, 0x16, 0x1c, 0x81, 0x16, 0x92, 0x87,
-  0x85, 0x18, 0x83, 0x18, 0x84, 0x86, 0x85, 0x16, 0x17, 0x18, 0x01, 0x61,
-  0x01, 0xcc, 0x51, 0x01, 0x85, 0x01, 0x81, 0x16, 0x80, 0x8a, 0x16, 0x01,
-  0x88, 0x02, 0x60, 0x13, 0x1c, 0x86, 0x01, 0x81, 0x16, 0x93, 0x88, 0x02,
-  0x60, 0x16, 0x1c, 0x81, 0x16, 0x95, 0x84, 0x88, 0x18, 0x83, 0x18, 0x87,
-  0x89, 0x85, 0x16, 0x17, 0x18, 0x01, 0x8b, 0x01, 0x85, 0x01, 0x81, 0x16,
-  0x88, 0x02, 0x60, 0x11, 0x1c, 0x83, 0x01, 0x81, 0x16, 0x96, 0x88, 0x02,
-  0x60, 0x16, 0x1c, 0x81, 0x16, 0x92, 0x87, 0x85, 0x18, 0x83, 0x18, 0x84,
-  0x86, 0x85, 0x16, 0x17, 0x18, 0x01, 0x61, 0x01, 0x18, 0x51, 0x01, 0x85,
-  0x01, 0x81, 0x16, 0x80, 0x83, 0x16, 0x60, 0x07, 0x02, 0x01, 0x88, 0x02,
-  0x60, 0x14, 0x1c, 0x86, 0x01, 0x81, 0x16, 0x93, 0x88, 0x02, 0x60, 0x16,
-  0x1c, 0x81, 0x16, 0x95, 0x84, 0x88, 0x18, 0x83, 0x18, 0x87, 0x89, 0x85,
-  0x16, 0x17, 0x18, 0x01, 0x60, 0xd2, 0x51, 0x01, 0x85, 0x01, 0x81, 0x16,
-  0x88, 0x02, 0x60, 0x1b, 0x1c, 0x83, 0x01, 0x81, 0x16, 0x96, 0x88, 0x02,
-  0x60, 0x16, 0x1c, 0x81, 0x16, 0x92, 0x87, 0x85, 0x18, 0x83, 0x18, 0x84,
-  0x86, 0x85
+  0x88, 0x18, 0x83, 0x18, 0x87, 0x89, 0x85, 0x16, 0x17, 0x18, 0x01, 0x61,
+  0x01, 0xf4, 0x51, 0x01, 0x85, 0x01, 0x81, 0x16, 0x88, 0x02, 0x60, 0x15,
+  0x1c, 0x83, 0x01, 0x81, 0x16, 0x96, 0x88, 0x02, 0x60, 0x16, 0x1c, 0x81,
+  0x16, 0x92, 0x87, 0x85, 0x18, 0x83, 0x18, 0x84, 0x86, 0x85, 0x16, 0x17,
+  0x18, 0x01, 0x61, 0x01, 0xcc, 0x51, 0x01, 0x85, 0x01, 0x81, 0x16, 0x80,
+  0x8a, 0x16, 0x01, 0x88, 0x02, 0x60, 0x13, 0x1c, 0x86, 0x01, 0x81, 0x16,
+  0x93, 0x88, 0x02, 0x60, 0x16, 0x1c, 0x81, 0x16, 0x95, 0x84, 0x88, 0x18,
+  0x83, 0x18, 0x87, 0x89, 0x85, 0x16, 0x17, 0x18, 0x01, 0x8b, 0x01, 0x85,
+  0x01, 0x81, 0x16, 0x88, 0x02, 0x60, 0x11, 0x1c, 0x83, 0x01, 0x81, 0x16,
+  0x96, 0x88, 0x02, 0x60, 0x16, 0x1c, 0x81, 0x16, 0x92, 0x87, 0x85, 0x18,
+  0x83, 0x18, 0x84, 0x86, 0x85, 0x16, 0x17, 0x18, 0x01, 0x61, 0x01, 0x18,
+  0x51, 0x01, 0x85, 0x01, 0x81, 0x16, 0x80, 0x83, 0x16, 0x60, 0x07, 0x02,
+  0x01, 0x88, 0x02, 0x60, 0x14, 0x1c, 0x86, 0x01, 0x81, 0x16, 0x93, 0x88,
+  0x02, 0x60, 0x16, 0x1c, 0x81, 0x16, 0x95, 0x84, 0x88, 0x18, 0x83, 0x18,
+  0x87, 0x89, 0x85, 0x16, 0x17, 0x18, 0x01, 0x60, 0xd2, 0x51, 0x01, 0x85,
+  0x01, 0x81, 0x16, 0x88, 0x02, 0x60, 0x1b, 0x1c, 0x83, 0x01, 0x81, 0x16,
+  0x96, 0x88, 0x02, 0x60, 0x16, 0x1c, 0x81, 0x16, 0x92, 0x87, 0x85, 0x18,
+  0x83, 0x18, 0x84, 0x86, 0x85
 ] := by decide
 
 private theorem submissionInstructionsChunk5_assemble : assembleBytes submissionInstructionsChunk5 = [
@@ -4459,19 +4420,19 @@ private theorem submissionInstructionsChunk12_assemble : assembleBytes submissio
   0x17, 0x87, 0x18, 0x01, 0x60, 0xa0, 0x51, 0x01, 0x83, 0x01, 0x81, 0x16,
   0x80, 0x83, 0x16, 0x60, 0x1f, 0x02, 0x01, 0x88, 0x02, 0x60, 0x18, 0x1c,
   0x85, 0x01, 0x81, 0x16, 0x93, 0x88, 0x02, 0x60, 0x16, 0x1c, 0x81, 0x16,
-  0x94, 0x84, 0x88, 0x19, 0x17, 0x86, 0x18, 0x01, 0x8e, 0x01, 0x83, 0x01,
-  0x81, 0x16, 0x88, 0x02, 0x60, 0x13, 0x1c, 0x86, 0x01, 0x81, 0x16, 0x96,
-  0x88, 0x02, 0x60, 0x16, 0x1c, 0x81, 0x16, 0x95, 0x87, 0x85, 0x19, 0x17,
-  0x87, 0x18, 0x01, 0x60, 0x78, 0x51, 0x01, 0x83, 0x01, 0x81, 0x16, 0x80,
-  0x83, 0x16, 0x01, 0x88, 0x02, 0x60, 0x1a, 0x1c, 0x85, 0x01, 0x81, 0x16,
-  0x93, 0x88, 0x02, 0x60, 0x16, 0x1c, 0x81, 0x16, 0x94, 0x84, 0x88, 0x19,
-  0x17, 0x86, 0x18, 0x01, 0x8a, 0x01, 0x83, 0x01, 0x81, 0x16, 0x88, 0x02,
-  0x60, 0x1b, 0x1c, 0x86, 0x01, 0x81, 0x16, 0x96, 0x88, 0x02, 0x60, 0x16,
-  0x1c, 0x81, 0x16, 0x92, 0x50, 0x6e, 0x01, 0x7a, 0x6d, 0x76, 0xe8, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x01, 0x6e, 0xd9, 0xeb, 0xa1, 0x95, 0x87, 0x84,
-  0x81, 0x85, 0x18, 0x87, 0x83, 0x83, 0x16, 0x18, 0x17, 0x18, 0x18, 0x19,
-  0x01, 0x61, 0x01, 0x0e, 0x51, 0x01, 0x86, 0x01, 0x81, 0x16, 0x80, 0x83,
-  0x16, 0x60, 0x07, 0x02, 0x01
+  0x94, 0x84, 0x88, 0x19, 0x17, 0x86, 0x18, 0x01, 0x61, 0x01, 0xf4, 0x51,
+  0x01, 0x83, 0x01, 0x81, 0x16, 0x88, 0x02, 0x60, 0x13, 0x1c, 0x86, 0x01,
+  0x81, 0x16, 0x96, 0x88, 0x02, 0x60, 0x16, 0x1c, 0x81, 0x16, 0x95, 0x87,
+  0x85, 0x19, 0x17, 0x87, 0x18, 0x01, 0x60, 0x78, 0x51, 0x01, 0x83, 0x01,
+  0x81, 0x16, 0x80, 0x83, 0x16, 0x01, 0x88, 0x02, 0x60, 0x1a, 0x1c, 0x85,
+  0x01, 0x81, 0x16, 0x93, 0x88, 0x02, 0x60, 0x16, 0x1c, 0x81, 0x16, 0x94,
+  0x84, 0x88, 0x19, 0x17, 0x86, 0x18, 0x01, 0x8a, 0x01, 0x83, 0x01, 0x81,
+  0x16, 0x88, 0x02, 0x60, 0x1b, 0x1c, 0x86, 0x01, 0x81, 0x16, 0x96, 0x88,
+  0x02, 0x60, 0x16, 0x1c, 0x81, 0x16, 0x92, 0x50, 0x6e, 0x01, 0x7a, 0x6d,
+  0x76, 0xe8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x6e, 0xd9, 0xeb, 0xa1,
+  0x95, 0x87, 0x84, 0x81, 0x85, 0x18, 0x87, 0x83, 0x83, 0x16, 0x18, 0x17,
+  0x18, 0x18, 0x19, 0x01, 0x61, 0x01, 0x0e, 0x51, 0x01, 0x86, 0x01, 0x81,
+  0x16, 0x80, 0x83, 0x16, 0x60, 0x07, 0x02, 0x01
 ] := by decide
 
 private theorem submissionInstructionsChunk13_assemble : assembleBytes submissionInstructionsChunk13 = [
@@ -4505,16 +4466,16 @@ private theorem submissionInstructionsChunk14_assemble : assembleBytes submissio
   0x8a, 0x16, 0x61, 0x01, 0xff, 0x02, 0x01, 0x88, 0x02, 0x60, 0x1a, 0x1c,
   0x86, 0x01, 0x81, 0x16, 0x93, 0x88, 0x02, 0x60, 0x16, 0x1c, 0x81, 0x16,
   0x95, 0x87, 0x87, 0x81, 0x85, 0x16, 0x18, 0x86, 0x82, 0x86, 0x17, 0x18,
-  0x16, 0x18, 0x01, 0x8e, 0x01, 0x85, 0x01, 0x81, 0x16, 0x88, 0x02, 0x60,
-  0x12, 0x1c, 0x83, 0x01, 0x81, 0x16, 0x96, 0x88, 0x02, 0x60, 0x16, 0x1c,
-  0x81, 0x16, 0x92, 0x84, 0x84, 0x81, 0x85, 0x16, 0x18, 0x89, 0x82, 0x86,
-  0x17, 0x18, 0x16, 0x18, 0x01, 0x61, 0x01, 0x04, 0x51, 0x01, 0x85, 0x01,
-  0x81, 0x16, 0x80, 0x8a, 0x16, 0x61, 0x01, 0xff, 0x02, 0x01, 0x88, 0x02,
-  0x60, 0x1a, 0x1c, 0x86, 0x01, 0x81, 0x16, 0x93, 0x88, 0x02, 0x60, 0x16,
-  0x1c, 0x81, 0x16, 0x95, 0x87, 0x87, 0x81, 0x85, 0x16, 0x18, 0x86, 0x82,
-  0x86, 0x17, 0x18, 0x16, 0x18, 0x01, 0x60, 0xe6, 0x51, 0x01, 0x85, 0x01,
-  0x81, 0x16, 0x88, 0x02, 0x60, 0x17, 0x1c, 0x83, 0x01, 0x81, 0x16, 0x96,
-  0x88, 0x02, 0x60, 0x16, 0x1c, 0x81
+  0x16, 0x18, 0x01, 0x61, 0x01, 0xf4, 0x51, 0x01, 0x85, 0x01, 0x81, 0x16,
+  0x88, 0x02, 0x60, 0x12, 0x1c, 0x83, 0x01, 0x81, 0x16, 0x96, 0x88, 0x02,
+  0x60, 0x16, 0x1c, 0x81, 0x16, 0x92, 0x84, 0x84, 0x81, 0x85, 0x16, 0x18,
+  0x89, 0x82, 0x86, 0x17, 0x18, 0x16, 0x18, 0x01, 0x61, 0x01, 0x04, 0x51,
+  0x01, 0x85, 0x01, 0x81, 0x16, 0x80, 0x8a, 0x16, 0x61, 0x01, 0xff, 0x02,
+  0x01, 0x88, 0x02, 0x60, 0x1a, 0x1c, 0x86, 0x01, 0x81, 0x16, 0x93, 0x88,
+  0x02, 0x60, 0x16, 0x1c, 0x81, 0x16, 0x95, 0x87, 0x87, 0x81, 0x85, 0x16,
+  0x18, 0x86, 0x82, 0x86, 0x17, 0x18, 0x16, 0x18, 0x01, 0x60, 0xe6, 0x51,
+  0x01, 0x85, 0x01, 0x81, 0x16, 0x88, 0x02, 0x60, 0x17, 0x1c, 0x83, 0x01,
+  0x81, 0x16, 0x96, 0x88, 0x02, 0x60, 0x16, 0x1c, 0x81
 ] := by decide
 
 private theorem submissionInstructionsChunk15_assemble : assembleBytes submissionInstructionsChunk15 = [
@@ -4618,61 +4579,55 @@ private theorem submissionInstructionsChunk19_assemble : assembleBytes submissio
   0x51, 0x01, 0x84, 0x01, 0x8c, 0x16, 0x8b, 0x02, 0x60, 0x1b, 0x1c, 0x82,
   0x01, 0x8c, 0x16, 0x94, 0x8b, 0x02, 0x60, 0x16, 0x1c, 0x91, 0x85, 0x82,
   0x84, 0x19, 0x17, 0x18, 0x01, 0x8d, 0x01, 0x84, 0x01, 0x8c, 0x16, 0x8b,
-  0x02, 0x60, 0x1a, 0x1c, 0x83, 0x01, 0x90, 0x8b, 0x02, 0x60, 0x16, 0x1c,
-  0x93, 0x50, 0x95, 0x60, 0x50, 0x1c, 0x90
+  0x02, 0x60, 0x1a, 0x1c, 0x83, 0x01, 0x90, 0x8b, 0x02, 0x60, 0x16, 0x1c
 ] := by decide
 
 private theorem submissionInstructionsChunk20_assemble : assembleBytes submissionInstructionsChunk20 = [
-  0x95, 0x01, 0x61, 0x03, 0x40, 0x51, 0x01, 0x8a, 0x16, 0x96, 0x60, 0x50,
-  0x1c, 0x90, 0x92, 0x01, 0x61, 0x03, 0x60, 0x51, 0x01, 0x89, 0x16, 0x61,
-  0x03, 0x40, 0x52, 0x91, 0x60, 0x50, 0x1c, 0x90, 0x91, 0x01, 0x61, 0x03,
-  0x80, 0x51, 0x01, 0x87, 0x16, 0x61, 0x03, 0x60, 0x52, 0x91, 0x60, 0x50,
-  0x1c, 0x01, 0x61, 0x03, 0xa0, 0x51, 0x01, 0x85, 0x16, 0x61, 0x03, 0x80,
-  0x52, 0x91, 0x60, 0x50, 0x1c, 0x90, 0x91, 0x01, 0x61, 0x03, 0xc0, 0x51,
-  0x01, 0x83, 0x16, 0x61, 0x03, 0xa0, 0x52, 0x61, 0x03, 0xc0, 0x52, 0x50,
-  0x50, 0x50, 0x50, 0x50, 0x50, 0x50, 0x60, 0x40, 0x01, 0x81, 0x81, 0x14,
-  0x15, 0x61, 0x01, 0xe3, 0x57, 0x5b, 0x61, 0x03, 0x40, 0x51, 0x60, 0x20,
-  0x1b, 0x61, 0x03, 0x60, 0x51, 0x17, 0x60, 0x20, 0x1b, 0x61, 0x03, 0x80,
-  0x51, 0x17, 0x60, 0x20, 0x1b, 0x61, 0x03, 0xa0, 0x51, 0x17, 0x60, 0x20,
-  0x1b, 0x61, 0x03, 0xc0, 0x51, 0x17, 0x61, 0x01, 0x01, 0x81, 0x80, 0x60,
-  0x08, 0x1c, 0x18, 0x81, 0x5f, 0x19, 0x04, 0x16, 0x02, 0x18, 0x62, 0x01,
-  0x00, 0x01, 0x81, 0x80, 0x60, 0x10, 0x1c, 0x18, 0x81, 0x5f, 0x19, 0x04,
-  0x16, 0x02, 0x18, 0x5f, 0x52, 0x60, 0x20, 0x5f, 0xf3, 0x5b, 0x5f, 0x35,
-  0x5f, 0x1a, 0x60, 0x07, 0x18, 0x61, 0x14, 0x05, 0x57, 0x5f, 0x70, 0x01,
-  0x01, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x81, 0x80, 0x00, 0x01,
-  0x80, 0x00, 0x00, 0x02, 0x36, 0x1c, 0x60, 0x01, 0x16, 0x60, 0x6a, 0x57,
-  0x50, 0x61, 0x01, 0x10, 0x56, 0x5b, 0x60, 0x14, 0x60, 0x0e, 0x36, 0x62,
-  0x03, 0x19, 0x86, 0x04, 0x06, 0x60, 0x15, 0x02, 0x61, 0x12, 0xe0, 0x01,
-  0x60, 0x0c, 0x39, 0x59, 0x5f, 0xf3, 0x73, 0xdb, 0x4d, 0x90, 0xb3, 0xbe,
-  0x82, 0x8e, 0xa7, 0xce, 0xd8, 0xd8, 0x79, 0xdb, 0xce, 0xa2, 0xc1, 0xd5,
-  0xfe, 0x20, 0x7f, 0x73, 0xd8, 0xe2, 0xe8, 0x4b, 0xad, 0x19, 0xfc, 0x85,
-  0xdb, 0xad, 0xb5, 0x5f, 0xa5, 0x46, 0x76, 0x31, 0xce, 0x14, 0x15, 0x03,
-  0x73, 0x5b, 0xe9, 0x25, 0x9e, 0x94, 0x78, 0x20, 0x2d, 0xd0, 0xc1, 0xf4,
-  0xeb, 0x0c, 0x4e, 0xd0, 0x44, 0x2d, 0xbe, 0xb2, 0xcd, 0x73, 0x47, 0x52,
-  0x72, 0xba, 0x46, 0x7c, 0xa6, 0x71, 0x6d, 0xbb, 0x1c, 0x19, 0xa8, 0x4d,
-  0xe3, 0x55, 0xf0, 0x65, 0x82, 0x9a, 0x73, 0x37, 0x88, 0x0e, 0xe5, 0xe2,
-  0xe8, 0x21, 0xe0, 0x54, 0x0b, 0xb1, 0x46, 0xe3, 0x3b, 0x37, 0x34, 0x23,
-  0x16, 0xe7, 0xed, 0x73, 0x28, 0xdf, 0xaf, 0x14, 0xed, 0x99, 0x53, 0xf4,
-  0x9c, 0x7a, 0xbb, 0x56, 0x13, 0x08, 0xd0, 0xc6, 0x4b, 0xc4, 0xc1, 0x79,
-  0x73, 0x1a, 0xcf, 0x41, 0xb0, 0x9f, 0x87, 0xac, 0xc9, 0x83, 0xc2, 0xa0,
-  0x43, 0xf5, 0x04, 0x4c, 0x8f, 0x71, 0xc5, 0x2d, 0xbd, 0x73, 0x86, 0x3c,
-  0x59, 0x85, 0x88, 0xbd, 0x72, 0xa4, 0xba, 0xbf, 0x36, 0xc6, 0xbb, 0x01,
-  0xf2, 0x7b, 0xbd, 0xc0, 0xec, 0xd4, 0x73, 0xf6, 0xce, 0xa8, 0xd2, 0xa4,
-  0x91, 0xf5, 0xdc, 0x27, 0x6a, 0xa1, 0xf7, 0x61, 0x8b, 0x4d, 0x7a, 0x55,
-  0x2e, 0xc4, 0xad, 0x73, 0xc6, 0xc5, 0x3c, 0x46, 0xcf, 0x08, 0xde, 0x1c,
-  0x53, 0x75, 0xb1, 0x5a, 0xf8, 0x67, 0x6a, 0x2d, 0x32, 0xef, 0x52, 0x8a,
-  0x73, 0x8a, 0x14, 0xb0, 0xc8, 0x92, 0x87, 0xb3, 0x9b, 0x1a, 0x2f, 0x73,
-  0xaa, 0x79, 0xa1, 0xce, 0x95, 0xb0, 0x4e, 0x78, 0x17, 0x73, 0x09, 0x06,
-  0xf7, 0x77, 0x41, 0x05, 0xd3, 0x64, 0x06, 0x50, 0x54, 0x1c, 0x2e, 0x7b,
-  0xc1, 0x9b, 0xfe, 0x9b, 0x51, 0x49, 0x73, 0x4d, 0xe2, 0x0b, 0x6b, 0x1f,
-  0xb2, 0xaf, 0x44, 0x23, 0x70, 0xc4, 0x0e, 0x53, 0xa5, 0x0a, 0xca, 0x36,
-  0x0f, 0xc3, 0xbc, 0x73, 0x2b, 0x95, 0x67, 0xd6, 0x84, 0xdc, 0x89, 0xcd,
-  0x54, 0x62, 0x0e, 0x46, 0x02, 0x9f, 0x5b, 0xda, 0x0e, 0xca, 0xb7, 0x87,
-  0x5b, 0x36, 0x60, 0x02, 0x1c, 0x61, 0x01, 0x10, 0x57, 0x62, 0x20, 0x76,
-  0x21, 0x36, 0x02, 0x5f, 0x35, 0x60, 0xe8, 0x1c, 0x18, 0x61, 0x01, 0x10,
-  0x57, 0x73, 0x9c, 0x11, 0x85, 0xa5, 0xc5, 0xe9, 0xfc, 0x54, 0x61, 0x28,
-  0x08, 0x97, 0x7e, 0xe8, 0xf5, 0x48, 0xb2, 0x25, 0x8d, 0x31, 0x36, 0x61,
-  0x01, 0x74, 0x56
+  0x9d, 0x50, 0x99, 0x50, 0x9d, 0x50, 0x9b, 0x50, 0x50, 0x97, 0x50, 0x60,
+  0x50, 0x1c, 0x90, 0x60, 0x50, 0x1c, 0x9c, 0x01, 0x90, 0x60, 0x50, 0x1c,
+  0x91, 0x60, 0x50, 0x1c, 0x96, 0x01, 0x84, 0x16, 0x9b, 0x01, 0x90, 0x60,
+  0x50, 0x1c, 0x96, 0x01, 0x82, 0x16, 0x98, 0x01, 0x90, 0x99, 0x01, 0x89,
+  0x16, 0x95, 0x01, 0x01, 0x87, 0x16, 0x92, 0x01, 0x01, 0x85, 0x16, 0x94,
+  0x50, 0x90, 0x93, 0x92, 0x90, 0x61, 0x01, 0xd7, 0x56, 0x5b, 0x60, 0x20,
+  0x1b, 0x17, 0x60, 0x20, 0x1b, 0x17, 0x60, 0x20, 0x1b, 0x17, 0x60, 0x20,
+  0x1b, 0x17, 0x61, 0x01, 0x01, 0x81, 0x80, 0x60, 0x08, 0x1c, 0x18, 0x81,
+  0x5f, 0x19, 0x04, 0x16, 0x02, 0x18, 0x62, 0x01, 0x00, 0x01, 0x81, 0x80,
+  0x60, 0x10, 0x1c, 0x18, 0x81, 0x5f, 0x19, 0x04, 0x16, 0x02, 0x18, 0x5f,
+  0x52, 0x60, 0x20, 0x5f, 0xf3, 0x5b, 0x5f, 0x35, 0x5f, 0x1a, 0x60, 0x07,
+  0x18, 0x61, 0x13, 0xb3, 0x57, 0x5f, 0x70, 0x01, 0x01, 0x80, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x03, 0x81, 0x80, 0x00, 0x01, 0x80, 0x00, 0x00, 0x02,
+  0x36, 0x1c, 0x60, 0x01, 0x16, 0x60, 0x6a, 0x57, 0x50, 0x61, 0x01, 0x10,
+  0x56, 0x5b, 0x60, 0x14, 0x60, 0x0e, 0x36, 0x62, 0x03, 0x19, 0x86, 0x04,
+  0x06, 0x60, 0x15, 0x02, 0x61, 0x12, 0x8e, 0x01, 0x60, 0x0c, 0x39, 0x59,
+  0x5f, 0xf3, 0x73, 0xdb, 0x4d, 0x90, 0xb3, 0xbe, 0x82, 0x8e, 0xa7, 0xce,
+  0xd8, 0xd8, 0x79, 0xdb, 0xce, 0xa2, 0xc1, 0xd5, 0xfe, 0x20, 0x7f, 0x73,
+  0xd8, 0xe2, 0xe8, 0x4b, 0xad, 0x19, 0xfc, 0x85, 0xdb, 0xad, 0xb5, 0x5f,
+  0xa5, 0x46, 0x76, 0x31, 0xce, 0x14, 0x15, 0x03, 0x73, 0x5b, 0xe9, 0x25,
+  0x9e, 0x94, 0x78, 0x20, 0x2d, 0xd0, 0xc1, 0xf4, 0xeb, 0x0c, 0x4e, 0xd0,
+  0x44, 0x2d, 0xbe, 0xb2, 0xcd, 0x73, 0x47, 0x52, 0x72, 0xba, 0x46, 0x7c,
+  0xa6, 0x71, 0x6d, 0xbb, 0x1c, 0x19, 0xa8, 0x4d, 0xe3, 0x55, 0xf0, 0x65,
+  0x82, 0x9a, 0x73, 0x37, 0x88, 0x0e, 0xe5, 0xe2, 0xe8, 0x21, 0xe0, 0x54,
+  0x0b, 0xb1, 0x46, 0xe3, 0x3b, 0x37, 0x34, 0x23, 0x16, 0xe7, 0xed, 0x73,
+  0x28, 0xdf, 0xaf, 0x14, 0xed, 0x99, 0x53, 0xf4, 0x9c, 0x7a, 0xbb, 0x56,
+  0x13, 0x08, 0xd0, 0xc6, 0x4b, 0xc4, 0xc1, 0x79, 0x73, 0x1a, 0xcf, 0x41,
+  0xb0, 0x9f, 0x87, 0xac, 0xc9, 0x83, 0xc2, 0xa0, 0x43, 0xf5, 0x04, 0x4c,
+  0x8f, 0x71, 0xc5, 0x2d, 0xbd, 0x73, 0x86, 0x3c, 0x59, 0x85, 0x88, 0xbd,
+  0x72, 0xa4, 0xba, 0xbf, 0x36, 0xc6, 0xbb, 0x01, 0xf2, 0x7b, 0xbd, 0xc0,
+  0xec, 0xd4, 0x73, 0xf6, 0xce, 0xa8, 0xd2, 0xa4, 0x91, 0xf5, 0xdc, 0x27,
+  0x6a, 0xa1, 0xf7, 0x61, 0x8b, 0x4d, 0x7a, 0x55, 0x2e, 0xc4, 0xad, 0x73,
+  0xc6, 0xc5, 0x3c, 0x46, 0xcf, 0x08, 0xde, 0x1c, 0x53, 0x75, 0xb1, 0x5a,
+  0xf8, 0x67, 0x6a, 0x2d, 0x32, 0xef, 0x52, 0x8a, 0x73, 0x8a, 0x14, 0xb0,
+  0xc8, 0x92, 0x87, 0xb3, 0x9b, 0x1a, 0x2f, 0x73, 0xaa, 0x79, 0xa1, 0xce,
+  0x95, 0xb0, 0x4e, 0x78, 0x17, 0x73, 0x09, 0x06, 0xf7, 0x77, 0x41, 0x05,
+  0xd3, 0x64, 0x06, 0x50, 0x54, 0x1c, 0x2e, 0x7b, 0xc1, 0x9b, 0xfe, 0x9b,
+  0x51, 0x49, 0x73, 0x4d, 0xe2, 0x0b, 0x6b, 0x1f, 0xb2, 0xaf, 0x44, 0x23,
+  0x70, 0xc4, 0x0e, 0x53, 0xa5, 0x0a, 0xca, 0x36, 0x0f, 0xc3, 0xbc, 0x73,
+  0x2b, 0x95, 0x67, 0xd6, 0x84, 0xdc, 0x89, 0xcd, 0x54, 0x62, 0x0e, 0x46,
+  0x02, 0x9f, 0x5b, 0xda, 0x0e, 0xca, 0xb7, 0x87, 0x5b, 0x36, 0x60, 0x02,
+  0x1c, 0x61, 0x01, 0x10, 0x57, 0x62, 0x20, 0x76, 0x21, 0x36, 0x02, 0x5f,
+  0x35, 0x60, 0xe8, 0x1c, 0x18, 0x61, 0x01, 0x10, 0x57, 0x73, 0x9c, 0x11,
+  0x85, 0xa5, 0xc5, 0xe9, 0xfc, 0x54, 0x61, 0x28, 0x08, 0x97, 0x7e, 0xe8,
+  0xf5, 0x48, 0xb2, 0x25, 0x8d, 0x31, 0x36, 0x61, 0x01, 0x68, 0x56
 ] := by decide
 
 private theorem assemble_chunk0 :
@@ -4782,28 +4737,7 @@ structure InitStore where
   offset : UInt256
   useMsize : Bool
 
-def initStores : List InitStore :=
-  [⟨177, 4, 1732584193, 2, 832, false⟩,
-   ⟨180, 4, 4023233417, 2, 864, true⟩,
-   ⟨183, 4, 2562383102, 2, 896, true⟩,
-   ⟨186, 4, 271733878, 2, 928, true⟩,
-   ⟨189, 4, 3285377520, 2, 960, true⟩]
-
-set_option maxHeartbeats 10000000 in
-theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
-    submissionInstructions[w.index]? = some (.push w.valueWidth w.value) ∧
-    instructionPC (w.index + 1) = instructionPC w.index + w.valueWidth.val + 1 ∧
-    submissionInstructions[w.index + 1]? = some
-      (if w.useMsize then .op .MSIZE else .push w.offsetWidth w.offset) ∧
-    instructionPC (w.index + 2) = instructionPC (w.index + 1) +
-      (if w.useMsize then 1 else w.offsetWidth.val + 1) ∧
-    submissionInstructions[w.index + 2]? = some (.op .MSTORE) ∧
-    instructionPC (w.index + 3) = instructionPC (w.index + 2) + 1 := by
-  simp only [initStores, List.mem_cons, List.not_mem_nil, or_false] at hw
-  rcases hw with rfl | rfl | rfl | rfl | rfl
-  all_goals repeat' apply And.intro
-  all_goals simp only [instructionPC, ArtifactByteLength.instructionPC_eq_byteLength]
-  all_goals first | decide | rfl
+def initStores : List InitStore := []
 
 @[simp] theorem referenceArtifact_pc_0 :
     submissionArtifact.instructionPC 5 = 8 := by
@@ -4838,130 +4772,130 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
   rfl
 
 @[simp] theorem referenceArtifact_pc_405 :
-    submissionArtifact.instructionPC 193 = 311 := by
+    submissionArtifact.instructionPC 178 = 274 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc405 :
-    submissionArtifact.instructionPC 193 = 311 := by
+    submissionArtifact.instructionPC 178 = 274 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc405 :
-    instructionPC 193 = 311 := by
-  change submissionArtifact.instructionPC 193 = 311
+    instructionPC 178 = 274 := by
+  change submissionArtifact.instructionPC 178 = 274
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_406 :
-    submissionArtifact.instructionPC 193 = 311 := by
+    submissionArtifact.instructionPC 178 = 274 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc406 :
-    submissionArtifact.instructionPC 193 = 311 := by
+    submissionArtifact.instructionPC 178 = 274 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc406 :
-    instructionPC 193 = 311 := by
-  change submissionArtifact.instructionPC 193 = 311
+    instructionPC 178 = 274 := by
+  change submissionArtifact.instructionPC 178 = 274
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_407 :
-    submissionArtifact.instructionPC 194 = 313 := by
+    submissionArtifact.instructionPC 179 = 276 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc407 :
-    submissionArtifact.instructionPC 194 = 313 := by
+    submissionArtifact.instructionPC 179 = 276 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc407 :
-    instructionPC 194 = 313 := by
-  change submissionArtifact.instructionPC 194 = 313
+    instructionPC 179 = 276 := by
+  change submissionArtifact.instructionPC 179 = 276
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_408 :
-    submissionArtifact.instructionPC 195 = 314 := by
+    submissionArtifact.instructionPC 180 = 277 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc408 :
-    submissionArtifact.instructionPC 195 = 314 := by
+    submissionArtifact.instructionPC 180 = 277 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc408 :
-    instructionPC 195 = 314 := by
-  change submissionArtifact.instructionPC 195 = 314
+    instructionPC 180 = 277 := by
+  change submissionArtifact.instructionPC 180 = 277
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_409 :
-    submissionArtifact.instructionPC 196 = 316 := by
+    submissionArtifact.instructionPC 181 = 279 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc409 :
-    submissionArtifact.instructionPC 196 = 316 := by
+    submissionArtifact.instructionPC 181 = 279 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc409 :
-    instructionPC 196 = 316 := by
-  change submissionArtifact.instructionPC 196 = 316
+    instructionPC 181 = 279 := by
+  change submissionArtifact.instructionPC 181 = 279
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_410 :
-    submissionArtifact.instructionPC 197 = 317 := by
+    submissionArtifact.instructionPC 182 = 280 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc410 :
-    submissionArtifact.instructionPC 197 = 317 := by
+    submissionArtifact.instructionPC 182 = 280 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc410 :
-    instructionPC 197 = 317 := by
-  change submissionArtifact.instructionPC 197 = 317
+    instructionPC 182 = 280 := by
+  change submissionArtifact.instructionPC 182 = 280
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_411 :
-    submissionArtifact.instructionPC 198 = 318 := by
+    submissionArtifact.instructionPC 183 = 281 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc411 :
-    submissionArtifact.instructionPC 198 = 318 := by
+    submissionArtifact.instructionPC 183 = 281 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc411 :
-    instructionPC 198 = 318 := by
-  change submissionArtifact.instructionPC 198 = 318
+    instructionPC 183 = 281 := by
+  change submissionArtifact.instructionPC 183 = 281
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_412 :
-    submissionArtifact.instructionPC 199 = 319 := by
+    submissionArtifact.instructionPC 184 = 282 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc412 :
-    submissionArtifact.instructionPC 199 = 319 := by
+    submissionArtifact.instructionPC 184 = 282 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc412 :
-    instructionPC 199 = 319 := by
-  change submissionArtifact.instructionPC 199 = 319
+    instructionPC 184 = 282 := by
+  change submissionArtifact.instructionPC 184 = 282
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -4975,146 +4909,146 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
 
 
 @[simp] theorem referenceArtifact_pc_416 :
-    submissionArtifact.instructionPC 200 = 320 := by
+    submissionArtifact.instructionPC 185 = 283 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc416 :
-    submissionArtifact.instructionPC 200 = 320 := by
+    submissionArtifact.instructionPC 185 = 283 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc416 :
-    instructionPC 200 = 320 := by
-  change submissionArtifact.instructionPC 200 = 320
+    instructionPC 185 = 283 := by
+  change submissionArtifact.instructionPC 185 = 283
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_417 :
-    submissionArtifact.instructionPC 201 = 321 := by
+    submissionArtifact.instructionPC 186 = 284 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc417 :
-    submissionArtifact.instructionPC 201 = 321 := by
+    submissionArtifact.instructionPC 186 = 284 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc417 :
-    instructionPC 201 = 321 := by
-  change submissionArtifact.instructionPC 201 = 321
+    instructionPC 186 = 284 := by
+  change submissionArtifact.instructionPC 186 = 284
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_418 :
-    submissionArtifact.instructionPC 202 = 324 := by
+    submissionArtifact.instructionPC 187 = 287 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc418 :
-    submissionArtifact.instructionPC 202 = 324 := by
+    submissionArtifact.instructionPC 187 = 287 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc418 :
-    instructionPC 202 = 324 := by
-  change submissionArtifact.instructionPC 202 = 324
+    instructionPC 187 = 287 := by
+  change submissionArtifact.instructionPC 187 = 287
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_419 :
-    submissionArtifact.instructionPC 203 = 325 := by
+    submissionArtifact.instructionPC 188 = 288 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc419 :
-    submissionArtifact.instructionPC 203 = 325 := by
+    submissionArtifact.instructionPC 188 = 288 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc419 :
-    instructionPC 203 = 325 := by
-  change submissionArtifact.instructionPC 203 = 325
+    instructionPC 188 = 288 := by
+  change submissionArtifact.instructionPC 188 = 288
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_420 :
-    submissionArtifact.instructionPC 204 = 327 := by
+    submissionArtifact.instructionPC 189 = 290 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc420 :
-    submissionArtifact.instructionPC 204 = 327 := by
+    submissionArtifact.instructionPC 189 = 290 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc420 :
-    instructionPC 204 = 327 := by
-  change submissionArtifact.instructionPC 204 = 327
+    instructionPC 189 = 290 := by
+  change submissionArtifact.instructionPC 189 = 290
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_421 :
-    submissionArtifact.instructionPC 205 = 328 := by
+    submissionArtifact.instructionPC 190 = 291 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc421 :
-    submissionArtifact.instructionPC 205 = 328 := by
+    submissionArtifact.instructionPC 190 = 291 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc421 :
-    instructionPC 205 = 328 := by
-  change submissionArtifact.instructionPC 205 = 328
+    instructionPC 190 = 291 := by
+  change submissionArtifact.instructionPC 190 = 291
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_422 :
-    submissionArtifact.instructionPC 206 = 331 := by
+    submissionArtifact.instructionPC 191 = 294 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc422 :
-    submissionArtifact.instructionPC 206 = 331 := by
+    submissionArtifact.instructionPC 191 = 294 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc422 :
-    instructionPC 206 = 331 := by
-  change submissionArtifact.instructionPC 206 = 331
+    instructionPC 191 = 294 := by
+  change submissionArtifact.instructionPC 191 = 294
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_423 :
-    submissionArtifact.instructionPC 207 = 332 := by
+    submissionArtifact.instructionPC 192 = 295 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc423 :
-    submissionArtifact.instructionPC 207 = 332 := by
+    submissionArtifact.instructionPC 192 = 295 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc423 :
-    instructionPC 207 = 332 := by
-  change submissionArtifact.instructionPC 207 = 332
+    instructionPC 192 = 295 := by
+  change submissionArtifact.instructionPC 192 = 295
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_424 :
-    submissionArtifact.instructionPC 208 = 333 := by
+    submissionArtifact.instructionPC 193 = 296 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc424 :
-    submissionArtifact.instructionPC 208 = 333 := by
+    submissionArtifact.instructionPC 193 = 296 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc424 :
-    instructionPC 208 = 333 := by
-  change submissionArtifact.instructionPC 208 = 333
+    instructionPC 193 = 296 := by
+  change submissionArtifact.instructionPC 193 = 296
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -5122,194 +5056,194 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
 
 
 @[simp] theorem referenceArtifact_pc_426 :
-    submissionArtifact.instructionPC 209 = 335 := by
+    submissionArtifact.instructionPC 194 = 298 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc426 :
-    submissionArtifact.instructionPC 209 = 335 := by
+    submissionArtifact.instructionPC 194 = 298 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc426 :
-    instructionPC 209 = 335 := by
-  change submissionArtifact.instructionPC 209 = 335
+    instructionPC 194 = 298 := by
+  change submissionArtifact.instructionPC 194 = 298
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_427 :
-    submissionArtifact.instructionPC 210 = 336 := by
+    submissionArtifact.instructionPC 195 = 299 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc427 :
-    submissionArtifact.instructionPC 210 = 336 := by
+    submissionArtifact.instructionPC 195 = 299 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc427 :
-    instructionPC 210 = 336 := by
-  change submissionArtifact.instructionPC 210 = 336
+    instructionPC 195 = 299 := by
+  change submissionArtifact.instructionPC 195 = 299
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_428 :
-    submissionArtifact.instructionPC 211 = 338 := by
+    submissionArtifact.instructionPC 196 = 301 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc428 :
-    submissionArtifact.instructionPC 211 = 338 := by
+    submissionArtifact.instructionPC 196 = 301 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc428 :
-    instructionPC 211 = 338 := by
-  change submissionArtifact.instructionPC 211 = 338
+    instructionPC 196 = 301 := by
+  change submissionArtifact.instructionPC 196 = 301
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_429 :
-    submissionArtifact.instructionPC 213 = 340 := by
+    submissionArtifact.instructionPC 198 = 303 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc429 :
-    submissionArtifact.instructionPC 213 = 340 := by
+    submissionArtifact.instructionPC 198 = 303 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc429 :
-    instructionPC 213 = 340 := by
-  change submissionArtifact.instructionPC 213 = 340
+    instructionPC 198 = 303 := by
+  change submissionArtifact.instructionPC 198 = 303
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_430 :
-    submissionArtifact.instructionPC 212 = 339 := by
+    submissionArtifact.instructionPC 197 = 302 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc430 :
-    submissionArtifact.instructionPC 212 = 339 := by
+    submissionArtifact.instructionPC 197 = 302 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc430 :
-    instructionPC 212 = 339 := by
-  change submissionArtifact.instructionPC 212 = 339
+    instructionPC 197 = 302 := by
+  change submissionArtifact.instructionPC 197 = 302
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_431 :
-    submissionArtifact.instructionPC 214 = 343 := by
+    submissionArtifact.instructionPC 199 = 306 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc431 :
-    submissionArtifact.instructionPC 214 = 343 := by
+    submissionArtifact.instructionPC 199 = 306 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc431 :
-    instructionPC 214 = 343 := by
-  change submissionArtifact.instructionPC 214 = 343
+    instructionPC 199 = 306 := by
+  change submissionArtifact.instructionPC 199 = 306
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_432 :
-    submissionArtifact.instructionPC 215 = 344 := by
+    submissionArtifact.instructionPC 200 = 307 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc432 :
-    submissionArtifact.instructionPC 215 = 344 := by
+    submissionArtifact.instructionPC 200 = 307 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc432 :
-    instructionPC 215 = 344 := by
-  change submissionArtifact.instructionPC 215 = 344
+    instructionPC 200 = 307 := by
+  change submissionArtifact.instructionPC 200 = 307
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_433 :
-    submissionArtifact.instructionPC 216 = 345 := by
+    submissionArtifact.instructionPC 201 = 308 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc433 :
-    submissionArtifact.instructionPC 216 = 345 := by
+    submissionArtifact.instructionPC 201 = 308 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc433 :
-    instructionPC 216 = 345 := by
-  change submissionArtifact.instructionPC 216 = 345
+    instructionPC 201 = 308 := by
+  change submissionArtifact.instructionPC 201 = 308
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_434 :
-    submissionArtifact.instructionPC 217 = 346 := by
+    submissionArtifact.instructionPC 202 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc434 :
-    submissionArtifact.instructionPC 217 = 346 := by
+    submissionArtifact.instructionPC 202 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc434 :
-    instructionPC 217 = 346 := by
-  change submissionArtifact.instructionPC 217 = 346
+    instructionPC 202 = 309 := by
+  change submissionArtifact.instructionPC 202 = 309
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_435 :
-    submissionArtifact.instructionPC 218 = 348 := by
+    submissionArtifact.instructionPC 203 = 311 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc435 :
-    submissionArtifact.instructionPC 218 = 348 := by
+    submissionArtifact.instructionPC 203 = 311 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc435 :
-    instructionPC 218 = 348 := by
-  change submissionArtifact.instructionPC 218 = 348
+    instructionPC 203 = 311 := by
+  change submissionArtifact.instructionPC 203 = 311
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_436 :
-    submissionArtifact.instructionPC 219 = 349 := by
+    submissionArtifact.instructionPC 204 = 312 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc436 :
-    submissionArtifact.instructionPC 219 = 349 := by
+    submissionArtifact.instructionPC 204 = 312 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc436 :
-    instructionPC 219 = 349 := by
-  change submissionArtifact.instructionPC 219 = 349
+    instructionPC 204 = 312 := by
+  change submissionArtifact.instructionPC 204 = 312
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_437 :
-    submissionArtifact.instructionPC 220 = 350 := by
+    submissionArtifact.instructionPC 205 = 313 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc437 :
-    submissionArtifact.instructionPC 220 = 350 := by
+    submissionArtifact.instructionPC 205 = 313 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc437 :
-    instructionPC 220 = 350 := by
-  change submissionArtifact.instructionPC 220 = 350
+    instructionPC 205 = 313 := by
+  change submissionArtifact.instructionPC 205 = 313
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -5317,274 +5251,261 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
 
 
 @[simp] theorem referenceArtifact_pc_439 :
-    submissionArtifact.instructionPC 221 = 351 := by
+    submissionArtifact.instructionPC 206 = 314 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc439 :
-    submissionArtifact.instructionPC 221 = 351 := by
+    submissionArtifact.instructionPC 206 = 314 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc439 :
-    instructionPC 221 = 351 := by
-  change submissionArtifact.instructionPC 221 = 351
+    instructionPC 206 = 314 := by
+  change submissionArtifact.instructionPC 206 = 314
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_440 :
-    submissionArtifact.instructionPC 222 = 352 := by
+    submissionArtifact.instructionPC 207 = 315 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc440 :
-    submissionArtifact.instructionPC 222 = 352 := by
+    submissionArtifact.instructionPC 207 = 315 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc440 :
-    instructionPC 222 = 352 := by
-  change submissionArtifact.instructionPC 222 = 352
+    instructionPC 207 = 315 := by
+  change submissionArtifact.instructionPC 207 = 315
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_441 :
-    submissionArtifact.instructionPC 223 = 353 := by
+    submissionArtifact.instructionPC 208 = 316 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc441 :
-    submissionArtifact.instructionPC 223 = 353 := by
+    submissionArtifact.instructionPC 208 = 316 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc441 :
-    instructionPC 223 = 353 := by
-  change submissionArtifact.instructionPC 223 = 353
+    instructionPC 208 = 316 := by
+  change submissionArtifact.instructionPC 208 = 316
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_442 :
-    submissionArtifact.instructionPC 224 = 354 := by
+    submissionArtifact.instructionPC 209 = 317 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc442 :
-    submissionArtifact.instructionPC 224 = 354 := by
+    submissionArtifact.instructionPC 209 = 317 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc442 :
-    instructionPC 224 = 354 := by
-  change submissionArtifact.instructionPC 224 = 354
+    instructionPC 209 = 317 := by
+  change submissionArtifact.instructionPC 209 = 317
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_443 :
-    submissionArtifact.instructionPC 225 = 356 := by
+    submissionArtifact.instructionPC 210 = 319 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc443 :
-    submissionArtifact.instructionPC 225 = 356 := by
+    submissionArtifact.instructionPC 210 = 319 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc443 :
-    instructionPC 225 = 356 := by
-  change submissionArtifact.instructionPC 225 = 356
+    instructionPC 210 = 319 := by
+  change submissionArtifact.instructionPC 210 = 319
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_444 :
-    submissionArtifact.instructionPC 226 = 357 := by
+    submissionArtifact.instructionPC 211 = 320 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc444 :
-    submissionArtifact.instructionPC 226 = 357 := by
+    submissionArtifact.instructionPC 211 = 320 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc444 :
-    instructionPC 226 = 357 := by
-  change submissionArtifact.instructionPC 226 = 357
+    instructionPC 211 = 320 := by
+  change submissionArtifact.instructionPC 211 = 320
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_445 :
-    submissionArtifact.instructionPC 227 = 358 := by
+    submissionArtifact.instructionPC 212 = 321 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc445 :
-    submissionArtifact.instructionPC 227 = 358 := by
+    submissionArtifact.instructionPC 212 = 321 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc445 :
-    instructionPC 227 = 358 := by
-  change submissionArtifact.instructionPC 227 = 358
+    instructionPC 212 = 321 := by
+  change submissionArtifact.instructionPC 212 = 321
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_446 :
-    submissionArtifact.instructionPC 228 = 360 := by
+    submissionArtifact.instructionPC 213 = 323 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc446 :
-    submissionArtifact.instructionPC 228 = 360 := by
+    submissionArtifact.instructionPC 213 = 323 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc446 :
-    instructionPC 228 = 360 := by
-  change submissionArtifact.instructionPC 228 = 360
+    instructionPC 213 = 323 := by
+  change submissionArtifact.instructionPC 213 = 323
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_447 :
-    submissionArtifact.instructionPC 229 = 361 := by
+    submissionArtifact.instructionPC 214 = 324 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc447 :
-    submissionArtifact.instructionPC 229 = 361 := by
+    submissionArtifact.instructionPC 214 = 324 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc447 :
-    instructionPC 229 = 361 := by
-  change submissionArtifact.instructionPC 229 = 361
+    instructionPC 214 = 324 := by
+  change submissionArtifact.instructionPC 214 = 324
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_448 :
-    submissionArtifact.instructionPC 230 = 362 := by
+    submissionArtifact.instructionPC 215 = 325 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc448 :
-    submissionArtifact.instructionPC 230 = 362 := by
+    submissionArtifact.instructionPC 215 = 325 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc448 :
-    instructionPC 230 = 362 := by
-  change submissionArtifact.instructionPC 230 = 362
+    instructionPC 215 = 325 := by
+  change submissionArtifact.instructionPC 215 = 325
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_449 :
-    submissionArtifact.instructionPC 231 = 363 := by
+    submissionArtifact.instructionPC 216 = 326 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc449 :
-    submissionArtifact.instructionPC 231 = 363 := by
+    submissionArtifact.instructionPC 216 = 326 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc449 :
-    instructionPC 231 = 363 := by
-  change submissionArtifact.instructionPC 231 = 363
+    instructionPC 216 = 326 := by
+  change submissionArtifact.instructionPC 216 = 326
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_450 :
-    submissionArtifact.instructionPC 232 = 366 := by
+    submissionArtifact.instructionPC 217 = 329 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc450 :
-    submissionArtifact.instructionPC 232 = 366 := by
+    submissionArtifact.instructionPC 217 = 329 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc450 :
-    instructionPC 232 = 366 := by
-  change submissionArtifact.instructionPC 232 = 366
+    instructionPC 217 = 329 := by
+  change submissionArtifact.instructionPC 217 = 329
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_451 :
-    submissionArtifact.instructionPC 233 = 367 := by
+    submissionArtifact.instructionPC 218 = 330 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc451 :
-    submissionArtifact.instructionPC 233 = 367 := by
+    submissionArtifact.instructionPC 218 = 330 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc451 :
-    instructionPC 233 = 367 := by
-  change submissionArtifact.instructionPC 233 = 367
+    instructionPC 218 = 330 := by
+  change submissionArtifact.instructionPC 218 = 330
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_452 :
-    submissionArtifact.instructionPC 234 = 368 := by
+    submissionArtifact.instructionPC 219 = 331 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc452 :
-    submissionArtifact.instructionPC 234 = 368 := by
+    submissionArtifact.instructionPC 219 = 331 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc452 :
-    instructionPC 234 = 368 := by
-  change submissionArtifact.instructionPC 234 = 368
+    instructionPC 219 = 331 := by
+  change submissionArtifact.instructionPC 219 = 331
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem referenceArtifact_pc_453 :
-    submissionArtifact.instructionPC 235 = 371 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem refPc453 :
-    submissionArtifact.instructionPC 235 = 371 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem pc453 :
-    instructionPC 235 = 371 := by
-  change submissionArtifact.instructionPC 235 = 371
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
 @[simp] theorem referenceArtifact_pc_454 :
-    submissionArtifact.instructionPC 236 = 372 := by
+    submissionArtifact.instructionPC 226 = 360 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc454 :
-    submissionArtifact.instructionPC 236 = 372 := by
+    submissionArtifact.instructionPC 226 = 360 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc454 :
-    instructionPC 236 = 372 := by
-  change submissionArtifact.instructionPC 236 = 372
+    instructionPC 226 = 360 := by
+  change submissionArtifact.instructionPC 226 = 360
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_455 :
-    submissionArtifact.instructionPC 237 = 373 := by
+    submissionArtifact.instructionPC 227 = 361 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc455 :
-    submissionArtifact.instructionPC 237 = 373 := by
+    submissionArtifact.instructionPC 227 = 361 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc455 :
-    instructionPC 237 = 373 := by
-  change submissionArtifact.instructionPC 237 = 373
+    instructionPC 227 = 361 := by
+  change submissionArtifact.instructionPC 227 = 361
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -5650,291 +5571,109 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem referenceArtifact_pc_845 :
-    submissionArtifact.instructionPC 178 = 278 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem refPc845 :
-    submissionArtifact.instructionPC 178 = 278 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem pc845 :
-    instructionPC 178 = 278 := by
-  change submissionArtifact.instructionPC 178 = 278
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem referenceArtifact_pc_846 :
-    submissionArtifact.instructionPC 179 = 281 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem refPc846 :
-    submissionArtifact.instructionPC 179 = 281 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem pc846 :
-    instructionPC 179 = 281 := by
-  change submissionArtifact.instructionPC 179 = 281
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem referenceArtifact_pc_847 :
-    submissionArtifact.instructionPC 180 = 282 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem refPc847 :
-    submissionArtifact.instructionPC 180 = 282 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem pc847 :
-    instructionPC 180 = 282 := by
-  change submissionArtifact.instructionPC 180 = 282
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem referenceArtifact_pc_848 :
-    submissionArtifact.instructionPC 181 = 287 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem refPc848 :
-    submissionArtifact.instructionPC 181 = 287 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem pc848 :
-    instructionPC 181 = 287 := by
-  change submissionArtifact.instructionPC 181 = 287
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem referenceArtifact_pc_849 :
-    submissionArtifact.instructionPC 182 = 288 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem refPc849 :
-    submissionArtifact.instructionPC 182 = 288 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem pc849 :
-    instructionPC 182 = 288 := by
-  change submissionArtifact.instructionPC 182 = 288
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem referenceArtifact_pc_850 :
-    submissionArtifact.instructionPC 183 = 289 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem refPc850 :
-    submissionArtifact.instructionPC 183 = 289 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem pc850 :
-    instructionPC 183 = 289 := by
-  change submissionArtifact.instructionPC 183 = 289
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem referenceArtifact_pc_851 :
-    submissionArtifact.instructionPC 184 = 294 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem refPc851 :
-    submissionArtifact.instructionPC 184 = 294 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem pc851 :
-    instructionPC 184 = 294 := by
-  change submissionArtifact.instructionPC 184 = 294
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem referenceArtifact_pc_852 :
-    submissionArtifact.instructionPC 185 = 295 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem refPc852 :
-    submissionArtifact.instructionPC 185 = 295 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem pc852 :
-    instructionPC 185 = 295 := by
-  change submissionArtifact.instructionPC 185 = 295
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem referenceArtifact_pc_853 :
-    submissionArtifact.instructionPC 186 = 296 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem refPc853 :
-    submissionArtifact.instructionPC 186 = 296 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem pc853 :
-    instructionPC 186 = 296 := by
-  change submissionArtifact.instructionPC 186 = 296
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem referenceArtifact_pc_854 :
-    submissionArtifact.instructionPC 187 = 301 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem refPc854 :
-    submissionArtifact.instructionPC 187 = 301 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem pc854 :
-    instructionPC 187 = 301 := by
-  change submissionArtifact.instructionPC 187 = 301
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem referenceArtifact_pc_855 :
-    submissionArtifact.instructionPC 188 = 302 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem refPc855 :
-    submissionArtifact.instructionPC 188 = 302 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem pc855 :
-    instructionPC 188 = 302 := by
-  change submissionArtifact.instructionPC 188 = 302
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem referenceArtifact_pc_856 :
-    submissionArtifact.instructionPC 189 = 303 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem refPc856 :
-    submissionArtifact.instructionPC 189 = 303 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem pc856 :
-    instructionPC 189 = 303 := by
-  change submissionArtifact.instructionPC 189 = 303
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem referenceArtifact_pc_857 :
-    submissionArtifact.instructionPC 190 = 308 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem refPc857 :
-    submissionArtifact.instructionPC 190 = 308 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem pc857 :
-    instructionPC 190 = 308 := by
-  change submissionArtifact.instructionPC 190 = 308
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem referenceArtifact_pc_858 :
-    submissionArtifact.instructionPC 191 = 309 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem refPc858 :
-    submissionArtifact.instructionPC 191 = 309 := by
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
-@[simp] theorem pc858 :
-    instructionPC 191 = 309 := by
-  change submissionArtifact.instructionPC 191 = 309
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  rfl
 
 @[simp] theorem referenceArtifact_pc_859 :
-    submissionArtifact.instructionPC 192 = 310 := by
+    submissionArtifact.instructionPC 177 = 273 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc859 :
-    submissionArtifact.instructionPC 192 = 310 := by
+    submissionArtifact.instructionPC 177 = 273 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc859 :
-    instructionPC 192 = 310 := by
-  change submissionArtifact.instructionPC 192 = 310
+    instructionPC 177 = 273 := by
+  change submissionArtifact.instructionPC 177 = 273
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_860 :
-    submissionArtifact.instructionPC 193 = 311 := by
+    submissionArtifact.instructionPC 178 = 274 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc860 :
-    submissionArtifact.instructionPC 193 = 311 := by
+    submissionArtifact.instructionPC 178 = 274 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc860 :
-    instructionPC 193 = 311 := by
-  change submissionArtifact.instructionPC 193 = 311
+    instructionPC 178 = 274 := by
+  change submissionArtifact.instructionPC 178 = 274
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_861 :
-    submissionArtifact.instructionPC 193 = 311 := by
+    submissionArtifact.instructionPC 178 = 274 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc861 :
-    submissionArtifact.instructionPC 193 = 311 := by
+    submissionArtifact.instructionPC 178 = 274 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc861 :
-    instructionPC 193 = 311 := by
-  change submissionArtifact.instructionPC 193 = 311
+    instructionPC 178 = 274 := by
+  change submissionArtifact.instructionPC 178 = 274
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_862 :
-    submissionArtifact.instructionPC 193 = 311 := by
+    submissionArtifact.instructionPC 178 = 274 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc862 :
-    submissionArtifact.instructionPC 193 = 311 := by
+    submissionArtifact.instructionPC 178 = 274 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc862 :
-    instructionPC 193 = 311 := by
-  change submissionArtifact.instructionPC 193 = 311
+    instructionPC 178 = 274 := by
+  change submissionArtifact.instructionPC 178 = 274
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -5944,10 +5683,10 @@ theorem initStore_valid (w : InitStore) (hw : w ∈ initStores) :
 
 
 @[simp] theorem validJumpDest_210 :
-    Decode.isValidJumpDest submissionBytecode 350 = true := by
-  have h := submissionArtifact.isValidJumpDest_index 220 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 313 = true := by
+  have h := submissionArtifact.isValidJumpDest_index 205 (by rfl)
   change Decode.isValidJumpDest submissionBytecode
-    (submissionArtifact.instructionPC 220) = true at h
+    (submissionArtifact.instructionPC 205) = true at h
   simpa using h
 
 @[simp] theorem validJumpDest_3ee :
@@ -5972,40 +5711,40 @@ def padEnterPath : List
 /-- Cached located path for RIPEMD padded-length arithmetic. -/
 def padLengthPath : List
     (Challenge.EvmProof.Stepper.Located submissionArtifact .Osaka) :=
-  [⟨192, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨193, .push ⟨1, by decide⟩ (UInt256.ofNat 72), by rfl, by decide⟩,
-   ⟨194, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨195, .push ⟨1, by decide⟩ (UInt256.ofNat 63), by rfl, by decide⟩,
-   ⟨196, .op .NOT, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨197, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨198, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨177, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨178, .push ⟨1, by decide⟩ (UInt256.ofNat 72), by rfl, by decide⟩,
+   ⟨179, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨180, .push ⟨1, by decide⟩ (UInt256.ofNat 63), by rfl, by decide⟩,
+   ⟨181, .op .NOT, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨182, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨183, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩]
 
 /-- Cached located path for copying calldata and setting up the footer loop. -/
 def padSetupPath : List
     (Challenge.EvmProof.Stepper.Located submissionArtifact .Osaka) :=
-  [⟨199, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨200, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩,
-   ⟨201, .push ⟨2, by decide⟩ (UInt256.ofNat 1024), by rfl, by decide⟩,
-   ⟨202, .op .CALLDATACOPY, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨203, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
-   ⟨204, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨205, .push ⟨2, by decide⟩ (UInt256.ofNat 1024), by rfl, by decide⟩,
-   ⟨206, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨207, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨208, .push ⟨1, by decide⟩ (UInt256.ofNat 195), by rfl, by decide⟩,
-   ⟨209, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨210, .push ⟨1, by decide⟩ (UInt256.ofNat 192), by rfl, by decide⟩,
-   ⟨211, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨212, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨213, .push ⟨2, by decide⟩ (UInt256.ofNat 1016), by rfl, by decide⟩,
-   ⟨214, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨215, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨216, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨217, .push ⟨1, by decide⟩ (UInt256.ofNat 7), by rfl, by decide⟩,
-   ⟨218, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨219, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨220, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨221, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨184, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨185, .push ⟨0, by decide⟩ ⟨0⟩, by rfl, by decide⟩,
+   ⟨186, .push ⟨2, by decide⟩ (UInt256.ofNat 1024), by rfl, by decide⟩,
+   ⟨187, .op .CALLDATACOPY, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨188, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
+   ⟨189, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨190, .push ⟨2, by decide⟩ (UInt256.ofNat 1024), by rfl, by decide⟩,
+   ⟨191, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨192, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨193, .push ⟨1, by decide⟩ (UInt256.ofNat 195), by rfl, by decide⟩,
+   ⟨194, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨195, .push ⟨1, by decide⟩ (UInt256.ofNat 192), by rfl, by decide⟩,
+   ⟨196, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨197, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨198, .push ⟨2, by decide⟩ (UInt256.ofNat 1016), by rfl, by decide⟩,
+   ⟨199, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨200, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨201, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨202, .push ⟨1, by decide⟩ (UInt256.ofNat 7), by rfl, by decide⟩,
+   ⟨203, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨204, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨205, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨206, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩]
 
 
 

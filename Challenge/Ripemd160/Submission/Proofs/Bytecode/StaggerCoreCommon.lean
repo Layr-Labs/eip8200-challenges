@@ -15,15 +15,15 @@ inductive Reg where
   | cache (address : Nat)
   deriving DecidableEq
 
-def word (memory : ByteArray) (r : Reg) (q right : WordLane) (k : UInt256) : UInt256 := match r with
+def word (memory : ByteArray) (h4 : UInt256) (r : Reg) (q right : WordLane) (k : UInt256) : UInt256 := match r with
   | .a => q.a | .b => q.b | .c => q.c | .d => q.d | .e => q.e
   | .ar => right.a | .br => right.b | .cr => right.c | .dr => right.d | .er => right.e
   | .factor => factorWord | .pair => pairWord | .upper => upperWord | .lower => lowerWord | .k => k
-  | .cache address => MachineState.readWord memory address
+  | .cache address => if address = 500 then h4 else MachineState.readWord memory address
 
-def stack (memory : ByteArray) (shape : List Reg) (q right : WordLane) (k : UInt256)
+def stack (memory : ByteArray) (h4 : UInt256) (shape : List Reg) (q right : WordLane) (k : UInt256)
     (rho : List UInt256) : List UInt256 :=
-  shape.map (fun r => word memory r q right k) ++ rho
+  shape.map (fun r => word memory h4 r q right k) ++ rho
 
 theorem add_comm (a b : UInt256) : UInt256.add a b = UInt256.add b a := by
   apply bits_injective

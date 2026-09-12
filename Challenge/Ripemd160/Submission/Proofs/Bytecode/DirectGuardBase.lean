@@ -16,6 +16,8 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open KnownInputCompactState
+@[simp] private theorem literalZeroWord : (⟨0⟩ : UInt256) = UInt256.ofNat 0 := rfl
+@[simp] private theorem zeroWordNat : (0 : UInt256).toNat = 0 := rfl
 
 def wfOp {op : Operation}
     (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
@@ -52,7 +54,7 @@ def sizePath : List Located :=
    opAt 14 .OR,
    opAt 15 .OR,
    opAt 16 .ISZERO,
-   pushAt 17 2 4762,
+   pushAt 17 2 4680,
    opAt 18 .JUMPI]
 
 def checkEntryPath : List Located :=

@@ -44,8 +44,8 @@ def gasSteps (s : State) (q right : WordLane) (rho : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4578, stack := stack s.memory [ .d, .b, .e, .a, .k, .c, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] q right (UInt256.ofNat 2840853838) rho}
-      {s with pc := UInt256.ofNat 4675, stack := stack s.memory [  ] (q) (right) (UInt256.ofNat 0) rho, memory := StaggerCoreModel.tailMemory s.memory q right} := by
+    GasSteps {s with pc := UInt256.ofNat 4592, stack := stack s.memory [ .d, .b, .e, .a, .k, .c, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] q right (UInt256.ofNat 2840853838) rho}
+      {s with pc := UInt256.ofNat 4689, stack := stack s.memory [  ] (q) (right) (UInt256.ofNat 0) rho, memory := StaggerCoreModel.tailMemory s.memory q right} := by
   have h := StaggerRawTail.gasSteps s (input s.memory q right (UInt256.ofNat 2840853838)) rho hs hr ha hcode hfork hnp
   rw [output_eq, memory_eq] at h
   exact h

@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownDigestStates
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.CompressionSeamBridge
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.HashAfterModel
 
 set_option warningAsError true
 

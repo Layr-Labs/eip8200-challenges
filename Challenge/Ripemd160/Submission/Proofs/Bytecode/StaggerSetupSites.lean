@@ -25,8 +25,8 @@ def normalSite : GenericRoundSite Artifact.submissionArtifact .Osaka actualNorma
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := actualNormalTemplate) (by decide))
     (by decide)
-theorem normal_pc : normalSite.startPC = UInt256.ofNat 496 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 305) = UInt256.ofNat 496
+theorem normal_pc : normalSite.startPC = UInt256.ofNat 497 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 305) = UInt256.ofNat 497
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 private def advancesCheck : Instr → Bool
@@ -76,27 +76,27 @@ private def normal_gasSteps_of_raw (s t : State)
   · exact hrun
   · exact hnp
 
-theorem normal_end : pcAfter (UInt256.ofNat 496) actualNormalTemplate = UInt256.ofNat 926 := by decide
+theorem normal_end : pcAfter (UInt256.ofNat 497) actualNormalTemplate = UInt256.ofNat 927 := by decide
 
 theorem pad_slice :
-    (Artifact.submissionArtifact.instructions.drop 248).take StaggerPad.padTemplate.length = StaggerPad.padTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 238).take StaggerPad.padTemplate.length = StaggerPad.padTemplate := by rfl
 
 def padSite : GenericRoundSite Artifact.submissionArtifact .Osaka StaggerPad.padTemplate :=
-  StackSiteBuilder.ofSlice StaggerPad.padTemplate 248 pad_slice
-    (by change 248 + StaggerPad.padTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice StaggerPad.padTemplate 238 pad_slice
+    (by change 238 + StaggerPad.padTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := StaggerPad.padTemplate) (by decide))
     (by decide)
-theorem pad_pc : padSite.startPC = UInt256.ofNat 406 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 248) = UInt256.ofNat 406
+theorem pad_pc : padSite.startPC = UInt256.ofNat 394 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 238) = UInt256.ofNat 394
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem pad_advances : ∀ instruction ∈ StaggerPad.padTemplate.dropLast, PadLift.Advances instruction := by
   apply PadLift.advancesAll_sound
   decide
 
-theorem pad_end : pcAfter (UInt256.ofNat 406) StaggerPad.padTemplate = UInt256.ofNat 479 := by decide
+theorem pad_end : pcAfter (UInt256.ofNat 394) StaggerPad.padTemplate = UInt256.ofNat 467 := by decide
 
 def gasSteps_normal (s : State) (ret : UInt256) (p : Nat) (rest : List UInt256)
     (hstack : rest.length ≤ 896) (hrun : s.halt = .Running)
@@ -104,17 +104,17 @@ def gasSteps_normal (s : State) (ret : UInt256) (p : Nat) (rest : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 496, stack := UInt256.ofNat p :: ret :: rest}
-      {s with pc := UInt256.ofNat 926, stack := ret :: rest, memory := StaggerTableLayout.resultMemory s.memory (PairedScheduleData.extractedWord s.memory p), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat p)} := by
-  apply normal_gasSteps_of_raw {s with pc := UInt256.ofNat 496, stack := UInt256.ofNat p :: ret :: rest} _ hcode hfork hrun hnp normal_pc.symm
-  have h := StaggerNormal.run_normal s (UInt256.ofNat 495) ret p rest hstack hrun hp hbound
+    GasSteps {s with pc := UInt256.ofNat 497, stack := UInt256.ofNat p :: ret :: rest}
+      {s with pc := UInt256.ofNat 927, stack := ret :: rest, memory := StaggerTableLayout.resultMemory s.memory (PairedScheduleData.extractedWord s.memory p), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat p)} := by
+  apply normal_gasSteps_of_raw {s with pc := UInt256.ofNat 497, stack := UInt256.ofNat p :: ret :: rest} _ hcode hfork hrun hnp normal_pc.symm
+  have h := StaggerNormal.run_normal s (UInt256.ofNat 496) ret p rest hstack hrun hp hbound
   have hfull : StaggerNormal.normalTemplate = .op .JUMPDEST :: actualNormalTemplate := by rfl
-  have hend : pcAfter (UInt256.ofNat 495) StaggerNormal.normalTemplate = UInt256.ofNat 926 := by decide
+  have hend : pcAfter (UInt256.ofNat 496) StaggerNormal.normalTemplate = UInt256.ofNat 927 := by decide
   rw [hend, hfull] at h
   have ht := run_without_jumpdest actualNormalTemplate
-    (DenseScheduleTemplate.scheduleEntry s (UInt256.ofNat 495) (UInt256.ofNat p) ret rest) _ (by decide)
+    (DenseScheduleTemplate.scheduleEntry s (UInt256.ofNat 496) (UInt256.ofNat p) ret rest) _ (by decide)
     (by simp only [DenseScheduleTemplate.scheduleEntry, List.length_append, List.length_cons, List.length_nil]; omega) hrun h
-  simpa only [DenseScheduleTemplate.scheduleEntry, List.cons_append, List.nil_append, show (UInt256.ofNat 495).succ = UInt256.ofNat 496 by decide] using ht
+  simpa only [DenseScheduleTemplate.scheduleEntry, List.cons_append, List.nil_append, show (UInt256.ofNat 496).succ = UInt256.ofNat 497 by decide] using ht
 
 def gasSteps_pad (s : State) (ret : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 896) (hrun : s.halt = .Running)
@@ -122,10 +122,10 @@ def gasSteps_pad (s : State) (ret : UInt256) (rest : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 406, stack := ret :: rest}
-      {s with pc := UInt256.ofNat 479, stack := ret :: rest, memory := StaggerTablePad.resultMemory s.memory (UInt256.ofNat s.executionEnv.calldata.size)} := by
-  apply PadLift.gasSteps_of_raw padSite {s with pc := UInt256.ofNat 406, stack := ret :: rest} _ hcode hfork hrun hnp pad_pc.symm pad_advances
-  have h := StaggerPad.run_pad s (UInt256.ofNat 406) ret rest (by omega) hrun hactive hfit
+    GasSteps {s with pc := UInt256.ofNat 394, stack := ret :: rest}
+      {s with pc := UInt256.ofNat 467, stack := ret :: rest, memory := StaggerTablePad.resultMemory s.memory (UInt256.ofNat s.executionEnv.calldata.size)} := by
+  apply PadLift.gasSteps_of_raw padSite {s with pc := UInt256.ofNat 394, stack := ret :: rest} _ hcode hfork hrun hnp pad_pc.symm pad_advances
+  have h := StaggerPad.run_pad s (UInt256.ofNat 394) ret rest (by omega) hrun hactive hfit
   rw [pad_end] at h
   exact h
 #print axioms gasSteps_normal
