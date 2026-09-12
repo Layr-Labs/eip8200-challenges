@@ -30,7 +30,7 @@ def right2 (memory : ByteArray) (q : WordLane) : WordLane :=
 def left77 (memory : ByteArray) (q : WordLane) : WordLane :=
   StaggerScalarWord.step true false 4 8 (MachineState.readWord memory 0) (UInt256.ofNat 2840853838) q
 def left78 (memory : ByteArray) (q : WordLane) : WordLane :=
-  StaggerScalarWord.step true false 4 5 (MachineState.readWord memory 80) (UInt256.ofNat 2840853838) q
+  StaggerScalarWord.step false false 4 5 (MachineState.readWord memory 80) (UInt256.ofNat 2840853838) q
 def left79 (memory : ByteArray) (q : WordLane) : WordLane :=
   StaggerScalarWord.step false false 4 6 (MachineState.readWord memory 140) (UInt256.ofNat 2840853838) q
 
