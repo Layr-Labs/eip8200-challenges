@@ -140,21 +140,17 @@ theorem run_reset (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame)
   all_goals rfl
 #print axioms run_reset
 
-def cleanupTemplate (dest : Nat) : List Instr :=
-  [.op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP,
-   .push ⟨2, by decide⟩ (UInt256.ofNat dest), .op .JUMP]
+def cleanupTemplate : List Instr :=
+  [.op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP]
 
 theorem run_cleanup (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame)
-    (rho : List UInt256) (dest : Nat) (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat dest).toNat = true) :
-    runInstrSeq (cleanupTemplate dest) {s with pc := pc, stack := frame f rho} =
-      some {s with pc := UInt256.ofNat dest, stack := rho} := by
+    (rho : List UInt256) (hstack : rho.length ≤ 990) (hrun : s.halt = .Running) :
+    runInstrSeq cleanupTemplate {s with pc := pc, stack := frame f rho} =
+      some {s with pc := pcAfter pc cleanupTemplate, stack := rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
-  simp only [Word.word_toNat_ofNat] at hvalid
-  norm_num only at hvalid
   simp (discharger := omega) [cleanupTemplate, frame, runInstrSeq, Stepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
-    Nat.add_assoc, hrun, hbase, hcap, hvalid, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+    Nat.add_assoc, hrun, hbase, hcap, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
 #print axioms run_cleanup
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionBranchRaw

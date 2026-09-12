@@ -9,7 +9,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Challenge.EvmProof.Word StackRoundTrace
 def packedHash (h : Compression.HashState) : UInt256 := (UInt256.lor (ofUInt32 h.h4) (UInt256.shiftLeft (UInt256.lor (ofUInt32 h.h3) (UInt256.shiftLeft (UInt256.lor (ofUInt32 h.h2) (UInt256.shiftLeft (UInt256.lor (ofUInt32 h.h1) (UInt256.shiftLeft (ofUInt32 h.h0) (UInt256.ofNat 32))) (UInt256.ofNat 32))) (UInt256.ofNat 32))) (UInt256.ofNat 32)))
 def template : List Instr := [
-   .push ⟨2, by decide⟩ (UInt256.ofNat 32), .op .SHL, .op .OR,
+   .push ⟨1, by decide⟩ (UInt256.ofNat 32), .op .SHL, .op .OR,
    .push ⟨1, by decide⟩ (UInt256.ofNat 32), .op .SHL, .op .OR,
    .push ⟨1, by decide⟩ (UInt256.ofNat 32), .op .SHL, .op .OR,
    .push ⟨1, by decide⟩ (UInt256.ofNat 32), .op .SHL, .op .OR ]
@@ -40,15 +40,15 @@ theorem run_template (s : State) (pc off limit : UInt256) (h : Compression.HashS
       (ofUInt32 h.h3) (ofUInt32 h.h4) (off :: limit :: rho) hs hrun
 
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 3831).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3840).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3831 actual_slice
-    (by change 3831 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3840 actual_slice
+    (by change 3840 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 4742 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3831) = UInt256.ofNat 4742
+theorem site_pc : site.startPC = UInt256.ofNat 4690 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3840) = UInt256.ofNat 4694
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction :=
   Table80SiteCommon.coreAdvancesAll_sound template (by decide)
@@ -58,14 +58,14 @@ def gasSteps (s : State) (off limit : UInt256) (h : Compression.HashState)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4742, stack := StaggerPersistentFrame.frame h off limit rho}
-      {s with pc := UInt256.ofNat 4759, stack := packedHash h :: off :: limit :: rho} := by
+    GasSteps {s with pc := UInt256.ofNat 4690, stack := StaggerPersistentFrame.frame h off limit rho}
+      {s with pc := UInt256.ofNat 4706, stack := packedHash h :: off :: limit :: rho} := by
   apply DenseScheduleLift.gasSteps_of_raw site
-    {s with pc := UInt256.ofNat 4742, stack := StaggerPersistentFrame.frame h off limit rho}
-    {s with pc := UInt256.ofNat 4759, stack := packedHash h :: off :: limit :: rho}
+    {s with pc := UInt256.ofNat 4690, stack := StaggerPersistentFrame.frame h off limit rho}
+    {s with pc := UInt256.ofNat 4706, stack := packedHash h :: off :: limit :: rho}
     hcode hfork hrun hnp site_pc.symm advances
-  have hraw := run_template s (UInt256.ofNat 4742) off limit h rho hstack hrun
-  have hend : pcAfter (UInt256.ofNat 4742) template = UInt256.ofNat 4759 := by decide
+  have hraw := run_template s (UInt256.ofNat 4690) off limit h rho hstack hrun
+  have hend : pcAfter (UInt256.ofNat 4690) template = UInt256.ofNat 4706 := by decide
   rw [hend] at hraw
   exact hraw
 
