@@ -35,7 +35,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80RawCommon
     .op .ADD,
     .op (.Dup ⟨6, by decide⟩),
     .op .MUL,
-    .op (.Dup ⟨14, by decide⟩),
+    .op (.Dup ⟨13, by decide⟩),
     .op .SHR,
     .op (.Dup ⟨5, by decide⟩),
     .op .ADD,
@@ -78,16 +78,16 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80RawCommon
  #print axioms run_actual
 
  theorem actual_slice :
-     (Artifact.submissionArtifact.instructions.drop 3284).take template.length = template := by rfl
+     (Artifact.submissionArtifact.instructions.drop 3280).take template.length = template := by rfl
  def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-   StackSiteBuilder.ofSlice template 3284 actual_slice
-     (by change 3284 + template.length ≤ Artifact.submissionInstructions.length
+   StackSiteBuilder.ofSlice template 3280 actual_slice
+     (by change 3280 + template.length ≤ Artifact.submissionInstructions.length
          rw [Artifact.referenceInstructions_count]; decide)
      StackRoundData.artifact_code_bound
      (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
      (by decide)
  theorem site_pc : site.startPC = UInt256.ofNat 3939 := by
-   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3284) = UInt256.ofNat 3939
+   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3280) = UInt256.ofNat 3939
    rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
  theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
    apply Table80SiteCommon.coreAdvancesAll_sound

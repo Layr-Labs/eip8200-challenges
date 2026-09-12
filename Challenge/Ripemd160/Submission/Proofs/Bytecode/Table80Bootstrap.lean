@@ -75,16 +75,16 @@ theorem run_actual (s : State) (pc : UInt256) (rho : List UInt256)
 #print axioms run_actual
 
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 681).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 677).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 681 actual_slice
-    (by change 681 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 677 actual_slice
+    (by change 677 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 1066 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 681) = UInt256.ofNat 1066
+theorem site_pc : site.startPC = UInt256.ofNat 1058 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 677) = UInt256.ofNat 1058
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem runInstr_pc_div {s t : State}
     (hresult : Stepper.runInstr (.op .DIV) s = some t) :
@@ -124,19 +124,19 @@ def gasSteps (s : State) (rho : List UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 1066, stack := cache ++ rho}
-      {s with pc := UInt256.ofNat 1154, stack := resultStack s.memory rho} := by
+    GasSteps {s with pc := UInt256.ofNat 1058, stack := cache ++ rho}
+      {s with pc := UInt256.ofNat 1146, stack := resultStack s.memory rho} := by
   apply Stepper.runLocatedBlock_sound _ _ site.path
   · exact hcode
   · exact hfork
-  · have hpc : ({s with pc := UInt256.ofNat 1066, stack := cache ++ rho} : State).pc = site.startPC := site_pc.symm
+  · have hpc : ({s with pc := UInt256.ofNat 1058, stack := cache ++ rho} : State).pc = site.startPC := site_pc.symm
     rw [runLocatedBlock_eq_runInstrSeq_site site _ hpc (by
       intro located hm u v hu
       apply advances _ ?_ u v hu
       rw [← site.instruction_eq]
       exact List.mem_map_of_mem hm)]
-    have hraw := run_actual s (UInt256.ofNat 1066) rho hstack hrun hactive
-    have hend : pcAfter (UInt256.ofNat 1066) template = UInt256.ofNat 1154 := by decide
+    have hraw := run_actual s (UInt256.ofNat 1058) rho hstack hrun hactive
+    have hend : pcAfter (UInt256.ofNat 1058) template = UInt256.ofNat 1146 := by decide
     rw [hend] at hraw
     exact hraw
   · exact hrun

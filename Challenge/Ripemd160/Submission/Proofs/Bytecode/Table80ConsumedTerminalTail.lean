@@ -122,7 +122,7 @@ def template : List Instr :=
     .op .POP,
     .op .MSTORE,
     .op .MSTORE,
-    .op .MSTORE,
+    .op .POP,
     .op .JUMP ]
 
 def prefixTemplate : List Instr := template.dropLast
@@ -208,13 +208,13 @@ private def chunk4 : List Instr :=
    .op .MSTORE]
 
 private def chunk5 : List Instr :=
-  [.op .POP,
-   .op .POP,
-   .op .POP,
-   .op .POP,
-   .op .MSTORE,
-   .op .MSTORE,
-   .op .MSTORE]
+  [ .op .POP,
+    .op .POP,
+    .op .POP,
+    .op .POP,
+    .op .MSTORE,
+    .op .MSTORE,
+    .op .POP ]
 
 private def stack1 (q : WordLane) (factor ret r0 : UInt256) (rho : List UInt256) : List UInt256 :=
   [r0, q.d, q.b, q.c, q.a, q.e, factor, pairWord, upperWord, lowerWord] ++ (Table80Raw.cache ++ ret :: rho)
