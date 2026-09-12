@@ -1,7 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputPathDefs
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputLogic
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownDigestResult
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRunBridge
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.HashMemoryModel
 
 set_option warningAsError true
 set_option maxRecDepth 50000

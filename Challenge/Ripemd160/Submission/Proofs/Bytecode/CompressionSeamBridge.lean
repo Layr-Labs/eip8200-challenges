@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.HashAfterModel
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CompressionInterface
 
 set_option warningAsError true
@@ -24,11 +25,6 @@ open Challenge.Ripemd160
 open Challenge.EvmProof
 open EvmSemantics
 open EvmSemantics.EVM
-
-/-- Mathematical chaining state after `n` padded blocks. -/
-def hashAfter (input : ByteArray) (n : Nat) : Array UInt32 :=
-  SpecBridge.absorbBlocks EvmSemantics.Crypto.Ripemd160.H0
-    (Padding.paddedMessage input) 0 n
 
 /-- The five EVM chaining slots agree with the mathematical state after
 `n` blocks.  This is the invariant preserved by a concrete compressor. -/

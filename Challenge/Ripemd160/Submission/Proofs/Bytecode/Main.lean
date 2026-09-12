@@ -93,7 +93,7 @@ def initializedState (input : ByteArray) : State :=
   Artifact.initStores.foldl applyInitStore (Execution.mainStart input)
 
 @[simp] theorem initializedState_pc (input : ByteArray) :
-    (initializedState input).pc = UInt256.ofNat (Artifact.instructionPC 192) := by
+    (initializedState input).pc = UInt256.ofNat (Artifact.instructionPC 194) := by
   rfl
 
 @[simp] theorem initializedState_stack (input : ByteArray) :
@@ -364,7 +364,7 @@ def gasSteps_bodyInitialization (input : ByteArray) :
 
 def gasSteps_initialize (input : ByteArray)
     (entryPrefix : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Execution.atPC input 272)) :
+      (Execution.atPC input 276)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (initializedState input) :=
   (Execution.gasSteps_entry input entryPrefix).trans (gasSteps_bodyInitialization input)

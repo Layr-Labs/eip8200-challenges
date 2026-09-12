@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownDigestD
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.CompressionSeamBridge
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.HashAfterModel
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownDigestStepsA
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownDigestStepsB
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownDigestStepsC
