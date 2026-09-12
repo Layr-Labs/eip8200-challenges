@@ -384,7 +384,7 @@ private theorem fastPCAnchor24 :
 
 @[simp] theorem fastPC4 (i : Nat) (hi : 1072 ≤ i) (hii : i ≤ 1101) :
     Artifact.submissionArtifact.instructionPC i =
-      [1434, 1435, 1436, 1439, 1440, 1443, 1446, 1447, 1450, 1453, 1456, 1457, 1458, 1461, 1464, 1465, 1468, 1471, 1472, 1473, 1474, 1475, 1476, 1478, 1479, 1482, 1483, 1486, 1487, 1490][i - 1072]! := by
+      [1434, 1435, 1436, 1439, 1440, 1443, 1446, 1447, 1450, 1453, 1456, 1457, 1458, 1461, 1464, 1465, 1468, 1471, 1472, 1473, 1474, 1475, 1476, 1479, 1480, 1482, 1483, 1486, 1487, 1490][i - 1072]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
         Artifact.submissionArtifact.instructionPC (1072 + (i - 1072)) := by
