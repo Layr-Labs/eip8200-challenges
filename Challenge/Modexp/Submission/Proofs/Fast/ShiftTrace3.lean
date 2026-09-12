@@ -499,7 +499,7 @@ theorem run_shiftDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock blk3264
       (shiftDoneState s mem n bsize esize msize) =
       some { Exp.bDone s (Exp.mcopyMem mem 4096 5120 (32 * n)) n bsize esize msize with
-               pc := UInt256.ofNat 3138 } := by
+               pc := UInt256.ofNat 3273 } := by
   have hsize : (UInt256.ofNat (32 * n)).toNat = 32 * n := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
     exact lt_of_le_of_lt (show 32 * n ≤ 1024 by omega) (by decide)
@@ -514,7 +514,7 @@ theorem run_shiftDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   -- cannot close that, because the nesting is `activeWordsAfter (activeWordsAfter (... % 2^256))`
   -- and simp meets the layers one at a time.  So give it NAT-level rewrites -- the same shape
   -- `StagedOperandEntryZero` already uses -- and one identity to finish.  `Exp.activeWords_fix2`
-  -- is the ready-made two-region lemma but wants `298 <= activeWords` where this block has 296;
+  -- is the ready-made two-region lemma but wants `297 <= activeWords` where this block has 296;
   -- `Monpro.activeWordsAfter_fix` carries the 296 bound.
   have hactN : s.activeWords.toNat %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =

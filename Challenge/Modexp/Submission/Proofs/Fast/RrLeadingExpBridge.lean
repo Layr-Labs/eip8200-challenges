@@ -32,7 +32,7 @@ theorem logic_bitAt_eq (n k : Nat) :
 after rewriting the already-proved active-word identity. -/
 theorem exitState_eq_rrHead (template : State) (mem : ByteArray)
     (n bsize esize msize : Nat) (hn32 : n ≤ 32)
-    (hactive : 298 ≤ template.activeWords.toNat) :
+    (hactive : 297 ≤ template.activeWords.toNat) :
     exitState template mem n bsize esize msize =
       Challenge.Modexp.Submission.Proofs.Fast.Exp.rrHead template
         (copiedMemory mem n) n bsize esize msize (directCounter n) := by
@@ -65,7 +65,7 @@ direct helper exit.  The concrete helper trace composes before this bundle. -/
 theorem direct_rejoin_facts (template : State) (mem : ByteArray)
     (n bsize esize msize mm R minv : Nat)
     (hn2 : 2 ≤ n) (hn32 : n ≤ 32)
-    (hactive : 298 ≤ template.activeWords.toNat)
+    (hactive : 297 ≤ template.activeWords.toNat)
     (hframe : Frame mem n bsize minv)
     (hmod : Model.FastRepresents mem 0 n mm)
     (hr1 : Model.FastRepresents mem 4096 n (R % mm))

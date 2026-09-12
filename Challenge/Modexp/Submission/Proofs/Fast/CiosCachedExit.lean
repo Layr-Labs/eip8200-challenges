@@ -18,8 +18,8 @@ open WindowNibbleKernel CiosCachedMacCore CiosCached CiosCached
 theorem run_exit (s : State) (pbi paEnd pbEnd flag target2 dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1006) :
     runInstructions exitProgram
-      (framed s (UInt256.ofNat 4658) ([pbi, paEnd, pbEnd, flag, negative32, allOnes, target2, dst, ret] ++ rest)) =
-    some (framed s (UInt256.ofNat 4669) ([dst, ret] ++ rest)) := by
+      (framed s (UInt256.ofNat 4793) ([pbi, paEnd, pbEnd, flag, negative32, allOnes, target2, dst, ret] ++ rest)) =
+    some (framed s (UInt256.ofNat 4804) ([dst, ret] ++ rest)) := by
   -- `exitProgram` is `tailProgram.drop 23`: seven discards, a push of the successor's pc, and
   -- then -- where the program used to jump -- a discard.  The entry pc has to be restated
   -- from 4651 to 4658 because of that change.  While the fragment ENDED IN A JUMP its final
@@ -29,7 +29,7 @@ theorem run_exit (s : State) (pbi paEnd pbEnd flag target2 dst ret : UInt256) (r
   -- to 4668, and the last discard to 4669 -- the same exit as before.  That final equation is
   -- a closed term on which `succ_ofNat_mod` cannot fire until the sum is normalised, so it is
   -- settled directly.
-  have hstep : (UInt256.ofNat 4665 + UInt256.ofNat 3).succ = UInt256.ofNat 4669 := by decide
+  have hstep : (UInt256.ofNat 4800 + UInt256.ofNat 3).succ = UInt256.ofNat 4804 := by decide
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
   have hExtra11 : rest.length + 11 < 1024 := by omega

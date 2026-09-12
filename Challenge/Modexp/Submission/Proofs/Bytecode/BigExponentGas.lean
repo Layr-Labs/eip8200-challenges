@@ -10,16 +10,16 @@ open EvmSemantics
 open EvmSemantics.EVM
 
 private theorem jump1000 :
-    Decode.isValidJumpDest submissionBytecode 868 = true :=
-  Artifact.isValidJumpDest_index 679 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 1003 = true :=
+  Artifact.isValidJumpDest_index 754 (by rfl)
 
 private theorem jump1015 :
-    Decode.isValidJumpDest submissionBytecode 882 = true :=
-  Artifact.isValidJumpDest_index 686 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 1017 = true :=
+  Artifact.isValidJumpDest_index 761 (by rfl)
 
 private theorem jump1034 :
-    Decode.isValidJumpDest submissionBytecode 901 = true :=
-  Artifact.isValidJumpDest_index 695 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 1036 = true :=
+  Artifact.isValidJumpDest_index 770 (by rfl)
 
 def gasSteps_selectIteration (s : State) (accumulatorWord : UInt256)
     (count b e m baseOff expOff i j k : Nat) (offset byte : UInt256)
@@ -274,7 +274,7 @@ def gasSteps_exponentBit (s : State) (accumulatorWord : UInt256)
       (by simpa [innerBody, innerLoop, State.fork] using hnp)
   have hsquareRaw := BigMul.gasSteps_mulModBig
     (innerBody s accumulatorWord count b e m baseOff expOff i offset byte rest j)
-    2048 2048 3072 0 count 868 frame hframe hcount
+    2048 2048 3072 0 count 1003 frame hframe hcount
     (by simpa [innerBody, innerLoop] using hcode)
     (by simpa [innerBody, innerLoop, State.fork] using hfork)
     (by simpa [innerBody, innerLoop] using hrun)
@@ -296,13 +296,13 @@ def gasSteps_exponentBit (s : State) (accumulatorWord : UInt256)
   have hcopyRaw := BigHelpers.gasSteps_copy
     (squareReturned s accumulatorWord count b e m baseOff expOff i j offset
       byte rest)
-    2048 3072 count 882 frame (by omega) hcount
+    2048 3072 count 1017 frame (by omega) hcount
     (by simpa using hcode) (by simpa [State.fork] using hfork)
     (by simpa using hrun) (by simpa [State.fork] using hnp) jump1015
   have hcopy : Challenge.EvmProof.GasSteps
       (BigHelpers.copyEntry
         (squareReturned s accumulatorWord count b e m baseOff expOff i j offset
-          byte rest) 2048 3072 count 882 frame)
+          byte rest) 2048 3072 count 1017 frame)
       (copiedSquare s accumulatorWord count b e m baseOff expOff i j offset byte
         rest) := by
     simpa [copiedSquare, frame] using hcopyRaw
@@ -317,13 +317,13 @@ def gasSteps_exponentBit (s : State) (accumulatorWord : UInt256)
   have hproductRaw := BigMul.gasSteps_mulModBig
     (copiedSquare s accumulatorWord count b e m baseOff expOff i j offset byte
       rest)
-    2048 1024 3072 0 count 901 frame hframe hcount
+    2048 1024 3072 0 count 1036 frame hframe hcount
     (by simpa using hcode) (by simpa [State.fork] using hfork)
     (by simpa using hrun) (by simpa [State.fork] using hnp) jump1034
   have hproduct : Challenge.EvmProof.GasSteps
       (BigMul.mulEntry
         (copiedSquare s accumulatorWord count b e m baseOff expOff i j offset
-          byte rest) 2048 1024 3072 0 count 901 frame)
+          byte rest) 2048 1024 3072 0 count 1036 frame)
       (productReturned s accumulatorWord count b e m baseOff expOff i j offset
         byte rest) := by
     simpa [productReturned, mulResult, frame] using hproductRaw
@@ -378,7 +378,7 @@ theorem gasSteps_exponentBit_cost_potential (s : State)
         (by decide) (by decide)
   have hsquare := BigMul.gasSteps_mulModBig_cost_potential
     (innerBody s accumulatorWord count b e m baseOff expOff i offset byte rest j)
-    2048 2048 3072 0 count 868 frame hframe hcount
+    2048 2048 3072 0 count 1003 frame hframe hcount
     (by simpa [innerBody, innerLoop] using hcode)
     (by simpa [innerBody, innerLoop, State.fork] using hfork)
     (by simpa [innerBody, innerLoop] using hrun)
@@ -393,7 +393,7 @@ theorem gasSteps_exponentBit_cost_potential (s : State)
   have hcopy := BigHelpers.gasSteps_copy_cost_potential
     (squareReturned s accumulatorWord count b e m baseOff expOff i j offset
       byte rest)
-    2048 3072 count 882 frame (by omega) hcount
+    2048 3072 count 1017 frame (by omega) hcount
     (by simpa using hcode) (by simpa [State.fork] using hfork)
     (by simpa using hrun) (by simpa [State.fork] using hnp) jump1015
   have htoProduct :=
@@ -406,7 +406,7 @@ theorem gasSteps_exponentBit_cost_potential (s : State)
   have hproduct := BigMul.gasSteps_mulModBig_cost_potential
     (copiedSquare s accumulatorWord count b e m baseOff expOff i j offset byte
       rest)
-    2048 1024 3072 0 count 901 frame hframe hcount
+    2048 1024 3072 0 count 1036 frame hframe hcount
     (by simpa using hcode) (by simpa [State.fork] using hfork)
     (by simpa using hrun) (by simpa [State.fork] using hnp) jump1034
   have htoSelect :=

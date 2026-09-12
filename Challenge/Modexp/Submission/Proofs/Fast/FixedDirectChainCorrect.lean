@@ -33,12 +33,12 @@ open Challenge.Modexp.Submission.Proofs.Fast.FixedDirectStates
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
 theorem jumpD3970 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 3221).toNat = true :=
-  Exp.jumpD 3221 (by decide) FixedDirectPaths.jumpDest3970
+    (UInt256.ofNat 3356).toNat = true :=
+  Exp.jumpD 3356 (by decide) FixedDirectPaths.jumpDest3970
 
 theorem jumpD3997 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 1571).toNat = true :=
-  Exp.jumpD 1571 (by decide) jumpDest1802
+    (UInt256.ofNat 1706).toNat = true :=
+  Exp.jumpD 1706 (by decide) jumpDest1802
 
 /-- The memory word the loop head writes holds the remaining square count. -/
 theorem readWord_countStore (mem : ByteArray) (count : Nat) :
@@ -54,7 +54,7 @@ def gasSteps_squareLoop (s : State) {n bsize mm minv : Nat}
     (hslow : ¬ (n = 4 ∨ n = 8))
     (hm : 0 < mm) (hn32 : n ≤ 32) (hcount : 1 ≤ count)
     (hcount16 : count ≤ 16) (hbM : bM < mm)
-    (hactive : 298 ≤ s.activeWords.toNat)
+    (hactive : 297 ≤ s.activeWords.toNat)
     (hframe : Exp.Frame memory n bsize minv)
     (hinv : Inv memory n mm rawBase bM)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -70,7 +70,7 @@ def gasSteps_squareLoop (s : State) {n bsize mm minv : Nat}
   | succ k ih =>
       have hframe0 := countStore_frame (k + 1) hframe
       have hinv0 := countStore_inv (k + 1) hn32 hinv
-      have hcall := sub.square (UInt256.ofNat 3221)
+      have hcall := sub.square (UInt256.ofNat 3356)
         (UInt256.ofNat (k + 1) :: Exp.outer n bsize esize msize)
         (Exp.storeWord memory 9280 (UInt256.ofNat (k + 1))) bM
         hslow (by simp [Exp.outer])
@@ -118,7 +118,7 @@ def gasSteps_squareLoopFast (s : State) {n bsize mm minv : Nat}
     (memory : ByteArray) (esize msize count bM rawBase : Nat)
     (hfast : n = 4 ∨ n = 8) (hcount : 1 ≤ count) (hcount16 : count ≤ 16)
     (hn32 : n ≤ 32) (hbM : bM < mm)
-    (hactive : 298 ≤ s.activeWords.toNat)
+    (hactive : 297 ≤ s.activeWords.toNat)
     (hframe : Exp.Frame memory n bsize minv)
     (hinv : Inv memory n mm rawBase bM)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -134,7 +134,7 @@ def gasSteps_squareLoopFast (s : State) {n bsize mm minv : Nat}
   have hinv0 := countStore_inv count hn32 hinv
   (FixedDirectChainTrace.gasSteps_squareCall s memory
       n bsize esize msize count hactive hcode hfork hrun hnp).trans
-    (sub.squareLoop count (UInt256.ofNat 3221)
+    (sub.squareLoop count (UInt256.ofNat 3356)
       (UInt256.ofNat count :: Exp.outer n bsize esize msize)
       (Exp.storeWord memory 9280 (UInt256.ofNat count)) bM
       hfast hcount hcount16 (by simp [Exp.outer])
@@ -163,7 +163,7 @@ def chain_of_fixed (s : State) {n bsize mm minv : Nat}
     (memory : ByteArray) (esize msize count bM rawBase : Nat)
     (hm : 0 < mm) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hcount : 1 ≤ count) (hcount16 : count ≤ 16) (hbM : bM < mm)
-    (hactive : 298 ≤ s.activeWords.toNat)
+    (hactive : 297 ≤ s.activeWords.toNat)
     (hframe : Exp.Frame memory n bsize minv)
     (hmod : Model.FastRepresents memory 0 n mm)
     (hbase : Model.FastRepresents memory 2048 n bM)

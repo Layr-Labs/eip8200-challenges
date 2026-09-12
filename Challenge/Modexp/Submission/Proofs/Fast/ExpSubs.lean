@@ -184,7 +184,7 @@ def subsSquareLoop (s : State) (n bsize mm minv : Nat)
       Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
       Model.FastRepresents mem 2048 n a → a < mm →
       Challenge.EvmProof.GasSteps (sqCall s mem ret tail)
-        (retTo s (SquareLoop.sqLoopMem s n k mem) (UInt256.ofNat 3231) tail) := by
+        (retTo s (SquareLoop.sqLoopMem s n k mem) (UInt256.ofNat 3366) tail) := by
   intro k ret tail mem a hfast hk hk16 hcap hcount hf hm ha ham
   -- `GasSteps` lives in `Type`, so the limb count has to be split by `cases`.
   cases n with

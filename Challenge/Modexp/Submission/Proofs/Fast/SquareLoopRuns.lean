@@ -61,7 +61,7 @@ theorem run_sqExit_more (s : State) (mem : ByteArray) (n c : Nat)
   have htrue : UInt256.isTrue (UInt256.ofNat c) := by
     show (UInt256.ofNat c).toNat ≠ 0
     rw [hcNat]; omega
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 4739 = true := by
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 4874 = true := by
     rw [hcode]; exact jumpDest4753
   have h9280 : (9280 : UInt256).toNat = 9280 := by decide
   simp [sqExitProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
@@ -103,10 +103,10 @@ theorem run_last (s : State) (mem : ByteArray) (n : Nat)
     runInstructions lastProgram
       (frameAt pcLast s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
     some (frameAt pcNx s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst
-      (UInt256.ofNat 3231) rest) := by
+      (UInt256.ofNat 3366) rest) := by
   have hc16' : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 4650 = true := by
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 4785 = true := by
     rw [hcode]; exact CarryRowGas.jumpDest4664
   simp [lastProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     frameAt, frameStack, pcLast, pcNx, hjd, hc16', hc17, List.exchange,
@@ -121,12 +121,12 @@ theorem run_more (s : State) (mem : ByteArray) (n : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
     runInstructions moreProgram
       (frameAt pcMore s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
-    some (mpCsubState s mem pdst (UInt256.ofNat 4755)
+    some (mpCsubState s mem pdst (UInt256.ofNat 4890)
       (frameStack n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)) := by
   have hc16' : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 4669 = true := by
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 4804 = true := by
     rw [hcode]; exact jumpDest4683
   have hc19 : rest.length + 19 < 1024 := by omega
   simp [moreProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
@@ -184,7 +184,7 @@ def gasSteps_last (s : State) (mem : ByteArray) (n : Nat)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (frameAt pcLast s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
-      (frameAt pcNx s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst (UInt256.ofNat 3231) rest) :=
+      (frameAt pcNx s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst (UInt256.ofNat 3366) rest) :=
   lastBlock.steps
     (environment (frameAt pcLast s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
       hcode hfork hrun hnp) rfl
@@ -200,7 +200,7 @@ def gasSteps_more (s : State) (mem : ByteArray) (n : Nat)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (frameAt pcMore s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
-      (mpCsubState s mem pdst (UInt256.ofNat 4755)
+      (mpCsubState s mem pdst (UInt256.ofNat 4890)
         (frameStack n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)) :=
   moreBlock.steps
     (environment (frameAt pcMore s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
@@ -219,14 +219,14 @@ def gasSteps_nxExit (s : State) (mem : ByteArray) (n : Nat)
     Challenge.EvmProof.GasSteps
       (frameAt pcNx s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
       (mpCsubState s mem pdst ret rest) :=
-  (CarryRowGas.gasSteps_nxJd s mem pbi 2048 n (UInt256.ofNat 4788) ent inv m0
+  (CarryRowGas.gasSteps_nxJd s mem pbi 2048 n (UInt256.ofNat 4923) ent inv m0
     (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest)
     (by simp only [List.length_cons]; omega) hrun hcode hfork hnp).trans
   (CarryRowBlocks.exitBlock.steps
     (CarryRowBlocks.environment (CiosCachedTailDefs.nxState s mem pbi 2048 n
-      (UInt256.ofNat 4788) ent inv m0
+      (UInt256.ofNat 4923) ent inv m0
       (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest)) hcode hfork hrun hnp) rfl
-    (CiosReadonly.run_exit { s with memory := mem } pbi (UInt256.ofNat 4788)
+    (CiosReadonly.run_exit { s with memory := mem } pbi (UInt256.ofNat 4923)
       (UInt256.ofNat (2048 - 32)) ent (l2Target n) tl inv m0 aprev m96 m64 m32 pdst ret rest
       hcap))
 

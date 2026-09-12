@@ -17,10 +17,10 @@ theorem run_tail (s : State) (c mu f pbi pa pb flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
     (htarget : Decode.isValidJumpDest s.executionEnv.code pa.toNat = true) :
     runInstructions CarryRowPrograms.tail
-      (framed s (UInt256.ofNat 4615)
+      (framed s (UInt256.ofNat 4750)
         ([c,mu,f,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) =
     some (framed {s with memory := tailCarry s.memory c f}
-      (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb) then pa else UInt256.ofNat 4641)
+      (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb) then pa else UInt256.ofNat 4776)
       ([negative32+pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) := by
   have h1 := CarryRowTrace.run_tailStore s c mu f pbi pa pb flag dst ret rest hcap hact
   have h2 := CiosCachedTailTest.run_test {s with memory := tailCarry s.memory c f}

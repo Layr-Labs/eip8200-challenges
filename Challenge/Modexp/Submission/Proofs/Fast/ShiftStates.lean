@@ -22,8 +22,8 @@ open Challenge.Modexp.Submission.Proofs.Fast
 abbrev outer := Exp.outer
 
 /-- Program counters of the appended routine. -/
-def pcDispatch : Nat := 3302
-def pcHit : Nat := 3317
+def pcDispatch : Nat := 3437
+def pcHit : Nat := 3452
 -- 3346, not ticket 4's 3358: the recogniser-miss JUMPDEST is instruction 2556 here (it was 2561),
 -- and this is the one pc in the table the regenerator could not rewrite, because 3358 has no image
 -- in the pc map -- R-ONE2 deleted the instruction it used to sit on, so the map row is empty and
@@ -31,37 +31,37 @@ def pcHit : Nat := 3317
 -- and `blk2889` is located there, so a stale 3358 makes `runLocatedBlock blk2889 (missState …)`
 -- return `none`.  Nothing but the build checked this def: it is a bare `Nat` with no tie to the
 -- artifact, unlike every `instructionPC`/`opAt`/`pushAt` fact around it.
-def pcMiss : Nat := 3346
-def pcAfterCsub0 : Nat := 3363
-def pcNegLoop : Nat := 3370
-def pcNegNext : Nat := 3393
+def pcMiss : Nat := 3481
+def pcAfterCsub0 : Nat := 3498
+def pcNegLoop : Nat := 3505
+def pcNegNext : Nat := 3528
 /-- The negation body after its store, before the exit test. -/
-def pcNegMid : Nat := 3387
-def pcNegDone : Nat := 3401
-def pcPreNewton : Nat := 3447
-def pcNewtonB : Nat := 3472
-def pcShiftLoop : Nat := 3508
-def pcShiftBody : Nat := 3515
-def pcEstimate : Nat := 3529
-def pcMacSetup : Nat := 3611
-def pcMacLoop : Nat := 3624
-def pcMid : Nat := 3706
+def pcNegMid : Nat := 3522
+def pcNegDone : Nat := 3536
+def pcPreNewton : Nat := 3582
+def pcNewtonB : Nat := 3607
+def pcShiftLoop : Nat := 3643
+def pcShiftBody : Nat := 3650
+def pcEstimate : Nat := 3664
+def pcMacSetup : Nat := 3746
+def pcMacLoop : Nat := 3759
+def pcMid : Nat := 3841
 /-- The limb-pass body after the pointer steps, before the exit test. -/
-def pcMacTail : Nat := 3697
-def pcAddLoop : Nat := 3740
-def pcAddInner : Nat := 3746
-def pcAddTail : Nat := 3789
+def pcMacTail : Nat := 3832
+def pcAddLoop : Nat := 3875
+def pcAddInner : Nat := 3881
+def pcAddTail : Nat := 3924
 /-- The add body after `OR`, before the pointer step and exit test. -/
-def pcAddMid : Nat := 3775
-def pcSubCheck : Nat := 3807
-def pcSubEntry : Nat := 3817
-def pcSubInner : Nat := 3822
-def pcSubTail : Nat := 3861
+def pcAddMid : Nat := 3910
+def pcSubCheck : Nat := 3942
+def pcSubEntry : Nat := 3952
+def pcSubInner : Nat := 3957
+def pcSubTail : Nat := 3996
 /-- The subtract body after `OR`, before the pointer step and exit test. -/
-def pcSubMid : Nat := 3846
-def pcCsubCall : Nat := 3875
-def pcAfterCsub : Nat := 3886
-def pcShiftDone : Nat := 3895
+def pcSubMid : Nat := 3981
+def pcCsubCall : Nat := 4010
+def pcAfterCsub : Nat := 4021
+def pcShiftDone : Nat := 4030
 
 /-- A state with the outer frame only. -/
 def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat) : State :=

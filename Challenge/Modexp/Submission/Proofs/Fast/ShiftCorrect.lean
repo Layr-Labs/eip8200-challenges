@@ -27,8 +27,8 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.RrLeadingTraceCore
 
 theorem jumpD4643 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 3302).toNat = true :=
-  Exp.jumpD 3302 (by decide) jumpDest4608
+    (UInt256.ofNat 3437).toNat = true :=
+  Exp.jumpD 3437 (by decide) jumpDest4608
 
 /-! ## Facts at `BDONE` on the hit path -/
 
@@ -164,7 +164,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 298 ≤ s.activeWords.toNat)
+    (hact : 297 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
@@ -189,7 +189,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
         final.isDone = true ∧
         final.toResult = .returned (Challenge.Modexp.spec input) := by
   have hact296 : 296 ≤ s.activeWords.toNat :=
-    Nat.le_trans (show 296 ≤ 298 by norm_num) hact
+    Nat.le_trans (show 296 ≤ 297 by norm_num) hact
   have e : Env s := ⟨hcode, hfork, hrun, hnp, hact⟩
   let sub := Exp.subs s n bsize mm minv hcode hfork hrun hnp hact296 hcds hn hn32 hmpos
     hminvlt hminvA
@@ -301,10 +301,10 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     set mem1 := Exp.r1Mem n 4096 mem0 with hmem1
     have hframe1 : Exp.Frame mem1 n bsize minv := Exp.r1Mem_frame hn hn32 hframeS
     have hconv : Challenge.EvmProof.GasSteps
-        (Exp.r1Call s mem0 4096 (UInt256.ofNat 1300) n bsize esize msize)
+        (Exp.r1Call s mem0 4096 (UInt256.ofNat 1435) n bsize esize msize)
         (Exp.r0State s mem1 n bsize esize msize) :=
       Exp.gasSteps_r1Block s esize msize hcode hfork hrun hnp hact296 hn hn32
-        (UInt256.ofNat 1300) mem0 jumpDest1526 hframeS
+        (UInt256.ofNat 1435) mem0 jumpDest1526 hframeS
     let directMem := Exp.setupToDirectMem (Exp.r1Mem n) (Exp.ccbMem n sub.mpMem sub.amMem) n mem0
     have hf2 : Exp.Frame (Exp.mcopyMem mem1 5120 4096 (32 * n)) n bsize minv :=
       Exp.frame_mcopyMem (by omega) hframe1
@@ -314,7 +314,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
       (Exp.gasSteps_r0 s mem1 n bsize esize msize hn hn32 hact hframe1.s32 hcode hfork hrun
         hnp).trans
       (Exp.gasSteps_ccbFull s sub hspec esize msize hmpos hn hn32 5120 (by omega) (by omega)
-        (UInt256.ofNat 2837) (Exp.mcopyMem mem1 5120 4096 (32 * n)) (Limbs.radix ^ n % mm)
+        (UInt256.ofNat 2972) (Exp.mcopyMem mem1 5120 4096 (32 * n)) (Limbs.radix ^ n % mm)
         Exp.jumpD3571 hf2 hcc.1 hcc.2 (Nat.mod_lt _ hmpos) hact296 hcode hfork hrun hnp)
     have hframeDirect : Exp.Frame directMem n bsize minv := by
       dsimp only [directMem]
@@ -366,7 +366,7 @@ theorem gasSteps_handled (input : ByteArray)
     (hpath : Challenge.Modexp.Submission.Proofs.Fast.Setup.FastPath input) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
-        (Main.trampolineState input 1121) final) ∧
+        (Main.trampolineState input 1256) final) ∧
         final.isDone = true ∧
         final.toResult = .returned (Challenge.Modexp.spec input) := by
   have hsize : input.size < 2 ^ 256 := lt_trans hvalid.1 (by norm_num)
@@ -388,7 +388,7 @@ theorem gasSteps_handled (input : ByteArray)
     exact h
   have hxlt : Limbs.radix ^ (Setup.limbs input - 1) < Setup.modulus input :=
     Model.radix_pow_lt_of_odd hn hpath.2.2.1 hodd
-  have hact : 298 ≤ (Setup.fastSetupState input).activeWords.toNat := by
+  have hact : 297 ≤ (Setup.fastSetupState input).activeWords.toNat := by
     rw [Setup.fastSetup_activeWords input hpath, Exp.toNat_ofNat_self (by norm_num)]
   have hcds : (Setup.fastSetupState input).executionEnv.calldata.size < 2 ^ 256 := by
     rw [Exp.fastSetup_calldata input]

@@ -34,7 +34,7 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hstack : s.callStack = []) (hactive : 298 ≤ s.activeWords.toNat)
+    (hstack : s.callStack = []) (hactive : 297 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmz : 32 < msize)
     (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
@@ -69,7 +69,7 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
   have hsqLt : sqVal < mm := fixedDirectValue_lt hm hbMlt count
   have htraceProdCall := FixedDirectChainTrace.gasSteps_product
     s memSq n bsize esize msize ch.cnt hcode hfork hrun hnp
-  have htraceProdMp := sub.monpro 2048 1024 1024 (UInt256.ofNat 1571)
+  have htraceProdMp := sub.monpro 2048 1024 1024 (UInt256.ofNat 1706)
     (Exp.outer n bsize esize msize) memSq sqVal rawBase
     (by simp [Exp.outer]) (by omega) (by omega) (by omega) (by omega)
     (by omega) jumpD3997 hframeSq hsqInv.modulus hsqInv.squareBase
