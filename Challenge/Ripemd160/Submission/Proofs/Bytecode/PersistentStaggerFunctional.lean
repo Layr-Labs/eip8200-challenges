@@ -22,10 +22,10 @@ theorem result_eq_folds (memory : ByteArray) (words : Nat → UInt32)
     (h : Compression.HashState) (hm : StaggerMessage.Ready memory words) :
     result memory h = PairedCompressionBridge.combineLanes h
       (leftFold words 80 (initialCrypto h)) (rightFold words 80 (initialCrypto h)) := by
-  obtain ⟨d,d',hp,he,hd⟩ := StaggerCoreCorrect.paired_crypto memory words (initialCrypto h) hm
+  obtain ⟨d,e,hp,hd,he⟩ := StaggerCoreCorrect.paired_crypto memory words (initialCrypto h) hm
   dsimp only [result, initial, combine]
-  rw [hp,StaggerCoreCorrect.epilogue_dirtyE memory words _ _ hm d d' he hd,
-    StaggerFinalMemory.unpackRight_dirtyE _ _ d d' he hd,StaggerCoreCorrect.leftFinish_fold]
+  rw [hp,StaggerCoreCorrect.epilogue_dirtyDE memory words _ _ hm d e hd he,
+    StaggerFinalMemory.unpackRight_dirtyDE _ _ d e hd he,StaggerCoreCorrect.leftFinish_fold]
 
 /-- Functional compression carries the initial hash explicitly on the stack. -/
 theorem result_compressBlock (memory bs : ByteArray) (off : Nat)

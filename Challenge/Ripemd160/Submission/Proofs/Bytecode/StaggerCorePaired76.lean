@@ -26,8 +26,7 @@ theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho 
   have hr : Crypto.Ripemd160.sP[79]! = 11 := by rfl
   simp only [StaggerRawPaired76.outputStack, input, stack, List.map_cons, List.map_nil,
     List.cons_append, List.nil_append, StaggerCoreCommon.word, eval,
-    StaggerTerminal75.step, if_neg (show ¬ (76 = 75) by decide), if_pos rfl,
-    StaggerAlgorithm.step, hkb, hka, hm, hl, hr,
+    StaggerTerminal75.step, if_pos (Or.inr rfl), StaggerAlgorithm.step, hkb, hka, hm, hl, hr,
     upperWord, lowerWord, StaggerWord.step, StaggerWord.t, StaggerWord.sum,
     StaggerWord.raw, StaggerWord.selector, StaggerWord.key, StaggerBoolean.selector,
     List.cons.injEq, and_true]
@@ -49,7 +48,7 @@ def gasSteps (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 4516, stack := stack s.memory h4 [ .d, .pair, .upper, .a, .b, .e, .k, .c, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] q right (StaggerAlgorithm.physicalKey 75) rho}
-      {s with pc := UInt256.ofNat 4554, stack := stack s.memory h4 [ .d, .pair, .upper, .e, .c, .a, .k, .b, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] (eval s.memory q) right (StaggerAlgorithm.physicalKey 76) rho} := by
+      {s with pc := UInt256.ofNat 4552, stack := stack s.memory h4 [ .d, .pair, .upper, .e, .c, .a, .k, .b, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] (eval s.memory q) right (StaggerAlgorithm.physicalKey 76) rho} := by
   have g := StaggerRawPaired76.gasSteps s (input s.memory h4 q right (StaggerAlgorithm.physicalKey 75))
     rho hstack hrun hactive hcode hfork hnp
   rw [output_eq] at g
