@@ -73,32 +73,32 @@ def template : List Instr :=
     .op .AND,
     .push ⟨2, by decide⟩ (UInt256.ofNat 864),
     .op .MSTORE,
-    .op (.Swap ⟨3, by decide⟩),
     .op (.Dup ⟨3, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 80),
     .op .SHR,
+    .op (.Swap ⟨4, by decide⟩),
+    .op (.Dup ⟨5, by decide⟩),
     .op .ADD,
     .push ⟨2, by decide⟩ (UInt256.ofNat 928),
     .op .MLOAD,
     .op .ADD,
-    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
     .op .AND,
     .push ⟨2, by decide⟩ (UInt256.ofNat 896),
     .op .MSTORE,
-    .op (.Dup ⟨2, by decide⟩),
+    .op (.Swap ⟨3, by decide⟩),
+    .op (.Dup ⟨3, by decide⟩),
+    .op .ADD,
     .op (.Dup ⟨1, by decide⟩),
     .op .ADD,
-    .op (.Dup ⟨3, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 80),
-    .op .SHR,
-    .op .ADD,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 960),
+    .push ⟨3, by decide⟩ (UInt256.ofNat 960),
     .op .MLOAD,
     .op .ADD,
     .op (.Dup ⟨8, by decide⟩),
     .op .AND,
     .push ⟨2, by decide⟩ (UInt256.ofNat 928),
     .op .MSTORE,
+    .op .JUMPDEST,
     .push ⟨1, by decide⟩ (UInt256.ofNat 80),
     .op .SHR,
     .op (.Swap ⟨0, by decide⟩),
@@ -157,34 +157,34 @@ private def chunk1 : List Instr :=
    .op .MSTORE]
 
 private def chunk2 : List Instr :=
-  [.op (.Swap ⟨3, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+  [.op (.Dup ⟨3, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 80),
    .op .SHR,
+   .op (.Swap ⟨4, by decide⟩),
+   .op (.Dup ⟨5, by decide⟩),
    .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 928),
    .op .MLOAD,
    .op .ADD,
-   .op (.Dup ⟨8, by decide⟩),
+   .op (.Dup ⟨9, by decide⟩),
    .op .AND,
    .push ⟨2, by decide⟩ (UInt256.ofNat 896),
    .op .MSTORE]
 
 private def chunk3 : List Instr :=
-  [.op (.Dup ⟨2, by decide⟩),
+  [.op (.Swap ⟨3, by decide⟩),
+   .op (.Dup ⟨3, by decide⟩),
+   .op .ADD,
    .op (.Dup ⟨1, by decide⟩),
    .op .ADD,
-   .op (.Dup ⟨3, by decide⟩),
-   .push ⟨1, by decide⟩ (UInt256.ofNat 80),
-   .op .SHR,
-   .op .ADD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 960),
+   .push ⟨3, by decide⟩ (UInt256.ofNat 960),
    .op .MLOAD,
    .op .ADD,
    .op (.Dup ⟨8, by decide⟩),
    .op .AND,
    .push ⟨2, by decide⟩ (UInt256.ofNat 928),
-   .op .MSTORE]
+   .op .MSTORE,
+   .op .JUMPDEST]
 
 private def chunk4 : List Instr :=
   [.push ⟨1, by decide⟩ (UInt256.ofNat 80),
@@ -220,7 +220,8 @@ private def stack2 (q : WordLane) (factor ret r0 : UInt256) (rho : List UInt256)
   [r0, q.b, q.c, q.a, q.e, factor, pairWord, upperWord, lowerWord] ++ (Table80Raw.cache ++ ret :: rho)
 
 private def stack3 (q : WordLane) (factor ret r0 : UInt256) (rho : List UInt256) : List UInt256 :=
-  [q.b, q.c, q.a, r0, factor, pairWord, upperWord, lowerWord] ++ (Table80Raw.cache ++ ret :: rho)
+  [r0, q.b, q.c, q.a, UInt256.shiftRight q.a (UInt256.ofNat 80), factor, pairWord, upperWord, lowerWord] ++
+    (Table80Raw.cache ++ ret :: rho)
 
 private def stack4 (q : WordLane) (factor ret r0 : UInt256) (rho : List UInt256) : List UInt256 :=
   [q.b, q.c, q.a, r0, factor, pairWord, upperWord, lowerWord] ++ (Table80Raw.cache ++ ret :: rho)
@@ -272,6 +273,18 @@ private theorem run_chunk1 (s : State) (pc ret : UInt256) (q : WordLane) (factor
   all_goals repeat first | apply And.intro | rfl
 #print axioms run_chunk1
 
+private theorem tail_add_comm (a b : UInt256) : a + b = b + a :=
+  Table80CoreCommon.add_comm a b
+private theorem tail_add_assoc (a b c : UInt256) : (a + b) + c = a + (b + c) :=
+  Table80CoreCommon.add_assoc a b c
+private theorem tail_add_left_comm (a b c : UInt256) : a + (b + c) = b + (a + c) :=
+  Table80CoreCommon.add_left_comm a b c
+
+private theorem tail_pc_fix (pc : UInt256) :
+    pc + (UInt256.ofNat 2).add (UInt256.ofNat 1) =
+      (pc + UInt256.ofNat 2) + UInt256.ofNat 1 :=
+  (tail_add_assoc pc (UInt256.ofNat 2) (UInt256.ofNat 1)).symm
+
 private theorem run_chunk2 (s : State) (pc ret : UInt256) (q : WordLane) (factor r0 : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 996)
     (hrun : s.halt = .Running) (hactive : 34 ≤ s.activeWords.toNat) :
@@ -304,25 +317,22 @@ private theorem run_chunk3 (s : State) (pc ret : UInt256) (q : WordLane) (factor
   have hactiveAt (address : Nat) (haddress : address ≤ 1056) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := Table80Raw.active_preserved s.activeWords address hactive haddress
+  have hsum3 : q.b + (q.a + UInt256.shiftRight q.a (UInt256.ofNat 80)) =
+      UInt256.shiftRight q.a (UInt256.ofNat 80) + (q.b + q.a) := by
+    calc
+      q.b + (q.a + UInt256.shiftRight q.a (UInt256.ofNat 80)) =
+          (q.b + q.a) + UInt256.shiftRight q.a (UInt256.ofNat 80) :=
+        (tail_add_assoc q.b q.a (UInt256.shiftRight q.a (UInt256.ofNat 80))).symm
+      _ = UInt256.shiftRight q.a (UInt256.ofNat 80) + (q.b + q.a) :=
+        tail_add_comm _ _
   simp (discharger := omega) [chunk3, stack4, stack3, Table80Raw.cache,
     combineWord, result0, result1, result2, result3, result4, writeWord,
     runInstrSeq, Stepper.runInstr, UInt256.succ, pcAfter, Instr.size,
     hrun, hcap, Nat.add_assoc, List.getElem?_cons_zero, List.exchange,
     State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals repeat first | apply And.intro | rfl
+  all_goals simp only [hsum3, tail_pc_fix]
+  all_goals trivial
 #print axioms run_chunk3
-
-private theorem tail_add_comm (a b : UInt256) : a + b = b + a :=
-  Table80CoreCommon.add_comm a b
-private theorem tail_add_assoc (a b c : UInt256) : (a + b) + c = a + (b + c) :=
-  Table80CoreCommon.add_assoc a b c
-private theorem tail_add_left_comm (a b c : UInt256) : a + (b + c) = b + (a + c) :=
-  Table80CoreCommon.add_left_comm a b c
-
-private theorem tail_pc_fix (pc : UInt256) :
-    pc + (UInt256.ofNat 2).add (UInt256.ofNat 1) =
-      (pc + UInt256.ofNat 2) + UInt256.ofNat 1 :=
-  (tail_add_assoc pc (UInt256.ofNat 2) (UInt256.ofNat 1)).symm
 
 private theorem run_chunk4 (s : State) (pc ret : UInt256) (q : WordLane) (factor r0 : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 996)
