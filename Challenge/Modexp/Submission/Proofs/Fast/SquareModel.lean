@@ -176,7 +176,7 @@ with incoming carry `q.carry` (of weight `radix ^ j0`), the `t` block plus the
 carry (of weight `radix ^ (j0 + k)`) has gained exactly
 `bi * Σ_{j0 ≤ j < j0 + k} a[j] radix ^ j`. -/
 theorem l1Run_sum (q : MacState) (bi : UInt256) (pa n j0 : Nat)
-    (hpa : pa + 32 * n ≤ 4096) :
+    (hpa : pa + 32 * n ≤ 4160 ∨ 4160 + 32 * n ≤ pa) :
     ∀ k, j0 + k ≤ n →
       limbSum (tLimbs (l1Run q bi pa n j0 k).memory n) n +
           (l1Run q bi pa n j0 k).carry.toNat * Limbs.radix ^ (j0 + k) +
@@ -193,7 +193,7 @@ theorem l1Run_sum (q : MacState) (bi : UInt256) (pa n j0 : Nat)
       -- the source limb is unchanged by the earlier steps
       have hx : MachineState.readWord (l1Run q bi pa n j0 k).memory (pa + 32 * (n - 1 - (j0 + k))) =
           MachineState.readWord q.memory (pa + 32 * (n - 1 - (j0 + k))) :=
-        readWord_l1Run q bi pa n j0 _ (Or.inl (by omega)) k (by omega)
+        readWord_l1Run q bi pa n j0 _ (by omega) k (by omega)
       have hmac := macSpec
         (MachineState.readWord (l1Run q bi pa n j0 k).memory (pa + 32 * (n - 1 - (j0 + k)))) bi
         (MachineState.readWord (l1Run q bi pa n j0 k).memory (tAddr n (j0 + k)))
@@ -217,7 +217,7 @@ theorem l1Run_sum (q : MacState) (bi : UInt256) (pa n j0 : Nat)
 /-! ## The square-row prologue -/
 
 /-- The address of limb `k` of the squared operand. -/
-def aAddr (n k : Nat) : Nat := 512 + 32 * (n - 1 - k)
+def aAddr (n k : Nat) : Nat := 4864 + 32 * (n - 1 - k)
 
 /-- The limbs of the squared operand as a function. -/
 def aLimbs (mem : ByteArray) (n : Nat) (k : Nat) : Nat :=
@@ -373,27 +373,27 @@ theorem sqPro_sum (mem : ByteArray) (n i : Nat) (tb : UInt256) (hi : i < n) (htb
 /-- The whole first phase of square row `i`: the prologue, then the unchanged
 chain for the steps `i+1 .. n-1` with multiplier `b2` and carry `C`. -/
 def sqL1 (mem : ByteArray) (n i : Nat) (tb : UInt256) : MacState :=
-  l1Run (sqPro mem n i tb) (sqB2 (sqX mem n i) tb) 512 n (i + 1) (n - 1 - i)
+  l1Run (sqPro mem n i tb) (sqB2 (sqX mem n i) tb) 4864 n (i + 1) (n - 1 - i)
 
 theorem readWord_sqL1 (mem : ByteArray) (n i addr : Nat) (tb : UInt256) (hi : i < n)
     (haddr : addr + 32 ≤ 4160 ∨ 4160 + 32 * n ≤ addr) :
     MachineState.readWord (sqL1 mem n i tb).memory addr = MachineState.readWord mem addr := by
   unfold sqL1
-  rw [readWord_l1Run (sqPro mem n i tb) (sqB2 (sqX mem n i) tb) 512 n (i + 1) addr haddr
+  rw [readWord_l1Run (sqPro mem n i tb) (sqB2 (sqX mem n i) tb) 4864 n (i + 1) addr haddr
     (n - 1 - i) (by omega), readWord_sqPro mem n i addr tb hi haddr]
 
 theorem limbSum_aLimbs_sqPro (mem : ByteArray) (n i : Nat) (tb : UInt256) (hi : i < n)
-    (hn : n ≤ 32) (j : Nat) :
-    limbSum (srcLimbs (sqPro mem n i tb).memory 512 n) j = limbSum (aLimbs mem n) j := by
+    (hn : n ≤ 8) (j : Nat) :
+    limbSum (srcLimbs (sqPro mem n i tb).memory 4864 n) j = limbSum (aLimbs mem n) j := by
   apply limbSum_congr
   intro k _
   unfold srcLimbs aLimbs aAddr
-  rw [readWord_sqPro mem n i (512 + 32 * (n - 1 - k)) tb hi (Or.inl (by omega))]
+  rw [readWord_sqPro mem n i (4864 + 32 * (n - 1 - k)) tb hi (Or.inr (by omega))]
 
 /-- **The first phase of a square row is exact**:
 `Σ t'[k] rad^k + C' rad^n + b2 · A_{i+1} = Σ t[k] rad^k + x (x + tb) rad^i + b2 · A_n`,
 i.e. it adds the diagonal at weight `rad^i` and `b2 · Σ_{i<j<n} a_j rad^j`. -/
-theorem sqL1_sum (mem : ByteArray) (n i : Nat) (tb : UInt256) (hi : i < n) (hn : n ≤ 32)
+theorem sqL1_sum (mem : ByteArray) (n i : Nat) (tb : UInt256) (hi : i < n) (hn : n ≤ 8)
     (htb : tb.toNat ≤ 1) :
     limbSum (tLimbs (sqL1 mem n i tb).memory n) n +
         (sqL1 mem n i tb).carry.toNat * Limbs.radix ^ n +
@@ -401,7 +401,7 @@ theorem sqL1_sum (mem : ByteArray) (n i : Nat) (tb : UInt256) (hi : i < n) (hn :
       limbSum (tLimbs mem n) n +
         (sqX mem n i).toNat * ((sqX mem n i).toNat + tb.toNat) * Limbs.radix ^ i +
         (sqB2 (sqX mem n i) tb).toNat * limbSum (aLimbs mem n) n := by
-  have hrun := l1Run_sum (sqPro mem n i tb) (sqB2 (sqX mem n i) tb) 512 n (i + 1) (by omega)
+  have hrun := l1Run_sum (sqPro mem n i tb) (sqB2 (sqX mem n i) tb) 4864 n (i + 1) (by omega)
     (n - 1 - i) (by omega)
   have hpro := sqPro_sum mem n i tb hi htb
   rw [limbSum_aLimbs_sqPro mem n i tb hi hn, limbSum_aLimbs_sqPro mem n i tb hi hn,
@@ -431,6 +431,30 @@ theorem readWord_rowFrom (q : MacState) (n addr : Nat) (hn : n ≤ 32)
   unfold rowFrom rowFromL2 rowFromMid
   rw [readWord_tailMem _ _ _ haddr, readWord_l2Step _ _ _ _ _ _ hn haddr,
     readWord_midMem _ _ _ haddr]
+
+/-- The second loop writes within the actual accumulator width. -/
+theorem readWord_l2Step_range (mem : ByteArray) (mu c0 : UInt256) (n addr k : Nat)
+    (hn : 1 ≤ n) (haddr : addr + 32 ≤ 4096 ∨ 4160 + 32 * n ≤ addr) :
+    MachineState.readWord (l2Step mem mu c0 n k).memory addr = MachineState.readWord mem addr := by
+  induction k with
+  | zero => rfl
+  | succ k ih =>
+      simp only [l2Step]
+      rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint]
+      · exact ih
+      · rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
+        omega
+
+/-- The middle, reduction and tail preserve the staged operand above the accumulator. -/
+theorem readWord_rowFrom_range (q : MacState) (n addr : Nat) (hn : 1 ≤ n)
+    (haddr : addr + 32 ≤ 4096 ∨ 4160 + 32 * n ≤ addr) :
+    MachineState.readWord (rowFrom q n) addr = MachineState.readWord q.memory addr := by
+  unfold rowFrom rowFromL2 rowFromMid
+  rcases haddr with hlo | hhi
+  · rw [readWord_tailMem _ _ _ (Or.inl hlo),
+      readWord_l2Step_range _ _ _ _ _ _ hn (Or.inl hlo), readWord_midMem _ _ _ (Or.inl hlo)]
+  · rw [readWord_tailMem_high _ _ _ (by omega),
+      readWord_l2Step_range _ _ _ _ _ _ hn (Or.inr hhi), readWord_midMem_high _ _ _ (by omega)]
 
 /-- Limbs `0 .. n-2` of the new `t` are what the second loop stored. -/
 theorem readWord_rowFrom_limb (q : MacState) (n k : Nat) (hn32 : n ≤ 32) (hk : k + 2 ≤ n) :
@@ -666,15 +690,29 @@ theorem fastRepresents_sqRowsMem (mem : ByteArray) (n i ptr cnt v : Nat) (hn : n
   intro j hj
   rw [readWord_sqRowsMem mem n (ptr + 32 * j) hn (Or.inl (by omega)) i hi]
 
-theorem aLimbs_sqRowsMem (mem : ByteArray) (n i : Nat) (hn : n ≤ 32) (hi : i ≤ n) (k : Nat) :
+/-- Square rows write only within the actual accumulator width. -/
+theorem readWord_sqRowsMem_range (mem : ByteArray) (n addr : Nat)
+    (haddr : addr + 32 ≤ 4096 ∨ 4160 + 32 * n ≤ addr) :
+    ∀ i, i ≤ n → MachineState.readWord (sqRowsMem mem n i) addr = MachineState.readWord mem addr := by
+  intro i
+  induction i with
+  | zero => intro _; rfl
+  | succ i ih =>
+      intro hi
+      simp only [sqRowsMem, sqRowMem]
+      rw [readWord_rowFrom_range _ n addr (by omega) haddr,
+        readWord_sqL1 _ n i addr _ (by omega) (by omega)]
+      exact ih (by omega)
+
+theorem aLimbs_sqRowsMem (mem : ByteArray) (n i : Nat) (hn : n ≤ 8) (hi : i ≤ n) (k : Nat) :
     aLimbs (sqRowsMem mem n i) n k = aLimbs mem n k := by
   unfold aLimbs
-  rw [readWord_sqRowsMem mem n (aAddr n k) hn (Or.inl (by unfold aAddr; omega)) i hi]
+  rw [readWord_sqRowsMem_range mem n (aAddr n k) (Or.inr (by unfold aAddr; omega)) i hi]
 
 /-- One square row is exact:
 `t_{new} · rad + b2 · A_{i+1} = t + x (x + tb) rad^i + b2 · A_n + mu · m`. -/
 theorem sqRow_equation (mem : ByteArray) (p i : Nat) (tb : UInt256) (mm : Nat)
-    (hn32 : p + 2 ≤ 32) (hi : i < p + 2) (htb : tb.toNat ≤ 1)
+    (hn32 : p + 2 ≤ 8) (hi : i < p + 2) (htb : tb.toNat ≤ 1)
     (hm : Model.FastRepresents mem 0 (p + 2) mm)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
         (MachineState.readWord mem 5280).toNat + 1) % 2 ^ 256 = 0) :
@@ -693,8 +731,8 @@ theorem sqRow_equation (mem : ByteArray) (p i : Nat) (tb : UInt256) (mm : Nat)
     rw [readWord_sqL1 mem (p + 2) i (32 * (p + 2) - 32) tb hi (Or.inl (by omega)),
       readWord_sqL1 mem (p + 2) i 5280 tb hi (Or.inr (by omega))]
     exact hminv
-  have hq := row_equation_of_l1 (sqL1 mem (p + 2) i tb) p mm hn32 hm' hminv'
-  have hL := sqL1_sum mem (p + 2) i tb hi hn32 htb
+  have hq := row_equation_of_l1 (sqL1 mem (p + 2) i tb) p mm (by omega) hm' hminv'
+  have hL := sqL1_sum mem (p + 2) i tb hi (by omega) htb
   have htn : MachineState.readWord (sqL1 mem (p + 2) i tb).memory 4128 =
       MachineState.readWord mem 4128 :=
     readWord_sqL1 mem (p + 2) i 4128 tb hi (Or.inl (by omega))
@@ -729,7 +767,7 @@ theorem tValue_mpZeroed (s : State) (mem : ByteArray) (n : Nat) :
 /-- **The square-row invariant.**  After `i` square rows from an accumulator
 `t = 0`: `t_i · rad^i = Σ_{r<i} X_r rad^r + Q_i · m` with `Q_i < rad^i`, where
 `X_r = SquareMath.rowX` is row `r`'s contribution. -/
-theorem sqRows_invariant (m0 : ByteArray) (p mm : Nat) (hn32 : p + 2 ≤ 32)
+theorem sqRows_invariant (m0 : ByteArray) (p mm : Nat) (hn32 : p + 2 ≤ 8)
     (hm : Model.FastRepresents m0 0 (p + 2) mm)
     (hminv : ((MachineState.readWord m0 (32 * (p + 2) - 32)).toNat *
         (MachineState.readWord m0 5280).toNat + 1) % 2 ^ 256 = 0)
@@ -752,21 +790,21 @@ theorem sqRows_invariant (m0 : ByteArray) (p mm : Nat) (hn32 : p + 2 ≤ 32)
       have hM : sqRowsMem m0 (p + 2) (i + 1) =
           sqRowMem (sqRowsMem m0 (p + 2) i) (p + 2) i
             (sqTb (sqRowsMem m0 (p + 2) i) (p + 2) i) := rfl
-      have hmR := fastRepresents_sqRowsMem m0 (p + 2) i 0 (p + 2) mm hn32 (by omega)
+      have hmR := fastRepresents_sqRowsMem m0 (p + 2) i 0 (p + 2) mm (by omega) (by omega)
         (by omega) hm
       have hminvR : ((MachineState.readWord (sqRowsMem m0 (p + 2) i) (32 * (p + 2) - 32)).toNat *
           (MachineState.readWord (sqRowsMem m0 (p + 2) i) 5280).toNat + 1) % 2 ^ 256 = 0 := by
-        rw [readWord_sqRowsMem m0 (p + 2) (32 * (p + 2) - 32) hn32 (Or.inl (by omega)) i
+        rw [readWord_sqRowsMem m0 (p + 2) (32 * (p + 2) - 32) (by omega) (Or.inl (by omega)) i
             (by omega),
-          readWord_sqRowsMem m0 (p + 2) 5280 hn32 (Or.inr (by omega)) i (by omega)]
+          readWord_sqRowsMem m0 (p + 2) 5280 (by omega) (Or.inr (by omega)) i (by omega)]
         exact hminv
       have hrow := sqRow_equation (sqRowsMem m0 (p + 2) i) p i
-        (sqTb (sqRowsMem m0 (p + 2) i) (p + 2) i) mm hn32 (by omega)
+        (sqTb (sqRowsMem m0 (p + 2) i) (p + 2) i) mm (by omega) (by omega)
         (sqTb_le_one _ _ _) hmR hminvR
       rw [← hM] at hrow
       -- identify the words with the limbs of `a`
       have hA : ∀ k, aLimbs (sqRowsMem m0 (p + 2) i) (p + 2) k = aLimbs m0 (p + 2) k :=
-        aLimbs_sqRowsMem m0 (p + 2) i hn32 (by omega)
+        aLimbs_sqRowsMem m0 (p + 2) i (by omega) (by omega)
       have hAf : aLimbs (sqRowsMem m0 (p + 2) i) (p + 2) = aLimbs m0 (p + 2) := funext hA
       have hx : (sqX (sqRowsMem m0 (p + 2) i) (p + 2) i).toNat = aLimbs m0 (p + 2) i := hA i
       have htb : (sqTb (sqRowsMem m0 (p + 2) i) (p + 2) i).toNat =
@@ -835,15 +873,15 @@ theorem sqRows_invariant (m0 : ByteArray) (p mm : Nat) (hn32 : p + 2 ≤ 32)
 
 /-- **The square rows compute `a² + Q·m`**: after all `n` rows,
 `t · rad^n = a · a + Q · m` and `t < 2 m`. -/
-theorem sqRows_final (m0 : ByteArray) (p a mm : Nat) (hn32 : p + 2 ≤ 32)
-    (ha : Model.FastRepresents m0 512 (p + 2) a)
+theorem sqRows_final (m0 : ByteArray) (p a mm : Nat) (hn32 : p + 2 ≤ 8)
+    (ha : Model.FastRepresents m0 4864 (p + 2) a)
     (hm : Model.FastRepresents m0 0 (p + 2) mm)
     (hminv : ((MachineState.readWord m0 (32 * (p + 2) - 32)).toNat *
         (MachineState.readWord m0 5280).toNat + 1) % 2 ^ 256 = 0)
     (hz : tValue m0 (p + 2) = 0) (ham : a < mm) :
     ∃ Q, tValue (sqRowsMem m0 (p + 2) (p + 2)) (p + 2) * Limbs.radix ^ (p + 2) = a * a + Q * mm ∧
       tValue (sqRowsMem m0 (p + 2) (p + 2)) (p + 2) < 2 * mm := by
-  obtain ⟨Q, hQ, hinv⟩ := sqRows_invariant m0 p mm hn32 hm hminv hz (p + 2) le_rfl
+  obtain ⟨Q, hQ, hinv⟩ := sqRows_invariant m0 p mm (by omega) hm hminv hz (p + 2) le_rfl
   have hlimb : ∀ k, aLimbs m0 (p + 2) k < 2 * 2 ^ 255 := by
     intro k
     rw [two_half_radix]
@@ -868,14 +906,14 @@ theorem sqRows_final (m0 : ByteArray) (p a mm : Nat) (hn32 : p + 2 ≤ 32)
   omega
 
 /-- The top limb of the final square accumulator is at most one. -/
-theorem sqRows_tn_le_one (m0 : ByteArray) (p a mm : Nat) (hn32 : p + 2 ≤ 32)
-    (ha : Model.FastRepresents m0 512 (p + 2) a)
+theorem sqRows_tn_le_one (m0 : ByteArray) (p a mm : Nat) (hn32 : p + 2 ≤ 8)
+    (ha : Model.FastRepresents m0 4864 (p + 2) a)
     (hm : Model.FastRepresents m0 0 (p + 2) mm)
     (hminv : ((MachineState.readWord m0 (32 * (p + 2) - 32)).toNat *
         (MachineState.readWord m0 5280).toNat + 1) % 2 ^ 256 = 0)
     (hz : tValue m0 (p + 2) = 0) (ham : a < mm) :
     (MachineState.readWord (sqRowsMem m0 (p + 2) (p + 2)) 4128).toNat ≤ 1 := by
-  obtain ⟨-, -, hlt⟩ := sqRows_final m0 p a mm hn32 ha hm hminv hz ham
+  obtain ⟨-, -, hlt⟩ := sqRows_final m0 p a mm (by omega) ha hm hminv hz ham
   simp only [tValue] at hlt
   have hmlt : mm < Limbs.radix ^ (p + 2) := hm.1
   by_contra hcon
@@ -886,8 +924,8 @@ theorem sqRows_tn_le_one (m0 : ByteArray) (p a mm : Nat) (hn32 : p + 2 ≤ 32)
   omega
 
 /-- The square rows followed by `CSUB` leave `montMul m R a a` at `pdst`. -/
-theorem sqRows_represents (m0 : ByteArray) (p a mm pdst : Nat) (hn32 : p + 2 ≤ 32)
-    (ha : Model.FastRepresents m0 512 (p + 2) a)
+theorem sqRows_represents (m0 : ByteArray) (p a mm pdst : Nat) (hn32 : p + 2 ≤ 8)
+    (ha : Model.FastRepresents m0 4864 (p + 2) a)
     (hm : Model.FastRepresents m0 0 (p + 2) mm)
     (hodd : mm % 2 = 1) (ham : a < mm)
     (hminv : ((MachineState.readWord m0 (32 * (p + 2) - 32)).toNat *
@@ -896,19 +934,19 @@ theorem sqRows_represents (m0 : ByteArray) (p a mm pdst : Nat) (hn32 : p + 2 ≤
     Model.FastRepresents (Csub.csResultMemory (sqRowsMem m0 (p + 2) (p + 2)) (p + 2) pdst)
       pdst (p + 2) (Model.montMul mm (Limbs.radix ^ (p + 2)) a a) := by
   have hmpos : 0 < mm := by omega
-  obtain ⟨Q, hinv, hlt⟩ := sqRows_final m0 p a mm hn32 ha hm hminv hz ham
-  have htn1 := sqRows_tn_le_one m0 p a mm hn32 ha hm hminv hz ham
+  obtain ⟨Q, hinv, hlt⟩ := sqRows_final m0 p a mm (by omega) ha hm hminv hz ham
+  have htn1 := sqRows_tn_le_one m0 p a mm (by omega) ha hm hminv hz ham
   have hcop : Nat.Coprime (Limbs.radix ^ (p + 2)) mm := Model.coprime_radix_pow_of_odd hodd (p + 2)
   have hval : Model.montMul mm (Limbs.radix ^ (p + 2)) a a =
       tValue (sqRowsMem m0 (p + 2) (p + 2)) (p + 2) % mm :=
     Model.montMul_eq_mod_of_mul_eq hmpos hcop hinv
-  have hmR := fastRepresents_sqRowsMem m0 (p + 2) (p + 2) 0 (p + 2) mm hn32 le_rfl (by omega) hm
+  have hmR := fastRepresents_sqRowsMem m0 (p + 2) (p + 2) 0 (p + 2) mm (by omega) le_rfl (by omega) hm
   rw [hval]
   simp only [tValue] at hlt ⊢
   exact Csub.csub_correct (sqRowsMem m0 (p + 2) (p + 2)) (p + 2)
     (Csub.lowValue (sqRowsMem m0 (p + 2) (p + 2)) 4160 (p + 2) (p + 2)) mm
     (MachineState.readWord (sqRowsMem m0 (p + 2) (p + 2)) 4128).toNat
-    pdst (by omega) hn32
+    pdst (by omega) (by omega)
     (Csub.fastRepresents_lowValue (sqRowsMem m0 (p + 2) (p + 2)) 4160 (p + 2))
     hmR rfl htn1 hmpos hlt
 

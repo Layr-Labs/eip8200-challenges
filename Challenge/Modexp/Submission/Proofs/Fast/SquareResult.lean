@@ -73,7 +73,7 @@ theorem rowFrom_agree (a b : MacState) (h : Agree a.memory b.memory) (hc : a.car
   exact tail_agree _ _ hl2.1 _ _ hf
 
 theorem l1Run_agree (qa qb : MacState) (h : Agree qa.memory qb.memory) (hc : qa.carry = qb.carry)
-    (bi : UInt256) (pa n j0 : Nat) (hpa : pa + 32 * n ≤ 4096) :
+    (bi : UInt256) (pa n j0 : Nat) (hpa : pa + 32 * n ≤ 4096 ∨ 4128 ≤ pa) :
     ∀ k, j0 + k ≤ n →
       Agree (l1Run qa bi pa n j0 k).memory (l1Run qb bi pa n j0 k).memory ∧
         (l1Run qa bi pa n j0 k).carry = (l1Run qb bi pa n j0 k).carry := by
@@ -83,7 +83,7 @@ theorem l1Run_agree (qa qb : MacState) (h : Agree qa.memory qb.memory) (hc : qa.
   | succ k ih =>
       intro hk
       have prev := ih (by omega)
-      have hx := readWord_eq prev.1 (pa + 32 * (n - 1 - (j0 + k))) (Or.inl (by omega))
+      have hx := readWord_eq prev.1 (pa + 32 * (n - 1 - (j0 + k))) (by omega)
       have ht := readWord_eq prev.1 (4160 + 32 * (n - 1 - (j0 + k))) (Or.inr (by omega))
       simp only [l1Run_succ, l1StepOn, hx, ht, prev.2]
       constructor
@@ -91,10 +91,10 @@ theorem l1Run_agree (qa qb : MacState) (h : Agree qa.memory qb.memory) (hc : qa.
       · trivial
 
 theorem sqPro_agree (a b : ByteArray) (h : Agree a b) (n i : Nat) (tb : UInt256)
-    (hn : n ≤ 32) :
+    (_hn : n ≤ 32) :
     Agree (sqPro a n i tb).memory (sqPro b n i tb).memory ∧
       (sqPro a n i tb).carry = (sqPro b n i tb).carry := by
-  have hx : sqX a n i = sqX b n i := readWord_eq h (aAddr n i) (Or.inl (by unfold aAddr; omega))
+  have hx : sqX a n i = sqX b n i := readWord_eq h (aAddr n i) (Or.inr (by unfold aAddr; omega))
   have ht := readWord_eq h (tAddr n i) (Or.inr (by unfold tAddr; omega))
   have hs : sqSum a n i tb = sqSum b n i tb := by unfold sqSum; rw [hx, ht]
   have hcar : sqCarry a n i tb = sqCarry b n i tb := by unfold sqCarry; rw [hs, hx]
@@ -109,20 +109,20 @@ theorem sqL1_agree (a b : ByteArray) (h : Agree a b) (n i : Nat) (tb : UInt256)
     (hi : i < n) (hn : n ≤ 32) :
     Agree (sqL1 a n i tb).memory (sqL1 b n i tb).memory ∧
       (sqL1 a n i tb).carry = (sqL1 b n i tb).carry := by
-  have hx : sqX a n i = sqX b n i := readWord_eq h (aAddr n i) (Or.inl (by unfold aAddr; omega))
+  have hx : sqX a n i = sqX b n i := readWord_eq h (aAddr n i) (Or.inr (by unfold aAddr; omega))
   have hp := sqPro_agree a b h n i tb hn
   unfold sqL1
   rw [hx]
-  exact l1Run_agree _ _ hp.1 hp.2 _ 512 n (i + 1) (by omega) (n - 1 - i) (by omega)
+  exact l1Run_agree _ _ hp.1 hp.2 _ 4864 n (i + 1) (by omega) (n - 1 - i) (by omega)
 
-theorem sqTb_eq (a b : ByteArray) (h : Agree a b) (n i : Nat) (hn : n ≤ 32) :
+theorem sqTb_eq (a b : ByteArray) (h : Agree a b) (n i : Nat) (_hn : n ≤ 32) :
     sqTb a n i = sqTb b n i := by
   cases i with
   | zero => rfl
   | succ i =>
       show UInt256.sgt (UInt256.ofNat 0) (MachineState.readWord a (aAddr n i)) =
         UInt256.sgt (UInt256.ofNat 0) (MachineState.readWord b (aAddr n i))
-      rw [readWord_eq h (aAddr n i) (Or.inl (by unfold aAddr; omega))]
+      rw [readWord_eq h (aAddr n i) (Or.inr (by unfold aAddr; omega))]
 
 theorem sqRow_agree (a b : ByteArray) (h : Agree a b) (n i : Nat) (hi : i < n) (hn : n ≤ 32) :
     Agree (sqRowCarry a n i (sqTb a n i)) (sqRowMem b n i (sqTb b n i)) := by
@@ -198,30 +198,30 @@ theorem readWord_sqRowsCarry (mem : ByteArray) (n addr : Nat) (hn : n ≤ 32)
   readWord_sqRowsCarry_far mem n addr (by omega) i hi
 
 /-- The top bit fed into row `i + 1` is `SGT 0 x_i`, with `x_i` the limb row `i` read. -/
-theorem sqTb_succ_carry (mem : ByteArray) (n i : Nat) (hi : i < n) (hn : n ≤ 32) :
+theorem sqTb_succ_carry (mem : ByteArray) (n i : Nat) (hi : i < n) (hn : n ≤ 8) :
     sqTb (sqRowsCarry mem n (i + 1)) n (i + 1) =
       UInt256.sgt (UInt256.ofNat 0) (sqX (sqRowsCarry mem n i) n i) := by
   show UInt256.sgt (UInt256.ofNat 0) (MachineState.readWord (sqRowsCarry mem n (i + 1)) (aAddr n i)) =
     UInt256.sgt (UInt256.ofNat 0) (MachineState.readWord (sqRowsCarry mem n i) (aAddr n i))
   rw [sqRowsCarry_succ,
-    readWord_sqRowCarry_far _ n i (aAddr n i) _ hi (Or.inl (by unfold aAddr; omega))]
+    readWord_sqRowCarry_far _ n i (aAddr n i) _ hi (Or.inr (by unfold aAddr; omega))]
 
 /-! ## The square rows' value, machine-carry form -/
 
 /-- The top limb of the final machine-carry accumulator is at most one. -/
-theorem sqRowsCarry_tn_le_one (m0 : ByteArray) (p a mm : Nat) (hn32 : p + 2 ≤ 32)
-    (ha : Model.FastRepresents m0 512 (p + 2) a)
+theorem sqRowsCarry_tn_le_one (m0 : ByteArray) (p a mm : Nat) (hn32 : p + 2 ≤ 8)
+    (ha : Model.FastRepresents m0 4864 (p + 2) a)
     (hm : Model.FastRepresents m0 0 (p + 2) mm)
     (hminv : ((MachineState.readWord m0 (32 * (p + 2) - 32)).toNat *
         (MachineState.readWord m0 5280).toNat + 1) % 2 ^ 256 = 0)
     (hz : tValue m0 (p + 2) = 0) (ham : a < mm) :
     (MachineState.readWord (sqRowsCarry m0 (p + 2) (p + 2)) 4128).toNat ≤ 1 := by
-  rw [readWord_eq (sqRows_agree m0 (p + 2) hn32 (p + 2) le_rfl) 4128 (Or.inr (by decide))]
-  exact sqRows_tn_le_one m0 p a mm hn32 ha hm hminv hz ham
+  rw [readWord_eq (sqRows_agree m0 (p + 2) (by omega) (p + 2) le_rfl) 4128 (Or.inr (by decide))]
+  exact sqRows_tn_le_one m0 p a mm (by omega) ha hm hminv hz ham
 
-theorem sqRowsCarry_represents (m0 : ByteArray) (p a mm pdst : Nat) (hn32 : p + 2 ≤ 32)
-    (hpd : pdst + 32 * (p + 2) ≤ 4096)
-    (ha : Model.FastRepresents m0 512 (p + 2) a)
+theorem sqRowsCarry_represents (m0 : ByteArray) (p a mm pdst : Nat) (hn32 : p + 2 ≤ 8)
+    (hpd : pdst + 32 * (p + 2) ≤ 4096 ∨ 4128 ≤ pdst)
+    (ha : Model.FastRepresents m0 4864 (p + 2) a)
     (hm : Model.FastRepresents m0 0 (p + 2) mm)
     (hodd : mm % 2 = 1) (ham : a < mm)
     (hminv : ((MachineState.readWord m0 (32 * (p + 2) - 32)).toNat *
@@ -229,11 +229,41 @@ theorem sqRowsCarry_represents (m0 : ByteArray) (p a mm pdst : Nat) (hn32 : p + 
     (hz : tValue m0 (p + 2) = 0) :
     Model.FastRepresents (Csub.csResultMemory (sqRowsCarry m0 (p + 2) (p + 2)) (p + 2) pdst)
       pdst (p + 2) (Model.montMul mm (Limbs.radix ^ (p + 2)) a a) := by
-  have hrow := sqRows_agree m0 (p + 2) hn32 (p + 2) le_rfl
-  have htn := sqRows_tn_le_one m0 p a mm hn32 ha hm hminv hz ham
-  have hres := csResult_agree _ _ hrow (p + 2) pdst (by omega) hn32 htn
-  have hrep := sqRows_represents m0 p a mm pdst hn32 ha hm hodd ham hminv hz
-  exact (fastRepresents_iff _ _ hres pdst (p + 2) _ (Or.inl hpd)).2 hrep
+  have hrow := sqRows_agree m0 (p + 2) (by omega) (p + 2) le_rfl
+  have htn := sqRows_tn_le_one m0 p a mm (by omega) ha hm hminv hz ham
+  have hres := csResult_agree _ _ hrow (p + 2) pdst (by omega) (by omega) htn
+  have hrep := sqRows_represents m0 p a mm pdst (by omega) ha hm hodd ham hminv hz
+  exact (fastRepresents_iff _ _ hres pdst (p + 2) _ hpd).2 hrep
+
+/-- Zeroing touches only the accumulator, including its two leading words. -/
+theorem readWord_mpZeroed_far (s : State) (mem : ByteArray) (n addr : Nat)
+    (hd : addr + 32 ≤ 4096 ∨ 4160 + 32 * n ≤ addr) :
+    MachineState.readWord (mpZeroed s mem n) addr = MachineState.readWord mem addr := by
+  apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
+  rw [Challenge.EvmProof.Memory.readPadded_size]
+  omega
+
+/-- The staged copy represents the input operand. -/
+theorem represents_stage (mem : ByteArray) (n a : Nat)
+    (ha : Model.FastRepresents mem 512 n a) :
+    Model.FastRepresents (stage mem 512 n) 4864 n a := by
+  unfold Model.FastRepresents Model.fastLimbs at *
+  have heq : (List.range n).map (fun k =>
+      (MachineState.readWord (stage mem 512 n) (4864 + 32 * (n - 1 - k))).toNat) =
+      (List.range n).map (fun k => (MachineState.readWord mem (512 + 32 * (n - 1 - k))).toNat) := by
+    apply List.map_congr_left
+    intro k hk
+    have hk' := List.mem_range.mp hk
+    rw [read_stage_member mem 512 n (n - 1 - k) (by omega)]
+  simpa only [heq] using ha
+
+/-- The accumulator zeroing preserves the staged operand. -/
+theorem represents_zeroed_stage (s : State) (mem : ByteArray) (n a : Nat) (hn : n ≤ 8)
+    (ha : Model.FastRepresents mem 4864 n a) :
+    Model.FastRepresents (mpZeroed s mem n) 4864 n a := by
+  refine (Model.fastRepresents_congr (a := mem) ?_ a).1 ha
+  intro j hj
+  rw [readWord_mpZeroed_far s mem n (4864 + 32 * j) (Or.inr (by omega))]
 
 /-! ## The square subroutine's result memory -/
 
@@ -275,8 +305,10 @@ theorem sqMem_represents (s : State) (mem : ByteArray) (p a mm : Nat)
   unfold sqMem
   split
   · let prepared := inputMemory mem 512 (p + 2)
-    have ha' : Model.FastRepresents prepared 512 (p + 2) a :=
-      (fastRepresents_inputMemory mem 512 (p + 2) 512 (p + 2) a (by omega)).2 ha
+    have hfast : p + 2 = 4 ∨ p + 2 = 8 := by assumption
+    have hn8 : p + 2 ≤ 8 := by omega
+    have ha' : Model.FastRepresents prepared 4864 (p + 2) a := by
+      simpa only [prepared, inputMemory, if_pos hfast] using represents_stage mem (p + 2) a ha
     have hm' : Model.FastRepresents prepared 0 (p + 2) mm :=
       (fastRepresents_inputMemory mem 512 (p + 2) 0 (p + 2) mm (by omega)).2 hm
     have hminv' : ((MachineState.readWord prepared (32 * (p + 2) - 32)).toNat *
@@ -284,10 +316,8 @@ theorem sqMem_represents (s : State) (mem : ByteArray) (p a mm : Nat)
       simpa only [prepared,
         read_inputMemory_outside mem 512 (p + 2) (32 * (p + 2) - 32) (Or.inl (by omega)),
         read_inputMemory_outside mem 512 (p + 2) 5280 (Or.inr (by decide))] using hminv
-    have ha0 : Model.FastRepresents (mpZeroed s prepared (p + 2)) 512 (p + 2) a := by
-      refine (Model.fastRepresents_congr (a := prepared) ?_ a).1 ha'
-      intro j hj
-      rw [readWord_mpZeroed s prepared (p + 2) (512 + 32 * j) hn32 (Or.inl (by omega))]
+    have ha0 : Model.FastRepresents (mpZeroed s prepared (p + 2)) 4864 (p + 2) a :=
+      represents_zeroed_stage s prepared (p + 2) a hn8 ha'
     have hm0 : Model.FastRepresents (mpZeroed s prepared (p + 2)) 0 (p + 2) mm := by
       refine (Model.fastRepresents_congr (a := prepared) ?_ mm).1 hm'
       intro j hj
@@ -297,7 +327,7 @@ theorem sqMem_represents (s : State) (mem : ByteArray) (p a mm : Nat)
       rw [readWord_mpZeroed s prepared (p + 2) (32 * (p + 2) - 32) hn32 (Or.inl (by omega)),
         readWord_mpZeroed s prepared (p + 2) 5280 hn32 (Or.inr (by omega))]
       exact hminv'
-    exact sqRowsCarry_represents (mpZeroed s prepared (p + 2)) p a mm 512 hn32 (by omega)
+    exact sqRowsCarry_represents (mpZeroed s prepared (p + 2)) p a mm 512 hn8 (by omega)
       ha0 hm0 hodd ham hminv0 (tValue_mpZeroed s prepared (p + 2))
   · exact CarryResult.monproMem_represents s mem 512 512 p 512 a a mm hn32
       (by omega) (by omega) (by omega) ha ha hm hodd ham hminv
@@ -377,29 +407,34 @@ theorem Snapshot.of_far {mem mem' : ByteArray} {pa n : Nat} (h : Snapshot mem pa
   rw [hpres (4864 + 32 * k) (Or.inr (by omega)), hpres (pa + 32 * k) (Or.inl (by omega))]
   exact h k hk
 
-theorem Snapshot.sqPro {mem : ByteArray} {n : Nat} (h : Snapshot mem 512 n) (i : Nat)
-    (tb : UInt256) (hi : i < n) (hn : n ≤ 8) :
-    Snapshot (SquareModel.sqPro mem n i tb).memory 512 n :=
-  h.of_far hn (by omega) (fun addr haddr => readWord_sqPro mem n i addr tb hi (by omega))
+theorem Snapshot.sqPro {mem : ByteArray} {n : Nat} (_h : Snapshot mem 4864 n) (i : Nat)
+    (tb : UInt256) (_hi : i < n) (_hn : n ≤ 8) :
+    Snapshot (SquareModel.sqPro mem n i tb).memory 4864 n := by
+  intro k _; rfl
 
-theorem Snapshot.l1Run {q : MacState} {n : Nat} (h : Snapshot q.memory 512 n) (bi : UInt256)
-    (j0 k : Nat) (hk : j0 + k ≤ n) (hn : n ≤ 8) :
-    Snapshot (SquareModel.l1Run q bi 512 n j0 k).memory 512 n :=
-  h.of_far hn (by omega) (fun addr haddr => readWord_l1Run q bi 512 n j0 addr (by omega) k hk)
 
-theorem Snapshot.sqL1 {mem : ByteArray} {n : Nat} (h : Snapshot mem 512 n) (i : Nat)
-    (tb : UInt256) (hi : i < n) (hn : n ≤ 8) :
-    Snapshot (SquareModel.sqL1 mem n i tb).memory 512 n :=
-  h.of_far hn (by omega) (fun addr haddr => readWord_sqL1 mem n i addr tb hi (by omega))
+theorem Snapshot.l1Run {q : MacState} {n : Nat} (_h : Snapshot q.memory 4864 n) (bi : UInt256)
+    (j0 k : Nat) (_hk : j0 + k ≤ n) (_hn : n ≤ 8) :
+    Snapshot (SquareModel.l1Run q bi 4864 n j0 k).memory 4864 n := by
+  intro k _; rfl
 
-theorem Snapshot.sqRowCarry {mem : ByteArray} {n : Nat} (h : Snapshot mem 512 n) (i : Nat)
-    (tb : UInt256) (hi : i < n) (hn : n ≤ 8) :
-    Snapshot (SquareResult.sqRowCarry mem n i tb) 512 n :=
-  h.of_far hn (by omega) (fun addr haddr => readWord_sqRowCarry_far mem n i addr tb hi haddr)
 
-theorem Snapshot.sqRowsCarry {mem : ByteArray} {n : Nat} (h : Snapshot mem 512 n) (i : Nat)
-    (hi : i ≤ n) (hn : n ≤ 8) :
-    Snapshot (SquareResult.sqRowsCarry mem n i) 512 n :=
-  h.of_far hn (by omega) (fun addr haddr => readWord_sqRowsCarry_far mem n addr haddr i hi)
+theorem Snapshot.sqL1 {mem : ByteArray} {n : Nat} (_h : Snapshot mem 4864 n) (i : Nat)
+    (tb : UInt256) (_hi : i < n) (_hn : n ≤ 8) :
+    Snapshot (SquareModel.sqL1 mem n i tb).memory 4864 n := by
+  intro k _; rfl
+
+
+theorem Snapshot.sqRowCarry {mem : ByteArray} {n : Nat} (_h : Snapshot mem 4864 n) (i : Nat)
+    (tb : UInt256) (_hi : i < n) (_hn : n ≤ 8) :
+    Snapshot (SquareResult.sqRowCarry mem n i tb) 4864 n := by
+  intro k _; rfl
+
+
+theorem Snapshot.sqRowsCarry {mem : ByteArray} {n : Nat} (_h : Snapshot mem 4864 n) (i : Nat)
+    (_hi : i ≤ n) (_hn : n ≤ 8) :
+    Snapshot (SquareResult.sqRowsCarry mem n i) 4864 n := by
+  intro k _; rfl
+
 
 end Challenge.Modexp.Submission.Proofs.Fast.StagedOperand

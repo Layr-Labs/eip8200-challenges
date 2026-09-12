@@ -4,7 +4,7 @@ set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
 
-/-! # Redirect from the inherited `BDONE` to the fixed-exponent dispatcher. -/
+/-! # Base conversion now returns directly to the fixed-exponent dispatcher. -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectEntryTrace
 
@@ -15,14 +15,12 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths
 
 def entryPath : List (Challenge.EvmProof.Stepper.Located
     Artifact.submissionArtifact .Osaka) :=
-  [
-   pushAt 1166 2 3275,
-   opAt 1167 .JUMP]
+  []
 
 set_option linter.unusedSimpArgs false in
 theorem run_entry (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock entryPath
       (Exp.bDone s memory n bsize esize msize) =
@@ -32,7 +30,7 @@ theorem run_entry (s : State) (memory : ByteArray)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      Exp.bDone, entryState, Exp.outer, hcode, hrun,
+      Exp.bDone, entryState, Exp.outer, hrun,
       FixedDirectPaths.jumpDest3892,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,

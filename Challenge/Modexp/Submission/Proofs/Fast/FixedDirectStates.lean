@@ -18,37 +18,37 @@ abbrev outer := Exp.outer
 
 def otherWidth (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3284
+  { s with pc := UInt256.ofNat 3274
            stack := outer n bsize esize msize
            memory := mem }
 
 def checkThree (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3292
+  { s with pc := UInt256.ofNat 3282
            stack := outer n bsize esize msize
            memory := mem }
 
 def check65537 (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3312
+  { s with pc := UInt256.ofNat 3302
            stack := outer n bsize esize msize
            memory := mem }
 
 def special (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 3332
+  { s with pc := UInt256.ofNat 3322
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
 def square (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 3332
+  { s with pc := UInt256.ofNat 3322
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
 def squareReturn (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 3353
+  { s with pc := UInt256.ofNat 3343
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
@@ -58,13 +58,13 @@ then still the one the caller pushed), and for the unaccelerated widths the
 caller's own loop falls through to it with the count decremented to `0`. -/
 def product (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 3362
+  { s with pc := UInt256.ofNat 3352
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
 def fallback (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3378
+  { s with pc := UInt256.ofNat 3368
            stack := outer n bsize esize msize
            memory := mem }
 

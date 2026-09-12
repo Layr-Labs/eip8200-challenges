@@ -15,8 +15,8 @@ open CiosCached CiosCachedMidMemory CarryIface
 open Challenge.Modexp.Submission.Proofs.Fast.CarryRows
 open CarryRowModel CarryResult StagedOperand
 
-/-- An eight-limb multiply: `mul entry` (pc 4077) → `common` → `setup` → the eight rows (row head
-`hd = 4274`) → the final subtraction (pc 4928). -/
+/-- An eight-limb multiply: `mul entry` (pc 4067) → `common` → `setup` → the eight rows (row head
+`hd = 4264`) → the final subtraction (pc 4928). -/
 opaque gasSteps_specializedEight (L : RowLemmas) (E : EntryLemmas) (s : State) (mem : ByteArray)
     (pa pb : Nat) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
@@ -43,7 +43,7 @@ opaque gasSteps_specializedEight (L : RowLemmas) (E : EntryLemmas) (s : State) (
       hread (32*8-32) (Or.inl (by decide)),
       hread 5280 (Or.inr (by decide))] using hminv
   refine (E.gasSteps_mulEntry s mem pa pb pdst ret rest (by omega) hrun hcode hfork hnp).trans ?_
-  refine (E.gasSteps_commonSetup s mem (UInt256.ofNat 4266) pa pb 8 pdst ret rest hcap hrun hcode
+  refine (E.gasSteps_commonSetup s mem (UInt256.ofNat 4256) pa pb 8 pdst ret rest hcap hrun hcode
     hfork hnp hact (by decide) (by omega) hpb hpbFit hcds hs32 hml jumpDest_rowHead).trans ?_
   exact gasSteps_rowsEight L s (stage mem pa 8) pa pb
     (MachineState.readWord mem 5344) (MachineState.readWord mem 5280)

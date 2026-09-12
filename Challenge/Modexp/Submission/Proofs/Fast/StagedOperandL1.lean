@@ -174,6 +174,13 @@ theorem Snapshot.l1StepOn_pres {q : MacState} {pa n : Nat} (h : Snapshot q.memor
     SquareModel.readWord_l1StepOn_disj q bi pa n j (pa + 32 * k) (Or.inl (by omega))]
   exact h k hk
 
+theorem Snapshot.l1StepOn_pres_stage {q : MacState} {pa n : Nat} (h : Snapshot q.memory pa n)
+    (bi : UInt256) (j : Nat) (hn : n ≤ 8) (hpa : pa + 32 * n ≤ 4096 ∨ pa = 4864) (hj : j < n) :
+    Snapshot (SquareModel.l1StepOn q bi pa n j).memory pa n := by
+  rcases hpa with hfit | rfl
+  · exact h.l1StepOn_pres bi j hn hfit hj
+  · intro k _; rfl
+
 theorem Snapshot.l1Run_pres {q : MacState} {pa n : Nat} (h : Snapshot q.memory pa n)
     (bi : UInt256) (j0 : Nat) (hn : n ≤ 8) (hpa : pa + 32 * n ≤ 4096) :
     ∀ k, j0 + k ≤ n → Snapshot (SquareModel.l1Run q bi pa n j0 k).memory pa n

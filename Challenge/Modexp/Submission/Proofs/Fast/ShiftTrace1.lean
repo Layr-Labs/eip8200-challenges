@@ -88,7 +88,7 @@ theorem run_dispatch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
         Challenge.EvmProof.Word.ofNat_add_mod]
 
 /-- `blk2889`: the miss arm seeds `R1 = 0x0400` with the word 1 and calls the
-Montgomery-form conversion (pc 2211) with return address 1430, the old `r0` block.
+Montgomery-form conversion (pc 2206) with return address 1430, the old `r0` block.
 
 This call does not sit on the shared setup path, which every fast route runs.  It sits
 here, so it runs only on the recogniser-miss route -- the only route that reads `R1`; the

@@ -22,7 +22,7 @@ def blk1028 :
    pushAt 978 1 1,
    opAt 979 .AND,
    opAt 980 .ISZERO,
-   pushAt 981 2 1717,
+   pushAt 981 2 1712,
    opAt 982 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast
