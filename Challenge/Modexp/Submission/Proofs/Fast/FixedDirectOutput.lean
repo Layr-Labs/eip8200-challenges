@@ -26,13 +26,13 @@ open Challenge.Modexp.Submission.Proofs
 /-- Memory after the caller's square loop has run down from `k` remaining
 in-place Montgomery squares of BASE, `sq` being the memory effect of one
 `SQUARE(0x800) → 0x800` call.  Each iteration first stores the remaining count
-in memory word `0x2440 = 9280` (the loop head's `MSTORE`, read by the kernel's
+in memory word `0x2440 = 5184` (the loop head's `MSTORE`, read by the kernel's
 own square loop) and then calls the kernel. -/
 def fixedDirectMems
     (sq : ByteArray → ByteArray) : ByteArray → Nat → ByteArray
   | mem, 0 => mem
   | mem, k + 1 =>
-      fixedDirectMems sq (sq (Exp.storeWord mem 9280 (UInt256.ofNat (k + 1)))) k
+      fixedDirectMems sq (sq (Exp.storeWord mem 5184 (UInt256.ofNat (k + 1)))) k
 
 /-- Arithmetic value represented by BASE after `t` in-place squares. -/
 def fixedDirectValue (mm R bM : Nat) : Nat → Nat
@@ -81,29 +81,29 @@ theorem fixedDirectValue_form {mm R b bM : Nat} (hm : 0 < mm)
 normal-domain residue while BASE is in Montgomery form. -/
 structure Inv (mem : ByteArray) (n mm rawBase squareBase : Nat) : Prop where
   modulus : Model.FastRepresents mem 0 n mm
-  rawAcc : Model.FastRepresents mem 1024 n rawBase
-  squareBase : Model.FastRepresents mem 2048 n squareBase
+  rawAcc : Model.FastRepresents mem 256 n rawBase
+  squareBase : Model.FastRepresents mem 512 n squareBase
   oneBlock : ∃ one, one < Limbs.radix ∧
-    Model.FastRepresents mem 3072 n one
+    Model.FastRepresents mem 768 n one
 
 /-- The square count the loop head writes sits at `0x2440`, above every block
 the chain reads and below the configuration words. -/
 theorem countStore_frame {mem : ByteArray} {n bsize minv : Nat} (c : Nat)
     (hframe : Exp.Frame mem n bsize minv) :
-    Exp.Frame (Exp.storeWord mem 9280 (UInt256.ofNat c)) n bsize minv :=
+    Exp.Frame (Exp.storeWord mem 5184 (UInt256.ofNat c)) n bsize minv :=
   Exp.frame_storeWord (UInt256.ofNat c) (by omega) hframe
 
 /-- The square count the loop head writes disturbs no block of the chain. -/
 theorem countStore_inv {mem : ByteArray} {n mm rawBase squareBase : Nat} (c : Nat)
     (hn32 : n ≤ 32) (hinv : Inv mem n mm rawBase squareBase) :
-    Inv (Exp.storeWord mem 9280 (UInt256.ofNat c)) n mm rawBase squareBase := by
+    Inv (Exp.storeWord mem 5184 (UInt256.ofNat c)) n mm rawBase squareBase := by
   obtain ⟨one, honeLt, honeRep⟩ := hinv.oneBlock
-  exact ⟨Exp.storeWord_frame mem 9280 0 n mm _ (Or.inr (by omega)) hinv.modulus,
-    Exp.storeWord_frame mem 9280 1024 n rawBase _ (Or.inr (by omega)) hinv.rawAcc,
-    Exp.storeWord_frame mem 9280 2048 n squareBase _ (Or.inr (by omega))
+  exact ⟨Exp.storeWord_frame mem 5184 0 n mm _ (Or.inr (by omega)) hinv.modulus,
+    Exp.storeWord_frame mem 5184 1024 n rawBase _ (Or.inr (by omega)) hinv.rawAcc,
+    Exp.storeWord_frame mem 5184 2048 n squareBase _ (Or.inr (by omega))
       hinv.squareBase,
     ⟨one, honeLt,
-      Exp.storeWord_frame mem 9280 3072 n one _ (Or.inr (by omega)) honeRep⟩⟩
+      Exp.storeWord_frame mem 5184 3072 n one _ (Or.inr (by omega)) honeRep⟩⟩
 
 theorem fixedDirectMems_frame {s : State} {n bsize mm minv : Nat}
     (sub : Exp.Subroutines s n bsize mm minv) :
@@ -132,7 +132,7 @@ theorem fixedDirectMems_inv {s : State} {n bsize mm minv : Nat}
       have hinv0 := countStore_inv (t + 1) hn32 hinv
       have hframe0 := countStore_frame (t + 1) hframe
       obtain ⟨one, honeLt, honeRep⟩ := hinv0.oneBlock
-      have hstep : Inv (sub.sqMem (Exp.storeWord mem 9280 (UInt256.ofNat (t + 1))))
+      have hstep : Inv (sub.sqMem (Exp.storeWord mem 5184 (UInt256.ofNat (t + 1))))
           n mm rawBase (Model.montMul mm (Limbs.radix ^ n) bM bM) :=
         ⟨sub.sqKeep 0 mm _ (by omega) (Or.inr (by omega)) hinv0.modulus,
          sub.sqKeep 1024 rawBase _ (by omega) (Or.inr (by omega)) hinv0.rawAcc,

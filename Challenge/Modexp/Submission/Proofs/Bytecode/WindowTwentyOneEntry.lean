@@ -98,37 +98,41 @@ jump here with the loaded modulus word on top of the route frame and `POP`
 discards it. There is no base-width branch: a zero-width base runs the core
 with the base word `CALLDATALOAD 96 >> 256 = 0`. -/
 def baseProgram : List Instr :=
-  [.op .JUMPDEST, .op .JUMPDEST]
+  [.op .JUMPDEST, .op .POP]
 
 theorem run_base (template : State) (value : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions baseProgram (framed template (UInt256.ofNat 2199) (value :: rest)) =
-    some (framed template (UInt256.ofNat 2201) (value :: rest)) := by
+    some (framed template (UInt256.ofNat 2201) rest) := by
   have hcap1 : rest.length + 1 < 1024 := by omega
   simp [runInstructions, baseProgram, framed, Challenge.EvmProof.Stepper.runInstr,
     hcap1, Challenge.EvmProof.Word.succ_ofNat_mod]
 
 def modulusProgram : List Instr :=
-  [.op .JUMPDEST, .op .JUMPDEST, .op (.Dup ⟨0, by decide⟩)] ++
+  [.op (.Dup ⟨5, by decide⟩), .op .CALLDATALOAD, .op (.Dup ⟨0, by decide⟩)] ++
     testProgram (UInt256.ofNat 2829)
 
-theorem run_modulus (template : State)
-    (value : UInt256) (rest : List UInt256) (hrest : rest.length ≤ 999)
+theorem run_modulus (template : State) (modulusOffset : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 999)
+    (hoffset : rest[5]? = some modulusOffset)
     (htarget : Decode.isValidJumpDest template.executionEnv.code 2829 = true) :
-    runInstructions modulusProgram (framed template (UInt256.ofNat 2201) (value :: rest)) =
-    some (framed template (if value.toNat = 0 then UInt256.ofNat 2829 else UInt256.ofNat 2209)
-      (value :: rest)) := by
+    let modulus := MachineState.readWord template.executionEnv.calldata modulusOffset.toNat
+    runInstructions modulusProgram (framed template (UInt256.ofNat 2201) rest) =
+    some (framed template (if modulus.toNat = 0 then UInt256.ofNat 2829 else UInt256.ofNat 2209)
+      (modulus :: rest)) := by
+  let modulus := MachineState.readWord template.executionEnv.calldata modulusOffset.toNat
+  have hcap0 : rest.length < 1024 := by omega
   have hcap1 : rest.length + 1 < 1024 := by omega
-  have hh : runInstructions [.op .JUMPDEST, .op .JUMPDEST, .op (.Dup ⟨0, by decide⟩)]
-      (framed template (UInt256.ofNat 2201) (value :: rest)) =
-      some (framed template (UInt256.ofNat 2204) (value :: value :: rest)) := by
-    simp [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr, hcap1,
-      Challenge.EvmProof.Word.succ_ofNat_mod]
-  have ht := run_test template (UInt256.ofNat 2204) (UInt256.ofNat 2829) value
-    (value :: rest) (by simp only [List.length_cons]; omega) htarget
+  have hh : runInstructions [.op (.Dup ⟨5, by decide⟩), .op .CALLDATALOAD, .op (.Dup ⟨0, by decide⟩)]
+      (framed template (UInt256.ofNat 2201) rest) =
+      some (framed template (UInt256.ofNat 2204) (modulus :: modulus :: rest)) := by
+    simp [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr, hcap0, hcap1,
+      hoffset, modulus, Challenge.EvmProof.Word.succ_ofNat_mod]
+  have ht := run_test template (UInt256.ofNat 2204) (UInt256.ofNat 2829) modulus
+    (modulus :: rest) (by simp only [List.length_cons]; omega) htarget
   have both := runInstructions_append_some _ _ _ _ _ hh ht
   have hpc : advancePC 5 (UInt256.ofNat 2204) = UInt256.ofNat 2209 := by decide
-  simpa only [modulusProgram, framed, hpc] using both
+  simpa only [modulusProgram, framed, hpc, modulus] using both
 
 def normalizeProgram : List Instr :=
   [.op (.Dup ⟨4, by decide⟩), .op .CALLDATALOAD, .op (.Dup ⟨2, by decide⟩),

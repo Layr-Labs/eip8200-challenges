@@ -44,7 +44,7 @@ theorem run_redirect (s : State) (memory : ByteArray)
 set_option linter.unusedSimpArgs false in
 theorem run_guard (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) (hn32 : n ≤ 32)
-    (hb : bsize < 2 ^ 256) (hactive : 298 ≤ s.activeWords.toNat)
+    (hb : bsize < 2 ^ 256) (hactive : 170 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blkFullBaseGuard
@@ -103,7 +103,7 @@ theorem run_guard (s : State) (memory : ByteArray)
 set_option linter.unusedSimpArgs false in
 theorem run_copyAdd (s : State) (memory input : ByteArray)
     (n bsize esize msize : Nat) (hn32 : n ≤ 32)
-    (hactive : 298 ≤ s.activeWords.toNat)
+    (hactive : 170 ≤ s.activeWords.toNat)
     (hdata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
@@ -153,7 +153,7 @@ def gasSteps_redirect (s : State) (memory : ByteArray)
 
 def gasSteps_guard (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) (hn32 : n ≤ 32)
-    (hb : bsize < 2 ^ 256) (hactive : 298 ≤ s.activeWords.toNat)
+    (hb : bsize < 2 ^ 256) (hactive : 170 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -169,7 +169,7 @@ def gasSteps_guard (s : State) (memory : ByteArray)
 
 def gasSteps_copyAdd (s : State) (memory input : ByteArray)
     (n bsize esize msize : Nat) (hn32 : n ≤ 32)
-    (hactive : 298 ≤ s.activeWords.toNat)
+    (hactive : 170 ≤ s.activeWords.toNat)
     (hdata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)

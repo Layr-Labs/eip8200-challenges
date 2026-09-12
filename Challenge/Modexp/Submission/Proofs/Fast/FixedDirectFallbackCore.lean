@@ -27,8 +27,8 @@ def runInstructions : List Instr → State → Option State
 def fallbackProgram : List Instr :=
   [.op .JUMPDEST,
    .op (.Dup ⟨0, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 4096),
    .push ⟨2, by decide⟩ (UInt256.ofNat 1024),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 256),
    .op .MCOPY,
    .push ⟨0, by decide⟩ (UInt256.ofNat 0),
    .push ⟨2, by decide⟩ (UInt256.ofNat 1474),
@@ -37,7 +37,7 @@ def fallbackProgram : List Instr :=
 set_option linter.unusedSimpArgs false in
 theorem run_fallbackProgram (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hactive : 298 ≤ s.activeWords.toNat)
+    (hactive : 170 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest s.executionEnv.code 1474 = true)
     (hrun : s.halt = .Running) :
     runInstructions fallbackProgram
@@ -47,11 +47,11 @@ theorem run_fallbackProgram (s : State) (memory : ByteArray)
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       32 * n :=
     Exp.mod_word_self
-      (Nat.lt_of_le_of_lt (show 32 * n ≤ 1024 by omega) (by norm_num))
+      (Nat.lt_of_le_of_lt (show 32 * n ≤ 256 by omega) (by norm_num))
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter
-      (MachineState.activeWordsAfter s.activeWords.toNat 1024 (32 * n))
-      4096 (32 * n)) = s.activeWords :=
-    Exp.activeWords_fix2 s 1024 (32 * n) 4096 (32 * n)
+      (MachineState.activeWordsAfter s.activeWords.toNat 256 (32 * n))
+      1024 (32 * n)) = s.activeWords :=
+    Exp.activeWords_fix2 s 256 (32 * n) 1024 (32 * n)
       (by omega) (by omega) (by omega) (by omega) hactive
   simp (config := { maxSteps := 600000 })
     [fallbackProgram, runInstructions,

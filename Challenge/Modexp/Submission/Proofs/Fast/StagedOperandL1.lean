@@ -14,7 +14,7 @@ set_option maxHeartbeats 2000000
 Every first-loop block `k = 1..7` of the sqCP1m kernel is the 38-byte
 `JUMPDEST; PUSH2 (0x2300 + 32(7-k)); MLOAD; DUP9; <product>; <finish t>` (the
 last block included: its load is the generic staged load with offset 0).  The
-limb `a_j` is read from the staged copy at `8960 + 32(n-1-j)`, which the
+limb `a_j` is read from the staged copy at `4864 + 32(n-1-j)`, which the
 `StagedOperand.Snapshot` invariant identifies with the operand limb.
 
 The step is stated on an arbitrary MAC state `q` (memory and running carry),
@@ -29,9 +29,9 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 
-/-- Staged-operand load `PUSH2 (8960 + off); MLOAD; DUP9`. -/
+/-- Staged-operand load `PUSH2 (4864 + off); MLOAD; DUP9`. -/
 def loadProgram (off : UInt256) : List Instr :=
-  [.push 2 (UInt256.ofNat 8960 + off), .op .MLOAD, .op (.Dup ⟨8, by decide⟩)]
+  [.push 2 (UInt256.ofNat 4864 + off), .op .MLOAD, .op (.Dup ⟨8, by decide⟩)]
 
 def l1Program (off t : UInt256) : List Instr :=
   loadProgram off ++ CiosCached.macFusedProgram t t
@@ -53,12 +53,12 @@ theorem run_load (template : State)
     (pc off carry bi pbi hd pbEnd flag destination returnPC : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
     (hactive : UInt256.ofNat (MachineState.activeWordsAfter
-      template.activeWords.toNat (UInt256.ofNat 8960 + off).toNat 32) = template.activeWords) :
+      template.activeWords.toNat (UInt256.ofNat 4864 + off).toNat 32) = template.activeWords) :
     runInstructions (loadProgram off)
       (framed template pc
         ([carry, bi, pbi, hd, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)) =
     some (framed template (pc + UInt256.ofNat 5)
-      ([maxWord, MachineState.readWord template.memory (UInt256.ofNat 8960 + off).toNat,
+      ([maxWord, MachineState.readWord template.memory (UInt256.ofNat 4864 + off).toNat,
         carry, bi, pbi, hd, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)) := by
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
@@ -72,7 +72,7 @@ theorem run_load (template : State)
     succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem snapshot_read (mem : ByteArray) (pa n j : Nat) (h : Snapshot mem pa n) (hj : j < n) :
-    MachineState.readWord mem (8960 + 32 * (n - 1 - j)) =
+    MachineState.readWord mem (4864 + 32 * (n - 1 - j)) =
       MachineState.readWord mem (pa + 32 * (n - 1 - j)) :=
   h (n - 1 - j) (by omega)
 
@@ -80,36 +80,36 @@ theorem snapshot_read (mem : ByteArray) (pa n j : Nat) (h : Snapshot mem pa n) (
 theorem run_l1 (template : State) (pc : UInt256) (q : MacState)
     (bi : UInt256) (pa n j : Nat) (off t : UInt256)
     (hoff : off.toNat = 32 * (n - 1 - j))
-    (ht : t.toNat = 8256 + 32 * (n - 1 - j))
+    (ht : t.toNat = 4160 + 32 * (n - 1 - j))
     (pbi hd pbEnd flag destination returnPC : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
-    (hactive : 296 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
+    (hactive : 168 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
     (hsnapshot : Snapshot q.memory pa n) :
     runInstructions (l1Program off t)
       (qState template pc q bi pbi hd pbEnd flag destination returnPC rest) =
     some (qState template (pc + UInt256.ofNat 37) (SquareModel.l1StepOn q bi pa n j)
       bi pbi hd pbEnd flag destination returnPC rest) := by
-  have hsaddr : (UInt256.ofNat 8960 + off).toNat = 8960 + 32*(n-1-j) := by
-    rw [CiosCachedL1.base_offset_toNat 8960 off (by omega), hoff]
-  have hsread : MachineState.readWord q.memory (UInt256.ofNat 8960 + off).toNat =
+  have hsaddr : (UInt256.ofNat 4864 + off).toNat = 4864 + 32*(n-1-j) := by
+    rw [CiosCachedL1.base_offset_toNat 4864 off (by omega), hoff]
+  have hsread : MachineState.readWord q.memory (UInt256.ofNat 4864 + off).toNat =
       MachineState.readWord q.memory (pa + 32*(n-1-j)) := by
     rw [hsaddr]
     exact snapshot_read q.memory pa n j hsnapshot hj
   have hactA : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
-      (8960 + 32*(n-1-j)) 32) = template.activeWords :=
+      (4864 + 32*(n-1-j)) 32) = template.activeWords :=
     activeWords_fix template _ 32 (by decide) (by omega) hactive
   have hactT : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
-      (8256 + 32*(n-1-j)) 32) = template.activeWords :=
+      (4160 + 32*(n-1-j)) 32) = template.activeWords :=
     activeWords_fix template _ 32 (by decide) (by omega) hactive
   let st : State := { template with memory := q.memory }
   have hA : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat
-      (UInt256.ofNat 8960 + off).toNat 32) = st.activeWords := by
+      (UInt256.ofNat 4864 + off).toNat 32) = st.activeWords := by
     simpa only [st, hsaddr] using hactA
   have hT : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat t.toNat 32) =
       st.activeWords := by simpa only [st, ht] using hactT
   have hl := run_load st pc off q.carry bi pbi hd
     pbEnd flag destination returnPC rest hrest hA
-  rw [show MachineState.readWord st.memory (UInt256.ofNat 8960 + off).toNat =
+  rw [show MachineState.readWord st.memory (UInt256.ofNat 4864 + off).toNat =
     MachineState.readWord q.memory (pa + 32*(n-1-j)) from hsread] at hl
   have hf := CiosCachedFused.run_fused st (pc + UInt256.ofNat 5)
     (MachineState.readWord q.memory (pa + 32*(n-1-j))) bi q.carry t t
@@ -126,10 +126,10 @@ theorem run_l1 (template : State) (pc : UInt256) (q : MacState)
 theorem run_step (template : State) (pc : UInt256) (q : MacState)
     (bi : UInt256) (pa n j : Nat) (off t : UInt256)
     (hoff : off.toNat = 32 * (n - 1 - j))
-    (ht : t.toNat = 8256 + 32 * (n - 1 - j))
+    (ht : t.toNat = 4160 + 32 * (n - 1 - j))
     (pbi hd pbEnd flag destination returnPC : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
-    (hactive : 296 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
+    (hactive : 168 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
     (hsnapshot : Snapshot q.memory pa n) :
     runInstructions (stepProgram off t)
       (qState template pc q bi pbi hd pbEnd flag destination returnPC rest) =
@@ -151,9 +151,9 @@ theorem run_step (template : State) (pc : UInt256) (q : MacState)
 /-- The same block on the kernel's row frame `CiosCached.l1Q`. -/
 theorem run_stepQ (pc : Nat) (off t : UInt256) (s : State) (q : MacState) (bi : UInt256)
     (pa pb n i j : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hact : 296 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 1005) (hact : 168 ≤ s.activeWords.toNat)
     (hn : n ≤ 8) (hj : j < n) (hoff : off.toNat = 32 * (n - 1 - j))
-    (ht : t.toNat = 8256 + 32 * (n - 1 - j))
+    (ht : t.toNat = 4160 + 32 * (n - 1 - j))
     (hsnapshot : Snapshot q.memory pa n) :
     runInstructions (stepProgram off t) (l1Q pc s q bi pb n i hd ent pdst ret rest) =
       some (l1Q (pc+38) s (SquareModel.l1StepOn q bi pa n j) bi pb n i hd ent pdst ret rest) := by
@@ -167,15 +167,15 @@ theorem run_stepQ (pc : Nat) (off t : UInt256) (s : State) (q : MacState) (bi : 
 /-! ## The staged snapshot survives the first loop (any operand base) -/
 
 theorem Snapshot.l1StepOn_pres {q : MacState} {pa n : Nat} (h : Snapshot q.memory pa n)
-    (bi : UInt256) (j : Nat) (hn : n ≤ 8) (hpa : pa + 32 * n ≤ 8192) (hj : j < n) :
+    (bi : UInt256) (j : Nat) (hn : n ≤ 8) (hpa : pa + 32 * n ≤ 4096) (hj : j < n) :
     Snapshot (SquareModel.l1StepOn q bi pa n j).memory pa n := by
   intro k hk
-  rw [SquareModel.readWord_l1StepOn_disj q bi pa n j (8960 + 32 * k) (Or.inr (by omega)),
+  rw [SquareModel.readWord_l1StepOn_disj q bi pa n j (4864 + 32 * k) (Or.inr (by omega)),
     SquareModel.readWord_l1StepOn_disj q bi pa n j (pa + 32 * k) (Or.inl (by omega))]
   exact h k hk
 
 theorem Snapshot.l1Run_pres {q : MacState} {pa n : Nat} (h : Snapshot q.memory pa n)
-    (bi : UInt256) (j0 : Nat) (hn : n ≤ 8) (hpa : pa + 32 * n ≤ 8192) :
+    (bi : UInt256) (j0 : Nat) (hn : n ≤ 8) (hpa : pa + 32 * n ≤ 4096) :
     ∀ k, j0 + k ≤ n → Snapshot (SquareModel.l1Run q bi pa n j0 k).memory pa n
   | 0, _ => h
   | k + 1, hk => by

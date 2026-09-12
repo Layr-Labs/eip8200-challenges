@@ -32,9 +32,9 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hactive : 298 ≤ s.activeWords.toNat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 1024)
-    (he : esize ≤ 1024) (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
+    (hactive : 170 ≤ s.activeWords.toNat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 256)
+    (he : esize ≤ 256) (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
     (hmsz : msize = Challenge.Modexp.modulusSize input)
@@ -44,10 +44,10 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
       Limbs.radix ^ n [MOD mm])
     (hframe : Exp.Frame memory n bsize minv)
     (hmod : Model.FastRepresents memory 0 n mm)
-    (hbase : Model.FastRepresents memory 2048 n bM)
+    (hbase : Model.FastRepresents memory 512 n bM)
     (hone : ∃ one, one < Limbs.radix ∧
-      Model.FastRepresents memory 3072 n one)
-    (hraw : ∃ rawBase, Model.FastRepresents memory 1024 n rawBase ∧
+      Model.FastRepresents memory 768 n one)
+    (hraw : ∃ rawBase, Model.FastRepresents memory 256 n rawBase ∧
       rawBase ≡ Precompile.bytesToNatPadded input 96 bsize [MOD mm]) :
     Route s memory input n bsize esize msize where
   enter := FixedDirectEntryTrace.gasSteps_entry s memory
