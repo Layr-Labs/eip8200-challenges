@@ -8,10 +8,11 @@ open EvmSemantics YulEvmCompiler Challenge.EvmProof ArtifactByteLength
 open Artifact (op)
 def tail : List Instr :=
 [
-  op 0x98,
+  op 0x93,
+  op 0x50,
+  op 0x97,
   .push 1 144,
   op 0x1c,
-  op 0x01,
   op 0x98,
   .push 1 144,
   op 0x1c,
@@ -20,28 +21,26 @@ def tail : List Instr :=
   .push 1 144,
   op 0x1c,
   op 0x01,
-  op 0x92,
-  op 0x50,
-  op 0x50,
-  op 0x50,
+  op 0x97,
+  .push 1 144,
+  op 0x1c,
   op 0x94,
   .push 1 144,
   op 0x1c,
   op 0x01,
   op 0x91,
-  op 0x90,
-  .push 1 144,
-  op 0x1c,
+  op 0x50,
+  op 0x9f,
   op 0x01,
-  op 0x8d,
+  op 0x88,
+  op 0x16,
+  op 0x9d,
+  op 0x01,
   op 0x01,
   op 0x86,
   op 0x16,
-  op 0x9b,
+  op 0x9e,
   op 0x01,
-  op 0x85,
-  op 0x16,
-  op 0x9d,
   op 0x01,
   op 0x84,
   op 0x16,
@@ -115,7 +114,7 @@ def tail : List Instr :=
   op 0x1a,
   .push 1 7,
   op 0x18,
-  .push 2 5175,
+  .push 2 5174,
   op 0x57,
   .push 0 0,
   .push 17 342276208914615837337402008677671501826,
@@ -167,20 +166,20 @@ def tail : List Instr :=
   op 0x52,
   op 0x59,
   .push 0 0,
-  op 0xf3
+  op 0xf3,
 ]
-theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3763 = tail := by rfl
+theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3762 = tail := by rfl
 
-theorem pc_base : Artifact.submissionArtifact.instructionPC 3763 = 4680 := by
+theorem pc_base : Artifact.submissionArtifact.instructionPC 3762 = 4680 := by
   rw [instructionPC_eq_byteLength]
   rfl
 
 theorem get (index : Nat) :
-    Artifact.submissionArtifact.instructions[3763 + index]? = tail[index]? := by
+    Artifact.submissionArtifact.instructions[3762 + index]? = tail[index]? := by
   rw [← InstructionWindow.get_drop, tail_eq]
 
 theorem pc (index : Nat) :
-    Artifact.submissionArtifact.instructionPC (3763 + index) =
+    Artifact.submissionArtifact.instructionPC (3762 + index) =
       4680 + byteLength (tail.take index) := by
   rw [InstructionWindow.pc_drop, pc_base, tail_eq]
 
