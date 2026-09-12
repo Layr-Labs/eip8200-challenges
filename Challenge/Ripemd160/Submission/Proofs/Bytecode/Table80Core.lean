@@ -1,8 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80CoreAll
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairTableLayout
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80Tail
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80WideFinalWord
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80ConsumedTerminalTail
 import Mathlib.Tactic.FinCases
 set_option warningAsError true
 set_option maxRecDepth 100000
@@ -12,7 +10,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80Core
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Paired80WordRound Paired80Algorithm Table80CoreCommon
 
-def pcs : Array Nat := #[1154, 1198, 1242, 1286, 1328, 1372, 1416, 1460, 1503, 1546, 1588, 1630, 1674, 1718, 1761, 1806, 1864, 1910, 1956, 2001, 2046, 2090, 2132, 2178, 2224, 2263, 2309, 2356, 2402, 2448, 2493, 2532, 2594, 2633, 2671, 2711, 2749, 2787, 2825, 2864, 2901, 2941, 2980, 3019, 3058, 3096, 3133, 3165, 3211, 3257, 3302, 3347, 3393, 3433, 3476, 3522, 3567, 3613, 3660, 3706, 3751, 3796, 3839, 3886, 3939, 3980, 4025, 4069, 4114, 4157, 4201, 4243, 4285, 4328, 4370, 4413, 4458, 4503, 4546, 4585, 4615]
+def pcs : Array Nat := #[1134, 1178, 1222, 1266, 1308, 1352, 1396, 1440, 1483, 1526, 1568, 1610, 1654, 1698, 1741, 1786, 1844, 1890, 1936, 1981, 2026, 2070, 2112, 2158, 2204, 2243, 2289, 2336, 2382, 2428, 2473, 2512, 2574, 2613, 2651, 2691, 2729, 2767, 2805, 2844, 2881, 2921, 2960, 2999, 3038, 3076, 3113, 3145, 3191, 3237, 3282, 3327, 3373, 3413, 3456, 3502, 3547, 3593, 3640, 3686, 3731, 3776, 3819, 3866, 3919, 3960, 4005, 4049, 4094, 4137, 4181, 4223, 4265, 4308, 4350, 4393, 4438, 4483, 4526, 4565, 4603]
 def shapes : Array (List Reg) := #[
   [.k, .a, .b, .c, .d, .e, .factor, .pair, .upper, .lower],
   [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower],
@@ -442,9 +440,6 @@ def gasSteps_prefix (s : State) (n : Nat) (hn : n ≤ 78) (q : WordLane) (rho : 
 def finalLane (memory : ByteArray) (q : WordLane) : WordLane :=
   Paired80FinalWord.finish (message memory) (fold (message memory) 78 q)
 
-def physicalFinalLane (memory : ByteArray) (q : WordLane) : WordLane :=
-  Table80WideFinalWord.finish (message memory) (fold (message memory) 78 q)
-
 def gasSteps_core (s : State) (q : WordLane) (ret : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 995) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat)
@@ -453,7 +448,7 @@ def gasSteps_core (s : State) (q : WordLane) (ret : UInt256) (rho : List UInt256
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (atRound s 0 q (ret :: rho))
-      {s with pc := UInt256.ofNat 4615, stack := Table80ConsumedTerminalTail.entryStack Table80WideCoreBridge.wideFactorWord (physicalFinalLane s.memory q) ret rho} := by
+      {s with pc := UInt256.ofNat 4603, stack := Table80Tail.entryStack (finalLane s.memory q) ret rho} := by
   have hs : (ret :: rho).length ≤ 996 := by simp only [List.length_cons]; omega
   let q78 := fold (message s.memory) 78 q
   let q79 := Table80CoreRound78.eval (message s.memory 78) (physicalKey 78) q78

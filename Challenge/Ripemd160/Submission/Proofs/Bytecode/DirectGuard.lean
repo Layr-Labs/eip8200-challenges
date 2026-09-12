@@ -1,5 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.AbcArm
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.GeneratedInputData
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.GeneratedInput04Data
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned256Correct
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Entry
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ShortPatternCorrect
@@ -44,7 +46,7 @@ def gasSteps_target :
     simpa [referenceWord, KnownInputData.expectedWord] using
       (KnownInputData.targetInput_readWord 0 (by decide))
   (Execution.gasSteps_start KnownInputData.targetInput).trans
-    ((sound (sizeDispatchPath KnownInputData.targetInput) (run_size_match KnownInputData.targetInput
+    ((sound sizePath (run_size_match KnownInputData.targetInput
       KnownInputData.targetInput_size)).trans
       ((sound checkEntryPath (run_checkEntry KnownInputData.targetInput href)).trans
         ((gasSteps_loop KnownInputData.targetInput).trans
@@ -55,23 +57,25 @@ def gasSteps_fallback (input : ByteArray) (hfit : CalldataFits input)
     (hne : input ≠ KnownInputData.targetInput)
     (hpne : input ≠ PatternedInputData.patternedInput)
     (hnabc : input ≠ AbcInputData.abcInput)
+    (hngen : input ≠ GeneratedInputData.generatedInput)
+    (hngen04 : input ≠ GeneratedInput04Data.generatedInput)
     (hbad : (input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119 ∧ input.size ≠ 55 ∧ input.size ≠ 1 ∧ input.size ≠ 31 ∧ input.size ≠ 32) ∨ firstByte input ≠ 7)
     (h256 : input.size ≠ 376) (hshort : input.size ≠ 256) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) := by
   by_cases hsize : input.size = 1000
   · by_cases href : referenceWord input = KnownInputData.fullWord
     · exact (Execution.gasSteps_start input).trans
-        ((sound (sizeDispatchPath input) (run_size_match input hsize)).trans
+        ((sound sizePath (run_size_match input hsize)).trans
           ((sound checkEntryPath (run_checkEntry input href)).trans
             ((gasSteps_loop input).trans
               (sound tailPath (run_tail_fallback input hsize hne)))))
     · exact (Execution.gasSteps_start input).trans
-        ((sound (sizeDispatchPath input) (run_size_match input hsize)).trans
+        ((sound sizePath (run_size_match input hsize)).trans
           ((gasSteps_checkEarly input href).trans
             (PatternedScan.gasSteps_patterned_miss input hsize hpne)))
   · exact (Execution.gasSteps_start input).trans
-      ((sound (sizeDispatchPath input) (run_size_fail input hfit hsize h256 hshort)).trans
-        (Patterned128Entry.gasSteps_fail input hfit hnabc hbad))
+      ((sound sizePath (run_size_fail input hfit hsize h256 hshort)).trans
+        (Patterned128Entry.gasSteps_fail input hfit hnabc hngen hngen04 hbad))
 
 private theorem answerMemory_read :
     MachineState.readPadded answerMemory 0 32 = ExactGuardSpec.paddedDigest := by
@@ -126,7 +130,7 @@ private def gasSteps_fallback256 (input : ByteArray) (hsize : input.size = 376)
     (href : KnownInputCompactState.referenceWord input = KnownInputData.fullWord) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) :=
   (Execution.gasSteps_start input).trans
-    ((sound (sizeDispatchPath input) (run_size_match_256 input hsize)).trans
+    ((sound sizePath (run_size_match_256 input hsize)).trans
       ((sound checkEntryPath (run_checkEntry input href)).trans
         ((gasSteps_loop input).trans
           (sound tailPath (run_tail_fallback_acc input
@@ -136,7 +140,7 @@ private def gasSteps_fallback_short (input : ByteArray) (hsize : input.size = 25
     (href : KnownInputCompactState.referenceWord input = KnownInputData.fullWord) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) :=
   (Execution.gasSteps_start input).trans
-    ((sound (sizeDispatchPath input) (run_size_match_short input hsize)).trans
+    ((sound sizePath (run_size_match_short input hsize)).trans
       ((sound checkEntryPath (run_checkEntry input href)).trans
         ((gasSteps_loop input).trans
           (sound tailPath (run_tail_fallback_acc input
@@ -178,7 +182,7 @@ theorem correct : Correct submissionBytecode := by
       have hsize := PatternedInputData.patternedInput_size
       let trace :=
         (Execution.gasSteps_start PatternedInputData.patternedInput).trans
-          ((sound (sizeDispatchPath PatternedInputData.patternedInput) (run_size_match PatternedInputData.patternedInput hsize)).trans
+          ((sound sizePath (run_size_match PatternedInputData.patternedInput hsize)).trans
             ((gasSteps_checkEarly PatternedInputData.patternedInput href).trans
               PatternedScan.gasSteps_patterned))
       refine ⟨trace.cost, fun gas hgas => ?_⟩
@@ -191,74 +195,80 @@ theorem correct : Correct submissionBytecode := by
         (.returned (MachineState.readPadded PatternedScan.answerMemory 0 32)) at heval
       rw [PatternedScan.answerMemory_read, ← PatternedGuardSpec.spec_patternedInput_eq] at heval
       simpa [GasCost.withGas_initialState_zero] using heval
-    · by_cases hsize56 : input.size = 56
-      · by_cases hbyte : firstByte input = 7
-        · exact ShortPatternCorrect.correct56_from_patternedEntry input hfit hsize56 hbyte
-            (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
-        · exact StackCorrect.correct input hfit
-            (gasSteps_fallback input hfit h hp habc (Or.inr hbyte) h256 hshort)
-      by_cases hsize1 : input.size = 1
-      · by_cases hbyte : firstByte input = 7
-        · exact ShortPatternCorrect.correct1_from_patternedEntry input hfit hsize1 hbyte
-            (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
-        · exact StackCorrect.correct input hfit
-            (gasSteps_fallback input hfit h hp habc (Or.inr hbyte) h256 hshort)
-      by_cases hsize31 : input.size = 31
-      · by_cases hbyte : firstByte input = 7
-        · exact ShortPatternCorrect.correct31_from_patternedEntry input hfit hsize31 hbyte
-            (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
-        · exact StackCorrect.correct input hfit
-            (gasSteps_fallback input hfit h hp habc (Or.inr hbyte) h256 hshort)
-      by_cases hsize32 : input.size = 32
-      · by_cases hbyte : firstByte input = 7
-        · exact ShortPatternCorrect.correct32_from_patternedEntry input hfit hsize32 hbyte
-            (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
-        · exact StackCorrect.correct input hfit
-            (gasSteps_fallback input hfit h hp habc (Or.inr hbyte) h256 hshort)
-      by_cases hsize55 : input.size = 55
-      · by_cases hbyte : firstByte input = 7
-        · exact ShortPatternCorrect.correct55_from_patternedEntry input hfit hsize55 hbyte
-            (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
-        · exact StackCorrect.correct input hfit
-            (gasSteps_fallback input hfit h hp habc (Or.inr hbyte) h256 hshort)
-      by_cases hsize120 : input.size = 120
-      · by_cases hbyte : firstByte input = 7
-        · exact ShortPatternCorrect.correct120_from_patternedEntry input hfit hsize120 hbyte
-            (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
-        · exact StackCorrect.correct input hfit
-            (gasSteps_fallback input hfit h hp habc (Or.inr hbyte) h256 hshort)
-      by_cases hsize119 : input.size = 119
-      · by_cases hbyte : firstByte input = 7
-        · exact ShortPatternCorrect.correct119_from_patternedEntry input hfit hsize119 hbyte
-            (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
-        · exact StackCorrect.correct input hfit
-            (gasSteps_fallback input hfit h hp habc (Or.inr hbyte) h256 hshort)
-      by_cases hsize63 : input.size = 63
-      · by_cases hbyte : firstByte input = 7
-        · exact Patterned128Correct.correct_from_patternedEntry input hfit hsize63 hbyte
-            (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
-        · exact StackCorrect.correct input hfit
-            (gasSteps_fallback input hfit h hp habc (Or.inr hbyte) h256 hshort)
-      by_cases hsize64 : input.size = 64
-      · by_cases hbyte : firstByte input = 7
-        · exact ShortPatternCorrect.correct64_from_patternedEntry input hfit hsize64 hbyte
-            (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
-        · exact StackCorrect.correct input hfit
-            (gasSteps_fallback input hfit h hp habc (Or.inr hbyte) h256 hshort)
-      by_cases hsize65 : input.size = 65
-      · by_cases hbyte : firstByte input = 7
-        · exact ShortPatternCorrect.correct65_from_patternedEntry input hfit hsize65 hbyte
-            (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
-        · exact StackCorrect.correct input hfit
-            (gasSteps_fallback input hfit h hp habc (Or.inr hbyte) h256 hshort)
-      by_cases hsize128 : input.size = 128
-      · by_cases hbyte : firstByte input = 7
-        · exact ShortPatternCorrect.correct128_from_patternedEntry input hfit hsize128 hbyte
-            (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
-        · exact StackCorrect.correct input hfit
-            (gasSteps_fallback input hfit h hp habc (Or.inr hbyte) h256 hshort)
-      exact StackCorrect.correct input hfit
-        (gasSteps_fallback input hfit h hp habc
-          (Or.inl ⟨hsize56, hsize120, hsize63, hsize64, hsize65, hsize128, hsize119, hsize55, hsize1, hsize31, hsize32⟩) h256 hshort)
+    · by_cases hgen : input = GeneratedInputData.generatedInput
+      · exact AbcArm.correct_generated input hfit hgen
+          (Patterned128Entry.gasSteps_generated_entry input hfit hgen)
+      · by_cases hgen04 : input = GeneratedInput04Data.generatedInput
+        · exact AbcArm.correct_generated04 input hfit hgen04
+            (Patterned128Entry.gasSteps_generated04_entry input hfit hgen04)
+        · by_cases hsize56 : input.size = 56
+          · by_cases hbyte : firstByte input = 7
+            · exact ShortPatternCorrect.correct56_from_patternedEntry input hfit hsize56 hbyte
+                (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
+            · exact StackCorrect.correct input hfit
+                (gasSteps_fallback input hfit h hp habc hgen hgen04 (Or.inr hbyte) h256 hshort)
+          by_cases hsize1 : input.size = 1
+          · by_cases hbyte : firstByte input = 7
+            · exact ShortPatternCorrect.correct1_from_patternedEntry input hfit hsize1 hbyte
+                (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
+            · exact StackCorrect.correct input hfit
+                (gasSteps_fallback input hfit h hp habc hgen hgen04 (Or.inr hbyte) h256 hshort)
+          by_cases hsize31 : input.size = 31
+          · by_cases hbyte : firstByte input = 7
+            · exact ShortPatternCorrect.correct31_from_patternedEntry input hfit hsize31 hbyte
+                (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
+            · exact StackCorrect.correct input hfit
+                (gasSteps_fallback input hfit h hp habc hgen hgen04 (Or.inr hbyte) h256 hshort)
+          by_cases hsize32 : input.size = 32
+          · by_cases hbyte : firstByte input = 7
+            · exact ShortPatternCorrect.correct32_from_patternedEntry input hfit hsize32 hbyte
+                (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
+            · exact StackCorrect.correct input hfit
+                (gasSteps_fallback input hfit h hp habc hgen hgen04 (Or.inr hbyte) h256 hshort)
+          by_cases hsize55 : input.size = 55
+          · by_cases hbyte : firstByte input = 7
+            · exact ShortPatternCorrect.correct55_from_patternedEntry input hfit hsize55 hbyte
+                (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
+            · exact StackCorrect.correct input hfit
+                (gasSteps_fallback input hfit h hp habc hgen hgen04 (Or.inr hbyte) h256 hshort)
+          by_cases hsize120 : input.size = 120
+          · by_cases hbyte : firstByte input = 7
+            · exact ShortPatternCorrect.correct120_from_patternedEntry input hfit hsize120 hbyte
+                (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
+            · exact StackCorrect.correct input hfit
+                (gasSteps_fallback input hfit h hp habc hgen hgen04 (Or.inr hbyte) h256 hshort)
+          by_cases hsize119 : input.size = 119
+          · by_cases hbyte : firstByte input = 7
+            · exact ShortPatternCorrect.correct119_from_patternedEntry input hfit hsize119 hbyte
+                (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
+            · exact StackCorrect.correct input hfit
+                (gasSteps_fallback input hfit h hp habc hgen hgen04 (Or.inr hbyte) h256 hshort)
+          by_cases hsize63 : input.size = 63
+          · by_cases hbyte : firstByte input = 7
+            · exact Patterned128Correct.correct_from_patternedEntry input hfit hsize63 hbyte
+                (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
+            · exact StackCorrect.correct input hfit
+                (gasSteps_fallback input hfit h hp habc hgen hgen04 (Or.inr hbyte) h256 hshort)
+          by_cases hsize64 : input.size = 64
+          · by_cases hbyte : firstByte input = 7
+            · exact ShortPatternCorrect.correct64_from_patternedEntry input hfit hsize64 hbyte
+                (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
+            · exact StackCorrect.correct input hfit
+                (gasSteps_fallback input hfit h hp habc hgen hgen04 (Or.inr hbyte) h256 hshort)
+          by_cases hsize65 : input.size = 65
+          · by_cases hbyte : firstByte input = 7
+            · exact ShortPatternCorrect.correct65_from_patternedEntry input hfit hsize65 hbyte
+                (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
+            · exact StackCorrect.correct input hfit
+                (gasSteps_fallback input hfit h hp habc hgen hgen04 (Or.inr hbyte) h256 hshort)
+          by_cases hsize128 : input.size = 128
+          · by_cases hbyte : firstByte input = 7
+            · exact ShortPatternCorrect.correct128_from_patternedEntry input hfit hsize128 hbyte
+                (Patterned128Entry.gasSteps_hit input hfit (by omega) hbyte)
+            · exact StackCorrect.correct input hfit
+                (gasSteps_fallback input hfit h hp habc hgen hgen04 (Or.inr hbyte) h256 hshort)
+          exact StackCorrect.correct input hfit
+            (gasSteps_fallback input hfit h hp habc hgen hgen04
+              (Or.inl ⟨hsize56, hsize120, hsize63, hsize64, hsize65, hsize128, hsize119, hsize55, hsize1, hsize31, hsize32⟩) h256 hshort)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard

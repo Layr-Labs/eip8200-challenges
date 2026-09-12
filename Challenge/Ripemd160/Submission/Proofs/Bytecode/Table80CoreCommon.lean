@@ -1,4 +1,3 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80WideCoreBridge
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80RawCommon
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Paired80Algorithm
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Paired80FinalWord
@@ -13,7 +12,7 @@ inductive Reg where
 
 def word (r : Reg) (q : WordLane) (k : UInt256) : UInt256 := match r with
   | .a => q.a | .b => q.b | .c => q.c | .d => q.d | .e => q.e
-  | .factor => Table80WideCoreBridge.wideFactorWord | .pair => pairWord | .upper => upperWord | .lower => lowerWord | .k => k
+  | .factor => factorWord | .pair => pairWord | .upper => upperWord | .lower => lowerWord | .k => k
 
 def stack (shape : List Reg) (q : WordLane) (k : UInt256) (rho : List UInt256) : List UInt256 :=
   shape.map (fun r => word r q k) ++ (Table80Raw.cache ++ rho)
