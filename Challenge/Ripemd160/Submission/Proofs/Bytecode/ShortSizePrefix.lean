@@ -11,7 +11,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
 def shortSizePrefix : List Located :=
-  [opAt 0 .CALLDATASIZE, pushAt 1 1 255, opAt 2 .GT, pushAt 3 2 4796]
+  [opAt 0 .CALLDATASIZE, pushAt 1 2 255, opAt 2 .GT, pushAt 3 2 4829]
 
 def shortSizePath : List Located := shortSizePrefix ++ [opAt 4 .JUMPI]
 
@@ -21,30 +21,30 @@ def sizeDispatchPath (input : ByteArray) : List Located :=
 def shortSizeCondition (input : ByteArray) : UInt256 :=
   UInt256.gt (UInt256.ofNat 255) (UInt256.ofNat input.size)
 
-private theorem prefix_pc4 : Artifact.submissionArtifact.instructionPC 4 = 7 := by
+private theorem prefix_pc4 : Artifact.submissionArtifact.instructionPC 4 = 8 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
-private theorem short_dest : Decode.isValidJumpDest submissionBytecode 4796 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3874 = 4796 := by
+private theorem short_dest : Decode.isValidJumpDest submissionBytecode 4829 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3869 = 4829 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3874 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3869 (by rfl)
   rwa [hpc] at h
 
 private theorem run_short_prefix (input : ByteArray) :
     run shortSizePrefix (Execution.atPC input 0) =
-      some (PatternedScan.stS input 7 [4796, shortSizeCondition input]) := by
+      some (PatternedScan.stS input 8 [4829, shortSizeCondition input]) := by
   have pc0 : Artifact.submissionArtifact.instructionPC 0 = 0 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
   have pc1 : Artifact.submissionArtifact.instructionPC 1 = 1 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
-  have pc2 : Artifact.submissionArtifact.instructionPC 2 = 3 := by
+  have pc2 : Artifact.submissionArtifact.instructionPC 2 = 4 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
-  have pc3 : Artifact.submissionArtifact.instructionPC 3 = 4 := by
+  have pc3 : Artifact.submissionArtifact.instructionPC 3 = 5 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
   simp (config := { maxSteps := 400000 })
@@ -81,30 +81,30 @@ private theorem short_condition_zero (input : ByteArray) (hfit : CalldataFits in
   simp [h256, hlarge]
 
 theorem run_short_size_taken (input : ByteArray) (hsmall : input.size < 255) :
-    run shortSizePath (Execution.atPC input 0) = some (atPC input 4796) := by
+    run shortSizePath (Execution.atPC input 0) = some (atPC input 4829) := by
   have hp := run_short_prefix input
   rw [short_condition_one input hsmall] at hp
   have hj : run [opAt 4 .JUMPI]
-      (PatternedScan.stS input 7 [4796, UInt256.ofNat 1]) =
-      some (PatternedScan.stS input 4796 []) := by
+      (PatternedScan.stS input 8 [4829, UInt256.ofNat 1]) =
+      some (PatternedScan.stS input 4829 []) := by
     exact PatternedScan.blockOfS _
-      (PatternedScan.pcFactS input 4 7 _ (by norm_num) prefix_pc4)
-      (PatternedScan.stepS_jumpi_taken input 7 4796 4796 (UInt256.ofNat 1) []
+      (PatternedScan.pcFactS input 4 8 _ (by norm_num) prefix_pc4)
+      (PatternedScan.stepS_jumpi_taken input 8 4829 4829 (UInt256.ofNat 1) []
         (by simp) (by norm_num) rfl (by decide) short_dest)
   exact Stepper.runLocatedBlock_append shortSizePrefix [opAt 4 .JUMPI]
     _ _ _ hp rfl hj
 
 theorem run_short_size_fall (input : ByteArray) (hfit : CalldataFits input)
     (hlarge : ¬ input.size < 255) :
-    run shortSizePath (Execution.atPC input 0) = some (Execution.atPC input 8) := by
+    run shortSizePath (Execution.atPC input 0) = some (Execution.atPC input 9) := by
   have hp := run_short_prefix input
   rw [short_condition_zero input hfit hlarge] at hp
   have hj : run [opAt 4 .JUMPI]
-      (PatternedScan.stS input 7 [4796, UInt256.ofNat 0]) =
-      some (PatternedScan.stS input 8 []) := by
+      (PatternedScan.stS input 8 [4829, UInt256.ofNat 0]) =
+      some (PatternedScan.stS input 9 []) := by
     exact PatternedScan.blockOfS _
-      (PatternedScan.pcFactS input 4 7 _ (by norm_num) prefix_pc4)
-      (PatternedScan.stepS_jumpi_fall input 7 4796 (UInt256.ofNat 0) []
+      (PatternedScan.pcFactS input 4 8 _ (by norm_num) prefix_pc4)
+      (PatternedScan.stepS_jumpi_fall input 8 4829 (UInt256.ofNat 0) []
         (by simp) (by norm_num) (by decide))
   exact Stepper.runLocatedBlock_append shortSizePrefix [opAt 4 .JUMPI]
     _ _ _ hp rfl hj
