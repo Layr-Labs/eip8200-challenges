@@ -64,11 +64,11 @@ private def nine_zeroReturn :
     (by decide) (by rfl) (by rfl) (by decide)
 
 private def fermat_prime : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4767 FermatProgram.primeProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3656 14 4767 FermatProgram.primeProgram (by decide) (by rfl) (by rfl) (by decide)
+  WindowTwentyOneSlice.block allWellFormed 3642 14 4767 FermatProgram.primeProgram (by decide) (by rfl) (by rfl) (by decide)
 private def fermat_exponent : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4820 FermatProgram.exponentProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3670 9 4820 FermatProgram.exponentProgram (by decide) (by rfl) (by rfl) (by decide)
+  WindowTwentyOneSlice.block allWellFormed 3656 9 4820 FermatProgram.exponentProgram (by decide) (by rfl) (by rfl) (by decide)
 private def fermat_result : WindowTwentyOneBinding.Block submissionArtifact .Osaka 4832 FermatProgram.returnProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3679 16 4832 FermatProgram.returnProgram (by decide) (by rfl) (by rfl) (by decide)
+  WindowTwentyOneSlice.block allWellFormed 3665 16 4832 FermatProgram.returnProgram (by decide) (by rfl) (by rfl) (by decide)
 def fermatPaths : FermatProgram.Paths submissionArtifact .Osaka where
   prime := fermat_prime
   exponent := fermat_exponent
@@ -87,7 +87,7 @@ def twentyOnePaths : WindowTwentyOneGasRoute.Paths submissionArtifact .Osaka whe
   finish := nine_finish
   zeroReturn := nine_zeroReturn
   hitJump := by
-    have h := isValidJumpDest_index 3656 (by rfl)
+    have h := isValidJumpDest_index 3642 (by rfl)
     exact h
   zeroJump := by
     have h := isValidJumpDest_index 2222 (by rfl)

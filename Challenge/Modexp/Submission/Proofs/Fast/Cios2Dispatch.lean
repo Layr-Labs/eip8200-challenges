@@ -80,7 +80,7 @@ theorem jumpDestRowHead :
 /-- The square row head `sq_row` (instruction 3604, pc 4710 = 0x1266). -/
 theorem jumpDestSqRow :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4714 = true := by
-  exact Artifact.isValidJumpDest_index 3606 (by rfl)
+  exact Artifact.isValidJumpDest_index 3592 (by rfl)
 
 /-- `jumpDestRowHead` in the `hd.toNat` form taken by `gasSteps_setup`/`gasSteps_commonSetup`. -/
 theorem jumpDestRowHead' :
