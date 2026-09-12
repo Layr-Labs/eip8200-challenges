@@ -76,7 +76,7 @@ theorem frameAt_eq_nxJdState (s : State) (mem : ByteArray) (n : Nat)
 
 /-- `sq_exit` (4701): load the counter, decrement, store it back, branch to `more`. -/
 def sqExitProgram : List Instr :=
-  [.op .JUMPDEST, .push 3 9280, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .JUMPDEST, .op .ADD,
+  [.op .JUMPDEST, .push 2 9280, .op .MLOAD, .push 1 1, .op (.Swap ⟨0, by decide⟩), .op .SUB,
    .op (.Dup ⟨0, by decide⟩), .push 2 9280, .op .MSTORE, .push 2 4739, .op .JUMPI]
 
 /-- `last` (4719): the frame's `ret` slot becomes `after_sq`, then leave through `nx`. -/

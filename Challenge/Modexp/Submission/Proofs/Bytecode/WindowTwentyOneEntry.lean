@@ -93,10 +93,9 @@ theorem run_miss (template : State) (rest : List UInt256) (hrest : rest.length â
     hcap0, hcap1, Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat, htarget]
 
-/-- Entry of the one-word core at pc 2240 (0x8c0). Both special-modulus misses
-jump here with the loaded modulus word on top of the route frame and `POP`
-discards it. There is no base-width branch: a zero-width base runs the core
-with the base word `CALLDATALOAD 96 >> 256 = 0`. -/
+/-- Entry of the one-word core at pc 2199. Both special-modulus misses jump here
+with the loaded modulus word on top of the route frame. The entry preserves the
+modulus word on the stack and tests it directly without reloading from calldata. -/
 def baseProgram : List Instr :=
   [.op .JUMPDEST, .op .JUMPDEST]
 

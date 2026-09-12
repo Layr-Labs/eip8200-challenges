@@ -53,9 +53,8 @@ theorem run_sqExit_more (s : State) (mem : ByteArray) (n c : Nat)
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc19 : rest.length + 19 < 1024 := by omega
-  have hc15 : c ≤ 15 := by omega
-  have hdec : allOnes + UInt256.ofNat (c + 1) = UInt256.ofNat c := by
-    interval_cases c <;> decide
+  have hsub : UInt256.ofNat (c + 1) - UInt256.ofNat 1 = UInt256.ofNat c :=
+    sub_one c (by omega)
   have hcNat : (UInt256.ofNat c).toNat = c := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
   have htrue : UInt256.isTrue (UInt256.ofNat c) := by
@@ -65,7 +64,7 @@ theorem run_sqExit_more (s : State) (mem : ByteArray) (n c : Nat)
     rw [hcode]; exact jumpDest4753
   have h9280 : (9280 : UInt256).toNat = 9280 := by decide
   simp [sqExitProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    frameAt, frameStack, pcSqExit, pcMore, countMem, hcount, hdec, hcNat, htrue, hjd, h9280,
+    frameAt, frameStack, pcSqExit, pcMore, countMem, hcount, hsub, hcNat, htrue, hjd, h9280,
     State.activeWordsAfterUInt256, activeWords9280 s hact,
     hc16', hc17, hc18, hc19, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -84,12 +83,12 @@ theorem run_sqExit_last (s : State) (mem : ByteArray) (n : Nat)
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc19 : rest.length + 19 < 1024 := by omega
-  have hdec : allOnes + UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
+  have hsub : UInt256.ofNat 1 - UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
   have hfalse : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
   have h9280 : (9280 : UInt256).toNat = 9280 := by decide
   have hzero : (UInt256.ofNat 0).toNat = 0 := by decide
   simp [sqExitProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    frameAt, frameStack, pcSqExit, pcLast, countMem, hcount, hdec, hzero, hfalse, h9280,
+    frameAt, frameStack, pcSqExit, pcLast, countMem, hcount, hsub, hzero, hfalse, h9280,
     State.activeWordsAfterUInt256, activeWords9280 s hact,
     hc16', hc17, hc18, hc19, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
