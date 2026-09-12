@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80WideFinalWord
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80RawRound78
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80CoreCommon
 set_option warningAsError true
@@ -10,7 +11,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof PairedLaneU
 open Table80CoreCommon
 def input (q : WordLane) (k : UInt256) : Table80Raw.Input :=
   ⟨word .d q k, word .k q k, word .b q k, word .c q k, word .a q k, word .e q k, word .factor q k, word .pair q k, word .upper q k, word .lower q k⟩
-def eval (message k : UInt256) (q : WordLane) : WordLane := Paired80FinalWord.rawStep 5 11 message k q
+def eval (message k : UInt256) (q : WordLane) : WordLane := Table80WideFinalWord.raw78 message k q
 def nextKey (k : UInt256) : UInt256 := k
 theorem output_eq (memory : ByteArray) (q : WordLane) (k : UInt256) (rho : List UInt256) :
     Table80RawRound78.outputStack memory (input q k) rho =
@@ -19,7 +20,7 @@ theorem output_eq (memory : ByteArray) (q : WordLane) (k : UInt256) (rho : List 
     List.cons_append, List.nil_append, Table80CoreCommon.word, eval, nextKey,
     wordStep, wordT, wordSum, Paired80WordGroupTwoHoist.rawWordStep2,
     Paired80WordGroupTwoHoist.hoistedT, Paired80WordGroupTwoHoist.hoistedSum,
-    Paired80WordGroupTwoHoist.hoistedBoolean, Paired80FinalWord.rawStep,
+    Paired80WordGroupTwoHoist.hoistedBoolean, Table80WideFinalWord.raw78, Table80WideCoreBridge.wideWordShift,
     boolean_zero, boolean_one, boolean_three, boolean_four,
     PairedLaneBooleanFactoring.factoredWord, PairedLaneBooleanSynthesis.oneWord,
     PairedLaneBooleanSynthesis.threeWord, List.cons.injEq, and_true]
@@ -42,8 +43,8 @@ theorem output_eq (memory : ByteArray) (q : WordLane) (k : UInt256) (rho : List 
      (hfork : s.fork = .Osaka)
      (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
        s.executionEnv.fork s.executionEnv.codeAddr = false) :
-     Challenge.EvmProof.GasSteps {s with pc := UInt256.ofNat 4533, stack := stack [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] q k rho}
-       {s with pc := UInt256.ofNat 4572, stack :=
+     Challenge.EvmProof.GasSteps {s with pc := UInt256.ofNat 4546, stack := stack [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] q k rho}
+       {s with pc := UInt256.ofNat 4585, stack :=
           stack [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower] (eval (MachineState.readWord s.memory 400) k q) (nextKey k) rho} := by
    have gs := Table80RawRound78.gasSteps s (input q k) rho hstack hrun hactive hcode hfork hnp
    have hin : Table80Raw.inputStack (input q k) rho = stack [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] q k rho := rfl

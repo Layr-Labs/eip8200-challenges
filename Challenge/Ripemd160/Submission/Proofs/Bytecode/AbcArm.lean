@@ -104,11 +104,11 @@ def storeWord (memory : ByteArray) (address : Nat) (word : UInt256) : ByteArray 
 
 /-! ## Jump destinations (the `rw` idiom — cheap at high indices) -/
 
-theorem pcArm : Artifact.submissionArtifact.instructionPC 4110 = 5160 := by
+theorem pcArm : Artifact.submissionArtifact.instructionPC 4102 = 5162 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
-theorem arm_dest : Decode.isValidJumpDest submissionBytecode 5160 = true := by
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 4110 (by rfl)
+theorem arm_dest : Decode.isValidJumpDest submissionBytecode 5162 = true := by
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 4102 (by rfl)
   rw [pcArm] at h
   exact h
 
@@ -124,40 +124,40 @@ theorem generic_dest : Decode.isValidJumpDest submissionBytecode 276 = true := b
 
 def sizeCond (input : ByteArray) : UInt256 := (3 : UInt256) - UInt256.ofNat input.size
 
-def armEntry (input : ByteArray) : State := PatternedScan.stS input 5160 []
+def armEntry (input : ByteArray) : State := PatternedScan.stS input 5162 []
 
 def sizePath : List Located :=
-  [opAt 4110 .JUMPDEST, opAt 4111 .CALLDATASIZE, pushAt 4112 1 3, opAt 4113 .SUB, pushAt 4114 2 276]
+  [opAt 4102 .JUMPDEST, opAt 4103 .CALLDATASIZE, pushAt 4104 1 3, opAt 4105 .SUB, pushAt 4106 2 276]
 
 theorem run_size (input : ByteArray) :
     run sizePath (armEntry input) =
-      some (PatternedScan.stS input 5168 [276, sizeCond input]) := by
+      some (PatternedScan.stS input 5170 [276, sizeCond input]) := by
   let sz := UInt256.ofNat input.size
-  let l0 : Located := opAt 4110 .JUMPDEST
+  let l0 : Located := opAt 4102 .JUMPDEST
   have h0 := PatternedScan.blockOfS l0
-    (PatternedScan.pcFactS input 4110 5160 [] (by norm_num) (by
+    (PatternedScan.pcFactS input 4102 5162 [] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_jumpdest input 5160 [] (by simp) (by norm_num))
-  let l1 : Located := opAt 4111 .CALLDATASIZE
+    (PatternedScan.stepS_jumpdest input 5162 [] (by simp) (by norm_num))
+  let l1 : Located := opAt 4103 .CALLDATASIZE
   have h1 := PatternedScan.blockOfS l1
-    (PatternedScan.pcFactS input 4111 5161 [] (by norm_num) (by
+    (PatternedScan.pcFactS input 4103 5163 [] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_calldatasize input 5161 [] (by simp) (by norm_num))
-  let l2 : Located := pushAt 4112 1 3
+    (PatternedScan.stepS_calldatasize input 5163 [] (by simp) (by norm_num))
+  let l2 : Located := pushAt 4104 1 3
   have h2 := PatternedScan.blockOfS l2
-    (PatternedScan.pcFactS input 4112 5162 [sz] (by norm_num) (by
+    (PatternedScan.pcFactS input 4104 5164 [sz] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_push input 5162 1 3 [sz] (by simp) (by decide) (by decide) (by norm_num))
-  let l3 : Located := opAt 4113 .SUB
+    (PatternedScan.stepS_push input 5164 1 3 [sz] (by simp) (by decide) (by decide) (by norm_num))
+  let l3 : Located := opAt 4105 .SUB
   have h3 := PatternedScan.blockOfS l3
-    (PatternedScan.pcFactS input 4113 5164 [3, sz] (by norm_num) (by
+    (PatternedScan.pcFactS input 4105 5166 [3, sz] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_sub input 5164 3 sz [] (by simp) (by norm_num))
-  let l4 : Located := pushAt 4114 2 276
+    (PatternedScan.stepS_sub input 5166 3 sz [] (by simp) (by norm_num))
+  let l4 : Located := pushAt 4106 2 276
   have h4 := PatternedScan.blockOfS l4
-    (PatternedScan.pcFactS input 4114 5165 [sizeCond input] (by norm_num) (by
+    (PatternedScan.pcFactS input 4106 5167 [sizeCond input] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_push input 5165 2 276 [sizeCond input] (by simp) (by decide) (by decide) (by norm_num))
+    (PatternedScan.stepS_push input 5167 2 276 [sizeCond input] (by simp) (by decide) (by decide) (by norm_num))
   have s1 := Stepper.runLocatedBlock_append [l0] [l1] _ _ _ h0 rfl h1
   have s2 := Stepper.runLocatedBlock_append [l0, l1] [l2] _ _ _ s1 rfl h2
   have s3 := Stepper.runLocatedBlock_append [l0, l1, l2] [l3] _ _ _ s2 rfl h3
@@ -165,21 +165,21 @@ theorem run_size (input : ByteArray) :
   exact s4
 
 theorem run_size_miss (input : ByteArray) (hc : UInt256.isTrue (sizeCond input)) :
-    run [opAt 4115 .JUMPI] (PatternedScan.stS input 5168 [276, sizeCond input]) =
+    run [opAt 4107 .JUMPI] (PatternedScan.stS input 5170 [276, sizeCond input]) =
       some (fallbackState input) :=
-  PatternedScan.blockOfS (opAt 4115 .JUMPI)
-    (PatternedScan.pcFactS input 4115 5168 [276, sizeCond input] (by norm_num) (by
+  PatternedScan.blockOfS (opAt 4107 .JUMPI)
+    (PatternedScan.pcFactS input 4107 5170 [276, sizeCond input] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_jumpi_taken input 5168 276 276 (sizeCond input) []
+    (PatternedScan.stepS_jumpi_taken input 5170 276 276 (sizeCond input) []
       (by simp) (by norm_num) (by simpa using Word.literal_eq_ofNat 276) hc generic_dest)
 
 theorem run_size_pass (input : ByteArray) (hc : ¬ UInt256.isTrue (sizeCond input)) :
-    run [opAt 4115 .JUMPI] (PatternedScan.stS input 5168 [276, sizeCond input]) =
-      some (PatternedScan.stS input 5169 []) :=
-  PatternedScan.blockOfS (opAt 4115 .JUMPI)
-    (PatternedScan.pcFactS input 4115 5168 [276, sizeCond input] (by norm_num) (by
+    run [opAt 4107 .JUMPI] (PatternedScan.stS input 5170 [276, sizeCond input]) =
+      some (PatternedScan.stS input 5171 []) :=
+  PatternedScan.blockOfS (opAt 4107 .JUMPI)
+    (PatternedScan.pcFactS input 4107 5170 [276, sizeCond input] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_jumpi_fall input 5168 276 (sizeCond input) []
+    (PatternedScan.stepS_jumpi_fall input 5170 276 (sizeCond input) []
       (by simp) (by norm_num) hc)
 
 /-! ## The word test -/
@@ -188,49 +188,49 @@ def wordCond (input : ByteArray) : UInt256 :=
   UInt256.xor (MachineState.readWord input 0) (UInt256.shiftLeft 6382179 232)
 
 def wordPath : List Located :=
-  [pushAt 4116 3 6382179, pushAt 4117 1 232, opAt 4118 .SHL, pushAt 4119 0 0, opAt 4120 .CALLDATALOAD,
-   opAt 4121 .XOR, pushAt 4122 2 276]
+  [pushAt 4108 3 6382179, pushAt 4109 1 232, opAt 4110 .SHL, pushAt 4111 0 0, opAt 4112 .CALLDATALOAD,
+   opAt 4113 .XOR, pushAt 4114 2 276]
 
 theorem run_word (input : ByteArray) :
-    run wordPath (PatternedScan.stS input 5169 []) =
-      some (PatternedScan.stS input 5182 [276, wordCond input]) := by
+    run wordPath (PatternedScan.stS input 5171 []) =
+      some (PatternedScan.stS input 5184 [276, wordCond input]) := by
   let w := MachineState.readWord input 0
   let abcW := UInt256.shiftLeft 6382179 232
-  let l0 : Located := pushAt 4116 3 6382179
+  let l0 : Located := pushAt 4108 3 6382179
   have h0 := PatternedScan.blockOfS l0
-    (PatternedScan.pcFactS input 4116 5169 [] (by norm_num) (by
+    (PatternedScan.pcFactS input 4108 5171 [] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_push input 5169 3 6382179 [] (by simp) (by decide) (by decide) (by norm_num))
-  let l1 : Located := pushAt 4117 1 232
+    (PatternedScan.stepS_push input 5171 3 6382179 [] (by simp) (by decide) (by decide) (by norm_num))
+  let l1 : Located := pushAt 4109 1 232
   have h1 := PatternedScan.blockOfS l1
-    (PatternedScan.pcFactS input 4117 5173 [6382179] (by norm_num) (by
+    (PatternedScan.pcFactS input 4109 5175 [6382179] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_push input 5173 1 232 [6382179] (by simp) (by decide) (by decide) (by norm_num))
-  let l2 : Located := opAt 4118 .SHL
+    (PatternedScan.stepS_push input 5175 1 232 [6382179] (by simp) (by decide) (by decide) (by norm_num))
+  let l2 : Located := opAt 4110 .SHL
   have h2 := PatternedScan.blockOfS l2
-    (PatternedScan.pcFactS input 4118 5175 [232, 6382179] (by norm_num) (by
+    (PatternedScan.pcFactS input 4110 5177 [232, 6382179] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_shl input 5175 232 6382179 [] (by simp) (by norm_num))
-  let l3 : Located := pushAt 4119 0 0
+    (PatternedScan.stepS_shl input 5177 232 6382179 [] (by simp) (by norm_num))
+  let l3 : Located := pushAt 4111 0 0
   have h3 := PatternedScan.blockOfS l3
-    (PatternedScan.pcFactS input 4119 5176 [abcW] (by norm_num) (by
+    (PatternedScan.pcFactS input 4111 5178 [abcW] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_push0 input 5176 [abcW] (by simp) (by norm_num))
-  let l4 : Located := opAt 4120 .CALLDATALOAD
+    (PatternedScan.stepS_push0 input 5178 [abcW] (by simp) (by norm_num))
+  let l4 : Located := opAt 4112 .CALLDATALOAD
   have h4 := PatternedScan.blockOfS l4
-    (PatternedScan.pcFactS input 4120 5177 [0, abcW] (by norm_num) (by
+    (PatternedScan.pcFactS input 4112 5179 [0, abcW] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_calldataload input 5177 0 [abcW] (by simp) (by norm_num))
-  let l5 : Located := opAt 4121 .XOR
+    (PatternedScan.stepS_calldataload input 5179 0 [abcW] (by simp) (by norm_num))
+  let l5 : Located := opAt 4113 .XOR
   have h5 := PatternedScan.blockOfS l5
-    (PatternedScan.pcFactS input 4121 5178 [w, abcW] (by norm_num) (by
+    (PatternedScan.pcFactS input 4113 5180 [w, abcW] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_xor input 5178 w abcW [] (by simp) (by norm_num))
-  let l6 : Located := pushAt 4122 2 276
+    (PatternedScan.stepS_xor input 5180 w abcW [] (by simp) (by norm_num))
+  let l6 : Located := pushAt 4114 2 276
   have h6 := PatternedScan.blockOfS l6
-    (PatternedScan.pcFactS input 4122 5179 [wordCond input] (by norm_num) (by
+    (PatternedScan.pcFactS input 4114 5181 [wordCond input] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_push input 5179 2 276 [wordCond input] (by simp) (by decide) (by decide) (by norm_num))
+    (PatternedScan.stepS_push input 5181 2 276 [wordCond input] (by simp) (by decide) (by decide) (by norm_num))
   have s1 := Stepper.runLocatedBlock_append [l0] [l1] _ _ _ h0 rfl h1
   have s2 := Stepper.runLocatedBlock_append [l0, l1] [l2] _ _ _ s1 rfl h2
   have s3 := Stepper.runLocatedBlock_append [l0, l1, l2] [l3] _ _ _ s2 rfl h3
@@ -240,21 +240,21 @@ theorem run_word (input : ByteArray) :
   exact s6
 
 theorem run_word_miss (input : ByteArray) (hc : UInt256.isTrue (wordCond input)) :
-    run [opAt 4123 .JUMPI] (PatternedScan.stS input 5182 [276, wordCond input]) =
+    run [opAt 4115 .JUMPI] (PatternedScan.stS input 5184 [276, wordCond input]) =
       some (fallbackState input) :=
-  PatternedScan.blockOfS (opAt 4123 .JUMPI)
-    (PatternedScan.pcFactS input 4123 5182 [276, wordCond input] (by norm_num) (by
+  PatternedScan.blockOfS (opAt 4115 .JUMPI)
+    (PatternedScan.pcFactS input 4115 5184 [276, wordCond input] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_jumpi_taken input 5182 276 276 (wordCond input) []
+    (PatternedScan.stepS_jumpi_taken input 5184 276 276 (wordCond input) []
       (by simp) (by norm_num) (by simpa using Word.literal_eq_ofNat 276) hc generic_dest)
 
 theorem run_word_hit (input : ByteArray) (hc : ¬ UInt256.isTrue (wordCond input)) :
-    run [opAt 4123 .JUMPI] (PatternedScan.stS input 5182 [276, wordCond input]) =
-      some (PatternedScan.stS input 5183 []) :=
-  PatternedScan.blockOfS (opAt 4123 .JUMPI)
-    (PatternedScan.pcFactS input 4123 5182 [276, wordCond input] (by norm_num) (by
+    run [opAt 4115 .JUMPI] (PatternedScan.stS input 5184 [276, wordCond input]) =
+      some (PatternedScan.stS input 5185 []) :=
+  PatternedScan.blockOfS (opAt 4115 .JUMPI)
+    (PatternedScan.pcFactS input 4115 5184 [276, wordCond input] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_jumpi_fall input 5182 276 (wordCond input) []
+    (PatternedScan.stepS_jumpi_fall input 5184 276 (wordCond input) []
       (by simp) (by norm_num) hc)
 
 /-! ## Guard semantics -/
@@ -297,40 +297,40 @@ def answerMemory : ByteArray := storeWord ByteArray.empty 0 abcDigestWord
 
 def storedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 5206
+    pc := UInt256.ofNat 5208
     memory := answerMemory
     activeWords := UInt256.ofNat 1 }
 
 def sizedState (input : ByteArray) : State :=
-  { storedState input with pc := UInt256.ofNat 5207, stack := [UInt256.ofNat 32] }
+  { storedState input with pc := UInt256.ofNat 5209, stack := [UInt256.ofNat 32] }
 
 def returnedState (input : ByteArray) : State :=
   { storedState input with
-    pc := UInt256.ofNat 5208
+    pc := UInt256.ofNat 5210
     halt := .Returned
     hReturn := MachineState.readPadded answerMemory 0 32 }
 
 def storePath : List Located :=
-  [pushAt 4124 20 814647003348588794217809277549781461204094028796, pushAt 4125 0 0, opAt 4126 .MSTORE]
+  [pushAt 4116 20 814647003348588794217809277549781461204094028796, pushAt 4117 0 0, opAt 4118 .MSTORE]
 
 def finishPath : List Located :=
-  [pushAt 4128 0 0, opAt 4129 .RETURN]
+  [pushAt 4120 0 0, opAt 4121 .RETURN]
 
-@[simp] theorem pcRet0 : Artifact.submissionArtifact.instructionPC 4124 = 5183 := by
+@[simp] theorem pcRet0 : Artifact.submissionArtifact.instructionPC 4116 = 5185 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pcRet1 : Artifact.submissionArtifact.instructionPC 4125 = 5204 := by
+@[simp] theorem pcRet1 : Artifact.submissionArtifact.instructionPC 4117 = 5206 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pcRet2 : Artifact.submissionArtifact.instructionPC 4126 = 5205 := by
+@[simp] theorem pcRet2 : Artifact.submissionArtifact.instructionPC 4118 = 5207 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pcRet3 : Artifact.submissionArtifact.instructionPC 4127 = 5206 := by
+@[simp] theorem pcRet3 : Artifact.submissionArtifact.instructionPC 4119 = 5208 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pcRet4 : Artifact.submissionArtifact.instructionPC 4128 = 5207 := by
+@[simp] theorem pcRet4 : Artifact.submissionArtifact.instructionPC 4120 = 5209 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pcRet5 : Artifact.submissionArtifact.instructionPC 4129 = 5208 := by
+@[simp] theorem pcRet5 : Artifact.submissionArtifact.instructionPC 4121 = 5210 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem run_store (input : ByteArray) :
-    run storePath (PatternedScan.stS input 5183 []) = some (storedState input) := by
+    run storePath (PatternedScan.stS input 5185 []) = some (storedState input) := by
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
   simp (config := { maxSteps := 1000000 })
     [storePath, opAt, pushAt, wfOp, PatternedScan.stS, storedState,
@@ -354,12 +354,12 @@ theorem run_finish (input : ByteArray) :
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
 
 def gasSteps_msize (input : ByteArray) : GasSteps (storedState input) (sizedState input) := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 4127 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 4119 .MSIZE
     (by rfl) (by decide) trivial
-  have hp : (storedState input).pc.toNat = Artifact.submissionArtifact.instructionPC 4127 := by
+  have hp : (storedState input).pc.toNat = Artifact.submissionArtifact.instructionPC 4119 := by
     rw [pcRet3]; rfl
   have hop : (storedState input).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedState input) 4127
+    Artifact.submissionArtifact.state_decodedOp_of (storedState input) 4119
       rfl hp .MSIZE none hd rfl
   have gmraw := Msize.step hop (by change (0 : Nat) < 1024; decide)
     rfl deployAddress_not_precompile

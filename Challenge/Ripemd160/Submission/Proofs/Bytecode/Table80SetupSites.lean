@@ -1,4 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80NoJumpdest
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80ScratchZeroSchedule
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80PadSetup
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundData
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
@@ -11,7 +12,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80SetupSites
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate PairedHelperBooleanTrace Table80Setup
 
-def actualNormalTemplate : List Instr := Table80Setup.normalTemplate.tail
+def actualNormalTemplate : List Instr := Table80ScratchZero.normalTemplate.tail
 
 theorem normal_slice :
     (Artifact.submissionArtifact.instructions.drop 330).take actualNormalTemplate.length = actualNormalTemplate := by rfl
@@ -74,7 +75,7 @@ private def normal_gasSteps_of_raw (s t : State)
   · exact hrun
   · exact hnp
 
-theorem normal_end : pcAfter (UInt256.ofNat 539) actualNormalTemplate = UInt256.ofNat 1072 := by decide
+theorem normal_end : pcAfter (UInt256.ofNat 539) actualNormalTemplate = UInt256.ofNat 1066 := by decide
 
 theorem pad_slice :
     (Artifact.submissionArtifact.instructions.drop 250).take padTemplate.length = padTemplate := by rfl
@@ -103,11 +104,11 @@ def gasSteps_normal (s : State) (ret : UInt256) (p : Nat) (rest : List UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 539, stack := UInt256.ofNat p :: ret :: rest}
-      {s with pc := UInt256.ofNat 1072, stack := Table80Raw.cache ++ (ret :: rest), memory := PairTableLayout.resultMemory s.memory (PairedScheduleData.extractedWord s.memory p), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat p)} := by
+      {s with pc := UInt256.ofNat 1066, stack := Table80Raw.cache ++ (ret :: rest), memory := PairTableLayout.resultMemory s.memory (PairedScheduleData.extractedWord s.memory p), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat p)} := by
   apply normal_gasSteps_of_raw {s with pc := UInt256.ofNat 539, stack := UInt256.ofNat p :: ret :: rest} _ hcode hfork hrun hnp normal_pc.symm
-  have h := run_normal s (UInt256.ofNat 538) ret p rest hstack hrun hp hbound
-  have hfull : Table80Setup.normalTemplate = .op .JUMPDEST :: actualNormalTemplate := by rfl
-  have hend : pcAfter (UInt256.ofNat 538) Table80Setup.normalTemplate = UInt256.ofNat 1072 := by decide
+  have h := Table80ScratchZero.run_normal s (UInt256.ofNat 538) ret p rest hstack hrun hp hbound
+  have hfull : Table80ScratchZero.normalTemplate = .op .JUMPDEST :: actualNormalTemplate := by rfl
+  have hend : pcAfter (UInt256.ofNat 538) Table80ScratchZero.normalTemplate = UInt256.ofNat 1066 := by decide
   rw [hend, hfull] at h
   have ht := run_without_jumpdest actualNormalTemplate
     (DenseScheduleTemplate.scheduleEntry s (UInt256.ofNat 538) (UInt256.ofNat p) ret rest) _ (by decide)

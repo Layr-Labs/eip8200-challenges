@@ -107,7 +107,7 @@ def answerMemory : ByteArray := storeWord ByteArray.empty 0 paddedDigestWord
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4865
+    pc := UInt256.ofNat 4867
     stack := hitRest
     memory := answerMemory
     activeWords := UInt256.ofNat 1
@@ -177,6 +177,10 @@ set_option maxHeartbeats 80000000 in
 theorem run_word_regular (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 32)
     (h : ¬ ((32 * k) % 256 = 224)) :
     run wordPath (loopState input k a) = some (compareState input k (scalarAt k) a) := by
+  have hmaskOrder : UInt256.land (UInt256.mul M (UInt256.ofNat (scalarAt k))) m7 =
+      UInt256.land m7 (UInt256.mul M (UInt256.ofNat (scalarAt k))) := by
+    apply Challenge.EvmProof.Word.word_ext
+    rw [Challenge.EvmProof.Word.word_toNat_land, Challenge.EvmProof.Word.word_toNat_land, Nat.and_comm]
   have hval : ((UInt256.ofNat 255).land (UInt256.ofNat (32 * k))).toNat
       = (32 * k) % 256 := by
     rw [land_ff _ (by omega), Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -212,12 +216,16 @@ theorem run_word_regular (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 3
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      Challenge.EvmProof.Word.literal_eq_ofNat]
+      Challenge.EvmProof.Word.literal_eq_ofNat, hmaskOrder]
 
 set_option maxHeartbeats 80000000 in
 theorem run_word_straddle (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 32)
     (h : (32 * k) % 256 = 224) :
     run wordPath (loopState input k a) = some (straddleState input k a) := by
+  have hmaskOrder : UInt256.land (UInt256.mul M (UInt256.ofNat (scalarAt k))) m7 =
+      UInt256.land m7 (UInt256.mul M (UInt256.ofNat (scalarAt k))) := by
+    apply Challenge.EvmProof.Word.word_ext
+    rw [Challenge.EvmProof.Word.word_toNat_land, Challenge.EvmProof.Word.word_toNat_land, Nat.and_comm]
   have he : UInt256.ofNat 224 =
       (UInt256.ofNat 255).land (UInt256.ofNat (32 * k)) := by
     rw [land_ff _ (by omega), h]
@@ -234,7 +242,7 @@ theorem run_word_straddle (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      Challenge.EvmProof.Word.literal_eq_ofNat]
+      Challenge.EvmProof.Word.literal_eq_ofNat, hmaskOrder]
 
 def sound (path : List Located) {s t : State}
     (h : run path s = some t)

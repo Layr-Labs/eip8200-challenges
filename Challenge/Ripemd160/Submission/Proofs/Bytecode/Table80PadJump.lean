@@ -7,7 +7,7 @@ set_option linter.unusedSimpArgs false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80PadJump
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate PairedHelperBooleanTrace
-def jumpTemplate : List Instr := PadJump.template 1072
+def jumpTemplate : List Instr := PadJump.template 1066
 theorem jump_slice :
     (Artifact.submissionArtifact.instructions.drop 310).take jumpTemplate.length = jumpTemplate := by rfl
 def jumpSite : GenericRoundSite Artifact.submissionArtifact .Osaka jumpTemplate :=
@@ -25,12 +25,12 @@ theorem jump_advances : ∀ instruction ∈ jumpTemplate.dropLast, PadLift.Advan
   decide
 
 theorem valid_merge (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
-    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 1072).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 682 = 1072 := by
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 1066).toNat = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 681 = 1066 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 682 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 681 (by rfl)
   rw [hpc] at h
-  change Decode.isValidJumpDest s.executionEnv.code 1072 = true
+  change Decode.isValidJumpDest s.executionEnv.code 1066 = true
   rw [hcode]
   exact h
 
@@ -40,9 +40,9 @@ def gasSteps_jump (s : State) (rho : List UInt256) (hstack : rho.length ≤ 1022
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 508, stack := rho}
-      {s with pc := UInt256.ofNat 1072, stack := rho} := by
+      {s with pc := UInt256.ofNat 1066, stack := rho} := by
   apply PadLift.gasSteps_of_raw jumpSite {s with pc := UInt256.ofNat 508, stack := rho} _ hcode hfork hrun hnp jump_pc.symm jump_advances
-  exact PadJump.run_template s (UInt256.ofNat 508) rho 1072 hstack hrun (valid_merge s hcode)
+  exact PadJump.run_template s (UInt256.ofNat 508) rho 1066 hstack hrun (valid_merge s hcode)
 
 #print axioms gasSteps_jump
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80PadJump

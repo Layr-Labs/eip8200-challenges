@@ -82,7 +82,7 @@ private def scanSuffix : List YulEvmCompiler.Instr :=
 private theorem scanBefore_length : scanBefore.length = 56 := by
   simp [scanBefore, scanPrefix]
 
-private theorem scanSuffix_length : scanSuffix.length = 4074 := by
+private theorem scanSuffix_length : scanSuffix.length = 4066 := by
   simp [scanSuffix]
 
 private theorem artifact_scan_split :
@@ -126,7 +126,7 @@ private theorem artifact_instruction_projection :
     Artifact.submissionArtifact.instructions = Artifact.submissionInstructions := by rfl
 
 private theorem scan_instruction_at (index : Nat)
-    (hlo : 56 ≤ index) (hhi : index < 4130) :
+    (hlo : 56 ≤ index) (hhi : index < 4122) :
     Artifact.submissionInstructions[index]? = scanSuffix[index - 56]? := by
   have hi : index - 56 < scanSuffix.length := by
     rw [scanSuffix_length]
@@ -137,7 +137,7 @@ private theorem scan_instruction_at (index : Nat)
     Nat.add_sub_of_le hlo] using h
 
 private theorem scan_instruction_pc (index : Nat)
-    (hlo : 56 ≤ index) (hhi : index ≤ 4130) :
+    (hlo : 56 ≤ index) (hhi : index ≤ 4122) :
     Artifact.submissionArtifact.instructionPC index =
       76 + (YulEvmCompiler.assembleBytes (scanSuffix.take (index - 56))).length := by
   have hi : index - 56 ≤ scanSuffix.length := by
@@ -204,7 +204,7 @@ def setupPath : List Located :=
 def wordPath : List Located :=
   [opAt 84 .JUMPDEST, opAt 85 (.Dup ⟨0, by decide⟩),
    opAt 86 (.Dup ⟨5, by decide⟩), opAt 87 .MUL,
-   opAt 88 (.Dup ⟨0, by decide⟩), opAt 89 (.Dup ⟨7, by decide⟩),
+   opAt 88 (.Dup ⟨6, by decide⟩), opAt 89 (.Dup ⟨1, by decide⟩),
    opAt 90 .AND, opAt 91 (.Dup ⟨5, by decide⟩), opAt 92 .ADD,
    opAt 93 (.Dup ⟨1, by decide⟩), opAt 94 (.Dup ⟨9, by decide⟩),
    opAt 95 .XOR, opAt 96 (.Dup ⟨10, by decide⟩), opAt 97 .AND,

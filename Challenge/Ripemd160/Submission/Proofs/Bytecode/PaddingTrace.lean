@@ -1082,12 +1082,14 @@ set_option maxHeartbeats 400000 in
 private theorem run_lengthFooterSetup (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock lengthFooterSetupPath
       (padSentinel input) = some (lengthLoopState input 0) := by
+  have haddressOrder : UInt256.ofNat 1016 + Padding.paddedWord input =
+      Padding.paddedWord input + UInt256.ofNat 1016 := Challenge.EvmProof.Word.word_add_comm _ _
   simp [lengthFooterSetupPath, lengthSetupPath, Artifact.padSetupPath,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     lengthLoopState, lengthLoopMemory, topByteMemory, topByteActiveWords,
     topByteAddr, lengthAddr, lengthShift,
-    lengthOffsetWord, bitLengthWord, State.activeWordsAfterUInt256]
+    lengthOffsetWord, bitLengthWord, State.activeWordsAfterUInt256, haddressOrder]
 
 def gasSteps_lengthSetup (input : ByteArray) (hfit : CalldataFits input) :
     Challenge.EvmProof.GasSteps (padLengthReady input)

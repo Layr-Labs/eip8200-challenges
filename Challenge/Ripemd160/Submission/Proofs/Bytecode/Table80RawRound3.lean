@@ -29,8 +29,8 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80RawCommon
     .op .ADD,
     .op (.Dup ⟨7, by decide⟩),
     .op .AND,
-    .op (.Dup ⟨0, by decide⟩),
-    .op (.Dup ⟨10, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
+    .op (.Dup ⟨1, by decide⟩),
     .op .AND,
     .op .ADD,
     .op (.Dup ⟨6, by decide⟩),
@@ -51,7 +51,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80RawCommon
  def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
    [ (UInt256.land x.v7 (UInt256.shiftRight (UInt256.mul x.v6 x.v2) (UInt256.ofNat 22))),
     x.v1,
-    (UInt256.land x.v7 (UInt256.add x.v4 (UInt256.shiftRight (UInt256.mul x.v6 (UInt256.add (UInt256.land x.v9 (UInt256.land x.v7 (UInt256.add x.v1 (UInt256.add (MachineState.readWord memory 500) (UInt256.add (UInt256.xor x.v3 (UInt256.xor x.v2 (UInt256.xor x.v8 (UInt256.lor x.v0 (UInt256.land x.v8 x.v2))))) x.v5))))) (UInt256.land x.v7 (UInt256.add x.v1 (UInt256.add (MachineState.readWord memory 500) (UInt256.add (UInt256.xor x.v3 (UInt256.xor x.v2 (UInt256.xor x.v8 (UInt256.lor x.v0 (UInt256.land x.v8 x.v2))))) x.v5)))))) (UInt256.ofNat 21)))),
+    (UInt256.land x.v7 (UInt256.add x.v4 (UInt256.shiftRight (UInt256.mul x.v6 (UInt256.add (UInt256.land (UInt256.land x.v7 (UInt256.add x.v1 (UInt256.add (MachineState.readWord memory 500) (UInt256.add (UInt256.xor x.v3 (UInt256.xor x.v2 (UInt256.xor x.v8 (UInt256.lor x.v0 (UInt256.land x.v8 x.v2))))) x.v5)))) x.v9) (UInt256.land x.v7 (UInt256.add x.v1 (UInt256.add (MachineState.readWord memory 500) (UInt256.add (UInt256.xor x.v3 (UInt256.xor x.v2 (UInt256.xor x.v8 (UInt256.lor x.v0 (UInt256.land x.v8 x.v2))))) x.v5)))))) (UInt256.ofNat 21)))),
     x.v3,
     x.v4,
     x.v0,
@@ -78,16 +78,16 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80RawCommon
  #print axioms run_actual
 
  theorem actual_slice :
-     (Artifact.submissionArtifact.instructions.drop 840).take template.length = template := by rfl
+     (Artifact.submissionArtifact.instructions.drop 839).take template.length = template := by rfl
  def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-   StackSiteBuilder.ofSlice template 840 actual_slice
-     (by change 840 + template.length ≤ Artifact.submissionInstructions.length
+   StackSiteBuilder.ofSlice template 839 actual_slice
+     (by change 839 + template.length ≤ Artifact.submissionInstructions.length
          rw [Artifact.referenceInstructions_count]; decide)
      StackRoundData.artifact_code_bound
      (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
      (by decide)
- theorem site_pc : site.startPC = UInt256.ofNat 1273 := by
-   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 840) = UInt256.ofNat 1273
+ theorem site_pc : site.startPC = UInt256.ofNat 1286 := by
+   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 839) = UInt256.ofNat 1286
    rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
  theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
    apply Table80SiteCommon.coreAdvancesAll_sound
@@ -100,10 +100,10 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80RawCommon
      (hfork : s.fork = .Osaka)
      (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
        s.executionEnv.fork s.executionEnv.codeAddr = false) :
-     GasSteps {s with pc := UInt256.ofNat 1273, stack := inputStack x rho}
-       {s with pc := UInt256.ofNat 1315, stack := outputStack s.memory x rho} := by
-   have hraw := run_actual s (UInt256.ofNat 1273) x rho hstack hrun hactive
-   have hend : pcAfter (UInt256.ofNat 1273) template = UInt256.ofNat 1315 := by decide
+     GasSteps {s with pc := UInt256.ofNat 1286, stack := inputStack x rho}
+       {s with pc := UInt256.ofNat 1328, stack := outputStack s.memory x rho} := by
+   have hraw := run_actual s (UInt256.ofNat 1286) x rho hstack hrun hactive
+   have hend : pcAfter (UInt256.ofNat 1286) template = UInt256.ofNat 1328 := by decide
    rw [hend] at hraw
    exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
  #print axioms gasSteps

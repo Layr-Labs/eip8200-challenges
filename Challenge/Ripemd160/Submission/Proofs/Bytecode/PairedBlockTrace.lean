@@ -1,6 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80BootstrapBridge
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80Prepare
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80FinalBridgeModel
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80FinalBridgeWide
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80Bootstrap
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80Core
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80TailSite
@@ -42,7 +42,7 @@ noncomputable def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
   let ret := UInt256.ofNat 512
   let rho := driverRest input i
   let initial := Table80BootstrapBridge.initialLane h
-  let final := Table80Core.finalLane q.memory initial
+  let final := Table80Core.physicalFinalLane q.memory initial
   have hactive : 34 ≤ q.activeWords.toNat := scheduled_active s input i hfit hi
   have hh : StackMemory.hashAt q.memory = Compression.embedHash h :=
     (Table80FinalBridge.scheduled_hashAt s i).trans ctx.hash
@@ -51,13 +51,13 @@ noncomputable def gasSteps_compress (s : State) (input : ByteArray) (i : Nat)
     (by simp [rho, driverRest]) hrun hactive hcode hfork hnp
   have gc := Table80Core.gasSteps_core q initial ret rho (by simp [rho, driverRest])
     hrun hactive hcode hfork hnp
-  have gt := Table80TailSite.gasSteps q ret final rho (by simp [rho, driverRest])
+  have gt := Table80TailSite.gasSteps q ret final Table80WideCoreBridge.wideFactorWord rho (by simp [rho, driverRest])
     hrun hactive (valid_return q hcode) hcode hfork hnp
   have gall := gp.trans (gb.trans (gc.trans gt))
   apply gall.cast rfl
-  have hm : Table80Tail.resultMemory q.memory final = (resultState s input i).memory :=
-    Table80FinalBridge.resultMemory_model s input i h hfit hi ctx
-  change {q with pc := ret, stack := rho, memory := Table80Tail.resultMemory q.memory final} = _
+  have hm : Table80ConsumedTerminalTail.resultMemory q.memory final = (resultState s input i).memory :=
+    Table80FinalBridge.physical_resultMemory_model s input i h hfit hi ctx
+  change {q with pc := ret, stack := rho, memory := Table80ConsumedTerminalTail.resultMemory q.memory final} = _
   rw [hm]
   rfl
 

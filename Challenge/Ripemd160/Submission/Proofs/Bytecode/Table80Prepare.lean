@@ -16,7 +16,7 @@ opaque gasSteps_prepare_hit (s : State) (input : ByteArray) (i : Nat)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hhit : input.size = DriverTrace.blockOffset i) :
     GasSteps (DriverTrace.compressEntry s input i)
-      {scheduledState s i with pc := UInt256.ofNat 1072, stack := Table80Raw.cache ++ (UInt256.ofNat 512 :: driverRest input i)} := by
+      {scheduledState s i with pc := UInt256.ofNat 1066, stack := Table80Raw.cache ++ (UInt256.ofNat 512 :: driverRest input i)} := by
   let q := scheduledState s i
   let rho := UInt256.ofNat 512 :: driverRest input i
   have hfit256 : s.executionEnv.calldata.size < 2^256 := by
@@ -57,7 +57,7 @@ opaque gasSteps_prepare_miss (s : State) (input : ByteArray) (i : Nat)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hmiss : input.size ≠ DriverTrace.blockOffset i) :
     GasSteps (DriverTrace.compressEntry s input i)
-      {scheduledState s i with pc := UInt256.ofNat 1072, stack := Table80Raw.cache ++ (UInt256.ofNat 512 :: driverRest input i)} := by
+      {scheduledState s i with pc := UInt256.ofNat 1066, stack := Table80Raw.cache ++ (UInt256.ofNat 512 :: driverRest input i)} := by
   have hfit256 : s.executionEnv.calldata.size < 2^256 := by
     rw [ctx.calldata]
     exact calldata_lt_uint256 input hfit
@@ -80,7 +80,7 @@ opaque gasSteps_prepare (s : State) (input : ByteArray) (i : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (DriverTrace.compressEntry s input i)
-      {scheduledState s i with pc := UInt256.ofNat 1072, stack := Table80Raw.cache ++ (UInt256.ofNat 512 :: driverRest input i)} := by
+      {scheduledState s i with pc := UInt256.ofNat 1066, stack := Table80Raw.cache ++ (UInt256.ofNat 512 :: driverRest input i)} := by
   by_cases hhit : input.size = DriverTrace.blockOffset i
   · exact gasSteps_prepare_hit s input i h hfit hi ctx hcode hfork hrun hnp hhit
   · exact gasSteps_prepare_miss s input i h hfit hi ctx hcode hfork hrun hnp hhit

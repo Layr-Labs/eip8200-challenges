@@ -29,6 +29,8 @@ theorem output_eq (memory : ByteArray) (q : WordLane) (k : UInt256) (rho : List 
     Table80CoreCommon.add_assoc, Table80CoreCommon.mul_comm, Table80CoreCommon.mul_one,
     Table80CoreCommon.land_comm, Table80CoreCommon.lor_comm,
     Table80CoreCommon.xor_comm, Table80CoreCommon.xor_left_comm, Table80CoreCommon.xor_assoc]
+  all_goals simp (discharger := omega) only [Table80WideCoreBridge.masked_shift_raw,
+    Table80WideCoreBridge.masked_shift_add_raw]
   all_goals trivial
 #print axioms output_eq
 
@@ -45,8 +47,8 @@ theorem output_eq (memory : ByteArray) (q : WordLane) (k : UInt256) (rho : List 
      (hfork : s.fork = .Osaka)
      (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
        s.executionEnv.fork s.executionEnv.codeAddr = false) :
-     Challenge.EvmProof.GasSteps {s with pc := UInt256.ofNat 1851, stack := stack [.k, .d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] q k rho}
-       {s with pc := UInt256.ofNat 1897, stack :=
+     Challenge.EvmProof.GasSteps {s with pc := UInt256.ofNat 1864, stack := stack [.k, .d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] q k rho}
+       {s with pc := UInt256.ofNat 1910, stack :=
           stack [.d, .e, .c, .b, .k, .a, .factor, .pair, .upper, .lower] (eval (MachineState.readWord s.memory 340) k q) (nextKey k) rho} := by
    have gs := Table80RawRound16.gasSteps s (input q k) rho hstack hrun hactive hcode hfork hnp
    have hin : Table80Raw.inputStack (input q k) rho = stack [.k, .d, .b, .c, .a, .e, .factor, .pair, .upper, .lower] q k rho := rfl
