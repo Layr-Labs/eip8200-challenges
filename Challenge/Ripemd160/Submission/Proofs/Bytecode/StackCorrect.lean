@@ -1,5 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedBlockTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Execution
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectEmptyReturn
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -79,11 +80,13 @@ noncomputable def kernel : StackRunBridge.BlockKernel where
   hashResult2 := by intro _ _ hd; cases hd
   gasSteps2 := by intro _ _ _ _ hd; cases hd
 
-theorem correct (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size)
+theorem correct (input : ByteArray) (hfit : CalldataFits input)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0)
       (Execution.atPC input 272)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  exact StackRunBridge.correct_of_block_kernel kernel input hfit hpositive entryPrefix
+  by_cases hempty : input.size = 0
+  · exact DirectEmptyReturn.correct_empty input hfit hempty entryPrefix
+  · exact StackRunBridge.correct_of_block_kernel kernel input hfit (Nat.pos_of_ne_zero hempty) entryPrefix
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect

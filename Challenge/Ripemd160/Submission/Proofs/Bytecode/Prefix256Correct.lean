@@ -58,6 +58,6 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
       (.returned (MachineState.readPadded Prefix256Finish.answerMemory 0 32)) at heval
     rw [Prefix256Finish.answerMemory_read, ← hspec] at heval
     simpa [GasCost.withGas_initialState_zero] using heval
-  · exact StackCorrect.correct input hfit (by omega) (gasSteps_miss input hsize href hz)
+  · exact StackCorrect.correct input hfit (gasSteps_miss input hsize href hz)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Correct
