@@ -23,7 +23,7 @@ def blk2862 :
    opAt 2541 .SHR,
    opAt 2542 .AND,
    opAt 2543 .ISZERO,
-   pushAt 2544 2 3358,
+   pushAt 2544 2 1312,
    opAt 2545 .JUMPI]
 
 /-- Located block of the selected shift-reduce program. -/
@@ -45,12 +45,6 @@ def blk2874 :
    pushAt 2559 2 4658,
    opAt 2560 .JUMP]
 
-/-- Located block of the selected shift-reduce program. -/
-def blk2889 :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2561 .JUMPDEST,
-   pushAt 2562 2 1312,
-   opAt 2563 .JUMP]
 
 /-- Located block of the selected shift-reduce program. -/
 def blk2892 :

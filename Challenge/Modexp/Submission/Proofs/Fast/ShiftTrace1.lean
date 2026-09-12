@@ -79,31 +79,13 @@ theorem run_dispatch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
         dispState, missState, frameState, pcDispatch, pcMiss, outer, Exp.outer,
-        hcode, hrun, hzeroNat, haw, jumpDest4652, hm, FullBase.guardWord, hc,
+        hcode, hrun, hzeroNat, haw, jumpDest1526, hm, FullBase.guardWord, hc,
         State.activeWordsAfterUInt256,
         Challenge.EvmProof.Word.literal_eq_ofNat,
         Challenge.EvmProof.Word.word_toNat_ofNat,
         Challenge.EvmProof.Word.succ_ofNat_mod,
         Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- `blk2889`: the miss arm jumps to the old `r0` block at pc 1533. -/
-theorem run_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk2889
-      (missState s mem n bsize esize msize) =
-      some (Exp.r0State s mem n bsize esize msize) := by
-  simp (config := { maxSteps := 100000 })
-    [blk2889, opAt, pushAt, wfOp,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated,
-      Challenge.EvmProof.Stepper.runInstr,
-      missState, frameState, pcMiss, Exp.r0State, outer, Exp.outer,
-      hcode, hrun, jumpDest1526,
-      Challenge.EvmProof.Word.literal_eq_ofNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod]
 
 /-- `blk2874`: copy the raw base to `ACC` and `TS`, clear `TN`, call `CSUB`. -/
 theorem run_hit (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)

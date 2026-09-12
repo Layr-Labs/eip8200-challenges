@@ -24,7 +24,7 @@ abbrev outer := Exp.outer
 /-- Program counters of the appended routine. -/
 def pcDispatch : Nat := 3314
 def pcHit : Nat := 3329
-def pcMiss : Nat := 3358
+def pcMiss : Nat := 1312
 def pcAfterCsub0 : Nat := 3363
 def pcNegLoop : Nat := 3370
 def pcNegNext : Nat := 3393

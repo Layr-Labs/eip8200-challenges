@@ -2566,7 +2566,7 @@ def submissionInstructions : List Instr :=
  .op .SHR,
  .op .AND,
  .op .ISZERO,
- .push 2 3358,
+ .push 2 1312,
  .op .JUMPI,
  .op (.Dup { idx := 0 }),
  .push 1 96,
