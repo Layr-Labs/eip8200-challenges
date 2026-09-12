@@ -1,5 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ScheduledTailRaw
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Compression
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Paired144WordRound
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.ScheduledTailFrame
@@ -7,7 +8,10 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Challenge.EvmProof.Word StackRoundTrace
 
 def frame (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256) : List UInt256 :=
-  [ofUInt32 h.h0, ofUInt32 h.h1, ofUInt32 h.h2, ofUInt32 h.h3, ofUInt32 h.h4, off, limit] ++ rho
+  [Paired144WordRound.factorWord, UInt256.ofNat 4294967295, Paired144WordRound.compactMaskWord,
+   Paired144WordRound.coefficientWord 3 0, Paired144WordRound.coefficientWord 0 3,
+   Paired144WordRound.coefficientWord 0 2,
+   ofUInt32 h.h4, ofUInt32 h.h1, ofUInt32 h.h2, ofUInt32 h.h3, ofUInt32 h.h0, off, limit] ++ rho
 
 def coreRest (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256) : List UInt256 :=
   [ofUInt32 h.h1, ofUInt32 h.h2, ofUInt32 h.h3, ofUInt32 h.h0, off, limit] ++ rho
@@ -19,7 +23,12 @@ def bind (h : Compression.HashState) (q : ScheduledTailRaw.Input) : ScheduledTai
     h2 := ofUInt32 h.h2
     h3 := ofUInt32 h.h3
     h4 := ofUInt32 h.h4
-    lower := UInt256.ofNat 0xffffffff}
+    lower := UInt256.ofNat 0xffffffff
+    factor := Paired144WordRound.factorWord
+    cache140 := Paired144WordRound.compactMaskWord
+    cache350 := Paired144WordRound.coefficientWord 3 0
+    cache310 := Paired144WordRound.coefficientWord 0 3
+    cache190 := Paired144WordRound.coefficientWord 0 2}
 def high (x : UInt256) : UInt32 := toUInt32 (UInt256.shiftRight x (UInt256.ofNat 144))
 def combine (h : Compression.HashState) (q : ScheduledTailRaw.Input) : Compression.HashState :=
   {h0 := h.h1 + toUInt32 q.lc + high q.rd,
@@ -47,8 +56,8 @@ private theorem raw_toUInt32_add (x y : UInt256) :
 
 theorem tail_result (h : Compression.HashState) (q : ScheduledTailRaw.Input)
     (rho : List UInt256) :
-    ScheduledTailRaw.stack5 (bind h q) rho = frame (combine h q) q.off q.limit rho := by
-  simp only [ScheduledTailRaw.stack5, bind, frame, combine, high,
+    ScheduledTailRaw.stack4 (bind h q) rho = frame (combine h q) q.off q.limit rho := by
+  simp only [ScheduledTailRaw.stack4, bind, frame, combine, high,
     lower_left, lower_right, mask32_eq_ofUInt32, raw_toUInt32_add, toUInt32_ofUInt32,
     List.cons_append, List.nil_append,
     List.cons.injEq, and_true, true_and]

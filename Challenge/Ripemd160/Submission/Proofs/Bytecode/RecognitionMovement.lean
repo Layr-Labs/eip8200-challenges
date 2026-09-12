@@ -103,16 +103,16 @@ def gasSteps_partialBranch_no (s : State) (e : Env s) (f : RecognitionBodyRaw.Fr
 
 def gasSteps_finish_yes (s : State) (e : Env s) (f : RecognitionBodyRaw.Frame) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hc : f.acc.toNat = 0) :
-    GasSteps (atState s 313 (frame f rho)) (atState s 4878 (frame f rho)) := by
+    GasSteps (atState s 313 (frame f rho)) (atState s 4881 (frame f rho)) := by
   apply finish.lift s _ e (frame f rho)
-  have h := RecognitionBranchRaw.run_finish s (UInt256.ofNat 313) f rho 4878 hs e.run (valid_4796 s e)
+  have h := RecognitionBranchRaw.run_finish s (UInt256.ofNat 313) f rho 4881 hs e.run (valid_4796 s e)
   simpa only [atState, finish.end_pc, if_pos hc] using h
 
 def gasSteps_finish_no (s : State) (e : Env s) (f : RecognitionBodyRaw.Frame) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hc : ¬ (f.acc.toNat = 0)) :
     GasSteps (atState s 313 (frame f rho)) (atState s 320 (frame f rho)) := by
   apply finish.lift s _ e (frame f rho)
-  have h := RecognitionBranchRaw.run_finish s (UInt256.ofNat 313) f rho 4878 hs e.run (valid_4796 s e)
+  have h := RecognitionBranchRaw.run_finish s (UInt256.ofNat 313) f rho 4881 hs e.run (valid_4796 s e)
   simpa only [atState, finish.end_pc, if_neg hc] using h
 
 def gasSteps_cleanup (s : State) (e : Env s) (f : RecognitionBodyRaw.Frame) (rho : List UInt256) (hs : rho.length ≤ 990) :

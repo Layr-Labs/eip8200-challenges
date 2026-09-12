@@ -8,11 +8,17 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentOutput
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Challenge.EvmProof.Word StackRoundTrace
 def packedHash (h : Compression.HashState) : UInt256 := (UInt256.lor (ofUInt32 h.h4) (UInt256.shiftLeft (UInt256.lor (ofUInt32 h.h3) (UInt256.shiftLeft (UInt256.lor (ofUInt32 h.h2) (UInt256.shiftLeft (UInt256.lor (ofUInt32 h.h1) (UInt256.shiftLeft (ofUInt32 h.h0) (UInt256.ofNat 32))) (UInt256.ofNat 32))) (UInt256.ofNat 32))) (UInt256.ofNat 32)))
-def template : List Instr := [
+/-- Loop exit: drop the six resident round constants and bring the chaining words into
+serialization order. -/
+def prefixTemplate : List Instr := [
+   .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP,
+   .op (.Swap ⟨3, by decide⟩) ]
+def bodyTemplate : List Instr := [
    .push ⟨1, by decide⟩ (UInt256.ofNat 32), .op .SHL, .op .OR,
    .push ⟨1, by decide⟩ (UInt256.ofNat 32), .op .SHL, .op .OR,
    .push ⟨1, by decide⟩ (UInt256.ofNat 32), .op .SHL, .op .OR,
    .push ⟨1, by decide⟩ (UInt256.ofNat 32), .op .SHL, .op .OR ]
+def template : List Instr := prefixTemplate ++ bodyTemplate
 def join (a b : UInt256) : UInt256 := UInt256.lor (UInt256.shiftLeft a (UInt256.ofNat 32)) b
 
 private theorem join_reverse (a b : UInt256) :
@@ -21,51 +27,67 @@ private theorem join_reverse (a b : UInt256) :
 
 theorem run_raw (s : State) (pc a b c d e : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 1012) (hrun : s.halt = .Running) :
-    runInstrSeq template {s with pc := pc, stack := [a,b,c,d,e] ++ rho} =
-      some {s with pc := pcAfter pc template, stack := join (join (join (join a b) c) d) e :: rho} := by
+    runInstrSeq bodyTemplate {s with pc := pc, stack := [a,b,c,d,e] ++ rho} =
+      some {s with pc := pcAfter pc bodyTemplate, stack := join (join (join (join a b) c) d) e :: rho} := by
   have hcap (n : Nat) (hn : n ≤ 11) : rho.length + n < 1024 := by omega
-  simp (discharger := omega) [template, join,
+  simp (discharger := omega) [bodyTemplate, join,
     runInstrSeq, Stepper.runInstr, UInt256.succ, pcAfter, Instr.size,
     hrun, hcap, Nat.add_assoc, List.getElem?_cons_zero,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl
 
+theorem run_prefix (s : State) (pc off limit : UInt256) (h : Compression.HashState)
+    (rho : List UInt256) (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running) :
+    runInstrSeq prefixTemplate {s with pc := pc, stack := StaggerPersistentFrame.frame h off limit rho} =
+      some {s with
+        pc := pcAfter pc prefixTemplate,
+        stack := [ofUInt32 h.h0, ofUInt32 h.h1, ofUInt32 h.h2, ofUInt32 h.h3, ofUInt32 h.h4] ++
+          (off :: limit :: rho)} := by
+  have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
+  simp (discharger := omega) [prefixTemplate, StaggerPersistentFrame.frame,
+    runInstrSeq, Stepper.runInstr, UInt256.succ, pcAfter, Instr.size,
+    hrun, hcap, Nat.add_assoc, List.getElem?_cons_zero, List.exchange,
+    Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+  all_goals repeat first | apply And.intro | rfl
+
 theorem run_template (s : State) (pc off limit : UInt256) (h : Compression.HashState)
-    (rho : List UInt256) (hstack : rho.length ≤ 1010) (hrun : s.halt = .Running) :
+    (rho : List UInt256) (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running) :
     runInstrSeq template {s with pc := pc, stack := StaggerPersistentFrame.frame h off limit rho} =
       some {s with pc := pcAfter pc template, stack := packedHash h :: off :: limit :: rho} := by
-  have hs : (off :: limit :: rho).length ≤ 1012 := by simpa using hstack
-  simpa only [StaggerPersistentFrame.frame, packedHash, join_reverse, List.cons_append, List.nil_append] using
-    run_raw s pc (ofUInt32 h.h0) (ofUInt32 h.h1) (ofUInt32 h.h2)
+  have hs : (off :: limit :: rho).length ≤ 1012 := by simp; omega
+  have h1 := run_prefix s pc off limit h rho hstack hrun
+  have h2 := run_raw s (pcAfter pc prefixTemplate) (ofUInt32 h.h0) (ofUInt32 h.h1) (ofUInt32 h.h2)
       (ofUInt32 h.h3) (ofUInt32 h.h4) (off :: limit :: rho) hs hrun
+  have hsum := DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
+  simpa only [template, DenseScheduleTrace.pcAfter_append, packedHash, join_reverse] using hsum
 
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 3813).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3808).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3813 actual_slice
-    (by change 3813 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3808 actual_slice
+    (by change 3808 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 4748 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3813) = UInt256.ofNat 4748
+theorem site_pc : site.startPC = UInt256.ofNat 4744 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3808) = UInt256.ofNat 4744
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction :=
   Table80SiteCommon.coreAdvancesAll_sound template (by decide)
 
 def gasSteps (s : State) (off limit : UInt256) (h : Compression.HashState)
-    (rho : List UInt256) (hstack : rho.length ≤ 1010) (hrun : s.halt = .Running)
+    (rho : List UInt256) (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4748, stack := StaggerPersistentFrame.frame h off limit rho}
-      {s with pc := UInt256.ofNat 4764, stack := packedHash h :: off :: limit :: rho} := by
+    GasSteps {s with pc := UInt256.ofNat 4744, stack := StaggerPersistentFrame.frame h off limit rho}
+      {s with pc := UInt256.ofNat 4767, stack := packedHash h :: off :: limit :: rho} := by
   apply DenseScheduleLift.gasSteps_of_raw site
-    {s with pc := UInt256.ofNat 4748, stack := StaggerPersistentFrame.frame h off limit rho}
-    {s with pc := UInt256.ofNat 4764, stack := packedHash h :: off :: limit :: rho}
+    {s with pc := UInt256.ofNat 4744, stack := StaggerPersistentFrame.frame h off limit rho}
+    {s with pc := UInt256.ofNat 4767, stack := packedHash h :: off :: limit :: rho}
     hcode hfork hrun hnp site_pc.symm advances
-  have hraw := run_template s (UInt256.ofNat 4748) off limit h rho hstack hrun
-  have hend : pcAfter (UInt256.ofNat 4748) template = UInt256.ofNat 4764 := by decide
+  have hraw := run_template s (UInt256.ofNat 4744) off limit h rho hstack hrun
+  have hend : pcAfter (UInt256.ofNat 4744) template = UInt256.ofNat 4767 := by decide
   rw [hend] at hraw
   exact hraw
 

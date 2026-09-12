@@ -22,23 +22,23 @@ private theorem add64 (off : UInt256) :
     UInt256.ofNat 64 + off = off + UInt256.ofNat 64 := Word.word_add_comm _ _
 
 def template (dest : Nat) : List Instr :=
-  [.op (.Swap ⟨4, by decide⟩),
-   .push ⟨1, by decide⟩ (UInt256.ofNat 64), .op .ADD, .op (.Swap ⟨4, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩), .op (.Dup ⟨6, by decide⟩), .op .XOR,
+  [.op (.Swap ⟨10, by decide⟩),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 64), .op .ADD, .op (.Swap ⟨10, by decide⟩),
+   .op (.Dup ⟨12, by decide⟩), .op (.Dup ⟨12, by decide⟩), .op .XOR,
    .push ⟨2, by decide⟩ (UInt256.ofNat dest), .op .JUMPI]
 
 def nextOffset (off : UInt256) : UInt256 := off + UInt256.ofNat 64
 
 theorem run_continue (s : State) (pc : UInt256) (h : Compression.HashState)
     (off limit : UInt256) (rho : List UInt256) (dest : Nat)
-    (hstack : rho.length ≤ 1013) (hrun : s.halt = .Running)
+    (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running)
     (hmiss : (nextOffset off).toNat ≠ limit.toNat)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat dest).toNat = true) :
     runInstrSeq (template dest) {s with pc := pc, stack := StaggerPersistentFrame.frame h off limit rho} =
       some {s with
         pc := UInt256.ofNat dest
         stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
-  have hcap (n : Nat) (hn : n ≤ 10) : rho.length + n < 1024 := by omega
+  have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
   have heq : (UInt256.xor (nextOffset off) limit).toNat ≠ 0 := by
     rw [word_toNat_xor]
     intro hz
@@ -53,13 +53,13 @@ theorem run_continue (s : State) (pc : UInt256) (h : Compression.HashState)
 
 theorem run_exit (s : State) (pc : UInt256) (h : Compression.HashState)
     (off limit : UInt256) (rho : List UInt256) (dest : Nat)
-    (hstack : rho.length ≤ 1013) (hrun : s.halt = .Running)
+    (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running)
     (hhit : (nextOffset off).toNat = limit.toNat) :
     runInstrSeq (template dest) {s with pc := pc, stack := StaggerPersistentFrame.frame h off limit rho} =
       some {s with
         pc := pcAfter pc (template dest)
         stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
-  have hcap (n : Nat) (hn : n ≤ 10) : rho.length + n < 1024 := by omega
+  have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
   have heq : (UInt256.xor (nextOffset off) limit).toNat = 0 := by
     rw [word_toNat_xor, hhit, Nat.xor_self]
   change (UInt256.xor (off + UInt256.ofNat 64) limit).toNat = 0 at heq

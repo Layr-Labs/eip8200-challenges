@@ -19,17 +19,17 @@ def entry (s : State) (h q : WordLane) (off limit : UInt256) (rho : List UInt256
   {s with pc := UInt256.ofNat 1152, stack := stack s.memory h.e [.d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500] q h (UInt256.ofNat 1352829926) (suffix h off limit rho)}
 
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 697).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 696).take template.length = template := by rfl
 
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 697 actual_slice
-    (by change 697 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 696 actual_slice
+    (by change 696 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 1152 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 697) = UInt256.ofNat 1152
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 696) = UInt256.ofNat 1152
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound

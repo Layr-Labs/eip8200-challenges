@@ -26,11 +26,15 @@ def input (h : Compression.HashState) (off limit : UInt256) :
 
 def entry (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 999, stack := StaggerPersistentFrame.frame h off limit rho}
+  {s with pc := UInt256.ofNat 1079, stack := StaggerPersistentFrame.frame h off limit rho}
 
 theorem input_eq (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256) :
     StaggerPersistentBootstrapRaw.inputStack (input h off limit) rho =
-      StaggerPersistentFrame.frame h off limit rho := rfl
+      StaggerPersistentFrame.frame h off limit rho := by
+  simp only [StaggerPersistentBootstrapRaw.inputStack, input, StaggerPersistentFrame.frame,
+    StaggerPersistentBootstrapRaw.factorWord_eq, StaggerPersistentBootstrapRaw.compactMaskWord_eq,
+    StaggerPersistentBootstrapRaw.coefficient30_eq, StaggerPersistentBootstrapRaw.coefficient03_eq,
+    StaggerPersistentBootstrapRaw.coefficient02_eq]
 
 theorem output_eq (memory : ByteArray) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) :

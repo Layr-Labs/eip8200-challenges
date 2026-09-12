@@ -10,8 +10,13 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PersistentStaggerPrepar
 open Challenge.Ripemd160 EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PersistentStaggerTable StaggerPersistentFrame
 
+/-- The persistent frame below its top word (the resident factor constant). -/
 def rest (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256) : List UInt256 :=
-  [Word.ofUInt32 h.h1, Word.ofUInt32 h.h2, Word.ofUInt32 h.h3, Word.ofUInt32 h.h4, off, limit] ++ rho
+  [UInt256.ofNat 4294967295, Paired144WordRound.compactMaskWord,
+   Paired144WordRound.coefficientWord 3 0, Paired144WordRound.coefficientWord 0 3,
+   Paired144WordRound.coefficientWord 0 2,
+   Word.ofUInt32 h.h4, Word.ofUInt32 h.h1, Word.ofUInt32 h.h2, Word.ofUInt32 h.h3,
+   Word.ofUInt32 h.h0, off, limit] ++ rho
 
 theorem pointer_eq (input : ByteArray) (i : Nat) (hfit : CalldataFits input)
     (hi : i < DriverTrace.blockCount input) :
@@ -22,14 +27,14 @@ theorem pointer_eq (input : ByteArray) (i : Nat) (hfit : CalldataFits input)
   rfl
 
 def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.HashState)
-    (limit : UInt256) (rho : List UInt256) (hs : rho.length ≤ 890)
+    (limit : UInt256) (rho : List UInt256) (hs : rho.length ≤ 880)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input) (ctx : Context s input)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hr : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 520, stack := frame h (DriverTrace.blockOffsetWord i) limit rho}
-      {scheduledState s i with pc := UInt256.ofNat 999, stack := frame h (DriverTrace.blockOffsetWord i) limit rho} := by
+    GasSteps {s with pc := UInt256.ofNat 600, stack := frame h (DriverTrace.blockOffsetWord i) limit rho}
+      {scheduledState s i with pc := UInt256.ofNat 1079, stack := frame h (DriverTrace.blockOffsetWord i) limit rho} := by
   let off := DriverTrace.blockOffsetWord i
   let q := scheduledState s i
   let r := rest h off limit rho
@@ -49,13 +54,13 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
       change 38 ≤ (DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat (messagePointer i))).toNat at hq
       rw [scheduled_active_eq s input i hfit hi ctx] at hq
       exact hq
-    have gb := StaggerSetupSites.gasSteps_pad s (Word.ofUInt32 h.h0) r hrs hr (by omega) hf hcode hfork hnp
+    have gb := StaggerSetupSites.gasSteps_pad s Paired144WordRound.factorWord r hrs hr (by omega) hf hcode hfork hnp
     have hm := scheduled_memory_calldata s input i hfit hi ctx hh
     have gj := StaggerPadJump.gasSteps_jump q (frame h off limit rho)
       (by simp only [frame, List.length_append, List.length_cons, List.length_nil]; omega)
       hr hcode hfork hnp
-    have gb' : GasSteps {s with pc := UInt256.ofNat 442, stack := frame h off limit rho}
-        {q with pc := UInt256.ofNat 515, stack := frame h off limit rho} := by
+    have gb' : GasSteps {s with pc := UInt256.ofNat 522, stack := frame h off limit rho}
+        {q with pc := UInt256.ofNat 595, stack := frame h off limit rho} := by
       apply gb.cast rfl
       dsimp only [q, scheduledState]
       rw [scheduled_active_eq s input i hfit hi ctx]
@@ -68,7 +73,7 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
       (by omega) hr hf he hcode hfork hnp
     have gc := StaggerPersistentEntrySites.gasSteps_call s off limit h rho (by omega) hr hcode hfork hnp
     rw [show StaggerPersistentEntryRaw.pointer off = UInt256.ofNat (messagePointer i) from pointer_eq input i hfit hi] at gc
-    have gn := StaggerSetupSites.gasSteps_normal s (Word.ofUInt32 h.h0) (messagePointer i) r hrs hr
+    have gn := StaggerSetupSites.gasSteps_normal s Paired144WordRound.factorWord (messagePointer i) r hrs hr
       (messagePointer_lower i) (messagePointer_bound input hfit i hi) hcode hfork hnp
     exact gd.trans (gc.trans gn)
 
