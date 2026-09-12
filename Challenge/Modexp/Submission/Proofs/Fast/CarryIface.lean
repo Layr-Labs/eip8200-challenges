@@ -14,7 +14,7 @@ set_option maxHeartbeats 4000000
 WP-K (one kernel row, `CarryRowGas`) and WP-K2 (the kernel entry: `mul entry`, `common`,
 `setup`, fallback; `Cios2Dispatch`).  The composition is written generically over the two
 bundles below, whose fields are exactly the statements of those lemmas (explicit
-hypotheses — no axiom, no `sorry`).  They are instantiated with the real lemmas by
+hypotheses, with no axiom or unfinished placeholder). They are instantiated with the real lemmas by
 `CarryIface.rowLemmas` (`CarryRowLemmas`) and `CarryIface.entryLemmas` (`CarryEntryLemmas`),
 and `CarryFull.gasSteps_monproFull` (`CarryFullMonproFinal`) applies the generic composition
 `CarryFull.gasSteps_monproFullOf` to them.

@@ -265,14 +265,9 @@ opaque gasSteps_l2Final (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
       (l2At 4580 s mem bi mu c0 pb n i (n-2) hd ent pdst ret rest)
       (tailState s (l2Step mem mu c0 n (n-1)).memory
         (l2Step mem mu c0 n (n-1)).carry mu bi pb n i hd ent pdst ret rest) := by
-  have h := gasSteps_l2Mac 4580 0 0 8256 8288 l2Mac6 s mem bi mu c0 pb n i (n-2) hd ent pdst ret rest
-    hcap hrun hcode hfork hnp hact hn32 (by omega)
-    (by rw [show n - 2 - (n - 2) = 0 by omega]; decide)
-    (by rw [show n - 2 - (n - 2) = 0 by omega]; decide)
-    (by rw [show n - 1 - (n - 2) = 1 by omega]; decide) (by decide)
-  have hnn : n - 2 + 1 = n - 1 := by omega
-  rw [hnn] at h
-  exact h
+  exact l2Mac6.steps (environment (l2At 4580 s mem bi mu c0 pb n i (n-2) hd ent pdst ret rest)
+    hcode hfork hrun hnp) rfl
+    (CiosCachedLast.run_l2Last s mem bi mu c0 pb n i hd ent pdst ret rest hcap hact hn32 hn)
 
 /-- The whole four-limb second loop (dispatch to 4519, three cells). -/
 opaque gasSteps_l2Four (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
@@ -366,7 +361,7 @@ theorem jumpDest4726 :
 
 theorem jumpDest4664 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4650 = true :=
-  Artifact.isValidJumpDest_index 3543 (by rfl)
+  Artifact.isValidJumpDest_index 3541 (by rfl)
 
 /-! ## R0: the kernel-exit dispatch (pc 4630)
 
@@ -380,13 +375,13 @@ def dispatchProgram : List Instr :=
 /-- The dispatch block: the `JUMPI` ends it, taken for a square and not taken for a
 multiply (which then continues at the `nx` `JUMPDEST` 4639). -/
 def dispatchBlock : Block Artifact.submissionArtifact .Osaka 4641 dispatchProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3538 5 4641 dispatchProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3536 5 4641 dispatchProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The `nx` `JUMPDEST` (reached by the dispatch's fall-through and by `sq_exit`'s last
 square). -/
 def nxJd : Block Artifact.submissionArtifact .Osaka 4650 [.op .JUMPDEST] :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3543 1 4650 [.op .JUMPDEST]
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3541 1 4650 [.op .JUMPDEST]
     (by decide) (by rfl) (by rfl) (by decide)
 
 set_option linter.unusedSimpArgs false in

@@ -36,11 +36,11 @@ theorem run_middleStore (s : State) (c bi pbi pa pb flag dst ret : UInt256)
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
-theorem run_tailStore (s : State) (c mu f pbi pa pb flag dst ret : UInt256)
+theorem run_tailStore (s : State) (c f pbi pa pb flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat) :
     runInstructions CarryRowPrograms.tailStore
       (framed s (UInt256.ofNat 4615)
-        ([c,mu,f,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) =
+        ([c,f,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) =
     some (framed {s with memory := tailCarry s.memory c f} (UInt256.ofNat 4634)
       ([pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) := by
   have hc8 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega

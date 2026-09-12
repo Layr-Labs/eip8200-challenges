@@ -16,9 +16,11 @@ def middle : List Instr := middleStore ++ CiosReadonly.cachedProduct
 /-- The middle block with its leading `JUMPDEST` (pc 4334, the empty-chain entry). -/
 def middleBlock : List Instr := [.op .JUMPDEST] ++ middle
 
+/-- `mu` is already consumed by the last copy; the first address is a `PUSH4` so that the
+bytes of the removed `SWAP1 POP` are kept. -/
 def tailStore : List Instr :=
-  [.op (.Swap ⟨0, by decide⟩), .op .POP, .op (.Dup ⟨0, by decide⟩),
-   .push 2 8224, .op .MLOAD, .op .ADD, .op (.Dup ⟨0, by decide⟩),
+  [.op (.Dup ⟨0, by decide⟩),
+   .push 4 8224, .op .MLOAD, .op .ADD, .op (.Dup ⟨0, by decide⟩),
    .push 2 8256, .op .MSTORE, .op .LT, .op .ADD, .push 2 8224, .op .MSTORE]
 
 def tail : List Instr := tailStore ++ (CiosCached.tailProgram.drop 16).take 7

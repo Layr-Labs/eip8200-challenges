@@ -12,9 +12,11 @@ def fullEntryProgram : List Instr :=
 def fullMidProgram : List Instr :=
   CiosCached.midProgram.take 10 ++ cachedProduct
 
+/-- The fourteen discards, then four `JUMPDEST`s (formerly `PUSH2 4669 POP`) falling
+through to the CSUB guard at 4669. -/
 def fullExitProgram : List Instr :=
   ((CiosCached.tailProgram.drop 23).take 7 ++ dropCache) ++
-    (CiosCached.tailProgram.drop 30)
+    [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
 
 
 /-- First operand and accumulator pointers remain cached across every row. -/

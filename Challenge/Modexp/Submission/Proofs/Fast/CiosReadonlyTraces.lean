@@ -15,10 +15,8 @@ theorem run_exit (s : State) (pbi paEnd pbEnd flag target2 tl inv m0 aEnd m96 m6
       (framed s (UInt256.ofNat 4651)
         ([pbi,paEnd,pbEnd,flag,negative32,allOnes,target2,inv,m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest)) =
     some (framed s (UInt256.ofNat 4669) ([dst,ret] ++ rest)) := by
-  -- The block's last step is a discard rather than a jump, so the final pc is the PUSH's
-  -- `+ 3` followed by one more step.  That is a CLOSED term, and `succ_ofNat_mod` cannot
-  -- fire until the sum is normalised, so settle the whole equation directly.
-  have hstep : (UInt256.ofNat 4665 + UInt256.ofNat 3).succ = UInt256.ofNat 4669 := by decide
+  -- The block ends in four `JUMPDEST`s that fall through to the CSUB guard at 4669; every
+  -- step is a `succ` of a literal pc, which `succ_ofNat_mod` normalises.
   have hc2 : rest.length+2 < 1024 := by omega
   have hc3 : rest.length+3 < 1024 := by omega
   have hc4 : rest.length+4 < 1024 := by omega
@@ -34,7 +32,7 @@ theorem run_exit (s : State) (pbi paEnd pbEnd flag target2 tl inv m0 aEnd m96 m6
   have hc14 : rest.length+14 < 1024 := by omega
   have hc15 : rest.length+15 < 1024 := by omega
   have hc16 : rest.length+16 < 1024 := by omega
-  simp [hstep, fullExitProgram, dropCache, CiosCached.tailProgram, framed, runInstructions,
+  simp [fullExitProgram, dropCache, CiosCached.tailProgram, framed, runInstructions,
     Challenge.EvmProof.Stepper.runInstr, hc2,hc3,hc4,hc5,hc6,hc7,hc8,hc9,hc10,hc11,hc12,hc13,hc14,hc15,hc16,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat,
