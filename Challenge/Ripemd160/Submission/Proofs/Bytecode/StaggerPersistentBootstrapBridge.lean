@@ -25,7 +25,7 @@ def input (h : Compression.HashState) (off limit : UInt256) :
 
 def entry (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 927, stack := StaggerPersistentFrame.frame h off limit rho}
+  {s with pc := UInt256.ofNat 914, stack := StaggerPersistentFrame.frame h off limit rho}
 
 theorem input_eq (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256) :
     StaggerPersistentBootstrapRaw.inputStack (input h off limit) rho =
@@ -48,17 +48,17 @@ theorem output_eq (memory : ByteArray) (h : Compression.HashState) (off limit : 
 #print axioms output_eq
 
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 599).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 589).take template.length = template := by rfl
 
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 599 actual_slice
-    (by change 599 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 589 actual_slice
+    (by change 589 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 927 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 599) = UInt256.ofNat 927
+theorem site_pc : site.startPC = UInt256.ofNat 914 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 589) = UInt256.ofNat 914
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound
@@ -73,13 +73,13 @@ def gasSteps (s : State) (h : Compression.HashState) (off limit : UInt256)
     GasSteps (entry s h off limit rho)
       (StaggerPersistentCoreRight.initialState s (Word.ofUInt32 h.h4) (initial h)
         (StaggerPersistentFrame.coreRest h off limit rho)) := by
-  have raw := StaggerPersistentBootstrapRaw.run_actual s (UInt256.ofNat 927)
+  have raw := StaggerPersistentBootstrapRaw.run_actual s (UInt256.ofNat 914)
     (input h off limit) rho hs hr ha
-  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 927) template = UInt256.ofNat 964 := by decide
+  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 914) template = UInt256.ofNat 951 := by decide
   rw [hend] at raw
   have g := DenseScheduleLift.gasSteps_of_raw site
-    {s with pc := UInt256.ofNat 927, stack := StaggerPersistentBootstrapRaw.inputStack (input h off limit) rho}
-    {s with pc := UInt256.ofNat 964, stack := StaggerPersistentBootstrapRaw.outputStack s.memory (input h off limit) rho}
+    {s with pc := UInt256.ofNat 914, stack := StaggerPersistentBootstrapRaw.inputStack (input h off limit) rho}
+    {s with pc := UInt256.ofNat 951, stack := StaggerPersistentBootstrapRaw.outputStack s.memory (input h off limit) rho}
     hcode hfork hr hnp site_pc.symm advances raw
   rw [input_eq, output_eq] at g
   exact g

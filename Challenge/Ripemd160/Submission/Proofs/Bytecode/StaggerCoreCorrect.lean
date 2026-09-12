@@ -51,7 +51,7 @@ theorem epilogue_crypto (memory : ByteArray) (words : Nat → UInt32) (l r : Cry
       (UInt256.ofNat 2840853838) (embed l)
   have p0 := StaggerScalarWord.project_step true false 4 8 (by decide) (by decide)
     (MachineState.readWord memory 0) (UInt256.ofNat 2840853838) (embed l) h0
-  have p1 := StaggerScalarWord.project_step true false 4 5 (by decide) (by decide)
+  have p1 := StaggerScalarWord.project_step false false 4 5 (by decide) (by decide)
     (MachineState.readWord memory 80) (UInt256.ofNat 2840853838) (left77 memory (embed l)) h1
   have p2 := StaggerScalarWord.project_step false false 4 6 (by decide) (by decide)
     (MachineState.readWord memory 140) (UInt256.ofNat 2840853838) (left78 memory (left77 memory (embed l))) h2
@@ -59,7 +59,7 @@ theorem epilogue_crypto (memory : ByteArray) (words : Nat → UInt32) (l r : Cry
   rw [left_packCrypto]
   change unpackLeft (StaggerScalarWord.step false false 4 6 _ _ _) = _
   rw [p2]
-  change cryptoStep _ _ _ _ (unpackLeft (StaggerScalarWord.step true false 4 5 _ _ _)) = _
+  change cryptoStep _ _ _ _ (unpackLeft (StaggerScalarWord.step false false 4 5 _ _ _)) = _
   rw [p1]
   change cryptoStep _ _ _ _ (cryptoStep _ _ _ _ (unpackLeft (StaggerScalarWord.step true false 4 8 _ _ _))) = _
   rw [p0, hm0, hm1, hm2, show unpackLeft (embed l) = l from unpackLeft_packCrypto _ _]

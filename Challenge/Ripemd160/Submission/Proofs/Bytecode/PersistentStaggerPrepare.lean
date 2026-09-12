@@ -28,8 +28,8 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     (hr : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 485, stack := frame h (DriverTrace.blockOffsetWord i) limit rho}
-      {scheduledState s i with pc := UInt256.ofNat 927, stack := frame h (DriverTrace.blockOffsetWord i) limit rho} := by
+    GasSteps {s with pc := UInt256.ofNat 472, stack := frame h (DriverTrace.blockOffsetWord i) limit rho}
+      {scheduledState s i with pc := UInt256.ofNat 914, stack := frame h (DriverTrace.blockOffsetWord i) limit rho} := by
   let off := DriverTrace.blockOffsetWord i
   let q := scheduledState s i
   let r := rest h off limit rho
