@@ -12,7 +12,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80Core
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Paired80WordRound Paired80Algorithm Table80CoreCommon
 
-def pcs : Array Nat := #[1223, 1267, 1311, 1355, 1397, 1441, 1485, 1529, 1572, 1615, 1657, 1699, 1743, 1787, 1830, 1875, 1933, 1979, 2025, 2070, 2115, 2159, 2201, 2247, 2293, 2332, 2378, 2425, 2471, 2517, 2562, 2601, 2663, 2702, 2740, 2780, 2818, 2856, 2894, 2933, 2970, 3010, 3049, 3088, 3127, 3165, 3202, 3234, 3280, 3326, 3371, 3416, 3462, 3502, 3545, 3591, 3636, 3682, 3729, 3775, 3820, 3865, 3908, 3955, 4008, 4049, 4094, 4138, 4183, 4226, 4270, 4312, 4354, 4397, 4439, 4482, 4527, 4572, 4615, 4654, 4684]
+def pcs : Array Nat := #[1154, 1198, 1242, 1286, 1328, 1372, 1416, 1460, 1503, 1546, 1588, 1630, 1674, 1718, 1761, 1806, 1864, 1910, 1956, 2001, 2046, 2090, 2132, 2178, 2224, 2263, 2309, 2356, 2402, 2448, 2493, 2532, 2594, 2633, 2671, 2711, 2749, 2787, 2825, 2864, 2901, 2941, 2980, 3019, 3058, 3096, 3133, 3165, 3211, 3257, 3302, 3347, 3393, 3433, 3476, 3522, 3567, 3613, 3660, 3706, 3751, 3796, 3839, 3886, 3939, 3980, 4025, 4069, 4114, 4157, 4201, 4243, 4285, 4328, 4370, 4413, 4458, 4503, 4546, 4585, 4615]
 def shapes : Array (List Reg) := #[
   [.k, .a, .b, .c, .d, .e, .factor, .pair, .upper, .lower],
   [.d, .k, .c, .b, .e, .a, .factor, .pair, .upper, .lower],
@@ -453,7 +453,7 @@ def gasSteps_core (s : State) (q : WordLane) (ret : UInt256) (rho : List UInt256
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (atRound s 0 q (ret :: rho))
-      {s with pc := UInt256.ofNat 4684, stack := Table80ConsumedTerminalTail.entryStack Table80WideCoreBridge.wideFactorWord (physicalFinalLane s.memory q) ret rho} := by
+      {s with pc := UInt256.ofNat 4615, stack := Table80ConsumedTerminalTail.entryStack Table80WideCoreBridge.wideFactorWord (physicalFinalLane s.memory q) ret rho} := by
   have hs : (ret :: rho).length ≤ 996 := by simp only [List.length_cons]; omega
   let q78 := fold (message s.memory) 78 q
   let q79 := Table80CoreRound78.eval (message s.memory 78) (physicalKey 78) q78
