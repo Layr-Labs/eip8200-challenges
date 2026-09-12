@@ -18,7 +18,7 @@ theorem run_selector_4 (s : State)
     (hrun : s.halt = .Running) :
     run (selectorPath 4) (selectorEntry s KnownInputData.targetInput 4) =
       some (bodyEntry s KnownInputData.targetInput 4) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 3923 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 3917 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 3157 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath4,
@@ -65,7 +65,7 @@ theorem run_selector_5 (s : State)
     (hrun : s.halt = .Running) :
     run (selectorPath 5) (selectorEntry s KnownInputData.targetInput 5) =
       some (bodyEntry s KnownInputData.targetInput 5) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 3943 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 3937 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 3175 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath5,
@@ -112,7 +112,7 @@ theorem run_selector_6 (s : State)
     (hrun : s.halt = .Running) :
     run (selectorPath 6) (selectorEntry s KnownInputData.targetInput 6) =
       some (bodyEntry s KnownInputData.targetInput 6) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 3961 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 3955 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 3193 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath6,
@@ -159,7 +159,7 @@ theorem run_selector_7 (s : State)
     (hrun : s.halt = .Running) :
     run (selectorPath 7) (selectorEntry s KnownInputData.targetInput 7) =
       some (bodyEntry s KnownInputData.targetInput 7) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 3985 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 3979 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 3211 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath7,

@@ -38,7 +38,7 @@ def firstMatchedState (s : State) (input : ByteArray) : State :=
     stack := [DriverTrace.messageOffsetWord 0, UInt256.ofNat 461,
       DriverTrace.blockOffsetWord 0, Padding.paddedWord input] }
 
-theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 528 = true := by
+theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 522 = true := by
   have hpc : Artifact.submissionArtifact.instructionPC 294 = 528 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
@@ -202,7 +202,7 @@ theorem run_firstCompare_mismatch (s : State) (input : ByteArray)
   have hword : MachineState.readWord (PrefixStateMemory.copied s).memory 0 =
       PatternedWordData.expectedWordAt 0 :=
     PrefixStateMemory.copied_word_zero s
-  have hdest : Decode.isValidJumpDest submissionBytecode 528 = true := jumpDest_generic
+  have hdest : Decode.isValidJumpDest submissionBytecode 522 = true := jumpDest_generic
   have htrue : UInt256.isTrue
       (UInt256.xor (PatternedWordData.expectedWordAt 0)
         (MachineState.readWord input 0)) = true :=

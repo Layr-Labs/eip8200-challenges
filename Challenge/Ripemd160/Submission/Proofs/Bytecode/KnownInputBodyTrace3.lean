@@ -18,7 +18,7 @@ theorem run_selector_12 (s : State)
     (hrun : s.halt = .Running) :
     run (selectorPath 12) (selectorEntry s KnownInputData.targetInput 12) =
       some (bodyEntry s KnownInputData.targetInput 12) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 4092 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 4086 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 3301 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath12,
@@ -65,7 +65,7 @@ theorem run_selector_13 (s : State)
     (hrun : s.halt = .Running) :
     run (selectorPath 13) (selectorEntry s KnownInputData.targetInput 13) =
       some (bodyEntry s KnownInputData.targetInput 13) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 4112 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 4106 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 3319 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath13,
@@ -112,7 +112,7 @@ theorem run_selector_14 (s : State)
     (hrun : s.halt = .Running) :
     run (selectorPath 14) (selectorEntry s KnownInputData.targetInput 14) =
       some (bodyEntry s KnownInputData.targetInput 14) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 4133 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 4127 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 3337 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath14,
@@ -159,7 +159,7 @@ theorem run_selector_15 (s : State)
     (hrun : s.halt = .Running) :
     run (selectorPath 15) (selectorEntry s KnownInputData.targetInput 15) =
       some (bodyEntry s KnownInputData.targetInput 15) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 4154 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 4148 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 3355 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath15,

@@ -11,35 +11,35 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTemplate StackRoundTrace Table80ConsumedTerminalTail Paired80WordRound
 
 theorem prefix_slice :
-    (Artifact.submissionArtifact.instructions.drop 3911).take prefixTemplate.length =
+    (Artifact.submissionArtifact.instructions.drop 3906).take prefixTemplate.length =
       prefixTemplate := by rfl
 
 def prefixSite : GenericRoundSite Artifact.submissionArtifact .Osaka prefixTemplate :=
-  StackSiteBuilder.ofSlice prefixTemplate 3911 prefix_slice
-    (by change 3911 + prefixTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice prefixTemplate 3906 prefix_slice
+    (by change 3906 + prefixTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := prefixTemplate) (by decide))
     (by decide)
 
-theorem prefix_pc : prefixSite.startPC = UInt256.ofNat 4618 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3911) = UInt256.ofNat 4618
+theorem prefix_pc : prefixSite.startPC = UInt256.ofNat 4612 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3906) = UInt256.ofNat 4612
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
-theorem prefix_endPC : prefixSite.endPC = UInt256.ofNat 4717 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3982) = UInt256.ofNat 4717
+theorem prefix_endPC : prefixSite.endPC = UInt256.ofNat 4711 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3977) = UInt256.ofNat 4711
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def jumpSite : LocatedSite Artifact.submissionArtifact .Osaka where
   located := {
-    index := 3982
+    index := 3977
     instruction := .op .JUMP
     atIndex := by rfl
     wellFormed := StackRoundData.templateWellFormed_mem
       (instructions := [.op .JUMP]) (by decide) _ (by simp) }
-  pc := UInt256.ofNat 4717
+  pc := UInt256.ofNat 4711
   pc_eq := by
-    change (UInt256.ofNat 4717).toNat = Artifact.submissionArtifact.instructionPC 3982
+    change (UInt256.ofNat 4711).toNat = Artifact.submissionArtifact.instructionPC 3977
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def site : TailSite Artifact.submissionArtifact .Osaka where
@@ -55,7 +55,7 @@ def gasSteps (s : State) (ret : UInt256) (q : WordLane) (factor : UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4618, stack := entryStack factor q ret rho}
+    GasSteps {s with pc := UInt256.ofNat 4612, stack := entryStack factor q ret rho}
       {s with pc := ret, stack := rho, memory := resultMemory s.memory q} := by
   have g := gasSteps_tail site s ret q factor rho hstack hrun hactive hvalid hcode hfork hnp
   change GasSteps {s with pc := prefixSite.startPC, stack := entryStack factor q ret rho}

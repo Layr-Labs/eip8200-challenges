@@ -534,7 +534,9 @@ private theorem loadOffsetWord_eq (input : ByteArray) (blockOff k : Nat)
 exact little-endian reader seam required by the generic schedule proof. -/
 theorem paddedBlockAt (s : State) (base input : ByteArray)
     (msgOff : UInt256) (blockOff : Nat)
-    (hmemory : s.memory = paddedMemory base input)
+    (hmemory : ∀ a : Nat,
+      MachineState.readWord s.memory a =
+        MachineState.readWord (paddedMemory base input) a)
     (hbase : base.size ≤ messageOffset)
     (hmsgOff : msgOff = UInt256.ofNat (messageOffset + blockOff))
     (hfit : Challenge.Ripemd160.CalldataFits input)
@@ -542,7 +544,7 @@ theorem paddedBlockAt (s : State) (base input : ByteArray)
     ScheduleCorrect.MessageBlockAt s.memory msgOff
       (paddedMessage input) blockOff := by
   intro k hk
-  rw [hmemory, hmsgOff]
+  rw [hmsgOff]
   unfold ScheduleCorrect.expectedWord
   rw [loadOffsetWord_eq input blockOff k hfit hblock hk]
   have hpadded := paddedLength_lt input.size
@@ -552,9 +554,17 @@ theorem paddedBlockAt (s : State) (base input : ByteArray)
       simp only [messageOffset]
       omega
     exact lt_trans hsmall (by norm_num)
+  have hread :
+      Schedule.readLEWord s.memory
+          (UInt256.ofNat (messageOffset + (blockOff + k * 4))) =
+        Schedule.readLEWord (paddedMemory base input)
+          (UInt256.ofNat (messageOffset + (blockOff + k * 4))) := by
+    unfold Schedule.readLEWord
+    rw [hmemory]
   change Challenge.EvmProof.Word.mask32
-      (Schedule.readLEWord (paddedMemory base input)
+      (Schedule.readLEWord s.memory
         (UInt256.ofNat (messageOffset + (blockOff + k * 4)))) = _
+  rw [hread]
   rw [readLEWord_paddedMemory_shift base input (blockOff + k * 4)
     hbase haddr]
   exact mask32_readLEWord_eq_readLE32 (paddedMessage input)
@@ -633,7 +643,7 @@ theorem padReturned_paddedBlockAt (input : ByteArray)
       (paddedMessage input) blockOff := by
   apply paddedBlockAt (PaddingTrace.padReturned input)
     (PaddingTrace.padLengthReady input).memory input
-  · exact PaddingTrace.padReturned_memory input hfit
+  · exact PaddingTrace.padReturned_readWord input hfit
   · exact padBase_size input
   · rfl
   · exact hfit

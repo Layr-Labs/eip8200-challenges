@@ -692,7 +692,7 @@ theorem run_scheduleSetup (s : State) (messageOffset returnDest : UInt256)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have hdest : Decode.isValidJumpDest submissionBytecode 566 = true := by decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 560 = true := by decide
   simp [scheduleSetupLocated, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     compressEntry, scheduleEntry, hrun, hcode,
@@ -804,7 +804,7 @@ theorem run_leftIncrement (s : State) (messageOffset returnDest discard : UInt25
         some (leftLoopAt s messageOffset returnDest rest (i + 1)) := by
   have hadd : UInt256.ofNat i + UInt256.ofNat 1 = UInt256.ofNat (i + 1) := by
     exact Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
-  have hdest : Decode.isValidJumpDest submissionBytecode 655 = true := by decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 649 = true := by decide
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
@@ -1022,7 +1022,7 @@ theorem run_leftTest_exit (s : State) (messageOffset returnDest : UInt256)
   have hlt : UInt256.lt (UInt256.ofNat 80) (UInt256.ofNat 80) = 0 := by decide
   have hzero : UInt256.isZero (0 : UInt256) = UInt256.ofNat 1 := by decide
   have htrue : UInt256.isTrue (UInt256.ofNat 1) = true := by decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 726 = true := by decide
+  have hdest : Decode.isValidJumpDest submissionBytecode 720 = true := by decide
   simp [leftTestLocated, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     leftLoopAt, leftExitCompared, hrun, hcode, hlt, hzero, htrue, hdest,

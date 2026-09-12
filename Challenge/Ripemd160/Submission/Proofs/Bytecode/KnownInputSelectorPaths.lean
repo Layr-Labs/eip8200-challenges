@@ -10,7 +10,7 @@ def selectorGroup0 : List Located :=
   [opAt 2985 (.Dup ⟨2, by decide⟩),
    pushAt 2986 0 0,
    opAt 2987 .EQ,
-   pushAt 2988 2 6216,
+   pushAt 2988 2 270,
    opAt 2989 .JUMPI]
 
 def selectorGroup1 : List Located :=
@@ -24,14 +24,14 @@ def selectorGroup2 : List Located :=
   [opAt 2995 (.Dup ⟨2, by decide⟩),
    pushAt 2996 1 128,
    opAt 2997 .EQ,
-   pushAt 2998 2 6302,
+   pushAt 2998 2 31,
    opAt 2999 .JUMPI]
 
 def selectorGroup3 : List Located :=
   [opAt 3000 (.Dup ⟨2, by decide⟩),
    pushAt 3001 1 192,
    opAt 3002 .EQ,
-   pushAt 3003 2 6345,
+   pushAt 3003 2 23,
    opAt 3004 .JUMPI]
 
 def selectorGroup4 : List Located :=
@@ -71,7 +71,7 @@ def selectorGroup8 : List Located :=
 
 def selectorGroup9 : List Located :=
   [opAt 3030 (.Dup ⟨2, by decide⟩),
-   pushAt 3031 2 576,
+   pushAt 3031 2 670,
    opAt 3032 .EQ,
    pushAt 3033 2 6603,
    opAt 3034 .JUMPI]
@@ -85,7 +85,7 @@ def selectorGroup10 : List Located :=
 
 def selectorGroup11 : List Located :=
   [opAt 3040 (.Dup ⟨2, by decide⟩),
-   pushAt 3041 2 704,
+   pushAt 3041 2 127,
    opAt 3042 .EQ,
    pushAt 3043 2 6689,
    opAt 3044 .JUMPI]

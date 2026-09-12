@@ -18,7 +18,7 @@ theorem run_selector_8 (s : State)
     (hrun : s.halt = .Running) :
     run (selectorPath 8) (selectorEntry s KnownInputData.targetInput 8) =
       some (bodyEntry s KnownInputData.targetInput 8) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 4005 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 3999 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 3229 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath8,
@@ -65,7 +65,7 @@ theorem run_selector_9 (s : State)
     (hrun : s.halt = .Running) :
     run (selectorPath 9) (selectorEntry s KnownInputData.targetInput 9) =
       some (bodyEntry s KnownInputData.targetInput 9) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 4027 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 4021 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 3247 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath9,
@@ -112,7 +112,7 @@ theorem run_selector_10 (s : State)
     (hrun : s.halt = .Running) :
     run (selectorPath 10) (selectorEntry s KnownInputData.targetInput 10) =
       some (bodyEntry s KnownInputData.targetInput 10) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 4047 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 4041 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 3265 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath10,
@@ -159,7 +159,7 @@ theorem run_selector_11 (s : State)
     (hrun : s.halt = .Running) :
     run (selectorPath 11) (selectorEntry s KnownInputData.targetInput 11) =
       some (bodyEntry s KnownInputData.targetInput 11) := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 4070 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 4064 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 3283 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [selectorPath, selectorPath11,

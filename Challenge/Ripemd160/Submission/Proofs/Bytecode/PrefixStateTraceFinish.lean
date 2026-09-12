@@ -32,7 +32,7 @@ def entry (s : State) (input : ByteArray) : State := frame s input 5056
 def hit1Entry (s : State) (input : ByteArray) : State := frame s input 5097
 
 /-- The generic compression target of the guard is a valid jump destination. -/
-theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 528 = true := by
+theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 522 = true := by
   have hpc : Artifact.submissionArtifact.instructionPC 294 = 528 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
@@ -41,7 +41,7 @@ theorem jumpDest_generic : Decode.isValidJumpDest submissionBytecode 528 = true 
   exact h
 
 /-- The driver's `102` continuation is a valid jump destination. -/
-theorem jumpDest_driver : Decode.isValidJumpDest submissionBytecode 461 = true := by
+theorem jumpDest_driver : Decode.isValidJumpDest submissionBytecode 455 = true := by
   have hpc : Artifact.submissionArtifact.instructionPC 261 = 461 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide

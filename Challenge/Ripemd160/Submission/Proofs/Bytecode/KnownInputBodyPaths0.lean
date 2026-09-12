@@ -14,7 +14,7 @@ def bodyPath0 : List Located :=
    pushAt 3071 4 3462111087,
    pushAt 3072 1 64,
    opAt 3073 .MSTORE,
-   pushAt 3074 4 678731893,
+   pushAt 3074 4 170,
    pushAt 3075 1 26,
    opAt 3076 .MSTORE,
    pushAt 3077 4 3748113137,
@@ -61,7 +61,7 @@ def bodyPath2 : List Located :=
    pushAt 3114 1 128,
    opAt 3115 .MSTORE,
    pushAt 3116 1 15,
-   pushAt 3117 1 160,
+   pushAt 3117 1 50,
    opAt 3118 .MSTORE,
    opAt 3119 .POP,
    opAt 3120 .JUMP]
