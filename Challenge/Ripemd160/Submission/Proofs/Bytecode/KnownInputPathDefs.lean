@@ -1,4 +1,4 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.DriverTrace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DriverModel
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
 
 set_option warningAsError true

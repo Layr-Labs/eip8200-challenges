@@ -40,12 +40,11 @@ theorem desiredHash_eq_combine (s : State) (input : ByteArray) (i : Nat)
 theorem resultMemory_model (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState) (hfit : CalldataFits input)
     (hi : i < DriverTrace.blockCount input) (ctx : StackRunBridge.BlockContext s input i h) :
-    Table80Tail.cleanedResultMemory (scheduledState s i).memory
+    Table80Tail.resultMemory (scheduledState s i).memory
       (finalLane (scheduledState s i).memory (initialLane h)) =
       (resultState s input i).memory := by
   have hh : StackMemory.hashAt (scheduledState s i).memory = Compression.embedHash h :=
     (scheduled_hashAt s i).trans ctx.hash
-  unfold Table80Tail.cleanedResultMemory
   rw [resultMemory_eq_storeHash _ _ h hh,
     ← desiredHash_eq_combine s input i h hfit hi ctx]
   rfl
@@ -54,7 +53,7 @@ theorem resultState_model (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState) (hfit : CalldataFits input)
     (hi : i < DriverTrace.blockCount input) (ctx : StackRunBridge.BlockContext s input i h) :
     {scheduledState s i with
-      memory := Table80Tail.cleanedResultMemory (scheduledState s i).memory
+      memory := Table80Tail.resultMemory (scheduledState s i).memory
         (finalLane (scheduledState s i).memory (initialLane h))} = resultState s input i := by
   rw [resultMemory_model s input i h hfit hi ctx]
   rfl

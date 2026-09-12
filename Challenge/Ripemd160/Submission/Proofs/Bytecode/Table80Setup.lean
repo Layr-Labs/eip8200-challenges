@@ -359,6 +359,7 @@ def storesTemplate : List Instr :=
     .op .POP,
     .push ⟨1, by decide⟩ (UInt256.ofNat 25),
     .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 63),
     .push ⟨1, by decide⟩ (UInt256.ofNat 26),
     .push ⟨1, by decide⟩ (UInt256.ofNat 27),
     .push ⟨1, by decide⟩ (UInt256.ofNat 22) ]
@@ -419,6 +420,7 @@ def padTemplate : List Instr :=
     .op .MSTORE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 25),
     .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 63),
     .push ⟨1, by decide⟩ (UInt256.ofNat 26),
     .push ⟨1, by decide⟩ (UInt256.ofNat 27),
     .push ⟨1, by decide⟩ (UInt256.ofNat 22) ]

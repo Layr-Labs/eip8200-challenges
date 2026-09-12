@@ -32,7 +32,7 @@ def gasSteps_hit (input : ByteArray) (hsize : input.size = 376)
 def gasSteps_miss (input : ByteArray) (hsize : input.size = 376)
     (href : KnownInputCompactState.referenceWord input ≠ KnownInputData.fullWord)
     (hne : scanAcc input 12 ≠ 0) :
-    GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 272) :=
+    GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 276) :=
   (Prefix256Entry.gasSteps_hit input hsize href).trans
     ((Prefix256Scan.gasSteps_scan input hsize).trans
       (Prefix256Finish.gasSteps_miss input (UInt256.ofNat (scalarAt 12))
@@ -58,6 +58,6 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
       (.returned (MachineState.readPadded Prefix256Finish.answerMemory 0 32)) at heval
     rw [Prefix256Finish.answerMemory_read, ← hspec] at heval
     simpa [GasCost.withGas_initialState_zero] using heval
-  · exact StackCorrect.correct input hfit (by omega) (gasSteps_miss input hsize href hz)
+  · exact StackCorrect.correct input hfit (gasSteps_miss input hsize href hz)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Correct

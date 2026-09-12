@@ -1,4 +1,3 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80Cleanup
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairTableLayout
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairTableActive
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackMemory
@@ -73,7 +72,7 @@ def desiredHash (s : State) (input : ByteArray) (i : Nat) : Compression.EvmHashS
 
 def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
   { scheduledState s i with
-    memory := Table80Cleanup.memory (StackMemory.storeHash (scheduledState s i).memory (desiredHash s input i)) }
+    memory := StackMemory.storeHash (scheduledState s i).memory (desiredHash s input i) }
 
 @[simp] theorem resultState_executionEnv (s : State) (input : ByteArray) (i : Nat) :
     (resultState s input i).executionEnv = s.executionEnv := by rfl
@@ -85,8 +84,7 @@ def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
 theorem resultState_word_above (s : State) (input : ByteArray) (i address : Nat)
     (haddress : 1024 ≤ address) :
     StackRunBridge.wordAt (resultState s input i) address = StackRunBridge.wordAt s address := by
-  change MachineState.readWord (Table80Cleanup.memory (StackMemory.storeHash _ _)) address = _
-  rw [Table80Cleanup.read_memory _ address (by omega)]
+  change MachineState.readWord (StackMemory.storeHash _ _) address = _
   rw [StackMemory.readWord_storeHash_ge_120 _ _ _ (by omega)]
   exact PairTableLayout.read_resultMemory_outside _ _ _ (by omega)
 
@@ -103,8 +101,7 @@ theorem resultState_hash (s : State) (input : ByteArray) (i : Nat) (h : Compress
       StackRunBridge.embedHashArray
         (Crypto.Ripemd160.compressBlock (CompressionCorrect.hashArray h)
           (Padding.paddedMessage input) (DriverTrace.blockOffset i)) := by
-  change StackMemory.hashAt (Table80Cleanup.memory (StackMemory.storeHash _ _)) = _
-  rw [Table80Cleanup.hash_memory]
+  change StackMemory.hashAt (StackMemory.storeHash _ _) = _
   rw [StackMemory.hashAt_storeHash]
   unfold desiredHash
   rw [stateHash_of_context s input i h ctx]

@@ -1,4 +1,0 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundCertificatesLeft
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.QuadRoundCertificatesRight
-
-set_option warningAsError true
