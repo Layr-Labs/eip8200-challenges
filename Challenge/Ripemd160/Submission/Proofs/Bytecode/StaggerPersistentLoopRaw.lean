@@ -4,7 +4,6 @@ set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 1000000
 set_option linter.unusedSimpArgs false
-/- XOR branch proof adapted from promoted submission7bf15897-fbaa-4de5-96ef-91eb713cde8c, c77ac990. The unnecessary JUMPDEST is removed here. -/
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentLoopRaw
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace
@@ -17,7 +16,6 @@ private theorem word_toNat_xor (a b : UInt256) :
   exact Nat.lt_of_lt_of_le
     (Nat.xor_lt_two_pow a.val.isLt b.val.isLt) (by rfl)
 
-
 private theorem add_eq_hAdd (x y : UInt256) : UInt256.add x y = x + y := rfl
 
 private theorem add64 (off : UInt256) :
@@ -25,7 +23,7 @@ private theorem add64 (off : UInt256) :
 
 def template (dest : Nat) : List Instr :=
   [.op (.Swap ⟨4, by decide⟩),
-   .push ⟨1, by decide⟩ (UInt256.ofNat 64), .op .ADD, .op (.Swap ⟨4, by decide⟩),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 64), .op .ADD, .op (.Swap ⟨4, by decide⟩),
    .op (.Dup ⟨6, by decide⟩), .op (.Dup ⟨6, by decide⟩), .op .XOR,
    .push ⟨2, by decide⟩ (UInt256.ofNat dest), .op .JUMPI]
 
