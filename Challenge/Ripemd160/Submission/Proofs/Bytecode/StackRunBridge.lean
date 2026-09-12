@@ -461,7 +461,7 @@ def compressionSeam (kernel : BlockKernel) (input : ByteArray)
 /-- Nonempty inputs use the compression loop; the caller proves the empty return separately. -/
 theorem correct_of_block_kernel (kernel : BlockKernel)
     (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 276)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 453)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   exact FastOutputResultBridge.correct_of_seam input hfit

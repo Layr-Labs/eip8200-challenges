@@ -48,7 +48,7 @@ def gasSteps_clean (s : State) (h : Compression.HashState) (rho : List UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 1066, stack := Table80Raw.cache ++ rho}
+    GasSteps {s with pc := UInt256.ofNat 1135, stack := Table80Raw.cache ++ rho}
       (Table80Core.atRound s 0 (initialLane h) rho) := by
   have gs := Table80Bootstrap.gasSteps s rho hstack hrun hactive hcode hfork hnp
   rw [resultStack_eq s.memory h rho hh] at gs
