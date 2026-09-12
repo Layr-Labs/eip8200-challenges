@@ -79,12 +79,11 @@ def gasSteps_one (s : State) (e : Env s) (n k : Nat) (rho : List UInt256)
     have g1 := gasSteps_clamp s e (RecognitionBodyRaw.boundaryResult s
       (fullFrame s.executionEnv.calldata n k)) rho hs
     have g2 : GasSteps (atState s 222 (frame (fullFrame s.executionEnv.calldata n k) rho))
-        (atState s 285 (frame (fullFrame s.executionEnv.calldata n (k+1)) rho)) := by
+        (atState s 174 (frame (fullFrame s.executionEnv.calldata n (k+1)) rho)) := by
       simpa only [RecognitionFrame.boundary_next s n k hn hk hb] using g0.trans g1
-    have g3 := gasSteps_back s e (fullFrame s.executionEnv.calldata n (k+1)) rho hs
     have g4 := gasSteps_pass s e (fullFrame s.executionEnv.calldata n (k+1)) rho hs
     have g5 := gasSteps_route_head s e n (k+1) rho hs hn (by omega)
-    simpa only [loopState, if_neg hne, hb, ↓reduceIte] using g2.trans (g3.trans (g4.trans g5))
+    simpa only [loopState, if_neg hne, hb, ↓reduceIte] using g2.trans (g4.trans g5)
   · have hbfalse : boundary k=false := by cases h : boundary k <;> simp_all
     have g0 : GasSteps (atState s 184 (frame (fullFrame s.executionEnv.calldata n k) rho))
         (atState s 207 (frame (fullFrame s.executionEnv.calldata n (k+1)) rho)) := by

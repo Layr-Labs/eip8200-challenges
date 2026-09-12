@@ -23,7 +23,7 @@ private theorem add64 (off : UInt256) :
 
 def template (dest : Nat) : List Instr :=
   [.op (.Swap ⟨4, by decide⟩),
-   .push ⟨1, by decide⟩ (UInt256.ofNat 64), .op .ADD, .op (.Swap ⟨4, by decide⟩),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 64), .op .ADD, .op (.Swap ⟨4, by decide⟩),
    .op (.Dup ⟨6, by decide⟩), .op (.Dup ⟨6, by decide⟩), .op .XOR,
    .push ⟨2, by decide⟩ (UInt256.ofNat dest), .op .JUMPI]
 
