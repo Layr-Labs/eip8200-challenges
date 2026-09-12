@@ -29,7 +29,7 @@ open PatternedScan PatternedSwar
 
 @[simp] private theorem branchJumpPC : Artifact.submissionArtifact.instructionPC 167 = 263 := rfl
 @[simp] private theorem selectorDest : Decode.isValidJumpDest submissionBytecode 4834 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 3857 (by rfl)
+  Artifact.submissionArtifact.isValidJumpDest_index 3853 (by rfl)
 
 def branchPath : List Located :=
   [opAt 164 (.Dup ⟨2, by decide⟩), opAt 165 .ISZERO,
