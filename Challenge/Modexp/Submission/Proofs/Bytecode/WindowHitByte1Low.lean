@@ -18,9 +18,9 @@ theorem run_prep (template : State) (base modulus : UInt256) (high : Nat)
     (word pointer original accumulator : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) :
     runLocatedBlock (lowPrepPath 1)
-      (forwardedNibbleState { template with halt := .Running } (UInt256.ofNat 2921)
+      (forwardedNibbleState { template with halt := .Running } (UInt256.ofNat 2892)
         base modulus high (byteValue 1 word) word pointer original accumulator rest) =
-    some (forwardedNibbleState { template with halt := .Running } (UInt256.ofNat 2921)
+    some (forwardedNibbleState { template with halt := .Running } (UInt256.ofNat 2892)
       base modulus (lowNibble 1 word) (byteValue 1 word) word pointer
       original accumulator rest)  := by
   have _ := hrest
@@ -36,7 +36,7 @@ theorem run_squareLookup (template : State) (base modulus : UInt256)
     (hmask : UInt256.land (UInt256.ofNat 15) byte = UInt256.ofNat nibble)
     (hrest : rest.length ≤ 1000) :
     runLocatedBlock (lowSquareLookupPath 1)
-      (forwardedNibbleState { template with halt := .Running } (UInt256.ofNat 2921)
+      (forwardedNibbleState { template with halt := .Running } (UInt256.ofNat 2892)
         base modulus nibble byte word pointer original accumulator rest) =
     some (lowResultState { template with halt := .Running } (UInt256.ofNat 2946)
       base modulus nibble byte word pointer

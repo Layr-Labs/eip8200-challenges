@@ -53,7 +53,7 @@ theorem run_squareCall (s : State) (memory : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedExponentPaths.squareCall
       (FixedExponentStates.square s memory n bsize esize msize count) =
-      some (Exp.mpCall s memory 1024 1024 1024 (UInt256.ofNat 3781)
+      some (Exp.mpCall s memory 1024 1024 1024 (UInt256.ofNat 3752)
         (UInt256.ofNat count :: Exp.outer n bsize esize msize)) := by
   simp (config := { maxSteps := 400000 })
     [FixedExponentPaths.squareCall, opAt, pushAt, wfOp,
@@ -221,7 +221,7 @@ def gasSteps_squareCall (s : State) (memory : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (FixedExponentStates.square s memory n bsize esize msize count)
-      (Exp.mpCall s memory 1024 1024 1024 (UInt256.ofNat 3781)
+      (Exp.mpCall s memory 1024 1024 1024 (UInt256.ofNat 3752)
         (UInt256.ofNat count :: Exp.outer n bsize esize msize)) :=
   sound FixedExponentPaths.squareCall
     (run_squareCall s memory n bsize esize msize count hcode hrun)

@@ -19,7 +19,7 @@ open Challenge.Modexp.Submission.Proofs.Fast.FixedExponentStates
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
 theorem jumpD3781 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 3781).toNat = true :=
+    (UInt256.ofNat 3752).toNat = true :=
   Exp.jumpD 3781 (by decide) FixedExponentPaths.jumpDest3781
 
 theorem jumpD3808 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
@@ -50,7 +50,7 @@ def gasSteps_squareLoop (s : State) {n bsize mm minv R : Nat}
   induction count generalizing memory acc with
   | zero => omega
   | succ k ih =>
-      have hcall := sub.monpro 1024 1024 1024 (UInt256.ofNat 3781)
+      have hcall := sub.monpro 1024 1024 1024 (UInt256.ofNat 3752)
         (UInt256.ofNat (k + 1) :: Exp.outer n bsize esize msize)
         memory acc acc (by simp [Exp.outer])
         (by omega) (by omega) (by omega) (by omega) (by omega)
@@ -116,7 +116,7 @@ def gasSteps_fixedSquares (s : State) {n bsize mm minv R : Nat}
       (special s memory n bsize esize msize count)
       (square s mem0 n bsize esize msize count) := by
     simpa [mem0, FixedExponentStates.initialSquareMem] using hhead
-  have hcall := sub.monpro 1024 1024 1024 (UInt256.ofNat 3781)
+  have hcall := sub.monpro 1024 1024 1024 (UInt256.ofNat 3752)
     (UInt256.ofNat count :: Exp.outer n bsize esize msize)
     mem0 bM bM (by simp [Exp.outer])
     (by omega) (by omega) (by omega) (by omega) (by omega)

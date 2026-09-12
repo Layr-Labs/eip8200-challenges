@@ -54,6 +54,7 @@ theorem run_entry_three (s : State) (memory : ByteArray)
       Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
+set_option linter.unusedVariables false in
 theorem run_entry_other (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) (hne : esize ≠ 3) (he : esize ≤ 1024)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)

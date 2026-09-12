@@ -46,7 +46,7 @@ def handledOf (route : WindowRoute.Route)
       exact ⟨final, ⟨(EarlyWordCorrect.legacy input hmatch).trans fastTrace⟩,
         hdone, hresult⟩
     · let bodyEntry := (EarlyWordCorrect.legacy input hmatch).trans
-        (Setup.gasSteps_fallback input hfast)
+        (Setup.gasSteps_fallback input hvalid hfast)
       exact WindowBodyCorrect.handledOf route input hvalid bodyEntry
 
 private noncomputable def chosenFinal (route : WindowRoute.Route)

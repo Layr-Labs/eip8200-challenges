@@ -21,70 +21,70 @@ abbrev outer := Exp.outer
 /-- Fallthrough after the three-byte width test, before testing width one. -/
 def otherWidth (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3668
+  { s with pc := UInt256.ofNat 3639
            stack := outer n bsize esize msize
            memory := mem }
 
 /-- One-byte exponent calldata check. -/
 def checkThree (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3677
+  { s with pc := UInt256.ofNat 3648
            stack := outer n bsize esize msize
            memory := mem }
 
 /-- Three-byte exponent calldata check. -/
 def check65537 (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3698
+  { s with pc := UInt256.ofNat 3669
            stack := outer n bsize esize msize
            memory := mem }
 
 /-- Entry shared by the two fixed addition chains. -/
 def special (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 3719
+  { s with pc := UInt256.ofNat 3690
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
 /-- Squaring call site after the initial BASE-to-ACC copy. -/
 def square (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 3764
+  { s with pc := UInt256.ofNat 3735
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
 /-- Return from one Montgomery square. -/
 def squareReturn (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 3781
+  { s with pc := UInt256.ofNat 3752
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
 /-- Counter-zero fallthrough to the final multiply by BASE. -/
 def product (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3791
+  { s with pc := UInt256.ofNat 3762
            stack := UInt256.ofNat 0 :: outer n bsize esize msize
            memory := mem }
 
 /-- Return from the final Montgomery product. -/
 def decode (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3772
+  { s with pc := UInt256.ofNat 3743
            stack := outer n bsize esize msize
            memory := mem }
 
 /-- Return from Montgomery decoding, immediately before the inherited return. -/
 def finish (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3833
+  { s with pc := UInt256.ofNat 3804
            stack := outer n bsize esize msize
            memory := mem }
 
 /-- Shared generic fallback before copying R1 to ACC. -/
 def fallback (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3802
+  { s with pc := UInt256.ofNat 3773
            stack := outer n bsize esize msize
            memory := mem }
 

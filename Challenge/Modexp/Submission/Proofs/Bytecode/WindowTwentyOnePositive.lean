@@ -44,7 +44,7 @@ theorem modulus_at (template : State) (input : ByteArray) (hmatch : WindowTwenty
     Nat.mod_eq_of_lt hsmall, WindowTwentyOneInput.modulusWord]
 
 def normalized (template : State) (input : ByteArray) : State :=
-  WindowTwentyOneTablePrelude.initial (context template input) (UInt256.ofNat 2260)
+  WindowTwentyOneTablePrelude.initial (context template input) (UInt256.ofNat 2231)
     (WindowTwentyOneInput.baseWord input) (WindowTwentyOneInput.modulusWord input) (routeStack input)
 
 def returned (template : State) (input : ByteArray) : State :=

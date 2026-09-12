@@ -70,23 +70,23 @@ def routeStack (input : ByteArray) : List UInt256 :=
   let modOff := expOff + e
   [UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
    UInt256.ofNat 96, UInt256.ofNat expOff, UInt256.ofNat modOff,
-   UInt256.ofNat 1267, UInt256.ofNat modOff, UInt256.ofNat expOff,
+   UInt256.ofNat 1246, UInt256.ofNat modOff, UInt256.ofNat expOff,
    UInt256.ofNat m, UInt256.ofNat e, UInt256.ofNat b]
 
 /-- State after the three width comparisons and the final `ISZERO`. -/
 def conditionState (input : ByteArray) : State :=
   { Dispatch.wordEntryState input with
-    pc := UInt256.ofNat 2629
+    pc := UInt256.ofNat 2600
     stack := UInt256.isZero (WindowGuardLogic.guardDiff input) :: routeStack input }
 
 /-- State after the untaken conditional branch, before the legacy jump. -/
 def missState (input : ByteArray) : State :=
-  { Dispatch.wordEntryState input with pc := UInt256.ofNat 2633 }
+  { Dispatch.wordEntryState input with pc := UInt256.ofNat 2604 }
 
 /-- State after the taken conditional branch, before consuming the hit
 `JUMPDEST`.  The guard preserves the dispatcher calling-convention stack. -/
 def hitState (input : ByteArray) : State :=
-  { Dispatch.wordEntryState input with pc := UInt256.ofNat 2637 }
+  { Dispatch.wordEntryState input with pc := UInt256.ofNat 2608 }
 
 theorem routeStack_eq_entry (input : ByteArray) :
     routeStack input = (Dispatch.wordEntryState input).stack := by

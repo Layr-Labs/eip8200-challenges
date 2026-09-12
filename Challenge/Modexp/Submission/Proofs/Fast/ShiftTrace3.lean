@@ -488,7 +488,7 @@ theorem run_shiftDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3264
       (shiftDoneState s mem n bsize esize msize) =
-      some { Exp.bDone s mem n bsize esize msize with pc := UInt256.ofNat 3179 } := by
+      some { Exp.bDone s mem n bsize esize msize with pc := UInt256.ofNat 3150 } := by
   simp (config := { maxSteps := 200000 })
     [blk3264, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
