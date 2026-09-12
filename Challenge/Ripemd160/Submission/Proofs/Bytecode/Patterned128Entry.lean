@@ -332,6 +332,7 @@ private def gasSteps_size_match (input : ByteArray) (hsize : input.size = 56 ∨
 
 def gasSteps_fail (input : ByteArray) (hfit : CalldataFits input)
     (hnabc : input ≠ AbcInputData.abcInput)
+    (hgen : input ≠ Gen27InputData.gen27Input)
     (hbad : (input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119 ∧ input.size ≠ 55 ∧ input.size ≠ 1 ∧ input.size ≠ 31 ∧ input.size ≠ 32) ∨ DirectGuard.firstByte input ≠ 7) :
     GasSteps (DirectGuard.guardEntry input) (DirectGuard.fallbackState input) := by
   by_cases hbyte : DirectGuard.firstByte input = 7
@@ -340,7 +341,7 @@ def gasSteps_fail (input : ByteArray) (hfit : CalldataFits input)
       · exact hs
       · exact False.elim (hb hbyte)
     exact (gasSteps_byte_match input hbyte).trans (gasSteps_size_fail input hfit hs)
-  · exact (gasSteps_byte_fail input hbyte).trans (AbcArm.gasSteps_miss input hfit hnabc)
+  · exact (gasSteps_byte_fail input hbyte).trans (AbcArm.gasSteps_miss input hfit hnabc hgen)
 
 def gasSteps_match (input : ByteArray) (_hfit : CalldataFits input)
     (hsize : input.size = 56 ∨ input.size = 120 ∨ input.size = 63 ∨ input.size = 64 ∨ input.size = 65 ∨ input.size = 128 ∨ input.size = 119 ∨ input.size = 55 ∨ input.size = 1 ∨ input.size = 31 ∨ input.size = 32) (hbyte : DirectGuard.firstByte input = 7) :
@@ -361,6 +362,7 @@ def gasSteps_hit (input : ByteArray) (hfit : CalldataFits input)
 
 def gasSteps_miss (input : ByteArray) (hfit : CalldataFits input)
     (hnabc : input ≠ AbcInputData.abcInput)
+    (hgen : input ≠ Gen27InputData.gen27Input)
     (hbad : (input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119 ∧ input.size ≠ 55 ∧ input.size ≠ 1 ∧ input.size ≠ 31 ∧ input.size ≠ 32) ∨
       DirectGuard.firstByte input ≠ 7)
     (h1000 : input.size ≠ 1000) (h376 : input.size ≠ 376)
@@ -370,7 +372,7 @@ def gasSteps_miss (input : ByteArray) (hfit : CalldataFits input)
   exact (Execution.gasSteps_start input).trans
     ((sound (DirectGuard.sizeDispatchPath input)
         (DirectGuard.run_size_fail input hfit h1000 h376 h256)).trans
-      (gasSteps_fail input hfit hnabc hbad))
+      (gasSteps_fail input hfit hnabc hgen hbad))
 
 /-- Reaching the `abc` arm: the entry size classifier misses (3 is not 256, 376 or 1000)
 and the byte-0 gate misses ('a' = 0x61 ≠ 7), so the byte-0 `JUMPI` lands on the arm (pc 5169). -/
@@ -394,5 +396,28 @@ def gasSteps_abc_entry (input : ByteArray) (hfit : CalldataFits input)
     ((sound (DirectGuard.sizeDispatchPath input)
         (DirectGuard.run_size_fail input hfit h1000 h376 h256)).trans
       (gasSteps_byte_fail input hbyte))
+
+/-- Reaching the `gen27` arm: same route as `abc` — the entry classifier misses
+and the byte-0 gate misses (`0x91 ≠ 7`), so the byte-0 `JUMPI` lands on the
+`abc` arm, whose word miss forwards to the `gen27` arm. -/
+def gasSteps_gen27_entry (input : ByteArray) (hfit : CalldataFits input)
+    (heq : input = Gen27InputData.gen27Input) :
+    GasSteps (initialState submissionBytecode input 0) (Gen27Arm.armEntry input) := by
+  have hsize : input.size = 3 := by rw [heq]; rfl
+  have h1000 : input.size ≠ 1000 := by omega
+  have h376 : input.size ≠ 376 := by omega
+  have h256 : input.size ≠ 256 := by omega
+  have hbyte : DirectGuard.firstByte input ≠ 7 := by
+    intro h7
+    have h := firstByte_eq_byteAt input
+    rw [heq, Gen27Recognition.readWord_gen27Input] at h
+    rw [heq] at h7
+    rw [h7] at h
+    revert h; decide
+  exact (Execution.gasSteps_start input).trans
+    ((sound (DirectGuard.sizeDispatchPath input)
+        (DirectGuard.run_size_fail input hfit h1000 h376 h256)).trans
+      ((gasSteps_byte_fail input hbyte).trans
+        (AbcArm.gasSteps_gen27_entry input hfit heq)))
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Entry

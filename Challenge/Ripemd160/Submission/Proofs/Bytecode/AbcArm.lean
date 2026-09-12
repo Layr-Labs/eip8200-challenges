@@ -3,43 +3,45 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Branch
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.newArtifactByteLength
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputLogic
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.AbcRecognition
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Gen27Arm
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.AbcDigest
 import Challenge.EvmProof.Memory
 import Challenge.EvmProof.Execution
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Msize
 
 /-!
-# The `abc` arm: instructions 4085-4104, pc 5169-5220
+# The `abc` arm: instructions 4095-4114, pc 5154-5202
 
 Appended past the digest table.  Reached from the byte-0 `JUMPI` (instruction
-4038), whose pushed destination (instruction 4037) is 5169.  Misses re-enter
-the generic compressor at pc 268 (instruction 173).
+4053), whose pushed destination is 5154.  Size misses re-enter the generic
+compressor at pc 276 (instruction 178); word misses fall through to the
+`gen27` arm at pc 5203 (instruction 4115).
 
 The two tests branch separately: the size test first, so every input whose
 size is not 3 leaves after six instructions.
 
 ```
  idx    pc    instruction
-  4085   5169  JUMPDEST
-  4086   5170  CALLDATASIZE
-  4087   5171  PUSH1 3
-  4088   5173  SUB            ; 3 - size
-  4089   5169  PUSH2 268
-  4090   5172  JUMPI          ; size != 3  -> generic
-  4091   5173  PUSH3 0x616263
-  4092   5177  PUSH1 232
-  4093   5184  SHL            ; abcWord
-  4094   5185  PUSH0
-  4095   5186  CALLDATALOAD
-  4096   5187  XOR
-  4097   5188  PUSH2 268
-  4098   5191  JUMPI          ; word != abcWord -> generic
-  4099   5192  PUSH20 digest
-  4100   5216  PUSH0
-  4101   5217  MSTORE
-  4102   5218  MSIZE          ; = 32 (memory was empty)
-  4103   5219  PUSH0
-  4104   5220  RETURN
+  4095   5154  JUMPDEST
+  4096   5155  CALLDATASIZE
+  4097   5156  PUSH1 3
+  4098   5158  SUB            ; 3 - size
+  4099   5159  PUSH2 276
+  4100   5162  JUMPI          ; size != 3  -> generic
+  4101   5163  PUSH3 0x616263
+  4102   5167  PUSH1 232
+  4103   5169  SHL            ; abcWord
+  4104   5170  PUSH0
+  4105   5171  CALLDATALOAD
+  4106   5172  XOR
+  4107   5173  PUSH2 5203
+  4108   5176  JUMPI          ; word != abcWord -> gen27 arm
+  4109   5177  PUSH20 digest
+  4110   5198  PUSH0
+  4111   5199  MSTORE
+  4112   5200  MSIZE          ; = 32 (memory was empty)
+  4113   5201  PUSH0
+  4114   5202  RETURN
 ```
 
 Guard soundness is `AbcRecognition.input_eq_abc`; digest correctness is
@@ -189,11 +191,11 @@ def wordCond (input : ByteArray) : UInt256 :=
 
 def wordPath : List Located :=
   [pushAt 4101 3 6382179, pushAt 4102 1 232, opAt 4103 .SHL, pushAt 4104 0 0, opAt 4105 .CALLDATALOAD,
-   opAt 4106 .XOR, pushAt 4107 2 276]
+   opAt 4106 .XOR, pushAt 4107 2 5203]
 
 theorem run_word (input : ByteArray) :
     run wordPath (PatternedScan.stS input 5163 []) =
-      some (PatternedScan.stS input 5176 [276, wordCond input]) := by
+      some (PatternedScan.stS input 5176 [5203, wordCond input]) := by
   let w := MachineState.readWord input 0
   let abcW := UInt256.shiftLeft 6382179 232
   let l0 : Located := pushAt 4101 3 6382179
@@ -226,11 +228,11 @@ theorem run_word (input : ByteArray) :
     (PatternedScan.pcFactS input 4106 5172 [w, abcW] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
     (PatternedScan.stepS_xor input 5172 w abcW [] (by simp) (by norm_num))
-  let l6 : Located := pushAt 4107 2 276
+  let l6 : Located := pushAt 4107 2 5203
   have h6 := PatternedScan.blockOfS l6
     (PatternedScan.pcFactS input 4107 5173 [wordCond input] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_push input 5173 2 276 [wordCond input] (by simp) (by decide) (by decide) (by norm_num))
+    (PatternedScan.stepS_push input 5173 2 5203 [wordCond input] (by simp) (by decide) (by decide) (by norm_num))
   have s1 := Stepper.runLocatedBlock_append [l0] [l1] _ _ _ h0 rfl h1
   have s2 := Stepper.runLocatedBlock_append [l0, l1] [l2] _ _ _ s1 rfl h2
   have s3 := Stepper.runLocatedBlock_append [l0, l1, l2] [l3] _ _ _ s2 rfl h3
@@ -240,21 +242,21 @@ theorem run_word (input : ByteArray) :
   exact s6
 
 theorem run_word_miss (input : ByteArray) (hc : UInt256.isTrue (wordCond input)) :
-    run [opAt 4108 .JUMPI] (PatternedScan.stS input 5176 [276, wordCond input]) =
-      some (fallbackState input) :=
+    run [opAt 4108 .JUMPI] (PatternedScan.stS input 5176 [5203, wordCond input]) =
+      some (Gen27Arm.armEntry input) :=
   PatternedScan.blockOfS (opAt 4108 .JUMPI)
-    (PatternedScan.pcFactS input 4108 5176 [276, wordCond input] (by norm_num) (by
+    (PatternedScan.pcFactS input 4108 5176 [5203, wordCond input] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_jumpi_taken input 5176 276 276 (wordCond input) []
-      (by simp) (by norm_num) (by simpa using Word.literal_eq_ofNat 276) hc generic_dest)
+    (PatternedScan.stepS_jumpi_taken input 5176 5203 5203 (wordCond input) []
+      (by simp) (by norm_num) (by simpa using Word.literal_eq_ofNat 5203) hc Gen27Arm.arm_dest)
 
 theorem run_word_hit (input : ByteArray) (hc : ¬ UInt256.isTrue (wordCond input)) :
-    run [opAt 4108 .JUMPI] (PatternedScan.stS input 5176 [276, wordCond input]) =
+    run [opAt 4108 .JUMPI] (PatternedScan.stS input 5176 [5203, wordCond input]) =
       some (PatternedScan.stS input 5177 []) :=
   PatternedScan.blockOfS (opAt 4108 .JUMPI)
-    (PatternedScan.pcFactS input 4108 5176 [276, wordCond input] (by norm_num) (by
+    (PatternedScan.pcFactS input 4108 5176 [5203, wordCond input] (by norm_num) (by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))
-    (PatternedScan.stepS_jumpi_fall input 5176 276 (wordCond input) []
+    (PatternedScan.stepS_jumpi_fall input 5176 5203 (wordCond input) []
       (by simp) (by norm_num) hc)
 
 /-! ## Guard semantics -/
@@ -367,21 +369,40 @@ def gasSteps_msize (input : ByteArray) : GasSteps (storedState input) (sizedStat
 
 /-! ## The two exported certificates -/
 
-/-- **Miss.** Any input other than `"abc"` leaves the arm at the generic entry. -/
-def gasSteps_miss (input : ByteArray) (hfit : CalldataFits input) (hne : input ≠ abcInput) :
+/-- **Miss.** Any input other than `"abc"` or `gen27Input` leaves the arm at the
+generic entry (via the `gen27` arm for size-3 inputs). -/
+def gasSteps_miss (input : ByteArray) (hfit : CalldataFits input) (hne : input ≠ abcInput)
+    (hgen : input ≠ Gen27InputData.gen27Input) :
     GasSteps (armEntry input) (fallbackState input) :=
   if hs : sizeCond input = 0 then
+    have hsize : input.size = 3 := (sizeCond_zero_iff input hfit).1 hs
     have hw : wordCond input ≠ 0 := fun hw =>
-      hne (AbcRecognition.input_eq_abc input ((sizeCond_zero_iff input hfit).1 hs)
+      hne (AbcRecognition.input_eq_abc input hsize
         ((wordCond_zero_iff input).1 hw))
     (sound sizePath (run_size input)).trans
       ((sound _ (run_size_pass input (not_isTrue_of_eq _ hs))).trans
         ((sound wordPath (run_word input)).trans
-          (sound _ (run_word_miss input (isTrue_of_ne _ hw)))))
+          ((sound _ (run_word_miss input (isTrue_of_ne _ hw))).trans
+            (Gen27Arm.gasSteps_miss input hsize hgen))))
   else
     (sound sizePath (run_size input)).trans
       (sound _ (run_size_miss input (isTrue_of_ne _ hs)))
 
+/-- **gen27 entry.** `gen27Input` passes the size test, misses the `abc` word
+test, and lands on the `gen27` arm. -/
+def gasSteps_gen27_entry (input : ByteArray) (hfit : CalldataFits input)
+    (heq : input = Gen27InputData.gen27Input) :
+    GasSteps (armEntry input) (Gen27Arm.armEntry input) := by
+  have hs : sizeCond input = 0 := (sizeCond_zero_iff input hfit).2 (by rw [heq]; rfl)
+  have hw : wordCond input ≠ 0 := by
+    intro hz
+    have hword := (wordCond_zero_iff input).1 hz
+    rw [heq, Gen27Recognition.readWord_gen27Input] at hword
+    revert hword; decide
+  exact (sound sizePath (run_size input)).trans
+    ((sound _ (run_size_pass input (not_isTrue_of_eq _ hs))).trans
+      ((sound wordPath (run_word input)).trans
+        (sound _ (run_word_miss input hw))))
 /-- **Hit.** `"abc"` returns the stored digest. -/
 def gasSteps_hit (input : ByteArray) (hfit : CalldataFits input) (heq : input = abcInput) :
     GasSteps (armEntry input) (returnedState input) := by
