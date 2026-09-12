@@ -110,9 +110,9 @@ theorem paired_crypto (memory : ByteArray) (words : Nat → UInt32) (q : CryptoL
   have hc : (pair (embed q) (prologue memory (embed q))).c =
       (pair (embed q) (embed (rightFold words 3 q))).c :=
     congrArg (StaggerCoreModel.pairWord (embed q).c) hbc.2
-  rw [paired, StaggerPrologueNear.fold_eq (message memory) 77 (by decide)
+  rw [paired, StaggerModeSeven.fold_near (message memory) 77 (by decide)
     _ _ (pair_near _ _ _ hp) hb hc, pair_embed]
-  exact StaggerTerminal75.final_shape (message memory) words q q hm.paired
+  exact StaggerModeSeven.final_shape (message memory) words q q hm.paired
 
 def leftFinish (words : Nat → UInt32) (q : CryptoLane) : CryptoLane :=
   cryptoStep 4 6 (words 13) Crypto.Ripemd160.K[4]!
