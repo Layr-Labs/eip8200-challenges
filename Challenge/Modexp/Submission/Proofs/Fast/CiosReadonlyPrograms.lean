@@ -33,4 +33,16 @@ def commonFirstProgram : List Instr :=
   (commonFirstLoad ++ CiosNoDummyCarry.productProgram) ++
     (commonFinishLoad ++ commonFinishStore)
 
+def commonFusedPost : List Instr :=
+  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT, .op .SUB,
+   .op (.Dup ⟨12, by decide⟩), .op .MLOAD,
+   .op (.Dup ⟨2, by decide⟩), .op .ADD,
+   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op .MSTORE,
+   .op (.Dup ⟨2, by decide⟩), .op .GT, .op .SUB, .op .SUB]
+
+def commonPadding : List Instr := [.op .JUMPDEST, .op .JUMPDEST]
+
+def commonFirstActiveProgram : List Instr :=
+  ((commonFirstLoad ++ CiosNoDummyCarry.multiplyProgram) ++ commonFusedPost) ++ commonPadding
+
 end Challenge.Modexp.Submission.Proofs.Fast.CiosReadonly

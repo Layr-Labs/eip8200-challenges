@@ -2,7 +2,6 @@ import Challenge.Modexp.Submission.Proofs.Fast.Exp
 import Challenge.Modexp.Submission.Proofs.Fast.CarryFull
 import Challenge.Modexp.Submission.Proofs.Fast.SquareResult
 import Challenge.Modexp.Submission.Proofs.Fast.SquareFull
-import Challenge.Modexp.Submission.Proofs.Fast.SquareLoop
 
 -- Keep the caller proofs in their original word normal form.
 set_option warningAsError true
@@ -17,8 +16,6 @@ set_option maxHeartbeats 4000000
 instantiates it: `MONPRO` from `Fast.CarryFull.gasSteps_monproFull`, `ADDMOD`
 from the pair `Fast.Csub.gasSteps_addmod` / `gasSteps_csub` (packaged in `Exp`
 as `gasSteps_addmodFull`), and `SQUARE` from `Fast.SquareFull.gasSteps_squareFull`
-(the widths the kernel does not accelerate) together with
-`Fast.SquareLoop.gasSteps_squareLoop` (the in-kernel square loop for `n ∈ {4, 8}`),
 with the arithmetic of `Fast.SquareResult`.  Keeping the instance out of `Exp`
 means that `Exp` and every abstract consumer (the fixed-exponent chain, the
 shift / RR-leading / full-base continuations) compile without the kernel
@@ -37,9 +34,9 @@ open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
-/-- `MONPRO` writes only below `9280`, so the configuration words survive. -/
+/-- `MONPRO` writes only below `2720`, so the configuration words survive. -/
 theorem monproMem_frame' {s : State} {mem : ByteArray} {n bsize minv : Nat}
-    (pa pb pd : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32) (hpd : pd + 32 * n ≤ 8192)
+    (pa pb pd : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8) (hpd : pd + 32 * n ≤ 2048)
     (hf : Frame mem n bsize minv) :
     Frame (CarryResult.monproMem s mem pa pb n pd) n bsize minv :=
   have key := CarryResult.monproMem_frame s mem pa pb n pd hn hn32 hpd
@@ -53,14 +50,14 @@ def subsMonpro (s : State) (n bsize mm minv : Nat)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
+    (hact : 91 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
     ∀ (pa pb pd : Nat) (ret : UInt256) (tail : List UInt256)
       (mem : ByteArray) (a b : Nat), tail.length ≤ 998 →
-      32 ≤ pa → pa + 32 * n ≤ 8192 → 32 ≤ pb → pb + 32 * n ≤ 8192 →
-      pd + 32 * n ≤ 8192 →
+      32 ≤ pa → pa + 32 * n ≤ 2048 → 32 ≤ pb → pb + 32 * n ≤ 2048 →
+      pd + 32 * n ≤ 2048 →
       Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true →
       Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
       Model.FastRepresents mem pa n a → Model.FastRepresents mem pb n b → a < mm →
@@ -75,14 +72,14 @@ def subsMonpro (s : State) (n bsize mm minv : Nat)
     | zero => exact absurd hn (by omega)
     | succ p =>
       have hpdN : (UInt256.ofNat pd).toNat = pd :=
-        toNat_ofNat_self (Nat.lt_of_le_of_lt (show pd ≤ 8192 by omega) (by norm_num))
+        toNat_ofNat_self (Nat.lt_of_le_of_lt (show pd ≤ 2048 by omega) (by norm_num))
       have hlow : (MachineState.readWord mem (32 * (p + 2) - 32)).toNat =
           mm % Limbs.radix := by
         have h := Model.readWord_of_fastRepresents hm (j := p + 1) (by omega)
         rw [show (0 : Nat) + 32 * (p + 1) = 32 * (p + 2) - 32 from by omega,
           show p + 1 + 1 - 1 - (p + 1) = 0 from by omega, pow_zero, Nat.div_one] at h
         exact h
-      have hmi : (MachineState.readWord mem 9376).toNat = minv := by
+      have hmi : (MachineState.readWord mem 2816).toNat = minv := by
         rw [hf.minvW, toNat_ofNat_self hminvlt]
       exact Challenge.EvmProof.GasSteps.cast
         (CarryFull.gasSteps_monproFull s mem pa pb p a b mm (UInt256.ofNat pd) ret tail
@@ -105,35 +102,35 @@ theorem odd_of_minvA {mm minv : Nat}
     simp at h2
   · exact h1
 
-/-- `SQUARE` writes only below `9280`, so the configuration words survive. -/
+/-- `SQUARE` writes only below `2720`, so the configuration words survive. -/
 theorem sqMem_frame' {s : State} {mem : ByteArray} {n bsize minv : Nat}
-    (hn : 1 ≤ n) (hn32 : n ≤ 32) (hf : Frame mem n bsize minv) :
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hf : Frame mem n bsize minv) :
     Frame (SquareResult.sqMem s mem n) n bsize minv :=
   have key := SquareResult.sqMem_frame s mem n hn hn32
   ⟨by rw [key.1]; exact hf.s32, by rw [key.2.1]; exact hf.minvW,
    by rw [key.2.2.1]; exact hf.ml, by rw [key.2.2.2.1]; exact hf.tl,
    by rw [key.2.2.2.2]; exact hf.eoff⟩
 
-/-- The `SQUARE` step of the concrete instance, for the widths the kernel does
-not accelerate: `common` with `hd = sq_row` falls back to the generic `MONPRO`
-(`Fast.SquareFull.gasSteps_squareFull`). -/
+/-- The `SQUARE` step of the concrete instance: `common` (pc 3924) with
+`hd = sq_row` runs the square rows for `n ∈ {4, 8}` and falls back to the
+generic `MONPRO` otherwise (`Fast.SquareFull.gasSteps_squareFull`). -/
 def subsSquare (s : State) (n bsize mm minv : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
+    (hact : 91 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
     ∀ (ret : UInt256) (tail : List UInt256) (mem : ByteArray) (a : Nat),
-      ¬ (n = 4 ∨ n = 8) → tail.length ≤ 998 →
+      tail.length ≤ 998 →
       Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true →
       Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
-      Model.FastRepresents mem 2048 n a → a < mm →
+      Model.FastRepresents mem 512 n a → a < mm →
       Challenge.EvmProof.GasSteps (sqCall s mem ret tail)
         (retTo s (SquareResult.sqMem s mem n) ret tail) := by
-  intro ret tail mem a hslow hcap hjump hf hm ha ham
+  intro ret tail mem a hcap hjump hf hm ha ham
   -- `GasSteps` lives in `Type`, so the limb count has to be split by `cases`.
   cases n with
   | zero => exact absurd hn (by omega)
@@ -147,64 +144,12 @@ def subsSquare (s : State) (n bsize mm minv : Nat)
         rw [show (0 : Nat) + 32 * (p + 1) = 32 * (p + 2) - 32 from by omega,
           show p + 1 + 1 - 1 - (p + 1) = 0 from by omega, pow_zero, Nat.div_one] at h
         exact h
-      have hmi : (MachineState.readWord mem 9376).toNat = minv := by
+      have hmi : (MachineState.readWord mem 2816).toNat = minv := by
         rw [hf.minvW, toNat_ofNat_self hminvlt]
       exact Challenge.EvmProof.GasSteps.cast
         (SquareFull.gasSteps_squareFull s mem p a mm ret tail hcap hrun hcode hfork hnp
-          hact hn32 hslow hcds hf.s32 hf.tl hf.ml hjump ha hm ham hmpos
+          hact hn32 hcds hf.s32 hf.tl hf.ml hjump ha hm ham hmpos
           (by rw [hlow, hmi]; exact hminvA))
-        rfl rfl
-
-/-- The in-kernel square loop writes only below `9312`, so the configuration
-words survive. -/
-theorem sqLoopMem_frame' {s : State} {mem : ByteArray} {n bsize minv : Nat} (k : Nat)
-    (hfast : n = 4 ∨ n = 8) (hn : 1 ≤ n) (hn32 : n ≤ 32)
-    (hf : Frame mem n bsize minv) :
-    Frame (SquareLoop.sqLoopMem s n k mem) n bsize minv :=
-  have key := SquareLoop.sqLoopMem_frame s mem n k hfast hn hn32
-  ⟨by rw [key.1]; exact hf.s32, by rw [key.2.1]; exact hf.minvW,
-   by rw [key.2.2.1]; exact hf.ml, by rw [key.2.2.2.1]; exact hf.tl,
-   by rw [key.2.2.2.2]; exact hf.eoff⟩
-
-/-- The in-kernel square-loop step of the concrete instance: for `n ∈ {4, 8}`
-the kernel performs all `k` squares without leaving its row frame and returns to
-the caller's `after_sq` (pc 3243) (`Fast.SquareLoop.gasSteps_squareLoop`). -/
-def subsSquareLoop (s : State) (n bsize mm minv : Nat)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
-    (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
-    ∀ (k : Nat) (ret : UInt256) (tail : List UInt256) (mem : ByteArray) (a : Nat),
-      n = 4 ∨ n = 8 → 1 ≤ k → k ≤ 16 → tail.length ≤ 982 →
-      MachineState.readWord mem 9280 = UInt256.ofNat k →
-      Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
-      Model.FastRepresents mem 2048 n a → a < mm →
-      Challenge.EvmProof.GasSteps (sqCall s mem ret tail)
-        (retTo s (SquareLoop.sqLoopMem s n k mem) (UInt256.ofNat 3231) tail) := by
-  intro k ret tail mem a hfast hk hk16 hcap hcount hf hm ha ham
-  -- `GasSteps` lives in `Type`, so the limb count has to be split by `cases`.
-  cases n with
-  | zero => exact absurd hn (by omega)
-  | succ n1 =>
-    cases n1 with
-    | zero => exact absurd hn (by omega)
-    | succ p =>
-      have hlow : (MachineState.readWord mem (32 * (p + 2) - 32)).toNat =
-          mm % Limbs.radix := by
-        have h := Model.readWord_of_fastRepresents hm (j := p + 1) (by omega)
-        rw [show (0 : Nat) + 32 * (p + 1) = 32 * (p + 2) - 32 from by omega,
-          show p + 1 + 1 - 1 - (p + 1) = 0 from by omega, pow_zero, Nat.div_one] at h
-        exact h
-      have hmi : (MachineState.readWord mem 9376).toNat = minv := by
-        rw [hf.minvW, toNat_ofNat_self hminvlt]
-      exact Challenge.EvmProof.GasSteps.cast
-        (SquareLoop.gasSteps_squareLoop s mem p a mm k ret tail hcap hrun hcode hfork
-          hnp hact hn32 hfast hk hk16 hcount hcds hf.s32 hf.tl hf.ml ha hm ham hmpos
-          (odd_of_minvA hminvA) (by rw [hlow, hmi]; exact hminvA))
         rfl rfl
 
 /-- The concrete subroutine contracts. -/
@@ -213,9 +158,9 @@ def subs (s : State) (n bsize mm minv : Nat)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
+    (hact : 91 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
     Subroutines s n bsize mm minv where
   mpMem pa pb pd mem := CarryResult.monproMem s mem pa pb n pd
@@ -235,7 +180,7 @@ def subs (s : State) (n bsize mm minv : Nat)
       rw [show (0 : Nat) + 32 * (n - 1) = 32 * n - 32 from by omega,
         show n - 1 - (n - 1) = 0 from by omega, pow_zero, Nat.div_one] at h
       exact h
-    have hmi : (MachineState.readWord mem 9376).toNat = minv := by
+    have hmi : (MachineState.readWord mem 2816).toNat = minv := by
       rw [hf.minvW, toNat_ofNat_self hminvlt]
     obtain ⟨p, rfl⟩ : ∃ p, n = p + 2 := ⟨n - 2, by omega⟩
     exact SquareResult.sqMem_represents s mem p a mm hn32 ha hm (odd_of_minvA hminvA) ham
@@ -243,27 +188,9 @@ def subs (s : State) (n bsize mm minv : Nat)
   sqKeep ptr v mem hptr hdisj hrep :=
     SquareResult.sqMem_fastRepresents_outside s mem n ptr n v (by omega) hn32
       (Or.inl hptr) (Or.inl (by omega)) hdisj.symm hrep
-  sqLoopMem k mem := SquareLoop.sqLoopMem s n k mem
-  sqLoopFrame k _ hfast hf := sqLoopMem_frame' k hfast (by omega) hn32 hf
-  squareLoop := subsSquareLoop s n bsize mm minv hcode hfork hrun hnp hact hcds hn
-    hn32 hmpos hminvlt hminvA
-  sqLoopValue k mem a hfast hf hm ha ham := by
-    have hlow : (MachineState.readWord mem (32 * n - 32)).toNat = mm % Limbs.radix := by
-      have h := Model.readWord_of_fastRepresents hm (j := n - 1) (by omega)
-      rw [show (0 : Nat) + 32 * (n - 1) = 32 * n - 32 from by omega,
-        show n - 1 - (n - 1) = 0 from by omega, pow_zero, Nat.div_one] at h
-      exact h
-    have hmi : (MachineState.readWord mem 9376).toNat = minv := by
-      rw [hf.minvW, toNat_ofNat_self hminvlt]
-    obtain ⟨p, rfl⟩ : ∃ p, n = p + 2 := ⟨n - 2, by omega⟩
-    exact SquareLoop.sqLoopMem_represents s mem p a mm k hfast hn32 ha hm
-      (odd_of_minvA hminvA) ham hmpos (by rw [hlow, hmi]; exact hminvA)
-  sqLoopKeep k ptr v mem hfast hptr hdisj hrep :=
-    SquareLoop.sqLoopMem_fastRepresents_outside s mem n k ptr n v hfast (by omega)
-      hn32 (Or.inl hptr) (Or.inl (by omega)) hdisj.symm hrep
 
 /-- The value-level contract the concrete pair satisfies. -/
-theorem specOf (s : State) (n mm minv : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+theorem specOf (s : State) (n mm minv : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hodd : mm % 2 = 1) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
     SubSpec (fun pa pb pd mem => CarryResult.monproMem s mem pa pb n pd)
@@ -274,7 +201,7 @@ theorem specOf (s : State) (n mm minv : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
       rw [show (0 : Nat) + 32 * (n - 1) = 32 * n - 32 from by omega,
         show n - 1 - (n - 1) = 0 from by omega, pow_zero, Nat.div_one] at h
       exact h
-    have hmi : (MachineState.readWord mem 9376).toNat = minv := by
+    have hmi : (MachineState.readWord mem 2816).toNat = minv := by
       rw [hminv, toNat_ofNat_self hminvlt]
     obtain ⟨p, rfl⟩ : ∃ p, n = p + 2 := ⟨n - 2, by omega⟩
     exact CarryResult.monproMem_represents s mem pa pb p pd a b mm hn32 hpa hpb hpd ha hb hm hodd
@@ -283,7 +210,7 @@ theorem specOf (s : State) (n mm minv : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     CarryResult.monproMem_fastRepresents_outside s mem pa pb n pd ptr n v (by omega) hn32
       (by omega) (by omega) (by omega) hrep
   mpMinv pa pb pd mem hpd :=
-    CarryResult.monproMem_readWord_high s mem pa pb n pd 9376 (by omega) hn32 (by omega)
+    CarryResult.monproMem_readWord_high s mem pa pb n pd 2816 (by omega) hn32 (by omega)
       (by omega)
   amValue pa pb pd mem a b hpa hpb hpd hm ha hb hab :=
     Csub.addmod_csub_correct mem pa pb n a b mm pd hn hn32 hpa hpb ha hb hm hmpos hab
@@ -291,7 +218,7 @@ theorem specOf (s : State) (n mm minv : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     Csub.addmod_csub_preserves_region mem pa pb n pd ptr n v hn (by omega) (by omega)
       (by omega) hrep
   amMinv pa pb pd mem hpd :=
-    amMemOf_readWord_high mem pa pb n pd 9376 (by omega) hn32 (by omega) (by omega)
+    amMemOf_readWord_high mem pa pb n pd 2816 (by omega) hn32 (by omega) (by omega)
 
 /-- `specOf` transported onto a `Subroutines` record, so no call site ever has
 to unify a projection of `subs` with a lambda. -/
@@ -299,7 +226,7 @@ theorem specOf_of {s : State} {n bsize mm minv : Nat}
     (sub : Subroutines s n bsize mm minv)
     (hmp : sub.mpMem = fun pa pb pd mem => CarryResult.monproMem s mem pa pb n pd)
     (ham : sub.amMem = fun pa pb pd mem => amMemOf mem pa pb n pd)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hodd : mm % 2 = 1) (hmpos : 0 < mm)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hodd : mm % 2 = 1) (hmpos : 0 < mm)
     (hminvlt : minv < 2 ^ 256)
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
     SubSpec sub.mpMem sub.amMem n mm (Limbs.radix ^ n) minv := by
@@ -315,9 +242,9 @@ theorem subs_mpMem (s : State) (n bsize mm minv : Nat)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
+    (hact : 91 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
     (subs s n bsize mm minv hcode hfork hrun hnp hact hcds hn hn32 hmpos
       hminvlt hminvA).mpMem =
@@ -330,9 +257,9 @@ theorem subs_amMem (s : State) (n bsize mm minv : Nat)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
+    (hact : 91 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
     (subs s n bsize mm minv hcode hfork hrun hnp hact hcds hn hn32 hmpos
       hminvlt hminvA).amMem =
@@ -346,9 +273,9 @@ theorem specOf_subs (s : State) (n bsize mm minv : Nat)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
+    (hact : 91 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) (hodd : mm % 2 = 1) :
     SubSpec (subs s n bsize mm minv hcode hfork hrun hnp hact hcds hn hn32 hmpos
         hminvlt hminvA).mpMem

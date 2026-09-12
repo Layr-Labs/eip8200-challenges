@@ -26,7 +26,7 @@ instance (memory : ByteArray) (n bsize : Nat) : Decidable (Matches memory n bsiz
 
 /-- Memory after copying the complete `n`-word base from calldata to `ACC`. -/
 def copyBaseMem (memory input : ByteArray) (n : Nat) : ByteArray :=
-  MachineState.writeBytes memory (MachineState.readPadded input 96 (32 * n)) 1024
+  MachineState.writeBytes memory (MachineState.readPadded input 96 (32 * n)) 256
 
 /-- A word wholly inside a copied region is the corresponding source word.
 This is the calldata-to-memory analogue of `Csub.readWord_mcopy`. -/
@@ -62,29 +62,29 @@ theorem readWord_copyFrom (memory source : ByteArray) (src dst sz i : Nat)
 
 /-- The copied block represents the calldata base as an `n`-word integer. -/
 theorem copyBaseMem_represents (memory input : ByteArray) (n : Nat) :
-    Model.FastRepresents (copyBaseMem memory input n) 1024 n
+    Model.FastRepresents (copyBaseMem memory input n) 256 n
       (Precompile.bytesToNatPadded input 96 (32 * n)) := by
   have hsource := Setup.fastRepresents_bytes input 96 n
   apply Model.fastRepresents_of_limbs hsource.1
   intro k hk
   unfold copyBaseMem
-  rw [readWord_copyFrom memory input 96 1024 (32 * n) (n - 1 - k) (by omega)]
+  rw [readWord_copyFrom memory input 96 256 (32 * n) (n - 1 - k) (by omega)]
   exact Model.readLimb_of_fastRepresents hsource hk
 
 /-- The copy leaves a represented block outside `ACC` unchanged. -/
 theorem copyBaseMem_preserves (memory input : ByteArray) (n ptr count value : Nat)
-    (hdisjoint : 1024 + 32 * n ≤ ptr ∨ ptr + 32 * count ≤ 1024)
+    (hdisjoint : 256 + 32 * n ≤ ptr ∨ ptr + 32 * count ≤ 256)
     (hrep : Model.FastRepresents memory ptr count value) :
     Model.FastRepresents (copyBaseMem memory input n) ptr count value := by
   unfold copyBaseMem
-  apply Model.fastRepresents_writeBytes_disjoint memory _ 1024 ptr count value
+  apply Model.fastRepresents_writeBytes_disjoint memory _ 256 ptr count value
   · rw [Challenge.EvmProof.Memory.readPadded_size]
     exact hdisjoint
   · exact hrep
 
 /-- A disjoint word is unchanged by the calldata copy. -/
 theorem copyBaseMem_readWord_disjoint (memory input : ByteArray) (n addr : Nat)
-    (hdisjoint : addr + 32 ≤ 1024 ∨ 1024 + 32 * n ≤ addr) :
+    (hdisjoint : addr + 32 ≤ 256 ∨ 256 + 32 * n ≤ addr) :
     MachineState.readWord (copyBaseMem memory input n) addr =
       MachineState.readWord memory addr := by
   unfold copyBaseMem
@@ -93,7 +93,7 @@ theorem copyBaseMem_readWord_disjoint (memory input : ByteArray) (n addr : Nat)
 
 /-- All words above the ACC block, including configuration words, survive. -/
 theorem copyBaseMem_readWord_high (memory input : ByteArray) (n addr : Nat)
-    (hn32 : n ≤ 32) (haddr : 2048 ≤ addr) :
+    (hn32 : n ≤ 8) (haddr : 512 ≤ addr) :
     MachineState.readWord (copyBaseMem memory input n) addr =
       MachineState.readWord memory addr :=
   copyBaseMem_readWord_disjoint memory input n addr (Or.inr (by omega))
@@ -112,8 +112,8 @@ private theorem activeWordsAfter_eq_of_end_le (curr offset size : Nat)
 
 /-- The ACC copy stays inside the already allocated fast-path memory. -/
 theorem copyBase_activeWords (s : State) (n : Nat)
-    (hn32 : n ≤ 32) (hactive : 298 ≤ s.activeWords.toNat) :
-    s.activeWordsAfterUInt256 1024 (32 * n) = s.activeWords := by
+    (hn32 : n ≤ 8) (hactive : 93 ≤ s.activeWords.toNat) :
+    s.activeWordsAfterUInt256 256 (32 * n) = s.activeWords := by
   unfold State.activeWordsAfterUInt256
   rw [activeWordsAfter_eq_of_end_le]
   · exact (Challenge.EvmProof.Word.word_eq_ofNat_toNat _).symm
@@ -121,7 +121,7 @@ theorem copyBase_activeWords (s : State) (n : Nat)
 
 /-- In particular, the modulus block survives the calldata copy. -/
 theorem copyBaseMem_modulus {memory input : ByteArray} {n mm : Nat}
-    (hn32 : n ≤ 32) (hmod : Model.FastRepresents memory 0 n mm) :
+    (hn32 : n ≤ 8) (hmod : Model.FastRepresents memory 0 n mm) :
     Model.FastRepresents (copyBaseMem memory input n) 0 n mm :=
   copyBaseMem_preserves memory input n 0 n mm (Or.inr (by omega)) hmod
 

@@ -13,11 +13,11 @@ open Monpro CarryScratchAgreement
 
 /-- Overflow is carried in a stack slot, rather than the scratch word. -/
 def overflow (mem : ByteArray) (c : UInt256) : UInt256 :=
-  UInt256.lt (MachineState.readWord mem 8224 + c) c
+  UInt256.lt (MachineState.readWord mem 2080 + c) c
 
 def tailCarry (mem : ByteArray) (c f : UInt256) : ByteArray :=
   MachineState.writeBytes (tailMem1 mem c)
-    (Data.Bytes.natToBytesPadded (f + UInt256.lt (MachineState.readWord mem 8224 + c) c).toNat 32) 8224
+    (Data.Bytes.natToBytesPadded (f + UInt256.lt (MachineState.readWord mem 2080 + c) c).toNat 32) 2080
 
 def rowOverflow (mem : ByteArray) (pa pb n i : Nat) : UInt256 :=
   overflow (rowL1 mem pa pb n i).memory (rowL1 mem pa pb n i).carry
@@ -39,7 +39,7 @@ def rowsCarry (mem : ByteArray) (pa pb n : Nat) : Nat → ByteArray
   | i+1 => rowCarry (rowsCarry mem pa pb n i) pa pb n i
 
 theorem l1_agree (a b : ByteArray) (h : Agree a b) (bi : UInt256) (pa n j : Nat)
-    (hpa : pa + 32*n ≤ 8192) (hj : j ≤ n) :
+    (hpa : pa + 32*n ≤ 2048) (hj : j ≤ n) :
     Agree (l1Step a bi pa n j).memory (l1Step b bi pa n j).memory ∧
       (l1Step a bi pa n j).carry = (l1Step b bi pa n j).carry := by
   induction j with
@@ -47,25 +47,25 @@ theorem l1_agree (a b : ByteArray) (h : Agree a b) (bi : UInt256) (pa n j : Nat)
   | succ j ih =>
     have prev := ih (by omega)
     have hx := readWord_eq prev.1 (pa + 32*(n-1-j)) (Or.inl (by omega))
-    have ht := readWord_eq prev.1 (8256 + 32*(n-1-j)) (Or.inr (by omega))
+    have ht := readWord_eq prev.1 (2112 + 32*(n-1-j)) (Or.inr (by omega))
     simp only [l1Step, hx, ht, prev.2]
     exact ⟨write_same prev.1 _ _, True.intro⟩
 
 theorem l2_agree (a b : ByteArray) (h : Agree a b) (mu c0 : UInt256) (n k : Nat)
-    (hn : n ≤ 32) :
+    (hn : n ≤ 8) :
     Agree (l2Step a mu c0 n k).memory (l2Step b mu c0 n k).memory ∧
       (l2Step a mu c0 n k).carry = (l2Step b mu c0 n k).carry := by
   induction k with
   | zero => exact ⟨h, rfl⟩
   | succ k ih =>
     have hx := readWord_eq ih.1 (32*(n-2-k)) (Or.inl (by omega))
-    have ht := readWord_eq ih.1 (8256 + 32*(n-2-k)) (Or.inr (by omega))
+    have ht := readWord_eq ih.1 (2112 + 32*(n-2-k)) (Or.inr (by omega))
     simp only [l2Step, hx, ht, ih.2]
     exact ⟨write_same ih.1 _ _, True.intro⟩
 
 theorem middle_agree (a b : ByteArray) (h : Agree a b) (c : UInt256) :
     Agree (midMem1 a c) (midMem b c) := by
-  have ht := readWord_eq h 8224 (Or.inr (by decide))
+  have ht := readWord_eq h 2080 (Or.inr (by decide))
   have same : Agree (midMem1 a c) (midMem1 b c) := by
     simp only [midMem1, ht]
     exact write_same h _ _
@@ -74,26 +74,26 @@ theorem middle_agree (a b : ByteArray) (h : Agree a b) (c : UInt256) :
 theorem overflow_eq (a b : ByteArray) (h : Agree a b) (c : UInt256) :
     overflow a c = overflow b c := by
   unfold overflow
-  rw [readWord_eq h 8224 (Or.inr (by decide))]
+  rw [readWord_eq h 2080 (Or.inr (by decide))]
 
 theorem rowMu_eq (a b : ByteArray) (h : Agree a b) (n : Nat) :
     rowMu a n = rowMu b n := by
   unfold rowMu
-  rw [readWord_eq h 9376 (Or.inr (by decide)),
-    readWord_eq h (8224+32*n) (Or.inr (by omega))]
+  rw [readWord_eq h 2816 (Or.inr (by decide)),
+    readWord_eq h (2080+32*n) (Or.inr (by omega))]
 
-theorem rowC0_eq (a b : ByteArray) (h : Agree a b) (n : Nat) (hn : n ≤ 32) :
+theorem rowC0_eq (a b : ByteArray) (h : Agree a b) (n : Nat) (hn : n ≤ 8) :
     rowC0 a n = rowC0 b n := by
   unfold rowC0
   rw [readWord_eq h (32*n-32) (Or.inl (by omega)), rowMu_eq a b h n]
 
 theorem tail_agree (a b : ByteArray) (h : Agree a b) (c f : UInt256)
-    (hf : MachineState.readWord b 8192 = f) :
+    (hf : MachineState.readWord b 2048 = f) :
     Agree (tailCarry a c f) (tailMem b c) := by
-  have ht := readWord_eq h 8224 (Or.inr (by decide))
-  have hflag : MachineState.readWord (tailMem1 b c) 8192 = f := by
+  have ht := readWord_eq h 2080 (Or.inr (by decide))
+  have hflag : MachineState.readWord (tailMem1 b c) 2048 = f := by
     unfold tailMem1
-    rw [readWord_storeWord_outside b _ 8256 8192 (Or.inl (by decide))]
+    rw [readWord_storeWord_outside b _ 2112 2048 (Or.inl (by decide))]
     exact hf
   have same : Agree (tailMem1 a c) (tailMem1 b c) := by
     simp only [tailMem1, ht]
@@ -102,8 +102,8 @@ theorem tail_agree (a b : ByteArray) (h : Agree a b) (c f : UInt256)
   exact write_same same _ _
 
 theorem row_agree (a b : ByteArray) (h : Agree a b) (pa pb n i : Nat)
-    (hpa : pa+32*n ≤ 8192) (hpb : pb+32*n ≤ 8192)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hi : i < n) :
+    (hpa : pa+32*n ≤ 2048) (hpb : pb+32*n ≤ 2048)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hi : i < n) :
     Agree (rowCarry a pa pb n i) (rowMem b pa pb n i) := by
   have hbi : rowBi a pb n i = rowBi b pb n i := by
     unfold rowBi
@@ -119,17 +119,17 @@ theorem row_agree (a b : ByteArray) (h : Agree a b) (pa pb n i : Nat)
   have hflag := overflow_eq (rowL1 a pa pb n i).memory (rowL1 b pa pb n i).memory hl1.1 (rowL1 b pa pb n i).carry
   have hl2 := l2_agree _ _ hm (rowMu (rowL1 b pa pb n i).memory n)
     (rowC0 (rowL1 b pa pb n i).memory n) n (n-1) hn32
-  have hf : MachineState.readWord (rowL2 b pa pb n i).memory 8192 =
+  have hf : MachineState.readWord (rowL2 b pa pb n i).memory 2048 =
       overflow (rowL1 b pa pb n i).memory (rowL1 b pa pb n i).carry := by
     simp only [rowL2, rowMid]
-    rw [readWord_l2Step_low _ _ _ n 8192 (n-1) (by decide), readWord_midMem_tnp]
+    rw [readWord_l2Step_low _ _ _ n 2048 (n-1) (by decide), readWord_midMem_tnp]
     rfl
   simpa only [rowCarry, rowL2Carry, rowMem, rowL2, rowMid, hl1.2, hmu, hc0, hflag, hl2.2] using
     tail_agree _ _ hl2.1 _ _ hf
 
 theorem rows_agree (mem : ByteArray) (pa pb n j : Nat)
-    (hpa : pa+32*n ≤ 8192) (hpb : pb+32*n ≤ 8192)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hj : j ≤ n) :
+    (hpa : pa+32*n ≤ 2048) (hpb : pb+32*n ≤ 2048)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hj : j ≤ n) :
     Agree (rowsCarry mem pa pb n j) (rowsMem mem pa pb n j) := by
   induction j with
   | zero => exact refl mem
@@ -137,46 +137,46 @@ theorem rows_agree (mem : ByteArray) (pa pb n j : Nat)
     exact row_agree _ _ (ih (by omega)) pa pb n j hpa hpb hn hn32 (by omega)
 
 
-theorem csStep_agree (a b : ByteArray) (h : Agree a b) (n j : Nat) (hn : n ≤ 32) :
+theorem csStep_agree (a b : ByteArray) (h : Agree a b) (n j : Nat) (hn : n ≤ 8) :
     Agree (Csub.csStep a n j).memory (Csub.csStep b n j).memory ∧
       (Csub.csStep a n j).flag = (Csub.csStep b n j).flag := by
   induction j with
   | zero => exact ⟨h, rfl⟩
   | succ j ih =>
-    have ht := readWord_eq ih.1 (8256+32*(n-1-j)) (Or.inr (by omega))
+    have ht := readWord_eq ih.1 (2112+32*(n-1-j)) (Or.inr (by omega))
     have hm := readWord_eq ih.1 (32*(n-1-j)) (Or.inl (by omega))
     simp only [Csub.csStep, ht, hm, ih.2]
     exact ⟨write_same ih.1 _ _, True.intro⟩
 
-theorem csUse_eq (a b : ByteArray) (h : Agree a b) (n j : Nat) (hn : n ≤ 32) :
+theorem csUse_eq (a b : ByteArray) (h : Agree a b) (n j : Nat) (hn : n ≤ 8) :
     Csub.csUse a n j = Csub.csUse b n j := by
   have hs := csStep_agree a b h n j hn
-  simp only [Csub.csUse, hs.2, readWord_eq hs.1 8224 (Or.inr (by decide))]
+  simp only [Csub.csUse, hs.2, readWord_eq hs.1 2080 (Or.inr (by decide))]
 
-theorem csSrc_eq (a b : ByteArray) (h : Agree a b) (n j : Nat) (hn : n ≤ 32) :
+theorem csSrc_eq (a b : ByteArray) (h : Agree a b) (n j : Nat) (hn : n ≤ 8) :
     Csub.csSrc a n j = Csub.csSrc b n j := by
   unfold Csub.csSrc
   rw [csUse_eq a b h n j hn]
 
 theorem csResult_agree (a b : ByteArray) (h : Agree a b) (n dst : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 32)
-    (htn : (MachineState.readWord b 8224).toNat ≤ 1) :
+    (hn : 1 ≤ n) (hn32 : n ≤ 8)
+    (htn : (MachineState.readWord b 2080).toNat ≤ 1) :
     Agree (Csub.csResultMemory a n dst) (Csub.csResultMemory b n dst) := by
   have hg : EarlyCsub.Skip a = EarlyCsub.Skip b := by
     unfold EarlyCsub.Skip EarlyCsub.guardWord
-    rw [readWord_eq h 8224 (Or.inr (by decide)),
-      readWord_eq h 8256 (Or.inr (by decide)), readWord_eq h 0 (Or.inl (by decide))]
+    rw [readWord_eq h 2080 (Or.inr (by decide)),
+      readWord_eq h 2112 (Or.inr (by decide)), readWord_eq h 0 (Or.inl (by decide))]
   simp only [Csub.csResultMemory, hg]
   split
-  · rw [readPadded_eq h 8256 (32*n) (Or.inr (by decide))]
+  · rw [readPadded_eq h 2112 (32*n) (Or.inr (by decide))]
     exact write_same h _ _
   ·
     have hs := csStep_agree a b h n n hn32
-    have htn' : (MachineState.readWord (Csub.csStep b n n).memory 8224).toNat ≤ 1 := by
-      rw [Csub.csStep_readWord_disjoint b n 8224 hn (Or.inr (by omega)) n le_rfl]
+    have htn' : (MachineState.readWord (Csub.csStep b n n).memory 2080).toNat ≤ 1 := by
+      rw [Csub.csStep_readWord_disjoint b n 2080 hn (Or.inr (by omega)) n le_rfl]
       exact htn
     have hsrc := Csub.csSrc_toNat b n n (Csub.csUse_le_one b n n htn')
-    have hout : (Csub.csSrc b n n).toNat + 32*n ≤ 8192 ∨ 8224 ≤ (Csub.csSrc b n n).toNat := by
+    have hout : (Csub.csSrc b n n).toNat + 32*n ≤ 2048 ∨ 2080 ≤ (Csub.csSrc b n n).toNat := by
       rw [hsrc]
       split <;> omega
     have hbytes := readPadded_eq hs.1 (Csub.csSrc b n n).toNat (32*n) hout
@@ -185,7 +185,7 @@ theorem csResult_agree (a b : ByteArray) (h : Agree a b) (n dst : Nat)
 
 
 theorem fastRepresents_iff (a b : ByteArray) (h : Agree a b) (ptr n value : Nat)
-    (hout : ptr+32*n ≤ 8192 ∨ 8224 ≤ ptr) :
+    (hout : ptr+32*n ≤ 2048 ∨ 2080 ≤ ptr) :
     Model.FastRepresents a ptr n value ↔ Model.FastRepresents b ptr n value := by
   have hlimbs : Model.fastLimbs a ptr n = Model.fastLimbs b ptr n := by
     unfold Model.fastLimbs
@@ -197,14 +197,14 @@ theorem fastRepresents_iff (a b : ByteArray) (h : Agree a b) (ptr n value : Nat)
 
 
 theorem readWord_tailCarry (mem : ByteArray) (c f : UInt256) (addr : Nat)
-    (hout : addr+32 ≤ 8192 ∨ 9280 ≤ addr) :
+    (hout : addr+32 ≤ 2048 ∨ 2720 ≤ addr) :
     MachineState.readWord (tailCarry mem c f) addr = MachineState.readWord mem addr := by
   unfold tailCarry
-  rw [readWord_storeWord_outside _ _ 8224 addr (by omega),
+  rw [readWord_storeWord_outside _ _ 2080 addr (by omega),
     readWord_tailMem1 mem c addr (by omega)]
 
-theorem readWord_rowCarry (mem : ByteArray) (pa pb n i addr : Nat) (hn : n ≤ 32)
-    (hout : addr+32 ≤ 8192 ∨ 9280 ≤ addr) :
+theorem readWord_rowCarry (mem : ByteArray) (pa pb n i addr : Nat) (hn : n ≤ 8)
+    (hout : addr+32 ≤ 2048 ∨ 2720 ≤ addr) :
     MachineState.readWord (rowCarry mem pa pb n i) addr = MachineState.readWord mem addr := by
   unfold rowCarry rowL2Carry
   rw [readWord_tailCarry _ _ _ addr hout, readWord_l2Step _ _ _ n addr (n-1) hn hout,
@@ -212,8 +212,8 @@ theorem readWord_rowCarry (mem : ByteArray) (pa pb n i addr : Nat) (hn : n ≤ 3
   unfold rowL1
   exact readWord_l1Step mem _ pa n addr n hn hout
 
-theorem readWord_rowsCarry (mem : ByteArray) (pa pb n addr : Nat) (hn : n ≤ 32)
-    (hout : addr+32 ≤ 8192 ∨ 9280 ≤ addr) (i : Nat) :
+theorem readWord_rowsCarry (mem : ByteArray) (pa pb n addr : Nat) (hn : n ≤ 8)
+    (hout : addr+32 ≤ 2048 ∨ 2720 ≤ addr) (i : Nat) :
     MachineState.readWord (rowsCarry mem pa pb n i) addr = MachineState.readWord mem addr := by
   induction i with
   | zero => rfl

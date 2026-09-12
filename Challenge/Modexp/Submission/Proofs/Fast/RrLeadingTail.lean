@@ -32,8 +32,8 @@ theorem handled_of_rrDone (input : ByteArray) (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 298 ≤ s.activeWords.toNat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
+    (hact : 93 ≤ s.activeWords.toNat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hb : bsize ≤ 256) (he : esize ≤ 256)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
@@ -44,9 +44,9 @@ theorem handled_of_rrDone (input : ByteArray) (s : State) (mem : ByteArray)
     (hrrmod : rr ≡ Limbs.radix ^ n * Limbs.radix ^ n [MOD mm])
     (hframe : Frame mem n bsize minv)
     (hinv : RrInv mem n mm (Limbs.radix ^ n) rr)
-    (hacc0 : Model.FastRepresents mem 1024 n 0)
-    (hbase0 : Model.FastRepresents mem 2048 n 0)
-    (hone0 : Model.FastRepresents mem 3072 n 0) :
+    (hacc0 : Model.FastRepresents mem 256 n 0)
+    (hbase0 : Model.FastRepresents mem 512 n 0)
+    (hone0 : Model.FastRepresents mem 768 n 0) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
         (rrDone s mem n bsize esize msize) final) ∧
@@ -55,16 +55,16 @@ theorem handled_of_rrDone (input : ByteArray) (s : State) (mem : ByteArray)
   have hmpos : 0 < mm := lt_of_lt_of_le Limbs.radix_pos hradix
   rcases Nat.eq_zero_or_pos bsize with hb0 | hb0
   · subst hb0
-    have hEb : EbInv (mcopyMem mem 1024 4096 (32 * n)) n mm 0
+    have hEb : EbInv (mcopyMem mem 256 1024 (32 * n)) n mm 0
         (expAcc mm (Limbs.radix ^ n) 0 (expBits input 0) 0) := by
       refine ⟨?_, ?_, ?_, ⟨0, Limbs.radix_pos, ?_⟩⟩
-      · exact Csub.fastRepresents_mcopy_disjoint _ 4096 1024 (32 * n) 0 n mm
+      · exact Csub.fastRepresents_mcopy_disjoint _ 1024 256 (32 * n) 0 n mm
           (by omega) hinv.modulus
-      · exact Csub.fastRepresents_mcopy _ 4096 1024 n (Limbs.radix ^ n % mm)
+      · exact Csub.fastRepresents_mcopy _ 1024 256 n (Limbs.radix ^ n % mm)
           (by omega) hinv.r1
-      · exact Csub.fastRepresents_mcopy_disjoint _ 4096 1024 (32 * n) 2048 n 0
+      · exact Csub.fastRepresents_mcopy_disjoint _ 1024 256 (32 * n) 512 n 0
           (by omega) hbase0
-      · exact Csub.fastRepresents_mcopy_disjoint _ 4096 1024 (32 * n) 3072 n 0
+      · exact Csub.fastRepresents_mcopy_disjoint _ 1024 256 (32 * n) 768 n 0
           (by omega) hone0
     obtain ⟨final, ⟨tr⟩, hdone, hres⟩ :=
       FixedDirectCorrect.handled_of_entryStateConcrete input s mem
@@ -98,8 +98,8 @@ theorem handled_of_directRR (input : ByteArray) (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 298 ≤ s.activeWords.toNat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
+    (hact : 93 ≤ s.activeWords.toNat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hb : bsize ≤ 256) (he : esize ≤ 256)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
@@ -109,9 +109,9 @@ theorem handled_of_directRR (input : ByteArray) (s : State) (mem : ByteArray)
     (hframe : Frame mem n bsize minv)
     (hinv : RrInv mem n mm (Limbs.radix ^ n)
       (Limbs.radix * Limbs.radix ^ n % mm))
-    (hacc0 : Model.FastRepresents mem 1024 n 0)
-    (hbase0 : Model.FastRepresents mem 2048 n 0)
-    (hone0 : Model.FastRepresents mem 3072 n 0) :
+    (hacc0 : Model.FastRepresents mem 256 n 0)
+    (hbase0 : Model.FastRepresents mem 512 n 0)
+    (hone0 : Model.FastRepresents mem 768 n 0) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
         (rrHead s mem n bsize esize msize (directCounter n)) final) ∧
@@ -128,14 +128,14 @@ theorem handled_of_directRR (input : ByteArray) (s : State) (mem : ByteArray)
   have hfinal := directSuffix_final spec hmpos hcop hn hn32 mem hframe.minvW hinv
   have hframeFinal : Frame finalMem n bsize minv :=
     rrSuffixMem_frame sub (directCounter n) mem hframe (directCounter n + 1)
-  have haccFinal : Model.FastRepresents finalMem 1024 n 0 :=
-    rrSuffixMem_preserves sub spec (directCounter n) 1024 0 mem (by omega) hacc0
+  have haccFinal : Model.FastRepresents finalMem 256 n 0 :=
+    rrSuffixMem_preserves sub spec (directCounter n) 256 0 mem (by omega) hacc0
       (directCounter n + 1)
-  have hbaseFinal : Model.FastRepresents finalMem 2048 n 0 :=
-    rrSuffixMem_preserves sub spec (directCounter n) 2048 0 mem (by omega) hbase0
+  have hbaseFinal : Model.FastRepresents finalMem 512 n 0 :=
+    rrSuffixMem_preserves sub spec (directCounter n) 512 0 mem (by omega) hbase0
       (directCounter n + 1)
-  have honeFinal : Model.FastRepresents finalMem 3072 n 0 :=
-    rrSuffixMem_preserves sub spec (directCounter n) 3072 0 mem (by omega) hone0
+  have honeFinal : Model.FastRepresents finalMem 768 n 0 :=
+    rrSuffixMem_preserves sub spec (directCounter n) 768 0 mem (by omega) hone0
       (directCounter n + 1)
   obtain ⟨final, ⟨tr⟩, hdone, hres⟩ :=
     handled_of_rrDone input s finalMem n bsize esize msize mm minv finalValue

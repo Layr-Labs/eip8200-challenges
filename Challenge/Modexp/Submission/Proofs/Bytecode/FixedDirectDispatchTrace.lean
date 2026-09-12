@@ -41,7 +41,7 @@ theorem run_entry_three (s : State) (memory : ByteArray)
   have heq : UInt256.eq (UInt256.ofNat 3) (UInt256.ofNat 3) =
       UInt256.ofNat 1 := by decide
   simp (config := { maxSteps := 400000 })
-    [entryPrefix, opAt, pushAt, wfOp, jumpBridge3423,
+    [entryPrefix, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
@@ -53,13 +53,11 @@ theorem run_entry_three (s : State) (memory : ByteArray)
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat]
 
+set_option linter.unusedVariables false in
 set_option linter.unusedSimpArgs false in
 theorem run_entry_other (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat) (hne : esize ≠ 3) (he : esize ≤ 1024)
-    -- With the block ending in a discard rather than a jump, nothing in this proof reads the
-    -- code any more; the premise is kept so the call sites keep their arity, and named `_`
-    -- because this module sets `warningAsError`, where an unused binder is fatal.
-    (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (n bsize esize msize : Nat) (hne : esize ≠ 3) (he : esize ≤ 256)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock entryPrefix
       (entryState s memory n bsize esize msize) =
@@ -70,11 +68,11 @@ theorem run_entry_other (s : State) (memory : ByteArray)
       Exp.toNat_ofNat_self (Nat.lt_of_le_of_lt he (by norm_num)),
       if_neg hne.symm]
   simp (config := { maxSteps := 400000 })
-    [entryPrefix, opAt, pushAt, wfOp, jumpBridge3423,
+    [entryPrefix, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      entryState, Exp.bDone, otherWidth, Exp.outer, hrun, heq,
+      entryState, Exp.bDone, otherWidth, Exp.outer, hcode, hrun, heq,
       Exp.not_isTrue_zero,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -103,7 +101,7 @@ theorem run_oneWidth_hit (s : State) (memory : ByteArray)
 
 set_option linter.unusedSimpArgs false in
 theorem run_oneWidth_miss (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat) (hne : esize ≠ 1) (he : esize ≤ 1024)
+    (n bsize esize msize : Nat) (hne : esize ≠ 1) (he : esize ≤ 256)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock oneWidth
@@ -165,7 +163,7 @@ def gasSteps_entry_three (s : State) (memory : ByteArray)
     (by simpa [entryState, Exp.bDone] using hnp)
 
 def gasSteps_entry_other (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat) (hne : esize ≠ 3) (he : esize ≤ 1024)
+    (n bsize esize msize : Nat) (hne : esize ≠ 3) (he : esize ≤ 256)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -196,7 +194,7 @@ def gasSteps_oneWidth_hit (s : State) (memory : ByteArray)
     (by simpa [otherWidth] using hnp)
 
 def gasSteps_oneWidth_miss (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat) (hne : esize ≠ 1) (he : esize ≤ 1024)
+    (n bsize esize msize : Nat) (hne : esize ≠ 1) (he : esize ≤ 256)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig

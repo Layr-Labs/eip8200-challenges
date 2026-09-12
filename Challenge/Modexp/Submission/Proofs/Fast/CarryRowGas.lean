@@ -42,14 +42,14 @@ opaque gasSteps_out (s : State) (mem : ByteArray) (pb n i : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hi : i < n)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472) :
+    (hact : 91 ≤ s.activeWords.toNat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hi : i < n)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2912) :
     Challenge.EvmProof.GasSteps
-      (outState s mem pb n i (UInt256.ofNat 4029) ent pdst ret rest)
-      (firstAt 4032 s mem (rowBi mem pb n i) pb n i (UInt256.ofNat 4029) ent pdst ret rest) :=
+      (outState s mem pb n i (UInt256.ofNat 4037) ent pdst ret rest)
+      (firstAt 4040 s mem (rowBi mem pb n i) pb n i (UInt256.ofNat 4037) ent pdst ret rest) :=
   CarryRowBlocks.out.steps
-    (environment (outState s mem pb n i (UInt256.ofNat 4029) ent pdst ret rest) hcode hfork hrun hnp)
+    (environment (outState s mem pb n i (UInt256.ofNat 4037) ent pdst ret rest) hcode hfork hrun hnp)
     rfl
     (run_out s mem pb n i ent pdst ret rest hcap hrun hact hn hn32 hi hpb hpbFit)
 
@@ -61,13 +61,13 @@ opaque gasSteps_commonFirst (s : State) (mem : ByteArray) (bi : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hn : n ≤ 32) (hpos : 0 < n)
-    (hpaFit : pa+32*n ≤ 9472)
-    (htl : tl = UInt256.ofNat (8224+32*n))
+    (hact : 91 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hpos : 0 < n)
+    (hpaFit : pa+32*n ≤ 2912)
+    (htl : tl = UInt256.ofNat (2080+32*n))
     (hAend : aEnd = UInt256.ofNat (pa+32*n-32)) :
     Challenge.EvmProof.GasSteps
-      (firstAt 4032 s mem bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
-      (l1At 4058 s mem bi pa pb n i 1 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) :=
+      (firstAt 4040 s mem bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (l1At 4066 s mem bi pa pb n i 1 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) :=
   l1Mac0.steps (environment _ hcode hfork hrun hnp) rfl
     (CiosCommonFirst.run_commonFirst s mem bi pa pb n i hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest
       hcap hact hn hpos hpaFit htl hAend)
@@ -82,9 +82,9 @@ opaque gasSteps_l1Dispatch4 (s : State) (q : MacState) (bi : UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (l1Q 4058 s q bi pb 4 i hd (l1Target 4) pdst ret rest)
-      (l1Q 4212 s q bi pb 4 i hd (l1Target 4) pdst ret rest) :=
-  l1Dispatch.steps (environment (l1Q 4058 s q bi pb 4 i hd (l1Target 4) pdst ret rest) hcode hfork hrun hnp) rfl
+      (l1Q 4066 s q bi pb 4 i hd (l1Target 4) pdst ret rest)
+      (l1Q 4220 s q bi pb 4 i hd (l1Target 4) pdst ret rest) :=
+  l1Dispatch.steps (environment (l1Q 4066 s q bi pb 4 i hd (l1Target 4) pdst ret rest) hcode hfork hrun hnp) rfl
     (run_l1Dispatch4 s q bi pb i hd pdst ret rest hcap
       (by rw [hcode]; exact KernelChain.jumpDest4220))
 
@@ -96,9 +96,9 @@ opaque gasSteps_l1Dispatch8 (s : State) (q : MacState) (bi : UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (l1Q 4058 s q bi pb 8 i hd (l1Target 8) pdst ret rest)
-      (l1Q 4060 s q bi pb 8 i hd (l1Target 8) pdst ret rest) :=
-  l1Dispatch.steps (environment (l1Q 4058 s q bi pb 8 i hd (l1Target 8) pdst ret rest) hcode hfork hrun hnp) rfl
+      (l1Q 4066 s q bi pb 8 i hd (l1Target 8) pdst ret rest)
+      (l1Q 4068 s q bi pb 8 i hd (l1Target 8) pdst ret rest) :=
+  l1Dispatch.steps (environment (l1Q 4066 s q bi pb 8 i hd (l1Target 8) pdst ret rest) hcode hfork hrun hnp) rfl
     (run_l1Dispatch8 s q bi pb i hd pdst ret rest hcap
       (by rw [hcode]; exact KernelChain.jumpDest4068))
 
@@ -110,10 +110,10 @@ opaque gasSteps_l1MulFour (s : State) (mem : ByteArray) (bi : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hpaFit : pa + 32 * 4 ≤ 8192) (hsnapshot : StagedOperand.Snapshot mem pa 4) :
+    (hact : 91 ≤ s.activeWords.toNat)
+    (hpaFit : pa + 32 * 4 ≤ 2048) (hsnapshot : StagedOperand.Snapshot mem pa 4) :
     Challenge.EvmProof.GasSteps
-      (l1At 4058 s mem bi pa pb 4 i 1 hd (l1Target 4) pdst ret rest)
+      (l1At 4066 s mem bi pa pb 4 i 1 hd (l1Target 4) pdst ret rest)
       (midState s (l1Step mem bi pa 4 4).memory (l1Step mem bi pa 4 4).carry bi
         pb 4 i hd (l1Target 4) pdst ret rest) :=
   (gasSteps_l1Dispatch4 s (l1Step mem bi pa 4 1) bi pb i hd pdst ret rest hcap hrun hcode hfork hnp).trans
@@ -128,10 +128,10 @@ opaque gasSteps_l1MulEight (s : State) (mem : ByteArray) (bi : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hpaFit : pa + 32 * 8 ≤ 8192) (hsnapshot : StagedOperand.Snapshot mem pa 8) :
+    (hact : 91 ≤ s.activeWords.toNat)
+    (hpaFit : pa + 32 * 8 ≤ 2048) (hsnapshot : StagedOperand.Snapshot mem pa 8) :
     Challenge.EvmProof.GasSteps
-      (l1At 4058 s mem bi pa pb 8 i 1 hd (l1Target 8) pdst ret rest)
+      (l1At 4066 s mem bi pa pb 8 i 1 hd (l1Target 8) pdst ret rest)
       (midState s (l1Step mem bi pa 8 8).memory (l1Step mem bi pa 8 8).carry bi
         pb 8 i hd (l1Target 8) pdst ret rest) :=
   (gasSteps_l1Dispatch8 s (l1Step mem bi pa 8 1) bi pb i hd pdst ret rest hcap hrun hcode hfork hnp).trans
@@ -147,12 +147,12 @@ opaque gasSteps_mid (s : State) (mem : ByteArray) (c bi : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hact : 91 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hminv : inverseInvariant mem n)
     (hc : CiosReadonly.ReadonlyCache mem n tl inv m0) :
     Challenge.EvmProof.GasSteps
       (midState s mem c bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
-      (l2At 4357 s (midMem1 mem c) (overflow mem c) (rowMu mem n)
+      (l2At 4365 s (midMem1 mem c) (overflow mem c) (rowMu mem n)
         (rowC0 mem n) pb n i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) :=
   CarryRowBlocks.mid.steps (environment _ hcode hfork hrun hnp) rfl
     (CarryReadonlyRun.run_middle s mem c bi pb n i hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hact
@@ -169,10 +169,10 @@ opaque gasSteps_l2Mac (pc : Nat) (w : Fin 33) (x tl ts : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hn32 : n ≤ 32) (hk : k+1 < n)
-    (hx : x.toNat = 32 * (n - 2 - k)) (htl : tl.toNat = 8256 + 32 * (n - 2 - k))
-    (hts : ts.toNat = 8256 + 32 * (n - 1 - k))
+    (hact : 91 ≤ s.activeWords.toNat)
+    (hn32 : n ≤ 8) (hk : k+1 < n)
+    (hx : x.toNat = 32 * (n - 2 - k)) (htl : tl.toNat = 2112 + 32 * (n - 2 - k))
+    (hts : ts.toNat = 2112 + 32 * (n - 1 - k))
     (hpush : w.val = 0 → x = UInt256.ofNat 0) :
     Challenge.EvmProof.GasSteps
       (l2At pc s mem bi mu c0 pb n i k hd ent pdst ret rest)
@@ -190,10 +190,10 @@ opaque gasSteps_extraL2 (slot : Fin 3) (pc : Nat) (x loadAddr storeAddr : UInt25
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hn : n ≤ 32) (hk : k+1 < n)
+    (hact : 91 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hk : k+1 < n)
     (hx : x.toNat = 32*(n-2-k)) (hselect : x.toNat = CiosReadonlyExtra.cacheAddress slot)
-    (hload : loadAddr.toNat = 8256+32*(n-2-k))
-    (hstore : storeAddr.toNat = 8256+32*(n-1-k))
+    (hload : loadAddr.toNat = 2112+32*(n-2-k))
+    (hstore : storeAddr.toNat = 2112+32*(n-1-k))
     (hc : CiosReadonlyExtra.ExtraCache mem m96 m64 m32) :
     Challenge.EvmProof.GasSteps
       (l2At pc s mem bi mu c0 pb n i k hd ent inv m0
@@ -216,9 +216,9 @@ opaque gasSteps_l2Dispatch4 (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (l2At 4357 s mem bi mu c0 pb 4 i k hd ent pdst ret rest)
-      (l2At 4511 s mem bi mu c0 pb 4 i k hd ent pdst ret rest) :=
-  l2Dispatch.steps (environment (l2At 4357 s mem bi mu c0 pb 4 i k hd ent pdst ret rest) hcode hfork hrun hnp) rfl
+      (l2At 4365 s mem bi mu c0 pb 4 i k hd ent pdst ret rest)
+      (l2At 4519 s mem bi mu c0 pb 4 i k hd ent pdst ret rest) :=
+  l2Dispatch.steps (environment (l2At 4365 s mem bi mu c0 pb 4 i k hd ent pdst ret rest) hcode hfork hrun hnp) rfl
     (run_l2Dispatch4 s mem bi mu c0 pb i k hd ent pdst ret rest hcap
       (by rw [hcode]; exact jumpDest5112))
 
@@ -230,12 +230,12 @@ opaque gasSteps_l2Dispatch8 (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (l2At 4357 s mem bi mu c0 pb 8 i k hd ent pdst ret rest)
-      (l2At 4360 s mem bi mu c0 pb 8 i k hd ent pdst ret rest) :=
-  l2Dispatch.steps (environment (l2At 4357 s mem bi mu c0 pb 8 i k hd ent pdst ret rest) hcode hfork hrun hnp) rfl
+      (l2At 4365 s mem bi mu c0 pb 8 i k hd ent pdst ret rest)
+      (l2At 4368 s mem bi mu c0 pb 8 i k hd ent pdst ret rest) :=
+  l2Dispatch.steps (environment (l2At 4365 s mem bi mu c0 pb 8 i k hd ent pdst ret rest) hcode hfork hrun hnp) rfl
     (run_l2Dispatch8 s mem bi mu c0 pb i k hd ent pdst ret rest hcap
       (by rw [hcode]; exact jumpDestL2Eight)) |>.trans
-  (l2Join8.steps (environment (l2At 4359 s mem bi mu c0 pb 8 i k hd ent pdst ret rest) hcode hfork hrun hnp) rfl
+  (l2Join8.steps (environment (l2At 4367 s mem bi mu c0 pb 8 i k hd ent pdst ret rest) hcode hfork hrun hnp) rfl
     (run_l2Join8 s mem bi mu c0 pb 8 i k hd ent pdst ret rest hcap))
 
 opaque gasSteps_l2Join (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
@@ -246,9 +246,9 @@ opaque gasSteps_l2Join (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (l2At 4511 s mem bi mu c0 pb n i k hd ent pdst ret rest)
-      (l2At 4512 s mem bi mu c0 pb n i k hd ent pdst ret rest) :=
-  l2Join.steps (environment (l2At 4511 s mem bi mu c0 pb n i k hd ent pdst ret rest) hcode hfork hrun hnp) rfl
+      (l2At 4519 s mem bi mu c0 pb n i k hd ent pdst ret rest)
+      (l2At 4520 s mem bi mu c0 pb n i k hd ent pdst ret rest) :=
+  l2Join.steps (environment (l2At 4519 s mem bi mu c0 pb n i k hd ent pdst ret rest) hcode hfork hrun hnp) rfl
     (run_l2Join s mem bi mu c0 pb n i k hd ent pdst ret rest hcap)
 
 /-- The final second-loop copy lands exactly on the row tail frame. -/
@@ -259,13 +259,13 @@ opaque gasSteps_l2Final (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hn32 : n ≤ 32) (hn : 2 ≤ n) :
+    (hact : 91 ≤ s.activeWords.toNat)
+    (hn32 : n ≤ 8) (hn : 2 ≤ n) :
     Challenge.EvmProof.GasSteps
-      (l2At 4580 s mem bi mu c0 pb n i (n-2) hd ent pdst ret rest)
+      (l2At 4588 s mem bi mu c0 pb n i (n-2) hd ent pdst ret rest)
       (tailState s (l2Step mem mu c0 n (n-1)).memory
         (l2Step mem mu c0 n (n-1)).carry mu bi pb n i hd ent pdst ret rest) := by
-  have h := gasSteps_l2Mac 4580 0 0 8256 8288 l2Mac6 s mem bi mu c0 pb n i (n-2) hd ent pdst ret rest
+  have h := gasSteps_l2Mac 4588 0 0 2112 2144 l2Mac6 s mem bi mu c0 pb n i (n-2) hd ent pdst ret rest
     hcap hrun hcode hfork hnp hact hn32 (by omega)
     (by rw [show n - 2 - (n - 2) = 0 by omega]; decide)
     (by rw [show n - 2 - (n - 2) = 0 by omega]; decide)
@@ -282,18 +282,18 @@ opaque gasSteps_l2Four (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
+    (hact : 91 ≤ s.activeWords.toNat)
     (hc : CiosReadonlyExtra.ExtraCache mid m96 m64 m32) :
     Challenge.EvmProof.GasSteps
-      (l2At 4357 s mid bi mu c0 pb 4 i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (l2At 4365 s mid bi mu c0 pb 4 i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (tailState s (l2Step mid mu c0 4 3).memory
         (l2Step mid mu c0 4 3).carry mu bi pb 4 i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) := by
   have hcap' : (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest).length ≤ 1005 := by
     simp only [List.length_cons]; omega
   exact (gasSteps_l2Dispatch4 s mid bi mu c0 pb i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp).trans <|
   (gasSteps_l2Join s mid bi mu c0 pb 4 i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp).trans <|
-  (gasSteps_extraL2 1 4512 64 8320 8352 l2Mac4 s mid bi mu c0 pb 4 i 0 hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
-  (gasSteps_extraL2 2 4546 32 8288 8320 l2Mac5 s mid bi mu c0 pb 4 i 1 hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
+  (gasSteps_extraL2 1 4520 64 2176 2208 l2Mac4 s mid bi mu c0 pb 4 i 0 hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
+  (gasSteps_extraL2 2 4554 32 2144 2176 l2Mac5 s mid bi mu c0 pb 4 i 1 hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
   gasSteps_l2Final s mid bi mu c0 pb 4 i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide)
 
 /-- The whole eight-limb second loop (dispatch to 4367, seven cells). -/
@@ -304,22 +304,22 @@ opaque gasSteps_l2Eight (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
+    (hact : 91 ≤ s.activeWords.toNat)
     (hc : CiosReadonlyExtra.ExtraCache mid m96 m64 m32) :
     Challenge.EvmProof.GasSteps
-      (l2At 4357 s mid bi mu c0 pb 8 i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (l2At 4365 s mid bi mu c0 pb 8 i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (tailState s (l2Step mid mu c0 8 7).memory
         (l2Step mid mu c0 8 7).carry mu bi pb 8 i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) := by
   have hcap' : (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest).length ≤ 1005 := by
     simp only [List.length_cons]; omega
   exact (gasSteps_l2Dispatch8 s mid bi mu c0 pb i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp).trans <|
-  (gasSteps_l2Mac 4360 10 192 8448 8480 l2Mac0 s mid bi mu c0 pb 8 i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
-  (gasSteps_l2Mac 4405 1 160 8416 8448 l2Mac1 s mid bi mu c0 pb 8 i 1 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
-  (gasSteps_l2Mac 4441 1 128 8384 8416 l2Mac2 s mid bi mu c0 pb 8 i 2 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
-  (gasSteps_extraL2 0 4477 96 8352 8384 l2Mac3 s mid bi mu c0 pb 8 i 3 hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
+  (gasSteps_l2Mac 4368 10 192 2304 2336 l2Mac0 s mid bi mu c0 pb 8 i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Mac 4413 1 160 2272 2304 l2Mac1 s mid bi mu c0 pb 8 i 1 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Mac 4449 1 128 2240 2272 l2Mac2 s mid bi mu c0 pb 8 i 2 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_extraL2 0 4485 96 2208 2240 l2Mac3 s mid bi mu c0 pb 8 i 3 hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
   (gasSteps_l2Join s mid bi mu c0 pb 8 i 4 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp).trans <|
-  (gasSteps_extraL2 1 4512 64 8320 8352 l2Mac4 s mid bi mu c0 pb 8 i 4 hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
-  (gasSteps_extraL2 2 4546 32 8288 8320 l2Mac5 s mid bi mu c0 pb 8 i 5 hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
+  (gasSteps_extraL2 1 4520 64 2176 2208 l2Mac4 s mid bi mu c0 pb 8 i 4 hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
+  (gasSteps_extraL2 2 4554 32 2144 2176 l2Mac5 s mid bi mu c0 pb 8 i 5 hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
   gasSteps_l2Final s mid bi mu c0 pb 8 i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide)
 
 /-! ## Row end (pc 4623): `DUP3 JUMPI` back to the row head `hd`, or the exit to CSUB -/
@@ -332,8 +332,8 @@ opaque gasSteps_tailNext (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hi : i + 1 < n)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472)
+    (hact : 91 ≤ s.activeWords.toNat) (hi : i + 1 < n)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2912)
     (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode hd.toNat = true) :
     Challenge.EvmProof.GasSteps
       (tailState s mem c mu bi pb n i hd ent pdst ret rest)
@@ -342,187 +342,7 @@ opaque gasSteps_tailNext (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (CarryTailRows.run_next s mem c mu bi pb n i hd ent pdst ret rest
       hcap hact hpb hpbFit hi (by rw [hcode]; exact hhd))
 
-/-! ## R0: the kernel-exit dispatch (pc 4630)
-
-The row loop's `DUP3 JUMPI` now falls through into `DUP2 PUSH2 sq_row EQ PUSH2 sq_exit
-JUMPI`.  A square (`hd = sq_row = 4777`) leaves through `sq_exit` with its frame intact
-(`SquareLoop`); every multiply — and every square row that is not the last — is unaffected
-because the dispatch only reads the frame's row head. -/
-
-private theorem toNat_ne_of_ne {a b : UInt256} (h : a ≠ b) : a.toNat ≠ b.toNat := by
-  intro hab
-  apply h
-  cases a with
-  | mk av =>
-    cases b with
-    | mk bv =>
-      simp only [UInt256.toNat] at hab
-      congr
-      exact Fin.ext hab
-
-theorem jumpDest4726 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4712 = true :=
-  Artifact.isValidJumpDest_index 3588 (by rfl)
-
-theorem jumpDest4664 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4650 = true :=
-  Artifact.isValidJumpDest_index 3543 (by rfl)
-
-/-! ## R0: the kernel-exit dispatch (pc 4630)
-
-`DUP2 PUSH2 sq_row EQ PUSH2 sq_exit JUMPI`: the frame's row head decides.  A square
-(`hd = sq_row = 4777`) jumps to `sq_exit` (4701) with the frame retained; every multiply
-falls through the `JUMPI` into the `nx` `JUMPDEST` (4639) and on to the 14 `POP`s. -/
-
-def dispatchProgram : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .push 2 4788, .op .EQ, .push 2 4712, .op .JUMPI]
-
-/-- The dispatch block: the `JUMPI` ends it, taken for a square and not taken for a
-multiply (which then continues at the `nx` `JUMPDEST` 4639). -/
-def dispatchBlock : Block Artifact.submissionArtifact .Osaka 4641 dispatchProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3538 5 4641 dispatchProgram
-    (by decide) (by rfl) (by rfl) (by decide)
-
-/-- The `nx` `JUMPDEST` (reached by the dispatch's fall-through and by `sq_exit`'s last
-square). -/
-def nxJd : Block Artifact.submissionArtifact .Osaka 4650 [.op .JUMPDEST] :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3543 1 4650 [.op .JUMPDEST]
-    (by decide) (by rfl) (by rfl) (by decide)
-
-set_option linter.unusedSimpArgs false in
-/-- A multiply falls through the dispatch into the `nx` `JUMPDEST` (4639 → 4640). -/
-theorem run_dispatchMul (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat)
-    (hd ent dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1006)
-    (hne : hd ≠ UInt256.ofNat 4788) :
-    runInstructions dispatchProgram
-      (CiosCachedTailDefs.exitState s mem pbi pb n hd ent dst ret rest) =
-    some (CiosCachedTailDefs.nxJdState s mem pbi pb n hd ent dst ret rest) := by
-  have hc9 : rest.length + 9 < 1024 := by omega
-  have hc10 : rest.length + 10 < 1024 := by omega
-  have hc11 : rest.length + 11 < 1024 := by omega
-  have hcond : ¬ UInt256.isTrue ((UInt256.ofNat 4788).eq hd) := by
-    rw [UInt256.eq]
-    simp only [if_neg (toNat_ne_of_ne (Ne.symm hne))]
-    decide
-  simp [dispatchProgram, runInstructions,
-    Challenge.EvmProof.Stepper.runInstr, CiosCachedTailDefs.exitState,
-    CiosCachedTailDefs.nxJdState, CiosCachedMacCore.framed, hc9, hc10, hc11, hcond,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
-
-set_option linter.unusedSimpArgs false in
-/-- A square takes the dispatch's `JUMPI` to `sq_exit` (4701) with the frame retained. -/
-theorem run_dispatchSq (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat)
-    (ent dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1006)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
-    runInstructions dispatchProgram
-      (CiosCachedTailDefs.exitState s mem pbi pb n (UInt256.ofNat 4788) ent dst ret rest) =
-    some (CiosCachedTailDefs.sqExitState s mem pbi pb n (UInt256.ofNat 4788) ent dst ret rest) := by
-  have hc9 : rest.length + 9 < 1024 := by omega
-  have hc10 : rest.length + 10 < 1024 := by omega
-  have hc11 : rest.length + 11 < 1024 := by omega
-  have hcond : UInt256.isTrue ((UInt256.ofNat 4788).eq (UInt256.ofNat 4788)) := by decide
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 4712 = true := by
-    rw [hcode]; exact jumpDest4726
-  simp [dispatchProgram, runInstructions,
-    Challenge.EvmProof.Stepper.runInstr, CiosCachedTailDefs.exitState,
-    CiosCachedTailDefs.sqExitState, CiosCachedMacCore.framed, hc9, hc10, hc11, hcond, hjd,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
-
-set_option linter.unusedSimpArgs false in
-/-- The `nx` `JUMPDEST` alone (4639 → 4640), used by the last square's exit. -/
-theorem run_nxJd (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat)
-    (hd ent dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1006) :
-    runInstructions [.op .JUMPDEST]
-      (CiosCachedTailDefs.nxJdState s mem pbi pb n hd ent dst ret rest) =
-    some (CiosCachedTailDefs.nxState s mem pbi pb n hd ent dst ret rest) := by
-  simp [runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    CiosCachedTailDefs.nxJdState, CiosCachedTailDefs.nxState, CiosCachedMacCore.framed,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
-  omega
-
-/-- The dispatch on the multiply side, as a gas step. -/
-def gasSteps_dispatchMul (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat)
-    (hd ent dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1006)
-    (hrun : s.halt = .Running)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hne : hd ≠ UInt256.ofNat 4788) :
-    Challenge.EvmProof.GasSteps
-      (CiosCachedTailDefs.exitState s mem pbi pb n hd ent dst ret rest)
-      (CiosCachedTailDefs.nxJdState s mem pbi pb n hd ent dst ret rest) :=
-  dispatchBlock.steps
-    (environment (CiosCachedTailDefs.exitState s mem pbi pb n hd ent dst ret rest)
-      hcode hfork hrun hnp) rfl
-    (run_dispatchMul s mem pbi pb n hd ent dst ret rest hcap hne)
-
-/-- The dispatch on the square side, as a gas step. -/
-def gasSteps_dispatchSq (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat)
-    (ent dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1006)
-    (hrun : s.halt = .Running)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps
-      (CiosCachedTailDefs.exitState s mem pbi pb n (UInt256.ofNat 4788) ent dst ret rest)
-      (CiosCachedTailDefs.sqExitState s mem pbi pb n (UInt256.ofNat 4788) ent dst ret rest) :=
-  dispatchBlock.steps
-    (environment (CiosCachedTailDefs.exitState s mem pbi pb n (UInt256.ofNat 4788) ent dst ret rest)
-      hcode hfork hrun hnp) rfl
-    (run_dispatchSq s mem pbi pb n ent dst ret rest hcap hcode)
-
-/-- The `nx` `JUMPDEST`, as a gas step. -/
-def gasSteps_nxJd (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat)
-    (hd ent dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1006)
-    (hrun : s.halt = .Running)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps
-      (CiosCachedTailDefs.nxJdState s mem pbi pb n hd ent dst ret rest)
-      (CiosCachedTailDefs.nxState s mem pbi pb n hd ent dst ret rest) :=
-  nxJd.steps
-    (environment (CiosCachedTailDefs.nxJdState s mem pbi pb n hd ent dst ret rest)
-      hcode hfork hrun hnp) rfl
-    (run_nxJd s mem pbi pb n hd ent dst ret rest hcap)
-
-/-- The last row of a **square**: fall through the row loop's `JUMPI` into the dispatch,
-which jumps to `sq_exit` with the frame retained. -/
-def gasSteps_tailLastSq (s : State) (mem : ByteArray) (c mu bi : UInt256)
-    (pb n i : Nat) (ent tl inv m0 aEnd m96 m64 m32 pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hi : i + 1 = n)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472)
-    (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (UInt256.ofNat 4788).toNat = true) :
-    Challenge.EvmProof.GasSteps
-      (tailState s mem c mu bi pb n i (UInt256.ofNat 4788) ent inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
-      (CiosCachedTailDefs.sqExitState s (tailCarry mem c bi)
-        (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) pb n (UInt256.ofNat 4788) ent inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) :=
-  (tailLoop.steps (environment (tailState s mem c mu bi pb n i (UInt256.ofNat 4788) ent inv m0
-      (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) hcode hfork hrun hnp) rfl
-    (CarryTailRows.run_last s mem c mu bi pb n i (UInt256.ofNat 4788) ent inv m0
-      (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)
-      (by simp only [List.length_cons]; omega) hact hpb hpbFit hi (by rw [hcode]; exact hhd))).trans
-  (gasSteps_dispatchSq { s with memory := tailCarry mem c bi } (tailCarry mem c bi)
-    (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) pb n ent inv m0
-    (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)
-    (by simp only [List.length_cons]; omega) hrun hcode hfork hnp)
-
-/-- The last row: fall through the `JUMPI`, run the dispatch (`hd ≠ sq_row`, so it falls
-through as well), drop the frame, jump to the CSUB guard (4658). -/
+/-- The last row: fall through the `JUMPI`, drop the frame, jump to the CSUB guard (4667). -/
 opaque gasSteps_tailLast (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (pb n i : Nat) (hd ent tl inv m0 aEnd m96 m64 m32 pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
@@ -530,29 +350,20 @@ opaque gasSteps_tailLast (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hi : i + 1 = n)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472)
-    (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode hd.toNat = true)
-    (hne : hd ≠ UInt256.ofNat 4788) :
+    (hact : 91 ≤ s.activeWords.toNat) (hi : i + 1 = n)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2912)
+    (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode hd.toNat = true) :
     Challenge.EvmProof.GasSteps
       (tailState s mem c mu bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (mpCsubState s (tailCarry mem c bi) pdst ret rest) :=
-  ((tailLoop.steps (environment (tailState s mem c mu bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) hcode hfork hrun hnp) rfl
+  (tailLoop.steps (environment (tailState s mem c mu bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) hcode hfork hrun hnp) rfl
     (CarryTailRows.run_last s mem c mu bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)
       (by simp only [List.length_cons]; omega) hact hpb hpbFit hi (by rw [hcode]; exact hhd))).trans
-  ((gasSteps_dispatchMul { s with memory := tailCarry mem c bi } (tailCarry mem c bi)
-      (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) pb n hd ent inv m0
-      (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)
-      (by simp only [List.length_cons]; omega) hrun hcode hfork hnp hne).trans
-    (gasSteps_nxJd { s with memory := tailCarry mem c bi } (tailCarry mem c bi)
-      (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) pb n hd ent inv m0
-      (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)
-      (by simp only [List.length_cons]; omega) hrun hcode hfork hnp))).trans
-  (exitBlock.steps (environment (CiosCachedTailDefs.nxState s (tailCarry mem c bi)
+  (exitBlock.steps (environment (CarryTailRows.carryExitState s (tailCarry mem c bi)
       (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) pb n hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) hcode hfork hrun hnp) rfl
     (CiosReadonly.run_exit { s with memory := tailCarry mem c bi }
       (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) hd
-      (UInt256.ofNat (pb-32)) ent (l2Target n) tl inv m0 aEnd m96 m64 m32 pdst ret rest
-      hcap))
+      (UInt256.ofNat (pb-32)) ent (l2Target n) tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap
+      (by rw [hcode]; exact jumpDest4976)))
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryRowGas

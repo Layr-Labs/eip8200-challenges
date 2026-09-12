@@ -14,8 +14,8 @@ def selectedRows (mem : ByteArray) (pa pb n i : Nat) : ByteArray :=
   if n = 4 ∨ n = 8 then rowsCarry mem pa pb n i else rowsMem mem pa pb n i
 
 theorem selectedRows_agree (mem : ByteArray) (pa pb n i : Nat)
-    (hpa : pa+32*n ≤ 8192) (hpb : pb+32*n ≤ 8192)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hi : i ≤ n) :
+    (hpa : pa+32*n ≤ 2048) (hpb : pb+32*n ≤ 2048)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hi : i ≤ n) :
     Agree (selectedRows mem pa pb n i) (rowsMem mem pa pb n i) := by
   unfold selectedRows
   split
@@ -23,7 +23,7 @@ theorem selectedRows_agree (mem : ByteArray) (pa pb n i : Nat)
   · exact refl _
 
 theorem selectedRows_readWord_outside (mem : ByteArray) (pa pb n i addr : Nat)
-    (hn : n ≤ 32) (hout : addr+32 ≤ 8192 ∨ 9280 ≤ addr) :
+    (hn : n ≤ 8) (hout : addr+32 ≤ 2048 ∨ 2720 ≤ addr) :
     MachineState.readWord (selectedRows mem pa pb n i) addr = MachineState.readWord mem addr := by
   unfold selectedRows
   split
@@ -44,12 +44,12 @@ theorem csReturnedState_memory_monproMem (s : State) (mem : ByteArray) (pa pb n 
     (Csub.csReturnedState s (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n n pdst ret
       rest).memory = monproMem s mem pa pb n pdst.toNat := rfl
 
-/-- Every word outside `SUBB`, outside the CIOS scratch `[8192, 9280)` and
+/-- Every word outside `SUBB`, outside the CIOS scratch `[2048, 2720)` and
 outside the destination survives a `MONPRO` call. -/
 theorem monproMem_readWord_outside (s : State) (mem : ByteArray)
-    (pa pb n pdst addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32)
-    (hsubb : addr + 32 ≤ 7168 ∨ 7168 + 32 * n ≤ addr)
-    (hscratch : addr + 32 ≤ 8192 ∨ 9280 ≤ addr)
+    (pa pb n pdst addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
+    (hsubb : addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr)
+    (hscratch : addr + 32 ≤ 2048 ∨ 2720 ≤ addr)
     (hdst : addr + 32 ≤ pdst ∨ pdst + 32 * n ≤ addr) :
     MachineState.readWord (monproMem s mem pa pb n pdst) addr =
       MachineState.readWord mem addr := by
@@ -59,11 +59,11 @@ theorem monproMem_readWord_outside (s : State) (mem : ByteArray)
     mpZeroed_readWord_outside s (inputMemory mem pa n) n addr (by omega),
     read_inputMemory_outside mem pa n addr hscratch]
 
-/-- Everything at or above `9280` survives, given only that the destination is
-one of the named blocks below `T_ = 8192`. -/
+/-- Everything at or above `2720` survives, given only that the destination is
+one of the named blocks below `T_ = 2048`. -/
 theorem monproMem_readWord_high (s : State) (mem : ByteArray)
-    (pa pb n pdst addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32)
-    (hdst : pdst + 32 * n ≤ 8192) (haddr : 9280 ≤ addr) :
+    (pa pb n pdst addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
+    (hdst : pdst + 32 * n ≤ 2048) (haddr : 2720 ≤ addr) :
     MachineState.readWord (monproMem s mem pa pb n pdst) addr =
       MachineState.readWord mem addr :=
   monproMem_readWord_outside s mem pa pb n pdst addr hn hn32 (Or.inr (by omega))
@@ -72,29 +72,29 @@ theorem monproMem_readWord_high (s : State) (mem : ByteArray)
 /-- The five configuration words `V_S32`, `V_MINV`, `V_ML`, `V_TL`, `V_EOFF`
 are unchanged by a `MONPRO` call. -/
 theorem monproMem_frame (s : State) (mem : ByteArray) (pa pb n pdst : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 32) (hdst : pdst + 32 * n ≤ 8192) :
-    MachineState.readWord (monproMem s mem pa pb n pdst) 9344 =
-        MachineState.readWord mem 9344 ∧
-      MachineState.readWord (monproMem s mem pa pb n pdst) 9376 =
-        MachineState.readWord mem 9376 ∧
-      MachineState.readWord (monproMem s mem pa pb n pdst) 9408 =
-        MachineState.readWord mem 9408 ∧
-      MachineState.readWord (monproMem s mem pa pb n pdst) 9440 =
-        MachineState.readWord mem 9440 ∧
-      MachineState.readWord (monproMem s mem pa pb n pdst) 9472 =
-        MachineState.readWord mem 9472 :=
-  ⟨monproMem_readWord_high s mem pa pb n pdst 9344 hn hn32 hdst (by omega),
-   monproMem_readWord_high s mem pa pb n pdst 9376 hn hn32 hdst (by omega),
-   monproMem_readWord_high s mem pa pb n pdst 9408 hn hn32 hdst (by omega),
-   monproMem_readWord_high s mem pa pb n pdst 9440 hn hn32 hdst (by omega),
-   monproMem_readWord_high s mem pa pb n pdst 9472 hn hn32 hdst (by omega)⟩
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hdst : pdst + 32 * n ≤ 2048) :
+    MachineState.readWord (monproMem s mem pa pb n pdst) 2784 =
+        MachineState.readWord mem 2784 ∧
+      MachineState.readWord (monproMem s mem pa pb n pdst) 2816 =
+        MachineState.readWord mem 2816 ∧
+      MachineState.readWord (monproMem s mem pa pb n pdst) 2848 =
+        MachineState.readWord mem 2848 ∧
+      MachineState.readWord (monproMem s mem pa pb n pdst) 2880 =
+        MachineState.readWord mem 2880 ∧
+      MachineState.readWord (monproMem s mem pa pb n pdst) 2912 =
+        MachineState.readWord mem 2912 :=
+  ⟨monproMem_readWord_high s mem pa pb n pdst 2784 hn hn32 hdst (by omega),
+   monproMem_readWord_high s mem pa pb n pdst 2816 hn hn32 hdst (by omega),
+   monproMem_readWord_high s mem pa pb n pdst 2848 hn hn32 hdst (by omega),
+   monproMem_readWord_high s mem pa pb n pdst 2880 hn hn32 hdst (by omega),
+   monproMem_readWord_high s mem pa pb n pdst 2912 hn hn32 hdst (by omega)⟩
 
 /-- Every represented block disjoint from `SUBB`, from the CIOS scratch and
 from the destination survives a `MONPRO` call. -/
 theorem monproMem_fastRepresents_outside (s : State) (mem : ByteArray)
-    (pa pb n pdst ptr cnt v : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32)
-    (hsubb : ptr + 32 * cnt ≤ 7168 ∨ 7168 + 32 * n ≤ ptr)
-    (hscratch : ptr + 32 * cnt ≤ 8192 ∨ 9280 ≤ ptr)
+    (pa pb n pdst ptr cnt v : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
+    (hsubb : ptr + 32 * cnt ≤ 1792 ∨ 1792 + 32 * n ≤ ptr)
+    (hscratch : ptr + 32 * cnt ≤ 2048 ∨ 2720 ≤ ptr)
     (hdst : ptr + 32 * cnt ≤ pdst ∨ pdst + 32 * n ≤ ptr)
     (hrep : Model.FastRepresents mem ptr cnt v) :
     Model.FastRepresents (monproMem s mem pa pb n pdst) ptr cnt v := by
@@ -106,15 +106,15 @@ theorem monproMem_fastRepresents_outside (s : State) (mem : ByteArray)
 
 
 theorem monproMem_represents (s : State) (mem : ByteArray) (pa pb p pdst : Nat)
-    (a b mm : Nat) (hn32 : p+2 ≤ 32)
-    (hpa : pa+32*(p+2) ≤ 8192) (hpb : pb+32*(p+2) ≤ 8192)
-    (hpd : pdst+32*(p+2) ≤ 8192)
+    (a b mm : Nat) (hn32 : p+2 ≤ 8)
+    (hpa : pa+32*(p+2) ≤ 2048) (hpb : pb+32*(p+2) ≤ 2048)
+    (hpd : pdst+32*(p+2) ≤ 2048)
     (ha : Model.FastRepresents mem pa (p+2) a)
     (hb : Model.FastRepresents mem pb (p+2) b)
     (hm : Model.FastRepresents mem 0 (p+2) mm)
     (hodd : mm % 2 = 1) (ham : a < mm)
     (hminv : ((MachineState.readWord mem (32*(p+2)-32)).toNat *
-      (MachineState.readWord mem 9376).toNat + 1) % 2^256 = 0) :
+      (MachineState.readWord mem 2816).toNat + 1) % 2^256 = 0) :
     Model.FastRepresents (monproMem s mem pa pb (p+2) pdst) pdst (p+2)
       (Model.montMul mm (Limbs.radix^(p+2)) a b) := by
   let prepared := inputMemory mem pa (p+2)
@@ -125,10 +125,10 @@ theorem monproMem_represents (s : State) (mem : ByteArray) (pa pb p pdst : Nat)
   have hm' : Model.FastRepresents prepared 0 (p+2) mm :=
     (fastRepresents_inputMemory mem pa (p+2) 0 (p+2) mm (by omega)).2 hm
   have hminv' : ((MachineState.readWord prepared (32*(p+2)-32)).toNat *
-      (MachineState.readWord prepared 9376).toNat + 1) % 2^256 = 0 := by
+      (MachineState.readWord prepared 2816).toNat + 1) % 2^256 = 0 := by
     simpa only [prepared,
       read_inputMemory_outside mem pa (p+2) (32*(p+2)-32) (Or.inl (by omega)),
-      read_inputMemory_outside mem pa (p+2) 9376 (Or.inr (by decide))] using hminv
+      read_inputMemory_outside mem pa (p+2) 2816 (Or.inr (by decide))] using hminv
   have hrow := selectedRows_agree (mpZeroed s prepared (p+2)) pa pb (p+2) (p+2)
     hpa hpb (by omega) hn32 (by omega)
   have htn := Monpro.monpro_tn_le_one s prepared pa pb p a b mm hn32 hpa hpb ha' hb' hm' ham (by omega) hminv'

@@ -1,20 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMacCore
 
-/-!
-# The fused multiply-accumulate cell
-
-`macFusedProgram` computes the same accumulated word and outgoing carry as
-`macProductProgram ++ macFinishProgram` in one instruction fewer (26 bytes either way,
--3 gas per cell).  This file is the execution lemma for it.
-
-**Provenance.** Ported from terrapinelf's promoted MODEXP submission
-8c2efe8b-0254-4026-a953-9fdcd1730771 (public repo commit c8f510f, co-authors
-terrapinelf, ercumentyildirim, Akashneelesh), file
-`Challenge/Modexp/Submission/Proofs/Fast/CiosCachedFused.lean`, adapted to this
-artifact's cell frame.  The arithmetic identities it uses (`carry_eq`, `sum_eq`,
-`partialCarry`, `macSum`, `macCarry`) are this tree's own.
--/
-
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 8000000

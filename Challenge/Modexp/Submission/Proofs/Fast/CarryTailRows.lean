@@ -16,6 +16,12 @@ open WindowNibbleKernel CiosCachedMacCore CiosCached CiosCached CiosCachedTailDe
 open CarryRowRun CiosCachedExit CiosCachedPointers CarryRowModel
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
+def carryExitState (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat)
+    (hd ent dst ret : UInt256) (rest : List UInt256) : State :=
+  framed { s with memory := mem } (UInt256.ofNat 4649)
+    ([pbi, hd, UInt256.ofNat (pb-32),
+      ent, negative32, allOnes, l2Target n, dst, ret] ++ rest)
+
 theorem pointer_next (base i : Nat) :
     negative32 + UInt256.ofNat (ptrAt base i) = UInt256.ofNat (ptrAt base (i+1)) := by
   have hK : negative32 = UInt256.ofNat
@@ -25,8 +31,8 @@ theorem pointer_next (base i : Nat) :
 
 theorem run_next (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (pb n i : Nat) (hd ent dst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hact : 296 ≤ s.activeWords.toNat)
-    (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 9472) (hi : i+1 < n)
+    (hcap : rest.length ≤ 1005) (hact : 91 ≤ s.activeWords.toNat)
+    (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 2912) (hi : i+1 < n)
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions CarryRowPrograms.tail
       (CiosCached.tailState s mem c mu bi pb n i hd ent dst ret rest) =
@@ -43,12 +49,12 @@ theorem run_next (s : State) (mem : ByteArray) (c mu bi : UInt256)
 
 theorem run_last (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (pb n i : Nat) (hd ent dst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hact : 296 ≤ s.activeWords.toNat)
-    (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 9472) (hi : i+1 = n)
+    (hcap : rest.length ≤ 1005) (hact : 91 ≤ s.activeWords.toNat)
+    (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 2912) (hi : i+1 = n)
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions CarryRowPrograms.tail
       (CiosCached.tailState s mem c mu bi pb n i hd ent dst ret rest) =
-    some (exitState s (tailCarry mem c bi)
+    some (carryExitState s (tailCarry mem c bi)
       (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) pb n hd ent dst ret rest) := by
   have hp := pointer_next (pb+32*n-32) i
   have hcond : ¬UInt256.isTrue
@@ -59,6 +65,6 @@ theorem run_last (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) hd (UInt256.ofNat (pb-32))
     ent (l2Target n) dst (ret :: rest) (by simp only [List.length_cons]; omega) hact htarget
   simpa only [List.cons_append, List.nil_append, input, result, baseStack, framed, CiosCached.tailState,
-    exitState, hp, if_neg hcond, List.cons_append, List.nil_append] using trace
+    carryExitState, hp, if_neg hcond, List.cons_append, List.nil_append] using trace
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryTailRows

@@ -22,46 +22,39 @@ open Challenge.Modexp.Submission.Proofs.Fast
 abbrev outer := Exp.outer
 
 /-- Program counters of the appended routine. -/
-def pcDispatch : Nat := 3302
-def pcHit : Nat := 3317
--- 3346, not ticket 4's 3358: the recogniser-miss JUMPDEST is instruction 2556 here (it was 2561),
--- and this is the one pc in the table the regenerator could not rewrite, because 3358 has no image
--- in the pc map -- R-ONE2 deleted the instruction it used to sit on, so the map row is empty and
--- the literal was left standing.  `ShiftPCs.pc2889` states instruction 2556's pc as 3346 by `rfl`,
--- and `blk2889` is located there, so a stale 3358 makes `runLocatedBlock blk2889 (missState …)`
--- return `none`.  Nothing but the build checked this def: it is a bare `Nat` with no tie to the
--- artifact, unlike every `instructionPC`/`opAt`/`pushAt` fact around it.
-def pcMiss : Nat := 3346
-def pcAfterCsub0 : Nat := 3363
-def pcNegLoop : Nat := 3370
-def pcNegNext : Nat := 3393
+def pcDispatch : Nat := 3337
+def pcHit : Nat := 3352
+def pcMiss : Nat := 3381
+def pcAfterCsub0 : Nat := 3386
+def pcNegLoop : Nat := 3393
+def pcNegNext : Nat := 3416
 /-- The negation body after its store, before the exit test. -/
-def pcNegMid : Nat := 3387
-def pcNegDone : Nat := 3401
-def pcPreNewton : Nat := 3447
-def pcNewtonB : Nat := 3472
-def pcShiftLoop : Nat := 3508
-def pcShiftBody : Nat := 3515
-def pcEstimate : Nat := 3529
-def pcMacSetup : Nat := 3611
-def pcMacLoop : Nat := 3624
-def pcMid : Nat := 3706
+def pcNegMid : Nat := 3410
+def pcNegDone : Nat := 3424
+def pcPreNewton : Nat := 3470
+def pcNewtonB : Nat := 3495
+def pcShiftLoop : Nat := 3531
+def pcShiftBody : Nat := 3538
+def pcEstimate : Nat := 3552
+def pcMacSetup : Nat := 3630
+def pcMacLoop : Nat := 3643
+def pcMid : Nat := 3725
 /-- The limb-pass body after the pointer steps, before the exit test. -/
-def pcMacTail : Nat := 3697
-def pcAddLoop : Nat := 3740
-def pcAddInner : Nat := 3746
-def pcAddTail : Nat := 3789
+def pcMacTail : Nat := 3716
+def pcAddLoop : Nat := 3759
+def pcAddInner : Nat := 3765
+def pcAddTail : Nat := 3808
 /-- The add body after `OR`, before the pointer step and exit test. -/
-def pcAddMid : Nat := 3775
-def pcSubCheck : Nat := 3807
-def pcSubEntry : Nat := 3817
-def pcSubInner : Nat := 3822
-def pcSubTail : Nat := 3861
+def pcAddMid : Nat := 3794
+def pcSubCheck : Nat := 3826
+def pcSubEntry : Nat := 3836
+def pcSubInner : Nat := 3841
+def pcSubTail : Nat := 3880
 /-- The subtract body after `OR`, before the pointer step and exit test. -/
-def pcSubMid : Nat := 3846
-def pcCsubCall : Nat := 3875
-def pcAfterCsub : Nat := 3886
-def pcShiftDone : Nat := 3895
+def pcSubMid : Nat := 3865
+def pcCsubCall : Nat := 3894
+def pcAfterCsub : Nat := 3905
+def pcShiftDone : Nat := 3914
 
 /-- A state with the outer frame only. -/
 def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat) : State :=
@@ -150,7 +143,7 @@ def macLoopState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize
     State :=
   { s with pc := UInt256.ofNat pcMacLoop
            stack := UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) j) ::
-             UInt256.ofNat (Monpro.ptrAt (8224 + 32 * n) j) ::
+             UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j) ::
              (Monpro.l1Step um q NEG n j).carry :: q :: UInt256.ofNat k ::
              outer n bsize esize msize
            memory := (Monpro.l1Step um q NEG n j).memory }
@@ -160,7 +153,7 @@ def midState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k :
     State :=
   { s with pc := UInt256.ofNat pcMid
            stack := UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) n) ::
-             UInt256.ofNat (Monpro.ptrAt (8224 + 32 * n) n) ::
+             UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) n) ::
              (Monpro.l1Step um q NEG n n).carry :: q :: UInt256.ofNat k ::
              outer n bsize esize msize
            memory := (Monpro.l1Step um q NEG n n).memory }
@@ -172,14 +165,14 @@ def addLoopState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : S
 /-- `ADD_INNER` head after `j` limbs. -/
 def addInnerState (s : State) (mem : ByteArray) (n bsize esize msize k j : Nat) : State :=
   { s with pc := UInt256.ofNat pcAddInner
-           stack := UInt256.ofNat (Monpro.ptrAt (8224 + 32 * n) j) ::
+           stack := UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j) ::
              (addStep mem n j).flag :: UInt256.ofNat k :: outer n bsize esize msize
            memory := (addStep mem n j).memory }
 
 /-- The add tail block with the spent pointer on top. -/
 def addTailState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
   { s with pc := UInt256.ofNat pcAddTail
-           stack := UInt256.ofNat (Monpro.ptrAt (8224 + 32 * n) n) ::
+           stack := UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) n) ::
              (addStep mem n n).flag :: UInt256.ofNat k :: outer n bsize esize msize
            memory := (addStep mem n n).memory }
 
@@ -191,13 +184,13 @@ def subEntryState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : 
 
 def subInnerState (s : State) (mem : ByteArray) (n bsize esize msize k j : Nat) : State :=
   { s with pc := UInt256.ofNat pcSubInner
-           stack := UInt256.ofNat (Monpro.ptrAt (8224 + 32 * n) j) ::
+           stack := UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j) ::
              (subStep mem n j).flag :: UInt256.ofNat k :: outer n bsize esize msize
            memory := (subStep mem n j).memory }
 
 def subTailState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
   { s with pc := UInt256.ofNat pcSubTail
-           stack := UInt256.ofNat (Monpro.ptrAt (8224 + 32 * n) n) ::
+           stack := UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) n) ::
              (subStep mem n n).flag :: UInt256.ofNat k :: outer n bsize esize msize
            memory := (subStep mem n n).memory }
 
@@ -226,31 +219,31 @@ theorem ptrAt_step (base j : Nat) :
       UInt256.ofNat (Monpro.ptrAt base j) = UInt256.ofNat (Monpro.ptrAt base (j + 1)) := by
   rw [Challenge.EvmProof.Word.ofNat_add_mod, Monpro.ptrAt_succ]
 
-theorem negPtr_toNat (n j : Nat) (hn32 : n ≤ 32) (hj : j < n) :
+theorem negPtr_toNat (n j : Nat) (hn32 : n ≤ 8) (hj : j < n) :
     (UInt256.ofNat (Monpro.ptrAt (32 * n - 32) j)).toNat = 32 * (n - 1 - j) := by
   rw [Monpro.ptrAt_toNat _ _ (by omega) (by omega)]; omega
 
-theorem negPtr_ne_zero (n j : Nat) (hn32 : n ≤ 32) (hj : j + 1 < n) :
+theorem negPtr_ne_zero (n j : Nat) (hn32 : n ≤ 8) (hj : j + 1 < n) :
     (UInt256.ofNat (Monpro.ptrAt (32 * n - 32) j)).toNat ≠ 0 := by
   rw [negPtr_toNat n j hn32 (by omega)]; omega
 
-theorem tPtr_toNat (n j : Nat) (hn32 : n ≤ 32) (hj : j < n) :
-    (UInt256.ofNat (Monpro.ptrAt (8224 + 32 * n) j)).toNat = 8256 + 32 * (n - 1 - j) := by
+theorem tPtr_toNat (n j : Nat) (hn32 : n ≤ 8) (hj : j < n) :
+    (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j)).toNat = 2112 + 32 * (n - 1 - j) := by
   rw [Monpro.ptrAt_toNat _ _ (by omega) (by omega)]; omega
 
-theorem tPtr_toNat_last (n : Nat) (hn32 : n ≤ 32) :
-    (UInt256.ofNat (Monpro.ptrAt (8224 + 32 * n) n)).toNat = 8224 := by
+theorem tPtr_toNat_last (n : Nat) (hn32 : n ≤ 8) :
+    (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) n)).toNat = 2080 := by
   rw [Monpro.ptrAt_toNat _ _ (by omega) (by omega)]; omega
 
-theorem tPtr_gt_8255 (n j : Nat) (hn32 : n ≤ 32) (hj : j < n) :
-    8255 < (UInt256.ofNat (Monpro.ptrAt (8224 + 32 * n) j)).toNat := by
+theorem tPtr_gt_8255 (n j : Nat) (hn32 : n ≤ 8) (hj : j < n) :
+    2111 < (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j)).toNat := by
   rw [tPtr_toNat n j hn32 hj]; omega
 
-theorem tPtr_gt_8224 (n j : Nat) (hn32 : n ≤ 32) (hj : j < n) :
-    8224 < (UInt256.ofNat (Monpro.ptrAt (8224 + 32 * n) j)).toNat := by
+theorem tPtr_gt_8224 (n j : Nat) (hn32 : n ≤ 8) (hj : j < n) :
+    2080 < (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j)).toNat := by
   rw [tPtr_toNat n j hn32 hj]; omega
 
-theorem aPtr_toNat (n j : Nat) (hn32 : n ≤ 32) (hj : j < n) :
+theorem aPtr_toNat (n j : Nat) (hn32 : n ≤ 8) (hj : j < n) :
     (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) j)).toNat = NEG + 32 * (n - 1 - j) := by
   rw [Monpro.ptrAt_toNat _ _ (by unfold NEG; omega) (by unfold NEG; omega)]; unfold NEG; omega
 
