@@ -164,7 +164,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 298 ≤ s.activeWords.toNat)
+    (hact : 297 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
@@ -189,7 +189,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
         final.isDone = true ∧
         final.toResult = .returned (Challenge.Modexp.spec input) := by
   have hact296 : 296 ≤ s.activeWords.toNat :=
-    Nat.le_trans (show 296 ≤ 298 by norm_num) hact
+    Nat.le_trans (show 296 ≤ 297 by norm_num) hact
   have e : Env s := ⟨hcode, hfork, hrun, hnp, hact⟩
   let sub := Exp.subs s n bsize mm minv hcode hfork hrun hnp hact296 hcds hn hn32 hmpos
     hminvlt hminvA
@@ -388,7 +388,7 @@ theorem gasSteps_handled (input : ByteArray)
     exact h
   have hxlt : Limbs.radix ^ (Setup.limbs input - 1) < Setup.modulus input :=
     Model.radix_pow_lt_of_odd hn hpath.2.2.1 hodd
-  have hact : 298 ≤ (Setup.fastSetupState input).activeWords.toNat := by
+  have hact : 297 ≤ (Setup.fastSetupState input).activeWords.toNat := by
     rw [Setup.fastSetup_activeWords input hpath, Exp.toNat_ofNat_self (by norm_num)]
   have hcds : (Setup.fastSetupState input).executionEnv.calldata.size < 2 ^ 256 := by
     rw [Exp.fastSetup_calldata input]

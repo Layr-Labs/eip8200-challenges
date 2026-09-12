@@ -32,9 +32,9 @@ private theorem activeWordsAfter_eq_of_end_le (curr offset size : Nat)
     omega
 
 /-- Loading the established limb-size word at 9344 does not expand memory
-once the setup frame has allocated at least 298 words. -/
+once the setup frame has allocated at least 297 words. -/
 theorem loadActiveWords_eq (template : State)
-    (hactive : 298 ≤ template.activeWords.toNat) :
+    (hactive : 297 ≤ template.activeWords.toNat) :
     loadActiveWords template = template.activeWords := by
   unfold loadActiveWords State.activeWordsAfterUInt256
   rw [activeWordsAfter_eq_of_end_le]
@@ -42,9 +42,9 @@ theorem loadActiveWords_eq (template : State)
   · omega
 
 /-- Both ranges touched by the CC-to-RR `MCOPY` are already inside the
-298-word setup frame, so the direct helper preserves the active-word count. -/
+297-word setup frame, so the direct helper preserves the active-word count. -/
 theorem copiedActiveWords_eq (template : State) (n : Nat)
-    (hn32 : n ≤ 32) (hactive : 298 ≤ template.activeWords.toNat) :
+    (hn32 : n ≤ 32) (hactive : 297 ≤ template.activeWords.toNat) :
     copiedActiveWords template n = template.activeWords := by
   unfold copiedActiveWords State.activeWordsAfterUInt256_2
   rw [loadActiveWords_eq template hactive]

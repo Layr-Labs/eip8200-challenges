@@ -34,7 +34,7 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hstack : s.callStack = []) (hactive : 298 ≤ s.activeWords.toNat)
+    (hstack : s.callStack = []) (hactive : 297 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmz : 32 < msize)
     (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)

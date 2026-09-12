@@ -24,7 +24,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths
 set_option linter.unusedSimpArgs false in
 theorem run_start (s : State) (memory : ByteArray)
     (n bsize esize msize count : Nat) (_hn : 2 ≤ n) (_hn32 : n ≤ 32)
-    (_hactive : 298 ≤ s.activeWords.toNat)
+    (_hactive : 297 ≤ s.activeWords.toNat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.start
       (FixedDirectStates.special s memory n bsize esize msize count) =
@@ -44,7 +44,7 @@ theorem run_start (s : State) (memory : ByteArray)
 set_option linter.unusedSimpArgs false in
 theorem run_squareCall (s : State) (memory : ByteArray)
     (n bsize esize msize count : Nat)
-    (hactive : 298 ≤ s.activeWords.toNat)
+    (hactive : 297 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.squareCall
@@ -154,7 +154,7 @@ private def sound {s t : State}
 
 def gasSteps_start (s : State) (memory : ByteArray)
     (n bsize esize msize count : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hactive : 298 ≤ s.activeWords.toNat)
+    (hactive : 297 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -169,7 +169,7 @@ def gasSteps_start (s : State) (memory : ByteArray)
 
 def gasSteps_squareCall (s : State) (memory : ByteArray)
     (n bsize esize msize count : Nat)
-    (hactive : 298 ≤ s.activeWords.toNat)
+    (hactive : 297 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig

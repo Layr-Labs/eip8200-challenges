@@ -1034,7 +1034,7 @@ theorem fastRepresents_mcopyMem_disjoint (mem : ByteArray) (dst src sz ptr cnt v
   Csub.fastRepresents_mcopy_disjoint mem src dst sz ptr cnt v hdisj hrep
 
 theorem activeWordsAfter_fix (curr off sz : Nat) (hsz : sz ≠ 0)
-    (hoff : off + sz ≤ 9536) (hcurr : 298 ≤ curr) :
+    (hoff : off + sz ≤ 9504) (hcurr : 297 ≤ curr) :
     MachineState.activeWordsAfter curr off sz = curr := by
   unfold MachineState.activeWordsAfter
   simp only [hsz, if_false]
@@ -1042,7 +1042,7 @@ theorem activeWordsAfter_fix (curr off sz : Nat) (hsz : sz ≠ 0)
   exact Nat.max_eq_left hle
 
 theorem activeWords_fix (s : State) (off sz : Nat) (hsz : sz ≠ 0)
-    (hoff : off + sz ≤ 9536) (hact : 298 ≤ s.activeWords.toNat) :
+    (hoff : off + sz ≤ 9504) (hact : 297 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat off sz) =
       s.activeWords := by
   rw [activeWordsAfter_fix _ off sz hsz hoff hact]
@@ -1050,8 +1050,8 @@ theorem activeWords_fix (s : State) (off sz : Nat) (hsz : sz ≠ 0)
 
 theorem activeWords_fix2 (s : State) (off1 sz1 off2 sz2 : Nat)
     (hsz1 : sz1 ≠ 0) (hsz2 : sz2 ≠ 0)
-    (hoff1 : off1 + sz1 ≤ 9536) (hoff2 : off2 + sz2 ≤ 9536)
-    (hact : 298 ≤ s.activeWords.toNat) :
+    (hoff1 : off1 + sz1 ≤ 9504) (hoff2 : off2 + sz2 ≤ 9504)
+    (hact : 297 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter
       (MachineState.activeWordsAfter s.activeWords.toNat off1 sz1) off2 sz2) =
       s.activeWords := by
@@ -1078,7 +1078,7 @@ limb into `ACC` and start the Horner loop at `j = 1`. -/
 theorem run_baseHead (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)
     (hdata : s.executionEnv.calldata = input)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (hb0 : 1 ≤ bsize)
-    (hact : 298 ≤ s.activeWords.toNat) (hrun : s.halt = .Running) :
+    (hact : 297 ≤ s.activeWords.toNat) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1195
       (baseHead s mem n bsize esize msize) =
       some (blHead s (storeWord mem (992 + 32 * n)
@@ -1154,7 +1154,7 @@ theorem run_blAdd (s : State) (mem input : ByteArray)
     (hdata : s.executionEnv.calldata = input)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (hpb : pb ≤ 32) (_hj : 1 ≤ j)
     (hjpb : j ≤ pb) (hle : 32 * (pb - j) ≤ bsize)
-    (hact : 298 ≤ s.activeWords.toNat)
+    (hact : 297 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1229
@@ -1212,7 +1212,7 @@ theorem run_blAdd (s : State) (mem input : ByteArray)
 def gasSteps_baseHead (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)
     (hdata : s.executionEnv.calldata = input)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (hb0 : 1 ≤ bsize)
-    (hact : 298 ≤ s.activeWords.toNat)
+    (hact : 297 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -1268,7 +1268,7 @@ def gasSteps_blAdd (s : State) (mem input : ByteArray)
     (hdata : s.executionEnv.calldata = input)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (hpb : pb ≤ 32) (hj : 1 ≤ j)
     (hjpb : j ≤ pb) (hle : 32 * (pb - j) ≤ bsize)
-    (hact : 298 ≤ s.activeWords.toNat)
+    (hact : 297 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -1542,7 +1542,7 @@ set_option linter.unusedSimpArgs false in
 /-- `blk2562` (pc 3872..4053): `ACC := BASE`, then resume at the mask shift. -/
 theorem run_lzBaseCopy (s : State) (mem : ByteArray)
     (n bsize esize msize i w mask : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hact : 298 ≤ s.activeWords.toNat)
+    (hact : 297 ≤ s.activeWords.toNat)
     (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
@@ -1767,7 +1767,7 @@ theorem run_ebTail (s : State) (mem : ByteArray) (n bsize esize msize i w : Nat)
 set_option linter.unusedSimpArgs false in
 /-- `blk1320` (pc 1850..1875): set `ONE` to one and call `MonPro(ACC, ONE)`. -/
 theorem run_ebEnd (s : State) (mem : ByteArray) (n bsize esize msize i : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hact : 298 ≤ s.activeWords.toNat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hact : 297 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1320
@@ -1797,7 +1797,7 @@ set_option linter.unusedSimpArgs false in
 /-- `blk1333` (pc 1811..1885): `RETURN(ACC + s32 - msize, msize)`. -/
 theorem run_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hm : 32 < msize) (hm32 : msize ≤ 32 * n)
-    (hact : 298 ≤ s.activeWords.toNat) (hrun : s.halt = .Running) :
+    (hact : 297 ≤ s.activeWords.toNat) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1333
       (finHead s mem n bsize esize msize) =
       some (returnedState s mem n bsize esize msize) := by
@@ -1857,7 +1857,7 @@ def gasSteps_ebHeadExit (s : State) (mem : ByteArray)
 def gasSteps_ebLoad (s : State) (mem input : ByteArray)
     (n bsize esize msize i : Nat)
     (hdata : s.executionEnv.calldata = input)
-    (hb : bsize ≤ 1024) (hi : i ≤ 1024) (hact : 298 ≤ s.activeWords.toNat)
+    (hb : bsize ≤ 1024) (hi : i ≤ 1024) (hact : 297 ≤ s.activeWords.toNat)
     (heoff : MachineState.readWord mem 9472 = UInt256.ofNat (96 + bsize))
     (hnc : ¬(i = 0 ∧ expByte input bsize i ≠ 0))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -1945,7 +1945,7 @@ def gasSteps_ebLoadCopy (s : State) (mem input : ByteArray)
     (n bsize esize msize i : Nat)
     (hdata : s.executionEnv.calldata = input)
     (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hb : bsize ≤ 1024) (hi : i ≤ 1024) (hact : 298 ≤ s.activeWords.toNat)
+    (hb : bsize ≤ 1024) (hi : i ≤ 1024) (hact : 297 ≤ s.activeWords.toNat)
     (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
     (heoff : MachineState.readWord mem 9472 = UInt256.ofNat (96 + bsize))
     (h : i = 0) (hwne : expByte input bsize i ≠ 0)
@@ -2106,7 +2106,7 @@ def gasSteps_ebTail (s : State) (mem : ByteArray) (n bsize esize msize i w : Nat
       (run_ebTail s mem n bsize esize msize i w hcode hrun) hrun hnp
 
 def gasSteps_ebEnd (s : State) (mem : ByteArray) (n bsize esize msize i : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hact : 298 ≤ s.activeWords.toNat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hact : 297 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -2120,7 +2120,7 @@ def gasSteps_ebEnd (s : State) (mem : ByteArray) (n bsize esize msize i : Nat)
 
 def gasSteps_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hm : 32 < msize) (hm32 : msize ≤ 32 * n)
-    (hact : 298 ≤ s.activeWords.toNat)
+    (hact : 297 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -2963,7 +2963,7 @@ def r0State (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
 set_option linter.unusedSimpArgs false in
 /-- `blk1138` (pc 1533..1554): `MCOPY(CC, R1, s32)` then `CCB(CC)`. -/
 theorem run_r0 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hact : 298 ≤ s.activeWords.toNat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hact : 297 ≤ s.activeWords.toNat)
     (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
@@ -2997,7 +2997,7 @@ theorem run_r0 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 def gasSteps_r0 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hact : 298 ≤ s.activeWords.toNat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hact : 297 ≤ s.activeWords.toNat)
     (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -4003,7 +4003,7 @@ def gasSteps_blBody (s : State) {n bsize mm minv R : Nat}
     (hdata : s.executionEnv.calldata = input)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (hpb : pb ≤ 32) (hj : 1 ≤ j)
     (hjpb : j < pb) (hle : 32 * (pb - j) ≤ bsize)
-    (hact : 298 ≤ s.activeWords.toNat) (hacclt : acc < mm)
+    (hact : 297 ≤ s.activeWords.toNat) (hacclt : acc < mm)
     (hframe : Frame mem n bsize minv) (hinv : BlInv mem n mm R rr acc)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -4046,7 +4046,7 @@ def gasSteps_blLoop (s : State) {n bsize mm minv R : Nat}
     (hdata : s.executionEnv.calldata = input)
     (hm : 0 < mm) (hn : 2 ≤ n) (hn32 : n ≤ 32) (hcop : Nat.Coprime R mm)
     (hradix : Limbs.radix ≤ mm) (hb : bsize ≤ 1024) (hb0 : 1 ≤ bsize)
-    (hact : 298 ≤ s.activeWords.toNat) (hframe : Frame mem n bsize minv)
+    (hact : 297 ≤ s.activeWords.toNat) (hframe : Frame mem n bsize minv)
     (hinv : BlInv mem n mm R rr
       (blValue mm (Precompile.bytesToNatPadded input 96 bsize) (pbOf bsize) 0))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -4082,7 +4082,7 @@ def gasSteps_baseChain_fallback (s : State) {n bsize mm minv R : Nat}
     (hdata : s.executionEnv.calldata = input)
     (hm : 0 < mm) (hn : 2 ≤ n) (hn32 : n ≤ 32) (hcop : Nat.Coprime R mm)
     (hradix : Limbs.radix ≤ mm) (hb : bsize ≤ 1024) (hb0 : 1 ≤ bsize)
-    (hact : 298 ≤ s.activeWords.toNat) (_hrrlt : rr < mm)
+    (hact : 297 ≤ s.activeWords.toNat) (_hrrlt : rr < mm)
     (hframe : Frame mem n bsize minv)
     (hinv : BlInv
       (storeWord mem (992 + 32 * n) (UInt256.ofNat (topLimbOf input bsize)))
@@ -4432,7 +4432,7 @@ def gasSteps_byteBody (s : State) {n bsize mm minv R : Nat}
     (hdata : s.executionEnv.calldata = input)
     (hm : 0 < mm) (hcop : Nat.Coprime R mm) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hb : bsize ≤ 1024) (he : esize ≤ 1024)
-    (hi : i < esize) (hbM : bM < mm) (hact : 298 ≤ s.activeWords.toNat)
+    (hi : i < esize) (hbM : bM < mm) (hact : 297 ≤ s.activeWords.toNat)
     (hbits : ∀ j, j < 8 → bits (8 * i + j) = bitAt (expByte input bsize i) (7 - j))
     (hframe : Frame mem n bsize minv)
     (hshift : EbInv mem n mm bM
@@ -4554,7 +4554,7 @@ def gasSteps_ebLoop (s : State) {n bsize mm minv R : Nat}
     (hdata : s.executionEnv.calldata = input)
     (hm : 0 < mm) (hcop : Nat.Coprime R mm) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hb : bsize ≤ 1024) (he : esize ≤ 1024)
-    (hbM : bM < mm) (hact : 298 ≤ s.activeWords.toNat)
+    (hbM : bM < mm) (hact : 297 ≤ s.activeWords.toNat)
     (hframe : Frame mem n bsize minv)
     (hinv : EbInv mem n mm bM (expAcc mm R bM (expBits input bsize) 0))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -4601,7 +4601,7 @@ def gasSteps_setupToRR (s : State) {n bsize mm minv : Nat}
     (hmod2 : Model.FastRepresents (mcopyMem (dblF 4096 mem) 5120 4096 (32 * n)) 0 n mm)
     (hy2 : Model.FastRepresents (mcopyMem (dblF 4096 mem) 5120 4096 (32 * n)) 5120 n y)
     (hylt : y < mm)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hact : 298 ≤ s.activeWords.toNat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 32) (hact : 297 ≤ s.activeWords.toNat)
     (hframe : Frame mem n bsize minv)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -4681,7 +4681,7 @@ theorem handled_of_baseFallback (input : ByteArray) (s : State) (mem : ByteArray
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (_hstack : s.callStack = [])
-    (hact : 298 ≤ s.activeWords.toNat)
+    (hact : 297 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (hb0 : 1 ≤ bsize)
     (_he : esize ≤ 1024) (_hmz : 32 < msize) (_hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
@@ -4849,7 +4849,7 @@ theorem handled_of_rrHead (input : ByteArray) (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 298 ≤ s.activeWords.toNat)
+    (hact : 297 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
@@ -5652,7 +5652,6 @@ theorem readWord_setupMem_mid (input : ByteArray) (m0 target : Nat)
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
-    Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     Setup.readWord_empty]
 
 /-- `ACC`, `BASE` and the `ONE` slot are all zero when the setup hands over. -/
@@ -5682,7 +5681,6 @@ theorem readWord_setupMem_high (input : ByteArray) (m0 target : Nat)
       (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)),
     Setup.readWord_writeBytes_ne _ _ _ _
       (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)),
-    Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
@@ -5745,7 +5743,7 @@ def gasSteps_handover (s : State) (mem : ByteArray) (n bsize esize msize mm minv
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 298 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 0 < mm)
+    (hact : 297 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32) (hmpos : 0 < mm)
     (hodd : mm % 2 = 1)
     (hmod0 : Model.FastRepresents mem 0 n mm)
     (hr10 : Model.FastRepresents mem 4096 n (Limbs.radix ^ (n - 1)))
@@ -5760,7 +5758,7 @@ def gasSteps_handover (s : State) (mem : ByteArray) (n bsize esize msize mm minv
   gasSteps_setupToRR s sub mem esize msize (r1Mem n) (ccbMem n sub.mpMem sub.amMem)
     (fun ret mem' hjump hf =>
       gasSteps_r1Block s esize msize hcode hfork hrun hnp
-        (Nat.le_trans (show 296 ≤ 298 by norm_num) hact) hn hn32 ret mem' hjump hf)
+        (Nat.le_trans (show 296 ≤ 297 by norm_num) hact) hn hn32 ret mem' hjump hf)
     (fun ret mem' y' hjump hf hmod' hy' hylt' =>
       gasSteps_ccbFull s sub spec esize msize hmpos hn hn32 5120 (by omega) (by omega)
         ret mem' y' hjump hf hmod' hy' hylt' (by omega) hcode hfork hrun hnp)
@@ -5785,7 +5783,7 @@ theorem handled_of_handover (input : ByteArray) (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 298 ≤ s.activeWords.toNat)
+    (hact : 297 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
@@ -5810,7 +5808,7 @@ theorem handled_of_handover (input : ByteArray) (s : State) (mem : ByteArray)
         final.isDone = true ∧
         final.toResult = .returned (Challenge.Modexp.spec input) := by
   have hact296 : 296 ≤ s.activeWords.toNat :=
-    Nat.le_trans (show 296 ≤ 298 by norm_num) hact
+    Nat.le_trans (show 296 ≤ 297 by norm_num) hact
   obtain ⟨final, ⟨tr⟩, hdone, hres⟩ :=
     handled_of_rrHead input s
       (setupToRRMem (r1Mem n)
@@ -5885,7 +5883,7 @@ theorem gasSteps_handled (input : ByteArray)
     exact h
   have hxlt : Limbs.radix ^ (Setup.limbs input - 1) < Setup.modulus input :=
     Model.radix_pow_lt_of_odd hn hpath.2.2.1 hodd
-  have hact : 298 ≤ (Setup.fastSetupState input).activeWords.toNat := by
+  have hact : 297 ≤ (Setup.fastSetupState input).activeWords.toNat := by
     rw [Setup.fastSetup_activeWords input hpath, toNat_ofNat_self (by norm_num)]
   have hcds : (Setup.fastSetupState input).executionEnv.calldata.size < 2 ^ 256 := by
     rw [fastSetup_calldata input]; exact hsize
