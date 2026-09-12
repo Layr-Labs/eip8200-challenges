@@ -515,10 +515,10 @@ def blk3253 :
 def blk3258 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2938 .JUMPDEST,
-   pushAt 2939 1 1,
-   opAt 2940 (.Swap ⟨0, by decide⟩),
-   opAt 2941 .SUB,
-   pushAt 2942 2 3508,
+   pushAt 2939 0 0,
+   opAt 2940 .NOT,
+   opAt 2941 .ADD,
+   pushAt 2942 3 3508,
    opAt 2943 .JUMP]
 
 /-- Located block of the selected shift-reduce program. -/
