@@ -46,7 +46,7 @@ private theorem add_ofNat_assoc_add (u : UInt256) (a b : Nat) :
   exact word_add_ofNat_assoc u a b
 
 def cachedInitial : List Instr :=
-  [.push ⟨4, by decide⟩ maskWord,
+  [op .JUMPDEST, .push ⟨4, by decide⟩ maskWord,
     push2 (UInt256.ofNat 257), .push 0 0, op .NOT, op .DIV,
     push3 (UInt256.ofNat 65537), .push 0 0, op .NOT, op .DIV,
     .op (.Swap ⟨2, by decide⟩), dup1, op .MLOAD, swap1,
@@ -165,17 +165,17 @@ theorem run_fullTemplate_natural (s : State) (pc returnPC : UInt256)
 #print axioms run_fullTemplate_natural
 
 
-theorem fullTemplate_length : fullTemplate.length = 156 := by
+theorem fullTemplate_length : fullTemplate.length = 157 := by
   have hold := PairedMask32Cache.fullTemplate_length
   have hi : PairedMask32Cache.cachedInitial.length = 11 := rfl
-  have hn : cachedInitial.length = 16 := rfl
+  have hn : cachedInitial.length = 17 := rfl
   simp only [PairedMask32Cache.fullTemplate, List.length_append, hi] at hold
   simp only [fullTemplate, List.length_append, hn]
   omega
 
 #print axioms fullTemplate_length
 
-theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 219 := by
+theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 220 := by
   rw [DenseScheduleTemplate.assembleBytes_length]
   norm_num [fullTemplate, cachedInitial, upperTemplate, lowerTemplate, cachedReversedHalf,
     cachedStage, endianFactorPush, endianFactor, PairedMask32Cache.halfTemplate,
@@ -188,12 +188,12 @@ theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 219 := b
 
 #print axioms fullTemplate_byteLength
 
-theorem fullTemplate_staticGas : staticGas fullTemplate = 473 := by
+theorem fullTemplate_staticGas : staticGas fullTemplate = 474 := by
   have happend (xs ys : List Instr) : staticGas (xs ++ ys) = staticGas xs + staticGas ys := by
     simp only [staticGas, List.map_append, List.sum_append]
   have hold := PairedMask32Cache.fullTemplate_staticGas
   have hi : staticGas PairedMask32Cache.cachedInitial = 31 := by decide
-  have hn : staticGas cachedInitial = 50 := by decide
+  have hn : staticGas cachedInitial = 51 := by decide
   simp only [PairedMask32Cache.fullTemplate, happend, hi] at hold
   simp only [fullTemplate, happend, hn]
   omega
@@ -226,7 +226,7 @@ private theorem cachedInitial_advances :
       DenseScheduleLift.Advances instruction ∨ instruction = .op .DIV := by
   intro instruction hmem
   simp only [cachedInitial, List.mem_cons, List.not_mem_nil, or_false] at hmem
-  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
+  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
     rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals first
     | exact Or.inr rfl
@@ -236,6 +236,7 @@ private theorem cachedInitial_advances :
     | exact Or.inl (Or.inl (Or.inl StraightLine.add))
     | exact Or.inl (Or.inl (Or.inl StraightLine.mload))
     | exact Or.inl (Or.inl (Or.inl StraightLine.not))
+    | exact Or.inl (Or.inl (Or.inr (Or.inr rfl)))
 
 theorem fullTemplate_advances :
     ∀ instruction ∈ fullTemplate,
@@ -330,7 +331,7 @@ def gasSteps_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
 
 theorem fullTemplate_exactBytes : assembleBytes fullTemplate =
   (((([
-    0x63, 0xff, 0xff, 0xff, 0xff, 0x61, 0x01, 0x01, 0x5f, 0x19, 0x04, 0x62, 0x01, 0x00, 0x01,
+    0x5b, 0x63, 0xff, 0xff, 0xff, 0xff, 0x61, 0x01, 0x01, 0x5f, 0x19, 0x04, 0x62, 0x01, 0x00, 0x01,
     0x5f, 0x19, 0x04, 0x92, 0x80, 0x51, 0x90, 0x60, 0x20, 0x01, 0x51] ++ [
     0x80, 0x80, 0x60, 0x08, 0x1c, 0x18, 0x83, 0x16, 0x61, 0x01, 0x01, 0x02, 0x18, 0x80, 0x80, 0x60,
     0x10, 0x1c, 0x18, 0x85, 0x16, 0x62, 0x01, 0x00, 0x01, 0x02, 0x18, 0x80, 0x60, 0xe0, 0x1c, 0x60,
@@ -346,7 +347,7 @@ theorem fullTemplate_exactBytes : assembleBytes fullTemplate =
     0x5f, 0x61, 0x02, 0x00, 0x52]) ++ [
     0x50, 0x50, 0x50]) := by
   have h0 : assembleBytes cachedInitial = [
-    0x63, 0xff, 0xff, 0xff, 0xff, 0x61, 0x01, 0x01, 0x5f, 0x19, 0x04, 0x62, 0x01, 0x00, 0x01,
+    0x5b, 0x63, 0xff, 0xff, 0xff, 0xff, 0x61, 0x01, 0x01, 0x5f, 0x19, 0x04, 0x62, 0x01, 0x00, 0x01,
     0x5f, 0x19, 0x04, 0x92, 0x80, 0x51, 0x90, 0x60, 0x20, 0x01, 0x51] := by decide
   have h1 : assembleBytes upperTemplate = [
     0x80, 0x80, 0x60, 0x08, 0x1c, 0x18, 0x83, 0x16, 0x61, 0x01, 0x01, 0x02, 0x18, 0x80, 0x80, 0x60,

@@ -1,15 +1,13 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedBlockMath
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedScheduleLift
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedHelperBooleanTrace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairTableLayout
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairTableActive
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackMemory
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRunBridge
 
 set_option warningAsError true
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedBlockModel
-
 open Challenge.Ripemd160 EvmSemantics EvmSemantics.EVM
-open PairedLaneCryptoBridge (CryptoLane)
-open PairedHelperBooleanTrace
+open Challenge.EvmProof
 
 def messagePointer (i : Nat) : Nat := Padding.messageOffset + DriverTrace.blockOffset i
 
@@ -22,7 +20,7 @@ theorem blockWords_eq_readLE32 (input : ByteArray) (i k : Nat) (hk : k < 16) :
       (DriverTrace.blockOffset i + k * 4) := by
   interval_cases k <;> simp [blockWords, CompressionCorrect.schedule, List.range']
 
-theorem messagePointer_lower (i : Nat) : 736 ≤ messagePointer i := by
+theorem messagePointer_lower (i : Nat) : 1024 ≤ messagePointer i := by
   simp only [messagePointer, Padding.messageOffset]
   omega
 
@@ -39,36 +37,17 @@ theorem messagePointer_bound (input : ByteArray) (hfit : CalldataFits input)
   omega
 
 def selectedWords (s : State) (i : Nat) : Nat → UInt256 :=
-  if s.executionEnv.calldata.size = DriverTrace.blockOffset i then
-    PairedScheduleData.extractedWord s.memory (messagePointer i)
-  else PairedScheduleData.extractedWordG s.memory (messagePointer i)
-
-def selectedGarbage (s : State) (i : Nat) : Nat → Nat :=
-  if s.executionEnv.calldata.size = DriverTrace.blockOffset i then fun _ => 0
-  else PairedScheduleData.extractedGarbage s.memory (messagePointer i)
+  PairedScheduleData.extractedWord s.memory (messagePointer i)
 
 def scheduledState (s : State) (i : Nat) : State :=
   { s with
-    memory := PairedScheduleMemory.normalizedMemory s.memory
-      (selectedWords s i)
+    memory := PairTableLayout.resultMemory s.memory (selectedWords s i)
     activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat (messagePointer i)) }
-
-theorem scheduled_memory_hit (s : State) (i : Nat)
-    (hhit : s.executionEnv.calldata.size = DriverTrace.blockOffset i) :
-    (scheduledState s i).memory = PairedScheduleMemory.normalizedMemory s.memory
-      (PairedScheduleData.extractedWord s.memory (messagePointer i)) := by
-  simp only [scheduledState, selectedWords, if_pos hhit]
-
-theorem scheduled_memory_miss (s : State) (i : Nat)
-    (hmiss : s.executionEnv.calldata.size ≠ DriverTrace.blockOffset i) :
-    (scheduledState s i).memory = PairedScheduleMemory.normalizedMemory s.memory
-      (PairedScheduleData.extractedWordG s.memory (messagePointer i)) := by
-  simp only [scheduledState, selectedWords, if_neg hmiss]
 
 theorem scheduled_active (s : State) (input : ByteArray) (i : Nat)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input) :
-    23 ≤ (scheduledState s i).activeWords.toNat :=
-  PairedScheduleContract.loaded_active_ge23 s (messagePointer i)
+    34 ≤ (scheduledState s i).activeWords.toNat :=
+  PairTableActive.loaded_active_ge34 s (messagePointer i)
     (messagePointer_lower i) (messagePointer_bound input hfit i hi)
 
 theorem extracted_words (s : State) (input : ByteArray) (i : Nat)
@@ -76,78 +55,45 @@ theorem extracted_words (s : State) (input : ByteArray) (i : Nat)
     (hi : i < DriverTrace.blockCount input) (ctx : StackRunBridge.BlockContext s input i h)
     (k : Nat) (hk : k < 16) :
     PairedScheduleData.extractedWord s.memory (messagePointer i) k =
-      Challenge.EvmProof.Word.ofUInt32 (blockWords input i k) := by
+      Word.ofUInt32 (blockWords input i k) := by
   rw [PairedScheduleData.extractedWord_eq_expectedWord _ _ _ hk
     (messagePointer_bound input hfit i hi)]
   change ScheduleCorrect.expectedWord s.memory (DriverTrace.messageOffsetWord i) k = _
   rw [ctx.messageBlock k hk, blockWords_eq_readLE32 input i k hk]
 
-theorem scheduled_ready (s : State) (input : ByteArray) (i : Nat)
-    (h : Compression.HashState) (hfit : CalldataFits input)
-    (hi : i < DriverTrace.blockCount input) (ctx : StackRunBridge.BlockContext s input i h)
-    (hclean : s.executionEnv.calldata.size = DriverTrace.blockOffset i) :
-    NormalizedScheduleReady (scheduledState s i).memory (blockWords input i) := by
-  rw [scheduled_memory_hit s i hclean]
-  constructor
-  · intro k hk
-    change MachineState.readWord
-      (PairedScheduleMemory.normalizedMemory s.memory
-        (PairedScheduleData.extractedWord s.memory (messagePointer i)))
-        (PairedScheduleMemory.cell k) = _
-    rw [PairedScheduleMemory.read_normalized_cell _ _ _ (by omega), if_neg (by omega)]
-    exact extracted_words s input i h hfit hi ctx k hk
-  · intro k hk
-    change MachineState.readWord
-      (PairedScheduleMemory.normalizedMemory s.memory
-        (PairedScheduleData.extractedWord s.memory (messagePointer i)))
-        (PairedScheduleMemory.cell k + 16) = _
-    rw [PairedScheduleData.read_normalized_extracted_upper _ _ _ hk,
-      ← PairedScheduleData.extractedWord_eq_littleWord,
-      extracted_words s input i h hfit hi ctx k hk]
-    rfl
+def stateHash (s : State) : Array UInt32 :=
+  let h := StackMemory.hashAt s.memory
+  #[Word.toUInt32 h.h0, Word.toUInt32 h.h1, Word.toUInt32 h.h2,
+    Word.toUInt32 h.h3, Word.toUInt32 h.h4]
 
-theorem scheduled_hashWords (s : State) (i : Nat) :
-    PairedBlockMath.hashWords (scheduledState s i).memory = PairedBlockMath.hashWords s.memory := by
-  -- the chaining state lies above the schedule cells (read_normalized_outside: 544 ≤ address);
-  -- stated address-generically so it follows the relocated hashWords literals.
-  simp (disch := decide) only [scheduledState, PairedBlockMath.hashWords,
-    PairedScheduleMemory.read_normalized_outside]
-
-def leftFold (words : Nat → UInt32) : Nat → CryptoLane → CryptoLane :=
-  scalarLeftFold (fun i => i / 16) (fun i => Crypto.Ripemd160.s[i]!)
-    (fun i => words Crypto.Ripemd160.r[i]!) (fun i => Crypto.Ripemd160.K[i / 16]!)
-
-def rightFold (words : Nat → UInt32) : Nat → CryptoLane → CryptoLane :=
-  scalarRightFold (fun i => i / 16) (fun i => Crypto.Ripemd160.sP[i]!)
-    (fun i => words Crypto.Ripemd160.rP[i]!) (fun i => Crypto.Ripemd160.KP[i / 16]!)
-
-def resultFrame (s : State) (input : ByteArray) (i : Nat) : PairedTailTrace.Frame :=
-  PairedBlockMath.tailFrame
-    (leftFold (blockWords input i) 80 (PairedBlockMath.readLane s.memory))
-    (rightFold (blockWords input i) 80 (PairedBlockMath.readLane s.memory))
+def desiredHash (s : State) (input : ByteArray) (i : Nat) : Compression.EvmHashState :=
+  StackRunBridge.embedHashArray (Crypto.Ripemd160.compressBlock
+    (stateHash s) (Padding.paddedMessage input) (DriverTrace.blockOffset i))
 
 def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
   { scheduledState s i with
-    memory := PairedTailTrace.resultMemory (scheduledState s i).memory (resultFrame s input i) }
+    memory := StackMemory.storeHash (scheduledState s i).memory (desiredHash s input i) }
 
 @[simp] theorem resultState_executionEnv (s : State) (input : ByteArray) (i : Nat) :
     (resultState s input i).executionEnv = s.executionEnv := by rfl
-
 @[simp] theorem resultState_halt (s : State) (input : ByteArray) (i : Nat) :
     (resultState s input i).halt = s.halt := by rfl
-
 @[simp] theorem resultState_callStack (s : State) (input : ByteArray) (i : Nat) :
     (resultState s input i).callStack = s.callStack := by rfl
 
 theorem resultState_word_above (s : State) (input : ByteArray) (i address : Nat)
-    (haddress : 736 ≤ address) :
+    (haddress : 1024 ≤ address) :
     StackRunBridge.wordAt (resultState s input i) address = StackRunBridge.wordAt s address := by
-  change MachineState.readWord
-    (PairedTailTrace.resultMemory (scheduledState s i).memory (resultFrame s input i)) address = _
-  unfold MachineState.readWord
-  rw [PairedTailTrace.tail_readPadded_outside _ _ _ _ (Or.inr (by omega))]
-  change MachineState.readWord (scheduledState s i).memory address = MachineState.readWord s.memory address
-  exact PairedScheduleMemory.read_normalized_outside _ _ address (by omega)
+  change MachineState.readWord (StackMemory.storeHash _ _) address = _
+  rw [StackMemory.readWord_storeHash_ge_120 _ _ _ (by omega)]
+  exact PairTableLayout.read_resultMemory_outside _ _ _ (by omega)
+
+theorem stateHash_of_context (s : State) (input : ByteArray) (i : Nat)
+    (h : Compression.HashState) (ctx : StackRunBridge.BlockContext s input i h) :
+    stateHash s = CompressionCorrect.hashArray h := by
+  have hh : StackMemory.hashAt s.memory = Compression.embedHash h := ctx.hash
+  simp only [stateHash, hh, Compression.embedHash, Word.toUInt32_ofUInt32]
+  rfl
 
 theorem resultState_hash (s : State) (input : ByteArray) (i : Nat) (h : Compression.HashState)
     (ctx : StackRunBridge.BlockContext s input i h) :
@@ -155,30 +101,11 @@ theorem resultState_hash (s : State) (input : ByteArray) (i : Nat) (h : Compress
       StackRunBridge.embedHashArray
         (Crypto.Ripemd160.compressBlock (CompressionCorrect.hashArray h)
           (Padding.paddedMessage input) (DriverTrace.blockOffset i)) := by
-  have hh : PairedBlockMath.hashWords s.memory = Compression.embedHash h := ctx.hash
-  have hq : PairedBlockMath.hashWords (scheduledState s i).memory = Compression.embedHash h :=
-    (scheduled_hashWords s i).trans hh
-  change PairedBlockMath.hashWords
-    (PairedTailTrace.resultMemory (scheduledState s i).memory (resultFrame s input i)) = _
-  unfold resultFrame
-  rw [PairedBlockMath.tail_hash _ h _ _ hq, PairedBlockMath.readLane_of_hash _ h hh]
-  have hspec := PairedCompressionBridge.paired_compression_eq_spec
-    (Padding.paddedMessage input) (DriverTrace.blockOffset i) h
-    (leftFold (blockWords input i)) (rightFold (blockWords input i))
-    (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-  exact congrArg StackRunBridge.embedHashArray hspec
+  change StackMemory.hashAt (StackMemory.storeHash _ _) = _
+  rw [StackMemory.hashAt_storeHash]
+  unfold desiredHash
+  rw [stateHash_of_context s input i h ctx]
 
-#print axioms blockWords_eq_readLE32
-#print axioms messagePointer_lower
-#print axioms messagePointer_bound
-#print axioms scheduled_active
 #print axioms extracted_words
-#print axioms scheduled_ready
-#print axioms scheduled_hashWords
-#print axioms resultState_executionEnv
-#print axioms resultState_halt
-#print axioms resultState_callStack
-#print axioms resultState_word_above
 #print axioms resultState_hash
-
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedBlockModel

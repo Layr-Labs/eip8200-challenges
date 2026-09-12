@@ -567,7 +567,7 @@ theorem scheduleSeparated (input : ByteArray) (msgOff : UInt256)
     (hfit : Challenge.Ripemd160.CalldataFits input)
     (hblock : blockOff + 64 ≤ paddedLength input.size) :
     ∀ k, k < 16 →
-      0x2e0 ≤ (Schedule.loadOffsetWord msgOff k).toNat := by
+      0x400 ≤ (Schedule.loadOffsetWord msgOff k).toNat := by
   intro k hk
   rw [hmsgOff, loadOffsetWord_eq input blockOff k hfit hblock hk,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -657,7 +657,7 @@ theorem padReturned_blockIndexSeparated (input : ByteArray)
     (hfit : Challenge.Ripemd160.CalldataFits input) (i : Nat)
     (hi : i < paddedLength input.size / 64) :
     ∀ k, k < 16 →
-      0x2e0 ≤ (Schedule.loadOffsetWord
+      0x400 ≤ (Schedule.loadOffsetWord
         (UInt256.ofNat (messageOffset + i * 64)) k).toNat := by
   apply scheduleSeparated input (UInt256.ofNat (messageOffset + i * 64))
     (i * 64) rfl hfit

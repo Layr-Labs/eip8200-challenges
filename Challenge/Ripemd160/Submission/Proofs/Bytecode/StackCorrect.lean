@@ -1,6 +1,4 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.SentinelPreserve
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedBlockTrace
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.FastEmptyBlock
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Execution
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectEmptyReturn
 
@@ -12,100 +10,54 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
 
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
-/-- Mathematical single-block state for the hash invariant. Nonempty inputs
-execute the generic compressor. The empty case returns through DirectEmptyReturn
-and retains this abstract state only for the common hash-state interface. -/
+/-- Mathematical single-block state shared by the exact compression trace. -/
 def nextState (s : State) (input : ByteArray) (i : Nat) : State :=
-  if input.size = 0 then FastEmptyBlock.resultState s input i
-  else PairedBlockModel.resultState s input i
-
-theorem nextState_sentinel (s : State) (input : ByteArray) (i : Nat)
-    (hs : SentinelCore.SentinelOK s.memory) :
-    SentinelCore.SentinelOK (nextState s input i).memory := by
-  unfold nextState
-  split
-  · exact SentinelPreserve.sentinel_emptyMemory s.memory hs
-  · exact SentinelPreserve.sentinel_pairedResultState s input i
+  PairedBlockModel.resultState s input i
 
 @[simp] theorem nextState_executionEnv (s : State) (input : ByteArray) (i : Nat) :
-    (nextState s input i).executionEnv = s.executionEnv := by
-  unfold nextState
-  split <;> simp
+    (nextState s input i).executionEnv = s.executionEnv := rfl
 
 @[simp] theorem nextState_halt (s : State) (input : ByteArray) (i : Nat) :
-    (nextState s input i).halt = s.halt := by
-  unfold nextState
-  split <;> simp
+    (nextState s input i).halt = s.halt := rfl
 
 @[simp] theorem nextState_callStack (s : State) (input : ByteArray) (i : Nat) :
-    (nextState s input i).callStack = s.callStack := by
-  unfold nextState
-  split <;> simp
+    (nextState s input i).callStack = s.callStack := rfl
 
 theorem nextState_word_above (s : State) (input : ByteArray) (i address : Nat)
-    (haddress : 0x2e0 ≤ address) :
+    (haddress : 0x400 ≤ address) :
     StackRunBridge.wordAt (nextState s input i) address =
-      StackRunBridge.wordAt s address := by
-  unfold nextState
-  split
-  · exact FastEmptyBlock.resultState_word_above _ _ _ _ (by omega)
-  · exact PairedBlockModel.resultState_word_above _ _ _ _ haddress
-
-private theorem input_eq_empty (input : ByteArray) (hempty : input.size = 0) :
-    input = ByteArray.empty := by
-  apply ByteArray.ext
-  apply Array.ext
-  · simpa using hempty
-  · intro i hi
-    simp [hempty] at hi
+      StackRunBridge.wordAt s address :=
+  PairedBlockModel.resultState_word_above s input i address haddress
 
 theorem nextState_hash (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState) (_hfit : CalldataFits input)
-    (hi : i < DriverTrace.blockCount input)
+    (_hi : i < DriverTrace.blockCount input)
     (ctx : StackRunBridge.BlockContext s input i h)
-    (hmodel : CompressionCorrect.hashArray h = CompressionSeamBridge.hashAfter input i) :
+    (_hmodel : CompressionCorrect.hashArray h = CompressionSeamBridge.hashAfter input i) :
     StackRunBridge.hashAt32 (nextState s input i) =
       StackRunBridge.embedHashArray
         (Crypto.Ripemd160.compressBlock (CompressionCorrect.hashArray h)
-          (Padding.paddedMessage input) (DriverTrace.blockOffset i)) := by
-  unfold nextState
-  by_cases hempty : input.size = 0
-  · rw [if_pos hempty]
-    have hinput := input_eq_empty input hempty
-    subst input
-    have hi0 : i = 0 := by
-      simp [DriverTrace.blockCount, Padding.paddedLength] at hi
-      omega
-    subst i
-    change StackMemory.hashAt (FastEmptyBlock.resultState s ByteArray.empty 0).memory = _
-    rw [FastEmptyBlock.resultState_hashAt, hmodel]
-    change FastEmptyBlock.emptyHash = StackRunBridge.embedHashArray
-      (Crypto.Ripemd160.compressBlock Crypto.Ripemd160.H0 (Padding.paddedMessage ByteArray.empty) 0)
-    rw [FastEmptyBlock.compress_empty]
-    rfl
-  · rw [if_neg hempty]
-    exact PairedBlockModel.resultState_hash _ _ _ _ ctx
+          (Padding.paddedMessage input) (DriverTrace.blockOffset i)) :=
+  PairedBlockModel.resultState_hash s input i h ctx
 
 noncomputable def gasSteps_block (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState) (hfit : CalldataFits input)
     (hi : i < DriverTrace.blockCount input)
     (ctx : StackRunBridge.BlockContext s input i h)
-    (hpositive : 0 < input.size)
+    (_hpositive : 0 < input.size)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (DriverTrace.dispatchEntry s input i)
       (DriverTrace.compressReturned (nextState s input i) input i) := by
-  have hempty : input.size ≠ 0 := Nat.ne_of_gt hpositive
   have gcompress := PairedBlockTrace.gasSteps_compress s input i h hfit hi ctx
     hcode hfork hrun hnp
   exact GasSteps.cast gcompress (by rfl) (by
-    simp [nextState, hempty, DriverTrace.compressReturned])
+    rfl)
 
 noncomputable def kernel : StackRunBridge.BlockKernel where
   nextState := nextState
-  sentinel := nextState_sentinel
   executionEnv := nextState_executionEnv
   halt := nextState_halt
   callStack := nextState_callStack
@@ -115,7 +67,6 @@ noncomputable def kernel : StackRunBridge.BlockKernel where
   gasSteps := fun s input i h hfit hi ctx hcode hfork hrun hnp _ hpositive =>
     gasSteps_block s input i h hfit hi ctx hpositive hcode hfork hrun hnp
   nextState2 := fun s _ => s
-  sentinel2 := by intros; assumption
   executionEnv2 := by intros; rfl
   halt2 := by intros; rfl
   callStack2 := by intros; rfl
@@ -126,7 +77,7 @@ noncomputable def kernel : StackRunBridge.BlockKernel where
 
 theorem correct (input : ByteArray) (hfit : CalldataFits input)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0)
-      (Execution.atPC input 276)) :
+      (Execution.atPC input 268)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   by_cases hempty : input.size = 0
