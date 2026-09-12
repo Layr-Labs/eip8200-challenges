@@ -36,15 +36,14 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
   have hrs : r.length ≤ 896 := by simp only [r, rest, List.length_append, List.length_cons, List.length_nil]; omega
   have hf : s.executionEnv.calldata.size < 2^256 := by
     rw [ctx.calldata]; exact calldata_lt_uint256 input hfit
-  have gc := StaggerPersistentEntrySites.gasSteps_call s off limit h rho (by omega) hr hcode hfork hnp
-  rw [show StaggerPersistentEntryRaw.pointer off = UInt256.ofNat (messagePointer i) from pointer_eq input i hfit hi] at gc
   by_cases hh : input.size = DriverTrace.blockOffset i
   · have he : s.executionEnv.calldata.size = off.toNat := by
       rw [ctx.calldata, blockOffsetWord_toNat input hfit i hi]; exact hh
-    have gd := StaggerPersistentEntrySites.gasSteps_hit s (UInt256.ofNat (messagePointer i)) off limit h rho
+    have gd := StaggerPersistentEntrySites.gasSteps_hit s off limit h rho
       (by omega) hr hf he hcode hfork hnp
-    have gp := StaggerPersistentPadPrefix.gasSteps_prefix s (Word.ofUInt32 h.h0) (messagePointer i) r
-      (by omega) hr hcode hfork hnp
+    have gp := StaggerPersistentPadPrefix.gasSteps_prefix s (frame h off limit rho)
+      (by simp only [frame, List.length_append, List.length_cons, List.length_nil]; omega)
+      hr hcode hfork hnp
     have ha : 38 ≤ s.activeWords.toNat := by
       have hq := scheduled_active s input i hfit hi
       change 38 ≤ (DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat (messagePointer i))).toNat at hq
@@ -62,14 +61,16 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
       rw [scheduled_active_eq s input i hfit hi ctx]
       rw [hm]
       rfl
-    exact gc.trans (gd.trans (gp.trans (gb'.trans gj)))
+    exact gd.trans (gp.trans (gb'.trans gj))
   · have he : s.executionEnv.calldata.size ≠ off.toNat := by
       rw [ctx.calldata, blockOffsetWord_toNat input hfit i hi]; exact hh
-    have gd := StaggerPersistentEntrySites.gasSteps_miss s (UInt256.ofNat (messagePointer i)) off limit h rho
+    have gd := StaggerPersistentEntrySites.gasSteps_miss s off limit h rho
       (by omega) hr hf he hcode hfork hnp
+    have gc := StaggerPersistentEntrySites.gasSteps_call s off limit h rho (by omega) hr hcode hfork hnp
+    rw [show StaggerPersistentEntryRaw.pointer off = UInt256.ofNat (messagePointer i) from pointer_eq input i hfit hi] at gc
     have gn := StaggerSetupSites.gasSteps_normal s (Word.ofUInt32 h.h0) (messagePointer i) r hrs hr
       (messagePointer_lower i) (messagePointer_bound input hfit i hi) hcode hfork hnp
-    exact gc.trans (gd.trans gn)
+    exact gd.trans (gc.trans gn)
 
 #print axioms gasSteps_prepare
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PersistentStaggerPrepare

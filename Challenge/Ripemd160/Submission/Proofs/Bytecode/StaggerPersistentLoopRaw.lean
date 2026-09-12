@@ -1,4 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentFrame
+import Batteries.Data.Nat.Bitwise.Lemmas
 set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 1000000
@@ -7,6 +8,14 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentLoopRa
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace
 
+private theorem word_toNat_xor (a b : UInt256) :
+    (UInt256.xor a b).toNat = a.toNat ^^^ b.toNat := by
+  change (a.val ^^^ b.val).val = _
+  rw [Fin.xor_val]
+  apply Nat.mod_eq_of_lt
+  exact Nat.lt_of_lt_of_le
+    (Nat.xor_lt_two_pow a.val.isLt b.val.isLt) (by rfl)
+
 private theorem add_eq_hAdd (x y : UInt256) : UInt256.add x y = x + y := rfl
 
 private theorem add64 (off : UInt256) :
@@ -14,8 +23,8 @@ private theorem add64 (off : UInt256) :
 
 def template (dest : Nat) : List Instr :=
   [.op (.Swap ⟨4, by decide⟩),
-   .push ⟨1, by decide⟩ (UInt256.ofNat 64), .op .ADD, .op (.Swap ⟨4, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩), .op (.Dup ⟨6, by decide⟩), .op .EQ, .op .ISZERO,
+   .push ⟨2, by decide⟩ (UInt256.ofNat 64), .op .ADD, .op (.Swap ⟨4, by decide⟩),
+   .op (.Dup ⟨6, by decide⟩), .op (.Dup ⟨6, by decide⟩), .op .XOR,
    .push ⟨2, by decide⟩ (UInt256.ofNat dest), .op .JUMPI]
 
 def nextOffset (off : UInt256) : UInt256 := off + UInt256.ofNat 64
@@ -30,10 +39,11 @@ theorem run_continue (s : State) (pc : UInt256) (h : Compression.HashState)
         pc := UInt256.ofNat dest
         stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
   have hcap (n : Nat) (hn : n ≤ 10) : rho.length + n < 1024 := by omega
-  have heq : UInt256.eq (nextOffset off) limit = UInt256.ofNat 0 := by
-    unfold UInt256.eq
-    rw [if_neg hmiss]
-  change UInt256.eq (off + UInt256.ofNat 64) limit = UInt256.ofNat 0 at heq
+  have heq : (UInt256.xor (nextOffset off) limit).toNat ≠ 0 := by
+    rw [word_toNat_xor]
+    intro hz
+    exact hmiss (Nat.eq_of_xor_eq_zero hz)
+  change (UInt256.xor (off + UInt256.ofNat 64) limit).toNat ≠ 0 at heq
   simp only [Word.word_toNat_ofNat] at hvalid
   norm_num only at hvalid
   simp (discharger := omega) [template, StaggerPersistentFrame.frame, nextOffset, runInstrSeq,
@@ -50,10 +60,9 @@ theorem run_exit (s : State) (pc : UInt256) (h : Compression.HashState)
         pc := pcAfter pc (template dest)
         stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
   have hcap (n : Nat) (hn : n ≤ 10) : rho.length + n < 1024 := by omega
-  have heq : UInt256.eq (nextOffset off) limit = UInt256.ofNat 1 := by
-    unfold UInt256.eq
-    rw [if_pos hhit]
-  change UInt256.eq (off + UInt256.ofNat 64) limit = UInt256.ofNat 1 at heq
+  have heq : (UInt256.xor (nextOffset off) limit).toNat = 0 := by
+    rw [word_toNat_xor, hhit, Nat.xor_self]
+  change (UInt256.xor (off + UInt256.ofNat 64) limit).toNat = 0 at heq
   simp (discharger := omega) [template, StaggerPersistentFrame.frame, nextOffset, runInstrSeq,
     Stepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
