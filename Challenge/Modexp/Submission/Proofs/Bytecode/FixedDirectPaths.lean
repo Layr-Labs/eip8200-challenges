@@ -40,7 +40,7 @@ def entryPrefix : List Located :=
   [opAt 2435 .JUMPDEST,
    opAt 2436 (.Dup ⟨3, by decide⟩),
    pushAt 2437 2 3156,
-   opAt 2438 .JUMP,
+   opAt 2438 .POP,
    opAt 2439 .JUMPDEST,
    pushAt 2440 1 3,
    opAt 2441 .EQ,
@@ -166,7 +166,9 @@ theorem jumpDestSqCommon :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3905 = true :=
   Artifact.isValidJumpDest_index 2950 (by rfl)
 
-/-- Target of the (now contiguous) jump from `0x0c6d` to `0x0c71`. -/
+/-- Landing pad of the fall-through `POP` at `0x0c53`: the pushed target
+`0x0c54` is the very next instruction, so `POP` reproduces `JUMP`'s
+post-state for 5 gas instead of 11. -/
 theorem jumpBridge3423 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3156 = true :=
   Artifact.isValidJumpDest_index 2439 (by rfl)
