@@ -32,7 +32,7 @@ abbrev Located :=
 
 @[simp] theorem directPC1 (i : Nat) (hi : 2472 ≤ i) (hii : i ≤ 2505) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3212,3213,3214,3217,3218,3221,3224,3225,3226,3229,3232,3233,3234,3235,3236,3237,3238,3242,3243,3244,3245,3248,3251,3252,3255,3258,3259,3260,3261,3264,3267,3268,3269,3272] : List Nat)[i - 2472]! := by
+      ([3212,3213,3214,3217,3218,3221,3224,3225,3226,3229,3232,3233,3234,3236,3237,3238,3239,3242,3243,3244,3245,3248,3251,3252,3255,3258,3259,3260,3261,3264,3267,3268,3269,3272] : List Nat)[i - 2472]! := by
   interval_cases i <;> decide
 
 
@@ -40,7 +40,7 @@ def entryPrefix : List Located :=
   [opAt 2435 .JUMPDEST,
    opAt 2436 (.Dup ⟨3, by decide⟩),
    pushAt 2437 2 3156,
-   opAt 2438 .JUMP,
+   opAt 2438 .POP,
    opAt 2439 .JUMPDEST,
    pushAt 2440 1 3,
    opAt 2441 .EQ,
@@ -106,11 +106,11 @@ def squareCall : List Located :=
 
 def squareReturn : List Located :=
   [opAt 2483 .JUMPDEST,
-   pushAt 2484 0 0,
-   opAt 2485 .NOT,
-   opAt 2486 .ADD,
+   pushAt 2484 1 1,
+   opAt 2485 (.Swap ⟨0, by decide⟩),
+   opAt 2486 .SUB,
    opAt 2487 (.Dup ⟨0, by decide⟩),
-   pushAt 2488 3 3212,
+   pushAt 2488 2 3212,
    opAt 2489 .JUMPI]
 
 /-- `after_sq` (pc 3243): both the in-kernel loop's return target and the

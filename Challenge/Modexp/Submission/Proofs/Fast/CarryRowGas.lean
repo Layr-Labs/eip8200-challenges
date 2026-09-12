@@ -550,7 +550,7 @@ opaque gasSteps_tailLast (s : State) (mem : ByteArray) (c mu bi : UInt256)
       (by simp only [List.length_cons]; omega) hrun hcode hfork hnp))).trans
   (exitBlock.steps (environment (CiosCachedTailDefs.nxState s (tailCarry mem c bi)
       (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) pb n hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) hcode hfork hrun hnp) rfl
-    (CiosReadonly.run_exit { s with memory := tailCarry mem c bi }
+    (CiosReadonly.run_exit_pop { s with memory := tailCarry mem c bi }
       (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) hd
       (UInt256.ofNat (pb-32)) ent (l2Target n) tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap
       (by rw [hcode]; exact jumpDest4976)))
