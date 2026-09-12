@@ -240,7 +240,7 @@ def lift (s t : State) (e : Env s) (stack : List UInt256)
 end boundary
 
 namespace clamp
-abbrev template : List Instr := RecognitionBranchRaw.clampTemplateWith 2 285
+abbrev template : List Instr := RecognitionBranchRaw.clampTemplateWith 2 174
 theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 182).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
   StackSiteBuilder.ofSlice template 182 actual_slice
