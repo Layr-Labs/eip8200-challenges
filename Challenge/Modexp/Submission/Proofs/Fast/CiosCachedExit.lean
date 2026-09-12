@@ -36,6 +36,7 @@ theorem run_exit (s : State) (pbi paEnd pbEnd flag target2 dst ret : UInt256) (r
   have hc2new : rest.length+2 < 1024 := by omega
   simp [hExtra9, hExtra10, hExtra11, hExtra12, hExtra13, hExtra14, exitProgram, CiosCached.tailProgram, framed, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     hc2new, hc2, hc3, hc4, hc5, hc6, hc7, htarget,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat]
+    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedExit
