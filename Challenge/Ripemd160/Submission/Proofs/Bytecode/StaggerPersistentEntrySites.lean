@@ -8,28 +8,28 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate StaggerPersistentEntryRaw StaggerPersistentFrame
 def dispatchCode : List Instr := dispatchTemplate 448
 theorem dispatch_slice :
-    (Artifact.submissionArtifact.instructions.drop 336).take dispatchCode.length = dispatchCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 335).take dispatchCode.length = dispatchCode := by rfl
 def dispatchSite : GenericRoundSite Artifact.submissionArtifact .Osaka dispatchCode :=
-  StackSiteBuilder.ofSlice dispatchCode 336 dispatch_slice
-    (by change 336 + dispatchCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice dispatchCode 335 dispatch_slice
+    (by change 335 + dispatchCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := dispatchCode) (by decide)) (by decide)
 theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 528 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 336) = UInt256.ofNat 528
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 335) = UInt256.ofNat 528
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def callCode : List Instr := callTemplate
 theorem call_slice :
-    (Artifact.submissionArtifact.instructions.drop 341).take callCode.length = callCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 340).take callCode.length = callCode := by rfl
 def callSite : GenericRoundSite Artifact.submissionArtifact .Osaka callCode :=
-  StackSiteBuilder.ofSlice callCode 341 call_slice
-    (by change 341 + callCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice callCode 340 call_slice
+    (by change 340 + callCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := callCode) (by decide)) (by decide)
 theorem call_pc : callSite.startPC = UInt256.ofNat 535 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 341) = UInt256.ofNat 535
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 340) = UInt256.ofNat 535
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_pad (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
