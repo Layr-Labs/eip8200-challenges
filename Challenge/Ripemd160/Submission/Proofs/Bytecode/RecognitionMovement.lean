@@ -133,19 +133,9 @@ def gasSteps_clamp0 (s : State) (e : Env s) (f : RecognitionBodyRaw.Frame) (rho 
       simpa only [atState, clamp0.end_pc, if_neg hc] using h
     simpa only [RecognitionFrame.clamp, if_neg hc] using g.trans (gasSteps_reset0 s e f rho hs)
 
-def gasSteps_back (s : State) (e : Env s) (f : RecognitionBodyRaw.Frame) (rho : List UInt256) (hs : rho.length ≤ 990) :
-    GasSteps (atState s 285 (frame f rho)) (atState s 174 (frame f rho)) := by
-  apply back.lift s _ e (frame f rho)
-  have hv : Decode.isValidJumpDest s.executionEnv.code 174 = true := by
-    simpa only [Word.word_toNat_ofNat, Nat.reducePow, Nat.reduceMod] using valid_175 s e
-  have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
-  simp (discharger := omega) [atState, back.template, frame, runInstrSeq, Stepper.runInstr,
-    pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
-    Nat.add_assoc, e.run, hcap, Word.word_toNat_ofNat, Word.literal_eq_ofNat, hv]
-
 def gasSteps_clamp (s : State) (e : Env s) (f : RecognitionBodyRaw.Frame) (rho : List UInt256) (hs : rho.length ≤ 990) :
     GasSteps (atState s 275 (frame f rho)) (atState s 174 (frame (RecognitionFrame.clamp f) rho)) := by
-  have h := RecognitionBranchRaw.run_clamp_width 2 (by decide) s (UInt256.ofNat 275) f rho 174 hs e.run (valid_175 s e)
+  have h := RecognitionBranchRaw.run_clamp_width 2 (by decide) s (UInt256.ofNat 275) f rho 174 hs e.run (valid_174 s e)
   by_cases hc : f.stop.toNat < f.full.toNat
   · apply clamp.lift s _ e (frame f rho)
     simpa only [atState, RecognitionFrame.clamp, if_pos hc] using h
@@ -153,8 +143,8 @@ def gasSteps_clamp (s : State) (e : Env s) (f : RecognitionBodyRaw.Frame) (rho :
         (atState s 282 (frame f rho)) := by
       apply clamp.lift s _ e (frame f rho)
       simpa only [atState, clamp.end_pc, if_neg hc] using h
-    have gb := (g.trans (gasSteps_reset s e f rho hs)).trans (gasSteps_back s e ({ f with stop := f.full }) rho hs)
-    simpa only [RecognitionFrame.clamp, if_neg hc] using gb
+    have g' := g.trans (gasSteps_reset s e f rho hs)
+    simpa only [RecognitionFrame.clamp, if_neg hc] using g'.trans (gasSteps_back s e {f with stop := f.full} rho hs)
 
 def gasSteps_pass0 (s : State) (e : Env s) (f : RecognitionBodyRaw.Frame) (rho : List UInt256) (hs : rho.length ≤ 990) :
     GasSteps (atState s 174 (frame f rho)) (atState s 175 (frame f rho)) := by
@@ -180,6 +170,15 @@ def gasSteps_skip (s : State) (e : Env s) (f : RecognitionBodyRaw.Frame) (rho : 
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, e.run, hcap, Word.word_toNat_ofNat, Word.literal_eq_ofNat, hv]
 
+def gasSteps_back (s : State) (e : Env s) (f : RecognitionBodyRaw.Frame) (rho : List UInt256) (hs : rho.length ≤ 990) :
+    GasSteps (atState s 285 (frame f rho)) (atState s 174 (frame f rho)) := by
+  apply back.lift s _ e (frame f rho)
+  have hv : Decode.isValidJumpDest s.executionEnv.code 174 = true := by
+    simpa only [Word.word_toNat_ofNat, Nat.reducePow, Nat.reduceMod] using valid_175 s e
+  have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
+  simp (discharger := omega) [atState, back.template, frame, runInstrSeq, Stepper.runInstr,
+    pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
+    Nat.add_assoc, e.run, hcap, Word.word_toNat_ofNat, Word.literal_eq_ofNat, hv]
 
 #print axioms gasSteps_init
 #print axioms gasSteps_normal
