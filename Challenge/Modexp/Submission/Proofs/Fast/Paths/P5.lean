@@ -66,20 +66,16 @@ def blk1294 :
    pushAt 1188 2 1657,
    opAt 1189 .JUMPI]
 
-/-- Instructions 1431..1388, pc 1945..1960. -/
+/-- Instructions 1431..1388, pc 1945..1960.  The multiply's return address is
+the `ENX` landing itself: the byte after the `JUMP` is dead. -/
 def blk1301 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1190 2 1656,
+  [pushAt 1190 2 1657,
    pushAt 1191 2 256,
    pushAt 1192 2 512,
    pushAt 1193 2 256,
    pushAt 1194 2 4137,
    opAt 1195 .JUMP]
-
-/-- Instructions 1389..1389, pc 1961..1961. -/
-def blk1307 :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1196 .JUMPDEST]
 
 /-- Instructions 1438..1395, pc 1832..1888. -/
 def blk1308 :
