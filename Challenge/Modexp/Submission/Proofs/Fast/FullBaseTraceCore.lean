@@ -18,11 +18,11 @@ def runInstructions : List Instr → State → Option State
 def copyAddProgram : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 96),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 1024), .op .CALLDATACOPY,
+   .push ⟨2, by decide⟩ (UInt256.ofNat 256), .op .CALLDATACOPY,
    .push ⟨2, by decide⟩ (UInt256.ofNat 1469),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 2048),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 1024),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 6144),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 512),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 256),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 1536),
    .push ⟨2, by decide⟩ (UInt256.ofNat 3912), .op .JUMP]
 
 theorem run_copyAdd (s : State) (memory input : ByteArray)
@@ -34,7 +34,7 @@ theorem run_copyAdd (s : State) (memory input : ByteArray)
       some (addCallState s memory input n bsize esize msize) := by
   have hsize : (UInt256.ofNat (32 * n)).toNat = 32 * n := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
-    exact lt_of_le_of_lt (show 32 * n ≤ 1024 by omega) (by decide)
+    exact lt_of_le_of_lt (show 32 * n ≤ 256 by omega) (by decide)
   have haw := copyBase_activeWords s n hn32 hactive
   simp only [State.activeWordsAfterUInt256] at haw
   simp [copyAddProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,

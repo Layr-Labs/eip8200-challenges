@@ -14,7 +14,7 @@ open EarlyCsub
     already proves that the accumulator is below the modulus. -/
 def csResultMemory (memory : ByteArray) (n pdst : Nat) : ByteArray :=
   if Skip memory then
-    MachineState.writeBytes memory (MachineState.readPadded memory 8256 (32*n)) pdst
+    MachineState.writeBytes memory (MachineState.readPadded memory 2112 (32*n)) pdst
   else subResultMemory memory n pdst
 
 def csReturnedState (s : State) (memory : ByteArray) (n j : Nat)
@@ -23,7 +23,7 @@ def csReturnedState (s : State) (memory : ByteArray) (n j : Nat)
     pc := ret
     stack := rest
     memory := if Skip memory then
-      MachineState.writeBytes memory (MachineState.readPadded memory 8256 (32*n)) pdst.toNat
+      MachineState.writeBytes memory (MachineState.readPadded memory 2112 (32*n)) pdst.toNat
     else (subReturnedState s memory n j pdst ret rest).memory }
 
 theorem csReturnedState_memory (s : State) (memory : ByteArray) (n : Nat)
@@ -33,9 +33,9 @@ theorem csReturnedState_memory (s : State) (memory : ByteArray) (n : Nat)
 
 theorem csub_correct (memory : ByteArray) (n tlow mm tn pdst : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (ht : Model.FastRepresents memory 8256 n tlow)
+    (ht : Model.FastRepresents memory 2112 n tlow)
     (hm : Model.FastRepresents memory 0 n mm)
-    (htnv : (MachineState.readWord memory 8224).toNat = tn) (htn1 : tn ≤ 1)
+    (htnv : (MachineState.readWord memory 2080).toNat = tn) (htn1 : tn ≤ 1)
     (hmpos : 0 < mm) (hbound : tn * Limbs.radix ^ n + tlow < 2 * mm) :
     Model.FastRepresents (csResultMemory memory n pdst) pdst n
       ((tn * Limbs.radix ^ n + tlow) % mm) := by
@@ -46,22 +46,22 @@ theorem csub_correct (memory : ByteArray) (n tlow mm tn pdst : Nat)
     have htlt := high_limb_lt (by omega) ht hm hs.2
     have htn0 : tn = 0 := by omega
     rw [htn0, Nat.zero_mul, Nat.zero_add, Nat.mod_eq_of_lt htlt]
-    exact fastRepresents_mcopy memory 8256 pdst n tlow (by omega) ht
+    exact fastRepresents_mcopy memory 2112 pdst n tlow (by omega) ht
   · exact csub_sub_correct memory n tlow mm tn pdst hn hn32 ht hm htnv htn1 hmpos hbound
 
 theorem csub_preserves_region (memory : ByteArray) (n pdst ptr cnt v : Nat)
     (hn : 2 ≤ n)
-    (hdisjSubb : ptr + 32 * cnt ≤ 7168 ∨ 7168 + 32 * n ≤ ptr)
+    (hdisjSubb : ptr + 32 * cnt ≤ 1792 ∨ 1792 + 32 * n ≤ ptr)
     (hdisjDst : pdst + 32 * n ≤ ptr ∨ ptr + 32 * cnt ≤ pdst)
     (hrep : Model.FastRepresents memory ptr cnt v) :
     Model.FastRepresents (csResultMemory memory n pdst) ptr cnt v := by
   unfold csResultMemory
   split
-  · exact fastRepresents_mcopy_disjoint memory 8256 pdst (32*n) ptr cnt v hdisjDst hrep
+  · exact fastRepresents_mcopy_disjoint memory 2112 pdst (32*n) ptr cnt v hdisjDst hrep
   · exact csub_sub_preserves_region memory n pdst ptr cnt v hn hdisjSubb hdisjDst hrep
 
 theorem guarded_readWord_outside (memory : ByteArray) (n pdst addr : Nat)
-    (hn : 1 ≤ n) (hsubb : addr+32 ≤ 7168 ∨ 7168+32*n ≤ addr)
+    (hn : 1 ≤ n) (hsubb : addr+32 ≤ 1792 ∨ 1792+32*n ≤ addr)
     (hdst : addr+32 ≤ pdst ∨ pdst+32*n ≤ addr) :
     MachineState.readWord (csResultMemory memory n pdst) addr =
       MachineState.readWord memory addr := by
@@ -73,7 +73,7 @@ theorem guarded_readWord_outside (memory : ByteArray) (n pdst addr : Nat)
     exact hdst
   unfold csResultMemory
   split
-  · exact hcopy memory 8256
+  · exact hcopy memory 2112
   · unfold subResultMemory
     rw [hcopy]
     exact csStep_readWord_disjoint memory n addr hn hsubb n le_rfl

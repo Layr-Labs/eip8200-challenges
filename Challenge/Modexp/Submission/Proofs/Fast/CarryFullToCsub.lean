@@ -22,13 +22,13 @@ opaque gasSteps_toCsub (L : RowLemmas) (E : EntryLemmas) (s : State) (mem : Byte
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 8192)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472)
+    (hact : 93 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 2048)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2912)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
-    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n))
-    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * n - 32))
+    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32 * n))
+    (htl : MachineState.readWord mem 2880 = UInt256.ofNat (2080 + 32 * n))
+    (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32 * n - 32))
     (hminv : inverseInvariant mem n) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)

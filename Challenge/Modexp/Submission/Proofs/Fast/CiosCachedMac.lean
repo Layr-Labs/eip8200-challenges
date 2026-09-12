@@ -15,10 +15,10 @@ open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 theorem run_l2Mac (pc : Nat) (w : Fin 33) (x tl ts : UInt256)
     (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pb n i k : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hact : 296 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 1005) (hact : 93 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 32) (hk : k+1 < n)
-    (hx : x.toNat = 32 * (n - 2 - k)) (htl : tl.toNat = 8256 + 32 * (n - 2 - k))
-    (hts : ts.toNat = 8256 + 32 * (n - 1 - k))
+    (hx : x.toNat = 32 * (n - 2 - k)) (htl : tl.toNat = 2112 + 32 * (n - 2 - k))
+    (hts : ts.toNat = 2112 + 32 * (n - 1 - k))
     (hpush : w.val = 0 → x = UInt256.ofNat 0) :
     runInstructions (l2Program w x tl ts) (l2At pc s mid bi mu c0 pb n i k hd ent pdst ret rest) =
       some (l2At (pc+(w.val+35)) s mid bi mu c0 pb n i (k+1) hd ent pdst ret rest) := by

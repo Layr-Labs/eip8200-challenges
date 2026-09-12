@@ -51,10 +51,10 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
       2 ^ count + 1)
     (hframe : Exp.Frame memory n bsize minv)
     (hmod : Model.FastRepresents memory 0 n mm)
-    (hbase : Model.FastRepresents memory 2048 n bM)
-    (hrawAcc : Model.FastRepresents memory 1024 n rawBase)
+    (hbase : Model.FastRepresents memory 512 n bM)
+    (hrawAcc : Model.FastRepresents memory 256 n rawBase)
     (hone : ∃ one, one < Limbs.radix ∧
-      Model.FastRepresents memory 3072 n one) :
+      Model.FastRepresents memory 768 n one) :
     FixedExponentRoute.Handled input
       (special s memory n bsize esize msize count) := by
   let ch := chain_of_fixed s sub memory esize msize count bM rawBase
@@ -63,13 +63,13 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
   let memSq := ch.mem
   let sqVal := fixedDirectValue mm (Limbs.radix ^ n) bM count
   let prodVal := Model.montMul mm (Limbs.radix ^ n) sqVal rawBase
-  let memOut := sub.mpMem 2048 1024 1024 memSq
+  let memOut := sub.mpMem 512 256 256 memSq
   have hsqInv : Inv memSq n mm rawBase sqVal := ch.inv
   have hframeSq : Exp.Frame memSq n bsize minv := ch.frame
   have hsqLt : sqVal < mm := fixedDirectValue_lt hm hbMlt count
   have htraceProdCall := FixedDirectChainTrace.gasSteps_product
     s memSq n bsize esize msize ch.cnt hcode hfork hrun hnp
-  have htraceProdMp := sub.monpro 2048 1024 1024 (UInt256.ofNat 1571)
+  have htraceProdMp := sub.monpro 512 256 256 (UInt256.ofNat 1571)
     (Exp.outer n bsize esize msize) memSq sqVal rawBase
     (by simp [Exp.outer]) (by omega) (by omega) (by omega) (by omega)
     (by omega) jumpD3997 hframeSq hsqInv.modulus hsqInv.squareBase
@@ -78,8 +78,8 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
       (product s memSq n bsize esize msize ch.cnt)
       (Exp.finHead s memOut n bsize esize msize) :=
     htraceProdCall.trans htraceProdMp
-  have houtRep : Model.FastRepresents memOut 1024 n prodVal :=
-    spec.mpValueRaw 2048 1024 1024 memSq sqVal rawBase
+  have houtRep : Model.FastRepresents memOut 256 n prodVal :=
+    spec.mpValueRaw 512 256 256 memSq sqVal rawBase
       (by omega) (by omega) (by omega) hsqInv.modulus hframeSq.minvW
       hsqInv.squareBase hsqInv.rawAcc hsqLt
   have htraceReturn := Exp.gasSteps_return s memOut n bsize esize msize

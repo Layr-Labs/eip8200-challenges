@@ -24,26 +24,26 @@ opaque gasSteps_fallback (E : EntryLemmas) (s : State) (mem : ByteArray) (pa pb 
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 9472)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 9472)
+    (hact : 93 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 2912)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2912)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hs32 : MachineState.readWord mem 9344 = UInt256.ofNat (32 * n))
-    (htl : MachineState.readWord mem 9440 = UInt256.ofNat (8224 + 32 * n))
-    (hml : MachineState.readWord mem 9408 = UInt256.ofNat (32 * n - 32))
+    (hs32 : MachineState.readWord mem 2784 = UInt256.ofNat (32 * n))
+    (htl : MachineState.readWord mem 2880 = UInt256.ofNat (2080 + 32 * n))
+    (hml : MachineState.readWord mem 2848 = UInt256.ofNat (32 * n - 32))
     (hminv : inverseInvariant mem n) (hn4 : n ≠ 4) (hn8 : n ≠ 8) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
       (mpCsubState s (selectedRows (mpZeroed s mem n) pa pb n n) pdst ret rest) := by
   have h32n : 32 * n < 2 ^ 256 := by omega
-  have h128 : MachineState.readWord mem 9344 ≠ UInt256.ofNat 128 := by
+  have h128 : MachineState.readWord mem 2784 ≠ UInt256.ofNat 128 := by
     intro heq
     have hword : UInt256.ofNat (32 * n) = UInt256.ofNat 128 := hs32.symm.trans heq
     have hnat := congrArg UInt256.toNat hword
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt h32n,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by norm_num)] at hnat
     exact hn4 (by omega)
-  have h256 : MachineState.readWord mem 9344 ≠ UInt256.ofNat 256 := by
+  have h256 : MachineState.readWord mem 2784 ≠ UInt256.ofNat 256 := by
     intro heq
     have hword : UInt256.ofNat (32 * n) = UInt256.ofNat 256 := hs32.symm.trans heq
     have hnat := congrArg UInt256.toNat hword

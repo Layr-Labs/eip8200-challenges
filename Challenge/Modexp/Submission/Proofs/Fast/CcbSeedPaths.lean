@@ -26,7 +26,7 @@ private theorem seedPCAnchor :
 
 def entryPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2501 .JUMPDEST,
-   pushAt 2502 2 9344,
+   pushAt 2502 2 2784,
    opAt 2503 .MLOAD,
    pushAt 2504 1 128,
    opAt 2505 .LT,

@@ -29,7 +29,7 @@ def mulEntryProgram : List Instr :=
 
 def commonGuardProgram : List Instr :=
   [.op .JUMPDEST,
-   .push 2 9344,
+   .push 2 2784,
    .op .MLOAD,
    .op (.Dup ⟨0, by decide⟩),
    .push 1 128,

@@ -24,7 +24,7 @@ def blk1816 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1600 .JUMPDEST,
    opAt 1601 (.Dup ⟨0, by decide⟩),
-   pushAt 1602 2 4096,
+   pushAt 1602 2 1024,
    opAt 1603 .EQ,
    pushAt 1604 2 1356,
    opAt 1605 .JUMPI]
@@ -33,9 +33,9 @@ def blk1816 :
 def blk1822 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1606 2 1356,
-   pushAt 1607 2 6144,
+   pushAt 1607 2 1536,
    opAt 1608 (.Dup ⟨2, by decide⟩),
-   pushAt 1609 2 6144,
+   pushAt 1609 2 1536,
    pushAt 1610 2 3912,
    opAt 1611 .JUMP]
 

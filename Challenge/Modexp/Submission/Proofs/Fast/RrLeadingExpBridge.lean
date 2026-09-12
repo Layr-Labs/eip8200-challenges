@@ -68,19 +68,19 @@ theorem direct_rejoin_facts (template : State) (mem : ByteArray)
     (hactive : 298 ≤ template.activeWords.toNat)
     (hframe : Frame mem n bsize minv)
     (hmod : Model.FastRepresents mem 0 n mm)
-    (hr1 : Model.FastRepresents mem 4096 n (R % mm))
-    (hcc : Model.FastRepresents mem 5120 n (Limbs.radix * R % mm))
-    (hacc : Model.FastRepresents mem 1024 n 0)
-    (hbase : Model.FastRepresents mem 2048 n 0)
-    (hone : Model.FastRepresents mem 3072 n 0) :
+    (hr1 : Model.FastRepresents mem 1024 n (R % mm))
+    (hcc : Model.FastRepresents mem 1280 n (Limbs.radix * R % mm))
+    (hacc : Model.FastRepresents mem 256 n 0)
+    (hbase : Model.FastRepresents mem 512 n 0)
+    (hone : Model.FastRepresents mem 768 n 0) :
     exitState template mem n bsize esize msize =
         Challenge.Modexp.Submission.Proofs.Fast.Exp.rrHead template
           (copiedMemory mem n) n bsize esize msize (directCounter n) ∧
       Frame (copiedMemory mem n) n bsize minv ∧
       RrInv (copiedMemory mem n) n mm R (Limbs.radix * R % mm) ∧
-      Model.FastRepresents (copiedMemory mem n) 1024 n 0 ∧
-      Model.FastRepresents (copiedMemory mem n) 2048 n 0 ∧
-      Model.FastRepresents (copiedMemory mem n) 3072 n 0 ∧
+      Model.FastRepresents (copiedMemory mem n) 256 n 0 ∧
+      Model.FastRepresents (copiedMemory mem n) 512 n 0 ∧
+      Model.FastRepresents (copiedMemory mem n) 768 n 0 ∧
       directCounter n ≤ 5 := by
   have hcopy := rrCopyInv_after_copy mem n mm R hn2 hn32 hmod hr1 hcc
   exact ⟨exitState_eq_rrHead template mem n bsize esize msize hn32 hactive,

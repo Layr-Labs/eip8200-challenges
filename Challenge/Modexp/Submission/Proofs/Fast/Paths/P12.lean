@@ -46,7 +46,7 @@ def blk1627 :
    opAt 1462 .NOT,
    opAt 1463 .ADD,
    opAt 1464 (.Swap ⟨1, by decide⟩),
-   pushAt 1465 2 8224,
+   pushAt 1465 2 2080,
    opAt 1466 (.Dup ⟨1, by decide⟩),
    opAt 1467 .GT,
    pushAt 1468 2 1929,
@@ -58,7 +58,7 @@ def blk1662 :
   [opAt 1470 .POP,
    opAt 1471 .POP,
    opAt 1472 .POP,
-   pushAt 1473 2 8224,
+   pushAt 1473 2 2080,
    opAt 1474 .MSTORE,
 
    pushAt 1475 2 4669,

@@ -35,7 +35,7 @@ theorem guardWord_eq (memory : ByteArray) (n bsize : Nat)
     guardWord memory n bsize =
       if Matches memory n bsize then UInt256.ofNat 0 else UInt256.ofNat 1 := by
   have hsize : 32 * n < 2 ^ 256 :=
-    lt_of_le_of_lt (show 32 * n ≤ 1024 by omega) (by decide)
+    lt_of_le_of_lt (show 32 * n ≤ 256 by omega) (by decide)
   unfold guardWord UInt256.isZero
   rw [Challenge.EvmProof.Word.word_toNat_land, topShift_toNat]
   simp only [UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,

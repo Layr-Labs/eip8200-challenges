@@ -46,7 +46,7 @@ abbrev entryState (s : State) (mem : ByteArray)
 /-- Exact inherited exponent-loop state restored by every dispatcher miss. -/
 abbrev missState (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  Exp.ebHead s (Exp.mcopyMem mem 1024 4096 (32 * n))
+  Exp.ebHead s (Exp.mcopyMem mem 256 1024 (32 * n))
     n bsize esize msize 0
 
 /-- Successful execution from the appended dispatcher. -/

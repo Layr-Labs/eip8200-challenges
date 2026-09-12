@@ -28,10 +28,10 @@ private theorem sub_one (c : Nat) (hc : c + 1 < 2 ^ 256) :
     UInt256.ofNat (c + 1) - UInt256.ofNat 1 = UInt256.ofNat c := by
   simpa using Challenge.EvmProof.Word.ofNat_sub_ofNat (a := c + 1) (b := 1) (by omega) hc
 
-private theorem activeWords9280 (s : State) (hact : 296 ≤ s.activeWords.toNat) :
-    UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 9280 32) =
+private theorem activeWords9280 (s : State) (hact : 93 ≤ s.activeWords.toNat) :
+    UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2720 32) =
       s.activeWords := by
-  have hnat : MachineState.activeWordsAfter s.activeWords.toNat 9280 32 =
+  have hnat : MachineState.activeWordsAfter s.activeWords.toNat 2720 32 =
       s.activeWords.toNat := by
     unfold MachineState.activeWordsAfter
     simp only [show (32 : Nat) ≠ 0 by decide, if_false]
@@ -44,18 +44,17 @@ theorem run_sqExit_more (s : State) (mem : ByteArray) (n c : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 296 ≤ s.activeWords.toNat) (hcpos : 0 < c) (hc16 : c + 1 ≤ 16)
-    (hcount : MachineState.readWord mem 9280 = UInt256.ofNat (c + 1)) :
+    (hact : 93 ≤ s.activeWords.toNat) (hcpos : 0 < c) (hc16 : c + 1 ≤ 16)
+    (hcount : MachineState.readWord mem 2720 = UInt256.ofNat (c + 1)) :
     runInstructions sqExitProgram
       (frameAt pcSqExit s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
     some (frameAt pcMore s (countMem mem c) n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) := by
-  have hc16' : rest.length + 16 < 1024 := by omega
-  have hc17 : rest.length + 17 < 1024 := by omega
-  have hc18 : rest.length + 18 < 1024 := by omega
-  have hc19 : rest.length + 19 < 1024 := by omega
-  have hc15 : c ≤ 15 := by omega
-  have hdec : allOnes + UInt256.ofNat (c + 1) = UInt256.ofNat c := by
-    interval_cases c <;> decide
+  have hc16' : rest.length + 16 < 256 := by omega
+  have hc17 : rest.length + 17 < 256 := by omega
+  have hc18 : rest.length + 18 < 256 := by omega
+  have hc19 : rest.length + 19 < 256 := by omega
+  have hsub : UInt256.ofNat (c + 1) - UInt256.ofNat 1 = UInt256.ofNat c :=
+    sub_one c (by omega)
   have hcNat : (UInt256.ofNat c).toNat = c := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
   have htrue : UInt256.isTrue (UInt256.ofNat c) := by
@@ -63,9 +62,9 @@ theorem run_sqExit_more (s : State) (mem : ByteArray) (n c : Nat)
     rw [hcNat]; omega
   have hjd : Decode.isValidJumpDest s.executionEnv.code 4739 = true := by
     rw [hcode]; exact jumpDest4753
-  have h9280 : (9280 : UInt256).toNat = 9280 := by decide
+  have h9280 : (2720 : UInt256).toNat = 2720 := by decide
   simp [sqExitProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    frameAt, frameStack, pcSqExit, pcMore, countMem, hcount, hdec, hcNat, htrue, hjd, h9280,
+    frameAt, frameStack, pcSqExit, pcMore, countMem, hcount, hsub, hcNat, htrue, hjd, h9280,
     State.activeWordsAfterUInt256, activeWords9280 s hact,
     hc16', hc17, hc18, hc19, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -75,21 +74,21 @@ theorem run_sqExit_more (s : State) (mem : ByteArray) (n c : Nat)
 theorem run_sqExit_last (s : State) (mem : ByteArray) (n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hcount : MachineState.readWord mem 9280 = UInt256.ofNat 1) :
+    (hact : 93 ≤ s.activeWords.toNat)
+    (hcount : MachineState.readWord mem 2720 = UInt256.ofNat 1) :
     runInstructions sqExitProgram
       (frameAt pcSqExit s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
     some (frameAt pcLast s (countMem mem 0) n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) := by
-  have hc16' : rest.length + 16 < 1024 := by omega
-  have hc17 : rest.length + 17 < 1024 := by omega
-  have hc18 : rest.length + 18 < 1024 := by omega
-  have hc19 : rest.length + 19 < 1024 := by omega
-  have hdec : allOnes + UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
+  have hc16' : rest.length + 16 < 256 := by omega
+  have hc17 : rest.length + 17 < 256 := by omega
+  have hc18 : rest.length + 18 < 256 := by omega
+  have hc19 : rest.length + 19 < 256 := by omega
+  have hsub : UInt256.ofNat 1 - UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
   have hfalse : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
-  have h9280 : (9280 : UInt256).toNat = 9280 := by decide
+  have h9280 : (2720 : UInt256).toNat = 2720 := by decide
   have hzero : (UInt256.ofNat 0).toNat = 0 := by decide
   simp [sqExitProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    frameAt, frameStack, pcSqExit, pcLast, countMem, hcount, hdec, hzero, hfalse, h9280,
+    frameAt, frameStack, pcSqExit, pcLast, countMem, hcount, hsub, hzero, hfalse, h9280,
     State.activeWordsAfterUInt256, activeWords9280 s hact,
     hc16', hc17, hc18, hc19, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -104,8 +103,8 @@ theorem run_last (s : State) (mem : ByteArray) (n : Nat)
       (frameAt pcLast s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
     some (frameAt pcNx s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst
       (UInt256.ofNat 3231) rest) := by
-  have hc16' : rest.length + 16 < 1024 := by omega
-  have hc17 : rest.length + 17 < 1024 := by omega
+  have hc16' : rest.length + 16 < 256 := by omega
+  have hc17 : rest.length + 17 < 256 := by omega
   have hjd : Decode.isValidJumpDest s.executionEnv.code 4650 = true := by
     rw [hcode]; exact CarryRowGas.jumpDest4664
   simp [lastProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
@@ -123,12 +122,12 @@ theorem run_more (s : State) (mem : ByteArray) (n : Nat)
       (frameAt pcMore s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
     some (mpCsubState s mem pdst (UInt256.ofNat 4748)
       (frameStack n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)) := by
-  have hc16' : rest.length + 16 < 1024 := by omega
-  have hc17 : rest.length + 17 < 1024 := by omega
-  have hc18 : rest.length + 18 < 1024 := by omega
+  have hc16' : rest.length + 16 < 256 := by omega
+  have hc17 : rest.length + 17 < 256 := by omega
+  have hc18 : rest.length + 18 < 256 := by omega
   have hjd : Decode.isValidJumpDest s.executionEnv.code 4669 = true := by
     rw [hcode]; exact jumpDest4683
-  have hc19 : rest.length + 19 < 1024 := by omega
+  have hc19 : rest.length + 19 < 256 := by omega
   simp [moreProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     frameAt, frameStack, pcMore, pcAgain, mpCsubState, hjd, hc16', hc17, hc18, hc19,
     List.exchange,
@@ -145,8 +144,8 @@ def gasSteps_sqExitMore (s : State) (mem : ByteArray) (n c : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hcpos : 0 < c) (hc16 : c + 1 ≤ 16)
-    (hcount : MachineState.readWord mem 9280 = UInt256.ofNat (c + 1)) :
+    (hact : 93 ≤ s.activeWords.toNat) (hcpos : 0 < c) (hc16 : c + 1 ≤ 16)
+    (hcount : MachineState.readWord mem 2720 = UInt256.ofNat (c + 1)) :
     Challenge.EvmProof.GasSteps
       (frameAt pcSqExit s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
       (frameAt pcMore s (countMem mem c) n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) :=
@@ -164,8 +163,8 @@ def gasSteps_sqExitLast (s : State) (mem : ByteArray) (n : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hcount : MachineState.readWord mem 9280 = UInt256.ofNat 1) :
+    (hact : 93 ≤ s.activeWords.toNat)
+    (hcount : MachineState.readWord mem 2720 = UInt256.ofNat 1) :
     Challenge.EvmProof.GasSteps
       (frameAt pcSqExit s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
       (frameAt pcLast s (countMem mem 0) n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) :=
@@ -219,40 +218,40 @@ def gasSteps_nxExit (s : State) (mem : ByteArray) (n : Nat)
     Challenge.EvmProof.GasSteps
       (frameAt pcNx s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
       (mpCsubState s mem pdst ret rest) :=
-  (CarryRowGas.gasSteps_nxJd s mem pbi 2048 n (UInt256.ofNat 4788) ent inv m0
+  (CarryRowGas.gasSteps_nxJd s mem pbi 512 n (UInt256.ofNat 4788) ent inv m0
     (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest)
     (by simp only [List.length_cons]; omega) hrun hcode hfork hnp).trans
   (CarryRowBlocks.exitBlock.steps
-    (CarryRowBlocks.environment (CiosCachedTailDefs.nxState s mem pbi 2048 n
+    (CarryRowBlocks.environment (CiosCachedTailDefs.nxState s mem pbi 512 n
       (UInt256.ofNat 4788) ent inv m0
       (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest)) hcode hfork hrun hnp) rfl
     (CiosReadonly.run_exit { s with memory := mem } pbi (UInt256.ofNat 4788)
-      (UInt256.ofNat (2048 - 32)) ent (l2Target n) tl inv m0 aprev m96 m64 m32 pdst ret rest
+      (UInt256.ofNat (512 - 32)) ent (l2Target n) tl inv m0 aprev m96 m64 m32 pdst ret rest
       hcap))
 
-/-- The final conditional subtraction on an abstract memory: `[2048, ret]` above `tail`. -/
+/-- The final conditional subtraction on an abstract memory: `[512, ret]` above `tail`. -/
 def gasSteps_csubAt (s : State) (X : ByteArray) (n : Nat) (ret : UInt256)
     (tail : List UInt256) (hcap : tail.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hact : 93 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
-    (hml : MachineState.readWord X 9408 = UInt256.ofNat (32 * n - 32))
-    (htl : MachineState.readWord X 9440 = UInt256.ofNat (8224 + 32 * n))
-    (hs32 : MachineState.readWord (Csub.csStep X n n).memory 9344 = UInt256.ofNat (32 * n))
-    (htn : (MachineState.readWord (Csub.csStep X n n).memory 8224).toNat ≤ 1) :
+    (hml : MachineState.readWord X 2848 = UInt256.ofNat (32 * n - 32))
+    (htl : MachineState.readWord X 2880 = UInt256.ofNat (2080 + 32 * n))
+    (hs32 : MachineState.readWord (Csub.csStep X n n).memory 2784 = UInt256.ofNat (32 * n))
+    (htn : (MachineState.readWord (Csub.csStep X n n).memory 2080).toNat ≤ 1) :
     Challenge.EvmProof.GasSteps
-      (mpCsubState s X (UInt256.ofNat 2048) ret tail)
-      { s with pc := ret, stack := tail, memory := Csub.csResultMemory X n 2048 } := by
-  have g := Csub.gasSteps_csub s X n (UInt256.ofNat 2048) ret tail hcap hcode hfork hrun hnp
+      (mpCsubState s X (UInt256.ofNat 512) ret tail)
+      { s with pc := ret, stack := tail, memory := Csub.csResultMemory X n 512 } := by
+  have g := Csub.gasSteps_csub s X n (UInt256.ofNat 512) ret tail hcap hcode hfork hrun hnp
     hact hn hn32 hjump hml htl hs32
-    (by rw [show (UInt256.ofNat 2048).toNat = 2048 from by decide]; omega) htn
+    (by rw [show (UInt256.ofNat 512).toNat = 512 from by decide]; omega) htn
   refine g.cast rfl ?_
-  rw [show Csub.csReturnedState s X n n (UInt256.ofNat 2048) ret tail =
+  rw [show Csub.csReturnedState s X n n (UInt256.ofNat 512) ret tail =
       { s with pc := ret, stack := tail,
-               memory := Csub.csResultMemory X n (UInt256.ofNat 2048).toNat } from rfl,
-    show (UInt256.ofNat 2048).toNat = 2048 from by decide]
+               memory := Csub.csResultMemory X n (UInt256.ofNat 512).toNat } from rfl,
+    show (UInt256.ofNat 512).toNat = 512 from by decide]
 
 end Challenge.Modexp.Submission.Proofs.Fast.SquareLoopBlocks

@@ -33,10 +33,10 @@ def blk2557 :
 /-- Instructions 2562..2568, pc 3872..3650: `ACC := BASE`, then the shift. -/
 def blk2562 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 2420 2 9344,
+  [pushAt 2420 2 2784,
    opAt 2421 .MLOAD,
-   pushAt 2422 2 2048,
-   pushAt 2423 2 1024,
+   pushAt 2422 2 512,
+   pushAt 2423 2 256,
    opAt 2424 .MCOPY,
    pushAt 2425 2 1527,
    opAt 2426 .JUMP]

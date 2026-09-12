@@ -27,13 +27,13 @@ def blk1320 :
    opAt 1137 .POP,
    pushAt 1138 1 1,
    opAt 1139 (.Dup ⟨1, by decide⟩),
-   pushAt 1140 2 3040,
+   pushAt 1140 2 736,
    opAt 1141 .ADD,
    opAt 1142 .MSTORE,
    pushAt 1143 2 1571,
-   pushAt 1144 2 1024,
-   pushAt 1145 2 3072,
-   pushAt 1146 2 1024,
+   pushAt 1144 2 256,
+   pushAt 1145 2 768,
+   pushAt 1146 2 256,
    pushAt 1147 2 3912,
    opAt 1148 .JUMP]
 
@@ -44,7 +44,7 @@ def blk1333 :
    opAt 1150 (.Dup ⟨4, by decide⟩),
    opAt 1151 (.Dup ⟨0, by decide⟩),
    opAt 1152 (.Dup ⟨2, by decide⟩),
-   pushAt 1153 2 1024,
+   pushAt 1153 2 256,
    opAt 1154 .ADD,
    opAt 1155 .SUB,
    opAt 1156 .RETURN]

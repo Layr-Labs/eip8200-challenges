@@ -18,7 +18,7 @@ def fallbackProgram : List Instr :=
    .push ⟨1, by decide⟩ (UInt256.ofNat 96), .op .CALLDATALOAD,
    .op (.Swap ⟨0, by decide⟩), .op .SHR,
    .op (.Dup ⟨2, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 992), .op .ADD, .op .MSTORE,
+   .push ⟨2, by decide⟩ (UInt256.ofNat 224), .op .ADD, .op .MSTORE,
    .push ⟨1, by decide⟩ (UInt256.ofNat 1),
    .push ⟨2, by decide⟩ (UInt256.ofNat 1383), .op .JUMP]
 
@@ -65,7 +65,7 @@ def fallbackWordProgram : List Instr :=
 
 def fallbackStoreProgram : List Instr :=
   [.op (.Dup ⟨2, by decide⟩),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 992), .op .ADD, .op .MSTORE,
+   .push ⟨2, by decide⟩ (UInt256.ofNat 224), .op .ADD, .op .MSTORE,
    .push ⟨1, by decide⟩ (UInt256.ofNat 1),
    .push ⟨2, by decide⟩ (UInt256.ofNat 1383), .op .JUMP]
 
@@ -93,7 +93,7 @@ private theorem mod_word_self {a : Nat} (ha : a < 2 ^ 256) :
     a % 2 ^ 256 = a := Nat.mod_eq_of_lt ha
 
 private theorem activeWords_fix (s : State) (offset size : Nat) (hsz : size ≠ 0)
-    (hend : offset + size ≤ 9536) (hactive : 298 ≤ s.activeWords.toNat) :
+    (hend : offset + size ≤ 2976) (hactive : 298 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat offset size) =
       s.activeWords := by
   have hnat : MachineState.activeWordsAfter s.activeWords.toNat offset size =
@@ -110,11 +110,11 @@ jumps to the unchanged loop. No guard-match assumption is needed here. -/
 theorem run_fallback (s : State) (mem input : ByteArray)
     (n bsize esize msize : Nat)
     (hdata : s.executionEnv.calldata = input)
-    (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (hb0 : 1 ≤ bsize)
+    (hn32 : n ≤ 32) (hb : bsize ≤ 256) (hb0 : 1 ≤ bsize)
     (hact : 298 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest s.executionEnv.code 1383 = true) :
     runInstructions fallbackProgram (fallbackState s mem n bsize esize msize) =
-      some (legacyLoopState s (storeWord mem (992 + 32 * n)
+      some (legacyLoopState s (storeWord mem (224 + 32 * n)
         (UInt256.ofNat (topLimbOf input bsize))) n bsize esize msize
         (pbOf bsize) 1) := by
   have hpb1 : 1 ≤ pbOf bsize := by unfold pbOf; omega
@@ -137,19 +137,19 @@ theorem run_fallback (s : State) (mem input : ByteArray)
     have h2 : (5 : Nat) < 256 := by omega
     have h3 : pbOf bsize * 2 ^ 5 < 2 ^ 256 := by
       rw [he]
-      exact Nat.lt_of_le_of_lt (show 32 * pbOf bsize ≤ 1024 by omega) (by norm_num)
+      exact Nat.lt_of_le_of_lt (show 32 * pbOf bsize ≤ 256 by omega) (by norm_num)
     rw [Challenge.EvmProof.Word.shiftLeft_ofNat h1 h2 h3]
     exact congrArg UInt256.ofNat he
   have hsub : UInt256.ofNat (32 * pbOf bsize) - UInt256.ofNat bsize =
       UInt256.ofNat (32 * pbOf bsize - bsize) :=
     Challenge.EvmProof.Word.ofNat_sub_ofNat hpbBig
-      (Nat.lt_of_le_of_lt (show 32 * pbOf bsize ≤ 1024 by omega) (by norm_num))
+      (Nat.lt_of_le_of_lt (show 32 * pbOf bsize ≤ 256 by omega) (by norm_num))
   have hshl2 : UInt256.shiftLeft (UInt256.ofNat (32 * pbOf bsize - bsize))
       (UInt256.ofNat 3) = UInt256.ofNat ((32 - topWidth bsize) * 8) := by
     have he : (32 * pbOf bsize - bsize) * 2 ^ 3 = (32 - topWidth bsize) * 8 := by
       rw [← hshiftEq]; ring
     have h1 : 32 * pbOf bsize - bsize < 2 ^ 256 :=
-      Nat.lt_of_le_of_lt (show 32 * pbOf bsize - bsize ≤ 1024 by omega) (by norm_num)
+      Nat.lt_of_le_of_lt (show 32 * pbOf bsize - bsize ≤ 256 by omega) (by norm_num)
     have h2 : (3 : Nat) < 256 := by omega
     have h3 : (32 * pbOf bsize - bsize) * 2 ^ 3 < 2 ^ 256 := by
       rw [he]
@@ -161,13 +161,13 @@ theorem run_fallback (s : State) (mem input : ByteArray)
       (UInt256.ofNat ((32 - topWidth bsize) * 8)) =
       UInt256.ofNat (topLimbOf input bsize) :=
     Challenge.EvmProof.Bytes.shiftRight_readWord input 96 (topWidth bsize) htw1 htw32
-  have hmod : (992 + 32 * n) %
+  have hmod : (224 + 32 * n) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936
-      = 992 + 32 * n := mod_word_self (by
-        exact Nat.lt_of_le_of_lt (show 992 + 32 * n ≤ 2016 by omega) (by norm_num))
+      = 224 + 32 * n := mod_word_self (by
+        exact Nat.lt_of_le_of_lt (show 224 + 32 * n ≤ 2016 by omega) (by norm_num))
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
-      (992 + 32 * n) 32) = s.activeWords :=
-    activeWords_fix s (992 + 32 * n) 32 (by omega) (by omega) hact
+      (224 + 32 * n) 32) = s.activeWords :=
+    activeWords_fix s (224 + 32 * n) 32 (by omega) (by omega) hact
   have hcount : runInstructions fallbackCountProgram
       (fallbackState s mem n bsize esize msize) =
       some (fallbackCountState s mem n bsize esize msize) := by
@@ -186,7 +186,7 @@ theorem run_fallback (s : State) (mem input : ByteArray)
       Challenge.EvmProof.Word.word_toNat_ofNat]
   have hstore : runInstructions fallbackStoreProgram
       (fallbackWordState s mem input n bsize esize msize) =
-      some (legacyLoopState s (storeWord mem (992 + 32 * n)
+      some (legacyLoopState s (storeWord mem (224 + 32 * n)
         (UInt256.ofNat (topLimbOf input bsize))) n bsize esize msize
         (pbOf bsize) 1) := by
     simp [fallbackStoreProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
@@ -198,14 +198,14 @@ theorem run_fallback (s : State) (mem input : ByteArray)
   have hrest := runInstructions_append_of fallbackWordProgram fallbackStoreProgram
     (fallbackCountState s mem n bsize esize msize)
     (fallbackWordState s mem input n bsize esize msize)
-    (legacyLoopState s (storeWord mem (992 + 32 * n)
+    (legacyLoopState s (storeWord mem (224 + 32 * n)
       (UInt256.ofNat (topLimbOf input bsize))) n bsize esize msize (pbOf bsize) 1)
     hword hstore
   have hall := runInstructions_append_of fallbackCountProgram
     (fallbackWordProgram ++ fallbackStoreProgram)
     (fallbackState s mem n bsize esize msize)
     (fallbackCountState s mem n bsize esize msize)
-    (legacyLoopState s (storeWord mem (992 + 32 * n)
+    (legacyLoopState s (storeWord mem (224 + 32 * n)
       (UInt256.ofNat (topLimbOf input bsize))) n bsize esize msize (pbOf bsize) 1)
     hcount hrest
   have hprogram : fallbackProgram =

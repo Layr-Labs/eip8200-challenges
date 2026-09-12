@@ -21,7 +21,7 @@ theorem readonlyCache_rowsCarry {mem : ByteArray} {n : Nat} {tl inv m0 : UInt256
     (hc : CiosReadonly.ReadonlyCache mem n tl inv m0) (hn : n ≤ 32) (pa pb i : Nat) :
     CiosReadonly.ReadonlyCache (rowsCarry mem pa pb n i) n tl inv m0 :=
   hc.of_preserved
-    (readWord_rowsCarry mem pa pb n 9376 hn (Or.inr (by decide)) i)
+    (readWord_rowsCarry mem pa pb n 2816 hn (Or.inr (by decide)) i)
     (readWord_rowsCarry mem pa pb n (32*n-32) hn (Or.inl (by omega)) i)
 
 theorem extraCache_rowsCarry {mem : ByteArray} {m96 m64 m32 : UInt256}
@@ -37,12 +37,12 @@ opaque inverse_rowsCarry (mem : ByteArray) (pa pb n i : Nat)
     inverseInvariant (rowsCarry mem pa pb n i) n := by
   unfold inverseInvariant at *
   rw [readWord_rowsCarry mem pa pb n (32*n-32) hn (Or.inl (by omega)) i,
-    readWord_rowsCarry mem pa pb n 9376 hn (Or.inr (by decide)) i]
+    readWord_rowsCarry mem pa pb n 2816 hn (Or.inr (by decide)) i]
   exact hminv
 
 theorem readWord_selected_preserved (s : State) (memory : ByteArray)
     (pa pb n i addr : Nat) (hn : n ≤ 32)
-    (haddr : addr+32 ≤ 8192 ∨ 9280 ≤ addr) :
+    (haddr : addr+32 ≤ 2048 ∨ 2720 ≤ addr) :
     MachineState.readWord (selectedRows (mpZeroed s (inputMemory memory pa n) n) pa pb n i) addr =
       MachineState.readWord memory addr := by
   rw [selectedRows_readWord_outside _ pa pb n i addr hn haddr,

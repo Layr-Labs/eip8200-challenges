@@ -25,9 +25,9 @@ opaque gasSteps_rowsEight (L : RowLemmas) (s : State) (mem : ByteArray) (pa pb :
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 296 ≤ s.activeWords.toNat)
-    (hpaFit : pa + 32 * 8 ≤ 8192)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 8 ≤ 9472)
+    (hact : 93 ≤ s.activeWords.toNat)
+    (hpaFit : pa + 32 * 8 ≤ 2048)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 8 ≤ 2912)
     (hminv : inverseInvariant mem 8)
     (hc : CiosReadonly.ReadonlyCache mem 8 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)

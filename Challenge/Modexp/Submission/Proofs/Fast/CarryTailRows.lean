@@ -25,8 +25,8 @@ theorem pointer_next (base i : Nat) :
 
 theorem run_next (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (pb n i : Nat) (hd ent dst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hact : 296 ≤ s.activeWords.toNat)
-    (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 9472) (hi : i+1 < n)
+    (hcap : rest.length ≤ 1005) (hact : 93 ≤ s.activeWords.toNat)
+    (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 2912) (hi : i+1 < n)
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions CarryRowPrograms.tail
       (CiosCached.tailState s mem c mu bi pb n i hd ent dst ret rest) =
@@ -43,8 +43,8 @@ theorem run_next (s : State) (mem : ByteArray) (c mu bi : UInt256)
 
 theorem run_last (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (pb n i : Nat) (hd ent dst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hact : 296 ≤ s.activeWords.toNat)
-    (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 9472) (hi : i+1 = n)
+    (hcap : rest.length ≤ 1005) (hact : 93 ≤ s.activeWords.toNat)
+    (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 2912) (hi : i+1 = n)
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions CarryRowPrograms.tail
       (CiosCached.tailState s mem c mu bi pb n i hd ent dst ret rest) =
