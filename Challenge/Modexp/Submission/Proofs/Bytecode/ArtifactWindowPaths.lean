@@ -86,7 +86,7 @@ private theorem pcA3702 : Artifact.submissionArtifact.instructionPC 46 = 96 := b
 private theorem pcA3711 : Artifact.submissionArtifact.instructionPC 55 = 108 := by
   rw [show (55 : Nat) = 46 + 9 from rfl, instructionPC_add, pcA3702]; rfl
 
-private theorem pcA3935 : Artifact.submissionArtifact.instructionPC 3980 = 5260 := by rfl
+private theorem pcA3935 : Artifact.submissionArtifact.instructionPC 3931 = 5240 := by rfl
 
 
 private def nine_width :
@@ -144,8 +144,8 @@ private def nine_body :
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_trampoline :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 5260 WindowTwentyOneLoop.trampolineProgram :=
-  WindowTwentyOneSlice.block allWellFormed 3980 18 5260 WindowTwentyOneLoop.trampolineProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 5240 WindowTwentyOneLoop.trampolineProgram :=
+  WindowTwentyOneSlice.block allWellFormed 3931 18 5240 WindowTwentyOneLoop.trampolineProgram
     (by decide) pcA3935
     (by rw [locations_map_instruction]; rfl) (by decide)
 
@@ -196,7 +196,7 @@ def twentyOnePaths : WindowTwentyOneGasRoute.Paths submissionArtifact .Osaka whe
     have h := isValidJumpDest_index 2251 (by rfl)
     exact h
   trampJump := by
-    have h := isValidJumpDest_index 3980 (by rfl)
+    have h := isValidJumpDest_index 3931 (by rfl)
     exact h
   bodyJump := by
     have h := isValidJumpDest_index 1834 (by rfl)

@@ -199,24 +199,19 @@ theorem run_macSetup (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hpa : UInt256.ofNat (1280 + (32 * n - 32)) = UInt256.ofNat (NEG + 32 * n - 32) := by
     unfold NEG; congr 1; omega
-  have hbit : UInt256.land (UInt256.ofNat 32)
-      (UInt256.ofNat (NEG + 32 * n - 32)) =
-      (if n % 2 = 0 then UInt256.ofNat 32 else UInt256.ofNat 0) := by
-    interval_cases n <;> decide
-  by_cases hp : n % 2 = 0
-  all_goals simp (config := { maxSteps := 300000 })
+  simp (config := { maxSteps := 300000 })
     [blk3069, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      macSetupState, macLoopState, pcMacSetup, pcMacLoop, pcMacLoopB, macNeg32, Monpro.l1Step,
+      macSetupState, macLoopState, pcMacSetup, pcMacLoop, Monpro.l1Step,
       outer, Exp.outer, hcode, hrun, htl, hml, hTL, hML, Exp.push0_word, hpa,
-      hbit, hp, Nat.sub_zero, jumpDestMacB, UInt256.isTrue, List.exchange,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
+  all_goals (try (congr 1; unfold NEG; omega))
 
 /-- `blk3077a`: one limb of `t += q * NEG` with both pointer steps, up to the
 exit test.  The pointers stay abstract. -/
@@ -231,53 +226,11 @@ theorem run_macBodyA (s : State) (um : ByteArray) (q pa pt pa' pt' : UInt256)
     (hpt' : UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 + pt = pt') :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3077a
       { s with pc := UInt256.ofNat pcMacLoop
-               stack := pa :: pt :: (Monpro.l1Step um q NEG n j).carry :: q :: macNeg32 :: UInt256.ofNat k ::
-                 outer n bsize esize msize
-               memory := (Monpro.l1Step um q NEG n j).memory } =
-      some { s with pc := UInt256.ofNat pcMacLoopB
-                    stack := pa' :: pt' :: (Monpro.l1Step um q NEG n (j + 1)).carry :: q :: macNeg32 ::
-                      UInt256.ofNat k :: outer n bsize esize msize
-                    memory := (Monpro.l1Step um q NEG n (j + 1)).memory } := by
-  have hactA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
-      (NEG + 32 * (n - 1 - j)) 32) = s.activeWords :=
-    Monpro.activeWords_fix s _ 32 (by decide) (by unfold NEG; omega) hact
-  have hactT : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
-      (4160 + 32 * (n - 1 - j)) 32) = s.activeWords :=
-    Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  simp (config := { maxSteps := 800000 })
-    [blk3077a, mac2PathA, opAt, pushAt, wfOp,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated,
-      Challenge.EvmProof.Stepper.runInstr,
-      pcMacLoop, pcMacLoopB, macNeg32, Monpro.l1Step, Monpro.macSum, Monpro.macCarry, Monpro.mulHi,
-      Monpro.maxWord_literal, outer, Exp.outer,
-      hrun, hcode, negK_literal, hpa, hpt, hpa', hpt', hactA, hactT,
-      UInt256.gt, UInt256.isTrue,
-      State.activeWordsAfterUInt256,
-      Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod,
-      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
-      List.exchange]
-  refine ⟨?_, Monpro.MacAlt.macCarryFix _ _ _ _⟩
-  rw [Monpro.MacAlt.macSumNat]
-
-/-- The second MAC body has exactly the same arithmetic and pointer update. -/
-theorem run_macBodyB (s : State) (um : ByteArray) (q pa pt pa' pt' : UInt256)
-    (n bsize esize msize k j : Nat)
-    (hrun : s.halt = .Running)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 168 ≤ s.activeWords.toNat)
-    (hn32 : n ≤ 8) (hj : j < n)
-    (hpa : pa.toNat = NEG + 32 * (n - 1 - j)) (hpt : pt.toNat = 4160 + 32 * (n - 1 - j))
-    (hpa' : UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 + pa = pa')
-    (hpt' : UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 + pt = pt') :
-    Challenge.EvmProof.Stepper.runLocatedBlock blkMacSecond
-      { s with pc := UInt256.ofNat pcMacLoopB
-               stack := pa :: pt :: (Monpro.l1Step um q NEG n j).carry :: q :: macNeg32 :: UInt256.ofNat k ::
+               stack := pa :: pt :: (Monpro.l1Step um q NEG n j).carry :: q :: UInt256.ofNat k ::
                  outer n bsize esize msize
                memory := (Monpro.l1Step um q NEG n j).memory } =
       some { s with pc := UInt256.ofNat pcMacTail
-                    stack := pa' :: pt' :: (Monpro.l1Step um q NEG n (j + 1)).carry :: q :: macNeg32 ::
+                    stack := pa' :: pt' :: (Monpro.l1Step um q NEG n (j + 1)).carry :: q ::
                       UInt256.ofNat k :: outer n bsize esize msize
                     memory := (Monpro.l1Step um q NEG n (j + 1)).memory } := by
   have hactA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
@@ -287,11 +240,11 @@ theorem run_macBodyB (s : State) (um : ByteArray) (q pa pt pa' pt' : UInt256)
       (4160 + 32 * (n - 1 - j)) 32) = s.activeWords :=
     Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 800000 })
-    [blkMacSecond, mac2PathB, opAt, pushAt, wfOp,
+    [blk3077a, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      pcMacLoopB, pcMacTail, macNeg32, Monpro.l1Step, Monpro.macSum, Monpro.macCarry, Monpro.mulHi,
+      pcMacLoop, pcMacTail, Monpro.l1Step, Monpro.macSum, Monpro.macCarry, Monpro.mulHi,
       Monpro.maxWord_literal, outer, Exp.outer,
       hrun, hcode, negK_literal, hpa, hpt, hpa', hpt', hactA, hactT,
       UInt256.gt, UInt256.isTrue,
@@ -310,17 +263,17 @@ theorem run_macTail_go (s : State) (mm : ByteArray) (pa pt c q : UInt256)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3077b
       { s with pc := UInt256.ofNat pcMacTail
-               stack := pa :: pt :: c :: q :: macNeg32 :: UInt256.ofNat k :: outer n bsize esize msize
+               stack := pa :: pt :: c :: q :: UInt256.ofNat k :: outer n bsize esize msize
                memory := mm } =
       some { s with pc := UInt256.ofNat pcMacLoop
-                    stack := pa :: pt :: c :: q :: macNeg32 :: UInt256.ofNat k :: outer n bsize esize msize
+                    stack := pa :: pt :: c :: q :: UInt256.ofNat k :: outer n bsize esize msize
                     memory := mm } := by
   simp (config := { maxSteps := 200000 })
-    [blk3077b, mac2PathTail, opAt, pushAt, wfOp,
+    [blk3077b, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      pcMacTail, pcMacLoop, macNeg32, outer, Exp.outer, hcode, hrun, hgt, jumpDest4933,
+      pcMacTail, pcMacLoop, outer, Exp.outer, hcode, hrun, hgt, jumpDest4933,
       UInt256.gt, UInt256.isTrue,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -334,17 +287,17 @@ theorem run_macTail_exit (s : State) (mm : ByteArray) (pa pt c q : UInt256)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3077b
       { s with pc := UInt256.ofNat pcMacTail
-               stack := pa :: pt :: c :: q :: macNeg32 :: UInt256.ofNat k :: outer n bsize esize msize
+               stack := pa :: pt :: c :: q :: UInt256.ofNat k :: outer n bsize esize msize
                memory := mm } =
       some { s with pc := UInt256.ofNat pcMid
-                    stack := pa :: pt :: c :: q :: macNeg32 :: UInt256.ofNat k :: outer n bsize esize msize
+                    stack := pa :: pt :: c :: q :: UInt256.ofNat k :: outer n bsize esize msize
                     memory := mm } := by
   simp (config := { maxSteps := 200000 })
-    [blk3077b, mac2PathTail, opAt, pushAt, wfOp,
+    [blk3077b, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      pcMacTail, pcMid, macNeg32, outer, Exp.outer, hcode, hrun, hpt, jumpDest4933,
+      pcMacTail, pcMid, outer, Exp.outer, hcode, hrun, hpt, jumpDest4933,
       UInt256.gt, UInt256.isTrue,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,

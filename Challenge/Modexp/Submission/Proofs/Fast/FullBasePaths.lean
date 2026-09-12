@@ -43,7 +43,7 @@ def blkFullBaseCopyAdd :
    pushAt 2298 2 512,
    pushAt 2299 2 256,
    pushAt 2300 2 1536,
-   pushAt 2301 2 4067,
+   pushAt 2301 2 4047,
    opAt 2302 .JUMP]
 
 /-- Located block in the selected full-width-base helper. -/

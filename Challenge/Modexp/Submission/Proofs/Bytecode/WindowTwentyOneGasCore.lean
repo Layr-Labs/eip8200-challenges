@@ -12,7 +12,7 @@ structure Paths (artifact : ProgramArtifact) (fork : Fork) where
   table : Block artifact fork 2354 WindowTwentyOneTableBuild.program
   init : Block artifact fork 2470 WindowTwentyOneInit.program
   entry : Block artifact fork 2495 WindowTwentyOneLoop.entryProgram
-  trampoline : Block artifact fork 5260 WindowTwentyOneLoop.trampolineProgram
+  trampoline : Block artifact fork 5240 WindowTwentyOneLoop.trampolineProgram
   body : Block artifact fork 2500 WindowTwentyOneLoop.bodyProgram
   finish : Block artifact fork 2958 WindowTwentyOneReturn.program
 
@@ -21,7 +21,7 @@ def steps_pass {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (base modulus exponent : UInt256) (count : Nat) (hcount : count < 2)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (htramp : Decode.isValidJumpDest template.executionEnv.code 5260 = true)
+    (htramp : Decode.isValidJumpDest template.executionEnv.code 5240 = true)
     (hbody : Decode.isValidJumpDest template.executionEnv.code 2500 = true) :
     GasSteps (WindowTwentyOneLoop.loopState template base modulus exponent count rest)
       (WindowTwentyOneLoop.loopState template base modulus exponent (count + 1) rest) :=
@@ -37,7 +37,7 @@ def steps_pass {artifact : ProgramArtifact} {fork : Fork}
 def steps_three {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (base modulus exponent : UInt256) (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (htramp : Decode.isValidJumpDest template.executionEnv.code 5260 = true)
+    (htramp : Decode.isValidJumpDest template.executionEnv.code 5240 = true)
     (hbody : Decode.isValidJumpDest template.executionEnv.code 2500 = true) :
     GasSteps (WindowTwentyOneLoop.entryState template base modulus exponent rest)
       (WindowTwentyOneLoop.finishState template base modulus exponent rest) :=
@@ -62,7 +62,7 @@ def steps_core {artifact : ProgramArtifact} {fork : Fork}
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (he : rest[4]? = some exponentOffset) (hm : rest[5]? = some modulusOffset)
     (hmodulus : MachineState.readWord template.executionEnv.calldata modulusOffset.toNat = modulus)
-    (htramp : Decode.isValidJumpDest template.executionEnv.code 5260 = true)
+    (htramp : Decode.isValidJumpDest template.executionEnv.code 5240 = true)
     (hbody : Decode.isValidJumpDest template.executionEnv.code 2500 = true) :
     GasSteps (WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 2354) base modulus rest)
       (WindowTwentyOneCore.returnedState template base modulus

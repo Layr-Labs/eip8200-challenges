@@ -23,13 +23,13 @@ def copyAddProgram : List Instr :=
    .push ⟨2, by decide⟩ (UInt256.ofNat 512),
    .push ⟨2, by decide⟩ (UInt256.ofNat 256),
    .push ⟨2, by decide⟩ (UInt256.ofNat 1536),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 4067), .op .JUMP]
+   .push ⟨2, by decide⟩ (UInt256.ofNat 4047), .op .JUMP]
 
 theorem run_copyAdd (s : State) (memory input : ByteArray)
     (n bsize esize msize : Nat) (hn32 : n ≤ 8)
     (hactive : 169 ≤ s.activeWords.toNat)
     (hdata : s.executionEnv.calldata = input)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 4067 = true) :
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 4047 = true) :
     runInstructions copyAddProgram (copyState s memory n bsize esize msize) =
       some (addCallState s memory input n bsize esize msize) := by
   have hsize : (UInt256.ofNat (32 * n)).toNat = 32 * n := by

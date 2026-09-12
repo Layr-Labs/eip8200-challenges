@@ -836,16 +836,16 @@ theorem jumpDest3184 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3045 = true :=
   Artifact.isValidJumpDest_index 2303 (by rfl)
 
-theorem jumpDest4976 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4824 = true :=
-  Artifact.isValidJumpDest_index 3662 (by rfl)
+theorem jumpDest4976 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4804 = true :=
+  Artifact.isValidJumpDest_index 3613 (by rfl)
 
-theorem jumpDestSub : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4996 = true :=
-  Artifact.isValidJumpDest_index 3790 (by rfl)
+theorem jumpDestSub : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4976 = true :=
+  Artifact.isValidJumpDest_index 3741 (by rfl)
 
-theorem jumpDestCopyResume : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5247 = true :=
-  Artifact.isValidJumpDest_index 3971 (by rfl)
+theorem jumpDestCopyResume : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5227 = true :=
+  Artifact.isValidJumpDest_index 3922 (by rfl)
 
-theorem jumpDestEarlyCopy : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5236 = true :=
-  Artifact.isValidJumpDest_index 3964 (by rfl)
+theorem jumpDestEarlyCopy : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5216 = true :=
+  Artifact.isValidJumpDest_index 3915 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

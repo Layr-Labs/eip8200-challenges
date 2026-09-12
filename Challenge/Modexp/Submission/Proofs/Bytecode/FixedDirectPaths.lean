@@ -104,8 +104,8 @@ def squareCall : List Located :=
    pushAt 2525 2 512,
    opAt 2526 (.Dup ⟨0, by decide⟩),
    opAt 2527 (.Dup ⟨0, by decide⟩),
-   pushAt 2528 2 4943,
-   pushAt 2529 2 4071,
+   pushAt 2528 2 4923,
+   pushAt 2529 2 4051,
    opAt 2530 .JUMP]
 
 def squareReturn : List Located :=
@@ -127,7 +127,7 @@ def product : List Located :=
    pushAt 2541 2 256,
    opAt 2542 (.Dup ⟨0, by decide⟩),
    pushAt 2543 2 512,
-   pushAt 2544 2 4067,
+   pushAt 2544 2 4047,
    opAt 2545 .JUMP]
 
 def fallback : List Located :=
@@ -162,13 +162,13 @@ theorem jumpDest3959 :
 
 /-- The kernel's multiply entry `0x0f50` (the final mixed-domain product). -/
 theorem jumpDestSqMulEntry :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4067 = true :=
-  Artifact.isValidJumpDest_index 3055 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4047 = true :=
+  Artifact.isValidJumpDest_index 3006 (by rfl)
 
 /-- The kernel's shared `common` block `0x0f54` (entered by the square call). -/
 theorem jumpDestSqCommon :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4071 = true :=
-  Artifact.isValidJumpDest_index 3057 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4051 = true :=
+  Artifact.isValidJumpDest_index 3008 (by rfl)
 
 /-- Target of the (now contiguous) jump from `0x0c6d` to `0x0c71`. -/
 theorem jumpBridge3423 :

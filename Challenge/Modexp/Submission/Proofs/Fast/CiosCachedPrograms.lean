@@ -124,7 +124,7 @@ def entryProgram : List Instr :=
    .op .EQ,
    .push 1 285,
    .op .MUL,
-   .push 2 4215,
+   .push 2 4195,
    .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
    .push 3 416,

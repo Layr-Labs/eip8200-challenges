@@ -25,7 +25,7 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open WindowTwentyOneBinding
 
 def mulEntryProgram : List Instr :=
-  [.op .JUMPDEST, .push 2 4184]
+  [.op .JUMPDEST, .push 2 4164]
 
 def commonGuardProgram : List Instr :=
   [.op .JUMPDEST,
@@ -38,22 +38,22 @@ def commonGuardProgram : List Instr :=
    .push 2 256,
    .op .EQ,
    .op .OR,
-   .push 2 4095,
+   .push 2 4075,
    .op .JUMPI]
 
 def commonFallbackProgram : List Instr :=
   [.op .POP, .push 2 1761, .op .JUMP]
 
-def mulEntry : Block Artifact.submissionArtifact .Osaka 4067 mulEntryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3055 2 4067 mulEntryProgram
+def mulEntry : Block Artifact.submissionArtifact .Osaka 4047 mulEntryProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3006 2 4047 mulEntryProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def commonGuard : Block Artifact.submissionArtifact .Osaka 4071 commonGuardProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3057 12 4071 commonGuardProgram
+def commonGuard : Block Artifact.submissionArtifact .Osaka 4051 commonGuardProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3008 12 4051 commonGuardProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def commonFallback : Block Artifact.submissionArtifact .Osaka 4090 commonFallbackProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3069 3 4090 commonFallbackProgram
+def commonFallback : Block Artifact.submissionArtifact .Osaka 4070 commonFallbackProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3020 3 4070 commonFallbackProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 end Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Dispatch
