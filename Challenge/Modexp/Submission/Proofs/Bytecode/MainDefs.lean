@@ -54,17 +54,17 @@ def trampoline2Path :
 def headerLoadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 814 0 0, opAt 815 .CALLDATALOAD,
-   pushAt 816 1 32, opAt 817 .CALLDATALOAD,
+   pushAt 816 3 32, opAt 817 .CALLDATALOAD,
    pushAt 818 1 64, opAt 819 .CALLDATALOAD]
 
 /-- Direct hop over the EIP-7823 checks, justified by `Correct`'s valid-input
-precondition. The pushed target equals the fall-through pc, so `POP` reaches the same
-instruction as `JUMP` did at 6 gas less, with an identical stack and pc; the `JUMPDEST` at 1067
+precondition. Two `JUMPDEST`s fall through to the `JUMPDEST` at 1067, reaching the same
+instruction as `JUMP` did at 3 gas less, with an identical stack and pc; the `JUMPDEST` at 1067
 stays in the code, so nothing else that targets it is affected. The hop preserves the three
 loaded length words. -/
 def headerCheckPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 820 2 1067, opAt 821 .POP]
+  [opAt 820 .JUMPDEST, opAt 821 .JUMPDEST]
 
 /-- Reachable instructions from byte zero through optimized header parsing,
 retained as a single audit-friendly path. -/
@@ -84,7 +84,7 @@ def headerEntryState (input : ByteArray) : State :=
 /-- Gas-erased state after loading the three header words. -/
 def headerLoadedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 1063
+    pc := UInt256.ofNat 1065
     stack := [UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
@@ -136,7 +136,7 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
 @[simp] theorem headerPCs899 (i : Nat)
     (hi : 813 ≤ i) (hii : i ≤ 821) :
     Artifact.submissionArtifact.instructionPC i =
-      ([1054,1055,1056,1057,1059,1060,1062,1063,1066] : List Nat)[i - 813]! := by
+      ([1054,1055,1056,1057,1061,1062,1064,1065,1066] : List Nat)[i - 813]! := by
   interval_cases i <;> decide
 
 @[simp] theorem jump1196 :
