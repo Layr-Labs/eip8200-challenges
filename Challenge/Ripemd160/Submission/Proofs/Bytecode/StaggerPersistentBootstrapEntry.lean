@@ -26,7 +26,7 @@ def input (h : Compression.HashState) (off limit : UInt256) :
 
 def entry (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 925, stack := StaggerPersistentFrame.frame h off limit rho}
+  {s with pc := UInt256.ofNat 919, stack := StaggerPersistentFrame.frame h off limit rho}
 
 theorem input_eq (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256) :
     StaggerPersistentBootstrapRaw.inputStack (input h off limit) rho =
