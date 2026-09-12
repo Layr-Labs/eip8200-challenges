@@ -37,12 +37,12 @@ def blkFullBaseCopyAdd :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2240 (.Dup ⟨0, by decide⟩),
    pushAt 2241 1 96,
-   pushAt 2242 2 1024,
+   pushAt 2242 2 256,
    opAt 2243 .CALLDATACOPY,
    pushAt 2244 2 1469,
-   pushAt 2245 2 2048,
-   pushAt 2246 2 1024,
-   pushAt 2247 2 6144,
+   pushAt 2245 2 512,
+   pushAt 2246 2 256,
+   pushAt 2247 2 1536,
    pushAt 2248 2 3912,
    opAt 2249 .JUMP]
 
@@ -67,7 +67,7 @@ def blkFullBaseFallback :
    opAt 2265 (.Swap ⟨0, by decide⟩),
    opAt 2266 .SHR,
    opAt 2267 (.Dup ⟨2, by decide⟩),
-   pushAt 2268 2 992,
+   pushAt 2268 2 224,
    opAt 2269 .ADD,
    opAt 2270 .MSTORE,
    pushAt 2271 1 1,

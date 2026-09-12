@@ -35,7 +35,7 @@ theorem guardWord_eq (memory : ByteArray) (n bsize : Nat)
     guardWord memory n bsize =
       if Matches memory n bsize then UInt256.ofNat 0 else UInt256.ofNat 1 := by
   have hsize : 32 * n < 2 ^ 256 :=
-    lt_of_le_of_lt (show 32 * n ≤ 1024 by omega) (by decide)
+    lt_of_le_of_lt (show 32 * n ≤ 256 by omega) (by decide)
   unfold guardWord UInt256.isZero
   rw [Challenge.EvmProof.Word.word_toNat_land, topShift_toNat]
   simp only [UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -44,7 +44,7 @@ theorem guardWord_eq (memory : ByteArray) (n bsize : Nat)
     simp [Matches, heq, htop, Challenge.EvmProof.Word.word_toNat_ofNat]
 
 theorem run_guard_word (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat) (hactive : 298 ≤ s.activeWords.toNat)
+    (n bsize esize msize : Nat) (hactive : 170 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest s.executionEnv.code 2910 = true) :
     runInstructions guardProgram (entryState s memory n bsize esize msize) =
       some (if UInt256.isTrue (guardWord memory n bsize)
@@ -67,7 +67,7 @@ theorem run_guard_word (s : State) (memory : ByteArray)
 
 theorem run_guard (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) (hn32 : n ≤ 32)
-    (hb : bsize < 2 ^ 256) (hactive : 298 ≤ s.activeWords.toNat)
+    (hb : bsize < 2 ^ 256) (hactive : 170 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest s.executionEnv.code 2910 = true) :
     runInstructions guardProgram (entryState s memory n bsize esize msize) =
       some (if Matches memory n bsize

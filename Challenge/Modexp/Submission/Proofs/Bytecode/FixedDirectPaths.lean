@@ -12,7 +12,7 @@ The direct handler starts at pc 3179 (`0x0c6b`).  Each in-place square enters
 the kernel's shared `common` block with `hd = sq_row`; the final
 mixed-domain product enters the kernel's multiply entry.  For the accelerated
 widths the kernel loops internally and returns to `after_sq` (pc 3243), so the
-loop head first stores the square count in memory word `0x2440 = 9280`.
+loop head first stores the square count in memory word `0x2440 = 5184`.
 This file is the generated-Artifact boundary for its concrete trace proofs.
 -/
 
@@ -59,7 +59,7 @@ def oneWidth : List Located :=
    opAt 2443 .JUMPI]
 
 def checkThree : List Located :=
-  [pushAt 2444 2 9472,
+  [pushAt 2444 2 5376,
    opAt 2445 .MLOAD,
    opAt 2446 .CALLDATALOAD,
    pushAt 2447 0 0,
@@ -76,7 +76,7 @@ def threeHit : List Located :=
 
 def check65537 : List Located :=
   [opAt 2456 .JUMPDEST,
-   pushAt 2457 2 9472,
+   pushAt 2457 2 5376,
    opAt 2458 .MLOAD,
    opAt 2459 .CALLDATALOAD,
    pushAt 2460 1 232,
@@ -98,7 +98,7 @@ kernel's in-kernel loop) and call `SQUARE(0x800) → 0x800`, entering the kernel
 def squareCall : List Located :=
   [opAt 2467 .JUMPDEST,
    opAt 2468 (.Dup ⟨0, by decide⟩),
-   pushAt 2469 2 9280,
+   pushAt 2469 2 5184,
    opAt 2470 .MSTORE,
    pushAt 2471 2 3221,
    pushAt 2472 2 2048,
@@ -124,17 +124,17 @@ def product : List Located :=
   [opAt 2485 .JUMPDEST,
    opAt 2486 .POP,
    pushAt 2487 2 1571,
-   pushAt 2488 2 1024,
+   pushAt 2488 2 256,
    opAt 2489 (.Dup ⟨0, by decide⟩),
-   pushAt 2490 2 2048,
+   pushAt 2490 2 512,
    pushAt 2491 2 3912,
    opAt 2492 .JUMP]
 
 def fallback : List Located :=
   [opAt 2493 .JUMPDEST,
    opAt 2494 (.Dup ⟨0, by decide⟩),
-   pushAt 2495 2 4096,
-   pushAt 2496 2 1024,
+   pushAt 2495 2 1024,
+   pushAt 2496 2 256,
    opAt 2497 .MCOPY,
    pushAt 2498 0 0,
    pushAt 2499 2 1474,

@@ -31,13 +31,13 @@ open Challenge.Modexp.Submission.Proofs.Fast
 /-! ## Address constants -/
 
 /-- `n`-limb block holding `radix ^ n - m` (the former `CC` block). -/
-def NEG : Nat := 5120
+def NEG : Nat := 1280
 /-- Per-modulus words of the quotient estimator (the former `RR` block). -/
-def PRE_L : Nat := 6144
-def PRE_DODD : Nat := 6176
-def PRE_X : Nat := 6208
-def PRE_BMOD : Nat := 6240
-def PRE_DINV : Nat := 6272
+def PRE_L : Nat := 1536
+def PRE_DODD : Nat := 1568
+def PRE_X : Nat := 1600
+def PRE_BMOD : Nat := 1632
+def PRE_DINV : Nat := 1664
 
 /-! ## Phase 1: the raw base into `ACC` and `TS` -/
 
@@ -45,8 +45,8 @@ def PRE_DINV : Nat := 6272
 def hitMem (mem input : ByteArray) (n : Nat) : ByteArray :=
   Exp.storeWord
     (MachineState.writeBytes (FullBase.copyBaseMem mem input n)
-      (MachineState.readPadded input 96 (32 * n)) 8256)
-    8224 (UInt256.ofNat 0)
+      (MachineState.readPadded input 96 (32 * n)) 4160)
+    4128 (UInt256.ofNat 0)
 
 /-! ## Phase 2: `NEG := radix ^ n - m`, least significant limb first -/
 
@@ -90,18 +90,18 @@ def preMem (mem : ByteArray) : ByteArray := preMemOf mem (MachineState.readWord 
 
 /-- `u := r * radix` in the `t` area: `MCOPY(TN, BASE, s32)` then `t[0] := 0`. -/
 def uMem (mem : ByteArray) (n : Nat) : ByteArray :=
-  Exp.storeWord (Exp.mcopyMem mem 8224 2048 (32 * n)) (8224 + 32 * n) (UInt256.ofNat 0)
+  Exp.storeWord (Exp.mcopyMem mem 4128 512 (32 * n)) (4128 + 32 * n) (UInt256.ofNat 0)
 
 /-- The quotient guess, exactly as the `ESTIMATE` block computes it.  Its value
 is irrelevant to correctness. -/
 def qhatOf (mem : ByteArray) : UInt256 :=
-  let utop := MachineState.readWord mem 2048
+  let utop := MachineState.readWord mem 512
   let L := MachineState.readWord mem PRE_L
   let hi := utop / L
   let r := utop % L
   let X := MachineState.readWord mem PRE_X
   let xr := X * r
-  let unext := MachineState.readWord mem 2080
+  let unext := MachineState.readWord mem 544
   let uL := unext / L
   let lo := uL + xr
   let dodd := MachineState.readWord mem PRE_DODD
@@ -128,13 +128,13 @@ def macOf (mem : ByteArray) (n : Nat) (q : UInt256) : Monpro.MacState :=
 
 /-! ### The middle block -/
 
-def wN (mem : ByteArray) (c : UInt256) : UInt256 := c + MachineState.readWord mem 8224
+def wN (mem : ByteArray) (c : UInt256) : UInt256 := c + MachineState.readWord mem 4128
 def cwOf (mem : ByteArray) (c : UInt256) : UInt256 := UInt256.lt (wN mem c) c
 def tnOf (mem : ByteArray) (c q : UInt256) : UInt256 := wN mem c - q
 def bwOf (mem : ByteArray) (c q : UInt256) : UInt256 := UInt256.lt (wN mem c) q
 def negOf (mem : ByteArray) (c q : UInt256) : UInt256 := UInt256.gt (bwOf mem c q) (cwOf mem c)
 def midMem (mem : ByteArray) (c q : UInt256) : ByteArray :=
-  Exp.storeWord mem 8224 (tnOf mem c q)
+  Exp.storeWord mem 4128 (tnOf mem c q)
 
 /-! ### The repair rounds -/
 
@@ -143,14 +143,14 @@ def addStep (mem : ByteArray) (n : Nat) : Nat → Csub.LimbState
   | 0 => ⟨mem, UInt256.ofNat 0⟩
   | j + 1 =>
       let prev := addStep mem n j
-      let t := MachineState.readWord prev.memory (8256 + 32 * (n - 1 - j))
+      let t := MachineState.readWord prev.memory (4160 + 32 * (n - 1 - j))
       let md := MachineState.readWord prev.memory (32 * (n - 1 - j))
       let s1 := t + md
       let c1 := UInt256.gt t s1
       let s2 := prev.flag + s1
       let c2 := UInt256.gt prev.flag s2
       { memory := MachineState.writeBytes prev.memory
-          (Data.Bytes.natToBytesPadded s2.toNat 32) (8256 + 32 * (n - 1 - j))
+          (Data.Bytes.natToBytesPadded s2.toNat 32) (4160 + 32 * (n - 1 - j))
         flag := UInt256.lor c2 c1 }
 
 /-- The carry into `TN` after a full add pass. -/
@@ -158,12 +158,12 @@ def addCarry (mem : ByteArray) (n : Nat) : UInt256 := (addStep mem n n).flag
 
 /-- Memory after one whole add round: the pass and `TN += carry`. -/
 def addRoundMem (mem : ByteArray) (n : Nat) : ByteArray :=
-  Exp.storeWord (addStep mem n n).memory 8224
-    (addCarry mem n + MachineState.readWord (addStep mem n n).memory 8224)
+  Exp.storeWord (addStep mem n n).memory 4128
+    (addCarry mem n + MachineState.readWord (addStep mem n n).memory 4128)
 
 /-- The carry out of `TN` in that round: the round is the last one iff it is `1`. -/
 def addOut (mem : ByteArray) (n : Nat) : UInt256 :=
-  UInt256.lt (addCarry mem n + MachineState.readWord (addStep mem n n).memory 8224)
+  UInt256.lt (addCarry mem n + MachineState.readWord (addStep mem n n).memory 4128)
     (addCarry mem n)
 
 def addRounds (mem : ByteArray) (n : Nat) : Nat → ByteArray
@@ -175,22 +175,22 @@ def subStep (mem : ByteArray) (n : Nat) : Nat → Csub.LimbState
   | 0 => ⟨mem, UInt256.ofNat 0⟩
   | j + 1 =>
       let prev := subStep mem n j
-      let t := MachineState.readWord prev.memory (8256 + 32 * (n - 1 - j))
+      let t := MachineState.readWord prev.memory (4160 + 32 * (n - 1 - j))
       let md := MachineState.readWord prev.memory (32 * (n - 1 - j))
       let b1 := UInt256.gt md t
       let d1 := t - md
       let b2 := UInt256.lt d1 prev.flag
       let d2 := d1 - prev.flag
       { memory := MachineState.writeBytes prev.memory
-          (Data.Bytes.natToBytesPadded d2.toNat 32) (8256 + 32 * (n - 1 - j))
+          (Data.Bytes.natToBytesPadded d2.toNat 32) (4160 + 32 * (n - 1 - j))
         flag := UInt256.lor b2 b1 }
 
 def subBorrow (mem : ByteArray) (n : Nat) : UInt256 := (subStep mem n n).flag
 
 /-- Memory after one whole subtract round: the pass and `TN -= borrow`. -/
 def subRoundMem (mem : ByteArray) (n : Nat) : ByteArray :=
-  Exp.storeWord (subStep mem n n).memory 8224
-    (MachineState.readWord (subStep mem n n).memory 8224 - subBorrow mem n)
+  Exp.storeWord (subStep mem n n).memory 4128
+    (MachineState.readWord (subStep mem n n).memory 4128 - subBorrow mem n)
 
 def subRounds (mem : ByteArray) (n : Nat) : Nat → ByteArray
   | 0 => mem
@@ -222,7 +222,7 @@ def stepMem (mem : ByteArray) (n mm : Nat) : ByteArray :=
   let mac := macOf um n q
   let mid := midMem mac.memory mac.carry q
   let neg := negOf mac.memory mac.carry q
-  Csub.csResultMemory (fixMem mid n mm neg) n 2048
+  Csub.csResultMemory (fixMem mid n mm neg) n 512
 
 def stepMems (mem : ByteArray) (n mm : Nat) : Nat → ByteArray
   | 0 => mem
@@ -296,23 +296,23 @@ theorem sub_borrow_spec (a b : UInt256) :
 
 /-- `tv` in terms of `TN` and the `TS` limbs. -/
 theorem tv_def (mem : ByteArray) (n : Nat) :
-    tv mem n = (MachineState.readWord mem 8224).toNat * Limbs.radix ^ n +
-      Csub.lowValue mem 8256 n n := rfl
+    tv mem n = (MachineState.readWord mem 4128).toNat * Limbs.radix ^ n +
+      Csub.lowValue mem 4160 n n := rfl
 
 theorem tn_ne_zero_iff (mem : ByteArray) (n : Nat) :
-    (MachineState.readWord mem 8224).toNat ≠ 0 ↔ Limbs.radix ^ n ≤ tv mem n := by
+    (MachineState.readWord mem 4128).toNat ≠ 0 ↔ Limbs.radix ^ n ≤ tv mem n := by
   rw [tv_def]
-  have hlow := Csub.lowValue_lt mem 8256 n n
+  have hlow := Csub.lowValue_lt mem 4160 n n
   constructor
   · intro h
-    have : 1 ≤ (MachineState.readWord mem 8224).toNat := by omega
+    have : 1 ≤ (MachineState.readWord mem 4128).toNat := by omega
     nlinarith
   · intro h hz
     rw [hz] at h
     omega
 
 theorem tn_zero_of_lt (mem : ByteArray) (n : Nat) (h : tv mem n < Limbs.radix ^ n) :
-    (MachineState.readWord mem 8224).toNat = 0 := by
+    (MachineState.readWord mem 4128).toNat = 0 := by
   by_contra hne
   have := (tn_ne_zero_iff mem n).1 hne
   omega
@@ -453,7 +453,7 @@ theorem fastRepresents_preMemOf (mem : ByteArray) (d : UInt256) (ptr cnt v : Nat
 /-! ## `u = r * radix` -/
 
 theorem uMem_readWord_disjoint (mem : ByteArray) (n addr : Nat)
-    (hdisj : addr + 32 ≤ 8224 ∨ 8256 + 32 * n ≤ addr) :
+    (hdisj : addr + 32 ≤ 4128 ∨ 4160 + 32 * n ≤ addr) :
     MachineState.readWord (uMem mem n) addr = MachineState.readWord mem addr := by
   unfold uMem Exp.storeWord Exp.mcopyMem
   rw [Csub.readWord_write_disjoint _ _ _ _ (by omega)]
@@ -462,30 +462,30 @@ theorem uMem_readWord_disjoint (mem : ByteArray) (n addr : Nat)
 
 /-- The word of `u` at `TN`: the top limb of `r`. -/
 theorem uMem_readWord_tn (mem : ByteArray) (n : Nat) (hn : 1 ≤ n) :
-    MachineState.readWord (uMem mem n) 8224 = MachineState.readWord mem 2048 := by
+    MachineState.readWord (uMem mem n) 4128 = MachineState.readWord mem 512 := by
   unfold uMem Exp.storeWord Exp.mcopyMem
   rw [Csub.readWord_write_disjoint _ _ _ _ (by omega)]
-  have h := Csub.readWord_mcopy mem 2048 8224 (32 * n) 0 (by omega)
+  have h := Csub.readWord_mcopy mem 512 4128 (32 * n) 0 (by omega)
   simpa using h
 
 /-- The limbs of `u` inside `TS`: limb `j` of `u` is limb `j - 1` of `r`, and
 limb `0` is zero. -/
 theorem uMem_readWord_limb (mem : ByteArray) (n k : Nat) (hn : 1 ≤ n) (hk : k < n) :
-    MachineState.readWord (uMem mem n) (8256 + 32 * (n - 1 - k)) =
+    MachineState.readWord (uMem mem n) (4160 + 32 * (n - 1 - k)) =
       if k = 0 then UInt256.ofNat 0
-      else MachineState.readWord mem (2048 + 32 * (n - 1 - (k - 1))) := by
+      else MachineState.readWord mem (512 + 32 * (n - 1 - (k - 1))) := by
   unfold uMem Exp.storeWord Exp.mcopyMem
   by_cases hk0 : k = 0
   · subst hk0
     rw [if_pos rfl]
-    have h : 8256 + 32 * (n - 1 - 0) = 8224 + 32 * n := by omega
+    have h : 4160 + 32 * (n - 1 - 0) = 4128 + 32 * n := by omega
     rw [h]
     exact Challenge.EvmProof.Memory.readWord_writeWord _ _ _
   · rw [if_neg hk0]
     rw [Csub.readWord_write_disjoint _ _ _ _ (by omega)]
-    have h : 8256 + 32 * (n - 1 - k) = 8224 + 32 * (n - k) := by omega
+    have h : 4160 + 32 * (n - 1 - k) = 4128 + 32 * (n - k) := by omega
     rw [h]
-    have hm := Csub.readWord_mcopy mem 2048 8224 (32 * n) (n - k) (by omega)
+    have hm := Csub.readWord_mcopy mem 512 4128 (32 * n) (n - k) (by omega)
     rw [hm]
     congr 1
     omega
@@ -493,9 +493,9 @@ theorem uMem_readWord_limb (mem : ByteArray) (n k : Nat) (hn : 1 ≤ n) (hk : k 
 /-- The `TS` limbs of `u` are the limbs of `r` shifted up by one, so their value
 below limb `j + 1` is `radix * (r mod radix ^ j)`. -/
 theorem uMem_lowValue (mem : ByteArray) (n r : Nat) (hn : 1 ≤ n)
-    (hrep : Model.FastRepresents mem 2048 n r) :
+    (hrep : Model.FastRepresents mem 512 n r) :
     ∀ j, j + 1 ≤ n →
-      Csub.lowValue (uMem mem n) 8256 n (j + 1) = Limbs.radix * (r % Limbs.radix ^ j) := by
+      Csub.lowValue (uMem mem n) 4160 n (j + 1) = Limbs.radix * (r % Limbs.radix ^ j) := by
   intro j
   induction j with
   | zero =>
@@ -513,7 +513,7 @@ theorem uMem_lowValue (mem : ByteArray) (n r : Nat) (hn : 1 ≤ n)
       ring
 
 theorem uMem_tv (mem : ByteArray) (n r : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
-    (hrep : Model.FastRepresents mem 2048 n r) :
+    (hrep : Model.FastRepresents mem 512 n r) :
     tv (uMem mem n) n = r * Limbs.radix := by
   rw [tv_def, uMem_readWord_tn mem n (by omega)]
   have hlow := uMem_lowValue mem n r (by omega) hrep (n - 1) (by omega)
@@ -539,24 +539,24 @@ theorem uMem_tv (mem : ByteArray) (n r : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 32)
 
 theorem mac_value (mem : ByteArray) (n : Nat) (q : UInt256) (a : Nat) (hn32 : n ≤ 32)
     (hneg : Model.FastRepresents mem NEG n a) :
-    Csub.lowValue (macOf mem n q).memory 8256 n n +
+    Csub.lowValue (macOf mem n q).memory 4160 n n +
         (macOf mem n q).carry.toNat * Limbs.radix ^ n =
-      Csub.lowValue mem 8256 n n + q.toNat * a := by
-  have h := Monpro.l1_row mem q NEG n (Csub.lowValue mem 8256 n n) a hn32
-    (by unfold NEG; omega) hneg (Csub.fastRepresents_lowValue mem 8256 n)
+      Csub.lowValue mem 4160 n n + q.toNat * a := by
+  have h := Monpro.l1_row mem q NEG n (Csub.lowValue mem 4160 n n) a hn32
+    (by unfold NEG; omega) hneg (Csub.fastRepresents_lowValue mem 4160 n)
   have hsum : Monpro.limbSum (fun k => (Monpro.l1Val mem q NEG n k).toNat) n =
-      Csub.lowValue (Monpro.l1Step mem q NEG n n).memory 8256 n n := by
+      Csub.lowValue (Monpro.l1Step mem q NEG n n).memory 4160 n n := by
     rw [← Monpro.limbSum_eq_lowValue]
     apply Monpro.limbSum_congr
     intro k hk
-    rw [show 8256 + 32 * (n - 1 - k) = Monpro.tAddr n k from rfl,
+    rw [show 4160 + 32 * (n - 1 - k) = Monpro.tAddr n k from rfl,
       Monpro.readWord_l1Step_val mem q NEG n k hn32 hk (by unfold NEG; omega) n hk le_rfl]
   unfold macOf
   rw [← hsum]
   exact h
 
 theorem l1Step_readWord_disjoint (mem : ByteArray) (bi : UInt256) (pa n addr : Nat)
-    (hn : 1 ≤ n) (hdisj : addr + 32 ≤ 8256 ∨ 8256 + 32 * n ≤ addr) :
+    (hn : 1 ≤ n) (hdisj : addr + 32 ≤ 4160 ∨ 4160 + 32 * n ≤ addr) :
     ∀ j, MachineState.readWord (Monpro.l1Step mem bi pa n j).memory addr =
       MachineState.readWord mem addr := by
   intro j
@@ -568,7 +568,7 @@ theorem l1Step_readWord_disjoint (mem : ByteArray) (bi : UInt256) (pa n addr : N
       exact ih
 
 theorem mac_readWord_disjoint (mem : ByteArray) (n addr : Nat) (q : UInt256)
-    (hn : 1 ≤ n) (hdisj : addr + 32 ≤ 8256 ∨ 8256 + 32 * n ≤ addr) :
+    (hn : 1 ≤ n) (hdisj : addr + 32 ≤ 4160 ∨ 4160 + 32 * n ≤ addr) :
     MachineState.readWord (macOf mem n q).memory addr = MachineState.readWord mem addr :=
   l1Step_readWord_disjoint mem q NEG n addr hn hdisj n
 
@@ -583,37 +583,37 @@ theorem mid_relation (mem : ByteArray) (n mm : Nat) (q : UInt256) (u : Nat)
       tv (midMem (macOf mem n q).memory (macOf mem n q).carry q) n < Limbs.radix ^ (n + 1) ∧
       (negOf (macOf mem n q).memory (macOf mem n q).carry q).toNat ≤ 1 := by
   have hmac := mac_value mem n q (Limbs.radix ^ n - mm) hn32 hneg
-  have hTN : MachineState.readWord (macOf mem n q).memory 8224 =
-      MachineState.readWord mem 8224 :=
-    mac_readWord_disjoint mem n 8224 q (by omega) (Or.inl (by omega))
-  have hW := add_carry_spec (macOf mem n q).carry (MachineState.readWord mem 8224)
-  have hT := sub_borrow_spec ((macOf mem n q).carry + MachineState.readWord mem 8224) q
+  have hTN : MachineState.readWord (macOf mem n q).memory 4128 =
+      MachineState.readWord mem 4128 :=
+    mac_readWord_disjoint mem n 4128 q (by omega) (Or.inl (by omega))
+  have hW := add_carry_spec (macOf mem n q).carry (MachineState.readWord mem 4128)
+  have hT := sub_borrow_spec ((macOf mem n q).carry + MachineState.readWord mem 4128) q
   have hlowMid : Csub.lowValue (midMem (macOf mem n q).memory (macOf mem n q).carry q)
-      8256 n n = Csub.lowValue (macOf mem n q).memory 8256 n n := by
+      4160 n n = Csub.lowValue (macOf mem n q).memory 4160 n n := by
     apply Csub.lowValue_congr
     intro k hk
     unfold midMem Exp.storeWord
     exact Csub.readWord_write_disjoint _ _ _ _ (by omega)
   have htnMid : MachineState.readWord (midMem (macOf mem n q).memory (macOf mem n q).carry q)
-      8224 = (macOf mem n q).carry + MachineState.readWord mem 8224 - q := by
+      4128 = (macOf mem n q).carry + MachineState.readWord mem 4128 - q := by
     unfold midMem Exp.storeWord tnOf wN
     rw [Challenge.EvmProof.Memory.readWord_writeWord, hTN]
   have htv : tv (midMem (macOf mem n q).memory (macOf mem n q).carry q) n =
-      ((macOf mem n q).carry + MachineState.readWord mem 8224 - q).toNat * Limbs.radix ^ n +
-        Csub.lowValue (macOf mem n q).memory 8256 n n := by
+      ((macOf mem n q).carry + MachineState.readWord mem 4128 - q).toNat * Limbs.radix ^ n +
+        Csub.lowValue (macOf mem n q).memory 4160 n n := by
     rw [tv_def, htnMid, hlowMid]
-  have hu' : (MachineState.readWord mem 8224).toNat * Limbs.radix ^ n +
-      Csub.lowValue mem 8256 n n = u := by rw [← hu, tv_def]
+  have hu' : (MachineState.readWord mem 4128).toNat * Limbs.radix ^ n +
+      Csub.lowValue mem 4160 n n = u := by rw [← hu, tv_def]
   have hnegv : (negOf (macOf mem n q).memory (macOf mem n q).carry q).toNat =
-      if (UInt256.lt ((macOf mem n q).carry + MachineState.readWord mem 8224)
+      if (UInt256.lt ((macOf mem n q).carry + MachineState.readWord mem 4128)
             (macOf mem n q).carry).toNat <
-          (UInt256.lt ((macOf mem n q).carry + MachineState.readWord mem 8224) q).toNat
+          (UInt256.lt ((macOf mem n q).carry + MachineState.readWord mem 4128) q).toNat
         then 1 else 0 := by
     unfold negOf bwOf cwOf wN
     rw [gt_toNat, hTN]
-  have hTnlt : ((macOf mem n q).carry + MachineState.readWord mem 8224 - q).toNat <
-      Limbs.radix := ((macOf mem n q).carry + MachineState.readWord mem 8224 - q).val.isLt
-  have hlow'lt : Csub.lowValue (macOf mem n q).memory 8256 n n < Limbs.radix ^ n :=
+  have hTnlt : ((macOf mem n q).carry + MachineState.readWord mem 4128 - q).toNat <
+      Limbs.radix := ((macOf mem n q).carry + MachineState.readWord mem 4128 - q).val.isLt
+  have hlow'lt : Csub.lowValue (macOf mem n q).memory 4160 n n < Limbs.radix ^ n :=
     Csub.lowValue_lt _ _ _ _
   have hR' : Limbs.radix ^ (n + 1) = Limbs.radix ^ n * Limbs.radix := pow_succ _ _
   have hqa : q.toNat * (Limbs.radix ^ n - mm) + q.toNat * mm = q.toNat * Limbs.radix ^ n := by
@@ -623,11 +623,11 @@ theorem mid_relation (mem : ByteArray) (n mm : Nat) (q : UInt256) (u : Nat)
   have hcw1 := hW.2
   have hbw1 := hT.2
   -- the key identity: u + bw R' = t + q m + cw R'
-  have hkey : u + (UInt256.lt ((macOf mem n q).carry + MachineState.readWord mem 8224)
+  have hkey : u + (UInt256.lt ((macOf mem n q).carry + MachineState.readWord mem 4128)
         q).toNat * (Limbs.radix ^ n * Limbs.radix) =
-      ((macOf mem n q).carry + MachineState.readWord mem 8224 - q).toNat * Limbs.radix ^ n +
-        Csub.lowValue (macOf mem n q).memory 8256 n n + q.toNat * mm +
-        (UInt256.lt ((macOf mem n q).carry + MachineState.readWord mem 8224)
+      ((macOf mem n q).carry + MachineState.readWord mem 4128 - q).toNat * Limbs.radix ^ n +
+        Csub.lowValue (macOf mem n q).memory 4160 n n + q.toNat * mm +
+        (UInt256.lt ((macOf mem n q).carry + MachineState.readWord mem 4128)
           (macOf mem n q).carry).toNat * (Limbs.radix ^ n * Limbs.radix) := by
     zify at hu' hmac hW1 hT1 hqa ⊢
     linear_combination (-1 : ℤ) * hu' + (-1 : ℤ) * hmac +
@@ -644,12 +644,12 @@ theorem mid_relation (mem : ByteArray) (n mm : Nat) (q : UInt256) (u : Nat)
       omega
     · rw [h1, g1] at hkey ⊢; rw [if_neg (by decide)]; omega
   · rw [htv, hR']
-    have h1 : ((macOf mem n q).carry + MachineState.readWord mem 8224 - q).toNat *
-        Limbs.radix ^ n + Csub.lowValue (macOf mem n q).memory 8256 n n <
-        (((macOf mem n q).carry + MachineState.readWord mem 8224 - q).toNat + 1) *
+    have h1 : ((macOf mem n q).carry + MachineState.readWord mem 4128 - q).toNat *
+        Limbs.radix ^ n + Csub.lowValue (macOf mem n q).memory 4160 n n <
+        (((macOf mem n q).carry + MachineState.readWord mem 4128 - q).toNat + 1) *
           Limbs.radix ^ n := by
       rw [Nat.succ_mul]; omega
-    have h2 : (((macOf mem n q).carry + MachineState.readWord mem 8224 - q).toNat + 1) *
+    have h2 : (((macOf mem n q).carry + MachineState.readWord mem 4128 - q).toNat + 1) *
         Limbs.radix ^ n ≤ Limbs.radix * Limbs.radix ^ n :=
       Nat.mul_le_mul_right _ hTnlt
     rw [Nat.mul_comm (Limbs.radix ^ n) Limbs.radix]
@@ -659,7 +659,7 @@ theorem mid_relation (mem : ByteArray) (n mm : Nat) (q : UInt256) (u : Nat)
 /-! ## The repair rounds -/
 
 theorem addStep_readWord_disjoint (mem : ByteArray) (n addr : Nat)
-    (hdisj : addr + 32 ≤ 8256 ∨ 8256 + 32 * n ≤ addr) :
+    (hdisj : addr + 32 ≤ 4160 ∨ 4160 + 32 * n ≤ addr) :
     ∀ j, j ≤ n → MachineState.readWord (addStep mem n j).memory addr =
       MachineState.readWord mem addr := by
   intro j
@@ -675,32 +675,32 @@ theorem addStep_readWord_disjoint (mem : ByteArray) (n addr : Nat)
 
 /-- Limbs at or above `j` are untouched by the first `j` steps. -/
 theorem addStep_readWord_keep (mem : ByteArray) (n k : Nat) (hk : k < n) :
-    ∀ j, j ≤ k → MachineState.readWord (addStep mem n j).memory (8256 + 32 * (n - 1 - k)) =
-      MachineState.readWord mem (8256 + 32 * (n - 1 - k)) := by
+    ∀ j, j ≤ k → MachineState.readWord (addStep mem n j).memory (4160 + 32 * (n - 1 - k)) =
+      MachineState.readWord mem (4160 + 32 * (n - 1 - k)) := by
   intro j
   induction j with
   | zero => intro _; rfl
   | succ j ih =>
       intro hj
       have hstep : MachineState.readWord (addStep mem n (j + 1)).memory
-          (8256 + 32 * (n - 1 - k)) =
-          MachineState.readWord (addStep mem n j).memory (8256 + 32 * (n - 1 - k)) := by
+          (4160 + 32 * (n - 1 - k)) =
+          MachineState.readWord (addStep mem n j).memory (4160 + 32 * (n - 1 - k)) := by
         simp only [addStep]
         exact Csub.readWord_write_disjoint _ _ _ _ (by omega)
       rw [hstep, ih (by omega)]
 
 theorem addStep_lowValue_stable (mem : ByteArray) (n j : Nat) (hj : j < n) :
-    Csub.lowValue (addStep mem n (j + 1)).memory 8256 n j =
-      Csub.lowValue (addStep mem n j).memory 8256 n j := by
+    Csub.lowValue (addStep mem n (j + 1)).memory 4160 n j =
+      Csub.lowValue (addStep mem n j).memory 4160 n j := by
   apply Csub.lowValue_congr
   intro k hk
   simp only [addStep]
   exact Csub.readWord_write_disjoint _ _ _ _ (by omega)
 
 theorem addStep_readWord_new (mem : ByteArray) (n j : Nat) :
-    MachineState.readWord (addStep mem n (j + 1)).memory (8256 + 32 * (n - 1 - j)) =
+    MachineState.readWord (addStep mem n (j + 1)).memory (4160 + 32 * (n - 1 - j)) =
       (addStep mem n j).flag +
-        (MachineState.readWord (addStep mem n j).memory (8256 + 32 * (n - 1 - j)) +
+        (MachineState.readWord (addStep mem n j).memory (4160 + 32 * (n - 1 - j)) +
           MachineState.readWord (addStep mem n j).memory (32 * (n - 1 - j))) := by
   simp only [addStep]
   exact Challenge.EvmProof.Memory.readWord_writeWord _ _ _
@@ -709,10 +709,10 @@ theorem addStep_flag_succ (mem : ByteArray) (n j : Nat) :
     (addStep mem n (j + 1)).flag =
       UInt256.lor
         (UInt256.gt (addStep mem n j).flag ((addStep mem n j).flag +
-          (MachineState.readWord (addStep mem n j).memory (8256 + 32 * (n - 1 - j)) +
+          (MachineState.readWord (addStep mem n j).memory (4160 + 32 * (n - 1 - j)) +
             MachineState.readWord (addStep mem n j).memory (32 * (n - 1 - j)))))
-        (UInt256.gt (MachineState.readWord (addStep mem n j).memory (8256 + 32 * (n - 1 - j)))
-          (MachineState.readWord (addStep mem n j).memory (8256 + 32 * (n - 1 - j)) +
+        (UInt256.gt (MachineState.readWord (addStep mem n j).memory (4160 + 32 * (n - 1 - j)))
+          (MachineState.readWord (addStep mem n j).memory (4160 + 32 * (n - 1 - j)) +
             MachineState.readWord (addStep mem n j).memory (32 * (n - 1 - j)))) := by
   simp only [addStep]
 
@@ -736,9 +736,9 @@ theorem addLimb_spec' (t md c : UInt256) (hc : c.toNat ≤ 1) :
 
 theorem addStep_invariant (mem : ByteArray) (n : Nat) (hn32 : n ≤ 32) :
     ∀ j, j ≤ n →
-      Csub.lowValue (addStep mem n j).memory 8256 n j +
+      Csub.lowValue (addStep mem n j).memory 4160 n j +
           (addStep mem n j).flag.toNat * Limbs.radix ^ j =
-        Csub.lowValue mem 8256 n j + Csub.lowValue mem 0 n j ∧
+        Csub.lowValue mem 4160 n j + Csub.lowValue mem 0 n j ∧
         (addStep mem n j).flag.toNat ≤ 1 := by
   intro j
   induction j with
@@ -746,18 +746,18 @@ theorem addStep_invariant (mem : ByteArray) (n : Nat) (hn32 : n ≤ 32) :
   | succ j ih =>
       intro hj
       obtain ⟨ihEq, ihLe⟩ := ih (by omega)
-      have hxt : MachineState.readWord (addStep mem n j).memory (8256 + 32 * (n - 1 - j)) =
-          MachineState.readWord mem (8256 + 32 * (n - 1 - j)) :=
+      have hxt : MachineState.readWord (addStep mem n j).memory (4160 + 32 * (n - 1 - j)) =
+          MachineState.readWord mem (4160 + 32 * (n - 1 - j)) :=
         addStep_readWord_keep mem n j (by omega) j le_rfl
       have hxm : MachineState.readWord (addStep mem n j).memory (32 * (n - 1 - j)) =
           MachineState.readWord mem (32 * (n - 1 - j)) :=
         addStep_readWord_disjoint mem n _ (Or.inl (by omega)) j (by omega)
-      have hlimb := addLimb_spec' (MachineState.readWord mem (8256 + 32 * (n - 1 - j)))
+      have hlimb := addLimb_spec' (MachineState.readWord mem (4160 + 32 * (n - 1 - j)))
         (MachineState.readWord mem (32 * (n - 1 - j))) (addStep mem n j).flag ihLe
-      rw [Csub.lowValue_succ (addStep mem n (j + 1)).memory 8256 n j,
+      rw [Csub.lowValue_succ (addStep mem n (j + 1)).memory 4160 n j,
         addStep_lowValue_stable mem n j (by omega),
         addStep_readWord_new, addStep_flag_succ,
-        Csub.lowValue_succ mem 8256 n j, Csub.lowValue_succ mem 0 n j, pow_succ]
+        Csub.lowValue_succ mem 4160 n j, Csub.lowValue_succ mem 0 n j, pow_succ]
       simp only [Nat.zero_add, hxt, hxm]
       exact ⟨Csub.am_algebra _ _ _ _ _ _ _ _ _ _ hlimb.1 ihEq, hlimb.2⟩
 
@@ -769,19 +769,19 @@ theorem addRound_value (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n �
   have hM : Csub.lowValue mem 0 n n = mm := by
     rw [Csub.lowValue_full]; exact Model.value_of_fastRepresents hmod
   rw [hM] at hinv
-  have htn : MachineState.readWord (addStep mem n n).memory 8224 =
-      MachineState.readWord mem 8224 :=
-    addStep_readWord_disjoint mem n 8224 (Or.inl (by omega)) n le_rfl
+  have htn : MachineState.readWord (addStep mem n n).memory 4128 =
+      MachineState.readWord mem 4128 :=
+    addStep_readWord_disjoint mem n 4128 (Or.inl (by omega)) n le_rfl
   have hcarry := add_carry_spec (addStep mem n n).flag
-    (MachineState.readWord (addStep mem n n).memory 8224)
+    (MachineState.readWord (addStep mem n n).memory 4128)
   unfold addOut addCarry
   rw [tv_def, tv_def]
   unfold addRoundMem addCarry Exp.storeWord
   rw [Challenge.EvmProof.Memory.readWord_writeWord]
   have hlow : Csub.lowValue (MachineState.writeBytes (addStep mem n n).memory
       (Data.Bytes.natToBytesPadded (((addStep mem n n).flag +
-        MachineState.readWord (addStep mem n n).memory 8224).toNat) 32) 8224) 8256 n n =
-      Csub.lowValue (addStep mem n n).memory 8256 n n := by
+        MachineState.readWord (addStep mem n n).memory 4128).toNat) 32) 4128) 4160 n n =
+      Csub.lowValue (addStep mem n n).memory 4160 n n := by
     apply Csub.lowValue_congr
     intro k hk
     exact Csub.readWord_write_disjoint _ _ _ _ (by omega)
@@ -789,22 +789,22 @@ theorem addRound_value (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n �
   rw [htn] at hcarry
   refine ⟨?_, hcarry.2⟩
   rw [pow_succ]
-  have hc' : (((addStep mem n n).flag + MachineState.readWord mem 8224).toNat +
-      (UInt256.lt ((addStep mem n n).flag + MachineState.readWord mem 8224)
+  have hc' : (((addStep mem n n).flag + MachineState.readWord mem 4128).toNat +
+      (UInt256.lt ((addStep mem n n).flag + MachineState.readWord mem 4128)
         (addStep mem n n).flag).toNat * Limbs.radix) * Limbs.radix ^ n =
-      ((addStep mem n n).flag.toNat + (MachineState.readWord mem 8224).toNat) * Limbs.radix ^ n :=
+      ((addStep mem n n).flag.toNat + (MachineState.readWord mem 4128).toNat) * Limbs.radix ^ n :=
     by rw [hcarry.1]
   nlinarith [hc', hinv]
 
 theorem addRoundMem_readWord_disjoint (mem : ByteArray) (n addr : Nat)
-    (hdisj : addr + 32 ≤ 8224 ∨ 8256 + 32 * n ≤ addr) :
+    (hdisj : addr + 32 ≤ 4128 ∨ 4160 + 32 * n ≤ addr) :
     MachineState.readWord (addRoundMem mem n) addr = MachineState.readWord mem addr := by
   unfold addRoundMem Exp.storeWord
   rw [Csub.readWord_write_disjoint _ _ _ _ (by omega)]
   exact addStep_readWord_disjoint mem n addr (by omega) n le_rfl
 
 theorem subStep_readWord_disjoint (mem : ByteArray) (n addr : Nat)
-    (hdisj : addr + 32 ≤ 8256 ∨ 8256 + 32 * n ≤ addr) :
+    (hdisj : addr + 32 ≤ 4160 ∨ 4160 + 32 * n ≤ addr) :
     ∀ j, j ≤ n → MachineState.readWord (subStep mem n j).memory addr =
       MachineState.readWord mem addr := by
   intro j
@@ -819,31 +819,31 @@ theorem subStep_readWord_disjoint (mem : ByteArray) (n addr : Nat)
       rw [hstep, ih (by omega)]
 
 theorem subStep_readWord_keep (mem : ByteArray) (n k : Nat) (hk : k < n) :
-    ∀ j, j ≤ k → MachineState.readWord (subStep mem n j).memory (8256 + 32 * (n - 1 - k)) =
-      MachineState.readWord mem (8256 + 32 * (n - 1 - k)) := by
+    ∀ j, j ≤ k → MachineState.readWord (subStep mem n j).memory (4160 + 32 * (n - 1 - k)) =
+      MachineState.readWord mem (4160 + 32 * (n - 1 - k)) := by
   intro j
   induction j with
   | zero => intro _; rfl
   | succ j ih =>
       intro hj
       have hstep : MachineState.readWord (subStep mem n (j + 1)).memory
-          (8256 + 32 * (n - 1 - k)) =
-          MachineState.readWord (subStep mem n j).memory (8256 + 32 * (n - 1 - k)) := by
+          (4160 + 32 * (n - 1 - k)) =
+          MachineState.readWord (subStep mem n j).memory (4160 + 32 * (n - 1 - k)) := by
         simp only [subStep]
         exact Csub.readWord_write_disjoint _ _ _ _ (by omega)
       rw [hstep, ih (by omega)]
 
 theorem subStep_lowValue_stable (mem : ByteArray) (n j : Nat) (hj : j < n) :
-    Csub.lowValue (subStep mem n (j + 1)).memory 8256 n j =
-      Csub.lowValue (subStep mem n j).memory 8256 n j := by
+    Csub.lowValue (subStep mem n (j + 1)).memory 4160 n j =
+      Csub.lowValue (subStep mem n j).memory 4160 n j := by
   apply Csub.lowValue_congr
   intro k hk
   simp only [subStep]
   exact Csub.readWord_write_disjoint _ _ _ _ (by omega)
 
 theorem subStep_readWord_new (mem : ByteArray) (n j : Nat) :
-    MachineState.readWord (subStep mem n (j + 1)).memory (8256 + 32 * (n - 1 - j)) =
-      MachineState.readWord (subStep mem n j).memory (8256 + 32 * (n - 1 - j)) -
+    MachineState.readWord (subStep mem n (j + 1)).memory (4160 + 32 * (n - 1 - j)) =
+      MachineState.readWord (subStep mem n j).memory (4160 + 32 * (n - 1 - j)) -
         MachineState.readWord (subStep mem n j).memory (32 * (n - 1 - j)) -
         (subStep mem n j).flag := by
   simp only [subStep]
@@ -852,11 +852,11 @@ theorem subStep_readWord_new (mem : ByteArray) (n j : Nat) :
 theorem subStep_flag_succ (mem : ByteArray) (n j : Nat) :
     (subStep mem n (j + 1)).flag =
       UInt256.lor
-        (UInt256.lt (MachineState.readWord (subStep mem n j).memory (8256 + 32 * (n - 1 - j)) -
+        (UInt256.lt (MachineState.readWord (subStep mem n j).memory (4160 + 32 * (n - 1 - j)) -
             MachineState.readWord (subStep mem n j).memory (32 * (n - 1 - j)))
           (subStep mem n j).flag)
         (UInt256.gt (MachineState.readWord (subStep mem n j).memory (32 * (n - 1 - j)))
-          (MachineState.readWord (subStep mem n j).memory (8256 + 32 * (n - 1 - j)))) := by
+          (MachineState.readWord (subStep mem n j).memory (4160 + 32 * (n - 1 - j)))) := by
   simp only [subStep]
 
 theorem subLimb_spec' (x y b : UInt256) (hb : b.toNat ≤ 1) :
@@ -879,8 +879,8 @@ theorem subLimb_spec' (x y b : UInt256) (hb : b.toNat ≤ 1) :
 
 theorem subStep_invariant (mem : ByteArray) (n : Nat) (hn32 : n ≤ 32) :
     ∀ j, j ≤ n →
-      Csub.lowValue (subStep mem n j).memory 8256 n j + Csub.lowValue mem 0 n j =
-        Csub.lowValue mem 8256 n j + (subStep mem n j).flag.toNat * Limbs.radix ^ j ∧
+      Csub.lowValue (subStep mem n j).memory 4160 n j + Csub.lowValue mem 0 n j =
+        Csub.lowValue mem 4160 n j + (subStep mem n j).flag.toNat * Limbs.radix ^ j ∧
         (subStep mem n j).flag.toNat ≤ 1 := by
   intro j
   induction j with
@@ -888,57 +888,57 @@ theorem subStep_invariant (mem : ByteArray) (n : Nat) (hn32 : n ≤ 32) :
   | succ j ih =>
       intro hj
       obtain ⟨ihEq, ihLe⟩ := ih (by omega)
-      have hxt : MachineState.readWord (subStep mem n j).memory (8256 + 32 * (n - 1 - j)) =
-          MachineState.readWord mem (8256 + 32 * (n - 1 - j)) :=
+      have hxt : MachineState.readWord (subStep mem n j).memory (4160 + 32 * (n - 1 - j)) =
+          MachineState.readWord mem (4160 + 32 * (n - 1 - j)) :=
         subStep_readWord_keep mem n j (by omega) j le_rfl
       have hxm : MachineState.readWord (subStep mem n j).memory (32 * (n - 1 - j)) =
           MachineState.readWord mem (32 * (n - 1 - j)) :=
         subStep_readWord_disjoint mem n _ (Or.inl (by omega)) j (by omega)
-      have hlimb := subLimb_spec' (MachineState.readWord mem (8256 + 32 * (n - 1 - j)))
+      have hlimb := subLimb_spec' (MachineState.readWord mem (4160 + 32 * (n - 1 - j)))
         (MachineState.readWord mem (32 * (n - 1 - j))) (subStep mem n j).flag ihLe
-      rw [Csub.lowValue_succ (subStep mem n (j + 1)).memory 8256 n j,
+      rw [Csub.lowValue_succ (subStep mem n (j + 1)).memory 4160 n j,
         subStep_lowValue_stable mem n j (by omega),
         subStep_readWord_new, subStep_flag_succ,
-        Csub.lowValue_succ mem 0 n j, Csub.lowValue_succ mem 8256 n j, pow_succ]
+        Csub.lowValue_succ mem 0 n j, Csub.lowValue_succ mem 4160 n j, pow_succ]
       simp only [Nat.zero_add, hxt, hxm]
       exact ⟨Csub.cs_algebra _ _ _ _ _ _ _ _ _ _ hlimb.1 ihEq, hlimb.2⟩
 
 theorem subRound_value (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32)
     (hmod : Model.FastRepresents mem 0 n mm)
-    (htn : (MachineState.readWord mem 8224).toNat ≠ 0) :
+    (htn : (MachineState.readWord mem 4128).toNat ≠ 0) :
     tv (subRoundMem mem n) n + mm = tv mem n := by
   obtain ⟨hinv, hle⟩ := subStep_invariant mem n hn32 n le_rfl
   have hM : Csub.lowValue mem 0 n n = mm := by
     rw [Csub.lowValue_full]; exact Model.value_of_fastRepresents hmod
   rw [hM] at hinv
-  have htn' : MachineState.readWord (subStep mem n n).memory 8224 =
-      MachineState.readWord mem 8224 :=
-    subStep_readWord_disjoint mem n 8224 (Or.inl (by omega)) n le_rfl
-  have hborrow := (sub_borrow_spec (MachineState.readWord (subStep mem n n).memory 8224)
+  have htn' : MachineState.readWord (subStep mem n n).memory 4128 =
+      MachineState.readWord mem 4128 :=
+    subStep_readWord_disjoint mem n 4128 (Or.inl (by omega)) n le_rfl
+  have hborrow := (sub_borrow_spec (MachineState.readWord (subStep mem n n).memory 4128)
     (subStep mem n n).flag).1
   rw [tv_def, tv_def]
   unfold subRoundMem subBorrow Exp.storeWord
   rw [Challenge.EvmProof.Memory.readWord_writeWord]
   have hlow : Csub.lowValue (MachineState.writeBytes (subStep mem n n).memory
-      (Data.Bytes.natToBytesPadded ((MachineState.readWord (subStep mem n n).memory 8224 -
-        (subStep mem n n).flag).toNat) 32) 8224) 8256 n n =
-      Csub.lowValue (subStep mem n n).memory 8256 n n := by
+      (Data.Bytes.natToBytesPadded ((MachineState.readWord (subStep mem n n).memory 4128 -
+        (subStep mem n n).flag).toNat) 32) 4128) 4160 n n =
+      Csub.lowValue (subStep mem n n).memory 4160 n n := by
     apply Csub.lowValue_congr
     intro k hk
     exact Csub.readWord_write_disjoint _ _ _ _ (by omega)
   rw [hlow, htn']
   rw [htn'] at hborrow
-  have hnb : (UInt256.lt (MachineState.readWord mem 8224) (subStep mem n n).flag).toNat = 0 := by
+  have hnb : (UInt256.lt (MachineState.readWord mem 4128) (subStep mem n n).flag).toNat = 0 := by
     rw [Challenge.EvmProof.Word.word_toNat_lt]
     rw [if_neg]; omega
   rw [hnb, Nat.zero_mul, Nat.add_zero] at hborrow
-  have hb' : ((MachineState.readWord mem 8224 - (subStep mem n n).flag).toNat +
+  have hb' : ((MachineState.readWord mem 4128 - (subStep mem n n).flag).toNat +
       (subStep mem n n).flag.toNat) * Limbs.radix ^ n =
-      (MachineState.readWord mem 8224).toNat * Limbs.radix ^ n := by rw [hborrow]
+      (MachineState.readWord mem 4128).toNat * Limbs.radix ^ n := by rw [hborrow]
   nlinarith [hb', hinv]
 
 theorem subRoundMem_readWord_disjoint (mem : ByteArray) (n addr : Nat)
-    (hdisj : addr + 32 ≤ 8224 ∨ 8256 + 32 * n ≤ addr) :
+    (hdisj : addr + 32 ≤ 4128 ∨ 4160 + 32 * n ≤ addr) :
     MachineState.readWord (subRoundMem mem n) addr = MachineState.readWord mem addr := by
   unfold subRoundMem Exp.storeWord
   rw [Csub.readWord_write_disjoint _ _ _ _ (by omega)]
@@ -947,7 +947,7 @@ theorem subRoundMem_readWord_disjoint (mem : ByteArray) (n addr : Nat)
 /-! ### Rounds -/
 
 theorem addRounds_readWord_disjoint (mem : ByteArray) (n addr : Nat)
-    (hdisj : addr + 32 ≤ 8224 ∨ 8256 + 32 * n ≤ addr) :
+    (hdisj : addr + 32 ≤ 4128 ∨ 4160 + 32 * n ≤ addr) :
     ∀ k, MachineState.readWord (addRounds mem n k) addr = MachineState.readWord mem addr := by
   intro k
   induction k with
@@ -955,7 +955,7 @@ theorem addRounds_readWord_disjoint (mem : ByteArray) (n addr : Nat)
   | succ k ih => exact (addRoundMem_readWord_disjoint _ n addr hdisj).trans ih
 
 theorem subRounds_readWord_disjoint (mem : ByteArray) (n addr : Nat)
-    (hdisj : addr + 32 ≤ 8224 ∨ 8256 + 32 * n ≤ addr) :
+    (hdisj : addr + 32 ≤ 4128 ∨ 4160 + 32 * n ≤ addr) :
     ∀ k, MachineState.readWord (subRounds mem n k) addr = MachineState.readWord mem addr := by
   intro k
   induction k with
@@ -963,7 +963,7 @@ theorem subRounds_readWord_disjoint (mem : ByteArray) (n addr : Nat)
   | succ k ih => exact (subRoundMem_readWord_disjoint _ n addr hdisj).trans ih
 
 theorem fastRepresents_addRounds (mem : ByteArray) (n ptr cnt v : Nat)
-    (hdisj : ptr + 32 * cnt ≤ 8224 ∨ 8256 + 32 * n ≤ ptr)
+    (hdisj : ptr + 32 * cnt ≤ 4128 ∨ 4160 + 32 * n ≤ ptr)
     (hrep : Model.FastRepresents mem ptr cnt v) (k : Nat) :
     Model.FastRepresents (addRounds mem n k) ptr cnt v := by
   refine (Model.fastRepresents_congr ?_ v).2 hrep
@@ -971,7 +971,7 @@ theorem fastRepresents_addRounds (mem : ByteArray) (n ptr cnt v : Nat)
   exact addRounds_readWord_disjoint mem n _ (by omega) k
 
 theorem fastRepresents_subRounds (mem : ByteArray) (n ptr cnt v : Nat)
-    (hdisj : ptr + 32 * cnt ≤ 8224 ∨ 8256 + 32 * n ≤ ptr)
+    (hdisj : ptr + 32 * cnt ≤ 4128 ∨ 4160 + 32 * n ≤ ptr)
     (hrep : Model.FastRepresents mem ptr cnt v) (k : Nat) :
     Model.FastRepresents (subRounds mem n k) ptr cnt v := by
   refine (Model.fastRepresents_congr ?_ v).2 hrep
@@ -1028,11 +1028,11 @@ theorem addRounds_last (mem : ByteArray) (n mm k : Nat) (hn : 1 ≤ n) (hn32 : n
     by_contra hne
     have h0 : (addOut (addRounds mem n k) n).toNat = 0 := by omega
     rw [h0, hval] at hround
-    have hlow := Csub.lowValue_lt (addRoundMem (addRounds mem n k) n) 8256 n n
+    have hlow := Csub.lowValue_lt (addRoundMem (addRounds mem n k) n) 4160 n n
     have hlt' : tv (addRoundMem (addRounds mem n k) n) n < Limbs.radix ^ (n + 1) := by
       rw [tv_def, pow_succ]
-      have htn : (MachineState.readWord (addRoundMem (addRounds mem n k) n) 8224).toNat <
-          Limbs.radix := (MachineState.readWord _ 8224).val.isLt
+      have htn : (MachineState.readWord (addRoundMem (addRounds mem n k) n) 4128).toNat <
+          Limbs.radix := (MachineState.readWord _ 4128).val.isLt
       nlinarith
     rw [Nat.succ_mul] at hge
     omega
@@ -1057,7 +1057,7 @@ theorem subRounds_value (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n 
       have hprev := ih (fun j hj => hle j (by omega))
       have hmod' : Model.FastRepresents (subRounds mem n i) 0 n mm :=
         fastRepresents_subRounds mem n 0 n mm (Or.inl (by omega)) hmod i
-      have htn : (MachineState.readWord (subRounds mem n i) 8224).toNat ≠ 0 := by
+      have htn : (MachineState.readWord (subRounds mem n i) 4128).toNat ≠ 0 := by
         rw [tn_ne_zero_iff _ n]
         have := hle i (by omega)
         omega
@@ -1074,8 +1074,8 @@ structure RepairFacts (mid : ByteArray) (n mm : Nat) (neg : UInt256) : Prop wher
     addOut (addRounds mid n (addCount mid n mm neg - 1)) n = UInt256.ofNat 1
   subRoundsTn : ∀ i, i < subCount (addRounds mid n (addCount mid n mm neg)) n mm →
     (MachineState.readWord
-      (subRounds (addRounds mid n (addCount mid n mm neg)) n i) 8224).toNat ≠ 0
-  subDoneTn : (MachineState.readWord (fixMem mid n mm neg) 8224).toNat = 0
+      (subRounds (addRounds mid n (addCount mid n mm neg)) n i) 4128).toNat ≠ 0
+  subDoneTn : (MachineState.readWord (fixMem mid n mm neg) 4128).toNat = 0
   negCount : neg = UInt256.ofNat 1 → 1 ≤ addCount mid n mm neg
   posCount : neg = UInt256.ofNat 0 → addCount mid n mm neg = 0
 
@@ -1084,7 +1084,7 @@ nonzero, ending below `radix ^ n`. -/
 theorem subPhase_spec (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32)
     (hmpos : 0 < mm) (hmod : Model.FastRepresents mem 0 n mm) :
     (∀ i, i < subCount mem n mm →
-      (MachineState.readWord (subRounds mem n i) 8224).toNat ≠ 0) ∧
+      (MachineState.readWord (subRounds mem n i) 4128).toNat ≠ 0) ∧
     tv (subRounds mem n (subCount mem n mm)) n + subCount mem n mm * mm = tv mem n ∧
     tv (subRounds mem n (subCount mem n mm)) n < Limbs.radix ^ n := by
   unfold subCount
@@ -1133,7 +1133,7 @@ theorem repair_spec (mem : ByteArray) (n mm : Nat) (neg : UInt256) (u q : Nat)
     RepairFacts mem n mm neg ∧
       tv (fixMem mem n mm neg) n % mm = u % mm ∧
       tv (fixMem mem n mm neg) n < Limbs.radix ^ n ∧
-      (MachineState.readWord (fixMem mem n mm neg) 8224).toNat = 0 := by
+      (MachineState.readWord (fixMem mem n mm neg) 4128).toNat = 0 := by
   have hnegCases : neg = UInt256.ofNat 0 ∨ neg = UInt256.ofNat 1 := by
     rcases Nat.le_one_iff_eq_zero_or_eq_one.1 hneg with h | h
     · left; rw [Challenge.EvmProof.Word.word_eq_ofNat_toNat neg, h]
@@ -1233,11 +1233,11 @@ theorem fixMem_value (mem : ByteArray) (n mm : Nat) (neg : UInt256) (u q : Nat)
     (hlt : tv mem n < Limbs.radix ^ (n + 1)) (hneg : neg.toNat ≤ 1) :
     tv (fixMem mem n mm neg) n % mm = u % mm ∧
       tv (fixMem mem n mm neg) n < Limbs.radix ^ n ∧
-      (MachineState.readWord (fixMem mem n mm neg) 8224).toNat = 0 :=
+      (MachineState.readWord (fixMem mem n mm neg) 4128).toNat = 0 :=
   (repair_spec mem n mm neg u q hn hn32 hmpos hmm hmod hrel hlt hneg).2
 
 theorem fixMem_readWord_disjoint (mem : ByteArray) (n mm : Nat) (neg : UInt256) (addr : Nat)
-    (hdisj : addr + 32 ≤ 8224 ∨ 8256 + 32 * n ≤ addr) :
+    (hdisj : addr + 32 ≤ 4128 ∨ 4160 + 32 * n ≤ addr) :
     MachineState.readWord (fixMem mem n mm neg) addr = MachineState.readWord mem addr := by
   unfold fixMem
   rw [subRounds_readWord_disjoint _ n addr hdisj, addRounds_readWord_disjoint _ n addr hdisj]
@@ -1246,24 +1246,24 @@ theorem fixMem_readWord_disjoint (mem : ByteArray) (n mm : Nat) (neg : UInt256) 
 
 /-- Words the step leaves alone. -/
 theorem stepMem_readWord_disjoint (mem : ByteArray) (n mm addr : Nat) (hn : 1 ≤ n)
-    (hdisj : (addr + 32 ≤ 2048 ∨ 2048 + 32 * n ≤ addr) ∧
-      (addr + 32 ≤ 7168 ∨ 7168 + 32 * n ≤ addr) ∧
-      (addr + 32 ≤ 8224 ∨ 8256 + 32 * n ≤ addr)) :
+    (hdisj : (addr + 32 ≤ 512 ∨ 512 + 32 * n ≤ addr) ∧
+      (addr + 32 ≤ 3072 ∨ 3072 + 32 * n ≤ addr) ∧
+      (addr + 32 ≤ 4128 ∨ 4160 + 32 * n ≤ addr)) :
     MachineState.readWord (stepMem mem n mm) addr = MachineState.readWord mem addr := by
   unfold stepMem
   simp only
-  rw [Monpro.csResultMemory_readWord_outside _ n 2048 addr hn hdisj.2.1 hdisj.1,
+  rw [Monpro.csResultMemory_readWord_outside _ n 512 addr hn hdisj.2.1 hdisj.1,
     fixMem_readWord_disjoint _ n mm _ addr hdisj.2.2]
-  show MachineState.readWord (Exp.storeWord _ 8224 _) addr = _
+  show MachineState.readWord (Exp.storeWord _ 4128 _) addr = _
   unfold Exp.storeWord
   rw [Csub.readWord_write_disjoint _ _ _ _ (by omega)]
   rw [mac_readWord_disjoint _ n addr _ hn (by omega)]
   exact uMem_readWord_disjoint mem n addr hdisj.2.2
 
 theorem fastRepresents_stepMem (mem : ByteArray) (n mm ptr cnt v : Nat) (hn : 1 ≤ n)
-    (hdisj : (ptr + 32 * cnt ≤ 2048 ∨ 2048 + 32 * n ≤ ptr) ∧
-      (ptr + 32 * cnt ≤ 7168 ∨ 7168 + 32 * n ≤ ptr) ∧
-      (ptr + 32 * cnt ≤ 8224 ∨ 8256 + 32 * n ≤ ptr))
+    (hdisj : (ptr + 32 * cnt ≤ 512 ∨ 512 + 32 * n ≤ ptr) ∧
+      (ptr + 32 * cnt ≤ 3072 ∨ 3072 + 32 * n ≤ ptr) ∧
+      (ptr + 32 * cnt ≤ 4128 ∨ 4160 + 32 * n ≤ ptr))
     (hrep : Model.FastRepresents mem ptr cnt v) :
     Model.FastRepresents (stepMem mem n mm) ptr cnt v := by
   refine (Model.fastRepresents_congr ?_ v).2 hrep
@@ -1276,14 +1276,14 @@ theorem step_spec (mem : ByteArray) (n mm r : Nat)
     (htop : Limbs.radix ^ n < 2 * mm)
     (hmod : Model.FastRepresents mem 0 n mm)
     (hneg : Model.FastRepresents mem NEG n (Limbs.radix ^ n - mm))
-    (hbase : Model.FastRepresents mem 2048 n r) (hr : r < mm) :
+    (hbase : Model.FastRepresents mem 512 n r) (hr : r < mm) :
     RepairFacts
       (midMem (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
         (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n)))
       n mm
       (negOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
         (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))) ∧
-    Model.FastRepresents (stepMem mem n mm) 2048 n (r * Limbs.radix % mm) := by
+    Model.FastRepresents (stepMem mem n mm) 512 n (r * Limbs.radix % mm) := by
   have hmodU : Model.FastRepresents (uMem mem n) 0 n mm := by
     refine (Model.fastRepresents_congr ?_ mm).2 hmod
     intro i hi
@@ -1304,7 +1304,7 @@ theorem step_spec (mem : ByteArray) (n mm r : Nat)
         (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))) 0 n mm := by
     refine (Model.fastRepresents_congr ?_ mm).2 hmodU
     intro i hi
-    show MachineState.readWord (Exp.storeWord _ 8224 _) _ = _
+    show MachineState.readWord (Exp.storeWord _ 4128 _) _ = _
     unfold Exp.storeWord
     rw [Csub.readWord_write_disjoint _ _ _ _ (by omega)]
     exact mac_readWord_disjoint (uMem mem n) n _ _ (by omega) (Or.inl (by omega))
@@ -1316,8 +1316,8 @@ theorem step_spec (mem : ByteArray) (n mm r : Nat)
     (midMem (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
       (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))) n mm
     (negOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
-      (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n)))) n 2048)
-    2048 n (r * Limbs.radix % mm)
+      (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n)))) n 512)
+    512 n (r * Limbs.radix % mm)
   set fix := fixMem
     (midMem (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
       (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))) n mm
@@ -1328,14 +1328,14 @@ theorem step_spec (mem : ByteArray) (n mm r : Nat)
     refine (Model.fastRepresents_congr ?_ mm).2 hmodMid
     intro i hi
     exact fixMem_readWord_disjoint _ n mm _ _ (Or.inl (by omega))
-  have hlowFix : Model.FastRepresents fix 8256 n (Csub.lowValue fix 8256 n n) :=
+  have hlowFix : Model.FastRepresents fix 4160 n (Csub.lowValue fix 4160 n n) :=
     Csub.fastRepresents_lowValue _ _ _
-  have htvFix : tv fix n = Csub.lowValue fix 8256 n n := by
+  have htvFix : tv fix n = Csub.lowValue fix 4160 n n := by
     rw [tv_def, htn]; simp
-  have hbound : 0 * Limbs.radix ^ n + Csub.lowValue fix 8256 n n < 2 * mm := by
+  have hbound : 0 * Limbs.radix ^ n + Csub.lowValue fix 4160 n n < 2 * mm := by
     rw [Nat.zero_mul, Nat.zero_add, ← htvFix]
     exact lt_trans hltP htop
-  have hres := Csub.csub_correct fix n _ mm 0 2048 hn hn32 hlowFix hmodFix htn
+  have hres := Csub.csub_correct fix n _ mm 0 512 hn hn32 hlowFix hmodFix htn
     (Nat.zero_le 1) hmpos hbound
   rw [Nat.zero_mul, Nat.zero_add, ← htvFix, hcong] at hres
   exact hres
@@ -1345,8 +1345,8 @@ theorem stepMem_represents (mem : ByteArray) (n mm r : Nat)
     (htop : Limbs.radix ^ n < 2 * mm)
     (hmod : Model.FastRepresents mem 0 n mm)
     (hneg : Model.FastRepresents mem NEG n (Limbs.radix ^ n - mm))
-    (hbase : Model.FastRepresents mem 2048 n r) (hr : r < mm) :
-    Model.FastRepresents (stepMem mem n mm) 2048 n (r * Limbs.radix % mm) :=
+    (hbase : Model.FastRepresents mem 512 n r) (hr : r < mm) :
+    Model.FastRepresents (stepMem mem n mm) 512 n (r * Limbs.radix % mm) :=
   (step_spec mem n mm r hn hn32 hmpos hmm htop hmod hneg hbase hr).2
 
 theorem stepMems_modulus (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32)
@@ -1376,15 +1376,15 @@ theorem stepMems_represents (mem : ByteArray) (n mm r : Nat)
     (htop : Limbs.radix ^ n < 2 * mm)
     (hmod : Model.FastRepresents mem 0 n mm)
     (hneg : Model.FastRepresents mem NEG n (Limbs.radix ^ n - mm))
-    (hbase : Model.FastRepresents mem 2048 n r) (hr : r < mm) :
-    ∀ k, Model.FastRepresents (stepMems mem n mm k) 2048 n (r * Limbs.radix ^ k % mm) := by
+    (hbase : Model.FastRepresents mem 512 n r) (hr : r < mm) :
+    ∀ k, Model.FastRepresents (stepMems mem n mm k) 512 n (r * Limbs.radix ^ k % mm) := by
   intro k
   induction k with
   | zero =>
       simp only [stepMems, pow_zero, Nat.mul_one]
       rw [Nat.mod_eq_of_lt hr]; exact hbase
   | succ k ih =>
-      show Model.FastRepresents (stepMem (stepMems mem n mm k) n mm) 2048 n _
+      show Model.FastRepresents (stepMem (stepMems mem n mm k) n mm) 512 n _
       have h := stepMem_represents (stepMems mem n mm k) n mm _ hn hn32 hmpos hmm htop
         (stepMems_modulus mem n mm (by omega) hn32 hmod k) (stepMems_neg mem n mm (by omega) hn32 hneg k)
         ih (Nat.mod_lt _ hmpos)
@@ -1395,9 +1395,9 @@ theorem stepMems_represents (mem : ByteArray) (n mm r : Nat)
       exact h
 
 theorem stepMems_readWord_disjoint (mem : ByteArray) (n mm addr : Nat) (hn : 1 ≤ n)
-    (hdisj : (addr + 32 ≤ 2048 ∨ 2048 + 32 * n ≤ addr) ∧
-      (addr + 32 ≤ 7168 ∨ 7168 + 32 * n ≤ addr) ∧
-      (addr + 32 ≤ 8224 ∨ 8256 + 32 * n ≤ addr)) :
+    (hdisj : (addr + 32 ≤ 512 ∨ 512 + 32 * n ≤ addr) ∧
+      (addr + 32 ≤ 3072 ∨ 3072 + 32 * n ≤ addr) ∧
+      (addr + 32 ≤ 4128 ∨ 4160 + 32 * n ≤ addr)) :
     ∀ k, MachineState.readWord (stepMems mem n mm k) addr = MachineState.readWord mem addr := by
   intro k
   induction k with

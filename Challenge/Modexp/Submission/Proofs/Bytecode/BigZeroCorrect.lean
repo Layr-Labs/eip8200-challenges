@@ -86,23 +86,23 @@ theorem setupReturned_output_zero (s : State)
     (hmodOff : modOff < 2 ^ 256) :
     Limbs.Represents
       (BigSetup.setupReturned s b e m baseOff expOff modOff returnDest rest).memory
-      6144 (Limbs.limbCount m) 0 := by
+      1536 (Limbs.limbCount m) 0 := by
   let n := Limbs.limbCount m
   let s2 := BigSetup.afterClear2048 s b e m baseOff expOff modOff returnDest rest
   let s3 := BigSetup.afterClear6144 s b e m baseOff expOff modOff returnDest rest
   have hn : n ≤ 32 := Limbs.limbCount_le_32 m hmBound
   have hm : m < 2 ^ 256 := by omega
   have h0 : (0 : UInt256) = UInt256.ofNat 0 := by decide
-  have h6144 : (6144 : UInt256) = UInt256.ofNat 6144 := by decide
+  have h6144 : (1536 : UInt256) = UInt256.ofNat 1536 := by decide
   have hmNat : (UInt256.ofNat m).toNat = m := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hm]
   have hmodOffNat : (UInt256.ofNat modOff).toNat = modOff := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hmodOff]
-  have hz : Limbs.Represents s3.memory 6144 n 0 := by
+  have hz : Limbs.Represents s3.memory 1536 n 0 := by
     simpa [s3, BigSetup.afterClear6144, BigHelpers.clearReturned, h6144]
-      using BigHelpers.clearMemory_represents_zero s2.memory 6144 n (by omega)
+      using BigHelpers.clearMemory_represents_zero s2.memory 1536 n (by omega)
   have hkeep := BigBaseCorrect.loadMemory_preserves_region
-    s3.executionEnv.calldata s3.memory modOff 0 m m 6144 n 0 (by omega) hm
+    s3.executionEnv.calldata s3.memory modOff 0 m m 1536 n 0 (by omega) hm
     (by omega) (by omega) hz
   simpa [BigSetup.setupReturned, s3, BigLoad.loadReturned,
     BigLoad.loadLoop, h0, hmNat, hmodOffNat, n] using hkeep
@@ -180,7 +180,7 @@ theorem zeroFinalState_hReturn (input : ByteArray) (returnDest : UInt256)
     omega
   have hzero := setupReturned_output_zero (Main.headerState input) b e m 96
     expOff modOff returnDest rest hm hmodOff
-  have hbytes := readPadded_zero_of_represents loaded.memory 6144
+  have hbytes := readPadded_zero_of_represents loaded.memory 1536
     (Limbs.limbCount m) m (Limbs.width_le_limbs m)
     (by simpa [loaded, BigComplete.setupState] using hzero)
   have hmodulus' : Precompile.bytesToNatPadded input

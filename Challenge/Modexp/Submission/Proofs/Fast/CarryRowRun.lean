@@ -14,7 +14,7 @@ open Monpro CiosCached CiosCachedMacCore CarryRowModel CarryScratchAgreement
 open CiosCachedMidMemory
 
 theorem run_tail (s : State) (c mu f pbi pa pb flag dst ret : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 296 ≤ s.activeWords.toNat)
+    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 168 ≤ s.activeWords.toNat)
     (htarget : Decode.isValidJumpDest s.executionEnv.code pa.toNat = true) :
     runInstructions CarryRowPrograms.tail
       (framed s (UInt256.ofNat 4615)
