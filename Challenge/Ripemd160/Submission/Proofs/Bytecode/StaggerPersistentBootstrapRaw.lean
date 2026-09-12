@@ -27,12 +27,12 @@ def template : List Instr :=
     .op (.Dup ⟨10, by decide⟩),
     .op (.Dup ⟨10, by decide⟩),
     .op (.Dup ⟨10, by decide⟩),
-    .op (.Dup ⟨14, by decide⟩),
-    .push ⟨4, by decide⟩ (UInt256.ofNat 1352829926) ]
+    .push ⟨5, by decide⟩ (UInt256.ofNat 1352829926),
+    .op (.Dup ⟨15, by decide⟩) ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 := [x.h0, x.h1, x.h2, x.h3, x.h4, x.off, x.limit] ++ rho
 def outputStack (_memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ (UInt256.ofNat 1352829926),
-    x.h0,
+  [ x.h0,
+    (UInt256.ofNat 1352829926),
     x.h1,
     x.h2,
     x.h3,
