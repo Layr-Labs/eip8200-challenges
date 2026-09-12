@@ -43,7 +43,6 @@ def embedHashArray (a : Array UInt32) : Compression.EvmHashState :=
 structure BlockContext (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState) where
   calldata : s.executionEnv.calldata = input
-  allocated : (PaddingTrace.padReturned input).activeWords.toNat ≤ s.activeWords.toNat
   messageBlock : ScheduleCorrect.MessageBlockAt s.memory
     (DriverTrace.messageOffsetWord i) (Padding.paddedMessage input)
     (DriverTrace.blockOffset i)
@@ -59,8 +58,6 @@ structure BlockKernel where
   executionEnv : ∀ s input i, (nextState s input i).executionEnv = s.executionEnv
   halt : ∀ s input i, (nextState s input i).halt = s.halt
   callStack : ∀ s input i, (nextState s input i).callStack = s.callStack
-  activeWords : ∀ s input i, CalldataFits input → i < DriverTrace.blockCount input →
-    s.activeWords.toNat ≤ (nextState s input i).activeWords.toNat
   wordAbove : ∀ s input i address, 0x400 ≤ address →
     wordAt (nextState s input i) address = wordAt s address
   hashResult : ∀ (s : State) (input : ByteArray) (i : Nat)
@@ -88,8 +85,6 @@ structure BlockKernel where
   executionEnv2 : ∀ s input, (nextState2 s input).executionEnv = s.executionEnv
   halt2 : ∀ s input, (nextState2 s input).halt = s.halt
   callStack2 : ∀ s input, (nextState2 s input).callStack = s.callStack
-  activeWords2 : ∀ s input,
-    s.activeWords.toNat ≤ (nextState2 s input).activeWords.toNat
   wordAbove2 : ∀ s input address, 0x400 ≤ address →
     wordAt (nextState2 s input) address = wordAt s address
   doubleBlocks : ∀ input, double input = true → 2 ≤ DriverTrace.blockCount input
@@ -179,22 +174,6 @@ theorem states_calldata (kernel : BlockKernel) (input : ByteArray) (n : Nat) :
     (states kernel input n).executionEnv.calldata = input := by
   rw [states_executionEnv kernel input n]
   rfl
-
-theorem states_allocated (kernel : BlockKernel) (input : ByteArray)
-    (hfit : CalldataFits input) :
-    ∀ n, n ≤ DriverTrace.blockCount input →
-      (PaddingTrace.padReturned input).activeWords.toNat ≤
-        (states kernel input n).activeWords.toNat
-  | 0, _ => Nat.le_refl _
-  | 1, hn => by
-    rw [states_one]
-    exact kernel.activeWords _ input 0 hfit (by omega)
-  | n + 2, hn => by
-    rw [states_add_two]
-    split
-    · exact kernel.activeWords2 _ input
-    · exact (states_allocated kernel input hfit (n + 1) (by omega)).trans
-        (kernel.activeWords _ input (n + 1) hfit (by omega))
 
 theorem states_callStack (kernel : BlockKernel) (input : ByteArray) :
     ∀ n, (states kernel input n).callStack = []
@@ -290,7 +269,7 @@ private theorem padReturned_word_below (input : ByteArray)
     wordAt (PaddingTrace.padReturned input) address =
       wordAt (Main.initializedState input) address := by
   unfold wordAt
-  rw [PaddingTrace.padReturned_memory input hfit]
+  rw [PaddingTrace.padReturned_readWord input hfit address]
   unfold Padding.paddedMemory Padding.sentinelMemory Padding.copiedMemory
   have hpadded := Padding.input_and_footer_fit input.size
   rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint,
@@ -375,7 +354,7 @@ private theorem hashWords_next (kernel : BlockKernel) (input : ByteArray)
   let h := hashStateAfter input n
   let ctx : BlockContext (states kernel input n) input n h := {
     calldata := states_calldata kernel input n
-    allocated := states_allocated kernel input hfit n (by omega)
+
     messageBlock := messageBlockAt kernel input hfit n hn
     separated := blockSeparated input hfit n hn
     hash := hashAt32_of_hashWords hw }
@@ -437,7 +416,7 @@ def compressionRun (kernel : BlockKernel) (input : ByteArray)
     let h := hashStateAfter input i
     let ctx : BlockContext (states kernel input i) input i h := {
       calldata := states_calldata kernel input i
-      allocated := states_allocated kernel input hfit i (by omega)
+
       messageBlock := messageBlockAt kernel input hfit i hi
       separated := blockSeparated input hfit i hi
       hash := hashAt32_of_hashWords
@@ -462,7 +441,7 @@ def compressionRun (kernel : BlockKernel) (input : ByteArray)
     have hpos := DriverTrace.blockCount_pos input
     let ctx : BlockContext (states kernel input 0) input 0 h := {
       calldata := states_calldata kernel input 0
-      allocated := states_allocated kernel input hfit 0 (by omega)
+
       messageBlock := messageBlockAt kernel input hfit 0 hpos
       separated := blockSeparated input hfit 0 hpos
       hash := hashAt32_of_hashWords
@@ -482,7 +461,7 @@ def compressionSeam (kernel : BlockKernel) (input : ByteArray)
 /-- Nonempty inputs use the compression loop; the caller proves the empty return separately. -/
 theorem correct_of_block_kernel (kernel : BlockKernel)
     (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 272)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 276)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   exact FastOutputResultBridge.correct_of_seam input hfit

@@ -108,7 +108,7 @@ def template : List Instr :=
     .op .POP,
     .op .MSTORE,
     .op .MSTORE,
-    .op .POP,
+    .op .MSTORE,
     .op .JUMP ]
 
 def prefixTemplate : List Instr := template.dropLast

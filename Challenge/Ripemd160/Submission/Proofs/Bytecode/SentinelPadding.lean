@@ -57,7 +57,10 @@ theorem padReturned_size (input : ByteArray) (hfit : CalldataFits input) :
     544 ≤ (PaddingTrace.padReturned input).memory.size := by
   change 544 ≤ (PaddingTrace.padFinalMemory input).size
   rw [PaddingTrace.padFinalMemory_size input hfit]
-  unfold Padding.messageOffset
+  have hcount : 1 ≤ PaddingTrace.lengthStop input :=
+    (PaddingTrace.footerCount_spec input hfit).1
+  have hpadded := Padding.input_and_footer_fit input.size
+  unfold PaddingTrace.footerStart Padding.messageOffset
   omega
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.SentinelPadding

@@ -8,7 +8,7 @@ def write (memory : ByteArray) (address : Nat) (value : UInt256) : ByteArray :=
   MachineState.writeBytes memory (Data.Bytes.natToBytesPadded value.toNat 32) address
 
 def memory (m : ByteArray) : ByteArray :=
-  write (write m 22 27) 26 24
+  write (write (write m 22 27) 26 63) 24 25
 
 theorem read_write (m : ByteArray) (address writeAt : Nat) (value : UInt256)
     (h : writeAt + 32 ≤ address) :

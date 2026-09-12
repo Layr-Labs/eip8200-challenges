@@ -32,7 +32,7 @@ def gasSteps_hit (input : ByteArray) (hsize : input.size = 256)
 def gasSteps_miss (input : ByteArray) (hsize : input.size = 256)
     (href : KnownInputCompactState.referenceWord input ≠ KnownInputData.fullWord)
     (hne : scanAcc input 8 ≠ 0) :
-    GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 272) :=
+    GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 276) :=
   (Patterned256Entry.gasSteps_hit input hsize href).trans
     ((Patterned256Scan.gasSteps_scan input hsize).trans
       (Patterned256Finish.gasSteps_miss input (UInt256.ofNat (scalarAt 8))
