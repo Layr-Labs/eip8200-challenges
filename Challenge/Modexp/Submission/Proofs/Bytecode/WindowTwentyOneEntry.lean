@@ -93,34 +93,37 @@ theorem run_miss (template : State) (rest : List UInt256) (hrest : rest.length �
     hcap0, hcap1, Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat, htarget]
 
-/-- Entry of the one-word core at pc 2240 (0x8c0). Both special-modulus misses
-jump here with the loaded modulus word on top of the route frame and `POP`
-discards it. There is no base-width branch: a zero-width base runs the core
-with the base word `CALLDATALOAD 96 >> 256 = 0`. -/
+/-- Entry of the one-word core. Both special-modulus misses jump here with the
+loaded modulus word on top of the route frame. The block is headed by four
+consecutive `JUMPDEST`s at 2334-2337 and both static holders target the LAST of
+them, 2337, so the three redundant leading no-ops are never executed; entering at
+2337 is identical behaviour to entering at 2334 on the whole input space, because
+`JUMPDEST` is a semantic no-op. There is no base-width branch: a zero-width base
+runs the core with the base word `CALLDATALOAD 96 >> 256 = 0`. -/
 def baseProgram : List Instr :=
-  [.op .JUMPDEST, .op .JUMPDEST]
+  [.op .JUMPDEST]
 
 theorem run_base (template : State) (value : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions baseProgram (framed template (UInt256.ofNat 2334) (value :: rest)) =
-    some (framed template (UInt256.ofNat 2336) (value :: rest)) := by
+    runInstructions baseProgram (framed template (UInt256.ofNat 2337) (value :: rest)) =
+    some (framed template (UInt256.ofNat 2338) (value :: rest)) := by
   have hcap1 : rest.length + 1 < 1024 := by omega
   simp [runInstructions, baseProgram, framed, Challenge.EvmProof.Stepper.runInstr,
     hcap1, Challenge.EvmProof.Word.succ_ofNat_mod]
 
 def modulusProgram : List Instr :=
-  [.op .JUMPDEST, .op .JUMPDEST, .op (.Dup ⟨0, by decide⟩)] ++
+  [.op (.Dup ⟨0, by decide⟩)] ++
     testProgram (UInt256.ofNat 2964)
 
 theorem run_modulus (template : State)
     (value : UInt256) (rest : List UInt256) (hrest : rest.length ≤ 999)
     (htarget : Decode.isValidJumpDest template.executionEnv.code 2964 = true) :
-    runInstructions modulusProgram (framed template (UInt256.ofNat 2336) (value :: rest)) =
+    runInstructions modulusProgram (framed template (UInt256.ofNat 2338) (value :: rest)) =
     some (framed template (if value.toNat = 0 then UInt256.ofNat 2964 else UInt256.ofNat 2344)
       (value :: rest)) := by
   have hcap1 : rest.length + 1 < 1024 := by omega
-  have hh : runInstructions [.op .JUMPDEST, .op .JUMPDEST, .op (.Dup ⟨0, by decide⟩)]
-      (framed template (UInt256.ofNat 2336) (value :: rest)) =
+  have hh : runInstructions [.op (.Dup ⟨0, by decide⟩)]
+      (framed template (UInt256.ofNat 2338) (value :: rest)) =
       some (framed template (UInt256.ofNat 2339) (value :: value :: rest)) := by
     simp [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr, hcap1,
       Challenge.EvmProof.Word.succ_ofNat_mod]

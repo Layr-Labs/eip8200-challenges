@@ -11,8 +11,8 @@ open Challenge.EvmProof WindowNibbleKernel WindowTwentyOneBinding WindowTwentyOn
 structure Paths (artifact : ProgramArtifact) (fork : Fork) extends WindowTwentyOneGasCore.Paths artifact fork where
   width : Block artifact fork 2310 WindowTwentyOneEntry.widthProgram
   miss : Block artifact fork 2330 WindowTwentyOneEntry.missProgram
-  base : Block artifact fork 2334 WindowTwentyOneEntry.baseProgram
-  modulus : Block artifact fork 2336 WindowTwentyOneEntry.modulusProgram
+  base : Block artifact fork 2337 WindowTwentyOneEntry.baseProgram
+  modulus : Block artifact fork 2338 WindowTwentyOneEntry.modulusProgram
   normalize : Block artifact fork 2344 WindowTwentyOneEntry.normalizeProgram
   zeroReturn : Block artifact fork 2964 WindowTwentyOneReturn.zeroProgram
   hitJump : Decode.isValidJumpDest artifact.code 43 = true
@@ -45,7 +45,7 @@ private theorem jump_env {artifact : ProgramArtifact} {fork : Fork} {template : 
 /-- The state at the core entry 2240 (0x8c0): the route frame with the modulus
 word loaded by the special-modulus test still on top. -/
 def entryState (template : State) (input : ByteArray) : State :=
-  WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 2334)
+  WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 2337)
     (WindowTwentyOneInput.modulusWord input :: routeStack input)
 
 def positive_steps {artifact : ProgramArtifact} {fork : Fork}
