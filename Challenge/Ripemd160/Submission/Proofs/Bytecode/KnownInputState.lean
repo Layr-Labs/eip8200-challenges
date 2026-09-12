@@ -196,7 +196,7 @@ private theorem readWord_writeWord_disjoint (memory : ByteArray)
     resultMemory_h3, resultMemory_h4]
 
 theorem resultState_word_above (s : State) (input : ByteArray) (i address : Nat)
-    (haddress : 1253 ≤ address) :
+    (haddress : 0x4a0 ≤ address) :
     StackRunBridge.wordAt (resultState s input i) address =
       StackRunBridge.wordAt s address := by
   unfold StackRunBridge.wordAt resultState resultMemory
