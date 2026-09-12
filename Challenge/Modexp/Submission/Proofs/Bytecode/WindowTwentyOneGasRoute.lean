@@ -17,7 +17,7 @@ structure Paths (artifact : ProgramArtifact) (fork : Fork) extends WindowTwentyO
   zeroReturn : Block artifact fork 2964 WindowTwentyOneReturn.zeroProgram
   hitJump : Decode.isValidJumpDest artifact.code 43 = true
   zeroJump : Decode.isValidJumpDest artifact.code 2964 = true
-  trampJump : Decode.isValidJumpDest artifact.code 5240 = true
+  trampJump : Decode.isValidJumpDest artifact.code 5260 = true
   bodyJump : Decode.isValidJumpDest artifact.code 2500 = true
   missJump : Decode.isValidJumpDest artifact.code 606 = true
 

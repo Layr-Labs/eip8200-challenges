@@ -35,7 +35,7 @@ def blk1223 :
    pushAt 1128 2 256,
    pushAt 1129 2 1280,
    pushAt 1130 2 256,
-   pushAt 1131 2 4047,
+   pushAt 1131 2 4067,
    opAt 1132 .JUMP]
 
 /-- Instructions 1229..1249, pc 1693..1727. -/

@@ -23,7 +23,7 @@ def zeroProgram : List Instr :=
 /-- After `lowProgram`: `hd` above the operand pointers and the row frame. -/
 def cachedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4133
+  { s with pc := UInt256.ofNat 4153
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb,
              l1Target n, negative32, allOnes, l2Target n, dst, ret] ++ rest
            memory := mem }
@@ -31,7 +31,7 @@ def cachedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
 /-- After staging and zeroing: `hd` above the width word. -/
 def clearedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4153
+  { s with pc := UInt256.ofNat 4173
            stack := [hd, UInt256.ofNat (32*n), UInt256.ofNat pb,
              l1Target n, negative32, allOnes, l2Target n, dst, ret] ++ rest
            memory := mpZeroed s mem n }
@@ -73,12 +73,12 @@ theorem run_zero (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     Challenge.EvmProof.Word.word_toNat_ofNat, hpaN, hszN, hsizeN, hcdsN,
     hc8, hc9, hc10, hc11, hc12, hc13, hc14, List.exchange]
 
-/-- Operand pointers and the jump to the row head (pc 4153 → `hd`; the two freed bytes are
-non-executed `JUMPDEST`s after the `JUMP`): `SWAP2; DUP5; ADD; SWAP2; SWAP1; DUP3; ADD; DUP2; JUMP`. -/
+/-- Operand pointers and the jump to the row head (pc 4026 → `hd`):
+`SWAP1; DUP3; ADD; DUP5; ADD; SWAP2; DUP5; ADD; SWAP2; DUP2; JUMP`. -/
 def pointersJumpProgram : List Instr :=
-  [.op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .ADD,
-   .op (.Swap ⟨1, by decide⟩), .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩), .op .ADD,
+  [.op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .ADD,
+   .op (.Dup ⟨4, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩),
+   .op (.Dup ⟨4, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩),
    .op (.Dup ⟨1, by decide⟩), .op .JUMP]
 
 private theorem negative32_add_ofNat (x : Nat) (hx : 32 ≤ x)
@@ -116,13 +116,8 @@ theorem run_pointersJump (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Na
     negative32_add_ofNat (pb + 32 * n) (by omega) (by omega)
   have hlow : negative32 + UInt256.ofNat pb = UInt256.ofNat (pb - 32) :=
     negative32_add_ofNat pb hpb (by omega)
-  have hsumLow : UInt256.ofNat (pb - 32) + UInt256.ofNat (32 * n) =
-      UInt256.ofNat (pb + 32 * n - 32) := by
-    rw [Challenge.EvmProof.Word.ofNat_add_mod]
-    congr 1
-    omega
   simp [pointersJumpProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    clearedSetupState, outState, hc9, hc10, hc11, hc12, htarget, hsum, hend, hlow, hsumLow,
+    clearedSetupState, outState, hc9, hc10, hc11, hc12, htarget, hsum, hend, hlow,
     ptrAt_zero, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod]
 
 end Challenge.Modexp.Submission.Proofs.Fast.StagedOperand

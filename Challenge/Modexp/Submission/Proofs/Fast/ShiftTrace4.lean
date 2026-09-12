@@ -91,34 +91,47 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 
 /-! ## The limb pass -/
 
-/-- One limb-pass iteration with limbs to go. -/
+/-- One limb-pass iteration; parity selects the first or second unrolled body. -/
 def gasSteps_macIter (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k j : Nat)
     (hn32 : n ≤ 8) (hj : j + 1 < n) (e : Env s) :
     Challenge.EvmProof.GasSteps (macLoopState s um q n bsize esize msize k j)
-      (macLoopState s um q n bsize esize msize k (j + 1)) :=
-  (soundEnv blk3077a e
+      (macLoopState s um q n bsize esize msize k (j + 1)) := by
+  by_cases hp : (n - j) % 2 = 0
+  · have hnxt : (n - (j + 1)) % 2 ≠ 0 := by omega
+    have g := soundEnv blk3077a e
       (run_macBodyA s um q (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) j))
         (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) j))
         (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (j + 1)))
         (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (j + 1)))
         n bsize esize msize k j e.run e.code e.act296 hn32 (by omega)
         (aPtr_toNat n j (by omega) (by omega)) (tPtr_toNat n j (by omega) (by omega))
-        (ptrAt_step _ _) (ptrAt_step _ _))).trans
-    (soundEnv blk3077b e
-      (run_macTail_go s (Monpro.l1Step um q NEG n (j + 1)).memory
+        (ptrAt_step _ _) (ptrAt_step _ _))
+    simpa only [macLoopState, if_pos hp, if_neg hnxt] using g
+  · have hnxt : (n - (j + 1)) % 2 = 0 := by omega
+    have g := (soundEnv blkMacSecond e
+      (run_macBodyB s um q (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) j))
+        (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) j))
         (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (j + 1)))
         (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (j + 1)))
-        (Monpro.l1Step um q NEG n (j + 1)).carry q n bsize esize msize k
-        (tPtr_gt_8224 n (j + 1) (by omega) hj) e.code e.run))
+        n bsize esize msize k j e.run e.code e.act296 hn32 (by omega)
+        (aPtr_toNat n j (by omega) (by omega)) (tPtr_toNat n j (by omega) (by omega))
+        (ptrAt_step _ _) (ptrAt_step _ _))).trans
+      (soundEnv blk3077b e
+        (run_macTail_go s (Monpro.l1Step um q NEG n (j + 1)).memory
+          (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (j + 1)))
+          (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (j + 1)))
+          (Monpro.l1Step um q NEG n (j + 1)).carry q n bsize esize msize k
+          (tPtr_gt_8224 n (j + 1) (by omega) hj) e.code e.run))
+    simpa only [macLoopState, if_neg hp, if_pos hnxt] using g
 
-/-- The last limb-pass iteration, falling into the middle block. -/
+/-- The last limb always uses the second body, whose existing test falls into MID. -/
 def gasSteps_macLast (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s) :
     Challenge.EvmProof.GasSteps (macLoopState s um q n bsize esize msize k (n - 1))
-      (midState s um q n bsize esize msize k) :=
-  Challenge.EvmProof.GasSteps.cast
-    ((soundEnv blk3077a e
-        (run_macBodyA s um q (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (n - 1)))
+      (midState s um q n bsize esize msize k) := by
+  have hp : (n - (n - 1)) % 2 ≠ 0 := by omega
+  have g := ((soundEnv blkMacSecond e
+        (run_macBodyB s um q (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (n - 1)))
           (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (n - 1)))
           (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (n - 1 + 1)))
           (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (n - 1 + 1)))
@@ -131,7 +144,7 @@ def gasSteps_macLast (s : State) (um : ByteArray) (q : UInt256) (n bsize esize m
           (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) (n - 1 + 1)))
           (Monpro.l1Step um q NEG n (n - 1 + 1)).carry q n bsize esize msize k
           (by rw [Nat.sub_add_cancel hn]; exact tPtr_toNat_last n (by omega)) e.code e.run)))
-    rfl (by rw [Nat.sub_add_cancel hn]; rfl)
+  simpa only [macLoopState, if_neg hp, Nat.sub_add_cancel hn, midState] using g
 
 def gasSteps_macLoop (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s) :
@@ -537,4 +550,7 @@ def gasSteps_step (s : State) (mem : ByteArray) (n bsize esize msize k mm minv :
       (run_afterCsub s _ n bsize esize msize k hk hk32 e.code e.run)
   exact (((g1.trans g2).trans g3).trans g4).trans g5
 
+#print axioms gasSteps_macIter
+#print axioms gasSteps_macLast
+#print axioms gasSteps_macLoop
 end Challenge.Modexp.Submission.Proofs.Fast.Shift

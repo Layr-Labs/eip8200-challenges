@@ -44,24 +44,29 @@ def pcShiftLoop : Nat := 3643
 def pcShiftBody : Nat := 3650
 def pcEstimate : Nat := 3664
 def pcMacSetup : Nat := 3746
-def pcMacLoop : Nat := 3762
-def pcMid : Nat := 3840
+def pcMacLoop : Nat := 3772
+def pcMacLoopB : Nat := 3811
+
+/-- Cached wrapped pointer decrement retained through both MAC bodies. -/
+def macNeg32 : UInt256 := UInt256.ofNat
+  115792089237316195423570985008687907853269984665640564039457584007913129639904
+def pcMid : Nat := 3859
 /-- The limb-pass body after the pointer steps, before the exit test. -/
-def pcMacTail : Nat := 3801
-def pcAddLoop : Nat := 3875
-def pcAddInner : Nat := 3881
-def pcAddTail : Nat := 3924
+def pcMacTail : Nat := 3850
+def pcAddLoop : Nat := 3895
+def pcAddInner : Nat := 3901
+def pcAddTail : Nat := 3944
 /-- The add body after `OR`, before the pointer step and exit test. -/
-def pcAddMid : Nat := 3910
-def pcSubCheck : Nat := 3942
-def pcSubEntry : Nat := 3952
-def pcSubInner : Nat := 3957
-def pcSubTail : Nat := 3996
+def pcAddMid : Nat := 3930
+def pcSubCheck : Nat := 3962
+def pcSubEntry : Nat := 3972
+def pcSubInner : Nat := 3977
+def pcSubTail : Nat := 4016
 /-- The subtract body after `OR`, before the pointer step and exit test. -/
-def pcSubMid : Nat := 3981
-def pcCsubCall : Nat := 4010
-def pcAfterCsub : Nat := 4021
-def pcShiftDone : Nat := 4030
+def pcSubMid : Nat := 4001
+def pcCsubCall : Nat := 4030
+def pcAfterCsub : Nat := 4041
+def pcShiftDone : Nat := 4050
 
 /-- A state with the outer frame only. -/
 def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat) : State :=
@@ -148,11 +153,10 @@ def macSetupState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : 
 /-- The limb-pass loop head after `j` limbs, over the `u` memory `um` and guess `q`. -/
 def macLoopState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k j : Nat) :
     State :=
-  { s with pc := UInt256.ofNat pcMacLoop
+  { s with pc := UInt256.ofNat (if (n - j) % 2 = 0 then pcMacLoop else pcMacLoopB)
            stack := UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) j) ::
              UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) j) ::
-             UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 ::
-             (Monpro.l1Step um q NEG n j).carry :: q :: UInt256.ofNat k ::
+             (Monpro.l1Step um q NEG n j).carry :: q :: macNeg32 :: UInt256.ofNat k ::
              outer n bsize esize msize
            memory := (Monpro.l1Step um q NEG n j).memory }
 
@@ -162,8 +166,7 @@ def midState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k :
   { s with pc := UInt256.ofNat pcMid
            stack := UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) n) ::
              UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) n) ::
-             UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 ::
-             (Monpro.l1Step um q NEG n n).carry :: q :: UInt256.ofNat k ::
+             (Monpro.l1Step um q NEG n n).carry :: q :: macNeg32 :: UInt256.ofNat k ::
              outer n bsize esize msize
            memory := (Monpro.l1Step um q NEG n n).memory }
 

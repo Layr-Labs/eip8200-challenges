@@ -36,11 +36,11 @@ open Monpro CiosCached CarryRowBlocks CarryRowModel SquareRows
 Named so that a rider restack relocates them once, in the regenerator's `def pcX : Nat := N`
 form, instead of once per use site. -/
 
-def pcNx : Nat := 4785
-def pcSqExit : Nat := 4847
-def pcLast : Nat := 4864
-def pcMore : Nat := 4874
-def pcAgain : Nat := 4890
+def pcNx : Nat := 4805
+def pcSqExit : Nat := 4867
+def pcLast : Nat := 4885
+def pcMore : Nat := 4894
+def pcAgain : Nat := 4910
 
 /-! ## The retained frame -/
 
@@ -48,7 +48,7 @@ def pcAgain : Nat := 4890
 the kernel exit and through the whole loop. -/
 def frameStack (n : Nat) (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) :
     List UInt256 → List UInt256 := fun rest =>
-  [pbi, UInt256.ofNat 4923, UInt256.ofNat (512 - 32), ent, negative32, allOnes, l2Target n,
+  [pbi, UInt256.ofNat 4943, UInt256.ofNat (512 - 32), ent, negative32, allOnes, l2Target n,
     inv, m0, tl, m96, m64, m32, aprev, pdst, ret] ++ rest
 
 /-- The loop's states differ only in the program counter and the memory. -/
@@ -62,31 +62,30 @@ def frameAt (pc : Nat) (s : State) (mem : ByteArray) (n : Nat)
 theorem frameAt_eq_sqExitState (s : State) (mem : ByteArray) (n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) :
     frameAt pcSqExit s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest =
-      CiosCachedTailDefs.sqExitState s mem pbi 512 n (UInt256.ofNat 4923) ent inv m0
+      CiosCachedTailDefs.sqExitState s mem pbi 512 n (UInt256.ofNat 4943) ent inv m0
         (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) := rfl
 
 /-- The `nx` `JUMPDEST` state of the last square. -/
 theorem frameAt_eq_nxJdState (s : State) (mem : ByteArray) (n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) :
     frameAt pcNx s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest =
-      CiosCachedTailDefs.nxJdState s mem pbi 512 n (UInt256.ofNat 4923) ent inv m0
+      CiosCachedTailDefs.nxJdState s mem pbi 512 n (UInt256.ofNat 4943) ent inv m0
         (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) := rfl
 
 /-! ## Programs -/
 
 /-- `sq_exit` (4701): load the counter, decrement, store it back, branch to `more`. -/
 def sqExitProgram : List Instr :=
-  [.op .JUMPDEST, .push 3 5184, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .push 2 5184, .op .MSTORE, .push 2 4874, .op .JUMPI]
+  [.op .JUMPDEST, .push 3 5184, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .JUMPDEST, .op .ADD,
+   .op (.Dup ⟨0, by decide⟩), .push 2 5184, .op .MSTORE, .push 2 4894, .op .JUMPI]
 
-/-- `last` (4864): the frame's `ret` slot becomes `after_sq`, then leave through `nx`; the
-byte after its `JUMP` (4873) is a non-executed `JUMPDEST`. -/
+/-- `last` (4719): the frame's `ret` slot becomes `after_sq`, then leave through `nx`. -/
 def lastProgram : List Instr :=
-  [.push 2 3366, .op (.Swap ⟨15, by decide⟩), .op .POP, .push 2 4785, .op .JUMP]
+  [.push 2 3366, .op (.Swap ⟨15, by decide⟩), .op .POP, .push 2 4805, .op .JUMP]
 
 /-- `more` (4728): call the CSUB as a subroutine returning to `again`. -/
 def moreProgram : List Instr :=
-  [.op .JUMPDEST, .push 2 4890, .op (.Dup ⟨15, by decide⟩), .push 2 4804, .op .JUMP]
+  [.op .JUMPDEST, .push 2 4910, .op (.Dup ⟨15, by decide⟩), .push 2 4824, .op .JUMP]
 
 /-- `again` (4737): re-stage, re-zero, reset three frame slots, fall into `sq_row`. -/
 def againProgram : List Instr :=
@@ -100,39 +99,39 @@ def againProgram : List Instr :=
 
 /-! ## Located blocks -/
 
-def sqExitBlock : Block Artifact.submissionArtifact .Osaka 4847 sqExitProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3641 10 4847 sqExitProgram
+def sqExitBlock : Block Artifact.submissionArtifact .Osaka 4867 sqExitProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3690 11 4867 sqExitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def lastBlock : Block Artifact.submissionArtifact .Osaka 4864 lastProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3651 5 4864 lastProgram
+def lastBlock : Block Artifact.submissionArtifact .Osaka 4885 lastProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3701 5 4885 lastProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def moreBlock : Block Artifact.submissionArtifact .Osaka 4874 moreProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3657 5 4874 moreProgram
+def moreBlock : Block Artifact.submissionArtifact .Osaka 4894 moreProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3706 5 4894 moreProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def againBlock : Block Artifact.submissionArtifact .Osaka 4890 againProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3669 22 4890 againProgram
+def againBlock : Block Artifact.submissionArtifact .Osaka 4910 againProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3718 22 4910 againProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-! ## Jump destinations of the loop -/
 
 theorem jumpDest4753 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4874 = true :=
-  Artifact.isValidJumpDest_index 3657 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4894 = true :=
+  Artifact.isValidJumpDest_index 3706 (by rfl)
 
 theorem jumpDest4762 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4890 = true :=
-  Artifact.isValidJumpDest_index 3669 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4910 = true :=
+  Artifact.isValidJumpDest_index 3718 (by rfl)
 
 theorem jumpDest3272 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3366 = true :=
-  Artifact.isValidJumpDest_index 2536 (by rfl)
+  Artifact.isValidJumpDest_index 2538 (by rfl)
 
 theorem jumpDest4683 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4804 = true :=
-  Artifact.isValidJumpDest_index 3613 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4824 = true :=
+  Artifact.isValidJumpDest_index 3662 (by rfl)
 
 /-! ## The counter word -/
 
