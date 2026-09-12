@@ -25,12 +25,12 @@ theorem jump_advances : ∀ instruction ∈ jumpTemplate.dropLast, PadLift.Advan
   decide
 
 theorem valid_merge (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
-    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 1058).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 677 = 1058 := by
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 1048).toNat = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 668 = 1048 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 677 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 668 (by rfl)
   rw [hpc] at h
-  change Decode.isValidJumpDest s.executionEnv.code 1058 = true
+  change Decode.isValidJumpDest s.executionEnv.code 1048 = true
   rw [hcode]
   exact h
 
@@ -40,7 +40,7 @@ def gasSteps_jump (s : State) (rho : List UInt256) (hstack : rho.length ≤ 1022
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 502, stack := rho}
-      {s with pc := UInt256.ofNat 1058, stack := rho} := by
+      {s with pc := UInt256.ofNat 1048, stack := rho} := by
   apply PadLift.gasSteps_of_raw jumpSite {s with pc := UInt256.ofNat 502, stack := rho} _ hcode hfork hrun hnp jump_pc.symm jump_advances
   exact PadJump.run_template s (UInt256.ofNat 502) rho 1058 hstack hrun (valid_merge s hcode)
 

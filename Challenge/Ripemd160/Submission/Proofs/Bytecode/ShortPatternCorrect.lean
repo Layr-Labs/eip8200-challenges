@@ -56,7 +56,7 @@ theorem correct1_from_patternedEntry (input : ByteArray) (hfit : CalldataFits in
     have hdigest : ShortPatternFinish.paddedDigest 1 = ScanDigest1.paddedDigest := rfl
     rw [ShortPatternFinish.answerMemory_read, hdigest, ← hspec] at heval
     simpa [GasCost.withGas_initialState_zero] using heval
-  · exact StackCorrect.correct input hfit (by omega)
+  · exact StackCorrect.correct input hfit
       (hentry.trans
         ((ShortPatternScan1.gasSteps_scan input hsize).trans
           (ShortPatternFinish.gasSteps_miss input (UInt256.ofNat (scalarAt 1))
@@ -89,7 +89,7 @@ theorem correct31_from_patternedEntry (input : ByteArray) (hfit : CalldataFits i
     have hdigest : ShortPatternFinish.paddedDigest 31 = ScanDigest31.paddedDigest := rfl
     rw [ShortPatternFinish.answerMemory_read, hdigest, ← hspec] at heval
     simpa [GasCost.withGas_initialState_zero] using heval
-  · exact StackCorrect.correct input hfit (by omega)
+  · exact StackCorrect.correct input hfit
       (hentry.trans
         ((ShortPatternScan31.gasSteps_scan input hsize).trans
           (ShortPatternFinish.gasSteps_miss input (UInt256.ofNat (scalarAt 1))
@@ -122,7 +122,7 @@ theorem correct32_from_patternedEntry (input : ByteArray) (hfit : CalldataFits i
     have hdigest : ShortPatternFinish.paddedDigest 32 = ScanDigest32.paddedDigest := rfl
     rw [ShortPatternFinish.answerMemory_read, hdigest, ← hspec] at heval
     simpa [GasCost.withGas_initialState_zero] using heval
-  · exact StackCorrect.correct input hfit (by omega)
+  · exact StackCorrect.correct input hfit
       (hentry.trans
         ((ShortPatternScan32.gasSteps_scan input hsize).trans
           (ShortPatternFinish.gasSteps_miss input (UInt256.ofNat (scalarAt 1))
@@ -155,7 +155,7 @@ theorem correct55_from_patternedEntry (input : ByteArray) (hfit : CalldataFits i
     have hdigest : ShortPatternFinish.paddedDigest 55 = ScanDigest55.paddedDigest := rfl
     rw [ShortPatternFinish.answerMemory_read, hdigest, ← hspec] at heval
     simpa [GasCost.withGas_initialState_zero] using heval
-  · exact StackCorrect.correct input hfit (by omega)
+  · exact StackCorrect.correct input hfit
       (hentry.trans
         ((ShortPatternScan55.gasSteps_scan input hsize).trans
           (ShortPatternFinish.gasSteps_miss input (UInt256.ofNat (scalarAt 2))
@@ -188,7 +188,7 @@ theorem correct56_from_patternedEntry (input : ByteArray) (hfit : CalldataFits i
     have hdigest : ShortPatternFinish.paddedDigest 56 = ShortPatternDigest.paddedDigest56 := rfl
     rw [ShortPatternFinish.answerMemory_read, hdigest, ← hspec] at heval
     simpa [GasCost.withGas_initialState_zero] using heval
-  · exact StackCorrect.correct input hfit (by omega)
+  · exact StackCorrect.correct input hfit
       (hentry.trans
         ((ShortPatternScan56.gasSteps_scan input hsize).trans
           (ShortPatternFinish.gasSteps_miss input (UInt256.ofNat (scalarAt 2))
@@ -221,7 +221,7 @@ theorem correct120_from_patternedEntry (input : ByteArray) (hfit : CalldataFits 
     have hdigest : ShortPatternFinish.paddedDigest 120 = ShortPatternDigest.paddedDigest120 := rfl
     rw [ShortPatternFinish.answerMemory_read, hdigest, ← hspec] at heval
     simpa [GasCost.withGas_initialState_zero] using heval
-  · exact StackCorrect.correct input hfit (by omega)
+  · exact StackCorrect.correct input hfit
       (hentry.trans
         ((ShortPatternScan120.gasSteps_scan input hsize).trans
           (ShortPatternFinish.gasSteps_miss input (UInt256.ofNat (scalarAt 4))
@@ -254,7 +254,7 @@ theorem correct119_from_patternedEntry (input : ByteArray) (hfit : CalldataFits 
     have hdigest : ShortPatternFinish.paddedDigest 119 = ScanDigest119.paddedDigest := rfl
     rw [ShortPatternFinish.answerMemory_read, hdigest, ← hspec] at heval
     simpa [GasCost.withGas_initialState_zero] using heval
-  · exact StackCorrect.correct input hfit (by omega)
+  · exact StackCorrect.correct input hfit
       (hentry.trans
         ((ShortPatternScan119.gasSteps_scan input hsize).trans
           (ShortPatternFinish.gasSteps_miss input (UInt256.ofNat (scalarAt 4))
@@ -290,7 +290,7 @@ theorem correct64_from_patternedEntry (input : ByteArray) (hfit : CalldataFits i
     have hdigest : ShortPatternFinish.paddedDigest 64 = ScanDigest64.paddedDigest := rfl
     rw [ShortPatternFinish.answerMemory_read, hdigest, ← hspec] at heval
     simpa [GasCost.withGas_initialState_zero] using heval
-  · exact StackCorrect.correct input hfit (by omega)
+  · exact StackCorrect.correct input hfit
       (hentry.trans
         ((ShortPatternScan64.gasSteps_scan input hsize).trans
           (ShortPatternFinish.gasSteps_miss input (UInt256.ofNat (scalarAt 2))
@@ -324,7 +324,7 @@ theorem correct65_from_patternedEntry (input : ByteArray) (hfit : CalldataFits i
     have hdigest : ShortPatternFinish.paddedDigest 65 = ScanDigest65.paddedDigest := rfl
     rw [ShortPatternFinish.answerMemory_read, hdigest, ← hspec] at heval
     simpa [GasCost.withGas_initialState_zero] using heval
-  · exact StackCorrect.correct input hfit (by omega)
+  · exact StackCorrect.correct input hfit
       (hentry.trans
         ((ShortPatternScan65.gasSteps_scan input hsize).trans
           (ShortPatternFinish.gasSteps_miss input (UInt256.ofNat (scalarAt 3))
@@ -358,7 +358,7 @@ theorem correct128_from_patternedEntry (input : ByteArray) (hfit : CalldataFits 
     have hdigest : ShortPatternFinish.paddedDigest 128 = ScanDigest128.paddedDigest := rfl
     rw [ShortPatternFinish.answerMemory_read, hdigest, ← hspec] at heval
     simpa [GasCost.withGas_initialState_zero] using heval
-  · exact StackCorrect.correct input hfit (by omega)
+  · exact StackCorrect.correct input hfit
       (hentry.trans
         ((ShortPatternScan128.gasSteps_scan input hsize).trans
           (ShortPatternFinish.gasSteps_miss input (UInt256.ofNat (scalarAt 4))
