@@ -102,8 +102,19 @@ theorem run_partial (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame)
   all_goals rfl
 #print axioms run_partial
 
-def finishTemplate (dest : Nat) : List Instr := [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .op .ISZERO,
-  .push ⟨2, by decide⟩ (UInt256.ofNat dest), .op .JUMPI]
+/-- The scanner frame below the accumulator. -/
+def finishRest (f : RecognitionBodyRaw.Frame) (rho : List UInt256) : List UInt256 :=
+  [f.off, f.word, f.stop, f.full, c32,
+    PatternedSwar.m7, PatternedSwar.m8, PatternedSwar.M] ++ rho
+
+theorem finishRest_length (f : RecognitionBodyRaw.Frame) (rho : List UInt256) :
+    (finishRest f rho).length = rho.length + 8 := by
+  simp only [finishRest, List.length_append, List.length_cons, List.length_nil]; omega
+
+/-- The accumulator itself is the branch condition: a zero accumulator falls through into the
+inline selector, a nonzero one jumps to the frame cleanup. -/
+def finishTemplate (dest : Nat) : List Instr :=
+  [.op .JUMPDEST, .push ⟨2, by decide⟩ (UInt256.ofNat dest), .op .JUMPI]
 
 theorem run_finish (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame)
     (rho : List UInt256) (dest : Nat) (hstack : rho.length ≤ 990)
@@ -111,16 +122,16 @@ theorem run_finish (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat dest).toNat = true) :
     runInstrSeq (finishTemplate dest) {s with pc := pc, stack := frame f rho} =
       some {s with
-        pc := if f.acc.toNat = 0 then UInt256.ofNat dest else pcAfter pc (finishTemplate dest)
-        stack := frame f rho} := by
+        pc := if f.acc.toNat = 0 then pcAfter pc (finishTemplate dest) else UInt256.ofNat dest
+        stack := finishRest f rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
   simp only [Word.word_toNat_ofNat] at hvalid
   norm_num only at hvalid
   by_cases hc : f.acc.toNat = 0
-  all_goals simp (discharger := omega) [finishTemplate, frame, runInstrSeq, Stepper.runInstr,
+  all_goals simp (discharger := omega) [finishTemplate, frame, finishRest, runInstrSeq, Stepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
-    Nat.add_assoc, hrun, hbase, hcap, UInt256.lt, UInt256.eq, UInt256.isZero, UInt256.isTrue,
+    Nat.add_assoc, hrun, hbase, hcap, UInt256.isTrue,
     hc, hvalid, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals rfl
 #print axioms run_finish

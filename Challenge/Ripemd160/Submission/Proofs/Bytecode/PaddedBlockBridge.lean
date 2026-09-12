@@ -533,7 +533,7 @@ private theorem loadOffsetWord_eq (input : ByteArray) (blockOff k : Nat)
 exact little-endian reader seam required by the generic schedule proof. -/
 theorem paddedBlockAt (s : State) (base input : ByteArray)
     (msgOff : UInt256) (blockOff : Nat)
-    (hbytes : ∀ a : Nat, a < messageOffset + paddedLength input.size →
+    (hbytes : ∀ a : Nat, messageOffset + blockOff ≤ a → a < messageOffset + blockOff + 64 →
       s.memory[a]?.getD 0 = (paddedMemory base input)[a]?.getD 0)
     (hbase : base.size ≤ messageOffset)
     (hmsgOff : msgOff = UInt256.ofNat (messageOffset + blockOff))
@@ -566,7 +566,7 @@ theorem paddedBlockAt (s : State) (base input : ByteArray)
         (s.memory[messageOffset + (blockOff + k * 4) + i]?.getD 0) =
           (paddedMemory base input)[messageOffset + (blockOff + k * 4) + i]?.getD 0 := by
       intro i hi
-      exact hbytes _ (by omega)
+      exact hbytes _ (by omega) (by omega)
     have h0 := byteAt_readWord s.memory (messageOffset + (blockOff + k * 4)) 0 (by omega)
     have h1 := byteAt_readWord s.memory (messageOffset + (blockOff + k * 4)) 1 (by omega)
     have h2 := byteAt_readWord s.memory (messageOffset + (blockOff + k * 4)) 2 (by omega)
@@ -599,7 +599,7 @@ theorem scheduleSeparated (input : ByteArray) (msgOff : UInt256)
     (hfit : Challenge.Ripemd160.CalldataFits input)
     (hblock : blockOff + 64 ≤ paddedLength input.size) :
     ∀ k, k < 16 →
-      0x460 ≤ (Schedule.loadOffsetWord msgOff k).toNat := by
+      0x480 ≤ (Schedule.loadOffsetWord msgOff k).toNat := by
   intro k hk
   rw [hmsgOff, loadOffsetWord_eq input blockOff k hfit hblock hk,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -633,8 +633,8 @@ theorem padReturned_paddedBlockAt (input : ByteArray)
       (paddedMessage input) blockOff := by
   apply paddedBlockAt (PaddingTrace.padReturned input)
     (PaddingTrace.padLengthReady input).memory input
-  · intro a ha
-    exact PaddingTrace.padReturned_getD_window input hfit a ha
+  · intro a _ ha
+    exact PaddingTrace.padReturned_getD_window input hfit a (by omega)
   · exact padBase_size input
   · rfl
   · exact hfit
@@ -658,7 +658,7 @@ theorem padReturned_blockIndexSeparated (input : ByteArray)
     (hfit : Challenge.Ripemd160.CalldataFits input) (i : Nat)
     (hi : i < paddedLength input.size / 64) :
     ∀ k, k < 16 →
-      0x460 ≤ (Schedule.loadOffsetWord
+      0x480 ≤ (Schedule.loadOffsetWord
         (UInt256.ofNat (messageOffset + i * 64)) k).toNat := by
   apply scheduleSeparated input (UInt256.ofNat (messageOffset + i * 64))
     (i * 64) rfl hfit

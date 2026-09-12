@@ -17,7 +17,7 @@ def normalTemplate : List Instr := ((Table80Setup.initialTemplate ++ FundedNorma
 
 theorem run_normal (s : State) (pc returnPC : UInt256) (p : Nat) (rest : List UInt256)
     (hstack : rest.length ≤ 896) (hrun : s.halt = .Running)
-    (hp : 1120 ≤ p) (hbound : p + 64 < 2 ^ 256) :
+    (hp : 1152 ≤ p) (hbound : p + 64 < 2 ^ 256) :
     runInstrSeq normalTemplate (scheduleEntry s pc (UInt256.ofNat p) returnPC rest) =
       some {s with pc := pcAfter pc normalTemplate, stack := returnPC :: rest, memory := StaggerTableLayout.resultMemory s.memory (PairedScheduleData.extractedWord s.memory p), activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
   let words := PairedScheduleData.extractedWord s.memory p
@@ -26,8 +26,8 @@ theorem run_normal (s : State) (pc returnPC : UInt256) (p : Nat) (rest : List UI
     (PairedScheduleData.reversedWord (MachineState.readWord s.memory (p + 32)))
   let s1 : State := {s with activeWords := loadedActiveWords s (UInt256.ofNat p)}
   let s2 : State := {s1 with memory := scratch}
-  have ha : 37 ≤ s1.activeWords.toNat := Stagger144Active.loaded_active_ge37 s p hp hbound
-  have ha2 : 37 ≤ s2.activeWords.toNat := ha
+  have ha : 38 ≤ s1.activeWords.toNat := Stagger144Active.loaded_active_ge38 s p hp hbound
+  have ha2 : 38 ≤ s2.activeWords.toNat := ha
   have hptr : (UInt256.ofNat p).toNat = p := by
     rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
   have h1 := PairedNormal16Initial.run_cachedInitial s pc (UInt256.ofNat p) returnPC rest (by omega) hrun

@@ -103,22 +103,22 @@ def gasSteps_partialBranch_no (s : State) (e : Env s) (f : RecognitionBodyRaw.Fr
 
 def gasSteps_finish_yes (s : State) (e : Env s) (f : RecognitionBodyRaw.Frame) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hc : f.acc.toNat = 0) :
-    GasSteps (atState s 313 (frame f rho)) (atState s 4881 (frame f rho)) := by
+    GasSteps (atState s 313 (frame f rho)) (atState s 318 (RecognitionBranchRaw.finishRest f rho)) := by
   apply finish.lift s _ e (frame f rho)
-  have h := RecognitionBranchRaw.run_finish s (UInt256.ofNat 313) f rho 4881 hs e.run (valid_4796 s e)
+  have h := RecognitionBranchRaw.run_finish s (UInt256.ofNat 313) f rho 342 hs e.run (valid_342 s e)
   simpa only [atState, finish.end_pc, if_pos hc] using h
 
 def gasSteps_finish_no (s : State) (e : Env s) (f : RecognitionBodyRaw.Frame) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hc : ¬ (f.acc.toNat = 0)) :
-    GasSteps (atState s 313 (frame f rho)) (atState s 320 (frame f rho)) := by
+    GasSteps (atState s 313 (frame f rho)) (atState s 342 (RecognitionBranchRaw.finishRest f rho)) := by
   apply finish.lift s _ e (frame f rho)
-  have h := RecognitionBranchRaw.run_finish s (UInt256.ofNat 313) f rho 4881 hs e.run (valid_4796 s e)
+  have h := RecognitionBranchRaw.run_finish s (UInt256.ofNat 313) f rho 342 hs e.run (valid_342 s e)
   simpa only [atState, finish.end_pc, if_neg hc] using h
 
 def gasSteps_cleanup (s : State) (e : Env s) (f : RecognitionBodyRaw.Frame) (rho : List UInt256) (hs : rho.length ≤ 990) :
-    GasSteps (atState s 320 (frame f rho)) (atState s 329 rho) := by
-  apply cleanup.lift s _ e (frame f rho)
-  have h := RecognitionControlSimplify.run_cleanup s (UInt256.ofNat 320) f rho hs e.run
+    GasSteps (atState s 342 (RecognitionBranchRaw.finishRest f rho)) (atState s 351 rho) := by
+  apply cleanup.lift s _ e (RecognitionBranchRaw.finishRest f rho)
+  have h := RecognitionControlSimplify.run_cleanup s (UInt256.ofNat 342) f rho hs e.run
   simpa only [atState, cleanup.end_pc] using h
 
 def gasSteps_clamp0 (s : State) (e : Env s) (f : RecognitionBodyRaw.Frame) (rho : List UInt256) (hs : rho.length ≤ 990) :

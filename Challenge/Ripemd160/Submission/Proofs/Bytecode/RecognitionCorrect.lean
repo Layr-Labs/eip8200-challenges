@@ -34,8 +34,8 @@ theorem from_entry (input : ByteArray) (hfit : CalldataFits input)
   let s := initialState submissionBytecode input 0
   have e : RecognitionSites.Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
   by_cases hz : RecognitionAccumulator.resultAcc input input.size = 0
-  · let rho := RecognitionBodyRaw.frame (RecognitionLoop.endFrame s input.size) []
-    have hc : rho.length ≤ 990 := by simp [rho, RecognitionBodyRaw.frame]
+  · let rho := RecognitionBranchRaw.finishRest (RecognitionLoop.endFrame s input.size) []
+    have hc : rho.length ≤ 990 := by simp [rho, RecognitionBranchRaw.finishRest]
     have gh := RecognitionScan.gasSteps_hit s e input.size [] (by decide) hn rfl hz
     have gr := RecognitionReturn.gasSteps s e rho hc rfl rfl
     have trace : GasSteps (initialState submissionBytecode input 0) (RecognitionReturn.output s rho) :=

@@ -49,25 +49,22 @@ theorem run_pass (s : State) (pc : UInt256) (stack : List UInt256)
   simp [passTemplate, runInstrSeq, Stepper.runInstr, pcAfter, hstack, hrun]
   rfl
 
-/-- The rejected scanner frame is discarded before falling through to the generic path. -/
+/-- The rejected scanner frame (below the consumed accumulator) is discarded before falling
+through to the generic path. -/
 def cleanupTemplate : List Instr :=
-  [.op .POP, .op .POP, .op .POP, .op .POP, .op .POP,
+  [.op .JUMPDEST, .op .POP, .op .POP, .op .POP, .op .POP,
     .op .POP, .op .POP, .op .POP, .op .POP]
-
-theorem cleanup_decomposition (dest : Nat) :
-    RecognitionBranchRaw.cleanupTemplate dest = cleanupTemplate ++
-      [.push ⟨2, by decide⟩ (UInt256.ofNat dest), .op .JUMP] := rfl
 
 theorem run_cleanup (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame) (rho : List UInt256)
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running) :
-    runInstrSeq cleanupTemplate {s with pc := pc, stack := frame f rho} =
+    runInstrSeq cleanupTemplate {s with pc := pc, stack := RecognitionBranchRaw.finishRest f rho} =
       some {s with pc := pcAfter pc cleanupTemplate, stack := rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
-  simp (discharger := omega) [cleanupTemplate, frame, runInstrSeq, Stepper.runInstr,
+  simp (discharger := omega) [cleanupTemplate, RecognitionBranchRaw.finishRest, runInstrSeq, Stepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  rfl
+  all_goals rfl
 
 theorem boundary_length : boundaryTemplate.length = 46 := rfl
 theorem boundary_bytes : (boundaryTemplate.map Instr.size).sum = 53 := rfl

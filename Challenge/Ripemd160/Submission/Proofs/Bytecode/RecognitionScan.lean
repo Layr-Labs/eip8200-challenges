@@ -5,7 +5,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open RecognitionSites RecognitionMovement RecognitionBodyRaw RecognitionLoop RecognitionAccumulator
 
 def hitState (s : State) (n : Nat) (rho : List UInt256) : State :=
-  atState s 4881 (frame (endFrame s n) rho)
+  atState s 318 (RecognitionBranchRaw.finishRest (endFrame s n) rho)
 
 def gasSteps_hit (s : State) (e : Env s) (n : Nat) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hn : Allowed n) (hsize : s.executionEnv.calldata.size = n)
@@ -20,7 +20,7 @@ def gasSteps_hit (s : State) (e : Env s) (n : Nat) (rho : List UInt256)
 def gasSteps_miss (s : State) (e : Env s) (n : Nat) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hn : Allowed n) (hsize : s.executionEnv.calldata.size = n)
     (hzero : resultAcc s.executionEnv.calldata n ≠ 0) :
-    GasSteps (atState s 108 rho) (atState s 329 rho) := by
+    GasSteps (atState s 108 rho) (atState s 351 rho) := by
   have hz : (endFrame s n).acc.toNat ≠ 0 := by
     intro h
     apply hzero

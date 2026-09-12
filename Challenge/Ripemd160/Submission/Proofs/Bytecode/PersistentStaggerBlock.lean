@@ -19,12 +19,18 @@ def gasSteps (s : State) (input : ByteArray) (i : Nat) (h : Compression.HashStat
   let q := scheduledState s i
   let off := DriverTrace.blockOffsetWord i
   have gp := PersistentStaggerPrepare.gasSteps_prepare s input i h limit rho hs hfit hi ctx hcode hfork hr hnp
-  have gb := StaggerPersistentBootstrapBridge.gasSteps_body q h off limit rho (by omega) hr
+  have henv : q.executionEnv = s.executionEnv := scheduled_env s i
+  have hrq : q.halt = .Running := (scheduled_halt s i).trans hr
+  have hcq : q.executionEnv.code = Artifact.submissionArtifact.code := by rw [henv]; exact hcode
+  have hfq : q.fork = .Osaka := by change q.executionEnv.fork = _; rw [henv]; exact hfork
+  have hnq : Precompile.isPrecompileWithConfig q.executionEnv.precompileConfig
+      q.executionEnv.fork q.executionEnv.codeAddr = false := by rw [henv]; exact hnp
+  have gb := StaggerPersistentBootstrapBridge.gasSteps_body q h off limit rho (by omega) hrq
     (by change 35 ≤ (scheduledState s i).activeWords.toNat
-        have ha := scheduled_active s input i hfit hi
-        omega) hcode hfork hnp
+        have ha := scheduled_active s input i hfit hi ctx
+        omega) hcq hfq hnq
   have gt := PersistentStaggerTailBridge.gasSteps q h
-    (StaggerCoreModel.paired q.memory (initial h)) off limit rho (by omega) hr hcode hfork hnp
+    (StaggerCoreModel.paired q.memory (initial h)) off limit rho (by omega) hrq hcq hfq hnq
   have hrest : StaggerPersistentPackBridge.suffix (initial h) off limit rho = coreRest h off limit rho := by
     change StaggerPersistentPackBridge.suffix (StaggerPersistentBootstrapBridge.initial h) off limit rho = _
     rw [StaggerPersistentBootstrapBridge.initial_eq]

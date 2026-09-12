@@ -22,7 +22,7 @@ theorem pointer_eq (input : ByteArray) (i : Nat) (hfit : CalldataFits input)
     (hi : i < DriverTrace.blockCount input) :
     StaggerPersistentEntryRaw.pointer (DriverTrace.blockOffsetWord i) = UInt256.ofNat (messagePointer i) := by
   have hb := messagePointer_bound input hfit i hi
-  change UInt256.ofNat 1120 + UInt256.ofNat (DriverTrace.blockOffset i) = _
+  change UInt256.ofNat 1152 + UInt256.ofNat (DriverTrace.blockOffset i) = _
   rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb; omega)]
   rfl
 
@@ -36,7 +36,6 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     GasSteps {s with pc := UInt256.ofNat 600, stack := frame h (DriverTrace.blockOffsetWord i) limit rho}
       {scheduledState s i with pc := UInt256.ofNat 1079, stack := frame h (DriverTrace.blockOffsetWord i) limit rho} := by
   let off := DriverTrace.blockOffsetWord i
-  let q := scheduledState s i
   let r := rest h off limit rho
   have hrs : r.length ≤ 896 := by simp only [r, rest, List.length_append, List.length_cons, List.length_nil]; omega
   have hf : s.executionEnv.calldata.size < 2^256 := by
@@ -49,26 +48,25 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     have gp := StaggerPersistentPadPrefix.gasSteps_prefix s (frame h off limit rho)
       (by simp only [frame, List.length_append, List.length_cons, List.length_nil]; omega)
       hr hcode hfork hnp
-    have ha : 37 ≤ s.activeWords.toNat := by
-      have hq := scheduled_active s input i hfit hi
-      change 37 ≤ (DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat (messagePointer i))).toNat at hq
-      rw [scheduled_active_eq s input i hfit hi ctx] at hq
-      exact hq
+    have ha : 38 ≤ s.activeWords.toNat := ctx.active
     have gb := StaggerSetupSites.gasSteps_pad s Paired144WordRound.factorWord r hrs hr (by omega) hf hcode hfork hnp
-    have hm := scheduled_memory_calldata s input i hfit hi ctx hh
-    have gj := StaggerPadJump.gasSteps_jump q (frame h off limit rho)
+    have hhs : s.executionEnv.calldata.size = DriverTrace.blockOffset i := by rw [ctx.calldata]; exact hh
+    rw [scheduledState_hit s i hhs]
+    let qh : State :=
+      {s with memory := StaggerTablePad.resultMemory s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
+    have gj := StaggerPadJump.gasSteps_jump qh (frame h off limit rho)
       (by simp only [frame, List.length_append, List.length_cons, List.length_nil]; omega)
       hr hcode hfork hnp
     have gb' : GasSteps {s with pc := UInt256.ofNat 522, stack := frame h off limit rho}
-        {q with pc := UInt256.ofNat 595, stack := frame h off limit rho} := by
+        {qh with pc := UInt256.ofNat 595, stack := frame h off limit rho} := by
       apply gb.cast rfl
-      dsimp only [q, scheduledState]
-      rw [scheduled_active_eq s input i hfit hi ctx]
-      rw [hm]
       rfl
     exact gd.trans (gp.trans (gb'.trans gj))
   · have he : s.executionEnv.calldata.size ≠ off.toNat := by
       rw [ctx.calldata, blockOffsetWord_toNat input hfit i hi]; exact hh
+    have hhs : ¬ s.executionEnv.calldata.size = DriverTrace.blockOffset i := by
+      rw [ctx.calldata]; exact hh
+    rw [scheduledState_miss s i hhs]
     have gd := StaggerPersistentEntrySites.gasSteps_miss s off limit h rho
       (by omega) hr hf he hcode hfork hnp
     have gc := StaggerPersistentEntrySites.gasSteps_call s off limit h rho (by omega) hr hcode hfork hnp

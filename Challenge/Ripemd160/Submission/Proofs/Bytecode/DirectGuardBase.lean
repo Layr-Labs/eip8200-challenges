@@ -115,7 +115,7 @@ def tailPath : List Located :=
    opAt 53 .OR,
    opAt 54 (.Swap ⟨0, by decide⟩),
    opAt 55 .POP,
-   pushAt 56 2 329,
+   pushAt 56 2 351,
    opAt 57 .JUMPI]
 
 def returnPath : List Located :=
@@ -150,7 +150,7 @@ attribute [simp] Challenge.Ripemd160.initialState_stack
   Challenge.Ripemd160.initialState_calldata
 
 def sizeMatched (input : ByteArray) : State := atPC input 30
-def fallbackState (input : ByteArray) : State := atPC input 329
+def fallbackState (input : ByteArray) : State := atPC input 351
 
 def loopState (input : ByteArray) (n : Nat) : State :=
   { initialState submissionBytecode input 0 with

@@ -64,12 +64,12 @@ def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
   have gselect := sound selectorPath (run_selector n input sv ov)
   have gpre := sound digestStorePrePath (run_store_pre n input sv ov hsize)
   have gpost := sound digestStorePostPath (run_store_post n input sv ov hn hsize)
-  have hc := Artifact.submissionArtifact.decodeAt_op_index 3871 .CODECOPY
+  have hc := Artifact.submissionArtifact.decodeAt_op_index 3882 .CODECOPY
     (by rfl) (by decide) trivial
   have hpc : (copyReadyState n input sv ov).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 3871 := by rw [pc4870]; rfl
+      Artifact.submissionArtifact.instructionPC 3882 := by rw [pc4870]; rfl
   have hcopy : (copyReadyState n input sv ov).decodedOp = some .CODECOPY :=
-    Artifact.submissionArtifact.state_decodedOp_of (copyReadyState n input sv ov) 3871
+    Artifact.submissionArtifact.state_decodedOp_of (copyReadyState n input sv ov) 3882
       (by rfl) hpc .CODECOPY none hc (by rfl)
   have gcraw := Codecopy.step (s := copyReadyState n input sv ov)
     12 (UInt256.ofNat (tableOffset n)) 20 (returnRest sv ov)
