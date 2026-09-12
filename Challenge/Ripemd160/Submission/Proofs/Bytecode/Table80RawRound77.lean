@@ -46,10 +46,12 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80RawCommon
     .op (.Swap ⟨1, by decide⟩),
     .op (.Dup ⟨6, by decide⟩),
     .op .MUL,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 22),
-    .op .SHR ]
+    .op (.Dup ⟨10, by decide⟩),
+    .op .SHR,
+    .op (.Dup ⟨7, by decide⟩),
+    .op .AND ]
  def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-   [ (UInt256.shiftRight (UInt256.mul x.v6 x.v2) (UInt256.ofNat 22)),
+   [ (UInt256.land x.v7 (UInt256.shiftRight (UInt256.mul x.v6 x.v2) (UInt256.ofNat 22))),
     x.v1,
     (UInt256.land x.v7 (UInt256.add x.v4 (UInt256.shiftRight (UInt256.mul x.v6 (UInt256.add (UInt256.mul (UInt256.ofNat 31) (UInt256.land x.v8 (UInt256.land x.v7 (UInt256.add x.v1 (UInt256.add (MachineState.readWord memory 30) (UInt256.add (UInt256.xor x.v3 (UInt256.xor x.v2 (UInt256.xor x.v9 (UInt256.lor x.v0 (UInt256.land x.v9 x.v2))))) x.v5)))))) (UInt256.land x.v7 (UInt256.add x.v1 (UInt256.add (MachineState.readWord memory 30) (UInt256.add (UInt256.xor x.v3 (UInt256.xor x.v2 (UInt256.xor x.v9 (UInt256.lor x.v0 (UInt256.land x.v9 x.v2))))) x.v5)))))) (UInt256.ofNat 24)))),
     x.v3,

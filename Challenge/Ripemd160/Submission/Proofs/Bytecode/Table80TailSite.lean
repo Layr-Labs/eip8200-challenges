@@ -11,35 +11,35 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTemplate StackRoundTrace Table80ConsumedTerminalTail Paired80WordRound
 
 theorem prefix_slice :
-    (Artifact.submissionArtifact.instructions.drop 3911).take prefixTemplate.length =
+    (Artifact.submissionArtifact.instructions.drop 3913).take prefixTemplate.length =
       prefixTemplate := by rfl
 
 def prefixSite : GenericRoundSite Artifact.submissionArtifact .Osaka prefixTemplate :=
-  StackSiteBuilder.ofSlice prefixTemplate 3911 prefix_slice
-    (by change 3911 + prefixTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice prefixTemplate 3913 prefix_slice
+    (by change 3913 + prefixTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := prefixTemplate) (by decide))
     (by decide)
 
 theorem prefix_pc : prefixSite.startPC = UInt256.ofNat 4618 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3911) = UInt256.ofNat 4618
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3913) = UInt256.ofNat 4618
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem prefix_endPC : prefixSite.endPC = UInt256.ofNat 4717 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3984) = UInt256.ofNat 4717
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3986) = UInt256.ofNat 4717
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def jumpSite : LocatedSite Artifact.submissionArtifact .Osaka where
   located := {
-    index := 3984
+    index := 3986
     instruction := .op .JUMP
     atIndex := by rfl
     wellFormed := StackRoundData.templateWellFormed_mem
       (instructions := [.op .JUMP]) (by decide) _ (by simp) }
   pc := UInt256.ofNat 4717
   pc_eq := by
-    change (UInt256.ofNat 4717).toNat = Artifact.submissionArtifact.instructionPC 3984
+    change (UInt256.ofNat 4717).toNat = Artifact.submissionArtifact.instructionPC 3986
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def site : TailSite Artifact.submissionArtifact .Osaka where

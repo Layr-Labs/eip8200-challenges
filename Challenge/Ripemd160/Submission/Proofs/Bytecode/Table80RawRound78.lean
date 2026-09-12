@@ -76,16 +76,16 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80RawCommon
  #print axioms run_actual
 
  theorem actual_slice :
-     (Artifact.submissionArtifact.instructions.drop 3846).take template.length = template := by rfl
+     (Artifact.submissionArtifact.instructions.drop 3848).take template.length = template := by rfl
  def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-   StackSiteBuilder.ofSlice template 3846 actual_slice
-     (by change 3846 + template.length ≤ Artifact.submissionInstructions.length
+   StackSiteBuilder.ofSlice template 3848 actual_slice
+     (by change 3848 + template.length ≤ Artifact.submissionInstructions.length
          rw [Artifact.referenceInstructions_count]; decide)
      StackRoundData.artifact_code_bound
      (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
      (by decide)
  theorem site_pc : site.startPC = UInt256.ofNat 4548 := by
-   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3846) = UInt256.ofNat 4548
+   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3848) = UInt256.ofNat 4548
    rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
  theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
    apply Table80SiteCommon.coreAdvancesAll_sound

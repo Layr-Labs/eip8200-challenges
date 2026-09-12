@@ -44,14 +44,14 @@ theorem run_size_fail_legacy (input : ByteArray) (hfit : CalldataFits input)
   have e1000 := size_eq_zero input 1000 hlt (by norm_num) hsize
   change run sizePath (PatternedScan.stS input 8 []) =
     some (PatternedScan.stS input 4794 [])
-  -- rw idiom rather than term mode: the term form forces instructionPC 4039 and
+  -- rw idiom rather than term mode: the term form forces instructionPC 4041 and
   -- submissionBytecode into definitional equality with the literals, which ran
   -- past 800s at 18 GB on the other base.  Same statement, cheap elaboration.
-  have hpc4131 : Artifact.submissionArtifact.instructionPC 4039 = 4794 := by
+  have hpc4131 : Artifact.submissionArtifact.instructionPC 4041 = 4794 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
   have hdest : Decode.isValidJumpDest submissionBytecode 4794 = true := by
-    have h := Artifact.submissionArtifact.isValidJumpDest_index 4039 (by rfl)
+    have h := Artifact.submissionArtifact.isValidJumpDest_index 4041 (by rfl)
     rw [hpc4131] at h
     exact h
   have hprefix :

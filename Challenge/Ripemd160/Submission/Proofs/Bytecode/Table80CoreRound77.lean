@@ -1,4 +1,3 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80LateMask77
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80RawRound77
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80CoreCommon
 set_option warningAsError true
@@ -11,14 +10,14 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof PairedLaneU
 open Table80CoreCommon
 def input (q : WordLane) (k : UInt256) : Table80Raw.Input :=
   ⟨word .d q k, word .k q k, word .c q k, word .b q k, word .e q k, word .a q k, word .factor q k, word .pair q k, word .upper q k, word .lower q k⟩
-def eval (message k : UInt256) (q : WordLane) : WordLane := Table80LateMask77.raw77 message k q
+def eval (message k : UInt256) (q : WordLane) : WordLane := wordStep 4 8 13 message k q
 def nextKey (k : UInt256) : UInt256 := k
 theorem output_eq (memory : ByteArray) (q : WordLane) (k : UInt256) (rho : List UInt256) :
     Table80RawRound77.outputStack memory (input q k) rho =
       stack [.d, .k, .b, .c, .a, .e, .factor, .pair, .upper, .lower] (eval (MachineState.readWord memory 30) k q) (nextKey k) rho := by
   simp only [Table80RawRound77.outputStack, input, stack, List.map_cons, List.map_nil,
     List.cons_append, List.nil_append, Table80CoreCommon.word, eval, nextKey,
-    Table80LateMask77.raw77, Table80WideCoreBridge.wideWordShift, wordStep, wordT, wordSum, Paired80WordGroupTwoHoist.rawWordStep2,
+    wordStep, wordT, wordSum, Paired80WordGroupTwoHoist.rawWordStep2,
     Paired80WordGroupTwoHoist.hoistedT, Paired80WordGroupTwoHoist.hoistedSum,
     Paired80WordGroupTwoHoist.hoistedBoolean, Paired80FinalWord.rawStep,
     boolean_zero, boolean_one, boolean_three, boolean_four,
@@ -37,6 +36,9 @@ theorem output_eq (memory : ByteArray) (q : WordLane) (k : UInt256) (rho : List 
 
  theorem nextKey_physical : nextKey (Paired80Algorithm.physicalKey 77) =
      Paired80Algorithm.physicalKey 78 := by decide
+
+ theorem eval_physical (message : UInt256) (q : WordLane) :
+     eval message (Paired80Algorithm.physicalKey 77) q = Paired80Algorithm.step 77 message q := by rfl
 
  def gasSteps (s : State) (q : WordLane) (k : UInt256) (rho : List UInt256)
      (hstack : rho.length ≤ 996) (hrun : s.halt = .Running)

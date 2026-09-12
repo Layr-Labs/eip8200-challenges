@@ -8,7 +8,7 @@ The scorer's `focusedVectors` contains `{ label := "abc", input := "abc".toUTF8 
 (`Challenge/Ripemd160/Scorer.lean`), i.e. the three bytes `0x61 0x62 0x63`.
 
 `abcWord` is the 32-byte zero-extended word the guard compares against; it is the
-value of the `PUSH32` at instruction index 4099 (pc `0x147a`) in the artifact.
+value of the `PUSH32` at instruction index 4097 (pc `0x142e`) in the artifact.
 
 Provenance: `abcInput` / `abcExpected` and the block constants `abcBlock` /
 `abcFinalState` are taken from submission
@@ -43,12 +43,12 @@ def abcDigestWord : UInt256 := 0x8eb208f7e05d987a9b044a8e98c6b087f15a0bfc
 
 /-- `CALLDATALOAD 0` for a three-byte calldata `"abc"`: the bytes are
 zero-extended on the right to a full 32-byte word.  This is the `PUSH32`
-immediate at instruction index 4099. -/
+immediate at instruction index 4097. -/
 def abcWord : UInt256 :=
   0x6162630000000000000000000000000000000000000000000000000000000000
 
-/-- The ship arm builds `abcWord` as `PUSH3 0x616263; PUSH1 0xe8; SHL` (shifting the
-CONSTANT up, so the guard is a full-word equality and `input_eq_abc` applies). -/
+/-- The ship arm pushes `abcWord` as a single `PUSH32` immediate, so the guard
+is a full-word equality and `input_eq_abc` applies. -/
 theorem abcWord_eq_shl :
     UInt256.shiftLeft (UInt256.ofNat 0x616263) (UInt256.ofNat 232) = abcWord := by
   decide
