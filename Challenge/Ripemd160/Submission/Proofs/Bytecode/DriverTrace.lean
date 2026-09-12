@@ -49,15 +49,13 @@ def postCheckPath : List Located :=
    ⟨315, .push ⟨2, by decide⟩ (UInt256.ofNat 4718), by rfl, by decide⟩,
    ⟨316, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
-/-- The one-time empty-input test at the driver entry (pc 364): nonempty
-calldata jumps to the block setup at pc 413; later blocks skip it. -/
+/-- The one-time unconditional jump to the first block setup. -/
 def enterPath : List Located :=
-  [⟨234, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨235, .push ⟨2, by decide⟩ (UInt256.ofNat 517), by rfl, by decide⟩,
-   ⟨236, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨234, .push ⟨2, by decide⟩ (UInt256.ofNat 517), by rfl, by decide⟩,
+   ⟨235, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 @[simp] private theorem pcD231 : Artifact.submissionArtifact.instructionPC 234 = 368 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pcD232 : Artifact.submissionArtifact.instructionPC 235 = 369 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pcD232 : Artifact.submissionArtifact.instructionPC 235 = 371 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] private theorem pcD233 : Artifact.submissionArtifact.instructionPC 236 = 372 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] private theorem pcD234 : Artifact.submissionArtifact.instructionPC 237 = 373 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] private theorem pcD244 : Artifact.submissionArtifact.instructionPC 309 = 506 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
@@ -240,27 +238,20 @@ theorem run_call (s : State) (input : ByteArray)
     hrun, hadd]
 
 theorem run_enter (s : State) (input : ByteArray)
-    (hfit : Challenge.Ripemd160.CalldataFits input) (hpositive : 0 < input.size)
-    (hcalldata : s.executionEnv.calldata = input)
+    (_hfit : Challenge.Ripemd160.CalldataFits input) (_hpositive : 0 < input.size)
+    (_hcalldata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock enterPath
       (setupEntry s input) = some (loopAt s input 0) := by
-  have hsize : input.size < 2 ^ 256 := Nat.lt_trans hfit (by norm_num)
-  have hmod : input.size % 2 ^ 256 ≠ 0 := by
-    rw [Nat.mod_eq_of_lt hsize]
-    omega
-  norm_num at hmod
-  have htrue : UInt256.isTrue (UInt256.ofNat input.size) := by
-    exact hmod
   have hdest : Decode.isValidJumpDest submissionBytecode 517 = true := by
     have h := Artifact.submissionArtifact.isValidJumpDest_index 317 (by rfl)
     rw [pcD252] at h
     exact h
   simp [enterPath, Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    setupEntry, loopAt, blockOffsetWord, blockOffset, hcalldata, hcode,
-    hrun, hmod, htrue, hdest, UInt256.isTrue,
+    setupEntry, loopAt, blockOffsetWord, blockOffset, hcode,
+    hrun, hdest, UInt256.isTrue,
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.succ_ofNat_mod]
 

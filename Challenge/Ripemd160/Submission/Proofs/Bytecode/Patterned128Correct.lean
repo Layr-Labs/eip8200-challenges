@@ -40,7 +40,7 @@ theorem correct_from_patternedEntry (input : ByteArray) (hfit : CalldataFits inp
     have hdigest : ShortPatternFinish.paddedDigest 63 = Patterned63Digest.paddedDigest := rfl
     rw [ShortPatternFinish.answerMemory_read, hdigest, ← hspec] at heval
     simpa [GasCost.withGas_initialState_zero] using heval
-  · exact StackCorrect.correct input hfit
+  · exact StackCorrect.correct input hfit (by omega)
       (hentry.trans
         ((Patterned128Scan.gasSteps_scan input hsize).trans
           (ShortPatternFinish.gasSteps_miss input (UInt256.ofNat (scalarAt 2))
