@@ -21,7 +21,7 @@ def input (_memory : ByteArray) (h q : WordLane) (off limit : UInt256) :
     coefficientWord 3 0, h.e, h.b, h.c, h.d, h.a, off, limit⟩
 
 def entry (s : State) (h q : WordLane) (off limit : UInt256) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 1117, stack := stack s.memory h.e [.d, .k, .c, .b, .e, .a, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500] q h (UInt256.ofNat 1352829926) (suffix h off limit rho)}
+  {s with pc := UInt256.ofNat 1111, stack := stack s.memory h.e [.d, .k, .c, .b, .e, .a, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500] q h (UInt256.ofNat 1352829926) (suffix h off limit rho)}
 
 theorem input_eq (memory : ByteArray) (h q : WordLane) (off limit : UInt256)
     (rho : List UInt256) :
@@ -49,17 +49,17 @@ theorem output_eq (memory : ByteArray) (h q : WordLane) (off limit : UInt256)
 #print axioms output_eq
 
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 693).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 688).take template.length = template := by rfl
 
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 693 actual_slice
-    (by change 693 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 688 actual_slice
+    (by change 688 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 1117 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 693) = UInt256.ofNat 1117
+theorem site_pc : site.startPC = UInt256.ofNat 1111 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 688) = UInt256.ofNat 1111
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound
@@ -72,13 +72,13 @@ def gasSteps (s : State) (h q : WordLane) (off limit : UInt256) (rho : List UInt
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (entry s h q off limit rho)
       (StaggerCore.atRound s h.e 0 (StaggerCoreModel.pair h q) h (suffix h off limit rho)) := by
-  have raw := StaggerPersistentPackRaw.run_actual s (UInt256.ofNat 1117)
+  have raw := StaggerPersistentPackRaw.run_actual s (UInt256.ofNat 1111)
     (input s.memory h q off limit) rho hs hr
-  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 1117) template = UInt256.ofNat 1156 := by decide
+  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 1111) template = UInt256.ofNat 1150 := by decide
   rw [hend] at raw
   have g := DenseScheduleLift.gasSteps_of_raw site
-    {s with pc := UInt256.ofNat 1117, stack := StaggerPersistentPackRaw.inputStack (input s.memory h q off limit) rho}
-    {s with pc := UInt256.ofNat 1156, stack := StaggerPersistentPackRaw.outputStack (input s.memory h q off limit) rho}
+    {s with pc := UInt256.ofNat 1111, stack := StaggerPersistentPackRaw.inputStack (input s.memory h q off limit) rho}
+    {s with pc := UInt256.ofNat 1150, stack := StaggerPersistentPackRaw.outputStack (input s.memory h q off limit) rho}
     hcode hfork hr hnp site_pc.symm advances raw
   rw [input_eq, output_eq] at g
   exact g
