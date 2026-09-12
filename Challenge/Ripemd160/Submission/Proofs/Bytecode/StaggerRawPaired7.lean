@@ -17,9 +17,9 @@ def template : List Instr :=
     .op .AND,
     .op .OR,
     .op (.Dup ⟨5, by decide⟩),
-    .op (.Dup ⟨8, by decide⟩),
-    .op .XOR,
     .op (.Dup ⟨11, by decide⟩),
+    .op .XOR,
+    .op (.Dup ⟨8, by decide⟩),
     .op .XOR,
     .op .XOR,
     .op .ADD,
@@ -76,7 +76,7 @@ def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UI
     x.v3,
     x.v4,
     x.v0,
-    (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.shiftRight (UInt256.mul x.v10 (UInt256.add (UInt256.land (UInt256.land x.v3 (UInt256.add x.v7 (UInt256.add (MachineState.readWord memory 612) (UInt256.add (UInt256.xor (UInt256.xor x.v9 (UInt256.xor x.v6 x.v4)) (UInt256.lor (UInt256.land x.v6 x.v4) x.v0)) x.v5)))) x.v11) (UInt256.land x.v3 (UInt256.add x.v7 (UInt256.add (MachineState.readWord memory 612) (UInt256.add (UInt256.xor (UInt256.xor x.v9 (UInt256.xor x.v6 x.v4)) (UInt256.lor (UInt256.land x.v6 x.v4) x.v0)) x.v5)))))) (UInt256.ofNat 30)))),
+    (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.shiftRight (UInt256.mul x.v10 (UInt256.add (UInt256.land (UInt256.land x.v3 (UInt256.add x.v7 (UInt256.add (MachineState.readWord memory 612) (UInt256.add (UInt256.xor (UInt256.xor x.v6 (UInt256.xor x.v9 x.v4)) (UInt256.lor (UInt256.land x.v6 x.v4) x.v0)) x.v5)))) x.v11) (UInt256.land x.v3 (UInt256.add x.v7 (UInt256.add (MachineState.readWord memory 612) (UInt256.add (UInt256.xor (UInt256.xor x.v6 (UInt256.xor x.v9 x.v4)) (UInt256.lor (UInt256.land x.v6 x.v4) x.v0)) x.v5)))))) (UInt256.ofNat 30)))),
     x.v7,
     x.v8,
     x.v9,
@@ -114,16 +114,16 @@ theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
   simpa only [actualOutput_eq] using run_generated s pc x rho hstack hrun hactive
 #print axioms run_actual
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 1023).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 1016).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 1023 actual_slice
-    (by change 1023 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 1016 actual_slice
+    (by change 1016 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 1550 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1023) = UInt256.ofNat 1550
+theorem site_pc : site.startPC = UInt256.ofNat 1566 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1016) = UInt256.ofNat 1566
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound
@@ -136,10 +136,10 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 1550, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 1592, stack := outputStack s.memory x rho} := by
-  have hraw := run_actual s (UInt256.ofNat 1550) x rho hstack hrun hactive
-  have hend : pcAfter (UInt256.ofNat 1550) template = UInt256.ofNat 1592 := by decide
+    GasSteps {s with pc := UInt256.ofNat 1566, stack := inputStack x rho}
+      {s with pc := UInt256.ofNat 1608, stack := outputStack s.memory x rho} := by
+  have hraw := run_actual s (UInt256.ofNat 1566) x rho hstack hrun hactive
+  have hend : pcAfter (UInt256.ofNat 1566) template = UInt256.ofNat 1608 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps

@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedNormal16Initial
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairTableScratch
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairTablePad
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairTableActive
@@ -13,10 +14,7 @@ def initialTemplate : List Instr :=
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .NOT,
     .op .DIV,
-    .push ⟨3, by decide⟩ (UInt256.ofNat 65537),
-    .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-    .op .NOT,
-    .op .DIV,
+    .push ⟨32, by decide⟩ DenseScheduleTemplate.mask16,
     .op (.Swap ⟨2, by decide⟩),
     .op (.Dup ⟨0, by decide⟩),
     .op .MLOAD,

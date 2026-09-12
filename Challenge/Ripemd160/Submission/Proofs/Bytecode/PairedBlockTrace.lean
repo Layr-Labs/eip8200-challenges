@@ -14,10 +14,10 @@ def driverRest (input : ByteArray) (i : Nat) : List UInt256 :=
 
 theorem valid_return (s : State) (hcode : s.executionEnv.code = submissionBytecode) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 483).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 295 = 483 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 296 = 483 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 295 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 296 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 483 = true
   rw [hcode]

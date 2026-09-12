@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Stagger144Active
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80ScratchZeroEndian
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.FundedNormalEndian
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerNormal
 set_option warningAsError true
 set_option maxRecDepth 100000
@@ -13,7 +13,7 @@ open StaggerTableMemory PairTableActive
 open StaggerScratch
 
 
-def normalTemplate : List Instr := ((Table80Setup.initialTemplate ++ Table80ScratchZero.endianTemplate) ++ StaggerRawNormalPool.template) ++ storesTemplate
+def normalTemplate : List Instr := ((Table80Setup.initialTemplate ++ FundedNormalEndian.template) ++ StaggerRawNormalPool.template) ++ storesTemplate
 
 theorem run_normal (s : State) (pc returnPC : UInt256) (p : Nat) (rest : List UInt256)
     (hstack : rest.length ≤ 896) (hrun : s.halt = .Running)
@@ -30,19 +30,19 @@ theorem run_normal (s : State) (pc returnPC : UInt256) (p : Nat) (rest : List UI
   have ha2 : 38 ≤ s2.activeWords.toNat := ha
   have hptr : (UInt256.ofNat p).toNat = p := by
     rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
-  have h1 := PairedDivMaskCache.run_cachedInitial s pc (UInt256.ofNat p) returnPC rest (by omega) hrun
+  have h1 := PairedNormal16Initial.run_cachedInitial s pc (UInt256.ofNat p) returnPC rest (by omega) hrun
   rw [← initial_eq_cached] at h1
   simp only [inputWord0, inputWord1, hptr, PairedScheduleContract.pointer_add32_toNat p hbound] at h1
-  have h2 := Table80ScratchZero.run_endian s1 (pcAfter pc Table80Setup.initialTemplate)
+  have h2 := FundedNormalEndian.run_endian s1 (pcAfter pc Table80Setup.initialTemplate)
     (MachineState.readWord s.memory p) (MachineState.readWord s.memory (p + 32)) returnPC rest (by omega) hrun (by omega)
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
-  have h3 := run_pool s2 (pcAfter (pcAfter pc Table80Setup.initialTemplate) Table80ScratchZero.endianTemplate) (returnPC :: rest) (by simp; omega) hrun (by omega)
+  have h3 := run_pool s2 (pcAfter (pcAfter pc Table80Setup.initialTemplate) FundedNormalEndian.template) (returnPC :: rest) (by simp; omega) hrun (by omega)
   have hpool : poolStack (StaggerScratch.poolWord scratch) = poolStack words := by
     simp (discharger := decide) only [poolStack, scratch, words, StaggerScratch.poolWord_eq_extracted]
   rw [show s2.memory = scratch by rfl, hpool] at h3
   have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
   have h4 := run_stores s2
-    (pcAfter (pcAfter (pcAfter pc Table80Setup.initialTemplate) Table80ScratchZero.endianTemplate) StaggerRawNormalPool.template)
+    (pcAfter (pcAfter (pcAfter pc Table80Setup.initialTemplate) FundedNormalEndian.template) StaggerRawNormalPool.template)
     words (returnPC :: rest) (by simp; omega) hrun (by omega)
   have h := DenseScheduleTrace.runInstrSeq_append_running h123 (by exact hrun) h4
   have hm : StaggerTableLayout.resultMemory scratch words = StaggerTableLayout.resultMemory s.memory words :=

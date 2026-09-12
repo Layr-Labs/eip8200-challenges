@@ -93,7 +93,7 @@ theorem run_chunk1 (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
 def chunk2 : List Instr := [ .op .ADD,
     .op (.Swap ⟨7, by decide⟩),
     .op .POP,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 144),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHR,
     .op (.Swap ⟨12, by decide⟩),
     .op .ADD,
