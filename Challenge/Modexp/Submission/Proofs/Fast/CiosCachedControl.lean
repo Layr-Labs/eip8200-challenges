@@ -16,7 +16,7 @@ theorem run_l1Dispatch4 (s : State) (q : MacState) (bi : UInt256)
     (pb i : Nat) (hd pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005)
     (htarget : Decode.isValidJumpDest s.executionEnv.code 4347 = true) :
-    runInstructions l1DispatchProgram (l1Q 4191 s q bi pb 4 i hd (l1Target 4) pdst ret rest) =
+    runInstructions l1DispatchProgram (l1Q 4193 s q bi pb 4 i hd (l1Target 4) pdst ret rest) =
       some (l1Q 4347 s q bi pb 4 i hd (l1Target 4) pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
@@ -37,7 +37,7 @@ theorem run_l1Dispatch8 (s : State) (q : MacState) (bi : UInt256)
     (pb i : Nat) (hd pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005)
     (htarget : Decode.isValidJumpDest s.executionEnv.code 4195 = true) :
-    runInstructions l1DispatchProgram (l1Q 4191 s q bi pb 8 i hd (l1Target 8) pdst ret rest) =
+    runInstructions l1DispatchProgram (l1Q 4193 s q bi pb 8 i hd (l1Target 8) pdst ret rest) =
       some (l1Q 4195 s q bi pb 8 i hd (l1Target 8) pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega

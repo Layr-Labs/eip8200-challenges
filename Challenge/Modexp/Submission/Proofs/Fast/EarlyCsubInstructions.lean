@@ -37,13 +37,13 @@ def copyProgram : List Instr :=
    .op (.Swap ⟨1, by decide⟩), .op .MCOPY, .op .JUMP]
 
 def checkBlock : Block Artifact.submissionArtifact .Osaka 4804 checkProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3613 12 4804 checkProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3636 12 4804 checkProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def jumpBlock : Block Artifact.submissionArtifact .Osaka 4822 jumpProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3625 2 4822 jumpProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3648 2 4822 jumpProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def copyBlock : Block Artifact.submissionArtifact .Osaka 5216 copyProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3915 7 5216 copyProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3938 7 5216 copyProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def atState (s : State) (mem : ByteArray) (pc : Nat) (dst ret : UInt256)

@@ -19,7 +19,7 @@ def copyAddProgram : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .push ⟨1, by decide⟩ (UInt256.ofNat 96),
    .push ⟨2, by decide⟩ (UInt256.ofNat 256), .op .CALLDATACOPY,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 1604),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 3273),
    .push ⟨2, by decide⟩ (UInt256.ofNat 512),
    .push ⟨2, by decide⟩ (UInt256.ofNat 256),
    .push ⟨2, by decide⟩ (UInt256.ofNat 1536),

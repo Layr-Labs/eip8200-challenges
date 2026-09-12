@@ -19,30 +19,27 @@ def jumpProgram (target : UInt256) : List Instr :=
 def program (target : UInt256) : List Instr := updateProgram ++ jumpProgram target
 
 /-- The old counter is retained above the new five-slot frame for JUMPI. -/
-def updated (template : State) (pc : UInt256) (mem : ByteArray) (active : Nat)
-    (modulus accumulator exponent counter : UInt256)
+def updated (template : State) (pc base modulus accumulator exponent counter : UInt256)
     (rest : List UInt256) : State :=
-  WindowTwentyOneLookup.framed template pc mem active
+  WindowTwentyOneLookup.framed template pc base modulus
     ([counter, accumulator, modulus,
       UInt256.shiftLeft exponent (UInt256.ofNat 84), UInt256.ofNat 480,
       counter - UInt256.ofNat 1] ++ rest)
 
-theorem run_head (template : State) (pc : UInt256) (mem : ByteArray) (active : Nat)
-    (modulus accumulator exponent counter : UInt256)
+theorem run_head (template : State) (pc base modulus accumulator exponent counter : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions [.op .JUMPDEST]
-      (WindowTwentyOneGroup.state template pc mem active modulus accumulator exponent counter 0 rest) =
-    some (WindowTwentyOneGroup.state template pc.succ mem active modulus accumulator exponent counter 0 rest) := by
+      (WindowTwentyOneGroup.state template pc base modulus accumulator exponent counter 0 rest) =
+    some (WindowTwentyOneGroup.state template pc.succ base modulus accumulator exponent counter 0 rest) := by
   have hcap : rest.length + 5 < 1024 := by omega
   simp [runInstructions, WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
     Challenge.EvmProof.Stepper.runInstr, hcap, Nat.add_assoc]
 
-theorem run_update (template : State) (pc : UInt256) (mem : ByteArray) (active : Nat)
-    (modulus accumulator exponent counter : UInt256)
+theorem run_update (template : State) (pc base modulus accumulator exponent counter : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions updateProgram
-      (WindowTwentyOneGroup.state template pc mem active modulus accumulator exponent counter 0 rest) =
-    some (updated template (advancePC 10 pc) mem active modulus accumulator exponent counter rest) := by
+      (WindowTwentyOneGroup.state template pc base modulus accumulator exponent counter 0 rest) =
+    some (updated template (advancePC 10 pc) base modulus accumulator exponent counter rest) := by
   have hcap5 : rest.length + 5 < 1024 := by omega
   have hcap6 : rest.length + 6 < 1024 := by omega
   have hcap7 : rest.length + 7 < 1024 := by omega
@@ -54,15 +51,14 @@ theorem run_update (template : State) (pc : UInt256) (mem : ByteArray) (active :
     Challenge.EvmProof.Word.literal_eq_ofNat]
 
 theorem run_jump (template : State)
-    (pc target : UInt256) (mem : ByteArray) (active : Nat)
-    (modulus accumulator exponent counter : UInt256)
+    (pc target base modulus accumulator exponent counter : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (htarget : Decode.isValidJumpDest template.executionEnv.code target.toNat = true) :
     runInstructions (jumpProgram target)
-      (updated template pc mem active modulus accumulator exponent counter rest) =
+      (updated template pc base modulus accumulator exponent counter rest) =
     some (WindowTwentyOneGroup.state template
       (if UInt256.isTrue counter then target else advancePC 4 pc)
-      mem active modulus accumulator (UInt256.shiftLeft exponent (UInt256.ofNat 84))
+      base modulus accumulator (UInt256.shiftLeft exponent (UInt256.ofNat 84))
       (counter - UInt256.ofNat 1) 0 rest) := by
   have hcap6 : rest.length + 6 < 1024 := by omega
   have hcap7 : rest.length + 7 < 1024 := by omega
@@ -74,18 +70,17 @@ theorem run_jump (template : State)
       advancePC, succ_eq_add, hpush, word_add_assoc]
 
 theorem run_tail (template : State)
-    (pc target : UInt256) (mem : ByteArray) (active : Nat)
-    (modulus accumulator exponent counter : UInt256)
+    (pc target base modulus accumulator exponent counter : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (htarget : Decode.isValidJumpDest template.executionEnv.code target.toNat = true) :
     runInstructions (program target)
-      (WindowTwentyOneGroup.state template pc mem active modulus accumulator exponent counter 0 rest) =
+      (WindowTwentyOneGroup.state template pc base modulus accumulator exponent counter 0 rest) =
     some (WindowTwentyOneGroup.state template
       (if UInt256.isTrue counter then target else advancePC 14 pc)
-      mem active modulus accumulator (UInt256.shiftLeft exponent (UInt256.ofNat 84))
+      base modulus accumulator (UInt256.shiftLeft exponent (UInt256.ofNat 84))
       (counter - UInt256.ofNat 1) 0 rest) := by
-  have hu := run_update template pc mem active modulus accumulator exponent counter rest hrest
-  have hj := run_jump template (advancePC 10 pc) target mem active modulus accumulator exponent
+  have hu := run_update template pc base modulus accumulator exponent counter rest hrest
+  have hj := run_jump template (advancePC 10 pc) target base modulus accumulator exponent
     counter rest hrest htarget
   have both := runInstructions_append_some _ _ _ _ _ hu hj
   simpa only [program, ← advancePC_add, show 10 + 4 = 14 by decide] using both

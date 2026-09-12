@@ -100,38 +100,38 @@ def againProgram : List Instr :=
 /-! ## Located blocks -/
 
 def sqExitBlock : Block Artifact.submissionArtifact .Osaka 4847 sqExitProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3641 11 4847 sqExitProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3664 11 4847 sqExitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def lastBlock : Block Artifact.submissionArtifact .Osaka 4865 lastProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3652 5 4865 lastProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3675 5 4865 lastProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def moreBlock : Block Artifact.submissionArtifact .Osaka 4874 moreProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3657 5 4874 moreProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3680 5 4874 moreProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def againBlock : Block Artifact.submissionArtifact .Osaka 4890 againProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3669 22 4890 againProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3692 22 4890 againProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-! ## Jump destinations of the loop -/
 
 theorem jumpDest4753 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4874 = true :=
-  Artifact.isValidJumpDest_index 3657 (by rfl)
+  Artifact.isValidJumpDest_index 3680 (by rfl)
 
 theorem jumpDest4762 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4890 = true :=
-  Artifact.isValidJumpDest_index 3669 (by rfl)
+  Artifact.isValidJumpDest_index 3692 (by rfl)
 
 theorem jumpDest3272 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3366 = true :=
-  Artifact.isValidJumpDest_index 2538 (by rfl)
+  Artifact.isValidJumpDest_index 2561 (by rfl)
 
 theorem jumpDest4683 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4804 = true :=
-  Artifact.isValidJumpDest_index 3613 (by rfl)
+  Artifact.isValidJumpDest_index 3636 (by rfl)
 
 /-! ## The counter word -/
 

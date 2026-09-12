@@ -174,7 +174,7 @@ theorem run_return (template : State) (modulus offset : UInt256) (rest : List UI
       (UInt256.ofNat ((32 - baseSize) * 8))) modulus))
   have hv := run_value template modulus offset rest baseSize hwidth hrest hbase hoff
   have hr := WindowTwentyOneReturn.run_return template (UInt256.ofNat 121) word active
-    (by omega) hactive rest (by omega)
+    hsmall hactive rest (by omega)
   have both := runInstructions_append_some _ _ _ _ _ hv hr
   have hpc : advancePC 5 (UInt256.ofNat 121) = UInt256.ofNat 126 := by decide
   simpa only [returnProgram, hpc, word] using both
