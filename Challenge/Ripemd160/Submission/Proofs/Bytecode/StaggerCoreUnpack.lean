@@ -12,10 +12,10 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCoreUnpack
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof PairedLaneUInt256Bridge
 open Paired144WordRound Paired144WordRotation StaggerCoreCommon
 def input (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (k : UInt256) : StaggerRaw.Input :=
-  ⟨word memory h4 (.d) q right k, word memory h4 (.pair) q right k, word memory h4 (.upper) q right k, word memory h4 (.e) q right k, word memory h4 (.c) q right k, word memory h4 (.a) q right k, word memory h4 (.k) q right k, word memory h4 (.b) q right k, word memory h4 (.factor) q right k, word memory h4 (.lower) q right k, word memory h4 (.cache 140) q right k, word memory h4 (.cache 190) q right k, word memory h4 (.cache 310) q right k, word memory h4 (.cache 350) q right k, word memory h4 (.cache 500) q right k, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
+  ⟨word memory h4 (.d) q right k, word memory h4 (.late 252) q right k, word memory h4 (.late 342) q right k, word memory h4 (.pair) q right k, word memory h4 (.upper) q right k, word memory h4 (.e) q right k, word memory h4 (.c) q right k, word memory h4 (.a) q right k, word memory h4 (.k) q right k, word memory h4 (.b) q right k, word memory h4 (.factor) q right k, word memory h4 (.lower) q right k, word memory h4 (.cache 140) q right k, word memory h4 (.cache 190) q right k, word memory h4 (.cache 310) q right k, word memory h4 (.cache 350) q right k, word memory h4 (.cache 500) q right k, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
 theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho : List UInt256) :
     StaggerRawUnpack.outputStack memory (input memory h4 q right (StaggerAlgorithm.physicalKey 76)) rho =
-      stack memory h4 [ .k, .c, .d, .e, .a, .b, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] (StaggerCoreModel.left q) (q) (UInt256.ofNat 2840853838) rho := by
+      stack memory h4 [ .k, .c, .d, .e, .late 252, .late 342, .a, .b, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] (StaggerCoreModel.left q) (q) (UInt256.ofNat 2840853838) rho := by
   simp only [StaggerRawUnpack.outputStack, input, stack, List.map_cons, List.map_nil,
     List.cons_append, List.nil_append, StaggerCoreCommon.word,
     StaggerCoreModel.initial, StaggerCoreModel.pair, StaggerCoreModel.pairWord, StaggerCoreModel.left,
@@ -35,8 +35,8 @@ def gasSteps (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4552, stack := stack s.memory h4 [ .d, .pair, .upper, .e, .c, .a, .k, .b, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] q right (StaggerAlgorithm.physicalKey 76) rho}
-      {s with pc := UInt256.ofNat 4568, stack := stack s.memory h4 [ .k, .c, .d, .e, .a, .b, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] (StaggerCoreModel.left q) (q) (UInt256.ofNat 2840853838) rho} := by
+    GasSteps {s with pc := UInt256.ofNat 4541, stack := stack s.memory h4 [ .d, .late 252, .late 342, .pair, .upper, .e, .c, .a, .k, .b, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] q right (StaggerAlgorithm.physicalKey 76) rho}
+      {s with pc := UInt256.ofNat 4557, stack := stack s.memory h4 [ .k, .c, .d, .e, .late 252, .late 342, .a, .b, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 190, .cache 310, .cache 350, .cache 500 ] (StaggerCoreModel.left q) (q) (UInt256.ofNat 2840853838) rho} := by
   have h := StaggerRawUnpack.gasSteps s (input s.memory h4 q right (StaggerAlgorithm.physicalKey 76)) rho hs hr ha hcode hfork hnp
   rw [output_eq] at h
   exact h
