@@ -158,8 +158,9 @@ theorem run_frame (template : State) (pc base modulus exponent modulusOffset acc
     WindowTwentyOneTable.framed, WindowTableMemory.tableMemory, List.replicate_zero,
     List.nil_append, List.cons_append, ← advancePC_add, show 7 + 3 = 10 by decide] using both
 
-def program : List Instr := lookupProgram ++ frameProgram ++ [.push 2 2372, .op .JUMP]
+def program : List Instr := lookupProgram ++ frameProgram ++ [.push 2 2372, .op .POP]
 
+set_option linter.unusedSimpArgs false in
 theorem run_enter (template : State) (base modulus exponent modulusOffset : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (hoffset : rest[5]? = some modulusOffset)
@@ -176,7 +177,7 @@ theorem run_enter (template : State) (base modulus exponent modulusOffset : UInt
   have both := runInstructions_append_some _ _ _ _ _ hl hf
   have hpc : advancePC 10 (advancePC 11 (UInt256.ofNat 2347)) = UInt256.ofNat 2368 := by decide
   rw [hpc] at both
-  have hbranch : runInstructions [.push 2 2372, .op .JUMP]
+  have hbranch : runInstructions [.push 2 2372, .op .POP]
       (WindowTwentyOneGroup.state template (UInt256.ofNat 2368) base modulus
         (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat)
         (UInt256.shiftLeft exponent (UInt256.ofNat 4)) (UInt256.ofNat 2) 0 rest) =
@@ -187,7 +188,8 @@ theorem run_enter (template : State) (base modulus exponent modulusOffset : UInt
     have hcap6 : rest.length + 6 < 1024 := by omega
     simp [runInstructions, WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
       Challenge.EvmProof.Stepper.runInstr, hcap5, hcap6, Nat.add_assoc,
-      Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat, hjump]
+      Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, hjump]
   exact runInstructions_append_some _ _ _ _ _ both hbranch
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneInit
