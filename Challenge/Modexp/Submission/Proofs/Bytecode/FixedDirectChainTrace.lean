@@ -78,10 +78,11 @@ theorem run_squareReturn_loop (s : State) (memory : ByteArray)
     Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.squareReturn
       (FixedDirectStates.squareReturn s memory n bsize esize msize (k + 1)) =
       some (FixedDirectStates.square s memory n bsize esize msize k) := by
-  have hsub : UInt256.ofNat (k + 1) - UInt256.ofNat 1 = UInt256.ofNat k := by
-    simpa using Challenge.EvmProof.Word.ofNat_sub_ofNat
-      (a := k + 1) (b := 1) (by omega)
-      (Nat.lt_of_le_of_lt hk16 (by norm_num))
+  have hk1 : 1 ≤ k := by omega
+  have hk15 : k ≤ 15 := by omega
+  have hdec : UInt256.lnot ({ val := 0 } : UInt256) + UInt256.ofNat (k + 1) =
+      UInt256.ofNat k := by
+    interval_cases k <;> decide
   have htrue : UInt256.isTrue (UInt256.ofNat k) := by
     show (UInt256.ofNat k).toNat ≠ 0
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
@@ -92,7 +93,7 @@ theorem run_squareReturn_loop (s : State) (memory : ByteArray)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       FixedDirectStates.squareReturn, FixedDirectStates.square,
-      Exp.outer, hcode, hrun, hsub, htrue,
+      Exp.outer, hcode, hrun, hdec, htrue,
       jumpDest3953, List.exchange,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -105,7 +106,8 @@ theorem run_squareReturn_exit (s : State) (memory : ByteArray)
     Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.squareReturn
       (FixedDirectStates.squareReturn s memory n bsize esize msize 1) =
       some (FixedDirectStates.product s memory n bsize esize msize 0) := by
-  have hsub : UInt256.ofNat 1 - UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
+  have hdec : UInt256.lnot ({ val := 0 } : UInt256) + UInt256.ofNat 1 =
+      UInt256.ofNat 0 := by decide
   have hfalse : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
   simp (config := { maxSteps := 300000 })
     [FixedDirectPaths.squareReturn, opAt, pushAt, wfOp,
@@ -113,7 +115,7 @@ theorem run_squareReturn_exit (s : State) (memory : ByteArray)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       FixedDirectStates.squareReturn, FixedDirectStates.product,
-      Exp.outer, hrun, hsub, hfalse, List.exchange,
+      Exp.outer, hrun, hdec, hfalse, List.exchange,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
