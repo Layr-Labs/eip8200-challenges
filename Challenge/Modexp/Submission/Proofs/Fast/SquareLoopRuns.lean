@@ -225,7 +225,7 @@ def gasSteps_nxExit (s : State) (mem : ByteArray) (n : Nat)
     (CarryRowBlocks.environment (CiosCachedTailDefs.nxState s mem pbi 2048 n
       (UInt256.ofNat 4777) ent inv m0
       (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest)) hcode hfork hrun hnp) rfl
-    (CiosReadonly.run_exit { s with memory := mem } pbi (UInt256.ofNat 4777)
+    (CiosReadonly.run_exit_pop { s with memory := mem } pbi (UInt256.ofNat 4777)
       (UInt256.ofNat (2048 - 32)) ent (l2Target n) tl inv m0 aprev m96 m64 m32 pdst ret rest
       hcap (by rw [hcode]; exact jumpDest4683)))
 

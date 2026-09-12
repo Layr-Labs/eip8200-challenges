@@ -158,13 +158,13 @@ theorem run_frame (template : State) (pc base modulus exponent modulusOffset acc
     WindowTwentyOneTable.framed, WindowTableMemory.tableMemory, List.replicate_zero,
     List.nil_append, List.cons_append, ← advancePC_add, show 7 + 3 = 10 by decide] using both
 
-def program : List Instr := lookupProgram ++ frameProgram ++ [.push 2 2372, .op .JUMP]
+def program : List Instr := lookupProgram ++ frameProgram ++ [.push 2 2372, .op .POP]
 
 theorem run_enter (template : State) (base modulus exponent modulusOffset : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (hoffset : rest[5]? = some modulusOffset)
     (hmodulus : MachineState.readWord template.executionEnv.calldata modulusOffset.toNat = modulus)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 2372 = true) :
+    (_hjump : Decode.isValidJumpDest template.executionEnv.code 2372 = true) :
     runInstructions program
       (WindowTwentyOneTable.framed template (UInt256.ofNat 2347) base modulus 16 ([base, exponent] ++ rest)) =
     some (WindowTwentyOneGroup.state template (UInt256.ofNat 2372) base modulus
@@ -176,7 +176,7 @@ theorem run_enter (template : State) (base modulus exponent modulusOffset : UInt
   have both := runInstructions_append_some _ _ _ _ _ hl hf
   have hpc : advancePC 10 (advancePC 11 (UInt256.ofNat 2347)) = UInt256.ofNat 2368 := by decide
   rw [hpc] at both
-  have hbranch : runInstructions [.push 2 2372, .op .JUMP]
+  have hbranch : runInstructions [.push 2 2372, .op .POP]
       (WindowTwentyOneGroup.state template (UInt256.ofNat 2368) base modulus
         (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat)
         (UInt256.shiftLeft exponent (UInt256.ofNat 4)) (UInt256.ofNat 2) 0 rest) =
@@ -185,9 +185,10 @@ theorem run_enter (template : State) (base modulus exponent modulusOffset : UInt
         (UInt256.shiftLeft exponent (UInt256.ofNat 4)) (UInt256.ofNat 2) 0 rest) := by
     have hcap5 : rest.length + 5 < 1024 := by omega
     have hcap6 : rest.length + 6 < 1024 := by omega
+    have hpc2 : (UInt256.ofNat 2368 + UInt256.ofNat 3).succ = UInt256.ofNat 2372 := by decide
     simp [runInstructions, WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
-      Challenge.EvmProof.Stepper.runInstr, hcap5, hcap6, Nat.add_assoc,
-      Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat, hjump]
+      Challenge.EvmProof.Stepper.runInstr, hcap5, hcap6, hpc2, Nat.add_assoc,
+      Challenge.EvmProof.Word.literal_eq_ofNat]
   exact runInstructions_append_some _ _ _ _ _ both hbranch
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneInit

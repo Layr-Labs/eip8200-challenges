@@ -56,7 +56,7 @@ theorem run_entry_three (s : State) (memory : ByteArray)
 set_option linter.unusedSimpArgs false in
 theorem run_entry_other (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) (hne : esize ≠ 3) (he : esize ≤ 1024)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock entryPrefix
       (entryState s memory n bsize esize msize) =
@@ -71,7 +71,7 @@ theorem run_entry_other (s : State) (memory : ByteArray)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      entryState, Exp.bDone, otherWidth, Exp.outer, hcode, hrun, heq,
+      entryState, Exp.bDone, otherWidth, Exp.outer, hrun, heq,
       Exp.not_isTrue_zero,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,

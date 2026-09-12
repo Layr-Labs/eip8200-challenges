@@ -85,8 +85,11 @@ def tailLoop : Block Artifact.submissionArtifact .Osaka 4604 CarryRowPrograms.ta
   WindowTwentyOneSlice.block Artifact.allWellFormed 3513 20 4604 CarryRowPrograms.tail
     (by decide) (by rfl) (by rfl) (by decide)
 
-def exitBlock : Block Artifact.submissionArtifact .Osaka 4640 CiosReadonly.fullExitProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3539 16 4640 CiosReadonly.fullExitProgram
+def fullExitProgramPop : List Instr :=
+  CiosReadonly.fullExitProgram.dropLast ++ [.op .POP]
+
+def exitBlock : Block Artifact.submissionArtifact .Osaka 4640 fullExitProgramPop :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3539 16 4640 fullExitProgramPop
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l2Join8 : Block Artifact.submissionArtifact .Osaka 4348 joinProgram :=
