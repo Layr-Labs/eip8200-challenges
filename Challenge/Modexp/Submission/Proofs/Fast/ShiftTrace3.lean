@@ -468,15 +468,16 @@ theorem run_afterCsub (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
     Challenge.EvmProof.Stepper.runLocatedBlock blk3258
       (afterCsubState s mem n bsize esize msize k) =
       some (shiftLoopState s mem n bsize esize msize (k - 1)) := by
-  have hsub : UInt256.ofNat k - UInt256.ofNat 1 = UInt256.ofNat (k - 1) := by
-    rw [Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)]
+  have hdec : UInt256.lnot ({ val := 0 } : UInt256) + UInt256.ofNat k =
+      UInt256.ofNat (k - 1) := by
+    interval_cases k <;> decide
   simp (config := { maxSteps := 200000 })
     [blk3258, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       afterCsubState, shiftLoopState, kState, pcAfterCsub, pcShiftLoop,
-      outer, Exp.outer, hcode, hrun, hsub, jumpDest4839,
+      outer, Exp.outer, hcode, hrun, hdec, jumpDest4839,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
