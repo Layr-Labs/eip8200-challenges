@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerAlgorithm
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawCommon
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
 set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000

@@ -46,8 +46,8 @@ def gasSteps (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 3762, stack := stack s.memory h4 [ .d, .literal 28, .cachedMessage 342, .pair, .upper, .a, .c, .k, .e, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (StaggerAlgorithm.physicalKey 56) rho}
-      {s with pc := UInt256.ofNat 3809, stack := stack s.memory h4 [ .d, .literal 28, .cachedMessage 342, .pair, .upper, .e, .b, .k, .a, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval s.memory q) right (StaggerAlgorithm.physicalKey 57) rho} := by
+    GasSteps {s with pc := UInt256.ofNat 3755, stack := stack s.memory h4 [ .d, .literal 28, .cachedMessage 342, .pair, .upper, .a, .c, .k, .e, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (StaggerAlgorithm.physicalKey 56) rho}
+      {s with pc := UInt256.ofNat 3802, stack := stack s.memory h4 [ .d, .literal 28, .cachedMessage 342, .pair, .upper, .e, .b, .k, .a, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval s.memory q) right (StaggerAlgorithm.physicalKey 57) rho} := by
   have g := StaggerRawPaired57.gasSteps s (input s.memory h4 q right (StaggerAlgorithm.physicalKey 56))
     rho hstack hrun hactive hcode hfork hnp
   rw [output_eq] at g

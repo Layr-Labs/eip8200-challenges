@@ -1,4 +1,4 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentPackRaw
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.JointRightPackModel
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentCoreRight
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCore
 set_option warningAsError true
@@ -8,76 +8,47 @@ set_option linter.unusedSimpArgs false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentPackBridge
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Paired144WordRound Paired144WordRotation StaggerCoreCommon
-open StaggerPersistentPackRaw (template)
+open JointRightPackRaw (template)
 
-def suffix (h : WordLane) (off limit : UInt256) (rho : List UInt256) : List UInt256 :=
-  [h.b, h.c, h.d, h.a, off, limit] ++ rho
-
-def input (_memory : ByteArray) (h q : WordLane) (off limit : UInt256) :
-    StaggerPersistentPackRaw.Input :=
-  ⟨q.d, UInt256.ofNat 1352829926, q.c, q.b, q.e, q.a,
-    factorWord, lowerWord, compactMaskWord,
-    coefficientWord 0 2, coefficientWord 0 3,
-    coefficientWord 3 0, h.e, h.b, h.c, h.d, h.a, off, limit⟩
+abbrev suffix := JointRightPackModel.suffix
+abbrev input := JointRightPackModel.input
+abbrev input_eq := JointRightPackModel.input_eq
+abbrev output_eq := JointRightPackModel.output_eq
 
 def entry (s : State) (h q : WordLane) (off limit : UInt256) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 1184, stack := stack s.memory h.e [.d, .k, .c, .b, .e, .a, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500] q h (UInt256.ofNat 1352829926) (suffix h off limit rho)}
-
-theorem input_eq (memory : ByteArray) (h q : WordLane) (off limit : UInt256)
-    (rho : List UInt256) :
-    StaggerPersistentPackRaw.inputStack (input memory h q off limit) rho =
-      stack memory h.e [.d, .k, .c, .b, .e, .a, .factor, .lower, .cache 140,
-        .cache 350, .cache 310, .cache 190, .cache 500]
-        q h (UInt256.ofNat 1352829926) (suffix h off limit rho) := by
-  simp [StaggerPersistentPackRaw.inputStack, input, stack, StaggerCoreCommon.word, suffix]
-
-theorem output_eq (memory : ByteArray) (h q : WordLane) (off limit : UInt256)
-    (rho : List UInt256) :
-    StaggerPersistentPackRaw.outputStack (input memory h q off limit) rho =
-      stack memory h.e [.pair, .upper, .e, .b, .a, .d, .c, .factor, .lower,
-        .cache 140, .cache 350, .cache 310, .cache 190, .cache 500]
-        (StaggerCoreModel.pair h q) h (StaggerAlgorithm.physicalKey 0)
-        (suffix h off limit rho) := by
-  have hm : UInt256.ofNat 95780971281817308448866066055358605703522837925462015 =
-      Paired144WordRound.pairWord := by decide
-  have hu : UInt256.ofNat 95780971281817308448866066055358605703522833630494720 = upperWord := by decide
-  simp [StaggerPersistentPackRaw.outputStack, input, stack, StaggerCoreCommon.word,
-    StaggerCoreModel.pair, StaggerCoreModel.pairWord, suffix, hm, hu, StaggerCoreCommon.lor_comm]
-
-#print axioms input_eq
-#print axioms output_eq
+  {s with pc := UInt256.ofNat 1152, stack := stack s.memory h.e [.d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500] q h (UInt256.ofNat 1352829926) (suffix h off limit rho)}
 
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 725).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 697).take template.length = template := by rfl
 
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 725 actual_slice
-    (by change 725 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 697 actual_slice
+    (by change 697 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 1184 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 725) = UInt256.ofNat 1184
+theorem site_pc : site.startPC = UInt256.ofNat 1152 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 697) = UInt256.ofNat 1152
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound
   decide
 
 def gasSteps (s : State) (h q : WordLane) (off limit : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (hr : s.halt = .Running)
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (entry s h q off limit rho)
-      (StaggerCore.atRound s h.e 0 (StaggerCoreModel.pair h q) h (suffix h off limit rho)) := by
-  have raw := StaggerPersistentPackRaw.run_actual s (UInt256.ofNat 1184)
-    (input s.memory h q off limit) rho hs hr
-  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 1184) template = UInt256.ofNat 1262 := by decide
+      (StaggerCore.atRound s h.e 0 (StaggerCoreModel.pair h (StaggerCoreModel.right2 s.memory q)) h (suffix h off limit rho)) := by
+  have raw := JointRightPackRaw.run_actual s (UInt256.ofNat 1152)
+    (input s.memory h q off limit) rho hs hr ha
+  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 1152) template = UInt256.ofNat 1257 := by decide
   rw [hend] at raw
   have g := DenseScheduleLift.gasSteps_of_raw site
-    {s with pc := UInt256.ofNat 1184, stack := StaggerPersistentPackRaw.inputStack (input s.memory h q off limit) rho}
-    {s with pc := UInt256.ofNat 1262, stack := StaggerPersistentPackRaw.outputStack (input s.memory h q off limit) rho}
+    {s with pc := UInt256.ofNat 1152, stack := JointRightPackRaw.inputStack (input s.memory h q off limit) rho}
+    {s with pc := UInt256.ofNat 1257, stack := JointRightPackRaw.outputStack s.memory (input s.memory h q off limit) rho}
     hcode hfork hr hnp site_pc.symm advances raw
   rw [input_eq, output_eq] at g
   exact g
