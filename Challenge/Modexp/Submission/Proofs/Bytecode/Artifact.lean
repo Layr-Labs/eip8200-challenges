@@ -3585,7 +3585,7 @@ def submissionInstructions : List Instr :=
  .op .POP,
  .op .POP,
  .push 2 4671,
- .op .JUMP,
+ .op .POP,
  .op .JUMPDEST,
  .push 0 0,
  .op .MLOAD,
