@@ -37,6 +37,10 @@ private theorem lower_left (x : UInt256) :
   change (UInt256.ofNat 0xffffffff).toNat &&& x.toNat = x.toNat &&& (UInt256.ofNat 0xffffffff).toNat
   exact Nat.and_comm _ _
 
+private theorem lower_right (x : UInt256) :
+    UInt256.land x (UInt256.ofNat 0xffffffff) = mask32 x := by
+  rw [Word.land_comm, lower_left]
+
 private theorem raw_toUInt32_add (x y : UInt256) :
     toUInt32 (UInt256.add x y) = toUInt32 x + toUInt32 y := by
   change toUInt32 (x + y) = _
@@ -46,7 +50,7 @@ theorem tail_result (h : Compression.HashState) (q : StaggerPersistentTailRaw.In
     (rho : List UInt256) :
     StaggerPersistentTailRaw.stack5 (bind h q) rho = frame (combine h q) q.off q.limit rho := by
   simp only [StaggerPersistentTailRaw.stack5, bind, frame, combine, high,
-    lower_left, mask32_eq_ofUInt32, raw_toUInt32_add, toUInt32_ofUInt32,
+    lower_left, lower_right, mask32_eq_ofUInt32, raw_toUInt32_add, toUInt32_ofUInt32,
     List.cons_append, List.nil_append,
     List.cons.injEq, and_true, true_and]
   repeat' apply And.intro
