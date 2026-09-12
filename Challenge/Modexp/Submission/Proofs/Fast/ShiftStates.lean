@@ -44,10 +44,10 @@ def pcShiftLoop : Nat := 3643
 def pcShiftBody : Nat := 3650
 def pcEstimate : Nat := 3664
 def pcMacSetup : Nat := 3746
-def pcMacLoop : Nat := 3759
-def pcMid : Nat := 3841
+def pcMacLoop : Nat := 3762
+def pcMid : Nat := 3840
 /-- The limb-pass body after the pointer steps, before the exit test. -/
-def pcMacTail : Nat := 3832
+def pcMacTail : Nat := 3801
 def pcAddLoop : Nat := 3875
 def pcAddInner : Nat := 3881
 def pcAddTail : Nat := 3924
@@ -151,6 +151,7 @@ def macLoopState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize
   { s with pc := UInt256.ofNat pcMacLoop
            stack := UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) j) ::
              UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) j) ::
+             UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 ::
              (Monpro.l1Step um q NEG n j).carry :: q :: UInt256.ofNat k ::
              outer n bsize esize msize
            memory := (Monpro.l1Step um q NEG n j).memory }
@@ -161,6 +162,7 @@ def midState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k :
   { s with pc := UInt256.ofNat pcMid
            stack := UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) n) ::
              UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) n) ::
+             UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 ::
              (Monpro.l1Step um q NEG n n).carry :: q :: UInt256.ofNat k ::
              outer n bsize esize msize
            memory := (Monpro.l1Step um q NEG n n).memory }

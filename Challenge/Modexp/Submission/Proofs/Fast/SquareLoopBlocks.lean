@@ -38,7 +38,7 @@ form, instead of once per use site. -/
 
 def pcNx : Nat := 4785
 def pcSqExit : Nat := 4847
-def pcLast : Nat := 4865
+def pcLast : Nat := 4864
 def pcMore : Nat := 4874
 def pcAgain : Nat := 4890
 
@@ -76,10 +76,11 @@ theorem frameAt_eq_nxJdState (s : State) (mem : ByteArray) (n : Nat)
 
 /-- `sq_exit` (4701): load the counter, decrement, store it back, branch to `more`. -/
 def sqExitProgram : List Instr :=
-  [.op .JUMPDEST, .push 3 5184, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .JUMPDEST, .op .ADD,
+  [.op .JUMPDEST, .push 3 5184, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .ADD,
    .op (.Dup ⟨0, by decide⟩), .push 2 5184, .op .MSTORE, .push 2 4874, .op .JUMPI]
 
-/-- `last` (4719): the frame's `ret` slot becomes `after_sq`, then leave through `nx`. -/
+/-- `last` (4864): the frame's `ret` slot becomes `after_sq`, then leave through `nx`; the
+byte after its `JUMP` (4873) is a non-executed `JUMPDEST`. -/
 def lastProgram : List Instr :=
   [.push 2 3366, .op (.Swap ⟨15, by decide⟩), .op .POP, .push 2 4785, .op .JUMP]
 
@@ -100,11 +101,11 @@ def againProgram : List Instr :=
 /-! ## Located blocks -/
 
 def sqExitBlock : Block Artifact.submissionArtifact .Osaka 4847 sqExitProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3641 11 4847 sqExitProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3641 10 4847 sqExitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def lastBlock : Block Artifact.submissionArtifact .Osaka 4865 lastProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3652 5 4865 lastProgram
+def lastBlock : Block Artifact.submissionArtifact .Osaka 4864 lastProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3651 5 4864 lastProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def moreBlock : Block Artifact.submissionArtifact .Osaka 4874 moreProgram :=
@@ -127,7 +128,7 @@ theorem jumpDest4762 :
 
 theorem jumpDest3272 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3366 = true :=
-  Artifact.isValidJumpDest_index 2538 (by rfl)
+  Artifact.isValidJumpDest_index 2536 (by rfl)
 
 theorem jumpDest4683 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4804 = true :=

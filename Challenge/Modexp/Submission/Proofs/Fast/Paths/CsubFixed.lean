@@ -1785,7 +1785,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
     _ = 4846 := by rw [fixedPC4011]; rfl
 
 
-@[simp] theorem earlyExtraPC2880 : Artifact.submissionArtifact.instructionPC 2816 = 3763 := by rfl
+@[simp] theorem earlyExtraPC2880 : Artifact.submissionArtifact.instructionPC 2814 = 3764 := by rfl
 @[simp] theorem earlyExtraPC2883 : Artifact.submissionArtifact.instructionPC 3613 = 4804 := by rfl
 @[simp] theorem earlyExtraPC2884 : Artifact.submissionArtifact.instructionPC 3614 = 4805 := by rfl
 @[simp] theorem earlyExtraPC2885 : Artifact.submissionArtifact.instructionPC 3615 = 4806 := by rfl
@@ -1800,7 +1800,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem earlyExtraPC2894 : Artifact.submissionArtifact.instructionPC 3624 = 4821 := by rfl
 @[simp] theorem earlyExtraPC2895 : Artifact.submissionArtifact.instructionPC 3625 = 4822 := by rfl
 @[simp] theorem earlyExtraPC2896 : Artifact.submissionArtifact.instructionPC 3626 = 4825 := by rfl
-@[simp] theorem earlyExtraPC2927 : Artifact.submissionArtifact.instructionPC 2846 = 3794 := by rfl
+@[simp] theorem earlyExtraPC2927 : Artifact.submissionArtifact.instructionPC 2844 = 3794 := by rfl
 @[simp] theorem earlyExtraPC2930 : Artifact.submissionArtifact.instructionPC 3627 = 4826 := by rfl
 @[simp] theorem earlyExtraPC2931 : Artifact.submissionArtifact.instructionPC 3628 = 4827 := by rfl
 @[simp] theorem earlyExtraPC2932 : Artifact.submissionArtifact.instructionPC 3629 = 4830 := by rfl

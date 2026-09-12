@@ -15,7 +15,7 @@ call enters directly with `hd = 4710`.  Widths of four and eight limbs continue 
 kernel `setup` (pc 3948, `CiosCached.setupState`, `hd` on top); every other width drops
 `hd` and enters the generic `MONPRO` at pc 1667 (`Monpro.mpEntryState`).
 
-The 62-instruction `setup` (instructions 2978..3039, `StagedOperand.fullEntryProgram`,
+The 60-instruction `setup` (instructions 3045..3104, `StagedOperand.fullEntryProgram`,
 proved piecewise in `StagedOperandEntry{Prefix,Zero}`) stages the first operand at 4864,
 zeroes the scratch block and jumps (`DUP2; JUMP`) to the row head `hd` with the row-0 frame
 `CiosCached.outState … 0 hd (l1Target n) …`.
@@ -230,7 +230,7 @@ theorem run_commonFallback (s : State) (mem : ByteArray) (hd : UInt256) (pa pb :
 
 /-- The kernel `setup`: instructions 2978..3039 (pc 3948 = 0x0f6c .. 4036), 62 instructions. -/
 def setup : Block Artifact.submissionArtifact .Osaka 4075 StagedOperand.fullEntryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3023 62 4075 StagedOperand.fullEntryProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3023 60 4075 StagedOperand.fullEntryProgram
     (by decide) (by decide) (by rfl) (by decide)
 
 def environment (s : State)
