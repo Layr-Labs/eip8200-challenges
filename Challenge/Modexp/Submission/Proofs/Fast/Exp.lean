@@ -476,11 +476,19 @@ theorem run_rrMid (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     shr_ofNat n k (Nat.lt_of_le_of_lt hn (by norm_num)) (by omega)
   have hand : UInt256.land (UInt256.ofNat 1) (UInt256.ofNat (n / 2 ^ k)) =
       UInt256.ofNat (n / 2 ^ k % 2) := land_one _
+  have hshl : UInt256.shiftLeft (UInt256.ofNat (n / 2 ^ k % 2))
+      (UInt256.ofNat 8) = UInt256.ofNat (n / 2 ^ k % 2 * 256) := by
+    rw [Challenge.EvmProof.Word.shiftLeft_ofNat
+      (Nat.lt_trans (Nat.mod_lt _ (by decide)) (by norm_num)) (by decide)
+      (Nat.lt_of_le_of_lt
+        (Nat.mul_le_mul (Nat.le_of_lt (Nat.mod_lt _ (by decide))) (by decide))
+        (by norm_num)),
+      show n / 2 ^ k % 2 * 2 ^ 8 = n / 2 ^ k % 2 * 256 by ring]
   simp (config := { maxSteps := 600000 }) [blk1162, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     rrMid, rrSel, outer, selOf, bitAt, fastPC4, fastPC5, hcode, hrun,
-    hshr, hand, ofNat_mul_mod, jumpDest2392,
+    hshr, hand, hshl, ofNat_mul_mod, jumpDest2392,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
