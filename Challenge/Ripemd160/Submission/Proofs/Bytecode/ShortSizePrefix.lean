@@ -25,10 +25,10 @@ private theorem prefix_pc4 : Artifact.submissionArtifact.instructionPC 4 = 7 := 
   decide
 
 private theorem short_dest : Decode.isValidJumpDest submissionBytecode 4794 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 4041 = 4794 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 4039 = 4794 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 4041 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 4039 (by rfl)
   rwa [hpc] at h
 
 private theorem run_short_prefix (input : ByteArray) :
