@@ -4,6 +4,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedRowFrames
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
+set_option linter.unusedVariables false
 set_option maxRecDepth 40000
 set_option maxHeartbeats 200000
 
@@ -19,7 +20,7 @@ theorem run_exit (s : State) (pbi paEnd pbEnd flag target2 dst ret : UInt256) (r
     (hcap : rest.length ≤ 1006)
     (htarget : Decode.isValidJumpDest s.executionEnv.code 4658 = true) :
     runInstructions exitProgram
-      (framed s (UInt256.ofNat 4640) ([pbi, paEnd, pbEnd, flag, negative32, allOnes, target2, dst, ret] ++ rest)) =
+      (framed s (UInt256.ofNat 4647) ([pbi, paEnd, pbEnd, flag, negative32, allOnes, target2, dst, ret] ++ rest)) =
     some (framed s (UInt256.ofNat 4658) ([dst, ret] ++ rest)) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
@@ -36,6 +37,7 @@ theorem run_exit (s : State) (pbi paEnd pbEnd flag target2 dst ret : UInt256) (r
   have hc2new : rest.length+2 < 1024 := by omega
   simp [hExtra9, hExtra10, hExtra11, hExtra12, hExtra13, hExtra14, exitProgram, CiosCached.tailProgram, framed, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     hc2new, hc2, hc3, hc4, hc5, hc6, hc7, htarget,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat]
+    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedExit

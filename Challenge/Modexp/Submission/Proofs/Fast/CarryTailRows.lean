@@ -1,5 +1,4 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CarryRowRun
-import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedExit
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedPointers
 
 set_option warningAsError true
@@ -13,7 +12,7 @@ namespace Challenge.Modexp.Submission.Proofs.Fast.CarryTailRows
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open EvmSemantics EvmSemantics.EVM
 open WindowNibbleKernel CiosCachedMacCore CiosCached CiosCached CiosCachedTailDefs
-open CarryRowRun CiosCachedExit CiosCachedPointers CarryRowModel
+open CarryRowRun CiosCachedPointers CarryRowModel
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
 theorem pointer_next (base i : Nat) :

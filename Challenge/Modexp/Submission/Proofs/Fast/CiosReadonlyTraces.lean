@@ -1,6 +1,8 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CiosReadonlyPrograms
 
 set_option warningAsError true
+set_option linter.unusedVariables false
+set_option linter.unusedSimpArgs false
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.CiosReadonly
 
@@ -33,6 +35,8 @@ theorem run_exit (s : State) (pbi paEnd pbEnd flag target2 tl inv m0 aEnd m96 m6
   simp [fullExitProgram, dropCache, CiosCached.tailProgram, framed, runInstructions,
     Challenge.EvmProof.Stepper.runInstr, hc2,hc3,hc4,hc5,hc6,hc7,hc8,hc9,hc10,hc11,hc12,hc13,hc14,hc15,hc16,
     htarget, Challenge.EvmProof.Word.literal_eq_ofNat,
-    Challenge.EvmProof.Word.word_toNat_ofNat]
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod]
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosReadonly
