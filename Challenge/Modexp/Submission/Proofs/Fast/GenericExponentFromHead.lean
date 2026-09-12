@@ -35,7 +35,7 @@ def gasSteps_ebChainFromHead (s : State) {n bsize mm minv R : Nat}
     (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
     (_hradix : Limbs.radix ≤ mm) (hbM : bM < mm)
-    (hact : 298 ≤ s.activeWords.toNat)
+    (hact : 297 ≤ s.activeWords.toNat)
     (hframe : Exp.Frame mem n bsize minv)
     (hinv : Exp.EbInv (Exp.mcopyMem mem 1024 4096 (32 * n)) n mm bM
       (Exp.expAcc mm R bM (Exp.expBits input bsize) 0))
@@ -99,7 +99,7 @@ def gasSteps_ebChainFromHead (s : State) {n bsize mm minv R : Nat}
       (Exp.ebMems sub.mpMem input bsize n
         (Exp.mcopyMem mem 1024 4096 (32 * n)) esize)
       n bsize esize msize esize hn hn32 hact hcode hfork hrun hnp).trans
-    (sub.monpro 1024 3072 1024 (UInt256.ofNat 1571)
+    (sub.monpro 1024 3072 1024 (UInt256.ofNat 1706)
       (Exp.outer n bsize esize msize)
       (Exp.storeWord
         (Exp.ebMems sub.mpMem input bsize n
@@ -128,7 +128,7 @@ theorem handled_of_ebHead (input : ByteArray) (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 298 ≤ s.activeWords.toNat)
+    (hact : 297 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32)
     (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)

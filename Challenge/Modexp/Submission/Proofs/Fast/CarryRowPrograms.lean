@@ -13,7 +13,7 @@ def middleStore : List Instr :=
 
 def middle : List Instr := middleStore ++ CiosReadonly.cachedProduct
 
-/-- The middle block with its leading `JUMPDEST` (pc 4334, the empty-chain entry). -/
+/-- The middle block with its leading `JUMPDEST` (pc 4469, the empty-chain entry). -/
 def middleBlock : List Instr := [.op .JUMPDEST] ++ middle
 
 /-- `mu` is already consumed by the last copy; the first address is a `PUSH4` so that the

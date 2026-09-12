@@ -28,7 +28,7 @@ theorem run_expGuard (input : ByteArray) (i : Nat) (acc base : UInt256)
       UInt256.ofNat 0 := by
     rw [UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat, himod, hemod, if_neg hne]
-  have h598 : (545 : UInt256).toNat = 545 := by decide
+  have h598 : (680 : UInt256).toNat = 680 := by decide
   have hzeroNat : (UInt256.ofNat 0).toNat = 0 := by decide
   simp (config := { maxSteps := 150000 })
     [expGuardPath, opAt, pushAt,

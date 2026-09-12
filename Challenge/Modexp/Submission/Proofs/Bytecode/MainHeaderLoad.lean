@@ -13,7 +13,7 @@ theorem run_headerLoad (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock headerLoadPath
       (headerEntryState input) = some (headerLoadedState input) := by
   have hs1197 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1055) (by norm_num : 1055 + 1 < 2 ^ 256)
+    (n := 1190) (by norm_num : 1190 + 1 < 2 ^ 256)
   have hs1198 := Challenge.EvmProof.Word.succ_ofNat
     (n := 1136) (by norm_num : 1136 + 1 < 2 ^ 256)
   have ha1199 := Challenge.EvmProof.Word.ofNat_add_ofNat

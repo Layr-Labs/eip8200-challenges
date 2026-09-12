@@ -30,7 +30,7 @@ theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 298 ≤ s.activeWords.toNat)
+    (hact : 297 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (hb0 : 1 ≤ bsize)
     (he : esize ≤ 1024) (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
@@ -87,7 +87,7 @@ theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
         (FullBase.addCallState s mem input n bsize esize msize)
         (FullBase.rejoinState s converted n bsize esize msize) := by
       exact Challenge.EvmProof.GasSteps.cast
-        (sub.monpro 6144 1024 2048 (UInt256.ofNat 1469)
+        (sub.monpro 6144 1024 2048 (UInt256.ofNat 1604)
           (outer n bsize esize msize) copied rr base
           (by simp [outer]) (by omega) (by omega) (by omega) (by omega) (by omega)
           jumpD1755 hframeCopy hmodCopy hrrCopy hrawCopy hrrlt) rfl rfl

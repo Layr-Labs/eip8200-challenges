@@ -32,9 +32,9 @@ private theorem activeWordsAfter_eq_of_end_le (curr offset size : Nat)
     omega
 
 /-- Loading the established limb-size word at 9344 does not expand memory
-once the setup frame has allocated at least 298 words. -/
+once the setup frame has allocated at least 297 words. -/
 theorem loadActiveWords_eq (template : State)
-    (hactive : 298 ≤ template.activeWords.toNat) :
+    (hactive : 297 ≤ template.activeWords.toNat) :
     loadActiveWords template = template.activeWords := by
   unfold loadActiveWords State.activeWordsAfterUInt256
   rw [activeWordsAfter_eq_of_end_le]
@@ -42,9 +42,9 @@ theorem loadActiveWords_eq (template : State)
   · omega
 
 /-- Both ranges touched by the CC-to-RR `MCOPY` are already inside the
-298-word setup frame, so the direct helper preserves the active-word count. -/
+297-word setup frame, so the direct helper preserves the active-word count. -/
 theorem copiedActiveWords_eq (template : State) (n : Nat)
-    (hn32 : n ≤ 32) (hactive : 298 ≤ template.activeWords.toNat) :
+    (hn32 : n ≤ 32) (hactive : 297 ≤ template.activeWords.toNat) :
     copiedActiveWords template n = template.activeWords := by
   unfold copiedActiveWords State.activeWordsAfterUInt256_2
   rw [loadActiveWords_eq template hactive]
@@ -99,11 +99,6 @@ theorem copiedMemory_exponentPtrWord (mem : ByteArray) (n : Nat) (hn32 : n ≤ 3
     MachineState.readWord (copiedMemory mem n) 9472 =
       MachineState.readWord mem 9472 :=
   copiedMemory_readWord_above mem n 9472 hn32 (by omega)
-
-theorem copiedMemory_exponentSizeWord (mem : ByteArray) (n : Nat) (hn32 : n ≤ 32) :
-    MachineState.readWord (copiedMemory mem n) 9504 =
-      MachineState.readWord mem 9504 :=
-  copiedMemory_readWord_above mem n 9504 hn32 (by omega)
 
 /-- An entire byte range ending before the RR destination is unchanged. -/
 theorem copiedMemory_readPadded_before (mem : ByteArray)

@@ -11,7 +11,7 @@ namespace Challenge.Modexp.Benchmark
 
 /-- Joins the fixed-width dispatch route to the fast multi-limb MODEXP
 implementation and the certified reference fallback. The submitted program
-starts with `PUSH2 5256; JUMP` into the concrete dispatch. -/
+starts directly with the calldata header and concrete dispatch. -/
 theorem candidateFromWindow
     (route : Challenge.Modexp.Submission.Proofs.Bytecode.WindowRoute.Route) :
     Challenge.Modexp.Correct bytecode := by

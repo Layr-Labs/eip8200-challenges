@@ -22,18 +22,18 @@ open Challenge.Modexp.Submission.Proofs.Fast.FullBase
 
 private def fallbackCountPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2250 .JUMPDEST, opAt 2251 (.Dup ⟨2, by decide⟩),
-   pushAt 2252 1 31, opAt 2253 .ADD, pushAt 2254 1 5, opAt 2255 .SHR]
+  [opAt 2325 .JUMPDEST, opAt 2326 (.Dup ⟨2, by decide⟩),
+   pushAt 2327 1 31, opAt 2328 .ADD, pushAt 2329 1 5, opAt 2330 .SHR]
 private def fallbackWordPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2256 (.Dup ⟨3, by decide⟩), opAt 2257 (.Dup ⟨1, by decide⟩),
-   pushAt 2258 1 5, opAt 2259 .SHL, opAt 2260 .SUB, pushAt 2261 1 3,
-   opAt 2262 .SHL, pushAt 2263 1 96, opAt 2264 .CALLDATALOAD,
-   opAt 2265 (.Swap ⟨0, by decide⟩), opAt 2266 .SHR]
+  [opAt 2331 (.Dup ⟨3, by decide⟩), opAt 2332 (.Dup ⟨1, by decide⟩),
+   pushAt 2333 1 5, opAt 2334 .SHL, opAt 2335 .SUB, pushAt 2336 1 3,
+   opAt 2337 .SHL, pushAt 2338 1 96, opAt 2339 .CALLDATALOAD,
+   opAt 2340 (.Swap ⟨0, by decide⟩), opAt 2341 .SHR]
 private def fallbackStorePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2267 (.Dup ⟨2, by decide⟩), pushAt 2268 2 992, opAt 2269 .ADD,
-   opAt 2270 .MSTORE, pushAt 2271 1 1, pushAt 2272 2 1383, opAt 2273 .JUMP]
+  [opAt 2342 (.Dup ⟨2, by decide⟩), pushAt 2343 2 992, opAt 2344 .ADD,
+   opAt 2345 .MSTORE, pushAt 2346 1 1, pushAt 2347 2 1518, opAt 2348 .JUMP]
 
 private theorem shr_ofNat (value shift : Nat) (hv : value < 2 ^ 256)
     (hs : shift < 256) :
@@ -46,7 +46,7 @@ private theorem mod_word_self {a : Nat} (ha : a < 2 ^ 256) :
     a % 2 ^ 256 = a := Nat.mod_eq_of_lt ha
 
 private theorem activeWords_fix (s : State) (offset size : Nat) (hsz : size ≠ 0)
-    (hend : offset + size ≤ 9536) (hactive : 298 ≤ s.activeWords.toNat) :
+    (hend : offset + size ≤ 9504) (hactive : 297 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat offset size) =
       s.activeWords := by
   have hnat : MachineState.activeWordsAfter s.activeWords.toNat offset size =
@@ -63,7 +63,7 @@ theorem run_fallback (s : State) (mem input : ByteArray)
     (n bsize esize msize : Nat)
     (hdata : s.executionEnv.calldata = input)
     (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (hb0 : 1 ≤ bsize)
-    (hact : 298 ≤ s.activeWords.toNat)
+    (hact : 297 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blkFullBaseFallback
@@ -72,7 +72,7 @@ theorem run_fallback (s : State) (mem input : ByteArray)
         (FullBase.storeWord mem (992 + 32 * n)
           (UInt256.ofNat (FullBase.topLimbOf input bsize)))
         n bsize esize msize (FullBase.pbOf bsize) 1) := by
-  have hjump : Decode.isValidJumpDest s.executionEnv.code 1383 = true := by
+  have hjump : Decode.isValidJumpDest s.executionEnv.code 1518 = true := by
     simpa [hcode] using jumpDest1611
   have hpb1 : 1 ≤ pbOf bsize := by unfold pbOf; omega
   have hpbLe : pbOf bsize ≤ 32 := by unfold pbOf; omega
@@ -185,7 +185,7 @@ def gasSteps_fallback (s : State) (memory input : ByteArray)
     (n bsize esize msize : Nat)
     (hdata : s.executionEnv.calldata = input)
     (hn32 : n ≤ 32) (hb : bsize ≤ 1024) (hb0 : 1 ≤ bsize)
-    (hactive : 298 ≤ s.activeWords.toNat)
+    (hactive : 297 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
