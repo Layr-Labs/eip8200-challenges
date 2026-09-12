@@ -26,20 +26,20 @@ theorem prefix_pc : prefixSite.startPC = UInt256.ofNat 4615 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3917) = UInt256.ofNat 4615
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
-theorem prefix_endPC : prefixSite.endPC = UInt256.ofNat 4714 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3990) = UInt256.ofNat 4714
+theorem prefix_endPC : prefixSite.endPC = UInt256.ofNat 4717 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3993) = UInt256.ofNat 4717
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def jumpSite : LocatedSite Artifact.submissionArtifact .Osaka where
   located := {
-    index := 3990
+    index := 3993
     instruction := .op .JUMP
     atIndex := by rfl
     wellFormed := StackRoundData.templateWellFormed_mem
       (instructions := [.op .JUMP]) (by decide) _ (by simp) }
-  pc := UInt256.ofNat 4714
+  pc := UInt256.ofNat 4717
   pc_eq := by
-    change (UInt256.ofNat 4714).toNat = Artifact.submissionArtifact.instructionPC 3990
+    change (UInt256.ofNat 4717).toNat = Artifact.submissionArtifact.instructionPC 3993
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def site : TailSite Artifact.submissionArtifact .Osaka where
