@@ -23,8 +23,8 @@ def postSite : GenericRoundSite Artifact.submissionArtifact .Osaka postTemplate 
     (StackRoundData.templateWellFormed_mem (instructions := postTemplate) (by decide))
     (by decide)
 
-theorem post_pc : postSite.startPC = UInt256.ofNat 4721 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3783) = UInt256.ofNat 4721
+theorem post_pc : postSite.startPC = UInt256.ofNat 4723 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3783) = UInt256.ofNat 4723
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def joinTemplate : List Instr := [.op .JUMPDEST]
@@ -74,13 +74,13 @@ def gasSteps_continue (s : State) (h : Compression.HashState) (off limit : UInt2
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4721, stack := StaggerPersistentFrame.frame h off limit rho}
+    GasSteps {s with pc := UInt256.ofNat 4723, stack := StaggerPersistentFrame.frame h off limit rho}
       {s with pc := UInt256.ofNat 466, stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
-  have gp : GasSteps {s with pc := UInt256.ofNat 4721, stack := StaggerPersistentFrame.frame h off limit rho}
+  have gp : GasSteps {s with pc := UInt256.ofNat 4723, stack := StaggerPersistentFrame.frame h off limit rho}
       {s with pc := UInt256.ofNat 465, stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
-    apply PersistentLoopLift.gasSteps_of_raw postSite {s with pc := UInt256.ofNat 4721, stack := StaggerPersistentFrame.frame h off limit rho} _ hcode hfork hrun hnp post_pc.symm
+    apply PersistentLoopLift.gasSteps_of_raw postSite {s with pc := UInt256.ofNat 4723, stack := StaggerPersistentFrame.frame h off limit rho} _ hcode hfork hrun hnp post_pc.symm
     · exact PersistentLoopLift.advancesAll_sound _ (by decide)
-    · exact run_continue s (UInt256.ofNat 4721) h off limit rho 465 hstack hrun hmiss (valid_loop s hcode)
+    · exact run_continue s (UInt256.ofNat 4723) h off limit rho 465 hstack hrun hmiss (valid_loop s hcode)
   exact gp.trans (gasSteps_join s (StaggerPersistentFrame.frame h (nextOffset off) limit rho)
     (by simp [StaggerPersistentFrame.frame]; omega) hrun hcode hfork hnp)
 
@@ -90,12 +90,12 @@ def gasSteps_exit (s : State) (h : Compression.HashState) (off limit : UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4721, stack := StaggerPersistentFrame.frame h off limit rho}
-      {s with pc := UInt256.ofNat 4734, stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
-  apply PersistentLoopLift.gasSteps_of_raw postSite {s with pc := UInt256.ofNat 4721, stack := StaggerPersistentFrame.frame h off limit rho} _ hcode hfork hrun hnp post_pc.symm
+    GasSteps {s with pc := UInt256.ofNat 4723, stack := StaggerPersistentFrame.frame h off limit rho}
+      {s with pc := UInt256.ofNat 4736, stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
+  apply PersistentLoopLift.gasSteps_of_raw postSite {s with pc := UInt256.ofNat 4723, stack := StaggerPersistentFrame.frame h off limit rho} _ hcode hfork hrun hnp post_pc.symm
   · exact PersistentLoopLift.advancesAll_sound _ (by decide)
-  · have hr := run_exit s (UInt256.ofNat 4721) h off limit rho 465 hstack hrun hhit
-    have he : pcAfter (UInt256.ofNat 4721) (StaggerPersistentLoopRaw.template 465) = UInt256.ofNat 4734 := by decide
+  · have hr := run_exit s (UInt256.ofNat 4723) h off limit rho 465 hstack hrun hhit
+    have he : pcAfter (UInt256.ofNat 4723) (StaggerPersistentLoopRaw.template 465) = UInt256.ofNat 4736 := by decide
     rw [he] at hr
     exact hr
 #print axioms gasSteps_continue

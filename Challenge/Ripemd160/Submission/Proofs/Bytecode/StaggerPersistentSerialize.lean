@@ -19,10 +19,10 @@ def entrySite : GenericRoundSite Artifact.submissionArtifact .Osaka entryCode :=
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := entryCode) (by decide)) (by decide)
-theorem entry_pc : entrySite.startPC = UInt256.ofNat 4734 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3793) = UInt256.ofNat 4734
+theorem entry_pc : entrySite.startPC = UInt256.ofNat 4736 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3793) = UInt256.ofNat 4736
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem entry_end : entrySite.endPC = UInt256.ofNat 4735 := by
+theorem entry_end : entrySite.endPC = UInt256.ofNat 4737 := by
   have h := endPC_eq_pcAfter_sites entrySite.sites entrySite.startPC entrySite.endPC
     entrySite.head_eq entrySite.end_eq entrySite.contiguous
   rw [entrySite.instruction_eq, entry_pc] at h
@@ -36,10 +36,10 @@ def endian8Site : GenericRoundSite Artifact.submissionArtifact .Osaka endian8Cod
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := endian8Code) (by decide)) (by decide)
-theorem endian8_pc : endian8Site.startPC = UInt256.ofNat 4751 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3806) = UInt256.ofNat 4751
+theorem endian8_pc : endian8Site.startPC = UInt256.ofNat 4753 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3806) = UInt256.ofNat 4753
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem endian8_end : endian8Site.endPC = UInt256.ofNat 4767 := by
+theorem endian8_end : endian8Site.endPC = UInt256.ofNat 4769 := by
   have h := endPC_eq_pcAfter_sites endian8Site.sites endian8Site.startPC endian8Site.endPC
     endian8Site.head_eq endian8Site.end_eq endian8Site.contiguous
   rw [endian8Site.instruction_eq, endian8_pc] at h
@@ -53,10 +53,10 @@ def endian16Site : GenericRoundSite Artifact.submissionArtifact .Osaka endian16C
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := endian16Code) (by decide)) (by decide)
-theorem endian16_pc : endian16Site.startPC = UInt256.ofNat 4767 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3819) = UInt256.ofNat 4767
+theorem endian16_pc : endian16Site.startPC = UInt256.ofNat 4769 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3819) = UInt256.ofNat 4769
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem endian16_end : endian16Site.endPC = UInt256.ofNat 4784 := by
+theorem endian16_end : endian16Site.endPC = UInt256.ofNat 4786 := by
   have h := endPC_eq_pcAfter_sites endian16Site.sites endian16Site.startPC endian16Site.endPC
     endian16Site.head_eq endian16Site.end_eq endian16Site.contiguous
   rw [endian16Site.instruction_eq, endian16_pc] at h
@@ -70,26 +70,26 @@ def terminalSite : GenericRoundSite Artifact.submissionArtifact .Osaka terminalC
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := terminalCode) (by decide)) (by decide)
-theorem terminal_pc : terminalSite.startPC = UInt256.ofNat 4784 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3832) = UInt256.ofNat 4784
+theorem terminal_pc : terminalSite.startPC = UInt256.ofNat 4786 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3832) = UInt256.ofNat 4786
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def value (h : Compression.HashState) : UInt256 :=
   DenseScheduleTemplate.packedWord (StaggerPersistentOutput.packedHash h)
 def result (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) : State :=
-  StaggerPersistentReturn.result s (UInt256.ofNat 4784) (value h) (off :: limit :: rho)
+  StaggerPersistentReturn.result s (UInt256.ofNat 4786) (value h) (off :: limit :: rho)
 
 def gasSteps_entry (s : State) (rho : List UInt256) (hstack : rho.length < 1024)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4734, stack := rho}
-      {s with pc := UInt256.ofNat 4735, stack := rho} := by
+    GasSteps {s with pc := UInt256.ofNat 4736, stack := rho}
+      {s with pc := UInt256.ofNat 4737, stack := rho} := by
   apply DenseScheduleLift.gasSteps_of_raw entrySite
-    {s with pc := UInt256.ofNat 4734, stack := rho}
-    {s with pc := UInt256.ofNat 4735, stack := rho}
+    {s with pc := UInt256.ofNat 4736, stack := rho}
+    {s with pc := UInt256.ofNat 4737, stack := rho}
     hcode hfork hrun hnp entry_pc.symm
     (Table80SiteCommon.coreAdvancesAll_sound entryCode (by decide))
   simp [entryCode, runInstrSeq, Stepper.runInstr, hrun, hstack, UInt256.succ]
@@ -100,7 +100,7 @@ def gasSteps (s : State) (off limit : UInt256) (h : Compression.HashState)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4734, stack := StaggerPersistentFrame.frame h off limit rho}
+    GasSteps {s with pc := UInt256.ofNat 4736, stack := StaggerPersistentFrame.frame h off limit rho}
       (result s h off limit rho) := by
   have ge := gasSteps_entry s (StaggerPersistentFrame.frame h off limit rho)
     (by simp [StaggerPersistentFrame.frame]; omega) hcode hfork hrun hnp

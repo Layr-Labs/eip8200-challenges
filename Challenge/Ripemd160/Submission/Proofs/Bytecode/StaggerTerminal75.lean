@@ -9,42 +9,43 @@ open EvmSemantics PairedLaneUInt256Bridge Paired144Core Paired144WordRound
 open Paired144WordRotation StaggerTerminal75Math
 open Paired80Algorithm (leftFold rightFold)
 
-/-- The physical exception changes only the C outputs of rounds75 and76. -/
+/-- The final two physical rounds leave their rotated-C outputs unmasked. -/
 def step (i : Nat) (message : UInt256) (q : WordLane) : WordLane :=
-  if i=75 ∨ i=76 then {StaggerAlgorithm.step i message q with d:=wordShift q.c 28}
+  if i = 75 ∨ i = 76 then {StaggerAlgorithm.step i message q with d := wordShift q.c 28}
   else StaggerAlgorithm.step i message q
 
 def fold (message : Nat → UInt256) : Nat → WordLane → WordLane
-  | 0,q => q
-  | i+1,q => step i (message i) (fold message i q)
+  | 0, q => q
+  | i + 1, q => step i (message i) (fold message i q)
 
-theorem fold_prefix (message : Nat → UInt256) (n : Nat) (hn : n≤75) (q : WordLane) :
+theorem fold_prefix (message : Nat → UInt256) (n : Nat) (hn : n ≤ 75) (q : WordLane) :
     fold message n q = StaggerAlgorithm.fold message n q := by
   induction n with
   | zero => rfl
   | succ n ih =>
-    rw [fold,ih (by omega)]
-    simp only [step,show ¬(n=75 ∨ n=76) from by omega,if_false,StaggerAlgorithm.fold]
+    rw [fold, ih (by omega)]
+    simp [step, show n ≠ 75 from by omega, show n ≠ 76 from by omega,
+      StaggerAlgorithm.fold]
 
 theorem step76_d (l r : CryptoLane) (d : UInt256) (wl wr : UInt32)
     (hd : (bits d).getLsbD 121 = false)
     (he : UInt256.land d pairWord = (packCrypto l r).d) :
     StaggerAlgorithm.step 76 (word (pack wl.toBitVec wr.toBitVec))
-      {packCrypto l r with d:=d} =
+      {packCrypto l r with d := d} =
       {StaggerAlgorithm.step 76 (word (pack wl.toBitVec wr.toBitVec))
-        (packCrypto l r) with e:=d} := by
+        (packCrypto l r) with e := d} := by
   have ht := t_d_eq l r d wl.toBitVec wr.toBitVec
     Crypto.Ripemd160.K[4]!.toBitVec Crypto.Ripemd160.KP[4]!.toBitVec hd he
   change (⟨(packCrypto l r).e, _, (packCrypto l r).b,
-      UInt256.land (wordShift (packCrypto l r).c 28) pairWord,d⟩ : WordLane) = _
-  exact congrArg (fun t : UInt256 => (⟨(packCrypto l r).e,t,(packCrypto l r).b,
-    UInt256.land (wordShift (packCrypto l r).c 28) pairWord,d⟩ : WordLane)) ht
+      UInt256.land (wordShift (packCrypto l r).c 28) pairWord, d⟩ : WordLane) = _
+  exact congrArg (fun t : UInt256 => (⟨(packCrypto l r).e, t, (packCrypto l r).b,
+    UInt256.land (wordShift (packCrypto l r).c 28) pairWord, d⟩ : WordLane)) ht
 
 theorem final_shape (message : Nat → UInt256) (words : Nat → UInt32)
     (l r : CryptoLane) (hm : StaggerAlgorithm.MessageReady message words 77) :
     ∃ d e : UInt256,
       fold message 77 (packCrypto l (rightFold words 3 r)) =
-        {packCrypto (leftFold words 77 l) (rightFold words 80 r) with d:=d,e:=e} ∧
+        {packCrypto (leftFold words 77 l) (rightFold words 80 r) with d := d, e := e} ∧
       UInt256.land d pairWord =
         (packCrypto (leftFold words 77 l) (rightFold words 80 r)).d ∧
       UInt256.land e pairWord =
@@ -63,7 +64,9 @@ theorem final_shape (message : Nat → UInt256) (words : Nat → UInt32)
     exact c_gap _ _
   have he : UInt256.land e pairWord = q76.d :=
     congrArg (fun q : WordLane => q.d) h75
-  have hlast : StaggerAlgorithm.step 76 (message 76) {q76 with d:=e} = {q77 with e:=e} := by
+  have hd : UInt256.land d pairWord = q77.d :=
+    congrArg (fun q : WordLane => q.d) h76
+  have hlast : StaggerAlgorithm.step 76 (message 76) {q76 with d := e} = {q77 with e := e} := by
     have hh := step76_d (leftFold words 76 l) (rightFold words 79 r) e
       (words Crypto.Ripemd160.r[76]!) (words Crypto.Ripemd160.rP[79]!) hgap he
     have hm76 : message 76 = word (pack (words Crypto.Ripemd160.r[76]!).toBitVec
@@ -72,20 +75,17 @@ theorem final_shape (message : Nat → UInt256) (words : Nat → UInt32)
       rw [bits_word]
       exact hm 76 (by decide)
     rw [hm76] at h76 ⊢
-    exact hh.trans (congrArg (fun q : WordLane => {q with e:=e}) h76)
-  refine ⟨d,e,?_,?_,?_⟩
-  · rw [fold,step,if_pos (Or.inr rfl),fold,step,if_pos (Or.inl rfl),
-      fold_prefix message 75 (by decide),
-      StaggerAlgorithm.fold_crypto message words 75 (by decide) l r
-        (fun i hi => hm i (by omega))]
-    change {StaggerAlgorithm.step 76 (message 76)
-      {StaggerAlgorithm.step 75 (message 75) q75 with d:=e} with
-      d:=wordShift (StaggerAlgorithm.step 75 (message 75) q75).c 28} = _
-    rw [h75]
-    change {StaggerAlgorithm.step 76 (message 76) {q76 with d:=e} with d:=d} = _
-    rw [hlast]
-  · exact congrArg (fun q : WordLane => q.d) h76
-  · exact he.trans (congrArg (fun q : WordLane => q.e) h76)
+    exact hh.trans (congrArg (fun q : WordLane => {q with e := e}) h76)
+  refine ⟨d, e, ?_, hd, he.trans (congrArg (fun q : WordLane => q.e) h76)⟩
+  rw [fold, step, if_pos (by decide : 76 = 75 ∨ 76 = 76),
+    fold, step, if_pos (by decide : 75 = 75 ∨ 75 = 76),
+    fold_prefix message 75 (by decide),
+    StaggerAlgorithm.fold_crypto message words 75 (by decide) l r
+      (fun i hi => hm i (by omega))]
+  change {StaggerAlgorithm.step 76 (message 76)
+      {StaggerAlgorithm.step 75 (message 75) q75 with d := e}
+      with d := wordShift (StaggerAlgorithm.step 75 (message 75) q75).c 28} = _
+  rw [h75, hlast]
 
 #print axioms fold_prefix
 #print axioms step76_d

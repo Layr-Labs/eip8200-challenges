@@ -38,21 +38,34 @@ theorem high32_pairMask (x : UInt256) :
     PairedLaneUInt256Bridge.bits_word,←Paired144Core.normalize_eq_and]
   exact Paired144Core.high_pack _ _
 
+theorem unpackRight_dirtyE (l r : CryptoLane) (d : UInt256)
+    (he : UInt256.land d Paired144WordRound.pairWord = (packCrypto l r).e) :
+    unpackRight {packCrypto l r with e:=d} = r := by
+  have hhigh : high32 d = high32 (packCrypto l r).e :=
+    (high32_pairMask d).symm.trans (congrArg high32 he)
+  have h : unpackRight {packCrypto l r with e:=d} = unpackRight (packCrypto l r) := by
+    exact congrArg (fun e : UInt32 =>
+      (⟨high32 (packCrypto l r).a,high32 (packCrypto l r).b,high32 (packCrypto l r).c,
+        high32 (packCrypto l r).d,e⟩ : CryptoLane)) hhigh
+  exact h.trans (unpackRight_packCrypto l r)
+
 theorem unpackRight_dirtyDE (l r : CryptoLane) (d e : UInt256)
     (hd : UInt256.land d Paired144WordRound.pairWord = (packCrypto l r).d)
     (he : UInt256.land e Paired144WordRound.pairWord = (packCrypto l r).e) :
-    unpackRight {packCrypto l r with d:=d,e:=e} = r := by
+    unpackRight {packCrypto l r with d := d, e := e} = r := by
   have hhd : high32 d = high32 (packCrypto l r).d :=
     (high32_pairMask d).symm.trans (congrArg high32 hd)
   have hhe : high32 e = high32 (packCrypto l r).e :=
     (high32_pairMask e).symm.trans (congrArg high32 he)
-  have h : unpackRight {packCrypto l r with d:=d,e:=e} = unpackRight (packCrypto l r) := by
-    exact congrArg₂ (fun d e : UInt32 =>
-      (⟨high32 (packCrypto l r).a,high32 (packCrypto l r).b,high32 (packCrypto l r).c,
-        d,e⟩ : CryptoLane)) hhd hhe
+  have h : unpackRight {packCrypto l r with d := d, e := e} =
+      unpackRight (packCrypto l r) :=
+    congrArg₂ (fun d e : UInt32 =>
+      (⟨high32 (packCrypto l r).a, high32 (packCrypto l r).b,
+        high32 (packCrypto l r).c, d, e⟩ : CryptoLane)) hhd hhe
   exact h.trans (unpackRight_packCrypto l r)
 
 #print axioms unpackRight_dirtyDE
+#print axioms unpackRight_dirtyE
 
 #print axioms high32_packWord
 #print axioms unpackRight_packCrypto
