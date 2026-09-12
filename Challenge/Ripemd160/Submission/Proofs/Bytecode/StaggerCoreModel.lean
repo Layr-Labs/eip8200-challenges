@@ -35,7 +35,8 @@ def left79 (memory : ByteArray) (q : WordLane) : WordLane :=
 def prologue (memory : ByteArray) (q : WordLane) : WordLane :=
   right2 memory (right1 memory (right0 memory q))
 def paired (memory : ByteArray) (q : WordLane) : WordLane :=
-  StaggerAlgorithm.fold (message memory) 77 (pair q (prologue memory q))
+  StaggerAlgorithm.stepU 76 (message memory 76)
+    (StaggerAlgorithm.fold (message memory) 76 (pair q (prologue memory q)))
 def epilogue (memory : ByteArray) (q : WordLane) : WordLane :=
   left79 memory (left78 memory (left77 memory (left q)))
 

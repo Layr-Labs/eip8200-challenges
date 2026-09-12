@@ -23,9 +23,8 @@ theorem result_eq_folds (memory : ByteArray) (words : Nat → UInt32)
     result memory h = PairedCompressionBridge.combineLanes h
       (leftFold words 80 (initialCrypto h)) (rightFold words 80 (initialCrypto h)) := by
   dsimp only [result, initial, combine]
-  rw [StaggerCoreCorrect.paired_crypto memory words _ hm,
-    StaggerCoreCorrect.epilogue_crypto memory words _ _ hm,
-    unpackRight_packCrypto, StaggerCoreCorrect.leftFinish_fold]
+  rw [StaggerCoreCorrect.paired_left memory words _ hm,
+    StaggerFinalMemory.paired_right memory words _ hm, StaggerCoreCorrect.leftFinish_fold]
 
 /-- Functional compression carries the initial hash explicitly on the stack. -/
 theorem result_compressBlock (memory bs : ByteArray) (off : Nat)

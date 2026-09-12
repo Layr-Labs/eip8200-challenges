@@ -235,9 +235,10 @@ theorem prologue_unpack (memory : ByteArray) (words : Nat → UInt32) (q : Crypt
   rw [p0, hm0, hm1, hm2, show unpackLeft (embed q) = q from unpackLeft_packCrypto _ _]
   rfl
 
-theorem paired_crypto (memory : ByteArray) (words : Nat → UInt32) (q : CryptoLane)
+theorem fold3_prologue (memory : ByteArray) (words : Nat → UInt32) (q : CryptoLane)
     (hm : StaggerMessage.Ready memory words) :
-    paired memory (embed q) = packCrypto (leftFold words 77 q) (rightFold words 80 q) := by
+    StaggerAlgorithm.fold (message memory) 3 (pair (embed q) (prologue memory (embed q))) =
+      StaggerAlgorithm.fold (message memory) 3 (pair (embed q) (embed (rightFold words 3 q))) := by
   have hl := low_of_unpackLeft ((prologue_unpack memory words q hm).trans
     (unpackLeft_packCrypto (rightFold words 3 q) ⟨0,0,0,0,0⟩).symm)
   have hclean := StaggerScalarWord.embed_clean (rightFold words 3 q)
@@ -251,16 +252,50 @@ theorem paired_crypto (memory : ByteArray) (words : Nat → UInt32) (q : CryptoL
       (StaggerScalarWord.step_b_clean false 4 9 (MachineState.readWord memory 558)
         (UInt256.ofNat 1352829926) (right0 memory (embed q)))
       (clean_c _ hclean) hl.2.2.1
-  have h3 : StaggerAlgorithm.fold (message memory) 3 (pair (embed q) (prologue memory (embed q))) =
-      StaggerAlgorithm.fold (message memory) 3 (pair (embed q) (embed (rightFold words 3 q))) :=
-    fold_near3 (message memory) _ _ (pairWord_near _ hl.1)
-      (congrArg (StaggerCoreModel.pairWord _) hb) (congrArg (StaggerCoreModel.pairWord _) hc)
-      (pairWord_near _ hl.2.2.2.1) (pairWord_near _ hl.2.2.2.2)
-  have h77 : StaggerAlgorithm.fold (message memory) 77 (pair (embed q) (prologue memory (embed q))) =
-      StaggerAlgorithm.fold (message memory) 77 (pair (embed q) (embed (rightFold words 3 q))) :=
-    fold_congr (message memory) h3 74
-  rw [paired, h77, pair_embed]
-  exact StaggerAlgorithm.fold_crypto (message memory) words 77 (by decide) q q hm.paired
+  exact fold_near3 (message memory) _ _ (pairWord_near _ hl.1)
+    (congrArg (StaggerCoreModel.pairWord _) hb) (congrArg (StaggerCoreModel.pairWord _) hc)
+    (pairWord_near _ hl.2.2.2.1) (pairWord_near _ hl.2.2.2.2)
+
+theorem fold76_crypto (memory : ByteArray) (words : Nat → UInt32) (q : CryptoLane)
+    (hm : StaggerMessage.Ready memory words) :
+    StaggerAlgorithm.fold (message memory) 76 (pair (embed q) (prologue memory (embed q))) =
+      packCrypto (leftFold words 76 q) (rightFold words 79 q) := by
+  have h : StaggerAlgorithm.fold (message memory) 76 (pair (embed q) (prologue memory (embed q))) =
+      StaggerAlgorithm.fold (message memory) 76 (pair (embed q) (embed (rightFold words 3 q))) :=
+    fold_congr (message memory) (fold3_prologue memory words q hm) 73
+  rw [h, pair_embed]
+  exact StaggerAlgorithm.fold_crypto (message memory) words 76 (by decide) q q
+    (fun i hi => hm.paired i (by omega))
+
+/-- The paired core agrees with the clean 77-round packed state except that its `.d`
+field (the unmasked final rotation) is only equal after re-masking with `pairWord`. -/
+theorem paired_parts (memory : ByteArray) (words : Nat → UInt32) (q : CryptoLane)
+    (hm : StaggerMessage.Ready memory words) :
+    (paired memory (embed q)).a = (packCrypto (leftFold words 77 q) (rightFold words 80 q)).a ∧
+    (paired memory (embed q)).b = (packCrypto (leftFold words 77 q) (rightFold words 80 q)).b ∧
+    (paired memory (embed q)).c = (packCrypto (leftFold words 77 q) (rightFold words 80 q)).c ∧
+    UInt256.land (paired memory (embed q)).d Paired144WordRound.pairWord =
+      (packCrypto (leftFold words 77 q) (rightFold words 80 q)).d ∧
+    (paired memory (embed q)).e = (packCrypto (leftFold words 77 q) (rightFold words 80 q)).e := by
+  have hstep : StaggerAlgorithm.step 76 (message memory 76)
+      (packCrypto (leftFold words 76 q) (rightFold words 79 q)) =
+        packCrypto (leftFold words 77 q) (rightFold words 80 q) := by
+    have h76 : StaggerAlgorithm.fold (message memory) 76 (packCrypto q (rightFold words 3 q)) =
+        packCrypto (leftFold words 76 q) (rightFold words 79 q) :=
+      StaggerAlgorithm.fold_crypto (message memory) words 76 (by decide) q q
+        (fun i hi => hm.paired i (by omega))
+    have h77 : StaggerAlgorithm.step 76 (message memory 76)
+        (StaggerAlgorithm.fold (message memory) 76 (packCrypto q (rightFold words 3 q))) =
+          packCrypto (leftFold words 77 q) (rightFold words 80 q) :=
+      StaggerAlgorithm.fold_crypto (message memory) words 77 (by decide) q q hm.paired
+    rw [h76] at h77
+    exact h77
+  have hX : paired memory (embed q) = StaggerAlgorithm.stepU 76 (message memory 76)
+      (packCrypto (leftFold words 76 q) (rightFold words 79 q)) := by
+    unfold paired
+    rw [fold76_crypto memory words q hm]
+  rw [hX, ← hstep]
+  exact ⟨rfl, rfl, rfl, rfl, rfl⟩
 
 def leftFinish (words : Nat → UInt32) (q : CryptoLane) : CryptoLane :=
   cryptoStep 4 6 (words 13) Crypto.Ripemd160.K[4]!
@@ -302,8 +337,72 @@ theorem epilogue_crypto (memory : ByteArray) (words : Nat → UInt32) (l r : Cry
   rw [p0, hm0, hm1, hm2, show unpackLeft (packCrypto l r) = l from unpackLeft_packCrypto _ _]
   rfl
 
+theorem low32_land_pair (x : UInt256) :
+    low32 (UInt256.land x Paired144WordRound.pairWord) = low32 x := by
+  apply UInt32.eq_of_toBitVec_eq
+  change Paired144Core.low (PairedLaneUInt256Bridge.bits (UInt256.land x Paired144WordRound.pairWord)) =
+    Paired144Core.low (PairedLaneUInt256Bridge.bits x)
+  rw [PairedLaneUInt256Bridge.bits_land, Paired144WordRound.pairWord,
+    PairedLaneUInt256Bridge.bits_word, ← Paired144Core.normalize_eq_and]
+  exact Paired144Core.low_pack _ _
+
+theorem unpackLeft_parts (X Y : PairedLaneWordRound.WordLane) (ha : X.a = Y.a) (hb : X.b = Y.b)
+    (hc : X.c = Y.c) (hd : UInt256.land X.d Paired144WordRound.pairWord = Y.d) (he : X.e = Y.e) :
+    unpackLeft X = unpackLeft Y := by
+  unfold unpackLeft
+  rw [ha, hb, hc, he, ← hd, low32_land_pair]
+
+/-- `epilogue_crypto` for any lane whose low halves unpack to `l` and whose `.b/.c` rotation
+inputs satisfy `Low54`; the other fields may carry arbitrary high bits. -/
+theorem epilogue_near (memory : ByteArray) (words : Nat → UInt32) (X : PairedLaneWordRound.WordLane)
+    (l : CryptoLane) (hm : StaggerMessage.Ready memory words) (hX : unpackLeft X = l)
+    (hc : StaggerScalarLow54.Low54 (PairedLaneUInt256Bridge.bits X.c))
+    (hb : StaggerScalarLow54.Low54 (PairedLaneUInt256Bridge.bits X.b)) :
+    unpackLeft (epilogue memory X) = leftFinish words l := by
+  have hm0 : low32 (MachineState.readWord memory 0) = words 6 := hm.scalar 0 (by decide)
+  have hm1 : low32 (MachineState.readWord memory 144) = words 15 := hm.scalar 8 (by decide)
+  have hm2 : low32 (MachineState.readWord memory 252) = words 13 := hm.scalar 14 (by decide)
+  have h1 : StaggerScalarLow54.Low54
+      (PairedLaneUInt256Bridge.bits (left77 memory X).c) := hb
+  have h2 : StaggerScalarLow54.Low54
+      (PairedLaneUInt256Bridge.bits (left78 memory (left77 memory X)).c) :=
+    StaggerScalarLow54.clean_low54 _
+      (StaggerScalarWord.step_b_clean false 4 8 (MachineState.readWord memory 0)
+        (UInt256.ofNat 2840853838) X)
+  have p0 := StaggerScalarLow54.project_step true false 4 8 (by decide) (by decide)
+    (MachineState.readWord memory 0) (UInt256.ofNat 2840853838) X hc
+  have p1 := StaggerScalarLow54.project_step false false 4 5 (by decide) (by decide)
+    (MachineState.readWord memory 144) (UInt256.ofNat 2840853838) (left77 memory X) h1
+  have p2 := StaggerScalarLow54.project_step false false 4 6 (by decide) (by decide)
+    (MachineState.readWord memory 252) (UInt256.ofNat 2840853838)
+      (left78 memory (left77 memory X)) h2
+  unfold epilogue left
+  change unpackLeft (StaggerScalarWord.step false false 4 6 _ _ _) = _
+  rw [p2]
+  change cryptoStep _ _ _ _ (unpackLeft (StaggerScalarWord.step false false 4 5 _ _ _)) = _
+  rw [p1]
+  change cryptoStep _ _ _ _ (cryptoStep _ _ _ _ (unpackLeft (StaggerScalarWord.step true false 4 8 _ _ _))) = _
+  rw [p0, hm0, hm1, hm2, hX]
+  rfl
+
+theorem paired_left (memory : ByteArray) (words : Nat → UInt32) (q : CryptoLane)
+    (hm : StaggerMessage.Ready memory words) :
+    unpackLeft (epilogue memory (paired memory (embed q))) = leftFinish words (leftFold words 77 q) := by
+  obtain ⟨ha, hb, hc, hd, he⟩ := paired_parts memory words q hm
+  have hpacked := StaggerScalarLow54.packCrypto_low54 (leftFold words 77 q) (rightFold words 80 q)
+  refine epilogue_near memory words _ _ hm ?_ ?_ ?_
+  · rw [unpackLeft_parts _ _ ha hb hc hd he]
+    exact unpackLeft_packCrypto _ _
+  · rw [hc]
+    exact hpacked.2.2.1
+  · rw [hb]
+    exact hpacked.2.1
+
 #print axioms prologue_unpack
 #print axioms fold_near3
-#print axioms paired_crypto
+#print axioms fold76_crypto
+#print axioms paired_parts
+#print axioms epilogue_near
+#print axioms paired_left
 #print axioms epilogue_crypto
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCoreCorrect

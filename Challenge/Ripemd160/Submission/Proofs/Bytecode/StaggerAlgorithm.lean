@@ -29,6 +29,12 @@ def step (i : Nat) (message : UInt256) (q : WordLane) : WordLane :=
   StaggerWord.step (mode i) Crypto.Ripemd160.s[i]! Crypto.Ripemd160.sP[i + 3]!
     message (physicalKey i) q
 
+/-- The final packed round (index 76) keeps its rotated `.d` unmasked: that field is only
+consumed through its low and high 32-bit lanes (`epilogue` and `rawHash`). -/
+def stepU (i : Nat) (message : UInt256) (q : WordLane) : WordLane :=
+  ⟨q.e, StaggerWord.t (mode i) Crypto.Ripemd160.s[i]! Crypto.Ripemd160.sP[i + 3]!
+    message (physicalKey i) q, q.b, wordShift q.c 28, q.d⟩
+
 def fold (message : Nat → UInt256) : Nat → WordLane → WordLane
   | 0, q => q
   | i + 1, q => step i (message i) (fold message i q)

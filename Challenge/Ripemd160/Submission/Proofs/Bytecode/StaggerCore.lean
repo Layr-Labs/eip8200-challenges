@@ -91,7 +91,7 @@ def shapes : Array (List Reg) := #[
 def atRound (s : State) (h4 : UInt256) (i : Nat) (q right : WordLane) (rho : List UInt256) : State :=
   {s with pc := UInt256.ofNat pcs[i]!, stack := stack s.memory h4 shapes[i]! q right (physicalKey (i-1)) rho}
 
-def gasSteps_step (s : State) (h4 : UInt256) (i : Fin 77) (q right : WordLane) (rho : List UInt256)
+def gasSteps_step (s : State) (h4 : UInt256) (i : Fin 76) (q right : WordLane) (rho : List UInt256)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -175,10 +175,9 @@ def gasSteps_step (s : State) (h4 : UInt256) (i : Fin 77) (q right : WordLane) (
   | ⟨73, _⟩ => exact StaggerCorePaired73.gasSteps s h4 q right rho hs hr ha hcode hfork hnp
   | ⟨74, _⟩ => exact StaggerCorePaired74.gasSteps s h4 q right rho hs hr ha hcode hfork hnp
   | ⟨75, _⟩ => exact StaggerCorePaired75.gasSteps s h4 q right rho hs hr ha hcode hfork hnp
-  | ⟨76, _⟩ => exact StaggerCorePaired76.gasSteps s h4 q right rho hs hr ha hcode hfork hnp
-  | ⟨n+77, hi⟩ => exact False.elim (by omega)
+  | ⟨n+76, hi⟩ => exact False.elim (by omega)
 
-def gasSteps_prefix (s : State) (h4 : UInt256) (n : Nat) (hn : n ≤ 77) (q right : WordLane) (rho : List UInt256)
+def gasSteps_prefix (s : State) (h4 : UInt256) (n : Nat) (hn : n ≤ 76) (q right : WordLane) (rho : List UInt256)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -213,9 +212,13 @@ def gasSteps_pairedSuffix (s : State) (h4 : UInt256) (q right : WordLane) (rho :
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (atRound s h4 0 q right rho)
-      (suffixState s h4 (fold (message s.memory) 77 q) rho) :=
-  (gasSteps_prefix s h4 77 (by decide) q right rho hs hr ha hcode hfork hnp).trans
-    (gasSteps_suffix s h4 (fold (message s.memory) 77 q) right rho hs hr ha hcode hfork hnp)
+      (suffixState s h4 (StaggerAlgorithm.stepU 76 (message s.memory 76)
+        (fold (message s.memory) 76 q)) rho) :=
+  (gasSteps_prefix s h4 76 (by decide) q right rho hs hr ha hcode hfork hnp).trans
+    ((StaggerCorePaired76.gasSteps s h4 (fold (message s.memory) 76 q) right rho
+        hs hr ha hcode hfork hnp).trans
+      (gasSteps_suffix s h4 (StaggerAlgorithm.stepU 76 (message s.memory 76)
+        (fold (message s.memory) 76 q)) right rho hs hr ha hcode hfork hnp))
 
 #print axioms gasSteps_step
 #print axioms gasSteps_prefix
