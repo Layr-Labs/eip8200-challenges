@@ -468,16 +468,42 @@ theorem run_afterCsub (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
     Challenge.EvmProof.Stepper.runLocatedBlock blk3258
       (afterCsubState s mem n bsize esize msize k) =
       some (shiftLoopState s mem n bsize esize msize (k - 1)) := by
-  have hdec : UInt256.lnot ({ val := 0 } : UInt256) + UInt256.ofNat k =
-      UInt256.ofNat (k - 1) := by
-    interval_cases k <;> decide
+  have hsub : UInt256.ofNat k - UInt256.ofNat 1 = UInt256.ofNat (k - 1) := by
+    rw [Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)]
+  -- TICKET 6, the decrement idiom.  This block used to compute `k - 1` with `PUSH1 1; SWAP1; SUB`
+  -- and now computes it with `PUSH0; NOT; ADD`, i.e. `x + (2 ^ 256 - 1)`.  The stepper's `ADD`
+  -- leaves the complement as the FIRST summand, so the residual goal is
+  -- `lnot 0 + ofNat k = ofNat (k - 1)` -- the identity with the operands the other way round from
+  -- the natural statement, which is why `hsub` alone does not close it.
+  -- `hid` is that identity, proved for an arbitrary word so nothing about `k` leaks into it, and
+  -- then instantiated and composed with `hsub`.  Both sides reduce to a `% 2 ^ 256` of the same
+  -- natural: `2 ^ 256` is opaque to `omega`, so the modulus is cancelled by `congr 1` first and
+  -- omega then only needs `1 ≤ 2 ^ 256`.
+  have h1 : (1 : Nat) % 2 ^ 256 = 1 := by
+    have : (1 : Nat) < 2 ^ 256 := by norm_num
+    omega
+  have hz : ({ val := 0 } : UInt256).toNat = 0 := rfl
+  have hlnot : (UInt256.lnot ({ val := 0 } : UInt256)).toNat = 2 ^ 256 - 1 := by
+    rw [lnot_toNat, hz, Nat.sub_zero]
+  have hid : ∀ x : UInt256,
+      UInt256.lnot ({ val := 0 } : UInt256) + x = x - UInt256.ofNat 1 := by
+    intro x
+    apply Challenge.EvmProof.Word.word_ext
+    rw [Challenge.EvmProof.Word.word_toNat_add, Challenge.EvmProof.Word.word_toNat_sub,
+      Challenge.EvmProof.Word.word_toNat_ofNat, hlnot, h1]
+    congr 1
+    have hS : (1 : Nat) ≤ 2 ^ 256 := Nat.one_le_two_pow
+    omega
+  have hdec : UInt256.lnot ({ val := 0 } : UInt256) + UInt256.ofNat k
+      = UInt256.ofNat (k - 1) := by
+    rw [hid (UInt256.ofNat k), hsub]
   simp (config := { maxSteps := 200000 })
     [blk3258, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       afterCsubState, shiftLoopState, kState, pcAfterCsub, pcShiftLoop,
-      outer, Exp.outer, hcode, hrun, hdec, jumpDest4839,
+      outer, Exp.outer, hcode, hrun, hsub, hdec, jumpDest4839,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,

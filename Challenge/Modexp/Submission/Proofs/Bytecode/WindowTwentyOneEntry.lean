@@ -94,12 +94,16 @@ theorem run_miss (template : State) (rest : List UInt256) (hrest : rest.length �
     Challenge.EvmProof.Word.word_toNat_ofNat, htarget]
 
 /-- Entry of the one-word core at pc 2240 (0x8c0). Both special-modulus misses
-jump here with the loaded modulus word on top of the route frame and `POP`
-discards it. There is no base-width branch: a zero-width base runs the core
-with the base word `CALLDATALOAD 96 >> 256 = 0`. -/
+jump here with the loaded modulus word on top of the route frame. The `POP`
+that discarded it is gone: the word is kept and the core duplicates it rather
+than loading it a second time. There is no base-width branch: a zero-width base
+runs the core with the base word `CALLDATALOAD 96 >> 256 = 0`. -/
 def baseProgram : List Instr :=
   [.op .JUMPDEST, .op .JUMPDEST]
 
+/-- Both instructions are now `JUMPDEST`, so the block is a pure two-byte no-op and the incoming
+word is RETAINED. Nothing about the stack changes, which is why the statement carries `value`
+through instead of dropping it. -/
 theorem run_base (template : State) (value : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions baseProgram (framed template (UInt256.ofNat 2199) (value :: rest)) =
@@ -108,27 +112,37 @@ theorem run_base (template : State) (value : UInt256)
   simp [runInstructions, baseProgram, framed, Challenge.EvmProof.Stepper.runInstr,
     hcap1, Challenge.EvmProof.Word.succ_ofNat_mod]
 
+/-- The leading `DUP6; CALLDATALOAD` re-loaded the modulus word that the caller had already put on
+the stack. Both are `JUMPDEST` now and `DUP1` duplicates the retained word instead. -/
 def modulusProgram : List Instr :=
   [.op .JUMPDEST, .op .JUMPDEST, .op (.Dup ⟨0, by decide⟩)] ++
     testProgram (UInt256.ofNat 2829)
 
-theorem run_modulus (template : State)
-    (value : UInt256) (rest : List UInt256) (hrest : rest.length ≤ 999)
+theorem run_modulus (template : State) (modulusOffset : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 999)
+    -- kept for the call sites' arity but no longer reachable: the block does not read calldata
+    -- any more, so nothing in the proof can use it.  `warningAsError` makes an unreferenced
+    -- binder fatal, hence the underscore rather than a deletion.
+    (_hoffset : rest[5]? = some modulusOffset)
     (htarget : Decode.isValidJumpDest template.executionEnv.code 2829 = true) :
-    runInstructions modulusProgram (framed template (UInt256.ofNat 2201) (value :: rest)) =
-    some (framed template (if value.toNat = 0 then UInt256.ofNat 2829 else UInt256.ofNat 2209)
-      (value :: rest)) := by
+    let modulus := MachineState.readWord template.executionEnv.calldata modulusOffset.toNat
+    runInstructions modulusProgram (framed template (UInt256.ofNat 2201) (modulus :: rest)) =
+    some (framed template (if modulus.toNat = 0 then UInt256.ofNat 2829 else UInt256.ofNat 2209)
+      (modulus :: rest)) := by
+  let modulus := MachineState.readWord template.executionEnv.calldata modulusOffset.toNat
+  -- Only the DUP's own capacity check survives: the two `JUMPDEST`s touch no stack slot, and the
+  -- block is entered one deeper than before because the caller's word is retained.
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hh : runInstructions [.op .JUMPDEST, .op .JUMPDEST, .op (.Dup ⟨0, by decide⟩)]
-      (framed template (UInt256.ofNat 2201) (value :: rest)) =
-      some (framed template (UInt256.ofNat 2204) (value :: value :: rest)) := by
+      (framed template (UInt256.ofNat 2201) (modulus :: rest)) =
+      some (framed template (UInt256.ofNat 2204) (modulus :: modulus :: rest)) := by
     simp [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr, hcap1,
-      Challenge.EvmProof.Word.succ_ofNat_mod]
-  have ht := run_test template (UInt256.ofNat 2204) (UInt256.ofNat 2829) value
-    (value :: rest) (by simp only [List.length_cons]; omega) htarget
+      modulus, Challenge.EvmProof.Word.succ_ofNat_mod]
+  have ht := run_test template (UInt256.ofNat 2204) (UInt256.ofNat 2829) modulus
+    (modulus :: rest) (by simp only [List.length_cons]; omega) htarget
   have both := runInstructions_append_some _ _ _ _ _ hh ht
   have hpc : advancePC 5 (UInt256.ofNat 2204) = UInt256.ofNat 2209 := by decide
-  simpa only [modulusProgram, framed, hpc] using both
+  simpa only [modulusProgram, framed, hpc, modulus] using both
 
 def normalizeProgram : List Instr :=
   [.op (.Dup ⟨4, by decide⟩), .op .CALLDATALOAD, .op (.Dup ⟨2, by decide⟩),

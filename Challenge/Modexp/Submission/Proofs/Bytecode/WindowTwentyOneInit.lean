@@ -117,13 +117,19 @@ private theorem run_arrange (template : State) (pc base modulus exponent accumul
         UInt256.ofNat 480, UInt256.ofNat 2] ++ rest)) := by
   have hcap3 : rest.length + 3 < 1024 := by omega
   have hcap4 : rest.length + 4 < 1024 := by omega
-  have hp2 : UInt256.ofNat 2 = UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
-  have hp4 : UInt256.ofNat 4 = UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
-      UInt256.ofNat 1 := by decide
+  have hp4 : UInt256.ofNat 4 + UInt256.ofNat 1 =
+      UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + UInt256.ofNat 1))) := by
+    decide
   simp [runInstructions, frameArrangeProgram, WindowTwentyOneTable.framed,
     Challenge.EvmProof.Stepper.runInstr, hcap3, hcap4, Nat.add_assoc,
     List.exchange, Challenge.EvmProof.Word.literal_eq_ofNat,
-    advancePC, succ_eq_add, hp2, hp4, word_add_assoc]
+    advancePC, succ_eq_add, hp4, word_add_assoc]
+  -- What survives is `pc + A = pc + B` with A and B closed sums of `ofNat 1`s differing only in
+  -- nesting: the widened push contributes one `ofNat 4` where `advancePC 9` expands to nine
+  -- right-associated ones.  Cancelling the free `pc` leaves a closed equation, which `decide`
+  -- normalise both shapes.  `congr 1` alone closes it: once the free `pc` is cancelled the two
+  -- sums are definitionally equal, so no arithmetic step is needed at all.
+  congr 1
 
 private theorem run_frameLoad (template : State)
     (pc base modulus exponent modulusOffset accumulator : UInt256)
@@ -150,6 +156,8 @@ theorem run_frame (template : State) (pc base modulus exponent modulusOffset acc
     runInstructions frameProgram
       (WindowTwentyOneTable.framed template pc base modulus 16
         ([accumulator, UInt256.ofNat 480, exponent] ++ rest)) =
+    -- 12, not 10: `frameArrangeProgram`'s widened `PUSH3 0x000002` makes it 9 bytes rather than 7,
+    -- and the 3-byte load that follows is unchanged.
     some (WindowTwentyOneGroup.state template (advancePC 12 pc) base modulus accumulator
       (UInt256.shiftLeft exponent (UInt256.ofNat 4)) (UInt256.ofNat 2) 0 rest) := by
   have ha := run_arrange template pc base modulus exponent accumulator rest hrest
@@ -164,13 +172,7 @@ theorem run_frame (template : State) (pc base modulus exponent modulusOffset acc
 -- instruction of the loop's `iterationProgram`, so `POP` reaches it with the same stack and pc
 -- at 6 gas less.  The `JUMPDEST` stays in the code, so the loop's own back-edge to 2360 -- and
 -- the `hjump` witness the loop lemmas still take -- are unaffected.
-/-- Two `JUMPDEST`s (one gas each) fill the two bytes freed by widening the frame's
-`PUSH1 2` to `PUSH3 2`, so the frame falls through into the loop head instead of
-executing a `PUSH2` / `POP` pair. -/
-def padProgram : List Instr :=
-  [.op .JUMPDEST, .op .JUMPDEST]
-
-def program : List Instr := lookupProgram ++ frameProgram ++ padProgram
+def program : List Instr := lookupProgram ++ frameProgram ++ [.op .JUMPDEST, .op .JUMPDEST]
 
 theorem run_enter (template : State) (base modulus exponent modulusOffset : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
@@ -187,7 +189,7 @@ theorem run_enter (template : State) (base modulus exponent modulusOffset : UInt
   have both := runInstructions_append_some _ _ _ _ _ hl hf
   have hpc : advancePC 12 (advancePC 11 (UInt256.ofNat 2335)) = UInt256.ofNat 2358 := by decide
   rw [hpc] at both
-  have hbranch : runInstructions padProgram
+  have hbranch : runInstructions [.op .JUMPDEST, .op .JUMPDEST]
       (WindowTwentyOneGroup.state template (UInt256.ofNat 2358) base modulus
         (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat)
         (UInt256.shiftLeft exponent (UInt256.ofNat 4)) (UInt256.ofNat 2) 0 rest) =
@@ -195,10 +197,12 @@ theorem run_enter (template : State) (base modulus exponent modulusOffset : UInt
         (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat)
         (UInt256.shiftLeft exponent (UInt256.ofNat 4)) (UInt256.ofNat 2) 0 rest) := by
     have hcap5 : rest.length + 5 < 1024 := by omega
-    -- Two `JUMPDEST`s: the pc advances by one twice and the stack is untouched.
-    simp [runInstructions, padProgram, WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
-      Challenge.EvmProof.Stepper.runInstr, hcap5, Nat.add_assoc,
-      Challenge.EvmProof.Word.succ_ofNat_mod]
+    -- The dead `PUSH2 2360; POP` is gone: two `JUMPDEST` fillers hold the byte length, so the pc
+    -- advances by one twice and the block still exits at 2360.  The composite is a closed term on
+    -- which `succ_ofNat_mod` cannot fire, so it is settled directly.
+    have hstep : (UInt256.ofNat 2358).succ.succ = UInt256.ofNat 2360 := by decide
+    simp [runInstructions, WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
+      Challenge.EvmProof.Stepper.runInstr, hcap5, hstep]
   exact runInstructions_append_some _ _ _ _ _ both hbranch
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneInit

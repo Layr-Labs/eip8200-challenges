@@ -12,15 +12,15 @@ set_option linter.unusedSimpArgs false in
 theorem run_headerCheck (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock headerCheckPath
       (headerLoadedState input) = some (headerState input) := by
-  -- The block ends in `POP` rather than `JUMP`, so the last step is a fall-through.
-  -- `hdest`/`hdestWord` justified the jump target as a word and are now unreachable -- and this
-  -- module sets `warningAsError true`, so an unused `have` is fatal rather than untidy.
-  have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 1063) (b := 3) (by norm_num : 1063 + 3 < 2 ^ 256)
+  -- The block is now two `JUMPDEST` fillers where it held `PUSH2 1067; POP`.  Both are stack
+  -- no-ops and both advance the pc by one byte, so EVERY step is a `succ` and the `+3` helper that
+  -- justified the old `PUSH2`'s stride is unreachable.  It is DELETED rather than left: this
+  -- module sets `warningAsError true`, under which an unused `have` is fatal, not untidy -- the
+  -- same trap `hdest`/`hdestWord` set on the previous ticket.
   simp [headerCheckPath, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    headerLoadedState, headerState, initialState, hadd,
+    headerLoadedState, headerState, initialState,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat]
 

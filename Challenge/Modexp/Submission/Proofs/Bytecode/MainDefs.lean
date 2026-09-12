@@ -55,7 +55,7 @@ def headerLoadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 814 0 0, opAt 815 .CALLDATALOAD,
    pushAt 816 1 32, opAt 817 .CALLDATALOAD,
-   pushAt 818 1 64, opAt 819 .CALLDATALOAD]
+   pushAt 818 3 64, opAt 819 .CALLDATALOAD]
 
 /-- Direct hop over the EIP-7823 checks, justified by `Correct`'s valid-input
 precondition. The pushed target equals the fall-through pc, so `POP` reaches the same
@@ -64,7 +64,7 @@ stays in the code, so nothing else that targets it is affected. The hop preserve
 loaded length words. -/
 def headerCheckPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 820 2 1067, opAt 821 .POP]
+  [opAt 820 .JUMPDEST, opAt 821 .JUMPDEST]
 
 /-- Reachable instructions from byte zero through optimized header parsing,
 retained as a single audit-friendly path. -/
@@ -84,7 +84,10 @@ def headerEntryState (input : ByteArray) : State :=
 /-- Gas-erased state after loading the three header words. -/
 def headerLoadedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 1063
+    -- 1065, not ticket 5's 1063: the widened `PUSH3 0x000040` at instruction 818 pushes the two
+    -- CALLDATALOADs after it two bytes later, so this block's entry moves while its EXIT stays at
+    -- 1067 -- which is the whole point of the padding.
+    pc := UInt256.ofNat 1065
     stack := [UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
@@ -136,7 +139,7 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
 @[simp] theorem headerPCs899 (i : Nat)
     (hi : 813 ≤ i) (hii : i ≤ 821) :
     Artifact.submissionArtifact.instructionPC i =
-      ([1054,1055,1056,1057,1059,1060,1062,1063,1066] : List Nat)[i - 813]! := by
+      ([1054,1055,1056,1057,1059,1060,1064,1065,1066] : List Nat)[i - 813]! := by
   interval_cases i <;> decide
 
 @[simp] theorem jump1196 :
