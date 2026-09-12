@@ -28,3 +28,5 @@ Fixed-width subtraction uses the seven-instruction borrow combination and
 dedicated zero-borrow first limbs. Code addresses and Located-block certificates
 are bound to the complete bytecode artifact. Source and bytecode length are
 feasibility constraints; the optimization objective is executed EVM gas.
+
+This archive is the four fall-through jump substitutions validated against the current benchmark source.
