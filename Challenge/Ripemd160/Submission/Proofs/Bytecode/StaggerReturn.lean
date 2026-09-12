@@ -10,16 +10,16 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate
 
 def template : List Instr := [.op .JUMP]
-theorem slice : (Artifact.submissionArtifact.instructions.drop 3870).take template.length = template := by rfl
+theorem slice : (Artifact.submissionArtifact.instructions.drop 3873).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3870 slice
-    (by change 3870 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3873 slice
+    (by change 3873 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
 theorem pc : site.startPC = UInt256.ofNat 4689 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3870) = UInt256.ofNat 4689
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3873) = UInt256.ofNat 4689
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def gasSteps (s : State) (ret : UInt256) (rho : List UInt256)

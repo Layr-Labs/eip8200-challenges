@@ -49,11 +49,11 @@ def template : List Instr :=
     .op (.Dup ⟨3, by decide⟩),
     .op .AND ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ x.v0, (UInt256.ofNat 28), (UInt256.ofNat 72), x.v3, x.v4, x.v5, x.v6, x.v7, x.v8, x.v9, x.v10, x.v11, x.v12, x.v13, x.v14, x.v15, x.v16 ] ++ rho
+  [ x.v0, (UInt256.ofNat 28), x.v2, x.v3, x.v4, x.v5, x.v6, x.v7, x.v8, x.v9, x.v10, x.v11, x.v12, x.v13, x.v14, x.v15, x.v16 ] ++ rho
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.land x.v3 (UInt256.shiftRight (UInt256.mul x.v10 x.v6) (UInt256.ofNat 28))),
     (UInt256.ofNat 28),
-    (UInt256.ofNat 72),
+    x.v2,
     x.v3,
     x.v4,
     x.v0,

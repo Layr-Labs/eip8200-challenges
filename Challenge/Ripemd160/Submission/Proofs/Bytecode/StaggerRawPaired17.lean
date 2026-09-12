@@ -14,12 +14,12 @@ def template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND,
     .op (.Dup ⟨8, by decide⟩),
-    .op (.Dup ⟨11, by decide⟩),
-    .op (.Dup ⟨7, by decide⟩),
-    .op .XOR,
-    .op (.Dup ⟨10, by decide⟩),
+    .op (.Dup ⟨8, by decide⟩),
     .op (.Dup ⟨10, by decide⟩),
     .op .OR,
+    .op (.Dup ⟨12, by decide⟩),
+    .op (.Dup ⟨8, by decide⟩),
+    .op .XOR,
     .op .AND,
     .op .XOR,
     .op .OR,
@@ -53,15 +53,15 @@ def template : List Instr :=
     .op (.Dup ⟨3, by decide⟩),
     .op .AND ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ x.v0, (UInt256.ofNat 28), (UInt256.ofNat 72), x.v3, x.v4, x.v5, x.v6, x.v7, x.v8, x.v9, x.v10, x.v11, x.v12, x.v13, x.v14, x.v15, x.v16 ] ++ rho
+  [ x.v0, (UInt256.ofNat 28), x.v2, x.v3, x.v4, x.v5, x.v6, x.v7, x.v8, x.v9, x.v10, x.v11, x.v12, x.v13, x.v14, x.v15, x.v16 ] ++ rho
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.land x.v3 (UInt256.shiftRight (UInt256.mul x.v10 x.v6) (UInt256.ofNat 28))),
     (UInt256.ofNat 28),
-    (UInt256.ofNat 72),
+    x.v2,
     x.v3,
     x.v4,
     x.v5,
-    (UInt256.land x.v3 (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mul x.v10 (UInt256.add (UInt256.mul (UInt256.ofNat 63) (UInt256.land (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.add (MachineState.readWord memory 864) (UInt256.add (UInt256.lor (UInt256.xor (UInt256.land (UInt256.lor x.v6 x.v0) (UInt256.xor x.v4 x.v9)) x.v0) (UInt256.land x.v6 x.v9)) x.v7)))) x.v4)) (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.add (MachineState.readWord memory 864) (UInt256.add (UInt256.lor (UInt256.xor (UInt256.land (UInt256.lor x.v6 x.v0) (UInt256.xor x.v4 x.v9)) x.v0) (UInt256.land x.v6 x.v9)) x.v7)))))) (UInt256.ofNat 32)))),
+    (UInt256.land x.v3 (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mul x.v10 (UInt256.add (UInt256.mul (UInt256.ofNat 63) (UInt256.land (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.add (MachineState.readWord memory 864) (UInt256.add (UInt256.lor (UInt256.xor (UInt256.land (UInt256.xor x.v4 x.v9) (UInt256.lor x.v0 x.v6)) x.v0) (UInt256.land x.v6 x.v9)) x.v7)))) x.v4)) (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.add (MachineState.readWord memory 864) (UInt256.add (UInt256.lor (UInt256.xor (UInt256.land (UInt256.xor x.v4 x.v9) (UInt256.lor x.v0 x.v6)) x.v0) (UInt256.land x.v6 x.v9)) x.v7)))))) (UInt256.ofNat 32)))),
     x.v0,
     x.v8,
     x.v9,
@@ -98,8 +98,8 @@ def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osak
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 2016 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1417) = UInt256.ofNat 2016
+theorem site_pc : site.startPC = UInt256.ofNat 2018 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1417) = UInt256.ofNat 2018
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound
@@ -112,10 +112,10 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 2016, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 2063, stack := outputStack s.memory x rho} := by
-  have hraw := run_actual s (UInt256.ofNat 2016) x rho hstack hrun hactive
-  have hend : pcAfter (UInt256.ofNat 2016) template = UInt256.ofNat 2063 := by decide
+    GasSteps {s with pc := UInt256.ofNat 2018, stack := inputStack x rho}
+      {s with pc := UInt256.ofNat 2065, stack := outputStack s.memory x rho} := by
+  have hraw := run_actual s (UInt256.ofNat 2018) x rho hstack hrun hactive
+  have hend : pcAfter (UInt256.ofNat 2018) template = UInt256.ofNat 2065 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps

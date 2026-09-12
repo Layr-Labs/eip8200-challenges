@@ -13,6 +13,7 @@ open Paired144WordRound Paired144WordRotation
 inductive Reg where
   | a | b | c | d | e | ar | br | cr | dr | er | factor | pair | upper | lower | k
   | literal (value : Nat)
+  | cachedMessage (address : Nat)
   | cache (address : Nat)
   deriving DecidableEq
 
@@ -21,6 +22,7 @@ def word (memory : ByteArray) (h4 : UInt256) (r : Reg) (q right : WordLane) (k :
   | .ar => right.a | .br => right.b | .cr => right.c | .dr => right.d | .er => right.e
   | .factor => factorWord | .pair => pairWord | .upper => upperWord | .lower => lowerWord | .k => k
   | .literal value => UInt256.ofNat value
+  | .cachedMessage address => MachineState.readWord memory address
   | .cache address => match address with
     | 140 => compactMaskWord
     | 190 => coefficientWord 0 2

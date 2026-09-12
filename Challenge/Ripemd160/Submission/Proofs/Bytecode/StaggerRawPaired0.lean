@@ -9,7 +9,8 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired0
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
 def template : List Instr :=
-  [ .push ⟨1, by decide⟩ (UInt256.ofNat 72),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 342),
+    .op .MLOAD,
     .push ⟨1, by decide⟩ (UInt256.ofNat 28),
     .push ⟨22, by decide⟩ (UInt256.ofNat 30169115476673038213297653277143730720156734734729216),
     .op (.Swap ⟨6, by decide⟩),
@@ -52,7 +53,7 @@ def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.land x.v0 (UInt256.shiftRight (UInt256.mul x.v7 x.v6) (UInt256.ofNat 28))),
     (UInt256.ofNat 28),
-    (UInt256.ofNat 72),
+    (MachineState.readWord memory 342),
     x.v0,
     x.v1,
     x.v2,
@@ -108,9 +109,9 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 1245, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 1310, stack := outputStack s.memory x rho} := by
+      {s with pc := UInt256.ofNat 1312, stack := outputStack s.memory x rho} := by
   have hraw := run_actual s (UInt256.ofNat 1245) x rho hstack hrun hactive
-  have hend : pcAfter (UInt256.ofNat 1245) template = UInt256.ofNat 1310 := by decide
+  have hend : pcAfter (UInt256.ofNat 1245) template = UInt256.ofNat 1312 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps
