@@ -61,6 +61,10 @@ noncomputable def kernel : StackRunBridge.BlockKernel where
   executionEnv := nextState_executionEnv
   halt := nextState_halt
   callStack := nextState_callStack
+  activeWords := by
+    intro s input i hfit hi
+    exact PairTableActive.loaded_active_mono s (PairedBlockModel.messagePointer i)
+      (PairedBlockModel.messagePointer_bound input hfit i hi)
   wordAbove := nextState_word_above
   hashResult := nextState_hash
   double := fun _ => false
@@ -70,6 +74,7 @@ noncomputable def kernel : StackRunBridge.BlockKernel where
   executionEnv2 := by intros; rfl
   halt2 := by intros; rfl
   callStack2 := by intros; rfl
+  activeWords2 := by intros; exact Nat.le_refl _
   wordAbove2 := by intros; rfl
   doubleBlocks := by intro _ hd; cases hd
   hashResult2 := by intro _ _ hd; cases hd

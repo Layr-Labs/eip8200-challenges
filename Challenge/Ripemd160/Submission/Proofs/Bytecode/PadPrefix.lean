@@ -11,6 +11,18 @@ def template (touch : Nat) : List Instr :=
   [.op .JUMPDEST, .push ⟨1, by decide⟩ (UInt256.ofNat touch),
    .op .ADD, .op .MLOAD, .op .POP]
 
+/-- The outer padding pass already allocated the full message. -/
+def dropTemplate : List Instr := [.op .JUMPDEST, .op .POP]
+
+theorem run_drop (s : State) (pc ret : UInt256) (p : Nat) (rest : List UInt256)
+    (hstack : rest.length ≤ 1019) (hrun : s.halt = .Running) :
+    runInstrSeq dropTemplate {s with pc := pc, stack := UInt256.ofNat p :: ret :: rest} =
+      some {s with pc := pcAfter pc dropTemplate, stack := ret :: rest} := by
+  have hcap (n : Nat) (hn : n ≤ 4) : rest.length + n < 1024 := by omega
+  simp (discharger := omega) [dropTemplate, runInstrSeq, Stepper.runInstr, pcAfter,
+    UInt256.succ, Instr.size, hrun, hcap, List.length_cons, Nat.add_assoc]
+  rfl
+
 theorem active_eq (s : State) (p touch : Nat)
     (hbound : p + 64 < 2 ^ 256) (halign : p % 32 = 0)
     (htouch : 1 ≤ touch ∧ touch ≤ 32) :

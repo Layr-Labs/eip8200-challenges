@@ -728,6 +728,16 @@ def padReturned (input : ByteArray) : State :=
     stack := [UInt256.ofNat 0, Padding.paddedWord input]
     memory := padFinalMemory input }
 
+/-- The footer's top-byte store allocates every padded message block. -/
+theorem padReturned_allocated (input : ByteArray) (hfit : CalldataFits input) :
+    (Padding.messageOffset + Padding.paddedLength input.size) / 32 ≤
+      (padReturned input).activeWords.toNat := by
+  change _ ≤ (topByteActiveWords input).toNat
+  rw [topByteActiveWords_toNat input hfit]
+  apply Nat.le_trans ?_ (Nat.le_max_right _ _)
+  unfold Padding.messageOffset
+  omega
+
 @[simp] theorem padReturned_pc (input : ByteArray) :
     (padReturned input).pc = UInt256.ofNat 372 := by rfl
 

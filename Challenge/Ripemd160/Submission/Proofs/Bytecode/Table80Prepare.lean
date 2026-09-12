@@ -30,10 +30,15 @@ opaque gasSteps_prepare_hit (s : State) (input : ByteArray) (i : Nat)
     (by simp) hrun hfit256 heq hcode hfork hnp
   have gtouch := Table80Dispatch.gasSteps_prefix s (UInt256.ofNat 512) (messagePointer i)
     (driverRest input i) (by simp [driverRest]) hrun
-    (messagePointer_bound input hfit i hi) (messagePointer_aligned i) hcode hfork hnp
+    hcode hfork hnp
   let a : State := {s with activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat (messagePointer i))}
+  have ha : a = s := by
+    dsimp only [a]
+    rw [scheduled_active_eq s input i h hfit hi ctx]
   have ga : GasSteps (DriverTrace.compressEntry s input i)
-      {a with pc := UInt256.ofNat 410, stack := rho} := ghit.trans gtouch
+      {a with pc := UInt256.ofNat 410, stack := rho} := by
+    rw [ha]
+    exact ghit.trans gtouch
   have gbody := Table80SetupSites.gasSteps_pad a (UInt256.ofNat 512) (driverRest input i)
     (by simp [driverRest]) hrun (scheduled_active s input i hfit hi) hfit256 hcode hfork hnp
   have hmem : PairTablePad.resultMemory a.memory

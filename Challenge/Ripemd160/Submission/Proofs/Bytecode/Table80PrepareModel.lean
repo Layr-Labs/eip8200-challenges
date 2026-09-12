@@ -31,6 +31,19 @@ theorem hit_aligned (input : ByteArray) (i : Nat)
   rw [hhit, DriverTrace.blockOffset]
   omega
 
+theorem scheduled_active_eq (s : State) (input : ByteArray) (i : Nat)
+    (h : Compression.HashState) (hfit : CalldataFits input)
+    (hi : i < DriverTrace.blockCount input) (ctx : StackRunBridge.BlockContext s input i h) :
+    DenseScheduleTemplate.loadedActiveWords s
+      (UInt256.ofNat (PairedBlockModel.messagePointer i)) = s.activeWords := by
+  apply PairTableActive.loaded_active_eq_of_allocated s _
+    (PairedBlockModel.messagePointer_bound input hfit i hi) (messagePointer_aligned i)
+  have hpad := PaddingTrace.padReturned_allocated input hfit
+  have hlength := DriverTrace.paddedLength_eq_blockCount input
+  have hctx := ctx.allocated
+  unfold PairedBlockModel.messagePointer DriverTrace.blockOffset Padding.messageOffset at *
+  omega
+
 theorem scheduled_memory_calldata (s : State) (input : ByteArray) (i : Nat)
     (h : Compression.HashState) (hfit : CalldataFits input)
     (hi : i < DriverTrace.blockCount input) (ctx : StackRunBridge.BlockContext s input i h)
