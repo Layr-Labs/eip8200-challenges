@@ -9,17 +9,17 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate StaggerPersistentBootstrapRaw
 
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 572).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 570).take template.length = template := by rfl
 
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 572 actual_slice
-    (by change 572 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 570 actual_slice
+    (by change 570 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 
 theorem site_pc : site.startPC = UInt256.ofNat 904 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 572) = UInt256.ofNat 904
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 570) = UInt256.ofNat 904
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
