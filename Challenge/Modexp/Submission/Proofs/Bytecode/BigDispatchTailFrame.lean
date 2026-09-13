@@ -12,7 +12,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_bigTailFrame (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock bigTailFramePath
       (bigCheckedState input) = some (bigTailFrameState input) := by
-  have h1283Word : (1194 : UInt256) = UInt256.ofNat 1194 := by decide
+  have h1283Word : (1190 : UInt256) = UInt256.ofNat 1190 := by decide
   simp (config := { maxSteps := 80000 })
     [bigTailFramePath, opAt, pushAt, wfOp, bigCheckedState,
       Dispatch.wordCheckedState, bigTailFrameState, Main.headerState,

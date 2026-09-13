@@ -37,7 +37,7 @@ def hitProgram : List Instr := offsetsProgram ++ frameProgram
 
 /-- Every width miss restores the unchanged legacy entry with an empty stack. -/
 def missProgram : List Instr :=
-  [.op .JUMPDEST, .op .POP, .op .POP, .op .POP, .push 2 709, .op .JUMP]
+  [.op .JUMPDEST, .op .POP, .op .POP, .op .POP, .push 2 708, .op .JUMP]
 
 def headerStack (input : ByteArray) : List UInt256 :=
   [UInt256.ofNat (modulusSize input), UInt256.ofNat (exponentSize input),
@@ -49,7 +49,7 @@ structure Paths (artifact : ProgramArtifact) (fork : Fork) where
   hit : WindowTwentyOneBinding.Block artifact fork 25 hitProgram
   miss : WindowTwentyOneBinding.Block artifact fork 125 missProgram
   missJump : Decode.isValidJumpDest artifact.code 125 = true
-  legacyJump : Decode.isValidJumpDest artifact.code 709 = true
+  legacyJump : Decode.isValidJumpDest artifact.code 708 = true
 
 /-- Context reset is valid only with the three explicit carrier premises. -/
 theorem framed_eq_state (template : State) (input : ByteArray) (pc : UInt256)
@@ -151,9 +151,9 @@ theorem run_hit (template : State) (input : ByteArray) :
     Word.ofNat_add_mod] using both
 
 theorem run_miss (template : State) (input : ByteArray)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 709 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 708 = true) :
     runInstructions missProgram (framed template (UInt256.ofNat 125) (headerStack input)) =
-      some (framed template (UInt256.ofNat 709) []) := by
+      some (framed template (UInt256.ofNat 708) []) := by
   simp [missProgram, runInstructions, framed, headerStack, Stepper.runInstr, hjump,
     Word.literal_eq_ofNat, Word.word_toNat_ofNat]
 

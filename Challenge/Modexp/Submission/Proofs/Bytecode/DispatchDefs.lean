@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Bytecode.PCFast
 import Challenge.Modexp.Submission.Proofs.Bytecode.Main
 set_option warningAsError true
 set_option maxRecDepth 10000
@@ -39,22 +40,38 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 def zeroSizePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 457 (.Dup ⟨0, by decide⟩),
-   pushAt 458 2 664, opAt 459 .JUMPI,
-   pushAt 460 0 0, pushAt 461 0 0, opAt 462 .RETURN]
+   pushAt 458 2 664,
+   opAt 459 .JUMPI,
+   pushAt 460 0 0,
+   pushAt 461 0 0,
+   opAt 462 .RETURN]
 
 def wordEntryPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 457 (.Dup ⟨0, by decide⟩),
-   pushAt 458 2 664, opAt 459 .JUMPI,
-   opAt 463 .JUMPDEST, opAt 464 (.Dup ⟨2, by decide⟩),
-   pushAt 465 1 96, opAt 466 .ADD,
-   opAt 467 (.Dup ⟨2, by decide⟩), opAt 468 (.Dup ⟨1, by decide⟩),
-   opAt 469 .ADD, pushAt 470 1 32, opAt 471 (.Dup ⟨3, by decide⟩),
-   opAt 472 .GT, pushAt 473 2 694, opAt 474 .JUMPI,
-   pushAt 475 2 1186, opAt 476 (.Dup ⟨1, by decide⟩),
-   opAt 477 (.Dup ⟨3, by decide⟩), pushAt 478 1 96,
-   opAt 479 (.Dup ⟨6, by decide⟩), opAt 480 (.Dup ⟨8, by decide⟩),
-   opAt 481 (.Dup ⟨10, by decide⟩), pushAt 482 2 1756, opAt 483 .JUMP]
+   pushAt 458 2 664,
+   opAt 459 .JUMPI,
+   opAt 463 .JUMPDEST,
+   opAt 464 (.Dup ⟨2, by decide⟩),
+   pushAt 465 1 96,
+   opAt 466 .ADD,
+   opAt 467 (.Dup ⟨2, by decide⟩),
+   opAt 468 (.Dup ⟨1, by decide⟩),
+   opAt 469 .ADD,
+   pushAt 470 1 32,
+   opAt 471 (.Dup ⟨3, by decide⟩),
+   opAt 472 .GT,
+   pushAt 473 2 694,
+   opAt 474 .JUMPI,
+   pushAt 475 2 1186,
+   opAt 476 (.Dup ⟨1, by decide⟩),
+   opAt 477 (.Dup ⟨3, by decide⟩),
+   pushAt 478 1 96,
+   opAt 479 (.Dup ⟨6, by decide⟩),
+   opAt 480 (.Dup ⟨8, by decide⟩),
+   opAt 481 (.Dup ⟨10, by decide⟩),
+   pushAt 482 2 1752,
+   opAt 483 .JUMP]
 
 def zeroSetupPath := zeroSizePath.take 5
 def zeroReturnPath := [opAt 462 .RETURN]
@@ -67,7 +84,8 @@ def wordTailPath := wordRestPath.drop 12
     (hi : 457 ≤ i) (hii : i ≤ 483) :
     Artifact.submissionArtifact.instructionPC i =
       ([656,657,660,661,662,663,664,665,666,668,669,670,671,672,674,675,676,679,680,683,684,685,687,688,689,690,693] : List Nat)[i - 457]! := by
-  interval_cases i <;> decide
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  interval_cases i <;> rfl
 
 @[simp] theorem activeWordsAfterUInt256_zero (s : State) (offset : Nat) :
     s.activeWordsAfterUInt256 offset 0 = UInt256.ofNat s.activeWords.toNat := by
@@ -88,9 +106,9 @@ def wordTailPath := wordRestPath.drop 12
 
 set_option maxRecDepth 20000 in
 @[simp] theorem jump3000 :
-    Decode.isValidJumpDest submissionBytecode 1756 = true := by
-  have hpc : Artifact.instructionPC 1242 = 1756 := by decide
-  simpa only [hpc] using Artifact.isValidJumpDest_index 1242 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 1752 = true := by
+  have hpc : Artifact.instructionPC 1240 = 1752 := by decide
+  simpa only [hpc] using Artifact.isValidJumpDest_index 1240 (by rfl)
 
 def zeroSizeFinalState (input : ByteArray) : State :=
   { Main.headerState input with
@@ -147,7 +165,7 @@ submission artifact has been regenerated.
 
 /-- State reached by the retargeted one-word dispatcher at the appended route. -/
 def wordRouteEntryState (input : ByteArray) : State :=
-  { wordEntryState input with pc := UInt256.ofNat 1756 }
+  { wordEntryState input with pc := UInt256.ofNat 1752 }
 
 /-- The unchanged dispatcher prefix followed by its retargeted final jump. -/
 abbrev WordRouteEnter (input : ByteArray) : Type :=

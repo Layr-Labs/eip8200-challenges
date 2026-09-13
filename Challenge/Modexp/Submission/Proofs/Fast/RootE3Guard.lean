@@ -34,13 +34,13 @@ def guardWord (mem input : ByteArray) (n esize : Nat) : UInt256 :=
 
 def entry (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 3012
+    pc := UInt256.ofNat 3006
     stack := UInt256.ofNat n :: Exp.outer n bsize esize msize
     memory := mem }
 
 def result (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 3039
+    pc := UInt256.ofNat 3033
     stack := UInt256.shiftRight (UInt256.ofNat n)
       (guardWord mem s.executionEnv.calldata n esize) :: Exp.outer n bsize esize msize
     memory := Exp.storeWord mem 1760 (guardWord mem s.executionEnv.calldata n esize)}
@@ -149,7 +149,7 @@ theorem result_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       FixedExponentRoute.exponentValue s.executionEnv.calldata bsize 1 = 3 ∧ (n = 4 ∨ n = 8)) :
     result s mem n bsize esize msize =
       { s with
-        pc := UInt256.ofNat 3039
+        pc := UInt256.ofNat 3033
         stack := UInt256.ofNat (n / 2) :: Exp.outer n bsize esize msize
         memory := Exp.storeWord mem 1760 (UInt256.ofNat 1) } := by
   unfold result
@@ -165,7 +165,7 @@ theorem result_ordinary (s : State) (mem : ByteArray) (n bsize esize msize : Nat
       FixedExponentRoute.exponentValue s.executionEnv.calldata bsize 1 = 3 ∧ (n = 4 ∨ n = 8))) :
     result s mem n bsize esize msize =
       { s with
-        pc := UInt256.ofNat 3039
+        pc := UInt256.ofNat 3033
         stack := UInt256.ofNat n :: Exp.outer n bsize esize msize
         memory := Exp.storeWord mem 1760 (UInt256.ofNat 0) } := by
   unfold result

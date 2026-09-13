@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Bytecode.PCFast
 import Challenge.Modexp.ProofSupport
 import Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
 import Challenge.EvmProof.Word
@@ -53,9 +54,12 @@ def trampoline2Path :
 /-- Three EIP-198 header loads. -/
 def headerLoadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 451 0 0, opAt 452 .CALLDATALOAD,
-   pushAt 453 1 32, opAt 454 .CALLDATALOAD,
-   pushAt 455 1 64, opAt 456 .CALLDATALOAD]
+  [pushAt 451 0 0,
+   opAt 452 .CALLDATALOAD,
+   pushAt 453 1 32,
+   opAt 454 .CALLDATALOAD,
+   pushAt 455 1 64,
+   opAt 456 .CALLDATALOAD]
 
 /-- Direct hop over the EIP-7823 checks, justified by `Correct`'s valid-input
 precondition. The last header load uses `PUSH3 64`, which frees two bytes for two `JUMPDEST`s,
@@ -136,7 +140,8 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
     (hi : 450 ≤ i) (hii : i ≤ 457) :
     Artifact.submissionArtifact.instructionPC i =
       ([647,648,649,650,652,653,655,656] : List Nat)[i - 450]! := by
-  interval_cases i <;> decide
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  interval_cases i <;> rfl
 
 @[simp] theorem jump1196 :
     Decode.isValidJumpDest submissionBytecode 647 = true :=
