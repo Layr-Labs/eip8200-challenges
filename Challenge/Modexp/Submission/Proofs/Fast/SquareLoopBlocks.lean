@@ -98,38 +98,38 @@ def againProgram : List Instr :=
 /-! ## Located blocks -/
 
 def sqExitBlock : Block Artifact.submissionArtifact .Osaka 4919 sqExitProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3751 10 4919 sqExitProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3734 10 4919 sqExitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def lastBlock : Block Artifact.submissionArtifact .Osaka 4935 lastProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3761 4 4935 lastProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3744 4 4935 lastProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def moreBlock : Block Artifact.submissionArtifact .Osaka 4945 moreProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3765 5 4945 moreProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3748 5 4945 moreProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def againBlock : Block Artifact.submissionArtifact .Osaka 4956 againProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3770 18 4956 againProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3753 18 4956 againProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-! ## Jump destinations of the loop -/
 
 theorem jumpDest4753 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4945 = true :=
-  Artifact.isValidJumpDest_index 3765 (by rfl)
+  Artifact.isValidJumpDest_index 3748 (by rfl)
 
 theorem jumpDest4762 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4956 = true :=
-  Artifact.isValidJumpDest_index 3770 (by rfl)
+  Artifact.isValidJumpDest_index 3753 (by rfl)
 
 theorem jumpDest3272 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3303 = true :=
-  Artifact.isValidJumpDest_index 2489 (by rfl)
+  Artifact.isValidJumpDest_index 2485 (by rfl)
 
 theorem jumpDest4683 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4877 = true :=
-  Artifact.isValidJumpDest_index 3724 (by rfl)
+  Artifact.isValidJumpDest_index 3707 (by rfl)
 
 /-! ## The counter word -/
 

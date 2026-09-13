@@ -40,7 +40,7 @@ def pcNegNext : Nat := 3465
 def pcNegMid : Nat := 3459
 def pcNegDone : Nat := 3473
 def pcPreNewton : Nat := 3519
-def pcNewtonB : Nat := 3544
+def pcNewtonB : Nat := 3547
 def pcShiftLoop : Nat := 3597
 def pcShiftBody : Nat := 3604
 def pcEstimate : Nat := 3618
@@ -154,8 +154,8 @@ def macSetupState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : 
 def macLoopState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k j : Nat) :
     State :=
   { s with pc := UInt256.ofNat (pcMacLoop + 39 * ShiftUnrollEntry.cellIndex n j)
-           stack := UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) j) ::
-             UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j) ::
+           stack := UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j) ::
+             UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935 ::
              UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 ::
              (Monpro.l1Step um q NEG n j).carry :: q :: UInt256.ofNat k ::
              outer n bsize esize msize
@@ -170,8 +170,8 @@ def macDispatchState (s : State) (um : ByteArray) (q : UInt256)
 def midState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat) :
     State :=
   { s with pc := UInt256.ofNat pcMid
-           stack := UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) n) ::
-             UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) n) ::
+           stack := UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) n) ::
+             UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935 ::
              UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 ::
              (Monpro.l1Step um q NEG n n).carry :: q :: UInt256.ofNat k ::
              outer n bsize esize msize
