@@ -15,8 +15,8 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached
 /-- Stage the first operand at 2368 (`MCOPY`) and zero the scratch block (`CALLDATACOPY`
 from the end of calldata), keeping `hd` on top: pc 4174 → 4194. -/
 def zeroProgram : List Instr :=
-  [.push 2 2688, .op .MLOAD, .op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨2, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩), .push 2 2368, .op .MCOPY,
+  [.push 2 2688, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨2, by decide⟩),
+   .op .JUMPDEST, .push 2 2368, .op .MCOPY,
    .op (.Dup ⟨1, by decide⟩), .push 1 64, .op .ADD, .op .CALLDATASIZE,
    .push 2 2048, .op .CALLDATACOPY]
 
