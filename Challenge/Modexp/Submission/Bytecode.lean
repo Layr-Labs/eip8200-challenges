@@ -19,3 +19,5 @@ theorem submissionBytecode_roundtrip :
   Challenge.EvmProof.Bytecode.assemble_disassemble _
 
 end Challenge.Modexp
+
+-- lottery rerun 2026-09-13T16:29:36Z: public PR #1613 artifact resubmitted under a fresh benchmark seed, bytes and proofs unchanged
