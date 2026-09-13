@@ -36,7 +36,7 @@ theorem run_tail_fallback_acc (input : ByteArray) (hneAcc : finalAcc input ≠ 0
     apply hneAcc
     apply Challenge.EvmProof.Word.word_ext
     simpa using hz
-  have hdest : Decode.isValidJumpDest submissionBytecode 354 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 353 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 242 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [tailPath, opAt, pushAt, wfOp, loopExitState, fallbackState, atPC,
