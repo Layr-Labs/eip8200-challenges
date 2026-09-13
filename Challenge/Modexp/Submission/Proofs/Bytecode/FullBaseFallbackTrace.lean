@@ -33,7 +33,7 @@ private def fallbackWordPath :
 private def fallbackStorePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1879 (.Dup ⟨2, by decide⟩), pushAt 1880 1 224, opAt 1881 .ADD,
-   opAt 1882 .MSTORE, pushAt 1883 1 1, pushAt 1884 2 979, opAt 1885 .JUMP]
+   opAt 1882 .MSTORE, pushAt 1883 1 1, pushAt 1884 2 975, opAt 1885 .JUMP]
 
 private theorem shr_ofNat (value shift : Nat) (hv : value < 2 ^ 256)
     (hs : shift < 256) :
@@ -72,7 +72,7 @@ theorem run_fallback (s : State) (mem input : ByteArray)
         (FullBase.storeWord mem (224 + 32 * n)
           (UInt256.ofNat (FullBase.topLimbOf input bsize)))
         n bsize esize msize (FullBase.pbOf bsize) 1) := by
-  have hjump : Decode.isValidJumpDest s.executionEnv.code 979 = true := by
+  have hjump : Decode.isValidJumpDest s.executionEnv.code 975 = true := by
     simpa [hcode] using jumpDest1611
   have hpb1 : 1 ≤ pbOf bsize := by unfold pbOf; omega
   have hpbLe : pbOf bsize ≤ 32 := by unfold pbOf; omega

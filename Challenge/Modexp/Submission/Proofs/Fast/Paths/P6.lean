@@ -17,7 +17,7 @@ def blk1314 :
    opAt 759 .POP,
    pushAt 760 1 1,
    opAt 761 .ADD,
-   pushAt 762 2 1065,
+   pushAt 762 2 1061,
    opAt 763 .JUMP]
 
 /-- Instructions 1402..1414, pc 1977..2002. -/
@@ -30,11 +30,11 @@ def blk1320 :
    pushAt 768 2 736,
    opAt 769 .ADD,
    opAt 770 .MSTORE,
-   pushAt 771 2 1164,
+   pushAt 771 2 1160,
    pushAt 772 2 256,
    pushAt 773 2 768,
    pushAt 774 2 256,
-   pushAt 775 2 3552,
+   pushAt 775 2 3536,
    opAt 776 .JUMP]
 
 /-- Instructions 1463..1470, pc 2003..2012. -/
@@ -85,11 +85,11 @@ def blk1360 :
 def blk1362 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 802 .JUMPDEST,
-   pushAt 803 2 1206,
+   pushAt 803 2 1202,
    opAt 804 (.Dup ⟨2, by decide⟩),
    opAt 805 (.Dup ⟨0, by decide⟩),
    opAt 806 (.Dup ⟨0, by decide⟩),
-   pushAt 807 2 1491,
+   pushAt 807 2 1487,
    opAt 808 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

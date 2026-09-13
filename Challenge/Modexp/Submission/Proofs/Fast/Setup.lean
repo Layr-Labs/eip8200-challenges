@@ -228,7 +228,7 @@ def fallbackState (s : State) : State :=
 
 /-- Entry of `BAIL1` (pc 2016): one live stack word. -/
 def bail1State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 1174, stack := [UInt256.ofNat (modulusSize input)] }
+  { s with pc := UInt256.ofNat 1170, stack := [UInt256.ofNat (modulusSize input)] }
 
 /-- After the `msize > 32` check (pc 1456). -/
 def sizeCheckState (s : State) (input : ByteArray) : State :=
@@ -451,7 +451,7 @@ def oddCheckState (s : State) (input : ByteArray) : State :=
 
 /-- Entry of `BAIL6` (pc 1897): six live stack words. -/
 def bail6State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 1180
+  { s with pc := UInt256.ofNat 1176
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 
 set_option linter.unusedSimpArgs false in
@@ -1049,11 +1049,11 @@ def setupPathD :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 620 0 0,
    opAt 621 .SUB,
-   pushAt 622 6 2720,
+   pushAt 622 2 2720,
    opAt 623 .MSTORE,
    opAt 624 .POP,
    opAt 625 .POP,
-   pushAt 626 2 2840,
+   pushAt 626 2 2833,
    opAt 627 .JUMP]
 
 /-- After the variable stores and the modulus load (pc 1579). -/
@@ -1075,7 +1075,7 @@ def newtonState (s : State) (input : ByteArray) (m0 x p : Nat) : State :=
 /-- State at the `R1B` guard entry `JUMPDEST` (pc 2674).  The guard dispatches
 to `DOUBLE256` itself when the modulus's top bit is clear. -/
 def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
-  { s with pc := UInt256.ofNat 2840
+  { s with pc := UInt256.ofNat 2833
            stack := outerStack input
            memory := setupMem s.memory input m0
            activeWords := setupWords s.activeWords input }
@@ -1154,7 +1154,7 @@ theorem run_setupC (s : State) (input : ByteArray) (m0 : Nat)
 /-- The dispatcher entry `JUMPDEST` (instruction 2660, pc 2016).  The setup path jumps
 here directly instead of calling the Montgomery-form conversion first. -/
 private theorem jumpDest3296 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2840 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2833 = true :=
   Artifact.isValidJumpDest_index 2091 (by rfl)
 
 set_option linter.unusedSimpArgs false in
@@ -1542,7 +1542,7 @@ theorem fastSetupState_memory (input : ByteArray) :
 /-- The setup block hands over at the dispatcher entry with a plain outer stack,
 rather than at the Montgomery-form conversion call with its two argument words. -/
 theorem fastSetupState_pc (input : ByteArray) :
-    (fastSetupState input).pc = UInt256.ofNat 2840 := rfl
+    (fastSetupState input).pc = UInt256.ofNat 2833 := rfl
 
 theorem fastSetupState_stack (input : ByteArray) :
     (fastSetupState input).stack = outerStack input := rfl

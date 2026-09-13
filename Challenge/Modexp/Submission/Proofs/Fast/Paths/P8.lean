@@ -62,7 +62,7 @@ def blk1421 :
    opAt 902 (.Dup ⟨5, by decide⟩),
    opAt 903 (.Dup ⟨1, by decide⟩),
    opAt 904 .GT,
-   pushAt 905 2 1268,
+   pushAt 905 2 1264,
    opAt 906 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast
