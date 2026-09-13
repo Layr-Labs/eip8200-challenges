@@ -12,54 +12,71 @@ def template : List Instr :=
   [ .op (.Dup ⟨11, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 1080),
     .op .MSTORE,
-    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨15, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 1062),
     .op .MSTORE,
-    .op (.Dup ⟨15, by decide⟩),
+    .op (.Dup ⟨8, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 1044),
     .op .MSTORE,
-    .op (.Dup ⟨15, by decide⟩),
+    .op (.Dup ⟨4, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 1026),
     .op .MSTORE,
-    .op (.Dup ⟨5, by decide⟩),
+    .op (.Dup ⟨4, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 1008),
     .op .MSTORE,
-    .op (.Dup ⟨5, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 990),
     .op .MSTORE,
-    .op (.Dup ⟨0, by decide⟩),
+    .op (.Dup ⟨1, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 972),
     .op .MSTORE,
-    .op (.Dup ⟨0, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 954),
     .op .MSTORE,
-    .op (.Dup ⟨2, by decide⟩),
+    .op (.Dup ⟨11, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 936),
     .op .MSTORE,
-    .op (.Dup ⟨2, by decide⟩),
+    .op (.Dup ⟨11, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 918),
     .op .MSTORE,
-    .op (.Dup ⟨1, by decide⟩),
+    .op (.Dup ⟨7, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 900),
     .op .MSTORE,
-    .op (.Dup ⟨0, by decide⟩),
+    .op (.Dup ⟨15, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 882),
     .op .MSTORE,
-    .op (.Dup ⟨10, by decide⟩),
+    .op (.Dup ⟨4, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 864),
     .op .MSTORE,
+    .op (.Dup ⟨6, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 846),
     .op .MSTORE,
-    .op (.Dup ⟨0, by decide⟩),
+    .op (.Dup ⟨4, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 828),
     .op .MSTORE,
-    .op (.Dup ⟨0, by decide⟩),
+    .op (.Dup ⟨1, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 810),
     .op .MSTORE ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ x.v0, x.v1, x.v2, x.v3, x.v4, x.v5, x.v6, x.v7, x.v8, x.v9, x.v10, x.v11, x.v12, x.v13, x.v14, x.v15 ] ++ rho
+  [ x.v0,
+    x.v1,
+    x.v2,
+    x.v3,
+    x.v4,
+    x.v5,
+    x.v6,
+    x.v7,
+    x.v8,
+    x.v9,
+    x.v10,
+    x.v11,
+    x.v12,
+    x.v13,
+    x.v14,
+    x.v15 ] ++ rho
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ x.v1,
+  [ x.v0,
+    x.v1,
     x.v2,
     x.v3,
     x.v4,
@@ -75,7 +92,7 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     x.v14,
     x.v15 ] ++ rho
 def outputMemory (memory : ByteArray) (x : Input) : ByteArray :=
-  (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord memory 1080 x.v11) 1062 x.v8) 1044 x.v15) 1026 x.v15) 1008 x.v5) 990 x.v5) 972 x.v0) 954 x.v0) 936 x.v2) 918 x.v2) 900 x.v1) 882 x.v0) 864 x.v10) 846 x.v0) 828 x.v1) 810 x.v1)
+  (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord memory 1080 x.v11) 1062 x.v15) 1044 x.v8) 1026 x.v4) 1008 x.v4) 990 x.v9) 972 x.v1) 954 x.v9) 936 x.v11) 918 x.v11) 900 x.v7) 882 x.v15) 864 x.v4) 846 x.v6) 828 x.v4) 810 x.v1)
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 35 ≤ s.activeWords.toNat) :
@@ -102,8 +119,8 @@ def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osak
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 648 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 393) = UInt256.ofNat 648
+theorem site_pc : site.startPC = UInt256.ofNat 644 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 393) = UInt256.ofNat 644
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound
@@ -116,10 +133,10 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 648, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 727, stack := outputStack s.memory x rho, memory := outputMemory s.memory x} := by
-  have hraw := run_actual s (UInt256.ofNat 648) x rho hstack hrun hactive
-  have hend : pcAfter (UInt256.ofNat 648) template = UInt256.ofNat 727 := by decide
+    GasSteps {s with pc := UInt256.ofNat 644, stack := inputStack x rho}
+      {s with pc := UInt256.ofNat 724, stack := outputStack s.memory x rho, memory := outputMemory s.memory x} := by
+  have hraw := run_actual s (UInt256.ofNat 644) x rho hstack hrun hactive
+  have hend : pcAfter (UInt256.ofNat 644) template = UInt256.ofNat 724 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps

@@ -9,56 +9,55 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawNormalStore44
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
 def template : List Instr :=
-  [ .op (.Dup ⟨2, by decide⟩),
+  [ .op (.Dup ⟨0, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 792),
     .op .MSTORE,
-    .op (.Dup ⟨2, by decide⟩),
+    .op (.Dup ⟨0, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 774),
     .op .MSTORE,
+    .op (.Dup ⟨10, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 756),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 738),
     .op .MSTORE,
-    .op (.Dup ⟨9, by decide⟩),
+    .op (.Dup ⟨2, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 720),
     .op .MSTORE,
-    .op (.Dup ⟨9, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 702),
     .op .MSTORE,
-    .op (.Dup ⟨13, by decide⟩),
+    .op (.Dup ⟨0, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 684),
     .op .MSTORE,
-    .op (.Dup ⟨7, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 666),
     .op .MSTORE,
-    .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨8, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 648),
     .op .MSTORE,
-    .op (.Dup ⟨5, by decide⟩),
+    .op (.Dup ⟨8, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 630),
     .op .MSTORE,
-    .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨0, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 612),
     .op .MSTORE,
-    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨11, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 594),
     .op .MSTORE,
-    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨0, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 576),
     .op .MSTORE,
+    .op (.Dup ⟨0, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 558),
     .op .MSTORE,
-    .op (.Dup ⟨0, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 540),
     .op .MSTORE,
-    .op (.Dup ⟨10, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 522),
     .op .MSTORE ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ x.v0, x.v1, x.v2, x.v3, x.v4, x.v5, x.v6, x.v7, x.v8, x.v9, x.v10, x.v11, x.v12, x.v13, x.v14 ] ++ rho
-def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ x.v2,
+  [ x.v0,
+    x.v1,
+    x.v2,
     x.v3,
     x.v4,
     x.v5,
@@ -70,9 +69,24 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     x.v11,
     x.v12,
     x.v13,
-    x.v14 ] ++ rho
+    x.v14,
+    x.v15 ] ++ rho
+def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
+  [ x.v3,
+    x.v4,
+    x.v5,
+    x.v6,
+    x.v7,
+    x.v8,
+    x.v9,
+    x.v10,
+    x.v11,
+    x.v12,
+    x.v13,
+    x.v14,
+    x.v15 ] ++ rho
 def outputMemory (memory : ByteArray) (x : Input) : ByteArray :=
-  (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord memory 792 x.v2) 774 x.v2) 756 x.v0) 738 x.v1) 720 x.v10) 702 x.v10) 684 x.v14) 666 x.v8) 648 x.v4) 630 x.v6) 612 x.v4) 594 x.v9) 576 x.v9) 558 x.v1) 540 x.v2) 522 x.v12)
+  (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord memory 792 x.v0) 774 x.v0) 756 x.v10) 738 x.v0) 720 x.v2) 702 x.v0) 684 x.v1) 666 x.v1) 648 x.v10) 630 x.v10) 612 x.v2) 594 x.v13) 576 x.v2) 558 x.v2) 540 x.v11) 522 x.v2)
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 35 ≤ s.activeWords.toNat) :
@@ -80,7 +94,7 @@ theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
       some {s with pc := pcAfter pc template, stack := outputStack s.memory x rho, memory := outputMemory s.memory x} := by
   have hbase : rho.length < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
-  have hcap (n : Nat) (hn : n ≤ 19) : rho.length + n < 1024 := by omega
+  have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 1088) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     Stagger144Active.word_active_preserved s.activeWords address hactive haddress
@@ -91,16 +105,16 @@ theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
   all_goals repeat first | apply And.intro | rfl
 #print axioms run_actual
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 440).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 441).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 440 actual_slice
-    (by change 440 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 441 actual_slice
+    (by change 441 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 727 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 440) = UInt256.ofNat 727
+theorem site_pc : site.startPC = UInt256.ofNat 724 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 441) = UInt256.ofNat 724
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound
@@ -113,10 +127,10 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 727, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 805, stack := outputStack s.memory x rho, memory := outputMemory s.memory x} := by
-  have hraw := run_actual s (UInt256.ofNat 727) x rho hstack hrun hactive
-  have hend : pcAfter (UInt256.ofNat 727) template = UInt256.ofNat 805 := by decide
+    GasSteps {s with pc := UInt256.ofNat 724, stack := inputStack x rho}
+      {s with pc := UInt256.ofNat 801, stack := outputStack s.memory x rho, memory := outputMemory s.memory x} := by
+  have hraw := run_actual s (UInt256.ofNat 724) x rho hstack hrun hactive
+  have hend : pcAfter (UInt256.ofNat 724) template = UInt256.ofNat 801 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps

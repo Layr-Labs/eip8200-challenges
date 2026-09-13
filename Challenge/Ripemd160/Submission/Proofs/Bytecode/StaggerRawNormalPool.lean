@@ -15,7 +15,7 @@ def template : List Instr :=
     .op .AND,
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .MLOAD,
-    .push ⟨3, by decide⟩ (UInt256.ofNat 48),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 48),
     .op .MLOAD,
     .op (.Dup ⟨3, by decide⟩),
     .op .AND,
@@ -23,39 +23,39 @@ def template : List Instr :=
     .op .MLOAD,
     .op (.Dup ⟨4, by decide⟩),
     .op .AND,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 44),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 32),
     .op .MLOAD,
     .op (.Dup ⟨5, by decide⟩),
     .op .AND,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 56),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 44),
     .op .MLOAD,
     .op (.Dup ⟨6, by decide⟩),
     .op .AND,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 52),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 56),
     .op .MLOAD,
     .op (.Dup ⟨7, by decide⟩),
     .op .AND,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 40),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 52),
     .op .MLOAD,
     .op (.Dup ⟨8, by decide⟩),
     .op .AND,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 28),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 40),
     .op .MLOAD,
     .op (.Dup ⟨9, by decide⟩),
     .op .AND,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 60),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 28),
     .op .MLOAD,
     .op (.Dup ⟨10, by decide⟩),
+    .op .AND,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 60),
+    .op .MLOAD,
+    .op (.Dup ⟨11, by decide⟩),
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 8),
     .op .MLOAD,
     .push ⟨1, by decide⟩ (UInt256.ofNat 4),
     .op .MLOAD,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 32),
-    .op .MLOAD,
-    .op (.Dup ⟨13, by decide⟩),
-    .op .AND,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 36),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 12),
     .op .MLOAD,
     .op (.Dup ⟨14, by decide⟩),
     .op .AND,
@@ -64,15 +64,14 @@ def template : List Instr :=
     .op (.Dup ⟨15, by decide⟩),
     .op .AND,
     .op (.Swap ⟨14, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 12),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 36),
     .op .MLOAD,
     .op .AND ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
   [ x.v0 ] ++ rho
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ (UInt256.land (MachineState.readWord memory 12) x.v0),
-    (UInt256.land x.v0 (MachineState.readWord memory 36)),
-    (UInt256.land x.v0 (MachineState.readWord memory 32)),
+  [ (UInt256.land (MachineState.readWord memory 36) x.v0),
+    (UInt256.land x.v0 (MachineState.readWord memory 12)),
     (MachineState.readWord memory 4),
     (MachineState.readWord memory 8),
     (UInt256.land x.v0 (MachineState.readWord memory 60)),
@@ -81,6 +80,7 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     (UInt256.land x.v0 (MachineState.readWord memory 52)),
     (UInt256.land x.v0 (MachineState.readWord memory 56)),
     (UInt256.land x.v0 (MachineState.readWord memory 44)),
+    (UInt256.land x.v0 (MachineState.readWord memory 32)),
     (UInt256.land x.v0 (MachineState.readWord memory 20)),
     (UInt256.land x.v0 (MachineState.readWord memory 48)),
     (MachineState.readWord memory 0),
@@ -112,8 +112,8 @@ def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osak
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 573 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 335) = UInt256.ofNat 573
+theorem site_pc : site.startPC = UInt256.ofNat 571 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 335) = UInt256.ofNat 571
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound
@@ -126,10 +126,10 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 573, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 648, stack := outputStack s.memory x rho} := by
-  have hraw := run_actual s (UInt256.ofNat 573) x rho hstack hrun hactive
-  have hend : pcAfter (UInt256.ofNat 573) template = UInt256.ofNat 648 := by decide
+    GasSteps {s with pc := UInt256.ofNat 571, stack := inputStack x rho}
+      {s with pc := UInt256.ofNat 644, stack := outputStack s.memory x rho} := by
+  have hraw := run_actual s (UInt256.ofNat 571) x rho hstack hrun hactive
+  have hend : pcAfter (UInt256.ofNat 571) template = UInt256.ofNat 644 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps

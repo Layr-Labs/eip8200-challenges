@@ -10,7 +10,7 @@ open RecognitionSites RecognitionMovement RecognitionBodyRaw RecognitionFrame Re
 open RecognitionAccumulator RecognitionRecurrence
 
 def loopState (s : State) (n k : Nat) (rho : List UInt256) : State :=
-  atState s (if k=n/32 then 289 else if boundary k then 222 else 184)
+  atState s (if k=n/32 then 287 else if boundary k then 222 else 184)
     (frame (fullFrame s.executionEnv.calldata n k) rho)
 
 def gasSteps_route_head (s : State) (e : Env s) (n k : Nat) (rho : List UInt256)
@@ -114,7 +114,7 @@ def endFrame (s : State) (n : Nat) : RecognitionBodyRaw.Frame :=
   else RecognitionControlRaw.partialResult s (fullFrame s.executionEnv.calldata n (n/32))
 
 def endState (s : State) (n : Nat) (rho : List UInt256) : State :=
-  atState s 313 (frame (endFrame s n) rho)
+  atState s 311 (frame (endFrame s n) rho)
 
 theorem endFrame_acc (s : State) (n : Nat) (hn : Allowed n) (hsize : s.executionEnv.calldata.size=n) :
     (endFrame s n).acc = resultAcc s.executionEnv.calldata n := by
