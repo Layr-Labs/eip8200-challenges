@@ -43,35 +43,35 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def setupToClear0Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 561 .JUMPDEST, pushAt 562 1 31,
-   opAt 563 (.Dup ⟨3, by decide⟩), opAt 564 .ADD,
-   pushAt 565 1 5, opAt 566 .SHR, pushAt 567 2 735,
-   opAt 568 (.Dup ⟨1, by decide⟩), pushAt 569 0 0,
-   pushAt 570 1 145, opAt 571 .JUMP]
+  [opAt 560 .JUMPDEST, pushAt 561 1 31,
+   opAt 562 (.Dup ⟨3, by decide⟩), opAt 563 .ADD,
+   pushAt 564 1 5, opAt 565 .SHR, pushAt 566 2 735,
+   opAt 567 (.Dup ⟨1, by decide⟩), pushAt 568 0 0,
+   pushAt 569 1 145, opAt 570 .JUMP]
 
 def toClear1024Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 572 .JUMPDEST, pushAt 573 2 746,
-   opAt 574 (.Dup ⟨1, by decide⟩), pushAt 575 2 1024,
-   pushAt 576 1 145, opAt 577 .JUMP]
+  [opAt 571 .JUMPDEST, pushAt 572 2 746,
+   opAt 573 (.Dup ⟨1, by decide⟩), pushAt 574 2 1024,
+   pushAt 575 1 145, opAt 576 .JUMP]
 
 def toClear2048Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 578 .JUMPDEST, pushAt 579 2 757,
-   opAt 580 (.Dup ⟨1, by decide⟩), pushAt 581 2 2048,
-   pushAt 582 1 145, opAt 583 .JUMP]
+  [opAt 577 .JUMPDEST, pushAt 578 2 757,
+   opAt 579 (.Dup ⟨1, by decide⟩), pushAt 580 2 2048,
+   pushAt 581 1 145, opAt 582 .JUMP]
 
 def toClear6144Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 584 .JUMPDEST, pushAt 585 2 768,
-   opAt 586 (.Dup ⟨1, by decide⟩), pushAt 587 2 6144,
-   pushAt 588 1 145, opAt 589 .JUMP]
+  [opAt 583 .JUMPDEST, pushAt 584 2 768,
+   opAt 585 (.Dup ⟨1, by decide⟩), pushAt 586 2 6144,
+   pushAt 587 1 145, opAt 588 .JUMP]
 
 def toLoadModulusPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 590 .JUMPDEST, pushAt 591 2 779, pushAt 592 0 0,
-   opAt 593 (.Dup ⟨5, by decide⟩), opAt 594 (.Dup ⟨9, by decide⟩),
-   pushAt 595 2 534, opAt 596 .JUMP]
+  [opAt 589 .JUMPDEST, pushAt 590 2 779, pushAt 591 0 0,
+   opAt 592 (.Dup ⟨5, by decide⟩), opAt 593 (.Dup ⟨9, by decide⟩),
+   pushAt 594 2 534, opAt 595 .JUMP]
 
 def saved (b e m baseOff expOff modOff : Nat) (returnDest : UInt256)
     (rest : List UInt256) : List UInt256 :=
@@ -120,38 +120,38 @@ def setupReturned (s : State) (b e m baseOff expOff modOff : Nat)
     (saved b e m baseOff expOff modOff returnDest rest)
 
 @[simp] private theorem setupPCs (i : Nat)
-    (hi : 561 ≤ i) (hii : i ≤ 596) :
+    (hi : 560 ≤ i) (hii : i ≤ 595) :
     Artifact.submissionArtifact.instructionPC i =
-      ([719,720,722,723,724,726,727,730,731,732,734,735,736,739,740,743,745,746,747,750,751,754,756,757,758,761,762,765,767,768,769,772,773,774,775,778] : List Nat)[i - 561]! := by
+      ([719,720,722,723,724,726,727,730,731,732,734,735,736,739,740,743,745,746,747,750,751,754,756,757,758,761,762,765,767,768,769,772,773,774,775,778] : List Nat)[i - 560]! := by
   interval_cases i <;> decide
 
 private theorem jump19 :
     Decode.isValidJumpDest submissionBytecode 145 = true :=
-  Artifact.isValidJumpDest_index 87 (by rfl)
+  Artifact.isValidJumpDest_index 86 (by rfl)
 
 private theorem jump439 :
     Decode.isValidJumpDest submissionBytecode 534 = true :=
-  Artifact.isValidJumpDest_index 413 (by rfl)
+  Artifact.isValidJumpDest_index 412 (by rfl)
 
 private theorem jump721 :
     Decode.isValidJumpDest submissionBytecode 735 = true :=
-  Artifact.isValidJumpDest_index 572 (by rfl)
+  Artifact.isValidJumpDest_index 571 (by rfl)
 
 private theorem jump733 :
     Decode.isValidJumpDest submissionBytecode 746 = true :=
-  Artifact.isValidJumpDest_index 578 (by rfl)
+  Artifact.isValidJumpDest_index 577 (by rfl)
 
 private theorem jump745 :
     Decode.isValidJumpDest submissionBytecode 757 = true :=
-  Artifact.isValidJumpDest_index 584 (by rfl)
+  Artifact.isValidJumpDest_index 583 (by rfl)
 
 private theorem jump757 :
     Decode.isValidJumpDest submissionBytecode 768 = true :=
-  Artifact.isValidJumpDest_index 590 (by rfl)
+  Artifact.isValidJumpDest_index 589 (by rfl)
 
 private theorem jump768 :
     Decode.isValidJumpDest submissionBytecode 779 = true :=
-  Artifact.isValidJumpDest_index 597 (by rfl)
+  Artifact.isValidJumpDest_index 596 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupToClear0 (s : State) (b e m baseOff expOff modOff : Nat)

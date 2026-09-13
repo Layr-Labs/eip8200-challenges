@@ -43,82 +43,82 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 def mulToClearPath :
     List (Challenge.EvmProof.Stepper.Located
       Artifact.submissionArtifact .Osaka) :=
-  [opAt 328 .JUMPDEST, pushAt 329 2 425,
-   opAt 330 (.Dup ⟨5, by decide⟩), opAt 331 (.Dup ⟨4, by decide⟩),
-   pushAt 332 1 145, opAt 333 .JUMP]
+  [opAt 327 .JUMPDEST, pushAt 328 2 425,
+   opAt 329 (.Dup ⟨5, by decide⟩), opAt 330 (.Dup ⟨4, by decide⟩),
+   pushAt 331 1 145, opAt 332 .JUMP]
 
 def mulToCopyPath :
     List (Challenge.EvmProof.Stepper.Located
       Artifact.submissionArtifact .Osaka) :=
-  [opAt 334 .JUMPDEST, pushAt 335 2 437,
-   opAt 336 (.Dup ⟨5, by decide⟩), opAt 337 (.Dup ⟨2, by decide⟩),
-   pushAt 338 2 4096, pushAt 339 1 177, opAt 340 .JUMP]
+  [opAt 333 .JUMPDEST, pushAt 334 2 437,
+   opAt 335 (.Dup ⟨5, by decide⟩), opAt 336 (.Dup ⟨2, by decide⟩),
+   pushAt 337 2 4096, pushAt 338 1 177, opAt 339 .JUMP]
 
 def mulSetupPath :
     List (Challenge.EvmProof.Stepper.Located
       Artifact.submissionArtifact .Osaka) :=
-  [opAt 341 .JUMPDEST, pushAt 342 0 0]
+  [opAt 340 .JUMPDEST, pushAt 341 0 0]
 
 def mulOuterGuardPath :
     List (Challenge.EvmProof.Stepper.Located
       Artifact.submissionArtifact .Osaka) :=
-  [opAt 343 .JUMPDEST, opAt 344 (.Dup ⟨5, by decide⟩),
-   opAt 345 (.Dup ⟨1, by decide⟩), opAt 346 .LT, opAt 347 .ISZERO,
-   pushAt 348 2 526, opAt 349 .JUMPI]
+  [opAt 342 .JUMPDEST, opAt 343 (.Dup ⟨5, by decide⟩),
+   opAt 344 (.Dup ⟨1, by decide⟩), opAt 345 .LT, opAt 346 .ISZERO,
+   pushAt 347 2 526, opAt 348 .JUMPI]
 
 def mulOuterLoadPath :
     List (Challenge.EvmProof.Stepper.Located
       Artifact.submissionArtifact .Osaka) :=
-  [opAt 350 (.Dup ⟨0, by decide⟩), pushAt 351 1 5, opAt 352 .SHL,
-   opAt 353 (.Dup ⟨3, by decide⟩), opAt 354 .ADD, opAt 355 .MLOAD,
-   pushAt 356 0 0]
+  [opAt 349 (.Dup ⟨0, by decide⟩), pushAt 350 1 5, opAt 351 .SHL,
+   opAt 352 (.Dup ⟨3, by decide⟩), opAt 353 .ADD, opAt 354 .MLOAD,
+   pushAt 355 0 0]
 
 def mulInnerGuardPath :
     List (Challenge.EvmProof.Stepper.Located
       Artifact.submissionArtifact .Osaka) :=
-  [opAt 357 .JUMPDEST, pushAt 358 2 256,
-   opAt 359 (.Dup ⟨1, by decide⟩), opAt 360 .LT, opAt 361 .ISZERO,
-   pushAt 362 2 513, opAt 363 .JUMPI]
+  [opAt 356 .JUMPDEST, pushAt 357 2 256,
+   opAt 358 (.Dup ⟨1, by decide⟩), opAt 359 .LT, opAt 360 .ISZERO,
+   pushAt 361 2 513, opAt 362 .JUMPI]
 
 def mulInnerToAddPath :
     List (Challenge.EvmProof.Stepper.Located
       Artifact.submissionArtifact .Osaka) :=
-  [pushAt 364 1 1, opAt 365 (.Dup ⟨2, by decide⟩),
-   opAt 366 (.Dup ⟨2, by decide⟩), opAt 367 .SHR, opAt 368 .AND,
-   pushAt 369 2 486, opAt 370 (.Dup ⟨9, by decide⟩),
-   opAt 371 (.Dup ⟨9, by decide⟩), opAt 372 (.Dup ⟨3, by decide⟩),
-   pushAt 373 2 4096, opAt 374 (.Dup ⟨11, by decide⟩),
-   pushAt 375 1 216, opAt 376 .JUMP]
+  [pushAt 363 1 1, opAt 364 (.Dup ⟨2, by decide⟩),
+   opAt 365 (.Dup ⟨2, by decide⟩), opAt 366 .SHR, opAt 367 .AND,
+   pushAt 368 2 486, opAt 369 (.Dup ⟨9, by decide⟩),
+   opAt 370 (.Dup ⟨9, by decide⟩), opAt 371 (.Dup ⟨3, by decide⟩),
+   pushAt 372 2 4096, opAt 373 (.Dup ⟨11, by decide⟩),
+   pushAt 374 1 216, opAt 375 .JUMP]
 
 def mulAddToDoublePath :
     List (Challenge.EvmProof.Stepper.Located
       Artifact.submissionArtifact .Osaka) :=
-  [opAt 377 .JUMPDEST, pushAt 378 2 501,
-   opAt 379 (.Dup ⟨9, by decide⟩), opAt 380 (.Dup ⟨9, by decide⟩),
-   pushAt 381 1 1, pushAt 382 2 4096, opAt 383 (.Dup ⟨0, by decide⟩),
-   pushAt 384 1 216, opAt 385 .JUMP]
+  [opAt 376 .JUMPDEST, pushAt 377 2 501,
+   opAt 378 (.Dup ⟨9, by decide⟩), opAt 379 (.Dup ⟨9, by decide⟩),
+   pushAt 380 1 1, pushAt 381 2 4096, opAt 382 (.Dup ⟨0, by decide⟩),
+   pushAt 383 1 216, opAt 384 .JUMP]
 
 def mulDoubleToNextPath :
     List (Challenge.EvmProof.Stepper.Located
       Artifact.submissionArtifact .Osaka) :=
-  [opAt 386 .JUMPDEST, opAt 387 .POP, pushAt 388 1 1,
-   opAt 389 (.Dup ⟨1, by decide⟩), opAt 390 .ADD,
-   opAt 391 (.Swap ⟨0, by decide⟩), opAt 392 .POP,
-   pushAt 393 2 456, opAt 394 .JUMP]
+  [opAt 385 .JUMPDEST, opAt 386 .POP, pushAt 387 1 1,
+   opAt 388 (.Dup ⟨1, by decide⟩), opAt 389 .ADD,
+   opAt 390 (.Swap ⟨0, by decide⟩), opAt 391 .POP,
+   pushAt 392 2 456, opAt 393 .JUMP]
 
 def mulInnerToOuterPath :
     List (Challenge.EvmProof.Stepper.Located
       Artifact.submissionArtifact .Osaka) :=
-  [opAt 395 .JUMPDEST, opAt 396 .POP, opAt 397 .POP,
-   pushAt 398 1 1, opAt 399 (.Dup ⟨1, by decide⟩), opAt 400 .ADD,
-   opAt 401 (.Swap ⟨0, by decide⟩), opAt 402 .POP,
-   pushAt 403 2 439, opAt 404 .JUMP]
+  [opAt 394 .JUMPDEST, opAt 395 .POP, opAt 396 .POP,
+   pushAt 397 1 1, opAt 398 (.Dup ⟨1, by decide⟩), opAt 399 .ADD,
+   opAt 400 (.Swap ⟨0, by decide⟩), opAt 401 .POP,
+   pushAt 402 2 439, opAt 403 .JUMP]
 
 def mulOuterExitPath :
     List (Challenge.EvmProof.Stepper.Located
       Artifact.submissionArtifact .Osaka) :=
-  [opAt 405 .JUMPDEST, opAt 406 .POP, opAt 407 .POP, opAt 408 .POP,
-   opAt 409 .POP, opAt 410 .POP, opAt 411 .POP, opAt 412 .JUMP]
+  [opAt 404 .JUMPDEST, opAt 405 .POP, opAt 406 .POP, opAt 407 .POP,
+   opAt 408 .POP, opAt 409 .POP, opAt 410 .POP, opAt 411 .JUMP]
 
 def mulEntry (s : State) (a b out modulus : UInt256) (count : Nat)
     (returnDest : UInt256) (rest : List UInt256) : State :=
@@ -460,9 +460,9 @@ theorem readWord_eq_of_represents (left right : ByteArray)
       simp [mulOuterProgress, mulLoadedState, ih]
 
 @[simp] private theorem mulPCs (i : Nat)
-    (hi : 328 ≤ i) (hii : i ≤ 342) :
+    (hi : 327 ≤ i) (hii : i ≤ 341) :
     Artifact.submissionArtifact.instructionPC i =
-      ([416,417,420,421,422,424,425,426,429,430,431,434,436,437,438] : List Nat)[i - 328]! := by
+      ([416,417,420,421,422,424,425,426,429,430,431,434,436,437,438] : List Nat)[i - 327]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem listGetZero {α : Type} (head default : α)
@@ -476,78 +476,78 @@ theorem readWord_eq_of_represents (left right : ByteArray)
   rfl
 
 @[simp] private theorem mulLoopPCs (i : Nat)
-    (hi : 343 ≤ i) (hii : i ≤ 363) :
+    (hi : 342 ≤ i) (hii : i ≤ 362) :
     Artifact.submissionArtifact.instructionPC i =
-      ([439,440,441,442,443,444,447,448,449,451,452,453,454,455,456,457,460,461,462,463,466] : List Nat)[i - 343]! := by
+      ([439,440,441,442,443,444,447,448,449,451,452,453,454,455,456,457,460,461,462,463,466] : List Nat)[i - 342]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem mulInnerPCs (i : Nat)
-    (hi : 364 ≤ i) (hii : i ≤ 385) :
+    (hi : 363 ≤ i) (hii : i ≤ 384) :
     Artifact.submissionArtifact.instructionPC i =
-      ([467,469,470,471,472,473,476,477,478,479,482,483,485,486,487,490,491,492,494,497,498,500] : List Nat)[i - 364]! := by
+      ([467,469,470,471,472,473,476,477,478,479,482,483,485,486,487,490,491,492,494,497,498,500] : List Nat)[i - 363]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem mulNextPCs (i : Nat)
-    (hi : 386 ≤ i) (hii : i ≤ 394) :
+    (hi : 385 ≤ i) (hii : i ≤ 393) :
     Artifact.submissionArtifact.instructionPC i =
-      ([501,502,503,505,506,507,508,509,512] : List Nat)[i - 386]! := by
+      ([501,502,503,505,506,507,508,509,512] : List Nat)[i - 385]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem mulInnerExitPCs (i : Nat)
-    (hi : 395 ≤ i) (hii : i ≤ 404) :
+    (hi : 394 ≤ i) (hii : i ≤ 403) :
     Artifact.submissionArtifact.instructionPC i =
-      ([513,514,515,516,518,519,520,521,522,525] : List Nat)[i - 395]! := by
+      ([513,514,515,516,518,519,520,521,522,525] : List Nat)[i - 394]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem mulReturnPCs (i : Nat)
-    (hi : 405 ≤ i) (hii : i ≤ 412) :
+    (hi : 404 ≤ i) (hii : i ≤ 411) :
     Artifact.submissionArtifact.instructionPC i =
-      ([526,527,528,529,530,531,532,533] : List Nat)[i - 405]! := by
+      ([526,527,528,529,530,531,532,533] : List Nat)[i - 404]! := by
   interval_cases i <;> decide
 
 private theorem jump335 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 439 = true :=
-  Artifact.isValidJumpDest_index 343 (by rfl)
+  Artifact.isValidJumpDest_index 342 (by rfl)
 
 private theorem jump352 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 456 = true :=
-  Artifact.isValidJumpDest_index 357 (by rfl)
+  Artifact.isValidJumpDest_index 356 (by rfl)
 
 private theorem jump383 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 486 = true :=
-  Artifact.isValidJumpDest_index 377 (by rfl)
+  Artifact.isValidJumpDest_index 376 (by rfl)
 
 private theorem jump401 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 501 = true :=
-  Artifact.isValidJumpDest_index 386 (by rfl)
+  Artifact.isValidJumpDest_index 385 (by rfl)
 
 private theorem jump104 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 216 = true :=
-  Artifact.isValidJumpDest_index 149 (by rfl)
+  Artifact.isValidJumpDest_index 148 (by rfl)
 
 private theorem jump19 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 145 = true :=
-  Artifact.isValidJumpDest_index 87 (by rfl)
+  Artifact.isValidJumpDest_index 86 (by rfl)
 
 private theorem jump58 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 177 = true :=
-  Artifact.isValidJumpDest_index 115 (by rfl)
+  Artifact.isValidJumpDest_index 114 (by rfl)
 
 private theorem jump320 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 425 = true :=
-  Artifact.isValidJumpDest_index 334 (by rfl)
+  Artifact.isValidJumpDest_index 333 (by rfl)
 
 private theorem jump333 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 437 = true :=
-  Artifact.isValidJumpDest_index 341 (by rfl)
+  Artifact.isValidJumpDest_index 340 (by rfl)
 
 private theorem jump413 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 513 = true :=
-  Artifact.isValidJumpDest_index 395 (by rfl)
+  Artifact.isValidJumpDest_index 394 (by rfl)
 
 private theorem jump426 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 526 = true :=
-  Artifact.isValidJumpDest_index 405 (by rfl)
+  Artifact.isValidJumpDest_index 404 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_mulToClear (s : State) (a b out modulus : UInt256) (count : Nat)

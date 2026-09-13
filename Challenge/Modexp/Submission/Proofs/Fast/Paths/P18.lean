@@ -24,35 +24,35 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- Instructions 2692..2696, pc 4347..3840: the `w = 0` test. -/
 def blk2557 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2425 .JUMPDEST,
-   opAt 2426 (.Dup ⟨1, by decide⟩),
-   opAt 2427 .ISZERO,
-   pushAt 2428 2 1611,
-   opAt 2429 .JUMPI]
+  [opAt 2420 .JUMPDEST,
+   opAt 2421 (.Dup ⟨1, by decide⟩),
+   opAt 2422 .ISZERO,
+   pushAt 2423 2 1611,
+   opAt 2424 .JUMPI]
 
 /-- Instructions 2697..2703, pc 3872..3840: `ACC := BASE`, then the shift. -/
 def blk2562 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 2430 2 2688,
-   opAt 2431 .MLOAD,
-   pushAt 2432 2 512,
-   pushAt 2433 2 256,
-   opAt 2434 .MCOPY,
-   pushAt 2435 2 1652,
-   opAt 2436 .JUMP]
+  [pushAt 2425 2 2688,
+   opAt 2426 .MLOAD,
+   pushAt 2427 2 512,
+   pushAt 2428 2 256,
+   opAt 2429 .MCOPY,
+   pushAt 2430 2 1652,
+   opAt 2431 .JUMP]
 
 /-- PC table for the relocated leading-bit shortcut.  This range is outside
 the inherited `Fast.Defs` tables, so execution proofs need a local certificate
 instead of unfolding the complete bytecode prefix at every instruction. -/
 @[simp] theorem leadingBitPC (i : Nat)
-    (hi : 2425 ≤ i) (hii : i ≤ 2437) :
+    (hi : 2420 ≤ i) (hii : i ≤ 2432) :
     Artifact.submissionArtifact.instructionPC i =
-      ([3194,3195,3196,3197,3200,3201,3204,3205,3208,3211,3212,3215,3216] : List Nat)[i - 2425]! := by
+      ([3194,3195,3196,3197,3200,3201,3204,3205,3208,3211,3212,3215,3216] : List Nat)[i - 2420]! := by
   interval_cases i <;> decide
 
 theorem jumpDest3829 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3194 = true :=
-  Artifact.isValidJumpDest_index 2425 (by rfl)
+  Artifact.isValidJumpDest_index 2420 (by rfl)
 
 
 end Challenge.Modexp.Submission.Proofs.Fast

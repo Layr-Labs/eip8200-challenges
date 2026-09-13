@@ -43,40 +43,40 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def loadSetupPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 413 .JUMPDEST, pushAt 414 0 0]
+  [opAt 412 .JUMPDEST, pushAt 413 0 0]
 
 def loadGuardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 415 .JUMPDEST, opAt 416 (.Dup ⟨2, by decide⟩),
-   opAt 417 (.Dup ⟨1, by decide⟩), opAt 418 .LT, opAt 419 .ISZERO,
-   pushAt 420 2 600, opAt 421 .JUMPI]
+  [opAt 414 .JUMPDEST, opAt 415 (.Dup ⟨2, by decide⟩),
+   opAt 416 (.Dup ⟨1, by decide⟩), opAt 417 .LT, opAt 418 .ISZERO,
+   pushAt 419 2 600, opAt 420 .JUMPI]
 
 def loadToBytePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 422 (.Dup ⟨0, by decide⟩), pushAt 423 1 1,
-   opAt 424 (.Dup ⟨4, by decide⟩), opAt 425 .SUB, opAt 426 .SUB,
-   opAt 427 (.Dup ⟨0, by decide⟩), pushAt 428 1 5, opAt 429 .SHR,
-   pushAt 430 1 31, opAt 431 (.Dup ⟨2, by decide⟩), opAt 432 .AND,
-   pushAt 433 1 3, opAt 434 .SHL, opAt 435 (.Dup ⟨1, by decide⟩),
-   pushAt 436 1 5, opAt 437 .SHL, opAt 438 (.Dup ⟨7, by decide⟩),
-   opAt 439 .ADD, pushAt 440 2 578, pushAt 441 0 0,
-   opAt 442 (.Dup ⟨6, by decide⟩), opAt 443 (.Dup ⟨8, by decide⟩),
-   opAt 444 .ADD, pushAt 445 1 135, opAt 446 .JUMP]
+  [opAt 421 (.Dup ⟨0, by decide⟩), pushAt 422 1 1,
+   opAt 423 (.Dup ⟨4, by decide⟩), opAt 424 .SUB, opAt 425 .SUB,
+   opAt 426 (.Dup ⟨0, by decide⟩), pushAt 427 1 5, opAt 428 .SHR,
+   pushAt 429 1 31, opAt 430 (.Dup ⟨2, by decide⟩), opAt 431 .AND,
+   pushAt 432 1 3, opAt 433 .SHL, opAt 434 (.Dup ⟨1, by decide⟩),
+   pushAt 435 1 5, opAt 436 .SHL, opAt 437 (.Dup ⟨7, by decide⟩),
+   opAt 438 .ADD, pushAt 439 2 578, pushAt 440 0 0,
+   opAt 441 (.Dup ⟨6, by decide⟩), opAt 442 (.Dup ⟨8, by decide⟩),
+   opAt 443 .ADD, pushAt 444 1 135, opAt 445 .JUMP]
 
 def loadAfterBytePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 447 .JUMPDEST, opAt 448 (.Dup ⟨2, by decide⟩), opAt 449 .SHL,
-   opAt 450 (.Dup ⟨1, by decide⟩), opAt 451 .MLOAD, opAt 452 .OR,
-   opAt 453 (.Dup ⟨1, by decide⟩), opAt 454 .MSTORE, opAt 455 .POP,
-   opAt 456 .POP, opAt 457 .POP, opAt 458 .POP, pushAt 459 1 1,
-   opAt 460 (.Dup ⟨1, by decide⟩), opAt 461 .ADD,
-   opAt 462 (.Swap ⟨0, by decide⟩), opAt 463 .POP,
-   pushAt 464 2 536, opAt 465 .JUMP]
+  [opAt 446 .JUMPDEST, opAt 447 (.Dup ⟨2, by decide⟩), opAt 448 .SHL,
+   opAt 449 (.Dup ⟨1, by decide⟩), opAt 450 .MLOAD, opAt 451 .OR,
+   opAt 452 (.Dup ⟨1, by decide⟩), opAt 453 .MSTORE, opAt 454 .POP,
+   opAt 455 .POP, opAt 456 .POP, opAt 457 .POP, pushAt 458 1 1,
+   opAt 459 (.Dup ⟨1, by decide⟩), opAt 460 .ADD,
+   opAt 461 (.Swap ⟨0, by decide⟩), opAt 462 .POP,
+   pushAt 463 2 536, opAt 464 .JUMP]
 
 def loadExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 466 .JUMPDEST, opAt 467 .POP, opAt 468 .POP, opAt 469 .POP,
-   opAt 470 .POP, opAt 471 .JUMP]
+  [opAt 465 .JUMPDEST, opAt 466 .POP, opAt 467 .POP, opAt 468 .POP,
+   opAt 469 .POP, opAt 470 .JUMP]
 
 def loadByte (calldata : ByteArray) (offset i : Nat) : UInt256 :=
   UInt256.byteAt ⟨0⟩ (MachineState.readWord calldata (offset + i))
@@ -177,44 +177,44 @@ def loadReturned (s : State) (offset length dst returnDest : UInt256)
   rfl
 
 @[simp] private theorem loadSetupPCs (i : Nat)
-    (hi : 413 ≤ i) (hii : i ≤ 421) :
+    (hi : 412 ≤ i) (hii : i ≤ 420) :
     Artifact.submissionArtifact.instructionPC i =
-      ([534,535,536,537,538,539,540,541,544] : List Nat)[i - 413]! := by
+      ([534,535,536,537,538,539,540,541,544] : List Nat)[i - 412]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem loadBodyPCs (i : Nat)
-    (hi : 422 ≤ i) (hii : i ≤ 446) :
+    (hi : 421 ≤ i) (hii : i ≤ 445) :
     Artifact.submissionArtifact.instructionPC i =
-      ([545,546,548,549,550,551,552,554,555,557,558,559,561,562,563,565,566,567,568,571,572,573,574,575,577] : List Nat)[i - 422]! := by
+      ([545,546,548,549,550,551,552,554,555,557,558,559,561,562,563,565,566,567,568,571,572,573,574,575,577] : List Nat)[i - 421]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem loadStorePCs (i : Nat)
-    (hi : 447 ≤ i) (hii : i ≤ 465) :
+    (hi : 446 ≤ i) (hii : i ≤ 464) :
     Artifact.submissionArtifact.instructionPC i =
-      ([578,579,580,581,582,583,584,585,586,587,588,589,590,592,593,594,595,596,599] : List Nat)[i - 447]! := by
+      ([578,579,580,581,582,583,584,585,586,587,588,589,590,592,593,594,595,596,599] : List Nat)[i - 446]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem loadExitPCs (i : Nat)
-    (hi : 466 ≤ i) (hii : i ≤ 471) :
+    (hi : 465 ≤ i) (hii : i ≤ 470) :
     Artifact.submissionArtifact.instructionPC i =
-      ([600,601,602,603,604,605] : List Nat)[i - 466]! := by
+      ([600,601,602,603,604,605] : List Nat)[i - 465]! := by
   interval_cases i <;> decide
 
 private theorem jump441 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 536 = true :=
-  Artifact.isValidJumpDest_index 415 (by rfl)
+  Artifact.isValidJumpDest_index 414 (by rfl)
 
 private theorem jump4 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 135 = true :=
-  Artifact.isValidJumpDest_index 77 (by rfl)
+  Artifact.isValidJumpDest_index 76 (by rfl)
 
 private theorem jump484 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 578 = true :=
-  Artifact.isValidJumpDest_index 447 (by rfl)
+  Artifact.isValidJumpDest_index 446 (by rfl)
 
 private theorem jump506 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 600 = true :=
-  Artifact.isValidJumpDest_index 466 (by rfl)
+  Artifact.isValidJumpDest_index 465 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_loadSetup (s : State) (offset length : Nat) (dst returnDest : UInt256)

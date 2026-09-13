@@ -29,6 +29,13 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs
 
+@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2634 = 3527 := by rfl
+@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2640 = 3534 := by rfl
+@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2646 = 3541 := by rfl
+@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2652 = 3548 := by rfl
+@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2658 = 3555 := by rfl
+@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2664 = 3562 := by rfl
+
 /-- The shift traces normalize PUSH1 literals to `ofNat` before NOT. -/
 theorem notThirtyOneOfNat : UInt256.lnot (UInt256.ofNat 31) = UInt256.ofNat
     115792089237316195423570985008687907853269984665640564039457584007913129639904 := by

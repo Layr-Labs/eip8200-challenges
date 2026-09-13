@@ -38,35 +38,35 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def zeroSizePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 895 (.Dup ⟨0, by decide⟩),
-   pushAt 896 2 1206, opAt 897 .JUMPI,
-   pushAt 898 0 0, pushAt 899 0 0, opAt 900 .RETURN]
+  [opAt 894 (.Dup ⟨0, by decide⟩),
+   pushAt 895 2 1206, opAt 896 .JUMPI,
+   pushAt 897 0 0, pushAt 898 0 0, opAt 899 .RETURN]
 
 def wordEntryPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 895 (.Dup ⟨0, by decide⟩),
-   pushAt 896 2 1206, opAt 897 .JUMPI,
-   opAt 901 .JUMPDEST, opAt 902 (.Dup ⟨2, by decide⟩),
-   pushAt 903 1 96, opAt 904 .ADD,
-   opAt 905 (.Dup ⟨2, by decide⟩), opAt 906 (.Dup ⟨1, by decide⟩),
-   opAt 907 .ADD, pushAt 908 1 32, opAt 909 (.Dup ⟨3, by decide⟩),
-   opAt 910 .GT, pushAt 911 2 1236, opAt 912 .JUMPI,
-   pushAt 913 2 1186, opAt 914 (.Dup ⟨1, by decide⟩),
-   opAt 915 (.Dup ⟨3, by decide⟩), pushAt 916 1 96,
-   opAt 917 (.Dup ⟨6, by decide⟩), opAt 918 (.Dup ⟨8, by decide⟩),
-   opAt 919 (.Dup ⟨10, by decide⟩), pushAt 920 2 2302, opAt 921 .JUMP]
+  [opAt 894 (.Dup ⟨0, by decide⟩),
+   pushAt 895 2 1206, opAt 896 .JUMPI,
+   opAt 900 .JUMPDEST, opAt 901 (.Dup ⟨2, by decide⟩),
+   pushAt 902 1 96, opAt 903 .ADD,
+   opAt 904 (.Dup ⟨2, by decide⟩), opAt 905 (.Dup ⟨1, by decide⟩),
+   opAt 906 .ADD, pushAt 907 1 32, opAt 908 (.Dup ⟨3, by decide⟩),
+   opAt 909 .GT, pushAt 910 2 1236, opAt 911 .JUMPI,
+   pushAt 912 2 1186, opAt 913 (.Dup ⟨1, by decide⟩),
+   opAt 914 (.Dup ⟨3, by decide⟩), pushAt 915 1 96,
+   opAt 916 (.Dup ⟨6, by decide⟩), opAt 917 (.Dup ⟨8, by decide⟩),
+   opAt 918 (.Dup ⟨10, by decide⟩), pushAt 919 2 2302, opAt 920 .JUMP]
 
 def zeroSetupPath := zeroSizePath.take 5
-def zeroReturnPath := [opAt 900 .RETURN]
+def zeroReturnPath := [opAt 899 .RETURN]
 def wordJumpPath := wordEntryPath.take 3
 def wordRestPath := wordEntryPath.drop 3
 def wordCheckPath := wordRestPath.take 12
 def wordTailPath := wordRestPath.drop 12
 
 @[simp] theorem dispatchPCs (i : Nat)
-    (hi : 895 ≤ i) (hii : i ≤ 921) :
+    (hi : 894 ≤ i) (hii : i ≤ 920) :
     Artifact.submissionArtifact.instructionPC i =
-      ([1198,1199,1202,1203,1204,1205,1206,1207,1208,1210,1211,1212,1213,1214,1216,1217,1218,1221,1222,1225,1226,1227,1229,1230,1231,1232,1235] : List Nat)[i - 895]! := by
+      ([1198,1199,1202,1203,1204,1205,1206,1207,1208,1210,1211,1212,1213,1214,1216,1217,1218,1221,1222,1225,1226,1227,1229,1230,1231,1232,1235] : List Nat)[i - 894]! := by
   interval_cases i <;> decide
 
 @[simp] theorem activeWordsAfterUInt256_zero (s : State) (offset : Nat) :
@@ -80,17 +80,17 @@ def wordTailPath := wordRestPath.drop 12
 
 @[simp] theorem jump1237 :
     Decode.isValidJumpDest submissionBytecode 1206 = true :=
-  Artifact.isValidJumpDest_index 901 (by rfl)
+  Artifact.isValidJumpDest_index 900 (by rfl)
 
 @[simp] theorem jump517 :
     Decode.isValidJumpDest submissionBytecode 606 = true :=
-  Artifact.isValidJumpDest_index 472 (by rfl)
+  Artifact.isValidJumpDest_index 471 (by rfl)
 
 set_option maxRecDepth 20000 in
 @[simp] theorem jump3000 :
     Decode.isValidJumpDest submissionBytecode 2302 = true := by
-  have hpc : Artifact.instructionPC 1684 = 2302 := by decide
-  simpa only [hpc] using Artifact.isValidJumpDest_index 1684 (by rfl)
+  have hpc : Artifact.instructionPC 1679 = 2302 := by decide
+  simpa only [hpc] using Artifact.isValidJumpDest_index 1679 (by rfl)
 
 def zeroSizeFinalState (input : ByteArray) : State :=
   { Main.headerState input with

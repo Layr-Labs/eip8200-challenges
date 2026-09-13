@@ -67,7 +67,7 @@ def gasSteps_product (s : State) (mem : ByteArray) (p a mm : Nat)
   have hj : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
       (UInt256.ofNat 1696).toNat = true := by
     change Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1696 = true
-    exact Artifact.isValidJumpDest_index 1219 (by rfl)
+    exact Artifact.isValidJumpDest_index 1214 (by rfl)
   have hread (addr : Nat) (hd : addr+32 ≤ 2048 ∨ 2624 ≤ addr) :
       MachineState.readWord (rowsCarry (mpZeroed s mem (p+2)) 2368 256 (p+2) (p+2)) addr =
         MachineState.readWord mem addr := by

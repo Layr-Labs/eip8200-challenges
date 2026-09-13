@@ -10,12 +10,12 @@ private def earlyWord_guard : WindowTwentyOneBinding.Block submissionArtifact .O
 private def earlyWord_hit : WindowTwentyOneBinding.Block submissionArtifact .Osaka 26 EarlyWordProgram.hitProgram :=
   WindowTwentyOneSlice.block allWellFormed 19 13 26 EarlyWordProgram.hitProgram (by decide) (by rfl) (by rfl) (by decide)
 private def earlyWord_miss : WindowTwentyOneBinding.Block submissionArtifact .Osaka 127 EarlyWordProgram.missProgram :=
-  WindowTwentyOneSlice.block allWellFormed 71 6 127 EarlyWordProgram.missProgram (by decide) (by rfl) (by rfl) (by decide)
+  WindowTwentyOneSlice.block allWellFormed 70 6 127 EarlyWordProgram.missProgram (by decide) (by rfl) (by rfl) (by decide)
 def earlyWordPaths : EarlyWordProgram.Paths submissionArtifact .Osaka where
   guard := earlyWord_guard
   hit := earlyWord_hit
   miss := earlyWord_miss
-  missJump := by exact isValidJumpDest_index 71 (by rfl)
-  legacyJump := by exact isValidJumpDest_index 932 (by rfl)
+  missJump := by exact isValidJumpDest_index 70 (by rfl)
+  legacyJump := by exact isValidJumpDest_index 931 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Artifact

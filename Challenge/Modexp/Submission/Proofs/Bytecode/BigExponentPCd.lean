@@ -16,8 +16,8 @@ open EvmSemantics.EVM
 open Challenge.Modexp
 
 @[simp] theorem innerFinishPCs (i : Nat)
-    (hi : 825 ≤ i) (hii : i ≤ 835) :
+    (hi : 824 ≤ i) (hii : i ≤ 834) :
     Artifact.submissionArtifact.instructionPC i =
-      ([1106,1107,1108,1109,1110,1112,1113,1114,1115,1116,1119] : List Nat)[i - 825]! := by
+      ([1106,1107,1108,1109,1110,1112,1113,1114,1115,1116,1119] : List Nat)[i - 824]! := by
   interval_cases i <;> decide
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigExponent

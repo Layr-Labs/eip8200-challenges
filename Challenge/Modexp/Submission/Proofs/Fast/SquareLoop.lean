@@ -320,7 +320,7 @@ def gasSteps_roundLast (s : State) (M : ByteArray) (p a mm : Nat)
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
       (UInt256.ofNat 4207).toNat = true := by
     change Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4207 = true
-    exact Artifact.isValidJumpDest_index 3167 (by rfl)
+    exact Artifact.isValidJumpDest_index 3149 (by rfl)
   have g4 := gasSteps_csubRound s M p 0 a mm (UInt256.ofNat 4207) retained tl inv m0 m96 m64 m32
     (by simp only [retained, frameStack, List.length_append, List.length_cons, List.length_nil]; omega)
     hrun hcode hfork hnp hact hn32 hfast hjump h
