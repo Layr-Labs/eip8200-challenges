@@ -44,11 +44,10 @@ def programA : List Instr :=
   [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .op .MLOAD, .op (.Dup ⟨0, by decide⟩),
    .op (.Swap ⟨14, by decide⟩), .push 0 0]
 
-/-- `DUP2 ADD DUP2 DUP2 ADD SWAP2 DUP9 DUP3 DUP3 MULMOD` (idx 3700..3721). -/
+/-- `DUP2 ADD DUP2 DUP2 ADD SWAP2 DUP9 DUP3` (idx 3700..3721). -/
 def programB1 : List Instr :=
   [.op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .ADD,
-   .op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨8, by decide⟩), .op (.Dup ⟨2, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩), .op .MULMOD]
+   .op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨8, by decide⟩), .op (.Dup ⟨2, by decide⟩)]
 
 /-- `SWAP2 DUP2 DUP2 LT SWAP2 MUL SWAP2 SUB DUP2 DUP2 LT DUP3 SWAP2 SUB SUB` (idx 3658..3840). -/
 def programB2 : List Instr :=
@@ -75,8 +74,9 @@ def programB4 : List Instr :=
 The two bytes it saves are re-placed as unreachable `JUMPDEST`s after the row's final
 `JUMP` (pc 5032..5032), so every pc and instruction index from 43 (idx 3725) on is unchanged. -/
 def programB23 : List Instr :=
-  [.op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT,
-   .op (.Swap ⟨1, by decide⟩), .op .MUL, .op (.Swap ⟨1, by decide⟩), .op .SUB,
+  [.op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MUL,
+   .op (.Swap ⟨4, by decide⟩), .op .LT, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op .JUMPDEST,
+   .op .SUB,
    .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB,
    .push 2 256, .op (.Dup ⟨4, by decide⟩), .op .SUB,
    .op (.Dup ⟨0, by decide⟩), .op .MLOAD, .op (.Dup ⟨3, by decide⟩), .op .ADD,
@@ -149,8 +149,8 @@ theorem run_B1 (s : State) (tb x P hd w3 ent w5 M : UInt256)
     runInstructions programB1
       { s with pc := UInt256.ofNat 4439,
                stack := tb :: x :: P :: hd :: w3 :: ent :: w5 :: M :: rest } =
-    some { s with pc := UInt256.ofNat 4449,
-                  stack := UInt256.mulMod x (x + tb) M :: x :: (x + tb) :: ((x + tb) + x) :: P :: hd ::
+    some { s with pc := UInt256.ofNat 4447,
+                  stack := (x + tb) :: M :: x :: (x + tb) :: ((x + tb) + x) :: P :: hd ::
                     w3 :: ent :: w5 :: M :: rest } := by
   have h8 : rest.length + 8 < 1024 := by omega
   have h9 : rest.length + 9 < 1024 := by omega
@@ -225,8 +225,9 @@ theorem run_B4 (s : State) (C b2 P hd w3 ent : UInt256)
 
 /-- The fused borrow up to the store address (pc 4998..5015). -/
 def programB23a : List Instr :=
-  [.op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT,
-   .op (.Swap ⟨1, by decide⟩), .op .MUL, .op (.Swap ⟨1, by decide⟩), .op .SUB,
+  [.op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MUL,
+   .op (.Swap ⟨4, by decide⟩), .op .LT, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op .JUMPDEST,
+   .op .SUB,
    .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB,
    .push 2 256, .op (.Dup ⟨4, by decide⟩), .op .SUB]
 
@@ -249,14 +250,20 @@ private theorem carryReassociate (c a b lo : UInt256) :
 private theorem gt_eq_lt (a b : UInt256) : UInt256.gt a b = UInt256.lt b a := by
   rfl
 
-theorem run_B23a (s : State) (mmr x f b2 P : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1014) :
+private theorem mul_comm' (a b : UInt256) : a * b = b * a := by
+  apply Challenge.EvmProof.Word.word_ext
+  change (a.val * b.val).val = (b.val * a.val).val
+  rw [Fin.val_mul, Fin.val_mul, Nat.mul_comm]
+
+theorem run_B23a (s : State) (x f M b2 P : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1013) :
     runInstructions programB23a
-      { s with pc := UInt256.ofNat 4449, stack := mmr :: x :: f :: b2 :: P :: rest } =
+      { s with pc := UInt256.ofNat 4447, stack := f :: M :: x :: f :: b2 :: P :: rest } =
     some { s with pc := UInt256.ofNat 4466,
                   stack := (P - (256 : UInt256)) ::
-                    (UInt256.lt (mmr - UInt256.lt f x) (x * f) - (mmr - UInt256.lt f x)) ::
-                    (x * f) :: b2 :: P :: rest } := by
+                    (UInt256.lt (UInt256.mulMod x f M - UInt256.lt f x) (f * x) -
+                      (UInt256.mulMod x f M - UInt256.lt f x)) ::
+                    (f * x) :: b2 :: P :: rest } := by
   have h1 : rest.length + 1 < 1024 := by omega
   have h2 : rest.length + 2 < 1024 := by omega
   have h3 : rest.length + 3 < 1024 := by omega
@@ -266,7 +273,8 @@ theorem run_B23a (s : State) (mmr x f b2 P : UInt256)
   have h7 : rest.length + 7 < 1024 := by omega
   have h8 : rest.length + 8 < 1024 := by omega
   have h9 : rest.length + 9 < 1024 := by omega
-  simp [programB23a, runInstructions, Challenge.EvmProof.Stepper.runInstr, h1, h2, h3, h4, h5, h6, h7, h8, h9,
+  have h10 : rest.length + 10 < 1024 := by omega
+  simp [programB23a, runInstructions, Challenge.EvmProof.Stepper.runInstr, h1, h2, h3, h4, h5, h6, h7, h8, h9, h10,
     List.exchange]
   decide
 
@@ -296,24 +304,26 @@ theorem run_B23b (s : State) (tA d lo b2 P : UInt256)
   decide
 
 /-- The fused program preserves the original carry formula for arbitrary words. -/
-theorem run_B23 (s : State) (mmr x f b2 P : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1014)
+theorem run_B23 (s : State) (x f M b2 P : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1013)
     (hact : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (P - (256 : UInt256)).toNat 32) = s.activeWords) :
     runInstructions programB23
-      { s with pc := UInt256.ofNat 4449, stack := mmr :: x :: f :: b2 :: P :: rest } =
+      { s with pc := UInt256.ofNat 4447, stack := f :: M :: x :: f :: b2 :: P :: rest } =
     some { s with pc := UInt256.ofNat 4477,
                   stack := (UInt256.lt (x * f + MachineState.readWord s.memory (P - (256 : UInt256)).toNat)
-                      (x * f) + (((mmr - UInt256.lt f x) -
-                        UInt256.lt (mmr - UInt256.lt f x) (x * f)) - x * f)) :: b2 :: P :: rest
+                      (x * f) + (((UInt256.mulMod x f M - UInt256.lt f x) -
+                        UInt256.lt (UInt256.mulMod x f M - UInt256.lt f x) (x * f)) - x * f)) :: b2 :: P :: rest
                   memory := MachineState.writeBytes s.memory
                     (Data.Bytes.natToBytesPadded
                       (x * f + MachineState.readWord s.memory (P - (256 : UInt256)).toNat).toNat 32)
                     (P - (256 : UInt256)).toNat } := by
-  have ha := run_B23a s mmr x f b2 P rest hcap
+  have ha := run_B23a s x f M b2 P rest hcap
   have hb := run_B23b s (P - (256 : UInt256))
-    (UInt256.lt (mmr - UInt256.lt f x) (x * f) - (mmr - UInt256.lt f x)) (x * f) b2 P rest hcap hact
-  rw [programB23_split, runInstructions_append_some _ _ _ _ _ ha hb, carryReassociate, gt_eq_lt]
+    (UInt256.lt (UInt256.mulMod x f M - UInt256.lt f x) (f * x) - (UInt256.mulMod x f M - UInt256.lt f x))
+    (f * x) b2 P rest (by omega) hact
+  rw [programB23_split, runInstructions_append_some _ _ _ _ _ ha hb, carryReassociate, gt_eq_lt,
+    mul_comm' f x]
 
 /-- The word after the prologue: `lo = x * (x + tb)`. -/
 abbrev loOf (x tb : UInt256) : UInt256 := x * (x + tb)
@@ -341,7 +351,7 @@ theorem run_B (s : State) (tb x P hd w3 ent w5 M : UInt256)
                       (loOf x tb + MachineState.readWord s.memory (P - (256 : UInt256)).toNat).toNat 32)
                     (P - (256 : UInt256)).toNat } := by
   have h1 := run_B1 s tb x P hd w3 ent w5 M rest (by omega)
-  have h2 := run_B23 s (UInt256.mulMod x (x + tb) M) x (x + tb) ((x + tb) + x) P
+  have h2 := run_B23 s x (x + tb) M ((x + tb) + x) P
     (hd :: w3 :: ent :: w5 :: M :: rest) (by simp only [List.length_cons]; omega) hact
   have h5 := run_B4
     { s with memory := (MachineState.writeBytes s.memory

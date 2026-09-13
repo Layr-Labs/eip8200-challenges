@@ -8,7 +8,7 @@ set_option maxHeartbeats 2000000
 /-!
 # R4 的两个挂钩点
 
-两处判别块 `DUP7 PUSH2 l2Target(4) EQ PUSH2 r4 JUMPI`（H2 前有 `JUMPDEST`）：帧的第 7 槽是
+两处同形的判别块 `JUMPDEST DUP7 PUSH2 l2Target(4) EQ PUSH2 r4 JUMPI`：帧的第 7 槽是
 `l2Target n`，`n = 4` 时跳进 R4，`n = 8` 时落空。
 
 * H1（staged-entry 之后）：落空后 `PUSH2 sq_row JUMP` 回到行头；
@@ -22,7 +22,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
 open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro CiosCached SquareLoopBlocks
 
-def pcH1 : Nat := 4763
+def pcH1 : Nat := 4762
 def pcH1Fall : Nat := 4772
 def pcR4 : Nat := 4776
 
@@ -30,17 +30,14 @@ def pcR4 : Nat := 4776
 def hookProgram : List Instr :=
   [.op .JUMPDEST, .op (.Dup ⟨6, by decide⟩), .push 2 4172, .op .EQ, .push 2 4776, .op .JUMPI]
 
-def h1Program : List Instr :=
-  [.op (.Dup ⟨6, by decide⟩), .push 2 4172, .op .EQ, .push 2 4776, .op .JUMPI]
-
 def h1FallProgram : List Instr := [.push 2 4432, .op .JUMP]
 
-def h1Block : Block Artifact.submissionArtifact .Osaka 4763 h1Program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3579 5 4763 h1Program
+def h1Block : Block Artifact.submissionArtifact .Osaka 4762 hookProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3581 6 4762 hookProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def h1FallBlock : Block Artifact.submissionArtifact .Osaka 4772 h1FallProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3584 2 4772 h1FallProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3587 2 4772 h1FallProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def h2Block : Block Artifact.submissionArtifact .Osaka 4397 hookProgram :=
@@ -48,7 +45,10 @@ def h2Block : Block Artifact.submissionArtifact .Osaka 4397 hookProgram :=
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDestR4 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4776 = true :=
-  Artifact.isValidJumpDest_index 3586 (by rfl)
+  Artifact.isValidJumpDest_index 3589 (by rfl)
+
+theorem jumpDestH1 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4762 = true :=
+  Artifact.isValidJumpDest_index 3581 (by rfl)
 
 theorem jumpDestH2 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4397 = true :=
   Artifact.isValidJumpDest_index 3310 (by rfl)
@@ -86,30 +86,10 @@ theorem run_hookTaken (pc0 : Nat) (s : State) (mem : ByteArray)
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
-theorem run_h1Taken (pc0 : Nat) (s : State) (mem : ByteArray)
-    (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1004)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
-    runInstructions h1Program
-      (frameAt pc0 s mem 4 pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
-    some (frameAt pcR4 s mem 4 pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) := by
-  have hc16 : rest.length + 16 < 1024 := by omega
-  have hc17 : rest.length + 17 < 1024 := by omega
-  have hc18 : rest.length + 18 < 1024 := by omega
-  have hc19 : rest.length + 19 < 1024 := by omega
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 4776 = true := by
-    rw [hcode]; exact jumpDestR4
-  have hcond := cond_four
-  have hcond' := cond_four'
-  simp [h1Program, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    frameAt, frameStack, pcR4, hc16, hc17, hc18, hc19, hcond, hcond', hjd, List.exchange,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
-
 theorem run_h1Fall (s : State) (mem : ByteArray)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1004) :
-    runInstructions h1Program
+    runInstructions hookProgram
       (frameAt pcH1 s mem 8 pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
     some (frameAt pcH1Fall s mem 8 pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) := by
   have hc16 : rest.length + 16 < 1024 := by omega
@@ -118,7 +98,7 @@ theorem run_h1Fall (s : State) (mem : ByteArray)
   have hc19 : rest.length + 19 < 1024 := by omega
   have hcond := cond_eight
   have hcond' := cond_eight'
-  simp [h1Program, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+  simp [hookProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     frameAt, frameStack, pcH1, pcH1Fall, hc16, hc17, hc18, hc19, hcond, hcond', List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
@@ -174,7 +154,7 @@ def gasSteps_h1Taken (n : Nat) (hn : n = 4) :
       (frameAt pcR4 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) := by
   subst hn
   exact SquareRow.stepsOf h1Block
-    (run_h1Taken pcH1 s mem pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hcode) rfl
+    (run_hookTaken pcH1 s mem pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hcode) rfl
     hcode hfork hrun hnp
 
 /-- H2，`n = 4`：CSUB 返回后直接进下一轮 R4。 -/
