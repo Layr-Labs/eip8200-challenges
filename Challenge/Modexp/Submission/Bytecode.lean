@@ -19,3 +19,4 @@ theorem submissionBytecode_roundtrip :
   Challenge.EvmProof.Bytecode.assemble_disassemble _
 
 end Challenge.Modexp
+-- rerun of the accepted artifact under a fresh seed
