@@ -28,8 +28,8 @@ def site : GenericRoundSite A .Osaka template :=
     rw [Artifact.referenceInstructions_count]
     decide) StackRoundData.artifact_code_bound template_wellFormed (by decide)
 
-theorem site_start : site.startPC = UInt256.ofNat 25 := by rfl
-theorem site_end : site.endPC = UInt256.ofNat 33 := by rfl
+theorem site_start : site.startPC = UInt256.ofNat 27 := by rfl
+theorem site_end : site.endPC = UInt256.ofNat 35 := by rfl
 
 private theorem run_word (s : State) (pc : UInt256) (rho : List UInt256)
     (hstack : rho.length < 1021) (hrun : s.halt = .Running) :
@@ -77,8 +77,8 @@ def gasSteps_fullWord (s : State) (rho : List UInt256) (hstack : rho.length < 10
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 25, stack := rho}
-      {s with pc := UInt256.ofNat 33, stack := KnownInputData.fullWord :: rho} := by
+    GasSteps {s with pc := UInt256.ofNat 27, stack := rho}
+      {s with pc := UInt256.ofNat 35, stack := KnownInputData.fullWord :: rho} := by
   have g : GasSteps {s with pc := site.startPC, stack := rho}
       {s with pc := site.endPC, stack := KnownInputData.fullWord :: rho} := by
     apply DataStepper.runLocatedBlock_sound A .Osaka site.path
