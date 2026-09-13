@@ -103,12 +103,12 @@ def gasSteps_negLoop (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       (n - 1) (fun j hj => gasSteps_negIter s mem n bsize esize msize j hn32 (by omega) e)).trans
     (gasSteps_negLast s mem n bsize esize msize hn hn32 e)
 
-/-- From the first `CSUB` return to the shift loop head with `k = n`. -/
+/-- From the first `CSUB` return to the E3 guard at PC 3012 with counter `n`. -/
 def gasSteps_prologue (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32)) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
-      (shiftLoopState s (ShiftCacheModel.cacheMem (preMem (negStep mem n n).memory) n) n bsize esize msize n) :=
+      (kState s (ShiftCacheModel.cacheMem (preMem (negStep mem n n).memory) n) 3012 n n bsize esize msize) :=
   (  ((((soundEnv blk2892 e
       (run_negEntry s mem n bsize esize msize hn hn32 e.act296 hml e.code e.run)).trans
     (gasSteps_negLoop s mem n bsize esize msize hn hn32 e)).trans

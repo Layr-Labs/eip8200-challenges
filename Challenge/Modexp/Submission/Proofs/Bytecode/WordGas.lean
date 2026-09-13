@@ -80,7 +80,7 @@ theorem gasSteps_baseIteration_cost (input : ByteArray) (i : Nat)
     simp [baseRest, callerRest]
   have hhelper := blockCost_of_static Accessors.calldataBytePath 30
     (Accessors.run_calldataByte (baseLoopState input i base)
-      (UInt256.ofNat (96 + i)) 0 187 (baseRest input i base) hcap rfl rfl
+      (UInt256.ofNat (96 + i)) 0 182 (baseRest input i base) hcap rfl rfl
       (by decide)) (by rfl)
     (by decide) (by rfl) (by rfl)
   have htail := blockCost_of_static baseTailPath 48
@@ -88,7 +88,7 @@ theorem gasSteps_baseIteration_cost (input : ByteArray) (i : Nat)
     (by decide) (by rfl) (by rfl)
   have htail' : Challenge.EvmProof.Stepper.runLocatedBlockCost baseTailPath
       (Accessors.calldataByteReturned (baseLoopState input i base)
-        (UInt256.ofNat (96 + i)) 187 (baseRest input i base)) = 48 := by
+        (UInt256.ofNat (96 + i)) 182 (baseRest input i base)) = 48 := by
     simpa [baseReturnedState, Accessors.calldataByteReturned] using htail
   unfold gasSteps_baseIteration
   simp only [Challenge.EvmProof.GasSteps.trans_cost,

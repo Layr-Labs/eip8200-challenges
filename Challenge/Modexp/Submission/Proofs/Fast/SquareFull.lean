@@ -53,7 +53,7 @@ def gasSteps_squareFull (s : State) (mem : ByteArray) (p a mm : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) (hn32 : p + 2 ≤ 8)
-    (hslow : ¬(p + 2 = 4 ∨ p + 2 = 8))
+    (hslow : ¬ eligible mem (p + 2))
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * (p + 2)))
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * (p + 2)))
@@ -64,12 +64,12 @@ def gasSteps_squareFull (s : State) (mem : ByteArray) (p a mm : Nat)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
         (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) :
     Challenge.EvmProof.GasSteps
-      (Cios2Dispatch.commonState s mem 4737 512 512 (UInt256.ofNat 512) ret rest)
+      (Cios2Dispatch.commonState s mem 4769 512 512 (UInt256.ofNat 512) ret rest)
       { s with pc := ret, stack := rest, memory := SquareResult.sqMem s mem (p + 2) } := by
   -- the generic MONPRO fallback (the kernel path is `SquareLoop.gasSteps_squareLoop`)
-  have g1 := Cios2Dispatch.gasSteps_commonFallbackOfWidth s mem 4737 512 512 (p + 2)
+  have g1 := Cios2Dispatch.gasSteps_commonFallbackEligible s mem 4769 512 512 (p + 2)
     (UInt256.ofNat 512) ret rest (by omega) hrun hcode hfork hnp hact hn32 hs32
-    (fun h => hslow (Or.inl h)) (fun h => hslow (Or.inr h))
+    hslow
   have g2 := Monpro.gasSteps_monproCsub s mem 512 512 (p + 2) (UInt256.ofNat 512) ret rest
     (by omega) hrun hcode hfork hnp hact (by omega) hn32 (by decide) (by omega) (by decide)
     (by omega) hcds hs32 htl hml hjump

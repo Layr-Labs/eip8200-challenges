@@ -78,37 +78,37 @@ def trampolineState (input : ByteArray) (pc : Nat) : State :=
 
 /-- Gas-erased state at the public entry point. -/
 def headerEntryState (input : ByteArray) : State :=
-  { initialState submissionBytecode input 0 with pc := UInt256.ofNat 656 }
+  { initialState submissionBytecode input 0 with pc := UInt256.ofNat 648 }
 
 /-- Gas-erased state after loading the three header words. -/
 def headerLoadedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 664
+    pc := UInt256.ofNat 656
     stack := [UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 def headerModulusCheckedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 664
+    pc := UInt256.ofNat 656
     stack := [0, UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 def headerExponentCheckedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 664
+    pc := UInt256.ofNat 656
     stack := [0, 0, UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 def headerBaseCheckedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 664
+    pc := UInt256.ofNat 656
     stack := [0, 0, 0, UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 /-- Gas-erased state immediately after the successful size-check jump. -/
 def headerState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 664
+    pc := UInt256.ofNat 656
     stack := [UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
@@ -135,11 +135,11 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
 @[simp] theorem headerPCs899 (i : Nat)
     (hi : 450 ≤ i) (hii : i ≤ 457) :
     Artifact.submissionArtifact.instructionPC i =
-      ([655,656,657,658,660,661,663,664] : List Nat)[i - 450]! := by
+      ([647,648,649,650,652,653,655,656] : List Nat)[i - 450]! := by
   interval_cases i <;> decide
 
 @[simp] theorem jump1196 :
-    Decode.isValidJumpDest submissionBytecode 655 = true :=
+    Decode.isValidJumpDest submissionBytecode 647 = true :=
   Artifact.isValidJumpDest_index 450 (by rfl)
 
 

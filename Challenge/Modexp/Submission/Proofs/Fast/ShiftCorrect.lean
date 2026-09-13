@@ -1,3 +1,5 @@
+import Challenge.Modexp.Submission.Proofs.Fast.RootE3Correct
+import Challenge.Modexp.Submission.Proofs.Fast.RootE3Bindings
 import Challenge.Modexp.Submission.Proofs.Bytecode.RrLeadingTrace
 import Challenge.Modexp.Submission.Proofs.Fast.RrLeadingTail
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftTrace5
@@ -27,8 +29,8 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.RrLeadingTraceCore
 
 theorem jumpD4643 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 2833).toNat = true :=
-  Exp.jumpD 2833 (by decide) jumpDest4608
+    (UInt256.ofNat 2800).toNat = true :=
+  Exp.jumpD 2800 (by decide) jumpDest4608
 
 /-! ## Facts at `BDONE` on the hit path -/
 
@@ -240,81 +242,10 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
   -- carries `TopBitSet`), the miss arm by making the conversion call the setup path used to
   -- make.  In the previous layout both arms inherited `R1` from one call before the split.
   by_cases hmatch : FullBase.Matches mem n bsize
-  · -- the shift-reduce hit: the `MCOPY` at the loop exit establishes `R1` from `NEG`
-    have hbEq : bsize = 32 * n := hmatch.1
-    have htwo : Limbs.radix ^ n < 2 * mm :=
-      R1.radix_pow_lt_two_mul (by omega) hodd hmod0 hmatch.2
-    -- on this arm the modulus has its top bit set, so the `NEG` block the loop leaves in
-    -- place is already the reduced residue
-    have hmodEq : Limbs.radix ^ n % mm = Limbs.radix ^ n - mm := by
-      rw [Nat.mod_eq_sub_mod (le_of_lt hmmlt), Nat.mod_eq_of_lt (by omega)]
-    set fin0 := hitFinalMem mem input n mm with hfin0
-    set final := Exp.mcopyMem fin0 1024 1280 (32 * n) with hfinal
-    have htrace := gasSteps_hitPath s mem input n bsize esize msize mm minv hn hn32 e hdata
-      hbword hmatch hmpos hodd hmmlt hframe0 hmod0
-    let base := Precompile.bytesToNatPadded input 96 (32 * n)
-    let baseM := base % mm * Limbs.radix ^ n % mm
-    have hframe0F : Exp.Frame fin0 n bsize minv :=
-      (stepInv_stepMems (by omega) hn32
-        (m2_stepInv mem input n bsize mm minv hn hn32 hmpos hframe0 hmod0) n).frame
-    have hframeF : Exp.Frame final n bsize minv :=
-      Exp.frame_mcopyMem (by omega) hframe0F
-    have hmod0F : Model.FastRepresents fin0 0 n mm :=
-      hitFinal_preserves mem input n mm 0 n mm (by omega) hn32
-        ⟨Or.inl (by omega), Or.inl (by omega), Or.inl (by unfold NEG; omega),
-          Or.inl (by unfold PRE_L; omega), Or.inl (by omega), Or.inl (by omega)⟩ hmod0
-    have hmodF : Model.FastRepresents final 0 n mm :=
-      Exp.fastRepresents_mcopyMem_disjoint fin0 1024 1280 (32 * n) 0 n mm
-        (Or.inr (by omega)) hmod0F
-    have hbase0F : Model.FastRepresents fin0 512 n baseM :=
-      hitFinal_base mem input n mm hn hn32 hmpos hodd hmmlt hmatch.2 hmod0
-    have hbaseF : Model.FastRepresents final 512 n baseM :=
-      Exp.fastRepresents_mcopyMem_disjoint fin0 1024 1280 (32 * n) 512 n baseM
-        (Or.inr (by omega)) hbase0F
-    have hone0F : Model.FastRepresents fin0 768 n 0 :=
-      hitFinal_preserves mem input n mm 768 n 0 (by omega) hn32
-        ⟨Or.inr (by omega), Or.inr (by omega), Or.inl (by unfold NEG; omega),
-          Or.inl (by unfold PRE_L; omega), Or.inl (by omega), Or.inl (by omega)⟩ hone0
-    have honeF : Model.FastRepresents final 768 n 0 :=
-      Exp.fastRepresents_mcopyMem_disjoint fin0 1024 1280 (32 * n) 768 n 0
-        (Or.inr (by omega)) hone0F
-    have hnegF : Model.FastRepresents fin0 1280 n (Limbs.radix ^ n - mm) := by
-      simpa only [NEG] using hitFinal_neg mem input n mm hn hn32 hmpos hmod0
-    have hr1F : Model.FastRepresents final 1024 n (Limbs.radix ^ n % mm) := by
-      rw [hmodEq, hfinal]
-      exact Exp.fastRepresents_mcopyMem fin0 1024 1280 n (Limbs.radix ^ n - mm)
-        (by omega) hnegF
-    have hacc0F : Model.FastRepresents fin0 256 n base := hitFinal_acc mem input n mm (by omega) hn32
-    have haccF : Model.FastRepresents final 256 n base :=
-      Exp.fastRepresents_mcopyMem_disjoint fin0 1024 1280 (32 * n) 256 n base
-        (Or.inr (by omega)) hacc0F
-    have hEb : Exp.EbInv (Exp.mcopyMem final 256 1024 (32 * n)) n mm baseM
-        (Exp.expAcc mm (Limbs.radix ^ n) baseM (Exp.expBits input bsize) 0) := by
-      refine ⟨?_, ?_, ?_, ?_⟩
-      · exact Csub.fastRepresents_mcopy_disjoint _ 1024 256 (32 * n) 0 n mm (by omega) hmodF
-      · exact Csub.fastRepresents_mcopy _ 1024 256 n (Limbs.radix ^ n % mm) (by omega) hr1F
-      · exact Csub.fastRepresents_mcopy_disjoint _ 1024 256 (32 * n) 512 n baseM
-          (by omega) hbaseF
-      · exact ⟨0, Limbs.radix_pos,
-          Csub.fastRepresents_mcopy_disjoint _ 1024 256 (32 * n) 768 n 0 (by omega) honeF⟩
-    have hbaseForm : baseM ≡
-        Precompile.bytesToNatPadded input 96 bsize * Limbs.radix ^ n [MOD mm] := by
-      dsimp only [baseM, base]
-      rw [hbEq]
-      exact (Nat.mod_modEq
-          (Precompile.bytesToNatPadded input 96 (32 * n) % mm * Limbs.radix ^ n) mm).trans
-        (Nat.ModEq.mul_right (Limbs.radix ^ n)
-          (Nat.mod_modEq (Precompile.bytesToNatPadded input 96 (32 * n)) mm))
-    have hrawForm : base ≡ Precompile.bytesToNatPadded input 96 bsize [MOD mm] := by
-      simp only [base, hbEq]
-      exact Nat.ModEq.refl _
-    obtain ⟨fin, ⟨tr⟩, hdone, hres⟩ :=
-      FixedDirectCorrect.handled_of_entryStateConcrete input s final
-        n bsize esize msize mm minv baseM sub hspec
-        hcode hfork hrun hnp hdata hstack hact hn hn32 hb he hmz hm32 hbsize hesize
-        hmsz hmm hodd hradix (Nat.mod_lt _ hmpos) hbaseForm hframeF hmodF
-        hbaseF ⟨0, Limbs.radix_pos, honeF⟩ hEb ⟨base, haccF, hrawForm⟩
-    exact ⟨fin, ⟨htrace.trans tr⟩, hdone, hres⟩
+  · exact RootE3Correct.handled_of_bound_shift_hit input s mem n bsize esize msize mm minv
+      sub hspec hcode hfork hrun hnp hdata hstack hact hn hn32 hb he hmz hm32
+      hbsize hesize hmsz hmm hodd hradix hmpos hframe0 hmod0 hone0 hmatch
+      (RootE3Bindings.build s mem input n bsize esize msize minv hn hn32 hb he e hdata hframe0 hmatch)
   · -- the miss: `R1` is seeded and converted here, then the unchanged RR-leading chain
     -- from `r0`.  `mem0` is the memory after the seed store, `mem1` after the conversion.
     have hmiss := gasSteps_missPath s mem n bsize esize msize hn32 e hbword hmatch
@@ -336,10 +267,10 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     set mem1 := Exp.r1Mem n 1024 mem0 with hmem1
     have hframe1 : Exp.Frame mem1 n bsize minv := Exp.r1Mem_frame hn hn32 hframeS
     have hconv : Challenge.EvmProof.GasSteps
-        (Exp.r1Call s mem0 1024 (UInt256.ofNat 892) n bsize esize msize)
+        (Exp.r1Call s mem0 1024 (UInt256.ofNat 884) n bsize esize msize)
         (Exp.r0State s mem1 n bsize esize msize) :=
       Exp.gasSteps_r1Block s esize msize hcode hfork hrun hnp hact296 hn hn32
-        (UInt256.ofNat 892) mem0 jumpDest1526 hframeS
+        (UInt256.ofNat 884) mem0 jumpDest1526 hframeS
     let directMem := Exp.setupToDirectMem (Exp.r1Mem n) (Exp.ccbMem n sub.mpMem sub.amMem) n mem0
     have hf2 : Exp.Frame (Exp.mcopyMem mem1 1280 1024 (32 * n)) n bsize minv :=
       Exp.frame_mcopyMem (by omega) hframe1
@@ -349,7 +280,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
       (Exp.gasSteps_r0 s mem1 n bsize esize msize hn hn32 hact hframe1.s32 hcode hfork hrun
         hnp).trans
       (Exp.gasSteps_ccbFull s sub hspec esize msize hmpos hn hn32 1280 (by omega) (by omega)
-        (UInt256.ofNat 2431) (Exp.mcopyMem mem1 1280 1024 (32 * n)) (Limbs.radix ^ n % mm)
+        (UInt256.ofNat 2399) (Exp.mcopyMem mem1 1280 1024 (32 * n)) (Limbs.radix ^ n % mm)
         Exp.jumpD3571 hf2 hcc.1 hcc.2 (Nat.mod_lt _ hmpos) hact296 hcode hfork hrun hnp)
     have hframeDirect : Exp.Frame directMem n bsize minv := by
       dsimp only [directMem]
@@ -401,7 +332,7 @@ theorem gasSteps_handled (input : ByteArray)
     (hpath : Challenge.Modexp.Submission.Proofs.Fast.Setup.FastPath input) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
-        (Main.trampolineState input 717) final) ∧
+        (Main.trampolineState input 709) final) ∧
         final.isDone = true ∧
         final.toResult = .returned (Challenge.Modexp.spec input) := by
   have hsize : input.size < 2 ^ 256 := lt_trans hvalid.1 (by norm_num)

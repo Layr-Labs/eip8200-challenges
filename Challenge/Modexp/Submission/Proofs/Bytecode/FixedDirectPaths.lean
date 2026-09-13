@@ -27,12 +27,12 @@ abbrev Located :=
 
 @[simp] theorem directPC0 (i : Nat) (hi : 1995 ≤ i) (hii : i ≤ 2028) :
     Artifact.submissionArtifact.instructionPC i =
-      ([2675,2676,2677,2679,2680,2683,2684,2685,2687,2688,2691,2692,2695,2696,2697,2698,2699,2701,2702,2705,2706,2708,2711,2712,2713,2716,2717,2718,2720,2721,2725,2726,2729,2730] : List Nat)[i - 1995]! := by
+      ([2642,2643,2644,2646,2647,2650,2651,2652,2654,2655,2658,2659,2662,2663,2664,2665,2666,2668,2669,2672,2673,2675,2678,2679,2680,2683,2684,2685,2687,2688,2692,2693,2696,2697] : List Nat)[i - 1995]! := by
   interval_cases i <;> decide
 
 @[simp] theorem directPC1 (i : Nat) (hi : 2029 ≤ i) (hii : i ≤ 2062) :
     Artifact.submissionArtifact.instructionPC i =
-      ([2732,2733,2734,2737,2738,2741,2744,2745,2746,2749,2752,2753,2754,2755,2756,2757,2758,2761,2762,2763,2764,2767,2770,2771,2774,2777,2778,2779,2780,2783,2786,2787,2788,2791] : List Nat)[i - 2029]! := by
+      ([2699,2700,2701,2704,2705,2708,2711,2712,2713,2716,2719,2720,2721,2722,2723,2724,2725,2728,2729,2730,2731,2734,2737,2738,2741,2744,2745,2746,2747,2750,2753,2754,2755,2758] : List Nat)[i - 2029]! := by
   interval_cases i <;> decide
 
 
@@ -41,14 +41,14 @@ def entryPrefix : List Located :=
    opAt 1996 (.Dup ⟨3, by decide⟩),
    pushAt 1997 1 3,
    opAt 1998 .EQ,
-   pushAt 1999 2 2712,
+   pushAt 1999 2 2679,
    opAt 2000 .JUMPI]
 
 def oneWidth : List Located :=
   [opAt 2001 (.Dup ⟨3, by decide⟩),
    pushAt 2002 1 1,
    opAt 2003 .XOR,
-   pushAt 2004 2 2778,
+   pushAt 2004 2 2745,
    opAt 2005 .JUMPI]
 
 def checkThree : List Located :=
@@ -59,12 +59,12 @@ def checkThree : List Located :=
    opAt 2010 .BYTE,
    pushAt 2011 1 3,
    opAt 2012 .XOR,
-   pushAt 2013 2 2778,
+   pushAt 2013 2 2745,
    opAt 2014 .JUMPI]
 
 def threeHit : List Located :=
   [pushAt 2015 1 1,
-   pushAt 2016 2 2732,
+   pushAt 2016 2 2699,
    opAt 2017 .JUMP]
 
 def check65537 : List Located :=
@@ -76,7 +76,7 @@ def check65537 : List Located :=
    opAt 2023 .SHR,
    pushAt 2024 3 65537,
    opAt 2025 .XOR,
-   pushAt 2026 2 2778,
+   pushAt 2026 2 2745,
    opAt 2027 .JUMPI]
 
 def fermatHit : List Located :=
@@ -93,12 +93,12 @@ def squareCall : List Located :=
    opAt 2030 (.Dup ⟨0, by decide⟩),
    pushAt 2031 2 2624,
    opAt 2032 .MSTORE,
-   pushAt 2033 2 2753,
+   pushAt 2033 2 2720,
    pushAt 2034 2 512,
    opAt 2035 (.Dup ⟨0, by decide⟩),
    opAt 2036 (.Dup ⟨0, by decide⟩),
-   pushAt 2037 2 4737,
-   pushAt 2038 2 3537,
+   pushAt 2037 2 4769,
+   pushAt 2038 2 3562,
    opAt 2039 .JUMP]
 
 def squareReturn : List Located :=
@@ -107,7 +107,7 @@ def squareReturn : List Located :=
    opAt 2042 .NOT,
    opAt 2043 .ADD,
    opAt 2044 (.Dup ⟨0, by decide⟩),
-   pushAt 2045 2 2732,
+   pushAt 2045 2 2699,
    opAt 2046 .JUMPI]
 
 /-- `after_sq` (pc 3303): both the in-kernel loop's return target and the
@@ -116,11 +116,11 @@ left on the stack is dropped and the final mixed-domain product is called. -/
 def product : List Located :=
   [opAt 2047 .JUMPDEST,
    opAt 2048 .POP,
-   pushAt 2049 2 1160,
+   pushAt 2049 2 1152,
    pushAt 2050 2 256,
    opAt 2051 (.Dup ⟨0, by decide⟩),
    pushAt 2052 2 512,
-   pushAt 2053 2 3533,
+   pushAt 2053 2 3558,
    opAt 2054 .JUMP]
 
 def fallback : List Located :=
@@ -130,44 +130,44 @@ def fallback : List Located :=
    pushAt 2058 2 256,
    opAt 2059 .MCOPY,
    pushAt 2060 0 0,
-   pushAt 2061 2 1061,
+   pushAt 2061 2 1053,
    opAt 2062 .JUMP]
 
 theorem jumpDest3892 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2675 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2642 = true :=
   Artifact.isValidJumpDest_index 1995 (by rfl)
 
 theorem jumpDest3895 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2712 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2679 = true :=
   Artifact.isValidJumpDest_index 2018 (by rfl)
 
 theorem jumpDest3953 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2732 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2699 = true :=
   Artifact.isValidJumpDest_index 2029 (by rfl)
 
 theorem jumpDest3970 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2753 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2720 = true :=
   Artifact.isValidJumpDest_index 2040 (by rfl)
 
 theorem jumpDest3959 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2778 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2745 = true :=
   Artifact.isValidJumpDest_index 2055 (by rfl)
 
 /-- The kernel's multiply entry `0x0f50` (the final mixed-domain product). -/
 theorem jumpDestSqMulEntry :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3533 = true :=
-  Artifact.isValidJumpDest_index 2628 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3558 = true :=
+  Artifact.isValidJumpDest_index 2666 (by rfl)
 
 /-- The kernel's shared `common` block `0x0f54` (entered by the square call). -/
 theorem jumpDestSqCommon :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3537 = true :=
-  Artifact.isValidJumpDest_index 2630 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3562 = true :=
+  Artifact.isValidJumpDest_index 2668 (by rfl)
 
 
 /-- `after_sq` (pc 3303): the target the in-kernel square loop rewrites the
 kernel frame's return slot to. -/
 theorem jumpDestAfterSq :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2762 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2729 = true :=
   Artifact.isValidJumpDest_index 2047 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths

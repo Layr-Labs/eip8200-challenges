@@ -11,7 +11,7 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro CarryRowModel CarryScratchAgreement StagedOperand
 
 def selectedRows (mem : ByteArray) (pa pb n i : Nat) : ByteArray :=
-  if n = 4 ∨ n = 8 then rowsCarry mem pa pb n i else rowsMem mem pa pb n i
+  if eligible mem n then rowsCarry mem pa pb n i else rowsMem mem pa pb n i
 
 theorem selectedRows_agree (mem : ByteArray) (pa pb n i : Nat)
     (hpa : pa+32*n ≤ 2048) (hpb : pb+32*n ≤ 2048)

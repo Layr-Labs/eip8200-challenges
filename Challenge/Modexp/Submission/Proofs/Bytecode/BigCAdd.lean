@@ -63,9 +63,9 @@ theorem addLoop {s : State} (henv : Env s) (src : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1000) (hsrc : src ≤ 8192) :
     ∀ i, 1 ≤ i → i ≤ 1024 → ∀ (mem : ByteArray) (c : UInt256), c.toNat ≤ 1 →
       (src = 0 ∨ i ≤ src) →
-      ∃ mem' c', Reach (st s 561 (UInt256.ofNat i :: c :: ret :: UInt256.ofNat src :: rest)
+      ∃ mem' c', Reach (st s 553 (UInt256.ofNat i :: c :: ret :: UInt256.ofNat src :: rest)
           mem AW)
-          (st s 591 (UInt256.ofNat 0 :: c' :: ret :: UInt256.ofNat src :: rest) mem' AW) ∧
+          (st s 583 (UInt256.ofNat 0 :: c' :: ret :: UInt256.ofNat src :: rest) mem' AW) ∧
         c'.toNat ≤ 1 ∧
         num mem' 0 i + c'.toNat * 256 ^ i = num mem 0 i + num mem src i + c.toNat ∧
         (∀ k, i ≤ k → bget mem' k = bget mem k) := by
@@ -123,8 +123,8 @@ theorem addLoop {s : State} (henv : Env s) (src : Nat) (ret : UInt256)
 theorem subLoop {s : State} (henv : Env s) (c ret src : UInt256)
     (rest : List UInt256) (hcap : rest.length < 1000) :
     ∀ i, 1 ≤ i → i ≤ 1024 → ∀ (mem : ByteArray) (b : UInt256), b.toNat ≤ 1 →
-      ∃ mem' b', Reach (st s 597 (UInt256.ofNat i :: b :: c :: ret :: src :: rest) mem AW)
-          (st s 634 (UInt256.ofNat 0 :: b' :: c :: ret :: src :: rest) mem' AW) ∧
+      ∃ mem' b', Reach (st s 589 (UInt256.ofNat i :: b :: c :: ret :: src :: rest) mem AW)
+          (st s 626 (UInt256.ofNat 0 :: b' :: c :: ret :: src :: rest) mem' AW) ∧
         b'.toNat ≤ 1 ∧
         num mem' 4096 i + num mem 1024 i + b.toNat = num mem 0 i + b'.toNat * 256 ^ i ∧
         (∀ k, ¬ (4096 ≤ k ∧ k < 4096 + i) → bget mem' k = bget mem k) := by
@@ -185,7 +185,7 @@ theorem addm {s : State} (henv : Env s) (ml src retPc : Nat) (rest : List UInt25
     (hret : retPc < 2 ^ 16) (hjump : Decode.isValidJumpDest submissionBytecode retPc = true)
     (hmsv : MachineState.readWord mem 9216 = UInt256.ofNat ml)
     (hlt : num mem 0 ml + num mem src ml < 2 * num mem 1024 ml) :
-    ∃ mem', Reach (st s 555 (UInt256.ofNat retPc :: UInt256.ofNat src :: rest) mem AW)
+    ∃ mem', Reach (st s 547 (UInt256.ofNat retPc :: UInt256.ofNat src :: rest) mem AW)
         (st s retPc rest mem' AW) ∧
       num mem' 0 ml = (num mem 0 ml + num mem src ml) % num mem 1024 ml ∧
       (∀ k, ml ≤ k → (k < 4096 ∨ 5120 ≤ k) → bget mem' k = bget mem k) := by

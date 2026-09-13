@@ -18,7 +18,7 @@ def guardValueProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩), .push 1 32, .op .XOR, .op .OR,
    .op (.Dup ⟨1, by decide⟩), .push 1 32, .op .XOR, .op .OR]
 
-def branchProgram : List Instr := [.push 2 127, .op .JUMPI]
+def branchProgram : List Instr := [.push 1 125, .op .JUMPI]
 
 /-- Nineteen instructions at pc 0, ending at the conditional branch. -/
 def guardProgram : List Instr := headerProgram ++ guardValueProgram ++ branchProgram
@@ -37,7 +37,7 @@ def hitProgram : List Instr := offsetsProgram ++ frameProgram
 
 /-- Every width miss restores the unchanged legacy entry with an empty stack. -/
 def missProgram : List Instr :=
-  [.op .JUMPDEST, .op .POP, .op .POP, .op .POP, .push 2 717, .op .JUMP]
+  [.op .JUMPDEST, .op .POP, .op .POP, .op .POP, .push 2 709, .op .JUMP]
 
 def headerStack (input : ByteArray) : List UInt256 :=
   [UInt256.ofNat (modulusSize input), UInt256.ofNat (exponentSize input),
@@ -46,10 +46,10 @@ def headerStack (input : ByteArray) : List UInt256 :=
 /-- Abstract location and jump facts; this module does not depend on the artifact. -/
 structure Paths (artifact : ProgramArtifact) (fork : Fork) where
   guard : WindowTwentyOneBinding.Block artifact fork 0 guardProgram
-  hit : WindowTwentyOneBinding.Block artifact fork 26 hitProgram
-  miss : WindowTwentyOneBinding.Block artifact fork 127 missProgram
-  missJump : Decode.isValidJumpDest artifact.code 127 = true
-  legacyJump : Decode.isValidJumpDest artifact.code 717 = true
+  hit : WindowTwentyOneBinding.Block artifact fork 25 hitProgram
+  miss : WindowTwentyOneBinding.Block artifact fork 125 missProgram
+  missJump : Decode.isValidJumpDest artifact.code 125 = true
+  legacyJump : Decode.isValidJumpDest artifact.code 709 = true
 
 /-- Context reset is valid only with the three explicit carrier premises. -/
 theorem framed_eq_state (template : State) (input : ByteArray) (pc : UInt256)
@@ -82,11 +82,11 @@ theorem run_guard_value (template : State) (b e m : UInt256) :
     Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod, xor_comm]
 
 theorem run_branch (template : State) (value b e m : UInt256)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 127 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 125 = true) :
     runInstructions branchProgram
       (framed template (UInt256.ofNat 22) (value :: [m, e, b])) =
       some (framed template
-        (if value.toNat = 0 then UInt256.ofNat 26 else UInt256.ofNat 127) [m, e, b]) := by
+        (if value.toNat = 0 then UInt256.ofNat 25 else UInt256.ofNat 125) [m, e, b]) := by
   by_cases hv : value.toNat = 0 <;>
     simp [branchProgram, runInstructions, framed, Stepper.runInstr, UInt256.isTrue,
       hv, hjump, Word.literal_eq_ofNat, Word.word_toNat_ofNat,
@@ -95,11 +95,11 @@ theorem run_branch (template : State) (value b e m : UInt256)
 /-- The header guard covers all byte arrays, including truncated headers. -/
 theorem run_guard (template : State) (input : ByteArray)
     (hdata : template.executionEnv.calldata = input)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 127 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 125 = true) :
     runInstructions guardProgram (framed template (UInt256.ofNat 0) []) =
       some (framed template
         (if (WindowTwentyOneInput.guardDiff input).toNat = 0
-          then UInt256.ofNat 26 else UInt256.ofNat 127) (headerStack input)) := by
+          then UInt256.ofNat 25 else UInt256.ofNat 125) (headerStack input)) := by
   have hh := run_header template input hdata
   have hv := run_guard_value template (UInt256.ofNat (baseSize input))
     (UInt256.ofNat (exponentSize input)) (UInt256.ofNat (modulusSize input))
@@ -121,15 +121,15 @@ theorem guard_zero_iff (input : ByteArray) :
     rfl
 
 theorem run_offsets (template : State) (b e m : UInt256) :
-    runInstructions offsetsProgram (framed template (UInt256.ofNat 26) [m, e, b]) =
-      some (framed template (UInt256.ofNat 33)
+    runInstructions offsetsProgram (framed template (UInt256.ofNat 25) [m, e, b]) =
+      some (framed template (UInt256.ofNat 32)
         [UInt256.ofNat 96 + b + e, UInt256.ofNat 96 + b, m, e, b]) := by
   simp [offsetsProgram, runInstructions, framed, Stepper.runInstr,
     Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod]
 
 theorem run_frame (template : State) (b e m x y : UInt256) :
-    runInstructions frameProgram (framed template (UInt256.ofNat 33) [y, x, m, e, b]) =
-      some (framed template (UInt256.ofNat 43)
+    runInstructions frameProgram (framed template (UInt256.ofNat 32) [y, x, m, e, b]) =
+      some (framed template (UInt256.ofNat 42)
         [b, e, m, UInt256.ofNat 96, x, y, UInt256.ofNat 1186, y, x, m, e, b]) := by
   simp [frameProgram, runInstructions, framed, Stepper.runInstr,
     Word.literal_eq_ofNat,
@@ -137,8 +137,8 @@ theorem run_frame (template : State) (b e m x y : UInt256) :
 
 /-- The hit frame is canonical without resetting memory or environment. -/
 theorem run_hit (template : State) (input : ByteArray) :
-    runInstructions hitProgram (framed template (UInt256.ofNat 26) (headerStack input)) =
-      some (framed template (UInt256.ofNat 43) (WindowTwentyOnePositive.routeStack input)) := by
+    runInstructions hitProgram (framed template (UInt256.ofNat 25) (headerStack input)) =
+      some (framed template (UInt256.ofNat 42) (WindowTwentyOnePositive.routeStack input)) := by
   have ho := run_offsets template (UInt256.ofNat (baseSize input))
     (UInt256.ofNat (exponentSize input)) (UInt256.ofNat (modulusSize input))
   have hf := run_frame template (UInt256.ofNat (baseSize input))
@@ -151,9 +151,9 @@ theorem run_hit (template : State) (input : ByteArray) :
     Word.ofNat_add_mod] using both
 
 theorem run_miss (template : State) (input : ByteArray)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 717 = true) :
-    runInstructions missProgram (framed template (UInt256.ofNat 127) (headerStack input)) =
-      some (framed template (UInt256.ofNat 717) []) := by
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 709 = true) :
+    runInstructions missProgram (framed template (UInt256.ofNat 125) (headerStack input)) =
+      some (framed template (UInt256.ofNat 709) []) := by
   simp [missProgram, runInstructions, framed, headerStack, Stepper.runInstr, hjump,
     Word.literal_eq_ofNat, Word.word_toNat_ofNat]
 

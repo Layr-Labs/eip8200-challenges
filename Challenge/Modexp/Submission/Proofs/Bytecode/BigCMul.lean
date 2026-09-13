@@ -43,9 +43,9 @@ theorem mulLoop {s : State} (henv : Env s) (ml x y k retPc : Nat) (rest : List U
       MachineState.readWord mem 9216 = UInt256.ofNat ml →
       (∀ a, ml ≤ a → (a < 4096 ∨ 5120 ≤ a) → bget mem a = bget mem0 a) →
       num mem 0 ml = num mem0 y k / 2 ^ d * num mem0 x ml % num mem0 1024 ml →
-      ∃ mem', Reach (st s 492 (UInt256.ofNat (8 * k - d) :: UInt256.ofNat retPc ::
+      ∃ mem', Reach (st s 484 (UInt256.ofNat (8 * k - d) :: UInt256.ofNat retPc ::
             UInt256.ofNat x :: UInt256.ofNat y :: UInt256.ofNat k :: rest) mem AW)
-          (st s 548 (UInt256.ofNat (8 * k) :: UInt256.ofNat retPc ::
+          (st s 540 (UInt256.ofNat (8 * k) :: UInt256.ofNat retPc ::
             UInt256.ofNat x :: UInt256.ofNat y :: UInt256.ofNat k :: rest) mem' AW) ∧
         MachineState.readWord mem' 9216 = UInt256.ofNat ml ∧
         (∀ a, ml ≤ a → (a < 4096 ∨ 5120 ≤ a) → bget mem' a = bget mem0 a) ∧
@@ -75,7 +75,7 @@ theorem mulLoop {s : State} (henv : Env s) (ml x y k retPc : Nat) (rest : List U
     have hacc : num mem 0 ml < num mem0 1024 ml := by
       rw [hv]
       exact Nat.mod_lt _ (by omega)
-    obtain ⟨mem1, r3, hv1, hf1⟩ := addm henv ml 0 511
+    obtain ⟨mem1, r3, hv1, hf1⟩ := addm henv ml 0 503
       (UInt256.ofNat (8 * k - (d + 1)) :: UInt256.ofNat retPc :: UInt256.ofNat x ::
         UInt256.ofNat y :: UInt256.ofNat k :: rest)
       mem hrest hml1 hml (Or.inl rfl) (by norm_num) (by norm_num) jump511 hmsv
@@ -118,7 +118,7 @@ theorem mulLoop {s : State} (henv : Env s) (ml x y k retPc : Nat) (rest : List U
       have hacc1 : num mem1 0 ml < num mem0 1024 ml := by
         rw [hv1]
         exact Nat.mod_lt _ (by omega)
-      obtain ⟨mem2, r6, hv2, hf2⟩ := addm henv ml x 540
+      obtain ⟨mem2, r6, hv2, hf2⟩ := addm henv ml x 532
         (UInt256.ofNat (8 * k - (d + 1)) :: UInt256.ofNat retPc :: UInt256.ofNat x ::
           UInt256.ofNat y :: UInt256.ofNat k :: rest)
         mem1 hrest hml1 hml (Or.inr (by omega)) (by omega) (by norm_num) jump540 hmsv1
@@ -148,7 +148,7 @@ theorem mulm {s : State} (henv : Env s) (hcds : s.executionEnv.calldata.size < 2
     (hret : retPc < 2 ^ 16) (hjump : Decode.isValidJumpDest submissionBytecode retPc = true)
     (hmsv : MachineState.readWord mem 9216 = UInt256.ofNat ml)
     (hM : 1 ≤ num mem 1024 ml) (hX : num mem x ml ≤ num mem 1024 ml) :
-    ∃ mem', Reach (st s 483 (UInt256.ofNat retPc :: UInt256.ofNat x :: UInt256.ofNat y ::
+    ∃ mem', Reach (st s 475 (UInt256.ofNat retPc :: UInt256.ofNat x :: UInt256.ofNat y ::
           UInt256.ofNat k :: rest) mem AW) (st s retPc rest mem' AW) ∧
       num mem' 0 ml = num mem y k * num mem x ml % num mem 1024 ml ∧
       (∀ a, ml ≤ a → (a < 4096 ∨ 5120 ≤ a) → bget mem' a = bget mem a) := by

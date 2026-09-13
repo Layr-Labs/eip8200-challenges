@@ -45,8 +45,8 @@ theorem run_setup (s : State) (bl el ml : Nat) (stk : List UInt256) (mem : ByteA
     (hm : MachineState.readWord s.executionEnv.calldata 64 = UInt256.ofNat ml)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock setupPath (st s 258 stk mem aw) =
-      some (st s 307 (UInt256.ofNat ml :: UInt256.ofNat 0 :: UInt256.ofNat bl ::
+    Challenge.EvmProof.Stepper.runLocatedBlock setupPath (st s 250 stk mem aw) =
+      some (st s 299 (UInt256.ofNat ml :: UInt256.ofNat 0 :: UInt256.ofNat bl ::
         UInt256.ofNat el :: UInt256.ofNat ml :: stk)
         (setupMem mem s.executionEnv.calldata bl el ml) AW) := by
   have hc := caps _ (by omega : stk.length < 1000)

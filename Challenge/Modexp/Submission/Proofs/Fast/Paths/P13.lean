@@ -52,7 +52,7 @@ def blk1683 :
    pushAt 1143 2 2080,
    opAt 1144 (.Dup ⟨1, by decide⟩),
    opAt 1145 .GT,
-   pushAt 1146 2 1574,
+   pushAt 1146 2 1566,
    opAt 1147 .JUMPI]
 
 /-- Live instructions 1851..1866, pc 2848..2995; trailing padding is not executed. -/

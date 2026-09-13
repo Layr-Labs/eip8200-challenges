@@ -33,20 +33,20 @@ opaque gasSteps_toCsub (L : RowLemmas) (E : EntryLemmas) (s : State) (mem : Byte
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
       (mpCsubState s (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) pdst ret rest) := by
-  by_cases hn4 : n = 4
-  · subst n
-    rw [inputMemory, if_pos (show 4=4 ∨ 4=8 from Or.inl rfl),
-      selectedRows, if_pos (show 4=4 ∨ 4=8 from Or.inl rfl)]
-    exact gasSteps_specializedFour L E s mem pa pb pdst ret rest (by omega) hrun hcode
-      hfork hnp hact hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv
-  by_cases hn8 : n = 8
-  · subst n
-    rw [inputMemory, if_pos (show 8=4 ∨ 8=8 from Or.inr rfl),
-      selectedRows, if_pos (show 8=4 ∨ 8=8 from Or.inr rfl)]
-    exact gasSteps_specializedEight L E s mem pa pb pdst ret rest (by omega) hrun hcode
-      hfork hnp hact hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv
-  rw [inputMemory, if_neg (show ¬(n=4 ∨ n=8) by simp [hn4, hn8])]
-  exact gasSteps_fallback E s mem pa pb n pdst ret rest hcap hrun hcode hfork hnp hact hn
-    hn32 hpa (by omega) hpb hpbFit hcds hs32 htl hml hminv hn4 hn8
+  by_cases he : eligible mem n
+  · have hprepared : eligible (mpZeroed s (inputMemory mem pa n) n) n :=
+      (eligible_zeroed s _ n hn32).2 ((eligible_inputMemory mem pa n).2 he)
+    rw [selectedRows, if_pos hprepared, inputMemory, if_pos he]
+    by_cases hn4 : n = 4
+    · subst n
+      exact gasSteps_specializedFour L E s mem pa pb pdst ret rest hcap hrun hcode
+        hfork hnp hact hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv he.2
+    · have hn8 : n = 8 := he.1.resolve_left hn4
+      subst n
+      exact gasSteps_specializedEight L E s mem pa pb pdst ret rest hcap hrun hcode
+        hfork hnp hact hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv he.2
+  · rw [inputMemory, if_neg he]
+    exact gasSteps_fallback E s mem pa pb n pdst ret rest hcap hrun hcode hfork hnp hact hn
+      hn32 hpa (by omega) hpb hpbFit hcds hs32 htl hml hminv he
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryFull

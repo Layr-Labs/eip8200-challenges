@@ -128,7 +128,7 @@ def subsSquare (s : State) (n bsize mm minv : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
     ∀ (ret : UInt256) (tail : List UInt256) (mem : ByteArray) (a : Nat),
-      ¬ (n = 4 ∨ n = 8) → tail.length ≤ 998 →
+      ¬ ((n = 4 ∨ n = 8) ∧ minv ≠ 1) → tail.length ≤ 998 →
       Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true →
       Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
       Model.FastRepresents mem 512 n a → a < mm →
@@ -150,9 +150,16 @@ def subsSquare (s : State) (n bsize mm minv : Nat)
         exact h
       have hmi : (MachineState.readWord mem 2720).toNat = minv := by
         rw [hf.minvW, toNat_ofNat_self hminvlt]
+      have hslowMem : ¬ StagedOperand.eligible mem (p+2) := by
+        intro he
+        apply hslow
+        refine ⟨he.1, ?_⟩
+        intro hminvOne
+        apply he.2
+        rw [hf.minvW, hminvOne]
       exact Challenge.EvmProof.GasSteps.cast
         (SquareFull.gasSteps_squareFull s mem p a mm ret tail hcap hrun hcode hfork hnp
-          hact (by omega) hslow hcds hf.s32 hf.tl hf.ml hjump ha hm ham hmpos
+          hact (by omega) hslowMem hcds hf.s32 hf.tl hf.ml hjump ha hm ham hmpos
           (by rw [hlow, hmi]; exact hminvA))
         rfl rfl
 
@@ -180,12 +187,12 @@ def subsSquareLoop (s : State) (n bsize mm minv : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
     ∀ (k : Nat) (ret : UInt256) (tail : List UInt256) (mem : ByteArray) (a : Nat),
-      n = 4 ∨ n = 8 → 1 ≤ k → k ≤ 16 → tail.length ≤ 982 →
+      (n = 4 ∨ n = 8) ∧ minv ≠ 1 → 1 ≤ k → k ≤ 16 → tail.length ≤ 982 →
       MachineState.readWord mem 2624 = UInt256.ofNat k →
       Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
       Model.FastRepresents mem 512 n a → a < mm →
       Challenge.EvmProof.GasSteps (sqCall s mem ret tail)
-        (retTo s (FusedMemory.memory s n k mem) (UInt256.ofNat 1158) tail) := by
+        (retTo s (FusedMemory.memory s n k mem) (UInt256.ofNat 1150) tail) := by
   intro k ret tail mem a hfast hk hk16 hcap hcount hf hm ha ham
   -- `GasSteps` lives in `Type`, so the limb count has to be split by `cases`.
   cases n with
@@ -202,10 +209,16 @@ def subsSquareLoop (s : State) (n bsize mm minv : Nat)
         exact h
       have hmi : (MachineState.readWord mem 2720).toNat = minv := by
         rw [hf.minvW, toNat_ofNat_self hminvlt]
+      have hguard : MachineState.readWord mem 2720 ≠ UInt256.ofNat 1 := by
+        rw [hf.minvW]
+        intro hw
+        have hv := congrArg UInt256.toNat hw
+        rw [toNat_ofNat_self hminvlt, toNat_ofNat_self (by decide)] at hv
+        exact hfast.2 hv
       exact Challenge.EvmProof.GasSteps.cast
         (SquareLoop.gasSteps_squareLoop s mem p a mm k ret tail hcap hrun hcode hfork
-          hnp hact (by omega) hfast hk hk16 hcount hcds hf.s32 hf.tl hf.ml ha hm ham hmpos
-          (odd_of_minvA hminvA) (by rw [hlow, hmi]; exact hminvA))
+          hnp hact (by omega) hfast.1 hk hk16 hcount hcds hf.s32 hf.tl hf.ml ha hm ham hmpos
+          (odd_of_minvA hminvA) (by rw [hlow, hmi]; exact hminvA) hguard)
         rfl rfl
 
 /-- The concrete subroutine contracts. -/
