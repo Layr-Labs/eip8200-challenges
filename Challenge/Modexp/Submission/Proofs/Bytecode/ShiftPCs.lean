@@ -194,11 +194,11 @@ open EvmSemantics.EVM
 @[simp] theorem pc3035 : Artifact.submissionArtifact.instructionPC 2284 = 3071 := by rfl
 @[simp] theorem pc3036 : Artifact.submissionArtifact.instructionPC 2285 = 3072 := by rfl
 @[simp] theorem pc3037 : Artifact.submissionArtifact.instructionPC 2286 = 3073 := by rfl
-@[simp] theorem pc3038 : Artifact.submissionArtifact.instructionPC 2287 = 3076 := by rfl
+@[simp] theorem pc3038 : Artifact.submissionArtifact.instructionPC 2287 = 3074 := by rfl
 @[simp] theorem pc3039 : Artifact.submissionArtifact.instructionPC 2288 = 3077 := by rfl
 @[simp] theorem pc3040 : Artifact.submissionArtifact.instructionPC 2289 = 3078 := by rfl
-@[simp] theorem pc3041 : Artifact.submissionArtifact.instructionPC 2290 = 3081 := by rfl
-@[simp] theorem pc3042 : Artifact.submissionArtifact.instructionPC 2291 = 3082 := by rfl
+@[simp] theorem pc3041 : Artifact.submissionArtifact.instructionPC 2290 = 3079 := by rfl
+@[simp] theorem pc3042 : Artifact.submissionArtifact.instructionPC 2291 = 3080 := by rfl
 @[simp] theorem pc3043 : Artifact.submissionArtifact.instructionPC 2292 = 3085 := by rfl
 @[simp] theorem pc3044 : Artifact.submissionArtifact.instructionPC 2293 = 3086 := by rfl
 @[simp] theorem pc3045 : Artifact.submissionArtifact.instructionPC 2294 = 3087 := by rfl
