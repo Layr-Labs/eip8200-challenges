@@ -81,48 +81,45 @@ def checkEntryPath : List Located :=
    pushAt 31 2 968,
    opAt 32 .CALLDATALOAD,
    opAt 33 .XOR,
-   opAt 34 .JUMPDEST,
-   opAt 35 .JUMPDEST,
-   pushAt 36 2 960,
-   opAt 37 (.Swap ⟨0, by decide⟩)]
+   pushAt 34 2 960,
+   opAt 35 (.Swap ⟨0, by decide⟩)]
 
 def loopPath : List Located :=
-  [opAt 38 .JUMPDEST,
-   pushAt 39 1 32,
-   opAt 40 (.Dup ⟨2, by decide⟩),
-   opAt 41 .SUB,
-   opAt 42 .CALLDATALOAD,
-   opAt 43 (.Dup ⟨3, by decide⟩),
-   opAt 44 .XOR,
-   opAt 45 .OR,
-   pushAt 46 1 64,
-   opAt 47 (.Dup ⟨2, by decide⟩),
-   opAt 48 .SUB,
-   opAt 49 (.Swap ⟨1, by decide⟩),
-   opAt 50 .CALLDATALOAD,
-   opAt 51 (.Dup ⟨3, by decide⟩),
-   opAt 52 .XOR,
-   opAt 53 .OR,
-   opAt 54 (.Dup ⟨1, by decide⟩),
-   pushAt 55 2 54,
-   opAt 56 .JUMPI]
+  [opAt 36 .JUMPDEST,
+   pushAt 37 1 32,
+   opAt 38 (.Dup ⟨2, by decide⟩),
+   opAt 39 .SUB,
+   opAt 40 .CALLDATALOAD,
+   opAt 41 (.Dup ⟨3, by decide⟩),
+   opAt 42 .XOR,
+   opAt 43 .OR,
+   pushAt 44 1 64,
+   opAt 45 (.Dup ⟨2, by decide⟩),
+   opAt 46 .SUB,
+   opAt 47 (.Swap ⟨1, by decide⟩),
+   opAt 48 .CALLDATALOAD,
+   opAt 49 (.Dup ⟨3, by decide⟩),
+   opAt 50 .XOR,
+   opAt 51 .OR,
+   opAt 52 (.Dup ⟨1, by decide⟩),
+   pushAt 53 2 52,
+   opAt 54 .JUMPI]
 
 def tailPath : List Located :=
-  [opAt 57 (.Swap ⟨1, by decide⟩),
-   opAt 58 .POP,
-   opAt 59 .POP,
-   opAt 60 .JUMPDEST,
-   pushAt 61 2 353,
-   opAt 62 .JUMPI]
+  [opAt 55 (.Swap ⟨1, by decide⟩),
+   opAt 56 .POP,
+   opAt 57 .POP,
+   pushAt 58 2 353,
+   opAt 59 .JUMPI]
 
 def returnPath : List Located :=
-  [pushAt 63 20 972889429405991776604892044862621566948497025487,
-   pushAt 64 0 0,
-   opAt 65 .MSTORE]
+  [pushAt 60 20 972889429405991776604892044862621566948497025487,
+   pushAt 61 0 0,
+   opAt 62 .MSTORE]
 
 def returnFinishPath : List Located :=
-  [pushAt 67 0 0,
-   opAt 68 .RETURN]
+  [pushAt 64 0 0,
+   opAt 65 .RETURN]
 
 def atPC (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
@@ -151,15 +148,15 @@ def fallbackState (input : ByteArray) : State := atPC input 353
 
 def loopState (input : ByteArray) (n : Nat) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 54
+    pc := UInt256.ofNat 52
     stack := [reverseAcc input n, UInt256.ofNat (960 - 64 * n), referenceWord input] }
 
 def loopExitState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 77
+    pc := UInt256.ofNat 75
     stack := [finalAcc input, UInt256.ofNat 0, referenceWord input] }
 
-def returnEntry (input : ByteArray) : State := atPC input 85
+def returnEntry (input : ByteArray) : State := atPC input 82
 
 def storeWord (memory : ByteArray) (address : Nat) (word : UInt256) : ByteArray :=
   MachineState.writeBytes memory (Data.Bytes.natToBytesPadded word.toNat 32) address
@@ -169,7 +166,7 @@ def answerMemory : ByteArray :=
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 110
+    pc := UInt256.ofNat 107
     memory := answerMemory
     activeWords := UInt256.ofNat 1
     halt := .Returned
@@ -177,13 +174,13 @@ def returnedState (input : ByteArray) : State :=
 
 def storedReturnState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 108
+    pc := UInt256.ofNat 105
     memory := answerMemory
     activeWords := UInt256.ofNat 1 }
 
 def sizedReturnState (input : ByteArray) : State :=
   { storedReturnState input with
-    pc := UInt256.ofNat 109
+    pc := UInt256.ofNat 106
     stack := [UInt256.ofNat 32] }
 
 abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
@@ -264,15 +261,15 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_36 : Artifact.submissionArtifact.instructionPC 34 = 48 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_37 : Artifact.submissionArtifact.instructionPC 35 = 49 := by
+@[simp] theorem pc_direct_37 : Artifact.submissionArtifact.instructionPC 35 = 51 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_38 : Artifact.submissionArtifact.instructionPC 36 = 50 := by
+@[simp] theorem pc_direct_38 : Artifact.submissionArtifact.instructionPC 36 = 52 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_39 : Artifact.submissionArtifact.instructionPC 37 = 53 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_40 : Artifact.submissionArtifact.instructionPC 38 = 54 := by
+@[simp] theorem pc_direct_40 : Artifact.submissionArtifact.instructionPC 38 = 55 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_41 : Artifact.submissionArtifact.instructionPC 39 = 55 := by
+@[simp] theorem pc_direct_41 : Artifact.submissionArtifact.instructionPC 39 = 56 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_42 : Artifact.submissionArtifact.instructionPC 40 = 57 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
@@ -284,9 +281,9 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_46 : Artifact.submissionArtifact.instructionPC 44 = 61 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_47 : Artifact.submissionArtifact.instructionPC 45 = 62 := by
+@[simp] theorem pc_direct_47 : Artifact.submissionArtifact.instructionPC 45 = 63 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_48 : Artifact.submissionArtifact.instructionPC 46 = 63 := by
+@[simp] theorem pc_direct_48 : Artifact.submissionArtifact.instructionPC 46 = 64 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_49 : Artifact.submissionArtifact.instructionPC 47 = 65 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
@@ -302,9 +299,9 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_55 : Artifact.submissionArtifact.instructionPC 53 = 71 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_56 : Artifact.submissionArtifact.instructionPC 54 = 72 := by
+@[simp] theorem pc_direct_56 : Artifact.submissionArtifact.instructionPC 54 = 74 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_57 : Artifact.submissionArtifact.instructionPC 55 = 73 := by
+@[simp] theorem pc_direct_57 : Artifact.submissionArtifact.instructionPC 55 = 75 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_58 : Artifact.submissionArtifact.instructionPC 56 = 76 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
@@ -312,15 +309,15 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_60 : Artifact.submissionArtifact.instructionPC 58 = 78 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_61 : Artifact.submissionArtifact.instructionPC 59 = 79 := by
+@[simp] theorem pc_direct_61 : Artifact.submissionArtifact.instructionPC 59 = 81 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_62 : Artifact.submissionArtifact.instructionPC 60 = 80 := by
+@[simp] theorem pc_direct_62 : Artifact.submissionArtifact.instructionPC 60 = 82 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_63 : Artifact.submissionArtifact.instructionPC 61 = 81 := by
+@[simp] theorem pc_direct_63 : Artifact.submissionArtifact.instructionPC 61 = 103 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_64 : Artifact.submissionArtifact.instructionPC 62 = 84 := by
+@[simp] theorem pc_direct_64 : Artifact.submissionArtifact.instructionPC 62 = 104 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_65 : Artifact.submissionArtifact.instructionPC 63 = 85 := by
+@[simp] theorem pc_direct_65 : Artifact.submissionArtifact.instructionPC 63 = 105 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_66 : Artifact.submissionArtifact.instructionPC 64 = 106 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
