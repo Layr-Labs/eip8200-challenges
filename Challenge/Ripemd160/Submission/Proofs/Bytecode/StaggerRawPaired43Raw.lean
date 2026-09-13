@@ -23,11 +23,11 @@ def template : List Instr :=
     .op .ADD,
     .op (.Dup ⟨5, by decide⟩),
     .op .ADD,
-    .op (.Dup ⟨3, by decide⟩),
-    .op .AND,
-    .op (.Dup ⟨12, by decide⟩),
-    .op (.Swap ⟨0, by decide⟩),
     .push ⟨13, by decide⟩ (UInt256.ofNat 158456325065422163338801971201),
+    .op (.Dup ⟨13, by decide⟩),
+    .op (.Swap ⟨1, by decide⟩),
+    .op (.Dup ⟨5, by decide⟩),
+    .op .AND,
     .op .MULMOD,
     .push ⟨1, by decide⟩ (UInt256.ofNat 26),
     .op .SHR,
@@ -85,7 +85,7 @@ def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UI
     x.v3,
     x.v4,
     x.v5,
-    (UInt256.land x.v3 (UInt256.add x.v7 (UInt256.shiftRight (UInt256.mulMod (UInt256.ofNat 158456325065422163338801971201) (UInt256.land x.v3 (UInt256.add x.v5 (UInt256.add (MachineState.readWord memory 414) (UInt256.add (UInt256.xor (UInt256.lor (UInt256.lnot x.v6) x.v9) x.v0) x.v8)))) x.v12) (UInt256.ofNat 26)))),
+    (UInt256.land x.v3 (UInt256.add x.v7 (UInt256.shiftRight (UInt256.mulMod (UInt256.land x.v3 (UInt256.add x.v5 (UInt256.add (MachineState.readWord memory 414) (UInt256.add (UInt256.xor (UInt256.lor (UInt256.lnot x.v6) x.v9) x.v0) x.v8)))) (UInt256.ofNat 158456325065422163338801971201) x.v12) (UInt256.ofNat 26)))),
     x.v7,
     x.v0,
     x.v9,
@@ -96,11 +96,8 @@ def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UI
     x.v14,
     x.v15,
     x.v16 ] ++ rho
-private theorem mulMod_comm (a b m : UInt256) : UInt256.mulMod a b m = UInt256.mulMod b a m := by
-  simp only [UInt256.mulMod, Nat.mul_comm]
 private theorem actualOutput_eq (memory : ByteArray) (x : Input) (rho : List UInt256) :
-    actualOutput memory x rho = outputStack memory x rho := by
-  simp only [actualOutput, outputStack, mulMod_comm]
+    actualOutput memory x rho = outputStack memory x rho := by rfl
 private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 35 ≤ s.activeWords.toNat) :

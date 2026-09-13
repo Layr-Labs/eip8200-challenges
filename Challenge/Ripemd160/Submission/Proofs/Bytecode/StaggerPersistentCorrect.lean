@@ -10,10 +10,6 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentCorrec
 open Challenge.Ripemd160 EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open StaggerPersistentLoopInduction
 
-/-- The two byte-swap masks computed once at the hash entry and kept below the limit. -/
-def maskRho : List UInt256 := [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
-
-
 theorem padded_bound (input : ByteArray) (hfit : CalldataFits input) :
     DriverTrace.blockCount input * 64 < 2^256 := by
   rw [← DriverTrace.paddedLength_eq_blockCount]
@@ -29,10 +25,10 @@ theorem limit_eq (input : ByteArray) (hfit : CalldataFits input) :
   rw [DriverTrace.paddedLength_eq_blockCount]
 
 noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 358)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 354)) :
     GasSteps (initialState submissionBytecode input 0)
       (loopState input (PaddingTrace.entryState input) StackRunBridge.initialHashState 0
-        (DriverTrace.blockCount input) maskRho) := by
+        (DriverTrace.blockCount input) []) := by
   let s := PaddingTrace.entryState input
   let h := StackRunBridge.initialHashState
   have hr : s.halt = .Running := PadSkipEntry.entryState_halt input
@@ -42,28 +38,28 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
       s.executionEnv.fork s.executionEnv.codeAddr = false := PadSkipEntry.entryState_noPrecompile input
   have hi : s.executionEnv.calldata = input := PadSkipEntry.entryState_calldata input
   have heta := PaddingTrace.entryState_eta input
-  have gx : GasSteps s {s with pc := UInt256.ofNat 486, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (LoopCompletionControl.limit input) maskRho} := by
+  have gx : GasSteps s {s with pc := UInt256.ofNat 469, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (LoopCompletionControl.limit input) []} := by
     by_cases hz : input.size % 64 = 0
-    · have hs : s = {s with pc := UInt256.ofNat 394, stack := Padding.paddedWord input :: maskRho} := by
-        simpa only [if_pos hz, PaddingTrace.padFrame, maskRho] using heta
-      have gf := StaggerPersistentStart.gasSteps_full s (Padding.paddedWord input) maskRho
+    · have hs : s = {s with pc := UInt256.ofNat 377, stack := [Padding.paddedWord input]} := by
+        simpa only [if_pos hz, PaddingTrace.padFrame] using heta
+      have gf := StaggerPersistentStart.gasSteps_full s (Padding.paddedWord input) []
         (by decide) hr hc hf hn
       rw [hi] at gf
-      have gi := StaggerPersistentStart.gasSteps_push s (UInt256.ofNat input.size) maskRho
+      have gi := StaggerPersistentStart.gasSteps_push s (UInt256.ofNat input.size) []
         (by decide) hr hc hf hn
       have g := gf.trans gi
       rw [← hs] at g
       simpa only [LoopCompletionControl.limit, LoopCompletionControl.limitNat, if_pos hz] using g
-    · have hs : s = {s with pc := UInt256.ofNat 396, stack := Padding.paddedWord input :: maskRho} := by
-        simpa only [if_neg hz, PaddingTrace.padFrame, maskRho] using heta
-      have gi := StaggerPersistentStart.gasSteps_push s (Padding.paddedWord input) maskRho
+    · have hs : s = {s with pc := UInt256.ofNat 379, stack := [Padding.paddedWord input]} := by
+        simpa only [if_neg hz, PaddingTrace.padFrame] using heta
+      have gi := StaggerPersistentStart.gasSteps_push s (Padding.paddedWord input) []
         (by decide) hr hc hf hn
       rw [← hs] at gi
       simpa only [LoopCompletionControl.limit, LoopCompletionControl.limitNat, if_neg hz,
         Padding.paddedWord_eq input hfit] using gi
   have gj := StaggerPersistentLoopSites.gasSteps_join s
-    (StaggerPersistentFrame.frame h (UInt256.ofNat 0) (LoopCompletionControl.limit input) maskRho)
-    (by simp [StaggerPersistentFrame.frame, maskRho]) hr hc hf hn
+    (StaggerPersistentFrame.frame h (UInt256.ofNat 0) (LoopCompletionControl.limit input) [])
+    (by simp [StaggerPersistentFrame.frame]) hr hc hf hn
   have gp := PaddingTrace.gasSteps_pad input hfit entryPrefix
   have g := gp.trans (gx.trans gj)
   simpa only [loopState, LoopCompletionControl.blockPC, Nat.zero_mul,
@@ -72,7 +68,7 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
 def result (input : ByteArray) (states : Nat → State) (hashes : Nat → Compression.HashState) : State :=
   StaggerPersistentSerialize.result (states (DriverTrace.blockCount input))
     (hashes (DriverTrace.blockCount input))
-    (limitWord (DriverTrace.blockCount input)) (LoopCompletionControl.limit input) maskRho
+    (limitWord (DriverTrace.blockCount input)) (LoopCompletionControl.limit input) []
 
 noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size)
     (states : Nat → State) (hashes : Nat → Compression.HashState)
@@ -80,12 +76,12 @@ noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input) (hpo
     (hhzero : hashes 0 = StackRunBridge.initialHashState)
     (hambient : ∀ i, i ≤ DriverTrace.blockCount input → Ambient input (states i))
     (hblock : ∀ i, i < DriverTrace.blockCount input →
-      GasSteps (loopState input (states i) (hashes i) i (DriverTrace.blockCount input) maskRho)
-        (postState input (states (i + 1)) (hashes (i + 1)) i (DriverTrace.blockCount input) maskRho))
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 358)) :
+      GasSteps (loopState input (states i) (hashes i) i (DriverTrace.blockCount input) [])
+        (postState input (states (i + 1)) (hashes (i + 1)) i (DriverTrace.blockCount input) []))
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 354)) :
     GasSteps (initialState submissionBytecode input 0) (result input states hashes) := by
   have gs := gasSteps_start input hfit hpositive entryPrefix
-  have gb := run_blocks input states hashes maskRho hfit (by decide) hambient hblock
+  have gb := run_blocks input states hashes [] hfit (by decide) hambient hblock
   have a := hambient (DriverTrace.blockCount input) (Nat.le_refl _)
   have go := StaggerPersistentSerialize.gasSteps (states (DriverTrace.blockCount input))
     (limitWord (DriverTrace.blockCount input)) (LoopCompletionControl.limit input)
@@ -99,19 +95,19 @@ theorem correct_of_blocks (input : ByteArray) (hfit : CalldataFits input) (hposi
     (hhzero : hashes 0 = StackRunBridge.initialHashState)
     (hambient : ∀ i, i ≤ DriverTrace.blockCount input → Ambient input (states i))
     (hblock : ∀ i, i < DriverTrace.blockCount input →
-      GasSteps (loopState input (states i) (hashes i) i (DriverTrace.blockCount input) maskRho)
-        (postState input (states (i + 1)) (hashes (i + 1)) i (DriverTrace.blockCount input) maskRho))
+      GasSteps (loopState input (states i) (hashes i) i (DriverTrace.blockCount input) [])
+        (postState input (states (i + 1)) (hashes (i + 1)) i (DriverTrace.blockCount input) []))
     (hfinal : CompressionCorrect.hashArray (hashes (DriverTrace.blockCount input)) =
       CompressionSeamBridge.hashAfter input (DriverTrace.blockCount input))
     (hcalls : (states (DriverTrace.blockCount input)).callStack = [])
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 358)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 354)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   let trace := fullTrace input hfit hpositive states hashes hszero hhzero hambient hblock entryPrefix
   have hr : (result input states hashes).halt = .Returned := rfl
   have hc : (result input states hashes).callStack = [] := hcalls
   have hb : (result input states hashes).hReturn = spec input :=
-    StaggerPersistentSerialize.returned_spec_of_hashArray _ input _ _ maskRho _ hfinal
+    StaggerPersistentSerialize.returned_spec_of_hashArray _ input _ _ [] _ hfinal
   refine ⟨trace.cost, fun gas hgas => ?_⟩
   have heval := eval_of_steps (trace.trace gas hgas) (by
     simp [withGas, State.isDone, State.isHalted, State.isRunning, hc, hr])

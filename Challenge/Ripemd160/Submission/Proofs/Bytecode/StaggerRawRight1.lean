@@ -7,16 +7,19 @@ set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
 set_option linter.unusedSimpArgs false
 set_option linter.unusedVariables false
+set_option linter.unusedTactic false
+set_option linter.unreachableTactic false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawRight1
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
+private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
+private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
 def template : List Instr :=
-  [ .op (.Swap ⟨4, by decide⟩),
-    .op (.Dup ⟨5, by decide⟩),
-    .op .NOT,
+  [ .op (.Dup ⟨3, by decide⟩),
     .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨7, by decide⟩),
+    .op .NOT,
     .op .OR,
-    .op (.Dup ⟨4, by decide⟩),
     .op .XOR,
     .op .ADD,
     .push ⟨1, by decide⟩ (UInt256.ofNat 162),
@@ -40,12 +43,12 @@ def template : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 23),
     .op .SHR ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ x.v0,
+  [ x.v5,
     x.v1,
     x.v2,
     x.v3,
     x.v4,
-    x.v5,
+    x.v0,
     x.v6,
     x.v7,
     x.v8,
@@ -97,8 +100,10 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
   simp (discharger := omega) [template, inputStack, actualOutput,
     runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
-    State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals repeat first | apply And.intro | rfl
+    State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat,
+    RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
+  all_goals simp only [neutral_hadd, neutral_hmul, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
+  all_goals repeat first | apply And.intro | exact True.intro | rfl
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 35 ≤ s.activeWords.toNat) :
@@ -107,16 +112,16 @@ theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
   simpa only [actualOutput_eq] using run_generated s pc x rho hstack hrun hactive
 #print axioms run_actual
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 606).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 603).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 606 actual_slice
-    (by change 606 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 603 actual_slice
+    (by change 603 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 948 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 606) = UInt256.ofNat 948
+theorem site_pc : site.startPC = UInt256.ofNat 949 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 603) = UInt256.ofNat 949
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound
@@ -129,10 +134,10 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 948, stack := inputStack x rho}
+    GasSteps {s with pc := UInt256.ofNat 949, stack := inputStack x rho}
       {s with pc := UInt256.ofNat 979, stack := outputStack s.memory x rho} := by
-  have hraw := run_actual s (UInt256.ofNat 948) x rho hstack hrun hactive
-  have hend : pcAfter (UInt256.ofNat 948) template = UInt256.ofNat 979 := by decide
+  have hraw := run_actual s (UInt256.ofNat 949) x rho hstack hrun hactive
+  have hend : pcAfter (UInt256.ofNat 949) template = UInt256.ofNat 979 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps

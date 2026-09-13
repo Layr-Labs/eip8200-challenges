@@ -26,7 +26,7 @@ def input (h : Compression.HashState) (off limit : UInt256) :
 
 def entry (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 906, stack := StaggerPersistentFrame.frame h off limit rho}
+  {s with pc := UInt256.ofNat 904, stack := StaggerPersistentFrame.frame h off limit rho}
 
 theorem input_eq (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256) :
     StaggerPersistentBootstrapRaw.inputStack (input h off limit) rho =
@@ -40,8 +40,7 @@ theorem output_eq (memory : ByteArray) (h : Compression.HashState) (off limit : 
     (rho : List UInt256) :
     StaggerPersistentBootstrapRaw.outputStack memory (input h off limit) rho =
       stack memory (Word.ofUInt32 h.h4)
-        [.a, .k, .b, .c, .d, .e, .factor, .lower, .cache 140,
-          .cache 350, .cache 310, .cache 190, .cache 500]
+        [.factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .e]
         (initial h) (initial h) (UInt256.ofNat 1352829926)
         (StaggerPersistentFrame.coreRest h off limit rho) := by
   have hf : factorPlusWord = UInt256.ofNat 158456325065422163343096938498 := by decide
@@ -50,7 +49,7 @@ theorem output_eq (memory : ByteArray) (h : Compression.HashState) (off limit : 
   have h310 : fusedCoefficientWord 0 3 = UInt256.ofNat 1109194275457955143345843994625 := by decide
   have h350 : fusedModulusWord 8 5 = UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928 := by decide
   have hm : lowerWord = UInt256.ofNat 4294967295 := by decide
-  simp [StaggerPersistentBootstrapRaw.outputStack, input, stack, StaggerCoreCommon.word,
+  simp [StaggerPersistentBootstrapRaw.outputStack, StaggerPersistentBootstrapRaw.inputStack, input, stack, StaggerCoreCommon.word,
     initial_eq, StaggerPersistentFrame.coreRest, hf, hm, h140, h190, h310, h350]
 
 def gasSteps (s : State) (h : Compression.HashState) (off limit : UInt256)

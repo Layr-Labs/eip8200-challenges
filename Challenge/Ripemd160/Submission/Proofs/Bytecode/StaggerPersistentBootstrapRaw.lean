@@ -18,14 +18,7 @@ structure Input where
 /-- The six round constants are resident in the persistent frame (pushed once at
 entry), so the bootstrap only copies the chaining words and pushes the first right
 round constant. -/
-def template : List Instr :=
-  [ .op .JUMPDEST,
-    .op (.Dup ⟨6, by decide⟩),
-    .op (.Dup ⟨10, by decide⟩),
-    .op (.Dup ⟨10, by decide⟩),
-    .op (.Dup ⟨10, by decide⟩),
-    .push ⟨4, by decide⟩ (UInt256.ofNat 1352829926),
-    .op (.Dup ⟨15, by decide⟩) ]
+def template : List Instr := [.op .JUMPDEST]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.ofNat 158456325065422163343096938498),
     (UInt256.ofNat 4294967295),
@@ -40,26 +33,7 @@ def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
     x.h0,
     x.off,
     x.limit ] ++ rho
-def outputStack (_memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ x.h0,
-    (UInt256.ofNat 1352829926),
-    x.h1,
-    x.h2,
-    x.h3,
-    x.h4,
-    (UInt256.ofNat 158456325065422163343096938498),
-    (UInt256.ofNat 4294967295),
-    (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096),
-    (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928),
-    (UInt256.ofNat 1109194275457955143345843994625),
-    (UInt256.ofNat 475368975196266490007815979009),
-    x.h4,
-    x.h1,
-    x.h2,
-    x.h3,
-    x.h0,
-    x.off,
-    x.limit ] ++ rho
+def outputStack (_memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 := inputStack x rho
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat) :

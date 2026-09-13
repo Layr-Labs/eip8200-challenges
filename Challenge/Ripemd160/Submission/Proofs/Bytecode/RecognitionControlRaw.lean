@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.RawExpressionAC
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionBodyRaw
 
 set_option warningAsError true
@@ -27,9 +28,9 @@ def initTemplate : List Instr := [
   .op (.Dup ⟨2, by decide⟩),
   .push ⟨1, by decide⟩ (UInt256.ofNat 5),
   .op .SHL,
+  .op .CALLDATASIZE,
   .push ⟨1, by decide⟩ (UInt256.ofNat 31),
   .op .NOT,
-  .op .CALLDATASIZE,
   .op .AND,
   .push ⟨1, by decide⟩ (UInt256.ofNat 224),
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
@@ -56,7 +57,7 @@ theorem run_init (s : State) (pc incoming : UInt256) (rho : List UInt256)
     [initTemplate, initResult, frame, runInstrSeq, DataStepper.runInstr, pcAfter,
     UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, hU, hH, hL, hC,
-    Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+    Word.word_toNat_ofNat, Word.literal_eq_ofNat, RawExpressionAC.land_comm]
   all_goals repeat first | apply And.intro | rfl
 
 def initBodyTemplate : List Instr := initTemplate.drop 2
@@ -77,7 +78,7 @@ theorem run_init_body (s : State) (pc : UInt256) (rho : List UInt256)
     [initBodyTemplate, initTemplate, initResult, frame, runInstrSeq, DataStepper.runInstr, pcAfter,
     UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, hU, hH, hL, hC,
-    Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+    Word.word_toNat_ofNat, Word.literal_eq_ofNat, RawExpressionAC.land_comm]
   all_goals repeat first | apply And.intro | rfl
 
 def partialTemplate : List Instr :=
