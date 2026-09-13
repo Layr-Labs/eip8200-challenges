@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.RawExpressionAC
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawCommon
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Stagger144Active
 set_option warningAsError true
@@ -35,17 +36,17 @@ def template : List Instr :=
     .op .MLOAD,
     .op (.Dup ⟨7, by decide⟩),
     .op .AND,
+    .op (.Dup ⟨7, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 40),
     .op .MLOAD,
-    .op (.Dup ⟨8, by decide⟩),
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 28),
     .op .MLOAD,
     .op (.Dup ⟨9, by decide⟩),
     .op .AND,
+    .op (.Dup ⟨9, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 60),
     .op .MLOAD,
-    .op (.Dup ⟨10, by decide⟩),
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 8),
     .op .MLOAD,
@@ -55,9 +56,9 @@ def template : List Instr :=
     .op .MLOAD,
     .op (.Dup ⟨13, by decide⟩),
     .op .AND,
+    .op (.Dup ⟨13, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 36),
     .op .MLOAD,
-    .op (.Dup ⟨14, by decide⟩),
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 24),
     .op .MLOAD,
@@ -86,34 +87,60 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     (MachineState.readWord memory 0),
     (UInt256.land x.v0 (MachineState.readWord memory 16)),
     (UInt256.land x.v0 (MachineState.readWord memory 24)) ] ++ rho
+def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
+  [ (UInt256.land (MachineState.readWord memory 12) x.v0),
+    (UInt256.land (MachineState.readWord memory 36) x.v0),
+    (UInt256.land x.v0 (MachineState.readWord memory 32)),
+    (MachineState.readWord memory 4),
+    (MachineState.readWord memory 8),
+    (UInt256.land (MachineState.readWord memory 60) x.v0),
+    (UInt256.land x.v0 (MachineState.readWord memory 28)),
+    (UInt256.land (MachineState.readWord memory 40) x.v0),
+    (UInt256.land x.v0 (MachineState.readWord memory 52)),
+    (UInt256.land x.v0 (MachineState.readWord memory 56)),
+    (UInt256.land x.v0 (MachineState.readWord memory 44)),
+    (UInt256.land x.v0 (MachineState.readWord memory 20)),
+    (UInt256.land x.v0 (MachineState.readWord memory 48)),
+    (MachineState.readWord memory 0),
+    (UInt256.land x.v0 (MachineState.readWord memory 16)),
+    (UInt256.land x.v0 (MachineState.readWord memory 24)) ] ++ rho
+private theorem actualOutput_eq (memory : ByteArray) (x : Input) (rho : List UInt256) :
+    actualOutput memory x rho = outputStack memory x rho := by
+  simp only [actualOutput, outputStack, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
+private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
+    (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
+    (hactive : 35 ≤ s.activeWords.toNat) :
+    runInstrSeq template {s with pc := pc, stack := inputStack x rho} =
+      some {s with pc := pcAfter pc template, stack := actualOutput s.memory x rho} := by
+  have hbase : rho.length < 1024 := by omega
+  have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
+  have hcap (n : Nat) (hn : n ≤ 22) : rho.length + n < 1024 := by omega
+  have hactiveAt (address : Nat) (haddress : address ≤ 1088) :
+      UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
+    Stagger144Active.word_active_preserved s.activeWords address hactive haddress
+  simp (discharger := omega) [template, inputStack, actualOutput,
+    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+    List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
+    State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+  all_goals repeat first | apply And.intro | rfl
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 35 ≤ s.activeWords.toNat) :
     runInstrSeq template {s with pc := pc, stack := inputStack x rho} =
       some {s with pc := pcAfter pc template, stack := outputStack s.memory x rho} := by
-  have hbase : rho.length < 1024 := by omega
-  have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
-  have hcap (n : Nat) (hn : n ≤ 19) : rho.length + n < 1024 := by omega
-  have hactiveAt (address : Nat) (haddress : address ≤ 1088) :
-      UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
-    Stagger144Active.word_active_preserved s.activeWords address hactive haddress
-  simp (discharger := omega) [template, inputStack, outputStack,
-    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
-    List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
-    State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals repeat first | apply And.intro | rfl
+  simpa only [actualOutput_eq] using run_generated s pc x rho hstack hrun hactive
 #print axioms run_actual
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 335).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 334).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 335 actual_slice
-    (by change 335 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 334 actual_slice
+    (by change 334 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 573 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 335) = UInt256.ofNat 573
+theorem site_pc : site.startPC = UInt256.ofNat 572 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 334) = UInt256.ofNat 572
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound
@@ -126,10 +153,10 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 573, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 648, stack := outputStack s.memory x rho} := by
-  have hraw := run_actual s (UInt256.ofNat 573) x rho hstack hrun hactive
-  have hend : pcAfter (UInt256.ofNat 573) template = UInt256.ofNat 648 := by decide
+    GasSteps {s with pc := UInt256.ofNat 572, stack := inputStack x rho}
+      {s with pc := UInt256.ofNat 647, stack := outputStack s.memory x rho} := by
+  have hraw := run_actual s (UInt256.ofNat 572) x rho hstack hrun hactive
+  have hend : pcAfter (UInt256.ofNat 572) template = UInt256.ofNat 647 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps

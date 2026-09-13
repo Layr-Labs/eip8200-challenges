@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.RawExpressionAC
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionBodyRaw
 
 set_option warningAsError true
@@ -80,20 +81,20 @@ theorem run_init_body (s : State) (pc : UInt256) (rho : List UInt256)
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl
 
-def partialTemplate : List Instr := [
-  .op (.Dup ⟨1, by decide⟩),
-  .op .CALLDATALOAD,
-  .op (.Dup ⟨3, by decide⟩),
-  .op .XOR,
-  .op (.Dup ⟨2, by decide⟩),
-  .op .CALLDATASIZE,
-  .op .SUB,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 3),
-  .op .SHL,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 256),
-  .op .SUB,
-  .op .SHR,
-  .op .OR]
+def partialTemplate : List Instr :=
+  [ .op (.Dup ⟨2, by decide⟩),
+    .op (.Dup ⟨2, by decide⟩),
+    .op .CALLDATALOAD,
+    .op .XOR,
+    .op (.Dup ⟨2, by decide⟩),
+    .op .CALLDATASIZE,
+    .op .SUB,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 3),
+    .op .SHL,
+    .push ⟨2, by decide⟩ (UInt256.ofNat 256),
+    .op .SUB,
+    .op .SHR,
+    .op .OR ]
 
 def partialResult (s : State) (f : RecognitionBodyRaw.Frame) : RecognitionBodyRaw.Frame :=
   { f with
@@ -115,6 +116,7 @@ theorem run_partial (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame) (r
     [partialTemplate, partialResult, frame, runInstrSeq, DataStepper.runInstr, pcAfter,
     UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+  all_goals simp [RawExpressionAC.xor_comm]
   all_goals repeat first | apply And.intro | rfl
 
 def testTemplate (dest : Nat) : List Instr :=

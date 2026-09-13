@@ -85,4 +85,35 @@ theorem run_cachedInitial (s : State) (pc messageOffset returnPC : UInt256)
 theorem cachedInitial_length : cachedInitial.length = 16 := rfl
 theorem cachedInitial_byteLength : (assembleBytes cachedInitial).length = 22 := by decide
 theorem cachedInitial_gas : staticGas cachedInitial = 48 := by decide
+
+/-- Load the block after the entry prefix has constructed its two endian masks. -/
+def preparedInitial : List Instr :=
+  [dup1, op .MLOAD, swap1, push1 (UInt256.ofNat 32), op .ADD, op .MLOAD]
+
+theorem run_preparedInitial (s : State) (pc messageOffset returnPC : UInt256)
+    (rest : List UInt256) (hstack : rest.length < 1015) (hrun : s.halt = .Running) :
+    runInstrSeq preparedInitial
+      {s with pc := pc, stack := messageOffset :: mask8 :: mask16 :: returnPC :: maskWord :: rest} =
+      some {s with
+        pc := pcAfter pc preparedInitial
+        stack := inputWord1 s messageOffset :: inputWord0 s messageOffset ::
+          mask8 :: mask16 :: returnPC :: maskWord :: rest
+        activeWords := loadedActiveWords s messageOffset} := by
+  have hcap (m : Nat) (hm : m ≤ 9) : rest.length + m < 1024 := by omega
+  have hswap1 (u v : UInt256) (rho : List UInt256) :
+      (u :: v :: rho).exchange 0 1 = some (v :: u :: rho) := by
+    simpa using YulEvmCompiler.exchange_swap u v ([] : List UInt256) rho
+  have h32 : UInt256.ofNat 32 + messageOffset = messageOffset + UInt256.ofNat 32 :=
+    Word.word_add_comm _ _
+  simp [preparedInitial, inputWord0, inputWord1, loadedActiveWords, activeAfterWord,
+    op, push1, dup1, swap1, runInstrSeq, DataStepper.runInstr, pcAfter, hrun, hcap,
+    hswap1, h32, word_add_assoc, Nat.add_assoc, State.activeWordsAfterUInt256,
+    Word.word_toNat_ofNat, Word.ofNat_add_mod, UInt256.succ, Instr.size]
+
+  repeat first
+    | rw [add_ofNat_assoc_hAdd]
+    | rw [add_ofNat_assoc_add]
+    | rw [add_ofNat_assoc]
+
+#print axioms run_preparedInitial
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DeferredNormalInitial

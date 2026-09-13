@@ -10,7 +10,7 @@ def limitNat (input : ByteArray) : Nat :=
 def limit (input : ByteArray) : UInt256 := UInt256.ofNat (limitNat input)
 
 def blockPC (input : ByteArray) (i : Nat) : UInt256 :=
-  UInt256.ofNat (if input.size = i * 64 then 4769 else 484)
+  UInt256.ofNat (if input.size = i * 64 then 4772 else 484)
 
 theorem limit_le_padded (input : ByteArray) : limitNat input ≤ Padding.paddedLength input.size := by
   unfold limitNat Padding.paddedLength
