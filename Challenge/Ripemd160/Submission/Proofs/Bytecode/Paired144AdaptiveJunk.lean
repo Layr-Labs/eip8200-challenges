@@ -79,14 +79,14 @@ theorem compact_nat (w g A B : Nat) (hg : g = 68 ∨ g = 69 ∨ g = 87)
 
 theorem compact_junk (A B jl jr g : Nat)
     (hA : A < 2 ^ 34) (hB : B < 2 ^ 34) (hjr : jr < 2 ^ 64)
-    (hg : (g = 68 ∨ g = 69) ∧ jl < 2 ^ 32 ∨ g = 87 ∧ jl < 2 ^ 23) :
+    (hg : (g = 68 ∨ g = 69) ∧ jl < 2 ^ 32 ∨ g = 87 ∧ jl = 0) :
     compact g (BitVec.ofNat 256 (A + B * 2 ^ 144) + StaggerRound.junk jl jr) =
       BitVec.ofNat 256 (A % 2 ^ 32) + (BitVec.ofNat 256 (B % 2 ^ 32) <<< g) := by
   rw [StaggerRound.ofNat_add_junk]
   have hB' : B + jr * 2 ^ 32 < 2 ^ 112 := by
     simp only [Nat.reducePow] at *
     omega
-  rcases hg with ⟨hg, hjl⟩ | ⟨rfl, hjl⟩
+  rcases hg with ⟨hg, hjl⟩ | ⟨rfl, rfl⟩
   · have hA' : A + jl * 2 ^ 32 < 2 ^ 65 := by
       simp only [Nat.reducePow] at *
       omega
@@ -95,12 +95,8 @@ theorem compact_junk (A B jl jr g : Nat)
       rcases hg with rfl | rfl <;> decide
     rw [compact_nat 65 g _ _ hg' hw hA' hB']
     simp only [Nat.add_mul_mod_self_right]
-  · -- gap 87 shifts bit 57 of the lower half onto bit 0: dead bits must stay below bit 57.
-    have hA' : A + jl * 2 ^ 32 < 2 ^ 57 := by
-      simp only [Nat.reducePow] at *
-      omega
-    rw [compact_nat 57 87 _ _ (by simp) (by decide) hA' hB']
-    simp only [Nat.add_mul_mod_self_right]
+  · rw [compact_nat 34 87 _ _ (by simp) (by decide) (by simpa using hA) hB']
+    simp only [Nat.zero_mul, Nat.add_zero, Nat.add_mul_mod_self_right]
 
 #print axioms compact_wideH
 #print axioms compact_junk

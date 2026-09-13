@@ -27,9 +27,6 @@ def zeroMemory (memory : ByteArray) : ByteArray := MachineState.writeBytes memor
     (zeroMemory memory)[i]?.getD 0 = if i < 1112 then 0 else memory[i]?.getD 0 := by
   simp [zeroMemory, MachineState.writeBytes_getElem?_getD]
 
-/-- Words below `2 ^ 112` (the pad-only block stores the unmasked bit lengths `n <<< 3` and
-`n >>> 29`, which carry dead bits above their low 32) leave their first 18 bytes zero, so a
-store never reaches the next slot 18 bytes up. -/
 private theorem encoded_prefix_zero (value : UInt256) (hv : value.toNat < 2 ^ 112)
     (i : Nat) (hi : i < 18) :
     (Data.Bytes.natToBytesPadded value.toNat 32)[i]?.getD 0 = 0 := by
@@ -103,7 +100,6 @@ theorem selected_eq_full (memory : ByteArray) (words : Nat → UInt256) (keep : 
         · rw [zeroMemory_getD, if_pos (by omega)]
         · exact fun j hj hj' => hw j (by omega) (by omega)
 
-/-- Selected stores never touch bytes outside their 32-byte windows. -/
 theorem getD_storeSelected_outside (memory : ByteArray) (words : Nat → UInt256)
     (keep : Nat → Bool) (first count address : Nat)
     (hout : ∀ k, first ≤ k → k < first + count →
@@ -137,6 +133,5 @@ theorem erase_zeroMemory (memory : ByteArray) (words : Nat → UInt256) :
         zeroMemory_getD, if_neg hin]
 
 #print axioms selected_eq_full
-#print axioms getD_storeSelected_outside
 #print axioms erase_zeroMemory
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerTableSparse

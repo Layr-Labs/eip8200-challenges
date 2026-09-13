@@ -21,17 +21,15 @@ theorem compact_not_two (i : Fin 77) :
         Crypto.Ripemd160.r[j.val]! ≠ 2 := by decide
   exact h i
 
-/-- The loader stores words 1 and 2 without their mask, the pad-only block word 14: `g k`
-extra 32-bit words sit above each scalar word, at most two, fewer than `2 ^ 35` unless `k = 2`,
-at most one unless `k = 2` or `k = 14`, none for the other words except word 15, which may
-carry fewer than `2 ^ 23` (the pad-only block leaves at most three dead bits above its
-unmasked bit length). -/
+/-- The loader stores words 1 and 2 without their mask: `g k` extra 32-bit words sit above
+each scalar word, below `2^64`, below `2^35` unless `k=2`, below `2^32` unless `k=2` or
+`k=14`, and zero for every word other than 1, 2 and 14. The pad-only word14 has `g=n/2^29`. -/
 theorem ready_junk (memory : ByteArray) (words : Nat → UInt256) (scalar : Nat → UInt32)
     (g : Nat → Nat)
     (hwords : ∀ k, k < 16 → (words k).toNat = (scalar k).toNat + g k * 2 ^ 32)
     (hg : ∀ k, k < 16 → g k < 2 ^ 64) (hg35 : ∀ k, k < 16 → k ≠ 2 → g k < 2 ^ 35)
     (hg32 : ∀ k, k < 16 → k ≠ 2 → k ≠ 14 → g k < 2 ^ 32)
-    (hclean : ∀ k, k < 16 → ¬ StaggerAlgorithm.Dirty k → g k < 2 ^ 23 ∧ (k ≠ 15 → g k = 0)) :
+    (hclean : ∀ k, k < 16 → ¬ StaggerAlgorithm.Dirty k → g k = 0) :
     Ready (StaggerTableLayout.resultMemory memory words) scalar := by
   have hs (k : Nat) : (scalar k).toNat < 2 ^ 32 := (scalar k).toBitVec.isLt
   have hb (k : Nat) (hk : k < 16) : (words k).toNat < 2 ^ 112 := by
@@ -69,8 +67,8 @@ theorem ready (memory : ByteArray) (words : Nat → UInt256) (scalar : Nat → U
     Ready (StaggerTableLayout.resultMemory memory words) scalar :=
   ready_junk memory words scalar (fun _ => 0)
     (fun k hk => by rw [hwords k hk, Word.ofUInt32_toNat]; omega)
-    (fun _ _ => by norm_num) (fun _ _ _ => by norm_num) (fun _ _ _ _ => by norm_num)
-    (fun _ _ _ => ⟨by norm_num, fun _ => rfl⟩)
+    (fun _ _ => by norm_num) (fun _ _ _ => by norm_num)
+    (fun _ _ _ _ => by norm_num) (fun _ _ _ => rfl)
 
 #print axioms ready_junk
 #print axioms ready
