@@ -1,4 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Fast.R4Blocks
+import Mathlib.Algebra.Group.Fin.Basic
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
@@ -94,80 +95,11 @@ theorem run_pro (s : State) (e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 n3 : UInt
     (by simp only [List.length_cons]; omega) 
   exact runInstructions_append_some _ _ _ _ _ g0 (g1)
 
-def prog_r0d_0 : List Instr :=
-  [.push 2 2464, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .ADD,
-   .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩)]
-
-theorem run_r0d_0 (s : State) (a0 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1020)
-    (ha0 : MachineState.readWord s.memory 2464 = a0)
-    (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prog_r0d_0
-      { s with pc := UInt256.ofNat 4784, stack := rest } =
-    some { s with pc := UInt256.ofNat 4793,
-                  stack := a0 :: a0 :: (a0 + a0) :: rest } := by
-  have hc0 : rest.length < 1024 := by omega
-  have hz0 : (⟨0⟩ : UInt256).toNat = 0 := rfl
-  have hc1 : rest.length + 1 < 1024 := by omega
-  have hc2 : rest.length + 2 < 1024 := by omega
-  have hc3 : rest.length + 3 < 1024 := by omega
-  have hl2464 : (2464 : UInt256).toNat = 2464 := rfl
-  simp [hc0, hz0, prog_r0d_0, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, hc1, hc2, hc3, hl2464, ha0, State.activeWordsAfterUInt256, Monpro.activeWords_fix s 2464 32 (by decide) (by norm_num) hact]
-
-def prog_r0d_1 : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .op .MUL, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op .MULMOD]
-
-theorem run_r0d_1 (s : State) (x0 x1 x2 x3 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1017) :
-    runInstructions prog_r0d_1
-      { s with pc := UInt256.ofNat 4793, stack := x0 :: x1 :: x2 :: x3 :: rest } =
-    some { s with pc := UInt256.ofNat 4800,
-                  stack := (UInt256.mulMod x1 x1 x3) :: (x1 * x0) :: x2 :: x3 :: rest } := by
-  have hc0 : rest.length < 1024 := by omega
-  have hz0 : (⟨0⟩ : UInt256).toNat = 0 := rfl
-  have hc1 : rest.length + 1 < 1024 := by omega
-  have hc2 : rest.length + 2 < 1024 := by omega
-  have hc3 : rest.length + 3 < 1024 := by omega
-  have hc4 : rest.length + 4 < 1024 := by omega
-  have hc5 : rest.length + 5 < 1024 := by omega
-  have hc6 : rest.length + 6 < 1024 := by omega
-  simp [hc0, hz0, prog_r0d_1, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, hc1, hc2, hc3, hc4, hc5, hc6]
-
-def prog_r0d_2 : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT, .op .SUB,
-   .op (.Dup ⟨1, by decide⟩), .op .ADD, .push 0 0]
-
-theorem run_r0d_2 (s : State) (x0 x1 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1019) :
-    runInstructions prog_r0d_2
-      { s with pc := UInt256.ofNat 4800, stack := x0 :: x1 :: rest } =
-    some { s with pc := UInt256.ofNat 4807,
-                  stack := (⟨0⟩ : UInt256) :: (x1 + ((UInt256.gt x1 x0) - x0)) :: x1 :: rest } := by
-  have hc0 : rest.length < 1024 := by omega
-  have hz0 : (⟨0⟩ : UInt256).toNat = 0 := rfl
-  have hc1 : rest.length + 1 < 1024 := by omega
-  have hc2 : rest.length + 2 < 1024 := by omega
-  have hc3 : rest.length + 3 < 1024 := by omega
-  have hc4 : rest.length + 4 < 1024 := by omega
-  simp [hc0, hz0, prog_r0d_2, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, hc1, hc2, hc3, hc4]
-
-def prog_r0d_3 : List Instr :=
-  [.op .SUB]
-
-theorem run_r0d_3 (s : State) (x0 x1 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1021) :
-    runInstructions prog_r0d_3
-      { s with pc := UInt256.ofNat 4807, stack := x0 :: x1 :: rest } =
-    some { s with pc := UInt256.ofNat 4808,
-                  stack := (x0 - x1) :: rest } := by
-  have hc0 : rest.length < 1024 := by omega
-  have hz0 : (⟨0⟩ : UInt256).toNat = 0 := rfl
-  have hc1 : rest.length + 1 < 1024 := by omega
-  have hc2 : rest.length + 2 < 1024 := by omega
-  simp [hc0, hz0, prog_r0d_3, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, hc1, hc2]
-
-theorem prog_r0d_split : prog_r0d = prog_r0d_0 ++ (prog_r0d_1 ++ (prog_r0d_2 ++ (prog_r0d_3))) := rfl
+private theorem fusedBorrow_neg (a b c : UInt256) :
+    b - a - c = (⟨0⟩ : UInt256) - (c + (a - b)) := by
+  change UInt256.mk (b.val - a.val - c.val) = UInt256.mk (0 - (c.val + (a.val - b.val)))
+  congr 1
+  simp [sub_eq_add_neg, add_assoc, add_comm, add_left_comm]
 
 theorem run_r0d (s : State) (k n0 n1 n2 n3 np a0 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1012)
@@ -177,16 +109,25 @@ theorem run_r0d (s : State) (k n0 n1 n2 n3 np a0 : UInt256) (rest : List UInt256
       { s with pc := UInt256.ofNat 4784, stack := k :: n0 :: n1 :: n2 :: n3 :: np :: rest } =
     some { s with pc := UInt256.ofNat 4808,
                   stack := (dHi a0 k) :: (a0 * a0) :: (a0 + a0) :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } := by
-  rw [prog_r0d_split]
-  have g0 := run_r0d_0 s a0 (k :: n0 :: n1 :: n2 :: n3 :: np :: rest)
-    (by simp only [List.length_cons]; omega) (ha0 := ha0) (hact := hact)
-  have g1 := run_r0d_1 s a0 a0 ((a0 + a0)) k (n0 :: n1 :: n2 :: n3 :: np :: rest)
-    (by simp only [List.length_cons]; omega) 
-  have g2 := run_r0d_2 s ((UInt256.mulMod a0 a0 k)) ((a0 * a0)) ((a0 + a0) :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest)
-    (by simp only [List.length_cons]; omega) 
-  have g3 := run_r0d_3 s ((⟨0⟩ : UInt256)) (((a0 * a0) + ((UInt256.gt (a0 * a0) (UInt256.mulMod a0 a0 k)) - (UInt256.mulMod a0 a0 k)))) ((a0 * a0) :: (a0 + a0) :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest)
-    (by simp only [List.length_cons]; omega) 
-  exact runInstructions_append_some _ _ _ _ _ g0 (runInstructions_append_some _ _ _ _ _ g1 (runInstructions_append_some _ _ _ _ _ g2 (g3)))
+  have hc0 : rest.length + 0 < 1024 := by omega
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hl2464 : (2464 : UInt256).toNat = 2464 := rfl
+  simp [prog_r0d, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,
+    List.getElem?_cons_zero, List.getElem?_cons_succ, Nat.add_assoc,
+    hl2464, ha0, State.activeWordsAfterUInt256,
+    Monpro.activeWords_fix s 2464 32 (by decide) (by norm_num) hact,
+    dHi, fusedBorrow_neg, hc0, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11]
 
 def prog_r0z1_0 : List Instr :=
   [.push 2 2432, .op .MLOAD, .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨4, by decide⟩),

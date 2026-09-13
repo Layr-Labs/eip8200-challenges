@@ -29,11 +29,11 @@ def block_pro : Block Artifact.submissionArtifact .Osaka 4776 prog_pro :=
 /-- pc 4800..4823（idx 3617..3638）。 -/
 def prog_r0d : List Instr :=
   [.push 2 2464, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .ADD,
-   .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .MUL,
-   .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op (.Swap ⟨0, by decide⟩),
+   .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨0, by decide⟩),
+   .op .MUL, .op (.Swap ⟨1, by decide⟩), .op .JUMPDEST,
    .op (.Dup ⟨0, by decide⟩), .op .MULMOD, .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩), .op .GT, .op .SUB, .op (.Dup ⟨1, by decide⟩), .op .ADD,
-   .push 0 0, .op .SUB]
+   .op (.Dup ⟨2, by decide⟩), .op .GT, .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .SUB,
+   .op .SUB, .op .JUMPDEST]
 
 def block_r0d : Block Artifact.submissionArtifact .Osaka 4784 prog_r0d :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 3594 22 4784 prog_r0d
