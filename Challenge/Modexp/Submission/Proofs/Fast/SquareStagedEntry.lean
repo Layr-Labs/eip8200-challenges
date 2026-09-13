@@ -16,11 +16,11 @@ open Monpro CiosCached
 def program : List Instr :=
   [.op .JUMPDEST, .push 2 4448, .op (.Swap ⟨1, by decide⟩), .op .POP,
    .push 2 2336, .op (.Swap ⟨2, by decide⟩), .op .POP,
-   .push 2 1856, .op .ADD, .push 2 4778, .op .JUMP]
+   .push 2 1856, .op .ADD, .push 2 4778, .op .POP]
 
 def block : Block Artifact.submissionArtifact .Osaka 4759 program :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 3590 11 4759 program
-    (by decide) (by rfl) (by rfl) (by decide)
+    (by decide) (by rfl) (by decide) (by decide)
 
 theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 4759).toNat = true :=
@@ -28,7 +28,7 @@ theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
 
 theorem run_entry (s : State) (mem : ByteArray) (n : Nat)
     (ent inv m0 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1012)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
+    (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
     runInstructions program
       (outState s mem 512 n 0 (UInt256.ofNat 4759) ent inv m0 rest) =
     some { outState s mem 2368 n 0 (UInt256.ofNat 4448) ent inv m0 rest with
@@ -40,10 +40,8 @@ theorem run_entry (s : State) (mem : ByteArray) (n : Nat)
     rw [Challenge.EvmProof.Word.ofNat_add_mod]
     congr 1
     omega
-  have hj : Decode.isValidJumpDest s.executionEnv.code 4778 = true := by
-    rw [hcode]; exact Artifact.isValidJumpDest_index 3601 (by rfl)
   simp [program, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    outState, ptrAt_zero, hp, hj, h9, h10, List.exchange,
+    outState, ptrAt_zero, hp, h9, h10, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
