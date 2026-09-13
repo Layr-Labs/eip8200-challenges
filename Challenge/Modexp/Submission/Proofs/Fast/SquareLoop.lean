@@ -285,7 +285,8 @@ def gasSteps_roundMore (s : State) (M : ByteArray) (p c a mm : Nat)
     (by omega) hrun hcode hfork hnp (p + 2) (by omega)
   have g5 := gasSteps_again s (SquareLoopMem.sqRound s (p + 2) c M) (p + 2) tl inv m0 m96 m64 m32
     (sqLast (rowZero s M (p + 2)) (p + 2)) (UInt256.ofNat 512) ret rest
-    (by omega) hrun hcode hfork hnp hact hfast hcds hs32' R8RowZero.jumpDest
+    (by omega) hrun hcode hfork hnp hact hfast hcds hs32'
+    (SquareResetMemory.zeroScratch_sqRound s M (p + 2) c hn32) R8RowZero.jumpDest
   exact ((((g1.trans g2).trans g4).trans g45).trans g5)
 
 /-- The **last** round: the rows, `sq_exit`'s decrement to zero, the `ret` rewrite, the

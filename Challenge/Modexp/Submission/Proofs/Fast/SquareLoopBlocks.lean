@@ -89,7 +89,7 @@ def lastProgram : List Instr :=
 
 /-- `again` (4984): re-stage, re-zero, reset three frame slots, fall into `sq_row`. -/
 def againProgram : List Instr :=
-  [.push 2 2688, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .push 1 64, .op .ADD, .op .CALLDATASIZE, .push 2 2048,
+  [.push 2 2688, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .push 1 32, .op .ADD, .op .CALLDATASIZE, .push 2 2080,
    .op .CALLDATACOPY,
    .op .ADD, .push 2 289, .op (.Dup ⟨7, by decide⟩), .op .SUB,
    .op (.Swap ⟨3, by decide⟩), .op .POP,
