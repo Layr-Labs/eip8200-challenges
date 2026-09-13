@@ -27,7 +27,7 @@ def blk2557 :
   [opAt 1983 .JUMPDEST,
    opAt 1984 (.Dup ⟨1, by decide⟩),
    opAt 1985 .ISZERO,
-   pushAt 1986 2 1073,
+   pushAt 1986 2 1077,
    opAt 1987 .JUMPI]
 
 /-- Instructions 2697..2703, pc 3872..3840: `ACC := BASE`, then the shift. -/
@@ -38,7 +38,7 @@ def blk2562 :
    pushAt 1990 2 512,
    pushAt 1991 2 256,
    opAt 1992 .MCOPY,
-   pushAt 1993 2 1114,
+   pushAt 1993 2 1118,
    opAt 1994 .JUMP]
 
 /-- PC table for the relocated leading-bit shortcut.  This range is outside
@@ -47,11 +47,11 @@ instead of unfolding the complete bytecode prefix at every instruction. -/
 @[simp] theorem leadingBitPC (i : Nat)
     (hi : 1983 ≤ i) (hii : i ≤ 1995) :
     Artifact.submissionArtifact.instructionPC i =
-      ([2653,2654,2655,2656,2659,2660,2663,2664,2667,2670,2671,2674,2675] : List Nat)[i - 1983]! := by
+      ([2660,2661,2662,2663,2666,2667,2670,2671,2674,2677,2678,2681,2682] : List Nat)[i - 1983]! := by
   interval_cases i <;> decide
 
 theorem jumpDest3829 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2653 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2660 = true :=
   Artifact.isValidJumpDest_index 1983 (by rfl)
 
 

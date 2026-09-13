@@ -550,6 +550,10 @@ theorem run_csubCall (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange]
+  simpa only [
+    show UInt256.lnot (UInt256.ofNat 0) =
+      UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935 by decide,
+    Challenge.EvmProof.Word.ofNat_add_mod] using hdec
 
 /-- `blk3264`: drop the counter, copy the conversion's result from `0x1400` into
 `R1 = 0x0400` and jump to the dispatcher.
@@ -567,7 +571,7 @@ theorem run_shiftDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock blk3264
       (shiftDoneState s mem n bsize esize msize) =
       some { Exp.bDone s (Exp.mcopyMem mem 1024 1280 (32 * n)) n bsize esize msize with
-               pc := UInt256.ofNat 2675 } := by
+               pc := UInt256.ofNat 2682 } := by
   have hsize : (UInt256.ofNat (32 * n)).toNat = 32 * n := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
     exact lt_of_le_of_lt (show 32 * n ≤ 1024 by omega) (by decide)
