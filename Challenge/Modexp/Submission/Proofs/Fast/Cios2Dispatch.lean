@@ -79,8 +79,8 @@ theorem jumpDestRowHead :
 
 /-- The square row head `sq_row` (instruction 3559, pc 2464 = 0x1266). -/
 theorem jumpDestSqRow :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4428 = true := by
-  exact Artifact.isValidJumpDest_index 3329 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4427 = true := by
+  exact Artifact.isValidJumpDest_index 3326 (by rfl)
 
 /-- `jumpDestRowHead` in the `hd.toNat` form taken by `gasSteps_setup`/`gasSteps_commonSetup`. -/
 theorem jumpDestRowHead' :
@@ -90,18 +90,18 @@ theorem jumpDestRowHead' :
 
 /-- `jumpDestSqRow` in the `hd.toNat` form taken by `gasSteps_setup`/`gasSteps_commonSetup`. -/
 theorem jumpDestSqRow' :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 4428).toNat = true := by
-  rw [show (UInt256.ofNat 4428).toNat = 4428 by decide]
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 4427).toNat = true := by
+  rw [show (UInt256.ofNat 4427).toNat = 4427 by decide]
   exact jumpDestSqRow
 
 /-- The square call state (`Exp.sqCall s mem ret tail`) is definitionally `commonState`
 with `hd = 2464` and `pa = pb = pdst = 2048`. -/
 example (s : State) (mem : ByteArray) (ret : UInt256) (tail : List UInt256) :
     ({ s with pc := UInt256.ofNat 3537
-              stack := UInt256.ofNat 4428 :: UInt256.ofNat 512 :: UInt256.ofNat 512 ::
+              stack := UInt256.ofNat 4427 :: UInt256.ofNat 512 :: UInt256.ofNat 512 ::
                 UInt256.ofNat 512 :: ret :: tail
               memory := mem } : State) =
-      commonState s mem 4428 512 512 (UInt256.ofNat 512) ret tail := rfl
+      commonState s mem 4427 512 512 (UInt256.ofNat 512) ret tail := rfl
 
 /-- The multiply call state (`Exp.mpCall s mem pa pb pd ret tail`) is definitionally
 `dispatchState`. -/

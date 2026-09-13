@@ -79,15 +79,15 @@ def l2Mac5 : Block Artifact.submissionArtifact .Osaka 4202 (CiosReadonlyExtra.ex
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l2Mac6 : Block Artifact.submissionArtifact .Osaka 4235 (CiosCachedLast.l2LastProgram 0 0 2112 2144) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3192 30 4235 (CiosCachedLast.l2LastProgram 0 0 2112 2144)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3192 29 4235 (CiosCachedLast.l2LastProgram 0 0 2112 2144)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def tailLoop : Block Artifact.submissionArtifact .Osaka 4269 CarryRowPrograms.tail :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3222 18 4269 CarryRowPrograms.tail
+def tailLoop : Block Artifact.submissionArtifact .Osaka 4268 CarryRowPrograms.tail :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3221 18 4268 CarryRowPrograms.tail
     (by decide) (by rfl) (by rfl) (by decide)
 
-def exitBlock : Block Artifact.submissionArtifact .Osaka 4303 CiosReadonly.fullExitProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3246 14 4303 CiosReadonly.fullExitProgram
+def exitBlock : Block Artifact.submissionArtifact .Osaka 4302 CiosReadonly.fullExitProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3245 14 4302 CiosReadonly.fullExitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l2Join8 : Block Artifact.submissionArtifact .Osaka 4020 joinProgram :=
