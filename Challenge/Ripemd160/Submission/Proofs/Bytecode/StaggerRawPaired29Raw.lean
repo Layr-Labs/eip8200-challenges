@@ -15,20 +15,22 @@ private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
 def template : List Instr :=
   [ .op (.Swap ⟨7, by decide⟩),
-    .op .POP,
-    .push ⟨22, by decide⟩ (UInt256.ofNat 40945789247971450477386360121479348807026276516919705),
+    .push ⟨4, by decide⟩ (UInt256.ofNat 287469007),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+    .op .SHL,
+    .op .ADD,
     .op (.Swap ⟨6, by decide⟩),
-    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨6, by decide⟩),
+    .op (.Dup ⟨10, by decide⟩),
+    .op (.Dup ⟨10, by decide⟩),
+    .op .AND,
+    .op .XOR,
+    .op (.Dup ⟨10, by decide⟩),
+    .op (.Dup ⟨6, by decide⟩),
+    .op .XOR,
+    .op .AND,
     .op (.Dup ⟨5, by decide⟩),
-    .op (.Dup ⟨8, by decide⟩),
-    .op (.Dup ⟨2, by decide⟩),
-    .op (.Dup ⟨13, by decide⟩),
-    .op .AND,
-    .op .XOR,
-    .op (.Dup ⟨1, by decide⟩),
-    .op (.Dup ⟨13, by decide⟩),
-    .op .XOR,
-    .op .AND,
+    .op (.Dup ⟨10, by decide⟩),
     .op .XOR,
     .op .XOR,
     .op .ADD,
@@ -81,8 +83,8 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     x.v3,
     x.v4,
     x.v5,
-    (UInt256.land x.v3 (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mulMod (UInt256.land x.v3 (UInt256.add (UInt256.ofNat 40945789247971450477386360121479348807026276516919705) (UInt256.add (MachineState.readWord memory 666) (UInt256.add (UInt256.xor (UInt256.xor (UInt256.land (UInt256.xor x.v4 x.v9) (UInt256.xor (UInt256.land x.v0 x.v9) x.v6)) x.v4) x.v0) x.v7)))) x.v15 x.v12) (UInt256.ofNat 25)))),
-    (UInt256.ofNat 40945789247971450477386360121479348807026276516919705),
+    (UInt256.land x.v3 (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mulMod (UInt256.land x.v3 (UInt256.add (UInt256.add (UInt256.ofNat 6410773077581616093588493386869979742301214748966912) x.v8) (UInt256.add (MachineState.readWord memory 666) (UInt256.add (UInt256.xor (UInt256.xor (UInt256.land (UInt256.xor x.v4 x.v9) (UInt256.xor (UInt256.land x.v0 x.v9) x.v6)) x.v4) x.v0) x.v7)))) x.v15 x.v12) (UInt256.ofNat 25)))),
+    (UInt256.add (UInt256.ofNat 6410773077581616093588493386869979742301214748966912) x.v8),
     x.v0,
     x.v9,
     x.v10,
@@ -99,8 +101,8 @@ def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UI
     x.v3,
     x.v4,
     x.v5,
-    (UInt256.land x.v3 (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mulMod (UInt256.land x.v3 (UInt256.add (UInt256.ofNat 40945789247971450477386360121479348807026276516919705) (UInt256.add (MachineState.readWord memory 666) (UInt256.add (UInt256.xor (UInt256.xor (UInt256.land (UInt256.xor x.v4 x.v9) (UInt256.xor (UInt256.land x.v0 x.v9) x.v6)) x.v4) x.v0) x.v7)))) x.v15 x.v12) (UInt256.ofNat 25)))),
-    (UInt256.ofNat 40945789247971450477386360121479348807026276516919705),
+    (UInt256.land x.v3 (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mulMod (UInt256.land x.v3 (UInt256.add (UInt256.add (UInt256.ofNat 6410773077581616093588493386869979742301214748966912) x.v8) (UInt256.add (MachineState.readWord memory 666) (UInt256.add (UInt256.xor (UInt256.xor (UInt256.land (UInt256.xor x.v4 x.v9) (UInt256.xor (UInt256.land x.v0 x.v9) x.v6)) x.v4) x.v0) x.v7)))) x.v15 x.v12) (UInt256.ofNat 25)))),
+    (UInt256.add (UInt256.ofNat 6410773077581616093588493386869979742301214748966912) x.v8),
     x.v0,
     x.v9,
     x.v10,
@@ -119,7 +121,7 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
       some {s with pc := pcAfter pc template, stack := actualOutput s.memory x rho} := by
   have hbase : rho.length < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
-  have hcap (n : Nat) (hn : n ≤ 48) : rho.length + n < 1024 := by omega
+  have hcap (n : Nat) (hn : n ≤ 32) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 1088) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     Stagger144Active.word_active_preserved s.activeWords address hactive haddress

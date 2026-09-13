@@ -119,8 +119,7 @@ private theorem skip_getD (input : ByteArray) (a : Nat)
     Padding.sentinelMemory, MachineState.writeBytes_getElem?_getD,
     if_neg (by intro h; obtain ⟨h1, _⟩ := h; omega),
     Padding.copiedMemory]
-  change (MachineState.writeBytes (PaddingTrace.padLengthReady input).memory
-    (MachineState.readPadded input 0 input.size) Padding.messageOffset)[a]?.getD 0 = _
+  dsimp only [PaddingTrace.padSkip, PaddingTrace.padCopied]
   rw [Challenge.EvmProof.Memory.readPadded_zero_size]
 
 theorem entryState_blockAt (input : ByteArray) (hfit : CalldataFits input) :
@@ -183,8 +182,7 @@ theorem entryState_lowClear (input : ByteArray) (hfit : CalldataFits input) :
   have hbase := base_readWord input
   unfold entryState PaddingTrace.entryState
   split
-  · change (MachineState.readWord (MachineState.writeBytes (PaddingTrace.padLengthReady input).memory
-      (MachineState.readPadded input 0 input.size) Padding.messageOffset) 0).toNat < _
+  · dsimp only [PaddingTrace.padSkip, PaddingTrace.padCopied]
     rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _
       (Or.inl (by unfold Padding.messageOffset; omega)), hbase]
     decide
