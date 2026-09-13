@@ -8,8 +8,8 @@ set_option maxHeartbeats 2000000
 /-!
 # Structural certificate for the frozen RIPEMD-160 artifact
 
-The exact candidate has 5252 bytes, 3882 executable instructions and 280 data bytes, and SHA-256
-`7651a998181013b84489ab8fab52db9240e8b723891472e3a8e8a82e4dddb801`. PUSH rows carry their typed width and value.
+The exact candidate has 5252 bytes, 3881 executable instructions and 280 data bytes, and SHA-256
+`08fb62e6e10592e2277c8329788fb6af3a2fe7bfb795cf623894b3c981d6f079`. PUSH rows carry their typed width and value.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
@@ -25,24 +25,22 @@ def op (opcode : UInt8) : Instr :=
 
 private def submissionInstructionsChunk0 : List Instr :=
 [
-  op 0x36,
-  .push 1 255,
-  op 0x11,
+  .push 0 0,
+  op 0x35,
+  .push 0 0,
+  op 0x1a,
+  .push 2 7,
+  op 0x14,
   .push 2 4859,
   op 0x57,
   op 0x36,
-  .push 2 256,
-  op 0x14,
-  op 0x36,
-  .push 2 376,
-  op 0x14,
+  .push 2 2,
+  op 0x1c,
   op 0x36,
   .push 2 1000,
-  op 0x14,
-  op 0x17,
-  op 0x17,
-  op 0x15,
-  .push 2 4859,
+  op 0x18,
+  op 0x02,
+  .push 2 351,
   op 0x57,
   .push 1 97,
   .push 1 255,
@@ -53,8 +51,10 @@ private def submissionInstructionsChunk0 : List Instr :=
   .push 0 0,
   op 0x35,
   op 0x18,
-  .push 1 107,
+  .push 2 4859,
   op 0x57,
+  op 0x5b,
+  op 0x5b,
   .push 0 0,
   op 0x35,
   .push 0 0,
@@ -3986,14 +3986,6 @@ private def submissionInstructionsChunk20 : List Instr :=
   .push 2 920,
   op 0x56,
   op 0x5b,
-  .push 0 0,
-  op 0x35,
-  .push 0 0,
-  op 0x1a,
-  .push 1 7,
-  op 0x18,
-  .push 2 4897,
-  op 0x57,
   .push 17 342276208914615837337402008677671501826,
   op 0x36,
   op 0x1c,
@@ -4001,11 +3993,18 @@ private def submissionInstructionsChunk20 : List Instr :=
   op 0x16,
   .push 1 107,
   op 0x57,
-  op 0x5b,
   op 0x36,
-  .push 1 2,
-  op 0x1c,
-  .push 2 351,
+  .push 2 256,
+  op 0x14,
+  op 0x36,
+  .push 2 376,
+  op 0x14,
+  op 0x36,
+  .push 2 1000,
+  op 0x14,
+  op 0x17,
+  op 0x17,
+  .push 1 107,
   op 0x57,
   .push 3 2127393,
   op 0x36,
@@ -4029,7 +4028,7 @@ private def submissionInstructionsChunk20 : List Instr :=
   op 0xf3
 ]
 
-@[simp] private theorem submissionInstructionsChunk20_length : submissionInstructionsChunk20.length = 221 := by rfl
+@[simp] private theorem submissionInstructionsChunk20_length : submissionInstructionsChunk20.length = 220 := by rfl
 
 def submissionInstructions : List Instr :=
 submissionInstructionsChunk0
@@ -4054,14 +4053,14 @@ submissionInstructionsChunk0
  ++ submissionInstructionsChunk19
  ++ submissionInstructionsChunk20
 
-theorem referenceInstructions_count : submissionInstructions.length = 3882 := by
+theorem referenceInstructions_count : submissionInstructions.length = 3881 := by
   simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length, submissionInstructionsChunk20_length]
 
 private theorem submissionInstructionsChunk0_assemble : assembleBytes submissionInstructionsChunk0 = [
-  0x36, 0x60, 0xff, 0x11, 0x61, 0x12, 0xfb, 0x57, 0x36, 0x61, 0x01, 0x00,
-  0x14, 0x36, 0x61, 0x01, 0x78, 0x14, 0x36, 0x61, 0x03, 0xe8, 0x14, 0x17,
-  0x17, 0x15, 0x61, 0x12, 0xfb, 0x57, 0x60, 0x61, 0x60, 0xff, 0x5f, 0x19,
-  0x04, 0x02, 0x5f, 0x35, 0x18, 0x60, 0x6b, 0x57, 0x5f, 0x35, 0x5f, 0x60,
+  0x5f, 0x35, 0x5f, 0x1a, 0x61, 0x00, 0x07, 0x14, 0x61, 0x12, 0xfb, 0x57,
+  0x36, 0x61, 0x00, 0x02, 0x1c, 0x36, 0x61, 0x03, 0xe8, 0x18, 0x02, 0x61,
+  0x01, 0x5f, 0x57, 0x60, 0x61, 0x60, 0xff, 0x5f, 0x19, 0x04, 0x02, 0x5f,
+  0x35, 0x18, 0x61, 0x12, 0xfb, 0x57, 0x5b, 0x5b, 0x5f, 0x35, 0x5f, 0x60,
   0x20, 0x5b, 0x90, 0x81, 0x35, 0x83, 0x18, 0x17, 0x90, 0x60, 0x20, 0x01,
   0x61, 0x03, 0xe0, 0x81, 0x10, 0x60, 0x31, 0x57, 0x35, 0x82, 0x18, 0x60,
   0xc0, 0x1c, 0x17, 0x90, 0x50, 0x61, 0x01, 0x5f, 0x57, 0x73, 0xaa, 0x69,
@@ -4532,10 +4531,10 @@ private theorem submissionInstructionsChunk20_assemble : assembleBytes submissio
   0x15, 0x61, 0x03, 0x98, 0x57, 0x36, 0x60, 0x1d, 0x1c, 0x80, 0x61, 0x03,
   0xf0, 0x52, 0x80, 0x61, 0x03, 0xde, 0x52, 0x80, 0x61, 0x02, 0x88, 0x52,
   0x80, 0x61, 0x02, 0x64, 0x52, 0x61, 0x01, 0x0e, 0x52, 0x61, 0x03, 0x98,
-  0x56, 0x5b, 0x5f, 0x35, 0x5f, 0x1a, 0x60, 0x07, 0x18, 0x61, 0x13, 0x21,
-  0x57, 0x70, 0x01, 0x01, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x81,
-  0x80, 0x00, 0x01, 0x80, 0x00, 0x00, 0x02, 0x36, 0x1c, 0x60, 0x01, 0x16,
-  0x60, 0x6b, 0x57, 0x5b, 0x36, 0x60, 0x02, 0x1c, 0x61, 0x01, 0x5f, 0x57,
+  0x56, 0x5b, 0x70, 0x01, 0x01, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03,
+  0x81, 0x80, 0x00, 0x01, 0x80, 0x00, 0x00, 0x02, 0x36, 0x1c, 0x60, 0x01,
+  0x16, 0x60, 0x6b, 0x57, 0x36, 0x61, 0x01, 0x00, 0x14, 0x36, 0x61, 0x01,
+  0x78, 0x14, 0x36, 0x61, 0x03, 0xe8, 0x14, 0x17, 0x17, 0x60, 0x6b, 0x57,
   0x62, 0x20, 0x76, 0x21, 0x36, 0x02, 0x5f, 0x35, 0x60, 0xe8, 0x1c, 0x18,
   0x61, 0x01, 0x5f, 0x57, 0x36, 0x73, 0x04, 0x75, 0x29, 0x8f, 0x4c, 0x84,
   0x21, 0x48, 0x97, 0x61, 0x3f, 0x58, 0x4c, 0xb6, 0x16, 0xea, 0xea, 0xee,
@@ -4797,7 +4796,7 @@ private theorem tailPrefix_length : tailPrefix.length = 3661 := by
 private theorem tailPrefix_bytes_length : (assembleBytes tailPrefix).length = 4582 := by
   simp only [tailPrefix, assembleBytes_append, List.length_append, chunk0_byteLength, chunk1_byteLength, chunk2_byteLength, chunk3_byteLength, chunk4_byteLength, chunk5_byteLength, chunk6_byteLength, chunk7_byteLength, chunk8_byteLength, chunk9_byteLength, chunk10_byteLength, chunk11_byteLength, chunk12_byteLength, chunk13_byteLength, chunk14_byteLength, chunk15_byteLength, chunk16_byteLength, chunk17_byteLength, chunk18_byteLength, chunk19_byteLength]
 
-private theorem instructionPC_tail (i : Nat) (hi : i ≤ 221) :
+private theorem instructionPC_tail (i : Nat) (hi : i ≤ 220) :
     submissionArtifact.instructionPC (3661 + i) =
       4582 + (assembleBytes (submissionInstructionsChunk20.take i)).length := by
   apply ArtifactSegment.instructionPC_segment_of_bounds submissionArtifact
@@ -4823,34 +4822,34 @@ structure InitStore where
 def initStores : List InitStore := []
 
 @[simp] theorem referenceArtifact_pc_0 :
-    submissionArtifact.instructionPC 5 = 8 := by
+    submissionArtifact.instructionPC 5 = 7 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc0 :
-    submissionArtifact.instructionPC 5 = 8 := by
+    submissionArtifact.instructionPC 5 = 7 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc0 :
-    instructionPC 5 = 8 := by
-  change submissionArtifact.instructionPC 5 = 8
+    instructionPC 5 = 7 := by
+  change submissionArtifact.instructionPC 5 = 7
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_1 :
-    submissionArtifact.instructionPC 5 = 8 := by
+    submissionArtifact.instructionPC 5 = 7 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc1 :
-    submissionArtifact.instructionPC 5 = 8 := by
+    submissionArtifact.instructionPC 5 = 7 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc1 :
-    instructionPC 5 = 8 := by
-  change submissionArtifact.instructionPC 5 = 8
+    instructionPC 5 = 7 := by
+  change submissionArtifact.instructionPC 5 = 7
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
