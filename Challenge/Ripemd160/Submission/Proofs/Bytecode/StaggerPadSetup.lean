@@ -11,9 +11,10 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory
 open PairTableActive StaggerTableSparse StaggerTableLayout
 
-/-- Pad-only low block (pc 4780..4822): copy zero calldata over the table, store the low
-bit-length word (`(n <<< 3) &&& mask`, the mask being the resident `0xffffffff` four deep on
-the stack) and `0x80`, then leave `iszero (n >>> 29)` for the branch at 4823. -/
+/-- Pad-only low block (pc 4784..4826): copy zero calldata over the table, store the unmasked
+low bit-length word `n <<< 3` (two `JUMPDEST`s keep the block's length where the mask used
+to be applied; the resident `0xffffffff` stays four deep on the stack) and `0x80`, then leave
+`iszero (n >>> 29)` for the branch at 4827. -/
 def lowTemplate : List Instr :=
   [ .push ⟨2, by decide⟩ (UInt256.ofNat 1112),
     .op .CALLDATASIZE,
@@ -23,8 +24,8 @@ def lowTemplate : List Instr :=
     .op .CALLDATASIZE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 3),
     .op .SHL,
-    .op (.Dup ⟨3, by decide⟩),
-    .op .AND,
+    .op .JUMPDEST,
+    .op .JUMPDEST,
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 162),
     .op .MSTORE,
@@ -46,11 +47,11 @@ def lowTemplate : List Instr :=
     .op .SHR,
     .op .ISZERO ]
 
-/-- `PUSH2 0398 JUMPI` at 4823: straight to the rounds when the high word is zero. -/
+/-- `PUSH2 0398 JUMPI` at 4827: straight to the rounds when the high word is zero. -/
 def branchTemplate : List Instr :=
   [ .push ⟨2, by decide⟩ (UInt256.ofNat 925), .op .JUMPI ]
 
-/-- Pad-only high block (pc 4827..4854), reached only when `n >>> 29 ≠ 0`. -/
+/-- Pad-only high block (pc 4831..4858), reached only when `n >>> 29 ≠ 0`. -/
 def highTemplate : List Instr :=
   [ .op .CALLDATASIZE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 29),
@@ -127,10 +128,8 @@ theorem run_low (s : State) (pc returnPC : UInt256) (rest : List UInt256)
     exact (Word.word_eq_ofNat_toNat _).symm
   have hsize : (UInt256.ofNat s.executionEnv.calldata.size).toNat = s.executionEnv.calldata.size := by
     rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt hfit]
-  simp (discharger := omega) [lowTemplate, StaggerTablePad.lowChain, highZero, zeroMemory,
-    PadOnlySchedule.lowDiet_eq_lowLength, PadOnlySchedule.lowLength,
-    writeWord, PadShiftDiet.low, Word.land_comm,
-    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+  simp (discharger := omega) [lowTemplate, StaggerTablePad.lowChain, StaggerTablePad.lowDirty,
+    highZero, zeroMemory, writeWord, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     PairedHelperBooleanTrace.push0_toNat,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
     State.activeWordsAfterUInt256, hactiveAt, hcopyActive, hsize,
