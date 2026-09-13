@@ -26,13 +26,13 @@ def input (h : Compression.HashState) (off limit : UInt256) :
 
 def entry (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 919, stack := StaggerPersistentFrame.frame h off limit rho}
+  {s with pc := UInt256.ofNat 925, stack := StaggerPersistentFrame.frame h off limit rho}
 
 theorem input_eq (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256) :
     StaggerPersistentBootstrapRaw.inputStack (input h off limit) rho =
       StaggerPersistentFrame.frame h off limit rho := by
   simp only [StaggerPersistentBootstrapRaw.inputStack, input, StaggerPersistentFrame.frame,
-    StaggerPersistentBootstrapRaw.factorWord_eq, StaggerPersistentBootstrapRaw.fusedMinus_eq,
+    StaggerPersistentBootstrapRaw.factorWord_eq, StaggerPersistentBootstrapRaw.compactMaskWord_eq,
     StaggerPersistentBootstrapRaw.coefficient30_eq, StaggerPersistentBootstrapRaw.coefficient03_eq,
     StaggerPersistentBootstrapRaw.coefficient02_eq]
 
@@ -45,10 +45,10 @@ theorem output_eq (memory : ByteArray) (h : Compression.HashState) (off limit : 
         (initial h) (initial h) (UInt256.ofNat 1352829926)
         (StaggerPersistentFrame.coreRest h off limit rho) := by
   have hf : factorWord = UInt256.ofNat 20282409608374036907091774406720 := by decide
-  have h140 : fusedModulusWord 5 7 = UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096 := by decide
-  have h190 : fusedCoefficientWord 0 2 = UInt256.ofNat 475368975196266490007815979009 := by decide
-  have h310 : fusedCoefficientWord 0 3 = UInt256.ofNat 1109194275457955143345843994625 := by decide
-  have h350 : fusedModulusWord 8 5 = UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928 := by decide
+  have h140 : compactMaskWord = UInt256.ofNat 20282409603651670423942956318720 := by decide
+  have h190 : coefficientWord 0 2 = UInt256.ofNat 81129638433496147627271880966145 := by decide
+  have h310 : coefficientWord 0 3 = UInt256.ofNat 162259276866992295254539466964993 := by decide
+  have h350 : coefficientWord 3 0 = UInt256.ofNat 20282409608374036906851256238088 := by decide
   have hm : lowerWord = UInt256.ofNat 4294967295 := by decide
   simp [StaggerPersistentBootstrapRaw.outputStack, input, stack, StaggerCoreCommon.word,
     initial_eq, StaggerPersistentFrame.coreRest, hf, hm, h140, h190, h310, h350]

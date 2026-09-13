@@ -1,4 +1,3 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Paired144FusedD65
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Paired144WordSum
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Paired144WordScale
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Paired144LegacyRotation
@@ -88,12 +87,19 @@ theorem normalize_rotate_add (x : UInt256) (a b e f : BitVec 32) (r s : Nat)
     normalize (bits (wordRotate x r s) + pack e f) =
       pack (a.rotateLeft r+e) (b.rotateLeft s+f) := by
   by_cases h : usesCompact r s
-  · rw [wordRotate, if_pos h]
-    simpa only [Paired144WordRound.wordFusedRotate,
-      Paired144WordRound.fusedCoefficientWord, Paired144WordRound.fusedModulusWord,
-      RootFusedD65.wordFusedRotate, RootFusedD65.fusedCoefficientWord,
-      RootFusedD65.fusedModulusWord] using
-      RootFusedD65.normalize_wordFusedRotate_add x a b e f r s hn hr0 hr hs0 hs h
+  · have hu : r-s≤7 := by
+      simp [usesCompact] at h
+      omega
+    have hv : s-r≤7 := by
+      simp [usesCompact] at h
+      omega
+    have hr' : 32+(r-s)-(32-min r s)=r := by omega
+    have hs' : 32+(s-r)-(32-min r s)=s := by omega
+    rw [wordRotate,if_pos h,bits_shr _ (32-min r s) (by omega),bits_mul,bits_wordCompact x a b hn]
+    change normalize ((Paired144CompactGap.rawProduct a b (r-s) (s-r) >>> (32-min r s))+pack e f)=_
+    simpa only [hr',hs'] using
+      Paired144CompactRotation.normalize_shifted_add a b e f (r-s) (s-r) (32-min r s)
+        hu hv (by omega) (by omega)
   · rw [bits_legacy x a b r s hr0 hr hs0 hs h hn]
     exact Paired144LegacyRotation.normalize_rotate_add a b e f r s hr0 hr hs0 hs
 

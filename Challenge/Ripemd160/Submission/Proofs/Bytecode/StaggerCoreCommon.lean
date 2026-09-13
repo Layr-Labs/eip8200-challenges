@@ -24,10 +24,10 @@ def word (memory : ByteArray) (h4 : UInt256) (r : Reg) (q right : WordLane) (k :
   | .literal value => UInt256.ofNat value
   | .cachedMessage address => MachineState.readWord memory address
   | .cache address => match address with
-    | 140 => fusedModulusWord 5 7
-    | 190 => fusedCoefficientWord 0 2
-    | 310 => fusedCoefficientWord 0 3
-    | 350 => fusedModulusWord 8 5
+    | 140 => compactMaskWord
+    | 190 => coefficientWord 0 2
+    | 310 => coefficientWord 0 3
+    | 350 => coefficientWord 3 0
     | 500 => h4
     | _ => MachineState.readWord memory (address / 10 * 18)
 

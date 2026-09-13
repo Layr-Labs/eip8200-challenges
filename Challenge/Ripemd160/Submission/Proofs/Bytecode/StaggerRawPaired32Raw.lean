@@ -11,10 +11,8 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
 def template : List Instr :=
   [ .op (.Swap ⟨6, by decide⟩),
-    .op (.Dup ⟨3, by decide⟩),
-    .op .ADD,
-    .push ⟨4, by decide⟩ (UInt256.ofNat 341275145),
-    .op .ADD,
+    .op .POP,
+    .push ⟨23, by decide⟩ (UInt256.ofNat 136726760529788758926252426176837954510549114783656865),
     .op (.Swap ⟨4, by decide⟩),
     .op (.Dup ⟨7, by decide⟩),
     .op (.Dup ⟨10, by decide⟩),
@@ -53,11 +51,11 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     x.v2,
     x.v3,
     x.v4,
-    (UInt256.add (UInt256.ofNat 341275145) (UInt256.add x.v3 x.v7)),
+    (UInt256.ofNat 136726760529788758926252426176837954510549114783656865),
     x.v6,
     x.v0,
     x.v8,
-    (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.shiftRight (UInt256.mul x.v10 (UInt256.land x.v3 (UInt256.add (UInt256.add (UInt256.ofNat 341275145) (UInt256.add x.v3 x.v7)) (UInt256.add (MachineState.readWord memory 972) (UInt256.add (UInt256.xor (UInt256.lor x.v6 (UInt256.lnot x.v9)) x.v0) x.v5))))) (UInt256.ofNat 27)))),
+    (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.shiftRight (UInt256.mul x.v10 (UInt256.land x.v3 (UInt256.add (UInt256.ofNat 136726760529788758926252426176837954510549114783656865) (UInt256.add (MachineState.readWord memory 972) (UInt256.add (UInt256.xor (UInt256.lor x.v6 (UInt256.lnot x.v9)) x.v0) x.v5))))) (UInt256.ofNat 27)))),
     x.v10,
     x.v11,
     x.v12,
@@ -71,11 +69,11 @@ def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UI
     x.v2,
     x.v3,
     x.v4,
-    (UInt256.add (UInt256.ofNat 341275145) (UInt256.add x.v3 x.v7)),
+    (UInt256.ofNat 136726760529788758926252426176837954510549114783656865),
     x.v6,
     x.v0,
     x.v8,
-    (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.shiftRight (UInt256.mul x.v10 (UInt256.land x.v3 (UInt256.add (UInt256.add (UInt256.ofNat 341275145) (UInt256.add x.v3 x.v7)) (UInt256.add (MachineState.readWord memory 972) (UInt256.add (UInt256.xor (UInt256.lor x.v6 (UInt256.lnot x.v9)) x.v0) x.v5))))) (UInt256.ofNat 27)))),
+    (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.shiftRight (UInt256.mul x.v10 (UInt256.land x.v3 (UInt256.add (UInt256.ofNat 136726760529788758926252426176837954510549114783656865) (UInt256.add (MachineState.readWord memory 972) (UInt256.add (UInt256.xor (UInt256.lor x.v6 (UInt256.lnot x.v9)) x.v0) x.v5))))) (UInt256.ofNat 27)))),
     x.v10,
     x.v11,
     x.v12,
@@ -84,7 +82,8 @@ def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UI
     x.v15,
     x.v16 ] ++ rho
 private theorem actualOutput_eq (memory : ByteArray) (x : Input) (rho : List UInt256) :
-    actualOutput memory x rho = outputStack memory x rho := by rfl
+    actualOutput memory x rho = outputStack memory x rho := by
+  simp only [actualOutput, outputStack, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
 private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 35 ≤ s.activeWords.toNat) :

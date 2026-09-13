@@ -17,17 +17,6 @@ def compactMaskWord : UInt256 := UInt256.ofNat ((2 ^ 72 - 1) * 2 ^ 32)
 def coefficientWord (u v : Nat) : UInt256 := word (Paired144CompactGap.coefficient u v)
 def factorWord : UInt256 := coefficientWord 6 0
 
-def fusedCoefficientWord (u v : Nat) : UInt256 :=
-  UInt256.ofNat ((2 ^ 32 + 1) *
-    (2 ^ u + 2 ^ 65 * (if u < v then 2 ^ v - 2 ^ u else 2 ^ u - 2 ^ v)))
-def fusedModulusWord (r s : Nat) : UInt256 :=
-  UInt256.ofNat ((if r < s then 2 ^ 65 - 1 else 2 ^ 65 + 1) * 2 ^ 144)
-def wordFusedRotate (x : UInt256) (r s : Nat) : UInt256 :=
-  UInt256.shiftRight
-    (UInt256.mulMod (UInt256.land x pairWord)
-      (fusedCoefficientWord (r - s) (s - r)) (fusedModulusWord r s))
-    (UInt256.ofNat (32 - min r s))
-
 def wordF (j : Nat) (b c d : UInt256) : UInt256 :=
   match j with
   | 0 => UInt256.xor (UInt256.xor b c) d
@@ -67,7 +56,8 @@ instance (r s : Nat) : Decidable (usesCompact r s) := inferInstanceAs (Decidable
 
 def wordRotate (x : UInt256) (r s : Nat) : UInt256 :=
   if usesCompact r s then
-    wordFusedRotate x r s
+    UInt256.shiftRight (UInt256.mul (wordCompact x) (coefficientWord (r - s) (s - r)))
+      (UInt256.ofNat (32 - min r s))
   else
     let y := UInt256.land x pairWord
     if r = s then wordShift y (38 - r)

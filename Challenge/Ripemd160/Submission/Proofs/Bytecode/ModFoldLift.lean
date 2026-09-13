@@ -26,54 +26,32 @@ theorem runInstr_pc_mod {s t : State}
             rfl
   · simp [DataStepper.runInstr, hcap] at hresult
 
-theorem runInstr_pc_mulmod {s t : State}
-    (hresult : DataStepper.runInstr (.op .MULMOD) s = some t) :
-    t.pc = s.pc + UInt256.ofNat (Instr.op .MULMOD).size := by
-  by_cases hcap : s.stack.length < 1024
-  · rw [DataStepper.runInstr, if_pos hcap] at hresult
-    cases hs : s.stack with
-    | nil => simp [hs] at hresult
-    | cons a tail =>
-      cases ht : tail with
-      | nil => simp [hs, ht] at hresult
-      | cons b tail =>
-        cases hn : tail with
-        | nil => simp [hs, ht, hn] at hresult
-        | cons n rest =>
-          simp [hs, ht, hn] at hresult
-          subst t
-          rfl
-  · simp [DataStepper.runInstr, hcap] at hresult
-
 def Advances (instruction : Instr) : Prop :=
-  DenseScheduleLift.Advances instruction ∨ instruction = .op .MOD ∨ instruction = .op .MULMOD
+  DenseScheduleLift.Advances instruction ∨ instruction = .op .MOD
 
 theorem runInstr_pc_of_advances {instruction : Instr} {s t : State}
     (hform : Advances instruction)
     (hresult : DataStepper.runInstr instruction s = some t) :
     t.pc = s.pc + UInt256.ofNat instruction.size := by
-  rcases hform with hdense | hmod | hmulmod
+  rcases hform with hdense | hmod
   · exact DenseScheduleLift.runInstr_pc_of_advances hdense hresult
   · subst instruction
     exact runInstr_pc_mod hresult
-  · subst instruction
-    exact runInstr_pc_mulmod hresult
 
 def advancesCheck : Instr → Bool
-  | .op .MOD | .op .MULMOD => true
+  | .op .MOD => true
   | instruction => Table80SiteCommon.coreAdvancesCheck instruction
 
 theorem advancesCheck_sound (instruction : Instr)
     (h : advancesCheck instruction = true) : Advances instruction := by
   by_cases hmod : instruction = .op .MOD
-  · exact Or.inr (Or.inl hmod)
-  by_cases hmulmod : instruction = .op .MULMOD
-  · exact Or.inr (Or.inr hmulmod)
-  left
-  apply Table80SiteCommon.coreAdvancesCheck_sound
-  cases instruction with
-  | push width value => simpa [advancesCheck] using h
-  | op operation => cases operation <;> simp_all [advancesCheck]
+  · exact Or.inr hmod
+  · left
+    apply Table80SiteCommon.coreAdvancesCheck_sound
+    cases instruction with
+    | push width value => simpa [advancesCheck] using h
+    | op operation =>
+        cases operation <;> simpa [advancesCheck] using h
 
 theorem advancesAll_sound (code : List Instr)
     (h : code.all advancesCheck = true) :
