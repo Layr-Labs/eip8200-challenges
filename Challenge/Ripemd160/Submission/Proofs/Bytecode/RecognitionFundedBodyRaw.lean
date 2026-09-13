@@ -4,8 +4,6 @@ set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 3000000
 set_option linter.unusedSimpArgs false
-set_option linter.unusedTactic false
-set_option linter.unreachableTactic false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionFundedBodyRaw
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace RecognitionRecurrence RecognitionBodyRaw
@@ -27,8 +25,8 @@ def normalTemplate : List Instr :=
     .op (.Dup ⟨3, by decide⟩),
     .op .NOT,
     .op .AND,
-    .op (.Dup ⟨7, by decide⟩),
-    .op (.Dup ⟨4, by decide⟩),
+    .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨8, by decide⟩),
     .op .AND,
     .op (.Dup ⟨7, by decide⟩),
     .op .ADD,
@@ -53,18 +51,18 @@ theorem run_normal (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame) (rh
 
 def boundaryTemplate : List Instr :=
   [ .op (.Dup ⟨8, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 40),
-    .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨2, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 8),
     .op .SHR,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 40),
     .op .MUL,
     .push ⟨1, by decide⟩ (UInt256.ofNat 216),
     .op .SUB,
     .op .SHR,
     .push ⟨1, by decide⟩ (UInt256.ofNat 11),
     .op .MUL,
-    .op (.Dup ⟨3, by decide⟩),
-    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨7, by decide⟩),
+    .op (.Dup ⟨4, by decide⟩),
     .op .AND,
     .op .ADD,
     .op (.Dup ⟨2, by decide⟩),
@@ -75,9 +73,9 @@ def boundaryTemplate : List Instr :=
     .op .AND,
     .op .XOR,
     .op .OR,
-    .op (.Dup ⟨7, by decide⟩),
-    .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨2, by decide⟩),
     .op .NOT,
+    .op (.Dup ⟨8, by decide⟩),
     .op .AND,
     .op (.Dup ⟨9, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 43),
@@ -98,7 +96,6 @@ def boundaryTemplate : List Instr :=
     .op .ADD,
     .op (.Swap ⟨3, by decide⟩),
     .op .POP ]
-
 theorem run_boundary (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame) (rho : List UInt256)
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running) :
     runInstrSeq boundaryTemplate {s with pc := pc, stack := frame f rho} =

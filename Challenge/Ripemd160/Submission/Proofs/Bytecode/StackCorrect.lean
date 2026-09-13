@@ -10,7 +10,7 @@ open PersistentStaggerIteration StaggerPersistentLoopInduction
 
 theorem correct (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 354)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 358)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   apply StaggerPersistentCorrect.correct_of_blocks input hfit hpositive (states input) (hashes input)
@@ -22,7 +22,8 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
       states_noPrecompile input i, states_calldata input i⟩
   · intro i hi
     exact PersistentStaggerBlock.gasSteps (states input i) input i (hashes input i)
-      (LoopCompletionControl.limit input) [] (by decide) hfit hi
+      (LoopCompletionControl.limit input) [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
+      (by decide) [] rfl hfit hi
       (states_context input hfit hpositive i (Nat.le_of_lt hi))
       (states_code input i) (states_fork input i) (states_halt input i)
       (states_noPrecompile input i)

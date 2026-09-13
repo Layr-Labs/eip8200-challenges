@@ -1,35 +1,22 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.RawExpressionAC
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
 
 set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 2000000
 set_option linter.unusedSimpArgs false
-set_option linter.unusedTactic false
-set_option linter.unreachableTactic false
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionSelectorRaw
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace
 
-private theorem hadd_eq (a b : UInt256) : a + b = UInt256.add a b := rfl
-private theorem hmul_eq (a b : UInt256) : a * b = UInt256.mul a b := rfl
-
 def prefixTemplate (table : UInt256) : List Instr :=
-  [ .push ⟨1, by decide⟩ (UInt256.ofNat 20),
-    .push ⟨2, by decide⟩ table,
-    .op .CALLDATASIZE,
-    .push ⟨4, by decide⟩ (UInt256.ofNat 4043689217),
-    .op .DIV,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 15),
-    .op .AND,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 20),
-    .op .MUL,
-    .op .ADD,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 12) ]
+  [.push ⟨1, by decide⟩ 20, .push ⟨1, by decide⟩ 15,
+   .op .CALLDATASIZE, .push ⟨3, by decide⟩ 4022793, .op .DIV, .op .AND,
+   .push ⟨1, by decide⟩ 20, .op .MUL, .push ⟨2, by decide⟩ table,
+   .op .ADD, .push ⟨1, by decide⟩ 12]
 
 def selected (table : UInt256) (size : Nat) : UInt256 :=
-  UInt256.add table (UInt256.mul 20 (UInt256.land (UInt256.div 4043689217 (UInt256.ofNat size)) 15))
+  UInt256.add table (UInt256.mul 20 (UInt256.land (UInt256.div 4022793 (UInt256.ofNat size)) 15))
 
 theorem run_prefix (s : State) (pc table : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1010) (hrun : s.halt = .Running) :
@@ -42,8 +29,7 @@ theorem run_prefix (s : State) (pc table : UInt256) (rho : List UInt256)
   simp (discharger := omega) [prefixTemplate, selected, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals simp only [hadd_eq, hmul_eq, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
-  all_goals repeat first | apply And.intro | exact True.intro | rfl
+  all_goals repeat first | apply And.intro | rfl
 
 def finish : List Instr := [.push ⟨0, by decide⟩ 0, .op .RETURN]
 
