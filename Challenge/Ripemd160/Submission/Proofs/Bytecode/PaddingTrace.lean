@@ -63,9 +63,6 @@ def enterPath : List
 private theorem mask16_div :
     UInt256.lnot (UInt256.ofNat 0) / UInt256.ofNat 65537 = DenseScheduleTemplate.mask16 := by decide
 
-private theorem mask8_div :
-    UInt256.lnot (UInt256.ofNat 0) / UInt256.ofNat 257 = DenseScheduleTemplate.mask8 := by decide
-
 set_option maxHeartbeats 400000 in
 /-- The hash entry computes the two byte-swap masks once; they stay below the limit for the
 whole hash. -/
@@ -83,7 +80,7 @@ private theorem run_enter (input : ByteArray) :
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have p249 : Artifact.submissionArtifact.instructionPC 247 = 361 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have p250 : Artifact.submissionArtifact.instructionPC 248 = 364 := by
+  have p250 : Artifact.submissionArtifact.instructionPC 248 = 362 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have p251 : Artifact.submissionArtifact.instructionPC 249 = 365 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
@@ -93,7 +90,7 @@ private theorem run_enter (input : ByteArray) :
     Challenge.EvmProof.DataStepper.runLocated, Challenge.EvmProof.DataStepper.runInstr,
     padEntry, Main.initializedState, Execution.mainStart, Execution.atPC, hzero,
     p245, p246, p247, p248, p249, p250, p251, p252, initialState]
-  exact ⟨mask8_div, mask16_div⟩
+  exact ⟨by decide, mask16_div⟩
 
 def gasSteps_enterPad (input : ByteArray) :
     Challenge.EvmProof.GasSteps (Main.initializedState input) (padEntry input) := by
