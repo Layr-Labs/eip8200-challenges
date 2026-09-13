@@ -13,12 +13,12 @@ open Challenge.Modexp.Submission.Proofs.Fast
 
 def headProgram : List Instr :=
   [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .op .MLOAD,
-   .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨14, by decide⟩), .op .POP]
+   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨15, by decide⟩), .op .POP, .op .ADD, .op (.Dup ⟨14, by decide⟩)]
 
 def productsProgram : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op .ADD,
-   .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨7, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op .MUL,
+  [.op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup ⟨0, by decide⟩), .op .MUL,
    .op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op .MULMOD]
 
 def carryProgram : List Instr :=
@@ -36,27 +36,27 @@ theorem run_head (s : State) (pc P hd w3 ent w5 M w7 w8 w9 w10 w11 w12 w13 aprev
     (hact : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat P.toNat 32) = s.activeWords) :
     runInstructions headProgram
       { s with pc := pc, stack := P :: hd :: w3 :: ent :: w5 :: M :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: aprev :: rest } =
-    some { s with pc := advancePC 6 pc,
-                  stack := MachineState.readWord s.memory P.toNat :: P :: hd :: w3 :: ent :: w5 :: M :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: MachineState.readWord s.memory P.toNat :: rest } := by
+    some { s with pc := advancePC 9 pc,
+                  stack := MachineState.readWord s.memory P.toNat :: (MachineState.readWord s.memory P.toNat + MachineState.readWord s.memory P.toNat) :: P :: hd :: w3 :: ent :: w5 :: M :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: MachineState.readWord s.memory P.toNat :: rest } := by
   have h14 : rest.length + 14 < 1024 := by omega
   have h15 : rest.length + 15 < 1024 := by omega
   have h16 : rest.length + 16 < 1024 := by omega
-  simp [headProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr, h14, h15, h16,
+  have h17 : rest.length + 17 < 1024 := by omega
+  simp [headProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr, h14, h15, h16, h17,
     State.activeWordsAfterUInt256, hact, List.exchange, advancePC]
 
-theorem run_products (s : State) (pc x P hd w3 ent w5 M : UInt256)
+theorem run_products (s : State) (pc x b2 P hd w3 ent w5 M : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1010) :
     runInstructions productsProgram
-      { s with pc := pc, stack := x :: P :: hd :: w3 :: ent :: w5 :: M :: rest } =
-    some { s with pc := advancePC 11 pc,
-                  stack := UInt256.mulMod x x M :: (x * x) :: (x + x) :: P :: hd :: w3 :: ent :: w5 :: M :: rest } := by
-  have h7 : rest.length + 7 < 1024 := by omega
+      { s with pc := pc, stack := x :: b2 :: P :: hd :: w3 :: ent :: w5 :: M :: rest } =
+    some { s with pc := advancePC 7 pc,
+                  stack := UInt256.mulMod x x M :: (x * x) :: b2 :: P :: hd :: w3 :: ent :: w5 :: M :: rest } := by
   have h8 : rest.length + 8 < 1024 := by omega
   have h9 : rest.length + 9 < 1024 := by omega
   have h10 : rest.length + 10 < 1024 := by omega
   have h11 : rest.length + 11 < 1024 := by omega
   simp [productsProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    h7, h8, h9, h10, h11, List.exchange, advancePC]
+    h8, h9, h10, h11, List.exchange, advancePC]
 
 theorem run_carry (s : State) (pc mm lo b2 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1016) :
@@ -107,12 +107,12 @@ theorem run_program (s : State) (pc P hd w3 ent w5 M w7 w8 w9 w10 w11 w12 w13 ap
   let lo := x * x
   let mm := UInt256.mulMod x x M
   have h0 := run_head s pc P hd w3 ent w5 M w7 w8 w9 w10 w11 w12 w13 aprev rest (by omega) hactP
-  have h1 := run_products s (advancePC 6 pc) x P hd w3 ent w5 M
+  have h1 := run_products s (advancePC 9 pc) x (x + x) P hd w3 ent w5 M
     (w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: x :: rest) (by simp only [List.length_cons]; omega)
-  have h2 := run_carry s (advancePC 11 (advancePC 6 pc)) mm lo (x + x)
+  have h2 := run_carry s (advancePC 7 (advancePC 9 pc)) mm lo (x + x)
     (P :: hd :: w3 :: ent :: w5 :: M :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: x :: rest)
     (by simp only [List.length_cons]; omega)
-  have h3 := run_tail s (advancePC 7 (advancePC 11 (advancePC 6 pc)))
+  have h3 := run_tail s (advancePC 7 (advancePC 7 (advancePC 9 pc)))
     ((mm - UInt256.lt mm lo) - lo) lo (x + x) P hd w3 ent
     (w5 :: M :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: x :: rest)
     (by simp only [List.length_cons]; omega) hactT hjump
@@ -170,12 +170,12 @@ theorem run_rowZero (s : State) (mem : ByteArray) (pc : UInt256) (e : Nat)
     hzero, add_zero, sub_zero, lt_self, zero_add, allOnes, maxWord,
     Challenge.EvmProof.Word.ofNat_add_mod, List.cons_append, List.nil_append] using h
 
-def block : Block Artifact.submissionArtifact .Osaka 5273 program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4028 30 5273 program
+def block : Block Artifact.submissionArtifact .Osaka 5265 program :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4025 29 5265 program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
 
-theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5273 = true :=
-  Artifact.isValidJumpDest_index 4028 (by rfl)
+theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5265 = true :=
+  Artifact.isValidJumpDest_index 4025 (by rfl)
 
 def gasSteps_prologue (s : State) (mem : ByteArray) (e : Nat)
     (inv m0 tl m96 m64 m32 aprev : UInt256) (rest : List UInt256)
@@ -190,13 +190,13 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (e : Nat)
     (he : e + 37 < 2 ^ 256) (hentry : e + 37 = 3765) :
     Challenge.EvmProof.GasSteps
       { outState s mem 2368 8 0 (UInt256.ofNat 4427) (UInt256.ofNat e) inv m0
-        (tl :: m96 :: m64 :: m32 :: aprev :: rest) with pc := UInt256.ofNat 5273 }
+        (tl :: m96 :: m64 :: m32 :: aprev :: rest) with pc := UInt256.ofNat 5265 }
       (l1Q e s (sqPro mem 8 0 (UInt256.ofNat 0))
         (sqB2 (sqX mem 8 0) (UInt256.ofNat 0)) 2368 8 0
         (UInt256.ofNat 4427) (UInt256.ofNat (e + 37)) inv m0
         (tl :: m96 :: m64 :: m32 :: sqX mem 8 0 :: rest)) :=
   SquareRow.stepsOf block
-    (run_rowZero s mem (UInt256.ofNat 5273) e inv m0 tl m96 m64 m32 aprev rest hcap hact hzero
+    (run_rowZero s mem (UInt256.ofNat 5265) e inv m0 tl m96 m64 m32 aprev rest hcap hact hzero
       (by rw [hcode]; exact hjump) he hentry) rfl hcode hfork hrun hnp
 
 #print axioms run_rowZero

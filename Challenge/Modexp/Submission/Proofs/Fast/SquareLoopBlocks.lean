@@ -93,7 +93,7 @@ def againProgram : List Instr :=
    .op .CALLDATACOPY,
    .op .ADD, .push 2 292, .op (.Dup ⟨7, by decide⟩), .op .SUB,
    .op (.Swap ⟨3, by decide⟩), .op .POP,
-   .push 2 5273, .op .JUMP]
+   .push 2 5265, .op .JUMP]
 
 /-! ## Located blocks -/
 

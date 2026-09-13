@@ -38,7 +38,7 @@ def commonGuardProgram : List Instr :=
    .push 2 256,
    .op .EQ,
    .op .OR,
-   .push 2 3561,
+   .push 2 5298,
    .op .JUMPI]
 
 def commonFallbackProgram : List Instr :=

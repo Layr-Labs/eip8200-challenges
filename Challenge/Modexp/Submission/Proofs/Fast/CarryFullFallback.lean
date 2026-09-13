@@ -31,30 +31,18 @@ opaque gasSteps_fallback (E : EntryLemmas) (s : State) (mem : ByteArray) (pa pb 
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
-    (hminv : inverseInvariant mem n) (hn4 : n ≠ 4) (hn8 : n ≠ 8) :
+    (hminv : inverseInvariant mem n) (hslow : ¬ StagedOperand.eligible mem n) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
       (mpCsubState s (selectedRows (mpZeroed s mem n) pa pb n n) pdst ret rest) := by
-  have h32n : 32 * n < 2 ^ 256 := by omega
-  have h128 : MachineState.readWord mem 2688 ≠ UInt256.ofNat 128 := by
-    intro heq
-    have hword : UInt256.ofNat (32 * n) = UInt256.ofNat 128 := hs32.symm.trans heq
-    have hnat := congrArg UInt256.toNat hword
-    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt h32n,
-      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by norm_num)] at hnat
-    exact hn4 (by omega)
-  have h256 : MachineState.readWord mem 2688 ≠ UInt256.ofNat 256 := by
-    intro heq
-    have hword : UInt256.ofNat (32 * n) = UInt256.ofNat 256 := hs32.symm.trans heq
-    have hnat := congrArg UInt256.toNat hword
-    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt h32n,
-      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by norm_num)] at hnat
-    exact hn8 (by omega)
   have hf := ((E.gasSteps_mulEntry s mem pa pb pdst ret rest (by omega) hrun hcode hfork hnp).trans
-    (E.gasSteps_commonFallback s mem (UInt256.ofNat 3698) pa pb pdst ret rest (by omega) hrun
-      hcode hfork hnp hact h128 h256)).trans
+    (Cios2Dispatch.gasSteps_commonFallbackEligible s mem (UInt256.ofNat 3698) pa pb n pdst ret rest
+      (by omega) hrun hcode hfork hnp hact hn32 hs32 hslow)).trans
     (gasSteps_monpro s mem pa pb n pdst ret rest (by omega) hrun hcode hfork hnp hact
       hn hn32 hpa hpaFit hpb hpbFit hcds hs32 htl hml)
-  simpa only [selectedRows, if_neg (show ¬(n=4 ∨ n=8) by simp [hn4, hn8])] using hf
+  have hz : ¬ StagedOperand.eligible (mpZeroed s mem n) n := by
+    rw [StagedOperand.eligible_zeroed s mem n hn32]
+    exact hslow
+  simpa only [selectedRows, if_neg hz] using hf
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryFull

@@ -314,7 +314,7 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
   kernel keeps its frame and loops internally (`squareLoop` below), so it never
   returns to the pushed `ret`. -/
   square : ∀ (ret : UInt256) (tail : List UInt256) (mem : ByteArray) (a : Nat),
-    ¬ (n = 4 ∨ n = 8) → tail.length ≤ 998 →
+    ¬ ((n = 4 ∨ n = 8) ∧ minv ≠ 1) → tail.length ≤ 998 →
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true →
     Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
     Model.FastRepresents mem 512 n a → a < mm →
@@ -336,7 +336,7 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
   sqLoopMem : Nat → ByteArray → ByteArray
   /-- The accelerated widths complete the final product before returning to the cleanup. -/
   squareLoop : ∀ (k : Nat) (ret : UInt256) (tail : List UInt256)
-    (mem : ByteArray) (a : Nat), n = 4 ∨ n = 8 → 1 ≤ k → k ≤ 16 →
+    (mem : ByteArray) (a : Nat), (n = 4 ∨ n = 8) ∧ minv ≠ 1 → 1 ≤ k → k ≤ 16 →
     tail.length ≤ 982 →
     MachineState.readWord mem 2624 = UInt256.ofNat k →
     Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →

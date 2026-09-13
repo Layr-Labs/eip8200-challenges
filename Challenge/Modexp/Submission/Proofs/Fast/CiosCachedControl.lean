@@ -59,7 +59,7 @@ theorem run_l2Dispatch4 (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pb i k : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005)
     (htarget : Decode.isValidJumpDest s.executionEnv.code 4168 = true) :
-    runInstructions l2DispatchProgram (l2At 4018 s mid bi mu c0 pb 4 i k hd ent pdst ret rest) =
+    runInstructions l2DispatchProgram (l2At 4015 s mid bi mu c0 pb 4 i k hd ent pdst ret rest) =
       some (l2At 4168 s mid bi mu c0 pb 4 i k hd ent pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
@@ -80,7 +80,7 @@ theorem run_l2Dispatch8 (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pb i k : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005)
     (htarget : Decode.isValidJumpDest s.executionEnv.code 4020 = true) :
-    runInstructions l2DispatchProgram (l2At 4018 s mid bi mu c0 pb 8 i k hd ent pdst ret rest) =
+    runInstructions l2DispatchProgram (l2At 4015 s mid bi mu c0 pb 8 i k hd ent pdst ret rest) =
       some (l2At 4020 s mid bi mu c0 pb 8 i k hd ent pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega

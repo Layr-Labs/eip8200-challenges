@@ -52,7 +52,7 @@ kernel returning to the caller after each one (the unaccelerated widths). -/
 def gasSteps_squareLoop (s : State) {n bsize mm minv : Nat}
     (sub : Exp.Subroutines s n bsize mm minv)
     (memory : ByteArray) (esize msize count bM rawBase : Nat)
-    (hslow : ¬ (n = 4 ∨ n = 8))
+    (hslow : ¬ ((n = 4 ∨ n = 8) ∧ minv ≠ 1))
     (hm : 0 < mm) (hn32 : n ≤ 8) (hcount : 1 ≤ count)
     (hcount16 : count ≤ 16) (hbM : bM < mm)
     (hactive : 89 ≤ s.activeWords.toNat)
@@ -117,7 +117,7 @@ which returns only once, to `after_sq`. -/
 def gasSteps_squareLoopFast (s : State) {n bsize mm minv : Nat}
     (sub : Exp.Subroutines s n bsize mm minv)
     (memory : ByteArray) (esize msize count bM rawBase : Nat)
-    (hfast : n = 4 ∨ n = 8) (hcount : 1 ≤ count) (hcount16 : count ≤ 16)
+    (hfast : (n = 4 ∨ n = 8) ∧ minv ≠ 1) (hcount : 1 ≤ count) (hcount16 : count ≤ 16)
     (hn32 : n ≤ 8) (hbM : bM < mm)
     (hactive : 89 ≤ s.activeWords.toNat)
     (hframe : Exp.Frame memory n bsize minv)
@@ -172,14 +172,14 @@ def chain_of_fixed (s : State) {n bsize mm minv : Nat}
   have hinv : Inv memory n mm rawBase bM := ⟨hmod,hrawAcc,hbase,hone⟩
   have hhead := FixedDirectChainTrace.gasSteps_start s memory
     n bsize esize msize count hn hn32 hactive hcode hfork hrun hnp
-  by_cases hfast : n=4 ∨ n=8
+  by_cases hfast : (n=4 ∨ n=8) ∧ minv ≠ 1
   · let out := sub.sqLoopMem count (Exp.storeWord memory 2624 (UInt256.ofNat count))
     have hf0 := countStore_frame count hframe
     have hi0 := countStore_inv count hn32 hinv
     have hv : Model.FastRepresents out 256 n
         (Model.montMul mm (Limbs.radix^n) (fixedDirectValue mm (Limbs.radix^n) bM count) rawBase) := by
       rw [fixedDirectValue_eq_iterate]
-      exact sub.sqLoopValue count _ bM rawBase hfast hcount hf0 hi0.modulus
+      exact sub.sqLoopValue count _ bM rawBase hfast.1 hcount hf0 hi0.modulus
         hi0.squareBase hi0.rawAcc hbM
     have hs := gasSteps_squareLoopFast s sub memory esize msize count bM rawBase hfast hcount
       hcount16 hn32 hbM hactive hframe hinv hcode hfork hrun hnp

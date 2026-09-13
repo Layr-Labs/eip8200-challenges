@@ -16,7 +16,7 @@ open Monpro CiosCached
 def program : List Instr :=
   [.op .JUMPDEST, .push 2 4427, .op (.Swap ⟨1, by decide⟩), .op .POP,
    .push 2 2336, .op (.Swap ⟨2, by decide⟩), .op .POP,
-   .push 7 1856, .op .ADD]
+   .push 2 1856, .op .ADD]
 
 def block : Block Artifact.submissionArtifact .Osaka 4737 program :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 3561 9 4737 program
@@ -32,7 +32,7 @@ theorem run_entry (s : State) (mem : ByteArray) (n : Nat)
     runInstructions program
       (outState s mem 512 n 0 (UInt256.ofNat 4737) ent inv m0 rest) =
     some { outState s mem 2368 n 0 (UInt256.ofNat 4427) ent inv m0 rest with
-      pc := UInt256.ofNat 4757 } := by
+      pc := UInt256.ofNat 4752 } := by
   have h9 : rest.length + 9 < 1024 := by omega
   have h10 : rest.length + 10 < 1024 := by omega
   have hp : UInt256.ofNat 1856 + UInt256.ofNat (512 + 32 * n - 32) =
@@ -55,7 +55,7 @@ def gasSteps_entry (s : State) (mem : ByteArray) (n : Nat)
     Challenge.EvmProof.GasSteps
       (outState s mem 512 n 0 (UInt256.ofNat 4737) ent inv m0 rest)
       { outState s mem 2368 n 0 (UInt256.ofNat 4427) ent inv m0 rest with
-        pc := UInt256.ofNat 4757 } :=
+        pc := UInt256.ofNat 4752 } :=
   block.steps (SquareRow.environment _ hcode hfork hrun hnp) rfl
     (run_entry s mem n ent inv m0 rest hcap hcode)
 
