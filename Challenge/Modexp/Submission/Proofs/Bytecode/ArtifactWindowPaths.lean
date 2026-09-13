@@ -72,8 +72,8 @@ private def nine_modulus :
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_normalize :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1780 WindowTwentyOneEntry.normalizeProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1261 8 1780 WindowTwentyOneEntry.normalizeProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1780 WindowTwentyOneEntry.normalizeExact32Program :=
+  WindowTwentyOneSlice.block allWellFormed 1261 8 1780 WindowTwentyOneEntry.normalizeExact32Program
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 

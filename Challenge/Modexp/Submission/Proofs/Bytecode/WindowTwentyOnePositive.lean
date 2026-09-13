@@ -59,7 +59,8 @@ theorem returned_spec (template : State) (input : ByteArray)
     rw [WindowTwentyOneInput.modulusWord_toNat] at hmodulus
     omega
   rw [returned, WindowTwentyOneCore.core_result _ _ _ _ hmodulus,
-    WindowTwentyOneInput.baseWord_toNat_of_le input hmatch.1,
+    WindowTwentyOneInput.baseWord_toNat_of_le input
+      (WindowTwentyOneInput.base_width_of_match input hmatch),
     WindowTwentyOneInput.exponentWord_toNat, WindowTwentyOneInput.modulusWord_toNat,
     WindowTwentyOneInput.spec_eq input hmatch, Algorithm.modPow_eq, if_neg hm]
 

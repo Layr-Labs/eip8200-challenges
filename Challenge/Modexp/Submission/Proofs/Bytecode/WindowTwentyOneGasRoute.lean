@@ -13,7 +13,7 @@ structure Paths (artifact : ProgramArtifact) (fork : Fork) extends WindowTwentyO
   miss : Block artifact fork 1770 WindowTwentyOneEntry.missProgram
   base : Block artifact fork 1773 WindowTwentyOneEntry.baseProgram
   modulus : Block artifact fork 1774 WindowTwentyOneEntry.modulusProgram
-  normalize : Block artifact fork 1780 WindowTwentyOneEntry.normalizeProgram
+  normalize : Block artifact fork 1780 WindowTwentyOneEntry.normalizeExact32Program
   zeroReturn : Block artifact fork 2386 WindowTwentyOneReturn.zeroProgram
   hitJump : Decode.isValidJumpDest artifact.code 42 = true
   zeroJump : Decode.isValidJumpDest artifact.code 2386 = true
@@ -59,15 +59,29 @@ def positive_steps {artifact : ProgramArtifact} {fork : Fork}
   have hm := WindowTwentyOneEntry.run_modulus ctx (WindowTwentyOneInput.modulusWord input)
     (routeStack input) (by simp [routeStack]) (jump_env ec paths.zeroJump)
   rw [if_neg (Nat.ne_of_gt hmodulus)] at hm
-  have hn := WindowTwentyOneEntry.run_normalize ctx (WindowTwentyOneInput.modulusWord input)
-    (UInt256.ofNat 96) (baseSize input) hmatch.1 (routeStack input) (by simp [routeStack]) rfl rfl
-  have hn' : runInstructions WindowTwentyOneEntry.normalizeProgram
+  have hn := WindowTwentyOneEntry.run_normalize_exact32 ctx
+    (WindowTwentyOneInput.modulusWord input) (routeStack input) (by simp [routeStack])
+  have hbaseword : WindowTwentyOneInput.baseWord input =
+      MachineState.readWord input 96 := by
+    unfold WindowTwentyOneInput.baseWord
+    rw [hmatch.1]
+    rw [show (32 - 32) * 8 = 0 by omega]
+    change { val := (MachineState.readWord input 96).val >>>
+        (UInt256.ofNat 0).val } = MachineState.readWord input 96
+    have hz : (UInt256.ofNat 0).val = (0 : Fin UInt256.size) := by rfl
+    rw [hz]
+    cases h : MachineState.readWord input 96 with
+    | mk aval =>
+      congr
+      apply Fin.ext
+      simp
+  have hn' : runInstructions WindowTwentyOneEntry.normalizeExact32Program
       (WindowTwentyOneEntry.framed ctx (UInt256.ofNat 1780)
         (WindowTwentyOneInput.modulusWord input :: routeStack input)) =
       some (normalized template input) := by
     simpa only [normalized, WindowTwentyOneTablePrelude.initial, WindowTwentyOneEntry.framed,
-      WindowTwentyOneInput.baseWord, ctx, context, List.cons_append, List.nil_append,
-      show (UInt256.ofNat 96).toNat = 96 by decide] using hn
+      ctx, context, List.cons_append, List.nil_append,
+      hbaseword] using hn
   let gb := lift paths.base hb (ec.transfer rfl rfl) rfl
   let gm := lift paths.modulus hm (ec.transfer rfl rfl) rfl
   let gn := lift paths.normalize hn' (ec.transfer rfl rfl) rfl
@@ -76,7 +90,8 @@ def positive_steps {artifact : ProgramArtifact} {fork : Fork}
     (exponentOffset input) (modulusOffset input) (routeStack input)
     (by simp [routeStack]) rfl rfl (modulus_at template input hmatch) (jump_env ec paths.trampJump)
   have gc' : GasSteps (normalized template input) (returned template input) := by
-    simpa only [normalized, returned, ctx, exponent_at template input hmatch.1] using gc
+    simpa only [normalized, returned, ctx,
+      exponent_at template input (WindowTwentyOneInput.base_width_of_match input hmatch)] using gc
   exact ((gb.trans gm).trans gn).trans gc'
 
 def Handled (template : State) (input : ByteArray) : Prop :=
@@ -139,7 +154,7 @@ private theorem width_raw (template : State) (input : ByteArray)
   have h := WindowTwentyOneEntry.run_width (context template input)
     (UInt256.ofNat (baseSize input)) (UInt256.ofNat (exponentSize input)) (UInt256.ofNat (modulusSize input))
     (widthTail input) (by simp [widthTail, routeStack]) hjump
-  have hd : WindowTwentyOneEntry.widthDiff
+  have hd : WindowTwentyOneEntry.exactWidthDiff
       (UInt256.ofNat (baseSize input)) (UInt256.ofNat (exponentSize input))
       (UInt256.ofNat (modulusSize input)) = WindowTwentyOneInput.guardDiff input := rfl
   rw [hd] at h

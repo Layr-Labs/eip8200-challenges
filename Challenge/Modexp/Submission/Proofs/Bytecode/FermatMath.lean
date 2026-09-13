@@ -51,6 +51,7 @@ theorem result_spec (input : ByteArray) (hmatch : Matches input)
     (he : exponentValue input = modulusValue input - 1) :
     spec input = Precompile.natToBytes (resultWord input).toNat 32 := by
   rw [spec_eq input hmatch, he, modPow_prime _ _ hp,
-    resultWord_toNat input hmatch.1 hp.ne_zero]
+    resultWord_toNat input
+      (WindowTwentyOneInput.base_width_of_match input hmatch) hp.ne_zero]
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.FermatMath

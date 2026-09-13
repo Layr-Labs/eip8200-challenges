@@ -37,13 +37,18 @@ def widthDiff (baseSize exponentSize modulusSize : UInt256) : UInt256 :=
     (UInt256.lor (UInt256.xor exponentSize (UInt256.ofNat 32))
       (UInt256.gt baseSize (UInt256.ofNat 32)))
 
+def exactWidthDiff (baseSize exponentSize modulusSize : UInt256) : UInt256 :=
+  UInt256.lor (UInt256.xor modulusSize (UInt256.ofNat 32))
+    (UInt256.lor (UInt256.xor exponentSize (UInt256.ofNat 32))
+      (UInt256.xor baseSize (UInt256.ofNat 32)))
+
 private theorem xor_comm (a b : UInt256) : UInt256.xor a b = UInt256.xor b a := by
   apply Challenge.EvmProof.Word.word_ext
   change (a.val ^^^ b.val).val = (b.val ^^^ a.val).val
   rw [Fin.xor_val, Fin.xor_val, Nat.xor_comm]
 
 def widthValueProgram : List Instr :=
-  [.op .JUMPDEST, .push 1 32, .op (.Dup ⟨1, by decide⟩), .op .GT,
+  [.op .JUMPDEST, .push 1 32, .op (.Dup ⟨1, by decide⟩), .op .XOR,
    .op (.Dup ⟨2, by decide⟩), .push 1 32, .op .XOR, .op .OR,
    .op (.Dup ⟨3, by decide⟩), .push 1 32, .op .XOR, .op .OR]
 
@@ -52,12 +57,12 @@ theorem run_width_value (template : State) (baseSize exponentSize modulusSize : 
     runInstructions widthValueProgram
       (framed template (UInt256.ofNat 1751) ([baseSize, exponentSize, modulusSize] ++ tail)) =
     some (framed template (UInt256.ofNat 1766)
-      (widthDiff baseSize exponentSize modulusSize :: [baseSize, exponentSize, modulusSize] ++ tail)) := by
+      (exactWidthDiff baseSize exponentSize modulusSize :: [baseSize, exponentSize, modulusSize] ++ tail)) := by
   have hcap3 : tail.length + 3 < 1024 := by omega
   have hcap4 : tail.length + 4 < 1024 := by omega
   have hcap5 : tail.length + 5 < 1024 := by omega
   have hcap6 : tail.length + 6 < 1024 := by omega
-  simp [runInstructions, widthValueProgram, framed, widthDiff,
+  simp [runInstructions, widthValueProgram, framed, exactWidthDiff,
     Challenge.EvmProof.Stepper.runInstr, hcap3, hcap4, hcap5, hcap6, Nat.add_assoc, xor_comm,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod]
@@ -87,12 +92,12 @@ theorem run_width (template : State) (baseSize exponentSize modulusSize : UInt25
     runInstructions widthProgram
       (framed template (UInt256.ofNat 1751) ([baseSize, exponentSize, modulusSize] ++ tail)) =
     some (framed template
-      (if (widthDiff baseSize exponentSize modulusSize).toNat = 0
+      (if (exactWidthDiff baseSize exponentSize modulusSize).toNat = 0
         then UInt256.ofNat 42 else UInt256.ofNat 1770)
       ([baseSize, exponentSize, modulusSize] ++ tail)) := by
   have hv := run_width_value template baseSize exponentSize modulusSize tail htail
   have ht := run_short_test template (UInt256.ofNat 1766) (UInt256.ofNat 42)
-    (widthDiff baseSize exponentSize modulusSize) ([baseSize, exponentSize, modulusSize] ++ tail)
+    (exactWidthDiff baseSize exponentSize modulusSize) ([baseSize, exponentSize, modulusSize] ++ tail)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) htarget
   have both := runInstructions_append_some _ _ _ _ _ hv ht
   have hpc : advancePC 4 (UInt256.ofNat 1766) = UInt256.ofNat 1770 := by decide
@@ -173,6 +178,28 @@ theorem run_normalize (template : State) (modulus baseOffset : UInt256)
   simp [runInstructions, normalizeProgram, framed, Challenge.EvmProof.Stepper.runInstr,
     hcap1, hcap2, hcap3, hcap4, List.getElem?_cons_succ, hbase, hoffset,
     Challenge.EvmProof.Word.literal_eq_ofNat, hshift,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
+
+/- The fixed-width route has already established baseOffset = 96.  Keep the
+   shared normalizeProgram above unchanged because FermatProgram reuses its
+   tail; this specialized body loads the base word directly and spends its
+   ten-byte filler on six JUMPDESTs. -/
+def normalizeExact32Program : List Instr :=
+  [.push 2 96, .op .CALLDATALOAD,
+   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
+   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
+
+theorem run_normalize_exact32 (template : State) (modulus : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1000) :
+    runInstructions normalizeExact32Program
+      (framed template (UInt256.ofNat 1780) (modulus :: rest)) =
+    some (framed template (UInt256.ofNat 1790)
+      (MachineState.readWord template.executionEnv.calldata 96 :: modulus :: rest)) := by
+  have hcap1 : rest.length + 1 < 1024 := by omega
+  have hcap2 : rest.length + 2 < 1024 := by omega
+  simp [runInstructions, normalizeExact32Program, framed,
+    Challenge.EvmProof.Stepper.runInstr, hcap1, hcap2,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneEntry

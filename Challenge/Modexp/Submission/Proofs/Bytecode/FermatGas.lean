@@ -33,7 +33,8 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
     paths.load.steps (ec.transfer rfl rfl) rfl hlraw
   have heraw := FermatNext.run_exponent (context template input) m (exponentOffset input)
     (routeStack input) (by simp [routeStack]) (by simp [routeStack]) hjump
-  rw [exponent_at template input hmatch.1] at heraw
+  rw [exponent_at template input
+    (WindowTwentyOneInput.base_width_of_match input hmatch)] at heraw
   obtain ⟨oldFinal, ⟨oldTrace⟩, oldDone, oldResult⟩ :=
     WindowTwentyOneGasRoute.handled legacy template env hcall input hmatch
   by_cases he : (UInt256.xor (m - UInt256.ofNat 1)
@@ -81,7 +82,8 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
       let final := WindowTwentyOneReturn.returned (context template input) (UInt256.ofNat 124)
         (FermatMath.resultWord input) 0 (routeStack input)
       have hr := FermatProgram.run_return (context template input) m (UInt256.ofNat 96)
-        (routeStack input) (baseSize input) hmatch.1 (by simp [routeStack])
+        (routeStack input) (baseSize input)
+        (WindowTwentyOneInput.base_width_of_match input hmatch) (by simp [routeStack])
         (by simp [routeStack]) (by simp [routeStack]) 0 (by decide) rfl
       change runInstructions FermatProgram.returnProgram
         (withModulus template input (UInt256.ofNat 106)) = some final at hr

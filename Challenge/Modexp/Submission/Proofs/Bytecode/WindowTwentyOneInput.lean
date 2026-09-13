@@ -17,13 +17,14 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneInput
 open EvmSemantics
 open EvmSemantics.EVM
 
-def Matches (input : ByteArray) : Prop :=
-  baseSize input ≤ 32 ∧ exponentSize input = 32 ∧ modulusSize input = 32
+def Matches (input : ByteArray) : Prop := WindowGuardLogic.Matches input
 
-def guardDiff (input : ByteArray) : UInt256 :=
-  UInt256.lor (UInt256.xor (UInt256.ofNat (modulusSize input)) (UInt256.ofNat 32))
-    (UInt256.lor (UInt256.xor (UInt256.ofNat (exponentSize input)) (UInt256.ofNat 32))
-      (UInt256.gt (UInt256.ofNat (baseSize input)) (UInt256.ofNat 32)))
+def guardDiff (input : ByteArray) : UInt256 := WindowGuardLogic.guardDiff input
+
+theorem base_width_of_match (input : ByteArray) (hmatch : Matches input) :
+    baseSize input ≤ 32 := by
+  have h := hmatch.1
+  omega
 
 private theorem header_lt (input : ByteArray) (offset : Nat) :
     Precompile.bytesToNatPadded input offset 32 < 2 ^ 256 := by
@@ -57,13 +58,7 @@ private theorem gt_32_zero_iff (value : Nat) (hvalue : value < 2 ^ 256) :
 
 theorem guardDiff_eq_zero_iff (input : ByteArray) :
     guardDiff input = 0 ↔ Matches input := by
-  have hb : baseSize input < 2 ^ 256 := header_lt input 0
-  have he : exponentSize input < 2 ^ 256 := header_lt input 32
-  have hm : modulusSize input < 2 ^ 256 := header_lt input 64
-  simp only [guardDiff, WindowGuardLogic.wordOr_eq_zero_iff,
-    WindowGuardLogic.wordXor_eq_zero_iff, Matches]
-  rw [ofNat_eq_32_iff _ hm, ofNat_eq_32_iff _ he, gt_32_zero_iff _ hb]
-  constructor <;> rintro ⟨hm, he, hb⟩ <;> exact ⟨hb, he, hm⟩
+  simpa [guardDiff, Matches] using WindowGuardLogic.guardDiff_eq_zero_iff input
 
 def baseValue (input : ByteArray) : Nat :=
   Precompile.bytesToNatPadded input 96 (baseSize input)
