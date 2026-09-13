@@ -1,5 +1,6 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.RootOverlapGuard
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputCompactState
 import Challenge.EvmProof.Word
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.RootOverlapGuard
 
 set_option warningAsError true
 
@@ -60,10 +61,6 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
 open EvmSemantics EvmSemantics.EVM
 open KnownInputCompactState
 
-/-- The guard now compares the word-aligned root overlap at byte 968, so the
-accumulator it accepts is the overlap accumulator rather than the shifted one. -/
-abbrev finalAcc := RootOverlapGuard.finalAcc
-
 theorem shiftRight_xor_192 (a b : UInt256) :
     UInt256.shiftRight (UInt256.xor a b) (UInt256.ofNat 192) =
       UInt256.xor
@@ -98,6 +95,8 @@ theorem shiftRight_xor_192 (a b : UInt256) :
   rw [Nat.mod_eq_of_lt hab, Nat.mod_eq_of_lt habs,
     Nat.mod_eq_of_lt ha, Nat.mod_eq_of_lt hb, Nat.mod_eq_of_lt hshifts]
   exact Nat.shiftRight_xor_distrib
+
+abbrev finalAcc := RootOverlapGuard.finalAcc
 
 def tailDiff (input : ByteArray) : UInt256 :=
   UInt256.xor (MachineState.readWord input 968) (referenceWord input)
