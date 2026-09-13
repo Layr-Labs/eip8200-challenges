@@ -9,15 +9,15 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate StaggerPersistentEntryRaw StaggerPersistentFrame PairedMask32Cache
 def dispatchCode : List Instr := dispatchTemplate 4783
 theorem dispatch_slice :
-    (Artifact.submissionArtifact.instructions.drop 3712).take dispatchCode.length = dispatchCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3711).take dispatchCode.length = dispatchCode := by rfl
 def dispatchSite : GenericRoundSite Artifact.submissionArtifact .Osaka dispatchCode :=
-  StackSiteBuilder.ofSlice dispatchCode 3712 dispatch_slice
-    (by change 3712 + dispatchCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice dispatchCode 3711 dispatch_slice
+    (by change 3711 + dispatchCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := dispatchCode) (by decide)) (by decide)
 theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4642 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3712) = UInt256.ofNat 4642
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3711) = UInt256.ofNat 4642
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def callCode : List Instr := callTemplate
@@ -35,9 +35,9 @@ theorem call_pc : callSite.startPC = UInt256.ofNat 491 := by
 
 theorem valid_pad (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4783).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3790 = 4783 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3789 = 4783 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3790 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3789 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 4783 = true
   rw [hcode]
