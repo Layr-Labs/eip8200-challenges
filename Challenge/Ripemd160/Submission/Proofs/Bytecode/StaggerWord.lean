@@ -52,7 +52,7 @@ def t (mode r s : Nat) (message rawKey : UInt256) (q : WordLane) : UInt256 :=
   UInt256.land (UInt256.add (wordRotate (sum mode q.a q.b q.c q.d message rawKey) r s) q.e) pairWord
 
 def step (mode r s : Nat) (message rawKey : UInt256) (q : WordLane) : WordLane :=
-  ⟨q.e, t mode r s message rawKey q, q.b, UInt256.land (wordShift q.c 28) pairWord, q.d⟩
+  ⟨q.e, t mode r s message rawKey q, q.b, UInt256.land (wordShift q.c 23) pairWord, q.d⟩
 
 theorem sum_inputs (mode : Nat) (hm : mode < 9) (l q : CryptoLane)
     (wl wr kl kr : UInt32) (message : UInt256)
@@ -97,7 +97,7 @@ theorem step_of_crypto (mode r s : Nat) (hm : mode < 9)
         (cryptoStep (StaggerBoolean.rightGroup mode) s wr kr q) := by
   unfold step
   rw [t_of_crypto mode r s hm hr0 hr hs0 hs wl wr kl kr l q message hmsg,
-    show UInt256.land (wordShift (packCrypto l q).c 28) pairWord = _ from
+    show UInt256.land (wordShift (packCrypto l q).c 23) pairWord = _ from
       Paired144WordCrypto.wordCRotate_of_crypto l.c q.c]
   rfl
 
@@ -151,7 +151,7 @@ theorem step_of_crypto_junk (mode r s : Nat) (hm : mode < 9)
         (cryptoStep (StaggerBoolean.rightGroup mode) s wr kr q) := by
   unfold step
   rw [t_of_crypto_junk mode r s hm hr0 hr hs0 hs wl wr kl kr l q message jl jr hjl hjr hcompact hmsg,
-    show UInt256.land (wordShift (packCrypto l q).c 28) pairWord = _ from
+    show UInt256.land (wordShift (packCrypto l q).c 23) pairWord = _ from
       Paired144WordCrypto.wordCRotate_of_crypto l.c q.c]
   rfl
 

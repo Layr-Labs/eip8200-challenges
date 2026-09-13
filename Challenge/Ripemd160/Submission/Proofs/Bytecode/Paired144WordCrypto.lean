@@ -22,12 +22,12 @@ theorem wordT_of_crypto (j r s : Nat) (hr0 : 5≤r) (hr : r≤15) (hs0 : 5≤s) 
     crypto_rotl_toBitVec _ s (by omega) (by omega)] using h
 
 theorem wordCRotate_of_crypto (a b : UInt32) :
-    UInt256.land (wordShift (word (pack a.toBitVec b.toBitVec)) 28) pairWord =
+    UInt256.land (wordShift (word (pack a.toBitVec b.toBitVec)) 23) pairWord =
       word (pack (Crypto.Ripemd160.rotl32 a 10).toBitVec (Crypto.Ripemd160.rotl32 b 10).toBitVec) := by
   apply bits_injective
   simp only [bits_land,pairWord,bits_word,←normalize_eq_and]
   simpa only [crypto_rotl_toBitVec _ 10 (by decide) (by decide)] using
-    normalize_wordShift28 a.toBitVec b.toBitVec
+    normalize_wordShift23 a.toBitVec b.toBitVec
 
 theorem wordStep_of_crypto (j r s : Nat) (hr0 : 5≤r) (hr : r≤15) (hs0 : 5≤s) (hs : s≤15)
     (wl wr kl kr : UInt32) (l q : CryptoLane) :
@@ -36,7 +36,7 @@ theorem wordStep_of_crypto (j r s : Nat) (hr0 : 5≤r) (hr : r≤15) (hs0 : 5≤
       packCrypto (cryptoStep j r wl kl l) (cryptoStep (4-j) s wr kr q) := by
   unfold wordStep
   rw [wordT_of_crypto j r s hr0 hr hs0 hs wl wr kl kr l q,
-    show UInt256.land (wordShift (packCrypto l q).c 28) pairWord = _ from
+    show UInt256.land (wordShift (packCrypto l q).c 23) pairWord = _ from
       wordCRotate_of_crypto l.c q.c]
   rfl
 

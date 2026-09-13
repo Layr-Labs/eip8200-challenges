@@ -71,7 +71,7 @@ def step (i : Nat) (message : UInt256) (q : WordLane) : WordLane :=
     ⟨q.e, UInt256.land (UInt256.add (wordRotate
       (sum q.a q.b q.c q.d message (physicalKey i))
       Crypto.Ripemd160.s[i]! Crypto.Ripemd160.sP[i+3]!) q.e) pairWord,
-      q.b, UInt256.land (wordShift q.c 28) pairWord, q.d⟩
+      q.b, UInt256.land (wordShift q.c 23) pairWord, q.d⟩
   else StaggerTerminal75.step i message q
 
 def fold (message : Nat → UInt256) : Nat → WordLane → WordLane

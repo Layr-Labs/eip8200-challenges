@@ -12,7 +12,7 @@ open StackRoundTrace StaggerRaw
 def template : List Instr :=
   [ .push ⟨2, by decide⟩ (UInt256.ofNat 360),
     .op .MLOAD,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 28),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 23),
     .push ⟨4, by decide⟩ (UInt256.ofNat 1352829926),
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHL,
@@ -38,7 +38,7 @@ def template : List Instr :=
     .op .AND,
     .op (.Dup ⟨10, by decide⟩),
     .op .MUL,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 27),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 22),
     .op .SHR,
     .op (.Dup ⟨5, by decide⟩),
     .op .ADD,
@@ -52,10 +52,23 @@ def template : List Instr :=
     .op (.Dup ⟨3, by decide⟩),
     .op .AND ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ x.v0, x.v1, x.v2, x.v3, x.v4, x.v5, x.v6, x.v7, x.v8, x.v9, x.v10, x.v11, x.v12, x.v13 ] ++ rho
+  [ x.v0,
+    x.v1,
+    x.v2,
+    x.v3,
+    x.v4,
+    x.v5,
+    x.v6,
+    x.v7,
+    x.v8,
+    x.v9,
+    x.v10,
+    x.v11,
+    x.v12,
+    x.v13 ] ++ rho
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ (UInt256.land x.v0 (UInt256.shiftRight (UInt256.mul x.v7 x.v6) (UInt256.ofNat 28))),
-    (UInt256.ofNat 28),
+  [ (UInt256.land x.v0 (UInt256.shiftRight (UInt256.mul x.v7 x.v6) (UInt256.ofNat 23))),
+    (UInt256.ofNat 23),
     (MachineState.readWord memory 360),
     x.v0,
     x.v1,
@@ -63,7 +76,7 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     x.v3,
     (UInt256.ofNat 30169115476673038213297653277143730720156734734729216),
     x.v5,
-    (UInt256.land x.v0 (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul x.v7 (UInt256.land x.v0 (UInt256.add (UInt256.ofNat 30169115476673038213297653277143730720156734734729216) (UInt256.add (MachineState.readWord memory 54) (UInt256.add (UInt256.xor x.v6 (UInt256.xor x.v3 (UInt256.xor (UInt256.lor x.v5 (UInt256.land x.v1 x.v6)) x.v1))) x.v4))))) (UInt256.ofNat 27)))),
+    (UInt256.land x.v0 (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul x.v7 (UInt256.land x.v0 (UInt256.add (UInt256.ofNat 30169115476673038213297653277143730720156734734729216) (UInt256.add (MachineState.readWord memory 54) (UInt256.add (UInt256.xor (UInt256.xor (UInt256.lor x.v5 (UInt256.land x.v1 x.v6)) (UInt256.xor x.v6 x.v1)) x.v3) x.v4))))) (UInt256.ofNat 22)))),
     x.v7,
     x.v8,
     x.v9,
@@ -72,16 +85,16 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     x.v12,
     x.v13 ] ++ rho
 def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ (UInt256.land x.v0 (UInt256.shiftRight (UInt256.mul x.v7 x.v6) (UInt256.ofNat 28))),
-    (UInt256.ofNat 28),
+  [ (UInt256.land x.v0 (UInt256.shiftRight (UInt256.mul x.v7 x.v6) (UInt256.ofNat 23))),
+    (UInt256.ofNat 23),
     (MachineState.readWord memory 360),
     x.v0,
     x.v1,
     x.v2,
     x.v3,
-    (UInt256.shiftLeft (UInt256.ofNat 1352829926) (UInt256.ofNat 144)),
+    (UInt256.ofNat 30169115476673038213297653277143730720156734734729216),
     x.v5,
-    (UInt256.land x.v0 (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul x.v7 (UInt256.land x.v0 (UInt256.add (UInt256.shiftLeft (UInt256.ofNat 1352829926) (UInt256.ofNat 144)) (UInt256.add (MachineState.readWord memory 54) (UInt256.add (UInt256.xor (UInt256.xor (UInt256.lor x.v5 (UInt256.land x.v1 x.v6)) (UInt256.xor x.v6 x.v1)) x.v3) x.v4))))) (UInt256.ofNat 27)))),
+    (UInt256.land x.v0 (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul x.v7 (UInt256.land x.v0 (UInt256.add (UInt256.ofNat 30169115476673038213297653277143730720156734734729216) (UInt256.add (MachineState.readWord memory 54) (UInt256.add (UInt256.xor (UInt256.xor (UInt256.lor x.v5 (UInt256.land x.v1 x.v6)) (UInt256.xor x.v6 x.v1)) x.v3) x.v4))))) (UInt256.ofNat 22)))),
     x.v7,
     x.v8,
     x.v9,
@@ -90,9 +103,7 @@ def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UI
     x.v12,
     x.v13 ] ++ rho
 private theorem actualOutput_eq (memory : ByteArray) (x : Input) (rho : List UInt256) :
-    actualOutput memory x rho = outputStack memory x rho := by
-  have hkey : UInt256.shiftLeft (UInt256.ofNat 1352829926) (UInt256.ofNat 144) = UInt256.ofNat 30169115476673038213297653277143730720156734734729216 := by decide
-  simp only [actualOutput, outputStack, hkey, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
+    actualOutput memory x rho = outputStack memory x rho := by rfl
 private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 35 ≤ s.activeWords.toNat) :

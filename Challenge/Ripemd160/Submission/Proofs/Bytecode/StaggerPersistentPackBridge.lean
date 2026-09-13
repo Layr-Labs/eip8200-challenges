@@ -16,20 +16,20 @@ abbrev input_eq := JointRightPackModel.input_eq
 abbrev output_eq := JointRightPackModel.output_eq
 
 def entry (s : State) (h q : WordLane) (off limit : UInt256) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 992, stack := stack s.memory h.e [.d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500] q h (UInt256.ofNat 1352829926) (suffix h off limit rho)}
+  {s with pc := UInt256.ofNat 981, stack := stack s.memory h.e [.d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500] q h (UInt256.ofNat 1352829926) (suffix h off limit rho)}
 
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 630).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 636).take template.length = template := by rfl
 
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 630 actual_slice
-    (by change 630 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 636 actual_slice
+    (by change 636 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 992 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 630) = UInt256.ofNat 992
+theorem site_pc : site.startPC = UInt256.ofNat 981 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 636) = UInt256.ofNat 981
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound
@@ -42,13 +42,13 @@ def gasSteps (s : State) (h q : WordLane) (off limit : UInt256) (rho : List UInt
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (entry s h q off limit rho)
       (StaggerCore.atRound s h.e 0 (StaggerCoreModel.pair h (StaggerCoreModel.right2 s.memory q)) h (suffix h off limit rho)) := by
-  have raw := JointRightPackRaw.run_actual s (UInt256.ofNat 992)
+  have raw := JointRightPackRaw.run_actual s (UInt256.ofNat 981)
     (input s.memory h q off limit) rho hs hr ha
-  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 992) template = UInt256.ofNat 1057 := by decide
+  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 981) template = UInt256.ofNat 1046 := by decide
   rw [hend] at raw
   have g := DenseScheduleLift.gasSteps_of_raw site
-    {s with pc := UInt256.ofNat 992, stack := JointRightPackRaw.inputStack (input s.memory h q off limit) rho}
-    {s with pc := UInt256.ofNat 1057, stack := JointRightPackRaw.outputStack s.memory (input s.memory h q off limit) rho}
+    {s with pc := UInt256.ofNat 981, stack := JointRightPackRaw.inputStack (input s.memory h q off limit) rho}
+    {s with pc := UInt256.ofNat 1046, stack := JointRightPackRaw.outputStack s.memory (input s.memory h q off limit) rho}
     hcode hfork hr hnp site_pc.symm advances raw
   rw [input_eq, output_eq] at g
   exact g

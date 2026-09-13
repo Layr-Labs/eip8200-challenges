@@ -27,13 +27,19 @@ def template : List Instr :=
     .push ⟨4, by decide⟩ (UInt256.ofNat 1352829926),
     .op (.Dup ⟨15, by decide⟩) ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ (UInt256.ofNat 20282409608374036907091774406720),
+  [ (UInt256.ofNat 158456325065422163343096938498),
     (UInt256.ofNat 4294967295),
     (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096),
     (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928),
     (UInt256.ofNat 1109194275457955143345843994625),
     (UInt256.ofNat 475368975196266490007815979009),
-    x.h4, x.h1, x.h2, x.h3, x.h0, x.off, x.limit] ++ rho
+    x.h4,
+    x.h1,
+    x.h2,
+    x.h3,
+    x.h0,
+    x.off,
+    x.limit ] ++ rho
 def outputStack (_memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ x.h0,
     (UInt256.ofNat 1352829926),
@@ -41,7 +47,7 @@ def outputStack (_memory : ByteArray) (x : Input) (rho : List UInt256) : List UI
     x.h2,
     x.h3,
     x.h4,
-    (UInt256.ofNat 20282409608374036907091774406720),
+    (UInt256.ofNat 158456325065422163343096938498),
     (UInt256.ofNat 4294967295),
     (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096),
     (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928),
@@ -73,7 +79,7 @@ theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
   all_goals repeat first | apply And.intro | rfl
 #print axioms run_actual
 
-theorem factorWord_eq : Paired144WordRound.factorWord = UInt256.ofNat 20282409608374036907091774406720 := by decide
+theorem factorWord_eq : Paired144WordRound.factorPlusWord = UInt256.ofNat 158456325065422163343096938498 := by decide
 theorem fusedMinus_eq : Paired144WordRound.fusedModulusWord 5 7 = UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096 := by decide
 theorem coefficient02_eq : Paired144WordRound.fusedCoefficientWord 0 2 = UInt256.ofNat 475368975196266490007815979009 := by decide
 theorem coefficient03_eq : Paired144WordRound.fusedCoefficientWord 0 3 = UInt256.ofNat 1109194275457955143345843994625 := by decide

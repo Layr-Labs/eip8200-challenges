@@ -22,7 +22,7 @@ theorem output_eq (memory : ByteArray) (q right : WordLane) (rho : List UInt256)
     StaggerCoreModel.right0, StaggerCoreModel.right1, StaggerCoreModel.right2,
     StaggerCoreModel.left77, StaggerCoreModel.left78, StaggerCoreModel.left79,
     StaggerScalarWord.step, StaggerScalarWord.t, StaggerScalarWord.sum, StaggerScalarWord.rawF,
-    StaggerScalarWord.mask, wordShift, List.cons.injEq, and_true]
+    StaggerScalarWord.mask, wordShift, factorPlusWord, List.cons.injEq, and_true]
   all_goals try simp
   all_goals try simp only [StaggerCoreCommon.add_comm, StaggerCoreCommon.add_left_comm,
     StaggerCoreCommon.add_assoc, StaggerCoreCommon.mul_comm,

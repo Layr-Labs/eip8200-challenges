@@ -11,7 +11,7 @@ open Paired80Algorithm (leftFold rightFold)
 
 /-- The physical exception changes only the C outputs of rounds75 and76. -/
 def step (i : Nat) (message : UInt256) (q : WordLane) : WordLane :=
-  if i=75 ∨ i=76 then {StaggerAlgorithm.step i message q with d:=wordShift q.c 28}
+  if i=75 ∨ i=76 then {StaggerAlgorithm.step i message q with d:=wordShift q.c 23}
   else StaggerAlgorithm.step i message q
 
 def fold (message : Nat → UInt256) : Nat → WordLane → WordLane
@@ -36,9 +36,9 @@ theorem step76_d (l r : CryptoLane) (d : UInt256) (wl wr : UInt32)
   have ht := t_d_eq l r d wl.toBitVec wr.toBitVec
     Crypto.Ripemd160.K[4]!.toBitVec Crypto.Ripemd160.KP[4]!.toBitVec hd he
   change (⟨(packCrypto l r).e, _, (packCrypto l r).b,
-      UInt256.land (wordShift (packCrypto l r).c 28) pairWord,d⟩ : WordLane) = _
+      UInt256.land (wordShift (packCrypto l r).c 23) pairWord,d⟩ : WordLane) = _
   exact congrArg (fun t : UInt256 => (⟨(packCrypto l r).e,t,(packCrypto l r).b,
-    UInt256.land (wordShift (packCrypto l r).c 28) pairWord,d⟩ : WordLane)) ht
+    UInt256.land (wordShift (packCrypto l r).c 23) pairWord,d⟩ : WordLane)) ht
 
 theorem final_shape (message : Nat → UInt256) (words : Nat → UInt32)
     (l r : CryptoLane) (hm : StaggerAlgorithm.MessageReady message words 77) :
@@ -52,14 +52,14 @@ theorem final_shape (message : Nat → UInt256) (words : Nat → UInt32)
   let q75 := packCrypto (leftFold words 75 l) (rightFold words 78 r)
   let q76 := packCrypto (leftFold words 76 l) (rightFold words 79 r)
   let q77 := packCrypto (leftFold words 77 l) (rightFold words 80 r)
-  let e := wordShift q75.c 28
-  let d := wordShift q76.c 28
+  let e := wordShift q75.c 23
+  let d := wordShift q76.c 23
   have h75 : StaggerAlgorithm.step 75 (message 75) q75 = q76 :=
     StaggerAlgorithm.step_of_crypto words 75 (by decide) (message 75) _ _ (hm 75 (by decide))
   have h76 : StaggerAlgorithm.step 76 (message 76) q76 = q77 :=
     StaggerAlgorithm.step_of_crypto words 76 (by decide) (message 76) _ _ (hm 76 (by decide))
   have hgap : (bits e).getLsbD 121 = false := by
-    change (bits (wordShift (word (pack _ _)) 28)).getLsbD 121 = false
+    change (bits (wordShift (word (pack _ _)) 23)).getLsbD 121 = false
     exact c_gap _ _
   have he : UInt256.land e pairWord = q76.d :=
     congrArg (fun q : WordLane => q.d) h75
@@ -83,7 +83,7 @@ theorem final_shape (message : Nat → UInt256) (words : Nat → UInt32)
         (fun i hi => hm i (by omega))]
     change {StaggerAlgorithm.step 76 (message 76)
       {StaggerAlgorithm.step 75 (message 75) q75 with d:=e} with
-      d:=wordShift (StaggerAlgorithm.step 75 (message 75) q75).c 28} = _
+      d:=wordShift (StaggerAlgorithm.step 75 (message 75) q75).c 23} = _
     rw [h75]
     change {StaggerAlgorithm.step 76 (message 76) {q76 with d:=e} with d:=d} = _
     rw [hlast]

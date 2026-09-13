@@ -78,9 +78,9 @@ theorem pack_gap (a b : BitVec 32) : (pack a b).getLsbD 121 = false := by
     Bool.and_false]
 
 theorem c_gap (a b : BitVec 32) :
-    (bits (wordShift (word (pack a b)) 28)).getLsbD 121 = false := by
-  rw [bits_wordShift _ _ (by decide), bits_word, ← scaled_zero a b]
-  exact Paired144LegacyProduct.shiftedProduct_gap a b 0 0 28 (by decide) (by decide)
+    (bits (wordShift (word (pack a b)) 23)).getLsbD 121 = false := by
+  simpa only [wordShift, factorPlusWord, RootCommonFactorPlusWord.wordShift,
+    RootCommonFactorPlusWord.factorWord] using RootCommonFactorPlusWord.cRotate_gap121 a b
 
 theorem raw4_normalize_d (sel b c d : UInt256) :
     normalize (bits (StaggerWord.raw 4 sel b c d)) =
@@ -159,9 +159,10 @@ theorem mask_eq_of_normalize (x y : UInt256)
   simpa only [bits_land,pairWord,bits_word,← normalize_eq_and] using h
 
 theorem rotate11 (x : UInt256) :
-    wordRotate x 11 11 = wordShift (UInt256.land x pairWord) 27 := by
+    wordRotate x 11 11 = wordShift (UInt256.land x pairWord) 22 := by
   unfold wordRotate
-  rw [if_neg (by decide : ¬ usesCompact 11 11), if_pos rfl]
+  rw [if_neg (by decide : ¬ usesCompact 11 11),
+    if_neg (by decide : ¬ usesFusedExtra 11 11), if_pos rfl]
 
 theorem t_d_eq (l r : CryptoLane) (d : UInt256) (wl wr kl kr : BitVec 32)
     (hd : (bits d).getLsbD 121 = false)
@@ -180,7 +181,7 @@ theorem t_d_eq (l r : CryptoLane) (d : UInt256) (wl wr kl kr : BitVec 32)
         (packCrypto l r).e) pairWord = _
   simp only [StaggerWord.t,rotate11]
   exact congrArg (fun z : UInt256 => UInt256.land
-    (UInt256.add (wordShift z 27) (packCrypto l r).e) pairWord) hs
+    (UInt256.add (wordShift z 22) (packCrypto l r).e) pairWord) hs
 
 #print axioms sum_normalize_d
 #print axioms t_d_eq

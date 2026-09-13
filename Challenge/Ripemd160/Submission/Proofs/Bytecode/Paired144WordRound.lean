@@ -16,6 +16,7 @@ def upperWord : UInt256 := word (pack 0#32 (BitVec.allOnes 32))
 def compactMaskWord : UInt256 := UInt256.ofNat ((2 ^ 72 - 1) * 2 ^ 32)
 def coefficientWord (u v : Nat) : UInt256 := word (Paired144CompactGap.coefficient u v)
 def factorWord : UInt256 := coefficientWord 6 0
+def factorPlusWord : UInt256 := UInt256.ofNat ((2 ^ 32 + 1) * (2 + 2 ^ 65))
 
 def fusedCoefficientWord (u v : Nat) : UInt256 :=
   UInt256.ofNat ((2 ^ 32 + 1) *
@@ -53,7 +54,7 @@ def wordSum (j : Nat) (a b c d message k : UInt256) : UInt256 :=
   UInt256.add (UInt256.add (UInt256.add a (booleanPair j b c d)) message) k
 
 def wordShift (x : UInt256) (n : Nat) : UInt256 :=
-  UInt256.shiftRight (UInt256.mul x factorWord) (UInt256.ofNat n)
+  UInt256.shiftRight (UInt256.mul x factorPlusWord) (UInt256.ofNat n)
 def wordScale (x mask : UInt256) (d : Nat) : UInt256 :=
   UInt256.add (UInt256.mul (UInt256.ofNat (2 ^ d - 1)) (UInt256.land mask x)) x
 
@@ -65,21 +66,25 @@ def usesCompact (r s : Nat) : Prop :=
   (r, s) ∈ [(6, 12), (7, 5), (8, 12), (8, 13), (8, 15), (9, 7), (9, 13), (13, 8), (13, 9), (14, 12)]
 instance (r s : Nat) : Decidable (usesCompact r s) := inferInstanceAs (Decidable (_ ∨ _))
 
+def usesFusedExtra (r s : Nat) : Prop := (r,s) ∈ [(14,13),(8,7),(9,8),(7,6)]
+instance (r s : Nat) : Decidable (usesFusedExtra r s) := inferInstanceAs (Decidable (_ ∈ _))
+
 def wordRotate (x : UInt256) (r s : Nat) : UInt256 :=
   if usesCompact r s then
     wordFusedRotate x r s
+  else if usesFusedExtra r s then wordFusedRotate x r s
   else
     let y := UInt256.land x pairWord
-    if r = s then wordShift y (38 - r)
-    else if s < r then wordShift (wordScale y lowerWord (r - s)) (38 - s)
-    else wordShift (wordScale y upperWord (s - r)) (38 - r)
+    if r = s then wordShift y (33 - r)
+    else if s < r then wordShift (wordScale y lowerWord (r - s)) (33 - s)
+    else wordShift (wordScale y upperWord (s - r)) (33 - r)
 
 def wordT (j r s : Nat) (a b c d e message k : UInt256) : UInt256 :=
   UInt256.land (UInt256.add (wordRotate (wordSum j a b c d message k) r s) e) pairWord
 
 def wordStep (j r s : Nat) (message k : UInt256) (q : WordLane) : WordLane :=
   ⟨q.e, wordT j r s q.a q.b q.c q.d q.e message k, q.b,
-    UInt256.land (wordShift q.c 28) pairWord, q.d⟩
+    UInt256.land (wordShift q.c 23) pairWord, q.d⟩
 
 def adjustedK (k : UInt256) : UInt256 :=
   UInt256.add (UInt256.add k pairWord) (UInt256.ofNat 1)
@@ -93,12 +98,12 @@ def hoistedSum (a b c d message cachedK : UInt256) : UInt256 :=
 def rawWordStep2 (r s : Nat) (message cachedK : UInt256) (q : WordLane) : WordLane :=
   ⟨q.e, UInt256.land (UInt256.add
       (wordRotate (hoistedSum q.a q.b q.c q.d message cachedK) r s) q.e) pairWord,
-    q.b, UInt256.land (wordShift q.c 28) pairWord, q.d⟩
+    q.b, UInt256.land (wordShift q.c 23) pairWord, q.d⟩
 
 /-- The last physical round leaves both updated words unmasked. -/
 def rawFinish (r s : Nat) (message k : UInt256) (q : WordLane) : WordLane :=
   ⟨q.e, UInt256.add (wordRotate (wordSum 4 q.a q.b q.c q.d message k) r s) q.e,
-    q.b, wordShift q.c 28, q.d⟩
+    q.b, wordShift q.c 23, q.d⟩
 
 def packCrypto (l q : CryptoLane) : WordLane :=
   ⟨word (pack l.a.toBitVec q.a.toBitVec), word (pack l.b.toBitVec q.b.toBitVec),

@@ -14,7 +14,7 @@ def suffix (h : WordLane) (off limit : UInt256) (rho : List UInt256) : List UInt
 
 def input (memory : ByteArray) (h q : WordLane) (off limit : UInt256) : JointRightPackRaw.Input :=
   { rd := q.d, k := UInt256.ofNat 1352829926, rb := q.b, rc := q.c, ra := q.a, re := q.e,
-    factor := factorWord, lower := lowerWord,
+    factor := factorPlusWord, lower := lowerWord,
     cache140 := word memory h.e (.cache 140) q h (UInt256.ofNat 1352829926),
     cache350 := word memory h.e (.cache 350) q h (UInt256.ofNat 1352829926),
     cache310 := word memory h.e (.cache 310) q h (UInt256.ofNat 1352829926),
@@ -43,7 +43,7 @@ theorem output_eq (memory : ByteArray) (h q : WordLane) (off limit : UInt256)
     StaggerCoreModel.pair, StaggerCoreModel.pairWord, StaggerCoreModel.right2,
     JointRightPackRaw.packed, JointRightPackRaw.rotatedC, JointRightPackRaw.roundT,
     StaggerScalarWord.step, StaggerScalarWord.t, StaggerScalarWord.sum, StaggerScalarWord.rawF,
-    StaggerScalarWord.mask, wordShift, suffix, hm, hu, List.cons.injEq, and_true]
+    StaggerScalarWord.mask, wordShift, factorPlusWord, suffix, hm, hu, List.cons.injEq, and_true]
   all_goals try simp
   all_goals try simp only [RawExpressionAC.add_assoc, RawExpressionAC.add_comm,
     RawExpressionAC.add_left_comm, RawExpressionAC.mul_comm, RawExpressionAC.land_comm,

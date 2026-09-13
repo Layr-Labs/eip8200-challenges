@@ -26,7 +26,7 @@ def input (h : Compression.HashState) (off limit : UInt256) :
 
 def entry (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 919, stack := StaggerPersistentFrame.frame h off limit rho}
+  {s with pc := UInt256.ofNat 908, stack := StaggerPersistentFrame.frame h off limit rho}
 
 theorem input_eq (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256) :
     StaggerPersistentBootstrapRaw.inputStack (input h off limit) rho =
@@ -44,7 +44,7 @@ theorem output_eq (memory : ByteArray) (h : Compression.HashState) (off limit : 
           .cache 350, .cache 310, .cache 190, .cache 500]
         (initial h) (initial h) (UInt256.ofNat 1352829926)
         (StaggerPersistentFrame.coreRest h off limit rho) := by
-  have hf : factorWord = UInt256.ofNat 20282409608374036907091774406720 := by decide
+  have hf : factorPlusWord = UInt256.ofNat 158456325065422163343096938498 := by decide
   have h140 : fusedModulusWord 5 7 = UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096 := by decide
   have h190 : fusedCoefficientWord 0 2 = UInt256.ofNat 475368975196266490007815979009 := by decide
   have h310 : fusedCoefficientWord 0 3 = UInt256.ofNat 1109194275457955143345843994625 := by decide

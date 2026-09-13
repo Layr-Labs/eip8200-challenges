@@ -32,12 +32,12 @@ def sum (j : Nat) (a b c d message k : UInt256) : UInt256 :=
   mask (UInt256.add (UInt256.add (UInt256.add a (rawF j b c d)) message) k)
 
 def t (maskB : Bool) (j r : Nat) (message k : UInt256) (q : WordLane) : UInt256 :=
-  let raw := UInt256.add (wordShift (sum j q.a q.b q.c q.d message k) (38 - r)) q.e
+  let raw := UInt256.add (wordShift (sum j q.a q.b q.c q.d message k) (33 - r)) q.e
   if maskB then mask raw else raw
 
 def step (maskB maskD : Bool) (j r : Nat) (message k : UInt256) (q : WordLane) : WordLane :=
   ⟨q.e, t maskB j r message k q, q.b,
-    if maskD then mask (wordShift q.c 28) else wordShift q.c 28, q.d⟩
+    if maskD then mask (wordShift q.c 23) else wordShift q.c 23, q.d⟩
 
 theorem bits_mask (x : UInt256) : bits (mask x) = StaggerScalar.mask (bits x) := by
   simp only [mask, StaggerScalar.mask, bits_land, Paired144WordRound.lowerWord, bits_word]
@@ -52,7 +52,7 @@ theorem bits_t (maskB : Bool) (j r : Nat) (message k : UInt256) (q : WordLane) :
       StaggerScalar.t maskB j r (bits message) (bits k) (bitLane q) := by
   cases maskB <;>
     simp only [t, StaggerScalar.t, Bool.false_eq_true, ite_true, ite_false,
-      bits_mask, bits_add, bits_wordShift _ (38-r) (Nat.lt_of_le_of_lt (Nat.sub_le 38 r) (by decide)), bits_sum, bitLane]
+      bits_mask, bits_add, bits_wordShift _ (33-r) (Nat.lt_of_le_of_lt (Nat.sub_le 33 r) (by decide)), bits_sum, bitLane]
 
 
 def embed (q : CryptoLane) : WordLane := packCrypto q ⟨0,0,0,0,0⟩
@@ -83,12 +83,12 @@ theorem low_t_bits (maskB : Bool) (j r : Nat) (hr0 : 0 < r) (hr : r < 17)
 #print axioms low_t_bits
 
 theorem low_c_rotate (c : UInt256) (hc : mask c = c) :
-    low (bits (wordShift c 28)) = (low (bits c)).rotateLeft 10 := by
+    low (bits (wordShift c 23)) = (low (bits c)).rotateLeft 10 := by
   have hqc : bits c = pack (low (bits c)) 0#32 := by
     have h := congrArg bits hc
     rw [bits_mask, StaggerScalar.mask_eq] at h
     exact h.symm
-  rw [bits_wordShift _ 28 (by decide)]
+  rw [bits_wordShift _ 23 (by decide)]
   conv_lhs => rw [hqc]
   exact StaggerScalarWide.low_rotate (low (bits c)) 0#32 10 (by decide) (by decide)
 #print axioms low_c_rotate
@@ -105,7 +105,7 @@ theorem project_step (maskB maskD : Bool) (j r : Nat) (hr0 : 0 < r) (hr : r < 17
     unpackLeft (step maskB maskD j r message k q) =
       Paired80CryptoBridge.cryptoStep j r (low32 message) (low32 k) (unpackLeft q) := by
   have ht := low_t_bits maskB j r hr0 hr message k q
-  have hd := (low_optional_mask maskD (wordShift q.c 28)).trans (low_c_rotate q.c hc)
+  have hd := (low_optional_mask maskD (wordShift q.c 23)).trans (low_c_rotate q.c hc)
   apply crypto_bits_inj
   rw [Paired80CryptoBridge.cryptoStep_bits j r hr0 hr]
   exact congrArg₂ (fun b d : BitVec 32 =>

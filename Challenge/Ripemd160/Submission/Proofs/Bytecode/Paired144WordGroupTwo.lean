@@ -90,7 +90,7 @@ theorem rawWordStep2_eq (r s : Nat) (message k : UInt256) (q : WordLane)
   exact congrArg
     (fun x : UInt256 => PairedLaneWordRound.WordLane.mk q.e
       (UInt256.land (UInt256.add (wordRotate x r s) q.e) pairWord) q.b
-      (UInt256.land (wordShift q.c 28) pairWord) q.d)
+      (UInt256.land (wordShift q.c 23) pairWord) q.d)
     (hoistedSum_eq q.a q.b q.c q.d message k hb hc hd)
 
 theorem packCrypto_supported (l q : CryptoLane) :

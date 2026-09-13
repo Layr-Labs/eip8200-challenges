@@ -63,12 +63,12 @@ theorem sum_eq (j : Nat) (a b c d message k : BitVec 256) :
   simp only [sum, mask_eq, low_add, low_rawF, scalarSum]
 
 def t (maskB : Bool) (j r : Nat) (message k : BitVec 256) (q : Lane 256) : BitVec 256 :=
-  let raw := ((sum j q.a q.b q.c q.d message k * Paired144LegacyProduct.coefficient) >>> (38 - r)) + q.e
+  let raw := ((sum j q.a q.b q.c q.d message k * RootCommonFactorPlusProduct.coefficient) >>> (33 - r)) + q.e
   if maskB then mask raw else raw
 
 def step (maskB maskD : Bool) (j r : Nat) (message k : BitVec 256) (q : Lane 256) : Lane 256 :=
   ⟨q.e, t maskB j r message k q, q.b,
-    if maskD then mask ((q.c * Paired144LegacyProduct.coefficient) >>> 28) else (q.c * Paired144LegacyProduct.coefficient) >>> 28, q.d⟩
+    if maskD then mask ((q.c * RootCommonFactorPlusProduct.coefficient) >>> 23) else (q.c * RootCommonFactorPlusProduct.coefficient) >>> 23, q.d⟩
 
 def project (q : Lane 256) : Lane 32 := ⟨low q.a, low q.b, low q.c, low q.d, low q.e⟩
 
@@ -91,7 +91,7 @@ theorem project_step (maskB maskD : Bool) (j r : Nat) (hr0 : 0 < r) (hr : r < 32
   congr 1
   rw [hqc]
   cases maskD <;> simp only [Bool.false_eq_true, ite_false, ite_true,
-    low_mask, show 28 = 38 - 10 from rfl,
+    low_mask, show 23 = 33 - 10 from rfl,
     StaggerScalarWide.low_rotate _ _ 10 (by decide) (by decide), low_pack]
 
 theorem step_b_clean (maskD : Bool) (j r : Nat) (message k : BitVec 256) (q : Lane 256) :

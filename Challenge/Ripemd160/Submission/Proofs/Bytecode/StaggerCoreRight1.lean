@@ -22,7 +22,7 @@ theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho 
     StaggerCoreModel.right0, StaggerCoreModel.right1, StaggerCoreModel.right2,
     StaggerCoreModel.left77, StaggerCoreModel.left78, StaggerCoreModel.left79,
     StaggerScalarWord.step, StaggerScalarWord.t, StaggerScalarWord.sum, StaggerScalarWord.rawF,
-    StaggerScalarWord.mask, wordShift, List.cons.injEq, and_true]
+    StaggerScalarWord.mask, wordShift, factorPlusWord, List.cons.injEq, and_true]
   all_goals try simp
   all_goals try simp only [StaggerCoreCommon.add_comm, StaggerCoreCommon.add_left_comm,
     StaggerCoreCommon.add_assoc, StaggerCoreCommon.mul_comm,
@@ -35,8 +35,8 @@ def gasSteps (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 961, stack := stack s.memory h4 [ .d, .k, .c, .b, .e, .a, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (UInt256.ofNat 1352829926) rho}
-      {s with pc := UInt256.ofNat 992, stack := stack s.memory h4 [ .d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (StaggerCoreModel.right1 s.memory q) (right) (UInt256.ofNat 1352829926) rho} := by
+    GasSteps {s with pc := UInt256.ofNat 950, stack := stack s.memory h4 [ .d, .k, .c, .b, .e, .a, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (UInt256.ofNat 1352829926) rho}
+      {s with pc := UInt256.ofNat 981, stack := stack s.memory h4 [ .d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (StaggerCoreModel.right1 s.memory q) (right) (UInt256.ofNat 1352829926) rho} := by
   have h := StaggerRawRight1.gasSteps s (input s.memory h4 q right (UInt256.ofNat 1352829926)) rho hs hr ha hcode hfork hnp
   rw [output_eq] at h
   exact h

@@ -44,8 +44,7 @@ theorem mask_eq {x y : UInt256} (h : Near x y) :
 
 theorem rotate_eq (r s : Nat) (hc : ¬ usesCompact r s) {x y : UInt256}
     (h : Near x y) : wordRotate x r s = wordRotate y r s := by
-  unfold wordRotate
-  rw [if_neg hc,if_neg hc,mask_eq h]
+  simp only [wordRotate, if_neg hc, wordFusedRotate, mask_eq h]
 
 def LaneNear (q z : WordLane) : Prop :=
   Near q.a z.a ∧ Near q.b z.b ∧ Near q.c z.c ∧ Near q.d z.d ∧ Near q.e z.e
@@ -71,7 +70,7 @@ theorem step_near (r s : Nat) (hc : ¬ usesCompact r s) (message k : UInt256)
     (StaggerWord.step 0 r s message k q).c=(StaggerWord.step 0 r s message k z).c ∧
     (StaggerWord.step 0 r s message k q).d=(StaggerWord.step 0 r s message k z).d := by
   have ht := t_eq r s hc message k q z h
-  have hd : UInt256.land (wordShift q.c 28) pairWord = UInt256.land (wordShift z.c 28) pairWord := by rw [hc']
+  have hd : UInt256.land (wordShift q.c 23) pairWord = UInt256.land (wordShift z.c 23) pairWord := by rw [hc']
   exact ⟨⟨h.2.2.2.2, near_of_eq ht, near_of_eq hb, near_of_eq hd,h.2.2.2.1⟩,ht,hb,hd⟩
 
 theorem lane_ext (q z : WordLane) (ha : q.a=z.a) (hb : q.b=z.b) (hc : q.c=z.c)

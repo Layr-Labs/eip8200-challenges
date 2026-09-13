@@ -20,7 +20,7 @@ inductive Reg where
 def word (memory : ByteArray) (h4 : UInt256) (r : Reg) (q right : WordLane) (k : UInt256) : UInt256 := match r with
   | .a => q.a | .b => q.b | .c => q.c | .d => q.d | .e => q.e
   | .ar => right.a | .br => right.b | .cr => right.c | .dr => right.d | .er => right.e
-  | .factor => factorWord | .pair => pairWord | .upper => upperWord | .lower => lowerWord | .k => k
+  | .factor => factorPlusWord | .pair => pairWord | .upper => upperWord | .lower => lowerWord | .k => k
   | .literal value => UInt256.ofNat value
   | .cachedMessage address => MachineState.readWord memory address
   | .cache address => match address with

@@ -15,15 +15,20 @@ def usesAdaptive (r s : Nat) : Prop :=
 instance (r s : Nat) : Decidable (usesAdaptive r s) := inferInstanceAs (Decidable (_ ∨ _))
 
 def gap (r s : Nat) : Nat := 78 + s - r
+/-- MOD-fold modulus for gap `g`: it divides `2^144 - 2^g`, and every folded value
+`a + b·2^g` (with `a b < 2^32`) is below it. Chosen per gap to fit the old mask push width. -/
+def modulus (g : Nat) : Nat :=
+  if g = 68 then 1901475900349261631272695889920
+  else if g = 69 then 20282409603651670423946714415104
+  else 664615265545476016320534285192790016
 def compactWord (g : Nat) (x : UInt256) : UInt256 :=
-  UInt256.land (UInt256.lor x (UInt256.shiftRight x (UInt256.ofNat (144 - g))))
-    (UInt256.ofNat ((2 ^ 32 - 1) * (1 + 2 ^ g)))
+  UInt256.mod (UInt256.land x pairWord) (UInt256.ofNat (modulus g))
 def rotate (x : UInt256) (r s : Nat) : UInt256 :=
-  wordShift (compactWord (gap r s) x) (38 - r)
+  wordFusedRotate x r s
 def t (mode r s : Nat) (message rawKey : UInt256) (q : WordLane) : UInt256 :=
   UInt256.land (UInt256.add (rotate (StaggerWord.sum mode q.a q.b q.c q.d message rawKey) r s) q.e) pairWord
 def step (mode r s : Nat) (message rawKey : UInt256) (q : WordLane) : WordLane :=
-  ⟨q.e, t mode r s message rawKey q, q.b, UInt256.land (wordShift q.c 28) pairWord, q.d⟩
+  ⟨q.e, t mode r s message rawKey q, q.b, UInt256.land (wordShift q.c 23) pairWord, q.d⟩
 
 theorem cases_of (r s : Nat) (h : usesAdaptive r s) :
     Paired144AdaptiveProduct.Cases (gap r s) (38 - r) r s := by
@@ -78,19 +83,68 @@ theorem sum_inputs (mode : Nat) (hm : mode < 9) (l q : CryptoLane)
       l.c.toBitVec q.c.toBitVec l.d.toBitVec q.d.toBitVec wl.toBitVec wr.toBitVec
       kl.toBitVec kr.toBitVec jl jr g hjr hg
 
-theorem bits_compactWord (g : Nat) (x : UInt256) :
-    bits (compactWord g x) = Paired144AdaptiveInput.compact g (bits x) := by
-  simp only [compactWord, Paired144AdaptiveInput.compact,
-    bits_land, bits_lor, bits_shr x (144 - g) (by omega), bits_ofNat]
+theorem mod_fold_nat (A B g M c : Nat) (hg : g ≤ 144)
+    (hc : M * c = 2 ^ 144 - 2 ^ g) (hlt : A + B * 2 ^ g < M) :
+    (A + B * 2 ^ 144) % M = A + B * 2 ^ g := by
+  have h1 : 2 ^ g ≤ 2 ^ 144 := Nat.pow_le_pow_right (by decide) hg
+  have h2 : B * 2 ^ 144 = B * 2 ^ g + (B * c) * M := by
+    rw [Nat.mul_assoc, Nat.mul_comm c M, hc, Nat.mul_sub,
+      Nat.add_sub_cancel' (Nat.mul_le_mul_left B h1)]
+  rw [h2, ← Nat.add_assoc, Nat.add_mul_mod_self_right, Nat.mod_eq_of_lt hlt]
+
+theorem modulus_facts (g : Nat) (hg : g = 68 ∨ g = 69 ∨ g = 87) :
+    0 < modulus g ∧ modulus g < 2 ^ 256 ∧ (∃ c, modulus g * c = 2 ^ 144 - 2 ^ g) ∧
+      (2 ^ 32 - 1) + (2 ^ 32 - 1) * 2 ^ g < modulus g := by
+  rcases hg with rfl | rfl | rfl
+  · exact ⟨by decide, by decide, ⟨11728124029568, by decide⟩, by decide⟩
+  · exact ⟨by decide, by decide, ⟨1099511627776, by decide⟩, by decide⟩
+  · exact ⟨by decide, by decide, ⟨33554368, by decide⟩, by decide⟩
+
+theorem bits_compactWord (g : Nat) (hg : g = 68 ∨ g = 69 ∨ g = 87) (x : UInt256) (a b : BitVec 32)
+    (hn : normalize (bits x) = pack a b) :
+    bits (compactWord g x) = BitVec.ofNat 256 a.toNat + (BitVec.ofNat 256 b.toNat <<< g) := by
+  obtain ⟨hM0, hMlt, ⟨c, hc⟩, hbound⟩ := modulus_facts g hg
+  have hg144 : g ≤ 144 := by omega
+  have hx : UInt256.land x pairWord = word (pack a b) := by
+    apply bits_injective
+    simpa only [bits_land, pairWord, bits_word, ← normalize_eq_and] using hn
+  rw [compactWord, hx]
+  apply BitVec.eq_of_toNat_eq
+  have ha := a.isLt
+  have hb := b.isLt
+  have hlt : a.toNat + b.toNat * 2 ^ g < modulus g := by
+    have hbm : b.toNat * 2 ^ g ≤ (2 ^ 32 - 1) * 2 ^ g :=
+      Nat.mul_le_mul_right _ (by omega)
+    omega
+  have hmodval : (UInt256.ofNat (modulus g)).val.val = modulus g := by
+    change modulus g % 2 ^ 256 = modulus g
+    exact Nat.mod_eq_of_lt hMlt
+  have hmod : (UInt256.mod (word (pack a b)) (UInt256.ofNat (modulus g))).toNat =
+      (pack a b).toNat % modulus g := by
+    unfold UInt256.mod
+    rw [if_neg (by rw [hmodval]; omega)]
+    change (word (pack a b)).val.val % (UInt256.ofNat (modulus g)).val.val = _
+    rw [hmodval]
+    rfl
+  have hpow : 2 ^ g * 2 ^ 32 ≤ 2 ^ 256 := by
+    rw [← Nat.pow_add]; exact Nat.pow_le_pow_right (by decide) (by omega)
+  have hb2 : b.toNat * 2 ^ g < 2 ^ 256 := by omega
+  have ha2 : a.toNat < 2 ^ 256 := by omega
+  have hb3 : b.toNat < 2 ^ 256 := by omega
+  have hlt2 : a.toNat + b.toNat * 2 ^ g < 2 ^ 256 := by omega
+  rw [bits_toNat, hmod, pack_toNat, mod_fold_nat _ _ g _ c hg144 hc hlt,
+    BitVec.toNat_add, BitVec.toNat_shiftLeft, BitVec.toNat_ofNat, BitVec.toNat_ofNat,
+    Nat.shiftLeft_eq, Nat.mod_eq_of_lt ha2, Nat.mod_eq_of_lt hb3, Nat.mod_eq_of_lt hb2,
+    Nat.mod_eq_of_lt hlt2]
 
 theorem normalize_rotate_add (x : UInt256) (a b e f : BitVec 32) (r s : Nat)
     (hr : usesAdaptive r s)
-    (hc : Paired144AdaptiveInput.compact (gap r s) (bits x) =
-      BitVec.ofNat 256 a.toNat + (BitVec.ofNat 256 b.toNat <<< gap r s)) :
+    (hn : normalize (bits x) = pack a b) :
     normalize (bits (rotate x r s) + pack e f) = pack (a.rotateLeft r + e) (b.rotateLeft s + f) := by
-  rw [rotate, wordShift, bits_shr _ (38 - r) (by omega), bits_mul, bits_compactWord, hc]
-  change normalize ((Paired144AdaptiveProduct.fixedProduct a b (gap r s) >>> (38 - r)) + pack e f) = _
-  exact Paired144AdaptiveProduct.normalize_shifted_add a b e f _ _ r s (cases_of r s hr)
+  have hb : 5≤r ∧ r≤15 ∧ 5≤s ∧ s≤15 ∧ r≠s := by
+    rcases hr with ⟨rfl, rfl | rfl⟩ | ⟨rfl, rfl⟩ <;> decide
+  exact RootFusedD65All.current_wordFusedRotate_add_all x a b e f r s hn
+    hb.1 hb.2.1 hb.2.2.1 hb.2.2.2.1 hb.2.2.2.2
 
 theorem t_of_crypto (mode r s : Nat) (hm : mode < 9) (hr : usesAdaptive r s)
     (wl wr kl kr : UInt32) (l q : CryptoLane) (message : UInt256) (jl jr : Nat)
@@ -106,7 +160,9 @@ theorem t_of_crypto (mode r s : Nat) (hm : mode < 9) (hr : usesAdaptive r s)
   apply bits_injective
   simp only [t, bits_land, bits_add, pairWord, bits_word, ← normalize_eq_and]
   rw [show bits (packCrypto l q).e = pack l.e.toBitVec q.e.toBitVec from rfl]
-  have hinput := sum_inputs mode hm l q wl wr kl kr message jl jr (gap r s) hjr hg hmsg
+  have hjl : jl < 2 ^ 64 := by
+    rcases hg with ⟨_, h⟩ | ⟨_, h⟩ <;> simp only [Nat.reducePow] at * <;> omega
+  have hinput := (StaggerWord.sum_inputs_junk mode hm l q wl wr kl kr message jl jr hjl hjr hmsg).2
   have h := normalize_rotate_add _ _ _ l.e.toBitVec q.e.toBitVec r s hr hinput
   simpa only [UInt32.toBitVec_add, crypto_rotl_toBitVec _ r hb.1 hb.2.1,
     crypto_rotl_toBitVec _ s hb.2.2.1 hb.2.2.2] using h
@@ -121,7 +177,7 @@ theorem step_of_crypto (mode r s : Nat) (hm : mode < 9) (hr : usesAdaptive r s)
         (cryptoStep (StaggerBoolean.rightGroup mode) s wr kr q) := by
   unfold step
   rw [t_of_crypto mode r s hm hr wl wr kl kr l q message jl jr hjr hg hmsg,
-    show UInt256.land (wordShift (packCrypto l q).c 28) pairWord = _ from
+    show UInt256.land (wordShift (packCrypto l q).c 23) pairWord = _ from
       Paired144WordCrypto.wordCRotate_of_crypto l.c q.c]
   rfl
 
