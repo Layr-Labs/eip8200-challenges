@@ -3602,7 +3602,7 @@ def submissionInstructions : List Instr :=
  .push 2 1856,
  .op .ADD,
  .push 2 4762,
- .op .JUMP,
+ .op .POP,
  .op .JUMPDEST,
  .op (.Dup { idx := 6 }),
  .push 2 4172,
