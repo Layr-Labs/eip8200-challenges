@@ -16,7 +16,7 @@ private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
 def template : List Instr :=
   [ .op (.Dup ⟨0, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 16),
+    .push ⟨3, by decide⟩ (UInt256.ofNat 16),
     .op .MLOAD,
     .op .AND,
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
@@ -162,9 +162,9 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 556, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 629, stack := outputStack s.memory x rho} := by
+      {s with pc := UInt256.ofNat 631, stack := outputStack s.memory x rho} := by
   have hraw := run_actual s (UInt256.ofNat 556) x rho hstack halias hrun hactive
-  have hend : pcAfter (UInt256.ofNat 556) template = UInt256.ofNat 629 := by decide
+  have hend : pcAfter (UInt256.ofNat 556) template = UInt256.ofNat 631 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps

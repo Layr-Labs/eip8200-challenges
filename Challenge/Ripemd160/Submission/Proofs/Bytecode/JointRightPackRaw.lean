@@ -34,12 +34,13 @@ structure Input where
 private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
 def template : List Instr :=
-  [ .op (.Swap ⟨3, by decide⟩),
-    .op (.Dup ⟨2, by decide⟩),
-    .op (.Dup ⟨4, by decide⟩),
-    .op (.Dup ⟨6, by decide⟩),
+  [
+    .op (.Swap ⟨3, by decide⟩),
+    .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨5, by decide⟩),
     .op .NOT,
     .op .OR,
+    .op (.Dup ⟨3, by decide⟩),
     .op .XOR,
     .op .ADD,
     .push ⟨1, by decide⟩ (UInt256.ofNat 252),
@@ -87,8 +88,8 @@ def template : List Instr :=
     .op (.Dup ⟨6, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHL,
-    .op (.Dup ⟨0, by decide⟩),
-    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨7, by decide⟩),
+    .op (.Dup ⟨1, by decide⟩),
     .op .OR ]
 
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
