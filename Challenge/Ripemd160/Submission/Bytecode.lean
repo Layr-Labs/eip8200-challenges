@@ -7,7 +7,7 @@ set_option maxRecDepth 10000
 /-!
 # Structural binding for the frozen raw-EVM RIPEMD-160 artifact
 
-The candidate bytecode has 5264 bytes and SHA-256 `ef81dd926ebc7361b6266cf4af10b8df514c54373f59cd3cf0fd11e2033e057e`. The hex file remains the external raw input.
+The candidate bytecode has 5265 bytes and SHA-256 `40334255b027e9d5b4a70c74d14962b797d3c7ec7cc31ba95bde3e61069c4a6a`. The hex file remains the external raw input.
 -/
 
 namespace Challenge.Ripemd160
@@ -20,31 +20,31 @@ set_option maxRecDepth 50000 in
 def submissionBytecode : ByteArray := submissionBytes
 
 set_option maxRecDepth 50000 in
-@[simp] theorem referenceBytecode_size : submissionBytecode.size = 5264 := by
+@[simp] theorem referenceBytecode_size : submissionBytecode.size = 5265 := by
   simp [submissionBytecode]
 
 set_option maxRecDepth 100000 in
 set_option maxHeartbeats 2000000 in
-@[simp] theorem referenceBytecode_get_zero : submissionBytecode[0] = 0x5f := by
+@[simp] theorem referenceBytecode_get_zero : submissionBytecode[0] = 0x60 := by
   simp only [submissionBytecode]
   exact referenceBytes_get_zero
 
 set_option maxRecDepth 100000 in
 set_option maxHeartbeats 2000000 in
 @[simp] theorem referenceBytecode_extract_entry :
-    submissionBytecode.extract 1 2 = ByteArray.mk #[0x35] := by
+    submissionBytecode.extract 1 2 = ByteArray.mk #[0x07] := by
   simp only [submissionBytecode]
   exact referenceBytes_extract_entry
 
 @[simp] theorem bytesToBigEndianNat_entry_literal :
     EvmSemantics.Data.Bytes.bytesToBigEndianNat
-      (ByteArray.mk #[0x35]) = 0x35 := by
+      (ByteArray.mk #[0x07]) = 0x07 := by
   simp [EvmSemantics.Data.Bytes.bytesToBigEndianNat,
     Challenge.EvmProof.Bytecode.toList_eq_data, UInt8.toNat_ofNat]
 
 @[simp] theorem referenceBytecode_entry_value :
     EvmSemantics.Data.Bytes.bytesToBigEndianNat
-      (submissionBytecode.extract 1 2) = 0x35 := by
+      (submissionBytecode.extract 1 2) = 0x07 := by
   rw [referenceBytecode_extract_entry]
   exact bytesToBigEndianNat_entry_literal
 

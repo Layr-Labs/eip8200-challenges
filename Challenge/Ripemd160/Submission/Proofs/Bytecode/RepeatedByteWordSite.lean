@@ -13,18 +13,18 @@ open StackRoundTemplate StackRoundTrace
 
 abbrev A := Artifact.submissionArtifact
 def template : List Instr :=
-  [.push 1 97, .push 1 255, .push 0 0, .op .NOT, .op .DIV, .op .MUL]
+  [.push 1 255, .push 0 0, .op .NOT, .op .DIV, .push 1 97, .op .MUL]
 
 private theorem template_slice :
-    (A.instructions.drop 17).take template.length = template := by rfl
+    (A.instructions.drop 19).take template.length = template := by rfl
 
 private theorem template_wellFormed : ∀ instruction ∈ template,
     DataStepper.WellFormed .Osaka instruction := by
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def site : GenericRoundSite A .Osaka template :=
-  StackSiteBuilder.ofSlice _ 17 template_slice (by
-    change 17 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 19 template_slice (by
+    change 19 + template.length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) StackRoundData.artifact_code_bound template_wellFormed (by decide)
 
@@ -38,12 +38,11 @@ private theorem run_word (s : State) (pc : UInt256) (rho : List UInt256)
   have h0 : rho.length < 1024 := by omega
   have h1 : rho.length + 1 < 1024 := by omega
   have h2 : rho.length + 2 < 1024 := by omega
-  have h3 : rho.length + 3 < 1024 := by omega
   have hzero : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hadd (u v : UInt256) : u.add v = u + v := rfl
-  have hproduct : PatternedSwar.M * UInt256.ofNat 97 =
+  have hproduct : UInt256.ofNat 97 * PatternedSwar.M =
       KnownInputData.fullWord := by decide
-  simp [Nat.add_assoc, h3, template, runInstrSeq, DataStepper.runInstr, hrun, h0, h1, h2, hzero,
+  simp [Nat.add_assoc, template, runInstrSeq, DataStepper.runInstr, hrun, h0, h1, h2, hzero,
     pcAfter, Instr.size, UInt256.succ,
     Word.literal_eq_ofNat, CompactGuardConstants.repeated_one_ofNat, hadd, hproduct]
 

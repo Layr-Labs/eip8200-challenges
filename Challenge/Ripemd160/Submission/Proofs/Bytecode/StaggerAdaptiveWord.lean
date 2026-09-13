@@ -32,7 +32,7 @@ theorem cases_of (r s : Nat) (h : usesAdaptive r s) :
 
 theorem compact_four_junk (a0 a1 a2 a3 b0 b1 b2 b3 : BitVec 32) (jl jr g : Nat)
     (hjr : jr < 2 ^ 64)
-    (hg : (g = 68 ∨ g = 69) ∧ jl < 2 ^ 32 ∨ g = 87 ∧ jl = 0) :
+    (hg : (g = 68 ∨ g = 69) ∧ jl < 2 ^ 32 ∨ g = 87 ∧ jl < 2 ^ 23) :
     Paired144AdaptiveInput.compact g
       ((((pack a0 b0 + pack a1 b1) + pack a2 b2) + pack a3 b3) + StaggerRound.junk jl jr) =
       BitVec.ofNat 256 ((((a0 + a1) + a2) + a3).toNat) +
@@ -47,7 +47,7 @@ theorem compact_four_junk (a0 a1 a2 a3 b0 b1 b2 b3 : BitVec 32) (jl jr g : Nat)
 theorem rawSum_inputs (mode : Nat) (hm : mode < 9)
     (al ar bl br cl cr dl dr wl wr kl kr : BitVec 32) (jl jr g : Nat)
     (hjr : jr < 2 ^ 64)
-    (hg : (g = 68 ∨ g = 69) ∧ jl < 2 ^ 32 ∨ g = 87 ∧ jl = 0) :
+    (hg : (g = 68 ∨ g = 69) ∧ jl < 2 ^ 32 ∨ g = 87 ∧ jl < 2 ^ 23) :
     let x := StaggerRound.rawSum mode (pack al ar) (pack bl br) (pack cl cr) (pack dl dr)
       (pack wl wr + StaggerRound.junk jl jr) (pack kl kr)
     let a := PairedLaneRoundSemantic.scalarSum (StaggerBoolean.leftGroup mode) al bl cl dl wl kl
@@ -61,7 +61,7 @@ theorem rawSum_inputs (mode : Nat) (hm : mode < 9)
 theorem sum_inputs (mode : Nat) (hm : mode < 9) (l q : CryptoLane)
     (wl wr kl kr : UInt32) (message : UInt256) (jl jr g : Nat)
     (hjr : jr < 2 ^ 64)
-    (hg : (g = 68 ∨ g = 69) ∧ jl < 2 ^ 32 ∨ g = 87 ∧ jl = 0)
+    (hg : (g = 68 ∨ g = 69) ∧ jl < 2 ^ 32 ∨ g = 87 ∧ jl < 2 ^ 23)
     (hmsg : bits message = pack wl.toBitVec wr.toBitVec + StaggerRound.junk jl jr) :
     let x := StaggerWord.sum mode (packCrypto l q).a (packCrypto l q).b (packCrypto l q).c
       (packCrypto l q).d message (StaggerWord.key mode (word (pack kl.toBitVec kr.toBitVec)))
@@ -95,7 +95,7 @@ theorem normalize_rotate_add (x : UInt256) (a b e f : BitVec 32) (r s : Nat)
 theorem t_of_crypto (mode r s : Nat) (hm : mode < 9) (hr : usesAdaptive r s)
     (wl wr kl kr : UInt32) (l q : CryptoLane) (message : UInt256) (jl jr : Nat)
     (hjr : jr < 2 ^ 64)
-    (hg : (gap r s = 68 ∨ gap r s = 69) ∧ jl < 2 ^ 32 ∨ gap r s = 87 ∧ jl = 0)
+    (hg : (gap r s = 68 ∨ gap r s = 69) ∧ jl < 2 ^ 32 ∨ gap r s = 87 ∧ jl < 2 ^ 23)
     (hmsg : bits message = pack wl.toBitVec wr.toBitVec + StaggerRound.junk jl jr) :
     t mode r s message (StaggerWord.key mode (word (pack kl.toBitVec kr.toBitVec))) (packCrypto l q) =
       word (pack
@@ -114,7 +114,7 @@ theorem t_of_crypto (mode r s : Nat) (hm : mode < 9) (hr : usesAdaptive r s)
 theorem step_of_crypto (mode r s : Nat) (hm : mode < 9) (hr : usesAdaptive r s)
     (wl wr kl kr : UInt32) (l q : CryptoLane) (message : UInt256) (jl jr : Nat)
     (hjr : jr < 2 ^ 64)
-    (hg : (gap r s = 68 ∨ gap r s = 69) ∧ jl < 2 ^ 32 ∨ gap r s = 87 ∧ jl = 0)
+    (hg : (gap r s = 68 ∨ gap r s = 69) ∧ jl < 2 ^ 32 ∨ gap r s = 87 ∧ jl < 2 ^ 23)
     (hmsg : bits message = pack wl.toBitVec wr.toBitVec + StaggerRound.junk jl jr) :
     step mode r s message (StaggerWord.key mode (word (pack kl.toBitVec kr.toBitVec))) (packCrypto l q) =
       packCrypto (cryptoStep (StaggerBoolean.leftGroup mode) r wl kl l)

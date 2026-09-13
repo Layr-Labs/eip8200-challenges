@@ -31,13 +31,16 @@ theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho 
   all_goals first | rfl | trivial
 #print axioms output_eq
 def gasSteps (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
+    (hsame : right = q)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4488, stack := stack s.memory h4 [ .a, .c, .d, .e, .literal 28, .cachedMessage 360, .k, .b, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (UInt256.ofNat 2840853838) rho}
-      {s with pc := UInt256.ofNat 4516, stack := stack s.memory h4 [ .d, .b, .e, .a, .literal 28, .cachedMessage 360, .k, .c, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (StaggerCoreModel.left77 s.memory q) (right) (UInt256.ofNat 2840853838) rho} := by
-  have h := StaggerRawLeft77.gasSteps s (input s.memory h4 q right (UInt256.ofNat 2840853838)) rho hs hr ha hcode hfork hnp
+    GasSteps {s with pc := UInt256.ofNat 4506, stack := stack s.memory h4 [ .lower, .c, .d, .e, .literal 28, .cachedMessage 360, .k, .b, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (UInt256.ofNat 2840853838) rho}
+      {s with pc := UInt256.ofNat 4534, stack := stack s.memory h4 [ .d, .b, .e, .a, .literal 28, .cachedMessage 360, .k, .c, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (StaggerCoreModel.left77 s.memory q) (right) (UInt256.ofNat 2840853838) rho} := by
+  have h := StaggerRawLeft77.gasSteps s (input s.memory h4 q right (UInt256.ofNat 2840853838)) rho hs
+    (by simp only [input, StaggerCoreCommon.word, hsame])
+    (by simp only [input, StaggerCoreCommon.word, hsame]) hr ha hcode hfork hnp
   rw [output_eq] at h
   exact h
 #print axioms gasSteps
