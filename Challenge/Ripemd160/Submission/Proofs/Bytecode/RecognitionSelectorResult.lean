@@ -43,7 +43,7 @@ def gasSteps_copy_size (s : State) (src : UInt256) (rho : List UInt256)
   exact gcopy.trans (by simpa [sized, copied, Word.word_toNat_ofNat, Word.literal_eq_ofNat] using gs)
 
 theorem selected_nat (n : Nat) (hn : Allowed n) :
-    (selected (UInt256.ofNat 4972) n).toNat = 4972 + 20*((16714936/n)%16) := by
+    (selected (UInt256.ofNat 4971) n).toNat = 4971 + 20*((16714936/n)%16) := by
   rcases hn with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals decide
 

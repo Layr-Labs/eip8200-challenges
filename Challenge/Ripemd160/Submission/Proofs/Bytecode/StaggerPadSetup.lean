@@ -11,9 +11,9 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory
 open PairTableActive StaggerTableSparse StaggerTableLayout
 
-/-- Pad-only low block (pc 4780..4822): copy zero calldata over the table, store the low
+/-- Pad-only low block (pc 4779..4821): copy zero calldata over the table, store the low
 bit-length word (`(n <<< 3) &&& mask`, the mask being the resident `0xffffffff` four deep on
-the stack) and `0x80`, then leave `iszero (n >>> 29)` for the branch at 4823. -/
+the stack) and `0x80`, then leave `iszero (n >>> 29)` for the branch at 4822. -/
 def lowTemplate : List Instr :=
   [ .push ⟨2, by decide⟩ (UInt256.ofNat 1112),
     .op .CALLDATASIZE,
@@ -46,11 +46,11 @@ def lowTemplate : List Instr :=
     .op .SHR,
     .op .ISZERO ]
 
-/-- `PUSH2 0398 JUMPI` at 4823: straight to the rounds when the high word is zero. -/
+/-- `PUSH2 0398 JUMPI` at 4822: straight to the rounds when the high word is zero. -/
 def branchTemplate : List Instr :=
   [ .push ⟨2, by decide⟩ (UInt256.ofNat 920), .op .JUMPI ]
 
-/-- Pad-only high block (pc 4827..4854), reached only when `n >>> 29 ≠ 0`. -/
+/-- Pad-only high block (pc 4826..4853), reached only when `n >>> 29 ≠ 0`. -/
 def highTemplate : List Instr :=
   [ .op .CALLDATASIZE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 29),
