@@ -13,16 +13,16 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 351)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  apply StaggerPersistentCorrect.correct_of_blocks input hfit hpositive (states input) (hashes input)
+  apply StaggerPersistentCorrect.correct_of_blocks input hfit (states input) (hashes input)
     (states_zero input) (hashes_zero input) ?_ ?_
     (hashArray_hashes input hfit hpositive _ (Nat.le_refl _))
     (states_callStack input _) entryPrefix
   · intro i _
     exact ⟨states_code input i, states_fork input i, states_halt input i,
-      states_noPrecompile input i, states_calldata input i⟩
+      states_noPrecompile input i⟩
   · intro i hi
     exact PersistentStaggerBlock.gasSteps (states input i) input i (hashes input i)
-      (LoopCompletionControl.limit input) [] (by decide) hfit hi
+      (limitWord (DriverTrace.blockCount input)) [] (by decide) hfit hi
       (states_context input hfit hpositive i (Nat.le_of_lt hi))
       (states_code input i) (states_fork input i) (states_halt input i)
       (states_noPrecompile input i)

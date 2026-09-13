@@ -11,14 +11,14 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
 def template : List Instr :=
   [ .op (.Swap ⟨1, by decide⟩),
-    .op (.Dup ⟨7, by decide⟩),
-    .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨2, by decide⟩),
     .op .NOT,
-    .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨2, by decide⟩),
     .op .OR,
+    .op (.Dup ⟨8, by decide⟩),
     .op .XOR,
     .op .ADD,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 198),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 252),
     .op .MLOAD,
     .op .ADD,
     .op (.Dup ⟨6, by decide⟩),
@@ -40,7 +40,7 @@ def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
   [ x.v0, x.v1, x.v2, x.v3, (UInt256.ofNat 28), x.v5, x.v6, x.v7, x.v8, x.v9, x.v10, x.v11, x.v12, x.v13, x.v14, x.v15, x.v16, x.v17, x.v18, x.v19 ] ++ rho
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.shiftRight (UInt256.mul x.v13 x.v1) (UInt256.ofNat 28)),
-    (UInt256.add x.v3 (UInt256.shiftRight (UInt256.mul x.v13 (UInt256.land x.v14 (UInt256.add x.v6 (UInt256.add (MachineState.readWord memory 198) (UInt256.add (UInt256.xor (UInt256.lor (UInt256.lnot x.v0) x.v1) x.v7) x.v2))))) (UInt256.ofNat 32))),
+    (UInt256.add x.v3 (UInt256.shiftRight (UInt256.mul x.v13 (UInt256.land x.v14 (UInt256.add x.v6 (UInt256.add (MachineState.readWord memory 252) (UInt256.add (UInt256.xor (UInt256.lor (UInt256.lnot x.v0) x.v1) x.v7) x.v2))))) (UInt256.ofNat 32))),
     x.v0,
     x.v3,
     (UInt256.ofNat 28),
@@ -61,7 +61,7 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     x.v19 ] ++ rho
 def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.shiftRight (UInt256.mul x.v13 x.v1) (UInt256.ofNat 28)),
-    (UInt256.add x.v3 (UInt256.shiftRight (UInt256.mul x.v13 (UInt256.land x.v14 (UInt256.add x.v6 (UInt256.add (MachineState.readWord memory 198) (UInt256.add (UInt256.xor (UInt256.lor x.v1 (UInt256.lnot x.v0)) x.v7) x.v2))))) (UInt256.ofNat 32))),
+    (UInt256.add x.v3 (UInt256.shiftRight (UInt256.mul x.v13 (UInt256.land x.v14 (UInt256.add x.v6 (UInt256.add (MachineState.readWord memory 252) (UInt256.add (UInt256.xor x.v7 (UInt256.lor x.v1 (UInt256.lnot x.v0))) x.v2))))) (UInt256.ofNat 32))),
     x.v0,
     x.v3,
     (UInt256.ofNat 28),
@@ -115,8 +115,8 @@ def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osak
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 4661 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3730) = UInt256.ofNat 4661
+theorem site_pc : site.startPC = UInt256.ofNat 4629 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3730) = UInt256.ofNat 4629
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound
@@ -129,10 +129,10 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4661, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 4689, stack := outputStack s.memory x rho} := by
-  have hraw := run_actual s (UInt256.ofNat 4661) x rho hstack hrun hactive
-  have hend : pcAfter (UInt256.ofNat 4661) template = UInt256.ofNat 4689 := by decide
+    GasSteps {s with pc := UInt256.ofNat 4629, stack := inputStack x rho}
+      {s with pc := UInt256.ofNat 4657, stack := outputStack s.memory x rho} := by
+  have hraw := run_actual s (UInt256.ofNat 4629) x rho hstack hrun hactive
+  have hend : pcAfter (UInt256.ofNat 4629) template = UInt256.ofNat 4657 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps

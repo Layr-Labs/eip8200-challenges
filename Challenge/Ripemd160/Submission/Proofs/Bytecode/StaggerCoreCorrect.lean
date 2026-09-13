@@ -20,20 +20,20 @@ open StaggerPrologueNear (Near LaneNear)
 theorem prologue_crypto (memory : ByteArray) (words : Nat → UInt32) (q : CryptoLane)
     (hm : StaggerMessage.Ready memory words) :
     unpackLeft (prologue memory (embed q)) = rightFold words 3 q := by
-  have hm0 : low32 (MachineState.readWord memory 486) = words 5 := hm.scalar 27 (by decide)
-  have hm1 : low32 (MachineState.readWord memory 162) = words 14 := hm.scalar 9 (by decide)
-  have hm2 : low32 (MachineState.readWord memory 252) = words 7 := hm.scalar 14 (by decide)
+  have hm0 : low32 (MachineState.readWord memory 90) = words 5 := hm.scalar 5 (by decide)
+  have hm1 : low32 (MachineState.readWord memory 558) = words 14 := hm.scalar 31 (by decide)
+  have hm2 : low32 (MachineState.readWord memory 630) = words 7 := hm.scalar 35 (by decide)
   have hi := StaggerScalarLow54.packCrypto_low54 q ⟨0,0,0,0,0⟩
   have h1 : StaggerScalarLow54.Low54 (bits (right0 memory (embed q)).c) := hi.2.1
   have h2 : StaggerScalarLow54.Low54 (bits (right1 memory (right0 memory (embed q))).c) :=
     StaggerScalarLow54.clean_low54 _
       (StaggerScalarWord.step_b_clean false 4 8 _ _ (embed q))
   have p0 := StaggerScalarLow54.project_step true false 4 8 (by decide) (by decide)
-    (MachineState.readWord memory 486) (UInt256.ofNat 1352829926) (embed q) hi.2.2.1
+    (MachineState.readWord memory 90) (UInt256.ofNat 1352829926) (embed q) hi.2.2.1
   have p1 := StaggerScalarLow54.project_step true false 4 9 (by decide) (by decide)
-    (MachineState.readWord memory 162) (UInt256.ofNat 1352829926) (right0 memory (embed q)) h1
+    (MachineState.readWord memory 558) (UInt256.ofNat 1352829926) (right0 memory (embed q)) h1
   have p2 := StaggerScalarLow54.project_step true false 4 9 (by decide) (by decide)
-    (MachineState.readWord memory 252) (UInt256.ofNat 1352829926)
+    (MachineState.readWord memory 630) (UInt256.ofNat 1352829926)
       (right1 memory (right0 memory (embed q))) h2
   change unpackLeft (StaggerScalarWord.step true false 4 9 _ _ _) = _
   rw [p2]
@@ -128,8 +128,8 @@ theorem epilogue_project (memory : ByteArray) (words : Nat → UInt32) (q : Pair
     (hc : StaggerScalarLow54.Low54 (PairedLaneUInt256Bridge.bits q.c)) :
     unpackLeft (epilogue memory q) = leftFinish words (unpackLeft q) := by
   have hm0 : low32 (MachineState.readWord memory 0) = words 6 := hm.scalar 0 (by decide)
-  have hm1 : low32 (MachineState.readWord memory 612) = words 15 := hm.scalar 34 (by decide)
-  have hm2 : low32 (MachineState.readWord memory 198) = words 13 := hm.scalar 11 (by decide)
+  have hm1 : low32 (MachineState.readWord memory 144) = words 15 := hm.scalar 8 (by decide)
+  have hm2 : low32 (MachineState.readWord memory 252) = words 13 := hm.scalar 14 (by decide)
   have h1 : StaggerScalarLow54.Low54
       (PairedLaneUInt256Bridge.bits (left77 memory q).c) := hb
   have h2 : StaggerScalarLow54.Low54
@@ -140,12 +140,12 @@ theorem epilogue_project (memory : ByteArray) (words : Nat → UInt32) (q : Pair
   have p0 := StaggerScalarLow54.project_step true false 4 8 (by decide) (by decide)
     (MachineState.readWord memory 0) (UInt256.ofNat 2840853838) q hc
   have p1 := StaggerScalarLow54.project_step false false 4 5 (by decide) (by decide)
-    (MachineState.readWord memory 612) (UInt256.ofNat 2840853838) (left77 memory q) h1
+    (MachineState.readWord memory 144) (UInt256.ofNat 2840853838) (left77 memory q) h1
   have p2 := StaggerScalarLow54.project_step false false 4 6 (by decide) (by decide)
-    (MachineState.readWord memory 198) (UInt256.ofNat 2840853838)
+    (MachineState.readWord memory 252) (UInt256.ofNat 2840853838)
       (left78 memory (left77 memory q)) h2
   change unpackLeft (StaggerScalarWord.step false false 4 6
-    (MachineState.readWord memory 198) (UInt256.ofNat 2840853838)
+    (MachineState.readWord memory 252) (UInt256.ofNat 2840853838)
     (left78 memory (left77 memory q))) = _
   rw [p2]
   change cryptoStep _ _ _ _ (unpackLeft (StaggerScalarWord.step false false 4 5 _ _ _)) = _
