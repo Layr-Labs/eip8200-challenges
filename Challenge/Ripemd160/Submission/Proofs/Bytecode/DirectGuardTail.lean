@@ -17,7 +17,7 @@ theorem run_tail_target :
     run tailPath (loopExitState KnownInputData.targetInput) =
       some (returnEntry KnownInputData.targetInput) := by
   have hzero : finalAcc KnownInputData.targetInput = 0 :=
-    (KnownInputCompactLogic.finalAcc_zero_iff_target KnownInputData.targetInput
+    (RootOverlapGuard.finalAcc_zero_iff_target KnownInputData.targetInput
       KnownInputData.targetInput_size).2 rfl
   simp (config := { maxSteps := 1000000 })
     [tailPath, opAt, pushAt, wfOp, loopExitState, returnEntry, atPC,
@@ -50,7 +50,7 @@ theorem run_tail_fallback (input : ByteArray) (hsize : input.size = 1000)
     (hne : input ≠ KnownInputData.targetInput) :
     run tailPath (loopExitState input) = some (fallbackState input) :=
   run_tail_fallback_acc input (fun hz =>
-    hne ((KnownInputCompactLogic.finalAcc_zero_iff_target input hsize).1 hz))
+    hne ((RootOverlapGuard.finalAcc_zero_iff_target input hsize).1 hz))
 
 theorem run_return_store (input : ByteArray) :
     run returnPath (returnEntry input) = some (storedReturnState input) := by
