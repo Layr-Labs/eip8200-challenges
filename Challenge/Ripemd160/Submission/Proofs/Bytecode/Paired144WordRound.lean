@@ -12,7 +12,8 @@ abbrev CryptoLane := PairedLaneCryptoBridge.CryptoLane
 def pairWord : UInt256 := word pairMask
 def lowerWord : UInt256 := word (pack (BitVec.allOnes 32) 0#32)
 def upperWord : UInt256 := word (pack 0#32 (BitVec.allOnes 32))
-def compactMaskWord : UInt256 := UInt256.ofNat ((2 ^ 32 - 1) * (1 + 2 ^ 72))
+/-- MOD-fold modulus: `2^144 ≡ 2^72` and every compact value `a + b·2^72` is below it. -/
+def compactMaskWord : UInt256 := UInt256.ofNat ((2 ^ 72 - 1) * 2 ^ 32)
 def coefficientWord (u v : Nat) : UInt256 := word (Paired144CompactGap.coefficient u v)
 def factorWord : UInt256 := coefficientWord 6 0
 
@@ -46,7 +47,7 @@ def wordScale (x mask : UInt256) (d : Nat) : UInt256 :=
   UInt256.add (UInt256.mul (UInt256.ofNat (2 ^ d - 1)) (UInt256.land mask x)) x
 
 def wordCompact (x : UInt256) : UInt256 :=
-  UInt256.land (UInt256.lor x (UInt256.shiftRight x (UInt256.ofNat 72))) compactMaskWord
+  UInt256.mod (UInt256.land x pairWord) compactMaskWord
 
 def usesCompact (r s : Nat) : Prop :=
   ((s < r ∧ (r - s = 3 ∨ r - s = 6)) ∨ (r < s ∧ (s - r = 2 ∨ s - r = 3))) ∨

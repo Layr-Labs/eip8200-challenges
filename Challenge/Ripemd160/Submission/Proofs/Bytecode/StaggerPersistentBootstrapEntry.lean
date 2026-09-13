@@ -45,7 +45,7 @@ theorem output_eq (memory : ByteArray) (h : Compression.HashState) (off limit : 
         (initial h) (initial h) (UInt256.ofNat 1352829926)
         (StaggerPersistentFrame.coreRest h off limit rho) := by
   have hf : factorWord = UInt256.ofNat 20282409608374036907091774406720 := by decide
-  have h140 : compactMaskWord = UInt256.ofNat 20282409598929303941081901039615 := by decide
+  have h140 : compactMaskWord = UInt256.ofNat 20282409603651670423942956318720 := by decide
   have h190 : coefficientWord 0 2 = UInt256.ofNat 81129638433496147627271880966145 := by decide
   have h310 : coefficientWord 0 3 = UInt256.ofNat 162259276866992295254539466964993 := by decide
   have h350 : coefficientWord 3 0 = UInt256.ofNat 20282409608374036906851256238088 := by decide

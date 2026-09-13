@@ -36,7 +36,7 @@ def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4777, stack := ret :: rest}
+    GasSteps {s with pc := UInt256.ofNat 4726, stack := ret :: rest}
       {s with
         pc := UInt256.ofNat 925
         stack := ret :: rest
@@ -53,18 +53,18 @@ def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
       _ (ret :: rest) (by simp only [List.length_cons]; omega) hrun hz hcode hfork hnp
     have g3 := StaggerSetupSites.gasSteps_high
       {s with memory := StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
-      ret rest hmask hstack hrun hactive hfit hcode hfork hnp
+      ret rest hstack hrun hactive hfit hcode hfork hnp
     have g4 := StaggerPadJump.gasSteps_jump
       {s with memory := StaggerTablePad.resultMemory s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
       (ret :: rest) (by simp only [List.length_cons]; omega) hrun hcode hfork hnp
     have hmem := StaggerTablePad.highChain_eq s.memory (UInt256.ofNat s.executionEnv.calldata.size)
     have g23 : GasSteps
         {s with
-          pc := UInt256.ofNat 4833
+          pc := UInt256.ofNat 4769
           stack := StaggerPad.highZero (UInt256.ofNat s.executionEnv.calldata.size) :: ret :: rest
           memory := StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
         {s with
-          pc := UInt256.ofNat 4867
+          pc := UInt256.ofNat 4801
           stack := ret :: rest
           memory := StaggerTablePad.resultMemory s.memory (UInt256.ofNat s.executionEnv.calldata.size)} :=
       (g2.trans g3).cast rfl (by dsimp only; rw [hmem])
@@ -95,7 +95,7 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     rw [scheduledState_hit s i hhs]
     let qh : State :=
       {s with memory := StaggerTablePad.resultMemory s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
-    have gb' : GasSteps {s with pc := UInt256.ofNat 4777, stack := frame h off limit rho}
+    have gb' : GasSteps {s with pc := UInt256.ofNat 4726, stack := frame h off limit rho}
         {qh with pc := UInt256.ofNat 925, stack := frame h off limit rho} := by
       apply gb.cast rfl
       rfl
