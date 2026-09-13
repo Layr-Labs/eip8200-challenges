@@ -11,12 +11,12 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
 def template : List Instr :=
   [ .op (.Swap ⟨6, by decide⟩),
-    .op (.Dup ⟨7, by decide⟩),
-    .op (.Dup ⟨7, by decide⟩),
-    .op .OR,
-    .op (.Dup ⟨10, by decide⟩),
-    .op (.Dup ⟨6, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
+    .op (.Dup ⟨5, by decide⟩),
     .op .XOR,
+    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨8, by decide⟩),
+    .op .OR,
     .op .AND,
     .op (.Dup ⟨8, by decide⟩),
     .op .XOR,
@@ -78,7 +78,7 @@ def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UI
     x.v3,
     x.v4,
     x.v5,
-    (UInt256.land x.v3 (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mul (UInt256.ofNat 20282409608374036906834076368900) (UInt256.land x.v12 (UInt256.lor (UInt256.shiftRight (UInt256.add x.v8 (UInt256.add (MachineState.readWord memory 684) (UInt256.add (UInt256.lor (UInt256.land x.v6 x.v9) (UInt256.xor x.v0 (UInt256.land (UInt256.xor x.v4 x.v9) (UInt256.lor x.v6 x.v0)))) x.v7))) (UInt256.ofNat 72)) (UInt256.add x.v8 (UInt256.add (MachineState.readWord memory 684) (UInt256.add (UInt256.lor (UInt256.land x.v6 x.v9) (UInt256.xor x.v0 (UInt256.land (UInt256.xor x.v4 x.v9) (UInt256.lor x.v6 x.v0)))) x.v7)))))) (UInt256.ofNat 25)))),
+    (UInt256.land x.v3 (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mul (UInt256.ofNat 20282409608374036906834076368900) (UInt256.land x.v12 (UInt256.lor (UInt256.shiftRight (UInt256.add x.v8 (UInt256.add (MachineState.readWord memory 684) (UInt256.add (UInt256.lor (UInt256.land x.v6 x.v9) (UInt256.xor x.v0 (UInt256.land (UInt256.lor x.v6 x.v0) (UInt256.xor x.v4 x.v9)))) x.v7))) (UInt256.ofNat 72)) (UInt256.add x.v8 (UInt256.add (MachineState.readWord memory 684) (UInt256.add (UInt256.lor (UInt256.land x.v6 x.v9) (UInt256.xor x.v0 (UInt256.land (UInt256.lor x.v6 x.v0) (UInt256.xor x.v4 x.v9)))) x.v7)))))) (UInt256.ofNat 25)))),
     x.v0,
     x.v8,
     x.v9,
@@ -116,16 +116,16 @@ theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
   simpa only [actualOutput_eq] using run_generated s pc x rho hstack hrun hactive
 #print axioms run_actual
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 1486).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 1488).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 1486 actual_slice
-    (by change 1486 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 1488 actual_slice
+    (by change 1488 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 2003 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1486) = UInt256.ofNat 2003
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1488) = UInt256.ofNat 2003
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound

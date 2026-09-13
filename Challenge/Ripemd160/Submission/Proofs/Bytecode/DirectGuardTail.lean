@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Msize
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardLoop
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardEarly
 
 set_option warningAsError true
 set_option maxRecDepth 100000

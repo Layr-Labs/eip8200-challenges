@@ -23,6 +23,7 @@ theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho 
   have hm : StaggerAlgorithm.mode 13 = 5 := by decide
   have hl : Crypto.Ripemd160.s[13]! = 7 := by rfl
   have hr : Crypto.Ripemd160.sP[16]! = 9 := by rfl
+  have hphysical : (UInt256.add (UInt256.ofNat 4365900693716796170500213457465638344568325514723328) (UInt256.ofNat 30169115476673038213297653277143730720156734734729216)) = UInt256.ofNat 34535016170389834383797866734609369064725060249452544 := by decide
   simp only [StaggerRawPaired13.outputStack, input, stack, List.map_cons, List.map_nil,
     List.cons_append, List.nil_append, StaggerCoreCommon.word, eval,
     StaggerAlgorithm.step, StaggerAdaptiveWord.usesAdaptive, StaggerAdaptiveWord.step, StaggerAdaptiveWord.t,
@@ -30,6 +31,7 @@ theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho 
     upperWord, lowerWord, StaggerWord.step, StaggerWord.t, StaggerWord.sum,
     StaggerWord.raw, StaggerWord.selector, StaggerWord.key, StaggerBoolean.selector,
     List.cons.injEq, and_true]
+  simp only [hphysical]
   simp only [wordRotate, usesCompact, wordCompact, wordScale, wordShift]
   simp
   all_goals try simp only [upperWord, lowerWord, and_true, true_and]
