@@ -36,7 +36,7 @@ def blk1822 :
    pushAt 1679 2 1536,
    opAt 1680 (.Dup ⟨2, by decide⟩),
    pushAt 1681 2 1536,
-   pushAt 1682 2 4092,
+   pushAt 1682 2 4086,
    opAt 1683 .JUMP]
 
 /-- Instructions 1955..1957, pc 2768..2772: the skip. -/

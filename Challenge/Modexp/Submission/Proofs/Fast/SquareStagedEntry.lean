@@ -14,24 +14,24 @@ open Monpro CiosCached
 
 /-- Rebase the square's B pointer onto the already staged operand. -/
 def program : List Instr :=
-  [.op .JUMPDEST, .push 2 4981, .op (.Swap ⟨1, by decide⟩), .op .POP,
+  [.op .JUMPDEST, .push 2 4972, .op (.Swap ⟨1, by decide⟩), .op .POP,
    .push 2 2336, .op (.Swap ⟨2, by decide⟩), .op .POP,
-   .push 2 1856, .op .ADD, .push 2 4981, .op .JUMP]
+   .push 2 1856, .op .ADD, .push 2 4972, .op .JUMP]
 
-def block : Block Artifact.submissionArtifact .Osaka 5292 program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4026 11 5292 program
+def block : Block Artifact.submissionArtifact .Osaka 5283 program :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4021 11 5283 program
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 5292).toNat = true :=
-  Artifact.isValidJumpDest_index 4026 (by rfl)
+    (UInt256.ofNat 5283).toNat = true :=
+  Artifact.isValidJumpDest_index 4021 (by rfl)
 
 theorem run_entry (s : State) (mem : ByteArray) (n : Nat)
     (ent inv m0 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1012)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
     runInstructions program
-      (outState s mem 512 n 0 (UInt256.ofNat 5292) ent inv m0 rest) =
-    some (outState s mem 2368 n 0 (UInt256.ofNat 4981) ent inv m0 rest) := by
+      (outState s mem 512 n 0 (UInt256.ofNat 5283) ent inv m0 rest) =
+    some (outState s mem 2368 n 0 (UInt256.ofNat 4972) ent inv m0 rest) := by
   have h9 : rest.length + 9 < 1024 := by omega
   have h10 : rest.length + 10 < 1024 := by omega
   have hp : UInt256.ofNat 1856 + UInt256.ofNat (512 + 32 * n - 32) =
@@ -39,7 +39,7 @@ theorem run_entry (s : State) (mem : ByteArray) (n : Nat)
     rw [Challenge.EvmProof.Word.ofNat_add_mod]
     congr 1
     omega
-  have hj : Decode.isValidJumpDest s.executionEnv.code 4981 = true := by
+  have hj : Decode.isValidJumpDest s.executionEnv.code 4972 = true := by
     rw [hcode]; exact SquareRow.jumpDest4710
   simp [program, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     outState, ptrAt_zero, hp, hj, h9, h10, List.exchange,
@@ -54,8 +54,8 @@ def gasSteps_entry (s : State) (mem : ByteArray) (n : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (outState s mem 512 n 0 (UInt256.ofNat 5292) ent inv m0 rest)
-      (outState s mem 2368 n 0 (UInt256.ofNat 4981) ent inv m0 rest) :=
+      (outState s mem 512 n 0 (UInt256.ofNat 5283) ent inv m0 rest)
+      (outState s mem 2368 n 0 (UInt256.ofNat 4972) ent inv m0 rest) :=
   block.steps (SquareRow.environment _ hcode hfork hrun hnp) rfl
     (run_entry s mem n ent inv m0 rest hcap hcode)
 

@@ -213,7 +213,7 @@ theorem run_negBodyA (s : State) (mem : ByteArray) (p : UInt256) (n bsize esize 
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt, List.exchange]
 
-/-- `blk2896b`: the exit test with a nonzero pointer falls into the decrement. -/
+/-- `blk2896b` with a nonzero pointer: step the pointer and jump back to the loop head. -/
 theorem run_negTail (s : State) (m : ByteArray) (p c : UInt256) (n bsize esize msize : Nat)
     (hp0 : p.toNat ≠ 0)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -222,86 +222,44 @@ theorem run_negTail (s : State) (m : ByteArray) (p c : UInt256) (n bsize esize m
       { s with pc := UInt256.ofNat pcNegMid
                stack := p :: c :: outer n bsize esize msize
                memory := m } =
-      some { s with pc := UInt256.ofNat pcNegNext
-                    stack := p :: c :: outer n bsize esize msize
+      some { s with pc := UInt256.ofNat pcNegLoop
+                    stack := (UInt256.lnot (31 : UInt256) + p) :: c :: outer n bsize esize msize
                     memory := m } := by
   simp (config := { maxSteps := 200000 })
     [blk2896b, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      pcNegMid, pcNegNext, outer, Exp.outer, hcode, hrun, hp0, jumpDest4725,
-      UInt256.isZero, UInt256.isTrue,
-      Challenge.EvmProof.Word.literal_eq_ofNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt]
-
-/-- `blk2896` on the last limb: store limb `n - 1`, jump to `NEG_DONE`. -/
-theorem run_negLast (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hact : 88 ≤ s.activeWords.toNat)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk2896
-      (negLoopState s mem n bsize esize msize (n - 1)) =
-      some (negDoneState s mem n bsize esize msize) := by
-  obtain ⟨m, rfl⟩ : ∃ m, n = m + 1 := ⟨n - 1, by omega⟩
-  have hp : Monpro.ptrAt (32 * (m + 1) - 32) m %
-      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 0 := by
-    rw [Monpro.ptrAt_mod _ _ (by omega) (by omega)]; omega
-  have hp0 : UInt256.ofNat (Monpro.ptrAt (32 * (m + 1) - 32) m) = UInt256.ofNat 0 := by
-    rw [Challenge.EvmProof.Word.word_eq_ofNat_toNat (UInt256.ofNat (Monpro.ptrAt _ _)),
-      Monpro.ptrAt_toNat _ _ (by omega) (by omega)]
-    congr 1; omega
-  have hdst : (1280 + Monpro.ptrAt (32 * (m + 1) - 32) m) %
-      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
-      1280 := by
-    rw [Nat.add_mod, Monpro.ptrAt_mod _ _ (by omega) (by omega)]
-    rw [Nat.mod_eq_of_lt (a := 1280) (by decide)]
-    rw [show 32 * (m + 1) - 32 - 32 * m = 0 by omega]
-  have hidx : m + 1 - 1 - m = 0 := by omega
-  have hawL : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 0 32) =
-      s.activeWords :=
-    Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hawS : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1280 32) =
-      s.activeWords :=
-    Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  simp (config := { maxSteps := 400000 })
-    [blk2896, opAt, pushAt, wfOp,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated,
-      Challenge.EvmProof.Stepper.runInstr,
-      negLoopState, negDoneState, pcNegLoop, pcNegDone, negStep, NEG,
-      outer, Exp.outer, hcode, hrun, hp, hp0, hdst, hidx, hawL, hawS, jumpDest4725,
-      UInt256.isZero, UInt256.isTrue,
-      State.activeWordsAfterUInt256,
+      pcNegMid, pcNegLoop, outer, Exp.outer, hcode, hrun, hp0, jumpDest4664,
+      UInt256.isTrue,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt, List.exchange]
 
-/-- `blk2915`: decrement the pointer and jump back to the loop head. -/
-theorem run_negNext (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
+/-- `blk2896b` on the zero pointer: fall through into `NEG_DONE`. -/
+theorem run_negExit (s : State) (m : ByteArray) (p c : UInt256) (n bsize esize msize : Nat)
+    (hp0 : p.toNat = 0)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk2915
-      (negNextState s mem n bsize esize msize j) =
-      some (negLoopState s mem n bsize esize msize (j + 1)) := by
-  have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
-      UInt256) = UInt256.ofNat
-        115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
-    decide
+    Challenge.EvmProof.Stepper.runLocatedBlock blk2896b
+      { s with pc := UInt256.ofNat pcNegMid
+               stack := p :: c :: outer n bsize esize msize
+               memory := m } =
+      some { s with pc := UInt256.ofNat pcNegDone
+                    stack := (UInt256.lnot (31 : UInt256) + p) :: c :: outer n bsize esize msize
+                    memory := m } := by
   simp (config := { maxSteps := 200000 })
-    [blk2915, opAt, pushAt, wfOp,
+    [blk2896b, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      negLoopState, negNextState, pcNegLoop, pcNegNext,
-      outer, Exp.outer, hcode, hrun, hK, jumpDest4664, Monpro.ptrAt_succ,
+      pcNegMid, pcNegDone, outer, Exp.outer, hcode, hrun, hp0,
+      UInt256.isTrue,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod]
+      Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt, List.exchange]
 
 /-- `blk2919`: drop the loop words, store `L`, `dodd`, `X`, `Bmod`. -/
 theorem run_negDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)

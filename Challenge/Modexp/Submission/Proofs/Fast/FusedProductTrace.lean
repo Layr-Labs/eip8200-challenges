@@ -57,7 +57,7 @@ def gasSteps_product (s : State) (mem : ByteArray) (p a mm : Nat)
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080+32*(p+2)))
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*(p+2))) :
     Challenge.EvmProof.GasSteps
-      (frameAt 4207 s mem (p+2) pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
+      (frameAt 4201 s mem (p+2) pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
       {s with pc := UInt256.ofNat 1696, stack := rest, memory := StagedProduct.memory s mem (p+2)} := by
   have hn8 : p+2 ≤ 8 := by omega
   have g1 := gasSteps_entry s mem (p+2) pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest

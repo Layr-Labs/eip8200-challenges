@@ -1,16 +1,17 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneCore
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBinding
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneMsize
 
 set_option warningAsError true
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneGasCore
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
-open Challenge.EvmProof WindowNibbleKernel WindowTwentyOneBinding
+open Challenge.EvmProof WindowNibbleKernel WindowTwentyOneBinding WindowTwentyOneMsize
 
 structure Paths (artifact : ProgramArtifact) (fork : Fork) where
   table : Block artifact fork 2342 WindowTwentyOneTableBuild.program
-  init : Block artifact fork 2458 WindowTwentyOneInit.program
+  init : Block artifact fork 2435 WindowTwentyOneInit.program
   entry : Block artifact fork 2479 WindowTwentyOneLoop.entryProgram
   trampoline : Block artifact fork 2479 WindowTwentyOneLoop.trampolineProgram
   body : Block artifact fork 2501 WindowTwentyOneLoop.bodyProgram
@@ -65,18 +66,18 @@ def steps_core {artifact : ProgramArtifact} {fork : Fork}
       (WindowTwentyOneCore.returnedState template base modulus
         (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat) rest) := by
   let exponent := MachineState.readWord template.executionEnv.calldata exponentOffset.toNat
-  have ht := paths.table.steps
+  have ht := Block.stepsX paths.table
     (s := WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 2342) base modulus rest)
     (env.transfer rfl rfl) rfl
     (WindowTwentyOneTableBuild.run_all template base modulus exponentOffset rest hrest he)
   have hi := WindowTwentyOneInit.run_enter template base modulus exponent modulusOffset rest hrest hm hmodulus
   have hi' : runInstructions WindowTwentyOneInit.program
-      (WindowTwentyOneTable.framed template (UInt256.ofNat 2458) base modulus 16 ([base, exponent] ++ rest)) =
+      (WindowTwentyOneTable.framed template (UInt256.ofNat 2435) base modulus 16 ([base, exponent] ++ rest)) =
       some (WindowTwentyOneLoop.entryState template base modulus exponent rest) := by
     simpa only [WindowTwentyOneLoop.entryState, WindowTwentyOneLoop.eAt,
       WindowTwentyOneMath.accumulator, WindowTwentyOneMath.advance] using hi
   have hinit := paths.init.steps
-    (s := WindowTwentyOneTable.framed template (UInt256.ofNat 2458) base modulus 16 ([base, exponent] ++ rest))
+    (s := WindowTwentyOneTable.framed template (UInt256.ofNat 2435) base modulus 16 ([base, exponent] ++ rest))
     (env.transfer rfl rfl) rfl hi'
   have hloop := steps_three paths template env base modulus exponent rest hrest htramp
   have hfinish := paths.finish.steps
