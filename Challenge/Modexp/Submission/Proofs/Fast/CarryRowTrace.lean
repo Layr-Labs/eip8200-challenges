@@ -39,9 +39,9 @@ theorem run_middleStore (s : State) (c bi pbi pa pb flag dst ret : UInt256)
 theorem run_tailStore (s : State) (c f pbi pa pb flag dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions CarryRowPrograms.tailStore
-      (framed s (UInt256.ofNat 4268)
+      (framed s (UInt256.ofNat 4269)
         ([c,f,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) =
-    some (framed {s with memory := tailCarry s.memory c f} (UInt256.ofNat 4285)
+    some (framed {s with memory := tailCarry s.memory c f} (UInt256.ofNat 4286)
       ([pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) := by
   have hc8 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hc9 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega

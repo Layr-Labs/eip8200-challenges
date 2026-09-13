@@ -97,7 +97,7 @@ def squareCall : List Located :=
    pushAt 2034 2 512,
    opAt 2035 (.Dup ⟨0, by decide⟩),
    opAt 2036 (.Dup ⟨0, by decide⟩),
-   pushAt 2037 2 4737,
+   pushAt 2037 2 4739,
    pushAt 2038 2 3537,
    opAt 2039 .JUMP]
 
