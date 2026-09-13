@@ -92,29 +92,29 @@ theorem run_body (hcap : rest.length ≤ 1000) :
 
 def controlProgram : List Instr :=
   [.op (.Swap ⟨0, by decide⟩), .push 1 4, .op .ADD, .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩), .push 1 8, .op .GT, .push 2 2505, .op .JUMPI]
+   .op (.Dup ⟨1, by decide⟩), .push 1 8, .op .GT, .push 2 2510, .op .JUMPI]
 
 def resetProgram : List Instr :=
   [.op (.Swap ⟨0, by decide⟩), .op .POP, .push 0 0, .op (.Swap ⟨0, by decide⟩)]
 
 theorem run_start (hcap : rest.length ≤ 1000) :
     runInstructions [.op .JUMPDEST]
-      (framed s 2505 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) =
-      some (framed s 2506 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) := by
+      (framed s 2510 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) =
+      some (framed s 2511 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) := by
   have h8 : rest.length + 8 < 1024 := by omega
   simp [runInstructions, Challenge.EvmProof.Stepper.runInstr, framed, h8]
   decide
 
 theorem run_control (c : Nat) (hc : c = 0 ∨ c = 4) (hcap : rest.length ≤ 1000)
-    (hjd : Decode.isValidJumpDest s.executionEnv.code 2505 = true) :
+    (hjd : Decode.isValidJumpDest s.executionEnv.code 2510 = true) :
     runInstructions controlProgram
-      (framed s 2594 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m] ++ rest)) =
-      some (framed s (if c = 0 then 2505 else 2607)
+      (framed s 2599 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m] ++ rest)) =
+      some (framed s (if c = 0 then 2510 else 2612)
         ([Bm1,UInt256.ofNat (c+4),byte,offset,outerW,acc,base,m] ++ rest)) := by
   have h8 : rest.length + 8 < 1024 := by omega
   have h9 : rest.length + 9 < 1024 := by omega
   have h10 : rest.length + 10 < 1024 := by omega
-  have htarget : (2505 : UInt256).toNat = 2505 := by decide
+  have htarget : (2510 : UInt256).toNat = 2510 := by decide
   rcases hc with rfl | rfl <;>
     simp [controlProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr, framed,
       h8, h9, h10, List.exchange, UInt256.isTrue, UInt256.gt, UInt256.lt,
@@ -124,8 +124,8 @@ theorem run_control (c : Nat) (hc : c = 0 ∨ c = 4) (hcap : rest.length ≤ 100
 
 theorem run_reset (hcap : rest.length ≤ 1000) :
     runInstructions resetProgram
-      (framed s 2607 ([Bm1,8,byte,offset,outerW,acc,base,m] ++ rest)) =
-      some (framed s 2611 ([Bm1,0,byte,offset,outerW,acc,base,m] ++ rest)) := by
+      (framed s 2612 ([Bm1,8,byte,offset,outerW,acc,base,m] ++ rest)) =
+      some (framed s 2616 ([Bm1,0,byte,offset,outerW,acc,base,m] ++ rest)) := by
   have h7 : rest.length + 7 < 1024 := by omega
   have h8 : rest.length + 8 < 1024 := by omega
   simp [resetProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr, framed,

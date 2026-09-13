@@ -1,4 +1,3 @@
-import Challenge.Modexp.Submission.Proofs.Bytecode.PCFast
 import Challenge.Modexp.Submission.Proofs.Bytecode.WordLoops
 import Challenge.EvmProof.Memory
 set_option warningAsError true
@@ -45,20 +44,11 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def expFinishTailPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 161 .JUMPDEST,
-   opAt 162 .POP,
-   opAt 163 (.Dup ⟨0, by decide⟩),
-   opAt 164 (.Dup ⟨6, by decide⟩),
-   pushAt 165 1 32,
-   opAt 166 .SUB,
-   pushAt 167 1 3,
-   opAt 168 .SHL,
-   opAt 169 .SHL,
-   pushAt 170 0 0,
-   opAt 171 .MSTORE,
-   opAt 172 (.Dup ⟨5, by decide⟩),
-   pushAt 173 0 0,
-   opAt 174 .RETURN]
+  [opAt 161 .JUMPDEST, opAt 162 .POP, opAt 163 (.Dup ⟨0, by decide⟩),
+   opAt 164 (.Dup ⟨6, by decide⟩), pushAt 165 1 32, opAt 166 .SUB,
+   pushAt 167 1 3, opAt 168 .SHL, opAt 169 .SHL,
+   pushAt 170 0 0, opAt 171 .MSTORE,
+   opAt 172 (.Dup ⟨5, by decide⟩), pushAt 173 0 0, opAt 174 .RETURN]
 
 def expFinishDispatchState (input : ByteArray) (acc base : UInt256) : State :=
   { expLoopState input (exponentSize input) acc base with pc := UInt256.ofNat 234 }
@@ -95,8 +85,7 @@ def wordFinalState (input : ByteArray) (acc base : UInt256) : State :=
     (hi : 161 ≤ i) (hii : i ≤ 174) :
     Artifact.submissionArtifact.instructionPC i =
       ([234,235,236,237,238,240,241,243,244,245,246,247,248,249] : List Nat)[i - 161]! := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  interval_cases i <;> rfl
+  interval_cases i <;> decide
 
 @[simp] private theorem jump669 :
     Decode.isValidJumpDest submissionBytecode 234 = true :=

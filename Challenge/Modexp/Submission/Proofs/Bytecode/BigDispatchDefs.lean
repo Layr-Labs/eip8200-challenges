@@ -1,4 +1,3 @@
-import Challenge.Modexp.Submission.Proofs.Bytecode.PCFast
 import Challenge.Modexp.Submission.Proofs.Bytecode.Dispatch
 set_option warningAsError true
 set_option maxRecDepth 10000
@@ -34,49 +33,38 @@ def bigJumpPath := Dispatch.wordJumpPath
 
 def bigCheckExpPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 463 .JUMPDEST,
-   opAt 464 (.Dup ⟨2, by decide⟩),
-   pushAt 465 1 96,
-   opAt 466 .ADD]
+  [opAt 463 .JUMPDEST, opAt 464 (.Dup ⟨2, by decide⟩),
+   pushAt 465 1 96, opAt 466 .ADD]
 
 def bigCheckModPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 467 (.Dup ⟨2, by decide⟩),
-   opAt 468 (.Dup ⟨1, by decide⟩),
+  [opAt 467 (.Dup ⟨2, by decide⟩), opAt 468 (.Dup ⟨1, by decide⟩),
    opAt 469 .ADD]
 
 def bigCheckComparePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 470 1 32,
-   opAt 471 (.Dup ⟨3, by decide⟩),
-   opAt 472 .GT]
+  [pushAt 470 1 32, opAt 471 (.Dup ⟨3, by decide⟩), opAt 472 .GT]
 
 def bigCheckJumpPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 473 2 694,
-   opAt 474 .JUMPI]
+  [pushAt 473 2 694, opAt 474 .JUMPI]
 
 def bigCheckPath := bigCheckExpPath ++ bigCheckModPath ++
   bigCheckComparePath ++ bigCheckJumpPath
 
 def bigTailFramePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 484 .JUMPDEST,
-   pushAt 485 2 1189,
-   opAt 486 (.Dup ⟨1, by decide⟩),
-   opAt 487 (.Dup ⟨3, by decide⟩)]
+  [opAt 484 .JUMPDEST, pushAt 485 2 1194,
+   opAt 486 (.Dup ⟨1, by decide⟩), opAt 487 (.Dup ⟨3, by decide⟩)]
 
 def bigTailArgsPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 488 1 96,
-   opAt 489 (.Dup ⟨6, by decide⟩),
-   opAt 490 (.Dup ⟨8, by decide⟩),
-   opAt 491 (.Dup ⟨10, by decide⟩)]
+  [pushAt 488 1 96, opAt 489 (.Dup ⟨6, by decide⟩),
+   opAt 490 (.Dup ⟨8, by decide⟩), opAt 491 (.Dup ⟨10, by decide⟩)]
 
 def bigTailJumpPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 492 1 250,
-   opAt 493 .JUMP]
+  [pushAt 492 2 250, opAt 493 .JUMP]
 
 def bigTailPath := bigTailFramePath ++ bigTailArgsPath ++ bigTailJumpPath
 
@@ -112,7 +100,7 @@ def bigTailFrameState (input : ByteArray) : State :=
   let modOff := expOff + e
   { Main.headerState input with
     pc := UInt256.ofNat 700
-    stack := [UInt256.ofNat expOff, UInt256.ofNat modOff, UInt256.ofNat 1189,
+    stack := [UInt256.ofNat expOff, UInt256.ofNat modOff, UInt256.ofNat 1194,
       UInt256.ofNat modOff, UInt256.ofNat expOff, UInt256.ofNat m,
       UInt256.ofNat e, UInt256.ofNat b] }
 
@@ -126,7 +114,7 @@ def bigTailArgsState (input : ByteArray) : State :=
     pc := UInt256.ofNat 705
     stack := [UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
       UInt256.ofNat 96, UInt256.ofNat expOff, UInt256.ofNat modOff,
-      UInt256.ofNat 1189, UInt256.ofNat modOff, UInt256.ofNat expOff,
+      UInt256.ofNat 1194, UInt256.ofNat modOff, UInt256.ofNat expOff,
       UInt256.ofNat m, UInt256.ofNat e, UInt256.ofNat b] }
 
 /-- Calling-convention state at the first instruction of `modexpBig`. -/
@@ -140,15 +128,14 @@ def bigEntryState (input : ByteArray) : State :=
     pc := UInt256.ofNat 250
     stack := [UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
       UInt256.ofNat 96, UInt256.ofNat expOff, UInt256.ofNat modOff,
-      UInt256.ofNat 1189, UInt256.ofNat modOff, UInt256.ofNat expOff,
+      UInt256.ofNat 1194, UInt256.ofNat modOff, UInt256.ofNat expOff,
       UInt256.ofNat m, UInt256.ofNat e, UInt256.ofNat b] }
 
 @[simp] theorem bigTailPCs (i : Nat)
     (hi : 484 ≤ i) (hii : i ≤ 493) :
     Artifact.submissionArtifact.instructionPC i =
-      ([694,695,698,699,700,702,703,704,705,707] : List Nat)[i - 484]! := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  interval_cases i <;> rfl
+      ([694,695,698,699,700,702,703,704,705,708] : List Nat)[i - 484]! := by
+  interval_cases i <;> decide
 
 theorem jump704 : Decode.isValidJumpDest submissionBytecode 250 = true :=
   Artifact.isValidJumpDest_index 175 (by rfl)

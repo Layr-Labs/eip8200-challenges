@@ -1,4 +1,3 @@
-import Challenge.Modexp.Submission.Proofs.Bytecode.PCFast
 import Challenge.Modexp.Submission.Proofs.Bytecode.WordLoopTailHead
 set_option warningAsError true
 set_option maxRecDepth 10000
@@ -17,8 +16,7 @@ attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
     (hi : 153 ≤ i) (hii : i ≤ 174) :
     Artifact.submissionArtifact.instructionPC i =
       ([224,225,226,227,228,230,231,233,234,235,236,237,238,240,241,243,244,245,246,247,248,249] : List Nat)[i - 153]! := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  interval_cases i <;> rfl
+  interval_cases i <;> decide
 
 @[simp] private theorem jump589 :
     Decode.isValidJumpDest submissionBytecode 205 = true :=

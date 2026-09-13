@@ -54,7 +54,7 @@ def cacheProgram : List Instr :=
    .op .AND,
    .push 1 39,
    .op .MUL,
-   .push 2 3149,
+   .push 2 3158,
    .op .ADD,
    .push 2 1698,
    .op .MSTORE]
@@ -64,41 +64,41 @@ def dispatchProgram : List Instr :=
    .op .MLOAD,
    .op .JUMP]
 
-def cell0 : Block Artifact.submissionArtifact .Osaka 3149 cellProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2340 37 3149 cellProgram
+def cell0 : Block Artifact.submissionArtifact .Osaka 3158 cellProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2347 37 3158 cellProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def cell1 : Block Artifact.submissionArtifact .Osaka 3188 cellProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2377 37 3188 cellProgram
+def cell1 : Block Artifact.submissionArtifact .Osaka 3197 cellProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2384 37 3197 cellProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def cell2 : Block Artifact.submissionArtifact .Osaka 3227 cellProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2414 37 3227 cellProgram
+def cell2 : Block Artifact.submissionArtifact .Osaka 3236 cellProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2421 37 3236 cellProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def cell3 : Block Artifact.submissionArtifact .Osaka 3266 cellProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2451 37 3266 cellProgram
+def cell3 : Block Artifact.submissionArtifact .Osaka 3275 cellProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2458 37 3275 cellProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def cache : Block Artifact.submissionArtifact .Osaka 2988 cacheProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2228 11 2988 cacheProgram
+def cache : Block Artifact.submissionArtifact .Osaka 2995 cacheProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2233 11 2995 cacheProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def dispatch : Block Artifact.submissionArtifact .Osaka 3144 dispatchProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2337 3 3144 dispatchProgram
+def dispatch : Block Artifact.submissionArtifact .Osaka 3153 dispatchProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2344 3 3153 dispatchProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-theorem jump3684 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3149 = true :=
-  Artifact.isValidJumpDest_index 2340 (by rfl)
+theorem jump3684 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3158 = true :=
+  Artifact.isValidJumpDest_index 2347 (by rfl)
 
-theorem jump3723 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3188 = true :=
-  Artifact.isValidJumpDest_index 2377 (by rfl)
+theorem jump3723 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3197 = true :=
+  Artifact.isValidJumpDest_index 2384 (by rfl)
 
-theorem jump3762 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3227 = true :=
-  Artifact.isValidJumpDest_index 2414 (by rfl)
+theorem jump3762 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3236 = true :=
+  Artifact.isValidJumpDest_index 2421 (by rfl)
 
-theorem jump3801 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3266 = true :=
-  Artifact.isValidJumpDest_index 2451 (by rfl)
+theorem jump3801 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3275 = true :=
+  Artifact.isValidJumpDest_index 2458 (by rfl)
 
 #print axioms cell0
 #print axioms cache

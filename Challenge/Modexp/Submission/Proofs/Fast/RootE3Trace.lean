@@ -15,7 +15,7 @@ open Shift RootE3Phase
 /-- Exact cache/prologue endpoint in v4, before the phase/count guard. -/
 def guardEntry (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 3005
+    pc := UInt256.ofNat 3012
     stack := UInt256.ofNat n :: Exp.outer n bsize esize msize
     memory := mem }
 

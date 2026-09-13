@@ -1,4 +1,3 @@
-import Challenge.Modexp.Submission.Proofs.Bytecode.PCFast
 import Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
 import Challenge.EvmProof.Meter
 import Challenge.EvmProof.Word
@@ -56,8 +55,7 @@ def calldataByteReturned (s : State) (offset returnDest : UInt256)
     (hi : 76 ≤ i) (hii : i ≤ 85) :
     Artifact.submissionArtifact.instructionPC i =
       ([133,134,135,136,137,138,139,140,141,142] : List Nat)[i - 76]! := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  interval_cases i <;> rfl
+  interval_cases i <;> decide
 
 @[simp] private theorem helperNext (i : Nat) (hi : 133 ≤ i) (hii : i ≤ 142) :
     (UInt256.ofNat i).succ = UInt256.ofNat (i + 1) := by
