@@ -27,27 +27,25 @@ def zeroMemory (memory : ByteArray) : ByteArray := MachineState.writeBytes memor
     (zeroMemory memory)[i]?.getD 0 = if i < 1112 then 0 else memory[i]?.getD 0 := by
   simp [zeroMemory, MachineState.writeBytes_getElem?_getD]
 
-/-- Words below `2 ^ 64` (the pad-only block stores the unmasked bit length `n >>> 29`,
-which carries up to three dead bits above its low 32) leave their first 24 bytes zero. -/
-private theorem encoded_prefix_zero (value : UInt256) (hv : value.toNat < 2 ^ 64)
-    (i : Nat) (hi : i < 24) :
+private theorem encoded_prefix_zero (value : UInt256) (hv : value.toNat < 2 ^ 32)
+    (i : Nat) (hi : i < 28) :
     (Data.Bytes.natToBytesPadded value.toNat 32)[i]?.getD 0 = 0 := by
   rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD _ _ _ (by omega)]
-  have hp : (256 : Nat) ^ 8 ≤ 256 ^ (32 - 1 - i) :=
+  have hp : (256 : Nat) ^ 4 ≤ 256 ^ (32 - 1 - i) :=
     Nat.pow_le_pow_right (by omega) (by omega)
   have hv' : value.toNat < 256 ^ (32 - 1 - i) := by
     calc
-      value.toNat < 2 ^ 64 := hv
-      _ = 256 ^ 8 := by norm_num
+      value.toNat < 2 ^ 32 := hv
+      _ = 256 ^ 4 := by norm_num
       _ ≤ _ := hp
   rw [Nat.div_eq_of_lt hv']
   rfl
 
-/-- Writes of small words cannot introduce data before their final eight bytes. -/
+/-- Writes of small words cannot introduce data before their final four bytes. -/
 theorem getD_storeDescending_prefix_zero (memory : ByteArray) (words : Nat → UInt256)
-    (first count address : Nat) (ha : address < 18 * first + 24)
+    (first count address : Nat) (ha : address < 18 * first + 28)
     (hz : memory[address]?.getD 0 = 0)
-    (hw : ∀ j, first ≤ j → j < first + count → (words j).toNat < 2 ^ 64) :
+    (hw : ∀ j, first ≤ j → j < first + count → (words j).toNat < 2 ^ 32) :
     (storeDescending memory words first count)[address]?.getD 0 = 0 := by
   induction count generalizing first with
   | zero => exact hz
@@ -75,7 +73,7 @@ theorem storeDescending_size_ge (memory : ByteArray) (words : Nat → UInt256)
 /-- A zeroed table permits skipping any store whose logical word is zero. -/
 theorem selected_eq_full (memory : ByteArray) (words : Nat → UInt256) (keep : Nat → Bool)
     (first count : Nat) (hend : first + count ≤ 61)
-    (hw : ∀ j, first ≤ j → j < first + count → (words j).toNat < 2 ^ 64)
+    (hw : ∀ j, first ≤ j → j < first + count → (words j).toNat < 2 ^ 32)
     (hskip : ∀ j, first ≤ j → j < first + count → keep j = false → words j = UInt256.ofNat 0) :
     storeSelected (zeroMemory memory) words keep first count =
       storeDescending (zeroMemory memory) words first count := by
@@ -102,26 +100,6 @@ theorem selected_eq_full (memory : ByteArray) (words : Nat → UInt256) (keep : 
         · rw [zeroMemory_getD, if_pos (by omega)]
         · exact fun j hj hj' => hw j (by omega) (by omega)
 
-/-- Selected stores never touch bytes outside their 32-byte windows. -/
-theorem getD_storeSelected_outside (memory : ByteArray) (words : Nat → UInt256)
-    (keep : Nat → Bool) (first count address : Nat)
-    (hout : ∀ k, first ≤ k → k < first + count →
-      address < 18 * k ∨ 18 * k + 32 ≤ address) :
-    (storeSelected memory words keep first count)[address]?.getD 0 =
-      memory[address]?.getD 0 := by
-  induction count generalizing first with
-  | zero => rfl
-  | succ count ih =>
-    rw [storeSelected]
-    have hrest := ih (first + 1) (fun k hk hk' => hout k (by omega) (by omega))
-    split
-    · simp only [writeWord, MachineState.writeBytes_getElem?_getD,
-        YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
-      have h := hout first (by omega) (by omega)
-      rw [if_neg (by omega)]
-      exact hrest
-    · exact hrest
-
 theorem erase_zeroMemory (memory : ByteArray) (words : Nat → UInt256) :
     storeDescending (zeroMemory memory) words 0 61 = storeDescending memory words 0 61 := by
   apply ByteArray.ext_getElem
@@ -136,6 +114,5 @@ theorem erase_zeroMemory (memory : ByteArray) (words : Nat → UInt256) :
         zeroMemory_getD, if_neg hin]
 
 #print axioms selected_eq_full
-#print axioms getD_storeSelected_outside
 #print axioms erase_zeroMemory
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerTableSparse

@@ -27,49 +27,6 @@ theorem pointer_eq (input : ByteArray) (i : Nat) (hfit : CalldataFits input)
   rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb; omega)]
   rfl
 
-/-- The pad-only block (M3b): the low block, then `JUMPI` straight to the rounds when
-`n >>> 29 = 0`, otherwise the high block and the jump. Both paths leave the pad table. -/
-def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
-    (hmask : rest.head? = some (UInt256.ofNat 4294967295))
-    (hstack : rest.length ≤ 896) (hrun : s.halt = .Running)
-    (hactive : 35 ≤ s.activeWords.toNat) (hfit : s.executionEnv.calldata.size < 2 ^ 256)
-    (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4780, stack := ret :: rest}
-      {s with
-        pc := UInt256.ofNat 920
-        stack := ret :: rest
-        memory := StaggerTablePad.resultMemory s.memory (UInt256.ofNat s.executionEnv.calldata.size)} := by
-  have g1 := StaggerSetupSites.gasSteps_low s ret rest hmask hstack hrun hactive hfit hcode hfork hnp
-  by_cases hz : UInt256.isTrue (StaggerPad.highZero (UInt256.ofNat s.executionEnv.calldata.size))
-  · have g2 := StaggerSetupSites.gasSteps_branch_taken
-      {s with memory := StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
-      _ (ret :: rest) (by simp only [List.length_cons]; omega) hrun hz hcode hfork hnp
-    have hmem := StaggerTablePad.lowChain_eq s.memory _ ((StaggerPad.highZero_true_iff _).mp hz)
-    exact (g1.trans g2).cast rfl (by rw [hmem])
-  · have g2 := StaggerSetupSites.gasSteps_branch_fall
-      {s with memory := StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
-      _ (ret :: rest) (by simp only [List.length_cons]; omega) hrun hz hcode hfork hnp
-    have g3 := StaggerSetupSites.gasSteps_high
-      {s with memory := StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
-      ret rest hstack hrun hactive hfit hcode hfork hnp
-    have g4 := StaggerPadJump.gasSteps_jump
-      {s with memory := StaggerTablePad.resultMemory s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
-      (ret :: rest) (by simp only [List.length_cons]; omega) hrun hcode hfork hnp
-    have hmem := StaggerTablePad.highChain_eq s.memory (UInt256.ofNat s.executionEnv.calldata.size)
-    have g23 : GasSteps
-        {s with
-          pc := UInt256.ofNat 4823
-          stack := StaggerPad.highZero (UInt256.ofNat s.executionEnv.calldata.size) :: ret :: rest
-          memory := StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
-        {s with
-          pc := UInt256.ofNat 4855
-          stack := ret :: rest
-          memory := StaggerTablePad.resultMemory s.memory (UInt256.ofNat s.executionEnv.calldata.size)} :=
-      (g2.trans g3).cast rfl (by dsimp only; rw [hmem])
-    exact (g1.trans (g23.trans g4)).cast rfl rfl
-
 def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.HashState)
     (limit : UInt256) (rho : List UInt256) (hs : rho.length ≤ 880)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input) (ctx : Context s input)
@@ -78,7 +35,7 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := LoopCompletionControl.blockPC input i, stack := frame h (DriverTrace.blockOffsetWord i) limit rho}
-      {scheduledState s i with pc := UInt256.ofNat 920, stack := frame h (DriverTrace.blockOffsetWord i) limit rho} := by
+      {scheduledState s i with pc := UInt256.ofNat 925, stack := frame h (DriverTrace.blockOffsetWord i) limit rho} := by
   let off := DriverTrace.blockOffsetWord i
   let r := rest h off limit rho
   have hrs : r.length ≤ 896 := by simp only [r, rest, List.length_append, List.length_cons, List.length_nil]; omega
@@ -90,16 +47,19 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
       (by simp only [frame, List.length_append, List.length_cons, List.length_nil]; omega)
       hr hcode hfork hnp
     have ha : 37 ≤ s.activeWords.toNat := ctx.active
-    have gb := gasSteps_padAll s Paired144WordRound.factorWord r (by rfl) hrs hr (by omega) hf hcode hfork hnp
+    have gb := StaggerSetupSites.gasSteps_pad s Paired144WordRound.factorWord r hrs hr (by omega) hf hcode hfork hnp
     have hhs : s.executionEnv.calldata.size = DriverTrace.blockOffset i := by rw [ctx.calldata]; exact hh
     rw [scheduledState_hit s i hhs]
     let qh : State :=
       {s with memory := StaggerTablePad.resultMemory s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
-    have gb' : GasSteps {s with pc := UInt256.ofNat 4780, stack := frame h off limit rho}
-        {qh with pc := UInt256.ofNat 920, stack := frame h off limit rho} := by
+    have gj := StaggerPadJump.gasSteps_jump qh (frame h off limit rho)
+      (by simp only [frame, List.length_append, List.length_cons, List.length_nil]; omega)
+      hr hcode hfork hnp
+    have gb' : GasSteps {s with pc := UInt256.ofNat 4786, stack := frame h off limit rho}
+        {qh with pc := UInt256.ofNat 4856, stack := frame h off limit rho} := by
       apply gb.cast rfl
       rfl
-    simpa only [LoopCompletionControl.blockPC, DriverTrace.blockOffset, if_pos hh] using gp.trans gb'
+    simpa only [LoopCompletionControl.blockPC, DriverTrace.blockOffset, if_pos hh] using gp.trans (gb'.trans gj)
   · change input.size ≠ i * 64 at hh
     have hhs : ¬ s.executionEnv.calldata.size = DriverTrace.blockOffset i := by
       rw [ctx.calldata]; exact hh
@@ -110,6 +70,5 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
       (messagePointer_lower i) (messagePointer_bound input hfit i hi) ctx.lowClear hcode hfork hnp
     simpa only [LoopCompletionControl.blockPC, DriverTrace.blockOffset, if_neg hh, off, r, rest, frame, selectedWords, List.cons_append] using gc.trans gn
 
-#print axioms gasSteps_padAll
 #print axioms gasSteps_prepare
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PersistentStaggerPrepare

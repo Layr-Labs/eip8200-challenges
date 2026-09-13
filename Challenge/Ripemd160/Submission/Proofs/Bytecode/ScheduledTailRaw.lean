@@ -36,11 +36,9 @@ structure Input where
   off : UInt256
   limit : UInt256
 
-def stack0 (q : Input) (rho : List UInt256) : List UInt256 := [ q.ld, q.lb, q.le, q.la, q.literal28, q.literal72, q.k, q.lc, q.re, q.rc, q.ra, q.rd, q.rb, q.factor, q.lower, q.cache140, q.cache350, q.cache310, q.cache190, q.h4, q.h1, q.h2, q.h3, q.h0, q.off, q.limit ] ++ rho
+def stack0 (q : Input) (rho : List UInt256) : List UInt256 := [ q.lb, q.le, q.la, q.ld, q.literal72, q.k, q.lc, q.re, q.rc, q.ra, q.rd, q.rb, q.factor, q.lower, q.cache140, q.cache350, q.cache310, q.cache190, q.h4, q.h1, q.h2, q.h3, q.h0, q.off, q.limit ] ++ rho
 
-def chunk0 : List Instr := [ .op (.Swap ⟨3, by decide⟩),
-    .op .POP,
-    .op (.Swap ⟨7, by decide⟩),
+def chunk0 : List Instr := [ .op (.Swap ⟨7, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHR,
     .op (.Swap ⟨8, by decide⟩),

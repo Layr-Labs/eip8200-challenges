@@ -33,7 +33,7 @@ def fromCurrent (q : StaggerPersistentTailRaw.Input) : ScheduledTailRaw.Input :=
   {ld := q.ld, lb := q.lb, le := q.le, la := q.la, k := q.k, lc := q.lc, re := q.re, rc := q.rc, ra := q.ra, rd := q.rd, rb := q.rb, factor := q.factor, lower := q.lower, cache140 := q.cache140, cache190 := q.cache190, cache310 := q.cache310, cache350 := q.cache350, literal72 := q.literal72, literal28 := q.literal28, h4 := q.h4, h1 := q.h1, h2 := q.h2, h3 := q.h3, h0 := q.h0, off := q.off, limit := q.limit}
 
 theorem stack0_current (q : StaggerPersistentTailRaw.Input) (rho : List UInt256) :
-    ScheduledTailRaw.stack0 (fromCurrent q) rho = StaggerPersistentTailRaw.stack0 q rho := rfl
+    ScheduledTailRaw.stack0 (fromCurrent q) rho = StaggerPersistentTailRaw.entryStack q rho := rfl
 
 theorem bind_current (h : Compression.HashState) (q : StaggerPersistentTailRaw.Input) :
     ScheduledTailFrame.bind h (fromCurrent q) = fromCurrent (StaggerPersistentFrame.bind h q) := rfl
@@ -45,7 +45,7 @@ theorem run_current (s : State) (pc : UInt256) (h : Compression.HashState)
     (q : StaggerPersistentTailRaw.Input) (rho : List UInt256)
     (hstack : rho.length ≤ 980) (hrun : s.halt = .Running) :
     StackRoundTrace.runInstrSeq ScheduledTailRaw.template
-      {s with pc := pc, stack := StaggerPersistentTailRaw.stack0 (StaggerPersistentFrame.bind h q) rho} =
+      {s with pc := pc, stack := StaggerPersistentTailRaw.entryStack (StaggerPersistentFrame.bind h q) rho} =
       some {s with
         pc := StackRoundTrace.pcAfter pc ScheduledTailRaw.template
         stack := StaggerPersistentFrame.frame (StaggerPersistentFrame.combine h q) q.off q.limit rho} := by

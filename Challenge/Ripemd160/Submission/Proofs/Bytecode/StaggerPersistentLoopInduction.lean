@@ -23,10 +23,10 @@ def loopState (input : ByteArray) (s : State) (h : Compression.HashState) (i _co
   {s with pc := LoopCompletionControl.blockPC input i, stack := StaggerPersistentFrame.frame h (offsetWord i) (LoopCompletionControl.limit input) rho}
 
 def postState (input : ByteArray) (s : State) (h : Compression.HashState) (i _count : Nat) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 4626, stack := StaggerPersistentFrame.frame h (offsetWord i) (LoopCompletionControl.limit input) rho}
+  {s with pc := UInt256.ofNat 4632, stack := StaggerPersistentFrame.frame h (offsetWord i) (LoopCompletionControl.limit input) rho}
 
 def exitState (input : ByteArray) (s : State) (h : Compression.HashState) (count : Nat) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 4645, stack := StaggerPersistentFrame.frame h (limitWord count) (LoopCompletionControl.limit input) rho}
+  {s with pc := UInt256.ofNat 4651, stack := StaggerPersistentFrame.frame h (limitWord count) (LoopCompletionControl.limit input) rho}
 
 theorem next_offset (i count : Nat) (hi : i < count) (hbound : count * 64 < 2^256) :
     nextOffset (offsetWord i) = offsetWord (i + 1) := by

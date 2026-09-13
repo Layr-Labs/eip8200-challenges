@@ -49,16 +49,14 @@ theorem mode_valid (i : Fin 77) : mode i.val < 9 ∧
 def Dirty (k : Nat) : Prop := k = 1 ∨ k = 2
 instance (k : Nat) : Decidable (Dirty k) := inferInstanceAs (Decidable (_ ∨ _))
 
-/-- Dead bits allowed above the lanes of round `i`'s message word: none for a clean word other
-than word 15 and fewer than 23 for word 15 (the pad-only block leaves `n / 2 ^ 61 < 8` dead
-lanes above it), up to 64 bits in each half, and at most 32 in the lower half when the round
-rotates through `compact` (which never looks above bit 32 of the upper half). -/
+/-- Dead bits allowed above the lanes of round `i`'s message word: none for a clean word,
+up to 64 bits in each half, and at most 32 in the lower half when the round rotates through
+`compact` (which never looks above bit 32 of the upper half). -/
 def JunkBound (i jl jr : Nat) : Prop :=
   jl < 2 ^ 64 ∧ jr < 2 ^ 64 ∧
     (Paired144WordRound.usesCompact Crypto.Ripemd160.s[i]! Crypto.Ripemd160.sP[i + 3]! →
       jl < 2 ^ 32) ∧
-    (¬ Dirty Crypto.Ripemd160.r[i]! → jl < 2 ^ 23 ∧ (Crypto.Ripemd160.r[i]! ≠ 15 → jl = 0)) ∧
-    (¬ Dirty Crypto.Ripemd160.rP[i + 3]! → jr < 2 ^ 23 ∧ (Crypto.Ripemd160.rP[i + 3]! ≠ 15 → jr = 0)) ∧
+    (¬ Dirty Crypto.Ripemd160.r[i]! → jl = 0) ∧ (¬ Dirty Crypto.Ripemd160.rP[i + 3]! → jr = 0) ∧
     (Crypto.Ripemd160.r[i]! ≠ 2 → jl < 2 ^ 32)
 
 theorem adaptive_rounds (i : Fin 77) :
@@ -110,10 +108,10 @@ theorem step_of_crypto (words : Nat → UInt32) (i : Nat) (hi : i < 77)
   · have hg := adaptive_schedule ⟨i, hi⟩ ha
     have hj : (StaggerAdaptiveWord.gap Crypto.Ripemd160.s[i]! Crypto.Ripemd160.sP[i + 3]! = 68 ∨
         StaggerAdaptiveWord.gap Crypto.Ripemd160.s[i]! Crypto.Ripemd160.sP[i + 3]! = 69) ∧ jl < 2 ^ 32 ∨
-        StaggerAdaptiveWord.gap Crypto.Ripemd160.s[i]! Crypto.Ripemd160.sP[i + 3]! = 87 ∧ jl < 2 ^ 23 := by
+        StaggerAdaptiveWord.gap Crypto.Ripemd160.s[i]! Crypto.Ripemd160.sP[i + 3]! = 87 ∧ jl = 0 := by
       rcases hg with ⟨hg, hn⟩ | ⟨hg, hn⟩
       · exact Or.inl ⟨hg, hn2 hn⟩
-      · exact Or.inr ⟨hg, (hclean hn).1⟩
+      · exact Or.inr ⟨hg, hclean hn⟩
     have h := StaggerAdaptiveWord.step_of_crypto (mode i) _ _ hmode ha
       (words Crypto.Ripemd160.r[i]!) (words Crypto.Ripemd160.rP[i + 3]!)
       Crypto.Ripemd160.K[i / 16]! Crypto.Ripemd160.KP[(i + 3) / 16]! l q message jl jr hjr hj hmsg
