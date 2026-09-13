@@ -12,7 +12,7 @@ open StackRoundTrace StaggerRaw
 def template : List Instr :=
   [ .op (.Swap ⟨4, by decide⟩),
     .op .POP,
-    .push ⟨22, by decide⟩ (UInt256.ofNat 45805601672572416830120737830960963807809187239029665),
+    .push ⟨23, by decide⟩ (UInt256.ofNat 45805601672572416830120737830960963807809187239029665),
     .op (.Swap ⟨7, by decide⟩),
     .op (.Dup ⟨5, by decide⟩),
     .op (.Dup ⟨10, by decide⟩),

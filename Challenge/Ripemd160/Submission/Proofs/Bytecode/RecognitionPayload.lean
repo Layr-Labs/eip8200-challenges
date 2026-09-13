@@ -44,7 +44,7 @@ private def codePrefix : ByteArray :=
  ++   submissionByteChunk17
  ++   submissionByteChunk18
  ++   submissionByteChunk19
-private theorem codePrefix_size : codePrefix.size = 4579 := by
+private theorem codePrefix_size : codePrefix.size = 4578 := by
   simp only [codePrefix, ByteArray.size_append,
     submissionByteChunk0_size,
     submissionByteChunk1_size,
@@ -69,7 +69,7 @@ private theorem codePrefix_size : codePrefix.size = 4579 := by
 private theorem code_split : submissionBytecode = codePrefix ++ submissionByteChunk20 := rfl
 
 private theorem tableRead (n : Nat) :
-    MachineState.readPadded submissionBytecode (4984 + 20*((4022793/n)%16)) 20 =
+    MachineState.readPadded submissionBytecode (4983 + 20*((4022793/n)%16)) 20 =
       MachineState.readPadded submissionByteChunk20 (405 + 20*((4022793/n)%16)) 20 := by
   rw [code_split, readPadded_append_right _ _ _ _ (by rw [codePrefix_size]; omega), codePrefix_size]
   congr 1
@@ -82,7 +82,7 @@ private theorem tablePayload (n : Nat) (hn : Allowed n) :
   all_goals decide
 
 theorem read_selected (n : Nat) (hn : Allowed n) :
-    MachineState.readPadded submissionBytecode (selected (UInt256.ofNat 4984) n).toNat 20 =
+    MachineState.readPadded submissionBytecode (selected (UInt256.ofNat 4983) n).toNat 20 =
       MachineState.readPadded payload (20*((4022793/n)%16)) 20 := by
   rw [RecognitionSelectorResult.selected_nat n hn, tableRead]
   exact tablePayload n hn

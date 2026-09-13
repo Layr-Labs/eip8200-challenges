@@ -123,7 +123,7 @@ private def lowerValue (low : UInt256) : UInt256 := (UInt256.xor (UInt256.mul (U
 private theorem lowerValue_eq (low : UInt256) : lowerValue low = reversedValue low := by
   norm_num only [lowerValue, reversedValue, multipliedStage, endianDelta, endianFactor]
   simp only [RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
-private theorem run_lower (s : State) (pc low returnPC : UInt256) (rest : List UInt256)
+theorem run_lower (s : State) (pc low returnPC : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 996) (hrun : s.halt = .Running) :
     runInstrSeq lowerReverse {s with pc := pc, stack := low :: mask8 :: mask16 :: returnPC :: maskWord :: rest} =
       some {s with pc := pcAfter pc lowerReverse, stack := PairedScheduleData.reversedWord low :: mask8 :: mask16 :: returnPC :: maskWord :: rest} := by
@@ -181,4 +181,42 @@ theorem run_endian (s : State) (pc low high returnPC : UInt256) (rest : List UIn
   have h := DenseScheduleTrace.runInstrSeq_append_running h1234 (by exact hrun) h5
   simpa only [template_eq, DenseScheduleTrace.pcAfter_append, Table80ScratchZero.scratchMemory] using h
 #print axioms run_endian
+def finalReverse : List Instr :=
+  [ .op (.Swap ⟨0, by decide⟩),
+    .op (.Dup ⟨1, by decide⟩),
+    .op (.Dup ⟨0, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 8),
+    .op .SHR,
+    .op .XOR,
+    .op .AND,
+    .push ⟨2, by decide⟩ (UInt256.ofNat 257),
+    .op .MUL,
+    .op .XOR,
+    .op (.Swap ⟨0, by decide⟩),
+    .op (.Dup ⟨1, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 16),
+    .op .SHR,
+    .op (.Dup ⟨2, by decide⟩),
+    .op .XOR,
+    .op .AND,
+    .push ⟨3, by decide⟩ (UInt256.ofNat 65537),
+    .op .MUL,
+    .op .XOR ]
+
+private def finalValue (low : UInt256) : UInt256 := (UInt256.xor (UInt256.mul (UInt256.ofNat 65537) (UInt256.land (UInt256.xor (UInt256.xor (UInt256.mul (UInt256.ofNat 257) (UInt256.land (UInt256.xor (UInt256.shiftRight low (UInt256.ofNat 8)) low) mask8)) low) (UInt256.shiftRight (UInt256.xor (UInt256.mul (UInt256.ofNat 257) (UInt256.land (UInt256.xor (UInt256.shiftRight low (UInt256.ofNat 8)) low) mask8)) low) (UInt256.ofNat 16))) mask16)) (UInt256.xor (UInt256.mul (UInt256.ofNat 257) (UInt256.land (UInt256.xor (UInt256.shiftRight low (UInt256.ofNat 8)) low) mask8)) low))
+private theorem finalValue_eq (low : UInt256) : finalValue low = reversedValue low := by
+  norm_num only [finalValue, reversedValue, multipliedStage, endianDelta, endianFactor]
+  simp only [RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
+theorem run_finalReverse (s : State) (pc low returnPC : UInt256) (rest : List UInt256)
+    (hstack : rest.length ≤ 996) (hrun : s.halt = .Running) :
+    runInstrSeq finalReverse {s with pc := pc, stack := low :: mask8 :: mask16 :: returnPC :: maskWord :: rest} =
+      some {s with pc := pcAfter pc finalReverse, stack := PairedScheduleData.reversedWord low :: returnPC :: maskWord :: rest} := by
+  rw [← reversedValue_eq, ← finalValue_eq]
+  have hcap (n : Nat) (hn : n ≤ 27) : rest.length + n < 1024 := by omega
+  simp (discharger := omega) [finalReverse, finalValue,
+    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size, hrun, hcap,
+    Nat.add_assoc, List.getElem?_cons_zero, List.exchange, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+  all_goals repeat first | apply And.intro | rfl
+#print axioms run_finalReverse
+
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DeferredNormalEndian
