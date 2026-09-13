@@ -23,8 +23,8 @@ open Challenge.Modexp.Submission.Proofs.Fast
 abbrev outer := Exp.outer
 
 /-- Program counters of the appended routine. -/
-def pcDispatch : Nat := 2840
-def pcHit : Nat := 2855
+def pcDispatch : Nat := 2833
+def pcHit : Nat := 2848
 -- 3477, not ticket 4's 3454: the recogniser-miss JUMPDEST is instruction 2694 here (it was 2699),
 -- and this is the one pc in the table the regenerator could not rewrite, because 3454 has no image
 -- in the pc map -- R-ONE2 deleted the instruction it used to sit on, so the map row is empty and
@@ -32,40 +32,40 @@ def pcHit : Nat := 2855
 -- and `blk2889` is located there, so a stale 3454 makes `runLocatedBlock blk2889 (missState …)`
 -- return `none`.  Nothing but the build checked this def: it is a bare `Nat` with no tie to the
 -- artifact, unlike every `instructionPC`/`opAt`/`pushAt` fact around it.
-def pcMiss : Nat := 2884
-def pcAfterCsub0 : Nat := 2901
-def pcNegLoop : Nat := 2908
+def pcMiss : Nat := 2877
+def pcAfterCsub0 : Nat := 2894
+def pcNegLoop : Nat := 2901
 /-- The negation body after its store, before the exit test. -/
-def pcNegMid : Nat := 2925
-def pcNegDone : Nat := 2935
-def pcPreNewton : Nat := 2981
-def pcNewtonB : Nat := 3006
-def pcShiftLoop : Nat := 3059
-def pcShiftBody : Nat := 3066
-def pcEstimate : Nat := 3080
-def pcMacSetup : Nat := 3162
-def pcMacLoop : Nat := 3183
-def pcMid : Nat := 3348
+def pcNegMid : Nat := 2918
+def pcNegDone : Nat := 2928
+def pcPreNewton : Nat := 2974
+def pcNewtonB : Nat := 3002
+def pcShiftLoop : Nat := 3048
+def pcShiftBody : Nat := 3055
+def pcEstimate : Nat := 3069
+def pcMacSetup : Nat := 3151
+def pcMacLoop : Nat := 3167
+def pcMid : Nat := 3332
 /-- The limb-pass body after the pointer steps, before the exit test. -/
-def pcMacTail : Nat := 3339
-def pcAddLoop : Nat := 3397
-def pcAddInner : Nat := 3403
-def pcAddTail : Nat := 3446
+def pcMacTail : Nat := 3323
+def pcAddLoop : Nat := 3381
+def pcAddInner : Nat := 3387
+def pcAddTail : Nat := 3430
 /-- The add body after `OR`, before the pointer step and exit test. -/
-def pcAddMid : Nat := 3432
-def pcSubCheck : Nat := 3464
-def pcSubEntry : Nat := 3476
-def pcSubInner : Nat := 3482
-def pcSubTail : Nat := 3521
+def pcAddMid : Nat := 3416
+def pcSubCheck : Nat := 3448
+def pcSubEntry : Nat := 3460
+def pcSubInner : Nat := 3466
+def pcSubTail : Nat := 3505
 /-- The subtract body after `OR`, before the pointer step and exit test. -/
-def pcSubMid : Nat := 3506
-def pcCsubCall : Nat := 3378
+def pcSubMid : Nat := 3490
+def pcCsubCall : Nat := 3362
 /-- `UNC`: the middle block's jump target when `neg ||| TN ≠ 0`. -/
-def pcUnc : Nat := 3391
+def pcUnc : Nat := 3375
 /-- `CSUB(BASE)` returns straight to the shift loop head (`pcShiftLoop`); the call block
 already decremented the counter. -/
-def pcAfterCsub : Nat := 3059
-def pcShiftDone : Nat := 3535
+def pcAfterCsub : Nat := 3048
+def pcShiftDone : Nat := 3519
 
 /-- A state with the outer frame only. -/
 def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat) : State :=
@@ -129,7 +129,7 @@ def newtonBState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : Sta
 
 /-- The prologue state before storing the unrolled entry point. -/
 def cacheSetupState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  kState s mem 3042 n n bsize esize msize
+  kState s mem 3031 n n bsize esize msize
 
 /-- The shift loop head with `k` steps to go. -/
 def shiftLoopState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
@@ -152,8 +152,8 @@ def macSetupState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : 
 def macLoopState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k j : Nat) :
     State :=
   { s with pc := UInt256.ofNat (pcMacLoop + 39 * ShiftUnrollEntry.cellIndex n j)
-           stack := UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) j) ::
-             UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j) ::
+           stack := UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j) ::
+             UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935 ::
              UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 ::
              (Monpro.l1Step um q NEG n j).carry :: q :: UInt256.ofNat k ::
              outer n bsize esize msize
@@ -162,14 +162,14 @@ def macLoopState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize
 /-- The limb frame before the cached-entry dispatch. -/
 def macDispatchState (s : State) (um : ByteArray) (q : UInt256)
     (n bsize esize msize k : Nat) : State :=
-  { macLoopState s um q n bsize esize msize k 0 with pc := UInt256.ofNat 3178 }
+  { macLoopState s um q n bsize esize msize k 0 with pc := UInt256.ofNat 3162 }
 
 /-- The middle block entry: the two spent pointers still on the stack. -/
 def midState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat) :
     State :=
   { s with pc := UInt256.ofNat pcMid
-           stack := UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) n) ::
-             UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) n) ::
+           stack := UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) n) ::
+             UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935 ::
              UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 ::
              (Monpro.l1Step um q NEG n n).carry :: q :: UInt256.ofNat k ::
              outer n bsize esize msize

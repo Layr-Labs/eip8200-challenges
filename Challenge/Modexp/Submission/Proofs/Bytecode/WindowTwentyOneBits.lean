@@ -72,17 +72,17 @@ theorem lookupAddress_toNat (value : UInt256) (shift : Nat) (hshift : shift < 25
 /-- An exponent shifted by `processed` nibbles exposes the next twenty-one lookup
 addresses using the seven physical groups' shifts 247,243,...,167. -/
 theorem shifted_lookupAddress (exponent : UInt256) (processed index : Nat)
-    (hindex : index < 21) (hinside : processed + index < 64) :
+    (hpositive : 1 ≤ processed) (hindex : index < 21) (hinside : processed + index < 64) :
     (lookupAddress
-      (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed)))
-      (247 - 4 * index)).toNat =
+      (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed - 3)))
+      (244 - 4 * index)).toNat =
       32 * (exponent.toNat / 16 ^ (63 - (processed + index)) % 16) := by
   rw [lookupAddress_toNat _ _ (by omega), shiftLeft_toNat_mod _ _ (by omega)]
-  have hshift : 4 * processed ≤ 247 - 4 * index + 5 := by omega
-  have hbits : 247 - 4 * index + 5 + 4 ≤ 256 := by omega
-  rw [shifted_nibble_nat exponent.toNat (4 * processed)
-    (247 - 4 * index + 5) hshift hbits,
-    show 247 - 4 * index + 5 - 4 * processed =
+  have hshift : 4 * processed - 3 ≤ 244 - 4 * index + 5 := by omega
+  have hbits : 244 - 4 * index + 5 + 4 ≤ 256 := by omega
+  rw [shifted_nibble_nat exponent.toNat (4 * processed - 3)
+    (244 - 4 * index + 5) hshift hbits,
+    show 244 - 4 * index + 5 - (4 * processed - 3) =
       4 * (63 - (processed + index)) by omega,
     Nat.shiftRight_eq_div_pow]
   have hpow (n : Nat) : (2 : Nat) ^ (4 * n) = 16 ^ n := by
