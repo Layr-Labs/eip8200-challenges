@@ -25,7 +25,7 @@ theorem run_miss (s : State) (pc off limit : UInt256) (h : Compression.HashState
     unfold UInt256.eq
     rw [Word.word_toNat_ofNat]
     rw [Nat.mod_eq_of_lt hfit, if_neg hmiss]
-  simp (discharger := omega) [dispatchTemplate, frame, runInstrSeq, Stepper.runInstr,
+  simp (discharger := omega) [dispatchTemplate, frame, runInstrSeq, DataStepper.runInstr,
     hrun, hcap, heq, List.length_cons, List.getElem?_cons_zero, Nat.add_assoc, pcAfter, UInt256.succ, Instr.size,
     Word.literal_eq_ofNat, UInt256.isTrue]
   rfl
@@ -44,7 +44,7 @@ theorem run_hit (s : State) (pc off limit : UInt256) (h : Compression.HashState)
     rw [Nat.mod_eq_of_lt hfit, if_pos hhit]
   simp only [Word.word_toNat_ofNat] at hvalid
   norm_num only at hvalid
-  simp (discharger := omega) [dispatchTemplate, frame, runInstrSeq, Stepper.runInstr,
+  simp (discharger := omega) [dispatchTemplate, frame, runInstrSeq, DataStepper.runInstr,
     hrun, hcap, heq, List.length_cons, List.getElem?_cons_zero, Nat.add_assoc, hvalid, Word.literal_eq_ofNat, UInt256.isTrue]
 
 def callTemplate : List Instr :=
@@ -56,7 +56,7 @@ theorem run_call (s : State) (pc off limit : UInt256) (h : Compression.HashState
     runInstrSeq callTemplate {s with pc := pc, stack := frame h off limit rho} =
       some {s with pc := pcAfter pc callTemplate, stack := pointer off :: frame h off limit rho} := by
   have hcap (n : Nat) (hn : n ≤ 100) : rho.length + n < 1024 := by omega
-  simp (discharger := omega) [callTemplate, frame, pointer, runInstrSeq, Stepper.runInstr,
+  simp (discharger := omega) [callTemplate, frame, pointer, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, hrun, hcap,
     List.getElem?_cons_zero, Nat.add_assoc, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl

@@ -81,7 +81,7 @@ theorem run_template (s : State) (pc : UInt256) (q : Frame)
   have h19 : rho.length + 19 < 1024 := by omega
   have h20 : rho.length + 20 < 1024 := by omega
   simp (discharger := omega) [template, entryStack, resultStack, rawBoolean,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, h17, h18, h19, h20]
   rfl
@@ -160,7 +160,7 @@ theorem run_firstTTemplate (s : State) (pc value : UInt256) (q : Frame)
   have hcap (n : Nat) (hn : n ≤ 18) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [firstTTemplate, firstTEntry, afterTStack,
     rawT, rawRotation, rawProduct, rawSum, runInstrSeq,
-    Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap]
   exact ⟨rfl, rfl⟩
 
@@ -190,7 +190,7 @@ theorem run_firstC10Template (s : State) (pc value : UInt256) (q : Frame)
       some {s with pc := pcAfter pc firstC10Template, stack := afterC10Stack q value rho} := by
   have hcap (n : Nat) (hn : n ≤ 16) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [firstC10Template, afterTStack, afterC10Stack,
-    rawC10, runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter,
+    rawC10, runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter,
     UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hcap]
   exact ⟨rfl, rfl⟩
@@ -233,7 +233,7 @@ theorem run_secondBooleanTemplate (s : State) (pc first : UInt256) (q : Frame)
       some {s with pc := pcAfter pc secondBooleanTemplate, stack := secondTEntry q first (rawBoolean (secondFrame q first)) rho} := by
   have hcap (n : Nat) (hn : n ≤ 17) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [secondBooleanTemplate, afterC10Stack, secondTEntry,
-    secondFrame, rawBoolean, runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
+    secondFrame, rawBoolean, runInstrSeq, Challenge.EvmProof.DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hcap]
   rfl
@@ -278,7 +278,7 @@ theorem run_secondTTemplate (s : State) (pc first value : UInt256) (q : Frame)
   have hcap (n : Nat) (hn : n ≤ 15) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [secondTTemplate, secondTEntry, secondTStack,
     rawT, rawRotation, rawProduct, rawSum, secondFrame, runInstrSeq,
-    Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+    Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap]
   exact ⟨rfl, rfl⟩
 
@@ -304,7 +304,7 @@ theorem run_secondC10Template (s : State) (pc first value : UInt256) (q : Frame)
       some {s with pc := pcAfter pc secondC10Template, stack := secondC10Stack q first value rho} := by
   have hcap (n : Nat) (hn : n ≤ 13) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [secondC10Template, secondTStack, secondC10Stack,
-    rawC10, secondFrame, runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
+    rawC10, secondFrame, runInstrSeq, Challenge.EvmProof.DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hcap]
   exact ⟨rfl, rfl⟩
@@ -325,7 +325,7 @@ theorem run_returnTemplate (s : State) (pc first value : UInt256) (q : Frame)
       some {s with pc := q.ret, stack := returnedStack q first value rho} := by
   have hcap (n : Nat) (hn : n ≤ 11) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [returnTemplate, secondC10Stack, returnedStack,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, List.exchange,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, List.exchange,
     List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap, hvalid]
 
 
@@ -833,7 +833,7 @@ theorem run_inline0Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [push0_toNat, inline0Template, inline0Entry, inline0Output,
     inlineT, inlineRotation, inline0Frame, inline0Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -915,7 +915,7 @@ theorem run_inline1Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline1Template, inline1Entry, inline1Output,
     inlineT, inlineRotation, inline1Frame, inline0Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -997,7 +997,7 @@ theorem run_inline2Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline2Template, inline2Entry, inline2Output,
     inlineT, inlineRotation, inline2Frame, inline0Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -1079,7 +1079,7 @@ theorem run_inline3Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline3Template, inline3Entry, inline3Output,
     inlineT, inlineRotation, inline3Frame, inline0Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -1161,7 +1161,7 @@ theorem run_inline4Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline4Template, inline4Entry, inline4Output,
     inlineT, inlineRotation, inline4Frame, inline0Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -1243,7 +1243,7 @@ theorem run_inline5Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline5Template, inline5Entry, inline5Output,
     inlineT, inlineRotation, inline5Frame, inline0Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -1325,7 +1325,7 @@ theorem run_inline6Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline6Template, inline6Entry, inline6Output,
     inlineT, inlineRotation, inline6Frame, inline0Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -1407,7 +1407,7 @@ theorem run_inline7Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline7Template, inline7Entry, inline7Output,
     inlineT, inlineRotation, inline7Frame, inline0Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -1489,7 +1489,7 @@ theorem run_inline8Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline8Template, inline8Entry, inline8Output,
     inlineT, inlineRotation, inline8Frame, inline0Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -1571,7 +1571,7 @@ theorem run_inline9Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline9Template, inline9Entry, inline9Output,
     inlineT, inlineRotation, inline9Frame, inline0Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -1653,7 +1653,7 @@ theorem run_inline10Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline10Template, inline10Entry, inline10Output,
     inlineT, inlineRotation, inline10Frame, inline0Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -1735,7 +1735,7 @@ theorem run_inline11Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline11Template, inline11Entry, inline11Output,
     inlineT, inlineRotation, inline11Frame, inline0Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -1817,7 +1817,7 @@ theorem run_inline12Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline12Template, inline12Entry, inline12Output,
     inlineT, inlineRotation, inline12Frame, inline0Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -1899,7 +1899,7 @@ theorem run_inline13Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline13Template, inline13Entry, inline13Output,
     inlineT, inlineRotation, inline13Frame, inline0Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -1981,7 +1981,7 @@ theorem run_inline14Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline14Template, inline14Entry, inline14Output,
     inlineT, inlineRotation, inline14Frame, inline0Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -2063,7 +2063,7 @@ theorem run_inline15Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline15Template, inline15Entry, inline15Output,
     inlineT, inlineRotation, inline15Frame, inline0Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -2150,7 +2150,7 @@ theorem run_inline18Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline18Template, inline18Entry, inline18Output,
     inlineT, inlineRotation, inline18Frame, rawBoolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -2238,7 +2238,7 @@ theorem run_inline19Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline19Template, inline19Entry, inline19Output,
     inlineT, inlineRotation, inline19Frame, rawBoolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -2316,7 +2316,7 @@ theorem run_inline24Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline24Template, inline24Entry, inline24Output,
     singleT, inline24Frame, rawBoolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -2404,7 +2404,7 @@ theorem run_inline25Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [push0_toNat, inline25Template, inline25Entry, inline25Output,
     inlineT, inlineRotation, inline25Frame, rawBoolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -2482,7 +2482,7 @@ theorem run_inline30Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline30Template, inline30Entry, inline30Output,
     singleT, inline30Frame, rawBoolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -2570,7 +2570,7 @@ theorem run_inline31Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline31Template, inline31Entry, inline31Output,
     inlineT, inlineRotation, inline31Frame, rawBoolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -2647,7 +2647,7 @@ theorem run_inline32Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline32Template, inline32Entry, inline32Output,
     inlineT, inlineRotation, inline32Frame, inline2Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -2724,7 +2724,7 @@ theorem run_inline33Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline33Template, inline33Entry, inline33Output,
     inlineT, inlineRotation, inline33Frame, inline2Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -2801,7 +2801,7 @@ theorem run_inline34Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline34Template, inline34Entry, inline34Output,
     inlineT, inlineRotation, inline34Frame, inline2Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -2878,7 +2878,7 @@ theorem run_inline35Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline35Template, inline35Entry, inline35Output,
     inlineT, inlineRotation, inline35Frame, inline2Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -2955,7 +2955,7 @@ theorem run_inline36Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline36Template, inline36Entry, inline36Output,
     inlineT, inlineRotation, inline36Frame, inline2Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -3032,7 +3032,7 @@ theorem run_inline37Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline37Template, inline37Entry, inline37Output,
     inlineT, inlineRotation, inline37Frame, inline2Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -3109,7 +3109,7 @@ theorem run_inline38Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline38Template, inline38Entry, inline38Output,
     inlineT, inlineRotation, inline38Frame, inline2Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -3186,7 +3186,7 @@ theorem run_inline39Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline39Template, inline39Entry, inline39Output,
     inlineT, inlineRotation, inline39Frame, inline2Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -3263,7 +3263,7 @@ theorem run_inline40Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline40Template, inline40Entry, inline40Output,
     inlineT, inlineRotation, inline40Frame, inline2Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -3340,7 +3340,7 @@ theorem run_inline41Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline41Template, inline41Entry, inline41Output,
     inlineT, inlineRotation, inline41Frame, inline2Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -3417,7 +3417,7 @@ theorem run_inline42Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [push0_toNat, inline42Template, inline42Entry, inline42Output,
     inlineT, inlineRotation, inline42Frame, inline2Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -3494,7 +3494,7 @@ theorem run_inline43Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline43Template, inline43Entry, inline43Output,
     inlineT, inlineRotation, inline43Frame, inline2Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -3571,7 +3571,7 @@ theorem run_inline44Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline44Template, inline44Entry, inline44Output,
     inlineT, inlineRotation, inline44Frame, inline2Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -3648,7 +3648,7 @@ theorem run_inline45Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline45Template, inline45Entry, inline45Output,
     inlineT, inlineRotation, inline45Frame, inline2Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -3716,7 +3716,7 @@ theorem run_inline46Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline46Template, inline46Entry, inline46Output,
     singleT, inline46Frame, inline2Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -3784,7 +3784,7 @@ theorem run_inline47Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline47Template, inline47Entry, inline47Output,
     singleT, inline47Frame, inline2Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -3872,7 +3872,7 @@ theorem run_inline48Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline48Template, inline48Entry, inline48Output,
     inlineT, inlineRotation, inline48Frame, inline3Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -3960,7 +3960,7 @@ theorem run_inline49Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline49Template, inline49Entry, inline49Output,
     inlineT, inlineRotation, inline49Frame, inline3Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -4048,7 +4048,7 @@ theorem run_inline50Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline50Template, inline50Entry, inline50Output,
     inlineT, inlineRotation, inline50Frame, inline3Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -4136,7 +4136,7 @@ theorem run_inline51Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline51Template, inline51Entry, inline51Output,
     inlineT, inlineRotation, inline51Frame, inline3Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -4215,7 +4215,7 @@ theorem run_inline52Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [push0_toNat, inline52Template, inline52Entry, inline52Output,
     singleT, inline52Frame, inline3Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -4303,7 +4303,7 @@ theorem run_inline53Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline53Template, inline53Entry, inline53Output,
     inlineT, inlineRotation, inline53Frame, inline3Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -4391,7 +4391,7 @@ theorem run_inline54Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline54Template, inline54Entry, inline54Output,
     inlineT, inlineRotation, inline54Frame, inline3Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -4479,7 +4479,7 @@ theorem run_inline55Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline55Template, inline55Entry, inline55Output,
     inlineT, inlineRotation, inline55Frame, inline3Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -4567,7 +4567,7 @@ theorem run_inline56Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline56Template, inline56Entry, inline56Output,
     inlineT, inlineRotation, inline56Frame, inline3Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -4655,7 +4655,7 @@ theorem run_inline57Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline57Template, inline57Entry, inline57Output,
     inlineT, inlineRotation, inline57Frame, inline3Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -4743,7 +4743,7 @@ theorem run_inline58Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline58Template, inline58Entry, inline58Output,
     inlineT, inlineRotation, inline58Frame, inline3Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -4831,7 +4831,7 @@ theorem run_inline59Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline59Template, inline59Entry, inline59Output,
     inlineT, inlineRotation, inline59Frame, inline3Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -4919,7 +4919,7 @@ theorem run_inline60Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline60Template, inline60Entry, inline60Output,
     inlineT, inlineRotation, inline60Frame, inline3Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -5007,7 +5007,7 @@ theorem run_inline61Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline61Template, inline61Entry, inline61Output,
     inlineT, inlineRotation, inline61Frame, inline3Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -5095,7 +5095,7 @@ theorem run_inline62Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline62Template, inline62Entry, inline62Output,
     inlineT, inlineRotation, inline62Frame, inline3Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -5183,7 +5183,7 @@ theorem run_inline63Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline63Template, inline63Entry, inline63Output,
     inlineT, inlineRotation, inline63Frame, inline3Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -5265,7 +5265,7 @@ theorem run_inline64Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline64Template, inline64Entry, inline64Output,
     inlineT, inlineRotation, inline64Frame, inline4Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -5347,7 +5347,7 @@ theorem run_inline65Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [push0_toNat, inline65Template, inline65Entry, inline65Output,
     inlineT, inlineRotation, inline65Frame, inline4Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -5429,7 +5429,7 @@ theorem run_inline66Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline66Template, inline66Entry, inline66Output,
     inlineT, inlineRotation, inline66Frame, inline4Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -5511,7 +5511,7 @@ theorem run_inline67Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline67Template, inline67Entry, inline67Output,
     inlineT, inlineRotation, inline67Frame, inline4Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -5593,7 +5593,7 @@ theorem run_inline68Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline68Template, inline68Entry, inline68Output,
     inlineT, inlineRotation, inline68Frame, inline4Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -5675,7 +5675,7 @@ theorem run_inline69Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline69Template, inline69Entry, inline69Output,
     inlineT, inlineRotation, inline69Frame, inline4Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -5757,7 +5757,7 @@ theorem run_inline70Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline70Template, inline70Entry, inline70Output,
     inlineT, inlineRotation, inline70Frame, inline4Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -5839,7 +5839,7 @@ theorem run_inline71Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline71Template, inline71Entry, inline71Output,
     inlineT, inlineRotation, inline71Frame, inline4Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -5921,7 +5921,7 @@ theorem run_inline72Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline72Template, inline72Entry, inline72Output,
     inlineT, inlineRotation, inline72Frame, inline4Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -6003,7 +6003,7 @@ theorem run_inline73Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline73Template, inline73Entry, inline73Output,
     inlineT, inlineRotation, inline73Frame, inline4Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -6085,7 +6085,7 @@ theorem run_inline74Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline74Template, inline74Entry, inline74Output,
     inlineT, inlineRotation, inline74Frame, inline4Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -6167,7 +6167,7 @@ theorem run_inline75Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline75Template, inline75Entry, inline75Output,
     inlineT, inlineRotation, inline75Frame, inline4Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -6249,7 +6249,7 @@ theorem run_inline76Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline76Template, inline76Entry, inline76Output,
     inlineT, inlineRotation, inline76Frame, inline4Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -6331,7 +6331,7 @@ theorem run_inline77Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline77Template, inline77Entry, inline77Output,
     inlineT, inlineRotation, inline77Frame, inline4Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -6413,7 +6413,7 @@ theorem run_inline78Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline78Template, inline78Entry, inline78Output,
     inlineT, inlineRotation, inline78Frame, inline4Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -6495,7 +6495,7 @@ theorem run_inline79Template (s : State) (pc : UInt256) (q : Frame)
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline79Template, inline79Entry, inline79Output,
     inlineT, inlineRotation, inline79Frame, inline4Boolean, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -6550,7 +6550,7 @@ theorem run_call16Template (s : State) (pc : UInt256) (q : Frame)
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [call16Template, call16Entry, call16Frame, entryStack,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, UInt256.succ,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat, hvalid]
@@ -6597,7 +6597,7 @@ theorem run_call20Template (s : State) (pc : UInt256) (q : Frame)
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [call20Template, call20Entry, call20Frame, entryStack,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, UInt256.succ,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat, hvalid]
@@ -6646,7 +6646,7 @@ theorem run_call22Template (s : State) (pc : UInt256) (q : Frame)
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [call22Template, call22Entry, call22Frame, entryStack,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, UInt256.succ,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat, hvalid]
@@ -6693,7 +6693,7 @@ theorem run_call26Template (s : State) (pc : UInt256) (q : Frame)
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [call26Template, call26Entry, call26Frame, entryStack,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, UInt256.succ,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat, hvalid]
@@ -6742,7 +6742,7 @@ theorem run_call28Template (s : State) (pc : UInt256) (q : Frame)
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) =
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [call28Template, call28Entry, call28Frame, entryStack,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, UInt256.succ,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat, hvalid]
@@ -6762,7 +6762,7 @@ theorem run_group0Template (s : State) (pc : UInt256) (q : Frame)
       some {s with pc := pcAfter pc group0Template, stack := group0Output q rho} := by
   have hcap (n : Nat) (hn : n ≤ 10) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [group0Template, group0Entry, group0Output,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter,
     Instr.size, Nat.add_assoc, hrun, hcap]
 
 
@@ -6783,7 +6783,7 @@ theorem run_group16Template (s : State) (pc : UInt256) (q : Frame)
       some {s with pc := pcAfter pc group16Template, stack := group16Output q rho} := by
   have hcap (n : Nat) (hn : n ≤ 10) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [group16Template, group16Entry, group16Output,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap]
   rfl
 
@@ -6803,7 +6803,7 @@ theorem run_return18Template (s : State) (pc : UInt256) (q : Frame)
       some {s with pc := pcAfter pc return18Template, stack := return18Output q rho} := by
   have hcap (n : Nat) (hn : n ≤ 10) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [return18Template, return18Entry, return18Output,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, Nat.add_assoc, hrun, hcap]
   rfl
 
@@ -6823,7 +6823,7 @@ theorem run_return24Template (s : State) (pc : UInt256) (q : Frame)
       some {s with pc := pcAfter pc return24Template, stack := return24Output q rho} := by
   have hcap (n : Nat) (hn : n ≤ 10) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [return24Template, return24Entry, return24Output,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, Nat.add_assoc, hrun, hcap]
   rfl
 
@@ -6843,7 +6843,7 @@ theorem run_return30Template (s : State) (pc : UInt256) (q : Frame)
       some {s with pc := pcAfter pc return30Template, stack := return30Output q rho} := by
   have hcap (n : Nat) (hn : n ≤ 10) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [return30Template, return30Entry, return30Output,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, Nat.add_assoc, hrun, hcap]
   rfl
 
@@ -6865,7 +6865,7 @@ theorem run_group32Template (s : State) (pc : UInt256) (q : Frame)
       some {s with pc := pcAfter pc group32Template, stack := group32Output q rho} := by
   have hcap (n : Nat) (hn : n ≤ 10) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [group32Template, group32Entry, group32Output,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap]
   rfl
 
@@ -6887,7 +6887,7 @@ theorem run_group48Template (s : State) (pc : UInt256) (q : Frame)
       some {s with pc := pcAfter pc group48Template, stack := group48Output q rho} := by
   have hcap (n : Nat) (hn : n ≤ 10) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [group48Template, group48Entry, group48Output,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap]
   rfl
 
@@ -6909,7 +6909,7 @@ theorem run_group64Template (s : State) (pc : UInt256) (q : Frame)
       some {s with pc := pcAfter pc group64Template, stack := group64Output q rho} := by
   have hcap (n : Nat) (hn : n ≤ 10) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [group64Template, group64Entry, group64Output,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap]
   rfl
 
@@ -6930,7 +6930,7 @@ theorem run_coreExitTemplate (s : State) (pc : UInt256) (q : Frame)
       some {s with pc := pcAfter pc coreExitTemplate, stack := coreExitOutput q rho} := by
   have hcap (n : Nat) (hn : n ≤ 10) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [coreExitTemplate, coreExitEntry, coreExitOutput,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap]
   rfl
 
@@ -7646,16 +7646,16 @@ open Challenge.EvmProof StackRoundTemplate
 
 /-- Contiguous fetch only requires advancement before the last instruction. -/
 theorem runLocatedBlock_eq_raw_terminal_sites
-    {artifact : ProgramArtifact} {fork : Fork}
+    {artifact : DataProgramArtifact} {fork : Fork}
     (sites : List (LocatedSite artifact fork)) (template : List Instr)
     (hinst : sites.map (fun site => site.located.instruction) = template)
     (hcont : Contiguous sites) (s : State)
     (hhead : headPC sites = some s.pc)
     (hadvance : ∀ site, site ∈ sites.dropLast →
       ∀ {u v : State},
-        Challenge.EvmProof.Stepper.runInstr site.located.instruction u = some v →
+        Challenge.EvmProof.DataStepper.runInstr site.located.instruction u = some v →
           v.pc = u.pc + UInt256.ofNat site.located.instruction.size) :
-    Challenge.EvmProof.Stepper.runLocatedBlock (LocatedSite.path sites) s =
+    Challenge.EvmProof.DataStepper.runLocatedBlock (LocatedSite.path sites) s =
       runInstrSeq template s := by
   induction sites generalizing template s with
   | nil =>
@@ -7668,13 +7668,13 @@ theorem runLocatedBlock_eq_raw_terminal_sites
           have htemplate : template = [first.located.instruction] := by
             simpa [LocatedSite.path] using hinst.symm
           subst template
-          have hrun : Challenge.EvmProof.Stepper.runLocated first.located s =
-              Challenge.EvmProof.Stepper.runInstr first.located.instruction s := by
-            simp [Challenge.EvmProof.Stepper.runLocated, first.pc_eq, hpc]
-          change (match Challenge.EvmProof.Stepper.runLocated first.located s with
+          have hrun : Challenge.EvmProof.DataStepper.runLocated first.located s =
+              Challenge.EvmProof.DataStepper.runInstr first.located.instruction s := by
+            simp [Challenge.EvmProof.DataStepper.runLocated, first.pc_eq, hpc]
+          change (match Challenge.EvmProof.DataStepper.runLocated first.located s with
             | none => none
             | some next => some next) =
-            (match Challenge.EvmProof.Stepper.runInstr first.located.instruction s with
+            (match Challenge.EvmProof.DataStepper.runInstr first.located.instruction s with
             | none => none
             | some next => some next)
           rw [hrun]
@@ -7682,7 +7682,7 @@ theorem runLocatedBlock_eq_raw_terminal_sites
           have hpc : s.pc = first.pc := by
             simpa [headPC] using hhead.symm
           have hrun : ∀ {u v : State},
-              Challenge.EvmProof.Stepper.runInstr first.located.instruction u = some v →
+              Challenge.EvmProof.DataStepper.runInstr first.located.instruction u = some v →
                 v.pc = u.pc + UInt256.ofNat first.located.instruction.size := by
             intro u v hresult
             exact hadvance first (by simp) hresult
@@ -7693,15 +7693,15 @@ theorem runLocatedBlock_eq_raw_terminal_sites
           subst template
           have hadvanceTail : ∀ site, site ∈ (second :: tail).dropLast →
               ∀ {u v : State},
-                Challenge.EvmProof.Stepper.runInstr site.located.instruction u = some v →
+                Challenge.EvmProof.DataStepper.runInstr site.located.instruction u = some v →
                   v.pc = u.pc + UInt256.ofNat site.located.instruction.size := by
             intro site hmem u v hresult
             exact hadvance site (by simp only [List.dropLast_cons_cons]; exact List.mem_cons_of_mem first hmem) hresult
           cases hrunFirst :
-              Challenge.EvmProof.Stepper.runInstr first.located.instruction s with
+              Challenge.EvmProof.DataStepper.runInstr first.located.instruction s with
           | none =>
-              simp [LocatedSite.path, Challenge.EvmProof.Stepper.runLocatedBlock,
-                runInstrSeq, Challenge.EvmProof.Stepper.runLocated,
+              simp [LocatedSite.path, Challenge.EvmProof.DataStepper.runLocatedBlock,
+                runInstrSeq, Challenge.EvmProof.DataStepper.runLocated,
                 first.pc_eq, hpc, hrunFirst]
           | some next =>
               have hnextPC' : next.pc = second.pc := by
@@ -7719,16 +7719,16 @@ theorem runLocatedBlock_eq_raw_terminal_sites
               cases hhalt : next.halt with
               | Running =>
                   have hloc :
-                      Challenge.EvmProof.Stepper.runLocated first.located s = some next := by
-                    simp [Challenge.EvmProof.Stepper.runLocated, first.pc_eq, hpc, hrunFirst]
-                  change (match Challenge.EvmProof.Stepper.runLocated first.located s with
+                      Challenge.EvmProof.DataStepper.runLocated first.located s = some next := by
+                    simp [Challenge.EvmProof.DataStepper.runLocated, first.pc_eq, hpc, hrunFirst]
+                  change (match Challenge.EvmProof.DataStepper.runLocated first.located s with
                     | none => none
                     | some next' =>
                         match (second :: tail).map (fun site => site.located) with
                         | [] => some next'
                         | _ :: _ =>
                             match next'.halt with
-                            | .Running => Challenge.EvmProof.Stepper.runLocatedBlock
+                            | .Running => Challenge.EvmProof.DataStepper.runLocatedBlock
                                 ((second :: tail).map (fun site => site.located)) next'
                             | _ => none) =
                     runInstrSeq (first.located.instruction ::
@@ -7740,31 +7740,31 @@ theorem runLocatedBlock_eq_raw_terminal_sites
                   exact htail
               | Success =>
                   simp [LocatedSite.path,
-                    Challenge.EvmProof.Stepper.runLocatedBlock,
-                    runInstrSeq, Challenge.EvmProof.Stepper.runLocated,
+                    Challenge.EvmProof.DataStepper.runLocatedBlock,
+                    runInstrSeq, Challenge.EvmProof.DataStepper.runLocated,
                     first.pc_eq, hpc, hrunFirst, hhalt]
               | Returned =>
                   simp [LocatedSite.path,
-                    Challenge.EvmProof.Stepper.runLocatedBlock,
-                    runInstrSeq, Challenge.EvmProof.Stepper.runLocated,
+                    Challenge.EvmProof.DataStepper.runLocatedBlock,
+                    runInstrSeq, Challenge.EvmProof.DataStepper.runLocated,
                     first.pc_eq, hpc, hrunFirst, hhalt]
               | Reverted =>
                   simp [LocatedSite.path,
-                    Challenge.EvmProof.Stepper.runLocatedBlock,
-                    runInstrSeq, Challenge.EvmProof.Stepper.runLocated,
+                    Challenge.EvmProof.DataStepper.runLocatedBlock,
+                    runInstrSeq, Challenge.EvmProof.DataStepper.runLocated,
                     first.pc_eq, hpc, hrunFirst, hhalt]
               | Exception error =>
                   simp [LocatedSite.path,
-                    Challenge.EvmProof.Stepper.runLocatedBlock,
-                    runInstrSeq, Challenge.EvmProof.Stepper.runLocated,
+                    Challenge.EvmProof.DataStepper.runLocatedBlock,
+                    runInstrSeq, Challenge.EvmProof.DataStepper.runLocated,
                     first.pc_eq, hpc, hrunFirst, hhalt]
 
 
-theorem runLocatedBlock_eq_raw_terminal {artifact : ProgramArtifact} {fork : Fork}
+theorem runLocatedBlock_eq_raw_terminal {artifact : DataProgramArtifact} {fork : Fork}
     {code : List Instr} (site : GenericRoundSite artifact fork code)
     (s : State) (hpc : s.pc = site.startPC)
     (hform : ∀ instruction ∈ code.dropLast, DenseScheduleLift.Advances instruction) :
-    Stepper.runLocatedBlock site.path s = runInstrSeq code s := by
+    DataStepper.runLocatedBlock site.path s = runInstrSeq code s := by
   apply runLocatedBlock_eq_raw_terminal_sites site.sites code
     site.instruction_eq site.contiguous s
   · rw [site.head_eq]
@@ -7779,7 +7779,7 @@ theorem runLocatedBlock_eq_raw_terminal {artifact : ProgramArtifact} {fork : For
     exact h
 
 
-def gasSteps_terminal_of_raw {artifact : ProgramArtifact} {fork : Fork}
+def gasSteps_terminal_of_raw {artifact : DataProgramArtifact} {fork : Fork}
     {code : List Instr} (site : GenericRoundSite artifact fork code)
     (s t : State) (hcode : s.executionEnv.code = artifact.code) (hfork : s.fork = fork)
     (hrun : s.halt = .Running)
@@ -7788,7 +7788,7 @@ def gasSteps_terminal_of_raw {artifact : ProgramArtifact} {fork : Fork}
     (hpc : s.pc = site.startPC)
     (hform : ∀ instruction ∈ code.dropLast, DenseScheduleLift.Advances instruction)
     (hresult : runInstrSeq code s = some t) : GasSteps s t := by
-  apply Stepper.runLocatedBlock_sound artifact fork site.path hcode hfork
+  apply DataStepper.runLocatedBlock_sound artifact fork site.path hcode hfork
   · rw [runLocatedBlock_eq_raw_terminal site s hpc hform]
     exact hresult
   · exact hrun
@@ -7851,7 +7851,7 @@ theorem inline0Template_terminal_advances :
   decide
 
 
-def gasSteps_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
+def gasSteps_fullTemplate {artifact : DataProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork fullTemplate) (s : State)
     (q : Frame) (rho : List UInt256) (hstack : rho.length ≤ 1002)
     (hrun : s.halt = .Running)
@@ -7868,7 +7868,7 @@ def gasSteps_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
 
 /-- Metered execution for the same exact logical frame transition as CoreBlock. -/
 structure CoreGasBlock {a b : Nat} {xs ys : List CoreReg}
-    (block : CoreBlock a b xs ys) (artifact : ProgramArtifact) (fork : Fork) where
+    (block : CoreBlock a b xs ys) (artifact : DataProgramArtifact) (fork : Fork) where
   run : ∀ (s : State) (f : CoreFrame) (rho : List UInt256),
     rho.length ≤ 1002 → s.halt = .Running → 23 ≤ s.activeWords.toNat →
     CoreJumpValid s → s.executionEnv.code = artifact.code → s.fork = fork →
@@ -7878,7 +7878,7 @@ structure CoreGasBlock {a b : Nat} {xs ys : List CoreReg}
       {s with pc := UInt256.ofNat b, stack := coreStack ys (block.eval s.memory f) rho}
 
 def CoreGasBlock.of_site {a b : Nat} {xs ys : List CoreReg}
-    (block : CoreBlock a b xs ys) {artifact : ProgramArtifact} {fork : Fork}
+    (block : CoreBlock a b xs ys) {artifact : DataProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork block.code)
     (hpc : site.startPC = UInt256.ofNat a)
     (hform : ∀ instruction ∈ block.code.dropLast, DenseScheduleLift.Advances instruction) :
@@ -7888,7 +7888,7 @@ def CoreGasBlock.of_site {a b : Nat} {xs ys : List CoreReg}
     exact gasSteps_terminal_of_raw site _ _ hcode hfork hrun hnp hpc.symm hform
       (block.run s f rho hstack hrun hactive hvalid)
 
-inductive CoreGasChain (artifact : ProgramArtifact) (fork : Fork) :
+inductive CoreGasChain (artifact : DataProgramArtifact) (fork : Fork) :
     {a b : Nat} → {xs ys : List CoreReg} → CoreChain a xs b ys → Type where
   | nil (pc : Nat) (shape : List CoreReg) :
       CoreGasChain artifact fork (.nil pc shape)
@@ -7898,7 +7898,7 @@ inductive CoreGasChain (artifact : ProgramArtifact) (fork : Fork) :
       (rest : CoreGasChain artifact fork tail) :
       CoreGasChain artifact fork (.cons block tail)
 
-def CoreGasChain.run {artifact : ProgramArtifact} {fork : Fork}
+def CoreGasChain.run {artifact : DataProgramArtifact} {fork : Fork}
     {a b : Nat} {xs ys : List CoreReg} {chain : CoreChain a xs b ys}
     (steps : CoreGasChain artifact fork chain) (s : State) (f : CoreFrame)
     (rho : List UInt256)
@@ -8339,7 +8339,7 @@ theorem runInstrSeq_append_tail
       cases hfirst
       exact hwhole
   | cons instruction rest ih =>
-      cases hrun : Challenge.EvmProof.Stepper.runInstr instruction s with
+      cases hrun : Challenge.EvmProof.DataStepper.runInstr instruction s with
       | none =>
           simp [runInstrSeq, hrun] at hfirst
       | some next =>
@@ -8373,7 +8373,7 @@ theorem runInstrSeq_append_tail
                   simp [runInstrSeq, hrun, hhalt] at hfirst
 
 /-- Each physical window has its own exact bytecode binding; calls share one helper. -/
-structure WholeCoreSites (artifact : ProgramArtifact) (fork : Fork) where
+structure WholeCoreSites (artifact : DataProgramArtifact) (fork : Fork) where
   group0 : {site : GenericRoundSite artifact fork group0Template // site.startPC = UInt256.ofNat 960}
   inline0 : {site : GenericRoundSite artifact fork inline0Template // site.startPC = UInt256.ofNat 981}
   inline1 : {site : GenericRoundSite artifact fork inline1Template // site.startPC = UInt256.ofNat 1034}

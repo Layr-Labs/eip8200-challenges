@@ -19,7 +19,7 @@ theorem run_drop (s : State) (pc ret : UInt256) (p : Nat) (rest : List UInt256)
     runInstrSeq dropTemplate {s with pc := pc, stack := UInt256.ofNat p :: ret :: rest} =
       some {s with pc := pcAfter pc dropTemplate, stack := ret :: rest} := by
   have hcap (n : Nat) (hn : n ≤ 4) : rest.length + n < 1024 := by omega
-  simp (discharger := omega) [dropTemplate, runInstrSeq, Stepper.runInstr, pcAfter,
+  simp (discharger := omega) [dropTemplate, runInstrSeq, DataStepper.runInstr, pcAfter,
     UInt256.succ, Instr.size, hrun, hcap, List.length_cons, Nat.add_assoc]
   rfl
 
@@ -60,7 +60,7 @@ theorem run_template (s : State) (pc ret : UInt256) (p touch : Nat) (rest : List
       some {s with pc := pcAfter pc (template touch), stack := (ret :: rest), activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
   have hcap (n : Nat) (hn : n ≤ 4) : rest.length + n < 1024 := by omega
   have ha := active_eq s p touch hbound halign htouch
-  simp (discharger := omega) [template, runInstrSeq, Stepper.runInstr, pcAfter,
+  simp (discharger := omega) [template, runInstrSeq, DataStepper.runInstr, pcAfter,
     UInt256.succ, Instr.size, hrun, hcap, List.length_cons, Nat.add_assoc,
     State.activeWordsAfterUInt256, ha]
   rfl

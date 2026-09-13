@@ -9,7 +9,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionReturn
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open RecognitionSites RecognitionSelectorRaw RecognitionSelectorResult
 
-def source (s : State) : UInt256 := selected (UInt256.ofNat 4885) s.executionEnv.calldata.size
+def source (s : State) : UInt256 := selected (UInt256.ofNat 4951) s.executionEnv.calldata.size
 
 def beforeCopy (s : State) (rho : List UInt256) : State :=
   atState s 338 (12 :: source s :: 20 :: rho)
@@ -46,7 +46,7 @@ def gasSteps (s : State) (e : Env s) (rho : List UInt256)
     GasSteps (atState s 318 rho) (output s rho) := by
   have hp : StackRoundTrace.runInstrSeq RecognitionSites.selector.template
       (atState s 318 rho) = some (beforeCopy s rho) := by
-    have h := run_prefix s (UInt256.ofNat 318) (UInt256.ofNat 4885) rho (by omega) e.run
+    have h := run_prefix s (UInt256.ofNat 318) (UInt256.ofNat 4951) rho (by omega) e.run
     simpa only [RecognitionSites.selector.end_pc, beforeCopy, atState, source] using h
   have gp := RecognitionSites.selector.lift s (beforeCopy s rho) e rho hp
   have gc : GasSteps (beforeCopy s rho) (afterCopy s rho) :=

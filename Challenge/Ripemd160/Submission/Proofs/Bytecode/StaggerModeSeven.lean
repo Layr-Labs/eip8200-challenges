@@ -93,8 +93,11 @@ theorem step_eq (i : Nat) (message : UInt256) (q : WordLane)
     rw [step, if_pos he, physicalKey, if_pos he,
       sum_eq q.a q.b q.c q.d message (StaggerAlgorithm.key i) hb hc hd]
     rw [StaggerTerminal75.step, if_neg hterminal]
+    have ha : ¬ StaggerAdaptiveWord.usesAdaptive Crypto.Ripemd160.s[i]! Crypto.Ripemd160.sP[i + 3]! := by
+      have hi : i = 45 ∨ i = 46 ∨ i = 47 := by unfold enabled at he; omega
+      rcases hi with rfl | rfl | rfl <;> decide
     unfold StaggerAlgorithm.step StaggerAlgorithm.physicalKey
-    rw [hm]
+    rw [if_neg ha, hm]
     rfl
   · exact if_neg he
 

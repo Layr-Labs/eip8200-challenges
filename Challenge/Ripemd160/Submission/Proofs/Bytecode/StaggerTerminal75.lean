@@ -70,7 +70,7 @@ theorem final_shape (message : Nat → UInt256) (words : Nat → UInt32)
       (words Crypto.Ripemd160.rP[79]!).toBitVec) := by
       apply bits_injective
       rw [bits_word]
-      obtain ⟨jl, jr, ⟨-, -, -, h0l, h0r⟩, hmsg⟩ := hm 76 (by decide)
+      obtain ⟨jl, jr, ⟨-, -, -, h0l, h0r, _⟩, hmsg⟩ := hm 76 (by decide)
       rw [h0l (by decide), h0r (by decide)] at hmsg
       rw [hmsg, show StaggerRound.junk 0 0 = (0 : BitVec 256) from rfl]
       exact BitVec.add_zero _

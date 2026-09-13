@@ -1,4 +1,4 @@
-import Challenge.EvmProof.Meter
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataMeter
 import Challenge.Ripemd160.Submission.Bytecode
 import Challenge.Ripemd160.Spec
 
@@ -9,7 +9,7 @@ set_option warningAsError true
 
 This file records the closed form measured for the frozen reference bytecode
 and proves its arithmetic properties.  Memory expansion is kept as
-`MachineState.memCost`, the same potential used by `Challenge.EvmProof.Meter`,
+`MachineState.memCost`, the same potential used by `Challenge.EvmProof.DataMeter`,
 so a completed `GasSteps` trace can telescope its memory charges directly into
 the final term below.
 
@@ -85,7 +85,7 @@ theorem referenceGasForSize_monotone : Monotone referenceGasForSize := by
       (Nat.add_le_add_left
         (Nat.mul_le_mul_left 120620 (blockCount_monotone hle)) 3698)
       (Nat.mul_le_mul_left 3 (calldataWords_monotone hle)))
-    (Challenge.EvmProof.Meter.memCost_monotone
+    (Challenge.EvmProof.DataMeter.memCost_monotone
       (finalActiveWords_monotone hle))
 
 /-! The scorer checkpoints are kernel-checked consequences of the formula. -/
@@ -140,7 +140,7 @@ theorem correct_of_schedule {code : ByteArray} {schedule : Nat → Nat}
 Turn the completed functional `GasSteps` certificate into the exact gas
 schedule theorem.  To close the gas proof for the reference, instantiate this
 with the final halted state and the same full trace used for correctness, then
-prove `hcost` by telescoping the per-block `Meter` potential equations.
+prove `hcost` by telescoping the per-block `DataMeter` potential equations.
 -/
 theorem gasSchedule_correct_of_trace
     (finalState : ∀ input : ByteArray, CalldataFits input → State)

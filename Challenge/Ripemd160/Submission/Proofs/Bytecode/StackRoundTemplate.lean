@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRound
-import Challenge.EvmProof.Stepper
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataStepper
 import YulEvmCompiler.Instr
 
 set_option warningAsError true
@@ -21,8 +21,8 @@ open EvmSemantics.EVM
 open YulEvmCompiler
 open Challenge.EvmProof
 
-abbrev Located (artifact : ProgramArtifact) (fork : Fork) :=
-  Challenge.EvmProof.Stepper.Located artifact fork
+abbrev Located (artifact : DataProgramArtifact) (fork : Fork) :=
+  Challenge.EvmProof.DataStepper.Located artifact fork
 
 def op (o : Operation) : Instr := .op o
 
@@ -226,27 +226,27 @@ theorem f4Template_straight (xAddress : UInt256) (rotation : Nat)
 
 /-! ## Artifact locations and PCs -/
 
-structure LocatedSite (artifact : ProgramArtifact) (fork : Fork) where
+structure LocatedSite (artifact : DataProgramArtifact) (fork : Fork) where
   located : Located artifact fork
   pc : UInt256
   pc_eq : pc.toNat = artifact.instructionPC located.index
 
-def LocatedSite.path {artifact : ProgramArtifact} {fork : Fork}
+def LocatedSite.path {artifact : DataProgramArtifact} {fork : Fork}
     (sites : List (LocatedSite artifact fork)) : List (Located artifact fork) :=
   sites.map LocatedSite.located
 
-def headPC {artifact : ProgramArtifact} {fork : Fork}
+def headPC {artifact : DataProgramArtifact} {fork : Fork}
     : List (LocatedSite artifact fork) → Option UInt256
   | [] => none
   | site :: _ => some site.pc
 
-def afterPC {artifact : ProgramArtifact} {fork : Fork}
+def afterPC {artifact : DataProgramArtifact} {fork : Fork}
     : List (LocatedSite artifact fork) → Option UInt256
   | [] => none
   | [site] => some (site.pc + UInt256.ofNat site.located.instruction.size)
   | _ :: rest => afterPC rest
 
-def Contiguous {artifact : ProgramArtifact} {fork : Fork}
+def Contiguous {artifact : DataProgramArtifact} {fork : Fork}
     : List (LocatedSite artifact fork) → Prop
   | [] => True
   | [_] => True
@@ -254,7 +254,7 @@ def Contiguous {artifact : ProgramArtifact} {fork : Fork}
       next.pc = first.pc + UInt256.ofNat first.located.instruction.size ∧
         Contiguous (next :: rest)
 
-structure GenericRoundSite (artifact : ProgramArtifact) (fork : Fork)
+structure GenericRoundSite (artifact : DataProgramArtifact) (fork : Fork)
     (template : List Instr) where
   startPC : UInt256
   endPC : UInt256
@@ -264,7 +264,7 @@ structure GenericRoundSite (artifact : ProgramArtifact) (fork : Fork)
   instruction_eq : sites.map (fun site => site.located.instruction) = template
   contiguous : Contiguous sites
 
-def GenericRoundSite.path {artifact : ProgramArtifact} {fork : Fork}
+def GenericRoundSite.path {artifact : DataProgramArtifact} {fork : Fork}
     {template : List Instr} (site : GenericRoundSite artifact fork template) :
     List (Located artifact fork) :=
   LocatedSite.path site.sites

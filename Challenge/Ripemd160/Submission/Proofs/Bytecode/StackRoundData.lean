@@ -112,14 +112,14 @@ theorem rightRotation_le_32 (i : Fin 80) : rightRotation i.val ≤ 32 := by
 
 def TemplateWellFormed (instructions : List Instr) : Prop :=
   ∀ i : Fin instructions.length,
-    Challenge.EvmProof.Stepper.WellFormed .Osaka instructions[i]
+    Challenge.EvmProof.DataStepper.WellFormed .Osaka instructions[i]
 
 private def plainDecidable (operation : Operation) : Decidable (plainOp operation) := by
   cases operation <;> dsimp only [plainOp] <;> infer_instance
 
-/-- A transparent decision procedure avoids casts in the general Stepper instance. -/
+/-- A transparent decision procedure avoids casts in the general DataStepper instance. -/
 private def instructionWellFormedDecidable (instruction : Instr) :
-    Decidable (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction) :=
+    Decidable (Challenge.EvmProof.DataStepper.WellFormed .Osaka instruction) :=
   match instruction with
   | .push width value => inferInstanceAs (Decidable
       (value.toNat < 256 ^ width.val ∧
@@ -132,11 +132,11 @@ private def instructionWellFormedDecidable (instruction : Instr) :
 instance (instructions : List Instr) : Decidable (TemplateWellFormed instructions) :=
   letI := instructionWellFormedDecidable
   inferInstanceAs (Decidable (∀ i : Fin instructions.length,
-    Challenge.EvmProof.Stepper.WellFormed .Osaka instructions[i]))
+    Challenge.EvmProof.DataStepper.WellFormed .Osaka instructions[i]))
 
 theorem templateWellFormed_mem {instructions : List Instr}
     (h : TemplateWellFormed instructions) :
-    ∀ instruction ∈ instructions, Challenge.EvmProof.Stepper.WellFormed .Osaka instruction := by
+    ∀ instruction ∈ instructions, Challenge.EvmProof.DataStepper.WellFormed .Osaka instruction := by
   intro instruction hmem
   obtain ⟨i, hi, rfl⟩ := List.mem_iff_getElem.mp hmem
   exact h ⟨i, hi⟩

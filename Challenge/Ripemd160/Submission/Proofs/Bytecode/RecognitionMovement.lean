@@ -139,7 +139,7 @@ def gasSteps_back (s : State) (e : Env s) (f : RecognitionBodyRaw.Frame) (rho : 
   have hv : Decode.isValidJumpDest s.executionEnv.code 174 = true := by
     simpa only [Word.word_toNat_ofNat, Nat.reducePow, Nat.reduceMod] using valid_175 s e
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
-  simp (discharger := omega) [atState, back.template, frame, runInstrSeq, Stepper.runInstr,
+  simp (discharger := omega) [atState, back.template, frame, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, e.run, hcap, Word.word_toNat_ofNat, Word.literal_eq_ofNat, hv]
 
@@ -176,7 +176,7 @@ def gasSteps_skip (s : State) (e : Env s) (f : RecognitionBodyRaw.Frame) (rho : 
   have hv : Decode.isValidJumpDest s.executionEnv.code 213 = true := by
     simpa only [Word.word_toNat_ofNat, Nat.reducePow, Nat.reduceMod] using valid_214 s e
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
-  simp (discharger := omega) [atState, skip.template, frame, runInstrSeq, Stepper.runInstr,
+  simp (discharger := omega) [atState, skip.template, frame, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, e.run, hcap, Word.word_toNat_ofNat, Word.literal_eq_ofNat, hv]
 

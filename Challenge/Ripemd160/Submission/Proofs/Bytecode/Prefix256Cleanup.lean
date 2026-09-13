@@ -51,7 +51,7 @@ theorem run_branch (input : ByteArray) (sv ov acc : UInt256) :
     simp (config := { maxSteps := 400000 })
       [branchPath, opAt, pushAt, stS, atPC, hc, ht, hz,
        Challenge.Ripemd160.initialState_stack,
-       Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
+       DataStepper.runLocatedBlock, DataStepper.runLocated, DataStepper.runInstr,
        Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod,
        Word.word_toNat_ofNat]
 
@@ -62,7 +62,7 @@ theorem run_cleanup (input : ByteArray) (sv ov acc : UInt256)
   simp (config := { maxSteps := 400000 })
     [cleanupPath, opAt, pushAt, stS, fallbackState, atPC, List.exchange,
      Challenge.Ripemd160.initialState_stack,
-     Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
+     DataStepper.runLocatedBlock, DataStepper.runLocated, DataStepper.runInstr,
      Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod,
      Word.word_toNat_ofNat]
 
@@ -76,9 +76,9 @@ def gasSteps_miss (input : ByteArray) (sv ov acc : UInt256) (hne : acc ≠ 0) :
     exact hz
   have h := run_branch input sv ov acc
   rw [if_pos hc] at h
-  have branch := Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka branchPath
+  have branch := DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka branchPath
     (by rfl) (by rfl) h (by rfl) deployAddress_not_precompile
-  have cleanup := Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka cleanupPath
+  have cleanup := DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka cleanupPath
     (by rfl) (by rfl) (run_cleanup input sv ov acc hc) (by rfl) deployAddress_not_precompile
   exact branch.trans cleanup
 
@@ -87,7 +87,7 @@ def gasSteps_hit (input : ByteArray) (sv ov : UInt256) :
       (stS input 4837 [sv, ov, 0, P7, M, m7, P, m8]) := by
   have h := run_branch input sv ov 0
   rw [if_neg (by decide)] at h
-  exact Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka branchPath
+  exact DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka branchPath
     (by rfl) (by rfl) h (by rfl) deployAddress_not_precompile
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Cleanup

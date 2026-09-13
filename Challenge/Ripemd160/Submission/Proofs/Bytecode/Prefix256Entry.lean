@@ -21,7 +21,7 @@ def gasSteps_hit (input : ByteArray) (hsize : input.size = 376)
     GasSteps (initialState submissionBytecode input 0)
       (PatternedScan.patternedEntry input) :=
   (Execution.gasSteps_start input).trans
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
+    ((Challenge.EvmProof.DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
         (DirectGuard.sizeDispatchPath input) (by rfl) (by rfl)
         (DirectGuard.run_size_match_256 input hsize) (by rfl)
         deployAddress_not_precompile).trans

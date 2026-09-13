@@ -33,7 +33,7 @@ theorem run_template (s : State) (pc value : UInt256) (rho : List UInt256)
       some (result s pc value rho) := by
   have hcap (n : Nat) (hn : n ≤ 4) : rho.length + n < 1024 := by omega
   have hs : rho.length < 1024 := by omega
-  simp (discharger := omega) [template, result, outputMemory, runInstrSeq, Stepper.runInstr,
+  simp (discharger := omega) [template, result, outputMemory, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, hrun, hcap, hs, Nat.add_assoc,
     State.activeWordsAfterUInt256, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl
@@ -42,7 +42,7 @@ theorem advances : ∀ instruction ∈ template.dropLast, DenseScheduleLift.Adva
   apply Table80SiteCommon.coreAdvancesAll_sound
   decide
 
-def gasSteps_site {artifact : ProgramArtifact} {fork : Fork}
+def gasSteps_site {artifact : DataProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork template)
     (s : State) (value : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1019) (hcode : s.executionEnv.code = artifact.code)

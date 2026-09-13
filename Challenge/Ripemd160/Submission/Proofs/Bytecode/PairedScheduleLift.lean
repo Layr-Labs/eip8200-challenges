@@ -723,13 +723,13 @@ theorem run_storeTemplate (s : State) (pc value : UInt256) (address : Nat)
   by_cases hzero : address = 0
   · subst hzero
     simp [storeTemplate, op, writeWord, runInstrSeq,
-      Challenge.EvmProof.Stepper.runInstr, pcAfter, hrun, hcap1, hcap,
+      Challenge.EvmProof.DataStepper.runInstr, pcAfter, hrun, hcap1, hcap,
       UInt256.succ, Instr.size,
       State.activeWordsAfterUInt256]
     exact ⟨⟨rfl, rfl⟩, rfl⟩
   · by_cases hsmall : address < 256 <;>
       simp [storeTemplate, hzero, hsmall, push1, push2, op, writeWord, runInstrSeq,
-      Challenge.EvmProof.Stepper.runInstr, pcAfter, hrun, hcap1, hcap,
+      Challenge.EvmProof.DataStepper.runInstr, pcAfter, hrun, hcap1, hcap,
       UInt256.succ, Instr.size,
       State.activeWordsAfterUInt256, haddr]
     all_goals rfl
@@ -745,7 +745,7 @@ theorem run_maskTemplate (s : State) (pc value : UInt256)
         stack := Challenge.EvmProof.Word.mask32 value :: rest} := by
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hcap : rest.length + 1 + 1 < 1024 := by omega
-  simp [maskTemplate, op, runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
+  simp [maskTemplate, op, runInstrSeq, Challenge.EvmProof.DataStepper.runInstr,
     pcAfter, hrun, hcap1, hcap, UInt256.succ, Instr.size,
     Challenge.EvmProof.Word.mask32, Word.land_comm]
   exact ⟨rfl, rfl⟩
@@ -763,7 +763,7 @@ theorem run_duplicateShiftTemplate (s : State) (pc value : UInt256) (shift : Nat
   have hcap2 : rest.length + 1 + 1 < 1024 := by omega
   have hcap3 : rest.length + 1 + 1 + 1 < 1024 := by omega
   simp [duplicateShiftTemplate, dup1, push1, op, runInstrSeq,
-    Challenge.EvmProof.Stepper.runInstr, pcAfter, hrun, hcap1, hcap2, hcap3,
+    Challenge.EvmProof.DataStepper.runInstr, pcAfter, hrun, hcap1, hcap2, hcap3,
     UInt256.succ, Instr.size]
   rfl
 
@@ -1065,7 +1065,7 @@ theorem run_sentinelTemplate (s : State) (pc : UInt256) (rest : List UInt256)
       some { s with
         pc := pcAfter pc [.push ⟨0, by decide⟩ (UInt256.ofNat 0)]
         stack := UInt256.ofNat 0 :: rest } := by
-    simp [runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter,
+    simp [runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter,
       hrun, hcap, UInt256.succ, Instr.size]
     exact ⟨rfl, rfl⟩
   have h2 := PairedSchedulePrimitives.run_storeTemplate s
@@ -1258,7 +1258,7 @@ theorem fullTemplate_staticGas : staticGas fullTemplate = 460 := by
     PairedSchedulePrimitives.duplicateShiftTemplate, PairedSchedulePrimitives.maskTemplate,
     PairedSchedulePrimitives.storeTemplate, sentinelTemplate, cell,
     op, push1, push2, push3, dup1, swap1,
-    Challenge.EvmProof.Meter.instrStaticCost, Gas.baseCost]
+    Challenge.EvmProof.DataMeter.instrStaticCost, Gas.baseCost]
 
 #print axioms pointer_add32_toNat
 #print axioms loaded_active_ge23
@@ -1479,12 +1479,12 @@ theorem fullTemplate_advances :
     | exact Or.inr (Or.inr rfl)
     | exact Or.inl (Or.inr (Or.inr rfl))
 
-theorem runLocatedBlock_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
+theorem runLocatedBlock_fullTemplate {artifact : DataProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork fullTemplate)
     (s : State) (returnPC : UInt256) (p : Nat) (rest : List UInt256)
     (hstack : rest.length < 1018) (hrun : s.halt = .Running)
     (hp : 736 ≤ p) (hbound : p + 64 < 2 ^ 256) :
-    Stepper.runLocatedBlock site.path
+    DataStepper.runLocatedBlock site.path
       (scheduleEntry s site.startPC (UInt256.ofNat p) returnPC rest) =
       some { s with
         pc := site.endPC
@@ -1501,7 +1501,7 @@ theorem runLocatedBlock_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
   rw [← hend] at h
   exact h
 
-def gasSteps_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
+def gasSteps_fullTemplate {artifact : DataProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork fullTemplate)
     (s : State) (returnPC : UInt256) (p : Nat) (rest : List UInt256)
     (hstack : rest.length < 1018) (hrun : s.halt = .Running)
@@ -1515,7 +1515,7 @@ def gasSteps_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
         stack := returnPC :: rest
         memory := normalizedMemory s.memory (PairedScheduleData.extractedWord s.memory p)
         activeWords := loadedActiveWords s (UInt256.ofNat p) } := by
-  apply Stepper.runLocatedBlock_sound artifact fork site.path
+  apply DataStepper.runLocatedBlock_sound artifact fork site.path
   · exact hcode
   · exact hfork
   · exact runLocatedBlock_fullTemplate site s returnPC p rest hstack hrun hp hbound

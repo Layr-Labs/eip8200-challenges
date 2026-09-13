@@ -248,7 +248,7 @@ theorem runInstrSeq_fastLoad0
   have hcap1 : rest.length + 1 < 1024 := by omega
   simp [fastLoad0, afterFastLoad, inputWord, inputAddress,
     DenseScheduleTemplate.push1, DenseScheduleTemplate.push2, DenseScheduleTemplate.op,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter,
     hrun, hcap, hcap0, hcap1, loadActive, State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.word_toNat_ofNat, UInt256.succ,
     Instr.size, Instr.size_push, Instr.size_op]
@@ -272,7 +272,7 @@ theorem runInstrSeq_fastPackStep
     exact Nat.mod_eq_of_lt haddress
   simp [fastPackStep, afterFastPackStep, packAppend,
     DenseScheduleTemplate.push1, DenseScheduleTemplate.push2, DenseScheduleTemplate.op,
-    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter,
+    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter,
     hrun, hcap, hcap0, hcap1, hcap2, haddressWord,
     loadActive, State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.word_toNat_ofNat, UInt256.succ,
@@ -290,7 +290,7 @@ theorem runInstrSeq_jumpdest
         pc := pcAfter startPC [DenseScheduleTemplate.op .JUMPDEST]
         stack := rest } := by
   have hcap : rest.length < 1024 := by omega
-  simp [runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter,
+  simp [runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter,
     DenseScheduleTemplate.op, hrun, hcap, UInt256.succ,
     Instr.size, Instr.size_op]
   change startPC + UInt256.ofNat 1 = startPC + UInt256.ofNat 1
@@ -432,7 +432,7 @@ theorem runInstrSeq_fastStoreAndSetup
   simp [fastStoreAndSetup, afterFastStore,
     push0, DenseScheduleTemplate.push1, DenseScheduleTemplate.op,
     runInstrSeq,
-    Challenge.EvmProof.Stepper.runInstr, pcAfter, hrun, hcap,
+    Challenge.EvmProof.DataStepper.runInstr, pcAfter, hrun, hcap,
     hcap0, hcap1, hcap2, State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.word_toNat_ofNat, UInt256.succ,
     Instr.size, Instr.size_push, Instr.size_op,
@@ -451,7 +451,7 @@ theorem runInstrSeq_fastReturn
       some (afterFastReturn s startPC rest) := by
   have hcap : rest.length + 2 < 1024 := by omega
   simp [fastOutputReturnTemplate, afterFastReturn, runInstrSeq,
-    DenseScheduleTemplate.op, Challenge.EvmProof.Stepper.runInstr,
+    DenseScheduleTemplate.op, Challenge.EvmProof.DataStepper.runInstr,
     pcAfter, hrun, hcap,
     State.activeWordsAfterUInt256]
   constructor <;> rfl

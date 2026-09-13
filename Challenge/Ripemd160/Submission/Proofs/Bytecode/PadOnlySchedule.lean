@@ -75,7 +75,7 @@ theorem run_template (s : State) (pc returnPC : UInt256) (rest : List UInt256)
   have hsize : (UInt256.ofNat s.executionEnv.calldata.size).toNat = s.executionEnv.calldata.size := by
     rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt hfit]
   simp (discharger := omega) [PairedHelperBooleanTrace.push0_toNat, template, resultMemory,
-    lowDiet_eq_lowLength, lowLength, highLength, writeWord, runInstrSeq, Stepper.runInstr, pcAfter,
+    lowDiet_eq_lowLength, lowLength, highLength, writeWord, runInstrSeq, DataStepper.runInstr, pcAfter,
     UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt, hcopyActive, hsize,
     readPadded_end, Word.word_toNat_ofNat]

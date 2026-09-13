@@ -57,7 +57,7 @@ theorem run_chunk0 (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
       some {s with pc := pcAfter pc chunk0, stack := stack1 q rho} := by
   have hcap (n : Nat) (hn : n ≤ 43) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [chunk0, stack0, stack1, runInstrSeq,
-    Stepper.runInstr, UInt256.succ, pcAfter, Instr.size, hrun, hcap,
+    DataStepper.runInstr, UInt256.succ, pcAfter, Instr.size, hrun, hcap,
     Nat.add_assoc, List.getElem?_cons_zero, List.exchange,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl
@@ -83,7 +83,7 @@ theorem run_chunk1 (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
       some {s with pc := pcAfter pc chunk1, stack := stack2 q rho} := by
   have hcap (n : Nat) (hn : n ≤ 43) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [chunk1, stack1, stack2, runInstrSeq,
-    Stepper.runInstr, UInt256.succ, pcAfter, Instr.size, hrun, hcap,
+    DataStepper.runInstr, UInt256.succ, pcAfter, Instr.size, hrun, hcap,
     Nat.add_assoc, List.getElem?_cons_zero, List.exchange,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl
@@ -108,7 +108,7 @@ theorem run_chunk2 (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
       some {s with pc := pcAfter pc chunk2, stack := stack3 q rho} := by
   have hcap (n : Nat) (hn : n ≤ 43) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [chunk2, stack2, stack3, runInstrSeq,
-    Stepper.runInstr, UInt256.succ, pcAfter, Instr.size, hrun, hcap,
+    DataStepper.runInstr, UInt256.succ, pcAfter, Instr.size, hrun, hcap,
     Nat.add_assoc, List.getElem?_cons_zero, List.exchange,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl
@@ -134,7 +134,7 @@ theorem run_chunk3 (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
       some {s with pc := pcAfter pc chunk3, stack := stack4 q rho} := by
   have hcap (n : Nat) (hn : n ≤ 43) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [chunk3, stack3, stack4, runInstrSeq,
-    Stepper.runInstr, UInt256.succ, pcAfter, Instr.size, hrun, hcap,
+    DataStepper.runInstr, UInt256.succ, pcAfter, Instr.size, hrun, hcap,
     Nat.add_assoc, List.getElem?_cons_zero, List.exchange,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl

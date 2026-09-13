@@ -7,18 +7,18 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedInputData PatternedDigest PatternedGuardSpec PatternedSwar
 theorem stepS_calldatasize (input : ByteArray) (pc : Nat) (stk : List UInt256)
     (hlen : stk.length < 1024) (hpc : pc + 1 < 2 ^ 256) :
-    Stepper.runInstr (.op .CALLDATASIZE) (stS input pc stk) =
+    DataStepper.runInstr (.op .CALLDATASIZE) (stS input pc stk) =
       some (stS input (pc + 1) (UInt256.ofNat input.size :: stk)) := by
-  unfold Stepper.runInstr
+  unfold DataStepper.runInstr
   rw [if_pos (by simpa using hlen)]
   simp only [stS, Challenge.Ripemd160.initialState_calldata,
     Challenge.EvmProof.Word.succ_ofNat hpc]
 
 theorem stepS_lt (input : ByteArray) (pc : Nat) (a b : UInt256) (rest : List UInt256)
     (hlen : rest.length + 2 < 1024) (hpc : pc + 1 < 2 ^ 256) :
-    Stepper.runInstr (.op .LT) (stS input pc (a :: b :: rest)) =
+    DataStepper.runInstr (.op .LT) (stS input pc (a :: b :: rest)) =
       some (stS input (pc + 1) (UInt256.lt a b :: rest)) := by
-  unfold Stepper.runInstr
+  unfold DataStepper.runInstr
   rw [if_pos (by simpa using hlen)]
   simp only [stS, Word.succ_ofNat hpc]
 

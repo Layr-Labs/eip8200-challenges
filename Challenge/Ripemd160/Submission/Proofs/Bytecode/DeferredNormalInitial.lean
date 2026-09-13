@@ -46,8 +46,8 @@ private theorem add_ofNat_assoc_add (u : UInt256) (a b : Nat) :
 
 def cachedInitial : List Instr :=
   [op .JUMPDEST,
-    .push ⟨31, by decide⟩ mask8,
-    .push ⟨30, by decide⟩ mask16,
+    push2 (UInt256.ofNat 257), .push 0 0, op .NOT, op .DIV,
+    push3 (UInt256.ofNat 65537), .push 0 0, op .NOT, op .DIV,
     .op (.Swap ⟨1, by decide⟩), dup1, op .MLOAD, swap1,
     push1 (UInt256.ofNat 32), op .ADD, op .MLOAD]
 
@@ -70,8 +70,8 @@ theorem run_cachedInitial (s : State) (pc messageOffset returnPC : UInt256)
   have h32 : UInt256.ofNat 32 + messageOffset = messageOffset + UInt256.ofNat 32 :=
     Word.word_add_comm _ _
   simp [cachedInitial, scheduleEntry, inputWord0, inputWord1,
-    loadedActiveWords, activeAfterWord, op, push1, dup1, swap1,
-    runInstrSeq, Stepper.runInstr, pcAfter, hrun, hcap, hswap1, hswap2, h32,
+    loadedActiveWords, activeAfterWord, op, push1, push2, push3, dup1, swap1, hzero, mask8_div, mask16_div,
+    runInstrSeq, DataStepper.runInstr, pcAfter, hrun, hcap, hswap1, hswap2, h32,
     word_add_assoc, Nat.add_assoc, State.activeWordsAfterUInt256,
     Word.word_toNat_ofNat, Word.ofNat_add_mod, UInt256.succ, Instr.size]
   repeat first
@@ -82,7 +82,7 @@ theorem run_cachedInitial (s : State) (pc messageOffset returnPC : UInt256)
 
 #print axioms run_cachedInitial
 
-theorem cachedInitial_length : cachedInitial.length = 10 := rfl
-theorem cachedInitial_byteLength : (assembleBytes cachedInitial).length = 72 := by decide
-theorem cachedInitial_gas : staticGas cachedInitial = 28 := by decide
+theorem cachedInitial_length : cachedInitial.length = 16 := rfl
+theorem cachedInitial_byteLength : (assembleBytes cachedInitial).length = 22 := by decide
+theorem cachedInitial_gas : staticGas cachedInitial = 48 := by decide
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DeferredNormalInitial

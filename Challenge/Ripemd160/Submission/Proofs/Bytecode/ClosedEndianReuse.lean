@@ -68,7 +68,7 @@ theorem run_endian (s : State) (startPC value : UInt256) (shift : Nat)
   all_goals
     simp (config := { maxSteps := 1000000 })
       [code, factorPush, endianFactorPush, endianFactor, op, push1, push2, push3, dup1,
-        runInstrSeq, Stepper.runInstr, pcAfter, hrun, hcap, hcap2, hcap3, hcap4, hcap5,
+        runInstrSeq, DataStepper.runInstr, pcAfter, hrun, hcap, hcap2, hcap3, hcap4, hcap5,
         hzero, mask8_div, mask16_div, UInt256.succ, Instr.size,
         Instr.size_push, Instr.size_op, Word.literal_eq_ofNat,
         Word.word_toNat_ofNat, Word.ofNat_add_mod, Word.succ_ofNat, List.exchange, List.getElem?_cons_zero, List.getElem?_cons_succ,
@@ -86,7 +86,7 @@ theorem run_endian (s : State) (startPC value : UInt256) (shift : Nat)
       simp [UInt256.mul, Fin.mul_def, Nat.mul_comm]
 
 theorem advances (shift : Nat) {instruction : Instr} {s t : State}
-    (hmem : instruction ∈ code shift) (hrun : Stepper.runInstr instruction s = some t) :
+    (hmem : instruction ∈ code shift) (hrun : DataStepper.runInstr instruction s = some t) :
     t.pc = s.pc + UInt256.ofNat instruction.size := by
   simp only [code, List.mem_cons, List.not_mem_nil, or_false] at hmem
   rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
@@ -101,20 +101,20 @@ theorem advances (shift : Nat) {instruction : Instr} {s t : State}
     | simp only [factorPush]; split <;>
         exact Or.inl (Or.inl (by constructor))
 
-theorem run_located {artifact : ProgramArtifact} {fork : Fork}
+theorem run_located {artifact : DataProgramArtifact} {fork : Fork}
     (shift : Nat) (mask : UInt256)
     (site : StackRoundTemplate.GenericRoundSite artifact fork (code shift))
     (s : State) (value : UInt256) (rest : List UInt256)
     (hstack : rest.length < 1019)
     (hcase : (shift = 8 ∧ mask = mask8) ∨ (shift = 16 ∧ mask = mask16))
     (hrun : s.halt = .Running) :
-    Stepper.runLocatedBlock site.path {s with pc := site.startPC, stack := value :: rest} =
+    DataStepper.runLocatedBlock site.path {s with pc := site.startPC, stack := value :: rest} =
       some {s with pc := site.endPC, stack := packedStage value shift mask :: rest} := by
   have hend : site.endPC = pcAfter site.startPC (code shift) := by
     have h := endPC_eq_pcAfter_sites site.sites site.startPC site.endPC
       site.head_eq site.end_eq site.contiguous
     rwa [site.instruction_eq] at h
-  have hraw : Stepper.runLocatedBlock site.path
+  have hraw : DataStepper.runLocatedBlock site.path
       {s with pc := site.startPC, stack := value :: rest} =
       runInstrSeq (code shift) {s with pc := site.startPC, stack := value :: rest} := by
     apply runLocatedBlock_eq_runInstrSeq_site site _ rfl
@@ -124,7 +124,7 @@ theorem run_located {artifact : ProgramArtifact} {fork : Fork}
     exact List.mem_map_of_mem hmem
   rw [hraw, run_endian s site.startPC value shift mask rest hstack hcase hrun, ← hend]
 
-def gasSteps_endian {artifact : ProgramArtifact} {fork : Fork}
+def gasSteps_endian {artifact : DataProgramArtifact} {fork : Fork}
     (shift : Nat) (mask : UInt256)
     (site : StackRoundTemplate.GenericRoundSite artifact fork (code shift))
     (s : State) (value : UInt256) (rest : List UInt256)
@@ -136,7 +136,7 @@ def gasSteps_endian {artifact : ProgramArtifact} {fork : Fork}
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := site.startPC, stack := value :: rest}
       {s with pc := site.endPC, stack := packedStage value shift mask :: rest} := by
-  apply Stepper.runLocatedBlock_sound artifact fork site.path
+  apply DataStepper.runLocatedBlock_sound artifact fork site.path
   · exact hcode
   · exact hfork
   · exact run_located shift mask site s value rest hstack hcase hrun

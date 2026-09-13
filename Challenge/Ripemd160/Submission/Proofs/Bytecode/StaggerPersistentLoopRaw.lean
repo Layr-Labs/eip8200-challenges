@@ -38,7 +38,7 @@ theorem run_continue (s : State) (pc : UInt256) (h : Compression.HashState)
   simp only [Word.word_toNat_ofNat] at hvalid
   norm_num only at hvalid
   simp (discharger := omega) [template, StaggerPersistentFrame.frame, nextOffset, runInstrSeq,
-    Stepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+    DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
     heq, hvalid, add_eq_hAdd, add64, Word.word_toNat_ofNat, Word.literal_eq_ofNat, UInt256.isTrue, UInt256.isZero]
 
@@ -56,7 +56,7 @@ theorem run_exit (s : State) (pc : UInt256) (h : Compression.HashState)
     rw [if_neg (by omega)]
   change UInt256.lt (off + UInt256.ofNat 64) limit = UInt256.ofNat 0 at heq
   simp (discharger := omega) [template, StaggerPersistentFrame.frame, nextOffset, runInstrSeq,
-    Stepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+    DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
     heq, add_eq_hAdd, add64, Word.word_toNat_ofNat, Word.literal_eq_ofNat, UInt256.isTrue, UInt256.isZero]
 

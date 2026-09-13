@@ -73,7 +73,7 @@ theorem run_cachedInitial (s : State) (pc messageOffset returnPC : UInt256)
   simp [cachedInitial, scheduleEntry, inputWord0, inputWord1,
     loadedActiveWords, activeAfterWord, op, push1, push2, push3, dup1, swap1,
     hzero, mask8_div, mask16_div,
-    runInstrSeq, Stepper.runInstr, pcAfter, hrun, hcap, hswap1, hswap3, h32,
+    runInstrSeq, DataStepper.runInstr, pcAfter, hrun, hcap, hswap1, hswap3, h32,
     word_add_assoc, Nat.add_assoc, State.activeWordsAfterUInt256,
     Word.word_toNat_ofNat, Word.ofNat_add_mod, UInt256.succ, Instr.size]
   repeat first
@@ -204,10 +204,10 @@ theorem fullTemplate_staticGas : staticGas fullTemplate = 474 := by
 open StackRoundTemplate
 
 theorem runInstr_pc_div {s t : State}
-    (hresult : Stepper.runInstr (.op .DIV) s = some t) :
+    (hresult : DataStepper.runInstr (.op .DIV) s = some t) :
     t.pc = s.pc + UInt256.ofNat (Instr.op .DIV).size := by
   by_cases hcap : s.stack.length < 1024
-  · rw [Stepper.runInstr, if_pos hcap] at hresult
+  · rw [DataStepper.runInstr, if_pos hcap] at hresult
     cases hs : s.stack with
     | nil => simp [hs] at hresult
     | cons a tail =>
@@ -217,7 +217,7 @@ theorem runInstr_pc_div {s t : State}
             simp [hs, ht] at hresult
             subst t
             rfl
-  · simp [Stepper.runInstr, hcap] at hresult
+  · simp [DataStepper.runInstr, hcap] at hresult
 
 #print axioms runInstr_pc_div
 
@@ -265,7 +265,7 @@ theorem fullTemplate_advances :
 #print axioms fullTemplate_advances
 
 theorem advances {instruction : Instr} {s t : State}
-    (hmem : instruction ∈ fullTemplate) (hresult : Stepper.runInstr instruction s = some t) :
+    (hmem : instruction ∈ fullTemplate) (hresult : DataStepper.runInstr instruction s = some t) :
     t.pc = s.pc + UInt256.ofNat instruction.size := by
   rcases fullTemplate_advances instruction hmem with hnormal | hdiv
   · exact DenseScheduleLift.runInstr_pc_of_advances hnormal hresult
@@ -274,12 +274,12 @@ theorem advances {instruction : Instr} {s t : State}
 
 #print axioms advances
 
-theorem runLocatedBlock_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
+theorem runLocatedBlock_fullTemplate {artifact : DataProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork fullTemplate)
     (s : State) (returnPC : UInt256) (p : Nat) (rest : List UInt256)
     (hstack : rest.length < 1015) (hrun : s.halt = .Running)
     (hp : 736 ≤ p) (hbound : p + 64 < 2 ^ 256) :
-    Stepper.runLocatedBlock site.path
+    DataStepper.runLocatedBlock site.path
       (scheduleEntry s site.startPC (UInt256.ofNat p) returnPC rest) =
       some {s with
         pc := site.endPC
@@ -290,7 +290,7 @@ theorem runLocatedBlock_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
     have h := endPC_eq_pcAfter_sites site.sites site.startPC site.endPC
       site.head_eq site.end_eq site.contiguous
     rwa [site.instruction_eq] at h
-  have hraw : Stepper.runLocatedBlock site.path
+  have hraw : DataStepper.runLocatedBlock site.path
       (scheduleEntry s site.startPC (UInt256.ofNat p) returnPC rest) =
       runInstrSeq fullTemplate
         (scheduleEntry s site.startPC (UInt256.ofNat p) returnPC rest) := by
@@ -304,7 +304,7 @@ theorem runLocatedBlock_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
   rw [← hend] at h
   exact h
 
-def gasSteps_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
+def gasSteps_fullTemplate {artifact : DataProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork fullTemplate)
     (s : State) (returnPC : UInt256) (p : Nat) (rest : List UInt256)
     (hstack : rest.length < 1015) (hrun : s.halt = .Running)
@@ -318,7 +318,7 @@ def gasSteps_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
         stack := returnPC :: rest
         memory := normalizedMemory s.memory (PairedScheduleData.extractedWordG s.memory p)
         activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
-  apply Stepper.runLocatedBlock_sound artifact fork site.path
+  apply DataStepper.runLocatedBlock_sound artifact fork site.path
   · exact hcode
   · exact hfork
   · exact runLocatedBlock_fullTemplate site s returnPC p rest hstack hrun hp hbound

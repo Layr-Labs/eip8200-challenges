@@ -20,7 +20,7 @@ private def sound (path : List Located) {s t : State}
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false := by
         exact deployAddress_not_precompile) : GasSteps s t :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
+  Challenge.EvmProof.DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     path hcode hfork h hrun hnp
 
 private def gasSteps_loop (input : ByteArray) :

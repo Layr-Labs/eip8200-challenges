@@ -1,6 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ClosedEndianReuse
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTemplate
-import Challenge.EvmProof.Meter
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataMeter
 import YulEvmCompiler.Instr
 
 set_option warningAsError true
@@ -117,7 +117,7 @@ theorem fastOutputTemplate_byteLength :
 
 def staticGas (instructions : List Instr) : Nat :=
   (instructions.map
-    (Challenge.EvmProof.Meter.instrStaticCost .Osaka)).sum
+    (Challenge.EvmProof.DataMeter.instrStaticCost .Osaka)).sum
 
 theorem fastOutputTemplate_staticGas : staticGas fastOutputTemplate = 161 := by
   norm_num [staticGas, fastOutputTemplate, fastOutputBeforeReturnTemplate,
@@ -127,6 +127,6 @@ theorem fastOutputTemplate_staticGas : staticGas fastOutputTemplate = 161 := by
     DenseScheduleTemplate.push2, fastStoreAndSetup, fastOutputReturnTemplate,
     push0, DenseScheduleTemplate.op,
     DenseScheduleTemplate.push1, DenseScheduleTemplate.dup1,
-    Challenge.EvmProof.Meter.instrStaticCost, Gas.baseCost]
+    Challenge.EvmProof.DataMeter.instrStaticCost, Gas.baseCost]
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.FastOutputTemplate

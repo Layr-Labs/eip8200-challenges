@@ -135,9 +135,9 @@ theorem run_setup (input : ByteArray) :
       setupPath, opAt, pushAt, wfOp, atPC, loopState, frame, scanAcc, scalarAt,
       CompactGuardConstants.repeated_one_ofNat, CompactGuardConstants.repeated_high_ofNat, CompactGuardConstants.repeated_low,
       P7, P, m7, m8, M,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated,
-      Challenge.EvmProof.Stepper.runInstr,
+      Challenge.EvmProof.DataStepper.runLocatedBlock,
+      Challenge.EvmProof.DataStepper.runLocated,
+      Challenge.EvmProof.DataStepper.runInstr,
       Challenge.EvmProof.Word.literal_eq_ofNat]
 
 /-! ### Arithmetic the scan needs on its offset -/
@@ -213,9 +213,9 @@ theorem run_word_regular (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 3
   simp (config := { maxSteps := 800000 })
     [wordPath, opAt, pushAt, wfOp, loopState, compareState, frame, rawWord,
       guardWord, hk224, notmask224_eq k hk, hcond, hdest, hdestN, hdestL,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated,
-      Challenge.EvmProof.Stepper.runInstr,
+      Challenge.EvmProof.DataStepper.runLocatedBlock,
+      Challenge.EvmProof.DataStepper.runLocated,
+      Challenge.EvmProof.DataStepper.runInstr,
       Challenge.EvmProof.Word.literal_eq_ofNat, hmaskOrder]
 
 set_option maxHeartbeats 80000000 in
@@ -239,9 +239,9 @@ theorem run_word_straddle (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 
   simp (config := { maxSteps := 800000 })
     [wordPath, opAt, pushAt, wfOp, loopState, straddleState, frame, rawWord,
       notmask224_eq k hk, hcond,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated,
-      Challenge.EvmProof.Stepper.runInstr,
+      Challenge.EvmProof.DataStepper.runLocatedBlock,
+      Challenge.EvmProof.DataStepper.runLocated,
+      Challenge.EvmProof.DataStepper.runInstr,
       Challenge.EvmProof.Word.literal_eq_ofNat, hmaskOrder]
 
 def sound (path : List Located) {s t : State}
@@ -252,7 +252,7 @@ def sound (path : List Located) {s t : State}
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false := by
         exact deployAddress_not_precompile) : GasSteps s t :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
+  Challenge.EvmProof.DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     path hcode hfork h hrun hnp
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan

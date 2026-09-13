@@ -65,7 +65,7 @@ theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
   have hcap (n : Nat) (hn : n ≤ 100) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [template, inputStack, outputStack,
-    runInstrSeq, Stepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat, Word.lor_comm]
   all_goals repeat first | apply And.intro | rfl

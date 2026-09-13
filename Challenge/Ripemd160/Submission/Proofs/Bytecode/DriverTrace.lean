@@ -25,11 +25,11 @@ private def wfOp {op : Operation}
     (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
     (hplain : YulEvmCompiler.plainOp op)
     (havailable : op.availableInFork .Osaka = true) :
-    Challenge.EvmProof.Stepper.WellFormed .Osaka (.op op) :=
+    Challenge.EvmProof.DataStepper.WellFormed .Osaka (.op op) :=
   ⟨hopcode, hplain, havailable⟩
 
 abbrev Located :=
-  Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka
+  Challenge.EvmProof.DataStepper.Located Artifact.submissionArtifact .Osaka
 
 def callPath : List Located :=
   [⟨321, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -228,12 +228,12 @@ theorem run_call (s : State) (input : ByteArray)
     (hi : i < blockCount input)
     (_hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock callPath
+    Challenge.EvmProof.DataStepper.runLocatedBlock callPath
       (loopAt s input i) = some (dispatchEntry s input i) := by
   have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
     (messageOffset_lt_uint256 input hfit i hi)
-  simp [callPath, Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+  simp [callPath, Challenge.EvmProof.DataStepper.runLocatedBlock,
+    Challenge.EvmProof.DataStepper.runLocated, Challenge.EvmProof.DataStepper.runInstr,
     loopAt, dispatchEntry, messageOffsetWord, blockOffsetWord,
     hrun, hadd]
 
@@ -242,14 +242,14 @@ theorem run_enter (s : State) (input : ByteArray)
     (_hcalldata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock enterPath
+    Challenge.EvmProof.DataStepper.runLocatedBlock enterPath
       (setupEntry s input) = some (loopAt s input 0) := by
   have hdest : Decode.isValidJumpDest submissionBytecode 574 = true := by
     have h := Artifact.submissionArtifact.isValidJumpDest_index 321 (by rfl)
     rw [pcD252] at h
     exact h
-  simp [enterPath, Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+  simp [enterPath, Challenge.EvmProof.DataStepper.runLocatedBlock,
+    Challenge.EvmProof.DataStepper.runLocated, Challenge.EvmProof.DataStepper.runInstr,
     setupEntry, loopAt, blockOffsetWord, blockOffset, hcode,
     hrun, hdest, UInt256.isTrue,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -274,14 +274,14 @@ theorem run_postCheck_continue (s : State) (input : ByteArray)
     (hfit : Challenge.Ripemd160.CalldataFits input) (i : Nat)
     (hi : i + 1 < blockCount input)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock postCheckPath
+    Challenge.EvmProof.DataStepper.runLocatedBlock postCheckPath
       (compressReturned s input i) = some (loopAt s input (i + 1)) := by
   have hoff := blockOffset_lt_uint256 input hfit (i + 1) (by omega)
   have hadd := incrementedOffset input i hoff
   have heq := offset_ne_total input hfit (i + 1) hi
   have hfalse : UInt256.isTrue (0 : UInt256) = false := by decide
-  simp [postCheckPath, Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+  simp [postCheckPath, Challenge.EvmProof.DataStepper.runLocatedBlock,
+    Challenge.EvmProof.DataStepper.runLocated, Challenge.EvmProof.DataStepper.runInstr,
     compressReturned, loopAt, hrun, hadd, heq, hfalse]
 
 theorem run_postCheck_exit (s : State) (input : ByteArray)
@@ -289,7 +289,7 @@ theorem run_postCheck_exit (s : State) (input : ByteArray)
     (hlast : i + 1 = blockCount input)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock postCheckPath
+    Challenge.EvmProof.DataStepper.runLocatedBlock postCheckPath
       (compressReturned s input i) = some (afterExit s input) := by
   have hoff := blockOffset_lt_uint256 input hfit (i + 1) (by omega)
   have hadd := incrementedOffset input i hoff
@@ -298,19 +298,19 @@ theorem run_postCheck_exit (s : State) (input : ByteArray)
   have honeNat : UInt256.toNat (1 : UInt256) = 1 := by decide
   have hdest : Decode.isValidJumpDest submissionBytecode 4693 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 218 (by rfl)
-  simp [postCheckPath, Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+  simp [postCheckPath, Challenge.EvmProof.DataStepper.runLocatedBlock,
+    Challenge.EvmProof.DataStepper.runLocated, Challenge.EvmProof.DataStepper.runInstr,
     compressReturned, afterExit, hrun, hcode, hadd, hlast, heq,
     htrue, honeNat, UInt256.isTrue, hdest]
 
 private def gasStepsBlock (path : List Located) (s t : State)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hfork : s.fork = .Osaka)
-    (hresult : Challenge.EvmProof.Stepper.runLocatedBlock path s = some t)
+    (hresult : Challenge.EvmProof.DataStepper.runLocatedBlock path s = some t)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) : Challenge.EvmProof.GasSteps s t :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+  Challenge.EvmProof.DataStepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka path hcode hfork hresult hrun hnp
 
 def gasSteps_call (s : State) (input : ByteArray)

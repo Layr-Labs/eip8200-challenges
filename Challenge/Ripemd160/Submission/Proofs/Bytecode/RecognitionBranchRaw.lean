@@ -24,7 +24,7 @@ theorem run_clamp_width (width : Fin 33) (hwidth : width ≠ 0) (s : State) (pc 
   simp only [Word.word_toNat_ofNat] at hvalid
   norm_num only at hvalid
   by_cases hc : f.stop.toNat < f.full.toNat
-  all_goals simp (discharger := omega) [clampTemplateWith, frame, runInstrSeq, Stepper.runInstr,
+  all_goals simp (discharger := omega) [clampTemplateWith, frame, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, UInt256.lt, hwidth, UInt256.eq, UInt256.isZero, UInt256.isTrue,
     hc, hvalid, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
@@ -47,7 +47,7 @@ theorem run_clamp (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame)
   simp only [Word.word_toNat_ofNat] at hvalid
   norm_num only at hvalid
   by_cases hc : f.stop.toNat < f.full.toNat
-  all_goals simp (discharger := omega) [clampTemplate, frame, runInstrSeq, Stepper.runInstr,
+  all_goals simp (discharger := omega) [clampTemplate, frame, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, UInt256.lt, UInt256.eq, UInt256.isZero, UInt256.isTrue,
     hc, hvalid, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
@@ -71,7 +71,7 @@ theorem run_segment (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame)
   norm_num only at hvalid
   by_cases hc : ¬ f.off.toNat < f.full.toNat
   all_goals try simp only [not_not] at hc
-  all_goals simp (discharger := omega) [segmentTemplate, frame, runInstrSeq, Stepper.runInstr,
+  all_goals simp (discharger := omega) [segmentTemplate, frame, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, UInt256.lt, UInt256.eq, UInt256.isZero, UInt256.isTrue,
     hc, hvalid, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
@@ -95,7 +95,7 @@ theorem run_partial (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame)
   norm_num only at hvalid
   by_cases hc : f.off.toNat = s.executionEnv.calldata.size % 2^256
   all_goals norm_num only at hc
-  all_goals simp (discharger := omega) [partialTemplate, frame, runInstrSeq, Stepper.runInstr,
+  all_goals simp (discharger := omega) [partialTemplate, frame, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, UInt256.lt, UInt256.eq, UInt256.isZero, UInt256.isTrue,
     hc, hvalid, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
@@ -129,7 +129,7 @@ theorem run_finish (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame)
   simp only [Word.word_toNat_ofNat] at hvalid
   norm_num only at hvalid
   by_cases hc : f.acc.toNat = 0
-  all_goals simp (discharger := omega) [finishTemplate, frame, finishRest, runInstrSeq, Stepper.runInstr,
+  all_goals simp (discharger := omega) [finishTemplate, frame, finishRest, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, UInt256.isTrue,
     hc, hvalid, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
@@ -145,7 +145,7 @@ theorem run_reset (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame)
       some {s with pc := pcAfter pc resetTemplate, stack := frame {f with stop := f.full} rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
-  simp (discharger := omega) [resetTemplate, frame, runInstrSeq, Stepper.runInstr,
+  simp (discharger := omega) [resetTemplate, frame, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals rfl
@@ -164,7 +164,7 @@ theorem run_cleanup (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame)
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
   simp only [Word.word_toNat_ofNat] at hvalid
   norm_num only at hvalid
-  simp (discharger := omega) [cleanupTemplate, frame, runInstrSeq, Stepper.runInstr,
+  simp (discharger := omega) [cleanupTemplate, frame, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, hvalid, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
 #print axioms run_cleanup

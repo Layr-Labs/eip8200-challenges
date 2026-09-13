@@ -24,7 +24,7 @@ theorem run_maskTemplate (s : State) (pc value : UInt256) (slot : Fin 16)
         stack := Word.mask32 value :: rest} := by
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hcap2 : rest.length + 1 + 1 < 1024 := by omega
-  simp [maskTemplate, op, runInstrSeq, Stepper.runInstr,
+  simp [maskTemplate, op, runInstrSeq, DataStepper.runInstr,
     pcAfter, hrun, hcap1, hcap2, hlookup, UInt256.succ, Instr.size,
     maskWord, Word.mask32, Word.land_comm]
   exact ⟨rfl, rfl⟩
@@ -284,7 +284,7 @@ theorem run_cachedInitial (s : State) (pc messageOffset returnPC : UInt256)
     Word.word_add_comm _ _
   simp [cachedInitial, scheduleEntry, inputWord0, inputWord1,
     loadedActiveWords, activeAfterWord, op, push1, dup1, swap1,
-    runInstrSeq, Stepper.runInstr, pcAfter, hrun, hcap, hswap1, hswap3, h32,
+    runInstrSeq, DataStepper.runInstr, pcAfter, hrun, hcap, hswap1, hswap3, h32,
     word_add_assoc, Nat.add_assoc, State.activeWordsAfterUInt256,
     Word.word_toNat_ofNat, Word.ofNat_add_mod, UInt256.succ, Instr.size]
   repeat first
@@ -328,7 +328,7 @@ theorem run_cachedStage (s : State) (pc value : UInt256)
   all_goals norm_num at hsemantic
   all_goals
     simp [cachedStage, endianFactorPush, endianFactor, op, push1, push2, push3,
-      dup1, DenseScheduleTrace.stageState, runInstrSeq, Stepper.runInstr,
+      dup1, DenseScheduleTrace.stageState, runInstrSeq, DataStepper.runInstr,
       pcAfter, hrun, hcap, hcap2, hcap3, hcap4, hlookup, UInt256.succ, Instr.size,
       Challenge.EvmProof.Word.ofNat_add_mod, word_add_assoc]
     rw [add_ofNat_assoc pc 1 1]
@@ -391,7 +391,7 @@ theorem run_cleanupTemplate (s : State) (pc a b c : UInt256) (rest : List UInt25
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hcap2 : rest.length + 1 + 1 < 1024 := by omega
   have hcap3 : rest.length + 1 + 1 + 1 < 1024 := by omega
-  simp [cleanupTemplate, op, runInstrSeq, Stepper.runInstr, pcAfter, hrun,
+  simp [cleanupTemplate, op, runInstrSeq, DataStepper.runInstr, pcAfter, hrun,
     hcap1, hcap2, hcap3, UInt256.succ, Instr.size]
   rfl
 
@@ -500,7 +500,7 @@ theorem fullTemplate_staticGas : staticGas fullTemplate = 454 := by
     PairedScheduleStores.firstTemplate, middleTemplate, middleTemplateUnmasked, unmaskedTemplate, lastTemplate, maskTemplate,
     PairedSchedulePrimitives.duplicateShiftTemplate, PairedSchedulePrimitives.storeTemplate,
     sentinelTemplate, cleanupTemplate, cell, op, push1, push2, push3, dup1, swap1,
-    Meter.instrStaticCost, Gas.baseCost]
+    DataMeter.instrStaticCost, Gas.baseCost]
 
 #print axioms fullTemplate_staticGas
 
@@ -635,12 +635,12 @@ theorem fullTemplate_advances :
 
 #print axioms fullTemplate_advances
 
-theorem runLocatedBlock_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
+theorem runLocatedBlock_fullTemplate {artifact : DataProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork fullTemplate)
     (s : State) (returnPC : UInt256) (p : Nat) (rest : List UInt256)
     (hstack : rest.length < 1015) (hrun : s.halt = .Running)
     (hp : 736 ≤ p) (hbound : p + 64 < 2 ^ 256) :
-    Stepper.runLocatedBlock site.path
+    DataStepper.runLocatedBlock site.path
       (scheduleEntry s site.startPC (UInt256.ofNat p) returnPC rest) =
       some {s with
         pc := site.endPC
@@ -657,7 +657,7 @@ theorem runLocatedBlock_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
   rw [← hend] at h
   exact h
 
-def gasSteps_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
+def gasSteps_fullTemplate {artifact : DataProgramArtifact} {fork : Fork}
     (site : GenericRoundSite artifact fork fullTemplate)
     (s : State) (returnPC : UInt256) (p : Nat) (rest : List UInt256)
     (hstack : rest.length < 1015) (hrun : s.halt = .Running)
@@ -671,7 +671,7 @@ def gasSteps_fullTemplate {artifact : ProgramArtifact} {fork : Fork}
         stack := returnPC :: rest
         memory := normalizedMemory s.memory (PairedScheduleData.extractedWordG s.memory p)
         activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
-  apply Stepper.runLocatedBlock_sound artifact fork site.path
+  apply DataStepper.runLocatedBlock_sound artifact fork site.path
   · exact hcode
   · exact hfork
   · exact runLocatedBlock_fullTemplate site s returnPC p rest hstack hrun hp hbound

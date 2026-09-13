@@ -56,8 +56,8 @@ theorem run_loop_more (input : ByteArray) (n : Nat) (hn : n < 29) :
     hnext, hmod, hnextMod, hnaddr, hsum, hlt, hcond, hxor, hacc, hstep,
     Word.lor_comm,
     List.exchange, Nat.add_assoc, Nat.mul_add, UInt256.isTrue,
-    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
-    Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.DataStepper.runLocatedBlock, Challenge.EvmProof.DataStepper.runLocated,
+    Challenge.EvmProof.DataStepper.runInstr,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
 
@@ -78,8 +78,8 @@ theorem run_loop_last (input : ByteArray) :
   simp (config := { maxSteps := 1000000 })
     [loopPath, opAt, pushAt, wfOp, loopState, loopExitState, referenceWord,
     hacc, hfalse, hcond, hxor, Word.lor_comm, List.exchange, UInt256.isTrue,
-    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
-    Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.DataStepper.runLocatedBlock, Challenge.EvmProof.DataStepper.runLocated,
+    Challenge.EvmProof.DataStepper.runInstr,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
 

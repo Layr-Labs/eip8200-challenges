@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Word
-import Challenge.EvmProof.Meter
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataMeter
 
 set_option warningAsError true
 set_option maxRecDepth 50000

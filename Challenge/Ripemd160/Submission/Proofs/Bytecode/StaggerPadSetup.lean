@@ -82,7 +82,7 @@ theorem run_pad (s : State) (pc returnPC : UInt256) (rest : List UInt256)
     PadOnlySchedule.padWords, PadOnlySchedule.lowDiet_eq_lowLength,
     PadOnlySchedule.lowLength, PadOnlySchedule.highLength,
     writeWord, PadShiftDiet.high, PadShiftDiet.low, Word.land_comm,
-    runInstrSeq, Stepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     PairedHelperBooleanTrace.push0_toNat,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
     State.activeWordsAfterUInt256, hactiveAt, hcopyActive, hsize,

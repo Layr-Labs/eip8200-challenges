@@ -73,7 +73,7 @@ theorem run_cachedInitial (s : State) (pc messageOffset returnPC : UInt256)
   simp [cachedInitial, scheduleEntry, inputWord0, inputWord1,
     loadedActiveWords, activeAfterWord, op, push1, push2, dup1, swap1,
     hzero, mask8_div,
-    runInstrSeq, Stepper.runInstr, pcAfter, hrun, hcap, hswap1, hswap3, h32,
+    runInstrSeq, DataStepper.runInstr, pcAfter, hrun, hcap, hswap1, hswap3, h32,
     word_add_assoc, Nat.add_assoc, State.activeWordsAfterUInt256,
     Word.word_toNat_ofNat, Word.ofNat_add_mod, UInt256.succ, Instr.size]
   repeat first

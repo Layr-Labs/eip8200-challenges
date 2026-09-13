@@ -112,7 +112,7 @@ private theorem run_upper (s : State) (pc high low returnPC : UInt256) (rest : L
   rw [← reversedValue_eq, ← upperValue_eq]
   have hcap (n : Nat) (hn : n ≤ 27) : rest.length + n < 1024 := by omega
   simp (discharger := omega) [upperReverse, upperValue,
-    runInstrSeq, Stepper.runInstr, pcAfter, UInt256.succ, Instr.size, hrun, hcap,
+    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size, hrun, hcap,
     Nat.add_assoc, List.getElem?_cons_zero, List.exchange, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl
 #print axioms run_upper
@@ -127,7 +127,7 @@ private theorem run_lower (s : State) (pc low returnPC : UInt256) (rest : List U
   rw [← reversedValue_eq, ← lowerValue_eq]
   have hcap (n : Nat) (hn : n ≤ 27) : rest.length + n < 1024 := by omega
   simp (discharger := omega) [lowerReverse, lowerValue,
-    runInstrSeq, Stepper.runInstr, pcAfter, UInt256.succ, Instr.size, hrun, hcap,
+    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size, hrun, hcap,
     Nat.add_assoc, List.getElem?_cons_zero, List.exchange, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl
 #print axioms run_lower

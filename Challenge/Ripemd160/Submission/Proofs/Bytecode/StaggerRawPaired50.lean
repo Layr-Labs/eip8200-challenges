@@ -100,7 +100,7 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     Stagger144Active.word_active_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [template, inputStack, actualOutput,
-    runInstrSeq, Stepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
     State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl
@@ -120,8 +120,8 @@ def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osak
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 3320 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2552) = UInt256.ofNat 3320
+theorem site_pc : site.startPC = UInt256.ofNat 3276 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2552) = UInt256.ofNat 3276
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound
@@ -134,10 +134,10 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 3320, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 3360, stack := outputStack s.memory x rho} := by
-  have hraw := run_actual s (UInt256.ofNat 3320) x rho hstack hrun hactive
-  have hend : pcAfter (UInt256.ofNat 3320) template = UInt256.ofNat 3360 := by decide
+    GasSteps {s with pc := UInt256.ofNat 3276, stack := inputStack x rho}
+      {s with pc := UInt256.ofNat 3316, stack := outputStack s.memory x rho} := by
+  have hraw := run_actual s (UInt256.ofNat 3276) x rho hstack hrun hactive
+  have hend : pcAfter (UInt256.ofNat 3276) template = UInt256.ofNat 3316 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps

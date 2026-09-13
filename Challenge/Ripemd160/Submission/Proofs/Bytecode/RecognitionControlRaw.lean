@@ -53,7 +53,7 @@ theorem run_init (s : State) (pc incoming : UInt256) (rho : List UInt256)
   have hL : UInt256.lnot PatternedSwar.m8 = PatternedSwar.m7 := by decide
   have hC : UInt256.shiftLeft PatternedSwar.M (UInt256.ofNat 5) = c32 := by decide
   simp (config := { maxSteps := 600000 }) (discharger := omega)
-    [initTemplate, initResult, frame, runInstrSeq, Stepper.runInstr, pcAfter,
+    [initTemplate, initResult, frame, runInstrSeq, DataStepper.runInstr, pcAfter,
     UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, hU, hH, hL, hC,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
@@ -74,7 +74,7 @@ theorem run_init_body (s : State) (pc : UInt256) (rho : List UInt256)
   have hL : UInt256.lnot PatternedSwar.m8 = PatternedSwar.m7 := by decide
   have hC : UInt256.shiftLeft PatternedSwar.M (UInt256.ofNat 5) = c32 := by decide
   simp (config := { maxSteps := 600000 }) (discharger := omega)
-    [initBodyTemplate, initTemplate, initResult, frame, runInstrSeq, Stepper.runInstr, pcAfter,
+    [initBodyTemplate, initTemplate, initResult, frame, runInstrSeq, DataStepper.runInstr, pcAfter,
     UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, hU, hH, hL, hC,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
@@ -112,7 +112,7 @@ theorem run_partial (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame) (r
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
   simp (config := { maxSteps := 600000 }) (discharger := omega)
-    [partialTemplate, partialResult, frame, runInstrSeq, Stepper.runInstr, pcAfter,
+    [partialTemplate, partialResult, frame, runInstrSeq, DataStepper.runInstr, pcAfter,
     UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl
@@ -131,7 +131,7 @@ theorem run_test_continue (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Fra
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
   simp only [Word.word_toNat_ofNat] at hvalid
   norm_num only at hvalid
-  simp (discharger := omega) [testTemplate, frame, runInstrSeq, Stepper.runInstr,
+  simp (discharger := omega) [testTemplate, frame, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, UInt256.lt, hlt, UInt256.isTrue, hvalid,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
@@ -146,7 +146,7 @@ theorem run_test_exit (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame) 
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
   have hnlt : ¬ f.off.toNat < f.stop.toNat := by omega
-  simp (discharger := omega) [testTemplate, frame, runInstrSeq, Stepper.runInstr,
+  simp (discharger := omega) [testTemplate, frame, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, UInt256.lt, hnlt, UInt256.isTrue,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]

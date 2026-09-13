@@ -14,6 +14,6 @@ theorem run_without_jumpdest (code : List Instr) (s t : State)
   cases code with
   | nil => exact False.elim (hne rfl)
   | cons instruction rest =>
-    simpa only [runInstrSeq, Stepper.runInstr, hstack, if_pos, hrun] using h
+    simpa only [runInstrSeq, DataStepper.runInstr, hstack, if_pos, hrun] using h
 #print axioms run_without_jumpdest
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80Setup

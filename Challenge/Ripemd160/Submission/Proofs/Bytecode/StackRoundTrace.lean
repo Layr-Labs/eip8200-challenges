@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTemplate
-import Challenge.EvmProof.Meter
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataMeter
 import YulEvmCompiler.LowerDefs
 
 set_option warningAsError true
@@ -9,7 +9,7 @@ set_option maxHeartbeats 4000000
 /-!
 # H10 direct stack-round traces
 
-The evaluator theorem in this file is generic in `ProgramArtifact`.  The
+The evaluator theorem in this file is generic in `DataProgramArtifact`.  The
 caller supplies only a `GenericRoundSite`; no large artifact literal is
 reduced while proving a round.  The f0 theorem is the first direct trace and
 its gas theorem lifts the same successful evaluator result through the actual
@@ -25,8 +25,8 @@ open Challenge.EvmProof
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRound
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTemplate
 
-abbrev Located (artifact : ProgramArtifact) (fork : Fork) :=
-  Challenge.EvmProof.Stepper.Located artifact fork
+abbrev Located (artifact : DataProgramArtifact) (fork : Fork) :=
+  Challenge.EvmProof.DataStepper.Located artifact fork
 
 def roundWorking (a b c d e : UInt256) : Compression.EvmWorking :=
   { a := a, b := b, c := c, d := d, e := e }
@@ -60,7 +60,7 @@ def roundReturned (s : State) (endPC : UInt256) (j : Nat)
 def runInstrSeq : List Instr → State → Option State
   | [], s => some s
   | instruction :: rest, s =>
-      match Challenge.EvmProof.Stepper.runInstr instruction s with
+      match Challenge.EvmProof.DataStepper.runInstr instruction s with
       | none => none
       | some next =>
           match rest with
@@ -76,7 +76,7 @@ def pcAfter (pc : UInt256) : List Instr → UInt256
       pcAfter (pc + UInt256.ofNat instruction.size) rest
 
 theorem endPC_eq_pcAfter_sites
-    {artifact : ProgramArtifact} {fork : Fork}
+    {artifact : DataProgramArtifact} {fork : Fork}
     (sites : List (LocatedSite artifact fork)) (startPC endPC : UInt256)
     (hhead : headPC sites = some startPC)
     (hend : afterPC sites = some endPC)
@@ -125,12 +125,12 @@ private theorem runInstr_pc_binary {instruction : Instr} {s t : State}
     (hform : instruction = .op .ADD ∨ instruction = .op .AND ∨
       instruction = .op .OR ∨ instruction = .op .XOR ∨
       instruction = .op .SHL ∨ instruction = .op .SHR)
-    (hresult : Challenge.EvmProof.Stepper.runInstr instruction s = some t) :
+    (hresult : Challenge.EvmProof.DataStepper.runInstr instruction s = some t) :
     t.pc = s.pc.succ := by
   rcases hform with rfl | rfl | rfl | rfl | rfl | rfl
   all_goals
     by_cases hcap : s.stack.length < 1024
-    · rw [Challenge.EvmProof.Stepper.runInstr, if_pos hcap] at hresult
+    · rw [Challenge.EvmProof.DataStepper.runInstr, if_pos hcap] at hresult
       cases hs : s.stack with
       | nil => simp [hs] at hresult
       | cons a tail =>
@@ -140,31 +140,31 @@ private theorem runInstr_pc_binary {instruction : Instr} {s t : State}
               simp [hs, ht] at hresult
               subst t
               rfl
-    · simp [Challenge.EvmProof.Stepper.runInstr, hcap] at hresult
+    · simp [Challenge.EvmProof.DataStepper.runInstr, hcap] at hresult
 
 private theorem runInstr_pc_unary {instruction : Instr} {s t : State}
     (hform : instruction = .op .NOT ∨ instruction = .op .POP ∨
       instruction = .op .MLOAD)
-    (hresult : Challenge.EvmProof.Stepper.runInstr instruction s = some t) :
+    (hresult : Challenge.EvmProof.DataStepper.runInstr instruction s = some t) :
     t.pc = s.pc.succ := by
   rcases hform with rfl | rfl | rfl
   all_goals
     by_cases hcap : s.stack.length < 1024
-    · rw [Challenge.EvmProof.Stepper.runInstr, if_pos hcap] at hresult
+    · rw [Challenge.EvmProof.DataStepper.runInstr, if_pos hcap] at hresult
       cases hs : s.stack with
       | nil => simp [hs] at hresult
       | cons a rest =>
           simp [hs] at hresult
           subst t
           rfl
-    · simp [Challenge.EvmProof.Stepper.runInstr, hcap] at hresult
+    · simp [Challenge.EvmProof.DataStepper.runInstr, hcap] at hresult
 
 private theorem runInstr_pc_push {width : Fin 33} {value : UInt256}
     {s t : State}
-    (hresult : Challenge.EvmProof.Stepper.runInstr (.push width value) s = some t) :
+    (hresult : Challenge.EvmProof.DataStepper.runInstr (.push width value) s = some t) :
     t.pc = s.pc + UInt256.ofNat (Instr.push width value).size := by
   by_cases hcap : s.stack.length < 1024
-  · rw [Challenge.EvmProof.Stepper.runInstr, if_pos hcap] at hresult
+  · rw [Challenge.EvmProof.DataStepper.runInstr, if_pos hcap] at hresult
     by_cases hwidth : width.val = 0
     · simp [hwidth] at hresult
       cases hresult
@@ -178,33 +178,33 @@ private theorem runInstr_pc_push {width : Fin 33} {value : UInt256}
       change s.pc + UInt256.ofNat (width.val + 1) =
         s.pc + UInt256.ofNat (1 + width.val)
       rw [Nat.add_comm (width.val) 1]
-  · simp [Challenge.EvmProof.Stepper.runInstr, hcap] at hresult
+  · simp [Challenge.EvmProof.DataStepper.runInstr, hcap] at hresult
 
 private theorem runInstr_pc_dup {operation : Operation.DupOp} {s t : State}
-    (hresult : Challenge.EvmProof.Stepper.runInstr (.op (.Dup operation)) s = some t) :
+    (hresult : Challenge.EvmProof.DataStepper.runInstr (.op (.Dup operation)) s = some t) :
     t.pc = s.pc.succ := by
   by_cases hcap : s.stack.length < 1024
-  · rw [Challenge.EvmProof.Stepper.runInstr, if_pos hcap] at hresult
+  · rw [Challenge.EvmProof.DataStepper.runInstr, if_pos hcap] at hresult
     split at hresult
     · cases hresult
       rfl
     · simp_all
-  · simp [Challenge.EvmProof.Stepper.runInstr, hcap] at hresult
+  · simp [Challenge.EvmProof.DataStepper.runInstr, hcap] at hresult
 
 private theorem runInstr_pc_swap {operation : Operation.SwapOp} {s t : State}
-    (hresult : Challenge.EvmProof.Stepper.runInstr (.op (.Swap operation)) s = some t) :
+    (hresult : Challenge.EvmProof.DataStepper.runInstr (.op (.Swap operation)) s = some t) :
     t.pc = s.pc.succ := by
   by_cases hcap : s.stack.length < 1024
-  · rw [Challenge.EvmProof.Stepper.runInstr, if_pos hcap] at hresult
+  · rw [Challenge.EvmProof.DataStepper.runInstr, if_pos hcap] at hresult
     split at hresult
     · cases hresult
       rfl
     · simp_all
-  · simp [Challenge.EvmProof.Stepper.runInstr, hcap] at hresult
+  · simp [Challenge.EvmProof.DataStepper.runInstr, hcap] at hresult
 
 theorem runInstr_pc_of_straight {instruction : Instr} {s t : State}
     (hstraight : StraightLine instruction)
-    (hresult : Challenge.EvmProof.Stepper.runInstr instruction s = some t) :
+    (hresult : Challenge.EvmProof.DataStepper.runInstr instruction s = some t) :
     t.pc = s.pc + UInt256.ofNat instruction.size := by
   cases hstraight with
   | push width value => exact runInstr_pc_push hresult
@@ -246,16 +246,16 @@ theorem runInstr_pc_of_straight {instruction : Instr} {s t : State}
       exact runInstr_pc_swap hresult
 
 theorem runLocatedBlock_eq_runInstrSeq
-    {artifact : ProgramArtifact} {fork : Fork}
+    {artifact : DataProgramArtifact} {fork : Fork}
     (sites : List (LocatedSite artifact fork)) (template : List Instr)
     (hinst : sites.map (fun site => site.located.instruction) = template)
     (hcont : Contiguous sites) (s : State)
     (hhead : headPC sites = some s.pc)
     (hadvance : ∀ site, site ∈ sites →
       ∀ {u v : State},
-        Challenge.EvmProof.Stepper.runInstr site.located.instruction u = some v →
+        Challenge.EvmProof.DataStepper.runInstr site.located.instruction u = some v →
           v.pc = u.pc + UInt256.ofNat site.located.instruction.size) :
-    Challenge.EvmProof.Stepper.runLocatedBlock (LocatedSite.path sites) s =
+    Challenge.EvmProof.DataStepper.runLocatedBlock (LocatedSite.path sites) s =
       runInstrSeq template s := by
   induction sites generalizing template s with
   | nil =>
@@ -268,13 +268,13 @@ theorem runLocatedBlock_eq_runInstrSeq
           have htemplate : template = [first.located.instruction] := by
             simpa [LocatedSite.path] using hinst.symm
           subst template
-          have hrun : Challenge.EvmProof.Stepper.runLocated first.located s =
-              Challenge.EvmProof.Stepper.runInstr first.located.instruction s := by
-            simp [Challenge.EvmProof.Stepper.runLocated, first.pc_eq, hpc]
-          change (match Challenge.EvmProof.Stepper.runLocated first.located s with
+          have hrun : Challenge.EvmProof.DataStepper.runLocated first.located s =
+              Challenge.EvmProof.DataStepper.runInstr first.located.instruction s := by
+            simp [Challenge.EvmProof.DataStepper.runLocated, first.pc_eq, hpc]
+          change (match Challenge.EvmProof.DataStepper.runLocated first.located s with
             | none => none
             | some next => some next) =
-            (match Challenge.EvmProof.Stepper.runInstr first.located.instruction s with
+            (match Challenge.EvmProof.DataStepper.runInstr first.located.instruction s with
             | none => none
             | some next => some next)
           rw [hrun]
@@ -282,7 +282,7 @@ theorem runLocatedBlock_eq_runInstrSeq
           have hpc : s.pc = first.pc := by
             simpa [headPC] using hhead.symm
           have hrun : ∀ {u v : State},
-              Challenge.EvmProof.Stepper.runInstr first.located.instruction u = some v →
+              Challenge.EvmProof.DataStepper.runInstr first.located.instruction u = some v →
                 v.pc = u.pc + UInt256.ofNat first.located.instruction.size := by
             intro u v hresult
             exact hadvance first (by simp) hresult
@@ -293,15 +293,15 @@ theorem runLocatedBlock_eq_runInstrSeq
           subst template
           have hadvanceTail : ∀ site, site ∈ second :: tail →
               ∀ {u v : State},
-                Challenge.EvmProof.Stepper.runInstr site.located.instruction u = some v →
+                Challenge.EvmProof.DataStepper.runInstr site.located.instruction u = some v →
                   v.pc = u.pc + UInt256.ofNat site.located.instruction.size := by
             intro site hmem u v hresult
             exact hadvance site (by simp [hmem]) hresult
           cases hrunFirst :
-              Challenge.EvmProof.Stepper.runInstr first.located.instruction s with
+              Challenge.EvmProof.DataStepper.runInstr first.located.instruction s with
           | none =>
-              simp [LocatedSite.path, Challenge.EvmProof.Stepper.runLocatedBlock,
-                runInstrSeq, Challenge.EvmProof.Stepper.runLocated,
+              simp [LocatedSite.path, Challenge.EvmProof.DataStepper.runLocatedBlock,
+                runInstrSeq, Challenge.EvmProof.DataStepper.runLocated,
                 first.pc_eq, hpc, hrunFirst]
           | some next =>
               have hnextPC' : next.pc = second.pc := by
@@ -319,16 +319,16 @@ theorem runLocatedBlock_eq_runInstrSeq
               cases hhalt : next.halt with
               | Running =>
                   have hloc :
-                      Challenge.EvmProof.Stepper.runLocated first.located s = some next := by
-                    simp [Challenge.EvmProof.Stepper.runLocated, first.pc_eq, hpc, hrunFirst]
-                  change (match Challenge.EvmProof.Stepper.runLocated first.located s with
+                      Challenge.EvmProof.DataStepper.runLocated first.located s = some next := by
+                    simp [Challenge.EvmProof.DataStepper.runLocated, first.pc_eq, hpc, hrunFirst]
+                  change (match Challenge.EvmProof.DataStepper.runLocated first.located s with
                     | none => none
                     | some next' =>
                         match (second :: tail).map (fun site => site.located) with
                         | [] => some next'
                         | _ :: _ =>
                             match next'.halt with
-                            | .Running => Challenge.EvmProof.Stepper.runLocatedBlock
+                            | .Running => Challenge.EvmProof.DataStepper.runLocatedBlock
                                 ((second :: tail).map (fun site => site.located)) next'
                             | _ => none) =
                     runInstrSeq (first.located.instruction ::
@@ -340,34 +340,34 @@ theorem runLocatedBlock_eq_runInstrSeq
                   exact htail
               | Success =>
                   simp [LocatedSite.path,
-                    Challenge.EvmProof.Stepper.runLocatedBlock,
-                    runInstrSeq, Challenge.EvmProof.Stepper.runLocated,
+                    Challenge.EvmProof.DataStepper.runLocatedBlock,
+                    runInstrSeq, Challenge.EvmProof.DataStepper.runLocated,
                     first.pc_eq, hpc, hrunFirst, hhalt]
               | Returned =>
                   simp [LocatedSite.path,
-                    Challenge.EvmProof.Stepper.runLocatedBlock,
-                    runInstrSeq, Challenge.EvmProof.Stepper.runLocated,
+                    Challenge.EvmProof.DataStepper.runLocatedBlock,
+                    runInstrSeq, Challenge.EvmProof.DataStepper.runLocated,
                     first.pc_eq, hpc, hrunFirst, hhalt]
               | Reverted =>
                   simp [LocatedSite.path,
-                    Challenge.EvmProof.Stepper.runLocatedBlock,
-                    runInstrSeq, Challenge.EvmProof.Stepper.runLocated,
+                    Challenge.EvmProof.DataStepper.runLocatedBlock,
+                    runInstrSeq, Challenge.EvmProof.DataStepper.runLocated,
                     first.pc_eq, hpc, hrunFirst, hhalt]
               | Exception error =>
                   simp [LocatedSite.path,
-                    Challenge.EvmProof.Stepper.runLocatedBlock,
-                    runInstrSeq, Challenge.EvmProof.Stepper.runLocated,
+                    Challenge.EvmProof.DataStepper.runLocatedBlock,
+                    runInstrSeq, Challenge.EvmProof.DataStepper.runLocated,
                     first.pc_eq, hpc, hrunFirst, hhalt]
 
 theorem runLocatedBlock_eq_runInstrSeq_site
-    {artifact : ProgramArtifact} {fork : Fork} {template : List Instr}
+    {artifact : DataProgramArtifact} {fork : Fork} {template : List Instr}
     (site : GenericRoundSite artifact fork template) (s : State)
     (hhead : s.pc = site.startPC)
     (hadvance : ∀ located, located ∈ site.sites →
       ∀ {u v : State},
-        Challenge.EvmProof.Stepper.runInstr located.located.instruction u = some v →
+        Challenge.EvmProof.DataStepper.runInstr located.located.instruction u = some v →
           v.pc = u.pc + UInt256.ofNat located.located.instruction.size) :
-    Challenge.EvmProof.Stepper.runLocatedBlock site.path s =
+    Challenge.EvmProof.DataStepper.runLocatedBlock site.path s =
       runInstrSeq template s := by
   apply runLocatedBlock_eq_runInstrSeq site.sites template
     site.instruction_eq site.contiguous s
@@ -431,7 +431,7 @@ theorem runInstrSeq_f0 (s : State) (startPC : UInt256)
   simp (config := { maxSteps := 2000000 })
     [f0Template, op, push1, push2, push4, dup1, dup2, dup3, dup4, dup5,
       dup6, swap1, swap2, swap3, swap4, mask, c10, c22,
-      runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
+      runInstrSeq, Challenge.EvmProof.DataStepper.runInstr,
       roundEntry, roundReturned, roundWords, roundResult, roundWorking,
       roundWord, pcAfter, StackRound.stackRound, StackRound.stackF,
       StackRound.stackSum, StackRound.stackRawRot, StackRound.stackC10,
@@ -474,13 +474,13 @@ theorem runInstrSeq_f0 (s : State) (startPC : UInt256)
   · exact Word.land_comm _ _
 
 theorem runLocatedBlock_f0
-    {artifact : ProgramArtifact} {fork : Fork}
+    {artifact : DataProgramArtifact} {fork : Fork}
     (xAddress : UInt256) (rotation : Nat)
     (site : GenericRoundSite artifact fork (f0Template xAddress rotation))
     (s : State) (a b c d e : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1015)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock site.path
+    Challenge.EvmProof.DataStepper.runLocatedBlock site.path
         (roundEntry s site.startPC a b c d e rest) =
       some (roundReturned s site.endPC
         0 a b c d e xAddress rotation 0 rest) := by
@@ -495,7 +495,7 @@ theorem runLocatedBlock_f0
         rw [site.instruction_eq]
   have hadvance : ∀ located, located ∈ site.sites →
       ∀ {u v : State},
-        Challenge.EvmProof.Stepper.runInstr located.located.instruction u = some v →
+        Challenge.EvmProof.DataStepper.runInstr located.located.instruction u = some v →
       v.pc = u.pc + UInt256.ofNat located.located.instruction.size := by
     intro located hmem u v hresult
     have hstraight : StraightLine located.located.instruction := by
@@ -504,7 +504,7 @@ theorem runLocatedBlock_f0
       exact List.mem_map_of_mem hmem
     exact runInstr_pc_of_straight hstraight hresult
   calc
-    Challenge.EvmProof.Stepper.runLocatedBlock site.path
+    Challenge.EvmProof.DataStepper.runLocatedBlock site.path
         (roundEntry s site.startPC a b c d e rest) =
         runInstrSeq (f0Template xAddress rotation)
           (roundEntry s site.startPC a b c d e rest) :=
@@ -520,7 +520,7 @@ theorem runLocatedBlock_f0
       rw [hpc]
 
 def gasSteps_f0
-    {artifact : ProgramArtifact} {fork : Fork}
+    {artifact : DataProgramArtifact} {fork : Fork}
     (xAddress : UInt256) (rotation : Nat)
     (site : GenericRoundSite artifact fork (f0Template xAddress rotation))
     (s : State) (a b c d e : UInt256)
@@ -533,7 +533,7 @@ def gasSteps_f0
       (roundEntry s site.startPC a b c d e rest)
       (roundReturned s site.endPC
         0 a b c d e xAddress rotation 0 rest) := by
-  apply Challenge.EvmProof.Stepper.runLocatedBlock_sound artifact fork site.path
+  apply Challenge.EvmProof.DataStepper.runLocatedBlock_sound artifact fork site.path
   · simpa [roundEntry] using hcode
   · simpa [roundEntry] using hfork
   · exact runLocatedBlock_f0 xAddress rotation site s a b c d e rest hstack hrun

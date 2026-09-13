@@ -33,7 +33,7 @@ theorem run_constants (s : State) (pc : UInt256) (rho : List UInt256)
   have h4 : rho.length + 4 < 1024 := by omega
   have hzero : ({val := 0} : UInt256) = (0 : UInt256) := rfl
   have hadd (u v : UInt256) : u.add v = u + v := rfl
-  simp [code, runInstrSeq, Stepper.runInstr, hrun, h0, h1, h2, h3, h4, hzero,
+  simp [code, runInstrSeq, DataStepper.runInstr, hrun, h0, h1, h2, h3, h4, hzero,
     List.exchange, pcAfter, Instr.size, Instr.size_op, Instr.size_push, UInt256.succ,
     Word.literal_eq_ofNat, repeated_one, repeated_high, repeated_low,
     repeated_one_ofNat, repeated_high_ofNat, hadd]

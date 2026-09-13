@@ -18,7 +18,7 @@ open EvmSemantics
 open EvmSemantics.EVM
 
 theorem pcBound (index : Nat) : Artifact.instructionPC index < 2 ^ 256 := by
-  have hle := Challenge.EvmProof.ProgramArtifact.instructionPC_le_code_size
+  have hle := Challenge.EvmProof.DataProgramArtifact.instructionPC_le_code_size
     Artifact.submissionArtifact index
   change Artifact.instructionPC index ≤ submissionBytecode.size at hle
   rw [referenceBytecode_size] at hle
@@ -38,7 +38,7 @@ theorem decodedOpAt (s : State) (index : Nat) (op : Operation)
     (hplain : YulEvmCompiler.plainOp op)
     (havailable : op.availableInFork s.fork = true) :
     s.decodedOp = some op := by
-  apply Challenge.EvmProof.ProgramArtifact.state_decodedOp_of
+  apply Challenge.EvmProof.DataProgramArtifact.state_decodedOp_of
     Artifact.submissionArtifact s index
     (by simpa [Artifact.submissionArtifact] using hcode) (pcToNat hpc) op none
   · exact Artifact.submissionArtifact.decodeAt_op_index index op hget hopcode hplain
@@ -52,7 +52,7 @@ theorem decodedPushAt (s : State) (index : Nat) (width : Fin 33)
     (hfit : value.toNat < 256 ^ width.val)
     (havailable : (Operation.Push ⟨width⟩).availableInFork s.fork = true) :
     s.decoded = some (.Push ⟨width⟩, some (value, width.val)) := by
-  apply Challenge.EvmProof.ProgramArtifact.state_decoded_of
+  apply Challenge.EvmProof.DataProgramArtifact.state_decoded_of
     Artifact.submissionArtifact s index
     (by simpa [Artifact.submissionArtifact] using hcode) (pcToNat hpc)
     (.Push ⟨width⟩) (some (value, width.val))

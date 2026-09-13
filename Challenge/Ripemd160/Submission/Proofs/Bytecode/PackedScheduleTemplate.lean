@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
-import Challenge.EvmProof.Meter
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataMeter
 import YulEvmCompiler.Instr
 
 set_option warningAsError true

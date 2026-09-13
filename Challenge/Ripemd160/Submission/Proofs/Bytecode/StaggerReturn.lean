@@ -33,6 +33,6 @@ def gasSteps (s : State) (ret : UInt256) (rho : List UInt256)
   apply PadLift.gasSteps_of_raw site {s with pc := UInt256.ofNat 4689, stack := ret :: rho}
     _ hcode hfork hr hnp pc.symm (by simp [template])
   have hc : rho.length + 1 < 1024 := by omega
-  simp [template, runInstrSeq, Stepper.runInstr, hr, hv, hc]
+  simp [template, runInstrSeq, DataStepper.runInstr, hr, hv, hc]
 #print axioms gasSteps
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerReturn

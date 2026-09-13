@@ -44,7 +44,7 @@ theorem run_cleanup (s : State) (pc a b c returnPC : UInt256) (rest : List UInt2
     runInstrSeq maskCleanup {s with pc := pc, stack := a :: b :: c :: returnPC :: rest} =
       some {s with pc := pcAfter pc maskCleanup, stack := b :: returnPC :: rest} := by
   have hcap (n : Nat) (hn : n ≤ 27) : rest.length + n < 1024 := by omega
-  simp [maskCleanup, runInstrSeq, Stepper.runInstr, pcAfter, hrun, hcap,
+  simp [maskCleanup, runInstrSeq, DataStepper.runInstr, pcAfter, hrun, hcap,
     List.exchange, List.getElem?_cons_zero, UInt256.succ, Instr.size, Nat.add_assoc]
   all_goals repeat first | apply And.intro | rfl
 

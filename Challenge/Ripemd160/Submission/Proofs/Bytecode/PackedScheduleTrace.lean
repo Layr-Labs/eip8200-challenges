@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedScheduleTemplate
-import Challenge.EvmProof.Meter
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataMeter
 
 set_option warningAsError true
 set_option maxRecDepth 30000
@@ -148,7 +148,7 @@ theorem runInstrSeq_append_running
       cases hfirst
       exact hsecond
   | cons instruction rest ih =>
-      cases hrun : Challenge.EvmProof.Stepper.runInstr instruction s with
+      cases hrun : Challenge.EvmProof.DataStepper.runInstr instruction s with
       | none =>
           simp [runInstrSeq, hrun] at hfirst
       | some next =>
@@ -223,7 +223,7 @@ theorem runInstrSeq_endianStage
     simpa using YulEvmCompiler.exchange_swap u v ([] : List UInt256) rho
   simp (config := { maxSteps := 1000000 })
     [endianStage, op, push1, push32, dup1, swap1, packedStage,
-      stageState, runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
+      stageState, runInstrSeq, Challenge.EvmProof.DataStepper.runInstr,
       pcAfter, hrun, hcap, hcap2, hcap3, hswap1, UInt256.succ, Instr.size,
       Instr.size_push, Instr.size_op, Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.ofNat_add_mod,
@@ -266,7 +266,7 @@ theorem runInstrSeq_initial
   simp (config := { maxSteps := 2000000 })
     [initialTemplate, scheduleEntry, afterInitial, inputWord0, inputWord1,
       warmupActiveWords, activeAfterWord, op, push1, dup1, swap1,
-      runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, hrun, hcap,
+      runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, hrun, hcap,
       hcap2, hcap3, hcap4, hswap1, h60, h32, word_add_assoc,
       word_add_ofNat_assoc, Nat.add_assoc,
       Word.land_comm, Word.lor_comm, State.activeWordsAfterUInt256,
@@ -305,7 +305,7 @@ theorem runInstrSeq_store0
       storeAddresses, activeAfterWord, wordBytes, storeAddress, storeBase,
       List.range, List.range.loop, List.foldl,
       op, push1, push2, push4, dup1, runInstrSeq,
-      Challenge.EvmProof.Stepper.runInstr, pcAfter, hrun, hcap, hcap2, hcap3,
+      Challenge.EvmProof.DataStepper.runInstr, pcAfter, hrun, hcap, hcap2, hcap3,
       hswap1, word_add_assoc, word_add_ofNat_assoc, Nat.add_assoc,
       Word.land_comm, Word.lor_comm,
       State.activeWordsAfterUInt256,
@@ -340,7 +340,7 @@ theorem runInstrSeq_store1
       storeAddresses, activeAfterWord, wordBytes, storeAddress, storeBase,
       List.range, List.range.loop, List.foldl,
       op, push1, push2, push4, dup1, runInstrSeq,
-      Challenge.EvmProof.Stepper.runInstr, pcAfter, hrun, hcap, hcap2, hcap3,
+      Challenge.EvmProof.DataStepper.runInstr, pcAfter, hrun, hcap, hcap2, hcap3,
       hswap1, word_add_assoc, word_add_ofNat_assoc, Nat.add_assoc,
       Word.land_comm, Word.lor_comm,
       State.activeWordsAfterUInt256,

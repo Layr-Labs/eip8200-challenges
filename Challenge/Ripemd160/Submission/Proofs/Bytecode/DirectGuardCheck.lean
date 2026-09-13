@@ -51,8 +51,8 @@ theorem run_checkEntry (input : ByteArray)
     [hpc3278, hpc3279, hpc3280, hpc3281, hpc3282, hpushzero, hfullWordMul, CompactGuardConstants.repeated_one_ofNat, RepeatedByteWord.ascii_a, checkEntryPath, opAt, pushAt, wfOp, sizeMatched, atPC, loopState,
     loopAcc, referenceWord, href, hzero, hfalse, hcond, hstack, hcondStack,
     hstackZero, hzeroFalse,
-    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
-    Challenge.EvmProof.Stepper.runInstr,
+    Challenge.EvmProof.DataStepper.runLocatedBlock, Challenge.EvmProof.DataStepper.runLocated,
+    Challenge.EvmProof.DataStepper.runInstr,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
 

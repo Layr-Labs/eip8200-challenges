@@ -148,7 +148,7 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     Stagger144Active.word_active_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [template, inputStack, actualOutput,
-    runInstrSeq, Stepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
     State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl

@@ -2,7 +2,7 @@ import Batteries.Tactic.OpenPrivate
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactSegment
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedSwar
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedGuardSpec
-import Challenge.EvmProof.Stepper
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataStepper
 import Challenge.Ripemd160.ProofSupport.InitialState
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
 
@@ -152,10 +152,10 @@ def wfOp {op : Operation}
     (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
     (hplain : YulEvmCompiler.plainOp op)
     (havailable : op.availableInFork .Osaka = true) :
-    Challenge.EvmProof.Stepper.WellFormed .Osaka (.op op) :=
+    Challenge.EvmProof.DataStepper.WellFormed .Osaka (.op op) :=
   ⟨hopcode, hplain, havailable⟩
 
-abbrev Located := Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka
+abbrev Located := Challenge.EvmProof.DataStepper.Located Artifact.submissionArtifact .Osaka
 
 def opAt (index : Nat) (op : Operation)
     (hget : Artifact.submissionInstructions[index]? = some (.op op) := by
@@ -172,11 +172,11 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
       first
       | rw [scan_instruction_at] <;> first | rfl | decide
       | rfl)
-    (hwf : Challenge.EvmProof.Stepper.WellFormed .Osaka
+    (hwf : Challenge.EvmProof.DataStepper.WellFormed .Osaka
       (.push width value) := by decide) : Located :=
   ⟨index, .push width value, hget, hwf⟩
 
-abbrev run := Challenge.EvmProof.Stepper.runLocatedBlock
+abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   (artifact := Artifact.submissionArtifact) (fork := .Osaka)
 
 /-- Push the five constants and start the scan. -/

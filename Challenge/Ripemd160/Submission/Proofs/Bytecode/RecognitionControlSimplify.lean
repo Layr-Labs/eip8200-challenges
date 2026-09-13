@@ -28,7 +28,7 @@ theorem run_boundary (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame) (
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
   simp (config := { maxSteps := 600000 }) (discharger := omega)
     [boundaryTemplate, RecognitionBodyRaw.boundaryTemplate, boundaryResult, frame, c32,
-      advance, correction, PatternedSwar.straddleAdd, runInstrSeq, Stepper.runInstr,
+      advance, correction, PatternedSwar.straddleAdd, runInstrSeq, DataStepper.runInstr,
       pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
       Nat.add_assoc, hrun, hbase, hcap, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals simp only [hadd_eq, hmul_eq,
@@ -46,7 +46,7 @@ theorem run_pass (s : State) (pc : UInt256) (stack : List UInt256)
     (hstack : stack.length < 1024) (hrun : s.halt = .Running) :
     runInstrSeq passTemplate {s with pc := pc, stack := stack} =
       some {s with pc := pcAfter pc passTemplate, stack := stack} := by
-  simp [passTemplate, runInstrSeq, Stepper.runInstr, pcAfter, hstack, hrun]
+  simp [passTemplate, runInstrSeq, DataStepper.runInstr, pcAfter, hstack, hrun]
   rfl
 
 /-- The rejected scanner frame (below the consumed accumulator) is discarded before falling
@@ -61,7 +61,7 @@ theorem run_cleanup (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame) (r
       some {s with pc := pcAfter pc cleanupTemplate, stack := rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
-  simp (discharger := omega) [cleanupTemplate, RecognitionBranchRaw.finishRest, runInstrSeq, Stepper.runInstr,
+  simp (discharger := omega) [cleanupTemplate, RecognitionBranchRaw.finishRest, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals rfl
@@ -74,11 +74,11 @@ theorem cleanup_length : cleanupTemplate.length = 9 := rfl
 theorem cleanup_bytes : (cleanupTemplate.map Instr.size).sum = 9 := rfl
 
 theorem removed_jumpdest_cost (s : State) :
-    Stepper.instrCost (.op .JUMPDEST) s = 1 := rfl
+    DataStepper.instrCost (.op .JUMPDEST) s = 1 := rfl
 
 theorem removed_jump_cost (s : State) (dest : Nat) :
-    Stepper.instrCost (.push ⟨2, by decide⟩ (UInt256.ofNat dest)) s +
-      Stepper.instrCost (.op .JUMP) s = 11 := rfl
+    DataStepper.instrCost (.push ⟨2, by decide⟩ (UInt256.ofNat dest)) s +
+      DataStepper.instrCost (.op .JUMP) s = 11 := rfl
 
 #print axioms run_boundary
 #print axioms run_pass
