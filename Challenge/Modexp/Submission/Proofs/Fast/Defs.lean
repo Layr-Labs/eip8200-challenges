@@ -316,12 +316,12 @@ private theorem fastPCAnchor23 :
       rfl
 
 private theorem fastPCAnchor24 :
-    Artifact.submissionArtifact.instructionPC 2282 = 3007 := by
+    Artifact.submissionArtifact.instructionPC 2284 = 3007 := by
   calc
-    Artifact.submissionArtifact.instructionPC 2282 =
+    Artifact.submissionArtifact.instructionPC 2284 =
         Artifact.submissionArtifact.instructionPC 1672 +
-          (assembleBytes ((Artifact.submissionArtifact.instructions.drop 1672).take 610)).length :=
-      instructionPC_add Artifact.submissionArtifact 1672 610
+          (assembleBytes ((Artifact.submissionArtifact.instructions.drop 1672).take 612)).length :=
+      instructionPC_add Artifact.submissionArtifact 1672 612
     _ = 3007 := by
       rw [fastPCAnchor23]
       rfl
@@ -662,16 +662,16 @@ private theorem fastPCAnchor24 :
       rw [fastPCAnchor23]
       interval_cases i <;> rfl
 
-@[simp] theorem fullBasePC (i : Nat) (hi : 2282 ≤ i) (hii : i ≤ 2327) :
+@[simp] theorem fullBasePC (i : Nat) (hi : 2284 ≤ i) (hii : i ≤ 2329) :
     Artifact.submissionArtifact.instructionPC i =
-      [3007,3008,3009,3010,3011,3012,3013,3015,3016,3017,3018,3021,3022,3023,3025,3028,3029,3032,3035,3038,3041,3044,3045,3046,3047,3049,3050,3052,3053,3054,3055,3057,3058,3059,3061,3062,3064,3065,3066,3067,3068,3070,3071,3072,3074,3077][i - 2282]! := by
+      [3007,3008,3009,3010,3011,3012,3013,3015,3016,3017,3018,3021,3022,3023,3025,3028,3029,3032,3035,3038,3041,3044,3045,3046,3047,3049,3050,3052,3053,3054,3055,3057,3058,3059,3061,3062,3064,3065,3066,3067,3068,3070,3071,3072,3074,3077][i - 2284]! := by
   calc
     Artifact.submissionArtifact.instructionPC i =
-        Artifact.submissionArtifact.instructionPC (2282 + (i - 2282)) := by
+        Artifact.submissionArtifact.instructionPC (2284 + (i - 2284)) := by
       rw [Nat.add_sub_of_le hi]
-    _ = Artifact.submissionArtifact.instructionPC 2282 +
-          (assembleBytes ((Artifact.submissionArtifact.instructions.drop 2282).take (i - 2282))).length :=
-      instructionPC_add Artifact.submissionArtifact 2282 (i - 2282)
+    _ = Artifact.submissionArtifact.instructionPC 2284 +
+          (assembleBytes ((Artifact.submissionArtifact.instructions.drop 2284).take (i - 2284))).length :=
+      instructionPC_add Artifact.submissionArtifact 2284 (i - 2284)
     _ = _ := by
       rw [fastPCAnchor24]
       interval_cases i <;> rfl
@@ -722,7 +722,7 @@ theorem jumpDest1697 :
 
 theorem jumpDest3412 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3216 = true :=
-  Artifact.isValidJumpDest_index 2437 (by rfl)
+  Artifact.isValidJumpDest_index 2439 (by rfl)
 
 theorem jumpDest1703 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1599 = true :=
@@ -826,26 +826,26 @@ theorem jumpDest2392 :
 
 theorem jumpDest3111 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2972 = true :=
-  Artifact.isValidJumpDest_index 2259 (by rfl)
+  Artifact.isValidJumpDest_index 2261 (by rfl)
 
 theorem jumpDest3146 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3007 = true :=
-  Artifact.isValidJumpDest_index 2282 (by rfl)
+  Artifact.isValidJumpDest_index 2284 (by rfl)
 
 theorem jumpDest3184 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3045 = true :=
-  Artifact.isValidJumpDest_index 2304 (by rfl)
+  Artifact.isValidJumpDest_index 2306 (by rfl)
 
 theorem jumpDest4976 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4877 = true :=
-  Artifact.isValidJumpDest_index 3724 (by rfl)
+  Artifact.isValidJumpDest_index 3726 (by rfl)
 
 theorem jumpDestSub : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5032 = true :=
-  Artifact.isValidJumpDest_index 3836 (by rfl)
+  Artifact.isValidJumpDest_index 3838 (by rfl)
 
 theorem jumpDestCopyResume : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5279 = true :=
-  Artifact.isValidJumpDest_index 4015 (by rfl)
+  Artifact.isValidJumpDest_index 4017 (by rfl)
 
 theorem jumpDestEarlyCopy : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5268 = true :=
-  Artifact.isValidJumpDest_index 4008 (by rfl)
+  Artifact.isValidJumpDest_index 4010 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

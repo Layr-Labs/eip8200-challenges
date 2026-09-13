@@ -31,33 +31,33 @@ private theorem laddr_bound (i : Nat) (hi : i < 21) : WindowCopyMemory.laddr i +
   split <;> omega
 
 private theorem address_at (mem : ByteArray) (exponent : UInt256) (processed index : Nat)
-    (hpositive : 1 ≤ processed) (hindex : index < 21) (hinside : processed + index < 64) :
+    (hindex : index < 21) (hinside : processed + index < 64) :
     WindowTwentyOneGroup.address
-      (WindowCopyMemory.copyMem mem (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed - 3))))
+      (WindowCopyMemory.copyMem mem (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed))))
       (WindowCopyMemory.laddr index) =
     32 * WindowTwentyOneMath.nibble exponent.toNat (processed + index) := by
   unfold WindowTwentyOneGroup.address
   rw [WindowCopyMemory.land480_laddr _ _ _ hindex, land_comm]
-  exact WindowTwentyOneBits.shifted_lookupAddress exponent processed index hpositive hindex hinside
+  exact WindowTwentyOneBits.shifted_lookupAddress exponent processed index hindex hinside
 
 /-- The exact body for every eligible exponent position, from the trampoline's return
 (`headState`) to the loop tail.  The shifted exponent and counter are preserved. -/
 theorem run_twentyOne (template : State) (pc : UInt256) (mem : ByteArray)
     (base modulus accumulator exponent counter : UInt256)
     (htable : ∀ i, i < 16 → MachineState.readWord mem (32 * i) = WindowMath.tableWord base modulus i)
-    (processed : Nat) (hpositive : 1 ≤ processed) (hprocessed : processed + 21 ≤ 64)
+    (processed : Nat) (hprocessed : processed + 21 ≤ 64)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions program
       (WindowTwentyOneGroup.headState template pc
-        (WindowCopyMemory.copyMem mem (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed - 3)))) 19
+        (WindowCopyMemory.copyMem mem (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed)))) 19
         modulus accumulator
-        (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed - 3))) counter rest) =
+        (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed))) counter rest) =
     some (WindowTwentyOneGroup.state template (advancePC 443 pc)
-      (WindowCopyMemory.copyMem mem (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed - 3)))) 19
+      (WindowCopyMemory.copyMem mem (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed)))) 19
       modulus
       (WindowTwentyOneMath.advance base modulus exponent.toNat processed 21 accumulator)
-      (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed - 3))) counter 0 rest) := by
-  let shifted := UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed - 3))
+      (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed))) counter 0 rest) := by
+  let shifted := UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed))
   let cm := WindowCopyMemory.copyMem mem shifted
   let digit := fun index => WindowTwentyOneMath.nibble exponent.toNat (processed + index)
   let a1 := WindowTwentyOneGroup.accumulatorAfter base modulus accumulator (digit 0) (digit 1) (digit 2)
@@ -73,7 +73,7 @@ theorem run_twentyOne (template : State) (pc : UInt256) (mem : ByteArray)
     exact htable i hi16
   have ha (index : Nat) (hindex : index < 21) :
       WindowTwentyOneGroup.address cm (WindowCopyMemory.laddr index) = 32 * digit index :=
-    address_at mem exponent processed index hpositive hindex (by omega)
+    address_at mem exponent processed index hindex (by omega)
   have hb (index : Nat) (hindex : index < 21) := laddr_bound index hindex
   have h0 := WindowTwentyOneGroup.run_restGroup template pc cm
     base modulus accumulator shifted counter
