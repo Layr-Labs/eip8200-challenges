@@ -15,9 +15,8 @@ def input (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (k : UInt256)
   ⟨word memory h4 (.d) q right k, word memory h4 (.literal 28) q right k, word memory h4 (.cachedMessage 360) q right k, word memory h4 (.pair) q right k, word memory h4 (.upper) q right k, word memory h4 (.e) q right k, word memory h4 (.c) q right k, word memory h4 (.a) q right k, word memory h4 (.k) q right k, word memory h4 (.b) q right k, word memory h4 (.factor) q right k, word memory h4 (.lower) q right k, word memory h4 (.cache 140) q right k, word memory h4 (.cache 350) q right k, word memory h4 (.cache 310) q right k, word memory h4 (.cache 190) q right k, word memory h4 (.cache 500) q right k, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
 theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho : List UInt256) :
     StaggerRawUnpack.outputStack memory (input memory h4 q right (StaggerAlgorithm.physicalKey 76)) rho =
-      stack memory h4 [ .a, .c, .d, .e, .literal 28, .cachedMessage 360, .k, .b, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (StaggerCoreModel.left q) (q) (UInt256.ofNat 2840853838) rho := by
-  have hkey : StaggerAlgorithm.physicalKey 76 = UInt256.ofNat 2840853838 := by decide
-  simp only [StaggerRawUnpack.outputStack, input, stack, List.map_cons, List.map_nil, hkey,
+      stack memory h4 [ .k, .c, .d, .e, .literal 28, .cachedMessage 360, .a, .b, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (StaggerCoreModel.left q) (q) (UInt256.ofNat 2840853838) rho := by
+  simp only [StaggerRawUnpack.outputStack, input, stack, List.map_cons, List.map_nil,
     List.cons_append, List.nil_append, StaggerCoreCommon.word,
     StaggerCoreModel.initial, StaggerCoreModel.pair, StaggerCoreModel.pairWord, StaggerCoreModel.left,
     StaggerCoreModel.right0, StaggerCoreModel.right1, StaggerCoreModel.right2,
@@ -37,7 +36,7 @@ def gasSteps (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 4473, stack := stack s.memory h4 [ .d, .literal 28, .cachedMessage 360, .pair, .upper, .e, .c, .a, .k, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (StaggerAlgorithm.physicalKey 76) rho}
-      {s with pc := UInt256.ofNat 4483, stack := stack s.memory h4 [ .a, .c, .d, .e, .literal 28, .cachedMessage 360, .k, .b, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (StaggerCoreModel.left q) (q) (UInt256.ofNat 2840853838) rho} := by
+      {s with pc := UInt256.ofNat 4489, stack := stack s.memory h4 [ .k, .c, .d, .e, .literal 28, .cachedMessage 360, .a, .b, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (StaggerCoreModel.left q) (q) (UInt256.ofNat 2840853838) rho} := by
   have h := StaggerRawUnpack.gasSteps s (input s.memory h4 q right (StaggerAlgorithm.physicalKey 76)) rho hs hr ha hcode hfork hnp
   rw [output_eq] at h
   exact h
