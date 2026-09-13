@@ -83,8 +83,8 @@ def template : List Instr :=
     .op (.Dup ⟨6, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHL,
-    .op (.Dup ⟨7, by decide⟩),
-    .op (.Dup ⟨1, by decide⟩),
+    .op (.Dup ⟨0, by decide⟩),
+    .op (.Dup ⟨8, by decide⟩),
     .op .OR ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
   [ x.rd, x.k, x.rb, x.rc, x.ra, x.re, x.factor, x.lower, x.cache140, x.cache350, x.cache310, x.cache190, x.h4, x.h1, x.h2, x.h3, x.h0, x.off, x.limit ] ++ rho
@@ -150,7 +150,8 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
   simp (discharger := omega) [template, inputStack, actualOutput,
     runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
-    State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+    State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat,
+    RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm]
   all_goals repeat first | apply And.intro | rfl
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
