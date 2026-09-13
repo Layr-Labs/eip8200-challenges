@@ -40,11 +40,11 @@ private def environment (input : ByteArray) :
 /-- Every non-matching header reaches the unchanged legacy entry exactly. -/
 def legacy (input : ByteArray) (hmiss : ¬ WindowTwentyOneInput.Matches input) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Main.trampolineState input 1251) := by
+      (Main.trampolineState input 717) := by
   have tail := EarlyWordGas.steps_miss Artifact.earlyWordPaths
     (initialState submissionBytecode input 0) (environment input) input rfl hmiss
   change Challenge.EvmProof.GasSteps (Main.trampolineState input 0)
-    (Main.trampolineState input 1251) at tail
+    (Main.trampolineState input 717) at tail
   exact (Main.gasSteps_entryHop input).trans tail
 
 /-- Every matching header has a complete initial-state correctness trace. -/

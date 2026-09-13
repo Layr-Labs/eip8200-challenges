@@ -13,17 +13,17 @@ theorem run_headerLoad (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock headerLoadPath
       (headerEntryState input) = some (headerLoadedState input) := by
   have hs1197 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1190) (by norm_num : 1190 + 1 < 2 ^ 256)
+    (n := 656) (by norm_num : 656 + 1 < 2 ^ 256)
   have hs1198 := Challenge.EvmProof.Word.succ_ofNat
     (n := 1184) (by norm_num : 1184 + 1 < 2 ^ 256)
   have ha1199 := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := 1271) (b := 2) (by norm_num : 1271 + 2 < 2 ^ 256)
   have hs1201 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1273) (by norm_num : 1273 + 1 < 2 ^ 256)
+    (n := 739) (by norm_num : 739 + 1 < 2 ^ 256)
   have ha1202 := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := 1222) (b := 2) (by norm_num : 1222 + 2 < 2 ^ 256)
   have hs1204 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1276) (by norm_num : 1276 + 1 < 2 ^ 256)
+    (n := 742) (by norm_num : 742 + 1 < 2 ^ 256)
   have ha1060 := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := 1195) (b := 4) (by norm_num : 1195 + 4 < 2 ^ 256)
   have h0 : (0 : UInt256).toNat = 0 := by decide

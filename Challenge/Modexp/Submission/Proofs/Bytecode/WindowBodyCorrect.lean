@@ -93,7 +93,7 @@ def handledOf (route : WindowRoute.Route) (input : ByteArray)
     (hvalid : ValidInput input)
     (entry : Challenge.EvmProof.GasSteps
       (initialState submissionBytecode input 0)
-      (Main.trampolineState input 1189)) : Handled input := by
+      (Main.trampolineState input 655)) : Handled input := by
   by_cases hzeroSize : modulusSize input = 0
   · exact ⟨Dispatch.zeroSizeFinalState input,
       ⟨Dispatch.gasSteps_zeroSize_total input hvalid hzeroSize entry⟩,
@@ -108,28 +108,6 @@ def handledOf (route : WindowRoute.Route) (input : ByteArray)
     · let missed := entered.trans
         (route.miss input hvalid hpositive hword hmatch)
       exact prepend missed (legacyWordHandled input hvalid hpositive hword)
-  · have hbig : 32 < modulusSize input := by omega
-    by_cases hzeroModulus : Word.modulusValue input = 0
-    · exact ⟨SubmissionCorrect.bigZeroFinalState input,
-        ⟨SubmissionCorrect.gasSteps_bigZeroTotal input hvalid hbig
-          hzeroModulus entry⟩,
-        SubmissionCorrect.zeroFinalState_isDone input (baseSize input)
-          (exponentSize input) (modulusSize input) 96
-          (Word.expOffset input) (Word.modulusOffset input)
-          SubmissionCorrect.bigReturnDest (SubmissionCorrect.bigRest input),
-        BigZeroCorrect.zeroFinalState_result input
-          SubmissionCorrect.bigReturnDest (SubmissionCorrect.bigRest input)
-          hvalid hbig hzeroModulus⟩
-    · have hmodpos : 0 < Word.modulusValue input := by omega
-      exact ⟨SubmissionCorrect.bigCompletedState input,
-        ⟨SubmissionCorrect.gasSteps_bigNonzeroTotal input hvalid hbig
-          hmodpos entry⟩,
-        SubmissionCorrect.completedState_isDone input (baseSize input)
-          (exponentSize input) (modulusSize input) 96
-          (Word.expOffset input) (Word.modulusOffset input)
-          SubmissionCorrect.bigReturnDest (SubmissionCorrect.bigRest input),
-        BigSerializeCorrect.completedState_result input
-          SubmissionCorrect.bigReturnDest (SubmissionCorrect.bigRest input)
-          hvalid hbig hmodpos⟩
+  · exact SubmissionCorrect.bigHandled input hvalid (by omega) entry
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowBodyCorrect

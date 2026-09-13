@@ -38,43 +38,43 @@ theorem lift_cost {pc : Nat} {program : List Instr} (block : BoundBlock pc progr
   rw [runLocatedBlock_sound_cost]
   exact blockCostW block.path work hresult hs.fork hfree hcost hactive
 
-def bodyBlock0 : BoundBlock 3084 (bodyProgram 7) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2328 19 3084
+def bodyBlock0 : BoundBlock 2550 (bodyProgram 7) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1898 19 2550
     (bodyProgram 7) (by decide) (by rfl) (by rfl) (by rfl)
 
-def bodyBlock1 : BoundBlock 3106 (bodyProgram 6) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2347 19 3106
+def bodyBlock1 : BoundBlock 2572 (bodyProgram 6) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1917 19 2572
     (bodyProgram 6) (by decide) (by rfl) (by rfl) (by rfl)
 
-def bodyBlock2 : BoundBlock 3128 (bodyProgram 5) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2366 19 3128
+def bodyBlock2 : BoundBlock 2594 (bodyProgram 5) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1936 19 2594
     (bodyProgram 5) (by decide) (by rfl) (by rfl) (by rfl)
 
-def bodyBlock3 : BoundBlock 3150 (bodyProgram 4) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2385 19 3150
+def bodyBlock3 : BoundBlock 2616 (bodyProgram 4) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1955 19 2616
     (bodyProgram 4) (by decide) (by rfl) (by rfl) (by rfl)
 
-def startBlock : BoundBlock 3083 ([.op .JUMPDEST]) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2327 1 3083
+def startBlock : BoundBlock 2549 ([.op .JUMPDEST]) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1897 1 2549
     ([.op .JUMPDEST]) (by decide) (by rfl) (by rfl) (by rfl)
 
-def controlBlock : BoundBlock 3172 (controlProgram) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2404 9 3172
+def controlBlock : BoundBlock 2638 (controlProgram) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1974 9 2638
     (controlProgram) (by decide) (by rfl) (by rfl) (by rfl)
 
-def resetBlock : BoundBlock 3185 (resetProgram) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2413 4 3185
+def resetBlock : BoundBlock 2651 (resetProgram) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1983 4 2651
     (resetProgram) (by decide) (by rfl) (by rfl) (by rfl)
 
 variable (s : State) (rest : List UInt256)
   (Bm1 byte offset outerW acc base m : UInt256) (hs : Frame s)
 
 def body0 (hrest : rest.length < 1000) (counter : UInt256) :
-    GasSteps (stW s 3084 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest))
-      (stW s 3106 ([Bm1,counter,byte,offset,outerW,stepValue 7 counter Bm1 byte acc m,base,m] ++ rest)) :=
+    GasSteps (stW s 2550 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest))
+      (stW s 2572 ([Bm1,counter,byte,offset,outerW,stepValue 7 counter Bm1 byte acc m,base,m] ++ rest)) :=
   lift bodyBlock0 s hs _ _ (by
     simpa only [stW, framed, Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.ofNat_add_mod] using
-      run_body s 3084 7 Bm1 counter byte offset outerW acc base m rest (Nat.le_of_lt hrest))
+      run_body s 2550 7 Bm1 counter byte offset outerW acc base m rest (Nat.le_of_lt hrest))
 
 @[simp] theorem body0_cost (hrest : rest.length < 1000) (counter : UInt256) :
     (body0 s rest Bm1 byte offset outerW acc base m hs hrest counter).cost = 68 := by
@@ -82,11 +82,11 @@ def body0 (hrest : rest.length < 1000) (counter : UInt256) :
   apply lift_cost _ _ _ _ _ _ 68 (by decide) (by rfl) (by rfl)
 
 def body1 (hrest : rest.length < 1000) (counter : UInt256) :
-    GasSteps (stW s 3106 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest))
-      (stW s 3128 ([Bm1,counter,byte,offset,outerW,stepValue 6 counter Bm1 byte acc m,base,m] ++ rest)) :=
+    GasSteps (stW s 2572 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest))
+      (stW s 2594 ([Bm1,counter,byte,offset,outerW,stepValue 6 counter Bm1 byte acc m,base,m] ++ rest)) :=
   lift bodyBlock1 s hs _ _ (by
     simpa only [stW, framed, Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.ofNat_add_mod] using
-      run_body s 3106 6 Bm1 counter byte offset outerW acc base m rest (Nat.le_of_lt hrest))
+      run_body s 2572 6 Bm1 counter byte offset outerW acc base m rest (Nat.le_of_lt hrest))
 
 @[simp] theorem body1_cost (hrest : rest.length < 1000) (counter : UInt256) :
     (body1 s rest Bm1 byte offset outerW acc base m hs hrest counter).cost = 68 := by
@@ -94,11 +94,11 @@ def body1 (hrest : rest.length < 1000) (counter : UInt256) :
   apply lift_cost _ _ _ _ _ _ 68 (by decide) (by rfl) (by rfl)
 
 def body2 (hrest : rest.length < 1000) (counter : UInt256) :
-    GasSteps (stW s 3128 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest))
-      (stW s 3150 ([Bm1,counter,byte,offset,outerW,stepValue 5 counter Bm1 byte acc m,base,m] ++ rest)) :=
+    GasSteps (stW s 2594 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest))
+      (stW s 2616 ([Bm1,counter,byte,offset,outerW,stepValue 5 counter Bm1 byte acc m,base,m] ++ rest)) :=
   lift bodyBlock2 s hs _ _ (by
     simpa only [stW, framed, Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.ofNat_add_mod] using
-      run_body s 3128 5 Bm1 counter byte offset outerW acc base m rest (Nat.le_of_lt hrest))
+      run_body s 2594 5 Bm1 counter byte offset outerW acc base m rest (Nat.le_of_lt hrest))
 
 @[simp] theorem body2_cost (hrest : rest.length < 1000) (counter : UInt256) :
     (body2 s rest Bm1 byte offset outerW acc base m hs hrest counter).cost = 68 := by
@@ -106,11 +106,11 @@ def body2 (hrest : rest.length < 1000) (counter : UInt256) :
   apply lift_cost _ _ _ _ _ _ 68 (by decide) (by rfl) (by rfl)
 
 def body3 (hrest : rest.length < 1000) (counter : UInt256) :
-    GasSteps (stW s 3150 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest))
-      (stW s 3172 ([Bm1,counter,byte,offset,outerW,stepValue 4 counter Bm1 byte acc m,base,m] ++ rest)) :=
+    GasSteps (stW s 2616 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest))
+      (stW s 2638 ([Bm1,counter,byte,offset,outerW,stepValue 4 counter Bm1 byte acc m,base,m] ++ rest)) :=
   lift bodyBlock3 s hs _ _ (by
     simpa only [stW, framed, Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.ofNat_add_mod] using
-      run_body s 3150 4 Bm1 counter byte offset outerW acc base m rest (Nat.le_of_lt hrest))
+      run_body s 2616 4 Bm1 counter byte offset outerW acc base m rest (Nat.le_of_lt hrest))
 
 @[simp] theorem body3_cost (hrest : rest.length < 1000) (counter : UInt256) :
     (body3 s rest Bm1 byte offset outerW acc base m hs hrest counter).cost = 68 := by
@@ -118,8 +118,8 @@ def body3 (hrest : rest.length < 1000) (counter : UInt256) :
   apply lift_cost _ _ _ _ _ _ 68 (by decide) (by rfl) (by rfl)
 
 def start (hrest : rest.length < 1000) (counter : UInt256) :
-    GasSteps (stW s 3083 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest))
-      (stW s 3084 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) :=
+    GasSteps (stW s 2549 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest))
+      (stW s 2550 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) :=
   lift startBlock s hs _ _ (run_start s Bm1 counter byte offset outerW acc base m rest (Nat.le_of_lt hrest))
 
 @[simp] theorem start_cost (hrest : rest.length < 1000) (counter : UInt256) :
@@ -128,12 +128,12 @@ def start (hrest : rest.length < 1000) (counter : UInt256) :
   apply lift_cost _ _ _ _ _ _ 1 (by decide) (by rfl) (by rfl)
 
 def control (hrest : rest.length < 1000) (c : Nat) (hc : c = 0 ∨ c = 4) :
-    GasSteps (stW s 3172 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m] ++ rest))
-      (stW s (if c = 0 then 3083 else 3185)
+    GasSteps (stW s 2638 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m] ++ rest))
+      (stW s (if c = 0 then 2549 else 2651)
         ([Bm1,UInt256.ofNat (c+4),byte,offset,outerW,acc,base,m] ++ rest)) :=
   lift controlBlock s hs _ _ (by
-    have hj : Decode.isValidJumpDest s.executionEnv.code 3083 = true := by
-      rw [hs.code]; exact Artifact.isValidJumpDest_index 2327 (by rfl)
+    have hj : Decode.isValidJumpDest s.executionEnv.code 2549 = true := by
+      rw [hs.code]; exact Artifact.isValidJumpDest_index 1897 (by rfl)
     simpa only [stW, framed, apply_ite UInt256.ofNat, Challenge.EvmProof.Word.literal_eq_ofNat] using
       run_control s Bm1 byte offset outerW acc base m rest c hc (Nat.le_of_lt hrest) hj)
 
@@ -143,8 +143,8 @@ def control (hrest : rest.length < 1000) (c : Nat) (hc : c = 0 ∨ c = 4) :
   apply lift_cost _ _ _ _ _ _ 34 (by decide) (by rfl) (by rfl)
 
 def reset (hrest : rest.length < 1000) :
-    GasSteps (stW s 3185 ([Bm1,8,byte,offset,outerW,acc,base,m] ++ rest))
-      (stW s 3189 ([Bm1,0,byte,offset,outerW,acc,base,m] ++ rest)) :=
+    GasSteps (stW s 2651 ([Bm1,8,byte,offset,outerW,acc,base,m] ++ rest))
+      (stW s 2655 ([Bm1,0,byte,offset,outerW,acc,base,m] ++ rest)) :=
   lift resetBlock s hs _ _ (run_reset s Bm1 byte offset outerW acc base m rest (Nat.le_of_lt hrest))
 
 @[simp] theorem reset_cost (hrest : rest.length < 1000) :

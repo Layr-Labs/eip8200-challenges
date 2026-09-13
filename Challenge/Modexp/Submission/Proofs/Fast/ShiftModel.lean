@@ -67,11 +67,10 @@ def negStep (mem : ByteArray) (n : Nat) : Nat → Csub.LimbState
 def newtonW (d x : UInt256) : UInt256 := (UInt256.ofNat 2 - d * x) * x
 
 def newton4W (d : UInt256) : UInt256 :=
-  newtonW d (newtonW d (newtonW d
-    (UInt256.xor (UInt256.ofNat 2) (UInt256.ofNat 3 * d))))
+  newtonW d (newtonW d (newtonW d (newtonW d (UInt256.ofNat 1))))
 
 def newton8W (d : UInt256) : UInt256 :=
-  newtonW d (newtonW d (newtonW d (newton4W d)))
+  newtonW d (newtonW d (newtonW d (newtonW d (newton4W d))))
 
 def preL (d : UInt256) : UInt256 := UInt256.land d (UInt256.ofNat 0 - d)
 def preDodd (d : UInt256) : UInt256 := d / preL d

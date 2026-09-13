@@ -80,7 +80,7 @@ theorem gasSteps_baseIteration_cost (input : ByteArray) (i : Nat)
     simp [baseRest, callerRest]
   have hhelper := blockCost_of_static Accessors.calldataBytePath 30
     (Accessors.run_calldataByte (baseLoopState input i base)
-      (UInt256.ofNat (96 + i)) 0 648 (baseRest input i base) hcap rfl rfl
+      (UInt256.ofNat (96 + i)) 0 187 (baseRest input i base) hcap rfl rfl
       (by decide)) (by rfl)
     (by decide) (by rfl) (by rfl)
   have htail := blockCost_of_static baseTailPath 48
@@ -88,7 +88,7 @@ theorem gasSteps_baseIteration_cost (input : ByteArray) (i : Nat)
     (by decide) (by rfl) (by rfl)
   have htail' : Challenge.EvmProof.Stepper.runLocatedBlockCost baseTailPath
       (Accessors.calldataByteReturned (baseLoopState input i base)
-        (UInt256.ofNat (96 + i)) 648 (baseRest input i base)) = 48 := by
+        (UInt256.ofNat (96 + i)) 187 (baseRest input i base)) = 48 := by
     simpa [baseReturnedState, Accessors.calldataByteReturned] using htail
   unfold gasSteps_baseIteration
   simp only [Challenge.EvmProof.GasSteps.trans_cost,
@@ -108,11 +108,11 @@ theorem gasSteps_baseLoop_cost (input : ByteArray) (hvalid : ValidInput input) :
 
 theorem gasSteps_baseFinish_cost (input : ByteArray) (base : UInt256)
     (hvalid : ValidInput input) (hword : modulusSize input ≤ 32) :
-    (gasSteps_baseFinish input base hvalid hword).cost = 42 := by
+    (gasSteps_baseFinish input base hvalid hword).cost = 40 := by
   have hguard := blockCost_of_static baseGuardPath 26
     (run_baseFinishGuard input base hvalid) (by rfl)
     (by decide) (by rfl) (by rfl)
-  have htail := blockCost_of_static baseFinishTailPath 16
+  have htail := blockCost_of_static baseFinishTailPath 14
     (run_baseFinishTail input base hvalid hword) (by rfl)
     (by decide) (by rfl) (by rfl)
   unfold gasSteps_baseFinish
@@ -159,7 +159,7 @@ theorem gasSteps_bitExit_cost (input : ByteArray) (outer : Nat)
     (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
     (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
-    (by exact Artifact.isValidJumpDest_index 538 (by rfl))
+    (by exact Artifact.isValidJumpDest_index 154 (by rfl))
 
 theorem gasSteps_bitCopy0_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :

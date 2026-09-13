@@ -11,18 +11,18 @@ open Word
 
 def bitFinishTailHeadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Word.opAt 538 .JUMPDEST, Word.opAt 539 .POP,
-   Word.opAt 540 .POP, Word.opAt 541 .POP]
+  [Word.opAt 154 .JUMPDEST, Word.opAt 155 .POP,
+   Word.opAt 156 .POP, Word.opAt 157 .POP]
 
 def bitFinishTailFinishPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [Word.pushAt 542 1 1, Word.opAt 543 .ADD,
-   Word.pushAt 544 2 672, Word.opAt 545 .JUMP]
+  [Word.pushAt 158 1 1, Word.opAt 159 .ADD,
+   Word.pushAt 160 2 211, Word.opAt 161 .JUMP]
 
 def bitFinishTailMidState (input : ByteArray) (outer : Nat)
     (acc base : UInt256) : State :=
   { bitLoopState input outer 8 0 0 acc base with
-    pc := UInt256.ofNat 696
+    pc := UInt256.ofNat 235
     stack := [UInt256.ofNat outer, acc, base,
       UInt256.ofNat (modulusValue input), UInt256.ofNat (baseSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (modulusSize input),
@@ -30,9 +30,9 @@ def bitFinishTailMidState (input : ByteArray) (outer : Nat)
       UInt256.ofNat (modulusOffset input), UInt256.ofNat 1186] ++ callerRest input }
 
 @[simp] private theorem exitPCs (i : Nat)
-    (hi : 538 ≤ i) (hii : i ≤ 559) :
+    (hi : 154 ≤ i) (hii : i ≤ 175) :
     Artifact.submissionArtifact.instructionPC i =
-      ([692,693,694,695,696,698,699,702,703,704,705,706,707,709,710,712,713,714,715,716,717,718] : List Nat)[i - 538]! := by
+      ([231,232,233,234,235,237,238,241,242,243,244,245,246,248,249,251,252,253,254,255,256,257] : List Nat)[i - 154]! := by
   interval_cases i <;> decide
 
 set_option linter.unusedSimpArgs false in
@@ -41,10 +41,10 @@ theorem run_bitFinishTailHead (input : ByteArray) (outer : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock bitFinishTailHeadPath
       (bitFinishDispatchState input outer byte offset acc base) =
         some (bitFinishTailMidState input outer acc base) := by
-  have h656 : (UInt256.ofNat 692).succ = UInt256.ofNat 693 := by decide
-  have h657 : (UInt256.ofNat 693).succ = UInt256.ofNat 694 := by decide
-  have h658 : (UInt256.ofNat 694).succ = UInt256.ofNat 695 := by decide
-  have h659 : (UInt256.ofNat 695).succ = UInt256.ofNat 696 := by decide
+  have h656 : (UInt256.ofNat 231).succ = UInt256.ofNat 232 := by decide
+  have h657 : (UInt256.ofNat 232).succ = UInt256.ofNat 233 := by decide
+  have h658 : (UInt256.ofNat 233).succ = UInt256.ofNat 234 := by decide
+  have h659 : (UInt256.ofNat 234).succ = UInt256.ofNat 235 := by decide
   simp (config := { maxSteps := 100000 })
     [bitFinishTailHeadPath, Word.opAt, Word.wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
