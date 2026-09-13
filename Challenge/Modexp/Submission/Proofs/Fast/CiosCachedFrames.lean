@@ -25,16 +25,16 @@ def isFour (n : Nat) : UInt256 :=
 /-- First-loop entry of the multiply rows (frame slot `ent`): the setup computes
 `0x0fe4 + 0x98 * [n = 4]` (k1 JUMPDEST for eight limbs, k5 JUMPDEST for four). -/
 def l1Target (n : Nat) : UInt256 :=
-  UInt256.ofNat 3732 + UInt256.ofNat 148 * isFour n
+  UInt256.ofNat 3728 + UInt256.ofNat 148 * isFour n
 
 /-- Second-loop entry (`ent + 0x12b`), fixed for the whole kernel call. -/
 def l2Target (n : Nat) : UInt256 :=
-  UInt256.ofNat 4024 + UInt256.ofNat 148 * isFour n
+  UInt256.ofNat 4020 + UInt256.ofNat 148 * isFour n
 
-@[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 3880 := by decide
-@[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 3732 := by decide
-@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 4172 := by decide
-@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 4024 := by decide
+@[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 3876 := by decide
+@[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 3728 := by decide
+@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 4168 := by decide
+@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 4020 := by decide
 
 /-! ## Row frames
 

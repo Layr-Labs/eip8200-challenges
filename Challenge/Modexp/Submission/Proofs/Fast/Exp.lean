@@ -137,7 +137,7 @@ def outer (n bsize esize msize : Nat) : List UInt256 :=
 stack `[pa, pb, pd, ret] ++ tail`. -/
 def mpCall (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3536
+  { s with pc := UInt256.ofNat 3533
            stack := UInt256.ofNat pa :: UInt256.ofNat pb :: UInt256.ofNat pd ::
              ret :: tail
            memory := mem }
@@ -157,8 +157,8 @@ accumulator as `ptr + 0x1840`, which is correct only for an operand at `0x800`;
 the only caller (the fixed-exponent chain) squares `0x800` in place. -/
 def sqCall (s : State) (mem : ByteArray) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3540
-           stack := UInt256.ofNat 4743 :: UInt256.ofNat 512 :: UInt256.ofNat 512 ::
+  { s with pc := UInt256.ofNat 3537
+           stack := UInt256.ofNat 4739 :: UInt256.ofNat 512 :: UInt256.ofNat 512 ::
              UInt256.ofNat 512 :: ret :: tail
            memory := mem }
 
@@ -314,7 +314,7 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
   kernel keeps its frame and loops internally (`squareLoop` below), so it never
   returns to the pushed `ret`. -/
   square : ∀ (ret : UInt256) (tail : List UInt256) (mem : ByteArray) (a : Nat),
-    ¬ (n = 4 ∨ n = 8) → tail.length ≤ 998 →
+    ¬ ((n = 4 ∨ n = 8) ∧ minv ≠ 1) → tail.length ≤ 998 →
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true →
     Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
     Model.FastRepresents mem 512 n a → a < mm →
@@ -336,7 +336,7 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
   sqLoopMem : Nat → ByteArray → ByteArray
   /-- The accelerated widths complete the final product before returning to the cleanup. -/
   squareLoop : ∀ (k : Nat) (ret : UInt256) (tail : List UInt256)
-    (mem : ByteArray) (a : Nat), n = 4 ∨ n = 8 → 1 ≤ k → k ≤ 16 →
+    (mem : ByteArray) (a : Nat), (n = 4 ∨ n = 8) ∧ minv ≠ 1 → 1 ≤ k → k ≤ 16 →
     tail.length ≤ 982 →
     MachineState.readWord mem 2624 = UInt256.ofNat k →
     Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
@@ -439,7 +439,7 @@ theorem run_rrHead (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       (rrHead s mem n bsize esize msize k) =
       some (mpCall s mem 1536 1536 1536 (UInt256.ofNat 929)
         (UInt256.ofNat k :: outer n bsize esize msize)) := by
-  have h1939Nat : (UInt256.ofNat 3536).toNat = 3536 := by decide
+  have h1939Nat : (UInt256.ofNat 3533).toNat = 3533 := by decide
   simp (config := { maxSteps := 400000 }) [blk1155, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -909,7 +909,7 @@ theorem run_blMul (s : State) (mem : ByteArray) (n bsize esize msize pb j : Nat)
       (blMul s mem n bsize esize msize pb j) =
       some (mpCall s mem 256 1280 256 (UInt256.ofNat 999)
         (UInt256.ofNat j :: UInt256.ofNat pb :: outer n bsize esize msize)) := by
-  have h1939Nat : (UInt256.ofNat 3536).toNat = 3536 := by decide
+  have h1939Nat : (UInt256.ofNat 3533).toNat = 3533 := by decide
   simp (config := { maxSteps := 400000 }) [blk1223, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -948,7 +948,7 @@ theorem run_blExit (s : State) (mem : ByteArray) (n bsize esize msize pb j : Nat
       (blExit s mem n bsize esize msize pb j) =
       some (mpCall s mem 256 1536 512 (UInt256.ofNat 2675)
         (outer n bsize esize msize)) := by
-  have h1939Nat : (UInt256.ofNat 3536).toNat = 3536 := by decide
+  have h1939Nat : (UInt256.ofNat 3533).toNat = 3533 := by decide
   simp (config := { maxSteps := 400000 }) [blk1255, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -1154,7 +1154,7 @@ theorem run_blAdd (s : State) (mem input : ByteArray)
   have hmod : (736 + 32 * n) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936
       = 736 + 32 * n :=
-    mod_word_self (Nat.lt_of_le_of_lt (show 736 + 32 * n ≤ 4064 by omega) (by norm_num))
+    mod_word_self (Nat.lt_of_le_of_lt (show 736 + 32 * n ≤ 4060 by omega) (by norm_num))
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (736 + 32 * n) 32) = s.activeWords :=
     activeWords_fix s (736 + 32 * n) 32 (by omega) (by omega) hact
@@ -1540,7 +1540,7 @@ theorem run_ebitHead (s : State) (mem : ByteArray)
       (ebitHead s mem n bsize esize msize i w mask) =
       some (mpCall s mem 256 256 256 (UInt256.ofNat 1088)
         (bitStack n bsize esize msize i w mask)) := by
-  have h1939Nat : (UInt256.ofNat 3536).toNat = 3536 := by decide
+  have h1939Nat : (UInt256.ofNat 3533).toNat = 3533 := by decide
   simp (config := { maxSteps := 400000 }) [blk1287, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -1606,7 +1606,7 @@ theorem run_ebitMul (s : State) (mem : ByteArray)
       (ebitMul s mem n bsize esize msize i w mask) =
       some (mpCall s mem 256 512 256 (UInt256.ofNat 1113)
         (bitStack n bsize esize msize i w mask)) := by
-  have h1939Nat : (UInt256.ofNat 3536).toNat = 3536 := by decide
+  have h1939Nat : (UInt256.ofNat 3533).toNat = 3533 := by decide
   simp (config := { maxSteps := 400000 }) [blk1301, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -1710,12 +1710,12 @@ theorem run_ebEnd (s : State) (mem : ByteArray) (n bsize esize msize i : Nat)
   have hmod : (736 + 32 * n) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936
       = 736 + 32 * n :=
-    mod_word_self (Nat.lt_of_le_of_lt (show 736 + 32 * n ≤ 4064 by omega)
+    mod_word_self (Nat.lt_of_le_of_lt (show 736 + 32 * n ≤ 4060 by omega)
       (by norm_num))
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (736 + 32 * n) 32) = s.activeWords :=
     activeWords_fix s (736 + 32 * n) 32 (by omega) (by omega) hact
-  have h1939Nat : (UInt256.ofNat 3536).toNat = 3536 := by decide
+  have h1939Nat : (UInt256.ofNat 3533).toNat = 3533 := by decide
   simp (config := { maxSteps := 600000 }) [blk1320, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,

@@ -15,9 +15,9 @@ open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 theorem run_l1Dispatch4 (s : State) (q : MacState) (bi : UInt256)
     (pb i : Nat) (hd pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 3880 = true) :
-    runInstructions l1DispatchProgram (l1Q 3729 s q bi pb 4 i hd (l1Target 4) pdst ret rest) =
-      some (l1Q 3880 s q bi pb 4 i hd (l1Target 4) pdst ret rest) := by
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 3876 = true) :
+    runInstructions l1DispatchProgram (l1Q 3725 s q bi pb 4 i hd (l1Target 4) pdst ret rest) =
+      some (l1Q 3876 s q bi pb 4 i hd (l1Target 4) pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
   have hExtra11 : rest.length + 11 < 1024 := by omega
@@ -36,9 +36,9 @@ theorem run_l1Dispatch4 (s : State) (q : MacState) (bi : UInt256)
 theorem run_l1Dispatch8 (s : State) (q : MacState) (bi : UInt256)
     (pb i : Nat) (hd pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 3732 = true) :
-    runInstructions l1DispatchProgram (l1Q 3729 s q bi pb 8 i hd (l1Target 8) pdst ret rest) =
-      some (l1Q 3732 s q bi pb 8 i hd (l1Target 8) pdst ret rest) := by
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 3728 = true) :
+    runInstructions l1DispatchProgram (l1Q 3725 s q bi pb 8 i hd (l1Target 8) pdst ret rest) =
+      some (l1Q 3728 s q bi pb 8 i hd (l1Target 8) pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
   have hExtra11 : rest.length + 11 < 1024 := by omega
@@ -58,9 +58,9 @@ theorem run_l1Dispatch8 (s : State) (q : MacState) (bi : UInt256)
 theorem run_l2Dispatch4 (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pb i k : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 4172 = true) :
-    runInstructions l2DispatchProgram (l2At 4022 s mid bi mu c0 pb 4 i k hd ent pdst ret rest) =
-      some (l2At 4172 s mid bi mu c0 pb 4 i k hd ent pdst ret rest) := by
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 4168 = true) :
+    runInstructions l2DispatchProgram (l2At 4015 s mid bi mu c0 pb 4 i k hd ent pdst ret rest) =
+      some (l2At 4168 s mid bi mu c0 pb 4 i k hd ent pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
   have hExtra11 : rest.length + 11 < 1024 := by omega
@@ -79,9 +79,9 @@ theorem run_l2Dispatch4 (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
 theorem run_l2Dispatch8 (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pb i k : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005)
-    (htarget : Decode.isValidJumpDest s.executionEnv.code 4024 = true) :
-    runInstructions l2DispatchProgram (l2At 4022 s mid bi mu c0 pb 8 i k hd ent pdst ret rest) =
-      some (l2At 4024 s mid bi mu c0 pb 8 i k hd ent pdst ret rest) := by
+    (htarget : Decode.isValidJumpDest s.executionEnv.code 4020 = true) :
+    runInstructions l2DispatchProgram (l2At 4015 s mid bi mu c0 pb 8 i k hd ent pdst ret rest) =
+      some (l2At 4020 s mid bi mu c0 pb 8 i k hd ent pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
   have hExtra11 : rest.length + 11 < 1024 := by omega
@@ -100,8 +100,8 @@ theorem run_l2Dispatch8 (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
 theorem run_l2Join (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pb n i k : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005) :
-    runInstructions joinProgram (l2At 4172 s mid bi mu c0 pb n i k hd ent pdst ret rest) =
-      some (l2At 4173 s mid bi mu c0 pb n i k hd ent pdst ret rest) := by
+    runInstructions joinProgram (l2At 4168 s mid bi mu c0 pb n i k hd ent pdst ret rest) =
+      some (l2At 4169 s mid bi mu c0 pb n i k hd ent pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
   have hExtra11 : rest.length + 11 < 1024 := by omega
@@ -115,8 +115,8 @@ theorem run_l2Join (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
 theorem run_l2Join8 (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pb n i k : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005) :
-    runInstructions joinProgram (l2At 4024 s mid bi mu c0 pb n i k hd ent pdst ret rest) =
-      some (l2At 4025 s mid bi mu c0 pb n i k hd ent pdst ret rest) := by
+    runInstructions joinProgram (l2At 4020 s mid bi mu c0 pb n i k hd ent pdst ret rest) =
+      some (l2At 4021 s mid bi mu c0 pb n i k hd ent pdst ret rest) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
   have hExtra11 : rest.length + 11 < 1024 := by omega
