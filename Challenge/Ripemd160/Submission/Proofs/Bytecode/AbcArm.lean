@@ -15,59 +15,59 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open TinyGuardLogic
 abbrev Located := DataStepper.Located Artifact.submissionArtifact .Osaka
 
-@[simp] theorem pc_176 : Artifact.submissionArtifact.instructionPC 238 = 351 := by
+@[simp] theorem pc_176 : Artifact.submissionArtifact.instructionPC 238 = 349 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_241 : Artifact.submissionArtifact.instructionPC 3875 = 4966 := by
+@[simp] theorem pc_241 : Artifact.submissionArtifact.instructionPC 3875 = 4965 := by
   exact GuardInstructionWindow.pc 220
-@[simp] theorem pc_242 : Artifact.submissionArtifact.instructionPC 3876 = 4967 := by
+@[simp] theorem pc_242 : Artifact.submissionArtifact.instructionPC 3876 = 4966 := by
   exact GuardInstructionWindow.pc 221
-@[simp] theorem pc_243 : Artifact.submissionArtifact.instructionPC 3877 = 4968 := by
+@[simp] theorem pc_243 : Artifact.submissionArtifact.instructionPC 3877 = 4967 := by
   exact GuardInstructionWindow.pc 222
-@[simp] theorem pc_244 : Artifact.submissionArtifact.instructionPC 3878 = 4969 := by
+@[simp] theorem pc_244 : Artifact.submissionArtifact.instructionPC 3878 = 4968 := by
   exact GuardInstructionWindow.pc 223
-@[simp] theorem pc_245 : Artifact.submissionArtifact.instructionPC 3879 = 4970 := by
+@[simp] theorem pc_245 : Artifact.submissionArtifact.instructionPC 3879 = 4969 := by
   exact GuardInstructionWindow.pc 224
-@[simp] theorem pc_4089 : Artifact.submissionArtifact.instructionPC 3854 = 4896 := by
+@[simp] theorem pc_4089 : Artifact.submissionArtifact.instructionPC 3854 = 4895 := by
   exact GuardInstructionWindow.pc 199
-@[simp] theorem pc_4090 : Artifact.submissionArtifact.instructionPC 3855 = 4897 := by
+@[simp] theorem pc_4090 : Artifact.submissionArtifact.instructionPC 3855 = 4896 := by
   exact GuardInstructionWindow.pc 200
-@[simp] theorem pc_4091 : Artifact.submissionArtifact.instructionPC 3856 = 4898 := by
+@[simp] theorem pc_4091 : Artifact.submissionArtifact.instructionPC 3856 = 4897 := by
   exact GuardInstructionWindow.pc 201
-@[simp] theorem pc_4092 : Artifact.submissionArtifact.instructionPC 3857 = 4900 := by
+@[simp] theorem pc_4092 : Artifact.submissionArtifact.instructionPC 3857 = 4899 := by
   exact GuardInstructionWindow.pc 202
-@[simp] theorem pc_4093 : Artifact.submissionArtifact.instructionPC 3858 = 4901 := by
+@[simp] theorem pc_4093 : Artifact.submissionArtifact.instructionPC 3858 = 4900 := by
   exact GuardInstructionWindow.pc 203
-@[simp] theorem pc_4094 : Artifact.submissionArtifact.instructionPC 3859 = 4904 := by
+@[simp] theorem pc_4094 : Artifact.submissionArtifact.instructionPC 3859 = 4903 := by
   exact GuardInstructionWindow.pc 204
-@[simp] theorem pc_4095 : Artifact.submissionArtifact.instructionPC 3860 = 4905 := by
+@[simp] theorem pc_4095 : Artifact.submissionArtifact.instructionPC 3860 = 4904 := by
   exact GuardInstructionWindow.pc 205
-@[simp] theorem pc_4096 : Artifact.submissionArtifact.instructionPC 3861 = 4909 := by
+@[simp] theorem pc_4096 : Artifact.submissionArtifact.instructionPC 3861 = 4908 := by
   exact GuardInstructionWindow.pc 206
-@[simp] theorem pc_4097 : Artifact.submissionArtifact.instructionPC 3862 = 4910 := by
+@[simp] theorem pc_4097 : Artifact.submissionArtifact.instructionPC 3862 = 4909 := by
   exact GuardInstructionWindow.pc 207
-@[simp] theorem pc_4098 : Artifact.submissionArtifact.instructionPC 3863 = 4911 := by
+@[simp] theorem pc_4098 : Artifact.submissionArtifact.instructionPC 3863 = 4910 := by
   exact GuardInstructionWindow.pc 208
-@[simp] theorem pc_4099 : Artifact.submissionArtifact.instructionPC 3864 = 4912 := by
+@[simp] theorem pc_4099 : Artifact.submissionArtifact.instructionPC 3864 = 4911 := by
   exact GuardInstructionWindow.pc 209
-@[simp] theorem pc_4100 : Artifact.submissionArtifact.instructionPC 3865 = 4913 := by
+@[simp] theorem pc_4100 : Artifact.submissionArtifact.instructionPC 3865 = 4912 := by
   exact GuardInstructionWindow.pc 210
-@[simp] theorem pc_4101 : Artifact.submissionArtifact.instructionPC 3866 = 4915 := by
+@[simp] theorem pc_4101 : Artifact.submissionArtifact.instructionPC 3866 = 4914 := by
   exact GuardInstructionWindow.pc 211
-@[simp] theorem pc_4102 : Artifact.submissionArtifact.instructionPC 3867 = 4916 := by
+@[simp] theorem pc_4102 : Artifact.submissionArtifact.instructionPC 3867 = 4915 := by
   exact GuardInstructionWindow.pc 212
-@[simp] theorem pc_4103 : Artifact.submissionArtifact.instructionPC 3868 = 4917 := by
+@[simp] theorem pc_4103 : Artifact.submissionArtifact.instructionPC 3868 = 4916 := by
   exact GuardInstructionWindow.pc 213
-@[simp] theorem pc_4104 : Artifact.submissionArtifact.instructionPC 3869 = 4920 := by
+@[simp] theorem pc_4104 : Artifact.submissionArtifact.instructionPC 3869 = 4919 := by
   exact GuardInstructionWindow.pc 214
-@[simp] theorem pc_4105 : Artifact.submissionArtifact.instructionPC 3870 = 4921 := by
+@[simp] theorem pc_4105 : Artifact.submissionArtifact.instructionPC 3870 = 4920 := by
   exact GuardInstructionWindow.pc 215
-@[simp] theorem pc_4106 : Artifact.submissionArtifact.instructionPC 3871 = 4922 := by
+@[simp] theorem pc_4106 : Artifact.submissionArtifact.instructionPC 3871 = 4921 := by
   exact GuardInstructionWindow.pc 216
-@[simp] theorem pc_4107 : Artifact.submissionArtifact.instructionPC 3872 = 4943 := by
+@[simp] theorem pc_4107 : Artifact.submissionArtifact.instructionPC 3872 = 4942 := by
   exact GuardInstructionWindow.pc 217
-@[simp] theorem pc_4108 : Artifact.submissionArtifact.instructionPC 3873 = 4944 := by
+@[simp] theorem pc_4108 : Artifact.submissionArtifact.instructionPC 3873 = 4943 := by
   exact GuardInstructionWindow.pc 218
-@[simp] theorem pc_4109 : Artifact.submissionArtifact.instructionPC 3874 = 4965 := by
+@[simp] theorem pc_4109 : Artifact.submissionArtifact.instructionPC 3874 = 4964 := by
   exact GuardInstructionWindow.pc 219
 
 def sizePath : List Located :=
@@ -75,7 +75,7 @@ def sizePath : List Located :=
    ⟨3855, .op .CALLDATASIZE, by exact GuardInstructionWindow.get 200, ⟨by decide, trivial, rfl⟩⟩,
    ⟨3856, .push ⟨1, by decide⟩ (UInt256.ofNat 2), by exact GuardInstructionWindow.get 201, by decide⟩,
    ⟨3857, .op .SHR, by exact GuardInstructionWindow.get 202, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3858, .push ⟨2, by decide⟩ (UInt256.ofNat 351), by exact GuardInstructionWindow.get 203, by decide⟩,
+   ⟨3858, .push ⟨2, by decide⟩ (UInt256.ofNat 349), by exact GuardInstructionWindow.get 203, by decide⟩,
    ⟨3859, .op .JUMPI, by exact GuardInstructionWindow.get 204, ⟨by decide, trivial, rfl⟩⟩]
 
 def wordPath : List Located :=
@@ -87,7 +87,7 @@ def wordPath : List Located :=
    ⟨3865, .push ⟨1, by decide⟩ (UInt256.ofNat 232), by exact GuardInstructionWindow.get 210, by decide⟩,
    ⟨3866, .op .SHR, by exact GuardInstructionWindow.get 211, ⟨by decide, trivial, rfl⟩⟩,
    ⟨3867, .op .XOR, by exact GuardInstructionWindow.get 212, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3868, .push ⟨2, by decide⟩ (UInt256.ofNat 351), by exact GuardInstructionWindow.get 213, by decide⟩,
+   ⟨3868, .push ⟨2, by decide⟩ (UInt256.ofNat 349), by exact GuardInstructionWindow.get 213, by decide⟩,
    ⟨3869, .op .JUMPI, by exact GuardInstructionWindow.get 214, ⟨by decide, trivial, rfl⟩⟩]
 
 /-- The small-input answer block sits at the end of the code and is entered by fall-through
@@ -110,8 +110,8 @@ def sizeCond (input : ByteArray) : UInt256 :=
 def wordCond (input : ByteArray) : UInt256 :=
   UInt256.xor (leadWord input)
     (UInt256.mul (UInt256.ofNat input.size) (UInt256.ofNat 0x207621))
-def armEntry (input : ByteArray) : State := Execution.atPC input 4896
-def fallbackState (input : ByteArray) : State := Execution.atPC input 351
+def armEntry (input : ByteArray) : State := Execution.atPC input 4895
+def fallbackState (input : ByteArray) : State := Execution.atPC input 349
 def answerWord (input : ByteArray) : UInt256 :=
   UInt256.sub (UInt256.ofNat EmptySpec.digestNat)
     (UInt256.mul (UInt256.ofNat 25448770637332498804579667936807160623886401639)
@@ -122,14 +122,14 @@ def answerMemory (input : ByteArray) : ByteArray :=
   MachineState.writeBytes ByteArray.empty (answerBytes input) 0
 def stored (input : ByteArray) : State :=
   {initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4968
+    pc := UInt256.ofNat 4967
     memory := answerMemory input
     activeWords := UInt256.ofNat 1}
 def sized (input : ByteArray) : State :=
-  {stored input with pc := UInt256.ofNat 4969, stack := [UInt256.ofNat 32]}
+  {stored input with pc := UInt256.ofNat 4968, stack := [UInt256.ofNat 32]}
 def returned (input : ByteArray) : State :=
   {stored input with
-    pc := UInt256.ofNat 4970
+    pc := UInt256.ofNat 4969
     halt := .Returned
     hReturn := MachineState.readPadded (answerMemory input) 0 32}
 
@@ -149,11 +149,11 @@ private theorem true_of_ne_zero (w : UInt256) (h : w ≠ 0) : UInt256.isTrue w =
     exact hn
   simpa using ht
 
-theorem arm_dest : Decode.isValidJumpDest submissionBytecode 4896 = true := by
+theorem arm_dest : Decode.isValidJumpDest submissionBytecode 4895 = true := by
   have h := Artifact.submissionArtifact.isValidJumpDest_index 3854 (by exact GuardInstructionWindow.get 199)
   rw [pc_4089] at h
   exact h
-private theorem valid_generic : Decode.isValidJumpDest submissionBytecode 351 = true := by
+private theorem valid_generic : Decode.isValidJumpDest submissionBytecode 349 = true := by
   have h := Artifact.submissionArtifact.isValidJumpDest_index 238 (by rfl)
   rw [pc_176] at h
   exact h
@@ -167,7 +167,7 @@ theorem run_large (input : ByteArray) (hm : sizeCond input ≠ 0) :
 
 theorem run_small (input : ByteArray) (hm : sizeCond input = 0) :
     DataStepper.runLocatedBlock sizePath (armEntry input) =
-      some (Execution.atPC input 4905) := by
+      some (Execution.atPC input 4904) := by
   have ht : ¬ UInt256.isTrue (sizeCond input) := by rw [hm]; decide
   simp [sizeCond] at ht
   simp [sizePath, DataStepper.runLocatedBlock, DataStepper.runLocated, DataStepper.runInstr,
@@ -175,7 +175,7 @@ theorem run_small (input : ByteArray) (hm : sizeCond input = 0) :
     Word.ofNat_add_mod, Word.word_toNat_ofNat, ht]
 
 theorem run_word_miss (input : ByteArray) (hm : wordCond input ≠ 0) :
-    DataStepper.runLocatedBlock wordPath (Execution.atPC input 4905) =
+    DataStepper.runLocatedBlock wordPath (Execution.atPC input 4904) =
       some (fallbackState input) := by
   have ht := true_of_ne_zero (wordCond input) hm
   simp [wordCond, leadWord] at ht
@@ -184,8 +184,8 @@ theorem run_word_miss (input : ByteArray) (hm : wordCond input ≠ 0) :
     Word.ofNat_add_mod, Word.word_toNat_ofNat, mul_op, ht, valid_generic]
 
 theorem run_word_hit (input : ByteArray) (hm : wordCond input = 0) :
-    DataStepper.runLocatedBlock wordPath (Execution.atPC input 4905) =
-      some (Execution.atPC input 4921) := by
+    DataStepper.runLocatedBlock wordPath (Execution.atPC input 4904) =
+      some (Execution.atPC input 4920) := by
   have ht : ¬ UInt256.isTrue (wordCond input) := by rw [hm]; decide
   simp [wordCond, leadWord] at ht
   simp [wordPath, DataStepper.runLocatedBlock, DataStepper.runLocated, DataStepper.runInstr,
@@ -193,7 +193,7 @@ theorem run_word_hit (input : ByteArray) (hm : wordCond input = 0) :
     Word.ofNat_add_mod, Word.word_toNat_ofNat, mul_op, ht]
 
 theorem run_store (input : ByteArray) :
-    DataStepper.runLocatedBlock storePath (Execution.atPC input 4921) = some (stored input) := by
+    DataStepper.runLocatedBlock storePath (Execution.atPC input 4920) = some (stored input) := by
   simp [storePath, DataStepper.runLocatedBlock, DataStepper.runLocated, DataStepper.runInstr,
     Execution.atPC, initialState, stored, answerMemory, answerBytes, answerWord,
     EmptySpec.digestNat, UInt256.succ, State.activeWordsAfterUInt256,
