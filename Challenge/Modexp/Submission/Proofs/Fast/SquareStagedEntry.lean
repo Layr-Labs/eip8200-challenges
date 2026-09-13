@@ -14,25 +14,25 @@ open Monpro CiosCached
 
 /-- Rebase the square's B pointer onto the already staged operand. -/
 def program : List Instr :=
-  [.op .JUMPDEST, .push 2 4459, .op (.Swap ⟨1, by decide⟩), .op .POP,
+  [.op .JUMPDEST, .push 2 4449, .op (.Swap ⟨1, by decide⟩), .op .POP,
    .push 2 2336, .op (.Swap ⟨2, by decide⟩), .op .POP,
    .push 2 1856, .op .ADD]
 
-def block : Block Artifact.submissionArtifact .Osaka 4769 program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3605 9 4769 program
+def block : Block Artifact.submissionArtifact .Osaka 4759 program :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3595 9 4759 program
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 4769).toNat = true :=
-  Artifact.isValidJumpDest_index 3605 (by rfl)
+    (UInt256.ofNat 4759).toNat = true :=
+  Artifact.isValidJumpDest_index 3595 (by rfl)
 
 theorem run_entry (s : State) (mem : ByteArray) (n : Nat)
     (ent inv m0 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1012)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
     runInstructions program
-      (outState s mem 512 n 0 (UInt256.ofNat 4769) ent inv m0 rest) =
-    some { outState s mem 2368 n 0 (UInt256.ofNat 4459) ent inv m0 rest with
-      pc := UInt256.ofNat 4784 } := by
+      (outState s mem 512 n 0 (UInt256.ofNat 4759) ent inv m0 rest) =
+    some { outState s mem 2368 n 0 (UInt256.ofNat 4449) ent inv m0 rest with
+      pc := UInt256.ofNat 4774 } := by
   have h9 : rest.length + 9 < 1024 := by omega
   have h10 : rest.length + 10 < 1024 := by omega
   have hp : UInt256.ofNat 1856 + UInt256.ofNat (512 + 32 * n - 32) =
@@ -53,9 +53,9 @@ def gasSteps_entry (s : State) (mem : ByteArray) (n : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (outState s mem 512 n 0 (UInt256.ofNat 4769) ent inv m0 rest)
-      { outState s mem 2368 n 0 (UInt256.ofNat 4459) ent inv m0 rest with
-        pc := UInt256.ofNat 4784 } :=
+      (outState s mem 512 n 0 (UInt256.ofNat 4759) ent inv m0 rest)
+      { outState s mem 2368 n 0 (UInt256.ofNat 4449) ent inv m0 rest with
+        pc := UInt256.ofNat 4774 } :=
   block.steps (SquareRow.environment _ hcode hfork hrun hnp) rfl
     (run_entry s mem n ent inv m0 rest hcap hcode)
 
