@@ -3599,11 +3599,8 @@ def submissionInstructions : List Instr :=
  .push 2 2336,
  .op (.Swap { idx := 2 }),
  .op .POP,
- .push 2 1856,
+ .push 7 1856,
  .op .ADD,
- .push 2 4762,
- .op .JUMP,
- .op .JUMPDEST,
  .op (.Dup { idx := 6 }),
  .push 2 4172,
  .op .EQ,
@@ -4083,7 +4080,7 @@ def submissionInstructions : List Instr :=
  .push 2 4363,
  .op .JUMP]
 
-theorem submissionInstructions_count : submissionInstructions.length = 4060 := by
+theorem submissionInstructions_count : submissionInstructions.length = 4057 := by
   decide
 
 theorem assemble_submissionInstructions :
