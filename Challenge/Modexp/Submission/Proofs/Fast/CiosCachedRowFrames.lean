@@ -16,7 +16,7 @@ open WindowNibbleKernel
 `hd` above the call frame. -/
 def setupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3586
+  { s with pc := UInt256.ofNat 3585
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
@@ -32,7 +32,7 @@ def outState (s : State) (mem : ByteArray) (pb n i : Nat)
 `b_i` above the row frame. -/
 def midState (s : State) (mem : ByteArray) (c bi : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4011
+  { s with pc := UInt256.ofNat 4010
            stack := [c, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
            memory := mem }
@@ -42,7 +42,7 @@ def midState (s : State) (mem : ByteArray) (c bi : UInt256)
 statement about the row keeps its shape. -/
 def tailState (s : State) (mem : ByteArray) (c _mu bi : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4289
+  { s with pc := UInt256.ofNat 4288
            stack := [c, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
            memory := mem }

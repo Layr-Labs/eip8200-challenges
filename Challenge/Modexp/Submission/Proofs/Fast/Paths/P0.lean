@@ -21,7 +21,7 @@ def blk977 :
    opAt 499 .SUB,
    pushAt 500 1 223,
    opAt 501 .LT,
-   pushAt 502 2 1158,
+   pushAt 502 2 1157,
    opAt 503 .JUMPI]
 
 /-- Instructions 986..989, pc 1133..1137.  The EIP-7823 oversize test that used to
@@ -39,30 +39,29 @@ def blk986 :
 /-- Instructions 1003..1027, pc 1353..1384. -/
 def blk1003 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 508 (.Dup ⟨2, by decide⟩),
-   pushAt 509 1 31,
+  [pushAt 508 1 31,
+   opAt 509 (.Dup ⟨3, by decide⟩),
    opAt 510 .ADD,
    pushAt 511 1 5,
    opAt 512 .SHR,
    opAt 513 (.Dup ⟨0, by decide⟩),
    pushAt 514 1 5,
    opAt 515 .SHL,
-   opAt 516 (.Dup ⟨3, by decide⟩),
+   pushAt 516 1 96,
    opAt 517 (.Dup ⟨3, by decide⟩),
    opAt 518 .ADD,
-   pushAt 519 1 96,
+   opAt 519 (.Dup ⟨4, by decide⟩),
    opAt 520 .ADD,
-   opAt 521 (.Dup ⟨5, by decide⟩),
-   opAt 522 (.Dup ⟨2, by decide⟩),
-   opAt 523 .SUB,
-   pushAt 524 1 3,
-   opAt 525 .SHL,
-   opAt 526 (.Dup ⟨1, by decide⟩),
-   opAt 527 .CALLDATALOAD,
-   opAt 528 (.Swap ⟨0, by decide⟩),
-   opAt 529 .SHR,
-   opAt 530 .ISZERO,
-   pushAt 531 2 1164,
-   opAt 532 .JUMPI]
+   opAt 521 (.Dup ⟨0, by decide⟩),
+   opAt 522 .CALLDATALOAD,
+   opAt 523 (.Dup ⟨6, by decide⟩),
+   opAt 524 (.Dup ⟨3, by decide⟩),
+   opAt 525 .SUB,
+   pushAt 526 1 3,
+   opAt 527 .SHL,
+   opAt 528 .SHR,
+   opAt 529 .ISZERO,
+   pushAt 530 2 1163,
+   opAt 531 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast
