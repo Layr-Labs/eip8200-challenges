@@ -61,12 +61,12 @@ def tail : List Instr :=
   op 0x8c,
   op 0x8c,
   op 0x10,
-  .push 2 483,
+  .push 2 485,
   op 0x57,
   op 0x8b,
   op 0x36,
   op 0x14,
-  .push 2 4769,
+  .push 2 4779,
   op 0x57,
   op 0x50,
   op 0x50,
@@ -97,14 +97,14 @@ def tail : List Instr :=
   op 0x16,
   op 0x02,
   op 0x18,
-  op 0x80,
+  .push 3 65537,
+  .push 18 22300404921355919834653475635385858670002175,
+  op 0x82,
+  op 0x83,
   .push 1 16,
   op 0x1c,
-  op 0x81,
   op 0x18,
-  .push 18 22300404921355919834653475635385858670002175,
   op 0x16,
-  .push 3 65537,
   op 0x02,
   op 0x18,
   .push 0 0,
@@ -135,7 +135,7 @@ def tail : List Instr :=
   op 0x1c,
   op 0x90,
   op 0x81,
-  .push 2 4746,
+  .push 2 4756,
   op 0x57,
   op 0x50,
   op 0x50,
@@ -187,7 +187,7 @@ def tail : List Instr :=
   op 0x52,
   .push 1 36,
   op 0x52,
-  .push 2 921,
+  .push 2 920,
   op 0x56,
   op 0x5b,
   .push 0 0,
@@ -196,7 +196,7 @@ def tail : List Instr :=
   op 0x1a,
   .push 1 7,
   op 0x18,
-  .push 2 4886,
+  .push 2 4896,
   op 0x57,
   .push 17 342276208914615837337402008677671501826,
   op 0x36,
@@ -234,19 +234,19 @@ def tail : List Instr :=
   .push 0 0,
   op 0xf3
 ]
-theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3658 = tail := by rfl
+theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3655 = tail := by rfl
 
-theorem pc_base : Artifact.submissionArtifact.instructionPC 3658 = 4565 := by
+theorem pc_base : Artifact.submissionArtifact.instructionPC 3655 = 4575 := by
   rw [instructionPC_eq_byteLength]
   rfl
 
 theorem get (index : Nat) :
-    Artifact.submissionArtifact.instructions[3658 + index]? = tail[index]? := by
+    Artifact.submissionArtifact.instructions[3655 + index]? = tail[index]? := by
   rw [← InstructionWindow.get_drop, tail_eq]
 
 theorem pc (index : Nat) :
-    Artifact.submissionArtifact.instructionPC (3658 + index) =
-      4565 + byteLength (tail.take index) := by
+    Artifact.submissionArtifact.instructionPC (3655 + index) =
+      4575 + byteLength (tail.take index) := by
   rw [InstructionWindow.pc_drop, pc_base, tail_eq]
 
 #print axioms get

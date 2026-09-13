@@ -1,3 +1,5 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.RawExpressionAC
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DeferredNormalInitial
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentFrame
 
 set_option warningAsError true
@@ -8,7 +10,7 @@ set_option linter.unusedVariables false
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentEntryRaw
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
-open StackRoundTrace StaggerPersistentFrame
+open StackRoundTrace StaggerPersistentFrame PairedMask32Cache
 
 def dispatchTemplate (dest : Nat) : List Instr :=
   [.op (.Dup ⟨11, by decide⟩), .op .CALLDATASIZE, .op .EQ,
@@ -48,18 +50,23 @@ theorem run_hit (s : State) (pc off limit : UInt256) (h : Compression.HashState)
     hrun, hcap, heq, List.length_cons, List.getElem?_cons_zero, Nat.add_assoc, hvalid, Word.literal_eq_ofNat, UInt256.isTrue]
 
 def callTemplate : List Instr :=
-  [.op (.Dup ⟨11, by decide⟩), .push ⟨2, by decide⟩ (UInt256.ofNat 1120), .op .ADD]
+  [.push ⟨3, by decide⟩ (UInt256.ofNat 65537), .push 0 0, .op .NOT, .op .DIV,
+   .push ⟨2, by decide⟩ (UInt256.ofNat 257), .push 0 0, .op .NOT, .op .DIV,
+   .push ⟨2, by decide⟩ (UInt256.ofNat 1120), .op (.Dup ⟨14, by decide⟩), .op .ADD]
 def pointer (off : UInt256) : UInt256 := UInt256.add (UInt256.ofNat 1120) off
 
+set_option maxHeartbeats 500000 in
 theorem run_call (s : State) (pc off limit : UInt256) (h : Compression.HashState)
     (rho : List UInt256) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running) :
     runInstrSeq callTemplate {s with pc := pc, stack := frame h off limit rho} =
-      some {s with pc := pcAfter pc callTemplate, stack := pointer off :: frame h off limit rho} := by
+      some {s with pc := pcAfter pc callTemplate, stack := pointer off :: DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: frame h off limit rho} := by
   have hcap (n : Nat) (hn : n ≤ 100) : rho.length + n < 1024 := by omega
-  simp (discharger := omega) [callTemplate, frame, pointer, runInstrSeq, DataStepper.runInstr,
+  have hzero : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hpointer : off + UInt256.ofNat 1120 = pointer off := RawExpressionAC.add_comm _ _
+  simp (discharger := omega) [callTemplate, frame, hpointer, DeferredNormalInitial.mask8_div, DeferredNormalInitial.mask16_div, hzero, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, hrun, hcap,
     List.getElem?_cons_zero, Nat.add_assoc, Word.literal_eq_ofNat]
-  all_goals repeat first | apply And.intro | rfl
+  all_goals repeat first | apply And.intro | exact True.intro | rfl
 #print axioms run_call
 #print axioms run_miss
 #print axioms run_hit
