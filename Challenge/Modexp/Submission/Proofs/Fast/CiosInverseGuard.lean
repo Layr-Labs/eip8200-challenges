@@ -22,7 +22,7 @@ def guardProgram : List Instr :=
   [.op .JUMPDEST, .push 2 2688, .op .MLOAD, .op (.Dup ⟨0, by decide⟩),
    .push 1 128, .op .EQ, .op (.Swap ⟨0, by decide⟩), .push 2 256, .op .EQ,
    .op .OR, .push 1 1, .push 2 2720, .op .MLOAD, .op .GT, .op .AND,
-   .push 2 3586, .op .JUMPI]
+   .push 2 3588, .op .JUMPI]
 
 def condition (width inverse : UInt256) : UInt256 :=
   UInt256.land (UInt256.gt inverse (UInt256.ofNat 1))
@@ -82,9 +82,9 @@ theorem run_guardPass (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (hact : 88 ≤ s.activeWords.toNat)
     (hcond : UInt256.isTrue (condition (MachineState.readWord mem 2688)
       (MachineState.readWord mem 2720)))
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 3586 = true) :
-    runInstructions guardProgram (stateAt 3554 s mem hd pa pb pdst ret rest) =
-      some (stateAt 3586 s mem hd pa pb pdst ret rest) := by
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 3588 = true) :
+    runInstructions guardProgram (stateAt 3556 s mem hd pa pb pdst ret rest) =
+      some (stateAt 3588 s mem hd pa pb pdst ret rest) := by
   unfold condition at hcond
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
@@ -104,8 +104,8 @@ theorem run_guardFallback (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : 
     (hact : 88 ≤ s.activeWords.toNat)
     (hcond : ¬ UInt256.isTrue (condition (MachineState.readWord mem 2688)
       (MachineState.readWord mem 2720))) :
-    runInstructions guardProgram (stateAt 3554 s mem hd pa pb pdst ret rest) =
-      some (stateAt 3581 s mem hd pa pb pdst ret rest) := by
+    runInstructions guardProgram (stateAt 3556 s mem hd pa pb pdst ret rest) =
+      some (stateAt 3583 s mem hd pa pb pdst ret rest) := by
   unfold condition at hcond
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega

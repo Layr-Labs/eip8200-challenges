@@ -180,7 +180,7 @@ private theorem fastPCAnchor23 :
   rfl
 
 private theorem fastPCAnchor24 :
-    Artifact.submissionArtifact.instructionPC 1838 = 2430 := by
+    Artifact.submissionArtifact.instructionPC 1834 = 2430 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -376,10 +376,10 @@ private theorem fastPCAnchor24 :
   rw [← PCFast.byteLength_eq_assemble]
   interval_cases i <;> rfl
 
-@[simp] theorem fullBasePC (i : Nat) (hi : 1838 ≤ i) (hii : i ≤ 1883) :
+@[simp] theorem fullBasePC (i : Nat) (hi : 1834 ≤ i) (hii : i ≤ 1879) :
     Artifact.submissionArtifact.instructionPC i =
-      [2430,2431,2432,2433,2434,2435,2436,2438,2439,2440,2441,2444,2445,2446,2448,2451,2452,2455,2458,2461,2464,2467,2468,2469,2470,2472,2473,2475,2476,2477,2478,2480,2481,2482,2484,2485,2487,2488,2489,2490,2491,2493,2494,2495,2497,2500][i - 1838]! := by
-  have hsplit : i = 1838 + (i - 1838) := by omega
+      [2430,2431,2432,2433,2434,2435,2436,2438,2439,2440,2441,2444,2445,2446,2448,2451,2452,2455,2458,2461,2464,2467,2468,2469,2470,2472,2473,2475,2476,2477,2478,2480,2481,2482,2484,2485,2487,2488,2489,2490,2491,2493,2494,2495,2497,2500][i - 1834]! := by
+  have hsplit : i = 1834 + (i - 1834) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor24]
   rw [← PCFast.byteLength_eq_assemble]
   interval_cases i <;> rfl
@@ -430,7 +430,7 @@ theorem jumpDest1697 :
 
 theorem jumpDest3412 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2638 = true :=
-  Artifact.isValidJumpDest_index 1993 (by rfl)
+  Artifact.isValidJumpDest_index 1989 (by rfl)
 
 theorem jumpDest1703 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1049 = true :=
@@ -534,26 +534,26 @@ theorem jumpDest2392 :
 
 theorem jumpDest3111 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2395 = true :=
-  Artifact.isValidJumpDest_index 1815 (by rfl)
+  Artifact.isValidJumpDest_index 1811 (by rfl)
 
 theorem jumpDest3146 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2430 = true :=
-  Artifact.isValidJumpDest_index 1838 (by rfl)
+  Artifact.isValidJumpDest_index 1834 (by rfl)
 
 theorem jumpDest3184 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2468 = true :=
-  Artifact.isValidJumpDest_index 1860 (by rfl)
+  Artifact.isValidJumpDest_index 1856 (by rfl)
 
-theorem jumpDest4976 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4336 = true :=
-  Artifact.isValidJumpDest_index 3291 (by rfl)
+theorem jumpDest4976 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4338 = true :=
+  Artifact.isValidJumpDest_index 3289 (by rfl)
 
-theorem jumpDestSub : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4497 = true :=
-  Artifact.isValidJumpDest_index 3405 (by rfl)
+theorem jumpDestSub : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4499 = true :=
+  Artifact.isValidJumpDest_index 3403 (by rfl)
 
-theorem jumpDestCopyResume : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4744 = true :=
-  Artifact.isValidJumpDest_index 3584 (by rfl)
+theorem jumpDestCopyResume : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4746 = true :=
+  Artifact.isValidJumpDest_index 3582 (by rfl)
 
-theorem jumpDestEarlyCopy : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4733 = true :=
-  Artifact.isValidJumpDest_index 3577 (by rfl)
+theorem jumpDestEarlyCopy : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4735 = true :=
+  Artifact.isValidJumpDest_index 3575 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

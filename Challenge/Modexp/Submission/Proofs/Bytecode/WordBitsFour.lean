@@ -39,31 +39,31 @@ theorem lift_cost {pc : Nat} {program : List Instr} (block : BoundBlock pc progr
   exact blockCostW block.path work hresult hs.fork hfree hcost hactive
 
 def bodyBlock0 : BoundBlock 2507 (bodyProgram 7) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 1889 19 2507
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1885 19 2507
     (bodyProgram 7) (by decide) (by rfl) (by rfl) (by rfl)
 
 def bodyBlock1 : BoundBlock 2529 (bodyProgram 6) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 1908 19 2529
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1904 19 2529
     (bodyProgram 6) (by decide) (by rfl) (by rfl) (by rfl)
 
 def bodyBlock2 : BoundBlock 2551 (bodyProgram 5) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 1927 19 2551
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1923 19 2551
     (bodyProgram 5) (by decide) (by rfl) (by rfl) (by rfl)
 
 def bodyBlock3 : BoundBlock 2573 (bodyProgram 4) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 1946 19 2573
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1942 19 2573
     (bodyProgram 4) (by decide) (by rfl) (by rfl) (by rfl)
 
 def startBlock : BoundBlock 2506 ([.op .JUMPDEST]) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 1888 1 2506
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1884 1 2506
     ([.op .JUMPDEST]) (by decide) (by rfl) (by rfl) (by rfl)
 
 def controlBlock : BoundBlock 2595 (controlProgram) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 1965 9 2595
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1961 9 2595
     (controlProgram) (by decide) (by rfl) (by rfl) (by rfl)
 
 def resetBlock : BoundBlock 2608 (resetProgram) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 1974 4 2608
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1970 4 2608
     (resetProgram) (by decide) (by rfl) (by rfl) (by rfl)
 
 variable (s : State) (rest : List UInt256)
@@ -133,7 +133,7 @@ def control (hrest : rest.length < 1000) (c : Nat) (hc : c = 0 ∨ c = 4) :
         ([Bm1,UInt256.ofNat (c+4),byte,offset,outerW,acc,base,m] ++ rest)) :=
   lift controlBlock s hs _ _ (by
     have hj : Decode.isValidJumpDest s.executionEnv.code 2506 = true := by
-      rw [hs.code]; exact Artifact.isValidJumpDest_index 1888 (by rfl)
+      rw [hs.code]; exact Artifact.isValidJumpDest_index 1884 (by rfl)
     simpa only [stW, framed, apply_ite UInt256.ofNat, Challenge.EvmProof.Word.literal_eq_ofNat] using
       run_control s Bm1 byte offset outerW acc base m rest c hc (Nat.le_of_lt hrest) hj)
 

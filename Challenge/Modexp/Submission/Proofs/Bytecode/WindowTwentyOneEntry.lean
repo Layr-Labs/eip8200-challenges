@@ -175,4 +175,37 @@ theorem run_normalize (template : State) (modulus baseOffset : UInt256)
     Challenge.EvmProof.Word.literal_eq_ofNat, hshift,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
+/-- The relocated normalize block.  Identical to `normalizeProgram` except that the
+`32` literal is pushed as a 7-byte constant, which repays the six bytes freed by the
+deleted zero-modulus guard so that no pc from 1786 (0x06fa) onward moves.
+`normalizeProgram` itself is left untouched because `FermatProgram.valueProgram`
+consumes `normalizeProgram.drop 2` in the byte-unchanged Fermat region. -/
+def normalizeWideProgram : List Instr :=
+  [.op (.Dup ⟨4, by decide⟩), .op .CALLDATALOAD, .op (.Dup ⟨2, by decide⟩),
+   .push 7 32, .op .SUB, .push 1 3, .op .SHL, .op .SHR]
+
+theorem run_normalize_wide (template : State) (modulus baseOffset : UInt256)
+    (baseSize : Nat) (hwidth : baseSize ≤ 32)
+    (rest : List UInt256) (hrest : rest.length ≤ 1000)
+    (hbase : rest[0]? = some (UInt256.ofNat baseSize))
+    (hoffset : rest[3]? = some baseOffset) :
+    runInstructions normalizeWideProgram
+      (framed template (UInt256.ofNat 1775) (modulus :: rest)) =
+    some (framed template (UInt256.ofNat 1791)
+      (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata baseOffset.toNat)
+        (UInt256.ofNat ((32 - baseSize) * 8)) :: modulus :: rest)) := by
+  have hcap1 : rest.length + 1 < 1024 := by omega
+  have hcap2 : rest.length + 2 < 1024 := by omega
+  have hcap3 : rest.length + 3 < 1024 := by omega
+  have hcap4 : rest.length + 4 < 1024 := by omega
+  have hsub := Challenge.EvmProof.Word.ofNat_sub_ofNat hwidth (by decide : 32 < 2 ^ 256)
+  have hshift : UInt256.shiftLeft (UInt256.ofNat 32 - UInt256.ofNat baseSize) (UInt256.ofNat 3) =
+      UInt256.ofNat ((32 - baseSize) * 8) := by
+    rw [hsub, Challenge.EvmProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega)]
+    congr 1
+  simp [runInstructions, normalizeWideProgram, framed, Challenge.EvmProof.Stepper.runInstr,
+    hcap1, hcap2, hcap3, hcap4, List.getElem?_cons_succ, hbase, hoffset,
+    Challenge.EvmProof.Word.literal_eq_ofNat, hshift,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
+
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneEntry

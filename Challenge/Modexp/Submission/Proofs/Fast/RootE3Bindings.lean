@@ -18,30 +18,30 @@ open WindowTwentyOneBinding Shift
 
 /-- The twenty new instructions inserted immediately before the relocated loop head. -/
 def entryGuard : Block Artifact.submissionArtifact .Osaka 3006 RootE3Guard.program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2240 20 3006 RootE3Guard.program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2236 20 3006 RootE3Guard.program
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The phase exit is split where the conditional branch changes control flow. -/
 def phases : RootE3PhaseRun.PhaseBlocks Artifact.submissionArtifact .Osaka where
-  exitHead := WindowTwentyOneSlice.block Artifact.allWellFormed 2633 2 3502
+  exitHead := WindowTwentyOneSlice.block Artifact.allWellFormed 2631 2 3504
     RootE3PhaseRun.phaseExitHeadProgram (by decide) (by rfl) (by rfl) (by decide)
-  guard := WindowTwentyOneSlice.block Artifact.allWellFormed 2635 5 3504
+  guard := WindowTwentyOneSlice.block Artifact.allWellFormed 2633 5 3506
     RootE3PhaseRun.phaseGuardProgram (by decide) (by rfl) (by rfl) (by decide)
-  switch := WindowTwentyOneSlice.block Artifact.allWellFormed 2640 12 3513
+  switch := WindowTwentyOneSlice.block Artifact.allWellFormed 2638 12 3515
     RootE3PhaseRun.phaseSwitchProgram (by decide) (by rfl) (by rfl) (by decide)
-  done := WindowTwentyOneSlice.block Artifact.allWellFormed 2652 1 3534
+  done := WindowTwentyOneSlice.block Artifact.allWellFormed 2650 1 3536
     RootE3PhaseRun.phaseDoneProgram (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest3039 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3033 = true :=
-  Artifact.isValidJumpDest_index 2260 (by rfl)
+  Artifact.isValidJumpDest_index 2256 (by rfl)
 
-theorem jumpDest3542 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3534 = true :=
-  Artifact.isValidJumpDest_index 2652 (by rfl)
+theorem jumpDest3542 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3536 = true :=
+  Artifact.isValidJumpDest_index 2650 (by rfl)
 
 /-- The inherited loop guard consumes no memory and reaches the new phase test. -/
 def headSteps (s : State) (mem : ByteArray) (n bsize esize msize : Nat) (e : Env s) :
     GasSteps (shiftLoopState s mem n bsize esize msize 0)
-      (RootE3PhaseRun.frame s mem 3504 (Exp.outer n bsize esize msize)) := by
+      (RootE3PhaseRun.frame s mem 3506 (Exp.outer n bsize esize msize)) := by
   have first := soundEnv blk3013 e (run_shiftHead_done s mem n bsize esize msize e.code e.run)
   have second := phases.exitHead.steps (bindingEnv e) rfl
     (RootE3PhaseRun.run_phaseExitHead s mem (UInt256.ofNat 0)
@@ -54,7 +54,7 @@ def switchSteps (s : State) (mem : ByteArray) (n bsize esize msize : Nat) (e : E
     (hflag : MachineState.readWord mem 1760 = UInt256.ofNat 1) :
     GasSteps (shiftLoopState s mem n bsize esize msize 0)
       (shiftLoopState s (RootE3Phase.phaseSwitch mem n) n bsize esize msize (n / 4)) := by
-  have hd3542 : Decode.isValidJumpDest s.executionEnv.code 3534 = true := by
+  have hd3542 : Decode.isValidJumpDest s.executionEnv.code 3536 = true := by
     rw [e.code]; exact jumpDest3542
   have hd3039 : Decode.isValidJumpDest s.executionEnv.code 3033 = true := by
     rw [e.code]; exact jumpDest3039
@@ -76,7 +76,7 @@ def tailSteps (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     GasSteps (shiftLoopState s mem n bsize esize msize 0)
       (FixedExponentRoute.entryState s (Exp.mcopyMem mem 1024 1280 (32 * n))
         n bsize esize msize) := by
-  have hd3542 : Decode.isValidJumpDest s.executionEnv.code 3534 = true := by
+  have hd3542 : Decode.isValidJumpDest s.executionEnv.code 3536 = true := by
     rw [e.code]; exact jumpDest3542
   have guard := phases.guardZeroSteps s mem (Exp.outer n bsize esize msize)
     (by simp [Exp.outer]) e.act hflag hd3542 (bindingEnv e)

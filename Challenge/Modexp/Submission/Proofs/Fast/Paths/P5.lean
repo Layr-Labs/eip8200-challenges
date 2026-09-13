@@ -20,7 +20,7 @@ def blk1255 :
    pushAt 716 2 512,
    pushAt 717 2 1536,
    pushAt 718 2 256,
-   pushAt 719 2 3550,
+   pushAt 719 2 3552,
    opAt 720 .JUMP]
 
 /-- Instructions 1402..1360, pc 1896..1904. -/
@@ -47,7 +47,7 @@ def blk1287 :
    pushAt 731 2 256,
    opAt 732 (.Dup ⟨0, by decide⟩),
    pushAt 733 2 256,
-   pushAt 734 2 3550,
+   pushAt 734 2 3552,
    opAt 735 .JUMP]
 
 /-- Instructions 1424..1430, pc 1933..1941. -/
@@ -68,7 +68,7 @@ def blk1301 :
    pushAt 744 2 256,
    pushAt 745 2 512,
    pushAt 746 2 256,
-   pushAt 747 2 3550,
+   pushAt 747 2 3552,
    opAt 748 .JUMP]
 
 /-- Instructions 1389..1389, pc 1958..1958. -/
