@@ -1,5 +1,4 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedAllInlineCoreTrace
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundData
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
 set_option warningAsError true
 set_option maxRecDepth 100000

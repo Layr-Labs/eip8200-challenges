@@ -73,16 +73,16 @@ def boundaryTemplate : List Instr :=
     .op .AND,
     .op .XOR,
     .op .OR,
-    .op (.Dup ⟨7, by decide⟩),
-    .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨2, by decide⟩),
     .op .NOT,
-    .op .AND,
-    .op (.Dup ⟨3, by decide⟩),
     .op (.Dup ⟨8, by decide⟩),
     .op .AND,
-    .op (.Dup ⟨10, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 43),
     .op .MUL,
+    .op (.Dup ⟨4, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
+    .op .AND,
     .op .ADD,
     .op .XOR,
     .op (.Swap ⟨2, by decide⟩),
@@ -96,7 +96,6 @@ def boundaryTemplate : List Instr :=
     .op .ADD,
     .op (.Swap ⟨3, by decide⟩),
     .op .POP ]
-
 theorem run_boundary (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame) (rho : List UInt256)
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running) :
     runInstrSeq boundaryTemplate {s with pc := pc, stack := frame f rho} =

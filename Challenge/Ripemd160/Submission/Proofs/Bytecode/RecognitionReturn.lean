@@ -9,44 +9,44 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionReturn
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open RecognitionSites RecognitionSelectorRaw RecognitionSelectorResult
 
-def source (s : State) : UInt256 := selected (UInt256.ofNat 4970) s.executionEnv.calldata.size
+def source (s : State) : UInt256 := selected (UInt256.ofNat 4976) s.executionEnv.calldata.size
 
 def beforeCopy (s : State) (rho : List UInt256) : State :=
-  atState s 336 (12 :: source s :: 20 :: rho)
+  atState s 345 (12 :: source s :: 20 :: rho)
 
 def afterCopy (s : State) (rho : List UInt256) : State :=
   sized (beforeCopy s rho) (source s) rho
 
 def output (s : State) (rho : List UInt256) : State :=
-  RecognitionSelectorRaw.returned (afterCopy s rho) (UInt256.ofNat 338) rho
+  RecognitionSelectorRaw.returned (afterCopy s rho) (UInt256.ofNat 347) rho
 
 private theorem copy_decoded (s : State) (e : Env s) (rho : List UInt256) :
     (beforeCopy s rho).decodedOp = some .CODECOPY := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 225 .CODECOPY
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 231 .CODECOPY
     (by rfl) (by decide) trivial
-  apply Artifact.submissionArtifact.state_decodedOp_of (beforeCopy s rho) 225
+  apply Artifact.submissionArtifact.state_decodedOp_of (beforeCopy s rho) 231
     e.code ?_ .CODECOPY none hd (by change Operation.CODECOPY.availableInFork s.fork = true; rw [e.fork]; rfl)
-  change (UInt256.ofNat 336).toNat = Artifact.submissionArtifact.instructionPC 225
+  change (UInt256.ofNat 345).toNat = Artifact.submissionArtifact.instructionPC 231
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 private theorem size_decoded (s : State) (e : Env s) (rho : List UInt256) :
     (copied (beforeCopy s rho) (source s) rho).decodedOp = some .MSIZE := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 226 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 232 .MSIZE
     (by rfl) (by decide) trivial
   apply Artifact.submissionArtifact.state_decodedOp_of
-    (copied (beforeCopy s rho) (source s) rho) 226 e.code ?_ .MSIZE none hd (by change Operation.MSIZE.availableInFork s.fork = true; rw [e.fork]; rfl)
-  change (UInt256.ofNat 337).toNat = Artifact.submissionArtifact.instructionPC 226
+    (copied (beforeCopy s rho) (source s) rho) 232 e.code ?_ .MSIZE none hd (by change Operation.MSIZE.availableInFork s.fork = true; rw [e.fork]; rfl)
+  change (UInt256.ofNat 346).toNat = Artifact.submissionArtifact.instructionPC 232
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 def gasSteps (s : State) (e : Env s) (rho : List UInt256)
     (hcap : rho.length ≤ 990) (hmem : s.memory = ByteArray.empty)
     (hactive : s.activeWords = 0) :
-    GasSteps (atState s 316 rho) (output s rho) := by
+    GasSteps (atState s 325 rho) (output s rho) := by
   have hp : StackRoundTrace.runInstrSeq RecognitionSites.selector.template
-      (atState s 316 rho) = some (beforeCopy s rho) := by
-    have h := run_prefix s (UInt256.ofNat 316) (UInt256.ofNat 4970) rho (by omega) e.run
+      (atState s 325 rho) = some (beforeCopy s rho) := by
+    have h := run_prefix s (UInt256.ofNat 325) (UInt256.ofNat 4976) rho (by omega) e.run
     simpa only [RecognitionSites.selector.end_pc, beforeCopy, atState, source] using h
   have gp := RecognitionSites.selector.lift s (beforeCopy s rho) e rho hp
   have gc : GasSteps (beforeCopy s rho) (afterCopy s rho) :=
@@ -54,9 +54,9 @@ def gasSteps (s : State) (e : Env s) (rho : List UInt256)
       e.run e.np (copy_decoded s e rho) (size_decoded s e rho)
   have ea : Env (afterCopy s rho) := ⟨e.code, e.fork, e.run, e.np⟩
   have hf : StackRoundTrace.runInstrSeq RecognitionSites.returned.template
-      (atState (afterCopy s rho) 338 (32 :: rho)) = some (output s rho) :=
-    run_finish (afterCopy s rho) (UInt256.ofNat 338) rho (by omega) e.run
-  have hpc : (UInt256.ofNat 336).succ.succ = UInt256.ofNat 338 := by decide
+      (atState (afterCopy s rho) 347 (32 :: rho)) = some (output s rho) :=
+    run_finish (afterCopy s rho) (UInt256.ofNat 347) rho (by omega) e.run
+  have hpc : (UInt256.ofNat 345).succ.succ = UInt256.ofNat 347 := by decide
   have gf : GasSteps (afterCopy s rho) (output s rho) := by
     simpa only [afterCopy, beforeCopy, sized, copied, atState, hpc] using
       RecognitionSites.returned.lift (afterCopy s rho) (output s rho) ea (32 :: rho) hf
@@ -71,7 +71,7 @@ theorem output_spec (s : State) (e : Env s) (rho : List UInt256)
     (hn : RecognitionAccumulator.Allowed s.executionEnv.calldata.size)
     (hz : RecognitionAccumulator.resultAcc s.executionEnv.calldata s.executionEnv.calldata.size = 0) :
     (output s rho).hReturn = spec s.executionEnv.calldata := by
-  apply returned_spec (beforeCopy s rho) (source s) (UInt256.ofNat 338) rho
+  apply returned_spec (beforeCopy s rho) (source s) (UInt256.ofNat 347) rho
     s.executionEnv.calldata.size hn rfl hz
   change MachineState.readPadded s.executionEnv.code (source s).toNat 20 = _
   rw [e.code]
