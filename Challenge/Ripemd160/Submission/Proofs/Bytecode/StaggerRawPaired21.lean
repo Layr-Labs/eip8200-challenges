@@ -11,12 +11,12 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
 def template : List Instr :=
   [ .op (.Swap ⟨6, by decide⟩),
-    .op (.Dup ⟨4, by decide⟩),
-    .op (.Dup ⟨10, by decide⟩),
-    .op .XOR,
-    .op (.Dup ⟨8, by decide⟩),
-    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨7, by decide⟩),
+    .op (.Dup ⟨7, by decide⟩),
     .op .OR,
+    .op (.Dup ⟨10, by decide⟩),
+    .op (.Dup ⟨6, by decide⟩),
+    .op .XOR,
     .op .AND,
     .op (.Dup ⟨8, by decide⟩),
     .op .XOR,
@@ -78,7 +78,7 @@ def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UI
     x.v3,
     x.v4,
     x.v5,
-    (UInt256.land x.v3 (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mul (UInt256.ofNat 20282409608374036906834076368900) (UInt256.land x.v12 (UInt256.lor (UInt256.shiftRight (UInt256.add x.v8 (UInt256.add (MachineState.readWord memory 684) (UInt256.add (UInt256.lor (UInt256.land x.v6 x.v9) (UInt256.xor x.v0 (UInt256.land (UInt256.lor x.v6 x.v0) (UInt256.xor x.v4 x.v9)))) x.v7))) (UInt256.ofNat 72)) (UInt256.add x.v8 (UInt256.add (MachineState.readWord memory 684) (UInt256.add (UInt256.lor (UInt256.land x.v6 x.v9) (UInt256.xor x.v0 (UInt256.land (UInt256.lor x.v6 x.v0) (UInt256.xor x.v4 x.v9)))) x.v7)))))) (UInt256.ofNat 25)))),
+    (UInt256.land x.v3 (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mul (UInt256.ofNat 20282409608374036906834076368900) (UInt256.land x.v12 (UInt256.lor (UInt256.shiftRight (UInt256.add x.v8 (UInt256.add (MachineState.readWord memory 684) (UInt256.add (UInt256.lor (UInt256.land x.v6 x.v9) (UInt256.xor x.v0 (UInt256.land (UInt256.xor x.v4 x.v9) (UInt256.lor x.v6 x.v0)))) x.v7))) (UInt256.ofNat 72)) (UInt256.add x.v8 (UInt256.add (MachineState.readWord memory 684) (UInt256.add (UInt256.lor (UInt256.land x.v6 x.v9) (UInt256.xor x.v0 (UInt256.land (UInt256.xor x.v4 x.v9) (UInt256.lor x.v6 x.v0)))) x.v7)))))) (UInt256.ofNat 25)))),
     x.v0,
     x.v8,
     x.v9,
@@ -106,8 +106,7 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
   simp (discharger := omega) [template, inputStack, actualOutput,
     runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
-    State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat,
-    RawExpressionAC.xor_comm]
+    State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)

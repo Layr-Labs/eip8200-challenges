@@ -48,7 +48,7 @@ def loopAt (s : State) (msgOff returnDest : UInt256)
 
 def afterCondition (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (i : Nat) : State :=
-  { s with pc := UInt256.ofNat 557
+  { s with pc := UInt256.ofNat 559
            stack := [UInt256.ofNat i, msgOff, returnDest] ++ rest }
 
 def readEntry (s : State) (msgOff returnDest : UInt256)

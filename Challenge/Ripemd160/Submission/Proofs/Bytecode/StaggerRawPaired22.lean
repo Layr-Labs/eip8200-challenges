@@ -13,12 +13,12 @@ def template : List Instr :=
   [ .op (.Swap ⟨4, by decide⟩),
     .op (.Dup ⟨5, by decide⟩),
     .op (.Dup ⟨10, by decide⟩),
-    .op .OR,
     .op (.Dup ⟨7, by decide⟩),
-    .op (.Dup ⟨6, by decide⟩),
+    .op .OR,
+    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨7, by decide⟩),
     .op .XOR,
     .op .AND,
-    .op (.Dup ⟨6, by decide⟩),
     .op .XOR,
     .op (.Dup ⟨10, by decide⟩),
     .op (.Dup ⟨8, by decide⟩),
@@ -77,7 +77,7 @@ def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UI
     x.v6,
     x.v7,
     x.v8,
-    (UInt256.land x.v3 (UInt256.add x.v7 (UInt256.shiftRight (UInt256.mul x.v10 (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.add (MachineState.readWord memory 1008) (UInt256.add (UInt256.lor (UInt256.land x.v6 x.v9) (UInt256.xor x.v0 (UInt256.land (UInt256.xor x.v4 x.v6) (UInt256.lor x.v0 x.v9)))) x.v5))))) (UInt256.ofNat 31)))),
+    (UInt256.land x.v3 (UInt256.add x.v7 (UInt256.shiftRight (UInt256.mul x.v10 (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.add (MachineState.readWord memory 1008) (UInt256.add (UInt256.lor (UInt256.land x.v6 x.v9) (UInt256.xor (UInt256.land (UInt256.xor x.v4 x.v6) (UInt256.lor x.v0 x.v9)) x.v0)) x.v5))))) (UInt256.ofNat 31)))),
     x.v10,
     x.v11,
     x.v12,
@@ -102,8 +102,7 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
   simp (discharger := omega) [template, inputStack, actualOutput,
     runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
-    State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat,
-    RawExpressionAC.lor_comm]
+    State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
