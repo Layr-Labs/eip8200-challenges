@@ -116,7 +116,6 @@ theorem pad_words (input : ByteArray) (i : Nat) (hfit : CalldataFits input)
   rw [blockWords_eq_readLE32 input i k hk, ← hh]
   exact (PadOnlySchedule.padWords_eq_cryptoWords input hfit hn k hk).symm
 
-/-- The pad-only word 14 is the exact bit-length word plus `input.size / 2 ^ 29` dead lanes. -/
 theorem pad_word_fourteen (input : ByteArray) (i : Nat) (hfit : CalldataFits input)
     (hh : input.size = DriverTrace.blockOffset i) :
     (StaggerTablePad.padWordsDirty (UInt256.ofNat input.size) 14).toNat =
@@ -125,39 +124,14 @@ theorem pad_word_fourteen (input : ByteArray) (i : Nat) (hfit : CalldataFits inp
     StaggerTablePad.lowLength_eq_padWords, pad_words input i hfit hh 14 (by decide),
     Word.ofUInt32_toNat, size_word_toNat input hfit]
 
-/-- The pad-only word 15 is the exact bit-length word plus `input.size / 2 ^ 61` dead lanes. -/
-theorem pad_word_fifteen (input : ByteArray) (i : Nat) (hfit : CalldataFits input)
-    (hh : input.size = DriverTrace.blockOffset i) :
-    (StaggerTablePad.padWordsDirty (UInt256.ofNat input.size) 15).toNat =
-      (blockWords input i 15).toNat + input.size / 2 ^ 61 * 2 ^ 32 := by
-  rw [StaggerTablePad.padWordsDirty_fifteen, StaggerTablePad.highDirty_toNat,
-    StaggerTablePad.highLength_eq_padWords, pad_words input i hfit hh 15 (by decide),
-    Word.ofUInt32_toNat, size_word_toNat input hfit]
-
-/-- Dead lanes of the pad-only table: word 14 carries fewer than `2 ^ 35`, word 15 fewer than
-eight, the others none. -/
-def padJunk (input : ByteArray) (k : Nat) : Nat :=
-  if k = 14 then input.size / 2 ^ 29 else if k = 15 then input.size / 2 ^ 61 else 0
+def padJunk (input : ByteArray) (k : Nat) : Nat := if k = 14 then input.size / 2 ^ 29 else 0
 
 theorem padJunk_lt (input : ByteArray) (hfit : CalldataFits input) (k : Nat) :
     padJunk input k < 2 ^ 35 := by
   unfold padJunk CalldataFits at *
   split
-  · simp only [Nat.reducePow] at *
-    omega
-  · split
-    · simp only [Nat.reducePow] at *
-      omega
-    · decide
-
-theorem padJunk_small (input : ByteArray) (hfit : CalldataFits input) (k : Nat) (h14 : k ≠ 14) :
-    padJunk input k < 8 := by
-  unfold padJunk CalldataFits at *
-  rw [if_neg h14]
-  split
-  · simp only [Nat.reducePow] at *
-    omega
-  · omega
+  · simp only [Nat.reducePow] at *; omega
+  · decide
 
 theorem ready (s : State) (input : ByteArray) (i : Nat)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input)
@@ -169,28 +143,21 @@ theorem ready (s : State) (input : ByteArray) (i : Nat)
       (UInt256.ofNat s.executionEnv.calldata.size)) (blockWords input i)
     rw [ctx.calldata] at hh ⊢
     rw [StaggerTablePad.resultMemory_eq_table _ _ (size_word_lt input hfit)]
-    have hj (k : Nat) := padJunk_lt input hfit k
-    have hj8 (k : Nat) (h14 : k ≠ 14) := padJunk_small input hfit k h14
     exact StaggerMessage.ready_junk s.memory _ (blockWords input i) (padJunk input)
       (fun k hk => by
         by_cases h14 : k = 14
         · subst h14
           rw [pad_word_fourteen input i hfit hh]
           rfl
-        by_cases h15 : k = 15
-        · subst h15
-          rw [pad_word_fifteen input i hfit hh]
-          rfl
-        · rw [StaggerTablePad.padWordsDirty_ne _ _ h14 h15, pad_words input i hfit hh k hk,
+        · rw [StaggerTablePad.padWordsDirty_ne _ _ h14, pad_words input i hfit hh k hk,
             Word.ofUInt32_toNat]
-          simp only [padJunk, if_neg h14, if_neg h15, Nat.zero_mul, Nat.add_zero])
-      (fun k _ => Nat.lt_trans (hj k) (by decide))
-      (fun k _ _ => hj k)
-      (fun k _ _ h14 => Nat.lt_trans (hj8 k h14) (by decide))
+          simp only [padJunk, if_neg h14, Nat.zero_mul, Nat.add_zero])
+      (fun k _ => Nat.lt_trans (padJunk_lt input hfit k) (by decide))
+      (fun k _ _ => padJunk_lt input hfit k)
+      (fun k _ _ h14 => by simp [padJunk, h14])
       (fun k _ hd => by
         have h14 : k ≠ 14 := fun h => hd (Or.inr (Or.inr h))
-        exact ⟨Nat.lt_trans (hj8 k h14) (by decide),
-          fun h15 => by simp only [padJunk, if_neg h14, if_neg h15]⟩)
+        simp [padJunk, h14])
   · rw [scheduledState_miss s i hh]
     rw [ctx.calldata] at hh
     have hsplit (k : Nat) := StaggerScratch.dirtyWord_split s.memory (messagePointer i) k
@@ -207,8 +174,7 @@ theorem ready (s : State) (input : ByteArray) (i : Nat)
       (fun k _ hd => by
         have hd' : ¬ (k = 1 ∨ k = 2) := fun h =>
           hd (h.elim (fun h1 => Or.inl h1) (fun h2 => Or.inr (Or.inl h2)))
-        have h0 : (selectedWords s i k).toNat / 2 ^ 32 = 0 := (hsplit k).2.2.2 hd'
-        exact ⟨by show (selectedWords s i k).toNat / 2 ^ 32 < 2 ^ 23; rw [h0]; decide, fun _ => h0⟩)
+        exact (hsplit k).2.2.2 hd')
 
 theorem scheduled_word_above (s : State) (i address : Nat) (ha : 1120 ≤ address) :
     MachineState.readWord (scheduledState s i).memory address = MachineState.readWord s.memory address := by
@@ -257,8 +223,8 @@ theorem Context.scheduled (s : State) (input : ByteArray) (i : Nat)
       rw [ctx.calldata] at hh ⊢
       rw [StaggerTablePad.resultMemory_eq_table _ _ (size_word_lt input hfit),
         StaggerTableLayout.read_zero,
-        StaggerTablePad.padWordsDirty_ne _ StaggerTableLayout.slots[0]! (by decide) (by decide),
-        pad_words input i hfit hh _ (StaggerTableLayout.slots_lt 0 (by decide)),
+        StaggerTablePad.padWordsDirty_ne _ StaggerTableLayout.slots[0]! (by decide)]
+      rw [pad_words input i hfit hh _ (StaggerTableLayout.slots_lt 0 (by decide)),
         Word.ofUInt32_toNat]
       exact (blockWords input i _).toBitVec.isLt
     · rw [scheduledState_miss s i hh]
