@@ -56,7 +56,7 @@ theorem initial_pc : initialSite.startPC = UInt256.ofNat 367 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 250) = UInt256.ofNat 367
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
-def jumpCode := PadJump.template 596
+def jumpCode := PadJump.template 599
 
 theorem jump_slice :
     (Artifact.submissionArtifact.instructions.drop 293).take jumpCode.length = jumpCode := by rfl
@@ -73,12 +73,12 @@ theorem jump_pc : jumpSite.startPC = UInt256.ofNat 517 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_loop (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
-    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 596).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 343 = 596 := by
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 599).toNat = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 344 = 599 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 343 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 344 (by rfl)
   rw [hpc] at h
-  change Decode.isValidJumpDest s.executionEnv.code 596 = true
+  change Decode.isValidJumpDest s.executionEnv.code 599 = true
   rw [hcode]
   exact h
 
@@ -105,10 +105,10 @@ def gasSteps_jump (s : State) (frame : List UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 517, stack := frame}
-      {s with pc := UInt256.ofNat 596, stack := frame} := by
+      {s with pc := UInt256.ofNat 599, stack := frame} := by
   apply PadLift.gasSteps_of_raw jumpSite {s with pc := UInt256.ofNat 517, stack := frame} _ hcode hfork hrun hnp jump_pc.symm
   · apply PadLift.advancesAll_sound; decide
-  · exact PadJump.run_template s (UInt256.ofNat 517) frame 596 (by omega) hrun (valid_loop s hcode)
+  · exact PadJump.run_template s (UInt256.ofNat 517) frame 599 (by omega) hrun (valid_loop s hcode)
 #print axioms gasSteps_push
 #print axioms gasSteps_jump
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentStart

@@ -20,17 +20,17 @@ def left (q : WordLane) : WordLane := q
 def message (memory : ByteArray) (i : Nat) : UInt256 :=
   MachineState.readWord memory (18 * StaggerTableLayout.pairIndices[i]!)
 def right0 (memory : ByteArray) (q : WordLane) : WordLane :=
-  StaggerScalarWord.step true false 4 8 (MachineState.readWord memory 486) (UInt256.ofNat 1352829926) q
+  StaggerScalarWord.step true false 4 8 (MachineState.readWord memory 90) (UInt256.ofNat 1352829926) q
 def right1 (memory : ByteArray) (q : WordLane) : WordLane :=
-  StaggerScalarWord.step true false 4 9 (MachineState.readWord memory 162) (UInt256.ofNat 1352829926) q
+  StaggerScalarWord.step true false 4 9 (MachineState.readWord memory 558) (UInt256.ofNat 1352829926) q
 def right2 (memory : ByteArray) (q : WordLane) : WordLane :=
-  StaggerScalarWord.step true false 4 9 (MachineState.readWord memory 252) (UInt256.ofNat 1352829926) q
+  StaggerScalarWord.step true false 4 9 (MachineState.readWord memory 630) (UInt256.ofNat 1352829926) q
 def left77 (memory : ByteArray) (q : WordLane) : WordLane :=
   StaggerScalarWord.step true false 4 8 (MachineState.readWord memory 0) (UInt256.ofNat 2840853838) q
 def left78 (memory : ByteArray) (q : WordLane) : WordLane :=
-  StaggerScalarWord.step false false 4 5 (MachineState.readWord memory 612) (UInt256.ofNat 2840853838) q
+  StaggerScalarWord.step false false 4 5 (MachineState.readWord memory 144) (UInt256.ofNat 2840853838) q
 def left79 (memory : ByteArray) (q : WordLane) : WordLane :=
-  StaggerScalarWord.step false false 4 6 (MachineState.readWord memory 198) (UInt256.ofNat 2840853838) q
+  StaggerScalarWord.step false false 4 6 (MachineState.readWord memory 252) (UInt256.ofNat 2840853838) q
 
 def prologue (memory : ByteArray) (q : WordLane) : WordLane :=
   right2 memory (right1 memory (right0 memory q))
