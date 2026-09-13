@@ -8,10 +8,10 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open Paired144WordRound StaggerCoreCommon StaggerCoreModel
 
 def initialState (s : State) (h4 : UInt256) (q : WordLane) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 910, stack := stack s.memory h4 [ .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .e ] q q (UInt256.ofNat 1352829926) rho}
+  {s with pc := UInt256.ofNat 903, stack := stack s.memory h4 [ .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .e ] q q (UInt256.ofNat 1352829926) rho}
 
 def finalState (s : State) (h4 : UInt256) (q : WordLane) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 987, stack := stack s.memory h4 [ .d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (right1 s.memory (right0 s.memory q)) q (UInt256.ofNat 1352829926) rho}
+  {s with pc := UInt256.ofNat 980, stack := stack s.memory h4 [ .d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (right1 s.memory (right0 s.memory q)) q (UInt256.ofNat 1352829926) rho}
 
 def gasSteps (s : State) (h4 : UInt256) (q : WordLane) (rho : List UInt256)
     (hs : rho.length ≤ 900) (halias : rho[0]? = some q.b) (haliasC : rho[1]? = some q.c)
