@@ -15,28 +15,28 @@ open StackRoundTrace StaggerRaw
 private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
 def template : List Instr :=
-  [ .op (.Dup ⟨4, by decide⟩),
-    .op (.Dup ⟨4, by decide⟩),
-    .op (.Dup ⟨1, by decide⟩),
-    .op (.Dup ⟨12, by decide⟩),
-    .op (.Dup ⟨4, by decide⟩),
-    .op (.Dup ⟨15, by decide⟩),
-    .op (.Dup ⟨8, by decide⟩),
-    .op .NOT,
-    .op .OR,
-    .op .XOR,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 162),
+  [ .push ⟨1, by decide⟩ (UInt256.ofNat 162),
     .op .MLOAD,
     .push ⟨4, by decide⟩ (UInt256.ofNat 1352829926),
     .op .ADD,
+    .op (.Dup ⟨1, by decide⟩),
+    .op (.Dup ⟨4, by decide⟩),
+    .op .NOT,
+    .op (.Dup ⟨13, by decide⟩),
+    .op .OR,
+    .op .XOR,
     .op .ADD,
+    .op (.Dup ⟨10, by decide⟩),
     .op .ADD,
+    .op (.Dup ⟨5, by decide⟩),
     .op .AND,
+    .op (.Dup ⟨4, by decide⟩),
     .op .MUL,
     .push ⟨1, by decide⟩ (UInt256.ofNat 24),
     .op .SHR,
-    .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨2, by decide⟩),
     .op .ADD,
+    .op (.Dup ⟨5, by decide⟩),
     .op .AND,
     .push ⟨4, by decide⟩ (UInt256.ofNat 1352829926),
     .op (.Dup ⟨12, by decide⟩),
@@ -92,7 +92,7 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
       some {s with pc := pcAfter pc template, stack := actualOutput s.memory x rho} := by
   have hbase : rho.length < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
-  have hcap (n : Nat) (hn : n ≤ 48) : rho.length + n < 1024 := by omega
+  have hcap (n : Nat) (hn : n ≤ 22) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 1088) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     Stagger144Active.word_active_preserved s.activeWords address hactive haddress
@@ -119,8 +119,8 @@ def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osak
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 942 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 600) = UInt256.ofNat 942
+theorem site_pc : site.startPC = UInt256.ofNat 940 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 600) = UInt256.ofNat 940
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound
@@ -133,10 +133,10 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 942, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 982, stack := outputStack s.memory x rho} := by
-  have hraw := run_actual s (UInt256.ofNat 942) x rho hstack halias hkey hcache hrun hactive
-  have hend : pcAfter (UInt256.ofNat 942) template = UInt256.ofNat 982 := by decide
+    GasSteps {s with pc := UInt256.ofNat 940, stack := inputStack x rho}
+      {s with pc := UInt256.ofNat 980, stack := outputStack s.memory x rho} := by
+  have hraw := run_actual s (UInt256.ofNat 940) x rho hstack halias hkey hcache hrun hactive
+  have hend : pcAfter (UInt256.ofNat 940) template = UInt256.ofNat 980 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps

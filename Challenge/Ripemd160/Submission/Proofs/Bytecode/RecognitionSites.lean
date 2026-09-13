@@ -381,7 +381,7 @@ def lift (s t : State) (e : Env s) (stack : List UInt256)
 end cleanup
 
 namespace selector
-abbrev template : List Instr := RecognitionSelectorRaw.prefixTemplate (UInt256.ofNat 4931)
+abbrev template : List Instr := RecognitionSelectorRaw.prefixTemplate (UInt256.ofNat 4932)
 theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 218).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
   StackSiteBuilder.ofSlice template 218 actual_slice
