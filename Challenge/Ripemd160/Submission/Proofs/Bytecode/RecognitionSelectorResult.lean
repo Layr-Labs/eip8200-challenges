@@ -43,7 +43,7 @@ def gasSteps_copy_size (s : State) (src : UInt256) (rho : List UInt256)
   exact gcopy.trans (by simpa [sized, copied, Word.word_toNat_ofNat, Word.literal_eq_ofNat] using gs)
 
 theorem selected_nat (n : Nat) (hn : Allowed n) :
-    (selected (UInt256.ofNat 4976) n).toNat = 4976 + 20*((4022793/n)%16) := by
+    (selected (UInt256.ofNat 4971) n).toNat = 4971 + 20*((16714936/n)%16) := by
   rcases hn with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals decide
 
@@ -54,7 +54,7 @@ theorem digest_size (n : Nat) (hn : Allowed n) : (paddedDigest n).size = 32 := b
 theorem copied_memory (s : State) (src : UInt256) (rho : List UInt256) (n : Nat)
     (hn : Allowed n)
     (hread : MachineState.readPadded s.executionEnv.code src.toNat 20 =
-      MachineState.readPadded payload (20*((4022793/n)%16)) 20) :
+      MachineState.readPadded payload (20*((16714936/n)%16)) 20) :
     (copied s src rho).memory = paddedDigest n := by
   change MachineState.writeBytes ByteArray.empty _ 12 = _
   rw [hread]
@@ -63,7 +63,7 @@ theorem copied_memory (s : State) (src : UInt256) (rho : List UInt256) (n : Nat)
 theorem returned_output (s : State) (src pc : UInt256) (rho : List UInt256) (n : Nat)
     (hn : Allowed n)
     (hread : MachineState.readPadded s.executionEnv.code src.toNat 20 =
-      MachineState.readPadded payload (20*((4022793/n)%16)) 20) :
+      MachineState.readPadded payload (20*((16714936/n)%16)) 20) :
     (returned (sized s src rho) pc rho).hReturn = paddedDigest n := by
   change MachineState.readPadded (copied s src rho).memory 0 32 = _
   rw [copied_memory s src rho n hn hread, ← digest_size n hn]
@@ -73,7 +73,7 @@ theorem returned_spec (s : State) (src pc : UInt256) (rho : List UInt256) (n : N
     (hn : Allowed n) (hsize : s.executionEnv.calldata.size = n)
     (hzero : resultAcc s.executionEnv.calldata n = 0)
     (hread : MachineState.readPadded s.executionEnv.code src.toNat 20 =
-      MachineState.readPadded payload (20*((4022793/n)%16)) 20) :
+      MachineState.readPadded payload (20*((16714936/n)%16)) 20) :
     (returned (sized s src rho) pc rho).hReturn = Challenge.Ripemd160.spec s.executionEnv.calldata := by
   rw [returned_output s src pc rho n hn hread]
   exact (accepted_spec _ n hn hsize hzero).symm
