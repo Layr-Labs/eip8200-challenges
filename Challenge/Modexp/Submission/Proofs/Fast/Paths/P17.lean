@@ -2,7 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.Defs
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
-/-! Basic-block instruction paths, group 17 (instructions 1943..1955).
+/-! Basic-block instruction paths, group 17 (instructions 1943..1957).
 
 `RRSEL` (pc 2744) sits between the `RR` chain's selector and its multiply.
 The selector is `R1` when the corresponding bit of `n` is clear, and `R1` is
@@ -11,7 +11,7 @@ the call in that case and rejoins at pc 1692 with the stack untouched.
 
 * `blk1816` (idx 1943..1948, pc 2744..3189) — the `selOf = R1` test;
 * `blk1822` (idx 1952..1952, pc 1824..2767) — the `MONPRO` call frame;
-* `blk1828` (idx 1955..1955, pc 2768..2772) — the skip, straight to pc 1692. -/
+* `blk1828` (idx 1955..1957, pc 2768..2772) — the skip, straight to pc 1692. -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast
 
@@ -26,20 +26,20 @@ def blk1816 :
    opAt 1231 (.Dup ⟨0, by decide⟩),
    pushAt 1232 2 1024,
    opAt 1233 .EQ,
-   pushAt 1234 2 952,
+   pushAt 1234 2 948,
    opAt 1235 .JUMPI]
 
 /-- Instructions 1952..1952, pc 1824..2767: the multiply's call frame. -/
 def blk1822 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1236 2 952,
+  [pushAt 1236 2 948,
    pushAt 1237 2 1536,
    opAt 1238 (.Dup ⟨2, by decide⟩),
    pushAt 1239 2 1536,
-   pushAt 1240 2 3552,
+   pushAt 1240 2 3536,
    opAt 1241 .JUMP]
 
-/-- Instructions 1955..1955, pc 2768..2772: the skip. -/
+/-- Instructions 1955..1957, pc 2768..2772: the skip. -/
 def blk1828 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   []

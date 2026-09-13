@@ -39,7 +39,7 @@ def blk2896b :
    opAt 2147 .NOT,
    opAt 2148 .ADD,
    opAt 2149 (.Swap ⟨0, by decide⟩),
-   pushAt 2150 2 2908,
+   pushAt 2150 2 2901,
    opAt 2151 .JUMPI]
 
 /-- The limb-pass body up to its exit test (`blk3077` instructions 0..42). -/
@@ -89,7 +89,7 @@ def blk3077b :
   [pushAt 2478 2 2080,
    opAt 2479 (.Dup ⟨1, by decide⟩),
    opAt 2480 .GT,
-   pushAt 2481 2 3183,
+   pushAt 2481 2 3167,
    opAt 2482 .JUMPI]
 
 /-- The add-round body up to its exit test (`blk3157` instructions 0..26). -/
@@ -133,7 +133,7 @@ def blk3157b :
    pushAt 2553 2 2111,
    opAt 2554 (.Dup ⟨1, by decide⟩),
    opAt 2555 .GT,
-   pushAt 2556 2 3403,
+   pushAt 2556 2 3387,
    opAt 2557 .JUMPI]
 
 /-- The subtract-round body up to its exit test (`blk3213` instructions 0..22). -/
@@ -173,7 +173,7 @@ def blk3213b :
    pushAt 2609 2 2111,
    opAt 2610 (.Dup ⟨1, by decide⟩),
    opAt 2611 .GT,
-   pushAt 2612 2 3482,
+   pushAt 2612 2 3466,
    opAt 2613 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast

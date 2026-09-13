@@ -15,15 +15,15 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached
 /-- Stage the first operand at 2368 (`MCOPY`) and zero the scratch block (`CALLDATACOPY`
 from the end of calldata), keeping `hd` on top: pc 4174 → 4194. -/
 def zeroProgram : List Instr :=
-  [.push 2 2688, .op .MLOAD, .op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨2, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩), .push 2 2368, .op .MCOPY,
+  [.push 2 2688, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨2, by decide⟩),
+   .op .JUMPDEST, .push 2 2368, .op .MCOPY,
    .op (.Dup ⟨1, by decide⟩), .push 1 64, .op .ADD, .op .CALLDATASIZE,
    .push 2 2048, .op .CALLDATACOPY]
 
 /-- After `lowProgram`: `hd` above the operand pointers and the row frame. -/
 def cachedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3638
+  { s with pc := UInt256.ofNat 3622
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb,
              l1Target n, negative32, allOnes, l2Target n, dst, ret] ++ rest
            memory := mem }
@@ -31,7 +31,7 @@ def cachedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
 /-- After staging and zeroing: `hd` above the width word. -/
 def clearedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3658
+  { s with pc := UInt256.ofNat 3642
            stack := [hd, UInt256.ofNat (32*n), UInt256.ofNat pb,
              l1Target n, negative32, allOnes, l2Target n, dst, ret] ++ rest
            memory := mpZeroed s mem n }
