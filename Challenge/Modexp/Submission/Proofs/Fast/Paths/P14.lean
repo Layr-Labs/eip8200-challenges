@@ -24,11 +24,11 @@ def blk1742 :
 def blk1751 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1165 .JUMPDEST,
-   pushAt 1166 2 1658,
+   pushAt 1166 2 1650,
    opAt 1167 (.Dup ⟨2, by decide⟩),
    opAt 1168 (.Dup ⟨0, by decide⟩),
    opAt 1169 (.Dup ⟨0, by decide⟩),
-   pushAt 1170 2 3533,
+   pushAt 1170 2 3558,
    opAt 1171 .JUMP]
 
 /-- Instructions 1888..1891, pc 2661..2670: decrement and loop back. -/
@@ -39,7 +39,7 @@ def blk1758 :
    opAt 1174 .NOT,
    opAt 1175 .ADD,
    opAt 1176 (.Dup ⟨0, by decide⟩),
-   pushAt 1177 2 1647,
+   pushAt 1177 2 1639,
    opAt 1178 .JUMPI]
 
 /-- Instructions 1892..1894, pc 2671..3035: drop the counter and return. -/

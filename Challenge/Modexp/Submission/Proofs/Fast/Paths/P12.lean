@@ -49,7 +49,7 @@ def blk1627 :
    pushAt 1095 2 2080,
    opAt 1096 (.Dup ⟨1, by decide⟩),
    opAt 1097 .GT,
-   pushAt 1098 2 1518,
+   pushAt 1098 2 1510,
    opAt 1099 .JUMPI]
 
 /-- Instructions 1792..1745, pc 2770..2431. -/
@@ -61,7 +61,7 @@ def blk1662 :
    pushAt 1103 2 2080,
    opAt 1104 .MSTORE,
 
-   pushAt 1105 2 4316,
+   pushAt 1105 2 4349,
    opAt 1106 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

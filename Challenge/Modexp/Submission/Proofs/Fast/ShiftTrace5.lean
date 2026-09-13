@@ -239,82 +239,6 @@ theorem m2_stepInv (mem input : ByteArray) (n bsize mm minv : Nat)
       (neg_represents (m1Of mem input n) n mm (by omega) (by omega) hmpos hmod1)
   exact ⟨hframe2, hmod2, hneg2, ShiftCacheModel.read_cache _ n⟩
 
-/-- From the dispatcher entry on a hit to `BDONE`. -/
-def gasSteps_hitPath (s : State) (mem input : ByteArray) (n bsize esize msize mm minv : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8) (e : Env s)
-    (hdata : s.executionEnv.calldata = input) (hb : bsize < 2 ^ 256)
-    (hmatch : FullBase.Matches mem n bsize)
-    (hmpos : 0 < mm) (hodd : mm % 2 = 1) (hmm : mm < Limbs.radix ^ n)
-    (hframe : Exp.Frame mem n bsize minv)
-    (hmod : Model.FastRepresents mem 0 n mm) :
-    Challenge.EvmProof.GasSteps (dispState s mem n bsize esize msize)
-      { Exp.bDone s (Exp.mcopyMem (hitFinalMem mem input n mm) 1024 1280 (32 * n))
-          n bsize esize msize with pc := UInt256.ofNat 2675 } := by
-  have htop : Limbs.radix ^ n < 2 * mm := R1.radix_pow_lt_two_mul (by omega) hodd hmod hmatch.2
-  have hguard : Challenge.EvmProof.GasSteps (dispState s mem n bsize esize msize)
-      (hitState s mem n bsize esize msize) := by
-    have h := soundEnv blk2862 e
-      (run_dispatch s mem n bsize esize msize hn32 hb e.act296 e.code e.run)
-    rw [if_pos hmatch] at h
-    exact h
-  have hcsub0 := gasSteps_hitCsub s mem input n bsize esize msize hn hn32 e hdata hframe.ml
-    hframe.tl hframe.s32
-  -- facts at the shift loop entry
-  have hm1high : ∀ addr, 2688 ≤ addr →
-      MachineState.readWord (m1Of mem input n) addr = MachineState.readWord mem addr :=
-    fun addr haddr => m1_readWord_disjoint mem input n addr (by omega) hn32
-      ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩
-  have hm2high : ∀ addr, 2688 ≤ addr →
-      MachineState.readWord (m2Of mem input n) addr = MachineState.readWord mem addr :=
-    fun addr haddr => m2_readWord_disjoint mem input n addr (by omega) hn32
-      ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by unfold NEG; omega),
-        Or.inr (by unfold PRE_DINV; omega), Or.inr (by omega), Or.inr (by omega)⟩
-  have hframe2 : Exp.Frame (m2Of mem input n) n bsize minv :=
-    ⟨by rw [hm2high 2688 le_rfl]; exact hframe.s32,
-     by rw [hm2high 2720 (by omega)]; exact hframe.minvW,
-     by rw [hm2high 2752 (by omega)]; exact hframe.ml,
-     by rw [hm2high 2784 (by omega)]; exact hframe.tl,
-     by rw [hm2high 2816 (by omega)]; exact hframe.eoff⟩
-  have hmod1 : Model.FastRepresents (m1Of mem input n) 0 n mm := by
-    refine (Model.fastRepresents_congr ?_ mm).2 hmod
-    intro i hi
-    exact m1_readWord_disjoint mem input n _ (by omega) hn32
-      ⟨Or.inl (by omega), Or.inl (by omega), Or.inl (by omega), Or.inl (by omega)⟩
-  have hmod2 : Model.FastRepresents (m2Of mem input n) 0 n mm := by
-    unfold m2Of preMem
-    refine ShiftCacheModel.represents_cache _ n 0 n _ (Or.inl (by omega)) ?_
-    exact fastRepresents_preMemOf _ _ 0 n mm (Or.inl (by unfold PRE_L; omega))
-      (fastRepresents_negStep _ n 0 n mm (Or.inl (by unfold NEG; omega)) hmod1 n le_rfl)
-  have hneg2 : Model.FastRepresents (m2Of mem input n) NEG n (Limbs.radix ^ n - mm) := by
-    unfold m2Of preMem
-    refine ShiftCacheModel.represents_cache _ n NEG n _ (Or.inl (by unfold NEG; omega)) ?_
-    exact fastRepresents_preMemOf _ _ NEG n _ (Or.inl (by unfold NEG PRE_L; omega))
-      (neg_represents (m1Of mem input n) n mm (by omega) (by omega) hmpos hmod1)
-  have hbase2 : Model.FastRepresents (m2Of mem input n) 512 n
-      (Precompile.bytesToNatPadded input 96 (32 * n) % mm) := by
-    unfold m2Of preMem
-    refine ShiftCacheModel.represents_cache _ n 512 n _ (Or.inl (by omega)) ?_
-    exact fastRepresents_preMemOf _ _ 512 n _ (Or.inl (by unfold PRE_L; omega))
-      (fastRepresents_negStep _ n 512 n _ (Or.inl (by unfold NEG; omega))
-        (m1_base mem input n mm hn hn32 hmpos hodd hmod hmatch.2) n le_rfl)
-  have inv2 : StepInv (m2Of mem input n) n bsize mm minv := ⟨hframe2, hmod2, hneg2, ShiftCacheModel.read_cache _ n⟩
-  have hpro := gasSteps_prologue s (m1Of mem input n) n bsize esize msize (by omega) hn32 e
-    (by rw [hm1high 2752 (by omega)]; exact hframe.ml)
-  have hloop := gasSteps_shiftLoop s (m2Of mem input n) n bsize esize msize mm minv _ hn hn32 e
-    hmpos hmm htop inv2 hbase2 (Nat.mod_lt _ hmpos)
-  have hframeFin : Exp.Frame (hitFinalMem mem input n mm) n bsize minv :=
-    (stepInv_stepMems (by omega) hn32 inv2 n).frame
-  have hexit : Challenge.EvmProof.GasSteps
-      (shiftLoopState s (hitFinalMem mem input n mm) n bsize esize msize 0)
-      { Exp.bDone s (Exp.mcopyMem (hitFinalMem mem input n mm) 1024 1280 (32 * n))
-          n bsize esize msize with pc := UInt256.ofNat 2675 } :=
-    (soundEnv blk3013 e
-      (run_shiftHead_done s _ n bsize esize msize e.code e.run)).trans
-    (soundEnv blk3264 e
-      (run_shiftDone s _ n bsize esize msize (by omega) hn32 e.act296 hframeFin.s32
-        e.code e.run))
-  exact (((hguard.trans hcsub0).trans hpro).trans hloop).trans hexit
-
 /-- From the dispatcher entry on a miss to the Montgomery-form conversion call.
 
 The miss arm seeds `R1 = 0x0400` with 1 and calls the conversion with the old `r0`
@@ -325,7 +249,7 @@ def gasSteps_missPath (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn32 : n ≤ 8) (e : Env s) (hb : bsize < 2 ^ 256)
     (hmiss : ¬ FullBase.Matches mem n bsize) :
     Challenge.EvmProof.GasSteps (dispState s mem n bsize esize msize)
-      (Exp.r1Call s (Exp.storeWord mem 1024 (UInt256.ofNat 1)) 1024 (UInt256.ofNat 892)
+      (Exp.r1Call s (Exp.storeWord mem 1024 (UInt256.ofNat 1)) 1024 (UInt256.ofNat 884)
         n bsize esize msize) := by
   have h := soundEnv blk2862 e
     (run_dispatch s mem n bsize esize msize hn32 hb e.act296 e.code e.run)

@@ -42,7 +42,7 @@ def calldataByteValue (s : State) (offset : UInt256) : UInt256 :=
 def calldataByteEntry (s : State) (offset output returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 135
+    pc := UInt256.ofNat 133
     stack := [offset, output, returnDest] ++ rest }
 
 def calldataByteReturned (s : State) (offset returnDest : UInt256)
@@ -54,10 +54,10 @@ def calldataByteReturned (s : State) (offset returnDest : UInt256)
 @[simp] private theorem helperPCs (i : Nat)
     (hi : 76 ≤ i) (hii : i ≤ 85) :
     Artifact.submissionArtifact.instructionPC i =
-      ([135,136,137,138,139,140,141,142,143,144] : List Nat)[i - 76]! := by
+      ([133,134,135,136,137,138,139,140,141,142] : List Nat)[i - 76]! := by
   interval_cases i <;> decide
 
-@[simp] private theorem helperNext (i : Nat) (hi : 135 ≤ i) (hii : i ≤ 144) :
+@[simp] private theorem helperNext (i : Nat) (hi : 133 ≤ i) (hii : i ≤ 142) :
     (UInt256.ofNat i).succ = UInt256.ofNat (i + 1) := by
   exact Challenge.EvmProof.Word.succ_ofNat (by omega)
 

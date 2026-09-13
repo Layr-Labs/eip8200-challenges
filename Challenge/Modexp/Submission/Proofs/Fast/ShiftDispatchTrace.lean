@@ -15,7 +15,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 
 theorem jump_cell (i : Nat) (hi : i < 4) :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (UInt256.ofNat (3164 + 39 * i)).toNat = true := by
+      (UInt256.ofNat (3158 + 39 * i)).toNat = true := by
   interval_cases i
   · exact ShiftUnrollBindings.jump3684
   · exact ShiftUnrollBindings.jump3723

@@ -29,12 +29,12 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs
 
-@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2192 = 2979 := by rfl
-@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2198 = 2986 := by rfl
-@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2204 = 2993 := by rfl
-@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2210 = 3000 := by rfl
-@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2216 = 3007 := by rfl
-@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2222 = 3014 := by rfl
+@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2192 = 2946 := by rfl
+@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2198 = 2953 := by rfl
+@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2204 = 2960 := by rfl
+@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2210 = 2967 := by rfl
+@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2216 = 2974 := by rfl
+@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2222 = 2981 := by rfl
 
 /-- The shift traces normalize PUSH1 literals to `ofNat` before NOT. -/
 theorem notThirtyOneOfNat : UInt256.lnot (UInt256.ofNat 31) = UInt256.ofNat
@@ -108,7 +108,7 @@ theorem run_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock blk2889
       (missState s mem n bsize esize msize) =
       some (Exp.r1Call s (Exp.storeWord mem 1024 (UInt256.ofNat 1)) 1024
-        (UInt256.ofNat 892) n bsize esize msize) := by
+        (UInt256.ofNat 884) n bsize esize msize) := by
   have haw : UInt256.ofNat
       (MachineState.activeWordsAfter s.activeWords.toNat 1024 32) = s.activeWords :=
     Monpro.activeWords_fix s 1024 32 (by decide) (by omega) (by omega)

@@ -138,8 +138,8 @@ theorem run_zLoop_back (s : State) (i : Nat) (acc : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock zLoopPath
-      (st s 307 (UInt256.ofNat i :: acc :: rest) mem AW) =
-        some (st s 307 (UInt256.ofNat (i - 1) ::
+      (st s 299 (UInt256.ofNat i :: acc :: rest) mem AW) =
+        some (st s 299 (UInt256.ofNat (i - 1) ::
           UInt256.lor acc (byteW mem (1024 + (i - 1))) :: rest) mem AW) := by
   have hc := caps _ hcap
   have hdec := dec_ofNat i (by omega) (by omega)
@@ -159,8 +159,8 @@ theorem run_zLoop_exit (s : State) (acc : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock zLoopPath
-      (st s 307 (UInt256.ofNat 1 :: acc :: rest) mem AW) =
-        some (st s 328 (UInt256.ofNat 0 ::
+      (st s 299 (UInt256.ofNat 1 :: acc :: rest) mem AW) =
+        some (st s 320 (UInt256.ofNat 0 ::
           UInt256.lor acc (byteW mem 1024) :: rest) mem AW) := by
   have hc := caps _ hcap
   have hdec := dec_ofNat 1 (by omega) (by norm_num)
@@ -173,8 +173,8 @@ theorem run_zExit_nz (s : State) (acc : UInt256) (rest : List UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock zExitPath
-      (st s 328 (UInt256.ofNat 0 :: acc :: rest) mem AW) =
-        some (st s 338 rest mem AW) := by
+      (st s 320 (UInt256.ofNat 0 :: acc :: rest) mem AW) =
+        some (st s 330 rest mem AW) := by
   have hc := caps _ hcap
   bigc_run [zExitPath, hc, hcode, hrun, hacc]
 
@@ -183,8 +183,8 @@ theorem run_zExit_zero (s : State) (acc : UInt256) (rest : List UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock zExitPath
-      (st s 328 (UInt256.ofNat 0 :: acc :: rest) mem AW) =
-        some (st s 333 rest mem AW) := by
+      (st s 320 (UInt256.ofNat 0 :: acc :: rest) mem AW) =
+        some (st s 325 rest mem AW) := by
   have hc := caps _ hcap
   bigc_run [zExitPath, hc, hcode, hrun, hacc]
 
@@ -193,8 +193,8 @@ theorem run_zeroRet (s : State) (bl el ml : Nat) (rest : List UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock zeroRetPath
-      (st s 333 (UInt256.ofNat bl :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
-        some (rt s 337 (UInt256.ofNat bl :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
+      (st s 325 (UInt256.ofNat bl :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
+        some (rt s 329 (UInt256.ofNat bl :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
           mem AW (MachineState.readPadded mem 8192 ml)) := by
   have hc := caps _ hcap
   have h1 : ml < LIM := by simp only [LIM]; omega
@@ -208,8 +208,8 @@ theorem run_nz (s : State) (bl el ml : Nat) (rest : List UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock nzPath
-      (st s 338 (UInt256.ofNat bl :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
-        some (st s 483 (UInt256.ofNat 361 :: UInt256.ofNat 7168 :: UInt256.ofNat 5120 ::
+      (st s 330 (UInt256.ofNat bl :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
+        some (st s 475 (UInt256.ofNat 353 :: UInt256.ofNat 7168 :: UInt256.ofNat 5120 ::
           UInt256.ofNat bl :: UInt256.ofNat bl :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
           (MachineState.writeBytes mem (ByteArray.mk #[UInt8.ofNat 1]) (7167 + ml)) AW) := by
   have hc := caps _ hcap
@@ -225,8 +225,8 @@ theorem run_x1 (s : State) (bl el ml : Nat) (rest : List UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock x1Path
-      (st s 361 (UInt256.ofNat bl :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
-        some (st s 381 (UInt256.ofNat 0 :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
+      (st s 353 (UInt256.ofNat bl :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
+        some (st s 373 (UInt256.ofNat 0 :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
           (let m1 := MachineState.writeBytes mem (MachineState.readPadded mem 0 ml) 2048
            MachineState.writeBytes m1 (MachineState.readPadded m1 7168 ml) 3072) AW) := by
   have hc := caps _ hcap
@@ -244,8 +244,8 @@ theorem run_eGuard_done (s : State) (i el ml : Nat) (rest : List UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock eGuardPath
-      (st s 381 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
-        some (st s 462 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
+      (st s 373 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
+        some (st s 454 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
           mem AW) := by
   have hc := caps _ hcap
   have hshl := shl3_ofNat el (by omega)
@@ -260,8 +260,8 @@ theorem run_eGuard_go (s : State) (i el ml : Nat) (rest : List UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock eGuardPath
-      (st s 381 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
-        some (st s 392 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
+      (st s 373 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
+        some (st s 384 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
           mem AW) := by
   have hc := caps _ hcap
   have hshl := shl3_ofNat el (by omega)
@@ -275,8 +275,8 @@ theorem run_eSquare (s : State) (i el ml : Nat) (rest : List UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock eSquarePath
-      (st s 392 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
-        some (st s 483 (UInt256.ofNat 404 :: UInt256.ofNat 3072 :: UInt256.ofNat 3072 ::
+      (st s 384 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
+        some (st s 475 (UInt256.ofNat 396 :: UInt256.ofNat 3072 :: UInt256.ofNat 3072 ::
           UInt256.ofNat ml :: UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
           mem AW) := by
   have hc := caps _ hcap
@@ -290,8 +290,8 @@ theorem run_e2_skip (s : State) (i el ml : Nat) (rest : List UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock e2Path
-      (st s 404 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
-        some (st s 454 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
+      (st s 396 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
+        some (st s 446 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
           (MachineState.writeBytes mem (MachineState.readPadded mem 0 ml) 3072) AW) := by
   have hc := caps _ hcap
   have hshr := shr3_ofNat i (by omega)
@@ -318,8 +318,8 @@ theorem run_e2_mul (s : State) (i el ml : Nat) (rest : List UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock e2Path
-      (st s 404 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
-        some (st s 433 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
+      (st s 396 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
+        some (st s 425 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
           (MachineState.writeBytes mem (MachineState.readPadded mem 0 ml) 3072) AW) := by
   have hc := caps _ hcap
   have hshr := shr3_ofNat i (by omega)
@@ -343,8 +343,8 @@ theorem run_eMul (s : State) (i el ml : Nat) (rest : List UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock eMulPath
-      (st s 433 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
-        some (st s 483 (UInt256.ofNat 447 :: UInt256.ofNat 3072 :: UInt256.ofNat 2048 ::
+      (st s 425 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
+        some (st s 475 (UInt256.ofNat 439 :: UInt256.ofNat 3072 :: UInt256.ofNat 2048 ::
           UInt256.ofNat ml :: UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
           mem AW) := by
   have hc := caps _ hcap
@@ -355,8 +355,8 @@ theorem run_e4 (s : State) (i el ml : Nat) (rest : List UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock e4Path
-      (st s 447 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
-        some (st s 454 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
+      (st s 439 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
+        some (st s 446 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
           (MachineState.writeBytes mem (MachineState.readPadded mem 0 ml) 3072) AW) := by
   have hc := caps _ hcap
   have h2 : ml < LIM := by simp only [LIM]; omega
@@ -369,8 +369,8 @@ theorem run_e3 (s : State) (i el ml : Nat) (rest : List UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock e3Path
-      (st s 454 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
-        some (st s 381 (UInt256.ofNat (i + 1) :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
+      (st s 446 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
+        some (st s 373 (UInt256.ofNat (i + 1) :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
           mem AW) := by
   have hc := caps _ hcap
   have hadd : UInt256.ofNat 1 + UInt256.ofNat i = UInt256.ofNat (i + 1) := by
@@ -382,8 +382,8 @@ theorem run_e9 (s : State) (i el ml : Nat) (rest : List UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock e9Path
-      (st s 462 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
-        some (st s 555 (UInt256.ofNat 479 :: UInt256.ofNat 8192 ::
+      (st s 454 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
+        some (st s 547 (UInt256.ofNat 471 :: UInt256.ofNat 8192 ::
           UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
           (MachineState.writeBytes mem (MachineState.readPadded mem 3072 ml) 0) AW) := by
   have hc := caps _ hcap
@@ -397,8 +397,8 @@ theorem run_e5 (s : State) (i el ml : Nat) (rest : List UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock e5Path
-      (st s 479 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
-        some (rt s 482 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
+      (st s 471 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
+        some (rt s 474 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
           mem AW (MachineState.readPadded mem 0 ml)) := by
   have hc := caps _ hcap
   have h2 : ml < LIM := by simp only [LIM]; omega
@@ -414,8 +414,8 @@ theorem run_mEntry (s : State) (ml : Nat) (ret x y k : UInt256) (rest : List UIn
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock mEntryPath
-      (st s 483 (ret :: x :: y :: k :: rest) mem AW) =
-        some (st s 492 (UInt256.ofNat 0 :: ret :: x :: y :: k :: rest)
+      (st s 475 (ret :: x :: y :: k :: rest) mem AW) =
+        some (st s 484 (UInt256.ofNat 0 :: ret :: x :: y :: k :: rest)
           (MachineState.writeBytes mem
             (MachineState.readPadded s.executionEnv.calldata
               s.executionEnv.calldata.size ml) 0) AW) := by
@@ -432,8 +432,8 @@ theorem run_mGuard_done (s : State) (j k : Nat) (ret x y : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock mGuardPath
-      (st s 492 (UInt256.ofNat j :: ret :: x :: y :: UInt256.ofNat k :: rest) mem AW) =
-        some (st s 548 (UInt256.ofNat j :: ret :: x :: y :: UInt256.ofNat k :: rest)
+      (st s 484 (UInt256.ofNat j :: ret :: x :: y :: UInt256.ofNat k :: rest) mem AW) =
+        some (st s 540 (UInt256.ofNat j :: ret :: x :: y :: UInt256.ofNat k :: rest)
           mem AW) := by
   have hc := caps _ hcap
   have hshl := shl3_ofNat k (by omega)
@@ -448,8 +448,8 @@ theorem run_mGuard_go (s : State) (j k : Nat) (ret x y : UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock mGuardPath
-      (st s 492 (UInt256.ofNat j :: ret :: x :: y :: UInt256.ofNat k :: rest) mem AW) =
-        some (st s 503 (UInt256.ofNat j :: ret :: x :: y :: UInt256.ofNat k :: rest)
+      (st s 484 (UInt256.ofNat j :: ret :: x :: y :: UInt256.ofNat k :: rest) mem AW) =
+        some (st s 495 (UInt256.ofNat j :: ret :: x :: y :: UInt256.ofNat k :: rest)
           mem AW) := by
   have hc := caps _ hcap
   have hshl := shl3_ofNat k (by omega)
@@ -463,8 +463,8 @@ theorem run_mDouble (s : State) (j : Nat) (rest : List UInt256) (mem : ByteArray
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock mDoublePath
-      (st s 503 (UInt256.ofNat j :: rest) mem AW) =
-        some (st s 555 (UInt256.ofNat 511 :: UInt256.ofNat 0 :: UInt256.ofNat j :: rest)
+      (st s 495 (UInt256.ofNat j :: rest) mem AW) =
+        some (st s 547 (UInt256.ofNat 503 :: UInt256.ofNat 0 :: UInt256.ofNat j :: rest)
           mem AW) := by
   have hc := caps _ hcap
   bigc_run [mDoublePath, hc, hcode, hrun, zero_lit]
@@ -475,8 +475,8 @@ theorem run_m2_skip (s : State) (j yb : Nat) (ret x k : UInt256) (rest : List UI
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock m2Path
-      (st s 511 (UInt256.ofNat j :: ret :: x :: UInt256.ofNat yb :: k :: rest) mem AW) =
-        some (st s 540 (UInt256.ofNat j :: ret :: x :: UInt256.ofNat yb :: k :: rest)
+      (st s 503 (UInt256.ofNat j :: ret :: x :: UInt256.ofNat yb :: k :: rest) mem AW) =
+        some (st s 532 (UInt256.ofNat j :: ret :: x :: UInt256.ofNat yb :: k :: rest)
           mem AW) := by
   have hc := caps _ hcap
   have hshr := shr3_ofNat j (by omega)
@@ -497,8 +497,8 @@ theorem run_m2_add (s : State) (j yb : Nat) (ret x k : UInt256) (rest : List UIn
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock m2Path
-      (st s 511 (UInt256.ofNat j :: ret :: x :: UInt256.ofNat yb :: k :: rest) mem AW) =
-        some (st s 532 (UInt256.ofNat j :: ret :: x :: UInt256.ofNat yb :: k :: rest)
+      (st s 503 (UInt256.ofNat j :: ret :: x :: UInt256.ofNat yb :: k :: rest) mem AW) =
+        some (st s 524 (UInt256.ofNat j :: ret :: x :: UInt256.ofNat yb :: k :: rest)
           mem AW) := by
   have hc := caps _ hcap
   have hshr := shr3_ofNat j (by omega)
@@ -518,8 +518,8 @@ theorem run_mAdd (s : State) (j : Nat) (ret x y k : UInt256) (rest : List UInt25
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock mAddPath
-      (st s 532 (UInt256.ofNat j :: ret :: x :: y :: k :: rest) mem AW) =
-        some (st s 555 (UInt256.ofNat 540 :: x :: UInt256.ofNat j :: ret :: x :: y :: k :: rest)
+      (st s 524 (UInt256.ofNat j :: ret :: x :: y :: k :: rest) mem AW) =
+        some (st s 547 (UInt256.ofNat 532 :: x :: UInt256.ofNat j :: ret :: x :: y :: k :: rest)
           mem AW) := by
   have hc := caps _ hcap
   bigc_run [mAddPath, hc, hcode, hrun]
@@ -529,8 +529,8 @@ theorem run_m3 (s : State) (j : Nat) (rest : List UInt256) (mem : ByteArray)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock m3Path
-      (st s 540 (UInt256.ofNat j :: rest) mem AW) =
-        some (st s 492 (UInt256.ofNat (j + 1) :: rest) mem AW) := by
+      (st s 532 (UInt256.ofNat j :: rest) mem AW) =
+        some (st s 484 (UInt256.ofNat (j + 1) :: rest) mem AW) := by
   have hc := caps _ hcap
   have hadd : UInt256.ofNat 1 + UInt256.ofNat j = UInt256.ofNat (j + 1) := by
     rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega), Nat.add_comm]
@@ -542,7 +542,7 @@ theorem run_m9 (s : State) (j retPc : Nat) (x y k : UInt256) (rest : List UInt25
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock m9Path
-      (st s 548 (UInt256.ofNat j :: UInt256.ofNat retPc :: x :: y :: k :: rest) mem AW) =
+      (st s 540 (UInt256.ofNat j :: UInt256.ofNat retPc :: x :: y :: k :: rest) mem AW) =
         some (st s retPc rest mem AW) := by
   have hc := caps _ hcap
   have h1 : retPc < LIM := by simp only [LIM]; omega
@@ -556,8 +556,8 @@ theorem run_aEntry (s : State) (ml : Nat) (ret src : UInt256) (rest : List UInt2
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock aEntryPath
-      (st s 555 (ret :: src :: rest) mem AW) =
-        some (st s 561 (UInt256.ofNat ml :: UInt256.ofNat 0 :: ret :: src :: rest) mem AW) := by
+      (st s 547 (ret :: src :: rest) mem AW) =
+        some (st s 553 (UInt256.ofNat ml :: UInt256.ofNat 0 :: ret :: src :: rest) mem AW) := by
   have hc := caps _ hcap
   have haw0 : MachineState.activeWordsAfter 289 9216 32 = 289 := aw_keep _ _ (by omega)
   bigc_run [aEntryPath, hc, hcode, hrun, zero_lit, hmsv, haw0]
@@ -572,8 +572,8 @@ theorem run_aLoop_back (s : State) (i src : Nat) (c ret : UInt256) (rest : List 
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock aLoopPath
-      (st s 561 (UInt256.ofNat i :: c :: ret :: UInt256.ofNat src :: rest) mem AW) =
-        some (st s 561 (UInt256.ofNat (i - 1) ::
+      (st s 553 (UInt256.ofNat i :: c :: ret :: UInt256.ofNat src :: rest) mem AW) =
+        some (st s 553 (UInt256.ofNat (i - 1) ::
           UInt256.shiftRight (addSum mem src (i - 1) c) (UInt256.ofNat 8) ::
           ret :: UInt256.ofNat src :: rest)
           (MachineState.writeBytes mem
@@ -598,8 +598,8 @@ theorem run_aLoop_exit (s : State) (src : Nat) (c ret : UInt256) (rest : List UI
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock aLoopPath
-      (st s 561 (UInt256.ofNat 1 :: c :: ret :: UInt256.ofNat src :: rest) mem AW) =
-        some (st s 591 (UInt256.ofNat 0 ::
+      (st s 553 (UInt256.ofNat 1 :: c :: ret :: UInt256.ofNat src :: rest) mem AW) =
+        some (st s 583 (UInt256.ofNat 0 ::
           UInt256.shiftRight (addSum mem src 0 c) (UInt256.ofNat 8) ::
           ret :: UInt256.ofNat src :: rest)
           (MachineState.writeBytes mem
@@ -622,8 +622,8 @@ theorem run_aExit (s : State) (ml : Nat) (c ret src : UInt256) (rest : List UInt
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock aExitPath
-      (st s 591 (UInt256.ofNat 0 :: c :: ret :: src :: rest) mem AW) =
-        some (st s 597 (UInt256.ofNat ml :: UInt256.ofNat 0 :: c :: ret :: src :: rest)
+      (st s 583 (UInt256.ofNat 0 :: c :: ret :: src :: rest) mem AW) =
+        some (st s 589 (UInt256.ofNat ml :: UInt256.ofNat 0 :: c :: ret :: src :: rest)
           mem AW) := by
   have hc := caps _ hcap
   have haw0 : MachineState.activeWordsAfter 289 9216 32 = 289 := aw_keep _ _ (by omega)
@@ -638,8 +638,8 @@ theorem run_sLoop_back (s : State) (i : Nat) (b c ret src : UInt256) (rest : Lis
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock sLoopPath
-      (st s 597 (UInt256.ofNat i :: b :: c :: ret :: src :: rest) mem AW) =
-        some (st s 597 (UInt256.ofNat (i - 1) ::
+      (st s 589 (UInt256.ofNat i :: b :: c :: ret :: src :: rest) mem AW) =
+        some (st s 589 (UInt256.ofNat (i - 1) ::
           UInt256.shiftRight (subDiff mem (i - 1) b) (UInt256.ofNat 255) ::
           c :: ret :: src :: rest)
           (MachineState.writeBytes mem
@@ -668,8 +668,8 @@ theorem run_sLoop_exit (s : State) (b c ret src : UInt256) (rest : List UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock sLoopPath
-      (st s 597 (UInt256.ofNat 1 :: b :: c :: ret :: src :: rest) mem AW) =
-        some (st s 634 (UInt256.ofNat 0 ::
+      (st s 589 (UInt256.ofNat 1 :: b :: c :: ret :: src :: rest) mem AW) =
+        some (st s 626 (UInt256.ofNat 0 ::
           UInt256.shiftRight (subDiff mem 0 b) (UInt256.ofNat 255) ::
           c :: ret :: src :: rest)
           (MachineState.writeBytes mem
@@ -694,8 +694,8 @@ theorem run_sExit_keep (s : State) (b c ret src : UInt256) (rest : List UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock sExitPath
-      (st s 634 (UInt256.ofNat 0 :: b :: c :: ret :: src :: rest) mem AW) =
-        some (st s 651 (ret :: src :: rest) mem AW) := by
+      (st s 626 (UInt256.ofNat 0 :: b :: c :: ret :: src :: rest) mem AW) =
+        some (st s 643 (ret :: src :: rest) mem AW) := by
   have hc := caps _ hcap
   bigc_run [sExitPath, hc, hcode, hrun, hkeep]
 
@@ -705,8 +705,8 @@ theorem run_sExit_copy (s : State) (b c ret src : UInt256) (rest : List UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock sExitPath
-      (st s 634 (UInt256.ofNat 0 :: b :: c :: ret :: src :: rest) mem AW) =
-        some (st s 642 (ret :: src :: rest) mem AW) := by
+      (st s 626 (UInt256.ofNat 0 :: b :: c :: ret :: src :: rest) mem AW) =
+        some (st s 634 (ret :: src :: rest) mem AW) := by
   have hc := caps _ hcap
   bigc_run [sExitPath, hc, hcode, hrun, hkeep]
 
@@ -716,8 +716,8 @@ theorem run_copy (s : State) (ml : Nat) (ret src : UInt256) (rest : List UInt256
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock copyPath
-      (st s 642 (ret :: src :: rest) mem AW) =
-        some (st s 651 (ret :: src :: rest)
+      (st s 634 (ret :: src :: rest) mem AW) =
+        some (st s 643 (ret :: src :: rest)
           (MachineState.writeBytes mem (MachineState.readPadded mem 4096 ml) 0) AW) := by
   have hc := caps _ hcap
   have h2 : ml < LIM := by simp only [LIM]; omega
@@ -732,7 +732,7 @@ theorem run_a3 (s : State) (retPc : Nat) (src : UInt256) (rest : List UInt256)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock a3Path
-      (st s 651 (UInt256.ofNat retPc :: src :: rest) mem AW) =
+      (st s 643 (UInt256.ofNat retPc :: src :: rest) mem AW) =
         some (st s retPc rest mem AW) := by
   have hc := caps _ hcap
   have h1 : retPc < LIM := by simp only [LIM]; omega

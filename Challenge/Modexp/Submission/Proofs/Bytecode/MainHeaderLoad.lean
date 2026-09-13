@@ -25,7 +25,7 @@ theorem run_headerLoad (input : ByteArray) :
   have hs1204 := Challenge.EvmProof.Word.succ_ofNat
     (n := 742) (by norm_num : 742 + 1 < 2 ^ 256)
   have ha1060 := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 1191) (b := 4) (by norm_num : 1191 + 4 < 2 ^ 256)
+    (a := 1183) (b := 4) (by norm_num : 1183 + 4 < 2 ^ 256)
   have h0 : (0 : UInt256).toNat = 0 := by decide
   have h32 : (32 : UInt256).toNat = 32 := by decide
   have h64 : (64 : UInt256).toNat = 64 := by decide

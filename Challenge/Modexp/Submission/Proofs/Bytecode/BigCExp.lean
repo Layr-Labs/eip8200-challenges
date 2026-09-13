@@ -39,9 +39,9 @@ theorem expLoop {s : State} (henv : Env s) (hcds : s.executionEnv.calldata.size 
       num mem 3072 ml ≤ num mem0 1024 ml →
       num mem 3072 ml % num mem0 1024 ml =
         num mem0 2048 ml ^ (num mem0 6144 el / 2 ^ d) % num mem0 1024 ml →
-      ∃ mem', Reach (st s 381 (UInt256.ofNat (8 * el - d) :: UInt256.ofNat el ::
+      ∃ mem', Reach (st s 373 (UInt256.ofNat (8 * el - d) :: UInt256.ofNat el ::
             UInt256.ofNat ml :: rest) mem AW)
-          (st s 462 (UInt256.ofNat (8 * el) :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
+          (st s 454 (UInt256.ofNat (8 * el) :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
             mem' AW) ∧
         MachineState.readWord mem' 9216 = UInt256.ofNat ml ∧
         (∀ a, ml ≤ a → (a < 3072 ∨ 5120 ≤ a) → bget mem' a = bget mem0 a) ∧
@@ -67,7 +67,7 @@ theorem expLoop {s : State} (henv : Env s) (hcds : s.executionEnv.calldata.size 
       hel (by omega) (lt_word (by omega)) henv.code henv.run)
     have r2 := reach_run henv (run_eSquare s (8 * el - (d + 1)) el ml rest mem (by omega)
       henv.code henv.run)
-    obtain ⟨mem1, r3, hv1, hf1⟩ := mulm henv hcds ml 3072 3072 ml 404
+    obtain ⟨mem1, r3, hv1, hf1⟩ := mulm henv hcds ml 3072 3072 ml 396
       (UInt256.ofNat (8 * el - (d + 1)) :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem
       (by simp; omega) hml1 hml hml (by norm_num) (Or.inl (by omega)) (by norm_num)
       (Or.inl (by omega)) (by norm_num) jump404 hmsv (by rw [hMm]; exact hM)
@@ -121,7 +121,7 @@ theorem expLoop {s : State} (henv : Env s) (hcds : s.executionEnv.calldata.size 
           1024 ml = num mem0 1024 ml := num_congr ml (fun i _ => hf1c _ (by omega) (by omega))
       have hX1c : num (MachineState.writeBytes mem1 (MachineState.readPadded mem1 0 ml) 3072)
           2048 ml = num mem0 2048 ml := num_congr ml (fun i _ => hf1c _ (by omega) (by omega))
-      obtain ⟨mem2, r6, hv2, hf2⟩ := mulm henv hcds ml 3072 2048 ml 447
+      obtain ⟨mem2, r6, hv2, hf2⟩ := mulm henv hcds ml 3072 2048 ml 439
         (UInt256.ofNat (8 * el - (d + 1)) :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
         (MachineState.writeBytes mem1 (MachineState.readPadded mem1 0 ml) 3072)
         (by simp; omega) hml1 hml hml (by norm_num) (Or.inl (by omega)) (by norm_num)

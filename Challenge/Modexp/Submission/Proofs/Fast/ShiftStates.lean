@@ -23,8 +23,8 @@ open Challenge.Modexp.Submission.Proofs.Fast
 abbrev outer := Exp.outer
 
 /-- Program counters of the appended routine. -/
-def pcDispatch : Nat := 2833
-def pcHit : Nat := 2848
+def pcDispatch : Nat := 2800
+def pcHit : Nat := 2815
 -- 3477, not ticket 4's 3454: the recogniser-miss JUMPDEST is instruction 2694 here (it was 2699),
 -- and this is the one pc in the table the regenerator could not rewrite, because 3454 has no image
 -- in the pc map -- R-ONE2 deleted the instruction it used to sit on, so the map row is empty and
@@ -32,40 +32,40 @@ def pcHit : Nat := 2848
 -- and `blk2889` is located there, so a stale 3454 makes `runLocatedBlock blk2889 (missState …)`
 -- return `none`.  Nothing but the build checked this def: it is a bare `Nat` with no tie to the
 -- artifact, unlike every `instructionPC`/`opAt`/`pushAt` fact around it.
-def pcMiss : Nat := 2877
-def pcAfterCsub0 : Nat := 2894
-def pcNegLoop : Nat := 2901
+def pcMiss : Nat := 2844
+def pcAfterCsub0 : Nat := 2861
+def pcNegLoop : Nat := 2868
 /-- The negation body after its store, before the exit test. -/
-def pcNegMid : Nat := 2917
-def pcNegDone : Nat := 2927
-def pcPreNewton : Nat := 2971
-def pcNewtonB : Nat := 2999
-def pcShiftLoop : Nat := 3045
-def pcShiftBody : Nat := 3052
-def pcEstimate : Nat := 3066
-def pcMacSetup : Nat := 3148
-def pcMacLoop : Nat := 3164
-def pcMid : Nat := 3329
+def pcNegMid : Nat := 2884
+def pcNegDone : Nat := 2894
+def pcPreNewton : Nat := 2938
+def pcNewtonB : Nat := 2966
+def pcShiftLoop : Nat := 3039
+def pcShiftBody : Nat := 3046
+def pcEstimate : Nat := 3060
+def pcMacSetup : Nat := 3142
+def pcMacLoop : Nat := 3158
+def pcMid : Nat := 3323
 /-- The limb-pass body after the pointer steps, before the exit test. -/
-def pcMacTail : Nat := 3320
-def pcAddLoop : Nat := 3378
-def pcAddInner : Nat := 3384
-def pcAddTail : Nat := 3427
+def pcMacTail : Nat := 3314
+def pcAddLoop : Nat := 3372
+def pcAddInner : Nat := 3378
+def pcAddTail : Nat := 3421
 /-- The add body after `OR`, before the pointer step and exit test. -/
-def pcAddMid : Nat := 3413
-def pcSubCheck : Nat := 3445
-def pcSubEntry : Nat := 3457
-def pcSubInner : Nat := 3463
-def pcSubTail : Nat := 3502
+def pcAddMid : Nat := 3407
+def pcSubCheck : Nat := 3439
+def pcSubEntry : Nat := 3451
+def pcSubInner : Nat := 3457
+def pcSubTail : Nat := 3496
 /-- The subtract body after `OR`, before the pointer step and exit test. -/
-def pcSubMid : Nat := 3487
-def pcCsubCall : Nat := 3359
+def pcSubMid : Nat := 3481
+def pcCsubCall : Nat := 3353
 /-- `UNC`: the middle block's jump target when `neg ||| TN ≠ 0`. -/
-def pcUnc : Nat := 3372
+def pcUnc : Nat := 3366
 /-- `CSUB(BASE)` returns straight to the shift loop head (`pcShiftLoop`); the call block
 already decremented the counter. -/
-def pcAfterCsub : Nat := 3045
-def pcShiftDone : Nat := 3516
+def pcAfterCsub : Nat := 3039
+def pcShiftDone : Nat := 3510
 
 /-- A state with the outer frame only. -/
 def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat) : State :=
@@ -129,7 +129,7 @@ def newtonBState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : Sta
 
 /-- The prologue state before storing the unrolled entry point. -/
 def cacheSetupState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  kState s mem 3028 n n bsize esize msize
+  kState s mem 2995 n n bsize esize msize
 
 /-- The shift loop head with `k` steps to go. -/
 def shiftLoopState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
@@ -162,7 +162,7 @@ def macLoopState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize
 /-- The limb frame before the cached-entry dispatch. -/
 def macDispatchState (s : State) (um : ByteArray) (q : UInt256)
     (n bsize esize msize k : Nat) : State :=
-  { macLoopState s um q n bsize esize msize k 0 with pc := UInt256.ofNat 3159 }
+  { macLoopState s um q n bsize esize msize k 0 with pc := UInt256.ofNat 3153 }
 
 /-- The middle block entry: the two spent pointers still on the stack. -/
 def midState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat) :

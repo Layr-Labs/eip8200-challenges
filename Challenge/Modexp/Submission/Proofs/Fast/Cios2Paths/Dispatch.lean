@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Fast.CiosInverseGuard
 import Challenge.Modexp.Submission.Proofs.Fast.Defs
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneSlice
 set_option warningAsError true
@@ -25,35 +26,23 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open WindowTwentyOneBinding
 
 def mulEntryProgram : List Instr :=
-  [.op .JUMPDEST, .push 2 3698]
+  [.op .JUMPDEST, .push 2 3731]
 
-def commonGuardProgram : List Instr :=
-  [.op .JUMPDEST,
-   .push 2 2688,
-   .op .MLOAD,
-   .op (.Dup ⟨0, by decide⟩),
-   .push 1 128,
-   .op .EQ,
-   .op (.Swap ⟨0, by decide⟩),
-   .push 2 256,
-   .op .EQ,
-   .op .OR,
-   .push 2 3561,
-   .op .JUMPI]
+def commonGuardProgram : List Instr := CiosInverseGuard.guardProgram
 
 def commonFallbackProgram : List Instr :=
-  [.op .POP, .push 2 1215, .op .JUMP]
+  [.op .POP, .push 2 1207, .op .JUMP]
 
-def mulEntry : Block Artifact.submissionArtifact .Osaka 3533 mulEntryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2628 2 3533 mulEntryProgram
+def mulEntry : Block Artifact.submissionArtifact .Osaka 3558 mulEntryProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2666 2 3558 mulEntryProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def commonGuard : Block Artifact.submissionArtifact .Osaka 3537 commonGuardProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2630 12 3537 commonGuardProgram
+def commonGuard : Block Artifact.submissionArtifact .Osaka 3562 commonGuardProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2668 17 3562 commonGuardProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def commonFallback : Block Artifact.submissionArtifact .Osaka 3556 commonFallbackProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2642 3 3556 commonFallbackProgram
+def commonFallback : Block Artifact.submissionArtifact .Osaka 3589 commonFallbackProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2685 3 3589 commonFallbackProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 end Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Dispatch

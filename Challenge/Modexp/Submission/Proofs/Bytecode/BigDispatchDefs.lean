@@ -47,14 +47,14 @@ def bigCheckComparePath :
 
 def bigCheckJumpPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 473 2 702, opAt 474 .JUMPI]
+  [pushAt 473 2 694, opAt 474 .JUMPI]
 
 def bigCheckPath := bigCheckExpPath ++ bigCheckModPath ++
   bigCheckComparePath ++ bigCheckJumpPath
 
 def bigTailFramePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 484 .JUMPDEST, pushAt 485 2 1202,
+  [opAt 484 .JUMPDEST, pushAt 485 2 1194,
    opAt 486 (.Dup ⟨1, by decide⟩), opAt 487 (.Dup ⟨3, by decide⟩)]
 
 def bigTailArgsPath :
@@ -64,33 +64,33 @@ def bigTailArgsPath :
 
 def bigTailJumpPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 492 2 258, opAt 493 .JUMP]
+  [pushAt 492 2 250, opAt 493 .JUMP]
 
 def bigTailPath := bigTailFramePath ++ bigTailArgsPath ++ bigTailJumpPath
 
 def bigExpOffsetState (input : ByteArray) : State :=
   { Main.headerState input with
-    pc := UInt256.ofNat 677
+    pc := UInt256.ofNat 669
     stack := [UInt256.ofNat (96 + baseSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (baseSize input)] }
 
 def bigOffsetsState (input : ByteArray) : State :=
   { Main.headerState input with
-    pc := UInt256.ofNat 680
+    pc := UInt256.ofNat 672
     stack := [UInt256.ofNat (96 + (baseSize input + exponentSize input)),
       UInt256.ofNat (96 + baseSize input), UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 def bigComparedState (input : ByteArray) : State :=
   { Main.headerState input with
-    pc := UInt256.ofNat 684
+    pc := UInt256.ofNat 676
     stack := [1, UInt256.ofNat (96 + (baseSize input + exponentSize input)),
       UInt256.ofNat (96 + baseSize input), UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 def bigCheckedState (input : ByteArray) : State :=
-  { Dispatch.wordCheckedState input with pc := UInt256.ofNat 702 }
+  { Dispatch.wordCheckedState input with pc := UInt256.ofNat 694 }
 
 def bigTailFrameState (input : ByteArray) : State :=
   let b := baseSize input
@@ -99,8 +99,8 @@ def bigTailFrameState (input : ByteArray) : State :=
   let expOff := 96 + b
   let modOff := expOff + e
   { Main.headerState input with
-    pc := UInt256.ofNat 708
-    stack := [UInt256.ofNat expOff, UInt256.ofNat modOff, UInt256.ofNat 1202,
+    pc := UInt256.ofNat 700
+    stack := [UInt256.ofNat expOff, UInt256.ofNat modOff, UInt256.ofNat 1194,
       UInt256.ofNat modOff, UInt256.ofNat expOff, UInt256.ofNat m,
       UInt256.ofNat e, UInt256.ofNat b] }
 
@@ -111,10 +111,10 @@ def bigTailArgsState (input : ByteArray) : State :=
   let expOff := 96 + b
   let modOff := expOff + e
   { Main.headerState input with
-    pc := UInt256.ofNat 713
+    pc := UInt256.ofNat 705
     stack := [UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
       UInt256.ofNat 96, UInt256.ofNat expOff, UInt256.ofNat modOff,
-      UInt256.ofNat 1202, UInt256.ofNat modOff, UInt256.ofNat expOff,
+      UInt256.ofNat 1194, UInt256.ofNat modOff, UInt256.ofNat expOff,
       UInt256.ofNat m, UInt256.ofNat e, UInt256.ofNat b] }
 
 /-- Calling-convention state at the first instruction of `modexpBig`. -/
@@ -125,22 +125,22 @@ def bigEntryState (input : ByteArray) : State :=
   let expOff := 96 + b
   let modOff := expOff + e
   { Main.headerState input with
-    pc := UInt256.ofNat 258
+    pc := UInt256.ofNat 250
     stack := [UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
       UInt256.ofNat 96, UInt256.ofNat expOff, UInt256.ofNat modOff,
-      UInt256.ofNat 1202, UInt256.ofNat modOff, UInt256.ofNat expOff,
+      UInt256.ofNat 1194, UInt256.ofNat modOff, UInt256.ofNat expOff,
       UInt256.ofNat m, UInt256.ofNat e, UInt256.ofNat b] }
 
 @[simp] theorem bigTailPCs (i : Nat)
     (hi : 484 ≤ i) (hii : i ≤ 493) :
     Artifact.submissionArtifact.instructionPC i =
-      ([702,703,706,707,708,710,711,712,713,716] : List Nat)[i - 484]! := by
+      ([694,695,698,699,700,702,703,704,705,708] : List Nat)[i - 484]! := by
   interval_cases i <;> decide
 
-theorem jump704 : Decode.isValidJumpDest submissionBytecode 258 = true :=
+theorem jump704 : Decode.isValidJumpDest submissionBytecode 250 = true :=
   Artifact.isValidJumpDest_index 175 (by rfl)
 
-theorem jump1268 : Decode.isValidJumpDest submissionBytecode 702 = true :=
+theorem jump1268 : Decode.isValidJumpDest submissionBytecode 694 = true :=
   Artifact.isValidJumpDest_index 484 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatch

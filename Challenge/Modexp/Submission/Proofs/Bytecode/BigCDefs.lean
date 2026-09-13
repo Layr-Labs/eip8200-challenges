@@ -95,14 +95,14 @@ def zLoopPath :
    opAt 221 .OR,
    opAt 222 (.Swap ⟨0, by decide⟩),
    opAt 223 (.Dup ⟨0, by decide⟩),
-   pushAt 224 2 307,
+   pushAt 224 2 299,
    opAt 225 .JUMPI]
 
 /-- pc 328..332 -/
 def zExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 226 .POP,
-   pushAt 227 2 338,
+   pushAt 227 2 330,
    opAt 228 .JUMPI]
 
 /-- pc 333..337 -/
@@ -124,8 +124,8 @@ def nzPath :
    opAt 238 (.Dup ⟨0, by decide⟩),
    pushAt 239 2 5120,
    pushAt 240 2 7168,
-   pushAt 241 2 361,
-   pushAt 242 2 483,
+   pushAt 241 2 353,
+   pushAt 242 2 475,
    opAt 243 .JUMP]
 
 /-- pc 361..380 -/
@@ -153,7 +153,7 @@ def eGuardPath :
    opAt 259 .SHL,
    opAt 260 (.Dup ⟨1, by decide⟩),
    opAt 261 .EQ,
-   pushAt 262 2 462,
+   pushAt 262 2 454,
    opAt 263 .JUMPI]
 
 /-- pc 392..403 -/
@@ -162,8 +162,8 @@ def eSquarePath :
   [opAt 264 (.Dup ⟨2, by decide⟩),
    pushAt 265 2 3072,
    opAt 266 (.Dup ⟨0, by decide⟩),
-   pushAt 267 2 404,
-   pushAt 268 2 483,
+   pushAt 267 2 396,
+   pushAt 268 2 475,
    opAt 269 .JUMP]
 
 /-- pc 404..432 -/
@@ -187,7 +187,7 @@ def e2Path :
    pushAt 285 1 255,
    opAt 286 .SHR,
    opAt 287 .ISZERO,
-   pushAt 288 2 454,
+   pushAt 288 2 446,
    opAt 289 .JUMPI]
 
 /-- pc 433..446 -/
@@ -196,8 +196,8 @@ def eMulPath :
   [opAt 290 (.Dup ⟨2, by decide⟩),
    pushAt 291 2 2048,
    pushAt 292 2 3072,
-   pushAt 293 2 447,
-   pushAt 294 2 483,
+   pushAt 293 2 439,
+   pushAt 294 2 475,
    opAt 295 .JUMP]
 
 /-- pc 447..453 -/
@@ -215,7 +215,7 @@ def e3Path :
   [opAt 301 .JUMPDEST,
    pushAt 302 1 1,
    opAt 303 .ADD,
-   pushAt 304 2 381,
+   pushAt 304 2 373,
    opAt 305 .JUMP]
 
 /-- pc 462..478 -/
@@ -227,8 +227,8 @@ def e9Path :
    pushAt 309 0 0,
    opAt 310 .MCOPY,
    pushAt 311 2 8192,
-   pushAt 312 2 479,
-   pushAt 313 2 555,
+   pushAt 312 2 471,
+   pushAt 313 2 547,
    opAt 314 .JUMP]
 
 /-- pc 479..482 -/
@@ -259,15 +259,15 @@ def mGuardPath :
    opAt 329 .SHL,
    opAt 330 (.Dup ⟨1, by decide⟩),
    opAt 331 .EQ,
-   pushAt 332 2 548,
+   pushAt 332 2 540,
    opAt 333 .JUMPI]
 
 /-- pc 503..510 -/
 def mDoublePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 334 0 0,
-   pushAt 335 2 511,
-   pushAt 336 2 555,
+   pushAt 335 2 503,
+   pushAt 336 2 547,
    opAt 337 .JUMP]
 
 /-- pc 511..531 -/
@@ -287,15 +287,15 @@ def m2Path :
    pushAt 349 1 255,
    opAt 350 .SHR,
    opAt 351 .ISZERO,
-   pushAt 352 2 540,
+   pushAt 352 2 532,
    opAt 353 .JUMPI]
 
 /-- pc 532..539 -/
 def mAddPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 354 (.Dup ⟨2, by decide⟩),
-   pushAt 355 2 540,
-   pushAt 356 2 555,
+   pushAt 355 2 532,
+   pushAt 356 2 547,
    opAt 357 .JUMP]
 
 /-- pc 540..547 -/
@@ -304,7 +304,7 @@ def m3Path :
   [opAt 358 .JUMPDEST,
    pushAt 359 1 1,
    opAt 360 .ADD,
-   pushAt 361 2 492,
+   pushAt 361 2 484,
    opAt 362 .JUMP]
 
 /-- pc 548..554 -/
@@ -354,7 +354,7 @@ def aLoopPath :
    opAt 396 (.Swap ⟨1, by decide⟩),
    opAt 397 .POP,
    opAt 398 (.Dup ⟨0, by decide⟩),
-   pushAt 399 2 561,
+   pushAt 399 2 553,
    opAt 400 .JUMPI]
 
 /-- pc 591..596 -/
@@ -396,7 +396,7 @@ def sLoopPath :
    opAt 430 (.Swap ⟨1, by decide⟩),
    opAt 431 .POP,
    opAt 432 (.Dup ⟨0, by decide⟩),
-   pushAt 433 2 597,
+   pushAt 433 2 589,
    opAt 434 .JUMPI]
 
 /-- pc 634..641 -/
@@ -406,7 +406,7 @@ def sExitPath :
    opAt 436 .ISZERO,
    opAt 437 .OR,
    opAt 438 .ISZERO,
-   pushAt 439 2 651,
+   pushAt 439 2 643,
    opAt 440 .JUMPI]
 
 /-- pc 642..650 -/
@@ -428,64 +428,64 @@ def a3Path :
 
 @[simp] theorem bigCPCs (i : Nat) (hi : 175 ≤ i) (hii : i ≤ 449) :
     Artifact.submissionArtifact.instructionPC i =
-      ([258, 259, 262, 263, 264, 265, 267, 268, 269, 272, 273, 275, 276, 277, 278, 279, 280, 281, 282, 284, 285, 288, 289, 290, 292, 295, 296, 297, 298, 300, 301, 304, 305, 306, 307, 308, 309, 310, 311, 312, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 327, 328, 329, 332, 333, 334, 337, 338, 339, 341, 342, 345, 346, 347, 348, 351, 354, 357, 360, 361, 362, 363, 366, 367, 368, 371, 372, 373, 376, 379, 380, 381, 382, 383, 385, 386, 387, 388, 391, 392, 393, 396, 397, 400, 403, 404, 405, 406, 407, 410, 411, 412, 414, 415, 418, 419, 420, 421, 423, 424, 425, 427, 428, 429, 432, 433, 434, 437, 440, 443, 446, 447, 448, 449, 450, 453, 454, 455, 457, 458, 461, 462, 463, 464, 467, 468, 469, 472, 475, 478, 479, 480, 481, 482, 483, 484, 487, 488, 489, 490, 491, 492, 493, 494, 496, 497, 498, 499, 502, 503, 504, 507, 510, 511, 512, 513, 515, 516, 517, 518, 519, 520, 522, 523, 524, 526, 527, 528, 531, 532, 533, 536, 539, 540, 541, 543, 544, 547, 548, 549, 550, 551, 552, 553, 554, 555, 556, 557, 560, 561, 562, 563, 564, 565, 566, 567, 568, 569, 570, 571, 572, 573, 574, 575, 576, 577, 578, 579, 580, 581, 583, 584, 585, 586, 587, 590, 591, 592, 593, 596, 597, 598, 599, 600, 601, 602, 605, 606, 607, 608, 609, 610, 611, 612, 613, 614, 615, 616, 617, 618, 619, 622, 623, 624, 626, 627, 628, 629, 630, 633, 634, 635, 636, 637, 638, 641, 642, 645, 646, 649, 650, 651, 652, 653, 654] : List Nat)[i - 175]! := by
+      ([250, 251, 254, 255, 256, 257, 259, 260, 261, 264, 265, 267, 268, 269, 270, 271, 272, 273, 274, 276, 277, 280, 281, 282, 284, 287, 288, 289, 290, 292, 293, 296, 297, 298, 299, 300, 301, 302, 303, 304, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 319, 320, 321, 324, 325, 326, 329, 330, 331, 333, 334, 337, 338, 339, 340, 343, 346, 349, 352, 353, 354, 355, 358, 359, 360, 363, 364, 365, 368, 371, 372, 373, 374, 375, 377, 378, 379, 380, 383, 384, 385, 388, 389, 392, 395, 396, 397, 398, 399, 402, 403, 404, 406, 407, 410, 411, 412, 413, 415, 416, 417, 419, 420, 421, 424, 425, 426, 429, 432, 435, 438, 439, 440, 441, 442, 445, 446, 447, 449, 450, 453, 454, 455, 456, 459, 460, 461, 464, 467, 470, 471, 472, 473, 474, 475, 476, 479, 480, 481, 482, 483, 484, 485, 486, 488, 489, 490, 491, 494, 495, 496, 499, 502, 503, 504, 505, 507, 508, 509, 510, 511, 512, 514, 515, 516, 518, 519, 520, 523, 524, 525, 528, 531, 532, 533, 535, 536, 539, 540, 541, 542, 543, 544, 545, 546, 547, 548, 549, 552, 553, 554, 555, 556, 557, 558, 559, 560, 561, 562, 563, 564, 565, 566, 567, 568, 569, 570, 571, 572, 573, 575, 576, 577, 578, 579, 582, 583, 584, 585, 588, 589, 590, 591, 592, 593, 594, 597, 598, 599, 600, 601, 602, 603, 604, 605, 606, 607, 608, 609, 610, 611, 614, 615, 616, 618, 619, 620, 621, 622, 625, 626, 627, 628, 629, 630, 633, 634, 637, 638, 641, 642, 643, 644, 645, 646] : List Nat)[i - 175]! := by
   interval_cases i <;> decide
 
-@[simp] theorem jump258 : Decode.isValidJumpDest submissionBytecode 258 = true :=
+@[simp] theorem jump258 : Decode.isValidJumpDest submissionBytecode 250 = true :=
   Artifact.isValidJumpDest_index 175 (by rfl)
 
-@[simp] theorem jump307 : Decode.isValidJumpDest submissionBytecode 307 = true :=
+@[simp] theorem jump307 : Decode.isValidJumpDest submissionBytecode 299 = true :=
   Artifact.isValidJumpDest_index 209 (by rfl)
 
-@[simp] theorem jump338 : Decode.isValidJumpDest submissionBytecode 338 = true :=
+@[simp] theorem jump338 : Decode.isValidJumpDest submissionBytecode 330 = true :=
   Artifact.isValidJumpDest_index 232 (by rfl)
 
-@[simp] theorem jump361 : Decode.isValidJumpDest submissionBytecode 361 = true :=
+@[simp] theorem jump361 : Decode.isValidJumpDest submissionBytecode 353 = true :=
   Artifact.isValidJumpDest_index 244 (by rfl)
 
-@[simp] theorem jump381 : Decode.isValidJumpDest submissionBytecode 381 = true :=
+@[simp] theorem jump381 : Decode.isValidJumpDest submissionBytecode 373 = true :=
   Artifact.isValidJumpDest_index 256 (by rfl)
 
-@[simp] theorem jump404 : Decode.isValidJumpDest submissionBytecode 404 = true :=
+@[simp] theorem jump404 : Decode.isValidJumpDest submissionBytecode 396 = true :=
   Artifact.isValidJumpDest_index 270 (by rfl)
 
-@[simp] theorem jump447 : Decode.isValidJumpDest submissionBytecode 447 = true :=
+@[simp] theorem jump447 : Decode.isValidJumpDest submissionBytecode 439 = true :=
   Artifact.isValidJumpDest_index 296 (by rfl)
 
-@[simp] theorem jump454 : Decode.isValidJumpDest submissionBytecode 454 = true :=
+@[simp] theorem jump454 : Decode.isValidJumpDest submissionBytecode 446 = true :=
   Artifact.isValidJumpDest_index 301 (by rfl)
 
-@[simp] theorem jump462 : Decode.isValidJumpDest submissionBytecode 462 = true :=
+@[simp] theorem jump462 : Decode.isValidJumpDest submissionBytecode 454 = true :=
   Artifact.isValidJumpDest_index 306 (by rfl)
 
-@[simp] theorem jump479 : Decode.isValidJumpDest submissionBytecode 479 = true :=
+@[simp] theorem jump479 : Decode.isValidJumpDest submissionBytecode 471 = true :=
   Artifact.isValidJumpDest_index 315 (by rfl)
 
-@[simp] theorem jump483 : Decode.isValidJumpDest submissionBytecode 483 = true :=
+@[simp] theorem jump483 : Decode.isValidJumpDest submissionBytecode 475 = true :=
   Artifact.isValidJumpDest_index 319 (by rfl)
 
-@[simp] theorem jump492 : Decode.isValidJumpDest submissionBytecode 492 = true :=
+@[simp] theorem jump492 : Decode.isValidJumpDest submissionBytecode 484 = true :=
   Artifact.isValidJumpDest_index 326 (by rfl)
 
-@[simp] theorem jump511 : Decode.isValidJumpDest submissionBytecode 511 = true :=
+@[simp] theorem jump511 : Decode.isValidJumpDest submissionBytecode 503 = true :=
   Artifact.isValidJumpDest_index 338 (by rfl)
 
-@[simp] theorem jump540 : Decode.isValidJumpDest submissionBytecode 540 = true :=
+@[simp] theorem jump540 : Decode.isValidJumpDest submissionBytecode 532 = true :=
   Artifact.isValidJumpDest_index 358 (by rfl)
 
-@[simp] theorem jump548 : Decode.isValidJumpDest submissionBytecode 548 = true :=
+@[simp] theorem jump548 : Decode.isValidJumpDest submissionBytecode 540 = true :=
   Artifact.isValidJumpDest_index 363 (by rfl)
 
-@[simp] theorem jump555 : Decode.isValidJumpDest submissionBytecode 555 = true :=
+@[simp] theorem jump555 : Decode.isValidJumpDest submissionBytecode 547 = true :=
   Artifact.isValidJumpDest_index 370 (by rfl)
 
-@[simp] theorem jump561 : Decode.isValidJumpDest submissionBytecode 561 = true :=
+@[simp] theorem jump561 : Decode.isValidJumpDest submissionBytecode 553 = true :=
   Artifact.isValidJumpDest_index 374 (by rfl)
 
-@[simp] theorem jump597 : Decode.isValidJumpDest submissionBytecode 597 = true :=
+@[simp] theorem jump597 : Decode.isValidJumpDest submissionBytecode 589 = true :=
   Artifact.isValidJumpDest_index 405 (by rfl)
 
-@[simp] theorem jump651 : Decode.isValidJumpDest submissionBytecode 651 = true :=
+@[simp] theorem jump651 : Decode.isValidJumpDest submissionBytecode 643 = true :=
   Artifact.isValidJumpDest_index 446 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigC

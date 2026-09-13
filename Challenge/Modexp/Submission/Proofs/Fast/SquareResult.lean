@@ -269,23 +269,27 @@ theorem represents_zeroed_stage (s : State) (mem : ByteArray) (n a : Nat) (hn : 
 
 /-- The memory a whole `SQUARE(2048) → 2048` call leaves behind. -/
 def sqMem (s : State) (mem : ByteArray) (n : Nat) : ByteArray :=
-  if n = 4 ∨ n = 8 then
+  if eligible mem n then
     Csub.csResultMemory (sqRowsCarry (mpZeroed s (inputMemory mem 512 n) n) n n) n 512
   else CarryResult.monproMem s mem 512 512 n 512
 
-theorem sqMem_of_fast (s : State) (mem : ByteArray) (n : Nat) (h : n = 4 ∨ n = 8) :
+theorem sqMem_of_fast (s : State) (mem : ByteArray) (n : Nat) (h : eligible mem n) :
     sqMem s mem n =
       Csub.csResultMemory (sqRowsCarry (mpZeroed s (inputMemory mem 512 n) n) n n) n 512 := by
   unfold sqMem
   rw [if_pos h]
 
-theorem sqMem_of_not_fast (s : State) (mem : ByteArray) (n : Nat) (h : ¬(n = 4 ∨ n = 8)) :
+theorem sqMem_of_not_fast (s : State) (mem : ByteArray) (n : Nat) (h : ¬ eligible mem n) :
     sqMem s mem n = Monpro.monproMem s mem 512 512 n 512 := by
-  unfold sqMem CarryResult.monproMem CarryResult.selectedRows inputMemory Monpro.monproMem
-  rw [if_neg h, if_neg h, if_neg h]
+  rw [sqMem, if_neg h, CarryResult.monproMem, inputMemory, if_neg h]
+  have hz : ¬ eligible (mpZeroed s mem n) n := by
+    intro he
+    exact h ((eligible_zeroed s mem n (by rcases he.1 with rfl | rfl <;> omega)).1 he)
+  rw [CarryResult.selectedRows, if_neg hz]
+  rfl
 
 /-- The fast-path call ends with exactly this memory (the `CSUB` return state). -/
-theorem csReturnedState_memory_sqMem (s : State) (mem : ByteArray) (n : Nat) (h : n = 4 ∨ n = 8)
+theorem csReturnedState_memory_sqMem (s : State) (mem : ByteArray) (n : Nat) (h : eligible mem n)
     (ret : UInt256) (rest : List UInt256) :
     (Csub.csReturnedState s (sqRowsCarry (mpZeroed s (inputMemory mem 512 n) n) n n) n n
       (UInt256.ofNat 512) ret rest).memory = sqMem s mem n := by
@@ -305,8 +309,8 @@ theorem sqMem_represents (s : State) (mem : ByteArray) (p a mm : Nat)
   unfold sqMem
   split
   · let prepared := inputMemory mem 512 (p + 2)
-    have hfast : p + 2 = 4 ∨ p + 2 = 8 := by assumption
-    have hn8 : p + 2 ≤ 8 := by omega
+    have hfast : eligible mem (p + 2) := by assumption
+    have hn8 : p + 2 ≤ 8 := by rcases hfast.1 with h | h <;> omega
     have ha' : Model.FastRepresents prepared 2368 (p + 2) a := by
       simpa only [prepared, inputMemory, if_pos hfast] using represents_stage mem (p + 2) a ha
     have hm' : Model.FastRepresents prepared 0 (p + 2) mm :=

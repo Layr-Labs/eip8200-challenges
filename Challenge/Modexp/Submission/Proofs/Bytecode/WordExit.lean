@@ -51,7 +51,7 @@ def expFinishTailPath :
    opAt 172 (.Dup ⟨5, by decide⟩), pushAt 173 0 0, opAt 174 .RETURN]
 
 def expFinishDispatchState (input : ByteArray) (acc base : UInt256) : State :=
-  { expLoopState input (exponentSize input) acc base with pc := UInt256.ofNat 242 }
+  { expLoopState input (exponentSize input) acc base with pc := UInt256.ofNat 234 }
 
 def outputShift (input : ByteArray) : UInt256 :=
   UInt256.shiftLeft
@@ -68,7 +68,7 @@ def wordFinalState (input : ByteArray) (acc base : UInt256) : State :=
   let start := expLoopState input (exponentSize input) acc base
   let storedWords := start.activeWordsAfterUInt256 0 32
   { start with
-    pc := UInt256.ofNat 257
+    pc := UInt256.ofNat 249
     stack := [acc, base, UInt256.ofNat (modulusValue input),
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
@@ -84,11 +84,11 @@ def wordFinalState (input : ByteArray) (acc base : UInt256) : State :=
 @[simp] private theorem exitPCs (i : Nat)
     (hi : 161 ≤ i) (hii : i ≤ 174) :
     Artifact.submissionArtifact.instructionPC i =
-      ([242,243,244,245,246,248,249,251,252,253,254,255,256,257] : List Nat)[i - 161]! := by
+      ([234,235,236,237,238,240,241,243,244,245,246,247,248,249] : List Nat)[i - 161]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump669 :
-    Decode.isValidJumpDest submissionBytecode 242 = true :=
+    Decode.isValidJumpDest submissionBytecode 234 = true :=
   Artifact.isValidJumpDest_index 161 (by rfl)
 
 set_option linter.unusedSimpArgs false in
@@ -104,8 +104,8 @@ theorem run_expFinishGuard (input : ByteArray) (acc base : UInt256)
   have heq : UInt256.eq (UInt256.ofNat (exponentSize input))
       (UInt256.ofNat (exponentSize input)) = UInt256.ofNat 1 := by
     simp [UInt256.eq]
-  have h669 : (242 : UInt256).toNat = 242 := by decide
-  have h669Word : (242 : UInt256) = UInt256.ofNat 242 := by decide
+  have h669 : (234 : UInt256).toNat = 234 := by decide
+  have h669Word : (234 : UInt256) = UInt256.ofNat 234 := by decide
   simp (config := { maxSteps := 150000 })
     [expGuardPath, Word.opAt, Word.pushAt, Word.wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
