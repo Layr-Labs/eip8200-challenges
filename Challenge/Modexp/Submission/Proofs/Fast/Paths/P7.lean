@@ -14,11 +14,11 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 def blk1369 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 809 .JUMPDEST,
-   pushAt 810 1 1,
-   opAt 811 (.Swap ⟨0, by decide⟩),
-   opAt 812 .SUB,
+   pushAt 810 0 0,
+   opAt 811 .NOT,
+   opAt 812 .ADD,
    opAt 813 (.Dup ⟨0, by decide⟩),
-   pushAt 814 2 1191,
+   pushAt 814 3 1191,
    opAt 815 .JUMPI]
 
 /-- Instructions 1376..1508, pc 1984..2065. -/
