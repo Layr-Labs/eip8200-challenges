@@ -109,7 +109,7 @@ theorem sum_inputs_junk (mode : Nat) (hm : mode < 9) (l q : CryptoLane)
       (packCrypto l q).d message (key mode (word (pack kl.toBitVec kr.toBitVec)))
     let a := (Paired144WordSum.scalarSum (StaggerBoolean.leftGroup mode) l.a l.b l.c l.d wl kl).toBitVec
     let b := (Paired144WordSum.scalarSum (StaggerBoolean.rightGroup mode) q.a q.b q.c q.d wr kr).toBitVec
-    (jl < 2 ^ 35 →
+    (jl < 2 ^ 32 →
       Paired144CompactInput.compact (bits x) = BitVec.ofNat 256 a.toNat + (BitVec.ofNat 256 b.toNat <<< 72)) ∧
       normalize (bits x) = pack a b := by
   dsimp only
@@ -125,7 +125,7 @@ theorem t_of_crypto_junk (mode r s : Nat) (hm : mode < 9)
     (hr0 : 5≤r) (hr : r≤15) (hs0 : 5≤s) (hs : s≤15)
     (wl wr kl kr : UInt32) (l q : CryptoLane) (message : UInt256) (jl jr : Nat)
     (hjl : jl < 2 ^ 64) (hjr : jr < 2 ^ 64)
-    (hcompact : Paired144WordRound.usesCompact r s → jl < 2 ^ 35)
+    (hcompact : Paired144WordRound.usesCompact r s → jl < 2 ^ 32)
     (hmsg : bits message = pack wl.toBitVec wr.toBitVec + StaggerRound.junk jl jr) :
     t mode r s message (key mode (word (pack kl.toBitVec kr.toBitVec))) (packCrypto l q) =
       word (pack
@@ -144,7 +144,7 @@ theorem step_of_crypto_junk (mode r s : Nat) (hm : mode < 9)
     (hr0 : 5≤r) (hr : r≤15) (hs0 : 5≤s) (hs : s≤15)
     (wl wr kl kr : UInt32) (l q : CryptoLane) (message : UInt256) (jl jr : Nat)
     (hjl : jl < 2 ^ 64) (hjr : jr < 2 ^ 64)
-    (hcompact : Paired144WordRound.usesCompact r s → jl < 2 ^ 35)
+    (hcompact : Paired144WordRound.usesCompact r s → jl < 2 ^ 32)
     (hmsg : bits message = pack wl.toBitVec wr.toBitVec + StaggerRound.junk jl jr) :
     step mode r s message (key mode (word (pack kl.toBitVec kr.toBitVec))) (packCrypto l q) =
       packCrypto (cryptoStep (StaggerBoolean.leftGroup mode) r wl kl l)

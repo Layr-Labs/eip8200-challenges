@@ -1,6 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedScheduleLift
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80RawCommon
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80SiteCommon
 set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000

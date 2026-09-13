@@ -47,10 +47,18 @@ theorem run_checkEntry (input : ByteArray)
   have hpushzero : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hfullWordMul : PatternedSwar.M * UInt256.ofNat 97 =
       KnownInputData.fullWord := by decide
+  have hacczero : reverseAcc input 0 = tailDiff input := by
+    have hz : loopAcc input 0 = 0 := by
+      simpa only [loopAcc, referenceWord,
+        show UInt256.ofNat 0 = (0 : UInt256) from rfl] using hstackZero
+    simp only [reverseAcc, hz]
+    apply Word.word_ext
+    simp only [Word.word_toNat_lor]
+    simp
   simp (config := { maxSteps := 1000000 })
     [hpc3278, hpc3279, hpc3280, hpc3281, hpc3282, hpushzero, hfullWordMul, CompactGuardConstants.repeated_one_ofNat, RepeatedByteWord.ascii_a, checkEntryPath, opAt, pushAt, wfOp, sizeMatched, atPC, loopState,
-    loopAcc, referenceWord, href, hzero, hfalse, hcond, hstack, hcondStack,
-    hstackZero, hzeroFalse,
+    hacczero, tailDiff, referenceWord, href, hzero, hfalse, hcond, hstack, hcondStack,
+    hstackZero, hzeroFalse, List.exchange, List.getElem?_cons_zero,
     Challenge.EvmProof.DataStepper.runLocatedBlock, Challenge.EvmProof.DataStepper.runLocated,
     Challenge.EvmProof.DataStepper.runInstr,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
