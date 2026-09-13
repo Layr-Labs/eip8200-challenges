@@ -101,6 +101,61 @@ theorem step_of_crypto (mode r s : Nat) (hm : mode < 9)
       Paired144WordCrypto.wordCRotate_of_crypto l.c q.c]
   rfl
 
+theorem sum_inputs_junk (mode : Nat) (hm : mode < 9) (l q : CryptoLane)
+    (wl wr kl kr : UInt32) (message : UInt256) (jl jr : Nat)
+    (hjl : jl < 2 ^ 64) (hjr : jr < 2 ^ 64)
+    (hmsg : bits message = pack wl.toBitVec wr.toBitVec + StaggerRound.junk jl jr) :
+    let x := sum mode (packCrypto l q).a (packCrypto l q).b (packCrypto l q).c
+      (packCrypto l q).d message (key mode (word (pack kl.toBitVec kr.toBitVec)))
+    let a := (Paired144WordSum.scalarSum (StaggerBoolean.leftGroup mode) l.a l.b l.c l.d wl kl).toBitVec
+    let b := (Paired144WordSum.scalarSum (StaggerBoolean.rightGroup mode) q.a q.b q.c q.d wr kr).toBitVec
+    (jl < 2 ^ 32 →
+      Paired144CompactInput.compact (bits x) = BitVec.ofNat 256 a.toNat + (BitVec.ofNat 256 b.toNat <<< 72)) ∧
+      normalize (bits x) = pack a b := by
+  dsimp only
+  rw [bits_sum, hmsg]
+  simp only [packCrypto, bits_word]
+  simpa only [PairedLaneRoundSemantic.scalarSum, Paired144WordSum.scalarSum,
+    UInt32.toBitVec_add, PairedLaneCryptoBridge.crypto_f_toBitVec] using
+    StaggerRound.rawSum_inputs_junk mode hm l.a.toBitVec q.a.toBitVec l.b.toBitVec q.b.toBitVec
+      l.c.toBitVec q.c.toBitVec l.d.toBitVec q.d.toBitVec wl.toBitVec wr.toBitVec
+      kl.toBitVec kr.toBitVec jl jr hjl hjr
+
+theorem t_of_crypto_junk (mode r s : Nat) (hm : mode < 9)
+    (hr0 : 5≤r) (hr : r≤15) (hs0 : 5≤s) (hs : s≤15)
+    (wl wr kl kr : UInt32) (l q : CryptoLane) (message : UInt256) (jl jr : Nat)
+    (hjl : jl < 2 ^ 64) (hjr : jr < 2 ^ 64)
+    (hcompact : Paired144WordRound.usesCompact r s → jl < 2 ^ 32)
+    (hmsg : bits message = pack wl.toBitVec wr.toBitVec + StaggerRound.junk jl jr) :
+    t mode r s message (key mode (word (pack kl.toBitVec kr.toBitVec))) (packCrypto l q) =
+      word (pack
+        (Crypto.Ripemd160.rotl32 (Paired144WordSum.scalarSum (StaggerBoolean.leftGroup mode) l.a l.b l.c l.d wl kl) r + l.e).toBitVec
+        (Crypto.Ripemd160.rotl32 (Paired144WordSum.scalarSum (StaggerBoolean.rightGroup mode) q.a q.b q.c q.d wr kr) s + q.e).toBitVec) := by
+  apply bits_injective
+  simp only [t,bits_land,bits_add,pairWord,bits_word,←normalize_eq_and]
+  rw [show bits (packCrypto l q).e = pack l.e.toBitVec q.e.toBitVec from rfl]
+  have hinput := sum_inputs_junk mode hm l q wl wr kl kr message jl jr hjl hjr hmsg
+  have h := Paired144WordRotation.normalize_rotate_add_of _ _ _ l.e.toBitVec q.e.toBitVec r s
+    hr0 hr hs0 hs (fun hu => hinput.1 (hcompact hu)) hinput.2
+  simpa only [UInt32.toBitVec_add,crypto_rotl_toBitVec _ r (by omega) (by omega),
+    crypto_rotl_toBitVec _ s (by omega) (by omega)] using h
+
+theorem step_of_crypto_junk (mode r s : Nat) (hm : mode < 9)
+    (hr0 : 5≤r) (hr : r≤15) (hs0 : 5≤s) (hs : s≤15)
+    (wl wr kl kr : UInt32) (l q : CryptoLane) (message : UInt256) (jl jr : Nat)
+    (hjl : jl < 2 ^ 64) (hjr : jr < 2 ^ 64)
+    (hcompact : Paired144WordRound.usesCompact r s → jl < 2 ^ 32)
+    (hmsg : bits message = pack wl.toBitVec wr.toBitVec + StaggerRound.junk jl jr) :
+    step mode r s message (key mode (word (pack kl.toBitVec kr.toBitVec))) (packCrypto l q) =
+      packCrypto (cryptoStep (StaggerBoolean.leftGroup mode) r wl kl l)
+        (cryptoStep (StaggerBoolean.rightGroup mode) s wr kr q) := by
+  unfold step
+  rw [t_of_crypto_junk mode r s hm hr0 hr hs0 hs wl wr kl kr l q message jl jr hjl hjr hcompact hmsg,
+    show UInt256.land (wordShift (packCrypto l q).c 28) pairWord = _ from
+      Paired144WordCrypto.wordCRotate_of_crypto l.c q.c]
+  rfl
+
+#print axioms step_of_crypto_junk
 #print axioms bits_raw
 #print axioms bits_key
 #print axioms bits_sum

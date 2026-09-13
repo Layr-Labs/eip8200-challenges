@@ -61,6 +61,49 @@ theorem read_slot_low (memory : ByteArray) (words : Nat → UInt256)
       show (2:Nat)^144 % 2^32 = 0 by norm_num, Nat.mul_zero, Nat.add_zero,
       Nat.zero_mod, Nat.mod_eq_of_lt (hwords _ (slots_lt _ hj))] using hm
 
+/-- Words may carry dead bits above bit 32, as long as they stay below `2 ^ 112`: every
+round read still returns the two words verbatim, one per 144-bit half. -/
+theorem read_round_wide (memory : ByteArray) (words : Nat → UInt256)
+    (r : Nat) (hr : r < 77) (hwords : ∀ i, i < 16 → (words i).toNat < 2 ^ 112) :
+    (MachineState.readWord (resultMemory memory words) (18 * pairIndices[r]!)).toNat =
+      (words Crypto.Ripemd160.r[r]!).toNat + (words Crypto.Ripemd160.rP[r + 3]!).toNat * 2 ^ 144 := by
+  obtain ⟨hpos, hlt, hleft, hright⟩ := layout_valid ⟨r, hr⟩
+  change 1 ≤ pairIndices[r]! at hpos
+  change pairIndices[r]! < 61 at hlt
+  have h := read_pair_wide memory (tableWords words) 0 61 pairIndices[r]!
+    (by omega) (by omega)
+    (by have := hwords _ (slots_lt _ hlt); unfold tableWords; omega)
+    (hwords _ (slots_lt _ (by omega)))
+  simpa only [resultMemory, tableWords, hleft, hright] using h
+
+theorem read_slot_low_wide (memory : ByteArray) (words : Nat → UInt256)
+    (j : Nat) (hj : j < 61) (hwords : ∀ i, i < 16 → (words i).toNat < 2 ^ 112) :
+    (MachineState.readWord (resultMemory memory words) (18 * j)).toNat % 2 ^ 32 =
+      (words slots[j]!).toNat % 2 ^ 32 := by
+  by_cases hz : j = 0
+  · subst j
+    change (MachineState.readWord
+      (PairedScheduleMemory.writeWord (storeDescending memory (tableWords words) 1 60)
+        0 (words slots[0]!)) 0).toNat % 2 ^ 32 = _
+    rw [PairedScheduleMemory.read_writeWord]
+  · have h := read_pair_wide memory (tableWords words) 0 61 j (by omega) (by omega)
+      (by have := hwords _ (slots_lt _ hj); unfold tableWords; omega)
+      (hwords _ (slots_lt _ (by omega)))
+    unfold resultMemory
+    rw [h]
+    simp only [tableWords]
+    omega
+
+/-- Slot 0 is written last, so the first memory word is exactly the word in slot 0. -/
+theorem read_zero (memory : ByteArray) (words : Nat → UInt256) :
+    MachineState.readWord (resultMemory memory words) 0 = words slots[0]! := by
+  change MachineState.readWord
+    (PairedScheduleMemory.writeWord (storeDescending memory (tableWords words) 1 60)
+      0 (words slots[0]!)) 0 = _
+  exact PairedScheduleMemory.read_writeWord _ _ _
+
+#print axioms read_round_wide
+#print axioms read_slot_low_wide
 #print axioms layout_valid
 #print axioms read_round
 #print axioms resultMemory_size

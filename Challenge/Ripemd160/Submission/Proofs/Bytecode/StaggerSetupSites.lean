@@ -102,11 +102,12 @@ def gasSteps_normal (s : State) (ret : UInt256) (p : Nat) (rest : List UInt256)
     (hmask : rest.head? = some PairedMask32Cache.maskWord)
     (hstack : rest.length ≤ 896) (hrun : s.halt = .Running)
     (hp : 1120 ≤ p) (hbound : p + 64 < 2 ^ 256)
+    (hlow : (MachineState.readWord s.memory 0).toNat < 2 ^ 32)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 489, stack := UInt256.ofNat p :: ret :: rest}
-      {s with pc := UInt256.ofNat 975, stack := ret :: rest, memory := StaggerTableLayout.resultMemory s.memory (PairedScheduleData.extractedWord s.memory p), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat p)} := by
+      {s with pc := UInt256.ofNat 975, stack := ret :: rest, memory := StaggerTableLayout.resultMemory s.memory (StaggerScratch.dirtyWord s.memory p), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat p)} := by
   cases rest with
   | nil => simp at hmask
   | cons mask tailRest =>
@@ -114,7 +115,7 @@ def gasSteps_normal (s : State) (ret : UInt256) (p : Nat) (rest : List UInt256)
     subst mask
     simp only [List.length_cons] at hstack
     apply normal_gasSteps_of_raw {s with pc := UInt256.ofNat 489, stack := UInt256.ofNat p :: ret :: PairedMask32Cache.maskWord :: tailRest} _ hcode hfork hrun hnp normal_pc.symm
-    have h := DeferredNormalSchedule.run_normal s (UInt256.ofNat 488) ret p tailRest (by omega) hrun hp hbound
+    have h := DeferredNormalSchedule.run_normal s (UInt256.ofNat 488) ret p tailRest (by omega) hrun hp hbound hlow
     have hfull : DeferredNormalSchedule.normalTemplate = .op .JUMPDEST :: actualNormalTemplate := by rfl
     have hend : pcAfter (UInt256.ofNat 488) DeferredNormalSchedule.normalTemplate = UInt256.ofNat 975 := by decide
     rw [hend, hfull] at h

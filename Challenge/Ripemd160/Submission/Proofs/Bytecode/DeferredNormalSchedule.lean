@@ -18,10 +18,11 @@ def normalTemplate : List Instr := ((DeferredNormalInitial.cachedInitial ++ Defe
 
 theorem run_normal (s : State) (pc returnPC : UInt256) (p : Nat) (rest : List UInt256)
     (hstack : rest.length ≤ 896) (hrun : s.halt = .Running)
-    (hp : 1120 ≤ p) (hbound : p + 64 < 2 ^ 256) :
+    (hp : 1120 ≤ p) (hbound : p + 64 < 2 ^ 256)
+    (hlow : (MachineState.readWord s.memory 0).toNat < 2 ^ 32) :
     runInstrSeq normalTemplate (scheduleEntry s pc (UInt256.ofNat p) returnPC (maskWord :: rest)) =
-      some {s with pc := pcAfter pc normalTemplate, stack := returnPC :: maskWord :: rest, memory := StaggerTableLayout.resultMemory s.memory (PairedScheduleData.extractedWord s.memory p), activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
-  let words := PairedScheduleData.extractedWord s.memory p
+      some {s with pc := pcAfter pc normalTemplate, stack := returnPC :: maskWord :: rest, memory := StaggerTableLayout.resultMemory s.memory (StaggerScratch.dirtyWord s.memory p), activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
+  let words := StaggerScratch.dirtyWord s.memory p
   let scratch := StaggerScratch.scratchMemory s.memory
     (PairedScheduleData.reversedWord (MachineState.readWord s.memory p))
     (PairedScheduleData.reversedWord (MachineState.readWord s.memory (p + 32)))
@@ -37,8 +38,10 @@ theorem run_normal (s : State) (pc returnPC : UInt256) (p : Nat) (rest : List UI
     (MachineState.readWord s.memory p) (MachineState.readWord s.memory (p + 32)) returnPC rest (by omega) hrun (by omega)
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
   have h3 := StaggerNormal.run_pool s2 (pcAfter (pcAfter pc DeferredNormalInitial.cachedInitial) DeferredNormalEndian.template) (returnPC :: maskWord :: rest) (by simp; omega) hrun (by omega)
-  have hpool : StaggerNormal.poolStack (StaggerScratch.poolWord scratch) = StaggerNormal.poolStack words := by
-    simp (discharger := decide) only [StaggerNormal.poolStack, scratch, words, StaggerScratch.poolWord_eq_extracted]
+  have hpool : StaggerNormal.poolStack (StaggerScratch.poolWordD scratch) = StaggerNormal.poolStack words := by
+    have hD : ∀ i, i < 16 → StaggerScratch.poolWordD scratch i = words i :=
+      fun i hi => StaggerScratch.poolWordD_eq_dirty s.memory p i hi hlow
+    simp (discharger := decide) only [StaggerNormal.poolStack, hD]
   rw [show s2.memory = scratch by rfl, hpool] at h3
   have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
   have h4 := StaggerNormal.run_stores s2

@@ -103,7 +103,7 @@ private theorem readWord_encoded (value : UInt256) :
   exact Memory.bytesToBigEndianNat_natToBytesPadded _ _
     (by exact value.val.isLt)
 
-private theorem bytesToNatPadded_congrOffset (a b : ByteArray) (startA startB width : Nat)
+theorem bytesToNatPadded_congrOffset (a b : ByteArray) (startA startB width : Nat)
     (h : ∀ i, i < width → a[startA + i]?.getD 0 = b[startB + i]?.getD 0) :
     Precompile.bytesToNatPadded a startA width = Precompile.bytesToNatPadded b startB width := by
   unfold Precompile.bytesToNatPadded
@@ -148,6 +148,40 @@ theorem read_pair (memory : ByteArray) (words : Nat → UInt256)
   norm_num only
   omega
 
+/-- The same read with words wider than 32 bits: the next lower slot overwrites all but the
+low 144 bits of a word, and the read window keeps the low 112 bits of that lower word. -/
+theorem read_pair_wide (memory : ByteArray) (words : Nat → UInt256)
+    (first count j : Nat) (hfirst : first < j) (hj : j < first + count)
+    (hlo : (words j).toNat < 2 ^ 144) (hhi : (words (j - 1)).toNat < 2 ^ 112) :
+    (MachineState.readWord (storeDescending memory words first count) (18 * j)).toNat =
+      (words j).toNat + (words (j - 1)).toNat * 2 ^ 144 := by
+  rw [Bytes.readWord_toNat]
+  have hp := Bytes.bytesToNatPadded_add (storeDescending memory words first count) (18 * j) 14 18
+  change Precompile.bytesToNatPadded (storeDescending memory words first count) (18 * j) 32 = _
+  rw [show 32 = 14 + 18 by rfl, hp]
+  have hupper : Precompile.bytesToNatPadded (storeDescending memory words first count) (18 * j) 14 =
+      Precompile.bytesToNatPadded (Data.Bytes.natToBytesPadded (words (j - 1)).toNat 32) 18 14 := by
+    apply bytesToNatPadded_congrOffset
+    intro k hk
+    rw [getD_pair _ _ _ _ _ _ hfirst hj (by omega), if_pos hk]
+  have hlower : Precompile.bytesToNatPadded (storeDescending memory words first count) (18 * j + 14) 18 =
+      Precompile.bytesToNatPadded (Data.Bytes.natToBytesPadded (words j).toNat 32) 14 18 := by
+    apply bytesToNatPadded_congrOffset
+    intro k hk
+    have h := getD_pair memory words first count j (14 + k) hfirst hj (by omega)
+    rw [if_neg (by omega : ¬14 + k < 14)] at h
+    simpa only [← Nat.add_assoc] using h
+  rw [hupper, hlower]
+  have hupperNat := readWord_mod_pow (Data.Bytes.natToBytesPadded (words (j - 1)).toNat 32) 0 14 (by omega)
+  have hlowerNat := readWord_mod_pow (Data.Bytes.natToBytesPadded (words j).toNat 32) 0 18 (by omega)
+  rw [readWord_encoded] at hupperNat hlowerNat
+  norm_num only at hupperNat hlowerNat
+  rw [← hupperNat, ← hlowerNat]
+  rw [Nat.mod_eq_of_lt (by omega), Nat.mod_eq_of_lt (by omega)]
+  norm_num only
+  omega
+
+#print axioms read_pair_wide
 #print axioms read_pair
 
 theorem storeDescending_size (memory : ByteArray) (words : Nat → UInt256)

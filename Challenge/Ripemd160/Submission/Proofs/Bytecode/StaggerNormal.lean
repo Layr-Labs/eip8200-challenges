@@ -17,15 +17,16 @@ def poolStack (words : Nat → UInt256) : List UInt256 :=
   [ words 3, words 9, words 8, words 1, words 2, words 15, words 7, words 10, words 13, words 14, words 11, words 5, words 12, words 0, words 4, words 6 ]
 def poolInput : StaggerRaw.Input := ⟨UInt256.ofNat 4294967295, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
 theorem pool_output (memory : ByteArray) (rho : List UInt256) :
-    StaggerRawNormalPool.outputStack memory poolInput rho = poolStack (StaggerScratch.poolWord memory) ++ rho := by
-  simp only [StaggerRawNormalPool.outputStack, poolInput, poolStack, StaggerScratch.poolWord,
-    Word.mask32, Word.land_comm]
-  rfl
+    StaggerRawNormalPool.outputStack memory poolInput rho = poolStack (StaggerScratch.poolWordD memory) ++ rho := by
+  simp (config := {decide := true}) only [StaggerRawNormalPool.outputStack, poolInput, poolStack,
+    StaggerScratch.poolWordD, StaggerScratch.poolWord, Word.mask32, Word.land_comm, ite_true,
+    ite_false, Nat.reduceMul]
+  try rfl
 
 theorem run_pool (s : State) (pc : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat) :
     runInstrSeq StaggerRawNormalPool.template {s with pc := pc, stack := UInt256.ofNat 4294967295 :: rho} =
-      some {s with pc := pcAfter pc StaggerRawNormalPool.template, stack := poolStack (StaggerScratch.poolWord s.memory) ++ rho} := by
+      some {s with pc := pcAfter pc StaggerRawNormalPool.template, stack := poolStack (StaggerScratch.poolWordD s.memory) ++ rho} := by
   have h := StaggerRawNormalPool.run_actual s pc poolInput rho hs hr ha
   rw [pool_output] at h
   exact h

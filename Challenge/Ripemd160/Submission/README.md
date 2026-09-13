@@ -1,6 +1,6 @@
 # RIPEMD-160: paired rotations and direct round45 key
 
-The candidate measures 689685 gas / 5253 bytes on the unchanged local 49-vector corpus. SHA-256: `bfcda085b610ff3fe0c09106d7d11b173fac95c544cbc92288f3f2707072f937`. The current public physical-key/paired-rotation source is `6c8b38301e26a34315ed784f4401d3dc15dda209`, 691313 gas / 5224 bytes. The paired improvement is 1628 gas, with a 29-byte increase. The local proof base is the frozen entry-fallthrough source `a6d1c72e856a72886feff4aff9213c7d56ca376c`, 692583 gas / 5262 bytes.
+The candidate measures 689685 gas / 5253 bytes on the unchanged local 49-vector corpus. SHA-256: `d13010f95dc649ed9718f743eb2014e90cee73098e92dc096a045a97eb7e5b44`. The current public physical-key/paired-rotation source is `6c8b38301e26a34315ed784f4401d3dc15dda209`, 691313 gas / 5224 bytes. The paired improvement is 1628 gas, with a 29-byte increase. The local proof base is the frozen entry-fallthrough source `a6d1c72e856a72886feff4aff9213c7d56ca376c`, 692583 gas / 5262 bytes.
 
 The compressor incorporates ercumentyildirim's eleven additional compact paired rotations and physical key transitions from public submission `17d661c2-06b0-4fd8-901f-8187141d8118`. The message reads are translated to the retained Euler table layout. Both lane masks are synthesized from the existing lower mask. Round45 keeps its direct literal key, avoiding the thirteen-gas-per-block synthesis cost while fitting the original protected encoding limit. Gas-preserving associative/commutative expression encodings bind to exact raw execution theorems.
 

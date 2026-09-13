@@ -70,6 +70,19 @@ theorem normalize_rotate_add (x : UInt256) (a b e f : BitVec 32) (r s : Nat)
   · rw [bits_legacy x a b r s hr0 hr hs0 hs h hn]
     exact Paired144LegacyRotation.normalize_rotate_add a b e f r s hr0 hr hs0 hs
 
+/-- The compact rotation reads `compact`; the legacy rotation reads only `normalize`. -/
+theorem normalize_rotate_add_of (x : UInt256) (a b e f : BitVec 32) (r s : Nat)
+    (hr0 : 5≤r) (hr : r≤15) (hs0 : 5≤s) (hs : s≤15)
+    (hc : usesCompact r s → Paired144CompactInput.compact (bits x) =
+      BitVec.ofNat 256 a.toNat + (BitVec.ofNat 256 b.toNat <<<72))
+    (hn : normalize (bits x)=pack a b) :
+    normalize (bits (wordRotate x r s) + pack e f) =
+      pack (a.rotateLeft r+e) (b.rotateLeft s+f) := by
+  by_cases h : usesCompact r s
+  · exact normalize_rotate_add x a b e f r s hr0 hr hs0 hs (hc h) hn
+  · rw [bits_legacy x a b r s hr0 hr hs0 hs h hn]
+    exact Paired144LegacyRotation.normalize_rotate_add a b e f r s hr0 hr hs0 hs
+
 theorem normalize_wordShift28 (a b : BitVec 32) :
     normalize (bits (wordShift (word (pack a b)) 28)) =
       pack (a.rotateLeft 10) (b.rotateLeft 10) := by

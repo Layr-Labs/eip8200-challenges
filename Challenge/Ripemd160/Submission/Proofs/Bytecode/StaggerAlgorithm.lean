@@ -41,14 +41,30 @@ theorem mode_valid (i : Fin 77) : mode i.val < 9 ∧
       StaggerBoolean.rightGroup (mode j.val) = 4 - (j.val + 3) / 16 := by decide
   exact h i
 
+/-- The two schedule words stored without their 32-bit mask. -/
+def Dirty (k : Nat) : Prop := k = 1 ∨ k = 2
+instance (k : Nat) : Decidable (Dirty k) := inferInstanceAs (Decidable (_ ∨ _))
+
+/-- Dead bits allowed above the lanes of round `i`'s message word: none for a clean word,
+up to 64 bits in each half, and at most 32 in the lower half when the round rotates through
+`compact` (which never looks above bit 32 of the upper half). -/
+def JunkBound (i jl jr : Nat) : Prop :=
+  jl < 2 ^ 64 ∧ jr < 2 ^ 64 ∧
+    (Paired144WordRound.usesCompact Crypto.Ripemd160.s[i]! Crypto.Ripemd160.sP[i + 3]! →
+      jl < 2 ^ 32) ∧
+    (¬ Dirty Crypto.Ripemd160.r[i]! → jl = 0) ∧ (¬ Dirty Crypto.Ripemd160.rP[i + 3]! → jr = 0)
+
+def MessageWord (message : UInt256) (words : Nat → UInt32) (i : Nat) : Prop :=
+  ∃ jl jr, JunkBound i jl jr ∧ bits message =
+    (pack (words Crypto.Ripemd160.r[i]!).toBitVec (words Crypto.Ripemd160.rP[i + 3]!).toBitVec) +
+      StaggerRound.junk jl jr
+
 def MessageReady (message : Nat → UInt256) (words : Nat → UInt32) (count : Nat) : Prop :=
-  ∀ i < count, bits (message i) =
-    (pack (words Crypto.Ripemd160.r[i]!).toBitVec (words Crypto.Ripemd160.rP[i + 3]!).toBitVec)
+  ∀ i < count, MessageWord (message i) words i
 
 theorem step_of_crypto (words : Nat → UInt32) (i : Nat) (hi : i < 77)
     (message : UInt256) (l q : CryptoLane)
-    (hm : bits message =
-      (pack (words Crypto.Ripemd160.r[i]!).toBitVec (words Crypto.Ripemd160.rP[i + 3]!).toBitVec)) :
+    (hm : MessageWord message words i) :
     step i message (packCrypto l q) =
       packCrypto
         (cryptoStep (i / 16) Crypto.Ripemd160.s[i]!
@@ -58,9 +74,10 @@ theorem step_of_crypto (words : Nat → UInt32) (i : Nat) (hi : i < 77)
   obtain ⟨hl0, hl, _, _⟩ := rotation_bounds ⟨i, by omega⟩
   obtain ⟨_, _, hr0, hr⟩ := rotation_bounds ⟨i + 3, by omega⟩
   obtain ⟨hmode, hleft, hright⟩ := mode_valid ⟨i, hi⟩
-  have h := StaggerWord.step_of_crypto (mode i) _ _ hmode hl0 hl hr0 hr
+  obtain ⟨jl, jr, ⟨hjl, hjr, hc, -, -⟩, hmsg⟩ := hm
+  have h := StaggerWord.step_of_crypto_junk (mode i) _ _ hmode hl0 hl hr0 hr
     (words Crypto.Ripemd160.r[i]!) (words Crypto.Ripemd160.rP[i + 3]!)
-    Crypto.Ripemd160.K[i / 16]! Crypto.Ripemd160.KP[(i + 3) / 16]! l q message hm
+    Crypto.Ripemd160.K[i / 16]! Crypto.Ripemd160.KP[(i + 3) / 16]! l q message jl jr hjl hjr hc hmsg
   simpa only [step, physicalKey, key, packed32, hleft, hright] using h
 
 theorem fold_crypto (message : Nat → UInt256) (words : Nat → UInt32)

@@ -92,6 +92,121 @@ theorem erase_scratch (memory : ByteArray) (words : Nat → UInt256)
       rw [if_neg (by omega), if_neg (by omega)]
 
 
+/-! ## Words 1 and 2 without their mask
+
+The loader stores schedule words 1 and 2 straight from the unaligned load.  While the first
+memory word below the scratch block is a clean 32-bit word (the previous table's slot 0, or
+untouched memory), those loads see zero bytes above the lower scratch word, so they carry
+only the one or two schedule words that precede them. -/
+
+def dirtyWord (memory : ByteArray) (p i : Nat) : UInt256 :=
+  if i = 1 ∨ i = 2 then PairedScheduleData.extractedWordG memory p i
+  else PairedScheduleData.extractedWord memory p i
+
+def poolWordD (memory : ByteArray) (i : Nat) : UInt256 :=
+  if i = 1 ∨ i = 2 then MachineState.readWord memory (4 * i) else poolWord memory i
+
+private theorem extractedWordG_one_lt (memory : ByteArray) (p : Nat) :
+    (PairedScheduleData.extractedWordG memory p 1).toNat < 2 ^ 64 := by
+  have h : (PairedScheduleData.extractedWordG memory p 1).toNat =
+      (UInt256.shiftRight (PairedScheduleData.reversedWord (MachineState.readWord memory p))
+        (UInt256.ofNat 192)).toNat := by
+    simp only [PairedScheduleData.extractedWordG, PairedScheduleData.chunkG,
+      DenseScheduleMemory.DensePacked.shr, Nat.add_zero]
+    norm_num
+  rw [h, Word.shiftRight_toNat _ (by decide), Nat.shiftRight_eq_div_pow]
+  have hx : (PairedScheduleData.reversedWord (MachineState.readWord memory p)).toNat < 2 ^ 256 :=
+    (PairedScheduleData.reversedWord (MachineState.readWord memory p)).val.isLt
+  apply Nat.div_lt_of_lt_mul
+  rw [← Nat.pow_add]
+  exact hx
+
+theorem dirtyWord_split (memory : ByteArray) (p k : Nat) :
+    (dirtyWord memory p k).toNat =
+        (PairedScheduleData.extractedWord memory p k).toNat +
+          (dirtyWord memory p k).toNat / 2 ^ 32 * 2 ^ 32 ∧
+      (dirtyWord memory p k).toNat / 2 ^ 32 < 2 ^ 64 ∧
+      (k ≠ 2 → (dirtyWord memory p k).toNat / 2 ^ 32 < 2 ^ 32) ∧
+      (¬ (k = 1 ∨ k = 2) → (dirtyWord memory p k).toNat / 2 ^ 32 = 0) := by
+  have he := PairedScheduleData.extractedWord_bound memory p k
+  by_cases hd : k = 1 ∨ k = 2
+  · rw [dirtyWord, if_pos hd]
+    obtain ⟨heq, hmod, hlt⟩ := PairedScheduleData.extractedWordG_eq_add memory p k
+    have h1 : k ≠ 2 → (PairedScheduleData.extractedWordG memory p k).toNat < 2 ^ 64 := by
+      intro h2
+      have hk : k = 1 := by omega
+      subst hk
+      exact extractedWordG_one_lt memory p
+    refine ⟨?_, ?_, fun h2 => ?_, fun h => absurd hd h⟩
+    · simp only [Nat.reducePow] at *; omega
+    · simp only [Nat.reducePow] at *; omega
+    · have := h1 h2; simp only [Nat.reducePow] at *; omega
+  · rw [dirtyWord, if_neg hd]
+    simp only [Nat.reducePow] at *
+    refine ⟨by omega, by omega, fun _ => by omega, fun _ => by omega⟩
+
+/-- Bytes below the lower scratch word are those of the original memory. -/
+private theorem scratch_prefix (memory : ByteArray) (low high : UInt256) (a n : Nat)
+    (h : a + n ≤ 28) :
+    Precompile.bytesToNatPadded (scratchMemory memory low high) a n =
+      Precompile.bytesToNatPadded memory a n := by
+  apply StaggerTableMemory.bytesToNatPadded_congrOffset
+  intro i hi
+  simp only [scratchMemory, writeWord, MachineState.writeBytes_getElem?_getD,
+    YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
+  rw [if_neg (by omega), if_neg (by omega)]
+
+/-- A clean first word leaves bytes `[0,28)` zero. -/
+private theorem low_zero (memory : ByteArray)
+    (hlow : (MachineState.readWord memory 0).toNat < 2 ^ 32) (a : Nat) (ha : a ≤ 28) :
+    Precompile.bytesToNatPadded memory a (28 - a) = 0 := by
+  rw [Bytes.readWord_toNat] at hlow
+  have h32 := Bytes.bytesToNatPadded_add memory 0 28 4
+  have h28 := Bytes.bytesToNatPadded_add memory 0 a (28 - a)
+  rw [show a + (28 - a) = 28 by omega, Nat.zero_add] at h28
+  rw [show (28 : Nat) + 4 = 32 by rfl] at h32
+  have hpos : 0 < 256 ^ (28 - a) := Nat.pow_pos (by decide)
+  have hb : Precompile.bytesToNatPadded memory 0 28 = 0 := by
+    simp only [Nat.reducePow] at *
+    omega
+  rw [hb] at h28
+  omega
+
+private theorem scratch_window (memory : ByteArray) (low high : UInt256)
+    (hlow : (MachineState.readWord memory 0).toNat < 2 ^ 32) (i : Nat) (hi : i = 1 ∨ i = 2) :
+    (MachineState.readWord (scratchMemory memory low high) (4 * i)).toNat =
+      low.toNat >>> (32 * (7 - i)) := by
+  have hsplit := Bytes.bytesToNatPadded_add (scratchMemory memory low high) (4 * i) (28 - 4 * i)
+    (4 + 4 * i)
+  rw [show 28 - 4 * i + (4 + 4 * i) = 32 by omega, show 4 * i + (28 - 4 * i) = 28 by omega,
+    scratch_prefix memory low high (4 * i) (28 - 4 * i) (by omega),
+    low_zero memory hlow (4 * i) (by omega), Nat.zero_mul, Nat.zero_add] at hsplit
+  rw [Bytes.readWord_toNat, hsplit,
+    ← Bytes.readWord_shift_toNat (scratchMemory memory low high) 28 (4 + 4 * i) (by omega),
+    scratch_read_low]
+  congr 1
+  omega
+
+theorem poolWordD_eq_dirty (memory : ByteArray) (p i : Nat) (hi : i < 16)
+    (hlow : (MachineState.readWord memory 0).toNat < 2 ^ 32) :
+    poolWordD (scratchMemory memory
+        (PairedScheduleData.reversedWord (MachineState.readWord memory p))
+        (PairedScheduleData.reversedWord (MachineState.readWord memory (p + 32)))) i =
+      dirtyWord memory p i := by
+  by_cases hd : i = 1 ∨ i = 2
+  · rw [poolWordD, if_pos hd, dirtyWord, if_pos hd]
+    apply Word.word_ext
+    rw [scratch_window memory _ _ hlow i hd]
+    have hmod : i % 8 = i := by omega
+    have hdiv : i / 8 = 0 := by omega
+    simp only [PairedScheduleData.extractedWordG, PairedScheduleData.chunkG, hmod, hdiv,
+      if_pos hd, Nat.mul_zero, Nat.add_zero, DenseScheduleMemory.DensePacked.shr]
+    rw [Word.shiftRight_toNat _ (by omega)]
+  · rw [poolWordD, if_neg hd, dirtyWord, if_neg hd]
+    exact poolWord_eq_extracted memory p i hi
+
+#print axioms dirtyWord_split
+#print axioms poolWordD_eq_dirty
 #print axioms poolWord_eq_extracted
 #print axioms erase_scratch
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerScratch

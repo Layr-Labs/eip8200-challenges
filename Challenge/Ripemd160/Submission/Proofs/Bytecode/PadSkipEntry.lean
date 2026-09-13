@@ -149,6 +149,56 @@ theorem entryState_blockAt (input : ByteArray) (hfit : CalldataFits input) :
   · have hi' : i < Padding.paddedLength input.size / 64 := hi
     exact PaddedBlockBridge.padReturned_blockIndexAt input hfit i hi'
 
+/-! ## The first memory word at block-loop entry
+
+Only the calldata copy, the sentinel and the length footer are stored before the block
+loop, all at or above the message offset, so the first memory word is still zero. -/
+
+private theorem byteFrom_zero_beyond (bs : ByteArray) (i : Nat) (h : bs.size ≤ i) :
+    YulSemantics.EVM.byteFrom bs.toList i = 0 := by
+  unfold YulSemantics.EVM.byteFrom
+  rw [YulEvmCompiler.ByteArray.toList_eq_data, List.getD_eq_getElem?_getD,
+    Array.getElem?_toList]
+  exact Challenge.EvmProof.Memory.getElem?_getD_eq_zero_of_size_le bs i h
+
+private theorem bytesToNatPadded_zero_beyond (bs : ByteArray) (off : Nat)
+    (hoff : bs.size ≤ off) : ∀ n : Nat,
+    EvmSemantics.EVM.Precompile.bytesToNatPadded bs off n = 0
+  | 0 => Challenge.EvmProof.Bytes.bytesToNatPadded_zero_width bs off
+  | n + 1 => by
+      rw [Challenge.EvmProof.Bytes.bytesToNatPadded_succ,
+        bytesToNatPadded_zero_beyond bs off hoff n,
+        byteFrom_zero_beyond bs (off + n) (by omega)]
+      rfl
+
+private theorem base_readWord (input : ByteArray) :
+    MachineState.readWord (PaddingTrace.padLengthReady input).memory 0 = 0 := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Bytes.readWord_toNat,
+    bytesToNatPadded_zero_beyond _ 0 (by change 0 ≤ 0; exact Nat.le_refl 0) 32]
+  rfl
+
+theorem entryState_lowClear (input : ByteArray) (hfit : CalldataFits input) :
+    (MachineState.readWord (entryState input).memory 0).toNat < 2 ^ 32 := by
+  have hbase := base_readWord input
+  unfold entryState PaddingTrace.entryState
+  split
+  · change (MachineState.readWord (MachineState.writeBytes (PaddingTrace.padLengthReady input).memory
+      (MachineState.readPadded input 0 input.size) Padding.messageOffset) 0).toNat < _
+    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _
+      (Or.inl (by unfold Padding.messageOffset; omega)), hbase]
+    decide
+  · rw [PaddingTrace.padReturned_readWord input hfit 0 (by unfold Padding.messageOffset; omega)]
+    unfold Padding.paddedMemory Padding.sentinelMemory Padding.copiedMemory
+    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _
+        (Or.inl (by unfold Padding.messageOffset; have := (paddedLength_ge input.size).2; omega)),
+      Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _
+        (Or.inl (by unfold Padding.messageOffset; omega)),
+      Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _
+        (Or.inl (by unfold Padding.messageOffset; omega)), hbase]
+    decide
+
+#print axioms entryState_lowClear
 #print axioms entryState_active
 #print axioms entryState_allocated
 #print axioms entryState_blockAt
