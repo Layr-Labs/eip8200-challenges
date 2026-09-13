@@ -7,30 +7,30 @@ set_option linter.unusedSimpArgs false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPadJump
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate PairedHelperBooleanTrace
-def jumpTemplate : List Instr := PadJump.template 909
+def jumpTemplate : List Instr := PadJump.template 902
 theorem jump_slice :
-    (Artifact.submissionArtifact.instructions.drop 3773).take jumpTemplate.length = jumpTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3753).take jumpTemplate.length = jumpTemplate := by rfl
 def jumpSite : GenericRoundSite Artifact.submissionArtifact .Osaka jumpTemplate :=
-  StackSiteBuilder.ofSlice jumpTemplate 3773 jump_slice
-    (by change 3773 + jumpTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice jumpTemplate 3753 jump_slice
+    (by change 3753 + jumpTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := jumpTemplate) (by decide))
     (by decide)
-theorem jump_pc : jumpSite.startPC = UInt256.ofNat 4802 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3773) = UInt256.ofNat 4802
+theorem jump_pc : jumpSite.startPC = UInt256.ofNat 4836 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3753) = UInt256.ofNat 4836
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem jump_advances : ∀ instruction ∈ jumpTemplate.dropLast, PadLift.Advances instruction := by
   apply PadLift.advancesAll_sound
   decide
 
 theorem valid_merge (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
-    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 909).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 575 = 909 := by
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 902).toNat = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 570 = 902 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 575 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 570 (by rfl)
   rw [hpc] at h
-  change Decode.isValidJumpDest s.executionEnv.code 909 = true
+  change Decode.isValidJumpDest s.executionEnv.code 902 = true
   rw [hcode]
   exact h
 
@@ -39,10 +39,10 @@ def gasSteps_jump (s : State) (rho : List UInt256) (hstack : rho.length ≤ 1022
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4802, stack := rho}
-      {s with pc := UInt256.ofNat 909, stack := rho} := by
-  apply PadLift.gasSteps_of_raw jumpSite {s with pc := UInt256.ofNat 4802, stack := rho} _ hcode hfork hrun hnp jump_pc.symm jump_advances
-  exact PadJump.run_template s (UInt256.ofNat 4802) rho 909 hstack hrun (valid_merge s hcode)
+    GasSteps {s with pc := UInt256.ofNat 4836, stack := rho}
+      {s with pc := UInt256.ofNat 902, stack := rho} := by
+  apply PadLift.gasSteps_of_raw jumpSite {s with pc := UInt256.ofNat 4836, stack := rho} _ hcode hfork hrun hnp jump_pc.symm jump_advances
+  exact PadJump.run_template s (UInt256.ofNat 4836) rho 902 hstack hrun (valid_merge s hcode)
 
 #print axioms gasSteps_jump
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPadJump
