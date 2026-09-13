@@ -43,7 +43,7 @@ def pcNewtonB : Nat := 2959
 def pcShiftLoop : Nat := 3032
 def pcShiftBody : Nat := 3039
 def pcEstimate : Nat := 3053
-def pcMacSetup : Nat := 3132
+def pcMacSetup : Nat := 3134
 def pcMacLoop : Nat := 3149
 def pcMid : Nat := 3314
 /-- The limb-pass body after the pointer steps, before the exit test. -/
@@ -162,7 +162,7 @@ def macLoopState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize
 /-- The limb frame before the cached-entry dispatch. -/
 def macDispatchState (s : State) (um : ByteArray) (q : UInt256)
     (n bsize esize msize k : Nat) : State :=
-  { macLoopState s um q n bsize esize msize k 0 with pc := UInt256.ofNat 3142 }
+  { macLoopState s um q n bsize esize msize k 0 with pc := UInt256.ofNat 3144 }
 
 /-- The middle block entry: the two spent pointers still on the stack. -/
 def midState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat) :
