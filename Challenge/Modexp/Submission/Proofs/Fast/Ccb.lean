@@ -28,8 +28,8 @@ attribute [local simp] List.getElem?_cons_zero
 
 /-- The multiply entry `JUMPDEST` at pc 4018 (0x0f50, instruction 3189), the target of every `MONPRO` call. -/
 theorem jumpDestMulEntry :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3549 = true :=
-  Artifact.isValidJumpDest_index 2659 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3547 = true :=
+  Artifact.isValidJumpDest_index 2657 (by rfl)
 
 /-! ## States at the block boundaries -/
 
@@ -48,7 +48,7 @@ def loopState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
 /-- The `MONPRO` call, pc 2048, with the frame `[px, px, px, 2433]` pushed. -/
 def mpCallState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3549
+  { s with pc := UInt256.ofNat 3547
            stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
                      UInt256.ofNat 1645] ++ loopStack px k ret rest
            memory := mem }
@@ -92,8 +92,8 @@ theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have h2888 : (1645 : UInt256) = UInt256.ofNat 1645 := by decide
-  have h1939 : (3549 : UInt256) = UInt256.ofNat 3549 := by decide
-  have h1939Nat : (UInt256.ofNat 3549).toNat = 3549 := by decide
+  have h1939 : (3547 : UInt256) = UInt256.ofNat 3547 := by decide
+  have h1939Nat : (UInt256.ofNat 3547).toNat = 3547 := by decide
   simp (config := { maxSteps := 400000 }) [blk1751, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
