@@ -34,7 +34,7 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
   have gj := StaggerPersistentLoopSites.gasSteps_join s (PaddingTrace.padFrame input)
     (by simp) (PadSkipEntry.entryState_halt input) (PadSkipEntry.entryState_code input)
     (PadSkipEntry.entryState_fork input) (PadSkipEntry.entryState_noPrecompile input)
-  have gs : s = {s with pc := UInt256.ofNat 599, stack := PaddingTrace.padFrame input} :=
+  have gs : s = {s with pc := UInt256.ofNat 596, stack := PaddingTrace.padFrame input} :=
     PaddingTrace.entryState_eta input
   rw [← gs] at gj
   have g := gp.trans gj

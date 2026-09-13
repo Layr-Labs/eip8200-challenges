@@ -14,7 +14,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerNormal
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerTableMemory StaggerTableLayout
 def poolStack (words : Nat → UInt256) : List UInt256 :=
-  [ words 0, words 9, words 3, words 8, words 2, words 7, words 10, words 13, words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6 ]
+  [ words 3, words 9, words 8, words 1, words 2, words 15, words 7, words 10, words 13, words 14, words 11, words 5, words 12, words 0, words 4, words 6 ]
 def poolInput : StaggerRaw.Input := ⟨UInt256.ofNat 4294967295, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
 theorem pool_output (memory : ByteArray) (rho : List UInt256) :
     StaggerRawNormalPool.outputStack memory poolInput rho = poolStack (StaggerScratch.poolWord memory) ++ rho := by
@@ -23,16 +23,16 @@ theorem pool_output (memory : ByteArray) (rho : List UInt256) :
   rfl
 
 theorem run_pool (s : State) (pc : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat) :
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat) :
     runInstrSeq StaggerRawNormalPool.template {s with pc := pc, stack := UInt256.ofNat 4294967295 :: rho} =
       some {s with pc := pcAfter pc StaggerRawNormalPool.template, stack := poolStack (StaggerScratch.poolWord s.memory) ++ rho} := by
   have h := StaggerRawNormalPool.run_actual s pc poolInput rho hs hr ha
   rw [pool_output] at h
   exact h
 def NormalStore60Input (words : Nat → UInt256) : StaggerRaw.Input :=
-  ⟨words 0, words 9, words 3, words 8, words 2, words 7, words 10, words 13, words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
+  ⟨words 3, words 9, words 8, words 1, words 2, words 15, words 7, words 10, words 13, words 14, words 11, words 5, words 12, words 0, words 4, words 6, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
 theorem NormalStore60_output (memory : ByteArray) (words : Nat → UInt256) (rho : List UInt256) :
-    StaggerRawNormalStore60.outputStack memory (NormalStore60Input words) rho = [ words 9, words 3, words 8, words 2, words 7, words 10, words 13, words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6 ] ++ rho := by rfl
+    StaggerRawNormalStore60.outputStack memory (NormalStore60Input words) rho = [ words 9, words 8, words 1, words 2, words 15, words 7, words 10, words 13, words 14, words 11, words 5, words 12, words 0, words 4, words 6 ] ++ rho := by rfl
 
 theorem NormalStore60_memory (memory : ByteArray) (words : Nat → UInt256) :
     StaggerRawNormalStore60.outputMemory memory (NormalStore60Input words) =
@@ -40,15 +40,15 @@ theorem NormalStore60_memory (memory : ByteArray) (words : Nat → UInt256) :
 
 theorem run_NormalStore60 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat) :
-    runInstrSeq StaggerRawNormalStore60.template {s with pc := pc, stack := [ words 0, words 9, words 3, words 8, words 2, words 7, words 10, words 13, words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6 ] ++ rho} =
-      some {s with pc := pcAfter pc StaggerRawNormalStore60.template, stack := [ words 9, words 3, words 8, words 2, words 7, words 10, words 13, words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6 ] ++ rho, memory := storeDescending s.memory (tableWords words) 45 16} := by
+    runInstrSeq StaggerRawNormalStore60.template {s with pc := pc, stack := [ words 3, words 9, words 8, words 1, words 2, words 15, words 7, words 10, words 13, words 14, words 11, words 5, words 12, words 0, words 4, words 6 ] ++ rho} =
+      some {s with pc := pcAfter pc StaggerRawNormalStore60.template, stack := [ words 9, words 8, words 1, words 2, words 15, words 7, words 10, words 13, words 14, words 11, words 5, words 12, words 0, words 4, words 6 ] ++ rho, memory := storeDescending s.memory (tableWords words) 45 16} := by
   have h := StaggerRawNormalStore60.run_actual s pc (NormalStore60Input words) rho hs hr ha
   rw [NormalStore60_output, NormalStore60_memory] at h
   exact h
 def NormalStore44Input (words : Nat → UInt256) : StaggerRaw.Input :=
-  ⟨words 9, words 3, words 8, words 2, words 7, words 10, words 13, words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
+  ⟨words 9, words 8, words 1, words 2, words 15, words 7, words 10, words 13, words 14, words 11, words 5, words 12, words 0, words 4, words 6, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
 theorem NormalStore44_output (memory : ByteArray) (words : Nat → UInt256) (rho : List UInt256) :
-    StaggerRawNormalStore44.outputStack memory (NormalStore44Input words) rho = [ words 3, words 8, words 2, words 7, words 10, words 13, words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6 ] ++ rho := by rfl
+    StaggerRawNormalStore44.outputStack memory (NormalStore44Input words) rho = [ words 1, words 2, words 15, words 7, words 10, words 13, words 14, words 11, words 5, words 12, words 0, words 4, words 6 ] ++ rho := by rfl
 
 theorem NormalStore44_memory (memory : ByteArray) (words : Nat → UInt256) :
     StaggerRawNormalStore44.outputMemory memory (NormalStore44Input words) =
@@ -56,15 +56,15 @@ theorem NormalStore44_memory (memory : ByteArray) (words : Nat → UInt256) :
 
 theorem run_NormalStore44 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat) :
-    runInstrSeq StaggerRawNormalStore44.template {s with pc := pc, stack := [ words 9, words 3, words 8, words 2, words 7, words 10, words 13, words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6 ] ++ rho} =
-      some {s with pc := pcAfter pc StaggerRawNormalStore44.template, stack := [ words 3, words 8, words 2, words 7, words 10, words 13, words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6 ] ++ rho, memory := storeDescending s.memory (tableWords words) 29 16} := by
+    runInstrSeq StaggerRawNormalStore44.template {s with pc := pc, stack := [ words 9, words 8, words 1, words 2, words 15, words 7, words 10, words 13, words 14, words 11, words 5, words 12, words 0, words 4, words 6 ] ++ rho} =
+      some {s with pc := pcAfter pc StaggerRawNormalStore44.template, stack := [ words 1, words 2, words 15, words 7, words 10, words 13, words 14, words 11, words 5, words 12, words 0, words 4, words 6 ] ++ rho, memory := storeDescending s.memory (tableWords words) 29 16} := by
   have h := StaggerRawNormalStore44.run_actual s pc (NormalStore44Input words) rho hs hr ha
   rw [NormalStore44_output, NormalStore44_memory] at h
   exact h
 def NormalStore28Input (words : Nat → UInt256) : StaggerRaw.Input :=
-  ⟨words 3, words 8, words 2, words 7, words 10, words 13, words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
+  ⟨words 1, words 2, words 15, words 7, words 10, words 13, words 14, words 11, words 5, words 12, words 0, words 4, words 6, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
 theorem NormalStore28_output (memory : ByteArray) (words : Nat → UInt256) (rho : List UInt256) :
-    StaggerRawNormalStore28.outputStack memory (NormalStore28Input words) rho = [ words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6 ] ++ rho := by rfl
+    StaggerRawNormalStore28.outputStack memory (NormalStore28Input words) rho = [ words 10, words 13, words 14, words 11, words 5, words 12, words 0, words 4, words 6 ] ++ rho := by rfl
 
 theorem NormalStore28_memory (memory : ByteArray) (words : Nat → UInt256) :
     StaggerRawNormalStore28.outputMemory memory (NormalStore28Input words) =
@@ -72,13 +72,13 @@ theorem NormalStore28_memory (memory : ByteArray) (words : Nat → UInt256) :
 
 theorem run_NormalStore28 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat) :
-    runInstrSeq StaggerRawNormalStore28.template {s with pc := pc, stack := [ words 3, words 8, words 2, words 7, words 10, words 13, words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6 ] ++ rho} =
-      some {s with pc := pcAfter pc StaggerRawNormalStore28.template, stack := [ words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6 ] ++ rho, memory := storeDescending s.memory (tableWords words) 13 16} := by
+    runInstrSeq StaggerRawNormalStore28.template {s with pc := pc, stack := [ words 1, words 2, words 15, words 7, words 10, words 13, words 14, words 11, words 5, words 12, words 0, words 4, words 6 ] ++ rho} =
+      some {s with pc := pcAfter pc StaggerRawNormalStore28.template, stack := [ words 10, words 13, words 14, words 11, words 5, words 12, words 0, words 4, words 6 ] ++ rho, memory := storeDescending s.memory (tableWords words) 13 16} := by
   have h := StaggerRawNormalStore28.run_actual s pc (NormalStore28Input words) rho hs hr ha
   rw [NormalStore28_output, NormalStore28_memory] at h
   exact h
 def NormalStore12Input (words : Nat → UInt256) : StaggerRaw.Input :=
-  ⟨words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
+  ⟨words 10, words 13, words 14, words 11, words 5, words 12, words 0, words 4, words 6, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
 theorem NormalStore12_output (memory : ByteArray) (words : Nat → UInt256) (rho : List UInt256) :
     StaggerRawNormalStore12.outputStack memory (NormalStore12Input words) rho = [  ] ++ rho := by rfl
 
@@ -88,7 +88,7 @@ theorem NormalStore12_memory (memory : ByteArray) (words : Nat → UInt256) :
 
 theorem run_NormalStore12 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat) :
-    runInstrSeq StaggerRawNormalStore12.template {s with pc := pc, stack := [ words 4, words 14, words 15, words 11, words 5, words 1, words 12, words 6 ] ++ rho} =
+    runInstrSeq StaggerRawNormalStore12.template {s with pc := pc, stack := [ words 10, words 13, words 14, words 11, words 5, words 12, words 0, words 4, words 6 ] ++ rho} =
       some {s with pc := pcAfter pc StaggerRawNormalStore12.template, stack := [  ] ++ rho, memory := storeDescending s.memory (tableWords words) 0 13} := by
   have h := StaggerRawNormalStore12.run_actual s pc (NormalStore12Input words) rho hs hr ha
   rw [NormalStore12_output, NormalStore12_memory] at h
