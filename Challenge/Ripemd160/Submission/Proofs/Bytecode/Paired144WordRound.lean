@@ -48,9 +48,7 @@ def wordScale (x mask : UInt256) (d : Nat) : UInt256 :=
 def wordCompact (x : UInt256) : UInt256 :=
   UInt256.land (UInt256.lor x (UInt256.shiftRight x (UInt256.ofNat 72))) compactMaskWord
 
-def usesCompact (r s : Nat) : Prop :=
-  ((s < r ∧ (r - s = 3 ∨ r - s = 6)) ∨ (r < s ∧ (s - r = 2 ∨ s - r = 3))) ∨
-  (r, s) ∈ [(6, 12), (7, 5), (8, 12), (8, 13), (8, 15), (9, 7), (9, 13), (13, 8), (13, 9), (14, 12)]
+def usesCompact (r s : Nat) : Prop := (s < r ∧ (r - s = 3 ∨ r - s = 6)) ∨ (r < s ∧ (s - r = 2 ∨ s - r = 3))
 instance (r s : Nat) : Decidable (usesCompact r s) := inferInstanceAs (Decidable (_ ∨ _))
 
 def wordRotate (x : UInt256) (r s : Nat) : UInt256 :=

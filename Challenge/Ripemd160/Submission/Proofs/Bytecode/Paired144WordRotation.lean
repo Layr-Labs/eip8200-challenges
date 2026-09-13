@@ -55,11 +55,9 @@ theorem normalize_rotate_add (x : UInt256) (a b e f : BitVec 32) (r s : Nat)
       pack (a.rotateLeft r+e) (b.rotateLeft s+f) := by
   by_cases h : usesCompact r s
   · have hu : r-s≤7 := by
-      simp [usesCompact] at h
-      omega
+      rcases h with ⟨h, h | h⟩ | ⟨h, h | h⟩ <;> omega
     have hv : s-r≤7 := by
-      simp [usesCompact] at h
-      omega
+      rcases h with ⟨h, h | h⟩ | ⟨h, h | h⟩ <;> omega
     have hr' : 32+(r-s)-(32-min r s)=r := by omega
     have hs' : 32+(s-r)-(32-min r s)=s := by omega
     rw [wordRotate,if_pos h,bits_shr _ (32-min r s) (by omega),bits_mul,bits_wordCompact,hc]
