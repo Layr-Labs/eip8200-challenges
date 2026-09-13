@@ -34,12 +34,12 @@ open Challenge.Modexp.Submission.Proofs.Fast.FixedDirectStates
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
 theorem jumpD3970 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 2720).toNat = true :=
-  Exp.jumpD 2720 (by decide) FixedDirectPaths.jumpDest3970
+    (UInt256.ofNat 2715).toNat = true :=
+  Exp.jumpD 2715 (by decide) FixedDirectPaths.jumpDest3970
 
 theorem jumpD3997 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 1152).toNat = true :=
-  Exp.jumpD 1152 (by decide) jumpDest1802
+    (UInt256.ofNat 1147).toNat = true :=
+  Exp.jumpD 1147 (by decide) jumpDest1802
 
 /-- The memory word the loop head writes holds the remaining square count. -/
 theorem readWord_countStore (mem : ByteArray) (count : Nat) :
@@ -71,7 +71,7 @@ def gasSteps_squareLoop (s : State) {n bsize mm minv : Nat}
   | succ k ih =>
       have hframe0 := countStore_frame (k + 1) hframe
       have hinv0 := countStore_inv (k + 1) hn32 hinv
-      have hcall := sub.square (UInt256.ofNat 2720)
+      have hcall := sub.square (UInt256.ofNat 2715)
         (UInt256.ofNat (k + 1) :: Exp.outer n bsize esize msize)
         (Exp.storeWord memory 2624 (UInt256.ofNat (k + 1))) bM
         hslow (by simp [Exp.outer])
@@ -130,11 +130,11 @@ def gasSteps_squareLoopFast (s : State) {n bsize mm minv : Nat}
       (square s memory n bsize esize msize count)
       (Exp.retTo s
         (sub.sqLoopMem count (Exp.storeWord memory 2624 (UInt256.ofNat count)))
-        (UInt256.ofNat 1150) (UInt256.ofNat count :: Exp.outer n bsize esize msize)) :=
+        (UInt256.ofNat 1145) (UInt256.ofNat count :: Exp.outer n bsize esize msize)) :=
   have hinv0 := countStore_inv count hn32 hinv
   (FixedDirectChainTrace.gasSteps_squareCall s memory
       n bsize esize msize count hactive hcode hfork hrun hnp).trans
-    (sub.squareLoop count (UInt256.ofNat 2720)
+    (sub.squareLoop count (UInt256.ofNat 2715)
       (UInt256.ofNat count :: Exp.outer n bsize esize msize)
       (Exp.storeWord memory 2624 (UInt256.ofNat count)) bM
       hfast hcount hcount16 (by simp [Exp.outer])
@@ -195,7 +195,7 @@ def chain_of_fixed (s : State) {n bsize mm minv : Nat}
     have hs := gasSteps_squareLoop s sub memory esize msize count bM rawBase hfast hm hn32
       hcount hcount16 hbM hactive hframe hinv hcode hfork hrun hnp
     have hpc := FixedDirectChainTrace.gasSteps_product s memSq n bsize esize msize 0 hcode hfork hrun hnp
-    have hmp := sub.monpro 512 256 256 (UInt256.ofNat 1152) (Exp.outer n bsize esize msize)
+    have hmp := sub.monpro 512 256 256 (UInt256.ofNat 1147) (Exp.outer n bsize esize msize)
       memSq sqVal rawBase (by simp [Exp.outer]) (by omega) (by omega) (by omega) (by omega)
       (by omega) jumpD3997 hfSq hiSq.modulus hiSq.squareBase hiSq.rawAcc hsqLt
     have hv := spec.mpValueRaw 512 256 256 memSq sqVal rawBase

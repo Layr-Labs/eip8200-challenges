@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Fast.R8RowZero
 import Challenge.Modexp.Submission.Proofs.Fast.SquareLoopBlocks
 
 set_option warningAsError true
@@ -22,47 +23,47 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
 open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro CiosCached SquareLoopBlocks
 
-def pcH1 : Nat := 4784
-def pcH1Fall : Nat := 4793
-def pcR4 : Nat := 4797
+def pcH1 : Nat := 4771
+def pcH1Fall : Nat := 4780
+def pcR4 : Nat := 4784
 
 /-- 判别块。 -/
 def hookProgram : List Instr :=
-  [.op .JUMPDEST, .op (.Dup ⟨6, by decide⟩), .push 2 4201, .op .EQ, .push 2 4797, .op .JUMPI]
+  [.op .JUMPDEST, .op (.Dup ⟨6, by decide⟩), .push 2 4188, .op .EQ, .push 2 4784, .op .JUMPI]
 
 def h1Program : List Instr :=
-  [.op (.Dup ⟨6, by decide⟩), .push 2 4201, .op .EQ, .push 2 4797, .op .JUMPI]
+  [.op (.Dup ⟨6, by decide⟩), .push 2 4188, .op .EQ, .push 2 4784, .op .JUMPI]
 
-def h1FallProgram : List Instr := [.push 2 4459, .op .JUMP]
+def h1FallProgram : List Instr := [.push 2 5282, .op .JUMP]
 
-def h1Block : Block Artifact.submissionArtifact .Osaka 4784 h1Program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3614 5 4784 h1Program
+def h1Block : Block Artifact.submissionArtifact .Osaka 4771 h1Program :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3601 5 4771 h1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
-def h1FallBlock : Block Artifact.submissionArtifact .Osaka 4793 h1FallProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3619 2 4793 h1FallProgram
+def h1FallBlock : Block Artifact.submissionArtifact .Osaka 4780 h1FallProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3606 2 4780 h1FallProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def h2Block : Block Artifact.submissionArtifact .Osaka 4425 hookProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3347 6 4425 hookProgram
+def h2Block : Block Artifact.submissionArtifact .Osaka 4411 hookProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3335 6 4411 hookProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-theorem jumpDestR4 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4797 = true :=
-  Artifact.isValidJumpDest_index 3621 (by rfl)
+theorem jumpDestR4 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4784 = true :=
+  Artifact.isValidJumpDest_index 3608 (by rfl)
 
-theorem jumpDestH2 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4425 = true :=
-  Artifact.isValidJumpDest_index 3347 (by rfl)
+theorem jumpDestH2 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4411 = true :=
+  Artifact.isValidJumpDest_index 3335 (by rfl)
 
-theorem jumpDestRow : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4459 = true :=
-  Artifact.isValidJumpDest_index 3370 (by rfl)
+theorem jumpDestRow : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4446 = true :=
+  Artifact.isValidJumpDest_index 3357 (by rfl)
 
-theorem cond_four : UInt256.isTrue ((UInt256.ofNat 4201).eq (l2Target 4)) := by decide
+theorem cond_four : UInt256.isTrue ((UInt256.ofNat 4188).eq (l2Target 4)) := by decide
 
-theorem cond_eight : ¬ UInt256.isTrue ((UInt256.ofNat 4201).eq (l2Target 8)) := by decide
+theorem cond_eight : ¬ UInt256.isTrue ((UInt256.ofNat 4188).eq (l2Target 8)) := by decide
 
-theorem cond_four' : UInt256.isTrue ((UInt256.ofNat 4201).eq (UInt256.ofNat 4201)) := by decide
+theorem cond_four' : UInt256.isTrue ((UInt256.ofNat 4188).eq (UInt256.ofNat 4188)) := by decide
 
-theorem cond_eight' : ¬ UInt256.isTrue ((UInt256.ofNat 4201).eq (UInt256.ofNat 4053)) := by decide
+theorem cond_eight' : ¬ UInt256.isTrue ((UInt256.ofNat 4188).eq (UInt256.ofNat 4040)) := by decide
 
 /-! ## 判别块的运行 -/
 
@@ -77,7 +78,7 @@ theorem run_hookTaken (pc0 : Nat) (s : State) (mem : ByteArray)
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc19 : rest.length + 19 < 1024 := by omega
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 4797 = true := by
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 4784 = true := by
     rw [hcode]; exact jumpDestR4
   have hcond := cond_four
   have hcond' := cond_four'
@@ -97,7 +98,7 @@ theorem run_h1Taken (pc0 : Nat) (s : State) (mem : ByteArray)
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc19 : rest.length + 19 < 1024 := by omega
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 4797 = true := by
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 4784 = true := by
     rw [hcode]; exact jumpDestR4
   have hcond := cond_four
   have hcond' := cond_four'
@@ -146,11 +147,11 @@ theorem run_h1FallJump (s : State) (mem : ByteArray)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
     runInstructions h1FallProgram
       (frameAt pcH1Fall s mem 8 pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
-    some (frameAt 4459 s mem 8 pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) := by
+    some (frameAt 5282 s mem 8 pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) := by
   have hc16 : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 4459 = true := by
-    rw [hcode]; exact jumpDestRow
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 5282 = true := by
+    rw [hcode]; exact R8RowZero.jumpDest
   simp [h1FallProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     frameAt, frameStack, pcH1Fall, hc16, hc17, hjd, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -191,7 +192,7 @@ def gasSteps_h2Taken (n : Nat) (hn : n = 4) :
 def gasSteps_h1Fall (n : Nat) (hn : n = 8) :
     Challenge.EvmProof.GasSteps
       (frameAt pcH1 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
-      (frameAt 4459 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) := by
+      (frameAt 5282 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) := by
   subst hn
   exact (SquareRow.stepsOf h1Block
     (run_h1Fall s mem pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap) rfl

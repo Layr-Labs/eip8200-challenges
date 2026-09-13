@@ -22,8 +22,8 @@ open Challenge.Modexp.Submission.Proofs.Fast.FullBase
 
 /-- The multiply entry `JUMPDEST` at pc 4018 (0x0f50, instruction 3189), the `MONPRO` call target. -/
 private theorem jumpDestMulEntry :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3558 = true :=
-  Artifact.isValidJumpDest_index 2666 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3549 = true :=
+  Artifact.isValidJumpDest_index 2659 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_redirect (s : State) (memory : ByteArray)

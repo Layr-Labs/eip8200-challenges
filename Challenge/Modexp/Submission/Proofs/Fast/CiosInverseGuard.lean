@@ -19,14 +19,17 @@ def stateAt (pc : Nat) (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat
            memory := mem }
 
 def guardProgram : List Instr :=
-  [.op .JUMPDEST, .push 2 2688, .op .MLOAD, .op (.Dup ⟨0, by decide⟩),
-   .push 1 128, .op .EQ, .op (.Swap ⟨0, by decide⟩), .push 2 256, .op .EQ,
-   .op .OR, .push 1 1, .push 2 2720, .op .MLOAD, .op .GT, .op .AND,
-   .push 2 3594, .op .JUMPI]
+  [.op .JUMPDEST, .push 2 2688, .op .MLOAD,
+   .push 3 127, .op .AND, .op .ISZERO,
+   .push 1 1, .push 2 2720, .op .MLOAD, .op .GT, .op .AND,
+   .push 2 3585, .op .JUMPI]
+
+def validWidth (width : UInt256) : Prop :=
+  ∃ n : Nat, 2 ≤ n ∧ n ≤ 8 ∧ width = UInt256.ofNat (32*n)
 
 def condition (width inverse : UInt256) : UInt256 :=
   UInt256.land (UInt256.gt inverse (UInt256.ofNat 1))
-    (UInt256.lor ((UInt256.ofNat 256).eq width) ((UInt256.ofNat 128).eq width))
+    (UInt256.isZero (UInt256.land (UInt256.ofNat 127) width))
 
 theorem inverse_ne_zero (low inverse : UInt256)
     (hinv : (low.toNat * inverse.toNat + 1) % 2 ^ 256 = 0) :
@@ -60,31 +63,31 @@ theorem condition_pass (width inverse : UInt256)
   rcases hw with rfl | rfl <;> rw [condition, hi] <;> decide
 
 theorem condition_width_fallback (width inverse : UInt256)
+    (hvalid : validWidth width)
     (h128 : width ≠ UInt256.ofNat 128) (h256 : width ≠ UInt256.ofNat 256) :
     ¬ UInt256.isTrue (condition width inverse) := by
-  have h128n : (UInt256.ofNat 128).toNat ≠ width.toNat := by
-    intro h; exact h128 (Challenge.EvmProof.Word.word_ext h.symm)
-  have h256n : (UInt256.ofNat 256).toNat ≠ width.toNat := by
-    intro h; exact h256 (Challenge.EvmProof.Word.word_ext h.symm)
-  rw [condition, UInt256.eq, UInt256.eq, if_neg h256n, if_neg h128n]
-  unfold UInt256.gt
-  split <;> decide
+  rcases hvalid with ⟨n, hn, hn8, rfl⟩
+  interval_cases n
+  all_goals first
+    | exact (h128 rfl).elim
+    | exact (h256 rfl).elim
+    | (unfold condition UInt256.gt; split <;> decide)
 
 theorem condition_inverse_fallback (width : UInt256) :
     ¬ UInt256.isTrue (condition width (UInt256.ofNat 1)) := by
   unfold condition UInt256.gt
   split <;> norm_num [Challenge.EvmProof.Word.word_toNat_ofNat] at *
-  unfold UInt256.eq
-  split <;> split <;> decide
+  unfold UInt256.isZero
+  split <;> decide
 
 theorem run_guardPass (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hact : 88 ≤ s.activeWords.toNat)
     (hcond : UInt256.isTrue (condition (MachineState.readWord mem 2688)
       (MachineState.readWord mem 2720)))
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 3594 = true) :
-    runInstructions guardProgram (stateAt 3562 s mem hd pa pb pdst ret rest) =
-      some (stateAt 3594 s mem hd pa pb pdst ret rest) := by
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 3585 = true) :
+    runInstructions guardProgram (stateAt 3553 s mem hd pa pb pdst ret rest) =
+      some (stateAt 3585 s mem hd pa pb pdst ret rest) := by
   unfold condition at hcond
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
@@ -104,8 +107,8 @@ theorem run_guardFallback (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : 
     (hact : 88 ≤ s.activeWords.toNat)
     (hcond : ¬ UInt256.isTrue (condition (MachineState.readWord mem 2688)
       (MachineState.readWord mem 2720))) :
-    runInstructions guardProgram (stateAt 3562 s mem hd pa pb pdst ret rest) =
-      some (stateAt 3589 s mem hd pa pb pdst ret rest) := by
+    runInstructions guardProgram (stateAt 3553 s mem hd pa pb pdst ret rest) =
+      some (stateAt 3576 s mem hd pa pb pdst ret rest) := by
   unfold condition at hcond
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
