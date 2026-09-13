@@ -1,5 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputCompactState
 import Challenge.EvmProof.Word
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.RootOverlapGuard
 
 set_option warningAsError true
 
@@ -95,9 +96,10 @@ theorem shiftRight_xor_192 (a b : UInt256) :
     Nat.mod_eq_of_lt ha, Nat.mod_eq_of_lt hb, Nat.mod_eq_of_lt hshifts]
   exact Nat.shiftRight_xor_distrib
 
+abbrev finalAcc := RootOverlapGuard.finalAcc
+
 def tailDiff (input : ByteArray) : UInt256 :=
-  UInt256.shiftRight (UInt256.xor (MachineState.readWord input 992)
-    (referenceWord input)) (UInt256.ofNat 192)
+  UInt256.xor (MachineState.readWord input 968) (referenceWord input)
 
 def reverseAcc (input : ByteArray) : Nat → UInt256
   | 0 => UInt256.lor (tailDiff input) (loopAcc input 0)
@@ -108,7 +110,7 @@ def reverseAcc (input : ByteArray) : Nat → UInt256
         (reverseAcc input n))
 
 theorem reverseAcc_final (input : ByteArray) : reverseAcc input 15 = finalAcc input := by
-  norm_num only [reverseAcc, loopAcc, tailDiff, finalAcc, shiftRight_xor_192]
+  norm_num only [reverseAcc, loopAcc, tailDiff, finalAcc, RootOverlapGuard.finalAcc]
   apply Challenge.EvmProof.Word.word_ext
   simp only [Challenge.EvmProof.Word.word_toNat_lor]
   ac_rfl

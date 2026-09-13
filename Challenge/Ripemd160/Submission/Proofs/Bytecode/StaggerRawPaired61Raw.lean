@@ -22,14 +22,14 @@ def template : List Instr :=
     .op (.Dup ⟨5, by decide⟩),
     .op .AND,
     .op (.Dup ⟨7, by decide⟩),
+    .op .XOR,
+    .op (.Dup ⟨5, by decide⟩),
+    .op (.Dup ⟨11, by decide⟩),
     .op (.Dup ⟨9, by decide⟩),
-    .op (.Dup ⟨7, by decide⟩),
-    .op (.Dup ⟨13, by decide⟩),
-    .op (.Dup ⟨3, by decide⟩),
     .op .XOR,
     .op .OR,
+    .op (.Dup ⟨9, by decide⟩),
     .op .AND,
-    .op .XOR,
     .op .XOR,
     .op .ADD,
     .push ⟨1, by decide⟩ (UInt256.ofNat 108),
@@ -119,7 +119,7 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
       some {s with pc := pcAfter pc template, stack := actualOutput s.memory x rho} := by
   have hbase : rho.length < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
-  have hcap (n : Nat) (hn : n ≤ 23) : rho.length + n < 1024 := by omega
+  have hcap (n : Nat) (hn : n ≤ 48) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 1088) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     Stagger144Active.word_active_preserved s.activeWords address hactive haddress
