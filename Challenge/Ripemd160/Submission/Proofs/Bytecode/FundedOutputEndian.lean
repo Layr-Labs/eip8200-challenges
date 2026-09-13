@@ -6,7 +6,6 @@ set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 2000000
 set_option linter.unusedSimpArgs false
-set_option linter.unusedTactic false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.FundedOutputEndian.Stage8
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Challenge.EvmProof.Word
@@ -24,24 +23,9 @@ private theorem local_xor_comm (u v : UInt256) : UInt256.xor u v = UInt256.xor v
   simp [UInt256.xor, Fin.xor, Nat.xor_comm]
 /-- Stage 8 with the resident full-width mask read from the stack. The factor is kept below the XOR operands. -/
 def code : List Instr :=
-  [ClosedEndianReuse.factorPush 8, .op (.Dup ⟨4, by decide⟩),
-    .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨3, by decide⟩),
-    push1 (UInt256.ofNat 8), op .SHR, op .XOR, op .AND, op .MUL, op .XOR]
-
-private theorem run_symbolic (s : State) (startPC value mask : UInt256)
-    (a b : UInt256) (rest : List UInt256) (hstack : rest.length < 1010)
-    (hrun : s.halt = .Running) :
-    runInstrSeq code {s with pc := startPC, stack := value :: a :: b :: mask :: rest} =
-      some {s with
-        pc := pcAfter startPC code
-        stack := UInt256.xor (UInt256.mul (UInt256.land
-          (UInt256.xor (UInt256.shiftRight value (UInt256.ofNat 8)) value) mask)
-          (UInt256.ofNat 257)) value :: a :: b :: mask :: rest} := by
-  have hcap (n : Nat) (hn : n ≤ 14) : rest.length + n < 1024 := by omega
-  simp (discharger := omega) [code, ClosedEndianReuse.factorPush,
-    op, push1, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size, hrun, hcap,
-    Nat.add_assoc, List.getElem?_cons_zero, List.exchange, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals repeat first | apply And.intro | rfl
+  [dup1, dup1, push1 (UInt256.ofNat 8), op .SHR, op .XOR,
+    .op (.Dup ⟨4, by decide⟩), op .AND,
+    ClosedEndianReuse.factorPush 8, op .MUL, op .XOR]
 
 theorem run_endian (s : State) (startPC value : UInt256)
     (a b : UInt256) (rest : List UInt256) (hstack : rest.length < 1010)
@@ -50,10 +34,15 @@ theorem run_endian (s : State) (startPC value : UInt256)
       some {s with
         pc := pcAfter startPC code
         stack := packedStage value 8 mask8 :: a :: b :: mask8 :: rest} := by
+  have hcap (n : Nat) (hn : n ≤ 14) : rest.length + n < 1024 := by omega
   rw [← DenseEndianMultiply.multipliedStage8_eq_packedStage]
-  have hf : (2^8+1 : Nat) = 257 := by decide
-  simpa only [multipliedStage, endianDelta, endianFactor, hf, RawExpressionAC.mul_comm] using
-    run_symbolic s startPC value mask8 a b rest hstack hrun
+  simp (discharger := omega) [code, ClosedEndianReuse.factorPush, endianFactor, multipliedStage, endianDelta,
+    op, push1, dup1, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size, hrun, hcap,
+    Nat.add_assoc, List.getElem?_cons_zero, List.exchange, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+  refine ⟨rfl, ?_⟩
+  first
+    | rfl
+    | (rw [RawExpressionAC.land_comm]; rfl)
 
 theorem advances {instruction : Instr} {s t : State}
     (hmem : instruction ∈ code) (hrun : DataStepper.runInstr instruction s = some t) :

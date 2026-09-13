@@ -1,6 +1,7 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedPadStore
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Source32Funding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Stagger144Active
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerTablePad
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedPadStore
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80Setup
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadShiftDiet
 set_option warningAsError true
@@ -35,7 +36,8 @@ def lowTemplate : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 128),
     .push ⟨2, by decide⟩ (UInt256.ofNat 522),
     .op .MSTORE,
-    .push ⟨20, by decide⟩ (UInt256.ofNat (128 * (1 + 2 ^ 144))),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 128), .op (.Dup ⟨0, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 144), .op .SHL, .op .OR,
     .push ⟨1, by decide⟩ (UInt256.ofNat 54),
     .op .MSTORE,
     .op .CALLDATASIZE,
@@ -45,7 +47,7 @@ def lowTemplate : List Instr :=
 
 /-- `PUSH2 0398 JUMPI` at 4769: straight to the rounds when the high word is zero. -/
 def branchTemplate : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 902),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 909),
     .op .JUMPI ]
 
 /-- Pad-only high block (pc 4831..4858), reached only when `n >>> 29 ≠ 0`. -/
@@ -129,8 +131,9 @@ theorem run_low (s : State) (pc returnPC : UInt256) (rest : List UInt256)
     (StaggerTablePad.lowDirty (UInt256.ofNat s.executionEnv.calldata.size))
   change StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size) = _ at hpacked
   rw [hpacked]
-  simp (discharger := omega) [lowTemplate, StaggerTablePad.lowChain, StaggerTablePad.lowDirty,
-    highZero, zeroMemory, writeWord, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+  simp (discharger := omega) [lowTemplate, Source32Funding.sparse_value, Source32Funding.sparseKey, StaggerTablePad.lowChain, StaggerTablePad.lowDirty, highZero, zeroMemory,
+    writeWord,
+    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     PairedHelperBooleanTrace.push0_toNat,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
     State.activeWordsAfterUInt256, hactiveAt, hcopyActive, hsize,
@@ -159,9 +162,9 @@ theorem run_high (s : State) (pc returnPC : UInt256) (rest : List UInt256)
 
 theorem run_branch_taken (s : State) (pc c : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running) (hc : UInt256.isTrue c)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 902).toNat = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 909).toNat = true) :
     runInstrSeq branchTemplate {s with pc := pc, stack := c :: rho} =
-      some {s with pc := UInt256.ofNat 902, stack := rho} := by
+      some {s with pc := UInt256.ofNat 909, stack := rho} := by
   have hcap : rho.length < 1024 := by omega
   have hcap1 : rho.length + 1 < 1024 := by omega
   have hcap2 : rho.length + 2 < 1024 := by omega
