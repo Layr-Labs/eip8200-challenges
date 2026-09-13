@@ -33,7 +33,7 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     (hr : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 600, stack := frame h (DriverTrace.blockOffsetWord i) limit rho}
+    GasSteps {s with pc := UInt256.ofNat 601, stack := frame h (DriverTrace.blockOffsetWord i) limit rho}
       {scheduledState s i with pc := UInt256.ofNat 1079, stack := frame h (DriverTrace.blockOffsetWord i) limit rho} := by
   let off := DriverTrace.blockOffsetWord i
   let r := rest h off limit rho
@@ -71,7 +71,7 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
       (by omega) hr hf he hcode hfork hnp
     have gc := StaggerPersistentEntrySites.gasSteps_call s off limit h rho (by omega) hr hcode hfork hnp
     rw [show StaggerPersistentEntryRaw.pointer off = UInt256.ofNat (messagePointer i) from pointer_eq input i hfit hi] at gc
-    have gn := StaggerSetupSites.gasSteps_normal s Paired144WordRound.factorWord (messagePointer i) r hrs hr
+    have gn := StaggerSetupSites.gasSteps_normal s Paired144WordRound.factorWord (messagePointer i) r (by rfl) hrs hr
       (messagePointer_lower i) (messagePointer_bound input hfit i hi) hcode hfork hnp
     exact gd.trans (gc.trans gn)
 

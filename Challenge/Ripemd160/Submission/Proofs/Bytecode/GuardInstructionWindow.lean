@@ -61,7 +61,7 @@ def tail : List Instr :=
   op 0x8c,
   op 0x8c,
   op 0x18,
-  .push 2 599,
+  .push 2 600,
   op 0x57,
   op 0x50,
   op 0x50,
