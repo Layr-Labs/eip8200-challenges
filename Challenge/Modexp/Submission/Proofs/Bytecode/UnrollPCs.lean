@@ -24,31 +24,31 @@ open YulEvmCompiler
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc2414 : Artifact.submissionArtifact.instructionPC 1884 = 2501 := by
+@[simp] theorem pc2414 : Artifact.submissionArtifact.instructionPC 1883 = 2500 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc2415 : Artifact.submissionArtifact.instructionPC 1885 = 2502 := by
+@[simp] theorem pc2415 : Artifact.submissionArtifact.instructionPC 1884 = 2501 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc2416 : Artifact.submissionArtifact.instructionPC 1886 = 2504 := by
+@[simp] theorem pc2416 : Artifact.submissionArtifact.instructionPC 1885 = 2503 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc2417 : Artifact.submissionArtifact.instructionPC 1887 = 2505 := by
+@[simp] theorem pc2417 : Artifact.submissionArtifact.instructionPC 1886 = 2504 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc2554 : Artifact.submissionArtifact.instructionPC 1978 = 2612 := by
+@[simp] theorem pc2554 : Artifact.submissionArtifact.instructionPC 1977 = 2611 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc2555 : Artifact.submissionArtifact.instructionPC 1979 = 2613 := by
+@[simp] theorem pc2555 : Artifact.submissionArtifact.instructionPC 1978 = 2612 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc2556 : Artifact.submissionArtifact.instructionPC 1980 = 2615 := by
+@[simp] theorem pc2556 : Artifact.submissionArtifact.instructionPC 1979 = 2614 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 

@@ -27,15 +27,15 @@ def gasSteps_rowZeroToTail (s : State) (mem : ByteArray)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
     (hsnap : StagedOperand.Snapshot mem 2368 8) :
     Challenge.EvmProof.GasSteps
-      { outState s mem 2368 8 0 (UInt256.ofNat 4447) (UInt256.ofNat (sqEnt 8 0)) inv m0
-        (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5285 }
+      { outState s mem 2368 8 0 (UInt256.ofNat 4446) (UInt256.ofNat (sqEnt 8 0)) inv m0
+        (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5282 }
       (tailState s
         (rowFromL2Carry (sqL1 mem 8 0 (UInt256.ofNat 0)) 8).memory
         (rowFromL2Carry (sqL1 mem 8 0 (UInt256.ofNat 0)) 8).carry
         (rowMu (sqL1 mem 8 0 (UInt256.ofNat 0)).memory 8)
         (overflow (sqL1 mem 8 0 (UInt256.ofNat 0)).memory
           (sqL1 mem 8 0 (UInt256.ofNat 0)).carry)
-        2368 8 0 (UInt256.ofNat 4447) (UInt256.ofNat (sqEnt 8 0 + 37)) inv m0
+        2368 8 0 (UInt256.ofNat 4446) (UInt256.ofNat (sqEnt 8 0 + 37)) inv m0
         (tl :: m96 :: m64 :: m32 :: sqX mem 8 0 :: pdst :: ret :: rest)) := by
   have hi : (0 : Nat) < 8 := by decide
   have hn8 : 8 ≤ 8 := by omega
@@ -51,7 +51,7 @@ def gasSteps_rowZeroToTail (s : State) (mem : ByteArray)
   have gC := KernelChain.gasSteps_l1Suffix (9 - 8 + 0) (by omega) (by omega) s
     (sqPro mem 8 0 (UInt256.ofNat 0))
     (sqB2 (sqX mem 8 0) (UInt256.ofNat 0)) 2368 2368 8 0 (0 + 1)
-    (UInt256.ofNat 4447) (UInt256.ofNat (sqEnt 8 0 + 37)) inv m0
+    (UInt256.ofNat 4446) (UInt256.ofNat (sqEnt 8 0 + 37)) inv m0
     (tl :: m96 :: m64 :: m32 :: sqX mem 8 0 :: pdst :: ret :: rest)
     (by simp only [List.length_cons]; omega) hrun hcode hfork hnp hact hn8 (by omega) (by omega)
     (hsnap.sqPro 0 _ hi hn8)
@@ -78,11 +78,11 @@ def gasSteps_rowZeroToTail (s : State) (mem : ByteArray)
   have gM := CarryRowGas.gasSteps_mid s (sqL1 mem 8 0 (UInt256.ofNat 0)).memory
     (sqL1 mem 8 0 (UInt256.ofNat 0)).carry
     (sqB2 (sqX mem 8 0) (UInt256.ofNat 0)) 2368 8 0
-    (UInt256.ofNat 4447) (UInt256.ofNat (sqEnt 8 0 + 37)) tl inv m0 (sqX mem 8 0) m96 m64 m32
+    (UInt256.ofNat 4446) (UInt256.ofNat (sqEnt 8 0 + 37)) tl inv m0 (sqX mem 8 0) m96 m64 m32
     pdst ret rest hcap hrun hcode hfork hnp hact hn2 hn32 hminvQ hcQ
   refine (gP.trans gC).trans (gM.trans ?_)
   -- the second loop
-  exact CarryRowGas.gasSteps_l2Eight s _ _ _ _ 2368 0 (UInt256.ofNat 4447) (UInt256.ofNat (sqEnt 8 0 + 37))
+  exact CarryRowGas.gasSteps_l2Eight s _ _ _ _ 2368 0 (UInt256.ofNat 4446) (UInt256.ofNat (sqEnt 8 0 + 37))
     tl inv m0 (sqX mem 8 0) m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact
     (extraCache_midMem1 heQ _)
 
@@ -100,14 +100,14 @@ def gasSteps_rowZeroNext (s : State) (mem : ByteArray)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
     (hsnap : StagedOperand.Snapshot mem 2368 8) :
     Challenge.EvmProof.GasSteps
-      { outState s mem 2368 8 0 (UInt256.ofNat 4447) (UInt256.ofNat (sqEnt 8 0)) inv m0
-        (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5285 }
+      { outState s mem 2368 8 0 (UInt256.ofNat 4446) (UInt256.ofNat (sqEnt 8 0)) inv m0
+        (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5282 }
       (outState s (sqRowCarry mem 8 0 (UInt256.ofNat 0)) 2368 8 (0 + 1)
-        (UInt256.ofNat 4447) (UInt256.ofNat (sqEnt 8 0 + 37)) inv m0
+        (UInt256.ofNat 4446) (UInt256.ofNat (sqEnt 8 0 + 37)) inv m0
         (tl :: m96 :: m64 :: m32 :: sqX mem 8 0 :: pdst :: ret :: rest)) :=
   (gasSteps_rowZeroToTail s mem tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hrun hcode hfork
     hnp hact hzero hminv hc he hsnap).trans
-  (CarryRowGas.gasSteps_tailNext s _ _ _ _ 2368 8 0 (UInt256.ofNat 4447) (UInt256.ofNat (sqEnt 8 0 + 37))
+  (CarryRowGas.gasSteps_tailNext s _ _ _ _ 2368 8 0 (UInt256.ofNat 4446) (UInt256.ofNat (sqEnt 8 0 + 37))
     inv m0 (tl :: m96 :: m64 :: m32 :: sqX mem 8 0 :: pdst :: ret :: rest)
     (by simp only [List.length_cons]; omega) hrun hcode hfork hnp hact (by decide) (by decide)
     (by omega) jumpDest4710')
@@ -126,16 +126,16 @@ def gasSteps_rowsToExit (s : State) (a0 : UInt256) (M0 : ByteArray)
     (he : CiosReadonlyExtra.ExtraCache M0 m96 m64 m32)
     (hsnap : StagedOperand.Snapshot M0 2368 8) :
     Challenge.EvmProof.GasSteps
-      { rowState s a0 M0 8 tl inv m0 m96 m64 m32 pdst ret rest 0 with pc := UInt256.ofNat 5285 }
+      { rowState s a0 M0 8 tl inv m0 m96 m64 m32 pdst ret rest 0 with pc := UInt256.ofNat 5282 }
       (CiosCachedTailDefs.sqExitState s (sqRowsCarry M0 8 8)
-        (UInt256.ofNat (ptrAt (2368 + 32 * 8 - 32) 8)) 2368 8 (UInt256.ofNat 4447)
+        (UInt256.ofNat (ptrAt (2368 + 32 * 8 - 32) 8)) 2368 8 (UInt256.ofNat 4446)
         (UInt256.ofNat (sqEnt 8 8)) inv m0
         (tl :: m96 :: m64 :: m32 :: sqLast M0 8 :: pdst :: ret :: rest)) := by
   have ha0 : UInt256.sgt (UInt256.ofNat 0) (UInt256.ofNat 0) = UInt256.ofNat 0 := by decide
   have g0 := gasSteps_rowZeroNext s M0 tl inv m0 m96 m64 m32 a0 pdst ret rest
     hcap hrun hcode hfork hnp hact hzero hminv hc he hsnap
   have g0' : Challenge.EvmProof.GasSteps
-      { rowState s a0 M0 8 tl inv m0 m96 m64 m32 pdst ret rest 0 with pc := UInt256.ofNat 5285 }
+      { rowState s a0 M0 8 tl inv m0 m96 m64 m32 pdst ret rest 0 with pc := UInt256.ofNat 5282 }
       (rowState s (UInt256.ofNat 0) M0 8 tl inv m0 m96 m64 m32 pdst ret rest 1) := by
     simpa only [rowState, sqRowsCarry, sqTb, sqPrev, sqEnt_succ] using g0
   have next : ∀ i, i < 7 →
@@ -176,9 +176,9 @@ def gasSteps_rowsZeroWidth (s : State) (a0 : UInt256) (M0 : ByteArray) (n : Nat)
     (he : CiosReadonlyExtra.ExtraCache M0 m96 m64 m32)
     (hsnap : StagedOperand.Snapshot M0 2368 n) :
     Challenge.EvmProof.GasSteps
-      { rowState s a0 M0 n tl inv m0 m96 m64 m32 pdst ret rest 0 with pc := UInt256.ofNat 5285 }
+      { rowState s a0 M0 n tl inv m0 m96 m64 m32 pdst ret rest 0 with pc := UInt256.ofNat 5282 }
       (CiosCachedTailDefs.sqExitState s (sqRowsCarry M0 n n)
-        (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n)) 2368 n (UInt256.ofNat 4447)
+        (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n)) 2368 n (UInt256.ofNat 4446)
         (UInt256.ofNat (sqEnt n n)) inv m0
         (tl :: m96 :: m64 :: m32 :: sqLast M0 n :: pdst :: ret :: rest)) := by
   subst n
