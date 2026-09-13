@@ -9,16 +9,16 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate PairedHelperBooleanTrace
 def jumpTemplate : List Instr := PadJump.template 925
 theorem jump_slice :
-    (Artifact.submissionArtifact.instructions.drop 3811).take jumpTemplate.length = jumpTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3840).take jumpTemplate.length = jumpTemplate := by rfl
 def jumpSite : GenericRoundSite Artifact.submissionArtifact .Osaka jumpTemplate :=
-  StackSiteBuilder.ofSlice jumpTemplate 3811 jump_slice
-    (by change 3811 + jumpTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice jumpTemplate 3840 jump_slice
+    (by change 3840 + jumpTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := jumpTemplate) (by decide))
     (by decide)
-theorem jump_pc : jumpSite.startPC = UInt256.ofNat 4801 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3811) = UInt256.ofNat 4801
+theorem jump_pc : jumpSite.startPC = UInt256.ofNat 4859 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3840) = UInt256.ofNat 4859
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem jump_advances : ∀ instruction ∈ jumpTemplate.dropLast, PadLift.Advances instruction := by
   apply PadLift.advancesAll_sound
@@ -39,10 +39,10 @@ def gasSteps_jump (s : State) (rho : List UInt256) (hstack : rho.length ≤ 1022
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4801, stack := rho}
+    GasSteps {s with pc := UInt256.ofNat 4859, stack := rho}
       {s with pc := UInt256.ofNat 925, stack := rho} := by
-  apply PadLift.gasSteps_of_raw jumpSite {s with pc := UInt256.ofNat 4801, stack := rho} _ hcode hfork hrun hnp jump_pc.symm jump_advances
-  exact PadJump.run_template s (UInt256.ofNat 4801) rho 925 hstack hrun (valid_merge s hcode)
+  apply PadLift.gasSteps_of_raw jumpSite {s with pc := UInt256.ofNat 4859, stack := rho} _ hcode hfork hrun hnp jump_pc.symm jump_advances
+  exact PadJump.run_template s (UInt256.ofNat 4859) rho 925 hstack hrun (valid_merge s hcode)
 
 #print axioms gasSteps_jump
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPadJump

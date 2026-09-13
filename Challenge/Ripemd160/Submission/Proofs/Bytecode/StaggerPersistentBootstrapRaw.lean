@@ -29,7 +29,7 @@ def template : List Instr :=
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.ofNat 20282409608374036907091774406720),
     (UInt256.ofNat 4294967295),
-    (UInt256.ofNat 20282409603651670423942956318720),
+    (UInt256.ofNat 20282409598929303941081901039615),
     (UInt256.ofNat 20282409608374036906851256238088),
     (UInt256.ofNat 162259276866992295254539466964993),
     (UInt256.ofNat 81129638433496147627271880966145),
@@ -43,7 +43,7 @@ def outputStack (_memory : ByteArray) (x : Input) (rho : List UInt256) : List UI
     x.h4,
     (UInt256.ofNat 20282409608374036907091774406720),
     (UInt256.ofNat 4294967295),
-    (UInt256.ofNat 20282409603651670423942956318720),
+    (UInt256.ofNat 20282409598929303941081901039615),
     (UInt256.ofNat 20282409608374036906851256238088),
     (UInt256.ofNat 162259276866992295254539466964993),
     (UInt256.ofNat 81129638433496147627271880966145),
@@ -74,7 +74,7 @@ theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
 #print axioms run_actual
 
 theorem factorWord_eq : Paired144WordRound.factorWord = UInt256.ofNat 20282409608374036907091774406720 := by decide
-theorem compactMaskWord_eq : Paired144WordRound.compactMaskWord = UInt256.ofNat 20282409603651670423942956318720 := by decide
+theorem compactMaskWord_eq : Paired144WordRound.compactMaskWord = UInt256.ofNat 20282409598929303941081901039615 := by decide
 theorem coefficient02_eq : Paired144WordRound.coefficientWord 0 2 = UInt256.ofNat 81129638433496147627271880966145 := by decide
 theorem coefficient03_eq : Paired144WordRound.coefficientWord 0 3 = UInt256.ofNat 162259276866992295254539466964993 := by decide
 theorem coefficient30_eq : Paired144WordRound.coefficientWord 3 0 = UInt256.ofNat 20282409608374036906851256238088 := by decide

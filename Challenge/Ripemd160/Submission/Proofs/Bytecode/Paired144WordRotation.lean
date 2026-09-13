@@ -5,43 +5,10 @@ set_option warningAsError true
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Paired144WordRotation
 open EvmSemantics Paired144Core Paired144WordRound PairedLaneUInt256Bridge
 
-theorem bits_wordCompact (x : UInt256) (a b : BitVec 32)
-    (hn : normalize (bits x) = pack a b) :
-    bits (wordCompact x) = BitVec.ofNat 256 a.toNat + (BitVec.ofNat 256 b.toNat <<< 72) := by
-  have hx : UInt256.land x pairWord = word (pack a b) := by
-    apply bits_injective
-    simpa only [bits_land,pairWord,bits_word,←normalize_eq_and] using hn
-  rw [wordCompact, hx]
-  apply BitVec.eq_of_toNat_eq
-  have ha := a.isLt
-  have hb := b.isLt
-  have hmod : (UInt256.mod (word (pack a b)) compactMaskWord).toNat =
-      (pack a b).toNat % ((2 ^ 72 - 1) * 2 ^ 32) := by
-    simp only [UInt256.mod, compactMaskWord]
-    rfl
-  rw [bits_toNat, hmod, pack_toNat, BitVec.toNat_add, BitVec.toNat_shiftLeft,
-    BitVec.toNat_ofNat, BitVec.toNat_ofNat, Nat.shiftLeft_eq]
-  have hsplit : a.toNat + b.toNat * 2 ^ 144 =
-      (a.toNat + b.toNat * 2 ^ 72) + (b.toNat * 2 ^ 40) * ((2 ^ 72 - 1) * 2 ^ 32) := by
-    simp only [Nat.reducePow, Nat.reduceSub, Nat.reduceMul]
-    omega
-  have hlt : a.toNat + b.toNat * 2 ^ 72 < (2 ^ 72 - 1) * 2 ^ 32 := by
-    simp only [Nat.reducePow, Nat.reduceSub, Nat.reduceMul] at *
-    omega
-  have hlt2 : a.toNat + b.toNat * 2 ^ 72 < 2 ^ 256 := by
-    simp only [Nat.reducePow, Nat.reduceSub, Nat.reduceMul] at *
-    omega
-  have hb2 : b.toNat * 2 ^ 72 < 2 ^ 256 := by
-    simp only [Nat.reducePow, Nat.reduceSub, Nat.reduceMul] at *
-    omega
-  have ha2 : a.toNat < 2 ^ 256 := by
-    simp only [Nat.reducePow] at *
-    omega
-  have hb3 : b.toNat < 2 ^ 256 := by
-    simp only [Nat.reducePow] at *
-    omega
-  rw [hsplit, Nat.add_mul_mod_self_right, Nat.mod_eq_of_lt hlt, Nat.mod_eq_of_lt ha2,
-    Nat.mod_eq_of_lt hb3, Nat.mod_eq_of_lt hb2, Nat.mod_eq_of_lt hlt2]
+theorem bits_wordCompact (x : UInt256) :
+    bits (wordCompact x) = Paired144CompactInput.compact (bits x) := by
+  simp only [wordCompact,compactMaskWord,Paired144CompactInput.compact,
+    bits_land,bits_lor,bits_shr x 72 (by decide),bits_ofNat]
 
 theorem bits_wordShift (x : UInt256) (n : Nat) (hn : n<256) :
     bits (wordShift x n) = (bits x * Paired144LegacyProduct.coefficient) >>> n := by
@@ -81,7 +48,7 @@ theorem bits_legacy (x : UInt256) (a b : BitVec 32) (r s : Nat)
 
 theorem normalize_rotate_add (x : UInt256) (a b e f : BitVec 32) (r s : Nat)
     (hr0 : 5≤r) (hr : r≤15) (hs0 : 5≤s) (hs : s≤15)
-    (_hc : Paired144CompactInput.compact (bits x) =
+    (hc : Paired144CompactInput.compact (bits x) =
       BitVec.ofNat 256 a.toNat + (BitVec.ofNat 256 b.toNat <<<72))
     (hn : normalize (bits x)=pack a b) :
     normalize (bits (wordRotate x r s) + pack e f) =
@@ -95,7 +62,7 @@ theorem normalize_rotate_add (x : UInt256) (a b e f : BitVec 32) (r s : Nat)
       omega
     have hr' : 32+(r-s)-(32-min r s)=r := by omega
     have hs' : 32+(s-r)-(32-min r s)=s := by omega
-    rw [wordRotate,if_pos h,bits_shr _ (32-min r s) (by omega),bits_mul,bits_wordCompact x a b hn]
+    rw [wordRotate,if_pos h,bits_shr _ (32-min r s) (by omega),bits_mul,bits_wordCompact,hc]
     change normalize ((Paired144CompactGap.rawProduct a b (r-s) (s-r) >>> (32-min r s))+pack e f)=_
     simpa only [hr',hs'] using
       Paired144CompactRotation.normalize_shifted_add a b e f (r-s) (s-r) (32-min r s)

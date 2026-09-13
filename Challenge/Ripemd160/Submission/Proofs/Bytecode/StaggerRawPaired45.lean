@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired45Raw
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.ModFoldLift
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80SiteCommon
 set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
@@ -9,19 +9,19 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired45
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 2327).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2344).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 2327 actual_slice
-    (by change 2327 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 2344 actual_slice
+    (by change 2344 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 3009 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2327) = UInt256.ofNat 3009
+theorem site_pc : site.startPC = UInt256.ofNat 3043 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2344) = UInt256.ofNat 3043
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem advances : ∀ instruction ∈ template, ModFoldLift.Advances instruction := by
-  apply ModFoldLift.advancesAll_sound
+theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
+  apply Table80SiteCommon.coreAdvancesAll_sound
   decide
 
 def gasSteps (s : State) (x : Input) (rho : List UInt256)
@@ -31,11 +31,11 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 3009, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 3077, stack := outputStack s.memory x rho} := by
-  have hraw := run_actual s (UInt256.ofNat 3009) x rho hstack hrun hactive
-  have hend : pcAfter (UInt256.ofNat 3009) template = UInt256.ofNat 3077 := by decide
+    GasSteps {s with pc := UInt256.ofNat 3043, stack := inputStack x rho}
+      {s with pc := UInt256.ofNat 3113, stack := outputStack s.memory x rho} := by
+  have hraw := run_actual s (UInt256.ofNat 3043) x rho hstack hrun hactive
+  have hend : pcAfter (UInt256.ofNat 3043) template = UInt256.ofNat 3113 := by decide
   rw [hend] at hraw
-  exact ModFoldLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
+  exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired45
