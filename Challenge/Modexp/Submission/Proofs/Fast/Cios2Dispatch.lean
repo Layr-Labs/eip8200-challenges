@@ -9,13 +9,13 @@ set_option maxHeartbeats 4000000
 /-!
 # Kernel entry: `mul entry`, the shared `common` width guard and its fallback
 
-The multiply is called at the `mul entry` (pc 4067) with `[pa, pb, pdst, ret] ++ rest`;
-it pushes its row head `hd = 4264` and falls into `common` (pc 4153), which the square
+The multiply is called at the `mul entry` (pc 4018) with `[pa, pb, pdst, ret] ++ rest`;
+it pushes its row head `hd = 4266` and falls into `common` (pc 4104), which the square
 call enters directly with `hd = 2464`.  Widths of four and eight limbs continue at the
-kernel `setup` (pc 4177, `CiosCached.setupState`, `hd` on top); every other width drops
-`hd` and enters the generic `MONPRO` at pc 1744 (`Monpro.mpEntryState`).
+kernel `setup` (pc 4128, `CiosCached.setupState`, `hd` on top); every other width drops
+`hd` and enters the generic `MONPRO` at pc 1746 (`Monpro.mpEntryState`).
 
-The 62-instruction `setup` (instructions 3110..3171, `StagedOperand.fullEntryProgram`,
+The 62-instruction `setup` (instructions 3189..3189, `StagedOperand.fullEntryProgram`,
 proved piecewise in `StagedOperandEntry{Prefix,Zero}`) stages the first operand at 2368,
 zeroes the scratch block and jumps (`DUP2; JUMP`) to the row head `hd` with the row-0 frame
 `CiosCached.outState … 0 hd (l1Target n) …`.
@@ -23,7 +23,7 @@ zeroes the scratch block and jumps (`DUP2; JUMP`) to the row head `hd` with the 
 Exports: `commonState` (`Exp.sqCall` is definitionally
 `commonState s mem 2464 2048 2048 (UInt256.ofNat 2048) ret tail`), `dispatchState` (= `Exp.mpCall`),
 `gasSteps_mulEntry`, `gasSteps_common`, `gasSteps_commonFallback(OfWidth)`, `gasSteps_setup`,
-`gasSteps_commonSetup(Input)`, `gasSteps_mulSetup`, and the jump destinations 4067/4153/4177/4264/2464.
+`gasSteps_commonSetup(Input)`, `gasSteps_mulSetup`, and the jump destinations 4018/4104/4128/4266/2464.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch
@@ -35,78 +35,78 @@ open Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Dispatch
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open WindowNibbleKernel WindowTwentyOneBinding
 
-/-- The multiply call state: `mul entry`, pc 4067, `[pa, pb, pdst, ret] ++ rest`. -/
+/-- The multiply call state: `mul entry`, pc 4018, `[pa, pb, pdst, ret] ++ rest`. -/
 def dispatchState (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4141
+  { s with pc := UInt256.ofNat 4092
            stack := [UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
-/-- The shared `common` block, pc 4153, with the row head `hd` above the call frame
-(`hd = 4264` after the `mul entry`, `hd = 2464` for the square). -/
+/-- The shared `common` block, pc 4104, with the row head `hd` above the call frame
+(`hd = 4266` after the `mul entry`, `hd = 2464` for the square). -/
 def commonState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4145
+  { s with pc := UInt256.ofNat 4096
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
 /-- After the `common` guard's `JUMPI` falls through (pc 3904). -/
 def commonFallbackState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4164
+  { s with pc := UInt256.ofNat 4115
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
-/-- The `mul entry` JUMPDEST (instruction 3093, pc 4067 = 0x0f50). -/
+/-- The `mul entry` JUMPDEST (instruction 3189, pc 4018 = 0x0f50). -/
 theorem jumpDest4012 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4141 = true := by
-  exact Artifact.isValidJumpDest_index 3134 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4092 = true := by
+  exact Artifact.isValidJumpDest_index 3092 (by rfl)
 
-/-- The `common` JUMPDEST (instruction 3095, pc 4153 = 0x0f54). -/
+/-- The `common` JUMPDEST (instruction 3189, pc 4104 = 0x0f54). -/
 theorem jumpDestCommon :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4145 = true := by
-  exact Artifact.isValidJumpDest_index 3136 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4096 = true := by
+  exact Artifact.isValidJumpDest_index 3094 (by rfl)
 
-/-- The kernel `setup` JUMPDEST (instruction 3110, pc 4177 = 0x0f6c). -/
+/-- The kernel `setup` JUMPDEST (instruction 3189, pc 4128 = 0x0f6c). -/
 theorem jumpDestSetup :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4169 = true := by
-  exact Artifact.isValidJumpDest_index 3151 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4120 = true := by
+  exact Artifact.isValidJumpDest_index 3109 (by rfl)
 
-/-- The multiply row head (instruction 1760, pc 4264 = 0x0fc5). -/
+/-- The multiply row head (instruction 1760, pc 4266 = 0x0fc5). -/
 theorem jumpDestRowHead :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4256 = true := by
-  exact Artifact.isValidJumpDest_index 3211 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4258 = true := by
+  exact Artifact.isValidJumpDest_index 3203 (by rfl)
 
-/-- The square row head `sq_row` (instruction 3608, pc 2464 = 0x1266). -/
+/-- The square row head `sq_row` (instruction 3559, pc 2464 = 0x1266). -/
 theorem jumpDestSqRow :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4979 = true := by
-  exact Artifact.isValidJumpDest_index 3800 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4981 = true := by
+  exact Artifact.isValidJumpDest_index 3790 (by rfl)
 
 /-- `jumpDestRowHead` in the `hd.toNat` form taken by `gasSteps_setup`/`gasSteps_commonSetup`. -/
 theorem jumpDestRowHead' :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 4256).toNat = true := by
-  rw [show (UInt256.ofNat 4256).toNat = 4256 by decide]
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 4258).toNat = true := by
+  rw [show (UInt256.ofNat 4258).toNat = 4258 by decide]
   exact jumpDestRowHead
 
 /-- `jumpDestSqRow` in the `hd.toNat` form taken by `gasSteps_setup`/`gasSteps_commonSetup`. -/
 theorem jumpDestSqRow' :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 4979).toNat = true := by
-  rw [show (UInt256.ofNat 4979).toNat = 4979 by decide]
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 4981).toNat = true := by
+  rw [show (UInt256.ofNat 4981).toNat = 4981 by decide]
   exact jumpDestSqRow
 
 /-- The square call state (`Exp.sqCall s mem ret tail`) is definitionally `commonState`
 with `hd = 2464` and `pa = pb = pdst = 2048`. -/
 example (s : State) (mem : ByteArray) (ret : UInt256) (tail : List UInt256) :
-    ({ s with pc := UInt256.ofNat 4145
-              stack := UInt256.ofNat 4979 :: UInt256.ofNat 512 :: UInt256.ofNat 512 ::
+    ({ s with pc := UInt256.ofNat 4096
+              stack := UInt256.ofNat 4981 :: UInt256.ofNat 512 :: UInt256.ofNat 512 ::
                 UInt256.ofNat 512 :: ret :: tail
               memory := mem } : State) =
-      commonState s mem 4979 512 512 (UInt256.ofNat 512) ret tail := rfl
+      commonState s mem 4981 512 512 (UInt256.ofNat 512) ret tail := rfl
 
 /-- The multiply call state (`Exp.mpCall s mem pa pb pd ret tail`) is definitionally
 `dispatchState`. -/
 example (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256) (tail : List UInt256) :
-    ({ s with pc := UInt256.ofNat 4141
+    ({ s with pc := UInt256.ofNat 4092
               stack := UInt256.ofNat pa :: UInt256.ofNat pb :: UInt256.ofNat pd :: ret :: tail
               memory := mem } : State) =
       dispatchState s mem pa pb (UInt256.ofNat pd) ret tail := rfl
@@ -137,7 +137,7 @@ private theorem toNat_ne_of_ne {a b : UInt256} (h : a ≠ b) :
 theorem run_mulEntry (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1008) :
     runInstructions mulEntryProgram (dispatchState s mem pa pb pdst ret rest) =
-      some (commonState s mem (UInt256.ofNat 4256) pa pb pdst ret rest) := by
+      some (commonState s mem (UInt256.ofNat 4258) pa pb pdst ret rest) := by
   have hc4 : rest.length + 4 < 1024 := by omega
   simp [mulEntryProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     dispatchState, commonState, hc4,
@@ -164,7 +164,7 @@ theorem run_commonGuard (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Na
       UInt256.isTrue (UInt256.lor ((UInt256.ofNat 256).eq (MachineState.readWord mem 2688))
         ((UInt256.ofNat 128).eq (MachineState.readWord mem 2688))) := by
     rcases hs32 with h | h <;> rw [h] <;> decide
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 4169 = true := by
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 4120 = true := by
     rw [hcode]; exact jumpDestSetup
   simp (config := { maxSteps := 400000 })
     [commonGuardProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
@@ -211,7 +211,7 @@ theorem run_commonGuardFallthrough (s : State) (mem : ByteArray) (hd : UInt256) 
       Challenge.EvmProof.Word.word_toNat_ofNat, List.exchange]
 
 set_option linter.unusedSimpArgs false in
-/-- The fallback drops `hd` and enters the generic `MONPRO` (pc 1744). -/
+/-- The fallback drops `hd` and enters the generic `MONPRO` (pc 1746). -/
 theorem run_commonFallback (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008)
@@ -220,7 +220,7 @@ theorem run_commonFallback (s : State) (mem : ByteArray) (hd : UInt256) (pa pb :
       some (mpEntryState s mem pa pb pdst ret rest) := by
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 1751 = true := by
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 1753 = true := by
     rw [hcode]; exact jumpDest1865
   simp [commonFallbackProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     commonFallbackState, mpEntryState, hc4, hc5, hjd,
@@ -228,9 +228,9 @@ theorem run_commonFallback (s : State) (mem : ByteArray) (hd : UInt256) (pa pb :
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- The kernel `setup`: instructions 3110..3171 (pc 4177 = 0x0f6c .. 4263), 62 instructions. -/
-def setup : Block Artifact.submissionArtifact .Osaka 4169 StagedOperand.fullEntryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3151 60 4169 StagedOperand.fullEntryProgram
+/-- The kernel `setup`: instructions 3189..3189 (pc 4128 = 0x0f6c .. 4265), 62 instructions. -/
+def setup : Block Artifact.submissionArtifact .Osaka 4120 StagedOperand.fullEntryProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3109 60 4120 StagedOperand.fullEntryProgram
     (by decide) (by decide) (by rfl) (by decide)
 
 def environment (s : State)
@@ -242,7 +242,7 @@ def environment (s : State)
   ⟨by change Challenge.Modexp.submissionBytecode.size < 2^256; rw [Challenge.Modexp.submissionBytecode_size]; decide,
     hcode, hfork, hrun, hnp⟩
 
-/-- `mul entry` → `common` with `hd = 4264`. -/
+/-- `mul entry` → `common` with `hd = 4266`. -/
 opaque gasSteps_mulEntry (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
@@ -252,7 +252,7 @@ opaque gasSteps_mulEntry (s : State) (mem : ByteArray) (pa pb : Nat)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
-      (commonState s mem (UInt256.ofNat 4256) pa pb pdst ret rest) :=
+      (commonState s mem (UInt256.ofNat 4258) pa pb pdst ret rest) :=
   mulEntry.steps (environment _ hcode hfork hrun hnp) rfl
     (run_mulEntry s mem pa pb pdst ret rest hcap)
 
@@ -273,7 +273,7 @@ opaque gasSteps_common (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat
   commonGuard.steps (environment _ hcode hfork hrun hnp) rfl
     (run_commonGuard s mem hd pa pb pdst ret rest hcap hcode hact hs32)
 
-/-- `common` → generic `MONPRO` (pc 1744) for every other width (any `hd`). -/
+/-- `common` → generic `MONPRO` (pc 1746) for every other width (any `hd`). -/
 opaque gasSteps_commonFallback (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
@@ -293,7 +293,7 @@ opaque gasSteps_commonFallback (s : State) (mem : ByteArray) (hd : UInt256) (pa 
       hcode hfork hrun hnp) rfl
     (run_commonFallback s mem hd pa pb pdst ret rest hcap hcode))
 
-/-- Multiply, four limbs: `mul entry` → `common` → `setup` with `hd = 4264`. -/
+/-- Multiply, four limbs: `mul entry` → `common` → `setup` with `hd = 4266`. -/
 opaque gasSteps_dispatch4 (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
@@ -305,12 +305,12 @@ opaque gasSteps_dispatch4 (s : State) (mem : ByteArray) (pa pb : Nat)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat 128) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
-      (CiosCached.setupState s mem (UInt256.ofNat 4256) pa pb pdst ret rest) :=
+      (CiosCached.setupState s mem (UInt256.ofNat 4258) pa pb pdst ret rest) :=
   (gasSteps_mulEntry s mem pa pb pdst ret rest hcap hrun hcode hfork hnp).trans
-    (gasSteps_common s mem (UInt256.ofNat 4256) pa pb pdst ret rest hcap hrun hcode hfork hnp
+    (gasSteps_common s mem (UInt256.ofNat 4258) pa pb pdst ret rest hcap hrun hcode hfork hnp
       hact (Or.inl hs32))
 
-/-- Multiply, eight limbs: `mul entry` → `common` → `setup` with `hd = 4264`. -/
+/-- Multiply, eight limbs: `mul entry` → `common` → `setup` with `hd = 4266`. -/
 opaque gasSteps_dispatch8 (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
@@ -322,9 +322,9 @@ opaque gasSteps_dispatch8 (s : State) (mem : ByteArray) (pa pb : Nat)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat 256) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
-      (CiosCached.setupState s mem (UInt256.ofNat 4256) pa pb pdst ret rest) :=
+      (CiosCached.setupState s mem (UInt256.ofNat 4258) pa pb pdst ret rest) :=
   (gasSteps_mulEntry s mem pa pb pdst ret rest hcap hrun hcode hfork hnp).trans
-    (gasSteps_common s mem (UInt256.ofNat 4256) pa pb pdst ret rest hcap hrun hcode hfork hnp
+    (gasSteps_common s mem (UInt256.ofNat 4258) pa pb pdst ret rest hcap hrun hcode hfork hnp
       hact (Or.inr hs32))
 
 /-- Multiply, any other width: `mul entry` → `common` → generic `MONPRO`. -/
@@ -342,7 +342,7 @@ opaque gasSteps_dispatchFallback (s : State) (mem : ByteArray) (pa pb : Nat)
       (dispatchState s mem pa pb pdst ret rest)
       (mpEntryState s mem pa pb pdst ret rest) :=
   (gasSteps_mulEntry s mem pa pb pdst ret rest hcap hrun hcode hfork hnp).trans
-    (gasSteps_commonFallback s mem (UInt256.ofNat 4256) pa pb pdst ret rest hcap hrun hcode
+    (gasSteps_commonFallback s mem (UInt256.ofNat 4258) pa pb pdst ret rest hcap hrun hcode
       hfork hnp hact h128 h256)
 
 /-- `common` → generic `MONPRO` stated with the width word: `S32 = 32 * n` with `n ∉ {4, 8}`. -/
@@ -376,7 +376,7 @@ opaque gasSteps_commonFallbackOfWidth (s : State) (mem : ByteArray) (hd : UInt25
     exact hn8 (by omega)
   exact gasSteps_commonFallback s mem hd pa pb pdst ret rest hcap hrun hcode hfork hnp hact h128 h256
 
-/-- The kernel `setup` (pc 4177 → `hd`): stages `a` at 2368, zeroes `t` and builds the
+/-- The kernel `setup` (pc 4128 → `hd`): stages `a` at 2368, zeroes `t` and builds the
 row-0 frame `[pbi, hd, pb-32, l1Target n, …, inv, m0, tl, m96, m64, m32, aEnd, pdst, ret]`. -/
 opaque gasSteps_setup (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
@@ -406,7 +406,7 @@ opaque gasSteps_setup (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Na
       hcds hs32 hml (by rw [hcode]; exact hjump))
 
 /-- `common` → `setup` → row-0 head at `hd` for a four- or eight-limb width (any `hd`;
-4264 for the multiply, 2464 for the square). -/
+4266 for the multiply, 2464 for the square). -/
 opaque gasSteps_commonSetup (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
@@ -471,7 +471,7 @@ opaque gasSteps_commonSetupInput (s : State) (mem : ByteArray) (hd : UInt256) (p
   exact gasSteps_commonSetup s mem hd pa pb n pdst ret rest hcap hrun hcode hfork hnp hact hn
     hpaFit hpb hpbFit hcds hs32 hml hjump
 
-/-- Multiply, four or eight limbs: `mul entry` → `common` → `setup` → row-0 head at 4264
+/-- Multiply, four or eight limbs: `mul entry` → `common` → `setup` → row-0 head at 4266
 (the base's `gasSteps_dispatch4/8` followed by its `gasSteps_entry`). -/
 opaque gasSteps_mulSetup (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
@@ -489,13 +489,13 @@ opaque gasSteps_mulSetup (s : State) (mem : ByteArray) (pa pb n : Nat)
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
       (CiosCached.outState s (mpZeroed s (StagedOperand.stage mem pa n) n) pb n 0
-        (UInt256.ofNat 4256) (CiosCached.l1Target n)
+        (UInt256.ofNat 4258) (CiosCached.l1Target n)
         (MachineState.readWord mem 2720) (MachineState.readWord mem (32 * n - 32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
           MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
           UInt256.ofNat (pa + 32 * n - 32) :: pdst :: ret :: rest)) :=
   (gasSteps_mulEntry s mem pa pb pdst ret rest (by omega) hrun hcode hfork hnp).trans
-    (gasSteps_commonSetup s mem (UInt256.ofNat 4256) pa pb n pdst ret rest hcap hrun hcode hfork
+    (gasSteps_commonSetup s mem (UInt256.ofNat 4258) pa pb n pdst ret rest hcap hrun hcode hfork
       hnp hact hn hpaFit hpb hpbFit hcds hs32 hml jumpDestRowHead')
 
 end Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch

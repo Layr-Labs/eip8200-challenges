@@ -22,7 +22,7 @@ def fullEntryProgram : List Instr :=
 
 theorem fullEntryProgram_length : fullEntryProgram.length = 60 := rfl
 
-/-- The whole `setup`: from `setupState` (pc 4177, `[hd, pa, pb, dst, ret] ++ rest`) to the
+/-- The whole `setup`: from `setupState` (pc 4128, `[hd, pa, pb, dst, ret] ++ rest`) to the
 row-0 head at `hd` with the staged, zeroed memory and `ent = l1Target n`. -/
 theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256)
@@ -63,8 +63,8 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (EntryPrefix.displacement mem) rest hcap
   have hlow := EntryPrefix.run_low { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb)
-    (UInt256.ofNat 4286 + EntryPrefix.displacement mem)
-    (UInt256.ofNat 4578 + EntryPrefix.displacement mem)
+    (UInt256.ofNat 4288 + EntryPrefix.displacement mem)
+    (UInt256.ofNat 4580 + EntryPrefix.displacement mem)
     dst ret m0 inv aEnd tl m96 m32 rest hcap hact
   have hprefix := runInstructions_append_some _ _ _ _ _
     (runInstructions_append_some _ _ _ _ _ hreads hshuffle) hlow

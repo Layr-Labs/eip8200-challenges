@@ -8,20 +8,20 @@ set_option maxHeartbeats 2000000
 /-!
 # Located blocks of the in-kernel squaring loop (`sq_exit` / `more` / `again`)
 
-The R0 artifact keeps the square's row frame at the kernel exit: the dispatch at 4840
-sends a square to `sq_exit` (4907), which
+The R0 artifact keeps the square's row frame at the kernel exit: the dispatch at 4842
+sends a square to `sq_exit` (4908), which
 
 * decrements the square counter in memory word 2624 (`0x2440`, written by the caller) and
   stores it back;
 * if it is still non-zero, jumps to `more` (2400), which calls the unchanged final
   conditional subtraction as a **subroutine** (`PUSH2 again DUP16 PUSH2 guard JUMP`, so the
-  CSUB sees only `[pdst, again]` above the retained frame) and comes back at `again` (4982);
-* `again` (4982) re-stages the operand (`MCOPY 0x800 → 0x2300`), re-zeroes the accumulator
+  CSUB sees only `[pdst, again]` above the retained frame) and comes back at `again` (4984);
+* `again` (4984) re-stages the operand (`MCOPY 0x800 → 0x2300`), re-zeroes the accumulator
   (`CALLDATACOPY` of the calldata tail) and resets the frame's pointer, first-loop entry and
   previous-limb slots, then falls into `sq_row` (2496) — exactly the row-0 state that
   `Cios2Dispatch.gasSteps_commonSetupInput` produces for a fresh call;
-* if the counter reached zero, `last` (4924) overwrites the frame's `ret` slot with
-  `after_sq` (3360) and leaves through `nx` (4849), the 14 `POP`s and the CSUB.
+* if the counter reached zero, `last` (4925) overwrites the frame's `ret` slot with
+  `after_sq` (3360) and leaves through `nx` (4851), the 14 `POP`s and the CSUB.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.SquareLoopBlocks
@@ -36,11 +36,11 @@ open Monpro CiosCached CarryRowBlocks CarryRowModel SquareRows
 Named so that a rider restack relocates them once, in the regenerator's `def pcX : Nat := N`
 form, instead of once per use site. -/
 
-def pcNx : Nat := 4860
-def pcSqExit : Nat := 4918
-def pcLast : Nat := 4934
-def pcMore : Nat := 4943
-def pcAgain : Nat := 4954
+def pcNx : Nat := 4862
+def pcSqExit : Nat := 4919
+def pcLast : Nat := 4935
+def pcMore : Nat := 4945
+def pcAgain : Nat := 4956
 
 /-! ## The retained frame -/
 
@@ -48,7 +48,7 @@ def pcAgain : Nat := 4954
 the kernel exit and through the whole loop. -/
 def frameStack (n : Nat) (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) :
     List UInt256 → List UInt256 := fun rest =>
-  [pbi, UInt256.ofNat 4979, UInt256.ofNat (2368 - 32), ent, negative32, allOnes, l2Target n,
+  [pbi, UInt256.ofNat 4981, UInt256.ofNat (2368 - 32), ent, negative32, allOnes, l2Target n,
     inv, m0, tl, m96, m64, m32, aprev, pdst, ret] ++ rest
 
 /-- The loop's states differ only in the program counter and the memory. -/
@@ -62,32 +62,32 @@ def frameAt (pc : Nat) (s : State) (mem : ByteArray) (n : Nat)
 theorem frameAt_eq_sqExitState (s : State) (mem : ByteArray) (n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) :
     frameAt pcSqExit s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest =
-      CiosCachedTailDefs.sqExitState s mem pbi 2368 n (UInt256.ofNat 4979) ent inv m0
+      CiosCachedTailDefs.sqExitState s mem pbi 2368 n (UInt256.ofNat 4981) ent inv m0
         (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) := rfl
 
 /-- The `nx` `JUMPDEST` state of the last square. -/
 theorem frameAt_eq_nxJdState (s : State) (mem : ByteArray) (n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) :
     frameAt pcNx s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest =
-      CiosCachedTailDefs.nxJdState s mem pbi 2368 n (UInt256.ofNat 4979) ent inv m0
+      CiosCachedTailDefs.nxJdState s mem pbi 2368 n (UInt256.ofNat 4981) ent inv m0
         (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) := rfl
 
 /-! ## Programs -/
 
-/-- `sq_exit` (4907): load the counter, decrement, store it back, branch to `more`. -/
+/-- `sq_exit` (4908): load the counter, decrement, store it back, branch to `more`. -/
 def sqExitProgram : List Instr :=
   [.op .JUMPDEST, .push 2 2624, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .push 2 2624, .op .MSTORE, .push 2 4943, .op .JUMPI]
+   .op (.Dup ⟨0, by decide⟩), .push 2 2624, .op .MSTORE, .push 2 4945, .op .JUMPI]
 
-/-- `last` (4924): the frame's `ret` slot becomes `after_sq`, then leave through `nx`. -/
+/-- `last` (4925): the frame's `ret` slot becomes `after_sq`, then leave through `nx`. -/
 def lastProgram : List Instr :=
-  [.push 2 3352, .op (.Swap ⟨15, by decide⟩), .op .POP, .push 2 4860, .op .JUMP]
+  [.push 2 4207, .push 2 2368, .push 2 4877, .op .JUMP]
 
 /-- `more` (2400): call the CSUB as a subroutine returning to `again`. -/
 def moreProgram : List Instr :=
-  [.op .JUMPDEST, .push 2 4954, .push 2 2368, .push 2 4875, .op .JUMP]
+  [.op .JUMPDEST, .push 2 4956, .push 2 2368, .push 2 4877, .op .JUMP]
 
-/-- `again` (4982): re-stage, re-zero, reset three frame slots, fall into `sq_row`. -/
+/-- `again` (4984): re-stage, re-zero, reset three frame slots, fall into `sq_row`. -/
 def againProgram : List Instr :=
   [.op .JUMPDEST, .push 2 2688, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .push 1 64, .op .ADD, .op .CALLDATASIZE, .push 2 2048,
    .op .CALLDATACOPY,
@@ -97,39 +97,39 @@ def againProgram : List Instr :=
 
 /-! ## Located blocks -/
 
-def sqExitBlock : Block Artifact.submissionArtifact .Osaka 4918 sqExitProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3762 10 4918 sqExitProgram
+def sqExitBlock : Block Artifact.submissionArtifact .Osaka 4919 sqExitProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3753 10 4919 sqExitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def lastBlock : Block Artifact.submissionArtifact .Osaka 4934 lastProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3772 5 4934 lastProgram
+def lastBlock : Block Artifact.submissionArtifact .Osaka 4935 lastProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3763 4 4935 lastProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def moreBlock : Block Artifact.submissionArtifact .Osaka 4943 moreProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3777 5 4943 moreProgram
+def moreBlock : Block Artifact.submissionArtifact .Osaka 4945 moreProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3767 5 4945 moreProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def againBlock : Block Artifact.submissionArtifact .Osaka 4954 againProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3782 18 4954 againProgram
+def againBlock : Block Artifact.submissionArtifact .Osaka 4956 againProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3772 18 4956 againProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-! ## Jump destinations of the loop -/
 
 theorem jumpDest4753 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4943 = true :=
-  Artifact.isValidJumpDest_index 3777 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4945 = true :=
+  Artifact.isValidJumpDest_index 3767 (by rfl)
 
 theorem jumpDest4762 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4954 = true :=
-  Artifact.isValidJumpDest_index 3782 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4956 = true :=
+  Artifact.isValidJumpDest_index 3772 (by rfl)
 
 theorem jumpDest3272 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3352 = true :=
-  Artifact.isValidJumpDest_index 2533 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3303 = true :=
+  Artifact.isValidJumpDest_index 2491 (by rfl)
 
 theorem jumpDest4683 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4875 = true :=
-  Artifact.isValidJumpDest_index 3734 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4877 = true :=
+  Artifact.isValidJumpDest_index 3726 (by rfl)
 
 /-! ## The counter word -/
 

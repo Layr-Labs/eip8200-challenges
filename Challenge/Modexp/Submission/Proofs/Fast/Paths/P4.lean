@@ -10,15 +10,15 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 1325..1326, pc 1764..1767: jump to the appended full-base
+/-- Instructions 1325..1326, pc 1766..1769: jump to the appended full-base
 dispatcher. The remaining decoded instructions through index 1215 are
-unreachable padding, preserving the old loop head at index 1216 / pc 1793. -/
+unreachable padding, preserving the old loop head at index 1216 / pc 1795. -/
 def blk1195 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1116 2 3005,
+  [pushAt 1116 2 3007,
    opAt 1117 .JUMP]
 
-/-- Instructions 1216..1352, pc 1793..1801. -/
+/-- Instructions 1216..1352, pc 1795..1803. -/
 def blk1216 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1118 .JUMPDEST,
@@ -28,17 +28,17 @@ def blk1216 :
    pushAt 1122 2 1580,
    opAt 1123 .JUMPI]
 
-/-- Instructions 1353..1358, pc 1802..1817. -/
+/-- Instructions 1353..1358, pc 1804..1819. -/
 def blk1223 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1124 2 1537,
    pushAt 1125 2 256,
    pushAt 1126 2 1280,
    pushAt 1127 2 256,
-   pushAt 1128 2 4141,
+   pushAt 1128 2 4092,
    opAt 1129 .JUMP]
 
-/-- Instructions 1359..1379, pc 1818..1804. -/
+/-- Instructions 1359..1379, pc 1820..1806. -/
 def blk1229 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1130 .JUMPDEST,
@@ -60,10 +60,10 @@ def blk1229 :
    pushAt 1146 2 256,
    pushAt 1147 2 768,
    pushAt 1148 2 256,
-   pushAt 1149 2 2023,
+   pushAt 1149 2 2025,
    opAt 1150 .JUMP]
 
-/-- Instructions 1332..1384, pc 1728..1812. -/
+/-- Instructions 1332..1384, pc 1728..1814. -/
 def blk1250 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1151 .JUMPDEST,

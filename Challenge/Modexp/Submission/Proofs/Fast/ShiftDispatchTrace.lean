@@ -15,7 +15,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 
 theorem jump_cell (i : Nat) (hi : i < 4) :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (UInt256.ofNat (3770 + 39 * i)).toNat = true := by
+      (UInt256.ofNat (3721 + 39 * i)).toNat = true := by
   interval_cases i
   · exact ShiftUnrollBindings.jump3684
   · exact ShiftUnrollBindings.jump3723
@@ -25,12 +25,12 @@ theorem jump_cell (i : Nat) (hi : i < 4) :
 theorem run_dispatch (s : State) (um : ByteArray) (q : UInt256)
     (n bsize esize msize k : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hact : 88 ≤ s.activeWords.toNat)
-    (hcache : MachineState.readWord um 1696 = ShiftCacheModel.entryWord n)
+    (hcache : MachineState.readWord um 1698 = ShiftCacheModel.entryWord n)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
     runInstructions ShiftUnrollBindings.dispatchProgram
       (Shift.macDispatchState s um q n bsize esize msize k) =
       some (Shift.macLoopState s um q n bsize esize msize k 0) := by
-  have haw : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1696 32) =
+  have haw : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1698 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have he := ShiftUnrollEntry.entryWord_eq n hn hn32
   have hjump := jump_cell (ShiftUnrollEntry.cellIndex n 0) (ShiftUnrollEntry.index_lt n 0)

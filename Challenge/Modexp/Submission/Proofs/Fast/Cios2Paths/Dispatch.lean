@@ -7,14 +7,14 @@ set_option maxHeartbeats 4000000
 /-!
 # The kernel's `mul entry` and shared `common` width guard (sqCP1m)
 
-* `mul entry` (instruction 3093, pc 4067 = 0x0f50): `JUMPDEST; PUSH2 0x0fc5` pushes the
-  multiply row head `hd = 4264` and falls through into `common`.
-* `common` (instruction 3095, pc 4153 = 0x0f54, also entered directly by the square call
+* `mul entry` (instruction 3189, pc 4018 = 0x0f50): `JUMPDEST; PUSH2 0x0fc5` pushes the
+  multiply row head `hd = 4266` and falls through into `common`.
+* `common` (instruction 3189, pc 4104 = 0x0f54, also entered directly by the square call
   with `hd = 2464`): `JUMPDEST; PUSH2 0x2480; MLOAD; DUP1; PUSH1 0x80; EQ; SWAP1;
   PUSH2 0x100; EQ; OR; PUSH2 0x0f6c; JUMPI` — widths of four and eight limbs jump to the
-  kernel `setup` (pc 4177).
-* fallback (instruction 3107, pc 3904): `POP; PUSH2 0x0683; JUMP` drops `hd` and enters the
-  generic `MONPRO` at pc 1744.
+  kernel `setup` (pc 4128).
+* fallback (instruction 3189, pc 3904): `POP; PUSH2 0x0683; JUMP` drops `hd` and enters the
+  generic `MONPRO` at pc 1746.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Dispatch
@@ -25,7 +25,7 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open WindowTwentyOneBinding
 
 def mulEntryProgram : List Instr :=
-  [.op .JUMPDEST, .push 2 4256]
+  [.op .JUMPDEST, .push 2 4258]
 
 def commonGuardProgram : List Instr :=
   [.op .JUMPDEST,
@@ -38,22 +38,22 @@ def commonGuardProgram : List Instr :=
    .push 2 256,
    .op .EQ,
    .op .OR,
-   .push 2 4169,
+   .push 2 4120,
    .op .JUMPI]
 
 def commonFallbackProgram : List Instr :=
-  [.op .POP, .push 2 1751, .op .JUMP]
+  [.op .POP, .push 2 1753, .op .JUMP]
 
-def mulEntry : Block Artifact.submissionArtifact .Osaka 4141 mulEntryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3134 2 4141 mulEntryProgram
+def mulEntry : Block Artifact.submissionArtifact .Osaka 4092 mulEntryProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3092 2 4092 mulEntryProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def commonGuard : Block Artifact.submissionArtifact .Osaka 4145 commonGuardProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3136 12 4145 commonGuardProgram
+def commonGuard : Block Artifact.submissionArtifact .Osaka 4096 commonGuardProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3094 12 4096 commonGuardProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def commonFallback : Block Artifact.submissionArtifact .Osaka 4164 commonFallbackProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3148 3 4164 commonFallbackProgram
+def commonFallback : Block Artifact.submissionArtifact .Osaka 4115 commonFallbackProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3106 3 4115 commonFallbackProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 end Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Dispatch

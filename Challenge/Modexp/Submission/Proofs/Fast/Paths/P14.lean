@@ -2,7 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.Defs
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
-/-! Basic-block instruction paths, group 14 (instructions 1867..1892).
+/-! Basic-block instruction paths, group 14 (instructions 1869..1894).
 
 `CCB` (pc 2624) replaces the second `DOUBLE256` call: it doubles `CC` once
 through `ADDMOD` and then squares it eight times through `MONPRO`, which
@@ -15,38 +15,38 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 1867..1873, pc 2624..2644: `CCB` entry, `ADDMOD(px, px) → px`. -/
+/-- Instructions 1869..1875, pc 2624..2646: `CCB` entry, `ADDMOD(px, px) → px`. -/
 def blk1742 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   []
 
-/-- Instructions 1876..1882, pc 2560..2658: `MONPRO(px, px) → px`. -/
+/-- Instructions 1878..1884, pc 2560..2660: `MONPRO(px, px) → px`. -/
 def blk1751 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1605 .JUMPDEST,
-   pushAt 1606 2 2194,
-   opAt 1607 (.Dup ⟨2, by decide⟩),
-   opAt 1608 (.Dup ⟨0, by decide⟩),
-   opAt 1609 (.Dup ⟨0, by decide⟩),
-   pushAt 1610 2 4141,
-   opAt 1611 .JUMP]
+  [opAt 1607 .JUMPDEST,
+   pushAt 1608 2 2196,
+   opAt 1609 (.Dup ⟨2, by decide⟩),
+   opAt 1610 (.Dup ⟨0, by decide⟩),
+   opAt 1611 (.Dup ⟨0, by decide⟩),
+   pushAt 1612 2 4092,
+   opAt 1613 .JUMP]
 
-/-- Instructions 1888..1889, pc 2659..2668: decrement and loop back. -/
+/-- Instructions 1888..1891, pc 2661..2670: decrement and loop back. -/
 def blk1758 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1612 .JUMPDEST,
-   pushAt 1613 0 0,
-   opAt 1614 .NOT,
-   opAt 1615 .ADD,
-   opAt 1616 (.Dup ⟨0, by decide⟩),
-   pushAt 1617 2 2183,
-   opAt 1618 .JUMPI]
+  [opAt 1614 .JUMPDEST,
+   pushAt 1615 0 0,
+   opAt 1616 .NOT,
+   opAt 1617 .ADD,
+   opAt 1618 (.Dup ⟨0, by decide⟩),
+   pushAt 1619 2 2185,
+   opAt 1620 .JUMPI]
 
-/-- Instructions 1890..1892, pc 2669..3033: drop the counter and return. -/
+/-- Instructions 1892..1894, pc 2671..3035: drop the counter and return. -/
 def blk1765 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1619 .POP,
-   opAt 1620 .POP,
-   opAt 1621 .JUMP]
+  [opAt 1621 .POP,
+   opAt 1622 .POP,
+   opAt 1623 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast
