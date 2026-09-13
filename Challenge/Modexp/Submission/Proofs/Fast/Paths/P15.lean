@@ -49,7 +49,7 @@ def blk1776 :
   [pushAt 1632 1 1,
    pushAt 1633 2 2080,
    opAt 1634 .MSTORE,
-   pushAt 1635 2 4877,
+   pushAt 1635 2 4871,
    opAt 1636 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

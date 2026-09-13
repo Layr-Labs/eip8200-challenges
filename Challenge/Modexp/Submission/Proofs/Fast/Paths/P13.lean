@@ -10,7 +10,7 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 1810..1850, pc 2402..2608. -/
+/-- Instructions 1810..1850, pc 2411..2608. -/
 def blk1683 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1549 .JUMPDEST,

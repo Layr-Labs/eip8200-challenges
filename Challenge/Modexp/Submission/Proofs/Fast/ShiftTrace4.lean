@@ -63,20 +63,37 @@ theorem Env.act296 {s : State} (e : Env s) : 88 ≤ s.activeWords.toNat :=
 
 /-! ## The negation loop and the estimator prologue -/
 
-/-- One negation-loop iteration with limbs to go: body, exit test, decrement. -/
+/-- One negation-loop iteration with limbs to go: body, then the rotated exit test jumps back. -/
 def gasSteps_negIter (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
     (hn32 : n ≤ 8) (hj : j + 1 < n) (e : Env s) :
     Challenge.EvmProof.GasSteps (negLoopState s mem n bsize esize msize j)
       (negLoopState s mem n bsize esize msize (j + 1)) :=
-  ((soundEnv blk2896a e
-      (run_negBodyA s mem (UInt256.ofNat (Monpro.ptrAt (32 * n - 32) j)) n bsize esize msize j
-        hn32 (by omega) (negPtr_toNat n j hn32 (by omega)) e.act296 e.code e.run)).trans
-    (soundEnv blk2896b e
-      (run_negTail s (negStep mem n (j + 1)).memory
-        (UInt256.ofNat (Monpro.ptrAt (32 * n - 32) j)) (negStep mem n (j + 1)).flag
-        n bsize esize msize (negPtr_ne_zero n j hn32 hj) e.code e.run))).trans
-    (soundEnv blk2915 e
-      (run_negNext s mem n bsize esize msize j e.code e.run))
+  Challenge.EvmProof.GasSteps.cast
+    ((soundEnv blk2896a e
+        (run_negBodyA s mem (UInt256.ofNat (Monpro.ptrAt (32 * n - 32) j)) n bsize esize msize j
+          hn32 (by omega) (negPtr_toNat n j hn32 (by omega)) e.act296 e.code e.run)).trans
+      (soundEnv blk2896b e
+        (run_negTail s (negStep mem n (j + 1)).memory
+          (UInt256.ofNat (Monpro.ptrAt (32 * n - 32) j)) (negStep mem n (j + 1)).flag
+          n bsize esize msize (negPtr_ne_zero n j hn32 hj) e.code e.run)))
+    rfl (by rw [negTop_succ] <;> rfl)
+
+/-- The last limb: body, then the exit test falls through into `NEG_DONE`. -/
+def gasSteps_negLast (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s) :
+    Challenge.EvmProof.GasSteps (negLoopState s mem n bsize esize msize (n - 1))
+      (negDoneState s mem n bsize esize msize) :=
+  Challenge.EvmProof.GasSteps.cast
+    ((soundEnv blk2896a e
+        (run_negBodyA s mem (UInt256.ofNat (Monpro.ptrAt (32 * n - 32) (n - 1))) n bsize esize
+          msize (n - 1) hn32 (by omega) (negPtr_toNat n (n - 1) hn32 (by omega)) e.act296 e.code
+          e.run)).trans
+      (soundEnv blk2896b e
+        (run_negExit s (negStep mem n (n - 1 + 1)).memory
+          (UInt256.ofNat (Monpro.ptrAt (32 * n - 32) (n - 1))) (negStep mem n (n - 1 + 1)).flag
+          n bsize esize msize
+          (by rw [negPtr_toNat n (n - 1) hn32 (by omega)]; omega) e.code e.run)))
+    rfl (by rw [negTop_succ, Nat.sub_add_cancel hn] <;> rfl)
 
 def gasSteps_negLoop (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s) :
@@ -84,8 +101,7 @@ def gasSteps_negLoop (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       (negDoneState s mem n bsize esize msize) :=
   (Challenge.EvmProof.GasSteps.iterateBounded (I := fun j => negLoopState s mem n bsize esize msize j)
       (n - 1) (fun j hj => gasSteps_negIter s mem n bsize esize msize j hn32 (by omega) e)).trans
-    (soundEnv blk2896 e
-      (run_negLast s mem n bsize esize msize hn hn32 e.act296 e.code e.run))
+    (gasSteps_negLast s mem n bsize esize msize hn hn32 e)
 
 /-- From the first `CSUB` return to the shift loop head with `k = n`. -/
 def gasSteps_prologue (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
@@ -339,6 +355,21 @@ def gasSteps_subLastIter (s : State) (mem : ByteArray) (n bsize esize msize k : 
           e.code e.run)))
     rfl (by rw [Nat.sub_add_cancel hn]; rfl)
 
+/-- The subtract round body, from `SUBL` back to `SUB_CHECK`. -/
+def gasSteps_subBody (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s)
+    (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n)) :
+    Challenge.EvmProof.GasSteps (subEntryState s mem n bsize esize msize k)
+      (subCheckState s (subRoundMem mem n) n bsize esize msize k) :=
+  (((soundEnv blk3210 e
+      (run_subEntry s mem n bsize esize msize k e.act296 htl e.code e.run)).trans
+    (Challenge.EvmProof.GasSteps.iterateBounded
+      (I := fun j => subInnerState s mem n bsize esize msize k j) (n - 1) (fun j hj =>
+        gasSteps_subIter s mem n bsize esize msize k j hn32 (by omega) e))).trans
+    (gasSteps_subLastIter s mem n bsize esize msize k hn hn32 e)).trans
+    (soundEnv blk3245 e
+      (run_subTail s mem n bsize esize msize k e.act296 e.code e.run))
+
 /-- One subtract round, from `SUB_CHECK` with `TN ≠ 0` back to `SUB_CHECK`. -/
 def gasSteps_subRound (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s)
@@ -346,16 +377,9 @@ def gasSteps_subRound (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
     (htn : (MachineState.readWord mem 2080).toNat ≠ 0) :
     Challenge.EvmProof.GasSteps (subCheckState s mem n bsize esize msize k)
       (subCheckState s (subRoundMem mem n) n bsize esize msize k) :=
-  ((((soundEnv blk3204 e
+  (soundEnv blk3204g e
       (run_subCheck_go s mem n bsize esize msize k e.act296 htn e.code e.run)).trans
-    (soundEnv blk3210 e
-      (run_subEntry s mem n bsize esize msize k e.act296 htl e.code e.run))).trans
-    (Challenge.EvmProof.GasSteps.iterateBounded
-      (I := fun j => subInnerState s mem n bsize esize msize k j) (n - 1) (fun j hj =>
-        gasSteps_subIter s mem n bsize esize msize k j hn32 (by omega) e))).trans
-    (gasSteps_subLastIter s mem n bsize esize msize k hn hn32 e)).trans
-    (soundEnv blk3245 e
-      (run_subTail s mem n bsize esize msize k e.act296 e.code e.run))
+    (gasSteps_subBody s mem n bsize esize msize k hn hn32 e htl)
 
 /-- `c` subtract rounds followed by the exit to the `CSUB` call. -/
 def gasSteps_subRounds (s : State) (mem : ByteArray) (n bsize esize msize k c : Nat)
@@ -380,7 +404,7 @@ def gasSteps_subRounds (s : State) (mem : ByteArray) (n bsize esize msize k c : 
 
 theorem jumpD5357 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat pcAfterCsub).toNat = true :=
-  Exp.jumpD pcAfterCsub (by decide) jumpDest5322
+  Exp.jumpD pcAfterCsub (by decide) jumpDest4839
 
 theorem jumpD4692 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat pcAfterCsub0).toNat = true :=
@@ -388,7 +412,7 @@ theorem jumpD4692 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
 
 /-- `CSUB(BASE)` from the routine's call block back to `AFTER_CSUB`. -/
 def gasSteps_csubStep (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8) (e : Env s)
+    (hk : 1 ≤ k) (hk32 : k ≤ 32) (hn : 2 ≤ n) (hn32 : n ≤ 8) (e : Env s)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
@@ -402,13 +426,13 @@ def gasSteps_csubStep (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
   have htn' : (MachineState.readWord (Csub.csStep mem n n).memory 2080).toNat ≤ 1 := by
     rw [Csub.csStep_readWord_disjoint mem n 2080 (by omega) (Or.inr (by omega)) n le_rfl]
     exact htn
-  have hlen : (UInt256.ofNat k :: outer n bsize esize msize).length ≤ 1008 := by
+  have hlen : (UInt256.ofNat (k - 1) :: outer n bsize esize msize).length ≤ 1008 := by
     simp [outer, Exp.outer]
   Challenge.EvmProof.GasSteps.cast
     ((soundEnv blk3253 e
-        (run_csubCall s mem n bsize esize msize k e.code e.run)).trans
+        (run_csubCall s mem n bsize esize msize k hk hk32 e.code e.run)).trans
       (Csub.gasSteps_csub s mem n (UInt256.ofNat 512) (UInt256.ofNat pcAfterCsub)
-        (UInt256.ofNat k :: outer n bsize esize msize) hlen e.code e.fork e.run e.np
+        (UInt256.ofNat (k - 1) :: outer n bsize esize msize) hlen e.code e.fork e.run e.np
         e.act296 hn (by omega) jumpD5357 hml htl hs32'
         (by rw [show (UInt256.ofNat 512).toNat = 512 by decide]; omega) htn'))
     rfl (by
@@ -568,28 +592,76 @@ def gasSteps_step (s : State) (mem : ByteArray) (n bsize esize msize k mm minv :
       (csubCallState s (fixMem (stepMid mem n) n mm (stepNeg mem n)) n bsize esize msize k) := by
     by_cases h0 : stepNeg mem n = UInt256.ofNat 0
     · have hc0 : addCount (stepMid mem n) n mm (stepNeg mem n) = 0 := rf'.posCount h0
-      have start : Challenge.EvmProof.GasSteps
-          (midState s (stepU mem n) (stepQ mem n) n bsize esize msize k)
-          (subCheckState s (stepMid mem n) n bsize esize msize k) :=
-        soundEnv blk3125 e
-          (run_mid_pos s (stepU mem n) (stepQ mem n) n bsize esize msize k e.act296 h0
-            e.code e.run)
-      have start' : Challenge.EvmProof.GasSteps
-          (midState s (stepU mem n) (stepQ mem n) n bsize esize msize k)
-          (subCheckState s
-            (addRounds (stepMid mem n) n (addCount (stepMid mem n) n mm (stepNeg mem n)))
-            n bsize esize msize k) :=
-        Challenge.EvmProof.GasSteps.cast start rfl (by rw [hc0, addRounds_zero])
-      exact start'.trans tail
+      have hA : (addRounds (stepMid mem n) n (addCount (stepMid mem n) n mm (stepNeg mem n))) = stepMid mem n := by rw [hc0, addRounds_zero]
+      by_cases hs0 : subCount (addRounds (stepMid mem n) n (addCount (stepMid mem n) n mm (stepNeg mem n))) n mm = 0
+      · -- `neg = 0`, `TN = 0`: the middle block falls straight into the `CSUB` call.
+        have hfix : fixMem (stepMid mem n) n mm (stepNeg mem n) = stepMid mem n := by
+          show subRounds (addRounds (stepMid mem n) n (addCount (stepMid mem n) n mm (stepNeg mem n))) n (subCount (addRounds (stepMid mem n) n (addCount (stepMid mem n) n mm (stepNeg mem n))) n mm) = stepMid mem n
+          rw [hs0, show subRounds (addRounds (stepMid mem n) n (addCount (stepMid mem n) n mm (stepNeg mem n))) n 0 = (addRounds (stepMid mem n) n (addCount (stepMid mem n) n mm (stepNeg mem n))) from rfl, hA]
+        have htz0 : (MachineState.readWord (stepMid mem n) 2080).toNat = 0 := by
+          have h := rf'.subDoneTn
+          rw [hfix] at h
+          exact h
+        have htz : tnOf (stepMac mem n).memory (stepMac mem n).carry (stepQ mem n) = UInt256.ofNat 0 := by
+          rw [← midMem_tn]
+          exact Challenge.EvmProof.Word.word_ext (htz0.trans (by decide))
+        have start : Challenge.EvmProof.GasSteps
+            (midState s (stepU mem n) (stepQ mem n) n bsize esize msize k)
+            (csubCallState s (stepMid mem n) n bsize esize msize k) :=
+          soundEnv blk3125 e
+            (run_mid_zero s (stepU mem n) (stepQ mem n) n bsize esize msize k e.act296 h0 htz
+              e.code e.run)
+        exact Challenge.EvmProof.GasSteps.cast start rfl (by rw [hfix])
+      · -- `neg = 0`, `TN ≠ 0`: through `UNC` straight into `SUBL`, then the rounds.
+        have hc : 1 ≤ subCount (addRounds (stepMid mem n) n (addCount (stepMid mem n) n mm (stepNeg mem n))) n mm := by omega
+        have htnA : (MachineState.readWord (addRounds (stepMid mem n) n (addCount (stepMid mem n) n mm (stepNeg mem n))) 2080).toNat ≠ 0 := rf'.subRoundsTn 0 hc
+        have htnM : (MachineState.readWord (stepMid mem n) 2080).toNat ≠ 0 := by
+          have h := htnA
+          rw [hA] at h
+          exact h
+        have htnT : (tnOf (stepMac mem n).memory (stepMac mem n).carry (stepQ mem n)).toNat ≠ 0 := by
+          rw [← midMem_tn]; exact htnM
+        have hz : (stepNeg mem n).toNat = 0 := by rw [h0] <;> decide
+        have toUnc : Challenge.EvmProof.GasSteps
+            (midState s (stepU mem n) (stepQ mem n) n bsize esize msize k)
+            (uncState s (stepMid mem n) n bsize esize msize k (stepNeg mem n)) :=
+          soundEnv blk3125 e
+            (run_mid_unc s (stepU mem n) (stepQ mem n) n bsize esize msize k e.act296
+              (Or.inr htnT) e.code e.run)
+        have toSub : Challenge.EvmProof.GasSteps
+            (uncState s (stepMid mem n) n bsize esize msize k (stepNeg mem n))
+            (subEntryState s (stepMid mem n) n bsize esize msize k) :=
+          soundEnv blkUnc e
+            (run_unc_sub s (stepMid mem n) n bsize esize msize k (stepNeg mem n) hz e.code e.run)
+        have toSubA : Challenge.EvmProof.GasSteps
+            (midState s (stepU mem n) (stepQ mem n) n bsize esize msize k)
+            (subEntryState s (addRounds (stepMid mem n) n (addCount (stepMid mem n) n mm (stepNeg mem n))) n bsize esize msize k) :=
+          Challenge.EvmProof.GasSteps.cast (toUnc.trans toSub) rfl (by rw [hA])
+        have body := gasSteps_subBody s (addRounds (stepMid mem n) n (addCount (stepMid mem n) n mm (stepNeg mem n))) n bsize esize msize k (by omega) hn32 e htlA
+        have htlR : MachineState.readWord (subRoundMem (addRounds (stepMid mem n) n (addCount (stepMid mem n) n mm (stepNeg mem n))) n) 2784 =
+            UInt256.ofNat (2080 + 32 * n) := by
+          rw [show subRoundMem (addRounds (stepMid mem n) n (addCount (stepMid mem n) n mm (stepNeg mem n))) n = subRounds (addRounds (stepMid mem n) n (addCount (stepMid mem n) n mm (stepNeg mem n))) n 1 from rfl,
+            subRounds_readWord_disjoint (addRounds (stepMid mem n) n (addCount (stepMid mem n) n mm (stepNeg mem n))) n 2784 (Or.inr (by omega)) 1]
+          exact htlA
+        have rest := gasSteps_subRounds s (subRoundMem (addRounds (stepMid mem n) n (addCount (stepMid mem n) n mm (stepNeg mem n))) n) n bsize esize msize k
+          (subCount (addRounds (stepMid mem n) n (addCount (stepMid mem n) n mm (stepNeg mem n))) n mm - 1) (by omega) hn32 e htlR
+          (fun i hi => by
+            rw [subRounds_shift]; exact rf'.subRoundsTn (i + 1) (by omega))
+          (by rw [subRounds_shift, Nat.sub_add_cancel hc]; exact rf'.subDoneTn)
+        exact Challenge.EvmProof.GasSteps.cast ((toSubA.trans body).trans rest) rfl
+          (by rw [subRounds_shift, Nat.sub_add_cancel hc] <;> rfl)
     · have h1 : stepNeg mem n = UInt256.ofNat 1 :=
         (negOf_cases (stepMac mem n).memory (stepMac mem n).carry (stepQ mem n)).resolve_left h0
       have hc1 : 1 ≤ addCount (stepMid mem n) n mm (stepNeg mem n) := rf'.negCount h1
+      have hnz : (stepNeg mem n).toNat ≠ 0 := by rw [h1] <;> decide
       have start : Challenge.EvmProof.GasSteps
           (midState s (stepU mem n) (stepQ mem n) n bsize esize msize k)
           (addLoopState s (stepMid mem n) n bsize esize msize k) :=
-        soundEnv blk3125 e
-          (run_mid_neg s (stepU mem n) (stepQ mem n) n bsize esize msize k e.act296 h1
-            e.code e.run)
+        (soundEnv blk3125 e
+          (run_mid_unc s (stepU mem n) (stepQ mem n) n bsize esize msize k e.act296
+            (Or.inl hnz) e.code e.run)).trans
+        (soundEnv blkUnc e
+          (run_unc_add s (stepMid mem n) n bsize esize msize k (stepNeg mem n) hnz e.code e.run))
       have adds := gasSteps_addRounds s (stepMid mem n) n bsize esize msize k
         (addCount (stepMid mem n) n mm (stepNeg mem n)) (by omega) hn32 e hc1 htlMid
         rf'.addRoundsOut (rf'.addLastOut hc1)
@@ -599,18 +671,12 @@ def gasSteps_step (s : State) (mem : ByteArray) (n bsize esize msize k mm minv :
       (afterCsubState s (Csub.csResultMemory (fixMem (stepMid mem n) n mm (stepNeg mem n)) n 512)
         n bsize esize msize k) :=
     gasSteps_csubStep s (fixMem (stepMid mem n) n mm (stepNeg mem n)) n bsize esize msize k
-      hn hn32 e
+      hk hk32 hn hn32 e
       (by rw [hhighFix 2752 (by omega)]; exact hml0)
       (by rw [hhighFix 2784 (by omega)]; exact htl0)
       (by rw [hhighFix 2688 le_rfl]; exact hs320)
       (by rw [rf'.subDoneTn]; decide)
-  have g5 : Challenge.EvmProof.GasSteps
-      (afterCsubState s (Csub.csResultMemory (fixMem (stepMid mem n) n mm (stepNeg mem n)) n 512)
-        n bsize esize msize k)
-      (shiftLoopState s (Csub.csResultMemory (fixMem (stepMid mem n) n mm (stepNeg mem n)) n 512)
-        n bsize esize msize (k - 1)) :=
-    soundEnv blk3258 e
-      (run_afterCsub s _ n bsize esize msize k hk hk32 e.code e.run)
-  exact (((g1.trans g2).trans g3).trans g4).trans g5
+  -- `CSUB` returns to the loop head with `k - 1`: `afterCsubState k` is `shiftLoopState (k - 1)`.
+  exact Challenge.EvmProof.GasSteps.cast (((g1.trans g2).trans g3).trans g4) rfl rfl
 
 end Challenge.Modexp.Submission.Proofs.Fast.Shift
