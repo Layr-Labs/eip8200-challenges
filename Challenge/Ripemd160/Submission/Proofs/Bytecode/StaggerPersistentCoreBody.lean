@@ -17,7 +17,7 @@ def gasSteps (s : State) (h : WordLane) (off limit : UInt256) (rho : List UInt25
     simp only [suffix, JointRightPackModel.suffix, List.length_append, List.length_cons, List.length_nil]
     omega
   have gr := StaggerPersistentCoreRight.gasSteps s h.e h (suffix h off limit rho)
-    hstack (by rfl) hr ha hcode hfork hnp
+    hstack hr ha hcode hfork hnp
   have gp := StaggerPersistentPackBridge.gasSteps s h (StaggerCoreModel.right1 s.memory (StaggerCoreModel.right0 s.memory h))
     off limit rho (by omega) hr ha hcode hfork hnp
   have gc := StaggerCore.gasSteps_pairedSuffix s h.e

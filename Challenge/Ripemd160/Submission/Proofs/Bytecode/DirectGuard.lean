@@ -25,9 +25,9 @@ private def sound (path : List Located) {s t : State}
 
 private def gasSteps_loop (input : ByteArray) :
     GasSteps (loopState input 0) (loopExitState input) := by
-  let step : ∀ n, n < 14 → GasSteps (loopState input n) (loopState input (n + 1)) :=
+  let step : ∀ n, n < 29 → GasSteps (loopState input n) (loopState input (n + 1)) :=
     fun n hn => sound loopPath (run_loop_more input n hn)
-  exact (GasSteps.iterateBounded 14 step).trans
+  exact (GasSteps.iterateBounded 29 step).trans
     (sound loopPath (run_loop_last input))
 
 def gasSteps_target :

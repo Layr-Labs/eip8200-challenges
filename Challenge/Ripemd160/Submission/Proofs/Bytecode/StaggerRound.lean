@@ -205,7 +205,7 @@ theorem rawSum_inputs_junk (mode : Nat) (hm : mode < 9)
       (pack wl wr + junk jl jr) (pack kl kr)
     let a := scalarSum (StaggerBoolean.leftGroup mode) al bl cl dl wl kl
     let b := scalarSum (StaggerBoolean.rightGroup mode) ar br cr dr wr kr
-    (jl < 2 ^ 32 →
+    (jl < 2 ^ 35 →
       Paired144CompactInput.compact x = BitVec.ofNat 256 a.toNat + (BitVec.ofNat 256 b.toNat <<< 72)) ∧
       normalize x = pack a b := by
   dsimp only
