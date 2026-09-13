@@ -15,8 +15,8 @@ open CiosCached CiosCachedMidMemory CarryIface
 open Challenge.Modexp.Submission.Proofs.Fast.CarryRows
 open CarryRowModel CarryResult StagedOperand
 
-/-- A four-limb multiply: `mul entry` (pc 4067) → `common` → `setup` → the four rows (row head
-`hd = 4264`) → the final subtraction (pc 2432). -/
+/-- A four-limb multiply: `mul entry` (pc 4018) → `common` → `setup` → the four rows (row head
+`hd = 4266`) → the final subtraction (pc 2432). -/
 opaque gasSteps_specializedFour (L : RowLemmas) (E : EntryLemmas) (s : State) (mem : ByteArray)
     (pa pb : Nat) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
@@ -43,14 +43,14 @@ opaque gasSteps_specializedFour (L : RowLemmas) (E : EntryLemmas) (s : State) (m
       hread (32*4-32) (Or.inl (by decide)),
       hread 2720 (Or.inr (by decide))] using hminv
   refine (E.gasSteps_mulEntry s mem pa pb pdst ret rest (by omega) hrun hcode hfork hnp).trans ?_
-  refine (E.gasSteps_commonSetup s mem (UInt256.ofNat 4256) pa pb 4 pdst ret rest hcap hrun hcode
+  refine (E.gasSteps_commonSetup s mem (UInt256.ofNat 4258) pa pb 4 pdst ret rest hcap hrun hcode
     hfork hnp hact (by decide) (by omega) hpb hpbFit hcds hs32 hml jumpDest_rowHead).trans ?_
   exact gasSteps_rowsFour L s (stage mem pa 4) pa pb
     (MachineState.readWord mem 2784) (MachineState.readWord mem 2720)
     (MachineState.readWord mem (32*4-32)) (UInt256.ofNat (pa+32*4-32))
     (MachineState.readWord mem 96) (MachineState.readWord mem 64)
     (MachineState.readWord mem 32) pdst ret rest hcap hrun hcode hfork hnp hact
-    hpaFit hpb hpbFit hminv'
+    (Or.inl hpaFit) hpb hpbFit hminv'
     ⟨htl, (hread 2720 (Or.inr (by decide))).symm,
       (hread (32*4-32) (Or.inl (by decide))).symm⟩
     ⟨(hread 96 (Or.inl (by decide))).symm,

@@ -11,7 +11,7 @@ set_option maxHeartbeats 16000000
 # Fast-path certificate with the shift-reduce base conversion
 
 After `Fast.Setup` and the `R1B` guard, execution reaches the dispatcher at
-pc 4071.  When the base is exactly `n` words wide and the modulus has its top
+pc 4022.  When the base is exactly `n` words wide and the modulus has its top
 bit set, the shift-reduce routine converts the base and rejoins the exponent
 phase at `BDONE`; otherwise the old `r0` block runs the unchanged RR-leading
 chain.
@@ -27,8 +27,8 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.RrLeadingTraceCore
 
 theorem jumpD4643 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 3423).toNat = true :=
-  Exp.jumpD 3423 (by decide) jumpDest4608
+    (UInt256.ofNat 3374).toNat = true :=
+  Exp.jumpD 3374 (by decide) jumpDest4608
 
 /-! ## Facts at `BDONE` on the hit path -/
 
@@ -47,7 +47,7 @@ theorem hitFinal_readWord_disjoint (mem input : ByteArray) (n mm addr : Nat) (hn
     (hdisj : (addr + 32 ≤ 256 ∨ 256 + 32 * n ≤ addr) ∧
       (addr + 32 ≤ 512 ∨ 512 + 32 * n ≤ addr) ∧
       (addr + 32 ≤ NEG ∨ NEG + 32 * n ≤ addr) ∧
-      (addr + 32 ≤ PRE_L ∨ PRE_DINV + 64 ≤ addr) ∧
+      (addr + 32 ≤ PRE_L ∨ PRE_DINV + 66 ≤ addr) ∧
       (addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr) ∧
       (addr + 32 ≤ 2080 ∨ 2112 + 32 * n ≤ addr)) :
     MachineState.readWord (hitFinalMem mem input n mm) addr = MachineState.readWord mem addr := by
@@ -59,7 +59,7 @@ theorem hitFinal_preserves (mem input : ByteArray) (n mm ptr cnt v : Nat) (hn : 
     (hdisj : (ptr + 32 * cnt ≤ 256 ∨ 256 + 32 * n ≤ ptr) ∧
       (ptr + 32 * cnt ≤ 512 ∨ 512 + 32 * n ≤ ptr) ∧
       (ptr + 32 * cnt ≤ NEG ∨ NEG + 32 * n ≤ ptr) ∧
-      (ptr + 32 * cnt ≤ PRE_L ∨ PRE_DINV + 64 ≤ ptr) ∧
+      (ptr + 32 * cnt ≤ PRE_L ∨ PRE_DINV + 66 ≤ ptr) ∧
       (ptr + 32 * cnt ≤ 1792 ∨ 1792 + 32 * n ≤ ptr) ∧
       (ptr + 32 * cnt ≤ 2080 ∨ 2112 + 32 * n ≤ ptr))
     (hrep : Model.FastRepresents mem ptr cnt v) :
@@ -349,7 +349,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
       (Exp.gasSteps_r0 s mem1 n bsize esize msize hn hn32 hact hframe1.s32 hcode hfork hrun
         hnp).trans
       (Exp.gasSteps_ccbFull s sub hspec esize msize hmpos hn hn32 1280 (by omega) (by omega)
-        (UInt256.ofNat 2970) (Exp.mcopyMem mem1 1280 1024 (32 * n)) (Limbs.radix ^ n % mm)
+        (UInt256.ofNat 2972) (Exp.mcopyMem mem1 1280 1024 (32 * n)) (Limbs.radix ^ n % mm)
         Exp.jumpD3571 hf2 hcc.1 hcc.2 (Nat.mod_lt _ hmpos) hact296 hcode hfork hrun hnp)
     have hframeDirect : Exp.Frame directMem n bsize minv := by
       dsimp only [directMem]
