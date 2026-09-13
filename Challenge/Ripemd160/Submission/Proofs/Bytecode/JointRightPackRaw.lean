@@ -32,13 +32,13 @@ structure Input where
 def template : List Instr :=
   [ .op (.Swap ⟨3, by decide⟩),
     .op (.Dup ⟨2, by decide⟩),
-    .op (.Dup ⟨5, by decide⟩),
+    .op (.Dup ⟨4, by decide⟩),
+    .op (.Dup ⟨6, by decide⟩),
     .op .NOT,
-    .op (.Dup ⟨5, by decide⟩),
     .op .OR,
     .op .XOR,
     .op .ADD,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 630),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 252),
     .op .MLOAD,
     .op .ADD,
     .op .ADD,
@@ -83,16 +83,16 @@ def template : List Instr :=
     .op (.Dup ⟨6, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHL,
-    .op (.Dup ⟨0, by decide⟩),
-    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨7, by decide⟩),
+    .op (.Dup ⟨1, by decide⟩),
     .op .OR ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
   [ x.rd, x.k, x.rb, x.rc, x.ra, x.re, x.factor, x.lower, x.cache140, x.cache350, x.cache310, x.cache190, x.h4, x.h1, x.h2, x.h3, x.h0, x.off, x.limit ] ++ rho
 def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ (UInt256.lor x.lower (UInt256.shiftLeft x.lower (UInt256.ofNat 144))),
+  [ (UInt256.lor (UInt256.shiftLeft x.lower (UInt256.ofNat 144)) x.lower),
     (UInt256.shiftLeft x.lower (UInt256.ofNat 144)),
     (UInt256.lor x.h4 (UInt256.shiftLeft x.rd (UInt256.ofNat 144))),
-    (UInt256.lor x.h1 (UInt256.shiftLeft (UInt256.land x.lower (UInt256.add x.re (UInt256.shiftRight (UInt256.mul x.factor (UInt256.land x.lower (UInt256.add (UInt256.add (MachineState.readWord memory 630) (UInt256.add (UInt256.xor (UInt256.lor x.rc (UInt256.lnot x.rd)) x.rb) x.ra)) x.k))) (UInt256.ofNat 29)))) (UInt256.ofNat 144))),
+    (UInt256.lor x.h1 (UInt256.shiftLeft (UInt256.land x.lower (UInt256.add x.re (UInt256.shiftRight (UInt256.mul x.factor (UInt256.land x.lower (UInt256.add (UInt256.add (MachineState.readWord memory 252) (UInt256.add (UInt256.xor (UInt256.lor (UInt256.lnot x.rd) x.rc) x.rb) x.ra)) x.k))) (UInt256.ofNat 29)))) (UInt256.ofNat 144))),
     (UInt256.lor x.h0 (UInt256.shiftLeft x.re (UInt256.ofNat 144))),
     (UInt256.lor x.h3 (UInt256.shiftLeft (UInt256.shiftRight (UInt256.mul x.factor x.rc) (UInt256.ofNat 28)) (UInt256.ofNat 144))),
     (UInt256.lor x.h2 (UInt256.shiftLeft x.rb (UInt256.ofNat 144))),
@@ -115,7 +115,7 @@ def roundT (memory : ByteArray) (x : Input) : UInt256 :=
   UInt256.land x.lower (UInt256.add x.re
     (UInt256.shiftRight (UInt256.mul x.factor
       (UInt256.land x.lower (UInt256.add x.k
-        (UInt256.add (MachineState.readWord memory 630)
+        (UInt256.add (MachineState.readWord memory 252)
           (UInt256.add (UInt256.xor (UInt256.lor x.rc (UInt256.lnot x.rd)) x.rb) x.ra)))))
       (UInt256.ofNat 29)))
 def packed (a b : UInt256) : UInt256 :=

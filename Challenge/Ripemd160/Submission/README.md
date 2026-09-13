@@ -1,47 +1,13 @@
-# RIPEMD-160 Yukon submission
+# RIPEMD-160: paired rotations and direct round45 key
 
-This directory is the complete editable surface for the `ripemd160` track:
+The candidate measures 689685 gas / 5253 bytes on the unchanged local 49-vector corpus. SHA-256: `bfcda085b610ff3fe0c09106d7d11b173fac95c544cbc92288f3f2707072f937`. The current public physical-key/paired-rotation source is `6c8b38301e26a34315ed784f4401d3dc15dda209`, 691313 gas / 5224 bytes. The paired improvement is 1628 gas, with a 29-byte increase. The local proof base is the frozen entry-fallthrough source `a6d1c72e856a72886feff4aff9213c7d56ca376c`, 692583 gas / 5262 bytes.
 
-- `bytecode.hex` — one line of lowercase EVM bytecode without a `0x` prefix;
-- `Solution.lean` — `Challenge.Ripemd160.Benchmark.candidate`, proving
-  `Challenge.Ripemd160.Correct bytecode` for the generated artifact;
-- the Lean modules under `Proofs/` imported by `Solution.lean`.
+The compressor incorporates ercumentyildirim's eleven additional compact paired rotations and physical key transitions from public submission `17d661c2-06b0-4fd8-901f-8187141d8118`. The message reads are translated to the retained Euler table layout. Both lane masks are synthesized from the existing lower mask. Round45 keeps its direct literal key, avoiding the thirteen-gas-per-block synthesis cost while fitting the original protected encoding limit. Gas-preserving associative/commutative expression encodings bind to exact raw execution theorems.
 
-## Provenance
+The source also retains delayed mask initialization, the literal endian mask and Euler table order, loop completion padding dispatch, and whole-block initialization fall-through. These together save 809 gas against the older recognition-stack source used by the public compression submission. The direct round45 key saves another 819 gas over 63 compression blocks, for a total 1628 gas over the current public frontier. The public compression work is credited separately; its savings are not claimed as this submission's incremental contribution.
 
-This submission starts from promoted submission
-`1151093f-45e9-4fb6-91f5-7120739684b4` and retains the public source lineage
-of that submission and of every promotion it inherits from. Two recognition
-and digest lemmas are taken from previously promoted submission
-`cf170158-635a-4916-a3ca-220a0d3a4099` (co-authored by Amal-David). Source
-authorship is not reassigned.
+The formal graph uses the existing RIPEMD-160 specification. Its exact-byte certificate accounts for 3907 typed instructions in 21 chunks. Raw straight-line execution proofs preserve arbitrary stack tails and bind each location to the decoded artifact; higher-level equations establish the paired rotation bounds and physical key values. The loop proof keeps the input-dependent limit, synthetic padding transition and final serialization. Recognition conditions and the embedded digest payload are retained.
 
-## Current compressor
+Validation records are kept outside the frozen source: native clean/dirty 98/98, differential fuzz 3899 cases with seed 820096, 4096 setup states, 8192 control states and 4096 compression states. Compression saves exactly 46 gas per block against the frozen entry source. A three-way study of 69 corpus seeds checks 6624 generated executions, with no mismatches and savings1628 against the public source on every seed. The original protected Artifact, full ordinary Solution, independent Comparator and official submission outcomes are recorded individually as they complete.
 
-The current implementation builds on the local 744,387-gas baseline at
-`7cb007b8cf139ef1fd836e6216a5dc313f1cf068`. Its two RIPEMD-160 lanes are
-scheduled three rounds apart: right rounds 0–2, then 77 packed pairs of
-left round i and right round i+3, then left rounds 77–79. This increases
-pairs with equal rotations from 5 to 38 and reduces the message table from
-78 to 61 stored words. Five frequently used message pairs are cached on
-the stack. The scalar epilogue uses a proved low-32-bit projection to omit
-four masks that are redundant before the final masked hash combination.
-
-The exact runtime is 5,180 bytes with SHA-256
-`64a265b22f78c191eba3f2c45d5e495c9d78d11b894f0d4f622ac576b957e5fb`.
-The local protected native scorer reports 723,618 gas in both memory
-configurations. On the same local corpus, frontier `d17577a6` takes
-743,414 gas, a saving of 19,796 gas. Official results are recorded by Yukon.
-
-The new proof is organized as `StaggerTable*` and `StaggerNormal*` for
-message preparation, `StaggerBoolean`, `StaggerRound`, `StaggerWord` and
-`StaggerScalar*` for arithmetic, and `StaggerRaw*`, `StaggerCore*` and
-`StaggerFinal*` for exact execution and the specification bridge.
-`PairedBlockTrace` connects this compressor to the existing block driver.
-Inherited recognition and digest paths keep their behavior and have their
-concrete instruction addresses adjusted to the new artifact.
-
-The universal theorem in `Solution.lean` is stated for the exact submitted
-bytes and depends only on `propext`, `Classical.choice` and `Quot.sound`.
-Official validation, scoring and promotion status are recorded by the
-platform.
+Earlier contributors retain their attribution, including DPZZxlz's public padding skip and synthetic padding table, fkiene's aligned-buffer idea, and the prior resident-tail, recognition cleanup, delayed mask, Euler layout and loop-dispatch submissions. Changes stay within the editable RIPEMD160 Submission tree. The protected generator and limits, public specification, EVM semantics, scorer, reference artifact and corpus configuration are unchanged.

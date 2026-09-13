@@ -91,68 +91,68 @@ private def guardJumpState (input : ByteArray) : State :=
   { DirectGuard.guardEntry input with pc := UInt256.ofNat 107, stack := [] }
 
 private def bytePrefix : List Located :=
-  [DirectGuard.opAt 3855 .JUMPDEST (by exact GuardInstructionWindow.get 99),
-   DirectGuard.pushAt 3856 0 0 (by exact GuardInstructionWindow.get 100),
-   DirectGuard.opAt 3857 .CALLDATALOAD (by exact GuardInstructionWindow.get 101),
-   DirectGuard.pushAt 3858 0 0 (by exact GuardInstructionWindow.get 102),
-   DirectGuard.opAt 3859 .BYTE (by exact GuardInstructionWindow.get 103),
-   DirectGuard.pushAt 3860 1 7 (by exact GuardInstructionWindow.get 104),
-   DirectGuard.opAt 3861 .XOR (by exact GuardInstructionWindow.get 105),
-   DirectGuard.pushAt 3862 2 5149 (by exact GuardInstructionWindow.get 106)]
+  [DirectGuard.opAt 3849 .JUMPDEST (by exact GuardInstructionWindow.get 181),
+   DirectGuard.pushAt 3850 0 0 (by exact GuardInstructionWindow.get 182),
+   DirectGuard.opAt 3851 .CALLDATALOAD (by exact GuardInstructionWindow.get 183),
+   DirectGuard.pushAt 3852 0 0 (by exact GuardInstructionWindow.get 184),
+   DirectGuard.opAt 3853 .BYTE (by exact GuardInstructionWindow.get 185),
+   DirectGuard.pushAt 3854 1 7 (by exact GuardInstructionWindow.get 186),
+   DirectGuard.opAt 3855 .XOR (by exact GuardInstructionWindow.get 187),
+   DirectGuard.pushAt 3856 2 5178 (by exact GuardInstructionWindow.get 188)]
 
 private def sizePrefix : List Located :=
-  [DirectGuard.pushAt 3864 17 342276208914615837337402008677671501826 (by exact GuardInstructionWindow.get 108),
-   DirectGuard.opAt 3865 .CALLDATASIZE (by exact GuardInstructionWindow.get 109),
-   DirectGuard.opAt 3866 .SHR (by exact GuardInstructionWindow.get 110),
-   DirectGuard.pushAt 3867 1 1 (by exact GuardInstructionWindow.get 111),
-   DirectGuard.opAt 3868 .AND (by exact GuardInstructionWindow.get 112),
-   DirectGuard.pushAt 3869 1 107 (by exact GuardInstructionWindow.get 113)]
+  [DirectGuard.pushAt 3858 17 342276208914615837337402008677671501826 (by exact GuardInstructionWindow.get 190),
+   DirectGuard.opAt 3859 .CALLDATASIZE (by exact GuardInstructionWindow.get 191),
+   DirectGuard.opAt 3860 .SHR (by exact GuardInstructionWindow.get 192),
+   DirectGuard.pushAt 3861 1 1 (by exact GuardInstructionWindow.get 193),
+   DirectGuard.opAt 3862 .AND (by exact GuardInstructionWindow.get 194),
+   DirectGuard.pushAt 3863 1 107 (by exact GuardInstructionWindow.get 195)]
 
 private def fallbackSuffix : List Located :=
-  [DirectGuard.pushAt 3871 2 351 (by exact GuardInstructionWindow.get 115),
-   DirectGuard.opAt 3872 .JUMP (by exact GuardInstructionWindow.get 116)]
+  [DirectGuard.pushAt 3865 2 351 (by exact GuardInstructionWindow.get 197),
+   DirectGuard.opAt 3866 .JUMP (by exact GuardInstructionWindow.get 198)]
 
 private def guardMatchTail : List Located :=
   [DirectGuard.opAt 65 .JUMPDEST]
 
 private theorem run_byte_prefix (input : ByteArray) :
-    DirectGuard.run bytePrefix (PatternedScan.stS input 4813 []) =
-      some (PatternedScan.stS input 4824 [5149, byteValue input]) := by
+    DirectGuard.run bytePrefix (PatternedScan.stS input 4842 []) =
+      some (PatternedScan.stS input 4853 [5178, byteValue input]) := by
   let w := MachineState.readWord input 0
   let b := UInt256.byteAt 0 w
   let v := UInt256.xor 7 b
-  let l0 : Located := DirectGuard.opAt 3855 .JUMPDEST (by exact GuardInstructionWindow.get 99)
+  let l0 : Located := DirectGuard.opAt 3849 .JUMPDEST (by exact GuardInstructionWindow.get 181)
   have h0 := PatternedScan.blockOfS l0
-    (PatternedScan.pcFactS input 3855 4813 [] (by norm_num) (GuardInstructionWindow.pc 99))
-    (PatternedScan.stepS_jumpdest input 4813 [] (by simp) (by norm_num))
-  let l1 : Located := DirectGuard.pushAt 3856 0 0 (by exact GuardInstructionWindow.get 100)
+    (PatternedScan.pcFactS input 3849 4842 [] (by norm_num) (GuardInstructionWindow.pc 181))
+    (PatternedScan.stepS_jumpdest input 4842 [] (by simp) (by norm_num))
+  let l1 : Located := DirectGuard.pushAt 3850 0 0 (by exact GuardInstructionWindow.get 182)
   have h1 := PatternedScan.blockOfS l1
-    (PatternedScan.pcFactS input 3856 4814 [] (by norm_num) (GuardInstructionWindow.pc 100))
-    (PatternedScan.stepS_push0 input 4814 [] (by simp) (by norm_num))
-  let l2 : Located := DirectGuard.opAt 3857 .CALLDATALOAD (by exact GuardInstructionWindow.get 101)
+    (PatternedScan.pcFactS input 3850 4843 [] (by norm_num) (GuardInstructionWindow.pc 182))
+    (PatternedScan.stepS_push0 input 4843 [] (by simp) (by norm_num))
+  let l2 : Located := DirectGuard.opAt 3851 .CALLDATALOAD (by exact GuardInstructionWindow.get 183)
   have h2 := PatternedScan.blockOfS l2
-    (PatternedScan.pcFactS input 3857 4815 [0] (by norm_num) (GuardInstructionWindow.pc 101))
-    (PatternedScan.stepS_calldataload input 4815 0 [] (by simp) (by norm_num))
-  let l3 : Located := DirectGuard.pushAt 3858 0 0 (by exact GuardInstructionWindow.get 102)
+    (PatternedScan.pcFactS input 3851 4844 [0] (by norm_num) (GuardInstructionWindow.pc 183))
+    (PatternedScan.stepS_calldataload input 4844 0 [] (by simp) (by norm_num))
+  let l3 : Located := DirectGuard.pushAt 3852 0 0 (by exact GuardInstructionWindow.get 184)
   have h3 := PatternedScan.blockOfS l3
-    (PatternedScan.pcFactS input 3858 4816 [w] (by norm_num) (GuardInstructionWindow.pc 102))
-    (PatternedScan.stepS_push0 input 4816 [w] (by simp) (by norm_num))
-  let l4 : Located := DirectGuard.opAt 3859 .BYTE (by exact GuardInstructionWindow.get 103)
+    (PatternedScan.pcFactS input 3852 4845 [w] (by norm_num) (GuardInstructionWindow.pc 184))
+    (PatternedScan.stepS_push0 input 4845 [w] (by simp) (by norm_num))
+  let l4 : Located := DirectGuard.opAt 3853 .BYTE (by exact GuardInstructionWindow.get 185)
   have h4 := PatternedScan.blockOfS l4
-    (PatternedScan.pcFactS input 3859 4817 [0, w] (by norm_num) (GuardInstructionWindow.pc 103))
-    (PatternedScan.stepS_byte input 4817 0 w [] (by simp) (by norm_num))
-  let l5 : Located := DirectGuard.pushAt 3860 1 7 (by exact GuardInstructionWindow.get 104)
+    (PatternedScan.pcFactS input 3853 4846 [0, w] (by norm_num) (GuardInstructionWindow.pc 185))
+    (PatternedScan.stepS_byte input 4846 0 w [] (by simp) (by norm_num))
+  let l5 : Located := DirectGuard.pushAt 3854 1 7 (by exact GuardInstructionWindow.get 186)
   have h5 := PatternedScan.blockOfS l5
-    (PatternedScan.pcFactS input 3860 4818 [b] (by norm_num) (GuardInstructionWindow.pc 104))
-    (PatternedScan.stepS_push input 4818 1 7 [b] (by simp) (by decide) (by decide) (by norm_num))
-  let l6 : Located := DirectGuard.opAt 3861 .XOR (by exact GuardInstructionWindow.get 105)
+    (PatternedScan.pcFactS input 3854 4847 [b] (by norm_num) (GuardInstructionWindow.pc 186))
+    (PatternedScan.stepS_push input 4847 1 7 [b] (by simp) (by decide) (by decide) (by norm_num))
+  let l6 : Located := DirectGuard.opAt 3855 .XOR (by exact GuardInstructionWindow.get 187)
   have h6 := PatternedScan.blockOfS l6
-    (PatternedScan.pcFactS input 3861 4820 [7, b] (by norm_num) (GuardInstructionWindow.pc 105))
-    (PatternedScan.stepS_xor input 4820 7 b [] (by simp) (by norm_num))
-  let l7 : Located := DirectGuard.pushAt 3862 2 5149 (by exact GuardInstructionWindow.get 106)
+    (PatternedScan.pcFactS input 3855 4849 [7, b] (by norm_num) (GuardInstructionWindow.pc 187))
+    (PatternedScan.stepS_xor input 4849 7 b [] (by simp) (by norm_num))
+  let l7 : Located := DirectGuard.pushAt 3856 2 5178 (by exact GuardInstructionWindow.get 188)
   have h7 := PatternedScan.blockOfS l7
-    (PatternedScan.pcFactS input 3862 4821 [v] (by norm_num) (GuardInstructionWindow.pc 106))
-    (PatternedScan.stepS_push input 4821 2 5149 [v] (by simp) (by decide) (by decide) (by norm_num))
+    (PatternedScan.pcFactS input 3856 4850 [v] (by norm_num) (GuardInstructionWindow.pc 188))
+    (PatternedScan.stepS_push input 4850 2 5178 [v] (by simp) (by decide) (by decide) (by norm_num))
   have hseq1 := Stepper.runLocatedBlock_append [l0] [l1] _ _ _ h0 rfl h1
   have hseq2 := Stepper.runLocatedBlock_append [l0, l1] [l2] _ _ _ hseq1 rfl h2
   have hseq3 := Stepper.runLocatedBlock_append [l0, l1, l2] [l3] _ _ _ hseq2 rfl h3
@@ -165,38 +165,38 @@ private theorem run_byte_prefix (input : ByteArray) :
   rw [hv] at hseq7
   exact hseq7
 
-@[simp] private theorem sizeHitPC4102 : Artifact.submissionArtifact.instructionPC 3864 = 4825 := by
-  exact GuardInstructionWindow.pc 108
+@[simp] private theorem sizeHitPC4102 : Artifact.submissionArtifact.instructionPC 3858 = 4854 := by
+  exact GuardInstructionWindow.pc 190
 
-@[simp] private theorem sizeHitPC4103 : Artifact.submissionArtifact.instructionPC 3864 = 4825 := by
-  exact GuardInstructionWindow.pc 108
+@[simp] private theorem sizeHitPC4103 : Artifact.submissionArtifact.instructionPC 3858 = 4854 := by
+  exact GuardInstructionWindow.pc 190
 
-@[simp] private theorem sizeHitPC4106 : Artifact.submissionArtifact.instructionPC 3865 = 4843 := by
-  exact GuardInstructionWindow.pc 109
+@[simp] private theorem sizeHitPC4106 : Artifact.submissionArtifact.instructionPC 3859 = 4872 := by
+  exact GuardInstructionWindow.pc 191
 
-@[simp] private theorem sizeHitPC4107 : Artifact.submissionArtifact.instructionPC 3866 = 4844 := by
-  exact GuardInstructionWindow.pc 110
+@[simp] private theorem sizeHitPC4107 : Artifact.submissionArtifact.instructionPC 3860 = 4873 := by
+  exact GuardInstructionWindow.pc 192
 
-@[simp] private theorem sizeHitPC4108 : Artifact.submissionArtifact.instructionPC 3867 = 4845 := by
-  exact GuardInstructionWindow.pc 111
+@[simp] private theorem sizeHitPC4108 : Artifact.submissionArtifact.instructionPC 3861 = 4874 := by
+  exact GuardInstructionWindow.pc 193
 
-@[simp] private theorem sizeHitPC4109 : Artifact.submissionArtifact.instructionPC 3868 = 4847 := by
-  exact GuardInstructionWindow.pc 112
+@[simp] private theorem sizeHitPC4109 : Artifact.submissionArtifact.instructionPC 3862 = 4876 := by
+  exact GuardInstructionWindow.pc 194
 
-@[simp] private theorem sizeHitPC4110 : Artifact.submissionArtifact.instructionPC 3869 = 4848 := by
-  exact GuardInstructionWindow.pc 113
+@[simp] private theorem sizeHitPC4110 : Artifact.submissionArtifact.instructionPC 3863 = 4877 := by
+  exact GuardInstructionWindow.pc 195
 
-@[simp] private theorem sizeHitPC4111 : Artifact.submissionArtifact.instructionPC 3870 = 4850 := by
-  exact GuardInstructionWindow.pc 114
+@[simp] private theorem sizeHitPC4111 : Artifact.submissionArtifact.instructionPC 3864 = 4879 := by
+  exact GuardInstructionWindow.pc 196
 
-@[simp] private theorem sizeHitPC4112 : Artifact.submissionArtifact.instructionPC 3871 = 4851 := by
-  exact GuardInstructionWindow.pc 115
+@[simp] private theorem sizeHitPC4112 : Artifact.submissionArtifact.instructionPC 3865 = 4880 := by
+  exact GuardInstructionWindow.pc 197
 
-@[simp] private theorem sizeHitPC4113 : Artifact.submissionArtifact.instructionPC 3871 = 4851 := by
-  exact GuardInstructionWindow.pc 115
+@[simp] private theorem sizeHitPC4113 : Artifact.submissionArtifact.instructionPC 3865 = 4880 := by
+  exact GuardInstructionWindow.pc 197
 
-@[simp] private theorem sizeHitPC4114 : Artifact.submissionArtifact.instructionPC 3872 = 4854 := by
-  exact GuardInstructionWindow.pc 116
+@[simp] private theorem sizeHitPC4114 : Artifact.submissionArtifact.instructionPC 3866 = 4883 := by
+  exact GuardInstructionWindow.pc 198
 
 private def sizeBit (input : ByteArray) : UInt256 :=
   UInt256.land 1 (UInt256.shiftRight 342276208914615837337402008677671501826
@@ -208,8 +208,8 @@ private theorem sizeBit_flag (input : ByteArray) : UInt256.isZero (sizeBit input
   simpa only [sizeBit, sizeFlag, Word.literal_eq_ofNat] using h
 
 private theorem run_size_prefix (input : ByteArray) :
-    DirectGuard.run sizePrefix (PatternedScan.stS input 4825 []) =
-      some (PatternedScan.stS input 4850 [107, sizeBit input]) := by
+    DirectGuard.run sizePrefix (PatternedScan.stS input 4854 []) =
+      some (PatternedScan.stS input 4879 [107, sizeBit input]) := by
   simp (config := {maxSteps := 400000}) [sizePrefix, sizeBit, DirectGuard.opAt,
     DirectGuard.pushAt, DirectGuard.wfOp, PatternedScan.stS, initialState,
     Stepper.runLocatedBlock, Stepper.runLocated, Stepper.runInstr,
@@ -217,50 +217,50 @@ private theorem run_size_prefix (input : ByteArray) :
 
 private theorem run_byte_fail (input : ByteArray)
     (hbyte : DirectGuard.firstByte input ≠ 7) :
-    DirectGuard.run [DirectGuard.opAt 3863 .JUMPI (by exact GuardInstructionWindow.get 107)] (PatternedScan.stS input 4824 [5149, byteValue input]) =
+    DirectGuard.run [DirectGuard.opAt 3857 .JUMPI (by exact GuardInstructionWindow.get 189)] (PatternedScan.stS input 4853 [5178, byteValue input]) =
       some (AbcArm.armEntry input) := by
-  exact PatternedScan.blockOfS (DirectGuard.opAt 3863 .JUMPI (by exact GuardInstructionWindow.get 107))
-    (PatternedScan.pcFactS input 3863 4824 [5149, byteValue input] (by norm_num) (GuardInstructionWindow.pc 107))
-    (PatternedScan.stepS_jumpi_taken input 4824 5149 5149 (byteValue input) []
+  exact PatternedScan.blockOfS (DirectGuard.opAt 3857 .JUMPI (by exact GuardInstructionWindow.get 189))
+    (PatternedScan.pcFactS input 3857 4853 [5178, byteValue input] (by norm_num) (GuardInstructionWindow.pc 189))
+    (PatternedScan.stepS_jumpi_taken input 4853 5178 5178 (byteValue input) []
       (by simp) (by norm_num) (by simpa using Word.literal_eq_ofNat _) (byteValue_true input hbyte) AbcArm.arm_dest)
 
 private theorem run_byte_fall (input : ByteArray) :
-    DirectGuard.run [DirectGuard.opAt 3863 .JUMPI (by exact GuardInstructionWindow.get 107)] (PatternedScan.stS input 4824 [5149, UInt256.ofNat 0]) =
-      some (PatternedScan.stS input 4825 []) := by
-  exact PatternedScan.blockOfS (DirectGuard.opAt 3863 .JUMPI (by exact GuardInstructionWindow.get 107))
-    (PatternedScan.pcFactS input 3863 4824 [5149, UInt256.ofNat 0] (by norm_num) (GuardInstructionWindow.pc 107))
-    (PatternedScan.stepS_jumpi_fall input 4824 5149 (UInt256.ofNat 0) []
+    DirectGuard.run [DirectGuard.opAt 3857 .JUMPI (by exact GuardInstructionWindow.get 189)] (PatternedScan.stS input 4853 [5178, UInt256.ofNat 0]) =
+      some (PatternedScan.stS input 4854 []) := by
+  exact PatternedScan.blockOfS (DirectGuard.opAt 3857 .JUMPI (by exact GuardInstructionWindow.get 189))
+    (PatternedScan.pcFactS input 3857 4853 [5178, UInt256.ofNat 0] (by norm_num) (GuardInstructionWindow.pc 189))
+    (PatternedScan.stepS_jumpi_fall input 4853 5178 (UInt256.ofNat 0) []
       (by simp) (by norm_num) (by decide))
 
 private theorem run_size_match (input : ByteArray) (hc : UInt256.isTrue (sizeBit input)) :
-    DirectGuard.run [DirectGuard.opAt 3870 .JUMPI (by exact GuardInstructionWindow.get 114)]
-      (PatternedScan.stS input 4850 [107, sizeBit input]) =
+    DirectGuard.run [DirectGuard.opAt 3864 .JUMPI (by exact GuardInstructionWindow.get 196)]
+      (PatternedScan.stS input 4879 [107, sizeBit input]) =
       some (PatternedScan.stS input 107 []) := by
-  exact PatternedScan.blockOfS (DirectGuard.opAt 3870 .JUMPI (by exact GuardInstructionWindow.get 114))
-    (PatternedScan.pcFactS input 3870 4850 [107, sizeBit input] (by norm_num) sizeHitPC4111)
-    (PatternedScan.stepS_jumpi_taken input 4850 107 107 (sizeBit input) []
+  exact PatternedScan.blockOfS (DirectGuard.opAt 3864 .JUMPI (by exact GuardInstructionWindow.get 196))
+    (PatternedScan.pcFactS input 3864 4879 [107, sizeBit input] (by norm_num) sizeHitPC4111)
+    (PatternedScan.stepS_jumpi_taken input 4879 107 107 (sizeBit input) []
       (by simp) (by norm_num) (by rfl) hc guard_match_dest)
 
 private theorem run_size_fall (input : ByteArray) (hc : ¬ UInt256.isTrue (sizeBit input)) :
-    DirectGuard.run [DirectGuard.opAt 3870 .JUMPI (by exact GuardInstructionWindow.get 114)]
-      (PatternedScan.stS input 4850 [107, sizeBit input]) =
-      some (PatternedScan.stS input 4851 []) := by
-  exact PatternedScan.blockOfS (DirectGuard.opAt 3870 .JUMPI (by exact GuardInstructionWindow.get 114))
-    (PatternedScan.pcFactS input 3870 4850 [107, sizeBit input] (by norm_num) sizeHitPC4111)
-    (PatternedScan.stepS_jumpi_fall input 4850 107 (sizeBit input) []
+    DirectGuard.run [DirectGuard.opAt 3864 .JUMPI (by exact GuardInstructionWindow.get 196)]
+      (PatternedScan.stS input 4879 [107, sizeBit input]) =
+      some (PatternedScan.stS input 4880 []) := by
+  exact PatternedScan.blockOfS (DirectGuard.opAt 3864 .JUMPI (by exact GuardInstructionWindow.get 196))
+    (PatternedScan.pcFactS input 3864 4879 [107, sizeBit input] (by norm_num) sizeHitPC4111)
+    (PatternedScan.stepS_jumpi_fall input 4879 107 (sizeBit input) []
       (by simp) (by norm_num) hc)
 
 private theorem run_fallback_suffix (input : ByteArray) :
-    DirectGuard.run fallbackSuffix (PatternedScan.stS input 4851 []) =
+    DirectGuard.run fallbackSuffix (PatternedScan.stS input 4880 []) =
       some (DirectGuard.fallbackState input) := by
-  let l1 : Located := DirectGuard.pushAt 3871 2 351 (by exact GuardInstructionWindow.get 115)
+  let l1 : Located := DirectGuard.pushAt 3865 2 351 (by exact GuardInstructionWindow.get 197)
   have h1 := PatternedScan.blockOfS l1
-    (PatternedScan.pcFactS input 3871 4851 [] (by norm_num) sizeHitPC4113)
-    (PatternedScan.stepS_push input 4851 2 351 [] (by simp) (by decide) (by decide) (by norm_num))
-  let l2 : Located := DirectGuard.opAt 3872 .JUMP (by exact GuardInstructionWindow.get 116)
+    (PatternedScan.pcFactS input 3865 4880 [] (by norm_num) sizeHitPC4113)
+    (PatternedScan.stepS_push input 4880 2 351 [] (by simp) (by decide) (by decide) (by norm_num))
+  let l2 : Located := DirectGuard.opAt 3866 .JUMP (by exact GuardInstructionWindow.get 198)
   have h2 := PatternedScan.blockOfS l2
-    (PatternedScan.pcFactS input 3872 4854 [351] (by norm_num) sizeHitPC4114)
-    (PatternedScan.stepS_jump input 4854 351 351 [] (by simp) (by norm_num) rfl guard_fallback_dest)
+    (PatternedScan.pcFactS input 3866 4883 [351] (by norm_num) sizeHitPC4114)
+    (PatternedScan.stepS_jump input 4883 351 351 [] (by simp) (by norm_num) rfl guard_fallback_dest)
   exact Stepper.runLocatedBlock_append [l1] [l2] _ _ _ h1 rfl h2
 
 private theorem run_guard_match_tail (input : ByteArray) :
@@ -277,7 +277,7 @@ private theorem run_guard_match_tail (input : ByteArray) :
 
 private def gasSteps_byte_match (input : ByteArray)
     (hbyte : DirectGuard.firstByte input = 7) :
-    GasSteps (DirectGuard.guardEntry input) (PatternedScan.stS input 4825 []) := by
+    GasSteps (DirectGuard.guardEntry input) (PatternedScan.stS input 4854 []) := by
   have hp := run_byte_prefix input
   rw [byteValue_zero input hbyte] at hp
   exact (sound bytePrefix hp).trans (sound _ (run_byte_fall input))
@@ -289,7 +289,7 @@ private def gasSteps_byte_fail (input : ByteArray)
 
 private def gasSteps_size_fail (input : ByteArray) (hfit : CalldataFits input)
     (hbad : input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119 ∧ input.size ≠ 55 ∧ input.size ≠ 1 ∧ input.size ≠ 31 ∧ input.size ≠ 32) :
-    GasSteps (PatternedScan.stS input 4825 []) (DirectGuard.fallbackState input) := by
+    GasSteps (PatternedScan.stS input 4854 []) (DirectGuard.fallbackState input) := by
   have hf := sizeFlag_fail input hfit hbad
   rw [← sizeBit_flag] at hf
   have hc : ¬ UInt256.isTrue (sizeBit input) := by
@@ -302,7 +302,7 @@ private def gasSteps_size_fail (input : ByteArray) (hfit : CalldataFits input)
 
 
 private def gasSteps_size_match (input : ByteArray) (hsize : input.size = 56 ∨ input.size = 120 ∨ input.size = 63 ∨ input.size = 64 ∨ input.size = 65 ∨ input.size = 128 ∨ input.size = 119 ∨ input.size = 55 ∨ input.size = 1 ∨ input.size = 31 ∨ input.size = 32) :
-    GasSteps (PatternedScan.stS input 4825 []) (PatternedScan.patternedEntry input) := by
+    GasSteps (PatternedScan.stS input 4854 []) (PatternedScan.patternedEntry input) := by
   have hf := sizeFlag_hit input hsize
   rw [← sizeBit_flag] at hf
   have hc : UInt256.isTrue (sizeBit input) := by
@@ -358,7 +358,7 @@ def gasSteps_miss (input : ByteArray) (hfit : CalldataFits input)
       (gasSteps_fail input hfit hpositive hnabc hbad))
 
 /-- Reaching the `abc` arm: the entry size classifier misses (3 is not 256, 376 or 1000)
-and the byte-0 gate misses ('a' = 0x61 ≠ 7), so the byte-0 `JUMPI` lands on the arm (pc 5168). -/
+and the byte-0 gate misses ('a' = 0x61 ≠ 7), so the byte-0 `JUMPI` lands on the arm (pc 5167). -/
 def gasSteps_abc_entry (input : ByteArray) (hfit : CalldataFits input)
     (heq : input = AbcInputData.abcInput) :
     GasSteps (initialState submissionBytecode input 0) (AbcArm.armEntry input) := by
