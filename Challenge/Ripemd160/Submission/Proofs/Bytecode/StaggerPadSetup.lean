@@ -11,10 +11,9 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory
 open PairTableActive StaggerTableSparse StaggerTableLayout
 
-/-- Pad-only low block (pc 4780..4822): copy zero calldata over the table, store the unmasked
-low bit-length word `n <<< 3` (two `JUMPDEST`s keep the block's length where the mask used
-to be applied; the resident `0xffffffff` stays four deep on the stack) and `0x80`, then leave
-`iszero (n >>> 29)` for the branch at 4823. -/
+/-- Pad-only low block (pc 4780..4822): copy zero calldata over the table, store the low
+bit-length word (`(n <<< 3) &&& mask`, the mask being the resident `0xffffffff` four deep on
+the stack) and `0x80`, then leave `iszero (n >>> 29)` for the branch at 4823. -/
 def lowTemplate : List Instr :=
   [ .push ⟨2, by decide⟩ (UInt256.ofNat 1112),
     .op .CALLDATASIZE,
@@ -24,8 +23,8 @@ def lowTemplate : List Instr :=
     .op .CALLDATASIZE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 3),
     .op .SHL,
-    .op .JUMPDEST,
-    .op .JUMPDEST,
+    .op (.Dup ⟨3, by decide⟩),
+    .op .AND,
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 162),
     .op .MSTORE,
@@ -49,7 +48,7 @@ def lowTemplate : List Instr :=
 
 /-- `PUSH2 0398 JUMPI` at 4823: straight to the rounds when the high word is zero. -/
 def branchTemplate : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 920), .op .JUMPI ]
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 925), .op .JUMPI ]
 
 /-- Pad-only high block (pc 4827..4854), reached only when `n >>> 29 ≠ 0`. -/
 def highTemplate : List Instr :=
@@ -128,8 +127,10 @@ theorem run_low (s : State) (pc returnPC : UInt256) (rest : List UInt256)
     exact (Word.word_eq_ofNat_toNat _).symm
   have hsize : (UInt256.ofNat s.executionEnv.calldata.size).toNat = s.executionEnv.calldata.size := by
     rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt hfit]
-  simp (discharger := omega) [lowTemplate, StaggerTablePad.lowChain, StaggerTablePad.lowDirty,
-    highZero, zeroMemory, writeWord, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+  simp (discharger := omega) [lowTemplate, StaggerTablePad.lowChain, highZero, zeroMemory,
+    PadOnlySchedule.lowDiet_eq_lowLength, PadOnlySchedule.lowLength,
+    writeWord, PadShiftDiet.low, Word.land_comm,
+    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     PairedHelperBooleanTrace.push0_toNat,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
     State.activeWordsAfterUInt256, hactiveAt, hcopyActive, hsize,
@@ -158,9 +159,9 @@ theorem run_high (s : State) (pc returnPC : UInt256) (rest : List UInt256)
 
 theorem run_branch_taken (s : State) (pc c : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running) (hc : UInt256.isTrue c)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 920).toNat = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 925).toNat = true) :
     runInstrSeq branchTemplate {s with pc := pc, stack := c :: rho} =
-      some {s with pc := UInt256.ofNat 920, stack := rho} := by
+      some {s with pc := UInt256.ofNat 925, stack := rho} := by
   have hcap : rho.length < 1024 := by omega
   have hcap1 : rho.length + 1 < 1024 := by omega
   have hcap2 : rho.length + 2 < 1024 := by omega

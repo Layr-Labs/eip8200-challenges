@@ -11,12 +11,12 @@ open StackRoundTrace
 
 def prefixTemplate (table : UInt256) : List Instr :=
   [.push ⟨1, by decide⟩ 20, .push ⟨1, by decide⟩ 15,
-   .op .CALLDATASIZE, .push ⟨3, by decide⟩ 16714936, .op .DIV, .op .AND,
+   .op .CALLDATASIZE, .push ⟨3, by decide⟩ 4022793, .op .DIV, .op .AND,
    .push ⟨1, by decide⟩ 20, .op .MUL, .push ⟨2, by decide⟩ table,
    .op .ADD, .push ⟨1, by decide⟩ 12]
 
 def selected (table : UInt256) (size : Nat) : UInt256 :=
-  UInt256.add table (UInt256.mul 20 (UInt256.land (UInt256.div 16714936 (UInt256.ofNat size)) 15))
+  UInt256.add table (UInt256.mul 20 (UInt256.land (UInt256.div 4022793 (UInt256.ofNat size)) 15))
 
 theorem run_prefix (s : State) (pc table : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1010) (hrun : s.halt = .Running) :

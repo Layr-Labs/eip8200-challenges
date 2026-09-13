@@ -15,55 +15,23 @@ def keepPad (j : Nat) : Bool :=
 mask, so bits `n / 2 ^ 61` (fewer than three for realizable calldata) sit above the lane. -/
 def highDirty (n : UInt256) : UInt256 := UInt256.shiftRight n (UInt256.ofNat 29)
 
-/-- The low bit-length word as the pad-only setup stores it: `n <<< 3` without the 32-bit
-mask, so `n / 2 ^ 29` (fewer than `2 ^ 35` for realizable calldata) dead lanes sit above it. -/
-def lowDirty (n : UInt256) : UInt256 := UInt256.shiftLeft n (UInt256.ofNat 3)
-
-/-- Pad-only table words: the exact words except for the unmasked slots 14 and 15. -/
+/-- Pad-only table words: the exact words except for the unmasked slot 15. -/
 def padWordsDirty (n : UInt256) (i : Nat) : UInt256 :=
-  if i = 14 then lowDirty n else if i = 15 then highDirty n else PadOnlySchedule.padWords n i
+  if i = 15 then highDirty n else PadOnlySchedule.padWords n i
 
 def resultMemory (memory : ByteArray) (n : UInt256) : ByteArray :=
   storeSelected (zeroMemory memory) (tableWords (padWordsDirty n)) keepPad 0 61
 
-theorem padWordsDirty_fourteen (n : UInt256) : padWordsDirty n 14 = lowDirty n := by
-  simp [padWordsDirty]
-
 theorem padWordsDirty_fifteen (n : UInt256) : padWordsDirty n 15 = highDirty n := by
   simp [padWordsDirty]
 
-theorem padWordsDirty_ne (n : UInt256) (i : Nat) (hi14 : i ≠ 14) (hi15 : i ≠ 15) :
+theorem padWordsDirty_ne (n : UInt256) (i : Nat) (hi : i ≠ 15) :
     padWordsDirty n i = PadOnlySchedule.padWords n i := by
-  simp [padWordsDirty, hi14, hi15]
-
-theorem lowLength_eq_padWords (n : UInt256) :
-    PadOnlySchedule.lowLength n = PadOnlySchedule.padWords n 14 := by
-  simp [PadOnlySchedule.padWords]
+  simp [padWordsDirty, hi]
 
 theorem highLength_eq_padWords (n : UInt256) :
     PadOnlySchedule.highLength n = PadOnlySchedule.padWords n 15 := by
   simp [PadOnlySchedule.padWords]
-
-theorem lowDirty_shift (n : UInt256) (hn : n.toNat < 2 ^ 64) :
-    (UInt256.shiftLeft n (UInt256.ofNat 3)).toNat = n.toNat * 2 ^ 3 := by
-  have h := Word.shiftLeft_ofNat (value := n.toNat) (shift := 3) n.val.isLt (by decide)
-    (by simp only [Nat.reducePow] at *; omega)
-  rw [← Word.word_eq_ofNat_toNat n] at h
-  rw [h, Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by simp only [Nat.reducePow] at *; omega)]
-
-theorem lowDirty_toNat (n : UInt256) (hn : n.toNat < 2 ^ 64) :
-    (lowDirty n).toNat = (PadOnlySchedule.lowLength n).toNat + n.toNat / 2 ^ 29 * 2 ^ 32 := by
-  have hs := lowDirty_shift n hn
-  unfold PadOnlySchedule.lowLength lowDirty
-  rw [Word.word_toNat_land, hs]
-  have hm : (UInt256.ofNat 0xffffffff).toNat = 2 ^ 32 - 1 := by decide
-  rw [hm, Nat.and_comm, Nat.and_two_pow_sub_one_eq_mod]
-  simp only [Nat.reducePow]
-  omega
-
-theorem lowDirty_junk_lt (n : UInt256) (hn : n.toNat < 2 ^ 64) : n.toNat / 2 ^ 29 < 2 ^ 35 := by
-  simp only [Nat.reducePow] at *
-  omega
 
 theorem highDirty_toNat (n : UInt256) :
     (highDirty n).toNat = (PadOnlySchedule.highLength n).toNat + n.toNat / 2 ^ 61 * 2 ^ 32 := by
@@ -97,18 +65,13 @@ theorem padWords_bound (n : UInt256) (i : Nat) :
       · decide
 
 theorem padWordsDirty_bound (n : UInt256) (hn : n.toNat < 2 ^ 64) (i : Nat) :
-    (padWordsDirty n i).toNat < 2 ^ 112 := by
+    (padWordsDirty n i).toNat < 2 ^ 64 := by
   unfold padWordsDirty
   split
-  · unfold lowDirty
-    rw [lowDirty_shift n hn]
-    simp only [Nat.reducePow] at *
-    omega
-  · split
-    · unfold highDirty
-      rw [Word.shiftRight_toNat _ (by decide)]
-      exact Nat.lt_trans (Nat.lt_of_le_of_lt (Nat.shiftRight_le _ _) hn) (by decide)
-    · exact Nat.lt_trans (padWords_bound n i) (by decide)
+  · unfold highDirty
+    rw [Word.shiftRight_toNat _ (by decide)]
+    exact Nat.lt_of_le_of_lt (Nat.shiftRight_le _ _) hn
+  · exact Nat.lt_trans (padWords_bound n i) (by decide)
 
 theorem resultMemory_eq_table (memory : ByteArray) (n : UInt256) (hn : n.toNat < 2 ^ 64) :
     resultMemory memory n = StaggerTableLayout.resultMemory memory (padWordsDirty n) := by
@@ -139,8 +102,7 @@ theorem read_resultMemory_outside (memory : ByteArray) (n : UInt256)
 
 /-! ## M3b: the pad-only block stores in program order
 
-The low block stores the unmasked low bit-length word `n <<< 3` at 162, 666, 144 and `0x80` at
-522, 54, 36;
+The low block stores the low bit-length word at 162, 666, 144 and `0x80` at 522, 54, 36;
 when `n >>> 29 ≠ 0` the high block then stores `n >>> 29` at 1008, 990, 648, 612, 270.
 Only adjacent slots (18 bytes apart) overlap, and every overlapping pair is still written
 higher-address first, so the result is the descending table store. -/
@@ -170,8 +132,8 @@ def keepLow (j : Nat) : Bool :=
 def lowChain (memory : ByteArray) (n : UInt256) : ByteArray :=
   PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord
     (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord
-      (zeroMemory memory) 162 (lowDirty n)) 666 (lowDirty n))
-      144 (lowDirty n)) 522 (UInt256.ofNat 128)) 54 (UInt256.ofNat 128))
+      (zeroMemory memory) 162 (PadOnlySchedule.lowLength n)) 666 (PadOnlySchedule.lowLength n))
+      144 (PadOnlySchedule.lowLength n)) 522 (UInt256.ofNat 128)) 54 (UInt256.ofNat 128))
     36 (UInt256.ofNat 128)
 
 /-- The high block's five stores of the unmasked high word (program order). -/
@@ -249,7 +211,7 @@ theorem lowChain_eq (memory : ByteArray) (n : UInt256) (hz : highDirty n = UInt2
   · intro j hj hj' hk
     have h : ¬ (slots[j]! = 0 ∨ slots[j]! = 14) := by simpa [keepLow] using hk
     by_cases h15 : slots[j]! = 15
-    · simp only [tableWords, padWordsDirty, if_neg (show slots[j]! ≠ 14 by omega), if_pos h15, hz]
+    · simp only [tableWords, padWordsDirty, if_pos h15, hz]
     · simp only [tableWords, padWordsDirty, PadOnlySchedule.padWords,
         if_neg (show slots[j]! ≠ 0 by omega), if_neg (show slots[j]! ≠ 14 by omega),
         if_neg h15]

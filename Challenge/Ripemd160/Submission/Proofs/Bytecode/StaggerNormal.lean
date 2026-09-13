@@ -24,10 +24,11 @@ theorem pool_output (memory : ByteArray) (rho : List UInt256) :
   try rfl
 
 theorem run_pool (s : State) (pc : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat) :
+    (hs : rho.length ≤ 900) (halias : rho[1]? = some (UInt256.ofNat 4294967295))
+    (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat) :
     runInstrSeq StaggerRawNormalPool.template {s with pc := pc, stack := UInt256.ofNat 4294967295 :: rho} =
       some {s with pc := pcAfter pc StaggerRawNormalPool.template, stack := poolStack (StaggerScratch.poolWordD s.memory) ++ rho} := by
-  have h := StaggerRawNormalPool.run_actual s pc poolInput rho hs hr ha
+  have h := StaggerRawNormalPool.run_actual s pc poolInput rho hs halias hr ha
   rw [pool_output] at h
   exact h
 def NormalStore60Input (words : Nat → UInt256) : StaggerRaw.Input :=
