@@ -37,7 +37,7 @@ def fallbackProgram : List Instr :=
 set_option linter.unusedSimpArgs false in
 theorem run_fallbackProgram (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
-    (hactive : 169 ≤ s.activeWords.toNat)
+    (hactive : 89 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest s.executionEnv.code 1599 = true)
     (hrun : s.halt = .Running) :
     runInstructions fallbackProgram

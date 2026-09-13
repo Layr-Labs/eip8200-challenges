@@ -47,17 +47,17 @@ theorem rrSuffixValue_lt {mm R n start initial : Nat}
 theorem readWord_rrSuffixMem
     (mpMem : Nat → Nat → Nat → ByteArray → ByteArray)
     (hkeep : ∀ (pa pb : Nat) (mem' : ByteArray),
-      MachineState.readWord (mpMem pa pb 1536 mem') 5280 =
-        MachineState.readWord mem' 5280)
+      MachineState.readWord (mpMem pa pb 1536 mem') 2720 =
+        MachineState.readWord mem' 2720)
     (n start : Nat) (mem : ByteArray) : ∀ i,
-    MachineState.readWord (rrSuffixMem mpMem n start mem i) 5280 =
-      MachineState.readWord mem 5280 := by
+    MachineState.readWord (rrSuffixMem mpMem n start mem i) 2720 =
+      MachineState.readWord mem 2720 := by
   intro i
   induction i with
   | zero => rfl
   | succ i ih =>
       show MachineState.readWord
-        (rrStep mpMem n (start - i) (rrSuffixMem mpMem n start mem i)) 5280 = _
+        (rrStep mpMem n (start - i) (rrSuffixMem mpMem n start mem i)) 2720 = _
       unfold rrStep
       split
       · rw [hkeep 1536 1536 _, ih]
@@ -107,7 +107,7 @@ theorem rrSuffixMem_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → Byt
     {n mm R minv start initial : Nat}
     (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
     (hcop : Nat.Coprime R mm) (hn32 : n ≤ 8) (mem : ByteArray)
-    (hminv : MachineState.readWord mem 5280 = UInt256.ofNat minv)
+    (hminv : MachineState.readWord mem 2720 = UInt256.ofNat minv)
     (hinv : RrInv mem n mm R initial) (hinitial : initial < mm) : ∀ i,
     RrInv (rrSuffixMem mpMem n start mem i) n mm R
       (rrSuffixValue mm R n start initial i) := by
@@ -116,12 +116,12 @@ theorem rrSuffixMem_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → Byt
   | zero => exact hinv
   | succ i ih =>
       have hv := rrSuffixValue_lt (R := R) (n := n) (start := start) hm hinitial i
-      have hmi : MachineState.readWord (rrSuffixMem mpMem n start mem i) 5280 =
+      have hmi : MachineState.readWord (rrSuffixMem mpMem n start mem i) 2720 =
           UInt256.ofNat minv :=
         (readWord_rrSuffixMem mpMem
           (fun pa pb m => spec.mpMinv pa pb 1536 m (by omega)) n start mem i).trans hminv
       have hmi1 : MachineState.readWord
-          (mpMem 1536 1536 1536 (rrSuffixMem mpMem n start mem i)) 5280 =
+          (mpMem 1536 1536 1536 (rrSuffixMem mpMem n start mem i)) 2720 =
             UInt256.ofNat minv :=
         (spec.mpMinv 1536 1536 1536 _ (by omega)).trans hmi
       have hsq : Model.FastRepresents
@@ -272,7 +272,7 @@ theorem directSuffix_final {mpMem amMem : Nat → Nat → Nat → ByteArray → 
     (spec : SubSpec mpMem amMem n mm R minv)
     (hm : 0 < mm) (hcop : Nat.Coprime R mm)
     (hn2 : 2 ≤ n) (hn32 : n ≤ 8) (mem : ByteArray)
-    (hminv : MachineState.readWord mem 5280 = UInt256.ofNat minv)
+    (hminv : MachineState.readWord mem 2720 = UInt256.ofNat minv)
     (hinv : RrInv mem n mm R (Limbs.radix * R % mm)) :
     RrInv
         (rrSuffixMem mpMem n (directCounter n) mem (directCounter n + 1))

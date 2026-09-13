@@ -44,7 +44,7 @@ theorem guardWord_eq (memory : ByteArray) (n bsize : Nat)
     simp [Matches, heq, htop, Challenge.EvmProof.Word.word_toNat_ofNat]
 
 theorem run_guard_word (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat) (hactive : 169 ≤ s.activeWords.toNat)
+    (n bsize esize msize : Nat) (hactive : 89 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest s.executionEnv.code 3043 = true) :
     runInstructions guardProgram (entryState s memory n bsize esize msize) =
       some (if UInt256.isTrue (guardWord memory n bsize)
@@ -67,7 +67,7 @@ theorem run_guard_word (s : State) (memory : ByteArray)
 
 theorem run_guard (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) (hn32 : n ≤ 8)
-    (hb : bsize < 2 ^ 256) (hactive : 169 ≤ s.activeWords.toNat)
+    (hb : bsize < 2 ^ 256) (hactive : 89 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest s.executionEnv.code 3043 = true) :
     runInstructions guardProgram (entryState s memory n bsize esize msize) =
       some (if Matches memory n bsize

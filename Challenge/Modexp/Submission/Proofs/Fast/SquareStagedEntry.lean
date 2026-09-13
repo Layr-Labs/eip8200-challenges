@@ -15,8 +15,8 @@ open Monpro CiosCached
 /-- Rebase the square's B pointer onto the already staged operand. -/
 def program : List Instr :=
   [.op .JUMPDEST, .push 2 4979, .op (.Swap ⟨1, by decide⟩), .op .POP,
-   .push 2 4832, .op (.Swap ⟨2, by decide⟩), .op .POP,
-   .push 2 4352, .op .ADD, .push 2 4979, .op .JUMP]
+   .push 2 2336, .op (.Swap ⟨2, by decide⟩), .op .POP,
+   .push 2 1856, .op .ADD, .push 2 4979, .op .JUMP]
 
 def block : Block Artifact.submissionArtifact .Osaka 5294 program :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 4038 11 5294 program
@@ -31,11 +31,11 @@ theorem run_entry (s : State) (mem : ByteArray) (n : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
     runInstructions program
       (outState s mem 512 n 0 (UInt256.ofNat 5294) ent inv m0 rest) =
-    some (outState s mem 4864 n 0 (UInt256.ofNat 4979) ent inv m0 rest) := by
+    some (outState s mem 2368 n 0 (UInt256.ofNat 4979) ent inv m0 rest) := by
   have h9 : rest.length + 9 < 1024 := by omega
   have h10 : rest.length + 10 < 1024 := by omega
-  have hp : UInt256.ofNat 4352 + UInt256.ofNat (512 + 32 * n - 32) =
-      UInt256.ofNat (4864 + 32 * n - 32) := by
+  have hp : UInt256.ofNat 1856 + UInt256.ofNat (512 + 32 * n - 32) =
+      UInt256.ofNat (2368 + 32 * n - 32) := by
     rw [Challenge.EvmProof.Word.ofNat_add_mod]
     congr 1
     omega
@@ -55,7 +55,7 @@ def gasSteps_entry (s : State) (mem : ByteArray) (n : Nat)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (outState s mem 512 n 0 (UInt256.ofNat 5294) ent inv m0 rest)
-      (outState s mem 4864 n 0 (UInt256.ofNat 4979) ent inv m0 rest) :=
+      (outState s mem 2368 n 0 (UInt256.ofNat 4979) ent inv m0 rest) :=
   block.steps (SquareRow.environment _ hcode hfork hrun hnp) rfl
     (run_entry s mem n ent inv m0 rest hcap hcode)
 

@@ -52,16 +52,10 @@ def primeProgram : List Instr := primeValueProgram ++ WindowTwentyOneEntry.testP
 
 def exponentValueProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op .CALLDATALOAD, .push 1 1,
-   .op (.Dup ⟨2, by decide⟩), .op .SUB, .op .XOR]
+   .op (.Dup ⟨2, by decide⟩), .op .SUB, .op .EQ]
 
--- XOR tests inequality directly; the filler preserves every subsequent PC.
 def exponentProgram : List Instr := exponentValueProgram ++
-  [.op .JUMPDEST, .push 2 (UInt256.ofNat 2323), .op .JUMPI]
-
-private theorem xor_true_iff_eq_zero (a b : UInt256) :
-    UInt256.isTrue (UInt256.xor a b) ↔ (UInt256.eq a b).toNat = 0 := by
-  simp only [UInt256.isTrue, ne_eq, toNat_zero_iff,
-    WindowGuardLogic.wordXor_eq_zero_iff, eq_zero_iff]
+  WindowTwentyOneEntry.testProgram (UInt256.ofNat 2323)
 
 private theorem zero_lt_eq_double_isZero (x : UInt256) :
     UInt256.lt ({ val := 0 } : UInt256) x = UInt256.isZero (UInt256.isZero x) := by
@@ -122,13 +116,23 @@ theorem run_exponent (template : State) (modulus offset : UInt256) (rest : List 
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
-  simp (config := { maxSteps := 500000 }) [exponentProgram, exponentValueProgram,
-    runInstructions, framed, hoff, Challenge.EvmProof.Stepper.runInstr,
-    hc1, hc2, hc3, hc4, htarget, xor_true_iff_eq_zero,
-    Challenge.EvmProof.Word.literal_eq_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod,
-    Challenge.EvmProof.Word.ofNat_add_mod]
-  split <;> simp_all
+  have hv : runInstructions exponentValueProgram (framed template (UInt256.ofNat 96)
+      (modulus :: rest)) =
+      some (framed template (UInt256.ofNat 103)
+        (UInt256.eq (modulus - UInt256.ofNat 1)
+          (MachineState.readWord template.executionEnv.calldata offset.toNat) :: modulus :: rest)) := by
+    simp (config := { maxSteps := 500000 }) [exponentValueProgram, runInstructions, framed, hoff,
+      Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3, hc4,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod]
+  have ht := WindowTwentyOneEntry.run_test template (UInt256.ofNat 103) (UInt256.ofNat 2323)
+    (UInt256.eq (modulus - UInt256.ofNat 1)
+      (MachineState.readWord template.executionEnv.calldata offset.toNat)) (modulus :: rest)
+    (by simp; omega) htarget
+  have both := runInstructions_append_some _ _ _ _ _ hv ht
+  have hpc : advancePC 5 (UInt256.ofNat 103) = UInt256.ofNat 108 := by decide
+  simpa only [exponentProgram, hpc, framed] using both
 
 private theorem run_value (template : State) (modulus offset : UInt256) (rest : List UInt256)
     (baseSize : Nat) (hwidth : baseSize ≤ 32)

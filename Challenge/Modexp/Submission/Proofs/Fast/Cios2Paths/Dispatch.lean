@@ -10,7 +10,7 @@ set_option maxHeartbeats 4000000
 * `mul entry` (instruction 3093, pc 4067 = 0x0f50): `JUMPDEST; PUSH2 0x0fc5` pushes the
   multiply row head `hd = 4264` and falls through into `common`.
 * `common` (instruction 3095, pc 4153 = 0x0f54, also entered directly by the square call
-  with `hd = 4960`): `JUMPDEST; PUSH2 0x2480; MLOAD; DUP1; PUSH1 0x80; EQ; SWAP1;
+  with `hd = 2464`): `JUMPDEST; PUSH2 0x2480; MLOAD; DUP1; PUSH1 0x80; EQ; SWAP1;
   PUSH2 0x100; EQ; OR; PUSH2 0x0f6c; JUMPI` — widths of four and eight limbs jump to the
   kernel `setup` (pc 4177).
 * fallback (instruction 3107, pc 3904): `POP; PUSH2 0x0683; JUMP` drops `hd` and enters the
@@ -29,7 +29,7 @@ def mulEntryProgram : List Instr :=
 
 def commonGuardProgram : List Instr :=
   [.op .JUMPDEST,
-   .push 2 5248,
+   .push 2 2688,
    .op .MLOAD,
    .op (.Dup ⟨0, by decide⟩),
    .push 1 128,

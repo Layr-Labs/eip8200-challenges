@@ -10,7 +10,7 @@ the Montgomery form of one, so that multiply is the identity; this block skips
 the call in that case and rejoins at pc 1692 with the stack untouched.
 
 * `blk1816` (idx 1941..1946, pc 2742..3116) — the `selOf = R1` test;
-* `blk1822` (idx 1952..1952, pc 3104..2765) — the `MONPRO` call frame;
+* `blk1822` (idx 1952..1952, pc 1824..2765) — the `MONPRO` call frame;
 * `blk1828` (idx 1953..1955, pc 2766..2770) — the skip, straight to pc 1692. -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast
@@ -29,7 +29,7 @@ def blk1816 :
    pushAt 1674 2 1486,
    opAt 1675 .JUMPI]
 
-/-- Instructions 1952..1952, pc 3104..2765: the multiply's call frame. -/
+/-- Instructions 1952..1952, pc 1824..2765: the multiply's call frame. -/
 def blk1822 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1676 2 1486,

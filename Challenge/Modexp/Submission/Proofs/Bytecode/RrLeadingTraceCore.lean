@@ -49,7 +49,7 @@ def outer (n bsize esize msize : Nat) : List UInt256 :=
 /-- pc 3243..3254: load the established size word and copy CC to RR. -/
 def copyProgram : List Instr :=
   [.op .JUMPDEST,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 5248), .op .MLOAD,
+   .push ⟨2, by decide⟩ (UInt256.ofNat 2688), .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 1280),
    .push ⟨2, by decide⟩ (UInt256.ofNat 1536), .op .MCOPY]
 
@@ -72,7 +72,7 @@ def copiedMemory (mem : ByteArray) (n : Nat) : ByteArray :=
     (MachineState.readPadded mem 1280 (32 * n)) 1536
 
 def loadActiveWords (template : State) : UInt256 :=
-  template.activeWordsAfterUInt256 5248 32
+  template.activeWordsAfterUInt256 2688 32
 
 def copiedActiveWords (template : State) (n : Nat) : UInt256 :=
   State.activeWordsAfterUInt256_2
@@ -150,7 +150,7 @@ theorem counterWord (n : Nat) (hn32 : n ≤ 32) :
 size word `32*n` at memory address 9344. -/
 theorem run_copy (template : State) (mem : ByteArray)
     (n bsize esize msize : Nat) (hn32 : n ≤ 32)
-    (hsize : MachineState.readWord mem 5248 = UInt256.ofNat (32 * n)) :
+    (hsize : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n)) :
     runInstructions copyProgram (entryState template mem n bsize esize msize) =
       some (copiedState template mem n bsize esize msize) := by
   have hpc :

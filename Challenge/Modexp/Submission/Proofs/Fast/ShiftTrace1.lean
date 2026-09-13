@@ -38,7 +38,7 @@ attribute [local simp] notThirtyOneOfNat
 
 /-- `blk2862`: the guard, byte-identical to the full-base guard. -/
 theorem run_dispatch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hn32 : n ≤ 8) (hb : bsize < 2 ^ 256) (hact : 168 ≤ s.activeWords.toNat)
+    (hn32 : n ≤ 8) (hb : bsize < 2 ^ 256) (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk2862
@@ -95,7 +95,7 @@ here, so it runs only on the recogniser-miss route -- the only route that reads 
 recogniser-hit routes set up what they need themselves.  The conversion's own exit copies
 its result into `R1` (`ShiftTrace3.run_shiftDone`). -/
 theorem run_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hact : 168 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk2889
@@ -119,7 +119,7 @@ theorem run_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 
 /-- `blk2874`: copy the raw base to `ACC` and `TS`, clear `TN`, call `CSUB`. -/
 theorem run_hit (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hact : 169 ≤ s.activeWords.toNat)
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hact : 89 ≤ s.activeWords.toNat)
     (hdata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
@@ -134,11 +134,11 @@ theorem run_hit (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)
       (MachineState.activeWordsAfter s.activeWords.toNat 256 (32 * n)) = s.activeWords :=
     Monpro.activeWords_fix s 256 (32 * n) (by omega) (by omega) (by omega)
   have haw2 : UInt256.ofNat
-      (MachineState.activeWordsAfter s.activeWords.toNat 4160 (32 * n)) = s.activeWords :=
-    Monpro.activeWords_fix s 4160 (32 * n) (by omega) (by omega) (by omega)
+      (MachineState.activeWordsAfter s.activeWords.toNat 2112 (32 * n)) = s.activeWords :=
+    Monpro.activeWords_fix s 2112 (32 * n) (by omega) (by omega) (by omega)
   have haw3 : UInt256.ofNat
-      (MachineState.activeWordsAfter s.activeWords.toNat 4128 32) = s.activeWords :=
-    Monpro.activeWords_fix s 4128 32 (by decide) (by omega) (by omega)
+      (MachineState.activeWordsAfter s.activeWords.toNat 2080 32) = s.activeWords :=
+    Monpro.activeWords_fix s 2080 32 (by decide) (by omega) (by omega)
   simp (config := { maxSteps := 400000 })
     [blk2874, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -155,16 +155,16 @@ theorem run_hit (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)
 
 /-- `blk2892`: back from `CSUB`, push the carry `1` and the limb-0 pointer. -/
 theorem run_negEntry (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hact : 168 ≤ s.activeWords.toNat)
-    (hml : MachineState.readWord mem 5312 = UInt256.ofNat (32 * n - 32))
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hact : 88 ≤ s.activeWords.toNat)
+    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk2892
       (afterCsub0State s mem n bsize esize msize) =
       some (negLoopState s mem n bsize esize msize 0) := by
   have haw : UInt256.ofNat
-      (MachineState.activeWordsAfter s.activeWords.toNat 5312 32) = s.activeWords :=
-    Monpro.activeWords_fix s 5312 32 (by decide) (by omega) hact
+      (MachineState.activeWordsAfter s.activeWords.toNat 2752 32) = s.activeWords :=
+    Monpro.activeWords_fix s 2752 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 200000 })
     [blk2892, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -182,7 +182,7 @@ theorem run_negEntry (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 pointer `p` stays abstract; only its value is needed. -/
 theorem run_negBodyA (s : State) (mem : ByteArray) (p : UInt256) (n bsize esize msize j : Nat)
     (hn32 : n ≤ 8) (hj : j < n) (hpv : p.toNat = 32 * (n - 1 - j))
-    (hact : 168 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk2896a
@@ -239,7 +239,7 @@ theorem run_negTail (s : State) (m : ByteArray) (p c : UInt256) (n bsize esize m
 
 /-- `blk2896` on the last limb: store limb `n - 1`, jump to `NEG_DONE`. -/
 theorem run_negLast (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hact : 168 ≤ s.activeWords.toNat)
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk2896
@@ -305,7 +305,7 @@ theorem run_negNext (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
 
 /-- `blk2919`: drop the loop words, store `L`, `dodd`, `X`, `Bmod`. -/
 theorem run_negDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hact : 168 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk2919
@@ -360,7 +360,7 @@ theorem run_preNewton (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 
 /-- `blk2982`: the last four Newton steps, the `dinv` store, and `k := n`. -/
 theorem run_newtonB (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hact : 168 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk2982

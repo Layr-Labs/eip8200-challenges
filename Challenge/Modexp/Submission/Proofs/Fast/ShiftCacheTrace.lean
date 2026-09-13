@@ -16,7 +16,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 abbrev cacheState := Shift.cacheSetupState
 
 theorem run_cache (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hact : 168 ≤ s.activeWords.toNat) :
+    (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions ShiftUnrollBindings.cacheProgram (cacheState s mem n bsize esize msize) =
       some (Shift.shiftLoopState s (ShiftCacheModel.cacheMem mem n) n bsize esize msize n) := by
   have haw : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1696 32) =

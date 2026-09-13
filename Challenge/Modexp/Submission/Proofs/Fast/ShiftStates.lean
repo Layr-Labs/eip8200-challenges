@@ -155,7 +155,7 @@ def macLoopState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize
     State :=
   { s with pc := UInt256.ofNat (pcMacLoop + 39 * ShiftUnrollEntry.cellIndex n j)
            stack := UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) j) ::
-             UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) j) ::
+             UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j) ::
              UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 ::
              (Monpro.l1Step um q NEG n j).carry :: q :: UInt256.ofNat k ::
              outer n bsize esize msize
@@ -171,7 +171,7 @@ def midState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k :
     State :=
   { s with pc := UInt256.ofNat pcMid
            stack := UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) n) ::
-             UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) n) ::
+             UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) n) ::
              UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 ::
              (Monpro.l1Step um q NEG n n).carry :: q :: UInt256.ofNat k ::
              outer n bsize esize msize
@@ -184,14 +184,14 @@ def addLoopState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : S
 /-- `ADD_INNER` head after `j` limbs. -/
 def addInnerState (s : State) (mem : ByteArray) (n bsize esize msize k j : Nat) : State :=
   { s with pc := UInt256.ofNat pcAddInner
-           stack := UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) j) ::
+           stack := UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j) ::
              (addStep mem n j).flag :: UInt256.ofNat k :: outer n bsize esize msize
            memory := (addStep mem n j).memory }
 
 /-- The add tail block with the spent pointer on top. -/
 def addTailState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
   { s with pc := UInt256.ofNat pcAddTail
-           stack := UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) n) ::
+           stack := UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) n) ::
              (addStep mem n n).flag :: UInt256.ofNat k :: outer n bsize esize msize
            memory := (addStep mem n n).memory }
 
@@ -203,13 +203,13 @@ def subEntryState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : 
 
 def subInnerState (s : State) (mem : ByteArray) (n bsize esize msize k j : Nat) : State :=
   { s with pc := UInt256.ofNat pcSubInner
-           stack := UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) j) ::
+           stack := UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j) ::
              (subStep mem n j).flag :: UInt256.ofNat k :: outer n bsize esize msize
            memory := (subStep mem n j).memory }
 
 def subTailState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
   { s with pc := UInt256.ofNat pcSubTail
-           stack := UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) n) ::
+           stack := UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) n) ::
              (subStep mem n n).flag :: UInt256.ofNat k :: outer n bsize esize msize
            memory := (subStep mem n n).memory }
 
@@ -247,19 +247,19 @@ theorem negPtr_ne_zero (n j : Nat) (hn32 : n ≤ 8) (hj : j + 1 < n) :
   rw [negPtr_toNat n j hn32 (by omega)]; omega
 
 theorem tPtr_toNat (n j : Nat) (hn32 : n ≤ 8) (hj : j < n) :
-    (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) j)).toNat = 4160 + 32 * (n - 1 - j) := by
+    (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j)).toNat = 2112 + 32 * (n - 1 - j) := by
   rw [Monpro.ptrAt_toNat _ _ (by omega) (by omega)]; omega
 
 theorem tPtr_toNat_last (n : Nat) (hn32 : n ≤ 8) :
-    (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) n)).toNat = 4128 := by
+    (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) n)).toNat = 2080 := by
   rw [Monpro.ptrAt_toNat _ _ (by omega) (by omega)]; omega
 
 theorem tPtr_gt_8255 (n j : Nat) (hn32 : n ≤ 8) (hj : j < n) :
-    4159 < (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) j)).toNat := by
+    2111 < (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j)).toNat := by
   rw [tPtr_toNat n j hn32 hj]; omega
 
 theorem tPtr_gt_8224 (n j : Nat) (hn32 : n ≤ 8) (hj : j < n) :
-    4128 < (UInt256.ofNat (Monpro.ptrAt (4128 + 32 * n) j)).toNat := by
+    2080 < (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j)).toNat := by
   rw [tPtr_toNat n j hn32 hj]; omega
 
 theorem aPtr_toNat (n j : Nat) (hn32 : n ≤ 8) (hj : j < n) :

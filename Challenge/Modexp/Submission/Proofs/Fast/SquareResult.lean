@@ -9,8 +9,8 @@ set_option maxHeartbeats 4000000
 # The machine-carry square rows and the square subroutine's result memory
 
 The kernel keeps the row overflow on the stack (`CarryRowModel` style) instead of
-storing it at `T_ = 4096`.  `sqRowsCarry` is that machine model; it agrees with
-the Monpro-style `sqRowsMem` everywhere except the scratch word `[4096, 4128)`.
+storing it at `T_ = 2048`.  `sqRowsCarry` is that machine model; it agrees with
+the Monpro-style `sqRowsMem` everywhere except the scratch word `[2048, 2080)`.
 
 `sqMem s mem n` is the memory a whole `SQUARE(2048) → 2048` call leaves behind:
 for `n ∈ {4, 8}` the square rows followed by the conditional subtraction, and for
@@ -57,23 +57,23 @@ theorem sqRowsCarry_succ (mem : ByteArray) (n i : Nat) :
 /-! ## Agreement with the Monpro-style model -/
 
 theorem rowFrom_agree (a b : MacState) (h : Agree a.memory b.memory) (hc : a.carry = b.carry)
-    (n : Nat) (hn32 : n ≤ 32) :
+    (n : Nat) (hn32 : n ≤ 8) :
     Agree (rowFromCarry a n) (rowFrom b n) := by
   have hm := middle_agree a.memory b.memory h b.carry
   have hmu := rowMu_eq a.memory b.memory h n
   have hc0 := rowC0_eq a.memory b.memory h n hn32
   have hflag := overflow_eq a.memory b.memory h b.carry
   have hl2 := l2_agree _ _ hm (rowMu b.memory n) (rowC0 b.memory n) n (n - 1) hn32
-  have hf : MachineState.readWord (rowFromL2 b n).memory 4096 = overflow b.memory b.carry := by
+  have hf : MachineState.readWord (rowFromL2 b n).memory 2048 = overflow b.memory b.carry := by
     unfold rowFromL2 rowFromMid
-    rw [readWord_l2Step_low _ _ _ n 4096 (n - 1) (by decide), readWord_midMem_tnp]
+    rw [readWord_l2Step_low _ _ _ n 2048 (n - 1) (by decide), readWord_midMem_tnp]
     rfl
   unfold rowFromCarry rowFromL2Carry rowFrom rowFromL2 rowFromMid
   rw [hc, hmu, hc0, hflag, hl2.2]
   exact tail_agree _ _ hl2.1 _ _ hf
 
 theorem l1Run_agree (qa qb : MacState) (h : Agree qa.memory qb.memory) (hc : qa.carry = qb.carry)
-    (bi : UInt256) (pa n j0 : Nat) (hpa : pa + 32 * n ≤ 4096 ∨ 4128 ≤ pa) :
+    (bi : UInt256) (pa n j0 : Nat) (hpa : pa + 32 * n ≤ 2048 ∨ 2080 ≤ pa) :
     ∀ k, j0 + k ≤ n →
       Agree (l1Run qa bi pa n j0 k).memory (l1Run qb bi pa n j0 k).memory ∧
         (l1Run qa bi pa n j0 k).carry = (l1Run qb bi pa n j0 k).carry := by
@@ -84,14 +84,14 @@ theorem l1Run_agree (qa qb : MacState) (h : Agree qa.memory qb.memory) (hc : qa.
       intro hk
       have prev := ih (by omega)
       have hx := readWord_eq prev.1 (pa + 32 * (n - 1 - (j0 + k))) (by omega)
-      have ht := readWord_eq prev.1 (4160 + 32 * (n - 1 - (j0 + k))) (Or.inr (by omega))
+      have ht := readWord_eq prev.1 (2112 + 32 * (n - 1 - (j0 + k))) (Or.inr (by omega))
       simp only [l1Run_succ, l1StepOn, hx, ht, prev.2]
       constructor
       · exact write_same prev.1 _ _
       · trivial
 
 theorem sqPro_agree (a b : ByteArray) (h : Agree a b) (n i : Nat) (tb : UInt256)
-    (_hn : n ≤ 32) :
+    (_hn : n ≤ 8) :
     Agree (sqPro a n i tb).memory (sqPro b n i tb).memory ∧
       (sqPro a n i tb).carry = (sqPro b n i tb).carry := by
   have hx : sqX a n i = sqX b n i := readWord_eq h (aAddr n i) (Or.inr (by unfold aAddr; omega))
@@ -106,16 +106,16 @@ theorem sqPro_agree (a b : ByteArray) (h : Agree a b) (n i : Nat) (tb : UInt256)
   exact write_same h _ _
 
 theorem sqL1_agree (a b : ByteArray) (h : Agree a b) (n i : Nat) (tb : UInt256)
-    (hi : i < n) (hn : n ≤ 32) :
+    (hi : i < n) (hn : n ≤ 8) :
     Agree (sqL1 a n i tb).memory (sqL1 b n i tb).memory ∧
       (sqL1 a n i tb).carry = (sqL1 b n i tb).carry := by
   have hx : sqX a n i = sqX b n i := readWord_eq h (aAddr n i) (Or.inr (by unfold aAddr; omega))
   have hp := sqPro_agree a b h n i tb hn
   unfold sqL1
   rw [hx]
-  exact l1Run_agree _ _ hp.1 hp.2 _ 4864 n (i + 1) (by omega) (n - 1 - i) (by omega)
+  exact l1Run_agree _ _ hp.1 hp.2 _ 2368 n (i + 1) (by omega) (n - 1 - i) (by omega)
 
-theorem sqTb_eq (a b : ByteArray) (h : Agree a b) (n i : Nat) (_hn : n ≤ 32) :
+theorem sqTb_eq (a b : ByteArray) (h : Agree a b) (n i : Nat) (_hn : n ≤ 8) :
     sqTb a n i = sqTb b n i := by
   cases i with
   | zero => rfl
@@ -124,14 +124,14 @@ theorem sqTb_eq (a b : ByteArray) (h : Agree a b) (n i : Nat) (_hn : n ≤ 32) :
         UInt256.sgt (UInt256.ofNat 0) (MachineState.readWord b (aAddr n i))
       rw [readWord_eq h (aAddr n i) (Or.inr (by unfold aAddr; omega))]
 
-theorem sqRow_agree (a b : ByteArray) (h : Agree a b) (n i : Nat) (hi : i < n) (hn : n ≤ 32) :
+theorem sqRow_agree (a b : ByteArray) (h : Agree a b) (n i : Nat) (hi : i < n) (hn : n ≤ 8) :
     Agree (sqRowCarry a n i (sqTb a n i)) (sqRowMem b n i (sqTb b n i)) := by
   rw [sqTb_eq a b h n i hn]
   have hl := sqL1_agree a b h n i (sqTb b n i) hi hn
   exact rowFrom_agree _ _ hl.1 hl.2 n hn
 
 /-- The machine-carry square rows agree with the Monpro-style ones outside `T_`. -/
-theorem sqRows_agree (mem : ByteArray) (n : Nat) (hn : n ≤ 32) :
+theorem sqRows_agree (mem : ByteArray) (n : Nat) (hn : n ≤ 8) :
     ∀ i, i ≤ n → Agree (sqRowsCarry mem n i) (sqRowsMem mem n i) := by
   intro i
   induction i with
@@ -142,45 +142,45 @@ theorem sqRows_agree (mem : ByteArray) (n : Nat) (hn : n ≤ 32) :
 
 /-! ## Where the machine-carry rows write -/
 
-/-- One 32-byte store at `dst ∈ [4096, 4160 + 32 n)` leaves every word outside
+/-- One 32-byte store at `dst ∈ [2048, 2112 + 32 n)` leaves every word outside
 that region alone. -/
 theorem readWord_store_far (mem : ByteArray) (w dst n addr : Nat)
-    (hdst : 4096 ≤ dst) (hdstHi : dst + 32 ≤ 4160 + 32 * n)
-    (haddr : addr + 32 ≤ 4096 ∨ 4160 + 32 * n ≤ addr) :
+    (hdst : 2048 ≤ dst) (hdstHi : dst + 32 ≤ 2112 + 32 * n)
+    (haddr : addr + 32 ≤ 2048 ∨ 2112 + 32 * n ≤ addr) :
     MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded w 32) dst) addr =
       MachineState.readWord mem addr :=
   readWord_storeWord_outside mem w dst addr (by omega)
 
 theorem readWord_l2Step_far (mem : ByteArray) (mu c0 : UInt256) (n addr : Nat) (hn : 1 ≤ n)
-    (haddr : addr + 32 ≤ 4096 ∨ 4160 + 32 * n ≤ addr) :
+    (haddr : addr + 32 ≤ 2048 ∨ 2112 + 32 * n ≤ addr) :
     ∀ k, MachineState.readWord (l2Step mem mu c0 n k).memory addr = MachineState.readWord mem addr := by
   intro k
   induction k with
   | zero => rfl
   | succ k ih =>
       simp only [l2Step]
-      rw [readWord_store_far _ _ (4160 + 32 * (n - 1 - k)) n addr (by omega) (by omega) haddr]
+      rw [readWord_store_far _ _ (2112 + 32 * (n - 1 - k)) n addr (by omega) (by omega) haddr]
       exact ih
 
 theorem readWord_rowFromCarry_far (q : MacState) (n addr : Nat) (hn : 1 ≤ n)
-    (haddr : addr + 32 ≤ 4096 ∨ 4160 + 32 * n ≤ addr) :
+    (haddr : addr + 32 ≤ 2048 ∨ 2112 + 32 * n ≤ addr) :
     MachineState.readWord (rowFromCarry q n) addr = MachineState.readWord q.memory addr := by
   unfold rowFromCarry rowFromL2Carry tailCarry tailMem1 midMem1
-  rw [readWord_store_far _ _ 4128 n addr (by omega) (by omega) haddr,
-    readWord_store_far _ _ 4160 n addr (by omega) (by omega) haddr,
+  rw [readWord_store_far _ _ 2080 n addr (by omega) (by omega) haddr,
+    readWord_store_far _ _ 2112 n addr (by omega) (by omega) haddr,
     readWord_l2Step_far _ _ _ n addr hn haddr (n - 1),
-    readWord_store_far _ _ 4128 n addr (by omega) (by omega) haddr]
+    readWord_store_far _ _ 2080 n addr (by omega) (by omega) haddr]
 
 theorem readWord_sqRowCarry_far (mem : ByteArray) (n i addr : Nat) (tb : UInt256) (hi : i < n)
-    (haddr : addr + 32 ≤ 4096 ∨ 4160 + 32 * n ≤ addr) :
+    (haddr : addr + 32 ≤ 2048 ∨ 2112 + 32 * n ≤ addr) :
     MachineState.readWord (sqRowCarry mem n i tb) addr = MachineState.readWord mem addr := by
   unfold sqRowCarry
   rw [readWord_rowFromCarry_far _ n addr (by omega) haddr,
     readWord_sqL1 mem n i addr tb hi (by omega)]
 
-/-- The machine-carry square rows write only inside `[4096, 4160 + 32 n)`. -/
+/-- The machine-carry square rows write only inside `[2048, 2112 + 32 n)`. -/
 theorem readWord_sqRowsCarry_far (mem : ByteArray) (n addr : Nat)
-    (haddr : addr + 32 ≤ 4096 ∨ 4160 + 32 * n ≤ addr) :
+    (haddr : addr + 32 ≤ 2048 ∨ 2112 + 32 * n ≤ addr) :
     ∀ i, i ≤ n → MachineState.readWord (sqRowsCarry mem n i) addr = MachineState.readWord mem addr := by
   intro i
   induction i with
@@ -191,9 +191,9 @@ theorem readWord_sqRowsCarry_far (mem : ByteArray) (n addr : Nat)
         readWord_sqRowCarry_far (sqRowsCarry mem n i) n i addr _ (by omega) haddr]
       exact ih (by omega)
 
-/-- The machine-carry square rows write only inside `[4096, 5184)`. -/
-theorem readWord_sqRowsCarry (mem : ByteArray) (n addr : Nat) (hn : n ≤ 32)
-    (haddr : addr + 32 ≤ 4096 ∨ 5184 ≤ addr) (i : Nat) (hi : i ≤ n) :
+/-- The machine-carry square rows write only inside `[2048, 2624)`. -/
+theorem readWord_sqRowsCarry (mem : ByteArray) (n addr : Nat) (hn : n ≤ 8)
+    (haddr : addr + 32 ≤ 2048 ∨ 2624 ≤ addr) (i : Nat) (hi : i ≤ n) :
     MachineState.readWord (sqRowsCarry mem n i) addr = MachineState.readWord mem addr :=
   readWord_sqRowsCarry_far mem n addr (by omega) i hi
 
@@ -210,22 +210,22 @@ theorem sqTb_succ_carry (mem : ByteArray) (n i : Nat) (hi : i < n) (hn : n ≤ 8
 
 /-- The top limb of the final machine-carry accumulator is at most one. -/
 theorem sqRowsCarry_tn_le_one (m0 : ByteArray) (p a mm : Nat) (hn32 : p + 2 ≤ 8)
-    (ha : Model.FastRepresents m0 4864 (p + 2) a)
+    (ha : Model.FastRepresents m0 2368 (p + 2) a)
     (hm : Model.FastRepresents m0 0 (p + 2) mm)
     (hminv : ((MachineState.readWord m0 (32 * (p + 2) - 32)).toNat *
-        (MachineState.readWord m0 5280).toNat + 1) % 2 ^ 256 = 0)
+        (MachineState.readWord m0 2720).toNat + 1) % 2 ^ 256 = 0)
     (hz : tValue m0 (p + 2) = 0) (ham : a < mm) :
-    (MachineState.readWord (sqRowsCarry m0 (p + 2) (p + 2)) 4128).toNat ≤ 1 := by
-  rw [readWord_eq (sqRows_agree m0 (p + 2) (by omega) (p + 2) le_rfl) 4128 (Or.inr (by decide))]
+    (MachineState.readWord (sqRowsCarry m0 (p + 2) (p + 2)) 2080).toNat ≤ 1 := by
+  rw [readWord_eq (sqRows_agree m0 (p + 2) (by omega) (p + 2) le_rfl) 2080 (Or.inr (by decide))]
   exact sqRows_tn_le_one m0 p a mm (by omega) ha hm hminv hz ham
 
 theorem sqRowsCarry_represents (m0 : ByteArray) (p a mm pdst : Nat) (hn32 : p + 2 ≤ 8)
-    (hpd : pdst + 32 * (p + 2) ≤ 4096 ∨ 4128 ≤ pdst)
-    (ha : Model.FastRepresents m0 4864 (p + 2) a)
+    (hpd : pdst + 32 * (p + 2) ≤ 2048 ∨ 2080 ≤ pdst)
+    (ha : Model.FastRepresents m0 2368 (p + 2) a)
     (hm : Model.FastRepresents m0 0 (p + 2) mm)
     (hodd : mm % 2 = 1) (ham : a < mm)
     (hminv : ((MachineState.readWord m0 (32 * (p + 2) - 32)).toNat *
-        (MachineState.readWord m0 5280).toNat + 1) % 2 ^ 256 = 0)
+        (MachineState.readWord m0 2720).toNat + 1) % 2 ^ 256 = 0)
     (hz : tValue m0 (p + 2) = 0) :
     Model.FastRepresents (Csub.csResultMemory (sqRowsCarry m0 (p + 2) (p + 2)) (p + 2) pdst)
       pdst (p + 2) (Model.montMul mm (Limbs.radix ^ (p + 2)) a a) := by
@@ -237,7 +237,7 @@ theorem sqRowsCarry_represents (m0 : ByteArray) (p a mm pdst : Nat) (hn32 : p + 
 
 /-- Zeroing touches only the accumulator, including its two leading words. -/
 theorem readWord_mpZeroed_far (s : State) (mem : ByteArray) (n addr : Nat)
-    (hd : addr + 32 ≤ 4096 ∨ 4160 + 32 * n ≤ addr) :
+    (hd : addr + 32 ≤ 2048 ∨ 2112 + 32 * n ≤ addr) :
     MachineState.readWord (mpZeroed s mem n) addr = MachineState.readWord mem addr := by
   apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
   rw [Challenge.EvmProof.Memory.readPadded_size]
@@ -246,10 +246,10 @@ theorem readWord_mpZeroed_far (s : State) (mem : ByteArray) (n addr : Nat)
 /-- The staged copy represents the input operand. -/
 theorem represents_stage (mem : ByteArray) (n a : Nat)
     (ha : Model.FastRepresents mem 512 n a) :
-    Model.FastRepresents (stage mem 512 n) 4864 n a := by
+    Model.FastRepresents (stage mem 512 n) 2368 n a := by
   unfold Model.FastRepresents Model.fastLimbs at *
   have heq : (List.range n).map (fun k =>
-      (MachineState.readWord (stage mem 512 n) (4864 + 32 * (n - 1 - k))).toNat) =
+      (MachineState.readWord (stage mem 512 n) (2368 + 32 * (n - 1 - k))).toNat) =
       (List.range n).map (fun k => (MachineState.readWord mem (512 + 32 * (n - 1 - k))).toNat) := by
     apply List.map_congr_left
     intro k hk
@@ -259,11 +259,11 @@ theorem represents_stage (mem : ByteArray) (n a : Nat)
 
 /-- The accumulator zeroing preserves the staged operand. -/
 theorem represents_zeroed_stage (s : State) (mem : ByteArray) (n a : Nat) (hn : n ≤ 8)
-    (ha : Model.FastRepresents mem 4864 n a) :
-    Model.FastRepresents (mpZeroed s mem n) 4864 n a := by
+    (ha : Model.FastRepresents mem 2368 n a) :
+    Model.FastRepresents (mpZeroed s mem n) 2368 n a := by
   refine (Model.fastRepresents_congr (a := mem) ?_ a).1 ha
   intro j hj
-  rw [readWord_mpZeroed_far s mem n (4864 + 32 * j) (Or.inr (by omega))]
+  rw [readWord_mpZeroed_far s mem n (2368 + 32 * j) (Or.inr (by omega))]
 
 /-! ## The square subroutine's result memory -/
 
@@ -294,12 +294,12 @@ theorem csReturnedState_memory_sqMem (s : State) (mem : ByteArray) (n : Nat) (h 
 
 /-- `SQUARE(2048) → 2048` writes the Montgomery square `a · a · R⁻¹ mod m`. -/
 theorem sqMem_represents (s : State) (mem : ByteArray) (p a mm : Nat)
-    (hn32 : p + 2 ≤ 32)
+    (hn32 : p + 2 ≤ 8)
     (ha : Model.FastRepresents mem 512 (p + 2) a)
     (hm : Model.FastRepresents mem 0 (p + 2) mm)
     (hodd : mm % 2 = 1) (ham : a < mm)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
-      (MachineState.readWord mem 5280).toNat + 1) % 2 ^ 256 = 0) :
+      (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) :
     Model.FastRepresents (sqMem s mem (p + 2)) 512 (p + 2)
       (Model.montMul mm (Limbs.radix ^ (p + 2)) a a) := by
   unfold sqMem
@@ -307,37 +307,37 @@ theorem sqMem_represents (s : State) (mem : ByteArray) (p a mm : Nat)
   · let prepared := inputMemory mem 512 (p + 2)
     have hfast : p + 2 = 4 ∨ p + 2 = 8 := by assumption
     have hn8 : p + 2 ≤ 8 := by omega
-    have ha' : Model.FastRepresents prepared 4864 (p + 2) a := by
+    have ha' : Model.FastRepresents prepared 2368 (p + 2) a := by
       simpa only [prepared, inputMemory, if_pos hfast] using represents_stage mem (p + 2) a ha
     have hm' : Model.FastRepresents prepared 0 (p + 2) mm :=
       (fastRepresents_inputMemory mem 512 (p + 2) 0 (p + 2) mm (by omega)).2 hm
     have hminv' : ((MachineState.readWord prepared (32 * (p + 2) - 32)).toNat *
-        (MachineState.readWord prepared 5280).toNat + 1) % 2 ^ 256 = 0 := by
+        (MachineState.readWord prepared 2720).toNat + 1) % 2 ^ 256 = 0 := by
       simpa only [prepared,
         read_inputMemory_outside mem 512 (p + 2) (32 * (p + 2) - 32) (Or.inl (by omega)),
-        read_inputMemory_outside mem 512 (p + 2) 5280 (Or.inr (by decide))] using hminv
-    have ha0 : Model.FastRepresents (mpZeroed s prepared (p + 2)) 4864 (p + 2) a :=
+        read_inputMemory_outside mem 512 (p + 2) 2720 (Or.inr (by decide))] using hminv
+    have ha0 : Model.FastRepresents (mpZeroed s prepared (p + 2)) 2368 (p + 2) a :=
       represents_zeroed_stage s prepared (p + 2) a hn8 ha'
     have hm0 : Model.FastRepresents (mpZeroed s prepared (p + 2)) 0 (p + 2) mm := by
       refine (Model.fastRepresents_congr (a := prepared) ?_ mm).1 hm'
       intro j hj
       rw [readWord_mpZeroed s prepared (p + 2) (0 + 32 * j) hn32 (Or.inl (by omega))]
     have hminv0 : ((MachineState.readWord (mpZeroed s prepared (p + 2)) (32 * (p + 2) - 32)).toNat *
-        (MachineState.readWord (mpZeroed s prepared (p + 2)) 5280).toNat + 1) % 2 ^ 256 = 0 := by
+        (MachineState.readWord (mpZeroed s prepared (p + 2)) 2720).toNat + 1) % 2 ^ 256 = 0 := by
       rw [readWord_mpZeroed s prepared (p + 2) (32 * (p + 2) - 32) hn32 (Or.inl (by omega)),
-        readWord_mpZeroed s prepared (p + 2) 5280 hn32 (Or.inr (by omega))]
+        readWord_mpZeroed s prepared (p + 2) 2720 hn32 (Or.inr (by omega))]
       exact hminv'
     exact sqRowsCarry_represents (mpZeroed s prepared (p + 2)) p a mm 512 hn8 (by omega)
       ha0 hm0 hodd ham hminv0 (tValue_mpZeroed s prepared (p + 2))
   · exact CarryResult.monproMem_represents s mem 512 512 p 512 a a mm hn32
       (by omega) (by omega) (by omega) ha ha hm hodd ham hminv
 
-/-- Every word outside `SUBB`, outside the CIOS scratch `[4096, 5184)` and
+/-- Every word outside `SUBB`, outside the CIOS scratch `[2048, 2624)` and
 outside the operand/destination block at `2048` survives a `SQUARE` call. -/
 theorem sqMem_readWord_outside (s : State) (mem : ByteArray) (n addr : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 32)
-    (hsubb : addr + 32 ≤ 3072 ∨ 3072 + 32 * n ≤ addr)
-    (hscratch : addr + 32 ≤ 4096 ∨ 5184 ≤ addr)
+    (hn : 1 ≤ n) (hn32 : n ≤ 8)
+    (hsubb : addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr)
+    (hscratch : addr + 32 ≤ 2048 ∨ 2624 ≤ addr)
     (hdst : addr + 32 ≤ 512 ∨ 512 + 32 * n ≤ addr) :
     MachineState.readWord (sqMem s mem n) addr = MachineState.readWord mem addr := by
   unfold sqMem
@@ -349,33 +349,33 @@ theorem sqMem_readWord_outside (s : State) (mem : ByteArray) (n addr : Nat)
   · exact CarryResult.monproMem_readWord_outside s mem 512 512 n 512 addr hn hn32
       hsubb hscratch hdst
 
-/-- Everything at or above `5184` survives a `SQUARE` call. -/
+/-- Everything at or above `2624` survives a `SQUARE` call. -/
 theorem sqMem_readWord_high (s : State) (mem : ByteArray) (n addr : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 32) (haddr : 5184 ≤ addr) :
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (haddr : 2624 ≤ addr) :
     MachineState.readWord (sqMem s mem n) addr = MachineState.readWord mem addr :=
   sqMem_readWord_outside s mem n addr hn hn32 (Or.inr (by omega)) (Or.inr haddr)
     (Or.inr (by omega))
 
 /-- The five configuration words `V_S32`, `V_MINV`, `V_ML`, `V_TL`, `V_EOFF`
 are unchanged by a `SQUARE` call. -/
-theorem sqMem_frame (s : State) (mem : ByteArray) (n : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32) :
-    MachineState.readWord (sqMem s mem n) 5248 = MachineState.readWord mem 5248 ∧
-      MachineState.readWord (sqMem s mem n) 5280 = MachineState.readWord mem 5280 ∧
-      MachineState.readWord (sqMem s mem n) 5312 = MachineState.readWord mem 5312 ∧
-      MachineState.readWord (sqMem s mem n) 5344 = MachineState.readWord mem 5344 ∧
-      MachineState.readWord (sqMem s mem n) 5376 = MachineState.readWord mem 5376 :=
-  ⟨sqMem_readWord_high s mem n 5248 hn hn32 (by omega),
-   sqMem_readWord_high s mem n 5280 hn hn32 (by omega),
-   sqMem_readWord_high s mem n 5312 hn hn32 (by omega),
-   sqMem_readWord_high s mem n 5344 hn hn32 (by omega),
-   sqMem_readWord_high s mem n 5376 hn hn32 (by omega)⟩
+theorem sqMem_frame (s : State) (mem : ByteArray) (n : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8) :
+    MachineState.readWord (sqMem s mem n) 2688 = MachineState.readWord mem 2688 ∧
+      MachineState.readWord (sqMem s mem n) 2720 = MachineState.readWord mem 2720 ∧
+      MachineState.readWord (sqMem s mem n) 2752 = MachineState.readWord mem 2752 ∧
+      MachineState.readWord (sqMem s mem n) 2784 = MachineState.readWord mem 2784 ∧
+      MachineState.readWord (sqMem s mem n) 2816 = MachineState.readWord mem 2816 :=
+  ⟨sqMem_readWord_high s mem n 2688 hn hn32 (by omega),
+   sqMem_readWord_high s mem n 2720 hn hn32 (by omega),
+   sqMem_readWord_high s mem n 2752 hn hn32 (by omega),
+   sqMem_readWord_high s mem n 2784 hn hn32 (by omega),
+   sqMem_readWord_high s mem n 2816 hn hn32 (by omega)⟩
 
 /-- Every represented block disjoint from `SUBB`, from the CIOS scratch and from
 the block at `2048` survives a `SQUARE` call. -/
 theorem sqMem_fastRepresents_outside (s : State) (mem : ByteArray)
-    (n ptr cnt v : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 32)
-    (hsubb : ptr + 32 * cnt ≤ 3072 ∨ 3072 + 32 * n ≤ ptr)
-    (hscratch : ptr + 32 * cnt ≤ 4096 ∨ 5184 ≤ ptr)
+    (n ptr cnt v : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
+    (hsubb : ptr + 32 * cnt ≤ 1792 ∨ 1792 + 32 * n ≤ ptr)
+    (hscratch : ptr + 32 * cnt ≤ 2048 ∨ 2624 ≤ ptr)
     (hdst : ptr + 32 * cnt ≤ 512 ∨ 512 + 32 * n ≤ ptr)
     (hrep : Model.FastRepresents mem ptr cnt v) :
     Model.FastRepresents (sqMem s mem n) ptr cnt v := by
@@ -399,41 +399,41 @@ open Monpro SquareModel SquareResult
 
 
 theorem Snapshot.of_far {mem mem' : ByteArray} {pa n : Nat} (h : Snapshot mem pa n)
-    (hn : n ≤ 8) (hpa : pa + 32 * n ≤ 4096)
-    (hpres : ∀ addr, (addr + 32 ≤ 4096 ∨ 4160 + 32 * n ≤ addr) →
+    (hn : n ≤ 8) (hpa : pa + 32 * n ≤ 2048)
+    (hpres : ∀ addr, (addr + 32 ≤ 2048 ∨ 2112 + 32 * n ≤ addr) →
       MachineState.readWord mem' addr = MachineState.readWord mem addr) :
     Snapshot mem' pa n := by
   intro k hk
-  rw [hpres (4864 + 32 * k) (Or.inr (by omega)), hpres (pa + 32 * k) (Or.inl (by omega))]
+  rw [hpres (2368 + 32 * k) (Or.inr (by omega)), hpres (pa + 32 * k) (Or.inl (by omega))]
   exact h k hk
 
-theorem Snapshot.sqPro {mem : ByteArray} {n : Nat} (_h : Snapshot mem 4864 n) (i : Nat)
+theorem Snapshot.sqPro {mem : ByteArray} {n : Nat} (_h : Snapshot mem 2368 n) (i : Nat)
     (tb : UInt256) (_hi : i < n) (_hn : n ≤ 8) :
-    Snapshot (SquareModel.sqPro mem n i tb).memory 4864 n := by
+    Snapshot (SquareModel.sqPro mem n i tb).memory 2368 n := by
   intro k _; rfl
 
 
-theorem Snapshot.l1Run {q : MacState} {n : Nat} (_h : Snapshot q.memory 4864 n) (bi : UInt256)
+theorem Snapshot.l1Run {q : MacState} {n : Nat} (_h : Snapshot q.memory 2368 n) (bi : UInt256)
     (j0 k : Nat) (_hk : j0 + k ≤ n) (_hn : n ≤ 8) :
-    Snapshot (SquareModel.l1Run q bi 4864 n j0 k).memory 4864 n := by
+    Snapshot (SquareModel.l1Run q bi 2368 n j0 k).memory 2368 n := by
   intro k _; rfl
 
 
-theorem Snapshot.sqL1 {mem : ByteArray} {n : Nat} (_h : Snapshot mem 4864 n) (i : Nat)
+theorem Snapshot.sqL1 {mem : ByteArray} {n : Nat} (_h : Snapshot mem 2368 n) (i : Nat)
     (tb : UInt256) (_hi : i < n) (_hn : n ≤ 8) :
-    Snapshot (SquareModel.sqL1 mem n i tb).memory 4864 n := by
+    Snapshot (SquareModel.sqL1 mem n i tb).memory 2368 n := by
   intro k _; rfl
 
 
-theorem Snapshot.sqRowCarry {mem : ByteArray} {n : Nat} (_h : Snapshot mem 4864 n) (i : Nat)
+theorem Snapshot.sqRowCarry {mem : ByteArray} {n : Nat} (_h : Snapshot mem 2368 n) (i : Nat)
     (tb : UInt256) (_hi : i < n) (_hn : n ≤ 8) :
-    Snapshot (SquareResult.sqRowCarry mem n i tb) 4864 n := by
+    Snapshot (SquareResult.sqRowCarry mem n i tb) 2368 n := by
   intro k _; rfl
 
 
-theorem Snapshot.sqRowsCarry {mem : ByteArray} {n : Nat} (_h : Snapshot mem 4864 n) (i : Nat)
+theorem Snapshot.sqRowsCarry {mem : ByteArray} {n : Nat} (_h : Snapshot mem 2368 n) (i : Nat)
     (_hi : i ≤ n) (_hn : n ≤ 8) :
-    Snapshot (SquareResult.sqRowsCarry mem n i) 4864 n := by
+    Snapshot (SquareResult.sqRowsCarry mem n i) 2368 n := by
   intro k _; rfl
 
 

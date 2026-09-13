@@ -126,8 +126,8 @@ theorem run_shiftHead_done (s : State) (mem : ByteArray) (n bsize esize msize : 
 
 /-- `blk3018`: `MCOPY(TN, BASE, s32)` and `t[0] := 0`. -/
 theorem run_shiftBody (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hact : 169 ≤ s.activeWords.toNat)
-    (htl : MachineState.readWord mem 5344 = UInt256.ofNat (4128 + 32 * n))
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hact : 89 ≤ s.activeWords.toNat)
+    (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3018
@@ -137,25 +137,25 @@ theorem run_shiftBody (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
       115792089237316195423570985008687907853269984665640564039457584007913129639936
       = 32 * n := Exp.mod_word_self (Nat.lt_of_le_of_lt (show 32 * n ≤ 1024 by omega) (by norm_num))
   have hfix2 : UInt256.ofNat (MachineState.activeWordsAfter
-      (MachineState.activeWordsAfter s.activeWords.toNat 4128 (32 * n)) 512
+      (MachineState.activeWordsAfter s.activeWords.toNat 2080 (32 * n)) 512
       (32 * n)) = s.activeWords :=
-    Exp.activeWords_fix2 s 4128 (32 * n) 512 (32 * n) (by omega) (by omega) (by omega)
+    Exp.activeWords_fix2 s 2080 (32 * n) 512 (32 * n) (by omega) (by omega) (by omega)
       (by omega) hact
-  have hfixTL : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 5344 32) =
+  have hfixTL : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2784 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) (by omega)
   have hfixT0 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
-      (4128 + 32 * n) 32) = s.activeWords :=
+      (2080 + 32 * n) 32) = s.activeWords :=
     Monpro.activeWords_fix s _ 32 (by decide) (by omega) (by omega)
   have htl' : MachineState.readWord
-      (MachineState.writeBytes mem (MachineState.readPadded mem 512 (32 * n)) 4128) 5344 =
-      UInt256.ofNat (4128 + 32 * n) := by
-    rw [show MachineState.writeBytes mem (MachineState.readPadded mem 512 (32 * n)) 4128 =
-      Exp.mcopyMem mem 4128 512 (32 * n) from rfl]
-    rw [Exp.readWord_mcopyMem_disjoint mem 4128 512 (32 * n) 5344 (Or.inr (by omega))]
+      (MachineState.writeBytes mem (MachineState.readPadded mem 512 (32 * n)) 2080) 2784 =
+      UInt256.ofNat (2080 + 32 * n) := by
+    rw [show MachineState.writeBytes mem (MachineState.readPadded mem 512 (32 * n)) 2080 =
+      Exp.mcopyMem mem 2080 512 (32 * n) from rfl]
+    rw [Exp.readWord_mcopyMem_disjoint mem 2080 512 (32 * n) 2784 (Or.inr (by omega))]
     exact htl
-  have hmodTL : (4128 + 32 * n) %
+  have hmodTL : (2080 + 32 * n) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936
-      = 4128 + 32 * n := Nat.mod_eq_of_lt (by omega)
+      = 2080 + 32 * n := Nat.mod_eq_of_lt (by omega)
   simp (config := { maxSteps := 400000 })
     [blk3018, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -202,7 +202,7 @@ private theorem addMod_comm (a b m : UInt256) :
 
 /-- `blk3026`: quotient estimate with a branchless saturation mask. -/
 theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
-    (hact : 168 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3026
@@ -242,17 +242,17 @@ theorem run_estimate (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
 
 /-- `blk3069`: the limb-pass frame `[paj, ptj, 0, q]`. -/
 theorem run_macSetup (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hact : 168 ≤ s.activeWords.toNat)
-    (htl : MachineState.readWord (uMem mem n) 5344 = UInt256.ofNat (4128 + 32 * n))
-    (hml : MachineState.readWord (uMem mem n) 5312 = UInt256.ofNat (32 * n - 32))
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hact : 88 ≤ s.activeWords.toNat)
+    (htl : MachineState.readWord (uMem mem n) 2784 = UInt256.ofNat (2080 + 32 * n))
+    (hml : MachineState.readWord (uMem mem n) 2752 = UInt256.ofNat (32 * n - 32))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3069
       (macSetupState s mem n bsize esize msize k) =
       some (macDispatchState s (uMem mem n) (qhatOf (uMem mem n)) n bsize esize msize k) := by
-  have hTL : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 5344 32) =
+  have hTL : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2784 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hML : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 5312 32) =
+  have hML : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2752 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hpa : UInt256.ofNat (1280 + (32 * n - 32)) = UInt256.ofNat (NEG + 32 * n - 32) := by
     unfold NEG; congr 1; omega
@@ -272,7 +272,7 @@ theorem run_macSetup (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
 
 /-- `blk3077b` with limbs to go: back to the loop head. -/
 theorem run_macTail_go (s : State) (mm : ByteArray) (pa pt c q : UInt256)
-    (n bsize esize msize k : Nat) (hgt : 4128 < pt.toNat)
+    (n bsize esize msize k : Nat) (hgt : 2080 < pt.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3077b
@@ -296,7 +296,7 @@ theorem run_macTail_go (s : State) (mm : ByteArray) (pa pt c q : UInt256)
 
 /-- `blk3077b` after the last limb: fall through into the middle block. -/
 theorem run_macTail_exit (s : State) (mm : ByteArray) (pa pt c q : UInt256)
-    (n bsize esize msize k : Nat) (hpt : pt.toNat = 4128)
+    (n bsize esize msize k : Nat) (hpt : pt.toNat = 2080)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3077b

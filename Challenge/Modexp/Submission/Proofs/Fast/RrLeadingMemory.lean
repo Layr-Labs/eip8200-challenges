@@ -31,10 +31,10 @@ private theorem activeWordsAfter_eq_of_end_le (curr offset size : Nat)
       (Nat.div_lt_iff_lt_mul (by omega)).2 (by omega)
     omega
 
-/-- Loading the established limb-size word at 5248 does not expand memory
-once the setup frame has allocated at least 297 words. -/
+/-- Loading the established limb-size word at 2688 does not expand memory
+once the setup frame has allocated at least 89 words. -/
 theorem loadActiveWords_eq (template : State)
-    (hactive : 169 ≤ template.activeWords.toNat) :
+    (hactive : 89 ≤ template.activeWords.toNat) :
     loadActiveWords template = template.activeWords := by
   unfold loadActiveWords State.activeWordsAfterUInt256
   rw [activeWordsAfter_eq_of_end_le]
@@ -42,9 +42,9 @@ theorem loadActiveWords_eq (template : State)
   · omega
 
 /-- Both ranges touched by the CC-to-RR `MCOPY` are already inside the
-297-word setup frame, so the direct helper preserves the active-word count. -/
+89-word setup frame, so the direct helper preserves the active-word count. -/
 theorem copiedActiveWords_eq (template : State) (n : Nat)
-    (hn32 : n ≤ 8) (hactive : 169 ≤ template.activeWords.toNat) :
+    (hn32 : n ≤ 8) (hactive : 89 ≤ template.activeWords.toNat) :
     copiedActiveWords template n = template.activeWords := by
   unfold copiedActiveWords State.activeWordsAfterUInt256_2
   rw [loadActiveWords_eq template hactive]
@@ -64,9 +64,9 @@ theorem copiedActiveWords_eq (template : State) (n : Nat)
   rw [hsrc]
   exact (Challenge.EvmProof.Word.word_eq_ofNat_toNat _).symm
 
-/-- A word at or above byte 7168 is disjoint from the copied RR destination. -/
+/-- A word at or above byte 1792 is disjoint from the copied RR destination. -/
 theorem copiedMemory_readWord_above (mem : ByteArray) (n addr : Nat)
-    (hn32 : n ≤ 8) (haddr : 3072 ≤ addr) :
+    (hn32 : n ≤ 8) (haddr : 1792 ≤ addr) :
     MachineState.readWord (copiedMemory mem n) addr =
       MachineState.readWord mem addr := by
   unfold copiedMemory
@@ -76,29 +76,29 @@ theorem copiedMemory_readWord_above (mem : ByteArray) (n addr : Nat)
   omega
 
 theorem copiedMemory_sizeWord (mem : ByteArray) (n : Nat) (hn32 : n ≤ 8) :
-    MachineState.readWord (copiedMemory mem n) 5248 =
-      MachineState.readWord mem 5248 :=
-  copiedMemory_readWord_above mem n 5248 hn32 (by omega)
+    MachineState.readWord (copiedMemory mem n) 2688 =
+      MachineState.readWord mem 2688 :=
+  copiedMemory_readWord_above mem n 2688 hn32 (by omega)
 
 theorem copiedMemory_bsizeWord (mem : ByteArray) (n : Nat) (hn32 : n ≤ 8) :
-    MachineState.readWord (copiedMemory mem n) 5280 =
-      MachineState.readWord mem 5280 :=
-  copiedMemory_readWord_above mem n 5280 hn32 (by omega)
+    MachineState.readWord (copiedMemory mem n) 2720 =
+      MachineState.readWord mem 2720 :=
+  copiedMemory_readWord_above mem n 2720 hn32 (by omega)
 
 theorem copiedMemory_esizeWord (mem : ByteArray) (n : Nat) (hn32 : n ≤ 8) :
-    MachineState.readWord (copiedMemory mem n) 5312 =
-      MachineState.readWord mem 5312 :=
-  copiedMemory_readWord_above mem n 5312 hn32 (by omega)
+    MachineState.readWord (copiedMemory mem n) 2752 =
+      MachineState.readWord mem 2752 :=
+  copiedMemory_readWord_above mem n 2752 hn32 (by omega)
 
 theorem copiedMemory_msizeWord (mem : ByteArray) (n : Nat) (hn32 : n ≤ 8) :
-    MachineState.readWord (copiedMemory mem n) 5344 =
-      MachineState.readWord mem 5344 :=
-  copiedMemory_readWord_above mem n 5344 hn32 (by omega)
+    MachineState.readWord (copiedMemory mem n) 2784 =
+      MachineState.readWord mem 2784 :=
+  copiedMemory_readWord_above mem n 2784 hn32 (by omega)
 
 theorem copiedMemory_exponentPtrWord (mem : ByteArray) (n : Nat) (hn32 : n ≤ 8) :
-    MachineState.readWord (copiedMemory mem n) 5376 =
-      MachineState.readWord mem 5376 :=
-  copiedMemory_readWord_above mem n 5376 hn32 (by omega)
+    MachineState.readWord (copiedMemory mem n) 2816 =
+      MachineState.readWord mem 2816 :=
+  copiedMemory_readWord_above mem n 2816 hn32 (by omega)
 
 
 theorem copiedMemory_readPadded_before (mem : ByteArray)

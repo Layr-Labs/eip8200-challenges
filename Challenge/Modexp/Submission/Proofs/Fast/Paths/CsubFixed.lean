@@ -17,26 +17,26 @@ private theorem instructionPC_succ
 
 def csGenericPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 3848 .JUMPDEST,
-   pushAt 3849 2 5248,
+   pushAt 3849 2 2688,
    opAt 3850 .MLOAD,
    pushAt 3851 2 256,
    opAt 3852 .EQ,
    pushAt 3853 2 5078,
    opAt 3854 .JUMPI,
-   pushAt 3855 2 5248,
+   pushAt 3855 2 2688,
    opAt 3856 .MLOAD,
    pushAt 3857 1 128,
    opAt 3858 .EQ,
    pushAt 3859 2 4897,
    opAt 3860 .JUMPI,
-   pushAt 3861 2 5344,
+   pushAt 3861 2 2784,
    opAt 3862 .MLOAD,
-   pushAt 3863 2 5312,
+   pushAt 3863 2 2752,
    opAt 3864 .MLOAD,
    opAt 3865 (.Dup ⟨0, by decide⟩),
-   pushAt 3866 2 3072,
+   pushAt 3866 2 1792,
    opAt 3867 .ADD,
-   pushAt 3868 2 4160,
+   pushAt 3868 2 2112,
    opAt 3869 .POP,
    opAt 3870 (.Swap ⟨0, by decide⟩),
    pushAt 3871 0 0,
@@ -46,7 +46,7 @@ def csGenericPath : List (Challenge.EvmProof.Stepper.Located Artifact.submission
 
 def csFixedEntry8 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 3848 .JUMPDEST,
-   pushAt 3849 2 5248,
+   pushAt 3849 2 2688,
    opAt 3850 .MLOAD,
    pushAt 3851 2 256,
    opAt 3852 .EQ,
@@ -56,13 +56,13 @@ def csFixedEntry8 : List (Challenge.EvmProof.Stepper.Located Artifact.submission
 
 def csFixedEntry4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 3848 .JUMPDEST,
-   pushAt 3849 2 5248,
+   pushAt 3849 2 2688,
    opAt 3850 .MLOAD,
    pushAt 3851 2 256,
    opAt 3852 .EQ,
    pushAt 3853 2 5078,
    opAt 3854 .JUMPI,
-   pushAt 3855 2 5248,
+   pushAt 3855 2 2688,
    opAt 3856 .MLOAD,
    pushAt 3857 1 128,
    opAt 3858 .EQ,
@@ -71,7 +71,7 @@ def csFixedEntry4 : List (Challenge.EvmProof.Stepper.Located Artifact.submission
    opAt 3748 .JUMPDEST]
 
 def csFixedStep8_0 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 3876 2 4384,
+  [pushAt 3876 2 2336,
    opAt 3877 .MLOAD,
    pushAt 3878 1 224,
    opAt 3879 .MLOAD,
@@ -80,11 +80,11 @@ def csFixedStep8_0 : List (Challenge.EvmProof.Stepper.Located Artifact.submissio
    opAt 3882 .GT,
    opAt 3883 (.Swap ⟨1, by decide⟩),
    opAt 3884 .SUB,
-   pushAt 3885 2 3296,
+   pushAt 3885 2 2016,
    opAt 3886 .MSTORE]
 
 def csFixedStep8_1 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 3887 2 4352,
+  [pushAt 3887 2 2304,
    opAt 3888 .MLOAD,
    pushAt 3889 1 192,
    opAt 3890 .MLOAD,
@@ -100,11 +100,11 @@ def csFixedStep8_1 : List (Challenge.EvmProof.Stepper.Located Artifact.submissio
    opAt 3900 .GT,
    opAt 3901 .OR,
    opAt 3902 (.Swap ⟨0, by decide⟩),
-   pushAt 3903 2 3264,
+   pushAt 3903 2 1984,
    opAt 3904 .MSTORE]
 
 def csFixedStep8_2 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 3905 2 4320,
+  [pushAt 3905 2 2272,
    opAt 3906 .MLOAD,
    pushAt 3907 1 160,
    opAt 3908 .MLOAD,
@@ -120,11 +120,11 @@ def csFixedStep8_2 : List (Challenge.EvmProof.Stepper.Located Artifact.submissio
    opAt 3918 .GT,
    opAt 3919 .OR,
    opAt 3920 (.Swap ⟨0, by decide⟩),
-   pushAt 3921 2 3232,
+   pushAt 3921 2 1952,
    opAt 3922 .MSTORE]
 
 def csFixedStep8_3 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 3923 2 4288,
+  [pushAt 3923 2 2240,
    opAt 3924 .MLOAD,
    pushAt 3925 1 128,
    opAt 3926 .MLOAD,
@@ -140,12 +140,12 @@ def csFixedStep8_3 : List (Challenge.EvmProof.Stepper.Located Artifact.submissio
    opAt 3936 .GT,
    opAt 3937 .OR,
    opAt 3938 (.Swap ⟨0, by decide⟩),
-   pushAt 3939 2 3200,
+   pushAt 3939 2 1920,
    opAt 3940 .MSTORE]
 
 def csFixedStep8_4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [
-   pushAt 3941 2 4256,
+   pushAt 3941 2 2208,
    opAt 3942 .MLOAD,
    pushAt 3943 1 96,
    opAt 3944 .MLOAD,
@@ -161,12 +161,12 @@ def csFixedStep8_4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissio
    opAt 3954 .GT,
    opAt 3955 .OR,
    opAt 3956 (.Swap ⟨0, by decide⟩),
-   pushAt 3957 2 3168,
+   pushAt 3957 2 1888,
    opAt 3958 .MSTORE]
 
 def csFixedStep8_5 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 3959 .JUMPDEST,
-   pushAt 3960 2 4224,
+   pushAt 3960 2 2176,
    opAt 3961 .MLOAD,
    pushAt 3962 1 64,
    opAt 3963 .MLOAD,
@@ -182,11 +182,11 @@ def csFixedStep8_5 : List (Challenge.EvmProof.Stepper.Located Artifact.submissio
    opAt 3973 .GT,
    opAt 3974 .OR,
    opAt 3975 (.Swap ⟨0, by decide⟩),
-   pushAt 3976 2 3136,
+   pushAt 3976 2 1856,
    opAt 3977 .MSTORE]
 
 def csFixedStep8_6 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 3978 2 4192,
+  [pushAt 3978 2 2144,
    opAt 3979 .MLOAD,
    pushAt 3980 1 32,
    opAt 3981 .MLOAD,
@@ -202,11 +202,11 @@ def csFixedStep8_6 : List (Challenge.EvmProof.Stepper.Located Artifact.submissio
    opAt 3991 .GT,
    opAt 3992 .OR,
    opAt 3993 (.Swap ⟨0, by decide⟩),
-   pushAt 3994 2 3104,
+   pushAt 3994 2 1824,
    opAt 3995 .MSTORE]
 
 def csFixedStep8_7 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 3996 2 4160,
+  [pushAt 3996 2 2112,
    opAt 3997 .MLOAD,
    pushAt 3998 0 0,
    opAt 3999 .MLOAD,
@@ -222,30 +222,30 @@ def csFixedStep8_7 : List (Challenge.EvmProof.Stepper.Located Artifact.submissio
    opAt 4009 .GT,
    opAt 4010 .OR,
    opAt 4011 (.Swap ⟨0, by decide⟩),
-   pushAt 4012 2 3072,
+   pushAt 4012 2 1792,
    opAt 4013 .MSTORE]
 
 def csFixedTail8 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 4014 .ISZERO,
-   pushAt 4015 2 4128,
+   pushAt 4015 2 2080,
    opAt 4016 .MLOAD,
    opAt 4017 .OR,
-   pushAt 4018 2 1087,
+   pushAt 4018 2 319,
    opAt 4019 .NOT,
    pushAt 4020 2 5281,
    opAt 4021 .JUMP,
    opAt 4029 .JUMPDEST,
    opAt 4030 .MUL,
-   pushAt 4031 2 4160,
+   pushAt 4031 2 2112,
    opAt 4032 .ADD,
-   pushAt 4033 2 5248,
+   pushAt 4033 2 2688,
    opAt 4034 .MLOAD,
    opAt 4035 (.Swap ⟨1, by decide⟩),
    opAt 4036 .MCOPY,
    opAt 4037 .JUMP]
 
 def csFixedStep4_0 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 3749 2 4256,
+  [pushAt 3749 2 2208,
    opAt 3750 .MLOAD,
    pushAt 3751 1 96,
    opAt 3752 .MLOAD,
@@ -254,14 +254,14 @@ def csFixedStep4_0 : List (Challenge.EvmProof.Stepper.Located Artifact.submissio
    opAt 3755 .GT,
    opAt 3756 (.Swap ⟨1, by decide⟩),
    opAt 3757 .SUB,
-   pushAt 3758 2 3168,
+   pushAt 3758 2 1888,
    opAt 3759 .MSTORE,
    pushAt 3760 2 5187,
    opAt 3761 .JUMP]
 
 def csFixedStep4_1 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 3959 .JUMPDEST,
-   pushAt 3960 2 4224,
+   pushAt 3960 2 2176,
    opAt 3961 .MLOAD,
    pushAt 3962 1 64,
    opAt 3963 .MLOAD,
@@ -277,11 +277,11 @@ def csFixedStep4_1 : List (Challenge.EvmProof.Stepper.Located Artifact.submissio
    opAt 3973 .GT,
    opAt 3974 .OR,
    opAt 3975 (.Swap ⟨0, by decide⟩),
-   pushAt 3976 2 3136,
+   pushAt 3976 2 1856,
    opAt 3977 .MSTORE]
 
 def csFixedStep4_2 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 3978 2 4192,
+  [pushAt 3978 2 2144,
    opAt 3979 .MLOAD,
    pushAt 3980 1 32,
    opAt 3981 .MLOAD,
@@ -297,11 +297,11 @@ def csFixedStep4_2 : List (Challenge.EvmProof.Stepper.Located Artifact.submissio
    opAt 3991 .GT,
    opAt 3992 .OR,
    opAt 3993 (.Swap ⟨0, by decide⟩),
-   pushAt 3994 2 3104,
+   pushAt 3994 2 1824,
    opAt 3995 .MSTORE]
 
 def csFixedStep4_3 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 3996 2 4160,
+  [pushAt 3996 2 2112,
    opAt 3997 .MLOAD,
    pushAt 3998 0 0,
    opAt 3999 .MLOAD,
@@ -317,23 +317,23 @@ def csFixedStep4_3 : List (Challenge.EvmProof.Stepper.Located Artifact.submissio
    opAt 4009 .GT,
    opAt 4010 .OR,
    opAt 4011 (.Swap ⟨0, by decide⟩),
-   pushAt 4012 2 3072,
+   pushAt 4012 2 1792,
    opAt 4013 .MSTORE]
 
 def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 4014 .ISZERO,
-   pushAt 4015 2 4128,
+   pushAt 4015 2 2080,
    opAt 4016 .MLOAD,
    opAt 4017 .OR,
-   pushAt 4018 2 1087,
+   pushAt 4018 2 319,
    opAt 4019 .NOT,
    pushAt 4020 2 5281,
    opAt 4021 .JUMP,
    opAt 4029 .JUMPDEST,
    opAt 4030 .MUL,
-   pushAt 4031 2 4160,
+   pushAt 4031 2 2112,
    opAt 4032 .ADD,
-   pushAt 4033 2 5248,
+   pushAt 4033 2 2688,
    opAt 4034 .MLOAD,
    opAt 4035 (.Swap ⟨1, by decide⟩),
    opAt 4036 .MCOPY,
@@ -363,7 +363,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3779 : Artifact.submissionArtifact.instructionPC 3850 = 5034 := by
   calc
     Artifact.submissionArtifact.instructionPC 3850 =
-        Artifact.submissionArtifact.instructionPC 3849 + (YulEvmCompiler.Instr.push 2 5248).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3849 + (YulEvmCompiler.Instr.push 2 2688).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3849 _ (by rfl)
     _ = 5034 := by rw [fixedPC3778]; rfl
 
@@ -405,7 +405,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3785 : Artifact.submissionArtifact.instructionPC 3856 = 5046 := by
   calc
     Artifact.submissionArtifact.instructionPC 3856 =
-        Artifact.submissionArtifact.instructionPC 3855 + (YulEvmCompiler.Instr.push 2 5248).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3855 + (YulEvmCompiler.Instr.push 2 2688).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3855 _ (by rfl)
     _ = 5046 := by rw [fixedPC3784]; rfl
 
@@ -447,7 +447,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3791 : Artifact.submissionArtifact.instructionPC 3862 = 5057 := by
   calc
     Artifact.submissionArtifact.instructionPC 3862 =
-        Artifact.submissionArtifact.instructionPC 3861 + (YulEvmCompiler.Instr.push 2 5344).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3861 + (YulEvmCompiler.Instr.push 2 2784).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3861 _ (by rfl)
     _ = 5057 := by rw [fixedPC3790]; rfl
 
@@ -461,7 +461,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3793 : Artifact.submissionArtifact.instructionPC 3864 = 5061 := by
   calc
     Artifact.submissionArtifact.instructionPC 3864 =
-        Artifact.submissionArtifact.instructionPC 3863 + (YulEvmCompiler.Instr.push 2 5312).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3863 + (YulEvmCompiler.Instr.push 2 2752).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3863 _ (by rfl)
     _ = 5061 := by rw [fixedPC3792]; rfl
 
@@ -482,7 +482,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3796 : Artifact.submissionArtifact.instructionPC 3867 = 5066 := by
   calc
     Artifact.submissionArtifact.instructionPC 3867 =
-        Artifact.submissionArtifact.instructionPC 3866 + (YulEvmCompiler.Instr.push 2 3072).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3866 + (YulEvmCompiler.Instr.push 2 1792).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3866 _ (by rfl)
     _ = 5066 := by rw [fixedPC3795]; rfl
 
@@ -496,7 +496,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3798 : Artifact.submissionArtifact.instructionPC 3869 = 5070 := by
   calc
     Artifact.submissionArtifact.instructionPC 3869 =
-        Artifact.submissionArtifact.instructionPC 3868 + (YulEvmCompiler.Instr.push 2 4160).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3868 + (YulEvmCompiler.Instr.push 2 2112).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3868 _ (by rfl)
     _ = 5070 := by rw [fixedPC3797]; rfl
 
@@ -555,7 +555,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3806 : Artifact.submissionArtifact.instructionPC 3877 = 5082 := by
   calc
     Artifact.submissionArtifact.instructionPC 3877 =
-        Artifact.submissionArtifact.instructionPC 3876 + (YulEvmCompiler.Instr.push 2 4384).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3876 + (YulEvmCompiler.Instr.push 2 2336).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3876 _ (by rfl)
     _ = 5082 := by rw [fixedPC3805]; rfl
 
@@ -618,7 +618,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3815 : Artifact.submissionArtifact.instructionPC 3886 = 5094 := by
   calc
     Artifact.submissionArtifact.instructionPC 3886 =
-        Artifact.submissionArtifact.instructionPC 3885 + (YulEvmCompiler.Instr.push 2 3296).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3885 + (YulEvmCompiler.Instr.push 2 2016).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3885 _ (by rfl)
     _ = 5094 := by rw [fixedPC3814]; rfl
 
@@ -632,7 +632,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3817 : Artifact.submissionArtifact.instructionPC 3888 = 5098 := by
   calc
     Artifact.submissionArtifact.instructionPC 3888 =
-        Artifact.submissionArtifact.instructionPC 3887 + (YulEvmCompiler.Instr.push 2 4352).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3887 + (YulEvmCompiler.Instr.push 2 2304).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3887 _ (by rfl)
     _ = 5098 := by rw [fixedPC3816]; rfl
 
@@ -744,7 +744,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3833 : Artifact.submissionArtifact.instructionPC 3904 = 5117 := by
   calc
     Artifact.submissionArtifact.instructionPC 3904 =
-        Artifact.submissionArtifact.instructionPC 3903 + (YulEvmCompiler.Instr.push 2 3264).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3903 + (YulEvmCompiler.Instr.push 2 1984).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3903 _ (by rfl)
     _ = 5117 := by rw [fixedPC3832]; rfl
 
@@ -758,7 +758,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3835 : Artifact.submissionArtifact.instructionPC 3906 = 5121 := by
   calc
     Artifact.submissionArtifact.instructionPC 3906 =
-        Artifact.submissionArtifact.instructionPC 3905 + (YulEvmCompiler.Instr.push 2 4320).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3905 + (YulEvmCompiler.Instr.push 2 2272).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3905 _ (by rfl)
     _ = 5121 := by rw [fixedPC3834]; rfl
 
@@ -870,7 +870,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3851 : Artifact.submissionArtifact.instructionPC 3922 = 5140 := by
   calc
     Artifact.submissionArtifact.instructionPC 3922 =
-        Artifact.submissionArtifact.instructionPC 3921 + (YulEvmCompiler.Instr.push 2 3232).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3921 + (YulEvmCompiler.Instr.push 2 1952).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3921 _ (by rfl)
     _ = 5140 := by rw [fixedPC3850]; rfl
 
@@ -884,7 +884,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3853 : Artifact.submissionArtifact.instructionPC 3924 = 5144 := by
   calc
     Artifact.submissionArtifact.instructionPC 3924 =
-        Artifact.submissionArtifact.instructionPC 3923 + (YulEvmCompiler.Instr.push 2 4288).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3923 + (YulEvmCompiler.Instr.push 2 2240).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3923 _ (by rfl)
     _ = 5144 := by rw [fixedPC3852]; rfl
 
@@ -996,7 +996,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3869 : Artifact.submissionArtifact.instructionPC 3940 = 5163 := by
   calc
     Artifact.submissionArtifact.instructionPC 3940 =
-        Artifact.submissionArtifact.instructionPC 3939 + (YulEvmCompiler.Instr.push 2 3200).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3939 + (YulEvmCompiler.Instr.push 2 1920).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3939 _ (by rfl)
     _ = 5163 := by rw [fixedPC3868]; rfl
 
@@ -1010,7 +1010,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3872 : Artifact.submissionArtifact.instructionPC 3942 = 5167 := by
   calc
     Artifact.submissionArtifact.instructionPC 3942 =
-        Artifact.submissionArtifact.instructionPC 3941 + (YulEvmCompiler.Instr.push 2 4256).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3941 + (YulEvmCompiler.Instr.push 2 2208).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3941 _ (by rfl)
     _ = 5167 := by rw [fixedPC3871]; rfl
 
@@ -1122,7 +1122,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3888 : Artifact.submissionArtifact.instructionPC 3958 = 5186 := by
   calc
     Artifact.submissionArtifact.instructionPC 3958 =
-        Artifact.submissionArtifact.instructionPC 3957 + (YulEvmCompiler.Instr.push 2 3168).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3957 + (YulEvmCompiler.Instr.push 2 1888).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3957 _ (by rfl)
     _ = 5186 := by rw [fixedPC3887]; rfl
 
@@ -1146,7 +1146,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3891 : Artifact.submissionArtifact.instructionPC 3961 = 5191 := by
   calc
     Artifact.submissionArtifact.instructionPC 3961 =
-        Artifact.submissionArtifact.instructionPC 3960 + (YulEvmCompiler.Instr.push 2 4224).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3960 + (YulEvmCompiler.Instr.push 2 2176).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3960 _ (by rfl)
     _ = 5191 := by rw [fixedPC3890]; rfl
 
@@ -1258,7 +1258,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3907 : Artifact.submissionArtifact.instructionPC 3977 = 5210 := by
   calc
     Artifact.submissionArtifact.instructionPC 3977 =
-        Artifact.submissionArtifact.instructionPC 3976 + (YulEvmCompiler.Instr.push 2 3136).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3976 + (YulEvmCompiler.Instr.push 2 1856).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3976 _ (by rfl)
     _ = 5210 := by rw [fixedPC3906]; rfl
 
@@ -1272,7 +1272,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3909 : Artifact.submissionArtifact.instructionPC 3979 = 5214 := by
   calc
     Artifact.submissionArtifact.instructionPC 3979 =
-        Artifact.submissionArtifact.instructionPC 3978 + (YulEvmCompiler.Instr.push 2 4192).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3978 + (YulEvmCompiler.Instr.push 2 2144).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3978 _ (by rfl)
     _ = 5214 := by rw [fixedPC3908]; rfl
 
@@ -1384,7 +1384,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3925 : Artifact.submissionArtifact.instructionPC 3995 = 5233 := by
   calc
     Artifact.submissionArtifact.instructionPC 3995 =
-        Artifact.submissionArtifact.instructionPC 3994 + (YulEvmCompiler.Instr.push 2 3104).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3994 + (YulEvmCompiler.Instr.push 2 1824).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3994 _ (by rfl)
     _ = 5233 := by rw [fixedPC3924]; rfl
 
@@ -1398,7 +1398,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3927 : Artifact.submissionArtifact.instructionPC 3997 = 5237 := by
   calc
     Artifact.submissionArtifact.instructionPC 3997 =
-        Artifact.submissionArtifact.instructionPC 3996 + (YulEvmCompiler.Instr.push 2 4160).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3996 + (YulEvmCompiler.Instr.push 2 2112).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3996 _ (by rfl)
     _ = 5237 := by rw [fixedPC3926]; rfl
 
@@ -1510,7 +1510,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3943 : Artifact.submissionArtifact.instructionPC 4013 = 5255 := by
   calc
     Artifact.submissionArtifact.instructionPC 4013 =
-        Artifact.submissionArtifact.instructionPC 4012 + (YulEvmCompiler.Instr.push 2 3072).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 4012 + (YulEvmCompiler.Instr.push 2 1792).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 4012 _ (by rfl)
     _ = 5255 := by rw [fixedPC3942]; rfl
 
@@ -1531,7 +1531,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3946 : Artifact.submissionArtifact.instructionPC 4016 = 5260 := by
   calc
     Artifact.submissionArtifact.instructionPC 4016 =
-        Artifact.submissionArtifact.instructionPC 4015 + (YulEvmCompiler.Instr.push 2 4128).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 4015 + (YulEvmCompiler.Instr.push 2 2080).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 4015 _ (by rfl)
     _ = 5260 := by rw [fixedPC3945]; rfl
 
@@ -1565,7 +1565,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3952 : Artifact.submissionArtifact.instructionPC 4032 = 5286 := by
   calc
     Artifact.submissionArtifact.instructionPC 4032 =
-        Artifact.submissionArtifact.instructionPC 4031 + (YulEvmCompiler.Instr.push 2 4160).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 4031 + (YulEvmCompiler.Instr.push 2 2112).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 4031 _ (by rfl)
     _ = 5286 := by rw [fixedPC3951]; rfl
 
@@ -1579,7 +1579,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC3954 : Artifact.submissionArtifact.instructionPC 4034 = 5290 := by
   calc
     Artifact.submissionArtifact.instructionPC 4034 =
-        Artifact.submissionArtifact.instructionPC 4033 + (YulEvmCompiler.Instr.push 2 5248).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 4033 + (YulEvmCompiler.Instr.push 2 2688).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 4033 _ (by rfl)
     _ = 5290 := by rw [fixedPC3953]; rfl
 
@@ -1885,7 +1885,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC4001 : Artifact.submissionArtifact.instructionPC 3750 = 4901 := by
   calc
     Artifact.submissionArtifact.instructionPC 3750 =
-        Artifact.submissionArtifact.instructionPC 3749 + (YulEvmCompiler.Instr.push 2 4256).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3749 + (YulEvmCompiler.Instr.push 2 2208).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3749 _ (by rfl)
     _ = 4901 := by rw [fixedPC4000]; rfl
 
@@ -1948,7 +1948,7 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
 @[simp] theorem fixedPC4010 : Artifact.submissionArtifact.instructionPC 3759 = 4913 := by
   calc
     Artifact.submissionArtifact.instructionPC 3759 =
-        Artifact.submissionArtifact.instructionPC 3758 + (YulEvmCompiler.Instr.push 2 3168).bytes.length :=
+        Artifact.submissionArtifact.instructionPC 3758 + (YulEvmCompiler.Instr.push 2 1888).bytes.length :=
       instructionPC_succ Artifact.submissionArtifact 3758 _ (by rfl)
     _ = 4913 := by rw [fixedPC4009]; rfl
 

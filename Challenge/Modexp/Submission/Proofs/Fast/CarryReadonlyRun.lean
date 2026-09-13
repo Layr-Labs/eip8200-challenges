@@ -15,8 +15,8 @@ open CiosCachedMidMemory CiosReadonly
 
 theorem run_middle (s : State) (mem : ByteArray) (c bi : UInt256)
     (pb n i : Nat) (hd ent tl inv m0 aEnd m96 m64 m32 dst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 998) (hact : 168 ≤ s.activeWords.toNat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 32)
+    (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hc : ReadonlyCache mem n tl inv m0) (hminv : inverseInvariant mem n) :
     runInstructions CarryRowPrograms.middleBlock
       (CiosCached.midState s mem c bi pb n i hd ent inv m0
@@ -31,12 +31,12 @@ theorem run_middle (s : State) (mem : ByteArray) (c bi : UInt256)
     (CarryRowModel.rowC0_eq _ _ hmem n hn32).trans (rowC0_mid mem c n hn hn32)
   have hcache : ReadonlyCache (midMem1 mem c) n tl inv m0 :=
     hc.of_preserved
-      (readWord_midMem1 mem c 5280 (Or.inr (by decide)))
+      (readWord_midMem1 mem c 2720 (Or.inr (by decide)))
       (readWord_midMem1 mem c (32*n-32) (Or.inl (by omega)))
   have hminv' : inverseInvariant (midMem1 mem c) n := by
     unfold inverseInvariant
     rw [readWord_midMem1 mem c (32*n-32) (Or.inl (by omega)),
-      readWord_midMem1 mem c 5280 (Or.inr (by decide))]
+      readWord_midMem1 mem c 2720 (Or.inr (by decide))]
     exact hminv
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega

@@ -11,14 +11,14 @@ set_option maxHeartbeats 2000000
 The R0 artifact keeps the square's row frame at the kernel exit: the dispatch at 4840
 sends a square to `sq_exit` (4907), which
 
-* decrements the square counter in memory word 5184 (`0x2440`, written by the caller) and
+* decrements the square counter in memory word 2624 (`0x2440`, written by the caller) and
   stores it back;
-* if it is still non-zero, jumps to `more` (4896), which calls the unchanged final
+* if it is still non-zero, jumps to `more` (2400), which calls the unchanged final
   conditional subtraction as a **subroutine** (`PUSH2 again DUP16 PUSH2 guard JUMP`, so the
   CSUB sees only `[pdst, again]` above the retained frame) and comes back at `again` (4982);
 * `again` (4982) re-stages the operand (`MCOPY 0x800 → 0x2300`), re-zeroes the accumulator
   (`CALLDATACOPY` of the calldata tail) and resets the frame's pointer, first-loop entry and
-  previous-limb slots, then falls into `sq_row` (4992) — exactly the row-0 state that
+  previous-limb slots, then falls into `sq_row` (2496) — exactly the row-0 state that
   `Cios2Dispatch.gasSteps_commonSetupInput` produces for a fresh call;
 * if the counter reached zero, `last` (4924) overwrites the frame's `ret` slot with
   `after_sq` (3360) and leaves through `nx` (4849), the 14 `POP`s and the CSUB.
@@ -48,7 +48,7 @@ def pcAgain : Nat := 4954
 the kernel exit and through the whole loop. -/
 def frameStack (n : Nat) (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) :
     List UInt256 → List UInt256 := fun rest =>
-  [pbi, UInt256.ofNat 4979, UInt256.ofNat (4864 - 32), ent, negative32, allOnes, l2Target n,
+  [pbi, UInt256.ofNat 4979, UInt256.ofNat (2368 - 32), ent, negative32, allOnes, l2Target n,
     inv, m0, tl, m96, m64, m32, aprev, pdst, ret] ++ rest
 
 /-- The loop's states differ only in the program counter and the memory. -/
@@ -62,34 +62,34 @@ def frameAt (pc : Nat) (s : State) (mem : ByteArray) (n : Nat)
 theorem frameAt_eq_sqExitState (s : State) (mem : ByteArray) (n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) :
     frameAt pcSqExit s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest =
-      CiosCachedTailDefs.sqExitState s mem pbi 4864 n (UInt256.ofNat 4979) ent inv m0
+      CiosCachedTailDefs.sqExitState s mem pbi 2368 n (UInt256.ofNat 4979) ent inv m0
         (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) := rfl
 
 /-- The `nx` `JUMPDEST` state of the last square. -/
 theorem frameAt_eq_nxJdState (s : State) (mem : ByteArray) (n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) :
     frameAt pcNx s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest =
-      CiosCachedTailDefs.nxJdState s mem pbi 4864 n (UInt256.ofNat 4979) ent inv m0
+      CiosCachedTailDefs.nxJdState s mem pbi 2368 n (UInt256.ofNat 4979) ent inv m0
         (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) := rfl
 
 /-! ## Programs -/
 
 /-- `sq_exit` (4907): load the counter, decrement, store it back, branch to `more`. -/
 def sqExitProgram : List Instr :=
-  [.op .JUMPDEST, .push 2 5184, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .push 2 5184, .op .MSTORE, .push 2 4943, .op .JUMPI]
+  [.op .JUMPDEST, .push 2 2624, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .ADD,
+   .op (.Dup ⟨0, by decide⟩), .push 2 2624, .op .MSTORE, .push 2 4943, .op .JUMPI]
 
 /-- `last` (4924): the frame's `ret` slot becomes `after_sq`, then leave through `nx`. -/
 def lastProgram : List Instr :=
   [.push 2 3352, .op (.Swap ⟨15, by decide⟩), .op .POP, .push 2 4860, .op .JUMP]
 
-/-- `more` (4896): call the CSUB as a subroutine returning to `again`. -/
+/-- `more` (2400): call the CSUB as a subroutine returning to `again`. -/
 def moreProgram : List Instr :=
-  [.op .JUMPDEST, .push 2 4954, .push 2 4864, .push 2 4875, .op .JUMP]
+  [.op .JUMPDEST, .push 2 4954, .push 2 2368, .push 2 4875, .op .JUMP]
 
 /-- `again` (4982): re-stage, re-zero, reset three frame slots, fall into `sq_row`. -/
 def againProgram : List Instr :=
-  [.op .JUMPDEST, .push 2 5248, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .push 1 64, .op .ADD, .op .CALLDATASIZE, .push 2 4096,
+  [.op .JUMPDEST, .push 2 2688, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .push 1 64, .op .ADD, .op .CALLDATASIZE, .push 2 2048,
    .op .CALLDATACOPY,
    .op .ADD, .push 2 292, .op (.Dup ⟨7, by decide⟩), .op .SUB,
    .op (.Swap ⟨3, by decide⟩), .op .POP,
@@ -133,23 +133,23 @@ theorem jumpDest4683 :
 
 /-! ## The counter word -/
 
-/-- The memory after `sq_exit`'s `MSTORE`: the counter word 5184 holds `c`. -/
+/-- The memory after `sq_exit`'s `MSTORE`: the counter word 2624 holds `c`. -/
 def countMem (mem : ByteArray) (c : Nat) : ByteArray :=
-  MachineState.writeBytes mem (Data.Bytes.natToBytesPadded c 32) 5184
+  MachineState.writeBytes mem (Data.Bytes.natToBytesPadded c 32) 2624
 
 theorem readWord_countMem (mem : ByteArray) (c : Nat) (hc : c < 2 ^ 256) :
-    MachineState.readWord (countMem mem c) 5184 = UInt256.ofNat c := by
+    MachineState.readWord (countMem mem c) 2624 = UInt256.ofNat c := by
   have h : (UInt256.ofNat c).toNat = c := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hc]
-  calc MachineState.readWord (countMem mem c) 5184
+  calc MachineState.readWord (countMem mem c) 2624
       = MachineState.readWord
           (MachineState.writeBytes mem
-            (Data.Bytes.natToBytesPadded (UInt256.ofNat c).toNat 32) 5184) 5184 := by
+            (Data.Bytes.natToBytesPadded (UInt256.ofNat c).toNat 32) 2624) 2624 := by
         rw [countMem, h]
-    _ = UInt256.ofNat c := Challenge.EvmProof.Memory.readWord_writeWord mem 5184 (UInt256.ofNat c)
+    _ = UInt256.ofNat c := Challenge.EvmProof.Memory.readWord_writeWord mem 2624 (UInt256.ofNat c)
 
 theorem readWord_countMem_disjoint (mem : ByteArray) (c addr : Nat)
-    (hd : addr + 32 ≤ 5184 ∨ 5216 ≤ addr) :
+    (hd : addr + 32 ≤ 2624 ∨ 2656 ≤ addr) :
     MachineState.readWord (countMem mem c) addr = MachineState.readWord mem addr := by
   simp only [countMem]
   apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint

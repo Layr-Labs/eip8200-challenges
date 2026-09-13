@@ -14,7 +14,7 @@ gas-parametric trace algebra through the public `Challenge.EvmProof.GasStep.of_r
 only `SGT` of the candidate bytecode: instruction 3744 at pc 4801 (0x126c) in the
 square row `sq_row` (`JUMPDEST DUP1 MLOAD DUP1 SWAP15 PUSH0 SGT ...`).
 
-Use: split `sq_row` at the `SGT` — a `Block` for idx 3608..3747 (pc 4960..4960),
+Use: split `sq_row` at the `SGT` — a `Block` for idx 3608..3747 (pc 2464..2464),
 `gasSteps_sqRowSgt`, then a `Block` for idx 3749..3840 (pc 4922..).
 -/
 

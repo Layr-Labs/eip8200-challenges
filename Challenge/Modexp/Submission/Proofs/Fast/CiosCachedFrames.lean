@@ -43,7 +43,7 @@ The kernel keeps, below the per-step words, the row frame
 (`pdst, ret, rest` are generic; the multiply instantiates them with
 `inv, m0, tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest`).
 `hd` is the row head the tail returns to (`JUMPI` via `DUP3`; 4264 for the multiply,
-the `sq_row` pc 4960 for the square) and `ent` is the first-loop entry
+the `sq_row` pc 2464 for the square) and `ent` is the first-loop entry
 (`l1Target n` for the multiply; the square rows advance it by 38 per row). -/
 
 /-- The first-loop frame on an arbitrary MAC state `q` (memory and running carry). -/

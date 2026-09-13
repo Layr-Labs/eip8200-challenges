@@ -45,7 +45,7 @@ def loopState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
            stack := loopStack px k ret rest
            memory := mem }
 
-/-- The `MONPRO` call, pc 4096, with the frame `[px, px, px, 2431]` pushed. -/
+/-- The `MONPRO` call, pc 2048, with the frame `[px, px, px, 2431]` pushed. -/
 def mpCallState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 4141
@@ -77,7 +77,7 @@ def doneState (s : State) (mem : ByteArray) (ret : UInt256)
 /-! ## Block reductions -/
 
 set_option linter.unusedSimpArgs false in
-/-- `blk1751` (pc 2299..2430): push the `MONPRO` frame and jump to pc 4096. -/
+/-- `blk1751` (pc 2299..2430): push the `MONPRO` frame and jump to pc 2048. -/
 theorem run_call (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)

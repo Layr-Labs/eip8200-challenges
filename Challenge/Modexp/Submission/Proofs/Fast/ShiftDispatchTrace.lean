@@ -24,7 +24,7 @@ theorem jump_cell (i : Nat) (hi : i < 4) :
 
 theorem run_dispatch (s : State) (um : ByteArray) (q : UInt256)
     (n bsize esize msize k : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
-    (hact : 168 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hcache : MachineState.readWord um 1696 = ShiftCacheModel.entryWord n)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
     runInstructions ShiftUnrollBindings.dispatchProgram

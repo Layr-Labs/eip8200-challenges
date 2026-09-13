@@ -14,7 +14,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 def blk1138 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1070 .JUMPDEST,
-   pushAt 1071 2 5248,
+   pushAt 1071 2 2688,
    opAt 1072 .MLOAD,
    pushAt 1073 2 1024,
    pushAt 1074 2 1280,

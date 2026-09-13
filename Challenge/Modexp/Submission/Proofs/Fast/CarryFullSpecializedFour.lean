@@ -16,7 +16,7 @@ open Challenge.Modexp.Submission.Proofs.Fast.CarryRows
 open CarryRowModel CarryResult StagedOperand
 
 /-- A four-limb multiply: `mul entry` (pc 4067) → `common` → `setup` → the four rows (row head
-`hd = 4264`) → the final subtraction (pc 4928). -/
+`hd = 4264`) → the final subtraction (pc 2432). -/
 opaque gasSteps_specializedFour (L : RowLemmas) (E : EntryLemmas) (s : State) (mem : ByteArray)
     (pa pb : Nat) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
@@ -24,34 +24,34 @@ opaque gasSteps_specializedFour (L : RowLemmas) (E : EntryLemmas) (s : State) (m
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 168 ≤ s.activeWords.toNat)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 4096)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 4 ≤ 5376)
+    (hact : 88 ≤ s.activeWords.toNat)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 2048)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 4 ≤ 2816)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hs32 : MachineState.readWord mem 5248 = UInt256.ofNat (32 * 4))
-    (htl : MachineState.readWord mem 5344 = UInt256.ofNat (4128 + 32 * 4))
-    (hml : MachineState.readWord mem 5312 = UInt256.ofNat (32 * 4 - 32))
+    (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * 4))
+    (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * 4))
+    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * 4 - 32))
     (hminv : inverseInvariant mem 4) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
       (mpCsubState s (rowsCarry (mpZeroed s (stage mem pa 4) 4) pa pb 4 4) pdst ret rest) := by
-  have hread (addr : Nat) (hd : addr+32 ≤ 4096 ∨ 5184 ≤ addr) :
+  have hread (addr : Nat) (hd : addr+32 ≤ 2048 ∨ 2624 ≤ addr) :
       MachineState.readWord (stage mem pa 4) addr = MachineState.readWord mem addr :=
     read_stage_outside mem pa 4 addr (by omega)
   have hminv' : inverseInvariant (stage mem pa 4) 4 := by
     simpa only [inverseInvariant,
       hread (32*4-32) (Or.inl (by decide)),
-      hread 5280 (Or.inr (by decide))] using hminv
+      hread 2720 (Or.inr (by decide))] using hminv
   refine (E.gasSteps_mulEntry s mem pa pb pdst ret rest (by omega) hrun hcode hfork hnp).trans ?_
   refine (E.gasSteps_commonSetup s mem (UInt256.ofNat 4256) pa pb 4 pdst ret rest hcap hrun hcode
     hfork hnp hact (by decide) (by omega) hpb hpbFit hcds hs32 hml jumpDest_rowHead).trans ?_
   exact gasSteps_rowsFour L s (stage mem pa 4) pa pb
-    (MachineState.readWord mem 5344) (MachineState.readWord mem 5280)
+    (MachineState.readWord mem 2784) (MachineState.readWord mem 2720)
     (MachineState.readWord mem (32*4-32)) (UInt256.ofNat (pa+32*4-32))
     (MachineState.readWord mem 96) (MachineState.readWord mem 64)
     (MachineState.readWord mem 32) pdst ret rest hcap hrun hcode hfork hnp hact
     hpaFit hpb hpbFit hminv'
-    ⟨htl, (hread 5280 (Or.inr (by decide))).symm,
+    ⟨htl, (hread 2720 (Or.inr (by decide))).symm,
       (hread (32*4-32) (Or.inl (by decide))).symm⟩
     ⟨(hread 96 (Or.inl (by decide))).symm,
       (hread 64 (Or.inl (by decide))).symm,

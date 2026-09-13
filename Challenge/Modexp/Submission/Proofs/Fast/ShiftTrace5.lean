@@ -41,19 +41,19 @@ theorem repairFacts_of (mem : ByteArray) (n mm r : Nat)
 theorem frame_stepMem {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hf : Exp.Frame mem n bsize minv) : Exp.Frame (stepMem mem n mm) n bsize minv where
   s32 := by
-    rw [stepMem_readWord_disjoint mem n mm 5248 hn
+    rw [stepMem_readWord_disjoint mem n mm 2688 hn
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩]; exact hf.s32
   minvW := by
-    rw [stepMem_readWord_disjoint mem n mm 5280 hn
+    rw [stepMem_readWord_disjoint mem n mm 2720 hn
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩]; exact hf.minvW
   ml := by
-    rw [stepMem_readWord_disjoint mem n mm 5312 hn
+    rw [stepMem_readWord_disjoint mem n mm 2752 hn
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩]; exact hf.ml
   tl := by
-    rw [stepMem_readWord_disjoint mem n mm 5344 hn
+    rw [stepMem_readWord_disjoint mem n mm 2784 hn
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩]; exact hf.tl
   eoff := by
-    rw [stepMem_readWord_disjoint mem n mm 5376 hn
+    rw [stepMem_readWord_disjoint mem n mm 2816 hn
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩]; exact hf.eoff
 
 theorem stepInv_stepMem {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n) (hn32 : n ≤ 8)
@@ -114,8 +114,8 @@ alone, apart from `BASE` and `SUBB`. -/
 theorem m1_readWord_disjoint (mem input : ByteArray) (n addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hdisj : (addr + 32 ≤ 256 ∨ 256 + 32 * n ≤ addr) ∧
       (addr + 32 ≤ 512 ∨ 512 + 32 * n ≤ addr) ∧
-      (addr + 32 ≤ 3072 ∨ 3072 + 32 * n ≤ addr) ∧
-      (addr + 32 ≤ 4128 ∨ 4160 + 32 * n ≤ addr)) :
+      (addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr) ∧
+      (addr + 32 ≤ 2080 ∨ 2112 + 32 * n ≤ addr)) :
     MachineState.readWord (m1Of mem input n) addr = MachineState.readWord mem addr := by
   unfold m1Of
   rw [Monpro.csResultMemory_readWord_outside _ n 512 addr (by omega) hdisj.2.2.1 hdisj.2.1]
@@ -157,22 +157,22 @@ theorem m1_base (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 : n �
     (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem) :
     Model.FastRepresents (m1Of mem input n) 512 n
       (Precompile.bytesToNatPadded input 96 (32 * n) % mm) := by
-  have hts : Model.FastRepresents (hitMem mem input n) 4160 n
+  have hts : Model.FastRepresents (hitMem mem input n) 2112 n
       (Precompile.bytesToNatPadded input 96 (32 * n)) := by
     unfold hitMem Exp.storeWord
-    refine Model.fastRepresents_writeWord_disjoint _ 4128 4160 n _ _ (Or.inl (by omega)) ?_
+    refine Model.fastRepresents_writeWord_disjoint _ 2080 2112 n _ _ (Or.inl (by omega)) ?_
     have hsource := Setup.fastRepresents_bytes input 96 n
     apply Model.fastRepresents_of_limbs hsource.1
     intro k hk
-    rw [FullBase.readWord_copyFrom _ input 96 4160 (32 * n) (n - 1 - k) (by omega)]
+    rw [FullBase.readWord_copyFrom _ input 96 2112 (32 * n) (n - 1 - k) (by omega)]
     exact Model.readLimb_of_fastRepresents hsource hk
   have hmodH : Model.FastRepresents (hitMem mem input n) 0 n mm := by
     unfold hitMem Exp.storeWord
-    refine Model.fastRepresents_writeWord_disjoint _ 4128 0 n _ _ (Or.inr (by omega)) ?_
-    refine Model.fastRepresents_writeBytes_disjoint _ _ 4160 0 n _
+    refine Model.fastRepresents_writeWord_disjoint _ 2080 0 n _ _ (Or.inr (by omega)) ?_
+    refine Model.fastRepresents_writeBytes_disjoint _ _ 2112 0 n _
       (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega) ?_
     exact FullBase.copyBaseMem_modulus hn32 hmod
-  have htn0 : (MachineState.readWord (hitMem mem input n) 4128).toNat = 0 := by
+  have htn0 : (MachineState.readWord (hitMem mem input n) 2080).toNat = 0 := by
     unfold hitMem Exp.storeWord
     rw [Challenge.EvmProof.Memory.readWord_writeWord]
     decide
@@ -189,8 +189,8 @@ theorem m2_readWord_disjoint (mem input : ByteArray) (n addr : Nat) (hn : 1 ≤ 
       (addr + 32 ≤ 512 ∨ 512 + 32 * n ≤ addr) ∧
       (addr + 32 ≤ NEG ∨ NEG + 32 * n ≤ addr) ∧
       (addr + 32 ≤ PRE_L ∨ PRE_DINV + 64 ≤ addr) ∧
-      (addr + 32 ≤ 3072 ∨ 3072 + 32 * n ≤ addr) ∧
-      (addr + 32 ≤ 4128 ∨ 4160 + 32 * n ≤ addr)) :
+      (addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr) ∧
+      (addr + 32 ≤ 2080 ∨ 2112 + 32 * n ≤ addr)) :
     MachineState.readWord (m2Of mem input n) addr = MachineState.readWord mem addr := by
   have hpre : addr + 32 ≤ PRE_L ∨ PRE_DINV + 32 ≤ addr := by
     rcases hdisj.2.2.2.1 with h | h
@@ -211,17 +211,17 @@ theorem m2_stepInv (mem input : ByteArray) (n bsize mm minv : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm)
     (hframe : Exp.Frame mem n bsize minv) (hmod : Model.FastRepresents mem 0 n mm) :
     StepInv (m2Of mem input n) n bsize mm minv := by
-  have hm2high : ∀ addr, 5248 ≤ addr →
+  have hm2high : ∀ addr, 2688 ≤ addr →
       MachineState.readWord (m2Of mem input n) addr = MachineState.readWord mem addr :=
     fun addr haddr => m2_readWord_disjoint mem input n addr (by omega) hn32
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by unfold NEG; omega),
         Or.inr (by unfold PRE_DINV; omega), Or.inr (by omega), Or.inr (by omega)⟩
   have hframe2 : Exp.Frame (m2Of mem input n) n bsize minv :=
-    ⟨by rw [hm2high 5248 le_rfl]; exact hframe.s32,
-     by rw [hm2high 5280 (by omega)]; exact hframe.minvW,
-     by rw [hm2high 5312 (by omega)]; exact hframe.ml,
-     by rw [hm2high 5344 (by omega)]; exact hframe.tl,
-     by rw [hm2high 5376 (by omega)]; exact hframe.eoff⟩
+    ⟨by rw [hm2high 2688 le_rfl]; exact hframe.s32,
+     by rw [hm2high 2720 (by omega)]; exact hframe.minvW,
+     by rw [hm2high 2752 (by omega)]; exact hframe.ml,
+     by rw [hm2high 2784 (by omega)]; exact hframe.tl,
+     by rw [hm2high 2816 (by omega)]; exact hframe.eoff⟩
   have hmod1 : Model.FastRepresents (m1Of mem input n) 0 n mm := by
     refine (Model.fastRepresents_congr ?_ mm).2 hmod
     intro i hi
@@ -260,21 +260,21 @@ def gasSteps_hitPath (s : State) (mem input : ByteArray) (n bsize esize msize mm
   have hcsub0 := gasSteps_hitCsub s mem input n bsize esize msize hn hn32 e hdata hframe.ml
     hframe.tl hframe.s32
   -- facts at the shift loop entry
-  have hm1high : ∀ addr, 5248 ≤ addr →
+  have hm1high : ∀ addr, 2688 ≤ addr →
       MachineState.readWord (m1Of mem input n) addr = MachineState.readWord mem addr :=
     fun addr haddr => m1_readWord_disjoint mem input n addr (by omega) hn32
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩
-  have hm2high : ∀ addr, 5248 ≤ addr →
+  have hm2high : ∀ addr, 2688 ≤ addr →
       MachineState.readWord (m2Of mem input n) addr = MachineState.readWord mem addr :=
     fun addr haddr => m2_readWord_disjoint mem input n addr (by omega) hn32
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by unfold NEG; omega),
         Or.inr (by unfold PRE_DINV; omega), Or.inr (by omega), Or.inr (by omega)⟩
   have hframe2 : Exp.Frame (m2Of mem input n) n bsize minv :=
-    ⟨by rw [hm2high 5248 le_rfl]; exact hframe.s32,
-     by rw [hm2high 5280 (by omega)]; exact hframe.minvW,
-     by rw [hm2high 5312 (by omega)]; exact hframe.ml,
-     by rw [hm2high 5344 (by omega)]; exact hframe.tl,
-     by rw [hm2high 5376 (by omega)]; exact hframe.eoff⟩
+    ⟨by rw [hm2high 2688 le_rfl]; exact hframe.s32,
+     by rw [hm2high 2720 (by omega)]; exact hframe.minvW,
+     by rw [hm2high 2752 (by omega)]; exact hframe.ml,
+     by rw [hm2high 2784 (by omega)]; exact hframe.tl,
+     by rw [hm2high 2816 (by omega)]; exact hframe.eoff⟩
   have hmod1 : Model.FastRepresents (m1Of mem input n) 0 n mm := by
     refine (Model.fastRepresents_congr ?_ mm).2 hmod
     intro i hi
@@ -299,7 +299,7 @@ def gasSteps_hitPath (s : State) (mem input : ByteArray) (n bsize esize msize mm
         (m1_base mem input n mm hn hn32 hmpos hodd hmod hmatch.2) n le_rfl)
   have inv2 : StepInv (m2Of mem input n) n bsize mm minv := ⟨hframe2, hmod2, hneg2, ShiftCacheModel.read_cache _ n⟩
   have hpro := gasSteps_prologue s (m1Of mem input n) n bsize esize msize (by omega) hn32 e
-    (by rw [hm1high 5312 (by omega)]; exact hframe.ml)
+    (by rw [hm1high 2752 (by omega)]; exact hframe.ml)
   have hloop := gasSteps_shiftLoop s (m2Of mem input n) n bsize esize msize mm minv _ hn hn32 e
     hmpos hmm htop inv2 hbase2 (Nat.mod_lt _ hmpos)
   have hframeFin : Exp.Frame (hitFinalMem mem input n mm) n bsize minv :=

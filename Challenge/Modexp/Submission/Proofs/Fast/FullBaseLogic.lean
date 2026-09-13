@@ -112,7 +112,7 @@ private theorem activeWordsAfter_eq_of_end_le (curr offset size : Nat)
 
 /-- The ACC copy stays inside the already allocated fast-path memory. -/
 theorem copyBase_activeWords (s : State) (n : Nat)
-    (hn32 : n ≤ 8) (hactive : 169 ≤ s.activeWords.toNat) :
+    (hn32 : n ≤ 8) (hactive : 89 ≤ s.activeWords.toNat) :
     s.activeWordsAfterUInt256 256 (32 * n) = s.activeWords := by
   unfold State.activeWordsAfterUInt256
   rw [activeWordsAfter_eq_of_end_le]

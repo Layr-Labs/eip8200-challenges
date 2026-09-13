@@ -16,7 +16,7 @@ set_option maxHeartbeats 1000000
 Row head `out` (4264, multiply only), `commonFirst` (4267), the first-loop dispatch
 `DUP6 JUMP` (4292); the uniform first-loop blocks live in `KernelChain`; the middle block
 with its `JUMPDEST` (4553, the empty-chain entry); the second-loop dispatch `DUP10 JUMP`
-(4490) and cells (4502..4832); the tail (4833, ends `DUP3 JUMPI` to the row head `hd`) and
+(4490) and cells (4502..2336); the tail (4833, ends `DUP3 JUMPI` to the row head `hd`) and
 the exit (4859, jumps to the moved CSUB guard 4876).  The kernel `setup` block belongs to
 the entry side (`Cios2Dispatch` / `StagedOperandEntry`).
 -/
@@ -50,36 +50,36 @@ def l2Dispatch : Block Artifact.submissionArtifact .Osaka 4576 l2DispatchProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The first eight-limb second-loop cell loads its modulus word with `PUSH10 0xc0`. -/
-def l2Mac0 : Block Artifact.submissionArtifact .Osaka 4579 (l2Program 10 192 4352 4384) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3488 30 4579 (l2Program 10 192 4352 4384)
+def l2Mac0 : Block Artifact.submissionArtifact .Osaka 4579 (l2Program 10 192 2304 2336) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3488 30 4579 (l2Program 10 192 2304 2336)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Mac1 : Block Artifact.submissionArtifact .Osaka 4623 (l2Program 1 160 4320 4352) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3518 30 4623 (l2Program 1 160 4320 4352)
+def l2Mac1 : Block Artifact.submissionArtifact .Osaka 4623 (l2Program 1 160 2272 2304) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3518 30 4623 (l2Program 1 160 2272 2304)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Mac2 : Block Artifact.submissionArtifact .Osaka 4658 (l2Program 1 128 4288 4320) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3548 30 4658 (l2Program 1 128 4288 4320)
+def l2Mac2 : Block Artifact.submissionArtifact .Osaka 4658 (l2Program 1 128 2240 2272) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3548 30 4658 (l2Program 1 128 2240 2272)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Mac3 : Block Artifact.submissionArtifact .Osaka 4693 (CiosReadonlyExtra.extraProgram 0 4256 4288) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3578 29 4693 (CiosReadonlyExtra.extraProgram 0 4256 4288)
+def l2Mac3 : Block Artifact.submissionArtifact .Osaka 4693 (CiosReadonlyExtra.extraProgram 0 2208 2240) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3578 29 4693 (CiosReadonlyExtra.extraProgram 0 2208 2240)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l2Join : Block Artifact.submissionArtifact .Osaka 4726 joinProgram :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 3607 1 4726 joinProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Mac4 : Block Artifact.submissionArtifact .Osaka 4727 (CiosReadonlyExtra.extraProgram 1 4224 4256) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3608 29 4727 (CiosReadonlyExtra.extraProgram 1 4224 4256)
+def l2Mac4 : Block Artifact.submissionArtifact .Osaka 4727 (CiosReadonlyExtra.extraProgram 1 2176 2208) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3608 29 4727 (CiosReadonlyExtra.extraProgram 1 2176 2208)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Mac5 : Block Artifact.submissionArtifact .Osaka 4760 (CiosReadonlyExtra.extraProgram 2 4192 4224) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3637 29 4760 (CiosReadonlyExtra.extraProgram 2 4192 4224)
+def l2Mac5 : Block Artifact.submissionArtifact .Osaka 4760 (CiosReadonlyExtra.extraProgram 2 2144 2176) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3637 29 4760 (CiosReadonlyExtra.extraProgram 2 2144 2176)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Mac6 : Block Artifact.submissionArtifact .Osaka 4793 (CiosCachedLast.l2LastProgram 0 0 4160 4192) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3666 30 4793 (CiosCachedLast.l2LastProgram 0 0 4160 4192)
+def l2Mac6 : Block Artifact.submissionArtifact .Osaka 4793 (CiosCachedLast.l2LastProgram 0 0 2112 2144) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3666 30 4793 (CiosCachedLast.l2LastProgram 0 0 2112 2144)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def tailLoop : Block Artifact.submissionArtifact .Osaka 4827 CarryRowPrograms.tail :=

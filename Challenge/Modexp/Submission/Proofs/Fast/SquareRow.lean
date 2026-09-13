@@ -17,7 +17,7 @@ set_option maxHeartbeats 2000000
 slot 14 = `aprev`) it
 
 * loads `x`, parks it in slot 14 (`DUP1 SWAP15`), and computes `tb = SGT 0 aprev`;
-* computes `f = x + tb`, `b2 = f + x`, `lo = x * f`, `hi` (4864-bit high word via
+* computes `f = x + tb`, `b2 = f + x`, `lo = x * f`, `hi` (2368-bit high word via
   `MULMOD … 2^256-1`), stores `s = lo + t_i` at `P + 0x1840 = tAddr n i` and leaves the
   carry `C = [s < lo] + hi` above `b2`;
 * advances the frame's `ent` slot by 37 and jumps to the old `ent` — the entry of the
@@ -59,7 +59,7 @@ def programB2 : List Instr :=
 
 /-- `SWAP1 DUP4 PUSH2 0x1840 ADD` (idx 3840..3840). -/
 def programB3a : List Instr :=
-  [.op (.Swap ⟨0, by decide⟩), .push 2 704, .op (.Dup ⟨4, by decide⟩), .op .SUB]
+  [.op (.Swap ⟨0, by decide⟩), .push 2 256, .op (.Dup ⟨4, by decide⟩), .op .SUB]
 
 /-- `DUP1 MLOAD DUP3 ADD DUP1 SWAP2 MSTORE LT ADD` (idx 3840..3648). -/
 def programB3b : List Instr :=
@@ -78,7 +78,7 @@ def programB23 : List Instr :=
   [.op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT,
    .op (.Swap ⟨1, by decide⟩), .op .MUL, .op (.Swap ⟨1, by decide⟩), .op .SUB,
    .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB,
-   .push 2 704, .op (.Dup ⟨4, by decide⟩), .op .SUB,
+   .push 2 256, .op (.Dup ⟨4, by decide⟩), .op .SUB,
    .op (.Dup ⟨0, by decide⟩), .op .MLOAD, .op (.Dup ⟨3, by decide⟩), .op .ADD,
    .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .MSTORE,
    .op (.Dup ⟨2, by decide⟩), .op .GT, .op .SUB, .op .SUB]
@@ -181,7 +181,7 @@ theorem run_B3a (s : State) (hi lo b2 P : UInt256)
     runInstructions programB3a
       { s with pc := UInt256.ofNat 5011, stack := hi :: lo :: b2 :: P :: rest } =
     some { s with pc := UInt256.ofNat 5017,
-                  stack := (P - (704 : UInt256)) :: lo :: hi :: b2 :: P :: rest } := by
+                  stack := (P - (256 : UInt256)) :: lo :: hi :: b2 :: P :: rest } := by
   have h4 : rest.length + 4 < 1024 := by omega
   have h5 : rest.length + 5 < 1024 := by omega
   have h6 : rest.length + 6 < 1024 := by omega
@@ -228,9 +228,9 @@ def programB23a : List Instr :=
   [.op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT,
    .op (.Swap ⟨1, by decide⟩), .op .MUL, .op (.Swap ⟨1, by decide⟩), .op .SUB,
    .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB,
-   .push 2 704, .op (.Dup ⟨4, by decide⟩), .op .SUB]
+   .push 2 256, .op (.Dup ⟨4, by decide⟩), .op .SUB]
 
-/-- Load/add/store and the two-subtraction carry (pc 5013..4832). -/
+/-- Load/add/store and the two-subtraction carry (pc 5013..2336). -/
 def programB23b : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .op .MLOAD, .op (.Dup ⟨3, by decide⟩), .op .ADD,
    .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .MSTORE,
@@ -254,7 +254,7 @@ theorem run_B23a (s : State) (mmr x f b2 P : UInt256)
     runInstructions programB23a
       { s with pc := UInt256.ofNat 4996, stack := mmr :: x :: f :: b2 :: P :: rest } =
     some { s with pc := UInt256.ofNat 5013,
-                  stack := (P - (704 : UInt256)) ::
+                  stack := (P - (256 : UInt256)) ::
                     (UInt256.lt (mmr - UInt256.lt f x) (x * f) - (mmr - UInt256.lt f x)) ::
                     (x * f) :: b2 :: P :: rest } := by
   have h1 : rest.length + 1 < 1024 := by omega
@@ -299,19 +299,19 @@ theorem run_B23b (s : State) (tA d lo b2 P : UInt256)
 theorem run_B23 (s : State) (mmr x f b2 P : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1014)
     (hact : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
-      (P - (704 : UInt256)).toNat 32) = s.activeWords) :
+      (P - (256 : UInt256)).toNat 32) = s.activeWords) :
     runInstructions programB23
       { s with pc := UInt256.ofNat 4996, stack := mmr :: x :: f :: b2 :: P :: rest } =
     some { s with pc := UInt256.ofNat 5024,
-                  stack := (UInt256.lt (x * f + MachineState.readWord s.memory (P - (704 : UInt256)).toNat)
+                  stack := (UInt256.lt (x * f + MachineState.readWord s.memory (P - (256 : UInt256)).toNat)
                       (x * f) + (((mmr - UInt256.lt f x) -
                         UInt256.lt (mmr - UInt256.lt f x) (x * f)) - x * f)) :: b2 :: P :: rest
                   memory := MachineState.writeBytes s.memory
                     (Data.Bytes.natToBytesPadded
-                      (x * f + MachineState.readWord s.memory (P - (704 : UInt256)).toNat).toNat 32)
-                    (P - (704 : UInt256)).toNat } := by
+                      (x * f + MachineState.readWord s.memory (P - (256 : UInt256)).toNat).toNat 32)
+                    (P - (256 : UInt256)).toNat } := by
   have ha := run_B23a s mmr x f b2 P rest hcap
-  have hb := run_B23b s (P - (704 : UInt256))
+  have hb := run_B23b s (P - (256 : UInt256))
     (UInt256.lt (mmr - UInt256.lt f x) (x * f) - (mmr - UInt256.lt f x)) (x * f) b2 P rest hcap hact
   rw [programB23_split, runInstructions_append_some _ _ _ _ _ ha hb, carryReassociate, gt_eq_lt]
 
@@ -327,28 +327,28 @@ abbrev hiOf (x tb M : UInt256) : UInt256 :=
 theorem run_B (s : State) (tb x P hd w3 ent w5 M : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hact : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
-      (P - (704 : UInt256)).toNat 32) = s.activeWords)
+      (P - (256 : UInt256)).toNat 32) = s.activeWords)
     (hjump : Decode.isValidJumpDest s.executionEnv.code ent.toNat = true) :
     runInstructions programB
       { s with pc := UInt256.ofNat 4986,
                stack := tb :: x :: P :: hd :: w3 :: ent :: w5 :: M :: rest } =
     some { s with pc := ent,
-                  stack := (UInt256.lt (loOf x tb + MachineState.readWord s.memory (P - (704 : UInt256)).toNat)
+                  stack := (UInt256.lt (loOf x tb + MachineState.readWord s.memory (P - (256 : UInt256)).toNat)
                       (loOf x tb) + hiOf x tb M) ::
                     ((x + tb) + x) :: P :: hd :: w3 :: (ent + UInt256.ofNat 37) :: w5 :: M :: rest
                   memory := MachineState.writeBytes s.memory
                     (Data.Bytes.natToBytesPadded
-                      (loOf x tb + MachineState.readWord s.memory (P - (704 : UInt256)).toNat).toNat 32)
-                    (P - (704 : UInt256)).toNat } := by
+                      (loOf x tb + MachineState.readWord s.memory (P - (256 : UInt256)).toNat).toNat 32)
+                    (P - (256 : UInt256)).toNat } := by
   have h1 := run_B1 s tb x P hd w3 ent w5 M rest (by omega)
   have h2 := run_B23 s (UInt256.mulMod x (x + tb) M) x (x + tb) ((x + tb) + x) P
     (hd :: w3 :: ent :: w5 :: M :: rest) (by simp only [List.length_cons]; omega) hact
   have h5 := run_B4
     { s with memory := (MachineState.writeBytes s.memory
       (Data.Bytes.natToBytesPadded
-        (loOf x tb + MachineState.readWord s.memory (P - (704 : UInt256)).toNat).toNat 32)
-      (P - (704 : UInt256)).toNat) }
-    (UInt256.lt (loOf x tb + MachineState.readWord s.memory (P - (704 : UInt256)).toNat)
+        (loOf x tb + MachineState.readWord s.memory (P - (256 : UInt256)).toNat).toNat 32)
+      (P - (256 : UInt256)).toNat) }
+    (UInt256.lt (loOf x tb + MachineState.readWord s.memory (P - (256 : UInt256)).toNat)
       (loOf x tb) + hiOf x tb M) ((x + tb) + x) P hd w3 ent (w5 :: M :: rest)
     (by simp only [List.length_cons]; omega) hjump
   exact runInstructions_append_some _ _ _ _ _
@@ -357,19 +357,19 @@ theorem run_B (s : State) (tb x P hd w3 ent w5 M : UInt256)
 /-! ## The prologue on the kernel row frame -/
 
 /-- The row pointer of square row `i` is the address of `a_i`. -/
-theorem ptr_toNat (n i : Nat) (hi : i < n) (hn : n ≤ 32) :
-    (UInt256.ofNat (ptrAt (4864 + 32 * n - 32) i)).toNat = aAddr n i := by
+theorem ptr_toNat (n i : Nat) (hi : i < n) (hn : n ≤ 8) :
+    (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) i)).toNat = aAddr n i := by
   rw [ptrAt_toNat _ _ (by omega) (by omega), aAddr]
   omega
 
 /-- ... and `P + 0x1840` is the address of `t_i`. -/
-theorem tptr_toNat (n i : Nat) (hi : i < n) (hn : n ≤ 32) :
-    (UInt256.ofNat (ptrAt (4864 + 32 * n - 32) i) - (704 : UInt256)).toNat = tAddr n i  := by
-  have hp : UInt256.ofNat (ptrAt (4864 + 32 * n - 32) i) = UInt256.ofNat (aAddr n i) := by
+theorem tptr_toNat (n i : Nat) (hi : i < n) (hn : n ≤ 8) :
+    (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) i) - (256 : UInt256)).toNat = tAddr n i  := by
+  have hp : UInt256.ofNat (ptrAt (2368 + 32 * n - 32) i) = UInt256.ofNat (aAddr n i) := by
     apply Challenge.EvmProof.Word.word_ext
     rw [ptr_toNat n i hi hn, Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt (by unfold aAddr; omega)]
-  rw [hp, show (704 : UInt256) = UInt256.ofNat 704 by decide,
+  rw [hp, show (256 : UInt256) = UInt256.ofNat 256 by decide,
     Challenge.EvmProof.Word.ofNat_sub_ofNat (by unfold aAddr; omega) (by unfold aAddr; omega),
     Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by unfold aAddr; omega)]
   unfold aAddr tAddr
@@ -388,32 +388,32 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (n i e : Nat)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 168 ≤ s.activeWords.toNat) (hi : i < n) (hn : n ≤ 8)
+    (hact : 88 ≤ s.activeWords.toNat) (hi : i < n) (hn : n ≤ 8)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode e = true)
     (he : e + 37 < 2 ^ 256) :
     Challenge.EvmProof.GasSteps
-      (outState s mem 4864 n i (UInt256.ofNat 4979) (UInt256.ofNat e) pdst ret
+      (outState s mem 2368 n i (UInt256.ofNat 4979) (UInt256.ofNat e) pdst ret
         (w10 :: w11 :: w12 :: w13 :: aprev :: rest))
       (l1Q e s (sqPro mem n i (UInt256.sgt (UInt256.ofNat 0) aprev))
-        (sqB2 (sqX mem n i) (UInt256.sgt (UInt256.ofNat 0) aprev)) 4864 n i
+        (sqB2 (sqX mem n i) (UInt256.sgt (UInt256.ofNat 0) aprev)) 2368 n i
         (UInt256.ofNat 4979) (UInt256.ofNat (e + 37)) pdst ret
         (w10 :: w11 :: w12 :: w13 :: sqX mem n i :: rest)) := by
-  let P : UInt256 := UInt256.ofNat (ptrAt (4864 + 32 * n - 32) i)
+  let P : UInt256 := UInt256.ofNat (ptrAt (2368 + 32 * n - 32) i)
   let s' : State := { s with memory := mem }
   have hP : P.toNat = aAddr n i := ptr_toNat n i hi (by omega)
-  have hT : (P - (704 : UInt256)).toNat = tAddr n i := tptr_toNat n i hi (by omega)
+  have hT : (P - (256 : UInt256)).toNat = tAddr n i := tptr_toNat n i hi (by omega)
   have hactP : UInt256.ofNat (MachineState.activeWordsAfter s'.activeWords.toNat P.toNat 32) =
       s'.activeWords := by
     rw [hP]; exact activeWords_fix s' _ 32 (by decide) (by rw [aAddr]; omega) hact
   have hactT : UInt256.ofNat (MachineState.activeWordsAfter s'.activeWords.toNat
-      (P - (704 : UInt256)).toNat 32) = s'.activeWords := by
+      (P - (256 : UInt256)).toNat 32) = s'.activeWords := by
     rw [hT]; exact activeWords_fix s' _ 32 (by decide) (by rw [tAddr]; omega) hact
   have hjumpE : Decode.isValidJumpDest s'.executionEnv.code (UInt256.ofNat e).toNat = true := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
     change Decode.isValidJumpDest s.executionEnv.code e = true
     rw [hcode]; exact hjump
   -- block A
-  have hA := run_A s' P (UInt256.ofNat 4979) (UInt256.ofNat (4864 - 32)) (UInt256.ofNat e)
+  have hA := run_A s' P (UInt256.ofNat 4979) (UInt256.ofNat (2368 - 32)) (UInt256.ofNat e)
     negative32 allOnes (l2Target n) pdst ret w10 w11 w12 w13 aprev rest (by omega) hactP
   rw [push0_eq] at hA
   have gA := stepsOf blockA hA rfl hcode hfork hrun hnp
@@ -421,13 +421,13 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (n i e : Nat)
   have gS := SgtStep.gasSteps_sqRowSgt
     { s' with pc := UInt256.ofNat 4985,
               stack := UInt256.ofNat 0 :: aprev :: MachineState.readWord s'.memory P.toNat :: P ::
-                UInt256.ofNat 4979 :: UInt256.ofNat (4864 - 32) :: UInt256.ofNat e :: negative32 ::
+                UInt256.ofNat 4979 :: UInt256.ofNat (2368 - 32) :: UInt256.ofNat e :: negative32 ::
                 allOnes :: l2Target n :: pdst :: ret :: w10 :: w11 :: w12 :: w13 ::
                 MachineState.readWord s'.memory P.toNat :: rest }
     (UInt256.ofNat 0) aprev _ hcode hfork rfl rfl (by simp only [List.length_cons]; omega) hrun hnp
   -- block B
   have hB := run_B s' (UInt256.sgt (UInt256.ofNat 0) aprev) (MachineState.readWord s'.memory P.toNat) P
-    (UInt256.ofNat 4979) (UInt256.ofNat (4864 - 32)) (UInt256.ofNat e) negative32 allOnes
+    (UInt256.ofNat 4979) (UInt256.ofNat (2368 - 32)) (UInt256.ofNat e) negative32 allOnes
     (l2Target n :: pdst :: ret :: w10 :: w11 :: w12 :: w13 ::
       MachineState.readWord s'.memory P.toNat :: rest)
     (by simp only [List.length_cons]; omega) hactT hjumpE

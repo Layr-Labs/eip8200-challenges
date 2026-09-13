@@ -33,7 +33,7 @@ private theorem helperPCAnchor :
 def helperPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2259 .JUMPDEST,
-   pushAt 2260 2 5248,
+   pushAt 2260 2 2688,
    opAt 2261 .MLOAD,
    pushAt 2262 2 1280,
    pushAt 2263 2 1536,

@@ -18,11 +18,11 @@ theorem copyBaseMem_frame {memory input : ByteArray} {n bsize minv : Nat}
         MachineState.readWord memory addr :=
     fun addr haddr => copyBaseMem_readWord_high memory input n addr hn32 haddr
   exact
-    ⟨by rw [key 5248 (by omega)]; exact hf.s32,
-     by rw [key 5280 (by omega)]; exact hf.minvW,
-     by rw [key 5312 (by omega)]; exact hf.ml,
-     by rw [key 5344 (by omega)]; exact hf.tl,
-     by rw [key 5376 (by omega)]; exact hf.eoff⟩
+    ⟨by rw [key 2688 (by omega)]; exact hf.s32,
+     by rw [key 2720 (by omega)]; exact hf.minvW,
+     by rw [key 2752 (by omega)]; exact hf.ml,
+     by rw [key 2784 (by omega)]; exact hf.tl,
+     by rw [key 2816 (by omega)]; exact hf.eoff⟩
 
 /-- Copying the full-width base and multiplying RR first converts it directly
 to Montgomery form while preserving the unreduced normal-domain accumulator. -/

@@ -9,12 +9,12 @@ set_option maxHeartbeats 4000000
 # `SQUARE(2048) → 2048` through the sqCP1m kernel
 
 The fixed-exponent caller enters the kernel's `common` block (pc 4153) with the row
-head `hd = sq_row = 4960` on top of the call frame `[2048, 2048, 2048, ret]`
-(`Cios2Dispatch.commonState s mem 4960 2048 2048 (ofNat 2048) ret rest`, definitionally
+head `hd = sq_row = 2464` on top of the call frame `[2048, 2048, 2048, ret]`
+(`Cios2Dispatch.commonState s mem 2464 2048 2048 (ofNat 2048) ret rest`, definitionally
 `Exp.sqCall`).
 
 * `n ∈ {4, 8}`: the call does **not** return to `ret` on the R0 artifact — the kernel keeps
-  its frame, loops over the counter in memory word 5184 and leaves through `after_sq`
+  its frame, loops over the counter in memory word 2624 and leaves through `after_sq`
   (3360).  That path is `SquareLoop.gasSteps_squareLoop`; this lemma therefore carries
   `hslow : ¬(n = 4 ∨ n = 8)`.
 * other widths: `common` falls back (`POP PUSH2 0x683 JUMP`) to the generic `MONPRO`
@@ -52,17 +52,17 @@ def gasSteps_squareFull (s : State) (mem : ByteArray) (p a mm : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 168 ≤ s.activeWords.toNat) (hn32 : p + 2 ≤ 32)
+    (hact : 88 ≤ s.activeWords.toNat) (hn32 : p + 2 ≤ 8)
     (hslow : ¬(p + 2 = 4 ∨ p + 2 = 8))
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hs32 : MachineState.readWord mem 5248 = UInt256.ofNat (32 * (p + 2)))
-    (htl : MachineState.readWord mem 5344 = UInt256.ofNat (4128 + 32 * (p + 2)))
-    (hml : MachineState.readWord mem 5312 = UInt256.ofNat (32 * (p + 2) - 32))
+    (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * (p + 2)))
+    (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * (p + 2)))
+    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * (p + 2) - 32))
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
     (ha : Model.FastRepresents mem 512 (p + 2) a) (hm : Model.FastRepresents mem 0 (p + 2) mm)
     (ham : a < mm) (hmpos : 0 < mm)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
-        (MachineState.readWord mem 5280).toNat + 1) % 2 ^ 256 = 0) :
+        (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) :
     Challenge.EvmProof.GasSteps
       (Cios2Dispatch.commonState s mem 5294 512 512 (UInt256.ofNat 512) ret rest)
       { s with pc := ret, stack := rest, memory := SquareResult.sqMem s mem (p + 2) } := by

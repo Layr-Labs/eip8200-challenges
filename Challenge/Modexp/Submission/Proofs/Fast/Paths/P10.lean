@@ -56,7 +56,7 @@ def blk1519 :
    pushAt 1438 1 31,
    opAt 1439 .NOT,
    opAt 1440 .ADD,
-   pushAt 1441 2 4128,
+   pushAt 1441 2 2080,
    opAt 1442 (.Dup ⟨2, by decide⟩),
    opAt 1443 .GT,
    pushAt 1444 2 1924,

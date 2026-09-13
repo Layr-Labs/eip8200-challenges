@@ -116,9 +116,9 @@ theorem run_fused (s : State)
 theorem run_commonFirst (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb n i : Nat) (hd ent tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)
-    (hact : 168 ≤ s.activeWords.toNat) (hn : n ≤ 32) (hpos : 0 < n)
-    (hpaFit : pa+32*n ≤ 5376)
-    (htl : tl = UInt256.ofNat (4128+32*n))
+    (hact : 88 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hpos : 0 < n)
+    (hpaFit : pa+32*n ≤ 2816)
+    (htl : tl = UInt256.ofNat (2080+32*n))
     (hAend : aEnd = UInt256.ofNat (pa+32*n-32)) :
     runInstructions commonFirstProgram
       (firstAt 4259 s mem bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
@@ -126,7 +126,7 @@ theorem run_commonFirst (s : State) (mem : ByteArray) (bi : UInt256)
   have ha : aEnd.toNat = pa+32*(n-1) := by
     rw [hAend,Challenge.EvmProof.Word.word_toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
     omega
-  have ht : tl.toNat = 4160+32*(n-1) := by
+  have ht : tl.toNat = 2112+32*(n-1) := by
     rw [htl,Challenge.EvmProof.Word.word_toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
     omega
   let st : State := {s with memory := mem}

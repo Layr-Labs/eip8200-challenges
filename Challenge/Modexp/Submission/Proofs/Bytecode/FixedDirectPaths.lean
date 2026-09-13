@@ -52,7 +52,7 @@ def oneWidth : List Located :=
    opAt 2491 .JUMPI]
 
 def checkThree : List Located :=
-  [pushAt 2492 2 5376,
+  [pushAt 2492 2 2816,
    opAt 2493 .MLOAD,
    opAt 2494 .CALLDATALOAD,
    pushAt 2495 0 0,
@@ -69,7 +69,7 @@ def threeHit : List Located :=
 
 def check65537 : List Located :=
   [opAt 2504 .JUMPDEST,
-   pushAt 2505 2 5376,
+   pushAt 2505 2 2816,
    opAt 2506 .MLOAD,
    opAt 2507 .CALLDATALOAD,
    pushAt 2508 1 232,
@@ -91,7 +91,7 @@ kernel's in-kernel loop) and call `SQUARE(0x800) → 0x800`, entering the kernel
 def squareCall : List Located :=
   [opAt 2515 .JUMPDEST,
    opAt 2516 (.Dup ⟨0, by decide⟩),
-   pushAt 2517 2 5184,
+   pushAt 2517 2 2624,
    opAt 2518 .MSTORE,
    pushAt 2519 2 3343,
    pushAt 2520 2 512,

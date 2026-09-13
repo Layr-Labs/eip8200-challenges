@@ -121,9 +121,9 @@ theorem run_cell1 (s : State) (um : ByteArray) (q pa pt pa' pt' : UInt256)
     (n bsize esize msize k j : Nat)
     (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 168 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 8) (hj : j < n)
-    (hpa : pa.toNat = NEG + 32 * (n - 1 - j)) (hpt : pt.toNat = 4160 + 32 * (n - 1 - j))
+    (hpa : pa.toNat = NEG + 32 * (n - 1 - j)) (hpt : pt.toNat = 2112 + 32 * (n - 1 - j))
     (hpa' : UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 + pa = pa')
     (hpt' : UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 + pt = pt') :
     Challenge.EvmProof.Stepper.runLocatedBlock cellPath
@@ -139,7 +139,7 @@ theorem run_cell1 (s : State) (um : ByteArray) (q pa pt pa' pt' : UInt256)
       (NEG + 32 * (n - 1 - j)) 32) = s.activeWords :=
     Monpro.activeWords_fix s _ 32 (by decide) (by unfold NEG; omega) hact
   have hactT : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
-      (4160 + 32 * (n - 1 - j)) 32) = s.activeWords :=
+      (2112 + 32 * (n - 1 - j)) 32) = s.activeWords :=
     Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 800000 })
     [cellPath, opAt, pushAt, wfOp,

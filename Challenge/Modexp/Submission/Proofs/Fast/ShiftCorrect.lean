@@ -36,8 +36,8 @@ theorem hitMem_acc (mem input : ByteArray) (n : Nat) (hn32 : n ≤ 8) :
     Model.FastRepresents (hitMem mem input n) 256 n
       (Precompile.bytesToNatPadded input 96 (32 * n)) := by
   unfold hitMem Exp.storeWord
-  refine Model.fastRepresents_writeWord_disjoint _ 4128 256 n _ _ (Or.inr (by omega)) ?_
-  refine Model.fastRepresents_writeBytes_disjoint _ _ 4160 256 n _
+  refine Model.fastRepresents_writeWord_disjoint _ 2080 256 n _ _ (Or.inr (by omega)) ?_
+  refine Model.fastRepresents_writeBytes_disjoint _ _ 2112 256 n _
     (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega) ?_
   exact FullBase.copyBaseMem_represents mem input n
 
@@ -48,8 +48,8 @@ theorem hitFinal_readWord_disjoint (mem input : ByteArray) (n mm addr : Nat) (hn
       (addr + 32 ≤ 512 ∨ 512 + 32 * n ≤ addr) ∧
       (addr + 32 ≤ NEG ∨ NEG + 32 * n ≤ addr) ∧
       (addr + 32 ≤ PRE_L ∨ PRE_DINV + 64 ≤ addr) ∧
-      (addr + 32 ≤ 3072 ∨ 3072 + 32 * n ≤ addr) ∧
-      (addr + 32 ≤ 4128 ∨ 4160 + 32 * n ≤ addr)) :
+      (addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr) ∧
+      (addr + 32 ≤ 2080 ∨ 2112 + 32 * n ≤ addr)) :
     MachineState.readWord (hitFinalMem mem input n mm) addr = MachineState.readWord mem addr := by
   unfold hitFinalMem
   rw [stepMems_readWord_disjoint _ n mm addr hn ⟨hdisj.2.1, hdisj.2.2.2.2.1, hdisj.2.2.2.2.2⟩ n]
@@ -60,8 +60,8 @@ theorem hitFinal_preserves (mem input : ByteArray) (n mm ptr cnt v : Nat) (hn : 
       (ptr + 32 * cnt ≤ 512 ∨ 512 + 32 * n ≤ ptr) ∧
       (ptr + 32 * cnt ≤ NEG ∨ NEG + 32 * n ≤ ptr) ∧
       (ptr + 32 * cnt ≤ PRE_L ∨ PRE_DINV + 64 ≤ ptr) ∧
-      (ptr + 32 * cnt ≤ 3072 ∨ 3072 + 32 * n ≤ ptr) ∧
-      (ptr + 32 * cnt ≤ 4128 ∨ 4160 + 32 * n ≤ ptr))
+      (ptr + 32 * cnt ≤ 1792 ∨ 1792 + 32 * n ≤ ptr) ∧
+      (ptr + 32 * cnt ≤ 2080 ∨ 2112 + 32 * n ≤ ptr))
     (hrep : Model.FastRepresents mem ptr cnt v) :
     Model.FastRepresents (hitFinalMem mem input n mm) ptr cnt v := by
   refine (Model.fastRepresents_congr ?_ v).2 hrep
@@ -129,7 +129,7 @@ theorem hitFinal_base (mem input : ByteArray) (n mm : Nat)
 
 private theorem readWord_setupMem_operand (input : ByteArray) (m0 target : Nat)
     (hm : Challenge.Modexp.modulusSize input ≤ 256)
-    (hlo : 256 ≤ target) (hhi : target + 32 ≤ 5248) :
+    (hlo : 256 ≤ target) (hhi : target + 32 ≤ 2688) :
     MachineState.readWord (Setup.setupMem ByteArray.empty input m0) target =
       UInt256.ofNat 0 := by
   have hS := Setup.s32_le_256 input hm
@@ -199,7 +199,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 169 ≤ s.activeWords.toNat)
+    (hact : 89 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
@@ -217,14 +217,14 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     (hacc0 : Model.FastRepresents mem 256 n 0)
     (hbase0 : Model.FastRepresents mem 512 n 0)
     (hone0 : Model.FastRepresents mem 768 n 0)
-    (htz : Model.FastRepresents mem 4160 n 0) :
+    (htz : Model.FastRepresents mem 2112 n 0) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
         (dispState s mem n bsize esize msize) final) ∧
         final.isDone = true ∧
         final.toResult = .returned (Challenge.Modexp.spec input) := by
-  have hact296 : 168 ≤ s.activeWords.toNat :=
-    Nat.le_trans (show 168 ≤ 169 by norm_num) hact
+  have hact296 : 88 ≤ s.activeWords.toNat :=
+    Nat.le_trans (show 88 ≤ 89 by norm_num) hact
   have e : Env s := ⟨hcode, hfork, hrun, hnp, hact⟩
   let sub := Exp.subs s n bsize mm minv hcode hfork hrun hnp hact296 hcds hn hn32 hmpos
     hminvlt hminvA
@@ -331,8 +331,8 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
       Exp.storeWord_frame mem 1024 512 n 0 (UInt256.ofNat 1) (Or.inr (by omega)) hbase0
     have honeS : Model.FastRepresents mem0 768 n 0 :=
       Exp.storeWord_frame mem 1024 768 n 0 (UInt256.ofNat 1) (Or.inr (by omega)) hone0
-    have htzS : Model.FastRepresents mem0 4160 n 0 :=
-      Exp.storeWord_frame mem 1024 4160 n 0 (UInt256.ofNat 1) (Or.inl (by omega)) htz
+    have htzS : Model.FastRepresents mem0 2112 n 0 :=
+      Exp.storeWord_frame mem 1024 2112 n 0 (UInt256.ofNat 1) (Or.inl (by omega)) htz
     set mem1 := Exp.r1Mem n 1024 mem0 with hmem1
     have hframe1 : Exp.Frame mem1 n bsize minv := Exp.r1Mem_frame hn hn32 hframeS
     have hconv : Challenge.EvmProof.GasSteps
@@ -423,7 +423,7 @@ theorem gasSteps_handled (input : ByteArray)
     exact h
   have hxlt : Limbs.radix ^ (Setup.limbs input - 1) < Setup.modulus input :=
     Model.radix_pow_lt_of_odd hn hpath.2.2.1 hodd
-  have hact : 169 ≤ (Setup.fastSetupState input).activeWords.toNat := by
+  have hact : 89 ≤ (Setup.fastSetupState input).activeWords.toNat := by
     rw [Setup.fastSetup_activeWords input hpath, Exp.toNat_ofNat_self (by norm_num)]
   have hcds : (Setup.fastSetupState input).executionEnv.calldata.size < 2 ^ 256 := by
     rw [Exp.fastSetup_calldata input]
