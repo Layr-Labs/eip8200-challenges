@@ -1,6 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Stagger144Active
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerTablePad
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedPadStore
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80Setup
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadShiftDiet
 set_option warningAsError true
@@ -21,9 +20,12 @@ def lowTemplate : List Instr :=
     .op .CALLDATASIZE,
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .CALLDATACOPY,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 128),
     .op .CALLDATASIZE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 3),
     .op .SHL,
+    .op .JUMPDEST,
+    .op .JUMPDEST,
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 162),
     .op .MSTORE,
@@ -32,18 +34,20 @@ def lowTemplate : List Instr :=
     .op .MSTORE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .MSTORE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 128),
+    .op (.Dup ⟨0, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 522),
     .op .MSTORE,
-    .push ⟨19, by decide⟩ (UInt256.ofNat (128 * (1 + 2 ^ 144))),
+    .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 54),
+    .op .MSTORE,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 36),
     .op .MSTORE,
     .op .CALLDATASIZE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 29),
     .op .SHR,
     .op .ISZERO ]
 
-/-- Skip the high stores when the unmasked high part is zero. -/
+/-- `PUSH2 0398 JUMPI` at 4769: straight to the rounds when the high word is zero. -/
 def branchTemplate : List Instr :=
   [ .push ⟨2, by decide⟩ (UInt256.ofNat 906), .op .JUMPI ]
 
@@ -124,13 +128,8 @@ theorem run_low (s : State) (pc returnPC : UInt256) (rest : List UInt256)
     exact (Word.word_eq_ofNat_toNat _).symm
   have hsize : (UInt256.ofNat s.executionEnv.calldata.size).toNat = s.executionEnv.calldata.size := by
     rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt hfit]
-  have hpacked := PackedPadStore.after_length_stores s.memory
-    (StaggerTablePad.lowDirty (UInt256.ofNat s.executionEnv.calldata.size))
-  change StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size) = _ at hpacked
-  rw [hpacked]
-  simp (discharger := omega) [lowTemplate, StaggerTablePad.lowChain, StaggerTablePad.lowDirty, highZero, zeroMemory,
-    writeWord,
-    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+  simp (discharger := omega) [lowTemplate, StaggerTablePad.lowChain, StaggerTablePad.lowDirty,
+    highZero, zeroMemory, writeWord, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     PairedHelperBooleanTrace.push0_toNat,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
     State.activeWordsAfterUInt256, hactiveAt, hcopyActive, hsize,

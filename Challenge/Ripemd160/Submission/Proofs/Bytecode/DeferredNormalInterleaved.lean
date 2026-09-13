@@ -12,18 +12,8 @@ open PairTableActive Table80ScratchZero DeferredNormalEndian
 def firstLoad : List Instr := [.op .MLOAD]
 def secondLoad : List Instr :=
   [.push ⟨2, by decide⟩ (UInt256.ofNat 1152), .op (.Dup ⟨14, by decide⟩), .op .ADD, .op .MLOAD]
-def cleanupTemplate : List Instr := [.op (.Dup ⟨1, by decide⟩)]
 def template : List Instr :=
-  ((((((firstLoad ++ DeferredNormalEndian.lowerReverse) ++ lowerStore) ++ secondLoad) ++ DeferredNormalEndian.finalReverse) ++ upperStore) ++ cleanupTemplate)
-
-private theorem run_finalCleanup (s : State) (pc ret : UInt256) (rest : List UInt256)
-    (hstack : rest.length ≤ 996) (hrun : s.halt = .Running) :
-    runInstrSeq cleanupTemplate {s with pc := pc, stack := ret :: maskWord :: rest} =
-      some {s with pc := pcAfter pc cleanupTemplate, stack := maskWord :: ret :: maskWord :: rest} := by
-  have hcap (n : Nat) (hn : n ≤ 27) : rest.length + n < 1024 := by omega
-  simp [cleanupTemplate, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ,
-    Instr.size, hrun, hcap, Nat.add_assoc, List.getElem?_cons_zero]
-  rfl
+  ((((((firstLoad ++ DeferredNormalEndian.lowerReverse) ++ lowerStore) ++ secondLoad) ++ DeferredNormalEndian.finalReverse) ++ upperStore) ++ DeferredNormalEndian.finalCleanup)
 
 private theorem run_firstLoad (s : State) (pc p : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 1000) (hrun : s.halt = .Running) :
@@ -130,7 +120,7 @@ theorem run_template (s : State) (pc ret : UInt256) (p : Nat) (rest : List UInt2
     ret (UInt256.ofNat (p - 1120)) rest (by omega) hrun hoff
   rw [haddr, PairedScheduleContract.pointer_add32_toNat p hbound, hread] at h4
   have h1234 := DenseScheduleTrace.runInstrSeq_append_running h123 (by exact hrun) h4
-  have h5 := run_finalReverse s2
+  have h5 := run_final s2
     (pcAfter (pcAfter (pcAfter (pcAfter pc firstLoad) DeferredNormalEndian.lowerReverse) lowerStore) secondLoad)
     (MachineState.readWord s.memory (p + 32)) ret rest (by omega) hrun
   have h12345 := DenseScheduleTrace.runInstrSeq_append_running h1234 (by exact hrun) h5

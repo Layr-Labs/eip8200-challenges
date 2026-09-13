@@ -60,11 +60,11 @@ def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
     have hmem := StaggerTablePad.highChain_eq s.memory (UInt256.ofNat s.executionEnv.calldata.size)
     have g23 : GasSteps
         {s with
-          pc := UInt256.ofNat 4767
+          pc := UInt256.ofNat 4754
           stack := StaggerPad.highZero (UInt256.ofNat s.executionEnv.calldata.size) :: ret :: rest
           memory := StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
         {s with
-          pc := UInt256.ofNat 4799
+          pc := UInt256.ofNat 4786
           stack := ret :: rest
           memory := StaggerTablePad.resultMemory s.memory (UInt256.ofNat s.executionEnv.calldata.size)} :=
       (g2.trans g3).cast rfl (by dsimp only; rw [hmem])

@@ -146,9 +146,12 @@ def tail : List Instr :=
   op 0x36,
   .push 0 0,
   op 0x37,
+  .push 1 128,
   op 0x36,
   .push 1 3,
   op 0x1b,
+  op 0x5b,
+  op 0x5b,
   op 0x80,
   .push 1 162,
   op 0x52,
@@ -157,11 +160,13 @@ def tail : List Instr :=
   op 0x52,
   .push 1 144,
   op 0x52,
-  .push 1 128,
+  op 0x80,
   .push 2 522,
   op 0x52,
-  .push 19 2854495385411919762116571938898990272765493376,
+  op 0x80,
   .push 1 54,
+  op 0x52,
+  .push 1 36,
   op 0x52,
   op 0x36,
   .push 1 29,
@@ -228,7 +233,7 @@ def tail : List Instr :=
   op 0x52,
   op 0x59,
   .push 0 0,
-  op 0xf3
+  op 0xf3,
 ]
 theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3594 = tail := by rfl
 
