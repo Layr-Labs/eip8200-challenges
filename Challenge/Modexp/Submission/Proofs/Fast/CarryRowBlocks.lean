@@ -42,11 +42,11 @@ def l1Mac0 : Block Artifact.submissionArtifact .Osaka 3725 CiosReadonly.commonFi
 
 /-- The middle block with its leading `JUMPDEST` (instruction 3360, pc 4555). -/
 def mid : Block Artifact.submissionArtifact .Osaka 4010 CarryRowPrograms.middleBlock :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3020 24 4010 CarryRowPrograms.middleBlock
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3020 23 4010 CarryRowPrograms.middleBlock
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Dispatch : Block Artifact.submissionArtifact .Osaka 4038 l2DispatchProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3044 2 4038 l2DispatchProgram
+def l2Dispatch : Block Artifact.submissionArtifact .Osaka 4037 l2DispatchProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3043 2 4037 l2DispatchProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The first eight-limb second-loop cell loads its modulus word with `PUSH10 0xc0`. -/
