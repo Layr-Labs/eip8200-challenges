@@ -108,10 +108,10 @@ def loopPath : List Located :=
    opAt 56 .JUMPI]
 
 def tailPath : List Located :=
-  [opAt 57 (.Swap ⟨0, by decide⟩),
+  [opAt 57 (.Swap ⟨1, by decide⟩),
    opAt 58 .POP,
-   opAt 59 (.Swap ⟨0, by decide⟩),
-   opAt 60 .POP,
+   opAt 59 .POP,
+   opAt 60 .JUMPDEST,
    pushAt 61 2 354,
    opAt 62 .JUMPI]
 
