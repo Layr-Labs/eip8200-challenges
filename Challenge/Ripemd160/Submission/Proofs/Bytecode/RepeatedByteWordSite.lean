@@ -16,20 +16,20 @@ def template : List Instr :=
   [.push 1 97, .push 1 255, .push 0 0, .op .NOT, .op .DIV, .op .MUL]
 
 private theorem template_slice :
-    (A.instructions.drop 17).take template.length = template := by rfl
+    (A.instructions.drop 19).take template.length = template := by rfl
 
 private theorem template_wellFormed : ∀ instruction ∈ template,
     DataStepper.WellFormed .Osaka instruction := by
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def site : GenericRoundSite A .Osaka template :=
-  StackSiteBuilder.ofSlice _ 17 template_slice (by
-    change 17 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice _ 19 template_slice (by
+    change 19 + template.length ≤ Artifact.submissionInstructions.length
     rw [Artifact.referenceInstructions_count]
     decide) StackRoundData.artifact_code_bound template_wellFormed (by decide)
 
-theorem site_start : site.startPC = UInt256.ofNat 27 := by rfl
-theorem site_end : site.endPC = UInt256.ofNat 35 := by rfl
+theorem site_start : site.startPC = UInt256.ofNat 30 := by rfl
+theorem site_end : site.endPC = UInt256.ofNat 38 := by rfl
 
 private theorem run_word (s : State) (pc : UInt256) (rho : List UInt256)
     (hstack : rho.length < 1021) (hrun : s.halt = .Running) :
@@ -77,8 +77,8 @@ def gasSteps_fullWord (s : State) (rho : List UInt256) (hstack : rho.length < 10
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 27, stack := rho}
-      {s with pc := UInt256.ofNat 35, stack := KnownInputData.fullWord :: rho} := by
+    GasSteps {s with pc := UInt256.ofNat 30, stack := rho}
+      {s with pc := UInt256.ofNat 38, stack := KnownInputData.fullWord :: rho} := by
   have g : GasSteps {s with pc := site.startPC, stack := rho}
       {s with pc := site.endPC, stack := KnownInputData.fullWord :: rho} := by
     apply DataStepper.runLocatedBlock_sound A .Osaka site.path
