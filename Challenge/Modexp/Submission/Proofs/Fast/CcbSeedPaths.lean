@@ -30,9 +30,9 @@ def entryPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArti
    opAt 2065 .MLOAD,
    pushAt 2066 1 128,
    opAt 2067 .LT,
-   opAt 2068 (.Dup ⟨0, by decide⟩),
+   opAt 2068 .JUMPDEST,
    pushAt 2069 1 8,
-   opAt 2070 (.Swap ⟨0, by decide⟩),
+   opAt 2070 (.Dup ⟨1, by decide⟩),
    opAt 2071 .SHL]
 
 def callPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
