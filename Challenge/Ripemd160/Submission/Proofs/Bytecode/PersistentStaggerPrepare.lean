@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.LoopCompletionControl
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PersistentStaggerTable
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentEntrySites
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerSetupSites
@@ -33,18 +34,15 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     (hr : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 597, stack := frame h (DriverTrace.blockOffsetWord i) limit rho}
-      {scheduledState s i with pc := UInt256.ofNat 1095, stack := frame h (DriverTrace.blockOffsetWord i) limit rho} := by
+    GasSteps {s with pc := LoopCompletionControl.blockPC input i, stack := frame h (DriverTrace.blockOffsetWord i) limit rho}
+      {scheduledState s i with pc := UInt256.ofNat 1092, stack := frame h (DriverTrace.blockOffsetWord i) limit rho} := by
   let off := DriverTrace.blockOffsetWord i
   let r := rest h off limit rho
   have hrs : r.length ≤ 896 := by simp only [r, rest, List.length_append, List.length_cons, List.length_nil]; omega
-  have hf : s.executionEnv.calldata.size < 2^256 := by
-    rw [ctx.calldata]; exact calldata_lt_uint256 input hfit
   by_cases hh : input.size = DriverTrace.blockOffset i
-  · have he : s.executionEnv.calldata.size = off.toNat := by
-      rw [ctx.calldata, blockOffsetWord_toNat input hfit i hi]; exact hh
-    have gd := StaggerPersistentEntrySites.gasSteps_hit s off limit h rho
-      (by omega) hr hf he hcode hfork hnp
+  · change input.size = i * 64 at hh
+    have hf : s.executionEnv.calldata.size < 2^256 := by
+      rw [ctx.calldata]; exact calldata_lt_uint256 input hfit
     have gp := StaggerPersistentPadPrefix.gasSteps_prefix s (frame h off limit rho)
       (by simp only [frame, List.length_append, List.length_cons, List.length_nil]; omega)
       hr hcode hfork hnp
@@ -57,23 +55,20 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     have gj := StaggerPadJump.gasSteps_jump qh (frame h off limit rho)
       (by simp only [frame, List.length_append, List.length_cons, List.length_nil]; omega)
       hr hcode hfork hnp
-    have gb' : GasSteps {s with pc := UInt256.ofNat 522, stack := frame h off limit rho}
-        {qh with pc := UInt256.ofNat 592, stack := frame h off limit rho} := by
+    have gb' : GasSteps {s with pc := UInt256.ofNat 416, stack := frame h off limit rho}
+        {qh with pc := UInt256.ofNat 486, stack := frame h off limit rho} := by
       apply gb.cast rfl
       rfl
-    exact gd.trans (gp.trans (gb'.trans gj))
-  · have he : s.executionEnv.calldata.size ≠ off.toNat := by
-      rw [ctx.calldata, blockOffsetWord_toNat input hfit i hi]; exact hh
+    simpa only [LoopCompletionControl.blockPC, DriverTrace.blockOffset, if_pos hh] using gp.trans (gb'.trans gj)
+  · change input.size ≠ i * 64 at hh
     have hhs : ¬ s.executionEnv.calldata.size = DriverTrace.blockOffset i := by
       rw [ctx.calldata]; exact hh
     rw [scheduledState_miss s i hhs]
-    have gd := StaggerPersistentEntrySites.gasSteps_miss s off limit h rho
-      (by omega) hr hf he hcode hfork hnp
     have gc := StaggerPersistentEntrySites.gasSteps_call s off limit h rho (by omega) hr hcode hfork hnp
     rw [show StaggerPersistentEntryRaw.pointer off = UInt256.ofNat (messagePointer i) from pointer_eq input i hfit hi] at gc
     have gn := StaggerSetupSites.gasSteps_normal s Paired144WordRound.factorWord (messagePointer i) r (by rfl) hrs hr
       (messagePointer_lower i) (messagePointer_bound input hfit i hi) hcode hfork hnp
-    exact gd.trans (gc.trans gn)
+    simpa only [LoopCompletionControl.blockPC, DriverTrace.blockOffset, if_neg hh, off, r, rest, frame, selectedWords, List.cons_append] using gc.trans gn
 
 #print axioms gasSteps_prepare
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PersistentStaggerPrepare

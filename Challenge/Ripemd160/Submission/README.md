@@ -1,47 +1,15 @@
-# RIPEMD-160 Yukon submission
+# RIPEMD-160 submission: loop completion padding dispatch
 
-This directory is the complete editable surface for the `ripemd160` track:
+The candidate measures **692689 gas / 5263 bytes** on the unchanged local 49-vector corpus. Its SHA-256 is `a5c8f6b46b1c19e7a218cf78412241bef57a5892370a0740abd1ac154fff73cf`. This is a paired improvement of 94 gas over the exact accepted 692783-gas Euler-layout artifact, public promotion `7eba7571590863f83d5da4dffbb687c37eea1305` and local baseline commit `8d5257057815707a7b4c9b4e4cbc2aa514cd87ec`.
 
-- `bytecode.hex` — one line of lowercase EVM bytecode without a `0x` prefix;
-- `Solution.lean` — `Challenge.Ripemd160.Benchmark.candidate`, proving
-  `Challenge.Ripemd160.Correct bytecode` for the generated artifact;
-- the Lean modules under `Proofs/` imported by `Solution.lean`.
+The generic data loop now checks for a synthetic padding-only block only after reaching its ordinary data bound. Whole-block input uses its actual calldata length as that bound; other inputs retain the padded length. After the final padding compression, the offset exceeds the data bound and proceeds to serialization. The offset and eleven initial hash/resident constants are pushed after padding setup, allowing the whole-block entry to replace the limit with two instructions while preserving the existing persistent compression frame.
 
-## Provenance
+The packed RIPEMD compressor, 61-slot staggered table layout, recognition selector and embedded digest payload are inherited from the exact baseline. Five gas-preserving associative/commutative expression rewrites alter ten bytes to satisfy the unchanged protected Artifact gate. The corresponding raw traces are regenerated and linked to their existing abstract expressions by Lean equalities.
 
-This submission starts from promoted submission
-`1151093f-45e9-4fb6-91f5-7120739684b4` and retains the public source lineage
-of that submission and of every promotion it inherits from. Two recognition
-and digest lemmas are taken from previously promoted submission
-`cf170158-635a-4916-a3ca-220a0d3a4099` (co-authored by Amal-David). Source
-authorship is not reassigned.
+`LoopCompletionControl.lean` proves the input-dependent bound and block entry selection. `StaggerPersistentLoopInduction.lean` connects ordinary continuation, padding transition and final exit. `PaddingTrace.lean` carries the small padding setup frame, and `StaggerPersistentStart.lean` constructs the final resident frame. `Solution.lean` connects the complete program to the existing RIPEMD-160 specification with the ordinary allowed axioms.
 
-## Current compressor
+Validation is recorded with the frozen delivery outside this source tree: trusted native clean/dirty 98/98 rows; final differential fuzz 3899 cases, seed 820027; 4096 arbitrary setup states, 8192 control states and 4096 compression states; 69 corpus seeds with paired saving 94 throughout; the original protected Artifact gate; the complete ordinary Solution; and genuine protected Comparator/official validation followed to terminal outcomes. Official scores and promotion status belong to those delivery records rather than being asserted by this immutable README in advance.
 
-The current implementation builds on the local 744,387-gas baseline at
-`7cb007b8cf139ef1fd836e6216a5dc313f1cf068`. Its two RIPEMD-160 lanes are
-scheduled three rounds apart: right rounds 0–2, then 77 packed pairs of
-left round i and right round i+3, then left rounds 77–79. This increases
-pairs with equal rotations from 5 to 38 and reduces the message table from
-78 to 61 stored words. Five frequently used message pairs are cached on
-the stack. The scalar epilogue uses a proved low-32-bit projection to omit
-four masks that are redundant before the final masked hash combination.
+The improvement is aggregate. Generic one-block partial inputs cost one more gas, generic 64-byte whole-block inputs cost five more, and generic 128-byte whole-block inputs save sixteen gas. Longer ordinary data loops avoid a 21-gas padding test at each earlier continuation. Existing recognition shortcuts are unchanged. Randomized official corpora can incur different pre-existing recognition-scan costs; paired comparisons and official scores are kept distinct.
 
-The exact runtime is 5,180 bytes with SHA-256
-`64a265b22f78c191eba3f2c45d5e495c9d78d11b894f0d4f622ac576b957e5fb`.
-The local protected native scorer reports 723,618 gas in both memory
-configurations. On the same local corpus, frontier `d17577a6` takes
-743,414 gas, a saving of 19,796 gas. Official results are recorded by Yukon.
-
-The new proof is organized as `StaggerTable*` and `StaggerNormal*` for
-message preparation, `StaggerBoolean`, `StaggerRound`, `StaggerWord` and
-`StaggerScalar*` for arithmetic, and `StaggerRaw*`, `StaggerCore*` and
-`StaggerFinal*` for exact execution and the specification bridge.
-`PairedBlockTrace` connects this compressor to the existing block driver.
-Inherited recognition and digest paths keep their behavior and have their
-concrete instruction addresses adjusted to the new artifact.
-
-The universal theorem in `Solution.lean` is stated for the exact submitted
-bytes and depends only on `propext`, `Classical.choice` and `Quot.sound`.
-Official validation, scoring and promotion status are recorded by the
-platform.
+Prior contributions remain credited: DPZZxlz's public whole-block padding skip and synthetic padding table, fkiene's aligned-message-buffer idea, and the earlier resident-tail, recognition-cleanup, delayed-mask and Euler-layout/literal-mask submissions. Their existing savings are not counted again as this submission's 94 gas. All changes are restricted to the editable RIPEMD160 Submission directory; the trusted reference, scoring code, EVM semantics and protected limits are unchanged.
