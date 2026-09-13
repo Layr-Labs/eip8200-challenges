@@ -43,29 +43,29 @@ def pcNewtonB : Nat := 2966
 def pcShiftLoop : Nat := 3039
 def pcShiftBody : Nat := 3046
 def pcEstimate : Nat := 3060
-def pcMacSetup : Nat := 3142
-def pcMacLoop : Nat := 3158
-def pcMid : Nat := 3323
+def pcMacSetup : Nat := 3140
+def pcMacLoop : Nat := 3156
+def pcMid : Nat := 3321
 /-- The limb-pass body after the pointer steps, before the exit test. -/
-def pcMacTail : Nat := 3314
-def pcAddLoop : Nat := 3372
-def pcAddInner : Nat := 3378
-def pcAddTail : Nat := 3421
+def pcMacTail : Nat := 3312
+def pcAddLoop : Nat := 3370
+def pcAddInner : Nat := 3376
+def pcAddTail : Nat := 3419
 /-- The add body after `OR`, before the pointer step and exit test. -/
-def pcAddMid : Nat := 3407
-def pcSubCheck : Nat := 3439
-def pcSubEntry : Nat := 3451
-def pcSubInner : Nat := 3457
-def pcSubTail : Nat := 3496
+def pcAddMid : Nat := 3405
+def pcSubCheck : Nat := 3437
+def pcSubEntry : Nat := 3449
+def pcSubInner : Nat := 3455
+def pcSubTail : Nat := 3494
 /-- The subtract body after `OR`, before the pointer step and exit test. -/
-def pcSubMid : Nat := 3481
-def pcCsubCall : Nat := 3353
+def pcSubMid : Nat := 3479
+def pcCsubCall : Nat := 3351
 /-- `UNC`: the middle block's jump target when `neg ||| TN ≠ 0`. -/
-def pcUnc : Nat := 3366
+def pcUnc : Nat := 3364
 /-- `CSUB(BASE)` returns straight to the shift loop head (`pcShiftLoop`); the call block
 already decremented the counter. -/
 def pcAfterCsub : Nat := 3039
-def pcShiftDone : Nat := 3510
+def pcShiftDone : Nat := 3508
 
 /-- A state with the outer frame only. -/
 def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat) : State :=
@@ -162,7 +162,7 @@ def macLoopState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize
 /-- The limb frame before the cached-entry dispatch. -/
 def macDispatchState (s : State) (um : ByteArray) (q : UInt256)
     (n bsize esize msize k : Nat) : State :=
-  { macLoopState s um q n bsize esize msize k 0 with pc := UInt256.ofNat 3153 }
+  { macLoopState s um q n bsize esize msize k 0 with pc := UInt256.ofNat 3151 }
 
 /-- The middle block entry: the two spent pointers still on the stack. -/
 def midState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat) :

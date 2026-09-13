@@ -94,14 +94,15 @@ def uMem (mem : ByteArray) (n : Nat) : ByteArray :=
   Exp.storeWord (Exp.mcopyMem mem 2080 512 (32 * n)) (2080 + 32 * n) (UInt256.ofNat 0)
 
 /-- The quotient guess, exactly as the `ESTIMATE` block computes it.  Its value
-is irrelevant to correctness. -/
+is irrelevant to correctness.  `X = preX` is `2^256 / L` for the power of two
+`L = preL`, so `X * L` truncates to zero and the low product `X * (utop % L)`
+agrees with `X * utop`; the block multiplies the unreduced word. -/
 def qhatOf (mem : ByteArray) : UInt256 :=
   let utop := MachineState.readWord mem 512
   let L := MachineState.readWord mem PRE_L
   let hi := utop / L
-  let r := utop % L
   let X := MachineState.readWord mem PRE_X
-  let xr := X * r
+  let xr := X * utop
   let unext := MachineState.readWord mem 544
   let uL := unext / L
   let lo := uL + xr

@@ -43,7 +43,7 @@ def copyState (s : State) (memory : ByteArray)
 /-- RR-first Montgomery entry after copying the normal-domain base to ACC. -/
 def addCallState (s : State) (memory input : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 3558
+  { s with pc := UInt256.ofNat 3556
            stack := [UInt256.ofNat 1536, UInt256.ofNat 256,
              UInt256.ofNat 512, UInt256.ofNat 2642] ++
              outer n bsize esize msize
