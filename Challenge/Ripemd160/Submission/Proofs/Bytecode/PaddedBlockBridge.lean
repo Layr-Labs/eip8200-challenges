@@ -1,6 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HashSpecBridge
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ScheduleCorrect
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PaddingTrace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.InitializationCorrect
 import YulEvmCompiler.BytesLemmas
 
 set_option warningAsError true
@@ -533,8 +534,7 @@ private theorem loadOffsetWord_eq (input : ByteArray) (blockOff k : Nat)
 exact little-endian reader seam required by the generic schedule proof. -/
 theorem paddedBlockAt (s : State) (base input : ByteArray)
     (msgOff : UInt256) (blockOff : Nat)
-    (hbytes : ∀ a : Nat, messageOffset + blockOff ≤ a → a < messageOffset + blockOff + 64 →
-      s.memory[a]?.getD 0 = (paddedMemory base input)[a]?.getD 0)
+    (hmemory : s.memory = paddedMemory base input)
     (hbase : base.size ≤ messageOffset)
     (hmsgOff : msgOff = UInt256.ofNat (messageOffset + blockOff))
     (hfit : Challenge.Ripemd160.CalldataFits input)
@@ -542,7 +542,7 @@ theorem paddedBlockAt (s : State) (base input : ByteArray)
     ScheduleCorrect.MessageBlockAt s.memory msgOff
       (paddedMessage input) blockOff := by
   intro k hk
-  rw [hmsgOff]
+  rw [hmemory, hmsgOff]
   unfold ScheduleCorrect.expectedWord
   rw [loadOffsetWord_eq input blockOff k hfit hblock hk]
   have hpadded := paddedLength_lt input.size
@@ -552,41 +552,9 @@ theorem paddedBlockAt (s : State) (base input : ByteArray)
       simp only [messageOffset]
       omega
     exact lt_trans hsmall (by norm_num)
-  have hread :
-      Schedule.readLEWord s.memory
-          (UInt256.ofNat (messageOffset + (blockOff + k * 4))) =
-        Schedule.readLEWord (paddedMemory base input)
-          (UInt256.ofNat (messageOffset + (blockOff + k * 4))) := by
-    unfold Schedule.readLEWord
-    have hoff : (UInt256.ofNat (messageOffset + (blockOff + k * 4))).toNat =
-        messageOffset + (blockOff + k * 4) := by
-      rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt haddr]
-    simp only [hoff]
-    have hb : ∀ i : Nat, i < 4 →
-        (s.memory[messageOffset + (blockOff + k * 4) + i]?.getD 0) =
-          (paddedMemory base input)[messageOffset + (blockOff + k * 4) + i]?.getD 0 := by
-      intro i hi
-      exact hbytes _ (by omega) (by omega)
-    have h0 := byteAt_readWord s.memory (messageOffset + (blockOff + k * 4)) 0 (by omega)
-    have h1 := byteAt_readWord s.memory (messageOffset + (blockOff + k * 4)) 1 (by omega)
-    have h2 := byteAt_readWord s.memory (messageOffset + (blockOff + k * 4)) 2 (by omega)
-    have h3 := byteAt_readWord s.memory (messageOffset + (blockOff + k * 4)) 3 (by omega)
-    have h0' := byteAt_readWord (paddedMemory base input)
-      (messageOffset + (blockOff + k * 4)) 0 (by omega)
-    have h1' := byteAt_readWord (paddedMemory base input)
-      (messageOffset + (blockOff + k * 4)) 1 (by omega)
-    have h2' := byteAt_readWord (paddedMemory base input)
-      (messageOffset + (blockOff + k * 4)) 2 (by omega)
-    have h3' := byteAt_readWord (paddedMemory base input)
-      (messageOffset + (blockOff + k * 4)) 3 (by omega)
-    have hz : UInt256.ofNat 0 = (⟨0⟩ : UInt256) := rfl
-    rw [hz] at h0 h0'
-    rw [h0, h1, h2, h3, h0', h1', h2', h3',
-      hb 0 (by omega), hb 1 (by omega), hb 2 (by omega), hb 3 (by omega)]
   change Challenge.EvmProof.Word.mask32
-      (Schedule.readLEWord s.memory
+      (Schedule.readLEWord (paddedMemory base input)
         (UInt256.ofNat (messageOffset + (blockOff + k * 4)))) = _
-  rw [hread]
   rw [readLEWord_paddedMemory_shift base input (blockOff + k * 4)
     hbase haddr]
   exact mask32_readLEWord_eq_readLE32 (paddedMessage input)
@@ -599,7 +567,7 @@ theorem scheduleSeparated (input : ByteArray) (msgOff : UInt256)
     (hfit : Challenge.Ripemd160.CalldataFits input)
     (hblock : blockOff + 64 ≤ paddedLength input.size) :
     ∀ k, k < 16 →
-      0x460 ≤ (Schedule.loadOffsetWord msgOff k).toNat := by
+      0x400 ≤ (Schedule.loadOffsetWord msgOff k).toNat := by
   intro k hk
   rw [hmsgOff, loadOffsetWord_eq input blockOff k hfit hblock hk,
     Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -618,10 +586,42 @@ private theorem padBase_memory (input : ByteArray) :
       (Main.initializedState input).memory := by
   rfl
 
+private theorem applyInitStore_size_le (s : State) (w : Artifact.InitStore)
+    (hs : s.memory.size ≤ messageOffset) (hw : w ∈ Artifact.initStores) :
+    (Main.applyInitStore s w).memory.size ≤ messageOffset := by
+  have hoff : w.offset.toNat + 32 ≤ messageOffset := by
+    simp only [Artifact.initStores, List.mem_cons, List.not_mem_nil,
+      or_false] at hw
+    rcases hw with rfl | rfl | rfl | rfl | rfl <;> decide
+  simp only [Main.applyInitStore]
+  rw [MachineState.writeBytes_size, if_neg]
+  · rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
+    exact max_le hs hoff
+  · rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
+    omega
+
 private theorem padBase_size (input : ByteArray) :
     (PaddingTrace.padLengthReady input).memory.size ≤ messageOffset := by
-  change 0 ≤ messageOffset
-  exact Nat.zero_le _
+  rw [padBase_memory]
+  unfold Main.initializedState
+  have hfold : ∀ (ws : List Artifact.InitStore) (s : State),
+      (∀ w, w ∈ ws → w ∈ Artifact.initStores) →
+      s.memory.size ≤ messageOffset →
+      (ws.foldl Main.applyInitStore s).memory.size ≤ messageOffset := by
+    intro ws
+    induction ws with
+    | nil => simp
+    | cons w ws ih =>
+        intro s hmem hs
+        simp only [List.foldl_cons]
+        apply ih (Main.applyInitStore s w)
+        · intro x hx
+          exact hmem x (List.mem_cons_of_mem w hx)
+        · exact applyInitStore_size_le s w hs (hmem w (by simp))
+  apply hfold Artifact.initStores (Execution.mainStart input)
+  · intro w hw
+    exact hw
+  · simp [Execution.mainStart, Execution.atPC, initialState, messageOffset]
 
 /-- The certified padding trace establishes the schedule's mathematical
 message-block precondition for every complete padded block. -/
@@ -633,8 +633,7 @@ theorem padReturned_paddedBlockAt (input : ByteArray)
       (paddedMessage input) blockOff := by
   apply paddedBlockAt (PaddingTrace.padReturned input)
     (PaddingTrace.padLengthReady input).memory input
-  · intro a _ ha
-    exact PaddingTrace.padReturned_getD_window input hfit a (by omega)
+  · exact PaddingTrace.padReturned_memory input hfit
   · exact padBase_size input
   · rfl
   · exact hfit
@@ -658,7 +657,7 @@ theorem padReturned_blockIndexSeparated (input : ByteArray)
     (hfit : Challenge.Ripemd160.CalldataFits input) (i : Nat)
     (hi : i < paddedLength input.size / 64) :
     ∀ k, k < 16 →
-      0x460 ≤ (Schedule.loadOffsetWord
+      0x400 ≤ (Schedule.loadOffsetWord
         (UInt256.ofNat (messageOffset + i * 64)) k).toNat := by
   apply scheduleSeparated input (UInt256.ofNat (messageOffset + i * 64))
     (i * 64) rfl hfit

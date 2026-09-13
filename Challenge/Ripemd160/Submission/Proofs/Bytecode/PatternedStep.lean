@@ -1,4 +1,4 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionEntryPrelude
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScanTrace
 
 set_option warningAsError true
 set_option maxRecDepth 100000

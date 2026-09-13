@@ -1,7 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputPathDefs
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputLogic
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownDigestResult
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.HashMemoryModel
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRunBridge
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -22,13 +22,13 @@ def legacyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
 
 def sizeMatched (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 5246
+    pc := UInt256.ofNat 5238
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x3e7,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
 def sizeFailed (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 187
+    pc := UInt256.ofNat 188
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x3e7,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 

@@ -18,7 +18,7 @@ theorem run_checkEntry (input : ByteArray)
   have hpc3278 : Artifact.submissionArtifact.instructionPC 23 = 35 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hpc3279 : Artifact.submissionArtifact.instructionPC 24 = 36 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hpc3280 : Artifact.submissionArtifact.instructionPC 25 = 37 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpc3281 : Artifact.submissionArtifact.instructionPC 26 = 39 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3281 : Artifact.submissionArtifact.instructionPC 26 = 38 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hpc3282 : Artifact.submissionArtifact.instructionPC 27 = 40 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hzero : UInt256.xor KnownInputData.fullWord (referenceWord input) = 0 := by
     exact (KnownInputLogic.wordXor_eq_zero_iff
