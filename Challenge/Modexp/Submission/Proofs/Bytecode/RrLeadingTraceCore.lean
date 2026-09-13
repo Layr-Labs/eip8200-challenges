@@ -63,7 +63,7 @@ def counterProgram : List Instr :=
 
 /-- pc 3189..3218: rejoin the inherited RR head at pc 1625. -/
 def jumpProgram : List Instr :=
-  [.push ⟨2, by decide⟩ (UInt256.ofNat 914), .op .JUMP]
+  [.push ⟨2, by decide⟩ (UInt256.ofNat 918), .op .JUMP]
 
 def helperProgram : List Instr := copyProgram ++ counterProgram ++ jumpProgram
 
@@ -82,14 +82,14 @@ def copiedActiveWords (template : State) (n : Nat) : UInt256 :=
 def entryState (template : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { template with
-    pc := UInt256.ofNat 2431
+    pc := UInt256.ofNat 2438
     stack := outer n bsize esize msize
     memory := mem }
 
 def copiedState (template : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { template with
-    pc := UInt256.ofNat 2443
+    pc := UInt256.ofNat 2450
     stack := outer n bsize esize msize
     memory := copiedMemory mem n
     activeWords := copiedActiveWords template n }
@@ -97,7 +97,7 @@ def copiedState (template : State) (mem : ByteArray)
 def counterState (template : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { template with
-    pc := UInt256.ofNat 2462
+    pc := UInt256.ofNat 2469
     stack := UInt256.ofNat (directCounter n) :: outer n bsize esize msize
     memory := copiedMemory mem n
     activeWords := copiedActiveWords template n }
@@ -106,7 +106,7 @@ def counterState (template : State) (mem : ByteArray)
 def exitState (template : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { template with
-    pc := UInt256.ofNat 914
+    pc := UInt256.ofNat 918
     stack := UInt256.ofNat (directCounter n) :: outer n bsize esize msize
     memory := copiedMemory mem n
     activeWords := copiedActiveWords template n }
@@ -154,8 +154,8 @@ theorem run_copy (template : State) (mem : ByteArray)
     runInstructions copyProgram (entryState template mem n bsize esize msize) =
       some (copiedState template mem n bsize esize msize) := by
   have hpc :
-      (((UInt256.ofNat 2431).succ + UInt256.ofNat 3).succ +
-        UInt256.ofNat 3 + UInt256.ofNat 3).succ = UInt256.ofNat 2443 := by
+      (((UInt256.ofNat 2438).succ + UInt256.ofNat 3).succ +
+        UInt256.ofNat 3 + UInt256.ofNat 3).succ = UInt256.ofNat 2450 := by
     decide
   simp [copyProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     entryState, copiedState, copiedMemory, copiedActiveWords, loadActiveWords,

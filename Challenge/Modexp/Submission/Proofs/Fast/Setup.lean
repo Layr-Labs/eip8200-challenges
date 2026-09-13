@@ -1,4 +1,3 @@
-import Challenge.Modexp.Submission.Proofs.Fast.NewtonSeed
 import Challenge.Modexp.Submission.Proofs.Fast.Defs
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P0
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P1
@@ -228,7 +227,7 @@ def fallbackState (s : State) : State :=
 
 /-- Entry of `BAIL1` (pc 2016): one live stack word. -/
 def bail1State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 1170, stack := [UInt256.ofNat (modulusSize input)] }
+  { s with pc := UInt256.ofNat 1174, stack := [UInt256.ofNat (modulusSize input)] }
 
 /-- After the `msize > 32` check (pc 1456). -/
 def sizeCheckState (s : State) (input : ByteArray) : State :=
@@ -451,7 +450,7 @@ def oddCheckState (s : State) (input : ByteArray) : State :=
 
 /-- Entry of `BAIL6` (pc 1897): six live stack words. -/
 def bail6State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 1176
+  { s with pc := UInt256.ofNat 1180
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 
 set_option linter.unusedSimpArgs false in
@@ -908,14 +907,15 @@ theorem neg_word (v : Nat) :
 
 /-- The first four Newton steps. -/
 def newton4 (m0 : Nat) : Nat :=
-  NewtonSeed.iter m0 3
+  Model.newtonStep m0 (Model.newtonStep m0 (Model.newtonStep m0
+    (Model.newtonStep m0 1)))
 
 /-- All eight Newton steps. -/
 def newton8 (m0 : Nat) : Nat :=
-  Model.newtonStep m0 (Model.newtonStep m0 (Model.newtonStep m0 (newton4 m0)))
+  Model.newtonStep m0 (Model.newtonStep m0 (Model.newtonStep m0
+    (Model.newtonStep m0 (newton4 m0))))
 
-theorem newton8_eq (m0 : Nat) (hodd : m0 % 2 = 1) :
-    newton8 m0 = Model.newtonIter m0 8 := NewtonSeed.six_eq_old hodd
+theorem newton8_eq (m0 : Nat) : newton8 m0 = Model.newtonIter m0 8 := rfl
 
 /-- One `MSTORE` of a natural-number value. -/
 def mstoreAt (mem : ByteArray) (addr value : Nat) : ByteArray :=
@@ -959,102 +959,106 @@ def setupWords (w : UInt256) (input : ByteArray) : UInt256 :=
 `MLOAD` of its least significant limb. -/
 def setupPathA :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 545 (.Dup ⟨1, by decide⟩),
-   pushAt 546 2 2688,
-   opAt 547 .MSTORE,
-   opAt 548 .JUMPDEST,
-   opAt 549 (.Dup ⟨3, by decide⟩),
-   pushAt 550 1 96,
-   opAt 551 .ADD,
-   pushAt 552 2 2816,
-   opAt 553 .MSTORE,
-   pushAt 554 1 32,
-   opAt 555 (.Dup ⟨2, by decide⟩),
-   opAt 556 .SUB,
-   opAt 557 (.Dup ⟨0, by decide⟩),
-   pushAt 558 2 2752,
-   opAt 559 .MSTORE,
-   opAt 560 (.Dup ⟨2, by decide⟩),
-   pushAt 561 2 2080,
-   opAt 562 .ADD,
-   pushAt 563 2 2784,
-   opAt 564 .MSTORE,
-   opAt 565 (.Dup ⟨2, by decide⟩),
-   opAt 566 .CALLDATASIZE,
-   pushAt 567 0 0,
-   opAt 568 .CALLDATACOPY,
-   opAt 569 (.Dup ⟨6, by decide⟩),
-   opAt 570 (.Dup ⟨2, by decide⟩),
-   opAt 571 (.Dup ⟨1, by decide⟩),
-   opAt 572 (.Dup ⟨5, by decide⟩),
-   opAt 573 .SUB,
-   opAt 574 .CALLDATACOPY,
-   opAt 575 (.Swap ⟨0, by decide⟩),
-   opAt 576 .POP,
-   opAt 577 (.Dup ⟨0, by decide⟩),
-   opAt 578 .MLOAD]
+  [opAt 546 (.Dup ⟨1, by decide⟩),
+   pushAt 547 2 2688,
+   opAt 548 .MSTORE,
+   opAt 549 .JUMPDEST,
+   opAt 550 (.Dup ⟨3, by decide⟩),
+   pushAt 551 1 96,
+   opAt 552 .ADD,
+   pushAt 553 2 2816,
+   opAt 554 .MSTORE,
+   pushAt 555 1 32,
+   opAt 556 (.Dup ⟨2, by decide⟩),
+   opAt 557 .SUB,
+   opAt 558 (.Dup ⟨0, by decide⟩),
+   pushAt 559 2 2752,
+   opAt 560 .MSTORE,
+   opAt 561 (.Dup ⟨2, by decide⟩),
+   pushAt 562 2 2080,
+   opAt 563 .ADD,
+   pushAt 564 2 2784,
+   opAt 565 .MSTORE,
+   opAt 566 (.Dup ⟨2, by decide⟩),
+   opAt 567 .CALLDATASIZE,
+   pushAt 568 0 0,
+   opAt 569 .CALLDATACOPY,
+   opAt 570 (.Dup ⟨6, by decide⟩),
+   opAt 571 (.Dup ⟨2, by decide⟩),
+   opAt 572 (.Dup ⟨1, by decide⟩),
+   opAt 573 (.Dup ⟨5, by decide⟩),
+   opAt 574 .SUB,
+   opAt 575 .CALLDATACOPY,
+   opAt 576 (.Swap ⟨0, by decide⟩),
+   opAt 577 .POP,
+   opAt 578 (.Dup ⟨0, by decide⟩),
+   opAt 579 .MLOAD]
 
 /-- Instructions 1206..1230: `x := 1` and the first four Newton steps. -/
 def setupPathB :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 579 (.Dup ⟨0, by decide⟩),
-   pushAt 580 1 3,
-   opAt 581 .MUL,
-   pushAt 582 1 2,
-   opAt 583 .XOR,
-   opAt 584 (.Dup ⟨0, by decide⟩),
-   opAt 585 (.Dup ⟨2, by decide⟩),
-   opAt 586 .MUL,
-   pushAt 587 1 2,
-   opAt 588 .SUB,
-   opAt 589 .MUL,
-   opAt 590 (.Dup ⟨0, by decide⟩),
-   opAt 591 (.Dup ⟨2, by decide⟩),
-   opAt 592 .MUL,
-   pushAt 593 1 2,
-   opAt 594 .SUB,
-   opAt 595 .MUL,
-   opAt 596 (.Dup ⟨0, by decide⟩),
-   opAt 597 (.Dup ⟨2, by decide⟩),
-   opAt 598 .MUL,
-   pushAt 599 1 2,
-   opAt 600 .SUB,
-   opAt 601 .MUL]
+  [opAt 580 (.Dup ⟨0, by decide⟩),
+   pushAt 581 1 2,
+   opAt 582 .SUB,
+   opAt 583 (.Dup ⟨0, by decide⟩),
+   opAt 584 (.Dup ⟨2, by decide⟩),
+   opAt 585 .MUL,
+   pushAt 586 1 2,
+   opAt 587 .SUB,
+   opAt 588 .MUL,
+   opAt 589 (.Dup ⟨0, by decide⟩),
+   opAt 590 (.Dup ⟨2, by decide⟩),
+   opAt 591 .MUL,
+   pushAt 592 1 2,
+   opAt 593 .SUB,
+   opAt 594 .MUL,
+   opAt 595 (.Dup ⟨0, by decide⟩),
+   opAt 596 (.Dup ⟨2, by decide⟩),
+   opAt 597 .MUL,
+   pushAt 598 1 2,
+   opAt 599 .SUB,
+   opAt 600 .MUL]
 
 /-- Instructions 1231..1254: the last four Newton steps. -/
 def setupPathC :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 602 (.Dup ⟨0, by decide⟩),
-   opAt 603 (.Dup ⟨2, by decide⟩),
-   opAt 604 .MUL,
-   pushAt 605 1 2,
-   opAt 606 .SUB,
-   opAt 607 .MUL,
-   opAt 608 (.Dup ⟨0, by decide⟩),
-   opAt 609 (.Dup ⟨2, by decide⟩),
-   opAt 610 .MUL,
-   pushAt 611 1 2,
-   opAt 612 .SUB,
-   opAt 613 .MUL,
-   opAt 614 (.Dup ⟨0, by decide⟩),
-   opAt 615 (.Dup ⟨2, by decide⟩),
-   opAt 616 .MUL,
-   pushAt 617 1 2,
-   opAt 618 .SUB,
-   opAt 619 .MUL]
+  [opAt 601 (.Dup ⟨0, by decide⟩),
+   opAt 602 (.Dup ⟨2, by decide⟩),
+   opAt 603 .MUL,
+   pushAt 604 1 2,
+   opAt 605 .SUB,
+   opAt 606 .MUL,
+   opAt 607 (.Dup ⟨0, by decide⟩),
+   opAt 608 (.Dup ⟨2, by decide⟩),
+   opAt 609 .MUL,
+   pushAt 610 1 2,
+   opAt 611 .SUB,
+   opAt 612 .MUL,
+   opAt 613 (.Dup ⟨0, by decide⟩),
+   opAt 614 (.Dup ⟨2, by decide⟩),
+   opAt 615 .MUL,
+   pushAt 616 1 2,
+   opAt 617 .SUB,
+   opAt 618 .MUL,
+   opAt 619 (.Dup ⟨0, by decide⟩),
+   opAt 620 (.Dup ⟨2, by decide⟩),
+   opAt 621 .MUL,
+   pushAt 622 1 2,
+   opAt 623 .SUB,
+   opAt 624 .MUL]
 
 /-- Instructions 1255..1271: `MSTORE V_MINV`, `MSTORE R1 1` and the tail call
 into the `R1B` guard. -/
 def setupPathD :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 620 0 0,
-   opAt 621 .SUB,
-   pushAt 622 2 2720,
-   opAt 623 .MSTORE,
-   opAt 624 .POP,
-   opAt 625 .POP,
-   pushAt 626 2 2833,
-   opAt 627 .JUMP]
+  [pushAt 625 0 0,
+   opAt 626 .SUB,
+   pushAt 627 2 2720,
+   opAt 628 .MSTORE,
+   opAt 629 .POP,
+   opAt 630 .POP,
+   pushAt 631 2 2840,
+   opAt 632 .JUMP]
 
 /-- After the variable stores and the modulus load (pc 1579). -/
 def modLoadedState (s : State) (input : ByteArray) (m0 : Nat) : State :=
@@ -1075,7 +1079,7 @@ def newtonState (s : State) (input : ByteArray) (m0 x p : Nat) : State :=
 /-- State at the `R1B` guard entry `JUMPDEST` (pc 2674).  The guard dispatches
 to `DOUBLE256` itself when the modulus's top bit is clear. -/
 def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
-  { s with pc := UInt256.ofNat 2833
+  { s with pc := UInt256.ofNat 2840
            stack := outerStack input
            memory := setupMem s.memory input m0
            activeWords := setupWords s.activeWords input }
@@ -1124,12 +1128,18 @@ set_option linter.unusedSimpArgs false in
 theorem run_setupB (s : State) (input : ByteArray) (m0 : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupPathB (modLoadedState s input m0) =
-      some (newtonState s input m0 (newton4 m0) 859) := by
+      some (newtonState s input m0 (newton4 m0) 856) := by
+  have hmulone (x : UInt256) : x * UInt256.ofNat 1 = x := by
+    change UInt256.mk (x.val * (1 : Fin UInt256.size)) = x
+    simp
+  have hseed : UInt256.ofNat 2 - UInt256.ofNat m0 =
+      UInt256.ofNat (Model.newtonStep m0 1) := by
+    simpa only [hmulone] using newton_word_step m0 1
   simp (config := { maxSteps := 1000000 })
     [setupPathB, opAt, pushAt, wfOp,
      Challenge.EvmProof.Stepper.runLocatedBlock,
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-     modLoadedState, newtonState, outerStack, newton4, NewtonSeed.iter, hrun, newton_word_step, NewtonSeed.word_seed,
+     modLoadedState, newtonState, outerStack, newton4, hrun, newton_word_step, hseed,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
@@ -1139,8 +1149,8 @@ set_option linter.unusedSimpArgs false in
 theorem run_setupC (s : State) (input : ByteArray) (m0 : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupPathC
-        (newtonState s input m0 (newton4 m0) 859) =
-      some (newtonState s input m0 (newton8 m0) 880) := by
+        (newtonState s input m0 (newton4 m0) 856) =
+      some (newtonState s input m0 (newton8 m0) 884) := by
   simp (config := { maxSteps := 1000000 })
     [setupPathC, opAt, pushAt, wfOp,
      Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -1154,14 +1164,14 @@ theorem run_setupC (s : State) (input : ByteArray) (m0 : Nat)
 /-- The dispatcher entry `JUMPDEST` (instruction 2660, pc 2016).  The setup path jumps
 here directly instead of calling the Montgomery-form conversion first. -/
 private theorem jumpDest3296 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2833 = true :=
-  Artifact.isValidJumpDest_index 2091 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2840 = true :=
+  Artifact.isValidJumpDest_index 2098 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupD (s : State) (input : ByteArray) (m0 : Nat)
     (hcode : s.executionEnv.code = submissionBytecode) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupPathD
-        (newtonState s input m0 (newton8 m0) 880) =
+        (newtonState s input m0 (newton8 m0) 884) =
       some (setupExitState s input m0) := by
   have hmodminv : ∀ v : Nat,
       negWord v %
@@ -1461,7 +1471,7 @@ theorem minv_correct (input : ByteArray) (m0 : Nat)
     exact Nat.mod_lt _ Limbs.radix_pos
   have hneg : negWord (newton8 m0) = Limbs.radix - Model.newtonIter m0 8 := by
     unfold negWord
-    rw [newton8_eq m0 hodd0, Nat.mod_eq_of_lt hlt]
+    rw [newton8_eq, Nat.mod_eq_of_lt hlt]
     exact Nat.mod_eq_of_lt (by omega)
   rw [hneg]
   refine Model.minv_spec ?_ (le_of_lt hlt)
@@ -1492,11 +1502,11 @@ def gasSteps_setup (s : State) (input : ByteArray) (m0 : Nat)
           (run_setupB s input m0 hrun) hrun hnp).trans
       ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
           Artifact.submissionArtifact .Osaka setupPathC
-            (s := newtonState s input m0 (newton4 m0) 859) hcode hfork
+            (s := newtonState s input m0 (newton4 m0) 856) hcode hfork
             (run_setupC s input m0 hrun) hrun hnp).trans
         (Challenge.EvmProof.Stepper.runLocatedBlock_sound
           Artifact.submissionArtifact .Osaka setupPathD
-            (s := newtonState s input m0 (newton8 m0) 880) hcode hfork
+            (s := newtonState s input m0 (newton8 m0) 884) hcode hfork
             (run_setupD s input m0 hcode hrun) hrun hnp)))
 
 def gasSteps_fastPath_of (s : State) (input : ByteArray) (m0 : Nat)
@@ -1542,7 +1552,7 @@ theorem fastSetupState_memory (input : ByteArray) :
 /-- The setup block hands over at the dispatcher entry with a plain outer stack,
 rather than at the Montgomery-form conversion call with its two argument words. -/
 theorem fastSetupState_pc (input : ByteArray) :
-    (fastSetupState input).pc = UInt256.ofNat 2833 := rfl
+    (fastSetupState input).pc = UInt256.ofNat 2840 := rfl
 
 theorem fastSetupState_stack (input : ByteArray) :
     (fastSetupState input).stack = outerStack input := rfl

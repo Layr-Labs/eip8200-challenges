@@ -25,16 +25,16 @@ private def wfOp {op : Operation}
 
 def calldataBytePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨76, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨77, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨78, .op .CALLDATALOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨79, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨80, .op .BYTE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨81, .op (.Swap ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨82, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨77, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨78, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨79, .op .CALLDATALOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨80, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
+   ⟨81, .op .BYTE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨82, .op (.Swap ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨83, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨84, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨85, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨84, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨85, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨86, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def calldataByteValue (s : State) (offset : UInt256) : UInt256 :=
   UInt256.byteAt ⟨0⟩ (MachineState.readWord s.executionEnv.calldata offset.toNat)
@@ -52,9 +52,9 @@ def calldataByteReturned (s : State) (offset returnDest : UInt256)
     stack := calldataByteValue s offset :: rest }
 
 @[simp] private theorem helperPCs (i : Nat)
-    (hi : 76 ≤ i) (hii : i ≤ 85) :
+    (hi : 77 ≤ i) (hii : i ≤ 86) :
     Artifact.submissionArtifact.instructionPC i =
-      ([135,136,137,138,139,140,141,142,143,144] : List Nat)[i - 76]! := by
+      ([135,136,137,138,139,140,141,142,143,144] : List Nat)[i - 77]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem helperNext (i : Nat) (hi : 135 ≤ i) (hii : i ≤ 144) :
