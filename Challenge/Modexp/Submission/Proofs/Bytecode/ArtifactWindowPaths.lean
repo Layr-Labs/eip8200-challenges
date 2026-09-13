@@ -84,8 +84,8 @@ private def nine_table :
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_init :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2458 WindowTwentyOneInit.program :=
-  WindowTwentyOneSlice.block allWellFormed 1806 16 2458 WindowTwentyOneInit.program
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2435 WindowTwentyOneInit.program :=
+  WindowTwentyOneSlice.block allWellFormed 1806 16 2435 WindowTwentyOneInit.program
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
