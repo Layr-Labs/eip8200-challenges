@@ -9,16 +9,16 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate PairedHelperBooleanTrace
 def jumpTemplate : List Instr := PadJump.template 921
 theorem jump_slice :
-    (Artifact.submissionArtifact.instructions.drop 3841).take jumpTemplate.length = jumpTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3839).take jumpTemplate.length = jumpTemplate := by rfl
 def jumpSite : GenericRoundSite Artifact.submissionArtifact .Osaka jumpTemplate :=
-  StackSiteBuilder.ofSlice jumpTemplate 3841 jump_slice
-    (by change 3841 + jumpTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice jumpTemplate 3839 jump_slice
+    (by change 3839 + jumpTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := jumpTemplate) (by decide))
     (by decide)
 theorem jump_pc : jumpSite.startPC = UInt256.ofNat 4830 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3841) = UInt256.ofNat 4830
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3839) = UInt256.ofNat 4830
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem jump_advances : ∀ instruction ∈ jumpTemplate.dropLast, PadLift.Advances instruction := by
   apply PadLift.advancesAll_sound
@@ -26,9 +26,9 @@ theorem jump_advances : ∀ instruction ∈ jumpTemplate.dropLast, PadLift.Advan
 
 theorem valid_merge (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 921).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 562 = 921 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 560 = 921 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 562 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 560 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 921 = true
   rw [hcode]

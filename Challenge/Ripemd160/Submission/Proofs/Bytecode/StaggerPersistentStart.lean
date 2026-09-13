@@ -60,17 +60,17 @@ theorem initial_pc : initialSite.startPC = UInt256.ofNat 376 := by
 def jumpCode := PadJump.template 376
 
 theorem jump_slice :
-    (Artifact.submissionArtifact.instructions.drop 3793).take jumpCode.length = jumpCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3791).take jumpCode.length = jumpCode := by rfl
 
 def jumpSite : GenericRoundSite Artifact.submissionArtifact .Osaka jumpCode :=
-  StackSiteBuilder.ofSlice jumpCode 3793 jump_slice
-    (by change 3793 + jumpCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice jumpCode 3791 jump_slice
+    (by change 3791 + jumpCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := jumpCode) (by decide)) (by decide)
 
 theorem jump_pc : jumpSite.startPC = UInt256.ofNat 4755 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3793) = UInt256.ofNat 4755
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3791) = UInt256.ofNat 4755
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_loop (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
@@ -140,15 +140,15 @@ def gasSteps_full (s : State) (limit : UInt256) (rho : List UInt256)
 
 def partialTemplate : List Instr := [.op .JUMPDEST]
 theorem partial_slice :
-    (Artifact.submissionArtifact.instructions.drop 3766).take partialTemplate.length = partialTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3764).take partialTemplate.length = partialTemplate := by rfl
 def partialSite : GenericRoundSite Artifact.submissionArtifact .Osaka partialTemplate :=
-  StackSiteBuilder.ofSlice partialTemplate 3766 partial_slice
-    (by change 3766 + partialTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice partialTemplate 3764 partial_slice
+    (by change 3764 + partialTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := partialTemplate) (by decide)) (by decide)
 theorem partial_pc : partialSite.startPC = UInt256.ofNat 4718 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3766) = UInt256.ofNat 4718
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3764) = UInt256.ofNat 4718
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def gasSteps_partial (s : State) (stack : List UInt256)

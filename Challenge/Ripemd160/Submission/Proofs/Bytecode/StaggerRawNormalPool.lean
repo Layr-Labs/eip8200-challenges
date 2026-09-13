@@ -15,9 +15,7 @@ def template : List Instr :=
     .op .AND,
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .MLOAD,
-    .op (.Dup ⟨2, by decide⟩),
-    .op .AND,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 48),
+    .push ⟨3, by decide⟩ (UInt256.ofNat 48),
     .op .MLOAD,
     .op (.Dup ⟨3, by decide⟩),
     .op .AND,
@@ -85,7 +83,7 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     (UInt256.land x.v0 (MachineState.readWord memory 44)),
     (UInt256.land x.v0 (MachineState.readWord memory 20)),
     (UInt256.land x.v0 (MachineState.readWord memory 48)),
-    (UInt256.land x.v0 (MachineState.readWord memory 0)),
+    (MachineState.readWord memory 0),
     (UInt256.land x.v0 (MachineState.readWord memory 16)),
     (UInt256.land x.v0 (MachineState.readWord memory 24)) ] ++ rho
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)

@@ -79,17 +79,17 @@ private def normal_gasSteps_of_raw (s t : State)
 theorem normal_end : pcAfter (UInt256.ofNat 489) actualNormalTemplate = UInt256.ofNat 921 := by decide
 
 theorem pad_slice :
-    (Artifact.submissionArtifact.instructions.drop 3796).take StaggerPad.padTemplate.length = StaggerPad.padTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3794).take StaggerPad.padTemplate.length = StaggerPad.padTemplate := by rfl
 
 def padSite : GenericRoundSite Artifact.submissionArtifact .Osaka StaggerPad.padTemplate :=
-  StackSiteBuilder.ofSlice StaggerPad.padTemplate 3796 pad_slice
-    (by change 3796 + StaggerPad.padTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice StaggerPad.padTemplate 3794 pad_slice
+    (by change 3794 + StaggerPad.padTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := StaggerPad.padTemplate) (by decide))
     (by decide)
 theorem pad_pc : padSite.startPC = UInt256.ofNat 4760 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3796) = UInt256.ofNat 4760
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3794) = UInt256.ofNat 4760
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem pad_advances : ∀ instruction ∈ StaggerPad.padTemplate.dropLast, PadLift.Advances instruction := by
