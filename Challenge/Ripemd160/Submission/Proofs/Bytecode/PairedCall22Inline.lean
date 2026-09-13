@@ -88,7 +88,7 @@ theorem run_inline22Template_raw (s : State) (pc : UInt256) (q : PairedHelperBoo
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [inline22Template, inline22Entry, inline22Output,
     inlineT, inlineRotation, inline22Frame, oneRaw, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -192,7 +192,7 @@ theorem run_inline23Template_raw (s : State) (pc : UInt256) (q : PairedHelperBoo
         s.activeWords := active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [PairedLaneSequentialShift.shr_word, inline23Template, inline23Entry, inline23Output,
     inlineT, inlineRotation, inline23Frame, oneRaw, inlineProduct, rawC10,
-    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc,
     hrun, hcap, State.activeWordsAfterUInt256, hactiveAt,
     Challenge.EvmProof.Word.word_toNat_ofNat]

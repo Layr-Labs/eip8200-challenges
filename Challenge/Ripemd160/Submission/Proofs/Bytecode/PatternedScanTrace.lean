@@ -73,21 +73,21 @@ def loopState (input : ByteArray) (k : Nat) (a : UInt256) : State :=
 straddling word has already bumped the scalar by eleven, so it is explicit. -/
 def compareState (input : ByteArray) (k s : Nat) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 215
+    pc := UInt256.ofNat 366
     stack := guardWord k :: UInt256.mul M (UInt256.ofNat (scalarAt k)) ::
       UInt256.ofNat s :: UInt256.ofNat (32 * k) :: a :: frame }
 
 /-- At the head of the correction block, for a straddling offset. -/
 def straddleState (input : ByteArray) (k : Nat) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 183
+    pc := UInt256.ofNat 333
     stack := rawWord k :: UInt256.mul M (UInt256.ofNat (scalarAt k)) ::
       UInt256.ofNat (scalarAt k) :: UInt256.ofNat (32 * k) :: a :: frame }
 
 /-- After the thirty-one words, at the padded tail. -/
 def tailState (input : ByteArray) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 258
+    pc := UInt256.ofNat 409
     stack := UInt256.ofNat (scalarAt 32) :: UInt256.ofNat 1024 :: a :: frame }
 
 /-- The stub jumps here, and the guard answers or falls through.  -/
@@ -97,8 +97,8 @@ def hitRest : List UInt256 :=
   UInt256.ofNat (scalarAt 32) :: UInt256.ofNat 1024 :: 0 :: frame
 
 def hitState (input : ByteArray) : State :=
-  { atPC input 4837 with stack := hitRest }
-def fallbackState (input : ByteArray) : State := atPC input 272
+  { atPC input 5039 with stack := hitRest }
+def fallbackState (input : ByteArray) : State := atPC input 423
 
 def storeWord (memory : ByteArray) (address : Nat) (word : UInt256) : ByteArray :=
   MachineState.writeBytes memory (Data.Bytes.natToBytesPadded word.toNat 32) address
@@ -107,7 +107,7 @@ def answerMemory : ByteArray := storeWord ByteArray.empty 0 paddedDigestWord
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4858
+    pc := UInt256.ofNat 5060
     stack := hitRest
     memory := answerMemory
     activeWords := UInt256.ofNat 1
@@ -135,9 +135,9 @@ theorem run_setup (input : ByteArray) :
       setupPath, opAt, pushAt, wfOp, atPC, loopState, frame, scanAcc, scalarAt,
       CompactGuardConstants.repeated_one_ofNat, CompactGuardConstants.repeated_high_ofNat, CompactGuardConstants.repeated_low,
       P7, P, m7, m8, M,
-      Challenge.EvmProof.DataStepper.runLocatedBlock,
-      Challenge.EvmProof.DataStepper.runLocated,
-      Challenge.EvmProof.DataStepper.runInstr,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
       Challenge.EvmProof.Word.literal_eq_ofNat]
 
 /-! ### Arithmetic the scan needs on its offset -/
@@ -198,24 +198,24 @@ theorem run_word_regular (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 3
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt (by norm_num : 224 < 2 ^ 256), hval] at hn
     exact h hn.symm
-  have hdest : Decode.isValidJumpDest submissionBytecode 215 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 132 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 366 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 123 (by rfl)
   have hdestN : Decode.isValidJumpDest submissionBytecode
-      (UInt256.ofNat 215).toNat = true := by
+      (UInt256.ofNat 366).toNat = true := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt (by norm_num : 215 < 2 ^ 256)]
+      Nat.mod_eq_of_lt (by norm_num : 366 < 2 ^ 256)]
     exact hdest
   have hdestL : Decode.isValidJumpDest submissionBytecode
-      ((215 : UInt256)).toNat = true := by
-    rw [show ((215 : UInt256)).toNat = 215 from by decide]
+      ((366 : UInt256)).toNat = true := by
+    rw [show ((366 : UInt256)).toNat = 366 from by decide]
     exact hdest
   have hk224 : ¬ ((32 * k) % 256 == 224) = true := by simpa using h
   simp (config := { maxSteps := 800000 })
     [wordPath, opAt, pushAt, wfOp, loopState, compareState, frame, rawWord,
       guardWord, hk224, notmask224_eq k hk, hcond, hdest, hdestN, hdestL,
-      Challenge.EvmProof.DataStepper.runLocatedBlock,
-      Challenge.EvmProof.DataStepper.runLocated,
-      Challenge.EvmProof.DataStepper.runInstr,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
       Challenge.EvmProof.Word.literal_eq_ofNat, hmaskOrder]
 
 set_option maxHeartbeats 80000000 in
@@ -239,9 +239,9 @@ theorem run_word_straddle (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 
   simp (config := { maxSteps := 800000 })
     [wordPath, opAt, pushAt, wfOp, loopState, straddleState, frame, rawWord,
       notmask224_eq k hk, hcond,
-      Challenge.EvmProof.DataStepper.runLocatedBlock,
-      Challenge.EvmProof.DataStepper.runLocated,
-      Challenge.EvmProof.DataStepper.runInstr,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
       Challenge.EvmProof.Word.literal_eq_ofNat, hmaskOrder]
 
 def sound (path : List Located) {s t : State}
@@ -252,7 +252,7 @@ def sound (path : List Located) {s t : State}
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false := by
         exact deployAddress_not_precompile) : GasSteps s t :=
-  Challenge.EvmProof.DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     path hcode hfork h hrun hnp
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan

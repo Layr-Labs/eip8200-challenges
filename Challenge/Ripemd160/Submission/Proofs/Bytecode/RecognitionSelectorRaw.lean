@@ -10,13 +10,13 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace
 
 def prefixTemplate (table : UInt256) : List Instr :=
-  [.push ⟨1, by decide⟩ 20, .push ⟨1, by decide⟩ 15,
-   .op .CALLDATASIZE, .push ⟨3, by decide⟩ 16714936, .op .DIV, .op .AND,
-   .push ⟨1, by decide⟩ 20, .op .MUL, .push ⟨2, by decide⟩ table,
+  [.push ⟨1, by decide⟩ 20, .push ⟨1, by decide⟩ 38,
+   .op .CALLDATASIZE, .op .MOD,
+   .push ⟨1, by decide⟩ 21, .op .MUL, .push ⟨2, by decide⟩ table,
    .op .ADD, .push ⟨1, by decide⟩ 12]
 
 def selected (table : UInt256) (size : Nat) : UInt256 :=
-  UInt256.add table (UInt256.mul 20 (UInt256.land (UInt256.div 16714936 (UInt256.ofNat size)) 15))
+  UInt256.add table (UInt256.mul 21 (UInt256.mod (UInt256.ofNat size) 38))
 
 theorem run_prefix (s : State) (pc table : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1010) (hrun : s.halt = .Running) :
@@ -26,7 +26,7 @@ theorem run_prefix (s : State) (pc table : UInt256) (rho : List UInt256)
         stack := 12 :: selected table s.executionEnv.calldata.size :: 20 :: rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 10) : rho.length + n < 1024 := by omega
-  simp (discharger := omega) [prefixTemplate, selected, runInstrSeq, DataStepper.runInstr,
+  simp (discharger := omega) [prefixTemplate, selected, runInstrSeq, Stepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl
@@ -48,7 +48,7 @@ theorem run_finish (s : State) (pc : UInt256) (rho : List UInt256)
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 10) : rho.length + n < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
-  simp (discharger := omega) [finish, returned, runInstrSeq, DataStepper.runInstr,
+  simp (discharger := omega) [finish, returned, runInstrSeq, Stepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, hzero, State.activeWordsAfterUInt256, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
 

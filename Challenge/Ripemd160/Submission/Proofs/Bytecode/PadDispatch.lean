@@ -25,7 +25,7 @@ theorem run_miss (s : State) (pc ptr ret off : UInt256) (rho : List UInt256)
     unfold UInt256.eq
     rw [Word.word_toNat_ofNat]
     rw [Nat.mod_eq_of_lt hfit, if_neg hmiss]
-  simp (discharger := omega) [template, runInstrSeq, DataStepper.runInstr,
+  simp (discharger := omega) [template, runInstrSeq, Stepper.runInstr,
     hrun, hcap, heq, List.length_cons, List.getElem?_cons_zero, Nat.add_assoc, pcAfter, UInt256.succ, Instr.size,
     Word.literal_eq_ofNat, UInt256.isTrue]
   rfl
@@ -44,7 +44,7 @@ theorem run_hit (s : State) (pc ptr ret off : UInt256) (rho : List UInt256)
     rw [Nat.mod_eq_of_lt hfit, if_pos hhit]
   simp only [Word.word_toNat_ofNat] at hvalid
   norm_num only at hvalid
-  simp (discharger := omega) [template, runInstrSeq, DataStepper.runInstr,
+  simp (discharger := omega) [template, runInstrSeq, Stepper.runInstr,
     hrun, hcap, heq, List.length_cons, List.getElem?_cons_zero, Nat.add_assoc, hvalid, Word.literal_eq_ofNat, UInt256.isTrue]
 
 #print axioms run_miss

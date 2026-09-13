@@ -7,7 +7,7 @@ set_option maxRecDepth 30000
 /-!
 # Generic instruction-site certificates
 
-The constructor below uses an instruction slice and `DataProgramArtifact.instructionPC`.
+The constructor below uses an instruction slice and `ProgramArtifact.instructionPC`.
 It does not inspect a concrete bytecode literal or reduce prefix encodings.
 -/
 
@@ -17,10 +17,10 @@ open EvmSemantics
 open EvmSemantics.EVM
 open YulEvmCompiler
 open Challenge.EvmProof
-open Challenge.EvmProof.DataStepper
+open Challenge.EvmProof.Stepper
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTemplate
 
-private theorem getElem_slice {artifact : DataProgramArtifact} (startIndex : Nat)
+private theorem getElem_slice {artifact : ProgramArtifact} (startIndex : Nat)
     (template : List Instr)
     (hslice : (artifact.instructions.drop startIndex).take template.length = template)
     (i : Nat) (hi : i < template.length) :
@@ -29,16 +29,16 @@ private theorem getElem_slice {artifact : DataProgramArtifact} (startIndex : Nat
   rw [List.getElem?_take, if_pos hi, List.getElem?_drop] at hs
   simpa [Nat.add_comm] using hs.trans (List.getElem?_eq_getElem hi)
 
-private theorem instructionPC_succ (artifact : DataProgramArtifact) (index : Nat)
+private theorem instructionPC_succ (artifact : ProgramArtifact) (index : Nat)
     (hi : index < artifact.instructions.length) :
     artifact.instructionPC (index + 1) =
       artifact.instructionPC index + artifact.instructions[index].size := by
-  unfold DataProgramArtifact.instructionPC
+  unfold ProgramArtifact.instructionPC
   rw [← List.take_append_getElem hi, assembleBytes_append]
   simp [Instr.size]
 
 private theorem headPC_finRange_map
-    : ∀ {artifact : DataProgramArtifact} {fork : Fork} (n : Nat)
+    : ∀ {artifact : ProgramArtifact} {fork : Fork} (n : Nat)
       (f : Fin n → LocatedSite artifact fork), ∀ (hn : 0 < n),
       headPC ((List.finRange n).map f) =
         some (f ⟨0, by omega⟩).pc := by
@@ -54,7 +54,7 @@ private theorem headPC_finRange_map
       rfl
 
 private theorem contiguous_finRange_map
-    : ∀ {artifact : DataProgramArtifact} {fork : Fork} (n : Nat)
+    : ∀ {artifact : ProgramArtifact} {fork : Fork} (n : Nat)
       (f : Fin n → LocatedSite artifact fork),
       (∀ (i : Fin n) (hi : i.val + 1 < n),
         (f ⟨i.val + 1, hi⟩).pc =
@@ -97,7 +97,7 @@ private theorem contiguous_finRange_map
             exact hih
 
 private theorem afterPC_finRange_map_last
-    : ∀ {artifact : DataProgramArtifact} {fork : Fork} (n : Nat)
+    : ∀ {artifact : ProgramArtifact} {fork : Fork} (n : Nat)
       (f : Fin n → LocatedSite artifact fork), ∀ (hn : 0 < n),
       afterPC ((List.finRange n).map f) =
         some ((f ⟨n - 1, by omega⟩).pc +
@@ -130,7 +130,7 @@ private theorem afterPC_finRange_map_last
               afterPC (g 0 :: (List.finRange n).map (fun i => g i.succ)) by rfl]
           simpa [g] using hih
 
-def ofSlice {artifact : DataProgramArtifact} {fork : Fork}
+def ofSlice {artifact : ProgramArtifact} {fork : Fork}
     (template : List Instr) (startIndex : Nat)
     (hslice : (artifact.instructions.drop startIndex).take template.length = template)
     (hbounds : startIndex + template.length ≤ artifact.instructions.length)

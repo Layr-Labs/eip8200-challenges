@@ -10,10 +10,10 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTemplate StackRoundTrace
 
 theorem runInstr_pc_mul {s t : State}
-    (hresult : DataStepper.runInstr (.op .MUL) s = some t) :
+    (hresult : Stepper.runInstr (.op .MUL) s = some t) :
     t.pc = s.pc + UInt256.ofNat (Instr.op .MUL).size := by
   by_cases hcap : s.stack.length < 1024
-  · rw [DataStepper.runInstr, if_pos hcap] at hresult
+  · rw [Stepper.runInstr, if_pos hcap] at hresult
     cases hs : s.stack with
     | nil => simp [hs] at hresult
     | cons a tail =>
@@ -23,25 +23,25 @@ theorem runInstr_pc_mul {s t : State}
             simp [hs, ht] at hresult
             subst t
             rfl
-  · simp [DataStepper.runInstr, hcap] at hresult
+  · simp [Stepper.runInstr, hcap] at hresult
 
 def Advances (instruction : Instr) : Prop :=
   SharedCallTrace.Advances instruction ∨ instruction = .op .MUL
 
 theorem runInstr_pc_of_advances {instruction : Instr} {s t : State}
     (hform : Advances instruction)
-    (hresult : DataStepper.runInstr instruction s = some t) :
+    (hresult : Stepper.runInstr instruction s = some t) :
     t.pc = s.pc + UInt256.ofNat instruction.size := by
   rcases hform with hshared | hmul
   · exact SharedCallTrace.runInstr_pc_of_advances hshared hresult
   · subst instruction
     exact runInstr_pc_mul hresult
 
-theorem runLocatedBlock_eq_raw {artifact : DataProgramArtifact} {fork : Fork}
+theorem runLocatedBlock_eq_raw {artifact : ProgramArtifact} {fork : Fork}
     {template : List Instr} (site : GenericRoundSite artifact fork template)
     (hform : ∀ instruction ∈ template, Advances instruction)
     (s : State) (hpc : s.pc = site.startPC) :
-    DataStepper.runLocatedBlock site.path s = runInstrSeq template s := by
+    Stepper.runLocatedBlock site.path s = runInstrSeq template s := by
   apply runLocatedBlock_eq_runInstrSeq_site site s hpc
   intro located hmem u v hresult
   apply runInstr_pc_of_advances _ hresult

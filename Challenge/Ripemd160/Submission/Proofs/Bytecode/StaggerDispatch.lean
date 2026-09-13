@@ -10,16 +10,16 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate PairedHelperBooleanTrace
 def dispatchTemplate : List Instr := PadDispatch.template 404
 theorem dispatch_slice :
-    (Artifact.submissionArtifact.instructions.drop 309).take dispatchTemplate.length = dispatchTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 294).take dispatchTemplate.length = dispatchTemplate := by rfl
 def dispatchSite : GenericRoundSite Artifact.submissionArtifact .Osaka dispatchTemplate :=
-  StackSiteBuilder.ofSlice dispatchTemplate 309 dispatch_slice
-    (by change 309 + dispatchTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice dispatchTemplate 294 dispatch_slice
+    (by change 294 + dispatchTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := dispatchTemplate) (by decide))
     (by decide)
 theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 503 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 309) = UInt256.ofNat 503
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 294) = UInt256.ofNat 503
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem dispatch_advances : ∀ instruction ∈ dispatchTemplate.dropLast, PadLift.Advances instruction := by
   apply PadLift.advancesAll_sound
@@ -27,16 +27,16 @@ theorem dispatch_advances : ∀ instruction ∈ dispatchTemplate.dropLast, PadLi
 
 def prefixTemplate : List Instr := PadPrefix.dropTemplate
 theorem prefix_slice :
-    (Artifact.submissionArtifact.instructions.drop 246).take prefixTemplate.length = prefixTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 235).take prefixTemplate.length = prefixTemplate := by rfl
 def prefixSite : GenericRoundSite Artifact.submissionArtifact .Osaka prefixTemplate :=
-  StackSiteBuilder.ofSlice prefixTemplate 246 prefix_slice
-    (by change 246 + prefixTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice prefixTemplate 235 prefix_slice
+    (by change 235 + prefixTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := prefixTemplate) (by decide))
     (by decide)
 theorem prefix_pc : prefixSite.startPC = UInt256.ofNat 404 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 246) = UInt256.ofNat 404
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 235) = UInt256.ofNat 404
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem prefix_advances : ∀ instruction ∈ prefixTemplate.dropLast, PadLift.Advances instruction := by
   apply PadLift.advancesAll_sound
@@ -44,9 +44,9 @@ theorem prefix_advances : ∀ instruction ∈ prefixTemplate.dropLast, PadLift.A
 
 theorem valid_pad (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 404).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 246 = 404 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 235 = 404 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 246 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 235 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 404 = true
   rw [hcode]

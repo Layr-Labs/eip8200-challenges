@@ -36,53 +36,53 @@ theorem pcFactG (input : ByteArray) (idx pc : Nat) (stk : List UInt256)
   show (UInt256.ofNat pc).toNat = pc
   rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hpc]
 
-theorem runLocated_of_pcG {artifact : Challenge.EvmProof.DataProgramArtifact}
-    {fork : Fork} (located : Challenge.EvmProof.DataStepper.Located artifact fork)
+theorem runLocated_of_pcG {artifact : Challenge.EvmProof.ProgramArtifact}
+    {fork : Fork} (located : Challenge.EvmProof.Stepper.Located artifact fork)
     {s : State} (h : s.pc.toNat = artifact.instructionPC located.index) :
-    Challenge.EvmProof.DataStepper.runLocated located s =
-      Challenge.EvmProof.DataStepper.runInstr located.instruction s := by
-  unfold Challenge.EvmProof.DataStepper.runLocated
+    Challenge.EvmProof.Stepper.runLocated located s =
+      Challenge.EvmProof.Stepper.runInstr located.instruction s := by
+  unfold Challenge.EvmProof.Stepper.runLocated
   rw [if_pos h]
 
-theorem runLocatedBlock_singleG {artifact : Challenge.EvmProof.DataProgramArtifact}
-    {fork : Fork} (l : Challenge.EvmProof.DataStepper.Located artifact fork) (s : State) :
-    Challenge.EvmProof.DataStepper.runLocatedBlock [l] s =
-      Challenge.EvmProof.DataStepper.runLocated l s := by
-  unfold Challenge.EvmProof.DataStepper.runLocatedBlock
-  cases h : Challenge.EvmProof.DataStepper.runLocated l s <;> simp
+theorem runLocatedBlock_singleG {artifact : Challenge.EvmProof.ProgramArtifact}
+    {fork : Fork} (l : Challenge.EvmProof.Stepper.Located artifact fork) (s : State) :
+    Challenge.EvmProof.Stepper.runLocatedBlock [l] s =
+      Challenge.EvmProof.Stepper.runLocated l s := by
+  unfold Challenge.EvmProof.Stepper.runLocatedBlock
+  cases h : Challenge.EvmProof.Stepper.runLocated l s <;> simp
 
 theorem stepG_push (input : ByteArray) (pc w : Nat) (v : UInt256) (stk : List UInt256)
     (hlen : stk.length < 1024) (hw : w ≠ 0) (hwlt : w < 33)
     (hpc : pc + (w + 1) < 2 ^ 256) :
-    Challenge.EvmProof.DataStepper.runInstr (.push ⟨w, by omega⟩ v) (stG input pc stk) =
+    Challenge.EvmProof.Stepper.runInstr (.push ⟨w, by omega⟩ v) (stG input pc stk) =
       some (stG input (pc + (w + 1)) (v :: stk)) := by
-  unfold Challenge.EvmProof.DataStepper.runInstr
+  unfold Challenge.EvmProof.Stepper.runInstr
   rw [if_pos (by simpa using hlen)]
   simp [stG, if_neg hw, Challenge.EvmProof.Word.ofNat_add_ofNat hpc]
 
 theorem stepG_push0 (input : ByteArray) (pc : Nat) (stk : List UInt256)
     (hlen : stk.length < 1024) (hpc : pc + 1 < 2 ^ 256) :
-    Challenge.EvmProof.DataStepper.runInstr (.push ⟨0, by omega⟩ 0) (stG input pc stk) =
+    Challenge.EvmProof.Stepper.runInstr (.push ⟨0, by omega⟩ 0) (stG input pc stk) =
       some (stG input (pc + 1) (⟨0⟩ :: stk)) := by
-  unfold Challenge.EvmProof.DataStepper.runInstr
+  unfold Challenge.EvmProof.Stepper.runInstr
   rw [if_pos (by simpa using hlen)]
   simp [stG, Challenge.EvmProof.Word.succ_ofNat hpc]
 
 theorem stepG_calldataload (input : ByteArray) (pc : Nat) (off : UInt256)
     (rest : List UInt256) (hlen : rest.length + 1 < 1024) (hpc : pc + 1 < 2 ^ 256) :
-    Challenge.EvmProof.DataStepper.runInstr (.op .CALLDATALOAD) (stG input pc (off :: rest)) =
+    Challenge.EvmProof.Stepper.runInstr (.op .CALLDATALOAD) (stG input pc (off :: rest)) =
       some (stG input (pc + 1) (MachineState.readWord input off.toNat :: rest)) := by
-  unfold Challenge.EvmProof.DataStepper.runInstr
+  unfold Challenge.EvmProof.Stepper.runInstr
   rw [if_pos (by simpa using hlen)]
   simp only [stG, Challenge.Ripemd160.initialState_calldata,
     Challenge.EvmProof.Word.succ_ofNat hpc]
 
 theorem stepG_dup1 (input : ByteArray) (pc : Nat) (a : UInt256) (rest : List UInt256)
     (hlen : rest.length + 1 < 1024) (hpc : pc + 1 < 2 ^ 256) :
-    Challenge.EvmProof.DataStepper.runInstr (.op (.Dup ⟨0, by decide⟩))
+    Challenge.EvmProof.Stepper.runInstr (.op (.Dup ⟨0, by decide⟩))
         (stG input pc (a :: rest)) =
       some (stG input (pc + 1) (a :: a :: rest)) := by
-  unfold Challenge.EvmProof.DataStepper.runInstr
+  unfold Challenge.EvmProof.Stepper.runInstr
   rw [if_pos (by simpa using hlen)]
   simp only [stG_stack]
   show (match some a with
@@ -94,34 +94,34 @@ theorem stepG_dup1 (input : ByteArray) (pc : Nat) (a : UInt256) (rest : List UIn
 
 theorem stepG_xor (input : ByteArray) (pc : Nat) (a b : UInt256) (rest : List UInt256)
     (hlen : rest.length + 2 < 1024) (hpc : pc + 1 < 2 ^ 256) :
-    Challenge.EvmProof.DataStepper.runInstr (.op .XOR) (stG input pc (a :: b :: rest)) =
+    Challenge.EvmProof.Stepper.runInstr (.op .XOR) (stG input pc (a :: b :: rest)) =
       some (stG input (pc + 1) (UInt256.xor a b :: rest)) := by
-  unfold Challenge.EvmProof.DataStepper.runInstr
+  unfold Challenge.EvmProof.Stepper.runInstr
   rw [if_pos (by simpa using hlen)]
   simp only [stG, Challenge.EvmProof.Word.succ_ofNat hpc]
 
 theorem stepG_pop (input : ByteArray) (pc : Nat) (a : UInt256) (rest : List UInt256)
     (hlen : rest.length + 1 < 1024) (hpc : pc + 1 < 2 ^ 256) :
-    Challenge.EvmProof.DataStepper.runInstr (.op .POP) (stG input pc (a :: rest)) =
+    Challenge.EvmProof.Stepper.runInstr (.op .POP) (stG input pc (a :: rest)) =
       some (stG input (pc + 1) rest) := by
-  unfold Challenge.EvmProof.DataStepper.runInstr
+  unfold Challenge.EvmProof.Stepper.runInstr
   rw [if_pos (by simpa using hlen)]
   simp only [stG, Challenge.EvmProof.Word.succ_ofNat hpc]
 
 theorem stepG_jumpdest (input : ByteArray) (pc : Nat) (stk : List UInt256)
     (hlen : stk.length < 1024) (hpc : pc + 1 < 2 ^ 256) :
-    Challenge.EvmProof.DataStepper.runInstr (.op .JUMPDEST) (stG input pc stk) =
+    Challenge.EvmProof.Stepper.runInstr (.op .JUMPDEST) (stG input pc stk) =
       some (stG input (pc + 1) stk) := by
-  unfold Challenge.EvmProof.DataStepper.runInstr
+  unfold Challenge.EvmProof.Stepper.runInstr
   rw [if_pos (by simpa using hlen)]
   simp only [stG, Challenge.EvmProof.Word.succ_ofNat hpc]
 
 theorem stepG_jump (input : ByteArray) (pc target : Nat) (rest : List UInt256)
     (hlen : rest.length + 1 < 1024) (ht : target < 2 ^ 256)
     (hvalid : Decode.isValidJumpDest submissionBytecode target = true) :
-    Challenge.EvmProof.DataStepper.runInstr (.op .JUMP)
+    Challenge.EvmProof.Stepper.runInstr (.op .JUMP)
         (stG input pc (UInt256.ofNat target :: rest)) = some (stG input target rest) := by
-  unfold Challenge.EvmProof.DataStepper.runInstr
+  unfold Challenge.EvmProof.Stepper.runInstr
   rw [if_pos (by simpa using hlen)]
   simp only [stG_code, stG_stack]
   rw [show (UInt256.ofNat target).toNat = target from by
@@ -132,10 +132,10 @@ theorem stepG_jumpi_taken (input : ByteArray) (pc target : Nat) (c : UInt256)
     (rest : List UInt256) (hlen : rest.length + 2 < 1024) (ht : target < 2 ^ 256)
     (hc : UInt256.isTrue c = true)
     (hvalid : Decode.isValidJumpDest submissionBytecode target = true) :
-    Challenge.EvmProof.DataStepper.runInstr (.op .JUMPI)
+    Challenge.EvmProof.Stepper.runInstr (.op .JUMPI)
         (stG input pc (UInt256.ofNat target :: c :: rest)) =
       some (stG input target rest) := by
-  unfold Challenge.EvmProof.DataStepper.runInstr
+  unfold Challenge.EvmProof.Stepper.runInstr
   rw [if_pos (by simpa using hlen)]
   simp only [stG_stack, stG_code, hc, if_true]
   rw [show (UInt256.ofNat target).toNat = target from by
@@ -146,19 +146,19 @@ theorem stepG_jumpi_taken (input : ByteArray) (pc target : Nat) (c : UInt256)
 /-- One located step is one block. -/
 theorem blockOf (l : Located) {s t : State}
     (hpc : s.pc.toNat = Artifact.submissionArtifact.instructionPC l.index)
-    (h : Challenge.EvmProof.DataStepper.runInstr l.instruction s = some t) :
-    Challenge.EvmProof.DataStepper.runLocatedBlock [l] s = some t := by
+    (h : Challenge.EvmProof.Stepper.runInstr l.instruction s = some t) :
+    Challenge.EvmProof.Stepper.runLocatedBlock [l] s = some t := by
   rw [runLocatedBlock_singleG, runLocated_of_pcG l hpc, h]
 
 def soundG (l : Located) {s t : State}
-    (h : Challenge.EvmProof.DataStepper.runLocatedBlock [l] s = some t)
+    (h : Challenge.EvmProof.Stepper.runLocatedBlock [l] s = some t)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code := by rfl)
     (hfork : s.fork = .Osaka := by rfl)
     (hrun : s.halt = .Running := by rfl)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false := by
         exact deployAddress_not_precompile) : GasSteps s t :=
-  Challenge.EvmProof.DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     [l] hcode hfork h hrun hnp
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard

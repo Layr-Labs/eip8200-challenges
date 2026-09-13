@@ -1,4 +1,4 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataProgram
+import Challenge.EvmProof.Program
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -20,7 +20,7 @@ theorem byteLength_eq_assemble (instructions : List Instr) :
   | cons instruction rest ih =>
     cases instruction <;> simp [byteLength, assembleBytes_cons, ih, Nat.add_comm]
 
-theorem instructionPC_eq_byteLength (artifact : DataProgramArtifact) (index : Nat) :
+theorem instructionPC_eq_byteLength (artifact : ProgramArtifact) (index : Nat) :
     artifact.instructionPC index = byteLength (artifact.instructions.take index) :=
   (byteLength_eq_assemble _).symm
 

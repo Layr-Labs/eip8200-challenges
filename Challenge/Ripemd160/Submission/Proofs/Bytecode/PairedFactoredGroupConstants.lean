@@ -52,7 +52,7 @@ theorem run_upperTemplate (s : State) (pc : UInt256) (rho : List UInt256)
         stack := UInt256.ofNat 460344169260758029377710773882198039553172832256 :: rho} := by
   have hzero : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 2) : rho.length + n < 1024 := by omega
-  simp [upperTemplate, runInstrSeq, Challenge.EvmProof.DataStepper.runInstr,
+  simp [upperTemplate, runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
     pcAfter, Instr.size, hrun, hzero, hcap, List.length_cons, Nat.add_assoc,
     Word.literal_eq_ofNat, upper_value, UInt256.succ, add_eq_hadd, word_add_ofNat_assoc]
 
@@ -66,7 +66,7 @@ theorem run_replaceTemplate (s : State) (pc value discarded : UInt256) (rho : Li
         stack := UInt256.ofNat 526962527014005041256681316140890030896371104153 :: value :: rho} := by
   have hcap (n : Nat) (hn : n ≤ 3) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [replaceTemplate,
-    runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, UInt256.succ,
+    runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
     add_eq_hadd, word_add_ofNat_assoc]
   try rfl

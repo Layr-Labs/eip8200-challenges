@@ -10,20 +10,20 @@ def Advances (instruction : Instr) : Prop :=
   PadLift.Advances instruction ∨ instruction = .op .ISZERO
 
 theorem runInstr_pc_extra {instruction : Instr} {s t : State}
-    (hform : Advances instruction) (hresult : DataStepper.runInstr instruction s = some t) :
+    (hform : Advances instruction) (hresult : Stepper.runInstr instruction s = some t) :
     t.pc = s.pc + UInt256.ofNat instruction.size := by
   rcases hform with hold | hz
   · exact PadLift.runInstr_pc_extra hold hresult
   · subst instruction
     by_cases hcap : s.stack.length < 1024
-    · simp only [DataStepper.runInstr, if_pos hcap] at hresult
+    · simp only [Stepper.runInstr, if_pos hcap] at hresult
       cases hs : s.stack with
       | nil => simp [hs] at hresult
       | cons a rest =>
         simp only [hs] at hresult
         cases hresult
         rfl
-    · simp [DataStepper.runInstr, hcap] at hresult
+    · simp [Stepper.runInstr, hcap] at hresult
 
 def advancesCheck : Instr → Bool
   | .op .ISZERO => true
@@ -46,7 +46,7 @@ theorem advancesAll_sound (code : List Instr) (h : code.all advancesCheck = true
   intro instruction hi
   exact advancesCheck_sound instruction ((List.all_eq_true.mp h) instruction hi)
 
-def gasSteps_of_raw {artifact : DataProgramArtifact} {fork : Fork}
+def gasSteps_of_raw {artifact : ProgramArtifact} {fork : Fork}
     {code : List Instr} (site : GenericRoundSite artifact fork code)
     (s t : State) (hcode : s.executionEnv.code = artifact.code) (hfork : s.fork = fork)
     (hrun : s.halt = .Running)
@@ -55,7 +55,7 @@ def gasSteps_of_raw {artifact : DataProgramArtifact} {fork : Fork}
     (hpc : s.pc = site.startPC)
     (hform : ∀ instruction ∈ code.dropLast, Advances instruction)
     (hresult : runInstrSeq code s = some t) : GasSteps s t := by
-  apply DataStepper.runLocatedBlock_sound artifact fork site.path hcode hfork
+  apply Stepper.runLocatedBlock_sound artifact fork site.path hcode hfork
   · have hl := runLocatedBlock_eq_raw_terminal_sites site.sites code
       site.instruction_eq site.contiguous s (by rw [site.head_eq]; exact congrArg some hpc.symm) (by
         intro located hmem u v hr
@@ -64,7 +64,7 @@ def gasSteps_of_raw {artifact : DataProgramArtifact} {fork : Fork}
             site.sites.dropLast.map (fun item => item.located.instruction) := List.mem_map_of_mem hmem
         rw [List.map_dropLast, site.instruction_eq] at hm
         exact hm)
-    change DataStepper.runLocatedBlock (LocatedSite.path site.sites) s = some t
+    change Stepper.runLocatedBlock (LocatedSite.path site.sites) s = some t
     rw [hl]
     exact hresult
   · exact hrun

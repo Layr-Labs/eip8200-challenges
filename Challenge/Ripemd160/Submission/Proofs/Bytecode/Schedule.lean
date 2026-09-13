@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Word
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataMeter
+import Challenge.EvmProof.Meter
 
 set_option warningAsError true
 set_option maxRecDepth 50000
@@ -38,7 +38,7 @@ def readLEWord (memory : ByteArray) (off : UInt256) : UInt256 :=
 
 def scheduleEntry (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 690
+  { s with pc := UInt256.ofNat 892
            stack := [msgOff, returnDest] ++ rest }
 
 def loopAt (s : State) (msgOff returnDest : UInt256)
@@ -59,7 +59,7 @@ def readEntry (s : State) (msgOff returnDest : UInt256)
 
 def afterRead (s : State) (msgOff returnDest : UInt256)
     (rest : List UInt256) (i : Nat) : State :=
-  { s with pc := UInt256.ofNat 714
+  { s with pc := UInt256.ofNat 916
            stack := [readLEWord s.memory (loadOffsetWord msgOff i),
              UInt256.ofNat 0x259, UInt256.ofNat i, msgOff, returnDest] ++ rest
            activeWords := s.activeWordsAfterUInt256
@@ -90,7 +90,7 @@ def afterStore (s : State) (msgOff returnDest : UInt256)
   let value := UInt256.land (readLEWord s.memory (loadOffsetWord msgOff i))
     (UInt256.ofNat 0xffffffff)
   { loaded with
-    pc := UInt256.ofNat 679
+    pc := UInt256.ofNat 881
     stack := [UInt256.ofNat i, msgOff, returnDest] ++ rest
     memory := MachineState.writeBytes loaded.memory
       (Data.Bytes.natToBytesPadded value.toNat 32) (xSlotWord i).toNat

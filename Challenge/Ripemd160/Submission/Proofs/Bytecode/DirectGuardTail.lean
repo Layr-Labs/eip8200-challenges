@@ -75,8 +75,8 @@ theorem run_tail_target :
   simp (config := { maxSteps := 1000000 })
     [tailPath, opAt, pushAt, wfOp, loopExitState, returnEntry, atPC,
     hzero', List.exchange, UInt256.isTrue,
-    Challenge.EvmProof.DataStepper.runLocatedBlock, Challenge.EvmProof.DataStepper.runLocated,
-    Challenge.EvmProof.DataStepper.runInstr,
+    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
 
@@ -105,13 +105,13 @@ theorem run_tail_fallback_acc (input : ByteArray) (hneAcc : finalAcc input ≠ 0
       BooleanSelect.xor_comm _ _
     rw [hcomm]
     exact htrue
-  have hdest : Decode.isValidJumpDest submissionBytecode 351 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 238 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 497 = true :=
+    Artifact.validJumpDest_3ee
   simp (config := { maxSteps := 1000000 })
     [tailPath, opAt, pushAt, wfOp, loopExitState, fallbackState, atPC,
     htrue', hdest, List.exchange,
-    Challenge.EvmProof.DataStepper.runLocatedBlock, Challenge.EvmProof.DataStepper.runLocated,
-    Challenge.EvmProof.DataStepper.runInstr,
+    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
 
@@ -129,8 +129,8 @@ theorem run_return_store (input : ByteArray) :
     answerMemory, storeWord, ExactGuardSpec.paddedDigestWord,
     MachineState.mstore, State.activeWordsAfterUInt256,
     MachineState.activeWordsAfter, hzeroNat,
-    Challenge.EvmProof.DataStepper.runLocatedBlock, Challenge.EvmProof.DataStepper.runLocated,
-    Challenge.EvmProof.DataStepper.runInstr,
+    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
 
@@ -141,14 +141,14 @@ theorem run_return_finish (input : ByteArray) :
     [returnFinishPath, opAt, pushAt, wfOp, sizedReturnState, storedReturnState,
     returnedState, initialState, State.activeWordsAfterUInt256,
     MachineState.activeWordsAfter, hzeroNat,
-    Challenge.EvmProof.DataStepper.runLocatedBlock, Challenge.EvmProof.DataStepper.runLocated,
-    Challenge.EvmProof.DataStepper.runInstr,
+    Challenge.EvmProof.Stepper.runLocatedBlock, Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
 
 def gasSteps_direct_return (input : ByteArray) :
     GasSteps (returnEntry input) (returnedState input) := by
-  have gs := DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
+  have gs := Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     returnPath (by rfl) (by rfl) (run_return_store input) (by rfl)
     deployAddress_not_precompile
   have hd := Artifact.submissionArtifact.decodeAt_op_index 62 .MSIZE
@@ -166,7 +166,7 @@ def gasSteps_direct_return (input : ByteArray) :
   have gm : GasSteps (storedReturnState input) (sizedReturnState input) := by
     simpa [storedReturnState, sizedReturnState, initialState,
       Word.succ_ofNat_mod, Word.word_toNat_ofNat] using gmraw
-  have gf := DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
+  have gf := Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     returnFinishPath (by rfl) (by rfl) (run_return_finish input) (by rfl)
     deployAddress_not_precompile
   exact gs.trans (gm.trans gf)

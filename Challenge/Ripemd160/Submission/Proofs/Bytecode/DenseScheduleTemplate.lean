@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataMeter
+import Challenge.EvmProof.Meter
 import YulEvmCompiler.Instr
 
 set_option warningAsError true
@@ -165,7 +165,7 @@ theorem denseWindowTemplate_byteLength :
 
 def staticGas (instructions : List Instr) : Nat :=
   (instructions.map
-    (Challenge.EvmProof.DataMeter.instrStaticCost .Osaka)).sum
+    (Challenge.EvmProof.Meter.instrStaticCost .Osaka)).sum
 
 theorem denseFullTemplate_staticGas :
     staticGas denseFullTemplate = 167 := by
@@ -173,7 +173,7 @@ theorem denseFullTemplate_staticGas :
     denseHalfTemplate, initialTemplate, endianStage8, endianStage16,
     endianStage, endianMaskPush, endianFactorPush, endianFactor, op, push1, push2, push3,
     dup1, swap1,
-    Challenge.EvmProof.DataMeter.instrStaticCost, Gas.baseCost]
+    Challenge.EvmProof.Meter.instrStaticCost, Gas.baseCost]
   rfl
 
 def packedStage (value : UInt256) (shift : Nat) (mask : UInt256) : UInt256 :=

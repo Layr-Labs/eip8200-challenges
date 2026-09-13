@@ -12,11 +12,11 @@ open StackRoundTemplate StackRoundTrace
 /-- The two additional straight-line operations used by H12 helpers. -/
 theorem runInstr_pc_extra {instruction : Instr} {s t : State}
     (hform : instruction = .op .SUB ∨ instruction = .op .JUMPDEST)
-    (hresult : DataStepper.runInstr instruction s = some t) :
+    (hresult : Stepper.runInstr instruction s = some t) :
     t.pc = s.pc + UInt256.ofNat instruction.size := by
   rcases hform with rfl | rfl
   · by_cases hcap : s.stack.length < 1024
-    · rw [DataStepper.runInstr, if_pos hcap] at hresult
+    · rw [Stepper.runInstr, if_pos hcap] at hresult
       cases hs : s.stack with
       | nil => simp [hs] at hresult
       | cons a tail =>
@@ -26,29 +26,29 @@ theorem runInstr_pc_extra {instruction : Instr} {s t : State}
               simp [hs, ht] at hresult
               subst t
               rfl
-    · simp [DataStepper.runInstr, hcap] at hresult
+    · simp [Stepper.runInstr, hcap] at hresult
   · by_cases hcap : s.stack.length < 1024
-    · simp [DataStepper.runInstr, hcap] at hresult
+    · simp [Stepper.runInstr, hcap] at hresult
       subst t
       rfl
-    · simp [DataStepper.runInstr, hcap] at hresult
+    · simp [Stepper.runInstr, hcap] at hresult
 
 def Advances (instruction : Instr) : Prop :=
   StraightLine instruction ∨ instruction = .op .SUB ∨ instruction = .op .JUMPDEST
 
 theorem runInstr_pc_of_advances {instruction : Instr} {s t : State}
     (hform : Advances instruction)
-    (hresult : DataStepper.runInstr instruction s = some t) :
+    (hresult : Stepper.runInstr instruction s = some t) :
     t.pc = s.pc + UInt256.ofNat instruction.size := by
   rcases hform with hstraight | hextra
   · exact runInstr_pc_of_straight hstraight hresult
   · exact runInstr_pc_extra hextra hresult
 
-theorem runLocatedBlock_eq_raw {artifact : DataProgramArtifact} {fork : Fork}
+theorem runLocatedBlock_eq_raw {artifact : ProgramArtifact} {fork : Fork}
     {template : List Instr} (site : GenericRoundSite artifact fork template)
     (hform : ∀ instruction ∈ template, Advances instruction)
     (s : State) (hpc : s.pc = site.startPC) :
-    DataStepper.runLocatedBlock site.path s = runInstrSeq template s := by
+    Stepper.runLocatedBlock site.path s = runInstrSeq template s := by
   apply runLocatedBlock_eq_runInstrSeq_site site s hpc
   intro located hmem u v hresult
   apply runInstr_pc_of_advances _ hresult
@@ -88,15 +88,15 @@ theorem runInstrSeq_callPushes (s : State) (pc returnPC xAddress helperPC : UInt
       returnPC xAddress helperPC rotation a b c d e rest) := by
   have hcap (n : Nat) (hn : n ≤ 9) : rest.length + n < 1024 := by omega
   simp (discharger := omega) [callPushes, callPushed, roundEntry, runInstrSeq,
-    DataStepper.runInstr, pcAfter, push1, push2, hrun, hcap, Nat.add_assoc,
+    Stepper.runInstr, pcAfter, push1, push2, hrun, hcap, Nat.add_assoc,
     Instr.size_push]
 
-theorem runLocatedBlock_callPushes {artifact : DataProgramArtifact} {fork : Fork}
+theorem runLocatedBlock_callPushes {artifact : ProgramArtifact} {fork : Fork}
     (returnPC xAddress helperPC : UInt256) (rotation : Nat)
     (site : GenericRoundSite artifact fork (callPushes returnPC xAddress helperPC rotation))
     (s : State) (a b c d e : UInt256) (rest : List UInt256)
     (hstack : rest.length < 1015) (hrun : s.halt = .Running) :
-    DataStepper.runLocatedBlock site.path (roundEntry s site.startPC a b c d e rest) =
+    Stepper.runLocatedBlock site.path (roundEntry s site.startPC a b c d e rest) =
       some (callPushed s site.endPC returnPC xAddress helperPC rotation a b c d e rest) := by
   have hend : site.endPC = pcAfter site.startPC
       (callPushes returnPC xAddress helperPC rotation) := by
@@ -108,45 +108,45 @@ theorem runLocatedBlock_callPushes {artifact : DataProgramArtifact} {fork : Fork
   rw [runInstrSeq_callPushes s site.startPC returnPC xAddress helperPC rotation
     a b c d e rest hstack hrun, ← hend]
 
-theorem runLocated_jump {artifact : DataProgramArtifact} {fork : Fork}
+theorem runLocated_jump {artifact : ProgramArtifact} {fork : Fork}
     (site : LocatedSite artifact fork) (hinstr : site.located.instruction = .op .JUMP)
     (s : State) (dest : UInt256) (rest : List UInt256)
     (hstack : rest.length < 1023)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code dest.toNat = true) :
-    DataStepper.runLocated site.located {s with pc := site.pc, stack := dest :: rest} =
+    Stepper.runLocated site.located {s with pc := site.pc, stack := dest :: rest} =
       some {s with pc := dest, stack := rest} := by
-  simp [DataStepper.runLocated, site.pc_eq, hinstr, DataStepper.runInstr, hstack, hvalid]
+  simp [Stepper.runLocated, site.pc_eq, hinstr, Stepper.runInstr, hstack, hvalid]
 
-theorem runLocated_jumpdest {artifact : DataProgramArtifact} {fork : Fork}
+theorem runLocated_jumpdest {artifact : ProgramArtifact} {fork : Fork}
     (site : LocatedSite artifact fork) (hinstr : site.located.instruction = .op .JUMPDEST)
     (s : State) (hstack : s.stack.length < 1024) :
-    DataStepper.runLocated site.located {s with pc := site.pc} =
+    Stepper.runLocated site.located {s with pc := site.pc} =
       some {s with pc := site.pc.succ} := by
-  simp [DataStepper.runLocated, site.pc_eq, hinstr, DataStepper.runInstr, hstack]
+  simp [Stepper.runLocated, site.pc_eq, hinstr, Stepper.runInstr, hstack]
 
-structure CallSite (artifact : DataProgramArtifact) (fork : Fork)
+structure CallSite (artifact : ProgramArtifact) (fork : Fork)
     (returnPC xAddress helperPC : UInt256) (rotation : Nat) where
   pushes : GenericRoundSite artifact fork (callPushes returnPC xAddress helperPC rotation)
   jump : LocatedSite artifact fork
   jump_instr : jump.located.instruction = .op .JUMP
   jump_pc : jump.pc = pushes.endPC
 
-def CallSite.path {artifact : DataProgramArtifact} {fork : Fork}
+def CallSite.path {artifact : ProgramArtifact} {fork : Fork}
     {returnPC xAddress helperPC : UInt256} {rotation : Nat}
     (site : CallSite artifact fork returnPC xAddress helperPC rotation) :
-    List (DataStepper.Located artifact fork) :=
+    List (Stepper.Located artifact fork) :=
   site.pushes.path ++ [site.jump.located]
 
-theorem runLocatedBlock_call {artifact : DataProgramArtifact} {fork : Fork}
+theorem runLocatedBlock_call {artifact : ProgramArtifact} {fork : Fork}
     (returnPC xAddress helperPC : UInt256) (rotation : Nat)
     (site : CallSite artifact fork returnPC xAddress helperPC rotation)
     (s : State) (a b c d e : UInt256) (rest : List UInt256)
     (hstack : rest.length < 1015) (hrun : s.halt = .Running)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code helperPC.toNat = true) :
-    DataStepper.runLocatedBlock site.path
+    Stepper.runLocatedBlock site.path
       (roundEntry s site.pushes.startPC a b c d e rest) =
       some (helperEntry s helperPC returnPC xAddress rotation a b c d e rest) := by
-  apply DataStepper.runLocatedBlock_append site.pushes.path [site.jump.located]
+  apply Stepper.runLocatedBlock_append site.pushes.path [site.jump.located]
     _ (callPushed s site.pushes.endPC returnPC xAddress helperPC rotation a b c d e rest)
   · exact runLocatedBlock_callPushes _ _ _ _ _ _ _ _ _ _ _ _ hstack hrun
   · exact hrun
@@ -154,13 +154,13 @@ theorem runLocatedBlock_call {artifact : DataProgramArtifact} {fork : Fork}
       simp; omega
     have h := runLocated_jump site.jump site.jump_instr s helperPC
       ([xAddress, returnPC, UInt256.ofNat (32 - rotation), a, b, c, d, e] ++ rest) hcap hvalid
-    have hlocated : DataStepper.runLocated site.jump.located
+    have hlocated : Stepper.runLocated site.jump.located
         (callPushed s site.pushes.endPC returnPC xAddress helperPC rotation a b c d e rest) =
         some (helperEntry s helperPC returnPC xAddress rotation a b c d e rest) := by
       simpa [callPushed, helperEntry, site.jump_pc] using h
-    simp only [DataStepper.runLocatedBlock, hlocated]
+    simp only [Stepper.runLocatedBlock, hlocated]
 
-def gasSteps_call {artifact : DataProgramArtifact} {fork : Fork}
+def gasSteps_call {artifact : ProgramArtifact} {fork : Fork}
     (returnPC xAddress helperPC : UInt256) (rotation : Nat)
     (site : CallSite artifact fork returnPC xAddress helperPC rotation)
     (s : State) (a b c d e : UInt256) (rest : List UInt256)
@@ -171,39 +171,39 @@ def gasSteps_call {artifact : DataProgramArtifact} {fork : Fork}
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (roundEntry s site.pushes.startPC a b c d e rest)
       (helperEntry s helperPC returnPC xAddress rotation a b c d e rest) := by
-  apply DataStepper.runLocatedBlock_sound artifact fork site.path
+  apply Stepper.runLocatedBlock_sound artifact fork site.path
   · exact hcode
   · exact hfork
   · exact runLocatedBlock_call _ _ _ _ _ _ _ _ _ _ _ _ hstack hrun hvalid
   · exact hrun
   · exact hnp
 
-def returnPath {artifact : DataProgramArtifact} {fork : Fork}
-    (jump target : LocatedSite artifact fork) : List (DataStepper.Located artifact fork) :=
+def returnPath {artifact : ProgramArtifact} {fork : Fork}
+    (jump target : LocatedSite artifact fork) : List (Stepper.Located artifact fork) :=
   [jump.located, target.located]
 
-theorem runLocatedBlock_return {artifact : DataProgramArtifact} {fork : Fork}
+theorem runLocatedBlock_return {artifact : ProgramArtifact} {fork : Fork}
     (jump target : LocatedSite artifact fork)
     (hjump : jump.located.instruction = .op .JUMP)
     (htarget : target.located.instruction = .op .JUMPDEST)
     (s : State) (rest : List UInt256) (hstack : rest.length < 1023)
     (hrun : s.halt = .Running)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code target.pc.toNat = true) :
-    DataStepper.runLocatedBlock (returnPath jump target)
+    Stepper.runLocatedBlock (returnPath jump target)
       {s with pc := jump.pc, stack := target.pc :: rest} =
       some {s with pc := target.pc.succ, stack := rest} := by
   have hj := runLocated_jump jump hjump s target.pc rest hstack hvalid
   have hd := runLocated_jumpdest target htarget {s with stack := rest} (by simpa using (show rest.length < 1024 by omega))
-  apply DataStepper.runLocatedBlock_append [jump.located] [target.located]
+  apply Stepper.runLocatedBlock_append [jump.located] [target.located]
     _ {s with pc := target.pc, stack := rest}
-  · simp only [DataStepper.runLocatedBlock]
+  · simp only [Stepper.runLocatedBlock]
     rw [hj]
   · exact hrun
-  · simp only [DataStepper.runLocatedBlock]
-    rw [show DataStepper.runLocated target.located {s with pc := target.pc, stack := rest} =
+  · simp only [Stepper.runLocatedBlock]
+    rw [show Stepper.runLocated target.located {s with pc := target.pc, stack := rest} =
       some {s with pc := target.pc.succ, stack := rest} from hd]
 
-def gasSteps_return {artifact : DataProgramArtifact} {fork : Fork}
+def gasSteps_return {artifact : ProgramArtifact} {fork : Fork}
     (jump target : LocatedSite artifact fork)
     (hjump : jump.located.instruction = .op .JUMP)
     (htarget : target.located.instruction = .op .JUMPDEST)
@@ -215,7 +215,7 @@ def gasSteps_return {artifact : DataProgramArtifact} {fork : Fork}
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := jump.pc, stack := target.pc :: rest}
       {s with pc := target.pc.succ, stack := rest} := by
-  apply DataStepper.runLocatedBlock_sound artifact fork (returnPath jump target)
+  apply Stepper.runLocatedBlock_sound artifact fork (returnPath jump target)
   · exact hcode
   · exact hfork
   · exact runLocatedBlock_return jump target hjump htarget s rest hstack hrun hvalid

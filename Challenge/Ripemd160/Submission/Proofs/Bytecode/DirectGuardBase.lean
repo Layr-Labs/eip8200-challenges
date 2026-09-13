@@ -23,10 +23,10 @@ def wfOp {op : Operation}
     (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
     (hplain : YulEvmCompiler.plainOp op)
     (havailable : op.availableInFork .Osaka = true) :
-    Challenge.EvmProof.DataStepper.WellFormed .Osaka (.op op) :=
+    Challenge.EvmProof.Stepper.WellFormed .Osaka (.op op) :=
   ⟨hopcode, hplain, havailable⟩
 
-abbrev Located := Challenge.EvmProof.DataStepper.Located Artifact.submissionArtifact .Osaka
+abbrev Located := Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka
 
 def opAt (index : Nat) (op : Operation)
     (hget : Artifact.submissionInstructions[index]? = some (.op op) := by rfl)
@@ -37,7 +37,7 @@ def opAt (index : Nat) (op : Operation)
 
 def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
     (hget : Artifact.submissionInstructions[index]? = some (.push width value) := by rfl)
-    (hwf : Challenge.EvmProof.DataStepper.WellFormed .Osaka
+    (hwf : Challenge.EvmProof.Stepper.WellFormed .Osaka
       (.push width value) := by decide) : Located :=
   ⟨index, .push width value, hget, hwf⟩
 
@@ -54,7 +54,7 @@ def sizePath : List Located :=
    opAt 14 .OR,
    opAt 15 .OR,
    opAt 16 .ISZERO,
-   pushAt 17 2 4834,
+   pushAt 17 2 5044,
    opAt 18 .JUMPI]
 
 def checkEntryPath : List Located :=
@@ -114,7 +114,7 @@ def tailPath : List Located :=
    opAt 54 .OR,
    opAt 55 (.Swap ⟨0, by decide⟩),
    opAt 56 .POP,
-   pushAt 57 2 351,
+   pushAt 57 2 497,
    opAt 58 .JUMPI]
 
 def returnPath : List Located :=
@@ -149,7 +149,7 @@ attribute [simp] Challenge.Ripemd160.initialState_stack
   Challenge.Ripemd160.initialState_calldata
 
 def sizeMatched (input : ByteArray) : State := atPC input 30
-def fallbackState (input : ByteArray) : State := atPC input 351
+def fallbackState (input : ByteArray) : State := atPC input 497
 
 def loopState (input : ByteArray) (n : Nat) : State :=
   { initialState submissionBytecode input 0 with
@@ -188,7 +188,7 @@ def sizedReturnState (input : ByteArray) : State :=
     pc := UInt256.ofNat 105
     stack := [UInt256.ofNat 32] }
 
-abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
+abbrev run := Challenge.EvmProof.Stepper.runLocatedBlock
   (artifact := Artifact.submissionArtifact) (fork := .Osaka)
 
 /- Freeze the concrete direct-guard range so symbolic path reduction never

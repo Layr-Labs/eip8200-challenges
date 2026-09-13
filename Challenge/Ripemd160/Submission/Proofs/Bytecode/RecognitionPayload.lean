@@ -5,7 +5,9 @@ import Challenge.EvmProof.Memory
 set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 3000000
+
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionPayload
+
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open RecognitionAccumulator RecognitionDigest RecognitionSelectorRaw
 
@@ -25,26 +27,27 @@ private theorem readPadded_append_right (a b : ByteArray) (start n : Nat)
 
 private def codePrefix : ByteArray :=
   submissionByteChunk0
- ++   submissionByteChunk1
- ++   submissionByteChunk2
- ++   submissionByteChunk3
- ++   submissionByteChunk4
- ++   submissionByteChunk5
- ++   submissionByteChunk6
- ++   submissionByteChunk7
- ++   submissionByteChunk8
- ++   submissionByteChunk9
- ++   submissionByteChunk10
- ++   submissionByteChunk11
- ++   submissionByteChunk12
- ++   submissionByteChunk13
- ++   submissionByteChunk14
- ++   submissionByteChunk15
- ++   submissionByteChunk16
- ++   submissionByteChunk17
- ++   submissionByteChunk18
- ++   submissionByteChunk19
-private theorem codePrefix_size : codePrefix.size = 4562 := by
+ ++ submissionByteChunk1
+ ++ submissionByteChunk2
+ ++ submissionByteChunk3
+ ++ submissionByteChunk4
+ ++ submissionByteChunk5
+ ++ submissionByteChunk6
+ ++ submissionByteChunk7
+ ++ submissionByteChunk8
+ ++ submissionByteChunk9
+ ++ submissionByteChunk10
+ ++ submissionByteChunk11
+ ++ submissionByteChunk12
+ ++ submissionByteChunk13
+ ++ submissionByteChunk14
+ ++ submissionByteChunk15
+ ++ submissionByteChunk16
+ ++ submissionByteChunk17
+ ++ submissionByteChunk18
+ ++ submissionByteChunk19
+
+private theorem codePrefix_size : codePrefix.size = 4765 := by
   simp only [codePrefix, ByteArray.size_append,
     submissionByteChunk0_size,
     submissionByteChunk1_size,
@@ -66,26 +69,32 @@ private theorem codePrefix_size : codePrefix.size = 4562 := by
     submissionByteChunk17_size,
     submissionByteChunk18_size,
     submissionByteChunk19_size]
+
 private theorem code_split : submissionBytecode = codePrefix ++ submissionByteChunk20 := rfl
 
 private theorem tableRead (n : Nat) :
-    MachineState.readPadded submissionBytecode (4951 + 20*((16714936/n)%16)) 20 =
-      MachineState.readPadded submissionByteChunk20 (389 + 20*((16714936/n)%16)) 20 := by
-  rw [code_split, readPadded_append_right _ _ _ _ (by rw [codePrefix_size]; omega), codePrefix_size]
+    MachineState.readPadded submissionBytecode (5456 + 21*(n%38)) 20 =
+      MachineState.readPadded submissionByteChunk20 (691 + 21*(n%38)) 20 := by
+  rw [code_split, readPadded_append_right _ _ _ _ (by rw [codePrefix_size]; omega),
+    codePrefix_size]
   congr 1
   omega
 
 private theorem tablePayload (n : Nat) (hn : Allowed n) :
-    MachineState.readPadded submissionByteChunk20 (389 + 20*((16714936/n)%16)) 20 =
-      MachineState.readPadded payload (20*((16714936/n)%16)) 20 := by
+    MachineState.readPadded submissionByteChunk20 (691 + 21*(n%38)) 20 =
+      MachineState.readPadded payload (21*((16714936/n)%16)) 20 := by
   rcases hn with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals decide
 
+/-- The sparse mod-38 table is appended after executable code. Each slot is a
+PUSH20 opcode followed by its digest, so the selector addresses the immediate. -/
 theorem read_selected (n : Nat) (hn : Allowed n) :
-    MachineState.readPadded submissionBytecode (selected (UInt256.ofNat 4951) n).toNat 20 =
-      MachineState.readPadded payload (20*((16714936/n)%16)) 20 := by
+    MachineState.readPadded submissionBytecode
+        (selected (UInt256.ofNat 5456) n).toNat 20 =
+      MachineState.readPadded payload (21*((16714936/n)%16)) 20 := by
   rw [RecognitionSelectorResult.selected_nat n hn, tableRead]
   exact tablePayload n hn
 
 #print axioms read_selected
+
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionPayload

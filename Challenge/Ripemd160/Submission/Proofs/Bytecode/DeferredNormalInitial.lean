@@ -45,10 +45,7 @@ private theorem add_ofNat_assoc_add (u : UInt256) (a b : Nat) :
   exact word_add_ofNat_assoc u a b
 
 def cachedInitial : List Instr :=
-  [op .JUMPDEST,
-    push2 (UInt256.ofNat 257), .push 0 0, op .NOT, op .DIV,
-    push3 (UInt256.ofNat 65537), .push 0 0, op .NOT, op .DIV,
-    .op (.Swap ⟨1, by decide⟩), dup1, op .MLOAD, swap1,
+  [op .JUMPDEST, dup1, op .MLOAD, swap1,
     push1 (UInt256.ofNat 32), op .ADD, op .MLOAD]
 
 theorem run_cachedInitial (s : State) (pc messageOffset returnPC : UInt256)
@@ -57,32 +54,28 @@ theorem run_cachedInitial (s : State) (pc messageOffset returnPC : UInt256)
       some {s with
         pc := pcAfter pc cachedInitial
         stack := inputWord1 s messageOffset :: inputWord0 s messageOffset ::
-          mask8 :: mask16 :: returnPC :: maskWord :: rest
+          returnPC :: maskWord :: rest
         activeWords := loadedActiveWords s messageOffset} := by
   have hcap (m : Nat) (hm : m ≤ 9) : rest.length + m < 1024 := by omega
   have hswap1 (u v : UInt256) (rho : List UInt256) :
       (u :: v :: rho).exchange 0 1 = some (v :: u :: rho) := by
     simpa using YulEvmCompiler.exchange_swap u v ([] : List UInt256) rho
-  have hswap2 (u v w : UInt256) (rho : List UInt256) :
-      (u :: v :: w :: rho).exchange 0 2 = some (w :: v :: u :: rho) := by
-    simpa using YulEvmCompiler.exchange_swap u w [v] rho
   have hzero : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have h32 : UInt256.ofNat 32 + messageOffset = messageOffset + UInt256.ofNat 32 :=
     Word.word_add_comm _ _
   simp [cachedInitial, scheduleEntry, inputWord0, inputWord1,
-    loadedActiveWords, activeAfterWord, op, push1, push2, push3, dup1, swap1, hzero, mask8_div, mask16_div,
-    runInstrSeq, DataStepper.runInstr, pcAfter, hrun, hcap, hswap1, hswap2, h32,
+    loadedActiveWords, activeAfterWord, op, push1, dup1, swap1,
+    runInstrSeq, Stepper.runInstr, pcAfter, hrun, hcap, hswap1, h32,
     word_add_assoc, Nat.add_assoc, State.activeWordsAfterUInt256,
     Word.word_toNat_ofNat, Word.ofNat_add_mod, UInt256.succ, Instr.size]
   repeat first
     | rw [add_ofNat_assoc_hAdd]
     | rw [add_ofNat_assoc_add]
     | rw [add_ofNat_assoc]
-  simp only [word_add_ofNat_assoc]
 
 #print axioms run_cachedInitial
 
-theorem cachedInitial_length : cachedInitial.length = 16 := rfl
-theorem cachedInitial_byteLength : (assembleBytes cachedInitial).length = 22 := by decide
-theorem cachedInitial_gas : staticGas cachedInitial = 48 := by decide
+theorem cachedInitial_length : cachedInitial.length = 7 := rfl
+theorem cachedInitial_byteLength : (assembleBytes cachedInitial).length = 8 := by decide
+theorem cachedInitial_gas : staticGas cachedInitial = 19 := by decide
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DeferredNormalInitial

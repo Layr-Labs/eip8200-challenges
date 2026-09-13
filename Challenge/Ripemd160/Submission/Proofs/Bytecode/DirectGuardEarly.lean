@@ -23,10 +23,10 @@ private theorem refW_eq (input : ByteArray) :
 
 private theorem stepG_dup2 (input : ByteArray) (pc : Nat) (a b : UInt256)
     (rest : List UInt256) (hlen : rest.length + 2 < 1024) (hpc : pc + 1 < 2 ^ 256) :
-    Challenge.EvmProof.DataStepper.runInstr (.op (.Dup ⟨1, by decide⟩))
+    Challenge.EvmProof.Stepper.runInstr (.op (.Dup ⟨1, by decide⟩))
         (stG input pc (a :: b :: rest)) =
       some (stG input (pc + 1) (b :: a :: b :: rest)) := by
-  unfold Challenge.EvmProof.DataStepper.runInstr
+  unfold Challenge.EvmProof.Stepper.runInstr
   rw [if_pos (by simpa using hlen)]
   simp only [stG_stack]
   show (match some b with

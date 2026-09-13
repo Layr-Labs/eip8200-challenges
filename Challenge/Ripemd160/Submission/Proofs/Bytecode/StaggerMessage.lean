@@ -41,7 +41,7 @@ theorem ready_junk (memory : ByteArray) (words : Nat → UInt256) (scalar : Nat 
     have hc := compact_not_two ⟨i, hi⟩
     refine ⟨g Crypto.Ripemd160.r[i]!, g Crypto.Ripemd160.rP[i + 3]!,
       ⟨hg _ hl, hg _ hr, fun hu => hg32 _ hl (hc hu),
-        hclean _ hl, hclean _ hr, hg32 _ hl⟩, ?_⟩
+        hclean _ hl, hclean _ hr⟩, ?_⟩
     apply BitVec.eq_of_toNat_eq
     rw [bits_toNat, BitVec.toNat_add, pack_toNat, StaggerRound.junk, BitVec.toNat_ofNat]
     change (MachineState.readWord (StaggerTableLayout.resultMemory memory words)

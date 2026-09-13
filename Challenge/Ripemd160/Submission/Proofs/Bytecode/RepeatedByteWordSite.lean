@@ -18,7 +18,7 @@ private theorem template_slice :
     (A.instructions.drop 21).take template.length = template := by rfl
 
 private theorem template_wellFormed : ∀ instruction ∈ template,
-    DataStepper.WellFormed .Osaka instruction := by
+    Stepper.WellFormed .Osaka instruction := by
   exact StackRoundData.templateWellFormed_mem (by decide)
 
 def site : GenericRoundSite A .Osaka template :=

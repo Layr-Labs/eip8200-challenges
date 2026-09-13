@@ -26,15 +26,15 @@ theorem run_word (byte : UInt256) (s : State) (pc : UInt256) (rho : List UInt256
   have h2 : rho.length + 2 < 1024 := by omega
   have hzero : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hadd (u v : UInt256) : u.add v = u + v := rfl
-  simp [code, runInstrSeq, DataStepper.runInstr, hrun, h0, h1, h2, hzero,
+  simp [code, runInstrSeq, Stepper.runInstr, hrun, h0, h1, h2, hzero,
     pcAfter, Instr.size, Instr.size_op, Instr.size_push, UInt256.succ,
     Word.literal_eq_ofNat, CompactGuardConstants.repeated_one_ofNat, hadd]
 
 theorem runInstr_pc_div {s t : State}
-    (hresult : DataStepper.runInstr (.op .DIV) s = some t) :
+    (hresult : Stepper.runInstr (.op .DIV) s = some t) :
     t.pc = s.pc + UInt256.ofNat (Instr.op .DIV).size := by
   by_cases hcap : s.stack.length < 1024
-  · rw [DataStepper.runInstr, if_pos hcap] at hresult
+  · rw [Stepper.runInstr, if_pos hcap] at hresult
     cases hs : s.stack with
     | nil => simp [hs] at hresult
     | cons a tail =>
@@ -44,10 +44,10 @@ theorem runInstr_pc_div {s t : State}
             simp [hs, ht] at hresult
             subst t
             rfl
-  · simp [DataStepper.runInstr, hcap] at hresult
+  · simp [Stepper.runInstr, hcap] at hresult
 
 theorem advances (byte : UInt256) {instruction : Instr} {s t : State}
-    (hmem : instruction ∈ code byte) (hresult : DataStepper.runInstr instruction s = some t) :
+    (hmem : instruction ∈ code byte) (hresult : Stepper.runInstr instruction s = some t) :
     t.pc = s.pc + UInt256.ofNat instruction.size := by
   simp only [code, List.mem_cons, List.not_mem_nil, or_false] at hmem
   rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl
@@ -58,17 +58,17 @@ theorem advances (byte : UInt256) {instruction : Instr} {s t : State}
     | exact Or.inr rfl
     | exact Or.inl (Or.inl (by constructor))
 
-theorem run_located {artifact : DataProgramArtifact} {fork : Fork}
+theorem run_located {artifact : ProgramArtifact} {fork : Fork}
     (byte : UInt256) (site : GenericRoundSite artifact fork (code byte))
     (s : State) (rho : List UInt256) (hstack : rho.length < 1021)
     (hrun : s.halt = .Running) :
-    DataStepper.runLocatedBlock site.path {s with pc := site.startPC, stack := rho} =
+    Stepper.runLocatedBlock site.path {s with pc := site.startPC, stack := rho} =
       some {s with pc := site.endPC, stack := (byte * M) :: rho} := by
   have hend : site.endPC = pcAfter site.startPC (code byte) := by
     have h := endPC_eq_pcAfter_sites site.sites site.startPC site.endPC
       site.head_eq site.end_eq site.contiguous
     rwa [site.instruction_eq] at h
-  have hraw : DataStepper.runLocatedBlock site.path {s with pc := site.startPC, stack := rho} =
+  have hraw : Stepper.runLocatedBlock site.path {s with pc := site.startPC, stack := rho} =
       runInstrSeq (code byte) {s with pc := site.startPC, stack := rho} := by
     apply runLocatedBlock_eq_runInstrSeq_site site _ rfl
     intro located hmem u v hresult
@@ -77,7 +77,7 @@ theorem run_located {artifact : DataProgramArtifact} {fork : Fork}
     exact List.mem_map_of_mem hmem
   rw [hraw, run_word byte s site.startPC rho hstack hrun, ← hend]
 
-def gasSteps_word {artifact : DataProgramArtifact} {fork : Fork}
+def gasSteps_word {artifact : ProgramArtifact} {fork : Fork}
     (byte : UInt256) (site : GenericRoundSite artifact fork (code byte))
     (s : State) (rho : List UInt256) (hstack : rho.length < 1021)
     (hcode : s.executionEnv.code = artifact.code) (hfork : s.fork = fork)
@@ -86,7 +86,7 @@ def gasSteps_word {artifact : DataProgramArtifact} {fork : Fork}
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := site.startPC, stack := rho}
       {s with pc := site.endPC, stack := (byte * M) :: rho} := by
-  apply DataStepper.runLocatedBlock_sound artifact fork site.path
+  apply Stepper.runLocatedBlock_sound artifact fork site.path
   · exact hcode
   · exact hfork
   · exact run_located byte site s rho hstack hrun

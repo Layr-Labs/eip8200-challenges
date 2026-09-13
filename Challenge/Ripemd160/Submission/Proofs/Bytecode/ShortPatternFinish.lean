@@ -14,8 +14,8 @@ theorem run_store_pre (n : Nat) (input : ByteArray) (sv ov : UInt256)
   simp (config := { maxSteps := 400000 })
     [digestStorePrePath, opAt, pushAt, wfOp, digestEntryState, quotientState,
      returnRest, stS, initialState, List.exchange,
-     Challenge.EvmProof.DataStepper.runLocatedBlock,
-     Challenge.EvmProof.DataStepper.runLocated, Challenge.EvmProof.DataStepper.runInstr,
+     Challenge.EvmProof.Stepper.runLocatedBlock,
+     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
@@ -33,8 +33,8 @@ theorem run_store_post (n : Nat) (input : ByteArray) (sv ov : UInt256)
      returnRest, stS, initialState, answerMemory, storeWord, paddedDigestWord,
      List.exchange, hsize, UInt256.eq, UInt256.isTrue, State.activeWordsAfterUInt256,
      MachineState.activeWordsAfter, hzeroNat,
-     Challenge.EvmProof.DataStepper.runLocatedBlock,
-     Challenge.EvmProof.DataStepper.runLocated, Challenge.EvmProof.DataStepper.runInstr,
+     Challenge.EvmProof.Stepper.runLocatedBlock,
+     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
@@ -50,9 +50,9 @@ theorem run_finish (n : Nat) (input : ByteArray) (sv ov : UInt256) :
       returnRest, stS, initialState, returnedState, answerMemory, storeWord,
       paddedDigestWord, State.activeWordsAfterUInt256,
       MachineState.activeWordsAfter, hzeroNat,
-      Challenge.EvmProof.DataStepper.runLocatedBlock,
-      Challenge.EvmProof.DataStepper.runLocated,
-      Challenge.EvmProof.DataStepper.runInstr,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
@@ -67,7 +67,7 @@ def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
   have hc := Artifact.submissionArtifact.decodeAt_op_index 3882 .CODECOPY
     (by rfl) (by decide) trivial
   have hpc : (copyReadyState n input sv ov).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 3882 := by rw [pc4870]; rfl
+      Artifact.submissionArtifact.instructionPC 3866 := by rw [pc4870]; rfl
   have hcopy : (copyReadyState n input sv ov).decodedOp = some .CODECOPY :=
     Artifact.submissionArtifact.state_decodedOp_of (copyReadyState n input sv ov) 3882
       (by rfl) hpc .CODECOPY none hc (by rfl)
@@ -96,7 +96,7 @@ def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
   have hd := Artifact.submissionArtifact.decodeAt_op_index 3872 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedState n input sv ov).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 3872 := by
+      Artifact.submissionArtifact.instructionPC 3856 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
   have hop : (storedState n input sv ov).decodedOp = some .MSIZE :=

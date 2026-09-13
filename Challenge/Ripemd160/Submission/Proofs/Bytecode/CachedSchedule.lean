@@ -173,7 +173,7 @@ theorem run_original_raw (s : State) (value returnPC : UInt256) (rest : List UIn
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [PairedHelperBooleanTrace.push0_toNat, originalLower, rawMemory, rawCache, writeWord,
-    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+    runInstrSeq, Stepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
     State.activeWordsAfterUInt256, hactiveAt, Challenge.EvmProof.Word.word_toNat_ofNat]
   all_goals repeat first | apply And.intro | rfl
@@ -188,7 +188,7 @@ theorem run_actual_raw (s : State) (value returnPC : UInt256) (rest : List UInt2
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     active_schedule_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [PairedHelperBooleanTrace.push0_toNat, actualLower, lowerMemory, rawCache, writeWord,
-    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+    runInstrSeq, Stepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
     State.activeWordsAfterUInt256, hactiveAt, Challenge.EvmProof.Word.word_toNat_ofNat]
   all_goals repeat first | apply And.intro | rfl

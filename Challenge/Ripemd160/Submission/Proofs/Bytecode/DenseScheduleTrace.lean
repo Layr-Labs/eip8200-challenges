@@ -1,6 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseEndianMultiply
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTemplate
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataMeter
+import Challenge.EvmProof.Meter
 
 set_option warningAsError true
 set_option maxRecDepth 30000
@@ -98,7 +98,7 @@ theorem runInstrSeq_append_running
       cases hfirst
       exact hsecond
   | cons instruction rest ih =>
-      cases hrun : Challenge.EvmProof.DataStepper.runInstr instruction s with
+      cases hrun : Challenge.EvmProof.Stepper.runInstr instruction s with
       | none =>
           simp [runInstrSeq, hrun] at hfirst
       | some next =>
@@ -195,7 +195,7 @@ theorem runInstrSeq_endianStage
     simp (config := { maxSteps := 1000000 })
       [endianStage, endianMaskPush, endianFactorPush, endianFactor, op, push1, push2, push3,
         push32, dup1, swap1,
-        stageState, runInstrSeq, Challenge.EvmProof.DataStepper.runInstr,
+        stageState, runInstrSeq, Challenge.EvmProof.Stepper.runInstr,
         pcAfter, hrun, hcap, hcap2, hcap3, hcap4, hswap1, UInt256.succ, Instr.size,
         Instr.size_push, Instr.size_op, Challenge.EvmProof.Word.word_toNat_ofNat,
         Challenge.EvmProof.Word.ofNat_add_mod,
@@ -236,7 +236,7 @@ theorem runInstrSeq_initial
   simp (config := { maxSteps := 2000000 })
     [initialTemplate, scheduleEntry, afterInitial, inputWord0, inputWord1,
       loadedActiveWords, activeAfterWord, op, push1, dup1, swap1,
-      runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, hrun, hcap,
+      runInstrSeq, Challenge.EvmProof.Stepper.runInstr, pcAfter, hrun, hcap,
       hcap2, hcap3, hcap4, hswap1, h32, word_add_assoc,
       word_add_ofNat_assoc, Nat.add_assoc,
       Word.land_comm, Word.lor_comm, State.activeWordsAfterUInt256,
@@ -270,7 +270,7 @@ theorem runInstrSeq_denseStore
     omega
   simp [push1, op, denseStoreAddress, denseStoreOffset, writeDenseWord, wordBytes,
     denseStoreActiveWords, activeAfterWord, runInstrSeq,
-    Challenge.EvmProof.DataStepper.runInstr, pcAfter, hrun, hcap, hcap2,
+    Challenge.EvmProof.Stepper.runInstr, pcAfter, hrun, hcap, hcap2,
     UInt256.succ, Instr.size, Instr.size_push, Instr.size_op,
     State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.word_toNat_ofNat,

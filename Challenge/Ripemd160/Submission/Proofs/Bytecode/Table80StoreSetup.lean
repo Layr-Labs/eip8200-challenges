@@ -20,7 +20,7 @@ theorem run_stores (s : State) (pc returnPC : UInt256) (rest : List UInt256) (wo
     word_active_preserved _ _ hactive ha
   simp (discharger := omega) [storesTemplate, poolStack, resultMemory, storeDescending,
     tableWords, slots, writeWord, Table80Raw.cache, maskWord,
-    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+    runInstrSeq, Stepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     PairedHelperBooleanTrace.push0_toNat,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
     State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]

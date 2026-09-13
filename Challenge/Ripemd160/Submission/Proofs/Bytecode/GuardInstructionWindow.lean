@@ -61,12 +61,12 @@ def tail : List Instr :=
   op 0x8c,
   op 0x8c,
   op 0x10,
-  .push 2 483,
+  .push 2 629,
   op 0x57,
   op 0x8b,
   op 0x36,
   op 0x14,
-  .push 2 4759,
+  .push 2 4969,
   op 0x57,
   op 0x50,
   op 0x50,
@@ -135,11 +135,11 @@ def tail : List Instr :=
   op 0x1c,
   op 0x90,
   op 0x81,
-  .push 2 4736,
+  .push 2 4946,
   op 0x57,
   op 0x50,
   op 0x50,
-  .push 2 376,
+  .push 2 522,
   op 0x56,
   op 0x5b,
   .push 2 1112,
@@ -187,7 +187,7 @@ def tail : List Instr :=
   op 0x52,
   .push 1 36,
   op 0x52,
-  .push 2 921,
+  .push 2 1177,
   op 0x56,
   op 0x5b,
   .push 0 0,
@@ -196,7 +196,7 @@ def tail : List Instr :=
   op 0x1a,
   .push 1 7,
   op 0x18,
-  .push 2 4876,
+  .push 2 5380,
   op 0x57,
   .push 17 342276208914615837337402008677671501826,
   op 0x36,
@@ -205,13 +205,27 @@ def tail : List Instr :=
   op 0x16,
   .push 1 107,
   op 0x57,
-  .push 2 351,
+  .push 2 497,
   op 0x56,
+  .push 20 407177000021581765662970131450951124156487664282,
+  .push 20 1238202210714422317976759695583289414507727951107,
+  .push 20 788302141291229731098395206502327271368262842391,
+  .push 20 51536278723262616553055226583496568135069946185,
+  .push 20 317028691540587235129640223973284367834059040749,
+  .push 20 153055736697849525067355378316411867211147587005,
+  .push 20 1409020389675646681432984939370312113762541159597,
+  .push 20 1251998741523656777300485297472400595618864439423,
+  .push 20 524717510892769952200770787354467678713137771213,
+  .push 20 233347948783734465632298330963582576039387513209,
+  .push 20 766350606435067737561421097975693824639675460820,
+  .push 20 444633252455795925629383436637892360005217141692,
+  .push 20 1134778670259348587079032227229296800638025290378,
+  .push 20 248818459742486850486840648156276084652376766343,
   op 0x5b,
   op 0x36,
   .push 1 2,
   op 0x1c,
-  .push 2 351,
+  .push 2 497,
   op 0x57,
   .push 3 2127393,
   op 0x36,
@@ -221,7 +235,7 @@ def tail : List Instr :=
   .push 1 232,
   op 0x1c,
   op 0x18,
-  .push 2 351,
+  .push 2 497,
   op 0x57,
   op 0x36,
   .push 20 25448770637332498804579667936807160623886401639,
@@ -233,20 +247,55 @@ def tail : List Instr :=
   op 0x59,
   .push 0 0,
   op 0xf3,
+  .push 20 0,
+  .push 20 524717510892769952200770787354467678713137771213,
+  .push 20 0,
+  .push 20 0,
+  .push 20 0,
+  .push 20 248818459742486850486840648156276084652376766343,
+  .push 20 444633252455795925629383436637892360005217141692,
+  .push 20 0,
+  .push 20 0,
+  .push 20 0,
+  .push 20 0,
+  .push 20 0,
+  .push 20 766350606435067737561421097975693824639675460820,
+  .push 20 0,
+  .push 20 233347948783734465632298330963582576039387513209,
+  .push 20 0,
+  .push 20 0,
+  .push 20 51536278723262616553055226583496568135069946185,
+  .push 20 1238202210714422317976759695583289414507727951107,
+  .push 20 0,
+  .push 20 0,
+  .push 20 0,
+  .push 20 0,
+  .push 20 0,
+  .push 20 0,
+  .push 20 317028691540587235129640223973284367834059040749,
+  .push 20 788302141291229731098395206502327271368262842391,
+  .push 20 407177000021581765662970131450951124156487664282,
+  .push 20 1134778670259348587079032227229296800638025290378,
+  .push 20 0,
+  .push 20 0,
+  .push 20 1251998741523656777300485297472400595618864439423,
+  .push 20 153055736697849525067355378316411867211147587005,
+  .push 20 0,
+  .push 20 1409020389675646681432984939370312113762541159597,
 ]
-theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3662 = tail := by rfl
+theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3652 = tail := by rfl
 
-theorem pc_base : Artifact.submissionArtifact.instructionPC 3662 = 4555 := by
+theorem pc_base : Artifact.submissionArtifact.instructionPC 3652 = 4765 := by
   rw [instructionPC_eq_byteLength]
   rfl
 
 theorem get (index : Nat) :
-    Artifact.submissionArtifact.instructions[3662 + index]? = tail[index]? := by
+    Artifact.submissionArtifact.instructions[3652 + index]? = tail[index]? := by
   rw [← InstructionWindow.get_drop, tail_eq]
 
 theorem pc (index : Nat) :
-    Artifact.submissionArtifact.instructionPC (3662 + index) =
-      4555 + byteLength (tail.take index) := by
+    Artifact.submissionArtifact.instructionPC (3652 + index) =
+      4765 + byteLength (tail.take index) := by
   rw [InstructionWindow.pc_drop, pc_base, tail_eq]
 
 #print axioms get

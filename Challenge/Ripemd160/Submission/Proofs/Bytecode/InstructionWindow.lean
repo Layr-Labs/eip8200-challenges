@@ -27,7 +27,7 @@ theorem byteLength_append (xs ys : List Instr) :
   | nil => simp [byteLength]
   | cons x xs ih => cases x <;> simp [byteLength, ih, Nat.add_assoc]
 
-theorem pc_drop (artifact : DataProgramArtifact) (base index : Nat) :
+theorem pc_drop (artifact : ProgramArtifact) (base index : Nat) :
     artifact.instructionPC (base + index) = artifact.instructionPC base +
       byteLength ((artifact.instructions.drop base).take index) := by
   rw [instructionPC_eq_byteLength, instructionPC_eq_byteLength,

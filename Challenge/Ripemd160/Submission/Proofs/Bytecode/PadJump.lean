@@ -18,14 +18,14 @@ theorem run_template (s : State) (pc : UInt256) (rho : List UInt256) (dest : Nat
   have hcap1 : rho.length + 1 < 1024 := by omega
   simp only [Word.word_toNat_ofNat] at hvalid
   norm_num only at hvalid
-  simp (discharger := omega) [template, runInstrSeq, DataStepper.runInstr, hrun,
+  simp (discharger := omega) [template, runInstrSeq, Stepper.runInstr, hrun,
     hcap, hcap1, hvalid, List.length_cons]
 
 theorem run_merge (s : State) (pc : UInt256) (rho : List UInt256)
     (hstack : rho.length < 1024) (hrun : s.halt = .Running) :
     runInstrSeq [.op .JUMPDEST] {s with pc := pc, stack := rho} =
       some {s with pc := pc + UInt256.ofNat 1, stack := rho} := by
-  simp [runInstrSeq, DataStepper.runInstr, hrun, hstack, UInt256.succ]
+  simp [runInstrSeq, Stepper.runInstr, hrun, hstack, UInt256.succ]
   rfl
 #print axioms run_template
 #print axioms run_merge
