@@ -13,14 +13,14 @@ attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
   Challenge.EvmProof.Word.succ_ofNat_mod
 
 @[simp] private theorem exitPCs (i : Nat)
-    (hi : 153 ≤ i) (hii : i ≤ 174) :
+    (hi : 154 ≤ i) (hii : i ≤ 175) :
     Artifact.submissionArtifact.instructionPC i =
-      ([231,232,233,234,235,237,238,241,242,243,244,245,246,248,249,251,252,253,254,255,256,257] : List Nat)[i - 153]! := by
+      ([231,232,233,234,235,237,238,241,242,243,244,245,246,248,249,251,252,253,254,255,256,257] : List Nat)[i - 154]! := by
   interval_cases i <;> decide
 
 @[simp] private theorem jump589 :
     Decode.isValidJumpDest submissionBytecode 211 = true :=
-  Artifact.isValidJumpDest_index 137 (by rfl)
+  Artifact.isValidJumpDest_index 138 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_bitFinishTailFinish (input : ByteArray) (outer : Nat)

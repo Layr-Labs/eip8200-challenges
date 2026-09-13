@@ -31,14 +31,14 @@ def fallbackProgram : List Instr :=
    .push ⟨2, by decide⟩ (UInt256.ofNat 256),
    .op .MCOPY,
    .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 1061),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 1065),
    .op .JUMP]
 
 set_option linter.unusedSimpArgs false in
 theorem run_fallbackProgram (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hactive : 89 ≤ s.activeWords.toNat)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 1061 = true)
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 1065 = true)
     (hrun : s.halt = .Running) :
     runInstructions fallbackProgram
       (fallback s memory n bsize esize msize) =
