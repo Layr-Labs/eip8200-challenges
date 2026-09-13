@@ -96,7 +96,7 @@ def gasSteps_return (n : Nat) (input : ByteArray) (sv ov : UInt256)
   have hd := Artifact.submissionArtifact.decodeAt_op_index 3872 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedState n input sv ov).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 3872 := by
+      Artifact.submissionArtifact.instructionPC 3868 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
   have hop : (storedState n input sv ov).decodedOp = some .MSIZE :=

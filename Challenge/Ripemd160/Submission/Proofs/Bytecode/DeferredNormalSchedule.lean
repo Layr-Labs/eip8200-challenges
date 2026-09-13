@@ -37,7 +37,7 @@ theorem run_normal (s : State) (pc returnPC : UInt256) (p : Nat) (rest : List UI
   have h2 := DeferredNormalEndian.run_endian s1 (pcAfter pc DeferredNormalInitial.preparedInitial)
     (MachineState.readWord s.memory p) (MachineState.readWord s.memory (p + 32)) returnPC rest (by omega) hrun (by omega)
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
-  have h3 := StaggerNormal.run_pool s2 (pcAfter (pcAfter pc DeferredNormalInitial.preparedInitial) DeferredNormalEndian.template) (returnPC :: maskWord :: rest) (by simp; omega) (by rfl) hrun (by omega)
+  have h3 := StaggerNormal.run_pool s2 (pcAfter (pcAfter pc DeferredNormalInitial.preparedInitial) DeferredNormalEndian.template) (returnPC :: maskWord :: rest) (by simp; omega) hrun (by omega)
   have hpool : StaggerNormal.poolStack (StaggerScratch.poolWordD scratch) = StaggerNormal.poolStack words := by
     have hD : ∀ i, i < 16 → StaggerScratch.poolWordD scratch i = words i :=
       fun i hi => StaggerScratch.poolWordD_eq_dirty s.memory p i hi hlow

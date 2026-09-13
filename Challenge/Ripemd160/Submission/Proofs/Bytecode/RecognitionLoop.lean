@@ -10,12 +10,12 @@ open RecognitionSites RecognitionMovement RecognitionBodyRaw RecognitionFrame Re
 open RecognitionAccumulator RecognitionRecurrence
 
 def loopState (s : State) (n k : Nat) (rho : List UInt256) : State :=
-  atState s (if k=n/32 then 296 else if boundary k then 230 else 192)
+  atState s (if k=n/32 then 289 else if boundary k then 222 else 184)
     (frame (fullFrame s.executionEnv.calldata n k) rho)
 
 def gasSteps_route_head (s : State) (e : Env s) (n k : Nat) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hn : Allowed n) (hk : k ≤ n/32) :
-    GasSteps (atState s 183 (frame (fullFrame s.executionEnv.calldata n k) rho))
+    GasSteps (atState s 175 (frame (fullFrame s.executionEnv.calldata n k) rho))
       (loopState s n k rho) := by
   have hstop := lt_stop_iff s.executionEnv.calldata n k hn hk
   have hfull := off_lt_full_iff s.executionEnv.calldata n k hn hk
@@ -43,7 +43,7 @@ def gasSteps_route_head (s : State) (e : Env s) (n k : Nat) (rho : List UInt256)
 
 def gasSteps_route_normal (s : State) (e : Env s) (n k : Nat) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hn : Allowed n) (hk : k ≤ n/32) :
-    GasSteps (atState s 215 (frame (fullFrame s.executionEnv.calldata n k) rho))
+    GasSteps (atState s 207 (frame (fullFrame s.executionEnv.calldata n k) rho))
       (loopState s n k rho) := by
   have hstop := lt_stop_iff s.executionEnv.calldata n k hn hk
   have hfull := off_lt_full_iff s.executionEnv.calldata n k hn hk
@@ -78,15 +78,15 @@ def gasSteps_one (s : State) (e : Env s) (n k : Nat) (rho : List UInt256)
   · have g0 := gasSteps_boundary s e (fullFrame s.executionEnv.calldata n k) rho hs
     have g1 := gasSteps_clamp s e (RecognitionBodyRaw.boundaryResult s
       (fullFrame s.executionEnv.calldata n k)) rho hs
-    have g2 : GasSteps (atState s 230 (frame (fullFrame s.executionEnv.calldata n k) rho))
-        (atState s 182 (frame (fullFrame s.executionEnv.calldata n (k+1)) rho)) := by
+    have g2 : GasSteps (atState s 222 (frame (fullFrame s.executionEnv.calldata n k) rho))
+        (atState s 174 (frame (fullFrame s.executionEnv.calldata n (k+1)) rho)) := by
       simpa only [RecognitionFrame.boundary_next s n k hn hk hb] using g0.trans g1
     have g4 := gasSteps_pass s e (fullFrame s.executionEnv.calldata n (k+1)) rho hs
     have g5 := gasSteps_route_head s e n (k+1) rho hs hn (by omega)
     simpa only [loopState, if_neg hne, hb, ↓reduceIte] using g2.trans (g4.trans g5)
   · have hbfalse : boundary k=false := by cases h : boundary k <;> simp_all
-    have g0 : GasSteps (atState s 192 (frame (fullFrame s.executionEnv.calldata n k) rho))
-        (atState s 215 (frame (fullFrame s.executionEnv.calldata n (k+1)) rho)) := by
+    have g0 : GasSteps (atState s 184 (frame (fullFrame s.executionEnv.calldata n k) rho))
+        (atState s 207 (frame (fullFrame s.executionEnv.calldata n (k+1)) rho)) := by
       simpa only [RecognitionFrame.normal_next s n k (by omega) hbfalse] using
         gasSteps_normal s e (fullFrame s.executionEnv.calldata n k) rho hs
     have g1 := gasSteps_route_normal s e n (k+1) rho hs hn (by omega)
@@ -101,11 +101,11 @@ def gasSteps_words (s : State) (e : Env s) (n m : Nat) (rho : List UInt256)
 
 def gasSteps_start (s : State) (e : Env s) (n : Nat) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hn : Allowed n) (hsize : s.executionEnv.calldata.size=n) :
-    GasSteps (atState s 116 rho) (loopState s n 0 rho) := by
+    GasSteps (atState s 108 rho) (loopState s n 0 rho) := by
   have gi := gasSteps_init s e rho hs
   have gc := gasSteps_clamp0 s e (RecognitionControlRaw.initResult s.executionEnv.calldata.size) rho hs
-  have g0 : GasSteps (atState s 116 rho)
-      (atState s 182 (frame (fullFrame s.executionEnv.calldata n 0) rho)) := by
+  have g0 : GasSteps (atState s 108 rho)
+      (atState s 174 (frame (fullFrame s.executionEnv.calldata n 0) rho)) := by
     simpa only [hsize, RecognitionFrame.init_clamped s.executionEnv.calldata n hn] using gi.trans gc
   exact g0.trans ((gasSteps_pass0 s e _ rho hs).trans (gasSteps_route_head s e n 0 rho hs hn (by omega)))
 
@@ -114,7 +114,7 @@ def endFrame (s : State) (n : Nat) : RecognitionBodyRaw.Frame :=
   else RecognitionControlRaw.partialResult s (fullFrame s.executionEnv.calldata n (n/32))
 
 def endState (s : State) (n : Nat) (rho : List UInt256) : State :=
-  atState s 320 (frame (endFrame s n) rho)
+  atState s 313 (frame (endFrame s n) rho)
 
 theorem endFrame_acc (s : State) (n : Nat) (hn : Allowed n) (hsize : s.executionEnv.calldata.size=n) :
     (endFrame s n).acc = resultAcc s.executionEnv.calldata n := by
@@ -135,7 +135,7 @@ def gasSteps_end (s : State) (e : Env s) (n : Nat) (rho : List UInt256)
 
 def gasSteps_accumulate (s : State) (e : Env s) (n : Nat) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hn : Allowed n) (hsize : s.executionEnv.calldata.size=n) :
-    GasSteps (atState s 116 rho) (endState s n rho) :=
+    GasSteps (atState s 108 rho) (endState s n rho) :=
   (gasSteps_start s e n rho hs hn hsize).trans
     ((gasSteps_words s e n (n/32) rho hs hn (by omega)).trans (gasSteps_end s e n rho hs hn hsize))
 
