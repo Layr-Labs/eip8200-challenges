@@ -85,8 +85,8 @@ def block_r0e : Block Artifact.submissionArtifact .Osaka 4877 prog_r0e :=
 
 /-- pc 5158..5173（idx 3935..3950）。 -/
 def prog_redm : List Instr :=
-  [.op .JUMPDEST, .op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩), .op .MUL, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨9, by decide⟩),
+  [.op .JUMPDEST, .op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨13, by decide⟩),
+   .op .MUL, .op (.Dup ⟨6, by decide⟩), .op .JUMPDEST, .op (.Dup ⟨9, by decide⟩),
    .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨12, by decide⟩), .op .MULMOD,
    .op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨1, by decide⟩),
    .op .GT, .op .ADD]
@@ -97,8 +97,8 @@ def block_redm : Block Artifact.submissionArtifact .Osaka 5142 prog_redm :=
 
 /-- pc 5174..5201（idx 3951..3978）。 -/
 def prog_reds1 : List Instr :=
-  [.op (.Dup ⟨11, by decide⟩), .op (.Dup ⟨10, by decide⟩), .op (.Dup ⟨3, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩), .op .MUL, .op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨4, by decide⟩),
+  [.op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨12, by decide⟩), .op .MUL,
+   .op (.Dup ⟨10, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .JUMPDEST, .op (.Dup ⟨4, by decide⟩),
    .op .MULMOD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT, .op .SUB,
    .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .ADD, .op (.Dup ⟨9, by decide⟩),
    .op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Swap ⟨10, by decide⟩), .op .POP,
@@ -111,8 +111,8 @@ def block_reds1 : Block Artifact.submissionArtifact .Osaka 5158 prog_reds1 :=
 
 /-- pc 5202..5229（idx 3979..4006）。 -/
 def prog_reds2 : List Instr :=
-  [.op (.Dup ⟨12, by decide⟩), .op (.Dup ⟨10, by decide⟩), .op (.Dup ⟨3, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩), .op .MUL, .op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨4, by decide⟩),
+  [.op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .MUL,
+   .op (.Dup ⟨10, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op .JUMPDEST, .op (.Dup ⟨4, by decide⟩),
    .op .MULMOD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT, .op .SUB,
    .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .ADD, .op (.Dup ⟨8, by decide⟩),
    .op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Swap ⟨9, by decide⟩), .op .POP,
@@ -125,8 +125,8 @@ def block_reds2 : Block Artifact.submissionArtifact .Osaka 5186 prog_reds2 :=
 
 /-- pc 5230..5257（idx 4007..4034）。 -/
 def prog_reds3 : List Instr :=
-  [.op (.Dup ⟨13, by decide⟩), .op (.Dup ⟨10, by decide⟩), .op (.Dup ⟨3, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩), .op .MUL, .op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨4, by decide⟩),
+  [.op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op .MUL,
+   .op (.Dup ⟨10, by decide⟩), .op (.Dup ⟨15, by decide⟩), .op .JUMPDEST, .op (.Dup ⟨4, by decide⟩),
    .op .MULMOD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT, .op .SUB,
    .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .ADD, .op (.Dup ⟨7, by decide⟩),
    .op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Swap ⟨8, by decide⟩), .op .POP,
@@ -140,9 +140,9 @@ def block_reds3 : Block Artifact.submissionArtifact .Osaka 5214 prog_reds3 :=
 /-- pc 5258..5273（idx 4035..4050）。 -/
 def prog_redt : List Instr :=
   [.op (.Dup ⟨8, by decide⟩), .op .ADD, .op (.Swap ⟨3, by decide⟩), .op .POP,
-   .op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .LT, .op (.Swap ⟨0, by decide⟩),
-   .op .POP, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨6, by decide⟩), .op .POP,
-   .op (.Swap ⟨0, by decide⟩), .op .POP, .op .JUMP]
+   .op .POP, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨7, by decide⟩), .op .GT,
+   .op .JUMPDEST, .op (.Swap ⟨0, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .ADD, .op (.Swap ⟨5, by decide⟩),
+   .op .POP, .op .JUMPDEST, .op .JUMP]
 
 def block_redt : Block Artifact.submissionArtifact .Osaka 5242 prog_redt :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 4015 16 5242 prog_redt
@@ -261,8 +261,8 @@ def block_r3h : Block Artifact.submissionArtifact .Osaka 5092 prog_r3h :=
 
 /-- pc 5119..5149（idx 3898..3928）。 -/
 def prog_r3d : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MUL, .op (.Swap ⟨0, by decide⟩),
-   .op .POP, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨1, by decide⟩),
+  [.op (.Dup ⟨1, by decide⟩), .op .MUL, .op .JUMPDEST, .op .JUMPDEST,
+   .op .JUMPDEST, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨1, by decide⟩),
    .op (.Dup ⟨2, by decide⟩), .op .MUL, .op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨0, by decide⟩),
    .op .MULMOD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT, .op .SUB,
    .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .ADD, .op (.Dup ⟨4, by decide⟩),
