@@ -21,8 +21,8 @@ of the window.
 /-- The two exponent copies the MX trampoline stores above the 16-word table. -/
 def copyMem (mem : ByteArray) (e : UInt256) : ByteArray :=
   WindowTableMemory.storeWord
-    (WindowTableMemory.storeWord mem 544 (UInt256.shiftRight e (UInt256.ofNat 7)))
-    576 (UInt256.shiftRight e (UInt256.ofNat 3))
+    (WindowTableMemory.storeWord mem 544 (UInt256.shiftRight e (UInt256.ofNat 4)))
+    576 e
 
 theorem readWord_copyMem_low (mem : ByteArray) (e : UInt256) (a : Nat) (ha : a + 32 ≤ 544) :
     MachineState.readWord (copyMem mem e) a = MachineState.readWord mem a := by
@@ -129,14 +129,14 @@ private theorem window_low (bs : ByteArray) (off k : Nat) (v : UInt256) (hk : k 
 
 theorem land480_copyA (mem : ByteArray) (e : UInt256) (k : Nat) (hk : k ≤ 10) :
     UInt256.land (UInt256.ofNat 480) (MachineState.readWord (copyMem mem e) (514 + k)) =
-      UInt256.land (UInt256.ofNat 480) (UInt256.shiftRight e (UInt256.ofNat (247 - 8 * k))) := by
+      UInt256.land (UInt256.ofNat 480) (UInt256.shiftRight e (UInt256.ofNat (244 - 8 * k))) := by
   apply Challenge.EvmProof.Word.word_ext
   rw [Challenge.EvmProof.Word.word_toNat_land, Challenge.EvmProof.Word.word_toNat_land,
     Challenge.EvmProof.Word.shiftRight_toNat _ (by omega),
     show (UInt256.ofNat 480).toNat = 480 from rfl,
     land480_mod (MachineState.readWord _ _).toNat, land480_mod (e.toNat >>> _)]
   congr 1
-  have hw := window_low (copyMem mem e) 544 k (UInt256.shiftRight e (UInt256.ofNat 7)) (by omega)
+  have hw := window_low (copyMem mem e) 544 k (UInt256.shiftRight e (UInt256.ofNat 4)) (by omega)
     (by
       unfold copyMem
       rw [storeWord_getD_other _ _ _ _ (Or.inl (by omega)), storeWord_getD _ _ _ _ (by omega)])
@@ -146,7 +146,7 @@ theorem land480_copyA (mem : ByteArray) (e : UInt256) (k : Nat) (hk : k ≤ 10) 
         storeWord_getD _ _ _ _ (by omega), show 31 - (k + 1) = 30 - k by omega])
     (by omega)
   rw [show 544 - 30 + k = 514 + k by omega] at hw
-  have hp : (2 : Nat) ^ 7 * 256 ^ (30 - k) = 2 ^ (247 - 8 * k) := by
+  have hp : (2 : Nat) ^ 4 * 256 ^ (30 - k) = 2 ^ (244 - 8 * k) := by
     rw [show (256 : Nat) = 2 ^ 8 by rfl, ← Nat.pow_mul, ← Nat.pow_add]
     congr 1
     omega
@@ -155,14 +155,14 @@ theorem land480_copyA (mem : ByteArray) (e : UInt256) (k : Nat) (hk : k ≤ 10) 
 
 theorem land480_copyB (mem : ByteArray) (e : UInt256) (k : Nat) (hk : k ≤ 10) :
     UInt256.land (UInt256.ofNat 480) (MachineState.readWord (copyMem mem e) (546 + k)) =
-      UInt256.land (UInt256.ofNat 480) (UInt256.shiftRight e (UInt256.ofNat (243 - 8 * k))) := by
+      UInt256.land (UInt256.ofNat 480) (UInt256.shiftRight e (UInt256.ofNat (240 - 8 * k))) := by
   apply Challenge.EvmProof.Word.word_ext
   rw [Challenge.EvmProof.Word.word_toNat_land, Challenge.EvmProof.Word.word_toNat_land,
     Challenge.EvmProof.Word.shiftRight_toNat _ (by omega),
     show (UInt256.ofNat 480).toNat = 480 from rfl,
     land480_mod (MachineState.readWord _ _).toNat, land480_mod (e.toNat >>> _)]
   congr 1
-  have hw := window_low (copyMem mem e) 576 k (UInt256.shiftRight e (UInt256.ofNat 3)) (by omega)
+  have hw := window_low (copyMem mem e) 576 k e (by omega)
     (by
       unfold copyMem
       rw [storeWord_getD _ _ _ _ (by omega)])
@@ -171,12 +171,11 @@ theorem land480_copyB (mem : ByteArray) (e : UInt256) (k : Nat) (hk : k ≤ 10) 
       rw [Nat.add_assoc, storeWord_getD _ _ _ _ (by omega), show 31 - (k + 1) = 30 - k by omega])
     (by omega)
   rw [show 576 - 30 + k = 546 + k by omega] at hw
-  have hp : (2 : Nat) ^ 3 * 256 ^ (30 - k) = 2 ^ (243 - 8 * k) := by
-    rw [show (256 : Nat) = 2 ^ 8 by rfl, ← Nat.pow_mul, ← Nat.pow_add]
+  have hp : 256 ^ (30 - k) = (2 : Nat) ^ (240 - 8 * k) := by
+    rw [show (256 : Nat) = 2 ^ 8 by rfl, ← Nat.pow_mul]
     congr 1
     omega
-  rw [hw, Challenge.EvmProof.Word.shiftRight_toNat _ (by omega), Nat.shiftRight_eq_div_pow,
-    Nat.shiftRight_eq_div_pow, Nat.div_div_eq_div_mul, hp]
+  rw [hw, Nat.shiftRight_eq_div_pow, hp]
 
 theorem activeWordsAfter_nineteen (a : Nat) (ha : a + 32 ≤ 608) :
     MachineState.activeWordsAfter 19 a 32 = 19 := by
@@ -188,12 +187,12 @@ def laddr (i : Nat) : Nat := if i % 2 = 0 then 514 + i / 2 else 546 + i / 2
 
 theorem land480_laddr (mem : ByteArray) (e : UInt256) (i : Nat) (hi : i < 21) :
     UInt256.land (UInt256.ofNat 480) (MachineState.readWord (copyMem mem e) (laddr i)) =
-      UInt256.land (UInt256.ofNat 480) (UInt256.shiftRight e (UInt256.ofNat (247 - 4 * i))) := by
+      UInt256.land (UInt256.ofNat 480) (UInt256.shiftRight e (UInt256.ofNat (244 - 4 * i))) := by
   unfold laddr
   by_cases h : i % 2 = 0
   · rw [if_pos h, land480_copyA mem e (i / 2) (by omega),
-      show 247 - 8 * (i / 2) = 247 - 4 * i by omega]
+      show 244 - 8 * (i / 2) = 244 - 4 * i by omega]
   · rw [if_neg h, land480_copyB mem e (i / 2) (by omega),
-      show 243 - 8 * (i / 2) = 247 - 4 * i by omega]
+      show 240 - 8 * (i / 2) = 244 - 4 * i by omega]
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowCopyMemory

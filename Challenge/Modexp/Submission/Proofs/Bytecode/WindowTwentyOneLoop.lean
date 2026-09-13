@@ -25,8 +25,8 @@ def entryProgram : List Instr := []
 
 def setupProgram : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨2, by decide⟩), .push 1 7, .op .SHR, .push 2 544, .op .MSTORE,
-   .op (.Dup ⟨2, by decide⟩), .push 1 3, .op .SHR, .push 2 576, .op .MSTORE]
+   .op (.Dup ⟨2, by decide⟩), .push 1 4, .op .SHR, .push 2 544, .op .MSTORE,
+   .op (.Dup ⟨2, by decide⟩), .push 5 576, .op .MSTORE]
 
 def backProgram (target : UInt256) : List Instr := [.push 2 target, .op .JUMP]
 
@@ -38,7 +38,7 @@ def bodyProgram : List Instr :=
   WindowTwentyOneBody.program ++ WindowTwentyOneTail.program (UInt256.ofNat 2479)
 
 def eAt (exponent : UInt256) (count : Nat) : UInt256 :=
-  UInt256.shiftLeft exponent (UInt256.ofNat (4 * (1 + 21 * count)))
+  UInt256.shiftLeft exponent (UInt256.ofNat (4 * (1 + 21 * count) - 3))
 
 def loopMem (base modulus exponent : UInt256) : Nat → ByteArray
   | 0 => WindowTableMemory.tableMemory base modulus
@@ -88,7 +88,7 @@ def finishState (template : State) (base modulus exponent : UInt256)
   WindowTwentyOneGroup.state template (UInt256.ofNat 2958) (loopMem base modulus exponent 3) 19 modulus
     (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63)
     (UInt256.shiftLeft
-      (UInt256.shiftLeft exponent (UInt256.ofNat 172)) (UInt256.ofNat 84))
+      (UInt256.shiftLeft exponent (UInt256.ofNat 169)) (UInt256.ofNat 84))
     (UInt256.ofNat 0 - UInt256.ofNat 1) 0 rest
 
 private theorem advancePC_ofNat (count pc : Nat) :
@@ -133,6 +133,7 @@ theorem run_setup (template : State) (pc : UInt256) (mem : ByteArray) (active : 
     State.activeWordsAfterUInt256, ha, h1, h1', h2,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     advancePC, succ_eq_add, hpush, hpush3, word_add_assoc]
+  congr 1
 
 theorem run_back (template : State) (pc target : UInt256) (mem : ByteArray) (active : Nat)
     (stack : List UInt256) (hcap : stack.length + 1 < 1024)
@@ -192,7 +193,7 @@ theorem run_body (template : State) (base modulus exponent : UInt256)
     rw [WindowTwentyOneMath.accumulator_twentyOne]
   have hb := WindowTwentyOneBody.run_twentyOne template (UInt256.ofNat 2501) mem
     base modulus a exponent c (loopMem_table base modulus exponent count)
-    (1 + 21 * count) (by omega) rest hrest
+    (1 + 21 * count) (by omega) (by omega) rest hrest
   have ht := WindowTwentyOneTail.run_tail template (UInt256.ofNat 2944) (UInt256.ofNat 2479)
     (WindowCopyMemory.copyMem mem e) 19 modulus nextA e c rest hrest
     (by rw [show (UInt256.ofNat 2479).toNat = 2479 from rfl]; exact hjump)
@@ -217,7 +218,7 @@ theorem run_continue (template : State) (base modulus exponent : UInt256)
     congr 1
   have hshift : UInt256.shiftLeft (eAt exponent count) (UInt256.ofNat 84) = eAt exponent (count + 1) := by
     unfold eAt
-    rw [WindowTwentyOneTail.shift_twentyOne exponent (1 + 21 * count) (by omega)]
+    rw [WindowTwentyOneTail.shift_twentyOne exponent (1 + 21 * count) (by omega) (by omega)]
     congr 2
   rw [if_pos hc, hsub, hshift, show 21 * count + 21 = 21 * (count + 1) by omega] at h
   simpa only [loopState, loopActive] using h
