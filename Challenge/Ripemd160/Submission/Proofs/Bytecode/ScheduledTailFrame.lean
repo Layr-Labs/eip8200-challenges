@@ -8,9 +8,9 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Challenge.EvmProof.Word StackRoundTrace
 
 def frame (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256) : List UInt256 :=
-  [Paired144WordRound.factorWord, UInt256.ofNat 4294967295, Paired144WordRound.compactMaskWord,
-   Paired144WordRound.coefficientWord 3 0, Paired144WordRound.coefficientWord 0 3,
-   Paired144WordRound.coefficientWord 0 2,
+  [Paired144WordRound.factorWord, UInt256.ofNat 4294967295, Paired144WordRound.fusedModulusWord 5 7,
+   Paired144WordRound.fusedModulusWord 8 5, Paired144WordRound.fusedCoefficientWord 0 3,
+   Paired144WordRound.fusedCoefficientWord 0 2,
    ofUInt32 h.h4, ofUInt32 h.h1, ofUInt32 h.h2, ofUInt32 h.h3, ofUInt32 h.h0, off, limit] ++ rho
 
 def coreRest (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256) : List UInt256 :=
@@ -25,10 +25,10 @@ def bind (h : Compression.HashState) (q : ScheduledTailRaw.Input) : ScheduledTai
     h4 := ofUInt32 h.h4
     lower := UInt256.ofNat 0xffffffff
     factor := Paired144WordRound.factorWord
-    cache140 := Paired144WordRound.compactMaskWord
-    cache350 := Paired144WordRound.coefficientWord 3 0
-    cache310 := Paired144WordRound.coefficientWord 0 3
-    cache190 := Paired144WordRound.coefficientWord 0 2}
+    cache140 := Paired144WordRound.fusedModulusWord 5 7
+    cache350 := Paired144WordRound.fusedModulusWord 8 5
+    cache310 := Paired144WordRound.fusedCoefficientWord 0 3
+    cache190 := Paired144WordRound.fusedCoefficientWord 0 2}
 def high (x : UInt256) : UInt32 := toUInt32 (UInt256.shiftRight x (UInt256.ofNat 144))
 def combine (h : Compression.HashState) (q : ScheduledTailRaw.Input) : Compression.HashState :=
   {h0 := h.h1 + toUInt32 q.lc + high q.rd,

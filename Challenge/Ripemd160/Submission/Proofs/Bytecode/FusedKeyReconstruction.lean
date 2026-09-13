@@ -1,0 +1,20 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Paired144WordRound
+set_option warningAsError true
+namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.FusedKeyReconstruction
+open EvmSemantics Paired144WordRound
+theorem key1 : UInt256.add (UInt256.ofNat 6410773077581616093588493386869979742301214748966912)
+    (UInt256.ofNat 34535016170389834383797866734609369064725061767952793) = UInt256.ofNat 40945789247971450477386360121479348807026276516919705 := by decide
+theorem key2 : UInt256.add (UInt256.ofNat 341275145)
+    (UInt256.add pairWord (UInt256.ofNat 40945789247971450477386360121479348807026276516919705)) = UInt256.ofNat 136726760529788758926252426176837954510549114783656865 := by decide
+theorem key3 : UInt256.add (UInt256.ofNat 4859812446901711551265000851017333273431271886815232)
+    (UInt256.land pairWord (UInt256.ofNat 136726760529788758926252426176837954510549114783656865)) = UInt256.ofNat 45805601672572416830120737830960963807809187239029665 := by decide
+theorem modulusPlus : UInt256.shiftLeft (UInt256.ofNat 36893488147419103233) (UInt256.ofNat 144) =
+    UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928 := by decide
+theorem modulusMinus : UInt256.shiftLeft (UInt256.ofNat 36893488147419103231) (UInt256.ofNat 144) =
+    UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096 := by decide
+#print axioms key1
+#print axioms key2
+#print axioms key3
+#print axioms modulusPlus
+#print axioms modulusMinus
+end Challenge.Ripemd160.Submission.Proofs.Bytecode.FusedKeyReconstruction

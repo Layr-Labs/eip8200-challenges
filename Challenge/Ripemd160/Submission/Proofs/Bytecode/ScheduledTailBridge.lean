@@ -13,8 +13,8 @@ def tailInput (memory : ByteArray) (h : Compression.HashState) (l r : WordLane)
   {ld := l.d, lb := l.b, le := l.e, la := l.a, k := UInt256.ofNat 2840853838,
    lc := l.c, re := r.e, rc := r.c, ra := r.a, rd := r.d, rb := r.b,
    factor := factorWord, lower := UInt256.ofNat 4294967295,
-   cache140 := compactMaskWord, cache190 := coefficientWord 0 2,
-   cache310 := coefficientWord 0 3, cache350 := coefficientWord 3 0,
+   cache140 := fusedModulusWord 5 7, cache190 := fusedCoefficientWord 0 2,
+   cache310 := fusedCoefficientWord 0 3, cache350 := fusedModulusWord 8 5,
    literal72 := MachineState.readWord memory 342, literal28 := UInt256.ofNat 28,
    h4 := Word.ofUInt32 h.h4, h1 := Word.ofUInt32 h.h1, h2 := Word.ofUInt32 h.h2,
    h3 := Word.ofUInt32 h.h3, h0 := Word.ofUInt32 h.h0, off := off, limit := limit}
