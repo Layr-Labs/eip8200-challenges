@@ -9,35 +9,35 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate StaggerPersistentEntryRaw StaggerPersistentFrame PairedMask32Cache
 def dispatchCode : List Instr := dispatchTemplate 4783
 theorem dispatch_slice :
-    (Artifact.submissionArtifact.instructions.drop 3712).take dispatchCode.length = dispatchCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3708).take dispatchCode.length = dispatchCode := by rfl
 def dispatchSite : GenericRoundSite Artifact.submissionArtifact .Osaka dispatchCode :=
-  StackSiteBuilder.ofSlice dispatchCode 3712 dispatch_slice
-    (by change 3712 + dispatchCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice dispatchCode 3708 dispatch_slice
+    (by change 3708 + dispatchCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := dispatchCode) (by decide)) (by decide)
 theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4642 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3712) = UInt256.ofNat 4642
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3708) = UInt256.ofNat 4642
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def callCode : List Instr := callTemplate
 theorem call_slice :
-    (Artifact.submissionArtifact.instructions.drop 276).take callCode.length = callCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 274).take callCode.length = callCode := by rfl
 def callSite : GenericRoundSite Artifact.submissionArtifact .Osaka callCode :=
-  StackSiteBuilder.ofSlice callCode 276 call_slice
-    (by change 276 + callCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice callCode 274 call_slice
+    (by change 274 + callCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := callCode) (by decide)) (by decide)
-theorem call_pc : callSite.startPC = UInt256.ofNat 491 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 276) = UInt256.ofNat 491
+theorem call_pc : callSite.startPC = UInt256.ofNat 486 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 274) = UInt256.ofNat 486
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_pad (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4783).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3790 = 4783 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3786 = 4783 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3790 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3786 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 4783 = true
   rw [hcode]
@@ -126,11 +126,11 @@ def gasSteps_call (s : State) (off limit : UInt256) (h : Compression.HashState)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 491, stack := frame h off limit rho}
-      {s with pc := UInt256.ofNat 509, stack := pointer off :: DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: frame h off limit rho} := by
-  apply call_gasSteps_of_raw {s with pc := UInt256.ofNat 491, stack := frame h off limit rho} _ hcode hfork hrun hnp call_pc.symm
-  have hr := run_call s (UInt256.ofNat 491) off limit h rho hstack hrun
-  have he : pcAfter (UInt256.ofNat 491) callTemplate = UInt256.ofNat 509 := by decide
+    GasSteps {s with pc := UInt256.ofNat 486, stack := frame h off limit rho}
+      {s with pc := UInt256.ofNat 504, stack := pointer off :: DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: frame h off limit rho} := by
+  apply call_gasSteps_of_raw {s with pc := UInt256.ofNat 486, stack := frame h off limit rho} _ hcode hfork hrun hnp call_pc.symm
+  have hr := run_call s (UInt256.ofNat 486) off limit h rho hstack hrun
+  have he : pcAfter (UInt256.ofNat 486) callTemplate = UInt256.ofNat 504 := by decide
   rw [he] at hr
   exact hr
 #print axioms gasSteps_call
