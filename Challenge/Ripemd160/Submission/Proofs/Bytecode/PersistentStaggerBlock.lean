@@ -9,6 +9,7 @@ open PersistentStaggerTable PersistentStaggerFunctional StaggerPersistentFrame
 
 def gasSteps (s : State) (input : ByteArray) (i : Nat) (h : Compression.HashState)
     (limit : UInt256) (rho : List UInt256) (hs : rho.length ≤ 880)
+    (tail : List UInt256) (hrho : rho = DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: tail)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input) (ctx : Context s input)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hr : s.halt = .Running)
@@ -18,7 +19,7 @@ def gasSteps (s : State) (input : ByteArray) (i : Nat) (h : Compression.HashStat
       {scheduledState s i with pc := UInt256.ofNat 4579, stack := frame (result (scheduledState s i).memory h) (DriverTrace.blockOffsetWord i) limit rho} := by
   let q := scheduledState s i
   let off := DriverTrace.blockOffsetWord i
-  have gp := PersistentStaggerPrepare.gasSteps_prepare s input i h limit rho hs hfit hi ctx hcode hfork hr hnp
+  have gp := PersistentStaggerPrepare.gasSteps_prepare s input i h limit rho hs tail hrho hfit hi ctx hcode hfork hr hnp
   have henv : q.executionEnv = s.executionEnv := scheduled_env s i
   have hrq : q.halt = .Running := (scheduled_halt s i).trans hr
   have hcq : q.executionEnv.code = Artifact.submissionArtifact.code := by rw [henv]; exact hcode

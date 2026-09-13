@@ -22,7 +22,7 @@ def legacyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
 
 def sizeMatched (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 5194
+    pc := UInt256.ofNat 5155
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x3e7,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
