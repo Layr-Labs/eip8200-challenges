@@ -134,11 +134,45 @@ theorem run_lower (s : State) (pc low returnPC : UInt256) (rest : List UInt256)
     Nat.add_assoc, List.getElem?_cons_zero, List.exchange, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl
 #print axioms run_lower
-/-- The closing byte-swap stage of a block: identical arithmetic to `lowerReverse`,
-but it reads each resident mask through a `SWAP1` instead of a `DUP`, so both mask
-slots are retired by the stage itself and no trailing `POP` pair is required. -/
-def finalReverse : List Instr :=
-  [ .op (.Swap ⟨0, by decide⟩),
+private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
+def lowerReverseFirst : List Instr :=
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 257),
+    .op (.Dup ⟨2, by decide⟩),
+    .op (.Dup ⟨2, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 8),
+    .op .SHR,
+    .op (.Dup ⟨3, by decide⟩),
+    .op .XOR,
+    .op .AND,
+    .op .MUL,
+    .op .XOR,
+    .push ⟨3, by decide⟩ (UInt256.ofNat 65537),
+    .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨2, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 16),
+    .op .SHR,
+    .op (.Dup ⟨3, by decide⟩),
+    .op .XOR,
+    .op .AND,
+    .op .MUL,
+    .op .XOR ]
+theorem run_lowerFirst (s : State) (pc low returnPC : UInt256) (rest : List UInt256)
+    (hstack : rest.length ≤ 996) (hrun : s.halt = .Running) :
+    runInstrSeq lowerReverseFirst {s with pc := pc, stack := low :: mask8 :: mask16 :: returnPC :: maskWord :: rest} =
+      some {s with pc := pcAfter pc lowerReverseFirst, stack := PairedScheduleData.reversedWord low :: mask8 :: mask16 :: returnPC :: maskWord :: rest} := by
+  rw [← reversedValue_eq, ← lowerValue_eq]
+  have hcap (n : Nat) (hn : n ≤ 27) : rest.length + n < 1024 := by omega
+  simp (discharger := omega) [lowerReverseFirst, lowerValue,
+    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size, hrun, hcap,
+    Nat.add_assoc, List.getElem?_cons_zero, List.exchange, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+  all_goals simp only [neutral_hmul, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm,
+    RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm,
+    RawExpressionAC.land_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm,
+    RawExpressionAC.xor_left_comm]
+  all_goals repeat first | apply And.intro | exact True.intro | rfl
+#print axioms run_lowerFirst
+def lowerReverseSecond : List Instr :=
+  [ .op (.Dup ⟨1, by decide⟩),
     .op (.Dup ⟨1, by decide⟩),
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 8),
@@ -148,45 +182,31 @@ def finalReverse : List Instr :=
     .push ⟨2, by decide⟩ (UInt256.ofNat 257),
     .op .MUL,
     .op .XOR,
-    .op (.Swap ⟨0, by decide⟩),
+    .push ⟨3, by decide⟩ (UInt256.ofNat 65537),
     .op (.Dup ⟨1, by decide⟩),
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 16),
     .op .SHR,
     .op .XOR,
+    .op (.Dup ⟨4, by decide⟩),
     .op .AND,
-    .push ⟨3, by decide⟩ (UInt256.ofNat 65537),
     .op .MUL,
     .op .XOR ]
-private def finalValue (low : UInt256) : UInt256 := (UInt256.xor (UInt256.mul (UInt256.ofNat 65537) (UInt256.land (UInt256.xor (UInt256.shiftRight (UInt256.xor (UInt256.mul (UInt256.ofNat 257) (UInt256.land (UInt256.xor (UInt256.shiftRight low (UInt256.ofNat 8)) low) mask8)) low) (UInt256.ofNat 16)) (UInt256.xor (UInt256.mul (UInt256.ofNat 257) (UInt256.land (UInt256.xor (UInt256.shiftRight low (UInt256.ofNat 8)) low) mask8)) low)) mask16)) (UInt256.xor (UInt256.mul (UInt256.ofNat 257) (UInt256.land (UInt256.xor (UInt256.shiftRight low (UInt256.ofNat 8)) low) mask8)) low))
-private theorem finalValue_eq (low : UInt256) : finalValue low = reversedValue low := by
-  norm_num only [finalValue, reversedValue, multipliedStage, endianDelta, endianFactor]
-theorem run_final (s : State) (pc low returnPC : UInt256) (rest : List UInt256)
+theorem run_lowerSecond (s : State) (pc low returnPC : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 996) (hrun : s.halt = .Running) :
-    runInstrSeq finalReverse {s with pc := pc, stack := low :: mask8 :: mask16 :: returnPC :: maskWord :: rest} =
-      some {s with pc := pcAfter pc finalReverse, stack := PairedScheduleData.reversedWord low :: returnPC :: maskWord :: rest} := by
-  rw [← reversedValue_eq, ← finalValue_eq]
+    runInstrSeq lowerReverseSecond {s with pc := pc, stack := low :: mask8 :: mask16 :: returnPC :: maskWord :: rest} =
+      some {s with pc := pcAfter pc lowerReverseSecond, stack := PairedScheduleData.reversedWord low :: mask8 :: mask16 :: returnPC :: maskWord :: rest} := by
+  rw [← reversedValue_eq, ← lowerValue_eq]
   have hcap (n : Nat) (hn : n ≤ 27) : rest.length + n < 1024 := by omega
-  simp (discharger := omega) [finalReverse, finalValue,
+  simp (discharger := omega) [lowerReverseSecond, lowerValue,
     runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size, hrun, hcap,
     Nat.add_assoc, List.getElem?_cons_zero, List.exchange, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals repeat first | apply And.intro | rfl
-#print axioms run_final
-/-- Copy the resident low-word mask after the final endian stage retires both endian masks. -/
-def finalCleanup : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩)]
-theorem run_finalCleanup (s : State) (pc returnPC : UInt256)
-    (rest : List UInt256) (hstack : rest.length ≤ 996) (hrun : s.halt = .Running) :
-    runInstrSeq finalCleanup
-      {s with pc := pc, stack := returnPC :: maskWord :: rest} =
-      some {s with
-        pc := pcAfter pc finalCleanup
-        stack := maskWord :: returnPC :: maskWord :: rest} := by
-  have hcap (n : Nat) (hn : n ≤ 27) : rest.length + n < 1024 := by omega
-  simp [finalCleanup, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ,
-    Instr.size, hrun, hcap, Nat.add_assoc, List.getElem?_cons_zero]
-  all_goals repeat first | apply And.intro | rfl
-#print axioms run_finalCleanup
+  all_goals simp only [neutral_hmul, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm,
+    RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm,
+    RawExpressionAC.land_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm,
+    RawExpressionAC.xor_left_comm]
+  all_goals repeat first | apply And.intro | exact True.intro | rfl
+#print axioms run_lowerSecond
 def cleanupTemplate : List Instr :=
   [.op .POP, .op .POP, .op (.Dup ⟨1, by decide⟩)]
 theorem run_cleanup (s : State) (pc m8 m16 returnPC : UInt256)

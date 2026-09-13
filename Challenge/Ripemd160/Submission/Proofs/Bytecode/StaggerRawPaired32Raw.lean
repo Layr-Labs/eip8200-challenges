@@ -6,15 +6,17 @@ set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
 set_option linter.unusedSimpArgs false
 set_option linter.unusedVariables false
+set_option linter.unusedTactic false
+set_option linter.unreachableTactic false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired32
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
+private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
+private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
 def template : List Instr :=
   [ .op (.Swap ⟨6, by decide⟩),
-    .op (.Dup ⟨3, by decide⟩),
-    .op .ADD,
-    .push ⟨4, by decide⟩ (UInt256.ofNat 341275145),
-    .op .ADD,
+    .op .POP,
+    .push ⟨23, by decide⟩ (UInt256.ofNat 136726760529788758926252426176837954510549114783656865),
     .op (.Swap ⟨4, by decide⟩),
     .op (.Dup ⟨7, by decide⟩),
     .op (.Dup ⟨10, by decide⟩),
@@ -69,11 +71,11 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     x.v2,
     x.v3,
     x.v4,
-    (UInt256.add (UInt256.ofNat 341275145) (UInt256.add x.v3 x.v7)),
+    (UInt256.ofNat 136726760529788758926252426176837954510549114783656865),
     x.v6,
     x.v0,
     x.v8,
-    (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.shiftRight (UInt256.mul x.v10 (UInt256.land x.v3 (UInt256.add (UInt256.add (UInt256.ofNat 341275145) (UInt256.add x.v3 x.v7)) (UInt256.add (MachineState.readWord memory 972) (UInt256.add (UInt256.xor (UInt256.lor x.v6 (UInt256.lnot x.v9)) x.v0) x.v5))))) (UInt256.ofNat 22)))),
+    (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.shiftRight (UInt256.mul x.v10 (UInt256.land x.v3 (UInt256.add (UInt256.ofNat 136726760529788758926252426176837954510549114783656865) (UInt256.add (MachineState.readWord memory 972) (UInt256.add (UInt256.xor (UInt256.lor x.v6 (UInt256.lnot x.v9)) x.v0) x.v5))))) (UInt256.ofNat 22)))),
     x.v10,
     x.v11,
     x.v12,
@@ -87,11 +89,11 @@ def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UI
     x.v2,
     x.v3,
     x.v4,
-    (UInt256.add (UInt256.ofNat 341275145) (UInt256.add x.v3 x.v7)),
+    (UInt256.ofNat 136726760529788758926252426176837954510549114783656865),
     x.v6,
     x.v0,
     x.v8,
-    (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.shiftRight (UInt256.mul x.v10 (UInt256.land x.v3 (UInt256.add (UInt256.add (UInt256.ofNat 341275145) (UInt256.add x.v3 x.v7)) (UInt256.add (MachineState.readWord memory 972) (UInt256.add (UInt256.xor (UInt256.lor x.v6 (UInt256.lnot x.v9)) x.v0) x.v5))))) (UInt256.ofNat 22)))),
+    (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.shiftRight (UInt256.mul x.v10 (UInt256.land x.v3 (UInt256.add (UInt256.ofNat 136726760529788758926252426176837954510549114783656865) (UInt256.add (MachineState.readWord memory 972) (UInt256.add (UInt256.xor (UInt256.lor x.v6 (UInt256.lnot x.v9)) x.v0) x.v5))))) (UInt256.ofNat 22)))),
     x.v10,
     x.v11,
     x.v12,
@@ -115,8 +117,10 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
   simp (discharger := omega) [template, inputStack, actualOutput,
     runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
-    State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals repeat first | apply And.intro | rfl
+    State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat,
+    RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
+  all_goals simp only [neutral_hadd, neutral_hmul, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
+  all_goals repeat first | apply And.intro | exact True.intro | rfl
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 35 ≤ s.activeWords.toNat) :

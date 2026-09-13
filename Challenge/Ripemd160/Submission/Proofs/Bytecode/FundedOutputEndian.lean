@@ -22,9 +22,9 @@ private theorem local_xor_comm (u v : UInt256) : UInt256.xor u v = UInt256.xor v
   simp [UInt256.xor, Fin.xor, Nat.xor_comm]
 /-- Stage 8 with a literal, truncated mask. The factor is kept below the XOR operands. -/
 def code : List Instr :=
-  [dup1, dup1, push1 (UInt256.ofNat 8), op .SHR, op .XOR,
-    .push ⟨19, by decide⟩ mask8Low, op .AND,
-    ClosedEndianReuse.factorPush 8, op .MUL, op .XOR]
+  [ClosedEndianReuse.factorPush 8, .push ⟨19, by decide⟩ mask8Low,
+    .op (.Dup ⟨2, by decide⟩), dup1, push1 (UInt256.ofNat 8), op .SHR,
+    op .XOR, op .AND, op .MUL, op .XOR]
 
 theorem run_endian (s : State) (startPC value : UInt256)
     (rest : List UInt256) (hstack : rest.length < 1018)

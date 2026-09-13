@@ -66,7 +66,7 @@ def usesCompact (r s : Nat) : Prop :=
   (r, s) ∈ [(6, 12), (7, 5), (8, 12), (8, 13), (8, 15), (9, 7), (9, 13), (13, 8), (13, 9), (14, 12)]
 instance (r s : Nat) : Decidable (usesCompact r s) := inferInstanceAs (Decidable (_ ∨ _))
 
-def usesFusedExtra (r s : Nat) : Prop := (r,s) ∈ [(14,13),(8,7),(9,8),(7,6)]
+def usesFusedExtra (r s : Nat) : Prop := (r,s) ∈ [(14,13),(8,7),(9,8),(7,6),(13,14),(6,7)]
 instance (r s : Nat) : Decidable (usesFusedExtra r s) := inferInstanceAs (Decidable (_ ∈ _))
 
 def wordRotate (x : UInt256) (r s : Nat) : UInt256 :=

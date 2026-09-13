@@ -19,17 +19,17 @@ theorem run_reverse_pair (s : State) (input : ByteArray) (n : Nat) (hn : n < 15)
     (hinput : s.executionEnv.calldata = input) :
     run loopPath
       { s with
-        pc := UInt256.ofNat 58
+        pc := UInt256.ofNat 54
         stack := [UInt256.ofNat (960 - 64 * n), a, r] ++ rest } =
     some { s with
-      pc := UInt256.ofNat (if n < 14 then 58 else 82)
+      pc := UInt256.ofNat (if n < 14 then 54 else 78)
       stack := [UInt256.ofNat (896 - 64 * n),
         UInt256.lor
           (UInt256.xor (MachineState.readWord input (928 - 64 * n)) r)
           (UInt256.lor
             (UInt256.xor (MachineState.readWord input (960 - 64 * n)) r) a), r] ++ rest } := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 58 = true := by
-    have h := Artifact.submissionArtifact.isValidJumpDest_index 39 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 54 = true := by
+    have h := Artifact.submissionArtifact.isValidJumpDest_index 37 (by rfl)
     rw [pc_direct_39] at h
     exact h
   have hcap3 : rest.length + 1 + 1 + 1 < 1024 := by omega
