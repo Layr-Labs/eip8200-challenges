@@ -29,12 +29,12 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs
 
-@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2195 = 2982 := by rfl
-@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2201 = 2989 := by rfl
-@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2207 = 2996 := by rfl
-@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2213 = 3003 := by rfl
-@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2219 = 3010 := by rfl
-@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2225 = 3017 := by rfl
+@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2192 = 2979 := by rfl
+@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2198 = 2986 := by rfl
+@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2204 = 2993 := by rfl
+@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2210 = 3000 := by rfl
+@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2216 = 3007 := by rfl
+@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2222 = 3014 := by rfl
 
 /-- The shift traces normalize PUSH1 literals to `ofNat` before NOT. -/
 theorem notThirtyOneOfNat : UInt256.lnot (UInt256.ofNat 31) = UInt256.ofNat
@@ -208,7 +208,7 @@ theorem run_negBodyA (s : State) (mem : ByteArray) (p : UInt256) (n bsize esize 
       (1280 + 32 * (n - 1 - j)) 32) = s.activeWords :=
     Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 400000 })
-    [blk2896a, opAt, pushAt, wfOp,
+    [UInt256.gt, UInt256.lt, blk2896a, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
