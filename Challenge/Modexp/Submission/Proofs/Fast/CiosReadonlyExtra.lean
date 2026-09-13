@@ -93,10 +93,10 @@ theorem ExtraCache.choose {mem : ByteArray} {m96 m64 m32 : UInt256}
   · exact hc.word64
   · exact hc.word32
 
-def legacyExtraProgram (slot : Fin 3) (tl ts : UInt256) : List Instr :=
+def extraProgram (slot : Fin 3) (tl ts : UInt256) : List Instr :=
   extraLoad slot ++ CiosCached.macFusedProgram tl ts
 
-theorem run_legacyExtraStep (slot : Fin 3) (template : State) (pc : UInt256) (mem : ByteArray)
+theorem run_extraStep (slot : Fin 3) (template : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat) (x loadAddr storeAddr : UInt256)
     (hx : x.toNat = 32*(n-2-k))
     (hselect : x.toNat = cacheAddress slot)
@@ -106,7 +106,7 @@ theorem run_legacyExtraStep (slot : Fin 3) (template : State) (pc : UInt256) (me
     (rest : List UInt256) (hrest : rest.length ≤ 998)
     (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hk : k+1 < n)
     (hc : ExtraCache mem m96 m64 m32) :
-    runInstructions (legacyExtraProgram slot loadAddr storeAddr)
+    runInstructions (extraProgram slot loadAddr storeAddr)
       (CiosCachedL2.state template pc mem bi mu c0 n k pbi paEnd pbEnd flag target2 inv
         (m0 :: cachedTL :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
     some (CiosCachedL2.state template (pc+UInt256.ofNat 33) mem bi mu c0 n (k+1)
@@ -142,74 +142,6 @@ theorem run_legacyExtraStep (slot : Fin 3) (template : State) (pc : UInt256) (me
   change runInstructions (extraLoad slot ++ CiosCached.macFusedProgram loadAddr storeAddr) _ = _
   simpa only [st,CiosCachedL2.state,framed,extendedStack,l2Step,hx,hloadAddr,hstoreAddr,hpc,
     List.cons_append,List.nil_append] using hall
-
-/-- Fused cached high-modulus load and low product. The filler keeps all PCs fixed. -/
-def slotZeroPrefix : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op .MUL,
-   .op (.Dup ⟨9, by decide⟩), .op (.Dup ⟨15, by decide⟩), .op .JUMPDEST]
-
-def extraProgram (slot : Fin 3) (tl ts : UInt256) : List Instr :=
-  if slot.val = 0 then
-    slotZeroPrefix ++ (CiosCached.macProductProgram.drop 4).take 2 ++
-      CiosCached.macFusedPostProgram tl ts
-  else legacyExtraProgram slot tl ts
-
-private theorem run_slotZeroPrefix (s : State)
-    (pc carry mu bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 998) :
-    runInstructions slotZeroPrefix
-      (framed s pc (extendedStack carry mu bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
-    runInstructions (extraLoad 0 ++ CiosCached.macProductProgram.take 4)
-      (framed s pc (extendedStack carry mu bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
-  have hc19 : rest.length + 19 < 1024 := by omega
-  have hc20 : rest.length + 20 < 1024 := by omega
-  have hc21 : rest.length + 21 < 1024 := by omega
-  have hc22 : rest.length + 22 < 1024 := by omega
-  have hc23 : rest.length + 23 < 1024 := by omega
-  simp [slotZeroPrefix, extraLoad, CiosCached.macProductProgram, runInstructions,
-    Challenge.EvmProof.Stepper.runInstr, framed, extendedStack, List.exchange, Nat.add_assoc,
-    hc19, hc20, hc21, hc22, hc23]
-
-theorem run_extraStep (slot : Fin 3) (template : State) (pc : UInt256) (mem : ByteArray)
-    (bi mu c0 : UInt256) (n k : Nat) (x loadAddr storeAddr : UInt256)
-    (hx : x.toNat = 32*(n-2-k))
-    (hselect : x.toNat = cacheAddress slot)
-    (hloadAddr : loadAddr.toNat = 2112+32*(n-2-k))
-    (hstoreAddr : storeAddr.toNat = 2112+32*(n-1-k))
-    (pbi paEnd pbEnd flag target2 cachedTL inv m0 aEnd m96 m64 m32 dst ret : UInt256)
-    (rest : List UInt256) (hrest : rest.length ≤ 998)
-    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hk : k+1 < n)
-    (hc : ExtraCache mem m96 m64 m32) :
-    runInstructions (extraProgram slot loadAddr storeAddr)
-      (CiosCachedL2.state template pc mem bi mu c0 n k pbi paEnd pbEnd flag target2 inv
-        (m0 :: cachedTL :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
-    some (CiosCachedL2.state template (pc+UInt256.ofNat 33) mem bi mu c0 n (k+1)
-      pbi paEnd pbEnd flag target2 inv (m0 :: cachedTL :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) := by
-  have hold := run_legacyExtraStep slot template pc mem bi mu c0 n k x loadAddr storeAddr
-    hx hselect hloadAddr hstoreAddr pbi paEnd pbEnd flag target2 cachedTL inv m0 aEnd
-    m96 m64 m32 dst ret rest hrest hactive hn hk hc
-  by_cases hs : slot.val = 0
-  · have hslot : slot = 0 := Fin.ext hs
-    subst slot
-    let st : State := { template with memory := (l2Step mem mu c0 n k).memory }
-    have hp := run_slotZeroPrefix st pc (l2Step mem mu c0 n k).carry mu bi pbi paEnd pbEnd
-      flag target2 cachedTL inv m0 aEnd m96 m64 m32 dst ret rest hrest
-    have hnew : extraProgram 0 loadAddr storeAddr =
-        slotZeroPrefix ++ ((CiosCached.macProductProgram.drop 4).take 2 ++
-          CiosCached.macFusedPostProgram loadAddr storeAddr) := by rfl
-    have holdp : legacyExtraProgram 0 loadAddr storeAddr =
-        (extraLoad 0 ++ CiosCached.macProductProgram.take 4) ++
-          ((CiosCached.macProductProgram.drop 4).take 2 ++
-            CiosCached.macFusedPostProgram loadAddr storeAddr) := by rfl
-    rw [hnew, runInstructions_append]
-    rw [holdp, runInstructions_append] at hold
-    change (runInstructions slotZeroPrefix
-      (framed st pc (extendedStack (l2Step mem mu c0 n k).carry mu bi pbi paEnd pbEnd
-        flag target2 cachedTL inv m0 aEnd m96 m64 m32 dst ret rest))).bind _ = _
-    rw [hp]
-    exact hold
-  · simpa only [extraProgram, if_neg hs] using hold
-
 
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosReadonlyExtra

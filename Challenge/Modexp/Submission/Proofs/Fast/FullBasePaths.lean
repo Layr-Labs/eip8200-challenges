@@ -29,7 +29,7 @@ def blkFullBaseGuard :
    opAt 1847 .SHR,
    opAt 1848 .AND,
    opAt 1849 .ISZERO,
-   pushAt 1850 2 2504,
+   pushAt 1850 2 2511,
    opAt 1851 .JUMPI]
 
 /-- Located block in the selected full-width-base helper. -/
@@ -39,11 +39,11 @@ def blkFullBaseCopyAdd :
    pushAt 1853 1 96,
    pushAt 1854 2 256,
    opAt 1855 .CALLDATACOPY,
-   pushAt 1856 2 2675,
+   pushAt 1856 2 2682,
    pushAt 1857 2 512,
    pushAt 1858 2 256,
    pushAt 1859 2 1536,
-   pushAt 1860 2 3536,
+   pushAt 1860 2 3552,
    opAt 1861 .JUMP]
 
 /-- Located block in the selected full-width-base helper. -/
@@ -71,7 +71,7 @@ def blkFullBaseFallback :
    opAt 1881 .ADD,
    opAt 1882 .MSTORE,
    pushAt 1883 1 1,
-   pushAt 1884 2 975,
+   pushAt 1884 2 979,
    opAt 1885 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast
