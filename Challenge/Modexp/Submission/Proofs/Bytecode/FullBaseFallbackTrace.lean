@@ -22,18 +22,34 @@ open Challenge.Modexp.Submission.Proofs.Fast.FullBase
 
 private def fallbackCountPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1862 .JUMPDEST, opAt 1863 (.Dup ⟨2, by decide⟩),
-   pushAt 1864 1 31, opAt 1865 .ADD, pushAt 1866 1 5, opAt 1867 .SHR]
+  [opAt 1860 .JUMPDEST,
+   opAt 1861 (.Dup ⟨2, by decide⟩),
+   pushAt 1862 1 31,
+   opAt 1863 .ADD,
+   pushAt 1864 1 5,
+   opAt 1865 .SHR]
 private def fallbackWordPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1868 (.Dup ⟨3, by decide⟩), opAt 1869 (.Dup ⟨1, by decide⟩),
-   pushAt 1870 1 5, opAt 1871 .SHL, opAt 1872 .SUB, pushAt 1873 1 3,
-   opAt 1874 .SHL, pushAt 1875 1 96, opAt 1876 .CALLDATALOAD,
-   opAt 1877 (.Swap ⟨0, by decide⟩), opAt 1878 .SHR]
+  [opAt 1866 (.Dup ⟨3, by decide⟩),
+   opAt 1867 (.Dup ⟨1, by decide⟩),
+   pushAt 1868 1 5,
+   opAt 1869 .SHL,
+   opAt 1870 .SUB,
+   pushAt 1871 1 3,
+   opAt 1872 .SHL,
+   pushAt 1873 1 96,
+   opAt 1874 .CALLDATALOAD,
+   opAt 1875 (.Swap ⟨0, by decide⟩),
+   opAt 1876 .SHR]
 private def fallbackStorePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1879 (.Dup ⟨2, by decide⟩), pushAt 1880 1 224, opAt 1881 .ADD,
-   opAt 1882 .MSTORE, pushAt 1883 1 1, pushAt 1884 2 967, opAt 1885 .JUMP]
+  [opAt 1877 (.Dup ⟨2, by decide⟩),
+   pushAt 1878 1 224,
+   opAt 1879 .ADD,
+   opAt 1880 .MSTORE,
+   pushAt 1881 1 1,
+   pushAt 1882 2 963,
+   opAt 1883 .JUMP]
 
 private theorem shr_ofNat (value shift : Nat) (hv : value < 2 ^ 256)
     (hs : shift < 256) :
@@ -72,7 +88,7 @@ theorem run_fallback (s : State) (mem input : ByteArray)
         (FullBase.storeWord mem (224 + 32 * n)
           (UInt256.ofNat (FullBase.topLimbOf input bsize)))
         n bsize esize msize (FullBase.pbOf bsize) 1) := by
-  have hjump : Decode.isValidJumpDest s.executionEnv.code 967 = true := by
+  have hjump : Decode.isValidJumpDest s.executionEnv.code 963 = true := by
     simpa [hcode] using jumpDest1611
   have hpb1 : 1 ≤ pbOf bsize := by unfold pbOf; omega
   have hpbLe : pbOf bsize ≤ 32 := by unfold pbOf; omega

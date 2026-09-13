@@ -13,7 +13,7 @@ def skipped (n : Nat) : Nat :=
 def cellIndex (n j : Nat) : Nat := (skipped n + j) % 4
 
 def entryWord (n : Nat) : UInt256 :=
-  UInt256.ofNat 3158 + UInt256.ofNat 39 *
+  UInt256.ofNat 3150 + UInt256.ofNat 39 *
     UInt256.land (UInt256.ofNat 0 - UInt256.ofNat n) (UInt256.ofNat 3)
 
 theorem index_lt (n j : Nat) : cellIndex n j < 4 := Nat.mod_lt _ (by decide)
@@ -36,7 +36,7 @@ theorem index_last (n : Nat) (hn : 1 ≤ n) (hcap : n ≤ 8) :
   interval_cases n <;> decide
 
 theorem entryWord_eq (n : Nat) (hn : 1 ≤ n) (hcap : n ≤ 8) :
-    entryWord n = UInt256.ofNat (3158 + 39 * cellIndex n 0) := by
+    entryWord n = UInt256.ofNat (3150 + 39 * cellIndex n 0) := by
   interval_cases n <;> decide
 
 #print axioms index_last

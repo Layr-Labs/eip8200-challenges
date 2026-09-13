@@ -16,14 +16,13 @@ def blk977 :
   [opAt 494 .JUMPDEST,
    pushAt 495 1 64,
    opAt 496 .CALLDATALOAD,
-   opAt 497 (.Dup ⟨0, by decide⟩),
-   pushAt 498 1 33,
-   opAt 499 (.Swap ⟨0, by decide⟩),
-   opAt 500 .SUB,
-   pushAt 501 1 223,
-   opAt 502 .LT,
-   pushAt 503 2 1162,
-   opAt 504 .JUMPI]
+   pushAt 497 1 33,
+   opAt 498 (.Dup ⟨1, by decide⟩),
+   opAt 499 .SUB,
+   pushAt 500 1 223,
+   opAt 501 .LT,
+   pushAt 502 2 1158,
+   opAt 503 .JUMPI]
 
 /-- Instructions 986..989, pc 1133..1137.  The EIP-7823 oversize test that used to
 follow the two header loads (13 instructions, `DUP3 PUSH2 1024 LT DUP3 PUSH2 1024 LT OR
@@ -32,38 +31,38 @@ bounds every declared size by 1024, so its `JUMPI` was never taken.  The block n
 straight through to the top-limb block at instruction 872, pc 1138. -/
 def blk986 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 505 1 32,
-   opAt 506 .CALLDATALOAD,
-   pushAt 507 0 0,
-   opAt 508 .CALLDATALOAD]
+  [pushAt 504 1 32,
+   opAt 505 .CALLDATALOAD,
+   pushAt 506 0 0,
+   opAt 507 .CALLDATALOAD]
 
 /-- Instructions 1003..1027, pc 1353..1384. -/
 def blk1003 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 509 (.Dup ⟨2, by decide⟩),
-   pushAt 510 1 31,
-   opAt 511 .ADD,
-   pushAt 512 1 5,
-   opAt 513 .SHR,
-   opAt 514 (.Dup ⟨0, by decide⟩),
-   pushAt 515 1 5,
-   opAt 516 .SHL,
+  [opAt 508 (.Dup ⟨2, by decide⟩),
+   pushAt 509 1 31,
+   opAt 510 .ADD,
+   pushAt 511 1 5,
+   opAt 512 .SHR,
+   opAt 513 (.Dup ⟨0, by decide⟩),
+   pushAt 514 1 5,
+   opAt 515 .SHL,
+   opAt 516 (.Dup ⟨3, by decide⟩),
    opAt 517 (.Dup ⟨3, by decide⟩),
-   opAt 518 (.Dup ⟨3, by decide⟩),
-   opAt 519 .ADD,
-   pushAt 520 1 96,
-   opAt 521 .ADD,
-   opAt 522 (.Dup ⟨5, by decide⟩),
-   opAt 523 (.Dup ⟨2, by decide⟩),
-   opAt 524 .SUB,
-   pushAt 525 1 3,
-   opAt 526 .SHL,
-   opAt 527 (.Dup ⟨1, by decide⟩),
-   opAt 528 .CALLDATALOAD,
-   opAt 529 (.Swap ⟨0, by decide⟩),
-   opAt 530 .SHR,
-   opAt 531 .ISZERO,
-   pushAt 532 2 1168,
-   opAt 533 .JUMPI]
+   opAt 518 .ADD,
+   pushAt 519 1 96,
+   opAt 520 .ADD,
+   opAt 521 (.Dup ⟨5, by decide⟩),
+   opAt 522 (.Dup ⟨2, by decide⟩),
+   opAt 523 .SUB,
+   pushAt 524 1 3,
+   opAt 525 .SHL,
+   opAt 526 (.Dup ⟨1, by decide⟩),
+   opAt 527 .CALLDATALOAD,
+   opAt 528 (.Swap ⟨0, by decide⟩),
+   opAt 529 .SHR,
+   opAt 530 .ISZERO,
+   pushAt 531 2 1164,
+   opAt 532 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast
