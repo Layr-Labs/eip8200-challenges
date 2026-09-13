@@ -13,7 +13,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open KnownInputCompactState
 
-def guardEntry (input : ByteArray) : State := atPC input 4792
+def guardEntry (input : ByteArray) : State := atPC input 4803
 
 /-- `UInt256.eq` is `if a.toNat = b.toNat then 1 else 0`, and both operands are
 below `2 ^ 256`, so the test reduces to the underlying `Nat` comparison. -/
