@@ -11,7 +11,7 @@ def initialState (s : State) (h4 : UInt256) (q : WordLane) (rho : List UInt256) 
   {s with pc := UInt256.ofNat 905, stack := stack s.memory h4 [ .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .e ] q q (UInt256.ofNat 1352829926) rho}
 
 def finalState (s : State) (h4 : UInt256) (q : WordLane) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 979, stack := stack s.memory h4 [ .d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (right1 s.memory (right0 s.memory q)) q (UInt256.ofNat 1352829926) rho}
+  {s with pc := UInt256.ofNat 982, stack := stack s.memory h4 [ .d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (right1 s.memory (right0 s.memory q)) q (UInt256.ofNat 1352829926) rho}
 
 def gasSteps (s : State) (h4 : UInt256) (q : WordLane) (rho : List UInt256)
     (hs : rho.length ≤ 900) (halias : rho[0]? = some q.b) (haliasC : rho[1]? = some q.c)
@@ -22,7 +22,7 @@ def gasSteps (s : State) (h4 : UInt256) (q : WordLane) (rho : List UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (initialState s h4 q rho) (finalState s h4 q rho) := by
   have g0 := StaggerCoreRight0.gasSteps s h4 q q rho hs halias haliasC haliasD haliasA hh4 hr ha hcode hfork hnp
-  have g1 := StaggerCoreRight1.gasSteps s h4 (right0 s.memory q) q rho hs hr ha hcode hfork hnp
+  have g1 := StaggerCoreRight1.gasSteps s h4 (right0 s.memory q) q rho hs halias hh4 hr ha hcode hfork hnp
   exact g0.trans g1
 #print axioms gasSteps
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentCoreRight

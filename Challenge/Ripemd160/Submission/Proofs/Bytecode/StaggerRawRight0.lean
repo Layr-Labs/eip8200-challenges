@@ -43,17 +43,11 @@ def template : List Instr :=
     .op (.Dup ⟨9, by decide⟩),
     .op .ADD,
     .op (.Dup ⟨4, by decide⟩),
-    .op .AND,
-    .op (.Dup ⟨10, by decide⟩),
-    .push ⟨4, by decide⟩ (UInt256.ofNat 1352829926),
-    .op (.Dup ⟨11, by decide⟩) ]
+    .op .AND ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
   [ x.v6, x.v7, x.v8, x.v9, x.v10, x.v11, x.v5 ] ++ rho
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ x.v5,
-    x.v0,
-    x.v2,
-    (UInt256.land x.v7 (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mul x.v6 (UInt256.land x.v7 (UInt256.add x.v0 (UInt256.add (UInt256.add (UInt256.xor x.v2 (UInt256.lor x.v3 (UInt256.lnot x.v4))) (MachineState.readWord memory 486)) x.v1)))) (UInt256.ofNat 25)))),
+  [     (UInt256.land x.v7 (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mul x.v6 (UInt256.land x.v7 (UInt256.add x.v0 (UInt256.add (UInt256.add (UInt256.xor x.v2 (UInt256.lor x.v3 (UInt256.lnot x.v4))) (MachineState.readWord memory 486)) x.v1)))) (UInt256.ofNat 25)))),
     x.v4,
     (UInt256.shiftRight (UInt256.mul x.v6 x.v3) (UInt256.ofNat 23)),
     x.v6,
@@ -64,10 +58,7 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     x.v11,
     x.v12 ] ++ rho
 def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ x.v5,
-    x.v0,
-    x.v2,
-    (UInt256.land x.v7 (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mul x.v6 (UInt256.land x.v7 (UInt256.add x.v0 (UInt256.add (UInt256.add (UInt256.xor x.v2 (UInt256.lor x.v3 (UInt256.lnot x.v4))) (MachineState.readWord memory 486)) x.v1)))) (UInt256.ofNat 25)))),
+  [     (UInt256.land x.v7 (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mul x.v6 (UInt256.land x.v7 (UInt256.add x.v0 (UInt256.add (UInt256.add (UInt256.xor x.v2 (UInt256.lor x.v3 (UInt256.lnot x.v4))) (MachineState.readWord memory 486)) x.v1)))) (UInt256.ofNat 25)))),
     x.v4,
     (UInt256.shiftRight (UInt256.mul x.v6 x.v3) (UInt256.ofNat 23)),
     x.v6,
@@ -129,9 +120,9 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 905, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 949, stack := outputStack s.memory x rho} := by
+      {s with pc := UInt256.ofNat 942, stack := outputStack s.memory x rho} := by
   have hraw := run_actual s (UInt256.ofNat 905) x rho hstack halias haliasC haliasD haliasA hkey haliasE hrun hactive
-  have hend : pcAfter (UInt256.ofNat 905) template = UInt256.ofNat 949 := by decide
+  have hend : pcAfter (UInt256.ofNat 905) template = UInt256.ofNat 942 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps

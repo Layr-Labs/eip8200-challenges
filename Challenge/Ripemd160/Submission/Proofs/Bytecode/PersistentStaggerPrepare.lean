@@ -36,7 +36,7 @@ def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4763, stack := ret :: rest}
+    GasSteps {s with pc := UInt256.ofNat 4729, stack := ret :: rest}
       {s with
         pc := UInt256.ofNat 904
         stack := ret :: rest
@@ -60,11 +60,11 @@ def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
     have hmem := StaggerTablePad.highChain_eq s.memory (UInt256.ofNat s.executionEnv.calldata.size)
     have g23 : GasSteps
         {s with
-          pc := UInt256.ofNat 4804
+          pc := UInt256.ofNat 4770
           stack := StaggerPad.highZero (UInt256.ofNat s.executionEnv.calldata.size) :: ret :: rest
           memory := StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
         {s with
-          pc := UInt256.ofNat 4836
+          pc := UInt256.ofNat 4802
           stack := ret :: rest
           memory := StaggerTablePad.resultMemory s.memory (UInt256.ofNat s.executionEnv.calldata.size)} :=
       (g2.trans g3).cast rfl (by dsimp only; rw [hmem])
@@ -72,6 +72,7 @@ def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
 
 def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.HashState)
     (limit : UInt256) (rho : List UInt256) (hs : rho.length ≤ 880)
+    (tail : List UInt256) (hrho : rho = DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: tail)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input) (ctx : Context s input)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hr : s.halt = .Running)
@@ -95,7 +96,7 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     rw [scheduledState_hit s i hhs]
     let qh : State :=
       {s with memory := StaggerTablePad.resultMemory s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
-    have gb' : GasSteps {s with pc := UInt256.ofNat 4763, stack := frame h off limit rho}
+    have gb' : GasSteps {s with pc := UInt256.ofNat 4729, stack := frame h off limit rho}
         {qh with pc := UInt256.ofNat 904, stack := frame h off limit rho} := by
       apply gb.cast rfl
       rfl
@@ -104,12 +105,29 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     have hhs : ¬ s.executionEnv.calldata.size = DriverTrace.blockOffset i := by
       rw [ctx.calldata]; exact hh
     rw [scheduledState_miss s i hhs]
-    have gc := StaggerPersistentEntrySites.gasSteps_call s off limit h rho (by omega) hr hcode hfork hnp
-    rw [show StaggerPersistentEntryRaw.pointer off = UInt256.ofNat (messagePointer i) from pointer_eq input i hfit hi] at gc
-    have gn := StaggerSetupSites.gasSteps_normal s Paired144WordRound.factorPlusWord (messagePointer i) r (by rfl)
-      (by simp [r, rest, off, DriverTrace.blockOffsetWord, messagePointer, Padding.messageOffset]) hrs hr
-      (messagePointer_lower i) (messagePointer_bound input hfit i hi) ctx.lowClear hcode hfork hnp
-    simpa only [LoopCompletionControl.blockPC, DriverTrace.blockOffset, if_neg hh, off, r, rest, frame, selectedWords, List.cons_append] using gc.trans gn
+    subst hrho
+    have hb := messagePointer_bound input hfit i hi
+    have hq0 : off + UInt256.ofNat 1120 = UInt256.ofNat (messagePointer i) := by
+      change UInt256.ofNat (DriverTrace.blockOffset i) + UInt256.ofNat 1120 = _
+      rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb; omega)]
+      unfold messagePointer Padding.messageOffset
+      congr 1
+      omega
+    have hq1 : off + UInt256.ofNat 1152 = UInt256.ofNat (messagePointer i + 32) := by
+      change UInt256.ofNat (DriverTrace.blockOffset i) + UInt256.ofNat 1152 = _
+      rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb; omega)]
+      unfold messagePointer Padding.messageOffset
+      congr 1
+      omega
+    have gn := StaggerSetupSites.gasSteps_normal s Paired144WordRound.factorPlusWord
+      (Paired144WordRound.fusedModulusWord 5 7) (Paired144WordRound.fusedModulusWord 8 5)
+      (Paired144WordRound.fusedCoefficientWord 0 3) (Paired144WordRound.fusedCoefficientWord 0 2)
+      (Word.ofUInt32 h.h4) (Word.ofUInt32 h.h1) (Word.ofUInt32 h.h2) (Word.ofUInt32 h.h3)
+      (Word.ofUInt32 h.h0) off limit tail (messagePointer i)
+      (by simp only [List.length_cons] at hs; omega) hr
+      (messagePointer_lower i) hb hq1 hq0 ctx.lowClear hcode hfork hnp
+    simpa only [LoopCompletionControl.blockPC, DriverTrace.blockOffset, if_neg hh, off, frame, selectedWords,
+      PersistentMaskEndian.stk, List.cons_append, List.nil_append] using gn
 
 #print axioms gasSteps_padAll
 #print axioms gasSteps_prepare

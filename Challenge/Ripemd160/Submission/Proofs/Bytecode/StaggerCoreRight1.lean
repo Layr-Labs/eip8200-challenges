@@ -31,13 +31,13 @@ theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho 
   all_goals first | rfl | trivial
 #print axioms output_eq
 def gasSteps (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 900) (halias : rho[0]? = some q.c) (hh4 : h4 = q.a) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 949, stack := stack s.memory h4 [ .a, .k, .c, .b, .e, .d, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (UInt256.ofNat 1352829926) rho}
-      {s with pc := UInt256.ofNat 979, stack := stack s.memory h4 [ .d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (StaggerCoreModel.right1 s.memory q) (right) (UInt256.ofNat 1352829926) rho} := by
-  have h := StaggerRawRight1.gasSteps s (input s.memory h4 q right (UInt256.ofNat 1352829926)) rho hs hr ha hcode hfork hnp
+    GasSteps {s with pc := UInt256.ofNat 942, stack := stack s.memory h4 [ .b, .e, .d, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (UInt256.ofNat 1352829926) rho}
+      {s with pc := UInt256.ofNat 982, stack := stack s.memory h4 [ .d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (StaggerCoreModel.right1 s.memory q) (right) (UInt256.ofNat 1352829926) rho} := by
+  have h := StaggerRawRight1.gasSteps s (input s.memory h4 q right (UInt256.ofNat 1352829926)) rho hs halias (by rfl) hh4.symm hr ha hcode hfork hnp
   rw [output_eq] at h
   exact h
 #print axioms gasSteps
