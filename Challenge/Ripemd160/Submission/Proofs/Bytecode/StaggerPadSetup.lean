@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedPadStore
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Stagger144Active
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerTablePad
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80Setup
@@ -20,7 +21,6 @@ def lowTemplate : List Instr :=
     .op .CALLDATASIZE,
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .CALLDATACOPY,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 128),
     .op .CALLDATASIZE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 3),
     .op .SHL,
@@ -32,13 +32,11 @@ def lowTemplate : List Instr :=
     .op .MSTORE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .MSTORE,
-    .op (.Dup ⟨0, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 128),
     .push ⟨2, by decide⟩ (UInt256.ofNat 522),
     .op .MSTORE,
-    .op (.Dup ⟨0, by decide⟩),
+    .push ⟨19, by decide⟩ (UInt256.ofNat (128 * (1 + 2 ^ 144))),
     .push ⟨1, by decide⟩ (UInt256.ofNat 54),
-    .op .MSTORE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 36),
     .op .MSTORE,
     .op .CALLDATASIZE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 29),
@@ -127,6 +125,10 @@ theorem run_low (s : State) (pc returnPC : UInt256) (rest : List UInt256)
     exact (Word.word_eq_ofNat_toNat _).symm
   have hsize : (UInt256.ofNat s.executionEnv.calldata.size).toNat = s.executionEnv.calldata.size := by
     rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt hfit]
+  have hpacked := PackedPadStore.after_length_stores s.memory
+    (StaggerTablePad.lowDirty (UInt256.ofNat s.executionEnv.calldata.size))
+  change StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size) = _ at hpacked
+  rw [hpacked]
   simp (discharger := omega) [lowTemplate, StaggerTablePad.lowChain, StaggerTablePad.lowDirty,
     highZero, zeroMemory, writeWord, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     PairedHelperBooleanTrace.push0_toNat,
