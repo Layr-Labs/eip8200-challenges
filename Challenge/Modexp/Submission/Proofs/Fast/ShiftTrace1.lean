@@ -29,6 +29,13 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs
 
+@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2195 = 2982 := by rfl
+@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2201 = 2989 := by rfl
+@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2207 = 2996 := by rfl
+@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2213 = 3003 := by rfl
+@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2219 = 3010 := by rfl
+@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2225 = 3017 := by rfl
+
 /-- The shift traces normalize PUSH1 literals to `ofNat` before NOT. -/
 theorem notThirtyOneOfNat : UInt256.lnot (UInt256.ofNat 31) = UInt256.ofNat
     115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
@@ -101,7 +108,7 @@ theorem run_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock blk2889
       (missState s mem n bsize esize msize) =
       some (Exp.r1Call s (Exp.storeWord mem 1024 (UInt256.ofNat 1)) 1024
-        (UInt256.ofNat 896) n bsize esize msize) := by
+        (UInt256.ofNat 892) n bsize esize msize) := by
   have haw : UInt256.ofNat
       (MachineState.activeWordsAfter s.activeWords.toNat 1024 32) = s.activeWords :=
     Monpro.activeWords_fix s 1024 32 (by decide) (by omega) (by omega)

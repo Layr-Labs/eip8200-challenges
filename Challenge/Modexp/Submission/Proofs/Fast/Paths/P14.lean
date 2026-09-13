@@ -23,30 +23,30 @@ def blk1742 :
 /-- Instructions 1878..1884, pc 2560..2660: `MONPRO(px, px) → px`. -/
 def blk1751 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1170 .JUMPDEST,
-   pushAt 1171 2 1662,
-   opAt 1172 (.Dup ⟨2, by decide⟩),
-   opAt 1173 (.Dup ⟨0, by decide⟩),
-   opAt 1174 (.Dup ⟨0, by decide⟩),
-   pushAt 1175 2 3552,
-   opAt 1176 .JUMP]
+  [opAt 1165 .JUMPDEST,
+   pushAt 1166 2 1658,
+   opAt 1167 (.Dup ⟨2, by decide⟩),
+   opAt 1168 (.Dup ⟨0, by decide⟩),
+   opAt 1169 (.Dup ⟨0, by decide⟩),
+   pushAt 1170 2 3536,
+   opAt 1171 .JUMP]
 
 /-- Instructions 1888..1891, pc 2661..2670: decrement and loop back. -/
 def blk1758 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1177 .JUMPDEST,
-   pushAt 1178 0 0,
-   opAt 1179 .NOT,
-   opAt 1180 .ADD,
-   opAt 1181 (.Dup ⟨0, by decide⟩),
-   pushAt 1182 2 1651,
-   opAt 1183 .JUMPI]
+  [opAt 1172 .JUMPDEST,
+   pushAt 1173 0 0,
+   opAt 1174 .NOT,
+   opAt 1175 .ADD,
+   opAt 1176 (.Dup ⟨0, by decide⟩),
+   pushAt 1177 2 1647,
+   opAt 1178 .JUMPI]
 
 /-- Instructions 1892..1894, pc 2671..3035: drop the counter and return. -/
 def blk1765 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1184 .POP,
-   opAt 1185 .POP,
-   opAt 1186 .JUMP]
+  [opAt 1179 .POP,
+   opAt 1180 .POP,
+   opAt 1181 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

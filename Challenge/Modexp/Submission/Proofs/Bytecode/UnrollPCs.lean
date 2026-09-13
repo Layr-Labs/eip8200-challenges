@@ -15,14 +15,14 @@ open EvmSemantics.EVM
 
 open YulEvmCompiler
 
-@[simp] theorem pc485 : Artifact.submissionArtifact.instructionPC 152 = 227 := by rfl
-@[simp] theorem pc486 : Artifact.submissionArtifact.instructionPC 153 = 230 := by rfl
-@[simp] theorem pc2414 : Artifact.submissionArtifact.instructionPC 1893 = 2544 := by rfl
-@[simp] theorem pc2415 : Artifact.submissionArtifact.instructionPC 1894 = 2545 := by rfl
-@[simp] theorem pc2416 : Artifact.submissionArtifact.instructionPC 1895 = 2547 := by rfl
-@[simp] theorem pc2417 : Artifact.submissionArtifact.instructionPC 1896 = 2548 := by rfl
-@[simp] theorem pc2554 : Artifact.submissionArtifact.instructionPC 1987 = 2655 := by rfl
-@[simp] theorem pc2555 : Artifact.submissionArtifact.instructionPC 1988 = 2656 := by rfl
-@[simp] theorem pc2556 : Artifact.submissionArtifact.instructionPC 1989 = 2659 := by rfl
+@[simp] theorem pc485 : Artifact.submissionArtifact.instructionPC 151 = 227 := by rfl
+@[simp] theorem pc486 : Artifact.submissionArtifact.instructionPC 152 = 230 := by rfl
+@[simp] theorem pc2414 : Artifact.submissionArtifact.instructionPC 1886 = 2537 := by rfl
+@[simp] theorem pc2415 : Artifact.submissionArtifact.instructionPC 1887 = 2538 := by rfl
+@[simp] theorem pc2416 : Artifact.submissionArtifact.instructionPC 1888 = 2540 := by rfl
+@[simp] theorem pc2417 : Artifact.submissionArtifact.instructionPC 1889 = 2541 := by rfl
+@[simp] theorem pc2554 : Artifact.submissionArtifact.instructionPC 1980 = 2648 := by rfl
+@[simp] theorem pc2555 : Artifact.submissionArtifact.instructionPC 1981 = 2649 := by rfl
+@[simp] theorem pc2556 : Artifact.submissionArtifact.instructionPC 1982 = 2652 := by rfl
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.UnrollPCs
