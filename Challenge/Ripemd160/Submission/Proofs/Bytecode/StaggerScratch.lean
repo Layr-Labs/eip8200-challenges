@@ -104,7 +104,7 @@ def dirtyWord (memory : ByteArray) (p i : Nat) : UInt256 :=
   else PairedScheduleData.extractedWord memory p i
 
 def poolWordD (memory : ByteArray) (i : Nat) : UInt256 :=
-  if i = 1 ∨ i = 2 then MachineState.readWord memory (4 * i) else poolWord memory i
+  if i ≤ 2 then MachineState.readWord memory (4 * i) else poolWord memory i
 
 private theorem extractedWordG_one_lt (memory : ByteArray) (p : Nat) :
     (PairedScheduleData.extractedWordG memory p 1).toNat < 2 ^ 64 := by
@@ -173,7 +173,7 @@ private theorem low_zero (memory : ByteArray)
   omega
 
 private theorem scratch_window (memory : ByteArray) (low high : UInt256)
-    (hlow : (MachineState.readWord memory 0).toNat < 2 ^ 32) (i : Nat) (hi : i = 1 ∨ i = 2) :
+    (hlow : (MachineState.readWord memory 0).toNat < 2 ^ 32) (i : Nat) (hi : i ≤ 2) :
     (MachineState.readWord (scratchMemory memory low high) (4 * i)).toNat =
       low.toNat >>> (32 * (7 - i)) := by
   have hsplit := Bytes.bytesToNatPadded_add (scratchMemory memory low high) (4 * i) (28 - 4 * i)
@@ -193,16 +193,26 @@ theorem poolWordD_eq_dirty (memory : ByteArray) (p i : Nat) (hi : i < 16)
         (PairedScheduleData.reversedWord (MachineState.readWord memory p))
         (PairedScheduleData.reversedWord (MachineState.readWord memory (p + 32)))) i =
       dirtyWord memory p i := by
-  by_cases hd : i = 1 ∨ i = 2
-  · rw [poolWordD, if_pos hd, dirtyWord, if_pos hd]
+  by_cases hd : i ≤ 2
+  · rw [poolWordD, if_pos hd]
     apply Word.word_ext
     rw [scratch_window memory _ _ hlow i hd]
     have hmod : i % 8 = i := by omega
     have hdiv : i / 8 = 0 := by omega
-    simp only [PairedScheduleData.extractedWordG, PairedScheduleData.chunkG, hmod, hdiv,
-      if_pos hd, Nat.mul_zero, Nat.add_zero, DenseScheduleMemory.DensePacked.shr]
-    rw [Word.shiftRight_toNat _ (by omega)]
-  · rw [poolWordD, if_neg hd, dirtyWord, if_neg hd]
+    by_cases h0 : i = 0
+    · subst h0
+      rw [dirtyWord, if_neg (by decide)]
+      simp only [PairedScheduleData.extractedWord, PairedScheduleData.chunk, if_pos rfl,
+        ite_true, Nat.zero_div, Nat.mul_zero, Nat.add_zero, Nat.zero_mod,
+        DenseScheduleMemory.DensePacked.shr]
+      change _ = (UInt256.shiftRight _ (UInt256.ofNat 224)).toNat
+      rw [Word.shiftRight_toNat _ (by decide)]
+    · have h12 : i = 1 ∨ i = 2 := by omega
+      rw [dirtyWord, if_pos h12]
+      simp only [PairedScheduleData.extractedWordG, PairedScheduleData.chunkG, hmod, hdiv,
+        if_pos h12, Nat.mul_zero, Nat.add_zero, DenseScheduleMemory.DensePacked.shr]
+      rw [Word.shiftRight_toNat _ (by omega)]
+  · rw [poolWordD, if_neg hd, dirtyWord, if_neg (by omega)]
     exact poolWord_eq_extracted memory p i hi
 
 #print axioms dirtyWord_split
