@@ -60,19 +60,4 @@ theorem Snapshot.zeroed {mem : ByteArray} {pa n : Nat} (h : Snapshot mem pa n)
     readWord_mpZeroed _ _ _ _ (by omega) (Or.inl (by omega))]
   exact h k hk
 
-
-theorem Snapshot.l1_stage {mem : ByteArray} {pa n : Nat} (h : Snapshot mem pa n)
-    (bi : UInt256) (j : Nat) (hn : n ≤ 8) (hpa : pa + 32*n ≤ 2048 ∨ pa = 2368) :
-    Snapshot (l1Step mem bi pa n j).memory pa n := by
-  rcases hpa with hfit | rfl
-  · exact h.l1 bi j hn hfit
-  · intro k _; rfl
-
-theorem Snapshot.zeroed_stage {mem : ByteArray} {pa n : Nat} (h : Snapshot mem pa n)
-    (s : State) (hn : n ≤ 8) (hpa : pa + 32*n ≤ 2048 ∨ pa = 2368) :
-    Snapshot (mpZeroed s mem n) pa n := by
-  rcases hpa with hfit | rfl
-  · exact h.zeroed s hn hfit
-  · intro k _; rfl
-
 end Challenge.Modexp.Submission.Proofs.Fast.StagedOperand

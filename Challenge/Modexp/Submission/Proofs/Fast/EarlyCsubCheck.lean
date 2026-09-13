@@ -42,16 +42,6 @@ theorem jumpWord_eq (mem : ByteArray) : jumpWord mem =
     UInt256.land (UInt256.isZero (MachineState.readWord mem 2080))
       (UInt256.lt (MachineState.readWord mem 2112) (MachineState.readWord mem 0)) := rfl
 
-/-- Comparison results are Boolean words, so one LT implements the same guard. -/
-theorem jumpWord_lt (mem : ByteArray) : jumpWord mem =
-    UInt256.lt (MachineState.readWord mem 2080)
-      (UInt256.lt (MachineState.readWord mem 2112) (MachineState.readWord mem 0)) := by
-  apply word_ext
-  simp only [jumpWord, word_toNat_lt, word_toNat_land, word_toNat_isZero]
-  by_cases h : (MachineState.readWord mem 2112).toNat < (MachineState.readWord mem 0).toNat <;>
-    by_cases hz : (MachineState.readWord mem 2080).toNat = 0 <;>
-      simp [h, hz, Nat.lt_one_iff]
-
 theorem jumpWord_toNat (mem : ByteArray) :
     (jumpWord mem).toNat = if Skip mem then 1 else 0 := by
   unfold jumpWord

@@ -144,7 +144,7 @@ end CountAgree
 
 /-! ## A staged round, the internal loop, and the caller's initial copy -/
 
-def roundDst (_c : Nat) : Nat := 2368
+def roundDst (c : Nat) : Nat := if c = 0 then 512 else 2368
 
 def sqRound (s : State) (n c : Nat) (mem : ByteArray) : ByteArray :=
   Csub.csResultMemory
@@ -208,11 +208,11 @@ theorem sqRound_represents (s : State) (mem : ByteArray) (p a mm c : Nat) (hn32 
       readWord_mpZeroed s mem (p + 2) 2720 hn32 (Or.inr (by decide))]
     exact hminv
   have hrep := sqRowsCarry_represents (mpZeroed s mem (p + 2)) p a mm (roundDst c) (by omega)
-    (by simp only [roundDst]; omega) ha0 hm0 hodd ham hminv0 (tValue_mpZeroed s mem (p + 2))
+    (by unfold roundDst; split <;> omega) ha0 hm0 hodd ham hminv0 (tValue_mpZeroed s mem (p + 2))
   have hagree := CountAgree.csResult_agree _ _ (CountAgree.countMem_agree _ c) (p + 2) (roundDst c)
     (by omega) hn32 (tn_le_one s mem p a mm hn32 hfast ha hm ham hminv)
   exact (CountAgree.fastRepresents_iff _ _ hagree (roundDst c) (p + 2) _
-    (by simp only [roundDst]; omega)).2 hrep
+    (by unfold roundDst; split <;> omega)).2 hrep
 
 theorem sqRound_readWord_outside (s : State) (mem : ByteArray) (n c addr : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (_hfast : n = 4 ∨ n = 8)
@@ -222,7 +222,7 @@ theorem sqRound_readWord_outside (s : State) (mem : ByteArray) (n c addr : Nat)
     (hcount : addr + 32 ≤ 2624 ∨ 2656 ≤ addr) :
     MachineState.readWord (sqRound s n c mem) addr = MachineState.readWord mem addr := by
   have hd : addr + 32 ≤ roundDst c ∨ roundDst c + 32 * n ≤ addr := by
-    simp only [roundDst]; omega
+    unfold roundDst; split <;> omega
   rw [sqRound, csResultMemory_readWord_outside _ n (roundDst c) addr hn hsubb hd,
     SquareLoopBlocks.readWord_countMem_disjoint _ c addr hcount,
     readWord_sqRowsCarry _ n addr hn32 hscratch n le_rfl,
@@ -240,7 +240,7 @@ theorem sqRound_count (s : State) (mem : ByteArray) (n c : Nat) (hn : 1 ≤ n) (
     (_hfast : n = 4 ∨ n = 8) (hc : c < 2 ^ 256) :
     MachineState.readWord (sqRound s n c mem) 2624 = UInt256.ofNat c := by
   rw [sqRound, csResultMemory_readWord_outside _ n (roundDst c) 2624 hn (Or.inr (by omega))
-    (by simp only [roundDst]; omega)]
+    (by unfold roundDst; split <;> omega)]
   exact SquareLoopBlocks.readWord_countMem _ c hc
 
 /-- Blocks disjoint from `SUBB`, the scratch, the destination and the counter survive. -/
@@ -312,7 +312,7 @@ theorem sqRunMem_represents (s : State) (mem : ByteArray) (p a mm k : Nat)
     (hodd : mm % 2 = 1) (ham : a < mm) (hmpos : 0 < mm)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
       (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) :
-    Model.FastRepresents (sqRunMem s (p + 2) k mem) 2368 (p + 2)
+    Model.FastRepresents (sqRunMem s (p + 2) k mem) 512 (p + 2)
       ((fun x => Model.montMul mm (Limbs.radix ^ (p + 2)) x x)^[k] a) := by
   induction k generalizing mem a with
   | zero => omega
@@ -384,16 +384,16 @@ theorem sqLoopMem_fastRepresents_outside (s : State) (mem : ByteArray) (n k ptr 
 
 /-- Initial staging followed by the internal square loop has the original caller contract. -/
 theorem sqLoopMem_represents (s : State) (mem : ByteArray) (p a mm k : Nat)
-    (hfast : p + 2 = 4 ∨ p + 2 = 8) (hn32 : p + 2 ≤ 8) (hk : 1 ≤ k)
+    (hfast : p + 2 = 4 ∨ p + 2 = 8) (hn32 : p + 2 ≤ 8)
     (ha : Model.FastRepresents mem 512 (p + 2) a)
     (hm : Model.FastRepresents mem 0 (p + 2) mm)
     (hodd : mm % 2 = 1) (ham : a < mm) (hmpos : 0 < mm)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
       (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) :
-    Model.FastRepresents (sqLoopMem s (p + 2) k mem) 2368 (p + 2)
+    Model.FastRepresents (sqLoopMem s (p + 2) k mem) 512 (p + 2)
       ((fun x => Model.montMul mm (Limbs.radix ^ (p + 2)) x x)^[k] a) := by
   cases k with
-  | zero => omega
+  | zero => exact ha
   | succ k =>
       have hm' : Model.FastRepresents (stage mem 512 (p + 2)) 0 (p + 2) mm := by
         refine (Model.fastRepresents_congr (a := mem) ?_ mm).1 hm

@@ -57,19 +57,37 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
       Model.FastRepresents memory 768 n one) :
     FixedExponentRoute.Handled input
       (special s memory n bsize esize msize count) := by
-  let ch := chain_of_fixed s sub spec memory esize msize count bM rawBase
+  let ch := chain_of_fixed s sub memory esize msize count bM rawBase
     hm hn hn32 hcount hcount16 hbMlt hactive
     hframe hmod hbase hrawAcc hone hcode hfork hrun hnp
+  let memSq := ch.mem
   let sqVal := fixedDirectValue mm (Limbs.radix ^ n) bM count
   let prodVal := Model.montMul mm (Limbs.radix ^ n) sqVal rawBase
-  let memOut := ch.mem
-  have houtRep : Model.FastRepresents memOut 256 n prodVal := ch.value
+  let memOut := sub.mpMem 512 256 256 memSq
+  have hsqInv : Inv memSq n mm rawBase sqVal := ch.inv
+  have hframeSq : Exp.Frame memSq n bsize minv := ch.frame
+  have hsqLt : sqVal < mm := fixedDirectValue_lt hm hbMlt count
+  have htraceProdCall := FixedDirectChainTrace.gasSteps_product
+    s memSq n bsize esize msize ch.cnt hcode hfork hrun hnp
+  have htraceProdMp := sub.monpro 512 256 256 (UInt256.ofNat 1696)
+    (Exp.outer n bsize esize msize) memSq sqVal rawBase
+    (by simp [Exp.outer]) (by omega) (by omega) (by omega) (by omega)
+    (by omega) jumpD3997 hframeSq hsqInv.modulus hsqInv.squareBase
+    hsqInv.rawAcc hsqLt
+  have htraceProd : Challenge.EvmProof.GasSteps
+      (product s memSq n bsize esize msize ch.cnt)
+      (Exp.finHead s memOut n bsize esize msize) :=
+    htraceProdCall.trans htraceProdMp
+  have houtRep : Model.FastRepresents memOut 256 n prodVal :=
+    spec.mpValueRaw 512 256 256 memSq sqVal rawBase
+      (by omega) (by omega) (by omega) hsqInv.modulus hframeSq.minvW
+      hsqInv.squareBase hsqInv.rawAcc hsqLt
   have htraceReturn := Exp.gasSteps_return s memOut n bsize esize msize
     hn hn32 hmz hm32 hactive hcode hfork hrun hnp
   have htrace : Challenge.EvmProof.GasSteps
       (special s memory n bsize esize msize count)
       (Exp.returnedState s memOut n bsize esize msize) :=
-    ch.trace.trans htraceReturn
+    (ch.trace.trans htraceProd).trans htraceReturn
   have houtEq : prodVal =
       Precompile.bytesToNatPadded input 96 bsize ^ (2 ^ count + 1) % mm :=
     directProduct_value hm hcop hbMform hrawForm

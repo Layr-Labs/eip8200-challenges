@@ -48,14 +48,14 @@ def primeValueProgram : List Instr :=
 
 /-- Both special-modulus tests jump straight to the one-word core entry 2240
 (0x8c0) when they miss. -/
-def primeProgram : List Instr := primeValueProgram ++ WindowTwentyOneEntry.testProgram (UInt256.ofNat 2325)
+def primeProgram : List Instr := primeValueProgram ++ WindowTwentyOneEntry.testProgram (UInt256.ofNat 2323)
 
 def exponentValueProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op .CALLDATALOAD, .push 1 1,
    .op (.Dup ⟨2, by decide⟩), .op .SUB, .op .EQ]
 
 def exponentProgram : List Instr := exponentValueProgram ++
-  WindowTwentyOneEntry.testProgram (UInt256.ofNat 2325)
+  WindowTwentyOneEntry.testProgram (UInt256.ofNat 2323)
 
 private theorem zero_lt_eq_double_isZero (x : UInt256) :
     UInt256.lt ({ val := 0 } : UInt256) x = UInt256.isZero (UInt256.isZero x) := by
@@ -75,11 +75,11 @@ def returnProgram : List Instr := valueProgram ++ WindowTwentyOneReturn.program
 
 theorem run_prime (template : State) (offset : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 999) (hoff : rest[5]? = some offset)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 2325 = true) :
+    (htarget : Decode.isValidJumpDest template.executionEnv.code 2323 = true) :
     runInstructions primeProgram (framed template (UInt256.ofNat 43) rest) =
     some (framed template
       (if (primeValue (MachineState.readWord template.executionEnv.calldata offset.toNat)).toNat = 0
-        then UInt256.ofNat 2325 else UInt256.ofNat 96)
+        then UInt256.ofNat 2323 else UInt256.ofNat 96)
       (MachineState.readWord template.executionEnv.calldata offset.toNat :: rest)) := by
   have hc0 : rest.length < 1024 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
@@ -95,7 +95,7 @@ theorem run_prime (template : State) (offset : UInt256) (rest : List UInt256)
       Challenge.EvmProof.Stepper.runInstr, hc0, hc1, hc2, hc3, hc4, hsecp,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
-  have ht := WindowTwentyOneEntry.run_test template (UInt256.ofNat 91) (UInt256.ofNat 2325)
+  have ht := WindowTwentyOneEntry.run_test template (UInt256.ofNat 91) (UInt256.ofNat 2323)
     (primeValue (MachineState.readWord template.executionEnv.calldata offset.toNat))
     (MachineState.readWord template.executionEnv.calldata offset.toNat :: rest)
     (by simp; omega) htarget
@@ -105,12 +105,12 @@ theorem run_prime (template : State) (offset : UInt256) (rest : List UInt256)
 
 theorem run_exponent (template : State) (modulus offset : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 999) (hoff : rest[4]? = some offset)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 2325 = true) :
+    (htarget : Decode.isValidJumpDest template.executionEnv.code 2323 = true) :
     runInstructions exponentProgram (framed template (UInt256.ofNat 96) (modulus :: rest)) =
     some (framed template
       (if (UInt256.eq (modulus - UInt256.ofNat 1)
         (MachineState.readWord template.executionEnv.calldata offset.toNat)).toNat = 0
-        then UInt256.ofNat 2325 else UInt256.ofNat 108)
+        then UInt256.ofNat 2323 else UInt256.ofNat 108)
       (modulus :: rest)) := by
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -126,7 +126,7 @@ theorem run_exponent (template : State) (modulus offset : UInt256) (rest : List 
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
-  have ht := WindowTwentyOneEntry.run_test template (UInt256.ofNat 103) (UInt256.ofNat 2325)
+  have ht := WindowTwentyOneEntry.run_test template (UInt256.ofNat 103) (UInt256.ofNat 2323)
     (UInt256.eq (modulus - UInt256.ofNat 1)
       (MachineState.readWord template.executionEnv.calldata offset.toNat)) (modulus :: rest)
     (by simp; omega) htarget
@@ -183,6 +183,6 @@ structure Paths (artifact : Challenge.EvmProof.ProgramArtifact) (fork : Fork) wh
   prime : WindowTwentyOneBinding.Block artifact fork 43 primeProgram
   exponent : WindowTwentyOneBinding.Block artifact fork 96 exponentProgram
   result : WindowTwentyOneBinding.Block artifact fork 108 returnProgram
-  legacyJump : Decode.isValidJumpDest artifact.code 2325 = true
+  legacyJump : Decode.isValidJumpDest artifact.code 2323 = true
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.FermatProgram

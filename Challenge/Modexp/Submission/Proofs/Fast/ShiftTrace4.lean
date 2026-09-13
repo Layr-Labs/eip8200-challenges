@@ -468,7 +468,7 @@ structure StepInv (mem : ByteArray) (n bsize mm minv : Nat) : Prop where
   frame : Exp.Frame mem n bsize minv
   modulus : Model.FastRepresents mem 0 n mm
   neg : Model.FastRepresents mem NEG n (Limbs.radix ^ n - mm)
-  cache : MachineState.readWord mem 1698 = ShiftCacheModel.entryWord n
+  cache : MachineState.readWord mem 1696 = ShiftCacheModel.entryWord n
 
 theorem negOf_cases (mem : ByteArray) (c q : UInt256) :
     negOf mem c q = UInt256.ofNat 0 ∨ negOf mem c q = UInt256.ofNat 1 := by

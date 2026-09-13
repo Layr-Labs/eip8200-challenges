@@ -19,11 +19,11 @@ private theorem run_wordTail_generic (template : State)
     (hrun : template.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock wordTailPath
       (framed template 1222 [modOff, expOff, m, e, b]) =
-    some (framed template 2302
+    some (framed template 2300
       [b, e, m, UInt256.ofNat 96, expOff, modOff, UInt256.ofNat 1186,
         modOff, expOff, m, e, b]) := by
-  have h3000 : (2302 : UInt256).toNat = 2302 := by decide
-  have h3000Word : (2302 : UInt256) = UInt256.ofNat 2302 := by decide
+  have h3000 : (2300 : UInt256).toNat = 2300 := by decide
+  have h3000Word : (2300 : UInt256) = UInt256.ofNat 2300 := by decide
   have h96Word : (96 : UInt256) = UInt256.ofNat 96 := by decide
   have h1267Word : (1186 : UInt256) = UInt256.ofNat 1186 := by decide
   simp (config := { maxSteps := 200000 })

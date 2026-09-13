@@ -21,57 +21,57 @@ private theorem notThirtyOneOfNat : UInt256.lnot (UInt256.ofNat 31) = UInt256.of
 attribute [local simp] CompactConstants.notThirtyOne notThirtyOneOfNat
 attribute [local simp] CompactConstants.notZero CompactConstants.notZeroStruct
 
-@[simp] private theorem compactLoopPC2749 : Artifact.submissionArtifact.instructionPC 2770 = 3701 := by rfl
-@[simp] private theorem compactLoopPC2750 : Artifact.submissionArtifact.instructionPC 2771 = 3703 := by rfl
-@[simp] private theorem compactLoopPC2751 : Artifact.submissionArtifact.instructionPC 2772 = 3704 := by rfl
-@[simp] private theorem compactLoopPC2752 : Artifact.submissionArtifact.instructionPC 2773 = 3707 := by rfl
-@[simp] private theorem compactLoopPC2753 : Artifact.submissionArtifact.instructionPC 2774 = 3708 := by rfl
-@[simp] private theorem compactLoopPC2754 : Artifact.submissionArtifact.instructionPC 2775 = 3711 := by rfl
-@[simp] private theorem compactLoopPC2755 : Artifact.submissionArtifact.instructionPC 2776 = 3712 := by rfl
-@[simp] private theorem compactLoopPC2756 : Artifact.submissionArtifact.instructionPC 2777 = 3715 := by rfl
-@[simp] private theorem compactLoopPC2758 : Artifact.submissionArtifact.instructionPC 2782 = 3722 := by rfl
-@[simp] private theorem compactLoopPC2759 : Artifact.submissionArtifact.instructionPC 2783 = 3723 := by rfl
-@[simp] private theorem compactLoopPC2760 : Artifact.submissionArtifact.instructionPC 2784 = 3724 := by rfl
-@[simp] private theorem compactLoopPC2761 : Artifact.submissionArtifact.instructionPC 2785 = 3725 := by rfl
-@[simp] private theorem compactLoopPC2762 : Artifact.submissionArtifact.instructionPC 2786 = 3726 := by rfl
-@[simp] private theorem compactLoopPC2763 : Artifact.submissionArtifact.instructionPC 2787 = 3727 := by rfl
-@[simp] private theorem compactLoopPC2764 : Artifact.submissionArtifact.instructionPC 2788 = 3728 := by rfl
-@[simp] private theorem compactLoopPC2765 : Artifact.submissionArtifact.instructionPC 2789 = 3729 := by rfl
-@[simp] private theorem compactLoopPC2766 : Artifact.submissionArtifact.instructionPC 2790 = 3730 := by rfl
-@[simp] private theorem compactLoopPC2767 : Artifact.submissionArtifact.instructionPC 2791 = 3731 := by rfl
-@[simp] private theorem compactLoopPC2768 : Artifact.submissionArtifact.instructionPC 2792 = 3732 := by rfl
-@[simp] private theorem compactLoopPC2769 : Artifact.submissionArtifact.instructionPC 2793 = 3733 := by rfl
-@[simp] private theorem compactLoopPC2770 : Artifact.submissionArtifact.instructionPC 2794 = 3734 := by rfl
-@[simp] private theorem compactLoopPC2771 : Artifact.submissionArtifact.instructionPC 2795 = 3735 := by rfl
-@[simp] private theorem compactLoopPC2772 : Artifact.submissionArtifact.instructionPC 2796 = 3736 := by rfl
-@[simp] private theorem compactLoopPC2773 : Artifact.submissionArtifact.instructionPC 2797 = 3737 := by rfl
-@[simp] private theorem compactLoopPC2774 : Artifact.submissionArtifact.instructionPC 2798 = 3738 := by rfl
-@[simp] private theorem compactLoopPC2775 : Artifact.submissionArtifact.instructionPC 2799 = 3739 := by rfl
-@[simp] private theorem compactLoopPC2776 : Artifact.submissionArtifact.instructionPC 2800 = 3740 := by rfl
-@[simp] private theorem compactLoopPC2777 : Artifact.submissionArtifact.instructionPC 2801 = 3741 := by rfl
-@[simp] private theorem compactLoopPC2778 : Artifact.submissionArtifact.instructionPC 2802 = 3742 := by rfl
-@[simp] private theorem compactLoopPC2779 : Artifact.submissionArtifact.instructionPC 2803 = 3743 := by rfl
-@[simp] private theorem compactLoopPC2780 : Artifact.submissionArtifact.instructionPC 2804 = 3744 := by rfl
-@[simp] private theorem compactLoopPC2781 : Artifact.submissionArtifact.instructionPC 2805 = 3745 := by rfl
-@[simp] private theorem compactLoopPC2782 : Artifact.submissionArtifact.instructionPC 2806 = 3746 := by rfl
-@[simp] private theorem compactLoopPC2783 : Artifact.submissionArtifact.instructionPC 2807 = 3747 := by rfl
-@[simp] private theorem compactLoopPC2784 : Artifact.submissionArtifact.instructionPC 2808 = 3748 := by rfl
-@[simp] private theorem compactLoopPC2785 : Artifact.submissionArtifact.instructionPC 2809 = 3749 := by rfl
-@[simp] private theorem compactLoopPC2786 : Artifact.submissionArtifact.instructionPC 2810 = 3750 := by rfl
-@[simp] private theorem compactLoopPC2787 : Artifact.submissionArtifact.instructionPC 2811 = 3751 := by rfl
-@[simp] private theorem compactLoopPC2788 : Artifact.submissionArtifact.instructionPC 2812 = 3752 := by rfl
-@[simp] private theorem compactLoopPC2789 : Artifact.submissionArtifact.instructionPC 2813 = 3753 := by rfl
-@[simp] private theorem compactLoopPC2790 : Artifact.submissionArtifact.instructionPC 2814 = 3754 := by rfl
-@[simp] private theorem compactLoopPC2791 : Artifact.submissionArtifact.instructionPC 2815 = 3755 := by rfl
-@[simp] private theorem compactLoopPC2792 : Artifact.submissionArtifact.instructionPC 2816 = 3756 := by rfl
-@[simp] private theorem compactLoopPC2793 : Artifact.submissionArtifact.instructionPC 2817 = 3757 := by rfl
-@[simp] private theorem compactLoopPC2794 : Artifact.submissionArtifact.instructionPC 2818 = 3758 := by rfl
-@[simp] private theorem compactLoopPC2795 : Artifact.submissionArtifact.instructionPC 2819 = 3759 := by rfl
-@[simp] private theorem compactLoopPC2797 : Artifact.submissionArtifact.instructionPC 2938 = 3880 := by rfl
-@[simp] private theorem compactLoopPC2798 : Artifact.submissionArtifact.instructionPC 2939 = 3881 := by rfl
-@[simp] private theorem compactLoopPC2799 : Artifact.submissionArtifact.instructionPC 2940 = 3882 := by rfl
-@[simp] private theorem compactLoopPC2800 : Artifact.submissionArtifact.instructionPC 2941 = 3885 := by rfl
-@[simp] private theorem compactLoopPC2803 : Artifact.submissionArtifact.instructionPC 2944 = 3888 := by rfl
+@[simp] private theorem compactLoopPC2749 : Artifact.submissionArtifact.instructionPC 2812 = 3750 := by rfl
+@[simp] private theorem compactLoopPC2750 : Artifact.submissionArtifact.instructionPC 2813 = 3752 := by rfl
+@[simp] private theorem compactLoopPC2751 : Artifact.submissionArtifact.instructionPC 2814 = 3753 := by rfl
+@[simp] private theorem compactLoopPC2752 : Artifact.submissionArtifact.instructionPC 2815 = 3756 := by rfl
+@[simp] private theorem compactLoopPC2753 : Artifact.submissionArtifact.instructionPC 2816 = 3757 := by rfl
+@[simp] private theorem compactLoopPC2754 : Artifact.submissionArtifact.instructionPC 2817 = 3760 := by rfl
+@[simp] private theorem compactLoopPC2755 : Artifact.submissionArtifact.instructionPC 2818 = 3761 := by rfl
+@[simp] private theorem compactLoopPC2756 : Artifact.submissionArtifact.instructionPC 2819 = 3764 := by rfl
+@[simp] private theorem compactLoopPC2758 : Artifact.submissionArtifact.instructionPC 2824 = 3771 := by rfl
+@[simp] private theorem compactLoopPC2759 : Artifact.submissionArtifact.instructionPC 2825 = 3772 := by rfl
+@[simp] private theorem compactLoopPC2760 : Artifact.submissionArtifact.instructionPC 2826 = 3773 := by rfl
+@[simp] private theorem compactLoopPC2761 : Artifact.submissionArtifact.instructionPC 2827 = 3774 := by rfl
+@[simp] private theorem compactLoopPC2762 : Artifact.submissionArtifact.instructionPC 2828 = 3775 := by rfl
+@[simp] private theorem compactLoopPC2763 : Artifact.submissionArtifact.instructionPC 2829 = 3776 := by rfl
+@[simp] private theorem compactLoopPC2764 : Artifact.submissionArtifact.instructionPC 2830 = 3777 := by rfl
+@[simp] private theorem compactLoopPC2765 : Artifact.submissionArtifact.instructionPC 2831 = 3778 := by rfl
+@[simp] private theorem compactLoopPC2766 : Artifact.submissionArtifact.instructionPC 2832 = 3779 := by rfl
+@[simp] private theorem compactLoopPC2767 : Artifact.submissionArtifact.instructionPC 2833 = 3780 := by rfl
+@[simp] private theorem compactLoopPC2768 : Artifact.submissionArtifact.instructionPC 2834 = 3781 := by rfl
+@[simp] private theorem compactLoopPC2769 : Artifact.submissionArtifact.instructionPC 2835 = 3782 := by rfl
+@[simp] private theorem compactLoopPC2770 : Artifact.submissionArtifact.instructionPC 2836 = 3783 := by rfl
+@[simp] private theorem compactLoopPC2771 : Artifact.submissionArtifact.instructionPC 2837 = 3784 := by rfl
+@[simp] private theorem compactLoopPC2772 : Artifact.submissionArtifact.instructionPC 2838 = 3785 := by rfl
+@[simp] private theorem compactLoopPC2773 : Artifact.submissionArtifact.instructionPC 2839 = 3786 := by rfl
+@[simp] private theorem compactLoopPC2774 : Artifact.submissionArtifact.instructionPC 2840 = 3787 := by rfl
+@[simp] private theorem compactLoopPC2775 : Artifact.submissionArtifact.instructionPC 2841 = 3788 := by rfl
+@[simp] private theorem compactLoopPC2776 : Artifact.submissionArtifact.instructionPC 2842 = 3789 := by rfl
+@[simp] private theorem compactLoopPC2777 : Artifact.submissionArtifact.instructionPC 2843 = 3790 := by rfl
+@[simp] private theorem compactLoopPC2778 : Artifact.submissionArtifact.instructionPC 2844 = 3791 := by rfl
+@[simp] private theorem compactLoopPC2779 : Artifact.submissionArtifact.instructionPC 2845 = 3792 := by rfl
+@[simp] private theorem compactLoopPC2780 : Artifact.submissionArtifact.instructionPC 2846 = 3793 := by rfl
+@[simp] private theorem compactLoopPC2781 : Artifact.submissionArtifact.instructionPC 2847 = 3794 := by rfl
+@[simp] private theorem compactLoopPC2782 : Artifact.submissionArtifact.instructionPC 2848 = 3795 := by rfl
+@[simp] private theorem compactLoopPC2783 : Artifact.submissionArtifact.instructionPC 2849 = 3796 := by rfl
+@[simp] private theorem compactLoopPC2784 : Artifact.submissionArtifact.instructionPC 2850 = 3797 := by rfl
+@[simp] private theorem compactLoopPC2785 : Artifact.submissionArtifact.instructionPC 2851 = 3798 := by rfl
+@[simp] private theorem compactLoopPC2786 : Artifact.submissionArtifact.instructionPC 2852 = 3799 := by rfl
+@[simp] private theorem compactLoopPC2787 : Artifact.submissionArtifact.instructionPC 2853 = 3800 := by rfl
+@[simp] private theorem compactLoopPC2788 : Artifact.submissionArtifact.instructionPC 2854 = 3801 := by rfl
+@[simp] private theorem compactLoopPC2789 : Artifact.submissionArtifact.instructionPC 2855 = 3802 := by rfl
+@[simp] private theorem compactLoopPC2790 : Artifact.submissionArtifact.instructionPC 2856 = 3803 := by rfl
+@[simp] private theorem compactLoopPC2791 : Artifact.submissionArtifact.instructionPC 2857 = 3804 := by rfl
+@[simp] private theorem compactLoopPC2792 : Artifact.submissionArtifact.instructionPC 2858 = 3805 := by rfl
+@[simp] private theorem compactLoopPC2793 : Artifact.submissionArtifact.instructionPC 2859 = 3806 := by rfl
+@[simp] private theorem compactLoopPC2794 : Artifact.submissionArtifact.instructionPC 2860 = 3807 := by rfl
+@[simp] private theorem compactLoopPC2795 : Artifact.submissionArtifact.instructionPC 2861 = 3808 := by rfl
+@[simp] private theorem compactLoopPC2797 : Artifact.submissionArtifact.instructionPC 2980 = 3929 := by rfl
+@[simp] private theorem compactLoopPC2798 : Artifact.submissionArtifact.instructionPC 2981 = 3930 := by rfl
+@[simp] private theorem compactLoopPC2799 : Artifact.submissionArtifact.instructionPC 2982 = 3931 := by rfl
+@[simp] private theorem compactLoopPC2800 : Artifact.submissionArtifact.instructionPC 2983 = 3934 := by rfl
+@[simp] private theorem compactLoopPC2803 : Artifact.submissionArtifact.instructionPC 2986 = 3937 := by rfl
 
 theorem run_cell0 (s : State) (um : ByteArray) (q pa pt pa' pt' : UInt256)
     (n bsize esize msize k j : Nat)
@@ -87,7 +87,7 @@ theorem run_cell0 (s : State) (um : ByteArray) (q pa pt pa' pt' : UInt256)
                stack := pa :: pt :: UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 :: (Monpro.l1Step um q NEG n j).carry :: q :: UInt256.ofNat k ::
                  outer n bsize esize msize
                memory := (Monpro.l1Step um q NEG n j).memory } =
-      some { s with pc := UInt256.ofNat 3760
+      some { s with pc := UInt256.ofNat 3809
                     stack := pa' :: pt' :: UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 :: (Monpro.l1Step um q NEG n (j + 1)).carry :: q ::
                       UInt256.ofNat k :: outer n bsize esize msize
                     memory := (Monpro.l1Step um q NEG n (j + 1)).memory } := by

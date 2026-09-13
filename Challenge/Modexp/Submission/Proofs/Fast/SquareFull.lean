@@ -8,7 +8,7 @@ set_option maxHeartbeats 4000000
 /-!
 # `SQUARE(2048) → 2048` through the sqCP1m kernel
 
-The fixed-exponent caller enters the kernel's `common` block (pc 4104) with the row
+The fixed-exponent caller enters the kernel's `common` block (pc 4153) with the row
 head `hd = sq_row = 2464` on top of the call frame `[2048, 2048, 2048, ret]`
 (`Cios2Dispatch.commonState s mem 2464 2048 2048 (ofNat 2048) ret rest`, definitionally
 `Exp.sqCall`).
@@ -18,7 +18,7 @@ head `hd = sq_row = 2464` on top of the call frame `[2048, 2048, 2048, ret]`
   (3360).  That path is `SquareLoop.gasSteps_squareLoop`; this lemma therefore carries
   `hslow : ¬(n = 4 ∨ n = 8)`.
 * other widths: `common` falls back (`POP PUSH2 0x683 JUMP`) to the generic `MONPRO`
-  at 1746 (`Cios2Dispatch.gasSteps_commonFallbackOfWidth`, `Monpro.gasSteps_monproCsub`),
+  at 1744 (`Cios2Dispatch.gasSteps_commonFallbackOfWidth`, `Monpro.gasSteps_monproCsub`),
   which returns to `ret` with memory `SquareResult.sqMem s mem n`.
 -/
 
@@ -64,10 +64,10 @@ def gasSteps_squareFull (s : State) (mem : ByteArray) (p a mm : Nat)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
         (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) :
     Challenge.EvmProof.GasSteps
-      (Cios2Dispatch.commonState s mem 5292 512 512 (UInt256.ofNat 512) ret rest)
+      (Cios2Dispatch.commonState s mem 5294 512 512 (UInt256.ofNat 512) ret rest)
       { s with pc := ret, stack := rest, memory := SquareResult.sqMem s mem (p + 2) } := by
   -- the generic MONPRO fallback (the kernel path is `SquareLoop.gasSteps_squareLoop`)
-  have g1 := Cios2Dispatch.gasSteps_commonFallbackOfWidth s mem 5292 512 512 (p + 2)
+  have g1 := Cios2Dispatch.gasSteps_commonFallbackOfWidth s mem 5294 512 512 (p + 2)
     (UInt256.ofNat 512) ret rest (by omega) hrun hcode hfork hnp hact hn32 hs32
     (fun h => hslow (Or.inl h)) (fun h => hslow (Or.inr h))
   have g2 := Monpro.gasSteps_monproCsub s mem 512 512 (p + 2) (UInt256.ofNat 512) ret rest

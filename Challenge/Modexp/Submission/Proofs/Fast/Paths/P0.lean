@@ -22,7 +22,7 @@ def blk977 :
    opAt 938 .SUB,
    pushAt 939 1 223,
    opAt 940 .LT,
-   pushAt 941 2 1708,
+   pushAt 941 2 1706,
    opAt 942 .JUMPI]
 
 /-- Instructions 986..989, pc 1133..1137.  The EIP-7823 oversize test that used to
@@ -63,7 +63,7 @@ def blk1003 :
    opAt 967 (.Swap ⟨0, by decide⟩),
    opAt 968 .SHR,
    opAt 969 .ISZERO,
-   pushAt 970 2 1714,
+   pushAt 970 2 1712,
    opAt 971 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast

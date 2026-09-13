@@ -36,12 +36,4 @@ theorem Snapshot.rows {mem : ByteArray} {pa n : Nat} (h : Snapshot mem pa n)
   | zero => exact h
   | succ i ih => exact ih.row pb i hn hpa
 
-
-theorem Snapshot.rows_stage {mem : ByteArray} {pa n : Nat} (h : Snapshot mem pa n)
-    (pb i : Nat) (hn : n ≤ 8) (hpa : pa + 32*n ≤ 2048 ∨ pa = 2368) :
-    Snapshot (rowsCarry mem pa pb n i) pa n := by
-  rcases hpa with hfit | rfl
-  · exact h.rows pb i hn hfit
-  · intro k _; rfl
-
 end Challenge.Modexp.Submission.Proofs.Fast.StagedOperand

@@ -19,7 +19,7 @@ theorem run_cache (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions ShiftUnrollBindings.cacheProgram (cacheState s mem n bsize esize msize) =
       some (Shift.shiftLoopState s (ShiftCacheModel.cacheMem mem n) n bsize esize msize n) := by
-  have haw : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1698 32) =
+  have haw : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1696 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 300000 })
     [runInstructions, ShiftUnrollBindings.cacheProgram, cacheState, Shift.cacheSetupState,

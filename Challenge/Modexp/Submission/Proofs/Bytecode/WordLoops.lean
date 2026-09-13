@@ -1,5 +1,12 @@
-import Challenge.Modexp.Submission.Proofs.Bytecode.WordBitsFourCopies
 import Challenge.Modexp.Submission.Proofs.Bytecode.WordBitSel
+import Challenge.Modexp.Submission.Proofs.Bytecode.Unroll0
+import Challenge.Modexp.Submission.Proofs.Bytecode.Unroll1
+import Challenge.Modexp.Submission.Proofs.Bytecode.Unroll2
+import Challenge.Modexp.Submission.Proofs.Bytecode.Unroll3
+import Challenge.Modexp.Submission.Proofs.Bytecode.Unroll4
+import Challenge.Modexp.Submission.Proofs.Bytecode.Unroll5
+import Challenge.Modexp.Submission.Proofs.Bytecode.Unroll6
+import Challenge.Modexp.Submission.Proofs.Bytecode.Unroll7
 set_option warningAsError true
 set_option maxRecDepth 10000
 set_option maxHeartbeats 1000000
@@ -41,9 +48,9 @@ def gasSteps_bitCopy0 (input : ByteArray) (outer : Nat)
       (bitUnrollState input outer 0 byte offset acc base)
       (bitUnrollState input outer 1 byte offset
         (bitStepSel input byte 0 acc base) base) :=
-  WordBitsFourCopies.gasSteps_copy0
+  Unroll0.gasSteps_bitCopy0_sym
     (bitLoopState input outer 0 byte offset acc base) (bitTail input)
-    (base - UInt256.ofNat 1) byte offset (UInt256.ofNat outer)
+    (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
     (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
 
@@ -53,9 +60,9 @@ def gasSteps_bitCopy1 (input : ByteArray) (outer : Nat)
       (bitUnrollState input outer 1 byte offset acc base)
       (bitUnrollState input outer 2 byte offset
         (bitStepSel input byte 1 acc base) base) :=
-  WordBitsFourCopies.gasSteps_copy1
+  Unroll1.gasSteps_bitCopy1_sym
     (bitLoopState input outer 0 byte offset acc base) (bitTail input)
-    (base - UInt256.ofNat 1) byte offset (UInt256.ofNat outer)
+    (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
     (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
 
@@ -65,9 +72,9 @@ def gasSteps_bitCopy2 (input : ByteArray) (outer : Nat)
       (bitUnrollState input outer 2 byte offset acc base)
       (bitUnrollState input outer 3 byte offset
         (bitStepSel input byte 2 acc base) base) :=
-  WordBitsFourCopies.gasSteps_copy2
+  Unroll2.gasSteps_bitCopy2_sym
     (bitLoopState input outer 0 byte offset acc base) (bitTail input)
-    (base - UInt256.ofNat 1) byte offset (UInt256.ofNat outer)
+    (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
     (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
 
@@ -77,9 +84,9 @@ def gasSteps_bitCopy3 (input : ByteArray) (outer : Nat)
       (bitUnrollState input outer 3 byte offset acc base)
       (bitUnrollState input outer 4 byte offset
         (bitStepSel input byte 3 acc base) base) :=
-  WordBitsFourCopies.gasSteps_copy3
+  Unroll3.gasSteps_bitCopy3_sym
     (bitLoopState input outer 0 byte offset acc base) (bitTail input)
-    (base - UInt256.ofNat 1) byte offset (UInt256.ofNat outer)
+    (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
     (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
 
@@ -89,9 +96,9 @@ def gasSteps_bitCopy4 (input : ByteArray) (outer : Nat)
       (bitUnrollState input outer 4 byte offset acc base)
       (bitUnrollState input outer 5 byte offset
         (bitStepSel input byte 4 acc base) base) :=
-  WordBitsFourCopies.gasSteps_copy4
+  Unroll4.gasSteps_bitCopy4_sym
     (bitLoopState input outer 0 byte offset acc base) (bitTail input)
-    (base - UInt256.ofNat 1) byte offset (UInt256.ofNat outer)
+    (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
     (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
 
@@ -101,9 +108,9 @@ def gasSteps_bitCopy5 (input : ByteArray) (outer : Nat)
       (bitUnrollState input outer 5 byte offset acc base)
       (bitUnrollState input outer 6 byte offset
         (bitStepSel input byte 5 acc base) base) :=
-  WordBitsFourCopies.gasSteps_copy5
+  Unroll5.gasSteps_bitCopy5_sym
     (bitLoopState input outer 0 byte offset acc base) (bitTail input)
-    (base - UInt256.ofNat 1) byte offset (UInt256.ofNat outer)
+    (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
     (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
 
@@ -113,9 +120,9 @@ def gasSteps_bitCopy6 (input : ByteArray) (outer : Nat)
       (bitUnrollState input outer 6 byte offset acc base)
       (bitUnrollState input outer 7 byte offset
         (bitStepSel input byte 6 acc base) base) :=
-  WordBitsFourCopies.gasSteps_copy6
+  Unroll6.gasSteps_bitCopy6_sym
     (bitLoopState input outer 0 byte offset acc base) (bitTail input)
-    (base - UInt256.ofNat 1) byte offset (UInt256.ofNat outer)
+    (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
     (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
 
@@ -125,9 +132,9 @@ def gasSteps_bitCopy7 (input : ByteArray) (outer : Nat)
       (bitUnrollState input outer 7 byte offset acc base)
       (bitUnrollState input outer 8 byte offset
         (bitStepSel input byte 7 acc base) base) :=
-  WordBitsFourCopies.gasSteps_copy7
+  Unroll7.gasSteps_bitCopy7_sym
     (bitLoopState input outer 0 byte offset acc base) (bitTail input)
-    (base - UInt256.ofNat 1) byte offset (UInt256.ofNat outer)
+    (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
     (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
 
