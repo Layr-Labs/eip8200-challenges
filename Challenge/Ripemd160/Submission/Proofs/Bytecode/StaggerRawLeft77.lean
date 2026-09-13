@@ -11,11 +11,11 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
 def template : List Instr :=
   [ .op (.Swap ⟨5, by decide⟩),
-    .op (.Dup ⟨2, by decide⟩),
+    .op (.Dup ⟨7, by decide⟩),
+    .op (.Dup ⟨3, by decide⟩),
     .op .NOT,
-    .op (.Dup ⟨2, by decide⟩),
+    .op (.Dup ⟨3, by decide⟩),
     .op .OR,
-    .op (.Dup ⟨8, by decide⟩),
     .op .XOR,
     .op .ADD,
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
@@ -63,7 +63,7 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     x.v19 ] ++ rho
 def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.shiftRight (UInt256.mul x.v13 x.v1) (UInt256.ofNat 28)),
-    (UInt256.land x.v14 (UInt256.add x.v3 (UInt256.shiftRight (UInt256.mul x.v13 (UInt256.land x.v14 (UInt256.add x.v0 (UInt256.add (MachineState.readWord memory 0) (UInt256.add (UInt256.xor x.v7 (UInt256.lor x.v1 (UInt256.lnot x.v2))) x.v6))))) (UInt256.ofNat 30)))),
+    (UInt256.land x.v14 (UInt256.add x.v3 (UInt256.shiftRight (UInt256.mul x.v13 (UInt256.land x.v14 (UInt256.add x.v0 (UInt256.add (MachineState.readWord memory 0) (UInt256.add (UInt256.xor (UInt256.lor x.v1 (UInt256.lnot x.v2)) x.v7) x.v6))))) (UInt256.ofNat 30)))),
     x.v2,
     x.v3,
     (UInt256.ofNat 28),
@@ -92,7 +92,7 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
       some {s with pc := pcAfter pc template, stack := actualOutput s.memory x rho} := by
   have hbase : rho.length < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
-  have hcap (n : Nat) (hn : n ≤ 22) : rho.length + n < 1024 := by omega
+  have hcap (n : Nat) (hn : n ≤ 25) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 1088) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     Stagger144Active.word_active_preserved s.activeWords address hactive haddress
@@ -109,16 +109,16 @@ theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
   simpa only [actualOutput_eq] using run_generated s pc x rho hstack hrun hactive
 #print axioms run_actual
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 3578).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3582).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3578 actual_slice
-    (by change 3578 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3582 actual_slice
+    (by change 3582 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 4479 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3578) = UInt256.ofNat 4479
+theorem site_pc : site.startPC = UInt256.ofNat 4469 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3582) = UInt256.ofNat 4469
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound
@@ -131,10 +131,10 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4479, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 4508, stack := outputStack s.memory x rho} := by
-  have hraw := run_actual s (UInt256.ofNat 4479) x rho hstack hrun hactive
-  have hend : pcAfter (UInt256.ofNat 4479) template = UInt256.ofNat 4508 := by decide
+    GasSteps {s with pc := UInt256.ofNat 4469, stack := inputStack x rho}
+      {s with pc := UInt256.ofNat 4498, stack := outputStack s.memory x rho} := by
+  have hraw := run_actual s (UInt256.ofNat 4469) x rho hstack hrun hactive
+  have hend : pcAfter (UInt256.ofNat 4469) template = UInt256.ofNat 4498 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps

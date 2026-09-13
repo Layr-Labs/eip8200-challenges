@@ -54,7 +54,7 @@ def sizePath : List Located :=
    opAt 14 .OR,
    opAt 15 .OR,
    opAt 16 .ISZERO,
-   pushAt 17 2 4844,
+   pushAt 17 2 4834,
    opAt 18 .JUMPI]
 
 def checkEntryPath : List Located :=
@@ -87,23 +87,6 @@ def checkEarlyPath : List Located :=
    pushAt 28 1 107,
    opAt 29 .JUMPI,
    opAt 65 .JUMPDEST]
-
-def loopPath : List Located :=
-  [opAt 34 .JUMPDEST,
-   opAt 35 (.Swap ⟨0, by decide⟩),
-   opAt 36 (.Dup ⟨1, by decide⟩),
-   opAt 37 .CALLDATALOAD,
-   opAt 38 (.Dup ⟨3, by decide⟩),
-   opAt 39 .XOR,
-   opAt 40 .OR,
-   opAt 41 (.Swap ⟨0, by decide⟩),
-   pushAt 42 1 32,
-   opAt 43 .ADD,
-   pushAt 44 2 992,
-   opAt 45 (.Dup ⟨1, by decide⟩),
-   opAt 46 .LT,
-   pushAt 47 1 49,
-   opAt 48 .JUMPI]
 
 def tailPath : List Located :=
   [opAt 49 .CALLDATALOAD,
@@ -245,34 +228,6 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
     Artifact.submissionArtifact.instructionPC 33 = 47 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc2828 :
     Artifact.submissionArtifact.instructionPC 34 = 49 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc2829 :
-    Artifact.submissionArtifact.instructionPC 35 = 50 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc2830 :
-    Artifact.submissionArtifact.instructionPC 36 = 51 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc2831 :
-    Artifact.submissionArtifact.instructionPC 37 = 52 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc2832 :
-    Artifact.submissionArtifact.instructionPC 38 = 53 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc2833 :
-    Artifact.submissionArtifact.instructionPC 39 = 54 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc2834 :
-    Artifact.submissionArtifact.instructionPC 40 = 55 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc2835 :
-    Artifact.submissionArtifact.instructionPC 41 = 56 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc2836 :
-    Artifact.submissionArtifact.instructionPC 42 = 57 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc2837 :
-    Artifact.submissionArtifact.instructionPC 43 = 59 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc2838 :
-    Artifact.submissionArtifact.instructionPC 44 = 60 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc2839 :
-    Artifact.submissionArtifact.instructionPC 45 = 63 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc2840 :
-    Artifact.submissionArtifact.instructionPC 46 = 64 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc2841 :
-    Artifact.submissionArtifact.instructionPC 47 = 65 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc2842 :
-    Artifact.submissionArtifact.instructionPC 48 = 67 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc2843 :
     Artifact.submissionArtifact.instructionPC 49 = 68 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc2844 :

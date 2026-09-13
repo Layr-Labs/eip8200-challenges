@@ -1,3 +1,5 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardPairedAdapter
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardAppendBridge
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Entry
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardTail
@@ -25,10 +27,13 @@ private def sound (path : List Located) {s t : State}
 
 private def gasSteps_loop (input : ByteArray) :
     GasSteps (loopState input 0) (loopExitState input) := by
-  let step : ∀ n, n < 29 → GasSteps (loopState input n) (loopState input (n + 1)) :=
-    fun n hn => sound loopPath (run_loop_more input n hn)
-  exact (GasSteps.iterateBounded 29 step).trans
-    (sound loopPath (run_loop_last input))
+  have core := DirectGuardPairedAdapter.gasSteps_pair_core_verified input
+  rw [DirectGuardPairedAdapter.pair_loop_state_eq,
+    DirectGuardPairedAdapter.pair_exit_state_eq] at core
+  exact (DirectGuardAppendBridge.gasSteps_entry input
+    JumpDestSplitCertificate.valid_5231_split).trans
+      (core.trans (DirectGuardAppendBridge.gasSteps_exit input))
+
 
 def gasSteps_target :
     GasSteps (initialState submissionBytecode KnownInputData.targetInput 0)

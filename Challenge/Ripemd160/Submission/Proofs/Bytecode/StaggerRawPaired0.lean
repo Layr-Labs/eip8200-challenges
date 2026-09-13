@@ -20,12 +20,12 @@ def template : List Instr :=
     .op (.Dup ⟨6, by decide⟩),
     .op (.Dup ⟨5, by decide⟩),
     .op (.Dup ⟨11, by decide⟩),
-    .op .XOR,
+    .op .AND,
+    .op (.Dup ⟨10, by decide⟩),
+    .op .OR,
     .op (.Dup ⟨11, by decide⟩),
     .op (.Dup ⟨7, by decide⟩),
-    .op .AND,
-    .op (.Dup ⟨11, by decide⟩),
-    .op .OR,
+    .op .XOR,
     .op .XOR,
     .op .XOR,
     .op .ADD,
@@ -81,7 +81,7 @@ def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UI
     x.v3,
     (UInt256.shiftLeft (UInt256.ofNat 1352829926) (UInt256.ofNat 144)),
     x.v5,
-    (UInt256.land x.v0 (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul x.v7 (UInt256.land x.v0 (UInt256.add (UInt256.shiftLeft (UInt256.ofNat 1352829926) (UInt256.ofNat 144)) (UInt256.add (MachineState.readWord memory 54) (UInt256.add (UInt256.xor (UInt256.xor (UInt256.lor x.v5 (UInt256.land x.v1 x.v6)) (UInt256.xor x.v6 x.v1)) x.v3) x.v4))))) (UInt256.ofNat 27)))),
+    (UInt256.land x.v0 (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul x.v7 (UInt256.land x.v0 (UInt256.add (UInt256.shiftLeft (UInt256.ofNat 1352829926) (UInt256.ofNat 144)) (UInt256.add (MachineState.readWord memory 54) (UInt256.add (UInt256.xor (UInt256.xor (UInt256.xor x.v1 x.v6) (UInt256.lor x.v5 (UInt256.land x.v6 x.v1))) x.v3) x.v4))))) (UInt256.ofNat 27)))),
     x.v7,
     x.v8,
     x.v9,
@@ -100,7 +100,7 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
       some {s with pc := pcAfter pc template, stack := actualOutput s.memory x rho} := by
   have hbase : rho.length < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
-  have hcap (n : Nat) (hn : n ≤ 22) : rho.length + n < 1024 := by omega
+  have hcap (n : Nat) (hn : n ≤ 23) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 1088) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     Stagger144Active.word_active_preserved s.activeWords address hactive haddress
@@ -117,16 +117,16 @@ theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
   simpa only [actualOutput_eq] using run_generated s pc x rho hstack hrun hactive
 #print axioms run_actual
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 678).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 680).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 678 actual_slice
-    (by change 678 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 680 actual_slice
+    (by change 680 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 1059 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 678) = UInt256.ofNat 1059
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 680) = UInt256.ofNat 1059
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound
