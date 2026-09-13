@@ -47,7 +47,7 @@ def lowTemplate : List Instr :=
     .op .SHR,
     .op .ISZERO ]
 
-/-- `PUSH2 0398 JUMPI` at 4776: straight to the rounds when the high word is zero. -/
+/-- `PUSH2 0398 JUMPI` at 4769: straight to the rounds when the high word is zero. -/
 def branchTemplate : List Instr :=
   [ .push ⟨2, by decide⟩ (UInt256.ofNat 925), .op .JUMPI ]
 
