@@ -91,16 +91,15 @@ theorem run_tail (template : State)
   simpa only [program, ← advancePC_add, show 10 + 4 = 14 by decide] using both
 
 theorem shift_twentyOne (exponent : UInt256) (processed : Nat)
-    (hpositive : 1 ≤ processed) (hprocessed : processed + 21 < 64) :
-    UInt256.shiftLeft (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed - 3)))
+    (hprocessed : processed + 21 < 64) :
+    UInt256.shiftLeft (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed)))
         (UInt256.ofNat 84) =
-      UInt256.shiftLeft exponent (UInt256.ofNat (4 * (processed + 21) - 3)) := by
+      UInt256.shiftLeft exponent (UInt256.ofNat (4 * (processed + 21))) := by
   apply Challenge.EvmProof.Word.word_ext
   rw [WindowTwentyOneBits.shiftLeft_toNat_mod _ 84 (by decide),
-    WindowTwentyOneBits.shiftLeft_toNat_mod _ (4 * processed - 3) (by omega),
-    WindowTwentyOneBits.shiftLeft_toNat_mod _ (4 * (processed + 21) - 3) (by omega)]
+    WindowTwentyOneBits.shiftLeft_toNat_mod _ (4 * processed) (by omega),
+    WindowTwentyOneBits.shiftLeft_toNat_mod _ (4 * (processed + 21)) (by omega)]
   simp only [Nat.shiftLeft_eq, Nat.mod_mul_mod, Nat.mul_assoc, ← Nat.pow_add]
   congr 3
-  omega
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneTail

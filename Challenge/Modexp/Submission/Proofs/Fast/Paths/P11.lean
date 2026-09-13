@@ -49,7 +49,7 @@ def blk1595 :
    pushAt 1477 2 4877,
    opAt 1478 .JUMP]
 
-/-- Instructions 1600..1753, pc 2347..2376. -/
+/-- Instructions 1600..1753, pc 2347..2379. -/
 def blk1600 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1479 .JUMPDEST,
