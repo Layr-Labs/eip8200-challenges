@@ -106,7 +106,8 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     rw [scheduledState_miss s i hhs]
     have gc := StaggerPersistentEntrySites.gasSteps_call s off limit h rho (by omega) hr hcode hfork hnp
     rw [show StaggerPersistentEntryRaw.pointer off = UInt256.ofNat (messagePointer i) from pointer_eq input i hfit hi] at gc
-    have gn := StaggerSetupSites.gasSteps_normal s Paired144WordRound.factorWord (messagePointer i) r (by rfl) hrs hr
+    have gn := StaggerSetupSites.gasSteps_normal s Paired144WordRound.factorWord (messagePointer i) r (by rfl)
+      (by simp [r, rest, off, DriverTrace.blockOffsetWord, messagePointer, Padding.messageOffset]) hrs hr
       (messagePointer_lower i) (messagePointer_bound input hfit i hi) ctx.lowClear hcode hfork hnp
     simpa only [LoopCompletionControl.blockPC, DriverTrace.blockOffset, if_neg hh, off, r, rest, frame, selectedWords, List.cons_append] using gc.trans gn
 

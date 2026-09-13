@@ -235,18 +235,18 @@ def tail : List Instr :=
   .push 0 0,
   op 0xf3
 ]
-theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3657 = tail := by rfl
+theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3656 = tail := by rfl
 
-theorem pc_base : Artifact.submissionArtifact.instructionPC 3657 = 4579 := by
+theorem pc_base : Artifact.submissionArtifact.instructionPC 3656 = 4579 := by
   rw [instructionPC_eq_byteLength]
   rfl
 
 theorem get (index : Nat) :
-    Artifact.submissionArtifact.instructions[3657 + index]? = tail[index]? := by
+    Artifact.submissionArtifact.instructions[3656 + index]? = tail[index]? := by
   rw [← InstructionWindow.get_drop, tail_eq]
 
 theorem pc (index : Nat) :
-    Artifact.submissionArtifact.instructionPC (3657 + index) =
+    Artifact.submissionArtifact.instructionPC (3656 + index) =
       4579 + byteLength (tail.take index) := by
   rw [InstructionWindow.pc_drop, pc_base, tail_eq]
 

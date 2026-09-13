@@ -123,7 +123,7 @@ private def lowerValue (low : UInt256) : UInt256 := (UInt256.xor (UInt256.mul (U
 private theorem lowerValue_eq (low : UInt256) : lowerValue low = reversedValue low := by
   norm_num only [lowerValue, reversedValue, multipliedStage, endianDelta, endianFactor]
   simp only [RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
-private theorem run_lower (s : State) (pc low returnPC : UInt256) (rest : List UInt256)
+theorem run_lower (s : State) (pc low returnPC : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 996) (hrun : s.halt = .Running) :
     runInstrSeq lowerReverse {s with pc := pc, stack := low :: mask8 :: mask16 :: returnPC :: maskWord :: rest} =
       some {s with pc := pcAfter pc lowerReverse, stack := PairedScheduleData.reversedWord low :: mask8 :: mask16 :: returnPC :: maskWord :: rest} := by
@@ -136,7 +136,7 @@ private theorem run_lower (s : State) (pc low returnPC : UInt256) (rest : List U
 #print axioms run_lower
 def cleanupTemplate : List Instr :=
   [.op .POP, .op .POP, .op (.Dup ⟨1, by decide⟩)]
-private theorem run_cleanup (s : State) (pc m8 m16 returnPC : UInt256)
+theorem run_cleanup (s : State) (pc m8 m16 returnPC : UInt256)
     (rest : List UInt256) (hstack : rest.length ≤ 996) (hrun : s.halt = .Running) :
     runInstrSeq cleanupTemplate
       {s with pc := pc, stack := m8 :: m16 :: returnPC :: maskWord :: rest} =
