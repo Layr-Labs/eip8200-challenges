@@ -19,6 +19,12 @@ def gasSteps_route_head (s : State) (e : Env s) (n k : Nat) (rho : List UInt256)
       (loopState s n k rho) := by
   have hstop := lt_stop_iff s.executionEnv.calldata n k hn hk
   have hfull := off_lt_full_iff s.executionEnv.calldata n k hn hk
+  have hbnd := allowed_bounds n hn
+  have hbound : (fullFrame s.executionEnv.calldata n k).off.toNat ≤
+      (fullFrame s.executionEnv.calldata n k).full.toNat := by
+    rw [off_toNat s.executionEnv.calldata n k (by omega),
+      full_toNat s.executionEnv.calldata n k hn]
+    omega
   by_cases hd : k=n/32
   · have he : (fullFrame s.executionEnv.calldata n k).stop.toNat ≤
         (fullFrame s.executionEnv.calldata n k).off.toNat := by
@@ -26,7 +32,7 @@ def gasSteps_route_head (s : State) (e : Env s) (n k : Nat) (rho : List UInt256)
       have := hstop.not.mpr (by simp [hnot])
       omega
     have g := (gasSteps_test0_exit s e _ rho hs he).trans (gasSteps_skip s e _ rho hs)
-    have ge := gasSteps_segment_yes s e _ rho hs (hfull.not.mpr (by omega))
+    have ge := gasSteps_segment_yes s e _ rho hs (hfull.not.mpr (by omega)) hbound
     simpa only [loopState, if_pos hd] using g.trans ge
   · have hlt : k<n/32 := by omega
     by_cases hb : boundary k=false
@@ -38,7 +44,7 @@ def gasSteps_route_head (s : State) (e : Env s) (n k : Nat) (rho : List UInt256)
         have := hstop.not.mpr (by simp [hb])
         omega
       have g := (gasSteps_test0_exit s e _ rho hs he).trans (gasSteps_skip s e _ rho hs)
-      have ge := gasSteps_segment_no s e _ rho hs (not_not_intro (hfull.mpr hlt))
+      have ge := gasSteps_segment_no s e _ rho hs (not_not_intro (hfull.mpr hlt)) hbound
       simpa only [loopState, if_neg hd, hbtrue, ↓reduceIte] using g.trans ge
 
 def gasSteps_route_normal (s : State) (e : Env s) (n k : Nat) (rho : List UInt256)
@@ -47,6 +53,12 @@ def gasSteps_route_normal (s : State) (e : Env s) (n k : Nat) (rho : List UInt25
       (loopState s n k rho) := by
   have hstop := lt_stop_iff s.executionEnv.calldata n k hn hk
   have hfull := off_lt_full_iff s.executionEnv.calldata n k hn hk
+  have hbnd := allowed_bounds n hn
+  have hbound : (fullFrame s.executionEnv.calldata n k).off.toNat ≤
+      (fullFrame s.executionEnv.calldata n k).full.toNat := by
+    rw [off_toNat s.executionEnv.calldata n k (by omega),
+      full_toNat s.executionEnv.calldata n k hn]
+    omega
   by_cases hd : k=n/32
   · have he : (fullFrame s.executionEnv.calldata n k).stop.toNat ≤
         (fullFrame s.executionEnv.calldata n k).off.toNat := by
@@ -54,7 +66,7 @@ def gasSteps_route_normal (s : State) (e : Env s) (n k : Nat) (rho : List UInt25
       have := hstop.not.mpr (by simp [hnot])
       omega
     have g := (gasSteps_test_exit s e _ rho hs he)
-    have ge := gasSteps_segment_yes s e _ rho hs (hfull.not.mpr (by omega))
+    have ge := gasSteps_segment_yes s e _ rho hs (hfull.not.mpr (by omega)) hbound
     simpa only [loopState, if_pos hd] using g.trans ge
   · have hlt : k<n/32 := by omega
     by_cases hb : boundary k=false
@@ -66,7 +78,7 @@ def gasSteps_route_normal (s : State) (e : Env s) (n k : Nat) (rho : List UInt25
         have := hstop.not.mpr (by simp [hb])
         omega
       have g := (gasSteps_test_exit s e _ rho hs he)
-      have ge := gasSteps_segment_no s e _ rho hs (not_not_intro (hfull.mpr hlt))
+      have ge := gasSteps_segment_no s e _ rho hs (not_not_intro (hfull.mpr hlt)) hbound
       simpa only [loopState, if_neg hd, hbtrue, ↓reduceIte] using g.trans ge
 
 def gasSteps_one (s : State) (e : Env s) (n k : Nat) (rho : List UInt256)
