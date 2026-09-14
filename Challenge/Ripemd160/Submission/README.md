@@ -1,13 +1,30 @@
-# RIPEMD-160: assemble the output through descending memory stores
+# RIPEMD-160: reuse the invariant input length in recognizer loops
 
-Candidate: 671,167 gas / 5,220 bytes, raw-byte SHA-256
-`b3acdaccb01fd77ed1beb469bd064648d82273c66f423555b2969d99e5071b56`.
-The frozen parent a64a2bde measures 671,241 gas, was accepted as e2eb0193,
-and was promoted to 730e7dc2.
-This candidate saves 74 gas on the baseline corpus: 32 from our output
-assembly change and 42 from jacklightChen's public J2 length-reuse change.
+Candidate: 671,143 gas / 5,220 bytes, raw-byte SHA-256
+`150240919d5a65f3cbe3e6750fbf3b9d28f3e3e79b35556252532b0815a79ab6`.
+The frozen parent ffe632fe measures 671,167 gas with a complete universal
+proof; its independent secure verification is running separately. This
+candidate saves another 24 gas by extending length reuse to two recognizer
+loop sites. Relative to the accepted 730e7dc2 frontier at 671,241 gas, the
+baseline saving is 98: our output assembly saves 32, jacklightChen's initializer
+change saves 42, and the two loop reads save 24.
 The executable has 3,745 instructions and 4,940 bytes, followed by the
 unchanged 280-byte digest payload.
+
+The J2 frame stores the original input length in its len field. The finish
+comparison at PC234 and the next-segment calculation at PC258 previously
+retrieved that field through DUP6 and DUP7. CALLDATASIZE produces the same
+word for one less gas at each site. On the baseline corpus, the two sites
+execute 24 times in total. Both opcodes remain one byte, so every PC,
+instruction index, jump target and payload offset stays fixed.
+
+The raw finish and transition helpers now require the frame length to equal
+UInt256.ofNat of the actual calldata size. J2Moves and J2Sites carry this
+invariant. The loop induction carries its existing input-size equality through
+one-step and multi-step execution, establishing the condition at every tail
+and transition. Initialization supplies the original length, and normal,
+tail and transition steps preserve it. The public universal correctness
+statement has no new assumption.
 
 The old output assembly discarded six round constants, exchanged two hash
 words and combined the five 32-bit words through four shifts and ORs. The new
@@ -52,15 +69,14 @@ specification. The J2 raw initializer retains its existing result model.
 Runtime validation of these exact bytes passes the original read-only loader,
 98 native clean and dirty executions, the mandatory 120-seed corpus gate,
 2500 fuzz cases, executable reassembly, jump destinations and CODECOPY bounds.
-Expanded differential validation against a64a2bde passes 4358 inputs: seven
-have unchanged gas, 2369 save four gas, fourteen save three gas and 1968 save
-one gas. All digests match an independent RIPEMD implementation. Sixty of 69
-additional corpus seeds save 74 gas; the other nine save 77 because their
-recognizer execution counts differ. The per-input prediction is minus one
-per output packing and minus one per each of the three changed J2 sites.
-The full Solution build passes all 3720 jobs, and the final theorem depends
-only on propext, Classical.choice and Quot.sound. Independent secure Comparator
-verification is the remaining check; its result is recorded after completion.
+Expanded differential validation against a64a2bde passes 4358 inputs with no
+gas regression. All digests match an independent RIPEMD implementation. Sixty
+of 69 additional corpus seeds save 98 gas; the other nine save 102 because
+their recognizer execution counts differ. The per-input prediction is minus
+one per output packing and minus one per each of the five changed J2 sites.
+The full Solution build passes all 3,720 jobs. The final candidate depends
+only on propext, Classical.choice and Quot.sound. Independent secure
+Comparator verification is run against this frozen artifact next.
 
 The parent retains our deferred padding-limit rounding, literal unit constant,
 and exact-32 guard before rounding. The parent and earlier artifacts have

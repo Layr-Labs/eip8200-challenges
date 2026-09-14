@@ -285,3 +285,4 @@ theorem correct_empty (input : ByteArray) (hfit : CalldataFits input)
 #print axioms correct_hit
 #print axioms gasSteps_miss
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.AbcArm
+-- redraw marker 2026-09-14T18:58:20Z

@@ -43,6 +43,7 @@ theorem run_normalGuard (s : State) (pc : UInt256) (f : Frame) (rho : List UInt2
 
 theorem run_finish (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
+    (hlen : f.len = UInt256.ofNat s.executionEnv.calldata.size)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code 294 = true) :
     runInstrSeq finishTemplate {s with pc := pc, stack := frame f rho} =
       some {s with pc := if f.stop.toNat = f.len.toNat then UInt256.ofNat 294 else pcAfter pc finishTemplate,
@@ -52,7 +53,7 @@ theorem run_finish (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
   by_cases hc : f.stop.toNat = f.len.toNat
   all_goals simp (discharger := omega) [finishTemplate, frame, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
-    Nat.add_assoc, hrun, hbase, hcap, UInt256.lt, UInt256.eq, UInt256.isZero, UInt256.isTrue,
+    Nat.add_assoc, hrun, hbase, hcap, ← hlen, UInt256.lt, UInt256.eq, UInt256.isZero, UInt256.isTrue,
     hc, eq_comm, hvalid, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals rfl
 
