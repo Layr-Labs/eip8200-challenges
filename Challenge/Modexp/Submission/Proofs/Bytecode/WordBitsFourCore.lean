@@ -3,6 +3,7 @@ import Challenge.EvmProof.Word
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
+set_option linter.unusedTactic false
 set_option maxHeartbeats 2000000
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.WordBitsFourCore
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
@@ -91,8 +92,9 @@ theorem run_body (hcap : rest.length ≤ 1000) :
     hpc, stepValue] using hall
 
 def controlProgram : List Instr :=
-  [.op (.Swap ⟨0, by decide⟩), .push 1 4, .op .ADD, .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩), .push 1 8, .op .GT, .push 2 2505, .op .JUMPI]
+  [.op .JUMPDEST, .op (.Dup ⟨1, by decide⟩), .op .ISZERO,
+   .op (.Swap ⟨1, by decide⟩), .push 2 4, .op .ADD, .op (.Swap ⟨1, by decide⟩),
+   .push 2 2505, .op .JUMPI]
 
 def resetProgram : List Instr :=
   [.op (.Swap ⟨0, by decide⟩), .op .POP, .push 0 0, .op (.Swap ⟨0, by decide⟩)]
@@ -115,9 +117,14 @@ theorem run_control (c : Nat) (hc : c = 0 ∨ c = 4) (hcap : rest.length ≤ 100
   have h9 : rest.length + 9 < 1024 := by omega
   have h10 : rest.length + 10 < 1024 := by omega
   have htarget : (2505 : UInt256).toNat = 2505 := by decide
+  have hz0 : UInt256.isZero (UInt256.ofNat 0) = UInt256.ofNat 1 := by decide
+  have hz4 : UInt256.isZero (UInt256.ofNat 4) = UInt256.ofNat 0 := by decide
+  have ht1 : UInt256.isTrue (UInt256.ofNat 1) := by decide
+  have ht0 : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
   rcases hc with rfl | rfl <;>
     simp [controlProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr, framed,
-      h8, h9, h10, List.exchange, UInt256.isTrue, UInt256.gt, UInt256.lt,
+      h8, h9, h10, List.exchange, UInt256.isTrue, UInt256.isZero, UInt256.gt, UInt256.lt,
+      hz0, hz4, ht1, ht0,
       Challenge.EvmProof.Word.word_toNat_ofNat, htarget, hjd,
       Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.literal_eq_ofNat]

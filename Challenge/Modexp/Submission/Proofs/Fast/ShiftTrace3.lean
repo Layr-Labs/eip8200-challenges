@@ -565,7 +565,7 @@ theorem run_shiftDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3264
-      (frameState s mem 3532 n bsize esize msize) =
+      (frameState s mem 3534 n bsize esize msize) =
       some { Exp.bDone s (Exp.mcopyMem mem 1024 1280 (32 * n)) n bsize esize msize with
                pc := UInt256.ofNat 2637 } := by
   have hsize : (UInt256.ofNat (32 * n)).toNat = 32 * n := by
