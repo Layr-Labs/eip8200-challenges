@@ -12,7 +12,7 @@ case, so a straight-line block containing `SGT` cannot be run with
 `runInstructions`.  This module lifts `EvmSemantics.EVM.StepRunning.sgt` into the
 gas-parametric trace algebra through the public `Challenge.EvmProof.GasStep.of_running`
 (exactly like the shared opcode wrappers in `Challenge.EvmProof.Ops`), and locates the
-only `SGT` of the candidate bytecode: instruction 3744 at pc 4803 (0x126c) in the
+only `SGT` of the candidate bytecode: instruction 3739 at pc 4807 (0x126c) in the
 square row `sq_row` (`JUMPDEST DUP1 MLOAD DUP1 SWAP15 PUSH0 SGT ...`).
 
 Use: split `sq_row` at the `SGT` — a `Block` for idx 3559..3698 (pc 2464..2464),
@@ -42,42 +42,42 @@ def gasStep_sgt {s : State} {a b : UInt256} {rest : List UInt256}
     StepRunning.sgt (withGas s gas) a b rest hop hgas hstack hcap
 
 /-- The candidate's only `SGT` is instruction 3744. -/
-theorem sqRowSgt_index : Artifact.submissionInstructions[3363]? = some (.op .SGT) := by
+theorem sqRowSgt_index : Artifact.submissionInstructions[3359]? = some (.op .SGT) := by
   rfl
 
-/-- ... at program counter 4803 (0x126c). -/
-theorem sqRowSgt_pc : Artifact.submissionArtifact.instructionPC 3363 = 4452 := by
+/-- ... at program counter 4807 (0x126c). -/
+theorem sqRowSgt_pc : Artifact.submissionArtifact.instructionPC 3359 = 4447 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 theorem decodedOp_sqRowSgt (s : State)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka) (hpc : s.pc = UInt256.ofNat 4452) :
+    (hfork : s.fork = .Osaka) (hpc : s.pc = UInt256.ofNat 4447) :
     s.decodedOp = some .SGT := by
-  have hpcNat : s.pc.toNat = Artifact.submissionArtifact.instructionPC 3363 := by
+  have hpcNat : s.pc.toNat = Artifact.submissionArtifact.instructionPC 3359 := by
     rw [hpc, sqRowSgt_pc]; decide
   have hwf : Stepper.WellFormed s.fork (.op .SGT) := by
     rw [hfork]
     exact ⟨by decide, trivial, rfl⟩
-  exact Stepper.decodes_of_artifact Artifact.submissionArtifact s 3363 (.op .SGT)
+  exact Stepper.decodes_of_artifact Artifact.submissionArtifact s 3359 (.op .SGT)
     hcode hpcNat sqRowSgt_index hwf
 
-theorem succ_4716 : (UInt256.ofNat 4452).succ = UInt256.ofNat 4453 := by
+theorem succ_4716 : (UInt256.ofNat 4447).succ = UInt256.ofNat 4448 := by
   decide
 
-/-- The `SGT` of `sq_row` (pc 4803 → 4923): pops `a, b`, pushes `UInt256.sgt a b`.
+/-- The `SGT` of `sq_row` (pc 4807 → 4927): pops `a, b`, pushes `UInt256.sgt a b`.
 In `sq_row` the operands are `a = 0` (from `PUSH0`) and `b = aprev`; see
 `SquareDiag.sgt_zero_toNat` / `SquareModel.sgt_zero_eq_zero_of_lt`. -/
 def gasSteps_sqRowSgt (s : State) (a b : UInt256) (rest : List UInt256)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
-    (hpc : s.pc = UInt256.ofNat 4452)
+    (hpc : s.pc = UInt256.ofNat 4447)
     (hstack : s.stack = a :: b :: rest)
     (hcap : rest.length ≤ 1021)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    GasSteps s { s with stack := UInt256.sgt a b :: rest, pc := UInt256.ofNat 4453 } := by
+    GasSteps s { s with stack := UInt256.sgt a b :: rest, pc := UInt256.ofNat 4448 } := by
   have hcap' : s.stack.length + Operation.pushArity .SGT ≤
       1024 + Operation.popArity .SGT := by
     rw [hstack]
@@ -89,7 +89,7 @@ def gasSteps_sqRowSgt (s : State) (a b : UInt256) (rest : List UInt256)
   exact h
 
 /-- Same rule for a state written as a record update of a template
-(`{ t with pc := 4803, stack := a :: b :: rest, memory := m }`), the form used by
+(`{ t with pc := 4807, stack := a :: b :: rest, memory := m }`), the form used by
 the kernel frames. -/
 def gasSteps_sqRowSgt_framed (t : State) (m : ByteArray) (a b : UInt256)
     (rest : List UInt256)
@@ -99,9 +99,9 @@ def gasSteps_sqRowSgt_framed (t : State) (m : ByteArray) (a b : UInt256)
     (hrun : t.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig t.executionEnv.precompileConfig t.executionEnv.fork
       t.executionEnv.codeAddr = false) :
-    GasSteps { t with pc := UInt256.ofNat 4452, stack := a :: b :: rest, memory := m }
-      { t with pc := UInt256.ofNat 4453, stack := UInt256.sgt a b :: rest, memory := m } :=
-  gasSteps_sqRowSgt { t with pc := UInt256.ofNat 4452, stack := a :: b :: rest, memory := m }
+    GasSteps { t with pc := UInt256.ofNat 4447, stack := a :: b :: rest, memory := m }
+      { t with pc := UInt256.ofNat 4448, stack := UInt256.sgt a b :: rest, memory := m } :=
+  gasSteps_sqRowSgt { t with pc := UInt256.ofNat 4447, stack := a :: b :: rest, memory := m }
     a b rest hcode hfork rfl rfl hcap hrun hnp
 
 end Challenge.Modexp.Submission.Proofs.Fast.SgtStep
