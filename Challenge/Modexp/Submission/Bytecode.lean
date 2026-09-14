@@ -19,3 +19,5 @@ theorem submissionBytecode_roundtrip :
   Challenge.EvmProof.Bytecode.assemble_disassemble _
 
 end Challenge.Modexp
+
+-- resubmission 20260914T235828Z: artifact bytes and proof modules unchanged from the promoted tree
