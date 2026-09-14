@@ -99,8 +99,8 @@ def squareCall : List Located :=
    pushAt 2031 2 512,
    opAt 2032 (.Dup ⟨0, by decide⟩),
    opAt 2033 (.Dup ⟨0, by decide⟩),
-   pushAt 2034 2 4754,
-   pushAt 2035 2 3551,
+   pushAt 2034 2 4756,
+   pushAt 2035 2 3553,
    opAt 2036 .JUMP]
 
 def squareReturn : List Located :=
@@ -121,7 +121,7 @@ def product : List Located :=
    pushAt 2046 2 256,
    opAt 2047 (.Dup ⟨0, by decide⟩),
    pushAt 2048 2 512,
-   pushAt 2049 2 3547,
+   pushAt 2049 2 3549,
    opAt 2050 .JUMP]
 
 def fallback : List Located :=
@@ -156,13 +156,13 @@ theorem jumpDest3959 :
 
 /-- The kernel's multiply entry `0x0f50` (the final mixed-domain product). -/
 theorem jumpDestSqMulEntry :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3547 = true :=
-  Artifact.isValidJumpDest_index 2657 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3549 = true :=
+  Artifact.isValidJumpDest_index 2659 (by rfl)
 
 /-- The kernel's shared `common` block `0x0f54` (entered by the square call). -/
 theorem jumpDestSqCommon :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3551 = true :=
-  Artifact.isValidJumpDest_index 2659 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3553 = true :=
+  Artifact.isValidJumpDest_index 2661 (by rfl)
 
 
 /- `after_sq` (pc 3303): the target the in-kernel square loop rewrites the

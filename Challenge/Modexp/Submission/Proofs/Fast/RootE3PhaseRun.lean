@@ -18,7 +18,7 @@ def frame (s : State) (mem : ByteArray) (pc : Nat) (stack : List UInt256) : Stat
   { s with memory := mem, pc := UInt256.ofNat pc, stack := stack }
 
 def phaseGuardProgram : List Instr :=
-  [.push 2 1760, .op .MLOAD, .op .ISZERO, .push 2 3531, .op .JUMPI]
+  [.push 2 1760, .op .MLOAD, .op .ISZERO, .push 2 3533, .op .JUMPI]
 
 def phaseExitHeadProgram : List Instr := [.op .JUMPDEST, .op .POP]
 
@@ -33,9 +33,9 @@ def phaseSwitchMemory (mem : ByteArray) (n : Nat) : ByteArray :=
 
 private theorem run_phaseGuard (s : State) (mem : ByteArray) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) (hact : 89 ≤ s.activeWords.toNat)
-    (hdest : Decode.isValidJumpDest s.executionEnv.code 3531 = true) :
-    runInstructions phaseGuardProgram (frame s mem 3501 rest) =
-      some (frame s mem (if (MachineState.readWord mem 1760).toNat = 0 then 3531 else 3510) rest) := by
+    (hdest : Decode.isValidJumpDest s.executionEnv.code 3533 = true) :
+    runInstructions phaseGuardProgram (frame s mem 3503 rest) =
+      some (frame s mem (if (MachineState.readWord mem 1760).toNat = 0 then 3533 else 3512) rest) := by
   have hcap0 : rest.length < 1024 := by omega
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hcap2 : rest.length + 2 < 1024 := by omega
@@ -52,23 +52,23 @@ private theorem run_phaseGuard (s : State) (mem : ByteArray) (rest : List UInt25
 theorem run_phaseGuardZero (s : State) (mem : ByteArray) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) (hact : 89 ≤ s.activeWords.toNat)
     (hflag : MachineState.readWord mem 1760 = UInt256.ofNat 0)
-    (hdest : Decode.isValidJumpDest s.executionEnv.code 3531 = true) :
-    runInstructions phaseGuardProgram (frame s mem 3501 rest) =
-      some (frame s mem 3531 rest) := by
+    (hdest : Decode.isValidJumpDest s.executionEnv.code 3533 = true) :
+    runInstructions phaseGuardProgram (frame s mem 3503 rest) =
+      some (frame s mem 3533 rest) := by
   simpa [hflag] using run_phaseGuard s mem rest hrest hact hdest
 
 theorem run_phaseGuardOne (s : State) (mem : ByteArray) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) (hact : 89 ≤ s.activeWords.toNat)
     (hflag : MachineState.readWord mem 1760 = UInt256.ofNat 1)
-    (hdest : Decode.isValidJumpDest s.executionEnv.code 3531 = true) :
-    runInstructions phaseGuardProgram (frame s mem 3501 rest) =
-      some (frame s mem 3510 rest) := by
+    (hdest : Decode.isValidJumpDest s.executionEnv.code 3533 = true) :
+    runInstructions phaseGuardProgram (frame s mem 3503 rest) =
+      some (frame s mem 3512 rest) := by
   simpa [hflag] using run_phaseGuard s mem rest hrest hact hdest
 
 theorem run_phaseExitHead (s : State) (mem : ByteArray) (value : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions phaseExitHeadProgram (frame s mem 3499 (value :: rest)) =
-      some (frame s mem 3501 rest) := by
+    runInstructions phaseExitHeadProgram (frame s mem 3501 (value :: rest)) =
+      some (frame s mem 3503 rest) := by
   have hcap : rest.length + 1 < 1024 := by omega
   simp [runInstructions, phaseExitHeadProgram, frame, Challenge.EvmProof.Stepper.runInstr,
     hcap, Challenge.EvmProof.Word.succ_ofNat_mod]
@@ -77,7 +77,7 @@ theorem run_phaseSwitch (s : State) (mem : ByteArray) (n : Nat) (rest : List UIn
     (hn : n = 4 ∨ n = 8) (hrest : rest.length ≤ 1000) (hact : 89 ≤ s.activeWords.toNat)
     (hdest : Decode.isValidJumpDest s.executionEnv.code 3032 = true) :
     runInstructions phaseSwitchProgram
-      (frame s mem 3510 ([UInt256.ofNat (32 * n), UInt256.ofNat n] ++ rest)) =
+      (frame s mem 3512 ([UInt256.ofNat (32 * n), UInt256.ofNat n] ++ rest)) =
       some (frame s (phaseSwitchMemory mem n) 3032
         ([UInt256.ofNat (n / 4), UInt256.ofNat (32 * n), UInt256.ofNat n] ++ rest)) := by
   have hn1 : 1 ≤ n := by omega
@@ -110,7 +110,7 @@ theorem run_phaseSwitch (s : State) (mem : ByteArray) (n : Nat) (rest : List UIn
 
 /-- Exact relocated guard bytes at PCs 3506 through 3514. -/
 theorem phaseGuardProgram_assembly : assemble phaseGuardProgram =
-    ByteArray.mk #[0x61, 0x06, 0xe0, 0x51, 0x15, 0x61, 0x0d, 0xcb, 0x57] := by rfl
+    ByteArray.mk #[0x61, 0x06, 0xe0, 0x51, 0x15, 0x61, 0x0d, 0xcd, 0x57] := by rfl
 
 /-- Exact relocated switch bytes at PCs 3515 through 3535; PUSH0 uses Instr.push0. -/
 theorem phaseSwitchProgram_assembly : assemble phaseSwitchProgram =
@@ -121,8 +121,8 @@ def phaseDoneProgram : List Instr := [.op .JUMPDEST]
 
 theorem run_phaseDone (s : State) (mem : ByteArray) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) :
-    runInstructions phaseDoneProgram (frame s mem 3531 rest) =
-      some (frame s mem 3532 rest) := by
+    runInstructions phaseDoneProgram (frame s mem 3533 rest) =
+      some (frame s mem 3534 rest) := by
   have hcap : rest.length < 1024 := by omega
   simp [runInstructions, phaseDoneProgram, frame, Challenge.EvmProof.Stepper.runInstr,
     hcap, Challenge.EvmProof.Word.succ_ofNat_mod]
@@ -130,18 +130,18 @@ theorem run_phaseDone (s : State) (mem : ByteArray) (rest : List UInt256)
 theorem run_phaseExitZero (s : State) (mem : ByteArray) (value : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) (hact : 89 ≤ s.activeWords.toNat)
     (hflag : MachineState.readWord mem 1760 = UInt256.ofNat 0)
-    (hdest : Decode.isValidJumpDest s.executionEnv.code 3531 = true) :
+    (hdest : Decode.isValidJumpDest s.executionEnv.code 3533 = true) :
     runInstructions (phaseExitHeadProgram ++ phaseGuardProgram)
-      (frame s mem 3499 (value :: rest)) = some (frame s mem 3531 rest) := by
+      (frame s mem 3501 (value :: rest)) = some (frame s mem 3533 rest) := by
   rw [runInstructions_append, run_phaseExitHead s mem value rest hrest]
   exact run_phaseGuardZero s mem rest hrest hact hflag hdest
 
 theorem run_phaseExitOne (s : State) (mem : ByteArray) (value : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) (hact : 89 ≤ s.activeWords.toNat)
     (hflag : MachineState.readWord mem 1760 = UInt256.ofNat 1)
-    (hdest : Decode.isValidJumpDest s.executionEnv.code 3531 = true) :
+    (hdest : Decode.isValidJumpDest s.executionEnv.code 3533 = true) :
     runInstructions (phaseExitHeadProgram ++ phaseGuardProgram)
-      (frame s mem 3499 (value :: rest)) = some (frame s mem 3510 rest) := by
+      (frame s mem 3501 (value :: rest)) = some (frame s mem 3512 rest) := by
   rw [runInstructions_append, run_phaseExitHead s mem value rest hrest]
   exact run_phaseGuardOne s mem rest hrest hact hflag hdest
 
@@ -150,27 +150,27 @@ open Challenge.EvmProof WindowTwentyOneBinding
 /-- MAIN supplies only these four artifact-location certificates.
 The instruction indices in v4 are2639/2641/2646/2658 respectively. -/
 structure PhaseBlocks (artifact : ProgramArtifact) (fork : Fork) where
-  exitHead : Block artifact fork 3499 phaseExitHeadProgram
-  guard : Block artifact fork 3501 phaseGuardProgram
-  switch : Block artifact fork 3510 phaseSwitchProgram
-  done : Block artifact fork 3531 phaseDoneProgram
+  exitHead : Block artifact fork 3501 phaseExitHeadProgram
+  guard : Block artifact fork 3503 phaseGuardProgram
+  switch : Block artifact fork 3512 phaseSwitchProgram
+  done : Block artifact fork 3533 phaseDoneProgram
 
 def PhaseBlocks.guardZeroSteps {artifact : ProgramArtifact} {fork : Fork}
     (blocks : PhaseBlocks artifact fork) (s : State) (mem : ByteArray)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) (hact : 89 ≤ s.activeWords.toNat)
     (hflag : MachineState.readWord mem 1760 = UInt256.ofNat 0)
-    (hdest : Decode.isValidJumpDest s.executionEnv.code 3531 = true)
-    (env : Environment artifact fork (frame s mem 3501 rest)) :
-    GasSteps (frame s mem 3501 rest) (frame s mem 3531 rest) :=
+    (hdest : Decode.isValidJumpDest s.executionEnv.code 3533 = true)
+    (env : Environment artifact fork (frame s mem 3503 rest)) :
+    GasSteps (frame s mem 3503 rest) (frame s mem 3533 rest) :=
   blocks.guard.steps env rfl (run_phaseGuardZero s mem rest hrest hact hflag hdest)
 
 def PhaseBlocks.guardOneSteps {artifact : ProgramArtifact} {fork : Fork}
     (blocks : PhaseBlocks artifact fork) (s : State) (mem : ByteArray)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) (hact : 89 ≤ s.activeWords.toNat)
     (hflag : MachineState.readWord mem 1760 = UInt256.ofNat 1)
-    (hdest : Decode.isValidJumpDest s.executionEnv.code 3531 = true)
-    (env : Environment artifact fork (frame s mem 3501 rest)) :
-    GasSteps (frame s mem 3501 rest) (frame s mem 3510 rest) :=
+    (hdest : Decode.isValidJumpDest s.executionEnv.code 3533 = true)
+    (env : Environment artifact fork (frame s mem 3503 rest)) :
+    GasSteps (frame s mem 3503 rest) (frame s mem 3512 rest) :=
   blocks.guard.steps env rfl (run_phaseGuardOne s mem rest hrest hact hflag hdest)
 
 def PhaseBlocks.switchSteps {artifact : ProgramArtifact} {fork : Fork}
@@ -179,8 +179,8 @@ def PhaseBlocks.switchSteps {artifact : ProgramArtifact} {fork : Fork}
     (hrest : rest.length ≤ 1000) (hact : 89 ≤ s.activeWords.toNat)
     (hdest : Decode.isValidJumpDest s.executionEnv.code 3032 = true)
     (env : Environment artifact fork
-      (frame s mem 3510 ([UInt256.ofNat (32 * n), UInt256.ofNat n] ++ rest))) :
-    GasSteps (frame s mem 3510 ([UInt256.ofNat (32 * n), UInt256.ofNat n] ++ rest))
+      (frame s mem 3512 ([UInt256.ofNat (32 * n), UInt256.ofNat n] ++ rest))) :
+    GasSteps (frame s mem 3512 ([UInt256.ofNat (32 * n), UInt256.ofNat n] ++ rest))
       (frame s (phaseSwitchMemory mem n) 3032
         ([UInt256.ofNat (n / 4), UInt256.ofNat (32 * n), UInt256.ofNat n] ++ rest)) :=
   blocks.switch.steps env rfl (run_phaseSwitch s mem n rest hn hrest hact hdest)
