@@ -1006,17 +1006,18 @@ theorem run_mpL2Body (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       fastPC13, fastPC14,
       hc10, hc11, hc12, hc13, hc14, hrun, hcode, hK, h32, h8224,
       h2241, h2241', hjump, jumpDest2038,
-      hpmj, hptj, hwr, hnextT, hgt, hactM, hactT, hactW, ptrAt_succ, ptrAt_shift32,
+      hpmj, hptj, hwr, hnextT, hgt, hactM, hactT, hactW, ptrAt_succ, ptrAt_pred, ptrAt_shift32,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
       List.exchange]
-  refine ⟨?_, MacAlt.macCarryFix _ _ _ _⟩
-  rw [MacAlt.macSumNat]
-  rw [Nat.add_comm (ptrAt (2048 + 32 * n) k) 32, ptrAt_shift32, hwr]
-  exact ⟨hactW, rfl⟩
+  first
+    | exact MacAlt.macCarryFix _ _ _ _
+    | (rw [MacAlt.macSumNat]
+       rw [Nat.add_comm (ptrAt (2048 + 32 * n) k) 32, ptrAt_shift32, hwr]
+       exact ⟨hactW, rfl⟩)
 
 
 set_option linter.unusedSimpArgs false in
@@ -1075,17 +1076,18 @@ theorem run_mpL2Exit (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
       mpL2State, mpTailState, l2Step, macSum, macCarry, mulHi, maxWord_literal,
       fastPC13, fastPC14,
       hc10, hc11, hc12, hc13, hc14, hrun, hK, h32, h8224,
-      hpmj, hptj, hwr, hnextT, hactM, hactT, hactW, ptrAt_succ, ptrAt_shift32,
+      hpmj, hptj, hwr, hnextT, hactM, hactT, hactW, ptrAt_succ, ptrAt_pred, ptrAt_shift32,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
       List.exchange]
-  refine ⟨?_, MacAlt.macCarryFix _ _ _ _⟩
-  rw [MacAlt.macSumNat]
-  rw [Nat.add_comm (ptrAt (2048 + 32 * n) k) 32, ptrAt_shift32, hwr]
-  exact ⟨hactW, rfl⟩
+  first
+    | exact MacAlt.macCarryFix _ _ _ _
+    | (rw [MacAlt.macSumNat]
+       rw [Nat.add_comm (ptrAt (2048 + 32 * n) k) 32, ptrAt_shift32, hwr]
+       exact ⟨hactW, rfl⟩)
 
 /-! ## The row tail, the outer loop back edge and the tail call -/
 
@@ -1110,6 +1112,7 @@ theorem run_mpTailNext (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
       UInt256) = UInt256.ofNat
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
     decide
+
   have h8192 : (2048 : UInt256).toNat = 2048 := by decide
   have h8224 : (2080 : UInt256).toNat = 2080 := by decide
   have h8256 : (2112 : UInt256).toNat = 2112 := by decide
@@ -1172,6 +1175,7 @@ theorem run_mpTailLast (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
       UInt256) = UInt256.ofNat
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
     decide
+
   have h8192 : (2048 : UInt256).toNat = 2048 := by decide
   have h8224 : (2080 : UInt256).toNat = 2080 := by decide
   have h8256 : (2112 : UInt256).toNat = 2112 := by decide
