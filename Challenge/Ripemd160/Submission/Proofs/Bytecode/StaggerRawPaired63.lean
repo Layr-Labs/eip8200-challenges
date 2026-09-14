@@ -9,16 +9,16 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired63
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 2937).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 2936).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 2937 actual_slice
-    (by change 2937 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 2936 actual_slice
+    (by change 2936 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 3903 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2937) = UInt256.ofNat 3903
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 2936) = UInt256.ofNat 3903
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound

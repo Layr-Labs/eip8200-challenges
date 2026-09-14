@@ -156,14 +156,14 @@ end transitionSite
 
 namespace transitionGuardSite
 abbrev template : List Instr := J2Raw.transitionGuardTemplate
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 192).take template.length = template := by rfl
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 191).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 192 actual_slice
-    (by change 192 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 191 actual_slice
+    (by change 191 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 285 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 192) = UInt256.ofNat 285
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 191) = UInt256.ofNat 285
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem end_pc : pcAfter (UInt256.ofNat 285) template = UInt256.ofNat 291 := by decide
 theorem form : ∀ instruction ∈ template.dropLast, RecognitionLift.Advances instruction :=
@@ -175,14 +175,14 @@ end transitionGuardSite
 
 namespace toTailSite
 abbrev template : List Instr := J2Raw.toTailTemplate
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 197).take template.length = template := by rfl
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 196).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 197 actual_slice
-    (by change 197 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 196 actual_slice
+    (by change 196 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 291 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 197) = UInt256.ofNat 291
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 196) = UInt256.ofNat 291
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem end_pc : pcAfter (UInt256.ofNat 291) template = UInt256.ofNat 294 := by decide
 theorem form : ∀ instruction ∈ template.dropLast, RecognitionLift.Advances instruction :=
@@ -194,14 +194,14 @@ end toTailSite
 
 namespace resultSite
 abbrev template : List Instr := J2Raw.resultTemplate
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 199).take template.length = template := by rfl
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 198).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 199 actual_slice
-    (by change 199 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 198 actual_slice
+    (by change 198 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 294 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 199) = UInt256.ofNat 294
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 198) = UInt256.ofNat 294
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem end_pc : pcAfter (UInt256.ofNat 294) template = UInt256.ofNat 299 := by decide
 theorem form : ∀ instruction ∈ template.dropLast, RecognitionLift.Advances instruction :=
@@ -229,15 +229,15 @@ theorem valid_219 (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEn
 
 theorem valid_298 (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEnv.code 294 = true := by
   rw [e.code]
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 199 (by rfl)
-  have hp : Artifact.submissionArtifact.instructionPC 199 = 294 := by
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 198 (by rfl)
+  have hp : Artifact.submissionArtifact.instructionPC 198 = 294 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   simpa only [hp] using h
 
 theorem valid_341 (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEnv.code 336 = true := by
   rw [e.code]
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 226 (by rfl)
-  have hp : Artifact.submissionArtifact.instructionPC 226 = 336 := by
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 225 (by rfl)
+  have hp : Artifact.submissionArtifact.instructionPC 225 = 336 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   simpa only [hp] using h
 

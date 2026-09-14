@@ -11,8 +11,8 @@ private theorem hadd_eq (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem hmul_eq (a b : UInt256) : a * b = UInt256.mul a b := rfl
 private theorem hsub_eq (a b : UInt256) : a - b = UInt256.sub a b := rfl
 
-def transitionATemplate : List Instr := transitionTemplate.take 16
-def transitionBTemplate : List Instr := transitionTemplate.drop 16
+def transitionATemplate : List Instr := transitionTemplate.take 15
+def transitionBTemplate : List Instr := transitionTemplate.drop 15
 def transitionAResult (f : Frame) : Frame := {f with word := advance 114 f.word, off := f.stop}
 def transitionBResult (f : Frame) : Frame :=
   let e := UInt256.add f.off (clamp (UInt256.sub f.len f.off))
@@ -53,7 +53,7 @@ theorem run_transition (s : State) (pc : UInt256) (f : Frame) (rho : List UInt25
   have ha := run_transitionA s pc f rho hstack hrun
   have hb := run_transitionB s (pcAfter pc transitionATemplate) (transitionAResult f) rho hstack hrun (by simpa only [transitionAResult] using hlen)
   have hab := DenseScheduleTrace.runInstrSeq_append_running ha (by exact hrun) hb
-  have ht : transitionATemplate ++ transitionBTemplate = transitionTemplate := List.take_append_drop 16 _
+  have ht : transitionATemplate ++ transitionBTemplate = transitionTemplate := List.take_append_drop 15 _
   have hr : transitionBResult (transitionAResult f) = transitionResult f := rfl
   rw [← DenseScheduleTrace.pcAfter_append, ht, hr] at hab
   exact hab
