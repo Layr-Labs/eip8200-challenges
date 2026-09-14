@@ -8,8 +8,8 @@ set_option maxHeartbeats 2000000
 /-!
 # Structural certificate for the frozen RIPEMD-160 artifact
 
-The exact candidate has 5233 bytes, 3790 executable instructions and 280 data bytes, and SHA-256
-`24c55f44135ea5653731c5a2e1e880754c3c396ddadddbf29a753a36b0856da7`. PUSH rows carry their typed width and value.
+The exact candidate has 5233 bytes, 3789 executable instructions and 280 data bytes, and SHA-256
+`ff5b157dc2a1c565f3b6007f650d126c15ea501354615d06b051d4fbda8a28c4`. PUSH rows carry their typed width and value.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
@@ -3871,10 +3871,9 @@ private def submissionInstructionsChunk20 : List Instr :=
   op 0x17,
   .push 1 54,
   op 0x52,
+  .push 2 65535,
   op 0x36,
-  .push 1 29,
-  op 0x1c,
-  op 0x15,
+  op 0x10,
   .push 2 890,
   op 0x57,
   op 0x36,
@@ -3937,7 +3936,7 @@ private def submissionInstructionsChunk20 : List Instr :=
   op 0xf3
 ]
 
-@[simp] private theorem submissionInstructionsChunk20_length : submissionInstructionsChunk20.length = 196 := by rfl
+@[simp] private theorem submissionInstructionsChunk20_length : submissionInstructionsChunk20.length = 195 := by rfl
 
 def submissionInstructions : List Instr :=
 submissionInstructionsChunk0
@@ -3962,7 +3961,7 @@ submissionInstructionsChunk0
  ++ submissionInstructionsChunk19
  ++ submissionInstructionsChunk20
 
-theorem referenceInstructions_count : submissionInstructions.length = 3790 := by
+theorem referenceInstructions_count : submissionInstructions.length = 3789 := by
   simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length, submissionInstructionsChunk20_length]
 
 private theorem submissionInstructionsChunk0_assemble : assembleBytes submissionInstructionsChunk0 = [
@@ -4435,7 +4434,7 @@ private theorem submissionInstructionsChunk20_assemble : assembleBytes submissio
   0x61, 0x04, 0x58, 0x36, 0x5f, 0x37, 0x36, 0x60, 0x03, 0x1b, 0x80, 0x60,
   0xa2, 0x52, 0x80, 0x61, 0x02, 0x9a, 0x52, 0x60, 0x90, 0x52, 0x60, 0x80,
   0x61, 0x02, 0x0a, 0x52, 0x60, 0x80, 0x80, 0x60, 0x90, 0x1b, 0x17, 0x60,
-  0x36, 0x52, 0x36, 0x60, 0x1d, 0x1c, 0x15, 0x61, 0x03, 0x7a, 0x57, 0x36,
+  0x36, 0x52, 0x61, 0xff, 0xff, 0x36, 0x10, 0x61, 0x03, 0x7a, 0x57, 0x36,
   0x60, 0x1d, 0x1c, 0x80, 0x61, 0x03, 0xf0, 0x52, 0x80, 0x61, 0x03, 0xde,
   0x52, 0x80, 0x61, 0x02, 0x88, 0x52, 0x80, 0x61, 0x02, 0x64, 0x52, 0x61,
   0x01, 0x0e, 0x52, 0x61, 0x03, 0x7a, 0x56, 0x5b, 0x60, 0x01, 0x70, 0x01,
@@ -4703,7 +4702,7 @@ private theorem tailPrefix_length : tailPrefix.length = 3594 := by
 private theorem tailPrefix_bytes_length : (assembleBytes tailPrefix).length = 4617 := by
   simp only [tailPrefix, assembleBytes_append, List.length_append, chunk0_byteLength, chunk1_byteLength, chunk2_byteLength, chunk3_byteLength, chunk4_byteLength, chunk5_byteLength, chunk6_byteLength, chunk7_byteLength, chunk8_byteLength, chunk9_byteLength, chunk10_byteLength, chunk11_byteLength, chunk12_byteLength, chunk13_byteLength, chunk14_byteLength, chunk15_byteLength, chunk16_byteLength, chunk17_byteLength, chunk18_byteLength, chunk19_byteLength]
 
-private theorem instructionPC_tail (i : Nat) (hi : i ≤ 196) :
+private theorem instructionPC_tail (i : Nat) (hi : i ≤ 195) :
     submissionArtifact.instructionPC (3594 + i) =
       4617 + (assembleBytes (submissionInstructionsChunk20.take i)).length := by
   apply ArtifactSegment.instructionPC_segment_of_bounds submissionArtifact
