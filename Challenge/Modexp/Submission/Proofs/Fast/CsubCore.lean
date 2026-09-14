@@ -548,6 +548,7 @@ theorem run_csLoopBody (s : State) (memory : ByteArray) (n j : Nat)
       UInt256) = UInt256.ofNat
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
     decide
+  have h32w : (32 : UInt256) = UInt256.ofNat 32 := by decide
   have h8224 : (2080 : UInt256).toNat = 2080 := by decide
   have h2666 : (1443 : UInt256).toNat = 1443 := by decide
   have h2666' : (1443 : UInt256) = UInt256.ofNat 1443 := by decide
@@ -586,8 +587,8 @@ theorem run_csLoopBody (s : State) (memory : ByteArray) (n j : Nat)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       csLoopState, csStep, fastPC14, fastPC15, fastPC16, fastPC17, fastPC18, fastPC19,
-      hc6, hc7, hc8, hc9, hc10, hrun, hcode, hK, h8224, h2666, h2666', hjump,
-      jumpDest2225, ht, hm, hd, hnext, hgt, hactT, hactM, hactD, ptrAt_succ,
+      hc6, hc7, hc8, hc9, hc10, hrun, hcode, hK, h32w, h8224, h2666, h2666', hjump,
+      jumpDest2225, ht, hm, hd, hnext, hgt, hactT, hactM, hactD, ptrAt_succ, ptrAt_pred,
       UInt256.gt, UInt256.lt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -616,6 +617,7 @@ theorem run_csLoopExit (s : State) (memory : ByteArray) (n j : Nat)
       UInt256) = UInt256.ofNat
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
     decide
+  have h32w : (32 : UInt256) = UInt256.ofNat 32 := by decide
   have h8224 : (2080 : UInt256).toNat = 2080 := by decide
   have ht : ptrAt (2080 + 32 * n) j %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
@@ -645,8 +647,8 @@ theorem run_csLoopExit (s : State) (memory : ByteArray) (n j : Nat)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       csLoopState, csTailState, csStep, fastPC14, fastPC15, fastPC16, fastPC17, fastPC18, fastPC19,
-      hc6, hc7, hc8, hc9, hc10, hrun, hK, h8224, hnj,
-      ht, hm, hd, hnext, hactT, hactM, hactD, ptrAt_succ,
+      hc6, hc7, hc8, hc9, hc10, hrun, hK, h32w, h8224, hnj,
+      ht, hm, hd, hnext, hactT, hactM, hactD, ptrAt_succ, ptrAt_pred,
       UInt256.gt, UInt256.lt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
