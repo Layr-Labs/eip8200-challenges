@@ -60,6 +60,32 @@ theorem ptrAt_succ (base j : Nat) :
   simp only [ptrAt, Nat.succ_mul]
   omega
 
+/-- One downward step, in the shape the shared-constant `PUSH3 32; SWAP3; SUB`
+chain produces: subtracting 32 from the embedded pointer equals embedding the
+next `ptrAt`, because `x - 32 = x + (2 ^ 256 - 32)` in `UInt256`. -/
+theorem ptrAt_sub32 (base j : Nat) :
+    UInt256.ofNat (ptrAt base j) - UInt256.ofNat 32 =
+      UInt256.ofNat (ptrAt base (j + 1)) := by
+  apply Challenge.EvmProof.Word.word_ext
+  change ((UInt256.ofNat (ptrAt base j)).val - (UInt256.ofNat 32).val).val = _
+  rw [Fin.val_sub]
+  change (UInt256.size - (UInt256.ofNat 32).toNat +
+      (UInt256.ofNat (ptrAt base j)).toNat) % UInt256.size =
+    (UInt256.ofNat (ptrAt base (j + 1))).toNat
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat]
+  have hstep : ptrAt base (j + 1) =
+      ptrAt base j + 115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
+    rw [Nat.add_comm]; exact ptrAt_succ base j
+  rw [hstep]
+  have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 : Nat) =
+      2 ^ 256 - 32 := by norm_num
+  rw [hK]
+  change (2 ^ 256 - 32 % 2 ^ 256 + ptrAt base j % 2 ^ 256) % 2 ^ 256 =
+    (ptrAt base j + (2 ^ 256 - 32)) % 2 ^ 256
+  omega
+
 /-- The address a downward pointer walk has reached, as long as it has not
 yet stepped below the base of the block. -/
 theorem ptrAt_toNat (base j : Nat) (hj : 32 * j ≤ base) (hbase : base < 2 ^ 256) :
@@ -268,7 +294,7 @@ theorem run_amLoopBody (s : State) (memory : ByteArray) (pa pb n j : Nat)
       Challenge.EvmProof.Stepper.runInstr,
       amLoopState, amStep, fastPC14, fastPC15, fastPC16, fastPC17, fastPC18, fastPC19,
       hc6, hc7, hc8, hc9, hrun, hcode, hK, h8224, h2500, h2500', hjump, jumpDest2168,
-      hta, htb, htt, hnext, hgt, hactA, hactB, hactT, ptrAt_succ,
+      hta, htb, htt, hnext, hgt, hactA, hactB, hactT, ptrAt_succ, ptrAt_sub32,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -352,7 +378,7 @@ theorem run_amLoopExit (s : State) (memory : ByteArray) (pa pb n j : Nat)
       Challenge.EvmProof.Stepper.runInstr,
       amLoopState, amTailState, amStep, fastPC14, fastPC15, fastPC16, fastPC17, fastPC18, fastPC19,
       hc6, hc7, hc8, hc9, hrun, hK, h8224, hnj,
-      hta, htb, htt, hnext, hactA, hactB, hactT, ptrAt_succ,
+      hta, htb, htt, hnext, hactA, hactB, hactT, ptrAt_succ, ptrAt_sub32,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
