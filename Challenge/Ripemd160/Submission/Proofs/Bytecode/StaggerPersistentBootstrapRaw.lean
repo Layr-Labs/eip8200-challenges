@@ -27,9 +27,9 @@ def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
     (UInt256.ofNat 1109194275457955143345843994625),
     (UInt256.ofNat 475368975196266490007815979009),
     x.h4,
-    x.h1,
-    x.h2,
     x.h3,
+    x.h2,
+    x.h1,
     x.h0,
     x.off,
     x.limit ] ++ rho

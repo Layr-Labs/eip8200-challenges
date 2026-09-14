@@ -34,8 +34,7 @@ structure Input where
 private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
 def template : List Instr :=
-  [
-    .op (.Swap ⟨3, by decide⟩),
+  [ .op (.Swap ⟨3, by decide⟩),
     .op (.Dup ⟨3, by decide⟩),
     .op (.Dup ⟨5, by decide⟩),
     .op .NOT,
@@ -59,7 +58,7 @@ def template : List Instr :=
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHL,
-    .op (.Dup ⟨12, by decide⟩),
+    .op (.Dup ⟨14, by decide⟩),
     .op .OR,
     .op (.Swap ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
@@ -78,7 +77,7 @@ def template : List Instr :=
     .op .SHR,
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHL,
-    .op (.Dup ⟨14, by decide⟩),
+    .op (.Dup ⟨12, by decide⟩),
     .op .OR,
     .op (.Swap ⟨2, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
@@ -93,7 +92,7 @@ def template : List Instr :=
     .op .OR ]
 
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ x.rd, x.k, x.rb, x.rc, x.ra, x.re, x.factor, x.lower, x.cache140, x.cache350, x.cache310, x.cache190, x.h4, x.h1, x.h2, x.h3, x.h0, x.off, x.limit ] ++ rho
+  [ x.rd, x.k, x.rb, x.rc, x.ra, x.re, x.factor, x.lower, x.cache140, x.cache350, x.cache310, x.cache190, x.h4, x.h3, x.h2, x.h1, x.h0, x.off, x.limit ] ++ rho
 def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.lor (UInt256.shiftLeft x.lower (UInt256.ofNat 144)) x.lower),
     (UInt256.shiftLeft x.lower (UInt256.ofNat 144)),
@@ -109,9 +108,9 @@ def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UI
     x.cache310,
     x.cache190,
     x.h4,
-    x.h1,
-    x.h2,
     x.h3,
+    x.h2,
+    x.h1,
     x.h0,
     x.off,
     x.limit ] ++ rho
@@ -133,7 +132,7 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     packed x.h4 x.rd, packed x.h1 (roundT memory x), packed x.h0 x.re,
     packed x.h3 (rotatedC x), packed x.h2 x.rb,
     x.factor, x.lower, x.cache140, x.cache350, x.cache310, x.cache190,
-    x.h4, x.h1, x.h2, x.h3, x.h0, x.off, x.limit ] ++ rho
+    x.h4, x.h3, x.h2, x.h1, x.h0, x.off, x.limit ] ++ rho
 private theorem actualOutput_eq (memory : ByteArray) (x : Input) (rho : List UInt256) :
     actualOutput memory x rho = outputStack memory x rho := by
   simp only [actualOutput, outputStack, packed, rotatedC, roundT, pairMask, upperMask,

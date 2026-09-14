@@ -83,11 +83,10 @@ def initTemplate : List Instr := [
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
   .push ⟨0, by decide⟩ (UInt256.ofNat 0)]
 
-def firstTemplate : List Instr := [
-  .op (.Dup ⟨3, by decide⟩),
-  .op .ISZERO,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 216),
-  .op .JUMPI]
+def firstTemplate : List Instr := [ .op (.Dup ⟨3, by decide⟩),
+    .op .ISZERO,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 215),
+    .op .JUMPI ]
 
 def normalTemplate : List Instr := [
   .op .JUMPDEST,
@@ -117,7 +116,7 @@ def normalGuardTemplate : List Instr := [
   .op (.Dup ⟨3, by decide⟩),
   .op (.Dup ⟨2, by decide⟩),
   .op .LT,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 187),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 186),
   .op .JUMPI]
 
 def tailTemplate : List Instr := [
@@ -137,12 +136,11 @@ def tailTemplate : List Instr := [
   .op .SHR,
   .op .OR]
 
-def finishTemplate : List Instr := [
-  .op .CALLDATASIZE,
-  .op (.Dup ⟨5, by decide⟩),
-  .op .EQ,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 294),
-  .op .JUMPI]
+def finishTemplate : List Instr := [ .op .CALLDATASIZE,
+    .op (.Dup ⟨5, by decide⟩),
+    .op .EQ,
+    .push ⟨2, by decide⟩ (UInt256.ofNat 293),
+    .op .JUMPI ]
 
 def transitionTemplate : List Instr := [
   .op (.Dup ⟨9, by decide⟩),
@@ -191,17 +189,16 @@ def transitionGuardTemplate : List Instr := [
   .op (.Dup ⟨3, by decide⟩),
   .op (.Dup ⟨2, by decide⟩),
   .op .LT,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 187),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 186),
   .op .JUMPI]
 
 def toTailTemplate : List Instr := [
-  .push ⟨1, by decide⟩ (UInt256.ofNat 216),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 215),
   .op .JUMP]
 
-def resultTemplate : List Instr := [
-  .op .JUMPDEST,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 337),
-  .op .JUMPI]
+def resultTemplate : List Instr := [ .op .JUMPDEST,
+    .push ⟨2, by decide⟩ (UInt256.ofNat 335),
+    .op .JUMPI ]
 
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Raw

@@ -68,8 +68,8 @@ def gasSteps_align (input : ByteArray) (h32 : input.size = 32) :
     (by rw [PaddingTrace.initialFrame_length]; decide) h32
 
 def gasSteps (input : ByteArray) (h32 : input.size = 32)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 337)) :
-    GasSteps (initialState submissionBytecode input 0) (atState (tableState input) 894 frame) := by
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 335)) :
+    GasSteps (initialState submissionBytecode input 0) (atState (tableState input) 898 frame) := by
   have hfit : CalldataFits input := by change input.size < 2 ^ 64; rw [h32]; decide
   let s := PaddingTrace.padCopied input
   have e : Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
@@ -82,23 +82,23 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32)
   have g0 := (Main.gasSteps_initialize input entryPrefix).trans
     ((PaddingTrace.gasSteps_enterPad input).trans ((PaddingTrace.gasSteps_paddedLength input).trans
       ((PaddingTrace.gasSteps_lengthCopy input hfit).trans (PaddingTrace.gasSteps_push input))))
-  have g1 : GasSteps (PaddingTrace.padFramed input) (atState s 4705 entryFrame) := by
+  have g1 : GasSteps (PaddingTrace.padFramed input) (atState s 4708 entryFrame) := by
     simpa only [PaddingTrace.padGuardTaken, PaddingTrace.padGuardMiss, hframe, atState, s] using
       gasSteps_align input h32
-  have g2 : GasSteps (atState s 4705 entryFrame) (atState s 4706 frame) := by
+  have g2 : GasSteps (atState s 4708 entryFrame) (atState s 4709 frame) := by
     exact StaggerPersistentStart.gasSteps_entry s entryFrame (by decide) e.run e.code e.fork e.np
   have g3 := Shared32Trace.gasSteps_guard s e frame hcap h32
   have g4 := Shared32Trace.gasSteps_sparse s e factorPlusWord (UInt256.ofNat 4294967295)
     (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)
     (fusedCoefficientWord 0 2)
-    (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
-    (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
+    (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
+    (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
     (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 32) [] (by decide) hactive (by decide)
   have g5 := Shared32Trace.gasSteps_table s e factorPlusWord
     (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)
     (fusedCoefficientWord 0 2)
-    (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
-    (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
+    (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
+    (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
     (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 32) [] (by decide) hactive
     (copied_low input) hgap
   have hm : sparseMemory s.memory = PairedScheduleMemory.writeWord s.memory 60 highWord := by

@@ -10,17 +10,17 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 
 theorem correct (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 337)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 335)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   by_cases h32 : input.size = 32
   · exact Shared32Correct.correct input h32 entryPrefix
   · exact ColdCorrect.correct input hfit hpositive h32 entryPrefix
 theorem correct_tail (input : ByteArray) (hfit : CalldataFits input)
-    (hpositive : 0 < input.size) (hsmall : input.size < 5220)
+    (hpositive : 0 < input.size) (hsmall : input.size < 5223)
     (rho : List UInt256) (hcap : rho.length ≤ 20)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0)
-      (StackTail.append (Execution.atPC input 337) rho)) :
+      (StackTail.append (Execution.atPC input 335) rho)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   by_cases h32 : input.size = 32

@@ -17,7 +17,7 @@ private theorem hmul_eq (a b : UInt256) : a * b = UInt256.mul a b := rfl
 
 def prefixTemplate (table : UInt256) : List Instr :=
   [ .push ⟨1, by decide⟩ (UInt256.ofNat 20),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+    .op (.Dup ⟨0, by decide⟩),
     .op .CALLDATASIZE,
     .push ⟨4, by decide⟩ (UInt256.ofNat 2337668504),
     .op .DIV,
