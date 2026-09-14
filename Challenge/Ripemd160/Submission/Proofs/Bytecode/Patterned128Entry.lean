@@ -59,48 +59,48 @@ private theorem calldatasize_step (input : ByteArray) (pc : Nat) (stk : List UIn
 
 /-! ## Program counters in the guard window -/
 
-private theorem pc3836 : Artifact.submissionArtifact.instructionPC 3740 = 4838 := GuardInstructionWindow.pc 180
-private theorem pc3837 : Artifact.submissionArtifact.instructionPC 3741 = 4839 := GuardInstructionWindow.pc 181
-private theorem pc3843 : Artifact.submissionArtifact.instructionPC 3747 = 4864 := GuardInstructionWindow.pc 187
-private theorem pc3844 : Artifact.submissionArtifact.instructionPC 3748 = 4865 := GuardInstructionWindow.pc 188
-private theorem packedPC3748 : Artifact.submissionArtifact.instructionPC 3748 = 4865 := GuardInstructionWindow.pc 188
-private theorem packedPC3749 : Artifact.submissionArtifact.instructionPC 3749 = 4874 := GuardInstructionWindow.pc 189
-private theorem packedPC3750 : Artifact.submissionArtifact.instructionPC 3750 = 4875 := GuardInstructionWindow.pc 190
-private theorem packedPC3751 : Artifact.submissionArtifact.instructionPC 3751 = 4877 := GuardInstructionWindow.pc 191
-private theorem packedPC3752 : Artifact.submissionArtifact.instructionPC 3752 = 4878 := GuardInstructionWindow.pc 192
-private theorem packedPC3753 : Artifact.submissionArtifact.instructionPC 3753 = 4879 := GuardInstructionWindow.pc 193
-private theorem packedPC3754 : Artifact.submissionArtifact.instructionPC 3754 = 4882 := GuardInstructionWindow.pc 194
-private theorem packedPC3755 : Artifact.submissionArtifact.instructionPC 3755 = 4883 := GuardInstructionWindow.pc 195
-private theorem packedPC3756 : Artifact.submissionArtifact.instructionPC 3756 = 4884 := GuardInstructionWindow.pc 196
-private theorem packedPC3757 : Artifact.submissionArtifact.instructionPC 3757 = 4885 := GuardInstructionWindow.pc 197
-private theorem packedPC3758 : Artifact.submissionArtifact.instructionPC 3758 = 4887 := GuardInstructionWindow.pc 198
+private theorem pc3836 : Artifact.submissionArtifact.instructionPC 3739 = 4838 := GuardInstructionWindow.pc 179
+private theorem pc3837 : Artifact.submissionArtifact.instructionPC 3740 = 4839 := GuardInstructionWindow.pc 180
+private theorem pc3843 : Artifact.submissionArtifact.instructionPC 3746 = 4864 := GuardInstructionWindow.pc 186
+private theorem pc3844 : Artifact.submissionArtifact.instructionPC 3747 = 4865 := GuardInstructionWindow.pc 187
+private theorem packedPC3748 : Artifact.submissionArtifact.instructionPC 3747 = 4865 := GuardInstructionWindow.pc 187
+private theorem packedPC3749 : Artifact.submissionArtifact.instructionPC 3748 = 4874 := GuardInstructionWindow.pc 188
+private theorem packedPC3750 : Artifact.submissionArtifact.instructionPC 3749 = 4875 := GuardInstructionWindow.pc 189
+private theorem packedPC3751 : Artifact.submissionArtifact.instructionPC 3750 = 4877 := GuardInstructionWindow.pc 190
+private theorem packedPC3752 : Artifact.submissionArtifact.instructionPC 3751 = 4878 := GuardInstructionWindow.pc 191
+private theorem packedPC3753 : Artifact.submissionArtifact.instructionPC 3752 = 4879 := GuardInstructionWindow.pc 192
+private theorem packedPC3754 : Artifact.submissionArtifact.instructionPC 3753 = 4882 := GuardInstructionWindow.pc 193
+private theorem packedPC3755 : Artifact.submissionArtifact.instructionPC 3754 = 4883 := GuardInstructionWindow.pc 194
+private theorem packedPC3756 : Artifact.submissionArtifact.instructionPC 3755 = 4884 := GuardInstructionWindow.pc 195
+private theorem packedPC3757 : Artifact.submissionArtifact.instructionPC 3756 = 4885 := GuardInstructionWindow.pc 196
+private theorem packedPC3758 : Artifact.submissionArtifact.instructionPC 3757 = 4887 := GuardInstructionWindow.pc 197
 
-@[simp] private theorem sizeHitPC3838 : Artifact.submissionArtifact.instructionPC 3742 = 4841 :=
+@[simp] private theorem sizeHitPC3838 : Artifact.submissionArtifact.instructionPC 3741 = 4841 :=
+  GuardInstructionWindow.pc 181
+@[simp] private theorem sizeHitPC3839 : Artifact.submissionArtifact.instructionPC 3742 = 4859 :=
   GuardInstructionWindow.pc 182
-@[simp] private theorem sizeHitPC3839 : Artifact.submissionArtifact.instructionPC 3743 = 4859 :=
+@[simp] private theorem sizeHitPC3840 : Artifact.submissionArtifact.instructionPC 3743 = 4860 :=
   GuardInstructionWindow.pc 183
-@[simp] private theorem sizeHitPC3840 : Artifact.submissionArtifact.instructionPC 3744 = 4860 :=
+@[simp] private theorem sizeHitPC3841 : Artifact.submissionArtifact.instructionPC 3744 = 4861 :=
   GuardInstructionWindow.pc 184
-@[simp] private theorem sizeHitPC3841 : Artifact.submissionArtifact.instructionPC 3745 = 4861 :=
+@[simp] private theorem sizeHitPC3842 : Artifact.submissionArtifact.instructionPC 3745 = 4862 :=
   GuardInstructionWindow.pc 185
-@[simp] private theorem sizeHitPC3842 : Artifact.submissionArtifact.instructionPC 3746 = 4862 :=
-  GuardInstructionWindow.pc 186
 
 /-! ## The size mask -/
 
 private def maskEntry : List Located :=
-  [DirectGuard.opAt 3740 .JUMPDEST (by exact GuardInstructionWindow.get 180)]
+  [DirectGuard.opAt 3739 .JUMPDEST (by exact GuardInstructionWindow.get 179)]
 
 private def sizePrefix : List Located :=
-  [DirectGuard.pushAt 3741 1 1 (by exact GuardInstructionWindow.get 181),
-   DirectGuard.pushAt 3742 17 342276208914615837337402008677671501826 (by exact GuardInstructionWindow.get 182),
-   DirectGuard.opAt 3743 .CALLDATASIZE (by exact GuardInstructionWindow.get 183),
-   DirectGuard.opAt 3744 .SHR (by exact GuardInstructionWindow.get 184),
-   DirectGuard.opAt 3745 .AND (by exact GuardInstructionWindow.get 185),
-   DirectGuard.pushAt 3746 1 111 (by exact GuardInstructionWindow.get 186)]
+  [DirectGuard.pushAt 3740 1 1 (by exact GuardInstructionWindow.get 180),
+   DirectGuard.pushAt 3741 17 342276208914615837337402008677671501826 (by exact GuardInstructionWindow.get 181),
+   DirectGuard.opAt 3742 .CALLDATASIZE (by exact GuardInstructionWindow.get 182),
+   DirectGuard.opAt 3743 .SHR (by exact GuardInstructionWindow.get 183),
+   DirectGuard.opAt 3744 .AND (by exact GuardInstructionWindow.get 184),
+   DirectGuard.pushAt 3745 1 111 (by exact GuardInstructionWindow.get 185)]
 
 private def maskJump : List Located :=
-  [DirectGuard.opAt 3747 .JUMPI (by exact GuardInstructionWindow.get 187)]
+  [DirectGuard.opAt 3746 .JUMPI (by exact GuardInstructionWindow.get 186)]
 
 private def guardMatchTail : List Located :=
   [DirectGuard.opAt 69 .JUMPDEST]
@@ -118,13 +118,13 @@ private theorem run_mask_entry (input : ByteArray) :
     DirectGuard.run maskEntry (PatternedScan.stS input 4838 []) =
       some (PatternedScan.stS input 4839 []) :=
   PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 3740 4838 [] (by norm_num) pc3836)
+    (PatternedScan.pcFactS input 3739 4838 [] (by norm_num) pc3836)
     (PatternedScan.stepS_jumpdest input 4838 [] (by simp) (by norm_num))
 
 private theorem run_size_prefix (input : ByteArray) :
     DirectGuard.run sizePrefix (PatternedScan.stS input 4839 []) =
       some (PatternedScan.stS input 4864 [111, sizeBit input]) := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3741 = 4839 := pc3837
+  have hpc : Artifact.submissionArtifact.instructionPC 3740 = 4839 := pc3837
   simp (config := {maxSteps := 400000}) [sizePrefix, sizeBit, DirectGuard.opAt,
     DirectGuard.pushAt, DirectGuard.wfOp, PatternedScan.stS, initialState, hpc,
     DataStepper.runLocatedBlock, DataStepper.runLocated, DataStepper.runInstr,
@@ -134,7 +134,7 @@ private theorem run_mask_match (input : ByteArray) (hc : UInt256.isTrue (sizeBit
     DirectGuard.run maskJump (PatternedScan.stS input 4864 [111, sizeBit input]) =
       some (PatternedScan.stS input 111 []) :=
   PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 3747 4864 [111, sizeBit input] (by norm_num) pc3843)
+    (PatternedScan.pcFactS input 3746 4864 [111, sizeBit input] (by norm_num) pc3843)
     (PatternedScan.stepS_jumpi_taken input 4864 111 111 (sizeBit input) []
       (by simp) (by norm_num) (by rfl) hc guard_match_dest)
 
@@ -142,7 +142,7 @@ private theorem run_mask_fall (input : ByteArray) (hc : ¬ UInt256.isTrue (sizeB
     DirectGuard.run maskJump (PatternedScan.stS input 4864 [111, sizeBit input]) =
       some (PatternedScan.stS input 4865 []) :=
   PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 3747 4864 [111, sizeBit input] (by norm_num) pc3843)
+    (PatternedScan.pcFactS input 3746 4864 [111, sizeBit input] (by norm_num) pc3843)
     (PatternedScan.stepS_jumpi_fall input 4864 111 (sizeBit input) []
       (by simp) (by norm_num) hc)
 
@@ -193,19 +193,19 @@ private def lengthCond (input : ByteArray) : UInt256 :=
     (UInt256.eq 256 (UInt256.ofNat input.size))
 
 private def lengthPrefix : List Located :=
-  [DirectGuard.pushAt 3748 8 105838886210502912 (by exact GuardInstructionWindow.get 188),
-   DirectGuard.opAt 3749 .CALLDATASIZE (by exact GuardInstructionWindow.get 189),
-   DirectGuard.pushAt 3750 1 53 (by exact GuardInstructionWindow.get 190),
-   DirectGuard.opAt 3751 .AND (by exact GuardInstructionWindow.get 191),
-   DirectGuard.opAt 3752 .SHR (by exact GuardInstructionWindow.get 192),
-   DirectGuard.pushAt 3753 2 1016 (by exact GuardInstructionWindow.get 193),
-   DirectGuard.opAt 3754 .AND (by exact GuardInstructionWindow.get 194),
-   DirectGuard.opAt 3755 .CALLDATASIZE (by exact GuardInstructionWindow.get 195),
-   DirectGuard.opAt 3756 .EQ (by exact GuardInstructionWindow.get 196),
-   DirectGuard.pushAt 3757 1 111 (by exact GuardInstructionWindow.get 197)]
+  [DirectGuard.pushAt 3747 8 105838886210502912 (by exact GuardInstructionWindow.get 187),
+   DirectGuard.opAt 3748 .CALLDATASIZE (by exact GuardInstructionWindow.get 188),
+   DirectGuard.pushAt 3749 1 53 (by exact GuardInstructionWindow.get 189),
+   DirectGuard.opAt 3750 .AND (by exact GuardInstructionWindow.get 190),
+   DirectGuard.opAt 3751 .SHR (by exact GuardInstructionWindow.get 191),
+   DirectGuard.pushAt 3752 2 1016 (by exact GuardInstructionWindow.get 192),
+   DirectGuard.opAt 3753 .AND (by exact GuardInstructionWindow.get 193),
+   DirectGuard.opAt 3754 .CALLDATASIZE (by exact GuardInstructionWindow.get 194),
+   DirectGuard.opAt 3755 .EQ (by exact GuardInstructionWindow.get 195),
+   DirectGuard.pushAt 3756 1 111 (by exact GuardInstructionWindow.get 196)]
 
 private def lengthJump : List Located :=
-  [DirectGuard.opAt 3758 .JUMPI (by exact GuardInstructionWindow.get 198)]
+  [DirectGuard.opAt 3757 .JUMPI (by exact GuardInstructionWindow.get 197)]
 
 private theorem run_length_prefix (input : ByteArray) :
     DirectGuard.run lengthPrefix (PatternedScan.stS input 4865 []) =
@@ -258,7 +258,7 @@ private def gasSteps_length_match (input : ByteArray)
   have hj : DirectGuard.run lengthJump (PatternedScan.stS input 4887 [111, lengthCond input]) =
       some (PatternedScan.stS input 111 []) :=
     PatternedScan.blockOfS _
-      (PatternedScan.pcFactS input 3758 4887 _ (by norm_num) packedPC3758)
+      (PatternedScan.pcFactS input 3757 4887 _ (by norm_num) packedPC3758)
       (PatternedScan.stepS_jumpi_taken input 4887 111 111 (lengthCond input) []
         (by simp) (by norm_num) (by simpa using Word.literal_eq_ofNat _)
         (lengthCond_true input hsize) guard_match_dest)
@@ -271,7 +271,7 @@ private def gasSteps_length_fail (input : ByteArray) (hfit : CalldataFits input)
   have hj : DirectGuard.run lengthJump (PatternedScan.stS input 4887 [111, lengthCond input]) =
       some (AbcArm.armEntry input) :=
     PatternedScan.blockOfS _
-      (PatternedScan.pcFactS input 3758 4887 _ (by norm_num) packedPC3758)
+      (PatternedScan.pcFactS input 3757 4887 _ (by norm_num) packedPC3758)
       (PatternedScan.stepS_jumpi_fall input 4887 111 (lengthCond input) []
         (by simp) (by norm_num) (lengthCond_false input hfit h256 h376 h1000))
   exact (sound lengthPrefix (run_length_prefix input)).trans (sound lengthJump hj)

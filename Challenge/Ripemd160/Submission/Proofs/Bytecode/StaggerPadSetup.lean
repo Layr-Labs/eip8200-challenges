@@ -12,10 +12,12 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory
 open PairTableActive StaggerTableSparse StaggerTableLayout
 
-/-- Pad-only low block (pc 4783..4824): copy zero calldata over the table, store the unmasked
+/-- Pad-only low block (pc 4746..4801): copy zero calldata over the table, store the unmasked
 low bit-length word `n <<< 3` (two `JUMPDEST`s keep the block's length where the mask used
 to be applied; the resident `0xffffffff` stays four deep on the stack) and `0x80`, then leave
-`iszero (n >>> 29)` for the branch at 4825. -/
+the packed `lt n 65535` guard for the branch at 4802. The guard is a sufficient condition for
+`n >>> 29 = 0`: every calldata length it accepts leaves the high lanes clear, and the lengths it
+rejects fall through to the high block, which stores the exact high word whatever its value. -/
 def lowTemplate : List Instr :=
   [ .push ⟨2, by decide⟩ (UInt256.ofNat 1112),
     .op .CALLDATASIZE,
@@ -38,10 +40,9 @@ def lowTemplate : List Instr :=
     .push ⟨19, by decide⟩ (UInt256.ofNat (128 * (1 + 2 ^ 144))),
     .push ⟨1, by decide⟩ (UInt256.ofNat 54),
     .op .MSTORE,
+    .push ⟨2, by decide⟩ (UInt256.ofNat 65535),
     .op .CALLDATASIZE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 29),
-    .op .SHR,
-    .op .ISZERO ]
+    .op .LT ]
 
 /-- `PUSH2 398 JUMPI` at 4768: straight to the rounds when the high word is zero. -/
 def branchTemplate : List Instr :=
@@ -70,39 +71,28 @@ def highTemplate : List Instr :=
 
 private theorem add_eq_hAdd (x y : UInt256) : UInt256.add x y = x + y := rfl
 
-/-- The branch condition left by the low block. -/
-def highZero (n : UInt256) : UInt256 := UInt256.isZero (UInt256.shiftRight n (UInt256.ofNat 29))
+/-- The branch condition left by the low block: the packed length guard `lt n 65535`. -/
+def highZero (n : UInt256) : UInt256 := UInt256.lt n (UInt256.ofNat 65535)
 
-theorem highZero_true_iff (n : UInt256) :
-    UInt256.isTrue (highZero n) ↔ StaggerTablePad.highDirty n = UInt256.ofNat 0 := by
-  have hx : StaggerTablePad.highDirty n = UInt256.ofNat 0 ↔
-      (UInt256.shiftRight n (UInt256.ofNat 29)).toNat = 0 := by
-    constructor
-    · intro h
-      change (StaggerTablePad.highDirty n).toNat = 0
-      rw [h]
-      decide
-    · intro h
-      apply Word.word_ext
-      change (UInt256.shiftRight n (UInt256.ofNat 29)).toNat = _
-      rw [h]
-      decide
-  rw [hx]
-  unfold highZero UInt256.isZero
-  by_cases h : (UInt256.shiftRight n (UInt256.ofNat 29)).toNat = 0
-  · rw [if_pos h]
-    constructor
-    · intro _
-      exact h
-    · intro _
-      show (UInt256.ofNat 1).toNat ≠ 0
-      decide
-  · rw [if_neg h]
-    constructor
-    · intro h'
-      exact absurd h' (by show ¬ (UInt256.ofNat 0).toNat ≠ 0; decide)
-    · intro h'
-      exact absurd h' h
+theorem highZero_true_imp (n : UInt256) (h : UInt256.isTrue (highZero n)) :
+    StaggerTablePad.highDirty n = UInt256.ofNat 0 := by
+  have hnum : (UInt256.ofNat 65535).toNat = 65535 := by decide
+  have hbound : n.toNat < 65535 := by
+    by_cases hc : n.toNat < 65535
+    · exact hc
+    · refine absurd ?_ h
+      show (highZero n).toNat = 0
+      unfold highZero
+      rw [Word.word_toNat_lt]
+      simp only [hnum]
+      exact if_neg hc
+  apply Word.word_ext
+  unfold StaggerTablePad.highDirty
+  rw [Word.shiftRight_toNat _ (by decide), Nat.shiftRight_eq_div_pow]
+  have h0 : (UInt256.ofNat 0).toNat = 0 := by decide
+  rw [h0]
+  simp only [Nat.reducePow]
+  omega
 
 theorem run_low (s : State) (pc returnPC : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 995) (hrun : s.halt = .Running) (hactive : 35 ≤ s.activeWords.toNat)
@@ -185,5 +175,5 @@ theorem run_branch_fall (s : State) (pc c : UInt256) (rho : List UInt256)
 #print axioms run_high
 #print axioms run_branch_taken
 #print axioms run_branch_fall
-#print axioms highZero_true_iff
+#print axioms highZero_true_imp
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPad
