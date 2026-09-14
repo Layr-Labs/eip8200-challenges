@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadZeroPrefix
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedPadStore
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Stagger144Active
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerTablePad
@@ -17,9 +18,9 @@ low bit-length word `n <<< 3` (two `JUMPDEST`s keep the block's length where the
 to be applied; the resident `0xffffffff` stays four deep on the stack) and `0x80`, then leave
 `iszero (n >>> 29)` for the branch at 4827. -/
 def lowTemplate : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 1112),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 1084),
     .op .CALLDATASIZE,
-    .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 28),
     .op .CALLDATACOPY,
     .op .CALLDATASIZE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 3),
@@ -35,7 +36,7 @@ def lowTemplate : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 128),
     .push ⟨2, by decide⟩ (UInt256.ofNat 522),
     .op .MSTORE,
-    .push ⟨20, by decide⟩ (UInt256.ofNat (128 * (1 + 2 ^ 144))),
+    .push ⟨19, by decide⟩ (UInt256.ofNat (128 * (1 + 2 ^ 144))),
     .push ⟨1, by decide⟩ (UInt256.ofNat 54),
     .op .MSTORE,
     .op .CALLDATASIZE,
@@ -106,6 +107,7 @@ theorem highZero_true_iff (n : UInt256) :
 
 theorem run_low (s : State) (pc returnPC : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 995) (hrun : s.halt = .Running) (hactive : 35 ≤ s.activeWords.toNat)
+    (hlow : (MachineState.readWord s.memory 0).toNat < 2 ^ 32)
     (hfit : s.executionEnv.calldata.size < 2 ^ 256) :
     runInstrSeq lowTemplate {s with pc := pc, stack := returnPC :: UInt256.ofNat 4294967295 :: rest} =
       some {s with
@@ -116,13 +118,16 @@ theorem run_low (s : State) (pc returnPC : UInt256) (rest : List UInt256)
   have hactiveAt (address : Nat) (ha : address ≤ 1088) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     Stagger144Active.word_active_preserved _ _ hactive ha
-  have hcopyActive : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 0 1112) = s.activeWords := by
-    have he : MachineState.activeWordsAfter s.activeWords.toNat 0 1112 = s.activeWords.toNat := by
-      simp only [MachineState.activeWordsAfter, if_neg (by decide : (1112 : Nat) ≠ 0)]
+  have hcopyActive : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 28 1084) = s.activeWords := by
+    have he : MachineState.activeWordsAfter s.activeWords.toNat 28 1084 = s.activeWords.toNat := by
+      simp only [MachineState.activeWordsAfter, if_neg (by decide : (1084 : Nat) ≠ 0)]
       apply Nat.max_eq_left
       omega
     rw [he]
     exact (Word.word_eq_ofNat_toNat _).symm
+  have hcopyMemory : MachineState.writeBytes s.memory PadZeroPrefix.zeroBytes 28 =
+      MachineState.writeBytes s.memory StaggerTableSparse.zeroBytes 0 :=
+    PadZeroPrefix.write_suffix_eq s.memory hlow
   have hsize : (UInt256.ofNat s.executionEnv.calldata.size).toNat = s.executionEnv.calldata.size := by
     rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt hfit]
   have hpacked := PackedPadStore.after_length_stores s.memory
@@ -134,7 +139,7 @@ theorem run_low (s : State) (pc returnPC : UInt256) (rest : List UInt256)
     PairedHelperBooleanTrace.push0_toNat,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
     State.activeWordsAfterUInt256, hactiveAt, hcopyActive, hsize,
-    StaggerTablePad.readPadded_end, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+    PadZeroPrefix.readPadded_end, hcopyMemory, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals simp only [add_eq_hAdd]
 
 theorem run_high (s : State) (pc returnPC : UInt256) (rest : List UInt256)

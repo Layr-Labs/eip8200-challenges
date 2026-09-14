@@ -10,16 +10,16 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate PairedHelperBooleanTrace
 def dispatchTemplate : List Instr := PadDispatch.template 404
 theorem dispatch_slice :
-    (Artifact.submissionArtifact.instructions.drop 306).take dispatchTemplate.length = dispatchTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 305).take dispatchTemplate.length = dispatchTemplate := by rfl
 def dispatchSite : GenericRoundSite Artifact.submissionArtifact .Osaka dispatchTemplate :=
-  StackSiteBuilder.ofSlice dispatchTemplate 306 dispatch_slice
-    (by change 306 + dispatchTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice dispatchTemplate 305 dispatch_slice
+    (by change 305 + dispatchTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := dispatchTemplate) (by decide))
     (by decide)
 theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 503 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 306) = UInt256.ofNat 503
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 305) = UInt256.ofNat 503
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem dispatch_advances : ∀ instruction ∈ dispatchTemplate.dropLast, PadLift.Advances instruction := by
   apply PadLift.advancesAll_sound

@@ -8,8 +8,8 @@ set_option maxHeartbeats 2000000
 /-!
 # Structural certificate for the frozen RIPEMD-160 artifact
 
-The exact candidate has 5218 bytes, 3769 executable instructions and 280 data bytes, and SHA-256
-`1e8568ce9b6c0a8a7e3c71ff1ac1df59336404fbb6b1625fac1ab0b28e09de2e`. PUSH rows carry their typed width and value.
+The exact candidate has 5218 bytes, 3768 executable instructions and 280 data bytes, and SHA-256
+`e5aa4b7b42ede0aa20bda820494eaa763c149a7abe1844c4480681cef5aad02a`. PUSH rows carry their typed width and value.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
@@ -171,8 +171,7 @@ private def submissionInstructionsChunk0 : List Instr :=
   op 0x90,
   op 0x1c,
   op 0x17,
-  op 0x84,
-]
+  op 0x84]
 
 @[simp] private theorem submissionInstructionsChunk0_length : submissionInstructionsChunk0.length = 147 := by rfl
 
@@ -295,23 +294,21 @@ private def submissionInstructionsChunk1 : List Instr :=
   .push 4 3285377520,
   .push 13 475368975196266490007815979009,
   .push 13 1109194275457955143345843994625,
-  .push 12 36893488147419103231,
+  .push 13 36893488147419103233,
   .push 1 144,
   op 0x1b,
-  op 0x80,
   .push 1 2,
   .push 1 144,
   op 0x1b,
-  op 0x01,
-  op 0x90,
+  op 0x81,
+  op 0x03,
   .push 4 4294967295,
   .push 13 158456325065422163343096938498,
   .push 1 63,
   op 0x36,
-  op 0x16,
-]
+  op 0x16]
 
-@[simp] private theorem submissionInstructionsChunk1_length : submissionInstructionsChunk1.length = 131 := by rfl
+@[simp] private theorem submissionInstructionsChunk1_length : submissionInstructionsChunk1.length = 130 := by rfl
 
 private def submissionInstructionsChunk2 : List Instr :=
 [
@@ -397,8 +394,7 @@ private def submissionInstructionsChunk2 : List Instr :=
   .push 1 56,
   op 0x51,
   op 0x87,
-  op 0x16,
-]
+  op 0x16]
 
 @[simp] private theorem submissionInstructionsChunk2_length : submissionInstructionsChunk2.length = 83 := by rfl
 
@@ -541,8 +537,7 @@ private def submissionInstructionsChunk3 : List Instr :=
   op 0x52,
   op 0x8b,
   .push 2 414,
-  op 0x52,
-]
+  op 0x52]
 
 @[simp] private theorem submissionInstructionsChunk3_length : submissionInstructionsChunk3.length = 138 := by rfl
 
@@ -724,8 +719,7 @@ private def submissionInstructionsChunk4 : List Instr :=
   op 0x8a,
   op 0x86,
   op 0x81,
-  op 0x16,
-]
+  op 0x16]
 
 @[simp] private theorem submissionInstructionsChunk4_length : submissionInstructionsChunk4.length = 177 := by rfl
 
@@ -941,8 +935,7 @@ private def submissionInstructionsChunk5 : List Instr :=
   op 0x83,
   op 0x16,
   op 0x97,
-  op 0x89,
-]
+  op 0x89]
 
 @[simp] private theorem submissionInstructionsChunk5_length : submissionInstructionsChunk5.length = 211 := by rfl
 
@@ -1155,8 +1148,7 @@ private def submissionInstructionsChunk6 : List Instr :=
   op 0x01,
   op 0x83,
   op 0x16,
-  op 0x95,
-]
+  op 0x95]
 
 @[simp] private theorem submissionInstructionsChunk6_length : submissionInstructionsChunk6.length = 208 := by rfl
 
@@ -1332,8 +1324,7 @@ private def submissionInstructionsChunk7 : List Instr :=
   op 0x81,
   op 0x17,
   op 0x88,
-  op 0x87,
-]
+  op 0x87]
 
 @[simp] private theorem submissionInstructionsChunk7_length : submissionInstructionsChunk7.length = 171 := by rfl
 
@@ -1522,8 +1513,7 @@ private def submissionInstructionsChunk8 : List Instr :=
   op 0x83,
   op 0x16,
   op 0x96,
-  op 0x86,
-]
+  op 0x86]
 
 @[simp] private theorem submissionInstructionsChunk8_length : submissionInstructionsChunk8.length = 184 := by rfl
 
@@ -1723,8 +1713,7 @@ private def submissionInstructionsChunk9 : List Instr :=
   op 0x8a,
   op 0x16,
   op 0x8a,
-  op 0x87,
-]
+  op 0x87]
 
 @[simp] private theorem submissionInstructionsChunk9_length : submissionInstructionsChunk9.length = 195 := by rfl
 
@@ -1916,8 +1905,7 @@ private def submissionInstructionsChunk10 : List Instr :=
   op 0x81,
   op 0x1c,
   op 0x83,
-  op 0x16,
-]
+  op 0x16]
 
 @[simp] private theorem submissionInstructionsChunk10_length : submissionInstructionsChunk10.length = 187 := by rfl
 
@@ -2109,8 +2097,7 @@ private def submissionInstructionsChunk11 : List Instr :=
   .push 1 19,
   op 0x1c,
   op 0x88,
-  op 0x01,
-]
+  op 0x01]
 
 @[simp] private theorem submissionInstructionsChunk11_length : submissionInstructionsChunk11.length = 187 := by rfl
 
@@ -2308,8 +2295,7 @@ private def submissionInstructionsChunk12 : List Instr :=
   op 0x02,
   op 0x81,
   op 0x1c,
-  op 0x83,
-]
+  op 0x83]
 
 @[simp] private theorem submissionInstructionsChunk12_length : submissionInstructionsChunk12.length = 193 := by rfl
 
@@ -2488,8 +2474,7 @@ private def submissionInstructionsChunk13 : List Instr :=
   .push 1 27,
   op 0x1c,
   op 0x87,
-  op 0x01,
-]
+  op 0x01]
 
 @[simp] private theorem submissionInstructionsChunk13_length : submissionInstructionsChunk13.length = 174 := by rfl
 
@@ -2698,8 +2683,7 @@ private def submissionInstructionsChunk14 : List Instr :=
   op 0x16,
   op 0x94,
   op 0x86,
-  op 0x8a,
-]
+  op 0x8a]
 
 @[simp] private theorem submissionInstructionsChunk14_length : submissionInstructionsChunk14.length = 204 := by rfl
 
@@ -2900,8 +2884,7 @@ private def submissionInstructionsChunk15 : List Instr :=
   op 0x17,
   op 0x88,
   op 0x18,
-  op 0x8a,
-]
+  op 0x8a]
 
 @[simp] private theorem submissionInstructionsChunk15_length : submissionInstructionsChunk15.length = 196 := by rfl
 
@@ -3103,8 +3086,7 @@ private def submissionInstructionsChunk16 : List Instr :=
   op 0x86,
   op 0x16,
   op 0x88,
-  op 0x18,
-]
+  op 0x18]
 
 @[simp] private theorem submissionInstructionsChunk16_length : submissionInstructionsChunk16.length = 197 := by rfl
 
@@ -3312,8 +3294,7 @@ private def submissionInstructionsChunk17 : List Instr :=
   op 0x98,
   op 0x8a,
   op 0x02,
-  op 0x81,
-]
+  op 0x81]
 
 @[simp] private theorem submissionInstructionsChunk17_length : submissionInstructionsChunk17.length = 203 := by rfl
 
@@ -3529,8 +3510,7 @@ private def submissionInstructionsChunk18 : List Instr :=
   op 0x83,
   op 0x16,
   op 0x98,
-  op 0x8a,
-]
+  op 0x8a]
 
 @[simp] private theorem submissionInstructionsChunk18_length : submissionInstructionsChunk18.length = 211 := by rfl
 
@@ -3736,8 +3716,7 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x83,
   op 0x16,
   op 0x9a,
-  op 0x01,
-]
+  op 0x01]
 
 @[simp] private theorem submissionInstructionsChunk19_length : submissionInstructionsChunk19.length = 201 := by rfl
 
@@ -3840,9 +3819,9 @@ private def submissionInstructionsChunk20 : List Instr :=
   .push 2 489,
   op 0x56,
   op 0x5b,
-  .push 2 1112,
+  .push 2 1084,
   op 0x36,
-  .push 0 0,
+  .push 1 28,
   op 0x37,
   op 0x36,
   .push 1 3,
@@ -3858,7 +3837,7 @@ private def submissionInstructionsChunk20 : List Instr :=
   .push 1 128,
   .push 2 522,
   op 0x52,
-  .push 20 2854495385411919762116571938898990272765493376,
+  .push 19 2854495385411919762116571938898990272765493376,
   .push 1 54,
   op 0x52,
   op 0x36,
@@ -3913,8 +3892,7 @@ private def submissionInstructionsChunk20 : List Instr :=
   op 0x52,
   op 0x59,
   .push 0 0,
-  op 0xf3,
-]
+  op 0xf3]
 
 @[simp] private theorem submissionInstructionsChunk20_length : submissionInstructionsChunk20.length = 171 := by rfl
 
@@ -3941,7 +3919,7 @@ submissionInstructionsChunk0
  ++ submissionInstructionsChunk19
  ++ submissionInstructionsChunk20
 
-theorem referenceInstructions_count : submissionInstructions.length = 3769 := by
+theorem referenceInstructions_count : submissionInstructions.length = 3768 := by
   simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length, submissionInstructionsChunk20_length]
 
 private theorem submissionInstructionsChunk0_assemble : assembleBytes submissionInstructionsChunk0 = [
@@ -3984,9 +3962,9 @@ private theorem submissionInstructionsChunk1_assemble : assembleBytes submission
   0xba, 0xdc, 0xfe, 0x63, 0xef, 0xcd, 0xab, 0x89, 0x63, 0xc3, 0xd2, 0xe1,
   0xf0, 0x6c, 0x06, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x01, 0x00,
   0x00, 0x00, 0x01, 0x6c, 0x0e, 0x00, 0x00, 0x00, 0x0e, 0x00, 0x00, 0x00,
-  0x01, 0x00, 0x00, 0x00, 0x01, 0x6b, 0x00, 0x00, 0x00, 0x01, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x60, 0x90, 0x1b, 0x80, 0x60, 0x02,
-  0x60, 0x90, 0x1b, 0x01, 0x90, 0x63, 0xff, 0xff, 0xff, 0xff, 0x6c, 0x02,
+  0x01, 0x00, 0x00, 0x00, 0x01, 0x6c, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x60, 0x90, 0x1b, 0x60, 0x02,
+  0x60, 0x90, 0x1b, 0x81, 0x03, 0x63, 0xff, 0xff, 0xff, 0xff, 0x6c, 0x02,
   0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x02,
   0x60, 0x3f, 0x36, 0x16
 ] := by decide
@@ -4409,9 +4387,9 @@ private theorem submissionInstructionsChunk20_assemble : assembleBytes submissio
   0x53, 0x36, 0x60, 0x03, 0x1b, 0x8d, 0x61, 0x04, 0x58, 0x01, 0x5b, 0x81,
   0x81, 0x53, 0x60, 0x01, 0x01, 0x90, 0x60, 0x08, 0x1c, 0x90, 0x81, 0x61,
   0x12, 0x7b, 0x57, 0x50, 0x50, 0x61, 0x01, 0xe9, 0x56, 0x5b, 0x61, 0x04,
-  0x58, 0x36, 0x5f, 0x37, 0x36, 0x60, 0x03, 0x1b, 0x80, 0x60, 0xa2, 0x52,
-  0x80, 0x61, 0x02, 0x9a, 0x52, 0x60, 0x90, 0x52, 0x60, 0x80, 0x61, 0x02,
-  0x0a, 0x52, 0x73, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x3c, 0x36, 0x60, 0x1c, 0x37, 0x36, 0x60, 0x03, 0x1b, 0x80, 0x60, 0xa2,
+  0x52, 0x80, 0x61, 0x02, 0x9a, 0x52, 0x60, 0x90, 0x52, 0x60, 0x80, 0x61,
+  0x02, 0x0a, 0x52, 0x72, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x60,
   0x36, 0x52, 0x36, 0x60, 0x1d, 0x1c, 0x15, 0x61, 0x03, 0x7e, 0x57, 0x9b,
   0x60, 0x40, 0x01, 0x9b, 0x61, 0x12, 0x61, 0x56, 0x5b, 0x60, 0x01, 0x70,
@@ -4674,17 +4652,17 @@ private def tailPrefix : List Instr :=
   submissionInstructionsChunk18 ++
   submissionInstructionsChunk19
 
-private theorem tailPrefix_length : tailPrefix.length = 3598 := by
+private theorem tailPrefix_length : tailPrefix.length = 3597 := by
   simp only [tailPrefix, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length]
 
 private theorem tailPrefix_bytes_length : (assembleBytes tailPrefix).length = 4625 := by
   simp only [tailPrefix, assembleBytes_append, List.length_append, chunk0_byteLength, chunk1_byteLength, chunk2_byteLength, chunk3_byteLength, chunk4_byteLength, chunk5_byteLength, chunk6_byteLength, chunk7_byteLength, chunk8_byteLength, chunk9_byteLength, chunk10_byteLength, chunk11_byteLength, chunk12_byteLength, chunk13_byteLength, chunk14_byteLength, chunk15_byteLength, chunk16_byteLength, chunk17_byteLength, chunk18_byteLength, chunk19_byteLength]
 
 private theorem instructionPC_tail (i : Nat) (hi : i ≤ 171) :
-    submissionArtifact.instructionPC (3598 + i) =
+    submissionArtifact.instructionPC (3597 + i) =
       4625 + (assembleBytes (submissionInstructionsChunk20.take i)).length := by
   apply ArtifactSegment.instructionPC_segment_of_bounds submissionArtifact
-    tailPrefix submissionInstructionsChunk20 [] 3598 4625
+    tailPrefix submissionInstructionsChunk20 [] 3597 4625
   · simp only [submissionArtifact, submissionInstructions, tailPrefix, List.append_nil]
   · exact tailPrefix_length
   · exact tailPrefix_bytes_length
@@ -5234,119 +5212,119 @@ def initStores : List InitStore := []
   rfl
 
 @[simp] theorem referenceArtifact_pc_448 :
-    submissionArtifact.instructionPC 273 = 459 := by
+    submissionArtifact.instructionPC 272 = 459 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc448 :
-    submissionArtifact.instructionPC 273 = 459 := by
+    submissionArtifact.instructionPC 272 = 459 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc448 :
-    instructionPC 273 = 459 := by
-  change submissionArtifact.instructionPC 273 = 459
+    instructionPC 272 = 459 := by
+  change submissionArtifact.instructionPC 272 = 459
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_449 :
-    submissionArtifact.instructionPC 274 = 464 := by
+    submissionArtifact.instructionPC 273 = 464 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc449 :
-    submissionArtifact.instructionPC 274 = 464 := by
+    submissionArtifact.instructionPC 273 = 464 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc449 :
-    instructionPC 274 = 464 := by
-  change submissionArtifact.instructionPC 274 = 464
+    instructionPC 273 = 464 := by
+  change submissionArtifact.instructionPC 273 = 464
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_450 :
-    submissionArtifact.instructionPC 275 = 478 := by
+    submissionArtifact.instructionPC 274 = 478 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc450 :
-    submissionArtifact.instructionPC 275 = 478 := by
+    submissionArtifact.instructionPC 274 = 478 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc450 :
-    instructionPC 275 = 478 := by
-  change submissionArtifact.instructionPC 275 = 478
+    instructionPC 274 = 478 := by
+  change submissionArtifact.instructionPC 274 = 478
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_451 :
-    submissionArtifact.instructionPC 276 = 480 := by
+    submissionArtifact.instructionPC 275 = 480 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc451 :
-    submissionArtifact.instructionPC 276 = 480 := by
+    submissionArtifact.instructionPC 275 = 480 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc451 :
-    instructionPC 276 = 480 := by
-  change submissionArtifact.instructionPC 276 = 480
+    instructionPC 275 = 480 := by
+  change submissionArtifact.instructionPC 275 = 480
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_452 :
-    submissionArtifact.instructionPC 277 = 481 := by
+    submissionArtifact.instructionPC 276 = 481 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc452 :
-    submissionArtifact.instructionPC 277 = 481 := by
+    submissionArtifact.instructionPC 276 = 481 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc452 :
-    instructionPC 277 = 481 := by
-  change submissionArtifact.instructionPC 277 = 481
+    instructionPC 276 = 481 := by
+  change submissionArtifact.instructionPC 276 = 481
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_454 :
-    submissionArtifact.instructionPC 3675 = 4727 := by
+    submissionArtifact.instructionPC 3674 = 4727 := by
   exact (instructionPC_tail 77 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem refPc454 :
-    submissionArtifact.instructionPC 3675 = 4727 := by
+    submissionArtifact.instructionPC 3674 = 4727 := by
   exact (instructionPC_tail 77 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pc454 :
-    instructionPC 3675 = 4727 := by
-  change submissionArtifact.instructionPC 3675 = 4727
+    instructionPC 3674 = 4727 := by
+  change submissionArtifact.instructionPC 3674 = 4727
   exact (instructionPC_tail 77 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem referenceArtifact_pc_455 :
-    submissionArtifact.instructionPC 3676 = 4730 := by
+    submissionArtifact.instructionPC 3675 = 4730 := by
   exact (instructionPC_tail 78 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem refPc455 :
-    submissionArtifact.instructionPC 3676 = 4730 := by
+    submissionArtifact.instructionPC 3675 = 4730 := by
   exact (instructionPC_tail 78 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pc455 :
-    instructionPC 3676 = 4730 := by
-  change submissionArtifact.instructionPC 3676 = 4730
+    instructionPC 3675 = 4730 := by
+  change submissionArtifact.instructionPC 3675 = 4730
   exact (instructionPC_tail 78 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
@@ -5448,422 +5426,422 @@ def initStores : List InitStore := []
   rfl
 
 @[simp] theorem pcU2_265 :
-    submissionArtifact.instructionPC 278 = 482 := by
+    submissionArtifact.instructionPC 277 = 482 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_265 :
-    instructionPC 278 = 482 := by
-  change submissionArtifact.instructionPC 278 = 482
+    instructionPC 277 = 482 := by
+  change submissionArtifact.instructionPC 277 = 482
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_266 :
-    submissionArtifact.instructionPC 278 = 482 := by
+    submissionArtifact.instructionPC 277 = 482 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_266 :
-    instructionPC 278 = 482 := by
-  change submissionArtifact.instructionPC 278 = 482
+    instructionPC 277 = 482 := by
+  change submissionArtifact.instructionPC 277 = 482
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_267 :
-    submissionArtifact.instructionPC 279 = 485 := by
+    submissionArtifact.instructionPC 278 = 485 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_267 :
-    instructionPC 279 = 485 := by
-  change submissionArtifact.instructionPC 279 = 485
+    instructionPC 278 = 485 := by
+  change submissionArtifact.instructionPC 278 = 485
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_268 :
-    submissionArtifact.instructionPC 3666 = 4714 := by
+    submissionArtifact.instructionPC 3665 = 4714 := by
   exact (instructionPC_tail 68 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_268 :
-    instructionPC 3666 = 4714 := by
-  change submissionArtifact.instructionPC 3666 = 4714
+    instructionPC 3665 = 4714 := by
+  change submissionArtifact.instructionPC 3665 = 4714
   exact (instructionPC_tail 68 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_269 :
-    submissionArtifact.instructionPC 3667 = 4716 := by
+    submissionArtifact.instructionPC 3666 = 4716 := by
   exact (instructionPC_tail 69 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_269 :
-    instructionPC 3667 = 4716 := by
-  change submissionArtifact.instructionPC 3667 = 4716
+    instructionPC 3666 = 4716 := by
+  change submissionArtifact.instructionPC 3666 = 4716
   exact (instructionPC_tail 69 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_270 :
-    submissionArtifact.instructionPC 3668 = 4719 := by
+    submissionArtifact.instructionPC 3667 = 4719 := by
   exact (instructionPC_tail 70 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_270 :
-    instructionPC 3668 = 4719 := by
-  change submissionArtifact.instructionPC 3668 = 4719
+    instructionPC 3667 = 4719 := by
+  change submissionArtifact.instructionPC 3667 = 4719
   exact (instructionPC_tail 70 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_271 :
-    submissionArtifact.instructionPC 3669 = 4720 := by
+    submissionArtifact.instructionPC 3668 = 4720 := by
   exact (instructionPC_tail 71 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_271 :
-    instructionPC 3669 = 4720 := by
-  change submissionArtifact.instructionPC 3669 = 4720
+    instructionPC 3668 = 4720 := by
+  change submissionArtifact.instructionPC 3668 = 4720
   exact (instructionPC_tail 71 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_272 :
-    submissionArtifact.instructionPC 3670 = 4721 := by
+    submissionArtifact.instructionPC 3669 = 4721 := by
   exact (instructionPC_tail 72 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_272 :
-    instructionPC 3670 = 4721 := by
-  change submissionArtifact.instructionPC 3670 = 4721
+    instructionPC 3669 = 4721 := by
+  change submissionArtifact.instructionPC 3669 = 4721
   exact (instructionPC_tail 72 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_273 :
-    submissionArtifact.instructionPC 3671 = 4722 := by
+    submissionArtifact.instructionPC 3670 = 4722 := by
   exact (instructionPC_tail 73 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_273 :
-    instructionPC 3671 = 4722 := by
-  change submissionArtifact.instructionPC 3671 = 4722
+    instructionPC 3670 = 4722 := by
+  change submissionArtifact.instructionPC 3670 = 4722
   exact (instructionPC_tail 73 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_274 :
-    submissionArtifact.instructionPC 3672 = 4723 := by
+    submissionArtifact.instructionPC 3671 = 4723 := by
   exact (instructionPC_tail 74 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_274 :
-    instructionPC 3672 = 4723 := by
-  change submissionArtifact.instructionPC 3672 = 4723
+    instructionPC 3671 = 4723 := by
+  change submissionArtifact.instructionPC 3671 = 4723
   exact (instructionPC_tail 74 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_275 :
-    submissionArtifact.instructionPC 3673 = 4725 := by
+    submissionArtifact.instructionPC 3672 = 4725 := by
   exact (instructionPC_tail 75 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_275 :
-    instructionPC 3673 = 4725 := by
-  change submissionArtifact.instructionPC 3673 = 4725
+    instructionPC 3672 = 4725 := by
+  change submissionArtifact.instructionPC 3672 = 4725
   exact (instructionPC_tail 75 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_276 :
-    submissionArtifact.instructionPC 3674 = 4726 := by
+    submissionArtifact.instructionPC 3673 = 4726 := by
   exact (instructionPC_tail 76 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_276 :
-    instructionPC 3674 = 4726 := by
-  change submissionArtifact.instructionPC 3674 = 4726
+    instructionPC 3673 = 4726 := by
+  change submissionArtifact.instructionPC 3673 = 4726
   exact (instructionPC_tail 76 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_279 :
-    submissionArtifact.instructionPC 3677 = 4731 := by
+    submissionArtifact.instructionPC 3676 = 4731 := by
   exact (instructionPC_tail 79 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_279 :
-    instructionPC 3677 = 4731 := by
-  change submissionArtifact.instructionPC 3677 = 4731
+    instructionPC 3676 = 4731 := by
+  change submissionArtifact.instructionPC 3676 = 4731
   exact (instructionPC_tail 79 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_280 :
-    submissionArtifact.instructionPC 3678 = 4732 := by
+    submissionArtifact.instructionPC 3677 = 4732 := by
   exact (instructionPC_tail 80 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_280 :
-    instructionPC 3678 = 4732 := by
-  change submissionArtifact.instructionPC 3678 = 4732
+    instructionPC 3677 = 4732 := by
+  change submissionArtifact.instructionPC 3677 = 4732
   exact (instructionPC_tail 80 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_281 :
-    submissionArtifact.instructionPC 3679 = 4733 := by
+    submissionArtifact.instructionPC 3678 = 4733 := by
   exact (instructionPC_tail 81 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_281 :
-    instructionPC 3679 = 4733 := by
-  change submissionArtifact.instructionPC 3679 = 4733
+    instructionPC 3678 = 4733 := by
+  change submissionArtifact.instructionPC 3678 = 4733
   exact (instructionPC_tail 81 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_282 :
-    submissionArtifact.instructionPC 3680 = 4734 := by
+    submissionArtifact.instructionPC 3679 = 4734 := by
   exact (instructionPC_tail 82 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_282 :
-    instructionPC 3680 = 4734 := by
-  change submissionArtifact.instructionPC 3680 = 4734
+    instructionPC 3679 = 4734 := by
+  change submissionArtifact.instructionPC 3679 = 4734
   exact (instructionPC_tail 82 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_283 :
-    submissionArtifact.instructionPC 3681 = 4735 := by
+    submissionArtifact.instructionPC 3680 = 4735 := by
   exact (instructionPC_tail 83 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_283 :
-    instructionPC 3681 = 4735 := by
-  change submissionArtifact.instructionPC 3681 = 4735
+    instructionPC 3680 = 4735 := by
+  change submissionArtifact.instructionPC 3680 = 4735
   exact (instructionPC_tail 83 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_284 :
-    submissionArtifact.instructionPC 3682 = 4737 := by
+    submissionArtifact.instructionPC 3681 = 4737 := by
   exact (instructionPC_tail 84 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_284 :
-    instructionPC 3682 = 4737 := by
-  change submissionArtifact.instructionPC 3682 = 4737
+    instructionPC 3681 = 4737 := by
+  change submissionArtifact.instructionPC 3681 = 4737
   exact (instructionPC_tail 84 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_285 :
-    submissionArtifact.instructionPC 3683 = 4738 := by
+    submissionArtifact.instructionPC 3682 = 4738 := by
   exact (instructionPC_tail 85 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_285 :
-    instructionPC 3683 = 4738 := by
-  change submissionArtifact.instructionPC 3683 = 4738
+    instructionPC 3682 = 4738 := by
+  change submissionArtifact.instructionPC 3682 = 4738
   exact (instructionPC_tail 85 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_286 :
-    submissionArtifact.instructionPC 3684 = 4739 := by
+    submissionArtifact.instructionPC 3683 = 4739 := by
   exact (instructionPC_tail 86 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_286 :
-    instructionPC 3684 = 4739 := by
-  change submissionArtifact.instructionPC 3684 = 4739
+    instructionPC 3683 = 4739 := by
+  change submissionArtifact.instructionPC 3683 = 4739
   exact (instructionPC_tail 86 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_287 :
-    submissionArtifact.instructionPC 3685 = 4741 := by
+    submissionArtifact.instructionPC 3684 = 4741 := by
   exact (instructionPC_tail 87 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_287 :
-    instructionPC 3685 = 4741 := by
-  change submissionArtifact.instructionPC 3685 = 4741
+    instructionPC 3684 = 4741 := by
+  change submissionArtifact.instructionPC 3684 = 4741
   exact (instructionPC_tail 87 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_288 :
-    submissionArtifact.instructionPC 3686 = 4742 := by
+    submissionArtifact.instructionPC 3685 = 4742 := by
   exact (instructionPC_tail 88 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_288 :
-    instructionPC 3686 = 4742 := by
-  change submissionArtifact.instructionPC 3686 = 4742
+    instructionPC 3685 = 4742 := by
+  change submissionArtifact.instructionPC 3685 = 4742
   exact (instructionPC_tail 88 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_289 :
-    submissionArtifact.instructionPC 3687 = 4743 := by
+    submissionArtifact.instructionPC 3686 = 4743 := by
   exact (instructionPC_tail 89 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_289 :
-    instructionPC 3687 = 4743 := by
-  change submissionArtifact.instructionPC 3687 = 4743
+    instructionPC 3686 = 4743 := by
+  change submissionArtifact.instructionPC 3686 = 4743
   exact (instructionPC_tail 89 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_290 :
-    submissionArtifact.instructionPC 3688 = 4744 := by
+    submissionArtifact.instructionPC 3687 = 4744 := by
   exact (instructionPC_tail 90 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_290 :
-    instructionPC 3688 = 4744 := by
-  change submissionArtifact.instructionPC 3688 = 4744
+    instructionPC 3687 = 4744 := by
+  change submissionArtifact.instructionPC 3687 = 4744
   exact (instructionPC_tail 90 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_291 :
-    submissionArtifact.instructionPC 3689 = 4747 := by
+    submissionArtifact.instructionPC 3688 = 4747 := by
   exact (instructionPC_tail 91 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_291 :
-    instructionPC 3689 = 4747 := by
-  change submissionArtifact.instructionPC 3689 = 4747
+    instructionPC 3688 = 4747 := by
+  change submissionArtifact.instructionPC 3688 = 4747
   exact (instructionPC_tail 91 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_292 :
-    submissionArtifact.instructionPC 3690 = 4748 := by
+    submissionArtifact.instructionPC 3689 = 4748 := by
   exact (instructionPC_tail 92 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_292 :
-    instructionPC 3690 = 4748 := by
-  change submissionArtifact.instructionPC 3690 = 4748
+    instructionPC 3689 = 4748 := by
+  change submissionArtifact.instructionPC 3689 = 4748
   exact (instructionPC_tail 92 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_293 :
-    submissionArtifact.instructionPC 3691 = 4749 := by
+    submissionArtifact.instructionPC 3690 = 4749 := by
   exact (instructionPC_tail 93 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_293 :
-    instructionPC 3691 = 4749 := by
-  change submissionArtifact.instructionPC 3691 = 4749
+    instructionPC 3690 = 4749 := by
+  change submissionArtifact.instructionPC 3690 = 4749
   exact (instructionPC_tail 93 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_294 :
-    submissionArtifact.instructionPC 3692 = 4750 := by
+    submissionArtifact.instructionPC 3691 = 4750 := by
   exact (instructionPC_tail 94 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_294 :
-    instructionPC 3692 = 4750 := by
-  change submissionArtifact.instructionPC 3692 = 4750
+    instructionPC 3691 = 4750 := by
+  change submissionArtifact.instructionPC 3691 = 4750
   exact (instructionPC_tail 94 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2_295 :
-    submissionArtifact.instructionPC 3693 = 4753 := by
+    submissionArtifact.instructionPC 3692 = 4753 := by
   exact (instructionPC_tail 95 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem pcU2i_295 :
-    instructionPC 3693 = 4753 := by
-  change submissionArtifact.instructionPC 3693 = 4753
+    instructionPC 3692 = 4753 := by
+  change submissionArtifact.instructionPC 3692 = 4753
   exact (instructionPC_tail 95 (by decide)).trans (by
     rw [← ArtifactByteLength.byteLength_eq_assemble]
     rfl)
 
 @[simp] theorem validJumpDest_210 :
     Decode.isValidJumpDest submissionBytecode 4731 = true := by
-  have hp : submissionArtifact.instructionPC 3677 = 4731 := by
+  have hp : submissionArtifact.instructionPC 3676 = 4731 := by
     exact (instructionPC_tail 79 (by decide)).trans (by
       rw [← ArtifactByteLength.byteLength_eq_assemble]
       rfl)
-  have h := submissionArtifact.isValidJumpDest_index 3677 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 3676 (by rfl)
   rw [hp] at h
   exact h
 
 @[simp] theorem pcU2_345 :
-    submissionArtifact.instructionPC 283 = 489 := by
+    submissionArtifact.instructionPC 282 = 489 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_345 :
-    instructionPC 283 = 489 := by
-  change submissionArtifact.instructionPC 283 = 489
+    instructionPC 282 = 489 := by
+  change submissionArtifact.instructionPC 282 = 489
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem validJumpDest_loop :
     Decode.isValidJumpDest submissionBytecode 489 = true := by
-  have hp : submissionArtifact.instructionPC 283 = 489 := by
+  have hp : submissionArtifact.instructionPC 282 = 489 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
-  have h := submissionArtifact.isValidJumpDest_index 283 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 282 (by rfl)
   rw [hp] at h
   exact h
 
 @[simp] theorem validJumpDest_initialize :
     Decode.isValidJumpDest submissionBytecode 489 = true := by
-  have hp : submissionArtifact.instructionPC 283 = 489 := by
+  have hp : submissionArtifact.instructionPC 282 = 489 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
-  have h := submissionArtifact.isValidJumpDest_index 283 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 282 (by rfl)
   rw [hp] at h
   exact h
 
 @[simp] theorem validJumpDest_partialEntry :
     Decode.isValidJumpDest submissionBytecode 4705 = true := by
-  have hp : submissionArtifact.instructionPC 3660 = 4705 := by
+  have hp : submissionArtifact.instructionPC 3659 = 4705 := by
     exact (instructionPC_tail 62 (by decide)).trans (by
       rw [← ArtifactByteLength.byteLength_eq_assemble]
       rfl)
-  have h := submissionArtifact.isValidJumpDest_index 3660 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 3659 (by rfl)
   rw [hp] at h
   exact h
 
@@ -5917,37 +5895,37 @@ def padCopyPath : List
 straight to the block loop. -/
 def padGuardPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨275, .push ⟨1, by decide⟩ (UInt256.ofNat 63), by rfl, by decide⟩,
-   ⟨276, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨277, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨278, .push ⟨2, by decide⟩ (UInt256.ofNat 4705), by rfl, by decide⟩,
-   ⟨279, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨274, .push ⟨1, by decide⟩ (UInt256.ofNat 63), by rfl, by decide⟩,
+   ⟨275, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨276, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨277, .push ⟨2, by decide⟩ (UInt256.ofNat 4705), by rfl, by decide⟩,
+   ⟨278, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 /-- Cached located path for the sentinel byte. -/
 def padSentinelPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨3666, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
-   ⟨3667, .push ⟨2, by decide⟩ (UInt256.ofNat 1120), by rfl, by decide⟩,
-   ⟨3668, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3669, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3670, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨3665, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
+   ⟨3666, .push ⟨2, by decide⟩ (UInt256.ofNat 1120), by rfl, by decide⟩,
+   ⟨3667, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3668, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3669, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩]
 
 /-- Cached located path for the footer-loop setup. -/
 def padFooterSetupPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨3671, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3672, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
-   ⟨3673, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3674, .op (.Dup ⟨13, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3675, .push ⟨2, by decide⟩ (UInt256.ofNat 1112), by rfl, by decide⟩,
-   ⟨3676, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨3670, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3671, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
+   ⟨3672, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3673, .op (.Dup ⟨13, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3674, .push ⟨2, by decide⟩ (UInt256.ofNat 1112), by rfl, by decide⟩,
+   ⟨3675, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩]
 
 /-- Cached located path for the footer-loop exit. -/
 def padExitPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨3690, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3691, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3692, .push ⟨2, by decide⟩ (UInt256.ofNat 489), by rfl, by decide⟩,
-   ⟨3693, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨3689, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3690, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3691, .push ⟨2, by decide⟩ (UInt256.ofNat 489), by rfl, by decide⟩,
+   ⟨3692, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact

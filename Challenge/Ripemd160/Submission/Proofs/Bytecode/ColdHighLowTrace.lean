@@ -37,7 +37,7 @@ noncomputable opaque gasSteps_lowRoute (input : ByteArray) (hfit : CalldataFits 
     (by simp [frame,maskRho]) hr hc hf hnp
   have ha : 35≤s.activeWords.toNat := Nat.le_trans (by decide : 35≤37) ctx.active
   have gl:=ColdOrdinarySites.gasSteps_low s Paired144WordRound.factorPlusWord r (by rfl)
-    (by simp [r,ColdOrdinaryPrepare.rest,maskRho]) hr ha hsz hc hf hnp
+    (by simp [r,ColdOrdinaryPrepare.rest,maskRho]) hr ha ctx.lowClear hsz hc hf hnp
   rw [hcal] at gl
   have gl' : GasSteps {s with pc:=UInt256.ofNat 4755,stack:=frame h off lim maskRho}
       {lowState input i with pc:=UInt256.ofNat 4812, stack:=StaggerPad.highZero (UInt256.ofNat input.size)::frame h off lim maskRho} := gl
