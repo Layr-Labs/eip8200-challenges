@@ -14,7 +14,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
 open Challenge.Modexp.Submission.Proofs.Fast Monpro SquareModel CarryScratchAgreement
 
 def program (next : UInt256) : List Instr :=
-  ((diagonalProgram next ++ cellsProgram 7) ++ finishStore) ++ exitProgram
+  (((diagonalProgram next ++ cellsProgram 6) ++ cellAB (UInt256.ofNat (SquareModel.aAddr 8 7)))
+    ++ finishStore) ++ exitProgram
 
 def initial (s : State) (pc hd ent stride target inv m0 m96 m64 m32 aprev : UInt256)
     (rest : List UInt256) : State :=
@@ -42,22 +43,40 @@ theorem run_program (s : State)
       some (result s hd next stride target inv m0 m96 m64 m32 rest) := by
   let x := MachineState.readWord s.memory 2592
   let bi := x+x
+  let q6 := zeroRun (diagonal s.memory) bi 6
+  let x7 := MachineState.readWord q6.memory (SquareModel.aAddr 8 7)
   have h0 := run_diagonal s pc hd ent next stride target inv m0 (UInt256.ofNat 2336)
     m96 m64 m32 aprev rest hcap hact
   have h1 := run_cells s (advancePC 30 pc) bi (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next stride
     (diagonal s.memory)
     (target :: inv :: m0 :: UInt256.ofNat 2336 :: m96 :: m64 :: m32 :: x :: rest)
-    (by simp only [List.length_cons]; omega) hact 7 (by decide)
-  have h2 := run_finishStore { s with memory := (firstProduct s.memory).memory }
-    (advancePC 226 pc) (firstProduct s.memory).carry bi
+    (by simp only [List.length_cons]; omega) hact 6 (by decide)
+  have h1b := run_cellAB { s with memory := q6.memory } (advancePC 198 pc) q6.carry bi
+    (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next stride maxWord (SquareModel.aAddr 8 7)
+    (target :: inv :: m0 :: UInt256.ofNat 2336 :: m96 :: m64 :: m32 :: x :: rest)
+    (by simp only [List.length_cons]; omega) (by unfold SquareModel.aAddr; omega) hact
+  have h2 := run_finishStore { s with memory := q6.memory } (advancePC 221 pc)
+    (R4Math.zCarry x7 bi q6.carry maxWord) (R4Math.zSum x7 bi q6.carry) bi
     (UInt256.ofNat 2592 :: hd :: UInt256.ofNat 2336 :: next :: stride :: maxWord :: target ::
       inv :: m0 :: UInt256.ofNat 2336 :: m96 :: m64 :: m32 :: x :: rest)
     (by simp only [List.length_cons]; omega) hact
+  have hmem : MachineState.writeBytes
+      (MachineState.writeBytes q6.memory
+        (Data.Bytes.natToBytesPadded (R4Math.zCarry x7 bi q6.carry maxWord).toNat 32) 2080)
+      (Data.Bytes.natToBytesPadded (R4Math.zSum x7 bi q6.carry).toNat 32) 2112 =
+      firstMemory s.memory := by
+    rw [writeBytes_comm_disjoint _ _ _ 2080 2112
+      (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; decide)
+      (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; decide)
+      (Or.inl (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]))]
+    rfl
+  rw [hmem] at h2
   have h3 := run_exit { s with memory := firstMemory s.memory } (advancePC 232 pc)
     (UInt256.ofNat 0) (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next stride maxWord target
     inv m0 m96 m64 m32 x rest hcap hact hjump
   have h01 := runInstructions_append_some _ _ _ _ _ h0 h1
-  have h012 := runInstructions_append_some _ _ _ _ _ h01 h2
+  have h01b := runInstructions_append_some _ _ _ _ _ h01 h1b
+  have h012 := runInstructions_append_some _ _ _ _ _ h01b h2
   exact runInstructions_append_some _ _ _ _ _ h012 h3
 
 /-- Full instruction semantics together with the exact old-model bridge. -/
