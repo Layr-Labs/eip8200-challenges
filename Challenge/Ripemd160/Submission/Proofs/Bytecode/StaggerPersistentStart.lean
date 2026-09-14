@@ -25,19 +25,36 @@ def initialTemplate : List Instr :=
     .push ⟨4, by decide⟩ (UInt256.ofNat 3285377520),
     .push ⟨13, by decide⟩ (UInt256.ofNat 475368975196266490007815979009),
     .push ⟨13, by decide⟩ (UInt256.ofNat 1109194275457955143345843994625),
-    .push ⟨11, by decide⟩ (UInt256.ofNat 36893488147419103231),
+    .push ⟨11, by decide⟩ (UInt256.ofNat 36893488147419103233),
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHL,
-    .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 2),
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHL,
-    .op .ADD,
-    .op (.Swap ⟨0, by decide⟩),
+    .op (.Dup ⟨1, by decide⟩),
+    .op .SUB,
+    .op .JUMPDEST,
     .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295),
     .push ⟨13, by decide⟩ (UInt256.ofNat 158456325065422163343096938498) ]
 
 private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
+
+private theorem neutral_hsub (a b : UInt256) : a - b = UInt256.sub a b := rfl
+
+/-- The resident pair is seeded in plus form; the minus modulus is recovered by
+subtracting the same shifted increment that used to be added to it. -/
+private theorem shiftedIncrement : UInt256.shiftLeft (UInt256.ofNat 2) (UInt256.ofNat 144) =
+    UInt256.ofNat 44601490397061246283071436545296723011960832 := by decide
+
+private theorem modulusMinusFromPlus : UInt256.sub
+    (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928)
+    (UInt256.ofNat 44601490397061246283071436545296723011960832) =
+    UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096 := by decide
+
+private theorem modulusMinusFromPlusShift : UInt256.sub
+    (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928)
+    (UInt256.shiftLeft (UInt256.ofNat 2) (UInt256.ofNat 144)) =
+    UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096 := by decide
 
 theorem run_initial (s : State) (pc limit : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running) :
@@ -48,9 +65,12 @@ theorem run_initial (s : State) (pc limit : UInt256) (rho : List UInt256)
   have hcap (n : Nat) (hn : n ≤ 15) : rho.length + n < 1024 := by omega
   simp [initialTemplate, StaggerPersistentFrame.frame, StackRunBridge.initialHashState,
     Crypto.Ripemd160.H0, Word.ofUInt32, runInstrSeq, DataStepper.runInstr, pcAfter,
-    UInt256.succ, Instr.size, List.exchange, neutral_hadd, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
+    UInt256.succ, Instr.size, List.exchange, neutral_hadd, neutral_hsub,
+    List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
     StaggerPersistentBootstrapRaw.factorWord_eq,
-    FusedKeyReconstruction.modulusMinus, FusedKeyReconstruction.modulusCombinedPlus, StaggerPersistentBootstrapRaw.fusedMinus_eq,
+    FusedKeyReconstruction.modulusPlus, FusedKeyReconstruction.modulusMinus,
+    FusedKeyReconstruction.modulusCombinedPlus, StaggerPersistentBootstrapRaw.fusedMinus_eq,
+    shiftedIncrement, modulusMinusFromPlus, modulusMinusFromPlusShift,
     StaggerPersistentBootstrapRaw.coefficient30_eq, StaggerPersistentBootstrapRaw.coefficient03_eq,
     StaggerPersistentBootstrapRaw.coefficient02_eq, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl
