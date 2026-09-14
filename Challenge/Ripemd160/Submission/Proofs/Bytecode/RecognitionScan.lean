@@ -20,7 +20,7 @@ def gasSteps_hit (s : State) (e : Env s) (n : Nat) (rho : List UInt256)
 def gasSteps_miss (s : State) (e : Env s) (n : Nat) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hn : Allowed n) (hsize : s.executionEnv.calldata.size = n)
     (hzero : resultAcc s.executionEnv.calldata n ≠ 0) :
-    GasSteps (atState s 112 rho) (atState s 354 rho) := by
+    GasSteps (atState s 112 rho) (atState s 353 rho) := by
   have hz : (endFrame s n).acc.toNat ≠ 0 := by
     intro h
     apply hzero

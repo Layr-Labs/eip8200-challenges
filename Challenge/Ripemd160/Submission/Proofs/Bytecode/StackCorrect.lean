@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Source32Correct
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentCorrect
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PersistentStaggerBlock
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PersistentStaggerIteration
@@ -8,12 +9,13 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
 open Challenge.Ripemd160 EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PersistentStaggerIteration StaggerPersistentLoopInduction
 
-theorem correct (input : ByteArray) (hfit : CalldataFits input)
+theorem correct_ordinary (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 354)) :
+    (hne32 : input.size ≠ 32)
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 353)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  apply StaggerPersistentCorrect.correct_of_blocks input hfit hpositive (states input) (hashes input)
+  apply StaggerPersistentCorrect.correct_of_blocks input hfit hpositive hne32 (states input) (hashes input)
     (states_zero input) (hashes_zero input) ?_ ?_
     (hashArray_hashes input hfit hpositive _ (Nat.le_refl _))
     (states_callStack input _) entryPrefix
@@ -27,5 +29,14 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
       (states_context input hfit hpositive i (Nat.le_of_lt hi))
       (states_code input i) (states_fork input i) (states_halt input i)
       (states_noPrecompile input i)
+theorem correct (input : ByteArray) (hfit : CalldataFits input)
+    (hpositive : 0 < input.size)
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 353)) :
+    ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
+      Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
+  by_cases h32 : input.size = 32
+  · exact Source32Correct.correct input hfit h32 entryPrefix
+  · exact correct_ordinary input hfit hpositive h32 entryPrefix
 #print axioms correct
+#print axioms correct_ordinary
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect

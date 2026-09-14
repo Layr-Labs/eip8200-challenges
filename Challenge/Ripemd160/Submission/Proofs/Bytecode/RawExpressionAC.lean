@@ -52,9 +52,4 @@ theorem xor_assoc (a b c : UInt256) : UInt256.xor (UInt256.xor a b) c = UInt256.
   exact BitVec.xor_assoc _ _ _
 theorem xor_left_comm (a b c : UInt256) : UInt256.xor a (UInt256.xor b c) = UInt256.xor b (UInt256.xor a c) := by
   rw [← xor_assoc, xor_comm a b, xor_assoc]
-theorem mulMod_comm (a b m : UInt256) :
-    UInt256.mulMod a b m = UInt256.mulMod b a m := by
-  unfold UInt256.mulMod
-  rw [Nat.mul_comm a.toNat b.toNat]
-
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.RawExpressionAC

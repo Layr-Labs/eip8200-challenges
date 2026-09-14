@@ -36,7 +36,7 @@ theorem run_tail_fallback_acc (input : ByteArray) (hneAcc : finalAcc input ≠ 0
     apply hneAcc
     apply Challenge.EvmProof.Word.word_ext
     simpa using hz
-  have hdest : Decode.isValidJumpDest submissionBytecode 354 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 353 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 242 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [tailPath, opAt, pushAt, wfOp, loopExitState, fallbackState, atPC,
@@ -82,14 +82,14 @@ def gasSteps_direct_return (input : ByteArray) :
   have gs := DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     returnPath (by rfl) (by rfl) (run_return_store input) (by rfl)
     deployAddress_not_precompile
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 64 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 63 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedReturnState input).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 64 := by
+      Artifact.submissionArtifact.instructionPC 63 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
   have hop : (storedReturnState input).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 64
+    Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 63
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop
     (by change (0 : Nat) < 1024; decide) (by rfl)
