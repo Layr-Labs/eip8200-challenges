@@ -19,3 +19,5 @@ theorem submissionBytecode_roundtrip :
   Challenge.EvmProof.Bytecode.assemble_disassemble _
 
 end Challenge.Modexp
+
+-- Submission surface marker 2026-09-14T14:30:03Z; executable bytes and proof declarations unchanged.
