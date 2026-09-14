@@ -11,18 +11,18 @@ open PersistentStaggerIteration StaggerPersistentFrame
 
 noncomputable opaque gasSteps_setup (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (i : Nat) (hi : i < DriverTrace.blockCount input)
-    (hh : input.size = DriverTrace.blockOffset i) (hlarge : 5223 ≤ input.size) :
+    (hh : input.size = DriverTrace.blockOffset i) (hlarge : 5220 ≤ input.size) :
     GasSteps
       {states input i with
-        pc := UInt256.ofNat 4766
+        pc := UInt256.ofNat 4763
         stack := frame (hashes input i) (DriverTrace.blockOffsetWord i)
           (LoopCompletionControl.limit input) maskRho}
       {tableState input i with
-        pc := UInt256.ofNat 898
+        pc := UInt256.ofNat 894
         stack := frame (hashes input i) (DriverTrace.blockOffsetWord i)
           (Padding.paddedWord input) maskRho} :=
   ColdTraceCompose.two (gasSteps_lowRoute input hfit hpositive i hi hh hlarge)
-    (ColdTraceCompose.two (gasSteps_padding input hfit (by omega) i)
+    (ColdTraceCompose.two (gasSteps_padding input hfit i)
       (gasSteps_normal input hfit i hi))
 
 #print axioms gasSteps_setup

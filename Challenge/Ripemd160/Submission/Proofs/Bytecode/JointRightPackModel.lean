@@ -10,7 +10,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Paired144WordRound Paired144WordRotation StaggerCoreCommon
 
 def suffix (h : WordLane) (off limit : UInt256) (rho : List UInt256) : List UInt256 :=
-  [h.d, h.c, h.b, h.a, off, limit] ++ rho
+  [h.b, h.c, h.d, h.a, off, limit] ++ rho
 
 def input (memory : ByteArray) (h q : WordLane) (off limit : UInt256) : JointRightPackRaw.Input :=
   { rd := q.d, k := UInt256.ofNat 1352829926, rb := q.b, rc := q.c, ra := q.a, re := q.e,

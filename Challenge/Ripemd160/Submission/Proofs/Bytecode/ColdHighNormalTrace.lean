@@ -8,8 +8,8 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PersistentStaggerTable PersistentStaggerIteration ColdHighPaddingMemory StaggerPersistentFrame
 noncomputable opaque gasSteps_normal (input : ByteArray) (hfit : CalldataFits input) (i : Nat)
     (hi : i<DriverTrace.blockCount input) :
-    GasSteps {paddedState input i with pc:=UInt256.ofNat 494,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (Padding.paddedWord input) maskRho}
-      {tableState input i with pc:=UInt256.ofNat 898,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (Padding.paddedWord input) maskRho} := by
+    GasSteps {paddedState input i with pc:=UInt256.ofNat 490,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (Padding.paddedWord input) maskRho}
+      {tableState input i with pc:=UInt256.ofNat 894,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (Padding.paddedWord input) maskRho} := by
   let h:=hashes input i
   let off:=DriverTrace.blockOffsetWord i
   have hc : (paddedState input i).executionEnv.code=Artifact.submissionArtifact.code := states_code input i
@@ -32,7 +32,7 @@ noncomputable opaque gasSteps_normal (input : ByteArray) (hfit : CalldataFits in
   have gn:=ColdOrdinarySites.gasSteps_normal (paddedState input i) Paired144WordRound.factorPlusWord
     (Paired144WordRound.fusedModulusWord 5 7) (Paired144WordRound.fusedModulusWord 8 5)
     (Paired144WordRound.fusedCoefficientWord 0 3) (Paired144WordRound.fusedCoefficientWord 0 2)
-    (Word.ofUInt32 h.h4) (Word.ofUInt32 h.h3) (Word.ofUInt32 h.h2) (Word.ofUInt32 h.h1)
+    (Word.ofUInt32 h.h4) (Word.ofUInt32 h.h1) (Word.ofUInt32 h.h2) (Word.ofUInt32 h.h3)
     (Word.ofUInt32 h.h0) off (Padding.paddedWord input) [] (messagePointer i) (by decide) hr
     (messagePointer_lower i) hb hq1 hq0
     (by change (MachineState.readWord (finalMemory input i) 0).toNat<2^32

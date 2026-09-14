@@ -12,16 +12,16 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PersistentStaggerIteration StaggerPersistentLoopInduction
 
 noncomputable opaque gasSteps (input : ByteArray) (hfit : CalldataFits input)
-    (hpositive : 0 < input.size) (hn32 : input.size ≠ 32)
+    (hpositive : 0 < input.size)
     (i : Nat) (hi : i < DriverTrace.blockCount input)
     (hh : input.size = DriverTrace.blockOffset i)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 335)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 337)) :
     GasSteps (initialState submissionBytecode input 0)
       {states input i with
-        pc := UInt256.ofNat 4766
+        pc := UInt256.ofNat 4763
         stack := StaggerPersistentFrame.frame (hashes input i) (DriverTrace.blockOffsetWord i)
           (LoopCompletionControl.limit input) ColdHighTrace.maskRho} := by
-  have gs := StaggerPersistentCorrect.gasSteps_start input hfit hpositive hn32 entryPrefix
+  have gs := StaggerPersistentCorrect.gasSteps_start input hfit hpositive entryPrefix
   have ga : ∀ j, j ≤ i → Ambient input (states input j) := by
     intro j _
     exact ⟨states_code input j, states_fork input j, states_halt input j,
@@ -30,7 +30,7 @@ noncomputable opaque gasSteps (input : ByteArray) (hfit : CalldataFits input)
     ColdHighTrace.maskRho hfit (by decide) i hi ga (by
       intro j hj
       have hjc : j < DriverTrace.blockCount input := by omega
-      have ho : input.size = DriverTrace.blockOffset j → input.size < 5223 := by
+      have ho : input.size = DriverTrace.blockOffset j → input.size < 5220 := by
         intro h
         rw [DriverTrace.blockOffset] at h hh
         omega
@@ -42,7 +42,7 @@ noncomputable opaque gasSteps (input : ByteArray) (hfit : CalldataFits input)
   have hstart : GasSteps (initialState submissionBytecode input 0)
       (loopState input (states input 0) (hashes input 0) 0 (DriverTrace.blockCount input)
         ColdHighTrace.maskRho) := gs
-  have hpc : LoopCompletionControl.blockPC input i = UInt256.ofNat 4766 := by
+  have hpc : LoopCompletionControl.blockPC input i = UInt256.ofNat 4763 := by
     unfold LoopCompletionControl.blockPC
     rw [show input.size = i * 64 by simpa [DriverTrace.blockOffset] using hh]
     simp

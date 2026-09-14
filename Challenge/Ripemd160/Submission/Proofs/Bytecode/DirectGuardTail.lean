@@ -37,7 +37,7 @@ theorem run_tail_divert_acc (input : ByteArray) (hneAcc : finalAcc input ≠ 0) 
     apply hneAcc
     apply Challenge.EvmProof.Word.word_ext
     simpa using hz
-  have hdest : Decode.isValidJumpDest submissionBytecode 102 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 103 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 62 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [tailPath, opAt, pushAt, wfOp, loopExitState, tailDivertState, spentCells, atPC,
@@ -54,7 +54,7 @@ theorem run_fallback_clear (input : ByteArray)
   have htrue : UInt256.isTrue (referenceWord input) := by
     rw [href]
     decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 335 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 337 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 226 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [fallbackPath, opAt, pushAt, wfOp, tailDivertState, fallbackState, spentCells, atPC,

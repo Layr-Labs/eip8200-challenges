@@ -16,19 +16,19 @@ open EvmSemantics.EVM
 
 def legacyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 123
+    pc := UInt256.ofNat 124
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x3e7,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
 def sizeMatched (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 5190
+    pc := UInt256.ofNat 5187
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x3e7,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
 def sizeFailed (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 191
+    pc := UInt256.ofNat 192
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x3e7,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
@@ -63,7 +63,7 @@ def accState (s : State) (input : ByteArray) (i pc n : Nat) : State :=
 
 def selectorEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 5983
+    pc := UInt256.ofNat 5980
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x3e7,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 
@@ -120,7 +120,7 @@ def resultActiveWords (s : State) : UInt256 :=
 
 def resultState (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 76
+    pc := UInt256.ofNat 77
     stack := [DriverTrace.blockOffsetWord i, Padding.paddedWord input]
     memory := resultMemory s.memory i
     activeWords := resultActiveWords s }

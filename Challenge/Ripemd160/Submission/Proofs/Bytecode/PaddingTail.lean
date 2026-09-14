@@ -8,7 +8,7 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PaddingTrace
 
 def gasSteps_entry (input : ByteArray) (rho : List UInt256) (hcap : rho.length ≤ 20) :
-    GasSteps (StackTail.append (Execution.atPC input 335) rho)
+    GasSteps (StackTail.append (Execution.atPC input 337) rho)
       (StackTail.append (Main.initializedState input) rho) := by
   apply StackTail.gasSteps Execution.path_3ee rho
   · change 0 + rho.length + 1 < 1024
@@ -33,14 +33,14 @@ def gasSteps_push (input : ByteArray) (rho : List UInt256) (hcap : rho.length �
 
 def gasSteps_prefix (input : ByteArray) (hfit : CalldataFits input)
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
-    GasSteps (StackTail.append (Execution.atPC input 335) rho)
+    GasSteps (StackTail.append (Execution.atPC input 337) rho)
       (StackTail.append (padFramed input) rho) :=
   (gasSteps_entry input rho hcap).trans
     ((tail_enter input rho hcap).trans ((tail_length input rho hcap).trans
       ((tail_copy input hfit rho hcap).trans (gasSteps_push input rho hcap))))
 
 def gasSteps_guardMiss (input : ByteArray) (hfit : CalldataFits input)
-    (hn32 : input.size ≠ 32) (hnz : input.size % 64 ≠ 0)
+    (hnz : input.size % 64 ≠ 0)
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
     GasSteps (StackTail.append (padFramed input) rho)
       (StackTail.append (padGuardMiss input) rho) := by
@@ -50,7 +50,6 @@ def gasSteps_guardMiss (input : ByteArray) (hfit : CalldataFits input)
     ([DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16] ++ rho)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega)
     rfl rfl rfl deployAddress_not_precompile
-    (by exact Nat.lt_trans hfit (by norm_num)) hn32
   rw [PadLimitArithmetic.rounded_input] at gp
   exact g.trans gp
 
@@ -135,15 +134,15 @@ noncomputable def gasSteps_loop (input : ByteArray) (hfit : CalldataFits input)
           exact hz) hz)
 
 noncomputable def gasSteps_pad (input : ByteArray) (hfit : CalldataFits input)
-    (hn32 : input.size ≠ 32) (rho : List UInt256) (hcap : rho.length ≤ 20) :
-    GasSteps (StackTail.append (Execution.atPC input 335) rho)
+    (rho : List UInt256) (hcap : rho.length ≤ 20) :
+    GasSteps (StackTail.append (Execution.atPC input 337) rho)
       (StackTail.append (entryState input) rho) := by
   have gp := gasSteps_prefix input hfit rho hcap
   by_cases hz : input.size % 64 = 0
   · rw [entryState_skip input hz]
     exact gp.trans (tail_guardSkip input hfit hz rho hcap)
   · rw [entryState_miss input hz]
-    exact gp.trans ((gasSteps_guardMiss input hfit hn32 hz rho hcap).trans
+    exact gp.trans ((gasSteps_guardMiss input hfit hz rho hcap).trans
       ((gasSteps_setup input hfit rho hcap).trans (gasSteps_loop input hfit rho hcap)))
 
 #print axioms gasSteps_prefix

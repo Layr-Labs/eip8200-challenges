@@ -22,7 +22,7 @@ theorem run_reverse_pair (s : State) (input : ByteArray) (n : Nat) (hn : n < 15)
         pc := UInt256.ofNat 51
         stack := [a, UInt256.ofNat (960 - 64 * n), r] ++ rest } =
     some { s with
-      pc := UInt256.ofNat (if n < 14 then 51 else 73)
+      pc := UInt256.ofNat (if n < 14 then 51 else 74)
       stack := [UInt256.lor
           (UInt256.xor (MachineState.readWord input (928 - 64 * n)) r)
           (UInt256.lor

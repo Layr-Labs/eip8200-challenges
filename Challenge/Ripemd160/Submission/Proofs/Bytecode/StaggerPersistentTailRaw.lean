@@ -192,6 +192,6 @@ theorem run_template (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
   simpa only [template, DenseScheduleTrace.pcAfter_append] using hsum4
 #print axioms run_template
 /-- Tail entry stack once the last left round has folded the scratch word away. -/
-def entryStack (q : Input) (rho : List UInt256) : List UInt256 := [ q.lb, q.le, q.la, q.ld, q.literal72, q.k, q.lc, q.re, q.rc, q.ra, q.rd, q.rb, q.factor, q.lower, q.cache140, q.cache350, q.cache310, q.cache190, q.h4, q.h3, q.h2, q.h1, q.h0, q.off, q.limit ] ++ rho
+def entryStack (q : Input) (rho : List UInt256) : List UInt256 := [ q.lb, q.le, q.la, q.ld, q.literal72, q.k, q.lc, q.re, q.rc, q.ra, q.rd, q.rb, q.factor, q.lower, q.cache140, q.cache350, q.cache310, q.cache190, q.h4, q.h1, q.h2, q.h3, q.h0, q.off, q.limit ] ++ rho
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentTailRaw

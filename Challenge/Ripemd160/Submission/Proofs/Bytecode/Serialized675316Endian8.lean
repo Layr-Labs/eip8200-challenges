@@ -24,18 +24,16 @@ private theorem local_xor_comm (u v : UInt256) : UInt256.xor u v = UInt256.xor v
   simp [UInt256.xor, Fin.xor, Nat.xor_comm]
 /-- Stage 8 with the resident full-width mask read from the stack. The factor is kept below the XOR operands. -/
 def code : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 257),
+  [ .op (.Dup ⟨3, by decide⟩),
     .op (.Dup ⟨1, by decide⟩),
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 8),
     .op .SHR,
     .op .XOR,
-    .op (.Dup ⟨5, by decide⟩),
     .op .AND,
+    .push ⟨2, by decide⟩ (UInt256.ofNat 257),
     .op .MUL,
     .op .XOR ]
-
-private theorem neutral_hmul (x y : UInt256) : x * y = UInt256.mul x y := rfl
 
 private theorem run_symbolic (s : State) (startPC value mask : UInt256)
     (a b : UInt256) (rest : List UInt256) (hstack : rest.length < 1010)
@@ -50,8 +48,8 @@ private theorem run_symbolic (s : State) (startPC value mask : UInt256)
   simp (discharger := omega) [code, ClosedEndianReuse.factorPush,
     op, push1, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size, hrun, hcap,
     Nat.add_assoc, List.getElem?_cons_zero, List.exchange, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals simp only [neutral_hmul, RawExpressionAC.xor_comm, RawExpressionAC.land_comm, RawExpressionAC.mul_comm]
-  all_goals repeat first | apply And.intro | exact True.intro | rfl
+  all_goals simp only [RawExpressionAC.xor_comm, RawExpressionAC.land_comm, RawExpressionAC.mul_comm]
+  all_goals repeat first | apply And.intro | rfl
 
 theorem run_endian (s : State) (startPC value : UInt256)
     (a b : UInt256) (rest : List UInt256) (hstack : rest.length < 1010)
