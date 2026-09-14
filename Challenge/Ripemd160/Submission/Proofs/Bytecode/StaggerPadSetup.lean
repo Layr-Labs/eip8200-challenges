@@ -36,13 +36,12 @@ def lowTemplate : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 128),
     .push ⟨2, by decide⟩ (UInt256.ofNat 522),
     .op .MSTORE,
-    .push ⟨19, by decide⟩ (UInt256.ofNat (128 * (1 + 2 ^ 144))),
+    .push ⟨21, by decide⟩ (UInt256.ofNat (128 * (1 + 2 ^ 144))),
     .push ⟨1, by decide⟩ (UInt256.ofNat 54),
     .op .MSTORE,
+    .op .CODESIZE,
     .op .CALLDATASIZE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 29),
-    .op .SHR,
-    .op .ISZERO ]
+    .op .LT ]
 
 /-- `PUSH2 0398 JUMPI` at 4769: straight to the rounds when the high word is zero. -/
 def branchTemplate : List Instr :=
@@ -71,44 +70,32 @@ def highTemplate : List Instr :=
 
 private theorem add_eq_hAdd (x y : UInt256) : UInt256.add x y = x + y := rfl
 
-/-- The branch condition left by the low block. -/
-def highZero (n : UInt256) : UInt256 := UInt256.isZero (UInt256.shiftRight n (UInt256.ofNat 29))
+/-- The fast padding path is valid for lengths below the artifact's byte size. -/
+def highZero (n : UInt256) : UInt256 := UInt256.lt n (UInt256.ofNat 5218)
 
 theorem highZero_true_iff (n : UInt256) :
-    UInt256.isTrue (highZero n) ↔ StaggerTablePad.highDirty n = UInt256.ofNat 0 := by
-  have hx : StaggerTablePad.highDirty n = UInt256.ofNat 0 ↔
-      (UInt256.shiftRight n (UInt256.ofNat 29)).toNat = 0 := by
-    constructor
-    · intro h
-      change (StaggerTablePad.highDirty n).toNat = 0
-      rw [h]
-      decide
-    · intro h
-      apply Word.word_ext
-      change (UInt256.shiftRight n (UInt256.ofNat 29)).toNat = _
-      rw [h]
-      decide
-  rw [hx]
-  unfold highZero UInt256.isZero
-  by_cases h : (UInt256.shiftRight n (UInt256.ofNat 29)).toNat = 0
-  · rw [if_pos h]
-    constructor
-    · intro _
-      exact h
-    · intro _
-      show (UInt256.ofNat 1).toNat ≠ 0
-      decide
-  · rw [if_neg h]
-    constructor
-    · intro h'
-      exact absurd h' (by show ¬ (UInt256.ofNat 0).toNat ≠ 0; decide)
-    · intro h'
-      exact absurd h' h
+    UInt256.isTrue (highZero n) ↔ n.toNat < 5218 := by
+  change (UInt256.lt n (UInt256.ofNat 5218)).toNat ≠ 0 ↔ n.toNat < 5218
+  rw [Word.word_toNat_lt]
+  have hc : (UInt256.ofNat 5218).toNat = 5218 := by decide
+  rw [hc]
+  by_cases hn : n.toNat < 5218 <;> simp [hn]
+
+theorem highZero_true_imp (n : UInt256) (h : UInt256.isTrue (highZero n)) :
+    StaggerTablePad.highDirty n = UInt256.ofNat 0 := by
+  have hbound := (highZero_true_iff n).mp h
+  apply Word.word_ext
+  unfold StaggerTablePad.highDirty
+  rw [Word.shiftRight_toNat _ (by decide), Nat.shiftRight_eq_div_pow]
+  have h0 : (UInt256.ofNat 0).toNat = 0 := by decide
+  rw [h0]
+  simp only [Nat.reducePow]
+  omega
 
 theorem run_low (s : State) (pc returnPC : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 995) (hrun : s.halt = .Running) (hactive : 35 ≤ s.activeWords.toNat)
     (hlow : (MachineState.readWord s.memory 0).toNat < 2 ^ 32)
-    (hfit : s.executionEnv.calldata.size < 2 ^ 256) :
+    (hfit : s.executionEnv.calldata.size < 2 ^ 256) (hcode : s.executionEnv.code.size = 5218) :
     runInstrSeq lowTemplate {s with pc := pc, stack := returnPC :: UInt256.ofNat 4294967295 :: rest} =
       some {s with
              pc := pcAfter pc lowTemplate
@@ -135,7 +122,7 @@ theorem run_low (s : State) (pc returnPC : UInt256) (rest : List UInt256)
   change StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size) = _ at hpacked
   rw [hpacked]
   simp (discharger := omega) [lowTemplate, StaggerTablePad.lowChain, StaggerTablePad.lowDirty,
-    highZero, zeroMemory, writeWord, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+    highZero, hcode, zeroMemory, writeWord, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     PairedHelperBooleanTrace.push0_toNat,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
     State.activeWordsAfterUInt256, hactiveAt, hcopyActive, hsize,
@@ -191,4 +178,5 @@ theorem run_branch_fall (s : State) (pc c : UInt256) (rho : List UInt256)
 #print axioms run_branch_taken
 #print axioms run_branch_fall
 #print axioms highZero_true_iff
+#print axioms highZero_true_imp
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPad

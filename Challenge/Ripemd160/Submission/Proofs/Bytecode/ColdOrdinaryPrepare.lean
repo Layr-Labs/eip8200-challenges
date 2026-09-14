@@ -32,7 +32,7 @@ theorem pointer_eq (input : ByteArray) (i : Nat) (hfit : CalldataFits input)
 def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
     (hmask : rest.head? = some (UInt256.ofNat 4294967295))
     (hstack : rest.length ≤ 896) (hrun : s.halt = .Running)
-    (hsmall : s.executionEnv.calldata.size < 2^29)
+    (hsmall : s.executionEnv.calldata.size < 5218)
     (hactive : 35 ≤ s.activeWords.toNat)
     (hlow : (MachineState.readWord s.memory 0).toNat < 2 ^ 32) (hfit : s.executionEnv.calldata.size < 2 ^ 256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
@@ -46,22 +46,19 @@ def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
   have g1 := ColdOrdinarySites.gasSteps_low s ret rest hmask hstack hrun hactive hlow hfit hcode hfork hnp
   have hz : UInt256.isTrue (StaggerPad.highZero (UInt256.ofNat s.executionEnv.calldata.size)) := by
     apply (StaggerPad.highZero_true_iff _).mpr
-    apply Word.word_ext
-    unfold StaggerTablePad.highDirty
-    rw [Word.shiftRight_toNat _ (by decide), Nat.shiftRight_eq_div_pow]
-    change s.executionEnv.calldata.size % 2^256 / 2^29 = 0
-    rw [Nat.mod_eq_of_lt hfit, Nat.div_eq_of_lt hsmall]
+    rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt hfit]
+    exact hsmall
   have g2 := ColdOrdinarySites.gasSteps_branch_taken
     {s with memory := StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
     _ (ret :: rest) (by simp only [List.length_cons]; omega) hrun hz hcode hfork hnp
-  have hmem := StaggerTablePad.lowChain_eq s.memory _ ((StaggerPad.highZero_true_iff _).mp hz)
+  have hmem := StaggerTablePad.lowChain_eq s.memory _ (StaggerPad.highZero_true_imp _ hz)
   exact (g1.trans g2).cast rfl (by rw [hmem])
 
 def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.HashState)
     (limit : UInt256) (rho : List UInt256) (hs : rho.length ≤ 880)
     (tail : List UInt256) (hrho : rho = DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: tail)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input) (ctx : Context s input)
-    (hordinary : input.size = DriverTrace.blockOffset i → input.size < 2^29)
+    (hordinary : input.size = DriverTrace.blockOffset i → input.size < 5218)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hr : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig

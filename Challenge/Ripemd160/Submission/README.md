@@ -1,46 +1,52 @@
-# RIPEMD-160: shared 32-byte path with cheaper startup and padding clear
+# RIPEMD-160: packed classifier and CODESIZE padding cutoff
 
-Candidate: 672,361 gas / 5,218 bytes, SHA-256
-`e5aa4b7b42ede0aa20bda820494eaa763c149a7abe1844c4480681cef5aad02a`.
+Candidate: 672,252 gas / 5,218 bytes, SHA-256
+`464966b56b1a08ec1c5f7d4f868f0cbec8c1efb1441bd15397a93d38646a2f71`.
 
-This extends ercumentyildirim's 6d7f412a, promoted as fc2c0d19 at 672,499 gas.
-That parent introduces the J2 recognizer with 251-byte chunks, a 32-byte input
-path sharing the lower byte-swap prefix, and a general cold padding route for
-large aligned inputs. This change adds two previously proved optimizations.
+This combines the verified packed classifier of 2052d385 (672,336 gas) with
+a cheaper cutoff for the padding-only path. The underlying Shared32/J2 parent
+is ercumentyildirim's promoted 6d7f412a/fc2c0d19 at 672,499 gas. Our 13a7ebda
+adds cheaper modulus initialization and the shortened prefix clear; the packed
+classifier contributes a further 25 gas and this cutoff contributes 84.
 
-The persistent initializer starts with the plus-modulus seed (2^65 + 1) shifted
-by 144, then derives the minus modulus by subtracting 2 shifted by 144. It uses
-DUP2/SUB in place of DUP1/ADD/SWAP1. This removes one executed instruction and
-saves three gas per generic entry, or 96 gas over the corpus. PUSH13 keeps the
-byte positions after the initializer unchanged and passes the original loader.
-The arithmetic equality is proved in StaggerPersistentStart. The existing
-DenseScheduleLift theorem supplies SUB advancement directly.
+The old padding guard computes ISZERO(CALLDATASIZE >> 29). The new guard uses
+CALLDATASIZE < CODESIZE, with this exact artifact's size of 5218. It costs seven
+gas instead of eleven. A length below 5218 also has a zero high length word,
+so the fast padding table is valid. Larger aligned inputs use the parent's
+existing general padding writer, whose proof is generalized to the new cutoff.
+The resulting hash remains correct for every input admitted by CalldataFits.
 
-The padding-only CALLDATACOPY clears [28,1112), using 1084 bytes and destination
-28. Context.lowClear already proves that the first 28 memory bytes are zero.
-PadZeroPrefix proves exact ByteArray equality with the original full clear,
-including its size. Copying 34 words instead of 35 saves three gas, while
-PUSH1 28 costs one more gas than PUSH0: the net reduction is two gas per padding
-call and 42 over the corpus. The packed marker literal narrows from PUSH20 to
-PUSH19 to absorb the extra copy-destination byte. PCs from 4804 onward remain
-unchanged. ColdOrdinary and ColdHighLow proofs pass the existing invariant.
+The literal holding packed 0x80 markers widens from PUSH19 to PUSH21 to absorb
+the two bytes freed by the new guard. The branch starts at PC4812 as before;
+all subsequent physical instruction positions and the payload base are fixed.
+There are 3765 executable instructions, 4938 executable bytes and 280 payload
+bytes. The classifier retains the loader-compatible operand order from 2052d385.
 
-There are 3,768 instructions, 4,938 executable bytes and 280 payload bytes.
-Assembly reconstructs the complete executable region exactly; the protected
-binding includes the payload as well. Only files inside Submission are edited.
+StaggerPad.highZero_true_iff characterizes the new comparison as n.toNat < 5218.
+Its highZero_true_imp lemma proves that the high length word is zero on that
+route. ColdOrdinaryPrepare uses this implication to identify the exact padding
+memory. ColdHighModel and the top-level Cold route use the complementary bound.
+The existing full general-padding memory and output proofs apply without any
+assumption that inputs are small. Submission-local DataStepper and PadLift
+include our previously verified CODESIZE soundness extension. Protected EVM
+semantics, compiler, generator, scorer, specification and options are unchanged.
 
-The original protected loader passes. The pinned native scorer passes all 49
-vectors in clean and dirty frames at 672,361 gas. Differential validation
-against 6d7f412a passes 4,358 inputs through 65,537 bytes and 69 corpus seeds.
-Every corpus seed saves 138 gas; among the expanded inputs, 19 are unchanged,
-3,811 save three gas and 528 save five gas. The complete 120-seed correctness,
-2,500-case fuzz, reassembly, runtime jump and CODECOPY gate passes. Identical
-seeds 0, 1 and 820096 confirm the same 138-gas reduction against the promotion.
+The full Solution build passes all 3714 jobs. The candidate theorem depends
+only on propext, Classical.choice and Quot.sound. The original protected loader
+passes. The original native scorer passes all 49 corpus vectors in clean and
+dirty frames at 672,252 gas. The mandatory 120-seed correctness gate, 2500 fuzz
+cases, executable reassembly, runtime jumps and CODECOPY bounds pass.
 
-The full Solution build passes all 3,713 jobs; its candidate theorem depends
-only on propext, Classical.choice and Quot.sound. Independent secure Comparator
-verification is pending.
-Official validation is separate from local testing. The parent architecture,
-compression, endian handling, recognition and payload retain their provenance.
-Our plus-modulus implementation builds on fkiene's arithmetic idea and removes
-its executable filler. The shortened clear and its memory proof are our work.
+Expanded differential checking against 2052d385 passes 4358 inputs and 69
+corpus seeds. All corpus seeds save 84 gas. Of the expanded inputs, 3830 are
+unchanged and 508 save four gas. Twenty large aligned inputs use the additional
+general padding path and cost 1014 to 1073 gas more, while returning the same
+correct digest. This is a corpus gas improvement; it does not reduce gas for
+every input. Independent secure Comparator verification is pending.
+
+Attribution: the Shared32/J2/general cold route is ercumentyildirim's work;
+the compact five-byte classifier constant is i34-9's refinement of our earlier
+lookup. The plus-modulus idea credits fkiene, with our removal of its filler.
+The shortened clear, its memory proof, the CODESIZE proof support and this
+cutoff integration are our work. Earlier compression, endian and digest payload
+contributions retain their provenance. Only Submission files are changed.

@@ -100,17 +100,17 @@ theorem low_end : pcAfter (UInt256.ofNat 4755) StaggerPad.lowTemplate = UInt256.
 open StaggerPad (branchTemplate)
 
 theorem branch_slice :
-    (Artifact.submissionArtifact.instructions.drop 3719).take branchTemplate.length = branchTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3718).take branchTemplate.length = branchTemplate := by rfl
 
 def branchSite : GenericRoundSite Artifact.submissionArtifact .Osaka branchTemplate :=
-  StackSiteBuilder.ofSlice branchTemplate 3719 branch_slice
-    (by change 3719 + branchTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice branchTemplate 3718 branch_slice
+    (by change 3718 + branchTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := branchTemplate) (by decide))
     (by decide)
 theorem branch_pc : branchSite.startPC = UInt256.ofNat 4812 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3719) = UInt256.ofNat 4812
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3718) = UInt256.ofNat 4812
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem branch_advances : ∀ instruction ∈ branchTemplate.dropLast, PadLift.Advances instruction := by
@@ -168,7 +168,7 @@ def gasSteps_low (s : State) (ret : UInt256) (rest : List UInt256)
     subst mask
     simp only [List.length_cons] at hstack
     apply PadLift.gasSteps_of_raw lowSite {s with pc := UInt256.ofNat 4755, stack := ret :: UInt256.ofNat 4294967295 :: tailRest} _ hcode hfork hrun hnp low_pc.symm low_advances
-    have h := StaggerPad.run_low s (UInt256.ofNat 4755) ret tailRest (by omega) hrun hactive hlow hfit
+    have h := StaggerPad.run_low s (UInt256.ofNat 4755) ret tailRest (by omega) hrun hactive hlow hfit (by rw [hcode]; exact referenceBytecode_size)
     rw [low_end] at h
     exact h
 

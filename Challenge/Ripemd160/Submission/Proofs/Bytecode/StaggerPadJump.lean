@@ -9,16 +9,16 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate PairedHelperBooleanTrace
 def jumpTemplate : List Instr := PadJump.template 894
 theorem jump_slice :
-    (Artifact.submissionArtifact.instructions.drop 3737).take jumpTemplate.length = jumpTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3736).take jumpTemplate.length = jumpTemplate := by rfl
 def jumpSite : GenericRoundSite Artifact.submissionArtifact .Osaka jumpTemplate :=
-  StackSiteBuilder.ofSlice jumpTemplate 3737 jump_slice
-    (by change 3737 + jumpTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice jumpTemplate 3736 jump_slice
+    (by change 3736 + jumpTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := jumpTemplate) (by decide))
     (by decide)
 theorem jump_pc : jumpSite.startPC = UInt256.ofNat 4836 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3737) = UInt256.ofNat 4836
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3736) = UInt256.ofNat 4836
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem jump_advances : ∀ instruction ∈ jumpTemplate.dropLast, PadLift.Advances instruction := by
   apply PadLift.advancesAll_sound

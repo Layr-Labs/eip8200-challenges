@@ -30,7 +30,7 @@ noncomputable opaque gasSteps (input : ByteArray) (hfit : CalldataFits input)
     ColdHighTrace.maskRho hfit (by decide) i hi ga (by
       intro j hj
       have hjc : j < DriverTrace.blockCount input := by omega
-      have ho : input.size = DriverTrace.blockOffset j → input.size < 2 ^ 29 := by
+      have ho : input.size = DriverTrace.blockOffset j → input.size < 5218 := by
         intro h
         rw [DriverTrace.blockOffset] at h hh
         omega

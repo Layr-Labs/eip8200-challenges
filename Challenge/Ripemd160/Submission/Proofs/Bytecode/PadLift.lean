@@ -9,12 +9,13 @@ open StackRoundTrace StackRoundTemplate PairedHelperBooleanTrace
 
 def Advances (instruction : Instr) : Prop :=
   DenseScheduleLift.Advances instruction ∨ instruction = .op .CALLDATASIZE ∨
-    instruction = .op .EQ ∨ instruction = .op .CALLDATACOPY
+    instruction = .op .EQ ∨ instruction = .op .CALLDATACOPY ∨ instruction = .op .CODESIZE ∨
+    instruction = .op .SUB
 
 theorem runInstr_pc_extra {instruction : Instr} {s t : State}
     (hform : Advances instruction) (hresult : DataStepper.runInstr instruction s = some t) :
     t.pc = s.pc + UInt256.ofNat instruction.size := by
-  rcases hform with hd | hs | he | hc
+  rcases hform with hd | hs | he | hc | hp | hsub
   · exact DenseScheduleLift.runInstr_pc_of_advances hd hresult
   all_goals subst instruction
   all_goals by_cases hcap : s.stack.length < 1024
@@ -45,9 +46,23 @@ theorem runInstr_pc_extra {instruction : Instr} {s t : State}
           simp [hs, ht, hu] at hresult
           subst t
           rfl
+  · simp only [DataStepper.runInstr, if_pos hcap] at hresult
+    cases hresult
+    rfl
+
+  · simp only [DataStepper.runInstr, if_pos hcap] at hresult
+    cases hs : s.stack with
+    | nil => simp [hs] at hresult
+    | cons a tail =>
+      cases ht : tail with
+      | nil => simp [hs, ht] at hresult
+      | cons b rest =>
+        simp [hs, ht] at hresult
+        subst t
+        rfl
 
 def advancesCheck : Instr → Bool
-  | .op .CALLDATASIZE | .op .EQ | .op .CALLDATACOPY => true
+  | .op .CALLDATASIZE | .op .EQ | .op .CALLDATACOPY | .op .CODESIZE | .op .SUB => true
   | i => coreAdvancesCheck i
 
 theorem advancesCheck_sound (instruction : Instr)
@@ -58,12 +73,16 @@ theorem advancesCheck_sound (instruction : Instr)
     cases operation <;> first
       | exact Or.inr (Or.inl rfl)
       | exact Or.inr (Or.inr (Or.inl rfl))
-      | exact Or.inr (Or.inr (Or.inr rfl))
+      | exact Or.inr (Or.inr (Or.inr (Or.inl rfl)))
+      | exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl rfl))))
+      | exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr rfl))))
       | exact Or.inl (coreAdvancesCheck_sound _ h)
       | (rename_i inner; cases inner <;> first
           | exact Or.inr (Or.inl rfl)
           | exact Or.inr (Or.inr (Or.inl rfl))
-          | exact Or.inr (Or.inr (Or.inr rfl))
+          | exact Or.inr (Or.inr (Or.inr (Or.inl rfl)))
+          | exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl rfl))))
+          | exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr rfl))))
           | exact Or.inl (coreAdvancesCheck_sound _ h))
 
 theorem advancesAll_sound (code : List Instr) (h : code.all advancesCheck = true) :
