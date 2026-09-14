@@ -73,26 +73,26 @@ local macro "lenOK" : tactic =>
   `(tactic| ((try simp only [List.length_cons, List.length_append, win] at *) <;> omega))
 
 theorem jd5158 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4944 = true :=
-  Artifact.isValidJumpDest_index 3773 (by rfl)
+  Artifact.isValidJumpDest_index 3772 (by rfl)
 
 theorem jd4903 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (4704 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 3561 (by rfl)
+  Artifact.isValidJumpDest_index 3560 (by rfl)
 
 theorem jd5020 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (4816 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 3661 (by rfl)
+  Artifact.isValidJumpDest_index 3660 (by rfl)
 
 theorem jd5108 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (4899 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 3734 (by rfl)
+  Artifact.isValidJumpDest_index 3733 (by rfl)
 
 theorem jd5274 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (5050 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 3879 (by rfl)
+  Artifact.isValidJumpDest_index 3878 (by rfl)
 
 theorem jd4379 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4174 = true :=
-  Artifact.isValidJumpDest_index 3166 (by rfl)
+  Artifact.isValidJumpDest_index 3165 (by rfl)
 
 section
 variable (s : State)
@@ -159,7 +159,7 @@ def gasSteps_row1 (P : W5) (k n0 n1 n2 n3 np a0 a1 a2 a3 : UInt256) (rest : List
   have hjd : Decode.isValidJumpDest s.executionEnv.code 4944 = true := by rw [hcode]; exact jd5158
   simp only [win]
   seg block_r1h (run_r1h s (hcap := by lenOK) (ha1 := ha1) (ha0 := ha0) (hact := hact) ..)
-  refine GasSteps.trans (gasSteps_sgtAt 3567 4714 (by rfl) (by rfl) (by norm_num) s _ _ _
+  refine GasSteps.trans (gasSteps_sgtAt 3566 4714 (by rfl) (by rfl) (by norm_num) s _ _ _
     hcode hfork (by lenOK) hrun hnp) ?_
   seg block_r1d (run_r1d s (hcap := by lenOK) (hk := hk) (htb := R4Value.tb_le_one _) ..)
   seg block_r1c2 (run_r1c2 s (hcap := by lenOK) (ha2 := ha2) (hact := hact) ..)
@@ -180,7 +180,7 @@ def gasSteps_row2 (P : W5) (k n0 n1 n2 n3 np a1 a2 a3 : UInt256) (rest : List UI
   have hjd : Decode.isValidJumpDest s.executionEnv.code 4944 = true := by rw [hcode]; exact jd5158
   simp only [win]
   seg block_r2h (run_r2h s (hcap := by lenOK) (ha2 := ha2) (ha1 := ha1) (hact := hact) ..)
-  refine GasSteps.trans (gasSteps_sgtAt 3667 4826 (by rfl) (by rfl) (by norm_num) s _ _ _
+  refine GasSteps.trans (gasSteps_sgtAt 3666 4826 (by rfl) (by rfl) (by norm_num) s _ _ _
     hcode hfork (by lenOK) hrun hnp) ?_
   seg block_r2d (run_r2d s (hcap := by lenOK) (hk := hk) (htb := R4Value.tb_le_one _) ..)
   seg block_r2c3 (run_r2c3 s (hcap := by lenOK) (ha3 := ha3) (hact := hact) ..)
@@ -198,7 +198,7 @@ def gasSteps_row3 (P : W5) (k n0 n1 n2 n3 np a2 a3 : UInt256) (rest : List UInt2
                  win (row3 a2 a3 k P).1 (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) } := by
   simp only [win]
   seg block_r3h (run_r3h s (hcap := by lenOK) (ha3 := ha3) (ha2 := ha2) (hact := hact) ..)
-  refine GasSteps.trans (gasSteps_sgtAt 3740 4909 (by rfl) (by rfl) (by norm_num) s _ _ _
+  refine GasSteps.trans (gasSteps_sgtAt 3739 4909 (by rfl) (by rfl) (by norm_num) s _ _ _
     hcode hfork (by lenOK) hrun hnp) ?_
   seg block_r3d (run_r3d s (hcap := by lenOK) (hk := hk) (htb := R4Value.tb_le_one _) ..)
   exact SquareRow.stepsOf block_r3e (run_r3e s (hcap := by lenOK) ..) rfl hcode hfork hrun hnp
