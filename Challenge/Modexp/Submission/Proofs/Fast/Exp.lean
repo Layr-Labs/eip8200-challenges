@@ -1355,13 +1355,6 @@ def ebitMul (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat) :
            stack := bitStack n bsize esize msize i w mask
            memory := mem }
 
-/-- pc 1958, back from the multiply. -/
-def ebitJoin (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat) :
-    State :=
-  { s with pc := UInt256.ofNat 1100
-           stack := bitStack n bsize esize msize i w mask
-           memory := mem }
-
 /-- `ENX`, pc 1894. -/
 def ebitNext (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat) :
     State :=
@@ -1615,7 +1608,7 @@ theorem run_ebitMul (s : State) (mem : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1301
       (ebitMul s mem n bsize esize msize i w mask) =
-      some (mpCall s mem 256 512 256 (UInt256.ofNat 1100)
+      some (mpCall s mem 256 512 256 (UInt256.ofNat 1101)
         (bitStack n bsize esize msize i w mask)) := by
   have h1939Nat : (UInt256.ofNat 3550).toNat = 3550 := by decide
   simp (config := { maxSteps := 400000 }) [blk1301, opAt, pushAt, wfOp,
@@ -1625,21 +1618,6 @@ theorem run_ebitMul (s : State) (mem : ByteArray)
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
-    Challenge.EvmProof.Word.word_toNat_ofNat]
-
-set_option linter.unusedSimpArgs false in
-/-- `blk1307` (pc 1958): the one-instruction rejoin. -/
-theorem run_ebitJoin (s : State) (mem : ByteArray)
-    (n bsize esize msize i w mask : Nat) (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk1307
-      (ebitJoin s mem n bsize esize msize i w mask) =
-      some (ebitNext s mem n bsize esize msize i w mask) := by
-  simp (config := { maxSteps := 200000 }) [blk1307, opAt, pushAt, wfOp,
-    Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    ebitJoin, ebitNext, bitStack, outer, hrun,
-    Challenge.EvmProof.Word.literal_eq_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
@@ -1987,23 +1965,11 @@ def gasSteps_ebitMul (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (ebitMul s mem n bsize esize msize i w mask)
-      (mpCall s mem 256 512 256 (UInt256.ofNat 1100)
+      (mpCall s mem 256 512 256 (UInt256.ofNat 1101)
         (bitStack n bsize esize msize i w mask)) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1301 hcode hfork
       (run_ebitMul s mem n bsize esize msize i w mask hcode hrun) hrun hnp
-
-def gasSteps_ebitJoin (s : State) (mem : ByteArray)
-    (n bsize esize msize i w mask : Nat)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps (ebitJoin s mem n bsize esize msize i w mask)
-      (ebitNext s mem n bsize esize msize i w mask) :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka blk1307 hcode hfork
-      (run_ebitJoin s mem n bsize esize msize i w mask hrun) hrun hnp
 
 def gasSteps_ebitNextLoop (s : State) (mem : ByteArray)
     (n bsize esize msize i w mask : Nat) (hmask : 2 ≤ mask) (hmask128 : mask ≤ 128)
@@ -3708,7 +3674,7 @@ theorem jumpD1806 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 1075).toNat = true := jumpD 1075 (by decide) jumpDest1732
 
 theorem jumpD1831 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 1100).toNat = true := jumpD 1100 (by decide) jumpDest1757
+    (UInt256.ofNat 1101).toNat = true := jumpD 1101 (by decide) jumpDest1758
 
 theorem jumpD1533 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 880).toNat = true := jumpD 880 (by decide) jumpDest1526
@@ -4169,7 +4135,7 @@ def gasSteps_bitStep (s : State) {n bsize mm minv R : Nat}
     have hbase1 := spec.mpFrame 256 256 256 512 bM mem (by omega)
       (Or.inl (by omega)) hinv.baseBlock
     Challenge.EvmProof.GasSteps.cast
-      (((((gasSteps_ebitHead s mem n bsize esize msize i w (2 ^ r) hcode hfork hrun
+      ((((gasSteps_ebitHead s mem n bsize esize msize i w (2 ^ r) hcode hfork hrun
           hnp).trans
         (sub.monpro 256 256 256 (UInt256.ofNat 1075)
           (bitStack n bsize esize msize i w (2 ^ r)) mem acc acc (by simp [bitStack])
@@ -4179,15 +4145,12 @@ def gasSteps_bitStep (s : State) {n bsize mm minv R : Nat}
           (2 ^ r) hmask hw256 hne hcode hfork hrun hnp)).trans
         ((gasSteps_ebitMul s (sub.mpMem 256 256 256 mem) n bsize esize msize i w
             (2 ^ r) hcode hfork hrun hnp).trans
-          (sub.monpro 256 512 256 (UInt256.ofNat 1100)
+          (sub.monpro 256 512 256 (UInt256.ofNat 1101)
             (bitStack n bsize esize msize i w (2 ^ r))
             (sub.mpMem 256 256 256 mem) (Model.montMul mm R acc acc) bM
             (by simp [bitStack]) (by omega) (by omega) (by omega) (by omega)
             (by omega) jumpD1831 (sub.mpFrame 256 256 256 mem (by omega) hframe) hmod1 hsq
-            hbase1 (Model.montMul_lt hm _ _ _)))).trans
-        (gasSteps_ebitJoin s
-          (sub.mpMem 256 512 256 (sub.mpMem 256 256 256 mem))
-          n bsize esize msize i w (2 ^ r) hcode hfork hrun hnp))
+            hbase1 (Model.montMul_lt hm _ _ _))))
       rfl (by rw [h1]; rfl)
 
 def gasSteps_bitBody (s : State) {n bsize mm minv R : Nat}

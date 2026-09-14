@@ -64,17 +64,12 @@ def blk1294 :
 /-- Instructions 1431..1388, pc 1942..1957. -/
 def blk1301 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 742 2 1100,
+  [pushAt 742 2 1101,
    pushAt 743 2 256,
    pushAt 744 2 512,
    pushAt 745 2 256,
    pushAt 746 2 3550,
    opAt 747 .JUMP]
-
-/-- Instructions 1389..1389, pc 1958..1958. -/
-def blk1307 :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 748 .JUMPDEST]
 
 /-- Instructions 1438..1395, pc 1829..1888. -/
 def blk1308 :
