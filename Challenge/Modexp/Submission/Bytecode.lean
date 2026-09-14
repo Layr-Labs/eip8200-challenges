@@ -20,4 +20,6 @@ theorem submissionBytecode_roundtrip :
 
 end Challenge.Modexp
 
--- lottery rerun 2026-09-14T04:58:53Z: public PR #1738 artifact resubmitted under a fresh benchmark seed, bytes and proofs unchanged
+-- wrapped-counter decrement in the DOUBLE256 radix-conversion loop: pc 1190 now
+-- reads PUSH0; NOT; ADD, with the back-edge target widened to PUSH3 so that every
+-- later program counter, jump destination and instruction index is unchanged
