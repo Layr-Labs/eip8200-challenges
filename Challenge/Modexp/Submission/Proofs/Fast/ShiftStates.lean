@@ -53,9 +53,7 @@ def pcAddLoop : Nat := 3162
 def pcAddInner : Nat := 3168
 def pcAddTail : Nat := 3211
 /-- The add body after `OR`, before the pointer step and exit test. -/
-def pcAddMid : Nat := 3193
-/-- The fall-through padding after the add-round exit test. -/
-def pcAddPad : Nat := 3206
+def pcAddMid : Nat := 3197
 def pcSubCheck : Nat := 3229
 def pcSubEntry : Nat := 3241
 def pcSubInner : Nat := 3247

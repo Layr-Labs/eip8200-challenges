@@ -29,7 +29,7 @@ attribute [local simp] List.getElem?_cons_zero
 /-- The multiply entry `JUMPDEST` at pc 4013 (0x0f50, instruction 3190), the target of every `MONPRO` call. -/
 theorem jumpDestMulEntry :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3353 = true :=
-  Artifact.isValidJumpDest_index 2511 (by rfl)
+  Artifact.isValidJumpDest_index 2512 (by rfl)
 
 /-! ## States at the block boundaries -/
 

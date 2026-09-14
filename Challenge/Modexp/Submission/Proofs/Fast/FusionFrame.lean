@@ -16,10 +16,11 @@ def chunkA : List Instr :=
    .op .POP]
 
 def chunkB (head : UInt256) : List Instr :=
-  [.op .POP,
-   .push 3 1856,
-   .op (.Dup ⟨9, by decide⟩),
+  [.push 2 1856,
+   .op (.Dup ⟨10, by decide⟩),
    .op .SUB,
+   .op (.Swap ⟨0, by decide⟩),
+   .op .POP,
    .push 2 head,
    .op (.Swap ⟨1, by decide⟩),
    .op .POP,
@@ -58,12 +59,11 @@ theorem run_a (hcap : rest.length ≤ 1005) :
 theorem run_b (hcap : rest.length ≤ 1005) :
     runInstructions (chunkB head) { s with pc := 3477, stack := [p,oldHead,oldEnd,ent,neg,mask,ent2,inv,m0,tl,m96,m64,m32,tl+256,dst,ret] ++ rest } =
       some { s with pc := 3493, stack := [tl-1856,head,224,ent,neg,mask,ent2,inv,m0,tl,m96,m64,m32,tl+256,dst,ret] ++ rest } := by
-  have h15 : rest.length + 15 < 1024 := by omega
   have h16 : rest.length + 16 < 1024 := by omega
   have h17 : rest.length + 17 < 1024 := by omega
   have h18 : rest.length + 18 < 1024 := by omega
   simp [chunkB, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    List.exchange, h15, h16, h17, h18, Challenge.EvmProof.Word.word_add_comm]
+    List.exchange, h16, h17, h18, Challenge.EvmProof.Word.word_add_comm]
   decide
 
 theorem run_c (hcap : rest.length ≤ 1005) :

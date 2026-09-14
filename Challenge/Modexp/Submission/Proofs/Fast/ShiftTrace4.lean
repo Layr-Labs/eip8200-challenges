@@ -258,16 +258,12 @@ def gasSteps_addLastIter (s : State) (mem : ByteArray) (n bsize esize msize k : 
         (run_addBodyA s mem (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (n - 1))) n bsize esize
           msize k (n - 1) hn32 (by omega) (tPtr_toNat n (n - 1) hn32 (by omega)) e.act296 e.code
           e.run)).trans
-      ((soundEnv blk3157b e
+      (soundEnv blk3157b e
         (run_addTail_last s (addStep mem n (n - 1 + 1)).memory (addStep mem n (n - 1 + 1)).flag
           (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (n - 1)))
           (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (n - 1 + 1))) n bsize esize msize k
           (ptrAt_step _ _) (by rw [Nat.sub_add_cancel hn]; exact tPtr_toNat_last n hn32)
-          e.code e.run)).trans
-        (soundEnv blk3157c e
-          (run_addPad s (addStep mem n (n - 1 + 1)).memory (addStep mem n (n - 1 + 1)).flag
-            (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (n - 1 + 1))) n bsize esize msize k
-            e.code e.run))))
+          e.code e.run)))
     rfl (by rw [Nat.sub_add_cancel hn]; rfl)
 
 /-- The whole add pass from the round head to the add tail. -/

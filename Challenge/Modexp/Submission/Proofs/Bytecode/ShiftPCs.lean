@@ -1098,372 +1098,375 @@ open EvmSemantics.EVM
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3161 : Artifact.submissionArtifact.instructionPC 2386 = 3175 := by
+@[simp] theorem pc3161 : Artifact.submissionArtifact.instructionPC 2386 = 3172 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3162 : Artifact.submissionArtifact.instructionPC 2387 = 3176 := by
+@[simp] theorem pc3162 : Artifact.submissionArtifact.instructionPC 2387 = 3175 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
+@[simp] theorem pc3163 : Artifact.submissionArtifact.instructionPC 2388 = 3176 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
 
-@[simp] theorem pc3164 : Artifact.submissionArtifact.instructionPC 2388 = 3177 := by
+@[simp] theorem pc3164 : Artifact.submissionArtifact.instructionPC 2389 = 3177 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3165 : Artifact.submissionArtifact.instructionPC 2389 = 3178 := by
+@[simp] theorem pc3165 : Artifact.submissionArtifact.instructionPC 2390 = 3178 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3166 : Artifact.submissionArtifact.instructionPC 2390 = 3179 := by
+@[simp] theorem pc3166 : Artifact.submissionArtifact.instructionPC 2391 = 3179 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3167 : Artifact.submissionArtifact.instructionPC 2391 = 3180 := by
+@[simp] theorem pc3167 : Artifact.submissionArtifact.instructionPC 2392 = 3180 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3168 : Artifact.submissionArtifact.instructionPC 2392 = 3181 := by
+@[simp] theorem pc3168 : Artifact.submissionArtifact.instructionPC 2393 = 3181 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3169 : Artifact.submissionArtifact.instructionPC 2393 = 3182 := by
+@[simp] theorem pc3169 : Artifact.submissionArtifact.instructionPC 2394 = 3182 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3170 : Artifact.submissionArtifact.instructionPC 2394 = 3183 := by
+@[simp] theorem pc3170 : Artifact.submissionArtifact.instructionPC 2395 = 3183 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3171 : Artifact.submissionArtifact.instructionPC 2395 = 3184 := by
+@[simp] theorem pc3171 : Artifact.submissionArtifact.instructionPC 2396 = 3184 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3172 : Artifact.submissionArtifact.instructionPC 2396 = 3185 := by
+@[simp] theorem pc3172 : Artifact.submissionArtifact.instructionPC 2397 = 3185 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3173 : Artifact.submissionArtifact.instructionPC 2397 = 3186 := by
+@[simp] theorem pc3173 : Artifact.submissionArtifact.instructionPC 2398 = 3186 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3174 : Artifact.submissionArtifact.instructionPC 2398 = 3187 := by
+@[simp] theorem pc3174 : Artifact.submissionArtifact.instructionPC 2399 = 3187 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3175 : Artifact.submissionArtifact.instructionPC 2399 = 3188 := by
+@[simp] theorem pc3175 : Artifact.submissionArtifact.instructionPC 2400 = 3188 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3176 : Artifact.submissionArtifact.instructionPC 2400 = 3189 := by
+@[simp] theorem pc3176 : Artifact.submissionArtifact.instructionPC 2401 = 3189 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3177 : Artifact.submissionArtifact.instructionPC 2401 = 3190 := by
+@[simp] theorem pc3177 : Artifact.submissionArtifact.instructionPC 2402 = 3190 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3178 : Artifact.submissionArtifact.instructionPC 2402 = 3191 := by
+@[simp] theorem pc3178 : Artifact.submissionArtifact.instructionPC 2403 = 3191 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3179 : Artifact.submissionArtifact.instructionPC 2403 = 3192 := by
+@[simp] theorem pc3179 : Artifact.submissionArtifact.instructionPC 2404 = 3192 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3180 : Artifact.submissionArtifact.instructionPC 2404 = 3193 := by
+@[simp] theorem pc3180 : Artifact.submissionArtifact.instructionPC 2405 = 3193 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3181 : Artifact.submissionArtifact.instructionPC 2405 = 3195 := by
+@[simp] theorem pc3181 : Artifact.submissionArtifact.instructionPC 2406 = 3194 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3182 : Artifact.submissionArtifact.instructionPC 2406 = 3196 := by
+@[simp] theorem pc3182 : Artifact.submissionArtifact.instructionPC 2407 = 3195 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3183 : Artifact.submissionArtifact.instructionPC 2407 = 3197 := by
+@[simp] theorem pc3183 : Artifact.submissionArtifact.instructionPC 2408 = 3196 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3184 : Artifact.submissionArtifact.instructionPC 2408 = 3200 := by
+@[simp] theorem pc3184 : Artifact.submissionArtifact.instructionPC 2409 = 3197 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3185 : Artifact.submissionArtifact.instructionPC 2409 = 3201 := by
+@[simp] theorem pc3185 : Artifact.submissionArtifact.instructionPC 2410 = 3198 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3185_compact : Artifact.submissionArtifact.instructionPC 2410 = 3202 := by
+@[simp] theorem pc3185_compact : Artifact.submissionArtifact.instructionPC 2411 = 3200 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3186 : Artifact.submissionArtifact.instructionPC 2411 = 3205 := by
+@[simp] theorem pc3186 : Artifact.submissionArtifact.instructionPC 2412 = 3201 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3187 : Artifact.submissionArtifact.instructionPC 2412 = 3206 := by
+@[simp] theorem pc3187 : Artifact.submissionArtifact.instructionPC 2413 = 3202 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3188 : Artifact.submissionArtifact.instructionPC 2413 = 3207 := by
+@[simp] theorem pc3188 : Artifact.submissionArtifact.instructionPC 2414 = 3205 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3189 : Artifact.submissionArtifact.instructionPC 2414 = 3208 := by
+@[simp] theorem pc3189 : Artifact.submissionArtifact.instructionPC 2415 = 3206 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3190 : Artifact.submissionArtifact.instructionPC 2415 = 3209 := by
+@[simp] theorem pc3190 : Artifact.submissionArtifact.instructionPC 2416 = 3207 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3191 : Artifact.submissionArtifact.instructionPC 2416 = 3210 := by
+@[simp] theorem pc3191 : Artifact.submissionArtifact.instructionPC 2417 = 3210 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3192 : Artifact.submissionArtifact.instructionPC 2417 = 3211 := by
+@[simp] theorem pc3192 : Artifact.submissionArtifact.instructionPC 2418 = 3211 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3193 : Artifact.submissionArtifact.instructionPC 2418 = 3212 := by
+@[simp] theorem pc3193 : Artifact.submissionArtifact.instructionPC 2419 = 3212 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3194 : Artifact.submissionArtifact.instructionPC 2419 = 3215 := by
+@[simp] theorem pc3194 : Artifact.submissionArtifact.instructionPC 2420 = 3215 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3195 : Artifact.submissionArtifact.instructionPC 2420 = 3216 := by
+@[simp] theorem pc3195 : Artifact.submissionArtifact.instructionPC 2421 = 3216 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3196 : Artifact.submissionArtifact.instructionPC 2421 = 3217 := by
+@[simp] theorem pc3196 : Artifact.submissionArtifact.instructionPC 2422 = 3217 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3197 : Artifact.submissionArtifact.instructionPC 2422 = 3218 := by
+@[simp] theorem pc3197 : Artifact.submissionArtifact.instructionPC 2423 = 3218 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3198 : Artifact.submissionArtifact.instructionPC 2423 = 3219 := by
+@[simp] theorem pc3198 : Artifact.submissionArtifact.instructionPC 2424 = 3219 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3199 : Artifact.submissionArtifact.instructionPC 2424 = 3222 := by
+@[simp] theorem pc3199 : Artifact.submissionArtifact.instructionPC 2425 = 3222 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3200 : Artifact.submissionArtifact.instructionPC 2425 = 3223 := by
+@[simp] theorem pc3200 : Artifact.submissionArtifact.instructionPC 2426 = 3223 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3201 : Artifact.submissionArtifact.instructionPC 2426 = 3224 := by
+@[simp] theorem pc3201 : Artifact.submissionArtifact.instructionPC 2427 = 3224 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3202 : Artifact.submissionArtifact.instructionPC 2427 = 3225 := by
+@[simp] theorem pc3202 : Artifact.submissionArtifact.instructionPC 2428 = 3225 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3203 : Artifact.submissionArtifact.instructionPC 2428 = 3228 := by
+@[simp] theorem pc3203 : Artifact.submissionArtifact.instructionPC 2429 = 3228 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3204 : Artifact.submissionArtifact.instructionPC 2429 = 3229 := by
+@[simp] theorem pc3204 : Artifact.submissionArtifact.instructionPC 2430 = 3229 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3205 : Artifact.submissionArtifact.instructionPC 2430 = 3230 := by
+@[simp] theorem pc3205 : Artifact.submissionArtifact.instructionPC 2431 = 3230 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3206 : Artifact.submissionArtifact.instructionPC 2431 = 3233 := by
+@[simp] theorem pc3206 : Artifact.submissionArtifact.instructionPC 2432 = 3233 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3207 : Artifact.submissionArtifact.instructionPC 2433 = 3235 := by
+@[simp] theorem pc3207 : Artifact.submissionArtifact.instructionPC 2434 = 3235 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3208 : Artifact.submissionArtifact.instructionPC 2434 = 3236 := by
+@[simp] theorem pc3208 : Artifact.submissionArtifact.instructionPC 2435 = 3236 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3209 : Artifact.submissionArtifact.instructionPC 2435 = 3239 := by
+@[simp] theorem pc3209 : Artifact.submissionArtifact.instructionPC 2436 = 3239 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3210 : Artifact.submissionArtifact.instructionPC 2438 = 3242 := by
+@[simp] theorem pc3210 : Artifact.submissionArtifact.instructionPC 2439 = 3242 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3211 : Artifact.submissionArtifact.instructionPC 2439 = 3243 := by
+@[simp] theorem pc3211 : Artifact.submissionArtifact.instructionPC 2440 = 3243 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3212 : Artifact.submissionArtifact.instructionPC 2440 = 3246 := by
+@[simp] theorem pc3212 : Artifact.submissionArtifact.instructionPC 2441 = 3246 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3213 : Artifact.submissionArtifact.instructionPC 2441 = 3247 := by
+@[simp] theorem pc3213 : Artifact.submissionArtifact.instructionPC 2442 = 3247 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3214 : Artifact.submissionArtifact.instructionPC 2442 = 3248 := by
+@[simp] theorem pc3214 : Artifact.submissionArtifact.instructionPC 2443 = 3248 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3215 : Artifact.submissionArtifact.instructionPC 2443 = 3249 := by
+@[simp] theorem pc3215 : Artifact.submissionArtifact.instructionPC 2444 = 3249 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3216 : Artifact.submissionArtifact.instructionPC 2444 = 3250 := by
+@[simp] theorem pc3216 : Artifact.submissionArtifact.instructionPC 2445 = 3250 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3217 : Artifact.submissionArtifact.instructionPC 2445 = 3253 := by
+@[simp] theorem pc3217 : Artifact.submissionArtifact.instructionPC 2446 = 3253 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3219 : Artifact.submissionArtifact.instructionPC 2446 = 3254 := by
+@[simp] theorem pc3219 : Artifact.submissionArtifact.instructionPC 2447 = 3254 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3220 : Artifact.submissionArtifact.instructionPC 2447 = 3255 := by
+@[simp] theorem pc3220 : Artifact.submissionArtifact.instructionPC 2448 = 3255 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3221 : Artifact.submissionArtifact.instructionPC 2448 = 3256 := by
+@[simp] theorem pc3221 : Artifact.submissionArtifact.instructionPC 2449 = 3256 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3222 : Artifact.submissionArtifact.instructionPC 2449 = 3257 := by
+@[simp] theorem pc3222 : Artifact.submissionArtifact.instructionPC 2450 = 3257 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3223 : Artifact.submissionArtifact.instructionPC 2450 = 3258 := by
+@[simp] theorem pc3223 : Artifact.submissionArtifact.instructionPC 2451 = 3258 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3224 : Artifact.submissionArtifact.instructionPC 2451 = 3259 := by
+@[simp] theorem pc3224 : Artifact.submissionArtifact.instructionPC 2452 = 3259 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3225 : Artifact.submissionArtifact.instructionPC 2452 = 3260 := by
+@[simp] theorem pc3225 : Artifact.submissionArtifact.instructionPC 2453 = 3260 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3226 : Artifact.submissionArtifact.instructionPC 2453 = 3261 := by
+@[simp] theorem pc3226 : Artifact.submissionArtifact.instructionPC 2454 = 3261 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3227 : Artifact.submissionArtifact.instructionPC 2454 = 3262 := by
+@[simp] theorem pc3227 : Artifact.submissionArtifact.instructionPC 2455 = 3262 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3228 : Artifact.submissionArtifact.instructionPC 2455 = 3263 := by
+@[simp] theorem pc3228 : Artifact.submissionArtifact.instructionPC 2456 = 3263 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3229 : Artifact.submissionArtifact.instructionPC 2456 = 3264 := by
+@[simp] theorem pc3229 : Artifact.submissionArtifact.instructionPC 2457 = 3264 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3230 : Artifact.submissionArtifact.instructionPC 2457 = 3265 := by
+@[simp] theorem pc3230 : Artifact.submissionArtifact.instructionPC 2458 = 3265 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3231 : Artifact.submissionArtifact.instructionPC 2458 = 3266 := by
+@[simp] theorem pc3231 : Artifact.submissionArtifact.instructionPC 2459 = 3266 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3232 : Artifact.submissionArtifact.instructionPC 2459 = 3267 := by
+@[simp] theorem pc3232 : Artifact.submissionArtifact.instructionPC 2460 = 3267 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3233 : Artifact.submissionArtifact.instructionPC 2460 = 3268 := by
+@[simp] theorem pc3233 : Artifact.submissionArtifact.instructionPC 2461 = 3268 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3234 : Artifact.submissionArtifact.instructionPC 2461 = 3269 := by
+@[simp] theorem pc3234 : Artifact.submissionArtifact.instructionPC 2462 = 3269 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3235 : Artifact.submissionArtifact.instructionPC 2462 = 3270 := by
+@[simp] theorem pc3235 : Artifact.submissionArtifact.instructionPC 2463 = 3270 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3236 : Artifact.submissionArtifact.instructionPC 2463 = 3271 := by
+@[simp] theorem pc3236 : Artifact.submissionArtifact.instructionPC 2464 = 3271 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3237 : Artifact.submissionArtifact.instructionPC 2464 = 3272 := by
+@[simp] theorem pc3237 : Artifact.submissionArtifact.instructionPC 2465 = 3272 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3238 : Artifact.submissionArtifact.instructionPC 2465 = 3273 := by
+@[simp] theorem pc3238 : Artifact.submissionArtifact.instructionPC 2466 = 3273 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3238_compact : Artifact.submissionArtifact.instructionPC 2466 = 3275 := by
+@[simp] theorem pc3238_compact : Artifact.submissionArtifact.instructionPC 2467 = 3275 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3239 : Artifact.submissionArtifact.instructionPC 2467 = 3276 := by
+@[simp] theorem pc3239 : Artifact.submissionArtifact.instructionPC 2468 = 3276 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3240 : Artifact.submissionArtifact.instructionPC 2468 = 3277 := by
+@[simp] theorem pc3240 : Artifact.submissionArtifact.instructionPC 2469 = 3277 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3241 : Artifact.submissionArtifact.instructionPC 2469 = 3280 := by
+@[simp] theorem pc3241 : Artifact.submissionArtifact.instructionPC 2470 = 3280 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3242 : Artifact.submissionArtifact.instructionPC 2470 = 3281 := by
+@[simp] theorem pc3242 : Artifact.submissionArtifact.instructionPC 2471 = 3281 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3243 : Artifact.submissionArtifact.instructionPC 2471 = 3282 := by
+@[simp] theorem pc3243 : Artifact.submissionArtifact.instructionPC 2472 = 3282 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3244 : Artifact.submissionArtifact.instructionPC 2472 = 3285 := by
+@[simp] theorem pc3244 : Artifact.submissionArtifact.instructionPC 2473 = 3285 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3245 : Artifact.submissionArtifact.instructionPC 2473 = 3286 := by
+@[simp] theorem pc3245 : Artifact.submissionArtifact.instructionPC 2474 = 3286 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3246 : Artifact.submissionArtifact.instructionPC 2474 = 3287 := by
+@[simp] theorem pc3246 : Artifact.submissionArtifact.instructionPC 2475 = 3287 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3247 : Artifact.submissionArtifact.instructionPC 2475 = 3290 := by
+@[simp] theorem pc3247 : Artifact.submissionArtifact.instructionPC 2476 = 3290 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3248 : Artifact.submissionArtifact.instructionPC 2476 = 3291 := by
+@[simp] theorem pc3248 : Artifact.submissionArtifact.instructionPC 2477 = 3291 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3249 : Artifact.submissionArtifact.instructionPC 2477 = 3292 := by
+@[simp] theorem pc3249 : Artifact.submissionArtifact.instructionPC 2478 = 3292 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3250 : Artifact.submissionArtifact.instructionPC 2478 = 3295 := by
+@[simp] theorem pc3250 : Artifact.submissionArtifact.instructionPC 2479 = 3295 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3251 : Artifact.submissionArtifact.instructionPC 2479 = 3296 := by
+@[simp] theorem pc3251 : Artifact.submissionArtifact.instructionPC 2480 = 3296 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3252 : Artifact.submissionArtifact.instructionPC 2480 = 3299 := by
+@[simp] theorem pc3252 : Artifact.submissionArtifact.instructionPC 2481 = 3299 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -1471,7 +1474,7 @@ open EvmSemantics.EVM
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3254 : Artifact.submissionArtifact.instructionPC 2465 = 3273 := by
+@[simp] theorem pc3254 : Artifact.submissionArtifact.instructionPC 2466 = 3273 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -1496,33 +1499,33 @@ open EvmSemantics.EVM
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3264 : Artifact.submissionArtifact.instructionPC 2481 = 3300 := by
+@[simp] theorem pc3264 : Artifact.submissionArtifact.instructionPC 2482 = 3300 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3265 : Artifact.submissionArtifact.instructionPC 2482 = 3301 := by
+@[simp] theorem pc3265 : Artifact.submissionArtifact.instructionPC 2483 = 3301 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3265a : Artifact.submissionArtifact.instructionPC 2502 = 3334 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-
-@[simp] theorem pc3265c : Artifact.submissionArtifact.instructionPC 2506 = 3342 := by
+@[simp] theorem pc3265a : Artifact.submissionArtifact.instructionPC 2503 = 3334 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 
-@[simp] theorem pc3265e : Artifact.submissionArtifact.instructionPC 2508 = 3348 := by
+@[simp] theorem pc3265c : Artifact.submissionArtifact.instructionPC 2507 = 3342 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3266 : Artifact.submissionArtifact.instructionPC 2509 = 3349 := by
+
+@[simp] theorem pc3265e : Artifact.submissionArtifact.instructionPC 2509 = 3348 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3267 : Artifact.submissionArtifact.instructionPC 2510 = 3352 := by
+@[simp] theorem pc3266 : Artifact.submissionArtifact.instructionPC 2510 = 3349 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] theorem pc3267 : Artifact.submissionArtifact.instructionPC 2511 = 3352 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -1566,59 +1569,59 @@ open EvmSemantics.EVM
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2883 : Artifact.submissionArtifact.instructionPC 3136 = 4132 := by
+@[simp] theorem earlyExtraPC2883 : Artifact.submissionArtifact.instructionPC 3138 = 4132 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2884 : Artifact.submissionArtifact.instructionPC 3137 = 4133 := by
+@[simp] theorem earlyExtraPC2884 : Artifact.submissionArtifact.instructionPC 3139 = 4133 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2885 : Artifact.submissionArtifact.instructionPC 3138 = 4134 := by
+@[simp] theorem earlyExtraPC2885 : Artifact.submissionArtifact.instructionPC 3140 = 4134 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2886 : Artifact.submissionArtifact.instructionPC 3139 = 4135 := by
+@[simp] theorem earlyExtraPC2886 : Artifact.submissionArtifact.instructionPC 3141 = 4135 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2887 : Artifact.submissionArtifact.instructionPC 3140 = 4138 := by
+@[simp] theorem earlyExtraPC2887 : Artifact.submissionArtifact.instructionPC 3142 = 4138 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2888 : Artifact.submissionArtifact.instructionPC 3141 = 4139 := by
+@[simp] theorem earlyExtraPC2888 : Artifact.submissionArtifact.instructionPC 3143 = 4139 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2889 : Artifact.submissionArtifact.instructionPC 3142 = 4140 := by
+@[simp] theorem earlyExtraPC2889 : Artifact.submissionArtifact.instructionPC 3144 = 4140 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2890 : Artifact.submissionArtifact.instructionPC 3143 = 4143 := by
+@[simp] theorem earlyExtraPC2890 : Artifact.submissionArtifact.instructionPC 3145 = 4143 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2891 : Artifact.submissionArtifact.instructionPC 3144 = 4144 := by
+@[simp] theorem earlyExtraPC2891 : Artifact.submissionArtifact.instructionPC 3146 = 4144 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2892 : Artifact.submissionArtifact.instructionPC 3145 = 4145 := by
+@[simp] theorem earlyExtraPC2892 : Artifact.submissionArtifact.instructionPC 3147 = 4145 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2893 : Artifact.submissionArtifact.instructionPC 3145 = 4145 := by
+@[simp] theorem earlyExtraPC2893 : Artifact.submissionArtifact.instructionPC 3147 = 4145 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2894 : Artifact.submissionArtifact.instructionPC 3146 = 4148 := by
+@[simp] theorem earlyExtraPC2894 : Artifact.submissionArtifact.instructionPC 3148 = 4148 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2895 : Artifact.submissionArtifact.instructionPC 3147 = 4149 := by
+@[simp] theorem earlyExtraPC2895 : Artifact.submissionArtifact.instructionPC 3149 = 4149 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2896 : Artifact.submissionArtifact.instructionPC 3148 = 4152 := by
+@[simp] theorem earlyExtraPC2896 : Artifact.submissionArtifact.instructionPC 3150 = 4152 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -1626,59 +1629,59 @@ open EvmSemantics.EVM
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2930 : Artifact.submissionArtifact.instructionPC 3149 = 4153 := by
+@[simp] theorem earlyExtraPC2930 : Artifact.submissionArtifact.instructionPC 3151 = 4153 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2931 : Artifact.submissionArtifact.instructionPC 3150 = 4154 := by
+@[simp] theorem earlyExtraPC2931 : Artifact.submissionArtifact.instructionPC 3152 = 4154 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2932 : Artifact.submissionArtifact.instructionPC 3151 = 4157 := by
+@[simp] theorem earlyExtraPC2932 : Artifact.submissionArtifact.instructionPC 3153 = 4157 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2933 : Artifact.submissionArtifact.instructionPC 3152 = 4158 := by
+@[simp] theorem earlyExtraPC2933 : Artifact.submissionArtifact.instructionPC 3154 = 4158 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2934 : Artifact.submissionArtifact.instructionPC 3153 = 4160 := by
+@[simp] theorem earlyExtraPC2934 : Artifact.submissionArtifact.instructionPC 3155 = 4160 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2935 : Artifact.submissionArtifact.instructionPC 3154 = 4161 := by
+@[simp] theorem earlyExtraPC2935 : Artifact.submissionArtifact.instructionPC 3156 = 4161 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2936 : Artifact.submissionArtifact.instructionPC 3155 = 4162 := by
+@[simp] theorem earlyExtraPC2936 : Artifact.submissionArtifact.instructionPC 3157 = 4162 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2937 : Artifact.submissionArtifact.instructionPC 3156 = 4163 := by
+@[simp] theorem earlyExtraPC2937 : Artifact.submissionArtifact.instructionPC 3158 = 4163 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2938 : Artifact.submissionArtifact.instructionPC 3157 = 4164 := by
+@[simp] theorem earlyExtraPC2938 : Artifact.submissionArtifact.instructionPC 3159 = 4164 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2939 : Artifact.submissionArtifact.instructionPC 3158 = 4165 := by
+@[simp] theorem earlyExtraPC2939 : Artifact.submissionArtifact.instructionPC 3160 = 4165 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2940 : Artifact.submissionArtifact.instructionPC 3159 = 4166 := by
+@[simp] theorem earlyExtraPC2940 : Artifact.submissionArtifact.instructionPC 3161 = 4166 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2941 : Artifact.submissionArtifact.instructionPC 3160 = 4169 := by
+@[simp] theorem earlyExtraPC2941 : Artifact.submissionArtifact.instructionPC 3162 = 4169 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2942 : Artifact.submissionArtifact.instructionPC 3161 = 4170 := by
+@[simp] theorem earlyExtraPC2942 : Artifact.submissionArtifact.instructionPC 3163 = 4170 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2943 : Artifact.submissionArtifact.instructionPC 3162 = 4173 := by
+@[simp] theorem earlyExtraPC2943 : Artifact.submissionArtifact.instructionPC 3164 = 4173 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -1716,15 +1719,15 @@ open EvmSemantics.EVM
   rfl
 
 
-@[simp] theorem pcC3078 : Artifact.submissionArtifact.instructionPC 2432 = 3234 := by
+@[simp] theorem pcC3078 : Artifact.submissionArtifact.instructionPC 2433 = 3234 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pcC3082 : Artifact.submissionArtifact.instructionPC 2436 = 3240 := by
+@[simp] theorem pcC3082 : Artifact.submissionArtifact.instructionPC 2437 = 3240 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pcC3083 : Artifact.submissionArtifact.instructionPC 2437 = 3241 := by
+@[simp] theorem pcC3083 : Artifact.submissionArtifact.instructionPC 2438 = 3241 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -1991,23 +1994,23 @@ open EvmSemantics.EVM
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pcT2647 : Artifact.submissionArtifact.instructionPC 2501 = 3333 := by
+@[simp] theorem pcT2647 : Artifact.submissionArtifact.instructionPC 2502 = 3333 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pcT2649 : Artifact.submissionArtifact.instructionPC 2503 = 3337 := by
+@[simp] theorem pcT2649 : Artifact.submissionArtifact.instructionPC 2504 = 3337 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pcT2650 : Artifact.submissionArtifact.instructionPC 2504 = 3340 := by
+@[simp] theorem pcT2650 : Artifact.submissionArtifact.instructionPC 2505 = 3340 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pcT2651 : Artifact.submissionArtifact.instructionPC 2505 = 3341 := by
+@[simp] theorem pcT2651 : Artifact.submissionArtifact.instructionPC 2506 = 3341 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pcT2653 : Artifact.submissionArtifact.instructionPC 2507 = 3345 := by
+@[simp] theorem pcT2653 : Artifact.submissionArtifact.instructionPC 2508 = 3345 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
