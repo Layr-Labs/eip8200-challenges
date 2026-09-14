@@ -10,9 +10,9 @@ open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
 open Shift
 
-/-- The exact between-loop memory operations: clear phase, then copy Y to ACC. -/
+/-- The exact between-loop memory operations: clear phase, then copy the retained `TS` to ACC. -/
 def phaseSwitch (mem : ByteArray) (n : Nat) : ByteArray :=
-  Exp.mcopyMem (Exp.storeWord mem 1760 (UInt256.ofNat 0)) 256 512 (32 * n)
+  Exp.mcopyMem (Exp.storeWord mem 1760 (UInt256.ofNat 0)) 256 2112 (32 * n)
 
 theorem phaseSwitch_readWord (mem : ByteArray) (n addr : Nat)
     (hflag : addr + 32 ≤ 1760 ∨ 1792 ≤ addr)
@@ -27,15 +27,15 @@ theorem phaseSwitch_preserves (mem : ByteArray) (n ptr cnt value : Nat)
     (hcopy : 256 + 32 * n ≤ ptr ∨ ptr + 32 * cnt ≤ 256)
     (hrep : Model.FastRepresents mem ptr cnt value) :
     Model.FastRepresents (phaseSwitch mem n) ptr cnt value := by
-  apply Exp.fastRepresents_mcopyMem_disjoint _ 256 512 (32 * n) ptr cnt value hcopy
+  apply Exp.fastRepresents_mcopyMem_disjoint _ 256 2112 (32 * n) ptr cnt value hcopy
   exact Model.fastRepresents_writeWord_disjoint mem 1760 ptr cnt value 0 hflag.symm hrep
 
-theorem phaseSwitch_copyY (mem : ByteArray) (n value : Nat) (hn : 1 ≤ n) (hn8 : n ≤ 8)
-    (hrep : Model.FastRepresents mem 512 n value) :
+theorem phaseSwitch_copyY (mem : ByteArray) (n value : Nat) (hn : 1 ≤ n) (_hn8 : n ≤ 8)
+    (hrep : Model.FastRepresents mem 2112 n value) :
     Model.FastRepresents (phaseSwitch mem n) 256 n value := by
-  apply Exp.fastRepresents_mcopyMem _ 256 512 n value hn
-  exact Model.fastRepresents_writeWord_disjoint mem 1760 512 n value 0
-    (Or.inr (by omega)) hrep
+  apply Exp.fastRepresents_mcopyMem _ 256 2112 n value hn
+  exact Model.fastRepresents_writeWord_disjoint mem 1760 2112 n value 0
+    (Or.inl (by omega)) hrep
 
 theorem phaseSwitch_inv (mem : ByteArray) (n bsize mm minv : Nat) (hn8 : n ≤ 8)
     (inv : StepInv mem n bsize mm minv) :
@@ -63,17 +63,17 @@ theorem represents_acc_after_steps (mem : ByteArray) (n mm value k : Nat)
 theorem two_phase_values (mem : ByteArray) (n bsize mm minv r k : Nat)
     (hn : 2 ≤ n) (hn8 : n ≤ 8) (hm : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (htop : Limbs.radix ^ n < 2 * mm) (inv : StepInv mem n bsize mm minv)
-    (hbase : Model.FastRepresents mem 512 n r) (hr : r < mm) :
+    (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm) :
     let first := stepMems mem n mm (2 * k)
     let second := stepMems (phaseSwitch first n) n mm k
-    Model.FastRepresents second 512 n (r * Limbs.radix ^ (3 * k) % mm) ∧
+    Model.FastRepresents second 2112 n (r * Limbs.radix ^ (3 * k) % mm) ∧
       Model.FastRepresents second 256 n (r * Limbs.radix ^ (2 * k) % mm) := by
   dsimp only
   have invFirst := stepInv_stepMems (by omega) hn8 inv (2 * k)
   have firstBase := stepMems_represents mem n mm r hn hn8 hm hmm htop inv.modulus inv.neg
     hbase hr (2 * k)
   have invBetween := phaseSwitch_inv _ n bsize mm minv hn8 invFirst
-  have baseBetween := phaseSwitch_preserves _ n 512 n _ (Or.inl (by omega))
+  have baseBetween := phaseSwitch_preserves _ n 2112 n _ (Or.inr (by omega))
     (Or.inl (by omega)) firstBase
   have hsecond := stepMems_represents _ n mm _ hn hn8 hm hmm htop invBetween.modulus
     invBetween.neg baseBetween (Nat.mod_lt _ hm) k
@@ -149,18 +149,19 @@ def e3Final (mem input : ByteArray) (n mm k : Nat) : ByteArray :=
   let first := stepMems (e3Prepared mem input n) n mm (2 * k)
   stepMems (phaseSwitch first n) n mm k
 
+/-- The loop exit publishes the retained `TS` into `BASE` before the `R1` copy. -/
 def e3Output (mem input : ByteArray) (n mm k : Nat) : ByteArray :=
-  Exp.mcopyMem (e3Final mem input n mm k) 1024 1280 (32 * n)
+  Exp.mcopyMem (Exp.mcopyMem (e3Final mem input n mm k) 512 2112 (32 * n)) 1024 1280 (32 * n)
 
 theorem m2_base_value (mem input : ByteArray) (n mm : Nat)
     (hn : 2 ≤ n) (hn8 : n ≤ 8) (hm : 0 < mm) (hodd : mm % 2 = 1)
     (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem) :
-    Model.FastRepresents (m2Of mem input n) 512 n
+    Model.FastRepresents (m2Of mem input n) 2112 n
       (EvmSemantics.EVM.Precompile.bytesToNatPadded input 96 (32 * n) % mm) := by
   unfold m2Of preMem
-  refine ShiftCacheModel.represents_cache _ n 512 n _ (Or.inl (by omega)) ?_
-  exact fastRepresents_preMemOf _ _ 512 n _ (Or.inl (by unfold PRE_L; omega))
-    (fastRepresents_negStep _ n 512 n _ (Or.inl (by unfold NEG; omega))
+  refine ShiftCacheModel.represents_cache _ n 2112 n _ (Or.inr (by omega)) ?_
+  exact fastRepresents_preMemOf _ _ 2112 n _ (Or.inr (by unfold PRE_DINV; omega))
+    (fastRepresents_negStep _ n 2112 n _ (Or.inr (by unfold NEG; omega))
       (m1_base mem input n mm hn hn8 hm hodd hmod htop) n le_rfl)
 
 theorem keep_one_steps (mem : ByteArray) (n mm value k : Nat)
@@ -187,7 +188,7 @@ theorem e3_output_facts (mem input : ByteArray) (n bsize mm minv k : Nat)
   have inv0 := m2_stepInv mem input n bsize mm minv hn hn8 hm hframe hmod
   have invPrep := flagSet_inv _ (UInt256.ofNat 1) n bsize mm minv hn8 inv0
   have hbase2 := m2_base_value mem input n mm hn hn8 hm hodd hmod htop
-  have hbasePrep := flagSet_preserves _ (UInt256.ofNat 1) 512 n _ (Or.inl (by omega)) hbase2
+  have hbasePrep := flagSet_preserves _ (UInt256.ofNat 1) 2112 n _ (Or.inr (by omega)) hbase2
   have htwo := R1.radix_pow_lt_two_mul (by omega) hodd hmod htop
   have vals := two_phase_values (e3Prepared mem input n) n bsize mm minv _ k hn hn8 hm
     (Model.fastRepresents_lt hmod) htwo invPrep hbasePrep (Nat.mod_lt _ hm)
@@ -206,15 +207,21 @@ theorem e3_output_facts (mem input : ByteArray) (n bsize mm minv k : Nat)
   have honeSwitch := phaseSwitch_preserves _ n 768 n 0 (Or.inl (by omega))
     (Or.inl (by omega)) honeFirst
   have honeFinal := keep_one_steps _ n mm 0 k (by omega) hn8 honeSwitch
-  refine ⟨Exp.frame_mcopyMem (by omega) invFinal.frame, ?_, ?_, ?_, ?_⟩
+  refine ⟨Exp.frame_mcopyMem (by omega) (Exp.frame_mcopyMem (by omega) invFinal.frame), ?_, ?_, ?_, ?_⟩
   · exact Exp.fastRepresents_mcopyMem_disjoint _ 1024 1280 (32 * n) 0 n mm
-      (Or.inr (by omega)) invFinal.modulus
+      (Or.inr (by omega))
+      (Exp.fastRepresents_mcopyMem_disjoint _ 512 2112 (32 * n) 0 n mm
+        (Or.inr (by omega)) invFinal.modulus)
   · exact Exp.fastRepresents_mcopyMem_disjoint _ 1024 1280 (32 * n) 512 n _
-      (Or.inr (by omega)) vals.1
+      (Or.inr (by omega)) (Exp.fastRepresents_mcopyMem _ 512 2112 n _ (by omega) vals.1)
   · exact Exp.fastRepresents_mcopyMem_disjoint _ 1024 1280 (32 * n) 256 n _
-      (Or.inr (by omega)) vals.2
+      (Or.inr (by omega))
+      (Exp.fastRepresents_mcopyMem_disjoint _ 512 2112 (32 * n) 256 n _
+        (Or.inr (by omega)) vals.2)
   · exact Exp.fastRepresents_mcopyMem_disjoint _ 1024 1280 (32 * n) 768 n 0
-      (Or.inr (by omega)) honeFinal
+      (Or.inr (by omega))
+      (Exp.fastRepresents_mcopyMem_disjoint _ 512 2112 (32 * n) 768 n 0
+        (Or.inl (by omega)) honeFinal)
 
 #print axioms e3_output_facts
 
@@ -235,7 +242,7 @@ def ordinaryFinal (mem input : ByteArray) (n mm : Nat) : ByteArray :=
   stepMems (flagSet (m2Of mem input n) (UInt256.ofNat 0)) n mm n
 
 def ordinaryOutput (mem input : ByteArray) (n mm : Nat) : ByteArray :=
-  Exp.mcopyMem (ordinaryFinal mem input n mm) 1024 1280 (32 * n)
+  Exp.mcopyMem (Exp.mcopyMem (ordinaryFinal mem input n mm) 512 2112 (32 * n)) 1024 1280 (32 * n)
 
 theorem m2_one_value (mem input : ByteArray) (n : Nat) (hn : 1 ≤ n) (hn8 : n ≤ 8)
     (hone : Model.FastRepresents mem 768 n 0) :
@@ -264,7 +271,7 @@ theorem ordinary_output_facts (mem input : ByteArray) (n bsize mm minv : Nat)
   have invPrep := flagSet_inv _ (UInt256.ofNat 0) n bsize mm minv hn8 inv0
   have invFinal := stepInv_stepMems (by omega) hn8 invPrep n
   have hbase2 := m2_base_value mem input n mm hn hn8 hm hodd hmod htop
-  have hbasePrep := flagSet_preserves _ (UInt256.ofNat 0) 512 n _ (Or.inl (by omega)) hbase2
+  have hbasePrep := flagSet_preserves _ (UInt256.ofNat 0) 2112 n _ (Or.inr (by omega)) hbase2
   have htwo := R1.radix_pow_lt_two_mul (by omega) hodd hmod htop
   have hbaseFinal := stepMems_represents (flagSet (m2Of mem input n) (UInt256.ofNat 0))
     n mm _ hn hn8 hm (Model.fastRepresents_lt hmod) htwo invPrep.modulus invPrep.neg
@@ -278,17 +285,25 @@ theorem ordinary_output_facts (mem input : ByteArray) (n bsize mm minv : Nat)
   have hmodEq : Limbs.radix ^ n % mm = Limbs.radix ^ n - mm := by
     rw [Nat.mod_eq_sub_mod (le_of_lt (Model.fastRepresents_lt hmod)),
       Nat.mod_eq_of_lt (by omega)]
-  refine ⟨Exp.frame_mcopyMem (by omega) invFinal.frame, ?_, ?_, ?_, ?_, ?_⟩
+  refine ⟨Exp.frame_mcopyMem (by omega) (Exp.frame_mcopyMem (by omega) invFinal.frame), ?_, ?_, ?_, ?_, ?_⟩
   · exact Exp.fastRepresents_mcopyMem_disjoint _ 1024 1280 (32 * n) 0 n mm
-      (Or.inr (by omega)) invFinal.modulus
+      (Or.inr (by omega))
+      (Exp.fastRepresents_mcopyMem_disjoint _ 512 2112 (32 * n) 0 n mm
+        (Or.inr (by omega)) invFinal.modulus)
   · exact Exp.fastRepresents_mcopyMem_disjoint _ 1024 1280 (32 * n) 512 n _
-      (Or.inr (by omega)) hbaseFinal
+      (Or.inr (by omega)) (Exp.fastRepresents_mcopyMem _ 512 2112 n _ (by omega) hbaseFinal)
   · exact Exp.fastRepresents_mcopyMem_disjoint _ 1024 1280 (32 * n) 256 n _
-      (Or.inr (by omega)) haccFinal
+      (Or.inr (by omega))
+      (Exp.fastRepresents_mcopyMem_disjoint _ 512 2112 (32 * n) 256 n _
+        (Or.inr (by omega)) haccFinal)
   · exact Exp.fastRepresents_mcopyMem_disjoint _ 1024 1280 (32 * n) 768 n 0
-      (Or.inr (by omega)) honeFinal
+      (Or.inr (by omega))
+      (Exp.fastRepresents_mcopyMem_disjoint _ 512 2112 (32 * n) 768 n 0
+        (Or.inl (by omega)) honeFinal)
   · rw [hmodEq]
-    exact Exp.fastRepresents_mcopyMem _ 1024 1280 n _ (by omega) invFinal.neg
+    exact Exp.fastRepresents_mcopyMem _ 1024 1280 n _ (by omega)
+      (Exp.fastRepresents_mcopyMem_disjoint _ 512 2112 (32 * n) NEG n _
+        (Or.inl (by unfold NEG; omega)) invFinal.neg)
 
 #print axioms m2_acc_value
 #print axioms ordinary_output_facts

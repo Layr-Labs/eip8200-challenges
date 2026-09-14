@@ -1,6 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CompactConstants
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftTrace2
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowGuardLogic
+import Challenge.Modexp.Submission.Proofs.Fast.RetainedTEntry
 
 set_option warningAsError false
 set_option maxRecDepth 40000
@@ -526,14 +527,14 @@ theorem run_subTail (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- `blk3253`: `k := k - 1` (`NOT ADD` on the zero above `k`), then call `CSUB(BASE)` returning straight to the loop head. -/
+/-- `blk3253`: `k := k - 1` (`NOT ADD` on the zero above `k`), then call the retained `CSUB` entry returning straight to the loop head. -/
 theorem run_csubCall (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hk : 1 ≤ k) (hk32 : k ≤ 32)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3253
       (csubCallState s mem n bsize esize msize k) =
-      some (Csub.csEntryState s mem (UInt256.ofNat 512) (UInt256.ofNat pcAfterCsub)
+      some (RetainedT.entryState s mem (UInt256.ofNat pcAfterCsub)
         (UInt256.ofNat (k - 1) :: outer n bsize esize msize)) := by
   have hdec : UInt256.lnot (UInt256.ofNat 0) + UInt256.ofNat k =
       UInt256.ofNat (k - 1) := by
@@ -544,15 +545,15 @@ theorem run_csubCall (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      csubCallState, kState, pcCsubCall, pcAfterCsub, Csub.csEntryState,
-      outer, Exp.outer, hcode, hrun, hdec, hdec', jumpDest4976,
+      csubCallState, kState, pcCsubCall, pcAfterCsub, RetainedT.entryState,
+      outer, Exp.outer, hcode, hrun, hdec, hdec', RetainedT.jumpDest4486,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange]
 
-/-- `blk3264`: drop the counter, copy the conversion's result from `0x1400` into
-`R1 = 0x0400` and jump to the dispatcher.
+/-- `blk3264`: publish the retained accumulator `TS = 0x0840` into `BASE = 0x0200`, copy the
+conversion's result from `0x1400` into `R1 = 0x0400` and jump to the dispatcher.
 
 The `MCOPY` is the conversion's own: it computes into `0x1400`, and in the
 previous layout `R1` was filled by the call `Setup.setupPathD` used to make.  That call now
@@ -561,46 +562,51 @@ re-establishes `R1` here for the generic route that follows.  The copy length is
 configuration word `V_S32 = 0x2480`, i.e. `32 * n`. -/
 theorem run_shiftDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (hact : 88 ≤ s.activeWords.toNat)
-    (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
+    (_hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3264
-      (frameState s mem 3535 n bsize esize msize) =
-      some { Exp.bDone s (Exp.mcopyMem mem 1024 1280 (32 * n)) n bsize esize msize with
-               pc := UInt256.ofNat 2637 } := by
+      (frameState s mem 3526 n bsize esize msize) =
+      some { Exp.bDone s (Exp.mcopyMem (Exp.mcopyMem mem 512 2112 (32 * n)) 1024 1280 (32 * n))
+               n bsize esize msize with
+               pc := UInt256.ofNat 2636 } := by
   have hsize : (UInt256.ofNat (32 * n)).toNat = 32 * n := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
     exact lt_of_le_of_lt (show 32 * n ≤ 1024 by omega) (by decide)
+  -- The block copies twice, each `MCOPY` touching a destination and a source region; the
+  -- copy length is the frame word `V_S32 = 32 * n` duplicated from the stack, so no load.
+  have hactN : s.activeWords.toNat %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      s.activeWords.toNat := Nat.mod_eq_of_lt s.activeWords.val.isLt
+  have haw512 : MachineState.activeWordsAfter s.activeWords.toNat 512 (32 * n) =
+      s.activeWords.toNat :=
+    Monpro.activeWordsAfter_fix s.activeWords.toNat 512 (32 * n) (by omega) (by omega) hact
+  have haw2112 : MachineState.activeWordsAfter s.activeWords.toNat 2112 (32 * n) =
+      s.activeWords.toNat :=
+    Monpro.activeWordsAfter_fix s.activeWords.toNat 2112 (32 * n) (by omega) (by omega) hact
+  have haw1024 : MachineState.activeWordsAfter s.activeWords.toNat 1024 (32 * n) =
+      s.activeWords.toNat :=
+    Monpro.activeWordsAfter_fix s.activeWords.toNat 1024 (32 * n) (by omega) (by omega) hact
+  have haw1280 : MachineState.activeWordsAfter s.activeWords.toNat 1280 (32 * n) =
+      s.activeWords.toNat :=
+    Monpro.activeWordsAfter_fix s.activeWords.toNat 1280 (32 * n) (by omega) (by omega) hact
   have hawDst : UInt256.ofNat
       (MachineState.activeWordsAfter s.activeWords.toNat 1024 (32 * n)) = s.activeWords :=
     Monpro.activeWords_fix s 1024 (32 * n) (by omega) (by omega) (by omega)
   have hawSrc : UInt256.ofNat
       (MachineState.activeWordsAfter s.activeWords.toNat 1280 (32 * n)) = s.activeWords :=
     Monpro.activeWords_fix s 1280 (32 * n) (by omega) (by omega) (by omega)
-  -- This block's high-water mark is fixed THREE times, not once: the `MLOAD` of `V_S32` at 2688
-  -- and then the `MCOPY`'s destination 1024 and source 1280.  A composed `UInt256`-level fact
-  -- cannot close that, because the nesting is `activeWordsAfter (activeWordsAfter (... % 2^256))`
-  -- and simp meets the layers one at a time.  So give it NAT-level rewrites -- the same shape
-  -- `StagedOperandEntryZero` already uses -- and one identity to finish.  `Exp.activeWords_fix2`
-  -- is the ready-made two-region lemma but wants `297 <= activeWords` where this block has 296;
-  -- `Monpro.activeWordsAfter_fix` carries the 296 bound.
-  have hactN : s.activeWords.toNat %
-      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
-      s.activeWords.toNat := Nat.mod_eq_of_lt s.activeWords.val.isLt
-  have haw9344 : MachineState.activeWordsAfter s.activeWords.toNat 2688 32 =
-      s.activeWords.toNat :=
-    Monpro.activeWordsAfter_fix s.activeWords.toNat 2688 32 (by decide) (by omega) hact
-  have haw4096 : MachineState.activeWordsAfter s.activeWords.toNat 1024 (32 * n) =
-      s.activeWords.toNat :=
-    Monpro.activeWordsAfter_fix s.activeWords.toNat 1024 (32 * n) (by omega) (by omega) hact
-  have haw5120 : MachineState.activeWordsAfter s.activeWords.toNat 1280 (32 * n) =
-      s.activeWords.toNat :=
-    Monpro.activeWordsAfter_fix s.activeWords.toNat 1280 (32 * n) (by omega) (by omega) hact
+  have hawA : UInt256.ofNat
+      (MachineState.activeWordsAfter s.activeWords.toNat 512 (32 * n)) = s.activeWords :=
+    Monpro.activeWords_fix s 512 (32 * n) (by omega) (by omega) (by omega)
+  have hawT : UInt256.ofNat
+      (MachineState.activeWordsAfter s.activeWords.toNat 2112 (32 * n)) = s.activeWords :=
+    Monpro.activeWords_fix s 2112 (32 * n) (by omega) (by omega) (by omega)
   have hawId : UInt256.ofNat s.activeWords.toNat = s.activeWords :=
     (Challenge.EvmProof.Word.word_eq_ofNat_toNat _).symm
   simp (config := { maxSteps := 400000 })
-    [blk3264, opAt, pushAt, wfOp, hs32, hsize, hawDst, hawSrc, Exp.mcopyMem,
-      hactN, haw9344, haw4096, haw5120, hawId,
+    [blk3264, opAt, pushAt, wfOp, hsize, hawDst, hawSrc, hawA, hawT, Exp.mcopyMem,
+      hactN, haw512, haw2112, haw1024, haw1280, hawId,
       State.activeWordsAfterUInt256, State.activeWordsAfterUInt256_2,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,

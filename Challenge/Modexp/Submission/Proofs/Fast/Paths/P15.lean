@@ -39,7 +39,7 @@ def blk1768 :
    pushAt 1182 1 255,
    opAt 1183 .SHR,
    opAt 1184 .ISZERO,
-   pushAt 1185 2 1174,
+   pushAt 1185 2 1175,
    opAt 1186 .JUMPI]
 
 /-- Instructions 1824..1907, pc 2688..3015: `t[n] := 1` and the tail call into
@@ -49,7 +49,7 @@ def blk1776 :
   [pushAt 1187 1 1,
    pushAt 1188 2 2080,
    opAt 1189 .MSTORE,
-   pushAt 1190 2 4330,
+   pushAt 1190 2 4325,
    opAt 1191 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast
