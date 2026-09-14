@@ -11,19 +11,19 @@ namespace Challenge.Modexp.Submission.Proofs.Fast.LazyCsub
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwentyOneBinding
 
-def gateBlock : Block Artifact.submissionArtifact .Osaka 4727 LazyGate.program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3572 5 4727 LazyGate.program
+def gateBlock : Block Artifact.submissionArtifact .Osaka 4737 LazyGate.program :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3578 5 4737 LazyGate.program
     (by decide) (by rfl) (by rfl) (by decide)
 
-def copyBlock : Block Artifact.submissionArtifact .Osaka 4736 LazyGate.copyProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3577 7 4736 LazyGate.copyProgram
+def copyBlock : Block Artifact.submissionArtifact .Osaka 4746 LazyGate.copyProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3583 7 4746 LazyGate.copyProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-theorem jumpDestGate : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4727 = true :=
-  Artifact.isValidJumpDest_index 3572 (by rfl)
+theorem jumpDestGate : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4737 = true :=
+  Artifact.isValidJumpDest_index 3578 (by rfl)
 
-theorem jumpDestCopy : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4736 = true :=
-  Artifact.isValidJumpDest_index 3577 (by rfl)
+theorem jumpDestCopy : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4746 = true :=
+  Artifact.isValidJumpDest_index 3583 (by rfl)
 
 def gasSteps_csub_lazy (s : State) (memory : ByteArray) (n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
@@ -39,7 +39,7 @@ def gasSteps_csub_lazy (s : State) (memory : ByteArray) (n : Nat)
     (hs32 : MachineState.readWord (Csub.csStep memory n n).memory 2688 = UInt256.ofNat (32*n))
     (hdstFit : pdst.toNat+32*n ≤ 2816)
     (htn : (MachineState.readWord (Csub.csStep memory n n).memory 2080).toNat ≤ 1) :
-    Challenge.EvmProof.GasSteps (LazyGate.atState s memory 4727 pdst ret rest)
+    Challenge.EvmProof.GasSteps (LazyGate.atState s memory 4737 pdst ret rest)
       (LazyGate.returnedState s (resultMemory memory n pdst.toNat) ret rest) := by
   have env : Environment Artifact.submissionArtifact .Osaka s :=
     ⟨by change Challenge.Modexp.submissionBytecode.size < 2^256

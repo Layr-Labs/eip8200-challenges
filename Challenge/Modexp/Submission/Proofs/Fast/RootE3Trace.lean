@@ -15,7 +15,7 @@ open Shift RootE3Phase
 /-- Exact cache/prologue endpoint in v4, before the phase/count guard. -/
 def guardEntry (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 3006
+    pc := UInt256.ofNat 3002
     stack := UInt256.ofNat n :: Exp.outer n bsize esize msize
     memory := mem }
 
@@ -41,13 +41,14 @@ structure TraceBindings (s : State) (mem input : ByteArray) (n bsize esize msize
     MachineState.readWord phaseMem 1760 = UInt256.ofNat 0 →
     MachineState.readWord phaseMem 2688 = UInt256.ofNat (32 * n) →
     GasSteps (shiftLoopState s phaseMem n bsize esize msize 0)
-      (FixedExponentRoute.entryState s (Exp.mcopyMem phaseMem 1024 1280 (32 * n))
+      (FixedExponentRoute.entryState s
+        (Exp.mcopyMem (Exp.mcopyMem phaseMem 512 2112 (32 * n)) 1024 1280 (32 * n))
         n bsize esize msize)
 
 theorem phaseSwitch_flag_zero (mem : ByteArray) (n : Nat) (hn8 : n ≤ 8) :
     MachineState.readWord (RootE3Phase.phaseSwitch mem n) 1760 = UInt256.ofNat 0 := by
   unfold RootE3Phase.phaseSwitch
-  rw [Exp.readWord_mcopyMem_disjoint _ 256 512 (32 * n) 1760 (Or.inr (by omega))]
+  rw [Exp.readWord_mcopyMem_disjoint _ 256 2112 (32 * n) 1760 (Or.inr (by omega))]
   exact Challenge.EvmProof.Memory.readWord_writeWord mem 1760 (UInt256.ofNat 0)
 
 theorem flag_after_steps_of_read (mem : ByteArray) (flag : UInt256) (n mm count : Nat)
@@ -69,8 +70,8 @@ def ordinaryTrace (s : State) (mem input : ByteArray) (n bsize esize msize mm mi
   have inv0 := m2_stepInv mem input n bsize mm minv hn hn8 hm hframe hmod
   have invPrep := flagSet_inv _ (UInt256.ofNat 0) n bsize mm minv hn8 inv0
   have hbase0 := m2_base_value mem input n mm hn hn8 hm hodd hmod htop
-  have hbasePrep := flagSet_preserves _ (UInt256.ofNat 0) 512 n _
-    (Or.inl (by omega)) hbase0
+  have hbasePrep := flagSet_preserves _ (UInt256.ofNat 0) 2112 n _
+    (Or.inr (by omega)) hbase0
   have htwo := R1.radix_pow_lt_two_mul (by omega) hodd hmod htop
   have loop := gasSteps_shiftLoop_count s (flagSet (m2Of mem input n) (UInt256.ofNat 0))
     n bsize esize msize mm minv _ n (by omega) hn hn8 e hm (Model.fastRepresents_lt hmod)
@@ -94,8 +95,8 @@ def e3Trace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv k :
   have inv0 := m2_stepInv mem input n bsize mm minv hn hn8 hm hframe hmod
   have invPrep := flagSet_inv _ (UInt256.ofNat 1) n bsize mm minv hn8 inv0
   have hbase0 := m2_base_value mem input n mm hn hn8 hm hodd hmod htop
-  have hbasePrep := flagSet_preserves _ (UInt256.ofNat 1) 512 n _
-    (Or.inl (by omega)) hbase0
+  have hbasePrep := flagSet_preserves _ (UInt256.ofNat 1) 2112 n _
+    (Or.inr (by omega)) hbase0
   have htwo := R1.radix_pow_lt_two_mul (by omega) hodd hmod htop
   have firstLoop := gasSteps_shiftLoop_count s (e3Prepared mem input n)
     n bsize esize msize mm minv _ (2 * k) (by omega) hn hn8 e hm
@@ -105,7 +106,7 @@ def e3Trace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv k :
     (Model.fastRepresents_lt hmod) htwo invPrep.modulus invPrep.neg hbasePrep
     (Nat.mod_lt _ hm) (2 * k)
   have invSwitch := phaseSwitch_inv _ n bsize mm minv hn8 invFirst
-  have hbaseSwitch := phaseSwitch_preserves _ n 512 n _ (Or.inl (by omega))
+  have hbaseSwitch := phaseSwitch_preserves _ n 2112 n _ (Or.inr (by omega))
     (Or.inl (by omega)) hbaseFirst
   have secondLoop := gasSteps_shiftLoop_count s
     (RootE3Phase.phaseSwitch (stepMems (e3Prepared mem input n) n mm (2 * k)) n)

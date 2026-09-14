@@ -40,7 +40,7 @@ private theorem ptr_wrap (base n : Nat) :
   rw [h, Nat.add_mul_mod_self_left]
 
 private theorem entry_from_reduction (n : Nat) (hn : n = 4 ∨ n = 8) :
-    l2Target n - UInt256.ofNat 289 = UInt256.ofNat (sqEnt n 0) := by
+    l2Target n - UInt256.ofNat 288 = UInt256.ofNat (sqEnt n 0) := by
   rcases hn with rfl | rfl <;> decide
 
 /-! ## The two halves of `again` -/
@@ -55,7 +55,7 @@ def againFixProgram : List Instr := againProgram.drop 8
 the memory is already the next square's input. -/
 def againMidState (s : State) (mem : ByteArray) (n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4429
+  { s with pc := UInt256.ofNat 4424
            stack := UInt256.ofNat (32 * n) ::
              frameStack n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest
            memory := mpZeroed s mem n }
@@ -122,13 +122,13 @@ theorem run_againFix (s : State) (mem : ByteArray) (n : Nat)
     (hcap : rest.length ≤ 1000)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hn : n = 4 ∨ n = 8)
-    (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5286 = true) :
+    (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5296 = true) :
     runInstructions againFixProgram
       (againMidState s mem n (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n))
         (UInt256.ofNat (sqEnt n n)) tl inv m0 m96 m64 m32 aprev pdst ret rest) =
     some { outState s (mpZeroed s mem n) 2368 n 0
-      (UInt256.ofNat 4441) (UInt256.ofNat (sqEnt n 0)) inv m0
-      (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5286 } := by
+      (UInt256.ofNat 4436) (UInt256.ofNat (sqEnt n 0)) inv m0
+      (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5296 } := by
   have hc16' : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
@@ -140,7 +140,7 @@ theorem run_againFix (s : State) (mem : ByteArray) (n : Nat)
     rw [Challenge.EvmProof.Word.word_add_comm]
     exact ptr_wrap (2368 + 32 * n - 32) n
   have hent := entry_from_reduction n hn
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 5286 = true := by
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 5296 = true := by
     rw [hcode]; exact hhd
   simp (config := { maxSteps := 200000 })
     [againFixProgram, againProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
@@ -158,13 +158,13 @@ theorem run_again (s : State) (mem : ByteArray) (n : Nat)
     (hact : 88 ≤ s.activeWords.toNat) (hn : n = 4 ∨ n = 8)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
-    (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5286 = true) :
+    (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5296 = true) :
     runInstructions againProgram
       (frameAt pcAgain s mem n (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n))
         (UInt256.ofNat (sqEnt n n)) tl inv m0 m96 m64 m32 aprev pdst ret rest) =
     some { outState s (mpZeroed s mem n) 2368 n 0
-      (UInt256.ofNat 4441) (UInt256.ofNat (sqEnt n 0)) inv m0
-      (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5286 } := by
+      (UInt256.ofNat 4436) (UInt256.ofNat (sqEnt n 0)) inv m0
+      (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5296 } := by
   change runInstructions (againStageProgram ++ againFixProgram) _ = _
   exact runInstructions_append_some _ _ _ _ _
     (run_againStage s mem n (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n))
@@ -183,13 +183,13 @@ def gasSteps_again (s : State) (mem : ByteArray) (n : Nat)
     (hact : 88 ≤ s.activeWords.toNat) (hn : n = 4 ∨ n = 8)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
-    (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5286 = true) :
+    (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5296 = true) :
     Challenge.EvmProof.GasSteps
       (frameAt pcAgain s mem n (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n))
         (UInt256.ofNat (sqEnt n n)) tl inv m0 m96 m64 m32 aprev pdst ret rest)
       { outState s (mpZeroed s mem n) 2368 n 0
-        (UInt256.ofNat 4441) (UInt256.ofNat (sqEnt n 0)) inv m0
-        (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5286 } :=
+        (UInt256.ofNat 4436) (UInt256.ofNat (sqEnt n 0)) inv m0
+        (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5296 } :=
   againBlock.steps
     (environment (frameAt pcAgain s mem n (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n))
       (UInt256.ofNat (sqEnt n n)) tl inv m0 m96 m64 m32 aprev pdst ret rest)

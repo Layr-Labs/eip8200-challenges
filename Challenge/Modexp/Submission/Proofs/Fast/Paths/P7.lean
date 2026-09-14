@@ -18,7 +18,7 @@ def blk1369 :
    opAt 808 (.Swap ⟨0, by decide⟩),
    opAt 809 .SUB,
    opAt 810 (.Dup ⟨0, by decide⟩),
-   pushAt 811 2 1178,
+   pushAt 811 2 1179,
    opAt 812 .JUMPI]
 
 /-- Instructions 1376..1508, pc 1984..2065. -/

@@ -156,7 +156,7 @@ theorem gasSteps_bitExit_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
     (gasSteps_bitExit input outer byte offset acc base).cost = 13 :=
   WordEnds.gasSteps_bitExit_sym_cost (bitLoopState input outer 0 byte offset acc base) (bitTail input)
-    (base - UInt256.ofNat 1) (UInt256.ofNat 8) byte offset (UInt256.ofNat outer)
+    (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
     (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
     (by exact Artifact.isValidJumpDest_index 153 (by rfl))
@@ -187,7 +187,7 @@ theorem gasSteps_bitCopy2_cost (input : ByteArray) (outer : Nat)
 
 theorem gasSteps_bitCopy3_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitCopy3 input outer byte offset acc base).cost = 100 :=
+    (gasSteps_bitCopy3 input outer byte offset acc base).cost = 99 :=
   WordBitsFourCopies.gasSteps_copy3_cost (bitLoopState input outer 0 byte offset acc base) (bitTail input)
     (base - UInt256.ofNat 1) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
@@ -219,7 +219,7 @@ theorem gasSteps_bitCopy6_cost (input : ByteArray) (outer : Nat)
 
 theorem gasSteps_bitCopy7_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitCopy7 input outer byte offset acc base).cost = 104 :=
+    (gasSteps_bitCopy7 input outer byte offset acc base).cost = 107 :=
   WordBitsFourCopies.gasSteps_copy7_cost (bitLoopState input outer 0 byte offset acc base) (bitTail input)
     (base - UInt256.ofNat 1) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
@@ -227,7 +227,7 @@ theorem gasSteps_bitCopy7_cost (input : ByteArray) (outer : Nat)
 
 theorem gasSteps_bitLoop_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
-    (gasSteps_bitLoop input outer byte offset acc base).cost = 635 := by
+    (gasSteps_bitLoop input outer byte offset acc base).cost = 637 := by
   have hentry := gasSteps_bitEntry_cost input outer byte offset acc base
   have hhead := gasSteps_bitHead_cost input outer byte offset acc base
   have hc0 := gasSteps_bitCopy0_cost input outer byte offset
@@ -266,16 +266,16 @@ theorem gasSteps_bitFinish_cost (input : ByteArray) (outer : Nat)
 theorem gasSteps_expIteration_cost (input : ByteArray) (i : Nat)
     (acc base : UInt256) (hvalid : ValidInput input)
     (hi : i < exponentSize input) :
-    (gasSteps_expIteration input i acc base hvalid hi).cost = 717 := by
+    (gasSteps_expIteration input i acc base hvalid hi).cost = 719 := by
   simp [gasSteps_expIteration, gasSteps_expEnter_cost, gasSteps_bitLoop_cost,
     gasSteps_bitFinish_cost]
 
 theorem gasSteps_expLoop_cost (input : ByteArray) (acc base : UInt256)
     (hvalid : ValidInput input) :
-    (gasSteps_expLoop input acc base hvalid).cost = 717 * exponentSize input := by
+    (gasSteps_expLoop input acc base hvalid).cost = 719 * exponentSize input := by
   unfold gasSteps_expLoop
   have h := Challenge.EvmProof.GasSteps.iterateBounded_cost_of_const
-    (count := exponentSize input) (cost := 717) (body := fun i hi =>
+    (count := exponentSize input) (cost := 719) (body := fun i hi =>
       gasSteps_expIteration input i (expAfter input base i acc) base hvalid hi) (by
         intro i hi
         exact gasSteps_expIteration_cost input i (expAfter input base i acc)

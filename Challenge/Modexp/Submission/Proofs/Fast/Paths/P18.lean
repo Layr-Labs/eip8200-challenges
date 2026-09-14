@@ -25,36 +25,36 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- Instructions 2692..2696, pc 4347..3840: the `w = 0` test. -/
 def blk2557 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1980 .JUMPDEST,
-   opAt 1981 (.Dup ⟨1, by decide⟩),
-   opAt 1982 .ISZERO,
-   pushAt 1983 2 1060,
-   opAt 1984 .JUMPI]
+  [opAt 1979 .JUMPDEST,
+   opAt 1980 (.Dup ⟨1, by decide⟩),
+   opAt 1981 .ISZERO,
+   pushAt 1982 2 1060,
+   opAt 1983 .JUMPI]
 
 /-- Instructions 2697..2703, pc 3872..3840: `ACC := BASE`, then the shift. -/
 def blk2562 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1985 2 2688,
-   opAt 1986 .MLOAD,
-   pushAt 1987 2 512,
-   pushAt 1988 2 256,
-   opAt 1989 .MCOPY,
-   pushAt 1990 2 1101,
-   opAt 1991 .JUMP]
+  [pushAt 1984 2 2688,
+   opAt 1985 .MLOAD,
+   pushAt 1986 2 512,
+   pushAt 1987 2 256,
+   opAt 1988 .MCOPY,
+   pushAt 1989 2 1101,
+   opAt 1990 .JUMP]
 
 /-- PC table for the relocated leading-bit shortcut.  This range is outside
 the inherited `Fast.Defs` tables, so execution proofs need a local certificate
 instead of unfolding the complete bytecode prefix at every instruction. -/
 @[simp] theorem leadingBitPC (i : Nat)
-    (hi : 1980 ≤ i) (hii : i ≤ 1992) :
+    (hi : 1979 ≤ i) (hii : i ≤ 1991) :
     Artifact.submissionArtifact.instructionPC i =
-      ([2615,2616,2617,2618,2621,2622,2625,2626,2629,2632,2633,2636,2637] : List Nat)[i - 1980]! := by
+      ([2614,2615,2616,2617,2620,2621,2624,2625,2628,2631,2632,2635,2636] : List Nat)[i - 1979]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 theorem jumpDest3829 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2615 = true :=
-  Artifact.isValidJumpDest_index 1980 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2614 = true :=
+  Artifact.isValidJumpDest_index 1979 (by rfl)
 
 
 end Challenge.Modexp.Submission.Proofs.Fast
