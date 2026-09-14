@@ -32,18 +32,18 @@ def nibbleProgram (copies : Nat) (hcopies : copies ≤ 10) (laddr : Nat) : List 
 /-- One staged nibble consumes five modulus copies and leaves its entire tail. -/
 theorem run_nibble (template : State) (pc : UInt256) (mem : ByteArray)
     (base modulus accumulator exponent counter : UInt256)
-    (copies : Nat) (hcopies : copies ≤ 10) (laddr : Nat) (hladdr : laddr + 32 ≤ 608)
+    (copies : Nat) (hcopies : copies ≤ 10) (laddr : Nat) (hladdr : laddr + 32 ≤ 576)
     (htable : ∀ i, i < 16 → MachineState.readWord mem (32 * i) = WindowMath.tableWord base modulus i)
     (index : Nat) (hindex : index < 16) (haddress : address mem laddr = 32 * index)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions (nibbleProgram copies hcopies laddr)
-      (state template pc mem 19 modulus accumulator exponent counter (copies + 5) rest) =
-    some (state template (advancePC 16 pc) mem 19 modulus
+      (state template pc mem 18 modulus accumulator exponent counter (copies + 5) rest) =
+    some (state template (advancePC 16 pc) mem 18 modulus
       (WindowMath.nibbleWordStep modulus base accumulator index)
       exponent counter copies rest) := by
   let tail := List.replicate copies modulus ++
     ([modulus, exponent, UInt256.ofNat 480, counter] ++ rest)
-  let core := WindowTwentyOneLookup.framed template pc mem 19 []
+  let core := WindowTwentyOneLookup.framed template pc mem 18 []
   let squared := WindowMath.squareWordAfter modulus 4 accumulator
   have hsquare := WindowTwentyOneStage.run_fourSquares core pc accumulator modulus
     (modulus :: tail)
@@ -51,8 +51,8 @@ theorem run_nibble (template : State) (pc : UInt256) (mem : ByteArray)
           List.length_nil]; omega)
   have hsquare' :
       runInstructions WindowTwentyOneStage.fourSquaresProgram
-        (state template pc mem 19 modulus accumulator exponent counter (copies + 5) rest) =
-      some (WindowTwentyOneLookup.framed template (advancePC 8 pc) mem 19
+        (state template pc mem 18 modulus accumulator exponent counter (copies + 5) rest) =
+      some (WindowTwentyOneLookup.framed template (advancePC 8 pc) mem 18
         (squared :: modulus :: tail)) := by
     simpa only [state, core, tail, squared, WindowTwentyOneStage.framed,
       WindowTwentyOneLookup.framed, List.replicate_succ, List.cons_append, List.nil_append] using hsquare
@@ -88,7 +88,7 @@ def accumulatorAfter (base modulus accumulator : UInt256)
 
 theorem run_nibbles (template : State) (pc : UInt256) (mem : ByteArray)
     (base modulus accumulator exponent counter : UInt256)
-    (l0 l1 l2 : Nat) (hl0 : l0 + 32 ≤ 608) (hl1 : l1 + 32 ≤ 608) (hl2 : l2 + 32 ≤ 608)
+    (l0 l1 l2 : Nat) (hl0 : l0 + 32 ≤ 576) (hl1 : l1 + 32 ≤ 576) (hl2 : l2 + 32 ≤ 576)
     (htable : ∀ i, i < 16 → MachineState.readWord mem (32 * i) = WindowMath.tableWord base modulus i)
     (index0 index1 index2 : Nat)
     (hi0 : index0 < 16) (hi1 : index1 < 16) (hi2 : index2 < 16)
@@ -97,8 +97,8 @@ theorem run_nibbles (template : State) (pc : UInt256) (mem : ByteArray)
     (ha2 : address mem l2 = 32 * index2)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions (nibblesProgram l0 l1 l2)
-      (state template pc mem 19 modulus accumulator exponent counter 15 rest) =
-    some (state template (advancePC 48 pc) mem 19 modulus
+      (state template pc mem 18 modulus accumulator exponent counter 15 rest) =
+    some (state template (advancePC 48 pc) mem 18 modulus
       (accumulatorAfter base modulus accumulator index0 index1 index2)
       exponent counter 0 rest) := by
   let a1 := WindowMath.nibbleWordStep modulus base accumulator index0
@@ -117,7 +117,7 @@ theorem run_nibbles (template : State) (pc : UInt256) (mem : ByteArray)
 /-- One physical 64-byte group processes three nibbles and restores the five-slot frame. -/
 theorem run_group (template : State) (pc : UInt256) (mem : ByteArray)
     (base modulus accumulator exponent counter : UInt256)
-    (l0 l1 l2 : Nat) (hl0 : l0 + 32 ≤ 608) (hl1 : l1 + 32 ≤ 608) (hl2 : l2 + 32 ≤ 608)
+    (l0 l1 l2 : Nat) (hl0 : l0 + 32 ≤ 576) (hl1 : l1 + 32 ≤ 576) (hl2 : l2 + 32 ≤ 576)
     (htable : ∀ i, i < 16 → MachineState.readWord mem (32 * i) = WindowMath.tableWord base modulus i)
     (index0 index1 index2 : Nat)
     (hi0 : index0 < 16) (hi1 : index1 < 16) (hi2 : index2 < 16)
@@ -126,17 +126,17 @@ theorem run_group (template : State) (pc : UInt256) (mem : ByteArray)
     (ha2 : address mem l2 = 32 * index2)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions (program l0 l1 l2)
-      (state template pc mem 19 modulus accumulator exponent counter 0 rest) =
-    some (state template (advancePC 64 pc) mem 19 modulus
+      (state template pc mem 18 modulus accumulator exponent counter 0 rest) =
+    some (state template (advancePC 64 pc) mem 18 modulus
       (accumulatorAfter base modulus accumulator index0 index1 index2)
       exponent counter 0 rest) := by
-  let core := WindowTwentyOneLookup.framed template pc mem 19 []
+  let core := WindowTwentyOneLookup.framed template pc mem 18 []
   have hs := WindowTwentyOneStage.run_stage core pc accumulator modulus exponent
     (UInt256.ofNat 480) counter rest hrest
   have hs' :
       runInstructions WindowTwentyOneStage.stageProgram
-        (state template pc mem 19 modulus accumulator exponent counter 0 rest) =
-      some (state template (advancePC 16 pc) mem 19 modulus accumulator exponent counter 15 rest) := by
+        (state template pc mem 18 modulus accumulator exponent counter 0 rest) =
+      some (state template (advancePC 16 pc) mem 18 modulus accumulator exponent counter 15 rest) := by
     simpa only [state, core, WindowTwentyOneStage.framed, WindowTwentyOneLookup.framed,
       List.replicate_zero, List.nil_append, List.cons_append, List.append_assoc] using hs
   have hn := run_nibbles template (advancePC 16 pc) mem base modulus accumulator exponent counter
@@ -147,7 +147,7 @@ theorem run_group (template : State) (pc : UInt256) (mem : ByteArray)
 /-- The pass's first group, resumed after the trampoline's `stageHead`. -/
 theorem run_restGroup (template : State) (pc : UInt256) (mem : ByteArray)
     (base modulus accumulator exponent counter : UInt256)
-    (l0 l1 l2 : Nat) (hl0 : l0 + 32 ≤ 608) (hl1 : l1 + 32 ≤ 608) (hl2 : l2 + 32 ≤ 608)
+    (l0 l1 l2 : Nat) (hl0 : l0 + 32 ≤ 576) (hl1 : l1 + 32 ≤ 576) (hl2 : l2 + 32 ≤ 576)
     (htable : ∀ i, i < 16 → MachineState.readWord mem (32 * i) = WindowMath.tableWord base modulus i)
     (index0 index1 index2 : Nat)
     (hi0 : index0 < 16) (hi1 : index1 < 16) (hi2 : index2 < 16)
@@ -156,17 +156,17 @@ theorem run_restGroup (template : State) (pc : UInt256) (mem : ByteArray)
     (ha2 : address mem l2 = 32 * index2)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions (restProgram l0 l1 l2)
-      (headState template pc mem 19 modulus accumulator exponent counter rest) =
-    some (state template (advancePC 59 pc) mem 19 modulus
+      (headState template pc mem 18 modulus accumulator exponent counter rest) =
+    some (state template (advancePC 59 pc) mem 18 modulus
       (accumulatorAfter base modulus accumulator index0 index1 index2)
       exponent counter 0 rest) := by
-  let core := WindowTwentyOneLookup.framed template pc mem 19 []
+  let core := WindowTwentyOneLookup.framed template pc mem 18 []
   have hs := WindowTwentyOneStage.run_stageRest core pc accumulator modulus exponent
     (UInt256.ofNat 480) counter rest hrest
   have hs' :
       runInstructions WindowTwentyOneStage.stageRest
-        (headState template pc mem 19 modulus accumulator exponent counter rest) =
-      some (state template (advancePC 11 pc) mem 19 modulus accumulator exponent counter 15 rest) := by
+        (headState template pc mem 18 modulus accumulator exponent counter rest) =
+      some (state template (advancePC 11 pc) mem 18 modulus accumulator exponent counter 15 rest) := by
     simpa only [headState, state, core, WindowTwentyOneStage.framed, WindowTwentyOneLookup.framed,
       List.replicate_zero, List.nil_append, List.cons_append, List.append_assoc] using hs
   have hn := run_nibbles template (advancePC 11 pc) mem base modulus accumulator exponent counter
