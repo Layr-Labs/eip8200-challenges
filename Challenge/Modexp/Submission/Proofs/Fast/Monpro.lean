@@ -337,26 +337,6 @@ theorem ptrAt_succ (base j : Nat) :
   simp only [ptrAt, Nat.succ_mul]
   omega
 
-/-- One downward step, in the shape a `PUSH2 32; SUB` produces.  The
-unsigned decrement and the wrapped increment by `2 ^ 256 - 32` agree on
-every word, because the word subtraction already reduces modulo
-`2 ^ 256`; no range side condition on `base` or `j` is needed. -/
-theorem ptrAt_pred (base j : Nat) :
-    UInt256.ofNat (ptrAt base j) - UInt256.ofNat 32 =
-      UInt256.ofNat (ptrAt base (j + 1)) := by
-  have hstep : ptrAt base (j + 1) = ptrAt base j +
-      115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
-    simp only [ptrAt, Nat.succ_mul]
-    omega
-  have hpow : (2 : Nat) ^ 256 =
-      115792089237316195423570985008687907853269984665640564039457584007913129639936 := by
-    norm_num
-  apply Challenge.EvmProof.Word.word_ext
-  rw [hstep]
-  simp only [Challenge.EvmProof.Word.word_toNat_sub,
-    Challenge.EvmProof.Word.word_toNat_ofNat, hpow]
-  omega
-
 theorem ptrAt_toNat (base j : Nat) (hj : 32 * j ≤ base) (hbase : base < 2 ^ 256) :
     (UInt256.ofNat (ptrAt base j)).toNat = base - 32 * j := by
   rw [Challenge.EvmProof.Word.word_toNat_ofNat, ptrAt]
@@ -728,7 +708,10 @@ theorem run_mpL1Body (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
-  have h32 : (32 : UInt256) = UInt256.ofNat 32 := by decide
+  have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
+      UInt256) = UInt256.ofNat
+        115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
+    decide
   have h1995 : (1135 : UInt256).toNat = 1135 := by decide
   have h1995' : (1135 : UInt256) = UInt256.ofNat 1135 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
@@ -763,9 +746,8 @@ theorem run_mpL1Body (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
       Challenge.EvmProof.Stepper.runInstr,
       mpL1State, l1Step, macSum, macCarry, mulHi, maxWord_literal,
       fastPC11, fastPC12,
-      hc9, hc10, hc11, hc12, hc13, hrun, hcode, h32, h1995, h1995', hjump,
+      hc9, hc10, hc11, hc12, hc13, hrun, hcode, hK, h1995, h1995', hjump,
       jumpDest1914, hpaj, hptj, hnextA, hpamN, hgt, hactA, hactT, ptrAt_succ,
-      ptrAt_pred,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -791,7 +773,10 @@ theorem run_mpL1Exit (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
-  have h32 : (32 : UInt256) = UInt256.ofNat 32 := by decide
+  have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
+      UInt256) = UInt256.ofNat
+        115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
+    decide
   have hpaj : ptrAt (pa + 32 * n - 32) j %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       pa + 32 * (n - 1 - j) := by
@@ -820,8 +805,8 @@ theorem run_mpL1Exit (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
       Challenge.EvmProof.Stepper.runInstr,
       mpL1State, mpMidState, l1Step, macSum, macCarry, mulHi, maxWord_literal,
       fastPC11, fastPC12,
-      hc9, hc10, hc11, hc12, hc13, hrun, h32,
-      hpaj, hptj, hnextA, hpamN, hactA, hactT, ptrAt_succ, ptrAt_pred,
+      hc9, hc10, hc11, hc12, hc13, hrun, hK,
+      hpaj, hptj, hnextA, hpamN, hactA, hactT, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,

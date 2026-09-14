@@ -282,7 +282,7 @@ private theorem fastPCAnchor24 :
 
 @[simp] theorem fastPC12 (i : Nat) (hi : 813 ≤ i) (hii : i ≤ 855) :
     Artifact.submissionArtifact.instructionPC i =
-      [1172,1173,1176,1177,1178,1179,1180,1181,1182,1183,1184,1185,1186,1189,1190,1191,1192,1193,1196,1197,1198,1199,1202,1203,1204,1207,1208,1211,1212,1213,1216,1217,1218,1219,1222,1223,1224,1225,1226,1227,1228,1229,1230][i - 813]! := by
+      [1172,1173,1175,1176,1177,1178,1180,1181,1182,1183,1184,1185,1186,1189,1190,1191,1192,1193,1196,1197,1198,1199,1202,1203,1204,1207,1208,1211,1212,1213,1216,1217,1218,1219,1222,1223,1224,1225,1226,1227,1228,1229,1230][i - 813]! := by
   have hsplit : i = 813 + (i - 813) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor12]
   rw [← PCFast.byteLength_eq_assemble]
@@ -430,7 +430,7 @@ theorem jumpDest1697 :
 
 theorem jumpDest3412 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2443 = true :=
-  Artifact.isValidJumpDest_index 1847 (by rfl)
+  Artifact.isValidJumpDest_index 1846 (by rfl)
 
 theorem jumpDest1703 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 939 = true :=
@@ -545,15 +545,15 @@ theorem jumpDest3184 :
   Artifact.isValidJumpDest_index 1775 (by rfl)
 
 theorem jumpDest4976 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4132 = true :=
-  Artifact.isValidJumpDest_index 3139 (by rfl)
+  Artifact.isValidJumpDest_index 3136 (by rfl)
 
 theorem jumpDestSub : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4299 = true :=
-  Artifact.isValidJumpDest_index 3256 (by rfl)
+  Artifact.isValidJumpDest_index 3253 (by rfl)
 
 theorem jumpDestCopyResume : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4555 = true :=
-  Artifact.isValidJumpDest_index 3440 (by rfl)
+  Artifact.isValidJumpDest_index 3437 (by rfl)
 
 theorem jumpDestEarlyCopy : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4544 = true :=
-  Artifact.isValidJumpDest_index 3433 (by rfl)
+  Artifact.isValidJumpDest_index 3430 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast
