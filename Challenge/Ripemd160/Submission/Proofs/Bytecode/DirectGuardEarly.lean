@@ -50,7 +50,7 @@ private theorem pc_e27 : Artifact.submissionArtifact.instructionPC 27 = 39 := by
 /-- A first word other than the repeated `0x61` word jumps to the patterned guard. -/
 def gasSteps_checkEarly (input : ByteArray)
     (href : referenceWord input ≠ KnownInputData.fullWord) :
-    GasSteps (sizeMatched input) (stG input 4830 []) := by
+    GasSteps (sizeMatched input) (stG input 4826 []) := by
   have hxor : UInt256.xor KnownInputData.fullWord (referenceWord input) ≠ 0 := by
     intro hz
     exact href (((KnownInputLogic.wordXor_eq_zero_iff
@@ -78,16 +78,16 @@ def gasSteps_checkEarly (input : ByteArray)
     (blockOf _ (pcFactG input 25 35 [KnownInputData.fullWord, referenceWord input]
       (by norm_num) pc_e25)
       (stepG_xor input 35 KnownInputData.fullWord (referenceWord input) [] (by simp) (by norm_num)))
-  have step4 := soundG (pushAt 26 2 (UInt256.ofNat 4830))
+  have step4 := soundG (pushAt 26 2 (UInt256.ofNat 4826))
     (blockOf _ (pcFactG input 26 36 [UInt256.xor KnownInputData.fullWord (referenceWord input)]
       (by norm_num) pc_e26)
-      (stepG_push input 36 2 (UInt256.ofNat 4830)
+      (stepG_push input 36 2 (UInt256.ofNat 4826)
         [UInt256.xor KnownInputData.fullWord (referenceWord input)]
         (by simp) (by decide) (by decide) (by norm_num)))
   have step5 := soundG (opAt 27 .JUMPI)
-    (blockOf _ (pcFactG input 27 39 [4830, UInt256.xor KnownInputData.fullWord (referenceWord input)]
+    (blockOf _ (pcFactG input 27 39 [4826, UInt256.xor KnownInputData.fullWord (referenceWord input)]
       (by norm_num) pc_e27)
-      (stepG_jumpi_taken input 39 4830 (UInt256.xor KnownInputData.fullWord (referenceWord input))
+      (stepG_jumpi_taken input 39 4826 (UInt256.xor KnownInputData.fullWord (referenceWord input))
         [] (by simp) (by norm_num) htrue guard_dest))
   exact step0.trans (step1.trans (step2.trans (step3.trans (step4.trans step5))))
 

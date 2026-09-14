@@ -12,6 +12,6 @@ open Challenge.Ripemd160 EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 abbrev Located := DataStepper.Located Artifact.submissionArtifact .Osaka
 
 def patternedEntry (input : ByteArray) : State :=
-  { initialState submissionBytecode input 0 with pc := UInt256.ofNat 110 }
+  { initialState submissionBytecode input 0 with pc := UInt256.ofNat 111 }
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan

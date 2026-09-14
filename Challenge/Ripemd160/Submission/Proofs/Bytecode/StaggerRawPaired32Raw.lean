@@ -14,11 +14,9 @@ open StackRoundTrace StaggerRaw
 private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
 def template : List Instr :=
-  [ .op (.Swap ⟨6, by decide⟩),
-    .op .POP,
-    .push ⟨23, by decide⟩ (UInt256.ofNat 136726760529788758926252426176837954510549114783656865),
+  [ .push ⟨23, by decide⟩ (UInt256.ofNat 136726760529788758926252426176837954510549114783656865),
     .op (.Swap ⟨4, by decide⟩),
-    .op (.Dup ⟨7, by decide⟩),
+    .op (.Dup ⟨1, by decide⟩),
     .op (.Dup ⟨10, by decide⟩),
     .op .NOT,
     .op (.Dup ⟨8, by decide⟩),
@@ -43,19 +41,18 @@ def template : List Instr :=
     .op (.Swap ⟨8, by decide⟩),
     .op (.Dup ⟨10, by decide⟩),
     .op .MUL,
-    .op (.Dup ⟨1, by decide⟩),
+    .op (.Dup ⟨7, by decide⟩),
     .op .SHR,
     .op (.Dup ⟨3, by decide⟩),
     .op .AND ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
   [ x.v0,
-    (UInt256.ofNat 23),
     x.v2,
     x.v3,
     x.v4,
     x.v5,
     x.v6,
-    x.v7,
+    (UInt256.ofNat 23),
     x.v8,
     x.v9,
     x.v10,
@@ -67,13 +64,13 @@ def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
     x.v16 ] ++ rho
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.land x.v3 (UInt256.shiftRight (UInt256.mul x.v10 x.v9) (UInt256.ofNat 23))),
-    (UInt256.ofNat 23),
+    x.v0,
     x.v2,
     x.v3,
     x.v4,
     (UInt256.ofNat 136726760529788758926252426176837954510549114783656865),
     x.v6,
-    x.v0,
+    (UInt256.ofNat 23),
     x.v8,
     (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.shiftRight (UInt256.mul x.v10 (UInt256.land x.v3 (UInt256.add (UInt256.ofNat 136726760529788758926252426176837954510549114783656865) (UInt256.add (MachineState.readWord memory 972) (UInt256.add (UInt256.xor (UInt256.lor x.v6 (UInt256.lnot x.v9)) x.v0) x.v5))))) (UInt256.ofNat 22)))),
     x.v10,
@@ -85,13 +82,13 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     x.v16 ] ++ rho
 def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.land x.v3 (UInt256.shiftRight (UInt256.mul x.v10 x.v9) (UInt256.ofNat 23))),
-    (UInt256.ofNat 23),
+    x.v0,
     x.v2,
     x.v3,
     x.v4,
     (UInt256.ofNat 136726760529788758926252426176837954510549114783656865),
     x.v6,
-    x.v0,
+    (UInt256.ofNat 23),
     x.v8,
     (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.shiftRight (UInt256.mul x.v10 (UInt256.land x.v3 (UInt256.add (UInt256.ofNat 136726760529788758926252426176837954510549114783656865) (UInt256.add (MachineState.readWord memory 972) (UInt256.add (UInt256.xor (UInt256.lor x.v6 (UInt256.lnot x.v9)) x.v0) x.v5))))) (UInt256.ofNat 22)))),
     x.v10,

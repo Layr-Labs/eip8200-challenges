@@ -38,20 +38,20 @@ def template : List Instr :=
     .op (.Swap ⟨6, by decide⟩),
     .op (.Dup ⟨13, by decide⟩),
     .op .MUL,
-    .op (.Dup ⟨4, by decide⟩),
+    .op (.Dup ⟨10, by decide⟩),
     .op .SHR ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
   [ x.v2,
     x.v1,
     x.v2,
     x.v0,
-    (UInt256.ofNat 23),
+    x.v10,
     x.v5,
     x.v6,
     x.v7,
     x.v8,
     x.v9,
-    x.v10,
+    (UInt256.ofNat 23),
     x.v11,
     x.v12,
     x.v13,
@@ -66,13 +66,13 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     x.v1,
     x.v2,
     x.v0,
-    (UInt256.ofNat 23),
+    x.v10,
     x.v5,
     x.v6,
     (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul x.v13 (UInt256.land x.v14 (UInt256.add x.v6 (UInt256.add (MachineState.readWord memory 612) (UInt256.add (UInt256.xor x.v1 (UInt256.lor x.v7 (UInt256.lnot x.v0))) x.v3))))) (UInt256.ofNat 28))),
     x.v8,
     x.v9,
-    x.v10,
+    (UInt256.ofNat 23),
     x.v11,
     x.v12,
     x.v13,
@@ -87,13 +87,13 @@ def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UI
     x.v1,
     x.v2,
     x.v0,
-    (UInt256.ofNat 23),
+    x.v10,
     x.v5,
     x.v6,
     (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul x.v13 (UInt256.land x.v14 (UInt256.add x.v6 (UInt256.add (MachineState.readWord memory 612) (UInt256.add (UInt256.xor x.v1 (UInt256.lor x.v7 (UInt256.lnot x.v0))) x.v3))))) (UInt256.ofNat 28))),
     x.v8,
     x.v9,
-    x.v10,
+    (UInt256.ofNat 23),
     x.v11,
     x.v12,
     x.v13,
@@ -131,16 +131,16 @@ theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
   simpa only [actualOutput_eq] using run_generated s pc x rho hstack haliasR hrun hactive
 #print axioms run_actual
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 3480).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3473).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3480 actual_slice
-    (by change 3480 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3473 actual_slice
+    (by change 3473 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 4527 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3480) = UInt256.ofNat 4527
+theorem site_pc : site.startPC = UInt256.ofNat 4521 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3473) = UInt256.ofNat 4521
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound
@@ -153,10 +153,10 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4527, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 4555, stack := outputStack s.memory x rho} := by
-  have hraw := run_actual s (UInt256.ofNat 4527) x rho hstack haliasR hrun hactive
-  have hend : pcAfter (UInt256.ofNat 4527) template = UInt256.ofNat 4555 := by decide
+    GasSteps {s with pc := UInt256.ofNat 4521, stack := inputStack x rho}
+      {s with pc := UInt256.ofNat 4549, stack := outputStack s.memory x rho} := by
+  have hraw := run_actual s (UInt256.ofNat 4521) x rho hstack haliasR hrun hactive
+  have hend : pcAfter (UInt256.ofNat 4521) template = UInt256.ofNat 4549 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps
