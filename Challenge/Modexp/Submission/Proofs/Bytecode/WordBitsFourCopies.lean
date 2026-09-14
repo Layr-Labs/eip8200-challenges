@@ -91,14 +91,16 @@ def gasSteps_copy6 :
   unfold gasSteps_copy6
   simp
 
+/-- The eighth copy ends on the dispatcher's fall-through at pc 2607, which is
+now the byte-loop tail itself: no landing pad is executed between them. -/
 def gasSteps_copy7 :
     GasSteps (stW s 2572 ([Bm1,4,byte,offset,outerW,acc,base,m] ++ rest))
-      (stW s 2611 ([Bm1,8,byte,offset,outerW,(value 7 Bm1 byte acc m),base,m] ++ rest)) := by
-  refine (((body3 s rest Bm1 byte offset outerW acc base m hs hrest 4).trans (control s rest Bm1 byte offset outerW (stepValue 4 4 Bm1 byte acc m) base m hs hrest 4 (by decide))).trans (reset s rest Bm1 byte offset outerW (stepValue 4 4 Bm1 byte acc m) base m hs hrest)).cast rfl ?_
+      (stW s 2607 ([Bm1,8,byte,offset,outerW,(value 7 Bm1 byte acc m),base,m] ++ rest)) := by
+  refine ((body3 s rest Bm1 byte offset outerW acc base m hs hrest 4).trans (control s rest Bm1 byte offset outerW (stepValue 4 4 Bm1 byte acc m) base m hs hrest 4 (by decide))).cast rfl ?_
   simp [stW, value, stepValue, Challenge.EvmProof.Word.literal_eq_ofNat, show UInt256.ofNat 4 - UInt256.ofNat 4 = UInt256.ofNat 0 from by decide]
 
 @[simp] theorem gasSteps_copy7_cost :
-    (gasSteps_copy7 s rest Bm1 byte offset outerW acc base m hs hrest).cost = 104 := by
+    (gasSteps_copy7 s rest Bm1 byte offset outerW acc base m hs hrest).cost = 100 := by
   unfold gasSteps_copy7
   simp
 

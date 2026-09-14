@@ -40,15 +40,15 @@ open YulEvmCompiler
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc2554 : Artifact.submissionArtifact.instructionPC 1977 = 2611 := by
+@[simp] theorem pc2554 : Artifact.submissionArtifact.instructionPC 1973 = 2607 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc2555 : Artifact.submissionArtifact.instructionPC 1978 = 2612 := by
+@[simp] theorem pc2555 : Artifact.submissionArtifact.instructionPC 1974 = 2608 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc2556 : Artifact.submissionArtifact.instructionPC 1979 = 2614 := by
+@[simp] theorem pc2556 : Artifact.submissionArtifact.instructionPC 1975 = 2610 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 

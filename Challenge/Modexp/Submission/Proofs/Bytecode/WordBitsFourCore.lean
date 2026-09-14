@@ -91,15 +91,14 @@ theorem run_body (hcap : rest.length ≤ 1000) :
   simpa only [show (selectProgram shift ++ factorProgram) ++ productProgram = bodyProgram shift from rfl,
     hpc, stepValue] using hall
 
+/-- The half-byte dispatcher. Its fall-through at pc 2607 is now the byte-loop
+tail itself: the four inert `JUMPDEST`s that used to be executed there have been
+moved behind the tail's unconditional jump, so nothing separates the last bit
+body from the tail. -/
 def controlProgram : List Instr :=
   [.op .JUMPDEST, .op (.Dup ⟨1, by decide⟩), .op .ISZERO,
    .op (.Swap ⟨1, by decide⟩), .push 2 4, .op .ADD, .op (.Swap ⟨1, by decide⟩),
    .push 2 2505, .op .JUMPI]
-
-/-- The counter slot is dead after the eighth bit: the byte-loop tail pops it,
-and the next byte pushes a fresh zero before re-entering this block. -/
-def resetProgram : List Instr :=
-  [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
 
 theorem run_start (hcap : rest.length ≤ 1000) :
     runInstructions [.op .JUMPDEST]
@@ -130,16 +129,5 @@ theorem run_control (c : Nat) (hc : c = 0 ∨ c = 4) (hcap : rest.length ≤ 100
       Challenge.EvmProof.Word.word_toNat_ofNat, htarget, hjd,
       Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.literal_eq_ofNat]
-
-theorem run_reset (hcap : rest.length ≤ 1000) :
-    runInstructions resetProgram
-      (framed s 2607 ([Bm1,8,byte,offset,outerW,acc,base,m] ++ rest)) =
-      some (framed s 2611 ([Bm1,8,byte,offset,outerW,acc,base,m] ++ rest)) := by
-  have h8 : rest.length + 8 < 1024 := by omega
-  simp [resetProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr, framed,
-    h8, Challenge.EvmProof.Word.succ_ofNat_mod,
-    Challenge.EvmProof.Word.literal_eq_ofNat]
-  try decide
-  try rfl
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WordBitsFourCore

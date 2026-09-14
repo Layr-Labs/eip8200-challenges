@@ -62,10 +62,6 @@ def controlBlock : BoundBlock 2594 (controlProgram) :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 1964 9 2594
     (controlProgram) (by decide) (by rfl) (by rfl) (by rfl)
 
-def resetBlock : BoundBlock 2607 (resetProgram) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 1973 4 2607
-    (resetProgram) (by decide) (by rfl) (by rfl) (by rfl)
-
 variable (s : State) (rest : List UInt256)
   (Bm1 byte offset outerW acc base m : UInt256) (hs : Frame s)
 
@@ -141,15 +137,5 @@ def control (hrest : rest.length < 1000) (c : Nat) (hc : c = 0 ∨ c = 4) :
     (control s rest Bm1 byte offset outerW acc base m hs hrest c hc).cost = 32 := by
   unfold control
   apply lift_cost _ _ _ _ _ _ 32 (by decide) (by rfl) (by rfl)
-
-def reset (hrest : rest.length < 1000) :
-    GasSteps (stW s 2607 ([Bm1,8,byte,offset,outerW,acc,base,m] ++ rest))
-      (stW s 2611 ([Bm1,8,byte,offset,outerW,acc,base,m] ++ rest)) :=
-  lift resetBlock s hs _ _ (run_reset s Bm1 byte offset outerW acc base m rest (Nat.le_of_lt hrest))
-
-@[simp] theorem reset_cost (hrest : rest.length < 1000) :
-    (reset s rest Bm1 byte offset outerW acc base m hs hrest).cost = 4 := by
-  unfold reset
-  apply lift_cost _ _ _ _ _ _ 4 (by decide) (by rfl) (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WordBitsFour

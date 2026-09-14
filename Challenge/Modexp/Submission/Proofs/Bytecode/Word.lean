@@ -169,9 +169,9 @@ def bitHeadPath :
 /-- Its tail drops `base - 1` and rejoins the byte loop. -/
 def bitExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1977 .POP,
-   pushAt 1978 1 224,
-   opAt 1979 .JUMP]
+  [opAt 1973 .POP,
+   pushAt 1974 1 224,
+   opAt 1975 .JUMP]
 
 /-- Byte offset of the copy of the unrolled body that handles exponent bit `j`. -/
 def bitPC (j : Nat) : Nat :=
@@ -180,7 +180,7 @@ def bitPC (j : Nat) : Nat :=
   | 1 | 5 => 2528
   | 2 | 6 => 2550
   | 3 | 7 => 2572
-  | _ => 2611
+  | _ => 2607
 
 def bitCounter (j : Nat) : Nat := if j < 4 then 0 else if j < 8 then 4 else 8
 
