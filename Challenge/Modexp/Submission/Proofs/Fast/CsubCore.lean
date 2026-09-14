@@ -60,6 +60,27 @@ theorem ptrAt_succ (base j : Nat) :
   simp only [ptrAt, Nat.succ_mul]
   omega
 
+
+/-- One downward step, in the shape the shared `PUSH3 32; SUB` pair
+produces: subtracting 32 modulo `2 ^ 256` is the same as adding
+`2 ^ 256 - 32`.  The proof avoids `omega`/`simp` on `Nat.mod` with the
+`2 ^ 256` modulus — `omega` does not evaluate `Nat.pow` moduli — by
+normalizing both sides to `(x % 2 ^ 256 + 2 ^ 256 - 32) % 2 ^ 256`
+with `Nat.add_mod` instead. -/
+theorem ptrAt_sub32 (base j : Nat) :
+    UInt256.ofNat (ptrAt base j) - UInt256.ofNat 32 =
+      UInt256.ofNat (ptrAt base (j + 1)) := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_sub,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (by decide : 32 < 2 ^ 256)]
+  rw [← ptrAt_succ]
+  have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
+      Nat) = 2 ^ 256 - 32 := by norm_num
+  rw [hK, Nat.add_comm (2 ^ 256 - 32) (ptrAt base j), Nat.add_mod,
+    Nat.mod_eq_of_lt (by norm_num : 2 ^ 256 - 32 < 2 ^ 256),
+    Nat.add_comm (2 ^ 256) (ptrAt base j % 2 ^ 256),
+    Nat.add_sub_assoc (by norm_num : 32 ≤ 2 ^ 256) (ptrAt base j % 2 ^ 256)]
 /-- The address a downward pointer walk has reached, as long as it has not
 yet stepped below the base of the block. -/
 theorem ptrAt_toNat (base j : Nat) (hj : 32 * j ≤ base) (hbase : base < 2 ^ 256) :
@@ -251,6 +272,7 @@ theorem run_amLoopBody (s : State) (memory : ByteArray) (pa pb n j : Nat)
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       2080 + 32 * (n - 1 - j) := by
     rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have h32 : (32 : UInt256) = UInt256.ofNat 32 := by decide
   have hgt : 2080 < 2080 + 32 * (n - 1 - j) := by omega
   have hactA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (pa + 32 * (n - 1 - j)) 32) = s.activeWords :=
@@ -267,8 +289,8 @@ theorem run_amLoopBody (s : State) (memory : ByteArray) (pa pb n j : Nat)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       amLoopState, amStep, fastPC14, fastPC15, fastPC16, fastPC17, fastPC18, fastPC19,
-      hc6, hc7, hc8, hc9, hrun, hcode, hK, h8224, h2500, h2500', hjump, jumpDest2168,
-      hta, htb, htt, hnext, hgt, hactA, hactB, hactT, ptrAt_succ,
+      hc6, hc7, hc8, hc9, hrun, hcode, hK, h32, h8224, h2500, h2500', hjump, jumpDest2168,
+      hta, htb, htt, hnext, hgt, hactA, hactB, hactT, ptrAt_succ, ptrAt_sub32,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -323,6 +345,7 @@ theorem run_amLoopExit (s : State) (memory : ByteArray) (pa pb n j : Nat)
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
     decide
   have h8224 : (2080 : UInt256).toNat = 2080 := by decide
+  have h32 : (32 : UInt256) = UInt256.ofNat 32 := by decide
   have hta : ptrAt (pa + 32 * n - 32) j %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       pa + 32 * (n - 1 - j) := by
@@ -351,8 +374,8 @@ theorem run_amLoopExit (s : State) (memory : ByteArray) (pa pb n j : Nat)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       amLoopState, amTailState, amStep, fastPC14, fastPC15, fastPC16, fastPC17, fastPC18, fastPC19,
-      hc6, hc7, hc8, hc9, hrun, hK, h8224, hnj,
-      hta, htb, htt, hnext, hactA, hactB, hactT, ptrAt_succ,
+      hc6, hc7, hc8, hc9, hrun, hK, h32, h8224, hnj,
+      hta, htb, htt, hnext, hactA, hactB, hactT, ptrAt_succ, ptrAt_sub32,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
