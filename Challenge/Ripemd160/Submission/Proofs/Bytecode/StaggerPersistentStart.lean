@@ -159,11 +159,8 @@ def gasSteps_round (s : State) (h : Compression.HashState) (off limit : UInt256)
     exact ⟨rfl, rfl⟩
 
 def guard32Template : List Instr :=
-  [ .op .CALLDATASIZE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 32),
-    .op .EQ,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 323),
-    .op .JUMPI ]
+  [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
+   .push ⟨3, by decide⟩ (UInt256.ofNat 0), .op .POP]
 theorem guard32_slice :
     (Artifact.submissionArtifact.instructions.drop 3628).take guard32Template.length = guard32Template := by rfl
 def guard32Site : GenericRoundSite Artifact.submissionArtifact .Osaka guard32Template :=
@@ -176,9 +173,11 @@ theorem guard32_pc : guard32Site.startPC = UInt256.ofNat 4705 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3628) = UInt256.ofNat 4705
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
-def gasSteps_guard32_miss (s : State) (stack : List UInt256)
-    (hstack : stack.length ≤ 1000) (hsize : s.executionEnv.calldata.size < 2^256)
-    (hne : s.executionEnv.calldata.size ≠ 32) (hrun : s.halt = .Running)
+/-- The retired exact-32 diversion is now a stack-neutral passthrough: three
+landing pads, a zero push and its pop.  It runs unconditionally for every
+input size. -/
+def gasSteps_guard32_passthrough (s : State) (stack : List UInt256)
+    (hstack : stack.length ≤ 1000) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
@@ -186,15 +185,10 @@ def gasSteps_guard32_miss (s : State) (stack : List UInt256)
       {s with pc := UInt256.ofNat 4713, stack := stack} := by
   apply PadLift.gasSteps_of_raw guard32Site {s with pc := UInt256.ofNat 4705, stack := stack} _ hcode hfork hrun hnp guard32_pc.symm
   · apply PadLift.advancesAll_sound; decide
-  · have hcap (n : Nat) (hn : n ≤ 3) : stack.length+n < 1024 := by omega
+    have hcap (n : Nat) (hn : n ≤ 3) : stack.length+n < 1024 := by omega
     have hcap0 : stack.length < 1024 := by omega
-    have hw : (UInt256.ofNat s.executionEnv.calldata.size).toNat = s.executionEnv.calldata.size := by
-      rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt hsize]
-    have heq : UInt256.eq (UInt256.ofNat 32) (UInt256.ofNat s.executionEnv.calldata.size) = UInt256.ofNat 0 := by
-      unfold UInt256.eq
-      rw [hw, if_neg (by simpa using Ne.symm hne)]
-    simp [guard32Template, runInstrSeq, DataStepper.runInstr, hrun, hcap, hcap0, heq,
-      UInt256.isTrue, pcAfter, Nat.add_assoc]
+    simp [guard32Template, runInstrSeq, DataStepper.runInstr, hrun, hcap, hcap0,
+      pcAfter, Nat.add_assoc]
     rfl
 
 def entryTemplate : List Instr := [.op .JUMPDEST]
@@ -226,9 +220,7 @@ def gasSteps_partial (s : State) (h : Compression.HashState) (off limit : UInt25
     (rho : List UInt256) (hstack : rho.length ≤ 980) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hsize : s.executionEnv.calldata.size < 2^256)
-    (hne : s.executionEnv.calldata.size ≠ 32) :
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 4704, stack := StaggerPersistentFrame.frame h off limit rho}
       {s with pc := UInt256.ofNat 4722, stack := StaggerPersistentFrame.frame h off (PadLimitArithmetic.rounded limit) rho} := by
   let F := StaggerPersistentFrame.frame h off limit rho
@@ -236,7 +228,7 @@ def gasSteps_partial (s : State) (h : Compression.HashState) (off limit : UInt25
     simp only [F, StaggerPersistentFrame.frame, List.length_append, List.length_cons, List.length_nil]
     omega
   have ge := gasSteps_entry s F hF hrun hcode hfork hnp
-  have gg := gasSteps_guard32_miss s F hF hsize hne hrun hcode hfork hnp
+  have gg := gasSteps_guard32_passthrough s F hF hrun hcode hfork hnp
   have gr := gasSteps_round s h off limit rho hstack hrun hcode hfork hnp
   exact ge.trans (gg.trans gr)
 
@@ -244,5 +236,5 @@ def gasSteps_partial (s : State) (h : Compression.HashState) (off limit : UInt25
 #print axioms gasSteps_round
 #print axioms gasSteps_entry
 #print axioms gasSteps_partial
-#print axioms gasSteps_guard32_miss
+#print axioms gasSteps_guard32_passthrough
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentStart

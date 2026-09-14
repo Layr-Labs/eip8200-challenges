@@ -12,7 +12,7 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PersistentStaggerIteration StaggerPersistentLoopInduction
 
 noncomputable opaque gasSteps (input : ByteArray) (hfit : CalldataFits input)
-    (hpositive : 0 < input.size) (hn32 : input.size ≠ 32)
+    (hpositive : 0 < input.size)
     (i : Nat) (hi : i < DriverTrace.blockCount input)
     (hh : input.size = DriverTrace.blockOffset i)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 336)) :
@@ -21,7 +21,7 @@ noncomputable opaque gasSteps (input : ByteArray) (hfit : CalldataFits input)
         pc := UInt256.ofNat 4762
         stack := StaggerPersistentFrame.frame (hashes input i) (DriverTrace.blockOffsetWord i)
           (LoopCompletionControl.limit input) ColdHighTrace.maskRho} := by
-  have gs := StaggerPersistentCorrect.gasSteps_start input hfit hpositive hn32 entryPrefix
+  have gs := StaggerPersistentCorrect.gasSteps_start input hfit hpositive entryPrefix
   have ga : ∀ j, j ≤ i → Ambient input (states input j) := by
     intro j _
     exact ⟨states_code input j, states_fork input j, states_halt input j,

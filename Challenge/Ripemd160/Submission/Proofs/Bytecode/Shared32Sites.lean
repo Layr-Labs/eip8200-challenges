@@ -165,26 +165,7 @@ def lift (s t : State) (e : Env s) (stack : List UInt256)
   · exact h
 end table
 
-namespace guard
-abbrev template : List Instr := [.op .CALLDATASIZE, .push ⟨1, by decide⟩ (UInt256.ofNat 32), .op .EQ, .push ⟨2, by decide⟩ (UInt256.ofNat 323), .op .JUMPI]
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3628).take template.length = template := by rfl
-def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3628 actual_slice
-    (by change 3628 + template.length ≤ Artifact.submissionInstructions.length
-        rw [Artifact.referenceInstructions_count]; decide)
-    StackRoundData.artifact_code_bound
-    (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 4705 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3628) = UInt256.ofNat 4705
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem end_pc : pcAfter (UInt256.ofNat 4705) template = UInt256.ofNat 4713 := by decide
-def lift (s t : State) (e : Env s) (stack : List UInt256)
-    (h : runInstrSeq template (atState s 4705 stack) = some t) :
-    GasSteps (atState s 4705 stack) t := by
-  apply PadLift.gasSteps_of_raw site (atState s 4705 stack) t e.code e.fork e.run e.np site_pc.symm
-  · apply PadLift.advancesAll_sound; decide
-  · exact h
-end guard
+
 
 theorem valid_special (s : State) (e : Env s) :
     Decode.isValidJumpDest s.executionEnv.code 323 = true := by
@@ -217,6 +198,5 @@ theorem msize_decoded (s : State) (e : Env s) (stack : List UInt256) :
 
 #print axioms table.lift
 #print axioms sparse.lift
-#print axioms guard.lift
 #print axioms msize_decoded
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Sites

@@ -1,6 +1,6 @@
 # RIPEMD-160: shorten the patterned-input segment transition
 
-The submitted runtime uses 670084 gas on the original 49-vector clean corpus and the same total on the corresponding dirty-frame corpus. It is 5219 bytes: 4939 executable bytes followed by the unchanged 280-byte digest payload. There are 3736 executable instructions. The raw-byte SHA-256 is `ba94a3b28840365c1c425623e4f8378249a85d7b3fd4a461a91e648199cca5e6`.
+The submitted runtime uses 670084 gas on the original 49-vector clean corpus and the same total on the corresponding dirty-frame corpus. It is 5219 bytes: 4939 executable bytes followed by the unchanged 280-byte digest payload. There are 3736 executable instructions. The raw-byte SHA-256 is `f07ea1fe22423b28c90fedb3b76be1463060a47984b5f2e6a38eeb36ea021a35`.
 
 The immediate parent is our frozen `b92b9bc11ab9559538febabe4eecad9613402fbe` last-use-copy candidate, which uses 670099 gas. This version saves three gas per patterned segment transition, fifteen gas across the original measured corpus. Compared on the same inputs with the accepted 670855-gas public source `fdd0717d031168693e7aa55b68dead6b305fa2e1`, it saves 771 gas. The prior last-use optimization and its universally checked register transport are retained below.
 
@@ -38,3 +38,7 @@ The original read-only loader returned rc0 for these exact bytes. The mandatory 
 This work extends our accepted RIPEMD chain: the resident frame, deferred loop limit, literal moduli, guard before partial rounding, descending serialization stores, J2 size reads and permuted chaining words. The J2 initializer CALLDATASIZE substitution was previously adapted from jacklightChen's public `cdeec6a3` branch and is retained with attribution. The current contribution is the shorter J2 segment transition, balanced exact encoding and universal proof integration. The last-copy consumption and its register transport were developed in the immediate parent. Previously published benchmark implementation and proofs remain the foundation.
 
 Only Challenge/Ripemd160/Submission is changed. The original specification, EVM semantics, protected scorer and artifact generator, compiler and Lean kernel, dependency pins and benchmark settings are used as supplied. No axiom, admission or native_decide is added. Exploratory candidates and their scripts are kept outside the submitted worktree. Public submission branches continue to be reviewed, and active research is compared on identical inputs after every frontier promotion.
+
+## Retired exact-32 diversion
+
+At byte PC4705 the eight-byte sequence `CALLDATASIZE PUSH1 0x20 EQ PUSH2 0x0143 JUMPI` (five instructions, 21 gas) is replaced by `JUMPDEST JUMPDEST JUMPDEST PUSH3 0 POP` (five instructions, 8 gas), a stack-neutral passthrough in the same byte width. The diverted route at PC323 is no longer reachable; every input now follows the general padding path, which already handles the 32-byte case. The passthrough saves 13 gas on each call that reaches the footer entry.
