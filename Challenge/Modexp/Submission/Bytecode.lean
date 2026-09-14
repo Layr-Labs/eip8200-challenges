@@ -21,3 +21,5 @@ theorem submissionBytecode_roundtrip :
 end Challenge.Modexp
 
 -- lottery rerun 2026-09-13T23:44:50Z: public PR #1663 artifact resubmitted under a fresh benchmark seed, bytes and proofs unchanged
+
+-- lottery rerun 2026-09-14T00:51:32Z: accepted artifact resubmitted under a fresh benchmark seed, bytes and proofs unchanged
