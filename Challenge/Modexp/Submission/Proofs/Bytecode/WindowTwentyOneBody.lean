@@ -26,7 +26,7 @@ private theorem land_comm (a b : UInt256) : UInt256.land a b = UInt256.land b a 
   rw [Challenge.EvmProof.Word.word_toNat_land,
     Challenge.EvmProof.Word.word_toNat_land, Nat.and_comm]
 
-private theorem laddr_bound (i : Nat) (hi : i < 21) : WindowCopyMemory.laddr i + 32 ≤ 608 := by
+private theorem laddr_bound (i : Nat) (hi : i < 21) : WindowCopyMemory.laddr i + 32 ≤ 576 := by
   unfold WindowCopyMemory.laddr
   split <;> omega
 
@@ -49,11 +49,11 @@ theorem run_twentyOne (template : State) (pc : UInt256) (mem : ByteArray)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions program
       (WindowTwentyOneGroup.headState template pc
-        (WindowCopyMemory.copyMem mem (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed - 3)))) 19
+        (WindowCopyMemory.copyMem mem (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed - 3)))) 18
         modulus accumulator
         (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed - 3))) counter rest) =
     some (WindowTwentyOneGroup.state template (advancePC 443 pc)
-      (WindowCopyMemory.copyMem mem (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed - 3)))) 19
+      (WindowCopyMemory.copyMem mem (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed - 3)))) 18
       modulus
       (WindowTwentyOneMath.advance base modulus exponent.toNat processed 21 accumulator)
       (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed - 3))) counter 0 rest) := by

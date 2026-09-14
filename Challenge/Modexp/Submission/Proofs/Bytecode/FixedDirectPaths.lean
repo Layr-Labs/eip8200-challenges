@@ -9,10 +9,10 @@ set_option maxHeartbeats 4000000
 /-!
 # Exact located blocks for the direct fixed-exponent handler
 
-The direct handler starts at pc 3240 (`0x0c6b`).  Each in-place square enters
+The direct handler starts at pc 3241 (`0x0c6b`).  Each in-place square enters
 the kernel's shared `common` block with `hd = sq_row`; the final
 mixed-domain product enters the kernel's multiply entry.  For the accelerated
-widths the kernel loops internally and returns to `after_sq` (pc 3303), so the
+widths the kernel loops internally and returns to `after_sq` (pc 3304), so the
 loop head first stores the square count in memory word `0x2440 = 9280`.
 This file is the generated-Artifact boundary for its concrete trace proofs.
 -/
@@ -99,8 +99,8 @@ def squareCall : List Located :=
    pushAt 2031 2 512,
    opAt 2032 (.Dup ⟨0, by decide⟩),
    opAt 2033 (.Dup ⟨0, by decide⟩),
-   pushAt 2034 2 4756,
-   pushAt 2035 2 3553,
+   pushAt 2034 2 4760,
+   pushAt 2035 2 3554,
    opAt 2036 .JUMP]
 
 def squareReturn : List Located :=
@@ -112,7 +112,7 @@ def squareReturn : List Located :=
    pushAt 2042 2 2694,
    opAt 2043 .JUMPI]
 
-/-- `after_sq` (pc 3303): both the in-kernel loop's return target and the
+/-- `after_sq` (pc 3304): both the in-kernel loop's return target and the
 fall-through of the caller loop for the unaccelerated widths.  The square count
 left on the stack is dropped and the final mixed-domain product is called. -/
 def product : List Located :=
@@ -121,7 +121,7 @@ def product : List Located :=
    pushAt 2046 2 256,
    opAt 2047 (.Dup ⟨0, by decide⟩),
    pushAt 2048 2 512,
-   pushAt 2049 2 3549,
+   pushAt 2049 2 3550,
    opAt 2050 .JUMP]
 
 def fallback : List Located :=
@@ -156,16 +156,16 @@ theorem jumpDest3959 :
 
 /-- The kernel's multiply entry `0x0f50` (the final mixed-domain product). -/
 theorem jumpDestSqMulEntry :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3549 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3550 = true :=
   Artifact.isValidJumpDest_index 2659 (by rfl)
 
 /-- The kernel's shared `common` block `0x0f54` (entered by the square call). -/
 theorem jumpDestSqCommon :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3553 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3554 = true :=
   Artifact.isValidJumpDest_index 2661 (by rfl)
 
 
-/- `after_sq` (pc 3303): the target the in-kernel square loop rewrites the
+/- `after_sq` (pc 3304): the target the in-kernel square loop rewrites the
 kernel frame's return slot to. -/
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths

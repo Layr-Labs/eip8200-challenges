@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Fast.LazyMixedProduct
 import Challenge.Modexp.Submission.Proofs.Fast.FusedEntry
 import Challenge.Modexp.Submission.Proofs.Fast.CarryFullRowsFour
 import Challenge.Modexp.Submission.Proofs.Fast.CarryFullRowsEight
@@ -52,12 +53,12 @@ def gasSteps_product (s : State) (mem : ByteArray) (p a mm : Nat)
     (hc : CiosReadonly.ReadonlyCache mem (p+2) tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
     (ha : Model.FastRepresents mem 2368 (p+2) a)
-    (hm : Model.FastRepresents mem 0 (p+2) mm) (ham : a < mm)
+    (hm : Model.FastRepresents mem 0 (p+2) mm) (ham : a < Limbs.radix^(p+2)) (hmpos : 0 < mm)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32*(p+2)-32))
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080+32*(p+2)))
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*(p+2))) :
     Challenge.EvmProof.GasSteps
-      (frameAt 3671 s mem (p+2) pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
+      (frameAt 3666 s mem (p+2) pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
       {s with pc := UInt256.ofNat 1145, stack := rest, memory := StagedProduct.memory s mem (p+2)} := by
   have hn8 : p+2 ≤ 8 := by omega
   have g1 := gasSteps_entry s mem (p+2) pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest
@@ -82,8 +83,8 @@ def gasSteps_product (s : State) (mem : ByteArray) (p a mm : Nat)
       hread 2688 (Or.inr (by decide))]; exact hs32)
     (by
       rw [Csub.csStep_readWord_disjoint _ (p+2) 2080 (by omega) (Or.inr (by omega)) (p+2) le_rfl]
-      exact StagedProduct.rows_tn_le_one s mem p a (Csub.lowValue mem 256 (p+2) (p+2)) mm hn8
-        ha (Csub.fastRepresents_lowValue mem 256 (p+2)) hm ham hminv)
+      exact LazyMixedProduct.rows_tn_le_one s mem p a (Csub.lowValue mem 256 (p+2) (p+2)) mm hn8
+        ha (Csub.fastRepresents_lowValue mem 256 (p+2)) hm ham hmpos hminv)
   exact (g1.trans g2).trans g3
 
 #print axioms gasSteps_product

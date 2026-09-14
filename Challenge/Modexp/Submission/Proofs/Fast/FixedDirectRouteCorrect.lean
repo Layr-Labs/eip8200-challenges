@@ -48,7 +48,7 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
     (hone : ∃ one, one < Limbs.radix ∧
       Model.FastRepresents memory 768 n one)
     (hraw : ∃ rawBase, Model.FastRepresents memory 256 n rawBase ∧
-      rawBase ≡ Precompile.bytesToNatPadded input 96 bsize [MOD mm]) :
+      rawBase ≡ Precompile.bytesToNatPadded input 96 bsize [MOD mm] ∧ rawBase < mm) :
     Route s memory input n bsize esize msize where
   enter := FixedDirectEntryTrace.gasSteps_entry s memory
     n bsize esize msize hcode hfork hrun hnp
@@ -89,7 +89,7 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
           (FixedDirectFallbackTrace.gasSteps_fallback s memory
             n bsize esize msize hn hn32 hactive hcode hfork hrun hnp)
   hit := by
-    rcases hraw with ⟨rawBase, hrawRep, hrawForm⟩
+    rcases hraw with ⟨rawBase, hrawRep, hrawForm, hrawLt⟩
     rintro ⟨count, hcase⟩
     cases hcase with
     | three hsize hvalue =>
@@ -112,7 +112,7 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
           hrawForm
           (by omega) (by omega)
           (by simpa [exponentValue] using hvalue)
-          hframe hmod hbase hrawRep hone
+          hframe hmod hbase hrawRep hrawLt hone
         exact prepend htoSpecial hfixed
     | fermat hsize hvalue =>
         cases hsize
@@ -132,7 +132,7 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
           hrawForm
           (by omega) (by omega)
           (by simpa [exponentValue] using hvalue)
-          hframe hmod hbase hrawRep hone
+          hframe hmod hbase hrawRep hrawLt hone
         exact prepend htoSpecial hfixed
 
 end Challenge.Modexp.Submission.Proofs.Fast.FixedDirectRouteCorrect
