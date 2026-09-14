@@ -1,12 +1,24 @@
 # RIPEMD-160: defer padding-limit rounding until it is needed
 
-Research candidate: 671,664 gas / 5,220 bytes, raw-byte SHA-256
-`2f22d1b8913a02248432176bac3edd6b2adf346bcbb55e493d8ba6ec3eeb6737`.
-This extends our fully verified 5cf31e63 candidate, accepted as 6f7231a3 and
-promoted to 3267c1f8 at 672,060 gas. The exact Artifact assembly and full
-Solution proof pass all 3719 build jobs. The final correctness theorem uses
+Research candidate: 671,622 gas / 5,220 bytes, raw-byte SHA-256
+`1faf23dba9bf2bf99b3aee617c3ba171b39b1303c4635755b9c4296acf419c61`.
+This extends Meganpark980320's public in-flight cdbceb0f candidate (submission
+0f4090d0, PR #1816) at 671,664 gas, itself based on the fully verified 5cf31e63
+candidate accepted as 6f7231a3 and promoted to 3267c1f8 at 672,060 gas. The
+public base passes all 3719 build jobs; this exact artifact preserves its layout
+and changes only three value-equivalent recognizer instructions. The final correctness theorem uses
 only propext, Classical.choice and Quot.sound. Independent secure verification
 is required before this candidate is submitted.
+
+The final delta replaces three J2 initializer DUP operations at PCs 133, 134
+and 138 with CALLDATASIZE. At each site the duplicated resident value is exactly
+the calldata length just pushed at PC 132. CALLDATASIZE therefore produces the
+same UInt256 value and identical stack shape while costing two gas instead of
+three. The initializer executes on fourteen paired clean/dirty corpus entries,
+so the three replacements reduce the aggregate score by 42 gas. No instruction
+width, program counter, jump destination, payload offset, or memory behavior
+changes. The resulting score is 671,622: 42 below the public in-flight base and
+438 below the promoted 672,060 leader.
 
 The generic entry initially keeps CALLDATASIZE as its block-loop limit.
 Previously it computed the rounded padding length before checking alignment,
