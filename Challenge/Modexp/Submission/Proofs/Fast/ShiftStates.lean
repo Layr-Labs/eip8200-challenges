@@ -44,28 +44,28 @@ def pcShiftLoop : Nat := 3032
 def pcShiftBody : Nat := 3039
 def pcEstimate : Nat := 3053
 def pcMacSetup : Nat := 3132
-def pcMacLoop : Nat := 3149
-def pcMid : Nat := 3314
+def pcMacLoop : Nat := 3147
+def pcMid : Nat := 3312
 /-- The limb-pass body after the pointer steps, before the exit test. -/
-def pcMacTail : Nat := 3305
-def pcAddLoop : Nat := 3363
-def pcAddInner : Nat := 3369
-def pcAddTail : Nat := 3412
+def pcMacTail : Nat := 3303
+def pcAddLoop : Nat := 3361
+def pcAddInner : Nat := 3367
+def pcAddTail : Nat := 3410
 /-- The add body after `OR`, before the pointer step and exit test. -/
-def pcAddMid : Nat := 3398
-def pcSubCheck : Nat := 3430
-def pcSubEntry : Nat := 3442
-def pcSubInner : Nat := 3448
-def pcSubTail : Nat := 3487
+def pcAddMid : Nat := 3396
+def pcSubCheck : Nat := 3428
+def pcSubEntry : Nat := 3440
+def pcSubInner : Nat := 3446
+def pcSubTail : Nat := 3485
 /-- The subtract body after `OR`, before the pointer step and exit test. -/
-def pcSubMid : Nat := 3472
-def pcCsubCall : Nat := 3344
+def pcSubMid : Nat := 3470
+def pcCsubCall : Nat := 3342
 /-- `UNC`: the middle block's jump target when `neg ||| TN ≠ 0`. -/
-def pcUnc : Nat := 3357
+def pcUnc : Nat := 3355
 /-- `CSUB(BASE)` returns straight to the shift loop head (`pcShiftLoop`); the call block
 already decremented the counter. -/
 def pcAfterCsub : Nat := 3032
-def pcShiftDone : Nat := 3501
+def pcShiftDone : Nat := 3499
 
 /-- A state with the outer frame only. -/
 def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat) : State :=
