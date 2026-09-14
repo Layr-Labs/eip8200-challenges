@@ -40,7 +40,7 @@ private theorem jump_env {artifact : ProgramArtifact} {fork : Fork} {template : 
   rw [env.code]
   exact hjump
 
-/-- The state at the core entry 2240 (0x8c0): the route frame with the modulus
+/-- The state at the core entry 2241 (0x8c0): the route frame with the modulus
 word loaded by the special-modulus test still on top. -/
 def entryState (template : State) (input : ByteArray) : State :=
   WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 1774)
@@ -78,7 +78,7 @@ def Handled (template : State) (input : ByteArray) : Prop :=
     final.isDone = true ∧ final.toResult = .returned (spec input)
 
 /-- Every accepted width, including a zero-width base, is handled by the main
-path from 2240: there is no separate zero-base exit.  Since the zero-modulus
+path from 2241: there is no separate zero-base exit.  Since the zero-modulus
 guard was removed, a zero modulus is handled by this same path too: every
 `MULMOD` against a zero modulus returns zero, so the accumulator collapses and
 the unchanged return path emits the 32 zero bytes the old handler returned. -/

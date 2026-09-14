@@ -110,7 +110,7 @@ theorem run_miss (template : State) (rest : List UInt256) (hrest : rest.length �
     hcap0, hcap1, Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat, htarget]
 
-/-- Entry of the one-word core at pc 2240 (0x8c0). Both special-modulus misses
+/-- Entry of the one-word core at pc 2241 (0x8c0). Both special-modulus misses
 jump here with the loaded modulus word on top of the route frame and `POP`
 discards it. There is no base-width branch: a zero-width base runs the core
 with the base word `CALLDATALOAD 96 >> 256 = 0`. -/
@@ -125,9 +125,9 @@ theorem run_base (template : State) (value : UInt256)
   simp [runInstructions, baseProgram, framed, Challenge.EvmProof.Stepper.runInstr,
     hcap1, Challenge.EvmProof.Word.succ_ofNat_mod]
 
-/-- The zero-modulus guard that used to sit at 1774 is gone: a zero modulus is
+/-- The zero-modulus guard that used to sit at 1775 is gone: a zero modulus is
 handled by the main path, because every `MULMOD` against it returns zero.  The
-normalize block therefore starts here, at 1774. -/
+normalize block therefore starts here, at 1775. -/
 def normalizeProgram : List Instr :=
   [.op (.Dup ⟨4, by decide⟩), .op .CALLDATALOAD, .op (.Dup ⟨2, by decide⟩),
    .push 1 32, .op .SUB, .push 1 3, .op .SHL, .op .SHR]

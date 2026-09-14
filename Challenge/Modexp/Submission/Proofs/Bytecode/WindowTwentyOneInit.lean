@@ -10,13 +10,13 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneInit
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open WindowNibbleKernel
 
-/-! # The loop frame prologue at 1873
+/-! # The loop frame prologue at 1874
 
 The table build now leaves the bare route stack: its closing `MULMOD` consumed
 the `base` and the `modulus` that used to be handed on.  These thirty-one bytes
 rebuild the loop frame from scratch — counter, mask, the exponent shifted left
 one bit, the modulus, and the first table lookup — and land on the unchanged
-trampoline anchor at 1904.
+trampoline anchor at 1905.
 
 The exponent load that used to sit in the table prelude lives here now. -/
 
@@ -138,7 +138,7 @@ private theorem run_mload (template : State)
     WindowTwentyOneMath.initialAccumulator, State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.succ_ofNat_mod]
 
-/-- The prologue lands exactly on the unchanged trampoline anchor at 1904. -/
+/-- The prologue lands exactly on the unchanged trampoline anchor at 1905. -/
 theorem run_enter (template : State) (base modulus exponentOffset modulusOffset : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (he : rest[4]? = some exponentOffset)

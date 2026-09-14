@@ -49,7 +49,7 @@ def program : List Instr :=
   WindowTwentyOneTablePrelude.program ++ buildProgram 12 ++ WindowTwentyOneTable.lastUpdateProgramM
 
 /-- The complete 89-byte table construction.  The exponent is no longer loaded
-here: the frame prologue at 1873 loads it, and the modulus that this block
+here: the frame prologue at 1874 loads it, and the modulus that this block
 leaves in the frame's third slot is what the closing bare `MULMOD` consumes. -/
 theorem run_all (template : State) (base modulus : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :

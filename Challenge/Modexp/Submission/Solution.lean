@@ -28,3 +28,5 @@ theorem candidate : Challenge.Modexp.Correct bytecode :=
 end Challenge.Modexp.Benchmark
 
 #print axioms Challenge.Modexp.Benchmark.candidate
+
+-- Release archive refresh; the candidate theorem and submitted bytes are unchanged.
