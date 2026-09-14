@@ -25,36 +25,36 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- Instructions 2692..2696, pc 4347..3840: the `w = 0` test. -/
 def blk2557 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1831 .JUMPDEST,
-   opAt 1832 (.Dup ⟨1, by decide⟩),
-   opAt 1833 .ISZERO,
-   pushAt 1834 2 949,
-   opAt 1835 .JUMPI]
+  [opAt 1835 .JUMPDEST,
+   opAt 1836 (.Dup ⟨1, by decide⟩),
+   opAt 1837 .ISZERO,
+   pushAt 1838 2 951,
+   opAt 1839 .JUMPI]
 
 /-- Instructions 2697..2703, pc 3872..3840: `ACC := BASE`, then the shift. -/
 def blk2562 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1836 2 2688,
-   opAt 1837 .MLOAD,
-   pushAt 1838 2 512,
-   pushAt 1839 2 256,
-   opAt 1840 .MCOPY,
-   pushAt 1841 2 990,
-   opAt 1842 .JUMP]
+  [pushAt 1840 2 2688,
+   opAt 1841 .MLOAD,
+   pushAt 1842 2 512,
+   pushAt 1843 2 256,
+   opAt 1844 .MCOPY,
+   pushAt 1845 2 992,
+   opAt 1846 .JUMP]
 
 /-- PC table for the relocated leading-bit shortcut.  This range is outside
 the inherited `Fast.Defs` tables, so execution proofs need a local certificate
 instead of unfolding the complete bytecode prefix at every instruction. -/
 @[simp] theorem leadingBitPC (i : Nat)
-    (hi : 1831 ≤ i) (hii : i ≤ 1843) :
+    (hi : 1835 ≤ i) (hii : i ≤ 1847) :
     Artifact.submissionArtifact.instructionPC i =
-      ([2417,2418,2419,2420,2423,2424,2427,2428,2431,2434,2435,2438,2439] : List Nat)[i - 1831]! := by
+      ([2421,2422,2423,2424,2427,2428,2431,2432,2435,2438,2439,2442,2443] : List Nat)[i - 1835]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 theorem jumpDest3829 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2417 = true :=
-  Artifact.isValidJumpDest_index 1831 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2421 = true :=
+  Artifact.isValidJumpDest_index 1835 (by rfl)
 
 
 end Challenge.Modexp.Submission.Proofs.Fast

@@ -57,7 +57,7 @@ def againFixProgram : List Instr := againProgram.drop 2
 the memory is untouched. -/
 def againMidState (s : State) (mem : ByteArray) (n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4218
+  { s with pc := UInt256.ofNat 4222
            stack := UInt256.ofNat (32 * n) ::
              frameStack n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest
            memory := mem }
@@ -97,13 +97,13 @@ theorem run_againFix (s : State) (mem : ByteArray) (n : Nat)
     (hcap : rest.length ≤ 1000)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hn : n = 4 ∨ n = 8)
-    (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5090 = true) :
+    (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5091 = true) :
     runInstructions againFixProgram
       (againMidState s mem n (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n))
         (UInt256.ofNat (sqEnt n n)) tl inv m0 m96 m64 m32 aprev pdst ret rest) =
     some { outState s mem 2368 n 0
-      (UInt256.ofNat 4230) (UInt256.ofNat (sqEnt n 0)) inv m0
-      (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5090 } := by
+      (UInt256.ofNat 4234) (UInt256.ofNat (sqEnt n 0)) inv m0
+      (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5091 } := by
   have hc16' : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
@@ -115,7 +115,7 @@ theorem run_againFix (s : State) (mem : ByteArray) (n : Nat)
     rw [Challenge.EvmProof.Word.word_add_comm]
     exact ptr_wrap (2368 + 32 * n - 32) n
   have hent := entry_from_reduction n hn
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 5090 = true := by
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 5091 = true := by
     rw [hcode]; exact hhd
   simp (config := { maxSteps := 200000 })
     [againFixProgram, againProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
@@ -133,13 +133,13 @@ theorem run_again (s : State) (mem : ByteArray) (n : Nat)
     (hact : 88 ≤ s.activeWords.toNat) (hn : n = 4 ∨ n = 8)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
-    (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5090 = true) :
+    (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5091 = true) :
     runInstructions againProgram
       (frameAt pcAgain s mem n (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n))
         (UInt256.ofNat (sqEnt n n)) tl inv m0 m96 m64 m32 aprev pdst ret rest) =
     some { outState s mem 2368 n 0
-      (UInt256.ofNat 4230) (UInt256.ofNat (sqEnt n 0)) inv m0
-      (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5090 } := by
+      (UInt256.ofNat 4234) (UInt256.ofNat (sqEnt n 0)) inv m0
+      (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5091 } := by
   change runInstructions (againStageProgram ++ againFixProgram) _ = _
   exact runInstructions_append_some _ _ _ _ _
     (run_againStage s mem n (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n))
@@ -158,13 +158,13 @@ def gasSteps_again (s : State) (mem : ByteArray) (n : Nat)
     (hact : 88 ≤ s.activeWords.toNat) (hn : n = 4 ∨ n = 8)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
-    (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5090 = true) :
+    (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5091 = true) :
     Challenge.EvmProof.GasSteps
       (frameAt pcAgain s mem n (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n))
         (UInt256.ofNat (sqEnt n n)) tl inv m0 m96 m64 m32 aprev pdst ret rest)
       { outState s mem 2368 n 0
-        (UInt256.ofNat 4230) (UInt256.ofNat (sqEnt n 0)) inv m0
-        (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5090 } :=
+        (UInt256.ofNat 4234) (UInt256.ofNat (sqEnt n 0)) inv m0
+        (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5091 } :=
   againBlock.steps
     (environment (frameAt pcAgain s mem n (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n))
       (UInt256.ofNat (sqEnt n n)) tl inv m0 m96 m64 m32 aprev pdst ret rest)

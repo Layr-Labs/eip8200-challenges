@@ -22,9 +22,9 @@ theorem nonzero_path {artifact : ProgramArtifact} (sb : SetupBlocks artifact)
     (hb : MachineState.readWord s.executionEnv.calldata 0 = UInt256.ofNat bl)
     (hOneZero : ∀ a, 3072 ≤ a → a < 4096 → bget mem a = 0)
     (hzero : num mem 8192 ml = 0) (hM : 1 ≤ num mem 1024 ml) :
-    ∃ memF, Reach (st s 299 (UInt256.ofNat bl :: UInt256.ofNat el :: UInt256.ofNat ml :: stk)
+    ∃ memF, Reach (st s 301 (UInt256.ofNat bl :: UInt256.ofNat el :: UInt256.ofNat ml :: stk)
           mem AW)
-        (rt s 298 (UInt256.ofNat (8 * el) :: UInt256.ofNat el :: UInt256.ofNat ml :: stk) memF
+        (rt s 300 (UInt256.ofNat (8 * el) :: UInt256.ofNat el :: UInt256.ofNat ml :: stk) memF
           AW (MachineState.readPadded memF 0 ml)) ∧
       num memF 0 ml = num mem 5120 bl ^ num s.executionEnv.calldata (96 + bl) el % num mem 1024 ml := by
   have hSJ : SetupJumps s.executionEnv.code := by rw [env.code]; exact sb.jumps
@@ -68,7 +68,7 @@ theorem nonzero_path {artifact : ProgramArtifact} (sb : SetupBlocks artifact)
     (num_congr ml (fun i _ => hfA _ (by omega) (by omega))).trans hMN
   rw [hMN] at hRE hvE
   rw [hBN] at hvE
-  obtain ⟨memF, r4, hvF, _⟩ := Unsigned.addm ab s env ml 8192 295
+  obtain ⟨memF, r4, hvF, _⟩ := Unsigned.addm ab s env ml 8192 297
     (UInt256.ofNat (8 * el) :: UInt256.ofNat el :: UInt256.ofNat ml :: stk) memA
     (by simp; omega) hml1 hml (Or.inr (by omega)) (by decide) (by decide) hSJ.j295 hm hZA
     (by rw [hA0, hZA, hMA]; omega)
@@ -90,14 +90,14 @@ theorem rt_result (s : State) (pc : Nat) (stk : List UInt256) (mem : ByteArray)
 is metered, and the only integration parameters are certified artifact blocks. -/
 theorem bigC_correct {artifact : ProgramArtifact} (sb : SetupBlocks artifact)
     (eb : ExpBlocks artifact) (mb : MulBlocks artifact) (ab : Unsigned.Blocks artifact)
-    (s : State) (env : Environment artifact .Osaka s) (hpc : s.pc = UInt256.ofNat 236)
+    (s : State) (env : Environment artifact .Osaka s) (hpc : s.pc = UInt256.ofNat 238)
     (hstk : s.stack.length < 900) (haw : s.activeWords.toNat ≤ 289)
     (hcs : s.callStack = []) (hvalid : ValidInput s.executionEnv.calldata)
     (hpos : 0 < modulusSize s.executionEnv.calldata) :
     ∃ final : State, Nonempty (GasSteps s final) ∧
       final.isDone = true ∧ final.toResult = .returned (spec s.executionEnv.calldata) := by
   obtain ⟨hsz, hbl, hel, hml⟩ := hvalid
-  have hs : st s 236 s.stack s.memory s.activeWords = s := by
+  have hs : st s 238 s.stack s.memory s.activeWords = s := by
     unfold st
     rw [← hpc]
   have hb : MachineState.readWord s.executionEnv.calldata 0 =

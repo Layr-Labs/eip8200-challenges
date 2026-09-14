@@ -39,9 +39,9 @@ theorem expLoop {artifact : ProgramArtifact} (eb : ExpBlocks artifact)
       num mem 3072 ml ≤ num mem0 1024 ml →
       num mem 3072 ml % num mem0 1024 ml =
         num mem0 5120 bl ^ (num s.executionEnv.calldata (96 + bl) el / 2 ^ d) % num mem0 1024 ml →
-      ∃ mem', Reach (st s 310 (UInt256.ofNat (8 * el - d) :: UInt256.ofNat el ::
+      ∃ mem', Reach (st s 312 (UInt256.ofNat (8 * el - d) :: UInt256.ofNat el ::
             UInt256.ofNat ml :: rest) mem AW)
-          (st s 394 (UInt256.ofNat (8 * el) :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
+          (st s 396 (UInt256.ofNat (8 * el) :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
             mem' AW) ∧
         (∀ a, ml ≤ a → (a < 3072 ∨ 5120 ≤ a) → bget mem' a = bget mem0 a) ∧
         num mem' 3072 ml ≤ num mem0 1024 ml ∧
@@ -69,7 +69,7 @@ theorem expLoop {artifact : ProgramArtifact} (eb : ExpBlocks artifact)
       hJ)
     have hZm : num mem 8192 ml = 0 := by
       exact (num_congr ml (fun i _ => hf _ (by omega) (by omega))).trans hzero
-    obtain ⟨mem1, r3, hv1, hf1⟩ := mulm mb ab env hcds ml 3072 3072 ml 333
+    obtain ⟨mem1, r3, hv1, hf1⟩ := mulm mb ab env hcds ml 3072 3072 ml 335
       (UInt256.ofNat (8 * el - (d + 1)) :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem
       (by simp; omega) hml1 hml hml (by decide) (by decide) (by decide) (by decide)
       (by decide) hJ.j333 hm hZm (by rw [hMm]; exact hM) (by rw [hMm]; exact hR)
@@ -120,7 +120,7 @@ theorem expLoop {artifact : ProgramArtifact} (eb : ExpBlocks artifact)
       have hZ1c : num (MachineState.writeBytes mem1 (MachineState.readPadded mem1 0 ml) 3072)
           8192 ml = 0 := by
         exact (num_congr ml (fun i _ => hf1c _ (by omega) (by omega))).trans hzero
-      obtain ⟨mem2, r6, hv2, hf2⟩ := mulm mb ab env hcds ml 3072 5120 bl 379
+      obtain ⟨mem2, r6, hv2, hf2⟩ := mulm mb ab env hcds ml 3072 5120 bl 381
         (UInt256.ofNat (8 * el - (d + 1)) :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
         (MachineState.writeBytes mem1 (MachineState.readPadded mem1 0 ml) 3072)
         (by simp; omega) hml1 hml hbl (by decide) (by decide) (by decide) (by decide)
