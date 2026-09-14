@@ -30,9 +30,9 @@ theorem mulLoop {artifact : ProgramArtifact} (mb : MulBlocks artifact)
     ∀ d, d ≤ 8 * k → ∀ mem : ByteArray,
       (∀ a, ml ≤ a → bget mem a = bget mem0 a) →
       num mem 0 ml = num mem0 y k / 2 ^ d * num mem0 x ml % num mem0 1024 ml →
-      ∃ mem', Reach (st s 419 (UInt256.ofNat (8 * k - d) :: UInt256.ofNat retPc ::
+      ∃ mem', Reach (st s 421 (UInt256.ofNat (8 * k - d) :: UInt256.ofNat retPc ::
             UInt256.ofNat x :: UInt256.ofNat y :: UInt256.ofNat k :: rest) mem AW)
-          (st s 475 (UInt256.ofNat (8 * k) :: UInt256.ofNat retPc ::
+          (st s 477 (UInt256.ofNat (8 * k) :: UInt256.ofNat retPc ::
             UInt256.ofNat x :: UInt256.ofNat y :: UInt256.ofNat k :: rest) mem' AW) ∧
         (∀ a, ml ≤ a → bget mem' a = bget mem0 a) ∧
         num mem' 0 ml = num mem0 y k * num mem0 x ml % num mem0 1024 ml := by
@@ -62,7 +62,7 @@ theorem mulLoop {artifact : ProgramArtifact} (mb : MulBlocks artifact)
     have hacc : num mem 0 ml < num mem0 1024 ml := by
       rw [hv]
       exact Nat.mod_lt _ (by omega)
-    obtain ⟨mem1, r3, hv1, hf1⟩ := Unsigned.addm ab s env ml 0 438
+    obtain ⟨mem1, r3, hv1, hf1⟩ := Unsigned.addm ab s env ml 0 440
       (UInt256.ofNat (8 * k - (d + 1)) :: UInt256.ofNat retPc :: UInt256.ofNat x ::
         UInt256.ofNat y :: UInt256.ofNat k :: rest)
       mem hrest hml1 hml (Or.inl rfl) (by decide) (by decide) hJ.j438 hm hZm
@@ -102,7 +102,7 @@ theorem mulLoop {artifact : ProgramArtifact} (mb : MulBlocks artifact)
       have hacc1 : num mem1 0 ml < num mem0 1024 ml := by
         rw [hv1]
         exact Nat.mod_lt _ (by omega)
-      obtain ⟨mem2, r6, hv2, hf2⟩ := Unsigned.addm ab s env ml x 467
+      obtain ⟨mem2, r6, hv2, hf2⟩ := Unsigned.addm ab s env ml x 469
         (UInt256.ofNat (8 * k - (d + 1)) :: UInt256.ofNat retPc :: UInt256.ofNat x ::
           UInt256.ofNat y :: UInt256.ofNat k :: rest)
         mem1 hrest hml1 hml (Or.inr (by omega)) hx' (by decide) hJ.j467 hm hZm1
@@ -130,7 +130,7 @@ theorem mulm {artifact : ProgramArtifact} (mb : MulBlocks artifact)
     (hm : MachineState.readWord s.executionEnv.calldata 64 = UInt256.ofNat ml)
     (hzero : num mem 8192 ml = 0)
     (hM : 1 ≤ num mem 1024 ml) (hX : num mem x ml ≤ num mem 1024 ml) :
-    ∃ mem', Reach (st s 411 (UInt256.ofNat retPc :: UInt256.ofNat x :: UInt256.ofNat y ::
+    ∃ mem', Reach (st s 413 (UInt256.ofNat retPc :: UInt256.ofNat x :: UInt256.ofNat y ::
           UInt256.ofNat k :: rest) mem AW) (st s retPc rest mem' AW) ∧
       num mem' 0 ml = num mem y k * num mem x ml % num mem 1024 ml ∧
       (∀ a, ml ≤ a → bget mem' a = bget mem a) := by
