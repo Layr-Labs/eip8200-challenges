@@ -54,7 +54,7 @@ def gasSteps_copy3 :
   simp [stW, value, stepValue, Challenge.EvmProof.Word.literal_eq_ofNat, show UInt256.ofNat 4 - UInt256.ofNat 0 = UInt256.ofNat 4 from by decide]
 
 @[simp] theorem gasSteps_copy3_cost :
-    (gasSteps_copy3 s rest Bm1 byte offset outerW acc base m hs hrest).cost = 100 := by
+    (gasSteps_copy3 s rest Bm1 byte offset outerW acc base m hs hrest).cost = 102 := by
   unfold gasSteps_copy3
   simp
 
@@ -93,12 +93,12 @@ def gasSteps_copy6 :
 
 def gasSteps_copy7 :
     GasSteps (stW s 2572 ([Bm1,4,byte,offset,outerW,acc,base,m] ++ rest))
-      (stW s 2611 ([Bm1,0,byte,offset,outerW,(value 7 Bm1 byte acc m),base,m] ++ rest)) := by
+      (stW s 2611 ([Bm1,8,byte,offset,outerW,(value 7 Bm1 byte acc m),base,m] ++ rest)) := by
   refine (((body3 s rest Bm1 byte offset outerW acc base m hs hrest 4).trans (control s rest Bm1 byte offset outerW (stepValue 4 4 Bm1 byte acc m) base m hs hrest 4 (by decide))).trans (reset s rest Bm1 byte offset outerW (stepValue 4 4 Bm1 byte acc m) base m hs hrest)).cast rfl ?_
   simp [stW, value, stepValue, Challenge.EvmProof.Word.literal_eq_ofNat, show UInt256.ofNat 4 - UInt256.ofNat 4 = UInt256.ofNat 0 from by decide]
 
 @[simp] theorem gasSteps_copy7_cost :
-    (gasSteps_copy7 s rest Bm1 byte offset outerW acc base m hs hrest).cost = 110 := by
+    (gasSteps_copy7 s rest Bm1 byte offset outerW acc base m hs hrest).cost = 106 := by
   unfold gasSteps_copy7
   simp
 
