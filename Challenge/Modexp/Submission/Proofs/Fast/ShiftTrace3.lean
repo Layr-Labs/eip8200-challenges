@@ -28,6 +28,26 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs
 /-- `GT a b` is `LT b a`.  The middle block computes both flags with `GT`
 (`[s, c, q]` ↦ `GT c s`, `GT q s`); rewriting every `GT` to `LT` puts the
 block's jump condition and the model's `negOf` into the same normal form. -/
+@[simp] private theorem hybridPC2528 : Artifact.submissionArtifact.instructionPC 2528 = 3359 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] private theorem hybridPC2646 : Artifact.submissionArtifact.instructionPC 2646 = 3522 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] private theorem hybridPC2647 : Artifact.submissionArtifact.instructionPC 2647 = 3525 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] private theorem hybridPC2648 : Artifact.submissionArtifact.instructionPC 2648 = 3528 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] private theorem hybridPC2649 : Artifact.submissionArtifact.instructionPC 2649 = 3529 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
 theorem midGtSwap (a b : UInt256) : UInt256.gt a b = UInt256.lt b a := rfl
 
 theorem isTrue_lor_left (a b : UInt256) (ha : a.toNat ≠ 0) :

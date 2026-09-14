@@ -19,7 +19,7 @@ def program : List Instr := TnCacheFrameOps.reset ++
    .op (.Swap ⟨3, by decide⟩), .op .POP]
 
 def block : Block TnCandidateArtifact.submissionArtifact .Osaka 4419 program :=
-  WindowTwentyOneSlice.block TnCandidateArtifact.allWellFormed 3335 14 4419 program
+  WindowTwentyOneSlice.block TnCandidateArtifact.allWellFormed 3346 14 4419 program
     (by decide) (by rfl) (by rfl) (by decide)
 
 def input (s : State) (mem : ByteArray) (tn aprev tl inv m0 m96 m64 m32 dst ret : UInt256)
@@ -80,7 +80,7 @@ def hookProgram : List Instr :=
    .push 2 4809, .op .JUMPI]
 
 def hookBlock : Block TnCandidateArtifact.submissionArtifact .Osaka 4409 hookProgram :=
-  WindowTwentyOneSlice.block TnCandidateArtifact.allWellFormed 3329 6 4409 hookProgram
+  WindowTwentyOneSlice.block TnCandidateArtifact.allWellFormed 3340 6 4409 hookProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem run_hook (s : State) (mem : ByteArray)

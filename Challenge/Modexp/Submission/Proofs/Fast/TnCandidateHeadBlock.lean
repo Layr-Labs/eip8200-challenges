@@ -11,7 +11,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast TnCandidateArtifact
 
 def head : Block submissionArtifact .Osaka 3711 TnCacheHeadTrace.program :=
-  WindowTwentyOneSlice.block allWellFormed 2758 29 3711 TnCacheHeadTrace.program
+  WindowTwentyOneSlice.block allWellFormed 2769 29 3711 TnCacheHeadTrace.program
     (by decide) (by rfl) (by rfl) (by decide)
 
 end Challenge.Modexp.Submission.Proofs.Fast.TnCandidateHeadBlock

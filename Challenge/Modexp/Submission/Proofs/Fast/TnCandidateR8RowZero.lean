@@ -13,7 +13,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast Monpro SquareModel
 
 def block : Block TnCandidateArtifact.submissionArtifact .Osaka 4441 TnCacheR8RowZero.program :=
-  WindowTwentyOneSlice.block TnCandidateArtifact.allWellFormed 3349 28 4441 TnCacheR8RowZero.program
+  WindowTwentyOneSlice.block TnCandidateArtifact.allWellFormed 3360 28 4441 TnCacheR8RowZero.program
     (by decide) (by rfl) (by rfl) (by decide)
 
 noncomputable def prologue_steps (s : State)

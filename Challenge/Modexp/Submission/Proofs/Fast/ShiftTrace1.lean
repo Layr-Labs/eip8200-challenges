@@ -31,27 +31,27 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs
 
-@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2172 = 2931 := by
+@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2183 = 2931 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2178 = 2938 := by
+@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2189 = 2938 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2184 = 2945 := by
+@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2195 = 2945 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2190 = 2952 := by
+@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2201 = 2952 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2196 = 2959 := by
+@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2207 = 2959 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2202 = 2966 := by
+@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2213 = 2966 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -113,7 +113,7 @@ theorem run_dispatch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
         Challenge.EvmProof.Word.ofNat_add_mod]
 
 /-- `blk2889`: the miss arm seeds `R1 = 0x0400` with the word 1 and calls the
-Montgomery-form conversion (pc 2208) with return address 1429, the old `r0` block.
+Montgomery-form conversion (pc 2208) with return address 1430, the old `r0` block.
 
 This call does not sit on the shared setup path, which every fast route runs.  It sits
 here, so it runs only on the recogniser-miss route -- the only route that reads `R1`; the
@@ -126,7 +126,7 @@ theorem run_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock blk2889
       (missState s mem n bsize esize msize) =
       some (Exp.r1Call s (Exp.storeWord mem 1024 (UInt256.ofNat 1)) 1024
-        (UInt256.ofNat 880) n bsize esize msize) := by
+        (UInt256.ofNat 881) n bsize esize msize) := by
   have haw : UInt256.ofNat
       (MachineState.activeWordsAfter s.activeWords.toNat 1024 32) = s.activeWords :=
     Monpro.activeWords_fix s 1024 32 (by decide) (by omega) (by omega)

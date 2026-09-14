@@ -10,8 +10,8 @@ set_option warningAsError true
 # Total initial dispatch through the early one-word wrapper
 
 The initial header reader starts directly at byte zero. Matching headers fall
-through to the Fermat/window proof at pc 43. Every other header restores the
-legacy entry at pc 1250 with an empty stack and unchanged memory and environment.
+through to the Fermat/window proof at pc 25. Every other header restores the
+legacy entry at pc 1251 with an empty stack and unchanged memory and environment.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.EarlyWordCorrect
@@ -40,11 +40,11 @@ private def environment (input : ByteArray) :
 /-- Every non-matching header reaches the unchanged legacy entry exactly. -/
 def legacy (input : ByteArray) (hmiss : ¬ WindowTwentyOneInput.Matches input) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Main.trampolineState input 708) := by
+      (Main.trampolineState input 709) := by
   have tail := EarlyWordGas.steps_miss Artifact.earlyWordPaths
     (initialState submissionBytecode input 0) (environment input) input rfl hmiss
   change Challenge.EvmProof.GasSteps (Main.trampolineState input 0)
-    (Main.trampolineState input 708) at tail
+    (Main.trampolineState input 709) at tail
   exact (Main.gasSteps_entryHop input).trans tail
 
 /-- Every matching header has a complete initial-state correctness trace. -/
@@ -57,7 +57,7 @@ def hit (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
   have entrySteps := EarlyWordGas.steps_hit Artifact.earlyWordPaths
     (initialState submissionBytecode input 0) (environment input) input rfl hmatch
   change Challenge.EvmProof.GasSteps (Main.trampolineState input 0)
-    (state (initialState submissionBytecode input 0) input (UInt256.ofNat 42)) at entrySteps
+    (FermatGas.entryState (initialState submissionBytecode input 0) input) at entrySteps
   exact ⟨final, ⟨(Main.gasSteps_entryHop input).trans (entrySteps.trans tail)⟩,
     done, result⟩
 

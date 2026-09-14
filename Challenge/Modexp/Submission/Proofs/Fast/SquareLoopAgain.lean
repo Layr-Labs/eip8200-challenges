@@ -11,7 +11,7 @@ set_option maxHeartbeats 2000000
 The first eight instructions, at PCs 4416 through 4428, clear the accumulator with
 CALLDATACOPY and preserve the width word. The remaining eight instructions reset
 the operand pointer and computed chain entry, then jump to the row-zero entry at
-5286. The previous-limb slot is preserved: the new entry overwrites it with the
+5283. The previous-limb slot is preserved: the new entry overwrites it with the
 first operand limb before ordinary rows can observe it.
 -/
 

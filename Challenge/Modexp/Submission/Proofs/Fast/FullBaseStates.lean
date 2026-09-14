@@ -22,7 +22,7 @@ def outer (n bsize esize msize : Nat) : List UInt256 :=
 /-- The inherited base-chain head, a two-instruction redirect at pc1607. -/
 def redirectState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 958
+  { s with pc := UInt256.ofNat 959
            stack := outer n bsize esize msize
            memory := memory }
 

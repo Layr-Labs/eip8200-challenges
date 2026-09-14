@@ -2,7 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.Defs
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
-/-! Basic-block instruction paths, group 15 (instructions 1894..1906).
+/-! Basic-block instruction paths, group 15 (instructions 1899..1906).
 
 `R1B` (pc 2669) sits in front of the first `DOUBLE256` call.  When the
 modulus's most significant bit is set, `radix ^ n < 2 * m`, so `R mod m` is
@@ -15,7 +15,7 @@ doublings `DOUBLE256` performs.  Every other modulus falls through to
 
 The two basic blocks are
 
-* `blk1768` (idx 1894..1901, pc 2669..3046) — `JUMPDEST`, the top-bit test
+* `blk1768` (idx 1899..1899, pc 2669..3046) — `JUMPDEST`, the top-bit test
   `MLOAD 0; PUSH1 255; SHR; ISZERO` and the `JUMPI` back to `DOUBLE256`;
 * `blk1776` (idx 1824..1906, pc 2688..3010) — `MSTORE TN 1` and the tail call
   into `CSUB` (pc 2432).
@@ -29,27 +29,27 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 1894..1901, pc 2669..3046: the top-bit test and the branch
+/-- Instructions 1899..1899, pc 2669..3046: the top-bit test and the branch
 back into `DOUBLE256`. -/
 def blk1768 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1179 .JUMPDEST,
-   pushAt 1180 0 0,
-   opAt 1181 .MLOAD,
-   pushAt 1182 1 255,
-   opAt 1183 .SHR,
-   opAt 1184 .ISZERO,
-   pushAt 1185 2 1174,
-   opAt 1186 .JUMPI]
+  [opAt 1181 .JUMPDEST,
+   pushAt 1182 0 0,
+   opAt 1183 .MLOAD,
+   pushAt 1184 1 255,
+   opAt 1185 .SHR,
+   opAt 1186 .ISZERO,
+   pushAt 1187 2 1175,
+   opAt 1188 .JUMPI]
 
 /-- Instructions 1824..1906, pc 2688..3010: `t[n] := 1` and the tail call into
 `CSUB`. -/
 def blk1776 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1187 1 1,
-   pushAt 1188 2 2080,
-   opAt 1189 .MSTORE,
-   pushAt 1190 2 4320,
-   opAt 1191 .JUMP]
+  [pushAt 1189 1 1,
+   pushAt 1190 2 2080,
+   opAt 1191 .MSTORE,
+   pushAt 1192 2 4320,
+   opAt 1193 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

@@ -43,11 +43,11 @@ def gasStep_sgt {s : State} {a b : UInt256} {rest : List UInt256}
     StepRunning.sgt (withGas s gas) a b rest hop hgas hstack hcap
 
 /-- The candidate's only `SGT` is instruction 3744. -/
-theorem sqRowSgt_index : Artifact.submissionInstructions[3383]? = some (.op .SGT) := by
+theorem sqRowSgt_index : Artifact.submissionInstructions[3394]? = some (.op .SGT) := by
   rfl
 
 /-- ... at program counter 4819 (0x126c). -/
-theorem sqRowSgt_pc : Artifact.submissionArtifact.instructionPC 3383 = 4477 := by
+theorem sqRowSgt_pc : Artifact.submissionArtifact.instructionPC 3394 = 4477 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -55,18 +55,18 @@ theorem decodedOp_sqRowSgt (s : State)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hpc : s.pc = UInt256.ofNat 4477) :
     s.decodedOp = some .SGT := by
-  have hpcNat : s.pc.toNat = Artifact.submissionArtifact.instructionPC 3383 := by
+  have hpcNat : s.pc.toNat = Artifact.submissionArtifact.instructionPC 3394 := by
     rw [hpc, sqRowSgt_pc]; decide
   have hwf : Stepper.WellFormed s.fork (.op .SGT) := by
     rw [hfork]
     exact ⟨by decide, trivial, rfl⟩
-  exact Stepper.decodes_of_artifact Artifact.submissionArtifact s 3383 (.op .SGT)
+  exact Stepper.decodes_of_artifact Artifact.submissionArtifact s 3394 (.op .SGT)
     hcode hpcNat sqRowSgt_index hwf
 
 theorem succ_4716 : (UInt256.ofNat 4477).succ = UInt256.ofNat 4478 := by
   decide
 
-/-- The `SGT` of `sq_row` (pc 4819 → 4938): pops `a, b`, pushes `UInt256.sgt a b`.
+/-- The `SGT` of `sq_row` (pc 4819 → 4944): pops `a, b`, pushes `UInt256.sgt a b`.
 In `sq_row` the operands are `a = 0` (from `PUSH0`) and `b = aprev`; see
 `SquareDiag.sgt_zero_toNat` / `SquareModel.sgt_zero_eq_zero_of_lt`. -/
 def gasSteps_sqRowSgt (s : State) (a b : UInt256) (rest : List UInt256)

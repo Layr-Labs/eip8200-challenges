@@ -9,10 +9,10 @@ set_option maxHeartbeats 2000000
 /-!
 # Run lemmas of the R0 squaring loop: `sq_exit`, `last`, `more`, and the exit
 
-The four short blocks of the loop (`sq_exit` 4925, `last` 4940, `more` 2400) as
+The four short blocks of the loop (`sq_exit` 4925, `last` 4944, `more` 2400) as
 `runInstructions` lemmas and gas steps, plus the last square's exit (`nx` 4866, the 14
 `POP`s and the jump to the CSUB guard) and the final conditional subtraction on an abstract
-memory.  `again` (4999), the only memory-heavy block, lives in `SquareLoopAgain`; splitting
+memory.  `again` (4998), the only memory-heavy block, lives in `SquareLoopAgain`; splitting
 it off keeps every single file's elaboration small.
 -/
 

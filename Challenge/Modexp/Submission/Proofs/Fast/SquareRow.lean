@@ -27,7 +27,7 @@ The memory/carry it produces is exactly WP-S1's `SquareModel.sqPro mem n i tb`.
 
 The block is split at the `SGT` (the shared stepper has no `SGT` case): block A
 (idx 3554..3696, pc 4812, 6 instructions), `SgtStep.gasSteps_sqRowSgt_framed`
-(idx 3737, pc 4819), block B (idx 3700..3840, pc 4938, 43 instructions; its
+(idx 3737, pc 4819), block B (idx 3700..3840, pc 4944, 43 instructions; its
 `runInstructions` proof is split into five sub-programs).
 -/
 
@@ -72,7 +72,7 @@ def programB4 : List Instr :=
 
 /-- Fuse the diagonal high-word borrow with the stored-low-word carry.
 The two bytes it saves are re-placed as unreachable `JUMPDEST`s after the row's final
-`JUMP` (pc 5043..5043), so every pc and instruction index from 43 (idx 3718) on is unchanged. -/
+`JUMP` (pc 5042..5042), so every pc and instruction index from 43 (idx 3718) on is unchanged. -/
 def programB23 : List Instr :=
   [.op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MUL,
    .op (.Swap ⟨4, by decide⟩), .op .LT, .op (.Swap ⟨2, by decide⟩), .op .MULMOD,
@@ -90,16 +90,16 @@ def programB : List Instr :=
 /-! ## Location certificates -/
 
 def blockA : Block Artifact.submissionArtifact .Osaka 4471 programA :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3377 6 4471 programA
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3388 6 4471 programA
     (by decide) (by rfl) (by rfl) (by decide)
 
 def blockB : Block Artifact.submissionArtifact .Osaka 4478 programB :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3384 40 4478 programB
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3395 40 4478 programB
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- `sq_row` itself is a jump destination (the frame's row head for square calls). -/
 theorem jumpDest4710 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4471 = true :=
-  Artifact.isValidJumpDest_index 3377 (by rfl)
+  Artifact.isValidJumpDest_index 3388 (by rfl)
 
 def environment (s : State)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -223,7 +223,7 @@ theorem run_B4 (s : State) (C b2 P hd w3 ent : UInt256)
     List.exchange, hjump]
   rfl
 
-/-- The fused borrow up to the store address (pc 5009..5026). -/
+/-- The fused borrow up to the store address (pc 5008..5025). -/
 def programB23a : List Instr :=
   [.op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MUL,
    .op (.Swap ⟨4, by decide⟩), .op .LT, .op (.Swap ⟨2, by decide⟩), .op .MULMOD,
@@ -231,7 +231,7 @@ def programB23a : List Instr :=
    .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB,
    .push 2 256, .op (.Dup ⟨4, by decide⟩), .op .SUB]
 
-/-- Load/add/store and the two-subtraction carry (pc 5026..2336). -/
+/-- Load/add/store and the two-subtraction carry (pc 5025..2336). -/
 def programB23b : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .op .MLOAD, .op (.Dup ⟨3, by decide⟩), .op .ADD,
    .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .MSTORE,

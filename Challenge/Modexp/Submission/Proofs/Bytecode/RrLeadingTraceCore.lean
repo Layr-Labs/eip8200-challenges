@@ -46,14 +46,14 @@ def outer (n bsize esize msize : Nat) : List UInt256 :=
   [UInt256.ofNat (32 * n), UInt256.ofNat n, UInt256.ofNat bsize,
    UInt256.ofNat esize, UInt256.ofNat msize]
 
-/-- pc 3189..3200: load the established size word and copy CC to RR. -/
+/-- pc 3183..3194: load the established size word and copy CC to RR. -/
 def copyProgram : List Instr :=
   [.op .JUMPDEST,
    .push ⟨2, by decide⟩ (UInt256.ofNat 2688), .op .MLOAD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 1280),
    .push ⟨2, by decide⟩ (UInt256.ofNat 1536), .op .MCOPY]
 
-/-- pc 3184..3232: four threshold comparisons and their sum. -/
+/-- pc 3178..3232: four threshold comparisons and their sum. -/
 def counterProgram : List Instr :=
   [.op (.Dup ⟨1, by decide⟩), .push ⟨1, by decide⟩ (UInt256.ofNat 3), .op .LT,
    .op (.Dup ⟨2, by decide⟩), .push ⟨1, by decide⟩ (UInt256.ofNat 7), .op .LT,
@@ -61,9 +61,9 @@ def counterProgram : List Instr :=
    .op (.Dup ⟨4, by decide⟩), .push ⟨1, by decide⟩ (UInt256.ofNat 31), .op .LT,
    .op .ADD, .op .ADD, .op .ADD]
 
-/-- pc 3184..3213: rejoin the inherited RR head at pc 1625. -/
+/-- pc 3178..3207: rejoin the inherited RR head at pc 1625. -/
 def jumpProgram : List Instr :=
-  [.push ⟨2, by decide⟩ (UInt256.ofNat 902), .op .JUMP]
+  [.push ⟨2, by decide⟩ (UInt256.ofNat 903), .op .JUMP]
 
 def helperProgram : List Instr := copyProgram ++ counterProgram ++ jumpProgram
 
@@ -106,7 +106,7 @@ def counterState (template : State) (mem : ByteArray)
 def exitState (template : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { template with
-    pc := UInt256.ofNat 902
+    pc := UInt256.ofNat 903
     stack := UInt256.ofNat (directCounter n) :: outer n bsize esize msize
     memory := copiedMemory mem n
     activeWords := copiedActiveWords template n }
