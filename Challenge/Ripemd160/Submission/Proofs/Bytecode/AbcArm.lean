@@ -16,7 +16,7 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open TinyGuardLogic
 abbrev Located := DataStepper.Located Artifact.submissionArtifact .Osaka
 
-@[simp] theorem pc_176 : Artifact.submissionArtifact.instructionPC 242 = 354 := by
+@[simp] theorem pc_176 : Artifact.submissionArtifact.instructionPC 245 = 357 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_241 : Artifact.submissionArtifact.instructionPC 3779 = 4948 := by
   exact GuardInstructionWindow.pc 216
@@ -68,7 +68,7 @@ def wordPath : List Located :=
    ⟨3769, .push ⟨3, by decide⟩ (UInt256.ofNat 2127393), by exact GuardInstructionWindow.get 206, by decide⟩,
    ⟨3770, .op .MUL, by exact GuardInstructionWindow.get 207, ⟨by decide, trivial, rfl⟩⟩,
    ⟨3771, .op .XOR, by exact GuardInstructionWindow.get 208, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3772, .push ⟨2, by decide⟩ (UInt256.ofNat 354), by exact GuardInstructionWindow.get 209, by decide⟩,
+   ⟨3772, .push ⟨2, by decide⟩ (UInt256.ofNat 357), by exact GuardInstructionWindow.get 209, by decide⟩,
    ⟨3773, .op .JUMPI, by exact GuardInstructionWindow.get 210, ⟨by decide, trivial, rfl⟩⟩]
 
 /-- The small-input answer block sits at the end of the code and is entered by fall-through
@@ -92,7 +92,7 @@ def wordCond (input : ByteArray) : UInt256 :=
   UInt256.xor (leadWord input)
     (UInt256.mul (UInt256.ofNat input.size) (UInt256.ofNat 0x207621))
 def armEntry (input : ByteArray) : State := Execution.atPC input 4887
-def fallbackState (input : ByteArray) : State := Execution.atPC input 354
+def fallbackState (input : ByteArray) : State := Execution.atPC input 357
 def answerWord (input : ByteArray) : UInt256 :=
   UInt256.sub (UInt256.ofNat EmptySpec.digestNat)
     (UInt256.mul (UInt256.ofNat 25448770637332498804579667936807160623886401639)
@@ -130,8 +130,8 @@ private theorem true_of_ne_zero (w : UInt256) (h : w ≠ 0) : UInt256.isTrue w =
     exact hn
   simpa using ht
 
-private theorem valid_generic : Decode.isValidJumpDest submissionBytecode 354 = true := by
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 242 (by rfl)
+private theorem valid_generic : Decode.isValidJumpDest submissionBytecode 357 = true := by
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 245 (by rfl)
   rw [pc_176] at h
   exact h
 theorem run_word_miss (input : ByteArray) (hm : wordCond input ≠ 0) :

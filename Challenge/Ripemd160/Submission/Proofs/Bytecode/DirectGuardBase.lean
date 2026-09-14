@@ -61,7 +61,7 @@ def gatePrefix : List Located :=
    pushAt 12 1 2,
    opAt 13 .SHR,
    opAt 14 .MUL,
-   pushAt 15 2 354]
+   pushAt 15 2 357]
 
 def checkEntryPath : List Located :=
   [pushAt 17 0 0,
@@ -116,7 +116,7 @@ def fallbackPath : List Located :=
   [opAt 62 .JUMPDEST,
    opAt 63 .POP,
    opAt 64 .JUMPDEST,
-   pushAt 65 2 354,
+   pushAt 65 2 357,
    opAt 66 .JUMPI]
 
 def returnPath : List Located :=
@@ -151,7 +151,7 @@ attribute [simp] Challenge.Ripemd160.initialState_stack
   Challenge.Ripemd160.initialState_calldata
 
 def sizeMatched (input : ByteArray) : State := atPC input 25
-def fallbackState (input : ByteArray) : State := atPC input 354
+def fallbackState (input : ByteArray) : State := atPC input 357
 
 def loopState (input : ByteArray) (n : Nat) : State :=
   { initialState submissionBytecode input 0 with
