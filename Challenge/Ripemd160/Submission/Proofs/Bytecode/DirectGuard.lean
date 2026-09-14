@@ -100,7 +100,8 @@ private def gasSteps_repeat_miss (input : ByteArray) (hfit : CalldataFits input)
   (gasSteps_matched input hfit (firstByte_of_fullWord input href) (Or.inr hsize)).trans
     ((sound checkEntryPath (run_checkEntry input href)).trans
       ((gasSteps_loop input).trans
-        (sound tailPath (run_tail_fallback input hsize hne))))
+        ((sound tailPath (run_tail_divert input hsize hne)).trans
+          (sound fallbackPath (run_fallback_clear input)))))
 
 private theorem firstByte_empty : firstByte ByteArray.empty ≠ 7 := by
   simp [firstByte, YulSemantics.EVM.byteFrom, YulEvmCompiler.ByteArray.toList_eq_data]
