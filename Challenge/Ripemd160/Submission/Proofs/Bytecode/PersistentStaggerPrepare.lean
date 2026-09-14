@@ -32,7 +32,8 @@ theorem pointer_eq (input : ByteArray) (i : Nat) (hfit : CalldataFits input)
 def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
     (hmask : rest.head? = some (UInt256.ofNat 4294967295))
     (hstack : rest.length ≤ 896) (hrun : s.halt = .Running)
-    (hactive : 35 ≤ s.activeWords.toNat) (hfit : s.executionEnv.calldata.size < 2 ^ 256)
+    (hactive : 35 ≤ s.activeWords.toNat)
+    (hlow : (MachineState.readWord s.memory 0).toNat < 2 ^ 32) (hfit : s.executionEnv.calldata.size < 2 ^ 256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
@@ -41,7 +42,7 @@ def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
         pc := UInt256.ofNat 890
         stack := ret :: rest
         memory := StaggerTablePad.resultMemory s.memory (UInt256.ofNat s.executionEnv.calldata.size)} := by
-  have g1 := StaggerSetupSites.gasSteps_low s ret rest hmask hstack hrun hactive hfit hcode hfork hnp
+  have g1 := StaggerSetupSites.gasSteps_low s ret rest hmask hstack hrun hactive hlow hfit hcode hfork hnp
   by_cases hz : UInt256.isTrue (StaggerPad.highZero (UInt256.ofNat s.executionEnv.calldata.size))
   · have g2 := StaggerSetupSites.gasSteps_branch_taken
       {s with memory := StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
@@ -60,7 +61,7 @@ def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
     have hmem := StaggerTablePad.highChain_eq s.memory (UInt256.ofNat s.executionEnv.calldata.size)
     have g23 : GasSteps
         {s with
-          pc := UInt256.ofNat 4802
+          pc := UInt256.ofNat 4803
           stack := StaggerPad.highZero (UInt256.ofNat s.executionEnv.calldata.size) :: ret :: rest
           memory := StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
         {s with
@@ -91,7 +92,7 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
       (by simp only [frame, List.length_append, List.length_cons, List.length_nil]; omega)
       hr hcode hfork hnp
     have ha : 37 ≤ s.activeWords.toNat := ctx.active
-    have gb := gasSteps_padAll s Paired144WordRound.factorPlusWord r (by rfl) hrs hr (by omega) hf hcode hfork hnp
+    have gb := gasSteps_padAll s Paired144WordRound.factorPlusWord r (by rfl) hrs hr (by omega) ctx.lowClear hf hcode hfork hnp
     have hhs : s.executionEnv.calldata.size = DriverTrace.blockOffset i := by rw [ctx.calldata]; exact hh
     rw [scheduledState_hit s i hhs]
     let qh : State :=
