@@ -208,6 +208,24 @@ theorem ptrAt_mod (base j : Nat) (hj : 32 * j ≤ base) (hbase : base < 2 ^ 256)
   rw [hlit, ← Challenge.EvmProof.Word.word_toNat_ofNat]
   exact ptrAt_toNat base j hj hbase
 
+/-- `SUB 32` on a `ptrAt` word is the same wrapped step the `ADD (2 ^ 256 - 32)`
+idiom produced: `x - 32 = x + (2 ^ 256 - 32)` modulo the EVM word size. -/
+theorem ptrAt_sub32 (base j : Nat) :
+    UInt256.ofNat (ptrAt base j) - (32 : UInt256) =
+      UInt256.ofNat (ptrAt base (j + 1)) := by
+  have h32 : (32 : UInt256).toNat = 32 := by decide
+  have hsub : ∀ x : UInt256, x - (32 : UInt256) =
+      x + UInt256.ofNat
+        115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
+    intro x
+    apply Challenge.EvmProof.Word.word_ext
+    have hx : x.toNat < 2 ^ 256 := x.val.isLt
+    rw [Challenge.EvmProof.Word.word_toNat_sub,
+      Challenge.EvmProof.Word.word_toNat_add, h32,
+      Challenge.EvmProof.Word.word_toNat_ofNat]
+    omega
+  rw [hsub, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_comm, ptrAt_succ]
+
 set_option linter.unusedSimpArgs false in
 theorem run_amLoopBody (s : State) (memory : ByteArray) (pa pb n j : Nat)
     (pd ret : UInt256) (rest : List UInt256)
@@ -565,6 +583,7 @@ theorem run_csLoopBody (s : State) (memory : ByteArray) (n j : Nat)
       csLoopState, csStep, fastPC14, fastPC15, fastPC16, fastPC17, fastPC18, fastPC19,
       hc6, hc7, hc8, hc9, hc10, hrun, hcode, hK, h8224, h2666, h2666', hjump,
       jumpDest2225, ht, hm, hd, hnext, hgt, hactT, hactM, hactD, ptrAt_succ,
+      ptrAt_sub32,
       UInt256.gt, UInt256.lt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -623,7 +642,7 @@ theorem run_csLoopExit (s : State) (memory : ByteArray) (n j : Nat)
       Challenge.EvmProof.Stepper.runInstr,
       csLoopState, csTailState, csStep, fastPC14, fastPC15, fastPC16, fastPC17, fastPC18, fastPC19,
       hc6, hc7, hc8, hc9, hc10, hrun, hK, h8224, hnj,
-      ht, hm, hd, hnext, hactT, hactM, hactD, ptrAt_succ,
+      ht, hm, hd, hnext, hactT, hactM, hactD, ptrAt_succ, ptrAt_sub32,
       UInt256.gt, UInt256.lt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
