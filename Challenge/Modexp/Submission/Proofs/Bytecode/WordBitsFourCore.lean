@@ -96,8 +96,8 @@ PUSH2 2377 JUMPI`. It re-enters the single body while the counter is below seven
 after incrementing the counter; on the eighth bit it falls through to the exit at
 pc 2413 with the counter at eight. -/
 def controlProgram : List Instr :=
-  [.push 2 1, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩),
-   .push 1 7, .op .GT,
+  [.op (.Dup ⟨1, by decide⟩), .push 1 7, .op .GT,
+   .op (.Swap ⟨1, by decide⟩), .push 1 1, .op .ADD, .op (.Swap ⟨1, by decide⟩),
    .push 2 2381, .op .JUMPI]
 
 theorem run_start (hcap : rest.length ≤ 1000) :
@@ -140,6 +140,7 @@ theorem run_control (c : Nat) (hc : c < 8) (hcap : rest.length ≤ 1000)
       Challenge.EvmProof.Word.word_toNat_ofNat, htarget, hjd,
       Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.literal_eq_ofNat]
+    all_goals (try rw [Nat.add_comm])
   · have hc7 : c = 7 := by omega
     subst hc7
     simp [controlProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr, framed,

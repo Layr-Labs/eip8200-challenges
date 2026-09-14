@@ -48,9 +48,9 @@ def startBlock : BoundBlock 2381 ([.op .JUMPDEST]) :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 1803 1 2381
     ([.op .JUMPDEST]) (by decide) (by rfl) (by rfl) (by rfl)
 
-/-- The loop control at pc 2404 (indices 1823 to 1830). -/
+/-- The loop control at pc 2400 (indices 1819 to 1827). -/
 def controlBlock : BoundBlock 2404 (controlProgram) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 1823 8 2404
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1823 9 2404
     (controlProgram) (by decide) (by rfl) (by rfl) (by rfl)
 
 variable (s : State) (rest : List UInt256)
@@ -92,8 +92,8 @@ def control (hrest : rest.length < 1000) (c : Nat) (hc : c < 8) :
       run_control s Bm1 byte offset outerW acc base m rest c hc (Nat.le_of_lt hrest) hj)
 
 @[simp] theorem control_cost (hrest : rest.length < 1000) (c : Nat) (hc : c < 8) :
-    (control s rest Bm1 byte offset outerW acc base m hs hrest c hc).cost = 31 := by
+    (control s rest Bm1 byte offset outerW acc base m hs hrest c hc).cost = 34 := by
   unfold control
-  apply lift_cost _ _ _ _ _ _ 31 (by decide) (by rfl) (by rfl)
+  apply lift_cost _ _ _ _ _ _ 34 (by decide) (by rfl) (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WordBitsFour

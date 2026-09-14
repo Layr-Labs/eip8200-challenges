@@ -34,15 +34,15 @@ def commonFallbackProgram : List Instr :=
   [.op .POP, .push 2 1086, .op .JUMP]
 
 def mulEntry : Block Artifact.submissionArtifact .Osaka 3353 mulEntryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2512 2 3353 mulEntryProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2513 2 3353 mulEntryProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def commonGuard : Block Artifact.submissionArtifact .Osaka 3357 commonGuardProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2514 13 3357 commonGuardProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2515 13 3357 commonGuardProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def commonFallback : Block Artifact.submissionArtifact .Osaka 3378 commonFallbackProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2527 3 3378 commonFallbackProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2528 3 3378 commonFallbackProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 end Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Dispatch

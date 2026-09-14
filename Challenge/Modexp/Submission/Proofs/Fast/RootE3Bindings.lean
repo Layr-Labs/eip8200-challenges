@@ -18,25 +18,25 @@ open WindowTwentyOneBinding Shift
 
 /-- The twenty new instructions inserted immediately before the relocated loop head. -/
 def entryGuard : Block Artifact.submissionArtifact .Osaka 2809 RootE3Guard.program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2092 20 2809 RootE3Guard.program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2093 20 2809 RootE3Guard.program
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The phase exit is split where the conditional branch changes control flow. -/
 def phases : RootE3PhaseRun.PhaseBlocks Artifact.submissionArtifact .Osaka where
-  exitHead := WindowTwentyOneSlice.block Artifact.allWellFormed 2482 2 3300
+  exitHead := WindowTwentyOneSlice.block Artifact.allWellFormed 2483 2 3300
     RootE3PhaseRun.phaseExitHeadProgram (by decide) (by rfl) (by rfl) (by decide)
-  guard := WindowTwentyOneSlice.block Artifact.allWellFormed 2484 5 3302
+  guard := WindowTwentyOneSlice.block Artifact.allWellFormed 2485 5 3302
     RootE3PhaseRun.phaseGuardProgram (by decide) (by rfl) (by rfl) (by decide)
-  switch := WindowTwentyOneSlice.block Artifact.allWellFormed 2489 12 3311
+  switch := WindowTwentyOneSlice.block Artifact.allWellFormed 2490 12 3311
     RootE3PhaseRun.phaseSwitchProgram (by decide) (by rfl) (by rfl) (by decide)
-  done := WindowTwentyOneSlice.block Artifact.allWellFormed 2501 1 3332
+  done := WindowTwentyOneSlice.block Artifact.allWellFormed 2502 1 3332
     RootE3PhaseRun.phaseDoneProgram (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest3039 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2836 = true :=
-  Artifact.isValidJumpDest_index 2112 (by rfl)
+  Artifact.isValidJumpDest_index 2113 (by rfl)
 
 theorem jumpDest3542 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3332 = true :=
-  Artifact.isValidJumpDest_index 2501 (by rfl)
+  Artifact.isValidJumpDest_index 2502 (by rfl)
 
 /-- The inherited loop guard consumes no memory and reaches the new phase test. -/
 def headSteps (s : State) (mem : ByteArray) (n bsize esize msize : Nat) (e : Env s) :
