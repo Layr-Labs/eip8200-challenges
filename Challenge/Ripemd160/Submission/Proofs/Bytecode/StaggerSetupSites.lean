@@ -75,7 +75,7 @@ private def normal_gasSteps_of_raw (s t : State)
   · exact hrun
   · exact hnp
 
-theorem normal_end : pcAfter (UInt256.ofNat 483) actualNormalTemplate = UInt256.ofNat 894 := by decide
+theorem normal_end : pcAfter (UInt256.ofNat 483) actualNormalTemplate = UInt256.ofNat 902 := by decide
 
 theorem low_slice :
     (Artifact.submissionArtifact.instructions.drop 3697).take StaggerPad.lowTemplate.length = StaggerPad.lowTemplate := by rfl
@@ -140,12 +140,12 @@ theorem high_advances : ∀ instruction ∈ StaggerPad.highTemplate.dropLast, Pa
 theorem high_end : pcAfter (UInt256.ofNat 4808) StaggerPad.highTemplate = UInt256.ofNat 4836 := by decide
 
 theorem valid_rounds (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
-    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 894).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 558 = 894 := by
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 902).toNat = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 558 = 902 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   have h := Artifact.submissionArtifact.isValidJumpDest_index 558 (by rfl)
   rw [hpc] at h
-  change Decode.isValidJumpDest s.executionEnv.code 894 = true
+  change Decode.isValidJumpDest s.executionEnv.code 902 = true
   rw [hcode]
   exact h
 
@@ -161,10 +161,10 @@ def gasSteps_normal (s : State) (ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UInt2
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 483, stack := PersistentMaskEndian.stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho}
-      {s with pc := UInt256.ofNat 894, stack := PersistentMaskEndian.stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho, memory := StaggerTableLayout.resultMemory s.memory (StaggerScratch.dirtyWord s.memory p), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat p)} := by
+      {s with pc := UInt256.ofNat 902, stack := PersistentMaskEndian.stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho, memory := StaggerTableLayout.resultMemory s.memory (StaggerScratch.dirtyWord s.memory p), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat p)} := by
   apply normal_gasSteps_of_raw {s with pc := UInt256.ofNat 483, stack := PersistentMaskEndian.stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho} _ hcode hfork hrun hnp normal_pc.symm
   have h := PersistentMaskEndian.run_normal s (UInt256.ofNat 483) ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho p hstack hrun hp hbound hq1 hq0 hlow hgap
-  have hend : pcAfter (UInt256.ofNat 483) PersistentMaskEndian.normalTemplate = UInt256.ofNat 894 := by decide
+  have hend : pcAfter (UInt256.ofNat 483) PersistentMaskEndian.normalTemplate = UInt256.ofNat 902 := by decide
   rw [hend] at h
   exact h
 
@@ -197,7 +197,7 @@ def gasSteps_branch_taken (s : State) (c : UInt256) (rho : List UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 4804, stack := c :: rho}
-      {s with pc := UInt256.ofNat 894, stack := rho} := by
+      {s with pc := UInt256.ofNat 902, stack := rho} := by
   apply PadLift.gasSteps_of_raw branchSite {s with pc := UInt256.ofNat 4804, stack := c :: rho} _ hcode hfork hrun hnp branch_pc.symm branch_advances
   exact StaggerPad.run_branch_taken s (UInt256.ofNat 4804) c rho hstack hrun hc (valid_rounds s hcode)
 

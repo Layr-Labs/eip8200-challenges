@@ -38,7 +38,7 @@ def template : List Instr :=
     .op .MLOAD,
     .op (.Dup ⟨5, by decide⟩),
     .op .AND,
-    .push ⟨19, by decide⟩ (UInt256.ofNat 22300745198530623141535718272648361505980417),
+    .push ⟨27, by decide⟩ (UInt256.ofNat 22300745198530623141535718272648361505980417),
     .push ⟨1, by decide⟩ (UInt256.ofNat 56),
     .op .MLOAD,
     .op (.Dup ⟨7, by decide⟩),
