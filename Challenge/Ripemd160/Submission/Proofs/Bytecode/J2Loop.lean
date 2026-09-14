@@ -48,18 +48,19 @@ def route_transition (s : State) (rho : List UInt256) (moves : Moves s rho)
     simpa only [if_pos hc, loopState, if_neg ht] using g
 
 def one (s : State) (rho : List UInt256) (moves : Moves s rho)
-    (n k : Nat) (hn : Allowed n) (hk : k<last n) :
+    (n k : Nat) (hn : Allowed n) (hk : k<last n)
+    (hsize : s.executionEnv.calldata.size = n) :
     GasSteps (loopState s n k rho) (loopState s n (k+1) rho) := by
   by_cases ht : isTail n k
   · have g0 := moves.tail (current s.executionEnv.calldata n k)
     have hf : ¬ (tailResult s (current s.executionEnv.calldata n k)).stop.toNat =
         (tailResult s (current s.executionEnv.calldata n k)).len.toNat :=
       (finish_iff s n k hn (by omega) ht).not.mpr (by omega)
-    have g1 := moves.finish (tailResult s (current s.executionEnv.calldata n k))
+    have g1 := moves.finish (tailResult s (current s.executionEnv.calldata n k)) (by simp only [tailResult, current, hsize])
     have g01 : GasSteps (atState s 216 (frame (current s.executionEnv.calldata n k) rho))
         (atState s 241 (frame (tailResult s (current s.executionEnv.calldata n k)) rho)) := by
       simpa only [if_neg hf] using g0.trans g1
-    have g2 := moves.transition (tailResult s (current s.executionEnv.calldata n k))
+    have g2 := moves.transition (tailResult s (current s.executionEnv.calldata n k)) (by simp only [tailResult, current, hsize])
     have g012 : GasSteps (atState s 216 (frame (current s.executionEnv.calldata n k) rho))
         (atState s 285 (frame (current s.executionEnv.calldata n (k+1)) rho)) := by
       simpa only [transition_next s n k hn hk ht] using g01.trans g2
@@ -87,22 +88,23 @@ def start (s : State) (rho : List UInt256) (moves : Moves s rho)
     simpa only [if_neg hc, loopState, if_neg ht] using g0.trans g1
 
 def words (s : State) (rho : List UInt256) (moves : Moves s rho)
-    (n m : Nat) (hn : Allowed n) (hm : m≤last n) :
+    (n m : Nat) (hn : Allowed n) (hm : m≤last n)
+    (hsize : s.executionEnv.calldata.size = n) :
     GasSteps (loopState s n 0 rho) (loopState s n m rho) := by
   induction m with
   | zero => exact GasSteps.refl _
-  | succ m ih => exact (ih (by omega)).trans (one s rho moves n m hn (by omega))
+  | succ m ih => exact (ih (by omega)).trans (one s rho moves n m hn (by omega) hsize)
 
 def accumulate (s : State) (rho : List UInt256) (moves : Moves s rho)
     (n : Nat) (hn : Allowed n) (hsize : s.executionEnv.calldata.size=n) :
     GasSteps (atState s 111 rho) (atState s 294 (frame (endFrame s n) rho)) := by
-  have g0 := (start s rho moves n hn hsize).trans (words s rho moves n (last n) hn (by omega))
+  have g0 := (start s rho moves n hn hsize).trans (words s rho moves n (last n) hn (by omega) hsize)
   have ht : isTail n (last n) := Or.inl rfl
   have g1 : GasSteps (loopState s n (last n) rho) (atState s 234 (frame (endFrame s n) rho)) := by
     simpa only [loopState, if_pos ht, endFrame] using moves.tail (current s.executionEnv.calldata n (last n))
   have hc := (finish_iff s n (last n) hn (by omega) ht).mpr rfl
   have g2 : GasSteps (atState s 234 (frame (endFrame s n) rho)) (atState s 294 (frame (endFrame s n) rho)) := by
-    simpa only [endFrame, if_pos hc] using moves.finish (endFrame s n)
+    simpa only [endFrame, if_pos hc] using moves.finish (endFrame s n) (by simp only [endFrame, tailResult, current, hsize])
   exact g0.trans (g1.trans g2)
 
 def gasSteps_hit (s : State) (rho : List UInt256) (moves : Moves s rho)

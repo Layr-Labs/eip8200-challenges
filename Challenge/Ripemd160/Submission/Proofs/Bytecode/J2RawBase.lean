@@ -138,7 +138,7 @@ def tailTemplate : List Instr := [
   .op .OR]
 
 def finishTemplate : List Instr := [
-  .op (.Dup ⟨5, by decide⟩),
+  .op .CALLDATASIZE,
   .op (.Dup ⟨5, by decide⟩),
   .op .EQ,
   .push ⟨2, by decide⟩ (UInt256.ofNat 294),
@@ -162,7 +162,7 @@ def transitionTemplate : List Instr := [
   .op (.Dup ⟨3, by decide⟩),
   .op (.Swap ⟨0, by decide⟩),
   .op (.Dup ⟨1, by decide⟩),
-  .op (.Dup ⟨6, by decide⟩),
+  .op .CALLDATASIZE,
   .op .SUB,
   .op (.Dup ⟨0, by decide⟩),
   .push ⟨1, by decide⟩ (UInt256.ofNat 251),

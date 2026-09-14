@@ -251,9 +251,9 @@ def moves (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length≤990) :
   tail f := by
     apply tailSite.lift s _ e (frame f rho)
     simpa only [atState, tailSite.end_pc] using run_tail s (UInt256.ofNat 216) f rho hs e.run
-  transition f := by
+  transition f hlen := by
     apply transitionSite.lift s _ e (frame f rho)
-    simpa only [atState, transitionSite.end_pc] using run_transition s (UInt256.ofNat 241) f rho hs e.run
+    simpa only [atState, transitionSite.end_pc] using run_transition s (UInt256.ofNat 241) f rho hs e.run hlen
   first f := by
     apply firstSite.lift s _ e (frame f rho)
     have h := run_first s (UInt256.ofNat 182) f rho hs e.run (valid_219 s e)
@@ -266,9 +266,9 @@ def moves (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length≤990) :
     by_cases hc : f.off.toNat<f.full.toNat
     · simpa only [atState, normalGuardSite.end_pc, if_pos hc] using h
     · simpa only [atState, normalGuardSite.end_pc, if_neg hc] using h
-  finish f := by
+  finish f hlen := by
     apply finishSite.lift s _ e (frame f rho)
-    have h := run_finish s (UInt256.ofNat 234) f rho hs e.run (valid_298 s e)
+    have h := run_finish s (UInt256.ofNat 234) f rho hs e.run hlen (valid_298 s e)
     by_cases hc : f.stop.toNat=f.len.toNat
     · simpa only [atState, finishSite.end_pc, if_pos hc] using h
     · simpa only [atState, finishSite.end_pc, if_neg hc] using h
