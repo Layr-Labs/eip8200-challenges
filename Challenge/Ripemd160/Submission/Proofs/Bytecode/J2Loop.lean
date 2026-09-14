@@ -118,7 +118,7 @@ def gasSteps_hit (s : State) (rho : List UInt256) (moves : Moves s rho)
 def gasSteps_miss (s : State) (rho : List UInt256) (moves : Moves s rho)
     (n : Nat) (hn : Allowed n) (hsize : s.executionEnv.calldata.size=n)
     (hzero : J2Accumulator.resultAcc s.executionEnv.calldata n≠0) :
-    GasSteps (atState s 113 rho) (atState s 352 rho) := by
+    GasSteps (atState s 113 rho) (atState s 341 (finishRest (endFrame s n) rho)) := by
   have hc : (endFrame s n).acc.toNat≠0 := by
     intro h; apply hzero; apply Word.word_ext
     change (J2Accumulator.resultAcc s.executionEnv.calldata n).toNat = 0
@@ -126,7 +126,7 @@ def gasSteps_miss (s : State) (rho : List UInt256) (moves : Moves s rho)
   have g := moves.result (endFrame s n)
   have gr : GasSteps (atState s 298 (frame (endFrame s n) rho)) (atState s 341 (finishRest (endFrame s n) rho)) := by
     simpa only [if_neg hc] using g
-  exact (accumulate s rho moves n hn hsize).trans (gr.trans (moves.cleanup _))
+  exact (accumulate s rho moves n hn hsize).trans gr
 
 #print axioms gasSteps_hit
 #print axioms gasSteps_miss

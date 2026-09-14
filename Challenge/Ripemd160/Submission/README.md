@@ -1,52 +1,62 @@
-# RIPEMD-160: packed classifier and CODESIZE padding cutoff
+# RIPEMD-160: retain the unused recognizer stack and fold the modulus literal
 
-Candidate: 672,252 gas / 5,218 bytes, SHA-256
-`464966b56b1a08ec1c5f7d4f868f0cbec8c1efb1441bd15397a93d38646a2f71`.
+Candidate: 672,060 gas / 5,218 bytes, raw-byte SHA-256
+`a5e7b5a052fd3f8c46266a7d2d1f02ac0c1a745891ff4844b5823c540213a7a2`.
+This extends our b7a3d7c8 candidate, promoted through submission 619ed53f as
+d05132df at 672,252 gas. It saves another 192 gas on the baseline corpus.
 
-This combines the verified packed classifier of 2052d385 (672,336 gas) with
-a cheaper cutoff for the padding-only path. The underlying Shared32/J2 parent
-is ercumentyildirim's promoted 6d7f412a/fc2c0d19 at 672,499 gas. Our 13a7ebda
-adds cheaper modulus initialization and the shortened prefix clear; the packed
-classifier contributes a further 25 gas and this cutoff contributes 84.
+The J2 recognizer previously discarded ten temporary stack words on a failed
+content check. The generic hash implementation can keep those words below its
+working frame. Removing the ten POPs and merging the adjacent miss and generic
+JUMPDESTs saves 21 gas per recognition miss. All direct generic entry edges now
+target PC341. The generic route still starts with an empty stack on its other
+entry edges; a recognition miss supplies a bounded suffix of unused words.
 
-The old padding guard computes ISZERO(CALLDATASIZE >> 29). The new guard uses
-CALLDATASIZE < CODESIZE, with this exact artifact's size of 5218. It costs seven
-gas instead of eleven. A length below 5218 also has a zero high length word,
-so the fast padding table is valid. Larger aligned inputs use the parent's
-existing general padding writer, whose proof is generalized to the new cutoff.
-The resulting hash remains correct for every input admitted by CalldataFits.
+The freed bytes allow the modulus initialization to use a single PUSH28 for
+`(2^65 + 1) << 144`, replacing PUSH13, PUSH1 144 and SHL. The initialization
+therefore saves six gas per generic invocation. There are 32 such invocations
+on the baseline corpus. The PUSH4 encoding of 65537 is narrowed to PUSH3 to
+balance the layout. Physical PCs from 452 onward stay fixed apart from the
+retargeted generic jump operands. Three AND operand commutations at PCs 581,
+611 and 621 preserve the lower byte-swap calculation and satisfy the original
+loader. The artifact contains 3752 instructions, 4938 executable bytes and the
+unchanged 280-byte digest payload.
 
-The literal holding packed 0x80 markers widens from PUSH19 to PUSH21 to absorb
-the two bytes freed by the new guard. The branch starts at PC4812 as before;
-all subsequent physical instruction positions and the payload base are fixed.
-There are 3765 executable instructions, 4938 executable bytes and 280 payload
-bytes. The classifier retains the loader-compatible operand order from 2052d385.
+StackTail proves that the supported instruction and located-path semantics
+preserve an appended stack suffix when the combined stack and path fit the
+EVM limit. PaddingTrace exposes bounded raw-path adapters. PaddingTail lifts
+complete padding execution, and ColdTailCorrect and Shared32TailCorrect
+connect it to the existing arbitrary-frame compression and serialization
+proofs. The recognizer miss carries ten words; the interface permits a suffix
+of at most twenty. RecognitionCorrect and StackCorrect use the generalized
+entry result. The unbounded-input cold path keeps its existing closed-entry
+proof. All executable indices, located paths, template byte equalities and
+the assembled artifact are bound to the exact candidate bytes.
 
-StaggerPad.highZero_true_iff characterizes the new comparison as n.toNat < 5218.
-Its highZero_true_imp lemma proves that the high length word is zero on that
-route. ColdOrdinaryPrepare uses this implication to identify the exact padding
-memory. ColdHighModel and the top-level Cold route use the complementary bound.
-The existing full general-padding memory and output proofs apply without any
-assumption that inputs are small. Submission-local DataStepper and PadLift
-include our previously verified CODESIZE soundness extension. Protected EVM
-semantics, compiler, generator, scorer, specification and options are unchanged.
+The full Solution build passes all 3718 jobs. Its final theorem uses only
+propext, Classical.choice and Quot.sound. The original protected loader passes.
+The native scorer passes all 49 corpus
+vectors in both clean and dirty frames. The mandatory 120-seed corpus gate,
+2500 fuzz cases, executable reassembly, runtime jumps and CODECOPY bounds pass.
+Expanded comparison against b7a3d7c8 passes 4358 inputs and 69 corpus seeds:
+21 inputs have unchanged gas, 2369 save 27 gas, and 1968 save six gas. Sixty
+corpus seeds save 192 gas and nine save 213. Every tested digest is correct.
+The predicted per-input delta is exactly minus six per generic initialization
+and minus twenty-one per recognizer miss. Full independent verification is
+recorded in the submission note after completion.
 
-The full Solution build passes all 3714 jobs. The candidate theorem depends
-only on propext, Classical.choice and Quot.sound. The original protected loader
-passes. The original native scorer passes all 49 corpus vectors in clean and
-dirty frames at 672,252 gas. The mandatory 120-seed correctness gate, 2500 fuzz
-cases, executable reassembly, runtime jumps and CODECOPY bounds pass.
+This retains the parent's CODESIZE cutoff at length 5218. Relative to older
+shift-cutoff versions, some larger aligned inputs therefore still take the
+more expensive general padding path. The present change does not introduce a
+new cutoff or a new input recognizer. Its semantic proof covers the benchmark's
+universal Correct predicate, including inputs outside the measured corpus.
 
-Expanded differential checking against 2052d385 passes 4358 inputs and 69
-corpus seeds. All corpus seeds save 84 gas. Of the expanded inputs, 3830 are
-unchanged and 508 save four gas. Twenty large aligned inputs use the additional
-general padding path and cost 1014 to 1073 gas more, while returning the same
-correct digest. This is a corpus gas improvement; it does not reduce gas for
-every input. Independent secure Comparator verification is pending.
-
-Attribution: the Shared32/J2/general cold route is ercumentyildirim's work;
-the compact five-byte classifier constant is i34-9's refinement of our earlier
-lookup. The plus-modulus idea credits fkiene, with our removal of its filler.
-The shortened clear, its memory proof, the CODESIZE proof support and this
-cutoff integration are our work. Earlier compression, endian and digest payload
-contributions retain their provenance. Only Submission files are changed.
+Attribution: ercumentyildirim supplied the Shared32/J2/general cold architecture
+in 6d7f412a. The plus-modulus idea credits fkiene; our earlier integration
+removed filler and proved the SUB path. The five-byte classifier constant
+credits i34-9's refinement of our earlier lookup. The prefix-clear memory
+proof, CODESIZE guard, retained-suffix proof, direct modulus literal, merged
+entry and their integration are our work. Earlier compression, endian and
+digest payload contributions retain their provenance. Only Submission files
+are changed; protected semantics, specification, scorer, generator, compiler,
+kernel, dependency pins and validation options are unchanged.

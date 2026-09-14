@@ -29,8 +29,9 @@ theorem of_returned (input : ByteArray) (t : State)
 theorem from_entry (input : ByteArray)
     (hn : RecognitionAccumulator.Allowed input.size)
     (hentry : GasSteps (initialState submissionBytecode input 0) (PatternedScan.patternedEntry input))
-    (hgeneric : GasSteps (initialState submissionBytecode input 0)
-      (J2Moves.atState (initialState submissionBytecode input 0) 352 []) →
+    (hgeneric : ∀ rho : List UInt256, rho.length ≤ 20 →
+      GasSteps (initialState submissionBytecode input 0)
+        (J2Moves.atState (initialState submissionBytecode input 0) 341 rho) →
       ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
         Eval (initialState submissionBytecode input gas) (.returned (spec input))) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
@@ -47,7 +48,7 @@ theorem from_entry (input : ByteArray)
     exact of_returned input _ trace (J2Return.output_halt s rho) rfl
       (J2Return.output_spec s e rho hn hz)
   · have gm := J2Loop.gasSteps_miss s [] (J2Sites.moves s e [] (by decide)) input.size hn rfl hz
-    exact hgeneric (hentry.trans gm)
+    exact hgeneric _ (by simp [J2Raw.finishRest]) (hentry.trans gm)
 
 #print axioms of_returned
 #print axioms from_entry
