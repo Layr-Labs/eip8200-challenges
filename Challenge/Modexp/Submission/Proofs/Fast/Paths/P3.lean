@@ -19,9 +19,9 @@ def blk1138 :
    pushAt 628 2 1024,
    pushAt 629 2 1280,
    opAt 630 .MCOPY,
-   pushAt 631 2 2394,
+   pushAt 631 2 2395,
    pushAt 632 2 1280,
-   pushAt 633 2 2753,
+   pushAt 633 2 2752,
    opAt 634 .JUMP]
 
 /-- Instructions 1282..1202, pc 1680..1692. -/
@@ -37,7 +37,7 @@ def blk1155 :
    pushAt 637 2 1536,
    opAt 638 (.Dup ⟨0, by decide⟩),
    pushAt 639 2 1536,
-   pushAt 640 2 3550,
+   pushAt 640 2 3546,
    opAt 641 .JUMP]
 
 /-- Instructions 1296..1307, pc 1713..1599. -/
@@ -53,7 +53,7 @@ def blk1162 :
    opAt 649 .SHL,
    pushAt 650 2 1024,
    opAt 651 .ADD,
-   pushAt 652 2 1727,
+   pushAt 652 2 1728,
    opAt 653 .JUMP]
 
 /-- Instructions 1178..1269, pc 1692..1749. -/
@@ -82,7 +82,7 @@ def blk1189 :
    opAt 666 .POP,
    opAt 667 (.Dup ⟨2, by decide⟩),
    opAt 668 .ISZERO,
-   pushAt 669 2 2637,
+   pushAt 669 2 2636,
    opAt 670 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast

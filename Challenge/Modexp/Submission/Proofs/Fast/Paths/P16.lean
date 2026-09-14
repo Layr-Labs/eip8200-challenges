@@ -37,7 +37,7 @@ def blk1781 :
    opAt 1199 .BYTE,
    opAt 1200 (.Dup ⟨1, by decide⟩),
    opAt 1201 .ISZERO,
-   pushAt 1202 2 1700,
+   pushAt 1202 2 1701,
    opAt 1203 .JUMPI]
 
 /-- Instructions 1790..1920, pc 2711..3077: every byte after the first. -/
@@ -68,7 +68,7 @@ def blk1796 :
    opAt 1222 .SHR,
    pushAt 1223 1 1,
    opAt 1224 .ADD,
-   pushAt 1225 2 2615,
+   pushAt 1225 2 2614,
    opAt 1226 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

@@ -12,7 +12,7 @@ def gasSteps_shiftLoop_count (s : State) (mem : ByteArray) (n bsize esize msize 
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (e : Env s) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (htop : Limbs.radix ^ n < 2 * mm)
     (inv : StepInv mem n bsize mm minv)
-    (hbase : Model.FastRepresents mem 512 n r) (hr : r < mm) :
+    (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm) :
     Challenge.EvmProof.GasSteps (shiftLoopState s mem n bsize esize msize k)
       (shiftLoopState s (stepMems mem n mm k) n bsize esize msize 0) :=
   Challenge.EvmProof.GasSteps.cast
