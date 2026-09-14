@@ -50,7 +50,7 @@ abbrev Located := DataStepper.Located Artifact.submissionArtifact .Osaka
   exact GuardInstructionWindow.pc 210
 @[simp] theorem pc_4105 : Artifact.submissionArtifact.instructionPC 3774 = 4903 := by
   exact GuardInstructionWindow.pc 211
-@[simp] theorem pc_4106 : Artifact.submissionArtifact.instructionPC 3775 = 4904 := by
+@[simp] theorem pc_4106 : Artifact.submissionArtifact.instructionPC 3775 = 4924 := by
   exact GuardInstructionWindow.pc 212
 @[simp] theorem pc_4107 : Artifact.submissionArtifact.instructionPC 3776 = 4925 := by
   exact GuardInstructionWindow.pc 213
@@ -74,11 +74,11 @@ def wordPath : List Located :=
 /-- The small-input answer block sits at the end of the code and is entered by fall-through
 from the word test. -/
 def storePath : List Located :=
-  [⟨3774, .op .CALLDATASIZE, by exact GuardInstructionWindow.get 211, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3775, .push ⟨20, by decide⟩ (UInt256.ofNat 25448770637332498804579667936807160623886401639), by exact GuardInstructionWindow.get 212, by decide⟩,
-   ⟨3776, .op .MUL, by exact GuardInstructionWindow.get 213, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3777, .push ⟨20, by decide⟩ (UInt256.ofNat 890993315260586290631548281360202943075753233713), by exact GuardInstructionWindow.get 214, by decide⟩,
-   ⟨3778, .op .SUB, by exact GuardInstructionWindow.get 215, ⟨by decide, trivial, rfl⟩⟩,
+  [⟨3774, .push ⟨20, by decide⟩ (UInt256.ofNat 95383801997447390147238369573240532004699299169), by exact GuardInstructionWindow.get 211, by decide⟩,
+   ⟨3775, .op .CALLDATASIZE, by exact GuardInstructionWindow.get 212, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨3776, .op .SHR, by exact GuardInstructionWindow.get 213, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨3777, .push ⟨20, by decide⟩ (UInt256.ofNat 802931186561056611446976448233794645126013734992), by exact GuardInstructionWindow.get 214, by decide⟩,
+   ⟨3778, .op .XOR, by exact GuardInstructionWindow.get 215, ⟨by decide, trivial, rfl⟩⟩,
    ⟨3779, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by exact GuardInstructionWindow.get 216, by decide⟩,
    ⟨3780, .op .MSTORE, by exact GuardInstructionWindow.get 217, ⟨by decide, trivial, rfl⟩⟩]
 
@@ -93,10 +93,11 @@ def wordCond (input : ByteArray) : UInt256 :=
     (UInt256.mul (UInt256.ofNat input.size) (UInt256.ofNat 0x207621))
 def armEntry (input : ByteArray) : State := Execution.atPC input 4887
 def fallbackState (input : ByteArray) : State := Execution.atPC input 357
+/-- The guarded sizes are zero and three. These constants reconstruct their
+RIPEMD digests with a shift and XOR; the finite equalities are proved below. -/
 def answerWord (input : ByteArray) : UInt256 :=
-  UInt256.sub (UInt256.ofNat EmptySpec.digestNat)
-    (UInt256.mul (UInt256.ofNat 25448770637332498804579667936807160623886401639)
-      (UInt256.ofNat input.size))
+  UInt256.xor (UInt256.ofNat 802931186561056611446976448233794645126013734992)
+    (UInt256.shiftRight (UInt256.ofNat 95383801997447390147238369573240532004699299169) (UInt256.ofNat input.size))
 def answerBytes (input : ByteArray) : ByteArray :=
   Data.Bytes.natToBytesPadded (answerWord input).toNat 32
 def answerMemory (input : ByteArray) : ByteArray :=

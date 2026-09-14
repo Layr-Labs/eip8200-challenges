@@ -107,8 +107,8 @@ def template1 : List Instr :=
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 738),
     .op .MSTORE,
-    .op (.Dup ⟨10, by decide⟩),
-    .op (.Dup ⟨9, by decide⟩),
+    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨11, by decide⟩),
     .op .MUL,
     .push ⟨2, by decide⟩ (UInt256.ofNat 720),
     .op .MSTORE ]
@@ -144,7 +144,7 @@ theorem run_chunk1 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : L
      writeWord, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
      List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
      State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals try simp only [neutral_hadd, neutral_hmul, RawExpressionAC.add_assoc]
+  all_goals try simp only [neutral_hadd, neutral_hmul, RawExpressionAC.add_assoc, RawExpressionAC.mul_comm]
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 #print axioms run_chunk1
 
