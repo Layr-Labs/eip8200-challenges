@@ -15,7 +15,7 @@ the message offset, the limit, and the two resident byte-swap masks. -/
 def stk (ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UInt256) (rho : List UInt256) : List UInt256 :=
   ret :: mw :: a2 :: a3 :: a4 :: a5 :: a6 :: a7 :: a8 :: a9 :: a10 :: off :: lim :: mask8 :: mask16 :: rho
 
-def stage8 (wide : Bool) : List Instr :=
+def stage8 (_wide : Bool) : List Instr :=
   [ .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 8),
     .op .SHR,
@@ -23,7 +23,7 @@ def stage8 (wide : Bool) : List Instr :=
     .op .XOR,
     .op (.Dup ⟨15, by decide⟩),
     .op .AND,
-    (if wide then .push ⟨4, by decide⟩ (UInt256.ofNat 257) else .push ⟨3, by decide⟩ (UInt256.ofNat 257)),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 257),
     .op .MUL,
     .op .XOR ]
 
@@ -69,7 +69,7 @@ theorem run_stage16 (s : State) (pc v ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim
   all_goals exact ⟨rfl, rfl⟩
 
 def loadTemplate (address : Nat) : List Instr :=
-  [ .push ⟨if address = 1152 then 4 else 3, by split_ifs <;> decide⟩ (UInt256.ofNat address), .op (.Dup ⟨12, by decide⟩), .op .ADD, .op .MLOAD ]
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat address), .op (.Dup ⟨12, by decide⟩), .op .ADD, .op .MLOAD ]
 
 theorem run_load (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UInt256)
     (rho : List UInt256) (address q : Nat) (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
@@ -108,7 +108,7 @@ theorem run_reverse (s : State) (pc v ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim
   rw [reversed_eq] at h2
   exact DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
 
-def highStore : List Instr := [ .push ⟨3, by decide⟩ (UInt256.ofNat 60), .op .MSTORE ]
+def highStore : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 60), .op .MSTORE ]
 def lowStore : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 28), .op .MSTORE ]
 
 theorem run_highStore (s : State) (pc value : UInt256) (rest : List UInt256)

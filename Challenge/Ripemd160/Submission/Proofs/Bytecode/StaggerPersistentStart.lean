@@ -25,10 +25,10 @@ def initialTemplate : List Instr :=
     .push ⟨4, by decide⟩ (UInt256.ofNat 3285377520),
     .push ⟨13, by decide⟩ (UInt256.ofNat 475368975196266490007815979009),
     .push ⟨13, by decide⟩ (UInt256.ofNat 1109194275457955143345843994625),
-    .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-    .op .NOT,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 191),
-    .op .SHR,
+    .push ⟨9, by decide⟩ (UInt256.ofNat 36893488147419103231),
+    .op .JUMPDEST,
+    .op .JUMPDEST,
+    .op .JUMPDEST,
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHL,
     .op (.Dup ⟨0, by decide⟩),
@@ -107,11 +107,11 @@ def gasSteps_push (s : State) (limit : UInt256) (rho : List UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 392, stack := limit :: rho}
-      {s with pc := UInt256.ofNat 482, stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 0) limit rho} := by
+      {s with pc := UInt256.ofNat 490, stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 0) limit rho} := by
   apply PadLift.gasSteps_of_raw initialSite {s with pc := UInt256.ofNat 392, stack := limit :: rho} _ hcode hfork hrun hnp initial_pc.symm
   · apply PadLift.advancesAll_sound; decide
   · have hr := run_initial s (UInt256.ofNat 392) limit rho (by omega) hrun
-    have hp : pcAfter (UInt256.ofNat 392) initialTemplate = UInt256.ofNat 482 := by decide
+    have hp : pcAfter (UInt256.ofNat 392) initialTemplate = UInt256.ofNat 490 := by decide
     rw [hp] at hr
     exact hr
 
