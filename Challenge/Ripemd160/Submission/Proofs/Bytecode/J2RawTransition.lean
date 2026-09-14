@@ -21,7 +21,7 @@ def transitionBResult (f : Frame) : Frame :=
 theorem run_transitionA (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running) :
     runInstrSeq transitionATemplate {s with pc := pc, stack := frame f rho} =
-      some {s with pc := pcAfter pc transitionATemplate, stack := frame (transitionAResult f) rho} := by
+      some {s with pc := pcAfter pc transitionATemplate, stack := (transitionAResult f).off :: frame (transitionAResult f) rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
   simp (config := { maxSteps := 600000 }) (discharger := omega) [transitionATemplate, transitionTemplate, transitionAResult, frame, c32, c114,
@@ -34,7 +34,7 @@ theorem run_transitionA (s : State) (pc : UInt256) (f : Frame) (rho : List UInt2
 theorem run_transitionB (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
     (hlen : f.len = UInt256.ofNat s.executionEnv.calldata.size) :
-    runInstrSeq transitionBTemplate {s with pc := pc, stack := frame f rho} =
+    runInstrSeq transitionBTemplate {s with pc := pc, stack := f.off :: frame f rho} =
       some {s with pc := pcAfter pc transitionBTemplate, stack := frame (transitionBResult f) rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
