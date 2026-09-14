@@ -54,10 +54,10 @@ def enterPath : List Located :=
   [⟨247, .push ⟨2, by decide⟩ (UInt256.ofNat 494), by rfl, by decide⟩,
    ⟨248, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
-@[simp] private theorem pcD231 : Artifact.submissionArtifact.instructionPC 247 = 368 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pcD232 : Artifact.submissionArtifact.instructionPC 248 = 371 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pcD233 : Artifact.submissionArtifact.instructionPC 249 = 372 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pcD234 : Artifact.submissionArtifact.instructionPC 250 = 373 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pcD231 : Artifact.submissionArtifact.instructionPC 248 = 368 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pcD232 : Artifact.submissionArtifact.instructionPC 249 = 371 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pcD233 : Artifact.submissionArtifact.instructionPC 250 = 372 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pcD234 : Artifact.submissionArtifact.instructionPC 251 = 373 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] private theorem pcD244 : Artifact.submissionArtifact.instructionPC 313 = 563 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] private theorem pcD245 : Artifact.submissionArtifact.instructionPC 314 = 564 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] private theorem pcD246 : Artifact.submissionArtifact.instructionPC 315 = 486 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
@@ -297,7 +297,7 @@ theorem run_postCheck_exit (s : State) (input : ByteArray)
   have htrue : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have honeNat : UInt256.toNat (1 : UInt256) = 1 := by decide
   have hdest : Decode.isValidJumpDest submissionBytecode 4693 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 218 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 217 (by rfl)
   simp [postCheckPath, Challenge.EvmProof.DataStepper.runLocatedBlock,
     Challenge.EvmProof.DataStepper.runLocated, Challenge.EvmProof.DataStepper.runInstr,
     compressReturned, afterExit, hrun, hcode, hadd, hlast, heq,

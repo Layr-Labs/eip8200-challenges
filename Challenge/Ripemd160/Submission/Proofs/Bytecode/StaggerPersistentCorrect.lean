@@ -42,7 +42,7 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
       s.executionEnv.fork s.executionEnv.codeAddr = false := PadSkipEntry.entryState_noPrecompile input
   have hi : s.executionEnv.calldata = input := PadSkipEntry.entryState_calldata input
   have heta := PaddingTrace.entryState_eta input
-  have gx : GasSteps s {s with pc := UInt256.ofNat 482, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (LoopCompletionControl.limit input) maskRho} := by
+  have gx : GasSteps s {s with pc := UInt256.ofNat 490, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (LoopCompletionControl.limit input) maskRho} := by
     by_cases hz : input.size % 64 = 0
     · have hs : s = {s with pc := UInt256.ofNat 390, stack := Padding.paddedWord input :: maskRho} := by
         simpa only [if_pos hz, PaddingTrace.padFrame, maskRho] using heta

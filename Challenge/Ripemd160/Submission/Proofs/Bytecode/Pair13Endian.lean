@@ -23,7 +23,7 @@ def stage8 (wide : Bool) : List Instr :=
     .op .XOR,
     .op (.Dup ⟨15, by decide⟩),
     .op .AND,
-    (if wide then .push ⟨4, by decide⟩ (UInt256.ofNat 257) else .push ⟨3, by decide⟩ (UInt256.ofNat 257)),
+    (if wide then .push ⟨2, by decide⟩ (UInt256.ofNat 257) else .push ⟨2, by decide⟩ (UInt256.ofNat 257)),
     .op .MUL,
     .op .XOR ]
 
@@ -69,7 +69,7 @@ theorem run_stage16 (s : State) (pc v ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim
   all_goals exact ⟨rfl, rfl⟩
 
 def loadTemplate (address : Nat) : List Instr :=
-  [ .push ⟨if address = 1152 then 4 else 3, by split_ifs <;> decide⟩ (UInt256.ofNat address), .op (.Dup ⟨12, by decide⟩), .op .ADD, .op .MLOAD ]
+  [ .push ⟨if address = 1152 then 2 else 2, by split_ifs <;> decide⟩ (UInt256.ofNat address), .op (.Dup ⟨12, by decide⟩), .op .ADD, .op .MLOAD ]
 
 theorem run_load (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UInt256)
     (rho : List UInt256) (address q : Nat) (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
@@ -80,8 +80,8 @@ theorem run_load (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UI
         stack := MachineState.readWord s.memory q :: stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho
         activeWords := activeAfterWord s.activeWords (UInt256.ofNat q)} := by
   have hcap (n : Nat) (hn : n ≤ 27) : rho.length + n < 1024 := by omega
-  have hwidthplus : (if address = 1152 then 4 else 3 : Nat) + 1 = 1 + (if address = 1152 then 4 else 3 : Nat) := Nat.add_comm _ _
-  have hwidth : (if address = 1152 then 4 else 3 : Nat) ≠ 0 := by split_ifs <;> decide
+  have hwidthplus : (if address = 1152 then 2 else 2 : Nat) + 1 = 1 + (if address = 1152 then 2 else 2 : Nat) := Nat.add_comm _ _
+  have hwidth : (if address = 1152 then 2 else 2 : Nat) ≠ 0 := by split_ifs <;> decide
   have hqn : (UInt256.ofNat q).toNat = q := by rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt hqb]
   simp (discharger := omega) [loadTemplate, hwidth, hwidthplus, stk, activeAfterWord,
     runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size, hrun, hcap,
@@ -108,7 +108,7 @@ theorem run_reverse (s : State) (pc v ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim
   rw [reversed_eq] at h2
   exact DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
 
-def highStore : List Instr := [ .push ⟨3, by decide⟩ (UInt256.ofNat 60), .op .MSTORE ]
+def highStore : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 60), .op .MSTORE ]
 def lowStore : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 28), .op .MSTORE ]
 
 theorem run_highStore (s : State) (pc value : UInt256) (rest : List UInt256)
@@ -253,8 +253,8 @@ theorem run_template (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim 
   rw [hloaded]
   exact h
 
-theorem exact_bytes : assembleBytes template = [99, 0, 0, 4, 128, 140, 1, 81, 128, 96, 8, 28, 129, 24, 143, 22, 99, 0, 0, 1, 1, 2, 24, 143, 129, 128, 96, 16, 28, 24, 22, 98, 1, 0, 1, 2, 24, 98, 0, 0, 60, 82, 98, 0, 4, 96, 140, 1, 81, 128, 96, 8, 28, 129, 24, 143, 22, 98, 0, 1, 1, 2, 24, 143, 129, 128, 96, 16, 28, 24, 22, 98, 1, 0, 1, 2, 24, 96, 28, 82, 129] := by decide
-theorem end_pc : pcAfter (UInt256.ofNat 483) template = UInt256.ofNat 564 := by decide
+theorem exact_bytes : assembleBytes template = [97, 4, 128, 140, 1, 81, 128, 96, 8, 28, 129, 24, 143, 22, 97, 1, 1, 2, 24, 143, 129, 128, 96, 16, 28, 24, 22, 98, 1, 0, 1, 2, 24, 96, 60, 82, 97, 4, 96, 140, 1, 81, 128, 96, 8, 28, 129, 24, 143, 22, 97, 1, 1, 2, 24, 143, 129, 128, 96, 16, 28, 24, 22, 98, 1, 0, 1, 2, 24, 96, 28, 82, 129] := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 491) template = UInt256.ofNat 564 := by decide
 #print axioms run_template
 #print axioms exact_bytes
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13Endian
