@@ -218,21 +218,21 @@ in reasonable memory. -/
 
 /-- Gas-erased state at the fast-path entry: pc 1396, empty stack. -/
 def entryState (s : State) : State :=
-  { s with pc := UInt256.ofNat 597, stack := [] }
+  { s with pc := UInt256.ofNat 599, stack := [] }
 
 /-- The fallback target: pc 1326 with an empty stack; memory and `activeWords`
 are untouched because indices 1112..1120 and the bail blocks contain no memory
 opcode. -/
 def fallbackState (s : State) : State :=
-  { s with pc := UInt256.ofNat 551, stack := [] }
+  { s with pc := UInt256.ofNat 553, stack := [] }
 
 /-- Entry of `BAIL1` (pc 2016): one live stack word. -/
 def bail1State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 1047, stack := [UInt256.ofNat (modulusSize input)] }
+  { s with pc := UInt256.ofNat 1048, stack := [UInt256.ofNat (modulusSize input)] }
 
 /-- After the `msize > 32` check (pc 1456). -/
 def sizeCheckState (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 612, stack := [UInt256.ofNat (modulusSize input)] }
+  { s with pc := UInt256.ofNat 614, stack := [UInt256.ofNat (modulusSize input)] }
 
 /-- Unsigned subtraction rejects values below 33 by wrapping, and values above
 256 by an ordinary difference.  The passing interval is exactly 33..256. -/
@@ -333,7 +333,7 @@ def sizesOkStack (input : ByteArray) : List UInt256 :=
    UInt256.ofNat (modulusSize input)]
 
 def topCheckState (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 617, stack := sizesOkStack input }
+  { s with pc := UInt256.ofNat 619, stack := sizesOkStack input }
 
 set_option linter.unusedSimpArgs false in
 theorem run_sizeCheck_pass (s : State) (input : ByteArray)
@@ -446,23 +446,23 @@ def outerStack (input : ByteArray) : List UInt256 :=
 
 /-- After the top-limb check (pc 1514). -/
 def oddCheckState (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 648
+  { s with pc := UInt256.ofNat 650
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 
 /-- Entry of `BAIL6` (pc 1053): six live stack words. -/
 def bail6State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 1053
+  { s with pc := UInt256.ofNat 1054
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 
 /-- Where `BAIL6` lands: the wide-modulus fallback entry (pc 236) with the six live
 words kept.  `modexpBig` re-reads the header from calldata and tolerates any incoming
 stack, so nothing is dropped any more. -/
 def bigBailState (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 236
+  { s with pc := UInt256.ofNat 238
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 
-theorem jumpDestBig : Decode.isValidJumpDest submissionBytecode 236 = true :=
-  Artifact.isValidJumpDest_index 163 (by rfl)
+theorem jumpDestBig : Decode.isValidJumpDest submissionBytecode 238 = true :=
+  Artifact.isValidJumpDest_index 165 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_topCheck_pass (s : State) (input : ByteArray)
@@ -549,7 +549,7 @@ theorem land_one_lastWord (input : ByteArray) (h : 32 < modulusSize input) :
 
 /-- State after all four checks passed (pc 1481), before any memory write. -/
 def setupEntryState (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 663
+  { s with pc := UInt256.ofNat 665
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 
 set_option linter.unusedSimpArgs false in
@@ -855,19 +855,19 @@ def gasSteps_fallback_of (s : State) (input : ByteArray)
 
 theorem entryState_initial (input : ByteArray) :
     entryState (initialState submissionBytecode input 0) =
-      Main.trampolineState input 597 := rfl
+      Main.trampolineState input 599 := rfl
 
 theorem fallbackState_initial (input : ByteArray) :
     fallbackState (initialState submissionBytecode input 0) =
-      Main.trampolineState input 551 := rfl
+      Main.trampolineState input 553 := rfl
 
 /-- The two landing sites of a declined fast path, from the public entry state. -/
 inductive Fallback (input : ByteArray) : Type
   | header (hsize : modulusSize input ≤ 32 ∨ 256 < modulusSize input)
-      (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 597)
-        (Main.trampolineState input 551))
+      (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 599)
+        (Main.trampolineState input 553))
   | big (h32 : 32 < modulusSize input) (hupper : modulusSize input ≤ 256)
-      (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 597)
+      (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 599)
         (bigBailState (initialState submissionBytecode input 0) input))
 
 /-- **Fallback certificate.**  For every calldata in the challenge domain that fails
@@ -1008,105 +1008,105 @@ def setupWords (w : UInt256) (input : ByteArray) : UInt256 :=
 `MLOAD` of its least significant limb. -/
 def setupPathA :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 470 (.Dup ⟨1, by decide⟩),
-   pushAt 471 2 2688,
-   opAt 472 .MSTORE,
-   opAt 473 (.Dup ⟨3, by decide⟩),
-   pushAt 474 1 96,
-   opAt 475 .ADD,
-   pushAt 476 2 2816,
-   opAt 477 .MSTORE,
-   pushAt 478 1 32,
-   opAt 479 (.Dup ⟨2, by decide⟩),
-   opAt 480 .SUB,
-   opAt 481 (.Dup ⟨0, by decide⟩),
-   pushAt 482 2 2752,
-   opAt 483 .MSTORE,
-   opAt 484 (.Dup ⟨2, by decide⟩),
-   pushAt 485 2 2080,
-   opAt 486 .ADD,
-   pushAt 487 2 2784,
-   opAt 488 .MSTORE,
-   opAt 489 (.Dup ⟨2, by decide⟩),
-   opAt 490 .CALLDATASIZE,
-   pushAt 491 0 0,
-   opAt 492 .CALLDATACOPY,
-   opAt 493 (.Dup ⟨6, by decide⟩),
-   opAt 494 (.Dup ⟨2, by decide⟩),
-   opAt 495 (.Dup ⟨1, by decide⟩),
-   opAt 496 (.Dup ⟨5, by decide⟩),
-   opAt 497 .SUB,
-   opAt 498 .CALLDATACOPY,
-   opAt 499 (.Swap ⟨0, by decide⟩),
-   opAt 500 .POP,
-   opAt 501 (.Dup ⟨0, by decide⟩),
-   opAt 502 .MLOAD]
+  [opAt 472 (.Dup ⟨1, by decide⟩),
+   pushAt 473 2 2688,
+   opAt 474 .MSTORE,
+   opAt 475 (.Dup ⟨3, by decide⟩),
+   pushAt 476 1 96,
+   opAt 477 .ADD,
+   pushAt 478 2 2816,
+   opAt 479 .MSTORE,
+   pushAt 480 1 32,
+   opAt 481 (.Dup ⟨2, by decide⟩),
+   opAt 482 .SUB,
+   opAt 483 (.Dup ⟨0, by decide⟩),
+   pushAt 484 2 2752,
+   opAt 485 .MSTORE,
+   opAt 486 (.Dup ⟨2, by decide⟩),
+   pushAt 487 2 2080,
+   opAt 488 .ADD,
+   pushAt 489 2 2784,
+   opAt 490 .MSTORE,
+   opAt 491 (.Dup ⟨2, by decide⟩),
+   opAt 492 .CALLDATASIZE,
+   pushAt 493 0 0,
+   opAt 494 .CALLDATACOPY,
+   opAt 495 (.Dup ⟨6, by decide⟩),
+   opAt 496 (.Dup ⟨2, by decide⟩),
+   opAt 497 (.Dup ⟨1, by decide⟩),
+   opAt 498 (.Dup ⟨5, by decide⟩),
+   opAt 499 .SUB,
+   opAt 500 .CALLDATACOPY,
+   opAt 501 (.Swap ⟨0, by decide⟩),
+   opAt 502 .POP,
+   opAt 503 (.Dup ⟨0, by decide⟩),
+   opAt 504 .MLOAD]
 
 /-- Instructions 1206..1230: `x := 1` and the first four Newton steps. -/
 def setupPathB :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 503 (.Dup ⟨0, by decide⟩),
-   pushAt 504 1 3,
-   opAt 505 .MUL,
-   pushAt 506 1 2,
-   opAt 507 .XOR,
-   opAt 508 (.Dup ⟨0, by decide⟩),
-   opAt 509 (.Dup ⟨2, by decide⟩),
-   opAt 510 .MUL,
-   pushAt 511 1 2,
-   opAt 512 .SUB,
-   opAt 513 .MUL,
-   opAt 514 (.Dup ⟨0, by decide⟩),
-   opAt 515 (.Dup ⟨2, by decide⟩),
-   opAt 516 .MUL,
-   pushAt 517 1 2,
-   opAt 518 .SUB,
-   opAt 519 .MUL,
-   opAt 520 (.Dup ⟨0, by decide⟩),
-   opAt 521 (.Dup ⟨2, by decide⟩),
-   opAt 522 .MUL,
-   pushAt 523 1 2,
-   opAt 524 .SUB,
-   opAt 525 .MUL]
+  [opAt 505 (.Dup ⟨0, by decide⟩),
+   pushAt 506 1 3,
+   opAt 507 .MUL,
+   pushAt 508 1 2,
+   opAt 509 .XOR,
+   opAt 510 (.Dup ⟨0, by decide⟩),
+   opAt 511 (.Dup ⟨2, by decide⟩),
+   opAt 512 .MUL,
+   pushAt 513 1 2,
+   opAt 514 .SUB,
+   opAt 515 .MUL,
+   opAt 516 (.Dup ⟨0, by decide⟩),
+   opAt 517 (.Dup ⟨2, by decide⟩),
+   opAt 518 .MUL,
+   pushAt 519 1 2,
+   opAt 520 .SUB,
+   opAt 521 .MUL,
+   opAt 522 (.Dup ⟨0, by decide⟩),
+   opAt 523 (.Dup ⟨2, by decide⟩),
+   opAt 524 .MUL,
+   pushAt 525 1 2,
+   opAt 526 .SUB,
+   opAt 527 .MUL]
 
 /-- Instructions 1231..1254: the last four Newton steps. -/
 def setupPathC :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 526 (.Dup ⟨0, by decide⟩),
-   opAt 527 (.Dup ⟨2, by decide⟩),
-   opAt 528 .MUL,
-   pushAt 529 1 2,
-   opAt 530 .SUB,
-   opAt 531 .MUL,
-   opAt 532 (.Dup ⟨0, by decide⟩),
-   opAt 533 (.Dup ⟨2, by decide⟩),
-   opAt 534 .MUL,
-   pushAt 535 1 2,
-   opAt 536 .SUB,
-   opAt 537 .MUL,
-   opAt 538 (.Dup ⟨0, by decide⟩),
-   opAt 539 (.Dup ⟨2, by decide⟩),
-   opAt 540 .MUL,
-   pushAt 541 1 2,
-   opAt 542 .SUB,
-   opAt 543 .MUL]
+  [opAt 528 (.Dup ⟨0, by decide⟩),
+   opAt 529 (.Dup ⟨2, by decide⟩),
+   opAt 530 .MUL,
+   pushAt 531 1 2,
+   opAt 532 .SUB,
+   opAt 533 .MUL,
+   opAt 534 (.Dup ⟨0, by decide⟩),
+   opAt 535 (.Dup ⟨2, by decide⟩),
+   opAt 536 .MUL,
+   pushAt 537 1 2,
+   opAt 538 .SUB,
+   opAt 539 .MUL,
+   opAt 540 (.Dup ⟨0, by decide⟩),
+   opAt 541 (.Dup ⟨2, by decide⟩),
+   opAt 542 .MUL,
+   pushAt 543 1 2,
+   opAt 544 .SUB,
+   opAt 545 .MUL]
 
 /-- Instructions 1255..1271: `MSTORE V_MINV`, `MSTORE R1 1` and the tail call
 into the `R1B` guard. -/
 def setupPathD :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 544 0 0,
-   opAt 545 .SUB,
-   pushAt 546 2 2720,
-   opAt 547 .MSTORE,
-   opAt 548 .POP,
-   opAt 549 .POP,
-   pushAt 550 2 2596,
-   opAt 551 .JUMP]
+  [pushAt 546 0 0,
+   opAt 547 .SUB,
+   pushAt 548 2 2720,
+   opAt 549 .MSTORE,
+   opAt 550 .POP,
+   opAt 551 .POP,
+   pushAt 552 2 2600,
+   opAt 553 .JUMP]
 
 /-- After the variable stores and the modulus load (pc 1579). -/
 def modLoadedState (s : State) (input : ByteArray) (m0 : Nat) : State :=
-  { s with pc := UInt256.ofNat 708
+  { s with pc := UInt256.ofNat 710
            stack := UInt256.ofNat m0 :: UInt256.ofNat (s32 input - 32) ::
              outerStack input
            memory := modulusMem s.memory input
@@ -1123,7 +1123,7 @@ def newtonState (s : State) (input : ByteArray) (m0 x p : Nat) : State :=
 /-- State at the `R1B` guard entry `JUMPDEST` (pc 2674).  The guard dispatches
 to `DOUBLE256` itself when the modulus's top bit is clear. -/
 def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
-  { s with pc := UInt256.ofNat 2596
+  { s with pc := UInt256.ofNat 2600
            stack := outerStack input
            memory := setupMem s.memory input m0
            activeWords := setupWords s.activeWords input }
@@ -1172,7 +1172,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_setupB (s : State) (input : ByteArray) (m0 : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupPathB (modLoadedState s input m0) =
-      some (newtonState s input m0 (newton4 m0) 736) := by
+      some (newtonState s input m0 (newton4 m0) 738) := by
   simp (config := { maxSteps := 1000000 })
     [setupPathB, opAt, pushAt, wfOp,
      Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -1187,8 +1187,8 @@ set_option linter.unusedSimpArgs false in
 theorem run_setupC (s : State) (input : ByteArray) (m0 : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupPathC
-        (newtonState s input m0 (newton4 m0) 736) =
-      some (newtonState s input m0 (newton8 m0) 757) := by
+        (newtonState s input m0 (newton4 m0) 738) =
+      some (newtonState s input m0 (newton8 m0) 759) := by
   simp (config := { maxSteps := 1000000 })
     [setupPathC, opAt, pushAt, wfOp,
      Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -1202,14 +1202,14 @@ theorem run_setupC (s : State) (input : ByteArray) (m0 : Nat)
 /-- The dispatcher entry `JUMPDEST` (instruction 2660, pc 2016).  The setup path jumps
 here directly instead of calling the Montgomery-form conversion first. -/
 private theorem jumpDest3296 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2596 = true :=
-  Artifact.isValidJumpDest_index 1938 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2600 = true :=
+  Artifact.isValidJumpDest_index 1942 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupD (s : State) (input : ByteArray) (m0 : Nat)
     (hcode : s.executionEnv.code = submissionBytecode) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupPathD
-        (newtonState s input m0 (newton8 m0) 757) =
+        (newtonState s input m0 (newton8 m0) 759) =
       some (setupExitState s input m0) := by
   have hmodminv : ∀ v : Nat,
       negWord v %
@@ -1540,11 +1540,11 @@ def gasSteps_setup (s : State) (input : ByteArray) (m0 : Nat)
           (run_setupB s input m0 hrun) hrun hnp).trans
       ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
           Artifact.submissionArtifact .Osaka setupPathC
-            (s := newtonState s input m0 (newton4 m0) 736) hcode hfork
+            (s := newtonState s input m0 (newton4 m0) 738) hcode hfork
             (run_setupC s input m0 hrun) hrun hnp).trans
         (Challenge.EvmProof.Stepper.runLocatedBlock_sound
           Artifact.submissionArtifact .Osaka setupPathD
-            (s := newtonState s input m0 (newton8 m0) 757) hcode hfork
+            (s := newtonState s input m0 (newton8 m0) 759) hcode hfork
             (run_setupD s input m0 hcode hrun) hrun hnp)))
 
 def gasSteps_fastPath_of (s : State) (input : ByteArray) (m0 : Nat)
@@ -1590,7 +1590,7 @@ theorem fastSetupState_memory (input : ByteArray) :
 /-- The setup block hands over at the dispatcher entry with a plain outer stack,
 rather than at the Montgomery-form conversion call with its two argument words. -/
 theorem fastSetupState_pc (input : ByteArray) :
-    (fastSetupState input).pc = UInt256.ofNat 2596 := rfl
+    (fastSetupState input).pc = UInt256.ofNat 2600 := rfl
 
 theorem fastSetupState_stack (input : ByteArray) :
     (fastSetupState input).stack = outerStack input := rfl
@@ -1600,7 +1600,7 @@ precondition (and the `ValidInput` bound on the calldata length), execution
 runs from the state the retargeted entry produces to the `R1B` guard, with the modulus loaded, `minv` computed and `R1` initialised. -/
 def gasSteps_fastSetup (input : ByteArray) (hsize : input.size < 2 ^ 256)
     (hpath : FastPath input) :
-    Challenge.EvmProof.GasSteps (Main.trampolineState input 597)
+    Challenge.EvmProof.GasSteps (Main.trampolineState input 599)
       (fastSetupState input) :=
   Challenge.EvmProof.GasSteps.cast
     (gasSteps_fastPath_of (initialState submissionBytecode input 0) input
@@ -1730,3 +1730,5 @@ theorem fastPath_em (input : ByteArray) : FastPath input ∨ ¬ FastPath input :
 
 
 end Challenge.Modexp.Submission.Proofs.Fast.Setup
+
+-- redraw marker 2026-09-14T17:23:05Z

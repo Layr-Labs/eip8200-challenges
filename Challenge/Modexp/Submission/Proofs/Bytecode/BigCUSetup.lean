@@ -58,8 +58,8 @@ theorem zLoop {artifact : ProgramArtifact} (sb : SetupBlocks artifact) {s : Stat
     (env : Environment artifact .Osaka s) (rest : List UInt256) (mem : ByteArray)
     (hcap : rest.length < 1000) :
     ∀ i, 1 ≤ i → i ≤ 1024 → ∀ acc : UInt256,
-      ∃ acc', Reach (st s 271 (UInt256.ofNat i :: acc :: rest) mem AW)
-          (st s 290 (UInt256.ofNat 0 :: acc' :: rest) mem AW) ∧
+      ∃ acc', Reach (st s 273 (UInt256.ofNat i :: acc :: rest) mem AW)
+          (st s 292 (UInt256.ofNat 0 :: acc' :: rest) mem AW) ∧
         (acc'.toNat = 0 ↔ acc.toNat = 0 ∧
           ∀ j, j < i → (MachineState.readWord mem (1024 + j)).toNat = 0) := by
   have hJ : SetupJumps s.executionEnv.code := by rw [env.code]; exact sb.jumps

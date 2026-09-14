@@ -19,59 +19,59 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- Located block in the selected full-width-base helper. -/
 def blkFullBaseGuard :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1749 .JUMPDEST,
-   opAt 1750 (.Dup ⟨0, by decide⟩),
-   opAt 1751 (.Dup ⟨3, by decide⟩),
-   opAt 1752 .EQ,
-   pushAt 1753 0 0,
-   opAt 1754 .MLOAD,
-   pushAt 1755 1 255,
-   opAt 1756 .SHR,
-   opAt 1757 .AND,
-   opAt 1758 .ISZERO,
-   pushAt 1759 2 2339,
-   opAt 1760 .JUMPI]
+  [opAt 1753 .JUMPDEST,
+   opAt 1754 (.Dup ⟨0, by decide⟩),
+   opAt 1755 (.Dup ⟨3, by decide⟩),
+   opAt 1756 .EQ,
+   pushAt 1757 0 0,
+   opAt 1758 .MLOAD,
+   pushAt 1759 1 255,
+   opAt 1760 .SHR,
+   opAt 1761 .AND,
+   opAt 1762 .ISZERO,
+   pushAt 1763 2 2343,
+   opAt 1764 .JUMPI]
 
 /-- Located block in the selected full-width-base helper. -/
 def blkFullBaseCopyAdd :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1761 (.Dup ⟨0, by decide⟩),
-   pushAt 1762 1 96,
-   pushAt 1763 2 256,
-   opAt 1764 .CALLDATACOPY,
-   pushAt 1765 2 2439,
-   pushAt 1766 2 512,
+  [opAt 1765 (.Dup ⟨0, by decide⟩),
+   pushAt 1766 1 96,
    pushAt 1767 2 256,
-   pushAt 1768 2 1536,
-   pushAt 1769 2 3349,
-   opAt 1770 .JUMP]
+   opAt 1768 .CALLDATACOPY,
+   pushAt 1769 2 2443,
+   pushAt 1770 2 512,
+   pushAt 1771 2 256,
+   pushAt 1772 2 1536,
+   pushAt 1773 2 3353,
+   opAt 1774 .JUMP]
 
 /-- Located block in the selected full-width-base helper. -/
 def blkFullBaseFallback :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1771 .JUMPDEST,
-   opAt 1772 (.Dup ⟨2, by decide⟩),
-   pushAt 1773 1 31,
-   opAt 1774 .ADD,
-   pushAt 1775 1 5,
-   opAt 1776 .SHR,
-   opAt 1777 (.Dup ⟨3, by decide⟩),
-   opAt 1778 (.Dup ⟨1, by decide⟩),
+  [opAt 1775 .JUMPDEST,
+   opAt 1776 (.Dup ⟨2, by decide⟩),
+   pushAt 1777 1 31,
+   opAt 1778 .ADD,
    pushAt 1779 1 5,
-   opAt 1780 .SHL,
-   opAt 1781 .SUB,
-   pushAt 1782 1 3,
-   opAt 1783 .SHL,
-   pushAt 1784 1 96,
-   opAt 1785 .CALLDATALOAD,
-   opAt 1786 (.Swap ⟨0, by decide⟩),
-   opAt 1787 .SHR,
-   opAt 1788 (.Dup ⟨2, by decide⟩),
-   pushAt 1789 1 224,
-   opAt 1790 .ADD,
-   opAt 1791 .MSTORE,
-   pushAt 1792 1 1,
-   pushAt 1793 2 851,
-   opAt 1794 .JUMP]
+   opAt 1780 .SHR,
+   opAt 1781 (.Dup ⟨3, by decide⟩),
+   opAt 1782 (.Dup ⟨1, by decide⟩),
+   pushAt 1783 1 5,
+   opAt 1784 .SHL,
+   opAt 1785 .SUB,
+   pushAt 1786 1 3,
+   opAt 1787 .SHL,
+   pushAt 1788 1 96,
+   opAt 1789 .CALLDATALOAD,
+   opAt 1790 (.Swap ⟨0, by decide⟩),
+   opAt 1791 .SHR,
+   opAt 1792 (.Dup ⟨2, by decide⟩),
+   pushAt 1793 1 224,
+   opAt 1794 .ADD,
+   opAt 1795 .MSTORE,
+   pushAt 1796 1 1,
+   pushAt 1797 2 853,
+   opAt 1798 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast
