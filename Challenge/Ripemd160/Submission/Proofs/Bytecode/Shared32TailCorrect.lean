@@ -54,6 +54,14 @@ def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
     StaggerPersistentFrame.frame, Pair13Endian.stk, List.append_assoc, List.cons_append, List.nil_append] using g
 
 
+
+private theorem serialize_append (s : State) (h : Compression.HashState)
+    (off limit : UInt256) (headWords tailWords : List UInt256) :
+    StackTail.append (StaggerPersistentSerialize.result s h off limit headWords) tailWords =
+      StaggerPersistentSerialize.result s h off limit (headWords ++ tailWords) := by
+  rfl
+
+
 def gasSteps_core (s : State) (e : Env s) (input : ByteArray)
     (hcal : s.executionEnv.calldata = input) (h32 : input.size = 32)
     (hactive : s.activeWords = UInt256.ofNat 36)
@@ -73,9 +81,14 @@ def gasSteps_core (s : State) (e : Env s) (input : ByteArray)
     (Shared32Core.resultHash s) rho (by omega) e.run e.code e.fork e.np
   have hoff : StaggerPersistentLoopRaw.nextOffset (UInt256.ofNat 0) = UInt256.ofNat 64 := by decide
   rw [hoff] at ge
-  simpa only [StackTail.append, Shared32Core.entryState, Shared32Core.resultState,
-    StaggerPersistentFrame.frame, StaggerPersistentSerialize.result,
-    StaggerPersistentReturn.result, Shared32Core.maskRho, masks,
+  have hresult : StackTail.append (Shared32Core.resultState s) rho =
+      StaggerPersistentSerialize.result s (Shared32Core.resultHash s)
+        (UInt256.ofNat 64) (UInt256.ofNat 32) masks :=
+    serialize_append s (Shared32Core.resultHash s) (UInt256.ofNat 64)
+      (UInt256.ofNat 32) Shared32Core.maskRho rho
+  rw [hresult]
+  simpa only [StackTail.append, Shared32Core.entryState,
+    StaggerPersistentFrame.frame, Shared32Core.maskRho, masks,
     List.append_assoc, List.cons_append, List.nil_append] using gb.trans (ge.trans go)
 
 theorem correct (input : ByteArray) (h32 : input.size = 32)

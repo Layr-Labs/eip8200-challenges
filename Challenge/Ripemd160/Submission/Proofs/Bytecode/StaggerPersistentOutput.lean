@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.MemoryPackedOutput
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentFrame
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80SiteCommon
 set_option warningAsError true
@@ -7,59 +8,45 @@ set_option linter.unusedSimpArgs false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentOutput
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Challenge.EvmProof.Word StackRoundTrace
+@[simp] private theorem rawZeroNat : (⟨0⟩ : UInt256).toNat = 0 := rfl
 def packedHash (h : Compression.HashState) : UInt256 := (UInt256.lor (ofUInt32 h.h4) (UInt256.shiftLeft (UInt256.lor (ofUInt32 h.h3) (UInt256.shiftLeft (UInt256.lor (ofUInt32 h.h2) (UInt256.shiftLeft (UInt256.lor (ofUInt32 h.h1) (UInt256.shiftLeft (ofUInt32 h.h0) (UInt256.ofNat 32))) (UInt256.ofNat 32))) (UInt256.ofNat 32))) (UInt256.ofNat 32)))
-/-- Loop exit: drop the six resident round constants and bring the chaining words into
-serialization order. -/
-def prefixTemplate : List Instr := [
-   .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP,
-   .op (.Swap ⟨3, by decide⟩) ]
-def bodyTemplate : List Instr := [
-   .push ⟨1, by decide⟩ (UInt256.ofNat 32), .op .SHL, .op .OR,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 32), .op .SHL, .op .OR,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 32), .op .SHL, .op .OR,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 32), .op .SHL, .op .OR ]
+/-- Five descending stores pack the chaining words into bytes 28 through 47. -/
+def prefixTemplate : List Instr :=
+  [.op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP]
+def bodyTemplate : List Instr :=
+  [.push ⟨1, by decide⟩ (UInt256.ofNat 16), .op .MSTORE,
+   .op (.Swap ⟨1, by decide⟩),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 12), .op .MSTORE,
+   .push ⟨1, by decide⟩ (UInt256.ofNat 8), .op .MSTORE,
+   .push ⟨1, by decide⟩ (UInt256.ofNat 4), .op .MSTORE,
+   .push ⟨0, by decide⟩ (UInt256.ofNat 0), .op .MSTORE,
+   .push ⟨1, by decide⟩ (UInt256.ofNat 16), .op .MLOAD]
 def template : List Instr := prefixTemplate ++ bodyTemplate
-def join (a b : UInt256) : UInt256 := UInt256.lor (UInt256.shiftLeft a (UInt256.ofNat 32)) b
 
-private theorem join_reverse (a b : UInt256) :
-    join a b = UInt256.lor b (UInt256.shiftLeft a (UInt256.ofNat 32)) :=
-  Word.lor_comm _ _
+def stored (s : State) (address : Nat) (word : UInt32) : State :=
+  {s with memory := MemoryPackedOutput.store s.memory address word
+          activeWords := s.activeWordsAfterUInt256 address 32}
 
-theorem run_raw (s : State) (pc a b c d e : UInt256)
-    (rho : List UInt256) (hstack : rho.length ≤ 1012) (hrun : s.halt = .Running) :
-    runInstrSeq bodyTemplate {s with pc := pc, stack := [a,b,c,d,e] ++ rho} =
-      some {s with pc := pcAfter pc bodyTemplate, stack := join (join (join (join a b) c) d) e :: rho} := by
-  have hcap (n : Nat) (hn : n ≤ 11) : rho.length + n < 1024 := by omega
-  simp (discharger := omega) [bodyTemplate, join,
-    runInstrSeq, DataStepper.runInstr, UInt256.succ, pcAfter, Instr.size,
-    hrun, hcap, Nat.add_assoc, List.getElem?_cons_zero,
-    Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals repeat first | apply And.intro | rfl
-
-theorem run_prefix (s : State) (pc off limit : UInt256) (h : Compression.HashState)
-    (rho : List UInt256) (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running) :
-    runInstrSeq prefixTemplate {s with pc := pc, stack := StaggerPersistentFrame.frame h off limit rho} =
-      some {s with
-        pc := pcAfter pc prefixTemplate,
-        stack := [ofUInt32 h.h0, ofUInt32 h.h1, ofUInt32 h.h2, ofUInt32 h.h3, ofUInt32 h.h4] ++
-          (off :: limit :: rho)} := by
-  have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
-  simp (discharger := omega) [prefixTemplate, StaggerPersistentFrame.frame,
-    runInstrSeq, DataStepper.runInstr, UInt256.succ, pcAfter, Instr.size,
-    hrun, hcap, Nat.add_assoc, List.getElem?_cons_zero, List.exchange,
-    Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals repeat first | apply And.intro | rfl
+def prepared (s : State) (h : Compression.HashState) : State :=
+  let t := stored (stored (stored (stored (stored s 16 h.h4) 12 h.h3) 8 h.h2) 4 h.h1) 0 h.h0
+  {t with activeWords := t.activeWordsAfterUInt256 16 32}
 
 theorem run_template (s : State) (pc off limit : UInt256) (h : Compression.HashState)
     (rho : List UInt256) (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running) :
     runInstrSeq template {s with pc := pc, stack := StaggerPersistentFrame.frame h off limit rho} =
-      some {s with pc := pcAfter pc template, stack := packedHash h :: off :: limit :: rho} := by
-  have hs : (off :: limit :: rho).length ≤ 1012 := by simp; omega
-  have h1 := run_prefix s pc off limit h rho hstack hrun
-  have h2 := run_raw s (pcAfter pc prefixTemplate) (ofUInt32 h.h0) (ofUInt32 h.h1) (ofUInt32 h.h2)
-      (ofUInt32 h.h3) (ofUInt32 h.h4) (off :: limit :: rho) hs hrun
-  have hsum := DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
-  simpa only [template, DenseScheduleTrace.pcAfter_append, packedHash, join_reverse] using hsum
+      some {prepared s h with pc := pcAfter pc template, stack := packedHash h :: off :: limit :: rho} := by
+  have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
+  have hread := MemoryPackedOutput.readWord_eq s.memory h
+  have hpack : PackedOutputMath.pack5 h.h0 h.h1 h.h2 h.h3 h.h4 = packedHash h := by
+    simp only [PackedOutputMath.pack5, PackedOutputMath.append32, packedHash, Word.lor_comm]
+  simp only [MemoryPackedOutput.memory, MemoryPackedOutput.store, hpack] at hread
+  simp (discharger := omega) [template, prefixTemplate, bodyTemplate,
+    StaggerPersistentFrame.frame, prepared, stored, MemoryPackedOutput.store,
+    runInstrSeq, DataStepper.runInstr, UInt256.succ, pcAfter, Instr.size,
+    hrun, hcap, Nat.add_assoc, List.getElem?_cons_zero, List.exchange,
+    Word.ofUInt32_toNat, Word.word_toNat_ofNat, Word.literal_eq_ofNat, hread,
+    State.activeWordsAfterUInt256]
+  all_goals repeat first | apply And.intro | rfl
 
 theorem actual_slice :
     (Artifact.submissionArtifact.instructions.drop 3592).take template.length = template := by rfl
@@ -81,17 +68,16 @@ def gasSteps (s : State) (off limit : UInt256) (h : Compression.HashState)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 4648, stack := StaggerPersistentFrame.frame h off limit rho}
-      {s with pc := UInt256.ofNat 4671, stack := packedHash h :: off :: limit :: rho} := by
+      {prepared s h with pc := UInt256.ofNat 4672, stack := packedHash h :: off :: limit :: rho} := by
   apply DenseScheduleLift.gasSteps_of_raw site
     {s with pc := UInt256.ofNat 4648, stack := StaggerPersistentFrame.frame h off limit rho}
-    {s with pc := UInt256.ofNat 4671, stack := packedHash h :: off :: limit :: rho}
+    {prepared s h with pc := UInt256.ofNat 4672, stack := packedHash h :: off :: limit :: rho}
     hcode hfork hrun hnp site_pc.symm advances
   have hraw := run_template s (UInt256.ofNat 4648) off limit h rho hstack hrun
-  have hend : pcAfter (UInt256.ofNat 4648) template = UInt256.ofNat 4671 := by decide
+  have hend : pcAfter (UInt256.ofNat 4648) template = UInt256.ofNat 4672 := by decide
   rw [hend] at hraw
   exact hraw
 
-#print axioms run_raw
 #print axioms run_template
 #print axioms actual_slice
 #print axioms gasSteps

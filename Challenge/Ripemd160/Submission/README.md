@@ -1,64 +1,80 @@
-# RIPEMD-160: recognize the 32-byte route before rounding
+# RIPEMD-160: assemble the output through descending memory stores
 
-Research candidate: 671,241 gas / 5,220 bytes, raw-byte SHA-256
-`5b301f0477890091afba147d04ce17b7b24309336e2809b449dc56afa594a813`.
-The exact assembly and full Solution proofs pass all 3719 build jobs. The
-final correctness theorem uses only propext, Classical.choice and Quot.sound.
-Independent secure verification is required before submission. This extends
-our universally proved 19639119 unit-literal artifact at 671,472 gas.
+Candidate: 671,167 gas / 5,220 bytes, raw-byte SHA-256
+`b3acdaccb01fd77ed1beb469bd064648d82273c66f423555b2969d99e5071b56`.
+The frozen parent a64a2bde measures 671,241 gas, was accepted as e2eb0193,
+and was promoted to 730e7dc2.
+This candidate saves 74 gas on the baseline corpus: 32 from our output
+assembly change and 42 from jacklightChen's public J2 length-reuse change.
+The executable has 3,745 instructions and 4,940 bytes, followed by the
+unchanged 280-byte digest payload.
 
-At the common partial-padding entry, the parent first rounded the resident
-length with `(length + 72) & ~63`, then checked whether the input had exactly
-32 bytes. The new bytecode performs that check first. Non-32 inputs fall
-through the same rounder and padding code. The 32-byte route takes its existing
-branch immediately and retains its original resident limit of 32.
+The old output assembly discarded six round constants, exchanged two hash
+words and combined the five 32-bit words through four shifts and ORs. The new
+assembly discards the same six constants, writes h4 at memory offset 16,
+exchanges the next hash words, then writes h3, h2, h1 and h0 at offsets 12,
+8, 4 and 0. The stores proceed toward lower addresses. Each later store
+preserves the four-byte word exposed above its end. Reading 32 bytes at offset
+16 therefore gives twelve leading zero bytes and the five big-endian hash
+words in the original order. The existing byte-swap stages and final return
+then produce the same RIPEMD-160 result.
 
-This limit still gives exactly one block of compression. The shared 32-byte
-route supplies its proven one-block schedule and enters the core at offset
-zero. After compression, the offset is 64. The continuation test `64 < 32`
-is false, and the separate padding-completion test compares offset 64 with
-calldata size 32, which is also false. The existing serialization follows.
-The retained limit does not affect the compression arithmetic or digest.
-The padded-message specification still has length 64; only the runtime loop
-limit on this dedicated route changes.
+The old packing window costs 39 gas; the new window costs 38. All measured
+generic executions already have the required memory active. There are 32
+such returns in the baseline corpus, so output assembly saves 32 gas. The
+new window is one byte longer. Narrowing the immediately following shift-eight
+literal from PUSH2 to PUSH1 balances that byte without changing its gas.
+Every physical PC outside 4654 through 4676 remains unchanged, as do all
+instruction indices, jump destinations and payload offsets.
 
-The change swaps two adjacent instruction groups in bytes 4706 through 4722:
-the five-instruction 32-byte guard moves ahead of the seven-instruction
-rounder. JUMPDEST at 4705 stays in place. All byte positions outside this
-17-byte region remain unchanged. The guard starts at 4706 and its non-32
-fallthrough reaches the rounder at 4714. Ordinary padding still starts at
-4723. There are 3745 executable instructions, 4940 executable bytes, and the
-unchanged 280-byte digest payload. CODECOPY still reads [4940,5220).
+The second change comes from jacklightChen's public submission eab66c37,
+source cdeec6a304f7bad5db7e4e7e497aa838e13c832c. At three J2 initializer
+sites, the resident value duplicated by the old instruction is exactly the
+calldata length. CALLDATASIZE produces that value for two gas instead of
+three. We adapted the public PCs 133, 134 and 138 to this parent's PCs 131,
+132 and 136. Each instruction remains one byte. The whole initializer proof
+binds the values to the actual execution environment. All three byte
+representations—typed instructions, exact assembly theorem and raw byte
+array—were updated together. The baseline initializer runs fourteen times,
+giving 42 gas of savings. That independent contribution is credited to its
+author rather than included in our 32-gas output contribution.
 
-The 32-byte branch avoids twenty-one gas. Eleven baseline vectors take that
-branch, so it saves 231 gas from 19639119. All other measured inputs retain
-the parent's cost. Compared with our accepted frontier 3267c1f8 at 672,060,
-the cumulative baseline improvement is 819 gas. The parent contributions
-are deferred padding-limit calculation and a direct lane-bit literal.
+MemoryPackedOutput proves the overlapping-store read one byte at a time for
+arbitrary initial memory and all five UInt32 hash words. Its readWord theorem
+connects that memory result to PackedOutputMath.pack5. StaggerPersistentOutput
+proves the complete raw instruction sequence and tracks both memory and
+active-word changes. StaggerPersistentSerialize composes the existing endian
+and return proofs over that resulting state. Its result model preserves the
+execution environment and call stack while permitting the changed scratch
+memory. The final returned-bytes theorem remains the original RIPEMD
+specification. The J2 raw initializer retains its existing result model.
 
-Expanded differential checks cover 4358 inputs: 4321 have unchanged cost and
-37 save twenty-one gas relative to 19639119. Every digest agrees with
-independent RIPEMD-160. All 69 additional corpus seeds save 231 gas. The
-original native scorer passes 49 clean and 49 dirty executions. The mandatory
-full gate passes 120 corpus seeds, 2500 fuzz cases, instruction reassembly,
-dynamic jumps and CODECOPY bounds. The original read-only loader accepts
-these exact bytes. Encoding size and footprint remain 5220 and 2312.
+Runtime validation of these exact bytes passes the original read-only loader,
+98 native clean and dirty executions, the mandatory 120-seed corpus gate,
+2500 fuzz cases, executable reassembly, jump destinations and CODECOPY bounds.
+Expanded differential validation against a64a2bde passes 4358 inputs: seven
+have unchanged gas, 2369 save four gas, fourteen save three gas and 1968 save
+one gas. All digests match an independent RIPEMD implementation. Sixty of 69
+additional corpus seeds save 74 gas; the other nine save 77 because their
+recognizer execution counts differ. The per-input prediction is minus one
+per output packing and minus one per each of the three changed J2 sites.
+The full Solution build passes all 3720 jobs, and the final theorem depends
+only on propext, Classical.choice and Quot.sound. Independent secure Comparator
+verification is the remaining check; its result is recorded after completion.
 
-StaggerPersistentStart splits the common entry into its JUMPDEST, 32-byte
-guard and raw rounder. Its composed non-32 trace reaches the same rounded
-frame as before. PaddingTrace, PaddingTail and ColdHighPaddingTrace use that
-composition; PaddingTraceGeneral handles the unchanged body after it.
-Shared32Start and Shared32TailCorrect take the early branch without rounding.
-Shared32Core uses resident limit 32 while its completed offset remains 64,
-reusing the parameterized compression and serialization proofs. The complete
-Solution passes; the protected Comparator must also accept the frozen bytes
-before upload.
+The parent retains our deferred padding-limit rounding, literal unit constant,
+and exact-32 guard before rounding. The parent and earlier artifacts have
+independent secure verification. The earlier 671,664 candidate was accepted
+as 0f4090d0 and promoted to cdbceb0f. That promotion's complete Submission
+tree matches the frozen d6a787fc. New public branches are inspected and active
+research is compared against each promoted frontier on identical inputs.
 
-Attribution: ercumentyildirim's 6d7f412a supplies the Shared32/J2/cold
-architecture. Our 5cf31e63 retains the unused recognizer suffix and folds the
-plus-modulus literal; the plus-modulus idea credits fkiene. Our d6a787fc defers
-padding-limit calculation and proves the shared high-input route. Our
-19639119 directly supplies the lane bit. The compact classifier constant
-credits i34-9's refinement of our earlier lookup. This guard reorder and its
-proof integration are our work. Earlier contributors retain their credit.
-All changes are within Submission; protected benchmark components are unchanged.
+Earlier attribution remains: ercumentyildirim supplied the Shared32/J2/cold
+architecture in 6d7f412a; fkiene supplied the plus-modulus idea; i34-9 refined
+the packed classifier constant. Our retained recognizer suffix, prefix-clear
+memory proof, deferred limit and guard integration remain in the parent.
+Earlier compression, endian, payload and proof contributions retain their
+provenance. Only Challenge/Ripemd160/Submission is changed. The protected
+semantics, specification, scorer, artifact generator, compiler, kernel,
+dependency pins and benchmark settings remain unchanged. Research and review
+continue after submission and promotion.
