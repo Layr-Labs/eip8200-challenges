@@ -29,7 +29,7 @@ def blkFullBaseGuard :
    opAt 1844 .SHR,
    opAt 1845 .AND,
    opAt 1846 .ISZERO,
-   pushAt 1847 2 2467,
+   pushAt 1847 2 2468,
    opAt 1848 .JUMPI]
 
 /-- Located block in the selected full-width-base helper. -/
@@ -39,11 +39,11 @@ def blkFullBaseCopyAdd :
    pushAt 1850 1 96,
    pushAt 1851 2 256,
    opAt 1852 .CALLDATACOPY,
-   pushAt 1853 2 2637,
+   pushAt 1853 2 2636,
    pushAt 1854 2 512,
    pushAt 1855 2 256,
    pushAt 1856 2 1536,
-   pushAt 1857 2 3550,
+   pushAt 1857 2 3546,
    opAt 1858 .JUMP]
 
 /-- Located block in the selected full-width-base helper. -/

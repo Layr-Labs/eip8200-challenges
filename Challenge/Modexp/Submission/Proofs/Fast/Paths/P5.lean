@@ -16,11 +16,11 @@ def blk1255 :
   [opAt 711 .JUMPDEST,
    opAt 712 .POP,
    opAt 713 .POP,
-   pushAt 714 2 2637,
+   pushAt 714 2 2636,
    pushAt 715 2 512,
    pushAt 716 2 1536,
    pushAt 717 2 256,
-   pushAt 718 2 3550,
+   pushAt 718 2 3546,
    opAt 719 .JUMP]
 
 /-- Instructions 1402..1360, pc 1896..1904. -/
@@ -30,13 +30,13 @@ def blk1272 :
    opAt 721 (.Dup ⟨4, by decide⟩),
    opAt 722 (.Dup ⟨1, by decide⟩),
    opAt 723 .EQ,
-   pushAt 724 2 1119,
+   pushAt 724 2 1120,
    opAt 725 .JUMPI]
 
 /-- Instructions 1409..1416, pc 1905..1914. -/
 def blk1279 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 726 2 1678,
+  [pushAt 726 2 1679,
    opAt 727 .JUMP]
 
 /-- Instructions 1417..1423, pc 1916..1932. -/
@@ -47,7 +47,7 @@ def blk1287 :
    pushAt 730 2 256,
    opAt 731 (.Dup ⟨0, by decide⟩),
    pushAt 732 2 256,
-   pushAt 733 2 3550,
+   pushAt 733 2 3546,
    opAt 734 .JUMP]
 
 /-- Instructions 1424..1430, pc 1933..1941. -/
@@ -68,7 +68,7 @@ def blk1301 :
    pushAt 743 2 256,
    pushAt 744 2 512,
    pushAt 745 2 256,
-   pushAt 746 2 3550,
+   pushAt 746 2 3546,
    opAt 747 .JUMP]
 
 /-- Instructions 1389..1389, pc 1958..1958. -/
@@ -80,7 +80,7 @@ def blk1307 :
 def blk1308 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 749 .JUMPDEST,
-   pushAt 750 1 1,
+   pushAt 750 2 1,
    opAt 751 .SHR,
    opAt 752 (.Dup ⟨0, by decide⟩),
    pushAt 753 2 1060,

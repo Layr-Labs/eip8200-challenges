@@ -29,8 +29,8 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.RrLeadingTraceCore
 
 theorem jumpD4643 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 2794).toNat = true :=
-  Exp.jumpD 2794 (by decide) jumpDest4608
+    (UInt256.ofNat 2793).toNat = true :=
+  Exp.jumpD 2793 (by decide) jumpDest4608
 
 /-! ## Facts at `BDONE` on the hit path -/
 
@@ -72,12 +72,12 @@ theorem hitFinal_acc (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 :
   RootE3Phase.represents_acc_after_steps _ n mm _ n (by omega) hn32
     (RootE3Phase.m2_acc_value mem input n mm hn hn32 hm hodd hmod htop)
 
-/-- `BASE` holds the Montgomery residue of the base at `BDONE`. -/
+/-- The retained `TS` holds the Montgomery residue of the base at `BDONE`. -/
 theorem hitFinal_base (mem input : ByteArray) (n mm : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hodd : mm % 2 = 1)
     (hmm : mm < Limbs.radix ^ n) (htop : R1.TopBitSet mem)
     (hmod : Model.FastRepresents mem 0 n mm) :
-    Model.FastRepresents (hitFinalMem mem input n mm) 512 n
+    Model.FastRepresents (hitFinalMem mem input n mm) 2112 n
       (Precompile.bytesToNatPadded input 96 (32 * n) % mm * Limbs.radix ^ n % mm) := by
   have htop' : Limbs.radix ^ n < 2 * mm := R1.radix_pow_lt_two_mul (by omega) hodd hmod htop
   have hmod1 : Model.FastRepresents (m1Of mem input n) 0 n mm := by
@@ -95,12 +95,12 @@ theorem hitFinal_base (mem input : ByteArray) (n mm : Nat)
     refine ShiftCacheModel.represents_cache _ n NEG n _ (Or.inl (by unfold NEG; omega)) ?_
     exact fastRepresents_preMemOf _ _ NEG n _ (Or.inl (by unfold NEG PRE_L; omega))
       (neg_represents (m1Of mem input n) n mm (by omega) (by omega) hmpos hmod1)
-  have hbase2 : Model.FastRepresents (m2Of mem input n) 512 n
+  have hbase2 : Model.FastRepresents (m2Of mem input n) 2112 n
       (Precompile.bytesToNatPadded input 96 (32 * n) % mm) := by
     unfold m2Of preMem
-    refine ShiftCacheModel.represents_cache _ n 512 n _ (Or.inl (by omega)) ?_
-    exact fastRepresents_preMemOf _ _ 512 n _ (Or.inl (by unfold PRE_L; omega))
-      (fastRepresents_negStep _ n 512 n _ (Or.inl (by unfold NEG; omega))
+    refine ShiftCacheModel.represents_cache _ n 2112 n _ (Or.inr (by omega)) ?_
+    exact fastRepresents_preMemOf _ _ 2112 n _ (Or.inr (by unfold PRE_DINV; omega))
+      (fastRepresents_negStep _ n 2112 n _ (Or.inr (by unfold NEG; omega))
         (m1_base mem input n mm hn hn32 hmpos hodd hmod htop) n le_rfl)
   exact stepMems_represents (m2Of mem input n) n mm _ hn hn32 hmpos hmm htop' hmod2 hneg2
     hbase2 (Nat.mod_lt _ hmpos) n
@@ -256,7 +256,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
       (Exp.gasSteps_r0 s mem1 n bsize esize msize hn hn32 hact hframe1.s32 hcode hfork hrun
         hnp).trans
       (Exp.gasSteps_ccbFull s sub hspec esize msize hmpos hn hn32 1280 (by omega) (by omega)
-        (UInt256.ofNat 2394) (Exp.mcopyMem mem1 1280 1024 (32 * n)) (Limbs.radix ^ n % mm)
+        (UInt256.ofNat 2395) (Exp.mcopyMem mem1 1280 1024 (32 * n)) (Limbs.radix ^ n % mm)
         Exp.jumpD3571 hf2 hcc.1 hcc.2 (Nat.mod_lt _ hmpos) hact296 hcode hfork hrun hnp)
     have hframeDirect : Exp.Frame directMem n bsize minv := by
       dsimp only [directMem]

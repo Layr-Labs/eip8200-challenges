@@ -1,4 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Fast.EarlyCsubModel
+import Challenge.Modexp.Submission.Proofs.Fast.RetainedTNormalizer
 import Challenge.Modexp.Submission.Proofs.Fast.FullBaseLogic
 import Challenge.Modexp.Submission.Proofs.Fast.Exp
 
@@ -11,8 +12,9 @@ open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
 
-/-! Memory-only semantics of the exact e570 producer. The deleted raw ACC
-copy is absent; the first CSUB result is copied from BASE to ACC before scale.
+/-! Memory-only semantics of the retained-accumulator producer. The raw base is
+placed at 2112, the leading-limb guard reduces it in place (`RetainedTNormalizer`),
+and the reduced value is copied from 2112 to ACC before scale.
 These facts do not certify the artifact locations or complete input theorem. -/
 
 def hitMemory (mem input : ByteArray) (n : Nat) : ByteArray :=
@@ -20,10 +22,10 @@ def hitMemory (mem input : ByteArray) (n : Nat) : ByteArray :=
     (MachineState.readPadded input 96 (32*n)) 2112) 2080 (UInt256.ofNat 0)
 
 def reducedMemory (mem input : ByteArray) (n : Nat) : ByteArray :=
-  Csub.csResultMemory (hitMemory mem input n) n 512
+  RetainedTNormalizer.resultMemory (hitMemory mem input n) n
 
 def canonicalMemory (mem input : ByteArray) (n : Nat) : ByteArray :=
-  Exp.mcopyMem (reducedMemory mem input n) 256 512 (32*n)
+  Exp.mcopyMem (reducedMemory mem input n) 256 2112 (32*n)
 
 theorem hit_t (mem input : ByteArray) (n : Nat) :
     Model.FastRepresents (hitMemory mem input n) 2112 n
@@ -54,29 +56,29 @@ theorem hit_high_zero (mem input : ByteArray) (n : Nat) :
 theorem reduced_base (mem input : ByteArray) (n mm : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hm : 0 < mm) (hodd : mm % 2 = 1)
     (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem) :
-    Model.FastRepresents (reducedMemory mem input n) 512 n
+    Model.FastRepresents (reducedMemory mem input n) 2112 n
       (Precompile.bytesToNatPadded input 96 (32*n) % mm) := by
-  have h := Csub.csub_correct (hitMemory mem input n) n
-    (Precompile.bytesToNatPadded input 96 (32*n)) mm 0 512 hn hn32
+  have hb : Precompile.bytesToNatPadded input 96 (32*n) < 2 * mm :=
+    FullBase.baseValue_lt_two_mul (by omega) hodd hmod htop (input := input)
+  exact RetainedTNormalizer.result_correct (hitMemory mem input n) n
+    (Precompile.bytesToNatPadded input 96 (32*n)) mm hn hn32
     (hit_t mem input n) (hit_modulus mem input n mm hn32 hmod)
-    (hit_high_zero mem input n) (by omega) hm
-    (by simpa using FullBase.baseValue_lt_two_mul (by omega) hodd hmod htop (input := input))
-  simpa only [Nat.zero_mul, Nat.zero_add, reducedMemory] using h
+    (hit_high_zero mem input n) hm hb
 
 theorem canonical_acc (mem input : ByteArray) (n mm : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hm : 0 < mm) (hodd : mm % 2 = 1)
     (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem) :
     Model.FastRepresents (canonicalMemory mem input n) 256 n
       (Precompile.bytesToNatPadded input 96 (32*n) % mm) :=
-  Exp.fastRepresents_mcopyMem _ 256 512 n _ (by omega)
+  Exp.fastRepresents_mcopyMem _ 256 2112 n _ (by omega)
     (reduced_base mem input n mm hn hn32 hm hodd hmod htop)
 
 theorem canonical_base (mem input : ByteArray) (n mm : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hm : 0 < mm) (hodd : mm % 2 = 1)
     (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem) :
-    Model.FastRepresents (canonicalMemory mem input n) 512 n
+    Model.FastRepresents (canonicalMemory mem input n) 2112 n
       (Precompile.bytesToNatPadded input 96 (32*n) % mm) :=
-  Exp.fastRepresents_mcopyMem_disjoint _ 256 512 (32*n) 512 n _ (Or.inl (by omega))
+  Exp.fastRepresents_mcopyMem_disjoint _ 256 2112 (32*n) 2112 n _ (Or.inl (by omega))
     (reduced_base mem input n mm hn hn32 hm hodd hmod htop)
 
 theorem canonical_lt (input : ByteArray) (n mm : Nat) (hm : 0 < mm) :
@@ -91,8 +93,9 @@ theorem canonical_readWord (mem input : ByteArray) (n addr : Nat)
     MachineState.readWord (canonicalMemory mem input n) addr =
       MachineState.readWord mem addr := by
   unfold canonicalMemory reducedMemory
-  rw [Exp.readWord_mcopyMem_disjoint _ 256 512 (32*n) addr hd.1,
-    Monpro.csResultMemory_readWord_outside _ n 512 addr (by omega) hd.2.2.1 hd.2.1]
+  rw [Exp.readWord_mcopyMem_disjoint _ 256 2112 (32*n) addr hd.1,
+    RetainedTNormalizer.readWord_outside _ n addr hn hd.2.2.1
+      (hd.2.2.2.elim (fun h => Or.inl (by omega)) (fun h => Or.inr h))]
   unfold hitMemory
   rw [Exp.storeWord_readWord_disjoint _ 2080 addr (UInt256.ofNat 0) (by omega)]
   apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint

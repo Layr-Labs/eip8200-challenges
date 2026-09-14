@@ -23,13 +23,13 @@ private theorem instructionPC_add
     assembleBytes_append, List.length_append]
 
 private theorem helperPCAnchor :
-    Artifact.submissionArtifact.instructionPC 1814 = 2394 := by
+    Artifact.submissionArtifact.instructionPC 1814 = 2395 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem helperPC (i : Nat) (hlo : 1814 ≤ i) (hhi : i ≤ 1836) :
     Artifact.submissionArtifact.instructionPC i =
-      ([2394,2395,2398,2399,2402,2405,2406,2407,2409,2410,2411,2413,2414,2415,2417,2418,2419,2421,2422,2423,2424,2425,2428] : List Nat)[i - 1814]! := by
+      ([2395,2396,2399,2400,2403,2406,2407,2408,2410,2411,2412,2414,2415,2416,2418,2419,2420,2422,2423,2424,2425,2426,2429] : List Nat)[i - 1814]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 

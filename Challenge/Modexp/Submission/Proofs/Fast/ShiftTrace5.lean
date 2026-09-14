@@ -28,7 +28,7 @@ theorem repairFacts_of (mem : ByteArray) (n mm r : Nat)
     (htop : Limbs.radix ^ n < 2 * mm)
     (hmod : Model.FastRepresents mem 0 n mm)
     (hneg : Model.FastRepresents mem NEG n (Limbs.radix ^ n - mm))
-    (hbase : Model.FastRepresents mem 512 n r) (hr : r < mm) :
+    (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm) :
     RepairFacts
       (midMem (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
         (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n)))
@@ -80,7 +80,7 @@ def gasSteps_shiftLoop (s : State) (mem : ByteArray) (n bsize esize msize mm min
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (e : Env s) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (htop : Limbs.radix ^ n < 2 * mm)
     (inv : StepInv mem n bsize mm minv)
-    (hbase : Model.FastRepresents mem 512 n r) (hr : r < mm) :
+    (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm) :
     Challenge.EvmProof.GasSteps (shiftLoopState s mem n bsize esize msize n)
       (shiftLoopState s (stepMems mem n mm n) n bsize esize msize 0) :=
   Challenge.EvmProof.GasSteps.cast
@@ -145,11 +145,11 @@ theorem hitFinal_neg (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 :
       (neg_represents (m1Of mem input n) n mm (by omega) (by omega) hmpos hmod1)
   exact stepMems_neg (m2Of mem input n) n mm (by omega) hn32 hneg2 n
 
-/-- The base value the first `CSUB` leaves in `BASE`: `b mod m`. -/
+/-- The base value the first `CSUB` leaves in the retained `TS`: `b mod m`. -/
 theorem m1_base (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hmpos : 0 < mm) (hodd : mm % 2 = 1)
     (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem) :
-    Model.FastRepresents (m1Of mem input n) 512 n
+    Model.FastRepresents (m1Of mem input n) 2112 n
       (Precompile.bytesToNatPadded input 96 (32 * n) % mm) :=
   ShiftProducerCanonical.canonical_base mem input n mm hn hn32 hmpos hodd hmod htop
 
