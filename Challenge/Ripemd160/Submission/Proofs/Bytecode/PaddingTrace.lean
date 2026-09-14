@@ -453,7 +453,7 @@ private theorem run_guardSkip (input : ByteArray) (hfit : CalldataFits input)
     Challenge.EvmProof.DataStepper.runLocatedBlock,
     Challenge.EvmProof.DataStepper.runLocated, Challenge.EvmProof.DataStepper.runInstr,
     padFramed, padSkip, UInt256.isTrue,
-    guard_toNat input hfit, hz]
+    guard_toNat_mirrored input hfit, hz]
 
 set_option maxHeartbeats 400000 in
 private theorem run_guardMiss (input : ByteArray) (hfit : CalldataFits input)
@@ -464,7 +464,7 @@ private theorem run_guardMiss (input : ByteArray) (hfit : CalldataFits input)
     Challenge.EvmProof.DataStepper.runLocatedBlock,
     Challenge.EvmProof.DataStepper.runLocated, Challenge.EvmProof.DataStepper.runInstr,
     padFramed, padGuardTaken, padGuardMiss, UInt256.isTrue,
-    guard_toNat input hfit, hnz]
+    guard_toNat_mirrored input hfit, hnz]
 
 def gasSteps_guardSkip (input : ByteArray) (hfit : CalldataFits input)
     (hz : input.size % 64 = 0) :

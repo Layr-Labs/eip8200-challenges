@@ -282,8 +282,8 @@ private def submissionInstructionsChunk1 : List Instr :=
   .push 27 822752278660603021055183846080144629349832214544141570168324096,
   .push 4 4294967295,
   .push 13 158456325065422163343096938498,
-  .push 1 63,
   op 0x36,
+  .push 1 63,
   op 0x16
 ]
 
@@ -3955,8 +3955,8 @@ private theorem submissionInstructionsChunk1_assemble : assembleBytes submission
   0x7a, 0x01, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x63, 0xff, 0xff, 0xff, 0xff, 0x6c, 0x02, 0x00,
-  0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x02, 0x60,
-  0x3f, 0x36, 0x16
+  0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x02, 0x36,
+  0x60, 0x3f, 0x16
 ] := by decide
 
 private theorem submissionInstructionsChunk2_assemble : assembleBytes submissionInstructionsChunk2 = [
@@ -5880,8 +5880,8 @@ def padCopyPath : List
 straight to the block loop. -/
 def padGuardPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨251, .push ⟨1, by decide⟩ (UInt256.ofNat 63), by rfl, by decide⟩,
-   ⟨252, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨251, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨252, .push ⟨1, by decide⟩ (UInt256.ofNat 63), by rfl, by decide⟩,
    ⟨253, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨254, .push ⟨2, by decide⟩ (UInt256.ofNat 4704), by rfl, by decide⟩,
    ⟨255, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
