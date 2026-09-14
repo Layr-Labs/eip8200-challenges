@@ -362,6 +362,28 @@ theorem ptrAt_mod (base j : Nat) (hj : 32 * j ≤ base) (hbase : base < 2 ^ 256)
   rw [hlit, ← Challenge.EvmProof.Word.word_toNat_ofNat]
   exact ptrAt_toNat base j hj hbase
 
+/-- A walk pointer embeds as its reduced limb address. -/
+theorem ptrAt_ofNat (base j : Nat) (hj : 32 * j ≤ base) (hbase : base < 2 ^ 256) :
+    UInt256.ofNat (ptrAt base j) = UInt256.ofNat (base - 32 * j) := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [ptrAt_toNat base j hj hbase, Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (Nat.lt_of_le_of_lt (Nat.sub_le base (32 * j)) hbase)]
+
+/-- Retreating a walk pointer by one limb is the wrapped subtraction of a
+plain `32`, so one resident `32` can serve both pointers of a row instead of
+two materializations of the wrapped constant `2 ^ 256 - 32`. -/
+theorem ptrAt_pred (base j : Nat) (hj : 32 * (j + 1) ≤ base)
+    (hbase : base < 2 ^ 256) :
+    UInt256.ofNat (ptrAt base j) - UInt256.ofNat 32 =
+      UInt256.ofNat (ptrAt base (j + 1)) := by
+  rw [ptrAt_ofNat base j (by omega) hbase,
+    ptrAt_ofNat base (j + 1) (by omega) hbase,
+    Challenge.EvmProof.Word.ofNat_sub_ofNat
+      (show 32 ≤ base - 32 * j by omega)
+      (Nat.lt_of_le_of_lt (Nat.sub_le base (32 * j)) hbase)]
+  exact congrArg UInt256.ofNat
+    (show base - 32 * j - 32 = base - 32 * (j + 1) by omega)
+
 /-! ## Active words
 
 Every address `MONPRO` touches lies below `0x2500`, so once the setup block has
@@ -708,6 +730,14 @@ theorem run_mpL1Body (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have h32 : (32 : UInt256) = UInt256.ofNat 32 := by decide
+  have hsubA : UInt256.ofNat (ptrAt (pa + 32 * n - 32) j) - UInt256.ofNat 32 =
+      UInt256.ofNat (ptrAt (pa + 32 * n - 32) (j + 1)) :=
+    ptrAt_pred (pa + 32 * n - 32) j (by omega) (by omega)
+  have hsubT : UInt256.ofNat (ptrAt (2080 + 32 * n) j) - UInt256.ofNat 32 =
+      UInt256.ofNat (ptrAt (2080 + 32 * n) (j + 1)) :=
+    ptrAt_pred (2080 + 32 * n) j (by omega) (by omega)
   have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
       UInt256) = UInt256.ofNat
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
@@ -746,7 +776,8 @@ theorem run_mpL1Body (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
       Challenge.EvmProof.Stepper.runInstr,
       mpL1State, l1Step, macSum, macCarry, mulHi, maxWord_literal,
       fastPC11, fastPC12,
-      hc9, hc10, hc11, hc12, hc13, hrun, hcode, hK, h1995, h1995', hjump,
+      hc9, hc10, hc11, hc12, hc13, hc14, hrun, hcode, hK, h32, hsubA, hsubT,
+      h1995, h1995', hjump,
       jumpDest1914, hpaj, hptj, hnextA, hpamN, hgt, hactA, hactT, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
@@ -773,6 +804,14 @@ theorem run_mpL1Exit (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have h32 : (32 : UInt256) = UInt256.ofNat 32 := by decide
+  have hsubA : UInt256.ofNat (ptrAt (pa + 32 * n - 32) j) - UInt256.ofNat 32 =
+      UInt256.ofNat (ptrAt (pa + 32 * n - 32) (j + 1)) :=
+    ptrAt_pred (pa + 32 * n - 32) j (by omega) (by omega)
+  have hsubT : UInt256.ofNat (ptrAt (2080 + 32 * n) j) - UInt256.ofNat 32 =
+      UInt256.ofNat (ptrAt (2080 + 32 * n) (j + 1)) :=
+    ptrAt_pred (2080 + 32 * n) j (by omega) (by omega)
   have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
       UInt256) = UInt256.ofNat
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
@@ -805,7 +844,7 @@ theorem run_mpL1Exit (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
       Challenge.EvmProof.Stepper.runInstr,
       mpL1State, mpMidState, l1Step, macSum, macCarry, mulHi, maxWord_literal,
       fastPC11, fastPC12,
-      hc9, hc10, hc11, hc12, hc13, hrun, hK,
+      hc9, hc10, hc11, hc12, hc13, hc14, hrun, hK, h32, hsubA, hsubT,
       hpaj, hptj, hnextA, hpamN, hactA, hactT, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
