@@ -1,40 +1,13 @@
-# RIPEMD-160: packed recognition, plus-modulus startup and CODESIZE padding
+# RIPEMD-160: paired rotations and direct round45 key
 
-Candidate: 673,533 gas / 5,233 bytes, SHA-256
-`020be29e88a166b2a1f9e63774c9ea4c4983c0fa7500b0d47911d0ac3e0af524`.
+The candidate measures 689685 gas / 5253 bytes on the unchanged local 49-vector corpus. SHA-256: `d13010f95dc649ed9718f743eb2014e90cee73098e92dc096a045a97eb7e5b44`. The current public physical-key/paired-rotation source is `6c8b38301e26a34315ed784f4401d3dc15dda209`, 691313 gas / 5224 bytes. The paired improvement is 1628 gas, with a 29-byte increase. The local proof base is the frozen entry-fallthrough source `a6d1c72e856a72886feff4aff9213c7d56ca376c`, 692583 gas / 5262 bytes.
 
-This extends i34-9's public af3a3675 implementation, which measures 673,713
-and combines the direct 32-byte footer with packed recognition and shifted
-empty/abc answers. Initialization seeds the plus modulus and derives the minus
-modulus by subtraction, following fkiene's public 9c74516c proposal. Moving
-its executable filler into a leading zero of the seed PUSH saves three gas
-per generic call, or 96 gas across the corpus.
+The compressor incorporates ercumentyildirim's eleven additional compact paired rotations and physical key transitions from public submission `17d661c2-06b0-4fd8-901f-8187141d8118`. The message reads are translated to the retained Euler table layout. Both lane masks are synthesized from the existing lower mask. Round45 keeps its direct literal key, avoiding the thirteen-gas-per-block synthesis cost while fitting the original protected encoding limit. Gas-preserving associative/commutative expression encodings bind to exact raw execution theorems.
 
-The padding-only block uses `CODESIZE CALLDATASIZE LT` to test whether the
-calldata length is below 5,233. This guarantees that its upper bit-length word
-is zero. Other lengths execute the exact high-word stores. The comparison
-saves four gas on each of 21 corpus paths, another 84 gas. The jump literal
-uses PUSH4 with two leading zeros. This layout keeps all physical byte PCs
-following initialization and following the padding branch unchanged.
+The source also retains delayed mask initialization, the literal endian mask and Euler table order, loop completion padding dispatch, and whole-block initialization fall-through. These together save 809 gas against the older recognition-stack source used by the public compression submission. The direct round45 key saves another 819 gas over 63 compression blocks, for a total 1628 gas over the current public frontier. The public compression work is credited separately; its savings are not claimed as this submission's incremental contribution.
 
-The exact bytecode has 3,788 instructions, 4,953 executable bytes and 280 data
-bytes. Selector 2020082812 permutes the fourteen digest records consistently.
-The original protected loader passes at its default recursion limit. The
-pinned native scorer passes all 49 vectors in clean and dirty frames, each
-at 673,533 gas. Differential testing against af3a3675 passes 4,358 inputs and
-69 corpus seeds; every seed saves exactly 180 gas. Tests include threshold,
-block and padding boundaries through 65,537 bytes. Large rejected lengths
-can execute zero upper stores and use more gas while returning the same digest.
-The 120-seed gate passes with minimum/median 673,533 and maximum 674,055.
+The formal graph uses the existing RIPEMD-160 specification. Its exact-byte certificate accounts for 3907 typed instructions in 21 chunks. Raw straight-line execution proofs preserve arbitrary stack tails and bind each location to the decoded artifact; higher-level equations establish the paired rotation bounds and physical key values. The loop proof keeps the input-dependent limit, synthetic padding transition and final serialization. Recognition conditions and the embedded digest payload are retained.
 
-The proof binds the exact instruction bytes and data suffix, derives the
-plus/minus modulus equality, proves the sufficient length bound for every
-UInt256 input, and connects both branches to the full RIPEMD specification.
-DataStepper and PadLift include the needed CODESIZE and SUB execution facts.
-No protected scorer, compiler, generator, specification or options are changed.
-Existing compression and recognition methods retain their attribution. Full
-proof and independent secure verification results are recorded separately.
+Validation records are kept outside the frozen source: native clean/dirty 98/98, differential fuzz 3899 cases with seed 820096, 4096 setup states, 8192 control states and 4096 compression states. Compression saves exactly 46 gas per block against the frozen entry source. A three-way study of 69 corpus seeds checks 6624 generated executions, with no mismatches and savings1628 against the public source on every seed. The original protected Artifact, full ordinary Solution, independent Comparator and official submission outcomes are recorded individually as they complete.
 
-The complete Solution build passes all 3,679 jobs. The universal candidate
-theorem uses only propext, Classical.choice and Quot.sound. Independent secure
-Comparator verification is in progress; official acceptance is separate.
+Earlier contributors retain their attribution, including DPZZxlz's public padding skip and synthetic padding table, fkiene's aligned-buffer idea, and the prior resident-tail, recognition cleanup, delayed mask, Euler layout and loop-dispatch submissions. Changes stay within the editable RIPEMD160 Submission tree. The protected generator and limits, public specification, EVM semantics, scorer, reference artifact and corpus configuration are unchanged.

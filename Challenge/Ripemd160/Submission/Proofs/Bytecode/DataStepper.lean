@@ -128,9 +128,6 @@ def runInstr (instruction : Instr) (s : State) : Option State :=
     | .op (.Swap n) => match s.stack.exchange 0 (n.idx.val + 1) with
         | some stack => some { s with stack := stack, pc := s.pc.succ }
         | none => none
-    | .op .CODESIZE => some { s with
-        stack := UInt256.ofNat s.executionEnv.code.size :: s.stack
-        pc := s.pc.succ }
     | .op .CALLDATASIZE => some { s with
         stack := UInt256.ofNat s.executionEnv.calldata.size :: s.stack
         pc := s.pc.succ }
@@ -397,27 +394,6 @@ private def sound_calldatasize {s t : State}
     simp at hresult
     subst t
     exact (GasStep.calldatasize hdecode hcap hrun hnp).trace gas hgas
-  · simp [runInstr, hcap] at hresult
-
-private def sound_codesize {s t : State}
-    (hdecode : s.decodedOp = some .CODESIZE)
-    (hresult : runInstr (.op .CODESIZE) s = some t)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) : GasSteps s t := by
-  refine ⟨instrCost (.op .CODESIZE) s, ?_⟩
-  intro gas hgas
-  by_cases hcap : s.stack.length < 1024
-  · rw [runInstr, if_pos hcap] at hresult
-    simp at hresult
-    subst t
-    let g : GasSteps s {s with
-        stack := UInt256.ofNat s.executionEnv.code.size :: s.stack,
-        pc := s.pc.succ} := by
-      apply GasStep.of_running (Gas.baseCost s.fork .CODESIZE) hrun hnp
-      intro fuel hfuel
-      simpa [withGas] using StepRunning.codesize (withGas s fuel) hdecode hfuel hcap
-    exact g.trace gas hgas
   · simp [runInstr, hcap] at hresult
 
 private def sound_calldataload {s t : State}
@@ -689,7 +665,6 @@ def runInstr_sound {instruction : Instr} {s t : State}
     | Env op =>
       cases op <;> first
         | exact (sound_calldataload hdecode hresult hrun hnp).trace gas hgas
-        | exact (sound_codesize hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_calldatasize hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_calldatacopy hdecode hresult hrun hnp).trace gas hgas
         | simp [runInstr] at hresult

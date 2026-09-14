@@ -29,7 +29,7 @@ theorem run_tail_target :
 
 /-- The divert needs only that the accumulator is nonzero.  The exit test now
 consumes the accumulator itself, so the diverted state carries just the two
-spent cells; the stub at 103 drops them before the generic arm. -/
+spent cells; the stub at 105 drops them before the generic arm. -/
 theorem run_tail_divert_acc (input : ByteArray) (hneAcc : finalAcc input ≠ 0) :
     run tailPath (loopExitState input) = some (tailDivertState input) := by
   have htrue : UInt256.isTrue (finalAcc input) := by
@@ -37,7 +37,7 @@ theorem run_tail_divert_acc (input : ByteArray) (hneAcc : finalAcc input ≠ 0) 
     apply hneAcc
     apply Challenge.EvmProof.Word.word_ext
     simpa using hz
-  have hdest : Decode.isValidJumpDest submissionBytecode 102 = true :=
+  have hdest : Decode.isValidJumpDest submissionBytecode 105 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 62 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [tailPath, opAt, pushAt, wfOp, loopExitState, tailDivertState, spentCells, atPC,
@@ -54,8 +54,8 @@ theorem run_fallback_clear (input : ByteArray)
   have htrue : UInt256.isTrue (referenceWord input) := by
     rw [href]
     decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 351 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 238 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 352 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 237 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [fallbackPath, opAt, pushAt, wfOp, tailDivertState, fallbackState, spentCells, atPC,
     htrue, hdest, List.exchange,

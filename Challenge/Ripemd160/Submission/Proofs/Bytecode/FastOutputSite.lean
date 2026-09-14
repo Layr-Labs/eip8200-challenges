@@ -143,7 +143,7 @@ def fastOutputSite :
 
 @[simp] theorem fastOutputSite_endPC :
     fastOutputSite.endPC = UInt256.ofNat 4765 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3925) =
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3924) =
     UInt256.ofNat 4765
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
@@ -168,12 +168,12 @@ private theorem pc_toNat_instructionPC (index : Nat) :
 
 def fastOutputReturn : LocatedSite Artifact.submissionArtifact .Osaka where
   located :=
-    { index := 3927
+    { index := 3924
       instruction := .op .RETURN
       atIndex := by rfl
       wellFormed := ⟨by decide, trivial, rfl⟩ }
-  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3925)
-  pc_eq := pc_toNat_instructionPC 3925
+  pc := UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3924)
+  pc_eq := pc_toNat_instructionPC 3924
 
 def fastOutputReturnPath :
     List (Challenge.EvmProof.DataStepper.Located Artifact.submissionArtifact .Osaka) :=
@@ -181,7 +181,7 @@ def fastOutputReturnPath :
 
 @[simp] theorem fastOutputReturn_pc :
     fastOutputReturn.pc = UInt256.ofNat 4765 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3925) =
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3924) =
     UInt256.ofNat 4765
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
@@ -267,12 +267,12 @@ private theorem runFastOutputReturn
           simpa [h] using hret_raw
         subst next
         rfl
-  have hpc_nat : t.pc.toNat = Artifact.submissionArtifact.instructionPC 3925 := by
+  have hpc_nat : t.pc.toNat = Artifact.submissionArtifact.instructionPC 3924 := by
     calc
       t.pc.toNat = fastOutputReturn.pc.toNat := by rw [hpc_t]
       _ = Artifact.submissionArtifact.instructionPC fastOutputReturn.located.index :=
         fastOutputReturn.pc_eq
-      _ = Artifact.submissionArtifact.instructionPC 3925 := by rfl
+      _ = Artifact.submissionArtifact.instructionPC 3924 := by rfl
   have hlocated :
       DataStepper.runLocated fastOutputReturn.located t =
         some (FastOutputTrace.afterFastReturn t t.pc rest) := by

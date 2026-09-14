@@ -193,7 +193,7 @@ theorem active_ge37 (cur : UInt256) (p : Nat) (hp : 1120 ≤ p) (hbound : p + 64
   omega
 
 def template : List Instr :=
-  loadTemplate 1152 ++ (stage8 true ++ stage16) ++ highStore ++ loadTemplate 1120 ++ (stage8 false ++ stage16) ++
+  loadTemplate 1152 ++ (stage8 true ++ stage16) ++ highStore ++ [.op .JUMPDEST] ++ loadTemplate 1120 ++ (stage8 false ++ stage16) ++
     lowStore ++ [.op (.Dup ⟨1, by decide⟩)]
 
 theorem run_template (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UInt256)
@@ -225,13 +225,21 @@ theorem run_template (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim 
     (by omega) hrun
   rw [Stagger144Active.word_active_preserved _ _ (by change 35 ≤ a1.toNat; omega) (by decide)] at h3
   have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
-  let pc3 := pcAfter (pcAfter (pcAfter (pcAfter pc (loadTemplate 1152)) (stage8 true)) stage16) highStore
+  let pcJ := pcAfter (pcAfter (pcAfter (pcAfter pc (loadTemplate 1152)) (stage8 true)) stage16) highStore
+  let pc3 := pcAfter pcJ [.op .JUMPDEST]
+  have hj : runInstrSeq [.op .JUMPDEST] {s2 with pc := pcJ, stack := F} =
+      some {s2 with pc := pc3, stack := F} := by
+    have hcap : F.length < 1024 := by omega
+    simp [runInstrSeq, DataStepper.runInstr, pcAfter, pc3, Instr.size,
+      UInt256.succ, hrun, hcap, s2, s1]
+    rfl
+  have h123j := DenseScheduleTrace.runInstrSeq_append_running h123 (by exact hrun) hj
   have h4 := run_load s2 pc3 ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho 1120 p hstack hrun hq0 (by omega)
   have hread : MachineState.readWord s2.memory p = MachineState.readWord s.memory p :=
     read_writeWord_disjoint _ _ _ _ (Or.inr (by omega))
   have hact : activeAfterWord s2.activeWords (UInt256.ofNat p) = a1 := active_reload s.activeWords p hbound
   rw [hread, hact] at h4
-  have h1234 := DenseScheduleTrace.runInstrSeq_append_running h123 (by exact hrun) h4
+  have h1234 := DenseScheduleTrace.runInstrSeq_append_running h123j (by exact hrun) h4
   let pc4 := pcAfter pc3 (loadTemplate 1120)
   have h5 := run_reverse s2 pc4 (MachineState.readWord s.memory p)
     ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho false hstack hrun
@@ -253,8 +261,8 @@ theorem run_template (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim 
   rw [hloaded]
   exact h
 
-theorem exact_bytes : assembleBytes template = [97, 4, 128, 140, 1, 81, 128, 96, 8, 28, 129, 24, 143, 22, 97, 1, 1, 2, 24, 143, 129, 128, 96, 16, 28, 24, 22, 98, 1, 0, 1, 2, 24, 96, 60, 82, 97, 4, 96, 140, 1, 81, 128, 96, 8, 28, 129, 24, 143, 22, 97, 1, 1, 2, 24, 143, 129, 128, 96, 16, 28, 24, 22, 98, 1, 0, 1, 2, 24, 96, 28, 82, 129] := by decide
-theorem end_pc : pcAfter (UInt256.ofNat 487) template = UInt256.ofNat 560 := by decide
+theorem exact_bytes : assembleBytes template = [97, 4, 128, 140, 1, 81, 128, 96, 8, 28, 129, 24, 143, 22, 97, 1, 1, 2, 24, 143, 129, 128, 96, 16, 28, 24, 22, 98, 1, 0, 1, 2, 24, 96, 60, 82, 91, 97, 4, 96, 140, 1, 81, 128, 96, 8, 28, 129, 24, 143, 22, 97, 1, 1, 2, 24, 143, 129, 128, 96, 16, 28, 24, 22, 98, 1, 0, 1, 2, 24, 96, 28, 82, 129] := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 490) template = UInt256.ofNat 564 := by decide
 #print axioms run_template
 #print axioms exact_bytes
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13Endian
