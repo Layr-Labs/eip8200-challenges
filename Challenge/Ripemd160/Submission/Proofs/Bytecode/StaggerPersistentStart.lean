@@ -1,5 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.FusedKeyReconstruction
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadLift
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadArithmeticLift
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadJump
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80SiteCommon
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HashAfterModel
@@ -113,13 +114,8 @@ def gasSteps_push (s : State) (limit : UInt256) (rho : List UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 381, stack := limit :: rho}
       {s with pc := UInt256.ofNat 478, stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 0) limit rho} := by
-  apply PadLift.gasSteps_of_raw initialSite {s with pc := UInt256.ofNat 381, stack := limit :: rho} _ hcode hfork hrun hnp initial_pc.symm
-  · intro instruction hmem
-    simp only [initialTemplate, List.dropLast, List.mem_cons, List.not_mem_nil, or_false] at hmem
-    rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
-    all_goals first
-      | exact PadLift.advancesCheck_sound _ (by decide)
-      | exact Or.inl (Or.inl (Or.inr (Or.inl rfl)))
+  apply PadArithmeticLift.gasSteps_of_raw initialSite {s with pc := UInt256.ofNat 381, stack := limit :: rho} _ hcode hfork hrun hnp initial_pc.symm
+  · apply PadArithmeticLift.advancesAll_sound; decide
   · have hr := run_initial s (UInt256.ofNat 381) limit rho (by omega) hrun
     have hp : pcAfter (UInt256.ofNat 381) initialTemplate = UInt256.ofNat 478 := by decide
     rw [hp] at hr
