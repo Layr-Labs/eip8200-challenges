@@ -23,7 +23,7 @@ def blk2862 :
    opAt 2094 .SHR,
    opAt 2095 .AND,
    opAt 2096 .ISZERO,
-   pushAt 2097 2 2838,
+   pushAt 2097 2 2831,
    opAt 2098 .JUMPI]
 
 /-- Located block of the selected shift-reduce program. -/
@@ -31,39 +31,32 @@ def blk2874 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2099 (.Dup ⟨0, by decide⟩),
    pushAt 2100 1 96,
-   pushAt 2101 2 256,
+   pushAt 2101 2 2112,
    opAt 2102 .CALLDATACOPY,
-   opAt 2103 (.Dup ⟨0, by decide⟩),
-   pushAt 2104 1 96,
-   pushAt 2105 2 2112,
-   opAt 2106 .CALLDATACOPY,
-   pushAt 2107 0 0,
-   pushAt 2108 2 2080,
-   opAt 2109 .MSTORE,
-   pushAt 2110 2 2855,
-   pushAt 2111 2 512,
-   pushAt 2112 2 4335,
-   opAt 2113 .JUMP]
+   pushAt 2103 0 0,
+   pushAt 2104 2 2080,
+   opAt 2105 .MSTORE,
+   pushAt 2106 2 2848,
+   pushAt 2107 2 512,
+   pushAt 2108 2 4330,
+   opAt 2109 .JUMP]
 
 /-- Located block of the selected shift-reduce program. -/
 def blk2889 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2114 .JUMPDEST,
-   pushAt 2115 1 1,
-   pushAt 2116 2 1024,
-   opAt 2117 .MSTORE,
-   pushAt 2118 2 880,
-   pushAt 2119 2 1024,
-   pushAt 2120 2 1657,
-   opAt 2121 .JUMP]
+  [opAt 2110 .JUMPDEST,
+   pushAt 2111 1 1,
+   pushAt 2112 2 1024,
+   opAt 2113 .MSTORE,
+   pushAt 2114 2 880,
+   pushAt 2115 2 1024,
+   pushAt 2116 2 1657,
+   opAt 2117 .JUMP]
 
 /-- Located block of the selected shift-reduce program. -/
 def blk2892 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2122 .JUMPDEST,
-   pushAt 2123 1 1,
-   pushAt 2124 2 2752,
-   opAt 2125 .MLOAD]
+  [pushAt 2123 1 1, pushAt 2124 2 2752, opAt 2125 .MLOAD]
 
 /-- Located block of the selected shift-reduce program. -/
 def blk2919 :
@@ -164,7 +157,7 @@ def blk3013 :
   [opAt 2259 .JUMPDEST,
    opAt 2260 (.Dup ⟨0, by decide⟩),
    opAt 2261 .ISZERO,
-   pushAt 2262 2 3501,
+   pushAt 2262 2 3502,
    opAt 2263 .JUMPI]
 
 /-- Located block of the selected shift-reduce program. -/
@@ -293,7 +286,7 @@ def blk3077 :
    pushAt 2488 2 2080,
    opAt 2489 (.Dup ⟨1, by decide⟩),
    opAt 2490 .GT,
-   pushAt 2491 2 3149,
+   pushAt 2491 2 3150,
    opAt 2492 .JUMPI]
 
 /-- The middle block: flags, `TN := Wn - q`, and the three-way exit test on `neg ||| TN`. -/
@@ -321,7 +314,7 @@ def blk3125 :
    opAt 2512 .MSTORE,
    opAt 2513 (.Dup ⟨1, by decide⟩),
    opAt 2514 .OR,
-   pushAt 2515 2 3357,
+   pushAt 2515 2 3358,
    opAt 2516 .JUMPI]
 
 /-- `UNC`: `neg ≠ 0` falls into `ADD_LOOP`, `neg = 0` jumps to `SUBL`. -/
@@ -329,7 +322,7 @@ def blkUnc :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2524 .JUMPDEST,
    opAt 2525 .ISZERO,
-   pushAt 2526 2 3442,
+   pushAt 2526 2 3443,
    opAt 2527 .JUMPI]
 
 /-- Located block of the selected shift-reduce program. -/
@@ -377,7 +370,7 @@ def blk3157 :
    pushAt 2563 2 2111,
    opAt 2564 (.Dup ⟨1, by decide⟩),
    opAt 2565 .GT,
-   pushAt 2566 2 3369,
+   pushAt 2566 2 3370,
    opAt 2567 .JUMPI]
 
 /-- Located block of the selected shift-reduce program. -/
@@ -393,7 +386,7 @@ def blk3192 :
    opAt 2575 .MSTORE,
    opAt 2576 .LT,
    opAt 2577 .ISZERO,
-   pushAt 2578 2 3363,
+   pushAt 2578 2 3364,
    opAt 2579 .JUMPI]
 
 /-- `SUB_CHECK` up to its jump: `TN = 0` jumps to the `CSUB` call with `[TN, k]`. -/
@@ -404,7 +397,7 @@ def blk3204 :
    opAt 2582 .MLOAD,
    opAt 2583 (.Dup ⟨0, by decide⟩),
    opAt 2584 .ISZERO,
-   pushAt 2585 2 3344,
+   pushAt 2585 2 3345,
    opAt 2586 .JUMPI]
 
 /-- `SUB_CHECK` with `TN ≠ 0`: drop the copy and fall into `SUBL`. -/
@@ -415,7 +408,7 @@ def blk3204g :
    opAt 2582 .MLOAD,
    opAt 2583 (.Dup ⟨0, by decide⟩),
    opAt 2584 .ISZERO,
-   pushAt 2585 2 3344,
+   pushAt 2585 2 3345,
    opAt 2586 .JUMPI,
    opAt 2587 .POP]
 
@@ -460,7 +453,7 @@ def blk3213 :
    pushAt 2619 2 2111,
    opAt 2620 (.Dup ⟨1, by decide⟩),
    opAt 2621 .GT,
-   pushAt 2622 2 3448,
+   pushAt 2622 2 3449,
    opAt 2623 .JUMPI]
 
 /-- Located block of the selected shift-reduce program. -/
@@ -472,7 +465,7 @@ def blk3245 :
    opAt 2627 .SUB,
    pushAt 2628 2 2080,
    opAt 2629 .MSTORE,
-   pushAt 2630 2 3430,
+   pushAt 2630 2 3431,
    opAt 2631 .JUMP]
 
 /-- `k := k - 1` (`NOT ADD` on the zero above `k`), call `CSUB(BASE)` returning to the loop head. -/
@@ -481,9 +474,9 @@ def blk3253 :
   [opAt 2517 .JUMPDEST,
    opAt 2518 .NOT,
    opAt 2519 .ADD,
-   pushAt 2520 2 3032,
+   pushAt 2520 2 3033,
    pushAt 2521 2 512,
-   pushAt 2522 2 4335,
+   pushAt 2522 2 4330,
    opAt 2523 .JUMP]
 
 /-- Located block of the selected shift-reduce program. -/
@@ -502,56 +495,56 @@ theorem jumpDest4608 :
   Artifact.isValidJumpDest_index 2087 (by rfl)
 
 theorem jumpDest4652 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2838 = true :=
-  Artifact.isValidJumpDest_index 2114 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2831 = true :=
+  Artifact.isValidJumpDest_index 2110 (by rfl)
 
 theorem jumpDest4657 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2855 = true :=
-  Artifact.isValidJumpDest_index 2122 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2848 = true :=
+  Artifact.isValidJumpDest_index 2118 (by rfl)
 
 theorem jumpDest4664 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2862 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2863 = true :=
   Artifact.isValidJumpDest_index 2126 (by rfl)
 
 
 theorem jumpDest4839 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3032 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3033 = true :=
   Artifact.isValidJumpDest_index 2259 (by rfl)
 
 theorem jumpDest4933 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3149 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3150 = true :=
   Artifact.isValidJumpDest_index 2340 (by rfl)
 
 theorem jumpDest5115 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3363 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3364 = true :=
   Artifact.isValidJumpDest_index 2528 (by rfl)
 
 theorem jumpDest5121 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3369 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3370 = true :=
   Artifact.isValidJumpDest_index 2532 (by rfl)
 
 theorem jumpDest5247 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3430 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3431 = true :=
   Artifact.isValidJumpDest_index 2580 (by rfl)
 
 theorem jumpDest5227 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3448 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3449 = true :=
   Artifact.isValidJumpDest_index 2592 (by rfl)
 
 theorem jumpDestUnc :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3357 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3358 = true :=
   Artifact.isValidJumpDest_index 2524 (by rfl)
 
 theorem jumpDestSubl :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3442 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3443 = true :=
   Artifact.isValidJumpDest_index 2588 (by rfl)
 
 theorem jumpDest5311 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3344 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3345 = true :=
   Artifact.isValidJumpDest_index 2517 (by rfl)
 
 theorem jumpDest5366 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3501 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3502 = true :=
   Artifact.isValidJumpDest_index 2632 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

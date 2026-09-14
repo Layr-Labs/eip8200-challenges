@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Fast.ShiftProducerCore
 import Challenge.Modexp.Submission.Proofs.Fast.Monpro
 import Challenge.Modexp.Submission.Proofs.Fast.FullBaseLogic
 import Challenge.Modexp.Submission.Proofs.Fast.Exp
@@ -43,12 +44,7 @@ def PRE_DINV : Nat := 1664
 
 /-- `ACC := base`, `TS := base`, `TN := 0`. -/
 def hitMem (mem input : ByteArray) (n : Nat) : ByteArray :=
-  Exp.storeWord
-    (MachineState.writeBytes (FullBase.copyBaseMem mem input n)
-      (MachineState.readPadded input 96 (32 * n)) 2112)
-    2080 (UInt256.ofNat 0)
-
-/-! ## Phase 2: `NEG := radix ^ n - m`, least significant limb first -/
+  ShiftProducerCanonical.hitMemory mem input n
 
 /-- Memory and carry after `j` limbs of the negation loop. -/
 def negStep (mem : ByteArray) (n : Nat) : Nat → Csub.LimbState

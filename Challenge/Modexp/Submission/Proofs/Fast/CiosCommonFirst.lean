@@ -121,8 +121,8 @@ theorem run_commonFirst (s : State) (mem : ByteArray) (bi : UInt256)
     (htl : tl = UInt256.ofNat (2080+32*n))
     (hAend : aEnd = UInt256.ofNat (pa+32*n-32)) :
     runInstructions commonFirstProgram
-      (firstAt 3725 s mem bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
-    some (l1At 3749 s mem bi pa pb n i 1 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) := by
+      (firstAt 3720 s mem bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
+    some (l1At 3744 s mem bi pa pb n i 1 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) := by
   have ha : aEnd.toNat = pa+32*(n-1) := by
     rw [hAend,Challenge.EvmProof.Word.word_toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
     omega
@@ -139,17 +139,17 @@ theorem run_commonFirst (s : State) (mem : ByteArray) (bi : UInt256)
   let pbi := UInt256.ofNat (ptrAt (pb+32*n-32) i)
   let frame := tail pbi hd (UInt256.ofNat (pb-32))
     ent (l2Target n) tl inv m0 aEnd m96 m64 m32 dst ret rest
-  have hl := run_load st (UInt256.ofNat 3725) bi pbi hd (UInt256.ofNat (pb-32))
+  have hl := run_load st (UInt256.ofNat 3720) bi pbi hd (UInt256.ofNat (pb-32))
     ent (l2Target n) tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hA
-  have hm := CiosNoDummyCarry.run_multiply st (advancePC 3 (UInt256.ofNat 3725))
+  have hm := CiosNoDummyCarry.run_multiply st (advancePC 3 (UInt256.ofNat 3720))
     (MachineState.readWord mem aEnd.toNat) bi frame
     (by simp only [frame,tail,List.length_append,List.length_cons,List.length_nil]; omega)
-  have hf := run_fused st (advancePC 6 (advancePC 3 (UInt256.ofNat 3725)))
+  have hf := run_fused st (advancePC 6 (advancePC 3 (UInt256.ofNat 3720)))
     (MachineState.readWord mem aEnd.toNat) bi pbi hd (UInt256.ofNat (pb-32))
     ent (l2Target n) tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hT
   have both := runInstructions_append_some _ _ _ _ _ hl hm
   have hall := runInstructions_append_some _ _ _ _ _ both hf
-  have hpc : advancePC 6 (advancePC 3 (UInt256.ofNat 3725))+UInt256.ofNat 15 = UInt256.ofNat 3749 := by decide
+  have hpc : advancePC 6 (advancePC 3 (UInt256.ofNat 3720))+UInt256.ofNat 15 = UInt256.ofNat 3744 := by decide
   simpa only [commonFirstProgram,st,frame,pbi,tail,firstAt,l1At,l1Q,l1Step,
     framed,ha,ht,hpc,Nat.sub_zero,List.cons_append,List.nil_append] using hall
 
