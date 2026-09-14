@@ -24,11 +24,11 @@ open Monpro CiosCached SquareModel CarryRowModel CarryScratchAgreement
 def program : List Instr := R8ZeroFirstRow.program (UInt256.ofNat 3586)
 
 def block : Block Artifact.submissionArtifact .Osaka 5091 program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3905 214 5091 program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3897 214 5091 program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
 
 theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5091 = true :=
-  Artifact.isValidJumpDest_index 3905 (by rfl)
+  Artifact.isValidJumpDest_index 3897 (by rfl)
 
 /-- The second-loop entry the row jumps to (`l2Target 8`). -/
 theorem jumpDestL2 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3837 = true :=

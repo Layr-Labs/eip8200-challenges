@@ -121,7 +121,7 @@ theorem jumpDest4683 :
 /-- The memory after `sq_exit`'s `MSTORE`: the counter word 2624 holds `c`. -/
 theorem jumpDestLazy :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4535 = true :=
-  Artifact.isValidJumpDest_index 3425 (by rfl)
+  Artifact.isValidJumpDest_index 3417 (by rfl)
 
 def countMem (mem : ByteArray) (c : Nat) : ByteArray :=
   MachineState.writeBytes mem (Data.Bytes.natToBytesPadded c 32) 2624
