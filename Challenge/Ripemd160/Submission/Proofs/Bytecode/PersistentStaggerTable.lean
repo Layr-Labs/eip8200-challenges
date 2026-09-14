@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairStoreGap
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Stagger144Active
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DriverModel
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PaddingTrace
@@ -12,6 +13,7 @@ set_option maxRecDepth 20000
 set_option maxHeartbeats 3000000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PersistentStaggerTable
 open Challenge.Ripemd160 EvmSemantics EvmSemantics.EVM Challenge.EvmProof
+open PairStoreGap
 
 def messagePointer (i : Nat) : Nat := Padding.messageOffset + DriverTrace.blockOffset i
 
@@ -31,6 +33,8 @@ structure Context (s : State) (input : ByteArray) : Prop where
   /-- The first memory word is a clean 32-bit word, so the unmasked loads of schedule words
   1 and 2 see zero bytes below the message. -/
   lowClear : (MachineState.readWord s.memory 0).toNat < 2 ^ 32
+  /-- Four skipped-store gap bytes for each of the thirteen equal table pairs. -/
+  gapClear : GapClear s.memory
 
 def blockWords (input : ByteArray) (i : Nat) : Nat → UInt32 :=
   fun k => (CompressionCorrect.schedule (Padding.paddedMessage input)
@@ -238,11 +242,35 @@ theorem scheduled_active_mono (s : State) (input : ByteArray) (i : Nat)
   · rw [scheduledState_miss s i hh]
     exact PairTableActive.loaded_active_mono s (messagePointer i) (messagePointer_bound input hfit i hi)
 
+theorem dirtyWords_bound (memory : ByteArray) (p i : Nat) :
+    (StaggerScratch.dirtyWord memory p i).toNat < 2 ^ 112 := by
+  have hs := StaggerScratch.dirtyWord_split memory p i
+  have he := PairedScheduleData.extractedWord_bound memory p i
+  rw [hs.1]
+  have hj := hs.2.1
+  omega
+
+/-- Preservation belongs to the existing scheduled-state model, so one generic
+lemma supplies all thirteen gap ranges after both ordinary and pad-only blocks. -/
+theorem scheduled_gapClear (s : State) (input : ByteArray) (i : Nat)
+    (hfit : CalldataFits input) (ctx : Context s input) :
+    GapClear (scheduledState s i).memory := by
+  by_cases hh : s.executionEnv.calldata.size = DriverTrace.blockOffset i
+  · rw [scheduledState_hit s i hh]
+    change GapClear (StaggerTablePad.resultMemory s.memory
+      (UInt256.ofNat s.executionEnv.calldata.size))
+    rw [ctx.calldata, StaggerTablePad.resultMemory_eq_table _ _ (size_word_lt input hfit)]
+    exact resultMemory_gapClear s.memory _
+      (fun k _ => StaggerTablePad.padWordsDirty_bound _ (size_word_lt input hfit) k)
+  · rw [scheduledState_miss s i hh]
+    exact resultMemory_gapClear s.memory _
+      (fun k _ => dirtyWords_bound s.memory (messagePointer i) k)
+
 theorem Context.scheduled (s : State) (input : ByteArray) (i : Nat)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input)
     (ctx : Context s input) : Context (scheduledState s i) input := by
   have hm := scheduled_active_mono s input i hfit hi
-  refine ⟨?_, ctx.active.trans hm, ?_, ?_, ctx.separated, ?_⟩
+  refine ⟨?_, ctx.active.trans hm, ?_, ?_, ctx.separated, ?_, scheduled_gapClear s input i hfit ctx⟩
   · rw [scheduled_env]; exact ctx.calldata
   · intro j hj hne; exact (ctx.allocated j hj hne).trans hm
   · intro j hj hne k hk

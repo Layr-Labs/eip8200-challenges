@@ -15,6 +15,7 @@ facts for both entry states.
 -/
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PadSkipEntry
 open Challenge.Ripemd160 EvmSemantics EvmSemantics.EVM
+open PairStoreGap
 
 abbrev entryState (input : ByteArray) : State := PaddingTrace.entryState input
 
@@ -198,6 +199,30 @@ theorem entryState_lowClear (input : ByteArray) (hfit : CalldataFits input) :
         (Or.inl (by unfold Padding.messageOffset; omega)), hbase]
     decide
 
+theorem entryState_gapClear (input : ByteArray) (hfit : CalldataFits input) :
+    GapClear (PadSkipEntry.entryState input).memory := by
+  intro j hj k hk0 hk1
+  have hjb := lowerPairSlots_bounds j hj
+  have ha : 18 * j + k < Padding.messageOffset := by
+    unfold Padding.messageOffset
+    omega
+  have hbase : (PaddingTrace.padLengthReady input).memory = ByteArray.empty := rfl
+  have hp : 64 ≤ Padding.paddedLength input.size := by
+    unfold Padding.paddedLength
+    omega
+  unfold PadSkipEntry.entryState PaddingTrace.entryState
+  split
+  · change (MachineState.writeBytes (PaddingTrace.padLengthReady input).memory
+      (MachineState.readPadded input 0 input.size) Padding.messageOffset)[18 * j + k]?.getD 0 = 0
+    rw [MachineState.writeBytes_getElem?_getD, if_neg (by omega), hbase]
+    simp
+  · rw [PaddingTrace.padReturned_getD_window input hfit _ (by omega)]
+    simp only [Padding.paddedMemory, Padding.sentinelMemory, Padding.copiedMemory,
+      MachineState.writeBytes_getElem?_getD]
+    rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), hbase]
+    simp
+
+#print axioms entryState_gapClear
 #print axioms entryState_lowClear
 #print axioms entryState_active
 #print axioms entryState_allocated

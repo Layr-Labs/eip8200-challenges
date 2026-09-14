@@ -69,7 +69,7 @@ theorem initial_context (input : ByteArray) (hfit : CalldataFits input) (hpos : 
   ⟨PadSkipEntry.entryState_calldata input, PadSkipEntry.entryState_active input hfit hpos,
     PadSkipEntry.entryState_allocated input hfit, PadSkipEntry.entryState_blockAt input hfit,
     fun i hi => PaddedBlockBridge.padReturned_blockIndexSeparated input hfit i hi,
-    PadSkipEntry.entryState_lowClear input hfit⟩
+    PadSkipEntry.entryState_lowClear input hfit, PadSkipEntry.entryState_gapClear input hfit⟩
 
 theorem states_context (input : ByteArray) (hfit : CalldataFits input) (hpos : 0 < input.size)
     (n : Nat) (hn : n ≤ DriverTrace.blockCount input) : Context (states input n) input := by

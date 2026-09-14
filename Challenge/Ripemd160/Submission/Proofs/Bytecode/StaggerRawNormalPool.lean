@@ -138,34 +138,5 @@ theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
       some {s with pc := pcAfter pc template, stack := outputStack s.memory x rho} := by
   simpa only [actualOutput_eq] using run_generated s pc x rho hstack halias hrun hactive
 #print axioms run_actual
-theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 345).take template.length = template := by rfl
-def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 345 actual_slice
-    (by change 345 + template.length ≤ Artifact.submissionInstructions.length
-        rw [Artifact.referenceInstructions_count]; decide)
-    StackRoundData.artifact_code_bound
-    (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
-    (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 556 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 345) = UInt256.ofNat 556
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
-  apply Table80SiteCommon.coreAdvancesAll_sound
-  decide
 
-def gasSteps (s : State) (x : Input) (rho : List UInt256)
-    (hstack : rho.length ≤ 900) (halias : rho[1]? = some x.v0) (hrun : s.halt = .Running)
-    (hactive : 35 ≤ s.activeWords.toNat)
-    (hcode : s.executionEnv.code = Artifact.submissionArtifact.code)
-    (hfork : s.fork = .Osaka)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 556, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 629, stack := outputStack s.memory x rho} := by
-  have hraw := run_actual s (UInt256.ofNat 556) x rho hstack halias hrun hactive
-  have hend : pcAfter (UInt256.ofNat 556) template = UInt256.ofNat 629 := by decide
-  rw [hend] at hraw
-  exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
-#print axioms gasSteps
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawNormalPool
