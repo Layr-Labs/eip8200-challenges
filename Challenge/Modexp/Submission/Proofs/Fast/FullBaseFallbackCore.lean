@@ -71,13 +71,13 @@ def fallbackStoreProgram : List Instr :=
 
 def fallbackCountState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2476
+  { s with pc := UInt256.ofNat 2475
            stack := UInt256.ofNat (pbOf bsize) :: outer n bsize esize msize
            memory := memory }
 
 def fallbackWordState (s : State) (memory input : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2490
+  { s with pc := UInt256.ofNat 2489
            stack := UInt256.ofNat (topLimbOf input bsize) ::
              UInt256.ofNat (pbOf bsize) :: outer n bsize esize msize
            memory := memory }
@@ -127,7 +127,7 @@ theorem run_fallback (s : State) (mem input : ByteArray)
     unfold topWidth; omega
   have hshr : UInt256.shiftRight (UInt256.ofNat (31 + bsize)) (UInt256.ofNat 5) =
       UInt256.ofNat ((31 + bsize) / 2 ^ 5) :=
-    shr_ofNat _ 5 (Nat.lt_of_le_of_lt (show 31 + bsize ≤ 1190 by omega) (by norm_num))
+    shr_ofNat _ 5 (Nat.lt_of_le_of_lt (show 31 + bsize ≤ 1189 by omega) (by norm_num))
       (by omega)
   have hpb : (31 + bsize) / 32 = pbOf bsize := rfl
   have hshl : UInt256.shiftLeft (UInt256.ofNat (pbOf bsize)) (UInt256.ofNat 5) =

@@ -6,12 +6,12 @@ set_option maxHeartbeats 4000000
 /-!
 # The `R1B` guard of the appended Montgomery path
 
-`R1B` occupies instruction indices 1895..1907 (pc 2674..3015).  It is entered
-at pc 2674 with stack `[px, ret]`, exactly the calling convention of
+`R1B` occupies instruction indices 1894..1906 (pc 2669..3010).  It is entered
+at pc 2669 with stack `[px, ret]`, exactly the calling convention of
 `DOUBLE256`, and it dispatches:
 
 * when the modulus's most significant bit is clear it jumps straight to
-  `DOUBLE256` (pc 2038) with the stack and memory untouched, so that path is
+  `DOUBLE256` (pc 2037) with the stack and memory untouched, so that path is
   literally the old one;
 * otherwise it stores `1` at `TN = 0x2020` and jumps to `CSUB` (pc 2432) with
   the same `[px, ret]` frame.
@@ -84,25 +84,25 @@ def tnMem (mem : ByteArray) : ByteArray :=
 
 /-! ## States at the block boundaries -/
 
-/-- Subroutine entry, pc 2674, stack `[px, ret]`. -/
+/-- Subroutine entry, pc 2669, stack `[px, ret]`. -/
 def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1658
+  { s with pc := UInt256.ofNat 1657
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
-/-- The fall-back target, pc 2038: `DOUBLE256`'s own entry, reached with the
+/-- The fall-back target, pc 2037: `DOUBLE256`'s own entry, reached with the
 stack and memory exactly as they arrived. -/
 def dblState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1175
+  { s with pc := UInt256.ofNat 1174
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
 /-- Between the test and the store, pc 2688. -/
 def fastState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1669
+  { s with pc := UInt256.ofNat 1668
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
@@ -111,7 +111,7 @@ def fastState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
 store does not grow memory. -/
 def csubState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4325
+  { s with pc := UInt256.ofNat 4320
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := tnMem mem }
 

@@ -218,7 +218,7 @@ theorem m2_stepInv (mem input : ByteArray) (n bsize mm minv : Nat)
 /-- From the dispatcher entry on a miss to the Montgomery-form conversion call.
 
 The miss arm seeds `R1 = 0x0400` with 1 and calls the conversion with the old `r0`
-block (pc 1430) as its return address, so the conversion runs only on this route.  The
+block (pc 1429) as its return address, so the conversion runs only on this route.  The
 recogniser-hit route instead gets its `R1` from the `MCOPY` at the end of the shift-reduce
 loop (`ShiftTrace3.run_shiftDone`). -/
 def gasSteps_missPath (s : State) (mem : ByteArray) (n bsize esize msize : Nat)

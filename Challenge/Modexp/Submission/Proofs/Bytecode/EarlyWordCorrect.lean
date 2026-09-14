@@ -11,7 +11,7 @@ set_option warningAsError true
 
 The initial header reader starts directly at byte zero. Matching headers fall
 through to the Fermat/window proof at pc 43. Every other header restores the
-legacy entry at pc 1251 with an empty stack and unchanged memory and environment.
+legacy entry at pc 1250 with an empty stack and unchanged memory and environment.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.EarlyWordCorrect

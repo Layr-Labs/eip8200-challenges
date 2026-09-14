@@ -2,7 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.Defs
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
-/-! Basic-block instruction paths, group 14 (instructions 1869..1894).
+/-! Basic-block instruction paths, group 14 (instructions 1868..1893).
 
 `CCB` (pc 2624) replaces the second `DOUBLE256` call: it doubles `CC` once
 through `ADDMOD` and then squares it eight times through `MONPRO`, which
@@ -15,23 +15,23 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 1869..1875, pc 2624..2646: `CCB` entry, `ADDMOD(px, px) → px`. -/
+/-- Instructions 1868..1874, pc 2624..2641: `CCB` entry, `ADDMOD(px, px) → px`. -/
 def blk1742 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   []
 
-/-- Instructions 1878..1884, pc 2560..2660: `MONPRO(px, px) → px`. -/
+/-- Instructions 1877..1883, pc 2560..2655: `MONPRO(px, px) → px`. -/
 def blk1751 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1162 .JUMPDEST,
-   pushAt 1163 2 1646,
+   pushAt 1163 2 1645,
    opAt 1164 (.Dup ⟨2, by decide⟩),
    opAt 1165 (.Dup ⟨0, by decide⟩),
    opAt 1166 (.Dup ⟨0, by decide⟩),
-   pushAt 1167 2 3546,
+   pushAt 1167 2 3541,
    opAt 1168 .JUMP]
 
-/-- Instructions 1888..1891, pc 2661..2670: decrement and loop back. -/
+/-- Instructions 1888..1890, pc 2661..2670: decrement and loop back. -/
 def blk1758 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1169 .JUMPDEST,
@@ -39,10 +39,10 @@ def blk1758 :
    opAt 1171 .NOT,
    opAt 1172 .ADD,
    opAt 1173 (.Dup ⟨0, by decide⟩),
-   pushAt 1174 2 1635,
+   pushAt 1174 2 1634,
    opAt 1175 .JUMPI]
 
-/-- Instructions 1892..1894, pc 2671..3035: drop the counter and return. -/
+/-- Instructions 1891..1893, pc 2671..3030: drop the counter and return. -/
 def blk1765 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1176 .POP,

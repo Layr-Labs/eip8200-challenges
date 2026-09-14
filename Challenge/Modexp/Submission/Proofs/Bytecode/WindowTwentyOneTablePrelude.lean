@@ -38,7 +38,7 @@ theorem run_init (template : State) (pc base modulus : UInt256)
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     advancePC, succ_eq_add, hpush, word_add_assoc]
 
-/-- The exponent is no longer loaded here — the frame prologue at 1874 loads it.
+/-- The exponent is no longer loaded here — the frame prologue at 1873 loads it.
 This single `DUP2` republishes the modulus as the frame's third slot, which the
 final bare `MULMOD` of the table build consumes. -/
 def loadProgram : List Instr :=

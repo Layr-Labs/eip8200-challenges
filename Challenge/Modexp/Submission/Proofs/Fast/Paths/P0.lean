@@ -10,7 +10,7 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 977..985, pc 1314..1326. -/
+/-- Instructions 977..985, pc 1313..1326. -/
 def blk977 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 494 .JUMPDEST,
@@ -21,10 +21,10 @@ def blk977 :
    opAt 499 .SUB,
    pushAt 500 1 223,
    opAt 501 .LT,
-   pushAt 502 2 1158,
+   pushAt 502 2 1157,
    opAt 503 .JUMPI]
 
-/-- Instructions 986..989, pc 1133..1137.  The EIP-7823 oversize test that used to
+/-- Instructions 986..989, pc 1132..1137.  The EIP-7823 oversize test that used to
 follow the two header loads (13 instructions, `DUP3 PUSH2 1024 LT DUP3 PUSH2 1024 LT OR
 DUP2 PUSH2 1024 LT OR PUSH2 <BAIL3> JUMPI`) is gone from the bytecode: `ValidInput`
 bounds every declared size by 1024, so its `JUMPI` was never taken.  The block now falls
@@ -36,7 +36,7 @@ def blk986 :
    pushAt 506 0 0,
    opAt 507 .CALLDATALOAD]
 
-/-- Instructions 1003..1027, pc 1353..1384. -/
+/-- Instructions 1003..1027, pc 1352..1383. -/
 def blk1003 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 508 1 31,
@@ -61,7 +61,7 @@ def blk1003 :
    opAt 527 .SHL,
    opAt 528 .SHR,
    opAt 529 .ISZERO,
-   pushAt 530 2 1164,
+   pushAt 530 2 1163,
    opAt 531 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast

@@ -2,7 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.Defs
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
-/-! Basic-block instruction paths, group 13 (instructions 1810..1820). -/
+/-! Basic-block instruction paths, group 13 (instructions 1809..1819). -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast
 
@@ -10,7 +10,7 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 1810..1850, pc 2411..2608. -/
+/-- Instructions 1809..1849, pc 2410..2609. -/
 def blk1683 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1104 .JUMPDEST,
@@ -52,10 +52,10 @@ def blk1683 :
    pushAt 1140 2 2080,
    opAt 1141 (.Dup ⟨1, by decide⟩),
    opAt 1142 .GT,
-   pushAt 1143 2 1562,
+   pushAt 1143 2 1561,
    opAt 1144 .JUMPI]
 
-/-- Live instructions 1851..1866, pc 2848..2995; trailing padding is not executed. -/
+/-- Live instructions 1850..1865, pc 2848..2995; trailing padding is not executed. -/
 def blk1724 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1145 .POP,
