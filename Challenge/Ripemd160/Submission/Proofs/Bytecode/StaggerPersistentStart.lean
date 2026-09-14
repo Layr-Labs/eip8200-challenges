@@ -25,19 +25,36 @@ def initialTemplate : List Instr :=
     .push ⟨4, by decide⟩ (UInt256.ofNat 3285377520),
     .push ⟨13, by decide⟩ (UInt256.ofNat 475368975196266490007815979009),
     .push ⟨13, by decide⟩ (UInt256.ofNat 1109194275457955143345843994625),
-    .push ⟨11, by decide⟩ (UInt256.ofNat 36893488147419103231),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+    .push ⟨9, by decide⟩ (UInt256.ofNat 36893488147419103233),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 144),
     .op .SHL,
-    .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 2),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 144),
     .op .SHL,
-    .op .ADD,
-    .op (.Swap ⟨0, by decide⟩),
+    .op (.Dup ⟨1, by decide⟩),
+    .op .SUB,
+    .op .JUMPDEST,
     .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295),
     .push ⟨13, by decide⟩ (UInt256.ofNat 158456325065422163343096938498) ]
 
 private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
+
+private theorem neutral_hsub (a b : UInt256) : a - b = UInt256.sub a b := rfl
+
+/-- The resident pair is seeded in plus form with a nine-byte immediate; the minus
+modulus is recovered by subtracting the same shifted increment that used to be added. -/
+private theorem shiftedIncrement : UInt256.shiftLeft (UInt256.ofNat 2) (UInt256.ofNat 144) =
+    UInt256.ofNat 44601490397061246283071436545296723011960832 := by decide
+
+private theorem modulusMinusFromPlus : UInt256.sub
+    (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928)
+    (UInt256.ofNat 44601490397061246283071436545296723011960832) =
+    UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096 := by decide
+
+private theorem modulusMinusFromPlusShift : UInt256.sub
+    (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928)
+    (UInt256.shiftLeft (UInt256.ofNat 2) (UInt256.ofNat 144)) =
+    UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096 := by decide
 
 theorem run_initial (s : State) (pc limit : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running) :
@@ -48,49 +65,52 @@ theorem run_initial (s : State) (pc limit : UInt256) (rho : List UInt256)
   have hcap (n : Nat) (hn : n ≤ 15) : rho.length + n < 1024 := by omega
   simp [initialTemplate, StaggerPersistentFrame.frame, StackRunBridge.initialHashState,
     Crypto.Ripemd160.H0, Word.ofUInt32, runInstrSeq, DataStepper.runInstr, pcAfter,
-    UInt256.succ, Instr.size, List.exchange, neutral_hadd, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
+    UInt256.succ, Instr.size, List.exchange, neutral_hadd, neutral_hsub,
+    List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
     StaggerPersistentBootstrapRaw.factorWord_eq,
-    FusedKeyReconstruction.modulusMinus, FusedKeyReconstruction.modulusCombinedPlus, StaggerPersistentBootstrapRaw.fusedMinus_eq,
+    FusedKeyReconstruction.modulusPlus, FusedKeyReconstruction.modulusMinus,
+    FusedKeyReconstruction.modulusCombinedPlus, StaggerPersistentBootstrapRaw.fusedMinus_eq,
+    shiftedIncrement, modulusMinusFromPlus, modulusMinusFromPlusShift,
     StaggerPersistentBootstrapRaw.coefficient30_eq, StaggerPersistentBootstrapRaw.coefficient03_eq,
     StaggerPersistentBootstrapRaw.coefficient02_eq, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl
 
 
 theorem initial_slice :
-    (Artifact.submissionArtifact.instructions.drop 264).take initialTemplate.length = initialTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 266).take initialTemplate.length = initialTemplate := by rfl
 
 def initialSite : GenericRoundSite Artifact.submissionArtifact .Osaka initialTemplate :=
-  StackSiteBuilder.ofSlice initialTemplate 264 initial_slice
-    (by change 264 + initialTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice initialTemplate 266 initial_slice
+    (by change 266 + initialTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := initialTemplate) (by decide)) (by decide)
 
 theorem initial_pc : initialSite.startPC = UInt256.ofNat 389 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 264) = UInt256.ofNat 389
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 266) = UInt256.ofNat 389
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def jumpCode := PadJump.template 389
 
 theorem jump_slice :
-    (Artifact.submissionArtifact.instructions.drop 3698).take jumpCode.length = jumpCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3700).take jumpCode.length = jumpCode := by rfl
 
 def jumpSite : GenericRoundSite Artifact.submissionArtifact .Osaka jumpCode :=
-  StackSiteBuilder.ofSlice jumpCode 3698 jump_slice
-    (by change 3698 + jumpCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice jumpCode 3700 jump_slice
+    (by change 3700 + jumpCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := jumpCode) (by decide)) (by decide)
 
 theorem jump_pc : jumpSite.startPC = UInt256.ofNat 4756 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3698) = UInt256.ofNat 4756
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3700) = UInt256.ofNat 4756
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_loop (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 389).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 264 = 389 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 266 = 389 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 264 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 266 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 389 = true
   rw [hcode]
@@ -125,15 +145,15 @@ def gasSteps_jump (s : State) (frame : List UInt256)
   · exact PadJump.run_template s (UInt256.ofNat 4756) frame 389 (by omega) hrun (valid_loop s hcode)
 def fullTemplate : List Instr := [.op .POP, .op .CALLDATASIZE]
 theorem full_slice :
-    (Artifact.submissionArtifact.instructions.drop 262).take fullTemplate.length = fullTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 264).take fullTemplate.length = fullTemplate := by rfl
 def fullSite : GenericRoundSite Artifact.submissionArtifact .Osaka fullTemplate :=
-  StackSiteBuilder.ofSlice fullTemplate 262 full_slice
-    (by change 262 + fullTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice fullTemplate 264 full_slice
+    (by change 264 + fullTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := fullTemplate) (by decide)) (by decide)
 theorem full_pc : fullSite.startPC = UInt256.ofNat 387 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 262) = UInt256.ofNat 387
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 264) = UInt256.ofNat 387
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def gasSteps_full (s : State) (limit : UInt256) (rho : List UInt256)
@@ -153,15 +173,15 @@ def gasSteps_full (s : State) (limit : UInt256) (rho : List UInt256)
 
 def partialTemplate : List Instr := [.op .JUMPDEST]
 theorem partial_slice :
-    (Artifact.submissionArtifact.instructions.drop 3666).take partialTemplate.length = partialTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3668).take partialTemplate.length = partialTemplate := by rfl
 def partialSite : GenericRoundSite Artifact.submissionArtifact .Osaka partialTemplate :=
-  StackSiteBuilder.ofSlice partialTemplate 3666 partial_slice
-    (by change 3666 + partialTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice partialTemplate 3668 partial_slice
+    (by change 3668 + partialTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := partialTemplate) (by decide)) (by decide)
 theorem partial_pc : partialSite.startPC = UInt256.ofNat 4711 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3666) = UInt256.ofNat 4711
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3668) = UInt256.ofNat 4711
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def gasSteps_partial (s : State) (stack : List UInt256)
