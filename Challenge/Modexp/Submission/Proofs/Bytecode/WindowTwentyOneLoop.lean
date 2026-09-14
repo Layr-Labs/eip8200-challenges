@@ -25,8 +25,8 @@ def entryProgram : List Instr := []
 
 def setupProgram : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨2, by decide⟩), .push 1 4, .op .SHR, .push 2 544, .op .MSTORE,
-   .op (.Dup ⟨2, by decide⟩), .push 2 576, .op .MSTORE]
+   .op (.Dup ⟨2, by decide⟩), .push 1 4, .op .SHR, .push 2 512, .op .MSTORE,
+   .op (.Dup ⟨2, by decide⟩), .push 2 544, .op .MSTORE]
 
 def backProgram (target : UInt256) : List Instr := [.push 2 target, .op .JUMP]
 
@@ -46,7 +46,7 @@ def loopMem (base modulus exponent : UInt256) : Nat → ByteArray
 
 def loopActive : Nat → Nat
   | 0 => 16
-  | _ + 1 => 19
+  | _ + 1 => 18
 
 theorem loopMem_table (base modulus exponent : UInt256) (count : Nat) :
     ∀ i, i < 16 → MachineState.readWord (loopMem base modulus exponent count) (32 * i) =
@@ -79,13 +79,13 @@ def loopState (template : State) (base modulus exponent : UInt256)
 def headState (template : State) (base modulus exponent : UInt256)
     (count : Nat) (rest : List UInt256) : State :=
   WindowTwentyOneGroup.headState template (UInt256.ofNat 1923) (loopMem base modulus exponent (count + 1))
-    19 modulus (WindowTwentyOneMath.accumulator base modulus exponent.toNat (21 * count))
+    18 modulus (WindowTwentyOneMath.accumulator base modulus exponent.toNat (21 * count))
     (eAt exponent count) (UInt256.ofNat (2 - count)) rest
 
 /-- The final decrement wraps, but no instruction reads this dead counter again. -/
 def finishState (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) : State :=
-  WindowTwentyOneGroup.state template (UInt256.ofNat 2380) (loopMem base modulus exponent 3) 19 modulus
+  WindowTwentyOneGroup.state template (UInt256.ofNat 2380) (loopMem base modulus exponent 3) 18 modulus
     (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63)
     (UInt256.shiftLeft
       (UInt256.shiftLeft exponent (UInt256.ofNat 169)) (UInt256.ofNat 84))
@@ -106,23 +106,23 @@ theorem run_entry (template : State) (base modulus exponent : UInt256)
   rfl
 
 theorem run_setup (template : State) (pc : UInt256) (mem : ByteArray) (active : Nat)
-    (hactive : active ≤ 19) (modulus accumulator exponent counter : UInt256)
+    (hactive : active ≤ 18) (modulus accumulator exponent counter : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions setupProgram
       (WindowTwentyOneGroup.state template pc mem active modulus accumulator exponent counter 0 rest) =
     some (WindowTwentyOneLookup.framed template (advancePC 14 pc)
-      (WindowCopyMemory.copyMem mem exponent) 19
+      (WindowCopyMemory.copyMem mem exponent) 18
       ([accumulator, modulus, exponent, UInt256.ofNat 480, counter] ++ rest)) := by
   have hcap5 : rest.length + 5 < 1024 := by omega
   have hcap6 : rest.length + 6 < 1024 := by omega
   have hcap7 : rest.length + 7 < 1024 := by omega
   have ha : (UInt256.ofNat active).toNat = active := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
-  have h1 : MachineState.activeWordsAfter active 544 32 = max active 18 := by
+  have h1 : MachineState.activeWordsAfter active 512 32 = max active 17 := by
     simp [MachineState.activeWordsAfter]
-  have h1' : (UInt256.ofNat (max active 18)).toNat = max active 18 := by
+  have h1' : (UInt256.ofNat (max active 17)).toNat = max active 17 := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
-  have h2 : MachineState.activeWordsAfter (max active 18) 576 32 = 19 := by
+  have h2 : MachineState.activeWordsAfter (max active 17) 544 32 = 18 := by
     simp [MachineState.activeWordsAfter]
     omega
   have hpush : UInt256.ofNat 2 = UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
@@ -152,18 +152,18 @@ theorem run_trampoline (template : State) (base modulus exponent : UInt256)
   let a := WindowTwentyOneMath.accumulator base modulus exponent.toNat (21 * count)
   let e := eAt exponent count
   let c := UInt256.ofNat (2 - count)
-  have hactive : loopActive count ≤ 19 := by cases count <;> simp [loopActive]
+  have hactive : loopActive count ≤ 18 := by cases count <;> simp [loopActive]
   have hs := run_setup template (UInt256.ofNat 1904) mem (loopActive count) hactive
     modulus a e c rest hrest
   let core := WindowTwentyOneLookup.framed template (advancePC 14 (UInt256.ofNat 1904))
-    (WindowCopyMemory.copyMem mem e) 19 []
+    (WindowCopyMemory.copyMem mem e) 18 []
   have hh := WindowTwentyOneStage.run_stageHead core (advancePC 14 (UInt256.ofNat 1904))
     a modulus e (UInt256.ofNat 480) c rest hrest
   have hh' : runInstructions WindowTwentyOneStage.stageHead
       (WindowTwentyOneLookup.framed template (advancePC 14 (UInt256.ofNat 1904))
-        (WindowCopyMemory.copyMem mem e) 19 ([a, modulus, e, UInt256.ofNat 480, c] ++ rest)) =
+        (WindowCopyMemory.copyMem mem e) 18 ([a, modulus, e, UInt256.ofNat 480, c] ++ rest)) =
       some (WindowTwentyOneLookup.framed template (advancePC 5 (advancePC 14 (UInt256.ofNat 1904)))
-        (WindowCopyMemory.copyMem mem e) 19
+        (WindowCopyMemory.copyMem mem e) 18
         (List.replicate 5 modulus ++ ([a, modulus, e, UInt256.ofNat 480, c] ++ rest))) := by
     simpa only [core, WindowTwentyOneStage.framed, WindowTwentyOneLookup.framed] using hh
   have h1 := runInstructions_append_some _ _ _ _ _ hs hh'
@@ -178,7 +178,7 @@ theorem run_body (template : State) (base modulus exponent : UInt256)
     runInstructions bodyProgram (headState template base modulus exponent count rest) =
     some (WindowTwentyOneGroup.state template
       (if UInt256.isTrue (UInt256.ofNat (2 - count)) then UInt256.ofNat 1904 else UInt256.ofNat 2380)
-      (loopMem base modulus exponent (count + 1)) 19 modulus
+      (loopMem base modulus exponent (count + 1)) 18 modulus
       (WindowTwentyOneMath.accumulator base modulus exponent.toNat (21 * count + 21))
       (UInt256.shiftLeft (eAt exponent count) (UInt256.ofNat 84))
       (UInt256.ofNat (2 - count) - UInt256.ofNat 1) 0 rest) := by
@@ -194,7 +194,7 @@ theorem run_body (template : State) (base modulus exponent : UInt256)
     base modulus a exponent c (loopMem_table base modulus exponent count)
     (1 + 21 * count) (by omega) (by omega) rest hrest
   have ht := WindowTwentyOneTail.run_tail template (UInt256.ofNat 2366) (UInt256.ofNat 1904)
-    (WindowCopyMemory.copyMem mem e) 19 modulus nextA e c rest hrest
+    (WindowCopyMemory.copyMem mem e) 18 modulus nextA e c rest hrest
     (by rw [show (UInt256.ofNat 1904).toNat = 1904 from rfl]; exact hjump)
   rw [ha, advancePC_ofNat] at hb
   rw [advancePC_ofNat] at ht

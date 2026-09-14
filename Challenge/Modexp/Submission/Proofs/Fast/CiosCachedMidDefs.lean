@@ -29,7 +29,7 @@ def input (s : State) (c bi pbi paEnd pbEnd flag dst ret : UInt256)
 
 def stored (s : State) (c bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=
-  framed { s with memory := midMem s.memory c } (UInt256.ofNat 4028)
+  framed { s with memory := midMem s.memory c } (UInt256.ofNat 4023)
     (baseStack bi pbi paEnd pbEnd flag dst ret rest)
 
 def product (s : State) (n : Nat) (bi pbi paEnd pbEnd flag dst ret : UInt256)

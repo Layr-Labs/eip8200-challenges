@@ -44,7 +44,7 @@ def handled_of_bDone (route : FixedExponentRoute.Route s mem input
 
 /-- Route-aware replacement for the outer case split at the dispatcher entry.
 
-`run_rrDone_skip` and `run_shiftDone` now jump straight to pc 3252, so their
+`run_rrDone_skip` and `run_shiftDone` now jump straight to pc 3253, so their
 traces end at `entryState` rather than `bDone`; the `enter` trampoline step is
 already consumed and must not be prepended again. -/
 def handled_of_entryState (route : FixedExponentRoute.Route s mem input
@@ -140,7 +140,7 @@ def handled_of_bDoneConcrete (input : ByteArray) (s : State) (mem : ByteArray)
     (hEb : Exp.EbInv (Exp.mcopyMem mem 256 1024 (32 * n)) n mm bM
       (Exp.expAcc mm (Limbs.radix ^ n) bM (Exp.expBits input bsize) 0))
     (hraw : ∃ rawBase, Model.FastRepresents mem 256 n rawBase ∧
-      rawBase ≡ Precompile.bytesToNatPadded input 96 bsize [MOD mm]) :
+      rawBase ≡ Precompile.bytesToNatPadded input 96 bsize [MOD mm] ∧ rawBase < mm) :
     BDoneContinuation input s mem n bsize esize msize :=
   handled_of_bDoneWithGeneric
     (FixedDirectRouteCorrect.route input s mem n bsize esize msize mm minv bM
@@ -150,7 +150,7 @@ def handled_of_bDoneConcrete (input : ByteArray) (s : State) (mem : ByteArray)
     hmz hm32 hbsize hesize hmsz hmm hodd hradix hbMlt hbMform hframe hEb
 
 /-- Fully instantiated adapter for traces that land on the dispatcher entry
-at pc 3252 directly (the `bsize = 0` RR-skip and the shift-reduce hit). -/
+at pc 3253 directly (the `bsize = 0` RR-skip and the shift-reduce hit). -/
 def handled_of_entryStateConcrete (input : ByteArray) (s : State) (mem : ByteArray)
     (n bsize esize msize mm minv bM : Nat)
     (sub : Exp.Subroutines s n bsize mm minv)
@@ -180,7 +180,7 @@ def handled_of_entryStateConcrete (input : ByteArray) (s : State) (mem : ByteArr
     (hEb : Exp.EbInv (Exp.mcopyMem mem 256 1024 (32 * n)) n mm bM
       (Exp.expAcc mm (Limbs.radix ^ n) bM (Exp.expBits input bsize) 0))
     (hraw : ∃ rawBase, Model.FastRepresents mem 256 n rawBase ∧
-      rawBase ≡ Precompile.bytesToNatPadded input 96 bsize [MOD mm]) :
+      rawBase ≡ Precompile.bytesToNatPadded input 96 bsize [MOD mm] ∧ rawBase < mm) :
     EntryContinuation input s mem n bsize esize msize :=
   handled_of_entryState
     (FixedDirectRouteCorrect.route input s mem n bsize esize msize mm minv bM
