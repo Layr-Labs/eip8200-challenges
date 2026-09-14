@@ -27,11 +27,10 @@ theorem run_tail_target :
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
 
-/-- The divert needs only that the accumulator is nonzero.  The exit test now
-consumes the accumulator itself, so the diverted state carries just the two
-spent cells; the stub at 103 drops them before the generic arm. -/
+/-- The tail needs only that the accumulator is nonzero.  Stating it that way lets
+the 256-byte path, which reaches this tail through the merged classifier, use it. -/
 theorem run_tail_divert_acc (input : ByteArray) (hneAcc : finalAcc input ≠ 0) :
-    run tailPath (loopExitState input) = some (tailDivertState input) := by
+    run tailPath (loopExitState input) = some (divertState input) := by
   have htrue : UInt256.isTrue (finalAcc input) := by
     intro hz
     apply hneAcc
@@ -40,24 +39,7 @@ theorem run_tail_divert_acc (input : ByteArray) (hneAcc : finalAcc input ≠ 0) 
   have hdest : Decode.isValidJumpDest submissionBytecode 103 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 63 (by rfl)
   simp (config := { maxSteps := 1000000 })
-    [tailPath, opAt, pushAt, wfOp, loopExitState, tailDivertState, spentCells, atPC,
-    htrue, hdest, List.exchange,
-    Challenge.EvmProof.DataStepper.runLocatedBlock, Challenge.EvmProof.DataStepper.runLocated,
-    Challenge.EvmProof.DataStepper.runInstr,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
-    Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
-
-/-- The clearing stub: drop the spent counter and anchor, then enter the generic arm. -/
-theorem run_fallback_clear (input : ByteArray)
-    (href : referenceWord input = KnownInputData.fullWord) :
-    run fallbackPath (tailDivertState input) = some (fallbackState input) := by
-  have htrue : UInt256.isTrue (referenceWord input) := by
-    rw [href]
-    decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 354 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 242 (by rfl)
-  simp (config := { maxSteps := 1000000 })
-    [fallbackPath, opAt, pushAt, wfOp, tailDivertState, fallbackState, spentCells, atPC,
+    [tailPath, opAt, pushAt, wfOp, loopExitState, divertState, spentCells, atPC,
     htrue, hdest, List.exchange,
     Challenge.EvmProof.DataStepper.runLocatedBlock, Challenge.EvmProof.DataStepper.runLocated,
     Challenge.EvmProof.DataStepper.runInstr,
@@ -66,9 +48,22 @@ theorem run_fallback_clear (input : ByteArray)
 
 theorem run_tail_divert (input : ByteArray) (hsize : input.size = 1000)
     (hne : input ≠ KnownInputData.targetInput) :
-    run tailPath (loopExitState input) = some (tailDivertState input) :=
+    run tailPath (loopExitState input) = some (divertState input) :=
   run_tail_divert_acc input (fun hz =>
     hne ((RootOverlapGuard.finalAcc_zero_iff_target input hsize).1 hz))
+
+/-- Retiring the two spent scan cells happens only on the miss exit. -/
+theorem run_divert_clear (input : ByteArray) :
+    run divertPath (divertState input) = some (fallbackState input) := by
+  have hdest : Decode.isValidJumpDest submissionBytecode 354 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 242 (by rfl)
+  simp (config := { maxSteps := 1000000 })
+    [divertPath, opAt, pushAt, wfOp, divertState, spentCells, fallbackState, atPC,
+    hdest, List.exchange,
+    Challenge.EvmProof.DataStepper.runLocatedBlock, Challenge.EvmProof.DataStepper.runLocated,
+    Challenge.EvmProof.DataStepper.runInstr,
+    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
 
 theorem run_return_store (input : ByteArray) :
     run returnPath (returnEntry input) = some (storedReturnState input) := by

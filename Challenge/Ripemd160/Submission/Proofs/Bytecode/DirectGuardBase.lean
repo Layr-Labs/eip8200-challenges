@@ -77,12 +77,12 @@ def checkEntryPath : List Located :=
    opAt 27 .JUMPI,
    pushAt 28 0 0,
    opAt 29 .CALLDATALOAD,
-   pushAt 30 2 960,
-   opAt 31 (.Dup ⟨1, by decide⟩),
-   pushAt 32 2 968,
-   opAt 33 .CALLDATALOAD,
-   opAt 34 .XOR,
-   opAt 35 .JUMPDEST]
+   opAt 30 (.Dup ⟨0, by decide⟩),
+   pushAt 31 2 968,
+   opAt 32 .CALLDATALOAD,
+   opAt 33 .XOR,
+   pushAt 34 2 960,
+   opAt 35 (.Swap ⟨0, by decide⟩)]
 
 def loopPath : List Located :=
   [opAt 36 .JUMPDEST,
@@ -105,20 +105,9 @@ def loopPath : List Located :=
    pushAt 53 1 52,
    opAt 54 .JUMPI]
 
-/-- The exit test now consumes the accumulator itself: a nonzero accumulator
-jumps to the clearing stub at 103, a zero accumulator falls straight into the
-digest store with the spent counter and the anchor still on the stack. -/
 def tailPath : List Located :=
   [pushAt 55 1 103,
    opAt 56 .JUMPI]
-
-/-- Off the measured path: drop the two spent cells and enter the generic arm. -/
-def fallbackPath : List Located :=
-  [opAt 63 .JUMPDEST,
-   opAt 64 .POP,
-   opAt 65 .JUMPDEST,
-   pushAt 66 2 354,
-   opAt 67 .JUMPI]
 
 def returnPath : List Located :=
   [pushAt 57 20 972889429405991776604892044862621566948497025487,
@@ -128,6 +117,15 @@ def returnPath : List Located :=
 def returnFinishPath : List Located :=
   [pushAt 61 0 0,
    opAt 62 .RETURN]
+
+/-- The miss exit reached by the accumulator test.  The two scan cells the
+match path leaves live are retired here, off the measured path. -/
+def divertPath : List Located :=
+  [opAt 63 .JUMPDEST,
+   opAt 64 .POP,
+   opAt 65 .POP,
+   pushAt 66 2 354,
+   opAt 67 .JUMP]
 
 def atPC (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
@@ -164,8 +162,8 @@ def loopExitState (input : ByteArray) : State :=
     pc := UInt256.ofNat 74
     stack := [finalAcc input, UInt256.ofNat 0, referenceWord input] }
 
-/-- The two cells the exit test leaves behind: the spent counter and the anchor
-word.  `RETURN` reads memory only, so the digest store runs on top of them. -/
+/-- The accumulator test consumes the scan accumulator itself, so the exhausted
+offset cell and the reference word stay live across the answer. -/
 def spentCells (input : ByteArray) : List UInt256 :=
   [UInt256.ofNat 0, referenceWord input]
 
@@ -174,7 +172,7 @@ def returnEntry (input : ByteArray) : State :=
     pc := UInt256.ofNat 77
     stack := spentCells input }
 
-def tailDivertState (input : ByteArray) : State :=
+def divertState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
     pc := UInt256.ofNat 103
     stack := spentCells input }
@@ -276,13 +274,13 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_32 : Artifact.submissionArtifact.instructionPC 30 = 42 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_33 : Artifact.submissionArtifact.instructionPC 31 = 45 := by
+@[simp] theorem pc_direct_33 : Artifact.submissionArtifact.instructionPC 31 = 43 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_34 : Artifact.submissionArtifact.instructionPC 32 = 46 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_35 : Artifact.submissionArtifact.instructionPC 33 = 49 := by
+@[simp] theorem pc_direct_35 : Artifact.submissionArtifact.instructionPC 33 = 47 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_36 : Artifact.submissionArtifact.instructionPC 34 = 50 := by
+@[simp] theorem pc_direct_36 : Artifact.submissionArtifact.instructionPC 34 = 48 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_37 : Artifact.submissionArtifact.instructionPC 35 = 51 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
