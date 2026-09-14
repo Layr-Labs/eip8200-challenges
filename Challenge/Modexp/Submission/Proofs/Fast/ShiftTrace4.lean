@@ -1,6 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftProducerSplitRun
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneSlice
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftTrace3
+import Challenge.Modexp.Submission.Proofs.Fast.RetainedTEntry
 
 set_option warningAsError false
 set_option maxRecDepth 40000
@@ -110,7 +111,7 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32)) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
-      (kState s (ShiftCacheModel.cacheMem (preMem (negStep mem n n).memory) n) 3006 n n bsize esize msize) :=
+      (kState s (ShiftCacheModel.cacheMem (preMem (negStep mem n n).memory) n) 3002 n n bsize esize msize) :=
   (  ((((soundEnv blk2892 e
       (run_negEntry s mem n bsize esize msize hn hn32 e.act296 hml e.code e.run)).trans
     (gasSteps_negLoop s mem n bsize esize msize hn hn32 e)).trans
@@ -420,7 +421,7 @@ def gasSteps_csubStep (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
     (htn : (MachineState.readWord mem 2080).toNat ≤ 1) :
     Challenge.EvmProof.GasSteps (csubCallState s mem n bsize esize msize k)
-      (afterCsubState s (Csub.csResultMemory mem n 512) n bsize esize msize k) :=
+      (afterCsubState s (RetainedTNormalizer.resultMemory mem n) n bsize esize msize k) :=
   have hs32' : MachineState.readWord (Csub.csStep mem n n).memory 2688 =
       UInt256.ofNat (32 * n) := by
     rw [Csub.csStep_readWord_disjoint mem n 2688 (by omega) (Or.inr (by omega)) n le_rfl]
@@ -433,19 +434,15 @@ def gasSteps_csubStep (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
   Challenge.EvmProof.GasSteps.cast
     ((soundEnv blk3253 e
         (run_csubCall s mem n bsize esize msize k hk hk32 e.code e.run)).trans
-      (Csub.gasSteps_csub s mem n (UInt256.ofNat 512) (UInt256.ofNat pcAfterCsub)
+      (RetainedT.gasSteps_retained s mem n (UInt256.ofNat pcAfterCsub)
         (UInt256.ofNat (k - 1) :: outer n bsize esize msize) hlen e.code e.fork e.run e.np
-        e.act296 hn (by omega) jumpD5357 hml htl hs32'
-        (by rw [show (UInt256.ofNat 512).toNat = 512 by decide]; omega) htn'))
-    rfl (by
-      rw [Csub.csReturnedState_eq_result,
-        show (UInt256.ofNat 512).toNat = 512 by decide]
-      rfl)
+        e.act296 hn (by omega) jumpD5357 hml htl hs32' htn'))
+    rfl rfl
 
 /-- The first `CSUB(BASE)`, reducing the raw base, from `HIT` to `AFTER_CSUB0`. -/
-def canonicalCopyBlock : WindowTwentyOneBinding.Block Artifact.submissionArtifact .Osaka 2848
+def canonicalCopyBlock : WindowTwentyOneBinding.Block Artifact.submissionArtifact .Osaka 2844
     ShiftProducerSplitRun.copyProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2118 5 2848 ShiftProducerSplitRun.copyProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2116 5 2844 ShiftProducerSplitRun.copyProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def gasSteps_hitCsub (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)
@@ -477,19 +474,18 @@ def gasSteps_hitCsub (s : State) (mem input : ByteArray) (n bsize esize msize : 
     decide
   have hlen : (outer n bsize esize msize).length ≤ 1008 := by simp [outer, Exp.outer]
   have first : Challenge.EvmProof.GasSteps (hitState s mem n bsize esize msize)
-      (rawCsubReturnState s (Csub.csResultMemory (hitMem mem input n) n 512) n bsize esize msize) :=
+      (rawCsubReturnState s (RetainedTNormalizer.resultMemory (hitMem mem input n) n) n bsize esize msize) :=
     Challenge.EvmProof.GasSteps.cast
       ((soundEnv blk2874 e
           (run_hit s mem input n bsize esize msize (by omega) hn32 e.act hdata e.code e.run)).trans
-        (Csub.gasSteps_csub s (hitMem mem input n) n (UInt256.ofNat 512)
+        (RetainedT.gasSteps_retained s (hitMem mem input n) n
           (UInt256.ofNat pcCsubReturn) (outer n bsize esize msize) hlen e.code e.fork e.run
           e.np e.act296 hn (by omega) jumpD4692
           (by rw [hhigh 2752 (by omega)]; exact hml)
-          (by rw [hhigh 2784 (by omega)]; exact htl) hs32'
-          (by rw [show (UInt256.ofNat 512).toNat = 512 by decide]; omega) htn'))
-      rfl (by rw [Csub.csReturnedState_eq_result, show (UInt256.ofNat 512).toNat = 512 by decide]; rfl)
+          (by rw [hhigh 2784 (by omega)]; exact htl) hs32' htn'))
+      rfl rfl
   have copy := canonicalCopyBlock.steps (bindingEnv e) rfl
-    (ShiftProducerSplitRun.run_copy s (Csub.csResultMemory (hitMem mem input n) n 512) n
+    (ShiftProducerSplitRun.run_copy s (RetainedTNormalizer.resultMemory (hitMem mem input n) n) n
       [UInt256.ofNat n, UInt256.ofNat bsize, UInt256.ofNat esize, UInt256.ofNat msize]
       (by simp) (by omega) hn32 e.act)
   exact first.trans (by
@@ -678,7 +674,7 @@ def gasSteps_step (s : State) (mem : ByteArray) (n bsize esize msize k mm minv :
       exact (start.trans adds).trans tail
   have g4 : Challenge.EvmProof.GasSteps
       (csubCallState s (fixMem (stepMid mem n) n mm (stepNeg mem n)) n bsize esize msize k)
-      (afterCsubState s (Csub.csResultMemory (fixMem (stepMid mem n) n mm (stepNeg mem n)) n 512)
+      (afterCsubState s (RetainedTNormalizer.resultMemory (fixMem (stepMid mem n) n mm (stepNeg mem n)) n)
         n bsize esize msize k) :=
     gasSteps_csubStep s (fixMem (stepMid mem n) n mm (stepNeg mem n)) n bsize esize msize k
       hk hk32 hn hn32 e

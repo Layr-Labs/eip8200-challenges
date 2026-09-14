@@ -105,82 +105,82 @@ private theorem fastPCAnchor8 :
   rfl
 
 private theorem fastPCAnchor9 :
-    Artifact.submissionArtifact.instructionPC 780 = 1151 := by
+    Artifact.submissionArtifact.instructionPC 780 = 1152 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor10 :
-    Artifact.submissionArtifact.instructionPC 814 = 1200 := by
+    Artifact.submissionArtifact.instructionPC 814 = 1201 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor11 :
-    Artifact.submissionArtifact.instructionPC 853 = 1251 := by
+    Artifact.submissionArtifact.instructionPC 853 = 1252 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor12 :
-    Artifact.submissionArtifact.instructionPC 890 = 1288 := by
+    Artifact.submissionArtifact.instructionPC 890 = 1289 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor13 :
-    Artifact.submissionArtifact.instructionPC 933 = 1347 := by
+    Artifact.submissionArtifact.instructionPC 933 = 1348 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor14 :
-    Artifact.submissionArtifact.instructionPC 974 = 1394 := by
+    Artifact.submissionArtifact.instructionPC 974 = 1395 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor15 :
-    Artifact.submissionArtifact.instructionPC 1010 = 1439 := by
+    Artifact.submissionArtifact.instructionPC 1010 = 1440 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor16 :
-    Artifact.submissionArtifact.instructionPC 1051 = 1495 := by
+    Artifact.submissionArtifact.instructionPC 1051 = 1496 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor17 :
-    Artifact.submissionArtifact.instructionPC 1092 = 1541 := by
+    Artifact.submissionArtifact.instructionPC 1092 = 1542 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor18 :
-    Artifact.submissionArtifact.instructionPC 1116 = 1573 := by
+    Artifact.submissionArtifact.instructionPC 1116 = 1574 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor19 :
-    Artifact.submissionArtifact.instructionPC 1159 = 1631 := by
+    Artifact.submissionArtifact.instructionPC 1159 = 1632 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor20 :
-    Artifact.submissionArtifact.instructionPC 1162 = 1634 := by
+    Artifact.submissionArtifact.instructionPC 1162 = 1635 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor21 :
-    Artifact.submissionArtifact.instructionPC 1179 = 1657 := by
+    Artifact.submissionArtifact.instructionPC 1179 = 1658 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor22 :
-    Artifact.submissionArtifact.instructionPC 1192 = 1678 := by
+    Artifact.submissionArtifact.instructionPC 1192 = 1679 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor23 :
-    Artifact.submissionArtifact.instructionPC 1227 = 1727 := by
+    Artifact.submissionArtifact.instructionPC 1227 = 1728 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor24 :
-    Artifact.submissionArtifact.instructionPC 1837 = 2429 := by
+    Artifact.submissionArtifact.instructionPC 1837 = 2430 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -250,7 +250,7 @@ private theorem fastPCAnchor24 :
 
 @[simp] theorem fastPC8 (i : Nat) (hi : 738 ≤ i) (hii : i ≤ 779) :
     Artifact.submissionArtifact.instructionPC i =
-      [1078,1079,1080,1083,1084,1087,1090,1093,1096,1099,1100,1101,1102,1104,1105,1106,1109,1110,1111,1112,1114,1115,1118,1119,1120,1121,1123,1124,1127,1128,1129,1132,1135,1138,1141,1144,1145,1146,1147,1148,1149,1150][i - 738]! := by
+      [1078,1079,1080,1083,1084,1087,1090,1093,1096,1099,1100,1101,1102,1105,1106,1107,1110,1111,1112,1113,1115,1116,1119,1120,1121,1122,1124,1125,1128,1129,1130,1133,1136,1139,1142,1145,1146,1147,1148,1149,1150,1151][i - 738]! := by
   have hsplit : i = 738 + (i - 738) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor8]
   rw [← PCFast.byteLength_eq_assemble]
@@ -258,7 +258,7 @@ private theorem fastPCAnchor24 :
 
 @[simp] theorem fastPC9 (i : Nat) (hi : 780 ≤ i) (hii : i ≤ 813) :
     Artifact.submissionArtifact.instructionPC i =
-      [1151,1154,1155,1156,1157,1158,1159,1162,1163,1164,1165,1166,1167,1168,1169,1170,1173,1174,1175,1178,1179,1182,1183,1184,1185,1188,1189,1190,1192,1193,1194,1195,1198,1199][i - 780]! := by
+      [1152,1155,1156,1157,1158,1159,1160,1163,1164,1165,1166,1167,1168,1169,1170,1171,1174,1175,1176,1179,1180,1183,1184,1185,1186,1189,1190,1191,1193,1194,1195,1196,1199,1200][i - 780]! := by
   have hsplit : i = 780 + (i - 780) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor9]
   rw [← PCFast.byteLength_eq_assemble]
@@ -266,7 +266,7 @@ private theorem fastPCAnchor24 :
 
 @[simp] theorem fastPC10 (i : Nat) (hi : 814 ≤ i) (hii : i ≤ 852) :
     Artifact.submissionArtifact.instructionPC i =
-      [1200,1201,1202,1203,1206,1207,1208,1210,1211,1212,1215,1216,1217,1218,1219,1221,1222,1223,1225,1226,1227,1228,1229,1230,1231,1233,1234,1235,1236,1237,1238,1239,1240,1241,1244,1245,1246,1249,1250][i - 814]! := by
+      [1201,1202,1203,1204,1207,1208,1209,1211,1212,1213,1216,1217,1218,1219,1220,1222,1223,1224,1226,1227,1228,1229,1230,1231,1232,1234,1235,1236,1237,1238,1239,1240,1241,1242,1245,1246,1247,1250,1251][i - 814]! := by
   have hsplit : i = 814 + (i - 814) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor10]
   rw [← PCFast.byteLength_eq_assemble]
@@ -274,7 +274,7 @@ private theorem fastPCAnchor24 :
 
 @[simp] theorem fastPC11 (i : Nat) (hi : 853 ≤ i) (hii : i ≤ 889) :
     Artifact.submissionArtifact.instructionPC i =
-      [1251,1252,1253,1254,1255,1256,1257,1258,1259,1260,1261,1262,1263,1264,1265,1266,1267,1268,1269,1270,1271,1272,1273,1274,1275,1276,1277,1278,1279,1280,1281,1282,1283,1284,1285,1286,1287][i - 853]! := by
+      [1252,1253,1254,1255,1256,1257,1258,1259,1260,1261,1262,1263,1264,1265,1266,1267,1268,1269,1270,1271,1272,1273,1274,1275,1276,1277,1278,1279,1280,1281,1282,1283,1284,1285,1286,1287,1288][i - 853]! := by
   have hsplit : i = 853 + (i - 853) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor11]
   rw [← PCFast.byteLength_eq_assemble]
@@ -282,7 +282,7 @@ private theorem fastPCAnchor24 :
 
 @[simp] theorem fastPC12 (i : Nat) (hi : 890 ≤ i) (hii : i ≤ 932) :
     Artifact.submissionArtifact.instructionPC i =
-      [1288,1289,1291,1292,1293,1294,1296,1297,1298,1299,1300,1301,1302,1305,1306,1307,1308,1309,1312,1313,1314,1315,1318,1319,1320,1323,1324,1327,1328,1329,1332,1333,1334,1335,1338,1339,1340,1341,1342,1343,1344,1345,1346][i - 890]! := by
+      [1289,1290,1292,1293,1294,1295,1297,1298,1299,1300,1301,1302,1303,1306,1307,1308,1309,1310,1313,1314,1315,1316,1319,1320,1321,1324,1325,1328,1329,1330,1333,1334,1335,1336,1339,1340,1341,1342,1343,1344,1345,1346,1347][i - 890]! := by
   have hsplit : i = 890 + (i - 890) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor12]
   rw [← PCFast.byteLength_eq_assemble]
@@ -290,7 +290,7 @@ private theorem fastPCAnchor24 :
 
 @[simp] theorem fastPC13 (i : Nat) (hi : 933 ≤ i) (hii : i ≤ 973) :
     Artifact.submissionArtifact.instructionPC i =
-      [1347,1348,1349,1350,1351,1352,1353,1354,1355,1356,1357,1358,1359,1362,1363,1365,1366,1367,1370,1371,1373,1374,1375,1376,1377,1378,1379,1380,1381,1382,1383,1384,1385,1386,1387,1388,1389,1390,1391,1392,1393][i - 933]! := by
+      [1348,1349,1350,1351,1352,1353,1354,1355,1356,1357,1358,1359,1360,1363,1364,1366,1367,1368,1371,1372,1374,1375,1376,1377,1378,1379,1380,1381,1382,1383,1384,1385,1386,1387,1388,1389,1390,1391,1392,1393,1394][i - 933]! := by
   have hsplit : i = 933 + (i - 933) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor13]
   rw [← PCFast.byteLength_eq_assemble]
@@ -298,7 +298,7 @@ private theorem fastPCAnchor24 :
 
 @[simp] theorem fastPC14 (i : Nat) (hi : 974 ≤ i) (hii : i ≤ 1009) :
     Artifact.submissionArtifact.instructionPC i =
-      [1394,1395,1396,1397,1398,1399,1400,1401,1402,1403,1404,1405,1406,1407,1409,1410,1412,1413,1414,1415,1416,1417,1419,1420,1421,1424,1425,1426,1429,1430,1431,1432,1433,1434,1435,1436][i - 974]! := by
+      [1395,1396,1397,1398,1399,1400,1401,1402,1403,1404,1405,1406,1407,1408,1410,1411,1413,1414,1415,1416,1417,1418,1420,1421,1422,1425,1426,1427,1430,1431,1432,1433,1434,1435,1436,1437][i - 974]! := by
   have hsplit : i = 974 + (i - 974) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor14]
   rw [← PCFast.byteLength_eq_assemble]
@@ -306,7 +306,7 @@ private theorem fastPCAnchor24 :
 
 @[simp] theorem fastPC15 (i : Nat) (hi : 1010 ≤ i) (hii : i ≤ 1050) :
     Artifact.submissionArtifact.instructionPC i =
-      [1439,1440,1441,1442,1445,1446,1447,1450,1451,1452,1455,1456,1458,1459,1460,1461,1462,1463,1466,1467,1468,1469,1470,1473,1474,1475,1478,1479,1480,1481,1482,1484,1485,1486,1487,1488,1489,1491,1492,1493,1494][i - 1010]! := by
+      [1440,1441,1442,1443,1446,1447,1448,1451,1452,1453,1456,1457,1459,1460,1461,1462,1463,1464,1467,1468,1469,1470,1471,1474,1475,1476,1479,1480,1481,1482,1483,1485,1486,1487,1488,1489,1490,1492,1493,1494,1495][i - 1010]! := by
   have hsplit : i = 1010 + (i - 1010) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor15]
   rw [← PCFast.byteLength_eq_assemble]
@@ -314,7 +314,7 @@ private theorem fastPCAnchor24 :
 
 @[simp] theorem fastPC16 (i : Nat) (hi : 1051 ≤ i) (hii : i ≤ 1091) :
     Artifact.submissionArtifact.instructionPC i =
-      [1495,1496,1497,1498,1501,1502,1503,1504,1505,1506,1507,1508,1509,1510,1511,1512,1513,1514,1515,1516,1517,1518,1519,1520,1521,1522,1523,1524,1525,1527,1528,1529,1530,1532,1533,1534,1535,1536,1538,1539,1540][i - 1051]! := by
+      [1496,1497,1498,1499,1502,1503,1504,1505,1506,1507,1508,1509,1510,1511,1512,1513,1514,1515,1516,1517,1518,1519,1520,1521,1522,1523,1524,1525,1526,1528,1529,1530,1531,1533,1534,1535,1536,1537,1539,1540,1541][i - 1051]! := by
   have hsplit : i = 1051 + (i - 1051) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor16]
   rw [← PCFast.byteLength_eq_assemble]
@@ -322,7 +322,7 @@ private theorem fastPCAnchor24 :
 
 @[simp] theorem fastPC17 (i : Nat) (hi : 1092 ≤ i) (hii : i ≤ 1115) :
     Artifact.submissionArtifact.instructionPC i =
-      [1541,1544,1545,1546,1549,1550,1551,1552,1553,1556,1557,1560,1561,1562,1563,1564,1565,1566,1567,1568,1569,1570,1571,1572][i - 1092]! := by
+      [1542,1545,1546,1547,1550,1551,1552,1553,1554,1557,1558,1561,1562,1563,1564,1565,1566,1567,1568,1569,1570,1571,1572,1573][i - 1092]! := by
   have hsplit : i = 1092 + (i - 1092) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor17]
   rw [← PCFast.byteLength_eq_assemble]
@@ -330,7 +330,7 @@ private theorem fastPCAnchor24 :
 
 @[simp] theorem fastPC18 (i : Nat) (hi : 1116 ≤ i) (hii : i ≤ 1158) :
     Artifact.submissionArtifact.instructionPC i =
-      [1573,1574,1575,1576,1577,1578,1579,1580,1581,1582,1583,1584,1586,1587,1588,1589,1591,1592,1593,1594,1595,1597,1598,1599,1600,1603,1604,1605,1608,1609,1610,1611,1612,1613,1616,1617,1618,1621,1622,1623,1626,1627,1630][i - 1116]! := by
+      [1574,1575,1576,1577,1578,1579,1580,1581,1582,1583,1584,1585,1587,1588,1589,1590,1592,1593,1594,1595,1596,1598,1599,1600,1601,1604,1605,1606,1609,1610,1611,1612,1613,1614,1617,1618,1619,1622,1623,1624,1627,1628,1631][i - 1116]! := by
   have hsplit : i = 1116 + (i - 1116) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor18]
   rw [← PCFast.byteLength_eq_assemble]
@@ -338,7 +338,7 @@ private theorem fastPCAnchor24 :
 
 @[simp] theorem fastPC19 (i : Nat) (hi : 1159 ≤ i) (hii : i ≤ 1161) :
     Artifact.submissionArtifact.instructionPC i =
-      [1631,1632,1633][i - 1159]! := by
+      [1632,1633,1634][i - 1159]! := by
   have hsplit : i = 1159 + (i - 1159) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor19]
   rw [← PCFast.byteLength_eq_assemble]
@@ -346,7 +346,7 @@ private theorem fastPCAnchor24 :
 
 @[simp] theorem fastPC20 (i : Nat) (hi : 1162 ≤ i) (hii : i ≤ 1178) :
     Artifact.submissionArtifact.instructionPC i =
-      [1634,1635,1638,1639,1640,1641,1644,1645,1646,1647,1648,1649,1650,1653,1654,1655,1656][i - 1162]! := by
+      [1635,1636,1639,1640,1641,1642,1645,1646,1647,1648,1649,1650,1651,1654,1655,1656,1657][i - 1162]! := by
   have hsplit : i = 1162 + (i - 1162) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor20]
   rw [← PCFast.byteLength_eq_assemble]
@@ -354,7 +354,7 @@ private theorem fastPCAnchor24 :
 
 @[simp] theorem fastPC21 (i : Nat) (hi : 1179 ≤ i) (hii : i ≤ 1191) :
     Artifact.submissionArtifact.instructionPC i =
-      [1657,1658,1659,1660,1662,1663,1664,1667,1668,1670,1673,1674,1677][i - 1179]! := by
+      [1658,1659,1660,1661,1663,1664,1665,1668,1669,1671,1674,1675,1678][i - 1179]! := by
   have hsplit : i = 1179 + (i - 1179) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor21]
   rw [← PCFast.byteLength_eq_assemble]
@@ -362,7 +362,7 @@ private theorem fastPCAnchor24 :
 
 @[simp] theorem fastPC22 (i : Nat) (hi : 1192 ≤ i) (hii : i ≤ 1226) :
     Artifact.submissionArtifact.instructionPC i =
-      [1678,1679,1680,1683,1684,1685,1686,1687,1688,1689,1690,1693,1694,1696,1699,1700,1701,1702,1703,1705,1706,1707,1708,1710,1711,1712,1713,1715,1716,1717,1719,1720,1722,1723,1726][i - 1192]! := by
+      [1679,1680,1681,1684,1685,1686,1687,1688,1689,1690,1691,1694,1695,1697,1700,1701,1702,1703,1704,1706,1707,1708,1709,1711,1712,1713,1714,1716,1717,1718,1720,1721,1723,1724,1727][i - 1192]! := by
   have hsplit : i = 1192 + (i - 1192) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor22]
   rw [← PCFast.byteLength_eq_assemble]
@@ -370,7 +370,7 @@ private theorem fastPCAnchor24 :
 
 @[simp] theorem fastPC23 (i : Nat) (hi : 1227 ≤ i) (hii : i ≤ 1238) :
     Artifact.submissionArtifact.instructionPC i =
-      [1727,1728,1729,1732,1733,1736,1737,1740,1743,1744,1747,1750][i - 1227]! := by
+      [1728,1729,1730,1733,1734,1737,1738,1741,1744,1745,1748,1751][i - 1227]! := by
   have hsplit : i = 1227 + (i - 1227) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor23]
   rw [← PCFast.byteLength_eq_assemble]
@@ -378,7 +378,7 @@ private theorem fastPCAnchor24 :
 
 @[simp] theorem fullBasePC (i : Nat) (hi : 1837 ≤ i) (hii : i ≤ 1882) :
     Artifact.submissionArtifact.instructionPC i =
-      [2429,2430,2431,2432,2433,2434,2435,2437,2438,2439,2440,2443,2444,2445,2447,2450,2451,2454,2457,2460,2463,2466,2467,2468,2469,2471,2472,2474,2475,2476,2477,2479,2480,2481,2483,2484,2486,2487,2488,2489,2490,2492,2493,2494,2496,2499][i - 1837]! := by
+      [2430,2431,2432,2433,2434,2435,2436,2438,2439,2440,2441,2444,2445,2446,2448,2451,2452,2455,2458,2461,2464,2467,2468,2469,2470,2472,2473,2475,2476,2477,2478,2480,2481,2482,2484,2485,2487,2488,2489,2490,2491,2493,2494,2495,2497,2500][i - 1837]! := by
   have hsplit : i = 1837 + (i - 1837) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor24]
   rw [← PCFast.byteLength_eq_assemble]
@@ -429,8 +429,8 @@ theorem jumpDest1697 :
   Artifact.isValidJumpDest_index 720 (by rfl)
 
 theorem jumpDest3412 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2637 = true :=
-  Artifact.isValidJumpDest_index 1992 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2636 = true :=
+  Artifact.isValidJumpDest_index 1991 (by rfl)
 
 theorem jumpDest1703 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1048 = true :=
@@ -453,107 +453,107 @@ theorem jumpDest1758 :
   Artifact.isValidJumpDest_index 749 (by rfl)
 
 theorem jumpDest1776 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1119 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1120 = true :=
   Artifact.isValidJumpDest_index 761 (by rfl)
 
 theorem jumpDest1802 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1147 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1148 = true :=
   Artifact.isValidJumpDest_index 776 (by rfl)
 
 theorem jumpDest1812 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1157 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1158 = true :=
   Artifact.isValidJumpDest_index 784 (by rfl)
 
 theorem jumpDest1826 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1163 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1164 = true :=
   Artifact.isValidJumpDest_index 788 (by rfl)
 
 theorem jumpDest1837 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1174 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1175 = true :=
   Artifact.isValidJumpDest_index 797 (by rfl)
 
 theorem jumpDest1841 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1178 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1179 = true :=
   Artifact.isValidJumpDest_index 799 (by rfl)
 
 theorem jumpDest1852 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1189 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1190 = true :=
   Artifact.isValidJumpDest_index 806 (by rfl)
 
 theorem jumpDest1865 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1202 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1203 = true :=
   Artifact.isValidJumpDest_index 816 (by rfl)
 
 theorem jumpDest1900 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1237 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1238 = true :=
   Artifact.isValidJumpDest_index 843 (by rfl)
 
 theorem jumpDest1914 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1251 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1252 = true :=
   Artifact.isValidJumpDest_index 853 (by rfl)
 
 theorem jumpDest2038 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1375 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1376 = true :=
   Artifact.isValidJumpDest_index 955 (by rfl)
 
 theorem jumpDest2137 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1474 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1475 = true :=
   Artifact.isValidJumpDest_index 1034 (by rfl)
 
 theorem jumpDest2168 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1505 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1506 = true :=
   Artifact.isValidJumpDest_index 1059 (by rfl)
 
 theorem jumpDest2225 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1561 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1562 = true :=
   Artifact.isValidJumpDest_index 1104 (by rfl)
 
 theorem jumpDest2299 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1634 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1635 = true :=
   Artifact.isValidJumpDest_index 1162 (by rfl)
 
 theorem jumpDest2310 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1645 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1646 = true :=
   Artifact.isValidJumpDest_index 1169 (by rfl)
 
 theorem jumpDest2322 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1657 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1658 = true :=
   Artifact.isValidJumpDest_index 1179 (by rfl)
 
 theorem jumpDest2343 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1678 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1679 = true :=
   Artifact.isValidJumpDest_index 1192 (by rfl)
 
 theorem jumpDest2365 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1700 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1701 = true :=
   Artifact.isValidJumpDest_index 1207 (by rfl)
 
 theorem jumpDest2392 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1727 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 1728 = true :=
   Artifact.isValidJumpDest_index 1227 (by rfl)
 
 theorem jumpDest3111 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2394 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2395 = true :=
   Artifact.isValidJumpDest_index 1814 (by rfl)
 
 theorem jumpDest3146 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2429 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2430 = true :=
   Artifact.isValidJumpDest_index 1837 (by rfl)
 
 theorem jumpDest3184 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2467 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2468 = true :=
   Artifact.isValidJumpDest_index 1859 (by rfl)
 
-theorem jumpDest4976 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4330 = true :=
-  Artifact.isValidJumpDest_index 3286 (by rfl)
+theorem jumpDest4976 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4325 = true :=
+  Artifact.isValidJumpDest_index 3283 (by rfl)
 
-theorem jumpDestSub : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4491 = true :=
-  Artifact.isValidJumpDest_index 3400 (by rfl)
+theorem jumpDestSub : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4501 = true :=
+  Artifact.isValidJumpDest_index 3406 (by rfl)
 
-theorem jumpDestCopyResume : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4747 = true :=
-  Artifact.isValidJumpDest_index 3584 (by rfl)
+theorem jumpDestCopyResume : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4757 = true :=
+  Artifact.isValidJumpDest_index 3590 (by rfl)
 
-theorem jumpDestEarlyCopy : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4736 = true :=
-  Artifact.isValidJumpDest_index 3577 (by rfl)
+theorem jumpDestEarlyCopy : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4746 = true :=
+  Artifact.isValidJumpDest_index 3583 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

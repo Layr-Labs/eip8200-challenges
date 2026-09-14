@@ -92,33 +92,31 @@ theorem run_body (hcap : rest.length ≤ 1000) :
     hpc, stepValue] using hall
 
 def controlProgram : List Instr :=
-  [.op .JUMPDEST, .op (.Dup ⟨1, by decide⟩), .op .ISZERO,
-   .op (.Swap ⟨1, by decide⟩), .push 2 4, .op .ADD, .op (.Swap ⟨1, by decide⟩),
-   .push 2 2505, .op .JUMPI]
+  [.op (.Dup ⟨1, by decide⟩), .op .ISZERO,
+   .op (.Swap ⟨1, by decide⟩), .push 1 4, .op .ADD, .op (.Swap ⟨1, by decide⟩),
+   .push 2 2506, .op .JUMPI]
 
-/-- The counter slot is dead after the eighth bit: the byte-loop tail pops it,
-and the next byte pushes a fresh zero before re-entering this block. -/
 def resetProgram : List Instr :=
-  [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
+  [.push 0 0, .op (.Swap ⟨1, by decide⟩), .op .POP, .op .JUMPDEST]
 
 theorem run_start (hcap : rest.length ≤ 1000) :
     runInstructions [.op .JUMPDEST]
-      (framed s 2505 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) =
-      some (framed s 2506 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) := by
+      (framed s 2506 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) =
+      some (framed s 2507 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) := by
   have h8 : rest.length + 8 < 1024 := by omega
   simp [runInstructions, Challenge.EvmProof.Stepper.runInstr, framed, h8]
   decide
 
 theorem run_control (c : Nat) (hc : c = 0 ∨ c = 4) (hcap : rest.length ≤ 1000)
-    (hjd : Decode.isValidJumpDest s.executionEnv.code 2505 = true) :
+    (hjd : Decode.isValidJumpDest s.executionEnv.code 2506 = true) :
     runInstructions controlProgram
-      (framed s 2594 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m] ++ rest)) =
-      some (framed s (if c = 0 then 2505 else 2607)
+      (framed s 2595 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m] ++ rest)) =
+      some (framed s (if c = 0 then 2506 else 2606)
         ([Bm1,UInt256.ofNat (c+4),byte,offset,outerW,acc,base,m] ++ rest)) := by
   have h8 : rest.length + 8 < 1024 := by omega
   have h9 : rest.length + 9 < 1024 := by omega
   have h10 : rest.length + 10 < 1024 := by omega
-  have htarget : (2505 : UInt256).toNat = 2505 := by decide
+  have htarget : (2506 : UInt256).toNat = 2506 := by decide
   have hz0 : UInt256.isZero (UInt256.ofNat 0) = UInt256.ofNat 1 := by decide
   have hz4 : UInt256.isZero (UInt256.ofNat 4) = UInt256.ofNat 0 := by decide
   have ht1 : UInt256.isTrue (UInt256.ofNat 1) := by decide
@@ -133,13 +131,15 @@ theorem run_control (c : Nat) (hc : c = 0 ∨ c = 4) (hcap : rest.length ≤ 100
 
 theorem run_reset (hcap : rest.length ≤ 1000) :
     runInstructions resetProgram
-      (framed s 2607 ([Bm1,8,byte,offset,outerW,acc,base,m] ++ rest)) =
-      some (framed s 2611 ([Bm1,8,byte,offset,outerW,acc,base,m] ++ rest)) := by
+      (framed s 2606 ([Bm1,8,byte,offset,outerW,acc,base,m] ++ rest)) =
+      some (framed s 2610 ([Bm1,0,byte,offset,outerW,acc,base,m] ++ rest)) := by
+  have h7 : rest.length + 7 < 1024 := by omega
   have h8 : rest.length + 8 < 1024 := by omega
+  have h9 : rest.length + 9 < 1024 := by omega
+  have h10 : rest.length + 10 < 1024 := by omega
   simp [resetProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr, framed,
-    h8, Challenge.EvmProof.Word.succ_ofNat_mod,
+    h7, h8, h9, h10, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.literal_eq_ofNat]
-  try decide
   try rfl
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WordBitsFourCore
