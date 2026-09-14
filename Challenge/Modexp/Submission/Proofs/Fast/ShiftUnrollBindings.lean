@@ -84,8 +84,8 @@ def cache : Block Artifact.submissionArtifact .Osaka 2988 cacheProgram :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 2228 11 2988 cacheProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def dispatch : Block Artifact.submissionArtifact .Osaka 3142 dispatchProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2335 3 3142 dispatchProgram
+def dispatch : Block Artifact.submissionArtifact .Osaka 3144 dispatchProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2337 3 3144 dispatchProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jump3684 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3149 = true :=
