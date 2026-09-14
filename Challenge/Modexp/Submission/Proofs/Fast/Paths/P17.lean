@@ -26,17 +26,17 @@ def blk1816 :
    opAt 1149 (.Dup ⟨0, by decide⟩),
    pushAt 1150 2 1024,
    opAt 1151 .EQ,
-   pushAt 1152 2 824,
+   pushAt 1152 2 826,
    opAt 1153 .JUMPI]
 
 /-- Instructions 1952..1952, pc 1824..2767: the multiply's call frame. -/
 def blk1822 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1154 2 824,
+  [pushAt 1154 2 826,
    pushAt 1155 2 1536,
    opAt 1156 (.Dup ⟨2, by decide⟩),
    pushAt 1157 2 1536,
-   pushAt 1158 2 3349,
+   pushAt 1158 2 3353,
    opAt 1159 .JUMP]
 
 /-- Instructions 1955..1957, pc 2768..2772: the skip. -/
