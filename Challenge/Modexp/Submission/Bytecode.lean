@@ -20,4 +20,6 @@ theorem submissionBytecode_roundtrip :
 
 end Challenge.Modexp
 
--- lottery rerun 2026-09-14T04:58:53Z: public PR #1738 artifact resubmitted under a fresh benchmark seed, bytes and proofs unchanged
+-- The nine bytes at pc 1190..1198 close the `DOUBLE256` loop: `PUSH0 NOT ADD` wraps the
+-- counter down by one and the back edge is pushed as a width-three literal, so the byte
+-- length, the instruction count and every later program counter are unchanged.
