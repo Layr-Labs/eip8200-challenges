@@ -1412,14 +1412,10 @@ def gasSteps_sentinel (input : ByteArray) (hfit : CalldataFits input) :
     (run_lengthSentinelStore input hfit) (by rfl) deployAddress_not_precompile
   exact g₁.trans (Challenge.EvmProof.GasSteps.cast g₂ rfl (padSentinelStored_eq input hfit))
 
-def gasSteps_lengthSetup (input : ByteArray) (hfit : CalldataFits input)
-    (hmiss : input.size ≠ 32) :
+def gasSteps_lengthSetup (input : ByteArray) (hfit : CalldataFits input) :
     Challenge.EvmProof.GasSteps (padGuardMiss input) (lengthLoopState input 0) := by
-  have hsize : (padSentinel input).executionEnv.calldata.size < 2 ^ 256 := by
-    change input.size < 2 ^ 256
-    exact Nat.lt_trans hfit (by norm_num)
-  have gg := Source32Footer.gasSteps_guard_miss (padSentinel input) (padFrame input)
-    (by simp [padFrame]) (by rfl) hsize hmiss (by rfl) (by rfl) deployAddress_not_precompile
+  have gg := Source32Footer.gasSteps_guard_window (padSentinel input) (padFrame input)
+    (by simp [padFrame]) (by rfl) (by rfl) (by rfl) deployAddress_not_precompile
   have gg' : Challenge.EvmProof.GasSteps (padSentinel input) (padFooterInput input) := by
     simpa only [padFooterInput, padSentinel, source32GuardPC] using gg
   have g₃ := Challenge.EvmProof.DataStepper.runLocatedBlock_sound
@@ -1444,79 +1440,11 @@ private def gasSteps_padPrefix (input : ByteArray) (hfit : CalldataFits input)
     ((gasSteps_enterPad input).trans ((gasSteps_paddedLength input).trans
       ((gasSteps_lengthCopy input hfit).trans (gasSteps_push input))))
 
-/-- The constructor preserves the complete ordinary footer-loop return state. -/
-def source32Returned (input : ByteArray) : State :=
-  { padSentinel input with
-    pc := UInt256.ofNat 389
-    stack := padFrame input
-    memory := MachineState.writeBytes (padSentinel input).memory (ByteArray.mk #[1]) 1177
-    activeWords := (padSentinel input).activeWordsAfterUInt256 1177 1 }
-
-private theorem source32Returned_eq (input : ByteArray) (hfit : CalldataFits input)
-    (h32 : input.size = 32) : source32Returned input = padReturned input := by
-  have hs0 : lengthShift input 0 = UInt256.ofNat 256 := by
-    unfold lengthShift bitLengthWord
-    rw [h32]
-    rfl
-  have hs1 : lengthShift input 1 = UInt256.ofNat 1 := by
-    change UInt256.shiftRight (lengthShift input 0) (UInt256.ofNat 8) = _
-    rw [hs0]
-    rfl
-  have hs2 : lengthShift input 2 = UInt256.ofNat 0 := by
-    change UInt256.shiftRight (lengthShift input 1) (UInt256.ofNat 8) = _
-    rw [hs1]
-    rfl
-  have ht : lengthStop input = 2 := by
-    rw [lengthStop, hs1, if_neg (by decide), hs2, if_pos (by rfl)]
-  have ha0 : lengthAddr input 0 = UInt256.ofNat 1176 := by
-    unfold lengthAddr lengthOffsetWord Padding.paddedWord
-    rw [h32]
-    rfl
-  have ha1 : lengthAddr input 1 = UInt256.ofNat 1177 := by
-    change UInt256.ofNat 1 + lengthAddr input 0 = _
-    rw [ha0]
-    exact Challenge.EvmProof.Word.ofNat_add_mod 1 1176
-  have hactive : (padSentinel input).activeWords = UInt256.ofNat 37 := by
-    change UInt256.ofNat (MachineState.activeWordsAfter
-      (UInt256.ofNat (MachineState.activeWordsAfter 0 1120 input.size)).toNat
-      (1120 + input.size) 1) = UInt256.ofNat 37
-    rw [h32]
-    rfl
-  have hsize : (padSentinel input).memory.size ≤ 1176 := by
-    have h := sentinel_size_le input hfit
-    simpa [Padding.messageOffset, Padding.paddedLength, h32] using h
-  have hm : lengthLoopMemory input 2 =
-      MachineState.writeBytes (padSentinel input).memory (ByteArray.mk #[1]) 1177 := by
-    simp only [lengthLoopMemory, hs0, hs1, ha0, ha1]
-    exact Source32Footer.omit_zero _ hsize
-  have ha : lengthLoopActiveWords input 2 =
-      (padSentinel input).activeWordsAfterUInt256 1177 1 := by
-    simp only [lengthLoopActiveWords, ha0, ha1, hactive, State.activeWordsAfterUInt256]
-    rfl
-  unfold source32Returned padReturned
-  rw [ht]
-  unfold lengthLoopState
-  rw [hm, ha]
-
-noncomputable def gasSteps_source32 (input : ByteArray) (hfit : CalldataFits input)
-    (h32 : input.size = 32) :
-    Challenge.EvmProof.GasSteps (padGuardMiss input) (padReturned input) := by
-  have gg := Source32Footer.gasSteps_guard_hit (padSentinel input) (padFrame input)
-    (by simp [padFrame]) (by rfl) h32 (by rfl) (by rfl) deployAddress_not_precompile
-  have gc := Source32Footer.gasSteps_constructor (padSentinel input) (padFrame input)
-    (by simp [padFrame]) (by rfl) (by rfl) (by rfl) deployAddress_not_precompile
-  have gh : Challenge.EvmProof.GasSteps (padSentinel input) (source32Returned input) := by
-    simpa only [source32Returned, padSentinel, source32GuardPC] using gg.trans gc
-  exact (gasSteps_sentinel input hfit).trans
-    (Challenge.EvmProof.GasSteps.cast gh rfl (source32Returned_eq input hfit h32))
-
 noncomputable def gasSteps_padBody (input : ByteArray) (hfit : CalldataFits input)
     (hnz : input.size % 64 ≠ 0) :
-    Challenge.EvmProof.GasSteps (padFramed input) (padReturned input) := by
-  apply (gasSteps_guardMiss input hfit hnz).trans
-  by_cases h32 : input.size = 32
-  · exact gasSteps_source32 input hfit h32
-  · exact (gasSteps_lengthSetup input hfit h32).trans (gasSteps_lengthLoop input hfit)
+    Challenge.EvmProof.GasSteps (padFramed input) (padReturned input) :=
+  (gasSteps_guardMiss input hfit hnz).trans
+    ((gasSteps_lengthSetup input hfit).trans (gasSteps_lengthLoop input hfit))
 
 /-- Block-loop entry state.  A whole-block input skips the sentinel and footer stores: its
 pad-only block is scheduled from the table and never reads message memory. -/
@@ -1557,8 +1485,6 @@ noncomputable def gasSteps_pad (input : ByteArray) (hfit : CalldataFits input)
       ((gasSteps_padPrefix input hfit entryPrefix).trans (gasSteps_padBody input hfit hz))
       rfl (entryState_miss input hz).symm
 
-#print axioms source32Returned_eq
-#print axioms gasSteps_source32
 #print axioms gasSteps_pad
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PaddingTrace
