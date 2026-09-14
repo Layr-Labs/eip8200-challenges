@@ -46,7 +46,7 @@ def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
   · have g2 := StaggerSetupSites.gasSteps_branch_taken
       {s with memory := StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
       _ (ret :: rest) (by simp only [List.length_cons]; omega) hrun hz hcode hfork hnp
-    have hmem := StaggerTablePad.lowChain_eq s.memory _ ((StaggerPad.highZero_true_iff _).mp hz)
+    have hmem := StaggerTablePad.lowChain_eq s.memory _ (StaggerPad.highZero_true_imp _ hz)
     exact (g1.trans g2).cast rfl (by rw [hmem])
   · have g2 := StaggerSetupSites.gasSteps_branch_fall
       {s with memory := StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
@@ -60,7 +60,7 @@ def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
     have hmem := StaggerTablePad.highChain_eq s.memory (UInt256.ofNat s.executionEnv.calldata.size)
     have g23 : GasSteps
         {s with
-          pc := UInt256.ofNat 4804
+          pc := UInt256.ofNat 4802
           stack := StaggerPad.highZero (UInt256.ofNat s.executionEnv.calldata.size) :: ret :: rest
           memory := StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
         {s with

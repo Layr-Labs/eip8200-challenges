@@ -15,47 +15,47 @@ private def wfOp {op : Operation}
     DataStepper.WellFormed .Osaka (.op op) := ⟨hopcode, hplain, havailable⟩
 
 def guardPath : List (DataStepper.Located Artifact.submissionArtifact .Osaka) :=
-  [ ⟨3672, .op .CALLDATASIZE, by exact GuardInstructionWindow.get 116, wfOp (by decide) trivial rfl⟩,
-    ⟨3673, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by exact GuardInstructionWindow.get 117, by decide⟩,
-    ⟨3674, .op .EQ, by exact GuardInstructionWindow.get 118, wfOp (by decide) trivial rfl⟩,
-    ⟨3675, .push ⟨2, by decide⟩ (UInt256.ofNat 4700), by exact GuardInstructionWindow.get 119, by decide⟩,
-    ⟨3676, .op .JUMPI, by exact GuardInstructionWindow.get 120, wfOp (by decide) trivial rfl⟩ ]
+  [ ⟨3674, .op .CALLDATASIZE, by exact GuardInstructionWindow.get 116, wfOp (by decide) trivial rfl⟩,
+    ⟨3675, .push ⟨1, by decide⟩ (UInt256.ofNat 32), by exact GuardInstructionWindow.get 117, by decide⟩,
+    ⟨3676, .op .EQ, by exact GuardInstructionWindow.get 118, wfOp (by decide) trivial rfl⟩,
+    ⟨3677, .push ⟨2, by decide⟩ (UInt256.ofNat 4700), by exact GuardInstructionWindow.get 119, by decide⟩,
+    ⟨3678, .op .JUMPI, by exact GuardInstructionWindow.get 120, wfOp (by decide) trivial rfl⟩ ]
 
 def constructorPath : List (DataStepper.Located Artifact.submissionArtifact .Osaka) :=
-  [ ⟨3660, .op .JUMPDEST, by exact GuardInstructionWindow.get 104, wfOp (by decide) trivial rfl⟩,
-    ⟨3661, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by exact GuardInstructionWindow.get 105, by decide⟩,
-    ⟨3662, .push ⟨2, by decide⟩ (UInt256.ofNat 1177), by exact GuardInstructionWindow.get 106, by decide⟩,
-    ⟨3663, .op .MSTORE8, by exact GuardInstructionWindow.get 107, wfOp (by decide) trivial rfl⟩,
-    ⟨3664, .push ⟨2, by decide⟩ (UInt256.ofNat 389), by exact GuardInstructionWindow.get 108, by decide⟩,
-    ⟨3665, .op .JUMP, by exact GuardInstructionWindow.get 109, wfOp (by decide) trivial rfl⟩ ]
+  [ ⟨3662, .op .JUMPDEST, by exact GuardInstructionWindow.get 104, wfOp (by decide) trivial rfl⟩,
+    ⟨3663, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by exact GuardInstructionWindow.get 105, by decide⟩,
+    ⟨3664, .push ⟨2, by decide⟩ (UInt256.ofNat 1177), by exact GuardInstructionWindow.get 106, by decide⟩,
+    ⟨3665, .op .MSTORE8, by exact GuardInstructionWindow.get 107, wfOp (by decide) trivial rfl⟩,
+    ⟨3666, .push ⟨2, by decide⟩ (UInt256.ofNat 389), by exact GuardInstructionWindow.get 108, by decide⟩,
+    ⟨3667, .op .JUMP, by exact GuardInstructionWindow.get 109, wfOp (by decide) trivial rfl⟩ ]
 
-@[simp] private theorem pc3662 : Artifact.submissionArtifact.instructionPC 3660 = 4700 :=
+@[simp] private theorem pc3662 : Artifact.submissionArtifact.instructionPC 3662 = 4700 :=
   (GuardInstructionWindow.pc 104).trans (by rfl)
-@[simp] private theorem pc3663 : Artifact.submissionArtifact.instructionPC 3661 = 4701 :=
+@[simp] private theorem pc3663 : Artifact.submissionArtifact.instructionPC 3663 = 4701 :=
   (GuardInstructionWindow.pc 105).trans (by rfl)
-@[simp] private theorem pc3664 : Artifact.submissionArtifact.instructionPC 3662 = 4703 :=
+@[simp] private theorem pc3664 : Artifact.submissionArtifact.instructionPC 3664 = 4703 :=
   (GuardInstructionWindow.pc 106).trans (by rfl)
-@[simp] private theorem pc3665 : Artifact.submissionArtifact.instructionPC 3663 = 4706 :=
+@[simp] private theorem pc3665 : Artifact.submissionArtifact.instructionPC 3665 = 4706 :=
   (GuardInstructionWindow.pc 107).trans (by rfl)
-@[simp] private theorem pc3666 : Artifact.submissionArtifact.instructionPC 3664 = 4707 :=
+@[simp] private theorem pc3666 : Artifact.submissionArtifact.instructionPC 3666 = 4707 :=
   (GuardInstructionWindow.pc 108).trans (by rfl)
-@[simp] private theorem pc3667 : Artifact.submissionArtifact.instructionPC 3665 = 4710 :=
+@[simp] private theorem pc3667 : Artifact.submissionArtifact.instructionPC 3667 = 4710 :=
   (GuardInstructionWindow.pc 109).trans (by rfl)
-@[simp] private theorem pc3674 : Artifact.submissionArtifact.instructionPC 3672 = 4720 :=
+@[simp] private theorem pc3674 : Artifact.submissionArtifact.instructionPC 3674 = 4720 :=
   (GuardInstructionWindow.pc 116).trans (by rfl)
-@[simp] private theorem pc3675 : Artifact.submissionArtifact.instructionPC 3673 = 4721 :=
+@[simp] private theorem pc3675 : Artifact.submissionArtifact.instructionPC 3675 = 4721 :=
   (GuardInstructionWindow.pc 117).trans (by rfl)
-@[simp] private theorem pc3676 : Artifact.submissionArtifact.instructionPC 3674 = 4723 :=
+@[simp] private theorem pc3676 : Artifact.submissionArtifact.instructionPC 3676 = 4723 :=
   (GuardInstructionWindow.pc 118).trans (by rfl)
-@[simp] private theorem pc3677 : Artifact.submissionArtifact.instructionPC 3675 = 4724 :=
+@[simp] private theorem pc3677 : Artifact.submissionArtifact.instructionPC 3677 = 4724 :=
   (GuardInstructionWindow.pc 119).trans (by rfl)
-@[simp] private theorem pc3678 : Artifact.submissionArtifact.instructionPC 3676 = 4727 :=
+@[simp] private theorem pc3678 : Artifact.submissionArtifact.instructionPC 3678 = 4727 :=
   (GuardInstructionWindow.pc 120).trans (by rfl)
 
 private theorem valid_constructor (s : State)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code 4700 = true := by
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3660 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3662 (by rfl)
   rw [pc3662] at h
   rw [hcode]
   exact h
