@@ -47,7 +47,7 @@ private theorem stepS_calldatasize (input : ByteArray) (pc : Nat) (stk : List UI
 
 private theorem pc_g8 : Artifact.submissionArtifact.instructionPC 8 = 11 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_g9 : Artifact.submissionArtifact.instructionPC 9 = 14 := by
+private theorem pc_g9 : Artifact.submissionArtifact.instructionPC 9 = 12 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 private theorem pc_g10 : Artifact.submissionArtifact.instructionPC 10 = 15 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
@@ -75,19 +75,19 @@ theorem run_gate_prefix (input : ByteArray) :
       some (PatternedScan.stS input 24 [336, EntryGateLogic.gateWord input.size]) := by
   let n := UInt256.ofNat input.size
   let s := UInt256.shiftRight n 2
-  let x := UInt256.xor n 1000
-  let l0 : Located := pushAt 8 2 1000
+  let x := UInt256.xor 1000 n
+  let l0 : Located := opAt 8 .CALLDATASIZE
   have h0 := PatternedScan.blockOfS l0
     (PatternedScan.pcFactS input 8 11 [] (by norm_num) pc_g8)
-    (PatternedScan.stepS_push input 11 2 1000 [] (by simp) (by decide) (by decide) (by norm_num))
-  let l1 : Located := opAt 9 .CALLDATASIZE
+    (stepS_calldatasize input 11 [] (by simp) (by norm_num))
+  let l1 : Located := pushAt 9 2 1000
   have h1 := PatternedScan.blockOfS l1
-    (PatternedScan.pcFactS input 9 14 [1000] (by norm_num) pc_g9)
-    (stepS_calldatasize input 14 [1000] (by simp) (by norm_num))
+    (PatternedScan.pcFactS input 9 12 [n] (by norm_num) pc_g9)
+    (PatternedScan.stepS_push input 12 2 1000 [n] (by simp) (by decide) (by decide) (by norm_num))
   let l2 : Located := opAt 10 .XOR
   have h2 := PatternedScan.blockOfS l2
-    (PatternedScan.pcFactS input 10 15 [n, 1000] (by norm_num) pc_g10)
-    (PatternedScan.stepS_xor input 15 n 1000 [] (by simp) (by norm_num))
+    (PatternedScan.pcFactS input 10 15 [1000, n] (by norm_num) pc_g10)
+    (PatternedScan.stepS_xor input 15 1000 n [] (by simp) (by norm_num))
   let l3 : Located := opAt 11 .CALLDATASIZE
   have h3 := PatternedScan.blockOfS l3
     (PatternedScan.pcFactS input 11 16 [x] (by norm_num) pc_g11)
@@ -116,7 +116,7 @@ theorem run_gate_prefix (input : ByteArray) :
   have hseq6 := DataStepper.runLocatedBlock_append [l0, l1, l2, l3, l4, l5] [l6] _ _ _ hseq5 rfl h6
   have hseq7 := DataStepper.runLocatedBlock_append [l0, l1, l2, l3, l4, l5, l6] [l7] _ _ _ hseq6 rfl h7
   have hv : s * x = EntryGateLogic.gateWord input.size := by
-    simp only [x, s, n, EntryGateLogic.gateWord, Word.literal_eq_ofNat, RawExpressionAC.xor_comm]
+    simp only [x, s, n, EntryGateLogic.gateWord, Word.literal_eq_ofNat]
     exact RawExpressionAC.mul_comm _ _
   rw [hv] at hseq7
   exact hseq7

@@ -54,8 +54,8 @@ def bytePrefix : List Located :=
 
 /-- Entry size gate: `(size >> 2) * (size ^ 1000) != 0` jumps to the generic arm. -/
 def gatePrefix : List Located :=
-  [pushAt 8 2 1000,
-   opAt 9 .CALLDATASIZE,
+  [opAt 8 .CALLDATASIZE,
+   pushAt 9 2 1000,
    opAt 10 .XOR,
    opAt 11 .CALLDATASIZE,
    pushAt 12 1 2,
@@ -226,7 +226,7 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_8 : Artifact.submissionArtifact.instructionPC 8 = 11 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_9 : Artifact.submissionArtifact.instructionPC 9 = 14 := by
+@[simp] theorem pc_direct_9 : Artifact.submissionArtifact.instructionPC 9 = 12 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_10 : Artifact.submissionArtifact.instructionPC 10 = 15 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl

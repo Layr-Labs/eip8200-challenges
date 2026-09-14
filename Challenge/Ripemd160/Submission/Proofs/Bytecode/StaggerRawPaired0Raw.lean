@@ -22,7 +22,7 @@ def template : List Instr :=
     .op (.Dup ⟨6, by decide⟩),
     .op (.Dup ⟨10, by decide⟩),
     .op (.Dup ⟨6, by decide⟩),
-    .op (.Dup ⟨12, by decide⟩),
+    .op (.Dup ⟨1, by decide⟩),
     .op .AND,
     .op (.Dup ⟨11, by decide⟩),
     .op .OR,
