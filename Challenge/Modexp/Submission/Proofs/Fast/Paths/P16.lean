@@ -37,14 +37,14 @@ def blk1781 :
    opAt 1120 .BYTE,
    opAt 1121 (.Dup ⟨1, by decide⟩),
    opAt 1122 .ISZERO,
-   pushAt 1123 2 1583,
+   pushAt 1123 2 1582,
    opAt 1124 .JUMPI]
 
 /-- Instructions 1790..1920, pc 2711..3077: every byte after the first. -/
 def blk1793 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1125 1 128,
-   pushAt 1126 2 949,
+   pushAt 1126 2 951,
    opAt 1127 .JUMP]
 
 /-- Instructions 1875..1942, pc 2720..3189: the highest set bit of byte `0`. -/
@@ -68,7 +68,7 @@ def blk1796 :
    opAt 1143 .SHR,
    pushAt 1144 1 1,
    opAt 1145 .ADD,
-   pushAt 1146 2 2417,
+   pushAt 1146 2 2421,
    opAt 1147 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

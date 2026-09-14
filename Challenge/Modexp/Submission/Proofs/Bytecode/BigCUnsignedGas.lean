@@ -15,16 +15,16 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.BigC
 
 /-- Only the exact artifact/location binding remains an integration parameter. -/
 structure Blocks (artifact : ProgramArtifact) where
-  entry : Block artifact .Osaka 482 entryProgram
-  init : Block artifact .Osaka 486 initProgram
-  cell : Block artifact .Osaka 492 cellProgram
-  guard : Block artifact .Osaka 527 guardProgram
-  decide : Block artifact .Osaka 532 decideProgram
-  retry : Block artifact .Osaka 537 retryProgram
-  finish : Block artifact .Osaka 546 finishProgram
-  jumpInit : Decode.isValidJumpDest artifact.code 486 = true
-  jumpLoop : Decode.isValidJumpDest artifact.code 492 = true
-  jumpDone : Decode.isValidJumpDest artifact.code 546 = true
+  entry : Block artifact .Osaka 484 entryProgram
+  init : Block artifact .Osaka 488 initProgram
+  cell : Block artifact .Osaka 494 cellProgram
+  guard : Block artifact .Osaka 529 guardProgram
+  decide : Block artifact .Osaka 534 decideProgram
+  retry : Block artifact .Osaka 539 retryProgram
+  finish : Block artifact .Osaka 548 finishProgram
+  jumpInit : Decode.isValidJumpDest artifact.code 488 = true
+  jumpLoop : Decode.isValidJumpDest artifact.code 494 = true
+  jumpDone : Decode.isValidJumpDest artifact.code 548 = true
 
 theorem lift_run {artifact : ProgramArtifact} {s : State}
     (env : Environment artifact .Osaka s) {pc : Nat} {instructions : List Instr}
@@ -40,8 +40,8 @@ theorem loop_reach {artifact : ProgramArtifact} (blocks : Blocks artifact)
     (hcap : rest.length < 1000) (hsrc : src ≤ 8192) (hz : z ≤ 8192) :
     ∀ n, 1 ≤ n → n ≤ 1024 → ∀ mem c,
       let result := pass src z n mem c
-      Reach (st s 492 (UInt256.ofNat n :: c :: UInt256.ofNat z :: ret :: UInt256.ofNat src :: rest) mem AW)
-        (st s 532 (UInt256.ofNat 0 :: result.2 :: UInt256.ofNat z :: ret :: UInt256.ofNat src :: rest) result.1 AW) := by
+      Reach (st s 494 (UInt256.ofNat n :: c :: UInt256.ofNat z :: ret :: UInt256.ofNat src :: rest) mem AW)
+        (st s 534 (UInt256.ofNat 0 :: result.2 :: UInt256.ofNat z :: ret :: UInt256.ofNat src :: rest) result.1 AW) := by
   intro n hn
   induction n, hn using Nat.le_induction with
   | base =>
@@ -55,7 +55,7 @@ theorem loop_reach {artifact : ProgramArtifact} (blocks : Blocks artifact)
     intro hn' mem c
     let w := sumWord mem src z n c
     let m1 := writeByte mem n w
-    have hj : Decode.isValidJumpDest s.executionEnv.code 492 = true := by
+    have hj : Decode.isValidJumpDest s.executionEnv.code 494 = true := by
       rw [env.code]
       exact blocks.jumpLoop
     have g1 := lift_run env blocks.cell
@@ -114,12 +114,12 @@ theorem addm_reach {artifact : ProgramArtifact} (blocks : Blocks artifact)
     (hm : MachineState.readWord s.executionEnv.calldata 64 = UInt256.ofNat ml)
     (hzero : num mem 8192 ml = 0)
     (hlt : num mem 0 ml + num mem src ml < 2 * num mem 1024 ml) :
-    Reach (st s 482 (UInt256.ofNat retPc :: UInt256.ofNat src :: rest) mem AW)
+    Reach (st s 484 (UInt256.ofNat retPc :: UInt256.ofNat src :: rest) mem AW)
       (st s retPc rest (addResult ml src mem) AW) := by
   let first := pass src 1024 ml mem (UInt256.ofNat 1)
   let second := pass 1024 8192 ml first.1 (UInt256.ofNat 1)
-  have hji : Decode.isValidJumpDest s.executionEnv.code 486 = true := by rw [env.code]; exact blocks.jumpInit
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 546 = true := by rw [env.code]; exact blocks.jumpDone
+  have hji : Decode.isValidJumpDest s.executionEnv.code 488 = true := by rw [env.code]; exact blocks.jumpInit
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 548 = true := by rw [env.code]; exact blocks.jumpDone
   have hjr : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat retPc).toNat = true := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
     exact hjump
@@ -168,7 +168,7 @@ theorem addm {artifact : ProgramArtifact} (blocks : Blocks artifact)
     (hm : MachineState.readWord s.executionEnv.calldata 64 = UInt256.ofNat ml)
     (hzero : num mem 8192 ml = 0)
     (hlt : num mem 0 ml + num mem src ml < 2 * num mem 1024 ml) :
-    ∃ mem', Reach (st s 482 (UInt256.ofNat retPc :: UInt256.ofNat src :: rest) mem AW)
+    ∃ mem', Reach (st s 484 (UInt256.ofNat retPc :: UInt256.ofNat src :: rest) mem AW)
         (st s retPc rest mem' AW) ∧
       num mem' 0 ml = (num mem 0 ml + num mem src ml) % num mem 1024 ml ∧
       (∀ k, ml ≤ k → bget mem' k = bget mem k) := by

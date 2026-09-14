@@ -28,82 +28,82 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 
 open CiosCached WindowTwentyOneBinding
 
-def out : Block Artifact.submissionArtifact .Osaka 3516 outProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2620 3 3516 outProgram
+def out : Block Artifact.submissionArtifact .Osaka 3520 outProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2624 3 3520 outProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Dispatch : Block Artifact.submissionArtifact .Osaka 3543 l1DispatchProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2647 2 3543 l1DispatchProgram
+def l1Dispatch : Block Artifact.submissionArtifact .Osaka 3547 l1DispatchProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2651 2 3547 l1DispatchProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Mac0 : Block Artifact.submissionArtifact .Osaka 3519 CiosReadonly.commonFirstProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2623 24 3519 CiosReadonly.commonFirstProgram
+def l1Mac0 : Block Artifact.submissionArtifact .Osaka 3523 CiosReadonly.commonFirstProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2627 24 3523 CiosReadonly.commonFirstProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The middle block with its leading `JUMPDEST` (instruction 3360, pc 4555). -/
-def mid : Block Artifact.submissionArtifact .Osaka 3804 CarryRowPrograms.middleBlock :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2866 23 3804 CarryRowPrograms.middleBlock
+def mid : Block Artifact.submissionArtifact .Osaka 3808 CarryRowPrograms.middleBlock :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2870 23 3808 CarryRowPrograms.middleBlock
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Dispatch : Block Artifact.submissionArtifact .Osaka 3831 l2DispatchProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2889 2 3831 l2DispatchProgram
+def l2Dispatch : Block Artifact.submissionArtifact .Osaka 3835 l2DispatchProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2893 2 3835 l2DispatchProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The first eight-limb second-loop cell loads its modulus word with `PUSH10 0xc0`. -/
-def l2Mac0 : Block Artifact.submissionArtifact .Osaka 3834 (l2Program 10 192 2304 2336) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2892 30 3834 (l2Program 10 192 2304 2336)
+def l2Mac0 : Block Artifact.submissionArtifact .Osaka 3838 (l2Program 10 192 2304 2336) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2896 30 3838 (l2Program 10 192 2304 2336)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Mac1 : Block Artifact.submissionArtifact .Osaka 3878 (l2Program 1 160 2272 2304) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2922 30 3878 (l2Program 1 160 2272 2304)
+def l2Mac1 : Block Artifact.submissionArtifact .Osaka 3882 (l2Program 1 160 2272 2304) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2926 30 3882 (l2Program 1 160 2272 2304)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Mac2 : Block Artifact.submissionArtifact .Osaka 3913 (l2Program 1 128 2240 2272) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2952 30 3913 (l2Program 1 128 2240 2272)
+def l2Mac2 : Block Artifact.submissionArtifact .Osaka 3917 (l2Program 1 128 2240 2272) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2956 30 3917 (l2Program 1 128 2240 2272)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Mac3 : Block Artifact.submissionArtifact .Osaka 3948 (CiosReadonlyExtra.extraProgram 0 2208 2240) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2982 28 3948 (CiosReadonlyExtra.extraProgram 0 2208 2240)
+def l2Mac3 : Block Artifact.submissionArtifact .Osaka 3952 (CiosReadonlyExtra.extraProgram 0 2208 2240) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2986 28 3952 (CiosReadonlyExtra.extraProgram 0 2208 2240)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Join : Block Artifact.submissionArtifact .Osaka 3981 joinProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3010 1 3981 joinProgram
+def l2Join : Block Artifact.submissionArtifact .Osaka 3985 joinProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3014 1 3985 joinProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Mac4 : Block Artifact.submissionArtifact .Osaka 3982 (CiosReadonlyExtra.extraProgram 1 2176 2208) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3011 29 3982 (CiosReadonlyExtra.extraProgram 1 2176 2208)
+def l2Mac4 : Block Artifact.submissionArtifact .Osaka 3986 (CiosReadonlyExtra.extraProgram 1 2176 2208) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3015 29 3986 (CiosReadonlyExtra.extraProgram 1 2176 2208)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Mac5 : Block Artifact.submissionArtifact .Osaka 4015 (CiosReadonlyExtra.extraProgram 2 2144 2176) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3040 29 4015 (CiosReadonlyExtra.extraProgram 2 2144 2176)
+def l2Mac5 : Block Artifact.submissionArtifact .Osaka 4019 (CiosReadonlyExtra.extraProgram 2 2144 2176) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3044 29 4019 (CiosReadonlyExtra.extraProgram 2 2144 2176)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Mac6 : Block Artifact.submissionArtifact .Osaka 4048 (CiosCachedLast.l2LastProgram 0 0 2112 2144) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3069 29 4048 (CiosCachedLast.l2LastProgram 0 0 2112 2144)
+def l2Mac6 : Block Artifact.submissionArtifact .Osaka 4052 (CiosCachedLast.l2LastProgram 0 0 2112 2144) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3073 29 4052 (CiosCachedLast.l2LastProgram 0 0 2112 2144)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def tailLoop : Block Artifact.submissionArtifact .Osaka 4081 CarryRowPrograms.tail :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3098 18 4081 CarryRowPrograms.tail
+def tailLoop : Block Artifact.submissionArtifact .Osaka 4085 CarryRowPrograms.tail :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3102 18 4085 CarryRowPrograms.tail
     (by decide) (by rfl) (by rfl) (by decide)
 
-def exitBlock : Block Artifact.submissionArtifact .Osaka 4114 CiosReadonly.fullExitProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3121 14 4114 CiosReadonly.fullExitProgram
+def exitBlock : Block Artifact.submissionArtifact .Osaka 4118 CiosReadonly.fullExitProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3125 14 4118 CiosReadonly.fullExitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Join8 : Block Artifact.submissionArtifact .Osaka 3833 joinProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2891 1 3833 joinProgram
+def l2Join8 : Block Artifact.submissionArtifact .Osaka 3837 joinProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2895 1 3837 joinProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-theorem jumpDestL2Eight : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3833 = true :=
-  Artifact.isValidJumpDest_index 2891 (by rfl)
+theorem jumpDestL2Eight : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3837 = true :=
+  Artifact.isValidJumpDest_index 2895 (by rfl)
 
 /-- The multiply row head (instruction 3190). -/
-theorem jumpDest4595 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3516 = true :=
-  Artifact.isValidJumpDest_index 2620 (by rfl)
+theorem jumpDest4595 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3520 = true :=
+  Artifact.isValidJumpDest_index 2624 (by rfl)
 
 /-- The four-limb second-loop entry (instruction 3461). -/
-theorem jumpDest5112 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3981 = true :=
-  Artifact.isValidJumpDest_index 3010 (by rfl)
+theorem jumpDest5112 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3985 = true :=
+  Artifact.isValidJumpDest_index 3014 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryRowBlocks
 

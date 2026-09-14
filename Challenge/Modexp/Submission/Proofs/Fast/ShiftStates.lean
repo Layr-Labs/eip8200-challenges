@@ -23,8 +23,8 @@ open Challenge.Modexp.Submission.Proofs.Fast
 abbrev outer := Exp.outer
 
 /-- Program counters of the appended routine. -/
-def pcDispatch : Nat := 2596
-def pcHit : Nat := 2611
+def pcDispatch : Nat := 2600
+def pcHit : Nat := 2615
 -- 3478, not ticket 4's 3455: the recogniser-miss JUMPDEST is instruction 2694 here (it was 2699),
 -- and this is the one pc in the table the regenerator could not rewrite, because 3455 has no image
 -- in the pc map -- R-ONE2 deleted the instruction it used to sit on, so the map row is empty and
@@ -32,41 +32,41 @@ def pcHit : Nat := 2611
 -- and `blk2889` is located there, so a stale 3455 makes `runLocatedBlock blk2889 (missState …)`
 -- return `none`.  Nothing but the build checked this def: it is a bare `Nat` with no tie to the
 -- artifact, unlike every `instructionPC`/`opAt`/`pushAt` fact around it.
-def pcMiss : Nat := 2630
-def pcCsubReturn : Nat := 2647
-def pcAfterCsub0 : Nat := 2656
-def pcNegLoop : Nat := 2662
+def pcMiss : Nat := 2634
+def pcCsubReturn : Nat := 2651
+def pcAfterCsub0 : Nat := 2660
+def pcNegLoop : Nat := 2666
 /-- The negation body after its store, before the exit test. -/
-def pcNegMid : Nat := 2678
-def pcNegDone : Nat := 2688
-def pcPreNewton : Nat := 2731
-def pcNewtonB : Nat := 2759
-def pcShiftLoop : Nat := 2832
-def pcShiftBody : Nat := 2839
-def pcEstimate : Nat := 2853
-def pcMacSetup : Nat := 2932
-def pcMacLoop : Nat := 2947
-def pcMid : Nat := 3112
+def pcNegMid : Nat := 2682
+def pcNegDone : Nat := 2692
+def pcPreNewton : Nat := 2735
+def pcNewtonB : Nat := 2763
+def pcShiftLoop : Nat := 2836
+def pcShiftBody : Nat := 2843
+def pcEstimate : Nat := 2857
+def pcMacSetup : Nat := 2936
+def pcMacLoop : Nat := 2951
+def pcMid : Nat := 3116
 /-- The limb-pass body after the pointer steps, before the exit test. -/
-def pcMacTail : Nat := 3103
-def pcAddLoop : Nat := 3158
-def pcAddInner : Nat := 3164
-def pcAddTail : Nat := 3207
+def pcMacTail : Nat := 3107
+def pcAddLoop : Nat := 3162
+def pcAddInner : Nat := 3168
+def pcAddTail : Nat := 3211
 /-- The add body after `OR`, before the pointer step and exit test. -/
-def pcAddMid : Nat := 3193
-def pcSubCheck : Nat := 3225
-def pcSubEntry : Nat := 3237
-def pcSubInner : Nat := 3243
-def pcSubTail : Nat := 3282
+def pcAddMid : Nat := 3197
+def pcSubCheck : Nat := 3229
+def pcSubEntry : Nat := 3241
+def pcSubInner : Nat := 3247
+def pcSubTail : Nat := 3286
 /-- The subtract body after `OR`, before the pointer step and exit test. -/
-def pcSubMid : Nat := 3267
-def pcCsubCall : Nat := 3142
+def pcSubMid : Nat := 3271
+def pcCsubCall : Nat := 3146
 /-- `UNC`: the middle block's jump target when `neg ||| TN ≠ 0`. -/
-def pcUnc : Nat := 3152
+def pcUnc : Nat := 3156
 /-- `CSUB(BASE)` returns straight to the shift loop head (`pcShiftLoop`); the call block
 already decremented the counter. -/
-def pcAfterCsub : Nat := 2832
-def pcShiftDone : Nat := 3296
+def pcAfterCsub : Nat := 2836
+def pcShiftDone : Nat := 3300
 
 /-- A state with the outer frame only. -/
 def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat) : State :=
@@ -133,7 +133,7 @@ def newtonBState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : Sta
 
 /-- The prologue state before storing the unrolled entry point. -/
 def cacheSetupState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  kState s mem 2788 n n bsize esize msize
+  kState s mem 2792 n n bsize esize msize
 
 /-- The shift loop head with `k` steps to go. -/
 def shiftLoopState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
@@ -166,7 +166,7 @@ def macLoopState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize
 /-- The limb frame before the cached-entry dispatch. -/
 def macDispatchState (s : State) (um : ByteArray) (q : UInt256)
     (n bsize esize msize k : Nat) : State :=
-  { macLoopState s um q n bsize esize msize k 0 with pc := UInt256.ofNat 2942 }
+  { macLoopState s um q n bsize esize msize k 0 with pc := UInt256.ofNat 2946 }
 
 /-- The middle block entry: the two spent pointers still on the stack. -/
 def midState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat) :
