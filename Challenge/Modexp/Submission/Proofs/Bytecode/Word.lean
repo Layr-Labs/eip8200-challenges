@@ -182,7 +182,7 @@ def bitPC (j : Nat) : Nat :=
   | 3 | 7 => 2572
   | _ => 2611
 
-def bitCounter (j : Nat) : Nat := if 4 ≤ j ∧ j < 8 then 4 else 0
+def bitCounter (j : Nat) : Nat := if j < 4 then 0 else if j < 8 then 4 else 8
 
 def expOffset (input : ByteArray) : Nat := 96 + baseSize input
 def modulusOffset (input : ByteArray) : Nat := expOffset input + exponentSize input

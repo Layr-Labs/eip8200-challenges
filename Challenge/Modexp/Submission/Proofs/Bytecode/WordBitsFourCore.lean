@@ -96,8 +96,12 @@ def controlProgram : List Instr :=
    .op (.Swap ⟨1, by decide⟩), .push 2 4, .op .ADD, .op (.Swap ⟨1, by decide⟩),
    .push 2 2505, .op .JUMPI]
 
+/-- The half-byte landing pad. The four bytes at pc 2607 used to rotate a fresh
+zero into the bit-counter slot; that slot is popped by the byte-loop tail at
+pc 2611 and re-established by the `PUSH0` at pc 219, so the rotation is dead.
+The pad is four inert `JUMPDEST`s: the stack is untouched. -/
 def resetProgram : List Instr :=
-  [.op (.Swap ⟨0, by decide⟩), .op .POP, .push 0 0, .op (.Swap ⟨0, by decide⟩)]
+  [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
 
 theorem run_start (hcap : rest.length ≤ 1000) :
     runInstructions [.op .JUMPDEST]
@@ -129,15 +133,17 @@ theorem run_control (c : Nat) (hc : c = 0 ∨ c = 4) (hcap : rest.length ≤ 100
       Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.literal_eq_ofNat]
 
+set_option linter.unusedTactic false in
 theorem run_reset (hcap : rest.length ≤ 1000) :
     runInstructions resetProgram
       (framed s 2607 ([Bm1,8,byte,offset,outerW,acc,base,m] ++ rest)) =
-      some (framed s 2611 ([Bm1,0,byte,offset,outerW,acc,base,m] ++ rest)) := by
+      some (framed s 2611 ([Bm1,8,byte,offset,outerW,acc,base,m] ++ rest)) := by
   have h7 : rest.length + 7 < 1024 := by omega
   have h8 : rest.length + 8 < 1024 := by omega
   simp [resetProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr, framed,
     h7, h8, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.literal_eq_ofNat]
-  rfl
+  try rfl
+  try decide
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WordBitsFourCore
