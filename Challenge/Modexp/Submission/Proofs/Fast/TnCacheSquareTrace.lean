@@ -187,7 +187,7 @@ theorem run_B4 (s : State) (C b2 P hd w3 ent : UInt256)
     List.exchange, hjump]
   rfl
 
-/-- The fused borrow up to the store address (pc 4998..5015). -/
+/-- The fused borrow up to the store address (pc 4997..5014). -/
 def programB23a : List Instr :=
   [.op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MUL,
    .op (.Swap ⟨4, by decide⟩), .op .LT, .op (.Swap ⟨2, by decide⟩), .op .MULMOD,
@@ -195,7 +195,7 @@ def programB23a : List Instr :=
    .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB,
    .push 2 256, .op (.Dup ⟨4, by decide⟩), .op .SUB]
 
-/-- Load/add/store and the two-subtraction carry (pc 5015..2336). -/
+/-- Load/add/store and the two-subtraction carry (pc 5014..2336). -/
 def programB23b : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .op .MLOAD, .op (.Dup ⟨3, by decide⟩), .op .ADD,
    .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .MSTORE,

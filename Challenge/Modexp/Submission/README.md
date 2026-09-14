@@ -1,4 +1,9 @@
-# MODEXP Yukon submission
+# MODEXP research candidate: TN carry, word entry, and R4 diagonal
+
+This is the `b088127b` integration of the TN carry cache, compact word entry,
+and three shorter R4 diagonal cells. The complete global Solution has passed
+Lean with the exact runtime below. The candidate theorem depends only on
+`propext`, `Classical.choice`, and `Quot.sound`.
 
 This directory is the complete editable surface for the `modexp` track. A
 submission must include:
@@ -32,20 +37,25 @@ bind those transitions to this exact bytecode. `CarryFullRowsFour/Eight` and
 square preserves its final carry through subtraction until the next real reset;
 it does not assume that carry is zero at the square exit.
 
-The word path includes the shortened table construction and later exponent load
-from the public word-window optimization. A zero modulus follows the common
-word path. Its output remains zero, but some zero-modulus inputs consume more
-gas than earlier implementations.
+The word prefix additionally uses DPZZxlz's public `a535bd25` entry and window
+layout. The exact selected TN word-loop core after byte 2394 is preserved.
+The R4 diagonal cells use the public MUL-before-MULMOD sequence, removing one
+instruction at each of three sites. A zero modulus follows the common word
+path; some zero-modulus inputs consume more gas than earlier implementations.
 
 ## Exact artifact and evidence
 
-The runtime is 5309 bytes and 4076 instructions, SHA-256
-`e874ac02b4ac816790a316dba4a79cb3607c667ad6fdd2b5dcc86cff2997152e`.
-The complete `Solution` builds with only `propext`, `Classical.choice`, and
-`Quot.sound` in the final theorem's axiom footprint. The unchanged protected
-renderer also admits these bytes with its default settings.
+The runtime is 5306 bytes and 4084 instructions, SHA-256
+`b088127b22fc84a463bd09a9573526315c82e9aeec6597453cc271591dba89f7`.
+The unchanged protected renderer admits these bytes with its default settings.
+The global artifact binding, complete Solution, and candidate theorem have
+compiled for this exact image. Release verification separately checks the
+global bytecode equality and the transitive allowed-axiom footprint.
 
-The protected native scorer reports 490481 gas on the 44 default inputs.
+The protected native scorer reports 489862 gas on the 44 default inputs, 619
+below the frozen TN submission. Against the current e874ac02 frontier the
+matched default reduction is 619. The 80-seed estimate against official record
+491125 is 0.2875; this does not guarantee an official score.
 Finite execution checks include 100 scoring corpora and a separate EVM suite
 with 445 verified outputs. Another 119 inputs exhausted the same 30-million-gas
 budget in all compared images; those are not counted as verified outputs.

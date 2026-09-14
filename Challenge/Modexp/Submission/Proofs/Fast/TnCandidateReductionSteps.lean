@@ -45,8 +45,8 @@ noncomputable def reduction_steps (s : State)
   have hj : Decode.isValidJumpDest s.executionEnv.code (l2PC n) = true := by
     rw [env.code]
     rcases hn with rfl | rfl
-    · exact TnCandidateArtifact.isValidJumpDest_index 3147 (by rfl)
-    · exact TnCandidateArtifact.isValidJumpDest_index 3028 (by rfl)
+    · exact TnCandidateArtifact.isValidJumpDest_index 3158 (by rfl)
+    · exact TnCandidateArtifact.isValidJumpDest_index 3039 (by rfl)
   let st : State := {s with memory := q.memory}
   let flag := UInt256.lt (tn+q.carry) q.carry
   let mem2 := (l2Step q.memory (rowMu q.memory n) (rowC0 q.memory n) n (n-1)).memory

@@ -5,18 +5,11 @@ set_option warningAsError true
 set_option maxRecDepth 40000
 
 /-!
-# Submission-local `SGT` step rule
+# Exact SGT rule for the eight-limb square row
 
-The shared symbolic stepper `Challenge.EvmProof.Stepper.runInstr` has no `SGT`
-case, so a straight-line block containing `SGT` cannot be run with
-`runInstructions`.  This module lifts `EvmSemantics.EVM.StepRunning.sgt` into the
-gas-parametric trace algebra through the public `Challenge.EvmProof.GasStep.of_running`
-(exactly like the shared opcode wrappers in `Challenge.EvmProof.Ops`), and locates the
-only `SGT` of the candidate bytecode: instruction 3739 at pc 4807 (0x126c) in the
-square row `sq_row` (`JUMPDEST DUP1 MLOAD DUP1 SWAP15 PUSH0 SGT ...`).
-
-Use: split `sq_row` at the `SGT` — a `Block` for idx 3559..3698 (pc 2464..2464),
-`gasSteps_sqRowSgt`, then a `Block` for idx 3700..3840 (pc 4923..).
+The shared symbolic stepper has no SGT case. This module uses the operational
+SGT rule and the gas-parametric trace algebra. In this runtime the square-row
+SGT is instruction 3394 at pc 4477. The separate R4 path has its own SGT sites.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.TnCandidateSgtStep
@@ -41,12 +34,12 @@ def gasStep_sgt {s : State} {a b : UInt256} {rest : List UInt256}
   simpa [withGas, cost] using
     StepRunning.sgt (withGas s gas) a b rest hop hgas hstack hcap
 
-/-- The candidate's only `SGT` is instruction 3744. -/
-theorem sqRowSgt_index : TnCandidateArtifact.submissionInstructions[3383]? = some (.op .SGT) := by
+/-- The SGT instruction in the eight-limb square row. -/
+theorem sqRowSgt_index : TnCandidateArtifact.submissionInstructions[3394]? = some (.op .SGT) := by
   rfl
 
-/-- ... at program counter 4807 (0x126c). -/
-theorem sqRowSgt_pc : TnCandidateArtifact.submissionArtifact.instructionPC 3383 = 4477 := by
+/-- Its exact byte address. -/
+theorem sqRowSgt_pc : TnCandidateArtifact.submissionArtifact.instructionPC 3394 = 4477 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -54,18 +47,18 @@ theorem decodedOp_sqRowSgt (s : State)
     (hcode : s.executionEnv.code = TnCandidate.bytecode)
     (hfork : s.fork = .Osaka) (hpc : s.pc = UInt256.ofNat 4477) :
     s.decodedOp = some .SGT := by
-  have hpcNat : s.pc.toNat = TnCandidateArtifact.submissionArtifact.instructionPC 3383 := by
+  have hpcNat : s.pc.toNat = TnCandidateArtifact.submissionArtifact.instructionPC 3394 := by
     rw [hpc, sqRowSgt_pc]; decide
   have hwf : Stepper.WellFormed s.fork (.op .SGT) := by
     rw [hfork]
     exact ⟨by decide, trivial, rfl⟩
-  exact Stepper.decodes_of_artifact TnCandidateArtifact.submissionArtifact s 3383 (.op .SGT)
+  exact Stepper.decodes_of_artifact TnCandidateArtifact.submissionArtifact s 3394 (.op .SGT)
     hcode hpcNat sqRowSgt_index hwf
 
 theorem succ_4716 : (UInt256.ofNat 4477).succ = UInt256.ofNat 4478 := by
   decide
 
-/-- The `SGT` of `sq_row` (pc 4807 → 4927): pops `a, b`, pushes `UInt256.sgt a b`.
+/-- The `SGT` of `sq_row` (pc 4477 → 4478): pops `a, b`, pushes `UInt256.sgt a b`.
 In `sq_row` the operands are `a = 0` (from `PUSH0`) and `b = aprev`; see
 `SquareDiag.sgt_zero_toNat` / `SquareModel.sgt_zero_eq_zero_of_lt`. -/
 def gasSteps_sqRowSgt (s : State) (a b : UInt256) (rest : List UInt256)
@@ -89,7 +82,7 @@ def gasSteps_sqRowSgt (s : State) (a b : UInt256) (rest : List UInt256)
   exact h
 
 /-- Same rule for a state written as a record update of a template
-(`{ t with pc := 4807, stack := a :: b :: rest, memory := m }`), the form used by
+(`{ t with pc := 4477, stack := a :: b :: rest, memory := m }`), the form used by
 the kernel frames. -/
 def gasSteps_sqRowSgt_framed (t : State) (m : ByteArray) (a b : UInt256)
     (rest : List UInt256)

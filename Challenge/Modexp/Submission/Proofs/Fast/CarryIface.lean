@@ -207,7 +207,7 @@ structure EntryLemmas : Type where
           MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
           UInt256.ofNat (pa+32*n-32) :: pdst :: ret :: rest))
   /-- Statement of WP-K2 `Cios2Dispatch.gasSteps_commonFallback`: every other width
-  drops `hd` and enters the generic `MONPRO` (pc 1662). -/
+  drops `hd` and enters the generic `MONPRO` (pc 1663). -/
   gasSteps_commonFallback : ∀ (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
@@ -227,6 +227,6 @@ structure EntryLemmas : Type where
 theorem jumpDest_rowHead :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 3711).toNat = true := by
   rw [show (UInt256.ofNat 3711).toNat = 3711 from by decide]
-  exact Artifact.isValidJumpDest_index 2758 (by rfl)
+  exact Artifact.isValidJumpDest_index 2769 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryIface

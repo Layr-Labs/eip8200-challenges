@@ -12,7 +12,7 @@ The three basic blocks are
 
 * `blk1781` (idx 1908..1792, pc 2690..3071) — the byte load and the `i = 0`
   test;
-* `blk1793` (idx 1789..1920, pc 2711..3077) — `PUSH1 128` and the jump back
+* `blk1793` (idx 1797..1920, pc 2711..3077) — `PUSH1 128` and the jump back
   into the bit loop;
 * `blk1796` (idx 1874..1941, pc 2720..3184) — the fold
   `w ||| w >>> 1 ||| w >>> 2 ||| w >>> 4`, then `>>> 1` and `+ 1`, and the
@@ -27,48 +27,48 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- Instructions 1908..1792, pc 2690..3071: load exponent byte `i`, test `i = 0`. -/
 def blk1781 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1192 .JUMPDEST,
-   opAt 1193 (.Dup ⟨0, by decide⟩),
-   pushAt 1194 2 2816,
-   opAt 1195 .MLOAD,
-   opAt 1196 .ADD,
-   opAt 1197 .CALLDATALOAD,
-   pushAt 1198 0 0,
-   opAt 1199 .BYTE,
-   opAt 1200 (.Dup ⟨1, by decide⟩),
-   opAt 1201 .ISZERO,
-   pushAt 1202 2 1700,
-   opAt 1203 .JUMPI]
+  [opAt 1194 .JUMPDEST,
+   opAt 1195 (.Dup ⟨0, by decide⟩),
+   pushAt 1196 2 2816,
+   opAt 1197 .MLOAD,
+   opAt 1198 .ADD,
+   opAt 1199 .CALLDATALOAD,
+   pushAt 1200 0 0,
+   opAt 1201 .BYTE,
+   opAt 1202 (.Dup ⟨1, by decide⟩),
+   opAt 1203 .ISZERO,
+   pushAt 1204 2 1701,
+   opAt 1205 .JUMPI]
 
-/-- Instructions 1789..1920, pc 2711..3077: every byte after the first. -/
+/-- Instructions 1797..1920, pc 2711..3077: every byte after the first. -/
 def blk1793 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1204 1 128,
-   pushAt 1205 2 1060,
-   opAt 1206 .JUMP]
+  [pushAt 1206 1 128,
+   pushAt 1207 2 1061,
+   opAt 1208 .JUMP]
 
 /-- Instructions 1874..1941, pc 2720..3184: the highest set bit of byte `0`. -/
 def blk1796 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1207 .JUMPDEST,
-   opAt 1208 (.Dup ⟨0, by decide⟩),
-   opAt 1209 (.Dup ⟨0, by decide⟩),
-   pushAt 1210 1 1,
-   opAt 1211 .SHR,
-   opAt 1212 .OR,
-   opAt 1213 (.Dup ⟨0, by decide⟩),
-   pushAt 1214 1 2,
-   opAt 1215 .SHR,
-   opAt 1216 .OR,
-   opAt 1217 (.Dup ⟨0, by decide⟩),
-   pushAt 1218 1 4,
-   opAt 1219 .SHR,
-   opAt 1220 .OR,
-   pushAt 1221 1 1,
-   opAt 1222 .SHR,
+  [opAt 1209 .JUMPDEST,
+   opAt 1210 (.Dup ⟨0, by decide⟩),
+   opAt 1211 (.Dup ⟨0, by decide⟩),
+   pushAt 1212 1 1,
+   opAt 1213 .SHR,
+   opAt 1214 .OR,
+   opAt 1215 (.Dup ⟨0, by decide⟩),
+   pushAt 1216 1 2,
+   opAt 1217 .SHR,
+   opAt 1218 .OR,
+   opAt 1219 (.Dup ⟨0, by decide⟩),
+   pushAt 1220 1 4,
+   opAt 1221 .SHR,
+   opAt 1222 .OR,
    pushAt 1223 1 1,
-   opAt 1224 .ADD,
-   pushAt 1225 2 2609,
-   opAt 1226 .JUMP]
+   opAt 1224 .SHR,
+   pushAt 1225 1 1,
+   opAt 1226 .ADD,
+   pushAt 1227 2 2609,
+   opAt 1228 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

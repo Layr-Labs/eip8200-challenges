@@ -11,11 +11,11 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast TnCandidateArtifact
 
 def blockA : Block submissionArtifact .Osaka 4471 TnCacheSquareTrace.programA :=
-  WindowTwentyOneSlice.block allWellFormed 3377 6 4471 TnCacheSquareTrace.programA
+  WindowTwentyOneSlice.block allWellFormed 3388 6 4471 TnCacheSquareTrace.programA
     (by decide) (by rfl) (by rfl) (by decide)
 
 def blockB : Block submissionArtifact .Osaka 4478 TnCacheSquareTrace.programB :=
-  WindowTwentyOneSlice.block allWellFormed 3384 40 4478 TnCacheSquareTrace.programB
+  WindowTwentyOneSlice.block allWellFormed 3395 40 4478 TnCacheSquareTrace.programB
     (by decide) (by rfl) (by rfl) (by decide)
 
 end Challenge.Modexp.Submission.Proofs.Fast.TnCandidateSquareBlocks

@@ -32,23 +32,23 @@ def h1Program : List Instr :=
   [.op (.Dup ⟨6, by decide⟩), .push 2 4171, .op .XOR, .push 2 4441, .op .JUMPI]
 
 def h1Block : Block Artifact.submissionArtifact .Osaka 4800 h1Program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3623 5 4800 h1Program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3634 5 4800 h1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
 
 
 def h2Block : Block Artifact.submissionArtifact .Osaka 4409 hookProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3329 6 4409 hookProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3340 6 4409 hookProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDestR4 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4809 = true :=
-  Artifact.isValidJumpDest_index 3628 (by rfl)
+  Artifact.isValidJumpDest_index 3639 (by rfl)
 
 theorem jumpDestH2 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4409 = true :=
-  Artifact.isValidJumpDest_index 3329 (by rfl)
+  Artifact.isValidJumpDest_index 3340 (by rfl)
 
 theorem jumpDestRow : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4471 = true :=
-  Artifact.isValidJumpDest_index 3377 (by rfl)
+  Artifact.isValidJumpDest_index 3388 (by rfl)
 
 theorem cond_four : UInt256.isTrue ((UInt256.ofNat 4171).eq (l2Target 4)) := by decide
 
@@ -112,7 +112,7 @@ theorem run_h1Fall (s : State) (mem : ByteArray)
   have hcond : UInt256.isTrue ((UInt256.ofNat 4171).xor (l2Target 8)) := by decide
   have hcond' : UInt256.isTrue ((UInt256.ofNat 4171).xor (UInt256.ofNat 4023)) := by decide
   have hjd : Decode.isValidJumpDest s.executionEnv.code 4441 = true := by
-    rw [hcode]; exact Artifact.isValidJumpDest_index 3349 (by rfl)
+    rw [hcode]; exact Artifact.isValidJumpDest_index 3360 (by rfl)
   simp [h1Program, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     frameAt, frameStack, pcH1, hc16, hc17, hc18, hc19, hcond, hcond', hjd, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,

@@ -19,12 +19,12 @@ def l1PC (n : Nat) : Nat := 3999-37*(n-1)
 theorem l1_jump (n : Nat) (hn : n = 4 ∨ n = 8) :
     Decode.isValidJumpDest TnCandidate.bytecode (UInt256.ofNat (l1PC n)).toNat = true := by
   rcases hn with rfl | rfl
-  · exact TnCandidateArtifact.isValidJumpDest_index 2911 (by rfl)
-  · exact TnCandidateArtifact.isValidJumpDest_index 2787 (by rfl)
+  · exact TnCandidateArtifact.isValidJumpDest_index 2922 (by rfl)
+  · exact TnCandidateArtifact.isValidJumpDest_index 2798 (by rfl)
 
 theorem row_jump :
     Decode.isValidJumpDest TnCandidate.bytecode (UInt256.ofNat 3711).toNat = true :=
-  TnCandidateArtifact.isValidJumpDest_index 2758 (by rfl)
+  TnCandidateArtifact.isValidJumpDest_index 2769 (by rfl)
 
 def result (mem : ByteArray) (tn : UInt256) (pa n : Nat) (pbi : UInt256) :
     TnCacheRowModel.CacheState :=

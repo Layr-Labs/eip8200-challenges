@@ -9,7 +9,7 @@ set_option warningAsError true
 Each of the three passes enters the trampoline at 2479 (from the loop head `PUSH2 2479
 JUMP` at 2479 on the first pass, from the tail's `JUMPI` afterwards).  The trampoline
 stores the two exponent copies of the pass's shifted exponent above the table, replays
-the first five staging instructions and jumps back to the `JUMPDEST` at 2500, where the
+the first five staging instructions and jumps back to the `JUMPDEST` at 2501, where the
 straight-line body resumes.  The memory of pass `count` is `loopMem count`: the table,
 overwritten `count` times with fresh copies; only its table words and the last copies
 are ever read.
@@ -75,7 +75,7 @@ def loopState (template : State) (base modulus exponent : UInt256)
     (WindowTwentyOneMath.accumulator base modulus exponent.toNat (21 * count))
     (eAt exponent count) (UInt256.ofNat (2 - count)) 0 rest
 
-/-- Body entry (2500) of pass `count`, with the pass's copies stored. -/
+/-- Body entry (2501) of pass `count`, with the pass's copies stored. -/
 def headState (template : State) (base modulus exponent : UInt256)
     (count : Nat) (rest : List UInt256) : State :=
   WindowTwentyOneGroup.headState template (UInt256.ofNat 1923) (loopMem base modulus exponent (count + 1))

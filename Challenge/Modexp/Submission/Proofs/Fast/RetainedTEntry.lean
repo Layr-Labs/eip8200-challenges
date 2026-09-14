@@ -22,25 +22,25 @@ open Challenge.EvmProof.Word
 
 def entryProgram : List Instr :=
   [.op .JUMPDEST, .push 0 0, .op .MLOAD, .push 2 2112, .op .MLOAD, .op .LT,
-   .push 2 5307, .op .JUMPI]
+   .push 2 5304, .op .JUMPI]
 /-- The fall-through push of the retained destination, ahead of the subtraction entry 4536. -/
 def pushProgram : List Instr := [.push 2 2112]
 def tailProgram : List Instr := [.op .JUMPDEST, .op .JUMP]
 
 def entryBlock : Block Artifact.submissionArtifact .Osaka 4521 entryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3424 8 4521 entryProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3435 8 4521 entryProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def pushBlock : Block Artifact.submissionArtifact .Osaka 4533 pushProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3432 1 4533 pushProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3443 1 4533 pushProgram
     (by decide) (by rfl) (by rfl) (by decide)
-def tailBlock : Block Artifact.submissionArtifact .Osaka 5307 tailProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4074 2 5307 tailProgram
+def tailBlock : Block Artifact.submissionArtifact .Osaka 5304 tailProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4082 2 5304 tailProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest4486 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4521 = true :=
-  Artifact.isValidJumpDest_index 3424 (by rfl)
-theorem jumpDest5326 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5307 = true :=
-  Artifact.isValidJumpDest_index 4074 (by rfl)
+  Artifact.isValidJumpDest_index 3435 (by rfl)
+theorem jumpDest5326 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5304 = true :=
+  Artifact.isValidJumpDest_index 4082 (by rfl)
 
 /-- The comparison word the entry block tests. -/
 def skipWord (mem : ByteArray) : UInt256 :=
@@ -60,7 +60,7 @@ theorem skipWord_toNat (mem : ByteArray) :
 def entryState (s : State) (mem : ByteArray) (ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 4521, stack := ret :: rest, memory := mem }
 def tailState (s : State) (mem : ByteArray) (ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 5307, stack := ret :: rest, memory := mem }
+  { s with pc := UInt256.ofNat 5304, stack := ret :: rest, memory := mem }
 def pushState (s : State) (mem : ByteArray) (ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 4533, stack := ret :: rest, memory := mem }
 def returnedState (s : State) (mem : ByteArray) (ret : UInt256) (rest : List UInt256) : State :=
@@ -78,8 +78,8 @@ theorem run_entry (s : State) (mem : ByteArray) (ret : UInt256) (rest : List UIn
   have hc4 : rest.length+4 < 1024 := by omega
   have h0 : ({val := 0} : UInt256).toNat = 0 := rfl
   have h2112 : (2112 : UInt256).toNat = 2112 := by decide
-  have heq5326 : (5307 : UInt256) = UInt256.ofNat 5307 := by decide
-  have h5326 : (5307 : UInt256).toNat = 5307 := by decide
+  have heq5326 : (5304 : UInt256) = UInt256.ofNat 5304 := by decide
+  have h5326 : (5304 : UInt256).toNat = 5304 := by decide
   have heq2112 : (2112 : UInt256) = UInt256.ofNat 2112 := by decide
   have ha0 := EarlyCsub.activeWords_fix s 0 32 (by decide) (by omega) hact
   have haT := EarlyCsub.activeWords_fix s 2112 32 (by decide) (by omega) hact

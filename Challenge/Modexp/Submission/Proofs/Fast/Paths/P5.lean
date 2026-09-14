@@ -2,7 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.Defs
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
-/-! Basic-block instruction paths, group 5 (instructions 1384..1394). -/
+/-! Basic-block instruction paths, group 5 (instructions 1385..1395). -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast
 
@@ -10,80 +10,80 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 1384..1392, pc 1862..1832. -/
+/-- Instructions 1385..1393, pc 1877..1847. -/
 def blk1255 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 711 .JUMPDEST,
-   opAt 712 .POP,
-   opAt 713 .POP,
-   pushAt 714 2 2631,
-   pushAt 715 2 512,
-   pushAt 716 2 1536,
-   pushAt 717 2 256,
-   pushAt 718 2 3541,
-   opAt 719 .JUMP]
+  [opAt 713 .JUMPDEST,
+   opAt 714 .POP,
+   opAt 715 .POP,
+   pushAt 716 2 2631,
+   pushAt 717 2 512,
+   pushAt 718 2 1536,
+   pushAt 719 2 256,
+   pushAt 720 2 3541,
+   opAt 721 .JUMP]
 
-/-- Instructions 1401..1359, pc 1895..1903. -/
+/-- Instructions 1402..1360, pc 1899..1900. -/
 def blk1272 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 720 .JUMPDEST,
-   opAt 721 (.Dup ⟨4, by decide⟩),
-   opAt 722 (.Dup ⟨1, by decide⟩),
-   opAt 723 .EQ,
-   pushAt 724 2 1119,
-   opAt 725 .JUMPI]
+  [opAt 722 .JUMPDEST,
+   opAt 723 (.Dup ⟨4, by decide⟩),
+   opAt 724 (.Dup ⟨1, by decide⟩),
+   opAt 725 .EQ,
+   pushAt 726 2 1120,
+   opAt 727 .JUMPI]
 
-/-- Instructions 1409..1415, pc 1904..1913. -/
+/-- Instructions 1410..1416, pc 1904..1913. -/
 def blk1279 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 726 2 1678,
-   opAt 727 .JUMP]
+  [pushAt 728 2 1679,
+   opAt 729 .JUMP]
 
-/-- Instructions 1416..1423, pc 1916..1931. -/
+/-- Instructions 1417..1423, pc 1916..1931. -/
 def blk1287 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 728 .JUMPDEST,
-   pushAt 729 2 1075,
-   pushAt 730 2 256,
-   opAt 731 (.Dup ⟨0, by decide⟩),
+  [opAt 730 .JUMPDEST,
+   pushAt 731 2 1076,
    pushAt 732 2 256,
-   pushAt 733 2 3541,
-   opAt 734 .JUMP]
+   opAt 733 (.Dup ⟨0, by decide⟩),
+   pushAt 734 2 256,
+   pushAt 735 2 3541,
+   opAt 736 .JUMP]
 
-/-- Instructions 1424..1429, pc 1932..1940. -/
+/-- Instructions 1425..1430, pc 1932..1940. -/
 def blk1294 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 735 .JUMPDEST,
-   opAt 736 (.Dup ⟨1, by decide⟩),
-   opAt 737 (.Dup ⟨1, by decide⟩),
-   opAt 738 .AND,
-   opAt 739 .ISZERO,
-   pushAt 740 2 1101,
-   opAt 741 .JUMPI]
+  [opAt 737 .JUMPDEST,
+   opAt 738 (.Dup ⟨1, by decide⟩),
+   opAt 739 (.Dup ⟨1, by decide⟩),
+   opAt 740 .AND,
+   opAt 741 .ISZERO,
+   pushAt 742 2 1102,
+   opAt 743 .JUMPI]
 
-/-- Instructions 1430..1387, pc 1941..1956. -/
+/-- Instructions 1431..1388, pc 1941..1956. -/
 def blk1301 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 742 2 1100,
-   pushAt 743 2 256,
-   pushAt 744 2 512,
+  [pushAt 744 2 1101,
    pushAt 745 2 256,
-   pushAt 746 2 3541,
-   opAt 747 .JUMP]
+   pushAt 746 2 512,
+   pushAt 747 2 256,
+   pushAt 748 2 3541,
+   opAt 749 .JUMP]
 
-/-- Instructions 1388..1388, pc 1957..1957. -/
+/-- Instructions 1389..1389, pc 1957..1957. -/
 def blk1307 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 748 .JUMPDEST]
+  [opAt 750 .JUMPDEST]
 
-/-- Instructions 1438..1394, pc 1828..1888. -/
+/-- Instructions 1438..1395, pc 1843..1888. -/
 def blk1308 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 749 .JUMPDEST,
-   pushAt 750 1 1,
-   opAt 751 .SHR,
-   opAt 752 (.Dup ⟨0, by decide⟩),
-   pushAt 753 2 1060,
-   opAt 754 .JUMPI]
+  [opAt 751 .JUMPDEST,
+   pushAt 752 1 1,
+   opAt 753 .SHR,
+   opAt 754 (.Dup ⟨0, by decide⟩),
+   pushAt 755 2 1061,
+   opAt 756 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast

@@ -20,7 +20,7 @@ def fallbackProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩),
    .push ⟨2, by decide⟩ (UInt256.ofNat 224), .op .ADD, .op .MSTORE,
    .push ⟨1, by decide⟩ (UInt256.ofNat 1),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 962), .op .JUMP]
+   .push ⟨2, by decide⟩ (UInt256.ofNat 963), .op .JUMP]
 
 def pbOf (bsize : Nat) : Nat := (31 + bsize) / 32
 def topWidth (bsize : Nat) : Nat := bsize - 32 * (pbOf bsize - 1)
@@ -31,7 +31,7 @@ def storeWord (memory : ByteArray) (addr : Nat) (w : UInt256) : ByteArray :=
 
 def legacyLoopState (s : State) (memory : ByteArray)
     (n bsize esize msize pb j : Nat) : State :=
-  { s with pc := UInt256.ofNat 962
+  { s with pc := UInt256.ofNat 963
            stack := UInt256.ofNat j :: UInt256.ofNat pb :: outer n bsize esize msize
            memory := memory }
 
@@ -67,7 +67,7 @@ def fallbackStoreProgram : List Instr :=
   [.op (.Dup ⟨2, by decide⟩),
    .push ⟨2, by decide⟩ (UInt256.ofNat 224), .op .ADD, .op .MSTORE,
    .push ⟨1, by decide⟩ (UInt256.ofNat 1),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 962), .op .JUMP]
+   .push ⟨2, by decide⟩ (UInt256.ofNat 963), .op .JUMP]
 
 def fallbackCountState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
@@ -112,7 +112,7 @@ theorem run_fallback (s : State) (mem input : ByteArray)
     (hdata : s.executionEnv.calldata = input)
     (hn32 : n ≤ 8) (hb : bsize ≤ 1024) (hb0 : 1 ≤ bsize)
     (hact : 89 ≤ s.activeWords.toNat)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 962 = true) :
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 963 = true) :
     runInstructions fallbackProgram (fallbackState s mem n bsize esize msize) =
       some (legacyLoopState s (storeWord mem (224 + 32 * n)
         (UInt256.ofNat (topLimbOf input bsize))) n bsize esize msize
@@ -127,7 +127,7 @@ theorem run_fallback (s : State) (mem input : ByteArray)
     unfold topWidth; omega
   have hshr : UInt256.shiftRight (UInt256.ofNat (31 + bsize)) (UInt256.ofNat 5) =
       UInt256.ofNat ((31 + bsize) / 2 ^ 5) :=
-    shr_ofNat _ 5 (Nat.lt_of_le_of_lt (show 31 + bsize ≤ 1189 by omega) (by norm_num))
+    shr_ofNat _ 5 (Nat.lt_of_le_of_lt (show 31 + bsize ≤ 1190 by omega) (by norm_num))
       (by omega)
   have hpb : (31 + bsize) / 32 = pbOf bsize := rfl
   have hshl : UInt256.shiftLeft (UInt256.ofNat (pbOf bsize)) (UInt256.ofNat 5) =

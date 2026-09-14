@@ -340,7 +340,7 @@ opaque gasSteps_tailNext (s : State) (mem : ByteArray) (c mu bi : UInt256)
 /-! ## R0: the kernel-exit dispatch (pc 4857)
 
 The row loop's `DUP3 JUMPI` now falls through into `DUP2 PUSH2 sq_row EQ PUSH2 sq_exit
-JUMPI`.  A square (`hd = sq_row = 4985`) leaves through `sq_exit` with its frame intact
+JUMPI`.  A square (`hd = sq_row = 4984`) leaves through `sq_exit` with its frame intact
 (`SquareLoop`); every multiply — and every square row that is not the last — is unaffected
 because the dispatch only reads the frame's row head. -/
 
@@ -357,13 +357,13 @@ private theorem toNat_ne_of_ne {a b : UInt256} (h : a ≠ b) : a.toNat ≠ b.toN
 
 theorem jumpDest4726 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4362 = true :=
-  Artifact.isValidJumpDest_index 3302 (by rfl)
+  Artifact.isValidJumpDest_index 3313 (by rfl)
 
 
 /-! ## R0: the kernel-exit dispatch (pc 4857)
 
 `DUP2 PUSH2 sq_row EQ PUSH2 sq_exit JUMPI`: the frame's row head decides.  A square
-(`hd = sq_row = 4985`) jumps to `sq_exit` (4925) with the frame retained; every multiply
+(`hd = sq_row = 4984`) jumps to `sq_exit` (4925) with the frame retained; every multiply
 falls through the `JUMPI` into the `nx` `JUMPDEST` (4866) and on to the 14 `POP`s. -/
 
 def dispatchProgram : List Instr :=
@@ -372,13 +372,13 @@ def dispatchProgram : List Instr :=
 /-- The dispatch block: the `JUMPI` ends it, taken for a square and not taken for a
 multiply (which then continues at the `nx` `JUMPDEST` 4866). -/
 def dispatchBlock : Block Artifact.submissionArtifact .Osaka 4292 dispatchProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3253 8 4292 dispatchProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3264 8 4292 dispatchProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The `nx` `JUMPDEST` (reached by the dispatch's fall-through and by `sq_exit`'s last
 square). -/
 def nxJd : Block Artifact.submissionArtifact .Osaka 4306 [] :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3261 0 4306 []
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3272 0 4306 []
     (by decide) (by rfl) (by rfl) (by decide)
 
 set_option linter.unusedSimpArgs false in

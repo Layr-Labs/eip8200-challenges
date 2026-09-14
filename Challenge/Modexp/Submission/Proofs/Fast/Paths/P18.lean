@@ -9,7 +9,7 @@ set_option maxHeartbeats 4000000
 bit loop's first iteration squares the accumulator, which is the Montgomery
 form of one and therefore a fixed point, and then multiplies by `BASE` because
 the leading bit of a nonzero byte is set, so it always ends holding `BASE`.
-This block copies `BASE` into `ACC` and resumes at the mask shift, pc 1828.  A
+This block copies `BASE` into `ACC` and resumes at the mask shift, pc 1843.  A
 zero byte has no set bit, so it takes the untouched loop head at pc 1916.
 
 * `blk2557` (idx 2692..2696, pc 4342..3840) — the `w = 0` test;
@@ -25,36 +25,36 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- Instructions 2692..2696, pc 4342..3840: the `w = 0` test. -/
 def blk2557 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1966 .JUMPDEST,
-   opAt 1967 (.Dup ⟨1, by decide⟩),
-   opAt 1968 .ISZERO,
-   pushAt 1969 2 1060,
-   opAt 1970 .JUMPI]
+  [opAt 1977 .JUMPDEST,
+   opAt 1978 (.Dup ⟨1, by decide⟩),
+   opAt 1979 .ISZERO,
+   pushAt 1980 2 1061,
+   opAt 1981 .JUMPI]
 
 /-- Instructions 2697..2703, pc 3872..3840: `ACC := BASE`, then the shift. -/
 def blk2562 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1971 2 2688,
-   opAt 1972 .MLOAD,
-   pushAt 1973 2 512,
-   pushAt 1974 2 256,
-   opAt 1975 .MCOPY,
-   pushAt 1976 2 1101,
-   opAt 1977 .JUMP]
+  [pushAt 1982 2 2688,
+   opAt 1983 .MLOAD,
+   pushAt 1984 2 512,
+   pushAt 1985 2 256,
+   opAt 1986 .MCOPY,
+   pushAt 1987 2 1102,
+   opAt 1988 .JUMP]
 
 /-- PC table for the relocated leading-bit shortcut.  This range is outside
 the inherited `Fast.Defs` tables, so execution proofs need a local certificate
 instead of unfolding the complete bytecode prefix at every instruction. -/
 @[simp] theorem leadingBitPC (i : Nat)
-    (hi : 1966 ≤ i) (hii : i ≤ 1978) :
+    (hi : 1977 ≤ i) (hii : i ≤ 1989) :
     Artifact.submissionArtifact.instructionPC i =
-      ([2609,2610,2611,2612,2615,2616,2619,2620,2623,2626,2627,2630,2631] : List Nat)[i - 1966]! := by
+      ([2609,2610,2611,2612,2615,2616,2619,2620,2623,2626,2627,2630,2631] : List Nat)[i - 1977]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 theorem jumpDest3829 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2609 = true :=
-  Artifact.isValidJumpDest_index 1966 (by rfl)
+  Artifact.isValidJumpDest_index 1977 (by rfl)
 
 
 end Challenge.Modexp.Submission.Proofs.Fast

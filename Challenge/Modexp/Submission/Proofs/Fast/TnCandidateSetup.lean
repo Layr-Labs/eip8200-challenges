@@ -13,7 +13,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast Monpro StagedOperand TnCacheSetup
 
 def block : Block TnCandidateArtifact.submissionArtifact .Osaka 3571 fullEntryProgram :=
-  WindowTwentyOneSlice.block TnCandidateArtifact.allWellFormed 2662 59 3571 fullEntryProgram
+  WindowTwentyOneSlice.block TnCandidateArtifact.allWellFormed 2673 59 3571 fullEntryProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 noncomputable def setup_steps (s : State)

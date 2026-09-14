@@ -6,7 +6,7 @@ set_option maxHeartbeats 4000000
 /-!
 # The `R1B` guard of the appended Montgomery path
 
-`R1B` occupies instruction indices 1894..1906 (pc 2669..3010).  It is entered
+`R1B` occupies instruction indices 1899..1906 (pc 2669..3010).  It is entered
 at pc 2669 with stack `[px, ret]`, exactly the calling convention of
 `DOUBLE256`, and it dispatches:
 
@@ -87,7 +87,7 @@ def tnMem (mem : ByteArray) : ByteArray :=
 /-- Subroutine entry, pc 2669, stack `[px, ret]`. -/
 def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1657
+  { s with pc := UInt256.ofNat 1658
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
@@ -95,14 +95,14 @@ def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
 stack and memory exactly as they arrived. -/
 def dblState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1174
+  { s with pc := UInt256.ofNat 1175
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
 /-- Between the test and the store, pc 2688. -/
 def fastState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1668
+  { s with pc := UInt256.ofNat 1669
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
