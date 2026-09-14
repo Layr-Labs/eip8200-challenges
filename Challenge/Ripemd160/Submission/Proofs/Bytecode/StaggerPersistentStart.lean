@@ -25,19 +25,27 @@ def initialTemplate : List Instr :=
     .push ⟨4, by decide⟩ (UInt256.ofNat 3285377520),
     .push ⟨13, by decide⟩ (UInt256.ofNat 475368975196266490007815979009),
     .push ⟨13, by decide⟩ (UInt256.ofNat 1109194275457955143345843994625),
-    .push ⟨11, by decide⟩ (UInt256.ofNat 36893488147419103231),
+    .push ⟨12, by decide⟩ (UInt256.ofNat 36893488147419103233),
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHL,
-    .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 2),
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHL,
-    .op .ADD,
-    .op (.Swap ⟨0, by decide⟩),
+    .op (.Dup ⟨1, by decide⟩),
+    .op .SUB,
     .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295),
     .push ⟨13, by decide⟩ (UInt256.ofNat 158456325065422163343096938498) ]
 
 private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
+
+private theorem neutral_hsub (a b : UInt256) : a - b = UInt256.sub a b := rfl
+
+/-- The minus-modulus word is the plus-modulus word less the single lane bit the startup
+block shifts into place, so one shifted literal seeds both resident moduli. -/
+private theorem modulusMinusFromPlus :
+    UInt256.sub (UInt256.shiftLeft (UInt256.ofNat 36893488147419103233) (UInt256.ofNat 144))
+        (UInt256.shiftLeft (UInt256.ofNat 2) (UInt256.ofNat 144)) =
+      UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096 := by decide
 
 theorem run_initial (s : State) (pc limit : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running) :
@@ -48,8 +56,9 @@ theorem run_initial (s : State) (pc limit : UInt256) (rho : List UInt256)
   have hcap (n : Nat) (hn : n ≤ 15) : rho.length + n < 1024 := by omega
   simp [initialTemplate, StaggerPersistentFrame.frame, StackRunBridge.initialHashState,
     Crypto.Ripemd160.H0, Word.ofUInt32, runInstrSeq, DataStepper.runInstr, pcAfter,
-    UInt256.succ, Instr.size, List.exchange, neutral_hadd, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
+    UInt256.succ, Instr.size, List.exchange, neutral_hadd, neutral_hsub, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
     StaggerPersistentBootstrapRaw.factorWord_eq,
+    FusedKeyReconstruction.modulusPlus, modulusMinusFromPlus,
     FusedKeyReconstruction.modulusMinus, FusedKeyReconstruction.modulusCombinedPlus, StaggerPersistentBootstrapRaw.fusedMinus_eq,
     StaggerPersistentBootstrapRaw.coefficient30_eq, StaggerPersistentBootstrapRaw.coefficient03_eq,
     StaggerPersistentBootstrapRaw.coefficient02_eq, Word.literal_eq_ofNat]
@@ -73,17 +82,17 @@ theorem initial_pc : initialSite.startPC = UInt256.ofNat 389 := by
 def jumpCode := PadJump.template 389
 
 theorem jump_slice :
-    (Artifact.submissionArtifact.instructions.drop 3698).take jumpCode.length = jumpCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3697).take jumpCode.length = jumpCode := by rfl
 
 def jumpSite : GenericRoundSite Artifact.submissionArtifact .Osaka jumpCode :=
-  StackSiteBuilder.ofSlice jumpCode 3698 jump_slice
-    (by change 3698 + jumpCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice jumpCode 3697 jump_slice
+    (by change 3697 + jumpCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := jumpCode) (by decide)) (by decide)
 
 theorem jump_pc : jumpSite.startPC = UInt256.ofNat 4756 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3698) = UInt256.ofNat 4756
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3697) = UInt256.ofNat 4756
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_loop (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
@@ -153,15 +162,15 @@ def gasSteps_full (s : State) (limit : UInt256) (rho : List UInt256)
 
 def partialTemplate : List Instr := [.op .JUMPDEST]
 theorem partial_slice :
-    (Artifact.submissionArtifact.instructions.drop 3666).take partialTemplate.length = partialTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3665).take partialTemplate.length = partialTemplate := by rfl
 def partialSite : GenericRoundSite Artifact.submissionArtifact .Osaka partialTemplate :=
-  StackSiteBuilder.ofSlice partialTemplate 3666 partial_slice
-    (by change 3666 + partialTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice partialTemplate 3665 partial_slice
+    (by change 3665 + partialTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := partialTemplate) (by decide)) (by decide)
 theorem partial_pc : partialSite.startPC = UInt256.ofNat 4711 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3666) = UInt256.ofNat 4711
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3665) = UInt256.ofNat 4711
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def gasSteps_partial (s : State) (stack : List UInt256)

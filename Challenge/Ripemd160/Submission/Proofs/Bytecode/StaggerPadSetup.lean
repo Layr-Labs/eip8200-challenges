@@ -12,9 +12,8 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory
 open PairTableActive StaggerTableSparse StaggerTableLayout
 
-/-- Pad-only low block at PCs 4761..4803: clear the sparse table, store the low
-bit-length word and padding marker, then leave `lt n 65535` for the branch at 4804.
-An accepted length has zero high lanes; rejected lengths use the unconditional high stores. -/
+/-- Pad-only low block at PC4761. The CODESIZE comparison accepts lengths below 5233,
+which guarantees the upper bit-length word is zero. Other lengths execute the exact high stores. -/
 def lowTemplate : List Instr :=
   [ .push ⟨2, by decide⟩ (UInt256.ofNat 1112),
     .op .CALLDATASIZE,
@@ -41,16 +40,16 @@ def lowTemplate : List Instr :=
     .op .OR,
     .push ⟨1, by decide⟩ (UInt256.ofNat 54),
     .op .MSTORE,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 65535),
+    .op .CODESIZE,
     .op .CALLDATASIZE,
     .op .LT ]
 
-/-- `PUSH2 890 JUMPI` at PC 4804: skip high stores when the guard accepts. -/
+/-- `PUSH2 0398 JUMPI` at 4769: straight to the rounds when the high word is zero. -/
 def branchTemplate : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 890),
+  [ .push ⟨4, by decide⟩ (UInt256.ofNat 890),
     .op .JUMPI ]
 
-/-- Pad-only high block at PCs 4808..4835, reached when the length guard rejects. -/
+/-- Exact upper length stores, reached when the sufficient low-length guard rejects. -/
 def highTemplate : List Instr :=
   [ .op .CALLDATASIZE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 29),
@@ -72,14 +71,14 @@ def highTemplate : List Instr :=
 
 private theorem add_eq_hAdd (x y : UInt256) : UInt256.add x y = x + y := rfl
 
-/-- The branch condition left by the low block: the packed length guard `lt n 65535`. -/
-def highZero (n : UInt256) : UInt256 := UInt256.lt n (UInt256.ofNat 65535)
+/-- The branch condition left by the low block: the CODESIZE-bounded length guard `lt n 5233`. -/
+def highZero (n : UInt256) : UInt256 := UInt256.lt n (UInt256.ofNat 5233)
 
 theorem highZero_true_imp (n : UInt256) (h : UInt256.isTrue (highZero n)) :
     StaggerTablePad.highDirty n = UInt256.ofNat 0 := by
-  have hnum : (UInt256.ofNat 65535).toNat = 65535 := by decide
-  have hbound : n.toNat < 65535 := by
-    by_cases hc : n.toNat < 65535
+  have hnum : (UInt256.ofNat 5233).toNat = 5233 := by decide
+  have hbound : n.toNat < 5233 := by
+    by_cases hc : n.toNat < 5233
     · exact hc
     · refine absurd ?_ h
       show (highZero n).toNat = 0
@@ -97,7 +96,7 @@ theorem highZero_true_imp (n : UInt256) (h : UInt256.isTrue (highZero n)) :
 
 theorem run_low (s : State) (pc returnPC : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 995) (hrun : s.halt = .Running) (hactive : 35 ≤ s.activeWords.toNat)
-    (hfit : s.executionEnv.calldata.size < 2 ^ 256) :
+    (hfit : s.executionEnv.calldata.size < 2 ^ 256) (hcode : s.executionEnv.code.size = 5233) :
     runInstrSeq lowTemplate {s with pc := pc, stack := returnPC :: UInt256.ofNat 4294967295 :: rest} =
       some {s with
              pc := pcAfter pc lowTemplate
@@ -123,7 +122,7 @@ theorem run_low (s : State) (pc returnPC : UInt256) (rest : List UInt256)
   change StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size) = _ at hpacked
   rw [hpacked]
   simp (discharger := omega) [lowTemplate, hconstant, hconstantRev, StaggerTablePad.lowChain, StaggerTablePad.lowDirty,
-    highZero, zeroMemory, writeWord, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+    highZero, hcode, zeroMemory, writeWord, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     PairedHelperBooleanTrace.push0_toNat,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
     State.activeWordsAfterUInt256, hactiveAt, hcopyActive, hsize,

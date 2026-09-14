@@ -28,7 +28,7 @@ theorem pointer_eq (input : ByteArray) (i : Nat) (hfit : CalldataFits input)
   rfl
 
 /-- The pad-only block (M3b): the low block, then `JUMPI` straight to the rounds when
-the length guard accepts, otherwise the high block and the jump. Both paths leave the pad table. -/
+`n >>> 29 = 0`, otherwise the high block and the jump. Both paths leave the pad table. -/
 def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
     (hmask : rest.head? = some (UInt256.ofNat 4294967295))
     (hstack : rest.length ≤ 896) (hrun : s.halt = .Running)
@@ -60,7 +60,7 @@ def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
     have hmem := StaggerTablePad.highChain_eq s.memory (UInt256.ofNat s.executionEnv.calldata.size)
     have g23 : GasSteps
         {s with
-          pc := UInt256.ofNat 4804
+          pc := UInt256.ofNat 4802
           stack := StaggerPad.highZero (UInt256.ofNat s.executionEnv.calldata.size) :: ret :: rest
           memory := StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
         {s with
