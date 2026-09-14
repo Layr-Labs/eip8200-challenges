@@ -96,8 +96,11 @@ def controlProgram : List Instr :=
    .op (.Swap ⟨1, by decide⟩), .push 2 4, .op .ADD, .op (.Swap ⟨1, by decide⟩),
    .push 2 2505, .op .JUMPI]
 
+/-- The four bytes after the half-byte branch. The counter slot is dead here:
+the byte loop pushes a fresh zero at pc 219 and pops this slot at pc 225, so
+the landing pad only has to walk the program counter to the tail. -/
 def resetProgram : List Instr :=
-  [.op (.Swap ⟨0, by decide⟩), .op .POP, .push 0 0, .op (.Swap ⟨0, by decide⟩)]
+  [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
 
 theorem run_start (hcap : rest.length ≤ 1000) :
     runInstructions [.op .JUMPDEST]
@@ -132,12 +135,12 @@ theorem run_control (c : Nat) (hc : c = 0 ∨ c = 4) (hcap : rest.length ≤ 100
 theorem run_reset (hcap : rest.length ≤ 1000) :
     runInstructions resetProgram
       (framed s 2607 ([Bm1,8,byte,offset,outerW,acc,base,m] ++ rest)) =
-      some (framed s 2611 ([Bm1,0,byte,offset,outerW,acc,base,m] ++ rest)) := by
-  have h7 : rest.length + 7 < 1024 := by omega
+      some (framed s 2611 ([Bm1,8,byte,offset,outerW,acc,base,m] ++ rest)) := by
   have h8 : rest.length + 8 < 1024 := by omega
   simp [resetProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr, framed,
-    h7, h8, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod,
+    h8, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.literal_eq_ofNat]
-  rfl
+  try decide
+  try rfl
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WordBitsFourCore
