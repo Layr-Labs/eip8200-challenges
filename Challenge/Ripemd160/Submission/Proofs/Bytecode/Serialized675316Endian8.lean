@@ -24,14 +24,14 @@ private theorem local_xor_comm (u v : UInt256) : UInt256.xor u v = UInt256.xor v
   simp [UInt256.xor, Fin.xor, Nat.xor_comm]
 /-- Stage 8 with the resident full-width mask read from the stack. The factor is kept below the XOR operands. -/
 def code : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 257),
-    .op (.Dup ⟨4, by decide⟩),
-    .op (.Dup ⟨2, by decide⟩),
-    .op (.Dup ⟨3, by decide⟩),
+  [ .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨1, by decide⟩),
+    .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 8),
     .op .SHR,
     .op .XOR,
     .op .AND,
+    .push ⟨2, by decide⟩ (UInt256.ofNat 257),
     .op .MUL,
     .op .XOR ]
 
@@ -41,15 +41,15 @@ private theorem run_symbolic (s : State) (startPC value mask : UInt256)
     runInstrSeq code {s with pc := startPC, stack := value :: a :: b :: mask :: rest} =
       some {s with
         pc := pcAfter startPC code
-        stack := UInt256.xor (UInt256.mul (UInt256.ofNat 257) (UInt256.land
-          (UInt256.xor (UInt256.shiftRight value (UInt256.ofNat 8)) value) mask))
-          value :: a :: b :: mask :: rest} := by
+        stack := UInt256.xor (UInt256.mul (UInt256.land
+          (UInt256.xor (UInt256.shiftRight value (UInt256.ofNat 8)) value) mask)
+          (UInt256.ofNat 257)) value :: a :: b :: mask :: rest} := by
   have hcap (n : Nat) (hn : n ≤ 14) : rest.length + n < 1024 := by omega
   simp (discharger := omega) [code, ClosedEndianReuse.factorPush,
     op, push1, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size, hrun, hcap,
     Nat.add_assoc, List.getElem?_cons_zero, List.exchange, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals simp only [mul_op, RawExpressionAC.xor_comm, RawExpressionAC.land_comm, RawExpressionAC.mul_comm]
-  all_goals repeat first | apply And.intro | exact True.intro | rfl
+  all_goals simp only [RawExpressionAC.xor_comm, RawExpressionAC.land_comm, RawExpressionAC.mul_comm]
+  all_goals repeat first | apply And.intro | rfl
 
 theorem run_endian (s : State) (startPC value : UInt256)
     (a b : UInt256) (rest : List UInt256) (hstack : rest.length < 1010)
