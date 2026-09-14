@@ -91,13 +91,14 @@ theorem run_body (hcap : rest.length ≤ 1000) :
   simpa only [show (selectProgram shift ++ factorProgram) ++ productProgram = bodyProgram shift from rfl,
     hpc, stepValue] using hall
 
-/-- The one-bit loop control at pc 2400: `DUP2 PUSH1 7 GT SWAP2 PUSH1 1 ADD SWAP2
-PUSH2 2377 JUMPI`. It re-enters the single body while the counter is below seven,
-after incrementing the counter; on the eighth bit it falls through to the exit at
-pc 2413 with the counter at eight. -/
+/-- The one-bit loop control at pc 2404: `PUSH1 1 DUP3 ADD SWAP2 PUSH1 7 GT
+JUMPDEST PUSH2 2381 JUMPI`. It re-enters the single body while the counter is
+below seven, after incrementing the counter; on the eighth bit it falls through
+to the exit at pc 2417 with the counter at eight. The padding `JUMPDEST` keeps
+the window at nine bytes and seven instructions. -/
 def controlProgram : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .push 1 7, .op .GT,
-   .op (.Swap ⟨1, by decide⟩), .push 1 1, .op .ADD, .op (.Swap ⟨1, by decide⟩),
+  [.push 1 1, .op (.Dup ⟨2, by decide⟩), .op .ADD,
+   .op (.Swap ⟨1, by decide⟩), .push 1 7, .op .GT, .op .JUMPDEST,
    .push 2 2381, .op .JUMPI]
 
 theorem run_start (hcap : rest.length ≤ 1000) :

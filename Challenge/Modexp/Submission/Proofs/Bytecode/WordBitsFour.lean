@@ -92,8 +92,8 @@ def control (hrest : rest.length < 1000) (c : Nat) (hc : c < 8) :
       run_control s Bm1 byte offset outerW acc base m rest c hc (Nat.le_of_lt hrest) hj)
 
 @[simp] theorem control_cost (hrest : rest.length < 1000) (c : Nat) (hc : c < 8) :
-    (control s rest Bm1 byte offset outerW acc base m hs hrest c hc).cost = 34 := by
+    (control s rest Bm1 byte offset outerW acc base m hs hrest c hc).cost = 32 := by
   unfold control
-  apply lift_cost _ _ _ _ _ _ 34 (by decide) (by rfl) (by rfl)
+  apply lift_cost _ _ _ _ _ _ 32 (by decide) (by rfl) (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WordBitsFour
