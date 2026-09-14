@@ -22,7 +22,7 @@ def guardProgram : List Instr :=
   [.op .JUMPDEST, .push 2 2688, .op .MLOAD,
    .push 1 127, .op .AND, .op .ISZERO,
    .push 1 1, .push 2 2720, .op .MLOAD, .op .GT, .op .AND,
-   .push 2 3379, .op .JUMPI]
+   .push 2 3383, .op .JUMPI]
 
 def validWidth (width : UInt256) : Prop :=
   ∃ n : Nat, 2 ≤ n ∧ n ≤ 8 ∧ width = UInt256.ofNat (32*n)
@@ -85,9 +85,9 @@ theorem run_guardPass (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (hact : 88 ≤ s.activeWords.toNat)
     (hcond : UInt256.isTrue (condition (MachineState.readWord mem 2688)
       (MachineState.readWord mem 2720)))
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 3379 = true) :
-    runInstructions guardProgram (stateAt 3353 s mem hd pa pb pdst ret rest) =
-      some (stateAt 3379 s mem hd pa pb pdst ret rest) := by
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 3383 = true) :
+    runInstructions guardProgram (stateAt 3357 s mem hd pa pb pdst ret rest) =
+      some (stateAt 3383 s mem hd pa pb pdst ret rest) := by
   unfold condition at hcond
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
@@ -107,8 +107,8 @@ theorem run_guardFallback (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : 
     (hact : 88 ≤ s.activeWords.toNat)
     (hcond : ¬ UInt256.isTrue (condition (MachineState.readWord mem 2688)
       (MachineState.readWord mem 2720))) :
-    runInstructions guardProgram (stateAt 3353 s mem hd pa pb pdst ret rest) =
-      some (stateAt 3374 s mem hd pa pb pdst ret rest) := by
+    runInstructions guardProgram (stateAt 3357 s mem hd pa pb pdst ret rest) =
+      some (stateAt 3378 s mem hd pa pb pdst ret rest) := by
   unfold condition at hcond
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
