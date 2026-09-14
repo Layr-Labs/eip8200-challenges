@@ -4,8 +4,6 @@ set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
 
-noncomputable section
-
 namespace Challenge.Modexp.Submission.Proofs.Fast.CarryFull
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
@@ -14,9 +12,10 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch
 open CiosCached CiosCachedMidMemory CarryIface
+open Challenge.Modexp.Submission.Proofs.Fast.CarryRows
 open CarryRowModel CarryResult StagedOperand
 
-opaque gasSteps_toCsub (E : EntryLemmas) (s : State) (mem : ByteArray) (pa pb n : Nat)
+opaque gasSteps_toCsub (L : RowLemmas) (E : EntryLemmas) (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -25,7 +24,7 @@ opaque gasSteps_toCsub (E : EntryLemmas) (s : State) (mem : ByteArray) (pa pb n 
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 2048)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2048)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2816)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
@@ -40,14 +39,14 @@ opaque gasSteps_toCsub (E : EntryLemmas) (s : State) (mem : ByteArray) (pa pb n 
     rw [selectedRows, if_pos hprepared, inputMemory, if_pos he]
     by_cases hn4 : n = 4
     · subst n
-      exact gasSteps_specializedFour E s mem pa pb pdst ret rest hcap hrun hcode
+      exact gasSteps_specializedFour L E s mem pa pb pdst ret rest hcap hrun hcode
         hfork hnp hact hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv he.2
     · have hn8 : n = 8 := he.1.resolve_left hn4
       subst n
-      exact gasSteps_specializedEight E s mem pa pb pdst ret rest hcap hrun hcode
+      exact gasSteps_specializedEight L E s mem pa pb pdst ret rest hcap hrun hcode
         hfork hnp hact hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv he.2
   · rw [inputMemory, if_neg he]
     exact gasSteps_fallback E s mem pa pb n pdst ret rest hcap hrun hcode hfork hnp hact hn
-      hn32 hpa (by omega) hpb (by omega) hcds hs32 htl hml hminv he
+      hn32 hpa (by omega) hpb hpbFit hcds hs32 htl hml hminv he
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryFull

@@ -10,80 +10,80 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 1385..1393, pc 1877..1847. -/
+/-- Instructions 1385..1393, pc 1863..1833. -/
 def blk1255 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 713 .JUMPDEST,
-   opAt 714 .POP,
-   opAt 715 .POP,
-   pushAt 716 2 2631,
-   pushAt 717 2 512,
-   pushAt 718 2 1536,
-   pushAt 719 2 256,
-   pushAt 720 2 3541,
-   opAt 721 .JUMP]
+  [opAt 638 .JUMPDEST,
+   opAt 639 .POP,
+   opAt 640 .POP,
+   pushAt 641 2 2439,
+   pushAt 642 2 512,
+   pushAt 643 2 1536,
+   pushAt 644 2 256,
+   pushAt 645 2 3349,
+   opAt 646 .JUMP]
 
-/-- Instructions 1402..1360, pc 1899..1900. -/
+/-- Instructions 1402..1360, pc 1896..1904. -/
 def blk1272 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 722 .JUMPDEST,
-   opAt 723 (.Dup ⟨4, by decide⟩),
-   opAt 724 (.Dup ⟨1, by decide⟩),
-   opAt 725 .EQ,
-   pushAt 726 2 1120,
-   opAt 727 .JUMPI]
+  [opAt 647 .JUMPDEST,
+   opAt 648 (.Dup ⟨4, by decide⟩),
+   opAt 649 (.Dup ⟨1, by decide⟩),
+   opAt 650 .EQ,
+   pushAt 651 2 1009,
+   opAt 652 .JUMPI]
 
-/-- Instructions 1410..1416, pc 1904..1913. -/
+/-- Instructions 1409..1416, pc 1905..1914. -/
 def blk1279 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 728 2 1679,
-   opAt 729 .JUMP]
+  [pushAt 653 2 1561,
+   opAt 654 .JUMP]
 
-/-- Instructions 1417..1423, pc 1916..1931. -/
+/-- Instructions 1417..1423, pc 1916..1932. -/
 def blk1287 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 730 .JUMPDEST,
-   pushAt 731 2 1076,
-   pushAt 732 2 256,
-   opAt 733 (.Dup ⟨0, by decide⟩),
-   pushAt 734 2 256,
-   pushAt 735 2 3541,
-   opAt 736 .JUMP]
+  [opAt 655 .JUMPDEST,
+   pushAt 656 2 964,
+   pushAt 657 2 256,
+   opAt 658 (.Dup ⟨0, by decide⟩),
+   pushAt 659 2 256,
+   pushAt 660 2 3349,
+   opAt 661 .JUMP]
 
-/-- Instructions 1425..1430, pc 1932..1940. -/
+/-- Instructions 1424..1430, pc 1933..1941. -/
 def blk1294 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 737 .JUMPDEST,
-   opAt 738 (.Dup ⟨1, by decide⟩),
-   opAt 739 (.Dup ⟨1, by decide⟩),
-   opAt 740 .AND,
-   opAt 741 .ISZERO,
-   pushAt 742 2 1102,
-   opAt 743 .JUMPI]
+  [opAt 662 .JUMPDEST,
+   opAt 663 (.Dup ⟨1, by decide⟩),
+   opAt 664 (.Dup ⟨1, by decide⟩),
+   opAt 665 .AND,
+   opAt 666 .ISZERO,
+   pushAt 667 2 990,
+   opAt 668 .JUMPI]
 
-/-- Instructions 1431..1388, pc 1941..1956. -/
+/-- Instructions 1431..1388, pc 1942..1957. -/
 def blk1301 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 744 2 1101,
-   pushAt 745 2 256,
-   pushAt 746 2 512,
-   pushAt 747 2 256,
-   pushAt 748 2 3541,
-   opAt 749 .JUMP]
+  [pushAt 669 2 989,
+   pushAt 670 2 256,
+   pushAt 671 2 512,
+   pushAt 672 2 256,
+   pushAt 673 2 3349,
+   opAt 674 .JUMP]
 
-/-- Instructions 1389..1389, pc 1957..1957. -/
+/-- Instructions 1389..1389, pc 1958..1958. -/
 def blk1307 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 750 .JUMPDEST]
+  [opAt 675 .JUMPDEST]
 
-/-- Instructions 1438..1395, pc 1843..1888. -/
+/-- Instructions 1438..1395, pc 1829..1888. -/
 def blk1308 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 751 .JUMPDEST,
-   pushAt 752 1 1,
-   opAt 753 .SHR,
-   opAt 754 (.Dup ⟨0, by decide⟩),
-   pushAt 755 2 1061,
-   opAt 756 .JUMPI]
+  [opAt 676 .JUMPDEST,
+   pushAt 677 2 1,
+   opAt 678 .SHR,
+   opAt 679 (.Dup ⟨0, by decide⟩),
+   pushAt 680 2 949,
+   opAt 681 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast

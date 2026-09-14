@@ -1,5 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.Fast.LazyLoopMemory
 import Challenge.Modexp.Submission.Proofs.Fast.LazySquareMemory
+import Challenge.Modexp.Submission.Proofs.Fast.R8RowZeroExact
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -14,6 +15,40 @@ def roundDst (_c : Nat) : Nat := 2368
 def sqRound (s : State) (n c : Nat) (mem : ByteArray) : ByteArray :=
   LazyCsub.resultMemory
     (SquareLoopBlocks.countMem (sqRowsCarry (mpZeroed s mem n) n n) c) n (roundDst c)
+
+/-- Writing the same bytes at the same place twice is the same as writing them once. -/
+theorem writeBytes_writeBytes_same (bs bytes : ByteArray) (start : Nat) :
+    MachineState.writeBytes (MachineState.writeBytes bs bytes start) bytes start =
+      MachineState.writeBytes bs bytes start := by
+  have hsize : (MachineState.writeBytes (MachineState.writeBytes bs bytes start) bytes start).size =
+      (MachineState.writeBytes bs bytes start).size := by
+    rw [MachineState.writeBytes_size (MachineState.writeBytes bs bytes start),
+      MachineState.writeBytes_size bs]
+    split_ifs <;> omega
+  apply ByteArray.ext_getElem hsize
+  intro i hi hi'
+  rw [← Challenge.EvmProof.Memory.getD0_eq_getElem _ i hi,
+    ← Challenge.EvmProof.Memory.getD0_eq_getElem _ i hi',
+    MachineState.writeBytes_getElem?_getD (MachineState.writeBytes bs bytes start)]
+  split_ifs with h
+  · rw [MachineState.writeBytes_getElem?_getD bs, if_pos h]
+  · rfl
+
+/-- Zeroing the accumulator region is idempotent. -/
+theorem mpZeroed_idem (s : State) (mem : ByteArray) (n : Nat) :
+    mpZeroed s (mpZeroed s mem n) n = mpZeroed s mem n := by
+  unfold mpZeroed
+  exact writeBytes_writeBytes_same _ _ _
+
+/-- One squaring round never touches the scratch word `[2048, 2080)`. -/
+theorem scratchZero_sqRound (s : State) (n c : Nat) (M : ByteArray) (hn1 : 1 ≤ n)
+    (hn : n ≤ 8) : R8RowZeroExact.ScratchZero (sqRound s n c M) := by
+  have h0 := (R8RowZeroExact.scratchZero_mpZeroed s M n hn1).sqRowsCarry n n
+  have h1 := h0.store c 2624 (Or.inr (by decide))
+  unfold sqRound LazyCsub.resultMemory SquareLoopBlocks.countMem Csub.subResultMemory roundDst
+  split
+  · exact h1.write _ 2368 (Or.inr (by decide))
+  · exact (h1.csStep n hn n).write _ 2368 (Or.inr (by decide))
 
 def sqRunMem (s : State) (n : Nat) : Nat → ByteArray → ByteArray
   | 0, mem => mem
@@ -32,6 +67,17 @@ theorem sqRunMem_zero (s : State) (n : Nat) (mem : ByteArray) : sqRunMem s n 0 m
 
 theorem sqRunMem_succ (s : State) (n k : Nat) (mem : ByteArray) :
     sqRunMem s n (k + 1) mem = sqRunMem s n k (sqRound s n k mem) := rfl
+
+theorem sqRound_mpZeroed (s : State) (n c : Nat) (mem : ByteArray) :
+    sqRound s n c (mpZeroed s mem n) = sqRound s n c mem := by
+  unfold sqRound; rw [mpZeroed_idem]
+
+/-- A run of at least one round does not see whether its entry memory was already zeroed. -/
+theorem sqRunMem_mpZeroed (s : State) (n k : Nat) (mem : ByteArray) (hk : 1 ≤ k) :
+    sqRunMem s n k (mpZeroed s mem n) = sqRunMem s n k mem := by
+  cases k with
+  | zero => omega
+  | succ j => rw [sqRunMem_succ, sqRunMem_succ, sqRound_mpZeroed]
 
 theorem tn_le_one (s : State) (mem : ByteArray) (p a mm : Nat) (hn32 : p + 2 ≤ 8)
     (_hfast : p + 2 = 4 ∨ p + 2 = 8)

@@ -2,6 +2,7 @@ import Challenge.Modexp.Benchmark.Artifact
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftCorrect
 import Challenge.Modexp.Submission.Proofs.Fast.WindowCorrect
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneCorrect
+import Challenge.Modexp.Submission.Proofs.Fast.BigCUGlue
 
 set_option warningAsError true
 set_option maxRecDepth 20000
@@ -11,13 +12,14 @@ namespace Challenge.Modexp.Benchmark
 
 /-- Joins the fixed-width dispatch route to the fast multi-limb MODEXP
 implementation and the certified reference fallback. The submitted program
-starts directly with the concrete dispatch header. -/
+starts with `PUSH2 5245; JUMP` into the concrete dispatch. -/
 theorem candidateFromWindow
     (route : Challenge.Modexp.Submission.Proofs.Bytecode.WindowRoute.Route) :
     Challenge.Modexp.Correct bytecode := by
   change Challenge.Modexp.Correct Challenge.Modexp.submissionBytecode
   exact Challenge.Modexp.Submission.Proofs.Fast.WindowCorrect.submission_correct_of
     route Challenge.Modexp.Submission.Proofs.Fast.Shift.gasSteps_handled
+    Challenge.Modexp.Submission.Proofs.Fast.BigCUGlue.bigBailHandled
 
 /-- Universal correctness of the exact submitted bytecode, including the
 concrete fixed-width window route and the complete legacy fallback. -/

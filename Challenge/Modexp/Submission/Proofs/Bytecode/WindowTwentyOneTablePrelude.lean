@@ -38,93 +38,90 @@ theorem run_init (template : State) (pc base modulus : UInt256)
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     advancePC, succ_eq_add, hpush, word_add_assoc]
 
-/-- The exponent word already sits on the route frame (depth one under the
-two modulus copies), so the load is a plain `DUP4 SWAP2`. -/
+/-- The exponent is no longer loaded here — the frame prologue at 1873 loads it.
+This single `DUP2` republishes the modulus as the frame's third slot, which the
+final bare `MULMOD` of the table build consumes. -/
 def loadProgram : List Instr :=
-  [.op (.Dup ⟨3, by decide⟩), .op (.Swap ⟨1, by decide⟩)]
+  [.op (.Dup ⟨1, by decide⟩)]
 
-theorem run_load (template : State) (pc base modulus exponent : UInt256)
-    (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (hexp : rest[1]? = some exponent) :
+theorem run_load (template : State) (pc base modulus : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions loadProgram
       (WindowTwentyOneTable.framed template pc base modulus 2 ([base, modulus] ++ rest)) =
-    some (WindowTwentyOneTable.framed template (advancePC 2 pc) base modulus 2
-      ([modulus, base, exponent] ++ rest)) := by
+    some (WindowTwentyOneTable.framed template (advancePC 1 pc) base modulus 2
+      ([modulus, base, modulus] ++ rest)) := by
   have hcap2 : rest.length + 2 < 1024 := by omega
-  have hcap3 : rest.length + 3 < 1024 := by omega
   simp [runInstructions, loadProgram, WindowTwentyOneTable.framed,
-    Challenge.EvmProof.Stepper.runInstr, hcap2, hcap3, Nat.add_assoc,
-    List.getElem?_cons_succ, hexp, List.exchange, advancePC]
+    Challenge.EvmProof.Stepper.runInstr, hcap2, Nat.add_assoc, advancePC]
 
 def squareProgram : List Instr :=
-  [.op (.Dup ⟨14, by decide⟩), .op (.Dup ⟨15, by decide⟩), .op .MULMOD]
+  [.op (.Dup ⟨13, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op .MULMOD]
 
 private theorem run_square (template : State) (pc base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions squareProgram
       (WindowTwentyOneTable.framed template pc base modulus 2
-        (List.replicate 14 modulus ++ [base, exponent] ++ rest)) =
+        (List.replicate 13 modulus ++ [base, exponent] ++ rest)) =
     some (WindowTwentyOneTable.framed template (advancePC 3 pc) base modulus 2
-      (WindowMath.tableWord base modulus 2 :: List.replicate 13 modulus ++
+      (WindowMath.tableWord base modulus 2 :: List.replicate 12 modulus ++
         [base, exponent] ++ rest)) := by
+  have hcap15 : rest.length + 15 < 1024 := by omega
   have hcap16 : rest.length + 16 < 1024 := by omega
   have hcap17 : rest.length + 17 < 1024 := by omega
-  have hcap18 : rest.length + 18 < 1024 := by omega
   simp [runInstructions, squareProgram, WindowTwentyOneTable.framed,
-    Challenge.EvmProof.Stepper.runInstr, hcap16, hcap17, hcap18, Nat.add_assoc,
+    Challenge.EvmProof.Stepper.runInstr, hcap15, hcap16, hcap17, Nat.add_assoc,
     List.replicate, WindowMath.tableWord, advancePC]
 
 def stagedProgram : List Instr :=
-  List.replicate 13 (.op (.Dup ⟨0, by decide⟩)) ++ squareProgram
+  List.replicate 12 (.op (.Dup ⟨0, by decide⟩)) ++ squareProgram
 
 theorem run_staged (template : State) (pc base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions stagedProgram
       (WindowTwentyOneTable.framed template pc base modulus 2 ([modulus, base, exponent] ++ rest)) =
-    some (WindowTwentyOneTable.framed template (advancePC 16 pc) base modulus 2
-      (WindowMath.tableWord base modulus 2 :: List.replicate 13 modulus ++
+    some (WindowTwentyOneTable.framed template (advancePC 15 pc) base modulus 2
+      (WindowMath.tableWord base modulus 2 :: List.replicate 12 modulus ++
         [base, exponent] ++ rest)) := by
   let core := WindowTwentyOneTable.framed template pc base modulus 2 []
-  have hd := WindowTwentyOneStage.run_topCopies core pc modulus ([base, exponent] ++ rest) 13
+  have hd := WindowTwentyOneStage.run_topCopies core pc modulus ([base, exponent] ++ rest) 12
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega)
-  have hs := run_square template (advancePC 13 pc) base modulus exponent rest hrest
-  have hd' : runInstructions (List.replicate 13 (.op (.Dup ⟨0, by decide⟩)))
+  have hs := run_square template (advancePC 12 pc) base modulus exponent rest hrest
+  have hd' : runInstructions (List.replicate 12 (.op (.Dup ⟨0, by decide⟩)))
       (WindowTwentyOneTable.framed template pc base modulus 2 ([modulus, base, exponent] ++ rest)) =
-    some (WindowTwentyOneTable.framed template (advancePC 13 pc) base modulus 2
-      (List.replicate 14 modulus ++ [base, exponent] ++ rest)) := by
+    some (WindowTwentyOneTable.framed template (advancePC 12 pc) base modulus 2
+      (List.replicate 13 modulus ++ [base, exponent] ++ rest)) := by
     simpa only [core, WindowTwentyOneStage.framed, WindowTwentyOneTable.framed,
       List.cons_append, List.nil_append, List.append_assoc] using hd
   have both := runInstructions_append_some _ _ _ _ _ hd' hs
-  simpa only [stagedProgram, ← advancePC_add, show 13 + 3 = 16 by decide] using both
+  simpa only [stagedProgram, ← advancePC_add, show 12 + 3 = 15 by decide] using both
 
 def program : List Instr :=
   initProgram ++ loadProgram ++ stagedProgram ++ WindowTwentyOneTable.storeProgramM
 
 def endPC (pc : UInt256) : UInt256 :=
-  WindowTwentyOneTable.storePCM (advancePC 16 (advancePC 2 (advancePC 7 pc)))
+  WindowTwentyOneTable.storePCM (advancePC 15 (advancePC 1 (advancePC 7 pc)))
 
-theorem run_prelude (template : State) (pc base modulus exponent : UInt256)
-    (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (hexp : rest[1]? = some exponent) :
+theorem run_prelude (template : State) (pc base modulus : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructionsX program (initial template pc base modulus rest) =
-    some (WindowTwentyOneTable.state template (endPC pc) base modulus exponent 2 rest) := by
+    some (WindowTwentyOneTable.state template (endPC pc) base modulus modulus 2 rest) := by
   have hi := run_init template pc base modulus rest hrest
   have hl : runInstructionsX loadProgram
       (WindowTwentyOneTable.framed template (advancePC 7 pc) base modulus 2 ([base, modulus] ++ rest)) =
-      some (WindowTwentyOneTable.framed template (advancePC 2 (advancePC 7 pc)) base modulus 2
-        ([modulus, base, exponent] ++ rest)) := by
+      some (WindowTwentyOneTable.framed template (advancePC 1 (advancePC 7 pc)) base modulus 2
+        ([modulus, base, modulus] ++ rest)) := by
     rw [runInstructionsX_eq _ (by decide)]
-    exact run_load template (advancePC 7 pc) base modulus exponent rest hrest hexp
+    exact run_load template (advancePC 7 pc) base modulus rest hrest
   have hs : runInstructionsX stagedProgram
-      (WindowTwentyOneTable.framed template (advancePC 2 (advancePC 7 pc)) base modulus 2
-        ([modulus, base, exponent] ++ rest)) =
-      some (WindowTwentyOneTable.framed template (advancePC 16 (advancePC 2 (advancePC 7 pc))) base modulus 2
-        (WindowMath.tableWord base modulus 2 :: List.replicate 13 modulus ++ [base, exponent] ++ rest)) := by
+      (WindowTwentyOneTable.framed template (advancePC 1 (advancePC 7 pc)) base modulus 2
+        ([modulus, base, modulus] ++ rest)) =
+      some (WindowTwentyOneTable.framed template (advancePC 15 (advancePC 1 (advancePC 7 pc))) base modulus 2
+        (WindowMath.tableWord base modulus 2 :: List.replicate 12 modulus ++ [base, modulus] ++ rest)) := by
     rw [runInstructionsX_eq _ (by decide)]
-    exact run_staged template (advancePC 2 (advancePC 7 pc)) base modulus exponent rest hrest
-  have ht := WindowTwentyOneTable.run_storeM template (advancePC 16 (advancePC 2 (advancePC 7 pc)))
+    exact run_staged template (advancePC 1 (advancePC 7 pc)) base modulus modulus rest hrest
+  have ht := WindowTwentyOneTable.run_storeM template (advancePC 15 (advancePC 1 (advancePC 7 pc)))
     base modulus 2 (by decide)
-    (List.replicate 13 modulus ++ [base, exponent] ++ rest)
+    (List.replicate 12 modulus ++ [base, modulus] ++ rest)
     (by simp only [List.length_append, List.length_replicate, List.length_cons, List.length_nil]; omega)
   have his := runInstructionsX_append_some _ _ _ _ _ hi hl
   have hist := runInstructionsX_append_some _ _ _ _ _ his hs

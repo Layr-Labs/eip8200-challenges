@@ -8,8 +8,8 @@ set_option maxHeartbeats 4000000
 /-!
 # The `LZ` head of the exponent-byte loop
 
-`LZ` occupies instruction indices 1908..1941 (pc 2690..3184).  It is entered
-at pc 2690 with the byte index `i` on top of the driver frame, loads exponent
+`LZ` occupies instruction indices 1908..1942 (pc 2695..3189).  It is entered
+at pc 2695 with the byte index `i` on top of the driver frame, loads exponent
 byte `i` exactly as the code it replaces did, and then chooses the mask the
 inner bit loop starts from:
 
@@ -82,36 +82,36 @@ theorem topExp_le (w : Nat) (hw : w < 256) (hne : w ≠ 0) : 2 ^ topExp w ≤ w 
 
 /-! ## States at the block boundaries -/
 
-/-- The `LZ` entry, pc 2690.  The driver frame below the byte index is left
+/-- The `LZ` entry, pc 2695.  The driver frame below the byte index is left
 abstract so that this module does not depend on `Fast.Exp`. -/
 def lzEntry (s : State) (mem : ByteArray) (i : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1679
+  { s with pc := UInt256.ofNat 1561
            stack := UInt256.ofNat i :: rest
            memory := mem }
 
 /-- pc 2711, the arm every byte after the first takes. -/
 def lzOther (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1695
+  { s with pc := UInt256.ofNat 1577
            stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
 /-- pc 2720, the arm byte `0` takes. -/
 def lzFirst (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1701
+  { s with pc := UInt256.ofNat 1583
            stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
 /-- The bit-loop head both arms rejoin, pc 1916. -/
 def lzJoin (s : State) (mem : ByteArray) (i w mask : Nat)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1061
+  { s with pc := UInt256.ofNat 949
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
 /-- The state handed to the relocated leading-bit shortcut at pc3865. -/
 def lzBase (s : State) (mem : ByteArray) (i w mask : Nat)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2609
+  { s with pc := UInt256.ofNat 2417
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
@@ -224,7 +224,7 @@ theorem sm_lt (w : Nat) (hw : w < 256) :
 
 /-! ## The two rejoining arms -/
 
-/-- Instructions 1797..1920: every byte after the first starts the bit loop at
+/-- Instructions 1790..1920: every byte after the first starts the bit loop at
 `0x80`, exactly as the code this replaces did. -/
 theorem run_lzOther (s : State) (mem : ByteArray) (i w : Nat)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
@@ -243,7 +243,7 @@ theorem run_lzOther (s : State) (mem : ByteArray) (i w : Nat)
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
-/-- Instructions 1874..1941: byte `0` starts the bit loop at its highest set
+/-- Instructions 1875..1942: byte `0` starts the bit loop at its highest set
 bit, so the exponent's leading zeros are never squared over. -/
 theorem run_lzFirst (s : State) (mem : ByteArray) (i w : Nat)
     (rest : List UInt256) (hcap : rest.length ≤ 1008) (hw : w < 256)

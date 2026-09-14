@@ -12,7 +12,7 @@ set_option maxHeartbeats 4000000
 /-!
 # The `MONPRO` subroutine of the appended Montgomery path
 
-`MONPRO` occupies instruction indices 1509..1727 (pc 2065..2345).  It is
+`MONPRO` occupies instruction indices 1509..1726 (pc 2066..2346).  It is
 entered with stack `[pa, pb, pc, ret]`, computes the CIOS Montgomery product
 `a * b * R⁻¹ mod m` of the `n`-limb blocks at `pa` and `pb` into the CIOS
 scratch area, and tail-calls `CSUB` at pc 2432 with stack `[pc, ret]`.
@@ -503,25 +503,25 @@ indexed state functions; the block-exit states take the popped stack entries
 as opaque parameters, which keeps every reduction lemma stated over an
 arbitrary state constrained only by its `pc` and stack shape. -/
 
-/-- Subroutine entry, pc 2065, stack `[pa, pb, pd, ret]`. -/
+/-- Subroutine entry, pc 2066, stack `[pa, pb, pd, ret]`. -/
 def mpEntryState (s : State) (mem : ByteArray) (pa pb : Nat) (pdst ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1203
+  { s with pc := UInt256.ofNat 1085
            stack := [UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
-/-- The outer loop head, pc 1899, at the start of row `i`. -/
+/-- The outer loop head, pc 1897, at the start of row `i`. -/
 def mpOutState (s : State) (mem : ByteArray) (pa pb n i : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1238
+  { s with pc := UInt256.ofNat 1120
            stack := [UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
            memory := mem }
 
-/-- The first limb loop head, pc 1992, after `j` steps of row `i`. -/
+/-- The first limb loop head, pc 1993, after `j` steps of row `i`. -/
 def mpL1State (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1252
+  { s with pc := UInt256.ofNat 1134
            stack := [UInt256.ofNat (ptrAt (pa + 32 * n - 32) j),
                      UInt256.ofNat (ptrAt (2080 + 32 * n) j),
                      (l1Step mem bi pa n j).carry, bi,
@@ -529,19 +529,19 @@ def mpL1State (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : Nat)
                      UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
            memory := (l1Step mem bi pa n j).memory }
 
-/-- The row middle, pc 2176.  The two spent loop pointers are popped at once,
+/-- The row middle, pc 2177.  The two spent loop pointers are popped at once,
 so they stay opaque. -/
 def mpMidState (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1307
+  { s with pc := UInt256.ofNat 1189
            stack := [paj, ptj, c, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
            memory := mem }
 
-/-- The second limb loop head, pc 2116, after `k` steps of row `i`. -/
+/-- The second limb loop head, pc 2117, after `k` steps of row `i`. -/
 def mpL2State (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pa pb n i k : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1376
+  { s with pc := UInt256.ofNat 1258
            stack := [UInt256.ofNat (ptrAt (32 * n - 64) k),
                      UInt256.ofNat (ptrAt (2048 + 32 * n) k),
                      (l2Step mid mu c0 n k).carry, mu, bi,
@@ -552,15 +552,15 @@ def mpL2State (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
 /-- The row tail, pc 2304. -/
 def mpTailState (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
     (pa pb n i : Nat) (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1431
+  { s with pc := UInt256.ofNat 1313
            stack := [pmj, ptj, c, mu, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32), pdst, ret] ++ rest
            memory := mem }
 
-/-- The subroutine exit, pc 2594, after all `n` rows. -/
+/-- The subroutine exit, pc 2595, after all `n` rows. -/
 def mpExitState (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1468
+  { s with pc := UInt256.ofNat 1350
            stack := [pbi, UInt256.ofNat (pa - 32), UInt256.ofNat (pb - 32),
                      pdst, ret] ++ rest
            memory := mem }
@@ -568,7 +568,7 @@ def mpExitState (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb : Nat)
 /-- `CSUB` entry, pc 2432, with stack `[pd, ret]`. -/
 def mpCsubState (s : State) (mem : ByteArray) (pdst ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4320
+  { s with pc := UInt256.ofNat 4128
            stack := [pdst, ret] ++ rest
            memory := mem }
 
@@ -712,10 +712,10 @@ theorem run_mpL1Body (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
       UInt256) = UInt256.ofNat
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
     decide
-  have h1995 : (1252 : UInt256).toNat = 1252 := by decide
-  have h1995' : (1252 : UInt256) = UInt256.ofNat 1252 := by decide
+  have h1995 : (1134 : UInt256).toNat = 1134 := by decide
+  have h1995' : (1134 : UInt256) = UInt256.ofNat 1134 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (1252 : UInt256).toNat = true := by
+      (1134 : UInt256).toNat = true := by
     rw [h1995]; exact jumpDest1914
   have hpaj : ptrAt (pa + 32 * n - 32) j %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
@@ -951,10 +951,10 @@ theorem run_mpL2Body (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     decide
   have h32 : (32 : UInt256) = UInt256.ofNat 32 := by decide
   have h8224 : (2080 : UInt256).toNat = 2080 := by decide
-  have h2241 : (1376 : UInt256).toNat = 1376 := by decide
-  have h2241' : (1376 : UInt256) = UInt256.ofNat 1376 := by decide
+  have h2241 : (1258 : UInt256).toNat = 1258 := by decide
+  have h2241' : (1258 : UInt256) = UInt256.ofNat 1258 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (1376 : UInt256).toNat = true := by
+      (1258 : UInt256).toNat = true := by
     rw [h2241]; exact jumpDest2038
   have hpmj : ptrAt (32 * n - 64) k %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
@@ -1098,10 +1098,10 @@ theorem run_mpTailNext (s : State) (mem : ByteArray) (pmj ptj c mu bi : UInt256)
   have h8192 : (2048 : UInt256).toNat = 2048 := by decide
   have h8224 : (2080 : UInt256).toNat = 2080 := by decide
   have h8256 : (2112 : UInt256).toNat = 2112 := by decide
-  have h1974 : (1238 : UInt256).toNat = 1238 := by decide
-  have h1974' : (1238 : UInt256) = UInt256.ofNat 1238 := by decide
+  have h1974 : (1120 : UInt256).toNat = 1120 := by decide
+  have h1974' : (1120 : UInt256) = UInt256.ofNat 1120 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (1238 : UInt256).toNat = true := by
+      (1120 : UInt256).toNat = true := by
     rw [h1974]; exact jumpDest1900
   have hnextB : ptrAt (pb + 32 * n - 32) (i + 1) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
@@ -1203,10 +1203,10 @@ theorem run_mpExit (s : State) (mem : ByteArray) (pbi : UInt256) (pa pb : Nat)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have h2642 : (4320 : UInt256).toNat = 4320 := by decide
-  have h2642' : (4320 : UInt256) = UInt256.ofNat 4320 := by decide
+  have h2642 : (4128 : UInt256).toNat = 4128 := by decide
+  have h2642' : (4128 : UInt256) = UInt256.ofNat 4128 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (4320 : UInt256).toNat = true := by
+      (4128 : UInt256).toNat = true := by
     rw [h2642]; exact jumpDest4976
   simp (config := { maxSteps := 400000 })
     [blk1595, opAt, pushAt, wfOp,
@@ -1757,7 +1757,7 @@ theorem fastRepresents_monpro_preserved (s : State) (memory : ByteArray)
 
 /-! ## The subroutine trace
 
-`MONPRO` is entered at pc 2065 with stack `[pa, pb, pd, ret]` and tail-calls
+`MONPRO` is entered at pc 2066 with stack `[pa, pb, pd, ret]` and tail-calls
 `CSUB` at pc 2432 with stack `[pd, ret]`; `CSUB` (proved in `Fast.Csub`) copies
 the reduced product to `pd` and returns to `ret`.  The trace below therefore
 ends exactly at the `CSUB` entry state. -/
@@ -2204,7 +2204,7 @@ theorem limbSum_eq_lowValue (memory : ByteArray) (ptr n j : Nat) :
   | zero => rfl
   | succ j ih => rw [limbSum_succ, Csub.lowValue_succ, ih]
 
-/-- The whole `MONPRO` call: from the subroutine entry at pc 2065 with stack
+/-- The whole `MONPRO` call: from the subroutine entry at pc 2066 with stack
 `[pa, pb, pd, ret]` through the `n` CIOS rows and the tail call to `CSUB`, back
 to the caller at `ret`.  The single arithmetic side condition `htn` — the CIOS
 accumulator's top limb is at most one, which is the `t < 2 m` bound of the row

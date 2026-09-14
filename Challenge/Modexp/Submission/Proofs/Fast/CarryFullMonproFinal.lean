@@ -1,11 +1,10 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CarryFullMonproCsub
+import Challenge.Modexp.Submission.Proofs.Fast.CarryRowLemmas
 import Challenge.Modexp.Submission.Proofs.Fast.CarryEntryLemmas
 
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
-
-noncomputable section
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.CarryFull
 
@@ -15,9 +14,10 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch
 open CiosCached CiosCachedMidMemory CarryIface
+open Challenge.Modexp.Submission.Proofs.Fast.CarryRows
 open CarryRowModel CarryResult StagedOperand
 
-opaque gasSteps_monproFullOf (E : EntryLemmas) (s : State) (mem : ByteArray) (pa pb p : Nat)
+opaque gasSteps_monproFullOf (L : RowLemmas) (E : EntryLemmas) (s : State) (mem : ByteArray) (pa pb p : Nat)
     (a b mm : Nat) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -44,7 +44,7 @@ opaque gasSteps_monproFullOf (E : EntryLemmas) (s : State) (mem : ByteArray) (pa
       (Csub.csReturnedState s
         (selectedRows (mpZeroed s (inputMemory mem pa (p+2)) (p + 2)) pa pb (p + 2) (p + 2)) (p + 2) (p + 2)
         pdst ret rest) :=
-  gasSteps_monproCsub E s mem pa pb (p + 2) pdst ret rest (by omega) hrun hcode hfork hnp
+  gasSteps_monproCsub L E s mem pa pb (p + 2) pdst ret rest (by omega) hrun hcode hfork hnp
     hact (by omega) hn32 hpa (by omega) hpb (by omega) hcds hs32 htl hml hminv hjump
     hdstFit
     (by
@@ -66,7 +66,7 @@ opaque gasSteps_monproFullOf (E : EntryLemmas) (s : State) (mem : ByteArray) (pa
       exact Monpro.monpro_tn_le_one s prepared pa pb p a b mm hn32 hpaFit hpbFit ha' hb' hm' ham
         hmpos hminv')
 
-/-- **The sqCP1m multiply kernel** (`MonPro(pa, pb) → pdst`): from the `mul entry` (pc 4006) to the
+/-- **The sqCP1m multiply kernel** (`MonPro(pa, pb) → pdst`): from the `mul entry` (pc 4013) to the
 return of the final subtraction, for every width (four and eight limbs through the kernel
 rows, every other width through the generic `MONPRO`).  Statement unchanged from the base. -/
 opaque gasSteps_monproFull (s : State) (mem : ByteArray) (pa pb p : Nat)
@@ -96,7 +96,7 @@ opaque gasSteps_monproFull (s : State) (mem : ByteArray) (pa pb p : Nat)
       (Csub.csReturnedState s
         (selectedRows (mpZeroed s (inputMemory mem pa (p+2)) (p + 2)) pa pb (p + 2) (p + 2)) (p + 2) (p + 2)
         pdst ret rest) :=
-  gasSteps_monproFullOf entryLemmas s mem pa pb p a b mm pdst ret rest hcap hrun hcode hfork hnp
+  gasSteps_monproFullOf rowLemmas entryLemmas s mem pa pb p a b mm pdst ret rest hcap hrun hcode hfork hnp
     hact hn32 hpa hpaFit hpb hpbFit hcds hs32 htl hml hjump hdstFit ha hb hm ham hmpos hminv
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryFull

@@ -13,7 +13,7 @@ open WindowNibbleKernel
 def returnedState (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) : State :=
   let finish := WindowTwentyOneLoop.finishState template base modulus exponent rest
-  WindowTwentyOneReturn.returned finish (UInt256.ofNat 2385)
+  WindowTwentyOneReturn.returned finish (UInt256.ofNat 2257)
     (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 18 finish.stack.tail
 
 theorem run_finish (template : State) (base modulus exponent : UInt256)
@@ -27,10 +27,10 @@ theorem run_finish (template : State) (base modulus exponent : UInt256)
       WindowTwentyOneLookup.framed, List.replicate_zero, List.nil_append, List.cons_append,
       List.tail_cons, List.length_cons]
     omega
-  have h := WindowTwentyOneReturn.run_return finish (UInt256.ofNat 2380)
+  have h := WindowTwentyOneReturn.run_return finish (UInt256.ofNat 2252)
     (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 18 (by decide) rfl
     finish.stack.tail htail
-  have hpc : advancePC 5 (UInt256.ofNat 2380) = UInt256.ofNat 2385 := by decide
+  have hpc : advancePC 5 (UInt256.ofNat 2252) = UInt256.ofNat 2257 := by decide
   simpa only [returnedState, finish, WindowTwentyOneReturn.framed, WindowTwentyOneLoop.finishState,
     WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed, List.replicate_zero,
     List.nil_append, List.cons_append, List.tail_cons, hpc] using h
@@ -45,17 +45,6 @@ theorem core_result (template : State) (base modulus exponent : UInt256)
     change exponent.toNat < 2 ^ 256
     exact exponent.val.isLt
   have h := WindowTwentyOneMath.three_bodies_toNat base modulus exponent.toNat hmodulus he
-  rw [h]
-
-/-- With a zero modulus every `MULMOD` of the last step yields zero, so the
-window core returns the precompile's zero word without a separate exit. -/
-theorem core_result_zero (template : State) (base modulus exponent : UInt256)
-    (hmodulus : modulus.toNat = 0) (rest : List UInt256) :
-    (returnedState template base modulus exponent rest).toResult =
-      .returned (Precompile.natToBytes 0 32) := by
-  unfold returnedState
-  rw [WindowTwentyOneReturn.returned_result]
-  have h := WindowTwentyOneMath.accumulator_zero base modulus exponent.toNat hmodulus
   rw [h]
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneCore

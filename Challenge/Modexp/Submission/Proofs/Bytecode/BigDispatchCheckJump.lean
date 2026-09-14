@@ -14,15 +14,15 @@ theorem run_bigCheckJump (input : ByteArray) :
       (bigComparedState input) = some (bigCheckedState input) := by
   have htrue : UInt256.isTrue 1 := by decide
   have h1 : (1 : UInt256).toNat = 1 := by decide
-  have h1268 : (695 : UInt256).toNat = 695 := by decide
-  have h1268Word : (695 : UInt256) = UInt256.ofNat 695 := by decide
+  have h236 : (236 : UInt256).toNat = 236 := by decide
+  have h236Word : (236 : UInt256) = UInt256.ofNat 236 := by decide
   simp (config := { maxSteps := 50000 })
     [bigCheckJumpPath, pushAt, opAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bigComparedState, bigCheckedState, Dispatch.wordCheckedState,
-      Main.headerState, initialState, UInt256.isTrue, htrue, h1, h1268,
-      h1268Word, jump1268,
+      bigComparedState, bigCheckedState, bigEntryState, Dispatch.wordCheckedState,
+      Main.headerState, initialState, UInt256.isTrue, htrue, h1, h236,
+      h236Word, jump704,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.succ_ofNat_mod]

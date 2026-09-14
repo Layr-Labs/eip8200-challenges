@@ -11,40 +11,40 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
 def callPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2065 .JUMPDEST,
-   pushAt 2066 2 2771,
-   opAt 2067 (.Dup ⟨3, by decide⟩),
-   opAt 2068 (.Dup ⟨0, by decide⟩),
-   opAt 2069 (.Dup ⟨0, by decide⟩),
-   pushAt 2070 2 1475,
-   opAt 2071 .JUMP]
+  [opAt 1919 .JUMPDEST,
+   pushAt 1920 2 2579,
+   opAt 1921 (.Dup ⟨3, by decide⟩),
+   opAt 1922 (.Dup ⟨0, by decide⟩),
+   opAt 1923 (.Dup ⟨0, by decide⟩),
+   pushAt 1924 2 1357,
+   opAt 1925 .JUMP]
 
 def entryPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2056 .JUMPDEST,
-   pushAt 2057 2 2688,
-   opAt 2058 .MLOAD,
-   pushAt 2059 1 128,
-   opAt 2060 .LT,
-   opAt 2061 (.Dup ⟨0, by decide⟩),
-   pushAt 2062 1 8,
-   opAt 2063 (.Swap ⟨0, by decide⟩),
-   opAt 2064 .SHL]
+  [opAt 1910 .JUMPDEST,
+   pushAt 1911 2 2688,
+   opAt 1912 .MLOAD,
+   pushAt 1913 1 128,
+   opAt 1914 .LT,
+   opAt 1915 (.Dup ⟨0, by decide⟩),
+   pushAt 1916 1 8,
+   opAt 1917 (.Swap ⟨0, by decide⟩),
+   opAt 1918 .SHL]
 
 def finishPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2079 .POP,
-   pushAt 2080 1 5,
-   opAt 2081 .SUB,
-   pushAt 2082 2 1635,
-   opAt 2083 .JUMP]
+  [opAt 1933 .POP,
+   pushAt 1934 1 5,
+   opAt 1935 .SUB,
+   pushAt 1936 2 1517,
+   opAt 1937 .JUMP]
 
 def retPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2072 .JUMPDEST,
-   pushAt 2073 0 0,
-   opAt 2074 .NOT,
-   opAt 2075 .ADD,
-   opAt 2076 (.Dup ⟨0, by decide⟩),
-   pushAt 2077 2 2760,
-   opAt 2078 .JUMPI]
+  [opAt 1926 .JUMPDEST,
+   pushAt 1927 0 0,
+   opAt 1928 .NOT,
+   opAt 1929 .ADD,
+   opAt 1930 (.Dup ⟨0, by decide⟩),
+   pushAt 1931 2 2568,
+   opAt 1932 .JUMPI]
 
 private theorem instructionPC_add (p : Challenge.EvmProof.ProgramArtifact) (base count : Nat) :
     p.instructionPC (base + count) = p.instructionPC base +
@@ -53,27 +53,27 @@ private theorem instructionPC_add (p : Challenge.EvmProof.ProgramArtifact) (base
     assembleBytes_append, List.length_append]
 
 private theorem seedPCAnchor :
-    Artifact.submissionArtifact.instructionPC 2056 = 2747 := by
+    Artifact.submissionArtifact.instructionPC 1910 = 2555 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem seedPC (i : Nat)
-    (hi : 2056 ≤ i) (hii : i ≤ 2083) :
+    (hi : 1910 ≤ i) (hii : i ≤ 1937) :
     Artifact.submissionArtifact.instructionPC i =
-      ([2747,2748,2751,2752,2754,2755,2756,2758,2759,2760,2761,2764,2765,2766,2767,2770,2771,2772,2773,2774,2775,2776,2779,2780,2781,2783,2784,2787] : List Nat)[i - 2056]! := by
+      ([2555,2556,2559,2560,2562,2563,2564,2566,2567,2568,2569,2572,2573,2574,2575,2578,2579,2580,2581,2582,2583,2584,2587,2588,2589,2591,2592,2595] : List Nat)[i - 1910]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 theorem jumpDest3973 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2747 = true :=
-  Artifact.isValidJumpDest_index 2056 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2555 = true :=
+  Artifact.isValidJumpDest_index 1910 (by rfl)
 
 theorem jumpDest4029 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2760 = true :=
-  Artifact.isValidJumpDest_index 2065 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2568 = true :=
+  Artifact.isValidJumpDest_index 1919 (by rfl)
 
 theorem jumpDest4040 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2771 = true :=
-  Artifact.isValidJumpDest_index 2072 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2579 = true :=
+  Artifact.isValidJumpDest_index 1926 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CcbSeed

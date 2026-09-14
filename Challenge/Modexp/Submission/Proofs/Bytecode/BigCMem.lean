@@ -8,7 +8,7 @@ set_option linter.unusedSimpArgs false
 # Compact multi-limb fallback: memory as numbers
 
 Pointwise byte view of EVM memory and the big-endian value of a byte window,
-plus the execution-environment bundle shared by all fallback traces.
+plus metered reachability composition; no artifact or located path dependency.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.BigC
@@ -19,14 +19,6 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 
 /-! ## Environment and reachability -/
 
-/-- The unchanging facts about the fallback entry state. -/
-structure Env (s : State) : Prop where
-  code : s.executionEnv.code = submissionBytecode
-  fork : s.fork = .Osaka
-  run : s.halt = .Running
-  np : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-    s.executionEnv.fork s.executionEnv.codeAddr = false
-
 /-- A metered execution exists from `a` to `b`. -/
 abbrev Reach (a b : State) : Prop := Nonempty (Challenge.EvmProof.GasSteps a b)
 
@@ -36,16 +28,6 @@ theorem Reach.tr {a b c : State} (h1 : Reach a b) (h2 : Reach b c) : Reach a c :
   exact ⟨x.trans y⟩
 
 theorem Reach.rfl' (a : State) : Reach a a := ⟨Challenge.EvmProof.GasSteps.refl a⟩
-
-theorem reach_run {s : State} (henv : Env s)
-    {path : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka)}
-    {pc : Nat} {stk : List UInt256} {mem : ByteArray} {aw : UInt256} {t : State}
-    (h : Challenge.EvmProof.Stepper.runLocatedBlock path (st s pc stk mem aw) = some t) :
-    Reach (st s pc stk mem aw) t :=
-  ⟨Challenge.EvmProof.Stepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka path
-    (by simpa [st, Artifact.submissionArtifact] using henv.code)
-    (by simpa [st, State.fork] using henv.fork) h
-    (by simpa [st] using henv.run) (by simpa [st] using henv.np)⟩
 
 /-! ## Bytes -/
 

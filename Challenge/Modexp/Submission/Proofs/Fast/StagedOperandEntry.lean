@@ -1,4 +1,5 @@
-import Challenge.Modexp.Submission.Proofs.Fast.TnCacheSetupEntry
+import Challenge.Modexp.Submission.Proofs.Fast.StagedOperandEntryPrefix
+import Challenge.Modexp.Submission.Proofs.Fast.StagedOperandEntryZero
 
 set_option warningAsError true
 set_option maxHeartbeats 1000000
@@ -15,11 +16,13 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached
 
-def fullEntryProgram : List Instr := TnCacheSetup.fullEntryProgram
+def fullEntryProgram : List Instr :=
+  ((EntryPrefix.loadProgram ++ EntryPrefix.shuffleProgram) ++ EntryPrefix.lowProgram) ++
+    (zeroProgram ++ pointersJumpProgram)
 
 theorem fullEntryProgram_length : fullEntryProgram.length = 59 := rfl
 
-/-- The whole `setup`: from `setupState` (pc 4116, `[hd, pa, pb, dst, ret] ++ rest`) to the
+/-- The whole `setup`: from `setupState` (pc 4123, `[hd, pa, pb, dst, ret] ++ rest`) to the
 row-0 head at `hd` with the staged, zeroed memory and `ent = l1Target n`. -/
 theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256)
@@ -37,10 +40,50 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
       (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
         MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
         UInt256.ofNat (pa+32*n-32) :: dst :: ret :: rest)) := by
-  have g := TnCacheSetup.run_entry s mem hd pa pb n dst ret rest hcap hact hn hn32
-    hpaFit hpb hpbFit hcds hs32 hml htarget
-  simpa only [fullEntryProgram, setupState, outState, l1Target, l2Target,
-    TnCacheSetup.setupState, TnCacheSetup.outState, TnCacheSetup.l1Target,
-    TnCacheSetup.l2Target, TnCacheSetup.zeroTn] using g
+  let tl := MachineState.readWord mem 2784
+  let inv := MachineState.readWord mem 2720
+  let m0 := MachineState.readWord mem (32*n-32)
+  let aEnd := UInt256.ofNat (pa+32*n-32)
+  let m96 := MachineState.readWord mem 96
+  let m64 := MachineState.readWord mem 64
+  let m32 := MachineState.readWord mem 32
+  have hcap' : (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest).length ≤ 1005 := by
+    simp only [List.length_cons]; omega
+  have hreads := EntryPrefix.run_load { s with memory := mem } hd
+    (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret rest (32*n-32)
+    hcap hact (by omega) hml
+  have hAend : UInt256.ofNat pa + UInt256.ofNat (32*n-32) = aEnd := by
+    dsimp [aEnd]
+    rw [Challenge.EvmProof.Word.ofNat_add_mod]
+    congr 1
+    omega
+  rw [hAend] at hreads
+  have hshuffle := EntryPrefix.run_shuffle { s with memory := mem } hd
+    (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret m0 inv aEnd tl m96 m32
+    (EntryPrefix.displacement mem) rest hcap
+  have hlow := EntryPrefix.run_low { s with memory := mem } hd
+    (UInt256.ofNat pa) (UInt256.ofNat pb)
+    (UInt256.ofNat 3545 + EntryPrefix.displacement mem)
+    (UInt256.ofNat 3833 + EntryPrefix.displacement mem)
+    dst ret m0 inv aEnd tl m96 m32 rest hcap hact
+  have hprefix := runInstructions_append_some _ _ _ _ _
+    (runInstructions_append_some _ _ _ _ _ hreads hshuffle) hlow
+  have hmasked :
+      runInstructions ((EntryPrefix.loadProgram ++ EntryPrefix.shuffleProgram) ++
+          EntryPrefix.lowProgram)
+        (setupState s mem hd pa pb dst ret rest) =
+      some (cachedSetupState s mem hd pa pb n inv m0
+        (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) := by
+    simpa only [setupState, cachedSetupState, EntryPrefix.displacement,
+      hs32, l1Target, l2Target, isFour, tl, inv, m0, aEnd, m96, m64, m32,
+      List.cons_append, List.nil_append] using hprefix
+  have hzero := run_zero s mem hd pa pb n inv m0
+    (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)
+    hcap' hact (by omega) hn32 hpaFit hcds hs32
+  have hpointers := run_pointersJump s (stage mem pa n) hd pb n inv m0
+    (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)
+    hcap' hpb hpbFit htarget
+  have hbody := runInstructions_append_some _ _ _ _ _ hzero hpointers
+  exact runInstructions_append_some _ _ _ _ _ hmasked hbody
 
 end Challenge.Modexp.Submission.Proofs.Fast.StagedOperand

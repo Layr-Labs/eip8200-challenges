@@ -91,41 +91,60 @@ theorem run_body (hcap : rest.length ≤ 1000) :
   simpa only [show (selectProgram shift ++ factorProgram) ++ productProgram = bodyProgram shift from rfl,
     hpc, stepValue] using hall
 
+/-- The one-bit loop control at pc 2400: `DUP2 PUSH1 7 GT SWAP2 PUSH1 1 ADD SWAP2
+PUSH2 2377 JUMPI`. It re-enters the single body while the counter is below seven,
+after incrementing the counter; on the eighth bit it falls through to the exit at
+pc 2413 with the counter at eight. -/
 def controlProgram : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .op .ISZERO,
-   .op (.Swap ⟨1, by decide⟩), .push 1 4, .op .ADD, .op (.Swap ⟨1, by decide⟩),
-   .push 2 2505, .op .JUMPI]
+  [.op (.Dup ⟨1, by decide⟩), .push 1 7, .op .GT,
+   .op (.Swap ⟨1, by decide⟩), .push 1 1, .op .ADD, .op (.Swap ⟨1, by decide⟩),
+   .push 2 2377, .op .JUMPI]
 
 theorem run_start (hcap : rest.length ≤ 1000) :
     runInstructions [.op .JUMPDEST]
-      (framed s 2505 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) =
-      some (framed s 2506 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) := by
+      (framed s 2377 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) =
+      some (framed s 2378 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) := by
   have h8 : rest.length + 8 < 1024 := by omega
   simp [runInstructions, Challenge.EvmProof.Stepper.runInstr, framed, h8]
   decide
 
-/-- The half-byte dispatcher. Its fall-through at pc 2605 is now the byte-loop
-tail itself: the counter slot is dead after the eighth bit, the tail pops it, and
-the four inert `JUMPDEST`s sit behind the tail's unconditional jump. -/
-theorem run_control (c : Nat) (hc : c = 0 ∨ c = 4) (hcap : rest.length ≤ 1000)
-    (hjd : Decode.isValidJumpDest s.executionEnv.code 2505 = true) :
+theorem gt_seven_of_lt (c : Nat) (hc : c < 7) :
+    UInt256.gt (UInt256.ofNat 7) (UInt256.ofNat c) = UInt256.ofNat 1 := by
+  unfold UInt256.gt
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (show c < 2 ^ 256 by omega), Nat.mod_eq_of_lt (show 7 < 2 ^ 256 by decide)]
+  exact if_pos hc
+
+theorem gt_seven_seven :
+    UInt256.gt (UInt256.ofNat 7) (UInt256.ofNat 7) = UInt256.ofNat 0 := by
+  decide
+
+/-- One pass of the loop control with the counter at `c`: bits zero to six jump
+back to the body head at 2377, the seventh bit falls through to the exit at 2413. -/
+theorem run_control (c : Nat) (hc : c < 8) (hcap : rest.length ≤ 1000)
+    (hjd : Decode.isValidJumpDest s.executionEnv.code 2377 = true) :
     runInstructions controlProgram
-      (framed s 2594 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m] ++ rest)) =
-      some (framed s (if c = 0 then 2505 else 2605)
-        ([Bm1,UInt256.ofNat (c+4),byte,offset,outerW,acc,base,m] ++ rest)) := by
+      (framed s 2400 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m] ++ rest)) =
+      some (framed s (if c < 7 then 2377 else 2413)
+        ([Bm1,UInt256.ofNat (c+1),byte,offset,outerW,acc,base,m] ++ rest)) := by
   have h8 : rest.length + 8 < 1024 := by omega
   have h9 : rest.length + 9 < 1024 := by omega
   have h10 : rest.length + 10 < 1024 := by omega
-  have htarget : (2505 : UInt256).toNat = 2505 := by decide
-  have hz0 : UInt256.isZero (UInt256.ofNat 0) = UInt256.ofNat 1 := by decide
-  have hz4 : UInt256.isZero (UInt256.ofNat 4) = UInt256.ofNat 0 := by decide
+  have htarget : (2377 : UInt256).toNat = 2377 := by decide
   have ht1 : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have ht0 : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
-  rcases hc with rfl | rfl <;>
+  by_cases h7 : c < 7
+  · have hg := gt_seven_of_lt c h7
     simp [controlProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr, framed,
-      h8, h9, h10, List.exchange, UInt256.isTrue, UInt256.isZero, UInt256.gt, UInt256.lt,
-      hz0, hz4, ht1, ht0,
+      h8, h9, h10, List.exchange, hg, ht1, h7,
       Challenge.EvmProof.Word.word_toNat_ofNat, htarget, hjd,
+      Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.literal_eq_ofNat]
+    all_goals (try rw [Nat.add_comm])
+  · have hc7 : c = 7 := by omega
+    subst hc7
+    simp [controlProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr, framed,
+      h8, h9, h10, List.exchange, gt_seven_seven, ht0,
       Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.literal_eq_ofNat]
 

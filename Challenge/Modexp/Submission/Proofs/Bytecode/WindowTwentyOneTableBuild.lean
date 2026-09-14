@@ -8,15 +8,15 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open WindowNibbleKernel WindowTwentyOneMsize
 
 /-- Every `MSIZE`-addressed update is five bytes: `DUPk MULMOD DUP1 MSIZE MSTORE`. -/
-def tablePC (power : Nat) : Nat := 1810 + 5 * power
+def tablePC (power : Nat) : Nat := 1683 + 5 * power
 
-private theorem updatePC (power : Nat) (hlo : 2 ≤ power) (hhi : power < 15) :
+private theorem updatePC (power : Nat) (hlo : 2 ≤ power) (hhi : power < 14) :
     WindowTwentyOneTable.storePCM (advancePC 2 (UInt256.ofNat (tablePC power))) =
       UInt256.ofNat (tablePC (power + 1)) := by
   interval_cases power <;> decide
 
 theorem run_one (template : State) (base modulus exponent : UInt256)
-    (power : Nat) (hlo : 2 ≤ power) (hhi : power < 15)
+    (power : Nat) (hlo : 2 ≤ power) (hhi : power < 14)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructionsX (WindowTwentyOneTable.updateProgramM power hlo)
       (WindowTwentyOneTable.state template (UInt256.ofNat (tablePC power)) base modulus exponent power rest) =
@@ -32,10 +32,10 @@ def buildProgram : Nat → List Instr
       WindowTwentyOneTable.updateProgramM (count + 2) (by omega)
 
 theorem run_build (template : State) (base modulus exponent : UInt256)
-    (count : Nat) (hcount : count ≤ 13)
+    (count : Nat) (hcount : count ≤ 12)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructionsX (buildProgram count)
-      (WindowTwentyOneTable.state template (UInt256.ofNat 1820) base modulus exponent 2 rest) =
+      (WindowTwentyOneTable.state template (UInt256.ofNat 1693) base modulus exponent 2 rest) =
     some (WindowTwentyOneTable.state template (UInt256.ofNat (tablePC (count + 2)))
       base modulus exponent (count + 2) rest) := by
   induction count with
@@ -48,23 +48,23 @@ theorem run_build (template : State) (base modulus exponent : UInt256)
 def program : List Instr :=
   WindowTwentyOneTablePrelude.program ++ buildProgram 12 ++ WindowTwentyOneTable.lastUpdateProgramM
 
-/-- The complete table construction from 1792 to 1884, including the exponent load. -/
-theorem run_all (template : State) (base modulus exponent : UInt256)
-    (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (hexp : rest[1]? = some exponent) :
+/-- The complete 89-byte table construction.  The exponent is no longer loaded
+here: the frame prologue at 1873 loads it, and the modulus that this block
+leaves in the frame's third slot is what the closing bare `MULMOD` consumes. -/
+theorem run_all (template : State) (base modulus : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructionsX program
-      (WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 1792) base modulus rest) =
-    some (WindowTwentyOneTable.framed template (UInt256.ofNat 1884) base modulus 16
-      ([base, exponent] ++ rest)) := by
-  have hp := WindowTwentyOneTablePrelude.run_prelude template (UInt256.ofNat 1792)
-    base modulus exponent rest hrest hexp
-  have hpc : WindowTwentyOneTablePrelude.endPC (UInt256.ofNat 1792) = UInt256.ofNat 1820 := by decide
+      (WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 1667) base modulus rest) =
+    some (WindowTwentyOneTable.framed template (UInt256.ofNat 1756) base modulus 16 rest) := by
+  have hp := WindowTwentyOneTablePrelude.run_prelude template (UInt256.ofNat 1667)
+    base modulus rest hrest
+  have hpc : WindowTwentyOneTablePrelude.endPC (UInt256.ofNat 1667) = UInt256.ofNat 1693 := by decide
   rw [hpc] at hp
-  have hb := run_build template base modulus exponent 12 (by decide) rest hrest
+  have hb := run_build template base modulus modulus 12 (by decide) rest hrest
   have hl := WindowTwentyOneTable.run_last_updateM template (UInt256.ofNat (tablePC 14))
-    base modulus exponent rest hrest
-  have hlastPC : WindowTwentyOneTable.lastStorePCM (advancePC 2 (UInt256.ofNat (tablePC 14))) =
-      UInt256.ofNat 1884 := by decide
+    base modulus rest hrest
+  have hlastPC : WindowTwentyOneTable.lastStorePCM (UInt256.ofNat (tablePC 14)).succ =
+      UInt256.ofNat 1756 := by decide
   rw [hlastPC] at hl
   exact runInstructionsX_append_some _ _ _ _ _ (runInstructionsX_append_some _ _ _ _ _ hp hb) hl
 

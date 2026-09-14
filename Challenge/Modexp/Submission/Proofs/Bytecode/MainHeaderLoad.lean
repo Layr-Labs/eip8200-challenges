@@ -13,19 +13,19 @@ theorem run_headerLoad (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock headerLoadPath
       (headerEntryState input) = some (headerLoadedState input) := by
   have hs1197 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 657) (by norm_num : 657 + 1 < 2 ^ 256)
+    (n := 656) (by norm_num : 656 + 1 < 2 ^ 256)
   have hs1198 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1181) (by norm_num : 1181 + 1 < 2 ^ 256)
+    (n := 1062) (by norm_num : 1062 + 1 < 2 ^ 256)
   have ha1199 := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 1271) (b := 2) (by norm_num : 1271 + 2 < 2 ^ 256)
+    (a := 1154) (b := 2) (by norm_num : 1154 + 2 < 2 ^ 256)
   have hs1201 := Challenge.EvmProof.Word.succ_ofNat
     (n := 739) (by norm_num : 739 + 1 < 2 ^ 256)
   have ha1202 := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 1222) (b := 2) (by norm_num : 1222 + 2 < 2 ^ 256)
+    (a := 1105) (b := 2) (by norm_num : 1105 + 2 < 2 ^ 256)
   have hs1204 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 743) (by norm_num : 743 + 1 < 2 ^ 256)
+    (n := 742) (by norm_num : 742 + 1 < 2 ^ 256)
   have ha1060 := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 1183) (b := 4) (by norm_num : 1183 + 4 < 2 ^ 256)
+    (a := 1184) (b := 4) (by norm_num : 1184 + 4 < 2 ^ 256)
   have h0 : (0 : UInt256).toNat = 0 := by decide
   have h32 : (32 : UInt256).toNat = 32 := by decide
   have h64 : (64 : UInt256).toNat = 64 := by decide

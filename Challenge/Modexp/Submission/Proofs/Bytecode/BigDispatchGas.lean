@@ -1,5 +1,4 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatchCheck
-import Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatchTail
 import Challenge.EvmProof.Meter
 set_option warningAsError true
 set_option maxRecDepth 10000
@@ -8,45 +7,6 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatch
 
 open EvmSemantics
 open EvmSemantics.EVM
-
-private def gasSteps_bigTailFrame (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (bigCheckedState input)
-      (bigTailFrameState input) :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka bigTailFramePath rfl rfl
-      (run_bigTailFrame input) rfl deployAddress_not_precompile
-
-private def gasSteps_bigTailArgs (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (bigTailFrameState input)
-      (bigTailArgsState input) :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka bigTailArgsPath rfl rfl
-      (run_bigTailArgs input) rfl deployAddress_not_precompile
-
-private def gasSteps_bigTailJump (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (bigTailArgsState input) (bigEntryState input) :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka bigTailJumpPath rfl rfl
-      (run_bigTailJump input) rfl deployAddress_not_precompile
-
-private theorem gasSteps_bigTailFrame_cost (input : ByteArray) :
-    (gasSteps_bigTailFrame input).cost = 10 := by rfl
-
-private theorem gasSteps_bigTailArgs_cost (input : ByteArray) :
-    (gasSteps_bigTailArgs input).cost = 12 := by rfl
-
-private theorem gasSteps_bigTailJump_cost (input : ByteArray) :
-    (gasSteps_bigTailJump input).cost = 11 := by rfl
-
-def gasSteps_bigTail (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (bigCheckedState input) (bigEntryState input) :=
-  (gasSteps_bigTailFrame input).trans <|
-    (gasSteps_bigTailArgs input).trans (gasSteps_bigTailJump input)
-
-theorem gasSteps_bigTail_cost (input : ByteArray) :
-    (gasSteps_bigTail input).cost = 33 := by
-  simp [gasSteps_bigTail, gasSteps_bigTailFrame_cost, gasSteps_bigTailArgs_cost,
-    gasSteps_bigTailJump_cost]
 
 private def gasSteps_bigCheckExp (input : ByteArray) (hvalid : ValidInput input) :
     Challenge.EvmProof.GasSteps (Dispatch.wordDispatchState input)
@@ -130,16 +90,17 @@ theorem gasSteps_bigJump_cost (input : ByteArray) (hvalid : ValidInput input)
       Dispatch.wordJumpPath (Main.headerState input) = 16 := by omega
   simpa [gasSteps_bigJump] using hcost
 
+/-- From the header state to the fallback entry: the dispatcher's jump and its
+size check.  No trampoline frame is built any more. -/
 def gasSteps_bigEntry (input : ByteArray) (hvalid : ValidInput input)
     (hpositive : 0 < modulusSize input) (hbig : 32 < modulusSize input) :
     Challenge.EvmProof.GasSteps (Main.headerState input) (bigEntryState input) :=
-  (gasSteps_bigJump input hvalid hpositive).trans <|
-    (gasSteps_bigCheck input hvalid hbig).trans (gasSteps_bigTail input)
+  (gasSteps_bigJump input hvalid hpositive).trans
+    (gasSteps_bigCheck input hvalid hbig)
 
 theorem gasSteps_bigEntry_cost (input : ByteArray) (hvalid : ValidInput input)
     (hpositive : 0 < modulusSize input) (hbig : 32 < modulusSize input) :
-    (gasSteps_bigEntry input hvalid hpositive hbig).cost = 90 := by
-  simp [gasSteps_bigEntry, gasSteps_bigJump_cost, gasSteps_bigCheck_cost,
-    gasSteps_bigTail_cost]
+    (gasSteps_bigEntry input hvalid hpositive hbig).cost = 57 := by
+  simp [gasSteps_bigEntry, gasSteps_bigJump_cost, gasSteps_bigCheck_cost]
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatch
