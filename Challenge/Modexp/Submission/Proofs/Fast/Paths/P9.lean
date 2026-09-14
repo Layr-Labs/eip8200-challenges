@@ -56,13 +56,13 @@ def blk1469 :
    opAt 865 .ADD,
    pushAt 866 2 2784,
    opAt 867 .MLOAD,
-   pushAt 868 1 32,
-   opAt 869 (.Swap ⟨0, by decide⟩),
-   opAt 870 .SUB,
+   pushAt 868 1 31,
+   opAt 869 .NOT,
+   opAt 870 .ADD,
    pushAt 871 2 2752,
    opAt 872 .MLOAD,
-   pushAt 873 1 32,
-   opAt 874 (.Swap ⟨0, by decide⟩),
-   opAt 875 .SUB]
+   pushAt 873 1 31,
+   opAt 874 .NOT,
+   opAt 875 .ADD]
 
 end Challenge.Modexp.Submission.Proofs.Fast

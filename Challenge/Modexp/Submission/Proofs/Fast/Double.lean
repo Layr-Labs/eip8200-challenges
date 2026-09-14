@@ -40,6 +40,21 @@ open Challenge.Modexp.Submission.Proofs.Fast
 -- reduce inside the block-reduction `simp` calls without it.
 attribute [local simp] List.getElem?_cons_zero
 
+/-- `x + (2 ^ 256 - 1)` is the same EVM word as `x - 1`: the `PUSH1 0; NOT; ADD`
+counter decrement produces the additive form, while the surrounding lemmas are
+stated with `SUB`.  Both sides wrap modulo `2 ^ 256`, so no bound on `w` is
+needed. -/
+theorem word_add_neg1 (w : EvmSemantics.UInt256) :
+    w + EvmSemantics.UInt256.ofNat
+        115792089237316195423570985008687907853269984665640564039457584007913129639935 =
+      w - EvmSemantics.UInt256.ofNat 1 := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_add,
+    Challenge.EvmProof.Word.word_toNat_sub,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+  omega
+
 /-! ## States at the block boundaries
 
 Every state is stated over an arbitrary carrier `s` and overrides only `pc`,
@@ -159,8 +174,19 @@ theorem run_ret (s : State) (mem : ByteArray) (px k k' : Nat) (ret : UInt256)
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
+  have hK1 : (115792089237316195423570985008687907853269984665640564039457584007913129639935 :
+      UInt256) = UInt256.ofNat
+        115792089237316195423570985008687907853269984665640564039457584007913129639935 := by
+    decide
   have h1915 : (1061 : UInt256) = UInt256.ofNat 1061 := by decide
   have h1915Nat : (UInt256.ofNat 1061).toNat = 1061 := by decide
+  have hadd : UInt256.ofNat (k' + 1 +
+      115792089237316195423570985008687907853269984665640564039457584007913129639935) =
+      UInt256.ofNat k' := by
+    apply Challenge.EvmProof.Word.word_ext
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat]
+    omega
   have hsub : UInt256.ofNat (k' + 1) - UInt256.ofNat 1 = UInt256.ofNat k' := by
     have h := Challenge.EvmProof.Word.ofNat_sub_ofNat
       (a := k' + 1) (b := 1) (by omega) (by omega)
@@ -173,7 +199,7 @@ theorem run_ret (s : State) (mem : ByteArray) (px k k' : Nat) (ret : UInt256)
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     retState, loopState, loopStack, fastPC9, hc3, hc4, hc5, hcode, hrun,
-    hone, h1915, h1915Nat, hsub, htrue, jumpDest1841, List.exchange,
+    hone, hK1, hadd, hsub, h1915, h1915Nat, htrue, jumpDest1841, word_add_neg1, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -186,18 +212,25 @@ theorem run_retLast (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     Challenge.EvmProof.Stepper.runLocatedBlock blk1369
       (retState s mem px 1 ret rest) =
       some (exitState s mem px ret rest) := by
+  have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have hone : (1 : UInt256) = UInt256.ofNat 1 := by decide
+  have hK1 : (115792089237316195423570985008687907853269984665640564039457584007913129639935 :
+      UInt256) = UInt256.ofNat
+        115792089237316195423570985008687907853269984665640564039457584007913129639935 := by
+    decide
   have h1915 : (1061 : UInt256) = UInt256.ofNat 1061 := by decide
+  have hadd : UInt256.ofNat (1 +
+      115792089237316195423570985008687907853269984665640564039457584007913129639935) =
+      UInt256.ofNat 0 := by decide
   have hsub : UInt256.ofNat 1 - UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
   have hfalse : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
   simp (config := { maxSteps := 400000 }) [blk1369, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     retState, exitState, loopStack, fastPC9, hc3, hc4, hc5, hrun,
-    hone, h1915, hsub, hfalse, List.exchange,
+    hone, hK1, hadd, hsub, h1915, hfalse, word_add_neg1, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,

@@ -337,6 +337,21 @@ theorem ptrAt_succ (base j : Nat) :
   simp only [ptrAt, Nat.succ_mul]
   omega
 
+
+/-- `x + (2 ^ 256 - 32)` is the same EVM word as `x - 32`: the
+`PUSH1 31; NOT; ADD` pointer retreat produces the additive form, while the
+surrounding lemmas are stated with `SUB`.  Both sides wrap modulo `2 ^ 256`,
+so no bound on `w` is needed. -/
+theorem word_add_neg32 (w : EvmSemantics.UInt256) :
+    w + EvmSemantics.UInt256.ofNat
+        115792089237316195423570985008687907853269984665640564039457584007913129639904 =
+      w - EvmSemantics.UInt256.ofNat 32 := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_add,
+    Challenge.EvmProof.Word.word_toNat_sub,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+  omega
 theorem ptrAt_toNat (base j : Nat) (hj : 32 * j ≤ base) (hbase : base < 2 ^ 256) :
     (UInt256.ofNat (ptrAt base j)).toNat = base - 32 * j := by
   rw [Challenge.EvmProof.Word.word_toNat_ofNat, ptrAt]
@@ -602,6 +617,17 @@ theorem run_mpEntry (s : State) (mem : ByteArray) (pa pb n : Nat)
   have hcdsN : s.executionEnv.calldata.size %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       s.executionEnv.calldata.size := Nat.mod_eq_of_lt (by omega)
+  have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
+      UInt256) = UInt256.ofNat
+        115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
+    decide
+  have hadd1 : UInt256.ofNat (pb + 32 * n +
+      115792089237316195423570985008687907853269984665640564039457584007913129639904) =
+      UInt256.ofNat (pb + 32 * n - 32) := by
+    apply Challenge.EvmProof.Word.word_ext
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat]
+    omega
   have hsub1 : UInt256.ofNat (pb + 32 * n) - UInt256.ofNat 32 =
       UInt256.ofNat (pb + 32 * n - 32) :=
     Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)
@@ -622,7 +648,7 @@ theorem run_mpEntry (s : State) (mem : ByteArray) (pa pb n : Nat)
       Challenge.EvmProof.Stepper.runInstr,
       mpEntryState, mpOutState, mpZeroed, fastPC10,
       hc4, hc5, hc6, hc7, hc8, hrun, h32, h64, h8192, h9344, hs32,
-      hsizeN, hcdsN, hsub1, hsub2, hsub3, hactS, hactC,
+      hsizeN, hcdsN, hK, hadd1, hsub1, hsub2, hsub3, word_add_neg32, hactS, hactC,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
@@ -877,14 +903,24 @@ theorem run_mpMid (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
   have hsc1 : 2112 ≤ 2080 + 32 * n := by omega
   have hsc2 : 32 * n - 32 + 32 ≤ 2048 := by omega
   have hsc3 : 32 * n ≤ 2048 := by omega
-  have hsubTL : UInt256.ofNat (2080 + 32 * n) - UInt256.ofNat 32 =
+  have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
+      UInt256) = UInt256.ofNat
+        115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
+    decide
+  have haddTL : UInt256.ofNat (2080 + 32 * n +
+      115792089237316195423570985008687907853269984665640564039457584007913129639904) =
       UInt256.ofNat (2048 + 32 * n) := by
-    rw [Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)]
-    exact congrArg UInt256.ofNat (by omega)
-  have hsubML : UInt256.ofNat (32 * n - 32) - UInt256.ofNat 32 =
+    apply Challenge.EvmProof.Word.word_ext
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat]
+    omega
+  have haddML : UInt256.ofNat (32 * n - 32 +
+      115792089237316195423570985008687907853269984665640564039457584007913129639904) =
       UInt256.ofNat (32 * n - 64) := by
-    rw [Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)]
-    exact congrArg UInt256.ofNat (by omega)
+    apply Challenge.EvmProof.Word.word_ext
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat]
+    omega
   have hactN : UInt256.ofNat
       (MachineState.activeWordsAfter s.activeWords.toNat 2080 32) = s.activeWords :=
     activeWords_fix s 2080 32 (by decide) (by omega) hact
@@ -913,9 +949,9 @@ theorem run_mpMid (s : State) (mem : ByteArray) (paj ptj c bi : UInt256)
       Challenge.EvmProof.Stepper.runInstr,
       mpMidState, mpL2State, l2Step, midMem, midMem1, rowMu, rowC0, mulHi,
       zero_lt_eq_double_isZero,
+      hml, htl, hTLN, hMLN, hK, haddTL, haddML, word_add_neg32, hsc1, hsc2, hsc3,
       maxWord_literal, fastPC12, fastPC13, readWord_midMem_peel,
       hc6, hc7, hc8, hc9, hc10, hc11, hrun, h32, h8192, h8224, h9376, h9408, h9440,
-      hml, htl, hTLN, hMLN, hsubTL, hsubML, hsc1, hsc2, hsc3,
       hactN, hactP, hactTL, hactT0, hactMI, hactML, hactM0,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,

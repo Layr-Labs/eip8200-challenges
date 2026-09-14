@@ -14,9 +14,9 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 def blk1369 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 727 .JUMPDEST,
-   pushAt 728 1 1,
-   opAt 729 (.Swap ⟨0, by decide⟩),
-   opAt 730 .SUB,
+   pushAt 728 1 0,
+   opAt 729 .NOT,
+   opAt 730 .ADD,
    opAt 731 (.Dup ⟨0, by decide⟩),
    pushAt 732 2 1061,
    opAt 733 .JUMPI]
@@ -43,9 +43,9 @@ def blk1379 :
    opAt 746 (.Dup ⟨0, by decide⟩),
    opAt 747 (.Dup ⟨3, by decide⟩),
    opAt 748 .ADD,
-   pushAt 749 1 32,
-   opAt 750 (.Swap ⟨0, by decide⟩),
-   opAt 751 .SUB,
+   pushAt 749 1 31,
+   opAt 750 .NOT,
+   opAt 751 .ADD,
    pushAt 752 1 32,
    opAt 753 (.Dup ⟨4, by decide⟩),
    opAt 754 .SUB,
