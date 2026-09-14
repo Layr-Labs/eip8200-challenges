@@ -17,10 +17,10 @@ open WindowNibbleKernel CiosCachedMacCore CiosCached CiosCached
 
 theorem run_exit (s : State) (pbi paEnd pbEnd flag target2 dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1006)
-    (_htarget : Decode.isValidJumpDest s.executionEnv.code 4325 = true) :
+    (_htarget : Decode.isValidJumpDest s.executionEnv.code 4320 = true) :
     runInstructions exitProgram
-      (framed s (UInt256.ofNat 4318) ([pbi, paEnd, pbEnd, flag, negative32, allOnes, target2, dst, ret] ++ rest)) =
-    some (framed s (UInt256.ofNat 4325) ([dst, ret] ++ rest)) := by
+      (framed s (UInt256.ofNat 4313) ([pbi, paEnd, pbEnd, flag, negative32, allOnes, target2, dst, ret] ++ rest)) =
+    some (framed s (UInt256.ofNat 4320) ([dst, ret] ++ rest)) := by
   have hExtra9 : rest.length + 9 < 1024 := by omega
   have hExtra10 : rest.length + 10 < 1024 := by omega
   have hExtra11 : rest.length + 11 < 1024 := by omega

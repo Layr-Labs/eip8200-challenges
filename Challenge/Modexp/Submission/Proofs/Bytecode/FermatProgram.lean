@@ -48,7 +48,7 @@ def primeValueProgram : List Instr :=
 
 /-- Both special-modulus tests jump straight to the one-word core entry 2240
 (0x8c0) when they miss. -/
-def primeProgram : List Instr := primeValueProgram ++ WindowTwentyOneEntry.testProgram (UInt256.ofNat 1787)
+def primeProgram : List Instr := primeValueProgram ++ WindowTwentyOneEntry.testProgram (UInt256.ofNat 1786)
 
 def exponentValueProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op .CALLDATALOAD, .push 1 1,
@@ -56,7 +56,7 @@ def exponentValueProgram : List Instr :=
 
 -- XOR tests inequality directly; the filler preserves every subsequent PC.
 def exponentProgram : List Instr := exponentValueProgram ++
-  [.op .JUMPDEST, .push 2 (UInt256.ofNat 1787), .op .JUMPI]
+  [.op .JUMPDEST, .push 2 (UInt256.ofNat 1786), .op .JUMPI]
 
 private theorem xor_true_iff_eq_zero (a b : UInt256) :
     UInt256.isTrue (UInt256.xor a b) ↔ (UInt256.eq a b).toNat = 0 := by
@@ -81,11 +81,11 @@ def returnProgram : List Instr := valueProgram ++ WindowTwentyOneReturn.program
 
 theorem run_prime (template : State) (offset : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 999) (hoff : rest[5]? = some offset)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 1787 = true) :
+    (htarget : Decode.isValidJumpDest template.executionEnv.code 1786 = true) :
     runInstructions primeProgram (framed template (UInt256.ofNat 43) rest) =
     some (framed template
       (if (primeValue (MachineState.readWord template.executionEnv.calldata offset.toNat)).toNat = 0
-        then UInt256.ofNat 1787 else UInt256.ofNat 96)
+        then UInt256.ofNat 1786 else UInt256.ofNat 96)
       (MachineState.readWord template.executionEnv.calldata offset.toNat :: rest)) := by
   have hc0 : rest.length < 1024 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
@@ -101,7 +101,7 @@ theorem run_prime (template : State) (offset : UInt256) (rest : List UInt256)
       Challenge.EvmProof.Stepper.runInstr, hc0, hc1, hc2, hc3, hc4, hsecp,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
-  have ht := WindowTwentyOneEntry.run_test template (UInt256.ofNat 91) (UInt256.ofNat 1787)
+  have ht := WindowTwentyOneEntry.run_test template (UInt256.ofNat 91) (UInt256.ofNat 1786)
     (primeValue (MachineState.readWord template.executionEnv.calldata offset.toNat))
     (MachineState.readWord template.executionEnv.calldata offset.toNat :: rest)
     (by simp; omega) htarget
@@ -111,12 +111,12 @@ theorem run_prime (template : State) (offset : UInt256) (rest : List UInt256)
 
 theorem run_exponent (template : State) (modulus offset : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 999) (hoff : rest[4]? = some offset)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 1787 = true) :
+    (htarget : Decode.isValidJumpDest template.executionEnv.code 1786 = true) :
     runInstructions exponentProgram (framed template (UInt256.ofNat 96) (modulus :: rest)) =
     some (framed template
       (if (UInt256.eq (modulus - UInt256.ofNat 1)
         (MachineState.readWord template.executionEnv.calldata offset.toNat)).toNat = 0
-        then UInt256.ofNat 1787 else UInt256.ofNat 108)
+        then UInt256.ofNat 1786 else UInt256.ofNat 108)
       (modulus :: rest)) := by
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -179,6 +179,6 @@ structure Paths (artifact : Challenge.EvmProof.ProgramArtifact) (fork : Fork) wh
   prime : WindowTwentyOneBinding.Block artifact fork 43 primeProgram
   exponent : WindowTwentyOneBinding.Block artifact fork 96 exponentProgram
   result : WindowTwentyOneBinding.Block artifact fork 106 returnProgram
-  legacyJump : Decode.isValidJumpDest artifact.code 1787 = true
+  legacyJump : Decode.isValidJumpDest artifact.code 1786 = true
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.FermatProgram

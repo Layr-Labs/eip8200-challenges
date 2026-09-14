@@ -4,6 +4,8 @@ set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
 
+noncomputable section
+
 namespace Challenge.Modexp.Submission.Proofs.Fast.CarryFull
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
@@ -12,12 +14,11 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch
 open CiosCached CiosCachedMidMemory CarryIface
-open Challenge.Modexp.Submission.Proofs.Fast.CarryRows
 open CarryRowModel CarryResult StagedOperand
 
-/-- An eight-limb multiply: `mul entry` (pc 4013) → `common` → `setup` → the eight rows (row head
+/-- An eight-limb multiply: `mul entry` (pc 4006) → `common` → `setup` → the eight rows (row head
 `hd = 4261`) → the final subtraction (pc 2432). -/
-opaque gasSteps_specializedEight (L : RowLemmas) (E : EntryLemmas) (s : State) (mem : ByteArray)
+opaque gasSteps_specializedEight (E : EntryLemmas) (s : State) (mem : ByteArray)
     (pa pb : Nat) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -26,7 +27,7 @@ opaque gasSteps_specializedEight (L : RowLemmas) (E : EntryLemmas) (s : State) (
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 8 ≤ 2048)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 8 ≤ 2816)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 8 ≤ 2048)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * 8))
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * 8))
@@ -44,10 +45,10 @@ opaque gasSteps_specializedEight (L : RowLemmas) (E : EntryLemmas) (s : State) (
       hread (32*8-32) (Or.inl (by decide)),
       hread 2720 (Or.inr (by decide))] using hminv
   refine (E.gasSteps_mulEntry s mem pa pb pdst ret rest (by omega) hrun hcode hfork hnp).trans ?_
-  refine (E.gasSteps_commonSetup s mem (UInt256.ofNat 3713) pa pb 8 pdst ret rest hcap hrun hcode
-    hfork hnp hact (by decide) (by omega) hpb hpbFit hcds hs32 hml jumpDest_rowHead hguard
+  refine (E.gasSteps_commonSetup s mem (UInt256.ofNat 3711) pa pb 8 pdst ret rest hcap hrun hcode
+    hfork hnp hact (by decide) (by omega) hpb (by omega) hcds hs32 hml jumpDest_rowHead hguard
       (CiosInverseGuard.inverse_ne_zero _ _ hminv)).trans ?_
-  exact gasSteps_rowsEight L s (stage mem pa 8) pa pb
+  exact gasSteps_rowsEight s (stage mem pa 8) pa pb
     (MachineState.readWord mem 2784) (MachineState.readWord mem 2720)
     (MachineState.readWord mem (32*8-32)) (UInt256.ofNat (pa+32*8-32))
     (MachineState.readWord mem 96) (MachineState.readWord mem 64)

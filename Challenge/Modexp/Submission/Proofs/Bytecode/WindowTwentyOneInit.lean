@@ -60,8 +60,8 @@ private theorem run_framePrep (template : State) (base modulus exponentOffset : 
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (hoffset : rest[4]? = some exponentOffset) :
     runInstructions framePrepProgram
-      (WindowTwentyOneTable.framed template (UInt256.ofNat 1874) base modulus 16 rest) =
-    some (WindowTwentyOneTable.framed template (UInt256.ofNat 1895) base modulus 16
+      (WindowTwentyOneTable.framed template (UInt256.ofNat 1873) base modulus 16 rest) =
+    some (WindowTwentyOneTable.framed template (UInt256.ofNat 1894) base modulus 16
       ([UInt256.shiftLeft
           (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat)
           (UInt256.ofNat 1),
@@ -83,9 +83,9 @@ private theorem run_modulusLoad (template : State)
     (hoffset : rest[5]? = some modulusOffset)
     (hmodulus : MachineState.readWord template.executionEnv.calldata modulusOffset.toNat = modulus) :
     runInstructions modulusLoadProgram
-      (WindowTwentyOneTable.framed template (UInt256.ofNat 1895) base modulus 16
+      (WindowTwentyOneTable.framed template (UInt256.ofNat 1894) base modulus 16
         ([exponentShifted, UInt256.ofNat 480, UInt256.ofNat 2] ++ rest)) =
-    some (WindowTwentyOneTable.framed template (UInt256.ofNat 1897) base modulus 16
+    some (WindowTwentyOneTable.framed template (UInt256.ofNat 1896) base modulus 16
       ([modulus, exponentShifted, UInt256.ofNat 480, UInt256.ofNat 2] ++ rest)) := by
   have hcap3 : rest.length + 3 < 1024 := by omega
   have hcap4 : rest.length + 4 < 1024 := by omega
@@ -100,9 +100,9 @@ private theorem run_address (template : State)
     (hoffset : rest[4]? = some exponentOffset)
     (hexponent : MachineState.readWord template.executionEnv.calldata exponentOffset.toNat = exponent) :
     runInstructions addressProgram
-      (WindowTwentyOneTable.framed template (UInt256.ofNat 1897) base modulus 16
+      (WindowTwentyOneTable.framed template (UInt256.ofNat 1896) base modulus 16
         ([modulus, exponentShifted, UInt256.ofNat 480, UInt256.ofNat 2] ++ rest)) =
-    some (WindowTwentyOneTable.framed template (UInt256.ofNat 1904) base modulus 16
+    some (WindowTwentyOneTable.framed template (UInt256.ofNat 1903) base modulus 16
       ([address exponent, modulus, exponentShifted, UInt256.ofNat 480, UInt256.ofNat 2] ++ rest)) := by
   have hcap4 : rest.length + 4 < 1024 := by omega
   have hcap5 : rest.length + 5 < 1024 := by omega
@@ -117,9 +117,9 @@ private theorem run_mload (template : State)
     (base modulus exponent exponentShifted : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions [.op .MLOAD]
-      (WindowTwentyOneTable.framed template (UInt256.ofNat 1904) base modulus 16
+      (WindowTwentyOneTable.framed template (UInt256.ofNat 1903) base modulus 16
         ([address exponent, modulus, exponentShifted, UInt256.ofNat 480, UInt256.ofNat 2] ++ rest)) =
-    some (WindowTwentyOneGroup.state template (UInt256.ofNat 1905)
+    some (WindowTwentyOneGroup.state template (UInt256.ofNat 1904)
       (WindowTableMemory.tableMemory base modulus) 16 modulus
       (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat)
       exponentShifted (UInt256.ofNat 2) 0 rest) := by
@@ -145,8 +145,8 @@ theorem run_enter (template : State) (base modulus exponentOffset modulusOffset 
     (hm : rest[5]? = some modulusOffset)
     (hmodulus : MachineState.readWord template.executionEnv.calldata modulusOffset.toNat = modulus) :
     runInstructions program
-      (WindowTwentyOneTable.framed template (UInt256.ofNat 1874) base modulus 16 rest) =
-    some (WindowTwentyOneGroup.state template (UInt256.ofNat 1905)
+      (WindowTwentyOneTable.framed template (UInt256.ofNat 1873) base modulus 16 rest) =
+    some (WindowTwentyOneGroup.state template (UInt256.ofNat 1904)
       (WindowTableMemory.tableMemory base modulus) 16 modulus
       (WindowTwentyOneMath.initialAccumulator base modulus
         (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat).toNat)

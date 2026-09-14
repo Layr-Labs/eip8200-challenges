@@ -15,7 +15,7 @@ open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 
-/-- Exact new v4 bytecode at PCs 3013 through 3038. -/
+/-- Exact new v4 bytecode at PCs 3008 through 3038. -/
 def program : List Instr :=
   [.op (.Dup ⟨4, by decide⟩), .push 1 1, .op .EQ,
    .push 2 2816, .op .MLOAD, .op .CALLDATALOAD, .push 0 0, .op .BYTE,
@@ -34,13 +34,13 @@ def guardWord (mem input : ByteArray) (n esize : Nat) : UInt256 :=
 
 def entry (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 3002
+    pc := UInt256.ofNat 2997
     stack := UInt256.ofNat n :: Exp.outer n bsize esize msize
     memory := mem }
 
 def result (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 3029
+    pc := UInt256.ofNat 3024
     stack := UInt256.shiftRight (UInt256.ofNat n)
       (guardWord mem s.executionEnv.calldata n esize) :: Exp.outer n bsize esize msize
     memory := Exp.storeWord mem 1760 (guardWord mem s.executionEnv.calldata n esize)}
@@ -149,7 +149,7 @@ theorem result_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       FixedExponentRoute.exponentValue s.executionEnv.calldata bsize 1 = 3 ∧ (n = 4 ∨ n = 8)) :
     result s mem n bsize esize msize =
       { s with
-        pc := UInt256.ofNat 3029
+        pc := UInt256.ofNat 3024
         stack := UInt256.ofNat (n / 2) :: Exp.outer n bsize esize msize
         memory := Exp.storeWord mem 1760 (UInt256.ofNat 1) } := by
   unfold result
@@ -165,7 +165,7 @@ theorem result_ordinary (s : State) (mem : ByteArray) (n bsize esize msize : Nat
       FixedExponentRoute.exponentValue s.executionEnv.calldata bsize 1 = 3 ∧ (n = 4 ∨ n = 8))) :
     result s mem n bsize esize msize =
       { s with
-        pc := UInt256.ofNat 3029
+        pc := UInt256.ofNat 3024
         stack := UInt256.ofNat n :: Exp.outer n bsize esize msize
         memory := Exp.storeWord mem 1760 (UInt256.ofNat 0) } := by
   unfold result
