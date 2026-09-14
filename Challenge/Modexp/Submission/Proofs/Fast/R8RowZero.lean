@@ -186,11 +186,11 @@ theorem run_rowZero (s : State) (mem : ByteArray) (pc : UInt256) (e : Nat)
     Challenge.EvmProof.Word.ofNat_add_mod, List.cons_append, List.nil_append] using h
 
 def block : Block Artifact.submissionArtifact .Osaka 5286 program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4055 28 5286 program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4046 28 5286 program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
 
 theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5286 = true :=
-  Artifact.isValidJumpDest_index 4055 (by rfl)
+  Artifact.isValidJumpDest_index 4046 (by rfl)
 
 def gasSteps_prologue (s : State) (mem : ByteArray) (e : Nat)
     (inv m0 tl m96 m64 m32 aprev : UInt256) (rest : List UInt256)

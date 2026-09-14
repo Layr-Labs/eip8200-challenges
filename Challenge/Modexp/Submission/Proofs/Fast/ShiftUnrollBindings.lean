@@ -65,40 +65,40 @@ def dispatchProgram : List Instr :=
    .op .JUMP]
 
 def cell0 : Block Artifact.submissionArtifact .Osaka 3150 cellProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2340 37 3150 cellProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2331 37 3150 cellProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def cell1 : Block Artifact.submissionArtifact .Osaka 3189 cellProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2377 37 3189 cellProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2368 37 3189 cellProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def cell2 : Block Artifact.submissionArtifact .Osaka 3228 cellProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2414 37 3228 cellProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2405 37 3228 cellProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def cell3 : Block Artifact.submissionArtifact .Osaka 3267 cellProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2451 37 3267 cellProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2442 37 3267 cellProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def cache : Block Artifact.submissionArtifact .Osaka 2989 cacheProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2228 11 2989 cacheProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2219 11 2989 cacheProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def dispatch : Block Artifact.submissionArtifact .Osaka 3143 dispatchProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2335 3 3143 dispatchProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2326 3 3143 dispatchProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jump3684 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3150 = true :=
-  Artifact.isValidJumpDest_index 2340 (by rfl)
+  Artifact.isValidJumpDest_index 2331 (by rfl)
 
 theorem jump3723 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3189 = true :=
-  Artifact.isValidJumpDest_index 2377 (by rfl)
+  Artifact.isValidJumpDest_index 2368 (by rfl)
 
 theorem jump3762 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3228 = true :=
-  Artifact.isValidJumpDest_index 2414 (by rfl)
+  Artifact.isValidJumpDest_index 2405 (by rfl)
 
 theorem jump3801 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3267 = true :=
-  Artifact.isValidJumpDest_index 2451 (by rfl)
+  Artifact.isValidJumpDest_index 2442 (by rfl)
 
 #print axioms cell0
 #print axioms cache

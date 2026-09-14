@@ -125,28 +125,9 @@ theorem run_base (template : State) (value : UInt256)
   simp [runInstructions, baseProgram, framed, Challenge.EvmProof.Stepper.runInstr,
     hcap1, Challenge.EvmProof.Word.succ_ofNat_mod]
 
-def modulusProgram : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩)] ++
-    testProgram (UInt256.ofNat 2386)
-
-theorem run_modulus (template : State)
-    (value : UInt256) (rest : List UInt256) (hrest : rest.length ≤ 999)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 2386 = true) :
-    runInstructions modulusProgram (framed template (UInt256.ofNat 1774) (value :: rest)) =
-    some (framed template (if value.toNat = 0 then UInt256.ofNat 2386 else UInt256.ofNat 1780)
-      (value :: rest)) := by
-  have hcap1 : rest.length + 1 < 1024 := by omega
-  have hh : runInstructions [.op (.Dup ⟨0, by decide⟩)]
-      (framed template (UInt256.ofNat 1774) (value :: rest)) =
-      some (framed template (UInt256.ofNat 1775) (value :: value :: rest)) := by
-    simp [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr, hcap1,
-      Challenge.EvmProof.Word.succ_ofNat_mod]
-  have ht := run_test template (UInt256.ofNat 1775) (UInt256.ofNat 2386) value
-    (value :: rest) (by simp only [List.length_cons]; omega) htarget
-  have both := runInstructions_append_some _ _ _ _ _ hh ht
-  have hpc : advancePC 5 (UInt256.ofNat 1775) = UInt256.ofNat 1780 := by decide
-  simpa only [modulusProgram, framed, hpc] using both
-
+/-- The zero-modulus guard that used to sit at 1774 is gone: a zero modulus is
+handled by the main path, because every `MULMOD` against it returns zero.  The
+normalize block therefore starts here, at 1774. -/
 def normalizeProgram : List Instr :=
   [.op (.Dup ⟨4, by decide⟩), .op .CALLDATALOAD, .op (.Dup ⟨2, by decide⟩),
    .push 1 32, .op .SUB, .push 1 3, .op .SHL, .op .SHR]
@@ -157,8 +138,8 @@ theorem run_normalize (template : State) (modulus baseOffset : UInt256)
     (hbase : rest[0]? = some (UInt256.ofNat baseSize))
     (hoffset : rest[3]? = some baseOffset) :
     runInstructions normalizeProgram
-      (framed template (UInt256.ofNat 1780) (modulus :: rest)) =
-    some (framed template (UInt256.ofNat 1790)
+      (framed template (UInt256.ofNat 1774) (modulus :: rest)) =
+    some (framed template (UInt256.ofNat 1784)
       (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata baseOffset.toNat)
         (UInt256.ofNat ((32 - baseSize) * 8)) :: modulus :: rest)) := by
   have hcap1 : rest.length + 1 < 1024 := by omega

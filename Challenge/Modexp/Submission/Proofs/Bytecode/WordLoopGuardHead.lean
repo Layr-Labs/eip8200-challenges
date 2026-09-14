@@ -9,8 +9,10 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Word
 
-/-- The unrolled block leaves the terminal counter at eight; the byte-loop tail
-pops that dead slot before the next byte pushes its own fresh zero. -/
+/-- The unrolled block now leaves the bit counter at `8`: the four `JUMPDEST`s
+at pc 2607..2610 replaced the old `SWAP1 POP PUSH0 SWAP1` that reset it to `0`.
+That slot arrives top-of-stack at pc 224 (`JUMPDEST POP POP POP`) and is popped
+by the first `POP` before any use, so the post-pop state is unchanged. -/
 def bitFinishDispatchState (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) : State :=
   { bitLoopState input outer 8 byte offset acc base with pc := UInt256.ofNat 224 }

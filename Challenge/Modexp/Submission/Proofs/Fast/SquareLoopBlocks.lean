@@ -98,29 +98,29 @@ def againProgram : List Instr :=
 /-! ## Located blocks -/
 
 def sqExitBlock : Block Artifact.submissionArtifact .Osaka 4372 sqExitProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3313 12 4372 sqExitProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3304 12 4372 sqExitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def lastBlock : Block Artifact.submissionArtifact .Osaka 4394 lastProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3325 6 4394 lastProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3316 6 4394 lastProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def againBlock : Block Artifact.submissionArtifact .Osaka 4416 againProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3337 16 4416 againProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3328 16 4416 againProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-! ## Jump destinations of the loop -/
 
 theorem jumpDest4683 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4330 = true :=
-  Artifact.isValidJumpDest_index 3286 (by rfl)
+  Artifact.isValidJumpDest_index 3277 (by rfl)
 
 /-! ## The counter word -/
 
 /-- The memory after `sq_exit`'s `MSTORE`: the counter word 2624 holds `c`. -/
 theorem jumpDestLazy :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4727 = true :=
-  Artifact.isValidJumpDest_index 3572 (by rfl)
+  Artifact.isValidJumpDest_index 3563 (by rfl)
 
 def countMem (mem : ByteArray) (c : Nat) : ByteArray :=
   MachineState.writeBytes mem (Data.Bytes.natToBytesPadded c 32) 2624

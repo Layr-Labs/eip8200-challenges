@@ -96,8 +96,6 @@ def controlProgram : List Instr :=
    .op (.Swap ⟨1, by decide⟩), .push 2 4, .op .ADD, .op (.Swap ⟨1, by decide⟩),
    .push 2 2505, .op .JUMPI]
 
-/-- The counter slot is dead after the eighth bit: the byte-loop tail pops it,
-and the next byte pushes a fresh zero before re-entering this block. -/
 def resetProgram : List Instr :=
   [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
 
@@ -131,6 +129,14 @@ theorem run_control (c : Nat) (hc : c = 0 ∨ c = 4) (hcap : rest.length ≤ 100
       Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.literal_eq_ofNat]
 
+/-- Four `JUMPDEST`s replace the old `SWAP1 POP PUSH0 SWAP1`.  They touch no
+stack slot, so the bit counter that arrives as `8` is STILL `8` at pc 2611 --
+this is deliberately NOT the old reset to `0`, and NOT a stack identity with
+the previous window.  The resulting divergence is real and is discharged
+downstream rather than papered over: the slot becomes top-of-stack at pc 224
+(`JUMPDEST POP POP POP`) and is popped by the first `POP` before any use.  See
+`WordLoops.run_bitFinishTailHead`, whose post-state `bitFinishTailMidState`
+does not mention this slot at all and is therefore unchanged. -/
 theorem run_reset (hcap : rest.length ≤ 1000) :
     runInstructions resetProgram
       (framed s 2607 ([Bm1,8,byte,offset,outerW,acc,base,m] ++ rest)) =
@@ -139,7 +145,5 @@ theorem run_reset (hcap : rest.length ≤ 1000) :
   simp [resetProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr, framed,
     h8, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.literal_eq_ofNat]
-  try decide
-  try rfl
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WordBitsFourCore

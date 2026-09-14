@@ -17,10 +17,10 @@ def clearProgram : List Instr :=
    .op .CALLDATASIZE, .push 2 2048, .op .CALLDATACOPY]
 
 def prefixBlock : Block Artifact.submissionArtifact .Osaka 3666 prefixProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2736 28 3666 prefixProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2727 28 3666 prefixProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def clearBlock : Block Artifact.submissionArtifact .Osaka 3707 clearProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2764 6 3707 clearProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2755 6 3707 clearProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def rowReady (s : State) (mem : ByteArray) (n : Nat)

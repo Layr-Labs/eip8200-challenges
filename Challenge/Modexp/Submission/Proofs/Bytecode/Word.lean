@@ -161,17 +161,17 @@ def bitJumpPath :
 /-- The head of the unrolled block derives `base - 1` for the eight copies. -/
 def bitHeadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1883 .JUMPDEST,
-   pushAt 1884 1 1,
-   opAt 1885 (.Dup ⟨6, by decide⟩),
-   opAt 1886 .SUB]
+  [opAt 1874 .JUMPDEST,
+   pushAt 1875 1 1,
+   opAt 1876 (.Dup ⟨6, by decide⟩),
+   opAt 1877 .SUB]
 
 /-- Its tail drops `base - 1` and rejoins the byte loop. -/
 def bitExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1977 .POP,
-   pushAt 1978 1 224,
-   opAt 1979 .JUMP]
+  [opAt 1968 .POP,
+   pushAt 1969 1 224,
+   opAt 1970 .JUMP]
 
 /-- Byte offset of the copy of the unrolled body that handles exponent bit `j`. -/
 def bitPC (j : Nat) : Nat :=
@@ -182,6 +182,10 @@ def bitPC (j : Nat) : Nat :=
   | 3 | 7 => 2572
   | _ => 2611
 
+/-- The bit counter standing in the second stack slot at `bitPC j`.  `j = 8` is
+the post-window state at pc 2611: the four `JUMPDEST`s leave the counter at the
+`8` the control block produced, where the old `SWAP1 POP PUSH0 SWAP1` reset it
+to `0`.  The slot is popped at pc 224 before any use. -/
 def bitCounter (j : Nat) : Nat := if j < 4 then 0 else if j < 8 then 4 else 8
 
 def expOffset (input : ByteArray) : Nat := 96 + baseSize input
@@ -347,7 +351,7 @@ def bitHeadState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
       UInt256.ofNat (modulusValue input)] ++ bitTail input)
 
 theorem jump3695 : Decode.isValidJumpDest submissionBytecode 2500 = true :=
-  Artifact.isValidJumpDest_index 1883 (by rfl)
+  Artifact.isValidJumpDest_index 1874 (by rfl)
 
 /-- The loop head jumps into the unrolled block. -/
 def gasSteps_bitEntry (input : ByteArray) (outer : Nat)

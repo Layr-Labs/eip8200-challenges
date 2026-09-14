@@ -10,8 +10,8 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.EvmProof WindowNibbleKernel WindowTwentyOneBinding WindowTwentyOneMsize
 
 structure Paths (artifact : ProgramArtifact) (fork : Fork) where
-  table : Block artifact fork 1790 WindowTwentyOneTableBuild.program
-  init : Block artifact fork 1883 WindowTwentyOneInit.program
+  table : Block artifact fork 1784 WindowTwentyOneTableBuild.program
+  init : Block artifact fork 1873 WindowTwentyOneInit.program
   entry : Block artifact fork 1904 WindowTwentyOneLoop.entryProgram
   trampoline : Block artifact fork 1904 WindowTwentyOneLoop.trampolineProgram
   body : Block artifact fork 1923 WindowTwentyOneLoop.bodyProgram
@@ -62,22 +62,23 @@ def steps_core {artifact : ProgramArtifact} {fork : Fork}
     (he : rest[4]? = some exponentOffset) (hm : rest[5]? = some modulusOffset)
     (hmodulus : MachineState.readWord template.executionEnv.calldata modulusOffset.toNat = modulus)
     (htramp : Decode.isValidJumpDest template.executionEnv.code 1904 = true) :
-    GasSteps (WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 1790) base modulus rest)
+    GasSteps (WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 1784) base modulus rest)
       (WindowTwentyOneCore.returnedState template base modulus
         (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat) rest) := by
   let exponent := MachineState.readWord template.executionEnv.calldata exponentOffset.toNat
   have ht := Block.stepsX paths.table
-    (s := WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 1790) base modulus rest)
+    (s := WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 1784) base modulus rest)
     (env.transfer rfl rfl) rfl
-    (WindowTwentyOneTableBuild.run_all template base modulus exponentOffset rest hrest he)
-  have hi := WindowTwentyOneInit.run_enter template base modulus exponent modulusOffset rest hrest hm hmodulus
+    (WindowTwentyOneTableBuild.run_all template base modulus rest hrest)
+  have hi := WindowTwentyOneInit.run_enter template base modulus exponentOffset modulusOffset
+    rest hrest he hm hmodulus
   have hi' : runInstructions WindowTwentyOneInit.program
-      (WindowTwentyOneTable.framed template (UInt256.ofNat 1883) base modulus 16 ([base, exponent] ++ rest)) =
+      (WindowTwentyOneTable.framed template (UInt256.ofNat 1873) base modulus 16 rest) =
       some (WindowTwentyOneLoop.entryState template base modulus exponent rest) := by
     simpa only [WindowTwentyOneLoop.entryState, WindowTwentyOneLoop.eAt,
-      WindowTwentyOneMath.accumulator, WindowTwentyOneMath.advance] using hi
+      WindowTwentyOneMath.accumulator, WindowTwentyOneMath.advance, exponent] using hi
   have hinit := paths.init.steps
-    (s := WindowTwentyOneTable.framed template (UInt256.ofNat 1883) base modulus 16 ([base, exponent] ++ rest))
+    (s := WindowTwentyOneTable.framed template (UInt256.ofNat 1873) base modulus 16 rest)
     (env.transfer rfl rfl) rfl hi'
   have hloop := steps_three paths template env base modulus exponent rest hrest htramp
   have hfinish := paths.finish.steps
