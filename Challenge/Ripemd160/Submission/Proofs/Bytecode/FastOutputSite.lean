@@ -111,7 +111,7 @@ private theorem fastOutputBeforeReturn_advances
       (fastStoreAndSetup_advances instruction hstore) hrun
 
 private theorem fastOutput_slice :
-    (Artifact.submissionArtifact.instructions.drop 218).take
+    (Artifact.submissionArtifact.instructions.drop 217).take
         FastOutputTemplate.fastOutputBeforeReturnTemplate.length =
       FastOutputTemplate.fastOutputBeforeReturnTemplate := by
   rfl
@@ -124,7 +124,7 @@ def fastOutputSite :
     FastOutputTemplate.fastOutputBeforeReturnTemplate 218
     fastOutput_slice
     (by
-      change 218 + FastOutputTemplate.fastOutputBeforeReturnTemplate.length ≤
+      change 217 + FastOutputTemplate.fastOutputBeforeReturnTemplate.length ≤
         Artifact.submissionInstructions.length
       rw [FastOutputTemplate.fastOutputBeforeReturnTemplate_length,
         Artifact.referenceInstructions_count]
@@ -136,7 +136,7 @@ def fastOutputSite :
 
 @[simp] theorem fastOutputSite_startPC :
     fastOutputSite.startPC = UInt256.ofNat 4693 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 218) =
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 217) =
     UInt256.ofNat 4693
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
