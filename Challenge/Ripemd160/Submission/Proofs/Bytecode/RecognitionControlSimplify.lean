@@ -53,7 +53,7 @@ theorem run_pass (s : State) (pc : UInt256) (stack : List UInt256)
 through to the generic path. -/
 def cleanupTemplate : List Instr :=
   [.op .JUMPDEST, .op .POP, .op .POP, .op .POP, .op .POP,
-    .op .POP, .op .POP, .op .POP, .op .POP, .op .JUMPDEST]
+    .op .POP, .op .POP, .op .POP, .op .POP]
 
 theorem run_cleanup (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame) (rho : List UInt256)
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running) :
@@ -70,8 +70,8 @@ theorem boundary_length : boundaryTemplate.length = 46 := rfl
 theorem boundary_bytes : (boundaryTemplate.map Instr.size).sum = 53 := rfl
 theorem pass_length : passTemplate.length = 1 := rfl
 theorem pass_bytes : (passTemplate.map Instr.size).sum = 1 := rfl
-theorem cleanup_length : cleanupTemplate.length = 10 := rfl
-theorem cleanup_bytes : (cleanupTemplate.map Instr.size).sum = 10 := rfl
+theorem cleanup_length : cleanupTemplate.length = 9 := rfl
+theorem cleanup_bytes : (cleanupTemplate.map Instr.size).sum = 9 := rfl
 
 theorem removed_jumpdest_cost (s : State) :
     DataStepper.instrCost (.op .JUMPDEST) s = 1 := rfl

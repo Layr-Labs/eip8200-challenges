@@ -1,25 +1,27 @@
-# RIPEMD-160: shifted empty/abc answer
+# RIPEMD-160: packed length lookup and shifted answers
 
-Research candidate: 674,344 gas / 5,233 bytes on the local corpus, four gas below
-the independently verified 674,348-gas parent. SHA-256: `53711f47bbcc9a90ebf19a647999a8a046b00a7b2f818eaa344aad234958c001`.
+Verified artifact: 674,319 gas / 5,234 bytes. SHA-256: `4970c4a183084c4b33ca6ff28a394edfb59ea157021601057d718855eeb2d33e`.
+The large-length condition checks n == ((0x17803e800000100 >> (n & 53)) & 1016),
+which is equivalent to n belonging to {256, 376, 1000}. It saves five gas per
+execution. The guarded empty/abc answer uses the verified shift/XOR reconstruction.
 
-The guarded empty/abc answer uses `(A >> input.size) xor B`, with
-`A = 0x10b528590516b262afd6901ab02b21f16eaadd61` and `B = 0x8ca4adfcc0ff4e36cefe988dcec3d4b9dc8f5050`. Replacing multiplication with shifting saves
-two gas for each accepted empty or abc input. Two commutative operand pairs
-at PCs 740 and 1147 are reordered without changing semantics or gas, allowing
-the original protected byte-array loader to compile at its default limit.
+Based on fkiene's widened-PUSH artifact a34c007a and ercumentyildirim's proof
+integration in public c4c6d8bc. The current promoted frontier 478b8a1d is our
+674,344-gas shifted-answer submission. This candidate saves 25 gas on the local
+corpus compared with that frontier. Widened PUSH avoids the extra rejected
+scan cleanup marker. Six commutative operand reorderings and two narrower late
+PUSH widths preserve semantics and gas. Selector 2766073206 permutes the existing
+14 digest slots to support the original protected loader at its default limit.
 
-This builds on the verified filler relocation in commit 9237f844 and the public
-direct-modulus optimization by fkiene, integrated in frontier bdb17448. Earlier
-recognition, rotations, memory layout and padding contributions are retained.
-
-The original protected loader and all 3,677 Solution build jobs pass. The final
-theorem uses only propext, Classical.choice and Quot.sound. Native scoring passes
-49/49 vectors in clean and dirty frames at 674,344 gas each. Differential checks
-against bdb17448 pass 4,274 inputs and 69 corpus seeds: 62 seeds save 100 gas and
-seven save 99 gas. The 120-seed submission gate reports no digest mismatches,
-median/minimum 674,344 gas and an empirical acceptance probability of 0.808
-against official score 674,444. After promotion of bf916155, the repeated gate
-also reports 0.808 against official score 674,348. The original secure Comparator
-and default kernel accept this exact artifact: verified score 674,344 gas,
-17 minutes 9 seconds, 25.7 GiB peak memory. Official acceptance is tracked separately.
+The original protected loader and all 3,678 Solution build jobs pass. The final
+universal theorem uses only propext, Classical.choice and Quot.sound. Native
+scoring passes 49/49 vectors in both clean and dirty frames at 674,319 gas.
+Differential checks against bf916155 pass 4,274 inputs and 69 corpus seeds:
+62 seeds save 29 gas and seven save 30 gas, with exact path-dependent savings.
+The 120-seed gate reports no digest mismatches, minimum/median 674,319 gas,
+maximum 674,841 and empirical acceptance probability 0.808 against the updated
+official score 674,344. Same-input comparisons on seeds 0, 1 and 820096 all save
+25 gas after the promotion of 478b8a1d at 10:55 UTC on 2026-09-14.
+The original secure Comparator and Lean default kernel accepted the exact artifact
+in 17 minutes 20 seconds. The protected verified-bytecode matches this submission.
+Official acceptance is recorded separately.

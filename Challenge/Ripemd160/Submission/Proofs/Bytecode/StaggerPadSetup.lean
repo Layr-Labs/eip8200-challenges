@@ -12,10 +12,10 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory
 open PairTableActive StaggerTableSparse StaggerTableLayout
 
-/-- Pad-only low block (pc 4784..4826): copy zero calldata over the table, store the unmasked
+/-- Pad-only low block (pc 4783..4824): copy zero calldata over the table, store the unmasked
 low bit-length word `n <<< 3` (two `JUMPDEST`s keep the block's length where the mask used
 to be applied; the resident `0xffffffff` stays four deep on the stack) and `0x80`, then leave
-`iszero (n >>> 29)` for the branch at 4827. -/
+`iszero (n >>> 29)` for the branch at 4825. -/
 def lowTemplate : List Instr :=
   [ .push ⟨2, by decide⟩ (UInt256.ofNat 1112),
     .op .CALLDATASIZE,
@@ -35,7 +35,7 @@ def lowTemplate : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 128),
     .push ⟨2, by decide⟩ (UInt256.ofNat 522),
     .op .MSTORE,
-    .push ⟨20, by decide⟩ (UInt256.ofNat (128 * (1 + 2 ^ 144))),
+    .push ⟨19, by decide⟩ (UInt256.ofNat (128 * (1 + 2 ^ 144))),
     .push ⟨1, by decide⟩ (UInt256.ofNat 54),
     .op .MSTORE,
     .op .CALLDATASIZE,
@@ -43,12 +43,12 @@ def lowTemplate : List Instr :=
     .op .SHR,
     .op .ISZERO ]
 
-/-- `PUSH2 0398 JUMPI` at 4769: straight to the rounds when the high word is zero. -/
+/-- `PUSH2 398 JUMPI` at 4768: straight to the rounds when the high word is zero. -/
 def branchTemplate : List Instr :=
   [ .push ⟨2, by decide⟩ (UInt256.ofNat 894),
     .op .JUMPI ]
 
-/-- Pad-only high block (pc 4831..4858), reached only when `n >>> 29 ≠ 0`. -/
+/-- Pad-only high block (pc 4829..4856), reached only when `n >>> 29 ≠ 0`. -/
 def highTemplate : List Instr :=
   [ .op .CALLDATASIZE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 29),

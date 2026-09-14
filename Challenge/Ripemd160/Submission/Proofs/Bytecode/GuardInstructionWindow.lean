@@ -66,7 +66,7 @@ def tail : List Instr :=
   op 0x36,
   op 0x8c,
   op 0x14,
-  .push 2 4746,
+  .push 2 4745,
   op 0x57,
   op 0x50,
   op 0x50,
@@ -90,7 +90,7 @@ def tail : List Instr :=
   op 0x83,
   op 0x81,
   op 0x80,
-  .push 2 8,
+  .push 1 8,
   op 0x1c,
   op 0x18,
   op 0x16,
@@ -135,11 +135,11 @@ def tail : List Instr :=
   op 0x1c,
   op 0x90,
   op 0x81,
-  .push 2 4723,
+  .push 2 4722,
   op 0x57,
   op 0x50,
   op 0x50,
-  .push 2 395,
+  .push 2 392,
   op 0x56,
   op 0x5b,
   .push 2 1112,
@@ -160,7 +160,7 @@ def tail : List Instr :=
   .push 1 128,
   .push 2 522,
   op 0x52,
-  .push 20 2854495385411919762116571938898990272765493376,
+  .push 19 2854495385411919762116571938898990272765493376,
   .push 1 54,
   op 0x52,
   op 0x36,
@@ -196,17 +196,15 @@ def tail : List Instr :=
   op 0x16,
   .push 1 111,
   op 0x57,
+  .push 8 105838886210502912,
   op 0x36,
-  .push 2 376,
-  op 0x14,
-  .push 2 256,
+  .push 1 53,
+  op 0x16,
+  op 0x1c,
+  .push 2 1016,
+  op 0x16,
   op 0x36,
   op 0x14,
-  op 0x36,
-  .push 2 1000,
-  op 0x14,
-  op 0x17,
-  op 0x17,
   .push 1 111,
   op 0x57,
   .push 0 0,
@@ -217,7 +215,7 @@ def tail : List Instr :=
   .push 3 2127393,
   op 0x02,
   op 0x18,
-  .push 2 357,
+  .push 2 354,
   op 0x57,
   .push 20 95383801997447390147238369573240532004699299169,
   op 0x36,
@@ -230,18 +228,18 @@ def tail : List Instr :=
   .push 0 0,
   op 0xf3
 ]
-theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3563 = tail := by rfl
+theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3560 = tail := by rfl
 
-theorem pc_base : Artifact.submissionArtifact.instructionPC 3563 = 4578 := by
+theorem pc_base : Artifact.submissionArtifact.instructionPC 3560 = 4578 := by
   rw [instructionPC_eq_byteLength]
   rfl
 
 theorem get (index : Nat) :
-    Artifact.submissionArtifact.instructions[3563 + index]? = tail[index]? := by
+    Artifact.submissionArtifact.instructions[3560 + index]? = tail[index]? := by
   rw [← InstructionWindow.get_drop, tail_eq]
 
 theorem pc (index : Nat) :
-    Artifact.submissionArtifact.instructionPC (3563 + index) =
+    Artifact.submissionArtifact.instructionPC (3560 + index) =
       4578 + byteLength (tail.take index) := by
   rw [InstructionWindow.pc_drop, pc_base, tail_eq]
 

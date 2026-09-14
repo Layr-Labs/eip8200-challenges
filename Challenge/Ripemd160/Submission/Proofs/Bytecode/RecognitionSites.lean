@@ -322,7 +322,7 @@ def lift (s t : State) (e : Env s) (stack : List UInt256)
 end partialWord
 
 namespace finish
-abbrev template : List Instr := RecognitionBranchRaw.finishTemplate 347
+abbrev template : List Instr := RecognitionBranchRaw.finishTemplate 345
 theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 212).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
   StackSiteBuilder.ofSlice template 212 actual_slice
@@ -343,26 +343,26 @@ end finish
 
 namespace cleanup
 abbrev template : List Instr := RecognitionControlSimplify.cleanupTemplate
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 235).take template.length = template := by rfl
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 233).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 235 actual_slice
-    (by change 235 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 233 actual_slice
+    (by change 233 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 347 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 235) = UInt256.ofNat 347
+theorem site_pc : site.startPC = UInt256.ofNat 345 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 233) = UInt256.ofNat 345
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem end_pc : pcAfter (UInt256.ofNat 347) template = UInt256.ofNat 357 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 345) template = UInt256.ofNat 354 := by decide
 theorem form : ∀ instruction ∈ template.dropLast, RecognitionLift.Advances instruction :=
   RecognitionLift.advancesAll_sound _ (by decide)
 def lift (s t : State) (e : Env s) (stack : List UInt256)
-    (h : runInstrSeq template (atState s 347 stack) = some t) : GasSteps (atState s 347 stack) t :=
+    (h : runInstrSeq template (atState s 345 stack) = some t) : GasSteps (atState s 345 stack) t :=
   RecognitionLift.gasSteps_of_raw site _ _ e.code e.fork e.run e.np site_pc.symm form h
 end cleanup
 
 namespace selector
-abbrev template : List Instr := RecognitionSelectorRaw.prefixTemplate (UInt256.ofNat 4953)
+abbrev template : List Instr := RecognitionSelectorRaw.prefixTemplate (UInt256.ofNat 4954)
 theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 215).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
   StackSiteBuilder.ofSlice template 215 actual_slice
@@ -463,17 +463,17 @@ theorem valid_315 (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEn
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
   simpa only [hp, Word.word_toNat_ofNat, Nat.reducePow, Nat.reduceMod] using h
-theorem valid_335 (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 357).toNat = true := by
+theorem valid_335 (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 354).toNat = true := by
   rw [e.code]
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 245 (by rfl)
-  have hp : Artifact.submissionArtifact.instructionPC 245 = 357 := by
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 242 (by rfl)
+  have hp : Artifact.submissionArtifact.instructionPC 242 = 354 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
   simpa only [hp, Word.word_toNat_ofNat, Nat.reducePow, Nat.reduceMod] using h
-theorem valid_342 (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 347).toNat = true := by
+theorem valid_342 (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 345).toNat = true := by
   rw [e.code]
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 235 (by rfl)
-  have hp : Artifact.submissionArtifact.instructionPC 235 = 347 := by
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 233 (by rfl)
+  have hp : Artifact.submissionArtifact.instructionPC 233 = 345 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
   simpa only [hp, Word.word_toNat_ofNat, Nat.reducePow, Nat.reduceMod] using h
