@@ -53,14 +53,13 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
     (hmod : Model.FastRepresents memory 0 n mm)
     (hbase : Model.FastRepresents memory 512 n bM)
     (hrawAcc : Model.FastRepresents memory 256 n rawBase)
-    (hrawLt : rawBase < mm)
     (hone : ∃ one, one < Limbs.radix ∧
       Model.FastRepresents memory 768 n one) :
     FixedExponentRoute.Handled input
       (special s memory n bsize esize msize count) := by
   let ch := chain_of_fixed s sub spec memory esize msize count bM rawBase
     hm hn hn32 hcount hcount16 hbMlt hactive
-    hframe hmod hbase hrawAcc hrawLt hone hcode hfork hrun hnp
+    hframe hmod hbase hrawAcc hone hcode hfork hrun hnp
   let sqVal := fixedDirectValue mm (Limbs.radix ^ n) bM count
   let prodVal := Model.montMul mm (Limbs.radix ^ n) sqVal rawBase
   let memOut := ch.mem

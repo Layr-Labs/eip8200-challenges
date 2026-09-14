@@ -34,7 +34,14 @@ theorem jumpD4643 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
 
 /-! ## Facts at `BDONE` on the hit path -/
 
-
+theorem hitMem_acc (mem input : ByteArray) (n : Nat) (hn32 : n ≤ 8) :
+    Model.FastRepresents (hitMem mem input n) 256 n
+      (Precompile.bytesToNatPadded input 96 (32 * n)) := by
+  unfold hitMem Exp.storeWord
+  refine Model.fastRepresents_writeWord_disjoint _ 2080 256 n _ _ (Or.inr (by omega)) ?_
+  refine Model.fastRepresents_writeBytes_disjoint _ _ 2112 256 n _
+    (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega) ?_
+  exact FullBase.copyBaseMem_represents mem input n
 
 /-- The words the whole hit path leaves alone: everything outside `ACC`, `BASE`,
 `NEG`, the estimator words, `SUBB` and the `t` area. -/
@@ -64,13 +71,30 @@ theorem hitFinal_preserves (mem input : ByteArray) (n mm ptr cnt v : Nat) (hn : 
   exact hitFinal_readWord_disjoint mem input n mm _ hn hn32 (by omega)
 
 /-- `ACC` still holds the raw base at `BDONE`. -/
-theorem hitFinal_acc (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
-    (hm : 0 < mm) (hodd : mm % 2 = 1)
-    (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem) :
+theorem hitFinal_acc (mem input : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8) :
     Model.FastRepresents (hitFinalMem mem input n mm) 256 n
-      (Precompile.bytesToNatPadded input 96 (32 * n) % mm) :=
-  RootE3Phase.represents_acc_after_steps _ n mm _ n (by omega) hn32
-    (RootE3Phase.m2_acc_value mem input n mm hn hn32 hm hodd hmod htop)
+      (Precompile.bytesToNatPadded input 96 (32 * n)) := by
+  have h1 : Model.FastRepresents (m1Of mem input n) 256 n
+      (Precompile.bytesToNatPadded input 96 (32 * n)) := by
+    unfold m1Of Csub.csResultMemory
+    split
+    · exact Csub.fastRepresents_mcopy_disjoint _ _ 512 (32*n) 256 n _
+        (Or.inr (by omega)) (hitMem_acc mem input n hn32)
+    · unfold Csub.subResultMemory
+      refine Csub.fastRepresents_mcopy_disjoint _ _ 512 (32*n) 256 n _ (Or.inr (by omega)) ?_
+      exact Csub.fastRepresents_csStep _ n 256 n _ (by omega) (Or.inl (by omega))
+        (hitMem_acc mem input n hn32) n le_rfl
+  have h2 : Model.FastRepresents (m2Of mem input n) 256 n
+      (Precompile.bytesToNatPadded input 96 (32 * n)) := by
+    unfold m2Of preMem
+    refine ShiftCacheModel.represents_cache _ n 256 n _ (Or.inl (by omega)) ?_
+    exact fastRepresents_preMemOf _ _ 256 n _ (Or.inl (by unfold PRE_L; omega))
+      (fastRepresents_negStep _ n 256 n _ (Or.inl (by unfold NEG; omega)) h1 n le_rfl)
+  unfold hitFinalMem
+  refine (Model.fastRepresents_congr ?_ _).2 h2
+  intro i hi
+  exact stepMems_readWord_disjoint _ n mm _ hn
+    ⟨Or.inl (by omega), Or.inl (by omega), Or.inl (by omega)⟩ n
 
 /-- `BASE` holds the Montgomery residue of the base at `BDONE`. -/
 theorem hitFinal_base (mem input : ByteArray) (n mm : Nat)
@@ -294,9 +318,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
         n bsize esize msize mm minv sub hspec hcode hfork hrun hnp hdata hstack hact
         hn hn32 hb he hmz hm32 hbsize hesize hmsz hmm hodd hradix hframeCopy hinvCopy
         haccCopy hbaseCopy honeCopy
-        (ShiftProducerCanonical.miss_of_same_modulus mem (copiedMemory directMem n) n bsize mm
-          (by omega) hmod0 hinvCopy.modulus hmatch)
-    have hhelper'  : Challenge.EvmProof.GasSteps
+    have hhelper' : Challenge.EvmProof.GasSteps
         (entryState s directMem n bsize esize msize)
         (Exp.rrHead s (copiedMemory directMem n) n bsize esize msize
           (RrLeadingLogic.directCounter n)) :=

@@ -14,7 +14,7 @@ def returnedState (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) : State :=
   let finish := WindowTwentyOneLoop.finishState template base modulus exponent rest
   WindowTwentyOneReturn.returned finish (UInt256.ofNat 2385)
-    (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 18 finish.stack.tail
+    (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 19 finish.stack.tail
 
 theorem run_finish (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
@@ -28,7 +28,7 @@ theorem run_finish (template : State) (base modulus exponent : UInt256)
       List.tail_cons, List.length_cons]
     omega
   have h := WindowTwentyOneReturn.run_return finish (UInt256.ofNat 2380)
-    (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 18 (by decide) rfl
+    (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 19 (by decide) rfl
     finish.stack.tail htail
   have hpc : advancePC 5 (UInt256.ofNat 2380) = UInt256.ofNat 2385 := by decide
   simpa only [returnedState, finish, WindowTwentyOneReturn.framed, WindowTwentyOneLoop.finishState,

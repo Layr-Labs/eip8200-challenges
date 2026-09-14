@@ -1,4 +1,3 @@
-import Challenge.Modexp.Submission.Proofs.Fast.ShiftProducerCore
 import Challenge.Modexp.Submission.Proofs.Fast.RrLeadingSuffix
 import Challenge.Modexp.Submission.Proofs.Fast.FullBaseCorrect
 import Challenge.Modexp.Submission.Proofs.Fast.FixedDirectCorrect
@@ -47,8 +46,7 @@ theorem handled_of_rrDone (input : ByteArray) (s : State) (mem : ByteArray)
     (hinv : RrInv mem n mm (Limbs.radix ^ n) rr)
     (hacc0 : Model.FastRepresents mem 256 n 0)
     (hbase0 : Model.FastRepresents mem 512 n 0)
-    (hone0 : Model.FastRepresents mem 768 n 0)
-    (hmiss : ¬ FullBase.Matches mem n bsize) :
+    (hone0 : Model.FastRepresents mem 768 n 0) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
         (rrDone s mem n bsize esize msize) final) ∧
@@ -75,7 +73,7 @@ theorem handled_of_rrDone (input : ByteArray) (s : State) (mem : ByteArray)
         hbsize hesize hmsz hmm hodd hradix hmpos
         (by simpa using Nat.ModEq.refl 0) hframe hinv.modulus hbase0
         ⟨0, Limbs.radix_pos, hone0⟩ hEb
-        ⟨0, hacc0, by simpa using Nat.ModEq.refl 0, hmpos⟩
+        ⟨0, hacc0, by simpa using Nat.ModEq.refl 0⟩
     exact ⟨final,
       ⟨(gasSteps_rrDone_skip s mem n esize msize hcode hfork hrun hnp).trans tr⟩,
       hdone, hres⟩
@@ -83,7 +81,7 @@ theorem handled_of_rrDone (input : ByteArray) (s : State) (mem : ByteArray)
       handled_of_baseHead input s mem n bsize esize msize mm minv rr sub spec
         hcode hfork hrun hnp hdata hstack hact hn hn32 hb hb0 he hmz hm32
         hbsize hesize hmsz hmm hodd hradix hrrlt hrrmod hframe
-        hinv.modulus hinv.r1 hinv.cc hinv.rr hacc0 hone0 hmiss
+        hinv.modulus hinv.r1 hinv.cc hinv.rr hacc0 hone0
     exact ⟨final,
       ⟨(gasSteps_rrDone_base s mem n bsize esize msize hb (by omega)
         hcode hfork hrun hnp).trans tr⟩,
@@ -113,8 +111,7 @@ theorem handled_of_directRR (input : ByteArray) (s : State) (mem : ByteArray)
       (Limbs.radix * Limbs.radix ^ n % mm))
     (hacc0 : Model.FastRepresents mem 256 n 0)
     (hbase0 : Model.FastRepresents mem 512 n 0)
-    (hone0 : Model.FastRepresents mem 768 n 0)
-    (hmiss : ¬ FullBase.Matches mem n bsize) :
+    (hone0 : Model.FastRepresents mem 768 n 0) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
         (rrHead s mem n bsize esize msize (directCounter n)) final) ∧
@@ -146,8 +143,6 @@ theorem handled_of_directRR (input : ByteArray) (s : State) (mem : ByteArray)
       hbsize hesize hmsz hmm hodd hradix (rrSuffixValue_lt hmpos
         (Nat.mod_lt _ hmpos) (directCounter n + 1)) hfinal.2 hframeFinal
       hfinal.1 haccFinal hbaseFinal honeFinal
-      (ShiftProducerCanonical.miss_of_same_modulus mem finalMem n bsize mm (by omega)
-        hinv.modulus hfinal.1.modulus hmiss)
   exact ⟨final, ⟨hrr.trans tr⟩, hdone, hres⟩
 
 end Challenge.Modexp.Submission.Proofs.Fast.RrLeadingTail

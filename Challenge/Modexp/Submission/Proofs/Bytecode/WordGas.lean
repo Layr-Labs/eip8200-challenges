@@ -156,7 +156,7 @@ theorem gasSteps_bitExit_cost (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
     (gasSteps_bitExit input outer byte offset acc base).cost = 13 :=
   WordEnds.gasSteps_bitExit_sym_cost (bitLoopState input outer 0 byte offset acc base) (bitTail input)
-    (base - UInt256.ofNat 1) (UInt256.ofNat 8) byte offset (UInt256.ofNat outer)
+    (base - UInt256.ofNat 1) (UInt256.ofNat 0) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
     (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
     (by exact Artifact.isValidJumpDest_index 153 (by rfl))

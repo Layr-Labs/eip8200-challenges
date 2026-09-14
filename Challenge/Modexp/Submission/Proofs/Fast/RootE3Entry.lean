@@ -80,14 +80,13 @@ theorem handled_of_asymmetric_three (input : ByteArray) (s : State) (memory : By
     (hmod : Model.FastRepresents memory 0 n mm)
     (hbase : Model.FastRepresents memory 512 n bM)
     (hrawAcc : Model.FastRepresents memory 256 n rawBase)
-    (hrawLt : rawBase < mm)
     (hone : ∃ one, one < Limbs.radix ∧
       Model.FastRepresents memory 768 n one) :
     FixedExponentRoute.Handled input
       (special s memory n bsize esize msize 1) := by
   let ch := chain_of_fixed s sub spec memory esize msize 1 bM rawBase
     hm hn hn32 (by omega) (by omega) hbMlt hactive
-    hframe hmod hbase hrawAcc hrawLt hone hcode hfork hrun hnp
+    hframe hmod hbase hrawAcc hone hcode hfork hrun hnp
   let sqVal := fixedDirectValue mm (Limbs.radix ^ n) bM 1
   let prodVal := Model.montMul mm (Limbs.radix ^ n) sqVal rawBase
   let memOut := ch.mem
@@ -136,7 +135,6 @@ theorem handled_of_entry_asymmetric_three (input : ByteArray) (s : State) (memor
     (hmod : Model.FastRepresents memory 0 n mm)
     (hbase : Model.FastRepresents memory 512 n bM)
     (hrawAcc : Model.FastRepresents memory 256 n rawBase)
-    (hrawLt : rawBase < mm)
     (hone : ∃ one, one < Limbs.radix ∧
       Model.FastRepresents memory 768 n one) :
     FixedExponentRoute.Handled input
@@ -151,7 +149,7 @@ theorem handled_of_entry_asymmetric_three (input : ByteArray) (s : State) (memor
   have hfixed := handled_of_asymmetric_three input s memory n bsize 1 msize mm minv
     bM rawBase S T sub spec hcode hfork hrun hnp hstack hactive hn hn32 hmz hm32
     hbsize hesize hmsz hmm hm hcop _hradix hbMlt hbMform hrawForm hscale hexp
-    hframe hmod hbase hrawAcc hrawLt hone
+    hframe hmod hbase hrawAcc hone
   rcases hfixed with ⟨final, ⟨tail⟩, hdone, hresult⟩
   exact ⟨final, ⟨htoSpecial.trans tail⟩, hdone, hresult⟩
 

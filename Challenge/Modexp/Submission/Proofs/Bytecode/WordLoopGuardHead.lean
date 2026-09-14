@@ -9,8 +9,9 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Word
 
-/-- The unrolled block leaves the terminal counter at eight; the byte-loop tail
-pops that dead slot before the next byte pushes its own fresh zero. -/
+/-- The unrolled block leaves the bit counter at the terminal value 8; the
+byte-loop tail at pc 225 pops that slot before the next byte pushes its own
+fresh zero, so the value is never read. -/
 def bitFinishDispatchState (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) : State :=
   { bitLoopState input outer 8 byte offset acc base with pc := UInt256.ofNat 224 }

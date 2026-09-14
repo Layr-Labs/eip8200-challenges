@@ -31,7 +31,7 @@ def framed (template : State) (pc : UInt256) (mem : ByteArray) (active : Nat)
     activeWords := UInt256.ofNat active }
 
 theorem activeWordsAfter_table (index : Nat) (hindex : index < 16) :
-    MachineState.activeWordsAfter 18 (32 * index) 32 = 18 := by
+    MachineState.activeWordsAfter 19 (32 * index) 32 = 19 := by
   simp [MachineState.activeWordsAfter]
   omega
 
@@ -40,7 +40,7 @@ For the three positions in a group, `slot` is 11, 6 or 1 respectively. -/
 theorem run_lookup (template : State) (pc : UInt256) (mem : ByteArray)
     (base modulus accumulator : UInt256)
     (tail : List UInt256) (slot : Nat) (hslot : slot ≤ 11) (laddr : Nat)
-    (hladdr : laddr + 32 ≤ 576)
+    (hladdr : laddr + 32 ≤ 608)
     (index : Nat) (hindex : index < 16)
     (hmask : tail[slot + 1]? = some (UInt256.ofNat 480))
     (hread : MachineState.readWord mem (32 * index) = WindowMath.tableWord base modulus index)
@@ -48,21 +48,21 @@ theorem run_lookup (template : State) (pc : UInt256) (mem : ByteArray)
       (UInt256.land (UInt256.ofNat 480) (MachineState.readWord mem laddr)).toNat = 32 * index)
     (hcap : tail.length + 4 < 1024) :
     runInstructions (program slot hslot laddr)
-      (framed template pc mem 18 (accumulator :: modulus :: tail)) =
-    some (framed template (advancePC 8 pc) mem 18
+      (framed template pc mem 19 (accumulator :: modulus :: tail)) =
+    some (framed template (advancePC 8 pc) mem 19
       (UInt256.mulMod (WindowMath.tableWord base modulus index)
         accumulator modulus :: tail)) := by
   have hcap2 : tail.length + 2 < 1024 := by omega
   have hcap3 : tail.length + 3 < 1024 := by omega
   have hl : (UInt256.ofNat laddr).toNat = laddr := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
-  have h18 : (UInt256.ofNat 18).toNat = 18 := rfl
+  have h19 : (UInt256.ofNat 19).toNat = 19 := rfl
   have hactive := activeWordsAfter_table index hindex
-  have hactive' := WindowCopyMemory.activeWordsAfter_eighteen laddr hladdr
+  have hactive' := WindowCopyMemory.activeWordsAfter_nineteen laddr hladdr
   have hpush3 : UInt256.ofNat 3 = UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
   simp (disch := omega)
     [runInstructions, program, framed, Challenge.EvmProof.Stepper.runInstr,
-      hcap, hcap2, hcap3, List.getElem?_cons_succ, hl, h18,
+      hcap, hcap2, hcap3, List.getElem?_cons_succ, hl, h19,
       hmask, haddress, hread, hactive, hactive', State.activeWordsAfterUInt256,
       advancePC, succ_eq_add, hpush3, word_add_assoc]
 

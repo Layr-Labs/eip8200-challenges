@@ -13,7 +13,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached
 
 /-- Stage the first operand at 2368 (`MCOPY`) and zero the scratch block (`CALLDATACOPY`
-from the end of calldata), keeping `hd` on top: pc 4169 → 4194. -/
+from the end of calldata), keeping `hd` on top: pc 4174 → 4194. -/
 def zeroProgram : List Instr :=
   [.push 2 2688, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨2, by decide⟩),
    .push 2 2368, .op .MCOPY,
@@ -23,7 +23,7 @@ def zeroProgram : List Instr :=
 /-- After `lowProgram`: `hd` above the operand pointers and the row frame. -/
 def cachedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3638
+  { s with pc := UInt256.ofNat 3643
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb,
              l1Target n, negative32, allOnes, l2Target n, dst, ret] ++ rest
            memory := mem }
@@ -31,7 +31,7 @@ def cachedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
 /-- After staging and zeroing: `hd` above the width word. -/
 def clearedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3657
+  { s with pc := UInt256.ofNat 3662
            stack := [hd, UInt256.ofNat (32*n), UInt256.ofNat pb,
              l1Target n, negative32, allOnes, l2Target n, dst, ret] ++ rest
            memory := mpZeroed s mem n }
@@ -73,7 +73,7 @@ theorem run_zero (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     Challenge.EvmProof.Word.word_toNat_ofNat, hpaN, hszN, hsizeN, hcdsN,
     hc8, hc9, hc10, hc11, hc12, hc13, hc14, List.exchange]
 
-/-- Operand pointers and the jump to the row head (pc 4189 → `hd`):
+/-- Operand pointers and the jump to the row head (pc 4194 → `hd`):
 `SWAP1; DUP3; ADD; DUP5; ADD; SWAP2; DUP5; ADD; SWAP2; DUP2; JUMP`. -/
 def pointersJumpProgram : List Instr :=
   [.op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .ADD,
@@ -99,7 +99,7 @@ private theorem negative32_add_ofNat (x : Nat) (hx : 32 ≤ x)
   rw [hsplit, Nat.add_mod_right]
 
 /-- From the cleared setup state the row-0 frame is built and the setup jumps to `hd`
-(the row head: 4199 for the multiply, 4919 for the square). -/
+(the row head: 4204 for the multiply, 4915 for the square). -/
 theorem run_pointersJump (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1005)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2816)

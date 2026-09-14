@@ -260,7 +260,7 @@ def subs (s : State) (n bsize mm minv : Nat)
   sqLoopMem k mem := FusedMemory.memory s n k mem
   squareLoop := subsSquareLoop s n bsize mm minv hcode hfork hrun hnp hact hcds hn
     (by omega) hmpos hminvlt hminvA
-  sqLoopValue k mem a b hfast hk hf hm ha hb ham hbm := by
+  sqLoopValue k mem a b hfast hk hf hm ha hb ham := by
     have hlow : (MachineState.readWord mem (32 * n - 32)).toNat = mm % Limbs.radix := by
       have h := Model.readWord_of_fastRepresents hm (j := n - 1) (by omega)
       rw [show (0 : Nat) + 32 * (n - 1) = 32 * n - 32 from by omega,
@@ -270,7 +270,7 @@ def subs (s : State) (n bsize mm minv : Nat)
       rw [hf.minvW, toNat_ofNat_self hminvlt]
     obtain ⟨p, rfl⟩ : ∃ p, n = p + 2 := ⟨n - 2, by omega⟩
     exact FusedMemory.represents s mem p a b mm k hfast (by omega) hk ha hb hm
-      (odd_of_minvA hminvA) ham hbm (by rw [hlow, hmi]; exact hminvA)
+      (odd_of_minvA hminvA) ham (by rw [hlow, hmi]; exact hminvA)
 
 /-- The value-level contract the concrete pair satisfies. -/
 theorem specOf (s : State) (n mm minv : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)

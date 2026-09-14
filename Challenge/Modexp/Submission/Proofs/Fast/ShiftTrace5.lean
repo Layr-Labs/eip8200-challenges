@@ -107,7 +107,7 @@ def gasSteps_shiftLoop (s : State) (mem : ByteArray) (n bsize esize msize mm min
 
 /-- Memory after the raw base has been reduced by the first `CSUB`. -/
 def m1Of (mem input : ByteArray) (n : Nat) : ByteArray :=
-  ShiftProducerCanonical.canonicalMemory mem input n
+  Csub.csResultMemory (hitMem mem input n) n 512
 
 /-- Words at or above `ACC + 32 n` that `hitMem` and the first `CSUB` leave
 alone, apart from `BASE` and `SUBB`. -/
@@ -116,8 +116,14 @@ theorem m1_readWord_disjoint (mem input : ByteArray) (n addr : Nat) (hn : 1 ≤ 
       (addr + 32 ≤ 512 ∨ 512 + 32 * n ≤ addr) ∧
       (addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr) ∧
       (addr + 32 ≤ 2080 ∨ 2112 + 32 * n ≤ addr)) :
-    MachineState.readWord (m1Of mem input n) addr = MachineState.readWord mem addr :=
-  ShiftProducerCanonical.canonical_readWord mem input n addr hn hn32 hdisj
+    MachineState.readWord (m1Of mem input n) addr = MachineState.readWord mem addr := by
+  unfold m1Of
+  rw [Monpro.csResultMemory_readWord_outside _ n 512 addr (by omega) hdisj.2.2.1 hdisj.2.1]
+  unfold hitMem Exp.storeWord
+  rw [Csub.readWord_write_disjoint _ _ _ _ (by omega)]
+  rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _
+    (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)]
+  exact FullBase.copyBaseMem_readWord_disjoint mem input n addr hdisj.1
 
 /-- Memory at the shift loop entry. -/
 def m2Of (mem input : ByteArray) (n : Nat) : ByteArray :=
@@ -150,15 +156,33 @@ theorem m1_base (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 : n �
     (hmpos : 0 < mm) (hodd : mm % 2 = 1)
     (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem) :
     Model.FastRepresents (m1Of mem input n) 512 n
-      (Precompile.bytesToNatPadded input 96 (32 * n) % mm) :=
-  ShiftProducerCanonical.canonical_base mem input n mm hn hn32 hmpos hodd hmod htop
-
-theorem m1_acc (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
-    (hmpos : 0 < mm) (hodd : mm % 2 = 1)
-    (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem) :
-    Model.FastRepresents (m1Of mem input n) 256 n
-      (Precompile.bytesToNatPadded input 96 (32 * n) % mm) :=
-  ShiftProducerCanonical.canonical_acc mem input n mm hn hn32 hmpos hodd hmod htop
+      (Precompile.bytesToNatPadded input 96 (32 * n) % mm) := by
+  have hts : Model.FastRepresents (hitMem mem input n) 2112 n
+      (Precompile.bytesToNatPadded input 96 (32 * n)) := by
+    unfold hitMem Exp.storeWord
+    refine Model.fastRepresents_writeWord_disjoint _ 2080 2112 n _ _ (Or.inl (by omega)) ?_
+    have hsource := Setup.fastRepresents_bytes input 96 n
+    apply Model.fastRepresents_of_limbs hsource.1
+    intro k hk
+    rw [FullBase.readWord_copyFrom _ input 96 2112 (32 * n) (n - 1 - k) (by omega)]
+    exact Model.readLimb_of_fastRepresents hsource hk
+  have hmodH : Model.FastRepresents (hitMem mem input n) 0 n mm := by
+    unfold hitMem Exp.storeWord
+    refine Model.fastRepresents_writeWord_disjoint _ 2080 0 n _ _ (Or.inr (by omega)) ?_
+    refine Model.fastRepresents_writeBytes_disjoint _ _ 2112 0 n _
+      (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega) ?_
+    exact FullBase.copyBaseMem_modulus hn32 hmod
+  have htn0 : (MachineState.readWord (hitMem mem input n) 2080).toNat = 0 := by
+    unfold hitMem Exp.storeWord
+    rw [Challenge.EvmProof.Memory.readWord_writeWord]
+    decide
+  have hbound : 0 * Limbs.radix ^ n + Precompile.bytesToNatPadded input 96 (32 * n) < 2 * mm := by
+    rw [Nat.zero_mul, Nat.zero_add]
+    exact FullBase.baseValue_lt_two_mul (by omega) hodd hmod htop
+  have h := Csub.csub_correct (hitMem mem input n) n _ mm 0 512 hn (by omega) hts hmodH htn0 (Nat.zero_le 1)
+    hmpos hbound
+  rw [Nat.zero_mul, Nat.zero_add] at h
+  exact h
 
 theorem m2_readWord_disjoint (mem input : ByteArray) (n addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hdisj : (addr + 32 ≤ 256 ∨ 256 + 32 * n ≤ addr) ∧

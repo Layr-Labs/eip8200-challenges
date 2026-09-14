@@ -71,7 +71,7 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
         n bsize msize mm minv X Y (Limbs.radix ^ (3 * k)) (Limbs.radix ^ (2 * k))
         sub spec hcode hfork hrun hnp hdata hb hstack hact hn hn8 hmz hm32
         hbsize hesize hmsz hmm hm (Model.coprime_radix_pow_of_odd hodd n) hradix
-        (Nat.mod_lt _ hm) hxform hyform hscale hexp hf hmrep hx hy (Nat.mod_lt _ hm) ⟨0, Limbs.radix_pos, ho⟩)
+        (Nat.mod_lt _ hm) hxform hyform hscale hexp hf hmrep hx hy ⟨0, Limbs.radix_pos, ho⟩)
   · let final := ordinaryOutput mem input n mm
     let base := Precompile.bytesToNatPadded input 96 (32 * n)
     let baseM := base % mm * Limbs.radix ^ n % mm
@@ -96,7 +96,7 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
         n bsize esize msize mm minv baseM sub spec
         hcode hfork hrun hnp hdata hstack hact hn hn8 hb he hmz hm32
         hbsize hesize hmsz hmm hodd hradix (Nat.mod_lt _ hm) hbForm
-        hf hmrep hbRep ⟨0, Limbs.radix_pos, ho⟩ hEb ⟨base % mm, haRep, (Nat.mod_modEq base mm).trans hrawForm, Nat.mod_lt _ hm⟩)
+        hf hmrep hbRep ⟨0, Limbs.radix_pos, ho⟩ hEb ⟨base, haRep, hrawForm⟩)
 
 #print axioms handled_of_shift_hit
 end RootE3Correct

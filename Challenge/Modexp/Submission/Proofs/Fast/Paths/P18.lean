@@ -5,7 +5,7 @@ set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
 /-! Basic-block instruction paths for the relocated leading-bit shortcut.
 
-`LZBASE` (pc 4342) is reached from `LZ`'s byte-0 arm with `[mask, w, i]`.  The
+`LZBASE` (pc 4347) is reached from `LZ`'s byte-0 arm with `[mask, w, i]`.  The
 bit loop's first iteration squares the accumulator, which is the Montgomery
 form of one and therefore a fixed point, and then multiplies by `BASE` because
 the leading bit of a nonzero byte is set, so it always ends holding `BASE`.

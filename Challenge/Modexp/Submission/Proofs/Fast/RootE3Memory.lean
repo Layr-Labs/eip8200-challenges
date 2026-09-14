@@ -218,18 +218,35 @@ theorem e3_output_facts (mem input : ByteArray) (n bsize mm minv k : Nat)
 
 #print axioms e3_output_facts
 
+theorem hitMem_acc (mem input : ByteArray) (n : Nat) (hn32 : n ≤ 8) :
+    Model.FastRepresents (hitMem mem input n) 256 n
+      (Precompile.bytesToNatPadded input 96 (32 * n)) := by
+  unfold hitMem Exp.storeWord
+  refine Model.fastRepresents_writeWord_disjoint _ 2080 256 n _ _ (Or.inr (by omega)) ?_
+  refine Model.fastRepresents_writeBytes_disjoint _ _ 2112 256 n _
+    (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega) ?_
+  exact FullBase.copyBaseMem_represents mem input n
 
-
-theorem m2_acc_value (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
-    (hm : 0 < mm) (hodd : mm % 2 = 1)
-    (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem) :
+theorem m2_acc_value (mem input : ByteArray) (n : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8) :
     Model.FastRepresents (m2Of mem input n) 256 n
-      (Precompile.bytesToNatPadded input 96 (32 * n) % mm) := by
-  have h1 := m1_acc mem input n mm hn hn32 hm hodd hmod htop
-  unfold m2Of preMem
-  refine ShiftCacheModel.represents_cache _ n 256 n _ (Or.inl (by omega)) ?_
-  exact fastRepresents_preMemOf _ _ 256 n _ (Or.inl (by unfold PRE_L; omega))
-    (fastRepresents_negStep _ n 256 n _ (Or.inl (by unfold NEG; omega)) h1 n le_rfl)
+      (Precompile.bytesToNatPadded input 96 (32 * n)) := by
+  have h1 : Model.FastRepresents (m1Of mem input n) 256 n
+      (Precompile.bytesToNatPadded input 96 (32 * n)) := by
+    unfold m1Of Csub.csResultMemory
+    split
+    · exact Csub.fastRepresents_mcopy_disjoint _ _ 512 (32*n) 256 n _
+        (Or.inr (by omega)) (hitMem_acc mem input n hn32)
+    · unfold Csub.subResultMemory
+      refine Csub.fastRepresents_mcopy_disjoint _ _ 512 (32*n) 256 n _ (Or.inr (by omega)) ?_
+      exact Csub.fastRepresents_csStep _ n 256 n _ (by omega) (Or.inl (by omega))
+        (hitMem_acc mem input n hn32) n le_rfl
+  have h2 : Model.FastRepresents (m2Of mem input n) 256 n
+      (Precompile.bytesToNatPadded input 96 (32 * n)) := by
+    unfold m2Of preMem
+    refine ShiftCacheModel.represents_cache _ n 256 n _ (Or.inl (by omega)) ?_
+    exact fastRepresents_preMemOf _ _ 256 n _ (Or.inl (by unfold PRE_L; omega))
+      (fastRepresents_negStep _ n 256 n _ (Or.inl (by unfold NEG; omega)) h1 n le_rfl)
+  exact h2
 
 def ordinaryFinal (mem input : ByteArray) (n mm : Nat) : ByteArray :=
   stepMems (flagSet (m2Of mem input n) (UInt256.ofNat 0)) n mm n
@@ -256,7 +273,7 @@ theorem ordinary_output_facts (mem input : ByteArray) (n bsize mm minv : Nat)
     let base := Precompile.bytesToNatPadded input 96 (32 * n)
     Exp.Frame out n bsize minv ∧ Model.FastRepresents out 0 n mm ∧
       Model.FastRepresents out 512 n (base % mm * Limbs.radix ^ n % mm) ∧
-      Model.FastRepresents out 256 n (base % mm) ∧
+      Model.FastRepresents out 256 n base ∧
       Model.FastRepresents out 768 n 0 ∧
       Model.FastRepresents out 1024 n (Limbs.radix ^ n % mm) := by
   dsimp only
@@ -269,7 +286,7 @@ theorem ordinary_output_facts (mem input : ByteArray) (n bsize mm minv : Nat)
   have hbaseFinal := stepMems_represents (flagSet (m2Of mem input n) (UInt256.ofNat 0))
     n mm _ hn hn8 hm (Model.fastRepresents_lt hmod) htwo invPrep.modulus invPrep.neg
     hbasePrep (Nat.mod_lt _ hm) n
-  have hacc2 := m2_acc_value mem input n mm hn hn8 hm hodd hmod htop
+  have hacc2 := m2_acc_value mem input n (by omega) hn8
   have haccPrep := flagSet_preserves _ (UInt256.ofNat 0) 256 n _ (Or.inl (by omega)) hacc2
   have haccFinal := represents_acc_after_steps _ n mm _ n (by omega) hn8 haccPrep
   have hone2 := m2_one_value mem input n (by omega) hn8 hone

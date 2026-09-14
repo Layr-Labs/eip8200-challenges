@@ -46,8 +46,7 @@ theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
     (hcc : Model.FastRepresents mem 1280 n (Limbs.radix * Limbs.radix ^ n % mm))
     (hrrb : Model.FastRepresents mem 1536 n rr)
     (hacc : Model.FastRepresents mem 256 n 0)
-    (hone : Model.FastRepresents mem 768 n 0)
-    (hmiss : ¬ FullBase.Matches mem n bsize) :
+    (hone : Model.FastRepresents mem 768 n 0) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
         (baseHead s mem n bsize esize msize) final) ∧
@@ -67,7 +66,61 @@ theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
   have hguard := Bytecode.FullBaseHitTrace.gasSteps_guard
     s mem n bsize esize msize hn32 hbword hact hcode hfork hrun hnp
   by_cases hmatch : FullBase.Matches mem n bsize
-  · exact False.elim (hmiss hmatch)
+  · have hbEq : bsize = 32 * n := hmatch.1
+    have hguardHit : Challenge.EvmProof.GasSteps
+        (FullBase.entryState s mem n bsize esize msize)
+        (FullBase.copyState s mem n bsize esize msize) := by
+      simpa [hmatch] using hguard
+    let copied := FullBase.copyBaseMem mem input n
+    let converted := sub.mpMem 1536 256 512 copied
+    let base := Precompile.bytesToNatPadded input 96 (32 * n)
+    let baseM := base * Limbs.radix ^ n % mm
+    have hvalues := FullBase.rawThenMonpro sub spec mem input hn32 hmpos
+      hcop hrrmod hrrlt hframe hmod hr1 hone hrrb
+    dsimp only at hvalues
+    rcases hvalues with
+      ⟨hframeCopy, hmodCopy, hrawCopy, hrrCopy, hbaseConv, hmodConv, hrrConv,
+        hr1Conv, honeConv, hframeConv, hrawConv⟩
+    have hcopy := Bytecode.FullBaseHitTrace.gasSteps_copyAdd
+      s mem input n bsize esize msize hn32 hact hdata hcode hfork hrun hnp
+    have hmonpro : Challenge.EvmProof.GasSteps
+        (FullBase.addCallState s mem input n bsize esize msize)
+        (FullBase.rejoinState s converted n bsize esize msize) := by
+      exact Challenge.EvmProof.GasSteps.cast
+        (sub.monpro 1536 256 512 (UInt256.ofNat 2637)
+          (outer n bsize esize msize) copied rr base
+          (by simp [outer]) (by omega) (by omega) (by omega) (by omega) (by omega)
+          jumpD3273 hframeCopy hmodCopy hrrCopy hrawCopy hrrlt) rfl rfl
+    have hEb : EbInv (mcopyMem converted 256 1024 (32 * n)) n mm baseM
+        (expAcc mm (Limbs.radix ^ n) baseM (expBits input bsize) 0) := by
+      refine ⟨?_, ?_, ?_, ?_⟩
+      · exact Csub.fastRepresents_mcopy_disjoint _ 1024 256 (32 * n) 0 n mm
+          (by omega) hmodConv
+      · exact Csub.fastRepresents_mcopy _ 1024 256 n
+          (Limbs.radix ^ n % mm) (by omega) hr1Conv
+      · exact Csub.fastRepresents_mcopy_disjoint _ 1024 256 (32 * n) 512 n
+          baseM (by omega) hbaseConv
+      · exact ⟨0, Limbs.radix_pos,
+          Csub.fastRepresents_mcopy_disjoint _ 1024 256 (32 * n) 768 n 0
+            (by omega) honeConv⟩
+    have hbaseForm : baseM ≡
+        Precompile.bytesToNatPadded input 96 bsize * Limbs.radix ^ n [MOD mm] := by
+      dsimp only [baseM, base]
+      rw [hbEq]
+      exact Nat.mod_modEq _ _
+    have hrawForm : base ≡ Precompile.bytesToNatPadded input 96 bsize [MOD mm] := by
+      simp only [base, hbEq]
+      exact Nat.ModEq.refl _
+    obtain ⟨final, ⟨tr⟩, hdone, hres⟩ :=
+      FixedDirectCorrect.handled_of_entryStateConcrete input s converted
+        n bsize esize msize mm minv baseM sub spec
+        hcode hfork hrun hnp hdata hstack hact hn hn32 hb he hmz hm32 hbsize hesize
+        hmsz hmm hodd hradix (Nat.mod_lt _ hmpos) hbaseForm hframeConv hmodConv
+        hbaseConv ⟨0, Limbs.radix_pos, honeConv⟩ hEb ⟨base, hrawConv, hrawForm⟩
+    have hroute := hredirect.trans hguardHit
+    have hroute := hroute.trans hcopy
+    have hroute := hroute.trans hmonpro
+    exact ⟨final, ⟨hroute.trans tr⟩, hdone, hres⟩
   · have hguardMiss : Challenge.EvmProof.GasSteps
         (FullBase.entryState s mem n bsize esize msize)
         (FullBase.fallbackState s mem n bsize esize msize) := by
@@ -81,7 +134,7 @@ theorem handled_of_baseHead (input : ByteArray) (s : State) (mem : ByteArray)
             n bsize esize msize mm minv bM sub spec hcode hfork hrun hnp hdata
             hstack hact hn hn32 hb he hmz hm32 hbsize hesize hmsz hmm hodd hradix
             hbMlt' hbMform' hframe' hmod' hbase' hone' hEb'
-            ⟨_, hraw', Nat.mod_modEq _ _, Nat.mod_lt _ hmpos⟩)
+            ⟨_, hraw', Nat.mod_modEq _ _⟩)
     exact ⟨final, ⟨(hredirect.trans hguardMiss).trans tr⟩, hdone, hres⟩
 
 end Challenge.Modexp.Submission.Proofs.Fast.Exp

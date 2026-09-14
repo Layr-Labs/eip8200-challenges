@@ -30,27 +30,27 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs
 
-@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2187 = 2940 := by
+@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2187 = 2939 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2193 = 2947 := by
+@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2193 = 2946 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2199 = 2954 := by
+@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2199 = 2953 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2205 = 2961 := by
+@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2205 = 2960 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2211 = 2968 := by
+@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2211 = 2967 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2217 = 2975 := by
+@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2217 = 2974 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -150,7 +150,7 @@ theorem run_hit (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock blk2874
       (hitState s mem n bsize esize msize) =
       some (Csub.csEntryState s (hitMem mem input n) (UInt256.ofNat 512)
-        (UInt256.ofNat pcCsubReturn) (outer n bsize esize msize)) := by
+        (UInt256.ofNat pcAfterCsub0) (outer n bsize esize msize)) := by
   have hsize : (UInt256.ofNat (32 * n)).toNat = 32 * n := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
     exact lt_of_le_of_lt (show 32 * n ≤ 256 by omega) (by decide)
@@ -168,7 +168,7 @@ theorem run_hit (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      hitState, frameState, pcHit, pcCsubReturn, Csub.csEntryState, hitMem, ShiftProducerCanonical.hitMemory,
+      hitState, frameState, pcHit, pcAfterCsub0, Csub.csEntryState, hitMem,
       FullBase.copyBaseMem, Exp.storeWord, outer, Exp.outer,
       hcode, hrun, hdata, hsize, haw1, haw2, haw3, jumpDest4976, Exp.push0_word,
       State.activeWordsAfterUInt256,

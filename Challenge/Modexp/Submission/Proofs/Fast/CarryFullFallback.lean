@@ -36,7 +36,7 @@ opaque gasSteps_fallback (E : EntryLemmas) (s : State) (mem : ByteArray) (pa pb 
       (dispatchState s mem pa pb pdst ret rest)
       (mpCsubState s (selectedRows (mpZeroed s mem n) pa pb n n) pdst ret rest) := by
   have hf := ((E.gasSteps_mulEntry s mem pa pb pdst ret rest (by omega) hrun hcode hfork hnp).trans
-    (Cios2Dispatch.gasSteps_commonFallbackEligible s mem (UInt256.ofNat 3717) pa pb n pdst ret rest
+    (Cios2Dispatch.gasSteps_commonFallbackEligible s mem (UInt256.ofNat 3722) pa pb n pdst ret rest
       (by omega) hrun hcode hfork hnp hact hn hn32 hs32 hslow)).trans
     (gasSteps_monpro s mem pa pb n pdst ret rest (by omega) hrun hcode hfork hnp hact
       hn hn32 hpa hpaFit hpb hpbFit hcds hs32 htl hml)
