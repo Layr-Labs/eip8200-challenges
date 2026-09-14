@@ -61,27 +61,27 @@ def commonFallbackState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Na
 /-- The `mul entry` JUMPDEST (instruction 3190, pc 4013 = 0x0f50). -/
 theorem jumpDest4012 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3550 = true := by
-  exact Artifact.isValidJumpDest_index 2659 (by rfl)
+  exact Artifact.isValidJumpDest_index 2661 (by rfl)
 
 /-- The `common` JUMPDEST (instruction 3190, pc 4104 = 0x0f54). -/
 theorem jumpDestCommon :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3554 = true := by
-  exact Artifact.isValidJumpDest_index 2661 (by rfl)
+  exact Artifact.isValidJumpDest_index 2663 (by rfl)
 
 /-- The kernel `setup` JUMPDEST (instruction 3190, pc 4123 = 0x0f6c). -/
 theorem jumpDestSetup :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3580 = true := by
-  exact Artifact.isValidJumpDest_index 2677 (by rfl)
+  exact Artifact.isValidJumpDest_index 2679 (by rfl)
 
 /-- The multiply row head (instruction 1760, pc 4261 = 0x0fc5). -/
 theorem jumpDestRowHead :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3717 = true := by
-  exact Artifact.isValidJumpDest_index 2770 (by rfl)
+  exact Artifact.isValidJumpDest_index 2772 (by rfl)
 
 /-- The square row head `sq_row` (instruction 3559, pc 2464 = 0x1266). -/
 theorem jumpDestSqRow :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4441 = true := by
-  exact Artifact.isValidJumpDest_index 3353 (by rfl)
+  exact Artifact.isValidJumpDest_index 3355 (by rfl)
 
 /-- `jumpDestRowHead` in the `hd.toNat` form taken by `gasSteps_setup`/`gasSteps_commonSetup`. -/
 theorem jumpDestRowHead' :
@@ -201,7 +201,7 @@ theorem run_commonFallback (s : State) (mem : ByteArray) (hd : UInt256) (pa pb :
       some (mpEntryState s mem pa pb pdst ret rest) := by
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 1202 = true := by
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 1203 = true := by
     rw [hcode]; exact jumpDest1865
   simp [commonFallbackProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     commonFallbackState, mpEntryState, hc4, hc5, hjd,
@@ -211,7 +211,7 @@ theorem run_commonFallback (s : State) (mem : ByteArray) (hd : UInt256) (pa pb :
 
 /-- The kernel `setup`: instructions 3189..3189 (pc 4123 = 0x0f6c .. 4260), 62 instructions. -/
 def setup : Block Artifact.submissionArtifact .Osaka 3580 StagedOperand.fullEntryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2677 59 3580 StagedOperand.fullEntryProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2679 59 3580 StagedOperand.fullEntryProgram
     (by decide) (by decide) (by rfl) (by decide)
 
 def environment (s : State)

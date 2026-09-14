@@ -145,7 +145,7 @@ def mpCall (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256)
 /-- The `ADDMOD` call state, pc 2347, stack `[pa, pb, pd, ret] ++ tail`. -/
 def amCall (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1474
+  { s with pc := UInt256.ofNat 1475
            stack := UInt256.ofNat pa :: UInt256.ofNat pb :: UInt256.ofNat pd ::
              ret :: tail
            memory := mem }
@@ -342,7 +342,7 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
     Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
     Model.FastRepresents mem 512 n a → a < mm →
     Challenge.EvmProof.GasSteps (sqCall s mem ret tail)
-      (retTo s (sqLoopMem k mem) (UInt256.ofNat 1145) tail)
+      (retTo s (sqLoopMem k mem) (UInt256.ofNat 1146) tail)
   /-- The raw factor retained in ACC decodes the Montgomery square chain. -/
   sqLoopValue : ∀ (k : Nat) (mem : ByteArray) (a b : Nat), n = 4 ∨ n = 8 → 1 ≤ k →
     Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
@@ -380,45 +380,45 @@ def selOf (n k : Nat) : Nat := 1024 + 256 * bitAt n k
 
 /-- `RRL`, pc 1569, at the top of iteration `k`. -/
 def rrHead (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
-  { s with pc := UInt256.ofNat 902
+  { s with pc := UInt256.ofNat 903
            stack := UInt256.ofNat k :: outer n bsize esize msize
            memory := mem }
 
 /-- pc 1713, back from the squaring `MonPro(RR, RR) → RR`. -/
 def rrMid (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
-  { s with pc := UInt256.ofNat 917
+  { s with pc := UInt256.ofNat 918
            stack := UInt256.ofNat k :: outer n bsize esize msize
            memory := mem }
 
 /-- pc 2744, with the selector computed but the multiply not yet taken. -/
 def rrSel (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
-  { s with pc := UInt256.ofNat 1727
+  { s with pc := UInt256.ofNat 1728
            stack := UInt256.ofNat (selOf n k) :: UInt256.ofNat k ::
              outer n bsize esize msize
            memory := mem }
 
 /-- pc 1719, back from the selected multiply, with the selector still live. -/
 def rrPost (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
-  { s with pc := UInt256.ofNat 935
+  { s with pc := UInt256.ofNat 936
            stack := UInt256.ofNat (selOf n k) :: UInt256.ofNat k ::
              outer n bsize esize msize
            memory := mem }
 
 /-- pc 1750, the fallthrough that decrements the counter. -/
 def rrNext (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
-  { s with pc := UInt256.ofNat 943
+  { s with pc := UInt256.ofNat 944
            stack := UInt256.ofNat k :: outer n bsize esize msize
            memory := mem }
 
 /-- `RRE`, pc 1758, reached once the counter has hit zero. -/
 def rrDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 950
+  { s with pc := UInt256.ofNat 951
            stack := UInt256.ofNat 0 :: outer n bsize esize msize
            memory := mem }
 
 /-- pc 1766, the head of the base chain. -/
 def baseHead (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 958
+  { s with pc := UInt256.ofNat 959
            stack := outer n bsize esize msize
            memory := mem }
 
@@ -437,7 +437,7 @@ theorem run_rrHead (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1155
       (rrHead s mem n bsize esize msize k) =
-      some (mpCall s mem 1536 1536 1536 (UInt256.ofNat 917)
+      some (mpCall s mem 1536 1536 1536 (UInt256.ofNat 918)
         (UInt256.ofNat k :: outer n bsize esize msize)) := by
   have h1939Nat : (UInt256.ofNat 3550).toNat = 3550 := by decide
   simp (config := { maxSteps := 400000 }) [blk1155, opAt, pushAt, wfOp,
@@ -487,7 +487,7 @@ theorem run_rrMid (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
 
 /-- pc 1824, the multiply's call frame about to be pushed. -/
 def rrCallSel (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
-  { s with pc := UInt256.ofNat 1737
+  { s with pc := UInt256.ofNat 1738
            stack := UInt256.ofNat (selOf n k) :: UInt256.ofNat k ::
              outer n bsize esize msize
            memory := mem }
@@ -544,7 +544,7 @@ theorem run_rrCallSel (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1822
       (rrCallSel s mem n bsize esize msize k) =
-      some (mpCall s mem 1536 (selOf n k) 1536 (UInt256.ofNat 935)
+      some (mpCall s mem 1536 (selOf n k) 1536 (UInt256.ofNat 936)
         (UInt256.ofNat (selOf n k) :: UInt256.ofNat k ::
           outer n bsize esize msize)) := by
   simp (config := { maxSteps := 400000 }) [blk1822, opAt, pushAt, wfOp,
@@ -581,7 +581,7 @@ theorem run_rrPost_exit (s : State) (mem : ByteArray) (n bsize esize msize : Nat
     Challenge.EvmProof.Stepper.runLocatedBlock blk1178
       (rrPost s mem n bsize esize msize 0) =
       some (rrDone s mem n bsize esize msize) := by
-  have h1631Nat : (UInt256.ofNat 950).toNat = 950 := by decide
+  have h1631Nat : (UInt256.ofNat 951).toNat = 951 := by decide
   simp (config := { maxSteps := 400000 }) [blk1178, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -606,7 +606,7 @@ theorem run_rrNext (s : State) (mem : ByteArray)
   have hdec : UInt256.lnot ({ val := 0 } : UInt256) + UInt256.ofNat (k' + 1) =
       UInt256.ofNat k' := by
     interval_cases k' <;> decide
-  have h1569Nat : (UInt256.ofNat 902).toNat = 902 := by decide
+  have h1569Nat : (UInt256.ofNat 903).toNat = 903 := by decide
   simp (config := { maxSteps := 400000 }) [blk1184, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -667,7 +667,7 @@ def gasSteps_rrHead (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (rrHead s mem n bsize esize msize k)
-      (mpCall s mem 1536 1536 1536 (UInt256.ofNat 917)
+      (mpCall s mem 1536 1536 1536 (UInt256.ofNat 918)
         (UInt256.ofNat k :: outer n bsize esize msize)) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1155 hcode hfork
@@ -715,7 +715,7 @@ def gasSteps_rrCallSel (s : State) (mem : ByteArray) (n bsize esize msize k : Na
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (rrCallSel s mem n bsize esize msize k)
-      (mpCall s mem 1536 (selOf n k) 1536 (UInt256.ofNat 935)
+      (mpCall s mem 1536 (selOf n k) 1536 (UInt256.ofNat 936)
         (UInt256.ofNat (selOf n k) :: UInt256.ofNat k ::
           outer n bsize esize msize)) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
@@ -836,31 +836,31 @@ def topWidth (bsize : Nat) : Nat := bsize - 32 * (pbOf bsize - 1)
 
 /-- `BL`, pc 1746, with the base-limb counter at `j`. -/
 def blHead (s : State) (mem : ByteArray) (n bsize esize msize pb j : Nat) : State :=
-  { s with pc := UInt256.ofNat 962
+  { s with pc := UInt256.ofNat 963
            stack := UInt256.ofNat j :: UInt256.ofNat pb :: outer n bsize esize msize
            memory := mem }
 
 /-- pc 1804, the loop body which calls `MonPro(ACC, CC) → ACC`. -/
 def blMul (s : State) (mem : ByteArray) (n bsize esize msize pb j : Nat) : State :=
-  { s with pc := UInt256.ofNat 970
+  { s with pc := UInt256.ofNat 971
            stack := UInt256.ofNat j :: UInt256.ofNat pb :: outer n bsize esize msize
            memory := mem }
 
 /-- pc 1820, back from the multiply. -/
 def blAdd (s : State) (mem : ByteArray) (n bsize esize msize pb j : Nat) : State :=
-  { s with pc := UInt256.ofNat 986
+  { s with pc := UInt256.ofNat 987
            stack := UInt256.ofNat j :: UInt256.ofNat pb :: outer n bsize esize msize
            memory := mem }
 
 /-- pc 1728, back from the add. -/
 def blNext (s : State) (mem : ByteArray) (n bsize esize msize pb j : Nat) : State :=
-  { s with pc := UInt256.ofNat 1021
+  { s with pc := UInt256.ofNat 1022
            stack := UInt256.ofNat j :: UInt256.ofNat pb :: outer n bsize esize msize
            memory := mem }
 
 /-- `BLE`, pc 1863, where the Horner loop ends. -/
 def blExit (s : State) (mem : ByteArray) (n bsize esize msize pb j : Nat) : State :=
-  { s with pc := UInt256.ofNat 1029
+  { s with pc := UInt256.ofNat 1030
            stack := UInt256.ofNat j :: UInt256.ofNat pb :: outer n bsize esize msize
            memory := mem }
 
@@ -900,7 +900,7 @@ theorem run_blHead_exit (s : State) (mem : ByteArray)
   have hpb256 : pb < 2 ^ 256 := Nat.lt_of_le_of_lt hpb (by norm_num)
   have heq : UInt256.eq (UInt256.ofNat j) (UInt256.ofNat pb) = UInt256.ofNat 1 := by
     rw [UInt256.eq, toNat_ofNat_self hj256, toNat_ofNat_self hpb256, if_pos hje]
-  have h1736Nat : (UInt256.ofNat 1029).toNat = 1029 := by decide
+  have h1736Nat : (UInt256.ofNat 1030).toNat = 1030 := by decide
   simp (config := { maxSteps := 400000 }) [blk1216, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -918,7 +918,7 @@ theorem run_blMul (s : State) (mem : ByteArray) (n bsize esize msize pb j : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1223
       (blMul s mem n bsize esize msize pb j) =
-      some (mpCall s mem 256 1280 256 (UInt256.ofNat 986)
+      some (mpCall s mem 256 1280 256 (UInt256.ofNat 987)
         (UInt256.ofNat j :: UInt256.ofNat pb :: outer n bsize esize msize)) := by
   have h1939Nat : (UInt256.ofNat 3550).toNat = 3550 := by decide
   simp (config := { maxSteps := 400000 }) [blk1223, opAt, pushAt, wfOp,
@@ -939,7 +939,7 @@ theorem run_blNext (s : State) (mem : ByteArray) (n bsize esize msize pb j : Nat
       (blNext s mem n bsize esize msize pb j) =
       some (blHead s mem n bsize esize msize pb (j + 1)) := by
   have hcomm : 1 + j = j + 1 := Nat.add_comm 1 j
-  have h1668Nat : (UInt256.ofNat 962).toNat = 962 := by decide
+  have h1668Nat : (UInt256.ofNat 963).toNat = 963 := by decide
   simp (config := { maxSteps := 400000 }) [blk1250, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -1137,7 +1137,7 @@ theorem run_blAdd (s : State) (mem input : ByteArray)
     Challenge.EvmProof.Stepper.runLocatedBlock blk1229
       (blAdd s mem n bsize esize msize pb j) =
       some (amCall s (storeWord mem (736 + 32 * n) (baseLimbWord input bsize pb j))
-        256 768 256 (UInt256.ofNat 1021)
+        256 768 256 (UInt256.ofNat 1022)
         (UInt256.ofNat j :: UInt256.ofNat pb :: outer n bsize esize msize)) := by
   have hsub1 : UInt256.ofNat pb - UInt256.ofNat j = UInt256.ofNat (pb - j) :=
     Challenge.EvmProof.Word.ofNat_sub_ofNat hjpb
@@ -1169,7 +1169,7 @@ theorem run_blAdd (s : State) (mem input : ByteArray)
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (736 + 32 * n) 32) = s.activeWords :=
     activeWords_fix s (736 + 32 * n) 32 (by omega) (by omega) hact
-  have h2467Nat : (UInt256.ofNat 1474).toNat = 1474 := by decide
+  have h2467Nat : (UInt256.ofNat 1475).toNat = 1475 := by decide
   simp (config := { maxSteps := 800000 }) [blk1229, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -1234,7 +1234,7 @@ def gasSteps_blMul (s : State) (mem : ByteArray) (n bsize esize msize pb j : Nat
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (blMul s mem n bsize esize msize pb j)
-      (mpCall s mem 256 1280 256 (UInt256.ofNat 986)
+      (mpCall s mem 256 1280 256 (UInt256.ofNat 987)
         (UInt256.ofNat j :: UInt256.ofNat pb :: outer n bsize esize msize)) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1223 hcode hfork
@@ -1252,7 +1252,7 @@ def gasSteps_blAdd (s : State) (mem input : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (blAdd s mem n bsize esize msize pb j)
       (amCall s (storeWord mem (736 + 32 * n) (baseLimbWord input bsize pb j))
-        256 768 256 (UInt256.ofNat 1021)
+        256 768 256 (UInt256.ofNat 1022)
         (UInt256.ofNat j :: UInt256.ofNat pb :: outer n bsize esize msize)) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1229 hcode hfork
@@ -1310,13 +1310,13 @@ def expByte (input : ByteArray) (bsize i : Nat) : Nat :=
 
 /-- `EB`, pc 1838, at the top of exponent byte `i`. -/
 def ebHead (s : State) (mem : ByteArray) (n bsize esize msize i : Nat) : State :=
-  { s with pc := UInt256.ofNat 1048
+  { s with pc := UInt256.ofNat 1049
            stack := UInt256.ofNat i :: outer n bsize esize msize
            memory := mem }
 
 /-- pc 1905, which loads exponent byte `i`. -/
 def ebLoad (s : State) (mem : ByteArray) (n bsize esize msize i : Nat) : State :=
-  { s with pc := UInt256.ofNat 1056
+  { s with pc := UInt256.ofNat 1057
            stack := UInt256.ofNat i :: outer n bsize esize msize
            memory := mem }
 
@@ -1328,7 +1328,7 @@ def bitStack (n bsize esize msize i w mask : Nat) : List UInt256 :=
 /-- `EBIT`, pc 1916. -/
 def ebitHead (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 1060
+  { s with pc := UInt256.ofNat 1061
            stack := bitStack n bsize esize msize i w mask
            memory := mem }
 
@@ -1344,53 +1344,53 @@ def lzBaseCopy (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat
 /-- pc 1820, back from the squaring. -/
 def ebitTest (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 1075
+  { s with pc := UInt256.ofNat 1076
            stack := bitStack n bsize esize msize i w mask
            memory := mem }
 
 /-- pc 1942, the multiply branch. -/
 def ebitMul (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 1084
+  { s with pc := UInt256.ofNat 1085
            stack := bitStack n bsize esize msize i w mask
            memory := mem }
 
 /-- pc 1958, back from the multiply. -/
 def ebitJoin (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 1100
+  { s with pc := UInt256.ofNat 1101
            stack := bitStack n bsize esize msize i w mask
            memory := mem }
 
 /-- `ENX`, pc 1894. -/
 def ebitNext (s : State) (mem : ByteArray) (n bsize esize msize i w mask : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 1101
+  { s with pc := UInt256.ofNat 1102
            stack := bitStack n bsize esize msize i w mask
            memory := mem }
 
 /-- pc 1824, the byte-loop tail. -/
 def ebTail (s : State) (mem : ByteArray) (n bsize esize msize i w : Nat) : State :=
-  { s with pc := UInt256.ofNat 1110
+  { s with pc := UInt256.ofNat 1111
            stack := bitStack n bsize esize msize i w 0
            memory := mem }
 
 /-- `EBE`, pc 1977. -/
 def ebEnd (s : State) (mem : ByteArray) (n bsize esize msize i : Nat) : State :=
-  { s with pc := UInt256.ofNat 1119
+  { s with pc := UInt256.ofNat 1120
            stack := UInt256.ofNat i :: outer n bsize esize msize
            memory := mem }
 
 /-- pc 1938, back from the final `MonPro(ACC, ONE)`. -/
 def finHead (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 1147
+  { s with pc := UInt256.ofNat 1148
            stack := outer n bsize esize msize
            memory := mem }
 
 /-- The halted state after `RETURN`. -/
 def returnedState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 1156
+  { s with pc := UInt256.ofNat 1157
            stack := outer n bsize esize msize
            memory := mem
            halt := .Returned
@@ -1431,7 +1431,7 @@ theorem run_ebHead_exit (s : State) (mem : ByteArray) (n bsize esize msize i : N
   have he256 : esize < 2 ^ 256 := Nat.lt_of_le_of_lt he (by norm_num)
   have heq : UInt256.eq (UInt256.ofNat i) (UInt256.ofNat esize) = UInt256.ofNat 1 := by
     rw [UInt256.eq, toNat_ofNat_self hi256, toNat_ofNat_self he256, if_pos hie]
-  have h1850Nat : (UInt256.ofNat 1119).toNat = 1119 := by decide
+  have h1850Nat : (UInt256.ofNat 1120).toNat = 1120 := by decide
   simp (config := { maxSteps := 400000 }) [blk1272, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -1524,7 +1524,7 @@ theorem run_lzBaseCopy (s : State) (mem : ByteArray)
       (32 * n)) = s.activeWords :=
     activeWords_fix2 s 256 (32 * n) 512 (32 * n) (by omega) (by omega) (by omega)
       (by omega) hact
-  have h1832Nat : (UInt256.ofNat 1101).toNat = 1101 := by decide
+  have h1832Nat : (UInt256.ofNat 1102).toNat = 1102 := by decide
   simp (config := { maxSteps := 600000 }) [blk2562, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -1549,7 +1549,7 @@ theorem run_ebitHead (s : State) (mem : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1287
       (ebitHead s mem n bsize esize msize i w mask) =
-      some (mpCall s mem 256 256 256 (UInt256.ofNat 1075)
+      some (mpCall s mem 256 256 256 (UInt256.ofNat 1076)
         (bitStack n bsize esize msize i w mask)) := by
   have h1939Nat : (UInt256.ofNat 3550).toNat = 3550 := by decide
   simp (config := { maxSteps := 400000 }) [blk1287, opAt, pushAt, wfOp,
@@ -1574,7 +1574,7 @@ theorem run_ebitTest_zero (s : State) (mem : ByteArray)
   have hland : UInt256.land (UInt256.ofNat mask) (UInt256.ofNat w) =
       UInt256.ofNat 0 := by
     rw [land_ofNat mask w hmask hw, hand]
-  have h1832Nat : (UInt256.ofNat 1101).toNat = 1101 := by decide
+  have h1832Nat : (UInt256.ofNat 1102).toNat = 1102 := by decide
   simp (config := { maxSteps := 400000 }) [blk1294, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -1615,7 +1615,7 @@ theorem run_ebitMul (s : State) (mem : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1301
       (ebitMul s mem n bsize esize msize i w mask) =
-      some (mpCall s mem 256 512 256 (UInt256.ofNat 1100)
+      some (mpCall s mem 256 512 256 (UInt256.ofNat 1101)
         (bitStack n bsize esize msize i w mask)) := by
   have h1939Nat : (UInt256.ofNat 3550).toNat = 3550 := by decide
   simp (config := { maxSteps := 400000 }) [blk1301, opAt, pushAt, wfOp,
@@ -1658,7 +1658,7 @@ theorem run_ebitNext_loop (s : State) (mem : ByteArray)
   have htrue : UInt256.isTrue (UInt256.ofNat (mask / 2)) :=
     isTrue_ofNat (Nat.lt_of_le_of_lt (show mask / 2 ≤ 128 by omega) (by norm_num))
       (by omega)
-  have h1789Nat : (UInt256.ofNat 1060).toNat = 1060 := by decide
+  have h1789Nat : (UInt256.ofNat 1061).toNat = 1061 := by decide
   simp (config := { maxSteps := 400000 }) [blk1308, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -1698,7 +1698,7 @@ theorem run_ebTail (s : State) (mem : ByteArray) (n bsize esize msize i w : Nat)
       (ebTail s mem n bsize esize msize i w) =
       some (ebHead s mem n bsize esize msize (i + 1)) := by
   have hcomm : 1 + i = i + 1 := Nat.add_comm 1 i
-  have h1769Nat : (UInt256.ofNat 1048).toNat = 1048 := by decide
+  have h1769Nat : (UInt256.ofNat 1049).toNat = 1049 := by decide
   simp (config := { maxSteps := 400000 }) [blk1314, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
@@ -1717,7 +1717,7 @@ theorem run_ebEnd (s : State) (mem : ByteArray) (n bsize esize msize i : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock blk1320
       (ebEnd s mem n bsize esize msize i) =
       some (mpCall s (storeWord mem (736 + 32 * n) (UInt256.ofNat 1))
-        256 768 256 (UInt256.ofNat 1147) (outer n bsize esize msize)) := by
+        256 768 256 (UInt256.ofNat 1148) (outer n bsize esize msize)) := by
   have hmod : (736 + 32 * n) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936
       = 736 + 32 * n :=
@@ -1947,7 +1947,7 @@ def gasSteps_ebitHead (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (ebitHead s mem n bsize esize msize i w mask)
-      (mpCall s mem 256 256 256 (UInt256.ofNat 1075)
+      (mpCall s mem 256 256 256 (UInt256.ofNat 1076)
         (bitStack n bsize esize msize i w mask)) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1287 hcode hfork
@@ -1987,7 +1987,7 @@ def gasSteps_ebitMul (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (ebitMul s mem n bsize esize msize i w mask)
-      (mpCall s mem 256 512 256 (UInt256.ofNat 1100)
+      (mpCall s mem 256 512 256 (UInt256.ofNat 1101)
         (bitStack n bsize esize msize i w mask)) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1301 hcode hfork
@@ -2049,7 +2049,7 @@ def gasSteps_ebEnd (s : State) (mem : ByteArray) (n bsize esize msize i : Nat)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (ebEnd s mem n bsize esize msize i)
       (mpCall s (storeWord mem (736 + 32 * n) (UInt256.ofNat 1))
-        256 768 256 (UInt256.ofNat 1147) (outer n bsize esize msize)) :=
+        256 768 256 (UInt256.ofNat 1148) (outer n bsize esize msize)) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1320 hcode hfork
       (run_ebEnd s mem n bsize esize msize i hn hn32 hact hcode hrun) hrun hnp
@@ -2870,7 +2870,7 @@ pc 1569.  `DOUBLE256` enters through the same kind of abstract contract as
 /-- The `DOUBLE256` entry, pc 2038, stack `[px, ret] ++ OUTER`. -/
 def dblCall (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 1174
+  { s with pc := UInt256.ofNat 1175
            stack := UInt256.ofNat px :: ret :: outer n bsize esize msize
            memory := mem }
 
@@ -2878,7 +2878,7 @@ def dblCall (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
 convention as `DOUBLE256`, which it dispatches to when the guard fails. -/
 def r1Call (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 1657
+  { s with pc := UInt256.ofNat 1658
            stack := UInt256.ofNat px :: ret :: outer n bsize esize msize
            memory := mem }
 
@@ -2892,7 +2892,7 @@ def ccCall (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
 
 /-- `r0`, pc 1610. -/
 def r0State (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 880
+  { s with pc := UInt256.ofNat 881
            stack := outer n bsize esize msize
            memory := mem }
 
@@ -3644,7 +3644,7 @@ into this file's dependency graph.  The final assembly therefore belongs in
 one-liner it needs. -/
 
 /-- **The `handled` obligation, from a trace and the value of the `ACC` block.**
-`entry` is the state the entry hop produces (`Main.trampolineState input 1362`),
+`entry` is the state the entry hop produces (`Main.trampolineState input 1363`),
 `s` the carrier of the fast-path states (`initialState submissionBytecode input 0`,
 whose `callStack` is `[]` by `rfl`). -/
 theorem handled_of_trace (input : ByteArray) (entry s : State) (mem : ByteArray)
@@ -3690,28 +3690,28 @@ theorem jumpD (pc : Nat) (hpc : (UInt256.ofNat pc).toNat = pc)
   rw [hpc]; exact hj
 
 theorem jumpD1586 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 917).toNat = true := jumpD 917 (by decide) jumpDest1565
+    (UInt256.ofNat 918).toNat = true := jumpD 918 (by decide) jumpDest1565
 
 theorem jumpD1615 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 935).toNat = true := jumpD 935 (by decide) jumpDest1584
+    (UInt256.ofNat 936).toNat = true := jumpD 936 (by decide) jumpDest1584
 
 theorem jumpD1693 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 986).toNat = true := jumpD 986 (by decide) jumpDest1635
+    (UInt256.ofNat 987).toNat = true := jumpD 987 (by decide) jumpDest1635
 
 theorem jumpD1728 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 1021).toNat = true := jumpD 1021 (by decide) jumpDest1670
+    (UInt256.ofNat 1022).toNat = true := jumpD 1022 (by decide) jumpDest1670
 
 theorem jumpD1755 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 1048).toNat = true := jumpD 1048 (by decide) jumpDest1697
+    (UInt256.ofNat 1049).toNat = true := jumpD 1049 (by decide) jumpDest1697
 
 theorem jumpD1806 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 1075).toNat = true := jumpD 1075 (by decide) jumpDest1732
+    (UInt256.ofNat 1076).toNat = true := jumpD 1076 (by decide) jumpDest1732
 
 theorem jumpD1831 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 1100).toNat = true := jumpD 1100 (by decide) jumpDest1757
+    (UInt256.ofNat 1101).toNat = true := jumpD 1101 (by decide) jumpDest1757
 
 theorem jumpD1533 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 880).toNat = true := jumpD 880 (by decide) jumpDest1526
+    (UInt256.ofNat 881).toNat = true := jumpD 881 (by decide) jumpDest1526
 
 theorem jumpD3273 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 2637).toNat = true := jumpD 2637 (by decide) jumpDest3412
@@ -3720,7 +3720,7 @@ theorem jumpD3571 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 2394).toNat = true := jumpD 2394 (by decide) jumpDest3111
 
 theorem jumpD1876 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 1147).toNat = true := jumpD 1147 (by decide) jumpDest1802
+    (UInt256.ofNat 1148).toNat = true := jumpD 1148 (by decide) jumpDest1802
 
 /-- The configuration words survive the `RR` chain. -/
 theorem rrMem_frame {s : State} {n bsize mm minv : Nat}
@@ -3776,7 +3776,7 @@ def gasSteps_rrBody (s : State) {n bsize mm minv R : Nat}
   have hmid : Challenge.EvmProof.GasSteps (rrHead s mem n bsize esize msize k)
       (rrSel s (sub.mpMem 1536 1536 1536 mem) n bsize esize msize k) :=
     ((gasSteps_rrHead s mem n bsize esize msize k hcode hfork hrun hnp).trans
-      (sub.monpro 1536 1536 1536 (UInt256.ofNat 917)
+      (sub.monpro 1536 1536 1536 (UInt256.ofNat 918)
         (UInt256.ofNat k :: outer n bsize esize msize) mem v v (by simp)
         (by omega) (by omega) (by omega) (by omega) (by omega) jumpD1586 hframe
         hinv.modulus hinv.rr hinv.rr hvlt)).trans
@@ -3798,7 +3798,7 @@ def gasSteps_rrBody (s : State) {n bsize mm minv R : Nat}
               hcode hfork hrun hnp).trans
             (gasSteps_rrCallSel s (sub.mpMem 1536 1536 1536 mem) n bsize esize msize k
               hcode hfork hrun hnp)).trans
-          (sub.monpro 1536 (selOf n k) 1536 (UInt256.ofNat 935)
+          (sub.monpro 1536 (selOf n k) 1536 (UInt256.ofNat 936)
             (UInt256.ofNat (selOf n k) :: UInt256.ofNat k :: outer n bsize esize msize)
             (sub.mpMem 1536 1536 1536 mem) (Model.montMul mm R v v)
             (if bitAt n k = 0 then R % mm else Limbs.radix * R % mm) (by simp)
@@ -3849,7 +3849,7 @@ def gasSteps_rrLastBody (s : State) {n bsize mm minv R : Nat}
   have hmid : Challenge.EvmProof.GasSteps (rrHead s mem n bsize esize msize 0)
       (rrSel s (sub.mpMem 1536 1536 1536 mem) n bsize esize msize 0) :=
     ((gasSteps_rrHead s mem n bsize esize msize 0 hcode hfork hrun hnp).trans
-      (sub.monpro 1536 1536 1536 (UInt256.ofNat 917)
+      (sub.monpro 1536 1536 1536 (UInt256.ofNat 918)
         (UInt256.ofNat 0 :: outer n bsize esize msize) mem v v (by simp)
         (by omega) (by omega) (by omega) (by omega) (by omega) jumpD1586 hframe
         hinv.modulus hinv.rr hinv.rr hvlt)).trans
@@ -3870,7 +3870,7 @@ def gasSteps_rrLastBody (s : State) {n bsize mm minv R : Nat}
               hcode hfork hrun hnp).trans
             (gasSteps_rrCallSel s (sub.mpMem 1536 1536 1536 mem) n bsize esize msize 0
               hcode hfork hrun hnp)).trans
-          (sub.monpro 1536 (selOf n 0) 1536 (UInt256.ofNat 935)
+          (sub.monpro 1536 (selOf n 0) 1536 (UInt256.ofNat 936)
             (UInt256.ofNat (selOf n 0) :: UInt256.ofNat 0 :: outer n bsize esize msize)
             (sub.mpMem 1536 1536 1536 mem) (Model.montMul mm R v v)
             (if bitAt n 0 = 0 then R % mm else Limbs.radix * R % mm) (by simp)
@@ -3957,14 +3957,14 @@ def gasSteps_blBody (s : State) {n bsize mm minv R : Nat}
   ((((gasSteps_blBodyHead s mem n bsize esize msize pb j hpb hjpb hcode hfork hrun
       hnp).trans
     (gasSteps_blMul s mem n bsize esize msize pb j hcode hfork hrun hnp)).trans
-      (sub.monpro 256 1280 256 (UInt256.ofNat 986)
+      (sub.monpro 256 1280 256 (UInt256.ofNat 987)
         (UInt256.ofNat j :: UInt256.ofNat pb :: outer n bsize esize msize) mem acc
         (Limbs.radix * R % mm) (by simp) (by omega) (by omega) (by omega) (by omega)
         (by omega) jumpD1693 hframe hinv.modulus hinv.accBlock hinv.ccBlock
         hacclt)).trans
     (gasSteps_blAdd s (sub.mpMem 256 1280 256 mem) input n bsize esize msize pb j
       hdata hn hn32 hb hpb hj (by omega) hle hact hcode hfork hrun hnp)).trans
-      ((sub.addmod 256 768 256 (UInt256.ofNat 1021)
+      ((sub.addmod 256 768 256 (UInt256.ofNat 1022)
         (UInt256.ofNat j :: UInt256.ofNat pb :: outer n bsize esize msize)
         (storeWord (sub.mpMem 256 1280 256 mem) (736 + 32 * n)
           (baseLimbWord input bsize pb j)) (by simp) (by omega) (by omega) (by omega)
@@ -4145,7 +4145,7 @@ def gasSteps_bitStep (s : State) {n bsize mm minv R : Nat}
     Challenge.EvmProof.GasSteps.cast
       (((gasSteps_ebitHead s mem n bsize esize msize i w (2 ^ r) hcode hfork hrun
           hnp).trans
-        (sub.monpro 256 256 256 (UInt256.ofNat 1075)
+        (sub.monpro 256 256 256 (UInt256.ofNat 1076)
           (bitStack n bsize esize msize i w (2 ^ r)) mem acc acc (by simp [bitStack])
           (by omega) (by omega) (by omega) (by omega) (by omega) jumpD1806 hframe
           hinv.modulus hinv.accBlock hinv.accBlock hacc)).trans
@@ -4171,7 +4171,7 @@ def gasSteps_bitStep (s : State) {n bsize mm minv R : Nat}
     Challenge.EvmProof.GasSteps.cast
       (((((gasSteps_ebitHead s mem n bsize esize msize i w (2 ^ r) hcode hfork hrun
           hnp).trans
-        (sub.monpro 256 256 256 (UInt256.ofNat 1075)
+        (sub.monpro 256 256 256 (UInt256.ofNat 1076)
           (bitStack n bsize esize msize i w (2 ^ r)) mem acc acc (by simp [bitStack])
           (by omega) (by omega) (by omega) (by omega) (by omega) jumpD1806 hframe
           hinv.modulus hinv.accBlock hinv.accBlock hacc)).trans
@@ -4179,7 +4179,7 @@ def gasSteps_bitStep (s : State) {n bsize mm minv R : Nat}
           (2 ^ r) hmask hw256 hne hcode hfork hrun hnp)).trans
         ((gasSteps_ebitMul s (sub.mpMem 256 256 256 mem) n bsize esize msize i w
             (2 ^ r) hcode hfork hrun hnp).trans
-          (sub.monpro 256 512 256 (UInt256.ofNat 1100)
+          (sub.monpro 256 512 256 (UInt256.ofNat 1101)
             (bitStack n bsize esize msize i w (2 ^ r))
             (sub.mpMem 256 256 256 mem) (Model.montMul mm R acc acc) bM
             (by simp [bitStack]) (by omega) (by omega) (by omega) (by omega)
@@ -4540,13 +4540,13 @@ def gasSteps_setupToRR (s : State) {n bsize mm minv : Nat}
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (r1Call s mem 1024 (UInt256.ofNat 880) n bsize esize msize)
+      (r1Call s mem 1024 (UInt256.ofNat 881) n bsize esize msize)
       (RrLeadingTraceCore.entryState s (setupToDirectMem dblF ccF n mem)
         n bsize esize msize) :=
   have hf1 : Frame (dblF 1024 mem) n bsize minv := dblFrame mem hframe
   have hf2 : Frame (mcopyMem (dblF 1024 mem) 1280 1024 (32 * n)) n bsize minv :=
     frame_mcopyMem (by omega) hf1
-  (((dbl (UInt256.ofNat 880) mem jumpD1533 hframe).trans
+  (((dbl (UInt256.ofNat 881) mem jumpD1533 hframe).trans
     (gasSteps_r0 s (dblF 1024 mem) n bsize esize msize hn hn32 hact hf1.s32 hcode
       hfork hrun hnp)).trans
       (cc (UInt256.ofNat 2394)
@@ -5312,8 +5312,8 @@ theorem ccbMem_modulus {mpMem amMem : Nat → Nat → Nat → ByteArray → Byte
 
 theorem jump2888 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (UInt256.ofNat 1645).toNat = true := by
-  rw [show (UInt256.ofNat 1645).toNat = 1645 by decide]
+      (UInt256.ofNat 1646).toNat = true := by
+  rw [show (UInt256.ofNat 1646).toNat = 1646 by decide]
   exact jumpDest2310
 
 theorem jump4040 :
@@ -5365,7 +5365,7 @@ def gasSteps_ccbFull (s : State) {n bsize mm minv R : Nat}
   · intro i _hi
     have hsquare := ccSqMem_inv spec hm hn32 px hpxlo hpxhi
       (seedMems (CcbSeed.doubles n)) seedValue hseedLt hseed.2.1 hseed.1 hseed.2.2 i
-    exact sub.monpro px px px (UInt256.ofNat 1645)
+    exact sub.monpro px px px (UInt256.ofNat 1646)
       (Ccb.loopStack px (CcbSeed.squares n - i) ret (outer n bsize esize msize))
       (squareMems i) (ccSq mm R seedValue i) (ccSq mm R seedValue i)
       (by simp only [Ccb.loopStack, outer, List.length_cons, List.length_nil,
@@ -5684,7 +5684,7 @@ def gasSteps_handover (s : State) (mem : ByteArray) (n bsize esize msize mm minv
     (htz : Model.FastRepresents mem 2112 n 0)
     (hframe0 : Frame mem n bsize minv) :
     Challenge.EvmProof.GasSteps
-      (r1Call s mem 1024 (UInt256.ofNat 880) n bsize esize msize)
+      (r1Call s mem 1024 (UInt256.ofNat 881) n bsize esize msize)
       (RrLeadingTraceCore.entryState s
         (setupToDirectMem (r1Mem n) (ccbMem n sub.mpMem sub.amMem) n mem)
         n bsize esize msize) :=
@@ -5794,7 +5794,7 @@ theorem gasSteps_handled (input : ByteArray)
     (hpath : Challenge.Modexp.Submission.Proofs.Fast.Setup.FastPath input) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
-        (Main.trampolineState input 1250) final) ∧
+        (Main.trampolineState input 1251) final) ∧
         final.isDone = true ∧
         final.toResult = .returned (Challenge.Modexp.spec input) := by
   have hsize : input.size < 2 ^ 256 := lt_trans hvalid.1 (by norm_num)

@@ -11,23 +11,23 @@ open WindowNibbleKernel WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro CiosCached SquareLoopBlocks
 
-def prefixProgram : List Instr := FusionFrame.frameProgram 3717 1145
+def prefixProgram : List Instr := FusionFrame.frameProgram 3717 1146
 def clearProgram : List Instr :=
   [.push 2 2016, .op (.Dup ⟨10, by decide⟩), .op .SUB,
    .op .CALLDATASIZE, .push 2 2048, .op .CALLDATACOPY]
 
 def prefixBlock : Block Artifact.submissionArtifact .Osaka 3666 prefixProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2736 28 3666 prefixProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2738 28 3666 prefixProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def clearBlock : Block Artifact.submissionArtifact .Osaka 3707 clearProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2764 6 3707 clearProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2766 6 3707 clearProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def rowReady (s : State) (mem : ByteArray) (n : Nat)
     (tl inv m0 m96 m64 m32 : UInt256) (rest : List UInt256) : State :=
   outState s mem 256 n 0 (UInt256.ofNat 3717) (l1Target n) inv m0
     (tl :: m96 :: m64 :: m32 :: UInt256.ofNat (2368+32*n-32) ::
-      UInt256.ofNat 256 :: UInt256.ofNat 1145 :: rest)
+      UInt256.ofNat 256 :: UInt256.ofNat 1146 :: rest)
 
 def prefixState (s : State) (mem : ByteArray) (n : Nat)
     (tl inv m0 m96 m64 m32 : UInt256) (rest : List UInt256) : State :=
@@ -46,7 +46,7 @@ theorem run_prefix (s : State) (mem : ByteArray) (n : Nat)
       (ent := ent) (neg := negative32) (mask := allOnes) (ent2 := l2Target _)
       (inv := inv) (m0 := m0) (tl := _) (m96 := m96) (m64 := m64) (m32 := m32)
       (aprev := aprev) (dst := pdst) (ret := ret) (head := UInt256.ofNat 3717)
-      (finish := UInt256.ofNat 1145) (rest := rest) (by omega)
+      (finish := UInt256.ofNat 1146) (rest := rest) (by omega)
 
 theorem run_clear (s : State) (mem : ByteArray) (n : Nat)
     (tl inv m0 m96 m64 m32 : UInt256) (rest : List UInt256)

@@ -47,4 +47,15 @@ theorem core_result (template : State) (base modulus exponent : UInt256)
   have h := WindowTwentyOneMath.three_bodies_toNat base modulus exponent.toNat hmodulus he
   rw [h]
 
+/-- With a zero modulus every `MULMOD` of the last step yields zero, so the
+window core returns the precompile's zero word without a separate exit. -/
+theorem core_result_zero (template : State) (base modulus exponent : UInt256)
+    (hmodulus : modulus.toNat = 0) (rest : List UInt256) :
+    (returnedState template base modulus exponent rest).toResult =
+      .returned (Precompile.natToBytes 0 32) := by
+  unfold returnedState
+  rw [WindowTwentyOneReturn.returned_result]
+  have h := WindowTwentyOneMath.accumulator_zero base modulus exponent.toNat hmodulus
+  rw [h]
+
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneCore

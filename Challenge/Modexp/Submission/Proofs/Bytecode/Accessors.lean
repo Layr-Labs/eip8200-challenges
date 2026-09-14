@@ -26,16 +26,16 @@ private def wfOp {op : Operation}
 
 def calldataBytePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨76, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨77, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨78, .op .CALLDATALOAD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨79, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
-   ⟨80, .op .BYTE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨81, .op (.Swap ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨82, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨83, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨84, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨85, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨78, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨79, .op (.Dup ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨80, .op .CALLDATALOAD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨81, .push ⟨0, by decide⟩ 0, by rfl, by decide⟩,
+   ⟨82, .op .BYTE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨83, .op (.Swap ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨84, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨85, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨86, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨87, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def calldataByteValue (s : State) (offset : UInt256) : UInt256 :=
   UInt256.byteAt ⟨0⟩ (MachineState.readWord s.executionEnv.calldata offset.toNat)
@@ -43,7 +43,7 @@ def calldataByteValue (s : State) (offset : UInt256) : UInt256 :=
 def calldataByteEntry (s : State) (offset output returnDest : UInt256)
     (rest : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 133
+    pc := UInt256.ofNat 134
     stack := [offset, output, returnDest] ++ rest }
 
 def calldataByteReturned (s : State) (offset returnDest : UInt256)
@@ -53,9 +53,9 @@ def calldataByteReturned (s : State) (offset returnDest : UInt256)
     stack := calldataByteValue s offset :: rest }
 
 @[simp] private theorem helperPCs (i : Nat)
-    (hi : 76 ≤ i) (hii : i ≤ 85) :
+    (hi : 78 ≤ i) (hii : i ≤ 87) :
     Artifact.submissionArtifact.instructionPC i =
-      ([133,134,135,136,137,138,139,140,141,142] : List Nat)[i - 76]! := by
+      ([134,135,136,137,138,139,140,141,142,143] : List Nat)[i - 78]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 

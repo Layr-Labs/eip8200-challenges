@@ -57,7 +57,7 @@ def loopState (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt256)
 
 def amCallState (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1474
+  { s with pc := UInt256.ofNat 1475
            stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
                      UInt256.ofNat 2777] ++ loopStack px n k ret rest
            memory := mem }
@@ -132,7 +132,7 @@ theorem run_call (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt256)
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
-  have h2467Nat : (UInt256.ofNat 1474).toNat = 1474 := by decide
+  have h2467Nat : (UInt256.ofNat 1475).toNat = 1475 := by decide
   simp (config := { maxSteps := 400000 })
     [callPath, opAt, pushAt, wfOp, seedPC,
      Challenge.EvmProof.Stepper.runLocatedBlock,

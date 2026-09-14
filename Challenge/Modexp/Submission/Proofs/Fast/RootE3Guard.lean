@@ -16,12 +16,18 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 
 /-- Exact new v4 bytecode at PCs 3013 through 3038. -/
-def program : List Instr :=
+private def loadProgram : List Instr :=
   [.op (.Dup ⟨4, by decide⟩), .push 1 1, .op .EQ,
-   .push 2 2816, .op .MLOAD, .op .CALLDATALOAD, .push 0 0, .op .BYTE,
-   .push 1 3, .op .EQ, .op .AND, .op (.Dup ⟨1, by decide⟩),
-   .push 1 3, .op .AND, .op .ISZERO, .op .AND,
-   .op (.Dup ⟨0, by decide⟩), .push 2 1760, .op .MSTORE, .op .SHR]
+   .push 2 2816, .op .MLOAD, .op .CALLDATALOAD, .push 0 0, .op .BYTE]
+
+private def testProgram : List Instr :=
+  [.push 1 3, .op .EQ, .op .AND, .op (.Dup ⟨1, by decide⟩),
+   .push 1 3, .op .AND, .op .ISZERO, .op .AND]
+
+private def storeProgram : List Instr :=
+  [.op (.Dup ⟨0, by decide⟩), .push 2 1760, .op .MSTORE, .op .SHR]
+
+def program : List Instr := (loadProgram ++ testProgram) ++ storeProgram
 
 def exponentByte (mem input : ByteArray) : UInt256 :=
   UInt256.byteAt (UInt256.ofNat 0)
@@ -45,22 +51,64 @@ def result (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
       (guardWord mem s.executionEnv.calldata n esize) :: Exp.outer n bsize esize msize
     memory := Exp.storeWord mem 1760 (guardWord mem s.executionEnv.calldata n esize)}
 
+private def loaded (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
+  { s with
+    pc := UInt256.ofNat 3017
+    stack := exponentByte mem s.executionEnv.calldata ::
+      UInt256.eq (UInt256.ofNat 1) (UInt256.ofNat esize) ::
+      UInt256.ofNat n :: Exp.outer n bsize esize msize
+    memory := mem }
+
+private def tested (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
+  { s with
+    pc := UInt256.ofNat 3027
+    stack := guardWord mem s.executionEnv.calldata n esize ::
+      UInt256.ofNat n :: Exp.outer n bsize esize msize
+    memory := mem }
+
+private theorem run_load (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
+    (hact : 89 ≤ s.activeWords.toNat) :
+    runInstructions loadProgram (entry s mem n bsize esize msize) =
+      some (loaded s mem n bsize esize msize) := by
+  have haw1 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2816 32) =
+      s.activeWords := Exp.activeWords_fix s 2816 32 (by decide) (by omega) (by omega)
+  simp [loadProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    entry, loaded, Exp.outer, exponentByte, State.activeWordsAfterUInt256, haw1,
+    Exp.push0_word, Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod]
+
+private theorem run_test (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
+    runInstructions testProgram (loaded s mem n bsize esize msize) =
+      some (tested s mem n bsize esize msize) := by
+  simp [testProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    loaded, tested, Exp.outer, guardWord, Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod]
+  decide
+
+private theorem run_store (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
+    (hact : 89 ≤ s.activeWords.toNat) :
+    runInstructions storeProgram (tested s mem n bsize esize msize) =
+      some (result s mem n bsize esize msize) := by
+  have haw2 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1760 32) =
+      s.activeWords := Monpro.activeWords_fix s 1760 32 (by decide) (by omega) (by omega)
+  simp [storeProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    tested, result, Exp.outer, Exp.storeWord, State.activeWordsAfterUInt256, haw2,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod]
+
 theorem run_guard (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hact : 89 ≤ s.activeWords.toNat) :
     runInstructions program (entry s mem n bsize esize msize) =
       some (result s mem n bsize esize msize) := by
-  have haw1 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2816 32) =
-      s.activeWords := Exp.activeWords_fix s 2816 32 (by decide) (by omega) (by omega)
-  have haw2 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1760 32) =
-      s.activeWords := Monpro.activeWords_fix s 1760 32 (by decide) (by omega) (by omega)
-  simp (config := {maxSteps := 300000})
-    [program, runInstructions, Challenge.EvmProof.Stepper.runInstr, entry, result,
-     Exp.outer, Exp.storeWord, guardWord, exponentByte,
-     State.activeWordsAfterUInt256, haw1, haw2, Exp.push0_word,
-     Challenge.EvmProof.Word.literal_eq_ofNat,
-     Challenge.EvmProof.Word.word_toNat_ofNat,
-     Challenge.EvmProof.Word.succ_ofNat_mod,
-     Challenge.EvmProof.Word.ofNat_add_mod]
+  have h1 := run_load s mem n bsize esize msize hact
+  have h2 := run_test s mem n bsize esize msize
+  have h3 := run_store s mem n bsize esize msize hact
+  exact runInstructions_append_some _ _ _ _ _
+    (runInstructions_append_some _ _ _ _ _ h1 h2) h3
 
 #print axioms run_guard
 end RootE3Guard

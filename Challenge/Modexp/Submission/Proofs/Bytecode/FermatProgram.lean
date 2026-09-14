@@ -41,28 +41,6 @@ theorem primeValue_nonzero (modulus : UInt256) :
     eq_zero_iff, eq_zero_iff]
   tauto
 
-def primeValueProgram : List Instr :=
-  [.op .JUMPDEST, .op (.Dup ⟨5, by decide⟩), .op .CALLDATALOAD,
-   .op (.Dup ⟨0, by decide⟩), .push 32 bn, .op .EQ,
-   .op (.Dup ⟨1, by decide⟩), .push 5 0x01000003d0, .op .NOT, .op .EQ, .op .OR]
-
-/-- Both special-modulus tests jump straight to the one-word core entry 2240
-(0x8c0) when they miss. -/
-def primeProgram : List Instr := primeValueProgram ++ WindowTwentyOneEntry.testProgram (UInt256.ofNat 1787)
-
-def exponentValueProgram : List Instr :=
-  [.op (.Dup ⟨5, by decide⟩), .op .CALLDATALOAD, .push 1 1,
-   .op (.Dup ⟨2, by decide⟩), .op .SUB, .op .XOR]
-
--- XOR tests inequality directly; the filler preserves every subsequent PC.
-def exponentProgram : List Instr := exponentValueProgram ++
-  [.op .JUMPDEST, .push 2 (UInt256.ofNat 1787), .op .JUMPI]
-
-private theorem xor_true_iff_eq_zero (a b : UInt256) :
-    UInt256.isTrue (UInt256.xor a b) ↔ (UInt256.eq a b).toNat = 0 := by
-  simp only [UInt256.isTrue, ne_eq, toNat_zero_iff,
-    WindowGuardLogic.wordXor_eq_zero_iff, eq_zero_iff]
-
 private theorem zero_lt_eq_double_isZero (x : UInt256) :
     UInt256.lt ({ val := 0 } : UInt256) x = UInt256.isZero (UInt256.isZero x) := by
   unfold UInt256.lt UInt256.isZero
@@ -72,72 +50,24 @@ private theorem zero_lt_eq_double_isZero (x : UInt256) :
   · have hp : 0 < x.toNat := Nat.pos_of_ne_zero h
     simp [h, hzero, Nat.not_le_of_gt hp]
 
+
+/-- Fermat exit at 95: load the base word at calldata 96, normalize it by the
+declared base width (depth six under the modulus word), reduce it modulo the
+prime and return `0 < base mod p`. -/
 def valueProgram : List Instr :=
-  [.op (.Dup ⟨4, by decide⟩), .op .CALLDATALOAD] ++
-    WindowTwentyOneEntry.normalizeProgram.drop 2 ++
-    [.op .MOD, .push 0 0, .op .LT]
+  [.push 1 96, .op .CALLDATALOAD, .op (.Dup ⟨6, by decide⟩),
+   .push 1 32, .op .SUB, .push 1 3, .op .SHL, .op .SHR,
+   .op .MOD, .push 0 0, .op .LT]
 
 def returnProgram : List Instr := valueProgram ++ WindowTwentyOneReturn.program
 
-theorem run_prime (template : State) (offset : UInt256) (rest : List UInt256)
-    (hrest : rest.length ≤ 999) (hoff : rest[5]? = some offset)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 1787 = true) :
-    runInstructions primeProgram (framed template (UInt256.ofNat 43) rest) =
-    some (framed template
-      (if (primeValue (MachineState.readWord template.executionEnv.calldata offset.toNat)).toNat = 0
-        then UInt256.ofNat 1787 else UInt256.ofNat 96)
-      (MachineState.readWord template.executionEnv.calldata offset.toNat :: rest)) := by
-  have hc0 : rest.length < 1024 := by omega
-  have hc1 : rest.length + 1 < 1024 := by omega
-  have hc2 : rest.length + 2 < 1024 := by omega
-  have hc3 : rest.length + 3 < 1024 := by omega
-  have hc4 : rest.length + 4 < 1024 := by omega
-  have hsecp : UInt256.lnot (4294968272 : UInt256) = secp := by decide
-  have hv : runInstructions primeValueProgram (framed template (UInt256.ofNat 43) rest) =
-      some (framed template (UInt256.ofNat 91)
-        (primeValue (MachineState.readWord template.executionEnv.calldata offset.toNat) ::
-          MachineState.readWord template.executionEnv.calldata offset.toNat :: rest)) := by
-    simp (config := { maxSteps := 500000 }) [primeValueProgram, primeValue, runInstructions, framed, hoff,
-      Challenge.EvmProof.Stepper.runInstr, hc0, hc1, hc2, hc3, hc4, hsecp,
-      Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod]
-  have ht := WindowTwentyOneEntry.run_test template (UInt256.ofNat 91) (UInt256.ofNat 1787)
-    (primeValue (MachineState.readWord template.executionEnv.calldata offset.toNat))
-    (MachineState.readWord template.executionEnv.calldata offset.toNat :: rest)
-    (by simp; omega) htarget
-  have both := runInstructions_append_some _ _ _ _ _ hv ht
-  have hpc : advancePC 5 (UInt256.ofNat 91) = UInt256.ofNat 96 := by decide
-  simpa only [primeProgram, hpc, framed] using both
-
-theorem run_exponent (template : State) (modulus offset : UInt256) (rest : List UInt256)
-    (hrest : rest.length ≤ 999) (hoff : rest[4]? = some offset)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 1787 = true) :
-    runInstructions exponentProgram (framed template (UInt256.ofNat 96) (modulus :: rest)) =
-    some (framed template
-      (if (UInt256.eq (modulus - UInt256.ofNat 1)
-        (MachineState.readWord template.executionEnv.calldata offset.toNat)).toNat = 0
-        then UInt256.ofNat 1787 else UInt256.ofNat 108)
-      (modulus :: rest)) := by
-  have hc1 : rest.length + 1 < 1024 := by omega
-  have hc2 : rest.length + 2 < 1024 := by omega
-  have hc3 : rest.length + 3 < 1024 := by omega
-  have hc4 : rest.length + 4 < 1024 := by omega
-  simp (config := { maxSteps := 500000 }) [exponentProgram, exponentValueProgram,
-    runInstructions, framed, hoff, Challenge.EvmProof.Stepper.runInstr,
-    hc1, hc2, hc3, hc4, htarget, xor_true_iff_eq_zero,
-    Challenge.EvmProof.Word.literal_eq_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod,
-    Challenge.EvmProof.Word.ofNat_add_mod]
-  split <;> simp_all
-
-private theorem run_value (template : State) (modulus offset : UInt256) (rest : List UInt256)
+private theorem run_value (template : State) (modulus : UInt256) (rest : List UInt256)
     (baseSize : Nat) (hwidth : baseSize ≤ 32)
-    (hrest : rest.length ≤ 999) (hbase : rest[0]? = some (UInt256.ofNat baseSize))
-    (hoff : rest[3]? = some offset) :
-    runInstructions valueProgram (framed template (UInt256.ofNat 106) (modulus :: rest)) =
-    some (framed template (UInt256.ofNat 119)
+    (hrest : rest.length ≤ 999) (hbase : rest[4]? = some (UInt256.ofNat baseSize)) :
+    runInstructions valueProgram (framed template (UInt256.ofNat 95) (modulus :: rest)) =
+    some (framed template (UInt256.ofNat 109)
       (UInt256.isZero (UInt256.isZero (UInt256.mod
-        (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata offset.toNat)
+        (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata 96)
           (UInt256.ofNat ((32 - baseSize) * 8))) modulus)) :: rest)) := by
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -148,37 +78,33 @@ private theorem run_value (template : State) (modulus offset : UInt256) (rest : 
       (UInt256.ofNat 3) = UInt256.ofNat ((32 - baseSize) * 8) := by
     rw [hsub, Challenge.EvmProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega)]
     congr 1
-  simp (config := { maxSteps := 500000 }) [valueProgram, WindowTwentyOneEntry.normalizeProgram,
-    runInstructions, framed, hbase, hoff, hshift,
+  have h96 : (UInt256.ofNat 96).toNat = 96 := by decide
+  simp (config := { maxSteps := 500000 }) [valueProgram,
+    runInstructions, framed, hbase, hshift, h96,
     Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3, hc4,
     Challenge.EvmProof.Word.literal_eq_ofNat, zero_lt_eq_double_isZero,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
   rfl
 
-theorem run_return (template : State) (modulus offset : UInt256) (rest : List UInt256)
+theorem run_return (template : State) (modulus : UInt256) (rest : List UInt256)
     (baseSize : Nat) (hwidth : baseSize ≤ 32)
-    (hrest : rest.length ≤ 999) (hbase : rest[0]? = some (UInt256.ofNat baseSize))
-    (hoff : rest[3]? = some offset) (active : Nat) (hsmall : active ≤ 16)
+    (hrest : rest.length ≤ 999) (hbase : rest[4]? = some (UInt256.ofNat baseSize))
+    (active : Nat) (hsmall : active ≤ 16)
     (hactive : template.activeWords = UInt256.ofNat active) :
-    runInstructions returnProgram (framed template (UInt256.ofNat 106) (modulus :: rest)) =
-    some (WindowTwentyOneReturn.returned template (UInt256.ofNat 124)
+    runInstructions returnProgram (framed template (UInt256.ofNat 95) (modulus :: rest)) =
+    some (WindowTwentyOneReturn.returned template (UInt256.ofNat 114)
       (UInt256.isZero (UInt256.isZero (UInt256.mod
-        (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata offset.toNat)
+        (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata 96)
           (UInt256.ofNat ((32 - baseSize) * 8))) modulus))) active rest) := by
   let word := UInt256.isZero (UInt256.isZero (UInt256.mod
-    (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata offset.toNat)
+    (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata 96)
       (UInt256.ofNat ((32 - baseSize) * 8))) modulus))
-  have hv := run_value template modulus offset rest baseSize hwidth hrest hbase hoff
-  have hr := WindowTwentyOneReturn.run_return template (UInt256.ofNat 119) word active
+  have hv := run_value template modulus rest baseSize hwidth hrest hbase
+  have hr := WindowTwentyOneReturn.run_return template (UInt256.ofNat 109) word active
     (by omega) hactive rest (by omega)
   have both := runInstructions_append_some _ _ _ _ _ hv hr
-  have hpc : advancePC 5 (UInt256.ofNat 119) = UInt256.ofNat 124 := by decide
+  have hpc : advancePC 5 (UInt256.ofNat 109) = UInt256.ofNat 114 := by decide
   simpa only [returnProgram, hpc, word] using both
 
-structure Paths (artifact : Challenge.EvmProof.ProgramArtifact) (fork : Fork) where
-  prime : WindowTwentyOneBinding.Block artifact fork 43 primeProgram
-  exponent : WindowTwentyOneBinding.Block artifact fork 96 exponentProgram
-  result : WindowTwentyOneBinding.Block artifact fork 106 returnProgram
-  legacyJump : Decode.isValidJumpDest artifact.code 1787 = true
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.FermatProgram

@@ -99,11 +99,13 @@ theorem run_lookup (template : State) (pc base modulus exponent : UInt256)
   simpa only [lookupProgram, hpc] using hall
 
 def frameArrangeProgram : List Instr :=
-  [.op (.Swap ⟨1, by decide⟩), .push 1 1, .op .SHL, .push 1 2,
-   .op (.Swap ⟨2, by decide⟩)]
+  [.op (.Swap ⟨1, by decide⟩), .push 1 1, .op .SHL]
 
+/-- The spare modulus copy left at 1783 sits at depth four under the frame, so
+the loop's modulus register is a plain `DUP5 SWAP1`. -/
 def frameLoadProgram : List Instr :=
-  [.op (.Dup ⟨9, by decide⟩), .op .CALLDATALOAD, .op (.Swap ⟨0, by decide⟩)]
+  [.op (.Dup ⟨3, by decide⟩), .push 1 2,
+   .op (.Swap ⟨3, by decide⟩), .op .JUMPDEST]
 
 def frameProgram : List Instr := frameArrangeProgram ++ frameLoadProgram
 
@@ -112,9 +114,9 @@ private theorem run_arrange (template : State) (pc base modulus exponent accumul
     runInstructions frameArrangeProgram
       (WindowTwentyOneTable.framed template pc base modulus 16
         ([accumulator, UInt256.ofNat 480, exponent] ++ rest)) =
-    some (WindowTwentyOneTable.framed template (advancePC 7 pc) base modulus 16
-      ([accumulator, UInt256.shiftLeft exponent (UInt256.ofNat 1),
-        UInt256.ofNat 480, UInt256.ofNat 2] ++ rest)) := by
+    some (WindowTwentyOneTable.framed template (advancePC 4 pc) base modulus 16
+      ([UInt256.shiftLeft exponent (UInt256.ofNat 1), UInt256.ofNat 480,
+        accumulator] ++ rest)) := by
   have hcap3 : rest.length + 3 < 1024 := by omega
   have hcap4 : rest.length + 4 < 1024 := by omega
   have hp2 : UInt256.ofNat 2 = UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
@@ -124,56 +126,57 @@ private theorem run_arrange (template : State) (pc base modulus exponent accumul
     advancePC, succ_eq_add, hp2, word_add_assoc]
 
 private theorem run_frameLoad (template : State)
-    (pc base modulus exponent modulusOffset accumulator : UInt256)
+    (pc base modulus exponent accumulator : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (hoffset : rest[5]? = some modulusOffset)
-    (hmodulus : MachineState.readWord template.executionEnv.calldata modulusOffset.toNat = modulus) :
+    (hmod : rest[0]? = some modulus) :
     runInstructions frameLoadProgram
       (WindowTwentyOneTable.framed template pc base modulus 16
-        ([accumulator, UInt256.shiftLeft exponent (UInt256.ofNat 1),
-          UInt256.ofNat 480, UInt256.ofNat 2] ++ rest)) =
-    some (WindowTwentyOneTable.framed template (advancePC 3 pc) base modulus 16
+        ([UInt256.shiftLeft exponent (UInt256.ofNat 1), UInt256.ofNat 480,
+          accumulator] ++ rest)) =
+    some (WindowTwentyOneTable.framed template (advancePC 5 pc) base modulus 16
       ([accumulator, modulus, UInt256.shiftLeft exponent (UInt256.ofNat 1),
         UInt256.ofNat 480, UInt256.ofNat 2] ++ rest)) := by
+  have hcap3 : rest.length + 3 < 1024 := by omega
   have hcap4 : rest.length + 4 < 1024 := by omega
   have hcap5 : rest.length + 5 < 1024 := by omega
+  have hp2 : UInt256.ofNat 2 = UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
   simp [runInstructions, frameLoadProgram, WindowTwentyOneTable.framed,
-    Challenge.EvmProof.Stepper.runInstr, hcap4, hcap5, Nat.add_assoc,
-    List.getElem?_cons_succ, hoffset, hmodulus, List.exchange, advancePC]
+    Challenge.EvmProof.Stepper.runInstr, hcap3, hcap4, hcap5, Nat.add_assoc,
+    List.getElem?_cons_succ, hmod, List.exchange,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    advancePC, succ_eq_add, hp2, word_add_assoc]
 
-theorem run_frame (template : State) (pc base modulus exponent modulusOffset accumulator : UInt256)
+theorem run_frame (template : State) (pc base modulus exponent accumulator : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (hoffset : rest[5]? = some modulusOffset)
-    (hmodulus : MachineState.readWord template.executionEnv.calldata modulusOffset.toNat = modulus) :
+    (hmod : rest[0]? = some modulus) :
     runInstructions frameProgram
       (WindowTwentyOneTable.framed template pc base modulus 16
         ([accumulator, UInt256.ofNat 480, exponent] ++ rest)) =
-    some (WindowTwentyOneGroup.state template (advancePC 10 pc) (WindowTableMemory.tableMemory base modulus) 16 modulus accumulator
+    some (WindowTwentyOneGroup.state template (advancePC 9 pc) (WindowTableMemory.tableMemory base modulus) 16 modulus accumulator
       (UInt256.shiftLeft exponent (UInt256.ofNat 1)) (UInt256.ofNat 2) 0 rest) := by
   have ha := run_arrange template pc base modulus exponent accumulator rest hrest
-  have hl := run_frameLoad template (advancePC 7 pc) base modulus exponent modulusOffset
-    accumulator rest hrest hoffset hmodulus
+  have hl := run_frameLoad template (advancePC 4 pc) base modulus exponent
+    accumulator rest hrest hmod
   have both := runInstructions_append_some _ _ _ _ _ ha hl
   simpa only [frameProgram, WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
     WindowTwentyOneTable.framed, WindowTableMemory.tableMemory, List.replicate_zero,
-    List.nil_append, List.cons_append, ← advancePC_add, show 7 + 3 = 10 by decide] using both
+    List.nil_append, List.cons_append, ← advancePC_add, show 4 + 5 = 9 by decide] using both
 
 def program : List Instr := lookupProgram ++ frameProgram
 
-theorem run_enter (template : State) (base modulus exponent modulusOffset : UInt256)
+theorem run_enter (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (hoffset : rest[5]? = some modulusOffset)
-    (hmodulus : MachineState.readWord template.executionEnv.calldata modulusOffset.toNat = modulus) :
+    (hmod : rest[0]? = some modulus) :
     runInstructions program
-      (WindowTwentyOneTable.framed template (UInt256.ofNat 1883) base modulus 16 ([base, exponent] ++ rest)) =
+      (WindowTwentyOneTable.framed template (UInt256.ofNat 1884) base modulus 16 ([base, exponent] ++ rest)) =
     some (WindowTwentyOneGroup.state template (UInt256.ofNat 1904) (WindowTableMemory.tableMemory base modulus) 16 modulus
       (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat)
       (UInt256.shiftLeft exponent (UInt256.ofNat 1)) (UInt256.ofNat 2) 0 rest) := by
-  have hl := run_lookup template (UInt256.ofNat 1883) base modulus exponent rest hrest
-  have hf := run_frame template (advancePC 11 (UInt256.ofNat 1883)) base modulus exponent modulusOffset
-    (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat) rest hrest hoffset hmodulus
+  have hl := run_lookup template (UInt256.ofNat 1884) base modulus exponent rest hrest
+  have hf := run_frame template (advancePC 11 (UInt256.ofNat 1884)) base modulus exponent
+    (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat) rest hrest hmod
   have both := runInstructions_append_some _ _ _ _ _ hl hf
-  have hpc : advancePC 10 (advancePC 11 (UInt256.ofNat 1883)) = UInt256.ofNat 1904 := by decide
+  have hpc : advancePC 9 (advancePC 11 (UInt256.ofNat 1884)) = UInt256.ofNat 1904 := by decide
   rw [hpc] at both
   simpa only [program] using both
 

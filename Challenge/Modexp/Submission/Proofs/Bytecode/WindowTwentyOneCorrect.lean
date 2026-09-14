@@ -22,12 +22,12 @@ private def environment (input : ByteArray) :
   noPrecompile := deployAddress_not_precompile
 
 private theorem entry_eq (input : ByteArray) :
-    state (Main.headerState input) input (UInt256.ofNat 1751) =
+    state (Main.headerState input) input (UInt256.ofNat 1752) =
       Dispatch.wordRouteEntryState input := by
   rfl
 
 private theorem miss_eq (input : ByteArray) :
-    state (Main.headerState input) input (UInt256.ofNat 143) =
+    state (Main.headerState input) input (UInt256.ofNat 144) =
       Dispatch.wordEntryState input := by
   rfl
 

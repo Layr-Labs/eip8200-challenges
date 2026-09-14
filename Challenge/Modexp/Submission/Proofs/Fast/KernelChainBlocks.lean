@@ -30,52 +30,52 @@ def environment (s : State)
     hcode, hfork, hrun, hnp⟩
 
 def l1Block1 : Block Artifact.submissionArtifact .Osaka 3746 (stepProgram 192 2304) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2799 31 3746 (stepProgram 192 2304)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2801 31 3746 (stepProgram 192 2304)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block2 : Block Artifact.submissionArtifact .Osaka 3783 (stepProgram 160 2272) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2830 31 3783 (stepProgram 160 2272)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2832 31 3783 (stepProgram 160 2272)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block3 : Block Artifact.submissionArtifact .Osaka 3820 (stepProgram 128 2240) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2861 31 3820 (stepProgram 128 2240)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2863 31 3820 (stepProgram 128 2240)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block4 : Block Artifact.submissionArtifact .Osaka 3857 (stepProgram 96 2208) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2892 31 3857 (stepProgram 96 2208)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2894 31 3857 (stepProgram 96 2208)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block5 : Block Artifact.submissionArtifact .Osaka 3894 (stepProgram 64 2176) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2923 31 3894 (stepProgram 64 2176)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2925 31 3894 (stepProgram 64 2176)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block6 : Block Artifact.submissionArtifact .Osaka 3931 (stepProgram 32 2144) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2954 31 3931 (stepProgram 32 2144)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2956 31 3931 (stepProgram 32 2144)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block7 : Block Artifact.submissionArtifact .Osaka 3968 (stepProgram 0 2112) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2985 31 3968 (stepProgram 0 2112)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2987 31 3968 (stepProgram 0 2112)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-! ## Jump destinations of the chain entries (block `k` for `k = 1..7`, and the
 middle `JUMPDEST` = entry `k = 8`) -/
 
 theorem jumpDest4068 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3746 = true :=
-  Artifact.isValidJumpDest_index 2799 (by rfl)
+  Artifact.isValidJumpDest_index 2801 (by rfl)
 theorem jumpDest4106 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3783 = true :=
-  Artifact.isValidJumpDest_index 2830 (by rfl)
+  Artifact.isValidJumpDest_index 2832 (by rfl)
 theorem jumpDest4144 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3820 = true :=
-  Artifact.isValidJumpDest_index 2861 (by rfl)
+  Artifact.isValidJumpDest_index 2863 (by rfl)
 theorem jumpDest4182 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3857 = true :=
-  Artifact.isValidJumpDest_index 2892 (by rfl)
+  Artifact.isValidJumpDest_index 2894 (by rfl)
 theorem jumpDest4220 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3894 = true :=
-  Artifact.isValidJumpDest_index 2923 (by rfl)
+  Artifact.isValidJumpDest_index 2925 (by rfl)
 theorem jumpDest4258 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3931 = true :=
-  Artifact.isValidJumpDest_index 2954 (by rfl)
+  Artifact.isValidJumpDest_index 2956 (by rfl)
 theorem jumpDest4296 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3968 = true :=
-  Artifact.isValidJumpDest_index 2985 (by rfl)
+  Artifact.isValidJumpDest_index 2987 (by rfl)
 theorem jumpDest4334 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4005 = true :=
-  Artifact.isValidJumpDest_index 3016 (by rfl)
+  Artifact.isValidJumpDest_index 3018 (by rfl)
 
 /-- Every chain entry `4296 + 37(k-1)`, `1 ≤ k ≤ 8`, is a valid jump destination. -/
 theorem jumpDest_l1Entry (k : Nat) (hk1 : 1 ≤ k) (hk8 : k ≤ 8) :

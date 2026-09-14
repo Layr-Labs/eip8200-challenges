@@ -63,7 +63,7 @@ def counterProgram : List Instr :=
 
 /-- pc 3189..3218: rejoin the inherited RR head at pc 1625. -/
 def jumpProgram : List Instr :=
-  [.push ⟨2, by decide⟩ (UInt256.ofNat 902), .op .JUMP]
+  [.push ⟨2, by decide⟩ (UInt256.ofNat 903), .op .JUMP]
 
 def helperProgram : List Instr := copyProgram ++ counterProgram ++ jumpProgram
 
@@ -106,7 +106,7 @@ def counterState (template : State) (mem : ByteArray)
 def exitState (template : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { template with
-    pc := UInt256.ofNat 902
+    pc := UInt256.ofNat 903
     stack := UInt256.ofNat (directCounter n) :: outer n bsize esize msize
     memory := copiedMemory mem n
     activeWords := copiedActiveWords template n }

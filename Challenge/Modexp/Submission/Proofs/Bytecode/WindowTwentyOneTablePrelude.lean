@@ -38,21 +38,23 @@ theorem run_init (template : State) (pc base modulus : UInt256)
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     advancePC, succ_eq_add, hpush, word_add_assoc]
 
+/-- The exponent word already sits on the route frame (depth one under the
+two modulus copies), so the load is a plain `DUP4 SWAP2`. -/
 def loadProgram : List Instr :=
-  [.op (.Dup ⟨6, by decide⟩), .op .CALLDATALOAD, .op (.Swap ⟨1, by decide⟩)]
+  [.op (.Dup ⟨3, by decide⟩), .op (.Swap ⟨1, by decide⟩)]
 
-theorem run_load (template : State) (pc base modulus exponentOffset : UInt256)
+theorem run_load (template : State) (pc base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (hoffset : rest[4]? = some exponentOffset) :
+    (hexp : rest[1]? = some exponent) :
     runInstructions loadProgram
       (WindowTwentyOneTable.framed template pc base modulus 2 ([base, modulus] ++ rest)) =
-    some (WindowTwentyOneTable.framed template (advancePC 3 pc) base modulus 2
-      ([modulus, base, MachineState.readWord template.executionEnv.calldata exponentOffset.toNat] ++ rest)) := by
+    some (WindowTwentyOneTable.framed template (advancePC 2 pc) base modulus 2
+      ([modulus, base, exponent] ++ rest)) := by
   have hcap2 : rest.length + 2 < 1024 := by omega
   have hcap3 : rest.length + 3 < 1024 := by omega
   simp [runInstructions, loadProgram, WindowTwentyOneTable.framed,
     Challenge.EvmProof.Stepper.runInstr, hcap2, hcap3, Nat.add_assoc,
-    List.getElem?_cons_succ, hoffset, List.exchange, advancePC]
+    List.getElem?_cons_succ, hexp, List.exchange, advancePC]
 
 def squareProgram : List Instr :=
   [.op (.Dup ⟨14, by decide⟩), .op (.Dup ⟨15, by decide⟩), .op .MULMOD]
@@ -99,37 +101,35 @@ def program : List Instr :=
   initProgram ++ loadProgram ++ stagedProgram ++ WindowTwentyOneTable.storeProgramM
 
 def endPC (pc : UInt256) : UInt256 :=
-  WindowTwentyOneTable.storePCM (advancePC 16 (advancePC 3 (advancePC 7 pc)))
+  WindowTwentyOneTable.storePCM (advancePC 16 (advancePC 2 (advancePC 7 pc)))
 
-theorem run_prelude (template : State) (pc base modulus exponentOffset : UInt256)
+theorem run_prelude (template : State) (pc base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (hoffset : rest[4]? = some exponentOffset) :
+    (hexp : rest[1]? = some exponent) :
     runInstructionsX program (initial template pc base modulus rest) =
-    some (WindowTwentyOneTable.state template (endPC pc) base modulus
-      (MachineState.readWord template.executionEnv.calldata exponentOffset.toNat) 2 rest) := by
-  let exponent := MachineState.readWord template.executionEnv.calldata exponentOffset.toNat
+    some (WindowTwentyOneTable.state template (endPC pc) base modulus exponent 2 rest) := by
   have hi := run_init template pc base modulus rest hrest
   have hl : runInstructionsX loadProgram
       (WindowTwentyOneTable.framed template (advancePC 7 pc) base modulus 2 ([base, modulus] ++ rest)) =
-      some (WindowTwentyOneTable.framed template (advancePC 3 (advancePC 7 pc)) base modulus 2
+      some (WindowTwentyOneTable.framed template (advancePC 2 (advancePC 7 pc)) base modulus 2
         ([modulus, base, exponent] ++ rest)) := by
     rw [runInstructionsX_eq _ (by decide)]
-    exact run_load template (advancePC 7 pc) base modulus exponentOffset rest hrest hoffset
+    exact run_load template (advancePC 7 pc) base modulus exponent rest hrest hexp
   have hs : runInstructionsX stagedProgram
-      (WindowTwentyOneTable.framed template (advancePC 3 (advancePC 7 pc)) base modulus 2
+      (WindowTwentyOneTable.framed template (advancePC 2 (advancePC 7 pc)) base modulus 2
         ([modulus, base, exponent] ++ rest)) =
-      some (WindowTwentyOneTable.framed template (advancePC 16 (advancePC 3 (advancePC 7 pc))) base modulus 2
+      some (WindowTwentyOneTable.framed template (advancePC 16 (advancePC 2 (advancePC 7 pc))) base modulus 2
         (WindowMath.tableWord base modulus 2 :: List.replicate 13 modulus ++ [base, exponent] ++ rest)) := by
     rw [runInstructionsX_eq _ (by decide)]
-    exact run_staged template (advancePC 3 (advancePC 7 pc)) base modulus exponent rest hrest
-  have ht := WindowTwentyOneTable.run_storeM template (advancePC 16 (advancePC 3 (advancePC 7 pc)))
+    exact run_staged template (advancePC 2 (advancePC 7 pc)) base modulus exponent rest hrest
+  have ht := WindowTwentyOneTable.run_storeM template (advancePC 16 (advancePC 2 (advancePC 7 pc)))
     base modulus 2 (by decide)
     (List.replicate 13 modulus ++ [base, exponent] ++ rest)
     (by simp only [List.length_append, List.length_replicate, List.length_cons, List.length_nil]; omega)
   have his := runInstructionsX_append_some _ _ _ _ _ hi hl
   have hist := runInstructionsX_append_some _ _ _ _ _ his hs
   have hall := runInstructionsX_append_some _ _ _ _ _ hist ht
-  simpa only [program, endPC, WindowTwentyOneTable.state, exponent, List.cons_append,
+  simpa only [program, endPC, WindowTwentyOneTable.state, List.cons_append,
     List.append_assoc] using hall
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneTablePrelude

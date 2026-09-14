@@ -133,14 +133,14 @@ theorem activeWords_fix (s : State) (off sz : Nat) (hsz : sz ≠ 0)
 /-- Subroutine entry (pc 2264) with stack `[pa, pb, pd, ret]`. -/
 def amEntryState (s : State) (memory : ByteArray) (pa pb : Nat)
     (pd ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1474
+  { s with pc := UInt256.ofNat 1475
            stack := [UInt256.ofNat pa, UInt256.ofNat pb, pd, ret] ++ rest
            memory := memory }
 
 /-- The `ADDMOD` loop head (pc 2295) after `j` limb steps. -/
 def amLoopState (s : State) (memory : ByteArray) (pa pb n j : Nat)
     (pd ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1505
+  { s with pc := UInt256.ofNat 1506
            stack := [UInt256.ofNat (ptrAt (2080 + 32 * n) j),
                      UInt256.ofNat (ptrAt (pa + 32 * n - 32) j),
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) j),
@@ -230,10 +230,10 @@ theorem run_amLoopBody (s : State) (memory : ByteArray) (pa pb n j : Nat)
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
     decide
   have h8224 : (2080 : UInt256).toNat = 2080 := by decide
-  have h2500 : (1505 : UInt256).toNat = 1505 := by decide
-  have h2500' : (1505 : UInt256) = UInt256.ofNat 1505 := by decide
+  have h2500 : (1506 : UInt256).toNat = 1506 := by decide
+  have h2500' : (1506 : UInt256) = UInt256.ofNat 1506 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (1505 : UInt256).toNat = true := by
+      (1506 : UInt256).toNat = true := by
     rw [h2500]; exact jumpDest2168
   have hta : ptrAt (pa + 32 * n - 32) j %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
@@ -281,7 +281,7 @@ theorem run_amLoopBody (s : State) (memory : ByteArray) (pa pb n j : Nat)
 pointers plus the carry are still on the stack. -/
 def amTailState (s : State) (memory : ByteArray) (pa pb n j : Nat)
     (pd ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1550
+  { s with pc := UInt256.ofNat 1551
            stack := [UInt256.ofNat (ptrAt (2080 + 32 * n) j),
                      UInt256.ofNat (ptrAt (pa + 32 * n - 32) j),
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) j),
@@ -421,7 +421,7 @@ def csStep (memory : ByteArray) (n : Nat) : Nat → LimbState
 /-- The `CSUB` loop head (pc 2225) after `j` limb steps. -/
 def csLoopState (s : State) (memory : ByteArray) (n j : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1561
+  { s with pc := UInt256.ofNat 1562
            stack := [UInt256.ofNat (ptrAt (2080 + 32 * n) j),
                      UInt256.ofNat (ptrAt (32 * n - 32) j),
                      UInt256.ofNat (ptrAt (1760 + 32 * n) j),
@@ -431,7 +431,7 @@ def csLoopState (s : State) (memory : ByteArray) (n j : Nat)
 /-- The `CSUB` loop exit (pc 2400). -/
 def csTailState (s : State) (memory : ByteArray) (n j : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1609
+  { s with pc := UInt256.ofNat 1610
            stack := [UInt256.ofNat (ptrAt (2080 + 32 * n) j),
                      UInt256.ofNat (ptrAt (32 * n - 32) j),
                      UInt256.ofNat (ptrAt (1760 + 32 * n) j),
@@ -483,11 +483,11 @@ theorem run_csEntry (s : State) (memory : ByteArray) (n : Nat)
   have hword4972 : (4491 : UInt256).toNat = 4491 := by decide
   have hword5022 : (4535 : UInt256).toNat = 4535 := by decide
   have hword5131 : (4624 : UInt256).toNat = 4624 := by decide
-  have hword2225 : (1561 : UInt256).toNat = 1561 := by decide
+  have hword2225 : (1562 : UInt256).toNat = 1562 := by decide
   have hwordEq4972 : (4491 : UInt256) = UInt256.ofNat 4491 := by decide
   have hwordEq5022 : (4535 : UInt256) = UInt256.ofNat 4535 := by decide
   have hwordEq5131 : (4624 : UInt256) = UInt256.ofNat 4624 := by decide
-  have hwordEq2225 : (1561 : UInt256) = UInt256.ofNat 1561 := by decide
+  have hwordEq2225 : (1562 : UInt256) = UInt256.ofNat 1562 := by decide
   have hwordZero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   simp (config := { maxSteps := 400000 })
     [csGenericPath, opAt, pushAt, wfOp,
@@ -526,10 +526,10 @@ theorem run_csLoopBody (s : State) (memory : ByteArray) (n j : Nat)
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
     decide
   have h8224 : (2080 : UInt256).toNat = 2080 := by decide
-  have h2666 : (1561 : UInt256).toNat = 1561 := by decide
-  have h2666' : (1561 : UInt256) = UInt256.ofNat 1561 := by decide
+  have h2666 : (1562 : UInt256).toNat = 1562 := by decide
+  have h2666' : (1562 : UInt256) = UInt256.ofNat 1562 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (1561 : UInt256).toNat = true := by
+      (1562 : UInt256).toNat = true := by
     rw [h2666]; exact jumpDest2225
   have ht : ptrAt (2080 + 32 * n) j %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
@@ -1407,11 +1407,11 @@ theorem run_csFixedEntry8 (s : State) (memory : ByteArray) (pdst ret : UInt256) 
   have hword4972 : (4491 : UInt256).toNat = 4491 := by decide
   have hword5022 : (4535 : UInt256).toNat = 4535 := by decide
   have hword5131 : (4624 : UInt256).toNat = 4624 := by decide
-  have hword2225 : (1561 : UInt256).toNat = 1561 := by decide
+  have hword2225 : (1562 : UInt256).toNat = 1562 := by decide
   have hwordEq4972 : (4491 : UInt256) = UInt256.ofNat 4491 := by decide
   have hwordEq5022 : (4535 : UInt256) = UInt256.ofNat 4535 := by decide
   have hwordEq5131 : (4624 : UInt256) = UInt256.ofNat 4624 := by decide
-  have hwordEq2225 : (1561 : UInt256) = UInt256.ofNat 1561 := by decide
+  have hwordEq2225 : (1562 : UInt256) = UInt256.ofNat 1562 := by decide
   have hwordZero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   simp (config := { maxSteps := 800000 })
     [csFixedEntry8, subEntryState, csFixedState, csStep, fastPC14, fastPC15, fastPC16, fastPC17, fastPC18, fastPC19,
@@ -1911,11 +1911,11 @@ theorem run_csFixedEntry4 (s : State) (memory : ByteArray) (pdst ret : UInt256) 
   have hword4972 : (4491 : UInt256).toNat = 4491 := by decide
   have hword5022 : (4535 : UInt256).toNat = 4535 := by decide
   have hword5131 : (4351 : UInt256).toNat = 4351 := by decide
-  have hword2225 : (1561 : UInt256).toNat = 1561 := by decide
+  have hword2225 : (1562 : UInt256).toNat = 1562 := by decide
   have hwordEq4972 : (4491 : UInt256) = UInt256.ofNat 4491 := by decide
   have hwordEq5022 : (4535 : UInt256) = UInt256.ofNat 4535 := by decide
   have hwordEq5131 : (4351 : UInt256) = UInt256.ofNat 4351 := by decide
-  have hwordEq2225 : (1561 : UInt256) = UInt256.ofNat 1561 := by decide
+  have hwordEq2225 : (1562 : UInt256) = UInt256.ofNat 1562 := by decide
   have hwordZero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   simp (config := { maxSteps := 800000 })
     [csFixedEntry4, subEntryState, csFixedState, csStep, fastPC14, fastPC15, fastPC16, fastPC17, fastPC18, fastPC19,

@@ -98,8 +98,8 @@ theorem lor_toNat_eq_zero (a b : UInt256) :
 theorem zLoop {s : State} (henv : Env s) (rest : List UInt256) (mem : ByteArray)
     (hcap : rest.length < 1000) :
     ∀ i, 1 ≤ i → i ≤ 1024 → ∀ acc : UInt256,
-      ∃ acc', Reach (st s 299 (UInt256.ofNat i :: acc :: rest) mem AW)
-          (st s 320 (UInt256.ofNat 0 :: acc' :: rest) mem AW) ∧
+      ∃ acc', Reach (st s 300 (UInt256.ofNat i :: acc :: rest) mem AW)
+          (st s 321 (UInt256.ofNat 0 :: acc' :: rest) mem AW) ∧
         (acc'.toNat = 0 ↔ acc.toNat = 0 ∧ ∀ j, j < i → bget mem (1024 + j) = 0) := by
   intro i hi
   induction i, hi using Nat.le_induction with
@@ -141,9 +141,9 @@ theorem nonzero_path {s : State} (henv : Env s)
     (hmsv : MachineState.readWord mem 9216 = UInt256.ofNat ml)
     (hzero : ∀ a, 7168 ≤ a → a < 9216 → bget mem a = 0)
     (hM : 1 ≤ num mem 1024 ml) :
-    ∃ memF, Reach (st s 330 (UInt256.ofNat bl :: UInt256.ofNat el :: UInt256.ofNat ml :: stk)
+    ∃ memF, Reach (st s 331 (UInt256.ofNat bl :: UInt256.ofNat el :: UInt256.ofNat ml :: stk)
           mem AW)
-        (rt s 474 (UInt256.ofNat (8 * el) :: UInt256.ofNat el :: UInt256.ofNat ml :: stk) memF
+        (rt s 475 (UInt256.ofNat (8 * el) :: UInt256.ofNat el :: UInt256.ofNat ml :: stk) memF
           AW (MachineState.readPadded memF 0 ml)) ∧
       num memF 0 ml = num mem 5120 bl ^ num mem 6144 el % num mem 1024 ml := by
   have r1 := reach_run henv (run_nz s bl el ml stk mem (by omega) hml henv.code henv.run)
@@ -166,7 +166,7 @@ theorem nonzero_path {s : State} (henv : Env s)
     rw [← hmsv]
     exact readWord_congr (fun i _ => hfN _ (by omega))
   -- base mod m
-  obtain ⟨mem3, r2, hv3, hf3⟩ := mulm henv hcds ml 7168 5120 bl 353
+  obtain ⟨mem3, r2, hv3, hf3⟩ := mulm henv hcds ml 7168 5120 bl 354
     (UInt256.ofNat bl :: UInt256.ofNat el :: UInt256.ofNat ml :: stk) memN (by simp; omega)
     hml1 hml hbl (by norm_num) (Or.inr ⟨by norm_num, by norm_num⟩) (by norm_num)
     (Or.inr ⟨le_refl _, by norm_num⟩) (by norm_num) jump361 hmsvN (by rw [hMN]; exact hM)
@@ -226,7 +226,7 @@ theorem nonzero_path {s : State} (henv : Env s)
     num_congr ml (fun i _ => hfA _ (by omega) (by omega) (by omega))
   rw [hMX] at hRE hvE
   rw [hXv, hEX] at hvE
-  obtain ⟨memF, r6, hvF, _⟩ := addm henv ml 8192 471
+  obtain ⟨memF, r6, hvF, _⟩ := addm henv ml 8192 472
     (UInt256.ofNat (8 * el) :: UInt256.ofNat el :: UInt256.ofNat ml :: stk) memA
     (by simp; omega) hml1 hml (Or.inr (by omega)) (by norm_num) (by norm_num) jump479 hmsvA
     (by rw [hA0, hZ, hMA]; omega)
@@ -249,14 +249,14 @@ theorem rt_result (s : State) (pc : Nat) (stk : List UInt256) (mem : ByteArray)
 
 /-- **Fallback correctness.**  From the fallback entry, every valid input with a
 nonempty modulus returns the MODEXP result. -/
-theorem bigC_correct (s : State) (henv : Env s) (hpc : s.pc = UInt256.ofNat 250)
+theorem bigC_correct (s : State) (henv : Env s) (hpc : s.pc = UInt256.ofNat 251)
     (hstk : s.stack.length < 900) (haw : s.activeWords.toNat ≤ 289)
     (hcs : s.callStack = []) (hvalid : ValidInput s.executionEnv.calldata)
     (hpos : 0 < modulusSize s.executionEnv.calldata) :
     ∃ final : State, Nonempty (Challenge.EvmProof.GasSteps s final) ∧
       final.isDone = true ∧ final.toResult = .returned (spec s.executionEnv.calldata) := by
   obtain ⟨hsz, hbl, hel, hml⟩ := hvalid
-  have hs : st s 250 s.stack s.memory s.activeWords = s := by
+  have hs : st s 251 s.stack s.memory s.activeWords = s := by
     unfold st
     rw [← hpc]
   have hb : MachineState.readWord s.executionEnv.calldata 0 =

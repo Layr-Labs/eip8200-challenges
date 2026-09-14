@@ -16,39 +16,39 @@ open EvmSemantics.EVM
 
 open YulEvmCompiler
 
-@[simp] theorem pc485 : Artifact.submissionArtifact.instructionPC 151 = 220 := by
+@[simp] theorem pc485 : Artifact.submissionArtifact.instructionPC 153 = 221 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc486 : Artifact.submissionArtifact.instructionPC 152 = 223 := by
+@[simp] theorem pc486 : Artifact.submissionArtifact.instructionPC 154 = 224 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc2414 : Artifact.submissionArtifact.instructionPC 1883 = 2500 := by
+@[simp] theorem pc2414 : Artifact.submissionArtifact.instructionPC 1885 = 2500 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc2415 : Artifact.submissionArtifact.instructionPC 1884 = 2501 := by
+@[simp] theorem pc2415 : Artifact.submissionArtifact.instructionPC 1886 = 2501 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc2416 : Artifact.submissionArtifact.instructionPC 1885 = 2503 := by
+@[simp] theorem pc2416 : Artifact.submissionArtifact.instructionPC 1887 = 2503 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc2417 : Artifact.submissionArtifact.instructionPC 1886 = 2504 := by
+@[simp] theorem pc2417 : Artifact.submissionArtifact.instructionPC 1888 = 2504 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc2554 : Artifact.submissionArtifact.instructionPC 1977 = 2611 := by
+@[simp] theorem pc2554 : Artifact.submissionArtifact.instructionPC 1979 = 2611 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc2555 : Artifact.submissionArtifact.instructionPC 1978 = 2612 := by
+@[simp] theorem pc2555 : Artifact.submissionArtifact.instructionPC 1980 = 2612 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc2556 : Artifact.submissionArtifact.instructionPC 1979 = 2614 := by
+@[simp] theorem pc2556 : Artifact.submissionArtifact.instructionPC 1981 = 2614 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 

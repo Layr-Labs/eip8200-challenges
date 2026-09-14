@@ -180,6 +180,84 @@ def cachedProduct : List Instr :=
    .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .MULMOD,
    .op (.Dup ⟨13, by decide⟩), .op .MLOAD, .op .ADDMOD]
 
+private def cachedProductMu : List Instr :=
+  [.op (.Dup ⟨8, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op .MLOAD,
+   .op .MUL]
+
+private def cachedProductMod : List Instr :=
+  [.op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .MULMOD]
+
+private def cachedProductFinish : List Instr :=
+  [.op (.Dup ⟨13, by decide⟩), .op .MLOAD, .op .ADDMOD]
+
+private theorem run_cachedProductMu (s : State)
+    (bi pbi pa pb flag target2 inv m0 aEnd m96 m64 m32 dst ret : UInt256)
+    (n : Nat) (rest : List UInt256) (hcap : rest.length ≤ 998) (hn : n ≤ 8)
+    (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions cachedProductMu
+      (framed s (UInt256.ofNat 4020)
+        (cacheStack bi pbi pa pb flag target2 (UInt256.ofNat (2080+32*n))
+          inv m0 aEnd m96 m64 m32 dst ret rest)) =
+    some (framed s (UInt256.ofNat 4024)
+      ([MachineState.readWord s.memory (2080+32*n) * inv] ++
+        cacheStack bi pbi pa pb flag target2 (UInt256.ofNat (2080+32*n))
+          inv m0 aEnd m96 m64 m32 dst ret rest)) := by
+  have hc17 : rest.length + 17 < 1024 := by omega
+  have hc18 : rest.length + 18 < 1024 := by omega
+  have hc19 : rest.length + 19 < 1024 := by omega
+  have hmod : (2080+32*n) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      2080+32*n := Nat.mod_eq_of_lt (by omega)
+  have hactQ := activeWords_fix s (2080+32*n) 32 (by decide) (by omega) hact
+  simp [cachedProductMu, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    framed, cacheStack, baseStack, Nat.add_assoc, hc17, hc18, hc19,
+    State.activeWordsAfterUInt256, Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod, hmod, hactQ]
+
+private theorem run_cachedProductMod (s : State)
+    (bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret mu : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 998) :
+    runInstructions cachedProductMod
+      (framed s (UInt256.ofNat 4024)
+        ([mu] ++ cacheStack bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
+    some (framed s (UInt256.ofNat 4029)
+      ([UInt256.mulMod m0 mu maxWord, maxWord, mu] ++
+        cacheStack bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
+  have hc18 : rest.length + 18 < 1024 := by omega
+  have hc19 : rest.length + 19 < 1024 := by omega
+  have hc20 : rest.length + 20 < 1024 := by omega
+  have hc21 : rest.length + 21 < 1024 := by omega
+  have hc22 : rest.length + 22 < 1024 := by omega
+  simp [cachedProductMod, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    framed, cacheStack, baseStack, Nat.add_assoc, hc18, hc19, hc20, hc21, hc22,
+    allOnes_value, maxWord, Challenge.EvmProof.Word.succ_ofNat_mod]
+
+private theorem run_cachedProductFinish (s : State)
+    (bi pbi pa pb flag target2 inv m0 aEnd m96 m64 m32 dst ret mm mu : UInt256)
+    (n : Nat) (rest : List UInt256) (hcap : rest.length ≤ 998) (hn : n ≤ 8)
+    (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions cachedProductFinish
+      (framed s (UInt256.ofNat 4029)
+        ([mm, maxWord, mu] ++
+          cacheStack bi pbi pa pb flag target2 (UInt256.ofNat (2080+32*n))
+            inv m0 aEnd m96 m64 m32 dst ret rest)) =
+    some (framed s (UInt256.ofNat 4032)
+      ([UInt256.addMod (MachineState.readWord s.memory (2080+32*n)) mm maxWord, mu] ++
+        cacheStack bi pbi pa pb flag target2 (UInt256.ofNat (2080+32*n))
+          inv m0 aEnd m96 m64 m32 dst ret rest)) := by
+  have hc20 : rest.length + 20 < 1024 := by omega
+  have hc21 : rest.length + 21 < 1024 := by omega
+  have hmod : (2080+32*n) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      2080+32*n := Nat.mod_eq_of_lt (by omega)
+  have hactQ := activeWords_fix s (2080+32*n) 32 (by decide) (by omega) hact
+  simp [cachedProductFinish, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    framed, cacheStack, baseStack, Nat.add_assoc, hc20, hc21,
+    allOnes_value, maxWord, State.activeWordsAfterUInt256,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod, hmod, hactQ]
+
 theorem run_cachedProduct (s : State) (bi pbi pa pb flag target2 inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (n : Nat) (rest : List UInt256) (hcap : rest.length ≤ 998) (hn : n ≤ 8)
     (hact : 88 ≤ s.activeWords.toNat) :
@@ -191,24 +269,22 @@ theorem run_cachedProduct (s : State) (bi pbi pa pb flag target2 inv m0 aEnd m96
     some (framed s (UInt256.ofNat 4032)
       ([UInt256.addMod t0 (UInt256.mulMod m0 (inv*t0) maxWord) maxWord,inv*t0] ++
         cacheStack bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
-  have hc17 : rest.length + 17 < 1024 := by omega
-  have hc18 : rest.length + 18 < 1024 := by omega
-  have hc19 : rest.length + 19 < 1024 := by omega
-  have hc20 : rest.length + 20 < 1024 := by omega
-  have hc21 : rest.length + 21 < 1024 := by omega
-  have hc22 : rest.length + 22 < 1024 := by omega
-  have hmod : (2080+32*n) % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2080+32*n := Nat.mod_eq_of_lt (by omega)
   have hmul : MachineState.readWord s.memory (2080+32*n) * inv = inv * MachineState.readWord s.memory (2080+32*n) := by
     apply Challenge.EvmProof.Word.word_ext
     change ((MachineState.readWord s.memory (2080+32*n)).val * inv.val).val =
       (inv.val * (MachineState.readWord s.memory (2080+32*n)).val).val
     rw [Fin.val_mul, Fin.val_mul, Nat.mul_comm]
-  have hactQ := activeWords_fix s (2080+32*n) 32 (by decide) (by omega) hact
-  simp (config := { maxSteps := 400000 }) [cachedProduct, runInstructions,
-    Challenge.EvmProof.Stepper.runInstr, framed, cacheStack, baseStack,
-    Nat.add_assoc, hc17, hc18, hc19, hc20, hc21, hc22, hmul, allOnes_value,
-    State.activeWordsAfterUInt256, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod, hmod, hactQ, List.exchange]
+  have h1 := run_cachedProductMu s bi pbi pa pb flag target2 inv m0 aEnd m96 m64 m32
+    dst ret n rest hcap hn hact
+  have h2 := run_cachedProductMod s bi pbi pa pb flag target2 (UInt256.ofNat (2080+32*n))
+    inv m0 aEnd m96 m64 m32 dst ret
+    (MachineState.readWord s.memory (2080+32*n) * inv) rest hcap
+  have h3 := run_cachedProductFinish s bi pbi pa pb flag target2 inv m0 aEnd m96 m64 m32
+    dst ret (UInt256.mulMod m0 (MachineState.readWord s.memory (2080+32*n) * inv) maxWord)
+    (MachineState.readWord s.memory (2080+32*n) * inv) n rest hcap hn hact
+  have h12 := runInstructions_append_some _ _ _ _ _ h1 h2
+  have h123 := runInstructions_append_some _ _ _ _ _ h12 h3
+  simpa [cachedProduct, cachedProductMu, cachedProductMod, cachedProductFinish, hmul] using h123
 
 /-- Physical read-only words retained across all CIOS rows. -/
 structure ReadonlyCache (mem : ByteArray) (n : Nat) (tl inv m0 : UInt256) : Prop where
