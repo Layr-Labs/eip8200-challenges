@@ -136,4 +136,15 @@ theorem three_bodies_toNat (base modulus : UInt256) (exponent : Nat)
   rw [Nat.mod_eq_of_lt hlt] at h
   simpa [exponentPrefix] using h
 
+/-- A zero modulus makes the final `MULMOD` return zero, whatever the accumulator. -/
+theorem accumulator_zero (base modulus : UInt256) (exponent : Nat)
+    (hmodulus : modulus.toNat = 0) :
+    (accumulator base modulus exponent (3 * 21)).toNat = 0 := by
+  change (WindowMath.nibbleWordStep modulus base
+    (accumulator base modulus exponent 62) (nibble exponent 63)).toNat = 0
+  have hz : modulus.val.val = 0 := hmodulus
+  unfold WindowMath.nibbleWordStep UInt256.mulMod
+  rw [if_pos hz]
+  rfl
+
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneMath

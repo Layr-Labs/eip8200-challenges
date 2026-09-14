@@ -20,8 +20,8 @@ theorem run_baseTail_head (input : ByteArray) (i : Nat) (base : UInt256)
         some (baseTailMidState input i base) := by
   rcases hvalid with ⟨_, hb, he, hm⟩
   have hi256 : i < 2 ^ 256 := by omega
-  have h169 : (169 : UInt256).toNat = 169 := by decide
-  have h169Word : (169 : UInt256) = UInt256.ofNat 169 := by decide
+  have h169 : (171 : UInt256).toNat = 171 := by decide
+  have h169Word : (171 : UInt256) = UInt256.ofNat 171 := by decide
   have h256Word : (256 : UInt256) = UInt256.ofNat 256 := by decide
   simp (config := { maxSteps := 150000 })
     [baseTailHeadPath, opAt, pushAt,
@@ -66,8 +66,8 @@ theorem run_baseTail_finish (input : ByteArray) (i : Nat) (base : UInt256)
         some (baseLoopState input (i + 1) (baseStep input i base)) := by
   rcases hvalid with ⟨_, hb, he, hm⟩
   have hi256 : i < 2 ^ 256 := by omega
-  have h541 : (154 : UInt256).toNat = 154 := by decide
-  have h541Word : (154 : UInt256) = UInt256.ofNat 154 := by decide
+  have h541 : (156 : UInt256).toNat = 156 := by decide
+  have h541Word : (156 : UInt256) = UInt256.ofNat 156 := by decide
   have hisucc' := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := i) (b := 1) (by omega : i + 1 < 2 ^ 256)
   have hincLeft : UInt256.ofNat 1 + UInt256.ofNat i =

@@ -19,12 +19,25 @@ def exponentOffset (input : ByteArray) : UInt256 := UInt256.ofNat (96 + baseSize
 def modulusOffset (input : ByteArray) : UInt256 :=
   UInt256.ofNat (96 + baseSize input + exponentSize input)
 
+/-- The three header sizes as the early entry at 26 sees them. -/
+def headerStack (input : ByteArray) : List UInt256 :=
+  [UInt256.ofNat (modulusSize input), UInt256.ofNat (exponentSize input),
+   UInt256.ofNat (baseSize input)]
+
+/-- The legacy route frame at 1759 (twelve words). -/
 def routeStack (input : ByteArray) : List UInt256 :=
   [UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
    UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
    exponentOffset input, modulusOffset input, UInt256.ofNat 1186,
    modulusOffset input, exponentOffset input, UInt256.ofNat (modulusSize input),
    UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)]
+
+/-- The lean core frame built by the entry at 26: the exponent word, its offset
+and the three header sizes.  The modulus word sits on top of it. -/
+def coreStack (input : ByteArray) : List UInt256 :=
+  [WindowTwentyOneInput.exponentWord input, exponentOffset input,
+   UInt256.ofNat (modulusSize input), UInt256.ofNat (exponentSize input),
+   UInt256.ofNat (baseSize input)]
 
 def state (template : State) (input : ByteArray) (pc : UInt256) : State :=
   WindowTwentyOneEntry.framed (context template input) pc (routeStack input)
@@ -44,48 +57,31 @@ theorem modulus_at (template : State) (input : ByteArray) (hmatch : WindowTwenty
     Nat.mod_eq_of_lt hsmall, WindowTwentyOneInput.modulusWord]
 
 def normalized (template : State) (input : ByteArray) : State :=
-  WindowTwentyOneTablePrelude.initial (context template input) (UInt256.ofNat 1667)
-    (WindowTwentyOneInput.baseWord input) (WindowTwentyOneInput.modulusWord input) (routeStack input)
+  WindowTwentyOneTablePrelude.initial (context template input) (UInt256.ofNat 1669)
+    (WindowTwentyOneInput.baseWord input) (WindowTwentyOneInput.modulusWord input)
+    (WindowTwentyOneInput.modulusWord input :: coreStack input)
 
 def returned (template : State) (input : ByteArray) : State :=
   WindowTwentyOneCore.returnedState (context template input) (WindowTwentyOneInput.baseWord input)
-    (WindowTwentyOneInput.modulusWord input) (WindowTwentyOneInput.exponentWord input) (routeStack input)
+    (WindowTwentyOneInput.modulusWord input) (WindowTwentyOneInput.exponentWord input)
+    (WindowTwentyOneInput.modulusWord input :: coreStack input)
 
-/-- `MULMOD` against a zero modulus returns zero by definition, so one nibble
-step is enough to collapse the accumulator whatever the table lookup produced. -/
-theorem advance_zero_modulus (base modulus : UInt256) (exponent start count : Nat)
-    (hm : modulus.toNat = 0) (acc : UInt256) :
-    WindowTwentyOneMath.advance base modulus exponent start (count + 1) acc = ⟨0⟩ := by
-  -- `UInt256.mulMod` branches on `n.val.val = 0`; `toNat` is that by definition, but
-  -- `rw` matches syntactically, so restate the hypothesis in the term's own form.
-  have hval : modulus.val.val = 0 := hm
-  rw [WindowTwentyOneMath.advance, WindowMath.nibbleWordStep, UInt256.mulMod, if_pos hval]
-
-/-- The window loop consumes 63 nibble steps after the initial lookup, so with a
-zero modulus the word it returns is zero. -/
-theorem accumulator_zero_modulus (base modulus : UInt256) (exponent : Nat)
-    (hm : modulus.toNat = 0) :
-    WindowTwentyOneMath.accumulator base modulus exponent 63 = ⟨0⟩ :=
-  advance_zero_modulus base modulus exponent 1 62 hm _
-
+/-- The core result is the specification for every accepted input, including a
+zero modulus, where the final `MULMOD` produces the zero word. -/
 theorem returned_spec (template : State) (input : ByteArray)
     (hmatch : WindowTwentyOneInput.Matches input) :
     (returned template input).toResult = .returned (spec input) := by
-  by_cases hzero : (WindowTwentyOneInput.modulusWord input).toNat = 0
+  by_cases hmodulus : (WindowTwentyOneInput.modulusWord input).toNat = 0
   · have hm0 : WindowTwentyOneInput.modulusValue input = 0 := by
       rw [← WindowTwentyOneInput.modulusWord_toNat]
-      exact hzero
-    rw [returned]
-    unfold WindowTwentyOneCore.returnedState
-    rw [WindowTwentyOneReturn.returned_result, accumulator_zero_modulus _ _ _ hzero,
+      exact hmodulus
+    rw [returned, WindowTwentyOneCore.core_result_zero _ _ _ _ hmodulus,
       WindowTwentyOneInput.spec_eq input hmatch, Algorithm.modPow_eq, hm0, if_pos rfl]
-    rfl
-  · have hmodulus : 0 < (WindowTwentyOneInput.modulusWord input).toNat :=
-      Nat.pos_of_ne_zero hzero
+  · have hpos : 0 < (WindowTwentyOneInput.modulusWord input).toNat := Nat.pos_of_ne_zero hmodulus
     have hm : WindowTwentyOneInput.modulusValue input ≠ 0 := by
       rw [WindowTwentyOneInput.modulusWord_toNat] at hmodulus
-      omega
-    rw [returned, WindowTwentyOneCore.core_result _ _ _ _ hmodulus,
+      exact hmodulus
+    rw [returned, WindowTwentyOneCore.core_result _ _ _ _ hpos,
       WindowTwentyOneInput.baseWord_toNat_of_le input hmatch.1,
       WindowTwentyOneInput.exponentWord_toNat, WindowTwentyOneInput.modulusWord_toNat,
       WindowTwentyOneInput.spec_eq input hmatch, Algorithm.modPow_eq, if_neg hm]
