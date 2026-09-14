@@ -19,7 +19,7 @@ def prefixTemplate (table : UInt256) : List Instr :=
   [ .push ⟨1, by decide⟩ (UInt256.ofNat 20),
     .push ⟨1, by decide⟩ (UInt256.ofNat 20),
     .op .CALLDATASIZE,
-    .push ⟨4, by decide⟩ (UInt256.ofNat 217301197),
+    .push ⟨6, by decide⟩ (UInt256.ofNat 217301197),
     .op .DIV,
     .push ⟨1, by decide⟩ (UInt256.ofNat 15),
     .op .AND,

@@ -349,16 +349,16 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_70 : Artifact.submissionArtifact.instructionPC 67 = 109 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_71 : Artifact.submissionArtifact.instructionPC 69 = 111 := by
+@[simp] theorem pc_direct_71 : Artifact.submissionArtifact.instructionPC 68 = 110 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_72 : Artifact.submissionArtifact.instructionPC 70 = 112 := by
+@[simp] theorem pc_direct_72 : Artifact.submissionArtifact.instructionPC 69 = 111 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem producerEndPC : Artifact.submissionArtifact.instructionPC 25 = 35 := pc_direct_25
 @[simp] theorem earlyWordLoadPC : Artifact.submissionArtifact.instructionPC 26 = 36 := pc_direct_26
 @[simp] theorem pc2823 : Artifact.submissionArtifact.instructionPC 27 = 39 := pc_direct_27
 @[simp] theorem pc2824 : Artifact.submissionArtifact.instructionPC 28 = 40 := pc_direct_28
 @[simp] theorem pc2825 : Artifact.submissionArtifact.instructionPC 28 = 40 := pc_direct_29
-@[simp] theorem pc2860 : Artifact.submissionArtifact.instructionPC 69 = 111 := pc_direct_71
+@[simp] theorem pc2860 : Artifact.submissionArtifact.instructionPC 68 = 110 := pc_direct_71
 @[simp] theorem pc_classifier_112 : Artifact.submissionArtifact.instructionPC 17 = 25 := pc_direct_17
 @[simp] theorem pc_classifier_113 : Artifact.submissionArtifact.instructionPC 18 = 26 := pc_direct_18
 
