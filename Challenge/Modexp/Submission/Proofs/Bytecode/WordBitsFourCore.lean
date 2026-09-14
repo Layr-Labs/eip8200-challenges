@@ -97,7 +97,7 @@ def controlProgram : List Instr :=
    .push 2 2505, .op .JUMPI]
 
 def resetProgram : List Instr :=
-  [.op (.Swap ⟨0, by decide⟩), .op .POP, .push 0 0, .op (.Swap ⟨0, by decide⟩)]
+  [.push 0 0, .op (.Swap ⟨1, by decide⟩), .op .POP, .op .JUMPDEST]
 
 theorem run_start (hcap : rest.length ≤ 1000) :
     runInstructions [.op .JUMPDEST]
@@ -135,9 +135,11 @@ theorem run_reset (hcap : rest.length ≤ 1000) :
       some (framed s 2611 ([Bm1,0,byte,offset,outerW,acc,base,m] ++ rest)) := by
   have h7 : rest.length + 7 < 1024 := by omega
   have h8 : rest.length + 8 < 1024 := by omega
+  have h9 : rest.length + 9 < 1024 := by omega
+  have h10 : rest.length + 10 < 1024 := by omega
   simp [resetProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr, framed,
-    h7, h8, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod,
+    h7, h8, h9, h10, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.literal_eq_ofNat]
-  rfl
+  try rfl
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WordBitsFourCore

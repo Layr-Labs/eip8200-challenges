@@ -98,7 +98,7 @@ def gasSteps_copy7 :
   simp [stW, value, stepValue, Challenge.EvmProof.Word.literal_eq_ofNat, show UInt256.ofNat 4 - UInt256.ofNat 4 = UInt256.ofNat 0 from by decide]
 
 @[simp] theorem gasSteps_copy7_cost :
-    (gasSteps_copy7 s rest Bm1 byte offset outerW acc base m hs hrest).cost = 110 := by
+    (gasSteps_copy7 s rest Bm1 byte offset outerW acc base m hs hrest).cost = 108 := by
   unfold gasSteps_copy7
   simp
 

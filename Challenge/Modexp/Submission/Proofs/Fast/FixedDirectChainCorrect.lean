@@ -18,7 +18,7 @@ of two ways, and `Chain` is what both of them hand to the final product:
   itself (`Exp.Subroutines.squareLoop`), returning once to `after_sq` (pc 3360)
   with the pushed count still on the stack;
 * other widths: the kernel returns after every square
-  (`Exp.Subroutines.square`) and the caller's own loop at pc 3285 counts down,
+  (`Exp.Subroutines.square`) and the caller's own loop at pc 3286 counts down,
   falling through to pc 3360 with the count at `0`.
 
 The final mixed-domain multiplication is composed in `FixedDirectHitCorrect`.
@@ -163,6 +163,7 @@ def chain_of_fixed (s : State) {n bsize mm minv : Nat}
     (hmod : Model.FastRepresents memory 0 n mm)
     (hbase : Model.FastRepresents memory 512 n bM)
     (hrawAcc : Model.FastRepresents memory 256 n rawBase)
+    (hrawLt : rawBase < mm)
     (hone : ∃ one, one < Limbs.radix ∧ Model.FastRepresents memory 768 n one)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -180,7 +181,7 @@ def chain_of_fixed (s : State) {n bsize mm minv : Nat}
         (Model.montMul mm (Limbs.radix^n) (fixedDirectValue mm (Limbs.radix^n) bM count) rawBase) := by
       rw [fixedDirectValue_eq_iterate]
       exact sub.sqLoopValue count _ bM rawBase hfast.1 hcount hf0 hi0.modulus
-        hi0.squareBase hi0.rawAcc hbM
+        hi0.squareBase hi0.rawAcc hbM hrawLt
     have hs := gasSteps_squareLoopFast s sub memory esize msize count bM rawBase hfast hcount
       hcount16 hn32 hbM hactive hframe hinv hcode hfork hrun hnp
     have hf := FusedFinish.gasSteps s out (UInt256.ofNat count) (Exp.outer n bsize esize msize)
