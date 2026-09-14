@@ -474,7 +474,7 @@ def gasSteps_guardSkip (input : ByteArray) (hfit : CalldataFits input)
     (run_guardSkip input hfit hz) (by rfl) deployAddress_not_precompile
 
 def gasSteps_guardMiss (input : ByteArray) (hfit : CalldataFits input)
-    (hn32 : input.size ≠ 32) (hnz : input.size % 64 ≠ 0) :
+    (hnz : input.size % 64 ≠ 0) :
     Challenge.EvmProof.GasSteps (padFramed input) (padGuardMiss input) := by
   have g := Challenge.EvmProof.DataStepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka guardPath (by rfl) (by rfl)
@@ -483,7 +483,6 @@ def gasSteps_guardMiss (input : ByteArray) (hfit : CalldataFits input)
     StackRunBridge.initialHashState (UInt256.ofNat 0) (UInt256.ofNat input.size)
     [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
     (by decide) rfl rfl rfl deployAddress_not_precompile
-    (by exact Nat.lt_trans hfit (by norm_num)) hn32
   rw [PadLimitArithmetic.rounded_input] at gp
   exact g.trans gp
 
@@ -1444,9 +1443,9 @@ private def gasSteps_padPrefix (input : ByteArray) (hfit : CalldataFits input)
       ((gasSteps_lengthCopy input hfit).trans (gasSteps_push input))))
 
 noncomputable def gasSteps_padBody (input : ByteArray) (hfit : CalldataFits input)
-    (hn32 : input.size ≠ 32) (hnz : input.size % 64 ≠ 0) :
+    (hnz : input.size % 64 ≠ 0) :
     Challenge.EvmProof.GasSteps (padFramed input) (padReturned input) :=
-  (gasSteps_guardMiss input hfit hn32 hnz).trans
+  (gasSteps_guardMiss input hfit hnz).trans
     ((gasSteps_lengthSetup input hfit).trans (gasSteps_lengthLoop input hfit))
 
 /-- Block-loop entry state.  A whole-block input skips the sentinel and footer stores: its
@@ -1475,7 +1474,6 @@ theorem entryState_eta (input : ByteArray) :
     rfl
 
 noncomputable def gasSteps_pad (input : ByteArray) (hfit : CalldataFits input)
-    (hn32 : input.size ≠ 32)
     (entryPrefix : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (Execution.atPC input 337)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
@@ -1486,7 +1484,7 @@ noncomputable def gasSteps_pad (input : ByteArray) (hfit : CalldataFits input)
       rfl (entryState_skip input hz).symm
   else
     Challenge.EvmProof.GasSteps.cast
-      ((gasSteps_padPrefix input hfit entryPrefix).trans (gasSteps_padBody input hfit hn32 hz))
+      ((gasSteps_padPrefix input hfit entryPrefix).trans (gasSteps_padBody input hfit hz))
       rfl (entryState_miss input hz).symm
 
 

@@ -28,7 +28,7 @@ theorem limit_eq (input : ByteArray) (hfit : CalldataFits input) :
   unfold limitWord
   rw [DriverTrace.paddedLength_eq_blockCount]
 
-noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size) (hn32 : input.size ≠ 32)
+noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 337)) :
     GasSteps (initialState submissionBytecode input 0)
       (loopState input (PaddingTrace.entryState input) StackRunBridge.initialHashState 0
@@ -56,7 +56,7 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
   have gj := StaggerPersistentLoopSites.gasSteps_join s
     (StaggerPersistentFrame.frame h (UInt256.ofNat 0) (LoopCompletionControl.limit input) maskRho)
     (by simp [StaggerPersistentFrame.frame, maskRho]) hr hc hf hn
-  have gp := PaddingTrace.gasSteps_pad input hfit hn32 entryPrefix
+  have gp := PaddingTrace.gasSteps_pad input hfit entryPrefix
   have g := gp.trans (gx.trans gj)
   simpa only [loopState, LoopCompletionControl.blockPC, Nat.zero_mul,
     if_neg (show input.size ≠ 0 by omega), offsetWord] using g
@@ -66,7 +66,7 @@ def result (input : ByteArray) (states : Nat → State) (hashes : Nat → Compre
     (hashes (DriverTrace.blockCount input))
     (limitWord (DriverTrace.blockCount input)) (LoopCompletionControl.limit input) maskRho
 
-noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size) (hn32 : input.size ≠ 32)
+noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size)
     (states : Nat → State) (hashes : Nat → Compression.HashState)
     (hszero : states 0 = PaddingTrace.entryState input)
     (hhzero : hashes 0 = StackRunBridge.initialHashState)
@@ -76,7 +76,7 @@ noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input) (hpo
         (postState input (states (i + 1)) (hashes (i + 1)) i (DriverTrace.blockCount input) maskRho))
     (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 337)) :
     GasSteps (initialState submissionBytecode input 0) (result input states hashes) := by
-  have gs := gasSteps_start input hfit hpositive hn32 entryPrefix
+  have gs := gasSteps_start input hfit hpositive entryPrefix
   have gb := run_blocks input states hashes maskRho hfit (by decide) hambient hblock
   have a := hambient (DriverTrace.blockCount input) (Nat.le_refl _)
   have go := StaggerPersistentSerialize.gasSteps (states (DriverTrace.blockCount input))
@@ -85,7 +85,7 @@ noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input) (hpo
   rw [← hszero, ← hhzero] at gs
   exact gs.trans (gb.trans go)
 
-theorem correct_of_blocks (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size) (hn32 : input.size ≠ 32)
+theorem correct_of_blocks (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size)
     (states : Nat → State) (hashes : Nat → Compression.HashState)
     (hszero : states 0 = PaddingTrace.entryState input)
     (hhzero : hashes 0 = StackRunBridge.initialHashState)
@@ -99,7 +99,7 @@ theorem correct_of_blocks (input : ByteArray) (hfit : CalldataFits input) (hposi
     (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 337)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  let trace := fullTrace input hfit hpositive hn32 states hashes hszero hhzero hambient hblock entryPrefix
+  let trace := fullTrace input hfit hpositive states hashes hszero hhzero hambient hblock entryPrefix
   have hr : (result input states hashes).halt = .Returned := rfl
   have hc : (result input states hashes).callStack = [] := hcalls
   have hb : (result input states hashes).hReturn = spec input :=

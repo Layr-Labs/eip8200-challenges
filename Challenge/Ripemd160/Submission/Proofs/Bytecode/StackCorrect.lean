@@ -1,7 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdTailCorrect
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32TailCorrect
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdCorrect
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Correct
 set_option warningAsError true
 set_option maxRecDepth 30000
 set_option maxHeartbeats 600000
@@ -13,9 +11,7 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 337)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  by_cases h32 : input.size = 32
-  · exact Shared32Correct.correct input h32 entryPrefix
-  · exact ColdCorrect.correct input hfit hpositive h32 entryPrefix
+  exact ColdCorrect.correct input hfit hpositive entryPrefix
 theorem correct_tail (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (hsmall : input.size < 5220)
     (rho : List UInt256) (hcap : rho.length ≤ 20)
@@ -23,9 +19,7 @@ theorem correct_tail (input : ByteArray) (hfit : CalldataFits input)
       (StackTail.append (Execution.atPC input 337) rho)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  by_cases h32 : input.size = 32
-  · exact Shared32TailCorrect.correct input h32 rho hcap entryPrefix
-  · exact ColdTailCorrect.correct input hfit hpositive h32 hsmall rho hcap entryPrefix
+  exact ColdTailCorrect.correct input hfit hpositive hsmall rho hcap entryPrefix
 #print axioms correct_tail
 #print axioms correct
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect

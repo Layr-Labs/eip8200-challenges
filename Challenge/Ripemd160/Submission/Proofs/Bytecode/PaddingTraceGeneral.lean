@@ -235,7 +235,7 @@ noncomputable def gasSteps_loop (hfit : CalldataFits input) :
 include hframe hlimit hcal hrun hcode hfork hnp in
 /-- Generic padding at the actual artifact entry, preserving an arbitrary initialized frame.
 The twelve upper words include the offset, and word12 is the padded limit. -/
-noncomputable def gasSteps_padBody (hfit : CalldataFits input) (_hn32 : input.size ≠ 32) :
+noncomputable def gasSteps_padBody (hfit : CalldataFits input) :
     GasSteps {s with pc := UInt256.ofNat 4723, stack := frame}
       (resultState input s frame) := by
   exact (gasSteps_setup input s frame hframe hlimit hcal hrun hcode hfork hnp hfit).trans

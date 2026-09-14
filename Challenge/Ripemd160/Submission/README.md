@@ -62,8 +62,10 @@ The full Solution build passes all 3720 jobs, and the final theorem depends
 only on propext, Classical.choice and Quot.sound. Independent secure Comparator
 verification is the remaining check; its result is recorded after completion.
 
-The parent retains our deferred padding-limit rounding, literal unit constant,
-and exact-32 guard before rounding. The parent and earlier artifacts have
+The parent retains our deferred padding-limit rounding and literal unit
+constant; the exact-32 diversion before rounding is retired into a
+stack-neutral passthrough, so the generic padding path now serves every
+input size. The parent and earlier artifacts have
 independent secure verification. The earlier 671,664 candidate was accepted
 as 0f4090d0 and promoted to cdbceb0f. That promotion's complete Submission
 tree matches the frozen d6a787fc. New public branches are inspected and active

@@ -40,7 +40,7 @@ def gasSteps_prefix (input : ByteArray) (hfit : CalldataFits input)
       ((tail_copy input hfit rho hcap).trans (gasSteps_push input rho hcap))))
 
 def gasSteps_guardMiss (input : ByteArray) (hfit : CalldataFits input)
-    (hn32 : input.size ≠ 32) (hnz : input.size % 64 ≠ 0)
+    (hnz : input.size % 64 ≠ 0)
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
     GasSteps (StackTail.append (padFramed input) rho)
       (StackTail.append (padGuardMiss input) rho) := by
@@ -50,7 +50,6 @@ def gasSteps_guardMiss (input : ByteArray) (hfit : CalldataFits input)
     ([DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16] ++ rho)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega)
     rfl rfl rfl deployAddress_not_precompile
-    (by exact Nat.lt_trans hfit (by norm_num)) hn32
   rw [PadLimitArithmetic.rounded_input] at gp
   exact g.trans gp
 
@@ -135,7 +134,7 @@ noncomputable def gasSteps_loop (input : ByteArray) (hfit : CalldataFits input)
           exact hz) hz)
 
 noncomputable def gasSteps_pad (input : ByteArray) (hfit : CalldataFits input)
-    (hn32 : input.size ≠ 32) (rho : List UInt256) (hcap : rho.length ≤ 20) :
+    (rho : List UInt256) (hcap : rho.length ≤ 20) :
     GasSteps (StackTail.append (Execution.atPC input 337) rho)
       (StackTail.append (entryState input) rho) := by
   have gp := gasSteps_prefix input hfit rho hcap
@@ -143,7 +142,7 @@ noncomputable def gasSteps_pad (input : ByteArray) (hfit : CalldataFits input)
   · rw [entryState_skip input hz]
     exact gp.trans (tail_guardSkip input hfit hz rho hcap)
   · rw [entryState_miss input hz]
-    exact gp.trans ((gasSteps_guardMiss input hfit hn32 hz rho hcap).trans
+    exact gp.trans ((gasSteps_guardMiss input hfit hz rho hcap).trans
       ((gasSteps_setup input hfit rho hcap).trans (gasSteps_loop input hfit rho hcap)))
 
 #print axioms gasSteps_prefix
