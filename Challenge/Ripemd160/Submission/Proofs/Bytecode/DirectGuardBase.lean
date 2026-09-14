@@ -77,13 +77,13 @@ def checkEntryPath : List Located :=
    opAt 27 .JUMPI,
    pushAt 28 0 0,
    opAt 29 .CALLDATALOAD,
-   opAt 30 (.Dup ⟨0, by decide⟩),
-   pushAt 31 2 968,
-   opAt 32 .CALLDATALOAD,
-   opAt 33 .XOR,
-   opAt 34 .JUMPDEST,
-   pushAt 35 2 960,
-   opAt 36 (.Swap ⟨0, by decide⟩)]
+   pushAt 30 2 960,
+   opAt 31 (.Dup ⟨1, by decide⟩),
+   pushAt 32 2 968,
+   opAt 33 .CALLDATALOAD,
+   opAt 34 .XOR,
+   opAt 35 .JUMPDEST,
+   opAt 36 .JUMPDEST]
 
 def loopPath : List Located :=
   [opAt 37 .JUMPDEST,
@@ -254,15 +254,15 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_32 : Artifact.submissionArtifact.instructionPC 30 = 42 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_33 : Artifact.submissionArtifact.instructionPC 31 = 43 := by
+@[simp] theorem pc_direct_33 : Artifact.submissionArtifact.instructionPC 31 = 45 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_34 : Artifact.submissionArtifact.instructionPC 32 = 46 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_35 : Artifact.submissionArtifact.instructionPC 33 = 47 := by
+@[simp] theorem pc_direct_35 : Artifact.submissionArtifact.instructionPC 33 = 49 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_36 : Artifact.submissionArtifact.instructionPC 34 = 48 := by
+@[simp] theorem pc_direct_36 : Artifact.submissionArtifact.instructionPC 34 = 50 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_37 : Artifact.submissionArtifact.instructionPC 35 = 49 := by
+@[simp] theorem pc_direct_37 : Artifact.submissionArtifact.instructionPC 35 = 51 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_38 : Artifact.submissionArtifact.instructionPC 36 = 52 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl

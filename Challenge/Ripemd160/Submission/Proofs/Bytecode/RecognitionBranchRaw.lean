@@ -54,7 +54,7 @@ theorem run_clamp (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame)
   all_goals rfl
 #print axioms run_clamp
 
-def segmentTemplate (dest : Nat) : List Instr := [.op .JUMPDEST, .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .EQ, .op .JUMPDEST,
+def segmentTemplate (dest : Nat) : List Instr := [.op .JUMPDEST, .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .LT, .op .ISZERO,
   .push ⟨2, by decide⟩ (UInt256.ofNat dest), .op .JUMPI]
 
 theorem run_segment (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame)
@@ -63,13 +63,14 @@ theorem run_segment (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat dest).toNat = true) :
     runInstrSeq (segmentTemplate dest) {s with pc := pc, stack := frame f rho} =
       some {s with
-        pc := if f.off.toNat = f.full.toNat then UInt256.ofNat dest else pcAfter pc (segmentTemplate dest)
+        pc := if ¬ f.off.toNat < f.full.toNat then UInt256.ofNat dest else pcAfter pc (segmentTemplate dest)
         stack := frame f rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
   simp only [Word.word_toNat_ofNat] at hvalid
   norm_num only at hvalid
-  by_cases hc : f.off.toNat = f.full.toNat
+  by_cases hc : ¬ f.off.toNat < f.full.toNat
+  all_goals try simp only [not_not] at hc
   all_goals simp (discharger := omega) [segmentTemplate, frame, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, UInt256.lt, UInt256.eq, UInt256.isZero, UInt256.isTrue,
