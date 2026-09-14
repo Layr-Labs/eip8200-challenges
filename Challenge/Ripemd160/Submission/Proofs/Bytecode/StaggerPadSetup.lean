@@ -13,10 +13,10 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory
 open PairTableActive StaggerTableSparse StaggerTableLayout
 
-/-- Pad-only low block (pc 4784..4826): copy zero calldata over the table, store the unmasked
+/-- Pad-only low block (pc 4793..4828): copy zero calldata over the table, store the unmasked
 low bit-length word `n <<< 3` (two `JUMPDEST`s keep the block's length where the mask used
 to be applied; the resident `0xffffffff` stays four deep on the stack) and `0x80`, then leave
-`iszero (n >>> 29)` for the branch at 4827. -/
+`iszero (n >>> 29)` for the branch at 4829. -/
 def lowTemplate : List Instr :=
   [ .push ⟨2, by decide⟩ (UInt256.ofNat 1084),
     .op .CALLDATASIZE,
@@ -36,19 +36,19 @@ def lowTemplate : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 128),
     .push ⟨2, by decide⟩ (UInt256.ofNat 522),
     .op .MSTORE,
-    .push ⟨21, by decide⟩ (UInt256.ofNat (128 * (1 + 2 ^ 144))),
+    .push ⟨19, by decide⟩ (UInt256.ofNat (128 * (1 + 2 ^ 144))),
     .push ⟨1, by decide⟩ (UInt256.ofNat 54),
     .op .MSTORE,
     .op .CODESIZE,
     .op .CALLDATASIZE,
     .op .LT ]
 
-/-- `PUSH2 0398 JUMPI` at 4769: straight to the rounds when the high word is zero. -/
+/-- `PUSH2 0398 JUMPI` at 4778: straight to the rounds when the high word is zero. -/
 def branchTemplate : List Instr :=
   [ .push ⟨2, by decide⟩ (UInt256.ofNat 894),
     .op .JUMPI ]
 
-/-- Pad-only high block (pc 4831..4858), reached only when `n >>> 29 ≠ 0`. -/
+/-- Pad-only high block (pc 4833..4860), reached only when `n >>> 29 ≠ 0`. -/
 def highTemplate : List Instr :=
   [ .op .CALLDATASIZE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 29),
@@ -71,15 +71,15 @@ def highTemplate : List Instr :=
 private theorem add_eq_hAdd (x y : UInt256) : UInt256.add x y = x + y := rfl
 
 /-- The fast padding path is valid for lengths below the artifact's byte size. -/
-def highZero (n : UInt256) : UInt256 := UInt256.lt n (UInt256.ofNat 5218)
+def highZero (n : UInt256) : UInt256 := UInt256.lt n (UInt256.ofNat 5220)
 
 theorem highZero_true_iff (n : UInt256) :
-    UInt256.isTrue (highZero n) ↔ n.toNat < 5218 := by
-  change (UInt256.lt n (UInt256.ofNat 5218)).toNat ≠ 0 ↔ n.toNat < 5218
+    UInt256.isTrue (highZero n) ↔ n.toNat < 5220 := by
+  change (UInt256.lt n (UInt256.ofNat 5220)).toNat ≠ 0 ↔ n.toNat < 5220
   rw [Word.word_toNat_lt]
-  have hc : (UInt256.ofNat 5218).toNat = 5218 := by decide
+  have hc : (UInt256.ofNat 5220).toNat = 5220 := by decide
   rw [hc]
-  by_cases hn : n.toNat < 5218 <;> simp [hn]
+  by_cases hn : n.toNat < 5220 <;> simp [hn]
 
 theorem highZero_true_imp (n : UInt256) (h : UInt256.isTrue (highZero n)) :
     StaggerTablePad.highDirty n = UInt256.ofNat 0 := by
@@ -95,7 +95,7 @@ theorem highZero_true_imp (n : UInt256) (h : UInt256.isTrue (highZero n)) :
 theorem run_low (s : State) (pc returnPC : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 995) (hrun : s.halt = .Running) (hactive : 35 ≤ s.activeWords.toNat)
     (hlow : (MachineState.readWord s.memory 0).toNat < 2 ^ 32)
-    (hfit : s.executionEnv.calldata.size < 2 ^ 256) (hcode : s.executionEnv.code.size = 5218) :
+    (hfit : s.executionEnv.calldata.size < 2 ^ 256) (hcode : s.executionEnv.code.size = 5220) :
     runInstrSeq lowTemplate {s with pc := pc, stack := returnPC :: UInt256.ofNat 4294967295 :: rest} =
       some {s with
              pc := pcAfter pc lowTemplate

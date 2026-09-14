@@ -30,14 +30,12 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
   have gx : GasSteps (StackTail.append s rho)
       {s with pc := UInt256.ofNat 489, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (LoopCompletionControl.limit input) (maskRho rho)} := by
     by_cases hz : input.size % 64 = 0
-    · have hs : StackTail.append s rho = {s with pc := UInt256.ofNat 486, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (Padding.paddedWord input) (maskRho rho)} := by
+    · have hs : StackTail.append s rho = {s with pc := UInt256.ofNat 489, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (UInt256.ofNat input.size) (maskRho rho)} := by
         dsimp [s]
         rw [PaddingTrace.entryState_skip input hz]
         rfl
-      have gf := StaggerPersistentStart.gasSteps_full s (Padding.paddedWord input)
-        (maskRho rho) (by omega) hr hc hf hn
-      rw [hi, ← hs] at gf
-      simpa only [LoopCompletionControl.limit, LoopCompletionControl.limitNat, if_pos hz] using gf
+      exact GasSteps.cast (GasSteps.refl (StackTail.append s rho)) rfl (by
+        simpa only [LoopCompletionControl.limit, LoopCompletionControl.limitNat, if_pos hz] using hs)
     · have hs : StackTail.append s rho = {s with pc := UInt256.ofNat 489, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (Padding.paddedWord input) (maskRho rho)} := by
         dsimp [s]
         rw [PaddingTrace.entryState_miss input hz]
@@ -56,7 +54,7 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
 
 /-- The ordinary hash route retains its arbitrary bounded suffix through every block. -/
 theorem correct (input : ByteArray) (hfit : CalldataFits input)
-    (hpositive : 0 < input.size) (hn32 : input.size ≠ 32) (hsmall : input.size < 5218)
+    (hpositive : 0 < input.size) (hn32 : input.size ≠ 32) (hsmall : input.size < 5220)
     (rho : List UInt256) (hcap : rho.length ≤ 20)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0)
       (StackTail.append (Execution.atPC input 341) rho)) :

@@ -138,8 +138,8 @@ def tailTemplate : List Instr := [
   .op .OR]
 
 def finishTemplate : List Instr := [
-  .op (.Dup ⟨4, by decide⟩),
-  .op (.Dup ⟨6, by decide⟩),
+  .op (.Dup ⟨5, by decide⟩),
+  .op (.Dup ⟨5, by decide⟩),
   .op .EQ,
   .push ⟨2, by decide⟩ (UInt256.ofNat 298),
   .op .JUMPI]

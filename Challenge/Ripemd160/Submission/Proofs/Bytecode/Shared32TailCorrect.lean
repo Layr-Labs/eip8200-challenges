@@ -15,7 +15,7 @@ def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
   have hfit : CalldataFits input := by change input.size < 2 ^ 64; rw [h32]; decide
   let s := PaddingTrace.padCopied input
   have e : Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
-  have hframe : PaddingTrace.padFrame input ++ rho = frame ++ rho := by rw [frame_eq input h32]
+  have hframe : PaddingTrace.initialFrame input ++ rho = entryFrame ++ rho := by rw [entry_frame_eq input h32]
   have hactive : s.activeWords = UInt256.ofNat 36 := copied_active input h32
   have hsize : (frame ++ rho).length ≤ 900 := by simp only [List.length_append]; change 15 + rho.length ≤ 900; omega
   have hgap : PairStoreGap.GapClear s.memory := by
@@ -23,12 +23,18 @@ def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
     exact copiedMemory_gapClear input
   have g0 := PaddingTail.gasSteps_prefix input hfit rho hcap
   have g1 : GasSteps (StackTail.append (PaddingTrace.padFramed input) rho)
-      (atState s 4705 (frame ++ rho)) := by
-    have ga := Shared32Alignment.gasSteps s e (PaddingTrace.padFrame input ++ rho)
-      (by rw [List.length_append, PaddingTrace.padFrame_length]; omega) h32
+      (atState s 4705 (entryFrame ++ rho)) := by
+    have ga := Shared32Alignment.gasSteps s e (PaddingTrace.initialFrame input ++ rho)
+      (by rw [List.length_append, PaddingTrace.initialFrame_length]; omega) h32
     simpa only [PaddingTrace.padFramed, StackTail.append, hframe, atState, s] using ga
-  have g2 : GasSteps (atState s 4705 (frame ++ rho)) (atState s 4706 (frame ++ rho)) :=
-    StaggerPersistentStart.gasSteps_partial s (frame ++ rho) (by omega) e.run e.code e.fork e.np
+  have g2 : GasSteps (atState s 4705 (entryFrame ++ rho)) (atState s 4715 (frame ++ rho)) := by
+    have gr := StaggerPersistentStart.gasSteps_partial s StackRunBridge.initialHashState
+      (UInt256.ofNat 0) (UInt256.ofNat 32) (maskRho ++ rho)
+      (by simp only [maskRho, List.length_append, List.length_cons, List.length_nil]; omega)
+      e.run e.code e.fork e.np
+    rw [rounded_32] at gr
+    simpa only [atState, entryFrame, frame, StaggerPersistentFrame.frame,
+      List.append_assoc, List.cons_append, List.nil_append] using gr
   have g3 := Shared32Trace.gasSteps_guard s e (frame ++ rho) hsize h32
   have g4 := Shared32Trace.gasSteps_sparse s e factorPlusWord (UInt256.ofNat 4294967295)
     (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)

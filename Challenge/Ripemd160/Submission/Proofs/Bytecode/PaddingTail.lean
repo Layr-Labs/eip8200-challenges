@@ -24,11 +24,11 @@ def gasSteps_entry (input : ByteArray) (rho : List UInt256) (hcap : rho.length â
 def gasSteps_push (input : ByteArray) (rho : List UInt256) (hcap : rho.length â‰¤ 20) :
     GasSteps (StackTail.append (padCopied input) rho)
       (StackTail.append (padFramed input) rho) := by
-  have g := StaggerPersistentStart.gasSteps_push (padCopied input) (Padding.paddedWord input)
+  have g := StaggerPersistentStart.gasSteps_push (padCopied input) (UInt256.ofNat input.size)
     ([DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16] ++ rho)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega)
     rfl rfl rfl deployAddress_not_precompile
-  simpa only [StackTail.append, padCopied, padFramed, padFrame,
+  simpa only [StackTail.append, padCopied, padFramed, initialFrame,
     StaggerPersistentFrame.frame, List.append_assoc, List.cons_append, List.nil_append] using g
 
 def gasSteps_prefix (input : ByteArray) (hfit : CalldataFits input)
@@ -49,7 +49,11 @@ def gasSteps_guardMiss (input : ByteArray) (hfit : CalldataFits input)
     rw [List.length_append, padFrame_length]
     omega
   have gp := StaggerPersistentStart.gasSteps_partial (padGuardMiss input)
-    (padFrame input ++ rho) (by omega) rfl rfl rfl deployAddress_not_precompile
+    StackRunBridge.initialHashState (UInt256.ofNat 0) (UInt256.ofNat input.size)
+    ([DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16] ++ rho)
+    (by simp only [List.length_append, List.length_cons, List.length_nil]; omega)
+    rfl rfl rfl deployAddress_not_precompile
+  rw [PadLimitArithmetic.rounded_input] at gp
   have gn := StaggerPersistentStart.gasSteps_guard32_miss (padGuardMiss input)
     (padFrame input ++ rho) hc (by exact Nat.lt_trans hfit (by norm_num)) hn32
     rfl rfl rfl deployAddress_not_precompile

@@ -42,7 +42,7 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
       (.push width value) := by decide) : Located :=
   ⟨index, .push width value, hget, hwf⟩
 
-/-- Entry byte gate: `byte0 == 7` jumps to the patterned guard at 4825. -/
+/-- Entry byte gate: `byte0 == 7` jumps to the patterned guard at 4827. -/
 def bytePrefix : List Located :=
   [pushAt 0 1 7,
    pushAt 1 0 0,
@@ -50,7 +50,7 @@ def bytePrefix : List Located :=
    pushAt 3 0 0,
    opAt 4 .BYTE,
    opAt 5 .EQ,
-   pushAt 6 2 4825]
+   pushAt 6 2 4827]
 
 /-- Entry size gate: `(size >> 2) * (size ^ 1000) != 0` jumps to the generic arm. -/
 def gatePrefix : List Located :=
@@ -73,7 +73,7 @@ def checkEntryPath : List Located :=
    opAt 23 .DIV,
    opAt 24 .MUL,
    opAt 25 .XOR,
-   pushAt 26 2 4825,
+   pushAt 26 2 4827,
    opAt 27 .JUMPI,
    pushAt 28 0 0,
    opAt 29 .CALLDATALOAD,

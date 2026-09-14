@@ -11,7 +11,7 @@ def gasSteps (s : State) (input : ByteArray) (i : Nat) (h : Compression.HashStat
     (limit : UInt256) (rho : List UInt256) (hs : rho.length ≤ 880)
     (tail : List UInt256) (hrho : rho = DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: tail)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input) (ctx : Context s input)
-    (hordinary : input.size = DriverTrace.blockOffset i → input.size < 5218)
+    (hordinary : input.size = DriverTrace.blockOffset i → input.size < 5220)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hr : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig

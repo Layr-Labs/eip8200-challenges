@@ -9,10 +9,10 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PersistentStaggerTable PersistentStaggerIteration ColdHighPaddingMemory StaggerPersistentFrame
 noncomputable opaque gasSteps_lowRoute (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0<input.size)
     (i : Nat) (hi : i<DriverTrace.blockCount input) (hh : input.size=DriverTrace.blockOffset i)
-    (hlarge : 5218≤input.size) :
+    (hlarge : 5220≤input.size) :
     GasSteps
-      {states input i with pc:=UInt256.ofNat 4754, stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (LoopCompletionControl.limit input) maskRho}
-      {lowState input i with pc:=UInt256.ofNat 4705, stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (Padding.paddedWord input) maskRho} := by
+      {states input i with pc:=UInt256.ofNat 4763, stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (LoopCompletionControl.limit input) maskRho}
+      {lowState input i with pc:=UInt256.ofNat 4705, stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (UInt256.ofNat input.size) maskRho} := by
   let s:=states input i
   let h:=hashes input i
   let off:=DriverTrace.blockOffsetWord i
@@ -27,26 +27,20 @@ noncomputable opaque gasSteps_lowRoute (input : ByteArray) (hfit : CalldataFits 
   have hsz : s.executionEnv.calldata.size<2^256 := by rw [hcal];exact calldata_lt_uint256 input hfit
   have hz : input.size%64=0 := by rw [hh,DriverTrace.blockOffset];omega
   have hlim : lim=UInt256.ofNat input.size := by simp only [lim,LoopCompletionControl.limit,LoopCompletionControl.limitNat,if_pos hz]
-  have hnext : lim+UInt256.ofNat 64=Padding.paddedWord input := by
-    rw [hlim,PaddingTraceGeneral.paddedWord_aligned input hfit hz]
-    apply Word.ofNat_add_ofNat
-    have hhfit : input.size<2^64 := hfit
-    norm_num at hhfit ⊢
-    omega
   have gp:=StaggerPersistentPadPrefix.gasSteps_prefix s (frame h off lim maskRho)
     (by simp [frame,maskRho]) hr hc hf hnp
   have ha : 35≤s.activeWords.toNat := Nat.le_trans (by decide : 35≤37) ctx.active
   have gl:=ColdOrdinarySites.gasSteps_low s Paired144WordRound.factorPlusWord r (by rfl)
     (by simp [r,ColdOrdinaryPrepare.rest,maskRho]) hr ha ctx.lowClear hsz hc hf hnp
   rw [hcal] at gl
-  have gl' : GasSteps {s with pc:=UInt256.ofNat 4755,stack:=frame h off lim maskRho}
-      {lowState input i with pc:=UInt256.ofNat 4812, stack:=StaggerPad.highZero (UInt256.ofNat input.size)::frame h off lim maskRho} := gl
+  have gl' : GasSteps {s with pc:=UInt256.ofNat 4764,stack:=frame h off lim maskRho}
+      {lowState input i with pc:=UInt256.ofNat 4819, stack:=StaggerPad.highZero (UInt256.ofNat input.size)::frame h off lim maskRho} := gl
   have gf:=ColdOrdinarySites.gasSteps_branch_fall (lowState input i)
     (StaggerPad.highZero (UInt256.ofNat input.size)) (frame h off lim maskRho)
     (by simp [frame,maskRho]) hr (large_branch input hfit hlarge) hc hf hnp
   have gr:=ColdHighRoute.gasSteps (lowState input i) h off lim maskRho (by decide) hr hc hf hnp
-  rw [hnext] at gr
-  exact ColdTraceCompose.two gp (ColdTraceCompose.two gl' (ColdTraceCompose.two gf gr))
+  have gout := ColdTraceCompose.two gp (ColdTraceCompose.two gl' (ColdTraceCompose.two gf gr))
+  exact gout.cast rfl (by rw [hlim])
 #print axioms gasSteps_lowRoute
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdHighTrace
