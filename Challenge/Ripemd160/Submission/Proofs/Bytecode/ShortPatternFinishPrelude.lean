@@ -272,7 +272,7 @@ def digestStorePostPath : List Located :=
     pushAt 3881 1 12]
 
 def digestFinishPath : List Located :=
-  [pushAt 214 0 0, opAt 215 .RETURN]
+  [pushAt 215 0 0, opAt 216 .RETURN]
 
 @[simp] theorem pcE2Length : Artifact.submissionArtifact.instructionPC 3871 = 4838 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
@@ -317,7 +317,7 @@ def digestFinishPath : List Located :=
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 @[simp] theorem pc4872 : Artifact.submissionArtifact.instructionPC 3877 = 4850 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-@[simp] theorem pc4873 : Artifact.submissionArtifact.instructionPC 215 = 4858 := by
+@[simp] theorem pc4873 : Artifact.submissionArtifact.instructionPC 216 = 4858 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem run_selector (n : Nat) (input : ByteArray) (sv ov : UInt256) :
     run selectorPath (selectorState n input sv ov) =
