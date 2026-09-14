@@ -15,10 +15,10 @@ private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
 def template : List Instr :=
   [ .op (.Swap ⟨7, by decide⟩),
-    .op (.Dup ⟨8, by decide⟩),
-    .op (.Dup ⟨10, by decide⟩),
-    .op (.Dup ⟨6, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
+    .op (.Dup ⟨5, by decide⟩),
     .op .AND,
+    .op (.Dup ⟨9, by decide⟩),
     .op .OR,
     .op (.Dup ⟨10, by decide⟩),
     .op (.Dup ⟨8, by decide⟩),

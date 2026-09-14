@@ -23,7 +23,7 @@ def template : List Instr :=
     .op (.Dup ⟨13, by decide⟩),
     .op .XOR,
     .op (.Dup ⟨8, by decide⟩),
-    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨2, by decide⟩),
     .op (.Dup ⟨13, by decide⟩),
     .op .AND,
     .op .XOR,
