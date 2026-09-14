@@ -78,9 +78,9 @@ def checkEntryPath : List Located :=
    pushAt 28 0 0,
    opAt 29 .CALLDATALOAD,
    pushAt 30 2 960,
-   opAt 31 (.Dup ⟨1, by decide⟩),
-   pushAt 32 2 968,
-   opAt 33 .CALLDATALOAD,
+   pushAt 31 2 968,
+   opAt 32 .CALLDATALOAD,
+   opAt 33 (.Dup ⟨2, by decide⟩),
    opAt 34 .XOR]
 
 def loopPath : List Located :=
@@ -277,7 +277,7 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_33 : Artifact.submissionArtifact.instructionPC 31 = 45 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_34 : Artifact.submissionArtifact.instructionPC 32 = 46 := by
+@[simp] theorem pc_direct_34 : Artifact.submissionArtifact.instructionPC 32 = 48 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_35 : Artifact.submissionArtifact.instructionPC 33 = 49 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl

@@ -63,6 +63,7 @@ theorem run_checkEntry (input : ByteArray)
     Challenge.EvmProof.DataStepper.runInstr,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
+  exact BooleanSelect.xor_comm _ _
 
 #print axioms run_checkEntry
 
