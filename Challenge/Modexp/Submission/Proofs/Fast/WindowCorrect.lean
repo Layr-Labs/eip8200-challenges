@@ -10,7 +10,7 @@ set_option maxHeartbeats 2000000
 # Full fast/reference composition for the fixed-width route
 
 The early wrapper handles matching headers first. Every other header restores
-the exact legacy entry at pc 1396. The Montgomery success proof is then reused
+the exact legacy entry at pc 1395. The Montgomery success proof is then reused
 verbatim. If that fast path declines, the unchanged broad Setup fallback reaches
 pc 1326 and the route-aware reference-body proof takes over.
 -/

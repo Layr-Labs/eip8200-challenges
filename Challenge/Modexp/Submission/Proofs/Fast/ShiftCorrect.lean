@@ -13,7 +13,7 @@ set_option maxHeartbeats 16000000
 # Fast-path certificate with the shift-reduce base conversion
 
 After `Fast.Setup` and the `R1B` guard, execution reaches the dispatcher at
-pc 4022.  When the base is exactly `n` words wide and the modulus has its top
+pc 4015.  When the base is exactly `n` words wide and the modulus has its top
 bit set, the shift-reduce routine converts the base and rejoins the exponent
 phase at `BDONE`; otherwise the old `r0` block runs the unchanged RR-leading
 chain.
@@ -29,8 +29,8 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.RrLeadingTraceCore
 
 theorem jumpD4643 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 2793).toNat = true :=
-  Exp.jumpD 2793 (by decide) jumpDest4608
+    (UInt256.ofNat 2788).toNat = true :=
+  Exp.jumpD 2788 (by decide) jumpDest4608
 
 /-! ## Facts at `BDONE` on the hit path -/
 
@@ -256,7 +256,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
       (Exp.gasSteps_r0 s mem1 n bsize esize msize hn hn32 hact hframe1.s32 hcode hfork hrun
         hnp).trans
       (Exp.gasSteps_ccbFull s sub hspec esize msize hmpos hn hn32 1280 (by omega) (by omega)
-        (UInt256.ofNat 2395) (Exp.mcopyMem mem1 1280 1024 (32 * n)) (Limbs.radix ^ n % mm)
+        (UInt256.ofNat 2394) (Exp.mcopyMem mem1 1280 1024 (32 * n)) (Limbs.radix ^ n % mm)
         Exp.jumpD3571 hf2 hcc.1 hcc.2 (Nat.mod_lt _ hmpos) hact296 hcode hfork hrun hnp)
     have hframeDirect : Exp.Frame directMem n bsize minv := by
       dsimp only [directMem]

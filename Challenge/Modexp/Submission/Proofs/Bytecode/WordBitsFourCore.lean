@@ -94,29 +94,29 @@ theorem run_body (hcap : rest.length ≤ 1000) :
 def controlProgram : List Instr :=
   [.op (.Dup ⟨1, by decide⟩), .op .ISZERO,
    .op (.Swap ⟨1, by decide⟩), .push 1 4, .op .ADD, .op (.Swap ⟨1, by decide⟩),
-   .push 2 2506, .op .JUMPI]
+   .push 2 2505, .op .JUMPI]
 
 theorem run_start (hcap : rest.length ≤ 1000) :
     runInstructions [.op .JUMPDEST]
-      (framed s 2506 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) =
-      some (framed s 2507 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) := by
+      (framed s 2505 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) =
+      some (framed s 2506 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) := by
   have h8 : rest.length + 8 < 1024 := by omega
   simp [runInstructions, Challenge.EvmProof.Stepper.runInstr, framed, h8]
   decide
 
-/-- The half-byte dispatcher. Its fall-through at pc 2606 is now the byte-loop
+/-- The half-byte dispatcher. Its fall-through at pc 2605 is now the byte-loop
 tail itself: the counter slot is dead after the eighth bit, the tail pops it, and
 the four inert `JUMPDEST`s sit behind the tail's unconditional jump. -/
 theorem run_control (c : Nat) (hc : c = 0 ∨ c = 4) (hcap : rest.length ≤ 1000)
-    (hjd : Decode.isValidJumpDest s.executionEnv.code 2506 = true) :
+    (hjd : Decode.isValidJumpDest s.executionEnv.code 2505 = true) :
     runInstructions controlProgram
-      (framed s 2595 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m] ++ rest)) =
-      some (framed s (if c = 0 then 2506 else 2606)
+      (framed s 2594 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m] ++ rest)) =
+      some (framed s (if c = 0 then 2505 else 2605)
         ([Bm1,UInt256.ofNat (c+4),byte,offset,outerW,acc,base,m] ++ rest)) := by
   have h8 : rest.length + 8 < 1024 := by omega
   have h9 : rest.length + 9 < 1024 := by omega
   have h10 : rest.length + 10 < 1024 := by omega
-  have htarget : (2506 : UInt256).toNat = 2506 := by decide
+  have htarget : (2505 : UInt256).toNat = 2505 := by decide
   have hz0 : UInt256.isZero (UInt256.ofNat 0) = UInt256.ofNat 1 := by decide
   have hz4 : UInt256.isZero (UInt256.ofNat 4) = UInt256.ofNat 0 := by decide
   have ht1 : UInt256.isTrue (UInt256.ofNat 1) := by decide

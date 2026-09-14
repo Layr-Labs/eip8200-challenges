@@ -176,11 +176,11 @@ def bitExitPath :
 /-- Byte offset of the copy of the unrolled body that handles exponent bit `j`. -/
 def bitPC (j : Nat) : Nat :=
   match j with
-  | 0 | 4 => 2506
-  | 1 | 5 => 2529
-  | 2 | 6 => 2551
-  | 3 | 7 => 2573
-  | _ => 2606
+  | 0 | 4 => 2505
+  | 1 | 5 => 2528
+  | 2 | 6 => 2550
+  | 3 | 7 => 2572
+  | _ => 2605
 
 def bitCounter (j : Nat) : Nat := if j < 4 then 0 else if j < 8 then 4 else 8
 
@@ -338,15 +338,15 @@ def bitUnrollState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
 def bitPushState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
   let s := bitLoopState input outer 0 byte offset acc base
-  { s with pc := UInt256.ofNat 223, stack := UInt256.ofNat 2501 :: s.stack }
+  { s with pc := UInt256.ofNat 223, stack := UInt256.ofNat 2500 :: s.stack }
 
 def bitHeadState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
-  WordStep.stW (bitLoopState input outer 0 byte offset acc base) 2501
+  WordStep.stW (bitLoopState input outer 0 byte offset acc base) 2500
     ([UInt256.ofNat 0, byte, offset, UInt256.ofNat outer, acc, base,
       UInt256.ofNat (modulusValue input)] ++ bitTail input)
 
-theorem jump3695 : Decode.isValidJumpDest submissionBytecode 2501 = true :=
+theorem jump3695 : Decode.isValidJumpDest submissionBytecode 2500 = true :=
   Artifact.isValidJumpDest_index 1874 (by rfl)
 
 /-- The loop head jumps into the unrolled block. -/

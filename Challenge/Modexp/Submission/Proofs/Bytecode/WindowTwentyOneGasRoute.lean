@@ -9,14 +9,14 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.EvmProof WindowNibbleKernel WindowTwentyOneBinding WindowTwentyOnePositive
 
 structure Paths (artifact : ProgramArtifact) (fork : Fork) extends WindowTwentyOneGasCore.Paths artifact fork where
-  width : Block artifact fork 1752 WindowTwentyOneEntry.widthProgram
-  miss : Block artifact fork 1771 WindowTwentyOneEntry.missProgram
-  base : Block artifact fork 1774 WindowTwentyOneEntry.baseProgram
-  normalize : Block artifact fork 1775 WindowTwentyOneEntry.normalizeProgram
-  zeroReturn : Block artifact fork 2387 WindowTwentyOneReturn.zeroProgram
+  width : Block artifact fork 1751 WindowTwentyOneEntry.widthProgram
+  miss : Block artifact fork 1770 WindowTwentyOneEntry.missProgram
+  base : Block artifact fork 1773 WindowTwentyOneEntry.baseProgram
+  normalize : Block artifact fork 1774 WindowTwentyOneEntry.normalizeProgram
+  zeroReturn : Block artifact fork 2386 WindowTwentyOneReturn.zeroProgram
   hitJump : Decode.isValidJumpDest artifact.code 42 = true
-  zeroJump : Decode.isValidJumpDest artifact.code 2387 = true
-  trampJump : Decode.isValidJumpDest artifact.code 1905 = true
+  zeroJump : Decode.isValidJumpDest artifact.code 2386 = true
+  trampJump : Decode.isValidJumpDest artifact.code 1904 = true
   missJump : Decode.isValidJumpDest artifact.code 143 = true
 
 def context_env {artifact : ProgramArtifact} {fork : Fork} (template : State)
@@ -40,10 +40,10 @@ private theorem jump_env {artifact : ProgramArtifact} {fork : Fork} {template : 
   rw [env.code]
   exact hjump
 
-/-- The state at the core entry 2241 (0x8c0): the route frame with the modulus
+/-- The state at the core entry 2240 (0x8c0): the route frame with the modulus
 word loaded by the special-modulus test still on top. -/
 def entryState (template : State) (input : ByteArray) : State :=
-  WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 1774)
+  WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 1773)
     (WindowTwentyOneInput.modulusWord input :: routeStack input)
 
 def positive_steps {artifact : ProgramArtifact} {fork : Fork}
@@ -57,7 +57,7 @@ def positive_steps {artifact : ProgramArtifact} {fork : Fork}
   have hn := WindowTwentyOneEntry.run_normalize ctx (WindowTwentyOneInput.modulusWord input)
     (UInt256.ofNat 96) (baseSize input) hmatch.1 (routeStack input) (by simp [routeStack]) rfl rfl
   have hn' : runInstructions WindowTwentyOneEntry.normalizeProgram
-      (WindowTwentyOneEntry.framed ctx (UInt256.ofNat 1775)
+      (WindowTwentyOneEntry.framed ctx (UInt256.ofNat 1774)
         (WindowTwentyOneInput.modulusWord input :: routeStack input)) =
       some (normalized template input) := by
     simpa only [normalized, WindowTwentyOneTablePrelude.initial, WindowTwentyOneEntry.framed,
@@ -78,7 +78,7 @@ def Handled (template : State) (input : ByteArray) : Prop :=
     final.isDone = true ∧ final.toResult = .returned (spec input)
 
 /-- Every accepted width, including a zero-width base, is handled by the main
-path from 2241: there is no separate zero-base exit.  Since the zero-modulus
+path from 2240: there is no separate zero-base exit.  Since the zero-modulus
 guard was removed, a zero modulus is handled by this same path too: every
 `MULMOD` against a zero modulus returns zero, so the accumulator collapses and
 the unchanged return path emits the 32 zero bytes the old handler returned. -/
@@ -96,9 +96,9 @@ private def widthTail (input : ByteArray) : List UInt256 := (routeStack input).d
 
 private theorem width_raw (template : State) (input : ByteArray)
     (hjump : Decode.isValidJumpDest template.executionEnv.code 42 = true) :
-    runInstructions WindowTwentyOneEntry.widthProgram (state template input (UInt256.ofNat 1752)) =
+    runInstructions WindowTwentyOneEntry.widthProgram (state template input (UInt256.ofNat 1751)) =
     some (state template input
-      (if (WindowTwentyOneInput.guardDiff input).toNat = 0 then UInt256.ofNat 42 else UInt256.ofNat 1771)) := by
+      (if (WindowTwentyOneInput.guardDiff input).toNat = 0 then UInt256.ofNat 42 else UInt256.ofNat 1770)) := by
   have h := WindowTwentyOneEntry.run_width (context template input)
     (UInt256.ofNat (baseSize input)) (UInt256.ofNat (exponentSize input)) (UInt256.ofNat (modulusSize input))
     (widthTail input) (by simp [widthTail, routeStack]) hjump
@@ -123,7 +123,7 @@ private theorem guard_zero_iff (input : ByteArray) :
 def steps_hit {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
-    GasSteps (state template input (UInt256.ofNat 1752)) (state template input (UInt256.ofNat 42)) := by
+    GasSteps (state template input (UInt256.ofNat 1751)) (state template input (UInt256.ofNat 42)) := by
   have h := width_raw template input (jump_env env paths.hitJump)
   rw [if_pos ((guard_zero_iff input).mpr hmatch)] at h
   exact lift paths.width h ((context_env template env input).transfer rfl rfl) rfl
@@ -131,7 +131,7 @@ def steps_hit {artifact : ProgramArtifact} {fork : Fork}
 def steps_miss {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (input : ByteArray) (hmatch : ¬ WindowTwentyOneInput.Matches input) :
-    GasSteps (state template input (UInt256.ofNat 1752)) (state template input (UInt256.ofNat 143)) := by
+    GasSteps (state template input (UInt256.ofNat 1751)) (state template input (UInt256.ofNat 143)) := by
   have h := width_raw template input (jump_env env paths.hitJump)
   have hn : (WindowTwentyOneInput.guardDiff input).toNat ≠ 0 := by
     intro hz

@@ -62,7 +62,7 @@ def bigCheckPath := bigCheckExpPath ++ bigCheckModPath ++
 def bigTailFramePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 484 .JUMPDEST,
-   pushAt 485 2 1190,
+   pushAt 485 2 1189,
    opAt 486 (.Dup ⟨1, by decide⟩),
    opAt 487 (.Dup ⟨3, by decide⟩)]
 
@@ -112,7 +112,7 @@ def bigTailFrameState (input : ByteArray) : State :=
   let modOff := expOff + e
   { Main.headerState input with
     pc := UInt256.ofNat 700
-    stack := [UInt256.ofNat expOff, UInt256.ofNat modOff, UInt256.ofNat 1190,
+    stack := [UInt256.ofNat expOff, UInt256.ofNat modOff, UInt256.ofNat 1189,
       UInt256.ofNat modOff, UInt256.ofNat expOff, UInt256.ofNat m,
       UInt256.ofNat e, UInt256.ofNat b] }
 
@@ -126,7 +126,7 @@ def bigTailArgsState (input : ByteArray) : State :=
     pc := UInt256.ofNat 705
     stack := [UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
       UInt256.ofNat 96, UInt256.ofNat expOff, UInt256.ofNat modOff,
-      UInt256.ofNat 1190, UInt256.ofNat modOff, UInt256.ofNat expOff,
+      UInt256.ofNat 1189, UInt256.ofNat modOff, UInt256.ofNat expOff,
       UInt256.ofNat m, UInt256.ofNat e, UInt256.ofNat b] }
 
 /-- Calling-convention state at the first instruction of `modexpBig`. -/
@@ -140,7 +140,7 @@ def bigEntryState (input : ByteArray) : State :=
     pc := UInt256.ofNat 250
     stack := [UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
       UInt256.ofNat 96, UInt256.ofNat expOff, UInt256.ofNat modOff,
-      UInt256.ofNat 1190, UInt256.ofNat modOff, UInt256.ofNat expOff,
+      UInt256.ofNat 1189, UInt256.ofNat modOff, UInt256.ofNat expOff,
       UInt256.ofNat m, UInt256.ofNat e, UInt256.ofNat b] }
 
 @[simp] theorem bigTailPCs (i : Nat)

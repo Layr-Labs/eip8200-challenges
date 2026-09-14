@@ -566,10 +566,10 @@ theorem run_shiftDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3264
-      (frameState s mem 3526 n bsize esize msize) =
+      (frameState s mem 3521 n bsize esize msize) =
       some { Exp.bDone s (Exp.mcopyMem (Exp.mcopyMem mem 512 2112 (32 * n)) 1024 1280 (32 * n))
                n bsize esize msize with
-               pc := UInt256.ofNat 2636 } := by
+               pc := UInt256.ofNat 2631 } := by
   have hsize : (UInt256.ofNat (32 * n)).toNat = 32 * n := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
     exact lt_of_le_of_lt (show 32 * n ≤ 1024 by omega) (by decide)
