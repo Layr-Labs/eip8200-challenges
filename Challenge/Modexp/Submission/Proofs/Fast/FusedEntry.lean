@@ -42,7 +42,7 @@ theorem run_prefix (s : State) (mem : ByteArray) (n : Nat)
       some (prefixState s mem n tl inv m0 m96 m64 m32 rest) := by
   rcases hn with rfl | rfl <;> subst tl <;>
     exact FusionFrame.run_prefix (s := {s with memory := mem}) (p := pbi)
-      (oldHead := UInt256.ofNat 4441) (oldEnd := UInt256.ofNat (2368-32))
+      (oldHead := UInt256.ofNat 4483) (oldEnd := UInt256.ofNat (2368-32))
       (ent := ent) (neg := negative32) (mask := allOnes) (ent2 := l2Target _)
       (inv := inv) (m0 := m0) (tl := _) (m96 := m96) (m64 := m64) (m32 := m32)
       (aprev := aprev) (dst := pdst) (ret := ret) (head := UInt256.ofNat 3717)

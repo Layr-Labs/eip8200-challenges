@@ -161,11 +161,11 @@ theorem run_rowZero (s : State) (mem : ByteArray) (pc : UInt256) (e : Nat)
     (hjump : Decode.isValidJumpDest s.executionEnv.code e = true)
     (_he : e + 37 < 2 ^ 256) (hentry : e + 37 = 3783) :
     runInstructions program
-      { outState s mem 2368 8 0 (UInt256.ofNat 4441) (UInt256.ofNat e) inv m0
+      { outState s mem 2368 8 0 (UInt256.ofNat 4483) (UInt256.ofNat e) inv m0
         (tl :: m96 :: m64 :: m32 :: aprev :: rest) with pc := pc } =
     some (l1Q e s (sqPro mem 8 0 (UInt256.ofNat 0))
       (sqB2 (sqX mem 8 0) (UInt256.ofNat 0)) 2368 8 0
-      (UInt256.ofNat 4441) (UInt256.ofNat (e + 37)) inv m0
+      (UInt256.ofNat 4483) (UInt256.ofNat (e + 37)) inv m0
       (tl :: m96 :: m64 :: m32 :: sqX mem 8 0 :: rest)) := by
   let s' : State := { s with memory := mem }
   have hp : (UInt256.ofNat 2592).toNat = 2592 := by decide
@@ -178,19 +178,19 @@ theorem run_rowZero (s : State) (mem : ByteArray) (pc : UInt256) (e : Nat)
   have hj : Decode.isValidJumpDest s'.executionEnv.code (UInt256.ofNat e).toNat = true := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
     exact hjump
-  have h := run_program s' pc (UInt256.ofNat 2592) (UInt256.ofNat 4441) (UInt256.ofNat 2336)
+  have h := run_program s' pc (UInt256.ofNat 2592) (UInt256.ofNat 4483) (UInt256.ofNat 2336)
     (UInt256.ofNat e) negative32 allOnes (l2Target 8) inv m0 tl m96 m64 m32 aprev rest hcap hP hT hj
   have hnext : UInt256.ofNat 3783 = UInt256.ofNat (e + 37) := by rw [hentry]
   simpa only [h2336, hnext, s', hp, outState, ptrAt_zero, l1Q, sqPro_eq, sqB2, sqX, aAddr, tAddr,
     hzero, add_zero, sub_zero, lt_self, zero_add, allOnes, maxWord,
     Challenge.EvmProof.Word.ofNat_add_mod, List.cons_append, List.nil_append] using h
 
-def block : Block Artifact.submissionArtifact .Osaka 5286 program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4055 28 5286 program
+def block : Block Artifact.submissionArtifact .Osaka 4453 program :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3360 28 4453 program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
 
-theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5286 = true :=
-  Artifact.isValidJumpDest_index 4055 (by rfl)
+theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4453 = true :=
+  Artifact.isValidJumpDest_index 3360 (by rfl)
 
 def gasSteps_prologue (s : State) (mem : ByteArray) (e : Nat)
     (inv m0 tl m96 m64 m32 aprev : UInt256) (rest : List UInt256)
@@ -204,14 +204,14 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (e : Nat)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode e = true)
     (he : e + 37 < 2 ^ 256) (hentry : e + 37 = 3783) :
     Challenge.EvmProof.GasSteps
-      { outState s mem 2368 8 0 (UInt256.ofNat 4441) (UInt256.ofNat e) inv m0
-        (tl :: m96 :: m64 :: m32 :: aprev :: rest) with pc := UInt256.ofNat 5286 }
+      { outState s mem 2368 8 0 (UInt256.ofNat 4483) (UInt256.ofNat e) inv m0
+        (tl :: m96 :: m64 :: m32 :: aprev :: rest) with pc := UInt256.ofNat 4453 }
       (l1Q e s (sqPro mem 8 0 (UInt256.ofNat 0))
         (sqB2 (sqX mem 8 0) (UInt256.ofNat 0)) 2368 8 0
-        (UInt256.ofNat 4441) (UInt256.ofNat (e + 37)) inv m0
+        (UInt256.ofNat 4483) (UInt256.ofNat (e + 37)) inv m0
         (tl :: m96 :: m64 :: m32 :: sqX mem 8 0 :: rest)) :=
   SquareRow.stepsOf block
-    (run_rowZero s mem (UInt256.ofNat 5286) e inv m0 tl m96 m64 m32 aprev rest hcap hact hzero
+    (run_rowZero s mem (UInt256.ofNat 4453) e inv m0 tl m96 m64 m32 aprev rest hcap hact hzero
       (by rw [hcode]; exact hjump) he hentry) rfl hcode hfork hrun hnp
 
 #print axioms run_rowZero
