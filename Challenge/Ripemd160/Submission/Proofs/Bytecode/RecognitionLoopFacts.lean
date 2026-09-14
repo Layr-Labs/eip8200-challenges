@@ -24,12 +24,6 @@ theorem stop_toNat (input : ByteArray) (n k : Nat) (hn : Allowed n) :
   change (UInt256.ofNat (stop n k)).toNat = _
   rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
 
-theorem off_le_stop (input : ByteArray) (n k : Nat) (hn : Allowed n) (hk : k ≤ n/32) :
-    (fullFrame input n k).off.toNat ≤ (fullFrame input n k).stop.toNat := by
-  have h := allowed_bounds n hn
-  rw [off_toNat input n k (by omega), stop_toNat input n k hn]
-  exact Nat.le_min.mpr ⟨by omega, by omega⟩
-
 theorem lt_stop_iff (input : ByteArray) (n k : Nat) (hn : Allowed n) (hk : k ≤ n/32) :
     (fullFrame input n k).off.toNat < (fullFrame input n k).stop.toNat ↔
       k < n/32 ∧ boundary k = false := by

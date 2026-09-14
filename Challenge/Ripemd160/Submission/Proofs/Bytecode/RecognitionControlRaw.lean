@@ -123,29 +123,6 @@ def testTemplate (dest : Nat) : List Instr :=
   [.op (.Dup ⟨3, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .LT,
    .push ⟨1, by decide⟩ (UInt256.ofNat dest), .op .JUMPI]
 
-def headTemplate (dest : Nat) : List Instr :=
-  [.op (.Dup ⟨3, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .EQ,
-   .push ⟨1, by decide⟩ (UInt256.ofNat dest), .op .JUMPI]
-
-theorem run_head (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame)
-    (rho : List UInt256) (dest : Nat) (hstack : rho.length ≤ 990)
-    (hrun : s.halt = .Running)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat dest).toNat = true) :
-    runInstrSeq (headTemplate dest) {s with pc := pc, stack := frame f rho} =
-      some {s with
-        pc := if f.off.toNat = f.stop.toNat then UInt256.ofNat dest else pcAfter pc (headTemplate dest)
-        stack := frame f rho} := by
-  have hbase : rho.length < 1024 := by omega
-  have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
-  simp only [Word.word_toNat_ofNat] at hvalid
-  norm_num only at hvalid
-  by_cases hc : f.off.toNat = f.stop.toNat
-  all_goals simp (discharger := omega) [headTemplate, frame, runInstrSeq, DataStepper.runInstr,
-    pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
-    Nat.add_assoc, hrun, hbase, hcap, UInt256.eq, UInt256.isZero, UInt256.isTrue,
-    hc, hvalid, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals rfl
-
 theorem run_test_continue (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame) (rho : List UInt256) (dest : Nat)
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
     (hlt : f.off.toNat < f.stop.toNat)
