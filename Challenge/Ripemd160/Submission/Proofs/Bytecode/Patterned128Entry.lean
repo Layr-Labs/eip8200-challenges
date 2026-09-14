@@ -58,32 +58,32 @@ private theorem calldatasize_step (input : ByteArray) (pc : Nat) (stk : List UIn
 
 /-! ## Program counters in the guard window -/
 
-private theorem pc3836 : Artifact.submissionArtifact.instructionPC 3743 = 4840 := GuardInstructionWindow.pc 180
-private theorem pc3837 : Artifact.submissionArtifact.instructionPC 3744 = 4841 := GuardInstructionWindow.pc 181
-private theorem pc3843 : Artifact.submissionArtifact.instructionPC 3750 = 4866 := GuardInstructionWindow.pc 187
-private theorem pc3844 : Artifact.submissionArtifact.instructionPC 3751 = 4867 := GuardInstructionWindow.pc 188
-private theorem pc3845 : Artifact.submissionArtifact.instructionPC 3752 = 4868 := GuardInstructionWindow.pc 189
-private theorem pc3846 : Artifact.submissionArtifact.instructionPC 3753 = 4871 := GuardInstructionWindow.pc 190
-private theorem pc3847 : Artifact.submissionArtifact.instructionPC 3754 = 4872 := GuardInstructionWindow.pc 191
-private theorem pc3848 : Artifact.submissionArtifact.instructionPC 3755 = 4875 := GuardInstructionWindow.pc 192
-private theorem pc3849 : Artifact.submissionArtifact.instructionPC 3756 = 4876 := GuardInstructionWindow.pc 193
-private theorem pc3850 : Artifact.submissionArtifact.instructionPC 3757 = 4877 := GuardInstructionWindow.pc 194
-private theorem pc3851 : Artifact.submissionArtifact.instructionPC 3758 = 4878 := GuardInstructionWindow.pc 195
-private theorem pc3852 : Artifact.submissionArtifact.instructionPC 3759 = 4881 := GuardInstructionWindow.pc 196
-private theorem pc3853 : Artifact.submissionArtifact.instructionPC 3760 = 4882 := GuardInstructionWindow.pc 197
-private theorem pc3854 : Artifact.submissionArtifact.instructionPC 3761 = 4883 := GuardInstructionWindow.pc 198
-private theorem pc3855 : Artifact.submissionArtifact.instructionPC 3762 = 4884 := GuardInstructionWindow.pc 199
-private theorem pc3856 : Artifact.submissionArtifact.instructionPC 3763 = 4886 := GuardInstructionWindow.pc 200
+private theorem pc3836 : Artifact.submissionArtifact.instructionPC 3740 = 4840 := GuardInstructionWindow.pc 180
+private theorem pc3837 : Artifact.submissionArtifact.instructionPC 3741 = 4841 := GuardInstructionWindow.pc 181
+private theorem pc3843 : Artifact.submissionArtifact.instructionPC 3747 = 4866 := GuardInstructionWindow.pc 187
+private theorem pc3844 : Artifact.submissionArtifact.instructionPC 3748 = 4867 := GuardInstructionWindow.pc 188
+private theorem pc3845 : Artifact.submissionArtifact.instructionPC 3749 = 4868 := GuardInstructionWindow.pc 189
+private theorem pc3846 : Artifact.submissionArtifact.instructionPC 3750 = 4871 := GuardInstructionWindow.pc 190
+private theorem pc3847 : Artifact.submissionArtifact.instructionPC 3751 = 4872 := GuardInstructionWindow.pc 191
+private theorem pc3848 : Artifact.submissionArtifact.instructionPC 3752 = 4875 := GuardInstructionWindow.pc 192
+private theorem pc3849 : Artifact.submissionArtifact.instructionPC 3753 = 4876 := GuardInstructionWindow.pc 193
+private theorem pc3850 : Artifact.submissionArtifact.instructionPC 3754 = 4877 := GuardInstructionWindow.pc 194
+private theorem pc3851 : Artifact.submissionArtifact.instructionPC 3755 = 4878 := GuardInstructionWindow.pc 195
+private theorem pc3852 : Artifact.submissionArtifact.instructionPC 3756 = 4881 := GuardInstructionWindow.pc 196
+private theorem pc3853 : Artifact.submissionArtifact.instructionPC 3757 = 4882 := GuardInstructionWindow.pc 197
+private theorem pc3854 : Artifact.submissionArtifact.instructionPC 3758 = 4883 := GuardInstructionWindow.pc 198
+private theorem pc3855 : Artifact.submissionArtifact.instructionPC 3759 = 4884 := GuardInstructionWindow.pc 199
+private theorem pc3856 : Artifact.submissionArtifact.instructionPC 3760 = 4886 := GuardInstructionWindow.pc 200
 
-@[simp] private theorem sizeHitPC3838 : Artifact.submissionArtifact.instructionPC 3745 = 4843 :=
+@[simp] private theorem sizeHitPC3838 : Artifact.submissionArtifact.instructionPC 3742 = 4843 :=
   GuardInstructionWindow.pc 182
-@[simp] private theorem sizeHitPC3839 : Artifact.submissionArtifact.instructionPC 3746 = 4861 :=
+@[simp] private theorem sizeHitPC3839 : Artifact.submissionArtifact.instructionPC 3743 = 4861 :=
   GuardInstructionWindow.pc 183
-@[simp] private theorem sizeHitPC3840 : Artifact.submissionArtifact.instructionPC 3747 = 4862 :=
+@[simp] private theorem sizeHitPC3840 : Artifact.submissionArtifact.instructionPC 3744 = 4862 :=
   GuardInstructionWindow.pc 184
-@[simp] private theorem sizeHitPC3841 : Artifact.submissionArtifact.instructionPC 3748 = 4863 :=
+@[simp] private theorem sizeHitPC3841 : Artifact.submissionArtifact.instructionPC 3745 = 4863 :=
   GuardInstructionWindow.pc 185
-@[simp] private theorem sizeHitPC3842 : Artifact.submissionArtifact.instructionPC 3749 = 4864 :=
+@[simp] private theorem sizeHitPC3842 : Artifact.submissionArtifact.instructionPC 3746 = 4864 :=
   GuardInstructionWindow.pc 186
 
 /-! ## The size mask -/
@@ -124,7 +124,7 @@ private theorem run_mask_entry (input : ByteArray) :
 private theorem run_size_prefix (input : ByteArray) :
     DirectGuard.run sizePrefix (PatternedScan.stS input 4841 []) =
       some (PatternedScan.stS input 4866 [111, sizeBit input]) := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3744 = 4841 := pc3837
+  have hpc : Artifact.submissionArtifact.instructionPC 3741 = 4841 := pc3837
   simp (config := {maxSteps := 400000}) [sizePrefix, sizeBit, DirectGuard.opAt,
     DirectGuard.pushAt, DirectGuard.wfOp, PatternedScan.stS, initialState, hpc,
     DataStepper.runLocatedBlock, DataStepper.runLocated, DataStepper.runInstr,
@@ -212,7 +212,7 @@ private def lengthJump : List Located :=
 private theorem run_length_prefix (input : ByteArray) :
     DirectGuard.run lengthPrefix (PatternedScan.stS input 4867 []) =
       some (PatternedScan.stS input 4886 [111, lengthCond input]) := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3751 = 4867 := pc3844
+  have hpc : Artifact.submissionArtifact.instructionPC 3748 = 4867 := pc3844
   have heq (a b : UInt256) : UInt256.eq a b = UInt256.eq b a := by
     simp [UInt256.eq, eq_comm]
   simp (config := {maxSteps := 400000}) [lengthPrefix, lengthCond, DirectGuard.opAt,

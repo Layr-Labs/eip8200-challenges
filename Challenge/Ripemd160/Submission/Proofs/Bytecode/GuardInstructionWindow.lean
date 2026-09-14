@@ -230,9 +230,9 @@ def tail : List Instr :=
   .push 0 0,
   op 0xf3
 ]
-theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3563 = tail := by rfl
+theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3560 = tail := by rfl
 
-theorem pc_base : Artifact.submissionArtifact.instructionPC 3563 = 4578 := by
+theorem pc_base : Artifact.submissionArtifact.instructionPC 3560 = 4578 := by
   rw [instructionPC_eq_byteLength]
   rfl
 
