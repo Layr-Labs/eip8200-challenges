@@ -206,7 +206,7 @@ theorem run_addBodyA (s : State) (mem : ByteArray) (p : UInt256) (n bsize esize 
                stack := p :: (addStep mem n j).flag :: UInt256.ofNat k :: outer n bsize esize msize
                memory := (addStep mem n j).memory } =
       some { s with pc := UInt256.ofNat pcAddMid
-                    stack := (addStep mem n (j + 1)).flag :: p :: UInt256.ofNat k ::
+                    stack := p :: (addStep mem n (j + 1)).flag :: UInt256.ofNat k ::
                       outer n bsize esize msize
                     memory := (addStep mem n (j + 1)).memory } := by
   have hsub : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + (2112 + 32 * (n - 1 - j)) - 2112) % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = 32 * (n - 1 - j) := by
@@ -226,7 +226,7 @@ theorem run_addBodyA (s : State) (mem : ByteArray) (p : UInt256) (n bsize esize 
       Challenge.EvmProof.Stepper.runInstr,
       pcAddInner, pcAddMid, addStep,
       outer, Exp.outer, hcode, hrun, hpv, hsub, hactT, hactM,
-      UInt256.gt, UInt256.isTrue,
+      UInt256.gt, UInt256.lt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -243,7 +243,7 @@ theorem run_addTail_go (s : State) (mm : ByteArray) (c p p' : UInt256)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3157b
       { s with pc := UInt256.ofNat pcAddMid
-               stack := c :: p :: UInt256.ofNat k :: outer n bsize esize msize
+               stack := p :: c :: UInt256.ofNat k :: outer n bsize esize msize
                memory := mm } =
       some { s with pc := UInt256.ofNat pcAddInner
                     stack := p' :: c :: UInt256.ofNat k :: outer n bsize esize msize
@@ -269,9 +269,9 @@ theorem run_addTail_last (s : State) (mm : ByteArray) (c p p' : UInt256)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3157b
       { s with pc := UInt256.ofNat pcAddMid
-               stack := c :: p :: UInt256.ofNat k :: outer n bsize esize msize
+               stack := p :: c :: UInt256.ofNat k :: outer n bsize esize msize
                memory := mm } =
-      some { s with pc := UInt256.ofNat pcAddTail
+      some { s with pc := UInt256.ofNat pcAddPad
                     stack := p' :: c :: UInt256.ofNat k :: outer n bsize esize msize
                     memory := mm } := by
   simp (config := { maxSteps := 200000 })
@@ -279,8 +279,31 @@ theorem run_addTail_last (s : State) (mm : ByteArray) (c p p' : UInt256)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      pcAddMid, pcAddTail, outer, Exp.outer, hcode, hrun, hp', hle, jumpDest5121,
+      pcAddMid, pcAddPad, outer, Exp.outer, hcode, hrun, hp', hle, jumpDest5121,
       UInt256.gt, UInt256.isTrue,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt, List.exchange]
+
+/-- `blk3157c`: the five padding `JUMPDEST`s between the add exit test and the tail. -/
+theorem run_addPad (s : State) (mm : ByteArray) (c p' : UInt256)
+    (n bsize esize msize k : Nat)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk3157c
+      { s with pc := UInt256.ofNat pcAddPad
+               stack := p' :: c :: UInt256.ofNat k :: outer n bsize esize msize
+               memory := mm } =
+      some { s with pc := UInt256.ofNat pcAddTail
+                    stack := p' :: c :: UInt256.ofNat k :: outer n bsize esize msize
+                    memory := mm } := by
+  simp (config := { maxSteps := 200000 })
+    [blk3157c, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      pcAddPad, pcAddTail, outer, Exp.outer, hcode, hrun,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
