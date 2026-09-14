@@ -211,7 +211,24 @@ def lift (s t : State) (e : Env s) (stack : List UInt256)
   RecognitionLift.gasSteps_of_raw site _ _ e.code e.fork e.run e.np site_pc.symm form h
 end resultSite
 
-
+namespace cleanupSite
+abbrev template : List Instr := J2Raw.cleanupTemplate
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 226).take template.length = template := by rfl
+def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
+  StackSiteBuilder.ofSlice template 226 actual_slice
+    (by change 226 + template.length ≤ Artifact.submissionInstructions.length
+        rw [Artifact.referenceInstructions_count]; decide)
+    code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
+theorem site_pc : site.startPC = UInt256.ofNat 341 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 226) = UInt256.ofNat 341
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
+theorem end_pc : pcAfter (UInt256.ofNat 341) template = UInt256.ofNat 352 := by decide
+theorem form : ∀ instruction ∈ template.dropLast, RecognitionLift.Advances instruction :=
+  RecognitionLift.advancesAll_sound _ (by decide)
+def lift (s t : State) (e : Env s) (stack : List UInt256)
+    (h : runInstrSeq template (atState s 341 stack) = some t) : GasSteps (atState s 341 stack) t :=
+  RecognitionLift.gasSteps_of_raw site _ _ e.code e.fork e.run e.np site_pc.symm form h
+end cleanupSite
 
 theorem valid_190 (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEnv.code 190 = true := by
   rw [e.code]
@@ -288,6 +305,9 @@ def moves (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length≤990) :
     apply toTailSite.lift s _ e (frame f rho)
     have hc : (frame f rho).length≤1022 := by simp only [frame, List.length_append, List.length_cons, List.length_nil]; omega
     simpa only [atState] using run_toTail s (UInt256.ofNat 294) (frame f rho) hc e.run (valid_219 s e)
+  cleanup f := by
+    apply cleanupSite.lift s _ e (finishRest f rho)
+    simpa only [atState, cleanupSite.end_pc] using run_cleanup s (UInt256.ofNat 341) f rho hs e.run
 
 #print axioms moves
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Sites

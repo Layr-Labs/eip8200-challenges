@@ -24,10 +24,10 @@ def initialTemplate : List Instr :=
     .push ⟨4, by decide⟩ (UInt256.ofNat 3285377520),
     .push ⟨13, by decide⟩ (UInt256.ofNat 475368975196266490007815979009),
     .push ⟨13, by decide⟩ (UInt256.ofNat 1109194275457955143345843994625),
-    .push ⟨28, by decide⟩ (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 2),
+    .push ⟨12, by decide⟩ (UInt256.ofNat 36893488147419103233),
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHL,
+    .push ⟨19, by decide⟩ (UInt256.ofNat 44601490397061246283071436545296723011960832),
     .op (.Dup ⟨1, by decide⟩),
     .op .SUB,
     .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295),
@@ -37,11 +37,9 @@ private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
 
 private theorem neutral_hsub (a b : UInt256) : a - b = UInt256.sub a b := rfl
 
-/-- The minus-modulus word is the plus-modulus word less the single lane bit the startup
-block shifts into place, so one shifted literal seeds both resident moduli. -/
 private theorem modulusMinusFromPlus :
     UInt256.sub (UInt256.shiftLeft (UInt256.ofNat 36893488147419103233) (UInt256.ofNat 144))
-        (UInt256.shiftLeft (UInt256.ofNat 2) (UInt256.ofNat 144)) =
+        (UInt256.ofNat 44601490397061246283071436545296723011960832) =
       UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096 := by decide
 
 theorem run_initial (s : State) (pc limit : UInt256) (rho : List UInt256)
@@ -63,42 +61,42 @@ theorem run_initial (s : State) (pc limit : UInt256) (rho : List UInt256)
 
 
 theorem initial_slice :
-    (Artifact.submissionArtifact.instructions.drop 245).take initialTemplate.length = initialTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 256).take initialTemplate.length = initialTemplate := by rfl
 
 def initialSite : GenericRoundSite Artifact.submissionArtifact .Osaka initialTemplate :=
-  StackSiteBuilder.ofSlice initialTemplate 245 initial_slice
-    (by change 245 + initialTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice initialTemplate 256 initial_slice
+    (by change 256 + initialTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := initialTemplate) (by decide)) (by decide)
 
-theorem initial_pc : initialSite.startPC = UInt256.ofNat 369 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 245) = UInt256.ofNat 369
+theorem initial_pc : initialSite.startPC = UInt256.ofNat 382 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 256) = UInt256.ofNat 382
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
-def jumpCode := PadJump.template 489
+def jumpCode := PadJump.template 504
 
 theorem jump_slice :
-    (Artifact.submissionArtifact.instructions.drop 3678).take jumpCode.length = jumpCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3689).take jumpCode.length = jumpCode := by rfl
 
 def jumpSite : GenericRoundSite Artifact.submissionArtifact .Osaka jumpCode :=
-  StackSiteBuilder.ofSlice jumpCode 3678 jump_slice
-    (by change 3678 + jumpCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice jumpCode 3689 jump_slice
+    (by change 3689 + jumpCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := jumpCode) (by decide)) (by decide)
 
-theorem jump_pc : jumpSite.startPC = UInt256.ofNat 4750 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3678) = UInt256.ofNat 4750
+theorem jump_pc : jumpSite.startPC = UInt256.ofNat 4765 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3689) = UInt256.ofNat 4765
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_loop (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
-    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 489).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 269 = 489 := by
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 504).toNat = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 280 = 504 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 269 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 280 (by rfl)
   rw [hpc] at h
-  change Decode.isValidJumpDest s.executionEnv.code 489 = true
+  change Decode.isValidJumpDest s.executionEnv.code 504 = true
   rw [hcode]
   exact h
 
@@ -109,12 +107,12 @@ def gasSteps_push (s : State) (limit : UInt256) (rho : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 369, stack := limit :: rho}
-      {s with pc := UInt256.ofNat 478, stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 0) limit rho} := by
-  apply PadLift.gasSteps_of_raw initialSite {s with pc := UInt256.ofNat 369, stack := limit :: rho} _ hcode hfork hrun hnp initial_pc.symm
+    GasSteps {s with pc := UInt256.ofNat 382, stack := limit :: rho}
+      {s with pc := UInt256.ofNat 493, stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 0) limit rho} := by
+  apply PadLift.gasSteps_of_raw initialSite {s with pc := UInt256.ofNat 382, stack := limit :: rho} _ hcode hfork hrun hnp initial_pc.symm
   · apply PadLift.advancesAll_sound; decide
-  · have hr := run_initial s (UInt256.ofNat 369) limit rho (by omega) hrun
-    have hp : pcAfter (UInt256.ofNat 369) initialTemplate = UInt256.ofNat 478 := by decide
+  · have hr := run_initial s (UInt256.ofNat 382) limit rho (by omega) hrun
+    have hp : pcAfter (UInt256.ofNat 382) initialTemplate = UInt256.ofNat 493 := by decide
     rw [hp] at hr
     exact hr
 
@@ -124,22 +122,22 @@ def gasSteps_jump (s : State) (frame : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4750, stack := frame}
-      {s with pc := UInt256.ofNat 489, stack := frame} := by
-  apply PadLift.gasSteps_of_raw jumpSite {s with pc := UInt256.ofNat 4750, stack := frame} _ hcode hfork hrun hnp jump_pc.symm
+    GasSteps {s with pc := UInt256.ofNat 4765, stack := frame}
+      {s with pc := UInt256.ofNat 504, stack := frame} := by
+  apply PadLift.gasSteps_of_raw jumpSite {s with pc := UInt256.ofNat 4765, stack := frame} _ hcode hfork hrun hnp jump_pc.symm
   · apply PadLift.advancesAll_sound; decide
-  · exact PadJump.run_template s (UInt256.ofNat 4750) frame 489 (by omega) hrun (valid_loop s hcode)
+  · exact PadJump.run_template s (UInt256.ofNat 4765) frame 504 (by omega) hrun (valid_loop s hcode)
 def fullTemplate : List Instr := [.op .CALLDATASIZE, .op (.Swap ⟨12, by decide⟩), .op .POP]
 theorem full_slice :
-    (Artifact.submissionArtifact.instructions.drop 266).take fullTemplate.length = fullTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 277).take fullTemplate.length = fullTemplate := by rfl
 def fullSite : GenericRoundSite Artifact.submissionArtifact .Osaka fullTemplate :=
-  StackSiteBuilder.ofSlice fullTemplate 266 full_slice
-    (by change 266 + fullTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice fullTemplate 277 full_slice
+    (by change 277 + fullTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := fullTemplate) (by decide)) (by decide)
-theorem full_pc : fullSite.startPC = UInt256.ofNat 486 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 266) = UInt256.ofNat 486
+theorem full_pc : fullSite.startPC = UInt256.ofNat 501 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 277) = UInt256.ofNat 501
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-- The aligned route changes only the full frame's limit after initialization. -/
@@ -148,9 +146,9 @@ def gasSteps_full (s : State) (limit : UInt256) (rho : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 486, stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 0) limit rho}
-      {s with pc := UInt256.ofNat 489, stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 0) (UInt256.ofNat s.executionEnv.calldata.size) rho} := by
-  apply PadLift.gasSteps_of_raw fullSite {s with pc := UInt256.ofNat 486, stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 0) limit rho} _ hcode hfork hrun hnp full_pc.symm
+    GasSteps {s with pc := UInt256.ofNat 501, stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 0) limit rho}
+      {s with pc := UInt256.ofNat 504, stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 0) (UInt256.ofNat s.executionEnv.calldata.size) rho} := by
+  apply PadLift.gasSteps_of_raw fullSite {s with pc := UInt256.ofNat 501, stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 0) limit rho} _ hcode hfork hrun hnp full_pc.symm
   · apply PadLift.advancesAll_sound; decide
   · have hcap (n : Nat) (hn : n ≤ 16) : rho.length+n < 1024 := by omega
     simp [fullTemplate, StaggerPersistentFrame.frame, runInstrSeq, DataStepper.runInstr,
@@ -159,15 +157,15 @@ def gasSteps_full (s : State) (limit : UInt256) (rho : List UInt256)
 
 def partialTemplate : List Instr := [.op .JUMPDEST]
 theorem partial_slice :
-    (Artifact.submissionArtifact.instructions.drop 3646).take partialTemplate.length = partialTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3657).take partialTemplate.length = partialTemplate := by rfl
 def partialSite : GenericRoundSite Artifact.submissionArtifact .Osaka partialTemplate :=
-  StackSiteBuilder.ofSlice partialTemplate 3646 partial_slice
-    (by change 3646 + partialTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice partialTemplate 3657 partial_slice
+    (by change 3657 + partialTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := partialTemplate) (by decide)) (by decide)
-theorem partial_pc : partialSite.startPC = UInt256.ofNat 4705 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3646) = UInt256.ofNat 4705
+theorem partial_pc : partialSite.startPC = UInt256.ofNat 4720 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3657) = UInt256.ofNat 4720
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def gasSteps_partial (s : State) (stack : List UInt256)
@@ -175,9 +173,9 @@ def gasSteps_partial (s : State) (stack : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4705, stack := stack}
-      {s with pc := UInt256.ofNat 4706, stack := stack} := by
-  apply PadLift.gasSteps_of_raw partialSite {s with pc := UInt256.ofNat 4705, stack := stack} _
+    GasSteps {s with pc := UInt256.ofNat 4720, stack := stack}
+      {s with pc := UInt256.ofNat 4721, stack := stack} := by
+  apply PadLift.gasSteps_of_raw partialSite {s with pc := UInt256.ofNat 4720, stack := stack} _
     hcode hfork hrun hnp partial_pc.symm
   · apply PadLift.advancesAll_sound; decide
   · simp [partialTemplate, runInstrSeq, DataStepper.runInstr, hrun, hstack]
@@ -187,15 +185,15 @@ def guard32Template : List Instr :=
   [.op .CALLDATASIZE, .push ⟨1, by decide⟩ (UInt256.ofNat 32), .op .EQ,
    .push ⟨2, by decide⟩ (UInt256.ofNat 328), .op .JUMPI]
 theorem guard32_slice :
-    (Artifact.submissionArtifact.instructions.drop 3647).take guard32Template.length = guard32Template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3658).take guard32Template.length = guard32Template := by rfl
 def guard32Site : GenericRoundSite Artifact.submissionArtifact .Osaka guard32Template :=
-  StackSiteBuilder.ofSlice guard32Template 3647 guard32_slice
-    (by change 3647 + guard32Template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice guard32Template 3658 guard32_slice
+    (by change 3658 + guard32Template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := guard32Template) (by decide)) (by decide)
-theorem guard32_pc : guard32Site.startPC = UInt256.ofNat 4706 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3647) = UInt256.ofNat 4706
+theorem guard32_pc : guard32Site.startPC = UInt256.ofNat 4721 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3658) = UInt256.ofNat 4721
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def gasSteps_guard32_miss (s : State) (stack : List UInt256)
@@ -204,9 +202,9 @@ def gasSteps_guard32_miss (s : State) (stack : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4706, stack := stack}
-      {s with pc := UInt256.ofNat 4714, stack := stack} := by
-  apply PadLift.gasSteps_of_raw guard32Site {s with pc := UInt256.ofNat 4706, stack := stack} _ hcode hfork hrun hnp guard32_pc.symm
+    GasSteps {s with pc := UInt256.ofNat 4721, stack := stack}
+      {s with pc := UInt256.ofNat 4729, stack := stack} := by
+  apply PadLift.gasSteps_of_raw guard32Site {s with pc := UInt256.ofNat 4721, stack := stack} _ hcode hfork hrun hnp guard32_pc.symm
   · apply PadLift.advancesAll_sound; decide
   · have hcap (n : Nat) (hn : n ≤ 3) : stack.length+n < 1024 := by omega
     have hcap0 : stack.length < 1024 := by omega

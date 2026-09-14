@@ -203,5 +203,17 @@ def resultTemplate : List Instr := [
   .push ⟨2, by decide⟩ (UInt256.ofNat 341),
   .op .JUMPI]
 
+def cleanupTemplate : List Instr := [
+  .op .JUMPDEST,
+  .op .POP,
+  .op .POP,
+  .op .POP,
+  .op .POP,
+  .op .POP,
+  .op .POP,
+  .op .POP,
+  .op .POP,
+  .op .POP,
+  .op .POP]
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Raw

@@ -96,10 +96,22 @@ theorem run_toTail (s : State) (pc : UInt256) (stack : List UInt256)
   simp (discharger := omega) [hb, hc, Nat.add_comm, toTailTemplate, runInstrSeq, DataStepper.runInstr, pcAfter,
     UInt256.succ, Instr.size, hrun, hvalid, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
 
+theorem run_cleanup (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
+    (hstack : rho.length ≤ 990) (hrun : s.halt = .Running) :
+    runInstrSeq cleanupTemplate {s with pc := pc, stack := finishRest f rho} =
+      some {s with pc := pcAfter pc cleanupTemplate, stack := rho} := by
+  have hbase : rho.length < 1024 := by omega
+  have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
+  simp (discharger := omega) [hbase, hcap, cleanupTemplate, finishRest, runInstrSeq, DataStepper.runInstr, pcAfter,
+    UInt256.succ, Instr.size, hrun, List.getElem?_cons_zero, Nat.add_assoc,
+    Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+  all_goals rfl
+
 #print axioms run_first
 #print axioms run_normalGuard
 #print axioms run_finish
 #print axioms run_transitionGuard
 #print axioms run_result
+#print axioms run_cleanup
 #print axioms run_toTail
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Raw

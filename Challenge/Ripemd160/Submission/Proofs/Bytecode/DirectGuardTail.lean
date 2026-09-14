@@ -54,8 +54,8 @@ theorem run_fallback_clear (input : ByteArray)
   have htrue : UInt256.isTrue (referenceWord input) := by
     rw [href]
     decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 341 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 226 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 352 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 237 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [fallbackPath, opAt, pushAt, wfOp, tailDivertState, fallbackState, spentCells, atPC,
     htrue, hdest, List.exchange,

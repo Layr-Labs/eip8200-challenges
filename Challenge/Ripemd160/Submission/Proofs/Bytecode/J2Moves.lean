@@ -28,4 +28,5 @@ structure Moves (s : State) (rho : List UInt256) where
   toTail (f : J2Raw.Frame) : GasSteps (atState s 294 (frame f rho)) (atState s 219 (frame f rho))
   result (f : J2Raw.Frame) : GasSteps (atState s 298 (frame f rho))
     (atState s (if f.acc.toNat=0 then 303 else 341) (finishRest f rho))
+  cleanup (f : J2Raw.Frame) : GasSteps (atState s 341 (finishRest f rho)) (atState s 352 rho)
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Moves

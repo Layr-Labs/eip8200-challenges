@@ -24,27 +24,27 @@ def lengthActive (input : ByteArray) (active : UInt256) : Nat → UInt256
 
 def sentinelState (input : ByteArray) (s : State) (frame : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 4722
+    pc := UInt256.ofNat 4737
     stack := frame
     memory := lengthMemory input s.memory 0
     activeWords := lengthActive input s.activeWords 0}
 
 def loopState (input : ByteArray) (s : State) (frame : List UInt256) (i : Nat) : State :=
   {s with
-    pc := UInt256.ofNat 4731
+    pc := UInt256.ofNat 4746
     stack := lengthAddr input i :: lengthShift input i :: frame
     memory := lengthMemory input s.memory i
     activeWords := lengthActive input s.activeWords i}
 
 def steppedState (input : ByteArray) (s : State) (frame : List UInt256) (i : Nat) : State :=
-  {loopState input s frame (i + 1) with pc := UInt256.ofNat 4743}
+  {loopState input s frame (i + 1) with pc := UInt256.ofNat 4758}
 
 def exitState (input : ByteArray) (s : State) (frame : List UInt256) (i : Nat) : State :=
-  {loopState input s frame i with pc := UInt256.ofNat 4748}
+  {loopState input s frame i with pc := UInt256.ofNat 4763}
 
 def resultStateAt (input : ByteArray) (s : State) (frame : List UInt256) (i : Nat) : State :=
   {s with
-    pc := UInt256.ofNat 489
+    pc := UInt256.ofNat 504
     stack := frame
     memory := lengthMemory input s.memory i
     activeWords := lengthActive input s.activeWords i}
@@ -67,10 +67,10 @@ theorem paddedWord_aligned (input : ByteArray) (hfit : CalldataFits input)
     (resultState input s frame).activeWords = lengthActive input s.activeWords (lengthStop input) := rfl
 
 private theorem valid_loop : Decode.isValidJumpDest submissionBytecode 4731 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3663 = 4731 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3674 = 4746 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   rw [← hpc]
-  exact Artifact.submissionArtifact.isValidJumpDest_index 3663 (by rfl)
+  exact Artifact.submissionArtifact.isValidJumpDest_index 3674 (by rfl)
 
 private theorem word_ne_zero (x : UInt256) (hx : x ≠ ⟨0⟩) : x.toNat ≠ 0 := by
   intro h
@@ -92,7 +92,7 @@ variable (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfi
 include hframe hcal hrun in
 private theorem run_sentinel (hfit : CalldataFits input) :
     DataStepper.runLocatedBlock lengthSentinelPath
-      {s with pc := UInt256.ofNat 4714, stack := frame} =
+      {s with pc := UInt256.ofNat 4729, stack := frame} =
       some (sentinelState input s frame) := by
   have hsum : Padding.messageOffset + input.size < 2^256 := by
     unfold CalldataFits at hfit
@@ -162,10 +162,10 @@ private theorem run_exit (i : Nat) :
 
 include hframe hlimit hcal hrun hcode hfork hnp in
 def gasSteps_setup (hfit : CalldataFits input) :
-    GasSteps {s with pc := UInt256.ofNat 4714, stack := frame}
+    GasSteps {s with pc := UInt256.ofNat 4729, stack := frame}
       (loopState input s frame 0) := by
   have gs := DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
-    lengthSentinelPath (s := {s with pc := UInt256.ofNat 4714, stack := frame}) hcode hfork (run_sentinel input s frame hframe hcal hrun hfit) hrun hnp
+    lengthSentinelPath (s := {s with pc := UInt256.ofNat 4729, stack := frame}) hcode hfork (run_sentinel input s frame hframe hcal hrun hfit) hrun hnp
   have gt := DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     lengthFooterSetupPath (s := sentinelState input s frame) hcode hfork (run_setup input s frame hframe hlimit hcal hrun) hrun hnp
   exact gs.trans gt
@@ -236,7 +236,7 @@ include hframe hlimit hcal hrun hcode hfork hnp in
 /-- Generic padding at the actual artifact entry, preserving an arbitrary initialized frame.
 The twelve upper words include the offset, and word12 is the padded limit. -/
 noncomputable def gasSteps_padBody (hfit : CalldataFits input) (hn32 : input.size ≠ 32) :
-    GasSteps {s with pc := UInt256.ofNat 4705, stack := frame}
+    GasSteps {s with pc := UInt256.ofNat 4720, stack := frame}
       (resultState input s frame) := by
   have gp := StaggerPersistentStart.gasSteps_partial s frame (by omega)
     hrun hcode hfork hnp
