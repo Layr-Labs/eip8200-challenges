@@ -9,22 +9,22 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate StaggerPersistentEntryRaw StaggerPersistentFrame PairedMask32Cache
 def dispatchCode : List Instr := dispatchTemplate 4763
 theorem dispatch_slice :
-    (Artifact.submissionArtifact.instructions.drop 3589).take dispatchCode.length = dispatchCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3587).take dispatchCode.length = dispatchCode := by rfl
 def dispatchSite : GenericRoundSite Artifact.submissionArtifact .Osaka dispatchCode :=
-  StackSiteBuilder.ofSlice dispatchCode 3589 dispatch_slice
-    (by change 3589 + dispatchCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice dispatchCode 3587 dispatch_slice
+    (by change 3587 + dispatchCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := dispatchCode) (by decide)) (by decide)
 theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4641 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3589) = UInt256.ofNat 4641
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3587) = UInt256.ofNat 4641
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_pad (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4763).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3679 = 4763 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3677 = 4763 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3679 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3677 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 4763 = true
   rw [hcode]

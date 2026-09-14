@@ -19,6 +19,7 @@ noncomputable opaque gasSteps_padding (input : ByteArray) (hfit : CalldataFits i
   have hcal : (lowState input i).executionEnv.calldata=input := states_calldata input i
   have gp := StaggerPersistentStart.gasSteps_partial (lowState input i) h off
     (UInt256.ofNat input.size) maskRho (by decide) hr hc hf hnp
+    (by rw [hcal]; exact Nat.lt_trans hfit (by norm_num)) (by simpa [hcal] using hn32)
   rw [PadLimitArithmetic.rounded_input] at gp
   have gpad:=PaddingTraceGeneral.gasSteps_padBody input (lowState input i)
     (frame h off (Padding.paddedWord input) maskRho) (by simp [frame,maskRho]) (by rfl)

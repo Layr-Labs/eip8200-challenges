@@ -65,10 +65,10 @@ private theorem pc_b0 : Artifact.submissionArtifact.instructionPC 0 = 0 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 theorem guard_dest : Decode.isValidJumpDest submissionBytecode 4827 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3708 = 4827 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3706 = 4827 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3708 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3706 (by rfl)
   rwa [hpc] at h
 
 theorem run_byte_prefix (input : ByteArray) :

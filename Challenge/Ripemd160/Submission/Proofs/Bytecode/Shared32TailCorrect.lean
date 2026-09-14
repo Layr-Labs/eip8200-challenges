@@ -10,7 +10,7 @@ open Shared32Scratch Shared32Sites Paired144WordRound Shared32Start
 
 def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
-    GasSteps (StackTail.append (Execution.atPC input 341) rho)
+    GasSteps (StackTail.append (Execution.atPC input 337) rho)
       (atState (tableState input) 894 (frame ++ rho)) := by
   have hfit : CalldataFits input := by change input.size < 2 ^ 64; rw [h32]; decide
   let s := PaddingTrace.padCopied input
@@ -27,27 +27,23 @@ def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
     have ga := Shared32Alignment.gasSteps s e (PaddingTrace.initialFrame input ++ rho)
       (by rw [List.length_append, PaddingTrace.initialFrame_length]; omega) h32
     simpa only [PaddingTrace.padFramed, StackTail.append, hframe, atState, s] using ga
-  have g2 : GasSteps (atState s 4705 (entryFrame ++ rho)) (atState s 4715 (frame ++ rho)) := by
-    have gr := StaggerPersistentStart.gasSteps_partial s StackRunBridge.initialHashState
-      (UInt256.ofNat 0) (UInt256.ofNat 32) (maskRho ++ rho)
-      (by simp only [maskRho, List.length_append, List.length_cons, List.length_nil]; omega)
-      e.run e.code e.fork e.np
-    rw [rounded_32] at gr
-    simpa only [atState, entryFrame, frame, StaggerPersistentFrame.frame,
-      List.append_assoc, List.cons_append, List.nil_append] using gr
+  have g2 : GasSteps (atState s 4705 (entryFrame ++ rho)) (atState s 4706 (frame ++ rho)) := by
+    exact StaggerPersistentStart.gasSteps_entry s (entryFrame ++ rho)
+      (by simp only [entryFrame, StaggerPersistentFrame.frame, maskRho, List.length_append,
+        List.length_cons, List.length_nil]; omega) e.run e.code e.fork e.np
   have g3 := Shared32Trace.gasSteps_guard s e (frame ++ rho) hsize h32
   have g4 := Shared32Trace.gasSteps_sparse s e factorPlusWord (UInt256.ofNat 4294967295)
     (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)
     (fusedCoefficientWord 0 2)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
-    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 64) rho (by omega) hactive (by decide)
+    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 32) rho (by omega) hactive (by decide)
   have g5 := Shared32Trace.gasSteps_table s e factorPlusWord
     (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)
     (fusedCoefficientWord 0 2)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
-    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 64) rho (by omega) hactive
+    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 32) rho (by omega) hactive
     (copied_low input) hgap
   have hm : sparseMemory s.memory = PairedScheduleMemory.writeWord s.memory 60 highWord := by
     rw [show s.memory = copiedMemory input from copied_memory input]
@@ -67,13 +63,13 @@ def gasSteps_core (s : State) (e : Env s) (input : ByteArray)
   let masks := Shared32Core.maskRho ++ rho
   have hm : masks.length ≤ 880 := by simp only [masks, Shared32Core.maskRho, List.length_append, List.length_cons, List.length_nil]; omega
   have gb := Shared32Core.gasSteps_body s e StackRunBridge.initialHashState
-    (UInt256.ofNat 0) (UInt256.ofNat 64) masks (by omega)
+    (UInt256.ofNat 0) (UInt256.ofNat 32) masks (by omega)
     (by rw [hactive]; decide)
   have ge := StaggerPersistentLoopSites.gasSteps_exit s (Shared32Core.resultHash s)
-    (UInt256.ofNat 0) (UInt256.ofNat 64) masks (by omega) e.run
+    (UInt256.ofNat 0) (UInt256.ofNat 32) masks (by omega) e.run
     (by decide) (by rw [hcal, h32]; decide) (by rw [hcal, h32]; decide)
     e.code e.fork e.np
-  have go := StaggerPersistentSerialize.gasSteps s (UInt256.ofNat 64) (UInt256.ofNat 64)
+  have go := StaggerPersistentSerialize.gasSteps s (UInt256.ofNat 64) (UInt256.ofNat 32)
     (Shared32Core.resultHash s) rho (by omega) e.run e.code e.fork e.np
   have hoff : StaggerPersistentLoopRaw.nextOffset (UInt256.ofNat 0) = UInt256.ofNat 64 := by decide
   rw [hoff] at ge
@@ -85,7 +81,7 @@ def gasSteps_core (s : State) (e : Env s) (input : ByteArray)
 theorem correct (input : ByteArray) (h32 : input.size = 32)
     (rho : List UInt256) (hcap : rho.length ≤ 20)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0)
-      (StackTail.append (Execution.atPC input 341) rho)) :
+      (StackTail.append (Execution.atPC input 337) rho)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   let s := Shared32Start.tableState input

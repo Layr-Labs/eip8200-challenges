@@ -15,7 +15,7 @@ def maskRho (rho : List UInt256) : List UInt256 :=
 noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (hn32 : input.size ≠ 32)
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
-    GasSteps (StackTail.append (Execution.atPC input 341) rho)
+    GasSteps (StackTail.append (Execution.atPC input 337) rho)
       (loopState input (PaddingTrace.entryState input) StackRunBridge.initialHashState 0
         (DriverTrace.blockCount input) (maskRho rho)) := by
   let s := PaddingTrace.entryState input
@@ -57,7 +57,7 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (hn32 : input.size ≠ 32) (hsmall : input.size < 5220)
     (rho : List UInt256) (hcap : rho.length ≤ 20)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0)
-      (StackTail.append (Execution.atPC input 341) rho)) :
+      (StackTail.append (Execution.atPC input 337) rho)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   have hm : (maskRho rho).length ≤ 880 := by

@@ -12,8 +12,8 @@ open Shared32Scratch Shared32Sites
 
 def gasSteps_guard (s : State) (e : Env s) (F : List UInt256)
     (hstack : F.length ≤ 900) (h32 : s.executionEnv.calldata.size = 32) :
-    GasSteps (atState s 4715 F) (atState s 328 F) := by
-  apply guard.lift s (atState s 328 F) e F
+    GasSteps (atState s 4706 F) (atState s 324 F) := by
+  apply guard.lift s (atState s 324 F) e F
   have h0 : F.length < 1024 := by omega
   have h1 : F.length + 1 < 1024 := by omega
   have h2 : F.length + 2 < 1024 := by omega
@@ -27,30 +27,30 @@ def gasSteps_sparse (s : State) (e : Env s)
     (hactive : s.activeWords = UInt256.ofNat 36)
     (hbyte : UInt8.ofNat (a4.toNat % 256) = 1) :
     GasSteps
-      (atState s 328 (stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho))
+      (atState s 324 (stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho))
       (atState {s with memory := sparseMemory s.memory} 527
         (stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho)) := by
   let F := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho
   have hF : F.length ≤ 900 := by simp only [F, stk, List.length_cons]; omega
   let sM : State := {s with memory := sparseMemory s.memory}
   have eM : Env sM := ⟨e.code, e.fork, e.run, e.np⟩
-  have g0 : GasSteps (atState s 328 F) (atState s 329 F) := by
-    apply special.lift s (atState s 329 F) e F
-    simpa only [special.template, atState, show UInt256.ofNat 328 + UInt256.ofNat 1 = UInt256.ofNat 329 by decide] using
-      PadJump.run_merge s (UInt256.ofNat 328) F (by omega) e.run
-  have g1 : GasSteps (atState s 329 F) (atState s 330 (UInt256.ofNat 1152 :: F)) := by
+  have g0 : GasSteps (atState s 324 F) (atState s 325 F) := by
+    apply special.lift s (atState s 325 F) e F
+    simpa only [special.template, atState, show UInt256.ofNat 324 + UInt256.ofNat 1 = UInt256.ofNat 325 by decide] using
+      PadJump.run_merge s (UInt256.ofNat 324) F (by omega) e.run
+  have g1 : GasSteps (atState s 325 F) (atState s 326 (UInt256.ofNat 1152 :: F)) := by
     have g := Msize.step (msize_decoded s e F) (by change F.length < 1024; omega) e.run e.np
     simpa only [atState, hactive,
-      show (UInt256.ofNat 329).succ = UInt256.ofNat 330 by decide,
+      show (UInt256.ofNat 325).succ = UInt256.ofNat 326 by decide,
       show UInt256.ofNat (32 * (UInt256.ofNat 36).toNat) = UInt256.ofNat 1152 by decide] using g
-  have g2 : GasSteps (atState s 330 (UInt256.ofNat 1152 :: F)) (atState sM 337 F) := by
-    apply sparse.lift s (atState sM 337 F) e (UInt256.ofNat 1152 :: F)
-    have h := Shared32SparseRun.run_sparse s (UInt256.ofNat 330) ret mw a2 a3 a4
+  have g2 : GasSteps (atState s 326 (UInt256.ofNat 1152 :: F)) (atState sM 333 F) := by
+    apply sparse.lift s (atState sM 333 F) e (UInt256.ofNat 1152 :: F)
+    have h := Shared32SparseRun.run_sparse s (UInt256.ofNat 326) ret mw a2 a3 a4
       a5 a6 a7 a8 a9 a10 lim rho hstack e.run hactive hbyte
     simpa only [sparse.template, sparse.end_pc, atState, sM, F] using h
-  have g3 : GasSteps (atState sM 337 F) (atState sM 526 F) := by
+  have g3 : GasSteps (atState sM 333 F) (atState sM 526 F) := by
     apply jump.lift sM (atState sM 526 F) eM F
-    exact PadJump.run_template sM (UInt256.ofNat 337) F 526 (by omega) e.run
+    exact PadJump.run_template sM (UInt256.ofNat 333) F 526 (by omega) e.run
       (by simpa only [show (UInt256.ofNat 526).toNat = 526 by decide] using valid_lower sM eM)
   have g4 : GasSteps (atState sM 526 F) (atState sM 527 F) := by
     apply lower.lift sM (atState sM 527 F) eM F

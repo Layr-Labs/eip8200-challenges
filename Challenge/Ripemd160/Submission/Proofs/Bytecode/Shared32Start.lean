@@ -14,7 +14,7 @@ open Shared32Scratch Shared32Sites Paired144WordRound
 
 def maskRho : List UInt256 := [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
 def frame : List UInt256 := StaggerPersistentFrame.frame StackRunBridge.initialHashState
-  (UInt256.ofNat 0) (UInt256.ofNat 64) maskRho
+  (UInt256.ofNat 0) (UInt256.ofNat 32) maskRho
 def entryFrame : List UInt256 := StaggerPersistentFrame.frame StackRunBridge.initialHashState
   (UInt256.ofNat 0) (UInt256.ofNat 32) maskRho
 
@@ -35,9 +35,8 @@ theorem padded_eq (input : ByteArray) (h32 : input.size = 32) :
   rfl
 
 theorem frame_eq (input : ByteArray) (h32 : input.size = 32) :
-    PaddingTrace.padFrame input = frame := by
-  rw [PaddingTrace.padFrame, padded_eq input h32]
-  rfl
+    PaddingTrace.initialFrame input = frame := by
+  exact entry_frame_eq input h32
 
 theorem copied_memory (input : ByteArray) :
     (PaddingTrace.padCopied input).memory = copiedMemory input := by
@@ -69,7 +68,7 @@ def gasSteps_align (input : ByteArray) (h32 : input.size = 32) :
     (by rw [PaddingTrace.initialFrame_length]; decide) h32
 
 def gasSteps (input : ByteArray) (h32 : input.size = 32)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 341)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 337)) :
     GasSteps (initialState submissionBytecode input 0) (atState (tableState input) 894 frame) := by
   have hfit : CalldataFits input := by change input.size < 2 ^ 64; rw [h32]; decide
   let s := PaddingTrace.padCopied input
@@ -86,24 +85,21 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32)
   have g1 : GasSteps (PaddingTrace.padFramed input) (atState s 4705 entryFrame) := by
     simpa only [PaddingTrace.padGuardTaken, PaddingTrace.padGuardMiss, hframe, atState, s] using
       gasSteps_align input h32
-  have g2 : GasSteps (atState s 4705 entryFrame) (atState s 4715 frame) := by
-    have gr := StaggerPersistentStart.gasSteps_partial s StackRunBridge.initialHashState
-      (UInt256.ofNat 0) (UInt256.ofNat 32) maskRho (by decide) e.run e.code e.fork e.np
-    rw [rounded_32] at gr
-    exact gr
+  have g2 : GasSteps (atState s 4705 entryFrame) (atState s 4706 frame) := by
+    exact StaggerPersistentStart.gasSteps_entry s entryFrame (by decide) e.run e.code e.fork e.np
   have g3 := Shared32Trace.gasSteps_guard s e frame hcap h32
   have g4 := Shared32Trace.gasSteps_sparse s e factorPlusWord (UInt256.ofNat 4294967295)
     (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)
     (fusedCoefficientWord 0 2)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
-    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 64) [] (by decide) hactive (by decide)
+    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 32) [] (by decide) hactive (by decide)
   have g5 := Shared32Trace.gasSteps_table s e factorPlusWord
     (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)
     (fusedCoefficientWord 0 2)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
-    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 64) [] (by decide) hactive
+    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 32) [] (by decide) hactive
     (copied_low input) hgap
   have hm : sparseMemory s.memory = PairedScheduleMemory.writeWord s.memory 60 highWord := by
     rw [show s.memory = copiedMemory input from copied_memory input]

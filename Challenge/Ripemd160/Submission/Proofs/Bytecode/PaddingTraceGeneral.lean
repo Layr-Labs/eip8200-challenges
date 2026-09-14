@@ -67,10 +67,10 @@ theorem paddedWord_aligned (input : ByteArray) (hfit : CalldataFits input)
     (resultState input s frame).activeWords = lengthActive input s.activeWords (lengthStop input) := rfl
 
 private theorem valid_loop : Decode.isValidJumpDest submissionBytecode 4740 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3662 = 4740 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3660 = 4740 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   rw [← hpc]
-  exact Artifact.submissionArtifact.isValidJumpDest_index 3662 (by rfl)
+  exact Artifact.submissionArtifact.isValidJumpDest_index 3660 (by rfl)
 
 private theorem word_ne_zero (x : UInt256) (hx : x ≠ ⟨0⟩) : x.toNat ≠ 0 := by
   intro h
@@ -235,15 +235,11 @@ noncomputable def gasSteps_loop (hfit : CalldataFits input) :
 include hframe hlimit hcal hrun hcode hfork hnp in
 /-- Generic padding at the actual artifact entry, preserving an arbitrary initialized frame.
 The twelve upper words include the offset, and word12 is the padded limit. -/
-noncomputable def gasSteps_padBody (hfit : CalldataFits input) (hn32 : input.size ≠ 32) :
-    GasSteps {s with pc := UInt256.ofNat 4715, stack := frame}
+noncomputable def gasSteps_padBody (hfit : CalldataFits input) (_hn32 : input.size ≠ 32) :
+    GasSteps {s with pc := UInt256.ofNat 4723, stack := frame}
       (resultState input s frame) := by
-  have gg := StaggerPersistentStart.gasSteps_guard32_miss s frame (by omega)
-    (by rw [hcal]; exact Nat.lt_trans hfit (by norm_num))
-    (by simpa [hcal] using hn32) hrun hcode hfork hnp
-  exact gg.trans
-    ((gasSteps_setup input s frame hframe hlimit hcal hrun hcode hfork hnp hfit).trans
-      (gasSteps_loop input s frame hframe hrun hcode hfork hnp hfit))
+  exact (gasSteps_setup input s frame hframe hlimit hcal hrun hcode hfork hnp hfit).trans
+    (gasSteps_loop input s frame hframe hrun hcode hfork hnp hfit)
 
 end
 
