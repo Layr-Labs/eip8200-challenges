@@ -54,7 +54,7 @@ theorem run_clamp (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame)
   all_goals rfl
 #print axioms run_clamp
 
-def segmentTemplate (dest : Nat) : List Instr := [.op .JUMPDEST, .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .EQ, .op .JUMPDEST,
+def segmentTemplate (dest : Nat) : List Instr := [.op .JUMPDEST, .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .EQ,
   .push ⟨2, by decide⟩ (UInt256.ofNat dest), .op .JUMPI]
 
 theorem run_segment (s : State) (pc : UInt256) (f : RecognitionBodyRaw.Frame)
