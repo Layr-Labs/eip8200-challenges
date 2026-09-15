@@ -17,3 +17,5 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
+
+/- Resample uniquifier: 2026-09-15T06:40Z -/
