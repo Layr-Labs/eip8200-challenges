@@ -17,4 +17,4 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- redraw marker 2026-09-15T09:15:23Z
+-- redraw marker 2026-09-15T12:31:44Z
