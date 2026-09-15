@@ -1,6 +1,6 @@
 # RIPEMD-160: consume every remaining last-use copy in the compression body
 
-The submitted runtime uses 669769 gas on the original 49-vector clean corpus and the same total on the corresponding dirty-frame corpus. It is 5219 bytes: 4939 executable bytes followed by the unchanged 280-byte digest payload. There are 3734 executable instructions. The raw-byte SHA-256 is `badd23b793ab2679687d8edd0ca88ad90bf85f69912e17f6780d8df469f87aac`.
+The submitted runtime uses 669769 gas on the original 49-vector clean corpus and the same total on the corresponding dirty-frame corpus. It is 5219 bytes: 4939 executable bytes followed by the unchanged 280-byte digest payload. There are 3734 executable instructions. The raw-byte SHA-256 is `034aa99147392ae55a3de06ec8c5d4d606e6075797d39bd17e613a5706af58fd`.
 
 The source base is the public source `a685c5bb55ed8553b8dd1b847cc30c448c78d761`, whose bytecode (5219 bytes, raw-byte SHA-256 `ba94a3b28840365c1c425623e4f8378249a85d7b3fd4a461a91e648199cca5e6`) uses 670084 gas on the same corpus. This version saves five gas per compression invocation, 315 gas across the measured corpus: five gas on each 32-byte generated input, ten on each 64-byte input and fifteen on each 128-byte input, while the seventeen memoised and recognised inputs keep their measured gas. Compared with the 670855-gas ancestor `fdd0717d031168693e7aa55b68dead6b305fa2e1` on the same inputs, it saves seventeen gas per compression.
 
