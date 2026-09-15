@@ -38,12 +38,13 @@ theorem output_eq (memory : ByteArray) (h q : WordLane) (off limit : UInt256)
         (StaggerAlgorithm.physicalKey 0) (suffix h off limit rho) := by
   have hm : JointRightPackRaw.pairMask = Paired144WordRound.pairWord := by decide
   have hu : JointRightPackRaw.upperMask = upperWord := by decide
+  have hp : UInt256.lor lowerWord upperWord = Paired144WordRound.pairWord := by decide
   simp only [JointRightPackRaw.outputStack, input, stack, List.map_cons, List.map_nil,
     List.cons_append, List.nil_append, StaggerCoreCommon.word,
     StaggerCoreModel.pair, StaggerCoreModel.pairWord, StaggerCoreModel.right2,
     JointRightPackRaw.packed, JointRightPackRaw.rotatedC, JointRightPackRaw.roundT,
     StaggerScalarWord.step, StaggerScalarWord.t, StaggerScalarWord.sum, StaggerScalarWord.rawF,
-    StaggerScalarWord.mask, wordShift, factorPlusWord, suffix, hm, hu, List.cons.injEq, and_true]
+    StaggerScalarWord.mask, wordShift, factorPlusWord, suffix, hm, hu, hp, List.cons.injEq, and_true]
   all_goals try simp
   all_goals try simp only [RawExpressionAC.add_assoc, RawExpressionAC.add_comm,
     RawExpressionAC.add_left_comm, RawExpressionAC.mul_comm, RawExpressionAC.land_comm,
