@@ -156,8 +156,8 @@ def blk2982 :
 def blk3013 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1901 .JUMPDEST,
-   opAt 1902 (.Dup ⟨0, by decide⟩),
-   opAt 1903 .ISZERO,
+   pushAt 1902 0 0,
+   opAt 1903 .EQ,
    pushAt 1904 2 3156,
    opAt 1905 .JUMPI]
 
@@ -339,8 +339,8 @@ def blk3204 :
   [opAt 2304 .JUMPDEST,
    pushAt 2305 2 2080,
    opAt 2306 .MLOAD,
-   opAt 2307 (.Dup ⟨0, by decide⟩),
-   opAt 2308 .ISZERO,
+   pushAt 2307 0 0,
+   opAt 2308 .EQ,
    pushAt 2309 2 3002,
    opAt 2310 .JUMPI]
 
@@ -350,8 +350,8 @@ def blk3204g :
   [opAt 2304 .JUMPDEST,
    pushAt 2305 2 2080,
    opAt 2306 .MLOAD,
-   opAt 2307 (.Dup ⟨0, by decide⟩),
-   opAt 2308 .ISZERO,
+   pushAt 2307 0 0,
+   opAt 2308 .EQ,
    pushAt 2309 2 3002,
    opAt 2310 .JUMPI,
    opAt 2311 .POP]

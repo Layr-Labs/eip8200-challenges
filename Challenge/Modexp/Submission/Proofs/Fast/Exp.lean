@@ -112,6 +112,13 @@ theorem isZero_ofNat_of_ne {a : Nat} (ha : a < 2 ^ 256) (h : a ≠ 0) :
 theorem isZero_ofNat_one : UInt256.isZero (UInt256.ofNat 1) = UInt256.ofNat 0 := by
   decide
 
+/-- `PUSH0; EQ` computes the same word as `ISZERO`: the pushed zero is the
+first operand, so `eq (ofNat 0) a` reduces to `isZero a`. -/
+theorem eq_zero_isZero (a : UInt256) :
+    UInt256.eq (UInt256.ofNat 0) a = UInt256.isZero a := by
+  rw [UInt256.eq, UInt256.isZero, toNat_ofNat_self (by norm_num),
+    show (0 = a.toNat) ↔ (a.toNat = 0) from eq_comm]
+
 theorem isTrue_one : UInt256.isTrue (UInt256.ofNat 1) := by decide
 
 theorem not_isTrue_zero : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
@@ -568,7 +575,7 @@ theorem run_rrPost_loop (s : State) (mem : ByteArray)
   simp (config := { maxSteps := 400000 }) [blk1178, opAt, pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    rrPost, rrNext, outer, hrun, hzero,
+    rrPost, rrNext, outer, hrun, hzero, eq_zero_isZero,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
@@ -586,7 +593,7 @@ theorem run_rrPost_exit (s : State) (mem : ByteArray) (n bsize esize msize : Nat
   simp (config := { maxSteps := 400000 }) [blk1178, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    rrPost, rrDone, outer, hcode, hrun, isZero_ofNat_zero, isTrue_one,
+    rrPost, rrDone, outer, hcode, hrun, isZero_ofNat_zero, isTrue_one, eq_zero_isZero,
     h1631Nat, jumpDest1599,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,

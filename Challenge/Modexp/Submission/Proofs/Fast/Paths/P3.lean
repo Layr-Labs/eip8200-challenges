@@ -61,8 +61,8 @@ def blk1178 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 593 .JUMPDEST,
    opAt 594 .POP,
-   opAt 595 (.Dup ⟨0, by decide⟩),
-   opAt 596 .ISZERO,
+   pushAt 595 0 0,
+   opAt 596 .EQ,
    pushAt 597 2 852,
    opAt 598 .JUMPI]
 
