@@ -53,14 +53,14 @@ def blk1595 :
 def blk1600 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 957 .JUMPDEST,
-   pushAt 958 2 2688,
+   pushAt 958 3 2688,
    opAt 959 .MLOAD,
    pushAt 960 2 32,
    opAt 961 (.Dup ⟨1, by decide⟩),
    opAt 962 (.Dup ⟨3, by decide⟩),
    opAt 963 .ADD,
    opAt 964 .SUB,
-   pushAt 965 2 32,
+   pushAt 965 1 32,
    opAt 966 (.Dup ⟨2, by decide⟩),
    opAt 967 (.Dup ⟨5, by decide⟩),
    opAt 968 .ADD,
