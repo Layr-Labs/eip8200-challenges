@@ -33,14 +33,15 @@ theorem run_transitionA (s : State) (pc : UInt256) (f : Frame) (rho : List UInt2
 
 theorem run_transitionB (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
-    (hlen : f.len = UInt256.ofNat s.executionEnv.calldata.size) :
+    (hlen : f.len = UInt256.ofNat s.executionEnv.calldata.size)
+    (hoff : f.off = f.stop) :
     runInstrSeq transitionBTemplate {s with pc := pc, stack := frame f rho} =
       some {s with pc := pcAfter pc transitionBTemplate, stack := frame (transitionBResult f) rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
   simp (config := { maxSteps := 600000 }) (discharger := omega) [transitionBTemplate, transitionTemplate, transitionBResult, frame, c32, c114,
     clamp, aligned, advance, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
-    List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hcap, ← hlen,
+    List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hcap, ← hlen, hoff,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals simp only [hsub_eq, hadd_eq, hmul_eq, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
   all_goals repeat first | apply And.intro | exact True.intro | rfl
@@ -51,7 +52,7 @@ theorem run_transition (s : State) (pc : UInt256) (f : Frame) (rho : List UInt25
     runInstrSeq transitionTemplate {s with pc := pc, stack := frame f rho} =
       some {s with pc := pcAfter pc transitionTemplate, stack := frame (transitionResult f) rho} := by
   have ha := run_transitionA s pc f rho hstack hrun
-  have hb := run_transitionB s (pcAfter pc transitionATemplate) (transitionAResult f) rho hstack hrun (by simpa only [transitionAResult] using hlen)
+  have hb := run_transitionB s (pcAfter pc transitionATemplate) (transitionAResult f) rho hstack hrun (by simpa only [transitionAResult] using hlen) (by simp only [transitionAResult])
   have hab := DenseScheduleTrace.runInstrSeq_append_running ha (by exact hrun) hb
   have ht : transitionATemplate ++ transitionBTemplate = transitionTemplate := List.take_append_drop 15 _
   have hr : transitionBResult (transitionAResult f) = transitionResult f := rfl
