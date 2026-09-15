@@ -94,6 +94,24 @@ theorem run_cell (s : State) (pc c bi w0 w1 w2 w3 w4 M : UInt256)
   have h01 := runInstructions_append_some _ _ _ _ _ h0 h1
   exact runInstructions_append_some _ _ _ _ _ h01 h2
 
+/-- A cell without its final store (`cellA ++ cellB`): used for the last cell of the
+first row, whose store is merged into `finishStore`. -/
+def cellAB (a : UInt256) : List Instr := cellA a ++ cellB
+
+theorem run_cellAB (s : State) (pc c bi w0 w1 w2 w3 w4 M : UInt256)
+    (a : Nat) (rest : List UInt256) (hcap : rest.length ≤ 1010)
+    (ha : a + 32 ≤ 2816) (hact : 88 ≤ s.activeWords.toNat) :
+    let x := MachineState.readWord s.memory a
+    runInstructions (cellAB (UInt256.ofNat a))
+      { s with pc := pc, stack := c :: bi :: w0 :: w1 :: w2 :: w3 :: w4 :: M :: rest } =
+    some { s with pc := advancePC 23 pc,
+                  stack := R4Math.zCarry x bi c M :: R4Math.zSum x bi c :: bi :: w0 :: w1 :: w2 :: w3 :: w4 :: M :: rest } := by
+  let x := MachineState.readWord s.memory a
+  have h0 := run_cellA s pc c bi w0 w1 w2 w3 w4 M a rest hcap ha hact
+  have h1 := run_cellB s (advancePC 11 pc) (UInt256.mulMod bi x M) (x*bi) c
+    (bi :: w0 :: w1 :: w2 :: w3 :: w4 :: M :: rest) (by simp only [List.length_cons]; omega)
+  exact runInstructions_append_some _ _ _ _ _ h0 h1
+
 def cellsProgram : Nat → List Instr
   | 0 => []
   | k+1 => cellsProgram k ++ cellProgram (UInt256.ofNat (SquareModel.aAddr 8 (k+1)))

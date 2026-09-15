@@ -850,6 +850,11 @@ theorem run_reds3 (s : State) (c m ret v p3 p2 q1 q0 p4 k n0 n1 n2 n3 np : UInt2
     (by simp only [List.length_cons]; omega) 
   exact runInstructions_append_some _ _ _ _ _ g0 (runInstructions_append_some _ _ _ _ _ g1 (runInstructions_append_some _ _ _ _ _ g2 (g3)))
 
+private theorem add_comm_redt (a b : UInt256) : a + b = b + a := by
+  change UInt256.mk (a.val + b.val) = UInt256.mk (b.val + a.val)
+  congr 1
+  ac_rfl
+
 theorem run_redt (s : State) (c m ret v p3 q2 q1 q0 p4 k n0 n1 n2 n3 np : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1007)
     (hjd : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
@@ -874,7 +879,7 @@ theorem run_redt (s : State) (c m ret v p3 q2 q1 q0 p4 k n0 n1 n2 n3 np : UInt25
   have hc14 : rest.length + 14 < 1024 := by omega
   have hc15 : rest.length + 15 < 1024 := by omega
   have hc16 : rest.length + 16 < 1024 := by omega
-  simp [prog_redt, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange,
+  simp [prog_redt, add_comm_redt, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,
     UInt256.gt, UInt256.lt, List.getElem?_cons_zero, List.getElem?_cons_succ, Nat.add_assoc, hjd, hc0, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16]
 
