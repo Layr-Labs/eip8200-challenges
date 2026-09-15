@@ -119,7 +119,7 @@ theorem diag1Part0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 : 
 def diag1Part1 : List Instr := [.op (.Dup ⟨8, by decide⟩), .op (.Dup ⟨2, by decide⟩)]
 
 theorem diag1Part1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1006) :
+    (hcap : rest.length ≤ 1005) :
     runInstructions diag1Part1 { s with pc := UInt256.ofNat 4721, stack := [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13] ++ rest } =
     some { s with pc := UInt256.ofNat 4723, stack := [x1, x8, x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13] ++ rest } := by
   have hc0 : rest.length + 0 < 1024 := by omega
@@ -291,7 +291,7 @@ theorem diag2Part0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 : 
 def diag2Part1 : List Instr := [.op (.Dup ⟨8, by decide⟩), .op (.Dup ⟨2, by decide⟩)]
 
 theorem diag2Part1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1006) :
+    (hcap : rest.length ≤ 1005) :
     runInstructions diag2Part1 { s with pc := UInt256.ofNat 4833, stack := [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13] ++ rest } =
     some { s with pc := UInt256.ofNat 4835, stack := [x1, x8, x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13] ++ rest } := by
   have hc0 : rest.length + 0 < 1024 := by omega

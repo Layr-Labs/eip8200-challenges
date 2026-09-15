@@ -46,20 +46,21 @@ def qState (template : State) (pc : UInt256) (q : MacState)
     (bi pbi hd pbEnd flag destination returnPC : UInt256) (rest : List UInt256) : State :=
   { template with
     pc := pc
-    stack := [q.carry, bi, pbi, hd, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest
+    stack := [q.carry, bi, pbi, hd, pbEnd, flag, destination, allOnes, returnPC] ++ rest
     memory := q.memory }
 
 theorem run_load (template : State)
     (pc off carry bi pbi hd pbEnd flag destination returnPC : UInt256)
-    (rest : List UInt256) (hrest : rest.length ≤ 1006)
+    (rest : List UInt256) (hrest : rest.length ≤ 1007)
     (hactive : UInt256.ofNat (MachineState.activeWordsAfter
       template.activeWords.toNat (UInt256.ofNat 2368 + off).toNat 32) = template.activeWords) :
     runInstructions (loadProgram off)
       (framed template pc
-        ([carry, bi, pbi, hd, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)) =
+        ([carry, bi, pbi, hd, pbEnd, flag, destination, allOnes, returnPC] ++ rest)) =
     some (framed template (pc + UInt256.ofNat 5)
       ([maxWord, MachineState.readWord template.memory (UInt256.ofNat 2368 + off).toNat,
-        carry, bi, pbi, hd, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)) := by
+        carry, bi, pbi, hd, pbEnd, flag, destination, allOnes, returnPC] ++ rest)) := by
+  have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
@@ -68,7 +69,7 @@ theorem run_load (template : State)
     show (2 : Nat)^256 = 115792089237316195423570985008687907853269984665640564039457584007913129639936 from by decide,
     Nat.reduceMod] at hactive
   simp [runInstructions, loadProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-    hc10, hc11, hc12, State.activeWordsAfterUInt256, hactive, allOnes_value,
+    hc9, hc10, hc11, hc12, State.activeWordsAfterUInt256, hactive, allOnes_value,
     succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem snapshot_read (mem : ByteArray) (pa n j : Nat) (h : Snapshot mem pa n) (hj : j < n) :
@@ -82,7 +83,7 @@ theorem run_l1 (template : State) (pc : UInt256) (q : MacState)
     (hoff : off.toNat = 32 * (n - 1 - j))
     (ht : t.toNat = 2112 + 32 * (n - 1 - j))
     (pbi hd pbEnd flag destination returnPC : UInt256)
-    (rest : List UInt256) (hrest : rest.length ≤ 1006)
+    (rest : List UInt256) (hrest : rest.length ≤ 1007)
     (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
     (hsnapshot : Snapshot q.memory pa n) :
     runInstructions (l1Program off t)
@@ -113,7 +114,7 @@ theorem run_l1 (template : State) (pc : UInt256) (q : MacState)
     MachineState.readWord q.memory (pa + 32*(n-1-j)) from hsread] at hl
   have hf := CiosCachedFused.run_fused st (pc + UInt256.ofNat 5)
     (MachineState.readWord q.memory (pa + 32*(n-1-j))) bi q.carry t t
-    ([pbi, hd, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)
+    ([pbi, hd, pbEnd, flag, destination, allOnes, returnPC] ++ rest)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) hT hT
   have hall := runInstructions_append_some _ _ _ _ _ hl hf
   have hpc : (pc + UInt256.ofNat 5) + UInt256.ofNat 31 =
@@ -128,14 +129,14 @@ theorem run_step (template : State) (pc : UInt256) (q : MacState)
     (hoff : off.toNat = 32 * (n - 1 - j))
     (ht : t.toNat = 2112 + 32 * (n - 1 - j))
     (pbi hd pbEnd flag destination returnPC : UInt256)
-    (rest : List UInt256) (hrest : rest.length ≤ 1006)
+    (rest : List UInt256) (hrest : rest.length ≤ 1007)
     (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
     (hsnapshot : Snapshot q.memory pa n) :
     runInstructions (stepProgram off t)
       (qState template pc q bi pbi hd pbEnd flag destination returnPC rest) =
     some (qState template (pc + UInt256.ofNat 37) (SquareModel.l1StepOn q bi pa n j)
       bi pbi hd pbEnd flag destination returnPC rest) := by
-  have hc : rest.length + 10 < 1024 := by omega
+  have hc : rest.length + 9 < 1024 := by omega
   have hjd : runInstructions [.op .JUMPDEST]
       (qState template pc q bi pbi hd pbEnd flag destination returnPC rest) =
       some (qState template (pc + UInt256.ofNat 1) q bi pbi hd pbEnd flag destination returnPC rest) := by
@@ -151,7 +152,7 @@ theorem run_step (template : State) (pc : UInt256) (q : MacState)
 /-- The same block on the kernel's row frame `CiosCached.l1Q`. -/
 theorem run_stepQ (pc : Nat) (off t : UInt256) (s : State) (q : MacState) (bi : UInt256)
     (pa pb n i j : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 1006) (hact : 88 ≤ s.activeWords.toNat)
     (hn : n ≤ 8) (hj : j < n) (hoff : off.toNat = 32 * (n - 1 - j))
     (ht : t.toNat = 2112 + 32 * (n - 1 - j))
     (hsnapshot : Snapshot q.memory pa n) :
@@ -159,7 +160,7 @@ theorem run_stepQ (pc : Nat) (off t : UInt256) (s : State) (q : MacState) (bi : 
       some (l1Q (pc+37) s (SquareModel.l1StepOn q bi pa n j) bi pb n i hd ent pdst ret rest) := by
   have h := run_step s (UInt256.ofNat pc) q bi pa n j off t hoff ht
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) hd
-    (UInt256.ofNat (pb-32)) ent (l2Target n) pdst (ret :: rest)
+    (UInt256.ofNat (pb-32)) ent pdst (l2Target n) (ret :: rest)
     (by simp only [List.length_cons]; omega) hact hn hj hsnapshot
   simpa only [List.cons_append, List.nil_append, qState, l1Q,
     Challenge.EvmProof.Word.ofNat_add_mod] using h

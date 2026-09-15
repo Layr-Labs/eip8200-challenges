@@ -102,8 +102,7 @@ theorem run_againFix (s : State) (mem : ByteArray) (n : Nat)
       (againMidState s mem n (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n))
         (UInt256.ofNat (sqEnt n n)) tl inv m0 m96 m64 m32 aprev pdst ret rest) =
     some { outState s mem 2368 n 0
-      (UInt256.ofNat 4234) (UInt256.ofNat (sqEnt n 0)) inv m0
-      (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5091 } := by
+      (UInt256.ofNat 4234) (UInt256.ofNat (sqEnt n 0)) m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5091 } := by
   have hc16' : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
@@ -138,8 +137,7 @@ theorem run_again (s : State) (mem : ByteArray) (n : Nat)
       (frameAt pcAgain s mem n (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n))
         (UInt256.ofNat (sqEnt n n)) tl inv m0 m96 m64 m32 aprev pdst ret rest) =
     some { outState s mem 2368 n 0
-      (UInt256.ofNat 4234) (UInt256.ofNat (sqEnt n 0)) inv m0
-      (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5091 } := by
+      (UInt256.ofNat 4234) (UInt256.ofNat (sqEnt n 0)) m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5091 } := by
   change runInstructions (againStageProgram ++ againFixProgram) _ = _
   exact runInstructions_append_some _ _ _ _ _
     (run_againStage s mem n (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n))
@@ -163,8 +161,7 @@ def gasSteps_again (s : State) (mem : ByteArray) (n : Nat)
       (frameAt pcAgain s mem n (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n))
         (UInt256.ofNat (sqEnt n n)) tl inv m0 m96 m64 m32 aprev pdst ret rest)
       { outState s mem 2368 n 0
-        (UInt256.ofNat 4234) (UInt256.ofNat (sqEnt n 0)) inv m0
-        (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5091 } :=
+        (UInt256.ofNat 4234) (UInt256.ofNat (sqEnt n 0)) m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 5091 } :=
   againBlock.steps
     (environment (frameAt pcAgain s mem n (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n))
       (UInt256.ofNat (sqEnt n n)) tl inv m0 m96 m64 m32 aprev pdst ret rest)

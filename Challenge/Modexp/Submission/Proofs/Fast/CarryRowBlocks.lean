@@ -70,24 +70,28 @@ def l2Join : Block Artifact.submissionArtifact .Osaka 3985 joinProgram :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 3009 1 3985 joinProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
+/-- Slot 1 now carries the trailing `ADD` that used to open slot 2's block, so the two
+cells are re-split one byte later: 3986..4020 (34 bytes) and 4020..4052 (32 bytes).
+The straight-line code between the `l2Join` `JUMPDEST` at 3985 and 4052 is unchanged
+as a byte range; only the proof's cut point moved. -/
 def l2Mac4 : Block Artifact.submissionArtifact .Osaka 3986 (CiosReadonlyExtra.extraProgram 1 2176 2208) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3010 29 3986 (CiosReadonlyExtra.extraProgram 1 2176 2208)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3010 28 3986 (CiosReadonlyExtra.extraProgram 1 2176 2208)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Mac5 : Block Artifact.submissionArtifact .Osaka 4019 (CiosReadonlyExtra.extraProgram 2 2144 2176) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3039 29 4019 (CiosReadonlyExtra.extraProgram 2 2144 2176)
+def l2Mac5 : Block Artifact.submissionArtifact .Osaka 4020 (CiosReadonlyExtra.extraProgram 2 2144 2176) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3038 28 4020 (CiosReadonlyExtra.extraProgram 2 2144 2176)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l2Mac6 : Block Artifact.submissionArtifact .Osaka 4052 (CiosCachedLast.l2LastProgram 0 0 2112 2144) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3068 29 4052 (CiosCachedLast.l2LastProgram 0 0 2112 2144)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3066 29 4052 (CiosCachedLast.l2LastProgram 0 0 2112 2144)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def tailLoop : Block Artifact.submissionArtifact .Osaka 4085 CarryRowPrograms.tail :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3097 18 4085 CarryRowPrograms.tail
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3095 18 4085 CarryRowPrograms.tail
     (by decide) (by rfl) (by rfl) (by decide)
 
 def exitBlock : Block Artifact.submissionArtifact .Osaka 4118 CiosReadonly.fullExitProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3120 14 4118 CiosReadonly.fullExitProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3118 14 4118 CiosReadonly.fullExitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l2Join8 : Block Artifact.submissionArtifact .Osaka 3837 joinProgram :=

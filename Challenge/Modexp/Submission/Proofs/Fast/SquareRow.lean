@@ -90,16 +90,16 @@ def programB : List Instr :=
 /-! ## Location certificates -/
 
 def blockA : Block Artifact.submissionArtifact .Osaka 4234 programA :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3195 6 4234 programA
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3193 6 4234 programA
     (by decide) (by rfl) (by rfl) (by decide)
 
 def blockB : Block Artifact.submissionArtifact .Osaka 4241 programB :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3202 40 4241 programB
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3200 40 4241 programB
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- `sq_row` itself is a jump destination (the frame's row head for square calls). -/
 theorem jumpDest4710 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4234 = true :=
-  Artifact.isValidJumpDest_index 3195 (by rfl)
+  Artifact.isValidJumpDest_index 3193 (by rfl)
 
 def environment (s : State)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -392,7 +392,7 @@ row head (`hd = 4801`, frame slot `ent = e`, slot 14 = `aprev`) to the first-loo
 `e` with memory/carry `SquareModel.sqPro mem n i tb` (`tb = SGT 0 aprev`), multiplier
 `b2 = sqB2 x tb`, frame slot `ent := e + 37` and slot 14 := `x = a_i`. -/
 def gasSteps_prologue (s : State) (mem : ByteArray) (n i e : Nat)
-    (pdst ret w10 w11 w12 w13 aprev : UInt256) (rest : List UInt256)
+    (pdst ret w9 w10 w11 w12 w13 aprev : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
@@ -403,11 +403,11 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (n i e : Nat)
     (he : e + 37 < 2 ^ 256) :
     Challenge.EvmProof.GasSteps
       (outState s mem 2368 n i (UInt256.ofNat 4234) (UInt256.ofNat e) pdst ret
-        (w10 :: w11 :: w12 :: w13 :: aprev :: rest))
+        (w9 :: w10 :: w11 :: w12 :: w13 :: aprev :: rest))
       (l1Q e s (sqPro mem n i (UInt256.sgt (UInt256.ofNat 0) aprev))
         (sqB2 (sqX mem n i) (UInt256.sgt (UInt256.ofNat 0) aprev)) 2368 n i
         (UInt256.ofNat 4234) (UInt256.ofNat (e + 37)) pdst ret
-        (w10 :: w11 :: w12 :: w13 :: sqX mem n i :: rest)) := by
+        (w9 :: w10 :: w11 :: w12 :: w13 :: sqX mem n i :: rest)) := by
   let P : UInt256 := UInt256.ofNat (ptrAt (2368 + 32 * n - 32) i)
   let s' : State := { s with memory := mem }
   have hP : P.toNat = aAddr n i := ptr_toNat n i hi (by omega)
@@ -424,21 +424,21 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (n i e : Nat)
     rw [hcode]; exact hjump
   -- block A
   have hA := run_A s' P (UInt256.ofNat 4234) (UInt256.ofNat (2368 - 32)) (UInt256.ofNat e)
-    negative32 allOnes (l2Target n) pdst ret w10 w11 w12 w13 aprev rest (by omega) hactP
+    pdst allOnes (l2Target n) ret w9 w10 w11 w12 w13 aprev rest (by omega) hactP
   rw [push0_eq] at hA
   have gA := stepsOf blockA hA rfl hcode hfork hrun hnp
   -- the SGT
   have gS := SgtStep.gasSteps_sqRowSgt
     { s' with pc := UInt256.ofNat 4240,
               stack := UInt256.ofNat 0 :: aprev :: MachineState.readWord s'.memory P.toNat :: P ::
-                UInt256.ofNat 4234 :: UInt256.ofNat (2368 - 32) :: UInt256.ofNat e :: negative32 ::
-                allOnes :: l2Target n :: pdst :: ret :: w10 :: w11 :: w12 :: w13 ::
+                UInt256.ofNat 4234 :: UInt256.ofNat (2368 - 32) :: UInt256.ofNat e :: pdst ::
+                allOnes :: l2Target n :: ret :: w9 :: w10 :: w11 :: w12 :: w13 ::
                 MachineState.readWord s'.memory P.toNat :: rest }
     (UInt256.ofNat 0) aprev _ hcode hfork rfl rfl (by simp only [List.length_cons]; omega) hrun hnp
   -- block B
   have hB := run_B s' (UInt256.sgt (UInt256.ofNat 0) aprev) (MachineState.readWord s'.memory P.toNat) P
-    (UInt256.ofNat 4234) (UInt256.ofNat (2368 - 32)) (UInt256.ofNat e) negative32 allOnes
-    (l2Target n :: pdst :: ret :: w10 :: w11 :: w12 :: w13 ::
+    (UInt256.ofNat 4234) (UInt256.ofNat (2368 - 32)) (UInt256.ofNat e) pdst allOnes
+    (l2Target n :: ret :: w9 :: w10 :: w11 :: w12 :: w13 ::
       MachineState.readWord s'.memory P.toNat :: rest)
     (by simp only [List.length_cons]; omega) hactT hjumpE
   have gB := stepsOf blockB hB rfl hcode hfork hrun hnp

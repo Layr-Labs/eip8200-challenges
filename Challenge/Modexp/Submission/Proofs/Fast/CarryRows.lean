@@ -51,24 +51,20 @@ opaque gasSteps_rowFourToTail (L : RowLemmas) (s : State) (mem : ByteArray) (pa 
     (hAend : aEnd = UInt256.ofNat (pa+32*4-32))
     (hsnapshot : StagedOperand.Snapshot mem pa 4) :
     Challenge.EvmProof.GasSteps
-      (outState s mem pb 4 i (UInt256.ofNat 3520) (l1Target 4) inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (outState s mem pb 4 i (UInt256.ofNat 3520) (l1Target 4) m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest))
       (tailState s (rowL2Carry mem pa pb 4 i).memory
         (rowL2Carry mem pa pb 4 i).carry
         (rowMu (rowL1 mem pa pb 4 i).memory 4)
-        (rowOverflow mem pa pb 4 i) pb 4 i (UInt256.ofNat 3520) (l1Target 4) inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) := by
-  have hcap' : (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest).length ≤ 1005 := by
+        (rowOverflow mem pa pb 4 i) pb 4 i (UInt256.ofNat 3520) (l1Target 4) m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest)) := by
+  have hcap' : (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest).length ≤ 1006 := by
     simp only [List.length_cons]; omega
   have hminv4 := inverse_l1Step mem (rowBi mem pb 4 i) pa 4 4 (by decide) hminv
-  refine (L.gasSteps_out s mem pb 4 i (l1Target 4) inv m0
-    (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp
+  refine (L.gasSteps_out s mem pb 4 i (l1Target 4) m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp
     hact (by decide) (by decide) hi hpb hpbFit).trans ?_
   refine (L.gasSteps_commonFirst s mem (rowBi mem pb 4 i) pa pb 4 i
     (UInt256.ofNat 3520) (l1Target 4) tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode
     hfork hnp hact (by decide) (by decide) (by omega) hc.lowAddress hAend).trans ?_
-  refine (L.gasSteps_l1MulFour s mem (rowBi mem pb 4 i) pa pb i (UInt256.ofNat 3520) inv m0
-    (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact
+  refine (L.gasSteps_l1MulFour s mem (rowBi mem pb 4 i) pa pb i (UInt256.ofNat 3520) m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact
     hpaFit hsnapshot).trans ?_
   refine (L.gasSteps_mid s (l1Step mem (rowBi mem pb 4 i) pa 4 4).memory
     (l1Step mem (rowBi mem pb 4 i) pa 4 4).carry (rowBi mem pb 4 i)
@@ -104,24 +100,20 @@ opaque gasSteps_rowEightToTail (L : RowLemmas) (s : State) (mem : ByteArray) (pa
     (hAend : aEnd = UInt256.ofNat (pa+32*8-32))
     (hsnapshot : StagedOperand.Snapshot mem pa 8) :
     Challenge.EvmProof.GasSteps
-      (outState s mem pb 8 i (UInt256.ofNat 3520) (l1Target 8) inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (outState s mem pb 8 i (UInt256.ofNat 3520) (l1Target 8) m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest))
       (tailState s (rowL2Carry mem pa pb 8 i).memory
         (rowL2Carry mem pa pb 8 i).carry
         (rowMu (rowL1 mem pa pb 8 i).memory 8)
-        (rowOverflow mem pa pb 8 i) pb 8 i (UInt256.ofNat 3520) (l1Target 8) inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) := by
-  have hcap' : (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest).length ≤ 1005 := by
+        (rowOverflow mem pa pb 8 i) pb 8 i (UInt256.ofNat 3520) (l1Target 8) m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest)) := by
+  have hcap' : (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest).length ≤ 1006 := by
     simp only [List.length_cons]; omega
   have hminv8 := inverse_l1Step mem (rowBi mem pb 8 i) pa 8 8 (by decide) hminv
-  refine (L.gasSteps_out s mem pb 8 i (l1Target 8) inv m0
-    (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp
+  refine (L.gasSteps_out s mem pb 8 i (l1Target 8) m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp
     hact (by decide) (by decide) hi hpb hpbFit).trans ?_
   refine (L.gasSteps_commonFirst s mem (rowBi mem pb 8 i) pa pb 8 i
     (UInt256.ofNat 3520) (l1Target 8) tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode
     hfork hnp hact (by decide) (by decide) (by omega) hc.lowAddress hAend).trans ?_
-  refine (L.gasSteps_l1MulEight s mem (rowBi mem pb 8 i) pa pb i (UInt256.ofNat 3520) inv m0
-    (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact
+  refine (L.gasSteps_l1MulEight s mem (rowBi mem pb 8 i) pa pb i (UInt256.ofNat 3520) m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact
     hpaFit hsnapshot).trans ?_
   refine (L.gasSteps_mid s (l1Step mem (rowBi mem pb 8 i) pa 8 8).memory
     (l1Step mem (rowBi mem pb 8 i) pa 8 8).carry (rowBi mem pb 8 i)
@@ -157,18 +149,15 @@ opaque gasSteps_rowFourNext (L : RowLemmas) (s : State) (mem : ByteArray) (pa pb
     (hAend : aEnd = UInt256.ofNat (pa+32*4-32))
     (hsnapshot : StagedOperand.Snapshot mem pa 4) :
     Challenge.EvmProof.GasSteps
-      (outState s mem pb 4 i (UInt256.ofNat 3520) (l1Target 4) inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
-      (outState s (rowCarry mem pa pb 4 i) pb 4 (i + 1) (UInt256.ofNat 3520) (l1Target 4) inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) :=
+      (outState s mem pb 4 i (UInt256.ofNat 3520) (l1Target 4) m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest))
+      (outState s (rowCarry mem pa pb 4 i) pb 4 (i + 1) (UInt256.ofNat 3520) (l1Target 4) m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest)) :=
   (gasSteps_rowFourToTail L s mem pa pb i tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun
       hcode hfork hnp hact (by omega) hpaFit hpb hpbFit hminv hc he hAend hsnapshot).trans <|
     by simpa only [rowCarry, rowOverflow] using
       L.gasSteps_tailNext s (rowL2Carry mem pa pb 4 i).memory
         (rowL2Carry mem pa pb 4 i).carry
         (rowMu (rowL1 mem pa pb 4 i).memory 4) (rowOverflow mem pa pb 4 i)
-        pb 4 i (UInt256.ofNat 3520) (l1Target 4) inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)
+        pb 4 i (UInt256.ofNat 3520) (l1Target 4) m64 m32 m0 tl m96 (inv :: aEnd :: pdst :: ret :: rest)
         (by simp only [List.length_cons]; omega) hrun hcode hfork hnp hact hi hpb hpbFit
         jumpDest_rowHead
 
@@ -189,8 +178,7 @@ opaque gasSteps_rowFourLast (L : RowLemmas) (s : State) (mem : ByteArray) (pa pb
     (hAend : aEnd = UInt256.ofNat (pa+32*4-32))
     (hsnapshot : StagedOperand.Snapshot mem pa 4) :
     Challenge.EvmProof.GasSteps
-      (outState s mem pb 4 i (UInt256.ofNat 3520) (l1Target 4) inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (outState s mem pb 4 i (UInt256.ofNat 3520) (l1Target 4) m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest))
       (mpCsubState s (rowCarry mem pa pb 4 i) pdst ret rest) :=
   (gasSteps_rowFourToTail L s mem pa pb i tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun
       hcode hfork hnp hact (by omega) hpaFit hpb hpbFit hminv hc he hAend hsnapshot).trans <|
@@ -218,18 +206,15 @@ opaque gasSteps_rowEightNext (L : RowLemmas) (s : State) (mem : ByteArray) (pa p
     (hAend : aEnd = UInt256.ofNat (pa+32*8-32))
     (hsnapshot : StagedOperand.Snapshot mem pa 8) :
     Challenge.EvmProof.GasSteps
-      (outState s mem pb 8 i (UInt256.ofNat 3520) (l1Target 8) inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
-      (outState s (rowCarry mem pa pb 8 i) pb 8 (i + 1) (UInt256.ofNat 3520) (l1Target 8) inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) :=
+      (outState s mem pb 8 i (UInt256.ofNat 3520) (l1Target 8) m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest))
+      (outState s (rowCarry mem pa pb 8 i) pb 8 (i + 1) (UInt256.ofNat 3520) (l1Target 8) m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest)) :=
   (gasSteps_rowEightToTail L s mem pa pb i tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun
       hcode hfork hnp hact (by omega) hpaFit hpb hpbFit hminv hc he hAend hsnapshot).trans <|
     by simpa only [rowCarry, rowOverflow] using
       L.gasSteps_tailNext s (rowL2Carry mem pa pb 8 i).memory
         (rowL2Carry mem pa pb 8 i).carry
         (rowMu (rowL1 mem pa pb 8 i).memory 8) (rowOverflow mem pa pb 8 i)
-        pb 8 i (UInt256.ofNat 3520) (l1Target 8) inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)
+        pb 8 i (UInt256.ofNat 3520) (l1Target 8) m64 m32 m0 tl m96 (inv :: aEnd :: pdst :: ret :: rest)
         (by simp only [List.length_cons]; omega) hrun hcode hfork hnp hact hi hpb hpbFit
         jumpDest_rowHead
 
@@ -250,8 +235,7 @@ opaque gasSteps_rowEightLast (L : RowLemmas) (s : State) (mem : ByteArray) (pa p
     (hAend : aEnd = UInt256.ofNat (pa+32*8-32))
     (hsnapshot : StagedOperand.Snapshot mem pa 8) :
     Challenge.EvmProof.GasSteps
-      (outState s mem pb 8 i (UInt256.ofNat 3520) (l1Target 8) inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (outState s mem pb 8 i (UInt256.ofNat 3520) (l1Target 8) m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest))
       (mpCsubState s (rowCarry mem pa pb 8 i) pdst ret rest) :=
   (gasSteps_rowEightToTail L s mem pa pb i tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun
       hcode hfork hnp hact (by omega) hpaFit hpb hpbFit hminv hc he hAend hsnapshot).trans <|

@@ -25,28 +25,28 @@ def exitState (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat)
     (hd ent dst ret : UInt256) (rest : List UInt256) : State :=
   framed { s with memory := mem } (UInt256.ofNat 4109)
     ([pbi, hd, UInt256.ofNat (pb-32),
-      ent, negative32, allOnes, l2Target n, dst, ret] ++ rest)
+      ent, dst, allOnes, l2Target n, ret] ++ rest)
 
 /-- The `nx` side of the R0 dispatch (pc 4856): the 14 `POP`s that drop the row frame. -/
 def nxState (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat)
     (hd ent dst ret : UInt256) (rest : List UInt256) : State :=
   framed { s with memory := mem } (UInt256.ofNat 4118)
     ([pbi, hd, UInt256.ofNat (pb-32),
-      ent, negative32, allOnes, l2Target n, dst, ret] ++ rest)
+      ent, dst, allOnes, l2Target n, ret] ++ rest)
 
 /-- The `nx` `JUMPDEST` itself (pc 4855): the last square jumps here from `sq_exit`. -/
 def nxJdState (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat)
     (hd ent dst ret : UInt256) (rest : List UInt256) : State :=
   framed { s with memory := mem } (UInt256.ofNat 4118)
     ([pbi, hd, UInt256.ofNat (pb-32),
-      ent, negative32, allOnes, l2Target n, dst, ret] ++ rest)
+      ent, dst, allOnes, l2Target n, ret] ++ rest)
 
 /-- `sq_exit` (pc 4912): the in-kernel squaring loop keeps the row frame. -/
 def sqExitState (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat)
     (hd ent dst ret : UInt256) (rest : List UInt256) : State :=
   framed { s with memory := mem } (UInt256.ofNat 4174)
     ([pbi, hd, UInt256.ofNat (pb-32),
-      ent, negative32, allOnes, l2Target n, dst, ret] ++ rest)
+      ent, dst, allOnes, l2Target n, ret] ++ rest)
 
 def cleanupProgram : List Instr := tailLoopProgram.take 3
 def storeProgram : List Instr := (tailLoopProgram.drop 3).take 13
@@ -55,7 +55,7 @@ def testProgram : List Instr := tailLoopProgram.drop 16
 theorem program_eq : tailLoopProgram = (cleanupProgram ++ storeProgram) ++ testProgram := rfl
 
 def baseStack (pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : List UInt256 :=
-  [pbi, paEnd, pbEnd, flag, negative32, allOnes, dst, ret] ++ rest
+  [pbi, paEnd, pbEnd, flag, dst, allOnes, ret] ++ rest
 
 def input (s : State) (c mu bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=

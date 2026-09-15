@@ -25,7 +25,7 @@ def outState (s : State) (mem : ByteArray) (pb n i : Nat)
     (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := hd
            stack := [UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
+                     hd, UInt256.ofNat (pb - 32), ent, pdst, allOnes, l2Target n, ret] ++ rest
            memory := mem }
 
 /-- After the first loop, at the middle block's `JUMPDEST` (pc 4555): the carry and
@@ -34,7 +34,7 @@ def midState (s : State) (mem : ByteArray) (c bi : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3808
            stack := [c, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
+                     hd, UInt256.ofNat (pb - 32), ent, pdst, allOnes, l2Target n, ret] ++ rest
            memory := mem }
 
 /-- After the second loop: the carry and `b_i` above the row frame.  The last copy
@@ -44,7 +44,7 @@ def tailState (s : State) (mem : ByteArray) (c _mu bi : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 4085
            stack := [c, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
+                     hd, UInt256.ofNat (pb - 32), ent, pdst, allOnes, l2Target n, ret] ++ rest
            memory := mem }
 
 theorem negative32_not : UInt256.lnot (UInt256.ofNat 31) = negative32 := by decide

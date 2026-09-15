@@ -19,11 +19,9 @@ theorem run_middle (s : State) (mem : ByteArray) (c bi : UInt256)
     (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hc : ReadonlyCache mem n tl inv m0) (hminv : inverseInvariant mem n) :
     runInstructions CarryRowPrograms.middleBlock
-      (CiosCached.midState s mem c bi pb n i hd ent inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
+      (CiosCached.midState s mem c bi pb n i hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: dst :: ret :: rest)) =
     some (CiosCached.l2At 3835 s (midMem1 mem c) (overflow mem c)
-      (rowMu mem n) (rowC0 mem n) pb n i 0 hd ent inv m0
-      (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) := by
+      (rowMu mem n) (rowC0 mem n) pb n i 0 hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: dst :: ret :: rest)) := by
   have hmem := middle_agree mem mem (refl mem) c
   have hmu : rowMu (midMem1 mem c) n = rowMu mem n :=
     (CarryRowModel.rowMu_eq _ _ hmem n).trans (rowMu_mid mem c n hn)
@@ -41,18 +39,17 @@ theorem run_middle (s : State) (mem : ByteArray) (c bi : UInt256)
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hjd : runInstructions [.op .JUMPDEST]
-      (CiosCached.midState s mem c bi pb n i hd ent inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
+      (CiosCached.midState s mem c bi pb n i hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: dst :: ret :: rest)) =
       some (framed {s with memory := mem} (UInt256.ofNat 3809)
         ([c,bi,UInt256.ofNat (ptrAt (pb+32*n-32) i),hd,
-          UInt256.ofNat (pb-32),ent,negative32,allOnes,l2Target n,inv] ++
-          (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))) := by
+          UInt256.ofNat (pb-32),ent,m64, allOnes, l2Target n] ++
+          (m32 :: m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: dst :: ret :: rest))) := by
     simp [runInstructions, Challenge.EvmProof.Stepper.runInstr, CiosCached.midState, framed,
       hc18, hc17, Challenge.EvmProof.Word.succ_ofNat_mod]
   have hs := CarryRowTrace.run_middleStore {s with memory := mem} c bi
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) hd
-    (UInt256.ofNat (pb-32)) ent (l2Target n) inv
-    (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)
+    (UInt256.ofNat (pb-32)) ent m64 (l2Target n)
+    (m32 :: m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: dst :: ret :: rest)
     (by simp only [List.length_cons]; omega) hact
   have hp := run_cachedProduct_model {s with memory := midMem1 mem c}
     (overflow mem c) (UInt256.ofNat (ptrAt (pb+32*n-32) i)) hd

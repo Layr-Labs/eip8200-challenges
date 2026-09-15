@@ -35,7 +35,7 @@ private theorem off_eq (k n j : Nat) (hk : k ≤ 7) (hjk : j + 8 = k + n) :
 def gasSteps_l1Step (k : Nat) (hk1 : 1 ≤ k) (hk7 : k ≤ 7)
     (s : State) (q : MacState) (bi : UInt256)
     (pa pb n i j : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -83,7 +83,7 @@ theorem l1Run_succ_left (q : MacState) (bi : UInt256) (pa n j : Nat) :
 def gasSteps_l1Run : (m k : Nat) → 1 ≤ k → k + m = 8 →
     (s : State) → (q : MacState) → (bi : UInt256) →
     (pa pb n i j : Nat) → (hd ent pdst ret : UInt256) → (rest : List UInt256) →
-    rest.length ≤ 1005 → s.halt = .Running →
+    rest.length ≤ 1006 → s.halt = .Running →
     s.executionEnv.code = Challenge.Modexp.submissionBytecode →
     s.fork = .Osaka →
     Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -115,7 +115,7 @@ running `8 - k` limb steps on any MAC state `q` with the staged snapshot of `a`
 def gasSteps_l1Suffix (k : Nat) (hk1 : 1 ≤ k) (hk8 : k ≤ 8)
     (s : State) (q : MacState) (bi : UInt256)
     (pa pb n i j : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -134,7 +134,7 @@ def gasSteps_l1Suffix (k : Nat) (hk1 : 1 ≤ k) (hk8 : k ≤ 8)
 def gasSteps_l1SuffixMul (k : Nat) (hk1 : 1 ≤ k) (hk8 : k ≤ 8)
     (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb n i j : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig

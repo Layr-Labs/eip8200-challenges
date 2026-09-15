@@ -25,8 +25,7 @@ def clearBlock : Block Artifact.submissionArtifact .Osaka 3510 clearProgram :=
 
 def rowReady (s : State) (mem : ByteArray) (n : Nat)
     (tl inv m0 m96 m64 m32 : UInt256) (rest : List UInt256) : State :=
-  outState s mem 256 n 0 (UInt256.ofNat 3520) (l1Target n) inv m0
-    (tl :: m96 :: m64 :: m32 :: UInt256.ofNat (2368+32*n-32) ::
+  outState s mem 256 n 0 (UInt256.ofNat 3520) (l1Target n) m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: UInt256.ofNat (2368+32*n-32) ::
       UInt256.ofNat 256 :: UInt256.ofNat 1036 :: rest)
 
 def prefixState (s : State) (mem : ByteArray) (n : Nat)
@@ -43,8 +42,8 @@ theorem run_prefix (s : State) (mem : ByteArray) (n : Nat)
   rcases hn with rfl | rfl <;> subst tl <;>
     exact FusionFrame.run_prefix (s := {s with memory := mem}) (p := pbi)
       (oldHead := UInt256.ofNat 4234) (oldEnd := UInt256.ofNat (2368-32))
-      (ent := ent) (neg := negative32) (mask := allOnes) (ent2 := l2Target _)
-      (inv := inv) (m0 := m0) (tl := _) (m96 := m96) (m64 := m64) (m32 := m32)
+      (ent := ent) (neg := m64) (mask := allOnes) (ent2 := l2Target _)
+      (inv := m32) (m0 := m0) (tl := _) (m96 := m96) (m64 := negative32) (m32 := inv)
       (aprev := aprev) (dst := pdst) (ret := ret) (head := UInt256.ofNat 3520)
       (finish := UInt256.ofNat 1036) (rest := rest) (by omega)
 

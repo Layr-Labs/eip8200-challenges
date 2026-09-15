@@ -16,12 +16,12 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro CiosCached CiosCachedMacCore CarryRowModel
 
 theorem run_middleStore (s : State) (c bi pbi pa pb flag dst ret : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 88 ≤ s.activeWords.toNat) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1010) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions CarryRowPrograms.middleStore
       (framed s (UInt256.ofNat 3809)
-        ([c,bi,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) =
+        ([c,bi,pbi,pa,pb,flag,dst, allOnes, ret] ++ rest)) =
     some (framed {s with memory := midMem1 s.memory c} (UInt256.ofNat 3823)
-      ([overflow s.memory c,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) := by
+      ([overflow s.memory c,pbi,pa,pb,flag,dst, allOnes, ret] ++ rest)) := by
   have hc8 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hc9 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hc10 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
@@ -37,12 +37,12 @@ theorem run_middleStore (s : State) (c bi pbi pa pb flag dst ret : UInt256)
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem run_tailStore (s : State) (c f pbi pa pb flag dst ret : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 88 ≤ s.activeWords.toNat) :
+    (rest : List UInt256) (hcap : rest.length ≤ 1010) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions CarryRowPrograms.tailStore
       (framed s (UInt256.ofNat 4085)
-        ([c,f,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) =
+        ([c,f,pbi,pa,pb,flag,dst, allOnes, ret] ++ rest)) =
     some (framed {s with memory := tailCarry s.memory c f} (UInt256.ofNat 4102)
-      ([pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) := by
+      ([pbi,pa,pb,flag,dst, allOnes, ret] ++ rest)) := by
   have hc8 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hc9 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega
   have hc10 : rest.length + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 < 1024 := by omega

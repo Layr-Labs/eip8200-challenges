@@ -206,13 +206,11 @@ def gasSteps_nxExit (s : State) (mem : ByteArray) (n : Nat)
     Challenge.EvmProof.GasSteps
       (frameAt pcNx s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
       (mpCsubState s mem pdst ret rest) :=
-  (CarryRowGas.gasSteps_nxJd s mem pbi 2368 n (UInt256.ofNat 4234) ent inv m0
-    (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest)
+  (CarryRowGas.gasSteps_nxJd s mem pbi 2368 n (UInt256.ofNat 4234) ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aprev :: pdst :: ret :: rest)
     (by simp only [List.length_cons]; omega) hrun hcode hfork hnp).trans
   (CarryRowBlocks.exitBlock.steps
     (CarryRowBlocks.environment (CiosCachedTailDefs.nxState s mem pbi 2368 n
-      (UInt256.ofNat 4234) ent inv m0
-      (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest)) hcode hfork hrun hnp) rfl
+      (UInt256.ofNat 4234) ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aprev :: pdst :: ret :: rest)) hcode hfork hrun hnp) rfl
     (CiosReadonly.run_exit { s with memory := mem } pbi (UInt256.ofNat 4234)
       (UInt256.ofNat (2368 - 32)) ent (l2Target n) tl inv m0 aprev m96 m64 m32 pdst ret rest
       hcap))

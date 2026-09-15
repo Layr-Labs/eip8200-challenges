@@ -37,7 +37,7 @@ open Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMidMemory
 /-- Multiply row head (`hd = 4261`): `JUMPDEST; DUP1; MLOAD` loads `b_i`. -/
 opaque gasSteps_out (s : State) (mem : ByteArray) (pb n i : Nat)
     (ent pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -66,8 +66,8 @@ opaque gasSteps_commonFirst (s : State) (mem : ByteArray) (bi : UInt256)
     (htl : tl = UInt256.ofNat (2080+32*n))
     (hAend : aEnd = UInt256.ofNat (pa+32*n-32)) :
     Challenge.EvmProof.GasSteps
-      (firstAt 3523 s mem bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
-      (l1At 3547 s mem bi pa pb n i 1 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) :=
+      (firstAt 3523 s mem bi pb n i hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest))
+      (l1At 3547 s mem bi pa pb n i 1 hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest)) :=
   l1Mac0.steps (environment _ hcode hfork hrun hnp) rfl
     (CiosCommonFirst.run_commonFirst s mem bi pa pb n i hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest
       hcap hact hn hpos hpaFit htl hAend)
@@ -76,7 +76,7 @@ opaque gasSteps_commonFirst (s : State) (mem : ByteArray) (bi : UInt256)
 
 opaque gasSteps_l1Dispatch4 (s : State) (q : MacState) (bi : UInt256)
     (pb i : Nat) (hd pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -90,7 +90,7 @@ opaque gasSteps_l1Dispatch4 (s : State) (q : MacState) (bi : UInt256)
 
 opaque gasSteps_l1Dispatch8 (s : State) (q : MacState) (bi : UInt256)
     (pb i : Nat) (hd pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -105,7 +105,7 @@ opaque gasSteps_l1Dispatch8 (s : State) (q : MacState) (bi : UInt256)
 /-- Four-limb multiply row: dispatch to block `k = 5` (pc 4444) and run steps `1..3`. -/
 opaque gasSteps_l1MulFour (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb i : Nat) (hd pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -123,7 +123,7 @@ opaque gasSteps_l1MulFour (s : State) (mem : ByteArray) (bi : UInt256)
 /-- Eight-limb multiply row: dispatch to block `k = 1` (pc 4296) and run steps `1..7`. -/
 opaque gasSteps_l1MulEight (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb i : Nat) (hd pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -151,9 +151,9 @@ opaque gasSteps_mid (s : State) (mem : ByteArray) (c bi : UInt256)
     (hminv : inverseInvariant mem n)
     (hc : CiosReadonly.ReadonlyCache mem n tl inv m0) :
     Challenge.EvmProof.GasSteps
-      (midState s mem c bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (midState s mem c bi pb n i hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest))
       (l2At 3835 s (midMem1 mem c) (overflow mem c) (rowMu mem n)
-        (rowC0 mem n) pb n i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) :=
+        (rowC0 mem n) pb n i 0 hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest)) :=
   CarryRowBlocks.mid.steps (environment _ hcode hfork hrun hnp) rfl
     (CarryReadonlyRun.run_middle s mem c bi pb n i hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hact
       hn hn32 hc hminv)
@@ -164,7 +164,7 @@ opaque gasSteps_l2Mac (pc : Nat) (w : Fin 33) (x tl ts : UInt256)
     (block : Block Artifact.submissionArtifact .Osaka pc (l2Program w x tl ts))
     (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
     (pb n i k : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -196,10 +196,8 @@ opaque gasSteps_extraL2 (slot : Fin 3) (pc : Nat) (x loadAddr storeAddr : UInt25
     (hstore : storeAddr.toNat = 2112+32*(n-1-k))
     (hc : CiosReadonlyExtra.ExtraCache mem m96 m64 m32) :
     Challenge.EvmProof.GasSteps
-      (l2At pc s mem bi mu c0 pb n i k hd ent inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
-      (l2At (pc+33) s mem bi mu c0 pb n i (k+1) hd ent inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) := by
+      (l2At pc s mem bi mu c0 pb n i k hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest))
+      (l2At (pc+CiosReadonlyExtra.extraStride slot) s mem bi mu c0 pb n i (k+1) hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest)) := by
   have h := CiosReadonlyExtra.run_extraStep slot s (UInt256.ofNat pc) mem
     bi mu c0 n k x loadAddr storeAddr hx hselect hload hstore
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) hd
@@ -210,7 +208,7 @@ opaque gasSteps_extraL2 (slot : Fin 3) (pc : Nat) (x loadAddr storeAddr : UInt25
 
 opaque gasSteps_l2Dispatch4 (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
     (pb i k : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -224,7 +222,7 @@ opaque gasSteps_l2Dispatch4 (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
 
 opaque gasSteps_l2Dispatch8 (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
     (pb i k : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -240,7 +238,7 @@ opaque gasSteps_l2Dispatch8 (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
 
 opaque gasSteps_l2Join (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
     (pb n i k : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -254,7 +252,7 @@ opaque gasSteps_l2Join (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
 /-- The final second-loop copy lands exactly on the row tail frame. -/
 opaque gasSteps_l2Final (s : State) (mem : ByteArray) (bi mu c0 : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -280,16 +278,16 @@ opaque gasSteps_l2Four (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (hact : 88 ≤ s.activeWords.toNat)
     (hc : CiosReadonlyExtra.ExtraCache mid m96 m64 m32) :
     Challenge.EvmProof.GasSteps
-      (l2At 3835 s mid bi mu c0 pb 4 i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (l2At 3835 s mid bi mu c0 pb 4 i 0 hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest))
       (tailState s (l2Step mid mu c0 4 3).memory
-        (l2Step mid mu c0 4 3).carry mu bi pb 4 i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) := by
-  have hcap' : (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest).length ≤ 1005 := by
+        (l2Step mid mu c0 4 3).carry mu bi pb 4 i hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest)) := by
+  have hcap' : (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest).length ≤ 1006 := by
     simp only [List.length_cons]; omega
-  exact (gasSteps_l2Dispatch4 s mid bi mu c0 pb i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp).trans <|
-  (gasSteps_l2Join s mid bi mu c0 pb 4 i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp).trans <|
+  exact (gasSteps_l2Dispatch4 s mid bi mu c0 pb i 0 hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp).trans <|
+  (gasSteps_l2Join s mid bi mu c0 pb 4 i 0 hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp).trans <|
   (gasSteps_extraL2 1 3986 64 2176 2208 l2Mac4 s mid bi mu c0 pb 4 i 0 hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
-  (gasSteps_extraL2 2 4019 32 2144 2176 l2Mac5 s mid bi mu c0 pb 4 i 1 hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
-  gasSteps_l2Final s mid bi mu c0 pb 4 i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide)
+  (gasSteps_extraL2 2 4020 32 2144 2176 l2Mac5 s mid bi mu c0 pb 4 i 1 hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
+  gasSteps_l2Final s mid bi mu c0 pb 4 i hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide)
 
 /-- The whole eight-limb second loop (dispatch to 4449, seven cells). -/
 opaque gasSteps_l2Eight (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
@@ -302,27 +300,27 @@ opaque gasSteps_l2Eight (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (hact : 88 ≤ s.activeWords.toNat)
     (hc : CiosReadonlyExtra.ExtraCache mid m96 m64 m32) :
     Challenge.EvmProof.GasSteps
-      (l2At 3835 s mid bi mu c0 pb 8 i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (l2At 3835 s mid bi mu c0 pb 8 i 0 hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest))
       (tailState s (l2Step mid mu c0 8 7).memory
-        (l2Step mid mu c0 8 7).carry mu bi pb 8 i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) := by
-  have hcap' : (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest).length ≤ 1005 := by
+        (l2Step mid mu c0 8 7).carry mu bi pb 8 i hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest)) := by
+  have hcap' : (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest).length ≤ 1006 := by
     simp only [List.length_cons]; omega
-  exact (gasSteps_l2Dispatch8 s mid bi mu c0 pb i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp).trans <|
-  (gasSteps_l2Mac 3838 10 192 2304 2336 l2Mac0 s mid bi mu c0 pb 8 i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
-  (gasSteps_l2Mac 3882 1 160 2272 2304 l2Mac1 s mid bi mu c0 pb 8 i 1 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
-  (gasSteps_l2Mac 3917 1 128 2240 2272 l2Mac2 s mid bi mu c0 pb 8 i 2 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  exact (gasSteps_l2Dispatch8 s mid bi mu c0 pb i 0 hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp).trans <|
+  (gasSteps_l2Mac 3838 10 192 2304 2336 l2Mac0 s mid bi mu c0 pb 8 i 0 hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Mac 3882 1 160 2272 2304 l2Mac1 s mid bi mu c0 pb 8 i 1 hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
+  (gasSteps_l2Mac 3917 1 128 2240 2272 l2Mac2 s mid bi mu c0 pb 8 i 2 hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans <|
   (gasSteps_extraL2 0 3952 96 2208 2240 l2Mac3 s mid bi mu c0 pb 8 i 3 hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
-  (gasSteps_l2Join s mid bi mu c0 pb 8 i 4 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp).trans <|
+  (gasSteps_l2Join s mid bi mu c0 pb 8 i 4 hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp).trans <|
   (gasSteps_extraL2 1 3986 64 2176 2208 l2Mac4 s mid bi mu c0 pb 8 i 4 hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
-  (gasSteps_extraL2 2 4019 32 2144 2176 l2Mac5 s mid bi mu c0 pb 8 i 5 hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
-  gasSteps_l2Final s mid bi mu c0 pb 8 i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide)
+  (gasSteps_extraL2 2 4020 32 2144 2176 l2Mac5 s mid bi mu c0 pb 8 i 5 hd ent tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) hc).trans <|
+  gasSteps_l2Final s mid bi mu c0 pb 8 i hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact (by decide) (by decide)
 
 /-! ## Row end (pc 2336): `DUP3 JUMPI` back to the row head `hd`, or the exit to CSUB -/
 
 /-- Not the last row: store the top words and jump back to the frame's row head `hd`. -/
 opaque gasSteps_tailNext (s : State) (mem : ByteArray) (c mu bi : UInt256)
-    (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hrun : s.halt = .Running)
+    (pb n i : Nat) (hd ent pdst ret w8 w9 w10 : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1002) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -331,10 +329,11 @@ opaque gasSteps_tailNext (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2816)
     (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode hd.toNat = true) :
     Challenge.EvmProof.GasSteps
-      (tailState s mem c mu bi pb n i hd ent pdst ret rest)
-      (outState s (tailCarry mem c bi) pb n (i + 1) hd ent pdst ret rest) :=
-  tailLoop.steps (environment (tailState s mem c mu bi pb n i hd ent pdst ret rest) hcode hfork hrun hnp) rfl
-    (CarryTailRows.run_next s mem c mu bi pb n i hd ent pdst ret rest
+      (tailState s mem c mu bi pb n i hd ent pdst ret (w8 :: w9 :: w10 :: negative32 :: rest))
+      (outState s (tailCarry mem c bi) pb n (i + 1) hd ent pdst ret (w8 :: w9 :: w10 :: negative32 :: rest)) :=
+  tailLoop.steps (environment (tailState s mem c mu bi pb n i hd ent pdst ret
+      (w8 :: w9 :: w10 :: negative32 :: rest)) hcode hfork hrun hnp) rfl
+    (CarryTailRows.run_next s mem c mu bi pb n i hd ent pdst ret w8 w9 w10 rest
       hcap hact hpb hpbFit hi (by rw [hcode]; exact hhd))
 
 /-! ## R0: the kernel-exit dispatch (pc 4846)
@@ -357,7 +356,7 @@ private theorem toNat_ne_of_ne {a b : UInt256} (h : a ≠ b) : a.toNat ≠ b.toN
 
 theorem jumpDest4726 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4174 = true :=
-  Artifact.isValidJumpDest_index 3161 (by rfl)
+  Artifact.isValidJumpDest_index 3159 (by rfl)
 
 
 /-! ## R0: the kernel-exit dispatch (pc 4846)
@@ -372,13 +371,13 @@ def dispatchProgram : List Instr :=
 /-- The dispatch block: the `JUMPI` ends it, taken for a square and not taken for a
 multiply (which then continues at the `nx` `JUMPDEST` 4855). -/
 def dispatchBlock : Block Artifact.submissionArtifact .Osaka 4109 dispatchProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3115 5 4109 dispatchProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3113 5 4109 dispatchProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The `nx` `JUMPDEST` (reached by the dispatch's fall-through and by `sq_exit`'s last
 square). -/
 def nxJd : Block Artifact.submissionArtifact .Osaka 4118 [] :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3120 0 4118 []
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3118 0 4118 []
     (by decide) (by rfl) (by rfl) (by decide)
 
 set_option linter.unusedSimpArgs false in
@@ -389,6 +388,7 @@ theorem run_dispatchMul (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Na
     runInstructions dispatchProgram
       (CiosCachedTailDefs.exitState s mem pbi pb n hd ent dst ret rest) =
     some (CiosCachedTailDefs.nxJdState s mem pbi pb n hd ent dst ret rest) := by
+  have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
@@ -398,7 +398,7 @@ theorem run_dispatchMul (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Na
     decide
   simp [dispatchProgram, runInstructions,
     Challenge.EvmProof.Stepper.runInstr, CiosCachedTailDefs.exitState,
-    CiosCachedTailDefs.nxJdState, CiosCachedMacCore.framed, hc9, hc10, hc11, hcond,
+    CiosCachedTailDefs.nxJdState, CiosCachedMacCore.framed, hc8, hc9, hc10, hc11, hcond,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
@@ -410,6 +410,7 @@ theorem run_dispatchSq (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat
     runInstructions dispatchProgram
       (CiosCachedTailDefs.exitState s mem pbi pb n (UInt256.ofNat 4234) ent dst ret rest) =
     some (CiosCachedTailDefs.sqExitState s mem pbi pb n (UInt256.ofNat 4234) ent dst ret rest) := by
+  have hc8 : rest.length + 8 < 1024 := by omega
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
@@ -418,7 +419,7 @@ theorem run_dispatchSq (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat
     rw [hcode]; exact jumpDest4726
   simp [dispatchProgram, runInstructions,
     Challenge.EvmProof.Stepper.runInstr, CiosCachedTailDefs.exitState,
-    CiosCachedTailDefs.sqExitState, CiosCachedMacCore.framed, hc9, hc10, hc11, hcond, hjd,
+    CiosCachedTailDefs.sqExitState, CiosCachedMacCore.framed, hc8, hc9, hc10, hc11, hcond, hjd,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
@@ -494,19 +495,14 @@ def gasSteps_tailLastSq (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
       (UInt256.ofNat 4234).toNat = true) :
     Challenge.EvmProof.GasSteps
-      (tailState s mem c mu bi pb n i (UInt256.ofNat 4234) ent inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (tailState s mem c mu bi pb n i (UInt256.ofNat 4234) ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest))
       (CiosCachedTailDefs.sqExitState s (tailCarry mem c bi)
-        (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) pb n (UInt256.ofNat 4234) ent inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) :=
-  (tailLoop.steps (environment (tailState s mem c mu bi pb n i (UInt256.ofNat 4234) ent inv m0
-      (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) hcode hfork hrun hnp) rfl
-    (CarryTailRows.run_last s mem c mu bi pb n i (UInt256.ofNat 4234) ent inv m0
-      (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)
+        (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) pb n (UInt256.ofNat 4234) ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest)) :=
+  (tailLoop.steps (environment (tailState s mem c mu bi pb n i (UInt256.ofNat 4234) ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest)) hcode hfork hrun hnp) rfl
+    (CarryTailRows.run_last s mem c mu bi pb n i (UInt256.ofNat 4234) ent m64 m32 m0 tl m96 (inv :: aEnd :: pdst :: ret :: rest)
       (by simp only [List.length_cons]; omega) hact hpb hpbFit hi (by rw [hcode]; exact hhd))).trans
   (gasSteps_dispatchSq { s with memory := tailCarry mem c bi } (tailCarry mem c bi)
-    (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) pb n ent inv m0
-    (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)
+    (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) pb n ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest)
     (by simp only [List.length_cons]; omega) hrun hcode hfork hnp)
 
 /-- The last row: fall through the `JUMPI`, run the dispatch (`hd ≠ sq_row`, so it falls
@@ -523,21 +519,19 @@ opaque gasSteps_tailLast (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode hd.toNat = true)
     (hne : hd ≠ UInt256.ofNat 4234) :
     Challenge.EvmProof.GasSteps
-      (tailState s mem c mu bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (tailState s mem c mu bi pb n i hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest))
       (mpCsubState s (tailCarry mem c bi) pdst ret rest) :=
-  ((tailLoop.steps (environment (tailState s mem c mu bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) hcode hfork hrun hnp) rfl
-    (CarryTailRows.run_last s mem c mu bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)
+  ((tailLoop.steps (environment (tailState s mem c mu bi pb n i hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest)) hcode hfork hrun hnp) rfl
+    (CarryTailRows.run_last s mem c mu bi pb n i hd ent m64 m32 m0 tl m96 (inv :: aEnd :: pdst :: ret :: rest)
       (by simp only [List.length_cons]; omega) hact hpb hpbFit hi (by rw [hcode]; exact hhd))).trans
   ((gasSteps_dispatchMul { s with memory := tailCarry mem c bi } (tailCarry mem c bi)
-      (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) pb n hd ent inv m0
-      (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)
+      (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) pb n hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest)
       (by simp only [List.length_cons]; omega) hrun hcode hfork hnp hne).trans
     (gasSteps_nxJd { s with memory := tailCarry mem c bi } (tailCarry mem c bi)
-      (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) pb n hd ent inv m0
-      (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)
+      (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) pb n hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest)
       (by simp only [List.length_cons]; omega) hrun hcode hfork hnp))).trans
   (exitBlock.steps (environment (CiosCachedTailDefs.nxState s (tailCarry mem c bi)
-      (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) pb n hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest)) hcode hfork hrun hnp) rfl
+      (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) pb n hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: pdst :: ret :: rest)) hcode hfork hrun hnp) rfl
     (CiosReadonly.run_exit { s with memory := tailCarry mem c bi }
       (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) hd
       (UInt256.ofNat (pb-32)) ent (l2Target n) tl inv m0 aEnd m96 m64 m32 pdst ret rest

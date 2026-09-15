@@ -14,7 +14,7 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 
 def tail (pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) : List UInt256 :=
-  [pbi,pa,pb,flag,negative32,allOnes,target2,inv,m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest
+  [pbi,pa,pb,flag,m64,allOnes,target2,m32,m0,tl,m96,negative32,inv,aEnd,dst,ret] ++ rest
 
 theorem run_load (s : State) (pc bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)
@@ -121,8 +121,8 @@ theorem run_commonFirst (s : State) (mem : ByteArray) (bi : UInt256)
     (htl : tl = UInt256.ofNat (2080+32*n))
     (hAend : aEnd = UInt256.ofNat (pa+32*n-32)) :
     runInstructions commonFirstProgram
-      (firstAt 3523 s mem bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
-    some (l1At 3547 s mem bi pa pb n i 1 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) := by
+      (firstAt 3523 s mem bi pb n i hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: dst :: ret :: rest)) =
+    some (l1At 3547 s mem bi pa pb n i 1 hd ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: dst :: ret :: rest)) := by
   have ha : aEnd.toNat = pa+32*(n-1) := by
     rw [hAend,Challenge.EvmProof.Word.word_toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
     omega

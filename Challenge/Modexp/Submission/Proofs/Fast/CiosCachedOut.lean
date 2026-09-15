@@ -17,7 +17,7 @@ set_option linter.unusedVariables false in
 set_option linter.unusedSimpArgs false in
 theorem run_out (s : State) (mem : ByteArray) (pb n i : Nat)
     (ent pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1005) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1006) (hrun : s.halt = .Running)
     (hact : 88 ≤ s.activeWords.toNat)
     (_hn : 2 ≤ n) (_hn32 : n ≤ 8) (hi : i < n)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2816) :

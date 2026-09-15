@@ -39,9 +39,9 @@ def l2Target (n : Nat) : UInt256 :=
 /-! ## Row frames
 
 The kernel keeps, below the per-step words, the row frame
-`[pbi, hd, pb - 32, ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest`
+`[pbi, hd, pb - 32, ent, pdst, allOnes, l2Target n, ret] ++ rest`
 (`pdst, ret, rest` are generic; the multiply instantiates them with
-`inv, m0, tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest`).
+`m64, m32, m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: dst :: ret :: rest`).
 `hd` is the row head the tail returns to (`JUMPI` via `DUP3`; 4261 for the multiply,
 the `sq_row` pc 2464 for the square) and `ent` is the first-loop entry
 (`l1Target n` for the multiply; the square rows advance it by 38 per row). -/
@@ -52,7 +52,7 @@ def l1Q (pc : Nat) (s : State) (q : MacState) (bi : UInt256)
   { s with pc := UInt256.ofNat pc
            stack := [q.carry, bi,
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
+                     hd, UInt256.ofNat (pb - 32), ent, pdst, allOnes, l2Target n, ret] ++ rest
            memory := q.memory }
 
 /-- Before first-loop step `j` of a multiply row: `q = l1Step mem bi pa n j`. -/
@@ -66,7 +66,7 @@ def firstAt (pc : Nat) (s : State) (mem : ByteArray) (bi : UInt256)
   { s with pc := UInt256.ofNat pc
            stack := [bi, UInt256.ofNat (ptrAt (pb+32*n-32) i),
              hd, UInt256.ofNat (pb-32), ent,
-             negative32, allOnes, l2Target n, pdst, ret] ++ rest
+             pdst, allOnes, l2Target n, ret] ++ rest
            memory := mem }
 
 /-- Before second-loop step `k` of row `i`: only the carry and `mu` above
@@ -76,7 +76,7 @@ def l2At (pc : Nat) (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
   { s with pc := UInt256.ofNat pc
            stack := [(l2Step mid mu c0 n k).carry, mu, bi,
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
+                     hd, UInt256.ofNat (pb - 32), ent, pdst, allOnes, l2Target n, ret] ++ rest
            memory := (l2Step mid mu c0 n k).memory }
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCached

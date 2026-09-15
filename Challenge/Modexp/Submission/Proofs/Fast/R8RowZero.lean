@@ -24,11 +24,11 @@ open Monpro CiosCached SquareModel CarryRowModel CarryScratchAgreement
 def program : List Instr := R8ZeroFirstRow.program (UInt256.ofNat 3586)
 
 def block : Block Artifact.submissionArtifact .Osaka 5091 program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3895 213 5091 program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3893 213 5091 program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
 
 theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5091 = true :=
-  Artifact.isValidJumpDest_index 3895 (by rfl)
+  Artifact.isValidJumpDest_index 3893 (by rfl)
 
 /-- The second-loop entry the row jumps to (`l2Target 8`). -/
 theorem jumpDestL2 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3837 = true :=
@@ -42,8 +42,7 @@ theorem allOnes_eq_maxWord : allOnes = maxWord := rfl
 `initial` frame. -/
 theorem entry_eq (s : State) (mem : ByteArray) (pc hd : UInt256) (e : Nat)
     (inv m0 m96 m64 m32 aprev : UInt256) (rest : List UInt256) :
-    ({ outState s mem 2368 8 0 hd (UInt256.ofNat e) inv m0
-        (UInt256.ofNat 2336 :: m96 :: m64 :: m32 :: aprev :: rest) with pc := pc } : State) =
+    ({ outState s mem 2368 8 0 hd (UInt256.ofNat e) m64 m32 (m0 :: UInt256.ofNat 2336 :: m96 :: negative32 :: inv :: aprev :: rest) with pc := pc } : State) =
       R8ZeroFirstRow.initial { s with memory := mem } pc hd (UInt256.ofNat e) negative32
         (l2Target 8) inv m0 m96 m64 m32 aprev rest := by
   simp only [outState, R8ZeroFirstRow.initial, ptrAt_zero, allOnes_eq_maxWord]
@@ -56,8 +55,7 @@ theorem run_rowZero (s : State) (mem : ByteArray) (pc hd : UInt256) (e : Nat)
     (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest s.executionEnv.code 3837 = true) :
     runInstructions program
-      { outState s mem 2368 8 0 hd (UInt256.ofNat e) inv m0
-        (UInt256.ofNat 2336 :: m96 :: m64 :: m32 :: aprev :: rest) with pc := pc } =
+      { outState s mem 2368 8 0 hd (UInt256.ofNat e) m64 m32 (m0 :: UInt256.ofNat 2336 :: m96 :: negative32 :: inv :: aprev :: rest) with pc := pc } =
     some (R8ZeroFirstRow.result { s with memory := mem } hd (UInt256.ofNat 3586) negative32
       (l2Target 8) inv m0 m96 m64 m32 rest) := by
   have hj : Decode.isValidJumpDest ({ s with memory := mem } : State).executionEnv.code
@@ -76,8 +74,7 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (e : Nat)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      { outState s mem 2368 8 0 (UInt256.ofNat 4234) (UInt256.ofNat e) inv m0
-        (UInt256.ofNat 2336 :: m96 :: m64 :: m32 :: aprev :: rest) with pc := UInt256.ofNat 5091 }
+      { outState s mem 2368 8 0 (UInt256.ofNat 4234) (UInt256.ofNat e) m64 m32 (m0 :: UInt256.ofNat 2336 :: m96 :: negative32 :: inv :: aprev :: rest) with pc := UInt256.ofNat 5091 }
       (R8ZeroFirstRow.result { s with memory := mem } (UInt256.ofNat 4234) (UInt256.ofNat 3586)
         negative32 (l2Target 8) inv m0 m96 m64 m32 rest) :=
   SquareRow.stepsOf block

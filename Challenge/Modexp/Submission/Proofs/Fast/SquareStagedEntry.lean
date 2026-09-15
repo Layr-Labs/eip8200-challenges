@@ -19,12 +19,12 @@ def program : List Instr :=
    .push 2 1856, .op .ADD]
 
 def block : Block Artifact.submissionArtifact .Osaka 4568 program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3436 9 4568 program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3434 9 4568 program
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 4568).toNat = true :=
-  Artifact.isValidJumpDest_index 3436 (by rfl)
+  Artifact.isValidJumpDest_index 3434 (by rfl)
 
 theorem run_entry (s : State) (mem : ByteArray) (n : Nat)
     (ent inv m0 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1012)
@@ -33,15 +33,15 @@ theorem run_entry (s : State) (mem : ByteArray) (n : Nat)
       (outState s mem 512 n 0 (UInt256.ofNat 4568) ent inv m0 rest) =
     some { outState s mem 2368 n 0 (UInt256.ofNat 4234) ent inv m0 rest with
       pc := UInt256.ofNat 4583 } := by
+  have h8 : rest.length + 8 < 1024 := by omega
   have h9 : rest.length + 9 < 1024 := by omega
-  have h10 : rest.length + 10 < 1024 := by omega
   have hp : UInt256.ofNat 1856 + UInt256.ofNat (512 + 32 * n - 32) =
       UInt256.ofNat (2368 + 32 * n - 32) := by
     rw [Challenge.EvmProof.Word.ofNat_add_mod]
     congr 1
     omega
   simp [program, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    outState, ptrAt_zero, hp, h9, h10, List.exchange,
+    outState, ptrAt_zero, hp, h8, h9, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 

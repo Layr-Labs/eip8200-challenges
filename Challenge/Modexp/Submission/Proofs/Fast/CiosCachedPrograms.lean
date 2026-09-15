@@ -206,7 +206,7 @@ def tailProgram : List Instr :=
    .op .ADD,
    .push 2 2080,
    .op .MSTORE,
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup ⟨11, by decide⟩),
    .op .ADD,
    .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),

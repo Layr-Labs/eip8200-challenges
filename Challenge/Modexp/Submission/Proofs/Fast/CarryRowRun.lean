@@ -13,18 +13,21 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro CiosCached CiosCachedMacCore CarryRowModel CarryScratchAgreement
 open CiosCachedMidMemory
 
-theorem run_tail (s : State) (c f pbi pa pb flag dst ret : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 88 ≤ s.activeWords.toNat)
+theorem run_tail (s : State) (c f pbi pa pb flag dst ret w7 w8 w9 w10 : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1005) (hact : 88 ≤ s.activeWords.toNat)
     (htarget : Decode.isValidJumpDest s.executionEnv.code pa.toNat = true) :
     runInstructions CarryRowPrograms.tail
       (framed s (UInt256.ofNat 4085)
-        ([c,f,pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) =
+        ([c,f,pbi,pa,pb,flag,dst, allOnes, ret] ++ (w7 :: w8 :: w9 :: w10 :: negative32 :: rest))) =
     some (framed {s with memory := tailCarry s.memory c f}
       (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb) then pa else UInt256.ofNat 4109)
-      ([negative32+pbi,pa,pb,flag,negative32,allOnes,dst,ret] ++ rest)) := by
-  have h1 := CarryRowTrace.run_tailStore s c f pbi pa pb flag dst ret rest hcap hact
+      ([negative32+pbi,pa,pb,flag,dst, allOnes, ret] ++ (w7 :: w8 :: w9 :: w10 :: negative32 :: rest))) := by
+  have hcap' : (w7 :: w8 :: w9 :: w10 :: negative32 :: rest).length ≤ 1010 := by
+    simp only [List.length_cons]; omega
+  have h1 := CarryRowTrace.run_tailStore s c f pbi pa pb flag dst ret
+    (w7 :: w8 :: w9 :: w10 :: negative32 :: rest) hcap' hact
   have h2 := CiosCachedTailTest.run_test {s with memory := tailCarry s.memory c f}
-    pbi pa pb flag dst ret rest hcap htarget
+    pbi pa pb flag dst ret w7 w8 w9 w10 rest (by omega) htarget
   have h := runInstructions_append_some _ _ _ _ _ h1 h2
   simpa only [CarryRowPrograms.tail, CiosCachedTailDefs.testProgram,
     CiosCachedTailDefs.tailLoopProgram, CiosCachedTailDefs.baseStack, List.drop_take] using h

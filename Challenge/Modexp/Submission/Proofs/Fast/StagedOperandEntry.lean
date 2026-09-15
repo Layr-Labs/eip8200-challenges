@@ -36,9 +36,9 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions fullEntryProgram (setupState s mem hd pa pb dst ret rest) =
     some (outState s (mpZeroed s (stage mem pa n) n) pb n 0 hd (l1Target n)
-      (MachineState.readWord mem 2720) (MachineState.readWord mem (32*n-32))
-      (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
-        MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
+      (MachineState.readWord mem 64) (MachineState.readWord mem 32)
+      (MachineState.readWord mem (32*n-32) :: MachineState.readWord mem 2784 ::
+        MachineState.readWord mem 96 :: negative32 :: MachineState.readWord mem 2720 ::
         UInt256.ofNat (pa+32*n-32) :: dst :: ret :: rest)) := by
   let tl := MachineState.readWord mem 2784
   let inv := MachineState.readWord mem 2720
@@ -47,7 +47,7 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
   let m96 := MachineState.readWord mem 96
   let m64 := MachineState.readWord mem 64
   let m32 := MachineState.readWord mem 32
-  have hcap' : (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest).length ≤ 1005 := by
+  have hcap' : (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: dst :: ret :: rest).length ≤ 1006 := by
     simp only [List.length_cons]; omega
   have hreads := EntryPrefix.run_load { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret rest (32*n-32)
@@ -59,30 +59,27 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     omega
   rw [hAend] at hreads
   have hshuffle := EntryPrefix.run_shuffle { s with memory := mem } hd
-    (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret m0 inv aEnd tl m96 m32
+    (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret m0 inv aEnd tl m96 m32 m64
     (EntryPrefix.displacement mem) rest hcap
   have hlow := EntryPrefix.run_low { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb)
     (UInt256.ofNat 3549 + EntryPrefix.displacement mem)
     (UInt256.ofNat 3837 + EntryPrefix.displacement mem)
-    dst ret m0 inv aEnd tl m96 m32 rest hcap hact
+    dst ret m0 inv aEnd tl m96 m32 m64 rest hcap hact
   have hprefix := runInstructions_append_some _ _ _ _ _
     (runInstructions_append_some _ _ _ _ _ hreads hshuffle) hlow
   have hmasked :
       runInstructions ((EntryPrefix.loadProgram ++ EntryPrefix.shuffleProgram) ++
           EntryPrefix.lowProgram)
         (setupState s mem hd pa pb dst ret rest) =
-      some (cachedSetupState s mem hd pa pb n inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) := by
+      some (cachedSetupState s mem hd pa pb n m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: dst :: ret :: rest)) := by
     simpa only [setupState, cachedSetupState, EntryPrefix.displacement,
       hs32, l1Target, l2Target, isFour, tl, inv, m0, aEnd, m96, m64, m32,
       List.cons_append, List.nil_append] using hprefix
-  have hzero := run_zero s mem hd pa pb n inv m0
-    (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)
+  have hzero := run_zero s mem hd pa pb n m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: dst :: ret :: rest)
     hcap' hact (by omega) hn32 hpaFit hcds hs32
-  have hpointers := run_pointersJump s (stage mem pa n) hd pb n inv m0
-    (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)
-    hcap' hpb hpbFit htarget
+  have hpointers := run_pointersJump s (stage mem pa n) hd pb n m64 m32 m0 tl m96
+    (inv :: aEnd :: dst :: ret :: rest) (by simp only [List.length_cons]; omega) hpb hpbFit htarget
   have hbody := runInstructions_append_some _ _ _ _ _ hzero hpointers
   exact runInstructions_append_some _ _ _ _ _ hmasked hbody
 

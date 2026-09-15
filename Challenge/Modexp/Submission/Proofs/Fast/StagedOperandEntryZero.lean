@@ -25,7 +25,7 @@ def cachedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
     (dst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3441
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb,
-             l1Target n, negative32, allOnes, l2Target n, dst, ret] ++ rest
+             l1Target n, dst, allOnes, l2Target n, ret] ++ rest
            memory := mem }
 
 /-- After staging and zeroing: `hd` above the width word. -/
@@ -33,11 +33,11 @@ def clearedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3460
            stack := [hd, UInt256.ofNat (32*n), UInt256.ofNat pb,
-             l1Target n, negative32, allOnes, l2Target n, dst, ret] ++ rest
+             l1Target n, dst, allOnes, l2Target n, ret] ++ rest
            memory := mpZeroed s mem n }
 
 theorem run_zero (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
-    (dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1005)
+    (dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1006)
     (hact : 88 ≤ s.activeWords.toNat) (hnpos : 0 < n) (hn : n ≤ 8) (hpa : pa+32*n ≤ 2816)
     (hcds : s.executionEnv.calldata.size < 115792089237316195423570985008687907853269984665640564039457584007913129639936)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*n)) :
@@ -76,7 +76,7 @@ theorem run_zero (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
 /-- Operand pointers and the jump to the row head (pc 4189 → `hd`):
 `SWAP1; DUP3; ADD; DUP5; ADD; SWAP2; DUP5; ADD; SWAP2; DUP2; JUMP`. -/
 def pointersJumpProgram : List Instr :=
-  [.op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .ADD,
+  [.op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op .ADD,
    .op (.Swap ⟨1, by decide⟩), .op (.Swap ⟨0, by decide⟩),
    .op (.Dup ⟨2, by decide⟩), .op .ADD,
    .op (.Dup ⟨1, by decide⟩), .op .JUMP]
@@ -101,15 +101,17 @@ private theorem negative32_add_ofNat (x : Nat) (hx : 32 ≤ x)
 /-- From the cleared setup state the row-0 frame is built and the setup jumps to `hd`
 (the row head: 4199 for the multiply, 4919 for the square). -/
 theorem run_pointersJump (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
-    (dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1005)
+    (dst ret w8 w9 w10 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1002)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2816)
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
-    runInstructions pointersJumpProgram (clearedSetupState s mem hd pb n dst ret rest) =
-      some (outState s (mpZeroed s mem n) pb n 0 hd (l1Target n) dst ret rest) := by
-  have hc9 : rest.length + 9 < 1024 := by omega
-  have hc10 : rest.length + 10 < 1024 := by omega
-  have hc11 : rest.length + 11 < 1024 := by omega
-  have hc12 : rest.length + 12 < 1024 := by omega
+    runInstructions pointersJumpProgram
+        (clearedSetupState s mem hd pb n dst ret (w8 :: w9 :: w10 :: negative32 :: rest)) =
+      some (outState s (mpZeroed s mem n) pb n 0 hd (l1Target n) dst ret
+        (w8 :: w9 :: w10 :: negative32 :: rest)) := by
+  have hc9 : rest.length + 12 < 1024 := by omega
+  have hc10 : rest.length + 13 < 1024 := by omega
+  have hc11 : rest.length + 14 < 1024 := by omega
+  have hc12 : rest.length + 15 < 1024 := by omega
   have hsum : UInt256.ofNat pb + UInt256.ofNat (32 * n) = UInt256.ofNat (pb + 32 * n) :=
     Challenge.EvmProof.Word.ofNat_add_mod pb (32 * n)
   have hend : negative32 + UInt256.ofNat (pb + 32 * n) = UInt256.ofNat (pb + 32 * n - 32) :=

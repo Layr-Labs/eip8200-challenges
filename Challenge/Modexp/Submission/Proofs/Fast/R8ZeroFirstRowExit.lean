@@ -12,17 +12,19 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
 open Challenge.Modexp.Submission.Proofs.Fast Monpro
 
 def quotientA : List Instr :=
-  [.op (.Dup ⟨8, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op .MLOAD, .op .MUL]
+  [.op (.Dup ⟨13, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op .MLOAD, .op .MUL]
 def quotientB : List Instr :=
   [.op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨13, by decide⟩), .op .MULMOD, .op (.Dup ⟨13, by decide⟩), .op .MLOAD, .op .ADDMOD]
 def quotientJump : List Instr := [.op (.Dup ⟨9, by decide⟩), .op .JUMP]
 def exitProgram : List Instr := (quotientA ++ quotientB) ++ quotientJump
 
+/-- The row frame in the exchanged window order: the cached limb `m64` takes the slot
+that used to hold `NOT 31` (`stride`), and `m32` the slot that used to hold `inv`. -/
 def endFrame (flag P hd tt next stride M target inv m0 m96 m64 m32 x : UInt256)
     (rest : List UInt256) : List UInt256 :=
-  flag :: P :: hd :: tt :: next :: stride :: M :: target :: inv :: m0 :: UInt256.ofNat 2336 ::
-    m96 :: m64 :: m32 :: x :: rest
+  flag :: P :: hd :: tt :: next :: m64 :: M :: target :: m32 :: m0 :: UInt256.ofNat 2336 ::
+    m96 :: stride :: inv :: x :: rest
 
 theorem run_quotientA (s : State)
     (pc flag P hd tt next stride M target inv m0 m96 m64 m32 x : UInt256)

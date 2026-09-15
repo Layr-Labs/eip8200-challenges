@@ -470,7 +470,7 @@ def gasSteps_r4Frame (s : State) (M : ByteArray) (a mm : Nat)
       (frameAt pcSqExit s (R4Bridge.r4Mem M (R4Bridge.r4Final M allOnes m0 m64 m32 inv)) 4 pbi
         ent tl inv m0 m96 m64 m32 aprev (UInt256.ofNat 512) ret rest) :=
     R4Trace.gasSteps_r4 { s with memory := M } pbi (UInt256.ofNat 4234)
-      (UInt256.ofNat (2368 - 32)) ent negative32 allOnes (l2Target 4) inv m0 tl m96 m64 m32
+      (UInt256.ofNat (2368 - 32)) ent m64 allOnes (l2Target 4) m32 m0 tl m96 negative32 inv
       (aprev :: UInt256.ofNat 512 :: ret :: rest) (by simp only [List.length_cons]; omega)
       hcode hfork hrun hnp hact (by exact CiosCachedMacCore.allOnes_value) h.minv h.inverseGuard
   rw [rows4_eq_r4 s M a mm tl inv m0 m96 m64 m32 h] at g
@@ -682,11 +682,11 @@ def gasSteps_squareLoop (s : State) (mem : ByteArray) (p a mm k : Nat)
       (CiosInverseGuard.inverse_ne_zero _ _ hminv)
   rw [l1Target_eq_sqEnt (p + 2) hfast, rowZero_eq_input s mem (p + 2) hfast hguard] at g1
   have g2 := SquareStagedEntry.gasSteps_entry s (rowZero s (stage mem 512 (p + 2)) (p + 2)) (p + 2)
-    (UInt256.ofNat (sqEnt (p + 2) 0)) (MachineState.readWord mem 2720)
-    (MachineState.readWord mem (32 * (p + 2) - 32))
-    (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 :: MachineState.readWord mem 64 ::
-      MachineState.readWord mem 32 :: UInt256.ofNat (512 + 32 * (p + 2) - 32) ::
-      UInt256.ofNat 512 :: ret :: rest)
+    (UInt256.ofNat (sqEnt (p + 2) 0)) (MachineState.readWord mem 64)
+    (MachineState.readWord mem 32)
+    (MachineState.readWord mem (32 * (p + 2) - 32) :: MachineState.readWord mem 2784 ::
+      MachineState.readWord mem 96 :: CiosCached.negative32 :: MachineState.readWord mem 2720 ::
+      UInt256.ofNat (512 + 32 * (p + 2) - 32) :: UInt256.ofNat 512 :: ret :: rest)
     (by simp only [List.length_cons]; omega) hrun hcode hfork hnp
   by_cases hp : p = 2
   · subst hp

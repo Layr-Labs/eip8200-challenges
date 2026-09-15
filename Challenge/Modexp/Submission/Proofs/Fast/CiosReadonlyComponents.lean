@@ -15,9 +15,14 @@ open WindowNibbleKernel CiosCachedMacCore CiosCached CiosCachedMidDefs
 open Monpro
 open CiosEndAroundCarry
 
+/-- The row frame in the exchanged window order.  Relative to `baseStack` the cached
+limb `m64` now occupies the `NOT 31` slot and `m32` the inverse slot, while `NOT 31`
+and the inverse move down to the slots those limbs vacated.  Written out rather than
+built from `baseStack` because the two exchanged slots were `baseStack`'s constants. -/
 def cacheStack (bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) : List UInt256 :=
-  baseStack bi pbi pa pb flag target2 inv (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)
+  [bi, pbi, pa, pb, flag, m64, allOnes, target2, m32, m0, tl, m96, negative32, inv, aEnd,
+    dst, ret] ++ rest
 
 def entryPrelude : List Instr :=
   [.push 1 64, .op .MLOAD, .push 1 96, .op .MLOAD, .push 2 2784, .op .MLOAD,
@@ -87,7 +92,7 @@ theorem run_dropCache (s : State) (tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
 
 def cachedLoadLow : List Instr := [.op (.Dup ⟨10, by decide⟩), .op .MLOAD]
 def cachedMakeMu : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨10, by decide⟩), .op .MUL,
+  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨15, by decide⟩), .op .MUL,
    .op (.Swap ⟨0, by decide⟩)]
 def cachedLoadMask : List Instr := [.op (.Dup ⟨8, by decide⟩)]
 
@@ -175,7 +180,7 @@ theorem run_cachedFinishCarry (s : State)
     List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod]
 
 def cachedProduct : List Instr :=
-  [.op (.Dup ⟨8, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op .MLOAD,
+  [.op (.Dup ⟨13, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op .MLOAD,
    .op .MUL, .op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .MULMOD,
    .op (.Dup ⟨13, by decide⟩), .op .MLOAD, .op .ADDMOD]

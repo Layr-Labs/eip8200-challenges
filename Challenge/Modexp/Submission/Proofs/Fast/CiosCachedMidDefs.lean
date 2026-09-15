@@ -21,7 +21,7 @@ def productProgram : List Instr := midProgram.drop 10
 theorem program_eq : midProgram = storeProgram ++ productProgram := rfl
 
 def baseStack (bi pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : List UInt256 :=
-  [bi, pbi, paEnd, pbEnd, flag, negative32, allOnes, dst, ret] ++ rest
+  [bi, pbi, paEnd, pbEnd, flag, dst, allOnes, ret] ++ rest
 
 def input (s : State) (c bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=

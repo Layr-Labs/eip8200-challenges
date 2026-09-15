@@ -49,8 +49,8 @@ def pcH2 : Nat := 4208
 the kernel exit and through the whole loop. -/
 def frameStack (n : Nat) (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) :
     List UInt256 → List UInt256 := fun rest =>
-  [pbi, UInt256.ofNat 4234, UInt256.ofNat (2368 - 32), ent, negative32, allOnes, l2Target n,
-    inv, m0, tl, m96, m64, m32, aprev, pdst, ret] ++ rest
+  [pbi, UInt256.ofNat 4234, UInt256.ofNat (2368 - 32), ent, m64, allOnes, l2Target n,
+    m32, m0, tl, m96, negative32, inv, aprev, pdst, ret] ++ rest
 
 /-- The loop's states differ only in the program counter and the memory. -/
 def frameAt (pc : Nat) (s : State) (mem : ByteArray) (n : Nat)
@@ -63,15 +63,13 @@ def frameAt (pc : Nat) (s : State) (mem : ByteArray) (n : Nat)
 theorem frameAt_eq_sqExitState (s : State) (mem : ByteArray) (n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) :
     frameAt pcSqExit s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest =
-      CiosCachedTailDefs.sqExitState s mem pbi 2368 n (UInt256.ofNat 4234) ent inv m0
-        (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) := rfl
+      CiosCachedTailDefs.sqExitState s mem pbi 2368 n (UInt256.ofNat 4234) ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aprev :: pdst :: ret :: rest) := rfl
 
 /-- The `nx` `JUMPDEST` state of the last square. -/
 theorem frameAt_eq_nxJdState (s : State) (mem : ByteArray) (n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) :
     frameAt pcNx s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest =
-      CiosCachedTailDefs.nxJdState s mem pbi 2368 n (UInt256.ofNat 4234) ent inv m0
-        (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) := rfl
+      CiosCachedTailDefs.nxJdState s mem pbi 2368 n (UInt256.ofNat 4234) ent m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: aprev :: pdst :: ret :: rest) := rfl
 
 /-! ## Programs -/
 
@@ -99,29 +97,29 @@ def againProgram : List Instr :=
 /-! ## Located blocks -/
 
 def sqExitBlock : Block Artifact.submissionArtifact .Osaka 4174 sqExitProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3161 12 4174 sqExitProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3159 12 4174 sqExitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def lastBlock : Block Artifact.submissionArtifact .Osaka 4196 lastProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3173 6 4196 lastProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3171 6 4196 lastProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def againBlock : Block Artifact.submissionArtifact .Osaka 4218 againProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3185 10 4218 againProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3183 10 4218 againProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-! ## Jump destinations of the loop -/
 
 theorem jumpDest4683 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4132 = true :=
-  Artifact.isValidJumpDest_index 3134 (by rfl)
+  Artifact.isValidJumpDest_index 3132 (by rfl)
 
 /-! ## The counter word -/
 
 /-- The memory after `sq_exit`'s `MSTORE`: the counter word 2624 holds `c`. -/
 theorem jumpDestLazy :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4535 = true :=
-  Artifact.isValidJumpDest_index 3415 (by rfl)
+  Artifact.isValidJumpDest_index 3413 (by rfl)
 
 def countMem (mem : ByteArray) (c : Nat) : ByteArray :=
   MachineState.writeBytes mem (Data.Bytes.natToBytesPadded c 32) 2624
