@@ -12,7 +12,7 @@ def frozenBytes : List UInt8 := [91, 128, 81, 128, 128, 159, 80, 1, 134, 143, 12
 
 theorem encoded_frozen : assembleBytes (program (UInt256.ofNat 3586)) = frozenBytes := by decide
 
-theorem program_length : (program (UInt256.ofNat 3586)).length = 214 := by decide
+theorem program_length : (program (UInt256.ofNat 3586)).length = 213 := by decide
 
 theorem encoded_length : (assembleBytes (program (UInt256.ofNat 3586))).length = 246 := by decide
 
