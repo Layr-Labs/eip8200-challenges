@@ -17,3 +17,6 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
+
+/- Second resubmission draw of the frozen artifact; bytecode and proofs
+   unchanged. Content-hash uniquifier: 2026-09-15T05:20Z. -/
