@@ -185,6 +185,7 @@ theorem run_amEntry (s : State) (memory : ByteArray) (pa pb n : Nat)
   have hc6 : rest.length + 6 < 1024 := by omega
   have hc7 : rest.length + 7 < 1024 := by omega
   have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
   have h32 : (32 : UInt256) = UInt256.ofNat 32 := by decide
   have h9344 : (2688 : UInt256).toNat = 2688 := by decide
   have h9440 : (2784 : UInt256).toNat = 2784 := by decide
@@ -207,7 +208,7 @@ theorem run_amEntry (s : State) (memory : ByteArray) (pa pb n : Nat)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       amEntryState, amLoopState, amStep, fastPC14, fastPC15, fastPC16, fastPC17, fastPC18, fastPC19,
-      hc4, hc5, hc6, hc7, hc8, hrun, h32, h9344, h9440, hzero,
+      hc4, hc5, hc6, hc7, hc8, hc9, hrun, h32, h9344, h9440, hzero,
       hs32, htl, hactA, hactB, hsuba, hsubb,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,

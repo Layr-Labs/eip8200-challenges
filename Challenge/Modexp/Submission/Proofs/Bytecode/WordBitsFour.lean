@@ -40,17 +40,17 @@ theorem lift_cost {pc : Nat} {program : List Instr} (block : BoundBlock pc progr
 
 /-- The single bit body at pc 2378 (instruction indices 1800 to 1818). -/
 def bodyBlock : BoundBlock 2382 (bodyProgram 7) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 1804 19 2382
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1802 19 2382
     (bodyProgram 7) (by decide) (by rfl) (by rfl) (by rfl)
 
 /-- The body head `JUMPDEST` at pc 2377 (index 1799), the target of the loop control. -/
 def startBlock : BoundBlock 2381 ([.op .JUMPDEST]) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 1803 1 2381
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1801 1 2381
     ([.op .JUMPDEST]) (by decide) (by rfl) (by rfl) (by rfl)
 
 /-- The loop control at pc 2404 (indices 1823 to 1830). -/
 def controlBlock : BoundBlock 2404 (controlProgram) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 1823 8 2404
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1821 8 2404
     (controlProgram) (by decide) (by rfl) (by rfl) (by rfl)
 
 variable (s : State) (rest : List UInt256)
@@ -87,7 +87,7 @@ def control (hrest : rest.length < 1000) (c : Nat) (hc : c < 8) :
         ([Bm1,UInt256.ofNat (c+1),byte,offset,outerW,acc,base,m] ++ rest)) :=
   lift controlBlock s hs _ _ (by
     have hj : Decode.isValidJumpDest s.executionEnv.code 2381 = true := by
-      rw [hs.code]; exact Artifact.isValidJumpDest_index 1803 (by rfl)
+      rw [hs.code]; exact Artifact.isValidJumpDest_index 1801 (by rfl)
     simpa only [stW, framed, apply_ite UInt256.ofNat, Challenge.EvmProof.Word.literal_eq_ofNat] using
       run_control s Bm1 byte offset outerW acc base m rest c hc (Nat.le_of_lt hrest) hj)
 

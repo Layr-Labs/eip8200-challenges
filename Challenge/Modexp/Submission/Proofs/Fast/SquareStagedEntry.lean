@@ -19,12 +19,12 @@ def program : List Instr :=
    .push 2 1856, .op .ADD]
 
 def block : Block Artifact.submissionArtifact .Osaka 4568 program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3446 9 4568 program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3436 9 4568 program
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 4568).toNat = true :=
-  Artifact.isValidJumpDest_index 3446 (by rfl)
+  Artifact.isValidJumpDest_index 3436 (by rfl)
 
 theorem run_entry (s : State) (mem : ByteArray) (n : Nat)
     (ent inv m0 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1012)
