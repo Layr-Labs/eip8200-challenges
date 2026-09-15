@@ -708,10 +708,6 @@ theorem run_mpL1Body (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
-  have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
-      UInt256) = UInt256.ofNat
-        115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
-    decide
   have h1995 : (1135 : UInt256).toNat = 1135 := by decide
   have h1995' : (1135 : UInt256) = UInt256.ofNat 1135 := by decide
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
@@ -729,10 +725,40 @@ theorem run_mpL1Body (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       pa + 32 * (n - 2 - j) := by
     rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hnextT : ptrAt (2080 + 32 * n) (j + 1) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      2080 + 32 * (n - 1 - j) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
   have hpamN : (pa - 32) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       pa - 32 := Nat.mod_eq_of_lt (by omega)
   have hgt : pa - 32 < pa + 32 * (n - 2 - j) := by omega
+  have hsubA : UInt256.ofNat (ptrAt (pa + 32 * n - 32) j) - UInt256.ofNat 32 =
+      UInt256.ofNat (ptrAt (pa + 32 * n - 32) (j + 1)) := by
+    have hw : UInt256.ofNat (ptrAt (pa + 32 * n - 32) j) =
+        UInt256.ofNat (pa + 32 * (n - 1 - j)) := by
+      apply Challenge.EvmProof.Word.word_ext
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+        Challenge.EvmProof.Word.word_toNat_ofNat, hpaj]
+      omega
+    rw [hw, Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)]
+    apply Challenge.EvmProof.Word.word_ext
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat, hnextA]
+    omega
+  have hsubT : UInt256.ofNat (ptrAt (2080 + 32 * n) j) - UInt256.ofNat 32 =
+      UInt256.ofNat (ptrAt (2080 + 32 * n) (j + 1)) := by
+    have hw : UInt256.ofNat (ptrAt (2080 + 32 * n) j) =
+        UInt256.ofNat (2112 + 32 * (n - 1 - j)) := by
+      apply Challenge.EvmProof.Word.word_ext
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+        Challenge.EvmProof.Word.word_toNat_ofNat, hptj]
+      omega
+    rw [hw, Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)]
+    apply Challenge.EvmProof.Word.word_ext
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat, hnextT]
+    omega
   have hactA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (pa + 32 * (n - 1 - j)) 32) = s.activeWords :=
     activeWords_fix s _ 32 (by decide) (by omega) hact
@@ -746,14 +772,16 @@ theorem run_mpL1Body (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
       Challenge.EvmProof.Stepper.runInstr,
       mpL1State, l1Step, macSum, macCarry, mulHi, maxWord_literal,
       fastPC11, fastPC12,
-      hc9, hc10, hc11, hc12, hc13, hrun, hcode, hK, h1995, h1995', hjump,
-      jumpDest1914, hpaj, hptj, hnextA, hpamN, hgt, hactA, hactT, ptrAt_succ,
+      hc9, hc10, hc11, hc12, hc13, hrun, hcode, h1995, h1995', hjump,
+      jumpDest1914, hpaj, hptj, hnextA, hnextT, hpamN, hgt, hsubA, hsubT,
+      hactA, hactT, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
       List.exchange]
+
 
 set_option linter.unusedSimpArgs false in
 theorem run_mpL1Exit (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j : Nat)
@@ -773,10 +801,6 @@ theorem run_mpL1Exit (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
   have hc11 : rest.length + 11 < 1024 := by omega
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
-  have hK : (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
-      UInt256) = UInt256.ofNat
-        115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
-    decide
   have hpaj : ptrAt (pa + 32 * n - 32) j %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       pa + 32 * (n - 1 - j) := by
@@ -792,6 +816,36 @@ theorem run_mpL1Exit (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
   have hpamN : (pa - 32) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       pa - 32 := Nat.mod_eq_of_lt (by omega)
+  have hnextT : ptrAt (2080 + 32 * n) (j + 1) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      2080 + 32 * (n - 1 - j) := by
+    rw [ptrAt_mod _ _ (by omega) (by omega)]; omega
+  have hsubA : UInt256.ofNat (ptrAt (pa + 32 * n - 32) j) - UInt256.ofNat 32 =
+      UInt256.ofNat (ptrAt (pa + 32 * n - 32) (j + 1)) := by
+    have hw : UInt256.ofNat (ptrAt (pa + 32 * n - 32) j) =
+        UInt256.ofNat (pa + 32 * (n - 1 - j)) := by
+      apply Challenge.EvmProof.Word.word_ext
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+        Challenge.EvmProof.Word.word_toNat_ofNat, hpaj]
+      omega
+    rw [hw, Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)]
+    apply Challenge.EvmProof.Word.word_ext
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat, hnextA]
+    omega
+  have hsubT : UInt256.ofNat (ptrAt (2080 + 32 * n) j) - UInt256.ofNat 32 =
+      UInt256.ofNat (ptrAt (2080 + 32 * n) (j + 1)) := by
+    have hw : UInt256.ofNat (ptrAt (2080 + 32 * n) j) =
+        UInt256.ofNat (2112 + 32 * (n - 1 - j)) := by
+      apply Challenge.EvmProof.Word.word_ext
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+        Challenge.EvmProof.Word.word_toNat_ofNat, hptj]
+      omega
+    rw [hw, Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)]
+    apply Challenge.EvmProof.Word.word_ext
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat, hnextT]
+    omega
   have hactA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (pa + 32 * (n - 1 - j)) 32) = s.activeWords :=
     activeWords_fix s _ 32 (by decide) (by omega) hact
@@ -805,8 +859,8 @@ theorem run_mpL1Exit (s : State) (mem : ByteArray) (bi : UInt256) (pa pb n i j :
       Challenge.EvmProof.Stepper.runInstr,
       mpL1State, mpMidState, l1Step, macSum, macCarry, mulHi, maxWord_literal,
       fastPC11, fastPC12,
-      hc9, hc10, hc11, hc12, hc13, hrun, hK,
-      hpaj, hptj, hnextA, hpamN, hactA, hactT, ptrAt_succ,
+      hc9, hc10, hc11, hc12, hc13, hrun,
+      hpaj, hptj, hnextA, hnextT, hpamN, hsubA, hsubT, hactA, hactT, ptrAt_succ,
       UInt256.gt, UInt256.isTrue,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.succ_ofNat_mod,
