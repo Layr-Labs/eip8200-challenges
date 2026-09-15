@@ -17,4 +17,6 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- redraw marker 2026-09-15T09:15:23Z
+
+/-- Marker for the 2026-09-15 corpus redraw of the 5,220-byte artifact. -/
+theorem redrawMarker_20260915T1400 : True := trivial
