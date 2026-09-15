@@ -75,7 +75,7 @@ theorem jumpDestRowHead :
 /-- The square row head `sq_row` (instruction 3559, pc 2464 = 0x1266). -/
 theorem jumpDestSqRow :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4065 = true := by
-  exact Artifact.isValidJumpDest_index 3055 (by rfl)
+  exact Artifact.isValidJumpDest_index 3057 (by rfl)
 
 /-- `jumpDestRowHead` in the `hd.toNat` form taken by `gasSteps_setup`/`gasSteps_commonSetup`. -/
 theorem jumpDestRowHead' :
@@ -256,7 +256,6 @@ opaque gasSteps_setup (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Na
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
-    (hn4 : n = 4 ∨ n = 8)
     (hpaFit : pa + 32 * n ≤ 2816)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2816)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
@@ -273,7 +272,7 @@ opaque gasSteps_setup (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Na
           UInt256.ofNat (pa + 32 * n - 32) :: pdst :: ret :: rest)) :=
   setup.steps (environment (CiosCached.setupState s mem hd pa pb pdst ret rest) hcode hfork hrun hnp)
     rfl
-    (StagedOperand.run_entry s mem hd pa pb n pdst ret rest hcap hact hn hn32 hn4 hpaFit hpb hpbFit
+    (StagedOperand.run_entry s mem hd pa pb n pdst ret rest hcap hact hn hn32 hpaFit hpb hpbFit
       hcds hs32 hml (by rw [hcode]; exact hjump))
 
 /-- `common` → `setup` → row-0 head at `hd` for a four- or eight-limb width (any `hd`;
@@ -310,8 +309,7 @@ opaque gasSteps_commonSetup (s : State) (mem : ByteArray) (hd : UInt256) (pa pb 
   exact (gasSteps_common s mem hd pa pb pdst ret rest (by omega) hrun hcode hfork hnp hact
       hwidth hguard hzero).trans
     (gasSteps_setup s mem hd pa pb n pdst ret rest hcap hrun hcode hfork hnp hact
-      (by rcases hn with rfl | rfl <;> omega) (by rcases hn with rfl | rfl <;> omega) hn
-      hpaFit hpb hpbFit hcds hs32 hml hjump)
+      (by omega) (by omega) hpaFit hpb hpbFit hcds hs32 hml hjump)
 
 /-- `gasSteps_commonSetup` with the staged memory written as `StagedOperand.inputMemory`
 (equal to `stage` for the kernel widths), the form of WP-S1's `sqRowsCarry` start and of
