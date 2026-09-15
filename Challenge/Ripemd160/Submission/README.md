@@ -1,25 +1,61 @@
-# RIPEMD-160: build the schedule fan's second lane by placement instead of multiplication
+# RIPEMD-160 submission
 
-The submitted runtime uses 667669 gas on the original 49-vector clean corpus and the same total on the corresponding dirty-frame corpus. It is 5219 bytes: 4939 executable bytes followed by the unchanged 280-byte digest payload. The source base is the public source `acfddfd4ab8d558fe6c5c129d19a1dbd6af9e57a`, whose bytecode (5219 bytes, raw-byte SHA-256 `badd23b793ab2679687d8edd0ca88ad90bf85f69912e17f6780d8df469f87aac`) uses 669769 gas on the same corpus. The submitted bytecode has raw-byte SHA-256 `beabbf1aa1da08e39ca1fd986a9f31cefd8ed775181d45bb2012a41fdc8c14a2`.
+Artifact `51db11449f70ac9faf706f1cfc42cc2c769ae3ab2ea6ddd475df78ed6d641a36`, 5,220 bytes,
+667,483 gas in each scorer context over the 49 scored vectors.
 
-## Schedule fan change
+## What changed
 
-The fan prepares the sixteen message words in the packed two-lane form the round body reads. The base artifact writes each byte-swapped half to scratch once and then derives the second lane arithmetically, multiplying every word that the schedule needs in both lanes by a broadcast constant.
+Two length-neutral repairs to the endianness-conversion fan and to three push immediates. Together
+they bring the artifact under the protected-literal cap while leaving the executed instruction
+sequence semantically unchanged.
 
-This version produces the second lane by placement. Each swapped half is written to scratch twice, the second copy eighteen bytes above the first, and the upper half is duplicated by two sixteen-byte MCOPY instructions. One load at the right offset then returns a word already holding the value in both lanes, and a single wide immediate mask clears the bytes between them. The broadcast constant and its multiplies are gone.
+### 1. Store-run permutation
 
-Over the changed region the fan loses 13 of its 17 multiplies and 9 of its 72 stack copies and gains 2 MCOPY instructions, one shift and one OR. The scheduled words are stored in a different order; that order never reverses two writes whose 32-byte windows overlap, so the scratch image is unchanged. The fan occupies the same 572 bytes as before.
+The conversion fan ends in a run of 45 store groups, at program counters 671 through 873, occupying
+202 bytes. Thirty-two of those groups are stack-neutral triples `DUPn PUSH<address> MSTORE`; the
+remaining thirteen are `PUSH<address> MSTORE` pairs that consume the value on top of the stack.
 
-The two artifacts differ only at byte offsets 326 to 897. Every byte from 899 onward is identical, which covers the whole compression body, the tail and the digest payload; all 15 jump destinations are unchanged; and the executable instruction count goes from 3734 to 3724. The compression body therefore executes the same instructions at the same program counters for the same gas, and none of the reduction comes from it.
+The run is reordered subject to three constraints, each of which preserves the memory image the fan
+produces:
 
-## Proof
+* two stores whose 32-byte ranges overlap keep their original relative order, so a later store still
+  overwrites an earlier one where the two intersect;
+* the thirteen consuming groups keep their mutual order, so each consumes the value its original
+  position consumed;
+* a triple that moves across consuming groups is rebased as `n' = n + c - c'`, where `c` and `c'` are
+  the numbers of consuming groups preceding it before and after the move. Consumed values shorten the
+  stack, so this is the index at which the same value now sits. The rebase is admitted only when
+  `1 <= n' <= 16`, and `n' >= 1` is exactly the condition guaranteeing the referenced value has not
+  itself already been consumed.
 
-The fan's raw execution theorems are restated for the new instruction slice: the two scratch stores and their addresses, the packed-load stage with its mask and its two MCOPY copies, and the store stage in its new order, whose write sequence is proved to leave the same scratch image because reordering writes to non-overlapping windows cannot change memory. The round driver and the table layout are unchanged, every instruction index that moved is relocated in the remaining located proofs, and the compression body's proofs are untouched. The straight-line advance check used by the located-block lifts is extended to cover MCOPY, discharged from the stepper's own MCOPY step.
+The permutation has an identical opcode multiset and an identical byte count, so it is neutral in both
+length and gas. It rewrites only bytes 671 through 873; no program counter outside that window moves.
+
+### 2. Three push narrowings
+
+Three immediates whose high byte is zero are narrowed from `PUSH2 00xx` to `PUSH1 xx`, at former
+program counters 1460, 1997 and 3980. These are the three latest eligible sites in the artifact. The
+choice is deliberate: narrowing an earlier site re-aligns the store run above and loses more than the
+narrowing gains.
+
+The instruction count is unchanged at 3,724. Code length falls from 4,943 to 4,940, so program
+counters after each narrowing shift by one, two and three bytes respectively. Twenty-four jump-target
+pushes and one payload-base push carry values that move with the code and are rewritten accordingly.
+
+Three further pushes carry values numerically equal to a JUMPDEST program counter but are memory
+offsets rather than jump targets, at former program counters 661, 681 and 4248. A push is rewritten
+only when it is immediately followed by JUMP or JUMPI, or when it is the payload base. Selecting
+targets by value alone would corrupt those three.
 
 ## Verification
 
-The original native scorer passed all 98 clean and dirty runs, totalling 667669 gas in each frame: 50 gas less for each of the 42 executions of the fan across the corpus. A memory-image differential over 442 inputs compared the full memory image and the whole stack at every one of the 1345 compression entries against the base artifact and found them identical on every entry, with 0 disagreements and 0 abnormal halts.
-
-## Scope
-
-Only Challenge/Ripemd160/Submission is changed. The original specification, EVM semantics, protected scorer and artifact generator, compiler and Lean kernel, dependency pins and benchmark settings are used as supplied. No axiom, no `sorry`, and no increased verification option.
+* Protected-literal cost 8,192 = 5,220 bytes + 2,316 distinct-value terms + 8 x 82 chunks, against a
+  cap of 8,194.
+* All 49 scored vectors reproduce the reference digest; 0 wrong.
+* Differential against the previous artifact over 459 inputs, covering lengths 0 to 1,000 with zero,
+  all-ones, incrementing, random and high-bit patterns as well as the scored corpus: 0 disagreements
+  and 0 abnormal halts, and every output matches the reference digest.
+* Jump audit: 15 JUMPDESTs declared, 13 distinct targets taken across the corpus, 0 jumps landing off
+  a JUMPDEST.
+* Code-offset audit: the payload base push resolves to 4,940, the code length, and the digest table is
+  byte-identical to the previous artifact's.

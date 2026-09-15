@@ -169,29 +169,29 @@ theorem chain_isort (memory : ByteArray) (l : List (Nat × UInt256))
     rfl
 
 def template0 : List Instr :=
-  [ .op (.Dup ⟨13, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 684),
-    .op .MSTORE,
-    .op (.Dup ⟨5, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 1080),
-    .op .MSTORE,
-    .op (.Dup ⟨10, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 1062),
-    .op .MSTORE,
-    .op (.Dup ⟨13, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 1044),
+  [ .op (.Dup ⟨4, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 126),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 900),
     .op .MSTORE,
-    .op (.Dup ⟨15, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 666),
-    .op .MSTORE,
-    .op (.Dup ⟨7, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 792),
+    .op (.Dup ⟨11, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 216),
     .op .MSTORE,
     .op (.Dup ⟨2, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 882),
+    .op .MSTORE,
+    .op (.Dup ⟨4, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 864),
+    .op .MSTORE,
+    .op (.Dup ⟨2, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 846),
+    .op .MSTORE,
+    .op (.Dup ⟨0, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 828),
+    .op .MSTORE,
+    .op (.Dup ⟨3, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 558),
     .op .MSTORE ]
 
 def stack0 (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
@@ -229,14 +229,14 @@ def outputStack0 (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :
     dualW words 12,
     dualW words 14 ] ++ rho
 def writes0 (words : Nat → UInt256) : List (Nat × UInt256) :=
-  [ (684, dualW words 6),
-    (1080, dualW words 5),
-    (1062, dualW words 13),
-    (1044, dualW words 6),
+  [ (126, dualW words 11),
     (900, dualW words 9),
-    (666, dualW words 14),
-    (792, dualW words 1),
-    (882, dualW words 3) ]
+    (216, dualW words 10),
+    (882, dualW words 3),
+    (864, dualW words 11),
+    (846, dualW words 3),
+    (828, dualW words 9),
+    (558, dualW words 8) ]
 def memory0 (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
   writeChain memory (writes0 words)
 
@@ -264,29 +264,28 @@ theorem run_chunk0 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : L
 #print axioms run_chunk0
 
 def template1 : List Instr :=
-  [ .op (.Dup ⟨6, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 648),
+  [ .op (.Dup ⟨13, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 684),
     .op .MSTORE,
     .op (.Dup ⟨3, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 558),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 936),
     .op .MSTORE,
-    .op (.Dup ⟨6, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 1008),
+    .op (.Dup ⟨5, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 108),
+    .op .MSTORE,
+    .op (.Dup ⟨7, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 792),
     .op .MSTORE,
     .op (.Dup ⟨7, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 774),
     .op .MSTORE,
-    .op (.Dup ⟨4, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 864),
+    .op (.Dup ⟨7, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 540),
     .op .MSTORE,
-    .op (.Dup ⟨2, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 846),
-    .op .MSTORE,
-    .op (.Dup ⟨4, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 126),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 756),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 828),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 522),
     .op .MSTORE ]
 
 def stack1 (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
@@ -307,8 +306,7 @@ def stack1 (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
     dualW words 12,
     dualW words 14 ] ++ rho
 def outputStack1 (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
-  [ dualW words 9,
-    dualW words 0,
+  [ dualW words 0,
     dualW words 3,
     dualW words 8,
     dualW words 11,
@@ -324,14 +322,14 @@ def outputStack1 (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :
     dualW words 12,
     dualW words 14 ] ++ rho
 def writes1 (words : Nat → UInt256) : List (Nat × UInt256) :=
-  [ (648, dualW words 15),
-    (558, dualW words 8),
-    (1008, dualW words 15),
+  [ (684, dualW words 6),
+    (936, dualW words 8),
+    (108, dualW words 5),
+    (792, dualW words 1),
     (774, dualW words 1),
-    (864, dualW words 11),
-    (846, dualW words 3),
-    (126, dualW words 11),
-    (828, dualW words 9) ]
+    (540, dualW words 1),
+    (756, dualW words 9),
+    (522, dualW words 0) ]
 def memory1 (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
   writeChain memory (writes1 words)
 
@@ -359,48 +357,31 @@ theorem run_chunk1 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : L
 #print axioms run_chunk1
 
 def template2 : List Instr :=
-  [ .op (.Dup ⟨7, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 540),
-    .op .MSTORE,
-    .op (.Dup ⟨5, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 108),
-    .op .MSTORE,
-    .op (.Dup ⟨14, by decide⟩),
+  [ .op (.Dup ⟨13, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 90),
     .op .MSTORE,
-    .op (.Dup ⟨11, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 630),
-    .op .MSTORE,
-    .op (.Dup ⟨1, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 522),
-    .op .MSTORE,
-    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨7, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 72),
     .op .MSTORE,
-    .op (.Dup ⟨1, by decide⟩),
+    .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 54),
     .op .MSTORE,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 756),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 36),
+    .op .MSTORE,
+    .op (.Dup ⟨13, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 666),
+    .op .MSTORE,
+    .op (.Dup ⟨5, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 504),
+    .op .MSTORE,
+    .op (.Dup ⟨3, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 1080),
+    .op .MSTORE,
+    .op (.Dup ⟨8, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 1062),
     .op .MSTORE ]
 
 def stack2 (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
-  [ dualW words 9,
-    dualW words 0,
-    dualW words 3,
-    dualW words 8,
-    dualW words 11,
-    dualW words 5,
-    dualW words 15,
-    dualW words 1,
-    dualW words 4,
-    dualW words 2,
-    dualW words 13,
-    dualW words 10,
-    dualW words 7,
-    dualW words 6,
-    dualW words 12,
-    dualW words 14 ] ++ rho
-def outputStack2 (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
   [ dualW words 0,
     dualW words 3,
     dualW words 8,
@@ -416,15 +397,30 @@ def outputStack2 (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :
     dualW words 6,
     dualW words 12,
     dualW words 14 ] ++ rho
+def outputStack2 (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
+  [ dualW words 3,
+    dualW words 8,
+    dualW words 11,
+    dualW words 5,
+    dualW words 15,
+    dualW words 1,
+    dualW words 4,
+    dualW words 2,
+    dualW words 13,
+    dualW words 10,
+    dualW words 7,
+    dualW words 6,
+    dualW words 12,
+    dualW words 14 ] ++ rho
 def writes2 (words : Nat → UInt256) : List (Nat × UInt256) :=
-  [ (540, dualW words 1),
-    (108, dualW words 5),
-    (90, dualW words 12),
-    (630, dualW words 10),
-    (522, dualW words 0),
+  [ (90, dualW words 12),
     (72, dualW words 4),
     (54, dualW words 0),
-    (756, dualW words 9) ]
+    (36, dualW words 0),
+    (666, dualW words 14),
+    (504, dualW words 1),
+    (1080, dualW words 5),
+    (1062, dualW words 13) ]
 def memory2 (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
   writeChain memory (writes2 words)
 
@@ -452,31 +448,31 @@ theorem run_chunk2 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : L
 #print axioms run_chunk2
 
 def template3 : List Instr :=
-  [ .op (.Dup ⟨11, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 288),
-    .op .MSTORE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 36),
-    .op .MSTORE,
-    .op (.Dup ⟨5, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 504),
-    .op .MSTORE,
-    .op (.Dup ⟨1, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 936),
-    .op .MSTORE,
-    .op (.Dup ⟨11, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 414),
+  [ .op (.Dup ⟨3, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 486),
     .op .MSTORE,
     .push ⟨2, by decide⟩ (UInt256.ofNat 972),
     .op .MSTORE,
+    .op (.Dup ⟨3, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 648),
+    .op .MSTORE,
+    .op (.Dup ⟨3, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 1008),
+    .op .MSTORE,
+    .op (.Dup ⟨8, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 630),
+    .op .MSTORE,
+    .op (.Dup ⟨3, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 612),
+    .op .MSTORE,
     .push ⟨2, by decide⟩ (UInt256.ofNat 738),
     .op .MSTORE,
-    .op (.Dup ⟨1, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 486),
+    .op (.Dup ⟨8, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 288),
     .op .MSTORE ]
 
 def stack3 (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
-  [ dualW words 0,
-    dualW words 3,
+  [ dualW words 3,
     dualW words 8,
     dualW words 11,
     dualW words 5,
@@ -504,14 +500,14 @@ def outputStack3 (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :
     dualW words 12,
     dualW words 14 ] ++ rho
 def writes3 (words : Nat → UInt256) : List (Nat × UInt256) :=
-  [ (288, dualW words 7),
-    (36, dualW words 0),
-    (504, dualW words 1),
-    (936, dualW words 8),
-    (414, dualW words 6),
+  [ (486, dualW words 5),
     (972, dualW words 3),
+    (648, dualW words 15),
+    (1008, dualW words 15),
+    (630, dualW words 10),
+    (612, dualW words 15),
     (738, dualW words 8),
-    (486, dualW words 5) ]
+    (288, dualW words 7) ]
 def memory3 (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
   writeChain memory (writes3 words)
 
@@ -539,23 +535,23 @@ theorem run_chunk3 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : L
 #print axioms run_chunk3
 
 def template4 : List Instr :=
-  [ .op (.Dup ⟨2, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 612),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 594),
+    .op .MSTORE,
+    .op (.Dup ⟨8, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 1044),
+    .op .MSTORE,
+    .op (.Dup ⟨8, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 414),
     .op .MSTORE,
     .op (.Dup ⟨4, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 396),
-    .op .MSTORE,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 594),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 360),
     .op .MSTORE,
     .push ⟨2, by decide⟩ (UInt256.ofNat 720),
     .op .MSTORE,
     .push ⟨2, by decide⟩ (UInt256.ofNat 270),
     .op .MSTORE,
-    .op (.Dup ⟨2, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 360),
-    .op .MSTORE,
-    .op (.Dup ⟨4, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 216),
+    .op (.Dup ⟨1, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 396),
     .op .MSTORE,
     .push ⟨2, by decide⟩ (UInt256.ofNat 468),
     .op .MSTORE ]
@@ -583,13 +579,13 @@ def outputStack4 (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :
     dualW words 12,
     dualW words 14 ] ++ rho
 def writes4 (words : Nat → UInt256) : List (Nat × UInt256) :=
-  [ (612, dualW words 15),
-    (396, dualW words 4),
-    (594, dualW words 11),
+  [ (594, dualW words 11),
+    (1044, dualW words 6),
+    (414, dualW words 6),
+    (360, dualW words 2),
     (720, dualW words 5),
     (270, dualW words 15),
-    (360, dualW words 2),
-    (216, dualW words 10),
+    (396, dualW words 4),
     (468, dualW words 1) ]
 def memory4 (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
   writeChain memory (writes4 words)
@@ -690,45 +686,45 @@ theorem run_chunk5 (s : State) (pc ret : UInt256) (words : Nat → UInt256) (res
 def writerTemplate : List Instr := template0 ++ template1 ++ template2 ++ template3 ++ template4 ++ template5
 
 def rawWrites (words : Nat → UInt256) : List (Nat × UInt256) :=
-  [ (684, dualW words 6),
-    (1080, dualW words 5),
-    (1062, dualW words 13),
-    (1044, dualW words 6),
+  [ (126, dualW words 11),
     (900, dualW words 9),
-    (666, dualW words 14),
-    (792, dualW words 1),
+    (216, dualW words 10),
     (882, dualW words 3),
-    (648, dualW words 15),
-    (558, dualW words 8),
-    (1008, dualW words 15),
-    (774, dualW words 1),
     (864, dualW words 11),
     (846, dualW words 3),
-    (126, dualW words 11),
     (828, dualW words 9),
-    (540, dualW words 1),
+    (558, dualW words 8),
+    (684, dualW words 6),
+    (936, dualW words 8),
     (108, dualW words 5),
-    (90, dualW words 12),
-    (630, dualW words 10),
+    (792, dualW words 1),
+    (774, dualW words 1),
+    (540, dualW words 1),
+    (756, dualW words 9),
     (522, dualW words 0),
+    (90, dualW words 12),
     (72, dualW words 4),
     (54, dualW words 0),
-    (756, dualW words 9),
-    (288, dualW words 7),
     (36, dualW words 0),
+    (666, dualW words 14),
     (504, dualW words 1),
-    (936, dualW words 8),
-    (414, dualW words 6),
-    (972, dualW words 3),
-    (738, dualW words 8),
+    (1080, dualW words 5),
+    (1062, dualW words 13),
     (486, dualW words 5),
+    (972, dualW words 3),
+    (648, dualW words 15),
+    (1008, dualW words 15),
+    (630, dualW words 10),
     (612, dualW words 15),
-    (396, dualW words 4),
+    (738, dualW words 8),
+    (288, dualW words 7),
     (594, dualW words 11),
+    (1044, dualW words 6),
+    (414, dualW words 6),
+    (360, dualW words 2),
     (720, dualW words 5),
     (270, dualW words 15),
-    (360, dualW words 2),
-    (216, dualW words 10),
+    (396, dualW words 4),
     (468, dualW words 1),
     (18, dualW words 4),
     (342, dualW words 2),
@@ -843,9 +839,9 @@ def writerMemory (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
   writeChain memory (writerWrites words)
 
 def slotOrder : List Nat :=
-  [684, 1080, 1062, 1044, 900, 666, 792, 882, 648, 558, 1008, 774, 864, 846, 126, 828, 540, 108,
-   90, 630, 522, 72, 54, 756, 288, 36, 504, 936, 414, 972, 738, 486, 612, 396, 594, 720, 270,
-   360, 216, 468, 18, 342, 198, 324, 252, 0, 450, 162]
+  [126, 900, 216, 882, 864, 846, 828, 558, 684, 936, 108, 792, 774, 540, 756, 522, 90, 72, 54,
+   36, 666, 504, 1080, 1062, 486, 972, 648, 1008, 630, 612, 738, 288, 594, 1044, 414, 360,
+   720, 270, 396, 468, 18, 342, 198, 324, 252, 0, 450, 162]
 
 theorem slotOrder_eq (words : Nat → UInt256) :
     (rawWrites words).map Prod.fst = slotOrder := by rfl
@@ -860,12 +856,12 @@ not fit this module's heartbeats (measured), so the sort is carried out on a CLO
 Key `16` is the slot-0 entry, whose value the writer has already masked back to a plain word. -/
 
 def rawKeys : List (Nat × Nat) :=
-  [(684, 6), (1080, 5), (1062, 13), (1044, 6), (900, 9), (666, 14), (792, 1), (882, 3), (648,
-   15), (558, 8), (1008, 15), (774, 1), (864, 11), (846, 3), (126, 11), (828, 9), (540, 1),
-   (108, 5), (90, 12), (630, 10), (522, 0), (72, 4), (54, 0), (756, 9), (288, 7), (36, 0),
-   (504, 1), (936, 8), (414, 6), (972, 3), (738, 8), (486, 5), (612, 15), (396, 4), (594, 11),
-   (720, 5), (270, 15), (360, 2), (216, 10), (468, 1), (18, 4), (342, 2), (198, 13), (324,
-   10), (252, 7), (0, 16), (450, 12), (162, 14)]
+  [(126, 11), (900, 9), (216, 10), (882, 3), (864, 11), (846, 3), (828, 9), (558, 8),
+   (684, 6), (936, 8), (108, 5), (792, 1), (774, 1), (540, 1), (756, 9), (522, 0), (90, 12),
+   (72, 4), (54, 0), (36, 0), (666, 14), (504, 1), (1080, 5), (1062, 13), (486, 5), (972, 3),
+   (648, 15), (1008, 15), (630, 10), (612, 15), (738, 8), (288, 7), (594, 11), (1044, 6),
+   (414, 6), (360, 2), (720, 5), (270, 15), (396, 4), (468, 1), (18, 4), (342, 2), (198, 13),
+   (324, 10), (252, 7), (0, 16), (450, 12), (162, 14)]
 
 def sortedKeys : List (Nat × Nat) :=
   [(1080, 5), (1062, 13), (1044, 6), (1008, 15), (972, 3), (936, 8), (900, 9), (882, 3), (864,
