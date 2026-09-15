@@ -96,8 +96,8 @@ PUSH2 2377 JUMPI`. It re-enters the single body while the counter is below seven
 after incrementing the counter; on the eighth bit it falls through to the exit at
 pc 2413 with the counter at eight. -/
 def controlProgram : List Instr :=
-  [.push 2 1, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩),
-   .push 1 7, .op .GT,
+  [.push 1 1, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩),
+   .push 2 7, .op .GT,
    .push 2 2381, .op .JUMPI]
 
 theorem run_start (hcap : rest.length ≤ 1000) :
