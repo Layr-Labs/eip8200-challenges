@@ -30,7 +30,3 @@ theorem candidate : Challenge.Modexp.Correct bytecode :=
 end Challenge.Modexp.Benchmark
 
 #print axioms Challenge.Modexp.Benchmark.candidate
-
--- draw rerun 2026-09-15T14:39:20Z: identical bytes and identical proof, resubmitted under a fresh benchmark seed
-
--- draw 3 2026-09-15T15:07:14Z: identical bytes and identical proof under a fresh benchmark seed
