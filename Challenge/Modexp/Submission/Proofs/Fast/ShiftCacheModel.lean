@@ -1,5 +1,5 @@
-import Challenge.Modexp.Submission.Proofs.Fast.ShiftUnrollEntry
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftModel
+import Challenge.Modexp.Submission.Proofs.Fast.M9MacChain
 
 set_option maxRecDepth 10000
 set_option maxHeartbeats 2000000
@@ -9,7 +9,16 @@ open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
 
-abbrev entryWord := ShiftUnrollEntry.entryWord
+/-- The conversion entry the E5 block stores at 1698. The old artifact cycled through four cell
+entries at `2951 + 39 * ((-n) &&& 3)`; the new one has exactly two, the eight-limb chain head and
+the four-limb one 0x91 bytes later, so the word is a two-way choice on the limb count. -/
+def entryWord (n : Nat) : UInt256 :=
+  UInt256.ofNat (if n = 4 then 2827 else 2682)
+
+/-- The same value in the MAC chain's own vocabulary, for the section lemma's cache hypothesis. -/
+theorem entryWord_eq_entryPC (n : Nat) (hn : n = 4 ∨ n = 8) :
+    entryWord n = UInt256.ofNat (M9Mac.entryPC n) := by
+  rcases hn with h | h <;> subst h <;> rfl
 
 def cacheMem (mem : ByteArray) (n : Nat) : ByteArray :=
   Exp.storeWord mem 1698 (entryWord n)

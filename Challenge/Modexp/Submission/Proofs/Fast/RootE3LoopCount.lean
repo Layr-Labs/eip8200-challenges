@@ -12,7 +12,8 @@ def gasSteps_shiftLoop_count (s : State) (mem : ByteArray) (n bsize esize msize 
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (e : Env s) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (htop : Limbs.radix ^ n < 2 * mm)
     (inv : StepInv mem n bsize mm minv)
-    (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm) :
+    (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm)
+    (hfast : n = 4 ∨ n = 8) :
     Challenge.EvmProof.GasSteps (shiftLoopState s mem n bsize esize msize k)
       (shiftLoopState s (stepMems mem n mm k) n bsize esize msize 0) :=
   Challenge.EvmProof.GasSteps.cast
@@ -26,7 +27,7 @@ def gasSteps_shiftLoop_count (s : State) (mem : ByteArray) (n bsize esize msize 
           (gasSteps_step s (stepMems mem n mm i) n bsize esize msize (k - i) mm minv
             (by omega) (by omega) hn hn32 e invI
             (repairFacts_of (stepMems mem n mm i) n mm _ hn hn32 hmpos hmm htop invI.modulus
-              invI.neg hbaseI (Nat.mod_lt _ hmpos)))
+              invI.neg hbaseI (Nat.mod_lt _ hmpos)) hfast)
           rfl (by
             show shiftLoopState s (stepMem (stepMems mem n mm i) n mm) n bsize esize msize
               (k - i - 1) = shiftLoopState s (stepMems mem n mm (i + 1)) n bsize esize msize
