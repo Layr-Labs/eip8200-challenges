@@ -108,38 +108,60 @@ theorem run_reverse (s : State) (pc v ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim
   rw [reversed_eq] at h2
   exact DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
 
-def highStore : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 60), .op .MSTORE ]
-def lowStore : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 28), .op .MSTORE ]
+def highStore : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 96), .op .MSTORE ]
+
+/-- The lower half is stored twice, eighteen bytes apart: the surviving bytes of the
+`46` store duplicate the low word's own tail, which is what lets the schedule loads
+below read the same thirty-two-bit field in two lanes at once. -/
+def lowStore : List Instr :=
+  [ .op (.Dup ⟨0, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 46),
+    .op .MSTORE,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 28),
+    .op .MSTORE ]
+
+/-- The scratch image the endian stage leaves behind. -/
+def scratch3 (memory : ByteArray) (low high : UInt256) : ByteArray :=
+  writeWord (writeWord (writeWord memory 96 high) 46 low) 28 low
 
 theorem run_highStore (s : State) (pc value : UInt256) (rest : List UInt256)
-    (hstack : rest.length < 1022) (hrun : s.halt = .Running) :
+    (hstack : rest.length < 1022) (hrun : s.halt = .Running)
+    (hactive : 35 ≤ s.activeWords.toNat) :
     runInstrSeq highStore {s with pc := pc, stack := value :: rest} =
       some { s with
         pc := pcAfter pc highStore
         stack := rest
-        memory := writeWord s.memory 60 value
-        activeWords := UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 60 32)} :=
+        memory := writeWord s.memory 96 value} :=
   by
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hcap : rest.length + 1 + 1 < 1024 := by omega
-  have haddr : (UInt256.ofNat 60).toNat = 60 := by decide
+  have haddr : (UInt256.ofNat 96).toNat = 96 := by decide
+  have hact : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 96 32) = s.activeWords :=
+    Stagger144Active.word_active_preserved s.activeWords 96 hactive (by decide)
   simp [highStore, writeWord, runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, hrun, hcap1, hcap,
-    UInt256.succ, Instr.size, State.activeWordsAfterUInt256, haddr]
+    UInt256.succ, Instr.size, State.activeWordsAfterUInt256, haddr, hact]
   all_goals rfl
 
 theorem run_lowStore (s : State) (pc value : UInt256) (rest : List UInt256)
-    (hstack : rest.length < 1022) (hrun : s.halt = .Running) :
+    (hstack : rest.length + 3 < 1024) (hrun : s.halt = .Running)
+    (hactive : 35 ≤ s.activeWords.toNat) :
     runInstrSeq lowStore {s with pc := pc, stack := value :: rest} =
       some { s with
         pc := pcAfter pc lowStore
         stack := rest
-        memory := writeWord s.memory 28 value
-        activeWords := UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 28 32)} := by
+        memory := writeWord (writeWord s.memory 46 value) 28 value} := by
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hcap : rest.length + 1 + 1 < 1024 := by omega
-  have haddr : (UInt256.ofNat 28).toNat = 28 := by decide
-  simp [lowStore, writeWord, runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, hrun, hcap1, hcap,
-    UInt256.succ, Instr.size, State.activeWordsAfterUInt256, haddr]
+  have hcap2 : rest.length + 1 + 1 + 1 < 1024 := by omega
+  have haddr46 : (UInt256.ofNat 46).toNat = 46 := by decide
+  have haddr28 : (UInt256.ofNat 28).toNat = 28 := by decide
+  have hact46 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 46 32) = s.activeWords :=
+    Stagger144Active.word_active_preserved s.activeWords 46 hactive (by decide)
+  have hact28 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 28 32) = s.activeWords :=
+    Stagger144Active.word_active_preserved s.activeWords 28 hactive (by decide)
+  simp [lowStore, writeWord, runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, hrun,
+    hcap1, hcap, hcap2, UInt256.succ, Instr.size, State.activeWordsAfterUInt256,
+    haddr46, haddr28, hact46, hact28, List.getElem?_cons_zero]
   all_goals rfl
 
 theorem active_swap (cur : UInt256) (p : Nat) (hbound : p + 64 < 2 ^ 256) :
@@ -194,7 +216,7 @@ theorem active_ge37 (cur : UInt256) (p : Nat) (hp : 1120 ≤ p) (hbound : p + 64
 
 def template : List Instr :=
   loadTemplate 1152 ++ (stage8 true ++ stage16) ++ highStore ++ [.op .JUMPDEST] ++ loadTemplate 1120 ++ (stage8 false ++ stage16) ++
-    lowStore ++ [.op (.Dup ⟨1, by decide⟩)]
+    lowStore
 
 theorem run_template (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UInt256)
     (rho : List UInt256) (p : Nat) (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
@@ -204,8 +226,8 @@ theorem run_template (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim 
     runInstrSeq template {s with pc := pc, stack := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho} =
       some {s with
         pc := pcAfter pc template
-        stack := mw :: stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho
-        memory := StaggerScratch.scratchMemory s.memory
+        stack := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho
+        memory := scratch3 s.memory
           (PairedScheduleData.reversedWord (MachineState.readWord s.memory p))
           (PairedScheduleData.reversedWord (MachineState.readWord s.memory (p + 32)))
         activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
@@ -214,7 +236,7 @@ theorem run_template (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim 
   let a1 := activeAfterWord s.activeWords (UInt256.ofNat (p + 32))
   have ha1 : 37 ≤ a1.toNat := active_ge37 s.activeWords p hp hbound
   let s1 : State := {s with activeWords := a1}
-  let s2 : State := {s1 with memory := writeWord s.memory 60 high}
+  let s2 : State := {s1 with memory := writeWord s.memory 96 high}
   let F := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho
   have hF : F.length ≤ 1005 := by simp [F, stk]; omega
   have h1 := run_load s pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho 1152 (p + 32) hstack hrun hq1 (by omega)
@@ -222,8 +244,7 @@ theorem run_template (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim 
     ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho true hstack hrun
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
   have h3 := run_highStore s1 (pcAfter (pcAfter (pcAfter pc (loadTemplate 1152)) (stage8 true)) stage16) high F
-    (by omega) hrun
-  rw [Stagger144Active.word_active_preserved _ _ (by change 35 ≤ a1.toNat; omega) (by decide)] at h3
+    (by omega) hrun (by change 35 ≤ a1.toNat; omega)
   have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
   let pcJ := pcAfter (pcAfter (pcAfter (pcAfter pc (loadTemplate 1152)) (stage8 true)) stage16) highStore
   let pc3 := pcAfter pcJ [.op .JUMPDEST]
@@ -245,24 +266,15 @@ theorem run_template (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim 
     ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho false hstack hrun
   have h12345 := DenseScheduleTrace.runInstrSeq_append_running h1234 (by exact hrun) h5
   have h6 := run_lowStore s2 (pcAfter (pcAfter pc4 (stage8 false)) stage16) low F (by omega) hrun
-  rw [Stagger144Active.word_active_preserved _ _ (by change 35 ≤ a1.toNat; omega) (by decide)] at h6
-  have h123456 := DenseScheduleTrace.runInstrSeq_append_running h12345 (by exact hrun) h6
-  let s3 : State := {s2 with memory := writeWord s2.memory 28 low}
-  have h7 : runInstrSeq [.op (.Dup ⟨1, by decide⟩)]
-      {s3 with pc := pcAfter (pcAfter (pcAfter pc4 (stage8 false)) stage16) lowStore, stack := F} =
-      some {s3 with pc := pcAfter (pcAfter (pcAfter (pcAfter pc4 (stage8 false)) stage16) lowStore) [.op (.Dup ⟨1, by decide⟩)], stack := mw :: F} := by
-    have hcap (n : Nat) (hn : n ≤ 27) : rho.length + n < 1024 := by omega
-    simp (discharger := omega) [F, stk, runInstrSeq, DataStepper.runInstr, pcAfter, hrun, hcap, Instr.size,
-      UInt256.succ, s3, s2, s1, Nat.add_assoc, List.getElem?_cons_zero]
-    rfl
-  have h := DenseScheduleTrace.runInstrSeq_append_running h123456 (by exact hrun) h7
+    (by change 35 ≤ a1.toNat; omega)
+  have h := DenseScheduleTrace.runInstrSeq_append_running h12345 (by exact hrun) h6
   have hloaded : loadedActiveWords s (UInt256.ofNat p) = a1 := active_swap s.activeWords p hbound
-  simp only [template, DenseScheduleTrace.pcAfter_append, List.append_assoc] at h ⊢
+  simp only [template, DenseScheduleTrace.pcAfter_append, List.append_assoc, scratch3] at h ⊢
   rw [hloaded]
   exact h
 
-theorem exact_bytes : assembleBytes template = [97, 4, 128, 140, 1, 81, 128, 96, 8, 28, 129, 24, 143, 22, 97, 1, 1, 2, 24, 143, 129, 128, 96, 16, 28, 24, 22, 98, 1, 0, 1, 2, 24, 96, 60, 82, 91, 97, 4, 96, 140, 1, 81, 128, 96, 8, 28, 129, 24, 143, 22, 97, 1, 1, 2, 24, 143, 129, 128, 96, 16, 28, 24, 22, 98, 1, 0, 1, 2, 24, 96, 28, 82, 129] := by decide
-theorem end_pc : pcAfter (UInt256.ofNat 480) template = UInt256.ofNat 554 := by decide
+theorem exact_bytes : assembleBytes template = [97, 4, 128, 140, 1, 81, 128, 96, 8, 28, 129, 24, 143, 22, 97, 1, 1, 2, 24, 143, 129, 128, 96, 16, 28, 24, 22, 98, 1, 0, 1, 2, 24, 96, 96, 82, 91, 97, 4, 96, 140, 1, 81, 128, 96, 8, 28, 129, 24, 143, 22, 97, 1, 1, 2, 24, 143, 129, 128, 96, 16, 28, 24, 22, 98, 1, 0, 1, 2, 24, 128, 96, 46, 82, 96, 28, 82] := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 495) template = UInt256.ofNat 572 := by decide
 #print axioms run_template
 #print axioms exact_bytes
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13Endian

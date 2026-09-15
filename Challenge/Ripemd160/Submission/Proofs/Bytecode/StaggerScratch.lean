@@ -157,7 +157,7 @@ private theorem scratch_prefix (memory : ByteArray) (low high : UInt256) (a n : 
   rw [if_neg (by omega), if_neg (by omega)]
 
 /-- A clean first word leaves bytes `[0,28)` zero. -/
-private theorem low_zero (memory : ByteArray)
+theorem low_zero (memory : ByteArray)
     (hlow : (MachineState.readWord memory 0).toNat < 2 ^ 32) (a : Nat) (ha : a ≤ 28) :
     Precompile.bytesToNatPadded memory a (28 - a) = 0 := by
   rw [Bytes.readWord_toNat] at hlow

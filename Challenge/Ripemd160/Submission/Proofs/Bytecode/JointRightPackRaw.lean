@@ -84,7 +84,9 @@ def template : List Instr :=
     .op .SHL,
     .op (.Dup ⟨11, by decide⟩),
     .op .OR,
-    .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
+    .op (.Dup ⟨6, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+    .op .SHL,
     .op (.Dup ⟨7, by decide⟩),
     .op (.Dup ⟨1, by decide⟩),
     .op .OR ]
@@ -141,19 +143,16 @@ private theorem actualOutput_eq (memory : ByteArray) (x : Input) (rho : List UIn
     RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
 private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 35 ≤ s.activeWords.toNat)
-    (hlower : x.lower = UInt256.ofNat 4294967295) :
+    (hactive : 35 ≤ s.activeWords.toNat) :
     runInstrSeq template {s with pc := pc, stack := inputStack x rho} =
       some {s with pc := pcAfter pc template, stack := actualOutput s.memory x rho} := by
-  have hupper : UInt256.shiftLeft (UInt256.ofNat 4294967295) (UInt256.ofNat 144) =
-      UInt256.ofNat 95780971281817308448866066055358605703522833630494720 := by decide
   have hbase : rho.length < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
   have hcap (n : Nat) (hn : n ≤ 32) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 1088) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     Stagger144Active.word_active_preserved s.activeWords address hactive haddress
-  simp (discharger := omega) [template, inputStack, actualOutput, hlower, hupper,
+  simp (discharger := omega) [template, inputStack, actualOutput,
     runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
     State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat,
@@ -162,10 +161,9 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 35 ≤ s.activeWords.toNat)
-    (hlower : x.lower = UInt256.ofNat 4294967295) :
+    (hactive : 35 ≤ s.activeWords.toNat) :
     runInstrSeq template {s with pc := pc, stack := inputStack x rho} =
       some {s with pc := pcAfter pc template, stack := outputStack s.memory x rho} := by
-  simpa only [actualOutput_eq] using run_generated s pc x rho hstack hrun hactive hlower
+  simpa only [actualOutput_eq] using run_generated s pc x rho hstack hrun hactive
 #print axioms run_actual
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.JointRightPackRaw

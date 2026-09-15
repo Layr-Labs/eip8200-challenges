@@ -27,7 +27,7 @@ theorem run_normal (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UIn
         memory := StaggerTableLayout.resultMemory s.memory (StaggerScratch.dirtyWord s.memory p)
         activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
   let words := StaggerScratch.dirtyWord s.memory p
-  let scratch := StaggerScratch.scratchMemory s.memory
+  let scratch := Shared32Scratch.fanMemory s.memory
     (PairedScheduleData.reversedWord (MachineState.readWord s.memory p))
     (PairedScheduleData.reversedWord (MachineState.readWord s.memory (p + 32)))
   have h := Pair13NormalTrace.run_normal s pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho p
@@ -38,11 +38,11 @@ theorem run_normal (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UIn
     simp only [words, StaggerScratch.dirtyWord, if_neg hnot]
     exact PairedScheduleData.extractedWord_bound s.memory p i
   have hscratchgap : PairStoreGap.GapClear scratch :=
-    PairStoreGap.scratchMemory_gapClear s.memory _ _ hgap
+    Shared32Scratch.fanMemory_gapClear s.memory _ _ hgap
   have hm : Pair13WriterRaw.writerMemory scratch words = StaggerTableLayout.resultMemory scratch words :=
     Pair13Memory.writerMemory_eq_resultMemory scratch words hclean hscratchgap
   have herase : StaggerTableLayout.resultMemory scratch words = StaggerTableLayout.resultMemory s.memory words :=
-    StaggerScratch.erase_scratch s.memory (StaggerTableLayout.tableWords words) _ _
+    Shared32Scratch.erase_fan s.memory (StaggerTableLayout.tableWords words) _ _
   change runInstrSeq normalTemplate {s with pc := pc, stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho} =
     some {s with pc := pcAfter pc normalTemplate, stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho, memory := StaggerTableLayout.resultMemory s.memory words, activeWords := loadedActiveWords s (UInt256.ofNat p)}
   rw [← herase, ← hm]

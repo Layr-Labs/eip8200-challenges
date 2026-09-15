@@ -11,14 +11,14 @@ open PersistentStaggerIteration StaggerPersistentFrame
 
 noncomputable opaque gasSteps_setup (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (i : Nat) (hi : i < DriverTrace.blockCount input)
-    (hh : input.size = DriverTrace.blockOffset i) (hlarge : 5223 ≤ input.size) :
+    (hh : input.size = DriverTrace.blockOffset i) (hlarge : 5219 ≤ input.size) :
     GasSteps
       {states input i with
-        pc := UInt256.ofNat 4766
+        pc := UInt256.ofNat 4762
         stack := frame (hashes input i) (DriverTrace.blockOffsetWord i)
           (LoopCompletionControl.limit input) maskRho}
       {tableState input i with
-        pc := UInt256.ofNat 884
+        pc := UInt256.ofNat 899
         stack := frame (hashes input i) (DriverTrace.blockOffsetWord i)
           (Padding.paddedWord input) maskRho} :=
   ColdTraceCompose.two (gasSteps_lowRoute input hfit hpositive i hi hh hlarge)

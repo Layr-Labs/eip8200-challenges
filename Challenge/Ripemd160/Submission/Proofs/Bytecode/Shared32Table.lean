@@ -70,16 +70,16 @@ theorem table_ready (memory : ByteArray) :
 
 theorem writer_memory (memory : ByteArray) (hgap : PairStoreGap.GapClear memory) :
     Pair13WriterRaw.writerMemory
-      (StaggerScratch.scratchMemory memory
+      (fanMemory memory
         (PairedScheduleData.reversedWord (MachineState.readWord memory 1120)) highWord)
       (words memory) = StaggerTableLayout.resultMemory memory (words memory) := by
   rw [Pair13Memory.writerMemory_eq_resultMemory _ _ (words_clean memory)
-    (PairStoreGap.scratchMemory_gapClear _ _ _ hgap)]
-  exact StaggerScratch.erase_scratch memory _ _ _
+    (fanMemory_gapClear _ _ _ hgap)]
+  exact erase_fan memory _ _ _
 
 theorem copied_writer_memory (input : ByteArray) :
     Pair13WriterRaw.writerMemory
-      (StaggerScratch.scratchMemory (copiedMemory input)
+      (fanMemory (copiedMemory input)
         (PairedScheduleData.reversedWord (MachineState.readWord (copiedMemory input) 1120)) highWord)
       (words (copiedMemory input)) =
       StaggerTableLayout.resultMemory (copiedMemory input) (words (copiedMemory input)) :=

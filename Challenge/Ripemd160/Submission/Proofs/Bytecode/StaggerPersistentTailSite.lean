@@ -10,17 +10,17 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate
 abbrev template := ScheduledTailRaw.template
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 3524).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3514).take template.length = template := by rfl
 
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3524 actual_slice
-    (by change 3524 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3514 actual_slice
+    (by change 3514 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 
-theorem site_pc : site.startPC = UInt256.ofNat 4584 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3524) = UInt256.ofNat 4584
+theorem site_pc : site.startPC = UInt256.ofNat 4580 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3514) = UInt256.ofNat 4580
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction :=
@@ -32,14 +32,14 @@ def gasSteps_prefix (s : State) (off limit : UInt256) (h : Compression.HashState
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4584, stack := StaggerPersistentTailRaw.entryStack (StaggerPersistentFrame.bind h {q with off := off, limit := limit}) rho}
-      {s with pc := UInt256.ofNat 4633, stack := StaggerPersistentFrame.frame (StaggerPersistentFrame.combine h q) off limit rho} := by
+    GasSteps {s with pc := UInt256.ofNat 4580, stack := StaggerPersistentTailRaw.entryStack (StaggerPersistentFrame.bind h {q with off := off, limit := limit}) rho}
+      {s with pc := UInt256.ofNat 4629, stack := StaggerPersistentFrame.frame (StaggerPersistentFrame.combine h q) off limit rho} := by
   apply DenseScheduleLift.gasSteps_of_raw site
-    {s with pc := UInt256.ofNat 4584, stack := StaggerPersistentTailRaw.entryStack (StaggerPersistentFrame.bind h {q with off := off, limit := limit}) rho}
-    {s with pc := UInt256.ofNat 4633, stack := StaggerPersistentFrame.frame (StaggerPersistentFrame.combine h q) off limit rho}
+    {s with pc := UInt256.ofNat 4580, stack := StaggerPersistentTailRaw.entryStack (StaggerPersistentFrame.bind h {q with off := off, limit := limit}) rho}
+    {s with pc := UInt256.ofNat 4629, stack := StaggerPersistentFrame.frame (StaggerPersistentFrame.combine h q) off limit rho}
     hcode hfork hrun hnp site_pc.symm advances
-  have hraw := ScheduledTailBridge.run_current s (UInt256.ofNat 4584) h {q with off := off, limit := limit} rho hstack hrun
-  have hend : pcAfter (UInt256.ofNat 4584) template = UInt256.ofNat 4633 := by decide
+  have hraw := ScheduledTailBridge.run_current s (UInt256.ofNat 4580) h {q with off := off, limit := limit} rho hstack hrun
+  have hend : pcAfter (UInt256.ofNat 4580) template = UInt256.ofNat 4629 := by decide
   rw [hend] at hraw
   exact hraw
 

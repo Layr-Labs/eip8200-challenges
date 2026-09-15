@@ -1,5 +1,4 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Lower
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Table
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Msize
 
 set_option warningAsError true
@@ -13,9 +12,9 @@ open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory Pair13Endian
 open Shared32Scratch
 
 def template : List Instr :=
-  [.push ⟨1, by decide⟩ (UInt256.ofNat 63), .op .MSTORE8,
+  [.push ⟨1, by decide⟩ (UInt256.ofNat 99), .op .MSTORE8,
    .op (.Dup ⟨4, by decide⟩),
-   .push ⟨1, by decide⟩ (UInt256.ofNat 86), .op .MSTORE8]
+   .push ⟨1, by decide⟩ (UInt256.ofNat 122), .op .MSTORE8]
 
 theorem run_sparse (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
@@ -37,7 +36,7 @@ theorem run_sparse (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt
     hactive, MachineState.activeWordsAfter, hbyte, sparseMemory]
   rfl
 
-theorem bytes_exact : assembleBytes template = [96,63,83,132,96,86,83] := by decide
+theorem bytes_exact : assembleBytes template = [96,99,83,132,96,122,83] := by decide
 
 theorem sparse_read_input (input : ByteArray) (hn : 0 < input.size) :
     MachineState.readWord (sparseMemory (copiedMemory input)) 1120 =
@@ -45,11 +44,15 @@ theorem sparse_read_input (input : ByteArray) (hn : 0 < input.size) :
   rw [copiedMemory_sparse input hn]
   exact read_writeWord_disjoint _ _ _ _ (Or.inr (by decide))
 
+/-- The exact-32 route places the upper scratch word with the two sparse MSTORE8s and the
+lower one with the doubled store, which together build exactly `Pair13Endian.scratch3`. -/
 theorem sparse_lower_memory (input : ByteArray) (hn : 0 < input.size) :
-    writeWord (sparseMemory (copiedMemory input)) 28
+    writeWord (writeWord (sparseMemory (copiedMemory input)) 46
+        (PairedScheduleData.reversedWord
+          (MachineState.readWord (sparseMemory (copiedMemory input)) 1120))) 28
       (PairedScheduleData.reversedWord
         (MachineState.readWord (sparseMemory (copiedMemory input)) 1120)) =
-      StaggerScratch.scratchMemory (copiedMemory input)
+      Pair13Endian.scratch3 (copiedMemory input)
         (PairedScheduleData.reversedWord (MachineState.readWord (copiedMemory input) 1120))
         highWord := by
   rw [sparse_read_input input hn, copiedMemory_sparse input hn]
