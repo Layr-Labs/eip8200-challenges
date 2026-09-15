@@ -23,7 +23,7 @@ def loadProgram : List Instr :=
    .push 2 2752, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .ADD,
    .push 1 32, .op .MLOAD,
    .push 1 31, .op .NOT, .push 2 2688, .op .MLOAD,
-   .push 1 128, .op .EQ, .push 1 148, .op .MUL]
+   .push 1 128, .op .AND, .push 1 14, .op .MUL]
 
 def shuffleProgram : List Instr :=
   [
@@ -43,8 +43,13 @@ def shuffleProgram : List Instr :=
 def lowProgram : List Instr :=
   [.push 1 64, .op .MLOAD, .op (.Swap ⟨10, by decide⟩)]
 
+/-- The four-limb displacement.  The artifact now masks instead of comparing:
+`PUSH1 128 AND PUSH1 14 MUL` yields `14 * (128 &&& s32)`, which is 1792 at
+`s32 = 128` and 0 at `s32 = 256`.  Unlike the old `148 * [s32 = 128]` this agrees
+with `1792 * isFour n` only for `n = 4` and `n = 8` (at `n = 5,6,7` the mask is
+still set), so every consumer carries `n = 4 ∨ n = 8` rather than `2 ≤ n ≤ 8`. -/
 def displacement (mem : ByteArray) : UInt256 :=
-  UInt256.ofNat 148 * UInt256.eq (UInt256.ofNat 128) (MachineState.readWord mem 2688)
+  UInt256.ofNat 14 * UInt256.land (UInt256.ofNat 128) (MachineState.readWord mem 2688)
 
 def readsProgram : List Instr := loadProgram.take 16
 def setupProgram : List Instr := loadProgram.drop 16
