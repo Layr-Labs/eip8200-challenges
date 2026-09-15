@@ -18,6 +18,7 @@ def rowLemmas : RowLemmas where
   gasSteps_l1MulFour := CarryRowGas.gasSteps_l1MulFour
   gasSteps_l1MulEight := CarryRowGas.gasSteps_l1MulEight
   gasSteps_mid := CarryRowGas.gasSteps_mid
+  gasSteps_midCopy := CarryRowGas.gasSteps_midCopy
   gasSteps_l2Four := CarryRowGas.gasSteps_l2Four
   gasSteps_l2Eight := CarryRowGas.gasSteps_l2Eight
   gasSteps_tailNext := CarryRowGas.gasSteps_tailNext

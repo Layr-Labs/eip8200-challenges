@@ -70,7 +70,8 @@ opaque gasSteps_rowFourToTail (L : RowLemmas) (s : State) (mem : ByteArray) (pa 
   refine (L.gasSteps_l1MulFour s mem (rowBi mem pb 4 i) pa pb i (UInt256.ofNat 3351) inv m0
     (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest) hcap' hrun hcode hfork hnp hact
     hpaFit hsnapshot).trans ?_
-  refine (L.gasSteps_mid s (l1Step mem (rowBi mem pb 4 i) pa 4 4).memory
+  -- four limbs: the middle block inside the private ladder copy, 5283 -> 5310
+  refine (L.gasSteps_midCopy s (l1Step mem (rowBi mem pb 4 i) pa 4 4).memory
     (l1Step mem (rowBi mem pb 4 i) pa 4 4).carry (rowBi mem pb 4 i)
     pb 4 i (UInt256.ofNat 3351) (l1Target 4) tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap
     hrun hcode hfork hnp hact (by decide) (by decide) hminv4

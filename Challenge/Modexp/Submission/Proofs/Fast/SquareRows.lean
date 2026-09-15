@@ -37,8 +37,16 @@ open CiosCachedMidMemory CarryRowModel StagedOperand
 /-! ## Row bookkeeping -/
 
 /-- First-loop entry of square row `i` of an `n`-limb square: the block `k = 9 - n + i`
-(limb step `i + 1`); for the last row the middle `JUMPDEST` 4555. -/
-def sqEnt (n i : Nat) : Nat := 3380 + 37 * (8 - n + i)
+(limb step `i + 1`); for the last row the middle `JUMPDEST`.
+
+Row `i`'s entry is the frame's `ent` slot advanced by 37 per row.  The setup
+computes `ent = 3380 + 14 * (s32 &&& 128)`, so the displacement for four limbs is 1792
+rather than 148 = 37*4: the four-limb square walks the private ladder copy
+(5172, 5209, 5246, 5283) exactly as the four-limb multiply does, and the eight-limb
+square is unchanged on the shared ladder.  Kept linear in `n` (448 = 1792/4) so the
+existing `omega`/`decide` proofs about it still go through.  `sqEnt n 0 = l2Target n - 288`
+continues to hold: 5460 - 288 = 5172 and 3668 - 288 = 3380. -/
+def sqEnt (n i : Nat) : Nat := 3380 + 448 * (8 - n) + 37 * i
 
 /-- Frame slot 14 at row head `i`: the row-0 value `a0` (the setup's `aEnd`, or zero when
 the in-kernel loop re-enters), and the limb `x_{i-1}` that row `i - 1` parked there. -/
@@ -69,10 +77,13 @@ theorem sqTb_eq_prev (a0 : UInt256) (M0 : ByteArray) (n i : Nat) (hi : i < n) (h
       exact ha0
   | succ j => exact (sqTb_succ_carry M0 n j (by omega) hn).symm
 
-theorem jumpDest_sqEnt (n i : Nat) (hn : n ≤ 8) (hi : i < n) :
+theorem jumpDest_sqEnt (n i : Nat) (hn4 : n = 4 ∨ n = 8) (hi : i < n) :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (sqEnt n i) = true := by
-  have h := KernelChain.jumpDest_l1Entry (9 - n + i) (by omega) (by omega)
-  rwa [show 9 - n + i - 1 = 8 - n + i by omega] at h
+  rcases hn4 with rfl | rfl
+  · have h := KernelChain.jumpDest_l1EntryCopy (9 - 4 + i) (by omega) (by omega)
+    rwa [show (5024 + 37 * (9 - 4 + i - 1)) = sqEnt 4 i by unfold sqEnt; omega] at h
+  · have h := KernelChain.jumpDest_l1Entry (9 - 8 + i) (by omega) (by omega)
+    rwa [show (3380 + 37 * (9 - 8 + i - 1)) = sqEnt 8 i by unfold sqEnt; omega] at h
 
 theorem jumpDest4710' :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 4065).toNat = true :=
@@ -119,50 +130,91 @@ def gasSteps_rowToTail (s : State) (mem : ByteArray) (n i : Nat)
   -- the prologue
   have gP := gasSteps_prologue s mem n i (sqEnt n i) inv m0 tl m96 m64 m32 aprev
     (pdst :: ret :: rest) (by simp only [List.length_cons]; omega) hrun hcode hfork hnp hact hi hn8
-    (jumpDest_sqEnt n i hn8 hi) (by unfold sqEnt; omega)
-  -- the chain: block `k = 9 - n + i`, limb steps `i + 1 .. n - 1`
-  have hk : 9 - n + i - 1 = 8 - n + i := by omega
-  have hsteps : 8 - (9 - n + i) = n - 1 - i := by omega
-  have gC := KernelChain.gasSteps_l1Suffix (9 - n + i) (by omega) (by omega) s
-    (sqPro mem n i (UInt256.sgt (UInt256.ofNat 0) aprev))
-    (sqB2 (sqX mem n i) (UInt256.sgt (UInt256.ofNat 0) aprev)) 2368 2368 n i (i + 1)
-    (UInt256.ofNat 4065) (UInt256.ofNat (sqEnt n i + 37)) inv m0
-    (tl :: m96 :: m64 :: m32 :: sqX mem n i :: pdst :: ret :: rest)
-    (by simp only [List.length_cons]; omega) hrun hcode hfork hnp hact hn8 (by omega) (by omega)
-    (hsnap.sqPro i _ hi hn8)
-  rw [hk, hsteps] at gC
-  -- the first-loop result is `sqL1`
-  have hQ : l1Run (sqPro mem n i (UInt256.sgt (UInt256.ofNat 0) aprev))
-      (sqB2 (sqX mem n i) (UInt256.sgt (UInt256.ofNat 0) aprev)) 2368 n (i + 1) (n - 1 - i) =
-      sqL1 mem n i (UInt256.sgt (UInt256.ofNat 0) aprev) := rfl
-  rw [hQ] at gC
-  -- caches on the first-loop result
-  have hstep : i + 1 + (n - 1 - i) ≤ n := by omega
-  have hcQ : CiosReadonly.ReadonlyCache (sqL1 mem n i (UInt256.sgt (UInt256.ofNat 0) aprev)).memory
-      n tl inv m0 :=
-    SquareCaches.readonlyCache_l1Run (SquareCaches.readonlyCache_sqPro hc hn32 i hi _) hn32 _ 2368
-      (i + 1) (n - 1 - i) hstep
-  have heQ : CiosReadonlyExtra.ExtraCache
-      (sqL1 mem n i (UInt256.sgt (UInt256.ofNat 0) aprev)).memory m96 m64 m32 :=
-    SquareCaches.extraCache_l1Run (SquareCaches.extraCache_sqPro he n i hi _) _ 2368 n
-      (i + 1) (n - 1 - i) hstep
-  have hminvQ : inverseInvariant (sqL1 mem n i (UInt256.sgt (UInt256.ofNat 0) aprev)).memory n :=
-    SquareCaches.inverse_l1Run _ _ 2368 n (i + 1) (n - 1 - i) hn32 hstep
-      (SquareCaches.inverse_sqPro mem n i _ hn32 hi hminv)
-  -- the middle
-  have gM := CarryRowGas.gasSteps_mid s (sqL1 mem n i (UInt256.sgt (UInt256.ofNat 0) aprev)).memory
-    (sqL1 mem n i (UInt256.sgt (UInt256.ofNat 0) aprev)).carry
-    (sqB2 (sqX mem n i) (UInt256.sgt (UInt256.ofNat 0) aprev)) 2368 n i
-    (UInt256.ofNat 4065) (UInt256.ofNat (sqEnt n i + 37)) tl inv m0 (sqX mem n i) m96 m64 m32
-    pdst ret rest hcap hrun hcode hfork hnp hact hn2 hn32 hminvQ hcQ
-  refine (gP.trans gC).trans (gM.trans ?_)
-  -- the second loop
+    (jumpDest_sqEnt n i hn hi) (by unfold sqEnt; omega)
+  -- Four limbs walk the private ladder copy (5172, 5209, 5246, 5283) and leave through its
+  -- own `PUSH2 0x0ee8 JUMP`; eight limbs walk the shared ladder and, with the `DUP10 JUMP`
+  -- gone, fall through 3639 into the join at 3668.  Chain, middle block and exit all differ,
+  -- so the row splits on the width here.
   by_cases h4 : n = 4
   · subst h4
+    -- the chain: block `k = 9 - 4 + i`, limb steps `i + 1 .. 4 - 1`
+    have hk : (5024 + 37 * (9 - 4 + i - 1)) = sqEnt 4 i := by unfold sqEnt; omega
+    have hsteps : 8 - (9 - 4 + i) = 4 - 1 - i := by omega
+    have gC := KernelChain.gasSteps_l1SuffixCopy (9 - 4 + i) (by omega) (by omega) s
+      (sqPro mem 4 i (UInt256.sgt (UInt256.ofNat 0) aprev))
+      (sqB2 (sqX mem 4 i) (UInt256.sgt (UInt256.ofNat 0) aprev)) 2368 2368 4 i (i + 1)
+      (UInt256.ofNat 4065) (UInt256.ofNat (sqEnt 4 i + 37)) inv m0
+      (tl :: m96 :: m64 :: m32 :: sqX mem 4 i :: pdst :: ret :: rest)
+      (by simp only [List.length_cons]; omega) hrun hcode hfork hnp hact hn8 (by omega) (by omega)
+      (hsnap.sqPro i _ hi hn8)
+    rw [hk, hsteps] at gC
+    -- the first-loop result is `sqL1`
+    have hQ : l1Run (sqPro mem 4 i (UInt256.sgt (UInt256.ofNat 0) aprev))
+        (sqB2 (sqX mem 4 i) (UInt256.sgt (UInt256.ofNat 0) aprev)) 2368 4 (i + 1) (4 - 1 - i) =
+        sqL1 mem 4 i (UInt256.sgt (UInt256.ofNat 0) aprev) := rfl
+    rw [hQ] at gC
+    -- caches on the first-loop result
+    have hstep : i + 1 + (4 - 1 - i) ≤ 4 := by omega
+    have hcQ : CiosReadonly.ReadonlyCache (sqL1 mem 4 i (UInt256.sgt (UInt256.ofNat 0) aprev)).memory
+        4 tl inv m0 :=
+      SquareCaches.readonlyCache_l1Run (SquareCaches.readonlyCache_sqPro hc hn32 i hi _) hn32 _ 2368
+        (i + 1) (4 - 1 - i) hstep
+    have heQ : CiosReadonlyExtra.ExtraCache
+        (sqL1 mem 4 i (UInt256.sgt (UInt256.ofNat 0) aprev)).memory m96 m64 m32 :=
+      SquareCaches.extraCache_l1Run (SquareCaches.extraCache_sqPro he 4 i hi _) _ 2368 4
+        (i + 1) (4 - 1 - i) hstep
+    have hminvQ : inverseInvariant (sqL1 mem 4 i (UInt256.sgt (UInt256.ofNat 0) aprev)).memory 4 :=
+      SquareCaches.inverse_l1Run _ _ 2368 4 (i + 1) (4 - 1 - i) hn32 hstep
+        (SquareCaches.inverse_sqPro mem 4 i _ hn32 hi hminv)
+    -- the middle
+    have gM := CarryRowGas.gasSteps_midCopy s (sqL1 mem 4 i (UInt256.sgt (UInt256.ofNat 0) aprev)).memory
+      (sqL1 mem 4 i (UInt256.sgt (UInt256.ofNat 0) aprev)).carry
+      (sqB2 (sqX mem 4 i) (UInt256.sgt (UInt256.ofNat 0) aprev)) 2368 4 i
+      (UInt256.ofNat 4065) (UInt256.ofNat (sqEnt 4 i + 37)) tl inv m0 (sqX mem 4 i) m96 m64 m32
+      pdst ret rest hcap hrun hcode hfork hnp hact hn2 hn32 hminvQ hcQ
+    refine (gP.trans gC).trans (gM.trans ?_)
+    -- the second loop
     exact CarryRowGas.gasSteps_l2Four s _ _ _ _ 2368 i (UInt256.ofNat 4065) (UInt256.ofNat (sqEnt 4 i + 37))
       tl inv m0 (sqX mem 4 i) m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact
       (extraCache_midMem1 heQ _)
   · obtain rfl : n = 8 := by omega
+    -- the chain: block `k = 9 - 8 + i`, limb steps `i + 1 .. 8 - 1`
+    have hk : (3380 + 37 * (9 - 8 + i - 1)) = sqEnt 8 i := by unfold sqEnt; omega
+    have hsteps : 8 - (9 - 8 + i) = 8 - 1 - i := by omega
+    have gC := KernelChain.gasSteps_l1Suffix (9 - 8 + i) (by omega) (by omega) s
+      (sqPro mem 8 i (UInt256.sgt (UInt256.ofNat 0) aprev))
+      (sqB2 (sqX mem 8 i) (UInt256.sgt (UInt256.ofNat 0) aprev)) 2368 2368 8 i (i + 1)
+      (UInt256.ofNat 4065) (UInt256.ofNat (sqEnt 8 i + 37)) inv m0
+      (tl :: m96 :: m64 :: m32 :: sqX mem 8 i :: pdst :: ret :: rest)
+      (by simp only [List.length_cons]; omega) hrun hcode hfork hnp hact hn8 (by omega) (by omega)
+      (hsnap.sqPro i _ hi hn8)
+    rw [hk, hsteps] at gC
+    -- the first-loop result is `sqL1`
+    have hQ : l1Run (sqPro mem 8 i (UInt256.sgt (UInt256.ofNat 0) aprev))
+        (sqB2 (sqX mem 8 i) (UInt256.sgt (UInt256.ofNat 0) aprev)) 2368 8 (i + 1) (8 - 1 - i) =
+        sqL1 mem 8 i (UInt256.sgt (UInt256.ofNat 0) aprev) := rfl
+    rw [hQ] at gC
+    -- caches on the first-loop result
+    have hstep : i + 1 + (8 - 1 - i) ≤ 8 := by omega
+    have hcQ : CiosReadonly.ReadonlyCache (sqL1 mem 8 i (UInt256.sgt (UInt256.ofNat 0) aprev)).memory
+        8 tl inv m0 :=
+      SquareCaches.readonlyCache_l1Run (SquareCaches.readonlyCache_sqPro hc hn32 i hi _) hn32 _ 2368
+        (i + 1) (8 - 1 - i) hstep
+    have heQ : CiosReadonlyExtra.ExtraCache
+        (sqL1 mem 8 i (UInt256.sgt (UInt256.ofNat 0) aprev)).memory m96 m64 m32 :=
+      SquareCaches.extraCache_l1Run (SquareCaches.extraCache_sqPro he 8 i hi _) _ 2368 8
+        (i + 1) (8 - 1 - i) hstep
+    have hminvQ : inverseInvariant (sqL1 mem 8 i (UInt256.sgt (UInt256.ofNat 0) aprev)).memory 8 :=
+      SquareCaches.inverse_l1Run _ _ 2368 8 (i + 1) (8 - 1 - i) hn32 hstep
+        (SquareCaches.inverse_sqPro mem 8 i _ hn32 hi hminv)
+    -- the middle
+    have gM := CarryRowGas.gasSteps_mid s (sqL1 mem 8 i (UInt256.sgt (UInt256.ofNat 0) aprev)).memory
+      (sqL1 mem 8 i (UInt256.sgt (UInt256.ofNat 0) aprev)).carry
+      (sqB2 (sqX mem 8 i) (UInt256.sgt (UInt256.ofNat 0) aprev)) 2368 8 i
+      (UInt256.ofNat 4065) (UInt256.ofNat (sqEnt 8 i + 37)) tl inv m0 (sqX mem 8 i) m96 m64 m32
+      pdst ret rest hcap hrun hcode hfork hnp hact hn2 hn32 hminvQ hcQ
+    refine (gP.trans gC).trans (gM.trans ?_)
+    -- the second loop
     exact CarryRowGas.gasSteps_l2Eight s _ _ _ _ 2368 i (UInt256.ofNat 4065) (UInt256.ofNat (sqEnt 8 i + 37))
       tl inv m0 (sqX mem 8 i) m96 m64 m32 pdst ret rest hcap hrun hcode hfork hnp hact
       (extraCache_midMem1 heQ _)

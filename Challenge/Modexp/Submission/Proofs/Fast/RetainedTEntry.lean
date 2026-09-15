@@ -28,19 +28,19 @@ def pushProgram : List Instr := [.push 2 2112]
 def tailProgram : List Instr := [.op .JUMPDEST, .op .JUMP]
 
 def entryBlock : Block Artifact.submissionArtifact .Osaka 4115 entryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3104 8 4115 entryProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3102 8 4115 entryProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def pushBlock : Block Artifact.submissionArtifact .Osaka 4127 pushProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3112 1 4127 pushProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3110 1 4127 pushProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def tailBlock : Block Artifact.submissionArtifact .Osaka 5135 tailProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3951 2 5135 tailProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3949 2 5135 tailProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest4486 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4115 = true :=
-  Artifact.isValidJumpDest_index 3104 (by rfl)
+  Artifact.isValidJumpDest_index 3102 (by rfl)
 theorem jumpDest5326 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5135 = true :=
-  Artifact.isValidJumpDest_index 3951 (by rfl)
+  Artifact.isValidJumpDest_index 3949 (by rfl)
 
 /-- The comparison word the entry block tests. -/
 def skipWord (mem : ByteArray) : UInt256 :=

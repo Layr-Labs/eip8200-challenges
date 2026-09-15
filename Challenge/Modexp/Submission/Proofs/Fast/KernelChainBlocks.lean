@@ -57,6 +57,32 @@ def l1Block7 : Block Artifact.submissionArtifact .Osaka 3602 (stepProgram 0 2112
   WindowTwentyOneSlice.block Artifact.allWellFormed 2696 31 3602 (stepProgram 0 2112)
     (by decide) (by rfl) (by rfl) (by decide)
 
+/-! ## The private four-limb ladder copy (5172-5313)
+
+The four-limb multiply rows no longer share the ladder at 3528: the setup computes
+`ent = 5172`, the entry of a byte copy of 3528-3665 that keeps its own tail jump.  Because
+the copy is byte-identical, blocks k5..k7 reuse the very same `stepProgram` literals -- only
+the instruction indices and program counters differ. -/
+
+def l1Block5Copy : Block Artifact.submissionArtifact .Osaka 5172 (stepProgram 64 2176) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3986 31 5172 (stepProgram 64 2176)
+    (by decide) (by rfl) (by rfl) (by decide)
+
+def l1Block6Copy : Block Artifact.submissionArtifact .Osaka 5209 (stepProgram 32 2144) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4017 31 5209 (stepProgram 32 2144)
+    (by decide) (by rfl) (by rfl) (by decide)
+
+def l1Block7Copy : Block Artifact.submissionArtifact .Osaka 5246 (stepProgram 0 2112) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4048 31 5246 (stepProgram 0 2112)
+    (by decide) (by rfl) (by rfl) (by decide)
+
+theorem jumpDest5172 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5172 = true :=
+  Artifact.isValidJumpDest_index 3986 (by rfl)
+theorem jumpDest5209 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5209 = true :=
+  Artifact.isValidJumpDest_index 4017 (by rfl)
+theorem jumpDest5246 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5246 = true :=
+  Artifact.isValidJumpDest_index 4048 (by rfl)
+
 /-! ## Jump destinations of the chain entries (block `k` for `k = 1..7`, and the
 middle `JUMPDEST` = entry `k = 8`) -/
 
@@ -90,6 +116,26 @@ theorem jumpDest_l1Entry (k : Nat) (hk1 : 1 ≤ k) (hk8 : k ≤ 8) :
   | 7, _, _ => exact jumpDest4296
   | 8, _, _ => exact jumpDest4334
   | 0, h, _ => exact absurd h (by decide)
+  | k + 9, _, h => exact absurd h (by omega)
+
+/-- The copy's middle-block entry, 5283 (= `5024 + 37*7`). -/
+theorem jumpDest5283 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5283 = true :=
+  Artifact.isValidJumpDest_index 4079 (by rfl)
+
+/-- Every chain entry of the private four-limb ladder copy, `5024 + 37(k-1)` for
+`5 ≤ k ≤ 8`, is a valid jump destination -- the mirror of `jumpDest_l1Entry`. -/
+theorem jumpDest_l1EntryCopy (k : Nat) (hk5 : 5 ≤ k) (hk8 : k ≤ 8) :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (5024 + 37 * (k - 1)) = true := by
+  match k, hk5, hk8 with
+  | 5, _, _ => exact jumpDest5172
+  | 6, _, _ => exact jumpDest5209
+  | 7, _, _ => exact jumpDest5246
+  | 8, _, _ => exact jumpDest5283
+  | 0, h, _ => exact absurd h (by decide)
+  | 1, h, _ => exact absurd h (by decide)
+  | 2, h, _ => exact absurd h (by decide)
+  | 3, h, _ => exact absurd h (by decide)
+  | 4, h, _ => exact absurd h (by decide)
   | k + 9, _, h => exact absurd h (by omega)
 
 end Challenge.Modexp.Submission.Proofs.Fast.KernelChain
