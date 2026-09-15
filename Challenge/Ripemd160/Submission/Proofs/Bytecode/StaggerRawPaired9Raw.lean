@@ -34,7 +34,7 @@ def template : List Instr :=
     .op (.Dup ⟨5, by decide⟩),
     .op .AND,
     .op .MULMOD,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 19),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 19),
     .op .SHR,
     .op (.Dup ⟨8, by decide⟩),
     .op .ADD,

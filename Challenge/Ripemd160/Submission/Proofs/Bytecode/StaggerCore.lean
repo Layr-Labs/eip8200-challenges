@@ -9,7 +9,7 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open Paired144WordRound StaggerCoreCommon StaggerCoreModel
 open StaggerModeSeven (physicalKey)
 open StaggerModeSeven (step fold)
-def pcs : Array Nat := #[1042, 1108, 1148, 1183, 1223, 1261, 1301, 1339, 1379, 1417, 1471, 1509, 1562, 1601, 1666, 1719, 1774, 1820, 1874, 1913, 1967, 2008, 2063, 2103, 2158, 2198, 2252, 2292, 2346, 2383, 2450, 2504, 2545, 2602, 2650, 2682, 2716, 2749, 2783, 2816, 2865, 2895, 2942, 2974, 3022, 3054, 3121, 3176, 3217, 3264, 3306, 3346, 3402, 3441, 3497, 3537, 3592, 3631, 3686, 3725, 3781, 3819, 3865, 3905, 3946, 3991, 4044, 4082, 4122, 4159, 4197, 4231, 4283, 4320, 4360, 4398, 4449, 4485]
+def pcs : Array Nat := #[1046, 1112, 1152, 1187, 1227, 1265, 1305, 1343, 1383, 1421, 1474, 1512, 1565, 1604, 1669, 1722, 1777, 1823, 1877, 1916, 1970, 2010, 2065, 2105, 2160, 2200, 2254, 2294, 2348, 2385, 2452, 2506, 2547, 2604, 2652, 2684, 2718, 2751, 2785, 2818, 2867, 2897, 2944, 2976, 3024, 3056, 3123, 3178, 3219, 3266, 3308, 3348, 3404, 3443, 3499, 3539, 3594, 3633, 3688, 3727, 3783, 3821, 3867, 3907, 3948, 3992, 4045, 4083, 4123, 4160, 4198, 4232, 4284, 4321, 4361, 4399, 4450, 4486]
 def shapes : Array (List Reg) := #[
   [ .pair, .upper, .e, .b, .a, .d, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ],
   [ .d, .literal 23, .cachedMessage 360, .pair, .upper, .a, .c, .k, .e, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ],
@@ -2009,7 +2009,7 @@ def gasSteps_prefix (s : State) (h4 : UInt256) (n : Nat) (hn : n ≤ 77) (q righ
 
 
 def suffixState (s : State) (h4 : UInt256) (q : WordLane) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 4580, stack := stack s.memory h4 [ .b, .e, .a, .d, .cachedMessage 360, .k, .c, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (epilogue s.memory q) q (UInt256.ofNat 2840853838) rho}
+  {s with pc := UInt256.ofNat 4581, stack := stack s.memory h4 [ .b, .e, .a, .d, .cachedMessage 360, .k, .c, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (epilogue s.memory q) q (UInt256.ofNat 2840853838) rho}
 
 def gasSteps_suffix (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)

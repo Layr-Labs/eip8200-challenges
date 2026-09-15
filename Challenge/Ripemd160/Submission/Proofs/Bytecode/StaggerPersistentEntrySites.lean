@@ -7,7 +7,7 @@ set_option maxRecDepth 30000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentEntrySites
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate StaggerPersistentEntryRaw StaggerPersistentFrame PairedMask32Cache
-def dispatchCode : List Instr := dispatchTemplate 4762
+def dispatchCode : List Instr := dispatchTemplate 4763
 theorem dispatch_slice :
     (Artifact.submissionArtifact.instructions.drop 3567).take dispatchCode.length = dispatchCode := by rfl
 def dispatchSite : GenericRoundSite Artifact.submissionArtifact .Osaka dispatchCode :=
@@ -16,17 +16,17 @@ def dispatchSite : GenericRoundSite Artifact.submissionArtifact .Osaka dispatchC
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := dispatchCode) (by decide)) (by decide)
-theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4641 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3567) = UInt256.ofNat 4641
+theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4642 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3567) = UInt256.ofNat 4642
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_pad (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
-    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4762).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3656 = 4762 := by
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4763).toNat = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3656 = 4763 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   have h := Artifact.submissionArtifact.isValidJumpDest_index 3656 (by rfl)
   rw [hpc] at h
-  change Decode.isValidJumpDest s.executionEnv.code 4762 = true
+  change Decode.isValidJumpDest s.executionEnv.code 4763 = true
   rw [hcode]
   exact h
 
@@ -37,11 +37,11 @@ def gasSteps_hit (s : State) (off limit : UInt256) (h : Compression.HashState)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4641, stack := frame h off limit rho}
-      {s with pc := UInt256.ofNat 4762, stack := frame h off limit rho} := by
-  apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4641, stack := frame h off limit rho} _ hcode hfork hrun hnp dispatch_pc.symm
+    GasSteps {s with pc := UInt256.ofNat 4642, stack := frame h off limit rho}
+      {s with pc := UInt256.ofNat 4763, stack := frame h off limit rho} := by
+  apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4642, stack := frame h off limit rho} _ hcode hfork hrun hnp dispatch_pc.symm
   · exact PadLift.advancesAll_sound _ (by decide)
-  · have hr := run_hit s (UInt256.ofNat 4641) off limit h rho 4762 hstack hrun hfit hhit (valid_pad s hcode)
+  · have hr := run_hit s (UInt256.ofNat 4642) off limit h rho 4763 hstack hrun hfit hhit (valid_pad s hcode)
     exact hr
 
 def gasSteps_miss (s : State) (off limit : UInt256) (h : Compression.HashState)
@@ -51,12 +51,12 @@ def gasSteps_miss (s : State) (off limit : UInt256) (h : Compression.HashState)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4641, stack := frame h off limit rho}
-      {s with pc := UInt256.ofNat 4648, stack := frame h off limit rho} := by
-  apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4641, stack := frame h off limit rho} _ hcode hfork hrun hnp dispatch_pc.symm
+    GasSteps {s with pc := UInt256.ofNat 4642, stack := frame h off limit rho}
+      {s with pc := UInt256.ofNat 4649, stack := frame h off limit rho} := by
+  apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4642, stack := frame h off limit rho} _ hcode hfork hrun hnp dispatch_pc.symm
   · exact PadLift.advancesAll_sound _ (by decide)
-  · have hr := run_miss s (UInt256.ofNat 4641) off limit h rho 4762 hstack hrun hfit hmiss
-    have he : pcAfter (UInt256.ofNat 4641) (dispatchTemplate 4762) = UInt256.ofNat 4648 := by decide
+  · have hr := run_miss s (UInt256.ofNat 4642) off limit h rho 4763 hstack hrun hfit hmiss
+    have he : pcAfter (UInt256.ofNat 4642) (dispatchTemplate 4763) = UInt256.ofNat 4649 := by decide
     rw [he] at hr
     exact hr
 
