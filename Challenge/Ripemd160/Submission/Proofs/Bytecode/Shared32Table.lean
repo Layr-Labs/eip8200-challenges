@@ -41,17 +41,39 @@ theorem words_clean (memory : ByteArray) (k : Nat) (hk0 : 3 ≤ k) (hk1 : k < 16
     exact PairedScheduleData.extractedWord_bound memory 1120 k
   · interval_cases k <;> norm_num [words, highScalar, Word.word_toNat_ofNat]
 
-theorem pool_words (memory : ByteArray) (k : Nat) (hk : k < 16)
-    (hzero : (MachineState.readWord memory 0).toNat < 2 ^ 32) :
+/-- The words the S51 pool actually loads.  For `3 ≤ k` this is EXACTLY `words memory k`;
+for `k < 3` it may carry the previous block's slot-0 dual lane above bit 144. -/
+def wordsRaw (memory : ByteArray) (k : Nat) : UInt256 :=
+  StaggerScratch.poolWordD
+    (StaggerScratch.scratchMemory memory
+      (PairedScheduleData.reversedWord (MachineState.readWord memory 1120)) highWord) k
+
+theorem pool_wordsRaw (memory : ByteArray) (k : Nat) :
     StaggerScratch.poolWordD
       (StaggerScratch.scratchMemory memory
         (PairedScheduleData.reversedWord (MachineState.readWord memory 1120)) highWord) k =
-      words memory k := by
+      wordsRaw memory k := rfl
+
+theorem wordsRaw_eq_high (memory : ByteArray) (k : Nat) (hk0 : 3 ≤ k) (hk1 : k < 16) :
+    wordsRaw memory k = words memory k := by
   by_cases hl : k < 8
-  · rw [words, if_pos hl]
+  · rw [wordsRaw, words, if_pos hl, pool_lower_high_irrelevant memory 1120 k highWord hl]
+    exact StaggerScratch.poolWordD_eq_dirty_high memory 1120 k hk1 (by omega)
+  · rw [wordsRaw, words, if_neg hl]
+    exact pool_upper memory _ k (by omega) hk1
+
+theorem wordsRaw_clean (memory : ByteArray) (k : Nat) (hk0 : 3 ≤ k) (hk1 : k < 16) :
+    (wordsRaw memory k).toNat < 2 ^ 32 := by
+  rw [wordsRaw_eq_high memory k hk0 hk1]
+  exact words_clean memory k hk0 hk1
+
+theorem wordsRaw_mod (memory : ByteArray) (k : Nat) (hk : k < 16)
+    (hzero : (MachineState.readWord memory 0).toNat % 2 ^ 144 < 2 ^ 32) :
+    (wordsRaw memory k).toNat % 2 ^ 144 = (words memory k).toNat % 2 ^ 144 := by
+  by_cases hl : k < 8
+  · rw [wordsRaw, words, if_pos hl]
     exact pool_lower memory 1120 k highWord hl hzero
-  · rw [words, if_neg hl]
-    exact pool_upper memory _ k (by omega) hk
+  · rw [wordsRaw_eq_high memory k (by omega) hk]
 
 theorem table_ready (memory : ByteArray) :
     StaggerMessage.Ready (StaggerTableLayout.resultMemory memory (words memory))
@@ -68,24 +90,46 @@ theorem table_ready (memory : ByteArray) :
       have hz := (words_split memory k hk).2.2.2 hd'
       exact ⟨by rw [hz]; decide, fun _ => hz⟩)
 
-theorem writer_memory (memory : ByteArray) (hgap : PairStoreGap.GapClear memory) :
+theorem writer_memory (memory : ByteArray) (hgap : PairStoreGap.GapClear memory)
+    (hzero : (MachineState.readWord memory 0).toNat % 2 ^ 144 < 2 ^ 32) :
     Pair13WriterRaw.writerMemory
       (fanMemory memory
         (PairedScheduleData.reversedWord (MachineState.readWord memory 1120)) highWord)
-      (words memory) = StaggerTableLayout.resultMemory memory (words memory) := by
-  rw [Pair13Memory.writerMemory_eq_resultMemory _ _ (words_clean memory)
-    (fanMemory_gapClear _ _ _ hgap)]
-  exact erase_fan memory _ _ _
+      (wordsRaw memory) = StaggerTableLayout.resultMemory0 memory (words memory) := by
+  rw [Pair13Memory.writerMemory_eq_resultMemoryD _ _
+      (fun i h1 h2 => wordsRaw_clean memory i h1 h2) (fanMemory_gapClear _ _ _ hgap),
+    Pair13Memory.resultMemoryD_congr_mod _ (wordsRaw memory) (words memory)
+      (by simp only [Pair13WriterRaw.dualW,
+        wordsRaw_eq_high memory 6 (by decide) (by decide)])
+      (fun j _ hj => by
+        simp only [StaggerTableLayout.tableWords]
+        exact wordsRaw_mod memory _ (StaggerTableLayout.slots_lt j hj) hzero),
+    Pair13Memory.resultMemoryD_eq _ _ (words_clean memory 6 (by decide) (by decide))]
+  exact congrArg
+    (fun m => PairedScheduleMemory.writeWord m 0
+      (StaggerTableLayout.dualLane (words memory 6)))
+    (erase_fan memory (StaggerTableLayout.tableWords (words memory)) _ _)
+
+theorem copiedMemory_low (input : ByteArray) :
+    (MachineState.readWord (copiedMemory input) 0).toNat % 2 ^ 144 < 2 ^ 32 := by
+  refine Nat.lt_of_le_of_lt (Nat.mod_le _ _) ?_
+  unfold copiedMemory
+  rw [Memory.readWord_writeBytes_disjoint _ _ _ _ (Or.inl (by decide))]
+  unfold MachineState.readWord
+  rw [← Bytes.bytesNat_toList, Bytes.readPadded_toList]
+  simp only [YulEvmCompiler.ByteArray.toList_eq_data]
+  decide
 
 theorem copied_writer_memory (input : ByteArray) :
     Pair13WriterRaw.writerMemory
       (fanMemory (copiedMemory input)
         (PairedScheduleData.reversedWord (MachineState.readWord (copiedMemory input) 1120)) highWord)
-      (words (copiedMemory input)) =
-      StaggerTableLayout.resultMemory (copiedMemory input) (words (copiedMemory input)) :=
-  writer_memory _ (copiedMemory_gapClear input)
+      (wordsRaw (copiedMemory input)) =
+      StaggerTableLayout.resultMemory0 (copiedMemory input) (words (copiedMemory input)) :=
+  writer_memory _ (copiedMemory_gapClear input) (copiedMemory_low input)
 
 #print axioms table_ready
-#print axioms pool_words
+#print axioms wordsRaw_eq_high
+#print axioms wordsRaw_mod
 #print axioms copied_writer_memory
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Table

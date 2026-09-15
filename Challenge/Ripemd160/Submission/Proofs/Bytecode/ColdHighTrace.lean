@@ -23,7 +23,7 @@ noncomputable opaque gasSteps_setup (input : ByteArray) (hfit : CalldataFits inp
           (Padding.paddedWord input) maskRho} :=
   ColdTraceCompose.two (gasSteps_lowRoute input hfit hpositive i hi hh hlarge)
     (ColdTraceCompose.two (gasSteps_padding input hfit (by omega) i)
-      (gasSteps_normal input hfit i hi))
+      (gasSteps_normal input hfit hpositive i hi))
 
 #print axioms gasSteps_setup
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdHighTrace

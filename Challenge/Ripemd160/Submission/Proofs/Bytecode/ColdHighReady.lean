@@ -7,8 +7,11 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdHighReady
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PersistentStaggerTable ColdHighPaddingMemory
 
+/-- The table the normal loader leaves: `resultMemory0`, i.e. with the dual lane the writer's
+slot-0 store keeps now that the mask at pc 873 is gone.  It is `resultMemory0`, not
+`resultMemory`, because that is what `ColdOrdinarySites.gasSteps_normal` produces. -/
 def tableMemory (input : ByteArray) (i : Nat) : ByteArray :=
-  StaggerTableLayout.resultMemory (finalMemory input i)
+  StaggerTableLayout.resultMemory0 (finalMemory input i)
     (StaggerScratch.dirtyWord (finalMemory input i) (messagePointer i))
 
 theorem extracted_words (input : ByteArray) (hfit : CalldataFits input) (i : Nat)
@@ -24,6 +27,10 @@ theorem ready (input : ByteArray) (hfit : CalldataFits input) (i : Nat)
     (hi : i<DriverTrace.blockCount input) (hh : input.size=DriverTrace.blockOffset i) :
     StaggerMessage.Ready (tableMemory input i) (blockWords input i) := by
   have hsplit (k : Nat) := StaggerScratch.dirtyWord_split (finalMemory input i) (messagePointer i) k
+  -- the dual lane at address 0 is invisible to `Ready`: slot 0 is read only through `low32`
+  refine StaggerMessage.ready_dual0 (finalMemory input i)
+    (StaggerScratch.dirtyWord (finalMemory input i) (messagePointer i)) (blockWords input i)
+    (Nat.lt_of_div_eq_zero (by norm_num) ((hsplit 6).2.2.2 (by decide))) ?_
   exact StaggerMessage.ready_junk (finalMemory input i) (StaggerScratch.dirtyWord (finalMemory input i) (messagePointer i)) (blockWords input i)
     (fun k => (StaggerScratch.dirtyWord (finalMemory input i) (messagePointer i) k).toNat / 2 ^ 32)
     (fun k hk => by

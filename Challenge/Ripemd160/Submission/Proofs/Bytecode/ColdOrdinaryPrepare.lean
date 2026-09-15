@@ -34,7 +34,7 @@ def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 896) (hrun : s.halt = .Running)
     (hsmall : s.executionEnv.calldata.size < 5220)
     (hactive : 35 ≤ s.activeWords.toNat)
-    (hlow : (MachineState.readWord s.memory 0).toNat < 2 ^ 32) (hfit : s.executionEnv.calldata.size < 2 ^ 256)
+    (hfit : s.executionEnv.calldata.size < 2 ^ 256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
@@ -42,17 +42,24 @@ def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
       {s with
         pc := UInt256.ofNat 884
         stack := ret :: rest
-        memory := StaggerTablePad.resultMemory s.memory (UInt256.ofNat s.executionEnv.calldata.size)} := by
-  have g1 := ColdOrdinarySites.gasSteps_low s ret rest hmask hstack hrun hactive hlow hfit hcode hfork hnp
+        memory := StaggerTablePad.padRealResult s.memory
+          (UInt256.ofNat s.executionEnv.calldata.size)} := by
+  have g1 := ColdOrdinarySites.gasSteps_low s ret rest hmask hstack hrun hactive hfit hcode hfork hnp
   have hz : UInt256.isTrue (StaggerPad.highZero (UInt256.ofNat s.executionEnv.calldata.size)) := by
     apply (StaggerPad.highZero_true_iff _).mpr
     rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt hfit]
     exact hsmall
   have g2 := ColdOrdinarySites.gasSteps_branch_taken
-    {s with memory := StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
+    {s with memory := (StaggerTablePad.padRealChain s.memory
+      (UInt256.ofNat s.executionEnv.calldata.size))}
     _ (ret :: rest) (by simp only [List.length_cons]; omega) hrun hz hcode hfork hnp
-  have hmem := StaggerTablePad.lowChain_eq s.memory _ (StaggerPad.highZero_true_imp _ hz)
-  exact (g1.trans g2).cast rfl (by rw [hmem])
+  -- The branch is taken exactly when `n < 5220`, which is the conservative proxy for
+  -- `highDirty n = 0`; that hypothesis is what `padRealChain_eq` consumes.  Above `2 ^ 29`
+  -- this block runs the high stores as well and never reaches here.
+  have heq : StaggerTablePad.padRealChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)
+      = StaggerTablePad.padRealResult s.memory (UInt256.ofNat s.executionEnv.calldata.size) :=
+    StaggerTablePad.padRealChain_eq s.memory _ (StaggerPad.highZero_true_imp _ hz)
+  exact (g1.trans g2).cast rfl (by rw [heq])
 
 def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.HashState)
     (limit : UInt256) (rho : List UInt256) (hs : rho.length ≤ 880)
@@ -76,11 +83,11 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
       (by simp only [frame, List.length_append, List.length_cons, List.length_nil]; omega)
       hr hcode hfork hnp
     have ha : 37 ≤ s.activeWords.toNat := ctx.active
-    have gb := gasSteps_padAll s Paired144WordRound.factorPlusWord r (by rfl) hrs hr (by rw [ctx.calldata]; exact hordinary hh) (by omega) ctx.lowClear hf hcode hfork hnp
+    have gb := gasSteps_padAll s Paired144WordRound.factorPlusWord r (by rfl) hrs hr (by rw [ctx.calldata]; exact hordinary hh) (by omega) hf hcode hfork hnp
     have hhs : s.executionEnv.calldata.size = DriverTrace.blockOffset i := by rw [ctx.calldata]; exact hh
     rw [scheduledState_hit s i hhs]
     let qh : State :=
-      {s with memory := StaggerTablePad.resultMemory s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
+      {s with memory := StaggerTablePad.padRealResult s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
     have gb' : GasSteps {s with pc := UInt256.ofNat 4764, stack := frame h off limit rho}
         {qh with pc := UInt256.ofNat 884, stack := frame h off limit rho} := by
       apply gb.cast rfl

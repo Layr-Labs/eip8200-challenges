@@ -50,10 +50,13 @@ theorem pack_two_128 (memory : ByteArray)
         split_ifs <;> first | rfl | omega
       · simp only [if_neg h36, if_neg h54]
 
-/-- Arbitrary length values are allowed: their writes cannot touch the omitted prefix. -/
-theorem after_length_stores (memory : ByteArray) (low : UInt256) :
+/-- The same merge over an ARBITRARY base: all the merge needs is that bytes `[36,54)` of
+the base are zero.  The pad block's real base is `writeBytes memory zeroBytes 28`, which
+clears `[28,1112)` and so satisfies this just as `zeroMemory` does. -/
+theorem after_length_stores_gen (base : ByteArray) (low : UInt256)
+    (hz : ∀ i, 36 ≤ i → i < 54 → base[i]?.getD 0 = 0) :
     let preMemory := writeWord (writeWord (writeWord (writeWord
-      (zeroMemory memory) 162 low) 666 low) 144 low) 522 (UInt256.ofNat 128)
+      base 162 low) 666 low) 144 low) 522 (UInt256.ofNat 128)
     writeWord (writeWord preMemory 54 (UInt256.ofNat 128)) 36 (UInt256.ofNat 128) =
       writeWord preMemory 54 (UInt256.ofNat (128 * (1 + 2 ^ 144))) := by
   dsimp only
@@ -61,8 +64,17 @@ theorem after_length_stores (memory : ByteArray) (low : UInt256) :
   intro i hlo hhi
   simp only [writeWord, MachineState.writeBytes_getElem?_getD,
     YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
-  rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega),
-    zeroMemory_getD, if_pos (by omega)]
+  rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega)]
+  exact hz i hlo hhi
+
+/-- Arbitrary length values are allowed: their writes cannot touch the omitted prefix. -/
+theorem after_length_stores (memory : ByteArray) (low : UInt256) :
+    let preMemory := writeWord (writeWord (writeWord (writeWord
+      (zeroMemory memory) 162 low) 666 low) 144 low) 522 (UInt256.ofNat 128)
+    writeWord (writeWord preMemory 54 (UInt256.ofNat 128)) 36 (UInt256.ofNat 128) =
+      writeWord preMemory 54 (UInt256.ofNat (128 * (1 + 2 ^ 144))) :=
+  after_length_stores_gen (zeroMemory memory) low
+    (fun i hlo hhi => by rw [zeroMemory_getD, if_pos (by omega)])
 
 #print axioms pack_two_128
 #print axioms after_length_stores

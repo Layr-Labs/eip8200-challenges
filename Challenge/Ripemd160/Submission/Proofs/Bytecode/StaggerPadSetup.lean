@@ -94,13 +94,13 @@ theorem highZero_true_imp (n : UInt256) (h : UInt256.isTrue (highZero n)) :
 
 theorem run_low (s : State) (pc returnPC : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 995) (hrun : s.halt = .Running) (hactive : 35 ≤ s.activeWords.toNat)
-    (hlow : (MachineState.readWord s.memory 0).toNat < 2 ^ 32)
     (hfit : s.executionEnv.calldata.size < 2 ^ 256) (hcode : s.executionEnv.code.size = 5220) :
     runInstrSeq lowTemplate {s with pc := pc, stack := returnPC :: UInt256.ofNat 4294967295 :: rest} =
       some {s with
              pc := pcAfter pc lowTemplate
              stack := highZero (UInt256.ofNat s.executionEnv.calldata.size) :: returnPC :: UInt256.ofNat 4294967295 :: rest
-             memory := StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)} := by
+             memory := StaggerTablePad.padRealChain s.memory
+               (UInt256.ofNat s.executionEnv.calldata.size)} := by
   have hcap (n : Nat) (hn : n ≤ 28) : rest.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (ha : address ≤ 1088) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
@@ -112,21 +112,26 @@ theorem run_low (s : State) (pc returnPC : UInt256) (rest : List UInt256)
       omega
     rw [he]
     exact (Word.word_eq_ofNat_toNat _).symm
-  have hcopyMemory : MachineState.writeBytes s.memory PadZeroPrefix.zeroBytes 28 =
-      MachineState.writeBytes s.memory StaggerTableSparse.zeroBytes 0 :=
-    PadZeroPrefix.write_suffix_eq s.memory hlow
+  have hz : ∀ i, 36 ≤ i → i < 54 →
+      (MachineState.writeBytes s.memory PadZeroPrefix.zeroBytes 28)[i]?.getD 0 = 0 := by
+    intro i hlo hhi
+    rw [MachineState.writeBytes_getElem?_getD, PadZeroPrefix.zeroBytes_size,
+      if_pos (by omega), PadZeroPrefix.zeroBytes_getD]
   have hsize : (UInt256.ofNat s.executionEnv.calldata.size).toNat = s.executionEnv.calldata.size := by
     rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt hfit]
-  have hpacked := PackedPadStore.after_length_stores s.memory
-    (StaggerTablePad.lowDirty (UInt256.ofNat s.executionEnv.calldata.size))
-  change StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size) = _ at hpacked
+  have hpacked := PackedPadStore.after_length_stores_gen
+    (MachineState.writeBytes s.memory PadZeroPrefix.zeroBytes 28)
+    (StaggerTablePad.lowDirty (UInt256.ofNat s.executionEnv.calldata.size)) hz
+  change StaggerTablePad.padRealChain s.memory
+    (UInt256.ofNat s.executionEnv.calldata.size) = _ at hpacked
   rw [hpacked]
-  simp (discharger := omega) [lowTemplate, StaggerTablePad.lowChain, StaggerTablePad.lowDirty,
+  simp (discharger := omega) [lowTemplate, StaggerTablePad.padRealChain,
+    StaggerTablePad.lowChainOver, StaggerTableSparse.zeroSuffix, StaggerTablePad.lowDirty,
     highZero, hcode, zeroMemory, writeWord, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     PairedHelperBooleanTrace.push0_toNat,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
     State.activeWordsAfterUInt256, hactiveAt, hcopyActive, hsize,
-    PadZeroPrefix.readPadded_end, hcopyMemory, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+    PadZeroPrefix.readPadded_end, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals simp only [add_eq_hAdd]
 
 theorem run_high (s : State) (pc returnPC : UInt256) (rest : List UInt256)

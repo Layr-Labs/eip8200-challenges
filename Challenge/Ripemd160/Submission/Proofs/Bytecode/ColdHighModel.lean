@@ -11,8 +11,10 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PersistentStaggerTable PersistentStaggerIteration ColdHighPaddingMemory StaggerPersistentFrame
 
 def maskRho : List UInt256 := [DenseScheduleTemplate.mask8,DenseScheduleTemplate.mask16]
+/-- What the low block really leaves: the six stores over the base the calldata copy actually
+produces (`zeroSuffix`), not over the model's fully cleared `zeroMemory`. -/
 def lowState (input : ByteArray) (i : Nat) : State :=
-  {states input i with memory:=StaggerTablePad.lowChain (states input i).memory (UInt256.ofNat input.size)}
+  {states input i with memory:=StaggerTablePad.padRealChain (states input i).memory (UInt256.ofNat input.size)}
 def paddedState (input : ByteArray) (i : Nat) : State :=
   {states input i with memory:=finalMemory input i, activeWords:=PaddingTraceGeneral.lengthActive input (states input i).activeWords (PaddingTrace.lengthStop input)}
 def tableState (input : ByteArray) (i : Nat) : State :=

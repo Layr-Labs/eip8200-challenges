@@ -624,8 +624,8 @@ def template5 : List Instr :=
     .op .MSTORE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 252),
     .op .MSTORE,
-    .op (.Dup ⟨4, by decide⟩),
-    .op .AND,
+    .op .JUMPDEST,
+    .op .JUMPDEST,
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .MSTORE,
     .push ⟨2, by decide⟩ (UInt256.ofNat 450),
@@ -650,7 +650,7 @@ def writes5 (words : Nat → UInt256) : List (Nat × UInt256) :=
     (198, dualW words 13),
     (324, dualW words 10),
     (252, dualW words 7),
-    (0, words 6),
+    (0, dualW words 6),
     (450, dualW words 12),
     (162, dualW words 14) ]
 def memory5 (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
@@ -676,8 +676,7 @@ theorem run_chunk5 (s : State) (pc ret : UInt256) (words : Nat → UInt256) (res
     [template5, stack5, outputStack5, memory5, writes5, writeChain,
      writeWord, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
      List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
-     State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat,
-     mask_dual words 6 (by decide) hclean6]
+     State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals try simp only [neutral_hadd, neutral_hmul, RawExpressionAC.add_assoc]
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 #print axioms run_chunk5
@@ -731,7 +730,7 @@ def rawWrites (words : Nat → UInt256) : List (Nat × UInt256) :=
     (198, dualW words 13),
     (324, dualW words 10),
     (252, dualW words 7),
-    (0, words 6),
+    (0, dualW words 6),
     (450, dualW words 12),
     (162, dualW words 14) ]
 
@@ -783,7 +782,7 @@ def sortedWrites (words : Nat → UInt256) : List (Nat × UInt256) :=
     (54, dualW words 0),
     (36, dualW words 0),
     (18, dualW words 4),
-    (0, words 6) ]
+    (0, dualW words 6) ]
 
 def writerWrites (words : Nat → UInt256) : List (Nat × UInt256) :=
   [ (1080, words 5),
@@ -833,7 +832,7 @@ def writerWrites (words : Nat → UInt256) : List (Nat × UInt256) :=
     (54, words 0),
     (36, words 0),
     (18, words 4),
-    (0, words 6) ]
+    (0, dualW words 6) ]
 
 def writerMemory (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
   writeChain memory (writerWrites words)
@@ -861,7 +860,7 @@ def rawKeys : List (Nat × Nat) :=
    (72, 4), (54, 0), (36, 0), (666, 14), (504, 1), (1080, 5), (1062, 13), (486, 5), (972, 3),
    (648, 15), (1008, 15), (630, 10), (612, 15), (738, 8), (288, 7), (594, 11), (1044, 6),
    (414, 6), (360, 2), (720, 5), (270, 15), (396, 4), (468, 1), (18, 4), (342, 2), (198, 13),
-   (324, 10), (252, 7), (0, 16), (450, 12), (162, 14)]
+   (324, 10), (252, 7), (0, 6), (450, 12), (162, 14)]
 
 def sortedKeys : List (Nat × Nat) :=
   [(1080, 5), (1062, 13), (1044, 6), (1008, 15), (972, 3), (936, 8), (900, 9), (882, 3), (864,
@@ -869,7 +868,7 @@ def sortedKeys : List (Nat × Nat) :=
    14), (648, 15), (630, 10), (612, 15), (594, 11), (558, 8), (540, 1), (522, 0), (504, 1),
    (486, 5), (468, 1), (450, 12), (414, 6), (396, 4), (360, 2), (342, 2), (324, 10), (288, 7),
    (270, 15), (252, 7), (216, 10), (198, 13), (162, 14), (126, 11), (108, 5), (90, 12), (72,
-   4), (54, 0), (36, 0), (18, 4), (0, 16)]
+   4), (54, 0), (36, 0), (18, 4), (0, 6)]
 
 def gW (words : Nat → UInt256) (p : Nat × Nat) : Nat × UInt256 :=
   (p.1, if p.2 < 16 then dualW words p.2 else words 6)

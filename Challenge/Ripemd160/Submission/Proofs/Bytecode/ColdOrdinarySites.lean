@@ -159,13 +159,13 @@ def gasSteps_normal (s : State) (ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UInt2
     (hp : 1120 ≤ p) (hbound : p + 64 < 2 ^ 256)
     (hq1 : off + UInt256.ofNat 1152 = UInt256.ofNat (p + 32))
     (hq0 : off + UInt256.ofNat 1120 = UInt256.ofNat p)
-    (hlow : (MachineState.readWord s.memory 0).toNat < 2 ^ 32)
+    (hlow : (MachineState.readWord s.memory 0).toNat % 2 ^ 144 < 2 ^ 32)
     (hgap : PairStoreGap.GapClear s.memory)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 480, stack := PersistentMaskEndian.stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho}
-      {s with pc := UInt256.ofNat 884, stack := PersistentMaskEndian.stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho, memory := StaggerTableLayout.resultMemory s.memory (StaggerScratch.dirtyWord s.memory p), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat p)} := by
+      {s with pc := UInt256.ofNat 884, stack := PersistentMaskEndian.stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho, memory := StaggerTableLayout.resultMemory0 s.memory (StaggerScratch.dirtyWord s.memory p), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat p)} := by
   apply normal_gasSteps_of_raw {s with pc := UInt256.ofNat 480, stack := PersistentMaskEndian.stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho} _ hcode hfork hrun hnp normal_pc.symm
   have h := PersistentMaskEndian.run_normal s (UInt256.ofNat 480) ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho p hstack hrun hp hbound hq1 hq0 hlow hgap
   have hend : pcAfter (UInt256.ofNat 480) PersistentMaskEndian.normalTemplate = UInt256.ofNat 884 := by decide
@@ -176,7 +176,7 @@ def gasSteps_low (s : State) (ret : UInt256) (rest : List UInt256)
     (hmask : rest.head? = some (UInt256.ofNat 4294967295))
     (hstack : rest.length ≤ 896) (hrun : s.halt = .Running)
     (hactive : 35 ≤ s.activeWords.toNat)
-    (hlow : (MachineState.readWord s.memory 0).toNat < 2 ^ 32) (hfit : s.executionEnv.calldata.size < 2 ^ 256)
+    (hfit : s.executionEnv.calldata.size < 2 ^ 256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
@@ -184,7 +184,8 @@ def gasSteps_low (s : State) (ret : UInt256) (rest : List UInt256)
       {s with
         pc := UInt256.ofNat 4819
         stack := StaggerPad.highZero (UInt256.ofNat s.executionEnv.calldata.size) :: ret :: rest
-        memory := StaggerTablePad.lowChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)} := by
+        memory := StaggerTablePad.padRealChain s.memory
+          (UInt256.ofNat s.executionEnv.calldata.size)} := by
   cases rest with
   | nil => simp at hmask
   | cons mask tailRest =>
@@ -192,7 +193,7 @@ def gasSteps_low (s : State) (ret : UInt256) (rest : List UInt256)
     subst mask
     simp only [List.length_cons] at hstack
     apply PadLift.gasSteps_of_raw lowSite {s with pc := UInt256.ofNat 4764, stack := ret :: UInt256.ofNat 4294967295 :: tailRest} _ hcode hfork hrun hnp low_pc.symm low_advances
-    have h := StaggerPad.run_low s (UInt256.ofNat 4764) ret tailRest (by omega) hrun hactive hlow hfit (by rw [hcode]; exact referenceBytecode_size)
+    have h := StaggerPad.run_low s (UInt256.ofNat 4764) ret tailRest (by omega) hrun hactive hfit (by rw [hcode]; exact referenceBytecode_size)
     rw [low_end] at h
     exact h
 

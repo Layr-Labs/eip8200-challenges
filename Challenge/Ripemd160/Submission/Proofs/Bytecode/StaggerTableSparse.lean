@@ -139,4 +139,85 @@ theorem erase_zeroMemory (memory : ByteArray) (words : Nat → UInt256) :
 #print axioms selected_eq_full
 #print axioms getD_storeSelected_outside
 #print axioms erase_zeroMemory
+
+/-- Bytes `[14,28)` are zero as soon as the first memory word's low 144 bits are below
+`2 ^ 32`.  Byte `i` sits at bits `8 * (31 - i) .. 8 * (31 - i) + 7`, which for `14 ≤ i < 28`
+lies in `[32,144)` -- entirely inside the window the weakened invariant constrains. -/
+theorem prefix_zero_low (memory : ByteArray)
+    (hlow : (MachineState.readWord memory 0).toNat % 2 ^ 144 < 2 ^ 32)
+    (i : Nat) (h14 : 14 ≤ i) (hi : i < 28) : memory[i]?.getD 0 = 0 := by
+  have hshift := Bytes.readWord_shift_toNat memory 0 (i + 1) (by omega)
+  rw [Nat.shiftRight_eq_div_pow] at hshift
+  have hsplit : (2 : Nat) ^ 144
+      = 2 ^ ((32 - (i + 1)) * 8) * 2 ^ (144 - (32 - (i + 1)) * 8) := by
+    rw [← Nat.pow_add]; congr 1; omega
+  have hkey : (MachineState.readWord memory 0).toNat / 2 ^ ((32 - (i + 1)) * 8) % 256
+      = (MachineState.readWord memory 0).toNat % 2 ^ 144
+          / 2 ^ ((32 - (i + 1)) * 8) % 256 := by
+    rw [hsplit, Nat.mod_mul_right_div_self, show (256 : Nat) = 2 ^ 8 by norm_num,
+      Nat.mod_mod_of_dvd _ (pow_dvd_pow 2 (by omega : 8 ≤ 144 - (32 - (i + 1)) * 8))]
+  have hdiv : (MachineState.readWord memory 0).toNat % 2 ^ 144
+      / 2 ^ ((32 - (i + 1)) * 8) = 0 :=
+    Nat.div_eq_of_lt (lt_of_lt_of_le hlow (Nat.pow_le_pow_right (by decide) (by omega)))
+  have hzero : Precompile.bytesToNatPadded memory 0 (i + 1) % 256 = 0 := by
+    rw [← hshift, hkey, hdiv]
+  have hs := Bytes.bytesToNatPadded_succ memory 0 i
+  rw [Nat.zero_add] at hs
+  have hblt : (YulSemantics.EVM.byteFrom memory.toList i).toNat < 256 :=
+    (YulSemantics.EVM.byteFrom memory.toList i).toBitVec.isLt
+  have hb : (YulSemantics.EVM.byteFrom memory.toList i).toNat = 0 := by omega
+  have he : YulSemantics.EVM.byteFrom memory.toList i = (0 : UInt8) :=
+    UInt8.toNat_inj.mp hb
+  change memory.data[i]?.getD 0 = 0
+  simpa only [YulSemantics.EVM.byteFrom, List.getD_eq_getElem?_getD,
+    YulEvmCompiler.ByteArray.toList_eq_data, Array.getElem?_toList] using he
+
+/-- The memory the pad block's calldata copy actually leaves: zeros from byte 28 up, with
+bytes `[0,28)` untouched.  Definitionally `MachineState.writeBytes memory
+PadZeroPrefix.zeroBytes 28`, but nameable from modules that do not import `PadZeroPrefix`. -/
+def zeroSuffix (memory : ByteArray) : ByteArray :=
+  MachineState.writeBytes memory (ByteArray.mk (Array.replicate 1084 (0 : UInt8))) 28
+
+private theorem suffixBytes_size :
+    (ByteArray.mk (Array.replicate 1084 (0 : UInt8))).size = 1084 := rfl
+
+private theorem suffixBytes_getD (i : Nat) :
+    (ByteArray.mk (Array.replicate 1084 (0 : UInt8)))[i]?.getD 0 = 0 := by
+  change (Array.replicate 1084 (0 : UInt8))[i]?.getD 0 = 0
+  by_cases hi : i < 1084
+  · rw [getElem?_pos _ _ (by simpa using hi)]; simp
+  · rw [getElem?_neg _ _ (by simpa using hi)]; rfl
+
+theorem zeroSuffix_size (memory : ByteArray) :
+    (zeroSuffix memory).size = max memory.size 1112 := by
+  rw [zeroSuffix, MachineState.writeBytes_size, suffixBytes_size, if_neg (by decide)]
+
+/-- The machine's real pad base: zero on `[28,1112)`, the incoming memory elsewhere. -/
+theorem zeroSuffix_getD (memory : ByteArray) (i : Nat) :
+    (zeroSuffix memory)[i]?.getD 0 =
+      if 28 ≤ i ∧ i < 1112 then 0 else memory[i]?.getD 0 := by
+  rw [zeroSuffix, MachineState.writeBytes_getElem?_getD, suffixBytes_size]
+  by_cases h : 28 ≤ i ∧ i < 1112
+  · rw [if_pos (by omega), if_pos h, suffixBytes_getD]
+  · rw [if_neg (by omega), if_neg h]
+
+/-- Reality versus model for the pad-only block: the machine clears only from byte 28 up,
+the model clears `[0,1112)`.  They are NOT equal once a previous block leaves a dual lane in
+bytes 10..13, but they agree from byte 14, which is all the subsystem can observe. -/
+theorem zeroSuffix_agree (memory : ByteArray)
+    (hlow : (MachineState.readWord memory 0).toNat % 2 ^ 144 < 2 ^ 32) :
+    AgreeFrom14 (zeroSuffix memory) (zeroMemory memory) := by
+  refine ⟨?_, ?_⟩
+  · rw [zeroSuffix, zeroMemory, MachineState.writeBytes_size, MachineState.writeBytes_size,
+      if_neg (by decide), if_neg (by decide), suffixBytes_size, zeroBytes_size]
+  · intro j hj
+    rw [zeroSuffix, zeroMemory, MachineState.writeBytes_getElem?_getD,
+      MachineState.writeBytes_getElem?_getD, suffixBytes_size, zeroBytes_size]
+    simp only [suffixBytes_getD, zeroBytes_getD]
+    by_cases hi : j < 28
+    · rw [if_neg (by omega), if_pos (by omega), prefix_zero_low memory hlow j hj hi]
+    · by_cases hend : j < 1112
+      · rw [if_pos (by omega), if_pos (by omega)]
+      · rw [if_neg (by omega), if_neg (by omega)]
+
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerTableSparse

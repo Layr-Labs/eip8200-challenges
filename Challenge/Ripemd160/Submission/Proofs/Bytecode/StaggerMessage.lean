@@ -72,6 +72,73 @@ theorem ready (memory : ByteArray) (words : Nat → UInt256) (scalar : Nat → U
     (fun _ _ => by norm_num) (fun _ _ _ => by norm_num) (fun _ _ _ _ => by norm_num)
     (fun _ _ _ => ⟨by norm_num, fun _ => rfl⟩)
 
+/-- `Ready` depends on the table image only from byte 14 up, plus the low 32 bits of the
+word at address 0.  `Ready.paired` reads at `18 * pairIndices[i]!` and `layout_valid` gives
+`1 ≤ pairIndices[i]!`, so every round window starts at address 18; `Ready.scalar` at `j = 0`
+reads address 0 but only through `low32`.  Both the normal-block table and the pad-only
+table are repaired through this one lemma. -/
+theorem ready_congr_high (m m' : ByteArray) (scalar : Nat → UInt32)
+    (hbyte : ∀ j, 14 ≤ j → m'[j]?.getD 0 = m[j]?.getD 0)
+    (hlo : (MachineState.readWord m' 0).toNat % 2 ^ 32
+         = (MachineState.readWord m 0).toNat % 2 ^ 32)
+    (h : Ready m scalar) : Ready m' scalar := by
+  have hread : ∀ A, 14 ≤ A → MachineState.readWord m' A = MachineState.readWord m A := by
+    intro A hA
+    apply Word.word_ext
+    rw [Bytes.readWord_toNat, Bytes.readWord_toNat]
+    exact StaggerTableMemory.bytesToNatPadded_congrOffset _ _ _ _ _
+      (fun i _ => hbyte (A + i) (by omega))
+  constructor
+  · intro i hi
+    obtain ⟨hpos, -, -, -⟩ := StaggerTableLayout.layout_valid ⟨i, hi⟩
+    change 1 ≤ StaggerTableLayout.pairIndices[i]! at hpos
+    have heq : StaggerCoreModel.message m' i = StaggerCoreModel.message m i :=
+      hread _ (by omega)
+    rw [heq]
+    exact h.paired i hi
+  · intro j hj
+    by_cases hz : j = 0
+    · subst hz
+      have hprev := h.scalar 0 hj
+      apply UInt32.toNat_inj.mp
+      have hgoal := congrArg UInt32.toNat hprev
+      change (MachineState.readWord m (18 * 0)).toNat % 2 ^ 32 = _ at hgoal
+      change (MachineState.readWord m' (18 * 0)).toNat % 2 ^ 32 = _
+      rw [show 18 * 0 = 0 from rfl] at hgoal ⊢
+      rw [hlo]
+      exact hgoal
+    · rw [hread (18 * j) (by omega)]
+      exact h.scalar j hj
+
+/-- `Ready` survives overwriting the word at address 0, provided the new value agrees with
+the old on its low 32 bits and the image agrees from byte 14 up.  `Ready.paired` reads only
+at `18 * pairIndices[i]!` and `layout_valid` gives `1 ≤ pairIndices[i]!`, so every round
+window starts at address 18; `Ready.scalar` at `j = 0` reads address 0 but only through
+`low32`.  Both the normal-block and the pad-only table use this. -/
+theorem ready_writeWord_zero (memory : ByteArray) (scalar : Nat → UInt32) (v : UInt256)
+    (hlo : v.toNat % 2 ^ 32 = (MachineState.readWord memory 0).toNat % 2 ^ 32)
+    (hbyte : ∀ j, 14 ≤ j →
+      (PairedScheduleMemory.writeWord memory 0 v)[j]?.getD 0 = memory[j]?.getD 0)
+    (h : Ready memory scalar) :
+    Ready (PairedScheduleMemory.writeWord memory 0 v) scalar :=
+  ready_congr_high memory _ scalar hbyte
+    (by rw [PairedScheduleMemory.read_writeWord]; exact hlo) h
+
+/-- The dual lane the removed mask at pc 873 leaves in slot 0 is invisible to `Ready`. -/
+theorem ready_dual0 (memory : ByteArray) (words : Nat → UInt256) (scalar : Nat → UInt32)
+    (hw : (words 6).toNat < 2 ^ 32)
+    (h : Ready (StaggerTableLayout.resultMemory memory words) scalar) :
+    Ready (StaggerTableLayout.resultMemory0 memory words) scalar := by
+  rw [StaggerTableLayout.resultMemory0]
+  refine ready_writeWord_zero _ scalar _ ?_ ?_ h
+  · have := StaggerTableLayout.read_zero0_low memory words hw
+    rw [StaggerTableLayout.read_zero0] at this
+    exact this
+  · intro j hj
+    have := StaggerTableLayout.getD_resultMemory0 memory words hw j hj
+    rwa [StaggerTableLayout.resultMemory0] at this
+
+#print axioms ready_dual0
 #print axioms ready_junk
 #print axioms ready
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerMessage

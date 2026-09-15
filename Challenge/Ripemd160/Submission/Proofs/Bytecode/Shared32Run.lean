@@ -18,7 +18,7 @@ def template : List Instr :=
 theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
     (hactive : s.activeWords = UInt256.ofNat 36)
-    (hlow : (MachineState.readWord s.memory 0).toNat < 2 ^ 32)
+    (hlow : (MachineState.readWord s.memory 0).toNat % 2 ^ 144 < 2 ^ 32)
     (hgap : PairStoreGap.GapClear s.memory) :
     runInstrSeq template
       {s with
@@ -30,7 +30,7 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
         pc := pcAfter pc template
         stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10
           (UInt256.ofNat 0) lim rho
-        memory := StaggerTableLayout.resultMemory s.memory (Shared32Table.words s.memory)} := by
+        memory := StaggerTableLayout.resultMemory0 s.memory (Shared32Table.words s.memory)} := by
   let rest : List UInt256 :=
     a2 :: a3 :: a4 :: a5 :: a6 :: a7 :: a8 :: a9 :: a10 :: UInt256.ofNat 0 :: lim :: mask8 :: mask16 :: rho
   let F := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10
@@ -51,21 +51,20 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     read_writeWord_disjoint _ _ _ _ (Or.inr (by decide))
   rw [hread] at h1
   have h2 := Pair13PoolRaw.run_actual s2 (pcAfter pc Shared32Lower.lowerTemplate) F hF hrun ha
-  have hclean : ∀ i, 3 ≤ i → i < 16 → (words i).toNat < 2 ^ 32 :=
-    fun i h0 h1 => Shared32Table.words_clean s.memory i h0 h1
+  have hclean : ∀ i, 3 ≤ i → i < 16 → (Shared32Table.wordsRaw s.memory i).toNat < 2 ^ 32 :=
+    fun i h0 h1 => Shared32Table.wordsRaw_clean s.memory i h0 h1
   have hpool : Pair13PoolRaw.poolStack
       (Pair13PoolRaw.poolWord (Pair13PoolRaw.copied scratch)) F =
-      Pair13PoolRaw.poolStack (Pair13WriterRaw.dualW words) F := by
+      Pair13PoolRaw.poolStack (Pair13WriterRaw.dualW (Shared32Table.wordsRaw s.memory)) F := by
     have hD : ∀ i, i < 16 → Pair13PoolRaw.poolWord (Pair13PoolRaw.copied scratch) i =
-        Pair13WriterRaw.dualW words i := by
+        Pair13WriterRaw.dualW (Shared32Table.wordsRaw s.memory) i := by
       intro i hi
       have h := Shared32Scratch.fan_poolWord s.memory
         (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1120)) highWord hlow i hi
-      simp only [Shared32Scratch.dualOf,
-        Shared32Table.pool_words s.memory i hi hlow] at h
+      simp only [Shared32Scratch.dualOf, Shared32Table.pool_wordsRaw s.memory i] at h
       show Pair13PoolRaw.poolWord (Shared32Scratch.fanMemory s.memory
           (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1120)) highWord) i =
-        Pair13WriterRaw.dualW (Shared32Table.words s.memory) i
+        Pair13WriterRaw.dualW (Shared32Table.wordsRaw s.memory) i
       rw [Pair13WriterRaw.dualW]
       exact h
     simp (discharger := decide) only [Pair13PoolRaw.poolStack, hD]
@@ -73,10 +72,12 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
   have h3 := Pair13WriterRaw.run_writer s3
     (pcAfter (pcAfter pc Shared32Lower.lowerTemplate) Pair13PoolRaw.template)
-    ret words rest hrest hrun ha3 hclean
+    ret (Shared32Table.wordsRaw s.memory) rest hrest hrun ha3 hclean
   have h := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
-  have hmem : Pair13WriterRaw.writerMemory (Pair13PoolRaw.copied scratch) words =
-      StaggerTableLayout.resultMemory s.memory words := Shared32Table.writer_memory s.memory hgap
+  have hmem : Pair13WriterRaw.writerMemory (Pair13PoolRaw.copied scratch)
+      (Shared32Table.wordsRaw s.memory) =
+      StaggerTableLayout.resultMemory0 s.memory words :=
+    Shared32Table.writer_memory s.memory hgap hlow
   simpa only [template, DenseScheduleTrace.pcAfter_append, s3, s2, s1, hmem, scratch, words,
     rest, stk] using h
 

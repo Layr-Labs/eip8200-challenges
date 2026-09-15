@@ -12,12 +12,8 @@ theorem scheduled_byte_above (s : State) (i address : Nat) (ha : 1112≤address)
     (scheduledState s i).memory[address]?.getD 0 = s.memory[address]?.getD 0 := by
   unfold scheduledState
   split
-  · change (StaggerTablePad.resultMemory s.memory _)[address]?.getD 0 = _
-    unfold StaggerTablePad.resultMemory
-    rw [StaggerTableSparse.getD_storeSelected_outside _ _ _ _ _ _
-      (fun k hk hk' => Or.inr (by omega)), StaggerTableSparse.zeroMemory_getD,
-      if_neg (by omega)]
-  · exact StaggerTableMemory.getD_table_outside s.memory _ address ha
+  · exact StaggerTablePad.getD_padRealResult_outside s.memory _ address ha
+  · exact StaggerTableLayout.getD_resultMemory0_outside s.memory _ address ha
 
 theorem states_byte_above (input : ByteArray) (n address : Nat) (ha : 1112≤address) :
     (states input n).memory[address]?.getD 0 = (PadSkipEntry.entryState input).memory[address]?.getD 0 := by
@@ -47,6 +43,15 @@ theorem lowChain_fresh (input : ByteArray) (hz : input.size%64=0) (n address : N
   rw [ColdHighMemory.lowChain_outside _ _ address (by omega)]
   exact states_fresh input hz n address ha
 
+/-- The same freshness for the image the pad block really leaves. -/
+theorem padRealChain_fresh (input : ByteArray) (hz : input.size%64=0) (n address : Nat)
+    (ha : 1120+input.size≤address) :
+    (StaggerTablePad.padRealChain (states input n).memory
+      (UInt256.ofNat input.size))[address]?.getD 0 = 0 := by
+  rw [ColdHighMemory.padRealChain_outside _ _ address (by omega)]
+  exact states_fresh input hz n address ha
+
 #print axioms states_fresh
 #print axioms lowChain_fresh
+#print axioms padRealChain_fresh
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdHighInitial

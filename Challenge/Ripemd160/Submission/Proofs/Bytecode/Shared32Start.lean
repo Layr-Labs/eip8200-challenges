@@ -27,7 +27,7 @@ theorem entry_frame_eq (input : ByteArray) (h32 : input.size = 32) :
 
 def tableState (input : ByteArray) : State :=
   {PaddingTrace.padCopied input with
-    memory := StaggerTableLayout.resultMemory (copiedMemory input) (Shared32Table.words (copiedMemory input))}
+    memory := StaggerTableLayout.resultMemory0 (copiedMemory input) (Shared32Table.words (copiedMemory input))}
 
 theorem padded_eq (input : ByteArray) (h32 : input.size = 32) :
     Padding.paddedWord input = UInt256.ofNat 64 := by
@@ -100,7 +100,7 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
     (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 32) [] (by decide) hactive
-    (copied_low input) hgap
+    (Nat.lt_of_le_of_lt (Nat.mod_le _ _) (copied_low input)) hgap
   have hm : sparseMemory s.memory = PairedScheduleMemory.writeWord s.memory 96 highWord := by
     rw [show s.memory = copiedMemory input from copied_memory input]
     exact copiedMemory_sparse input (by omega)
@@ -112,7 +112,9 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32)
 theorem table_ready (input : ByteArray) (h32 : input.size = 32) :
     StaggerMessage.Ready (tableState input).memory
       (fun k => (CompressionCorrect.schedule (Padding.paddedMessage input) 0)[k]!) :=
-  Shared32Spec.ready_spec input h32
+  StaggerMessage.ready_dual0 (copiedMemory input) (Shared32Table.words (copiedMemory input)) _
+    (Shared32Table.words_clean (copiedMemory input) 6 (by decide) (by decide))
+    (Shared32Spec.ready_spec input h32)
 
 #print axioms gasSteps
 #print axioms table_ready

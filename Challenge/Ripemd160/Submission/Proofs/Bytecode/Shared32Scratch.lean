@@ -100,20 +100,32 @@ theorem scratch_read_prefix (memory : ByteArray) (low high high' : UInt256)
   · rw [if_pos hw, if_pos hw]
   · rw [if_neg hw, if_neg hw, if_neg (by omega), if_neg (by omega)]
 
-/-- Replacing only the upper scratch word preserves all eight lower schedule words. -/
-theorem pool_lower (memory : ByteArray) (p i : Nat) (high : UInt256)
-    (hi : i < 8) (hlow : (MachineState.readWord memory 0).toNat < 2 ^ 32) :
+/-- The eight lower schedule words do not see the upper scratch word at all, whatever it is. -/
+theorem pool_lower_high_irrelevant (memory : ByteArray) (p i : Nat) (high : UInt256)
+    (hi : i < 8) :
     StaggerScratch.poolWordD
       (StaggerScratch.scratchMemory memory
         (PairedScheduleData.reversedWord (MachineState.readWord memory p)) high) i =
-      StaggerScratch.dirtyWord memory p i := by
-  rw [← StaggerScratch.poolWordD_eq_dirty memory p i (by omega) hlow]
+    StaggerScratch.poolWordD
+      (StaggerScratch.scratchMemory memory
+        (PairedScheduleData.reversedWord (MachineState.readWord memory p))
+        (PairedScheduleData.reversedWord (MachineState.readWord memory (p + 32)))) i := by
   by_cases hd : i ≤ 2
   · simp only [StaggerScratch.poolWordD, if_pos hd]
     exact scratch_read_prefix _ _ _ _ _ (by omega)
   · simp only [StaggerScratch.poolWordD, if_neg hd]
     rw [StaggerScratch.poolWord_eq _ _ _ _ (by omega),
       StaggerScratch.poolWord_eq _ _ _ _ (by omega), if_pos hi, if_pos hi]
+
+theorem pool_lower (memory : ByteArray) (p i : Nat) (high : UInt256)
+    (hi : i < 8) (hlow : (MachineState.readWord memory 0).toNat % 2 ^ 144 < 2 ^ 32) :
+    (StaggerScratch.poolWordD
+      (StaggerScratch.scratchMemory memory
+        (PairedScheduleData.reversedWord (MachineState.readWord memory p)) high) i).toNat
+        % 2 ^ 144
+      = (StaggerScratch.dirtyWord memory p i).toNat % 2 ^ 144 := by
+  rw [pool_lower_high_irrelevant memory p i high hi]
+  exact StaggerScratch.poolWordD_eq_dirty memory p i (by omega) hlow
 
 theorem pool_upper (memory : ByteArray) (low : UInt256) (i : Nat)
     (hi0 : 8 ≤ i) (hi1 : i < 16) :
@@ -292,10 +304,10 @@ theorem fan_high_chunk (memory : ByteArray) (low high : UInt256) (j a k : Nat)
 
 /-- The zero prefix `[0,28)` survives the fan, which is what makes word 3's upper lane zero. -/
 theorem fan_zero (memory : ByteArray) (low high : UInt256)
-    (hlow : (MachineState.readWord memory 0).toNat < 2 ^ 32) :
+    (hlow : (MachineState.readWord memory 0).toNat % 2 ^ 144 < 2 ^ 32) :
     Precompile.bytesToNatPadded (fanMemory memory low high) 22 4 = 0 := by
   rw [fan_prefix_memory memory low high 22 4 (by omega)]
-  have h6 := StaggerScratch.low_zero memory hlow 22 (by omega)
+  have h6 := StaggerScratch.low_zero memory hlow 22 (by omega) (by omega)
   have hsplit := Bytes.bytesToNatPadded_add memory 22 4 2
   rw [show (4 : Nat) + 2 = 28 - 22 by norm_num] at hsplit
   rw [h6] at hsplit
@@ -390,7 +402,7 @@ theorem fan_lanes (memory : ByteArray) (low high : UInt256) (i : Nat)
 /-- The S51 pool loads: the three unmasked sources verbatim, every other source as the
 `2 ^ 144 + 1` dual-lane broadcast of the very schedule word the S48 pool produced. -/
 theorem fan_poolWord (memory : ByteArray) (low high : UInt256)
-    (hlow : (MachineState.readWord memory 0).toNat < 2 ^ 32) (i : Nat) (hi : i < 16) :
+    (hlow : (MachineState.readWord memory 0).toNat % 2 ^ 144 < 2 ^ 32) (i : Nat) (hi : i < 16) :
     Pair13PoolRaw.poolWord (fanMemory memory low high) i =
       dualOf (StaggerScratch.poolWordD (StaggerScratch.scratchMemory memory low high)) i := by
   by_cases h2 : i ≤ 2

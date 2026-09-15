@@ -62,12 +62,12 @@ def gasSteps_table (s : State) (e : Env s)
     (ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 880)
     (hactive : s.activeWords = UInt256.ofNat 36)
-    (hlow : (MachineState.readWord s.memory 0).toNat < 2 ^ 32)
+    (hlow : (MachineState.readWord s.memory 0).toNat % 2 ^ 144 < 2 ^ 32)
     (hgap : PairStoreGap.GapClear s.memory) :
     GasSteps
       (atState {s with memory := writeWord s.memory 96 highWord} 517
         (stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho))
-      (atState {s with memory := StaggerTableLayout.resultMemory s.memory (Shared32Table.words s.memory)} 884
+      (atState {s with memory := StaggerTableLayout.resultMemory0 s.memory (Shared32Table.words s.memory)} 884
         (stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho)) := by
   let s1 : State := {s with memory := writeWord s.memory 96 highWord}
   have e1 : Env s1 := ⟨e.code, e.fork, e.run, e.np⟩
