@@ -105,6 +105,12 @@ theorem land_ofNat (a b : Nat) (ha : a < 2 ^ 256) (hb : b < 2 ^ 256) :
 theorem isZero_ofNat_zero : UInt256.isZero (UInt256.ofNat 0) = UInt256.ofNat 1 := by
   decide
 
+/-- `EQ x 0` is `ISZERO x`: the `PUSH0 EQ` lowering of `DUP1 ISZERO` produces
+exactly the condition word the guard proofs already reason about. -/
+theorem eq_zero_isZero (a : UInt256) :
+    UInt256.eq a (UInt256.ofNat 0) = UInt256.isZero a := by
+  simp [UInt256.eq, UInt256.isZero, Challenge.EvmProof.Word.word_toNat_ofNat]
+
 theorem isZero_ofNat_of_ne {a : Nat} (ha : a < 2 ^ 256) (h : a ≠ 0) :
     UInt256.isZero (UInt256.ofNat a) = UInt256.ofNat 0 := by
   rw [UInt256.isZero, toNat_ofNat_self ha, if_neg h]
@@ -565,7 +571,7 @@ theorem run_rrPost_loop (s : State) (mem : ByteArray)
       some (rrNext s mem n bsize esize msize k) := by
   have hzero : UInt256.isZero (UInt256.ofNat k) = UInt256.ofNat 0 :=
     isZero_ofNat_of_ne (Nat.lt_of_le_of_lt hk (by norm_num)) hk0
-  simp (config := { maxSteps := 400000 }) [blk1178, opAt, pushAt,
+    rrPost, rrNext, outer, hrun, hzero, eq_zero_isZero,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     rrPost, rrNext, outer, hrun, hzero,
@@ -586,7 +592,7 @@ theorem run_rrPost_exit (s : State) (mem : ByteArray) (n bsize esize msize : Nat
   simp (config := { maxSteps := 400000 }) [blk1178, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    rrPost, rrDone, outer, hcode, hrun, isZero_ofNat_zero, isTrue_one,
+    rrPost, rrDone, outer, hcode, hrun, isZero_ofNat_zero, isTrue_one, eq_zero_isZero,
     h1631Nat, jumpDest1599,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
