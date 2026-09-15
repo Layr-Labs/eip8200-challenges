@@ -34,3 +34,7 @@ end Challenge.Modexp.Benchmark
 -- draw rerun 2026-09-15T14:39:20Z: identical bytes and identical proof, resubmitted under a fresh benchmark seed
 
 -- draw 3 2026-09-15T15:07:14Z: identical bytes and identical proof under a fresh benchmark seed
+
+-- draw 4 2026-09-15T15:52:54Z: identical bytes and identical proof under a fresh benchmark seed
+
+-- draw 4 2026-09-15T16:02:17Z: identical bytes and identical proof under a fresh benchmark seed
