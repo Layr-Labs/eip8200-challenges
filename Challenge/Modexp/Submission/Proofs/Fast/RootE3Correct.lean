@@ -128,6 +128,7 @@ theorem handled_of_bound_shift_hit (input : ByteArray) (s : State) (mem : ByteAr
     (hmod : Model.FastRepresents mem 0 n mm)
     (hone : Model.FastRepresents mem 768 n 0)
     (hmatch : FullBase.Matches mem n bsize)
+    (hfast : n = 4 ∨ n = 8)
     (bindings : RootE3Trace.TraceBindings s mem input n bsize esize msize) :
     FixedExponentRoute.Handled input (Shift.dispState s mem n bsize esize msize) := by
   let e : Shift.Env s := ⟨hcode, hfork, hrun, hnp, hact⟩
@@ -136,7 +137,7 @@ theorem handled_of_bound_shift_hit (input : ByteArray) (s : State) (mem : ByteAr
     hmm hodd hradix hm hframe hmod hone hmatch
   · intro h
     exact RootE3Trace.ordinaryTrace s mem input n bsize esize msize mm minv bindings
-      hn hn8 e hm hodd hframe hmod hmatch.2 h
+      hn hn8 e hm hodd hframe hmod hmatch.2 h hfast
   · intro h
     have hn4 : n = 4 * (n / 4) := by rcases h.2.2 with h4 | h8 <;> omega
     exact RootE3Trace.e3Trace s mem input n bsize esize msize mm minv (n / 4) bindings

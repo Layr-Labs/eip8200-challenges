@@ -30,7 +30,7 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
   let ec := WindowTwentyOneGasRoute.context_env template env input
   let m := WindowTwentyOneInput.modulusWord input
   let e := WindowTwentyOneInput.exponentWord input
-  have hjump : Decode.isValidJumpDest (context template input).executionEnv.code 1656 = true := by
+  have hjump : Decode.isValidJumpDest (context template input).executionEnv.code 1395 = true := by
     rw [ec.code]
     exact paths.legacyJump
   have hraw := FermatNext.run_entry (context template input)
@@ -44,7 +44,7 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
   rw [heo, hmo, exponent_at template input hmatch.1, modulus_at template input hmatch] at hraw
   have hraw' : runInstructions FermatNext.entryProgram (entryState template input) =
       some (WindowTwentyOneEntry.framed (context template input)
-        (if (FermatNext.fermatDiff m e).toNat = 0 then UInt256.ofNat 45 else UInt256.ofNat 1656)
+        (if (FermatNext.fermatDiff m e).toNat = 0 then UInt256.ofNat 45 else UInt256.ofNat 1395)
         (m :: coreStack input)) := hraw
   obtain ⟨oldFinal, ⟨oldTrace⟩, oldDone, oldResult⟩ :=
     WindowTwentyOneGasRoute.handled legacy template env hcall input hmatch

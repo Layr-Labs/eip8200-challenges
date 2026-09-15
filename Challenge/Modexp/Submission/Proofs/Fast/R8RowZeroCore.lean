@@ -103,8 +103,8 @@ theorem run_tail (s : State) (pc C lo b2 P hd w3 ent : UInt256)
   have h6 : rest.length + 6 < 1024 := by omega
   have h7 : rest.length + 7 < 1024 := by omega
   have h8 : rest.length + 8 < 1024 := by omega
-  have h3765 : (3779 : UInt256) = UInt256.ofNat 3779 := by decide
+  have h3779 : (3779 : UInt256) = UInt256.ofNat 3779 := by decide
   simp [tailProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    h6, h7, h8, List.exchange, State.activeWordsAfterUInt256, h3765, hact, hjump]
+    h6, h7, h8, List.exchange, State.activeWordsAfterUInt256, h3779, hact, hjump]
 
 end Challenge.Modexp.Submission.Proofs.Fast.R8RowZero

@@ -48,14 +48,14 @@ private theorem instructionPC_add (p : Challenge.EvmProof.ProgramArtifact) (base
 /-- Instruction-index anchors: the only places the concrete instruction prefix is
 assembled.  Each is chained from the previous one, so the assembled slice stays short. -/
 private def nine_width :
-  WindowTwentyOneBinding.Block submissionArtifact .Osaka 1633 WindowTwentyOneEntry.widthProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1158 14 1633 WindowTwentyOneEntry.widthProgram
+  WindowTwentyOneBinding.Block submissionArtifact .Osaka 1372 WindowTwentyOneEntry.widthProgram :=
+  WindowTwentyOneSlice.block allWellFormed 951 14 1372 WindowTwentyOneEntry.widthProgram
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_hitTail :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1651 WindowTwentyOneEntry.hitTailProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1172 4 1651 WindowTwentyOneEntry.hitTailProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1390 WindowTwentyOneEntry.hitTailProgram :=
+  WindowTwentyOneSlice.block allWellFormed 965 4 1390 WindowTwentyOneEntry.hitTailProgram
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
@@ -66,56 +66,56 @@ private def nine_adapter :
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_base :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1656 WindowTwentyOneEntry.baseProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1176 1 1656 WindowTwentyOneEntry.baseProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1395 WindowTwentyOneEntry.baseProgram :=
+  WindowTwentyOneSlice.block allWellFormed 969 1 1395 WindowTwentyOneEntry.baseProgram
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_modulus :
-  WindowTwentyOneBinding.Block submissionArtifact .Osaka 1657 WindowTwentyOneEntry.modulusProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1177 2 1657 WindowTwentyOneEntry.modulusProgram
+  WindowTwentyOneBinding.Block submissionArtifact .Osaka 1396 WindowTwentyOneEntry.modulusProgram :=
+  WindowTwentyOneSlice.block allWellFormed 970 2 1396 WindowTwentyOneEntry.modulusProgram
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_normalize :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1660 WindowTwentyOneEntry.normalizeProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1179 7 1660 WindowTwentyOneEntry.normalizeProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1399 WindowTwentyOneEntry.normalizeProgram :=
+  WindowTwentyOneSlice.block allWellFormed 972 7 1399 WindowTwentyOneEntry.normalizeProgram
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_table :
-  WindowTwentyOneBinding.Block submissionArtifact .Osaka 1669 WindowTwentyOneTableBuild.program :=
-  WindowTwentyOneSlice.block allWellFormed 1186 91 1669 WindowTwentyOneTableBuild.program
+  WindowTwentyOneBinding.Block submissionArtifact .Osaka 1408 WindowTwentyOneTableBuild.program :=
+  WindowTwentyOneSlice.block allWellFormed 979 91 1408 WindowTwentyOneTableBuild.program
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_init :
-  WindowTwentyOneBinding.Block submissionArtifact .Osaka 1761 WindowTwentyOneInit.program :=
-  WindowTwentyOneSlice.block allWellFormed 1277 14 1761 WindowTwentyOneInit.program
+  WindowTwentyOneBinding.Block submissionArtifact .Osaka 1500 WindowTwentyOneInit.program :=
+  WindowTwentyOneSlice.block allWellFormed 1070 14 1500 WindowTwentyOneInit.program
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_entry :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1780 WindowTwentyOneLoop.entryProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1291 0 1780 WindowTwentyOneLoop.entryProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1519 WindowTwentyOneLoop.entryProgram :=
+  WindowTwentyOneSlice.block allWellFormed 1084 0 1519 WindowTwentyOneLoop.entryProgram
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_trampoline :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1780 WindowTwentyOneLoop.trampolineProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1291 14 1780 WindowTwentyOneLoop.trampolineProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1519 WindowTwentyOneLoop.trampolineProgram :=
+  WindowTwentyOneSlice.block allWellFormed 1084 14 1519 WindowTwentyOneLoop.trampolineProgram
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_body :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1799 WindowTwentyOneLoop.bodyProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1305 411 1799 WindowTwentyOneLoop.bodyProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1538 WindowTwentyOneLoop.bodyProgram :=
+  WindowTwentyOneSlice.block allWellFormed 1098 411 1538 WindowTwentyOneLoop.bodyProgram
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_finish :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2256 WindowTwentyOneReturn.program :=
-  WindowTwentyOneSlice.block allWellFormed 1716 5 2256 WindowTwentyOneReturn.program
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1995 WindowTwentyOneReturn.program :=
+  WindowTwentyOneSlice.block allWellFormed 1509 5 1995 WindowTwentyOneReturn.program
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
@@ -141,7 +141,7 @@ def fermatPaths : FermatNext.Paths submissionArtifact .Osaka where
   entry := fermat_entry
   prime := fermat_prime
   result := fermat_result
-  legacyJump := by exact isValidJumpDest_index 1176 (by rfl)
+  legacyJump := by exact isValidJumpDest_index 969 (by rfl)
 
 def twentyOnePaths : WindowTwentyOneGasRoute.Paths submissionArtifact .Osaka where
   width := nine_width
@@ -163,7 +163,7 @@ def twentyOnePaths : WindowTwentyOneGasRoute.Paths submissionArtifact .Osaka whe
     have h := isValidJumpDest_index 19 (by rfl)
     exact h
   trampJump := by
-    have h := isValidJumpDest_index 1291 (by rfl)
+    have h := isValidJumpDest_index 1084 (by rfl)
     exact h
   missJump := by
     have h := isValidJumpDest_index 78 (by rfl)

@@ -98,12 +98,12 @@ pc 2413 with the counter at eight. -/
 def controlProgram : List Instr :=
   [.push 2 1, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩),
    .push 1 7, .op .GT,
-   .push 2 2381, .op .JUMPI]
+   .push 2 2120, .op .JUMPI]
 
 theorem run_start (hcap : rest.length ≤ 1000) :
     runInstructions [.op .JUMPDEST]
-      (framed s 2381 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) =
-      some (framed s 2382 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) := by
+      (framed s 2120 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) =
+      some (framed s 2121 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) := by
   have h8 : rest.length + 8 < 1024 := by omega
   simp [runInstructions, Challenge.EvmProof.Stepper.runInstr, framed, h8]
   decide
@@ -122,15 +122,15 @@ theorem gt_seven_seven :
 /-- One pass of the loop control with the counter at `c`: bits zero to six jump
 back to the body head at 2377, the seventh bit falls through to the exit at 2413. -/
 theorem run_control (c : Nat) (hc : c < 8) (hcap : rest.length ≤ 1000)
-    (hjd : Decode.isValidJumpDest s.executionEnv.code 2381 = true) :
+    (hjd : Decode.isValidJumpDest s.executionEnv.code 2120 = true) :
     runInstructions controlProgram
-      (framed s 2404 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m] ++ rest)) =
-      some (framed s (if c < 7 then 2381 else 2417)
+      (framed s 2143 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m] ++ rest)) =
+      some (framed s (if c < 7 then 2120 else 2156)
         ([Bm1,UInt256.ofNat (c+1),byte,offset,outerW,acc,base,m] ++ rest)) := by
   have h8 : rest.length + 8 < 1024 := by omega
   have h9 : rest.length + 9 < 1024 := by omega
   have h10 : rest.length + 10 < 1024 := by omega
-  have htarget : (2381 : UInt256).toNat = 2381 := by decide
+  have htarget : (2120 : UInt256).toNat = 2120 := by decide
   have ht1 : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have ht0 : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
   by_cases h7 : c < 7

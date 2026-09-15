@@ -9,8 +9,8 @@ namespace Challenge.Modexp
 def submissionHex : String := (include_str "bytecode.hex").trimAscii.copy
 def submissionBytecode : ByteArray := submissionBytes
 
-@[simp] theorem submissionBytecode_size : submissionBytecode.size = 5339 := by
-  change submissionBytes.size = 5339
+@[simp] theorem submissionBytecode_size : submissionBytecode.size = 5137 := by
+  change submissionBytes.size = 5137
   exact submissionBytes_size
 
 theorem submissionBytecode_roundtrip :
@@ -19,5 +19,3 @@ theorem submissionBytecode_roundtrip :
   Challenge.EvmProof.Bytecode.assemble_disassemble _
 
 end Challenge.Modexp
-
--- lottery rerun 2026-09-15T07:11:44Z: accepted artifact resubmitted under a fresh benchmark seed, bytes and proofs unchanged
