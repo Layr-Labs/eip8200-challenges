@@ -34,10 +34,10 @@ jump back to the loop head is taken on the old pointer `p`, and `p = 0` falls in
 def blk2896b :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1991 (.Dup ⟨0, by decide⟩),
-   pushAt 1992 1 31,
-   opAt 1993 .NOT,
-   opAt 1994 .ADD,
-   opAt 1995 (.Swap ⟨0, by decide⟩),
+   pushAt 1992 1 32,
+   opAt 1993 .SUB,
+   opAt 1994 (.Swap ⟨0, by decide⟩),
+   opAt 1995 .JUMPDEST,
    pushAt 1996 2 2666,
    opAt 1997 .JUMPI]
 
@@ -120,9 +120,9 @@ def blk3157a :
 /-- The exit test of the add-round body (`blk3157` instructions 23..30). -/
 def blk3157b :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 2402 1 31,
-   opAt 2403 .NOT,
-   opAt 2404 .ADD,
+  [pushAt 2402 1 32,
+   opAt 2403 .SUB,
+   opAt 2404 .JUMPDEST,
    pushAt 2405 2 2111,
    opAt 2406 (.Dup ⟨1, by decide⟩),
    opAt 2407 .GT,
@@ -169,9 +169,9 @@ def blk3213b :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2461 (.Swap ⟨1, by decide⟩),
    opAt 2462 .POP,
-   pushAt 2463 1 31,
-   opAt 2464 .NOT,
-   opAt 2465 .ADD,
+   pushAt 2463 1 32,
+   opAt 2464 .SUB,
+   opAt 2465 .JUMPDEST,
    pushAt 2466 2 2111,
    opAt 2467 (.Dup ⟨1, by decide⟩),
    opAt 2468 .GT,
