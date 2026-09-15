@@ -55,8 +55,8 @@ def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osak
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 4648 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3582) = UInt256.ofNat 4648
+theorem site_pc : site.startPC = UInt256.ofNat 4652 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3582) = UInt256.ofNat 4652
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction :=
   Table80SiteCommon.coreAdvancesAll_sound template (by decide)
@@ -66,14 +66,14 @@ def gasSteps (s : State) (off limit : UInt256) (h : Compression.HashState)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4648, stack := StaggerPersistentFrame.frame h off limit rho}
-      {prepared s h with pc := UInt256.ofNat 4671, stack := packedHash h :: off :: limit :: rho} := by
+    GasSteps {s with pc := UInt256.ofNat 4652, stack := StaggerPersistentFrame.frame h off limit rho}
+      {prepared s h with pc := UInt256.ofNat 4675, stack := packedHash h :: off :: limit :: rho} := by
   apply DenseScheduleLift.gasSteps_of_raw site
-    {s with pc := UInt256.ofNat 4648, stack := StaggerPersistentFrame.frame h off limit rho}
-    {prepared s h with pc := UInt256.ofNat 4671, stack := packedHash h :: off :: limit :: rho}
+    {s with pc := UInt256.ofNat 4652, stack := StaggerPersistentFrame.frame h off limit rho}
+    {prepared s h with pc := UInt256.ofNat 4675, stack := packedHash h :: off :: limit :: rho}
     hcode hfork hrun hnp site_pc.symm advances
-  have hraw := run_template s (UInt256.ofNat 4648) off limit h rho hstack hrun
-  have hend : pcAfter (UInt256.ofNat 4648) template = UInt256.ofNat 4671 := by decide
+  have hraw := run_template s (UInt256.ofNat 4652) off limit h rho hstack hrun
+  have hend : pcAfter (UInt256.ofNat 4652) template = UInt256.ofNat 4675 := by decide
   rw [hend] at hraw
   exact hraw
 

@@ -11,7 +11,7 @@ open Shared32Scratch Shared32Sites Paired144WordRound Shared32Start
 def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
     GasSteps (StackTail.append (Execution.atPC input 336) rho)
-      (atState (tableState input) 899 (frame ++ rho)) := by
+      (atState (tableState input) 884 (frame ++ rho)) := by
   have hfit : CalldataFits input := by change input.size < 2 ^ 64; rw [h32]; decide
   let s := PaddingTrace.padCopied input
   have e : Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
@@ -23,11 +23,11 @@ def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
     exact copiedMemory_gapClear input
   have g0 := PaddingTail.gasSteps_prefix input hfit rho hcap
   have g1 : GasSteps (StackTail.append (PaddingTrace.padFramed input) rho)
-      (atState s 4704 (entryFrame ++ rho)) := by
+      (atState s 4708 (entryFrame ++ rho)) := by
     have ga := Shared32Alignment.gasSteps s e (PaddingTrace.initialFrame input ++ rho)
       (by rw [List.length_append, PaddingTrace.initialFrame_length]; omega) h32
     simpa only [PaddingTrace.padFramed, StackTail.append, hframe, atState, s] using ga
-  have g2 : GasSteps (atState s 4704 (entryFrame ++ rho)) (atState s 4705 (frame ++ rho)) := by
+  have g2 : GasSteps (atState s 4708 (entryFrame ++ rho)) (atState s 4709 (frame ++ rho)) := by
     exact StaggerPersistentStart.gasSteps_entry s (entryFrame ++ rho)
       (by simp only [entryFrame, StaggerPersistentFrame.frame, maskRho, List.length_append,
         List.length_cons, List.length_nil]; omega) e.run e.code e.fork e.np

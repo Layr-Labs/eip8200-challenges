@@ -107,8 +107,8 @@ def template1 : List Instr :=
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 738),
     .op .MSTORE,
-    .op (.Dup ⟨8, by decide⟩),
-    .op (.Dup ⟨11, by decide⟩),
+    .op (.Dup ⟨10, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
     .op .MUL,
     .push ⟨2, by decide⟩ (UInt256.ofNat 720),
     .op .MSTORE ]

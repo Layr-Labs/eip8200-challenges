@@ -21,10 +21,10 @@ def endian8Site : GenericRoundSite Artifact.submissionArtifact .Osaka endian8Cod
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := endian8Code) (by decide)) (by decide)
-theorem endian8_pc : endian8Site.startPC = UInt256.ofNat 4671 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3600) = UInt256.ofNat 4671
+theorem endian8_pc : endian8Site.startPC = UInt256.ofNat 4675 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3600) = UInt256.ofNat 4675
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem endian8_end : endian8Site.endPC = UInt256.ofNat 4684 := by
+theorem endian8_end : endian8Site.endPC = UInt256.ofNat 4688 := by
   have h := endPC_eq_pcAfter_sites endian8Site.sites endian8Site.startPC endian8Site.endPC
     endian8Site.head_eq endian8Site.end_eq endian8Site.contiguous
   rw [endian8Site.instruction_eq, endian8_pc] at h
@@ -38,10 +38,10 @@ def endian16Site : GenericRoundSite Artifact.submissionArtifact .Osaka endian16C
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := endian16Code) (by decide)) (by decide)
-theorem endian16_pc : endian16Site.startPC = UInt256.ofNat 4684 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3610) = UInt256.ofNat 4684
+theorem endian16_pc : endian16Site.startPC = UInt256.ofNat 4688 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3610) = UInt256.ofNat 4688
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem endian16_end : endian16Site.endPC = UInt256.ofNat 4698 := by
+theorem endian16_end : endian16Site.endPC = UInt256.ofNat 4702 := by
   have h := endPC_eq_pcAfter_sites endian16Site.sites endian16Site.startPC endian16Site.endPC
     endian16Site.head_eq endian16Site.end_eq endian16Site.contiguous
   rw [endian16Site.instruction_eq, endian16_pc] at h
@@ -55,22 +55,22 @@ def terminalSite : GenericRoundSite Artifact.submissionArtifact .Osaka terminalC
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := terminalCode) (by decide)) (by decide)
-theorem terminal_pc : terminalSite.startPC = UInt256.ofNat 4698 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3620) = UInt256.ofNat 4698
+theorem terminal_pc : terminalSite.startPC = UInt256.ofNat 4702 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3620) = UInt256.ofNat 4702
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def value (h : Compression.HashState) : UInt256 :=
   DenseScheduleTemplate.packedWord (StaggerPersistentOutput.packedHash h)
 def result (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) : State :=
-  StaggerPersistentReturn.result (StaggerPersistentOutput.prepared s h) (UInt256.ofNat 4698) (value h) (off :: limit :: rho)
+  StaggerPersistentReturn.result (StaggerPersistentOutput.prepared s h) (UInt256.ofNat 4702) (value h) (off :: limit :: rho)
 
 def gasSteps (s : State) (off limit : UInt256) (h : Compression.HashState)
     (rho : List UInt256) (hstack : rho.length ≤ 980) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4648, stack := StaggerPersistentFrame.frame h off limit (DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)}
+    GasSteps {s with pc := UInt256.ofNat 4652, stack := StaggerPersistentFrame.frame h off limit (DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)}
       (result s h off limit (DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)) := by
   have gp := StaggerPersistentOutput.gasSteps s off limit h
     (DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho) (by simp; omega) hrun hcode hfork hnp
