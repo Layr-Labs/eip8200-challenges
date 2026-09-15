@@ -1936,11 +1936,10 @@ def submissionInstructions : List Instr :=
  .op .JUMPDEST,
  .push 2 2688,
  .op .MLOAD,
- .push 1 128,
+ .push 2 128,
  .op .LT,
- .op (.Dup { idx := 0 }),
  .push 1 8,
- .op (.Swap { idx := 0 }),
+ .op (.Dup { idx := 1 }),
  .op .SHL,
  .op .JUMPDEST,
  .push 2 2583,
@@ -4133,7 +4132,7 @@ def submissionInstructions : List Instr :=
  .op .JUMPDEST,
  .op .JUMP]
 
-theorem submissionInstructions_count : submissionInstructions.length = 4110 := by
+theorem submissionInstructions_count : submissionInstructions.length = 4109 := by
   decide
 
 theorem assemble_submissionInstructions :

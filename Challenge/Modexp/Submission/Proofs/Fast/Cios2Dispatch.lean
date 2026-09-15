@@ -61,27 +61,27 @@ def commonFallbackState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Na
 /-- The `mul entry` JUMPDEST (instruction 3190, pc 4013 = 0x0f50). -/
 theorem jumpDest4012 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3353 = true := by
-  exact Artifact.isValidJumpDest_index 2509 (by rfl)
+  exact Artifact.isValidJumpDest_index 2508 (by rfl)
 
 /-- The `common` JUMPDEST (instruction 3190, pc 4104 = 0x0f54). -/
 theorem jumpDestCommon :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3357 = true := by
-  exact Artifact.isValidJumpDest_index 2511 (by rfl)
+  exact Artifact.isValidJumpDest_index 2510 (by rfl)
 
 /-- The kernel `setup` JUMPDEST (instruction 3190, pc 4123 = 0x0f6c). -/
 theorem jumpDestSetup :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3383 = true := by
-  exact Artifact.isValidJumpDest_index 2527 (by rfl)
+  exact Artifact.isValidJumpDest_index 2526 (by rfl)
 
 /-- The multiply row head (instruction 1760, pc 4261 = 0x0fc5). -/
 theorem jumpDestRowHead :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3520 = true := by
-  exact Artifact.isValidJumpDest_index 2619 (by rfl)
+  exact Artifact.isValidJumpDest_index 2618 (by rfl)
 
 /-- The square row head `sq_row` (instruction 3559, pc 2464 = 0x1266). -/
 theorem jumpDestSqRow :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4234 = true := by
-  exact Artifact.isValidJumpDest_index 3195 (by rfl)
+  exact Artifact.isValidJumpDest_index 3194 (by rfl)
 
 /-- `jumpDestRowHead` in the `hd.toNat` form taken by `gasSteps_setup`/`gasSteps_commonSetup`. -/
 theorem jumpDestRowHead' :
@@ -211,7 +211,7 @@ theorem run_commonFallback (s : State) (mem : ByteArray) (hd : UInt256) (pa pb :
 
 /-- The kernel `setup`: instructions 3189..3189 (pc 4123 = 0x0f6c .. 4260), 62 instructions. -/
 def setup : Block Artifact.submissionArtifact .Osaka 3383 StagedOperand.fullEntryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2527 59 3383 StagedOperand.fullEntryProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2526 59 3383 StagedOperand.fullEntryProgram
     (by decide) (by decide) (by rfl) (by decide)
 
 def environment (s : State)
