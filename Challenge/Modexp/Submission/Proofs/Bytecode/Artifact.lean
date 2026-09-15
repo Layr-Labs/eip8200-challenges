@@ -2014,7 +2014,7 @@ def submissionInstructions : List Instr :=
  .op .GT,
  .op .SUB,
  .op (.Dup { idx := 1 }),
- .op (.Dup { idx := 3 }),
+ .push 0 0,
  .op .ADD,
  .push 2 2336,
  .op .MLOAD,
