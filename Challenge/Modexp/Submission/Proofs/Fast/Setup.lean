@@ -93,6 +93,32 @@ theorem eq_maxWord_of_ne (w : UInt256)
   intro hc
   exact h (Challenge.EvmProof.Word.word_ext hc).symm
 
+/-- The rewritten entry test computes `ISZERO (NOT w)` instead of `EQ` against the
+all-ones word: `NOT w = 0` exactly when `w` is all ones. -/
+theorem isZero_lnot_of_ne_maxWord (w : UInt256)
+    (h : w ≠ UInt256.ofNat (Limbs.radix - 1)) :
+    UInt256.isZero (UInt256.lnot w) = UInt256.ofNat 0 := by
+  rw [UInt256.isZero, if_neg]
+  intro hz
+  apply h
+  apply Challenge.EvmProof.Word.word_ext
+  rw [toNat_ofNat_self (by unfold Limbs.radix; norm_num), Limbs.radix_eq]
+  have hw : w.toNat < 2 ^ 256 := w.val.isLt
+  have hnot : (UInt256.lnot w).toNat = 2 ^ 256 - 1 - w.toNat := by
+    unfold UInt256.lnot UInt256.size
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat]
+    exact Nat.mod_eq_of_lt (by omega)
+  rw [hnot] at hz
+  omega
+
+theorem isZero_lnot_of_eq_maxWord (w : UInt256)
+    (h : w = UInt256.ofNat (Limbs.radix - 1)) :
+    UInt256.isZero (UInt256.lnot w) = UInt256.ofNat 1 := by
+  rw [h, UInt256.isZero, if_pos]
+  unfold UInt256.lnot UInt256.size Limbs.radix
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat]
+  norm_num
+
 /-- `PUSH1 0x7f; AND` on the padded width is zero exactly when the width is a multiple of 128,
 which for `32 * limbs` means a limb count divisible by four. -/
 theorem land_mask_of_mod (n : Nat) (hn : n < 2 ^ 256) (h : n % 128 = 0) :
@@ -709,7 +735,7 @@ theorem run_oddCheck_pass (s : State) (input : ByteArray)
      oddCheckState, setupEntryState, outerStack, hdata, hrun, hsub, hmodmod,
      land_one_lastWord input h32, hodd, isZero_ofNat_one, isZero_ofNat_zero,
      -- the two conditions the rewritten block adds
-     lnot_zero_raw, eq_maxWord_of_ne _ hnprime, List.exchange,
+     lnot_zero_raw, isZero_lnot_of_ne_maxWord _ hnprime, List.exchange,
      land_mask_of_mod (s32 input) (by unfold s32 limbs Limbs.limbCount; omega) hwidth,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -820,7 +846,7 @@ theorem run_oddCheck_bail (s : State) (input : ByteArray)
        Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
        oddCheckState, bail6State, outerStack, hdata, hcode, hrun, hsub, hmodmod,
        land_one_lastWord input h32, jumpDest1826,
-       lnot_zero_raw, eq_maxWord_of_eq _ hnprime, isTrue_lor_iff, List.exchange,
+       lnot_zero_raw, isZero_lnot_of_eq_maxWord _ hnprime, isTrue_lor_iff, List.exchange,
        Challenge.EvmProof.Word.literal_eq_ofNat,
        Challenge.EvmProof.Word.succ_ofNat_mod,
        Challenge.EvmProof.Word.ofNat_add_mod,
