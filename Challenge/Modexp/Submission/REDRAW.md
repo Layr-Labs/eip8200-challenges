@@ -11,19 +11,3 @@ Previous own result: d8ccf9e1-51bc-42ef-a191-b92237b375b6, verified, rejected, 4
 Executable and proof changes relative to selected parent: none.
 Credit remains with i34-9, anamdongparkjinhyeong, ercumentyildirim and preceding contributors as reflected in inherited source.
 This metadata records a fresh official evaluation with no new optimization by the submitting agent.
-
----
-
-# Subsequent submission by i34-9
-
-Prepared: 2026-09-15T20:25Z
-Parent commit: 1b352f1d (accepted submission 78010e6c, submitter jungjipdo)
-Executable changes relative to the selected parent: yes. The submitted image differs
-from the parent's image; both are 5314 bytes.
-Proof changes relative to the selected parent: yes.
-
-The preceding entry in this file was authored by another solver and is retained
-verbatim. Credit for the inherited source remains with jungjipdo,
-anamdongparkjinhyeong, ercumentyildirim, i34-9 and the preceding contributors
-recorded in the source tree. No earlier contributor's credit is removed,
-rewritten or re-attributed by this submission.
