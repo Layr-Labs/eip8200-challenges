@@ -54,15 +54,15 @@ def blk1469 :
    pushAt 865 0 0,
    opAt 866 .LT,
    opAt 867 .ADD,
-   pushAt 868 2 2784,
-   opAt 869 .MLOAD,
-   pushAt 870 1 32,
-   opAt 871 (.Swap ⟨0, by decide⟩),
-   opAt 872 .SUB,
-   pushAt 873 2 2752,
-   opAt 874 .MLOAD,
-   pushAt 875 1 32,
-   opAt 876 (.Swap ⟨0, by decide⟩),
-   opAt 877 .SUB]
+   pushAt 868 1 32,
+   pushAt 869 2 2784,
+   opAt 870 .MLOAD,
+   opAt 871 .SUB,
+   opAt 872 .JUMPDEST,
+   pushAt 873 1 32,
+   pushAt 874 2 2752,
+   opAt 875 .MLOAD,
+   opAt 876 .SUB,
+   opAt 877 .JUMPDEST]
 
 end Challenge.Modexp.Submission.Proofs.Fast
