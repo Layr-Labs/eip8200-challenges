@@ -70,7 +70,7 @@ def wordEntryPath :
    opAt 418 (.Dup ⟨6, by decide⟩),
    opAt 419 (.Dup ⟨8, by decide⟩),
    opAt 420 (.Dup ⟨10, by decide⟩),
-   pushAt 421 2 1633,
+   pushAt 421 2 1372,
    opAt 422 .JUMP]
 
 def zeroSetupPath := zeroSizePath.take 5
@@ -106,9 +106,9 @@ def wordTailPath := wordRestPath.drop 12
 
 set_option maxRecDepth 20000 in
 @[simp] theorem jump3000 :
-    Decode.isValidJumpDest submissionBytecode 1633 = true := by
-  have hpc : Artifact.instructionPC 1158 = 1633 := by decide
-  simpa only [hpc] using Artifact.isValidJumpDest_index 1158 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 1372 = true := by
+  have hpc : Artifact.instructionPC 951 = 1372 := by decide
+  simpa only [hpc] using Artifact.isValidJumpDest_index 951 (by rfl)
 
 def zeroSizeFinalState (input : ByteArray) : State :=
   { Main.headerState input with
@@ -165,7 +165,7 @@ submission artifact has been regenerated.
 
 /-- State reached by the retargeted one-word dispatcher at the appended route. -/
 def wordRouteEntryState (input : ByteArray) : State :=
-  { wordEntryState input with pc := UInt256.ofNat 1633 }
+  { wordEntryState input with pc := UInt256.ofNat 1372 }
 
 /-- The unchanged dispatcher prefix followed by its retargeted final jump. -/
 abbrev WordRouteEnter (input : ByteArray) : Type :=

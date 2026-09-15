@@ -43,8 +43,8 @@ def gasSteps_l1Step (k : Nat) (hk1 : 1 ≤ k) (hk7 : k ≤ 7)
     (hact : 88 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hjk : j + 8 = k + n)
     (hsnapshot : Snapshot q.memory pa n) :
     Challenge.EvmProof.GasSteps
-      (l1Q (3549 + 37 * (k - 1)) s q bi pb n i hd ent pdst ret rest)
-      (l1Q (3549 + 37 * k) s (SquareModel.l1StepOn q bi pa n j) bi pb n i hd ent pdst ret rest) := by
+      (l1Q (3380 + 37 * (k - 1)) s q bi pb n i hd ent pdst ret rest)
+      (l1Q (3380 + 37 * k) s (SquareModel.l1StepOn q bi pa n j) bi pb n i hd ent pdst ret rest) := by
   have hj : j < n := by omega
   have ho := off_eq k n j hk7 hjk
   have hrunQ := fun (pc : Nat) (off t : UInt256) (hoff : off.toNat = 32 * (7 - k))
@@ -52,20 +52,20 @@ def gasSteps_l1Step (k : Nat) (hk1 : 1 ≤ k) (hk7 : k ≤ 7)
     run_stepQ pc off t s q bi pa pb n i j hd ent pdst ret rest hcap hact hn hj
       (by rw [ho]; exact hoff) (by rw [ho]; exact ht) hsnapshot
   interval_cases k
-  · exact l1Block1.steps (environment (l1Q 3549 s q bi pb n i hd ent pdst ret rest)
-      hcode hfork hrun hnp) rfl (hrunQ 3549 192 2304 (by decide) (by decide))
-  · exact l1Block2.steps (environment (l1Q 3586 s q bi pb n i hd ent pdst ret rest)
-      hcode hfork hrun hnp) rfl (hrunQ 3586 160 2272 (by decide) (by decide))
-  · exact l1Block3.steps (environment (l1Q 3623 s q bi pb n i hd ent pdst ret rest)
-      hcode hfork hrun hnp) rfl (hrunQ 3623 128 2240 (by decide) (by decide))
-  · exact l1Block4.steps (environment (l1Q 3660 s q bi pb n i hd ent pdst ret rest)
-      hcode hfork hrun hnp) rfl (hrunQ 3660 96 2208 (by decide) (by decide))
-  · exact l1Block5.steps (environment (l1Q 3697 s q bi pb n i hd ent pdst ret rest)
-      hcode hfork hrun hnp) rfl (hrunQ 3697 64 2176 (by decide) (by decide))
-  · exact l1Block6.steps (environment (l1Q 3734 s q bi pb n i hd ent pdst ret rest)
-      hcode hfork hrun hnp) rfl (hrunQ 3734 32 2144 (by decide) (by decide))
-  · exact l1Block7.steps (environment (l1Q 3771 s q bi pb n i hd ent pdst ret rest)
-      hcode hfork hrun hnp) rfl (hrunQ 3771 0 2112 (by decide) (by decide))
+  · exact l1Block1.steps (environment (l1Q 3380 s q bi pb n i hd ent pdst ret rest)
+      hcode hfork hrun hnp) rfl (hrunQ 3380 192 2304 (by decide) (by decide))
+  · exact l1Block2.steps (environment (l1Q 3417 s q bi pb n i hd ent pdst ret rest)
+      hcode hfork hrun hnp) rfl (hrunQ 3417 160 2272 (by decide) (by decide))
+  · exact l1Block3.steps (environment (l1Q 3454 s q bi pb n i hd ent pdst ret rest)
+      hcode hfork hrun hnp) rfl (hrunQ 3454 128 2240 (by decide) (by decide))
+  · exact l1Block4.steps (environment (l1Q 3491 s q bi pb n i hd ent pdst ret rest)
+      hcode hfork hrun hnp) rfl (hrunQ 3491 96 2208 (by decide) (by decide))
+  · exact l1Block5.steps (environment (l1Q 3528 s q bi pb n i hd ent pdst ret rest)
+      hcode hfork hrun hnp) rfl (hrunQ 3528 64 2176 (by decide) (by decide))
+  · exact l1Block6.steps (environment (l1Q 3565 s q bi pb n i hd ent pdst ret rest)
+      hcode hfork hrun hnp) rfl (hrunQ 3565 32 2144 (by decide) (by decide))
+  · exact l1Block7.steps (environment (l1Q 3602 s q bi pb n i hd ent pdst ret rest)
+      hcode hfork hrun hnp) rfl (hrunQ 3602 0 2112 (by decide) (by decide))
 
 /-! ## The chain suffix -/
 
@@ -91,8 +91,8 @@ def gasSteps_l1Run : (m k : Nat) → 1 ≤ k → k + m = 8 →
     88 ≤ s.activeWords.toNat → n ≤ 8 → (pa + 32 * n ≤ 2048 ∨ pa = 2368) → j + 8 = k + n →
     Snapshot q.memory pa n →
     Challenge.EvmProof.GasSteps
-      (l1Q (3549 + 37 * (k - 1)) s q bi pb n i hd ent pdst ret rest)
-      (l1Q 3808 s (SquareModel.l1Run q bi pa n j m) bi pb n i hd ent pdst ret rest)
+      (l1Q (3380 + 37 * (k - 1)) s q bi pb n i hd ent pdst ret rest)
+      (l1Q 3639 s (SquareModel.l1Run q bi pa n j m) bi pb n i hd ent pdst ret rest)
   | 0, k, _, hkm, s, q, bi, _, pb, n, i, _, hd, ent, pdst, ret, rest,
       _, _, _, _, _, _, _, _, _, _ => by
       obtain rfl : k = 8 := by omega
@@ -124,7 +124,7 @@ def gasSteps_l1Suffix (k : Nat) (hk1 : 1 ≤ k) (hk8 : k ≤ 8)
     (hjk : j + 8 = k + n)
     (hsnapshot : Snapshot q.memory pa n) :
     Challenge.EvmProof.GasSteps
-      (l1Q (3549 + 37 * (k - 1)) s q bi pb n i hd ent pdst ret rest)
+      (l1Q (3380 + 37 * (k - 1)) s q bi pb n i hd ent pdst ret rest)
       (midState s (SquareModel.l1Run q bi pa n j (8 - k)).memory
         (SquareModel.l1Run q bi pa n j (8 - k)).carry bi pb n i hd ent pdst ret rest) :=
   gasSteps_l1Run (8 - k) k hk1 (by omega) s q bi pa pb n i j hd ent pdst ret rest
@@ -143,7 +143,7 @@ def gasSteps_l1SuffixMul (k : Nat) (hk1 : 1 ≤ k) (hk8 : k ≤ 8)
     (hjk : j + 8 = k + n)
     (hsnapshot : Snapshot mem pa n) :
     Challenge.EvmProof.GasSteps
-      (l1At (3549 + 37 * (k - 1)) s mem bi pa pb n i j hd ent pdst ret rest)
+      (l1At (3380 + 37 * (k - 1)) s mem bi pa pb n i j hd ent pdst ret rest)
       (midState s (l1Step mem bi pa n n).memory (l1Step mem bi pa n n).carry
         bi pb n i hd ent pdst ret rest) := by
   have h := gasSteps_l1Suffix k hk1 hk8 s (l1Step mem bi pa n j) bi pa pb n i j hd ent pdst ret rest
