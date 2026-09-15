@@ -1520,19 +1520,43 @@ theorem run_r3e (s : State) (c p3 p2 p1 p0 p4 k n0 n1 n2 n3 np : UInt256) (rest 
   exact g0
 
 def prog_exit_0 : List Instr :=
-  [.op .JUMPDEST, .op (.Dup ⟨3, by decide⟩), .push 2 2208, .op .MSTORE,
-   .op (.Dup ⟨2, by decide⟩), .push 2 2176, .op .MSTORE]
+  [.op .JUMPDEST, .push 3 2112, .op .MSTORE,
+   .push 3 2144, .op .MSTORE]
 
-theorem run_exit_0 (s : State) (x0 x1 x2 x3 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1017)
+theorem run_exit_0 (s : State) (x0 x1 : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1019)
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prog_exit_0
-      { s with pc := UInt256.ofNat 4848, stack := x0 :: x1 :: x2 :: x3 :: rest } =
+      { s with pc := UInt256.ofNat 4848, stack := x0 :: x1 :: rest } =
     some { s with pc := UInt256.ofNat 4859,
-                  stack := x0 :: x1 :: x2 :: x3 :: rest,
+                  stack := rest,
                   memory := (MachineState.writeBytes (MachineState.writeBytes s.memory
-          (Data.Bytes.natToBytesPadded x3.toNat 32) 2208)
-          (Data.Bytes.natToBytesPadded x2.toNat 32) 2176) } := by
+          (Data.Bytes.natToBytesPadded x0.toNat 32) 2112)
+          (Data.Bytes.natToBytesPadded x1.toNat 32) 2144) } := by
+  have hc0 : rest.length < 1024 := by omega
+  have hz0 : (⟨0⟩ : UInt256).toNat = 0 := rfl
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hl2112 : (2112 : UInt256).toNat = 2112 := rfl
+  have hl2144 : (2144 : UInt256).toNat = 2144 := rfl
+  simp [hc0, hz0, prog_exit_0, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, hc1, hc2, hc3, hc4, hl2112, hl2144, State.activeWordsAfterUInt256, Monpro.activeWords_fix s 2112 32 (by decide) (by norm_num) hact, Monpro.activeWords_fix s 2144 32 (by decide) (by norm_num) hact]
+
+def prog_exit_1 : List Instr :=
+  [.push 3 2176, .op .MSTORE,
+   .push 3 2208, .op .MSTORE]
+
+theorem run_exit_1 (s : State) (x0 x1 : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1017)
+    (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions prog_exit_1
+      { s with pc := UInt256.ofNat 4859, stack := x0 :: x1 :: rest } =
+    some { s with pc := UInt256.ofNat 4869,
+                  stack := rest,
+                  memory := (MachineState.writeBytes (MachineState.writeBytes s.memory
+          (Data.Bytes.natToBytesPadded x0.toNat 32) 2176)
+          (Data.Bytes.natToBytesPadded x1.toNat 32) 2208) } := by
   have hc0 : rest.length < 1024 := by omega
   have hz0 : (⟨0⟩ : UInt256).toNat = 0 := rfl
   have hc1 : rest.length + 1 < 1024 := by omega
@@ -1543,43 +1567,16 @@ theorem run_exit_0 (s : State) (x0 x1 x2 x3 : UInt256) (rest : List UInt256)
   have hc6 : rest.length + 6 < 1024 := by omega
   have hl2176 : (2176 : UInt256).toNat = 2176 := rfl
   have hl2208 : (2208 : UInt256).toNat = 2208 := rfl
-  simp [hc0, hz0, prog_exit_0, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, hc1, hc2, hc3, hc4, hc5, hc6, hl2176, hl2208, State.activeWordsAfterUInt256, Monpro.activeWords_fix s 2208 32 (by decide) (by norm_num) hact, Monpro.activeWords_fix s 2176 32 (by decide) (by norm_num) hact]
-
-def prog_exit_1 : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .push 2 2144, .op .MSTORE, .op (.Dup ⟨0, by decide⟩),
-   .push 2 2112, .op .MSTORE, .op (.Dup ⟨4, by decide⟩)]
-
-theorem run_exit_1 (s : State) (x0 x1 x2 x3 x4 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1016)
-    (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prog_exit_1
-      { s with pc := UInt256.ofNat 4859, stack := x0 :: x1 :: x2 :: x3 :: x4 :: rest } =
-    some { s with pc := UInt256.ofNat 4870,
-                  stack := x4 :: x0 :: x1 :: x2 :: x3 :: x4 :: rest,
-                  memory := (MachineState.writeBytes (MachineState.writeBytes s.memory
-          (Data.Bytes.natToBytesPadded x1.toNat 32) 2144)
-          (Data.Bytes.natToBytesPadded x0.toNat 32) 2112) } := by
-  have hc0 : rest.length < 1024 := by omega
-  have hz0 : (⟨0⟩ : UInt256).toNat = 0 := rfl
-  have hc1 : rest.length + 1 < 1024 := by omega
-  have hc2 : rest.length + 2 < 1024 := by omega
-  have hc3 : rest.length + 3 < 1024 := by omega
-  have hc4 : rest.length + 4 < 1024 := by omega
-  have hc5 : rest.length + 5 < 1024 := by omega
-  have hc6 : rest.length + 6 < 1024 := by omega
-  have hc7 : rest.length + 7 < 1024 := by omega
-  have hl2112 : (2112 : UInt256).toNat = 2112 := rfl
-  have hl2144 : (2144 : UInt256).toNat = 2144 := rfl
-  simp [hc0, hz0, prog_exit_1, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hl2112, hl2144, State.activeWordsAfterUInt256, Monpro.activeWords_fix s 2144 32 (by decide) (by norm_num) hact, Monpro.activeWords_fix s 2112 32 (by decide) (by norm_num) hact]
+  simp [hc0, hz0, prog_exit_1, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, hc1, hc2, hc3, hc4, hc5, hc6, hl2176, hl2208, State.activeWordsAfterUInt256, Monpro.activeWords_fix s 2176 32 (by decide) (by norm_num) hact, Monpro.activeWords_fix s 2208 32 (by decide) (by norm_num) hact]
 
 def prog_exit_2 : List Instr :=
-  [.push 2 2080, .op .MSTORE, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP]
+  [.push 3 2080, .op .MSTORE, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP]
 
 theorem run_exit_2 (s : State) (x0 x1 x2 x3 x4 x5 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1016)
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prog_exit_2
-      { s with pc := UInt256.ofNat 4870, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: rest } =
+      { s with pc := UInt256.ofNat 4869, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: rest } =
     some { s with pc := UInt256.ofNat 4879,
                   stack := rest,
                   memory := (MachineState.writeBytes s.memory
@@ -1597,13 +1594,13 @@ theorem run_exit_2 (s : State) (x0 x1 x2 x3 x4 x5 : UInt256) (rest : List UInt25
   simp [hc0, hz0, prog_exit_2, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hl2080, State.activeWordsAfterUInt256, Monpro.activeWords_fix s 2080 32 (by decide) (by norm_num) hact]
 
 def prog_exit_3 : List Instr :=
-  [.op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP]
+  [.op .POP]
 
-theorem run_exit_3 (s : State) (x0 x1 x2 x3 x4 x5 : UInt256) (rest : List UInt256)
+theorem run_exit_3 (s : State) (x0 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1017) :
     runInstructions prog_exit_3
-      { s with pc := UInt256.ofNat 4879, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: rest } =
-    some { s with pc := UInt256.ofNat 4885,
+      { s with pc := UInt256.ofNat 4879, stack := x0 :: rest } =
+    some { s with pc := UInt256.ofNat 4880,
                   stack := rest } := by
   have hc0 : rest.length < 1024 := by omega
   have hz0 : (⟨0⟩ : UInt256).toNat = 0 := rfl
@@ -1616,13 +1613,13 @@ theorem run_exit_3 (s : State) (x0 x1 x2 x3 x4 x5 : UInt256) (rest : List UInt25
   simp [hc0, hz0, prog_exit_3, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, hc1, hc2, hc3, hc4, hc5, hc6]
 
 def prog_exit_4 : List Instr :=
-  [.push 2 4005, .op .JUMP]
+  [.push 7 4005, .op .JUMP]
 
 theorem run_exit_4 (s : State) (rest : List UInt256)
     (hcap : rest.length ≤ 1022)
     (hjd : Decode.isValidJumpDest s.executionEnv.code 4005 = true) :
     runInstructions prog_exit_4
-      { s with pc := UInt256.ofNat 4885, stack := rest } =
+      { s with pc := UInt256.ofNat 4880, stack := rest } =
     some { s with pc := (4005 : UInt256),
                   stack := rest } := by
   have hc0 : rest.length < 1024 := by omega
@@ -1630,6 +1627,47 @@ theorem run_exit_4 (s : State) (rest : List UInt256)
   have hc1 : rest.length + 1 < 1024 := by omega
   have hl4379 : (4005 : UInt256).toNat = 4005 := rfl
   simp [hc0, hz0, prog_exit_4, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, hc1, hl4379, hjd]
+
+/-- Two writes to disjoint windows commute (same statement and proof as
+`R8ZeroFirstRowEnds.writeBytes_comm_disjoint`, restated here to avoid an import edge). -/
+private theorem wb_comm (bs b1 b2 : ByteArray) (a1 a2 : Nat)
+    (h1 : b1.size ≠ 0) (h2 : b2.size ≠ 0) (hd : a1 + b1.size ≤ a2 ∨ a2 + b2.size ≤ a1) :
+    MachineState.writeBytes (MachineState.writeBytes bs b1 a1) b2 a2 =
+      MachineState.writeBytes (MachineState.writeBytes bs b2 a2) b1 a1 := by
+  have hsize : (MachineState.writeBytes (MachineState.writeBytes bs b1 a1) b2 a2).size =
+      (MachineState.writeBytes (MachineState.writeBytes bs b2 a2) b1 a1).size := by
+    rw [MachineState.writeBytes_size, MachineState.writeBytes_size, MachineState.writeBytes_size,
+      MachineState.writeBytes_size, if_neg h1, if_neg h2, if_neg h2, if_neg h1]
+    omega
+  apply ByteArray.ext_getElem hsize
+  intro i hi hi'
+  rw [← Challenge.EvmProof.Memory.getD0_eq_getElem _ i hi,
+    ← Challenge.EvmProof.Memory.getD0_eq_getElem _ i hi']
+  simp only [MachineState.writeBytes_getElem?_getD]
+  split_ifs <;> first | rfl | omega
+
+/-- The rider stores `0x840, 0x860, 0x880, 0x8a0` in stack order where the original stored
+`0x8a0, 0x880, 0x860, 0x840`.  The four windows are disjoint and word-aligned, so the two
+nestings are the same memory and `run_exit` keeps its original statement. -/
+private theorem exit_mem_reorder (m a b c d : ByteArray)
+    (ha : a.size = 32) (hb : b.size = 32) (hc : c.size = 32) (hd : d.size = 32) :
+    MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes
+      (MachineState.writeBytes m a 2112) b 2144) c 2176) d 2208 =
+    MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes
+      (MachineState.writeBytes m d 2208) c 2176) b 2144) a 2112 := by
+  have ha0 : a.size ≠ 0 := by omega
+  have hb0 : b.size ≠ 0 := by omega
+  have hc0 : c.size ≠ 0 := by omega
+  have hd0 : d.size ≠ 0 := by omega
+  rw [wb_comm (MachineState.writeBytes (MachineState.writeBytes m a 2112) b 2144) c d 2176 2208
+        hc0 hd0 (by omega),
+    wb_comm (MachineState.writeBytes m a 2112) b d 2144 2208 hb0 hd0 (by omega),
+    wb_comm m a d 2112 2208 ha0 hd0 (by omega),
+    wb_comm (MachineState.writeBytes (MachineState.writeBytes m d 2208) a 2112) b c 2144 2176
+        hb0 hc0 (by omega),
+    wb_comm (MachineState.writeBytes m d 2208) a c 2112 2176 ha0 hc0 (by omega),
+    wb_comm (MachineState.writeBytes (MachineState.writeBytes m d 2208) c 2176) a b 2112 2144
+        ha0 hb0 (by omega)]
 
 theorem prog_exit_split : prog_exit = prog_exit_0 ++ (prog_exit_1 ++ (prog_exit_2 ++ (prog_exit_3 ++ (prog_exit_4)))) := rfl
 
@@ -1648,16 +1686,19 @@ theorem run_exit (s : State) (p3 p2 p1 p0 p4 k n0 n1 n2 n3 np : UInt256) (rest :
           (Data.Bytes.natToBytesPadded p3.toNat 32) 2112)
           (Data.Bytes.natToBytesPadded p4.toNat 32) 2080) } := by
   rw [prog_exit_split]
-  have g0 := run_exit_0 s p3 p2 p1 p0 (p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest)
+  have hs : ∀ n : Nat, (Data.Bytes.natToBytesPadded n 32).size = 32 :=
+    fun n => YulEvmCompiler.BytesLemmas.natToBytesPadded_size n 32
+  have g0 := run_exit_0 s p3 p2 (p1 :: p0 :: p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest)
     (by simp only [List.length_cons]; omega) (hact := hact)
-  have g1 := run_exit_1 { s with memory := (MachineState.writeBytes (MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded p0.toNat 32) 2208) (Data.Bytes.natToBytesPadded p1.toNat 32) 2176) } p3 p2 p1 p0 p4 (k :: n0 :: n1 :: n2 :: n3 :: np :: rest)
+  have g1 := run_exit_1 { s with memory := (MachineState.writeBytes (MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded p3.toNat 32) 2112) (Data.Bytes.natToBytesPadded p2.toNat 32) 2144) } p1 p0 (p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest)
     (by simp only [List.length_cons]; omega) (hact := hact)
-  have g2 := run_exit_2 { s with memory := (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded p0.toNat 32) 2208) (Data.Bytes.natToBytesPadded p1.toNat 32) 2176) (Data.Bytes.natToBytesPadded p2.toNat 32) 2144) (Data.Bytes.natToBytesPadded p3.toNat 32) 2112) } p4 p3 p2 p1 p0 p4 (k :: n0 :: n1 :: n2 :: n3 :: np :: rest)
+  have g2 := run_exit_2 { s with memory := (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded p3.toNat 32) 2112) (Data.Bytes.natToBytesPadded p2.toNat 32) 2144) (Data.Bytes.natToBytesPadded p1.toNat 32) 2176) (Data.Bytes.natToBytesPadded p0.toNat 32) 2208) } p4 k n0 n1 n2 n3 (np :: rest)
     (by simp only [List.length_cons]; omega) (hact := hact)
-  have g3 := run_exit_3 { s with memory := (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded p0.toNat 32) 2208) (Data.Bytes.natToBytesPadded p1.toNat 32) 2176) (Data.Bytes.natToBytesPadded p2.toNat 32) 2144) (Data.Bytes.natToBytesPadded p3.toNat 32) 2112) (Data.Bytes.natToBytesPadded p4.toNat 32) 2080) } k n0 n1 n2 n3 np rest
-    (by omega) 
-  have g4 := run_exit_4 { s with memory := (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded p0.toNat 32) 2208) (Data.Bytes.natToBytesPadded p1.toNat 32) 2176) (Data.Bytes.natToBytesPadded p2.toNat 32) 2144) (Data.Bytes.natToBytesPadded p3.toNat 32) 2112) (Data.Bytes.natToBytesPadded p4.toNat 32) 2080) }  rest
-    (by omega) (hjd := hjd)
-  exact runInstructions_append_some _ _ _ _ _ g0 (runInstructions_append_some _ _ _ _ _ g1 (runInstructions_append_some _ _ _ _ _ g2 (runInstructions_append_some _ _ _ _ _ g3 (g4))))
+  have g3 := run_exit_3 { s with memory := (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded p3.toNat 32) 2112) (Data.Bytes.natToBytesPadded p2.toNat 32) 2144) (Data.Bytes.natToBytesPadded p1.toNat 32) 2176) (Data.Bytes.natToBytesPadded p0.toNat 32) 2208) (Data.Bytes.natToBytesPadded p4.toNat 32) 2080) } np rest (by omega)
+  have g4 := run_exit_4 { s with memory := (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded p3.toNat 32) 2112) (Data.Bytes.natToBytesPadded p2.toNat 32) 2144) (Data.Bytes.natToBytesPadded p1.toNat 32) 2176) (Data.Bytes.natToBytesPadded p0.toNat 32) 2208) (Data.Bytes.natToBytesPadded p4.toNat 32) 2080) } rest (by omega) (hjd := hjd)
+  have h := runInstructions_append_some _ _ _ _ _ g0 (runInstructions_append_some _ _ _ _ _ g1 (runInstructions_append_some _ _ _ _ _ g2 (runInstructions_append_some _ _ _ _ _ g3 (g4))))
+  rw [exit_mem_reorder s.memory (Data.Bytes.natToBytesPadded p3.toNat 32) (Data.Bytes.natToBytesPadded p2.toNat 32) (Data.Bytes.natToBytesPadded p1.toNat 32) (Data.Bytes.natToBytesPadded p0.toNat 32)
+    (hs _) (hs _) (hs _) (hs _)] at h
+  exact h
 
 end Challenge.Modexp.Submission.Proofs.Fast.R4Runs
