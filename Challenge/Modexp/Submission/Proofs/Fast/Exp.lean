@@ -150,14 +150,16 @@ def amCall (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256)
              ret :: tail
            memory := mem }
 
-/-- The `SQUARE` call state: the kernel's shared `common` block, entered with
+/-- The `SQUARE` call state: the kernel `setup` block, entered directly with
 `hd = sq_row` and all three operands at `0x800`, stack
-`[sq_row, 2048, 2048, 2048, ret] ++ tail`.  The square rows address the
-accumulator as `ptr + 0x1840`, which is correct only for an operand at `0x800`;
-the only caller (the fixed-exponent chain) squares `0x800` in place. -/
+`[sq_row, 2048, 2048, 2048, ret] ++ tail`.  The call's jump lands on the `setup`
+JUMPDEST at pc 3214, skipping the shared `common` JUMPDEST at 3213.  The square
+rows address the accumulator as `ptr + 0x1840`, which is correct only for an
+operand at `0x800`; the only caller (the fixed-exponent chain) squares `0x800`
+in place. -/
 def sqCall (s : State) (mem : ByteArray) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3213
+  { s with pc := UInt256.ofNat 3214
            stack := UInt256.ofNat 4366 :: UInt256.ofNat 512 :: UInt256.ofNat 512 ::
              UInt256.ofNat 512 :: ret :: tail
            memory := mem }
@@ -1616,7 +1618,7 @@ theorem run_ebitMul (s : State) (mem : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1301
       (ebitMul s mem n bsize esize msize i w mask) =
-      some (mpCall s mem 256 512 256 (UInt256.ofNat 1002)
+      some (mpCall s mem 256 512 256 (UInt256.ofNat 1003)
         (bitStack n bsize esize msize i w mask)) := by
   have h1939Nat : (UInt256.ofNat 3209).toNat = 3209 := by decide
   simp (config := { maxSteps := 400000 }) [blk1301, opAt, pushAt, wfOp,
@@ -1988,7 +1990,7 @@ def gasSteps_ebitMul (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (ebitMul s mem n bsize esize msize i w mask)
-      (mpCall s mem 256 512 256 (UInt256.ofNat 1002)
+      (mpCall s mem 256 512 256 (UInt256.ofNat 1003)
         (bitStack n bsize esize msize i w mask)) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1301 hcode hfork
@@ -3709,7 +3711,7 @@ theorem jumpD1806 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 977).toNat = true := jumpD 977 (by decide) jumpDest1732
 
 theorem jumpD1831 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 1002).toNat = true := jumpD 1002 (by decide) jumpDest1757
+    (UInt256.ofNat 1003).toNat = true := jumpD 1003 (by decide) jumpDest1758
 
 theorem jumpD1533 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 782).toNat = true := jumpD 782 (by decide) jumpDest1526
@@ -4180,15 +4182,12 @@ def gasSteps_bitStep (s : State) {n bsize mm minv R : Nat}
           (2 ^ r) hmask hw256 hne hcode hfork hrun hnp)).trans
         ((gasSteps_ebitMul s (sub.mpMem 256 256 256 mem) n bsize esize msize i w
             (2 ^ r) hcode hfork hrun hnp).trans
-          (sub.monpro 256 512 256 (UInt256.ofNat 1002)
+          (sub.monpro 256 512 256 (UInt256.ofNat 1003)
             (bitStack n bsize esize msize i w (2 ^ r))
             (sub.mpMem 256 256 256 mem) (Model.montMul mm R acc acc) bM
             (by simp [bitStack]) (by omega) (by omega) (by omega) (by omega)
             (by omega) jumpD1831 (sub.mpFrame 256 256 256 mem (by omega) hframe) hmod1 hsq
-            hbase1 (Model.montMul_lt hm _ _ _)))).trans
-        (gasSteps_ebitJoin s
-          (sub.mpMem 256 512 256 (sub.mpMem 256 256 256 mem))
-          n bsize esize msize i w (2 ^ r) hcode hfork hrun hnp))
+            hbase1 (Model.montMul_lt hm _ _ _)))))
       rfl (by rw [h1]; rfl)
 
 def gasSteps_bitBody (s : State) {n bsize mm minv R : Nat}

@@ -100,7 +100,7 @@ def squareCall : List Located :=
    opAt 1677 (.Dup ⟨0, by decide⟩),
    opAt 1678 (.Dup ⟨0, by decide⟩),
    pushAt 1679 2 4366,
-   pushAt 1680 2 3213,
+   pushAt 1680 2 3214,
    opAt 1681 .JUMP]
 
 def squareReturn : List Located :=
@@ -159,10 +159,11 @@ theorem jumpDestSqMulEntry :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3209 = true :=
   Artifact.isValidJumpDest_index 2386 (by rfl)
 
-/-- The kernel's shared `common` block `0x0f54` (entered by the square call). -/
-theorem jumpDestSqCommon :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3213 = true :=
-  Artifact.isValidJumpDest_index 2388 (by rfl)
+/-- The kernel `setup` JUMPDEST `0x0f6c` (entered directly by the square call,
+skipping the shared `common` JUMPDEST at 3213). -/
+theorem jumpDestSqSetup :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3214 = true :=
+  Artifact.isValidJumpDest_index 2389 (by rfl)
 
 
 /- `after_sq` (pc 3304): the target the in-kernel square loop rewrites the

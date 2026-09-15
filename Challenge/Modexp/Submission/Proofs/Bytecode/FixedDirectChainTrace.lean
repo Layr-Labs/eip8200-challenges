@@ -63,7 +63,7 @@ theorem run_squareCall (s : State) (memory : ByteArray)
       Challenge.EvmProof.Stepper.runInstr,
       FixedDirectStates.square, Exp.sqCall, Exp.storeWord, Exp.outer,
       hcode, hrun, haddr, hfix,
-      FixedDirectPaths.jumpDestSqCommon,
+      FixedDirectPaths.jumpDestSqSetup,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,

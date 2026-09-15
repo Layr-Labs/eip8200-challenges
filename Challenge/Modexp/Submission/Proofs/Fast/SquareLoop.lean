@@ -659,7 +659,7 @@ def gasSteps_squareLoop (s : State) (mem : ByteArray) (p a mm k : Nat)
         (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0)
     (hguard : MachineState.readWord mem 2720 ≠ UInt256.ofNat 1) :
     Challenge.EvmProof.GasSteps
-      (Cios2Dispatch.commonState s mem 4366 512 512 (UInt256.ofNat 512) ret rest)
+      (CiosCached.setupState s mem 4366 512 512 (UInt256.ofNat 512) ret rest)
       { s with pc := UInt256.ofNat 1047, stack := rest,
                memory := FusedMemory.memory s (p+2) k mem } := by
   have hs (addr : Nat) (hd : addr + 32 ≤ 2048 ∨ 2624 ≤ addr) :
@@ -677,7 +677,7 @@ def gasSteps_squareLoop (s : State) (mem : ByteArray) (p a mm k : Nat)
     refine (Model.fastRepresents_congr (a := mem) ?_ mm).1 hm
     intro j hj
     rw [hs (0 + 32 * j) (Or.inl (by omega))]
-  have g1 := Cios2Dispatch.gasSteps_commonSetupInput s mem (UInt256.ofNat 4366) 512 512 (p + 2)
+  have g1 := Cios2Dispatch.gasSteps_setupInput s mem (UInt256.ofNat 4366) 512 512 (p + 2)
     (UInt256.ofNat 512) ret rest (by omega) hrun hcode hfork hnp hact hfast (by omega)
     (by decide) (by omega) hcds hs32 hml SquareStagedEntry.jumpDest hguard
       (CiosInverseGuard.inverse_ne_zero _ _ hminv)

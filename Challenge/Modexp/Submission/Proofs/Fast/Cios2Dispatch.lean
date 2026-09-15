@@ -347,6 +347,41 @@ opaque gasSteps_commonSetupInput (s : State) (mem : ByteArray) (hd : UInt256) (p
   exact gasSteps_commonSetup s mem hd pa pb n pdst ret rest hcap hrun hcode hfork hnp hact hn
     hpaFit hpb hpbFit hcds hs32 hml hjump hguard hzero
 
+/-- `gasSteps_setup` with the staged memory written as `StagedOperand.inputMemory`
+(equal to `stage` for the kernel widths), entered directly at the `setup`
+JUMPDEST — the square call's landing after the `common` JUMPDEST elision. -/
+opaque gasSteps_setupInput (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
+    (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.codeAddr = false)
+    (hact : 88 ≤ s.activeWords.toNat) (hn : n = 4 ∨ n = 8)
+    (hpaFit : pa + 32 * n ≤ 2816)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2816)
+    (hcds : s.executionEnv.calldata.size < 2 ^ 256)
+    (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
+    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode hd.toNat = true)
+    (hguard : MachineState.readWord mem 2720 ≠ UInt256.ofNat 1)
+    (_hzero : MachineState.readWord mem 2720 ≠ UInt256.ofNat 0) :
+    Challenge.EvmProof.GasSteps
+      (CiosCached.setupState s mem hd pa pb pdst ret rest)
+      (CiosCached.outState s (mpZeroed s (StagedOperand.inputMemory mem pa n) n) pb n 0 hd
+        (CiosCached.l1Target n)
+        (MachineState.readWord mem 2720) (MachineState.readWord mem (32 * n - 32))
+        (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
+          MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
+          UInt256.ofNat (pa + 32 * n - 32) :: pdst :: ret :: rest)) := by
+  have hin : StagedOperand.inputMemory mem pa n = StagedOperand.stage mem pa n := by
+    unfold StagedOperand.inputMemory
+    rw [if_pos (show StagedOperand.eligible mem n from ⟨hn,hguard⟩)]
+  rw [hin]
+  exact gasSteps_setup s mem hd pa pb n pdst ret rest hcap hrun hcode hfork hnp hact
+    (by rcases hn with rfl | rfl <;> omega) (by rcases hn with rfl | rfl <;> omega) hn
+    hpaFit hpb hpbFit hcds hs32 hml hjump
+
 /-- Multiply, four or eight limbs: `mul entry` → `common` → `setup` → row-0 head at 4261
 (the base's `gasSteps_dispatch4/8` followed by its `gasSteps_entry`). -/
 opaque gasSteps_mulSetup (s : State) (mem : ByteArray) (pa pb n : Nat)
