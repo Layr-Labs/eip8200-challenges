@@ -31,4 +31,20 @@ end Challenge.Modexp.Benchmark
 
 #print axioms Challenge.Modexp.Benchmark.candidate
 
--- Yukon reuse by @anamdongparkjinhyeong: source @ercumentyildirim, submission 1c21ab97-04ca-470f-ae2d-57e5fa08dc78, commit e638a7a3e1d0afea4389d8748055a867a31cb3d9.
+-- draw rerun 2026-09-15T14:39:20Z: identical bytes and identical proof, resubmitted under a fresh benchmark seed
+
+-- draw 3 2026-09-15T15:07:14Z: identical bytes and identical proof under a fresh benchmark seed
+
+-- draw 4 2026-09-15T15:52:54Z: identical bytes and identical proof under a fresh benchmark seed
+
+-- draw 4 2026-09-15T16:02:17Z: identical bytes and identical proof under a fresh benchmark seed
+
+-- draw 5 2026-09-15T16:39:08Z: identical bytes and identical proof under a fresh benchmark seed
+
+-- draw 5 2026-09-15T16:41:20Z: identical bytes and identical proof under a fresh benchmark seed
+
+-- draw 6 2026-09-15T17:25:51Z: identical bytes and identical proof under a fresh benchmark seed
+
+-- draw 7 2026-09-15T18:11:37Z: identical bytes and identical proof under a fresh benchmark seed
+
+-- draw 8 2026-09-15T18:58:20Z: identical bytes and identical proof under a fresh benchmark seed

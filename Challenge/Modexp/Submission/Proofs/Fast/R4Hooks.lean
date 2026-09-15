@@ -29,41 +29,41 @@ def pcR4 : Nat := 4394
 
 /-- 判别块。 -/
 def hookProgram : List Instr :=
-  [.op .JUMPDEST, .op (.Dup ⟨6, by decide⟩), .push 2 5460, .op .EQ, .push 2 4394, .op .JUMPI]
+  [.op .JUMPDEST, .op (.Dup ⟨6, by decide⟩), .push 2 3816, .op .EQ, .push 2 4394, .op .JUMPI]
 
 def h1Program : List Instr :=
-  [.op (.Dup ⟨6, by decide⟩), .push 2 5460, .op .EQ, .push 2 4394, .op .JUMPI]
+  [.op (.Dup ⟨6, by decide⟩), .push 2 3816, .op .EQ, .push 2 4394, .op .JUMPI]
 
 def h1FallProgram : List Instr := [.push 2 4889, .op .JUMP]
 
 def h1Block : Block Artifact.submissionArtifact .Osaka 4381 h1Program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3286 5 4381 h1Program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3288 5 4381 h1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
 def h1FallBlock : Block Artifact.submissionArtifact .Osaka 4390 h1FallProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3291 2 4390 h1FallProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3293 2 4390 h1FallProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def h2Block : Block Artifact.submissionArtifact .Osaka 4039 hookProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3039 6 4039 hookProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3041 6 4039 hookProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDestR4 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4394 = true :=
-  Artifact.isValidJumpDest_index 3293 (by rfl)
+  Artifact.isValidJumpDest_index 3295 (by rfl)
 
 theorem jumpDestH2 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4039 = true :=
-  Artifact.isValidJumpDest_index 3039 (by rfl)
+  Artifact.isValidJumpDest_index 3041 (by rfl)
 
 theorem jumpDestRow : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4065 = true :=
-  Artifact.isValidJumpDest_index 3055 (by rfl)
+  Artifact.isValidJumpDest_index 3057 (by rfl)
 
-theorem cond_four : UInt256.isTrue ((UInt256.ofNat 5460).eq (l2Target 4)) := by decide
+theorem cond_four : UInt256.isTrue ((UInt256.ofNat 3816).eq (l2Target 4)) := by decide
 
-theorem cond_eight : ¬ UInt256.isTrue ((UInt256.ofNat 5460).eq (l2Target 8)) := by decide
+theorem cond_eight : ¬ UInt256.isTrue ((UInt256.ofNat 3816).eq (l2Target 8)) := by decide
 
-theorem cond_four' : UInt256.isTrue ((UInt256.ofNat 5460).eq (UInt256.ofNat 5460)) := by decide
+theorem cond_four' : UInt256.isTrue ((UInt256.ofNat 3816).eq (UInt256.ofNat 3816)) := by decide
 
-theorem cond_eight' : ¬ UInt256.isTrue ((UInt256.ofNat 5460).eq (UInt256.ofNat 3668)) := by decide
+theorem cond_eight' : ¬ UInt256.isTrue ((UInt256.ofNat 3816).eq (UInt256.ofNat 3668)) := by decide
 
 /-! ## 判别块的运行 -/
 
