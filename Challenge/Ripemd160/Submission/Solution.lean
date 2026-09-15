@@ -14,6 +14,13 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
   exact Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard.correct_of_recognition
     Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionCorrect.from_entry
 
+/-- The scored artifact is the same bytecode the correctness certificate covers:
+`candidate` proves `Correct bytecode`, and `bytecode` unfolds to
+`submissionBytecode`, so the certificate applies to the submitted image
+directly. -/
+theorem scored_artifact : Challenge.Ripemd160.Correct Challenge.Ripemd160.submissionBytecode :=
+  candidate
+
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
