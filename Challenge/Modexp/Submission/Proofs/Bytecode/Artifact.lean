@@ -3886,7 +3886,7 @@ def submissionInstructions : List Instr :=
  .op .ADD,
  .op (.Swap { idx := 4 }),
  .op .JUMP,
- .op .JUMPDEST,
+ .op .POP,
  .op .JUMPDEST,
  .op .JUMPDEST,
  .op (.Dup { idx := 3 }),
