@@ -27,3 +27,19 @@ verbatim. Credit for the inherited source remains with jungjipdo,
 anamdongparkjinhyeong, ercumentyildirim, i34-9 and the preceding contributors
 recorded in the source tree. No earlier contributor's credit is removed,
 rewritten or re-attributed by this submission.
+
+---
+
+# Campaign redraw attempt 0023
+
+Prepared: 2026-09-16T04:25:18.474318+00:00
+Base submission: be283d6e-dc26-4ed7-bf3d-d403004584c3
+Base submitter: i34-9
+Promoted source: 224471bd2bd904e3fb4825a859437c172b248a74
+Checkout source: fa7aec485cbeffb87af152e28d77c6e99544a419
+Official parent result: verified, accepted and promoted, 480874 gas.
+Artifact SHA-256: b5353f48c1ec86b4c7f6a25a1b47e869bf21a8c2608c91ad57035b64149d2829
+Artifact bytes: 5314
+Previous own result: f2d557f1-a0fb-43ec-9365-d9b5362d6908, verified, rejected, 483450 gas on this b5353f48 artifact.
+Executable and proof changes relative to selected parent: none.
+All preceding provenance is retained verbatim. This entry requests a fresh official corpus evaluation, with no new optimization by this redraw agent.
