@@ -1,9 +1,9 @@
 import Challenge.Modexp.Submission.Proofs.Fast.RootE3Correct
 import Challenge.Modexp.Submission.Proofs.Fast.RootE3Bindings
-import Challenge.Modexp.Submission.Proofs.Bytecode.RrLeadingTrace
-import Challenge.Modexp.Submission.Proofs.Fast.RrLeadingTail
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftTrace5
 import Challenge.Modexp.Submission.Proofs.Fast.ExpSubs
+import Challenge.Modexp.Submission.Proofs.Bytecode.BigCUMain
+import Challenge.Modexp.Submission.Proofs.Bytecode.BigCUBlocks
 
 set_option warningAsError false
 set_option maxRecDepth 40000
@@ -13,7 +13,7 @@ set_option maxHeartbeats 16000000
 # Fast-path certificate with the shift-reduce base conversion
 
 After `Fast.Setup` and the `R1B` guard, execution reaches the dispatcher at
-pc 4050.  When the base is exactly `n` words wide and the modulus has its top
+pc 4022.  When the base is exactly `n` words wide and the modulus has its top
 bit set, the shift-reduce routine converts the base and rejoins the exponent
 phase at `BDONE`; otherwise the old `r0` block runs the unchanged RR-leading
 chain.
@@ -29,8 +29,8 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.RrLeadingTraceCore
 
 theorem jumpD4643 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 2339).toNat = true :=
-  Exp.jumpD 2339 (by decide) jumpDest4608
+    (UInt256.ofNat 2474).toNat = true :=
+  Exp.jumpD 2474 (by decide) jumpDest4608
 
 /-! ## Facts at `BDONE` on the hit path -/
 
@@ -199,7 +199,18 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     -- The two conditions the rewritten dispatcher enforces. They are what makes the narrowed
     -- kernel composition applicable, so they travel with the dispatch rather than being
     -- rediscovered inside it.
-    (hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1) :
+    (hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1)
+    -- S1.  Both are needed only on the diverted miss arm, and both are free where
+    -- they are produced.  `bigC_correct` wants `ValidInput`, whose `size < 2 ^ 64`
+    -- component `handled_of_dispatch` cannot derive (`hcds` only gives `< 2 ^ 256`);
+    -- `gasSteps_handled` has it as a hypothesis.  And it wants an UPPER bound on
+    -- `activeWords`, where every bound in this tree is a lower one -- but the carrier
+    -- is `Setup.fastSetupState input`, whose `activeWords` is proved to be exactly
+    -- 89, and every named fast-path state is a record update of it touching only
+    -- `pc`/`stack`/`memory`, so the bound crosses definitionally and 89 <= 289 has
+    -- 200 words of slack.
+    (hvalid : Challenge.Modexp.ValidInput input)
+    (hactLe : s.activeWords.toNat ≤ 289) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
         (dispState s mem n bsize esize msize) final) ∧
@@ -225,88 +236,40 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
   · exact RootE3Correct.handled_of_bound_shift_hit input s mem n bsize esize msize mm minv
       sub hspec hcode hfork hrun hnp hdata hstack hact hn hn32 hb he hmz hm32
       hbsize hesize hmsz hmm hodd hradix hmpos hframe0 hmod0 hone0 hmatch hfast
+      hvalid hactLe
       (RootE3Bindings.build s mem input n bsize esize msize minv hn hn32 hb he e hdata hframe0 hmatch
         hfast)
-  · -- the miss: `R1` is seeded and converted here, then the unchanged RR-leading chain
-    -- from `r0`.  `mem0` is the memory after the seed store, `mem1` after the conversion.
-    have hmiss := gasSteps_missPath s mem n bsize esize msize hn32 e hbword hmatch
-    set mem0 := Exp.storeWord mem 1024 (UInt256.ofNat 1) with hmem0
-    have hr10 : Model.FastRepresents mem0 1024 n (Limbs.radix ^ (n - 1)) :=
-      fastRepresents_seed mem n (by omega) hn32 hr1z
-    have hframeS : Exp.Frame mem0 n bsize minv :=
-      Exp.frame_storeWord (UInt256.ofNat 1) (by omega) hframe0
-    have hmodS : Model.FastRepresents mem0 0 n mm :=
-      Exp.storeWord_frame mem 1024 0 n mm (UInt256.ofNat 1) (Or.inr (by omega)) hmod0
-    have haccS : Model.FastRepresents mem0 256 n 0 :=
-      Exp.storeWord_frame mem 1024 256 n 0 (UInt256.ofNat 1) (Or.inr (by omega)) hacc0
-    have hbaseS : Model.FastRepresents mem0 512 n 0 :=
-      Exp.storeWord_frame mem 1024 512 n 0 (UInt256.ofNat 1) (Or.inr (by omega)) hbase0
-    have honeS : Model.FastRepresents mem0 768 n 0 :=
-      Exp.storeWord_frame mem 1024 768 n 0 (UInt256.ofNat 1) (Or.inr (by omega)) hone0
-    have htzS : Model.FastRepresents mem0 2112 n 0 :=
-      Exp.storeWord_frame mem 1024 2112 n 0 (UInt256.ofNat 1) (Or.inl (by omega)) htz
-    set mem1 := Exp.r1Mem n 1024 mem0 with hmem1
-    have hframe1 : Exp.Frame mem1 n bsize minv := Exp.r1Mem_frame hn hn32 hframeS
-    have hconv : Challenge.EvmProof.GasSteps
-        (Exp.r1Call s mem0 1024 (UInt256.ofNat 782) n bsize esize msize)
-        (Exp.r0State s mem1 n bsize esize msize) :=
-      Exp.gasSteps_r1Block s esize msize hcode hfork hrun hnp hact296 hn hn32
-        (UInt256.ofNat 782) mem0 jumpDest1526 hframeS hfast
-    let directMem := Exp.setupToDirectMem (Exp.r1Mem n) (Exp.ccbMem n sub.mpMem sub.amMem) n mem0
-    have hf2 : Exp.Frame (Exp.mcopyMem mem1 1280 1024 (32 * n)) n bsize minv :=
-      Exp.frame_mcopyMem (by omega) hframe1
-    have hcc := Exp.setupToCC_facts n mm hn hn32 hmpos hodd mem0 hmodS hr10 hxlt htzS
-    have hr0 : Challenge.EvmProof.GasSteps (Exp.r0State s mem1 n bsize esize msize)
-        (entryState s directMem n bsize esize msize) :=
-      (Exp.gasSteps_r0 s mem1 n bsize esize msize hn hn32 hact hframe1.s32 hcode hfork hrun
-        hnp).trans
-      (Exp.gasSteps_ccbFull s sub hspec esize msize hmpos hn hn32 1280 (by omega) (by omega)
-        (UInt256.ofNat 2009) (Exp.mcopyMem mem1 1280 1024 (32 * n)) (Limbs.radix ^ n % mm)
-        Exp.jumpD3571 hf2 hcc.1 hcc.2 (Nat.mod_lt _ hmpos) hact296 hcode hfork hrun hnp)
-    have hframeDirect : Exp.Frame directMem n bsize minv := by
-      dsimp only [directMem]
-      exact Exp.setupToDirect_frame sub hn hn32 hframeS
-    have hdirect := Exp.setupToDirect_facts n mm sub hspec hn hn32 hmpos hodd mem0 hframeS
-      hmodS hr10 hxlt htzS
-    have hmodDirect : Model.FastRepresents directMem 0 n mm := by
-      simpa only [directMem] using hdirect.1
-    have hr1Direct : Model.FastRepresents directMem 1024 n (Limbs.radix ^ n % mm) := by
-      simpa only [directMem] using hdirect.2.1
-    have hccDirect : Model.FastRepresents directMem 1280 n
-        (Limbs.radix * Limbs.radix ^ n % mm) := by
-      simpa only [directMem] using hdirect.2.2
-    have haccDirect : Model.FastRepresents directMem 256 n 0 := by
-      dsimp only [directMem]
-      exact Exp.setupToDirect_preserves sub hspec 256 0 hn hn32 (by omega) (by omega) mem0
-        haccS
-    have hbaseDirect : Model.FastRepresents directMem 512 n 0 := by
-      dsimp only [directMem]
-      exact Exp.setupToDirect_preserves sub hspec 512 0 hn hn32 (by omega) (by omega) mem0
-        hbaseS
-    have honeDirect : Model.FastRepresents directMem 768 n 0 := by
-      dsimp only [directMem]
-      exact Exp.setupToDirect_preserves sub hspec 768 0 hn hn32 (by omega) (by omega) mem0
-        honeS
-    have hhelper :=
-      Bytecode.RrLeadingTrace.gasSteps_helper s directMem n bsize esize msize hn (by omega)
-        hact hframeDirect.s32 hcode hfork hrun hnp
-    obtain ⟨hexit, hframeCopy, hinvCopy, haccCopy, hbaseCopy, honeCopy, _⟩ :=
-      RrLeadingExpBridge.direct_rejoin_facts s directMem n bsize esize msize mm
-        (Limbs.radix ^ n) minv hn hn32 hact hframeDirect hmodDirect hr1Direct hccDirect
-        haccDirect hbaseDirect honeDirect
-    obtain ⟨fin, ⟨trTail⟩, hdone, hres⟩ :=
-      RrLeadingTail.handled_of_directRR input s (copiedMemory directMem n)
-        n bsize esize msize mm minv sub hspec hcode hfork hrun hnp hdata hstack hact
-        hn hn32 hb he hmz hm32 hbsize hesize hmsz hmm hodd hradix hframeCopy hinvCopy
-        haccCopy hbaseCopy honeCopy
-        (ShiftProducerCanonical.miss_of_same_modulus mem (copiedMemory directMem n) n bsize mm
-          (by omega) hmod0 hinvCopy.modulus hmatch)
-    have hhelper'  : Challenge.EvmProof.GasSteps
-        (entryState s directMem n bsize esize msize)
-        (Exp.rrHead s (copiedMemory directMem n) n bsize esize msize
-          (RrLeadingLogic.directCounter n)) :=
-      Challenge.EvmProof.GasSteps.cast hhelper rfl hexit
-    exact ⟨fin, ⟨(((hmiss.trans hconv).trans hr0).trans hhelper').trans trTail⟩, hdone, hres⟩
+  · -- **S1: the diverted miss.**  The dispatcher's `PUSH2` operand no longer names
+    -- the `r0` seeding block, so this whole class leaves the fast path at the bail
+    -- trampoline and enters `modexpBig` at pc 238.  `bigC_correct` re-reads the
+    -- header from calldata and is universal in the incoming memory and stack, so
+    -- the frame the fast path built is simply discarded; nothing about it has to be
+    -- carried across.
+    --
+    -- The `r0 -> RR-leading -> FullBase -> RrLeadingTail` subtree that used to
+    -- discharge this arm is dead from here.  It is retired by track S2, not by this
+    -- edit: deleting it before the bail exists would destroy the evidence that it
+    -- is dead.
+    have hbail := gasSteps_missPath s mem n bsize esize msize hn32 e hbword hmatch
+    -- `bigCState` is a record update of `s` touching only `pc`, `stack` and
+    -- `memory`, so every environment field is `s`'s DEFINITIONALLY.  Naming that
+    -- once, as a hypothesis carrying the bail state's spelling, is what lets `rw`
+    -- fire below: `hdata` is stated about `s`, and `rw` is syntactic, not up to
+    -- defeq.  `▸` would have to guess the motive here; this does not.
+    have hcd : (bigCState s mem n bsize esize msize).executionEnv.calldata = input := hdata
+    have hpos : 0 < Challenge.Modexp.modulusSize input := by omega
+    obtain ⟨final, ⟨tail⟩, hdone, hres⟩ :=
+      BigC.U.bigC_correct BigC.UBlocks.setupBlocks BigC.UBlocks.expBlocks
+        BigC.UBlocks.mulBlocks BigC.UBlocks.unsignedBlocks
+        (bigCState s mem n bsize esize msize)
+        (bindingEnv e) rfl
+        (by simp [bigCState, frameState, Exp.outer])
+        (show (bigCState s mem n bsize esize msize).activeWords.toNat ≤ 289 from hactLe)
+        (show (bigCState s mem n bsize esize msize).callStack = [] from hstack)
+        (by rw [hcd]; exact hvalid)
+        (by rw [hcd]; exact hpos)
+    refine ⟨final, ⟨hbail.trans tail⟩, hdone, ?_⟩
+    rw [hres, hcd]
 
 /-- **Fast-path certificate.** Every `ValidInput` on the fast path runs from
 the retargeted entry to the MODEXP result. -/
@@ -342,6 +305,10 @@ theorem gasSteps_handled (input : ByteArray)
   have hcds : (Setup.fastSetupState input).executionEnv.calldata.size < 2 ^ 256 := by
     rw [Exp.fastSetup_calldata input]
     exact hsize
+  -- S1.  The upper bound the bail needs, from the same lemma as the lower one.
+  have hactLe : (Setup.fastSetupState input).activeWords.toNat ≤ 289 := by
+    rw [Setup.fastSetup_activeWords input hpath, Exp.toNat_ofNat_self (by norm_num)]
+    norm_num
   obtain ⟨final, ⟨tr⟩, hdone, hres⟩ :=
     handled_of_dispatch input (Setup.fastSetupState input) (Setup.fastSetupMemory input)
       (Setup.limbs input) (Challenge.Modexp.baseSize input)
@@ -364,6 +331,7 @@ theorem gasSteps_handled (input : ByteArray)
       (Setup.limbs_four_or_eight input hpath.1 hpath.2.1.2.2 (Setup.fastPath_width input hpath))
       (Setup.minv_ne_one_of_entry input (Setup.minvValue input) hpath.1
         (Setup.fastPath_nprime input hpath) hminvA)
+      hvalid hactLe
   exact ⟨final, ⟨(Challenge.EvmProof.GasSteps.cast
     (Setup.gasSteps_fastSetup input hsize hpath) rfl (Exp.fastSetup_entry_eq input)).trans
     tr⟩, hdone, hres⟩

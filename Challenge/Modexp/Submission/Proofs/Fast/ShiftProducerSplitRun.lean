@@ -13,14 +13,14 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
 open ShiftProducerCanonical
 
 /-! Exact retained-accumulator producer fragments: the hit block calls the
-leading-limb entry 4514 with only the return address, and the copy block moves
+leading-limb entry 4486 with only the return address, and the copy block moves
 the reduced accumulator from 2112 to ACC. The run theorem is parameterized by
 the actual code's jump fact, without claiming the artifact contains these
 instructions. -/
 def hitProgram : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .push 1 96, .push 2 2112, .op .CALLDATACOPY,
    .push 0 0, .push 2 2080, .op .MSTORE,
-   .push 2 2390, .push 2 4143, .op .JUMP]
+   .push 2 2508, .push 2 4229, .op .JUMP]
 
 def copyProgram : List Instr :=
   [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .push 2 2112, .push 2 256,
@@ -30,13 +30,13 @@ def frame (s : State) (mem : ByteArray) (pc n : Nat) (rest : List UInt256) : Sta
   {s with pc := UInt256.ofNat pc, memory := mem, stack := UInt256.ofNat (32*n) :: rest}
 
 def csubEntry (s : State) (mem : ByteArray) (n : Nat) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 4143, memory := mem, stack := [UInt256.ofNat 2390, UInt256.ofNat (32*n)] ++ rest}
+  {s with pc := UInt256.ofNat 4229, memory := mem, stack := [UInt256.ofNat 2508, UInt256.ofNat (32*n)] ++ rest}
 
 theorem run_hit (s : State) (mem input : ByteArray) (n : Nat) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hact : 89 ≤ s.activeWords.toNat) (hdata : s.executionEnv.calldata = input)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 4143 = true) :
-    runInstructions hitProgram (frame s mem 2354 n rest) =
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 4229 = true) :
+    runInstructions hitProgram (frame s mem 2489 n rest) =
       some (csubEntry s (hitMemory mem input n) n rest) := by
   have hc1 : rest.length+1 < 1024 := by omega
   have hc2 : rest.length+2 < 1024 := by omega
@@ -57,8 +57,8 @@ theorem run_hit (s : State) (mem input : ByteArray) (n : Nat) (rest : List UInt2
 theorem run_copy (s : State) (mem : ByteArray) (n : Nat) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hact : 89 ≤ s.activeWords.toNat) :
-    runInstructions copyProgram (frame s mem 2390 n rest) =
-      some (frame s (Exp.mcopyMem mem 256 2112 (32*n)) 2399 n rest) := by
+    runInstructions copyProgram (frame s mem 2508 n rest) =
+      some (frame s (Exp.mcopyMem mem 256 2112 (32*n)) 2517 n rest) := by
   have hc1 : rest.length+1 < 1024 := by omega
   have hc2 : rest.length+2 < 1024 := by omega
   have hc3 : rest.length+3 < 1024 := by omega

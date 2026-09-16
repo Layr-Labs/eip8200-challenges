@@ -47,7 +47,7 @@ theorem run_entry_three (s : State) (memory : ByteArray)
       Challenge.EvmProof.Stepper.runInstr,
       entryState, Exp.bDone, FixedDirectStates.check65537, Exp.outer,
       hcode, hrun, heq,
-      Exp.isTrue_one, jumpDest3895,
+      Exp.isTrue_one, jumpDestCheck65537,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
@@ -105,7 +105,7 @@ theorem run_oneWidth_miss (s : State) (memory : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock oneWidth
       (otherWidth s memory n bsize esize msize) =
-      some (FixedDirectStates.fallback s memory n bsize esize msize) := by
+      some (FixedDirectStates.bailState s memory n bsize esize msize) := by
   have helt : esize < 2 ^ 256 := Nat.lt_of_le_of_lt he (by norm_num)
   have hxor : UInt256.xor (UInt256.ofNat 1) (UInt256.ofNat esize) ≠ 0 := by
     intro hx
@@ -126,8 +126,8 @@ theorem run_oneWidth_miss (s : State) (memory : ByteArray)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      otherWidth, FixedDirectStates.fallback, Exp.outer, hcode, hrun, hxor, htrue,
-      Exp.isTrue_one, jumpDest3959,
+      otherWidth, FixedDirectStates.bailState, Exp.outer, hcode, hrun, hxor, htrue,
+      Exp.isTrue_one, jumpDestBail,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
@@ -200,7 +200,7 @@ def gasSteps_oneWidth_miss (s : State) (memory : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (otherWidth s memory n bsize esize msize)
-      (FixedDirectStates.fallback s memory n bsize esize msize) :=
+      (FixedDirectStates.bailState s memory n bsize esize msize) :=
   sound oneWidth
     (run_oneWidth_miss s memory n bsize esize msize hne he hcode hrun)
     (by simpa [otherWidth, Artifact.submissionArtifact] using hcode)
