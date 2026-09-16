@@ -10,7 +10,8 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Return
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open J2Sites J2Moves RecognitionSelectorRaw RecognitionSelectorResult
 
-def source (s : State) : UInt256 := selected (UInt256.ofNat 4930) s.executionEnv.calldata.size
+def source (s : State) : UInt256 :=
+  selected (UInt256.ofNat s.executionEnv.code.size) s.executionEnv.calldata.size
 
 def beforeCopy (s : State) (rho : List UInt256) : State :=
   atState s 318 (12 :: source s :: 20 :: rho)
@@ -47,7 +48,7 @@ def gasSteps (s : State) (e : Env s) (rho : List UInt256)
     GasSteps (atState s 297 rho) (output s rho) := by
   have hp : StackRoundTrace.runInstrSeq J2ReturnSites.selector.template
       (atState s 297 rho) = some (beforeCopy s rho) := by
-    have h := run_prefix s (UInt256.ofNat 297) (UInt256.ofNat 4930) rho (by omega) e.run
+    have h := run_prefix s (UInt256.ofNat 297) rho (by omega) e.run
     simpa only [J2ReturnSites.selector.end_pc, beforeCopy, atState, source] using h
   have gp := J2ReturnSites.selector.lift s (beforeCopy s rho) e rho hp
   have gc : GasSteps (beforeCopy s rho) (afterCopy s rho) :=
@@ -77,7 +78,12 @@ theorem output_spec (s : State) (e : Env s) (rho : List UInt256)
       ((RecognitionAccumulator.resultAcc_zero_iff _ _ hn rfl).mpr
         ((J2Accumulator.resultAcc_zero_iff _ _ hn rfl).mp hz))
   change MachineState.readPadded s.executionEnv.code (source s).toNat 20 = _
-  rw [e.code]
+  have hsz : Artifact.submissionArtifact.code.size = 5210 := by
+    change submissionBytecode.size = 5210
+    rw [referenceBytecode_size]
+  have hsrc : source s = selected (UInt256.ofNat 5210) s.executionEnv.calldata.size := by
+    simp only [source, e.code, hsz]
+  rw [e.code, hsrc]
   exact J2Payload.read_selected _ hn
 
 #print axioms gasSteps
