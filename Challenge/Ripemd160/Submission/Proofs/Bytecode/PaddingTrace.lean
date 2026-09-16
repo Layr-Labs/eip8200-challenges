@@ -222,7 +222,7 @@ def bitLengthWord (input : ByteArray) : UInt256 :=
   UInt256.shiftLeft (UInt256.ofNat input.size) (UInt256.ofNat 3)
 
 def lengthOffsetWord (input : ByteArray) : UInt256 :=
-  Padding.paddedWord input + UInt256.ofNat 0x458
+  Padding.paddedWord input + UInt256.ofNat 1079
 
 /-- The persistent block-loop frame at hash entry: the initial chaining words and the six
 resident round constants above the zero offset and the padded limit. -/
@@ -840,7 +840,7 @@ theorem lengthOffsetWord_eq (input : ByteArray) (hfit : CalldataFits input) :
     (lengthOffsetWord input).toNat =
       Padding.messageOffset + Padding.paddedLength input.size - 8 := by
   have hlt := Padding.paddedLength_lt input.size
-  have hsum : Padding.paddedLength input.size + 0x458 < 2 ^ 256 := by
+  have hsum : Padding.paddedLength input.size + 1079 < 2 ^ 256 := by
     unfold CalldataFits at hfit
     norm_num at hfit ⊢
     omega
@@ -1003,7 +1003,7 @@ private theorem lengthLoopActiveWords_succ_toNat (input : ByteArray)
   exact ⟨hcur, by omega⟩
 
 theorem padReturned_allocated (input : ByteArray) (hfit : CalldataFits input) :
-    (Padding.messageOffset + Padding.paddedLength input.size) / 32 ≤
+    (Padding.messageOffset + Padding.paddedLength input.size + 31) / 32 ≤
       (padReturned input).activeWords.toNat := by
   have hp := lengthStop_pos input
   have hl := lengthStop_le input
@@ -1012,6 +1012,9 @@ theorem padReturned_allocated (input : ByteArray) (hfit : CalldataFits input) :
   change _ ≤ (lengthLoopActiveWords input (lengthStop input)).toNat
   rw [hs, lengthLoopActiveWords_succ_toNat input hfit j (by dsimp [j]; omega)]
   apply Nat.le_trans ?_ (Nat.le_max_right _ _)
+  have halign : Padding.paddedLength input.size % 64 = 0 := by
+    unfold Padding.paddedLength
+    omega
   unfold Padding.messageOffset
   omega
 
@@ -1401,8 +1404,8 @@ set_option maxHeartbeats 800000 in
 private theorem run_lengthFooterSetup (input : ByteArray) :
     Challenge.EvmProof.DataStepper.runLocatedBlock lengthFooterSetupPath
       (padSentinel input) = some (lengthLoopState input 0) := by
-  have haddressOrder : UInt256.ofNat 1112 + Padding.paddedWord input =
-      Padding.paddedWord input + UInt256.ofNat 1112 := Challenge.EvmProof.Word.word_add_comm _ _
+  have haddressOrder : UInt256.ofNat 1079 + Padding.paddedWord input =
+      Padding.paddedWord input + UInt256.ofNat 1079 := Challenge.EvmProof.Word.word_add_comm _ _
   simp [lengthFooterSetupPath, Artifact.padFooterSetupPath,
     Challenge.EvmProof.DataStepper.runLocatedBlock,
     Challenge.EvmProof.DataStepper.runLocated, Challenge.EvmProof.DataStepper.runInstr,

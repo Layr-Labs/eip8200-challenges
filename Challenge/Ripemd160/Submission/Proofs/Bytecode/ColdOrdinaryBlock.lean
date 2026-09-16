@@ -10,7 +10,7 @@ open PersistentStaggerTable PersistentStaggerFunctional StaggerPersistentFrame
 def gasSteps (s : State) (input : ByteArray) (i : Nat) (h : Compression.HashState)
     (limit : UInt256) (rho : List UInt256) (hs : rho.length ≤ 880)
     (tail : List UInt256) (hrho : rho = DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: tail)
-    (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input) (ctx : Context s input)
+    (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input) (ctx : Context s input i)
     (hordinary : input.size = DriverTrace.blockOffset i → input.size < 5224)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hr : s.halt = .Running)

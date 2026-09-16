@@ -31,13 +31,14 @@ def finalMemory (input : ByteArray) (i : Nat) : ByteArray :=
     (PaddingTrace.lengthStop input)
 
 theorem finalMemory_byte (input : ByteArray) (hfit : CalldataFits input) (hz : input.size%64=0)
-    (i a : Nat) (ha : 1120+input.size≤a) (hb : a<1120+Padding.paddedLength input.size) :
+    (hpositive : 0 < input.size)
+    (i a : Nat) (ha : 1087+input.size≤a) (hb : a<1087+Padding.paddedLength input.size) :
     (finalMemory input i)[a]?.getD 0 =
       (Padding.paddedMemory (PaddingTrace.padLengthReady input).memory input)[a]?.getD 0 := by
   have he : (StaggerTablePad.padRealChain (states input i).memory
       (UInt256.ofNat input.size))[a]?.getD 0 =
       (PaddingTrace.padCopied input).memory[a]?.getD 0 := by
-    rw [ColdHighInitial.padRealChain_fresh input hz i a ha]
+    rw [ColdHighInitial.padRealChain_fresh input hz hpositive i a ha]
     have h := ColdHighInitial.entry_fresh input hz a ha
     rw [PadSkipEntry.entryState, PaddingTrace.entryState_skip input hz] at h
     exact h.symm
@@ -45,7 +46,7 @@ theorem finalMemory_byte (input : ByteArray) (hfit : CalldataFits input) (hz : i
   rw [lengthMemory_byte_congr input _ _ _ a he, lengthMemory_copied]
   exact PaddingTrace.padFinalMemory_getD_paddedMemory input hfit a hb
 
-theorem finalMemory_blockAt (input : ByteArray) (hfit : CalldataFits input) (i : Nat)
+theorem finalMemory_blockAt (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size) (i : Nat)
     (hi : i<DriverTrace.blockCount input) (hh : input.size=DriverTrace.blockOffset i) :
     ScheduleCorrect.MessageBlockAt (finalMemory input i) (DriverTrace.messageOffsetWord i)
       (Padding.paddedMessage input) (DriverTrace.blockOffset i) := by
@@ -58,14 +59,14 @@ theorem finalMemory_blockAt (input : ByteArray) (hfit : CalldataFits input) (i :
     (PaddingTrace.padLengthReady input).memory input (DriverTrace.messageOffsetWord i)
     (DriverTrace.blockOffset i)
   · intro a ha ha'
-    exact finalMemory_byte input hfit hz i a (by rw [hh];exact ha) (by unfold Padding.messageOffset at *;omega)
+    exact finalMemory_byte input hfit hz hpositive i a (by rw [hh];exact ha) (by unfold Padding.messageOffset at *;omega)
   · exact Nat.zero_le _
   · rfl
   · exact hfit
   · exact hb
 
 theorem lengthMemory_below (input memory : ByteArray) (hfit : CalldataFits input)
-    (i : Nat) (hi : i≤9) (a : Nat) (ha : a<1120) :
+    (i : Nat) (hi : i≤9) (a : Nat) (ha : a<1087) :
     (lengthMemory input memory i)[a]?.getD 0 = memory[a]?.getD 0 := by
   have hb : 64≤Padding.paddedLength input.size := by unfold Padding.paddedLength;omega
   induction i with
@@ -87,7 +88,7 @@ theorem lengthMemory_read0 (input memory : ByteArray) (hfit : CalldataFits input
 
 /-- The pad block keeps the first word clean BELOW BIT 144 -- not zero.  Bytes 10..13 carry
 the dual lane the writer's slot-0 store leaves once the mask at pc 873 is gone, and the length
-loop writes at 1120 and above, so the incoming weakened invariant survives verbatim. -/
+loop writes at 1087 and above, so the incoming weakened invariant survives verbatim. -/
 theorem finalMemory_lowClear (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (i : Nat) (hi : i ≤ DriverTrace.blockCount input) :
     (MachineState.readWord (finalMemory input i) 0).toNat % 2 ^ 144 = 0 := by

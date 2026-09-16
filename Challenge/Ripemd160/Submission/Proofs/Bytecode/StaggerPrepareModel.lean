@@ -15,7 +15,7 @@ theorem calldata_lt_uint256 (input : ByteArray) (hfit : CalldataFits input) :
   unfold CalldataFits at hfit
   omega
 
-theorem messagePointer_aligned (i : Nat) : PairedBlockModel.messagePointer i % 32 = 0 := by
+theorem messagePointer_aligned (i : Nat) : PairedBlockModel.messagePointer i % 32 = 31 := by
   unfold PairedBlockModel.messagePointer Padding.messageOffset DriverTrace.blockOffset
   omega
 
@@ -36,8 +36,8 @@ theorem scheduled_active_eq (s : State) (input : ByteArray) (i : Nat)
     (hi : i < DriverTrace.blockCount input) (ctx : StackRunBridge.BlockContext s input i h) :
     DenseScheduleTemplate.loadedActiveWords s
       (UInt256.ofNat (PairedBlockModel.messagePointer i)) = s.activeWords := by
-  apply PairTableActive.loaded_active_eq_of_allocated s _
-    (PairedBlockModel.messagePointer_bound input hfit i hi) (messagePointer_aligned i)
+  apply PairTableActive.loaded_active_eq_of_ceil_allocated s _
+    (PairedBlockModel.messagePointer_bound input hfit i hi)
   have hpad := PaddingTrace.padReturned_allocated input hfit
   have hlength := DriverTrace.paddedLength_eq_blockCount input
   have hctx := ctx.allocated

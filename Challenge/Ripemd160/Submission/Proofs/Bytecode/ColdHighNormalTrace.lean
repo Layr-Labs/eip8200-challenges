@@ -18,14 +18,14 @@ noncomputable opaque gasSteps_normal (input : ByteArray) (hfit : CalldataFits in
   have hr : (paddedState input i).halt=.Running := states_halt input i
   have hnp:=states_noPrecompile input i
   have hb:=messagePointer_bound input hfit i hi
-  have hq0 : off+UInt256.ofNat 1120=UInt256.ofNat (messagePointer i) := by
-    change UInt256.ofNat (DriverTrace.blockOffset i)+UInt256.ofNat 1120=_
+  have hq0 : off+UInt256.ofNat 1087=UInt256.ofNat (messagePointer i) := by
+    change UInt256.ofNat (DriverTrace.blockOffset i)+UInt256.ofNat 1087=_
     rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb;omega)]
     unfold messagePointer Padding.messageOffset
     congr 1
     omega
-  have hq1 : off+UInt256.ofNat 1152=UInt256.ofNat (messagePointer i+32) := by
-    change UInt256.ofNat (DriverTrace.blockOffset i)+UInt256.ofNat 1152=_
+  have hq1 : off+UInt256.ofNat 1119=UInt256.ofNat (messagePointer i+32) := by
+    change UInt256.ofNat (DriverTrace.blockOffset i)+UInt256.ofNat 1119=_
     rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb;omega)]
     unfold messagePointer Padding.messageOffset
     congr 1

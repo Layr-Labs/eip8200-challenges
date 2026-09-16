@@ -16,7 +16,7 @@ def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
   let s := PaddingTrace.padCopied input
   have e : Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
   have hframe : PaddingTrace.initialFrame input ++ rho = entryFrame ++ rho := by rw [entry_frame_eq input h32]
-  have hactive : s.activeWords = UInt256.ofNat 36 := copied_active input h32
+  have hactive : s.activeWords = UInt256.ofNat 35 := copied_active input h32
   have hsize : (frame ++ rho).length ≤ 900 := by simp only [List.length_append]; change 15 + rho.length ≤ 900; omega
   have hgap : PairStoreGap.GapClear s.memory := by
     rw [show s.memory = copiedMemory input from copied_memory input]
@@ -64,7 +64,7 @@ private theorem serialize_append (s : State) (h : Compression.HashState)
 
 def gasSteps_core (s : State) (e : Env s) (input : ByteArray)
     (hcal : s.executionEnv.calldata = input) (h32 : input.size = 32)
-    (hactive : s.activeWords = UInt256.ofNat 36)
+    (hactive : s.activeWords = UInt256.ofNat 35)
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
     GasSteps (StackTail.append (Shared32Core.entryState s) rho)
       (StackTail.append (Shared32Core.resultState s) rho) := by

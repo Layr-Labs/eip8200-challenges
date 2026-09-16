@@ -24,7 +24,7 @@ def gasSteps_guard (s : State) (e : Env s) (F : List UInt256)
 def gasSteps_sparse (s : State) (e : Env s)
     (ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 880)
-    (hactive : s.activeWords = UInt256.ofNat 36)
+    (hactive : s.activeWords = UInt256.ofNat 35)
     (hbyte : UInt8.ofNat (a4.toNat % 256) = 1) :
     GasSteps
       (atState s 322 (stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho))
@@ -38,14 +38,15 @@ def gasSteps_sparse (s : State) (e : Env s)
     apply special.lift s (atState s 323 F) e F
     simpa only [special.template, atState, show UInt256.ofNat 322 + UInt256.ofNat 1 = UInt256.ofNat 323 by decide] using
       PadJump.run_merge s (UInt256.ofNat 322) F (by omega) e.run
-  have g1 : GasSteps (atState s 323 F) (atState s 324 (UInt256.ofNat 1152 :: F)) := by
-    have g := Msize.step (msize_decoded s e F) (by change F.length < 1024; omega) e.run e.np
-    simpa only [atState, hactive,
-      show (UInt256.ofNat 323).succ = UInt256.ofNat 324 by decide,
-      show UInt256.ofNat (32 * (UInt256.ofNat 36).toNat) = UInt256.ofNat 1152 by decide] using g
-  have g2 : GasSteps (atState s 324 (UInt256.ofNat 1152 :: F)) (atState sM 332 F) := by
-    apply sparse.lift s (atState sM 332 F) e (UInt256.ofNat 1152 :: F)
-    have h := Shared32SparseRun.run_sparse s (UInt256.ofNat 324) ret mw a2 a3 a4
+  have g1 : GasSteps (atState s 323 F) (atState s 325 (UInt256.ofNat 128 :: F)) := by
+    apply marker.lift s (atState s 325 (UInt256.ofNat 128 :: F)) e F
+    have hcap : F.length < 1024 := by omega
+    simp [marker.template, atState, runInstrSeq, DataStepper.runInstr, e.run, hcap,
+      UInt256.succ, Instr.size]
+    decide
+  have g2 : GasSteps (atState s 325 (UInt256.ofNat 128 :: F)) (atState sM 332 F) := by
+    apply sparse.lift s (atState sM 332 F) e (UInt256.ofNat 128 :: F)
+    have h := Shared32SparseRun.run_sparse s (UInt256.ofNat 325) ret mw a2 a3 a4
       a5 a6 a7 a8 a9 a10 lim rho hstack e.run hactive hbyte
     simpa only [sparse.template, sparse.end_pc, atState, sM, F] using h
   have g3 : GasSteps (atState sM 332 F) (atState sM 502 F) := by
@@ -61,7 +62,7 @@ def gasSteps_sparse (s : State) (e : Env s)
 def gasSteps_table (s : State) (e : Env s)
     (ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 880)
-    (hactive : s.activeWords = UInt256.ofNat 36)
+    (hactive : s.activeWords = UInt256.ofNat 35)
     (hlow : (MachineState.readWord s.memory 0).toNat % 2 ^ 144 < 2 ^ 32)
     (hgap : PairStoreGap.GapClear s.memory) :
     GasSteps

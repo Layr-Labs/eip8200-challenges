@@ -28,8 +28,8 @@ theorem large_branch (input : ByteArray) (hfit : CalldataFits input) (hlarge : 5
   omega
 
 theorem tableState_active (input : ByteArray) (hfit : CalldataFits input) (i : Nat)
-    (hi : i<DriverTrace.blockCount input) : 37≤(tableState input i).activeWords.toNat :=
-  Stagger144Active.loaded_active_ge37 (paddedState input i) (messagePointer i)
+    (hi : i<DriverTrace.blockCount input) : 35≤(tableState input i).activeWords.toNat :=
+  Stagger144Active.loaded_active_ge35 (paddedState input i) (messagePointer i)
     (messagePointer_lower i) (messagePointer_bound input hfit i hi)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdHighTrace

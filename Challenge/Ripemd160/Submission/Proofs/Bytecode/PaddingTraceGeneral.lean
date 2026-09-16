@@ -101,8 +101,8 @@ private theorem run_sentinel (hfit : CalldataFits input) :
   have hadd : (UInt256.ofNat Padding.messageOffset + UInt256.ofNat input.size).toNat =
       Padding.messageOffset + input.size := by
     rw [Word.ofNat_add_ofNat hsum, Word.word_toNat_ofNat, Nat.mod_eq_of_lt hsum]
-  have hadd' : (UInt256.ofNat input.size + UInt256.ofNat 1120).toNat =
-      1120 + input.size := by
+  have hadd' : (UInt256.ofNat input.size + UInt256.ofNat 1087).toNat =
+      1087 + input.size := by
     rw [Word.word_add_comm]
     exact hadd
   simp [lengthSentinelPath, Artifact.padSentinelPath, DataStepper.runLocatedBlock,
@@ -115,8 +115,8 @@ private theorem run_setup :
     DataStepper.runLocatedBlock lengthFooterSetupPath (sentinelState input s frame) =
       some (loopState input s frame 0) := by
   obtain ⟨hidx, hget⟩ := List.getElem_of_getElem? hlimit
-  have haddressOrder : UInt256.ofNat 1112 + Padding.paddedWord input =
-      Padding.paddedWord input + UInt256.ofNat 1112 := Word.word_add_comm _ _
+  have haddressOrder : UInt256.ofNat 1079 + Padding.paddedWord input =
+      Padding.paddedWord input + UInt256.ofNat 1079 := Word.word_add_comm _ _
   simp [lengthFooterSetupPath, Artifact.padFooterSetupPath, DataStepper.runLocatedBlock,
     DataStepper.runLocated, DataStepper.runInstr, sentinelState, loopState,
     lengthAddr, lengthShift, lengthOffsetWord, bitLengthWord, haddressOrder,

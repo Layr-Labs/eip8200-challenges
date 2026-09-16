@@ -17,7 +17,7 @@ def template : List Instr :=
 
 theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
-    (hactive : s.activeWords = UInt256.ofNat 36)
+    (hactive : s.activeWords = UInt256.ofNat 35)
     (hlow : (MachineState.readWord s.memory 0).toNat % 2 ^ 144 < 2 ^ 32)
     (hgap : PairStoreGap.GapClear s.memory) :
     runInstrSeq template
@@ -37,7 +37,7 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (UInt256.ofNat 0) lim rho
   let words := Shared32Table.words s.memory
   let scratch := Pair13Endian.scratch3 s.memory
-    (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1120)) highWord
+    (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1087)) highWord
   let s1 : State := {s with memory := writeWord s.memory 96 highWord}
   let s2 : State := {s with memory := scratch}
   let s3 : State := {s with memory := Pair13PoolRaw.copied scratch}
@@ -47,7 +47,7 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
   have hrest : rest.length ≤ 898 := by simp only [rest, List.length_cons]; omega
   have h1 := Shared32Lower.run_lower s1 pc ret (UInt256.ofNat 4294967295)
     a2 a3 a4 a5 a6 a7 a8 a9 a10 lim rho hstack hrun hactive
-  have hread : MachineState.readWord s1.memory 1120 = MachineState.readWord s.memory 1120 :=
+  have hread : MachineState.readWord s1.memory 1087 = MachineState.readWord s.memory 1087 :=
     read_writeWord_disjoint _ _ _ _ (Or.inr (by decide))
   rw [hread] at h1
   have h2 := Pair13PoolRaw.run_actual s2 (pcAfter pc Shared32Lower.lowerTemplate) F hF hrun ha
@@ -60,10 +60,10 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
         Pair13WriterRaw.dualW (Shared32Table.wordsRaw s.memory) i := by
       intro i hi
       have h := Shared32Scratch.fan_poolWord s.memory
-        (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1120)) highWord hlow i hi
+        (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1087)) highWord hlow i hi
       simp only [Shared32Scratch.dualOf, Shared32Table.pool_wordsRaw s.memory i] at h
       show Pair13PoolRaw.poolWord (Shared32Scratch.fanMemory s.memory
-          (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1120)) highWord) i =
+          (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1087)) highWord) i =
         Pair13WriterRaw.dualW (Shared32Table.wordsRaw s.memory) i
       rw [Pair13WriterRaw.dualW]
       exact h

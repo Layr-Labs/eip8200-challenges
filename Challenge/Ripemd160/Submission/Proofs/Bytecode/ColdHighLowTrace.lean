@@ -29,7 +29,7 @@ noncomputable opaque gasSteps_lowRoute (input : ByteArray) (hfit : CalldataFits 
   have hlim : lim=UInt256.ofNat input.size := by simp only [lim,LoopCompletionControl.limit,LoopCompletionControl.limitNat,if_pos hz]
   have gp:=StaggerPersistentPadPrefix.gasSteps_prefix s (frame h off lim maskRho)
     (by simp [frame,maskRho]) hr hc hf hnp
-  have ha : 35≤s.activeWords.toNat := Nat.le_trans (by decide : 35≤37) ctx.active
+  have ha : 35≤s.activeWords.toNat := ctx.active
   have gl:=ColdOrdinarySites.gasSteps_low s Paired144WordRound.factorPlusWord r (by rfl)
     (by simp [r,ColdOrdinaryPrepare.rest,maskRho]) hr ha hsz hc hf hnp
   rw [hcal] at gl

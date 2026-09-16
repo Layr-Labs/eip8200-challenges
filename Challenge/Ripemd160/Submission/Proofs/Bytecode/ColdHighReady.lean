@@ -14,16 +14,16 @@ def tableMemory (input : ByteArray) (i : Nat) : ByteArray :=
   StaggerTableLayout.resultMemory0 (finalMemory input i)
     (StaggerScratch.dirtyWord (finalMemory input i) (messagePointer i))
 
-theorem extracted_words (input : ByteArray) (hfit : CalldataFits input) (i : Nat)
+theorem extracted_words (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size) (i : Nat)
     (hi : i<DriverTrace.blockCount input) (hh : input.size=DriverTrace.blockOffset i)
     (k : Nat) (hk : k<16) :
     PairedScheduleData.extractedWord (finalMemory input i) (messagePointer i) k = Word.ofUInt32 (blockWords input i k) := by
   rw [PairedScheduleData.extractedWord_eq_expectedWord _ _ _ hk
     (messagePointer_bound input hfit i hi)]
   change ScheduleCorrect.expectedWord (finalMemory input i) (DriverTrace.messageOffsetWord i) k = _
-  rw [finalMemory_blockAt input hfit i hi hh k hk,blockWords_eq_readLE32 input i k hk]
+  rw [finalMemory_blockAt input hfit hpositive i hi hh k hk,blockWords_eq_readLE32 input i k hk]
 
-theorem ready (input : ByteArray) (hfit : CalldataFits input) (i : Nat)
+theorem ready (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size) (i : Nat)
     (hi : i<DriverTrace.blockCount input) (hh : input.size=DriverTrace.blockOffset i) :
     StaggerMessage.Ready (tableMemory input i) (blockWords input i) := by
   have hsplit (k : Nat) := StaggerScratch.dirtyWord_split (finalMemory input i) (messagePointer i) k
@@ -36,7 +36,7 @@ theorem ready (input : ByteArray) (hfit : CalldataFits input) (i : Nat)
     (fun k hk => by
       show (StaggerScratch.dirtyWord (finalMemory input i) (messagePointer i) k).toNat = _
       conv_lhs => rw [(hsplit k).1]
-      rw [extracted_words input hfit i hi hh k hk, Word.ofUInt32_toNat])
+      rw [extracted_words input hfit hpositive i hi hh k hk, Word.ofUInt32_toNat])
     (fun k _ => (hsplit k).2.1)
     (fun k _ h2 => Nat.lt_trans ((hsplit k).2.2.1 h2) (by decide))
     (fun k _ h2 _ => (hsplit k).2.2.1 h2)

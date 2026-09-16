@@ -48,7 +48,7 @@ theorem padded_upper (input : ByteArray) (h32 : input.size = 32)
 
 theorem copied_lower_read (input : ByteArray) (h32 : input.size = 32)
     (k : Nat) (hk : k < 8) :
-    Crypto.Ripemd160.readLE32 (copiedMemory input) (1120 + 4 * k) =
+    Crypto.Ripemd160.readLE32 (copiedMemory input) (1087 + 4 * k) =
       Crypto.Ripemd160.readLE32 (Padding.paddedMessage input) (4 * k) := by
   apply readLE32_congr
   intro i hi
@@ -59,15 +59,15 @@ theorem copied_lower_read (input : ByteArray) (h32 : input.size = 32)
   omega
 
 theorem extracted_readLE32 (memory : ByteArray) (k : Nat) (hk : k < 16) :
-    PairedScheduleData.extractedWord memory 1120 k =
-      Word.ofUInt32 (Crypto.Ripemd160.readLE32 memory (1120 + 4 * k)) := by
+    PairedScheduleData.extractedWord memory 1087 k =
+      Word.ofUInt32 (Crypto.Ripemd160.readLE32 memory (1087 + 4 * k)) := by
   rw [PairedScheduleData.extractedWord_eq_expectedWord _ _ _ hk (by omega)]
-  have hp : Schedule.loadOffsetWord (UInt256.ofNat 1120) k =
-      UInt256.ofNat (1120 + 4 * k) := by
+  have hp : Schedule.loadOffsetWord (UInt256.ofNat 1087) k =
+      UInt256.ofNat (1087 + 4 * k) := by
     apply Word.word_ext
     rw [PairedScheduleData.loadOffsetWord_toNat _ _ hk (by omega),
       Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
-  change Word.mask32 (Schedule.readLEWord memory (Schedule.loadOffsetWord (UInt256.ofNat 1120) k)) = _
+  change Word.mask32 (Schedule.readLEWord memory (Schedule.loadOffsetWord (UInt256.ofNat 1087) k)) = _
   rw [hp]
   exact PaddedBlockBridge.mask32_readLEWord_eq_readLE32 _ _ (by omega)
 

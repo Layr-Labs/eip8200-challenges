@@ -41,13 +41,13 @@ theorem frame_eq (input : ByteArray) (h32 : input.size = 32) :
 theorem copied_memory (input : ByteArray) :
     (PaddingTrace.padCopied input).memory = copiedMemory input := by
   change MachineState.writeBytes ByteArray.empty
-    (MachineState.readPadded input 0 input.size) 1120 = copiedMemory input
+    (MachineState.readPadded input 0 input.size) 1087 = copiedMemory input
   rw [Memory.readPadded_zero_size]
   rfl
 
 theorem copied_active (input : ByteArray) (h32 : input.size = 32) :
-    (PaddingTrace.padCopied input).activeWords = UInt256.ofNat 36 := by
-  change UInt256.ofNat (MachineState.activeWordsAfter 0 1120 input.size) = UInt256.ofNat 36
+    (PaddingTrace.padCopied input).activeWords = UInt256.ofNat 35 := by
+  change UInt256.ofNat (MachineState.activeWordsAfter 0 1087 input.size) = UInt256.ofNat 35
   rw [h32]
   rfl
 
@@ -74,7 +74,7 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32)
   let s := PaddingTrace.padCopied input
   have e : Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
   have hframe : PaddingTrace.initialFrame input = entryFrame := entry_frame_eq input h32
-  have hactive : s.activeWords = UInt256.ofNat 36 := copied_active input h32
+  have hactive : s.activeWords = UInt256.ofNat 35 := copied_active input h32
   have hcap : frame.length ≤ 900 := by decide
   have hgap : PairStoreGap.GapClear s.memory := by
     rw [show s.memory = copiedMemory input from copied_memory input]

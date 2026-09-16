@@ -7,7 +7,7 @@ set_option maxRecDepth 10000
 /-!
 # Structural binding for the frozen raw-EVM RIPEMD-160 artifact
 
-The candidate bytecode has 5224 bytes and SHA-256 `37a347233a7894afc45b15a4884f7351970ead3d27ee055cd4b15c2563870a87`. The hex file remains the external raw input.
+The candidate bytecode has 5224 bytes and SHA-256 `e4db447a28084afefb4fca6954735b0717e38a1df062e4868f6602eb4ac0c8c2`. The hex file remains the external raw input.
 -/
 
 namespace Challenge.Ripemd160

@@ -109,7 +109,7 @@ theorem resultHash_spec (input : ByteArray) (hfit : CalldataFits input)
     (hh : input.size = DriverTrace.blockOffset i) :
     CompressionCorrect.hashArray (resultHash input i) =
       CompressionSeamBridge.hashAfter input (DriverTrace.blockCount input) := by
-  have hr := ColdHighReady.ready input hfit i hi hh
+  have hr := ColdHighReady.ready input hfit hpositive i hi hh
   have hf := PersistentStaggerFunctional.result_compressBlock
     (tableState input i).memory (Padding.paddedMessage input)
     (DriverTrace.blockOffset i) (hashes input i) hr

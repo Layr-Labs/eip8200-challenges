@@ -56,7 +56,7 @@ def resultState (s : State) : State :=
 
 def gasSteps (s : State) (e : Env s) (input : ByteArray)
     (hcal : s.executionEnv.calldata = input) (h32 : input.size = 32)
-    (hactive : s.activeWords = UInt256.ofNat 36) :
+    (hactive : s.activeWords = UInt256.ofNat 35) :
     GasSteps (entryState s) (resultState s) := by
   have gb := gasSteps_body s e StackRunBridge.initialHashState
     (UInt256.ofNat 0) (UInt256.ofNat 32) maskRho (by decide)
