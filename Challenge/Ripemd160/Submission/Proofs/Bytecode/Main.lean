@@ -18,7 +18,7 @@ abbrev initializedState (input : ByteArray) : State := Execution.mainStart input
     (initializedState input).executionEnv.codeAddr = deployAddress := by rfl
 def gasSteps_initialize (input : ByteArray)
     (entryPrefix : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Execution.atPC input 336)) :
+      (Execution.atPC input 330)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (initializedState input) := Execution.gasSteps_entry input entryPrefix
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Main

@@ -45,7 +45,7 @@ def lowTemplate : List Instr :=
 
 /-- `PUSH2 0398 JUMPI` at 4778: straight to the rounds when the high word is zero. -/
 def branchTemplate : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 854),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 862),
     .op .JUMPI ]
 
 /-- Pad-only high block (pc 4833..4860), reached only when `n >>> 29 ≠ 0`. -/
@@ -71,15 +71,15 @@ def highTemplate : List Instr :=
 private theorem add_eq_hAdd (x y : UInt256) : UInt256.add x y = x + y := rfl
 
 /-- The fast padding path is valid for lengths below the artifact's byte size. -/
-def highZero (n : UInt256) : UInt256 := UInt256.lt n (UInt256.ofNat 5210)
+def highZero (n : UInt256) : UInt256 := UInt256.lt n (UInt256.ofNat 5214)
 
 theorem highZero_true_iff (n : UInt256) :
-    UInt256.isTrue (highZero n) ↔ n.toNat < 5210 := by
-  change (UInt256.lt n (UInt256.ofNat 5210)).toNat ≠ 0 ↔ n.toNat < 5210
+    UInt256.isTrue (highZero n) ↔ n.toNat < 5214 := by
+  change (UInt256.lt n (UInt256.ofNat 5214)).toNat ≠ 0 ↔ n.toNat < 5214
   rw [Word.word_toNat_lt]
-  have hc : (UInt256.ofNat 5210).toNat = 5210 := by decide
+  have hc : (UInt256.ofNat 5214).toNat = 5214 := by decide
   rw [hc]
-  by_cases hn : n.toNat < 5210 <;> simp [hn]
+  by_cases hn : n.toNat < 5214 <;> simp [hn]
 
 theorem highZero_true_imp (n : UInt256) (h : UInt256.isTrue (highZero n)) :
     StaggerTablePad.highDirty n = UInt256.ofNat 0 := by
@@ -94,7 +94,7 @@ theorem highZero_true_imp (n : UInt256) (h : UInt256.isTrue (highZero n)) :
 
 theorem run_low (s : State) (pc returnPC : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 995) (hrun : s.halt = .Running) (hactive : 35 ≤ s.activeWords.toNat)
-    (hfit : s.executionEnv.calldata.size < 2 ^ 256) (hcode : s.executionEnv.code.size = 5210) :
+    (hfit : s.executionEnv.calldata.size < 2 ^ 256) (hcode : s.executionEnv.code.size = 5214) :
     runInstrSeq lowTemplate {s with pc := pc, stack := returnPC :: UInt256.ofNat 4294967295 :: rest} =
       some {s with
              pc := pcAfter pc lowTemplate
@@ -156,9 +156,9 @@ theorem run_high (s : State) (pc returnPC : UInt256) (rest : List UInt256)
 
 theorem run_branch_taken (s : State) (pc c : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running) (hc : UInt256.isTrue c)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 854).toNat = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 862).toNat = true) :
     runInstrSeq branchTemplate {s with pc := pc, stack := c :: rho} =
-      some {s with pc := UInt256.ofNat 854, stack := rho} := by
+      some {s with pc := UInt256.ofNat 862, stack := rho} := by
   have hcap : rho.length < 1024 := by omega
   have hcap1 : rho.length + 1 < 1024 := by omega
   have hcap2 : rho.length + 2 < 1024 := by omega
