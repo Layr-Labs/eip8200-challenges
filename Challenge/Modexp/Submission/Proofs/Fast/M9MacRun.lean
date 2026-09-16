@@ -124,6 +124,61 @@ theorem run_head (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
   rw [hpc] at h
   exact h
 
+/-- One straight block on a MAC state whose incoming carry is *zero*, with `PUSH0` in place of the
+`DUP4` that would reproduce that carry.  Same conclusion as `run_block`. -/
+theorem run_block_zero (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
+    (pa n j : Nat) (a t : UInt256)
+    (ha : a.toNat = pa + 32 * (n - 1 - j)) (ht : t.toNat = 2112 + 32 * (n - 1 - j))
+    (rest : List UInt256) (hrest : rest.length ≤ 1014)
+    (hactive : 88 ≤ template.activeWords.toNat) (hpa : pa + 32 * n ≤ 2784)
+    (hn : n ≤ 8) (hj : j < n) (hcarry : m.carry = UInt256.ofNat 0) :
+    runInstructions (blockZeroProgram a t) (chainState template pc m bi rest) =
+    some (chainState template (pc + UInt256.ofNat 36) (SquareModel.l1StepOn m bi pa n j) bi rest) := by
+  have hactA : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
+      (pa + 32 * (n - 1 - j)) 32) = template.activeWords :=
+    activeWords_fix template _ 32 (by decide) (by omega) hactive
+  have hactT : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
+      (2112 + 32 * (n - 1 - j)) 32) = template.activeWords :=
+    activeWords_fix template _ 32 (by decide) (by omega) hactive
+  let st : State := { template with memory := m.memory }
+  have hA : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat a.toNat 32) =
+      st.activeWords := by simpa only [st, ha] using hactA
+  have hT : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat t.toNat 32) =
+      st.activeWords := by simpa only [st, ht] using hactT
+  have hl := run_load st pc a m.carry bi rest hrest hA
+  have hread : MachineState.readWord st.memory a.toNat =
+      MachineState.readWord m.memory (pa + 32 * (n - 1 - j)) := by simp only [st, ha]
+  rw [hread] at hl
+  have hf := CiosCachedFused.run_fused_zero st (pc + UInt256.ofNat 5)
+    (MachineState.readWord m.memory (pa + 32 * (n - 1 - j))) bi m.carry t t
+    (maxWord :: rest) (by simp only [List.length_cons]; omega) hT hT hcarry
+  have hall := runInstructions_append_some _ _ _ _ _ hl hf
+  have hpc : (pc + UInt256.ofNat 5) + UInt256.ofNat 31 = pc + UInt256.ofNat 36 := by
+    simp [word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
+  simpa only [blockZeroProgram, st, chainState, framed, SquareModel.l1StepOn, ht, hpc,
+    List.cons_append, List.nil_append] using hall
+
+/-- Block 0 (`JUMPDEST` included, 37 bytes) on a zero incoming carry. -/
+theorem run_head_zero (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
+    (pa n j : Nat) (a t : UInt256)
+    (ha : a.toNat = pa + 32 * (n - 1 - j)) (ht : t.toNat = 2112 + 32 * (n - 1 - j))
+    (rest : List UInt256) (hrest : rest.length ≤ 1014)
+    (hactive : 88 ≤ template.activeWords.toNat) (hpa : pa + 32 * n ≤ 2784)
+    (hn : n ≤ 8) (hj : j < n) (hcarry : m.carry = UInt256.ofNat 0) :
+    runInstructions (headZeroProgram a t) (chainState template pc m bi rest) =
+    some (chainState template (pc + UInt256.ofNat 37) (SquareModel.l1StepOn m bi pa n j) bi rest) := by
+  have hc : rest.length + 3 < 1024 := by omega
+  have hjd : runInstructions [.op .JUMPDEST] (chainState template pc m bi rest) =
+      some (chainState template (pc + UInt256.ofNat 1) m bi rest) := by
+    simp [runInstructions, Challenge.EvmProof.Stepper.runInstr, chainState, hc, succ_eq_add]
+  have hl := run_block_zero template (pc + UInt256.ofNat 1) m bi pa n j a t ha ht rest hrest
+    hactive hpa hn hj hcarry
+  have h := runInstructions_append_some _ _ _ _ _ hjd hl
+  have hpc : pc + UInt256.ofNat 1 + UInt256.ofNat 36 = pc + UInt256.ofNat 37 := by
+    rw [word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
+  rw [hpc] at h
+  exact h
+
 /-- `SWAP1 SWAP2 POP`: `[carry, q, mask] ++ rest` becomes `[carry, q] ++ rest`. -/
 theorem run_exit (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1014) :
@@ -168,5 +223,7 @@ end Challenge.Modexp.Submission.Proofs.Fast.M9Mac
 
 #print axioms Challenge.Modexp.Submission.Proofs.Fast.M9Mac.run_block
 #print axioms Challenge.Modexp.Submission.Proofs.Fast.M9Mac.run_head
+#print axioms Challenge.Modexp.Submission.Proofs.Fast.M9Mac.run_block_zero
+#print axioms Challenge.Modexp.Submission.Proofs.Fast.M9Mac.run_head_zero
 #print axioms Challenge.Modexp.Submission.Proofs.Fast.M9Mac.run_exit
 #print axioms Challenge.Modexp.Submission.Proofs.Fast.M9Mac.run_entry
