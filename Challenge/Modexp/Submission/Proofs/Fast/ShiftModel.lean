@@ -108,16 +108,19 @@ def qhatOf (mem : ByteArray) : UInt256 :=
   let diff := lo - rho
   let dinv := MachineState.readWord mem PRE_DINV
   let q := dinv * diff
-  -- Saturate a quotient that would wrap at the word radix. The generic
-  -- correction proof below accepts every UInt256 quotient, including this one.
-  let overflow := UInt256.isZero (UInt256.lt hi dodd)
+  -- The saturation tail that clamped a wrapping guess to `2^256 - 1` when
+  -- `hi = dodd` is gone.  It was only ever a gas hedge: `mid_relation` binds `q`
+  -- with no hypothesis and `repair_spec` constrains it only by the relation it
+  -- satisfies by construction, so every UInt256 quotient -- clamped or not --
+  -- yields the same `u mod m`.  Without the clamp that path simply costs more
+  -- repair rounds, and `Correct` quantifies gas existentially (`∃ g₀, ∀ g ≥ g₀`),
+  -- so a slower path is not an incorrect one.  `hi` survives: it still feeds `mm`.
   -- Record-style refinement: decrement only when
   -- `(q >> 128) * (N1 >> 128) > r̂`, which implies `q * N1 > r̂ * radix`.
-  UInt256.lor (UInt256.ofNat 0 - overflow)
-    (q - UInt256.gt
-      (UInt256.shiftRight q (UInt256.ofNat 128) *
-        UInt256.shiftRight (MachineState.readWord mem 32) (UInt256.ofNat 128))
-      (unext - MachineState.readWord mem 0 * q))
+  q - UInt256.gt
+    (UInt256.shiftRight q (UInt256.ofNat 128) *
+      UInt256.shiftRight (MachineState.readWord mem 32) (UInt256.ofNat 128))
+    (unext - MachineState.readWord mem 0 * q)
 
 /-- The limb pass `t += q * NEG` is exactly a CIOS first loop with `a = NEG`. -/
 def macOf (mem : ByteArray) (n : Nat) (q : UInt256) : Monpro.MacState :=
