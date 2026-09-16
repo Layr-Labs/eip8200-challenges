@@ -47,7 +47,7 @@ def transitionResult (f : Frame) : Frame :=
   { f with word := advance 114 f.word
            off := f.stop
            stop := e
-           full := UInt256.add f.stop (aligned (UInt256.sub e f.stop)) }
+           full := UInt256.add f.stop (UInt256.land (UInt256.sub f.len f.stop) (UInt256.ofNat 224)) }
 
 /-! ### Masking with `0xE0` instead of `~0x1F`
 
@@ -233,7 +233,7 @@ def transitionTemplate : List Instr := [
   .op (.Dup ⟨2, by decide⟩),
   .op .ADD,
   .op (.Swap ⟨4, by decide⟩),
-  .op (.Dup ⟨5, by decide⟩),
+  .op .CALLDATASIZE,
   .op .SUB,
   .push ⟨1, by decide⟩ (UInt256.ofNat 224),
   .op .AND,
