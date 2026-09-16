@@ -11,8 +11,8 @@ noncomputable opaque gasSteps_lowRoute (input : ByteArray) (hfit : CalldataFits 
     (i : Nat) (hi : i<DriverTrace.blockCount input) (hh : input.size=DriverTrace.blockOffset i)
     (hlarge : 5224≤input.size) :
     GasSteps
-      {states input i with pc:=UInt256.ofNat 4767, stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (LoopCompletionControl.limit input) maskRho}
-      {lowState input i with pc:=UInt256.ofNat 4709, stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (UInt256.ofNat input.size) maskRho} := by
+      {states input i with pc:=UInt256.ofNat 4795, stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (LoopCompletionControl.limit input) maskRho}
+      {lowState input i with pc:=UInt256.ofNat 4737, stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (UInt256.ofNat input.size) maskRho} := by
   let s:=states input i
   let h:=hashes input i
   let off:=DriverTrace.blockOffsetWord i

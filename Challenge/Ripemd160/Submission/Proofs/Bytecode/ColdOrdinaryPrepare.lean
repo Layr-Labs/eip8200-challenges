@@ -40,7 +40,7 @@ def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 4768, stack := ret :: rest}
       {s with
-        pc := UInt256.ofNat 868
+        pc := UInt256.ofNat 896
         stack := ret :: rest
         memory := StaggerTablePad.padRealResult s.memory
           (UInt256.ofNat s.executionEnv.calldata.size)} := by
@@ -71,7 +71,7 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := LoopCompletionControl.blockPC input i, stack := frame h (DriverTrace.blockOffsetWord i) limit rho}
-      {scheduledState s i with pc := UInt256.ofNat 868, stack := frame h (DriverTrace.blockOffsetWord i) limit rho} := by
+      {scheduledState s i with pc := UInt256.ofNat 896, stack := frame h (DriverTrace.blockOffsetWord i) limit rho} := by
   let off := DriverTrace.blockOffsetWord i
   let r := rest h off limit rho
   have hrs : r.length ≤ 896 := by simp only [r, rest, List.length_append, List.length_cons, List.length_nil]; omega
@@ -89,7 +89,7 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     let qh : State :=
       {s with memory := StaggerTablePad.padRealResult s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
     have gb' : GasSteps {s with pc := UInt256.ofNat 4768, stack := frame h off limit rho}
-        {qh with pc := UInt256.ofNat 868, stack := frame h off limit rho} := by
+        {qh with pc := UInt256.ofNat 896, stack := frame h off limit rho} := by
       apply gb.cast rfl
       rfl
     simpa only [LoopCompletionControl.blockPC, DriverTrace.blockOffset, if_pos hh] using gp.trans gb'
