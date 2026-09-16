@@ -242,6 +242,76 @@ theorem gt_toNat (a b : UInt256) :
 
 theorem radix_eq : Limbs.radix = 2 ^ 256 := rfl
 
+/-- An odd represented modulus has a nonzero least-significant word. -/
+theorem lowWord_ne_zero_of_odd (mem : ByteArray) (n mm : Nat)
+    (hn : 1 ≤ n) (hmod : Model.FastRepresents mem 0 n mm)
+    (hodd : mm % 2 = 1) :
+    MachineState.readWord mem (32 * (n - 1)) ≠ UInt256.ofNat 0 := by
+  have hlimb := Model.readLimb_of_fastRepresents hmod (k := 0) (by omega)
+  simp only [Nat.zero_add, Nat.sub_zero, pow_zero, Nat.div_one] at hlimb
+  intro hzero
+  have hmmod : mm % Limbs.radix = 0 := by
+    calc
+      mm % Limbs.radix =
+          (MachineState.readWord mem (32 * (n - 1))).toNat := hlimb.symm
+      _ = 0 := by
+        rw [hzero, Challenge.EvmProof.Word.word_toNat_ofNat]
+        norm_num
+  have hodd' := Model.low_limb_odd hodd
+  rw [hmmod] at hodd'
+  norm_num at hodd'
+
+/-- The first two's-complement carry is clear whenever the low word is nonzero. -/
+theorem one_add_lnot_no_carry (x : UInt256) (hx : x ≠ UInt256.ofNat 0) :
+    UInt256.lt (UInt256.ofNat 1 + UInt256.lnot x) (UInt256.ofNat 1) =
+      UInt256.ofNat 0 := by
+  apply Challenge.EvmProof.Word.word_ext
+  have hxlt : x.toNat < 2 ^ 256 := x.val.isLt
+  have hxpos : 0 < x.toNat := by
+    by_contra h
+    have hxzero : x.toNat = 0 := by omega
+    apply hx
+    apply Challenge.EvmProof.Word.word_ext
+    rw [hxzero, Challenge.EvmProof.Word.word_toNat_ofNat]
+    norm_num
+  simp only [Challenge.EvmProof.Word.word_toNat_lt,
+    Challenge.EvmProof.Word.word_toNat_add,
+    Challenge.EvmProof.Word.word_toNat_ofNat, lnot_toNat]
+  rw [show (1 : Nat) % 2 ^ 256 = 1 by norm_num]
+  rw [Nat.mod_eq_of_lt (by omega :
+    1 + (2 ^ 256 - 1 - x.toNat) < 2 ^ 256)]
+  rw [if_neg (by omega)]
+  norm_num
+
+/-- Unsigned comparison with zero is always false. -/
+theorem lt_zero_word (x : UInt256) :
+    UInt256.lt x (UInt256.ofNat 0) = UInt256.ofNat 0 := by
+  apply Challenge.EvmProof.Word.word_ext
+  simp only [Challenge.EvmProof.Word.word_toNat_lt,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+  norm_num
+
+/-- After the first nonzero low limb, every carry in `NEG := -m` is zero. -/
+theorem negStep_flag_zero_of_low_word (mem : ByteArray) (n : Nat)
+    (hlsw : MachineState.readWord mem (32 * (n - 1)) ≠ UInt256.ofNat 0) :
+    ∀ j, 1 ≤ j → j ≤ n → (negStep mem n j).flag = UInt256.ofNat 0 := by
+  intro j
+  induction j with
+  | zero =>
+      intro hj _
+      omega
+  | succ j ih =>
+      intro _ hjn
+      by_cases hj0 : j = 0
+      · subst j
+        simpa [negStep] using
+          one_add_lnot_no_carry
+            (MachineState.readWord mem (32 * (n - 1))) hlsw
+      · have hprev := ih (by omega) (by omega)
+        simp only [negStep]
+        rw [hprev]
+        exact lt_zero_word _
+
 /-- One word addition with its carry-out, tested against the first summand. -/
 theorem add_carry_spec (a b : UInt256) :
     (a + b).toNat + (UInt256.lt (a + b) a).toNat * Limbs.radix = a.toNat + b.toNat ∧

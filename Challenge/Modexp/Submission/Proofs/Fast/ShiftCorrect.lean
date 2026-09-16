@@ -222,11 +222,19 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
   -- carries `TopBitSet`), the miss arm by making the conversion call the setup path used to
   -- make.  In the previous layout both arms inherited `R1` from one call before the split.
   by_cases hmatch : FullBase.Matches mem n bsize
-  · exact RootE3Correct.handled_of_bound_shift_hit input s mem n bsize esize msize mm minv
+  · have hmod1 : Model.FastRepresents (m1Of mem input n) 0 n mm := by
+      refine (Model.fastRepresents_congr ?_ mm).2 hmod0
+      intro i hi
+      exact m1_readWord_disjoint mem input n _ (by omega) hn32
+        ⟨Or.inl (by omega), Or.inl (by omega), Or.inl (by omega), Or.inl (by omega)⟩
+    have hlsw : MachineState.readWord (m1Of mem input n) (32 * (n - 1)) ≠
+        UInt256.ofNat 0 :=
+      lowWord_ne_zero_of_odd (m1Of mem input n) n mm (by omega) hmod1 hodd
+    exact RootE3Correct.handled_of_bound_shift_hit input s mem n bsize esize msize mm minv
       sub hspec hcode hfork hrun hnp hdata hstack hact hn hn32 hb he hmz hm32
       hbsize hesize hmsz hmm hodd hradix hmpos hframe0 hmod0 hone0 hmatch hfast
-      (RootE3Bindings.build s mem input n bsize esize msize minv hn hn32 hb he e hdata hframe0 hmatch
-        hfast)
+      (RootE3Bindings.build s mem input n bsize esize msize minv hn hn32 hb he e hdata hframe0
+        hmatch hfast hlsw)
   · -- the miss: `R1` is seeded and converted here, then the unchanged RR-leading chain
     -- from `r0`.  `mem0` is the memory after the seed store, `mem1` after the conversion.
     have hmiss := gasSteps_missPath s mem n bsize esize msize hn32 e hbword hmatch
@@ -315,7 +323,7 @@ theorem gasSteps_handled (input : ByteArray)
     (hpath : Challenge.Modexp.Submission.Proofs.Fast.Setup.FastPath input) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
-        (Main.trampolineState input 599) final) ∧
+        (Main.fastEntryState input) final) ∧
         final.isDone = true ∧
         final.toResult = .returned (Challenge.Modexp.spec input) := by
   have hsize : input.size < 2 ^ 256 := lt_trans hvalid.1 (by norm_num)

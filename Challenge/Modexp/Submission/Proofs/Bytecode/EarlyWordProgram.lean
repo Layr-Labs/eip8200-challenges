@@ -23,9 +23,11 @@ def branchProgram : List Instr := [.push 1 127, .op .JUMPI]
 /-- Nineteen instructions at pc 0, ending at the conditional branch. -/
 def guardProgram : List Instr := headerProgram ++ guardValueProgram ++ branchProgram
 
-/-- Every width miss restores the unchanged legacy entry with an empty stack. -/
+/-- Every width miss keeps the already-loaded modulus size and reaches the
+fast entry with exactly that one word. -/
 def missProgram : List Instr :=
-  [.op .JUMPDEST, .op .POP, .op .POP, .op .POP, .push 2 599, .op .JUMP]
+  [.op .JUMPDEST, .op (.Swap ⟨1, by decide⟩), .op .POP, .op .POP,
+   .push 2 599, .op .JUMP]
 
 open WindowTwentyOnePositive (headerStack)
 
@@ -108,8 +110,9 @@ theorem guard_zero_iff (input : ByteArray) :
 theorem run_miss (template : State) (input : ByteArray)
     (hjump : Decode.isValidJumpDest template.executionEnv.code 599 = true) :
     runInstructions missProgram (framed template (UInt256.ofNat 127) (headerStack input)) =
-      some (framed template (UInt256.ofNat 599) []) := by
+      some (framed template (UInt256.ofNat 599)
+        [UInt256.ofNat (modulusSize input)]) := by
   simp [missProgram, runInstructions, framed, headerStack, Stepper.runInstr, hjump,
-    Word.literal_eq_ofNat, Word.word_toNat_ofNat]
+    List.exchange, Word.literal_eq_ofNat, Word.word_toNat_ofNat]
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.EarlyWordProgram

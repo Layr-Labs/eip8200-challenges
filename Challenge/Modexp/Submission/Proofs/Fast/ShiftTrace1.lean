@@ -209,6 +209,7 @@ theorem run_negEntry (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 pointer `p` stays abstract; only its value is needed. -/
 theorem run_negBodyA (s : State) (mem : ByteArray) (p : UInt256) (n bsize esize msize j : Nat)
     (hn32 : n ≤ 8) (hj : j < n) (hpv : p.toNat = 32 * (n - 1 - j))
+    (hlsw : MachineState.readWord mem (32 * (n - 1)) ≠ UInt256.ofNat 0)
     (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
@@ -227,13 +228,15 @@ theorem run_negBodyA (s : State) (mem : ByteArray) (p : UInt256) (n bsize esize 
   have hawS : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (1280 + 32 * (n - 1 - j)) 32) = s.activeWords :=
     Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hflag : (negStep mem n (j + 1)).flag = UInt256.ofNat 0 :=
+    negStep_flag_zero_of_low_word mem n hlsw (j + 1) (by omega) (by omega)
   simp (config := { maxSteps := 400000 })
     [UInt256.gt, UInt256.lt, blk2896a, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       pcNegLoop, pcNegMid, negStep, NEG,
-      outer, Exp.outer, hcode, hrun, hpv, hdst, hawL, hawS,
+      outer, Exp.outer, hcode, hrun, hpv, hflag, hdst, hawL, hawS,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
