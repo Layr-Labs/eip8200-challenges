@@ -96,7 +96,7 @@ theorem result_eq_l2At (s : State) (mem : ByteArray) (tl inv m0 m96 m64 m32 pdst
 
 /-! ## Row 0: the first-row program, the second loop and the tail -/
 
-def gasSteps_rowZeroToTail (s : State) (mem : ByteArray)
+def gasSteps_rowZeroToTail (s : State) (mem : ByteArray) (e : Nat)
     (tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -110,7 +110,7 @@ def gasSteps_rowZeroToTail (s : State) (mem : ByteArray)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
     (hsnap : StagedOperand.Snapshot mem 2368 8) :
     Challenge.EvmProof.GasSteps
-      { outState s mem 2368 8 0 (UInt256.ofNat 4065) (UInt256.ofNat (sqEnt 8 0)) inv m0
+      { outState s mem 2368 8 0 (UInt256.ofNat 4065) (UInt256.ofNat e) inv m0
         (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 4889 }
       (tailState s
         (rowFromL2Carry (sqL1 (mpZeroed s mem 8) 8 0 (UInt256.ofNat 0)) 8).memory
@@ -121,7 +121,7 @@ def gasSteps_rowZeroToTail (s : State) (mem : ByteArray)
         2368 8 0 (UInt256.ofNat 4065) (UInt256.ofNat (sqEnt 8 0 + 37)) inv m0
         (tl :: m96 :: m64 :: m32 :: sqX (mpZeroed s mem 8) 8 0 :: pdst :: ret :: rest)) := by
   have hcap2 : (pdst :: ret :: rest).length ≤ 1002 := by simp only [List.length_cons]; omega
-  have gP := R8RowZero.gasSteps_prologue s mem (sqEnt 8 0) inv m0 m96 m64 m32 aprev
+  have gP := R8RowZero.gasSteps_prologue s mem e inv m0 m96 m64 m32 aprev
     (pdst :: ret :: rest) hcap2 hrun hcode hfork hnp hact
   rw [result_eq_l2At s mem tl inv m0 m96 m64 m32 pdst ret rest hscr hminv hc] at gP
   have heZ : CiosReadonlyExtra.ExtraCache (mpZeroed s mem 8) m96 m64 m32 :=
@@ -138,7 +138,7 @@ def gasSteps_rowZeroToTail (s : State) (mem : ByteArray)
     (UInt256.ofNat (sqEnt 8 0 + 37)) _ inv m0 (sqX (mpZeroed s mem 8) 8 0) m96 m64 m32 pdst ret rest
     hcap hrun hcode hfork hnp hact (extraCache_midMem1 heQ _))
 
-def gasSteps_rowZeroNext (s : State) (mem : ByteArray)
+def gasSteps_rowZeroNext (s : State) (mem : ByteArray) (e : Nat)
     (tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -152,12 +152,12 @@ def gasSteps_rowZeroNext (s : State) (mem : ByteArray)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
     (hsnap : StagedOperand.Snapshot mem 2368 8) :
     Challenge.EvmProof.GasSteps
-      { outState s mem 2368 8 0 (UInt256.ofNat 4065) (UInt256.ofNat (sqEnt 8 0)) inv m0
+      { outState s mem 2368 8 0 (UInt256.ofNat 4065) (UInt256.ofNat e) inv m0
         (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 4889 }
       (outState s (sqRowCarry (mpZeroed s mem 8) 8 0 (UInt256.ofNat 0)) 2368 8 (0 + 1)
         (UInt256.ofNat 4065) (UInt256.ofNat (sqEnt 8 0 + 37)) inv m0
         (tl :: m96 :: m64 :: m32 :: sqX (mpZeroed s mem 8) 8 0 :: pdst :: ret :: rest)) :=
-  (gasSteps_rowZeroToTail s mem tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hrun hcode hfork
+  (gasSteps_rowZeroToTail s mem e tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hrun hcode hfork
     hnp hact hscr hminv hc he hsnap).trans
   (CarryRowGas.gasSteps_tailNext s _ _ _ _ 2368 8 0 (UInt256.ofNat 4065) (UInt256.ofNat (sqEnt 8 0 + 37))
     inv m0 (tl :: m96 :: m64 :: m32 :: sqX (mpZeroed s mem 8) 8 0 :: pdst :: ret :: rest)
@@ -166,7 +166,7 @@ def gasSteps_rowZeroNext (s : State) (mem : ByteArray)
 
 /-! ## Rows 0..7 -/
 
-def gasSteps_rowsToExit (s : State) (a0 : UInt256) (M0 : ByteArray)
+def gasSteps_rowsToExit (s : State) (a0 : UInt256) (M0 : ByteArray) (e : Nat)
     (tl inv m0 m96 m64 m32 pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -180,7 +180,7 @@ def gasSteps_rowsToExit (s : State) (a0 : UInt256) (M0 : ByteArray)
     (he : CiosReadonlyExtra.ExtraCache M0 m96 m64 m32)
     (hsnap : StagedOperand.Snapshot M0 2368 8) :
     Challenge.EvmProof.GasSteps
-      { rowState s a0 M0 8 tl inv m0 m96 m64 m32 pdst ret rest 0 with pc := UInt256.ofNat 4889 }
+      { rowStateEnt s a0 M0 8 tl inv m0 m96 m64 m32 pdst ret rest 0 e with pc := UInt256.ofNat 4889 }
       (CiosCachedTailDefs.sqExitState s (sqRowsCarry (mpZeroed s M0 8) 8 8)
         (UInt256.ofNat (ptrAt (2368 + 32 * 8 - 32) 8)) 2368 8 (UInt256.ofNat 4065)
         (UInt256.ofNat (sqEnt 8 8)) inv m0
@@ -199,12 +199,12 @@ def gasSteps_rowsToExit (s : State) (a0 : UInt256) (M0 : ByteArray)
       StagedMonpro.readWord_mpZeroed s M0 8 2720 (by decide) (Or.inr (by decide))]
     exact hminv
   have hsnapZ : StagedOperand.Snapshot (mpZeroed s M0 8) 2368 8 := fun _ _ => rfl
-  have g0 := gasSteps_rowZeroNext s M0 tl inv m0 m96 m64 m32 a0 pdst ret rest
+  have g0 := gasSteps_rowZeroNext s M0 e tl inv m0 m96 m64 m32 a0 pdst ret rest
     hcap hrun hcode hfork hnp hact hscr hminv hc he hsnap
   have g0' : Challenge.EvmProof.GasSteps
-      { rowState s a0 M0 8 tl inv m0 m96 m64 m32 pdst ret rest 0 with pc := UInt256.ofNat 4889 }
+      { rowStateEnt s a0 M0 8 tl inv m0 m96 m64 m32 pdst ret rest 0 e with pc := UInt256.ofNat 4889 }
       (rowState s (UInt256.ofNat 0) (mpZeroed s M0 8) 8 tl inv m0 m96 m64 m32 pdst ret rest 1) := by
-    simpa only [rowState, sqRowsCarry, sqTb, sqPrev, sqEnt_succ] using g0
+    simpa only [rowStateEnt, rowState, sqRowsCarry, sqTb, sqPrev, sqEnt_succ] using g0
   have next : ∀ i, i < 7 →
       Challenge.EvmProof.GasSteps
         (rowState s (UInt256.ofNat 0) (mpZeroed s M0 8) 8 tl inv m0 m96 m64 m32 pdst ret rest i)
@@ -233,7 +233,7 @@ def gasSteps_rowsToExit (s : State) (a0 : UInt256) (M0 : ByteArray)
     (I := fun i => rowState s (UInt256.ofNat 0) (mpZeroed s M0 8) 8 tl inv m0 m96 m64 m32 pdst ret rest (i + 1))
     6 (fun i hi => next (i + 1) (by omega)))).trans last
 
-def gasSteps_rowsZeroWidth (s : State) (a0 : UInt256) (M0 : ByteArray) (n : Nat)
+def gasSteps_rowsZeroWidth (s : State) (a0 : UInt256) (M0 : ByteArray) (n e : Nat)
     (tl inv m0 m96 m64 m32 pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -247,13 +247,13 @@ def gasSteps_rowsZeroWidth (s : State) (a0 : UInt256) (M0 : ByteArray) (n : Nat)
     (he : CiosReadonlyExtra.ExtraCache M0 m96 m64 m32)
     (hsnap : StagedOperand.Snapshot M0 2368 n) :
     Challenge.EvmProof.GasSteps
-      { rowState s a0 M0 n tl inv m0 m96 m64 m32 pdst ret rest 0 with pc := UInt256.ofNat 4889 }
+      { rowStateEnt s a0 M0 n tl inv m0 m96 m64 m32 pdst ret rest 0 e with pc := UInt256.ofNat 4889 }
       (CiosCachedTailDefs.sqExitState s (sqRowsCarry (mpZeroed s M0 n) n n)
         (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n)) 2368 n (UInt256.ofNat 4065)
         (UInt256.ofNat (sqEnt n n)) inv m0
         (tl :: m96 :: m64 :: m32 :: sqLast (mpZeroed s M0 n) n :: pdst :: ret :: rest)) := by
   subst n
-  exact gasSteps_rowsToExit s a0 M0 tl inv m0 m96 m64 m32 pdst ret rest
+  exact gasSteps_rowsToExit s a0 M0 e tl inv m0 m96 m64 m32 pdst ret rest
     hcap hrun hcode hfork hnp hact hscr hminv hc he hsnap
 
 end Challenge.Modexp.Submission.Proofs.Fast.R8Rows
