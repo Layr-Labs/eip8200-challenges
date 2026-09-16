@@ -19,3 +19,11 @@ theorem submissionBytecode_roundtrip :
   Challenge.EvmProof.Bytecode.assemble_disassemble _
 
 end Challenge.Modexp
+
+-- packaging revision 20260915T231210Z
+
+-- packaging revision 20260915T234013Z
+
+-- packaging revision 20260916T002555Z
+
+-- packaging revision 20260916T010908Z
