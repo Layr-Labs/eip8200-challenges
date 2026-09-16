@@ -81,7 +81,7 @@ theorem eligible_of_frame {mem : ByteArray} {n bsize minv : Nat} (hf : Frame mem
   exact hminv1 hv
 
 /-- The `MONPRO` step of the concrete instance. -/
-noncomputable def subsMonpro (s : State) (n bsize mm minv : Nat)
+def subsMonpro (s : State) (n bsize mm minv : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -177,8 +177,8 @@ theorem sqLoopMem_frame' {s : State} {mem : ByteArray} {n bsize minv : Nat} (k :
 
 /-- The in-kernel square-loop step of the concrete instance: for `n ∈ {4, 8}`
 the kernel performs all `k` squares without leaving its row frame and returns to
-after the fused product (pc 1047) (`Fast.SquareLoop.gasSteps_squareLoop`). -/
-noncomputable def subsSquareLoop (s : State) (n bsize mm minv : Nat)
+the caller's `after_sq` (pc 3360) (`Fast.SquareLoop.gasSteps_squareLoop`). -/
+def subsSquareLoop (s : State) (n bsize mm minv : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -223,7 +223,7 @@ noncomputable def subsSquareLoop (s : State) (n bsize mm minv : Nat)
         rfl rfl
 
 /-- The concrete subroutine contracts. -/
-noncomputable def subs (s : State) (n bsize mm minv : Nat)
+def subs (s : State) (n bsize mm minv : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
