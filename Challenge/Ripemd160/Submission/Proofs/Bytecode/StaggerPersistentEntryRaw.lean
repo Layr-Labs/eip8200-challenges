@@ -52,8 +52,8 @@ theorem run_hit (s : State) (pc off limit : UInt256) (h : Compression.HashState)
 def callTemplate : List Instr :=
   [.push ⟨3, by decide⟩ (UInt256.ofNat 65537), .push 0 0, .op .NOT, .op .DIV,
    .push ⟨2, by decide⟩ (UInt256.ofNat 257), .push 0 0, .op .NOT, .op .DIV,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 1087), .op (.Dup ⟨14, by decide⟩), .op .ADD]
-def pointer (off : UInt256) : UInt256 := UInt256.add (UInt256.ofNat 1087) off
+   .push ⟨2, by decide⟩ (UInt256.ofNat 1056), .op (.Dup ⟨14, by decide⟩), .op .ADD]
+def pointer (off : UInt256) : UInt256 := UInt256.add (UInt256.ofNat 1056) off
 
 set_option maxHeartbeats 500000 in
 theorem run_call (s : State) (pc off limit : UInt256) (h : Compression.HashState)
@@ -62,7 +62,7 @@ theorem run_call (s : State) (pc off limit : UInt256) (h : Compression.HashState
       some {s with pc := pcAfter pc callTemplate, stack := pointer off :: DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: frame h off limit rho} := by
   have hcap (n : Nat) (hn : n ≤ 100) : rho.length + n < 1024 := by omega
   have hzero : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
-  have hpointer : off + UInt256.ofNat 1087 = pointer off := RawExpressionAC.add_comm _ _
+  have hpointer : off + UInt256.ofNat 1056 = pointer off := RawExpressionAC.add_comm _ _
   simp (discharger := omega) [callTemplate, frame, hpointer, DeferredNormalInitial.mask8_div, DeferredNormalInitial.mask16_div, hzero, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, hrun, hcap,
     List.getElem?_cons_zero, Nat.add_assoc, Word.literal_eq_ofNat]

@@ -24,7 +24,7 @@ def gasSteps_guard (s : State) (e : Env s) (F : List UInt256)
 def gasSteps_sparse (s : State) (e : Env s)
     (ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 880)
-    (hactive : s.activeWords = UInt256.ofNat 35)
+    (hactive : s.activeWords = UInt256.ofNat 34)
     (hbyte : UInt8.ofNat (a4.toNat % 256) = 1) :
     GasSteps
       (atState s 322 (stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho))
@@ -62,13 +62,13 @@ def gasSteps_sparse (s : State) (e : Env s)
 def gasSteps_table (s : State) (e : Env s)
     (ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 880)
-    (hactive : s.activeWords = UInt256.ofNat 35)
+    (hactive : s.activeWords = UInt256.ofNat 34)
     (hlow : (MachineState.readWord s.memory 0).toNat % 2 ^ 144 < 2 ^ 32)
     (hgap : PairStoreGap.GapClear s.memory) :
     GasSteps
       (atState {s with memory := writeWord s.memory 96 highWord} 503
         (stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho))
-      (atState {s with memory := StaggerTableLayout.resultMemory0 s.memory (Shared32Table.words s.memory)} 868
+      (atState {s with memory := StaggerTableLayout.resultMemory0 s.memory (Shared32Table.words s.memory), activeWords := UInt256.ofNat 35} 868
         (stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho)) := by
   let s1 : State := {s with memory := writeWord s.memory 96 highWord}
   have e1 : Env s1 := ⟨e.code, e.fork, e.run, e.np⟩
