@@ -12,24 +12,24 @@ def template : List Instr :=
   [ .push ⟨2, by decide⟩ (UInt256.ofNat 4695),
     .op .JUMP ]
 
-theorem slice : (Artifact.submissionArtifact.instructions.drop 3665).take template.length=template := by rfl
+theorem slice : (Artifact.submissionArtifact.instructions.drop 3663).take template.length=template := by rfl
 
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3665 slice
-    (by change 3665+template.length≤Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3663 slice
+    (by change 3663+template.length≤Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count];decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions:=template) (by decide)) (by decide)
 
 theorem pc : site.startPC=UInt256.ofNat 4813 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3665)=UInt256.ofNat 4813
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3663)=UInt256.ofNat 4813
   rw [ArtifactByteLength.instructionPC_eq_byteLength];decide
 
 theorem valid (s : State) (hcode : s.executionEnv.code=Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code 4695=true := by
-  have hp : Artifact.submissionArtifact.instructionPC 3597=4695 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3595 = 4695 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength];decide
-  have h:=Artifact.submissionArtifact.isValidJumpDest_index 3597 (by rfl)
+  have h:=Artifact.submissionArtifact.isValidJumpDest_index 3595 (by rfl)
   rw [hp] at h
   rw [hcode]
   exact h
