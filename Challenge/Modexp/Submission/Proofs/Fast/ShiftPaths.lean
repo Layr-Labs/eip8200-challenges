@@ -235,7 +235,8 @@ def blk3026 :
 
 
 
-/-- The middle block: flags, `TN := Wn - q`, and the three-way exit test on `neg ||| TN`. -/
+/-- The middle block: flags, `TN := Wn - q`, and the three-way exit test on `TN` alone
+(`neg ≠ 0` already forces `TN ≠ 0`, so the old `neg ||| TN` was redundant). -/
 def blk3125 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   -- the three pops that discarded the old pointer loop's carried words are gone; the block now
@@ -257,8 +258,11 @@ def blk3125 :
    opAt 2234 (.Dup ⟨0, by decide⟩),
    pushAt 2235 2 2080,
    opAt 2236 .MSTORE,
-   opAt 2237 (.Dup ⟨1, by decide⟩),
-   opAt 2238 .OR,
+   -- the `DUP2; OR` that widened the exit test to `neg ||| TN` is gone: `neg ≠ 0` already
+   -- forces `TN ≠ 0` (see `ShiftTrace3.tn_ne_zero_of_neg`), so `TN` alone decides the branch
+   -- and the two bytes are spent on `JUMPDEST`s, leaving every later pc where it was.
+   opAt 2237 .JUMPDEST,
+   opAt 2238 .JUMPDEST,
    pushAt 2239 2 3012,
    opAt 2240 .JUMPI]
 
