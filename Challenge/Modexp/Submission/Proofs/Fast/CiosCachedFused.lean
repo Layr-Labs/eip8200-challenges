@@ -224,34 +224,41 @@ theorem run_fused (template : State) (pc x y c tl ts : UInt256)
 /-! ## The known-zero incoming carry
 
 `headProgram`'s sixth instruction is the `DUP4` that reproduces the cell's incoming carry `c`.
-Where `c` is already zero, `PUSH0` produces the same word for one gas less.  Everything below
-is that one substitution: `run_fused_zero` has the *same* conclusion as `run_fused`, only under
-the extra hypothesis `c = 0`, and is derived from `run_fused` rather than reproved. -/
+Where `c` is already zero, the carry add is redundant: `PUSH0 POP` preserves the preceding
+`lo` copy with the same byte length and lower gas.  Everything below is that one substitution:
+`run_fused_zero` has the *same* conclusion as `run_fused`, only under the extra hypothesis
+`c = 0`, and is derived from `run_fused` rather than reproved. -/
 
-/-- `headProgram` with the incoming-carry `DUP4` replaced by `PUSH0` (both one byte). -/
+/-- `headProgram` with its known-zero carry add replaced by the same-byte `PUSH0 POP` pair. -/
 private def headZeroProgram : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩),
    .op .GT, .op .SUB, .op (.Dup ⟨1, by decide⟩),
-   .push 0 0, .op .ADD]
+   .push 0 0, .op .POP]
 
 private theorem post_zero_eq (tl ts : UInt256) :
     macFusedPostZeroProgram tl ts = (headZeroProgram ++ memoryProgram tl ts) ++ tailProgram := rfl
 
 private theorem push0_ofNat : (⟨0⟩ : UInt256) = UInt256.ofNat 0 := by decide
 
-/-- On a zero-carry frame the two heads agree: `PUSH0` and the `DUP4` of a zero slot both push
-zero, and `PUSH0` advances the pc by the same single byte. -/
+private theorem word_add_zero (a : UInt256) : a + UInt256.ofNat 0 = a := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_add,
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.zero_mod, Nat.add_zero]
+  change a.val % EvmSemantics.UInt256.size = a.val
+  exact Nat.mod_eq_of_lt a.val.isLt
+
+/-- On a zero-carry frame the specialized head preserves the `DUP1` copy of `lo`: `PUSH0 POP`
+is the same stack transformation as adding the known-zero carry. -/
 private theorem run_head_zero (template : State) (pc mm lo y : UInt256)
     (rest : List UInt256) (hrest : rest.length + 8 < 1024) :
     runInstructions headZeroProgram
       (framed template pc ([mm, lo, UInt256.ofNat 0, y] ++ rest)) =
     some (framed template (pc + UInt256.ofNat 7)
-      ([lo + UInt256.ofNat 0, UInt256.lt mm lo - mm, lo, UInt256.ofNat 0, y] ++ rest)) := by
+      ([lo, UInt256.lt mm lo - mm, lo, UInt256.ofNat 0, y] ++ rest)) := by
   have hcap (n : Nat) (hn : n ≤ 8) : rest.length + n < 1024 := by omega
-  have hc := add_comm (UInt256.ofNat 0) lo
   simp (disch := omega) [runInstructions, headZeroProgram, framed,
     Challenge.EvmProof.Stepper.runInstr, List.getElem?_cons_zero,
-    List.getElem?_cons_succ, hcap, Nat.add_assoc, hc, push0_ofNat, UInt256.gt, UInt256.lt,
+    List.getElem?_cons_succ, hcap, Nat.add_assoc, word_add_zero, push0_ofNat, UInt256.gt, UInt256.lt,
     succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
 
 /-- The zero-carry post schedule runs exactly as the general one does. -/
@@ -265,6 +272,7 @@ private theorem run_post_zero_eq (template : State) (pc mm lo y tl ts : UInt256)
   simp only [runInstructions_append]
   rw [run_head_zero template pc mm lo y rest hrest, run_head template pc mm lo (UInt256.ofNat 0) y
     rest hrest]
+  simp only [word_add_zero]
 
 /-- **The rider.**  Identical conclusion to `run_fused`, under `c = 0`. -/
 theorem run_fused_zero (template : State) (pc x y c tl ts : UInt256)
