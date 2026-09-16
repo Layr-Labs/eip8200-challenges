@@ -17,8 +17,8 @@ from the end of calldata), keeping `hd` on top: pc 4169 → 4194. -/
 def zeroProgram : List Instr :=
   [.push 2 2688, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨2, by decide⟩),
    .push 2 2368, .op .MCOPY,
-   .op (.Dup ⟨1, by decide⟩), .push 1 64, .op .ADD, .op .CALLDATASIZE,
-   .push 2 2048, .op .CALLDATACOPY]
+   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
+   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
 
 /-- After `lowProgram`: `hd` above the operand pointers and the row frame. -/
 def cachedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
@@ -34,7 +34,7 @@ def clearedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
   { s with pc := UInt256.ofNat 3291
            stack := [hd, UInt256.ofNat (32*n), UInt256.ofNat pb,
              l1Target n, negative32, allOnes, l2Target n, dst, ret] ++ rest
-           memory := mpZeroed s mem n }
+           memory := mem }
 
 theorem run_zero (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1005)
@@ -105,7 +105,7 @@ theorem run_pointersJump (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Na
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2816)
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions pointersJumpProgram (clearedSetupState s mem hd pb n dst ret rest) =
-      some (outState s (mpZeroed s mem n) pb n 0 hd (l1Target n) dst ret rest) := by
+      some (outState s (mem) pb n 0 hd (l1Target n) dst ret rest) := by
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
