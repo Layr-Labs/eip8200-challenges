@@ -80,8 +80,7 @@ def gasSteps_shiftLoop (s : State) (mem : ByteArray) (n bsize esize msize mm min
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (e : Env s) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (htop : Limbs.radix ^ n < 2 * mm)
     (inv : StepInv mem n bsize mm minv)
-    (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm)
-    (hfast : n = 4 ∨ n = 8) :
+    (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm) :
     Challenge.EvmProof.GasSteps (shiftLoopState s mem n bsize esize msize n)
       (shiftLoopState s (stepMems mem n mm n) n bsize esize msize 0) :=
   Challenge.EvmProof.GasSteps.cast
@@ -95,7 +94,7 @@ def gasSteps_shiftLoop (s : State) (mem : ByteArray) (n bsize esize msize mm min
           (gasSteps_step s (stepMems mem n mm i) n bsize esize msize (n - i) mm minv
             (by omega) (by omega) hn hn32 e invI
             (repairFacts_of (stepMems mem n mm i) n mm _ hn hn32 hmpos hmm htop invI.modulus
-              invI.neg hbaseI (Nat.mod_lt _ hmpos)) hfast)
+              invI.neg hbaseI (Nat.mod_lt _ hmpos)))
           rfl (by
             show shiftLoopState s (stepMem (stepMems mem n mm i) n mm) n bsize esize msize
               (n - i - 1) = shiftLoopState s (stepMems mem n mm (i + 1)) n bsize esize msize
@@ -226,7 +225,7 @@ def gasSteps_missPath (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn32 : n ≤ 8) (e : Env s) (hb : bsize < 2 ^ 256)
     (hmiss : ¬ FullBase.Matches mem n bsize) :
     Challenge.EvmProof.GasSteps (dispState s mem n bsize esize msize)
-      (Exp.r1Call s (Exp.storeWord mem 1024 (UInt256.ofNat 1)) 1024 (UInt256.ofNat 782)
+      (Exp.r1Call s (Exp.storeWord mem 1024 (UInt256.ofNat 1)) 1024 (UInt256.ofNat 771)
         n bsize esize msize) := by
   have h := soundEnv blk2862 e
     (run_dispatch s mem n bsize esize msize hn32 hb e.act296 e.code e.run)

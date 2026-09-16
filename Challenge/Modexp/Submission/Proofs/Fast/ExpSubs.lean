@@ -1,30 +1,10 @@
 import Challenge.Modexp.Submission.Proofs.Fast.FusedMemory
 import Challenge.Modexp.Submission.Proofs.Fast.Exp
-import Challenge.Modexp.Submission.Proofs.Fast.CarryFullFast
+import Challenge.Modexp.Submission.Proofs.Fast.CarryFull
 import Challenge.Modexp.Submission.Proofs.Fast.SquareResult
+import Challenge.Modexp.Submission.Proofs.Fast.SquareFull
 import Challenge.Modexp.Submission.Proofs.Fast.SquareLoop
 
-/-!
-# `Exp.subs` for the surviving widths only (M9 width-chain narrowing, layer W2)
-
-Replacement for `Challenge/Modexp/Submission/Proofs/Fast/ExpSubs.lean` (keep the module name;
-checked here as `M9Width.ExpSubsFast` against `M9Width.CarryFullFast`, whose tree name is
-`Challenge.Modexp.Submission.Proofs.Fast.CarryFullFast` -- rename the import).  Differences
-from the tree's ExpSubs.lean, and nothing else:
-* imports `CarryFullFast` instead of `CarryFull`, and no longer imports `SquareFull`;
-* `eligible_of_frame`: `Frame` + `n ∈ {4, 8}` + `minv ≠ 1` gives `StagedOperand.eligible mem n`;
-* `subsMonpro` takes `(hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1)` and uses
-  `CarryFull.gasSteps_monproFullFast … (eligible_of_frame hf hfast hminv1 hminvlt)`;
-* `subsSquare` (the `¬ eligible` square through the generic `MONPRO`) is vacuous: its own
-  hypothesis `¬ ((n = 4 ∨ n = 8) ∧ minv ≠ 1)` contradicts `hfast`/`hminv1`;
-* `subs`, `subs_mpMem`, `subs_amMem`, `specOf_subs` take the same two hypotheses;
-  `specOf`, `specOf_of`, `subsSquareLoop`, the frame lemmas and every field of the
-  `Subroutines` record are verbatim.
-The one live caller is `ShiftCorrect.handled_of_dispatch` (line 207): it needs the two
-hypotheses added to its signature and passed here; `gasSteps_handled` (line 308) discharges
-them from the strengthened `FastPath` through `Setup.limbs_four_or_eight` and the
-`WidthBridge` lemmas `minv_ne_one_of_entry` (see WidthBridge.lean).
--/
 -- Keep the caller proofs in their original word normal form.
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -68,18 +48,6 @@ theorem monproMem_frame' {s : State} {mem : ByteArray} {n bsize minv : Nat}
    by rw [key.2.2.1]; exact hf.ml, by rw [key.2.2.2.1]; exact hf.tl,
    by rw [key.2.2.2.2]; exact hf.eoff⟩
 
-/-- The kernel's eligibility, read off the frame: the limb count is four or eight and the
-Montgomery inverse word at 2720 is not one. -/
-theorem eligible_of_frame {mem : ByteArray} {n bsize minv : Nat} (hf : Frame mem n bsize minv)
-    (hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1) (hminvlt : minv < 2 ^ 256) :
-    StagedOperand.eligible mem n := by
-  refine ⟨hfast, ?_⟩
-  rw [hf.minvW]
-  intro hw
-  have hv := congrArg UInt256.toNat hw
-  rw [toNat_ofNat_self hminvlt, toNat_ofNat_self (by decide)] at hv
-  exact hminv1 hv
-
 /-- The `MONPRO` step of the concrete instance. -/
 def subsMonpro (s : State) (n bsize mm minv : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -89,8 +57,7 @@ def subsMonpro (s : State) (n bsize mm minv : Nat)
     (hact : 88 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
-    (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0)
-    (hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1) :
+    (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
     ∀ (pa pb pd : Nat) (ret : UInt256) (tail : List UInt256)
       (mem : ByteArray) (a b : Nat), tail.length ≤ 998 →
       32 ≤ pa → pa + 32 * n ≤ 2048 → 32 ≤ pb → pb + 32 * n ≤ 2048 →
@@ -119,11 +86,10 @@ def subsMonpro (s : State) (n bsize mm minv : Nat)
       have hmi : (MachineState.readWord mem 2720).toNat = minv := by
         rw [hf.minvW, toNat_ofNat_self hminvlt]
       exact Challenge.EvmProof.GasSteps.cast
-        (CarryFull.gasSteps_monproFullFast s mem pa pb p a b mm (UInt256.ofNat pd) ret tail
+        (CarryFull.gasSteps_monproFull s mem pa pb p a b mm (UInt256.ofNat pd) ret tail
           (by omega) hrun hcode hfork hnp hact (by omega) hpa hpaFit hpb hpbFit hcds
           hf.s32 hf.tl hf.ml hjump (by omega) ha hb hm ham hmpos
-          (by rw [hlow, hmi]; exact hminvA)
-          (eligible_of_frame hf hfast hminv1 hminvlt))
+          (by rw [hlow, hmi]; exact hminvA))
         rfl
         (by simp only [Csub.csReturnedState_eq_result, retTo, CarryResult.monproMem_def, hpdN])
 
@@ -149,20 +115,53 @@ theorem sqMem_frame' {s : State} {mem : ByteArray} {n bsize minv : Nat}
    by rw [key.2.2.1]; exact hf.ml, by rw [key.2.2.2.1]; exact hf.tl,
    by rw [key.2.2.2.2]; exact hf.eoff⟩
 
-/-- The `SQUARE` step of the concrete instance for the widths the kernel does *not*
-accelerate.  There are none any more: the entry block only admits four or eight limbs with a
-Montgomery inverse different from one, so the field's own hypothesis is contradictory and the
-generic `MONPRO` square (`Fast.SquareFull.gasSteps_squareFull`) is never needed. -/
+/-- The `SQUARE` step of the concrete instance, for the widths the kernel does
+not accelerate: `common` with `hd = sq_row` falls back to the generic `MONPRO`
+(`Fast.SquareFull.gasSteps_squareFull`). -/
 def subsSquare (s : State) (n bsize mm minv : Nat)
-    (hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1) :
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 88 ≤ s.activeWords.toNat)
+    (hcds : s.executionEnv.calldata.size < 2 ^ 256)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
+    (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
     ∀ (ret : UInt256) (tail : List UInt256) (mem : ByteArray) (a : Nat),
       ¬ ((n = 4 ∨ n = 8) ∧ minv ≠ 1) → tail.length ≤ 998 →
       Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true →
       Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
       Model.FastRepresents mem 512 n a → a < mm →
       Challenge.EvmProof.GasSteps (sqCall s mem ret tail)
-        (retTo s (SquareResult.sqMem s mem n) ret tail) :=
-  fun _ _ _ _ hslow _ _ _ _ _ _ => absurd ⟨hfast, hminv1⟩ hslow
+        (retTo s (SquareResult.sqMem s mem n) ret tail) := by
+  intro ret tail mem a hslow hcap hjump hf hm ha ham
+  -- `GasSteps` lives in `Type`, so the limb count has to be split by `cases`.
+  cases n with
+  | zero => exact absurd hn (by omega)
+  | succ n1 =>
+    cases n1 with
+    | zero => exact absurd hn (by omega)
+    | succ p =>
+      have hlow : (MachineState.readWord mem (32 * (p + 2) - 32)).toNat =
+          mm % Limbs.radix := by
+        have h := Model.readWord_of_fastRepresents hm (j := p + 1) (by omega)
+        rw [show (0 : Nat) + 32 * (p + 1) = 32 * (p + 2) - 32 from by omega,
+          show p + 1 + 1 - 1 - (p + 1) = 0 from by omega, pow_zero, Nat.div_one] at h
+        exact h
+      have hmi : (MachineState.readWord mem 2720).toNat = minv := by
+        rw [hf.minvW, toNat_ofNat_self hminvlt]
+      have hslowMem : ¬ StagedOperand.eligible mem (p+2) := by
+        intro he
+        apply hslow
+        refine ⟨he.1, ?_⟩
+        intro hminvOne
+        apply he.2
+        rw [hf.minvW, hminvOne]
+      exact Challenge.EvmProof.GasSteps.cast
+        (SquareFull.gasSteps_squareFull s mem p a mm ret tail hcap hrun hcode hfork hnp
+          hact (by omega) hslowMem hcds hf.s32 hf.tl hf.ml hjump ha hm ham hmpos
+          (by rw [hlow, hmi]; exact hminvA))
+        rfl rfl
 
 /-- The in-kernel square loop writes only below `2656`, so the configuration
 words survive. -/
@@ -193,7 +192,7 @@ def subsSquareLoop (s : State) (n bsize mm minv : Nat)
       Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
       Model.FastRepresents mem 512 n a → a < mm →
       Challenge.EvmProof.GasSteps (sqCall s mem ret tail)
-        (retTo s (FusedMemory.memory s n k mem) (UInt256.ofNat 1047) tail) := by
+        (retTo s (FusedMemory.memory s n k mem) (UInt256.ofNat 1036) tail) := by
   intro k ret tail mem a hfast hk hk16 hcap hcount hf hm ha ham
   -- `GasSteps` lives in `Type`, so the limb count has to be split by `cases`.
   cases n with
@@ -231,19 +230,19 @@ def subs (s : State) (n bsize mm minv : Nat)
     (hact : 88 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
-    (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0)
-    (hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1) :
+    (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
     Subroutines s n bsize mm minv where
   mpMem pa pb pd mem := CarryResult.monproMem s mem pa pb n pd
   amMem pa pb pd mem := amMemOf mem pa pb n pd
   mpFrame pa pb pd mem hpd hf := monproMem_frame' pa pb pd (by omega) (by omega) (by omega) hf
   amFrame pa pb pd mem hpd hf := amMemOf_frame pa pb pd (by omega) (by omega) (by omega) hf
   monpro := subsMonpro s n bsize mm minv hcode hfork hrun hnp hact hcds hn (by omega) hmpos
-    hminvlt hminvA hfast hminv1
-  addmod := subsAddmod s n bsize minv hcode hfork hrun hnp hact hn (by omega) hfast
+    hminvlt hminvA
+  addmod := subsAddmod s n bsize minv hcode hfork hrun hnp hact hn (by omega)
   sqMem mem := SquareResult.sqMem s mem n
   sqFrame _ hf := sqMem_frame' (by omega) (by omega) hf
-  square := subsSquare s n bsize mm minv hfast hminv1
+  square := subsSquare s n bsize mm minv hcode hfork hrun hnp hact hcds hn (by omega) hmpos
+    hminvlt hminvA
   sqValue mem a hf hm ha ham := by
     have hlow : (MachineState.readWord mem (32 * n - 32)).toNat = mm % Limbs.radix := by
       have h := Model.readWord_of_fastRepresents hm (j := n - 1) (by omega)
@@ -329,10 +328,9 @@ theorem subs_mpMem (s : State) (n bsize mm minv : Nat)
     (hact : 88 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
-    (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0)
-    (hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1) :
+    (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
     (subs s n bsize mm minv hcode hfork hrun hnp hact hcds hn (by omega) hmpos
-      hminvlt hminvA hfast hminv1).mpMem =
+      hminvlt hminvA).mpMem =
       fun pa pb pd mem => CarryResult.monproMem s mem pa pb n pd := by
   delta subs
   rfl
@@ -345,10 +343,9 @@ theorem subs_amMem (s : State) (n bsize mm minv : Nat)
     (hact : 88 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
-    (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0)
-    (hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1) :
+    (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
     (subs s n bsize mm minv hcode hfork hrun hnp hact hcds hn (by omega) hmpos
-      hminvlt hminvA hfast hminv1).amMem =
+      hminvlt hminvA).amMem =
       fun pa pb pd mem => amMemOf mem pa pb n pd := by
   delta subs
   rfl
@@ -362,22 +359,20 @@ theorem specOf_subs (s : State) (n bsize mm minv : Nat)
     (hact : 88 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
-    (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) (hodd : mm % 2 = 1)
-    (hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1) :
+    (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) (hodd : mm % 2 = 1) :
     SubSpec (subs s n bsize mm minv hcode hfork hrun hnp hact hcds hn (by omega) hmpos
-        hminvlt hminvA hfast hminv1).mpMem
+        hminvlt hminvA).mpMem
       (subs s n bsize mm minv hcode hfork hrun hnp hact hcds hn (by omega) hmpos hminvlt
-        hminvA hfast hminv1).amMem n mm (Limbs.radix ^ n) minv :=
+        hminvA).amMem n mm (Limbs.radix ^ n) minv :=
   specOf_of (subs s n bsize mm minv hcode hfork hrun hnp hact hcds hn (by omega) hmpos
-    hminvlt hminvA hfast hminv1)
+    hminvlt hminvA)
     (subs_mpMem s n bsize mm minv hcode hfork hrun hnp hact hcds hn (by omega) hmpos hminvlt
-      hminvA hfast hminv1)
+      hminvA)
     (subs_amMem s n bsize mm minv hcode hfork hrun hnp hact hcds hn (by omega) hmpos hminvlt
-      hminvA hfast hminv1)
+      hminvA)
     hn (by omega) hodd hmpos hminvlt hminvA
 
 end Challenge.Modexp.Submission.Proofs.Fast.Exp
 
-#print axioms Challenge.Modexp.Submission.Proofs.Fast.Exp.eligible_of_frame
 #print axioms Challenge.Modexp.Submission.Proofs.Fast.Exp.subs
 #print axioms Challenge.Modexp.Submission.Proofs.Fast.Exp.specOf_subs

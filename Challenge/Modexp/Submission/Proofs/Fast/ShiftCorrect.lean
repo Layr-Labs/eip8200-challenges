@@ -29,8 +29,8 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.RrLeadingTraceCore
 
 theorem jumpD4643 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 2339).toNat = true :=
-  Exp.jumpD 2339 (by decide) jumpDest4608
+    (UInt256.ofNat 2600).toNat = true :=
+  Exp.jumpD 2600 (by decide) jumpDest4608
 
 /-! ## Facts at `BDONE` on the hit path -/
 
@@ -195,11 +195,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     (hacc0 : Model.FastRepresents mem 256 n 0)
     (hbase0 : Model.FastRepresents mem 512 n 0)
     (hone0 : Model.FastRepresents mem 768 n 0)
-    (htz : Model.FastRepresents mem 2112 n 0)
-    -- The two conditions the rewritten dispatcher enforces. They are what makes the narrowed
-    -- kernel composition applicable, so they travel with the dispatch rather than being
-    -- rediscovered inside it.
-    (hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1) :
+    (htz : Model.FastRepresents mem 2112 n 0) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
         (dispState s mem n bsize esize msize) final) ∧
@@ -209,11 +205,11 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     Nat.le_trans (show 88 ≤ 89 by norm_num) hact
   have e : Env s := ⟨hcode, hfork, hrun, hnp, hact⟩
   let sub := Exp.subs s n bsize mm minv hcode hfork hrun hnp hact296 hcds hn hn32 hmpos
-    hminvlt hminvA hfast hminv1
+    hminvlt hminvA
   have hspec : Exp.SubSpec sub.mpMem sub.amMem n mm (Limbs.radix ^ n) minv := by
     dsimp only [sub]
     exact Exp.specOf_subs s n bsize mm minv hcode hfork hrun hnp hact296 hcds hn hn32
-      hmpos hminvlt hminvA hodd hfast hminv1
+      hmpos hminvlt hminvA hodd
   have hbword : bsize < 2 ^ 256 := lt_of_le_of_lt hb (by norm_num)
   have hmmlt : mm < Limbs.radix ^ n := Model.fastRepresents_lt hmod0
   -- The setup path reaches the dispatcher WITHOUT converting, so the dispatcher's
@@ -224,9 +220,8 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
   by_cases hmatch : FullBase.Matches mem n bsize
   · exact RootE3Correct.handled_of_bound_shift_hit input s mem n bsize esize msize mm minv
       sub hspec hcode hfork hrun hnp hdata hstack hact hn hn32 hb he hmz hm32
-      hbsize hesize hmsz hmm hodd hradix hmpos hframe0 hmod0 hone0 hmatch hfast
-      (RootE3Bindings.build s mem input n bsize esize msize minv hn hn32 hb he e hdata hframe0 hmatch
-        hfast)
+      hbsize hesize hmsz hmm hodd hradix hmpos hframe0 hmod0 hone0 hmatch
+      (RootE3Bindings.build s mem input n bsize esize msize minv hn hn32 hb he e hdata hframe0 hmatch)
   · -- the miss: `R1` is seeded and converted here, then the unchanged RR-leading chain
     -- from `r0`.  `mem0` is the memory after the seed store, `mem1` after the conversion.
     have hmiss := gasSteps_missPath s mem n bsize esize msize hn32 e hbword hmatch
@@ -248,10 +243,10 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     set mem1 := Exp.r1Mem n 1024 mem0 with hmem1
     have hframe1 : Exp.Frame mem1 n bsize minv := Exp.r1Mem_frame hn hn32 hframeS
     have hconv : Challenge.EvmProof.GasSteps
-        (Exp.r1Call s mem0 1024 (UInt256.ofNat 782) n bsize esize msize)
+        (Exp.r1Call s mem0 1024 (UInt256.ofNat 771) n bsize esize msize)
         (Exp.r0State s mem1 n bsize esize msize) :=
       Exp.gasSteps_r1Block s esize msize hcode hfork hrun hnp hact296 hn hn32
-        (UInt256.ofNat 782) mem0 jumpDest1526 hframeS hfast
+        (UInt256.ofNat 771) mem0 jumpDest1526 hframeS
     let directMem := Exp.setupToDirectMem (Exp.r1Mem n) (Exp.ccbMem n sub.mpMem sub.amMem) n mem0
     have hf2 : Exp.Frame (Exp.mcopyMem mem1 1280 1024 (32 * n)) n bsize minv :=
       Exp.frame_mcopyMem (by omega) hframe1
@@ -261,7 +256,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
       (Exp.gasSteps_r0 s mem1 n bsize esize msize hn hn32 hact hframe1.s32 hcode hfork hrun
         hnp).trans
       (Exp.gasSteps_ccbFull s sub hspec esize msize hmpos hn hn32 1280 (by omega) (by omega)
-        (UInt256.ofNat 2009) (Exp.mcopyMem mem1 1280 1024 (32 * n)) (Limbs.radix ^ n % mm)
+        (UInt256.ofNat 2270) (Exp.mcopyMem mem1 1280 1024 (32 * n)) (Limbs.radix ^ n % mm)
         Exp.jumpD3571 hf2 hcc.1 hcc.2 (Nat.mod_lt _ hmpos) hact296 hcode hfork hrun hnp)
     have hframeDirect : Exp.Frame directMem n bsize minv := by
       dsimp only [directMem]
@@ -321,7 +316,7 @@ theorem gasSteps_handled (input : ByteArray)
   have hsize : input.size < 2 ^ 256 := lt_trans hvalid.1 (by norm_num)
   have hn : 2 ≤ Setup.limbs input := Setup.limbs_ge_two input hpath.1
   have hn32 : Setup.limbs input ≤ 8 := Setup.fastSetup_limbs_le_8 input hpath
-  have hodd : Setup.modulus input % 2 = 1 := Setup.fastPath_odd input hpath
+  have hodd : Setup.modulus input % 2 = 1 := hpath.2.2.2
   have hradix : Limbs.radix ≤ Setup.modulus input := by
     have h1 : Limbs.radix ^ 1 ≤ Limbs.radix ^ (Setup.limbs input - 1) :=
       Nat.pow_le_pow_right (le_of_lt Limbs.radix_gt_one) (by omega)
@@ -360,10 +355,6 @@ theorem gasSteps_handled (input : ByteArray)
       (Exp.fastSetup_zero_block input hpath 512 (by omega) (by omega))
       (Exp.fastSetup_zero_block input hpath 768 (by omega) (by omega))
       (Exp.fastSetup_tblock_zero input hpath hn32)
-      -- the two dispatcher conditions, discharged from the strengthened fast path
-      (Setup.limbs_four_or_eight input hpath.1 hpath.2.1.2.2 (Setup.fastPath_width input hpath))
-      (Setup.minv_ne_one_of_entry input (Setup.minvValue input) hpath.1
-        (Setup.fastPath_nprime input hpath) hminvA)
   exact ⟨final, ⟨(Challenge.EvmProof.GasSteps.cast
     (Setup.gasSteps_fastSetup input hsize hpath) rfl (Exp.fastSetup_entry_eq input)).trans
     tr⟩, hdone, hres⟩

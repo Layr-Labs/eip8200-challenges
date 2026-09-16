@@ -14,5 +14,6 @@ open Challenge.Modexp.Submission.Proofs.Fast
 def entryLemmas : EntryLemmas where
   gasSteps_mulEntry := Cios2Dispatch.gasSteps_mulEntry
   gasSteps_commonSetup := Cios2Dispatch.gasSteps_commonSetup
+  gasSteps_commonFallback := Cios2Dispatch.gasSteps_commonFallback
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryIface
