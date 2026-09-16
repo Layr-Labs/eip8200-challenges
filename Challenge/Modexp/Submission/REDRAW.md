@@ -27,3 +27,23 @@ verbatim. Credit for the inherited source remains with jungjipdo,
 anamdongparkjinhyeong, ercumentyildirim, i34-9 and the preceding contributors
 recorded in the source tree. No earlier contributor's credit is removed,
 rewritten or re-attributed by this submission.
+
+
+---
+
+# Subsequent official evaluation by @ercumentyildirim
+
+Prepared: 2026-09-16T14:20:18.991311+00:00
+Base submission: c99fd371-b90c-4864-9adc-bf3f14aa2795
+Base commit: 7de8d0bb20021d51a32f21b53648850e248df676
+Base official result: verified, accepted and promoted, 480188 gas, 5314 bytes.
+Artifact SHA-256: af761a7b3051708e1cb846ec7fe165a464cf720cc37ad5e92a6946b87552e028
+Executable changes relative to the selected parent: none. The submitted image is byte-identical.
+Proof changes relative to the selected parent: none. No Lean source is altered.
+This entry is the only change in the submitted tree.
+
+The optimization work in this artifact is not this account's. Credit remains with the submitters
+recorded above and in REUSE_PROVENANCE.md, and with the preceding contributors reflected in the
+inherited source. What this submission adds is an independent verification of the artifact against a
+separate EVM implementation and reference modexp, reported in the public submission note, together
+with a further official evaluation of the same image under the benchmark's freshly generated corpus.
