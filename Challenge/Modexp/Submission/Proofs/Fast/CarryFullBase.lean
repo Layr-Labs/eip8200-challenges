@@ -1,5 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CarryResult
-import Challenge.Modexp.Submission.Proofs.Fast.CarryIface
+import Challenge.Modexp.Submission.Proofs.Fast.CarryRows
 import Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch
 
 set_option warningAsError true
@@ -14,6 +14,7 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch
 open CiosCached CiosCachedMidMemory
+open Challenge.Modexp.Submission.Proofs.Fast.CarryRows
 open CarryRowModel CarryResult StagedOperand
 
 theorem readonlyCache_rowsCarry {mem : ByteArray} {n : Nat} {tl inv m0 : UInt256}
