@@ -1984,14 +1984,14 @@ def gasSteps_step (s : State) (h4 : UInt256) (i : Fin 77) (q right : WordLane) (
   | ⟨66, _⟩ => exact gasSteps_at66 s h4 q right rho hs hr ha hcode hfork hnp
   | ⟨67, _⟩ => exact gasSteps_at67 s h4 q right rho hs hr ha hcode hfork hnp
   | ⟨68, _⟩ => exact gasSteps_at68 s h4 q right rho hs hr ha hcode hfork hnp
-  | ⟨69, _⟩ => exact gasSteps_at69 s h4 q right rho hs hr ha hcode hfork hnp
-  | ⟨70, _⟩ => exact gasSteps_at70 s h4 q right rho hs hr ha hcode hfork hnp
-  | ⟨71, _⟩ => exact gasSteps_at71 s h4 q right rho hs hr ha hcode hfork hnp
-  | ⟨72, _⟩ => exact gasSteps_at72 s h4 q right rho hs hr ha hcode hfork hnp
-  | ⟨73, _⟩ => exact gasSteps_at73 s h4 q right rho hs hr ha hcode hfork hnp
-  | ⟨74, _⟩ => exact gasSteps_at74 s h4 q right rho hs hr ha hcode hfork hnp
-  | ⟨75, _⟩ => exact gasSteps_at75 s h4 q right rho hs hr ha hcode hfork hnp
-  | ⟨76, _⟩ => exact gasSteps_at76 s h4 q right rho hs hr ha hcode hfork hnp
+  | ⟨68, _⟩ => exact gasSteps_at69 s h4 q right rho hs hr ha hcode hfork hnp
+  | ⟨68, _⟩ => exact gasSteps_at70 s h4 q right rho hs hr ha hcode hfork hnp
+  | ⟨68, _⟩ => exact gasSteps_at71 s h4 q right rho hs hr ha hcode hfork hnp
+  | ⟨69, _⟩ => exact gasSteps_at72 s h4 q right rho hs hr ha hcode hfork hnp
+  | ⟨70, _⟩ => exact gasSteps_at73 s h4 q right rho hs hr ha hcode hfork hnp
+  | ⟨71, _⟩ => exact gasSteps_at74 s h4 q right rho hs hr ha hcode hfork hnp
+  | ⟨72, _⟩ => exact gasSteps_at75 s h4 q right rho hs hr ha hcode hfork hnp
+  | ⟨73, _⟩ => exact gasSteps_at76 s h4 q right rho hs hr ha hcode hfork hnp
   | ⟨n+77, hi⟩ => exact False.elim (by omega)
 
 def gasSteps_prefix (s : State) (h4 : UInt256) (n : Nat) (hn : n ≤ 77) (q right : WordLane) (rho : List UInt256)
@@ -2009,7 +2009,7 @@ def gasSteps_prefix (s : State) (h4 : UInt256) (n : Nat) (hn : n ≤ 77) (q righ
 
 
 def suffixState (s : State) (h4 : UInt256) (q : WordLane) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 4585, stack := stack s.memory h4 [ .b, .e, .a, .d, .cachedMessage 360, .k, .c, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (epilogue s.memory q) q (UInt256.ofNat 2840853838) rho}
+  {s with pc := UInt256.ofNat 4613, stack := stack s.memory h4 [ .b, .e, .a, .d, .cachedMessage 360, .k, .c, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (epilogue s.memory q) q (UInt256.ofNat 2840853838) rho}
 
 def gasSteps_suffix (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)

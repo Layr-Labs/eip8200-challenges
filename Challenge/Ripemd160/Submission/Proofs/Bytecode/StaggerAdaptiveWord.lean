@@ -96,9 +96,9 @@ theorem modulus_facts (g : Nat) (hg : g = 68 ∨ g = 69 ∨ g = 87) :
     0 < modulus g ∧ modulus g < 2 ^ 256 ∧ (∃ c, modulus g * c = 2 ^ 144 - 2 ^ g) ∧
       (2 ^ 32 - 1) + (2 ^ 32 - 1) * 2 ^ g < modulus g := by
   rcases hg with rfl | rfl | rfl
-  · exact ⟨by decide, by decide, ⟨11728124029568, by decide⟩, by decide⟩
-  · exact ⟨by decide, by decide, ⟨1099511627776, by decide⟩, by decide⟩
-  · exact ⟨by decide, by decide, ⟨33554368, by decide⟩, by decide⟩
+  · exact ⟨by decide, by decide, ⟨11728124029565, by decide⟩, by decide⟩
+  · exact ⟨by decide, by decide, ⟨1099511627773, by decide⟩, by decide⟩
+  · exact ⟨by decide, by decide, ⟨33554365, by decide⟩, by decide⟩
 
 theorem bits_compactWord (g : Nat) (hg : g = 68 ∨ g = 69 ∨ g = 87) (x : UInt256) (a b : BitVec 32)
     (hn : normalize (bits x) = pack a b) :
