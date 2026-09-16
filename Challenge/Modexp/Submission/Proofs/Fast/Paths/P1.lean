@@ -28,7 +28,7 @@ def blk1028 :
    opAt 473 .AND,
    opAt 474 .ISZERO,
    opAt 475 .OR,
-   opAt 476 (.Dup ⟨6, by decide⟩),
+   opAt 476 (.Dup ⟨2, by decide⟩),
    pushAt 477 1 127,
    opAt 478 .AND,
    opAt 479 .OR,
