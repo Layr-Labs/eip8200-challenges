@@ -51,7 +51,7 @@ def gasSteps_size_more (input : ByteArray) (sv ov : UInt256) (rest : List UInt25
     GasSteps (stS input 252 (sv :: ov :: rest))
       (stS input 160 (sv :: ov :: rest)) := by
   have hd : Decode.isValidJumpDest submissionBytecode 160 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 84 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 81 (by rfl)
   exact (gasSteps_size_test input sv ov rest hlen).trans
     (soundS (opAt 163 .JUMPI)
       (blockOfS _ (pcFactS input 163 252 _ (by norm_num) (by rfl))

@@ -63,7 +63,7 @@ private opaque finish (s : State) (e : Shared32Sites.Env s)
     (hdispatch : s.executionEnv.calldata.size ≠
       (StaggerPersistentLoopRaw.nextOffset off).toNat) :
     GasSteps
-      {s with pc := UInt256.ofNat 854, stack := frame h off limit maskRho}
+      {s with pc := UInt256.ofNat 910, stack := frame h off limit maskRho}
       (StaggerPersistentSerialize.result s
         (PersistentStaggerFunctional.result s.memory h) limit limit maskRho) := by
   have gb := Shared32Core.gasSteps_body s e h off limit maskRho (by decide) hactive
@@ -75,11 +75,11 @@ private opaque finish (s : State) (e : Shared32Sites.Env s)
     e.run e.code e.fork e.np
   have hend :
       ({s with
-        pc := UInt256.ofNat 4639
+        pc := UInt256.ofNat 4667
         stack := frame (PersistentStaggerFunctional.result s.memory h)
           (StaggerPersistentLoopRaw.nextOffset off) limit maskRho} : State) =
       {s with
-        pc := UInt256.ofNat 4639
+        pc := UInt256.ofNat 4667
         stack := frame (PersistentStaggerFunctional.result s.memory h) limit limit maskRho} := by
     rw [hnext]
   exact compose3 gb (ge.cast rfl hend) go
@@ -89,7 +89,7 @@ opaque gasSteps (input : ByteArray) (hfit : CalldataFits input) (i : Nat)
     (hh : input.size = DriverTrace.blockOffset i) :
     GasSteps
       {tableState input i with
-        pc := UInt256.ofNat 854
+        pc := UInt256.ofNat 910
         stack := frame (hashes input i) (DriverTrace.blockOffsetWord i)
           (Padding.paddedWord input) maskRho}
       (resultState input i) := by

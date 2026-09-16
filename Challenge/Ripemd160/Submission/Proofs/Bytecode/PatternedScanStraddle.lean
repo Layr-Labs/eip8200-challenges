@@ -20,7 +20,7 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedInputData PatternedDigest PatternedGuardSpec PatternedSwar
 
 theorem hdest5170 : Decode.isValidJumpDest submissionBytecode 215 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 132 (by rfl)
+  Artifact.submissionArtifact.isValidJumpDest_index 129 (by rfl)
 
 /- Affine shift-count folding in the full modular word ring. -/
 open Fin.CommRing in

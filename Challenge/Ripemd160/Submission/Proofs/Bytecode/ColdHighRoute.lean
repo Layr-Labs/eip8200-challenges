@@ -9,27 +9,27 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate StaggerPersistentFrame
 
 def template : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 4695),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 4723),
     .op .JUMP ]
 
-theorem slice : (Artifact.submissionArtifact.instructions.drop 3665).take template.length=template := by rfl
+theorem slice : (Artifact.submissionArtifact.instructions.drop 3662).take template.length=template := by rfl
 
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3665 slice
+  StackSiteBuilder.ofSlice template 3662 slice
     (by change 3665+template.length≤Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count];decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions:=template) (by decide)) (by decide)
 
 theorem pc : site.startPC=UInt256.ofNat 4813 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3665)=UInt256.ofNat 4813
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3662) = UInt256.ofNat 4841
   rw [ArtifactByteLength.instructionPC_eq_byteLength];decide
 
 theorem valid (s : State) (hcode : s.executionEnv.code=Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code 4695=true := by
-  have hp : Artifact.submissionArtifact.instructionPC 3597=4695 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3594 = 4723 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength];decide
-  have h:=Artifact.submissionArtifact.isValidJumpDest_index 3597 (by rfl)
+  have h:=Artifact.submissionArtifact.isValidJumpDest_index 3594 (by rfl)
   rw [hp] at h
   rw [hcode]
   exact h
@@ -40,7 +40,7 @@ def gasSteps (s : State) (h : Compression.HashState) (off lim : UInt256) (rho : 
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr=false) :
     GasSteps {s with pc:=UInt256.ofNat 4813, stack:=frame h off lim rho}
-      {s with pc:=UInt256.ofNat 4695, stack:=frame h off lim rho} := by
+      {s with pc:=UInt256.ofNat 4723, stack:=frame h off lim rho} := by
   apply PadLift.gasSteps_of_raw site {s with pc:=UInt256.ofNat 4813, stack:=frame h off lim rho} _ hc hf hr hnp pc.symm
   · exact PadLift.advancesAll_sound _ (by decide)
   · have hcap (n : Nat) (hn : n≤20) : rho.length+n<1024 := by omega

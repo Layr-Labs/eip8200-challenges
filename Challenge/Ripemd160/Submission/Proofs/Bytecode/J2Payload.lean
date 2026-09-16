@@ -82,12 +82,12 @@ private theorem tablePayload (n : Nat) (hn : Allowed n) :
   all_goals decide
 
 private theorem selected_nat (n : Nat) (hn : Allowed n) :
-    (selected (UInt256.ofNat 4930) n).toNat = 4930 + 20*((345007677684/n)%16) := by
+    (selected (UInt256.ofNat 4958) n).toNat = 4930 + 20*((345007677684/n)%16) := by
   rcases hn with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals decide
 
 theorem read_selected (n : Nat) (hn : Allowed n) :
-    MachineState.readPadded submissionBytecode (selected (UInt256.ofNat 4930) n).toNat 20 =
+    MachineState.readPadded submissionBytecode (selected (UInt256.ofNat 4958) n).toNat 20 =
       MachineState.readPadded payload (20*((345007677684/n)%16)) 20 := by
   rw [selected_nat n hn, tableRead]
   exact tablePayload n hn

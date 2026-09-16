@@ -42,13 +42,13 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
       s.executionEnv.fork s.executionEnv.codeAddr = false := PadSkipEntry.entryState_noPrecompile input
   have hi : s.executionEnv.calldata = input := PadSkipEntry.entryState_calldata input
   have heta := PaddingTrace.entryState_eta input
-  have gx : GasSteps s {s with pc := UInt256.ofNat 465, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (LoopCompletionControl.limit input) maskRho} := by
+  have gx : GasSteps s {s with pc := UInt256.ofNat 521, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (LoopCompletionControl.limit input) maskRho} := by
     by_cases hz : input.size % 64 = 0
-    · have hs : s = {s with pc := UInt256.ofNat 465, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (UInt256.ofNat input.size) maskRho} := by
+    · have hs : s = {s with pc := UInt256.ofNat 521, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (UInt256.ofNat input.size) maskRho} := by
         simpa only [if_pos hz, PaddingTrace.initialFrame, maskRho] using heta
       exact GasSteps.cast (GasSteps.refl s) rfl (by
         simpa only [LoopCompletionControl.limit, LoopCompletionControl.limitNat, if_pos hz] using hs)
-    · have hs : s = {s with pc := UInt256.ofNat 465, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (Padding.paddedWord input) maskRho} := by
+    · have hs : s = {s with pc := UInt256.ofNat 521, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (Padding.paddedWord input) maskRho} := by
         simpa only [if_neg hz, PaddingTrace.padFrame, maskRho] using heta
       exact GasSteps.cast (GasSteps.refl s) rfl (by
         simpa only [LoopCompletionControl.limit, LoopCompletionControl.limitNat, if_neg hz,
