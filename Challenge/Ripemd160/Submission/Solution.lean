@@ -20,4 +20,4 @@ end Challenge.Ripemd160.Benchmark
 -- redraw marker 2026-09-15T09:15:23Z
 -- Yukon reuse by @ercumentyildirim: source @i34-9, submission e1481dcc-c9a9-4364-82b3-0903851f0c06, commit 7a6785a7e139fe90f0d16f78b70221ae7926d355.
 -- provenance marker TAIL412-v1
--- executable 2b921623d6506b377af3e9376d411aa4e82c71fbb1de7573e3a615cf1778f629, 5214 bytes, 664775 gas, derived from 9d219ee0aaae45eb613c3416fcee2499c4dd814c09ccaf34868714f4ba4ca962 at 664803 gas.
+-- executable 2f718f9ea5113462f011f4fd7683703f9ec24cfd783c8b142d79f9a149459699, 5214 bytes, 664770 gas, derived from 2b921623d6506b377af3e9376d411aa4e82c71fbb1de7573e3a615cf1778f629 at 664775 gas; pc-270 CALLDATASIZE substitution ported from @ercumentyildirim submission 089bc76.
