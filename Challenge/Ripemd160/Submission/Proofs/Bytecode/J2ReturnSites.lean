@@ -12,14 +12,14 @@ private theorem code_bound : Artifact.submissionArtifact.code.size < 2^256 := by
   decide
 namespace selector
 abbrev template : List Instr := RecognitionSelectorRaw.prefixTemplate
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 199).take template.length = template := by rfl
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 197).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 199 actual_slice
-    (by change 199 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 197 actual_slice
+    (by change 197 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 297 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 199) = UInt256.ofNat 297
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 197) = UInt256.ofNat 297
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem end_pc : pcAfter (UInt256.ofNat 297) template = UInt256.ofNat 318 := by decide
 theorem form : ∀ instruction ∈ template.dropLast, RecognitionLift.Advances instruction :=
@@ -30,14 +30,14 @@ def lift (s t : State) (e : Env s) (stack : List UInt256)
 end selector
 namespace returned
 abbrev template : List Instr := RecognitionSelectorRaw.finish
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 212).take template.length = template := by rfl
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 210).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 212 actual_slice
-    (by change 212 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 210 actual_slice
+    (by change 210 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 320 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 212) = UInt256.ofNat 320
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 210) = UInt256.ofNat 320
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem end_pc : pcAfter (UInt256.ofNat 320) template = UInt256.ofNat 322 := by decide
 theorem form : ∀ instruction ∈ template.dropLast, RecognitionLift.Advances instruction :=
