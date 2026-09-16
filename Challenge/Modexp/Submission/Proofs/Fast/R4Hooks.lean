@@ -37,15 +37,15 @@ def h1Program : List Instr :=
 def h1FallProgram : List Instr := [.push 2 4889, .op .JUMP]
 
 def h1Block : Block Artifact.submissionArtifact .Osaka 4381 h1Program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3286 5 4381 h1Program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3284 5 4381 h1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
 def h1FallBlock : Block Artifact.submissionArtifact .Osaka 4390 h1FallProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3291 2 4390 h1FallProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3289 2 4390 h1FallProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def h2Block : Block Artifact.submissionArtifact .Osaka 4039 hookProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3039 6 4039 hookProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3037 6 4039 hookProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDestR4 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4394 = true :=

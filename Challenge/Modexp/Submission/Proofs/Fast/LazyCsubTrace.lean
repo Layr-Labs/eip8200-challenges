@@ -12,11 +12,11 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwentyOneBinding
 
 def gateBlock : Block Artifact.submissionArtifact .Osaka 4333 LazyGate.program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3256 5 4333 LazyGate.program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3254 5 4333 LazyGate.program
     (by decide) (by rfl) (by rfl) (by decide)
 
 def copyBlock : Block Artifact.submissionArtifact .Osaka 4342 LazyGate.copyProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3261 7 4342 LazyGate.copyProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3259 7 4342 LazyGate.copyProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDestGate : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4333 = true :=
