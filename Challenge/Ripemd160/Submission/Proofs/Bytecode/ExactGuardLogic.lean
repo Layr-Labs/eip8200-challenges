@@ -91,7 +91,7 @@ def scanDiff (input : ByteArray) : List (Nat × UInt256) → UInt256 → UInt256
 def guardDiff (input : ByteArray) : UInt256 :=
   scanDiff input checks
     (UInt256.lor
-      (UInt256.xor (UInt256.ofNat input.size) (UInt256.ofNat 1000)) 0)
+      (UInt256.xor (UInt256.ofNat input.size) (UInt256.ofNat 1028)) 0)
 
 /-- Declarative form of the runtime guard. -/
 def Matches (input : ByteArray) : Prop :=

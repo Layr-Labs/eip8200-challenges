@@ -11,12 +11,12 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory PairedMask32Cache
 
 theorem mask8_div :
-    UInt256.lnot (UInt256.ofNat 0) / UInt256.ofNat 257 = mask8 := by decide
+    UInt256.lnot (UInt256.ofNat 0) / UInt256.ofNat 285 = mask8 := by decide
 
 #print axioms mask8_div
 
 theorem mask16_div :
-    UInt256.lnot (UInt256.ofNat 0) / UInt256.ofNat 65537 = mask16 := by decide
+    UInt256.lnot (UInt256.ofNat 0) / UInt256.ofNat 65565 = mask16 := by decide
 
 #print axioms mask16_div
 
@@ -47,8 +47,8 @@ private theorem add_ofNat_assoc_add (u : UInt256) (a b : Nat) :
 
 def cachedInitial : List Instr :=
   [op .JUMPDEST, .push ⟨4, by decide⟩ maskWord,
-    push2 (UInt256.ofNat 257), .push 0 0, op .NOT, op .DIV,
-    push3 (UInt256.ofNat 65537), .push 0 0, op .NOT, op .DIV,
+    push2 (UInt256.ofNat 285), .push 0 0, op .NOT, op .DIV,
+    push3 (UInt256.ofNat 65565), .push 0 0, op .NOT, op .DIV,
     .op (.Swap ⟨2, by decide⟩), dup1, op .MLOAD, swap1,
     push1 (UInt256.ofNat 32), op .ADD, op .MLOAD]
 

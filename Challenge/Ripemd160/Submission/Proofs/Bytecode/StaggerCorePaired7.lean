@@ -18,8 +18,8 @@ def eval (memory : ByteArray) (q : WordLane) : WordLane :=
 theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho : List UInt256) :
     StaggerRawPaired7.outputStack memory (input memory h4 q right (StaggerAlgorithm.physicalKey 6)) rho =
       stack memory h4 [ .d, .literal 23, .cachedMessage 360, .pair, .upper, .e, .b, .k, .a, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval memory q) right (StaggerAlgorithm.physicalKey 7) rho := by
-  have hkb : StaggerAlgorithm.physicalKey 6 = UInt256.ofNat 30169115476673038213297653277143730720156734734729216 := by decide
-  have hka : StaggerAlgorithm.physicalKey 7 = UInt256.ofNat 30169115476673038213297653277143730720156734734729216 := by decide
+  have hkb : StaggerAlgorithm.physicalKey 6 = UInt256.ofNat 30169115476673038213297653277143730720156734734729244 := by decide
+  have hka : StaggerAlgorithm.physicalKey 7 = UInt256.ofNat 30169115476673038213297653277143730720156734734729244 := by decide
   have hm : StaggerAlgorithm.mode 7 = 0 := by decide
   have hl : Crypto.Ripemd160.s[7]! = 9 := by rfl
   have hr : Crypto.Ripemd160.sP[10]! = 8 := by rfl
@@ -47,8 +47,8 @@ def gasSteps (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 1347, stack := stack s.memory h4 [ .d, .literal 23, .cachedMessage 360, .pair, .upper, .a, .c, .k, .e, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (StaggerAlgorithm.physicalKey 6) rho}
-      {s with pc := UInt256.ofNat 1387, stack := stack s.memory h4 [ .d, .literal 23, .cachedMessage 360, .pair, .upper, .e, .b, .k, .a, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval s.memory q) right (StaggerAlgorithm.physicalKey 7) rho} := by
+    GasSteps {s with pc := UInt256.ofNat 1375, stack := stack s.memory h4 [ .d, .literal 23, .cachedMessage 360, .pair, .upper, .a, .c, .k, .e, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (StaggerAlgorithm.physicalKey 6) rho}
+      {s with pc := UInt256.ofNat 1415, stack := stack s.memory h4 [ .d, .literal 23, .cachedMessage 360, .pair, .upper, .e, .b, .k, .a, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval s.memory q) right (StaggerAlgorithm.physicalKey 7) rho} := by
   have g := StaggerRawPaired7.gasSteps s (input s.memory h4 q right (StaggerAlgorithm.physicalKey 6))
     rho hstack hrun hactive hcode hfork hnp
   rw [output_eq] at g

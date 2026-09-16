@@ -29,11 +29,11 @@ theorem prologue_crypto (memory : ByteArray) (words : Nat → UInt32) (q : Crypt
     StaggerScalarLow54.clean_low54 _
       (StaggerScalarWord.step_b_clean false 4 8 _ _ (embed q))
   have p0 := StaggerScalarLow54.project_step true false 4 8 (by decide) (by decide)
-    (MachineState.readWord memory 486) (UInt256.ofNat 1352829926) (embed q) hi.2.2.1
+    (MachineState.readWord memory 486) (UInt256.ofNat 1352829954) (embed q) hi.2.2.1
   have p1 := StaggerScalarLow54.project_step true false 4 9 (by decide) (by decide)
-    (MachineState.readWord memory 162) (UInt256.ofNat 1352829926) (right0 memory (embed q)) h1
+    (MachineState.readWord memory 162) (UInt256.ofNat 1352829954) (right0 memory (embed q)) h1
   have p2 := StaggerScalarLow54.project_step true false 4 9 (by decide) (by decide)
-    (MachineState.readWord memory 252) (UInt256.ofNat 1352829926)
+    (MachineState.readWord memory 252) (UInt256.ofNat 1352829954)
       (right1 memory (right0 memory (embed q))) h2
   change unpackLeft (StaggerScalarWord.step true false 4 9 _ _ _) = _
   rw [p2]
@@ -136,16 +136,16 @@ theorem epilogue_project (memory : ByteArray) (words : Nat → UInt32) (q : Pair
       (PairedLaneUInt256Bridge.bits (left78 memory (left77 memory q)).c) :=
     StaggerScalarLow54.clean_low54 _
       (StaggerScalarWord.step_b_clean false 4 8 (MachineState.readWord memory 0)
-        (UInt256.ofNat 2840853838) q)
+        (UInt256.ofNat 2840853866) q)
   have p0 := StaggerScalarLow54.project_step true false 4 8 (by decide) (by decide)
-    (MachineState.readWord memory 0) (UInt256.ofNat 2840853838) q hc
+    (MachineState.readWord memory 0) (UInt256.ofNat 2840853866) q hc
   have p1 := StaggerScalarLow54.project_step false false 4 5 (by decide) (by decide)
-    (MachineState.readWord memory 612) (UInt256.ofNat 2840853838) (left77 memory q) h1
+    (MachineState.readWord memory 612) (UInt256.ofNat 2840853866) (left77 memory q) h1
   have p2 := StaggerScalarLow54.project_step false false 4 6 (by decide) (by decide)
-    (MachineState.readWord memory 198) (UInt256.ofNat 2840853838)
+    (MachineState.readWord memory 198) (UInt256.ofNat 2840853866)
       (left78 memory (left77 memory q)) h2
   change unpackLeft (StaggerScalarWord.step false false 4 6
-    (MachineState.readWord memory 198) (UInt256.ofNat 2840853838)
+    (MachineState.readWord memory 198) (UInt256.ofNat 2840853866)
     (left78 memory (left77 memory q))) = _
   rw [p2]
   change cryptoStep _ _ _ _ (unpackLeft (StaggerScalarWord.step false false 4 5 _ _ _)) = _

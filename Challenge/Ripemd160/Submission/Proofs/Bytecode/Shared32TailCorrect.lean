@@ -32,7 +32,7 @@ def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
       (by simp only [entryFrame, StaggerPersistentFrame.frame, maskRho, List.length_append,
         List.length_cons, List.length_nil]; omega) e.run e.code e.fork e.np
   have g3 := Shared32Trace.gasSteps_guard s e (frame ++ rho) hsize h32
-  have g4 := Shared32Trace.gasSteps_sparse s e factorPlusWord (UInt256.ofNat 4294967295)
+  have g4 := Shared32Trace.gasSteps_sparse s e factorPlusWord (UInt256.ofNat 4294967323)
     (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)
     (fusedCoefficientWord 0 2)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)

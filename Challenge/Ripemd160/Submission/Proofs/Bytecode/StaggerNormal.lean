@@ -15,7 +15,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerTableMemory StaggerTableLayout
 def poolStack (words : Nat → UInt256) : List UInt256 :=
   [ words 3, words 9, words 8, words 1, words 2, words 15, words 7, words 10, words 13, words 14, words 11, words 5, words 12, words 0, words 4, words 6 ]
-def poolInput : StaggerRaw.Input := ⟨UInt256.ofNat 4294967295, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
+def poolInput : StaggerRaw.Input := ⟨UInt256.ofNat 4294967323, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
 theorem pool_output (memory : ByteArray) (rho : List UInt256) :
     StaggerRawNormalPool.outputStack memory poolInput rho = poolStack (StaggerScratch.poolWordD memory) ++ rho := by
   simp (config := {decide := true}) only [StaggerRawNormalPool.outputStack, poolInput, poolStack,
@@ -24,9 +24,9 @@ theorem pool_output (memory : ByteArray) (rho : List UInt256) :
   try rfl
 
 theorem run_pool (s : State) (pc : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (halias : rho[1]? = some (UInt256.ofNat 4294967295))
+    (hs : rho.length ≤ 900) (halias : rho[1]? = some (UInt256.ofNat 4294967323))
     (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat) :
-    runInstrSeq StaggerRawNormalPool.template {s with pc := pc, stack := UInt256.ofNat 4294967295 :: rho} =
+    runInstrSeq StaggerRawNormalPool.template {s with pc := pc, stack := UInt256.ofNat 4294967323 :: rho} =
       some {s with pc := pcAfter pc StaggerRawNormalPool.template, stack := poolStack (StaggerScratch.poolWordD s.memory) ++ rho} := by
   have h := StaggerRawNormalPool.run_actual s pc poolInput rho hs halias hr ha
   rw [pool_output] at h

@@ -33,7 +33,7 @@ theorem transitionBResult_eq (f : Frame) : transitionBResult f =
     {f with stop := UInt256.add f.off (clamp (UInt256.sub f.len f.off)),
             full := UInt256.add f.off (UInt256.land
               (UInt256.sub (UInt256.add f.off (clamp (UInt256.sub f.len f.off))) f.off)
-              (UInt256.ofNat 224))} := by
+              (UInt256.ofNat 252))} := by
   unfold transitionBResult
   rw [land224_eq_aligned _ (transitionB_operand_lt f)]
 

@@ -24,7 +24,7 @@ private theorem local_xor_comm (u v : UInt256) : UInt256.xor u v = UInt256.xor v
   simp [UInt256.xor, Fin.xor, Nat.xor_comm]
 /-- Stage 8 with the resident full-width mask read from the stack. The factor is kept below the XOR operands. -/
 def code : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 257),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 285),
     .op (.Dup ⟨1, by decide⟩),
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 8),
@@ -45,7 +45,7 @@ private theorem run_symbolic (s : State) (startPC value mask : UInt256)
         pc := pcAfter startPC code
         stack := UInt256.xor (UInt256.mul (UInt256.land
           (UInt256.xor (UInt256.shiftRight value (UInt256.ofNat 8)) value) mask)
-          (UInt256.ofNat 257)) value :: a :: b :: mask :: rest} := by
+          (UInt256.ofNat 285)) value :: a :: b :: mask :: rest} := by
   have hcap (n : Nat) (hn : n ≤ 14) : rest.length + n < 1024 := by omega
   simp (discharger := omega) [code, ClosedEndianReuse.factorPush,
     op, push1, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size, hrun, hcap,

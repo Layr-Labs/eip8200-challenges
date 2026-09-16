@@ -979,7 +979,7 @@ theorem pack5_lt_pow160 (h0 h1 h2 h3 h4 : UInt32) :
   exact pack5Nat_lt_pow160 h0 h1 h2 h3 h4
 
 theorem pack5_shiftRight160_eq_zero (h0 h1 h2 h3 h4 : UInt32) :
-    UInt256.shiftRight (pack5 h0 h1 h2 h3 h4) (UInt256.ofNat 160) = UInt256.ofNat 0 := by
+    UInt256.shiftRight (pack5 h0 h1 h2 h3 h4) (UInt256.ofNat 188) = UInt256.ofNat 0 := by
   rw [pack5_eq_ofNat, Word.shiftRight_ofNat]
   · congr 1
     rw [Nat.shiftRight_eq_div_pow, Nat.div_eq_of_lt (pack5Nat_lt_pow160 h0 h1 h2 h3 h4)]

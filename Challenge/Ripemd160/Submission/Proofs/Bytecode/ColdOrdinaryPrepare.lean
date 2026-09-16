@@ -13,7 +13,7 @@ open PersistentStaggerTable StaggerPersistentFrame
 
 /-- The persistent frame below its top word (the resident factor constant). -/
 def rest (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256) : List UInt256 :=
-  [UInt256.ofNat 4294967295, Paired144WordRound.fusedModulusWord 5 7,
+  [UInt256.ofNat 4294967323, Paired144WordRound.fusedModulusWord 5 7,
    Paired144WordRound.fusedModulusWord 8 5, Paired144WordRound.fusedCoefficientWord 0 3,
    Paired144WordRound.fusedCoefficientWord 0 2,
    Word.ofUInt32 h.h4, Word.ofUInt32 h.h3, Word.ofUInt32 h.h2, Word.ofUInt32 h.h1,
@@ -23,14 +23,14 @@ theorem pointer_eq (input : ByteArray) (i : Nat) (hfit : CalldataFits input)
     (hi : i < DriverTrace.blockCount input) :
     StaggerPersistentEntryRaw.pointer (DriverTrace.blockOffsetWord i) = UInt256.ofNat (messagePointer i) := by
   have hb := messagePointer_bound input hfit i hi
-  change UInt256.ofNat 1056 + UInt256.ofNat (DriverTrace.blockOffset i) = _
+  change UInt256.ofNat 1084 + UInt256.ofNat (DriverTrace.blockOffset i) = _
   rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb; omega)]
   rfl
 
 /-- The pad-only block (M3b): the low block, then `JUMPI` straight to the rounds when
 `n >>> 29 = 0`, otherwise the high block and the jump. Both paths leave the pad table. -/
 def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
-    (hmask : rest.head? = some (UInt256.ofNat 4294967295))
+    (hmask : rest.head? = some (UInt256.ofNat 4294967323))
     (hstack : rest.length ≤ 896) (hrun : s.halt = .Running)
     (hsmall : s.executionEnv.calldata.size < 5224)
     (hactive : 35 ≤ s.activeWords.toNat)
@@ -38,9 +38,9 @@ def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4768, stack := ret :: rest}
+    GasSteps {s with pc := UInt256.ofNat 4796, stack := ret :: rest}
       {s with
-        pc := UInt256.ofNat 868
+        pc := UInt256.ofNat 896
         stack := ret :: rest
         memory := StaggerTablePad.padRealResult s.memory
           (UInt256.ofNat s.executionEnv.calldata.size)} := by
@@ -71,7 +71,7 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := LoopCompletionControl.blockPC input i, stack := frame h (DriverTrace.blockOffsetWord i) limit rho}
-      {scheduledState s i with pc := UInt256.ofNat 868, stack := frame h (DriverTrace.blockOffsetWord i) limit rho} := by
+      {scheduledState s i with pc := UInt256.ofNat 896, stack := frame h (DriverTrace.blockOffsetWord i) limit rho} := by
   let off := DriverTrace.blockOffsetWord i
   let r := rest h off limit rho
   have hrs : r.length ≤ 896 := by simp only [r, rest, List.length_append, List.length_cons, List.length_nil]; omega
@@ -88,8 +88,8 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     rw [scheduledState_hit s i hhs]
     let qh : State :=
       {s with memory := StaggerTablePad.padRealResult s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
-    have gb' : GasSteps {s with pc := UInt256.ofNat 4768, stack := frame h off limit rho}
-        {qh with pc := UInt256.ofNat 868, stack := frame h off limit rho} := by
+    have gb' : GasSteps {s with pc := UInt256.ofNat 4796, stack := frame h off limit rho}
+        {qh with pc := UInt256.ofNat 896, stack := frame h off limit rho} := by
       apply gb.cast rfl
       rfl
     simpa only [LoopCompletionControl.blockPC, DriverTrace.blockOffset, if_pos hh] using gp.trans gb'
@@ -99,14 +99,14 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     rw [scheduledState_miss s i hhs]
     subst hrho
     have hb := messagePointer_bound input hfit i hi
-    have hq0 : off + UInt256.ofNat 1056 = UInt256.ofNat (messagePointer i) := by
-      change UInt256.ofNat (DriverTrace.blockOffset i) + UInt256.ofNat 1056 = _
+    have hq0 : off + UInt256.ofNat 1084 = UInt256.ofNat (messagePointer i) := by
+      change UInt256.ofNat (DriverTrace.blockOffset i) + UInt256.ofNat 1084 = _
       rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb; omega)]
       unfold messagePointer Padding.messageOffset
       congr 1
       omega
-    have hq1 : off + UInt256.ofNat 1088 = UInt256.ofNat (messagePointer i + 32) := by
-      change UInt256.ofNat (DriverTrace.blockOffset i) + UInt256.ofNat 1088 = _
+    have hq1 : off + UInt256.ofNat 1116 = UInt256.ofNat (messagePointer i + 32) := by
+      change UInt256.ofNat (DriverTrace.blockOffset i) + UInt256.ofNat 1116 = _
       rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb; omega)]
       unfold messagePointer Padding.messageOffset
       congr 1

@@ -9,7 +9,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.TinyGuardLogic
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
 def leadWord (input : ByteArray) : UInt256 :=
-  UInt256.shiftRight (MachineState.readWord input 0) (UInt256.ofNat 232)
+  UInt256.shiftRight (MachineState.readWord input 0) (UInt256.ofNat 260)
 def condition (input : ByteArray) : UInt256 :=
   UInt256.lor (UInt256.xor (leadWord input)
     (UInt256.mul (UInt256.ofNat input.size) (UInt256.ofNat 0x207621)))
@@ -76,7 +76,7 @@ theorem zero_cases (input : ByteArray) (hfit : CalldataFits input)
   rcases hs with hs | hs | hs | hs
   · exact Or.inl (input_eq_empty input hs)
   · rw [hs] at hp
-    change leadWord input = UInt256.ofNat 2127393 at hp
+    change leadWord input = UInt256.ofNat 2127421 at hp
     have hv := congrArg UInt256.toNat hp
     rw [prefix_toNat] at hv
     have hz2 : byte input 2 = 0 := by rw [byte_getD]; exact Memory.getElem?_getD_eq_zero_of_size_le input 2 (by omega)
@@ -84,7 +84,7 @@ theorem zero_cases (input : ByteArray) (hfit : CalldataFits input)
     norm_num [Word.word_toNat_ofNat] at hv
     omega
   · rw [hs] at hp
-    change leadWord input = UInt256.ofNat 4254786 at hp
+    change leadWord input = UInt256.ofNat 4254814 at hp
     have hv := congrArg UInt256.toNat hp
     rw [prefix_toNat] at hv
     have hz2 : byte input 2 = 0 := by rw [byte_getD]; exact Memory.getElem?_getD_eq_zero_of_size_le input 2 (by omega)
@@ -93,7 +93,7 @@ theorem zero_cases (input : ByteArray) (hfit : CalldataFits input)
     omega
   · right
     rw [hs] at hp
-    change leadWord input = UInt256.ofNat 6382179 at hp
+    change leadWord input = UInt256.ofNat 6382207 at hp
     have hv := congrArg UInt256.toNat hp
     rw [prefix_toNat] at hv
     norm_num [Word.word_toNat_ofNat] at hv

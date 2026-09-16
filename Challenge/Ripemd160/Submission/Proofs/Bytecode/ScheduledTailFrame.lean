@@ -8,7 +8,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Challenge.EvmProof.Word StackRoundTrace
 
 def frame (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256) : List UInt256 :=
-  [Paired144WordRound.factorPlusWord, UInt256.ofNat 4294967295, Paired144WordRound.fusedModulusWord 5 7,
+  [Paired144WordRound.factorPlusWord, UInt256.ofNat 4294967323, Paired144WordRound.fusedModulusWord 5 7,
    Paired144WordRound.fusedModulusWord 8 5, Paired144WordRound.fusedCoefficientWord 0 3,
    Paired144WordRound.fusedCoefficientWord 0 2,
    ofUInt32 h.h4, ofUInt32 h.h3, ofUInt32 h.h2, ofUInt32 h.h1, ofUInt32 h.h0, off, limit] ++ rho
@@ -29,7 +29,7 @@ def bind (h : Compression.HashState) (q : ScheduledTailRaw.Input) : ScheduledTai
     cache350 := Paired144WordRound.fusedModulusWord 8 5
     cache310 := Paired144WordRound.fusedCoefficientWord 0 3
     cache190 := Paired144WordRound.fusedCoefficientWord 0 2}
-def high (x : UInt256) : UInt32 := toUInt32 (UInt256.shiftRight x (UInt256.ofNat 144))
+def high (x : UInt256) : UInt32 := toUInt32 (UInt256.shiftRight x (UInt256.ofNat 172))
 def combine (h : Compression.HashState) (q : ScheduledTailRaw.Input) : Compression.HashState :=
   {h0 := h.h1 + toUInt32 q.lc + high q.rd,
    h1 := h.h2 + toUInt32 q.ld + high q.re,

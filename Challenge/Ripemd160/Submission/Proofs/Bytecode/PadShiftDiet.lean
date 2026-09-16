@@ -14,7 +14,7 @@ private theorem shl_nat (x : UInt256) (n : Nat) (hn : n < 256) :
 private theorem mask_nat : (UInt256.ofNat (2 ^ 32 - 1)).toNat = 2 ^ 32 - 1 := by decide
 
 theorem low (x : UInt256) :
-    UInt256.shiftRight (UInt256.shiftLeft x (UInt256.ofNat 227)) (UInt256.ofNat 224) =
+    UInt256.shiftRight (UInt256.shiftLeft x (UInt256.ofNat 255)) (UInt256.ofNat 252) =
       UInt256.land (UInt256.shiftLeft x (UInt256.ofNat 3)) (UInt256.ofNat (2 ^ 32 - 1)) := by
   apply word_ext
   rw [shiftRight_toNat _ (by decide), shl_nat _ _ (by decide), word_toNat_land,
@@ -23,7 +23,7 @@ theorem low (x : UInt256) :
   omega
 
 theorem high (x : UInt256) :
-    UInt256.shiftRight (UInt256.shiftLeft x (UInt256.ofNat 195)) (UInt256.ofNat 224) =
+    UInt256.shiftRight (UInt256.shiftLeft x (UInt256.ofNat 223)) (UInt256.ofNat 252) =
       UInt256.land (UInt256.shiftRight x (UInt256.ofNat 29)) (UInt256.ofNat (2 ^ 32 - 1)) := by
   apply word_ext
   rw [shiftRight_toNat _ (by decide), shl_nat _ _ (by decide), word_toNat_land,

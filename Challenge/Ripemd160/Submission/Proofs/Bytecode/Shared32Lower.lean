@@ -28,7 +28,7 @@ theorem run_lower (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt2
   let low := PairedScheduleData.reversedWord (MachineState.readWord s.memory 1056)
   have hF : F.length + 3 < 1024 := by simp only [F, stk, List.length_cons]; omega
   have ha : 34 ≤ s.activeWords.toNat := by rw [hactive]; decide
-  have hloadActive : activeAfterWord s.activeWords (UInt256.ofNat 1056) = s.activeWords := by
+  have hloadActive : activeAfterWord s.activeWords (UInt256.ofNat 1084) = s.activeWords := by
     rw [hactive]
     rfl
   have h1 := run_load s pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho

@@ -31,7 +31,7 @@ def Facts (n k : Nat) : Prop :=
   (¬ isTail n k → J2Accumulator.width n k = 32 ∧
     UInt256.add (UInt256.ofNat 32) (UInt256.ofNat (offset k)) = UInt256.ofNat (offset (k+1)) ∧
     full n k = full n (k+1) ∧ stop n k = stop n (k+1)) ∧
-  (isTail n k → UInt256.sub (UInt256.ofNat 256)
+  (isTail n k → UInt256.sub (UInt256.ofNat 284)
     (UInt256.shiftLeft (UInt256.sub (UInt256.ofNat (stop n k)) (UInt256.ofNat (offset k))) (UInt256.ofNat 3)) =
        J2Accumulator.shift n k) ∧
   (isTail n k → k < last n →

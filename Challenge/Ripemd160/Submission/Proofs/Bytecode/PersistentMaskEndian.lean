@@ -16,14 +16,14 @@ abbrev normalTemplate := Pair13NormalTrace.normalTemplate
 theorem run_normal (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UInt256)
     (rho : List UInt256) (p : Nat) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
     (hp : 1056 ≤ p) (hbound : p + 64 < 2 ^ 256)
-    (hq1 : off + UInt256.ofNat 1088 = UInt256.ofNat (p + 32))
-    (hq0 : off + UInt256.ofNat 1056 = UInt256.ofNat p)
+    (hq1 : off + UInt256.ofNat 1116 = UInt256.ofNat (p + 32))
+    (hq0 : off + UInt256.ofNat 1084 = UInt256.ofNat p)
     (hlow : (MachineState.readWord s.memory 0).toNat % 2 ^ 144 < 2 ^ 32)
     (hgap : PairStoreGap.GapClear s.memory) :
-    runInstrSeq normalTemplate {s with pc := pc, stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho} =
+    runInstrSeq normalTemplate {s with pc := pc, stack := stk ret (UInt256.ofNat 4294967323) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho} =
       some {s with
         pc := pcAfter pc normalTemplate
-        stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho
+        stack := stk ret (UInt256.ofNat 4294967323) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho
         memory := StaggerTableLayout.resultMemory0 s.memory (StaggerScratch.dirtyWord s.memory p)
         activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
   let words := StaggerScratch.dirtyWord s.memory p
@@ -66,8 +66,8 @@ theorem run_normal (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UIn
       (fun m => PairedScheduleMemory.writeWord m 0
         (StaggerTableLayout.dualLane (words 6)))
       (Shared32Scratch.erase_fan s.memory (StaggerTableLayout.tableWords words) _ _)
-  change runInstrSeq normalTemplate {s with pc := pc, stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho} =
-    some {s with pc := pcAfter pc normalTemplate, stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho, memory := StaggerTableLayout.resultMemory0 s.memory words, activeWords := loadedActiveWords s (UInt256.ofNat p)}
+  change runInstrSeq normalTemplate {s with pc := pc, stack := stk ret (UInt256.ofNat 4294967323) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho} =
+    some {s with pc := pcAfter pc normalTemplate, stack := stk ret (UInt256.ofNat 4294967323) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho, memory := StaggerTableLayout.resultMemory0 s.memory words, activeWords := loadedActiveWords s (UInt256.ofNat p)}
   rw [← herase, ← hm]
   exact h
 

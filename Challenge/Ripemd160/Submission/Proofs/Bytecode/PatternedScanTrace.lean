@@ -66,35 +66,35 @@ def scanAcc (input : ByteArray) : Nat → UInt256
 /-- At the head of the scan with `k` words folded in. -/
 def loopState (input : ByteArray) (k : Nat) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 160
+    pc := UInt256.ofNat 188
     stack := UInt256.ofNat (scalarAt k) :: UInt256.ofNat (32 * k) :: a :: frame }
 
 /-- After the expected word is derived and any correction applied.  A
 straddling word has already bumped the scalar by eleven, so it is explicit. -/
 def compareState (input : ByteArray) (k s : Nat) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 215
+    pc := UInt256.ofNat 243
     stack := guardWord k :: UInt256.mul M (UInt256.ofNat (scalarAt k)) ::
       UInt256.ofNat s :: UInt256.ofNat (32 * k) :: a :: frame }
 
 /-- At the head of the correction block, for a straddling offset. -/
 def straddleState (input : ByteArray) (k : Nat) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 183
+    pc := UInt256.ofNat 211
     stack := rawWord k :: UInt256.mul M (UInt256.ofNat (scalarAt k)) ::
       UInt256.ofNat (scalarAt k) :: UInt256.ofNat (32 * k) :: a :: frame }
 
 /-- After the thirty-one words, at the padded tail. -/
 def tailState (input : ByteArray) (a : UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 258
-    stack := UInt256.ofNat (scalarAt 32) :: UInt256.ofNat 1024 :: a :: frame }
+    pc := UInt256.ofNat 286
+    stack := UInt256.ofNat (scalarAt 32) :: UInt256.ofNat 1052 :: a :: frame }
 
 /-- The stub jumps here, and the guard answers or falls through.  -/
 def patternedEntry (input : ByteArray) : State := atPC input 108
 
 def hitRest : List UInt256 :=
-  UInt256.ofNat (scalarAt 32) :: UInt256.ofNat 1024 :: 0 :: frame
+  UInt256.ofNat (scalarAt 32) :: UInt256.ofNat 1052 :: 0 :: frame
 
 def hitState (input : ByteArray) : State :=
   { atPC input 4837 with stack := hitRest }
@@ -107,7 +107,7 @@ def answerMemory : ByteArray := storeWord ByteArray.empty 0 paddedDigestWord
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4858
+    pc := UInt256.ofNat 4886
     stack := hitRest
     memory := answerMemory
     activeWords := UInt256.ofNat 1
@@ -120,10 +120,10 @@ theorem run_setup (input : ByteArray) :
   have hpc3327 : Artifact.submissionArtifact.instructionPC 68 = 111 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hpc3328 : Artifact.submissionArtifact.instructionPC 69 = 112 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hpc3330 : Artifact.submissionArtifact.instructionPC 71 = 146 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpc3331 : Artifact.submissionArtifact.instructionPC 72 = 147 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpc3332 : Artifact.submissionArtifact.instructionPC 73 = 149 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpc3333 : Artifact.submissionArtifact.instructionPC 74 = 150 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpc3335 : Artifact.submissionArtifact.instructionPC 76 = 152 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3331 : Artifact.submissionArtifact.instructionPC 69 = 175 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3332 : Artifact.submissionArtifact.instructionPC 70 = 177 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3333 : Artifact.submissionArtifact.instructionPC 71 = 178 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc3335 : Artifact.submissionArtifact.instructionPC 70 = 180 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hzero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := rfl
   have hhigh := CompactGuardConstants.repeated_high_ofNat
   simp only [M, m8] at hhigh
@@ -143,7 +143,7 @@ theorem run_setup (input : ByteArray) :
 /-! ### Arithmetic the scan needs on its offset -/
 
 theorem land_ff (n : Nat) (hn : n < 2 ^ 256) :
-    UInt256.land (UInt256.ofNat 255) (UInt256.ofNat n) = UInt256.ofNat (n % 256) := by
+    UInt256.land (UInt256.ofNat 283) (UInt256.ofNat n) = UInt256.ofNat (n % 256) := by
   apply Challenge.EvmProof.Word.word_ext
   rw [Challenge.EvmProof.Word.word_toNat_land,
     Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -153,7 +153,7 @@ theorem land_ff (n : Nat) (hn : n < 2 ^ 256) :
   rw [Nat.and_comm, show 255 = 2 ^ 8 - 1 by decide, Nat.and_two_pow_sub_one_eq_mod]
 
 theorem straddle_iff (k : Nat) (hk : k < 32) :
-    UInt256.land (UInt256.ofNat 255) (UInt256.ofNat (32 * k)) = UInt256.ofNat 224 ↔
+    UInt256.land (UInt256.ofNat 283) (UInt256.ofNat (32 * k)) = UInt256.ofNat 252 ↔
       (32 * k) % 256 = 224 := by
   rw [land_ff _ (by omega)]
   constructor
@@ -167,8 +167,8 @@ theorem straddle_iff (k : Nat) (hk : k < 32) :
   · intro h; rw [h]
 
 theorem notmask224_eq (k : Nat) (hk : k < 32) :
-    UInt256.land (UInt256.ofNat 224) (UInt256.lnot (UInt256.ofNat (32*k))) =
-      UInt256.xor (UInt256.ofNat 224) (UInt256.land (UInt256.ofNat 255) (UInt256.ofNat (32*k))) := by
+    UInt256.land (UInt256.ofNat 252) (UInt256.lnot (UInt256.ofNat (32*k))) =
+      UInt256.xor (UInt256.ofNat 252) (UInt256.land (UInt256.ofNat 283) (UInt256.ofNat (32*k))) := by
   interval_cases k <;> decide
 
 /-! ### Deriving one expected word -/
@@ -181,15 +181,15 @@ theorem run_word_regular (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 3
       UInt256.land m7 (UInt256.mul M (UInt256.ofNat (scalarAt k))) := by
     apply Challenge.EvmProof.Word.word_ext
     rw [Challenge.EvmProof.Word.word_toNat_land, Challenge.EvmProof.Word.word_toNat_land, Nat.and_comm]
-  have hval : ((UInt256.ofNat 255).land (UInt256.ofNat (32 * k))).toNat
+  have hval : ((UInt256.ofNat 283).land (UInt256.ofNat (32 * k))).toNat
       = (32 * k) % 256 := by
     rw [land_ff _ (by omega), Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt (Nat.lt_trans (Nat.mod_lt _ (by decide)) (by norm_num))]
-  have hcond : UInt256.isTrue (UInt256.xor (UInt256.ofNat 224)
-      ((UInt256.ofNat 255).land (UInt256.ofNat (32 * k)))) := by
+  have hcond : UInt256.isTrue (UInt256.xor (UInt256.ofNat 252)
+      ((UInt256.ofNat 283).land (UInt256.ofNat (32 * k)))) := by
     intro hz
-    have hzero : UInt256.xor (UInt256.ofNat 224)
-        ((UInt256.ofNat 255).land (UInt256.ofNat (32 * k))) = 0 := by
+    have hzero : UInt256.xor (UInt256.ofNat 252)
+        ((UInt256.ofNat 283).land (UInt256.ofNat (32 * k))) = 0 := by
       apply Challenge.EvmProof.Word.word_ext
       change _ = 0
       exact hz
@@ -201,7 +201,7 @@ theorem run_word_regular (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 3
   have hdest : Decode.isValidJumpDest submissionBytecode 215 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 132 (by rfl)
   have hdestN : Decode.isValidJumpDest submissionBytecode
-      (UInt256.ofNat 215).toNat = true := by
+      (UInt256.ofNat 243).toNat = true := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt (by norm_num : 215 < 2 ^ 256)]
     exact hdest
@@ -226,14 +226,14 @@ theorem run_word_straddle (input : ByteArray) (k : Nat) (a : UInt256) (hk : k < 
       UInt256.land m7 (UInt256.mul M (UInt256.ofNat (scalarAt k))) := by
     apply Challenge.EvmProof.Word.word_ext
     rw [Challenge.EvmProof.Word.word_toNat_land, Challenge.EvmProof.Word.word_toNat_land, Nat.and_comm]
-  have he : UInt256.ofNat 224 =
-      (UInt256.ofNat 255).land (UInt256.ofNat (32 * k)) := by
+  have he : UInt256.ofNat 252 =
+      (UInt256.ofNat 283).land (UInt256.ofNat (32 * k)) := by
     rw [land_ff _ (by omega), h]
-  have hzero : UInt256.xor (UInt256.ofNat 224)
-      ((UInt256.ofNat 255).land (UInt256.ofNat (32 * k))) = 0 :=
+  have hzero : UInt256.xor (UInt256.ofNat 252)
+      ((UInt256.ofNat 283).land (UInt256.ofNat (32 * k))) = 0 :=
     (KnownInputLogic.wordXor_eq_zero_iff _ _).2 he
-  have hcond : ¬ UInt256.isTrue (UInt256.xor (UInt256.ofNat 224)
-      ((UInt256.ofNat 255).land (UInt256.ofNat (32 * k)))) := by
+  have hcond : ¬ UInt256.isTrue (UInt256.xor (UInt256.ofNat 252)
+      ((UInt256.ofNat 283).land (UInt256.ofNat (32 * k)))) := by
     rw [hzero]
     decide
   simp (config := { maxSteps := 800000 })

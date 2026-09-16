@@ -53,8 +53,8 @@ private theorem tailBytes_zero (input : ByteArray) (hsize : input.size = 1000) :
 theorem finalWord_of_size_shift (input : ByteArray)
     (hsize : input.size = 1000)
     (hshift : UInt256.shiftRight (MachineState.readWord input 992)
-        (UInt256.ofNat 192) =
-      UInt256.shiftRight KnownInputData.fullWord (UInt256.ofNat 192)) :
+        (UInt256.ofNat 220) =
+      UInt256.shiftRight KnownInputData.fullWord (UInt256.ofNat 220)) :
     MachineState.readWord input 992 = KnownInputData.finalWord := by
   apply Challenge.EvmProof.Word.word_ext
   rw [Challenge.EvmProof.Bytes.readWord_toNat]
@@ -62,8 +62,8 @@ theorem finalWord_of_size_shift (input : ByteArray)
     tailBytes_zero input hsize, Nat.add_zero]
   have hread := Challenge.EvmProof.Bytes.shiftRight_readWord input 992 8
     (by omega) (by omega)
-  have hfull : UInt256.shiftRight KnownInputData.fullWord (UInt256.ofNat 192) =
-      UInt256.ofNat 7016996765293437281 := by
+  have hfull : UInt256.shiftRight KnownInputData.fullWord (UInt256.ofNat 220) =
+      UInt256.ofNat 7016996765293437309 := by
     decide
   rw [hshift, hfull] at hread
   have hnat := congrArg UInt256.toNat hread
@@ -91,7 +91,7 @@ theorem finalAcc_zero_iff_matches (input : ByteArray)
       rw [KnownInputData.expectedWord, if_neg (by omega)]
       exact finalWord_of_size_shift input hsize
         (htail.trans (congrArg (fun w => UInt256.shiftRight w
-          (UInt256.ofNat 192)) href))
+          (UInt256.ofNat 220)) href))
     · rw [KnownInputData.expectedWord, if_pos (by omega)]
       exact hwords i (by omega)
   · rintro ⟨_, hwords⟩

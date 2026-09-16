@@ -77,10 +77,10 @@ theorem rescale (x y : UInt256) (factor s : Nat)
 theorem at_shift23 (x y : UInt256) :
     UInt256.land (UInt256.ofNat pairMask)
       (UInt256.add y (UInt256.shiftRight
-        (UInt256.mul (UInt256.ofNat 20282409608374036906885615976464) x) (UInt256.ofNat 23))) =
+        (UInt256.mul (UInt256.ofNat 20282409608374036906885615976492) x) (UInt256.ofNat 23))) =
     UInt256.land (UInt256.ofNat pairMask)
       (UInt256.add y (UInt256.shiftRight
-        (UInt256.mul (UInt256.ofNat 10141204804187018453442807988232) x) (UInt256.ofNat 22))) := by
+        (UInt256.mul (UInt256.ofNat 10141204804187018453442807988260) x) (UInt256.ofNat 22))) := by
   exact rescale x y 10141204804187018453442807988232 23 (by decide) (by decide)
 
 #print axioms at_shift23
@@ -89,10 +89,10 @@ theorem at_shift23 (x y : UInt256) :
 theorem at_shift25 (x y : UInt256) :
     UInt256.land (UInt256.ofNat pairMask)
       (UInt256.add y (UInt256.shiftRight
-        (UInt256.mul (UInt256.ofNat 20282409608374036906834076368900) x) (UInt256.ofNat 25))) =
+        (UInt256.mul (UInt256.ofNat 20282409608374036906834076368928) x) (UInt256.ofNat 25))) =
     UInt256.land (UInt256.ofNat pairMask)
       (UInt256.add y (UInt256.shiftRight
-        (UInt256.mul (UInt256.ofNat 10141204804187018453417038184450) x) (UInt256.ofNat 24))) := by
+        (UInt256.mul (UInt256.ofNat 10141204804187018453417038184478) x) (UInt256.ofNat 24))) := by
   exact rescale x y 10141204804187018453417038184450 25 (by decide) (by decide)
 
 #print axioms at_shift25
@@ -101,10 +101,10 @@ theorem at_shift25 (x y : UInt256) :
 theorem at_shift24 (x y : UInt256) :
     UInt256.land (UInt256.ofNat pairMask)
       (UInt256.add y (UInt256.shiftRight
-        (UInt256.mul (UInt256.ofNat 20282409608374036906954335453216) x) (UInt256.ofNat 24))) =
+        (UInt256.mul (UInt256.ofNat 20282409608374036906954335453244) x) (UInt256.ofNat 24))) =
     UInt256.land (UInt256.ofNat pairMask)
       (UInt256.add y (UInt256.shiftRight
-        (UInt256.mul (UInt256.ofNat 10141204804187018453477167726608) x) (UInt256.ofNat 23))) := by
+        (UInt256.mul (UInt256.ofNat 10141204804187018453477167726636) x) (UInt256.ofNat 23))) := by
   exact rescale x y 10141204804187018453477167726608 24 (by decide) (by decide)
 
 #print axioms at_shift24
@@ -113,10 +113,10 @@ theorem at_shift24 (x y : UInt256) :
 theorem at_shift27 (x y : UInt256) :
     UInt256.land (UInt256.ofNat pairMask)
       (UInt256.add y (UInt256.shiftRight
-        (UInt256.mul (UInt256.ofNat 20282409608374036906834076368900) x) (UInt256.ofNat 27))) =
+        (UInt256.mul (UInt256.ofNat 20282409608374036906834076368928) x) (UInt256.ofNat 27))) =
     UInt256.land (UInt256.ofNat pairMask)
       (UInt256.add y (UInt256.shiftRight
-        (UInt256.mul (UInt256.ofNat 10141204804187018453417038184450) x) (UInt256.ofNat 26))) := by
+        (UInt256.mul (UInt256.ofNat 10141204804187018453417038184478) x) (UInt256.ofNat 26))) := by
   exact rescale x y 10141204804187018453417038184450 27 (by decide) (by decide)
 
 #print axioms at_shift27
@@ -125,10 +125,10 @@ theorem at_shift27 (x y : UInt256) :
 theorem at_shift20 (x y : UInt256) :
     UInt256.land (UInt256.ofNat pairMask)
       (UInt256.add y (UInt256.shiftRight
-        (UInt256.mul (UInt256.ofNat 20282409608374036906834076368900) x) (UInt256.ofNat 20))) =
+        (UInt256.mul (UInt256.ofNat 20282409608374036906834076368928) x) (UInt256.ofNat 20))) =
     UInt256.land (UInt256.ofNat pairMask)
       (UInt256.add y (UInt256.shiftRight
-        (UInt256.mul (UInt256.ofNat 10141204804187018453417038184450) x) (UInt256.ofNat 19))) := by
+        (UInt256.mul (UInt256.ofNat 10141204804187018453417038184478) x) (UInt256.ofNat 19))) := by
   exact rescale x y 10141204804187018453417038184450 20 (by decide) (by decide)
 
 #print axioms at_shift20

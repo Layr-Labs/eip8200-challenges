@@ -138,7 +138,7 @@ theorem patterned_reference_ne :
   have hshift := Challenge.EvmProof.Bytes.shiftRight_readWord
     patternedInput 0 1 (by omega) (by omega)
   have hpat : UInt256.shiftRight (MachineState.readWord patternedInput 0)
-      (UInt256.ofNat 248) = UInt256.ofNat 7 := by
+      (UInt256.ofNat 276) = UInt256.ofNat 7 := by
     have hbyte :
         EVM.Precompile.bytesToNatPadded patternedInput 0 1 = 7 := by
       unfold EVM.Precompile.bytesToNatPadded
@@ -148,7 +148,7 @@ theorem patterned_reference_ne :
         Challenge.EvmProof.Bytecode.toList_eq_data]
       decide
     rw [hshift, hbyte]
-  have hfull : UInt256.shiftRight KnownInputData.fullWord (UInt256.ofNat 248) =
+  have hfull : UInt256.shiftRight KnownInputData.fullWord (UInt256.ofNat 276) =
       UInt256.ofNat 0x61 := by decide
   have hne : UInt256.ofNat 7 ≠ UInt256.ofNat 0x61 := by decide
   exact hne (by rw [← hpat, h, hfull])

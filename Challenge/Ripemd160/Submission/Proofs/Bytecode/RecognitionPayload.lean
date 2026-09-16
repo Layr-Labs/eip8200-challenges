@@ -82,7 +82,7 @@ private theorem tablePayload (n : Nat) (hn : Allowed n) :
   all_goals decide
 
 theorem read_selected (n : Nat) (hn : Allowed n) :
-    MachineState.readPadded submissionBytecode (selected (UInt256.ofNat 4953) n).toNat 20 =
+    MachineState.readPadded submissionBytecode (selected (UInt256.ofNat 4981) n).toNat 20 =
       MachineState.readPadded payload (20*((2337668504/n)%16)) 20 := by
   rw [RecognitionSelectorResult.selected_nat n hn, tableRead]
   exact tablePayload n hn

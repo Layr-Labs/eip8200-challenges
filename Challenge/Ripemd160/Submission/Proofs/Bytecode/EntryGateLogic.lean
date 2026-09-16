@@ -22,7 +22,7 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open TinyGuardLogic
 
 def gateWord (n : Nat) : UInt256 :=
-  UInt256.xor (UInt256.ofNat 1000) (UInt256.ofNat n) *
+  UInt256.xor (UInt256.ofNat 1028) (UInt256.ofNat n) *
     UInt256.shiftRight (UInt256.ofNat n) (UInt256.ofNat 2)
 
 theorem xor_toNat (a b : UInt256) : (UInt256.xor a b).toNat = a.toNat ^^^ b.toNat := by
@@ -36,7 +36,7 @@ theorem gateWord_toNat (n : Nat) (hn : n < 2 ^ 64) :
     (gateWord n).toNat = (1000 ^^^ n) * (n / 4) := by
   have hn256 : n < 2 ^ 256 := Nat.lt_trans hn (by norm_num)
   have hx : 1000 ^^^ n < 2 ^ 64 := Nat.xor_lt_two_pow (by norm_num) hn
-  have hxor : (UInt256.xor (UInt256.ofNat 1000) (UInt256.ofNat n)).toNat = 1000 ^^^ n := by
+  have hxor : (UInt256.xor (UInt256.ofNat 1028) (UInt256.ofNat n)).toNat = 1000 ^^^ n := by
     rw [xor_toNat, Word.word_toNat_ofNat, Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt (by norm_num), Nat.mod_eq_of_lt hn256]
   have hshift : (UInt256.shiftRight (UInt256.ofNat n) (UInt256.ofNat 2)).toNat = n / 4 := by
@@ -47,7 +47,7 @@ theorem gateWord_toNat (n : Nat) (hn : n < 2 ^ 64) :
     calc (1000 ^^^ n) * (n / 4) < 2 ^ 64 * 2 ^ 64 :=
           Nat.mul_lt_mul_of_lt_of_lt hx hq
       _ < 2 ^ 256 := by norm_num
-  change ((UInt256.xor (UInt256.ofNat 1000) (UInt256.ofNat n)).toNat *
+  change ((UInt256.xor (UInt256.ofNat 1028) (UInt256.ofNat n)).toNat *
       (UInt256.shiftRight (UInt256.ofNat n) (UInt256.ofNat 2)).toNat) % UInt256.size = _
   rw [hxor, hshift]
   exact Nat.mod_eq_of_lt hprod
@@ -58,7 +58,7 @@ theorem gateWord_true (n : Nat) (hn : n < 2 ^ 64) (h4 : 4 ≤ n) (h1000 : n ≠ 
   rw [gateWord_toNat n hn]
   have hx : 1000 ^^^ n ≠ 0 := by
     intro hz
-    have hw : UInt256.xor (UInt256.ofNat 1000) (UInt256.ofNat n) = 0 := by
+    have hw : UInt256.xor (UInt256.ofNat 1028) (UInt256.ofNat n) = 0 := by
       apply Word.word_ext
       rw [xor_toNat, Word.word_toNat_ofNat, Word.word_toNat_ofNat,
         Nat.mod_eq_of_lt (by norm_num), Nat.mod_eq_of_lt (Nat.lt_trans hn (by norm_num)), hz]

@@ -258,8 +258,8 @@ def lowChain (memory : ByteArray) (n : UInt256) : ByteArray :=
   PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord
     (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord
       (zeroMemory memory) 162 (lowDirty n)) 666 (lowDirty n))
-      144 (lowDirty n)) 522 (UInt256.ofNat 128)) 54 (UInt256.ofNat 128))
-    36 (UInt256.ofNat 128)
+      144 (lowDirty n)) 522 (UInt256.ofNat 156)) 54 (UInt256.ofNat 156))
+    36 (UInt256.ofNat 156)
 
 /-- The low block's six stores over an ARBITRARY base.  `lowChain memory = lowChainOver
 (zeroMemory memory)` definitionally; the machine's real base is
@@ -269,8 +269,8 @@ def lowChainOver (base : ByteArray) (n : UInt256) : ByteArray :=
   PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord
     (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord
       base 162 (lowDirty n)) 666 (lowDirty n))
-      144 (lowDirty n)) 522 (UInt256.ofNat 128)) 54 (UInt256.ofNat 128))
-    36 (UInt256.ofNat 128)
+      144 (lowDirty n)) 522 (UInt256.ofNat 156)) 54 (UInt256.ofNat 156))
+    36 (UInt256.ofNat 156)
 
 theorem lowChain_eq_over (memory : ByteArray) (n : UInt256) :
     lowChain memory n = lowChainOver (zeroMemory memory) n := rfl
@@ -286,8 +286,8 @@ theorem lowChainOver_agree {b b' : ByteArray}
     (h : StaggerTableLayout.AgreeFrom14 b b') (n : UInt256) :
     StaggerTableLayout.AgreeFrom14 (lowChainOver b n) (lowChainOver b' n) :=
   ((((((h.writeWord 162 (lowDirty n)).writeWord 666 (lowDirty n)).writeWord 144
-    (lowDirty n)).writeWord 522 (UInt256.ofNat 128)).writeWord 54
-    (UInt256.ofNat 128)).writeWord 36 (UInt256.ofNat 128))
+    (lowDirty n)).writeWord 522 (UInt256.ofNat 156)).writeWord 54
+    (UInt256.ofNat 156)).writeWord 36 (UInt256.ofNat 156))
 
 /-- The real pad table agrees with the model from byte 14 up. -/
 theorem padRealChain_agree (memory : ByteArray) (n : UInt256)

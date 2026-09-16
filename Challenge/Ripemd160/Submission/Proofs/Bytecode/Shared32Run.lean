@@ -23,18 +23,18 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     runInstrSeq template
       {s with
         pc := pc
-        stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10
+        stack := stk ret (UInt256.ofNat 4294967323) a2 a3 a4 a5 a6 a7 a8 a9 a10
           (UInt256.ofNat 0) lim rho
         memory := writeWord s.memory 96 highWord} =
       some {s with
         pc := pcAfter pc template
-        stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10
+        stack := stk ret (UInt256.ofNat 4294967323) a2 a3 a4 a5 a6 a7 a8 a9 a10
           (UInt256.ofNat 0) lim rho
         memory := StaggerTableLayout.resultMemory0 s.memory (Shared32Table.words s.memory)
         activeWords := UInt256.ofNat 35} := by
   let rest : List UInt256 :=
     a2 :: a3 :: a4 :: a5 :: a6 :: a7 :: a8 :: a9 :: a10 :: UInt256.ofNat 0 :: lim :: mask8 :: mask16 :: rho
-  let F := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10
+  let F := stk ret (UInt256.ofNat 4294967323) a2 a3 a4 a5 a6 a7 a8 a9 a10
     (UInt256.ofNat 0) lim rho
   let words := Shared32Table.words s.memory
   let scratch := Pair13Endian.scratch3 s.memory
@@ -46,7 +46,7 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
   have ha3 : s3.activeWords = UInt256.ofNat 34 := hactive
   have hF : F.length ≤ 900 := by simp only [F, stk, List.length_cons]; omega
   have hrest : rest.length ≤ 898 := by simp only [rest, List.length_cons]; omega
-  have h1 := Shared32Lower.run_lower s1 pc ret (UInt256.ofNat 4294967295)
+  have h1 := Shared32Lower.run_lower s1 pc ret (UInt256.ofNat 4294967323)
     a2 a3 a4 a5 a6 a7 a8 a9 a10 lim rho hstack hrun hactive
   have hread : MachineState.readWord s1.memory 1056 = MachineState.readWord s.memory 1056 :=
     read_writeWord_disjoint _ _ _ _ (Or.inr (by decide))
@@ -82,7 +82,7 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
   simpa only [template, DenseScheduleTrace.pcAfter_append, s3, s2, s1, hmem, scratch, words,
     rest, stk] using h
 
-theorem end_pc : pcAfter (UInt256.ofNat 503) template = UInt256.ofNat 868 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 531) template = UInt256.ofNat 896 := by decide
 
 #print axioms run_table
 #print axioms end_pc

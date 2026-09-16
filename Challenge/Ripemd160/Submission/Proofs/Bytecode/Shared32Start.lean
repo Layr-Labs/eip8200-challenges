@@ -92,7 +92,7 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32)
   have g2 : GasSteps (atState s 4709 entryFrame) (atState s 4710 frame) := by
     exact StaggerPersistentStart.gasSteps_entry s entryFrame (by decide) e.run e.code e.fork e.np
   have g3 := Shared32Trace.gasSteps_guard s e frame hcap h32
-  have g4 := Shared32Trace.gasSteps_sparse s e factorPlusWord (UInt256.ofNat 4294967295)
+  have g4 := Shared32Trace.gasSteps_sparse s e factorPlusWord (UInt256.ofNat 4294967323)
     (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)
     (fusedCoefficientWord 0 2)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)

@@ -24,8 +24,8 @@ theorem lookupNat_eq_iff (n : Nat) :
     · intro h; omega
 
 def lookup (x : UInt256) : UInt256 :=
-  UInt256.land (UInt256.ofNat 1016)
-    (UInt256.shiftRight (UInt256.ofNat 6308489473)
+  UInt256.land (UInt256.ofNat 1044)
+    (UInt256.shiftRight (UInt256.ofNat 6308489501)
       (UInt256.land (UInt256.ofNat 24) x))
 
 theorem lookup_toNat (x : UInt256) : (lookup x).toNat = lookupNat x.toNat := by
@@ -38,7 +38,7 @@ theorem lookup_toNat (x : UInt256) : (lookup x).toNat = lookupNat x.toNat := by
     rw [hi]
     have h : x.toNat &&& 24 ≤ 24 := Nat.and_le_right
     omega
-  have hsr := Word.shiftRight_toNat (UInt256.ofNat 6308489473) hs
+  have hsr := Word.shiftRight_toNat (UInt256.ofNat 6308489501) hs
   rw [← Word.word_eq_ofNat_toNat index] at hsr
   unfold lookup
   rw [Word.word_toNat_land, hsr]
@@ -47,7 +47,7 @@ theorem lookup_toNat (x : UInt256) : (lookup x).toNat = lookupNat x.toNat := by
   exact Nat.and_comm _ _
 
 theorem lookup_eq_iff (x : UInt256) :
-    lookup x = x ↔ x = UInt256.ofNat 256 ∨ x = UInt256.ofNat 376 ∨ x = UInt256.ofNat 1000 := by
+    lookup x = x ↔ x = UInt256.ofNat 284 ∨ x = UInt256.ofNat 404 ∨ x = UInt256.ofNat 1028 := by
   constructor
   · intro h
     have hn := congrArg UInt256.toNat h
@@ -61,14 +61,14 @@ theorem lookup_eq_iff (x : UInt256) :
 theorem flag (x : UInt256) :
     UInt256.eq x (lookup x) =
       UInt256.lor
-        (UInt256.lor (UInt256.eq (UInt256.ofNat 1000) x)
-          (UInt256.eq (UInt256.ofNat 376) x))
-        (UInt256.eq (UInt256.ofNat 256) x) := by
-  by_cases h256 : x = UInt256.ofNat 256
+        (UInt256.lor (UInt256.eq (UInt256.ofNat 1028) x)
+          (UInt256.eq (UInt256.ofNat 404) x))
+        (UInt256.eq (UInt256.ofNat 284) x) := by
+  by_cases h256 : x = UInt256.ofNat 284
   · subst x; decide
-  by_cases h376 : x = UInt256.ofNat 376
+  by_cases h376 : x = UInt256.ofNat 404
   · subst x; decide
-  by_cases h1000 : x = UInt256.ofNat 1000
+  by_cases h1000 : x = UInt256.ofNat 1028
   · subst x; decide
   have hlookup : x.toNat ≠ (lookup x).toNat := by
     intro h
@@ -83,9 +83,9 @@ theorem flag (x : UInt256) :
     intro h; apply h376; apply Word.word_ext; exact h.symm
   have h1000n : 1000 ≠ x.toNat := by
     intro h; apply h1000; apply Word.word_ext; exact h.symm
-  simp only [UInt256.eq, show (UInt256.ofNat 256).toNat = 256 by decide,
-    show (UInt256.ofNat 376).toNat = 376 by decide,
-    show (UInt256.ofNat 1000).toNat = 1000 by decide,
+  simp only [UInt256.eq, show (UInt256.ofNat 284).toNat = 256 by decide,
+    show (UInt256.ofNat 404).toNat = 376 by decide,
+    show (UInt256.ofNat 1028).toNat = 1000 by decide,
     if_neg hlookup, if_neg h256n, if_neg h376n, if_neg h1000n]
   decide
 

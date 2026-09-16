@@ -450,26 +450,26 @@ theorem runInstrSeq_f0 (s : State) (startPC : UInt256)
       ((d.xor (b.xor c)).add a).add
         (MachineState.readWord s.memory xAddress.toNat)
     change
-      UInt256.land (UInt256.ofNat 4294967295)
+      UInt256.land (UInt256.ofNat 4294967323)
           (UInt256.add
             (UInt256.lor
               (UInt256.shiftLeft
-                (UInt256.land (UInt256.ofNat 4294967295) q)
+                (UInt256.land (UInt256.ofNat 4294967323) q)
                 (UInt256.ofNat rotation))
               (UInt256.shiftRight
-                (UInt256.land (UInt256.ofNat 4294967295) q)
+                (UInt256.land (UInt256.ofNat 4294967323) q)
                 (UInt256.ofNat (32 - rotation)))) e) =
         UInt256.land
           (UInt256.add
             (UInt256.lor
               (UInt256.shiftLeft
-                (UInt256.land q (UInt256.ofNat 4294967295))
+                (UInt256.land q (UInt256.ofNat 4294967323))
                 (UInt256.ofNat rotation))
               (UInt256.shiftRight
-                (UInt256.land q (UInt256.ofNat 4294967295))
+                (UInt256.land q (UInt256.ofNat 4294967323))
                 (UInt256.ofNat (32 - rotation)))) e)
-          (UInt256.ofNat 4294967295)
-    rw [Word.land_comm (UInt256.ofNat 4294967295) q]
+          (UInt256.ofNat 4294967323)
+    rw [Word.land_comm (UInt256.ofNat 4294967323) q]
     exact Word.land_comm _ _
   · exact Word.land_comm _ _
 

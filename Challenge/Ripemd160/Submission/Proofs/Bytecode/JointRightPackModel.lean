@@ -13,12 +13,12 @@ def suffix (h : WordLane) (off limit : UInt256) (rho : List UInt256) : List UInt
   [h.d, h.c, h.b, h.a, off, limit] ++ rho
 
 def input (memory : ByteArray) (h q : WordLane) (off limit : UInt256) : JointRightPackRaw.Input :=
-  { rd := q.d, k := UInt256.ofNat 1352829926, rb := q.b, rc := q.c, ra := q.a, re := q.e,
+  { rd := q.d, k := UInt256.ofNat 1352829954, rb := q.b, rc := q.c, ra := q.a, re := q.e,
     factor := factorPlusWord, lower := lowerWord,
-    cache140 := word memory h.e (.cache 140) q h (UInt256.ofNat 1352829926),
-    cache350 := word memory h.e (.cache 350) q h (UInt256.ofNat 1352829926),
-    cache310 := word memory h.e (.cache 310) q h (UInt256.ofNat 1352829926),
-    cache190 := word memory h.e (.cache 190) q h (UInt256.ofNat 1352829926),
+    cache140 := word memory h.e (.cache 140) q h (UInt256.ofNat 1352829954),
+    cache350 := word memory h.e (.cache 350) q h (UInt256.ofNat 1352829954),
+    cache310 := word memory h.e (.cache 310) q h (UInt256.ofNat 1352829954),
+    cache190 := word memory h.e (.cache 190) q h (UInt256.ofNat 1352829954),
     h4 := h.e, h1 := h.b, h2 := h.c, h3 := h.d, h0 := h.a, off := off, limit := limit }
 
 theorem input_eq (memory : ByteArray) (h q : WordLane) (off limit : UInt256)
@@ -26,7 +26,7 @@ theorem input_eq (memory : ByteArray) (h q : WordLane) (off limit : UInt256)
     JointRightPackRaw.inputStack (input memory h q off limit) rho =
       stack memory h.e [.d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140,
         .cache 350, .cache 310, .cache 190, .cache 500]
-        q h (UInt256.ofNat 1352829926) (suffix h off limit rho) := by
+        q h (UInt256.ofNat 1352829954) (suffix h off limit rho) := by
   simp [JointRightPackRaw.inputStack, input, stack, StaggerCoreCommon.word, suffix]
 
 theorem output_eq (memory : ByteArray) (h q : WordLane) (off limit : UInt256)

@@ -9,7 +9,7 @@ open Challenge.EvmProof
 /-- Exact full-bitmap membership for the eleven short checked paths. -/
 def maskNat : Nat := (2 ^ 56) ||| (2 ^ 120) ||| (2 ^ 63) ||| (2 ^ 64) ||| (2 ^ 65) ||| (2 ^ 128) ||| (2 ^ 119) ||| (2 ^ 55) ||| (2 ^ 1) ||| (2 ^ 31) ||| (2 ^ 32)
 def mask : UInt256 := UInt256.ofNat maskNat
-theorem mask_literal : mask = UInt256.ofNat 342276208914615837337402008677671501826 := by decide
+theorem mask_literal : mask = UInt256.ofNat 342276208914615837337402008677671501854 := by decide
 private theorem mask_toNat : mask.toNat = maskNat := by decide
 private theorem mask_bit_false (n : Nat)
     (h56 : n ≠ 56) (h120 : n ≠ 120) (h63 : n ≠ 63) (h64 : n ≠ 64) (h65 : n ≠ 65) (h128 : n ≠ 128) (h119 : n ≠ 119) (h55 : n ≠ 55) (h1 : n ≠ 1) (h31 : n ≠ 31) (h32 : n ≠ 32) : maskNat.testBit n = false := by
@@ -41,10 +41,10 @@ private theorem eq_zero (n : Nat) (hn : n < 2 ^ 256) (x : UInt256)
 
 theorem flag (x : UInt256) :
     UInt256.isZero (UInt256.land (UInt256.ofNat 1) (UInt256.shiftRight mask x)) =
-      UInt256.isZero (UInt256.lor (UInt256.eq (UInt256.ofNat 56) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 120) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 63) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 64) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 65) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 128) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 119) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 55) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 1) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 31) x) (UInt256.eq (UInt256.ofNat 32) x))))))))))) := by
+      UInt256.isZero (UInt256.lor (UInt256.eq (UInt256.ofNat 56) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 148) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 63) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 64) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 65) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 156) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 147) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 55) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 1) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 31) x) (UInt256.eq (UInt256.ofNat 32) x))))))))))) := by
   by_cases h56 : x = UInt256.ofNat 56
   · subst x; decide
-  by_cases h120 : x = UInt256.ofNat 120
+  by_cases h120 : x = UInt256.ofNat 148
   · subst x; decide
   by_cases h63 : x = UInt256.ofNat 63
   · subst x; decide
@@ -52,9 +52,9 @@ theorem flag (x : UInt256) :
   · subst x; decide
   by_cases h65 : x = UInt256.ofNat 65
   · subst x; decide
-  by_cases h128 : x = UInt256.ofNat 128
+  by_cases h128 : x = UInt256.ofNat 156
   · subst x; decide
-  by_cases h119 : x = UInt256.ofNat 119
+  by_cases h119 : x = UInt256.ofNat 147
   · subst x; decide
   by_cases h55 : x = UInt256.ofNat 55
   · subst x; decide

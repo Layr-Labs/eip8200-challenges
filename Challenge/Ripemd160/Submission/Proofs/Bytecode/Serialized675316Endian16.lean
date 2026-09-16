@@ -28,7 +28,7 @@ def code : List Instr :=
     .op .XOR,
     .op (.Dup ⟨5, by decide⟩),
     .op .AND,
-    .push ⟨3, by decide⟩ (UInt256.ofNat 65537),
+    .push ⟨3, by decide⟩ (UInt256.ofNat 65565),
     .op .MUL,
     .op .XOR ]
 

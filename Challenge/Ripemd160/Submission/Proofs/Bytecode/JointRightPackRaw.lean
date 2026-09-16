@@ -42,7 +42,7 @@ def template : List Instr :=
     .op (.Dup ⟨3, by decide⟩),
     .op .XOR,
     .op .ADD,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 252),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 280),
     .op .MLOAD,
     .op .ADD,
     .op .ADD,
@@ -56,17 +56,17 @@ def template : List Instr :=
     .op .ADD,
     .op (.Dup ⟨6, by decide⟩),
     .op .AND,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 172),
     .op .SHL,
     .op (.Dup ⟨14, by decide⟩),
     .op .OR,
     .op (.Swap ⟨0, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 172),
     .op .SHL,
     .op (.Dup ⟨13, by decide⟩),
     .op .OR,
     .op (.Swap ⟨3, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 172),
     .op .SHL,
     .op (.Dup ⟨15, by decide⟩),
     .op .OR,
@@ -75,28 +75,28 @@ def template : List Instr :=
     .op .MUL,
     .push ⟨1, by decide⟩ (UInt256.ofNat 23),
     .op .SHR,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 172),
     .op .SHL,
     .op (.Dup ⟨12, by decide⟩),
     .op .OR,
     .op (.Swap ⟨2, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 172),
     .op .SHL,
     .op (.Dup ⟨11, by decide⟩),
     .op .OR,
-    .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
-    .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) ]
+    .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522833630494748),
+    .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522837925462043) ]
 
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
   [ x.rd, x.k, x.rb, x.rc, x.ra, x.re, x.factor, x.lower, x.cache140, x.cache350, x.cache310, x.cache190, x.h4, x.h3, x.h2, x.h1, x.h0, x.off, x.limit ] ++ rho
 def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ (UInt256.lor (UInt256.ofNat 95780971281817308448866066055358605703522833630494720) x.lower),
-    (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
-    (UInt256.lor x.h4 (UInt256.shiftLeft x.rd (UInt256.ofNat 144))),
-    (UInt256.lor x.h1 (UInt256.shiftLeft (UInt256.land x.lower (UInt256.add x.re (UInt256.shiftRight (UInt256.mul x.factor (UInt256.land x.lower (UInt256.add (UInt256.add (MachineState.readWord memory 252) (UInt256.add (UInt256.xor x.rb (UInt256.lor x.rc (UInt256.lnot x.rd))) x.ra)) x.k))) (UInt256.ofNat 24)))) (UInt256.ofNat 144))),
-    (UInt256.lor x.h0 (UInt256.shiftLeft x.re (UInt256.ofNat 144))),
-    (UInt256.lor x.h3 (UInt256.shiftLeft (UInt256.shiftRight (UInt256.mul x.factor x.rc) (UInt256.ofNat 23)) (UInt256.ofNat 144))),
-    (UInt256.lor x.h2 (UInt256.shiftLeft x.rb (UInt256.ofNat 144))),
+  [ (UInt256.lor (UInt256.ofNat 95780971281817308448866066055358605703522833630494748) x.lower),
+    (UInt256.ofNat 95780971281817308448866066055358605703522833630494748),
+    (UInt256.lor x.h4 (UInt256.shiftLeft x.rd (UInt256.ofNat 172))),
+    (UInt256.lor x.h1 (UInt256.shiftLeft (UInt256.land x.lower (UInt256.add x.re (UInt256.shiftRight (UInt256.mul x.factor (UInt256.land x.lower (UInt256.add (UInt256.add (MachineState.readWord memory 252) (UInt256.add (UInt256.xor x.rb (UInt256.lor x.rc (UInt256.lnot x.rd))) x.ra)) x.k))) (UInt256.ofNat 24)))) (UInt256.ofNat 172))),
+    (UInt256.lor x.h0 (UInt256.shiftLeft x.re (UInt256.ofNat 172))),
+    (UInt256.lor x.h3 (UInt256.shiftLeft (UInt256.shiftRight (UInt256.mul x.factor x.rc) (UInt256.ofNat 23)) (UInt256.ofNat 172))),
+    (UInt256.lor x.h2 (UInt256.shiftLeft x.rb (UInt256.ofNat 172))),
     x.factor,
     x.lower,
     x.cache140,
@@ -120,7 +120,7 @@ def roundT (memory : ByteArray) (x : Input) : UInt256 :=
           (UInt256.add (UInt256.xor (UInt256.lor x.rc (UInt256.lnot x.rd)) x.rb) x.ra)))))
       (UInt256.ofNat 24)))
 def packed (a b : UInt256) : UInt256 :=
-  UInt256.lor a (UInt256.shiftLeft b (UInt256.ofNat 144))
+  UInt256.lor a (UInt256.shiftLeft b (UInt256.ofNat 172))
 def upperMask : UInt256 := UInt256.ofNat ((2^32-1)*2^144)
 def pairMask : UInt256 := UInt256.ofNat ((2^32-1)*(1+2^144))
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
@@ -141,7 +141,7 @@ private theorem actualOutput_eq (memory : ByteArray) (x : Input) (rho : List UIn
 private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 35 ≤ s.activeWords.toNat)
-    (hlower : x.lower = UInt256.ofNat 4294967295) :
+    (hlower : x.lower = UInt256.ofNat 4294967323) :
     runInstrSeq template {s with pc := pc, stack := inputStack x rho} =
       some {s with pc := pcAfter pc template, stack := actualOutput s.memory x rho} := by
   have hbase : rho.length < 1024 := by omega
@@ -160,7 +160,7 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 35 ≤ s.activeWords.toNat)
-    (hlower : x.lower = UInt256.ofNat 4294967295) :
+    (hlower : x.lower = UInt256.ofNat 4294967323) :
     runInstrSeq template {s with pc := pc, stack := inputStack x rho} =
       some {s with pc := pcAfter pc template, stack := outputStack s.memory x rho} := by
   simpa only [actualOutput_eq] using run_generated s pc x rho hstack hrun hactive hlower

@@ -16,10 +16,10 @@ open StackRoundTrace PairedScheduleMemory
 
 /-- `2 ^ 144 + 1`: the dual-lane broadcast constant.  S51 no longer pushes it (the
 scratch duplicates the lanes instead), but the table image is still described by it. -/
-def coefficient : UInt256 := UInt256.ofNat 22300745198530623141535718272648361505980417
+def coefficient : UInt256 := UInt256.ofNat 22300745198530623141535718272648361505980445
 
 /-- The two four-byte lanes the schedule loads keep: bytes `10..14` and `28..32`. -/
-def poolMask : UInt256 := UInt256.ofNat 95780971281817308448866066055358605703522837925462015
+def poolMask : UInt256 := UInt256.ofNat 95780971281817308448866066055358605703522837925462043
 
 /-- The sixteen load addresses, in schedule-word order. -/
 def poolAddr : Nat → Nat
@@ -36,7 +36,7 @@ def rawLoad (memory : ByteArray) (i : Nat) : UInt256 :=
 def poolWord (memory : ByteArray) (i : Nat) : UInt256 :=
   if i = 0 ∨ i = 1 ∨ i = 2 then rawLoad memory i
   else if i = 3 then
-    UInt256.lor (UInt256.shiftLeft (UInt256.land poolMask (rawLoad memory 3)) (UInt256.ofNat 144))
+    UInt256.lor (UInt256.shiftLeft (UInt256.land poolMask (rawLoad memory 3)) (UInt256.ofNat 172))
       (UInt256.land poolMask (rawLoad memory 3))
   else UInt256.land poolMask (rawLoad memory i)
 
@@ -73,9 +73,9 @@ def template : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 78),
     .op .MCOPY,
     .push ⟨1, by decide⟩ (UInt256.ofNat 112),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 130),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 158),
     .op .MCOPY,
-    .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
+    .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522837925462043),
     .push ⟨1, by decide⟩ (UInt256.ofNat 102),
     .op .MLOAD,
     .op (.Dup ⟨1, by decide⟩),
@@ -125,7 +125,7 @@ def template : List Instr :=
     .op (.Dup ⟨13, by decide⟩),
     .op .AND,
     .op (.Dup ⟨0, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 172),
     .op .SHL,
     .op .OR,
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
@@ -309,7 +309,7 @@ theorem poolWord_three (memory : ByteArray) (w : UInt256) (hw : w.toNat < 2 ^ 32
     (Nat.mul_lt_mul_right (by norm_num : 0 < 2 ^ 144)).mpr hw
   have hb : w.toNat * 2 ^ 144 < 2 ^ 256 :=
     Nat.lt_of_lt_of_le h1 (by norm_num)
-  have hsl : (UInt256.shiftLeft w (UInt256.ofNat 144)).toNat = w.toNat * 2 ^ 144 := by
+  have hsl : (UInt256.shiftLeft w (UInt256.ofNat 172)).toNat = w.toNat * 2 ^ 144 := by
     conv_lhs => rw [Word.word_eq_ofNat_toNat w]
     rw [Word.shiftLeft_ofNat (by exact w.val.isLt) (by norm_num) hb, Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt hb]

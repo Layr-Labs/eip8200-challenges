@@ -36,7 +36,7 @@ theorem dual_toNat (w : UInt256) (hw : w.toNat < 2 ^ 32) :
 
 theorem mask_dual (words : Nat → UInt256) (i : Nat) (hi : 3 ≤ i)
     (hw : (words i).toNat < 2 ^ 32) :
-    UInt256.land (UInt256.ofNat 4294967295) (dualW words i) = words i := by
+    UInt256.land (UInt256.ofNat 4294967323) (dualW words i) = words i := by
   have hne : ¬ (i < 3) := by omega
   rw [dualW, if_neg hne]
   apply Word.word_ext
@@ -170,28 +170,28 @@ theorem chain_isort (memory : ByteArray) (l : List (Nat × UInt256))
 
 def template0 : List Instr :=
   [ .op (.Dup ⟨4, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 126),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 154),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 900),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 928),
     .op .MSTORE,
     .op (.Dup ⟨11, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 216),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 244),
     .op .MSTORE,
     .op (.Dup ⟨2, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 882),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 910),
     .op .MSTORE,
     .op (.Dup ⟨4, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 864),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 892),
     .op .MSTORE,
     .op (.Dup ⟨2, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 846),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 874),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 828),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 856),
     .op .MSTORE,
     .op (.Dup ⟨3, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 558),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 586),
     .op .MSTORE ]
 
 def stack0 (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
@@ -276,27 +276,27 @@ theorem run_chunk0 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : L
 
 def template1 : List Instr :=
   [ .op (.Dup ⟨13, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 684),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 712),
     .op .MSTORE,
     .op (.Dup ⟨3, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 936),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 964),
     .op .MSTORE,
     .op (.Dup ⟨5, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 108),
     .op .MSTORE,
     .op (.Dup ⟨7, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 792),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 820),
     .op .MSTORE,
     .op (.Dup ⟨7, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 774),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 802),
     .op .MSTORE,
     .op (.Dup ⟨7, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 540),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 568),
     .op .MSTORE,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 756),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 784),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 522),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 550),
     .op .MSTORE ]
 
 def stack1 (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
@@ -391,16 +391,16 @@ def template2 : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 36),
     .op .MSTORE,
     .op (.Dup ⟨13, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 666),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 694),
     .op .MSTORE,
     .op (.Dup ⟨5, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 504),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 532),
     .op .MSTORE,
     .op (.Dup ⟨3, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 1080),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 1108),
     .op .MSTORE,
     .op (.Dup ⟨8, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 1062),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 1090),
     .op .MSTORE ]
 
 def stack2 (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
@@ -490,26 +490,26 @@ theorem run_chunk2_grow (s : State) (pc : UInt256) (words : Nat → UInt256) (rh
 
 def template3 : List Instr :=
   [ .op (.Dup ⟨3, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 486),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 514),
     .op .MSTORE,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 972),
-    .op .MSTORE,
-    .op (.Dup ⟨3, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 648),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 1000),
     .op .MSTORE,
     .op (.Dup ⟨3, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 1008),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 676),
+    .op .MSTORE,
+    .op (.Dup ⟨3, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 1036),
     .op .MSTORE,
     .op (.Dup ⟨8, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 630),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 658),
     .op .MSTORE,
     .op (.Dup ⟨3, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 612),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 640),
     .op .MSTORE,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 738),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 766),
     .op .MSTORE,
     .op (.Dup ⟨8, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 288),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 316),
     .op .MSTORE ]
 
 def stack3 (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
@@ -576,25 +576,25 @@ theorem run_chunk3 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : L
 #print axioms run_chunk3
 
 def template4 : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 594),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 622),
     .op .MSTORE,
     .op (.Dup ⟨8, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 1044),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 1072),
     .op .MSTORE,
     .op (.Dup ⟨8, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 414),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 442),
     .op .MSTORE,
     .op (.Dup ⟨4, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 360),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 388),
     .op .MSTORE,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 720),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 748),
     .op .MSTORE,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 270),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 298),
     .op .MSTORE,
     .op (.Dup ⟨1, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 396),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 424),
     .op .MSTORE,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 468),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 496),
     .op .MSTORE ]
 
 def stack4 (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
@@ -657,19 +657,19 @@ theorem run_chunk4 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : L
 def template5 : List Instr :=
   [ .push ⟨1, by decide⟩ (UInt256.ofNat 18),
     .op .MSTORE,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 342),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 370),
     .op .MSTORE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 198),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 226),
     .op .MSTORE,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 324),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 352),
     .op .MSTORE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 252),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 280),
     .op .MSTORE,
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .MSTORE,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 450),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 478),
     .op .MSTORE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 162),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 190),
     .op .MSTORE ]
 
 def stack5 (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
@@ -700,10 +700,10 @@ theorem run_chunk5 (s : State) (pc ret : UInt256) (words : Nat → UInt256) (res
     (hactive : 35 ≤ s.activeWords.toNat)
     (hclean6 : (words 6).toNat < 2 ^ 32) :
     runInstrSeq template5
-        {s with pc := pc, stack := stack5 words (ret :: UInt256.ofNat 4294967295 :: rest)} =
+        {s with pc := pc, stack := stack5 words (ret :: UInt256.ofNat 4294967323 :: rest)} =
       some {s with
         pc := pcAfter pc template5
-        stack := outputStack5 words (ret :: UInt256.ofNat 4294967295 :: rest)
+        stack := outputStack5 words (ret :: UInt256.ofNat 4294967323 :: rest)
         memory := memory5 s.memory words} := by
   have hbase : rest.length < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -995,28 +995,28 @@ theorem run_writer (s : State) (pc ret : UInt256) (words : Nat → UInt256) (res
     runInstrSeq writerTemplate
         {s with
           pc := pc
-          stack := Pair13PoolRaw.poolStack (dualW words) (ret :: UInt256.ofNat 4294967295 :: rest)} =
+          stack := Pair13PoolRaw.poolStack (dualW words) (ret :: UInt256.ofNat 4294967323 :: rest)} =
       some {s with
         pc := pcAfter pc writerTemplate
-        stack := ret :: UInt256.ofNat 4294967295 :: rest
+        stack := ret :: UInt256.ofNat 4294967323 :: rest
         memory := writerMemory s.memory words} := by
-  have hrho : (ret :: UInt256.ofNat 4294967295 :: rest).length ≤ 900 := by
+  have hrho : (ret :: UInt256.ofNat 4294967323 :: rest).length ≤ 900 := by
     simp only [List.length_cons]; omega
   let s0 := s
   let pc0 := pc
-  have h0 := run_chunk0 s0 pc0 words (ret :: UInt256.ofNat 4294967295 :: rest) hrho hrun hactive
+  have h0 := run_chunk0 s0 pc0 words (ret :: UInt256.ofNat 4294967323 :: rest) hrho hrun hactive
   let s1 : State := {s0 with memory := memory0 s0.memory words}
   let pc1 := pcAfter pc0 template0
-  have h1 := run_chunk1 s1 pc1 words (ret :: UInt256.ofNat 4294967295 :: rest) hrho hrun hactive
+  have h1 := run_chunk1 s1 pc1 words (ret :: UInt256.ofNat 4294967323 :: rest) hrho hrun hactive
   let s2 : State := {s1 with memory := memory1 s1.memory words}
   let pc2 := pcAfter pc1 template1
-  have h2 := run_chunk2 s2 pc2 words (ret :: UInt256.ofNat 4294967295 :: rest) hrho hrun hactive
+  have h2 := run_chunk2 s2 pc2 words (ret :: UInt256.ofNat 4294967323 :: rest) hrho hrun hactive
   let s3 : State := {s2 with memory := memory2 s2.memory words}
   let pc3 := pcAfter pc2 template2
-  have h3 := run_chunk3 s3 pc3 words (ret :: UInt256.ofNat 4294967295 :: rest) hrho hrun hactive
+  have h3 := run_chunk3 s3 pc3 words (ret :: UInt256.ofNat 4294967323 :: rest) hrho hrun hactive
   let s4 : State := {s3 with memory := memory3 s3.memory words}
   let pc4 := pcAfter pc3 template3
-  have h4 := run_chunk4 s4 pc4 words (ret :: UInt256.ofNat 4294967295 :: rest) hrho hrun hactive
+  have h4 := run_chunk4 s4 pc4 words (ret :: UInt256.ofNat 4294967323 :: rest) hrho hrun hactive
   let s5 : State := {s4 with memory := memory4 s4.memory words}
   let pc5 := pcAfter pc4 template4
   have h5 := run_chunk5 s5 pc5 ret words rest hstack hrun hactive (hclean 6 (by decide) (by decide))
@@ -1043,31 +1043,31 @@ theorem run_writer_grow (s : State) (pc ret : UInt256) (words : Nat → UInt256)
     runInstrSeq writerTemplate
         {s with
           pc := pc
-          stack := Pair13PoolRaw.poolStack (dualW words) (ret :: UInt256.ofNat 4294967295 :: rest)} =
+          stack := Pair13PoolRaw.poolStack (dualW words) (ret :: UInt256.ofNat 4294967323 :: rest)} =
       some {s with
         pc := pcAfter pc writerTemplate
-        stack := ret :: UInt256.ofNat 4294967295 :: rest
+        stack := ret :: UInt256.ofNat 4294967323 :: rest
         memory := writerMemory s.memory words
         activeWords := UInt256.ofNat 35} := by
-  have hrho : (ret :: UInt256.ofNat 4294967295 :: rest).length ≤ 900 := by
+  have hrho : (ret :: UInt256.ofNat 4294967323 :: rest).length ≤ 900 := by
     simp only [List.length_cons]; omega
   have ha : 34 ≤ s.activeWords.toNat := by rw [hactive]; decide
   let s0 := s
   let pc0 := pc
-  have h0 := run_chunk0_of_small s0 pc0 words (ret :: UInt256.ofNat 4294967295 :: rest) hrho hrun ha
+  have h0 := run_chunk0_of_small s0 pc0 words (ret :: UInt256.ofNat 4294967323 :: rest) hrho hrun ha
   let s1 : State := {s0 with memory := memory0 s0.memory words}
   let pc1 := pcAfter pc0 template0
-  have h1 := run_chunk1_of_small s1 pc1 words (ret :: UInt256.ofNat 4294967295 :: rest) hrho hrun ha
+  have h1 := run_chunk1_of_small s1 pc1 words (ret :: UInt256.ofNat 4294967323 :: rest) hrho hrun ha
   let s2 : State := {s1 with memory := memory1 s1.memory words}
   let pc2 := pcAfter pc1 template1
-  have h2 := run_chunk2_grow s2 pc2 words (ret :: UInt256.ofNat 4294967295 :: rest) hrho hrun hactive
+  have h2 := run_chunk2_grow s2 pc2 words (ret :: UInt256.ofNat 4294967323 :: rest) hrho hrun hactive
   let s3 : State := {s2 with memory := memory2 s2.memory words, activeWords := UInt256.ofNat 35}
   let pc3 := pcAfter pc2 template2
-  have h3 := run_chunk3 s3 pc3 words (ret :: UInt256.ofNat 4294967295 :: rest) hrho hrun
+  have h3 := run_chunk3 s3 pc3 words (ret :: UInt256.ofNat 4294967323 :: rest) hrho hrun
     (by change 35 ≤ (UInt256.ofNat 35).toNat; decide)
   let s4 : State := {s3 with memory := memory3 s3.memory words}
   let pc4 := pcAfter pc3 template3
-  have h4 := run_chunk4 s4 pc4 words (ret :: UInt256.ofNat 4294967295 :: rest) hrho hrun
+  have h4 := run_chunk4 s4 pc4 words (ret :: UInt256.ofNat 4294967323 :: rest) hrho hrun
     (by change 35 ≤ (UInt256.ofNat 35).toNat; decide)
   let s5 : State := {s4 with memory := memory4 s4.memory words}
   let pc5 := pcAfter pc4 template4

@@ -7,7 +7,7 @@ open EvmSemantics Challenge.EvmProof Paired144WordRound StaggerCoreModel
 open Paired80Compression (low32 unpackLeft)
 open PairedScheduleMemory
 
-def high32 (x : UInt256) : UInt32 := low32 (UInt256.shiftRight x (UInt256.ofNat 144))
+def high32 (x : UInt256) : UInt32 := low32 (UInt256.shiftRight x (UInt256.ofNat 172))
 def unpackRight (q : WordLane) : CryptoLane :=
   ⟨high32 q.a, high32 q.b, high32 q.c, high32 q.d, high32 q.e⟩
 
@@ -16,7 +16,7 @@ theorem high32_packWord (a b : UInt32) :
   apply UInt32.eq_of_toBitVec_eq
   change (PairedLaneUInt256Bridge.bits
     (UInt256.shiftRight (PairedLaneUInt256Bridge.word
-      (Paired144Core.pack a.toBitVec b.toBitVec)) (UInt256.ofNat 144))).setWidth 32 = _
+      (Paired144Core.pack a.toBitVec b.toBitVec)) (UInt256.ofNat 172))).setWidth 32 = _
   rw [PairedLaneUInt256Bridge.bits_shr _ 144 (by decide),
     PairedLaneUInt256Bridge.bits_word, BitVec.setWidth_ushiftRight_eq_extractLsb]
   exact Paired144Core.high_pack a.toBitVec b.toBitVec
@@ -29,8 +29,8 @@ theorem high32_pairMask (x : UInt256) :
     high32 (UInt256.land x Paired144WordRound.pairWord) = high32 x := by
   apply UInt32.eq_of_toBitVec_eq
   change (PairedLaneUInt256Bridge.bits (UInt256.shiftRight (UInt256.land x _)
-    (UInt256.ofNat 144))).setWidth 32 =
-      (PairedLaneUInt256Bridge.bits (UInt256.shiftRight x (UInt256.ofNat 144))).setWidth 32
+    (UInt256.ofNat 172))).setWidth 32 =
+      (PairedLaneUInt256Bridge.bits (UInt256.shiftRight x (UInt256.ofNat 172))).setWidth 32
   rw [PairedLaneUInt256Bridge.bits_shr _ 144 (by decide),
     PairedLaneUInt256Bridge.bits_shr _ 144 (by decide),
     BitVec.setWidth_ushiftRight_eq_extractLsb,BitVec.setWidth_ushiftRight_eq_extractLsb,
@@ -87,7 +87,7 @@ theorem tailMemory_eq_storeRaw (memory : ByteArray) (l r : WordLane) :
 theorem addResult_normalized (memory : ByteArray) (l r : UInt256) (a : Nat) :
     addResult memory l r a = Word.ofUInt32
       (Word.toUInt32 (MachineState.readWord memory a) + (high32 r + low32 l)) := by
-  change Word.mask32 ((l + UInt256.shiftRight r (UInt256.ofNat 144)) +
+  change Word.mask32 ((l + UInt256.shiftRight r (UInt256.ofNat 172)) +
     MachineState.readWord memory a) = _
   rw [Word.mask32_eq_ofUInt32, Word.toUInt32_add, Word.toUInt32_add]
   apply congrArg Word.ofUInt32

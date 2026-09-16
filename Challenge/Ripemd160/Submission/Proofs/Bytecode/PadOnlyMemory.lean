@@ -8,7 +8,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate PairedHelperBooleanTrace
 open DenseScheduleTemplate PairedScheduleMemory PairedMask32Cache
 def padWords (n : UInt256) (i : Nat) : UInt256 :=
-  if i = 0 then UInt256.ofNat 128 else
+  if i = 0 then UInt256.ofNat 156 else
   if i = 14 then lowLength n else
   if i = 15 then highLength n else UInt256.ofNat 0
 
@@ -31,7 +31,7 @@ private theorem getD_resultMemory (memory : ByteArray) (n : UInt256) (i : Nat) :
     (resultMemory memory n)[i]?.getD 0 =
       if 480 ≤ i ∧ i < 512 then (Data.Bytes.natToBytesPadded (highLength n).toNat 32)[i - 480]?.getD 0
       else if 448 ≤ i ∧ i < 480 then (Data.Bytes.natToBytesPadded (lowLength n).toNat 32)[i - 448]?.getD 0
-      else if i < 32 then (Data.Bytes.natToBytesPadded (UInt256.ofNat 128).toNat 32)[i]?.getD 0
+      else if i < 32 then (Data.Bytes.natToBytesPadded (UInt256.ofNat 156).toNat 32)[i]?.getD 0
       else if i < 512 then 0 else memory[i]?.getD 0 := by
   simp [resultMemory, writeWord, MachineState.writeBytes_getElem?_getD,
     YulEvmCompiler.BytesLemmas.natToBytesPadded_size, zeroBytes_size, zeroBytes_getD]
