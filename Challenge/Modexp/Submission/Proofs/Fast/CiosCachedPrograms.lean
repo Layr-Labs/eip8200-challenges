@@ -93,10 +93,11 @@ def macFusedPostProgram (tl ts : UInt256) : List Instr :=
 def macFusedProgram (tl ts : UInt256) : List Instr :=
   macProductProgram.take 6 ++ macFusedPostProgram tl ts
 
-/-- `macFusedPostProgram` with the incoming-carry `DUP4` replaced by `PUSH0`: same byte length,
-one gas cheaper, and equivalent *only* on a frame whose incoming carry is already zero.  The
-`DUP4` it replaces reproduces the cell's incoming carry `c`, so this schedule is sound exactly
-where `c = 0` — the row-head cell of a conversion chain, never a cell fed by a predecessor. -/
+/-- `macFusedPostProgram` with the incoming-carry add specialized to a known zero.  The
+`DUP4` it replaces reproduces the cell's incoming carry `c`; after the preceding `DUP2` has
+already copied `lo`, the zero-carry path can preserve that copy with `PUSH0 POP` instead of
+adding zero.  The schedule is sound exactly where `c = 0` — the row-head cell of a conversion
+chain, never a cell fed by a predecessor. -/
 def macFusedPostZeroProgram (tl ts : UInt256) : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨2, by decide⟩),
@@ -104,7 +105,7 @@ def macFusedPostZeroProgram (tl ts : UInt256) : List Instr :=
    .op .SUB,
    .op (.Dup ⟨1, by decide⟩),
    .push 0 0,
-   .op .ADD,
+   .op .POP,
    .push 2 tl,
    .op .MLOAD,
    .op (.Dup ⟨1, by decide⟩),
