@@ -157,12 +157,12 @@ theorem jumpDest3959 :
 /-- The kernel's multiply entry `0x0f50` (the final mixed-domain product). -/
 theorem jumpDestSqMulEntry :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3209 = true :=
-  Artifact.isValidJumpDest_index 2384 (by rfl)
+  Artifact.isValidJumpDest_index 2380 (by rfl)
 
 /-- The kernel's shared `common` block `0x0f54` (entered by the square call). -/
 theorem jumpDestSqCommon :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3213 = true :=
-  Artifact.isValidJumpDest_index 2386 (by rfl)
+  Artifact.isValidJumpDest_index 2382 (by rfl)
 
 
 /- `after_sq` (pc 3304): the target the in-kernel square loop rewrites the

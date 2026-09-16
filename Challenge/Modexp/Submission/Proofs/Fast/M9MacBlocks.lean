@@ -36,7 +36,7 @@ general `headProgram`: it is the row head of every chain that reaches it, so its
 is the literal zero `entryProgram` pushes at pc 2676.  `block4` keeps `headProgram` — pc 2827 is
 also *fallen into* from block 3, whose outgoing carry is not zero. -/
 def block0 : Block Artifact.submissionArtifact .Osaka 2682 (headZeroProgram 1504 2336) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 1975 31 2682 (headZeroProgram 1504 2336)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1975 29 2682 (headZeroProgram 1504 2336)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 1: instructions 2008..2037, pc 2719..2754,

@@ -43,7 +43,7 @@ def jumpBlock : Block Artifact.submissionArtifact .Osaka 3980 jumpProgram :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 3001 2 3980 jumpProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def copyBlock : Block Artifact.submissionArtifact .Osaka 4342 copyProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3257 7 4342 copyProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3248 7 4342 copyProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def atState (s : State) (mem : ByteArray) (pc : Nat) (dst ret : UInt256)
