@@ -22,8 +22,7 @@ open EvmSemantics.EVM
 open YulEvmCompiler
 
 def submissionInstructions : List Instr :=
-[
- .push 0 0,
+[ .push 0 0,
  .op .CALLDATALOAD,
  .push 1 32,
  .op .CALLDATALOAD,
@@ -2015,8 +2014,8 @@ def submissionInstructions : List Instr :=
  .op .GT,
  .op .SUB,
  .op (.Dup { idx := 1 }),
- .push 0 0,
- .op .ADD,
+ .op .JUMPDEST,
+ .op .JUMPDEST,
  .push 2 2336,
  .op .MLOAD,
  .op (.Dup { idx := 1 }),
@@ -2456,15 +2455,12 @@ def submissionInstructions : List Instr :=
  .op (.Swap { idx := 2 }),
  .push 2 2368,
  .op .MCOPY,
- .op .JUMPDEST,
- .op .JUMPDEST,
- .op .JUMPDEST,
- .op .JUMPDEST,
- .op .JUMPDEST,
- .op .JUMPDEST,
- .op .JUMPDEST,
- .op .JUMPDEST,
- .op .JUMPDEST,
+ .op (.Dup { idx := 1 }),
+ .push 1 64,
+ .op .ADD,
+ .op .CALLDATASIZE,
+ .push 2 2048,
+ .op .CALLDATACOPY,
  .op (.Swap { idx := 1 }),
  .op (.Dup { idx := 4 }),
  .op .ADD,
@@ -4119,10 +4115,9 @@ def submissionInstructions : List Instr :=
  .op .MLOAD,
  .op .ADDMOD,
  .push 2 3816,
- .op .JUMP,
-]
+ .op .JUMP]
 
-theorem submissionInstructions_count : submissionInstructions.length = 4097 := by
+theorem submissionInstructions_count : submissionInstructions.length = 4094 := by
   decide
 
 theorem assemble_submissionInstructions :

@@ -70,12 +70,12 @@ theorem jumpDestSetup :
 /-- The multiply row head (instruction 1760, pc 4261 = 0x0fc5). -/
 theorem jumpDestRowHead :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3351 = true := by
-  exact Artifact.isValidJumpDest_index 2481 (by rfl)
+  exact Artifact.isValidJumpDest_index 2484 (by rfl)
 
 /-- The square row head `sq_row` (instruction 3559, pc 2464 = 0x1266). -/
 theorem jumpDestSqRow :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4065 = true := by
-  exact Artifact.isValidJumpDest_index 3055 (by rfl)
+  exact Artifact.isValidJumpDest_index 3058 (by rfl)
 
 /-- `jumpDestRowHead` in the `hd.toNat` form taken by `gasSteps_setup`/`gasSteps_commonSetup`. -/
 theorem jumpDestRowHead' :
