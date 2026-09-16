@@ -223,24 +223,33 @@ theorem run_fused (template : State) (pc x y c tl ts : UInt256)
 
 /-! ## The known-zero incoming carry
 
-`headProgram`'s sixth instruction is the `DUP4` that reproduces the cell's incoming carry `c`.
-Where `c` is already zero, `PUSH0` produces the same word for one gas less.  Everything below
-is that one substitution: `run_fused_zero` has the *same* conclusion as `run_fused`, only under
-the extra hypothesis `c = 0`, and is derived from `run_fused` rather than reproved. -/
+`headProgram`'s sixth and seventh instructions are the `DUP4` that reproduces the cell's incoming
+carry `c` and the `ADD` that folds it into the accumulator.  Where `c` is already zero that pair
+is the unconditional identity `x + 0 = x`, so both bytes are spent on `JUMPDEST` instead, for
+three gas less.  Everything below is that one substitution: `run_fused_zero` has the *same*
+conclusion as `run_fused`, only under the extra hypothesis `c = 0`, and is derived from
+`run_fused` rather than reproved. -/
 
-/-- `headProgram` with the incoming-carry `DUP4` replaced by `PUSH0` (both one byte). -/
+/-- `headProgram` with the incoming-carry `DUP4; ADD` replaced by two `JUMPDEST`s (two bytes
+either way, so every later pc is unmoved). -/
 private def headZeroProgram : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩),
    .op .GT, .op .SUB, .op (.Dup ⟨1, by decide⟩),
-   .push 0 0, .op .ADD]
+   .op .JUMPDEST, .op .JUMPDEST]
 
 private theorem post_zero_eq (tl ts : UInt256) :
     macFusedPostZeroProgram tl ts = (headZeroProgram ++ memoryProgram tl ts) ++ tailProgram := rfl
 
-private theorem push0_ofNat : (⟨0⟩ : UInt256) = UInt256.ofNat 0 := by decide
+/-- Adding the literal zero is the identity on a 256-bit word. -/
+private theorem add_zero_word (a : UInt256) : a + UInt256.ofNat 0 = a := by
+  apply Challenge.EvmProof.Word.word_ext
+  have ha : a.toNat < 2 ^ 256 := a.val.isLt
+  rw [Challenge.EvmProof.Word.word_toNat_add, Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.zero_mod, Nat.add_zero, Nat.mod_eq_of_lt ha]
 
-/-- On a zero-carry frame the two heads agree: `PUSH0` and the `DUP4` of a zero slot both push
-zero, and `PUSH0` advances the pc by the same single byte. -/
+/-- On a zero-carry frame the two heads agree: the `DUP4` of a zero slot pushes zero and the
+`ADD` then leaves the accumulator alone, which is exactly what the two `JUMPDEST`s do, over the
+same two bytes. -/
 private theorem run_head_zero (template : State) (pc mm lo y : UInt256)
     (rest : List UInt256) (hrest : rest.length + 8 < 1024) :
     runInstructions headZeroProgram
@@ -248,10 +257,10 @@ private theorem run_head_zero (template : State) (pc mm lo y : UInt256)
     some (framed template (pc + UInt256.ofNat 7)
       ([lo + UInt256.ofNat 0, UInt256.lt mm lo - mm, lo, UInt256.ofNat 0, y] ++ rest)) := by
   have hcap (n : Nat) (hn : n ≤ 8) : rest.length + n < 1024 := by omega
-  have hc := add_comm (UInt256.ofNat 0) lo
+  have hz0 := add_zero_word lo
   simp (disch := omega) [runInstructions, headZeroProgram, framed,
     Challenge.EvmProof.Stepper.runInstr, List.getElem?_cons_zero,
-    List.getElem?_cons_succ, hcap, Nat.add_assoc, hc, push0_ofNat, UInt256.gt, UInt256.lt,
+    List.getElem?_cons_succ, hcap, Nat.add_assoc, hz0, UInt256.gt, UInt256.lt,
     succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
 
 /-- The zero-carry post schedule runs exactly as the general one does. -/
