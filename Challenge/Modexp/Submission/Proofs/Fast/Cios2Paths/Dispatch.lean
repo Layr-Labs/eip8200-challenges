@@ -34,11 +34,11 @@ def commonGuardProgram : List Instr := [.op .JUMPDEST]
 
 
 def mulEntry : Block Artifact.submissionArtifact .Osaka 3209 mulEntryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2384 2 3209 mulEntryProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2382 2 3209 mulEntryProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def commonGuard : Block Artifact.submissionArtifact .Osaka 3213 commonGuardProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2386 1 3213 commonGuardProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2384 1 3213 commonGuardProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 

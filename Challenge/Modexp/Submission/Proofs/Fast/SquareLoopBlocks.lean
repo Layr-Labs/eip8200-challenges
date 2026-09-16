@@ -87,14 +87,22 @@ post-loop block. -/
 def lastProgram : List Instr :=
   [.op .POP, .op .POP, .push 2 3300, .push 2 2368, .push 2 4333, .op .JUMP]
 
-/-- `again` (4214): reload the width word, reset three frame slots and jump to the
+/-- `again` (4049): reload the width word, reset the operand pointer and jump to the
 row-zero entry.  The accumulator is no longer cleared here: the new first row writes
-every word of `T` before reading it. -/
+every word of `T` before reading it.
+
+**The first-loop entry slot is no longer reset.**  The five instructions that recomputed
+`l2Target n - 288 = sqEnt n 0` and swapped it into the frame are gone, their bytes absorbed
+by the widened `PUSH9`, so the block leaves that slot holding `sqEnt n n` -- the value the
+`n` rows left in it.  That is sound because the row this block jumps to is the dedicated
+eight-limb first row at 4889, which OVERWRITES the slot with the fixed `3417` before anything
+reads it: `R8RowZero.gasSteps_prologue` is stated for an arbitrary incoming `e`, and its
+result does not mention it.  The obligation is carried in the statement of
+`SquareLoopAgain.run_againFix`, whose postcondition now names `sqEnt n n` in that slot, and by
+the `e` parameter threaded through `SquareRows.rowStateEnt`, `R8Rows` and
+`SquareLoop.rowZeroState`. -/
 def againProgram : List Instr :=
-  [.push 2 2688, .op .MLOAD,
-   .op .ADD, .push 2 288, .op (.Dup ⟨7, by decide⟩), .op .SUB,
-   .op (.Swap ⟨3, by decide⟩), .op .POP,
-   .push 2 4889, .op .JUMP]
+  [.push 2 2688, .op .MLOAD, .op .ADD, .push 9 4889, .op .JUMP]
 
 /-! ## Located blocks -/
 
@@ -107,7 +115,7 @@ def lastBlock : Block Artifact.submissionArtifact .Osaka 4027 lastProgram :=
     (by decide) (by rfl) (by rfl) (by decide)
 
 def againBlock : Block Artifact.submissionArtifact .Osaka 4049 againProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3041 10 4049 againProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3041 5 4049 againProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-! ## Jump destinations of the loop -/
@@ -121,7 +129,7 @@ theorem jumpDest4683 :
 /-- The memory after `sq_exit`'s `MSTORE`: the counter word 2624 holds `c`. -/
 theorem jumpDestLazy :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4333 = true :=
-  Artifact.isValidJumpDest_index 3252 (by rfl)
+  Artifact.isValidJumpDest_index 3247 (by rfl)
 
 def countMem (mem : ByteArray) (c : Nat) : ByteArray :=
   MachineState.writeBytes mem (Data.Bytes.natToBytesPadded c 32) 2624

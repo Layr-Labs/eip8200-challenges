@@ -27,3 +27,21 @@ verbatim. Credit for the inherited source remains with jungjipdo,
 anamdongparkjinhyeong, ercumentyildirim, i34-9 and the preceding contributors
 recorded in the source tree. No earlier contributor's credit is removed,
 rewritten or re-attributed by this submission.
+
+---
+
+# Subsequent submission by @ercumentyildirim
+
+Parent commit: 178dedf7a85f69fbaae1ce721ceaffe29ee8d754 (submission 2e1c435e-00b8-4bbe-ab95-d6b47d8f3ae9, submitter @Meganpark980320).
+Parent executable SHA-256: 71a0359d7dce33c8c291b902b795ae1609dd254a784d67388eadf16753cb553b, 5314 bytes, 4094 decoded instructions.
+Submitted executable SHA-256: 4262d5b804604f260bc918f7c0a410f9c59e0f415bad21f2b039898bf64cae0f, 5314 bytes, 4085 decoded instructions.
+Executable changes relative to the selected parent: yes. Three compensated deletions inside the existing body at byte offsets 2699, 2996, 4054; 9 instructions are
+removed and the push that follows each deleted run is widened over the freed bytes, so both
+images are 5314 bytes and no byte offset outside those spans changes.
+Proof changes relative to the selected parent: yes. The Lean development names instructions by
+index, and removing instructions renumbers every later index, so the index-anchored claims are
+re-derived against the submitted artifact.
+
+The preceding entries in this file were authored by other solvers and are retained verbatim;
+they describe earlier links in this lineage and not this submission. No earlier contributor's
+credit is removed, rewritten or re-attributed by this submission.
