@@ -7,23 +7,100 @@ namespace Challenge.Modexp.Submission.Proofs.Fast.ShiftUnrollBindings
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwentyOneBinding
 
-def cacheProgram : List Instr :=
-  -- E5, new indices 1872..1880 (pcs 2531..2545): `DUP1 PUSH1 4 EQ PUSH1 0x91 MUL PUSH2 2682 ADD
-  -- PUSH2 0x6a2 MSTORE`.  The leading `DUP2` of the E5 region is instruction 1871 and belongs to
-  -- `blk2982`, exactly as the old `DUP2` at old index 2079 did.
-  [.op (.Dup { idx := 0 }),
-   .push 1 4,
-   .op .EQ,
-   .push 1 145,
+def cellProgram : List Instr :=
+  [.op .JUMPDEST,
+   .push 2 832,
+   .op (.Dup ⟨1, by decide⟩),
+   .op .SUB,
+   .op .MLOAD,
+   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩),
    .op .MUL,
-   .push 2 2682,
+   .op (.Swap ⟨1, by decide⟩),
+   .op (.Dup ⟨7, by decide⟩),
+   .op .MULMOD,
+   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup ⟨1, by decide⟩),
+   .op .LT,
+   .op .SUB,
+   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩),
+   .op .ADD,
+   .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨6, by decide⟩),
+   .op .GT,
+   .op .SUB,
+   .op .SUB,
+   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩),
+   .op .MLOAD,
+   .op .ADD,
+   .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨5, by decide⟩),
+   .op .GT,
+   .op .ADD,
+   .op (.Swap ⟨3, by decide⟩),
+   .op (.Dup ⟨1, by decide⟩),
+   .op .MSTORE,
+   .op (.Dup ⟨2, by decide⟩),
+   .op .ADD]
+
+def cacheProgram : List Instr :=
+  [.op (.Dup { idx := 0 }),
+   .push 0 0,
+   .op .SUB,
+   .push 1 3,
+   .op .AND,
+   .push 1 39,
+   .op .MUL,
+   .push 2 2951,
    .op .ADD,
    .push 2 1698,
    .op .MSTORE]
 
-def cache : Block Artifact.submissionArtifact .Osaka 2531 cacheProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 1872 9 2531 cacheProgram
+def dispatchProgram : List Instr :=
+  [.push 2 1698,
+   .op .MLOAD,
+   .op .JUMP]
+
+def cell0 : Block Artifact.submissionArtifact .Osaka 2951 cellProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2188 37 2951 cellProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
+def cell1 : Block Artifact.submissionArtifact .Osaka 2990 cellProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2225 37 2990 cellProgram
+    (by decide) (by rfl) (by rfl) (by decide)
+
+def cell2 : Block Artifact.submissionArtifact .Osaka 3029 cellProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2262 37 3029 cellProgram
+    (by decide) (by rfl) (by rfl) (by decide)
+
+def cell3 : Block Artifact.submissionArtifact .Osaka 3068 cellProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2299 37 3068 cellProgram
+    (by decide) (by rfl) (by rfl) (by decide)
+
+def cache : Block Artifact.submissionArtifact .Osaka 2792 cacheProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2078 11 2792 cacheProgram
+    (by decide) (by rfl) (by rfl) (by decide)
+
+def dispatch : Block Artifact.submissionArtifact .Osaka 2946 dispatchProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2185 3 2946 dispatchProgram
+    (by decide) (by rfl) (by rfl) (by decide)
+
+theorem jump3684 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2951 = true :=
+  Artifact.isValidJumpDest_index 2188 (by rfl)
+
+theorem jump3723 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2990 = true :=
+  Artifact.isValidJumpDest_index 2225 (by rfl)
+
+theorem jump3762 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3029 = true :=
+  Artifact.isValidJumpDest_index 2262 (by rfl)
+
+theorem jump3801 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3068 = true :=
+  Artifact.isValidJumpDest_index 2299 (by rfl)
+
+#print axioms cell0
 #print axioms cache
+#print axioms jump3801
 end Challenge.Modexp.Submission.Proofs.Fast.ShiftUnrollBindings
