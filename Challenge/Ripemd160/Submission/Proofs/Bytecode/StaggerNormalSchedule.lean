@@ -17,7 +17,7 @@ def normalTemplate : List Instr := ((Table80Setup.initialTemplate ++ FundedNorma
 
 theorem run_normal (s : State) (pc returnPC : UInt256) (p : Nat) (rest : List UInt256)
     (hstack : rest.length ≤ 896) (hrun : s.halt = .Running)
-    (hp : 1087 ≤ p) (hbound : p + 64 < 2 ^ 256)
+    (hp : 1056 ≤ p) (hbound : p + 64 < 2 ^ 256)
     (hlow : (MachineState.readWord s.memory 0).toNat < 2 ^ 32) :
     runInstrSeq normalTemplate (scheduleEntry s pc (UInt256.ofNat p) returnPC rest) =
       some {s with pc := pcAfter pc normalTemplate, stack := returnPC :: rest, memory := StaggerTableLayout.resultMemory s.memory (StaggerScratch.dirtyWord s.memory p), activeWords := loadedActiveWords s (UInt256.ofNat p)} := by

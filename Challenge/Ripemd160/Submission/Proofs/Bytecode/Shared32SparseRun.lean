@@ -20,7 +20,7 @@ def template : List Instr :=
 
 theorem run_sparse (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
-    (hactive : s.activeWords = UInt256.ofNat 35)
+    (hactive : s.activeWords = UInt256.ofNat 34)
     (hbyte : UInt8.ofNat (a4.toNat % 256) = 1) :
     runInstrSeq template
       {s with
@@ -41,8 +41,8 @@ theorem run_sparse (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt
 theorem bytes_exact : assembleBytes template = [96,99,83,132,96,122,83] := by decide
 
 theorem sparse_read_input (input : ByteArray) (hn : 0 < input.size) :
-    MachineState.readWord (sparseMemory (copiedMemory input)) 1087 =
-      MachineState.readWord (copiedMemory input) 1087 := by
+    MachineState.readWord (sparseMemory (copiedMemory input)) 1056 =
+      MachineState.readWord (copiedMemory input) 1056 := by
   rw [copiedMemory_sparse input hn]
   exact read_writeWord_disjoint _ _ _ _ (Or.inr (by decide))
 
@@ -51,11 +51,11 @@ lower one with the doubled store, which together build exactly `Pair13Endian.scr
 theorem sparse_lower_memory (input : ByteArray) (hn : 0 < input.size) :
     writeWord (writeWord (sparseMemory (copiedMemory input)) 46
         (PairedScheduleData.reversedWord
-          (MachineState.readWord (sparseMemory (copiedMemory input)) 1087))) 28
+          (MachineState.readWord (sparseMemory (copiedMemory input)) 1056))) 28
       (PairedScheduleData.reversedWord
-        (MachineState.readWord (sparseMemory (copiedMemory input)) 1087)) =
+        (MachineState.readWord (sparseMemory (copiedMemory input)) 1056)) =
       Pair13Endian.scratch3 (copiedMemory input)
-        (PairedScheduleData.reversedWord (MachineState.readWord (copiedMemory input) 1087))
+        (PairedScheduleData.reversedWord (MachineState.readWord (copiedMemory input) 1056))
         highWord := by
   rw [sparse_read_input input hn, copiedMemory_sparse input hn]
   rfl

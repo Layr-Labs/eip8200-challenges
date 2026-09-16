@@ -16,7 +16,7 @@ def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
   let s := PaddingTrace.padCopied input
   have e : Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
   have hframe : PaddingTrace.initialFrame input ++ rho = entryFrame ++ rho := by rw [entry_frame_eq input h32]
-  have hactive : s.activeWords = UInt256.ofNat 35 := copied_active input h32
+  have hactive : s.activeWords = UInt256.ofNat 34 := copied_active input h32
   have hsize : (frame ++ rho).length ≤ 900 := by simp only [List.length_append]; change 15 + rho.length ≤ 900; omega
   have hgap : PairStoreGap.GapClear s.memory := by
     rw [show s.memory = copiedMemory input from copied_memory input]
@@ -100,7 +100,7 @@ theorem correct (input : ByteArray) (h32 : input.size = 32)
   let s := Shared32Start.tableState input
   have e : Shared32Sites.Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
   have gs := gasSteps_start input h32 rho hcap
-  have gc := gasSteps_core s e input rfl h32 (Shared32Start.copied_active input h32) rho hcap
+  have gc := gasSteps_core s e input rfl h32 (Shared32Start.table_active input) rho hcap
   have trace := entryPrefix.trans (gs.trans gc)
   apply Shared32Correct.eval_of_initial_returned input _ trace rfl rfl
   exact Shared32Core.returned_spec s input h32 (Shared32Start.table_ready input h32)

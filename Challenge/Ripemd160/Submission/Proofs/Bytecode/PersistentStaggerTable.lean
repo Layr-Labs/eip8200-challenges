@@ -29,7 +29,7 @@ structure Context (s : State) (input : ByteArray) (next : Nat) : Prop where
     ScheduleCorrect.MessageBlockAt s.memory (DriverTrace.messageOffsetWord i)
       (Padding.paddedMessage input) (DriverTrace.blockOffset i)
   separated : ∀ i, i < DriverTrace.blockCount input → ∀ k, k < 16 →
-    1087 + i * 64 ≤ (Schedule.loadOffsetWord (DriverTrace.messageOffsetWord i) k).toNat
+    1056 + i * 64 ≤ (Schedule.loadOffsetWord (DriverTrace.messageOffsetWord i) k).toNat
   /-- The first memory word is a clean 32-bit word BELOW BIT 144, so the unmasked loads of
   schedule words 1 and 2 see zero bytes at 14..27.  Bytes 10..13 may carry the dual lane the
   writer's slot-0 store leaves behind once the mask at pc 873 is gone; that lane lives at
@@ -48,7 +48,7 @@ theorem blockWords_eq_readLE32 (input : ByteArray) (i k : Nat) (hk : k < 16) :
       (DriverTrace.blockOffset i + k * 4) := by
   interval_cases k <;> simp [blockWords, CompressionCorrect.schedule, List.range']
 
-theorem messagePointer_lower (i : Nat) : 1087 ≤ messagePointer i := by
+theorem messagePointer_lower (i : Nat) : 1056 ≤ messagePointer i := by
   simp only [messagePointer, Padding.messageOffset]
   omega
 
@@ -331,7 +331,7 @@ theorem calldata_lt_uint256 (input : ByteArray) (hfit : CalldataFits input) :
   unfold CalldataFits at hfit
   omega
 
-theorem messagePointer_aligned (i : Nat) : messagePointer i % 32 = 31 := by
+theorem messagePointer_aligned (i : Nat) : messagePointer i % 32 = 0 := by
   unfold messagePointer Padding.messageOffset DriverTrace.blockOffset
   omega
 
