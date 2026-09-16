@@ -357,9 +357,12 @@ constrained only by `s.executionEnv.calldata`, `s.executionEnv.code` and
 calls makes them unfold the frozen bytecode literal, which does not terminate
 in reasonable memory. -/
 
-/-- Gas-erased state at the fast-path entry: pc 1396, empty stack. -/
+/-- Gas-erased state at pc 599 with the modulus size retained by the
+public header decoder. -/
 def entryState (s : State) : State :=
-  { s with pc := UInt256.ofNat 599, stack := [] }
+  { s with
+    pc := UInt256.ofNat 599
+    stack := [UInt256.ofNat (modulusSize s.executionEnv.calldata)] }
 
 /-- The fallback target: pc 1326 with an empty stack; memory and `activeWords`
 are untouched because indices 1112..1120 and the bail blocks contain no memory
@@ -1145,7 +1148,7 @@ def gasSteps_fallback_of (s : State) (input : ByteArray)
 
 theorem entryState_initial (input : ByteArray) :
     entryState (initialState submissionBytecode input 0) =
-      Main.trampolineState input 599 := rfl
+      Main.fastEntryState input := rfl
 
 theorem fallbackState_initial (input : ByteArray) :
     fallbackState (initialState submissionBytecode input 0) =
@@ -1154,10 +1157,10 @@ theorem fallbackState_initial (input : ByteArray) :
 /-- The two landing sites of a declined fast path, from the public entry state. -/
 inductive Fallback (input : ByteArray) : Type
   | header (hsize : modulusSize input ≤ 32 ∨ 256 < modulusSize input)
-      (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 599)
+      (steps : Challenge.EvmProof.GasSteps (Main.fastEntryState input)
         (Main.trampolineState input 553))
   | big (h32 : 32 < modulusSize input) (hupper : modulusSize input ≤ 256)
-      (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 599)
+      (steps : Challenge.EvmProof.GasSteps (Main.fastEntryState input)
         (bigBailState (initialState submissionBytecode input 0) input))
 
 /-- **Fallback certificate.**  For every calldata in the challenge domain that fails
@@ -1965,7 +1968,7 @@ precondition (and the `ValidInput` bound on the calldata length), execution
 runs from the state the retargeted entry produces to the `R1B` guard, with the modulus loaded, `minv` computed and `R1` initialised. -/
 def gasSteps_fastSetup (input : ByteArray) (hsize : input.size < 2 ^ 256)
     (hpath : FastPath input) :
-    Challenge.EvmProof.GasSteps (Main.trampolineState input 599)
+    Challenge.EvmProof.GasSteps (Main.fastEntryState input)
       (fastSetupState input) :=
   Challenge.EvmProof.GasSteps.cast
     (gasSteps_fastPath_of (initialState submissionBytecode input 0) input

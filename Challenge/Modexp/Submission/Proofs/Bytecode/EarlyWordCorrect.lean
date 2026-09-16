@@ -10,8 +10,9 @@ set_option warningAsError true
 # Total initial dispatch through the early one-word wrapper
 
 The initial header reader starts directly at byte zero. Matching headers fall
-through to the Fermat/window proof at pc 25. Every other header restores the
-legacy entry at pc 1251 with an empty stack and unchanged memory and environment.
+through to the Fermat/window proof at pc 25. Every other header reaches the
+fast entry at pc 599 with the cached modulus-size singleton stack and unchanged
+memory and environment.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.EarlyWordCorrect
@@ -37,14 +38,14 @@ private def environment (input : ByteArray) :
   running := rfl
   noPrecompile := deployAddress_not_precompile
 
-/-- Every non-matching header reaches the unchanged legacy entry exactly. -/
+/-- Every non-matching header reaches the cached fast entry exactly. -/
 def legacy (input : ByteArray) (hmiss : ¬ WindowTwentyOneInput.Matches input) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Main.trampolineState input 599) := by
+      (Main.fastEntryState input) := by
   have tail := EarlyWordGas.steps_miss Artifact.earlyWordPaths
     (initialState submissionBytecode input 0) (environment input) input rfl hmiss
   change Challenge.EvmProof.GasSteps (Main.trampolineState input 0)
-    (Main.trampolineState input 599) at tail
+    (Main.fastEntryState input) at tail
   exact (Main.gasSteps_entryHop input).trans tail
 
 /-- Every matching header has a complete initial-state correctness trace. -/
