@@ -232,7 +232,7 @@ the extra hypothesis `c = 0`, and is derived from `run_fused` rather than reprov
 private def headZeroProgram : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩),
    .op .GT, .op .SUB, .op (.Dup ⟨1, by decide⟩),
-   .push 0 0, .op .ADD]
+   .op .JUMPDEST, .op .JUMPDEST]
 
 private theorem post_zero_eq (tl ts : UInt256) :
     macFusedPostZeroProgram tl ts = (headZeroProgram ++ memoryProgram tl ts) ++ tailProgram := rfl
@@ -248,11 +248,19 @@ private theorem run_head_zero (template : State) (pc mm lo y : UInt256)
     some (framed template (pc + UInt256.ofNat 7)
       ([lo + UInt256.ofNat 0, UInt256.lt mm lo - mm, lo, UInt256.ofNat 0, y] ++ rest)) := by
   have hcap (n : Nat) (hn : n ≤ 8) : rest.length + n < 1024 := by omega
-  have hc := add_comm (UInt256.ofNat 0) lo
-  simp (disch := omega) [runInstructions, headZeroProgram, framed,
-    Challenge.EvmProof.Stepper.runInstr, List.getElem?_cons_zero,
-    List.getElem?_cons_succ, hcap, Nat.add_assoc, hc, push0_ofNat, UInt256.gt, UInt256.lt,
-    succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
+  have hexec :
+      runInstructions headZeroProgram
+        (framed template pc ([mm, lo, UInt256.ofNat 0, y] ++ rest)) =
+      some (framed template (pc + UInt256.ofNat 7)
+        ([lo, UInt256.lt mm lo - mm, lo, UInt256.ofNat 0, y] ++ rest)) := by
+    simp (disch := omega) [runInstructions, headZeroProgram, framed,
+      Challenge.EvmProof.Stepper.runInstr, List.getElem?_cons_zero,
+      List.getElem?_cons_succ, hcap, Nat.add_assoc, UInt256.gt, UInt256.lt,
+      succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
+  convert hexec using 1
+  simp [Challenge.EvmProof.Word.ofNat_add_mod]
+
+
 
 /-- The zero-carry post schedule runs exactly as the general one does. -/
 private theorem run_post_zero_eq (template : State) (pc mm lo y tl ts : UInt256)
