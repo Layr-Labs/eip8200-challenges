@@ -1,20 +1,56 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairStoreGap
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairStoreMerge
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13WriterRaw
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.JD8Merge
 
 set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
 set_option linter.unusedSimpArgs false
 
+/-!
+# The 48-store writer image, as a SLOT-indexed table
+
+The writer emits 48 stores where the model has 61: the thirteen `lowerPairSlots` are elided and
+recovered from the dual lane of the slot above.  With clean words that is invisible, because an
+elided slot and its pair hold the same 32-bit field.  With junk it is not: the surviving slot
+keeps the load's LOW 144 bits and the elided slot receives its HIGH half, so the two carry the
+same schedule word with DIFFERENT junk.
+
+`StaggerTableLayout.tableWords words j = words slots[j]!` is word-indexed and cannot express
+that.  `tableJ` is the slot-indexed table the writer actually leaves, and the merge that licenses
+it — `JD8Merge.three_store_merge_hi` — needs NO bound on the source word at all: taking the
+elided slot's modelled value to be `hi144` of the stored one makes all three side conditions
+free.
+-/
+
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13Memory
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PairedScheduleMemory
 
-private theorem prefix_gap (memory : ByteArray) (words : Nat → UInt256)
+/-- The table image the 48-store writer leaves, indexed by SLOT.  An elided slot holds the high
+half of the value stored one slot above it; every other slot holds what the pool produced. -/
+def tableJ (words : Nat → UInt256) (j : Nat) : UInt256 :=
+  if j ∈ PairStoreGap.lowerPairSlots then
+    JD8Merge.hi144 (Pair13WriterRaw.dualW words StaggerTableLayout.slots[j]!)
+  else Pair13WriterRaw.dualW words StaggerTableLayout.slots[j]!
+
+def resultMemoryJ (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
+  StaggerTableMemory.storeDescending memory (tableJ words) 0 61
+
+/-- The thirteen elided slots are adjacent EQUAL pairs (`slots[j] = slots[j+1]`), which is what
+makes the elided value the high half of its neighbour's. -/
+theorem elide_eq (words : Nat → UInt256) (j : Nat) (hj : j ∈ PairStoreGap.lowerPairSlots) :
+    tableJ words j = JD8Merge.hi144 (tableJ words (j + 1)) := by
+  simp only [PairStoreGap.lowerPairSlots, List.mem_cons, List.not_mem_nil, or_false] at hj
+  rcases hj with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;>
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+
+/-- The four exposed gap bytes below a merged store are still zero in the chain above it. -/
+theorem prefix_gap (memory : ByteArray) (words : Nat → UInt256)
     (j : Nat) (hj : j ∈ PairStoreGap.lowerPairSlots) (hgap : PairStoreGap.GapClear memory) :
     ∀ i, 18 * (j + 1) - 4 ≤ i → i < 18 * (j + 1) →
-      (StaggerTableMemory.storeDescending memory (StaggerTableLayout.tableWords words)
+      (StaggerTableMemory.storeDescending memory (tableJ words)
         (j + 2) (59 - j))[i]?.getD 0 = 0 := by
   intro i hi0 hi1
   rw [StaggerTableMemory.getD_storeDescending_outside _ _ _ _ _
@@ -22,228 +58,155 @@ private theorem prefix_gap (memory : ByteArray) (words : Nat → UInt256)
   have hz := hgap j hj (i - 18 * j) (by omega) (by omega)
   simpa only [Nat.add_sub_of_le (by omega : 18 * j ≤ i)] using hz
 
-private theorem coefficient_eq : Pair13PoolRaw.coefficient =
-    UInt256.ofNat (2 ^ 144 + 1) := by
-  unfold Pair13PoolRaw.coefficient
-  congr 1
-
-/-- The table image the writer leaves once the mask at pc 873 is gone: exactly
-`StaggerTableLayout.resultMemory` except that slot 0, the lowest, keeps the dual lane the
-mask used to clear.  `storeDescending memory f 0 61` is definitionally
-`writeWord (storeDescending memory f 1 60) 0 (f 0)`, so this is that chain with the one
-value replaced.  Bytes 10..13 of address 0 are the only difference, and no round read
-covers them: every round reads at `18 * pairIndices[r]` with `1 <= pairIndices[r]`. -/
-def resultMemoryD (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
-  writeWord (StaggerTableMemory.storeDescending memory
-      (StaggerTableLayout.tableWords words) 1 60) 0
-    (Pair13WriterRaw.dualW words 6)
-
-/-- Writing the same slot twice keeps only the second value. -/
-theorem writeWord_overwrite (memory : ByteArray) (a : Nat) (x y : UInt256) :
-    writeWord (writeWord memory a x) a y = writeWord memory a y := by
-  apply ByteArray.ext_getElem
-  · simp only [writeWord_size]; omega
-  · intro i hi hj
-    rw [← Memory.getD0_eq_getElem _ _ hi, ← Memory.getD0_eq_getElem _ _ hj]
-    simp only [writeWord, MachineState.writeBytes_getElem?_getD,
-      YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
-    by_cases ha : a ≤ i ∧ i < a + 32
-    · rw [if_pos ha, if_pos ha]
-    · rw [if_neg ha, if_neg ha, if_neg ha]
-
-/-- `absorb` for an arbitrary value that agrees below bit 144: the store eighteen bytes
-below keeps only bits `0..143` of the slot above. -/
-theorem absorb_mod (memory : ByteArray) (a b : Nat) (hab : b + 18 = a) (v w u : UInt256)
-    (h : v.toNat % 2 ^ 144 = w.toNat % 2 ^ 144) :
-    writeWord (writeWord memory a v) b u = writeWord (writeWord memory a w) b u := by
-  apply ByteArray.ext_getElem
-  · simp only [writeWord_size]
-  · intro i hi hj
-    rw [← Memory.getD0_eq_getElem _ _ hi, ← Memory.getD0_eq_getElem _ _ hj]
-    simp only [writeWord, MachineState.writeBytes_getElem?_getD,
-      YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
-    by_cases hb : b ≤ i ∧ i < b + 32
-    · rw [if_pos hb, if_pos hb]
-    · rw [if_neg hb, if_neg hb]
-      by_cases ha : a ≤ i ∧ i < a + 32
-      · rw [if_pos ha, if_pos ha]
-        exact StaggerTableLayout.byte_of_mod v w h (i - a) (by omega) (by omega)
-      · rw [if_neg ha, if_neg ha]
-
-/-- Two descending table chains that agree on every word below bit 144 leave the same image,
-provided something is stored eighteen bytes below the lowest slot. -/
-theorem storeDescending_congr_mod (memory : ByteArray) (f g : Nat → UInt256) (count : Nat) :
-    ∀ (first : Nat) (v : UInt256), 0 < first →
-      (∀ j, first ≤ j → j < first + count →
-        (f j).toNat % 2 ^ 144 = (g j).toNat % 2 ^ 144) →
-      writeWord (StaggerTableMemory.storeDescending memory f first count) (18 * first - 18) v
-        = writeWord (StaggerTableMemory.storeDescending memory g first count)
-            (18 * first - 18) v := by
-  induction count with
-  | zero => intro first v _ _; rfl
-  | succ n ih =>
-    intro first v hfirst h
-    show writeWord (writeWord (StaggerTableMemory.storeDescending memory f (first + 1) n)
-        (18 * first) (f first)) (18 * first - 18) v
-      = writeWord (writeWord (StaggerTableMemory.storeDescending memory g (first + 1) n)
-        (18 * first) (g first)) (18 * first - 18) v
-    rw [absorb_mod _ (18 * first) (18 * first - 18) (by omega) (f first) (g first) v
-      (h first (by omega) (by omega))]
-    have hih := ih (first + 1) (g first) (by omega)
-      (fun j h1 h2 => h j (by omega) (by omega))
-    rw [show 18 * (first + 1) - 18 = 18 * first by omega] at hih
-    rw [hih]
-
-/-- Two table images built from word functions that agree below bit 144 (and exactly at the
-slot-0 word) are equal: slot 0 is the only slot nothing is written beneath. -/
-theorem resultMemoryD_congr_mod (memory : ByteArray) (u w : Nat → UInt256)
-    (h6 : Pair13WriterRaw.dualW u 6 = Pair13WriterRaw.dualW w 6)
-    (h : ∀ j, 1 ≤ j → j < 61 →
-      (StaggerTableLayout.tableWords u j).toNat % 2 ^ 144
-        = (StaggerTableLayout.tableWords w j).toNat % 2 ^ 144) :
-    resultMemoryD memory u = resultMemoryD memory w := by
-  have hs := storeDescending_congr_mod memory (StaggerTableLayout.tableWords u)
-    (StaggerTableLayout.tableWords w) 60 1 (Pair13WriterRaw.dualW w 6) (by omega)
-    (fun j h1 h2 => h j h1 (by omega))
-  rw [show 18 * 1 - 18 = 0 from rfl] at hs
-  rw [resultMemoryD, resultMemoryD, h6]
-  exact hs
-
-/-- `resultMemoryD` in the form downstream consumers want: the ordinary table with a single
-extra store at address 0.  Every read at an address `>= 32` is then discharged by
-`read_writeWord_disjoint`, and only the read at 0 needs an argument of its own. -/
-theorem dualW_eq_dualLane (words : Nat → UInt256) (hw : (words 6).toNat < 2 ^ 32) :
-    Pair13WriterRaw.dualW words 6 = StaggerTableLayout.dualLane (words 6) := by
-  apply Word.word_ext
-  rw [Pair13WriterRaw.dualW, if_neg (by decide : ¬ (6 < 3)),
-    Pair13PoolRaw.mul_coefficient_toNat _ hw, StaggerTableLayout.dualLane_toNat _ hw]
-
-theorem resultMemoryD_eq (memory : ByteArray) (words : Nat → UInt256)
-    (hw : (words 6).toNat < 2 ^ 32) :
-    resultMemoryD memory words = StaggerTableLayout.resultMemory0 memory words := by
-  rw [resultMemoryD, StaggerTableLayout.resultMemory0, dualW_eq_dualLane words hw]
-  show writeWord _ 0 (StaggerTableLayout.dualLane (words 6)) =
-    writeWord (writeWord (StaggerTableMemory.storeDescending memory
-      (StaggerTableLayout.tableWords words) 1 60) 0
-      (StaggerTableLayout.tableWords words 0)) 0
-      (StaggerTableLayout.dualLane (words 6))
-  rw [writeWord_overwrite]
-
-/-- The emitted48-store writer equals the previous61-store table under precisely
-13clean source-word bounds and the four-byte exposed-gap invariant. -/
-theorem writerMemory_eq_resultMemoryD (memory : ByteArray) (words : Nat → UInt256)
-    (hclean : ∀ i, 3 ≤ i → i < 16 → (words i).toNat < 2 ^ 32)
+/-- **The writer bridge.**  The emitted 48-store chain leaves exactly the slot-indexed table,
+under the four-byte exposed-gap invariant and NO bound on any source word. -/
+theorem writerMemory_eq_resultMemoryJ (memory : ByteArray) (words : Nat → UInt256)
     (hgap : PairStoreGap.GapClear memory) :
-    Pair13WriterRaw.writerMemory memory words = resultMemoryD memory words := by
+    Pair13WriterRaw.writerMemory memory words = resultMemoryJ memory words := by
   symm
-  change (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (words 8)) 918 (words 8)) 900 (words 9)) 882 (words 3)) 864 (words 11)) 846 (words 3)) 828 (words 9)) 810 (words 9)) 792 (words 1)) 774 (words 1)) 756 (words 9)) 738 (words 8)) 720 (words 5)) 702 (words 5)) 684 (words 6)) 666 (words 14)) 648 (words 15)) 630 (words 10)) 612 (words 15)) 594 (words 11)) 576 (words 11)) 558 (words 8)) 540 (words 1)) 522 (words 0)) 504 (words 1)) 486 (words 5)) 468 (words 1)) 450 (words 12)) 432 (words 12)) 414 (words 6)) 396 (words 4)) 378 (words 4)) 360 (words 2)) 342 (words 2)) 324 (words 10)) 306 (words 10)) 288 (words 7)) 270 (words 15)) 252 (words 7)) 234 (words 7)) 216 (words 10)) 198 (words 13)) 180 (words 13)) 162 (words 14)) 144 (words 14)) 126 (words 11)) 108 (words 5)) 90 (words 12)) 72 (words 4)) 54 (words 0)) 36 (words 0)) 18 (words 4)) 0 (Pair13WriterRaw.dualW words 6)) = Pair13WriterRaw.writerMemory memory words
-  have hm162 := PairStoreMerge.three_store_merge
-    (StaggerTableMemory.storeDescending memory (StaggerTableLayout.tableWords words) 10 51)
-    162 (words 14) (words 11)
-    (by decide) (hclean 14 (by decide) (by decide))
-    (by simpa only [Nat.reduceAdd, Nat.reduceMul, Nat.reduceSub] using
-      prefix_gap memory words 8 (by decide) hgap)
-  change (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (words 8)) 918 (words 8)) 900 (words 9)) 882 (words 3)) 864 (words 11)) 846 (words 3)) 828 (words 9)) 810 (words 9)) 792 (words 1)) 774 (words 1)) 756 (words 9)) 738 (words 8)) 720 (words 5)) 702 (words 5)) 684 (words 6)) 666 (words 14)) 648 (words 15)) 630 (words 10)) 612 (words 15)) 594 (words 11)) 576 (words 11)) 558 (words 8)) 540 (words 1)) 522 (words 0)) 504 (words 1)) 486 (words 5)) 468 (words 1)) 450 (words 12)) 432 (words 12)) 414 (words 6)) 396 (words 4)) 378 (words 4)) 360 (words 2)) 342 (words 2)) 324 (words 10)) 306 (words 10)) 288 (words 7)) 270 (words 15)) 252 (words 7)) 234 (words 7)) 216 (words 10)) 198 (words 13)) 180 (words 13)) 162 (words 14)) 144 (words 14)) 126 (words 11)) = (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (words 8)) 918 (words 8)) 900 (words 9)) 882 (words 3)) 864 (words 11)) 846 (words 3)) 828 (words 9)) 810 (words 9)) 792 (words 1)) 774 (words 1)) 756 (words 9)) 738 (words 8)) 720 (words 5)) 702 (words 5)) 684 (words 6)) 666 (words 14)) 648 (words 15)) 630 (words 10)) 612 (words 15)) 594 (words 11)) 576 (words 11)) 558 (words 8)) 540 (words 1)) 522 (words 0)) 504 (words 1)) 486 (words 5)) 468 (words 1)) 450 (words 12)) 432 (words 12)) 414 (words 6)) 396 (words 4)) 378 (words 4)) 360 (words 2)) 342 (words 2)) 324 (words 10)) 306 (words 10)) 288 (words 7)) 270 (words 15)) 252 (words 7)) 234 (words 7)) 216 (words 10)) 198 (words 13)) 180 (words 13)) 162 (UInt256.mul (words 14) (UInt256.ofNat (2 ^ 144 + 1)))) 126 (words 11)) at hm162
-  rw [hm162]
-  have hm198 := PairStoreMerge.three_store_merge
-    (StaggerTableMemory.storeDescending memory (StaggerTableLayout.tableWords words) 12 49)
-    198 (words 13) (UInt256.mul (words 14) (UInt256.ofNat (2 ^ 144 + 1)))
-    (by decide) (hclean 13 (by decide) (by decide))
-    (by simpa only [Nat.reduceAdd, Nat.reduceMul, Nat.reduceSub] using
-      prefix_gap memory words 10 (by decide) hgap)
-  change (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (words 8)) 918 (words 8)) 900 (words 9)) 882 (words 3)) 864 (words 11)) 846 (words 3)) 828 (words 9)) 810 (words 9)) 792 (words 1)) 774 (words 1)) 756 (words 9)) 738 (words 8)) 720 (words 5)) 702 (words 5)) 684 (words 6)) 666 (words 14)) 648 (words 15)) 630 (words 10)) 612 (words 15)) 594 (words 11)) 576 (words 11)) 558 (words 8)) 540 (words 1)) 522 (words 0)) 504 (words 1)) 486 (words 5)) 468 (words 1)) 450 (words 12)) 432 (words 12)) 414 (words 6)) 396 (words 4)) 378 (words 4)) 360 (words 2)) 342 (words 2)) 324 (words 10)) 306 (words 10)) 288 (words 7)) 270 (words 15)) 252 (words 7)) 234 (words 7)) 216 (words 10)) 198 (words 13)) 180 (words 13)) 162 (UInt256.mul (words 14) (UInt256.ofNat (2 ^ 144 + 1)))) = (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (words 8)) 918 (words 8)) 900 (words 9)) 882 (words 3)) 864 (words 11)) 846 (words 3)) 828 (words 9)) 810 (words 9)) 792 (words 1)) 774 (words 1)) 756 (words 9)) 738 (words 8)) 720 (words 5)) 702 (words 5)) 684 (words 6)) 666 (words 14)) 648 (words 15)) 630 (words 10)) 612 (words 15)) 594 (words 11)) 576 (words 11)) 558 (words 8)) 540 (words 1)) 522 (words 0)) 504 (words 1)) 486 (words 5)) 468 (words 1)) 450 (words 12)) 432 (words 12)) 414 (words 6)) 396 (words 4)) 378 (words 4)) 360 (words 2)) 342 (words 2)) 324 (words 10)) 306 (words 10)) 288 (words 7)) 270 (words 15)) 252 (words 7)) 234 (words 7)) 216 (words 10)) 198 (UInt256.mul (words 13) (UInt256.ofNat (2 ^ 144 + 1)))) 162 (UInt256.mul (words 14) (UInt256.ofNat (2 ^ 144 + 1)))) at hm198
-  rw [hm198]
-  have hm252 := PairStoreMerge.three_store_merge
-    (StaggerTableMemory.storeDescending memory (StaggerTableLayout.tableWords words) 15 46)
-    252 (words 7) (words 10)
-    (by decide) (hclean 7 (by decide) (by decide))
-    (by simpa only [Nat.reduceAdd, Nat.reduceMul, Nat.reduceSub] using
-      prefix_gap memory words 13 (by decide) hgap)
-  change (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (words 8)) 918 (words 8)) 900 (words 9)) 882 (words 3)) 864 (words 11)) 846 (words 3)) 828 (words 9)) 810 (words 9)) 792 (words 1)) 774 (words 1)) 756 (words 9)) 738 (words 8)) 720 (words 5)) 702 (words 5)) 684 (words 6)) 666 (words 14)) 648 (words 15)) 630 (words 10)) 612 (words 15)) 594 (words 11)) 576 (words 11)) 558 (words 8)) 540 (words 1)) 522 (words 0)) 504 (words 1)) 486 (words 5)) 468 (words 1)) 450 (words 12)) 432 (words 12)) 414 (words 6)) 396 (words 4)) 378 (words 4)) 360 (words 2)) 342 (words 2)) 324 (words 10)) 306 (words 10)) 288 (words 7)) 270 (words 15)) 252 (words 7)) 234 (words 7)) 216 (words 10)) = (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (words 8)) 918 (words 8)) 900 (words 9)) 882 (words 3)) 864 (words 11)) 846 (words 3)) 828 (words 9)) 810 (words 9)) 792 (words 1)) 774 (words 1)) 756 (words 9)) 738 (words 8)) 720 (words 5)) 702 (words 5)) 684 (words 6)) 666 (words 14)) 648 (words 15)) 630 (words 10)) 612 (words 15)) 594 (words 11)) 576 (words 11)) 558 (words 8)) 540 (words 1)) 522 (words 0)) 504 (words 1)) 486 (words 5)) 468 (words 1)) 450 (words 12)) 432 (words 12)) 414 (words 6)) 396 (words 4)) 378 (words 4)) 360 (words 2)) 342 (words 2)) 324 (words 10)) 306 (words 10)) 288 (words 7)) 270 (words 15)) 252 (UInt256.mul (words 7) (UInt256.ofNat (2 ^ 144 + 1)))) 216 (words 10)) at hm252
-  rw [hm252]
-  have hm324 := PairStoreMerge.three_store_merge
-    (StaggerTableMemory.storeDescending memory (StaggerTableLayout.tableWords words) 19 42)
-    324 (words 10) (words 7)
-    (by decide) (hclean 10 (by decide) (by decide))
-    (by simpa only [Nat.reduceAdd, Nat.reduceMul, Nat.reduceSub] using
-      prefix_gap memory words 17 (by decide) hgap)
-  change (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (words 8)) 918 (words 8)) 900 (words 9)) 882 (words 3)) 864 (words 11)) 846 (words 3)) 828 (words 9)) 810 (words 9)) 792 (words 1)) 774 (words 1)) 756 (words 9)) 738 (words 8)) 720 (words 5)) 702 (words 5)) 684 (words 6)) 666 (words 14)) 648 (words 15)) 630 (words 10)) 612 (words 15)) 594 (words 11)) 576 (words 11)) 558 (words 8)) 540 (words 1)) 522 (words 0)) 504 (words 1)) 486 (words 5)) 468 (words 1)) 450 (words 12)) 432 (words 12)) 414 (words 6)) 396 (words 4)) 378 (words 4)) 360 (words 2)) 342 (words 2)) 324 (words 10)) 306 (words 10)) 288 (words 7)) = (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (words 8)) 918 (words 8)) 900 (words 9)) 882 (words 3)) 864 (words 11)) 846 (words 3)) 828 (words 9)) 810 (words 9)) 792 (words 1)) 774 (words 1)) 756 (words 9)) 738 (words 8)) 720 (words 5)) 702 (words 5)) 684 (words 6)) 666 (words 14)) 648 (words 15)) 630 (words 10)) 612 (words 15)) 594 (words 11)) 576 (words 11)) 558 (words 8)) 540 (words 1)) 522 (words 0)) 504 (words 1)) 486 (words 5)) 468 (words 1)) 450 (words 12)) 432 (words 12)) 414 (words 6)) 396 (words 4)) 378 (words 4)) 360 (words 2)) 342 (words 2)) 324 (UInt256.mul (words 10) (UInt256.ofNat (2 ^ 144 + 1)))) 288 (words 7)) at hm324
-  rw [hm324]
-  have hm396 := PairStoreMerge.three_store_merge
-    (StaggerTableMemory.storeDescending memory (StaggerTableLayout.tableWords words) 23 38)
-    396 (words 4) (words 2)
-    (by decide) (hclean 4 (by decide) (by decide))
-    (by simpa only [Nat.reduceAdd, Nat.reduceMul, Nat.reduceSub] using
-      prefix_gap memory words 21 (by decide) hgap)
-  change (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (words 8)) 918 (words 8)) 900 (words 9)) 882 (words 3)) 864 (words 11)) 846 (words 3)) 828 (words 9)) 810 (words 9)) 792 (words 1)) 774 (words 1)) 756 (words 9)) 738 (words 8)) 720 (words 5)) 702 (words 5)) 684 (words 6)) 666 (words 14)) 648 (words 15)) 630 (words 10)) 612 (words 15)) 594 (words 11)) 576 (words 11)) 558 (words 8)) 540 (words 1)) 522 (words 0)) 504 (words 1)) 486 (words 5)) 468 (words 1)) 450 (words 12)) 432 (words 12)) 414 (words 6)) 396 (words 4)) 378 (words 4)) 360 (words 2)) = (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (words 8)) 918 (words 8)) 900 (words 9)) 882 (words 3)) 864 (words 11)) 846 (words 3)) 828 (words 9)) 810 (words 9)) 792 (words 1)) 774 (words 1)) 756 (words 9)) 738 (words 8)) 720 (words 5)) 702 (words 5)) 684 (words 6)) 666 (words 14)) 648 (words 15)) 630 (words 10)) 612 (words 15)) 594 (words 11)) 576 (words 11)) 558 (words 8)) 540 (words 1)) 522 (words 0)) 504 (words 1)) 486 (words 5)) 468 (words 1)) 450 (words 12)) 432 (words 12)) 414 (words 6)) 396 (UInt256.mul (words 4) (UInt256.ofNat (2 ^ 144 + 1)))) 360 (words 2)) at hm396
-  rw [hm396]
-  have hm450 := PairStoreMerge.three_store_merge
-    (StaggerTableMemory.storeDescending memory (StaggerTableLayout.tableWords words) 26 35)
-    450 (words 12) (words 6)
-    (by decide) (hclean 12 (by decide) (by decide))
-    (by simpa only [Nat.reduceAdd, Nat.reduceMul, Nat.reduceSub] using
-      prefix_gap memory words 24 (by decide) hgap)
-  change (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (words 8)) 918 (words 8)) 900 (words 9)) 882 (words 3)) 864 (words 11)) 846 (words 3)) 828 (words 9)) 810 (words 9)) 792 (words 1)) 774 (words 1)) 756 (words 9)) 738 (words 8)) 720 (words 5)) 702 (words 5)) 684 (words 6)) 666 (words 14)) 648 (words 15)) 630 (words 10)) 612 (words 15)) 594 (words 11)) 576 (words 11)) 558 (words 8)) 540 (words 1)) 522 (words 0)) 504 (words 1)) 486 (words 5)) 468 (words 1)) 450 (words 12)) 432 (words 12)) 414 (words 6)) = (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (words 8)) 918 (words 8)) 900 (words 9)) 882 (words 3)) 864 (words 11)) 846 (words 3)) 828 (words 9)) 810 (words 9)) 792 (words 1)) 774 (words 1)) 756 (words 9)) 738 (words 8)) 720 (words 5)) 702 (words 5)) 684 (words 6)) 666 (words 14)) 648 (words 15)) 630 (words 10)) 612 (words 15)) 594 (words 11)) 576 (words 11)) 558 (words 8)) 540 (words 1)) 522 (words 0)) 504 (words 1)) 486 (words 5)) 468 (words 1)) 450 (UInt256.mul (words 12) (UInt256.ofNat (2 ^ 144 + 1)))) 414 (words 6)) at hm450
-  rw [hm450]
-  have hm594 := PairStoreMerge.three_store_merge
-    (StaggerTableMemory.storeDescending memory (StaggerTableLayout.tableWords words) 34 27)
-    594 (words 11) (words 8)
-    (by decide) (hclean 11 (by decide) (by decide))
-    (by simpa only [Nat.reduceAdd, Nat.reduceMul, Nat.reduceSub] using
-      prefix_gap memory words 32 (by decide) hgap)
-  change (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (words 8)) 918 (words 8)) 900 (words 9)) 882 (words 3)) 864 (words 11)) 846 (words 3)) 828 (words 9)) 810 (words 9)) 792 (words 1)) 774 (words 1)) 756 (words 9)) 738 (words 8)) 720 (words 5)) 702 (words 5)) 684 (words 6)) 666 (words 14)) 648 (words 15)) 630 (words 10)) 612 (words 15)) 594 (words 11)) 576 (words 11)) 558 (words 8)) = (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (words 8)) 918 (words 8)) 900 (words 9)) 882 (words 3)) 864 (words 11)) 846 (words 3)) 828 (words 9)) 810 (words 9)) 792 (words 1)) 774 (words 1)) 756 (words 9)) 738 (words 8)) 720 (words 5)) 702 (words 5)) 684 (words 6)) 666 (words 14)) 648 (words 15)) 630 (words 10)) 612 (words 15)) 594 (UInt256.mul (words 11) (UInt256.ofNat (2 ^ 144 + 1)))) 558 (words 8)) at hm594
-  rw [hm594]
-  have hm720 := PairStoreMerge.three_store_merge
-    (StaggerTableMemory.storeDescending memory (StaggerTableLayout.tableWords words) 41 20)
-    720 (words 5) (words 6)
-    (by decide) (hclean 5 (by decide) (by decide))
-    (by simpa only [Nat.reduceAdd, Nat.reduceMul, Nat.reduceSub] using
-      prefix_gap memory words 39 (by decide) hgap)
-  change (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (words 8)) 918 (words 8)) 900 (words 9)) 882 (words 3)) 864 (words 11)) 846 (words 3)) 828 (words 9)) 810 (words 9)) 792 (words 1)) 774 (words 1)) 756 (words 9)) 738 (words 8)) 720 (words 5)) 702 (words 5)) 684 (words 6)) = (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (words 8)) 918 (words 8)) 900 (words 9)) 882 (words 3)) 864 (words 11)) 846 (words 3)) 828 (words 9)) 810 (words 9)) 792 (words 1)) 774 (words 1)) 756 (words 9)) 738 (words 8)) 720 (UInt256.mul (words 5) (UInt256.ofNat (2 ^ 144 + 1)))) 684 (words 6)) at hm720
-  rw [hm720]
-  have hm828 := PairStoreMerge.three_store_merge
-    (StaggerTableMemory.storeDescending memory (StaggerTableLayout.tableWords words) 47 14)
-    828 (words 9) (words 1)
-    (by decide) (hclean 9 (by decide) (by decide))
-    (by simpa only [Nat.reduceAdd, Nat.reduceMul, Nat.reduceSub] using
-      prefix_gap memory words 45 (by decide) hgap)
-  change (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (words 8)) 918 (words 8)) 900 (words 9)) 882 (words 3)) 864 (words 11)) 846 (words 3)) 828 (words 9)) 810 (words 9)) 792 (words 1)) = (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (words 8)) 918 (words 8)) 900 (words 9)) 882 (words 3)) 864 (words 11)) 846 (words 3)) 828 (UInt256.mul (words 9) (UInt256.ofNat (2 ^ 144 + 1)))) 792 (words 1)) at hm828
-  rw [hm828]
-  have hm936 := PairStoreMerge.three_store_merge
-    (StaggerTableMemory.storeDescending memory (StaggerTableLayout.tableWords words) 53 8)
-    936 (words 8) (words 9)
-    (by decide) (hclean 8 (by decide) (by decide))
-    (by simpa only [Nat.reduceAdd, Nat.reduceMul, Nat.reduceSub] using
-      prefix_gap memory words 51 (by decide) hgap)
-  change (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (words 8)) 918 (words 8)) 900 (words 9)) = (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (UInt256.mul (words 8) (UInt256.ofNat (2 ^ 144 + 1)))) 900 (words 9)) at hm936
-  rw [hm936]
-  have hm972 := PairStoreMerge.three_store_merge
-    (StaggerTableMemory.storeDescending memory (StaggerTableLayout.tableWords words) 55 6)
-    972 (words 3) (UInt256.mul (words 8) (UInt256.ofNat (2 ^ 144 + 1)))
-    (by decide) (hclean 3 (by decide) (by decide))
-    (by simpa only [Nat.reduceAdd, Nat.reduceMul, Nat.reduceSub] using
-      prefix_gap memory words 53 (by decide) hgap)
-  change (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (words 3)) 954 (words 3)) 936 (UInt256.mul (words 8) (UInt256.ofNat (2 ^ 144 + 1)))) = (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (UInt256.mul (words 3) (UInt256.ofNat (2 ^ 144 + 1)))) 936 (UInt256.mul (words 8) (UInt256.ofNat (2 ^ 144 + 1)))) at hm972
-  rw [hm972]
-  have hm1008 := PairStoreMerge.three_store_merge
-    (StaggerTableMemory.storeDescending memory (StaggerTableLayout.tableWords words) 57 4)
-    1008 (words 15) (UInt256.mul (words 3) (UInt256.ofNat (2 ^ 144 + 1)))
-    (by decide) (hclean 15 (by decide) (by decide))
-    (by simpa only [Nat.reduceAdd, Nat.reduceMul, Nat.reduceSub] using
-      prefix_gap memory words 55 (by decide) hgap)
-  change (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (words 15)) 990 (words 15)) 972 (UInt256.mul (words 3) (UInt256.ofNat (2 ^ 144 + 1)))) = (writeWord (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (UInt256.mul (words 15) (UInt256.ofNat (2 ^ 144 + 1)))) 972 (UInt256.mul (words 3) (UInt256.ofNat (2 ^ 144 + 1)))) at hm1008
-  rw [hm1008]
-  have hm1044 := PairStoreMerge.three_store_merge
-    (StaggerTableMemory.storeDescending memory (StaggerTableLayout.tableWords words) 59 2)
-    1044 (words 6) (UInt256.mul (words 15) (UInt256.ofNat (2 ^ 144 + 1)))
-    (by decide) (hclean 6 (by decide) (by decide))
-    (by simpa only [Nat.reduceAdd, Nat.reduceMul, Nat.reduceSub] using
-      prefix_gap memory words 57 (by decide) hgap)
-  change (writeWord (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (words 6)) 1026 (words 6)) 1008 (UInt256.mul (words 15) (UInt256.ofNat (2 ^ 144 + 1)))) = (writeWord (writeWord (writeWord (writeWord memory 1080 (words 5)) 1062 (words 13)) 1044 (UInt256.mul (words 6) (UInt256.ofNat (2 ^ 144 + 1)))) 1008 (UInt256.mul (words 15) (UInt256.ofNat (2 ^ 144 + 1)))) at hm1044
-  rw [hm1044]
-  simp only [Pair13WriterRaw.writerMemory, Pair13WriterRaw.writeChain,
-    Pair13WriterRaw.writerWrites, List.foldl_cons, List.foldl_nil, coefficient_eq,
-    RawExpressionAC.mul_comm]
+  rw [resultMemoryJ]
+  have g8 := prefix_gap memory words 8 (by decide) hgap
+  have g10 := prefix_gap memory words 10 (by decide) hgap
+  have g13 := prefix_gap memory words 13 (by decide) hgap
+  have g17 := prefix_gap memory words 17 (by decide) hgap
+  have g21 := prefix_gap memory words 21 (by decide) hgap
+  have g24 := prefix_gap memory words 24 (by decide) hgap
+  have g32 := prefix_gap memory words 32 (by decide) hgap
+  have g39 := prefix_gap memory words 39 (by decide) hgap
+  have g45 := prefix_gap memory words 45 (by decide) hgap
+  have g51 := prefix_gap memory words 51 (by decide) hgap
+  have g53 := prefix_gap memory words 53 (by decide) hgap
+  have g55 := prefix_gap memory words 55 (by decide) hgap
+  have g57 := prefix_gap memory words 57 (by decide) hgap
+  simp only [StaggerTableMemory.storeDescending, Nat.reduceAdd, Nat.reduceMul, Nat.reduceSub]
+    at g8 g10 g13 g17 g21 g24 g32 g39 g45 g51 g53 g55 g57 ⊢
+  simp only [elide_eq words 8 (by decide),
+    elide_eq words 10 (by decide),
+    elide_eq words 13 (by decide),
+    elide_eq words 17 (by decide),
+    elide_eq words 21 (by decide),
+    elide_eq words 24 (by decide),
+    elide_eq words 32 (by decide),
+    elide_eq words 39 (by decide),
+    elide_eq words 45 (by decide),
+    elide_eq words 51 (by decide),
+    elide_eq words 53 (by decide),
+    elide_eq words 55 (by decide),
+    elide_eq words 57 (by decide)]
+    at g8 g10 g13 g17 g21 g24 g32 g39 g45 g51 g53 g55 g57 ⊢
+  rw [JD8Merge.three_store_merge_hi (a := 162) (ha := by decide) (hgap := g8),
+      JD8Merge.three_store_merge_hi (a := 198) (ha := by decide) (hgap := g10),
+      JD8Merge.three_store_merge_hi (a := 252) (ha := by decide) (hgap := g13),
+      JD8Merge.three_store_merge_hi (a := 324) (ha := by decide) (hgap := g17),
+      JD8Merge.three_store_merge_hi (a := 396) (ha := by decide) (hgap := g21),
+      JD8Merge.three_store_merge_hi (a := 450) (ha := by decide) (hgap := g24),
+      JD8Merge.three_store_merge_hi (a := 594) (ha := by decide) (hgap := g32),
+      JD8Merge.three_store_merge_hi (a := 720) (ha := by decide) (hgap := g39),
+      JD8Merge.three_store_merge_hi (a := 828) (ha := by decide) (hgap := g45),
+      JD8Merge.three_store_merge_hi (a := 936) (ha := by decide) (hgap := g51),
+      JD8Merge.three_store_merge_hi (a := 972) (ha := by decide) (hgap := g53),
+      JD8Merge.three_store_merge_hi (a := 1008) (ha := by decide) (hgap := g55),
+      JD8Merge.three_store_merge_hi (a := 1044) (ha := by decide) (hgap := g57)]
+  have e0 : tableJ words 0 = Pair13WriterRaw.dualW words 6 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e1 : tableJ words 1 = Pair13WriterRaw.dualW words 4 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e2 : tableJ words 2 = Pair13WriterRaw.dualW words 0 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e3 : tableJ words 3 = Pair13WriterRaw.dualW words 0 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e4 : tableJ words 4 = Pair13WriterRaw.dualW words 4 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e5 : tableJ words 5 = Pair13WriterRaw.dualW words 12 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e6 : tableJ words 6 = Pair13WriterRaw.dualW words 5 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e7 : tableJ words 7 = Pair13WriterRaw.dualW words 11 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e9 : tableJ words 9 = Pair13WriterRaw.dualW words 14 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e11 : tableJ words 11 = Pair13WriterRaw.dualW words 13 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e12 : tableJ words 12 = Pair13WriterRaw.dualW words 10 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e14 : tableJ words 14 = Pair13WriterRaw.dualW words 7 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e15 : tableJ words 15 = Pair13WriterRaw.dualW words 15 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e16 : tableJ words 16 = Pair13WriterRaw.dualW words 7 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e18 : tableJ words 18 = Pair13WriterRaw.dualW words 10 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e19 : tableJ words 19 = Pair13WriterRaw.dualW words 2 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e20 : tableJ words 20 = Pair13WriterRaw.dualW words 2 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e22 : tableJ words 22 = Pair13WriterRaw.dualW words 4 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e23 : tableJ words 23 = Pair13WriterRaw.dualW words 6 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e25 : tableJ words 25 = Pair13WriterRaw.dualW words 12 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e26 : tableJ words 26 = Pair13WriterRaw.dualW words 1 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e27 : tableJ words 27 = Pair13WriterRaw.dualW words 5 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e28 : tableJ words 28 = Pair13WriterRaw.dualW words 1 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e29 : tableJ words 29 = Pair13WriterRaw.dualW words 0 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e30 : tableJ words 30 = Pair13WriterRaw.dualW words 1 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e31 : tableJ words 31 = Pair13WriterRaw.dualW words 8 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e33 : tableJ words 33 = Pair13WriterRaw.dualW words 11 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e34 : tableJ words 34 = Pair13WriterRaw.dualW words 15 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e35 : tableJ words 35 = Pair13WriterRaw.dualW words 10 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e36 : tableJ words 36 = Pair13WriterRaw.dualW words 15 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e37 : tableJ words 37 = Pair13WriterRaw.dualW words 14 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e38 : tableJ words 38 = Pair13WriterRaw.dualW words 6 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e40 : tableJ words 40 = Pair13WriterRaw.dualW words 5 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e41 : tableJ words 41 = Pair13WriterRaw.dualW words 8 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e42 : tableJ words 42 = Pair13WriterRaw.dualW words 9 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e43 : tableJ words 43 = Pair13WriterRaw.dualW words 1 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e44 : tableJ words 44 = Pair13WriterRaw.dualW words 1 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e46 : tableJ words 46 = Pair13WriterRaw.dualW words 9 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e47 : tableJ words 47 = Pair13WriterRaw.dualW words 3 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e48 : tableJ words 48 = Pair13WriterRaw.dualW words 11 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e49 : tableJ words 49 = Pair13WriterRaw.dualW words 3 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e50 : tableJ words 50 = Pair13WriterRaw.dualW words 9 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e52 : tableJ words 52 = Pair13WriterRaw.dualW words 8 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e54 : tableJ words 54 = Pair13WriterRaw.dualW words 3 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e56 : tableJ words 56 = Pair13WriterRaw.dualW words 15 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e58 : tableJ words 58 = Pair13WriterRaw.dualW words 6 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e59 : tableJ words 59 = Pair13WriterRaw.dualW words 13 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  have e60 : tableJ words 60 = Pair13WriterRaw.dualW words 5 := by
+    norm_num [tableJ, PairStoreGap.lowerPairSlots, StaggerTableLayout.slots]
+  simp only [e0, e1, e2, e3, e4, e5, e6, e7, e9, e11, e12, e14, e15, e16, e18, e19, e20, e22, e23, e25, e26, e27, e28, e29, e30, e31, e33, e34, e35, e36, e37, e38, e40, e41, e42, e43, e44, e46, e47, e48, e49, e50, e52, e54, e56, e58, e59, e60, Nat.reduceSub,
+    Pair13WriterRaw.writerMemory, Pair13WriterRaw.writeChain, Pair13WriterRaw.writerWrites,
+    Pair13WriterRaw.sortedWrites, List.foldl_cons, List.foldl_nil]
 
-#print axioms writerMemory_eq_resultMemoryD
+#print axioms elide_eq
+#print axioms writerMemory_eq_resultMemoryJ
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13Memory

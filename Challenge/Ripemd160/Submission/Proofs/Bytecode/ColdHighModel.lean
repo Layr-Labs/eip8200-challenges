@@ -20,7 +20,7 @@ def paddedState (input : ByteArray) (i : Nat) : State :=
 def tableState (input : ByteArray) (i : Nat) : State :=
   {paddedState input i with memory:=ColdHighReady.tableMemory input i, activeWords:=DenseScheduleTemplate.loadedActiveWords (paddedState input i) (UInt256.ofNat (messagePointer i))}
 
-theorem large_branch (input : ByteArray) (hfit : CalldataFits input) (hlarge : 5210 ≤ input.size) :
+theorem large_branch (input : ByteArray) (hfit : CalldataFits input) (hlarge : 5220≤input.size) :
     ¬UInt256.isTrue (StaggerPad.highZero (UInt256.ofNat input.size)) := by
   intro h
   have hn := (StaggerPad.highZero_true_iff _).mp h
@@ -28,8 +28,8 @@ theorem large_branch (input : ByteArray) (hfit : CalldataFits input) (hlarge : 5
   omega
 
 theorem tableState_active (input : ByteArray) (hfit : CalldataFits input) (i : Nat)
-    (hi : i<DriverTrace.blockCount input) : 35≤(tableState input i).activeWords.toNat :=
-  Stagger144Active.loaded_active_ge35 (paddedState input i) (messagePointer i)
+    (hi : i<DriverTrace.blockCount input) : 37≤(tableState input i).activeWords.toNat :=
+  Stagger144Active.loaded_active_ge37 (paddedState input i) (messagePointer i)
     (messagePointer_lower i) (messagePointer_bound input hfit i hi)
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdHighTrace

@@ -17,9 +17,8 @@ def template : List Instr :=
 
 theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
-    (hactive : s.activeWords = UInt256.ofNat 34)
-    (_hlow : (MachineState.readWord s.memory 0).toNat % 2 ^ 144 < 2 ^ 32)
-    (_hgap : PairStoreGap.GapClear s.memory) :
+    (hactive : s.activeWords = UInt256.ofNat 36)
+    (hgap : PairStoreGap.GapClear s.memory) :
     runInstrSeq template
       {s with
         pc := pc
@@ -30,37 +29,53 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
         pc := pcAfter pc template
         stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10
           (UInt256.ofNat 0) lim rho
-        memory := Shared32Table.tableMemory s.memory
-        activeWords := UInt256.ofNat 35} := by
+        memory := Pair13Memory.resultMemoryJ s.memory (Shared32Table.WJ s.memory)} := by
   let rest : List UInt256 :=
     a2 :: a3 :: a4 :: a5 :: a6 :: a7 :: a8 :: a9 :: a10 :: UInt256.ofNat 0 :: lim :: mask8 :: mask16 :: rho
   let F := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10
     (UInt256.ofNat 0) lim rho
+  let words := Shared32Table.WJ s.memory
   let scratch := Pair13Endian.scratch3 s.memory
-    (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1056)) highWord
+    (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1120)) highWord
   let s1 : State := {s with memory := writeWord s.memory 96 highWord}
   let s2 : State := {s with memory := scratch}
   let s3 : State := {s with memory := Pair13PoolRaw.copied scratch}
-  have ha : 34 ≤ s2.activeWords.toNat := by change 34 ≤ s.activeWords.toNat; rw [hactive]; decide
-  have ha3 : s3.activeWords = UInt256.ofNat 34 := hactive
+  have ha : 35 ≤ s2.activeWords.toNat := by change 35 ≤ s.activeWords.toNat; rw [hactive]; decide
+  have ha3 : 35 ≤ s3.activeWords.toNat := by change 35 ≤ s.activeWords.toNat; rw [hactive]; decide
   have hF : F.length ≤ 900 := by simp only [F, stk, List.length_cons]; omega
   have hrest : rest.length ≤ 898 := by simp only [rest, List.length_cons]; omega
   have h1 := Shared32Lower.run_lower s1 pc ret (UInt256.ofNat 4294967295)
     a2 a3 a4 a5 a6 a7 a8 a9 a10 lim rho hstack hrun hactive
-  have hread : MachineState.readWord s1.memory 1056 = MachineState.readWord s.memory 1056 :=
+  have hread : MachineState.readWord s1.memory 1120 = MachineState.readWord s.memory 1120 :=
     read_writeWord_disjoint _ _ _ _ (Or.inr (by decide))
   rw [hread] at h1
-  have h2 := Pair13PoolRaw.run_actual_of_small s2 (pcAfter pc Shared32Lower.lowerTemplate) F hF hrun ha
+  have h2 := Pair13PoolRaw.run_actual s2 (pcAfter pc Shared32Lower.lowerTemplate) F hF hrun ha
+  have hclean6 : (words 6).toNat < 2 ^ 32 := by
+    show (Shared32Scratch.wordsJ s.memory _ highWord 6).toNat < 2 ^ 32
+    rw [Shared32Scratch.wordsJ, if_pos (by tauto)]
+    exact Shared32Scratch.fanWord_lt _ _ 6
+  have hpool : Pair13PoolRaw.poolStack
+      (Pair13PoolRaw.poolWord (Pair13PoolRaw.copied scratch)) F =
+      Pair13PoolRaw.poolStack (Pair13WriterRaw.dualW words) F := by
+    have hD : ∀ i, i < 16 → Pair13PoolRaw.poolWord (Pair13PoolRaw.copied scratch) i =
+        Pair13WriterRaw.dualW words i := by
+      intro i hi
+      exact Shared32Scratch.fan_poolWordJ s.memory
+        (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1120)) highWord i hi
+    simp (discharger := decide) only [Pair13PoolRaw.poolStack, hD]
+  rw [show s2.memory = scratch by rfl, hpool] at h2
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
-  have h3 := PoolRawWriter.run_writer_grow s3
+  have h3 := Pair13WriterRaw.run_writer s3
     (pcAfter (pcAfter pc Shared32Lower.lowerTemplate) Pair13PoolRaw.template)
-    ret (Pair13PoolRaw.poolWord (Pair13PoolRaw.copied scratch)) rest hrest hrun ha3
+    ret words rest hrest hrun ha3 hclean6
   have h := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
-  simpa only [PoolRawWriter.template_eq, template, DenseScheduleTrace.pcAfter_append,
-    s3, s2, s1, scratch, Shared32Table.tableMemory, PoolShape.resultMemory, PoolShape.poolValue,
-    Bool.false_eq_true, if_false, Shared32Scratch.fanMemory, rest, stk] using h
+  have hmem : Pair13WriterRaw.writerMemory (Pair13PoolRaw.copied scratch) words =
+      Pair13Memory.resultMemoryJ s.memory words :=
+    Shared32Table.writer_memoryJ s.memory hgap
+  simpa only [template, DenseScheduleTrace.pcAfter_append, s3, s2, s1, hmem, scratch, words,
+    rest, stk] using h
 
-theorem end_pc : pcAfter (UInt256.ofNat 503) template = UInt256.ofNat 854 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 517) template = UInt256.ofNat 884 := by decide
 
 #print axioms run_table
 #print axioms end_pc

@@ -2,6 +2,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCoreModel
 import Challenge.EvmProof.Word
 set_option warningAsError true
 set_option maxRecDepth 10000
+set_option linter.unusedVariables false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerMessage
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof PairedLaneUInt256Bridge Paired144Core
 open Paired80Compression
@@ -43,10 +44,12 @@ theorem ready_junk (memory : ByteArray) (words : Nat → UInt256) (scalar : Nat 
     have hl := (Paired80Algorithm.index_bounds ⟨i, by omega⟩).1
     have hr := (Paired80Algorithm.index_bounds ⟨i+3, by omega⟩).2
     have hc := compact_not_two ⟨i, hi⟩
-    apply Or.inl
     refine ⟨g Crypto.Ripemd160.r[i]!, g Crypto.Ripemd160.rP[i + 3]!,
-      ⟨hg _ hl, hg _ hr, fun hu => hg35 _ hl (hc hu),
-        hclean _ hl, hclean _ hr, hg32 _ hl⟩, ?_⟩
+      ⟨Nat.lt_trans (hg _ hl) (by norm_num),
+        (fun hnd => (hclean _ hl (fun hd => hnd (StaggerAlgorithm.jdirty_of_dirty hd))).2
+          (StaggerAlgorithm.ne15_of_not_jdirty hnd)),
+        (fun hnd => (hclean _ hr (fun hd => hnd (StaggerAlgorithm.jdirty_of_dirty hd))).2
+          (StaggerAlgorithm.ne15_of_not_jdirty hnd))⟩, ?_⟩
     apply BitVec.eq_of_toNat_eq
     rw [bits_toNat, BitVec.toNat_add, pack_toNat, StaggerRound.junk, BitVec.toNat_ofNat]
     change (MachineState.readWord (StaggerTableLayout.resultMemory memory words)
