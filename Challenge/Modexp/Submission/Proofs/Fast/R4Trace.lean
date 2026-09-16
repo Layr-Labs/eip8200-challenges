@@ -73,26 +73,26 @@ local macro "lenOK" : tactic =>
   `(tactic| ((try simp only [List.length_cons, List.length_append, win] at *) <;> omega))
 
 theorem jd5158 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4742 = true :=
-  Artifact.isValidJumpDest_index 3601 (by rfl)
+  Artifact.isValidJumpDest_index 3599 (by rfl)
 
 theorem jd4903 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (4502 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 3389 (by rfl)
+  Artifact.isValidJumpDest_index 3387 (by rfl)
 
 theorem jd5020 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (4614 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 3489 (by rfl)
+  Artifact.isValidJumpDest_index 3487 (by rfl)
 
 theorem jd5108 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (4697 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 3562 (by rfl)
+  Artifact.isValidJumpDest_index 3560 (by rfl)
 
 theorem jd5274 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (4848 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 3707 (by rfl)
+  Artifact.isValidJumpDest_index 3705 (by rfl)
 
 theorem jd4379 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4005 = true :=
-  Artifact.isValidJumpDest_index 3021 (by rfl)
+  Artifact.isValidJumpDest_index 3019 (by rfl)
 
 section
 variable (s : State)

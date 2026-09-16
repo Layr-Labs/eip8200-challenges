@@ -228,43 +228,82 @@ Where `c` is already zero, `PUSH0` produces the same word for one gas less.  Eve
 is that one substitution: `run_fused_zero` has the *same* conclusion as `run_fused`, only under
 the extra hypothesis `c = 0`, and is derived from `run_fused` rather than reproved. -/
 
-/-- `headProgram` with the incoming-carry `DUP4` replaced by `PUSH0` (both one byte). -/
+/-- Zero-carry head: five shared ops; `PUSH0; ADD` absorbed into the following `PUSH4` load. -/
 private def headZeroProgram : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩),
-   .op .GT, .op .SUB, .op (.Dup ⟨1, by decide⟩),
-   .push 0 0, .op .ADD]
+   .op .GT, .op .SUB, .op (.Dup ⟨1, by decide⟩)]
+
+/-- Like `memoryProgram`, but the accumulator address uses `PUSH4` so byte length matches. -/
+private def memoryZeroProgram (tl ts : UInt256) : List Instr :=
+  [.push 4 tl, .op .MLOAD, .op (.Dup ⟨1, by decide⟩), .op .ADD,
+   .op (.Dup ⟨0, by decide⟩), .push 2 ts, .op .MSTORE,
+   .op (.Dup ⟨1, by decide⟩), .op .GT]
 
 private theorem post_zero_eq (tl ts : UInt256) :
-    macFusedPostZeroProgram tl ts = (headZeroProgram ++ memoryProgram tl ts) ++ tailProgram := rfl
+    macFusedPostZeroProgram tl ts = (headZeroProgram ++ memoryZeroProgram tl ts) ++ tailProgram := rfl
 
 private theorem push0_ofNat : (⟨0⟩ : UInt256) = UInt256.ofNat 0 := by decide
 
-/-- On a zero-carry frame the two heads agree: `PUSH0` and the `DUP4` of a zero slot both push
-zero, and `PUSH0` advances the pc by the same single byte. -/
-private theorem run_head_zero (template : State) (pc mm lo y : UInt256)
-    (rest : List UInt256) (hrest : rest.length + 8 < 1024) :
-    runInstructions headZeroProgram
+/-- Head through first load: five shared ops + `PUSH4; MLOAD` advances pc by 11, matching the
+general `headProgram ++ [PUSH2; MLOAD]` path on a zero-carry frame. -/
+private theorem run_head_zero_load (template : State) (pc mm lo y tl : UInt256)
+    (rest : List UInt256) (hrest : rest.length + 8 < 1024)
+    (hload : UInt256.ofNat (MachineState.activeWordsAfter
+      template.activeWords.toNat tl.toNat 32) = template.activeWords) :
+    runInstructions (headZeroProgram ++ [.push 4 tl, .op .MLOAD])
       (framed template pc ([mm, lo, UInt256.ofNat 0, y] ++ rest)) =
-    some (framed template (pc + UInt256.ofNat 7)
-      ([lo + UInt256.ofNat 0, UInt256.lt mm lo - mm, lo, UInt256.ofNat 0, y] ++ rest)) := by
+    some (framed template (pc + UInt256.ofNat 11)
+      ([MachineState.readWord template.memory tl.toNat, lo + UInt256.ofNat 0,
+        UInt256.lt mm lo - mm, lo, UInt256.ofNat 0, y] ++ rest)) := by
   have hcap (n : Nat) (hn : n ≤ 8) : rest.length + n < 1024 := by omega
-  have hc := add_comm (UInt256.ofNat 0) lo
-  simp (disch := omega) [runInstructions, headZeroProgram, framed,
-    Challenge.EvmProof.Stepper.runInstr, List.getElem?_cons_zero,
-    List.getElem?_cons_succ, hcap, Nat.add_assoc, hc, push0_ofNat, UInt256.gt, UInt256.lt,
-    succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
+  have hexec :
+      runInstructions (headZeroProgram ++ [.push 4 tl, .op .MLOAD])
+        (framed template pc ([mm, lo, UInt256.ofNat 0, y] ++ rest)) =
+      some (framed template (pc + UInt256.ofNat 11)
+        ([MachineState.readWord template.memory tl.toNat, lo,
+          UInt256.lt mm lo - mm, lo, UInt256.ofNat 0, y] ++ rest)) := by
+    simp (disch := omega) [runInstructions, headZeroProgram, framed,
+      Challenge.EvmProof.Stepper.runInstr, List.getElem?_cons_zero,
+      List.getElem?_cons_succ, hcap, Nat.add_assoc, UInt256.gt, UInt256.lt,
+      succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod, hload]
+  convert hexec using 1
+  simp [Challenge.EvmProof.Word.ofNat_add_mod]
 
 /-- The zero-carry post schedule runs exactly as the general one does. -/
 private theorem run_post_zero_eq (template : State) (pc mm lo y tl ts : UInt256)
-    (rest : List UInt256) (hrest : rest.length + 8 < 1024) :
+    (rest : List UInt256) (hrest : rest.length + 8 < 1024)
+    (hload : UInt256.ofNat (MachineState.activeWordsAfter
+      template.activeWords.toNat tl.toNat 32) = template.activeWords) :
     runInstructions (macFusedPostZeroProgram tl ts)
       (framed template pc ([mm, lo, UInt256.ofNat 0, y] ++ rest)) =
     runInstructions (macFusedPostProgram tl ts)
       (framed template pc ([mm, lo, UInt256.ofNat 0, y] ++ rest)) := by
-  rw [post_eq, post_zero_eq]
+  have suffix : List Instr :=
+    [.op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩), .push 2 ts, .op .MSTORE,
+     .op (.Dup ⟨1, by decide⟩), .op .GT] ++ tailProgram
+  have hz_split :
+      macFusedPostZeroProgram tl ts =
+        (headZeroProgram ++ [.push 4 tl, .op .MLOAD]) ++ suffix := by
+    simp [macFusedPostZeroProgram, headZeroProgram, tailProgram, suffix]
+  have hg_split :
+      macFusedPostProgram tl ts =
+        (headProgram ++ [.push 2 tl, .op .MLOAD]) ++ suffix := by
+    simp [macFusedPostProgram, headProgram, tailProgram, suffix]
+  have hgen :
+      runInstructions (headProgram ++ [.push 2 tl, .op .MLOAD])
+        (framed template pc ([mm, lo, UInt256.ofNat 0, y] ++ rest)) =
+      some (framed template (pc + UInt256.ofNat 11)
+        ([MachineState.readWord template.memory tl.toNat, lo + UInt256.ofNat 0,
+          UInt256.lt mm lo - mm, lo, UInt256.ofNat 0, y] ++ rest)) := by
+    have hcap (n : Nat) (hn : n ≤ 8) : rest.length + n < 1024 := by omega
+    have hc := add_comm (UInt256.ofNat 0) lo
+    simp (disch := omega) [runInstructions, headProgram, framed,
+      Challenge.EvmProof.Stepper.runInstr, List.getElem?_cons_zero,
+      List.getElem?_cons_succ, hcap, Nat.add_assoc, hc, push0_ofNat, UInt256.gt, UInt256.lt,
+      succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod, hload]
+  rw [hz_split, hg_split]
   simp only [runInstructions_append]
-  rw [run_head_zero template pc mm lo y rest hrest, run_head template pc mm lo (UInt256.ofNat 0) y
-    rest hrest]
+  rw [run_head_zero_load template pc mm lo y tl rest hrest hload, hgen]
 
 /-- **The rider.**  Identical conclusion to `run_fused`, under `c = 0`. -/
 theorem run_fused_zero (template : State) (pc x y c tl ts : UInt256)
@@ -304,7 +343,7 @@ theorem run_fused_zero (template : State) (pc x y c tl ts : UInt256)
           = macProductProgram.take 6 ++ macFusedPostProgram tl ts from rfl,
       hsplit macFusedPostZeroProgram, hsplit macFusedPostProgram,
       run_post_zero_eq template (advancePC 6 pc) (UInt256.mulMod y x maxWord) (x * y) y tl ts
-        rest hrest]
+        rest hrest hload]
   rw [key]
   exact run_fused template pc x y (UInt256.ofNat 0) tl ts rest hrest hload hstore
 
