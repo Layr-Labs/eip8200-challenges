@@ -228,19 +228,26 @@ Where `c` is already zero, `PUSH0` produces the same word for one gas less.  Eve
 is that one substitution: `run_fused_zero` has the *same* conclusion as `run_fused`, only under
 the extra hypothesis `c = 0`, and is derived from `run_fused` rather than reproved. -/
 
-/-- `headProgram` with the incoming-carry `DUP4` replaced by `PUSH0` (both one byte). -/
+/-- `headProgram` with the incoming-carry `DUP4` replaced by `DUP1; POP` (two bytes either way):
+on a zero-carry frame `DUP4` pushes `0` and `PUSH0; ADD` was a no-op, so `DUP1; POP` — the same
+no-op one gas cheaper — is the tightest equivalent. -/
 private def headZeroProgram : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩),
    .op .GT, .op .SUB, .op (.Dup ⟨1, by decide⟩),
-   .push 0 0, .op .ADD]
+   .op (.Dup ⟨0, by decide⟩), .op .POP]
 
 private theorem post_zero_eq (tl ts : UInt256) :
     macFusedPostZeroProgram tl ts = (headZeroProgram ++ memoryProgram tl ts) ++ tailProgram := rfl
 
-private theorem push0_ofNat : (⟨0⟩ : UInt256) = UInt256.ofNat 0 := by decide
+/-- `x + 0 = x` on words, for the `DUP1; POP` no-op that replaced `PUSH0; ADD`. -/
+private theorem word_add_zero (x : UInt256) : x + UInt256.ofNat 0 = x := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_add,
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.zero_mod, Nat.add_zero,
+    Nat.mod_eq_of_lt x.val.isLt]
 
-/-- On a zero-carry frame the two heads agree: `PUSH0` and the `DUP4` of a zero slot both push
-zero, and `PUSH0` advances the pc by the same single byte. -/
+/-- On a zero-carry frame the two heads agree: `DUP1; POP` and the `DUP4`-fed `ADD` of a zero
+slot both leave the low word untouched, and both advance the pc by the same seven bytes. -/
 private theorem run_head_zero (template : State) (pc mm lo y : UInt256)
     (rest : List UInt256) (hrest : rest.length + 8 < 1024) :
     runInstructions headZeroProgram
@@ -248,10 +255,9 @@ private theorem run_head_zero (template : State) (pc mm lo y : UInt256)
     some (framed template (pc + UInt256.ofNat 7)
       ([lo + UInt256.ofNat 0, UInt256.lt mm lo - mm, lo, UInt256.ofNat 0, y] ++ rest)) := by
   have hcap (n : Nat) (hn : n ≤ 8) : rest.length + n < 1024 := by omega
-  have hc := add_comm (UInt256.ofNat 0) lo
   simp (disch := omega) [runInstructions, headZeroProgram, framed,
     Challenge.EvmProof.Stepper.runInstr, List.getElem?_cons_zero,
-    List.getElem?_cons_succ, hcap, Nat.add_assoc, hc, push0_ofNat, UInt256.gt, UInt256.lt,
+    List.getElem?_cons_succ, hcap, Nat.add_assoc, word_add_zero, UInt256.gt, UInt256.lt,
     succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
 
 /-- The zero-carry post schedule runs exactly as the general one does. -/
