@@ -10,8 +10,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Return
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open J2Sites J2Moves RecognitionSelectorRaw RecognitionSelectorResult
 
-def source (s : State) : UInt256 :=
-  selected (UInt256.ofNat s.executionEnv.code.size) s.executionEnv.calldata.size
+def source (s : State) : UInt256 := selected (UInt256.ofNat 4958) s.executionEnv.calldata.size
 
 def beforeCopy (s : State) (rho : List UInt256) : State :=
   atState s 318 (12 :: source s :: 20 :: rho)
@@ -24,21 +23,21 @@ def output (s : State) (rho : List UInt256) : State :=
 
 private theorem copy_decoded (s : State) (e : Env s) (rho : List UInt256) :
     (beforeCopy s rho).decodedOp = some .CODECOPY := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 210 .CODECOPY
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 207 .CODECOPY
     (by rfl) (by decide) trivial
   apply Artifact.submissionArtifact.state_decodedOp_of (beforeCopy s rho) 210
     e.code ?_ .CODECOPY none hd (by change Operation.CODECOPY.availableInFork s.fork = true; rw [e.fork]; rfl)
-  change (UInt256.ofNat 318).toNat = Artifact.submissionArtifact.instructionPC 210
+  change (UInt256.ofNat 318).toNat = Artifact.submissionArtifact.instructionPC 207
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 private theorem size_decoded (s : State) (e : Env s) (rho : List UInt256) :
     (copied (beforeCopy s rho) (source s) rho).decodedOp = some .MSIZE := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 211 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 208 .MSIZE
     (by rfl) (by decide) trivial
   apply Artifact.submissionArtifact.state_decodedOp_of
     (copied (beforeCopy s rho) (source s) rho) 211 e.code ?_ .MSIZE none hd (by change Operation.MSIZE.availableInFork s.fork = true; rw [e.fork]; rfl)
-  change (UInt256.ofNat 319).toNat = Artifact.submissionArtifact.instructionPC 211
+  change (UInt256.ofNat 319).toNat = Artifact.submissionArtifact.instructionPC 208
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -48,7 +47,7 @@ def gasSteps (s : State) (e : Env s) (rho : List UInt256)
     GasSteps (atState s 297 rho) (output s rho) := by
   have hp : StackRoundTrace.runInstrSeq J2ReturnSites.selector.template
       (atState s 297 rho) = some (beforeCopy s rho) := by
-    have h := run_prefix s (UInt256.ofNat 297) rho (by omega) e.run
+    have h := run_prefix s (UInt256.ofNat 297) (UInt256.ofNat 4958) rho (by omega) e.run
     simpa only [J2ReturnSites.selector.end_pc, beforeCopy, atState, source] using h
   have gp := J2ReturnSites.selector.lift s (beforeCopy s rho) e rho hp
   have gc : GasSteps (beforeCopy s rho) (afterCopy s rho) :=
@@ -78,12 +77,7 @@ theorem output_spec (s : State) (e : Env s) (rho : List UInt256)
       ((RecognitionAccumulator.resultAcc_zero_iff _ _ hn rfl).mpr
         ((J2Accumulator.resultAcc_zero_iff _ _ hn rfl).mp hz))
   change MachineState.readPadded s.executionEnv.code (source s).toNat 20 = _
-  have hsz : Artifact.submissionArtifact.code.size = 5210 := by
-    change submissionBytecode.size = 5210
-    rw [referenceBytecode_size]
-  have hsrc : source s = selected (UInt256.ofNat 5210) s.executionEnv.calldata.size := by
-    simp only [source, e.code, hsz]
-  rw [e.code, hsrc]
+  rw [e.code]
   exact J2Payload.read_selected _ hn
 
 #print axioms gasSteps

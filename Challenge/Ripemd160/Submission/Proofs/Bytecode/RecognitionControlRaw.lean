@@ -16,10 +16,7 @@ private theorem xor_comm (a b : UInt256) : UInt256.xor a b = UInt256.xor b a := 
 def initTemplate : List Instr := [
   .op .JUMPDEST,
   .op .POP,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 255),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  .op .NOT,
-  .op .DIV,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 0x0101010101010101010101010101010101010101010101010101010101010101),
   .op (.Dup ⟨0, by decide⟩),
   .push ⟨1, by decide⟩ (UInt256.ofNat 7),
   .op .SHL,

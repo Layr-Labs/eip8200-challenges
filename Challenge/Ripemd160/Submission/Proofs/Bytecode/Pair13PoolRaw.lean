@@ -41,14 +41,11 @@ def cleanPoolWord (memory : ByteArray) (i : Nat) : UInt256 :=
   else UInt256.land poolMask (rawLoad memory i)
 
 /-- Keep word 11 masked: the terminal paired round receives an unmasked D.
-Word 9's mask is dropped at the bytecode level (S51 pops the mask instead of
-applying it); like the eight other unmasked sources it is normalized by the
-ordinary round-sum mask, and `PoolCertificates.slack_sources` re-witnesses the
-three table slots whose zero byte word 9 now occupies. -/
+The seven other sources are normalized by the ordinary round-sum mask. -/
 def poolWord (memory : ByteArray) (i : Nat) : UInt256 :=
   if i = 3 then
     UInt256.lor (UInt256.shiftLeft (rawLoad memory 3) (UInt256.ofNat 144)) (rawLoad memory 3)
-  else if i ∈ [0, 1, 2, 8, 9, 10, 12, 13, 14, 15] then rawLoad memory i
+  else if i ∈ [0, 1, 2, 8, 10, 12, 13, 14, 15] then rawLoad memory i
   else UInt256.land poolMask (rawLoad memory i)
 
 /-- The two sixteen-byte copies that duplicate the upper scratch word's lanes. -/
@@ -132,9 +129,9 @@ def template : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 110),
     .op .MLOAD,
     .op (.Swap ⟨14, by decide⟩),
-    .op .POP,
     .push ⟨1, by decide⟩ (UInt256.ofNat 72),
-    .op .MLOAD ]
+    .op .MLOAD,
+    .op .AND ]
 
 theorem run_actual_of_small (s : State) (pc : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)

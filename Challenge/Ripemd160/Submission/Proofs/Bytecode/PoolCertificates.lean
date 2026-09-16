@@ -15,11 +15,7 @@ theorem clear_sources : ∀ a ∈ zeroAddresses, resultSource false a = .zero :=
 theorem terminal_sources : ∀ k : Fin 32,
     resultSource false (594+k.val) = resultSource true (594+k.val) := by decide
 
-/-- Slots 42, 46 and 50 are re-witnessed at byte 22: word 9 is no longer masked
-by S51, so it now occupies byte 14 of those three slots.  Byte 22 is zero under
-both the masked and the unmasked pool, so this array also validates the clean
-image. -/
-def zeroByte : Array Nat := #[14,14,14,14,14,26,14,14,14,18,14,22,18,14,14,14,14,14,18,14,14,14,14,14,14,26,14,14,14,14,14,26,14,14,14,18,14,18,14,14,14,26,22,14,14,14,22,14,14,14,22,14,26,14,14,14,14,14,14,22,14]
+def zeroByte : Array Nat := #[14,14,14,14,14,26,14,14,14,18,14,22,18,14,14,14,14,14,18,14,14,14,14,14,14,26,14,14,14,14,14,26,14,14,14,18,14,18,14,14,14,26,14,14,14,14,14,14,14,14,14,14,26,14,14,14,14,14,14,22,14]
 
 theorem slack_sources : ∀ j : Fin 61,
     14 ≤ zeroByte[j.val]! ∧ zeroByte[j.val]! ≤ 26 ∧
