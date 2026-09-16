@@ -8,13 +8,20 @@ set_option maxHeartbeats 2000000
 /-!
 # `again`: stage the next eight-limb square and enter its specialized first row
 
-The first two instructions, at PCs 4214 and 4217, reload the width word.  The
-remaining eight instructions reset the operand pointer and computed chain entry,
-then jump to the row-zero entry at 5090.  The accumulator is no longer cleared
-here: the new first row overwrites every word of `T` before reading it, so the
-memory handed to it is the previous round's memory unchanged.  The previous-limb
-slot is preserved: the new entry overwrites it with the first operand limb before
-ordinary rows can observe it.
+The first two instructions reload the width word.  The remaining three reset the
+operand pointer and jump to the row-zero entry at 4889.  The accumulator is no
+longer cleared here: the new first row overwrites every word of `T` before reading
+it, so the memory handed to it is the previous round's memory unchanged.  The
+previous-limb slot is preserved: the new entry overwrites it with the first operand
+limb before ordinary rows can observe it.
+
+**The computed chain entry is no longer reset either.**  The five instructions that
+recomputed `l2Target n - 288 = sqEnt n 0` and swapped it into the frame are gone, so
+`run_againFix` hands row 0 the slot the rows left, `sqEnt n n`.  The dedicated
+eight-limb first row overwrites that slot with the fixed `3417` before anything reads
+it -- `R8RowZero.gasSteps_prologue` takes the incoming value as a parameter and its
+result does not mention it -- and the square loop threads it as the `e` of
+`SquareRows.rowStateEnt` / `SquareLoop.rowZeroState` rather than pinning it.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.SquareLoopBlocks
@@ -40,10 +47,6 @@ private theorem ptr_wrap (base n : Nat) :
   have h : ptrAt base n + 32 * n = base + 2 ^ 256 * n := by
     simp only [ptrAt, hpow]; omega
   rw [h, Nat.add_mul_mod_self_left]
-
-private theorem entry_from_reduction (n : Nat) (hn : n = 4 ∨ n = 8) :
-    l2Target n - UInt256.ofNat 288 = UInt256.ofNat (sqEnt n 0) := by
-  rcases hn with rfl | rfl <;> decide
 
 /-! ## The two halves of `again` -/
 
@@ -90,8 +93,9 @@ theorem run_againStage (s : State) (mem : ByteArray) (n : Nat)
       Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- The frame-fixing half (eight instructions) resets the pointer and chain entry,
-preserves slot 14, and branches to the specialized first row. -/
+/-- The frame-fixing half (three instructions) resets the operand pointer, leaves the
+chain-entry slot at the `sqEnt n n` the rows left in it, preserves slot 14, and branches
+to the specialized first row -- which overwrites the entry slot before reading it. -/
 theorem run_againFix (s : State) (mem : ByteArray) (n : Nat)
     (tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000)
@@ -102,8 +106,9 @@ theorem run_againFix (s : State) (mem : ByteArray) (n : Nat)
       (againMidState s mem n (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n))
         (UInt256.ofNat (sqEnt n n)) tl inv m0 m96 m64 m32 aprev pdst ret rest) =
     some { outState s mem 2368 n 0
-      (UInt256.ofNat 4065) (UInt256.ofNat (sqEnt n 0)) inv m0
+      (UInt256.ofNat 4065) (UInt256.ofNat (sqEnt n n)) inv m0
       (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 4889 } := by
+  have _hn := hn
   have hc16' : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
@@ -114,12 +119,11 @@ theorem run_againFix (s : State) (mem : ByteArray) (n : Nat)
       UInt256.ofNat (2368 + 32 * n - 32) := by
     rw [Challenge.EvmProof.Word.word_add_comm]
     exact ptr_wrap (2368 + 32 * n - 32) n
-  have hent := entry_from_reduction n hn
   have hjd : Decode.isValidJumpDest s.executionEnv.code 4889 = true := by
     rw [hcode]; exact hhd
   simp (config := { maxSteps := 200000 })
     [againFixProgram, againProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-      againMidState, frameStack, outState, hptr, hent, hjd, ptrAt_zero, push0_eq,
+      againMidState, frameStack, outState, hptr, hjd, ptrAt_zero, push0_eq,
       hc16', hc17, hc18, hc19, hc20, List.exchange,
       Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
@@ -138,7 +142,7 @@ theorem run_again (s : State) (mem : ByteArray) (n : Nat)
       (frameAt pcAgain s mem n (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n))
         (UInt256.ofNat (sqEnt n n)) tl inv m0 m96 m64 m32 aprev pdst ret rest) =
     some { outState s mem 2368 n 0
-      (UInt256.ofNat 4065) (UInt256.ofNat (sqEnt n 0)) inv m0
+      (UInt256.ofNat 4065) (UInt256.ofNat (sqEnt n n)) inv m0
       (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 4889 } := by
   change runInstructions (againStageProgram ++ againFixProgram) _ = _
   exact runInstructions_append_some _ _ _ _ _
@@ -163,7 +167,7 @@ def gasSteps_again (s : State) (mem : ByteArray) (n : Nat)
       (frameAt pcAgain s mem n (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n))
         (UInt256.ofNat (sqEnt n n)) tl inv m0 m96 m64 m32 aprev pdst ret rest)
       { outState s mem 2368 n 0
-        (UInt256.ofNat 4065) (UInt256.ofNat (sqEnt n 0)) inv m0
+        (UInt256.ofNat 4065) (UInt256.ofNat (sqEnt n n)) inv m0
         (tl :: m96 :: m64 :: m32 :: aprev :: pdst :: ret :: rest) with pc := UInt256.ofNat 4889 } :=
   againBlock.steps
     (environment (frameAt pcAgain s mem n (UInt256.ofNat (ptrAt (2368 + 32 * n - 32) n))

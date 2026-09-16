@@ -11,8 +11,8 @@ set_option maxHeartbeats 5000000
 namespace Challenge.Modexp.Benchmark
 
 /-- Joins the fixed-width dispatch route to the fast multi-limb MODEXP
-implementation and the certified reference fallback. The fast kernel keeps its
-high carry and modulus word at offset 128 in the operand stack. -/
+implementation and the certified reference fallback. The submitted program
+starts with `PUSH2 5245; JUMP` into the concrete dispatch. -/
 theorem candidateFromWindow
     (route : Challenge.Modexp.Submission.Proofs.Bytecode.WindowRoute.Route) :
     Challenge.Modexp.Correct bytecode := by
@@ -32,3 +32,12 @@ end Challenge.Modexp.Benchmark
 #print axioms Challenge.Modexp.Benchmark.candidate
 
 -- Yukon reuse by @anamdongparkjinhyeong: source @ercumentyildirim, submission 1c21ab97-04ca-470f-ae2d-57e5fa08dc78, commit e638a7a3e1d0afea4389d8748055a867a31cb3d9.
+-- Yukon reuse by @ercumentyildirim: source @Meganpark980320, submission 2e1c435e-00b8-4bbe-ab95-d6b47d8f3ae9, commit 178dedf7a85f69fbaae1ce721ceaffe29ee8d754.
+
+-- draw 3 2026-09-16T11:30:30Z: identical bytes and identical proof under a fresh benchmark seed
+
+-- draw 4 2026-09-16T12:09:55Z: identical bytes and identical proof under a fresh benchmark seed
+
+-- draw 5 2026-09-16T12:56:25Z: identical bytes and identical proof under a fresh benchmark seed
+
+-- draw 6 2026-09-16T13:42:23Z: identical bytes and identical proof under a fresh benchmark seed
