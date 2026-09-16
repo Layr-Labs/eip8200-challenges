@@ -25,22 +25,22 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- Instructions 2692..2696, pc 4347..3840: the `w = 0` test. -/
 def blk2557 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1625 .JUMPDEST,
-   opAt 1626 (.Dup ⟨1, by decide⟩),
-   opAt 1627 .ISZERO,
-   pushAt 1628 2 962,
-   opAt 1629 .JUMPI]
+  [opAt 1621 .JUMPDEST,
+   opAt 1622 (.Dup ⟨1, by decide⟩),
+   opAt 1623 .ISZERO,
+   pushAt 1624 2 962,
+   opAt 1625 .JUMPI]
 
 /-- Instructions 2697..2703, pc 3872..3840: `ACC := BASE`, then the shift. -/
 def blk2562 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1630 2 2688,
-   opAt 1631 .MLOAD,
-   pushAt 1632 2 512,
-   pushAt 1633 2 256,
-   opAt 1634 .MCOPY,
-   pushAt 1635 2 1003,
-   opAt 1636 .JUMP]
+  [pushAt 1626 2 2688,
+   opAt 1627 .MLOAD,
+   pushAt 1628 2 512,
+   pushAt 1629 2 256,
+   opAt 1630 .MCOPY,
+   pushAt 1631 2 1003,
+   opAt 1632 .JUMP]
 
 /-- PC table for the relocated leading-bit shortcut.  This range is outside
 the inherited `Fast.Defs` tables, so execution proofs need a local certificate

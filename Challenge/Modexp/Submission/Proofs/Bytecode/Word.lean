@@ -161,17 +161,17 @@ def bitJumpPath :
 /-- The head of the unrolled block derives `base - 1` for the eight copies. -/
 def bitHeadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1590 .JUMPDEST,
-   pushAt 1591 1 1,
-   opAt 1592 (.Dup ⟨6, by decide⟩),
-   opAt 1593 .SUB]
+  [opAt 1586 .JUMPDEST,
+   pushAt 1587 1 1,
+   opAt 1588 (.Dup ⟨6, by decide⟩),
+   opAt 1589 .SUB]
 
 /-- Its tail drops `base - 1` and rejoins the byte loop. -/
 def bitExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1622 .POP,
-   pushAt 1623 1 212,
-   opAt 1624 .JUMP]
+  [opAt 1618 .POP,
+   pushAt 1619 1 212,
+   opAt 1620 .JUMP]
 
 /-- Byte offset of the copy of the unrolled body that handles exponent bit `j`. -/
 def bitPC (j : Nat) : Nat :=

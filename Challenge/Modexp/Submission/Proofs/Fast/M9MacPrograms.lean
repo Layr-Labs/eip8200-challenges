@@ -36,9 +36,8 @@ def blockProgram (a t : UInt256) : List Instr :=
 def headProgram (a t : UInt256) : List Instr :=
   [.op .JUMPDEST] ++ blockProgram a t
 
-/-- One straight MAC block on a known-zero incoming carry: `macFusedZeroProgram` spends `PUSH0`
-where `macFusedProgram` spends the `DUP4` that reproduces the carry.  Same 36 bytes, one gas
-cheaper (30 instructions). -/
+/-- One straight MAC block on a known-zero incoming carry: `macFusedZeroProgram` replaces the
+carry `DUP4; ADD` of zero with two `JUMPDEST`s.  Same 36 bytes, three gas cheaper. -/
 def blockZeroProgram (a t : UInt256) : List Instr :=
   loadProgram a ++ CiosCached.macFusedZeroProgram t t
 

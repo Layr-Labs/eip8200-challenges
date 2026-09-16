@@ -39,50 +39,50 @@ abbrev Located :=
   interval_cases i <;> rfl
 
 def check65537 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1660 .JUMPDEST,
-   pushAt 1661 2 2816,
-   opAt 1662 .MLOAD,
-   opAt 1663 .CALLDATALOAD,
-   pushAt 1664 1 232,
-   opAt 1665 .SHR,
-   pushAt 1666 3 65537,
-   opAt 1667 .XOR,
-   pushAt 1668 2 2284,
-   opAt 1669 .JUMPI]
+  [opAt 1656 .JUMPDEST,
+   pushAt 1657 2 2816,
+   opAt 1658 .MLOAD,
+   opAt 1659 .CALLDATALOAD,
+   pushAt 1660 1 232,
+   opAt 1661 .SHR,
+   pushAt 1662 3 65537,
+   opAt 1663 .XOR,
+   pushAt 1664 2 2284,
+   opAt 1665 .JUMPI]
 
 def checkThree : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1648 2 2816,
-   opAt 1649 .MLOAD,
-   opAt 1650 .CALLDATALOAD,
-   pushAt 1651 0 0,
-   opAt 1652 .BYTE,
-   pushAt 1653 1 3,
-   opAt 1654 .XOR,
-   pushAt 1655 2 2284,
-   opAt 1656 .JUMPI]
+  [pushAt 1644 2 2816,
+   opAt 1645 .MLOAD,
+   opAt 1646 .CALLDATALOAD,
+   pushAt 1647 0 0,
+   opAt 1648 .BYTE,
+   pushAt 1649 1 3,
+   opAt 1650 .XOR,
+   pushAt 1651 2 2284,
+   opAt 1652 .JUMPI]
 
 def entryPrefix : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1637 .JUMPDEST,
-   opAt 1638 (.Dup ⟨3, by decide⟩),
-   pushAt 1639 1 3,
-   opAt 1640 .EQ,
-   pushAt 1641 2 2219,
-   opAt 1642 .JUMPI]
+  [opAt 1633 .JUMPDEST,
+   opAt 1634 (.Dup ⟨3, by decide⟩),
+   pushAt 1635 1 3,
+   opAt 1636 .EQ,
+   pushAt 1637 2 2219,
+   opAt 1638 .JUMPI]
 
 def fermatHit : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1670 1 16]
+  [pushAt 1666 1 16]
 
 def oneWidth : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1643 (.Dup ⟨3, by decide⟩),
-   pushAt 1644 1 1,
-   opAt 1645 .XOR,
-   pushAt 1646 2 2284,
-   opAt 1647 .JUMPI]
+  [opAt 1639 (.Dup ⟨3, by decide⟩),
+   pushAt 1640 1 1,
+   opAt 1641 .XOR,
+   pushAt 1642 2 2284,
+   opAt 1643 .JUMPI]
 
 def threeHit : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 1657 1 1,
-   pushAt 1658 2 2239,
-   opAt 1659 .JUMP]
+  [pushAt 1653 1 1,
+   pushAt 1654 2 2239,
+   opAt 1655 .JUMP]
 
 def start : List Located :=
   []
@@ -91,48 +91,48 @@ def start : List Located :=
 kernel's in-kernel loop) and call `SQUARE(0x800) → 0x800`, entering the kernel's
 `common` block with `hd = sq_row` and return address 3294. -/
 def squareCall : List Located :=
-  [opAt 1671 .JUMPDEST,
-   opAt 1672 (.Dup ⟨0, by decide⟩),
-   pushAt 1673 2 2624,
-   opAt 1674 .MSTORE,
-   pushAt 1675 2 2260,
-   pushAt 1676 2 512,
-   opAt 1677 (.Dup ⟨0, by decide⟩),
-   opAt 1678 (.Dup ⟨0, by decide⟩),
-   pushAt 1679 2 4366,
-   pushAt 1680 2 3213,
-   opAt 1681 .JUMP]
+  [opAt 1667 .JUMPDEST,
+   opAt 1668 (.Dup ⟨0, by decide⟩),
+   pushAt 1669 2 2624,
+   opAt 1670 .MSTORE,
+   pushAt 1671 2 2260,
+   pushAt 1672 2 512,
+   opAt 1673 (.Dup ⟨0, by decide⟩),
+   opAt 1674 (.Dup ⟨0, by decide⟩),
+   pushAt 1675 2 4366,
+   pushAt 1676 2 3213,
+   opAt 1677 .JUMP]
 
 def squareReturn : List Located :=
-  [opAt 1682 .JUMPDEST,
-   pushAt 1683 0 0,
-   opAt 1684 .NOT,
-   opAt 1685 .ADD,
-   opAt 1686 (.Dup ⟨0, by decide⟩),
-   pushAt 1687 2 2239,
-   opAt 1688 .JUMPI]
+  [opAt 1678 .JUMPDEST,
+   pushAt 1679 0 0,
+   opAt 1680 .NOT,
+   opAt 1681 .ADD,
+   opAt 1682 (.Dup ⟨0, by decide⟩),
+   pushAt 1683 2 2239,
+   opAt 1684 .JUMPI]
 
 /-- `after_sq` (pc 3304): both the in-kernel loop's return target and the
 fall-through of the caller loop for the unaccelerated widths.  The square count
 left on the stack is dropped and the final mixed-domain product is called. -/
 def product : List Located :=
-  [opAt 1689 .POP,
-   pushAt 1690 2 1049,
-   pushAt 1691 2 256,
-   opAt 1692 (.Dup ⟨0, by decide⟩),
-   pushAt 1693 2 512,
-   pushAt 1694 2 3209,
-   opAt 1695 .JUMP]
+  [opAt 1685 .POP,
+   pushAt 1686 2 1049,
+   pushAt 1687 2 256,
+   opAt 1688 (.Dup ⟨0, by decide⟩),
+   pushAt 1689 2 512,
+   pushAt 1690 2 3209,
+   opAt 1691 .JUMP]
 
 def fallback : List Located :=
-  [opAt 1696 .JUMPDEST,
-   opAt 1697 (.Dup ⟨0, by decide⟩),
-   pushAt 1698 2 1024,
-   pushAt 1699 2 256,
-   opAt 1700 .MCOPY,
-   pushAt 1701 0 0,
-   pushAt 1702 2 950,
-   opAt 1703 .JUMP]
+  [opAt 1692 .JUMPDEST,
+   opAt 1693 (.Dup ⟨0, by decide⟩),
+   pushAt 1694 2 1024,
+   pushAt 1695 2 256,
+   opAt 1696 .MCOPY,
+   pushAt 1697 0 0,
+   pushAt 1698 2 950,
+   opAt 1699 .JUMP]
 
 theorem jumpDest3892 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2182 = true :=

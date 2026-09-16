@@ -27,48 +27,48 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- Instructions 1908..1792, pc 2695..3071: load exponent byte `i`, test `i = 0`. -/
 def blk1781 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 904 .JUMPDEST,
-   opAt 905 (.Dup ⟨0, by decide⟩),
-   pushAt 906 2 2816,
-   opAt 907 .MLOAD,
-   opAt 908 .ADD,
-   opAt 909 .CALLDATALOAD,
-   pushAt 910 0 0,
-   opAt 911 .BYTE,
-   opAt 912 (.Dup ⟨1, by decide⟩),
-   opAt 913 .ISZERO,
-   pushAt 914 2 1321,
-   opAt 915 .JUMPI]
+  [opAt 900 .JUMPDEST,
+   opAt 901 (.Dup ⟨0, by decide⟩),
+   pushAt 902 2 2816,
+   opAt 903 .MLOAD,
+   opAt 904 .ADD,
+   opAt 905 .CALLDATALOAD,
+   pushAt 906 0 0,
+   opAt 907 .BYTE,
+   opAt 908 (.Dup ⟨1, by decide⟩),
+   opAt 909 .ISZERO,
+   pushAt 910 2 1321,
+   opAt 911 .JUMPI]
 
 /-- Instructions 1790..1920, pc 2711..3077: every byte after the first. -/
 def blk1793 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 916 1 128,
-   pushAt 917 2 962,
-   opAt 918 .JUMP]
+  [pushAt 912 1 128,
+   pushAt 913 2 962,
+   opAt 914 .JUMP]
 
 /-- Instructions 1875..1942, pc 2720..3189: the highest set bit of byte `0`. -/
 def blk1796 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 919 .JUMPDEST,
-   opAt 920 (.Dup ⟨0, by decide⟩),
+  [opAt 915 .JUMPDEST,
+   opAt 916 (.Dup ⟨0, by decide⟩),
+   opAt 917 (.Dup ⟨0, by decide⟩),
+   pushAt 918 1 1,
+   opAt 919 .SHR,
+   opAt 920 .OR,
    opAt 921 (.Dup ⟨0, by decide⟩),
-   pushAt 922 1 1,
+   pushAt 922 1 2,
    opAt 923 .SHR,
    opAt 924 .OR,
    opAt 925 (.Dup ⟨0, by decide⟩),
-   pushAt 926 1 2,
+   pushAt 926 1 4,
    opAt 927 .SHR,
    opAt 928 .OR,
-   opAt 929 (.Dup ⟨0, by decide⟩),
-   pushAt 930 1 4,
-   opAt 931 .SHR,
-   opAt 932 .OR,
-   pushAt 933 1 1,
-   opAt 934 .SHR,
-   pushAt 935 1 1,
-   opAt 936 .ADD,
-   pushAt 937 2 2160,
-   opAt 938 .JUMP]
+   pushAt 929 1 1,
+   opAt 930 .SHR,
+   pushAt 931 1 1,
+   opAt 932 .ADD,
+   pushAt 933 2 2160,
+   opAt 934 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

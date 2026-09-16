@@ -11,40 +11,40 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
 def callPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1713 .JUMPDEST,
-   pushAt 1714 2 2322,
-   opAt 1715 (.Dup ⟨3, by decide⟩),
-   opAt 1716 (.Dup ⟨0, by decide⟩),
-   opAt 1717 (.Dup ⟨0, by decide⟩),
-   pushAt 1718 2 1097,
-   opAt 1719 .JUMP]
+  [opAt 1709 .JUMPDEST,
+   pushAt 1710 2 2322,
+   opAt 1711 (.Dup ⟨3, by decide⟩),
+   opAt 1712 (.Dup ⟨0, by decide⟩),
+   opAt 1713 (.Dup ⟨0, by decide⟩),
+   pushAt 1714 2 1097,
+   opAt 1715 .JUMP]
 
 def entryPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1704 .JUMPDEST,
-   pushAt 1705 2 2688,
-   opAt 1706 .MLOAD,
-   pushAt 1707 1 128,
-   opAt 1708 .LT,
-   opAt 1709 (.Dup ⟨0, by decide⟩),
-   pushAt 1710 1 8,
-   opAt 1711 (.Swap ⟨0, by decide⟩),
-   opAt 1712 .SHL]
+  [opAt 1700 .JUMPDEST,
+   pushAt 1701 2 2688,
+   opAt 1702 .MLOAD,
+   pushAt 1703 1 128,
+   opAt 1704 .LT,
+   opAt 1705 (.Dup ⟨0, by decide⟩),
+   pushAt 1706 1 8,
+   opAt 1707 (.Swap ⟨0, by decide⟩),
+   opAt 1708 .SHL]
 
 def finishPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1727 .POP,
-   pushAt 1728 1 5,
-   opAt 1729 .SUB,
-   pushAt 1730 2 1255,
-   opAt 1731 .JUMP]
+  [opAt 1723 .POP,
+   pushAt 1724 1 5,
+   opAt 1725 .SUB,
+   pushAt 1726 2 1255,
+   opAt 1727 .JUMP]
 
 def retPath : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 1720 .JUMPDEST,
-   pushAt 1721 0 0,
-   opAt 1722 .NOT,
-   opAt 1723 .ADD,
-   opAt 1724 (.Dup ⟨0, by decide⟩),
-   pushAt 1725 2 2311,
-   opAt 1726 .JUMPI]
+  [opAt 1716 .JUMPDEST,
+   pushAt 1717 0 0,
+   opAt 1718 .NOT,
+   opAt 1719 .ADD,
+   opAt 1720 (.Dup ⟨0, by decide⟩),
+   pushAt 1721 2 2311,
+   opAt 1722 .JUMPI]
 
 private theorem instructionPC_add (p : Challenge.EvmProof.ProgramArtifact) (base count : Nat) :
     p.instructionPC (base + count) = p.instructionPC base +
