@@ -100,7 +100,7 @@ def poolSource (clean : Bool) (i j : Nat) : Source :=
   else if i = 3 then
     let source := fun k => if clean then maskSource k (loadSource 3 k) else loadSource 3 k
     join (if j < 14 then source (j+18) else .zero) (source j)
-  else if clean || decide (i ∈ [4,5,6,7,9,11]) then maskSource j (loadSource i j)
+  else if clean || decide (i ∈ [4,5,6,7,11]) then maskSource j (loadSource i j)
   else loadSource i j
 
 def poolValue (clean : Bool) (m : ByteArray) : Nat → UInt256 :=
