@@ -9,16 +9,16 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired14
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 1122).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 1138).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 1122 actual_slice
-    (by change 1122 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 1138 actual_slice
+    (by change 1138 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 1659 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1122) = UInt256.ofNat 1659
+theorem site_pc : site.startPC = UInt256.ofNat 1669 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 1138) = UInt256.ofNat 1669
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, ModFoldLift.Advances instruction := by
   apply ModFoldLift.advancesAll_sound
@@ -31,10 +31,10 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 1659, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 1712, stack := outputStack s.memory x rho} := by
-  have hraw := run_actual s (UInt256.ofNat 1659) x rho hstack hrun hactive
-  have hend : pcAfter (UInt256.ofNat 1659) template = UInt256.ofNat 1712 := by decide
+    GasSteps {s with pc := UInt256.ofNat 1669, stack := inputStack x rho}
+      {s with pc := UInt256.ofNat 1722, stack := outputStack s.memory x rho} := by
+  have hraw := run_actual s (UInt256.ofNat 1669) x rho hstack hrun hactive
+  have hend : pcAfter (UInt256.ofNat 1669) template = UInt256.ofNat 1722 := by decide
   rw [hend] at hraw
   exact ModFoldLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps

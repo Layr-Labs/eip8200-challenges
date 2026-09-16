@@ -75,7 +75,7 @@ private theorem skip_active_toNat (input : ByteArray) (hfit : CalldataFits input
     omega
 
 theorem entryState_active (input : ByteArray) (hfit : CalldataFits input)
-    (hpos : 0 < input.size) : 35 ≤ (entryState input).activeWords.toNat := by
+    (hpos : 0 < input.size) : 37 ≤ (entryState input).activeWords.toNat := by
   unfold entryState PaddingTrace.entryState
   split
   · next hz =>
@@ -90,7 +90,7 @@ theorem entryState_active (input : ByteArray) (hfit : CalldataFits input)
 
 theorem entryState_allocated (input : ByteArray) (hfit : CalldataFits input) :
     ∀ i, i < DriverTrace.blockCount input → input.size ≠ DriverTrace.blockOffset i →
-      (PersistentStaggerTable.messagePointer i + 95) / 32 ≤ (entryState input).activeWords.toNat := by
+      (PersistentStaggerTable.messagePointer i + 64) / 32 ≤ (entryState input).activeWords.toNat := by
   intro i hi hne
   unfold entryState PaddingTrace.entryState
   simp only [PersistentStaggerTable.messagePointer, Padding.messageOffset]
@@ -198,25 +198,6 @@ theorem entryState_lowClear (input : ByteArray) (hfit : CalldataFits input) :
       Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _
         (Or.inl (by unfold Padding.messageOffset; omega)), hbase]
     decide
-
-theorem entryState_zero_below (input : ByteArray) (hfit : CalldataFits input)
-    (a : Nat) (ha : a < Padding.messageOffset) :
-    (PadSkipEntry.entryState input).memory[a]?.getD 0 = 0 := by
-  have hbase : (PaddingTrace.padLengthReady input).memory = ByteArray.empty := rfl
-  have hp : 64 ≤ Padding.paddedLength input.size := by
-    unfold Padding.paddedLength
-    omega
-  unfold PadSkipEntry.entryState PaddingTrace.entryState
-  split
-  · change (MachineState.writeBytes (PaddingTrace.padLengthReady input).memory
-      (MachineState.readPadded input 0 input.size) Padding.messageOffset)[a]?.getD 0 = 0
-    rw [MachineState.writeBytes_getElem?_getD, if_neg (by omega), hbase]
-    simp
-  · rw [PaddingTrace.padReturned_getD_window input hfit _ (by omega)]
-    simp only [Padding.paddedMemory, Padding.sentinelMemory, Padding.copiedMemory,
-      MachineState.writeBytes_getElem?_getD]
-    rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), hbase]
-    simp
 
 theorem entryState_gapClear (input : ByteArray) (hfit : CalldataFits input) :
     GapClear (PadSkipEntry.entryState input).memory := by
