@@ -7,36 +7,29 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdHighReady
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PersistentStaggerTable ColdHighPaddingMemory
 
-/-- The table the normal loader leaves: `resultMemory0`, i.e. with the dual lane the writer's
-slot-0 store keeps now that the mask at pc 873 is gone.  It is `resultMemory0`, not
-`resultMemory`, because that is what `ColdOrdinarySites.gasSteps_normal` produces. -/
 def tableMemory (input : ByteArray) (i : Nat) : ByteArray :=
-  StaggerTableLayout.resultMemory0 (finalMemory input i)
+  StaggerTableLayout.resultMemory (finalMemory input i)
     (StaggerScratch.dirtyWord (finalMemory input i) (messagePointer i))
 
-theorem extracted_words (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size) (i : Nat)
+theorem extracted_words (input : ByteArray) (hfit : CalldataFits input) (i : Nat)
     (hi : i<DriverTrace.blockCount input) (hh : input.size=DriverTrace.blockOffset i)
     (k : Nat) (hk : k<16) :
     PairedScheduleData.extractedWord (finalMemory input i) (messagePointer i) k = Word.ofUInt32 (blockWords input i k) := by
   rw [PairedScheduleData.extractedWord_eq_expectedWord _ _ _ hk
     (messagePointer_bound input hfit i hi)]
   change ScheduleCorrect.expectedWord (finalMemory input i) (DriverTrace.messageOffsetWord i) k = _
-  rw [finalMemory_blockAt input hfit hpositive i hi hh k hk,blockWords_eq_readLE32 input i k hk]
+  rw [finalMemory_blockAt input hfit i hi hh k hk,blockWords_eq_readLE32 input i k hk]
 
-theorem ready (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size) (i : Nat)
+theorem ready (input : ByteArray) (hfit : CalldataFits input) (i : Nat)
     (hi : i<DriverTrace.blockCount input) (hh : input.size=DriverTrace.blockOffset i) :
     StaggerMessage.Ready (tableMemory input i) (blockWords input i) := by
   have hsplit (k : Nat) := StaggerScratch.dirtyWord_split (finalMemory input i) (messagePointer i) k
-  -- the dual lane at address 0 is invisible to `Ready`: slot 0 is read only through `low32`
-  refine StaggerMessage.ready_dual0 (finalMemory input i)
-    (StaggerScratch.dirtyWord (finalMemory input i) (messagePointer i)) (blockWords input i)
-    (Nat.lt_of_div_eq_zero (by norm_num) ((hsplit 6).2.2.2 (by decide))) ?_
   exact StaggerMessage.ready_junk (finalMemory input i) (StaggerScratch.dirtyWord (finalMemory input i) (messagePointer i)) (blockWords input i)
     (fun k => (StaggerScratch.dirtyWord (finalMemory input i) (messagePointer i) k).toNat / 2 ^ 32)
     (fun k hk => by
       show (StaggerScratch.dirtyWord (finalMemory input i) (messagePointer i) k).toNat = _
       conv_lhs => rw [(hsplit k).1]
-      rw [extracted_words input hfit hpositive i hi hh k hk, Word.ofUInt32_toNat])
+      rw [extracted_words input hfit i hi hh k hk, Word.ofUInt32_toNat])
     (fun k _ => (hsplit k).2.1)
     (fun k _ h2 => Nat.lt_trans ((hsplit k).2.2.1 h2) (by decide))
     (fun k _ h2 _ => (hsplit k).2.2.1 h2)

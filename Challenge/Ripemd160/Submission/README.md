@@ -1,42 +1,25 @@
-# RIPEMD-160: input buffer 1056 with a proved allocation transition
+# RIPEMD-160: build the schedule fan's second lane by placement instead of multiplication
 
-The artifact copies the input at address 1056 and consumes both words of each
-block before schedule writes reuse its bytes. The next block starts at 1120,
-above the last schedule byte at 1111. The exact-32 route starts with 34 allocated
-words and grows to 35 at the schedule store to address 1080. Its padding marker
-is the explicit byte 0x80 inherited from our 1087-buffer artifact.
+The submitted runtime uses 667669 gas on the original 49-vector clean corpus and the same total on the corresponding dirty-frame corpus. It is 5219 bytes: 4939 executable bytes followed by the unchanged 280-byte digest payload. The source base is the public source `acfddfd4ab8d558fe6c5c129d19a1dbd6af9e57a`, whose bytecode (5219 bytes, raw-byte SHA-256 `badd23b793ab2679687d8edd0ca88ad90bf85f69912e17f6780d8df469f87aac`) uses 669769 gas on the same corpus. The submitted bytecode has raw-byte SHA-256 `beabbf1aa1da08e39ca1fd986a9f31cefd8ed775181d45bb2012a41fdc8c14a2`.
 
-The clamped alignment masks at PCs 144 and 275 use the public `PUSH1 224;
-JUMPDEST` change by i34-9, source commit
-`3ff323e5a631bf0bd2d6897e2825f68ad2e86889`, promoted submission
-`5a7c448f-36db-401e-810d-a438a65c271c`. The three corresponding J2 proof modules
-are reused verbatim. See REUSE_PROVENANCE.md for attribution and the earlier
-public lineage. Our local source parent is the proved 1087-buffer commit
-`8737eba882613ff6a76fe7c64d7fd9b0fdf6c7d2`, submitted as `808bfe37`.
+## Schedule fan change
 
-## Artifact
+The fan prepares the sixteen message words in the packed two-lane form the round body reads. The base artifact writes each byte-swapped half to scratch once and then derives the second lane arithmetically, multiplying every word that the schedule needs in both lanes by a broadcast constant.
 
-- SHA-256: `959e34cb39e0da35b8d3eea31c70d45f7a1c9b754e2f867422fc05d60f9b6ec7`.
-- Size: 5224 bytes = 4944 executable bytes + 280 data bytes.
-- Executable instructions: 3720; all instruction PCs match the 1087 parent.
-- Local seed-zero and median score: 666,834.
-- Relative to the 666,935 parent: 63 gas from tighter buffer placement, plus
-  38 gas from the credited public mask change, totaling 101 gas.
-- Relative to the public 666,982 mask artifact: 148 gas from buffer reuse.
-- The digest selector and digest-table payload are unchanged.
+This version produces the second lane by placement. Each swapped half is written to scratch twice, the second copy eighteen bytes above the first, and the upper half is duplicated by two sixteen-byte MCOPY instructions. One load at the right offset then returns a word already holding the value in both lanes, and a single wide immediate mask clears the bytes between them. The broadcast constant and its multiplies are gone.
 
-## Proof and validation
+Over the changed region the fan loses 13 of its 17 multiplies and 9 of its 72 stack copies and gains 2 MCOPY instructions, one shift and one OR. The scheduled words are stored in a different order; that order never reverses two writes whose 32-byte windows overlap, so the scratch image is unchanged. The fan occupies the same 572 bytes as before.
 
-The proof retains the indexed invariant for unread input blocks. The early
-shared-32 loader and pool lemmas now allow 34 active words; a separate schedule
-lemma proves growth to 35, after which the existing compression proof applies.
-The general 35-word interfaces are preserved for all other routes.
+The two artifacts differ only at byte offsets 326 to 897. Every byte from 899 onward is identical, which covers the whole compression body, the tail and the digest payload; all 15 jump destinations are unchanged; and the executable instruction count goes from 3734 to 3724. The compression body therefore executes the same instructions at the same program counters for the same gas, and none of the reduction comes from it.
 
-The exact artifact has passed all 120 local corpus seeds, 2500 fuzz cases,
-reassembly, runtime jumps, CODECOPY bounds, and the actual read-only loader.
-Full Lean validation passed all 3720 jobs. The final candidate depends only on
-`propext`, `Classical.choice`, and `Quot.sound`. The original protected benchmark
-must also pass before submission; its exact result belongs in the final upload note.
-No protected benchmark scripts or verification options are changed.
+## Proof
 
-Model used for the new integration and buffer proof: GPT-6.
+The fan's raw execution theorems are restated for the new instruction slice: the two scratch stores and their addresses, the packed-load stage with its mask and its two MCOPY copies, and the store stage in its new order, whose write sequence is proved to leave the same scratch image because reordering writes to non-overlapping windows cannot change memory. The round driver and the table layout are unchanged, every instruction index that moved is relocated in the remaining located proofs, and the compression body's proofs are untouched. The straight-line advance check used by the located-block lifts is extended to cover MCOPY, discharged from the stepper's own MCOPY step.
+
+## Verification
+
+The original native scorer passed all 98 clean and dirty runs, totalling 667669 gas in each frame: 50 gas less for each of the 42 executions of the fan across the corpus. A memory-image differential over 442 inputs compared the full memory image and the whole stack at every one of the 1345 compression entries against the base artifact and found them identical on every entry, with 0 disagreements and 0 abnormal halts.
+
+## Scope
+
+Only Challenge/Ripemd160/Submission is changed. The original specification, EVM semantics, protected scorer and artifact generator, compiler and Lean kernel, dependency pins and benchmark settings are used as supplied. No axiom, no `sorry`, and no increased verification option.

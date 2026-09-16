@@ -58,12 +58,6 @@ theorem writeWord_preserves_gapClear (memory : ByteArray) (value : UInt256)
   rw [if_neg (by omega)]
   exact hg j hj k hk0 hk1
 
-theorem resultMemory0_gapClear (memory : ByteArray) (words : Nat → UInt256)
-    (hw : ∀ i, i < 16 → (words i).toNat < 2 ^ 112) :
-    GapClear (StaggerTableLayout.resultMemory0 memory words) := by
-  rw [StaggerTableLayout.resultMemory0]
-  exact writeWord_preserves_gapClear _ _ _ (by decide) (resultMemory_gapClear memory words hw)
-
 theorem scratchMemory_gapClear (memory : ByteArray) (low high : UInt256)
     (hg : GapClear memory) :
     GapClear (StaggerScratch.scratchMemory memory low high) := by

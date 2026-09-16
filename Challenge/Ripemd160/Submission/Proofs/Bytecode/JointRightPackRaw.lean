@@ -84,14 +84,18 @@ def template : List Instr :=
     .op .SHL,
     .op (.Dup ⟨11, by decide⟩),
     .op .OR,
-    .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
-    .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) ]
+    .op (.Dup ⟨6, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+    .op .SHL,
+    .op (.Dup ⟨7, by decide⟩),
+    .op (.Dup ⟨1, by decide⟩),
+    .op .OR ]
 
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
   [ x.rd, x.k, x.rb, x.rc, x.ra, x.re, x.factor, x.lower, x.cache140, x.cache350, x.cache310, x.cache190, x.h4, x.h3, x.h2, x.h1, x.h0, x.off, x.limit ] ++ rho
 def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ (UInt256.lor (UInt256.ofNat 95780971281817308448866066055358605703522833630494720) x.lower),
-    (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
+  [ (UInt256.lor (UInt256.shiftLeft x.lower (UInt256.ofNat 144)) x.lower),
+    (UInt256.shiftLeft x.lower (UInt256.ofNat 144)),
     (UInt256.lor x.h4 (UInt256.shiftLeft x.rd (UInt256.ofNat 144))),
     (UInt256.lor x.h1 (UInt256.shiftLeft (UInt256.land x.lower (UInt256.add x.re (UInt256.shiftRight (UInt256.mul x.factor (UInt256.land x.lower (UInt256.add (UInt256.add (MachineState.readWord memory 252) (UInt256.add (UInt256.xor x.rb (UInt256.lor x.rc (UInt256.lnot x.rd))) x.ra)) x.k))) (UInt256.ofNat 24)))) (UInt256.ofNat 144))),
     (UInt256.lor x.h0 (UInt256.shiftLeft x.re (UInt256.ofNat 144))),
@@ -124,7 +128,7 @@ def packed (a b : UInt256) : UInt256 :=
 def upperMask : UInt256 := UInt256.ofNat ((2^32-1)*2^144)
 def pairMask : UInt256 := UInt256.ofNat ((2^32-1)*(1+2^144))
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ (UInt256.lor x.lower upperMask), upperMask,
+  [ (UInt256.lor x.lower (UInt256.shiftLeft x.lower (UInt256.ofNat 144))), (UInt256.shiftLeft x.lower (UInt256.ofNat 144)),
     packed x.h4 x.rd, packed x.h1 (roundT memory x), packed x.h0 x.re,
     packed x.h3 (rotatedC x), packed x.h2 x.rb,
     x.factor, x.lower, x.cache140, x.cache350, x.cache310, x.cache190,
@@ -132,7 +136,6 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
 private theorem actualOutput_eq (memory : ByteArray) (x : Input) (rho : List UInt256) :
     actualOutput memory x rho = outputStack memory x rho := by
   simp only [actualOutput, outputStack, packed, rotatedC, roundT, pairMask, upperMask,
-    Nat.reducePow, Nat.reduceSub, Nat.reduceMul,
     RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm,
     RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm,
     RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm,
@@ -140,8 +143,7 @@ private theorem actualOutput_eq (memory : ByteArray) (x : Input) (rho : List UIn
     RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
 private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 35 ≤ s.activeWords.toNat)
-    (hlower : x.lower = UInt256.ofNat 4294967295) :
+    (hactive : 35 ≤ s.activeWords.toNat) :
     runInstrSeq template {s with pc := pc, stack := inputStack x rho} =
       some {s with pc := pcAfter pc template, stack := actualOutput s.memory x rho} := by
   have hbase : rho.length < 1024 := by omega
@@ -156,13 +158,12 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
     State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat,
     RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
   all_goals simp only [neutral_hadd, neutral_hmul, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
-  all_goals repeat first | apply And.intro | exact True.intro | rfl | (rw [hlower]; decide)
+  all_goals repeat first | apply And.intro | exact True.intro | rfl
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 35 ≤ s.activeWords.toNat)
-    (hlower : x.lower = UInt256.ofNat 4294967295) :
+    (hactive : 35 ≤ s.activeWords.toNat) :
     runInstrSeq template {s with pc := pc, stack := inputStack x rho} =
       some {s with pc := pcAfter pc template, stack := outputStack s.memory x rho} := by
-  simpa only [actualOutput_eq] using run_generated s pc x rho hstack hrun hactive hlower
+  simpa only [actualOutput_eq] using run_generated s pc x rho hstack hrun hactive
 #print axioms run_actual
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.JointRightPackRaw

@@ -11,19 +11,19 @@ open PersistentStaggerIteration StaggerPersistentFrame
 
 noncomputable opaque gasSteps_setup (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (i : Nat) (hi : i < DriverTrace.blockCount input)
-    (hh : input.size = DriverTrace.blockOffset i) (hlarge : 5224 ≤ input.size) :
+    (hh : input.size = DriverTrace.blockOffset i) (hlarge : 5219 ≤ input.size) :
     GasSteps
       {states input i with
-        pc := UInt256.ofNat 4767
+        pc := UInt256.ofNat 4762
         stack := frame (hashes input i) (DriverTrace.blockOffsetWord i)
           (LoopCompletionControl.limit input) maskRho}
       {tableState input i with
-        pc := UInt256.ofNat 868
+        pc := UInt256.ofNat 899
         stack := frame (hashes input i) (DriverTrace.blockOffsetWord i)
           (Padding.paddedWord input) maskRho} :=
   ColdTraceCompose.two (gasSteps_lowRoute input hfit hpositive i hi hh hlarge)
     (ColdTraceCompose.two (gasSteps_padding input hfit (by omega) i)
-      (gasSteps_normal input hfit hpositive i hi))
+      (gasSteps_normal input hfit i hi))
 
 #print axioms gasSteps_setup
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdHighTrace
