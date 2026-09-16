@@ -17,19 +17,19 @@ private theorem hmul_eq (a b : UInt256) : a * b = UInt256.mul a b := rfl
 
 def prefixTemplate (table : UInt256) : List Instr :=
   [ .push ⟨1, by decide⟩ (UInt256.ofNat 20),
-    .op (.Dup ⟨0, by decide⟩),
-    .op .CALLDATASIZE,
-    .push ⟨4, by decide⟩ (UInt256.ofNat 2337668504),
-    .op .DIV,
     .push ⟨1, by decide⟩ (UInt256.ofNat 15),
+    .op .CALLDATASIZE,
+    .push ⟨5, by decide⟩ (UInt256.ofNat 72808268889),
+    .op .DIV,
     .op .AND,
+    .op (.Dup ⟨1, by decide⟩),
     .op .MUL,
     .push ⟨2, by decide⟩ table,
     .op .ADD,
     .push ⟨1, by decide⟩ (UInt256.ofNat 12) ]
 
 def selected (table : UInt256) (size : Nat) : UInt256 :=
-  UInt256.add table (UInt256.mul 20 (UInt256.land (UInt256.div 2337668504 (UInt256.ofNat size)) 15))
+  UInt256.add table (UInt256.mul 20 (UInt256.land (UInt256.div 72808268889 (UInt256.ofNat size)) 15))
 
 theorem run_prefix (s : State) (pc table : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1010) (hrun : s.halt = .Running) :
