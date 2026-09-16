@@ -64,7 +64,7 @@ def endianStage (shift : Nat) (mask : UInt256) : List Instr :=
     op .OR ]
 
 def storeJ0 (half : Nat) : List Instr :=
-  [ dup1, push1 (UInt256.ofNat 224), op .SHR,
+  [ dup1, push1 (UInt256.ofNat 252), op .SHR,
     push2 (UInt256.ofNat (storeAddress half 0)), op .MSTORE ]
 
 def storeJ (half index : Nat) : List Instr :=
@@ -164,7 +164,7 @@ def packedWord (value : UInt256) : UInt256 :=
 
 def packedChunk (value : UInt256) (index : Nat) : UInt256 :=
   if index = 0 then
-    UInt256.shiftRight value (UInt256.ofNat 224)
+    UInt256.shiftRight value (UInt256.ofNat 252)
   else
     UInt256.land
       (UInt256.shiftRight value (UInt256.ofNat (224 - 32 * index))) mask32

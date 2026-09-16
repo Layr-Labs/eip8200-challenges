@@ -45,7 +45,7 @@ def packWords (word0 word1 word2 word3 word4 : UInt256) : UInt256 :=
   packAppend (packAppend (packAppend (packAppend word0 word1) word2) word3) word4
 
 def fastLoad0 : List Instr :=
-  [DenseScheduleTemplate.push2 (UInt256.ofNat 832), DenseScheduleTemplate.op .MLOAD]
+  [DenseScheduleTemplate.push2 (UInt256.ofNat 860), DenseScheduleTemplate.op .MLOAD]
 
 def fastPackStep (address : Nat) : List Instr :=
   [DenseScheduleTemplate.push1 (UInt256.ofNat 32), DenseScheduleTemplate.op .SHL,

@@ -50,7 +50,7 @@ theorem projection (n k : Nat) (hn : Allowed n) (hk : k < count n) :
     have hr : reference 1000 = patternedInput := by
       simp [reference, ← patternedInput_size]
     rw [hr, PatternedWordLogic.readWord_patterned]
-    change UInt256.shiftRight (baseWord 31) (UInt256.ofNat 192) = _
+    change UInt256.shiftRight (baseWord 31) (UInt256.ofNat 220) = _
     exact partial31
   · rw [compareWord_eq_expected k (by omega), ← PatternedWordLogic.readWord_patterned]
     have hp : 0 < min 32 (n - 32*k) := by unfold count at hk; omega

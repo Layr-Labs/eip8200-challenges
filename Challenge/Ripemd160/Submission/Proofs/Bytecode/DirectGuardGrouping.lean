@@ -62,22 +62,22 @@ open EvmSemantics EvmSemantics.EVM
 open KnownInputCompactState
 
 theorem shiftRight_xor_192 (a b : UInt256) :
-    UInt256.shiftRight (UInt256.xor a b) (UInt256.ofNat 192) =
+    UInt256.shiftRight (UInt256.xor a b) (UInt256.ofNat 220) =
       UInt256.xor
-        (UInt256.shiftRight a (UInt256.ofNat 192))
-        (UInt256.shiftRight b (UInt256.ofNat 192)) := by
+        (UInt256.shiftRight a (UInt256.ofNat 220))
+        (UInt256.shiftRight b (UInt256.ofNat 220)) := by
   unfold UInt256.shiftRight
-  have h : ¬ (UInt256.ofNat 192).toNat ≥ 256 := by decide
+  have h : ¬ (UInt256.ofNat 220).toNat ≥ 256 := by decide
   rw [if_neg h, if_neg h, if_neg h]
   unfold UInt256.xor
   congr 1
   apply Fin.ext
-  change (Fin.shiftRight (Fin.xor a.val b.val) (UInt256.ofNat 192).val).val =
+  change (Fin.shiftRight (Fin.xor a.val b.val) (UInt256.ofNat 220).val).val =
     (Fin.xor
-      (Fin.shiftRight a.val (UInt256.ofNat 192).val)
-      (Fin.shiftRight b.val (UInt256.ofNat 192).val)).val
+      (Fin.shiftRight a.val (UInt256.ofNat 220).val)
+      (Fin.shiftRight b.val (UInt256.ofNat 220).val)).val
   simp only [Fin.shiftRight, Fin.xor]
-  have hs : (UInt256.ofNat 192).val.val = 192 := by decide
+  have hs : (UInt256.ofNat 220).val.val = 192 := by decide
   rw [hs]
   change (((a.val.val ^^^ b.val.val) % UInt256.size) >>> 192) % UInt256.size =
     (((a.val.val >>> 192) % UInt256.size) ^^^

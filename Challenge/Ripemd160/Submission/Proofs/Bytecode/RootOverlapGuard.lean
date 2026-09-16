@@ -13,8 +13,8 @@ def finalAcc (input : ByteArray) : UInt256 :=
 
 theorem fullOverlap_implies_tail (input : ByteArray)
     (h : MachineState.readWord input 968 = KnownInputData.fullWord) :
-    UInt256.shiftRight (MachineState.readWord input 992) (UInt256.ofNat 192) =
-      UInt256.shiftRight KnownInputData.fullWord (UInt256.ofNat 192) := by
+    UInt256.shiftRight (MachineState.readWord input 992) (UInt256.ofNat 220) =
+      UInt256.shiftRight KnownInputData.fullWord (UInt256.ofNat 220) := by
   have hh := congrArg UInt256.toNat h
   rw [Bytes.readWord_toNat] at hh
   have hs : Precompile.bytesToNatPadded input 968 32 =
@@ -28,7 +28,7 @@ theorem fullOverlap_implies_tail (input : ByteArray)
     Nat.zero_mod, Nat.zero_add, Nat.mod_eq_of_lt hsmall] at hmod
   have hc : KnownInputData.fullWord.toNat % (256 ^ 8) = 7016996765293437281 := by decide
   rw [hc] at hmod
-  have hs' : UInt256.shiftRight (MachineState.readWord input 992) (UInt256.ofNat 192) =
+  have hs' : UInt256.shiftRight (MachineState.readWord input 992) (UInt256.ofNat 220) =
       UInt256.ofNat (Precompile.bytesToNatPadded input 992 8) :=
     Bytes.shiftRight_readWord input 992 8 (by omega) (by omega)
   rw [hs', hmod]

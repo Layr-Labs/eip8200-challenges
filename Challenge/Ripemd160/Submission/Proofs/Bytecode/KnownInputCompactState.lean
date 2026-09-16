@@ -20,8 +20,8 @@ def loopAcc (input : ByteArray) : Nat → UInt256
 def finalAcc (input : ByteArray) : UInt256 :=
   UInt256.lor
     (UInt256.xor
-      (UInt256.shiftRight (MachineState.readWord input 992) (UInt256.ofNat 192))
-      (UInt256.shiftRight (referenceWord input) (UInt256.ofNat 192)))
+      (UInt256.shiftRight (MachineState.readWord input 992) (UInt256.ofNat 220))
+      (UInt256.shiftRight (referenceWord input) (UInt256.ofNat 220)))
     (loopAcc input 30)
 
 def loopState (s : State) (input : ByteArray) (i n : Nat) : State :=
@@ -34,15 +34,15 @@ def loopState (s : State) (input : ByteArray) (i n : Nat) : State :=
 
 def loopExitState (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 213
-    stack := [UInt256.ofNat 992, loopAcc input 30,
+    pc := UInt256.ofNat 241
+    stack := [UInt256.ofNat 1020, loopAcc input 30,
       referenceWord input, DriverTrace.messageOffsetWord i,
       UInt256.ofNat 0x3e7, DriverTrace.blockOffsetWord i,
       Padding.paddedWord input] }
 
 def bodyEntry (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 236
+    pc := UInt256.ofNat 264
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x3e7,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 

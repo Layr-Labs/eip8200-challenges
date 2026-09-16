@@ -47,8 +47,8 @@ def tail : List Instr := [
   .push 0 0,
   op 0xf3
 ]
-private theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3681 = tail := by rfl
-private theorem pc_base : Artifact.submissionArtifact.instructionPC 3681 = 4831 := by
+private theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3678 = tail := by rfl
+private theorem pc_base : Artifact.submissionArtifact.instructionPC 3675 = 4859 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 theorem get (index : Nat) :

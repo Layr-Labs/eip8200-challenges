@@ -50,7 +50,7 @@ def abcWord : UInt256 :=
 /-- The ship arm builds `abcWord` as `PUSH3 0x616263; PUSH1 0xe8; SHL` (shifting the
 CONSTANT up, so the guard is a full-word equality and `input_eq_abc` applies). -/
 theorem abcWord_eq_shl :
-    UInt256.shiftLeft (UInt256.ofNat 0x616263) (UInt256.ofNat 232) = abcWord := by
+    UInt256.shiftLeft (UInt256.ofNat 0x616263) (UInt256.ofNat 260) = abcWord := by
   decide
 
 @[simp] theorem abcInput_size : abcInput.size = 3 := by rfl

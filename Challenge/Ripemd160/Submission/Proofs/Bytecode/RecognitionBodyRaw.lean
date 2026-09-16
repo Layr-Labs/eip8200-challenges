@@ -94,7 +94,7 @@ def boundaryTemplate : List Instr := [
   .op .SHR,
   .push ⟨1, by decide⟩ (UInt256.ofNat 40),
   .op .MUL,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 216),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 244),
   .op .SUB,
   .op .SHR,
   .push ⟨1, by decide⟩ (UInt256.ofNat 11),
@@ -124,7 +124,7 @@ def boundaryTemplate : List Instr := [
   .push ⟨1, by decide⟩ (UInt256.ofNat 32),
   .op .ADD,
   .op (.Swap ⟨0, by decide⟩),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 252),
   .op (.Dup ⟨2, by decide⟩),
   .op .ADD,
   .op (.Swap ⟨3, by decide⟩),
@@ -138,7 +138,7 @@ def boundaryResult (s : State) (f : Frame) : Frame :=
         (MachineState.readWord s.executionEnv.calldata f.off.toNat)) f.acc
     off := UInt256.add (UInt256.ofNat 32) f.off
     word := advance 43 f.word
-    stop := UInt256.add (UInt256.ofNat 224) (UInt256.add (UInt256.ofNat 32) f.off) }
+    stop := UInt256.add (UInt256.ofNat 252) (UInt256.add (UInt256.ofNat 32) f.off) }
 
 theorem run_boundary (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running) :

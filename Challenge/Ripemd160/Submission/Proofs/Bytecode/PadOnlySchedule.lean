@@ -24,20 +24,20 @@ def highLength (n : UInt256) : UInt256 :=
 
 def resultMemory (memory : ByteArray) (n : UInt256) : ByteArray :=
   writeWord (writeWord (writeWord
-    (MachineState.writeBytes memory zeroBytes 0) 0 (UInt256.ofNat 128))
+    (MachineState.writeBytes memory zeroBytes 0) 0 (UInt256.ofNat 156))
     448 (lowLength n)) 480 (highLength n)
 
 def template : List Instr :=
- [ .push ⟨2, by decide⟩ (UInt256.ofNat 512), .op .CALLDATASIZE,
+ [ .push ⟨2, by decide⟩ (UInt256.ofNat 540), .op .CALLDATASIZE,
    .push ⟨0, by decide⟩ (UInt256.ofNat 0), .op .CALLDATACOPY,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 128),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 156),
    .push ⟨0, by decide⟩ (UInt256.ofNat 0), .op .MSTORE,
-   .op .CALLDATASIZE, .push ⟨1, by decide⟩ (UInt256.ofNat 227), .op .SHL,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 224), .op .SHR,
+   .op .CALLDATASIZE, .push ⟨1, by decide⟩ (UInt256.ofNat 255), .op .SHL,
+   .push ⟨1, by decide⟩ (UInt256.ofNat 252), .op .SHR,
    .push ⟨2, by decide⟩ (UInt256.ofNat 448), .op .MSTORE,
    .op .CALLDATASIZE, .push ⟨1, by decide⟩ (UInt256.ofNat 29), .op .SHR,
    .push ⟨4, by decide⟩ (UInt256.ofNat 0xffffffff), .op .AND,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 480), .op .MSTORE,
+   .push ⟨2, by decide⟩ (UInt256.ofNat 508), .op .MSTORE,
    .push ⟨0, by decide⟩ (UInt256.ofNat 0),
    .push ⟨0, by decide⟩ (UInt256.ofNat 0),
    .push ⟨0, by decide⟩ (UInt256.ofNat 0),
@@ -50,7 +50,7 @@ theorem readPadded_end (input : ByteArray) :
   simp [MachineState.readPadded, zeroBytes]
 
 theorem lowDiet_eq_lowLength (n : UInt256) :
-    UInt256.shiftRight (UInt256.shiftLeft n (UInt256.ofNat 227)) (UInt256.ofNat 224) =
+    UInt256.shiftRight (UInt256.shiftLeft n (UInt256.ofNat 255)) (UInt256.ofNat 252) =
       lowLength n := by
   rw [PadShiftDiet.low]
   unfold lowLength

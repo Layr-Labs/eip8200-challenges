@@ -13,7 +13,7 @@ open PatternedSwar StackRoundTrace
 theorem repeated_one : UInt256.lnot (0 : UInt256) / (255 : UInt256) = M := by decide
 theorem repeated_high : UInt256.shiftLeft M (7 : UInt256) = m8 := by decide
 theorem repeated_low : UInt256.lnot m8 = m7 := by decide
-theorem repeated_one_ofNat : UInt256.lnot (UInt256.ofNat 0) / UInt256.ofNat 255 = M := by decide
+theorem repeated_one_ofNat : UInt256.lnot (UInt256.ofNat 0) / UInt256.ofNat 283 = M := by decide
 theorem repeated_high_ofNat : UInt256.shiftLeft M (UInt256.ofNat 7) = m8 := by decide
 
 def code : List Instr :=

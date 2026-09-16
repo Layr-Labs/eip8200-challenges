@@ -15,7 +15,7 @@ def template : List Instr :=
   [ .push ⟨1, by decide⟩ (UInt256.ofNat 99),
     .op .MSTORE8,
     .op (.Dup ⟨4, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 122),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 150),
     .op .MSTORE8 ]
 
 theorem run_sparse (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
@@ -25,7 +25,7 @@ theorem run_sparse (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt
     runInstrSeq template
       {s with
         pc := pc
-        stack := UInt256.ofNat 128 ::
+        stack := UInt256.ofNat 156 ::
           stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho} =
       some {s with
         pc := pcAfter pc template
