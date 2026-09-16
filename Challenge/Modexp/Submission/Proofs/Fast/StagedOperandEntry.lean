@@ -36,7 +36,7 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32*n-32))
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions fullEntryProgram (setupState s mem hd pa pb dst ret rest) =
-    some (outState s (mpZeroed s (stage mem pa n) n) pb n 0 hd (l1Target n)
+    some (outState s (stage mem pa n) pb n 0 hd (l1Target n)
       (MachineState.readWord mem 2720) (MachineState.readWord mem (32*n-32))
       (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
         MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
