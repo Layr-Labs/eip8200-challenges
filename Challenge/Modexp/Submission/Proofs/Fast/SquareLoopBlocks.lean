@@ -99,15 +99,15 @@ def againProgram : List Instr :=
 /-! ## Located blocks -/
 
 def sqExitBlock : Block Artifact.submissionArtifact .Osaka 4005 sqExitProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3021 12 4005 sqExitProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3020 12 4005 sqExitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def lastBlock : Block Artifact.submissionArtifact .Osaka 4027 lastProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3033 6 4027 lastProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3032 6 4027 lastProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def againBlock : Block Artifact.submissionArtifact .Osaka 4049 againProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3045 10 4049 againProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3044 10 4049 againProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-! ## Jump destinations of the loop -/

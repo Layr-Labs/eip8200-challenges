@@ -30,31 +30,31 @@ def environment (s : State)
     hcode, hfork, hrun, hnp⟩
 
 def l1Block1 : Block Artifact.submissionArtifact .Osaka 3380 (stepProgram 192 2304) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2510 31 3380 (stepProgram 192 2304)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2509 31 3380 (stepProgram 192 2304)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block2 : Block Artifact.submissionArtifact .Osaka 3417 (stepProgram 160 2272) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2541 31 3417 (stepProgram 160 2272)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2540 31 3417 (stepProgram 160 2272)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block3 : Block Artifact.submissionArtifact .Osaka 3454 (stepProgram 128 2240) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2572 31 3454 (stepProgram 128 2240)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2571 31 3454 (stepProgram 128 2240)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block4 : Block Artifact.submissionArtifact .Osaka 3491 (stepProgram 96 2208) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2603 31 3491 (stepProgram 96 2208)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2602 31 3491 (stepProgram 96 2208)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block5 : Block Artifact.submissionArtifact .Osaka 3528 (stepProgram 64 2176) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2634 31 3528 (stepProgram 64 2176)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2633 31 3528 (stepProgram 64 2176)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block6 : Block Artifact.submissionArtifact .Osaka 3565 (stepProgram 32 2144) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2665 31 3565 (stepProgram 32 2144)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2664 31 3565 (stepProgram 32 2144)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block7 : Block Artifact.submissionArtifact .Osaka 3602 (stepProgram 0 2112) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2696 31 3602 (stepProgram 0 2112)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2695 31 3602 (stepProgram 0 2112)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-! ## The private four-limb ladder copy (5172-5313)
@@ -65,15 +65,15 @@ the copy is byte-identical, blocks k5..k7 reuse the very same `stepProgram` lite
 the instruction indices and program counters differ. -/
 
 def l1Block5Copy : Block Artifact.submissionArtifact .Osaka 5172 (stepProgram 64 2176) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3976 31 5172 (stepProgram 64 2176)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3975 31 5172 (stepProgram 64 2176)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block6Copy : Block Artifact.submissionArtifact .Osaka 5209 (stepProgram 32 2144) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4007 31 5209 (stepProgram 32 2144)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4006 31 5209 (stepProgram 32 2144)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block7Copy : Block Artifact.submissionArtifact .Osaka 5246 (stepProgram 0 2112) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4038 31 5246 (stepProgram 0 2112)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4037 31 5246 (stepProgram 0 2112)
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest5172 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5172 = true :=

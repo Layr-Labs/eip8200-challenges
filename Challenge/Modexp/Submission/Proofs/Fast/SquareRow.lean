@@ -90,11 +90,11 @@ def programB : List Instr :=
 /-! ## Location certificates -/
 
 def blockA : Block Artifact.submissionArtifact .Osaka 4065 programA :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3055 6 4065 programA
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3054 6 4065 programA
     (by decide) (by rfl) (by rfl) (by decide)
 
 def blockB : Block Artifact.submissionArtifact .Osaka 4072 programB :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3062 40 4072 programB
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3061 40 4072 programB
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- `sq_row` itself is a jump destination (the frame's row head for square calls). -/

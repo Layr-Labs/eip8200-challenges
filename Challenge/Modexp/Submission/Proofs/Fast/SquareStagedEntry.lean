@@ -19,7 +19,7 @@ def program : List Instr :=
    .push 2 1856, .op .ADD]
 
 def block : Block Artifact.submissionArtifact .Osaka 4366 program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3277 9 4366 program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3276 9 4366 program
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
