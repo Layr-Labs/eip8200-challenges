@@ -257,8 +257,8 @@ def blk3125 :
    opAt 2236 (.Dup ⟨0, by decide⟩),
    pushAt 2237 2 2080,
    opAt 2238 .MSTORE,
-   opAt 2239 (.Dup ⟨1, by decide⟩),
-   opAt 2240 .OR,
+   pushAt 2239 0 0,
+   opAt 2240 .POP,
    pushAt 2241 2 3012,
    opAt 2242 .JUMPI]
 
