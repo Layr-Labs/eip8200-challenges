@@ -210,23 +210,23 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem compactLoopPC2797 : Artifact.submissionArtifact.instructionPC 2337 = 3128 := by
+@[simp] private theorem compactLoopPC2797 : Artifact.submissionArtifact.instructionPC 2335 = 3128 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem compactLoopPC2798 : Artifact.submissionArtifact.instructionPC 2338 = 3129 := by
+@[simp] private theorem compactLoopPC2798 : Artifact.submissionArtifact.instructionPC 2336 = 3129 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem compactLoopPC2799 : Artifact.submissionArtifact.instructionPC 2339 = 3131 := by
+@[simp] private theorem compactLoopPC2799 : Artifact.submissionArtifact.instructionPC 2337 = 3131 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem compactLoopPC2800 : Artifact.submissionArtifact.instructionPC 2340 = 3132 := by
+@[simp] private theorem compactLoopPC2800 : Artifact.submissionArtifact.instructionPC 2338 = 3132 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem compactLoopPC2803 : Artifact.submissionArtifact.instructionPC 2343 = 3137 := by
+@[simp] private theorem compactLoopPC2803 : Artifact.submissionArtifact.instructionPC 2341 = 3137 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -328,91 +328,91 @@ private theorem addMod_comm (a b m : UInt256) :
     UInt256.addMod a b m = UInt256.addMod b a m := by
   simp only [UInt256.addMod, Nat.add_comm]
 
-@[simp] private theorem newEstimatePC2960 : Artifact.submissionArtifact.instructionPC 1945 = 2643 := by
+@[simp] private theorem newEstimatePC2960 : Artifact.submissionArtifact.instructionPC 1947 = 2643 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem newEstimatePC2961 : Artifact.submissionArtifact.instructionPC 1946 = 2644 := by
+@[simp] private theorem newEstimatePC2961 : Artifact.submissionArtifact.instructionPC 1948 = 2644 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem newEstimatePC2962 : Artifact.submissionArtifact.instructionPC 1947 = 2647 := by
+@[simp] private theorem newEstimatePC2962 : Artifact.submissionArtifact.instructionPC 1949 = 2647 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem newEstimatePC2963 : Artifact.submissionArtifact.instructionPC 1948 = 2648 := by
+@[simp] private theorem newEstimatePC2963 : Artifact.submissionArtifact.instructionPC 1950 = 2648 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem newEstimatePC2964 : Artifact.submissionArtifact.instructionPC 1949 = 2649 := by
+@[simp] private theorem newEstimatePC2964 : Artifact.submissionArtifact.instructionPC 1951 = 2649 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem newEstimatePC2965 : Artifact.submissionArtifact.instructionPC 1950 = 2651 := by
+@[simp] private theorem newEstimatePC2965 : Artifact.submissionArtifact.instructionPC 1952 = 2651 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem newEstimatePC2966 : Artifact.submissionArtifact.instructionPC 1951 = 2652 := by
+@[simp] private theorem newEstimatePC2966 : Artifact.submissionArtifact.instructionPC 1953 = 2652 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem newEstimatePC2967 : Artifact.submissionArtifact.instructionPC 1952 = 2654 := by
+@[simp] private theorem newEstimatePC2967 : Artifact.submissionArtifact.instructionPC 1954 = 2654 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem newEstimatePCk2750 : Artifact.submissionArtifact.instructionPC 1953 = 2655 := by
+@[simp] private theorem newEstimatePCk2750 : Artifact.submissionArtifact.instructionPC 1955 = 2655 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem newEstimatePCk2751 : Artifact.submissionArtifact.instructionPC 1954 = 2656 := by
+@[simp] private theorem newEstimatePCk2751 : Artifact.submissionArtifact.instructionPC 1956 = 2656 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem newEstimatePCk2752 : Artifact.submissionArtifact.instructionPC 1955 = 2658 := by
+@[simp] private theorem newEstimatePCk2752 : Artifact.submissionArtifact.instructionPC 1957 = 2658 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem newEstimatePCk2753 : Artifact.submissionArtifact.instructionPC 1956 = 2659 := by
+@[simp] private theorem newEstimatePCk2753 : Artifact.submissionArtifact.instructionPC 1958 = 2659 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem newEstimatePCk2754 : Artifact.submissionArtifact.instructionPC 1957 = 2660 := by
+@[simp] private theorem newEstimatePCk2754 : Artifact.submissionArtifact.instructionPC 1959 = 2660 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem newEstimatePCk2755 : Artifact.submissionArtifact.instructionPC 1958 = 2661 := by
+@[simp] private theorem newEstimatePCk2755 : Artifact.submissionArtifact.instructionPC 1960 = 2661 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem newEstimatePCk2756 : Artifact.submissionArtifact.instructionPC 1959 = 2662 := by
+@[simp] private theorem newEstimatePCk2756 : Artifact.submissionArtifact.instructionPC 1961 = 2662 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem newEstimatePCk2757 : Artifact.submissionArtifact.instructionPC 1960 = 2663 := by
+@[simp] private theorem newEstimatePCk2757 : Artifact.submissionArtifact.instructionPC 1962 = 2663 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem newEstimatePCk2758 : Artifact.submissionArtifact.instructionPC 1961 = 2664 := by
+@[simp] private theorem newEstimatePCk2758 : Artifact.submissionArtifact.instructionPC 1963 = 2664 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem dagInstructionPC2284 : Artifact.submissionArtifact.instructionPC 1924 = 2614 := by
+@[simp] private theorem dagInstructionPC2284 : Artifact.submissionArtifact.instructionPC 1926 = 2614 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem dagInstructionPC2285 : Artifact.submissionArtifact.instructionPC 1925 = 2617 := by
+@[simp] private theorem dagInstructionPC2285 : Artifact.submissionArtifact.instructionPC 1927 = 2617 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem dagInstructionPC2286 : Artifact.submissionArtifact.instructionPC 1926 = 2618 := by
+@[simp] private theorem dagInstructionPC2286 : Artifact.submissionArtifact.instructionPC 1928 = 2618 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem dagInstructionPC2287 : Artifact.submissionArtifact.instructionPC 1927 = 2619 := by
+@[simp] private theorem dagInstructionPC2287 : Artifact.submissionArtifact.instructionPC 1929 = 2619 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem dagInstructionPC2288 : Artifact.submissionArtifact.instructionPC 1928 = 2620 := by
+@[simp] private theorem dagInstructionPC2288 : Artifact.submissionArtifact.instructionPC 1930 = 2620 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -432,199 +432,199 @@ private theorem addMod_comm (a b m : UInt256) :
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2279 : Artifact.submissionArtifact.instructionPC 1919 = 2605 := by
+@[simp] private theorem nopMovePC2279 : Artifact.submissionArtifact.instructionPC 1921 = 2605 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2280 : Artifact.submissionArtifact.instructionPC 1920 = 2608 := by
+@[simp] private theorem nopMovePC2280 : Artifact.submissionArtifact.instructionPC 1922 = 2608 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2281 : Artifact.submissionArtifact.instructionPC 1921 = 2609 := by
+@[simp] private theorem nopMovePC2281 : Artifact.submissionArtifact.instructionPC 1923 = 2609 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2282 : Artifact.submissionArtifact.instructionPC 1922 = 2610 := by
+@[simp] private theorem nopMovePC2282 : Artifact.submissionArtifact.instructionPC 1924 = 2610 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2283 : Artifact.submissionArtifact.instructionPC 1923 = 2613 := by
+@[simp] private theorem nopMovePC2283 : Artifact.submissionArtifact.instructionPC 1925 = 2613 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2284 : Artifact.submissionArtifact.instructionPC 1924 = 2614 := by
+@[simp] private theorem nopMovePC2284 : Artifact.submissionArtifact.instructionPC 1926 = 2614 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2285 : Artifact.submissionArtifact.instructionPC 1925 = 2617 := by
+@[simp] private theorem nopMovePC2285 : Artifact.submissionArtifact.instructionPC 1927 = 2617 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2286 : Artifact.submissionArtifact.instructionPC 1926 = 2618 := by
+@[simp] private theorem nopMovePC2286 : Artifact.submissionArtifact.instructionPC 1928 = 2618 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2287 : Artifact.submissionArtifact.instructionPC 1927 = 2619 := by
+@[simp] private theorem nopMovePC2287 : Artifact.submissionArtifact.instructionPC 1929 = 2619 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2288 : Artifact.submissionArtifact.instructionPC 1928 = 2620 := by
+@[simp] private theorem nopMovePC2288 : Artifact.submissionArtifact.instructionPC 1930 = 2620 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2289 : Artifact.submissionArtifact.instructionPC 1929 = 2623 := by
+@[simp] private theorem nopMovePC2289 : Artifact.submissionArtifact.instructionPC 1931 = 2623 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2290 : Artifact.submissionArtifact.instructionPC 1930 = 2624 := by
+@[simp] private theorem nopMovePC2290 : Artifact.submissionArtifact.instructionPC 1932 = 2624 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2291 : Artifact.submissionArtifact.instructionPC 1931 = 2625 := by
+@[simp] private theorem nopMovePC2291 : Artifact.submissionArtifact.instructionPC 1933 = 2625 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2292 : Artifact.submissionArtifact.instructionPC 1932 = 2628 := by
+@[simp] private theorem nopMovePC2292 : Artifact.submissionArtifact.instructionPC 1934 = 2628 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2293 : Artifact.submissionArtifact.instructionPC 1933 = 2629 := by
+@[simp] private theorem nopMovePC2293 : Artifact.submissionArtifact.instructionPC 1935 = 2629 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2294 : Artifact.submissionArtifact.instructionPC 1934 = 2630 := by
+@[simp] private theorem nopMovePC2294 : Artifact.submissionArtifact.instructionPC 1936 = 2630 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2295 : Artifact.submissionArtifact.instructionPC 1935 = 2631 := by
+@[simp] private theorem nopMovePC2295 : Artifact.submissionArtifact.instructionPC 1937 = 2631 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2296 : Artifact.submissionArtifact.instructionPC 1936 = 2632 := by
+@[simp] private theorem nopMovePC2296 : Artifact.submissionArtifact.instructionPC 1938 = 2632 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2297 : Artifact.submissionArtifact.instructionPC 1937 = 2633 := by
+@[simp] private theorem nopMovePC2297 : Artifact.submissionArtifact.instructionPC 1939 = 2633 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2298 : Artifact.submissionArtifact.instructionPC 1938 = 2634 := by
+@[simp] private theorem nopMovePC2298 : Artifact.submissionArtifact.instructionPC 1940 = 2634 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2299 : Artifact.submissionArtifact.instructionPC 1939 = 2635 := by
+@[simp] private theorem nopMovePC2299 : Artifact.submissionArtifact.instructionPC 1941 = 2635 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2300 : Artifact.submissionArtifact.instructionPC 1940 = 2638 := by
+@[simp] private theorem nopMovePC2300 : Artifact.submissionArtifact.instructionPC 1942 = 2638 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2301 : Artifact.submissionArtifact.instructionPC 1941 = 2639 := by
+@[simp] private theorem nopMovePC2301 : Artifact.submissionArtifact.instructionPC 1943 = 2639 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2302 : Artifact.submissionArtifact.instructionPC 1942 = 2640 := by
+@[simp] private theorem nopMovePC2302 : Artifact.submissionArtifact.instructionPC 1944 = 2640 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2303 : Artifact.submissionArtifact.instructionPC 1943 = 2641 := by
+@[simp] private theorem nopMovePC2303 : Artifact.submissionArtifact.instructionPC 1945 = 2641 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2304 : Artifact.submissionArtifact.instructionPC 1944 = 2642 := by
+@[simp] private theorem nopMovePC2304 : Artifact.submissionArtifact.instructionPC 1946 = 2642 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2305 : Artifact.submissionArtifact.instructionPC 1945 = 2643 := by
+@[simp] private theorem nopMovePC2305 : Artifact.submissionArtifact.instructionPC 1947 = 2643 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2306 : Artifact.submissionArtifact.instructionPC 1946 = 2644 := by
+@[simp] private theorem nopMovePC2306 : Artifact.submissionArtifact.instructionPC 1948 = 2644 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2307 : Artifact.submissionArtifact.instructionPC 1947 = 2647 := by
+@[simp] private theorem nopMovePC2307 : Artifact.submissionArtifact.instructionPC 1949 = 2647 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2308 : Artifact.submissionArtifact.instructionPC 1948 = 2648 := by
+@[simp] private theorem nopMovePC2308 : Artifact.submissionArtifact.instructionPC 1950 = 2648 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2309 : Artifact.submissionArtifact.instructionPC 1949 = 2649 := by
+@[simp] private theorem nopMovePC2309 : Artifact.submissionArtifact.instructionPC 1951 = 2649 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2310 : Artifact.submissionArtifact.instructionPC 1950 = 2651 := by
+@[simp] private theorem nopMovePC2310 : Artifact.submissionArtifact.instructionPC 1952 = 2651 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2311 : Artifact.submissionArtifact.instructionPC 1951 = 2652 := by
+@[simp] private theorem nopMovePC2311 : Artifact.submissionArtifact.instructionPC 1953 = 2652 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2312 : Artifact.submissionArtifact.instructionPC 1952 = 2654 := by
+@[simp] private theorem nopMovePC2312 : Artifact.submissionArtifact.instructionPC 1954 = 2654 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2313 : Artifact.submissionArtifact.instructionPC 1953 = 2655 := by
+@[simp] private theorem nopMovePC2313 : Artifact.submissionArtifact.instructionPC 1955 = 2655 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2314 : Artifact.submissionArtifact.instructionPC 1954 = 2656 := by
+@[simp] private theorem nopMovePC2314 : Artifact.submissionArtifact.instructionPC 1956 = 2656 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2315 : Artifact.submissionArtifact.instructionPC 1955 = 2658 := by
+@[simp] private theorem nopMovePC2315 : Artifact.submissionArtifact.instructionPC 1957 = 2658 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2316 : Artifact.submissionArtifact.instructionPC 1956 = 2659 := by
+@[simp] private theorem nopMovePC2316 : Artifact.submissionArtifact.instructionPC 1958 = 2659 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2317 : Artifact.submissionArtifact.instructionPC 1957 = 2660 := by
+@[simp] private theorem nopMovePC2317 : Artifact.submissionArtifact.instructionPC 1959 = 2660 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2318 : Artifact.submissionArtifact.instructionPC 1958 = 2661 := by
+@[simp] private theorem nopMovePC2318 : Artifact.submissionArtifact.instructionPC 1960 = 2661 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2319 : Artifact.submissionArtifact.instructionPC 1959 = 2662 := by
+@[simp] private theorem nopMovePC2319 : Artifact.submissionArtifact.instructionPC 1961 = 2662 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2320 : Artifact.submissionArtifact.instructionPC 1960 = 2663 := by
+@[simp] private theorem nopMovePC2320 : Artifact.submissionArtifact.instructionPC 1962 = 2663 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2321 : Artifact.submissionArtifact.instructionPC 1961 = 2664 := by
+@[simp] private theorem nopMovePC2321 : Artifact.submissionArtifact.instructionPC 1963 = 2664 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2322 : Artifact.submissionArtifact.instructionPC 1962 = 2667 := by
+@[simp] private theorem nopMovePC2322 : Artifact.submissionArtifact.instructionPC 1964 = 2667 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2323 : Artifact.submissionArtifact.instructionPC 1963 = 2668 := by
+@[simp] private theorem nopMovePC2323 : Artifact.submissionArtifact.instructionPC 1965 = 2668 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2324 : Artifact.submissionArtifact.instructionPC 1964 = 2669 := by
+@[simp] private theorem nopMovePC2324 : Artifact.submissionArtifact.instructionPC 1966 = 2669 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2325 : Artifact.submissionArtifact.instructionPC 1965 = 2670 := by
+@[simp] private theorem nopMovePC2325 : Artifact.submissionArtifact.instructionPC 1967 = 2670 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2326 : Artifact.submissionArtifact.instructionPC 1966 = 2671 := by
+@[simp] private theorem nopMovePC2326 : Artifact.submissionArtifact.instructionPC 1968 = 2671 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2327 : Artifact.submissionArtifact.instructionPC 1967 = 2672 := by
+@[simp] private theorem nopMovePC2327 : Artifact.submissionArtifact.instructionPC 1969 = 2672 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 

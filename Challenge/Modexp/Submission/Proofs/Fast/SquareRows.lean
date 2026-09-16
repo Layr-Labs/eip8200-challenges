@@ -275,12 +275,25 @@ def gasSteps_rowLastToExit (s : State) (mem : ByteArray) (n i : Nat)
 
 /-! ## The two loops -/
 
+/-- The loop invariant state at row head `i` with the frame's first-loop entry slot given
+explicitly as `e`: memory `sqRowsCarry M0 n i`, entry slot `e`, slot 14 = `sqPrev a0 M0 n i`.
+
+An ordinary row READS that slot -- it is the chain entry its prologue jumps to -- so rows run at
+`e = sqEnt n i` and are stated through `rowState` below.  Row 0 of the eight-limb square is the
+exception, and the reason this parameter exists: the dedicated first-row program at 4889
+overwrites the slot before anything reads it, so `R8RowZero.gasSteps_prologue` is stated for an
+arbitrary `e` and its result does not mention it.  Every row-0 statement in `R8Rows` and
+`SquareLoop` is therefore generic in `e`, and the loop does not require `again` to reset it. -/
+def rowStateEnt (s : State) (a0 : UInt256) (M0 : ByteArray) (n : Nat)
+    (tl inv m0 m96 m64 m32 pdst ret : UInt256) (rest : List UInt256) (i e : Nat) : State :=
+  outState s (sqRowsCarry M0 n i) 2368 n i (UInt256.ofNat 4065) (UInt256.ofNat e) inv m0
+    (tl :: m96 :: m64 :: m32 :: sqPrev a0 M0 n i :: pdst :: ret :: rest)
+
 /-- The loop invariant state at row head `i`: memory `sqRowsCarry M0 n i`, frame slot
 `ent = sqEnt n i`, slot 14 = `sqPrev a0 M0 n i`. -/
 def rowState (s : State) (a0 : UInt256) (M0 : ByteArray) (n : Nat)
     (tl inv m0 m96 m64 m32 pdst ret : UInt256) (rest : List UInt256) (i : Nat) : State :=
-  outState s (sqRowsCarry M0 n i) 2368 n i (UInt256.ofNat 4065) (UInt256.ofNat (sqEnt n i)) inv m0
-    (tl :: m96 :: m64 :: m32 :: sqPrev a0 M0 n i :: pdst :: ret :: rest)
+  rowStateEnt s a0 M0 n tl inv m0 m96 m64 m32 pdst ret rest i (sqEnt n i)
 
 theorem sqEnt_succ (n i : Nat) : sqEnt n i + 37 = sqEnt n (i + 1) := by
   unfold sqEnt; omega
