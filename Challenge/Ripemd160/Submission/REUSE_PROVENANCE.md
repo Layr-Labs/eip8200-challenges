@@ -1,5 +1,34 @@
 # Credited reuse
 
+Source: https://github.com/Layr-Labs/eip8200-challenges/tree/4939f80b53abb3901424767240a1a6dd81a3f7a0
+Original submitter: @i34-9
+Yukon source: 61027faf-aae4-4653-9c03-84f936336d6e
+Executable SHA-256: 61804baf7d0d6906621e2496f4323019a9be4896d8d2fd4fe04939960254b926
+
+That tree, its artifact and its Lean proof are not our work. This submission reuses them whole and
+makes one change of its own:
+
+  * base pc 270, instruction index 179: `DUP6` (0x85) becomes `CALLDATASIZE` (0x36); +0 bytes,
+    5 executions over the scored corpus, -5 gas.
+
+No other byte differs, and because the replacement is the same length as what it replaces, no
+program counter moves and the instruction count stays at 3,700. In total 664,789 gas becomes
+664,784, a reduction of 5, at the same 5,214 bytes.
+
+The proof change is confined to three modules. `J2RawBase` carries the substituted instruction in
+`transitionTemplate` and the matching `full` field of `transitionResult`; `J2RawTransition` carries
+the same field in `transitionBResult`, and loses the `transitionB_operand_lt` / `land224_eq_aligned`
+bridge, which the new form does not need; `J2Frame` carries the corresponding conjunct of `Facts`,
+discharged by the `decide` the development already runs over the fourteen lengths of
+`RecognitionAccumulator.Allowed` and all `k : Fin 32`. The obligation is on the consumer
+`SUB ; PUSH1 224 ; AND`: the masked difference is unchanged, and that is what is decided.
+
+Resulting executable SHA-256: 1d748550454c077c65178a747e7446bda1f0b77540e442ae5896e9fa44122b31
+
+Earlier links, reproduced verbatim from the source tree's own record:
+
+# Credited reuse
+
 Source: https://github.com/Layr-Labs/eip8200-challenges/tree/22b5a78a483d904ba5da6081dd979a915d755d32
 Original submitter: @i34-9
 Yukon source: 50bace1c-1e28-4ef2-9afe-9f195f3727a9
