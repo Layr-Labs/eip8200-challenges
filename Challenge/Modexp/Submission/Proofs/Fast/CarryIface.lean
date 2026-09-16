@@ -217,7 +217,7 @@ structure EntryLemmas : Type where
     (hzero : MachineState.readWord mem 2720 ≠ UInt256.ofNat 0),
     Challenge.EvmProof.GasSteps
       (Cios2Dispatch.commonState s mem hd pa pb pdst ret rest)
-      (outState s (mpZeroed s (StagedOperand.stage mem pa n) n) pb n 0 hd (l1Target n)
+      (outState s (StagedOperand.stage mem pa n) pb n 0 hd (l1Target n)
         (MachineState.readWord mem 2720) (MachineState.readWord mem (32*n-32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
           MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::

@@ -265,7 +265,7 @@ opaque gasSteps_setup (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Na
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode hd.toNat = true) :
     Challenge.EvmProof.GasSteps
       (CiosCached.setupState s mem hd pa pb pdst ret rest)
-      (CiosCached.outState s (mpZeroed s (StagedOperand.stage mem pa n) n) pb n 0 hd
+      (CiosCached.outState s (StagedOperand.stage mem pa n) pb n 0 hd
         (CiosCached.l1Target n)
         (MachineState.readWord mem 2720) (MachineState.readWord mem (32 * n - 32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
@@ -296,7 +296,7 @@ opaque gasSteps_commonSetup (s : State) (mem : ByteArray) (hd : UInt256) (pa pb 
     (hzero : MachineState.readWord mem 2720 ≠ UInt256.ofNat 0) :
     Challenge.EvmProof.GasSteps
       (commonState s mem hd pa pb pdst ret rest)
-      (CiosCached.outState s (mpZeroed s (StagedOperand.stage mem pa n) n) pb n 0 hd
+      (CiosCached.outState s (StagedOperand.stage mem pa n) pb n 0 hd
         (CiosCached.l1Target n)
         (MachineState.readWord mem 2720) (MachineState.readWord mem (32 * n - 32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
@@ -334,7 +334,7 @@ opaque gasSteps_commonSetupInput (s : State) (mem : ByteArray) (hd : UInt256) (p
     (hzero : MachineState.readWord mem 2720 ≠ UInt256.ofNat 0) :
     Challenge.EvmProof.GasSteps
       (commonState s mem hd pa pb pdst ret rest)
-      (CiosCached.outState s (mpZeroed s (StagedOperand.inputMemory mem pa n) n) pb n 0 hd
+      (CiosCached.outState s (StagedOperand.inputMemory mem pa n) pb n 0 hd
         (CiosCached.l1Target n)
         (MachineState.readWord mem 2720) (MachineState.readWord mem (32 * n - 32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
@@ -366,7 +366,7 @@ opaque gasSteps_mulSetup (s : State) (mem : ByteArray) (pa pb n : Nat)
     (hzero : MachineState.readWord mem 2720 ≠ UInt256.ofNat 0) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
-      (CiosCached.outState s (mpZeroed s (StagedOperand.stage mem pa n) n) pb n 0
+      (CiosCached.outState s (StagedOperand.stage mem pa n) pb n 0
         (UInt256.ofNat 3351) (CiosCached.l1Target n)
         (MachineState.readWord mem 2720) (MachineState.readWord mem (32 * n - 32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
