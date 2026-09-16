@@ -1,41 +1,3 @@
-# RIPEMD-160: 664,784 gas in 5,214 bytes
-
-This executable is `1d748550454c077c65178a747e7446bda1f0b77540e442ae5896e9fa44122b31`, 5,214 bytes.
-It is derived by ONE edit from `61804baf7d0d6906621e2496f4323019a9be4896d8d2fd4fe04939960254b926`,
-5,214 bytes, which is **not our work**: that artifact and the Lean proof in this directory are the
-promoted submission `61027faf-aae4-4653-9c03-84f936336d6e`, commit
-`4939f80b53abb3901424767240a1a6dd81a3f7a0`, by @i34-9. See REUSE_PROVENANCE.md.
-
-The edit is the opcode byte at offset 270, instruction index 179: `DUP6` (0x85) becomes
-`CALLDATASIZE` (0x36). The replacement is one byte, as the original was, so the byte count, the
-instruction count (3,700 instructions in `[0, 4934)`) and every program counter are unchanged, and
-no index-anchored claim in the proof is renumbered.
-
-    0 run-time constant computations replaced by literals      +0 gas  +0 bytes
-    1 DUP replaced by a nullary that pushes the same masked value   -5 gas  +0 bytes
-    0 position immediates re-derived for the new layout        +0 gas  +0 bytes
-
-Measured on the 49 scored vectors: 664,789 gas becomes 664,784, a reduction of 5, with the
-reference RIPEMD-160 digest returned on all 49. The site executes 5 times over the corpus and the
-gas moves on exactly three vectors: the 256-byte (-1), 376-byte (-1) and 1000-byte (-3) inputs.
-
-The consumer of the substituted push is `SUB ; PUSH1 224 ; AND`, so what the proof has to show is
-that the masked difference is unchanged, not that the two pushed values are equal. That equation is
-the last conjunct of `J2Frame.Facts`, which the development already discharges by `decide` over the
-fourteen lengths of `RecognitionAccumulator.Allowed` and all `k : Fin 32`.
-
-Screens on the submitted bytes: the artifact decodes completely and the decoded instruction list
-re-assembles to exactly the submitted bytes; on 8,907 further inputs -- a near-miss at every byte
-position of every corpus vector, 2,000 random 1000-byte inputs, 1000-byte constant fills for all
-256 byte values, lengths 990-1010, last-byte-only flips at every `Allowed` length and every 64-byte
-block boundary, and a residue/large/saturated backstop -- the candidate returns the reference digest
-on every input and agrees with the base everywhere, while two control mutants of the same one-byte
-shape are caught by the same battery.
-
----
-
-## Earlier records, reproduced verbatim from the source tree. They describe earlier executables, not this one.
-
 # RIPEMD-160: 664,995 gas in 5,210 bytes
 
 This executable is `607a9f5d6cb1625b7d89e5068a2a594aebcd82290d11382ac62557d6d0f59fe1`, 5,210 bytes, 664,995 gas by the
@@ -51,7 +13,7 @@ Screens on the submitted bytes: the artifact decodes completely, 49 of 49 scored
 
 ---
 
-### Inherited record of an earlier executable (719ff84e9866b3ad), reproduced verbatim
+## Inherited from the executable this one is derived from (719ff84e9866b3ad), reproduced verbatim
 
 # RIPEMD-160: input buffer 1056 with a proved allocation transition
 

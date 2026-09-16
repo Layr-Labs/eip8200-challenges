@@ -38,9 +38,9 @@ def Facts (n k : Nat) : Prop :=
     UInt256.ofNat (stop n k) = UInt256.ofNat (offset (k+1)) ∧
     UInt256.add (UInt256.ofNat (stop n k)) (clamp (UInt256.sub (UInt256.ofNat n) (UInt256.ofNat (stop n k)))) =
       UInt256.ofNat (stop n (k+1)) ∧
-    UInt256.add (UInt256.ofNat (stop n k))
-      (UInt256.land (UInt256.sub (UInt256.ofNat n) (UInt256.ofNat (stop n k)))
-        (UInt256.ofNat 224)) = UInt256.ofNat (full n (k+1)))
+    UInt256.add (UInt256.ofNat (stop n k)) (aligned (UInt256.sub
+      (UInt256.add (UInt256.ofNat (stop n k)) (clamp (UInt256.sub (UInt256.ofNat n) (UInt256.ofNat (stop n k)))))
+      (UInt256.ofNat (stop n k)))) = UInt256.ofNat (full n (k+1)))
 
 private theorem facts_closed (n : Nat) (hn : Allowed n) :
     ∀ k : Fin 32, k.val ≤ last n → Facts n k.val := by
