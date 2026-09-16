@@ -11,7 +11,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory Pair13Endian
 
 def lowerTemplate : List Instr :=
-  (loadTemplate 1087 ++ (stage8 false ++ stage16)) ++ lowStore
+  (loadTemplate 1056 ++ (stage8 false ++ stage16)) ++ lowStore
 
 theorem run_lower (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
@@ -22,20 +22,20 @@ theorem run_lower (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt2
         pc := pcAfter pc lowerTemplate
         stack := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho
         memory := writeWord (writeWord s.memory 46
-            (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1087))) 28
-          (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1087))} := by
+            (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1056))) 28
+          (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1056))} := by
   let F := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho
-  let low := PairedScheduleData.reversedWord (MachineState.readWord s.memory 1087)
+  let low := PairedScheduleData.reversedWord (MachineState.readWord s.memory 1056)
   have hF : F.length + 3 < 1024 := by simp only [F, stk, List.length_cons]; omega
   have ha : 35 ≤ s.activeWords.toNat := by rw [hactive]; decide
-  have hloadActive : activeAfterWord s.activeWords (UInt256.ofNat 1087) = s.activeWords := by
+  have hloadActive : activeAfterWord s.activeWords (UInt256.ofNat 1056) = s.activeWords := by
     rw [hactive]
     rfl
   have h1 := run_load s pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho
-    1087 1087 (by omega) hrun (by decide) (by decide)
+    1056 1056 (by omega) hrun (by decide) (by decide)
   rw [hloadActive] at h1
-  let pc1 := pcAfter pc (loadTemplate 1087)
-  have h2 := run_reverse s pc1 (MachineState.readWord s.memory 1087)
+  let pc1 := pcAfter pc (loadTemplate 1056)
+  have h2 := run_reverse s pc1 (MachineState.readWord s.memory 1056)
     ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho false (by omega) hrun
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
   let pc2 := pcAfter (pcAfter pc1 (stage8 false)) stage16

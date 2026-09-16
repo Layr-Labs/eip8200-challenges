@@ -4,7 +4,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Stagger144Active
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open DenseScheduleTemplate PairedScheduleContract
 theorem loaded_active_ge35 (s : State) (p : Nat)
-    (hp : 1087 ≤ p) (hbound : p + 64 < 2 ^ 256) :
+    (hp : 1056 ≤ p) (hbound : p + 64 < 2 ^ 256) :
     35 ≤ (loadedActiveWords s (UInt256.ofNat p)).toNat := by
   have hcur := (activeAfterWord s.activeWords (UInt256.ofNat p)).val.isLt
   have hnew : MachineState.activeWordsAfter

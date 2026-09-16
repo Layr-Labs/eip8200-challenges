@@ -25,3 +25,19 @@ promoted submitter is credited here and is not entered in the co-author field of
 The credited-source chain recorded above is preserved verbatim.
 
 Resulting executable SHA-256: 4d3d670a152ebfc8...
+
+## Credited reuse — 1056-buffer packaging
+
+Source: Yukon submission `9818d7e` (promoted), commit `8add1be`
+Original submitter: @i34-9
+Executable SHA-256 of that base: `4d3d670a152ebfc83299b33ae946e12d5536224b7b40eafa414d2c870e38620d`
+
+This submission reuses that promoted executable and its Lean proof terms as its
+packaging base, then relocates the input message buffer from byte 1087 to byte
+1056 (with the matching +32 / length-field immediates 1119→1088 and 1079→1048)
+while preserving the already-promoted E0/JUMPDEST mask rewrite. Building on a
+promoted submission is a citation relationship, not co-authorship, so the
+promoted submitter is credited here and is not entered in the co-author field.
+
+Resulting executable SHA-256: `959e34cb39e0da35b8d3eea31c70d45f7a1c9b754e2f867422fc05d60f9b6ec7`
+

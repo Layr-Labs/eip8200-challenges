@@ -266,7 +266,7 @@ private def submissionInstructionsChunk1 : List Instr :=
   op 0x36,
   op 0x36,
   .push 0 0,
-  .push 2 1087,
+  .push 2 1056,
   op 0x37,
   .push 0 0,
   .push 4 1732584193,
@@ -296,7 +296,7 @@ private def submissionInstructionsChunk2 : List Instr :=
   .push 2 4709,
   op 0x57,
   op 0x5b,
-  .push 2 1119,
+  .push 2 1088,
   op 0x8c,
   op 0x01,
   op 0x51,
@@ -323,7 +323,7 @@ private def submissionInstructionsChunk2 : List Instr :=
   .push 1 96,
   op 0x52,
   op 0x5b,
-  .push 2 1087,
+  .push 2 1056,
   op 0x8c,
   op 0x01,
   op 0x51,
@@ -3770,7 +3770,7 @@ private def submissionInstructionsChunk20 : List Instr :=
   op 0x16,
   op 0x9b,
   .push 1 128,
-  .push 2 1087,
+  .push 2 1056,
   op 0x36,
   op 0x01,
   op 0x53,
@@ -3778,7 +3778,7 @@ private def submissionInstructionsChunk20 : List Instr :=
   .push 1 3,
   op 0x1b,
   op 0x8d,
-  .push 2 1079,
+  .push 2 1048,
   op 0x01,
   op 0x5b,
   op 0x81,
@@ -5856,7 +5856,7 @@ def padCopyPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
   [⟨233, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨234, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨235, .push ⟨2, by decide⟩ (UInt256.ofNat 1087), by rfl, by decide⟩,
+   ⟨235, .push ⟨2, by decide⟩ (UInt256.ofNat 1056), by rfl, by decide⟩,
    ⟨236, .op .CALLDATACOPY, by rfl, wfOp (by decide) trivial rfl⟩]
 
 /-- Cached located path for the whole-block test: a length that is a multiple of 64 goes
@@ -5873,7 +5873,7 @@ def padGuardPath : List
 def padSentinelPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
   [⟨3624, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
-   ⟨3625, .push ⟨2, by decide⟩ (UInt256.ofNat 1087), by rfl, by decide⟩,
+   ⟨3625, .push ⟨2, by decide⟩ (UInt256.ofNat 1056), by rfl, by decide⟩,
    ⟨3626, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨3627, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨3628, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩]
@@ -5885,7 +5885,7 @@ def padFooterSetupPath : List
    ⟨3630, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
    ⟨3631, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨3632, .op (.Dup ⟨13, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3633, .push ⟨2, by decide⟩ (UInt256.ofNat 1079), by rfl, by decide⟩,
+   ⟨3633, .push ⟨2, by decide⟩ (UInt256.ofNat 1048), by rfl, by decide⟩,
    ⟨3634, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩]
 
 /-- Cached located path for the footer-loop exit. -/

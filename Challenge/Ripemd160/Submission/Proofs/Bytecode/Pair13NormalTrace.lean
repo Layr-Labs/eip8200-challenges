@@ -26,9 +26,9 @@ def normalTemplate : List Instr := (template ++ Pair13PoolRaw.template) ++ Pair1
 
 theorem run_normal (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UInt256)
     (rho : List UInt256) (p : Nat) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
-    (hp : 1087 ≤ p) (hbound : p + 64 < 2 ^ 256)
-    (hq1 : off + UInt256.ofNat 1119 = UInt256.ofNat (p + 32))
-    (hq0 : off + UInt256.ofNat 1087 = UInt256.ofNat p)
+    (hp : 1056 ≤ p) (hbound : p + 64 < 2 ^ 256)
+    (hq1 : off + UInt256.ofNat 1088 = UInt256.ofNat (p + 32))
+    (hq0 : off + UInt256.ofNat 1056 = UInt256.ofNat p)
     (hlow : (MachineState.readWord s.memory 0).toNat % 2 ^ 144 < 2 ^ 32) :
     runInstrSeq normalTemplate {s with pc := pc, stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho} =
       some {s with

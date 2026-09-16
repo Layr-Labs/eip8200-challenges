@@ -41,13 +41,13 @@ theorem frame_eq (input : ByteArray) (h32 : input.size = 32) :
 theorem copied_memory (input : ByteArray) :
     (PaddingTrace.padCopied input).memory = copiedMemory input := by
   change MachineState.writeBytes ByteArray.empty
-    (MachineState.readPadded input 0 input.size) 1087 = copiedMemory input
+    (MachineState.readPadded input 0 input.size) 1056 = copiedMemory input
   rw [Memory.readPadded_zero_size]
   rfl
 
 theorem copied_active (input : ByteArray) (h32 : input.size = 32) :
     (PaddingTrace.padCopied input).activeWords = UInt256.ofNat 35 := by
-  change UInt256.ofNat (MachineState.activeWordsAfter 0 1087 input.size) = UInt256.ofNat 35
+  change UInt256.ofNat (MachineState.activeWordsAfter 0 1056 input.size) = UInt256.ofNat 35
   rw [h32]
   rfl
 
