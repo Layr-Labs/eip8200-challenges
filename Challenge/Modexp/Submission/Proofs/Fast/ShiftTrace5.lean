@@ -226,12 +226,11 @@ def gasSteps_missPath (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn32 : n ≤ 8) (e : Env s) (hb : bsize < 2 ^ 256)
     (hmiss : ¬ FullBase.Matches mem n bsize) :
     Challenge.EvmProof.GasSteps (dispState s mem n bsize esize msize)
-      (Exp.r1Call s (Exp.storeWord mem 1024 (UInt256.ofNat 1)) 1024 (UInt256.ofNat 782)
-        n bsize esize msize) := by
+      (bigCState s mem n bsize esize msize) := by
   have h := soundEnv blk2862 e
     (run_dispatch s mem n bsize esize msize hn32 hb e.act296 e.code e.run)
   rw [if_neg hmiss] at h
-  exact h.trans (soundEnv blk2889 e
-    (run_miss s mem n bsize esize msize e.act296 e.code e.run))
+  exact h.trans (soundEnv blk1351 e
+    (run_bailMiss s mem n bsize esize msize e.code e.run))
 
 end Challenge.Modexp.Submission.Proofs.Fast.Shift

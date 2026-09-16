@@ -23,28 +23,28 @@ def exitProgram : List Instr := CiosCached.tailProgram.drop 23
 fall through to `nx` (pc 4855). -/
 def exitState (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat)
     (hd ent dst ret : UInt256) (rest : List UInt256) : State :=
-  framed { s with memory := mem } (UInt256.ofNat 3940)
+  framed { s with memory := mem } (UInt256.ofNat 4054)
     ([pbi, hd, UInt256.ofNat (pb-32),
       ent, negative32, allOnes, l2Target n, dst, ret] ++ rest)
 
 /-- The `nx` side of the R0 dispatch (pc 4856): the 14 `POP`s that drop the row frame. -/
 def nxState (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat)
     (hd ent dst ret : UInt256) (rest : List UInt256) : State :=
-  framed { s with memory := mem } (UInt256.ofNat 3949)
+  framed { s with memory := mem } (UInt256.ofNat 4063)
     ([pbi, hd, UInt256.ofNat (pb-32),
       ent, negative32, allOnes, l2Target n, dst, ret] ++ rest)
 
 /-- The `nx` `JUMPDEST` itself (pc 4855): the last square jumps here from `sq_exit`. -/
 def nxJdState (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat)
     (hd ent dst ret : UInt256) (rest : List UInt256) : State :=
-  framed { s with memory := mem } (UInt256.ofNat 3949)
+  framed { s with memory := mem } (UInt256.ofNat 4063)
     ([pbi, hd, UInt256.ofNat (pb-32),
       ent, negative32, allOnes, l2Target n, dst, ret] ++ rest)
 
 /-- `sq_exit` (pc 4912): the in-kernel squaring loop keeps the row frame. -/
 def sqExitState (s : State) (mem : ByteArray) (pbi : UInt256) (pb n : Nat)
     (hd ent dst ret : UInt256) (rest : List UInt256) : State :=
-  framed { s with memory := mem } (UInt256.ofNat 4005)
+  framed { s with memory := mem } (UInt256.ofNat 4119)
     ([pbi, hd, UInt256.ofNat (pb-32),
       ent, negative32, allOnes, l2Target n, dst, ret] ++ rest)
 
@@ -59,13 +59,13 @@ def baseStack (pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : L
 
 def input (s : State) (c mu bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=
-  framed s (UInt256.ofNat 3916) ([c, mu, bi] ++ baseStack pbi paEnd pbEnd flag dst ret rest)
+  framed s (UInt256.ofNat 4030) ([c, mu, bi] ++ baseStack pbi paEnd pbEnd flag dst ret rest)
 
 def cleaned (s : State) (c pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : State :=
-  framed s (UInt256.ofNat 3920) ([c] ++ baseStack pbi paEnd pbEnd flag dst ret rest)
+  framed s (UInt256.ofNat 4034) ([c] ++ baseStack pbi paEnd pbEnd flag dst ret rest)
 
 def stored (s : State) (c pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : State :=
-  framed { s with memory := tailMem s.memory c } (UInt256.ofNat 3933)
+  framed { s with memory := tailMem s.memory c } (UInt256.ofNat 4047)
     (baseStack pbi paEnd pbEnd flag dst ret rest)
 
 def result (s : State) (c pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : State :=
