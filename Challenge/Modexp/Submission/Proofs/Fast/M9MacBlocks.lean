@@ -36,7 +36,7 @@ general `headProgram`: it is the row head of every chain that reaches it, so its
 is the literal zero `entryProgram` pushes at pc 2676.  `block4` keeps `headProgram` — pc 2827 is
 also *fallen into* from block 3, whose outgoing carry is not zero. -/
 def block0 : Block Artifact.submissionArtifact .Osaka 2682 (headZeroProgram 1504 2336) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 1975 31 2682 (headZeroProgram 1504 2336)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1977 29 2682 (headZeroProgram 1504 2336)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 1: instructions 2008..2037, pc 2719..2754,
@@ -88,12 +88,12 @@ def exitBlock : Block Artifact.submissionArtifact .Osaka 2972 exitProgram :=
 
 /-- E6, the section entry: instructions 1970..1976, pc 2673..2681 (old pc 2936..2950). -/
 def entryBlock : Block Artifact.submissionArtifact .Osaka 2673 entryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 1968 7 2673 entryProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1970 7 2673 entryProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The eight-limb entry (block 0's `JUMPDEST`, instruction 1977). -/
 theorem jumpDest2682 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2682 = true :=
-  Artifact.isValidJumpDest_index 1975 (by rfl)
+  Artifact.isValidJumpDest_index 1977 (by rfl)
 
 /-- The four-limb entry (block 4's `JUMPDEST`, instruction 2098, = 2682 + 0x91). -/
 theorem jumpDest2827 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2827 = true :=

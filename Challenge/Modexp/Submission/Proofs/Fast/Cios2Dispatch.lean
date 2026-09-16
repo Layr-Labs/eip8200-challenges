@@ -55,17 +55,17 @@ def commonState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
 /-- The `mul entry` JUMPDEST (instruction 3190, pc 4013 = 0x0f50). -/
 theorem jumpDest4012 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3209 = true := by
-  exact Artifact.isValidJumpDest_index 2384 (by rfl)
+  exact Artifact.isValidJumpDest_index 2382 (by rfl)
 
 /-- The `common` JUMPDEST (instruction 3190, pc 4104 = 0x0f54). -/
 theorem jumpDestCommon :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3213 = true := by
-  exact Artifact.isValidJumpDest_index 2386 (by rfl)
+  exact Artifact.isValidJumpDest_index 2384 (by rfl)
 
 /-- The kernel `setup` JUMPDEST (instruction 3190, pc 4123 = 0x0f6c). -/
 theorem jumpDestSetup :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3214 = true := by
-  exact Artifact.isValidJumpDest_index 2387 (by rfl)
+  exact Artifact.isValidJumpDest_index 2385 (by rfl)
 
 /-- The multiply row head (instruction 1760, pc 4261 = 0x0fc5). -/
 theorem jumpDestRowHead :
@@ -75,7 +75,7 @@ theorem jumpDestRowHead :
 /-- The square row head `sq_row` (instruction 3559, pc 2464 = 0x1266). -/
 theorem jumpDestSqRow :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4065 = true := by
-  exact Artifact.isValidJumpDest_index 3051 (by rfl)
+  exact Artifact.isValidJumpDest_index 3046 (by rfl)
 
 /-- `jumpDestRowHead` in the `hd.toNat` form taken by `gasSteps_setup`/`gasSteps_commonSetup`. -/
 theorem jumpDestRowHead' :
@@ -161,7 +161,7 @@ set_option linter.unusedSimpArgs false in
 
 /-- The kernel `setup`: instructions 3189..3189 (pc 4123 = 0x0f6c .. 4260), 62 instructions. -/
 def setup : Block Artifact.submissionArtifact .Osaka 3214 StagedOperand.fullEntryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2387 59 3214 StagedOperand.fullEntryProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2385 59 3214 StagedOperand.fullEntryProgram
     (by decide) (by decide) (by rfl) (by decide)
 
 def environment (s : State)
