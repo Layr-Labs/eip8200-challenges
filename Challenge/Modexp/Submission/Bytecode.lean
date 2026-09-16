@@ -20,4 +20,4 @@ theorem submissionBytecode_roundtrip :
 
 end Challenge.Modexp
 
--- packaging revision 20260916T083253Z
+-- packaging revision 20260916T122805Z

@@ -52,6 +52,23 @@ theorem isTrue_lor_of (a b : UInt256) (h : a.toNat ≠ 0 ∨ b.toNat ≠ 0) :
   · exact isTrue_lor_left a b h
   · exact isTrue_lor_right a b h
 
+/-- **The exit test needs no `OR`.**  `neg = GT bw cw` with `bw = LT Wn q` and `cw = LT Wn c`,
+and `TN = Wn - q`.  A nonzero `neg` forces `bw` strictly above `cw`, hence `bw ≠ 0`, hence
+`Wn < q`; then `TN = Wn - q` wraps and is nonzero.  So `neg ||| TN ≠ 0 ↔ TN ≠ 0` for arbitrary
+256-bit operands, which is why the block's `DUP2; OR` could be dropped: one disjunct implies the
+other, and the `JUMPI` may read `TN` alone.  No invariant about the data is used. -/
+theorem tn_ne_zero_of_neg (mem : ByteArray) (c q : UInt256)
+    (h : (negOf mem c q).toNat ≠ 0) : (tnOf mem c q).toNat ≠ 0 := by
+  have hbw : (wN mem c).toNat < q.toNat := by
+    by_contra hge
+    exact h (by simp [negOf, bwOf, UInt256.gt, UInt256.lt, hge])
+  have hsub : (tnOf mem c q).toNat = 2 ^ 256 + (wN mem c).toNat - q.toNat := by
+    unfold tnOf
+    rw [Challenge.EvmProof.Word.word_toNat_sub_cond, if_pos hbw]
+  have hq : q.toNat < 2 ^ 256 := q.val.isLt
+  rw [hsub]
+  omega
+
 theorem midMem_tn (mem : ByteArray) (c q : UInt256) :
     MachineState.readWord (midMem mem c q) 2080 = tnOf mem c q := by
   unfold midMem Exp.storeWord
@@ -65,7 +82,9 @@ theorem subRounds_shift (mem : ByteArray) (n : Nat) :
         subRoundMem (subRounds mem n (i + 1)) n
       rw [subRounds_shift mem n i]
 
-/-- `blk3125` with `neg ||| TN ≠ 0`: store `TN`, jump to `UNC` with `neg` above `k`. -/
+/-- `blk3125` with `neg ||| TN ≠ 0`: store `TN`, jump to `UNC` with `neg` above `k`.  The block
+now tests `TN` alone; `tn_ne_zero_of_neg` turns the `neg` disjunct into a `TN` one, so the
+hypothesis and the conclusion are unchanged for every caller. -/
 theorem run_mid_unc (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat)
     (hact : 88 ≤ s.activeWords.toNat)
     (hor : (negOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q).toNat ≠ 0 ∨ (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q).toNat ≠ 0)
@@ -77,17 +96,17 @@ theorem run_mid_unc (s : State) (um : ByteArray) (q : UInt256) (n bsize esize ms
         (negOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q)) := by
   have hTN : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2080 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hor1 : UInt256.isTrue (UInt256.lor (negOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q) (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q)) := isTrue_lor_of _ _ hor
-  have hor2 : UInt256.isTrue (UInt256.lor (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q) (negOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q)) := isTrue_lor_of _ _ hor.symm
-  unfold negOf bwOf cwOf tnOf wN at hor1 hor2
-  simp only [midGtSwap] at hor1 hor2
+  have htn : UInt256.isTrue (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q) := by
+    show (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q).toNat ≠ 0
+    exact hor.elim (tn_ne_zero_of_neg _ _ _) id
+  unfold tnOf wN at htn
   simp (config := { maxSteps := 500000 })
     [blk3125, midGtSwap, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       midState, uncState, pcMid, pcUnc, midMem, negOf, bwOf, cwOf, tnOf, wN, Exp.storeWord,
-      outer, Exp.outer, hcode, hrun, hTN, hor1, hor2, jumpDestUnc,
+      outer, Exp.outer, hcode, hrun, hTN, htn, jumpDestUnc,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -106,8 +125,6 @@ theorem run_mid_zero (s : State) (um : ByteArray) (q : UInt256) (n bsize esize m
       some (csubCallState s (midMem (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q) n bsize esize msize k) := by
   have hTN : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2080 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hz : ¬ UInt256.isTrue (UInt256.lor (UInt256.ofNat 0) (UInt256.ofNat 0)) := by decide
-  have hz1 : UInt256.lor (UInt256.ofNat 0) (UInt256.ofNat 0) = UInt256.ofNat 0 := by decide
   have hz2 : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
   have hmem : midMem (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q = Exp.storeWord (Monpro.l1Step um q NEG n n).memory 2080 (UInt256.ofNat 0) := by
     unfold midMem; rw [htz]
@@ -121,7 +138,7 @@ theorem run_mid_zero (s : State) (um : ByteArray) (q : UInt256) (n bsize esize m
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       midState, csubCallState, pcMid, pcCsubCall, Exp.storeWord,
-      outer, Exp.outer, hcode, hrun, hTN, hneg, htz, hz, hz1, hz2,
+      outer, Exp.outer, hcode, hrun, hTN, hneg, htz, hz2,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
