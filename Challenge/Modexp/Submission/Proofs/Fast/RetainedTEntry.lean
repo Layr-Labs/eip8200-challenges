@@ -28,13 +28,13 @@ def pushProgram : List Instr := [.push 2 2112]
 def tailProgram : List Instr := [.op .JUMPDEST, .op .JUMP]
 
 def entryBlock : Block Artifact.submissionArtifact .Osaka 4115 entryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3102 8 4115 entryProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3100 8 4115 entryProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def pushBlock : Block Artifact.submissionArtifact .Osaka 4127 pushProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3110 1 4127 pushProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3108 1 4127 pushProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def tailBlock : Block Artifact.submissionArtifact .Osaka 5135 tailProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3939 2 5135 tailProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3937 2 5135 tailProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest4486 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4115 = true :=
