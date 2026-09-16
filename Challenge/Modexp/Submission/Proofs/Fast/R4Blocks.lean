@@ -250,29 +250,26 @@ def block_r3e : Block Artifact.submissionArtifact .Osaka 4734 prog_r3e :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 3595 6 4734 prog_r3e
     (by decide) (by rfl) (by rfl) (by decide)
 
-/-- pc 4848..4888（idx 3707..3725）。
+/-- pc 4848..4888（idx 3707..3735）。
 
 Rider: the five stores consume the top five stack values in stack order instead of `DUP`ing
-them.  The slots the `DUP`s vacated are absorbed into the neighbouring `PUSH` by widening it
-and left-padding the immediate with zero bytes, so the pcs and the instruction boundaries are
-still preserved, and the pushed values are bit-identical — but the padding now costs nothing,
-where a `JUMPDEST` cost 1 gas on every execution.  The five target words `0x820 .. 0x8a0` are
-pairwise disjoint and word-aligned, so the reordered writes commute
-(`writeBytes_comm_disjoint`), and the highest touched word is unchanged, so the
-memory-expansion charge is identical.  The eleven incoming values are dead either way: the
-block leaves with stack depth 0 and jumps to `0xfa5`.
-
-Ten instructions are deleted, so every instruction index after 3707 shifts down by 10; the
-pcs, and hence every jump destination and every pushed code pointer, are untouched. -/
+them, and every slot the `DUP`s vacated is padded with `JUMPDEST` so that the pcs, the
+instruction boundaries **and** the instruction indices are all preserved — nothing is deleted,
+so no later index shifts.  The five target words `0x820 .. 0x8a0` are pairwise disjoint and
+word-aligned, so the reordered writes commute (`writeBytes_comm_disjoint`), and the highest
+touched word is unchanged, so the memory-expansion charge is identical.  The eleven incoming
+values are dead either way: the block leaves with stack depth 0 and jumps to `0xfa5`. -/
 def prog_exit : List Instr :=
-  [.op .JUMPDEST, .push 3 2112, .op .MSTORE,
-   .push 3 2144, .op .MSTORE, .push 3 2176, .op .MSTORE,
-   .push 3 2208, .op .MSTORE, .push 3 2080, .op .MSTORE,
-   .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP,
-   .push 7 4005, .op .JUMP]
+  [.op .JUMPDEST, .op .JUMPDEST, .push 2 2112, .op .MSTORE,
+   .op .JUMPDEST, .push 2 2144, .op .MSTORE, .op .JUMPDEST,
+   .push 2 2176, .op .MSTORE, .op .JUMPDEST, .push 2 2208, .op .MSTORE,
+   .op .JUMPDEST, .push 2 2080, .op .MSTORE, .op .POP, .op .POP, .op .POP,
+   .op .POP, .op .POP, .op .POP, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
+   .op .JUMPDEST, .op .JUMPDEST,
+   .push 2 4005, .op .JUMP]
 
 def block_exit : Block Artifact.submissionArtifact .Osaka 4848 prog_exit :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3707 19 4848 prog_exit
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3707 29 4848 prog_exit
     (by decide) (by rfl) (by rfl) (by decide)
 
 end Challenge.Modexp.Submission.Proofs.Fast.R4Blocks

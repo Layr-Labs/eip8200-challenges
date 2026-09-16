@@ -1520,8 +1520,8 @@ theorem run_r3e (s : State) (c p3 p2 p1 p0 p4 k n0 n1 n2 n3 np : UInt256) (rest 
   exact g0
 
 def prog_exit_0 : List Instr :=
-  [.op .JUMPDEST, .push 3 2112, .op .MSTORE,
-   .push 3 2144, .op .MSTORE]
+  [.op .JUMPDEST, .op .JUMPDEST, .push 2 2112, .op .MSTORE,
+   .op .JUMPDEST, .push 2 2144, .op .MSTORE]
 
 theorem run_exit_0 (s : State) (x0 x1 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1019)
@@ -1544,15 +1544,15 @@ theorem run_exit_0 (s : State) (x0 x1 : UInt256) (rest : List UInt256)
   simp [hc0, hz0, prog_exit_0, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, hc1, hc2, hc3, hc4, hl2112, hl2144, State.activeWordsAfterUInt256, Monpro.activeWords_fix s 2112 32 (by decide) (by norm_num) hact, Monpro.activeWords_fix s 2144 32 (by decide) (by norm_num) hact]
 
 def prog_exit_1 : List Instr :=
-  [.push 3 2176, .op .MSTORE,
-   .push 3 2208, .op .MSTORE]
+  [.op .JUMPDEST, .push 2 2176, .op .MSTORE, .op .JUMPDEST,
+   .push 2 2208, .op .MSTORE, .op .JUMPDEST]
 
 theorem run_exit_1 (s : State) (x0 x1 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1017)
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prog_exit_1
       { s with pc := UInt256.ofNat 4859, stack := x0 :: x1 :: rest } =
-    some { s with pc := UInt256.ofNat 4869,
+    some { s with pc := UInt256.ofNat 4870,
                   stack := rest,
                   memory := (MachineState.writeBytes (MachineState.writeBytes s.memory
           (Data.Bytes.natToBytesPadded x0.toNat 32) 2176)
@@ -1570,13 +1570,13 @@ theorem run_exit_1 (s : State) (x0 x1 : UInt256) (rest : List UInt256)
   simp [hc0, hz0, prog_exit_1, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, hc1, hc2, hc3, hc4, hc5, hc6, hl2176, hl2208, State.activeWordsAfterUInt256, Monpro.activeWords_fix s 2176 32 (by decide) (by norm_num) hact, Monpro.activeWords_fix s 2208 32 (by decide) (by norm_num) hact]
 
 def prog_exit_2 : List Instr :=
-  [.push 3 2080, .op .MSTORE, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP]
+  [.push 2 2080, .op .MSTORE, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP]
 
 theorem run_exit_2 (s : State) (x0 x1 x2 x3 x4 x5 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1016)
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prog_exit_2
-      { s with pc := UInt256.ofNat 4869, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: rest } =
+      { s with pc := UInt256.ofNat 4870, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: rest } =
     some { s with pc := UInt256.ofNat 4879,
                   stack := rest,
                   memory := (MachineState.writeBytes s.memory
@@ -1594,13 +1594,13 @@ theorem run_exit_2 (s : State) (x0 x1 x2 x3 x4 x5 : UInt256) (rest : List UInt25
   simp [hc0, hz0, prog_exit_2, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hl2080, State.activeWordsAfterUInt256, Monpro.activeWords_fix s 2080 32 (by decide) (by norm_num) hact]
 
 def prog_exit_3 : List Instr :=
-  [.op .POP]
+  [.op .POP, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
 
 theorem run_exit_3 (s : State) (x0 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1017) :
     runInstructions prog_exit_3
       { s with pc := UInt256.ofNat 4879, stack := x0 :: rest } =
-    some { s with pc := UInt256.ofNat 4880,
+    some { s with pc := UInt256.ofNat 4885,
                   stack := rest } := by
   have hc0 : rest.length < 1024 := by omega
   have hz0 : (⟨0⟩ : UInt256).toNat = 0 := rfl
@@ -1613,13 +1613,13 @@ theorem run_exit_3 (s : State) (x0 : UInt256) (rest : List UInt256)
   simp [hc0, hz0, prog_exit_3, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, hc1, hc2, hc3, hc4, hc5, hc6]
 
 def prog_exit_4 : List Instr :=
-  [.push 7 4005, .op .JUMP]
+  [.push 2 4005, .op .JUMP]
 
 theorem run_exit_4 (s : State) (rest : List UInt256)
     (hcap : rest.length ≤ 1022)
     (hjd : Decode.isValidJumpDest s.executionEnv.code 4005 = true) :
     runInstructions prog_exit_4
-      { s with pc := UInt256.ofNat 4880, stack := rest } =
+      { s with pc := UInt256.ofNat 4885, stack := rest } =
     some { s with pc := (4005 : UInt256),
                   stack := rest } := by
   have hc0 : rest.length < 1024 := by omega
