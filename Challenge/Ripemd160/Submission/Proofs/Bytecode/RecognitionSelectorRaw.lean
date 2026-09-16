@@ -14,42 +14,35 @@ open StackRoundTrace
 
 private theorem hadd_eq (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem hmul_eq (a b : UInt256) : a * b = UInt256.mul a b := rfl
-private theorem hsub_eq (a b : UInt256) : a - b = UInt256.sub a b := rfl
 
-/-- The digest row is addressed relative to `CODESIZE` rather than from an absolute
-`PUSH2` table base: the slot index counts *down* from the end of the code, so the
-table base never appears as an immediate.  `PUSH1 20` widens to `PUSH3 20` to keep
-the surrounding instruction indices fixed, so this template still occupies 21 bytes
-and 11 instructions. -/
-def prefixTemplate : List Instr :=
-  [ .push ⟨3, by decide⟩ (UInt256.ofNat 20),
+def prefixTemplate (table : UInt256) : List Instr :=
+  [ .push ⟨1, by decide⟩ (UInt256.ofNat 20),
     .push ⟨1, by decide⟩ (UInt256.ofNat 15),
     .op .CALLDATASIZE,
-    .push ⟨5, by decide⟩ (UInt256.ofNat 392382779957),
+    .push ⟨5, by decide⟩ (UInt256.ofNat 345007677684),
     .op .DIV,
     .op .AND,
     .op (.Dup ⟨1, by decide⟩),
     .op .MUL,
-    .op .CODESIZE,
-    .op .SUB,
+    .push ⟨2, by decide⟩ table,
+    .op .ADD,
     .push ⟨1, by decide⟩ (UInt256.ofNat 12) ]
 
-def selected (codesize : UInt256) (size : Nat) : UInt256 :=
-  UInt256.sub codesize (UInt256.mul 20 (UInt256.land (UInt256.div 392382779957 (UInt256.ofNat size)) 15))
+def selected (table : UInt256) (size : Nat) : UInt256 :=
+  UInt256.add table (UInt256.mul 20 (UInt256.land (UInt256.div 345007677684 (UInt256.ofNat size)) 15))
 
-theorem run_prefix (s : State) (pc : UInt256) (rho : List UInt256)
+theorem run_prefix (s : State) (pc table : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1010) (hrun : s.halt = .Running) :
-    runInstrSeq prefixTemplate {s with pc := pc, stack := rho} =
+    runInstrSeq (prefixTemplate table) {s with pc := pc, stack := rho} =
       some {s with
-        pc := pcAfter pc prefixTemplate
-        stack := 12 :: selected (UInt256.ofNat s.executionEnv.code.size)
-          s.executionEnv.calldata.size :: 20 :: rho} := by
+        pc := pcAfter pc (prefixTemplate table)
+        stack := 12 :: selected table s.executionEnv.calldata.size :: 20 :: rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 10) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [prefixTemplate, selected, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals simp only [hadd_eq, hmul_eq, hsub_eq, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
+  all_goals simp only [hadd_eq, hmul_eq, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 
 def finish : List Instr := [.push ⟨0, by decide⟩ 0, .op .RETURN]
