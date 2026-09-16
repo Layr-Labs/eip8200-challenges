@@ -9,10 +9,10 @@ set_option maxHeartbeats 2000000
 /-!
 # Full fast/reference composition for the fixed-width route
 
-The early wrapper handles matching headers first. Every other header restores
-the exact legacy entry at pc 1396. The Montgomery success proof is then reused
-verbatim. If that fast path declines, the unchanged broad Setup fallback reaches
-pc 1326 and the route-aware reference-body proof takes over.
+The early wrapper handles matching headers first. Every other header reaches
+the fast entry at pc 599 with the cached modulus-size singleton stack. The
+Montgomery success proof is then reused. If that fast path declines, Setup's
+fallback post-state feeds the route-aware reference-body proof.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.WindowCorrect
@@ -25,7 +25,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 abbrev FastHandled (input : ByteArray) : Prop :=
   ∃ final : State,
     Nonempty (Challenge.EvmProof.GasSteps
-      (Main.trampolineState input 599) final) ∧
+      (Main.fastEntryState input) final) ∧
       final.isDone = true ∧ final.toResult = .returned (spec input)
 
 private theorem withGas_initialState (code cd : ByteArray) (gas : Nat) :

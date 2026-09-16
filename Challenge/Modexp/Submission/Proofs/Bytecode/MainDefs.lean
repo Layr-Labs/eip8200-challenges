@@ -80,6 +80,13 @@ def tramp7DestPath := [opAt 389 .JUMPDEST]
 def trampolineState (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
 
+/-- Fast-path entry after an early-header miss. The wrapper retains the
+already-decoded modulus size so setup need not reload calldata[64]. -/
+def fastEntryState (input : ByteArray) : State :=
+  { initialState submissionBytecode input 0 with
+    pc := UInt256.ofNat 599
+    stack := [UInt256.ofNat (modulusSize input)] }
+
 /-- Gas-erased state at the public entry point. -/
 def headerEntryState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat 554 }

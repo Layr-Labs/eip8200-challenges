@@ -16,7 +16,7 @@ attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
 @[simp] private theorem exitPCs (i : Nat)
     (hi : 143 ≤ i) (hii : i ≤ 164) :
     Artifact.submissionArtifact.instructionPC i =
-      ([212,213,214,215,216,218,219,221,222,223,224,225,226,228,229,231,232,233,234,235,236,237] : List Nat)[i - 143]! := by
+      ([212,213,214,215,216,218,219,221,222,223,224,225,226,227,228,231,232,233,234,235,236,237] : List Nat)[i - 143]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 

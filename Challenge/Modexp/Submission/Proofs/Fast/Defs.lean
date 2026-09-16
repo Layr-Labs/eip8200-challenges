@@ -170,7 +170,7 @@ private theorem fastPCAnchor24 :
 
 @[simp] theorem fastPC0 (i : Nat) (hi : 423 ≤ i) (hii : i ≤ 450) :
     Artifact.submissionArtifact.instructionPC i =
-      [599,600,602,603,605,606,607,609,610,613,614,616,617,618,619,621,622,623,625,626,627,629,630,632,633,634,635,636][i - 423]! := by
+      [599,600,601,602,605,606,607,609,610,613,614,616,617,618,619,621,622,623,625,626,627,629,630,632,633,634,635,636][i - 423]! := by
   have hsplit : i = 423 + (i - 423) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor0]
   rw [← PCFast.byteLength_eq_assemble]

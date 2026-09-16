@@ -69,8 +69,8 @@ theorem gasSteps_start_cost (input : ByteArray) (hvalid : ValidInput input)
 
 theorem gasSteps_baseIteration_cost (input : ByteArray) (i : Nat)
     (base : UInt256) (hvalid : ValidInput input) (hi : i < baseSize input) :
-    (gasSteps_baseIteration input i base hvalid hi).cost = 93 := by
-  have hguard := blockCost_of_static baseGuardPath 26
+    (gasSteps_baseIteration input i base hvalid hi).cost = 91 := by
+  have hguard := blockCost_of_static baseGuardPath 24
     (run_baseGuard input i base hvalid hi) (by rfl)
     (by decide) (by rfl) (by rfl)
   have hcall := blockCost_of_static baseCallPath 20
@@ -85,10 +85,10 @@ theorem gasSteps_baseIteration_cost (input : ByteArray) (i : Nat)
   omega
 
 theorem gasSteps_baseLoop_cost (input : ByteArray) (hvalid : ValidInput input) :
-    (gasSteps_baseLoop input hvalid).cost = 93 * baseSize input := by
+    (gasSteps_baseLoop input hvalid).cost = 91 * baseSize input := by
   unfold gasSteps_baseLoop
   have h := Challenge.EvmProof.GasSteps.iterateBounded_cost_of_const
-    (count := baseSize input) (cost := 93) (body := fun i hi =>
+    (count := baseSize input) (cost := 91) (body := fun i hi =>
       gasSteps_baseIteration input i (baseAfter input i) hvalid hi) (by
         intro i hi
         exact gasSteps_baseIteration_cost input i (baseAfter input i) hvalid hi)
@@ -96,8 +96,8 @@ theorem gasSteps_baseLoop_cost (input : ByteArray) (hvalid : ValidInput input) :
 
 theorem gasSteps_baseFinish_cost (input : ByteArray) (base : UInt256)
     (hvalid : ValidInput input) (hword : modulusSize input ≤ 32) :
-    (gasSteps_baseFinish input base hvalid hword).cost = 40 := by
-  have hguard := blockCost_of_static baseGuardPath 26
+    (gasSteps_baseFinish input base hvalid hword).cost = 38 := by
+  have hguard := blockCost_of_static baseGuardPath 24
     (run_baseFinishGuard input base hvalid) (by rfl)
     (by decide) (by rfl) (by rfl)
   have htail := blockCost_of_static baseFinishTailPath 14
@@ -272,28 +272,28 @@ theorem gasSteps_expLoop_cost (input : ByteArray) (acc base : UInt256)
 
 theorem gasSteps_expFinish_cost (input : ByteArray) (acc base : UInt256)
     (hvalid : ValidInput input) (hword : modulusSize input ≤ 32) :
-    (gasSteps_expFinish input acc base hvalid hword).cost = 60 := by
+    (gasSteps_expFinish input acc base hvalid hword).cost = 46 := by
   have hguard := blockCost_of_static expGuardPath 23
     (run_expFinishGuard input acc base hvalid) (by rfl)
     (by decide) (by rfl) (by rfl)
   have htail := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    expFinishTailPath 34
+    expFinishTailPath 20
     (run_expFinishTail input acc base hvalid hword) (by rfl)
     (by decide) (by rfl)
-  have hreturned : MachineState.activeWordsAfter 1 0
-      (modulusSize input) = 1 := by
-    unfold MachineState.activeWordsAfter
+  have hreturned : MachineState.activeWordsAfter 1
+      (outputOffset input) (modulusSize input) = 1 := by
+    unfold outputOffset MachineState.activeWordsAfter
     split
     · rfl
-    · have hdiv : (modulusSize input - 1) / 32 = 0 := by omega
+    · have hdiv : (32 - modulusSize input + modulusSize input - 1) / 32 = 0 := by
+        omega
       dsimp
-      rw [show 0 + modulusSize input - 1 = modulusSize input - 1 by omega,
-        hdiv]
+      rw [hdiv]
       decide
   have hstored : MachineState.activeWordsAfter 0 0 32 = 1 := by decide
   have hfinal : (wordFinalState input acc base).activeWords.toNat = 1 := by
     change (UInt256.ofNat (MachineState.activeWordsAfter
-      (MachineState.activeWordsAfter 0 0 32) 0
+      (MachineState.activeWordsAfter 0 0 32) (outputOffset input)
         (modulusSize input))).toNat = 1
     rw [hstored, hreturned]
     decide
@@ -344,6 +344,6 @@ theorem gasSteps_zeroModulus_cost (input : ByteArray)
   omega
 
 def wordGas (input : ByteArray) : Nat :=
-  982 + 93 * baseSize input + 761 * exponentSize input
+  966 + 91 * baseSize input + 761 * exponentSize input
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WordGas

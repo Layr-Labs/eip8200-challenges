@@ -69,13 +69,15 @@ theorem Env.act296 {s : State} (e : Env s) : 88 ≤ s.activeWords.toNat :=
 
 /-- One negation-loop iteration with limbs to go: body, then the rotated exit test jumps back. -/
 def gasSteps_negIter (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
-    (hn32 : n ≤ 8) (hj : j + 1 < n) (e : Env s) :
+    (hn32 : n ≤ 8) (hj : j + 1 < n)
+    (hlsw : MachineState.readWord mem (32 * (n - 1)) ≠ UInt256.ofNat 0)
+    (e : Env s) :
     Challenge.EvmProof.GasSteps (negLoopState s mem n bsize esize msize j)
       (negLoopState s mem n bsize esize msize (j + 1)) :=
   Challenge.EvmProof.GasSteps.cast
     ((soundEnv blk2896a e
         (run_negBodyA s mem (UInt256.ofNat (Monpro.ptrAt (32 * n - 32) j)) n bsize esize msize j
-          hn32 (by omega) (negPtr_toNat n j hn32 (by omega)) e.act296 e.code e.run)).trans
+          hn32 (by omega) (negPtr_toNat n j hn32 (by omega)) hlsw e.act296 e.code e.run)).trans
       (soundEnv blk2896b e
         (run_negTail s (negStep mem n (j + 1)).memory
           (UInt256.ofNat (Monpro.ptrAt (32 * n - 32) j)) (negStep mem n (j + 1)).flag
@@ -84,14 +86,16 @@ def gasSteps_negIter (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
 
 /-- The last limb: body, then the exit test falls through into `NEG_DONE`. -/
 def gasSteps_negLast (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s) :
+    (hn : 1 ≤ n) (hn32 : n ≤ 8)
+    (hlsw : MachineState.readWord mem (32 * (n - 1)) ≠ UInt256.ofNat 0)
+    (e : Env s) :
     Challenge.EvmProof.GasSteps (negLoopState s mem n bsize esize msize (n - 1))
       (negDoneState s mem n bsize esize msize) :=
   Challenge.EvmProof.GasSteps.cast
     ((soundEnv blk2896a e
         (run_negBodyA s mem (UInt256.ofNat (Monpro.ptrAt (32 * n - 32) (n - 1))) n bsize esize
-          msize (n - 1) hn32 (by omega) (negPtr_toNat n (n - 1) hn32 (by omega)) e.act296 e.code
-          e.run)).trans
+          msize (n - 1) hn32 (by omega) (negPtr_toNat n (n - 1) hn32 (by omega)) hlsw
+          e.act296 e.code e.run)).trans
       (soundEnv blk2896b e
         (run_negExit s (negStep mem n (n - 1 + 1)).memory
           (UInt256.ofNat (Monpro.ptrAt (32 * n - 32) (n - 1))) (negStep mem n (n - 1 + 1)).flag
@@ -100,22 +104,26 @@ def gasSteps_negLast (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     rfl (by rw [negTop_succ, Nat.sub_add_cancel hn] <;> rfl)
 
 def gasSteps_negLoop (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s) :
+    (hn : 1 ≤ n) (hn32 : n ≤ 8)
+    (hlsw : MachineState.readWord mem (32 * (n - 1)) ≠ UInt256.ofNat 0)
+    (e : Env s) :
     Challenge.EvmProof.GasSteps (negLoopState s mem n bsize esize msize 0)
       (negDoneState s mem n bsize esize msize) :=
   (Challenge.EvmProof.GasSteps.iterateBounded (I := fun j => negLoopState s mem n bsize esize msize j)
-      (n - 1) (fun j hj => gasSteps_negIter s mem n bsize esize msize j hn32 (by omega) e)).trans
-    (gasSteps_negLast s mem n bsize esize msize hn hn32 e)
+      (n - 1) (fun j hj =>
+        gasSteps_negIter s mem n bsize esize msize j hn32 (by omega) hlsw e)).trans
+    (gasSteps_negLast s mem n bsize esize msize hn hn32 hlsw e)
 
 /-- From the first `CSUB` return to the E3 guard at PC 3013 with counter `n`. -/
 def gasSteps_prologue (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s)
-    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32)) :
+    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (hlsw : MachineState.readWord mem (32 * (n - 1)) ≠ UInt256.ofNat 0) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
       (kState s (ShiftCacheModel.cacheMem (preMem (negStep mem n n).memory) n) 2546 n n bsize esize msize) :=
   (  ((((soundEnv blk2892 e
       (run_negEntry s mem n bsize esize msize hn hn32 e.act296 hml e.code e.run)).trans
-    (gasSteps_negLoop s mem n bsize esize msize hn hn32 e)).trans
+    (gasSteps_negLoop s mem n bsize esize msize hn hn32 hlsw e)).trans
     (soundEnv blk2919 e
       (run_negDone s mem n bsize esize msize e.act296 e.code e.run))).trans
     (soundEnv blk2956 e

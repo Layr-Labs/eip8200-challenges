@@ -94,7 +94,8 @@ def build (s : State) (mem input : ByteArray) (n bsize esize msize minv : Nat)
     (hn : 2 ≤ n) (hn8 : n ≤ 8) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (e : Env s) (hdata : s.executionEnv.calldata = input)
     (hframe : Exp.Frame mem n bsize minv) (hmatch : FullBase.Matches mem n bsize)
-    (hfast : n = 4 ∨ n = 8) :
+    (hfast : n = 4 ∨ n = 8)
+    (hlsw : MachineState.readWord (m1Of mem input n) (32 * (n - 1)) ≠ UInt256.ofNat 0) :
     RootE3Trace.TraceBindings s mem input n bsize esize msize := by
   have hm1ml : MachineState.readWord (m1Of mem input n) 2752 = UInt256.ofNat (32 * n - 32) := by
     rw [m1_readWord_disjoint mem input n 2752 (by omega) hn8
@@ -112,7 +113,7 @@ def build (s : State) (mem input : ByteArray) (n bsize esize msize minv : Nat)
     have second := gasSteps_hitCsub s mem input n bsize esize msize hn hn8 e hdata
       hframe.ml hframe.tl hframe.s32 hfast
     have third := gasSteps_prologue s (m1Of mem input n) n bsize esize msize
-      (by omega) hn8 e hm1ml
+      (by omega) hn8 e hm1ml hlsw
     simpa only [m1Of, m2Of, RootE3Trace.guardEntry, kState, outer] using
       first.trans (second.trans third)
   · intro hmiss
