@@ -17,7 +17,7 @@ public lineage. Our local source parent is the proved 1087-buffer commit
 ## Artifact
 
 - SHA-256: `959e34cb39e0da35b8d3eea31c70d45f7a1c9b754e2f867422fc05d60f9b6ec7`.
-- Size: 5224 bytes = 4944 executable bytes + 280 data bytes.
+- Size: 5238 bytes = 4958 executable bytes + 280 data bytes.
 - Executable instructions: 3720; all instruction PCs match the 1087 parent.
 - Local seed-zero and median score: 666,834.
 - Relative to the 666,935 parent: 63 gas from tighter buffer placement, plus

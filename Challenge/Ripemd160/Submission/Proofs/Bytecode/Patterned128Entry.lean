@@ -59,30 +59,30 @@ private theorem calldatasize_step (input : ByteArray) (pc : Nat) (stk : List UIn
 
 /-! ## Program counters in the guard window -/
 
-private theorem pc3836 : Artifact.submissionArtifact.instructionPC 3667 = 4817 := J2EntryWindow.pc 0
-private theorem pc3837 : Artifact.submissionArtifact.instructionPC 3668 = 4818 := J2EntryWindow.pc 1
-private theorem pc3843 : Artifact.submissionArtifact.instructionPC 3674 = 4843 := J2EntryWindow.pc 7
-private theorem packedPC3735 : Artifact.submissionArtifact.instructionPC 3675 = 4844 := J2EntryWindow.pc 8
-private theorem packedPC3736 : Artifact.submissionArtifact.instructionPC 3676 = 4847 := J2EntryWindow.pc 9
-private theorem packedPC3737 : Artifact.submissionArtifact.instructionPC 3677 = 4853 := J2EntryWindow.pc 10
-private theorem packedPC3738 : Artifact.submissionArtifact.instructionPC 3678 = 4854 := J2EntryWindow.pc 11
-private theorem packedPC3739 : Artifact.submissionArtifact.instructionPC 3679 = 4856 := J2EntryWindow.pc 12
-private theorem packedPC3740 : Artifact.submissionArtifact.instructionPC 3680 = 4857 := J2EntryWindow.pc 13
-private theorem packedPC3741 : Artifact.submissionArtifact.instructionPC 3681 = 4858 := J2EntryWindow.pc 14
-private theorem packedPC3742 : Artifact.submissionArtifact.instructionPC 3682 = 4859 := J2EntryWindow.pc 15
-private theorem packedPC3743 : Artifact.submissionArtifact.instructionPC 3683 = 4860 := J2EntryWindow.pc 16
-private theorem packedPC3744 : Artifact.submissionArtifact.instructionPC 3684 = 4861 := J2EntryWindow.pc 17
-private theorem packedPC3745 : Artifact.submissionArtifact.instructionPC 3685 = 4863 := J2EntryWindow.pc 18
+private theorem pc3836 : Artifact.submissionArtifact.instructionPC 3664 = 4845 := J2EntryWindow.pc 0
+private theorem pc3837 : Artifact.submissionArtifact.instructionPC 3665 = 4846 := J2EntryWindow.pc 1
+private theorem pc3843 : Artifact.submissionArtifact.instructionPC 3671 = 4871 := J2EntryWindow.pc 7
+private theorem packedPC3735 : Artifact.submissionArtifact.instructionPC 3672 = 4872 := J2EntryWindow.pc 8
+private theorem packedPC3736 : Artifact.submissionArtifact.instructionPC 3673 = 4875 := J2EntryWindow.pc 9
+private theorem packedPC3737 : Artifact.submissionArtifact.instructionPC 3674 = 4881 := J2EntryWindow.pc 10
+private theorem packedPC3738 : Artifact.submissionArtifact.instructionPC 3675 = 4882 := J2EntryWindow.pc 11
+private theorem packedPC3739 : Artifact.submissionArtifact.instructionPC 3676 = 4884 := J2EntryWindow.pc 12
+private theorem packedPC3740 : Artifact.submissionArtifact.instructionPC 3677 = 4885 := J2EntryWindow.pc 13
+private theorem packedPC3741 : Artifact.submissionArtifact.instructionPC 3678 = 4886 := J2EntryWindow.pc 14
+private theorem packedPC3742 : Artifact.submissionArtifact.instructionPC 3679 = 4887 := J2EntryWindow.pc 15
+private theorem packedPC3743 : Artifact.submissionArtifact.instructionPC 3680 = 4888 := J2EntryWindow.pc 16
+private theorem packedPC3744 : Artifact.submissionArtifact.instructionPC 3681 = 4889 := J2EntryWindow.pc 17
+private theorem packedPC3745 : Artifact.submissionArtifact.instructionPC 3682 = 4891 := J2EntryWindow.pc 18
 
-@[simp] private theorem sizeHitPC3838 : Artifact.submissionArtifact.instructionPC 3669 = 4820 :=
+@[simp] private theorem sizeHitPC3838 : Artifact.submissionArtifact.instructionPC 3666 = 4848 :=
   J2EntryWindow.pc 2
-@[simp] private theorem sizeHitPC3839 : Artifact.submissionArtifact.instructionPC 3670 = 4838 :=
+@[simp] private theorem sizeHitPC3839 : Artifact.submissionArtifact.instructionPC 3667 = 4866 :=
   J2EntryWindow.pc 3
-@[simp] private theorem sizeHitPC3840 : Artifact.submissionArtifact.instructionPC 3671 = 4839 :=
+@[simp] private theorem sizeHitPC3840 : Artifact.submissionArtifact.instructionPC 3668 = 4867 :=
   J2EntryWindow.pc 4
-@[simp] private theorem sizeHitPC3841 : Artifact.submissionArtifact.instructionPC 3672 = 4840 :=
+@[simp] private theorem sizeHitPC3841 : Artifact.submissionArtifact.instructionPC 3669 = 4868 :=
   J2EntryWindow.pc 5
-@[simp] private theorem sizeHitPC3842 : Artifact.submissionArtifact.instructionPC 3673 = 4841 :=
+@[simp] private theorem sizeHitPC3842 : Artifact.submissionArtifact.instructionPC 3670 = 4869 :=
   J2EntryWindow.pc 6
 
 /-! ## The size mask -/
@@ -123,7 +123,7 @@ private theorem run_mask_entry (input : ByteArray) :
 private theorem run_size_prefix (input : ByteArray) :
     DirectGuard.run sizePrefix (PatternedScan.stS input 4818 []) =
       some (PatternedScan.stS input 4843 [111, sizeBit input]) := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3668 = 4818 := pc3837
+  have hpc : Artifact.submissionArtifact.instructionPC 3665 = 4846 := pc3837
   simp (config := {maxSteps := 400000}) [sizePrefix, sizeBit, DirectGuard.opAt,
     DirectGuard.pushAt, DirectGuard.wfOp, PatternedScan.stS, initialState, hpc,
     DataStepper.runLocatedBlock, DataStepper.runLocated, DataStepper.runInstr,

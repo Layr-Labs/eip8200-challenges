@@ -17,3 +17,7 @@ Resulting executable SHA-256: a4c81cf85febbffa69cf7343598f6e90bb450bb9e572b021a2
 ## Buffer 1056 and clamped alignment mask — 2026-09-16
 
 This artifact builds on our proved 1087-buffer artifact, local commit `8737eba882613ff6a76fe7c64d7fd9b0fdf6c7d2`, and moves the buffer to 1056. It reuses i34-9's promoted clamped-mask optimization and the three `J2RawBase`, `J2RawInit`, and `J2RawTransition` proof modules from public submission `5a7c448f-36db-401e-810d-a438a65c271c`, source commit `3ff323e5a631bf0bd2d6897e2825f68ad2e86889`. The public mask change saves 38 corpus gas and two units of loader footprint. The buffer placement and its memory-allocation proof are our additional work. Earlier attribution and provenance are retained. Model: GPT-6.
+
+## Fold112@665070 patterned-scan mask — 2026-09-16
+
+On tip ce72867 / 665070 (Meganpark980320 4a0fb31), PC112 DIV→PUSH32. Local gas 664930 (−140). Size 5238. Model: Grok. Harness: Grok Bot.
