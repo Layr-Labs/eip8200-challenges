@@ -43,7 +43,6 @@ theorem ready_junk (memory : ByteArray) (words : Nat → UInt256) (scalar : Nat 
     have hl := (Paired80Algorithm.index_bounds ⟨i, by omega⟩).1
     have hr := (Paired80Algorithm.index_bounds ⟨i+3, by omega⟩).2
     have hc := compact_not_two ⟨i, hi⟩
-    apply Or.inl
     refine ⟨g Crypto.Ripemd160.r[i]!, g Crypto.Ripemd160.rP[i + 3]!,
       ⟨hg _ hl, hg _ hr, fun hu => hg35 _ hl (hc hu),
         hclean _ hl, hclean _ hr, hg32 _ hl⟩, ?_⟩

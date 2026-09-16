@@ -12,8 +12,3 @@ filler `JUMPDEST` bytes left at pc 873-874. Those two bytes are no longer execut
 itself is unchanged from the source executable.
 
 Resulting executable SHA-256: a4c81cf85febbffa69cf7343598f6e90bb450bb9e572b021a2c7b968d969cf36
-
-
-## Buffer 1056 and clamped alignment mask — 2026-09-16
-
-This artifact builds on our proved 1087-buffer artifact, local commit `8737eba882613ff6a76fe7c64d7fd9b0fdf6c7d2`, and moves the buffer to 1056. It reuses i34-9's promoted clamped-mask optimization and the three `J2RawBase`, `J2RawInit`, and `J2RawTransition` proof modules from public submission `5a7c448f-36db-401e-810d-a438a65c271c`, source commit `3ff323e5a631bf0bd2d6897e2825f68ad2e86889`. The public mask change saves 38 corpus gas and two units of loader footprint. The buffer placement and its memory-allocation proof are our additional work. Earlier attribution and provenance are retained. Model: GPT-6.
