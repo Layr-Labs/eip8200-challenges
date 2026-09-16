@@ -1,5 +1,3 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolPadInvariant
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolReference
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairStoreGap
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Stagger144Active
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DriverModel
@@ -22,16 +20,16 @@ def messagePointer (i : Nat) : Nat := Padding.messageOffset + DriverTrace.blockO
 /-- Block model context.  The message block is required in memory only for data blocks: the
 pad-only block (the one starting exactly at the end of the input, which exists only when the
 input length is a multiple of 64) is scheduled from the calldata size alone. -/
-structure Context (s : State) (input : ByteArray) (next : Nat) : Prop where
+structure Context (s : State) (input : ByteArray) : Prop where
   calldata : s.executionEnv.calldata = input
-  active : 35 ≤ s.activeWords.toNat
+  active : 37 ≤ s.activeWords.toNat
   allocated : ∀ i, i < DriverTrace.blockCount input → input.size ≠ DriverTrace.blockOffset i →
-    (messagePointer i + 95) / 32 ≤ s.activeWords.toNat
-  messageBlock : ∀ i, next ≤ i → i < DriverTrace.blockCount input → input.size ≠ DriverTrace.blockOffset i →
+    (messagePointer i + 64) / 32 ≤ s.activeWords.toNat
+  messageBlock : ∀ i, i < DriverTrace.blockCount input → input.size ≠ DriverTrace.blockOffset i →
     ScheduleCorrect.MessageBlockAt s.memory (DriverTrace.messageOffsetWord i)
       (Padding.paddedMessage input) (DriverTrace.blockOffset i)
   separated : ∀ i, i < DriverTrace.blockCount input → ∀ k, k < 16 →
-    1056 + i * 64 ≤ (Schedule.loadOffsetWord (DriverTrace.messageOffsetWord i) k).toNat
+    1120 ≤ (Schedule.loadOffsetWord (DriverTrace.messageOffsetWord i) k).toNat
   /-- The first memory word is a clean 32-bit word BELOW BIT 144, so the unmasked loads of
   schedule words 1 and 2 see zero bytes at 14..27.  Bytes 10..13 may carry the dual lane the
   writer's slot-0 store leaves behind once the mask at pc 873 is gone; that lane lives at
@@ -40,11 +38,6 @@ structure Context (s : State) (input : ByteArray) (next : Nat) : Prop where
   lowClear : (MachineState.readWord s.memory 0).toNat % 2 ^ 144 < 2 ^ 32
   /-- Four skipped-store gap bytes for each of the thirteen equal table pairs. -/
   gapClear : GapClear s.memory
-  extraClear : PoolInvariant.ExtraClear s.memory
-
-theorem Context.clear (s : State) (input : ByteArray) (i : Nat) (ctx : Context s input i) :
-    PoolShape.Clear s.memory :=
-  PoolInvariant.clear_of_parts s.memory ctx.lowClear ctx.gapClear ctx.extraClear
 
 def blockWords (input : ByteArray) (i : Nat) : Nat → UInt32 :=
   fun k => (CompressionCorrect.schedule (Padding.paddedMessage input)
@@ -55,7 +48,7 @@ theorem blockWords_eq_readLE32 (input : ByteArray) (i k : Nat) (hk : k < 16) :
       (DriverTrace.blockOffset i + k * 4) := by
   interval_cases k <;> simp [blockWords, CompressionCorrect.schedule, List.range']
 
-theorem messagePointer_lower (i : Nat) : 1056 ≤ messagePointer i := by
+theorem messagePointer_lower (i : Nat) : 1120 ≤ messagePointer i := by
   simp only [messagePointer, Padding.messageOffset]
   omega
 
@@ -80,7 +73,7 @@ def scheduledState (s : State) (i : Nat) : State :=
   if s.executionEnv.calldata.size = DriverTrace.blockOffset i then
     {s with memory := StaggerTablePad.padRealResult s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
   else
-    {s with memory := PoolReference.dataMemory s.memory (messagePointer i), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat (messagePointer i))}
+    {s with memory := StaggerTableLayout.resultMemory0 s.memory (selectedWords s i), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat (messagePointer i))}
 
 theorem scheduledState_hit (s : State) (i : Nat)
     (hh : s.executionEnv.calldata.size = DriverTrace.blockOffset i) :
@@ -91,26 +84,26 @@ theorem scheduledState_hit (s : State) (i : Nat)
 theorem scheduledState_miss (s : State) (i : Nat)
     (hh : ¬ s.executionEnv.calldata.size = DriverTrace.blockOffset i) :
     scheduledState s i =
-      {s with memory := PoolReference.dataMemory s.memory (messagePointer i), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat (messagePointer i))} := by
+      {s with memory := StaggerTableLayout.resultMemory0 s.memory (selectedWords s i), activeWords := DenseScheduleTemplate.loadedActiveWords s (UInt256.ofNat (messagePointer i))} := by
   unfold scheduledState; rw [if_neg hh]
 
 theorem scheduled_active (s : State) (input : ByteArray) (i : Nat)
-    (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input) (ctx : Context s input i) :
-    35 ≤ (scheduledState s i).activeWords.toNat := by
+    (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input) (ctx : Context s input) :
+    37 ≤ (scheduledState s i).activeWords.toNat := by
   by_cases hh : s.executionEnv.calldata.size = DriverTrace.blockOffset i
   · rw [scheduledState_hit s i hh]; exact ctx.active
   · rw [scheduledState_miss s i hh]
-    exact Stagger144Active.loaded_active_ge35 s (messagePointer i)
+    exact Stagger144Active.loaded_active_ge37 s (messagePointer i)
       (messagePointer_lower i) (messagePointer_bound input hfit i hi)
 
 theorem extracted_words (s : State) (input : ByteArray) (i : Nat)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input)
-    (ctx : Context s input i) (hne : input.size ≠ DriverTrace.blockOffset i) (k : Nat) (hk : k < 16) :
+    (ctx : Context s input) (hne : input.size ≠ DriverTrace.blockOffset i) (k : Nat) (hk : k < 16) :
     PairedScheduleData.extractedWord s.memory (messagePointer i) k = Word.ofUInt32 (blockWords input i k) := by
   rw [PairedScheduleData.extractedWord_eq_expectedWord _ _ _ hk
     (messagePointer_bound input hfit i hi)]
   change ScheduleCorrect.expectedWord s.memory (DriverTrace.messageOffsetWord i) k = _
-  rw [ctx.messageBlock i (Nat.le_refl i) hi hne k hk, blockWords_eq_readLE32 input i k hk]
+  rw [ctx.messageBlock i hi hne k hk, blockWords_eq_readLE32 input i k hk]
 
 theorem size_word_lt (input : ByteArray) (hfit : CalldataFits input) :
     (UInt256.ofNat input.size).toNat < 2 ^ 64 := by
@@ -175,7 +168,7 @@ theorem padJunk_small (input : ByteArray) (hfit : CalldataFits input) (k : Nat) 
 
 theorem ready (s : State) (input : ByteArray) (i : Nat)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input)
-    (ctx : Context s input i) :
+    (ctx : Context s input) :
     StaggerMessage.Ready (scheduledState s i).memory (blockWords input i) := by
   by_cases hh : s.executionEnv.calldata.size = DriverTrace.blockOffset i
   · rw [scheduledState_hit s i hh]
@@ -213,8 +206,6 @@ theorem ready (s : State) (input : ByteArray) (i : Nat)
           fun h15 => by simp only [padJunk, if_neg h14, if_neg h15]⟩)
   · rw [scheduledState_miss s i hh]
     rw [ctx.calldata] at hh
-    apply PoolInvariant.ready _ _ _ (ctx.clear s input i)
-    rw [PoolReference.reference_data_eq _ _ ctx.lowClear ctx.gapClear]
     have hsplit (k : Nat) := StaggerScratch.dirtyWord_split s.memory (messagePointer i) k
     refine StaggerMessage.ready_dual0 s.memory (selectedWords s i) (blockWords input i)
       (Nat.lt_of_div_eq_zero (by norm_num) ((hsplit 6).2.2.2 (by decide))) ?_
@@ -241,7 +232,7 @@ theorem scheduled_word_above (s : State) (i address : Nat) (ha : 1120 ≤ addres
     change MachineState.readWord (StaggerTablePad.padRealResult s.memory _) address = _
     exact StaggerTablePad.read_padRealResult_outside _ _ _ (by omega)
   · rw [scheduledState_miss s i hh]
-    exact PoolInvariant.read_result_outside false _ _ _ address (by omega)
+    exact StaggerTableLayout.read_resultMemory0_outside _ _ _ (by omega)
 
 theorem scheduled_env (s : State) (i : Nat) :
     (scheduledState s i).executionEnv = s.executionEnv := by
@@ -273,7 +264,7 @@ theorem dirtyWords_bound (memory : ByteArray) (p i : Nat) :
 /-- Preservation belongs to the existing scheduled-state model, so one generic
 lemma supplies all thirteen gap ranges after both ordinary and pad-only blocks. -/
 theorem scheduled_gapClear (s : State) (input : ByteArray) (i : Nat)
-    (hfit : CalldataFits input) (ctx : Context s input i) :
+    (hfit : CalldataFits input) (ctx : Context s input) :
     GapClear (scheduledState s i).memory := by
   by_cases hh : s.executionEnv.calldata.size = DriverTrace.blockOffset i
   · rw [scheduledState_hit s i hh]
@@ -291,31 +282,22 @@ theorem scheduled_gapClear (s : State) (input : ByteArray) (i : Nat)
     rw [hagree.2 (18 * j + k) (by have := lowerPairSlots_bounds j hj; omega)]
     exact hmodel j hj k hk hk'
   · rw [scheduledState_miss s i hh]
-    exact PoolInvariant.clear_gap _ (PoolFacts.result_clear _ _ _ (ctx.clear s input i))
-
-theorem scheduled_extraClear (s : State) (input : ByteArray) (i : Nat)
-    (hfit : CalldataFits input) (ctx : Context s input i) :
-    PoolInvariant.ExtraClear (scheduledState s i).memory := by
-  by_cases hh : s.executionEnv.calldata.size = DriverTrace.blockOffset i
-  · rw [scheduledState_hit s i hh]
-    exact PoolPadInvariant.extra_clear _ _
-      (by rw [ctx.calldata]; exact size_word_lt input hfit) ctx.lowClear
-  · rw [scheduledState_miss s i hh]
-    exact PoolInvariant.clear_extra _ (PoolFacts.result_clear _ _ _ (ctx.clear s input i))
+    exact resultMemory0_gapClear s.memory _
+      (fun k _ => dirtyWords_bound s.memory (messagePointer i) k)
 
 theorem Context.scheduled (s : State) (input : ByteArray) (i : Nat)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input)
-    (ctx : Context s input i) : Context (scheduledState s i) input (i + 1) := by
+    (ctx : Context s input) : Context (scheduledState s i) input := by
   have hm := scheduled_active_mono s input i hfit hi
-  refine ⟨?_, ctx.active.trans hm, ?_, ?_, ctx.separated, ?_, scheduled_gapClear s input i hfit ctx, scheduled_extraClear s input i hfit ctx⟩
+  refine ⟨?_, ctx.active.trans hm, ?_, ?_, ctx.separated, ?_, scheduled_gapClear s input i hfit ctx⟩
   · rw [scheduled_env]; exact ctx.calldata
   · intro j hj hne; exact (ctx.allocated j hj hne).trans hm
-  · intro j hnext hj hne k hk
+  · intro j hj hne k hk
     have hw := scheduled_word_above s i
-      (Schedule.loadOffsetWord (DriverTrace.messageOffsetWord j) k).toNat (by have hsep := ctx.separated j hj k hk; omega)
+      (Schedule.loadOffsetWord (DriverTrace.messageOffsetWord j) k).toNat (ctx.separated j hj k hk)
     unfold ScheduleCorrect.expectedWord Schedule.readLEWord
     rw [hw]
-    exact ctx.messageBlock j (by omega) hj hne k hk
+    exact ctx.messageBlock j hj hne k hk
   · by_cases hh : s.executionEnv.calldata.size = DriverTrace.blockOffset i
     · rw [scheduledState_hit s i hh]
       change (MachineState.readWord (StaggerTablePad.padRealResult s.memory _) 0).toNat % 2 ^ 144 < _
@@ -332,7 +314,17 @@ theorem Context.scheduled (s : State) (input : ByteArray) (i : Nat)
         Word.ofUInt32_toNat]
       exact (blockWords input i _).toBitVec.isLt
     · rw [scheduledState_miss s i hh]
-      exact PoolInvariant.clear_low _ (PoolFacts.result_clear _ _ _ (ctx.clear s input i))
+      have hsplit := StaggerScratch.dirtyWord_split s.memory (messagePointer i) StaggerTableLayout.slots[0]!
+      have he := PairedScheduleData.extractedWord_bound s.memory (messagePointer i) StaggerTableLayout.slots[0]!
+      have h0 := hsplit.2.2.2 (by decide)
+      have hb6 : (selectedWords s i 6).toNat < 2 ^ 32 := by
+        have := StaggerScratch.dirtyWord_split s.memory (messagePointer i) 6
+        exact Nat.lt_of_div_eq_zero (by norm_num) (this.2.2.2 (by decide))
+      change (MachineState.readWord
+        (StaggerTableLayout.resultMemory0 s.memory (selectedWords s i)) 0).toNat % 2 ^ 144 < _
+      rw [StaggerTableLayout.read_zero0, StaggerTableLayout.dualLane_toNat _ hb6,
+        Nat.mul_add_mod, Nat.mod_eq_of_lt (Nat.lt_trans hb6 (by norm_num))]
+      exact hb6
 
 theorem calldata_lt_uint256 (input : ByteArray) (hfit : CalldataFits input) :
     input.size < 2^256 := by
@@ -351,14 +343,14 @@ theorem blockOffsetWord_toNat (input : ByteArray) (hfit : CalldataFits input)
   rw [DriverTrace.blockOffsetWord, Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
 
 theorem scheduled_active_eq (s : State) (input : ByteArray) (i : Nat)
-    (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input) (ctx : Context s input i) :
+    (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input) (ctx : Context s input) :
     (scheduledState s i).activeWords = s.activeWords := by
   by_cases hh : s.executionEnv.calldata.size = DriverTrace.blockOffset i
   · rw [scheduledState_hit s i hh]
   · rw [scheduledState_miss s i hh]
     rw [ctx.calldata] at hh
-    exact PairTableActive.loaded_active_eq_of_ceil_allocated s _
-      (messagePointer_bound input hfit i hi) (ctx.allocated i hi hh)
+    exact PairTableActive.loaded_active_eq_of_allocated s _
+      (messagePointer_bound input hfit i hi) (messagePointer_aligned i) (ctx.allocated i hi hh)
 
 theorem scheduled_memory_calldata (s : State) (i : Nat)
     (hhit : s.executionEnv.calldata.size = DriverTrace.blockOffset i) :
