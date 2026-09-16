@@ -24,19 +24,19 @@ def isFour (n : Nat) : UInt256 :=
 
 /-- First-loop entry of the multiply rows (frame slot `ent`): the setup computes
 `0x0d34 + 14 * (s32 &&& 128)`: for eight limbs `s32 = 256`, the mask is zero and the
-entry is the shared k1 JUMPDEST 3387; for four limbs `s32 = 128`, adding `14*128 = 1792`
-gives 5179, the entry of the private ladder copy that keeps its own tail jump. -/
+entry is the shared k1 JUMPDEST 3380; for four limbs `s32 = 128`, adding `14*128 = 1792`
+gives 5172, the entry of the private ladder copy that keeps its own tail jump. -/
 def l1Target (n : Nat) : UInt256 :=
-  UInt256.ofNat 3387 + UInt256.ofNat 1792 * isFour n
+  UInt256.ofNat 3380 + UInt256.ofNat 1792 * isFour n
 
 /-- Second-loop entry (`ent + 0x12b`), fixed for the whole kernel call. -/
 def l2Target (n : Nat) : UInt256 :=
-  UInt256.ofNat 3666 + UInt256.ofNat 1792 * isFour n
+  UInt256.ofNat 3668 + UInt256.ofNat 1792 * isFour n
 
-@[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 5179 := by decide
-@[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 3387 := by decide
-@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 5458 := by decide
-@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 3666 := by decide
+@[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 5172 := by decide
+@[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 3380 := by decide
+@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 5460 := by decide
+@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 3668 := by decide
 
 /-! ## Row frames
 
@@ -44,7 +44,7 @@ The kernel keeps, below the per-step words, the row frame
 `[pbi, hd, pb - 32, ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest`
 (`pdst, ret, rest` are generic; the multiply instantiates them with
 `inv, m0, tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest`).
-`hd` is the row head the tail returns to (`JUMPI` via `DUP3`; 4289 for the multiply,
+`hd` is the row head the tail returns to (`JUMPI` via `DUP3`; 4261 for the multiply,
 the `sq_row` pc 2464 for the square) and `ent` is the first-loop entry
 (`l1Target n` for the multiply; the square rows advance it by 38 per row). -/
 

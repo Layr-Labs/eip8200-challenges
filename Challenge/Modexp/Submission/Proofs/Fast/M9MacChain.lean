@@ -21,7 +21,7 @@ set_option warningAsError true
 literal so that this module does not import `ShiftModel` (whose closure is `Exp`).
 
 ## Assumed from the tree (unchanged by the port), beyond `M9MacBlocks` and `M9MacRun`
-* `Challenge.Modexp.submissionBytecode_size : submissionBytecode.size = 5165` (`Submission/Bytecode.lean`).
+* `Challenge.Modexp.submissionBytecode_size : submissionBytecode.size = 5137` (`Submission/Bytecode.lean`).
 * `Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBinding.Environment` and `Block.steps`.
 * `Challenge.EvmProof.GasSteps` with `.refl`, `.trans`, `.cast`.
 * `Challenge.Modexp.Submission.Proofs.Fast.SquareModel.l1Run`, `l1Run_succ`, `l1Step_eq_l1Run`
@@ -63,11 +63,7 @@ def entryPC : Nat → Nat
 
 /-! ## One block -/
 
-/-- Block `b` (`b < 8`) performs limb step `j = b + n - 8` of width `n` on any MAC state.
-
-Block 0 alone runs the `PUSH0` schedule, so it alone needs its incoming carry to be zero;
-`hcarry` is vacuous for every other `b`.  The chain below discharges it because block 0 is only
-ever entered from the E6 entry, which sets the carry to the literal zero. -/
+/-- Block `b` (`b < 8`) performs limb step `j = b + n - 8` of width `n` on any MAC state. -/
 def gasSteps_block (b : Nat) (hb : b < 8) (s : State) (m : MacState) (bi : UInt256)
     (n j : Nat) (rest : List UInt256) (hrest : rest.length ≤ 1014)
     (hrun : s.halt = .Running)
@@ -75,16 +71,15 @@ def gasSteps_block (b : Nat) (hb : b < 8) (s : State) (m : MacState) (bi : UInt2
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 88 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hjb : j + 8 = b + n)
-    (hcarry : b = 0 → m.carry = UInt256.ofNat 0) :
+    (hact : 88 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hjb : j + 8 = b + n) :
     Challenge.EvmProof.GasSteps
       (chainState s (UInt256.ofNat (startPC b)) m bi rest)
       (chainState s (UInt256.ofNat (startPC (b + 1))) (SquareModel.l1StepOn m bi 1280 n j) bi rest) := by
   interval_cases b
-  · have h := run_head_zero s (UInt256.ofNat 2682) m bi 1280 n j 1504 2336
+  · have h := run_head s (UInt256.ofNat 2682) m bi 1280 n j 1504 2336
       (by rw [show n - 1 - j = 7 from by omega]; decide)
       (by rw [show n - 1 - j = 7 from by omega]; decide)
-      rest hrest hact (by omega) hn (by omega) (hcarry rfl)
+      rest hrest hact (by omega) hn (by omega)
     simp only [Challenge.EvmProof.Word.ofNat_add_mod, Nat.reduceAdd] at h
     show Challenge.EvmProof.GasSteps (chainState s (UInt256.ofNat 2682) m bi rest)
       (chainState s (UInt256.ofNat 2719) (SquareModel.l1StepOn m bi 1280 n j) bi rest)
@@ -175,19 +170,16 @@ def gasSteps_run : (m b : Nat) → b + m = 8 →
     Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false →
     88 ≤ s.activeWords.toNat → n ≤ 8 → j + 8 = b + n →
-    (b = 0 → q.carry = UInt256.ofNat 0) →
     Challenge.EvmProof.GasSteps
       (chainState s (UInt256.ofNat (startPC b)) q bi rest)
       (chainState s (UInt256.ofNat 2972) (SquareModel.l1Run q bi 1280 n j m) bi rest)
-  | 0, b, hbm, s, q, bi, n, j, rest, _, _, _, _, _, _, _, _, _ => by
+  | 0, b, hbm, s, q, bi, n, j, rest, _, _, _, _, _, _, _, _ => by
       obtain rfl : b = 8 := by omega
       exact Challenge.EvmProof.GasSteps.refl _
-  | m + 1, b, hbm, s, q, bi, n, j, rest, hrest, hrun, hcode, hfork, hnp, hact, hn, hjb,
-      hcarry => by
+  | m + 1, b, hbm, s, q, bi, n, j, rest, hrest, hrun, hcode, hfork, hnp, hact, hn, hjb => by
       have h1 := gasSteps_block b (by omega) s q bi n j rest hrest hrun hcode hfork hnp hact hn hjb
-        hcarry
       have h2 := gasSteps_run m (b + 1) (by omega) s (SquareModel.l1StepOn q bi 1280 n j) bi n (j + 1)
-        rest hrest hrun hcode hfork hnp hact hn (by omega) (fun h => absurd h (by omega))
+        rest hrest hrun hcode hfork hnp hact hn (by omega)
       rw [← l1Run_succ_left] at h2
       exact h1.trans h2
 
@@ -221,14 +213,14 @@ def gasSteps_chain (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArray)
   if h4 : n = 4 then by
     subst h4
     exact ((gasSteps_run 4 4 rfl s ⟨um, UInt256.ofNat 0⟩ q 4 0 rest hrest hrun hcode hfork hnp hact
-        (by decide) rfl (fun _ => rfl)).trans
+        (by decide) rfl).trans
       (gasSteps_exit s _ q rest hrest hrun hcode hfork hnp)).cast rfl
       (by rw [SquareModel.l1Step_eq_l1Run])
   else by
     have h8 : n = 8 := by omega
     subst h8
     exact ((gasSteps_run 8 0 rfl s ⟨um, UInt256.ofNat 0⟩ q 8 0 rest hrest hrun hcode hfork hnp hact
-        (by decide) rfl (fun _ => rfl)).trans
+        (by decide) rfl).trans
       (gasSteps_exit s _ q rest hrest hrun hcode hfork hnp)).cast rfl
       (by rw [SquareModel.l1Step_eq_l1Run])
 
