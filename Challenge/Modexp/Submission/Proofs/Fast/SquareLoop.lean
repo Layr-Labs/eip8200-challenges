@@ -1,11 +1,10 @@
 import Challenge.Modexp.Submission.Proofs.Fast.LazySquareMemory
-import Challenge.Modexp.Submission.Proofs.Fast.TnM128SquareFullSteps
-import Challenge.Modexp.Submission.Proofs.Fast.TnM128Again
-import Challenge.Modexp.Submission.Proofs.Fast.TnM128GlobalBinding
+import Challenge.Modexp.Submission.Proofs.Fast.R8Rows
 import Challenge.Modexp.Submission.Proofs.Fast.FusedProductTrace
 import Challenge.Modexp.Submission.Proofs.Fast.FusedMemory
 import Challenge.Modexp.Submission.Proofs.Fast.SquareLoopMem
 import Challenge.Modexp.Submission.Proofs.Fast.SquareLoopRuns
+import Challenge.Modexp.Submission.Proofs.Fast.SquareLoopAgain
 import Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch
 import Challenge.Modexp.Submission.Proofs.Fast.SquareStagedEntry
 import Challenge.Modexp.Submission.Proofs.Fast.R4Loop
@@ -15,8 +14,6 @@ import Challenge.Modexp.Submission.Proofs.Fast.R4Trace
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
-set_option linter.unusedSimpArgs false
-noncomputable section
 
 /-!
 # The in-kernel squaring loop: `k` squares in one call
@@ -25,7 +22,7 @@ For `n ∈ {4, 8}` the caller stores the number of squares in memory word 2624 a
 kernel once.  Each round runs the `n` square rows, and `sq_exit` decrements the counter:
 while it stays non-zero the conditional subtraction runs as a subroutine and `again`
 rebuilds the row-0 state for the next square; on zero the frame's `ret` slot is rewritten to
-`after_sq` (3298) and the call leaves through the ordinary exit.
+`after_sq` (3360) and the call leaves through the ordinary exit.
 
 `gasSteps_squareLoop` is the whole call; `SquareLoopMem.sqLoopMem` is its memory and
 `SquareLoopMem.sqLoopMem_represents` its value (`k` Montgomery squares).
@@ -37,7 +34,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro CiosCached SquareModel SquareResult SquareRow SquareRows
-open SquareLoopBlocks StagedOperand CarryRowModel CiosCachedMidMemory CiosCachedMacCore
+open SquareLoopBlocks StagedOperand CarryRowModel CiosCachedMidMemory
 
 /-! The memory model and its caller-facing lemmas live in `SquareLoopMem`; they are
 re-exported here so that the caller side only needs `SquareLoop`. -/
@@ -55,7 +52,7 @@ def rowZero (s : State) (mem : ByteArray) (n : Nat) : ByteArray :=
 /-- The specialized first eight-limb row keeps the ordinary frame and changes only its entry PC. -/
 def rowZeroState (s : State) (a0 : UInt256) (M0 : ByteArray) (n : Nat)
     (tl inv m0 m96 m64 m32 pdst ret : UInt256) (rest : List UInt256) : State :=
-  { rowState s a0 M0 n tl inv m0 m96 m64 m32 pdst ret rest 0 with pc := UInt256.ofNat 4917 }
+  { rowState s a0 M0 n tl inv m0 m96 m64 m32 pdst ret rest 0 with pc := UInt256.ofNat 4889 }
 
 theorem rowZero_eq_input (s : State) (mem : ByteArray) (n : Nat) (hn : n = 4 ∨ n = 8)
     (hguard : MachineState.readWord mem 2720 ≠ UInt256.ofNat 1) :
@@ -232,25 +229,6 @@ def gasSteps_csubRound (s : State) (M : ByteArray) (p c a mm : Nat)
       exact SquareLoopMem.tn_le_one s M p a mm hn32 hfast h.arep h.mrep h.mpos h.minv') hfast).cast rfl
     (by rw [sqRound_eq])
 
-theorem sqLast_eight (s : State) (M : ByteArray) :
-    sqLast (rowZero s M 8) 8 = sqX M 8 7 := by
-  change MachineState.readWord (sqRowsCarry (mpZeroed s M 8) 8 7) (aAddr 8 7) = _
-  rw [readWord_sqRowsCarry_far _ 8 (aAddr 8 7) (Or.inr (by decide)) 7 (by decide),
-    StagedMonpro.readWord_mpZeroed s M 8 (aAddr 8 7) (by decide) (Or.inr (by decide))]
-  rfl
-
-theorem rows128 (s : State) (M : ByteArray) :
-    MachineState.readWord (sqRowsCarry (rowZero s M 8) 8 8) 128 =
-      MachineState.readWord M 128 := by
-  rw [readWord_sqRowsCarry _ 8 128 (by decide) (Or.inl (by decide)) 8 le_rfl,
-    read_rowZero s M 8 128 (by decide) (Or.inr rfl) (Or.inl (by decide))]
-
-theorem round128 (s : State) (M : ByteArray) (c : Nat) :
-    MachineState.readWord (SquareLoopMem.sqRound s 8 c M) 128 =
-      MachineState.readWord M 128 :=
-  SquareLoopMem.sqRound_readWord_outside s M 8 c 128 (by decide) (by decide) (Or.inr rfl)
-    (Or.inl (by decide)) (Or.inl (by decide)) (Or.inl (by decide)) (Or.inl (by decide))
-
 /-! ## One round -/
 
 /-- A round that is **not** the last: the rows, `sq_exit`'s decrement, the CSUB subroutine
@@ -264,7 +242,7 @@ def gasSteps_roundMore (s : State) (M : ByteArray) (p c a mm : Nat)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) (hn32 : p + 2 ≤ 8)
     (hfast : p + 2 = 4 ∨ p + 2 = 8)
-    (_hcds : s.executionEnv.calldata.size < 2 ^ 256)
+    (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hcpos : 0 < c) (hc16 : c + 1 ≤ 16)
     (hcount : MachineState.readWord M 2624 = UInt256.ofNat (c + 1))
     (h8 : p = 6) (hscr : R8RowZeroExact.ScratchZero M)
@@ -274,56 +252,48 @@ def gasSteps_roundMore (s : State) (M : ByteArray) (p c a mm : Nat)
         (UInt256.ofNat 512) ret rest)
       (rowZeroState s (sqLast (rowZero s M (p + 2)) (p + 2)) (SquareLoopMem.sqRound s (p + 2) c M) (p + 2)
         tl inv m0 m96 m64 m32 (UInt256.ofNat 512) ret rest) := by
-  subst p
-  have hcode' := hcode.trans TnM128GlobalBinding.bytecode_eq
-  let env := TnM128SquareSteps.environment s hcode' hfork hrun hnp
-  let tn := (TnM128SquareFullSteps.finalCache M).tn
-  let X := sqRowsCarry (rowZero s M 8) 8 8
-  let prev := sqX M 8 7
-  let retained := TnM128SquareExit.frameStack tn (MachineState.readWord X 128) 8
-    (UInt256.ofNat 2336) (UInt256.ofNat 3683) tl inv m0 m96 m64 m32 prev
-    (UInt256.ofNat 512) ret rest
-  have hc : TnCacheRowPreserves.Cached M 2368 8 tl inv m0 m96 m64 m32 :=
-    ⟨⟨h.tlv, h.invw.symm, h.m0w.symm, h.inverseGuard⟩,
-      ⟨h.m96w.symm, h.m64w.symm, h.m32w.symm⟩, h.minv', fun _ _ => rfl⟩
-  have g1 := TnM128SquareFullSteps.square_steps s env M a0 tl inv m0 m96 m64 m32
-    (UInt256.ofNat 512) ret rest (by omega) hact hc hscr
-  have hinput : TnM128SquareFirstSteps.input s M a0 tl inv m0 m96 m64 m32
-      (UInt256.ofNat 512) ret rest =
-      rowZeroState s a0 M 8 tl inv m0 m96 m64 m32 (UInt256.ofNat 512) ret rest := rfl
-  have hcountRows : MachineState.readWord X 2624 = UInt256.ofNat (c+1) := by
-    dsimp only [X]
-    rw [readWord_sqRowsCarry _ 8 2624 (by decide) (Or.inr (by decide)) 8 le_rfl,
-      read_rowZero s M 8 2624 (by decide) (Or.inr rfl) (Or.inr (by decide))]
+  have hcountRows : MachineState.readWord
+      (sqRowsCarry (rowZero s M (p + 2)) (p + 2) (p + 2)) 2624 = UInt256.ofNat (c + 1) := by
+    rw [readWord_sqRowsCarry _ (p + 2) 2624 hn32 (Or.inr (by omega)) (p + 2) le_rfl,
+      read_rowZero s M (p + 2) 2624 hn32 hfast (Or.inr (by omega))]
     exact hcount
-  have g2 := TnM128SquareExit.gasSteps_sqExitMore tn (MachineState.readWord X 128) s X 8 c
-    (UInt256.ofNat 2336) (UInt256.ofNat 3683) tl inv m0 m96 m64 m32 prev
-    (UInt256.ofNat 512) ret rest (by omega) hrun hcode' hfork hnp hact hcpos hc16 hcountRows
-  have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (UInt256.ofNat 4067).toNat = true := R4Hooks.jumpDestH2
-  have g3 := gasSteps_csubRound s M 6 c a mm (UInt256.ofNat 4067) retained
+  have hs32' : MachineState.readWord (SquareLoopMem.sqRound s (p + 2) c M) 2688 =
+      UInt256.ofNat (32 * (p + 2)) := by
+    rw [SquareLoopMem.sqRound_readWord_high s M (p + 2) c 2688 (by omega) hn32 hfast (by omega)]
+    exact h.s32
+  have g1 := R8Rows.gasSteps_rowsZeroWidth s a0 M (p + 2) tl inv m0 m96 m64 m32
+    (UInt256.ofNat 512) ret rest (by omega) hrun hcode hfork hnp hact (by omega) hscr
+    h.minv' ⟨h.tlv, h.invw.symm, h.m0w.symm, h.inverseGuard⟩
+    ⟨h.m96w.symm, h.m64w.symm, h.m32w.symm⟩ (fun _ _ => rfl)
+  have g2 := gasSteps_sqExitMore s (sqRowsCarry (rowZero s M (p + 2)) (p + 2) (p + 2)) (p + 2) c
+    (UInt256.ofNat (ptrAt (2368 + 32 * (p + 2) - 32) (p + 2)))
+    (UInt256.ofNat (sqEnt (p + 2) (p + 2))) tl inv m0 m96 m64 m32
+    (sqLast (rowZero s M (p + 2)) (p + 2)) (UInt256.ofNat 512) ret rest
+    (by omega) hrun hcode hfork hnp hact hcpos hc16 hcountRows
+  have hjumpH2 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
+      (UInt256.ofNat pcH2).toNat = true := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by decide)]
+    exact R4Hooks.jumpDestH2
+  have g4 := gasSteps_csubRound s M p c a mm (UInt256.ofNat pcH2)
+    (frameStack (p + 2) (UInt256.ofNat (ptrAt (2368 + 32 * (p + 2) - 32) (p + 2)))
+      (UInt256.ofNat (sqEnt (p + 2) (p + 2))) tl inv m0 m96 m64 m32
+      (sqLast (rowZero s M (p + 2)) (p + 2)) (UInt256.ofNat 512) ret rest)
     tl inv m0 m96 m64 m32
-    (by simp only [retained, TnM128SquareExit.frameStack, List.length_append, List.length_cons, List.length_nil]; omega)
-    hrun hcode hfork hnp hact hn32 hfast hjump h
-  have g4 := TnM128Again.steps s env (SquareLoopMem.sqRound s 8 c M) tn prev
-    tl inv m0 m96 m64 m32 (UInt256.ofNat 512) ret rest (by omega) h.tlv
-  have hi : TnM128Again.input s (SquareLoopMem.sqRound s 8 c M) tn prev
-      tl inv m0 m96 m64 m32 (UInt256.ofNat 512) ret rest =
-      { s with
-          pc := UInt256.ofNat 4067
-          stack := retained
-          memory := SquareLoopMem.sqRound s 8 c M } := by
-    simp only [TnM128Again.input, TnCacheFrameOps.frame, TnM128SquareExit.frameStack,
-      retained, X, rows128, round128, framed, List.cons_append, List.nil_append]
-  have ho : TnM128SquareFirstSteps.input s (SquareLoopMem.sqRound s 8 c M) prev
-      tl inv m0 m96 m64 m32 (UInt256.ofNat 512) ret rest =
-      rowZeroState s (sqLast (rowZero s M 8) 8) (SquareLoopMem.sqRound s 8 c M) 8
-        tl inv m0 m96 m64 m32 (UInt256.ofNat 512) ret rest := by
-    rw [sqLast_eight]; rfl
-  exact (((g1.cast hinput rfl).trans g2).trans g3).trans (g4.cast hi ho)
+    (by simp only [frameStack, List.length_append, List.length_cons, List.length_nil]; omega)
+    hrun hcode hfork hnp hact hn32 hfast hjumpH2 h
+  simp only [SquareLoopMem.roundDst] at g4
+  have g45 := R4Hooks.gasSteps_h2Fall s (SquareLoopMem.sqRound s (p + 2) c M)
+    (UInt256.ofNat (ptrAt (2368 + 32 * (p + 2) - 32) (p + 2)))
+    (UInt256.ofNat (sqEnt (p + 2) (p + 2))) tl inv m0 m96 m64 m32
+    (sqLast (rowZero s M (p + 2)) (p + 2)) (UInt256.ofNat 512) ret rest
+    (by omega) hrun hcode hfork hnp (p + 2) (by omega)
+  have g5 := gasSteps_again s (SquareLoopMem.sqRound s (p + 2) c M) (p + 2) tl inv m0 m96 m64 m32
+    (sqLast (rowZero s M (p + 2)) (p + 2)) (UInt256.ofNat 512) ret rest
+    (by omega) hrun hcode hfork hnp hact hfast hcds hs32' R8RowZero.jumpDest
+  exact ((((g1.trans g2).trans g4).trans g45).trans g5)
 
 /-- The **last** round: the rows, `sq_exit`'s decrement to zero, the `ret` rewrite, the
-frame drop and the CSUB, returning to `after_sq` (3298). -/
+frame drop and the CSUB, returning to `after_sq` (3360). -/
 def gasSteps_roundLast (s : State) (M : ByteArray) (p a mm : Nat)
     (a0 tl inv m0 m96 m64 m32 ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hrun : s.halt = .Running)
@@ -342,57 +312,47 @@ def gasSteps_roundLast (s : State) (M : ByteArray) (p a mm : Nat)
         (UInt256.ofNat 512) ret rest)
       { s with pc := UInt256.ofNat 1047, stack := rest,
                memory := StagedProduct.memory s (SquareLoopMem.sqRound s (p + 2) 0 M) (p+2) } := by
-  subst p
-  have hcode' := hcode.trans TnM128GlobalBinding.bytecode_eq
-  let env := TnM128SquareSteps.environment s hcode' hfork hrun hnp
-  let tn := (TnM128SquareFullSteps.finalCache M).tn
-  let X := sqRowsCarry (rowZero s M 8) 8 8
-  let prev := sqX M 8 7
-  let retained := TnM128SquareExit.frameStack tn (MachineState.readWord X 128) 8
-    (UInt256.ofNat 2336) (UInt256.ofNat 3683) tl inv m0 m96 m64 m32 prev
-    (UInt256.ofNat 512) ret rest
-  have hc : TnCacheRowPreserves.Cached M 2368 8 tl inv m0 m96 m64 m32 :=
-    ⟨⟨h.tlv, h.invw.symm, h.m0w.symm, h.inverseGuard⟩,
-      ⟨h.m96w.symm, h.m64w.symm, h.m32w.symm⟩, h.minv', fun _ _ => rfl⟩
-  have g1 := TnM128SquareFullSteps.square_steps s env M a0 tl inv m0 m96 m64 m32
-    (UInt256.ofNat 512) ret rest (by omega) hact hc hscr
-  have hinput : TnM128SquareFirstSteps.input s M a0 tl inv m0 m96 m64 m32
-      (UInt256.ofNat 512) ret rest =
-      rowZeroState s a0 M 8 tl inv m0 m96 m64 m32 (UInt256.ofNat 512) ret rest := rfl
-  have hcountRows : MachineState.readWord X 2624 = UInt256.ofNat 1 := by
-    dsimp only [X]
-    rw [readWord_sqRowsCarry _ 8 2624 (by decide) (Or.inr (by decide)) 8 le_rfl,
-      read_rowZero s M 8 2624 (by decide) (Or.inr rfl) (Or.inr (by decide))]
+  have hcountRows : MachineState.readWord
+      (sqRowsCarry (rowZero s M (p + 2)) (p + 2) (p + 2)) 2624 = UInt256.ofNat 1 := by
+    rw [readWord_sqRowsCarry _ (p + 2) 2624 hn32 (Or.inr (by omega)) (p + 2) le_rfl,
+      read_rowZero s M (p + 2) 2624 hn32 hfast (Or.inr (by omega))]
     exact hcount
-  have g2 := TnM128SquareExit.gasSteps_sqExitLast tn (MachineState.readWord X 128) s X 8
-    (UInt256.ofNat 2336) (UInt256.ofNat 3683) tl inv m0 m96 m64 m32 prev
-    (UInt256.ofNat 512) ret rest (by omega) hrun hcode' hfork hnp hact hcountRows
-  have g3 := TnM128SquareExit.gasSteps_last tn (MachineState.readWord X 128) s (countMem X 0) 8
-    (UInt256.ofNat 2336) (UInt256.ofNat 3683) tl inv m0 m96 m64 m32 prev
-    (UInt256.ofNat 512) ret rest (by omega) hrun hcode' hfork hnp
+  have g1 := R8Rows.gasSteps_rowsZeroWidth s a0 M (p + 2) tl inv m0 m96 m64 m32
+    (UInt256.ofNat 512) ret rest (by omega) hrun hcode hfork hnp hact (by omega) hscr
+    h.minv' ⟨h.tlv, h.invw.symm, h.m0w.symm, h.inverseGuard⟩
+    ⟨h.m96w.symm, h.m64w.symm, h.m32w.symm⟩ (fun _ _ => rfl)
+  have g2 := gasSteps_sqExitLast s (sqRowsCarry (rowZero s M (p + 2)) (p + 2) (p + 2)) (p + 2)
+    (UInt256.ofNat (ptrAt (2368 + 32 * (p + 2) - 32) (p + 2)))
+    (UInt256.ofNat (sqEnt (p + 2) (p + 2))) tl inv m0 m96 m64 m32
+    (sqLast (rowZero s M (p + 2)) (p + 2)) (UInt256.ofNat 512) ret rest
+    (by omega) hrun hcode hfork hnp hact hcountRows
+  have g3 := gasSteps_last s (countMem (sqRowsCarry (rowZero s M (p + 2)) (p + 2) (p + 2)) 0)
+    (p + 2) (UInt256.ofNat (ptrAt (2368 + 32 * (p + 2) - 32) (p + 2)))
+    (UInt256.ofNat (sqEnt (p + 2) (p + 2))) tl inv m0 m96 m64 m32
+    (sqLast (rowZero s M (p + 2)) (p + 2)) (UInt256.ofNat 512) ret rest
+    (by omega) hrun hcode hfork hnp
+  let retained := frameStack (p+2)
+    (UInt256.ofNat (ptrAt (2368+32*(p+2)-32) (p+2)))
+    (UInt256.ofNat (sqEnt (p+2) (p+2))) tl inv m0 m96 m64 m32
+    (sqLast (rowZero s M (p+2)) (p+2)) (UInt256.ofNat 512) ret rest
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (UInt256.ofNat 3298).toNat = true := by
-    exact Artifact.isValidJumpDest_index 2447 (by rfl)
-  have g4 := gasSteps_csubRound s M 6 0 a mm (UInt256.ofNat 3298) retained tl inv m0 m96 m64 m32
-    (by simp only [retained, TnM128SquareExit.frameStack, List.length_append, List.length_cons, List.length_nil]; omega)
+      (UInt256.ofNat 3300).toNat = true := by
+    change Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3300 = true
+    exact Artifact.isValidJumpDest_index 2448 (by rfl)
+  have g4 := gasSteps_csubRound s M p 0 a mm (UInt256.ofNat 3300) retained tl inv m0 m96 m64 m32
+    (by simp only [retained, frameStack, List.length_append, List.length_cons, List.length_nil]; omega)
     hrun hcode hfork hnp hact hn32 hfast hjump h
   have hp := h.round 0 hn32 hfast hodd h.mpos
-  have g5 := FusedProductTrace.gasSteps_product tn s (SquareLoopMem.sqRound s 8 0 M) 6
-    (SquareLoopMem.sqRoundValue s 8 0 M mm) mm
-    (UInt256.ofNat 2336) (UInt256.ofNat 3683) tl inv m0 m96 m64 m32 prev
-    (UInt256.ofNat 512) ret rest (by omega) hfast hrun hcode hfork hnp hact hcds hp.minv'
+  have g5 := FusedProductTrace.gasSteps_product s (SquareLoopMem.sqRound s (p+2) 0 M) p
+    (SquareLoopMem.sqRoundValue s (p+2) 0 M mm) mm
+    (UInt256.ofNat (ptrAt (2368+32*(p+2)-32) (p+2)))
+    (UInt256.ofNat (sqEnt (p+2) (p+2))) tl inv m0 m96 m64 m32
+    (sqLast (rowZero s M (p+2)) (p+2)) (UInt256.ofNat 512) ret rest
+    (by omega) hfast hrun hcode hfork hnp hact hcds hp.minv'
     ⟨hp.tlv, hp.invw.symm, hp.m0w.symm, hp.inverseGuard⟩
     ⟨hp.m96w.symm, hp.m64w.symm, hp.m32w.symm⟩
     hp.arep hp.mrep hp.alt hp.mpos hp.ml (hp.tlw.trans hp.tlv) hp.s32
-  have hi : TnM128SquareExit.frameAt tn (MachineState.readWord (SquareLoopMem.sqRound s 8 0 M) 128)
-      3298 s (SquareLoopMem.sqRound s 8 0 M) 8 (UInt256.ofNat 2336) (UInt256.ofNat 3683)
-      tl inv m0 m96 m64 m32 prev (UInt256.ofNat 512) ret rest =
-      { s with
-          pc := UInt256.ofNat 3298
-          stack := retained
-          memory := SquareLoopMem.sqRound s 8 0 M } := by
-    simp only [TnM128SquareExit.frameAt, retained, X, rows128, round128, framed]
-  exact ((((g1.cast hinput rfl).trans g2).trans g3).trans g4).trans (g5.cast hi rfl)
+  exact ((((g1.trans g2).trans g3).trans g4).trans g5)
 
 /-! ## The loop -/
 
@@ -505,15 +465,16 @@ def gasSteps_r4Frame (s : State) (M : ByteArray) (a mm : Nat)
       (frameAt R4Hooks.pcR4 s M 4 pbi ent tl inv m0 m96 m64 m32 aprev (UInt256.ofNat 512) ret rest)
       (frameAt pcSqExit s (R4Bridge.rows4 M) 4 pbi ent tl inv m0 m96 m64 m32 aprev
         (UInt256.ofNat 512) ret rest) := by
-  have g := R4Trace.gasSteps_r4 {s with memory := M} pbi (UInt256.ofNat 4093)
-    (UInt256.ofNat 2336) ent (UInt256.ofNat 0) allOnes (MachineState.readWord M 128)
-    inv m0 tl m96 m64 m32 (aprev :: UInt256.ofNat 512 :: ret :: rest)
-    (by simp only [List.length_cons]; omega) hcode hfork hrun hnp hact
-    CiosCachedMacCore.allOnes_value h.minv h.inverseGuard
+  have g : Challenge.EvmProof.GasSteps
+      (frameAt R4Hooks.pcR4 s M 4 pbi ent tl inv m0 m96 m64 m32 aprev (UInt256.ofNat 512) ret rest)
+      (frameAt pcSqExit s (R4Bridge.r4Mem M (R4Bridge.r4Final M allOnes m0 m64 m32 inv)) 4 pbi
+        ent tl inv m0 m96 m64 m32 aprev (UInt256.ofNat 512) ret rest) :=
+    R4Trace.gasSteps_r4 { s with memory := M } pbi (UInt256.ofNat 4065)
+      (UInt256.ofNat (2368 - 32)) ent negative32 allOnes (l2Target 4) inv m0 tl m96 m64 m32
+      (aprev :: UInt256.ofNat 512 :: ret :: rest) (by simp only [List.length_cons]; omega)
+      hcode hfork hrun hnp hact (by exact CiosCachedMacCore.allOnes_value) h.minv h.inverseGuard
   rw [rows4_eq_r4 s M a mm tl inv m0 m96 m64 m32 h] at g
-  simpa only [frameAt, frameStack, R4Hooks.pcR4, pcSqExit, List.cons_append, List.nil_append,
-    R4Bridge.rows4_readWord_outside M 128 (Or.inl (by decide))]
-    using g
+  exact g
 
 /-- The CSUB of an R4 round, on `countMem (rows4 M) c`. -/
 def gasSteps_r4Csub (s : State) (M : ByteArray) (a mm c dst : Nat) (ret : UInt256)
@@ -573,11 +534,11 @@ def gasSteps_r4More (s : State) (M : ByteArray) (c a mm : Nat)
     (UInt256.ofNat 512) ret rest (by omega) hrun hcode hfork hnp hact hcpos hc16
     (by rw [R4Bridge.rows4_readWord_outside M 2624 (Or.inr (by norm_num))]; exact hcount)
   have hjumpH2 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (UInt256.ofNat 4067).toNat = true := by
+      (UInt256.ofNat 4039).toNat = true := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by decide)]
     exact R4Hooks.jumpDestH2
-  have g3 := gasSteps_r4Csub s M a mm c 2368 (UInt256.ofNat 4067)
-    (frameStack (R4Bridge.rows4 M) 4 pbi ent tl inv m0 m96 m64 m32 aprev (UInt256.ofNat 512) ret rest)
+  have g3 := gasSteps_r4Csub s M a mm c 2368 (UInt256.ofNat 4039)
+    (frameStack 4 pbi ent tl inv m0 m96 m64 m32 aprev (UInt256.ofNat 512) ret rest)
     tl inv m0 m96 m64 m32
     (by simp only [frameStack, List.length_append, List.length_cons, List.length_nil]; omega)
     hrun hcode hfork hnp hact (by norm_num) hjumpH2 h
@@ -586,19 +547,8 @@ def gasSteps_r4More (s : State) (M : ByteArray) (c a mm : Nat)
     simp only [R4Loop.r4Round, SquareLoopMem.roundDst]
   rw [← hr] at g3
   have g4 := R4Hooks.gasSteps_h2Taken s (R4Loop.r4Round c M) pbi ent tl inv m0 m96 m64 m32 aprev
-    (UInt256.ofNat 512) ret rest (by omega) hrun hcode hfork hnp 4 rfl h.tlv
-  have hm128 := R4Loop.r4Round_readWord_outside M c 128 (Or.inl (by decide))
-    (Or.inl (by decide)) (Or.inl (by decide)) (Or.inl (by decide))
-  have hi : frameAt SquareLoopBlocks.pcH2 s (R4Loop.r4Round c M) 4 pbi ent tl inv m0 m96 m64 m32
-      aprev (UInt256.ofNat 512) ret rest =
-      { s with
-          pc := UInt256.ofNat 4067
-          memory := R4Loop.r4Round c M
-          stack := frameStack (R4Bridge.rows4 M) 4 pbi ent tl inv m0 m96 m64 m32 aprev
-            (UInt256.ofNat 512) ret rest } := by
-    simp only [frameAt, frameStack, SquareLoopBlocks.pcH2, hm128,
-      R4Bridge.rows4_readWord_outside M 128 (Or.inl (by decide))]
-  exact ((g1.trans g2).trans g3).trans (g4.cast hi rfl)
+    (UInt256.ofNat 512) ret rest (by omega) hrun hcode hfork hnp 4 rfl
+  exact ((g1.trans g2).trans g3).trans g4
 
 /-- The **last** R4 round: R4, `sq_exit`'s decrement to zero, `last`, the CSUB returning to the
 fused product, and the product itself. -/
@@ -625,11 +575,11 @@ def gasSteps_r4Last (s : State) (M : ByteArray) (a mm : Nat)
   have g3 := gasSteps_last s (countMem (R4Bridge.rows4 M) 0) 4 pbi ent tl inv m0 m96 m64 m32
     aprev (UInt256.ofNat 512) ret rest (by omega) hrun hcode hfork hnp
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (UInt256.ofNat 3298).toNat = true := by
-    change Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3298 = true
-    exact Artifact.isValidJumpDest_index 2447 (by rfl)
-  have g4 := gasSteps_r4Csub s M a mm 0 2368 (UInt256.ofNat 3298)
-    (frameStack (R4Bridge.rows4 M) 4 pbi ent tl inv m0 m96 m64 m32 aprev (UInt256.ofNat 512) ret rest)
+      (UInt256.ofNat 3300).toNat = true := by
+    change Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3300 = true
+    exact Artifact.isValidJumpDest_index 2448 (by rfl)
+  have g4 := gasSteps_r4Csub s M a mm 0 2368 (UInt256.ofNat 3300)
+    (frameStack 4 pbi ent tl inv m0 m96 m64 m32 aprev (UInt256.ofNat 512) ret rest)
     tl inv m0 m96 m64 m32
     (by simp only [frameStack, List.length_append, List.length_cons, List.length_nil]; omega)
     hrun hcode hfork hnp hact (by norm_num) hjump h
@@ -638,33 +588,13 @@ def gasSteps_r4Last (s : State) (M : ByteArray) (a mm : Nat)
     simp only [R4Loop.r4Round, SquareLoopMem.roundDst]
   rw [← hr] at g4
   have hp := h.round4 0 hodd h.mpos
-  have g5 := FusedProductTrace.gasSteps_product (UInt256.ofNat 0) s (R4Loop.r4Round 0 M) 2
+  have g5 := FusedProductTrace.gasSteps_product s (R4Loop.r4Round 0 M) 2
     (R4Loop.r4RoundValue M 0 mm) mm pbi ent tl inv m0 m96 m64 m32 aprev
     (UInt256.ofNat 512) ret rest (by omega) (Or.inl rfl) hrun hcode hfork hnp hact hcds hp.minv'
     ⟨hp.tlv, hp.invw.symm, hp.m0w.symm, hp.inverseGuard⟩
     ⟨hp.m96w.symm, hp.m64w.symm, hp.m32w.symm⟩
     hp.arep hp.mrep hp.alt hp.mpos hp.ml (hp.tlw.trans hp.tlv) hp.s32
-  have hm128 := R4Loop.r4Round_readWord_outside M 0 128 (Or.inl (by decide))
-    (Or.inl (by decide)) (Or.inl (by decide)) (Or.inl (by decide))
-  have g3' := g3.cast rfl (show lazyCsubState s (countMem (R4Bridge.rows4 M) 0)
-      (UInt256.ofNat 2368) (UInt256.ofNat 3298)
-      (frameStack (countMem (R4Bridge.rows4 M) 0) 4 pbi ent tl inv m0 m96 m64 m32 aprev
-        (UInt256.ofNat 512) ret rest) =
-      lazyCsubState s (countMem (R4Bridge.rows4 M) 0) (UInt256.ofNat 2368) (UInt256.ofNat 3298)
-      (frameStack (R4Bridge.rows4 M) 4 pbi ent tl inv m0 m96 m64 m32 aprev
-        (UInt256.ofNat 512) ret rest) by
-    rw [frameStack, readWord_countMem_disjoint _ 0 128 (Or.inl (by decide))]; rfl)
-  have hi : TnM128SquareExit.frameAt (UInt256.ofNat 0)
-      (MachineState.readWord (R4Loop.r4Round 0 M) 128) 3298 s (R4Loop.r4Round 0 M) 4
-      pbi ent tl inv m0 m96 m64 m32 aprev (UInt256.ofNat 512) ret rest =
-      { s with
-          pc := UInt256.ofNat 3298
-          memory := R4Loop.r4Round 0 M
-          stack := frameStack (R4Bridge.rows4 M) 4 pbi ent tl inv m0 m96 m64 m32 aprev
-            (UInt256.ofNat 512) ret rest } := by
-    simp only [TnM128SquareExit.frameAt, TnM128SquareExit.frameStack, frameStack, framed, hm128,
-      R4Bridge.rows4_readWord_outside M 128 (Or.inl (by decide))]
-  exact (((g1.trans g2).trans g3').trans g4).trans (g5.cast hi rfl)
+  exact (((g1.trans g2).trans g3).trans g4).trans g5
 
 /-- **`k` R4 squares**, from the first R4 entry, ending after the fused product. -/
 def gasSteps_loop4 (s : State) (mm : Nat) (tl inv m0 m96 m64 m32 ret : UInt256)
@@ -709,7 +639,7 @@ theorem l1Target_eq_sqEnt (n : Nat) (hn : n = 4 ∨ n = 8) :
 
 /-- **The looped square subroutine of the sqCP1mL artifact**: entered at the kernel's
 `common` block with the row head `sq_row` and the counter `k` in memory word 2624, it runs
-`k` Montgomery squares of the block at 2048 and returns to `after_sq` (3298). -/
+`k` Montgomery squares of the block at 2048 and returns to `after_sq` (3360). -/
 def gasSteps_squareLoop (s : State) (mem : ByteArray) (p a mm k : Nat)
     (ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 982)
     (hrun : s.halt = .Running)
@@ -729,7 +659,7 @@ def gasSteps_squareLoop (s : State) (mem : ByteArray) (p a mm k : Nat)
         (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0)
     (hguard : MachineState.readWord mem 2720 ≠ UInt256.ofNat 1) :
     Challenge.EvmProof.GasSteps
-      (Cios2Dispatch.commonState s mem 4394 512 512 (UInt256.ofNat 512) ret rest)
+      (Cios2Dispatch.commonState s mem 4366 512 512 (UInt256.ofNat 512) ret rest)
       { s with pc := UInt256.ofNat 1047, stack := rest,
                memory := FusedMemory.memory s (p+2) k mem } := by
   have hs (addr : Nat) (hd : addr + 32 ≤ 2048 ∨ 2624 ≤ addr) :
@@ -747,7 +677,7 @@ def gasSteps_squareLoop (s : State) (mem : ByteArray) (p a mm k : Nat)
     refine (Model.fastRepresents_congr (a := mem) ?_ mm).1 hm
     intro j hj
     rw [hs (0 + 32 * j) (Or.inl (by omega))]
-  have g1 := Cios2Dispatch.gasSteps_commonSetupInput s mem (UInt256.ofNat 4394) 512 512 (p + 2)
+  have g1 := Cios2Dispatch.gasSteps_commonSetupInput s mem (UInt256.ofNat 4366) 512 512 (p + 2)
     (UInt256.ofNat 512) ret rest (by omega) hrun hcode hfork hnp hact hfast (by omega)
     (by decide) (by omega) hcds hs32 hml SquareStagedEntry.jumpDest hguard
       (CiosInverseGuard.inverse_ne_zero _ _ hminv)
@@ -787,7 +717,7 @@ def gasSteps_squareLoop (s : State) (mem : ByteArray) (p a mm k : Nat)
       (MachineState.readWord mem (32 * (2 + 2) - 32)) (MachineState.readWord mem 96)
       (MachineState.readWord mem 64) (MachineState.readWord mem 32)
       (UInt256.ofNat (512 + 32 * (2 + 2) - 32)) (UInt256.ofNat 512) ret rest (by omega)
-      hrun hcode hfork hnp (2 + 2) rfl htl
+      hrun hcode hfork hnp (2 + 2) rfl
     have g4 := gasSteps_loop4 s mm (MachineState.readWord mem 2784)
       (MachineState.readWord mem 2720) (MachineState.readWord mem (32 * (2 + 2) - 32))
       (MachineState.readWord mem 96) (MachineState.readWord mem 64)
@@ -816,7 +746,7 @@ def gasSteps_squareLoop (s : State) (mem : ByteArray) (p a mm k : Nat)
       (MachineState.readWord mem (32 * (p + 2) - 32)) (MachineState.readWord mem 96)
       (MachineState.readWord mem 64) (MachineState.readWord mem 32)
       (UInt256.ofNat (512 + 32 * (p + 2) - 32)) (UInt256.ofNat 512) ret rest (by omega)
-      hrun hcode hfork hnp (p + 2) (by omega) (by simpa only [h6] using htl)
+      hrun hcode hfork hnp (p + 2) (by omega)
     have hcall : R4Loop.loopMem s (p + 2) k mem =
         SquareLoopMem.sqRunMem s (p + 2) k (rowZero s (stage mem 512 (p + 2)) (p + 2)) := by
       rw [rowZero, SquareLoopMem.sqRunMem_mpZeroed s (p + 2) k _ hk, R4Loop.loopMem,
