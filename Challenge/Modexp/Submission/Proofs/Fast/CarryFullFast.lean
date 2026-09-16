@@ -1,7 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CarryFullSpecializedFour
 import Challenge.Modexp.Submission.Proofs.Fast.CarryFullSpecializedEight
 import Challenge.Modexp.Submission.Proofs.Fast.CarryFullBase
-import Challenge.Modexp.Submission.Proofs.Fast.CarryRowLemmas
 import Challenge.Modexp.Submission.Proofs.Fast.CarryEntryLemmas
 
 set_option warningAsError true
@@ -48,6 +47,8 @@ Exactly the tree's module options (`maxRecDepth 40000`, `maxHeartbeats 4000000`)
 no axiom declaration, no `native_decide`.
 -/
 
+noncomputable section
+
 namespace Challenge.Modexp.Submission.Proofs.Fast.CarryFull
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
@@ -56,12 +57,11 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch
 open CiosCached CiosCachedMidMemory CarryIface
-open Challenge.Modexp.Submission.Proofs.Fast.CarryRows
 open CarryRowModel CarryResult StagedOperand
 
 /-- `gasSteps_toCsub` restricted to eligible widths: `mul entry` → the four- or eight-limb rows →
 the `CSUB` entry.  The `¬ eligible` branch (the generic `MONPRO` fallback) is gone. -/
-opaque gasSteps_toCsubFast (L : RowLemmas) (E : EntryLemmas) (s : State) (mem : ByteArray)
+opaque gasSteps_toCsubFast (E : EntryLemmas) (s : State) (mem : ByteArray)
     (pa pb n : Nat) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -70,7 +70,7 @@ opaque gasSteps_toCsubFast (L : RowLemmas) (E : EntryLemmas) (s : State) (mem : 
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) (hn32 : n ≤ 8)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 2048)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2816)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2048)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
@@ -85,15 +85,15 @@ opaque gasSteps_toCsubFast (L : RowLemmas) (E : EntryLemmas) (s : State) (mem : 
   rw [selectedRows, if_pos hprepared, inputMemory, if_pos he]
   by_cases hn4 : n = 4
   · subst n
-    exact gasSteps_specializedFour L E s mem pa pb pdst ret rest hcap hrun hcode
+    exact gasSteps_specializedFour E s mem pa pb pdst ret rest hcap hrun hcode
       hfork hnp hact hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv he.2
   · have hn8 : n = 8 := he.1.resolve_left hn4
     subst n
-    exact gasSteps_specializedEight L E s mem pa pb pdst ret rest hcap hrun hcode
+    exact gasSteps_specializedEight E s mem pa pb pdst ret rest hcap hrun hcode
       hfork hnp hact hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv he.2
 
 /-- `gasSteps_monproCsub` for eligible widths: through the rows and the final subtraction. -/
-opaque gasSteps_monproCsubFast (L : RowLemmas) (E : EntryLemmas) (s : State) (mem : ByteArray)
+opaque gasSteps_monproCsubFast (E : EntryLemmas) (s : State) (mem : ByteArray)
     (pa pb n : Nat) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -102,7 +102,7 @@ opaque gasSteps_monproCsubFast (L : RowLemmas) (E : EntryLemmas) (s : State) (me
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 2048)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2816)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2048)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
@@ -117,7 +117,7 @@ opaque gasSteps_monproCsubFast (L : RowLemmas) (E : EntryLemmas) (s : State) (me
       (dispatchState s mem pa pb pdst ret rest)
       (Csub.csReturnedState s (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n n pdst ret
         rest) :=
-  (gasSteps_toCsubFast L E s mem pa pb n pdst ret rest (by omega) hrun hcode hfork hnp hact
+  (gasSteps_toCsubFast E s mem pa pb n pdst ret rest (by omega) hrun hcode hfork hnp hact
       hn32 hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv he).trans
     (Csub.gasSteps_csub s (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n pdst ret rest
       (by omega) hcode hfork hrun hnp hact hn hn32 hjump
@@ -133,7 +133,7 @@ opaque gasSteps_monproCsubFast (L : RowLemmas) (E : EntryLemmas) (s : State) (me
         exact htn) he.1)
 
 /-- `gasSteps_monproFullOf` for eligible widths. -/
-opaque gasSteps_monproFullOfFast (L : RowLemmas) (E : EntryLemmas) (s : State) (mem : ByteArray)
+opaque gasSteps_monproFullOfFast (E : EntryLemmas) (s : State) (mem : ByteArray)
     (pa pb p : Nat) (a b mm : Nat) (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -161,7 +161,7 @@ opaque gasSteps_monproFullOfFast (L : RowLemmas) (E : EntryLemmas) (s : State) (
       (Csub.csReturnedState s
         (selectedRows (mpZeroed s (inputMemory mem pa (p+2)) (p + 2)) pa pb (p + 2) (p + 2)) (p + 2) (p + 2)
         pdst ret rest) :=
-  gasSteps_monproCsubFast L E s mem pa pb (p + 2) pdst ret rest (by omega) hrun hcode hfork hnp
+  gasSteps_monproCsubFast E s mem pa pb (p + 2) pdst ret rest (by omega) hrun hcode hfork hnp
     hact (by omega) hn32 hpa (by omega) hpb (by omega) hcds hs32 htl hml hminv hjump
     hdstFit
     (by
@@ -215,7 +215,7 @@ opaque gasSteps_monproFullFast (s : State) (mem : ByteArray) (pa pb p : Nat)
       (Csub.csReturnedState s
         (selectedRows (mpZeroed s (inputMemory mem pa (p+2)) (p + 2)) pa pb (p + 2) (p + 2)) (p + 2) (p + 2)
         pdst ret rest) :=
-  gasSteps_monproFullOfFast rowLemmas entryLemmas s mem pa pb p a b mm pdst ret rest hcap hrun hcode
+  gasSteps_monproFullOfFast entryLemmas s mem pa pb p a b mm pdst ret rest hcap hrun hcode
     hfork hnp hact hn32 hpa hpaFit hpb hpbFit hcds hs32 htl hml hjump hdstFit ha hb hm ham hmpos hminv he
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryFull

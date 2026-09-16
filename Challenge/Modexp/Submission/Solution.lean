@@ -11,8 +11,8 @@ set_option maxHeartbeats 5000000
 namespace Challenge.Modexp.Benchmark
 
 /-- Joins the fixed-width dispatch route to the fast multi-limb MODEXP
-implementation and the certified reference fallback. The submitted program
-starts with `PUSH2 5245; JUMP` into the concrete dispatch. -/
+implementation and the certified reference fallback. The fast kernel keeps its
+high carry and modulus word at offset 128 in the operand stack. -/
 theorem candidateFromWindow
     (route : Challenge.Modexp.Submission.Proofs.Bytecode.WindowRoute.Route) :
     Challenge.Modexp.Correct bytecode := by

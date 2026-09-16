@@ -15,11 +15,11 @@ memory word `0x2440 = 2624` and calls the kernel; from there the chain runs one
 of two ways, and `Chain` is what both of them hand to the final product:
 
 * `n ∈ {4, 8}`: the kernel keeps its row frame and performs all `count` squares
-  itself (`Exp.Subroutines.squareLoop`), returning once to `after_sq` (pc 3360)
+  itself (`Exp.Subroutines.squareLoop`), returning once to `after_sq` (pc 3367)
   with the pushed count still on the stack;
 * other widths: the kernel returns after every square
-  (`Exp.Subroutines.square`) and the caller's own loop at pc 3286 counts down,
-  falling through to pc 3360 with the count at `0`.
+  (`Exp.Subroutines.square`) and the caller's own loop at pc 3282 counts down,
+  falling through to pc 3367 with the count at `0`.
 
 The final mixed-domain multiplication is composed in `FixedDirectHitCorrect`.
 -/

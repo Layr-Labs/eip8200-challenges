@@ -52,7 +52,7 @@ def squareReturn (s : State) (mem : ByteArray)
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
-/-- `after_sq` (pc 3360), reached two ways with the same shape: the in-kernel
+/-- `after_sq` (pc 3367), reached two ways with the same shape: the in-kernel
 square loop rewrites the kernel frame's return slot to it (the square count is
 then still the one the caller pushed), and for the unaccelerated widths the
 caller's own loop falls through to it with the count decremented to `0`. -/
