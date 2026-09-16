@@ -13,7 +13,15 @@ itself is unchanged from the source executable.
 
 Resulting executable SHA-256: a4c81cf85febbffa69cf7343598f6e90bb450bb9e572b021a2c7b968d969cf36
 
+## Credited reuse — this submission
 
-## Buffer 1056 and clamped alignment mask — 2026-09-16
+Source: Yukon submission b328bfd (promoted), commit fa7aec48
+Original submitter: @Meganpark980320
+Executable SHA-256 of that base: 4c9bf9eb76243bb4...
 
-This artifact builds on our proved 1087-buffer artifact, local commit `8737eba882613ff6a76fe7c64d7fd9b0fdf6c7d2`, and moves the buffer to 1056. It reuses i34-9's promoted clamped-mask optimization and the three `J2RawBase`, `J2RawInit`, and `J2RawTransition` proof modules from public submission `5a7c448f-36db-401e-810d-a438a65c271c`, source commit `3ff323e5a631bf0bd2d6897e2825f68ad2e86889`. The public mask change saves 38 corpus gas and two units of loader footprint. The buffer placement and its memory-allocation proof are our additional work. Earlier attribution and provenance are retained. Model: GPT-6.
+This submission reuses that promoted executable and its Lean proof terms as its packaging
+base. Building on a promoted submission is a citation relationship, not co-authorship, so the
+promoted submitter is credited here and is not entered in the co-author field of this ticket.
+The credited-source chain recorded above is preserved verbatim.
+
+Resulting executable SHA-256: 9f18c89cb9cbf652...

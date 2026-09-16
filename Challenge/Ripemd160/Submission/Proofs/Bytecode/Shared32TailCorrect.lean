@@ -11,23 +11,23 @@ open Shared32Scratch Shared32Sites Paired144WordRound Shared32Start
 def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
     GasSteps (StackTail.append (Execution.atPC input 336) rho)
-      (atState (tableState input) 854 (frame ++ rho)) := by
+      (atState (tableState input) 884 (frame ++ rho)) := by
   have hfit : CalldataFits input := by change input.size < 2 ^ 64; rw [h32]; decide
   let s := PaddingTrace.padCopied input
   have e : Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
   have hframe : PaddingTrace.initialFrame input ++ rho = entryFrame ++ rho := by rw [entry_frame_eq input h32]
-  have hactive : s.activeWords = UInt256.ofNat 34 := copied_active input h32
+  have hactive : s.activeWords = UInt256.ofNat 36 := copied_active input h32
   have hsize : (frame ++ rho).length ≤ 900 := by simp only [List.length_append]; change 15 + rho.length ≤ 900; omega
   have hgap : PairStoreGap.GapClear s.memory := by
     rw [show s.memory = copiedMemory input from copied_memory input]
     exact copiedMemory_gapClear input
   have g0 := PaddingTail.gasSteps_prefix input hfit rho hcap
   have g1 : GasSteps (StackTail.append (PaddingTrace.padFramed input) rho)
-      (atState s 4695 (entryFrame ++ rho)) := by
+      (atState s 4705 (entryFrame ++ rho)) := by
     have ga := Shared32Alignment.gasSteps s e (PaddingTrace.initialFrame input ++ rho)
       (by rw [List.length_append, PaddingTrace.initialFrame_length]; omega) h32
     simpa only [PaddingTrace.padFramed, StackTail.append, hframe, atState, s] using ga
-  have g2 : GasSteps (atState s 4695 (entryFrame ++ rho)) (atState s 4696 (frame ++ rho)) := by
+  have g2 : GasSteps (atState s 4705 (entryFrame ++ rho)) (atState s 4706 (frame ++ rho)) := by
     exact StaggerPersistentStart.gasSteps_entry s (entryFrame ++ rho)
       (by simp only [entryFrame, StaggerPersistentFrame.frame, maskRho, List.length_append,
         List.length_cons, List.length_nil]; omega) e.run e.code e.fork e.np
@@ -64,7 +64,7 @@ private theorem serialize_append (s : State) (h : Compression.HashState)
 
 def gasSteps_core (s : State) (e : Env s) (input : ByteArray)
     (hcal : s.executionEnv.calldata = input) (h32 : input.size = 32)
-    (hactive : s.activeWords = UInt256.ofNat 35)
+    (hactive : s.activeWords = UInt256.ofNat 36)
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
     GasSteps (StackTail.append (Shared32Core.entryState s) rho)
       (StackTail.append (Shared32Core.resultState s) rho) := by
@@ -100,7 +100,7 @@ theorem correct (input : ByteArray) (h32 : input.size = 32)
   let s := Shared32Start.tableState input
   have e : Shared32Sites.Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
   have gs := gasSteps_start input h32 rho hcap
-  have gc := gasSteps_core s e input rfl h32 (Shared32Start.table_active input) rho hcap
+  have gc := gasSteps_core s e input rfl h32 (Shared32Start.copied_active input h32) rho hcap
   have trace := entryPrefix.trans (gs.trans gc)
   apply Shared32Correct.eval_of_initial_returned input _ trace rfl rfl
   exact Shared32Core.returned_spec s input h32 (Shared32Start.table_ready input h32)
