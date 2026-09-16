@@ -93,20 +93,20 @@ def macFusedPostProgram (tl ts : UInt256) : List Instr :=
 def macFusedProgram (tl ts : UInt256) : List Instr :=
   macProductProgram.take 6 ++ macFusedPostProgram tl ts
 
-/-- `macFusedPostProgram` with the incoming-carry `DUP4` **and the `ADD` that consumes it** both
-deleted: same byte length, two gas cheaper, and equivalent *only* on a frame whose incoming carry
-is already zero.  The `DUP4` reproduces the cell's incoming carry `c` and the `ADD` adds it to the
-low product word, so dropping the pair is sound exactly where `c = 0` — the row-head cell of a
-conversion chain, never a cell fed by a predecessor.  The two freed bytes are absorbed by widening
-the load's `PUSH2` to a `PUSH4` of the same value, so the cell still occupies 36 bytes and no pc
-after it moves. -/
+/-- `macFusedPostProgram` with the incoming-carry add specialized to a known zero.  The
+`DUP4` it replaces reproduces the cell's incoming carry `c`; after the preceding `DUP2` has
+already copied `lo`, the zero-carry path can preserve that copy with `PUSH0 POP` instead of
+adding zero.  The schedule is sound exactly where `c = 0` — the row-head cell of a conversion
+chain, never a cell fed by a predecessor. -/
 def macFusedPostZeroProgram (tl ts : UInt256) : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨2, by decide⟩),
    .op .GT,
    .op .SUB,
    .op (.Dup ⟨1, by decide⟩),
-   .push 4 tl,
+   .push 0 0,
+   .op .POP,
+   .push 2 tl,
    .op .MLOAD,
    .op (.Dup ⟨1, by decide⟩),
    .op .ADD,

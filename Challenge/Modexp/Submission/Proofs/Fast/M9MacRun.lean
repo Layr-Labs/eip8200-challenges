@@ -124,8 +124,8 @@ theorem run_head (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
   rw [hpc] at h
   exact h
 
-/-- One straight block on a MAC state whose incoming carry is *zero*, with `PUSH0` in place of the
-`DUP4` that would reproduce that carry.  Same conclusion as `run_block`. -/
+/-- One straight block on a MAC state whose incoming carry is *zero*, with the carry add replaced
+by the same-byte `PUSH0 POP` no-op after the existing `lo` copy.  Same conclusion as `run_block`. -/
 theorem run_block_zero (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
     (pa n j : Nat) (a t : UInt256)
     (ha : a.toNat = pa + 32 * (n - 1 - j)) (ht : t.toNat = 2112 + 32 * (n - 1 - j))
