@@ -14,7 +14,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
    This independent run theorem is parameterized by the code's actual4491 jump fact;
    it does not pretend the old comparison artifact contains this new gate. -/
 def program : List Instr :=
-  [.op .JUMPDEST, .push 2 2080, .op .MLOAD, .push 2 4130, .op .JUMPI]
+  [.op .JUMPDEST, .push 2 2080, .op .MLOAD, .push 2 4299, .op .JUMPI]
 
 def atState (s : State) (mem : ByteArray) (pc : Nat) (dst ret : UInt256)
     (rest : List UInt256) : State :=
@@ -22,17 +22,17 @@ def atState (s : State) (mem : ByteArray) (pc : Nat) (dst ret : UInt256)
 
 theorem run_gate (s : State) (mem : ByteArray) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hact : 88 ≤ s.activeWords.toNat)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 4130 = true) :
-    runInstructions program (atState s mem 4333 dst ret rest) =
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 4299 = true) :
+    runInstructions program (atState s mem 4535 dst ret rest) =
       some (atState s mem
-        (if (MachineState.readWord mem 2080).toNat = 0 then 4342 else 4130)
+        (if (MachineState.readWord mem 2080).toNat = 0 then 4544 else 4299)
         dst ret rest) := by
   have hc2 : rest.length+2 < 1024 := by omega
   have hc3 : rest.length+3 < 1024 := by omega
   have hc4 : rest.length+4 < 1024 := by omega
   have h2080 : (2080 : UInt256).toNat = 2080 := by decide
-  have h4491 : (4130 : UInt256).toNat = 4130 := by decide
-  have heq4491 : (4130 : UInt256) = UInt256.ofNat 4130 := by decide
+  have h4491 : (4299 : UInt256).toNat = 4299 := by decide
+  have heq4491 : (4299 : UInt256) = UInt256.ofNat 4299 := by decide
   have haN := Csub.activeWords_fix s 2080 32 (by decide) (by omega) hact
   by_cases hz : (MachineState.readWord mem 2080).toNat = 0
   · simp [program,runInstructions,Challenge.EvmProof.Stepper.runInstr,
@@ -60,7 +60,7 @@ theorem run_copy (s : State) (mem : ByteArray) (n : Nat) (dst ret : UInt256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*n))
     (hdstFit : dst.toNat+32*n ≤ 2816)
     (hjump : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
-    runInstructions copyProgram (atState s mem 4342 dst ret rest) =
+    runInstructions copyProgram (atState s mem 4544 dst ret rest) =
       some (returnedState s
         (MachineState.writeBytes mem (MachineState.readPadded mem 2112 (32*n)) dst.toNat)
         ret rest) := by
