@@ -23,20 +23,18 @@ def isFour (n : Nat) : UInt256 :=
 
 
 /-- First-loop entry of the multiply rows (frame slot `ent`): the setup computes
-`0x0d34 + 14 * (s32 &&& 128)`: for eight limbs `s32 = 256`, the mask is zero and the
-entry is the shared k1 JUMPDEST 3380; for four limbs `s32 = 128`, adding `14*128 = 1792`
-gives 5172, the entry of the private ladder copy that keeps its own tail jump. -/
+`0x0fe4 + 0x98 * [n = 4]` (k1 JUMPDEST for eight limbs, k5 JUMPDEST for four). -/
 def l1Target (n : Nat) : UInt256 :=
-  UInt256.ofNat 3380 + UInt256.ofNat 1792 * isFour n
+  UInt256.ofNat 3549 + UInt256.ofNat 148 * isFour n
 
 /-- Second-loop entry (`ent + 0x12b`), fixed for the whole kernel call. -/
 def l2Target (n : Nat) : UInt256 :=
-  UInt256.ofNat 3668 + UInt256.ofNat 1792 * isFour n
+  UInt256.ofNat 3837 + UInt256.ofNat 148 * isFour n
 
-@[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 5172 := by decide
-@[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 3380 := by decide
-@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 5460 := by decide
-@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 3668 := by decide
+@[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 3697 := by decide
+@[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 3549 := by decide
+@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 3985 := by decide
+@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 3837 := by decide
 
 /-! ## Row frames
 

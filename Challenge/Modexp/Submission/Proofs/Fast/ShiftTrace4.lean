@@ -2,7 +2,6 @@ import Challenge.Modexp.Submission.Proofs.Fast.ShiftProducerSplitRun
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneSlice
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftTrace3
 import Challenge.Modexp.Submission.Proofs.Fast.RetainedTEntry
-import Challenge.Modexp.Submission.Proofs.Fast.M9MacShift
 
 set_option warningAsError false
 set_option maxRecDepth 40000
@@ -112,7 +111,7 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32)) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
-      (kState s (ShiftCacheModel.cacheMem (preMem (negStep mem n n).memory) n) 2546 n n bsize esize msize) :=
+      (kState s (ShiftCacheModel.cacheMem (preMem (negStep mem n n).memory) n) 2809 n n bsize esize msize) :=
   (  ((((soundEnv blk2892 e
       (run_negEntry s mem n bsize esize msize hn hn32 e.act296 hml e.code e.run)).trans
     (gasSteps_negLoop s mem n bsize esize msize hn hn32 e)).trans
@@ -124,14 +123,116 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       (run_newtonB s (negStep mem n n).memory n bsize esize msize e.act296 e.code e.run))).trans
     (ShiftUnrollBindings.cache.steps (bindingEnv e) rfl
       (ShiftCacheTrace.run_cache s (preMem (negStep mem n n).memory)
-        n bsize esize msize e.act296 hn32))
+        n bsize esize msize e.act296))
 
 /-! ## The limb pass -/
 
+/-- State after one cell, before the test which exists only after cell3. -/
+def macAfterCellState (s : State) (um : ByteArray) (q : UInt256)
+    (n bsize esize msize k j : Nat) : State :=
+  { macLoopState s um q n bsize esize msize k (j + 1) with
+      pc := UInt256.ofNat (pcMacLoop + 39 * (ShiftUnrollEntry.cellIndex n j + 1)) }
 
+/-- Each selected cell performs exactly one limb step. -/
+def gasSteps_macCell (s : State) (um : ByteArray) (q : UInt256)
+    (n bsize esize msize k j : Nat) (hn32 : n ≤ 8) (hj : j < n) (e : Env s) :
+    Challenge.EvmProof.GasSteps (macLoopState s um q n bsize esize msize k j)
+      (macAfterCellState s um q n bsize esize msize k j) := by
+  have hi := ShiftUnrollEntry.index_lt n j
+  generalize hidx : ShiftUnrollEntry.cellIndex n j = i at hi
+  interval_cases i
+  · simpa only [macLoopState, macAfterCellState, pcMacLoop, hidx] using
+      (soundEnv blk3077a e
+        (ShiftCell0.run_cell0 s um q
+          (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) j))
+          (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j))
+          (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (j + 1)))
+          (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (j + 1)))
+          n bsize esize msize k j e.run e.code e.act296 hn32 hj
+          (aPtr_toNat n j hn32 hj) (tPtr_toNat n j hn32 hj)
+          (ptrAt_step _ _) (ptrAt_step _ _)))
+  · simpa only [macLoopState, macAfterCellState, pcMacLoop, hidx] using
+      (soundEnv ShiftCell1.cellPath e
+        (ShiftCell1.run_cell1 s um q
+          (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) j))
+          (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j))
+          (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (j + 1)))
+          (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (j + 1)))
+          n bsize esize msize k j e.run e.code e.act296 hn32 hj
+          (aPtr_toNat n j hn32 hj) (tPtr_toNat n j hn32 hj)
+          (ptrAt_step _ _) (ptrAt_step _ _)))
+  · simpa only [macLoopState, macAfterCellState, pcMacLoop, hidx] using
+      (soundEnv ShiftCell2.cellPath e
+        (ShiftCell2.run_cell2 s um q
+          (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) j))
+          (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j))
+          (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (j + 1)))
+          (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (j + 1)))
+          n bsize esize msize k j e.run e.code e.act296 hn32 hj
+          (aPtr_toNat n j hn32 hj) (tPtr_toNat n j hn32 hj)
+          (ptrAt_step _ _) (ptrAt_step _ _)))
+  · simpa only [macLoopState, macAfterCellState, pcMacLoop, hidx] using
+      (soundEnv ShiftCell3.cellPath e
+        (ShiftCell3.run_cell3 s um q
+          (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) j))
+          (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j))
+          (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (j + 1)))
+          (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (j + 1)))
+          n bsize esize msize k j e.run e.code e.act296 hn32 hj
+          (aPtr_toNat n j hn32 hj) (tPtr_toNat n j hn32 hj)
+          (ptrAt_step _ _) (ptrAt_step _ _)))
 
+/-- Fall through within an unrolled group, or test and return after cell3. -/
+def gasSteps_macIter (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k j : Nat)
+    (hn32 : n ≤ 8) (hj : j + 1 < n) (e : Env s) :
+    Challenge.EvmProof.GasSteps (macLoopState s um q n bsize esize msize k j)
+      (macLoopState s um q n bsize esize msize k (j + 1)) := by
+  have cell := gasSteps_macCell s um q n bsize esize msize k j hn32 (by omega) e
+  by_cases hlt : ShiftUnrollEntry.cellIndex n j < 3
+  · exact cell.cast rfl (by
+      simp only [macAfterCellState, macLoopState,
+        ShiftUnrollEntry.index_next n j hlt])
+  · have h3 : ShiftUnrollEntry.cellIndex n j = 3 := by
+      have hi := ShiftUnrollEntry.index_lt n j
+      omega
+    have tail := soundEnv blk3077b e
+      (run_macTail_go s (Monpro.l1Step um q NEG n (j + 1)).memory
+        (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (j + 1)))
+        (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (j + 1)))
+        (Monpro.l1Step um q NEG n (j + 1)).carry q n bsize esize msize k
+        (tPtr_gt_8224 n (j + 1) hn32 hj) e.code e.run)
+    exact (cell.cast rfl (by
+      simp only [macAfterCellState, macLoopState, pcMacLoop, pcMacTail, h3])).trans
+      (tail.cast rfl (by
+        simp only [macLoopState, pcMacLoop, ShiftUnrollEntry.index_wrap n j h3]))
 
+/-- The last limb is always cell3, whose failed test reaches the middle block. -/
+def gasSteps_macLast (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat)
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s) :
+    Challenge.EvmProof.GasSteps (macLoopState s um q n bsize esize msize k (n - 1))
+      (midState s um q n bsize esize msize k) := by
+  have cell := gasSteps_macCell s um q n bsize esize msize k (n - 1) hn32 (by omega) e
+  have h3 := ShiftUnrollEntry.index_last n hn hn32
+  have tail := soundEnv blk3077b e
+    (run_macTail_exit s (Monpro.l1Step um q NEG n (n - 1 + 1)).memory
+      (UInt256.ofNat (Monpro.ptrAt (NEG + 32 * n - 32) (n - 1 + 1)))
+      (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (n - 1 + 1)))
+      (Monpro.l1Step um q NEG n (n - 1 + 1)).carry q n bsize esize msize k
+      (by rw [Nat.sub_add_cancel hn]; exact tPtr_toNat_last n hn32) e.code e.run)
+  exact (cell.cast rfl (by
+    simp only [macAfterCellState, macLoopState, pcMacLoop, pcMacTail, h3])).trans
+    (tail.cast rfl (by rw [Nat.sub_add_cancel hn]; rfl))
 
+def gasSteps_macLoop (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat)
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s) :
+    Challenge.EvmProof.GasSteps (macLoopState s um q n bsize esize msize k 0)
+      (midState s um q n bsize esize msize k) :=
+  (Challenge.EvmProof.GasSteps.iterateBounded
+      (I := fun j => macLoopState s um q n bsize esize msize k j) (n - 1) (fun j hj =>
+        gasSteps_macIter s um q n bsize esize msize k j hn32 (by omega) e)).trans
+    (gasSteps_macLast s um q n bsize esize msize k hn hn32 e)
+
+/-! ## The repair rounds -/
 
 /-- One add-pass iteration with limbs to go. -/
 def gasSteps_addIter (s : State) (mem : ByteArray) (n bsize esize msize k j : Nat)
@@ -322,8 +423,7 @@ def gasSteps_csubStep (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
-    (htn : (MachineState.readWord mem 2080).toNat ≤ 1)
-    (hfast : n = 4 ∨ n = 8) :
+    (htn : (MachineState.readWord mem 2080).toNat ≤ 1) :
     Challenge.EvmProof.GasSteps (csubCallState s mem n bsize esize msize k)
       (afterCsubState s (RetainedTNormalizer.resultMemory mem n) n bsize esize msize k) :=
   have hs32' : MachineState.readWord (Csub.csStep mem n n).memory 2688 =
@@ -340,13 +440,13 @@ def gasSteps_csubStep (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
         (run_csubCall s mem n bsize esize msize k hk hk32 e.code e.run)).trans
       (RetainedT.gasSteps_retained s mem n (UInt256.ofNat pcAfterCsub)
         (UInt256.ofNat (k - 1) :: outer n bsize esize msize) hlen e.code e.fork e.run e.np
-        e.act296 hn (by omega) jumpD5357 hml htl hs32' htn' hfast))
+        e.act296 hn (by omega) jumpD5357 hml htl hs32' htn'))
     rfl rfl
 
 /-- The first `CSUB(BASE)`, reducing the raw base, from `HIT` to `AFTER_CSUB0`. -/
-def canonicalCopyBlock : WindowTwentyOneBinding.Block Artifact.submissionArtifact .Osaka 2390
+def canonicalCopyBlock : WindowTwentyOneBinding.Block Artifact.submissionArtifact .Osaka 2651
     ShiftProducerSplitRun.copyProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 1760 5 2390 ShiftProducerSplitRun.copyProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1969 5 2651 ShiftProducerSplitRun.copyProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def gasSteps_hitCsub (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)
@@ -354,8 +454,7 @@ def gasSteps_hitCsub (s : State) (mem input : ByteArray) (n bsize esize msize : 
     (hdata : s.executionEnv.calldata = input)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
-    (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
-    (hfast : n = 4 ∨ n = 8) :
+    (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n)) :
     Challenge.EvmProof.GasSteps (hitState s mem n bsize esize msize)
       (afterCsub0State s (ShiftProducerCanonical.canonicalMemory mem input n)
         n bsize esize msize) := by
@@ -387,7 +486,7 @@ def gasSteps_hitCsub (s : State) (mem input : ByteArray) (n bsize esize msize : 
           (UInt256.ofNat pcCsubReturn) (outer n bsize esize msize) hlen e.code e.fork e.run
           e.np e.act296 hn (by omega) jumpD4692
           (by rw [hhigh 2752 (by omega)]; exact hml)
-          (by rw [hhigh 2784 (by omega)]; exact htl) hs32' htn' hfast))
+          (by rw [hhigh 2784 (by omega)]; exact htl) hs32' htn'))
       rfl rfl
   have copy := canonicalCopyBlock.steps (bindingEnv e) rfl
     (ShiftProducerSplitRun.run_copy s (RetainedTNormalizer.resultMemory (hitMem mem input n) n) n
@@ -432,8 +531,7 @@ def gasSteps_step (s : State) (mem : ByteArray) (n bsize esize msize k mm minv :
         (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n)))
       n mm
       (negOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
-        (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))))
-    (hfast : n = 4 ∨ n = 8) :
+        (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n)))) :
     Challenge.EvmProof.GasSteps (shiftLoopState s mem n bsize esize msize k)
       (shiftLoopState s (stepMem mem n mm) n bsize esize msize (k - 1)) := by
   have rf' : RepairFacts (stepMid mem n) n mm (stepNeg mem n) := rf
@@ -462,25 +560,26 @@ def gasSteps_step (s : State) (mem : ByteArray) (n bsize esize msize k mm minv :
     rw [fixMem_readWord_disjoint (stepMid mem n) n mm (stepNeg mem n) addr (Or.inr (by omega))]
     exact hhighMid addr haddr
   -- the chain
-  -- The old chain ran three blocks, then a mac setup block, then a four-cell dispatch, then the
-  -- pointer loop. The rewritten artifact ends the prefix at the estimate block and reaches the
-  -- conversion entry directly, so `g1` stops at `macSetupState` (pc 2673) and `g2` is the single
-  -- section lemma over the eight straight blocks.
   have g1 : Challenge.EvmProof.GasSteps (shiftLoopState s mem n bsize esize msize k)
-      (macSetupState s mem n bsize esize msize k) :=
-    ((soundEnv blk3013 e
+      (macLoopState s (stepU mem n) (stepQ mem n) n bsize esize msize k 0) :=
+    (    (((soundEnv blk3013 e
         (run_shiftHead_go s mem n bsize esize msize k (by omega) hk32 e.code e.run)).trans
       (soundEnv blk3018 e
         (run_shiftBody s mem n bsize esize msize k hn hn32 e.act htl0 e.code e.run))).trans
       (soundEnv blk3026 e
-        (run_estimate s mem n bsize esize msize k e.act296 e.code e.run))
+        (run_estimate s mem n bsize esize msize k e.act296 e.code e.run))).trans
+      (soundEnv blk3069 e
+        (run_macSetup s mem n bsize esize msize k (by omega) hn32 e.act296
+          (by rw [hhighU 2784 (by omega)]; exact htl0)
+          (by rw [hhighU 2752 (by omega)]; exact hml0) e.code e.run))).trans
+      (ShiftUnrollBindings.dispatch.steps (bindingEnv e) rfl
+        (ShiftDispatchTrace.run_dispatch s (stepU mem n) (stepQ mem n)
+          n bsize esize msize k (by omega) hn32 e.act296
+          (ShiftCacheModel.cache_survives_u mem n inv.cache) e.code))
   have g2 : Challenge.EvmProof.GasSteps
-      (macSetupState s mem n bsize esize msize k)
+      (macLoopState s (stepU mem n) (stepQ mem n) n bsize esize msize k 0)
       (midState s (stepU mem n) (stepQ mem n) n bsize esize msize k) :=
-    M9Mac.gasSteps_macSection n hfast s (stepU mem n) (stepQ mem n) bsize esize msize k
-      e.run e.code e.fork e.np e.act296
-      (by rw [ShiftCacheModel.cache_survives_u mem n inv.cache,
-              ShiftCacheModel.entryWord_eq_entryPC n hfast])
+    gasSteps_macLoop s (stepU mem n) (stepQ mem n) n bsize esize msize k (by omega) hn32 e
   have htlMid : MachineState.readWord (stepMid mem n) 2784 = UInt256.ofNat (2080 + 32 * n) := by
     rw [hhighMid 2784 (by omega)]; exact htl0
   have htlA : MachineState.readWord
@@ -587,7 +686,6 @@ def gasSteps_step (s : State) (mem : ByteArray) (n bsize esize msize k mm minv :
       (by rw [hhighFix 2784 (by omega)]; exact htl0)
       (by rw [hhighFix 2688 le_rfl]; exact hs320)
       (by rw [rf'.subDoneTn]; decide)
-      hfast
   -- `CSUB` returns to the loop head with `k - 1`: `afterCsubState k` is `shiftLoopState (k - 1)`.
   exact Challenge.EvmProof.GasSteps.cast (((g1.trans g2).trans g3).trans g4) rfl rfl
 
