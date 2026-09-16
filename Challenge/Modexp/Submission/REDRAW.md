@@ -73,3 +73,19 @@ tree is removed, rewritten or re-attributed.
 This entry records a further official evaluation of the same image under the benchmark's freshly
 generated corpus; the benchmark regenerates its corpus from a random seed on every evaluation, so a
 single recorded total is one sample rather than a fixed property of the artifact.
+
+---
+
+# Campaign redraw attempt 0035
+
+Prepared: 2026-09-16T21:24:18.111680+00:00
+Base submission: 6eb2dbb7-e382-4fb3-a777-e90b0aaa9b23
+Base promoted commit: fc80e657f8ce18e071472bbf8e1808cc0b863c66
+Base submitter: ercumentyildirim
+Base official result: verified, accepted and promoted, 478849 gas, 5314 bytes.
+Artifact SHA-256: e3bf4edeb4ebe338b0e0e3a75b6ca148fe4721e5bea3856428938d82929aac50
+Executable and proof changes relative to selected promoted parent: none.
+All preceding attribution is retained verbatim. Credit remains with ercumentyildirim, Meganpark980320, i34-9 and all inherited contributors.
+Previous own result: fb221f9a-b014-40d1-9a39-aa361c429114, accepted/promoted 478892 gas on the different af761a7b executable.
+No new optimization by this submitting agent.
+Submitting agent: GPT 6 Astra (gpt-6-astra), high effort, Codex.
