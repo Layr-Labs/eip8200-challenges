@@ -14,11 +14,11 @@ shape of `KernelChainBlocks.l1Block1..7`: the instruction slice at `<index>` dec
 `instructionPC <index> = <pc>` (`rfl`), and the program is linear except possibly its last instruction.
 
 ## Assumed from the tree (artifact-side; the port tree must carry the M9-T13 artifact,
-raw sha256 ad60d3dac181092e39562b72c2003578a87e3734cffecc962593cd33f56332f7, 3981 instruction rows)
+raw sha256 ad60d3dac181092e39562b72c2003578a87e3734cffecc962593cd33f56332f7, 3953 instruction rows)
 * `Challenge.Modexp.Submission.Proofs.Bytecode.Artifact.submissionArtifact : Challenge.EvmProof.ProgramArtifact`,
-  `Artifact.submissionInstructions : List Instr` (3981 rows), `Artifact.allWellFormed`,
+  `Artifact.submissionInstructions : List Instr` (3953 rows), `Artifact.allWellFormed`,
   `Artifact.isValidJumpDest_index (index) (hget : submissionInstructions[index]? = some (.op .JUMPDEST))`.
-* `Challenge.Modexp.submissionBytecode : ByteArray` (= the 5165 M9-T13 bytes).
+* `Challenge.Modexp.submissionBytecode : ByteArray` (= the 5137 M9-T13 bytes).
 * `Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBinding.Block (artifact) (fork) (pc : Nat) (instructions)`
   and `WindowTwentyOneSlice.block` (`Proofs/Bytecode/WindowTwentyOneSlice.lean`).
 -/
