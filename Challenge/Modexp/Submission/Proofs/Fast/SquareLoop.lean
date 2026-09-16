@@ -372,7 +372,7 @@ def gasSteps_roundLast (s : State) (M : ByteArray) (p a mm : Nat)
     (UInt256.ofNat 512) ret rest (by omega) hrun hcode' hfork hnp
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
       (UInt256.ofNat 3298).toNat = true := by
-    exact Artifact.isValidJumpDest_index 2447 (by rfl)
+    exact Artifact.isValidJumpDest_index 2441 (by rfl)
   have g4 := gasSteps_csubRound s M 6 0 a mm (UInt256.ofNat 3298) retained tl inv m0 m96 m64 m32
     (by simp only [retained, TnM128SquareExit.frameStack, List.length_append, List.length_cons, List.length_nil]; omega)
     hrun hcode hfork hnp hact hn32 hfast hjump h
@@ -627,7 +627,7 @@ def gasSteps_r4Last (s : State) (M : ByteArray) (a mm : Nat)
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
       (UInt256.ofNat 3298).toNat = true := by
     change Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3298 = true
-    exact Artifact.isValidJumpDest_index 2447 (by rfl)
+    exact Artifact.isValidJumpDest_index 2441 (by rfl)
   have g4 := gasSteps_r4Csub s M a mm 0 2368 (UInt256.ofNat 3298)
     (frameStack (R4Bridge.rows4 M) 4 pbi ent tl inv m0 m96 m64 m32 aprev (UInt256.ofNat 512) ret rest)
     tl inv m0 m96 m64 m32

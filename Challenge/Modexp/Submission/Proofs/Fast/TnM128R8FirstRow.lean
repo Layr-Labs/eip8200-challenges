@@ -106,7 +106,7 @@ theorem run_program (s : State)
 /-- Binding to the exact preferred 5314-byte research runtime. -/
 def block : Block TnM128CandidateArtifact.submissionArtifact .Osaka 4917
     (program (UInt256.ofNat 3424) (UInt256.ofNat 3666)) :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3730 213 4917
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3724 213 4917
     (program (UInt256.ofNat 3424) (UInt256.ofNat 3666))
     (by decide) (by rfl) (by rfl) (by decide)
 
