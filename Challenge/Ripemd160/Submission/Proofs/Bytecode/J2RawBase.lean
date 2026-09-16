@@ -113,10 +113,7 @@ theorem initResult_eq (n : Nat) : initResult n =
   rw [initResult, land224_eq_aligned _ (clamp_lt _)]
 
 def initTemplate : List Instr := [
-  .push ⟨1, by decide⟩ (UInt256.ofNat 255),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  .op .NOT,
-  .op .DIV,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 0x0101010101010101010101010101010101010101010101010101010101010101),
   .op (.Dup ⟨0, by decide⟩),
   .push ⟨1, by decide⟩ (UInt256.ofNat 7),
   .op .SHL,
@@ -139,16 +136,16 @@ def initTemplate : List Instr := [
   .op .MUL,
   .op .ADD,
   .op (.Dup ⟨0, by decide⟩),
-  .push ⟨2, by decide⟩ (UInt256.ofNat 224),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+  .op .JUMPDEST,
   .op .AND,
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0)
-]
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0)]
 
 def firstTemplate : List Instr := [ .op (.Dup ⟨3, by decide⟩),
     .op .ISZERO,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 217),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 245),
     .op .JUMPI ]
 
 def normalTemplate : List Instr := [
@@ -178,7 +175,7 @@ def normalTemplate : List Instr := [
 def normalGuardTemplate : List Instr := [ .op (.Dup ⟨3, by decide⟩),
     .op (.Dup ⟨2, by decide⟩),
     .op .LT,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 188),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 216),
     .op .JUMPI ]
 
 def tailTemplate : List Instr := [
@@ -201,60 +198,59 @@ def tailTemplate : List Instr := [
 def finishTemplate : List Instr := [ .op .CALLDATASIZE,
     .op (.Dup ⟨5, by decide⟩),
     .op .EQ,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 292),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 320),
     .op .JUMPI ]
 
-def transitionTemplate : List Instr := [
-  .op (.Dup ⟨9, by decide⟩),
-  .op (.Dup ⟨3, by decide⟩),
-  .op .NOT,
-  .op .AND,
-  .op (.Dup ⟨9, by decide⟩),
-  .op (.Dup ⟨4, by decide⟩),
-  .op .AND,
-  .op (.Dup ⟨8, by decide⟩),
-  .op .ADD,
-  .op .XOR,
-  .op (.Dup ⟨5, by decide⟩),
-  .op (.Swap ⟨2, by decide⟩),
-  .op .POP,
-  .op (.Swap ⟨2, by decide⟩),
-  .op .POP,
-  .op (.Dup ⟨1, by decide⟩),
-  .op .CALLDATASIZE,
-  .op .SUB,
-  .op (.Dup ⟨0, by decide⟩),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 251),
-  .op .LT,
-  .op (.Dup ⟨1, by decide⟩),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 251),
-  .op .SUB,
-  .op .MUL,
-  .op .ADD,
-  .op (.Dup ⟨2, by decide⟩),
-  .op .ADD,
-  .op (.Swap ⟨4, by decide⟩),
-  .op (.Dup ⟨5, by decide⟩),
-  .op .SUB,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 224),
-  .op .AND,
-  .op (.Dup ⟨2, by decide⟩),
-  .op .ADD,
-  .op (.Swap ⟨3, by decide⟩),
-  .op .POP
-]
+def transitionTemplate : List Instr := [ .op (.Dup ⟨9, by decide⟩),
+    .op (.Dup ⟨3, by decide⟩),
+    .op .NOT,
+    .op .AND,
+    .op (.Dup ⟨9, by decide⟩),
+    .op (.Dup ⟨4, by decide⟩),
+    .op .AND,
+    .op (.Dup ⟨8, by decide⟩),
+    .op .ADD,
+    .op .XOR,
+    .op (.Dup ⟨5, by decide⟩),
+    .op (.Swap ⟨2, by decide⟩),
+    .op .POP,
+    .op (.Swap ⟨2, by decide⟩),
+    .op .POP,
+    .op (.Dup ⟨1, by decide⟩),
+    .op .CALLDATASIZE,
+    .op .SUB,
+    .op (.Dup ⟨0, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 251),
+    .op .LT,
+    .op (.Dup ⟨1, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 251),
+    .op .SUB,
+    .op .MUL,
+    .op .ADD,
+    .op (.Dup ⟨2, by decide⟩),
+    .op .ADD,
+    .op (.Swap ⟨4, by decide⟩),
+    .op (.Dup ⟨5, by decide⟩),
+    .op .SUB,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+    .op .JUMPDEST,
+    .op .AND,
+    .op (.Dup ⟨2, by decide⟩),
+    .op .ADD,
+    .op (.Swap ⟨3, by decide⟩),
+    .op .POP ]
 
 def transitionGuardTemplate : List Instr := [ .op (.Dup ⟨3, by decide⟩),
     .op (.Dup ⟨2, by decide⟩),
     .op .LT,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 188),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 216),
     .op .JUMPI ]
 
-def toTailTemplate : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 217),
+def toTailTemplate : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 245),
     .op .JUMP ]
 
 def resultTemplate : List Instr := [ .op .JUMPDEST,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 336),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 364),
     .op .JUMPI ]
 
 

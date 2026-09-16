@@ -1,20 +1,3 @@
-# RIPEMD-160: 664,995 gas in 5,210 bytes
-
-This executable is `607a9f5d6cb1625b7d89e5068a2a594aebcd82290d11382ac62557d6d0f59fe1`, 5,210 bytes, 664,995 gas by the
-verified scorer in both scorer contexts over 49 vectors and 98 rows.
-It is derived from `719ff84e9866b3ad3caec3f16ec16fbd395f78df851305711a8c92c77ac30d9e`,
-5,210 bytes at 665,014 gas, by 2 edits in 2 gas-bearing spans:
-
-    0 run-time constant computations replaced by literals   +0 gas  +0 bytes
-    2 unreachable JUMPDESTs absorbed into the preceding PUSH   -19 gas  +0 bytes
-    0 position immediates re-derived for the new layout   +0 gas  +0 bytes
-
-Screens on the submitted bytes: the artifact decodes completely, 49 of 49 scored vectors return the reference digest, a further 505 inputs covering all 64 residues of the message length modulo 64 disagree on none, and the two artifacts run in lockstep at 3,788 surviving instructions over 209,740 observations with no disagreement.
-
----
-
-## Inherited from the executable this one is derived from (719ff84e9866b3ad), reproduced verbatim
-
 # RIPEMD-160: input buffer 1056 with a proved allocation transition
 
 The artifact copies the input at address 1056 and consumes both words of each
@@ -34,7 +17,7 @@ public lineage. Our local source parent is the proved 1087-buffer commit
 ## Artifact
 
 - SHA-256: `959e34cb39e0da35b8d3eea31c70d45f7a1c9b754e2f867422fc05d60f9b6ec7`.
-- Size: 5224 bytes = 4944 executable bytes + 280 data bytes.
+- Size: 5238 bytes = 4958 executable bytes + 280 data bytes.
 - Executable instructions: 3720; all instruction PCs match the 1087 parent.
 - Local seed-zero and median score: 666,834.
 - Relative to the 666,935 parent: 63 gas from tighter buffer placement, plus

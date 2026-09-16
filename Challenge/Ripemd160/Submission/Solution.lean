@@ -19,5 +19,5 @@ end Challenge.Ripemd160.Benchmark
 #print axioms Challenge.Ripemd160.Benchmark.candidate
 -- redraw marker 2026-09-15T09:15:23Z
 -- Yukon reuse by @ercumentyildirim: source @i34-9, submission e1481dcc-c9a9-4364-82b3-0903851f0c06, commit 7a6785a7e139fe90f0d16f78b70221ae7926d355.
--- provenance marker ABSORB22-v1
--- executable 607a9f5d6cb1625b7d89e5068a2a594aebcd82290d11382ac62557d6d0f59fe1, 5210 bytes, 664995 gas, derived from 719ff84e9866b3ad3caec3f16ec16fbd395f78df851305711a8c92c77ac30d9e at 665014 gas.
+
+-- fold112@665070 patterned-scan mask DIV->PUSH32 2026-09-16

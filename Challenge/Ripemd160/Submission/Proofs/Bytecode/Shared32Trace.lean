@@ -36,8 +36,8 @@ def gasSteps_sparse (s : State) (e : Env s)
   have eM : Env sM := ⟨e.code, e.fork, e.run, e.np⟩
   have g0 : GasSteps (atState s 322 F) (atState s 323 F) := by
     apply special.lift s (atState s 323 F) e F
-    simpa only [special.template, atState, show UInt256.ofNat 322 + UInt256.ofNat 1 = UInt256.ofNat 323 by decide] using
-      PadJump.run_merge s (UInt256.ofNat 322) F (by omega) e.run
+    simpa only [special.template, atState, show UInt256.ofNat 350 + UInt256.ofNat 1 = UInt256.ofNat 323 by decide] using
+      PadJump.run_merge s (UInt256.ofNat 350) F (by omega) e.run
   have g1 : GasSteps (atState s 323 F) (atState s 325 (UInt256.ofNat 128 :: F)) := by
     apply marker.lift s (atState s 325 (UInt256.ofNat 128 :: F)) e F
     have hcap : F.length < 1024 := by omega
@@ -52,11 +52,11 @@ def gasSteps_sparse (s : State) (e : Env s)
   have g3 : GasSteps (atState sM 332 F) (atState sM 502 F) := by
     apply jump.lift sM (atState sM 502 F) eM F
     exact PadJump.run_template sM (UInt256.ofNat 332) F 502 (by omega) e.run
-      (by simpa only [show (UInt256.ofNat 502).toNat = 502 by decide] using valid_lower sM eM)
+      (by simpa only [show (UInt256.ofNat 530).toNat = 502 by decide] using valid_lower sM eM)
   have g4 : GasSteps (atState sM 502 F) (atState sM 503 F) := by
     apply lower.lift sM (atState sM 503 F) eM F
-    simpa only [lower.template, atState, show UInt256.ofNat 502 + UInt256.ofNat 1 = UInt256.ofNat 503 by decide] using
-      PadJump.run_merge sM (UInt256.ofNat 502) F (by omega) e.run
+    simpa only [lower.template, atState, show UInt256.ofNat 530 + UInt256.ofNat 1 = UInt256.ofNat 503 by decide] using
+      PadJump.run_merge sM (UInt256.ofNat 530) F (by omega) e.run
   exact g0.trans (g1.trans (g2.trans (g3.trans g4)))
 
 def gasSteps_table (s : State) (e : Env s)
