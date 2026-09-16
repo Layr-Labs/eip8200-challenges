@@ -22,7 +22,7 @@ table base never appears as an immediate.  `PUSH1 20` widens to `PUSH3 20` to ke
 the surrounding instruction indices fixed, so this template still occupies 21 bytes
 and 11 instructions. -/
 def prefixTemplate : List Instr :=
-  [ .push ⟨3, by decide⟩ (UInt256.ofNat 20),
+  [ .push ⟨1, by decide⟩ (UInt256.ofNat 20),
     .push ⟨1, by decide⟩ (UInt256.ofNat 15),
     .op .CALLDATASIZE,
     .push ⟨5, by decide⟩ (UInt256.ofNat 392382779957),
