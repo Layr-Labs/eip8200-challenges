@@ -75,7 +75,7 @@ private theorem skip_active_toNat (input : ByteArray) (hfit : CalldataFits input
     omega
 
 theorem entryState_active (input : ByteArray) (hfit : CalldataFits input)
-    (hpos : 0 < input.size) : 35 ≤ (entryState input).activeWords.toNat := by
+    (hpos : 0 < input.size) : 37 ≤ (entryState input).activeWords.toNat := by
   unfold entryState PaddingTrace.entryState
   split
   · next hz =>
@@ -90,7 +90,7 @@ theorem entryState_active (input : ByteArray) (hfit : CalldataFits input)
 
 theorem entryState_allocated (input : ByteArray) (hfit : CalldataFits input) :
     ∀ i, i < DriverTrace.blockCount input → input.size ≠ DriverTrace.blockOffset i →
-      (PersistentStaggerTable.messagePointer i + 95) / 32 ≤ (entryState input).activeWords.toNat := by
+      (PersistentStaggerTable.messagePointer i + 64) / 32 ≤ (entryState input).activeWords.toNat := by
   intro i hi hne
   unfold entryState PaddingTrace.entryState
   simp only [PersistentStaggerTable.messagePointer, Padding.messageOffset]

@@ -53,7 +53,7 @@ def poolStack (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
     words 4, words 2, words 13, words 10, words 7, words 6, words 12, words 14 ] ++ rho
 
 theorem copy_active_preserved (current : UInt256) (o1 o2 : Nat)
-    (hc : 34 ≤ current.toNat) (h1 : o1 ≤ 1000) (h2 : o2 ≤ 1000) :
+    (hc : 35 ≤ current.toNat) (h1 : o1 ≤ 1000) (h2 : o2 ≤ 1000) :
     UInt256.ofNat (MachineState.activeWordsAfter
       (MachineState.activeWordsAfter current.toNat o1 16) o2 16) = current := by
   have h : MachineState.activeWordsAfter current.toNat o1 16 = current.toNat := by
@@ -80,21 +80,21 @@ def template : List Instr :=
     .op .MLOAD,
     .op (.Dup ⟨1, by decide⟩),
     .op .AND,
-    .op (.Dup ⟨1, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 42),
     .op .MLOAD,
+    .op (.Dup ⟨2, by decide⟩),
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 46),
     .op .MLOAD,
     .op (.Dup ⟨3, by decide⟩),
     .op .AND,
-    .op (.Dup ⟨3, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 76),
     .op .MLOAD,
-    .op .AND,
     .op (.Dup ⟨4, by decide⟩),
+    .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 106),
     .op .MLOAD,
+    .op (.Dup ⟨5, by decide⟩),
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 8),
     .op .MLOAD,
@@ -108,17 +108,17 @@ def template : List Instr :=
     .op .MLOAD,
     .op (.Dup ⟨9, by decide⟩),
     .op .AND,
-    .op (.Dup ⟨9, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 38),
     .op .MLOAD,
+    .op (.Dup ⟨10, by decide⟩),
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 80),
     .op .MLOAD,
     .op (.Dup ⟨11, by decide⟩),
     .op .AND,
-    .op (.Dup ⟨11, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 68),
     .op .MLOAD,
+    .op (.Dup ⟨12, by decide⟩),
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 12),
     .op .MLOAD,
@@ -130,18 +130,18 @@ def template : List Instr :=
     .op .OR,
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .MLOAD,
-    .op (.Dup ⟨14, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 110),
     .op .MLOAD,
+    .op (.Dup ⟨15, by decide⟩),
     .op .AND,
     .op (.Swap ⟨14, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 72),
     .op .MLOAD,
     .op .AND ]
 
-theorem run_actual_of_small (s : State) (pc : UInt256) (rho : List UInt256)
+theorem run_actual (s : State) (pc : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat) :
+    (hactive : 35 ≤ s.activeWords.toNat) :
     runInstrSeq template {s with pc := pc, stack := rho} =
       some {s with
         pc := pcAfter pc template
@@ -150,9 +150,9 @@ theorem run_actual_of_small (s : State) (pc : UInt256) (rho : List UInt256)
   have hbase : rho.length < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
   have hcap (n : Nat) (hn : n ≤ 40) : rho.length + n < 1024 := by omega
-  have hactiveAt (address : Nat) (haddress : address ≤ 1056) :
+  have hactiveAt (address : Nat) (haddress : address ≤ 1088) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
-    Stagger144Active.word_active_preserved_of_small s.activeWords address hactive haddress
+    Stagger144Active.word_active_preserved s.activeWords address hactive haddress
   have hactiveCopy (o1 o2 : Nat) (h1 : o1 ≤ 1000) (h2 : o2 ≤ 1000) :
       UInt256.ofNat (MachineState.activeWordsAfter
         (MachineState.activeWordsAfter s.activeWords.toNat o1 16) o2 16) = s.activeWords :=
@@ -164,16 +164,6 @@ theorem run_actual_of_small (s : State) (pc : UInt256) (rho : List UInt256)
      State.activeWordsAfterUInt256, State.activeWordsAfterUInt256_2, hactiveAt, hactiveCopy,
      Word.word_toNat_ofNat, Word.literal_eq_ofNat, RawExpressionAC.land_comm]
   all_goals repeat first | apply And.intro | rfl
-
-theorem run_actual (s : State) (pc : UInt256) (rho : List UInt256)
-    (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 35 ≤ s.activeWords.toNat) :
-    runInstrSeq template {s with pc := pc, stack := rho} =
-      some {s with
-        pc := pcAfter pc template
-        stack := poolStack (poolWord (copied s.memory)) rho
-        memory := copied s.memory} := by
-  exact run_actual_of_small s pc rho hstack hrun (by omega)
 
 /-! ### The dual-lane mask
 
