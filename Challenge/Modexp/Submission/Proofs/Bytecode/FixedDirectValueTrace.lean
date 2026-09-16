@@ -71,7 +71,7 @@ theorem run_checkThree_hit (s : State) (memory input : ByteArray)
       Challenge.EvmProof.Stepper.runInstr,
       FixedDirectStates.checkThree, FixedDirectStates.special, Exp.outer,
       hdata, hcode, hrun, heoff, hfix, haddr, hread, hxor,
-      Exp.not_isTrue_zero, jumpDest3953,
+      Exp.not_isTrue_zero, jumpDestSpecial,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -89,7 +89,7 @@ theorem run_checkThree_miss (s : State) (memory input : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.checkThree
       (FixedDirectStates.checkThree s memory n bsize 1 msize) =
-      some (FixedDirectStates.fallback s memory n bsize 1 msize) := by
+      some (FixedDirectStates.bailState s memory n bsize 1 msize) := by
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter
       s.activeWords.toNat 2816 32) = s.activeWords :=
     Exp.activeWords_fix s 2816 32 (by omega) (by omega) hactive
@@ -127,9 +127,9 @@ theorem run_checkThree_miss (s : State) (memory input : ByteArray)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      FixedDirectStates.checkThree, FixedDirectStates.fallback, Exp.outer,
+      FixedDirectStates.checkThree, FixedDirectStates.bailState, Exp.outer,
       hdata, hcode, hrun, heoff, hfix, haddr, hread, hxor, htrue,
-      Exp.isTrue_one, jumpDest3959,
+      Exp.isTrue_one, jumpDestBail,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -189,7 +189,7 @@ theorem run_check65537_miss (s : State) (memory input : ByteArray)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.check65537
       (FixedDirectStates.check65537 s memory n bsize 3 msize) =
-      some (FixedDirectStates.fallback s memory n bsize 3 msize) := by
+      some (FixedDirectStates.bailState s memory n bsize 3 msize) := by
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter
       s.activeWords.toNat 2816 32) = s.activeWords :=
     Exp.activeWords_fix s 2816 32 (by omega) (by omega) hactive
@@ -228,9 +228,9 @@ theorem run_check65537_miss (s : State) (memory input : ByteArray)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      FixedDirectStates.check65537, FixedDirectStates.fallback, Exp.outer,
+      FixedDirectStates.check65537, FixedDirectStates.bailState, Exp.outer,
       hdata, hcode, hrun, heoff, hfix, haddr, hshr, hxor, htrue,
-      Exp.isZero_ofNat_zero, Exp.isTrue_one, jumpDest3959,
+      Exp.isZero_ofNat_zero, Exp.isTrue_one, jumpDestBail,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -282,7 +282,7 @@ def gasSteps_checkThree_miss (s : State) (memory input : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (FixedDirectStates.checkThree s memory n bsize 1 msize)
-      (FixedDirectStates.fallback s memory n bsize 1 msize) :=
+      (FixedDirectStates.bailState s memory n bsize 1 msize) :=
   sound FixedDirectPaths.checkThree
     (run_checkThree_miss s memory input n bsize msize hb hvalue hdata hactive
       heoff hcode hrun)
@@ -324,7 +324,7 @@ def gasSteps_check65537_miss (s : State) (memory input : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (FixedDirectStates.check65537 s memory n bsize 3 msize)
-      (FixedDirectStates.fallback s memory n bsize 3 msize) :=
+      (FixedDirectStates.bailState s memory n bsize 3 msize) :=
   sound FixedDirectPaths.check65537
     (run_check65537_miss s memory input n bsize msize hb hvalue hdata hactive
       heoff hcode hrun)
