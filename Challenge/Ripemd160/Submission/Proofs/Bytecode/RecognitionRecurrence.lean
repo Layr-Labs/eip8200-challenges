@@ -24,7 +24,7 @@ def baseWord : Nat → UInt256
 def correction (off : UInt256) : UInt256 :=
   UInt256.mul
     (UInt256.shiftRight PatternedSwar.M
-      (UInt256.ofNat 216 - UInt256.mul (UInt256.ofNat 40)
+      (UInt256.ofNat 244 - UInt256.mul (UInt256.ofNat 40)
         (UInt256.shiftRight off (UInt256.ofNat 8))))
     (UInt256.ofNat 11)
 
@@ -55,8 +55,8 @@ theorem compareWord_eq_expected (k : Nat) (hk : k < 31) :
 
 /-- The final load observes only bytes992..999, not the fourth straddle. -/
 theorem partial31 :
-    UInt256.shiftRight (baseWord 31) (UInt256.ofNat 192) =
-      UInt256.shiftRight (PatternedWordData.expectedWordAt 31) (UInt256.ofNat 192) := by
+    UInt256.shiftRight (baseWord 31) (UInt256.ofNat 220) =
+      UInt256.shiftRight (PatternedWordData.expectedWordAt 31) (UInt256.ofNat 220) := by
   decide
 
 #print axioms baseWord_eq_rawWord

@@ -23,7 +23,7 @@ theorem pointer_eq (input : ByteArray) (i : Nat) (hfit : CalldataFits input)
     (hi : i < DriverTrace.blockCount input) :
     StaggerPersistentEntryRaw.pointer (DriverTrace.blockOffsetWord i) = UInt256.ofNat (messagePointer i) := by
   have hb := messagePointer_bound input hfit i hi
-  change UInt256.ofNat 1056 + UInt256.ofNat (DriverTrace.blockOffset i) = _
+  change UInt256.ofNat 1084 + UInt256.ofNat (DriverTrace.blockOffset i) = _
   rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb; omega)]
   rfl
 
@@ -37,9 +37,9 @@ def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4747, stack := ret :: rest}
+    GasSteps {s with pc := UInt256.ofNat 4775, stack := ret :: rest}
       {s with
-        pc := UInt256.ofNat 894
+        pc := UInt256.ofNat 922
         stack := ret :: rest
         memory := StaggerTablePad.resultMemory s.memory (UInt256.ofNat s.executionEnv.calldata.size)} := by
   have g1 := StaggerSetupSites.gasSteps_low s ret rest hmask hstack hrun hactive hlow hfit hcode hfork hnp
@@ -80,7 +80,7 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := LoopCompletionControl.blockPC input i, stack := frame h (DriverTrace.blockOffsetWord i) limit rho}
-      {scheduledState s i with pc := UInt256.ofNat 894, stack := frame h (DriverTrace.blockOffsetWord i) limit rho} := by
+      {scheduledState s i with pc := UInt256.ofNat 922, stack := frame h (DriverTrace.blockOffsetWord i) limit rho} := by
   let off := DriverTrace.blockOffsetWord i
   let r := rest h off limit rho
   have hrs : r.length ≤ 896 := by simp only [r, rest, List.length_append, List.length_cons, List.length_nil]; omega
@@ -97,8 +97,8 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     rw [scheduledState_hit s i hhs]
     let qh : State :=
       {s with memory := StaggerTablePad.resultMemory s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
-    have gb' : GasSteps {s with pc := UInt256.ofNat 4747, stack := frame h off limit rho}
-        {qh with pc := UInt256.ofNat 894, stack := frame h off limit rho} := by
+    have gb' : GasSteps {s with pc := UInt256.ofNat 4775, stack := frame h off limit rho}
+        {qh with pc := UInt256.ofNat 922, stack := frame h off limit rho} := by
       apply gb.cast rfl
       rfl
     simpa only [LoopCompletionControl.blockPC, DriverTrace.blockOffset, if_pos hh] using gp.trans gb'
@@ -108,14 +108,14 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     rw [scheduledState_miss s i hhs]
     subst hrho
     have hb := messagePointer_bound input hfit i hi
-    have hq0 : off + UInt256.ofNat 1056 = UInt256.ofNat (messagePointer i) := by
-      change UInt256.ofNat (DriverTrace.blockOffset i) + UInt256.ofNat 1056 = _
+    have hq0 : off + UInt256.ofNat 1084 = UInt256.ofNat (messagePointer i) := by
+      change UInt256.ofNat (DriverTrace.blockOffset i) + UInt256.ofNat 1084 = _
       rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb; omega)]
       unfold messagePointer Padding.messageOffset
       congr 1
       omega
-    have hq1 : off + UInt256.ofNat 1088 = UInt256.ofNat (messagePointer i + 32) := by
-      change UInt256.ofNat (DriverTrace.blockOffset i) + UInt256.ofNat 1088 = _
+    have hq1 : off + UInt256.ofNat 1116 = UInt256.ofNat (messagePointer i + 32) := by
+      change UInt256.ofNat (DriverTrace.blockOffset i) + UInt256.ofNat 1116 = _
       rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb; omega)]
       unfold messagePointer Padding.messageOffset
       congr 1

@@ -14,7 +14,7 @@ private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
 def firstLoad : List Instr := [.op .MLOAD]
 def secondLoad : List Instr :=
   [ .op (.Dup ⟨13, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 1088),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 1116),
     .op .ADD,
     .op .MLOAD ]
 def template : List Instr :=
@@ -38,9 +38,9 @@ private theorem run_secondLoad (s : State) (pc ret off : UInt256) (rest : List U
     runInstrSeq secondLoad {s with pc := pc, stack := mask8 :: mask16 :: ret :: maskWord :: rest} =
       some {s with
         pc := pcAfter pc secondLoad
-        stack := MachineState.readWord s.memory (off + UInt256.ofNat 1088).toNat ::
+        stack := MachineState.readWord s.memory (off + UInt256.ofNat 1116).toNat ::
           mask8 :: mask16 :: ret :: maskWord :: rest
-        activeWords := activeAfterWord s.activeWords (off + UInt256.ofNat 1088)} := by
+        activeWords := activeAfterWord s.activeWords (off + UInt256.ofNat 1116)} := by
   have hcap (n : Nat) (hn : n ≤ 27) : rest.length + n < 1024 := by omega
   simp [secondLoad, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, hrun, hcap, Nat.add_assoc, activeAfterWord, State.activeWordsAfterUInt256,
@@ -101,7 +101,7 @@ theorem run_template (s : State) (pc ret : UInt256) (p : Nat) (rest : List UInt2
   let s3 : State := {s2 with memory := writeWord s1.memory 60 hi}
   have hptr : (UInt256.ofNat p).toNat = p := by
     rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
-  have haddr : UInt256.ofNat (p - 1056) + UInt256.ofNat 1088 = UInt256.ofNat p + UInt256.ofNat 32 := by
+  have haddr : UInt256.ofNat (p - 1056) + UInt256.ofNat 1116 = UInt256.ofNat p + UInt256.ofNat 32 := by
     rw [Word.ofNat_add_ofNat (by omega), Word.ofNat_add_ofNat (by omega)]
     congr 1; omega
   have hread : MachineState.readWord s1.memory (p + 32) = MachineState.readWord s.memory (p + 32) := by

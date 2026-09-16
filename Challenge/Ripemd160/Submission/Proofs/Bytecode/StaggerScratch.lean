@@ -110,7 +110,7 @@ private theorem extractedWordG_one_lt (memory : ByteArray) (p : Nat) :
     (PairedScheduleData.extractedWordG memory p 1).toNat < 2 ^ 64 := by
   have h : (PairedScheduleData.extractedWordG memory p 1).toNat =
       (UInt256.shiftRight (PairedScheduleData.reversedWord (MachineState.readWord memory p))
-        (UInt256.ofNat 192)).toNat := by
+        (UInt256.ofNat 220)).toNat := by
     simp only [PairedScheduleData.extractedWordG, PairedScheduleData.chunkG,
       DenseScheduleMemory.DensePacked.shr, Nat.add_zero]
     norm_num
@@ -254,7 +254,7 @@ theorem poolWordD_eq_dirty (memory : ByteArray) (p i : Nat) (hi : i < 16)
       simp only [PairedScheduleData.extractedWord, PairedScheduleData.chunk, if_pos rfl,
         ite_true, Nat.zero_div, Nat.mul_zero, Nat.add_zero, Nat.zero_mod,
         DenseScheduleMemory.DensePacked.shr]
-      change _ = (UInt256.shiftRight _ (UInt256.ofNat 224)).toNat
+      change _ = (UInt256.shiftRight _ (UInt256.ofNat 252)).toNat
       rw [Word.shiftRight_toNat _ (by decide)]
     · have h12 : i = 1 ∨ i = 2 := by omega
       rw [dirtyWord, if_pos h12]
@@ -322,7 +322,7 @@ theorem poolWordD_eq_dirty_strong (memory : ByteArray) (p i : Nat) (hi : i < 16)
       simp only [PairedScheduleData.extractedWord, PairedScheduleData.chunk, if_pos rfl,
         ite_true, Nat.zero_div, Nat.mul_zero, Nat.add_zero, Nat.zero_mod,
         DenseScheduleMemory.DensePacked.shr]
-      change _ = (UInt256.shiftRight _ (UInt256.ofNat 224)).toNat
+      change _ = (UInt256.shiftRight _ (UInt256.ofNat 252)).toNat
       rw [Word.shiftRight_toNat _ (by decide)]
     · have h12 : i = 1 ∨ i = 2 := by omega
       rw [dirtyWord, if_pos h12]

@@ -26,7 +26,7 @@ private theorem copy_decoded (s : State) (e : Env s) (rho : List UInt256) :
     (by rfl) (by decide) trivial
   apply Artifact.submissionArtifact.state_decodedOp_of (beforeCopy s rho) 226
     e.code ?_ .CODECOPY none hd (by change Operation.CODECOPY.availableInFork s.fork = true; rw [e.fork]; rfl)
-  change (UInt256.ofNat 337).toNat = Artifact.submissionArtifact.instructionPC 226
+  change (UInt256.ofNat 365).toNat = Artifact.submissionArtifact.instructionPC 223
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -36,7 +36,7 @@ private theorem size_decoded (s : State) (e : Env s) (rho : List UInt256) :
     (by rfl) (by decide) trivial
   apply Artifact.submissionArtifact.state_decodedOp_of
     (copied (beforeCopy s rho) (source s) rho) 227 e.code ?_ .MSIZE none hd (by change Operation.MSIZE.availableInFork s.fork = true; rw [e.fork]; rfl)
-  change (UInt256.ofNat 338).toNat = Artifact.submissionArtifact.instructionPC 227
+  change (UInt256.ofNat 338).toNat = Artifact.submissionArtifact.instructionPC 224
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -46,7 +46,7 @@ def gasSteps (s : State) (e : Env s) (rho : List UInt256)
     GasSteps (atState s 316 rho) (output s rho) := by
   have hp : StackRoundTrace.runInstrSeq RecognitionSites.selector.template
       (atState s 316 rho) = some (beforeCopy s rho) := by
-    have h := run_prefix s (UInt256.ofNat 316) (UInt256.ofNat 4953) rho (by omega) e.run
+    have h := run_prefix s (UInt256.ofNat 344) (UInt256.ofNat 4953) rho (by omega) e.run
     simpa only [RecognitionSites.selector.end_pc, beforeCopy, atState, source] using h
   have gp := RecognitionSites.selector.lift s (beforeCopy s rho) e rho hp
   have gc : GasSteps (beforeCopy s rho) (afterCopy s rho) :=
@@ -56,7 +56,7 @@ def gasSteps (s : State) (e : Env s) (rho : List UInt256)
   have hf : StackRoundTrace.runInstrSeq RecognitionSites.returned.template
       (atState (afterCopy s rho) 339 (32 :: rho)) = some (output s rho) :=
     run_finish (afterCopy s rho) (UInt256.ofNat 339) rho (by omega) e.run
-  have hpc : (UInt256.ofNat 337).succ.succ = UInt256.ofNat 339 := by decide
+  have hpc : (UInt256.ofNat 365).succ.succ = UInt256.ofNat 339 := by decide
   have gf : GasSteps (afterCopy s rho) (output s rho) := by
     simpa only [afterCopy, beforeCopy, sized, copied, atState, hpc] using
       RecognitionSites.returned.lift (afterCopy s rho) (output s rho) ea (32 :: rho) hf

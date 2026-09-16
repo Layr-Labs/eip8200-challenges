@@ -18,7 +18,7 @@ low bit-length word `n <<< 3` (two `JUMPDEST`s keep the block's length where the
 to be applied; the resident `0xffffffff` stays four deep on the stack) and `0x80`, then leave
 `iszero (n >>> 29)` for the branch at 4829. -/
 def lowTemplate : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 1084),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 1112),
     .op .CALLDATASIZE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 28),
     .op .CALLDATACOPY,
@@ -29,12 +29,12 @@ def lowTemplate : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 162),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 666),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 694),
     .op .MSTORE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 172),
     .op .MSTORE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 128),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 522),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 156),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 550),
     .op .MSTORE,
     .push ⟨19, by decide⟩ (UInt256.ofNat (128 * (1 + 2 ^ 144))),
     .push ⟨1, by decide⟩ (UInt256.ofNat 54),
@@ -45,7 +45,7 @@ def lowTemplate : List Instr :=
 
 /-- `PUSH2 0398 JUMPI` at 4778: straight to the rounds when the high word is zero. -/
 def branchTemplate : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 868),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 896),
     .op .JUMPI ]
 
 /-- Pad-only high block (pc 4833..4860), reached only when `n >>> 29 ≠ 0`. -/
@@ -57,15 +57,15 @@ def highTemplate : List Instr :=
     .push ⟨2, by decide⟩ (UInt256.ofNat 1008),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 990),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 1018),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 648),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 676),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 612),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 640),
     .op .MSTORE,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 270),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 298),
     .op .MSTORE ]
 
 private theorem add_eq_hAdd (x y : UInt256) : UInt256.add x y = x + y := rfl
@@ -156,9 +156,9 @@ theorem run_high (s : State) (pc returnPC : UInt256) (rest : List UInt256)
 
 theorem run_branch_taken (s : State) (pc c : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running) (hc : UInt256.isTrue c)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 868).toNat = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 896).toNat = true) :
     runInstrSeq branchTemplate {s with pc := pc, stack := c :: rho} =
-      some {s with pc := UInt256.ofNat 868, stack := rho} := by
+      some {s with pc := UInt256.ofNat 896, stack := rho} := by
   have hcap : rho.length < 1024 := by omega
   have hcap1 : rho.length + 1 < 1024 := by omega
   have hcap2 : rho.length + 2 < 1024 := by omega

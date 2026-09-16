@@ -19,3 +19,5 @@ end Challenge.Ripemd160.Benchmark
 #print axioms Challenge.Ripemd160.Benchmark.candidate
 -- Yukon reuse by @ercumentyildirim: source @i34-9, submission e1481dcc-c9a9-4364-82b3-0903851f0c06, commit 7a6785a7e139fe90f0d16f78b70221ae7926d355.
 -- redraw marker 2026-09-16T05:14:12Z
+
+-- fold112 patterned-scan mask DIV->PUSH32 2026-09-16T07:10:00Z

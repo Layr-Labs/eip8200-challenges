@@ -10,19 +10,19 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawNormalStore12
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
 def template : List Instr :=
-  [ .push ⟨1, by decide⟩ (UInt256.ofNat 216),
+  [ .push ⟨1, by decide⟩ (UInt256.ofNat 244),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 198),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 226),
     .op .MSTORE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 180),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 162),
     .op .MSTORE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 172),
     .op .MSTORE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 126),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 154),
     .op .MSTORE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 108),
     .op .MSTORE,

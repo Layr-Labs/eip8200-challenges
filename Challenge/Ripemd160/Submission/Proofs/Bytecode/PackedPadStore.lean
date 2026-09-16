@@ -10,11 +10,11 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PairedScheduleMemory StaggerTableSparse
 
 private theorem byte128 (i : Nat) (hi : i < 32) :
-    (Data.Bytes.natToBytesPadded (UInt256.ofNat 128).toNat 32)[i]?.getD 0 =
+    (Data.Bytes.natToBytesPadded (UInt256.ofNat 156).toNat 32)[i]?.getD 0 =
       if i = 31 then 128 else 0 := by
   rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD _ _ _ hi]
   have h : ∀ j : Fin 32,
-      UInt8.ofNat ((UInt256.ofNat 128).toNat / 256 ^ (32 - 1 - j.val) % 256) =
+      UInt8.ofNat ((UInt256.ofNat 156).toNat / 256 ^ (32 - 1 - j.val) % 256) =
         if j.val = 31 then 128 else 0 := by decide
   exact h ⟨i, hi⟩
 
@@ -30,7 +30,7 @@ private theorem bytePacked (i : Nat) (hi : i < 32) :
 /-- The packed store omits only the already-zero bytes at addresses 36 through 53. -/
 theorem pack_two_128 (memory : ByteArray)
     (hzero : ∀ i, 36 ≤ i → i < 54 → memory[i]?.getD 0 = 0) :
-    writeWord (writeWord memory 54 (UInt256.ofNat 128)) 36 (UInt256.ofNat 128) =
+    writeWord (writeWord memory 54 (UInt256.ofNat 156)) 36 (UInt256.ofNat 156) =
       writeWord memory 54 (UInt256.ofNat (128 * (1 + 2 ^ 144))) := by
   apply ByteArray.ext_getElem
   · simp only [writeWord_size]
@@ -56,8 +56,8 @@ clears `[28,1112)` and so satisfies this just as `zeroMemory` does. -/
 theorem after_length_stores_gen (base : ByteArray) (low : UInt256)
     (hz : ∀ i, 36 ≤ i → i < 54 → base[i]?.getD 0 = 0) :
     let preMemory := writeWord (writeWord (writeWord (writeWord
-      base 162 low) 666 low) 144 low) 522 (UInt256.ofNat 128)
-    writeWord (writeWord preMemory 54 (UInt256.ofNat 128)) 36 (UInt256.ofNat 128) =
+      base 162 low) 666 low) 144 low) 522 (UInt256.ofNat 156)
+    writeWord (writeWord preMemory 54 (UInt256.ofNat 156)) 36 (UInt256.ofNat 156) =
       writeWord preMemory 54 (UInt256.ofNat (128 * (1 + 2 ^ 144))) := by
   dsimp only
   apply pack_two_128
@@ -70,8 +70,8 @@ theorem after_length_stores_gen (base : ByteArray) (low : UInt256)
 /-- Arbitrary length values are allowed: their writes cannot touch the omitted prefix. -/
 theorem after_length_stores (memory : ByteArray) (low : UInt256) :
     let preMemory := writeWord (writeWord (writeWord (writeWord
-      (zeroMemory memory) 162 low) 666 low) 144 low) 522 (UInt256.ofNat 128)
-    writeWord (writeWord preMemory 54 (UInt256.ofNat 128)) 36 (UInt256.ofNat 128) =
+      (zeroMemory memory) 162 low) 666 low) 144 low) 522 (UInt256.ofNat 156)
+    writeWord (writeWord preMemory 54 (UInt256.ofNat 156)) 36 (UInt256.ofNat 156) =
       writeWord preMemory 54 (UInt256.ofNat (128 * (1 + 2 ^ 144))) :=
   after_length_stores_gen (zeroMemory memory) low
     (fun i hlo hhi => by rw [zeroMemory_getD, if_pos (by omega)])

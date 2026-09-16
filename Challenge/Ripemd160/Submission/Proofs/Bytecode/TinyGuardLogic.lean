@@ -9,7 +9,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.TinyGuardLogic
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 
 def leadWord (input : ByteArray) : UInt256 :=
-  UInt256.shiftRight (MachineState.readWord input 0) (UInt256.ofNat 232)
+  UInt256.shiftRight (MachineState.readWord input 0) (UInt256.ofNat 260)
 def condition (input : ByteArray) : UInt256 :=
   UInt256.lor (UInt256.xor (leadWord input)
     (UInt256.mul (UInt256.ofNat input.size) (UInt256.ofNat 0x207621)))

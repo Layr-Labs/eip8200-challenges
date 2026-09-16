@@ -28,7 +28,7 @@ def sizeMatched (s : State) (input : ByteArray) (i : Nat) : State :=
 
 def sizeFailed (s : State) (input : ByteArray) (i : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 193
+    pc := UInt256.ofNat 221
     stack := [DriverTrace.messageOffsetWord i, UInt256.ofNat 0x3e7,
       DriverTrace.blockOffsetWord i, Padding.paddedWord input] }
 

@@ -29,7 +29,7 @@ def template : List Instr :=
     .op .XOR,
     .op .XOR,
     .op .ADD,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 990),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 1018),
     .op .MLOAD,
     .op .ADD,
     .op (.Dup ⟨5, by decide⟩),

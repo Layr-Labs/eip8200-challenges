@@ -41,10 +41,10 @@ private theorem eq_zero (n : Nat) (hn : n < 2 ^ 256) (x : UInt256)
 
 theorem flag (x : UInt256) :
     UInt256.isZero (UInt256.land (UInt256.ofNat 1) (UInt256.shiftRight mask x)) =
-      UInt256.isZero (UInt256.lor (UInt256.eq (UInt256.ofNat 56) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 120) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 63) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 64) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 65) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 128) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 119) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 55) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 1) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 31) x) (UInt256.eq (UInt256.ofNat 32) x))))))))))) := by
+      UInt256.isZero (UInt256.lor (UInt256.eq (UInt256.ofNat 56) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 148) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 63) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 64) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 65) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 156) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 119) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 55) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 1) x) (UInt256.lor (UInt256.eq (UInt256.ofNat 31) x) (UInt256.eq (UInt256.ofNat 32) x))))))))))) := by
   by_cases h56 : x = UInt256.ofNat 56
   · subst x; decide
-  by_cases h120 : x = UInt256.ofNat 120
+  by_cases h120 : x = UInt256.ofNat 148
   · subst x; decide
   by_cases h63 : x = UInt256.ofNat 63
   · subst x; decide
@@ -52,7 +52,7 @@ theorem flag (x : UInt256) :
   · subst x; decide
   by_cases h65 : x = UInt256.ofNat 65
   · subst x; decide
-  by_cases h128 : x = UInt256.ofNat 128
+  by_cases h128 : x = UInt256.ofNat 156
   · subst x; decide
   by_cases h119 : x = UInt256.ofNat 119
   · subst x; decide
