@@ -33,22 +33,11 @@ def rawLoad (memory : ByteArray) (i : Nat) : UInt256 :=
 
 /-- Word 3's upper lane falls inside the zero prefix `[0,28)`, so it is rebuilt with
 `DUP1; SHL 144; OR` instead of being read twice. -/
-def cleanPoolWord (memory : ByteArray) (i : Nat) : UInt256 :=
+def poolWord (memory : ByteArray) (i : Nat) : UInt256 :=
   if i = 0 ∨ i = 1 ∨ i = 2 then rawLoad memory i
   else if i = 3 then
     UInt256.lor (UInt256.shiftLeft (UInt256.land poolMask (rawLoad memory 3)) (UInt256.ofNat 144))
       (UInt256.land poolMask (rawLoad memory 3))
-  else UInt256.land poolMask (rawLoad memory i)
-
-/-- Keep word 11 masked: the terminal paired round receives an unmasked D.
-Word 9's mask is dropped at the bytecode level (S51 pops the mask instead of
-applying it); like the eight other unmasked sources it is normalized by the
-ordinary round-sum mask, and `PoolCertificates.slack_sources` re-witnesses the
-three table slots whose zero byte word 9 now occupies. -/
-def poolWord (memory : ByteArray) (i : Nat) : UInt256 :=
-  if i = 3 then
-    UInt256.lor (UInt256.shiftLeft (rawLoad memory 3) (UInt256.ofNat 144)) (rawLoad memory 3)
-  else if i ∈ [0, 1, 2, 8, 9, 10, 12, 13, 14, 15] then rawLoad memory i
   else UInt256.land poolMask (rawLoad memory i)
 
 /-- The two sixteen-byte copies that duplicate the upper scratch word's lanes. -/
@@ -90,6 +79,8 @@ def template : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 102),
     .op .MLOAD,
     .op (.Dup ⟨1, by decide⟩),
+    .op .AND,
+    .op (.Dup ⟨1, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 42),
     .op .MLOAD,
     .op .AND,
@@ -97,10 +88,14 @@ def template : List Instr :=
     .op .MLOAD,
     .op (.Dup ⟨3, by decide⟩),
     .op .AND,
+    .op (.Dup ⟨3, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 76),
     .op .MLOAD,
+    .op .AND,
+    .op (.Dup ⟨4, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 106),
     .op .MLOAD,
+    .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 8),
     .op .MLOAD,
     .push ⟨1, by decide⟩ (UInt256.ofNat 34),
@@ -112,6 +107,8 @@ def template : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 114),
     .op .MLOAD,
     .op (.Dup ⟨9, by decide⟩),
+    .op .AND,
+    .op (.Dup ⟨9, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 38),
     .op .MLOAD,
     .op .AND,
@@ -119,22 +116,28 @@ def template : List Instr :=
     .op .MLOAD,
     .op (.Dup ⟨11, by decide⟩),
     .op .AND,
+    .op (.Dup ⟨11, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 68),
     .op .MLOAD,
+    .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 12),
     .op .MLOAD,
+    .op (.Dup ⟨13, by decide⟩),
+    .op .AND,
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHL,
     .op .OR,
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .MLOAD,
+    .op (.Dup ⟨14, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 110),
     .op .MLOAD,
+    .op .AND,
     .op (.Swap ⟨14, by decide⟩),
-    .op .POP,
     .push ⟨1, by decide⟩ (UInt256.ofNat 72),
-    .op .MLOAD ]
+    .op .MLOAD,
+    .op .AND ]
 
 theorem run_actual_of_small (s : State) (pc : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
@@ -271,10 +274,10 @@ theorem poolWord_dual (memory : ByteArray) (i : Nat) (hi : 4 ≤ i) (w : UInt256
     (hw : w.toNat < 2 ^ 32)
     (hlo : Precompile.bytesToNatPadded memory (poolAddr i + 28) 4 = w.toNat)
     (hhi : Precompile.bytesToNatPadded memory (poolAddr i + 10) 4 = w.toNat) :
-    cleanPoolWord memory i = UInt256.mul coefficient w := by
+    poolWord memory i = UInt256.mul coefficient w := by
   have h0 : ¬ (i = 0 ∨ i = 1 ∨ i = 2) := by omega
   have h3 : ¬ (i = 3) := by omega
-  rw [cleanPoolWord, if_neg h0, if_neg h3, rawLoad]
+  rw [poolWord, if_neg h0, if_neg h3, rawLoad]
   apply Word.word_ext
   rw [Word.word_toNat_land, poolMask, Word.word_toNat_ofNat,
     Nat.mod_eq_of_lt (by norm_num :
@@ -289,7 +292,7 @@ produces the same broadcast. -/
 theorem poolWord_three (memory : ByteArray) (w : UInt256) (hw : w.toNat < 2 ^ 32)
     (hlo : Precompile.bytesToNatPadded memory 40 4 = w.toNat)
     (hhi : Precompile.bytesToNatPadded memory 22 4 = 0) :
-    cleanPoolWord memory 3 = UInt256.mul coefficient w := by
+    poolWord memory 3 = UInt256.mul coefficient w := by
   have h0 : ¬ ((3:Nat) = 0 ∨ (3:Nat) = 1 ∨ (3:Nat) = 2) := by decide
   have hmask : UInt256.land poolMask (rawLoad memory 3) = w := by
     apply Word.word_ext
@@ -300,7 +303,7 @@ theorem poolWord_three (memory : ByteArray) (w : UInt256) (hw : w.toNat < 2 ^ 32
       land_poolMask_nat _ w.toNat 0 hw (by norm_num)
         (by rw [lane_lo]; exact hlo) (by rw [lane_hi]; exact hhi),
       Nat.mul_zero, Nat.zero_add]
-  rw [cleanPoolWord, if_neg h0, if_pos rfl, hmask]
+  rw [poolWord, if_neg h0, if_pos rfl, hmask]
   apply Word.word_ext
   have h1 : w.toNat * 2 ^ 144 < 2 ^ 32 * 2 ^ 144 :=
     (Nat.mul_lt_mul_right (by norm_num : 0 < 2 ^ 144)).mpr hw

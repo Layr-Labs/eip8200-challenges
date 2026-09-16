@@ -7,12 +7,12 @@ set_option linter.unusedSimpArgs false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdHighTrace
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PersistentStaggerTable PersistentStaggerIteration ColdHighPaddingMemory StaggerPersistentFrame
-noncomputable opaque gasSteps_lowRoute (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size)
+noncomputable opaque gasSteps_lowRoute (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0<input.size)
     (i : Nat) (hi : i<DriverTrace.blockCount input) (hh : input.size=DriverTrace.blockOffset i)
-    (hlarge : 5210 ≤ input.size) :
+    (hlarge : 5224≤input.size) :
     GasSteps
-      {states input i with pc:=UInt256.ofNat 4753, stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (LoopCompletionControl.limit input) maskRho}
-      {lowState input i with pc:=UInt256.ofNat 4695, stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (UInt256.ofNat input.size) maskRho} := by
+      {states input i with pc:=UInt256.ofNat 4767, stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (LoopCompletionControl.limit input) maskRho}
+      {lowState input i with pc:=UInt256.ofNat 4709, stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (UInt256.ofNat input.size) maskRho} := by
   let s:=states input i
   let h:=hashes input i
   let off:=DriverTrace.blockOffsetWord i
@@ -33,8 +33,8 @@ noncomputable opaque gasSteps_lowRoute (input : ByteArray) (hfit : CalldataFits 
   have gl:=ColdOrdinarySites.gasSteps_low s Paired144WordRound.factorPlusWord r (by rfl)
     (by simp [r,ColdOrdinaryPrepare.rest,maskRho]) hr ha hsz hc hf hnp
   rw [hcal] at gl
-  have gl' : GasSteps {s with pc:=UInt256.ofNat 4754,stack:=frame h off lim maskRho}
-      {lowState input i with pc:=UInt256.ofNat 4809, stack:=StaggerPad.highZero (UInt256.ofNat input.size)::frame h off lim maskRho} := gl
+  have gl' : GasSteps {s with pc:=UInt256.ofNat 4768,stack:=frame h off lim maskRho}
+      {lowState input i with pc:=UInt256.ofNat 4823, stack:=StaggerPad.highZero (UInt256.ofNat input.size)::frame h off lim maskRho} := gl
   have gf:=ColdOrdinarySites.gasSteps_branch_fall (lowState input i)
     (StaggerPad.highZero (UInt256.ofNat input.size)) (frame h off lim maskRho)
     (by simp [frame,maskRho]) hr (large_branch input hfit hlarge) hc hf hnp

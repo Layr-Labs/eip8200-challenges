@@ -109,19 +109,6 @@ theorem finalMemory_gapClear (input : ByteArray) (hfit : CalldataFits input)
   exact (lengthMemory_below input _ hfit _ (PaddingTrace.lengthStop_le input) _ (by omega)).trans
     (h j hj k hk hk')
 
-theorem finalMemory_extraClear (input : ByteArray) (hfit : CalldataFits input) (i : Nat) :
-    PoolInvariant.ExtraClear (finalMemory input i) := by
-  intro a ha
-  have hb : a < 1056 := by simp only [List.mem_cons, List.not_mem_nil, or_false] at ha; omega
-  unfold finalMemory
-  rw [lengthMemory_below input _ hfit _ (PaddingTrace.lengthStop_le input) a hb]
-  simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
-  rcases ha with rfl | rfl | rfl | rfl
-  all_goals simp only [StaggerTablePad.padRealChain, StaggerTablePad.lowChainOver,
-    PairedScheduleMemory.writeWord, MachineState.writeBytes_getElem?_getD,
-    YulEvmCompiler.BytesLemmas.natToBytesPadded_size, StaggerTableSparse.zeroSuffix_getD]
-  all_goals norm_num
-
 #print axioms finalMemory_blockAt
 #print axioms finalMemory_lowClear
 #print axioms finalMemory_gapClear

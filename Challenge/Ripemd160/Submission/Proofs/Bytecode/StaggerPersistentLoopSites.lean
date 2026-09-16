@@ -14,18 +14,18 @@ open StackRoundTrace StackRoundTemplate StaggerPersistentLoopRaw
 def postTemplate : List Instr := StaggerPersistentLoopRaw.template 465
 
 theorem post_slice :
-    (Artifact.submissionArtifact.instructions.drop 3540).take postTemplate.length = postTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3554).take postTemplate.length = postTemplate := by rfl
 
 def postSite : GenericRoundSite Artifact.submissionArtifact .Osaka postTemplate :=
-  StackSiteBuilder.ofSlice postTemplate 3540 post_slice
-    (by change 3540 + postTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice postTemplate 3554 post_slice
+    (by change 3554 + postTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := postTemplate) (by decide))
     (by decide)
 
-theorem post_pc : postSite.startPC = UInt256.ofNat 4620 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3540) = UInt256.ofNat 4620
+theorem post_pc : postSite.startPC = UInt256.ofNat 4634 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3554) = UInt256.ofNat 4634
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def joinTemplate : List Instr := [.op .JUMPDEST]
@@ -75,13 +75,13 @@ def gasSteps_continue (s : State) (h : Compression.HashState) (off limit : UInt2
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4620, stack := StaggerPersistentFrame.frame h off limit rho}
+    GasSteps {s with pc := UInt256.ofNat 4634, stack := StaggerPersistentFrame.frame h off limit rho}
       {s with pc := UInt256.ofNat 466, stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
-  have gp : GasSteps {s with pc := UInt256.ofNat 4620, stack := StaggerPersistentFrame.frame h off limit rho}
+  have gp : GasSteps {s with pc := UInt256.ofNat 4634, stack := StaggerPersistentFrame.frame h off limit rho}
       {s with pc := UInt256.ofNat 465, stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
-    apply RecognitionLift.gasSteps_of_raw postSite {s with pc := UInt256.ofNat 4620, stack := StaggerPersistentFrame.frame h off limit rho} _ hcode hfork hrun hnp post_pc.symm
+    apply RecognitionLift.gasSteps_of_raw postSite {s with pc := UInt256.ofNat 4634, stack := StaggerPersistentFrame.frame h off limit rho} _ hcode hfork hrun hnp post_pc.symm
     · exact RecognitionLift.advancesAll_sound _ (by decide)
-    · exact run_continue s (UInt256.ofNat 4620) h off limit rho 465 (by omega) hrun hmiss (valid_loop s hcode)
+    · exact run_continue s (UInt256.ofNat 4634) h off limit rho 465 (by omega) hrun hmiss (valid_loop s hcode)
   exact gp.trans (gasSteps_join s (StaggerPersistentFrame.frame h (nextOffset off) limit rho)
     (by simp [StaggerPersistentFrame.frame]; omega) hrun hcode hfork hnp)
 
@@ -91,12 +91,12 @@ def gasSteps_bound (s : State) (h : Compression.HashState) (off limit : UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4620, stack := StaggerPersistentFrame.frame h off limit rho}
-      {s with pc := UInt256.ofNat 4632, stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
-  apply RecognitionLift.gasSteps_of_raw postSite {s with pc := UInt256.ofNat 4620, stack := StaggerPersistentFrame.frame h off limit rho} _ hcode hfork hrun hnp post_pc.symm
+    GasSteps {s with pc := UInt256.ofNat 4634, stack := StaggerPersistentFrame.frame h off limit rho}
+      {s with pc := UInt256.ofNat 4646, stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
+  apply RecognitionLift.gasSteps_of_raw postSite {s with pc := UInt256.ofNat 4634, stack := StaggerPersistentFrame.frame h off limit rho} _ hcode hfork hrun hnp post_pc.symm
   · exact RecognitionLift.advancesAll_sound _ (by decide)
-  · have hr := run_exit s (UInt256.ofNat 4620) h off limit rho 465 (by omega) hrun hhit
-    have he : pcAfter (UInt256.ofNat 4620) (StaggerPersistentLoopRaw.template 465) = UInt256.ofNat 4632 := by decide
+  · have hr := run_exit s (UInt256.ofNat 4634) h off limit rho 465 (by omega) hrun hhit
+    have he : pcAfter (UInt256.ofNat 4634) (StaggerPersistentLoopRaw.template 465) = UInt256.ofNat 4646 := by decide
     rw [he] at hr
     exact hr
 def gasSteps_pad (s : State) (h : Compression.HashState) (off limit : UInt256)
@@ -107,8 +107,8 @@ def gasSteps_pad (s : State) (h : Compression.HashState) (off limit : UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4620, stack := StaggerPersistentFrame.frame h off limit rho}
-      {s with pc := UInt256.ofNat 4753, stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
+    GasSteps {s with pc := UInt256.ofNat 4634, stack := StaggerPersistentFrame.frame h off limit rho}
+      {s with pc := UInt256.ofNat 4767, stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
   exact (gasSteps_bound s h off limit rho hstack hrun hbound hcode hfork hnp).trans
     (StaggerPersistentEntrySites.gasSteps_hit s (nextOffset off) limit h rho hstack hrun hfit hdispatch hcode hfork hnp)
 
@@ -120,8 +120,8 @@ def gasSteps_exit (s : State) (h : Compression.HashState) (off limit : UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4620, stack := StaggerPersistentFrame.frame h off limit rho}
-      {s with pc := UInt256.ofNat 4639, stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
+    GasSteps {s with pc := UInt256.ofNat 4634, stack := StaggerPersistentFrame.frame h off limit rho}
+      {s with pc := UInt256.ofNat 4653, stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
   exact (gasSteps_bound s h off limit rho hstack hrun hbound hcode hfork hnp).trans
     (StaggerPersistentEntrySites.gasSteps_miss s (nextOffset off) limit h rho hstack hrun hfit hdispatch hcode hfork hnp)
 

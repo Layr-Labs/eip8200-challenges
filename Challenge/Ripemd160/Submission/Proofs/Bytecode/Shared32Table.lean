@@ -1,5 +1,3 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolInvariant
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolReference
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Scratch
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13Memory
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerMessage
@@ -129,22 +127,6 @@ theorem copied_writer_memory (input : ByteArray) :
       (wordsRaw (copiedMemory input)) =
       StaggerTableLayout.resultMemory0 (copiedMemory input) (words (copiedMemory input)) :=
   writer_memory _ (copiedMemory_gapClear input) (copiedMemory_low input)
-
-def tableMemory (memory : ByteArray) : ByteArray :=
-  PoolShape.resultMemory false memory
-    (PairedScheduleData.reversedWord (MachineState.readWord memory 1056)) highWord
-
-theorem tableMemory_ready (memory : ByteArray) (hc : PoolShape.Clear memory)
-    (scalar : Nat → UInt32)
-    (hr : StaggerMessage.Ready (StaggerTableLayout.resultMemory0 memory (words memory)) scalar) :
-    StaggerMessage.Ready (tableMemory memory) scalar := by
-  apply PoolInvariant.ready _ _ _ hc
-  rw [PoolReference.reference_eq_writer _ _ _ (PoolInvariant.clear_low memory hc)]
-  change StaggerMessage.Ready (Pair13WriterRaw.writerMemory
-    (fanMemory memory (PairedScheduleData.reversedWord (MachineState.readWord memory 1056)) highWord)
-    (wordsRaw memory)) scalar
-  rw [writer_memory memory (PoolInvariant.clear_gap memory hc) (PoolInvariant.clear_low memory hc)]
-  exact hr
 
 #print axioms table_ready
 #print axioms wordsRaw_eq_high

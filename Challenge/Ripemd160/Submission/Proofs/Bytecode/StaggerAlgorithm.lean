@@ -1,4 +1,4 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerLaneSafe
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerAdaptiveWord
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Paired80Algorithm
 set_option warningAsError true
 set_option maxRecDepth 10000
@@ -88,24 +88,17 @@ theorem adaptive_schedule (i : Fin 77)
         ¬ Dirty Crypto.Ripemd160.r[j.val]!) := by decide
   exact hf i h
 
-def LegacyMessageWord (message : UInt256) (words : Nat → UInt32) (i : Nat) : Prop :=
+def MessageWord (message : UInt256) (words : Nat → UInt32) (i : Nat) : Prop :=
   ∃ jl jr, JunkBound i jl jr ∧ bits message =
     (pack (words Crypto.Ripemd160.r[i]!).toBitVec (words Crypto.Ripemd160.rP[i + 3]!).toBitVec) +
       StaggerRound.junk jl jr
 
-/-- The terminal round keeps the legacy clean representation. Other rounds
-may carry arbitrary inter-lane bits if their lower half cannot carry. -/
-def MessageWord (message : UInt256) (words : Nat → UInt32) (i : Nat) : Prop :=
-  LegacyMessageWord message words i ∨
-    (i ≠ 76 ∧ StaggerLaneSafe.Safe message
-      (words Crypto.Ripemd160.r[i]!) (words Crypto.Ripemd160.rP[i+3]!))
-
 def MessageReady (message : Nat → UInt256) (words : Nat → UInt32) (count : Nat) : Prop :=
   ∀ i < count, MessageWord (message i) words i
 
-theorem step_of_crypto_legacy (words : Nat → UInt32) (i : Nat) (hi : i < 77)
+theorem step_of_crypto (words : Nat → UInt32) (i : Nat) (hi : i < 77)
     (message : UInt256) (l q : CryptoLane)
-    (hm : LegacyMessageWord message words i) :
+    (hm : MessageWord message words i) :
     step i message (packCrypto l q) =
       packCrypto
         (cryptoStep (i / 16) Crypto.Ripemd160.s[i]!
@@ -132,59 +125,6 @@ theorem step_of_crypto_legacy (words : Nat → UInt32) (i : Nat) (hi : i < 77)
       (words Crypto.Ripemd160.r[i]!) (words Crypto.Ripemd160.rP[i + 3]!)
       Crypto.Ripemd160.K[i / 16]! Crypto.Ripemd160.KP[(i + 3) / 16]! l q message jl jr hjl hjr hc hmsg
     simpa only [step, ha, if_neg, ite_false, physicalKey, key, packed32, hleft, hright] using h
-
-theorem message_lanes (message : UInt256) (words : Nat → UInt32) (i : Nat)
-    (h : MessageWord message words i) :
-    message.toNat % 2^32 = (words Crypto.Ripemd160.r[i]!).toNat ∧
-    message.toNat / 2^144 % 2^32 = (words Crypto.Ripemd160.rP[i+3]!).toNat := by
-  rcases h with ⟨jl, jr, hb, he⟩ | ⟨_, hs⟩
-  · have hl := (words Crypto.Ripemd160.r[i]!).toBitVec.isLt
-    have hr := (words Crypto.Ripemd160.rP[i+3]!).toBitVec.isLt
-    have hjl := hb.1
-    have hjr := hb.2.1
-    have hn := StaggerRound.normalize_ofNat_junk
-      (words Crypto.Ripemd160.r[i]!).toBitVec.toNat
-      (words Crypto.Ripemd160.rP[i+3]!).toBitVec.toNat jl jr
-      (by omega) (by omega)
-    rw [← pack_eq_ofNat] at hn
-    rw [normalize_pack] at hn
-    have hnorm : normalize (bits message) =
-        pack (words Crypto.Ripemd160.r[i]!).toBitVec
-          (words Crypto.Ripemd160.rP[i+3]!).toBitVec := by rw [he]; exact hn
-    obtain ⟨hlo, hhi⟩ := pack_injective hnorm
-    constructor
-    · have h := congrArg BitVec.toNat hlo
-      simpa only [low, BitVec.extractLsb'_toNat, Nat.shiftRight_zero,
-        bits_toNat, UInt32.toNat_toBitVec] using h
-    · have h := congrArg BitVec.toNat hhi
-      simpa only [high, BitVec.extractLsb'_toNat, Nat.shiftRight_eq_div_pow,
-        bits_toNat, UInt32.toNat_toBitVec] using h
-  · exact ⟨hs.low, hs.high⟩
-
-theorem step_of_crypto (words : Nat → UInt32) (i : Nat) (hi : i < 77)
-    (message : UInt256) (l q : CryptoLane)
-    (hm : MessageWord message words i) :
-    step i message (packCrypto l q) =
-      packCrypto
-        (cryptoStep (i / 16) Crypto.Ripemd160.s[i]!
-          (words Crypto.Ripemd160.r[i]!) Crypto.Ripemd160.K[i / 16]! l)
-        (cryptoStep (4 - (i + 3) / 16) Crypto.Ripemd160.sP[i + 3]!
-          (words Crypto.Ripemd160.rP[i + 3]!) Crypto.Ripemd160.KP[(i + 3) / 16]! q) := by
-  rcases hm with hm | ⟨_, hs⟩
-  · exact step_of_crypto_legacy words i hi message l q hm
-  · let clean := word (pack (words Crypto.Ripemd160.r[i]!).toBitVec
-      (words Crypto.Ripemd160.rP[i+3]!).toBitVec)
-    have hc : LegacyMessageWord clean words i := by
-      refine ⟨0, 0, ?_, ?_⟩
-      · simp [JunkBound]
-      · simp [clean, bits_word, StaggerRound.junk]
-    have he : step i message (packCrypto l q) = step i clean (packCrypto l q) := by
-      unfold step physicalKey key packed32
-      split
-      · exact StaggerLaneSafe.adaptive_step_congr _ _ _ (mode_valid ⟨i, hi⟩).1 l q _ _ _ _ message hs
-      · exact StaggerLaneSafe.step_congr _ _ _ (mode_valid ⟨i, hi⟩).1 l q _ _ _ _ message hs
-    rw [he]
-    exact step_of_crypto_legacy words i hi clean l q hc
 
 theorem fold_crypto (message : Nat → UInt256) (words : Nat → UInt32)
     (count : Nat) (hcount : count ≤ 77) (l q : CryptoLane)

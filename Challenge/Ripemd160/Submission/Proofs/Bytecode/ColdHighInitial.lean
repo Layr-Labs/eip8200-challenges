@@ -13,7 +13,7 @@ theorem scheduled_byte_above (s : State) (i address : Nat) (ha : 1112≤address)
   unfold scheduledState
   split
   · exact StaggerTablePad.getD_padRealResult_outside s.memory _ address ha
-  · exact PoolInvariant.result_outside false s.memory _ _ address ha
+  · exact StaggerTableLayout.getD_resultMemory0_outside s.memory _ address ha
 
 theorem states_byte_above (input : ByteArray) (n address : Nat) (ha : 1112≤address) :
     (states input n).memory[address]?.getD 0 = (PadSkipEntry.entryState input).memory[address]?.getD 0 := by

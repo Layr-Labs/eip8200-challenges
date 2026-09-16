@@ -19,7 +19,7 @@ def prefixTemplate (table : UInt256) : List Instr :=
   [ .push ⟨1, by decide⟩ (UInt256.ofNat 20),
     .push ⟨1, by decide⟩ (UInt256.ofNat 15),
     .op .CALLDATASIZE,
-    .push ⟨5, by decide⟩ (UInt256.ofNat 345007677684),
+    .push ⟨5, by decide⟩ (UInt256.ofNat 72808268889),
     .op .DIV,
     .op .AND,
     .op (.Dup ⟨1, by decide⟩),
@@ -29,7 +29,7 @@ def prefixTemplate (table : UInt256) : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 12) ]
 
 def selected (table : UInt256) (size : Nat) : UInt256 :=
-  UInt256.add table (UInt256.mul 20 (UInt256.land (UInt256.div 345007677684 (UInt256.ofNat size)) 15))
+  UInt256.add table (UInt256.mul 20 (UInt256.land (UInt256.div 72808268889 (UInt256.ofNat size)) 15))
 
 theorem run_prefix (s : State) (pc table : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1010) (hrun : s.halt = .Running) :
