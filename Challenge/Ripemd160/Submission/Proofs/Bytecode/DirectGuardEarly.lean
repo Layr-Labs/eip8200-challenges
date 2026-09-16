@@ -78,10 +78,10 @@ def gasSteps_checkEarly (input : ByteArray)
     (blockOf _ (pcFactG input 25 35 [KnownInputData.fullWord, referenceWord input]
       (by norm_num) pc_e25)
       (stepG_xor input 35 KnownInputData.fullWord (referenceWord input) [] (by simp) (by norm_num)))
-  have step4 := soundG (pushAt 26 2 (UInt256.ofNat 4831))
+  have step4 := soundG (pushAt 26 2 (UInt256.ofNat 4859))
     (blockOf _ (pcFactG input 26 36 [UInt256.xor KnownInputData.fullWord (referenceWord input)]
       (by norm_num) pc_e26)
-      (stepG_push input 36 2 (UInt256.ofNat 4831)
+      (stepG_push input 36 2 (UInt256.ofNat 4859)
         [UInt256.xor KnownInputData.fullWord (referenceWord input)]
         (by simp) (by decide) (by decide) (by norm_num)))
   have step5 := soundG (opAt 27 .JUMPI)

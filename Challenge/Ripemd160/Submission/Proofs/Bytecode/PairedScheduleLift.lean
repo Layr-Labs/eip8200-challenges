@@ -42,7 +42,7 @@ theorem readWord_offset16 (memory : ByteArray) (offset : Nat)
     (hcurrent32 : current.toNat < 2 ^ 32)
     (hnext32 : next.toNat < 2 ^ 32) :
     MachineState.readWord memory (offset + 16) =
-      UInt256.shiftLeft current (UInt256.ofNat 128) := by
+      UInt256.shiftLeft current (UInt256.ofNat 156) := by
   have hsmall1 : (MachineState.readWord memory offset).toNat < 2 ^ 128 := by
     rw [hcurrent]
     exact hcurrent32.trans (by decide)
@@ -55,12 +55,12 @@ theorem readWord_offset16 (memory : ByteArray) (offset : Nat)
   have hresult : current.toNat * 2 ^ 128 < 2 ^ 256 := by
     norm_num at hcurrent32 ⊢
     omega
-  have hshift : UInt256.shiftLeft current (UInt256.ofNat 128) =
+  have hshift : UInt256.shiftLeft current (UInt256.ofNat 156) =
       UInt256.ofNat (current.toNat * 2 ^ 128) := by
     calc
-      UInt256.shiftLeft current (UInt256.ofNat 128) =
-          UInt256.shiftLeft (UInt256.ofNat current.toNat) (UInt256.ofNat 128) :=
-        congrArg (fun value => UInt256.shiftLeft value (UInt256.ofNat 128))
+      UInt256.shiftLeft current (UInt256.ofNat 156) =
+          UInt256.shiftLeft (UInt256.ofNat current.toNat) (UInt256.ofNat 156) :=
+        congrArg (fun value => UInt256.shiftLeft value (UInt256.ofNat 156))
           (Challenge.EvmProof.Word.word_eq_ofNat_toNat current)
       _ = _ := Challenge.EvmProof.Word.shiftLeft_ofNat current.val.isLt (by decide) hresult
   apply Challenge.EvmProof.Word.word_ext
@@ -75,7 +75,7 @@ theorem read_schedule_upper (memory : ByteArray) (words : Nat → UInt256)
     (hbound : ∀ i, i ≤ 16 → (words i).toNat < 2 ^ 32)
     (i : Nat) (hi : i < 16) :
     MachineState.readWord memory (32 * i + 16) =
-      UInt256.shiftLeft (words i) (UInt256.ofNat 128) := by
+      UInt256.shiftLeft (words i) (UInt256.ofNat 156) := by
   have hnext : MachineState.readWord memory (32 * i + 32) = words (i + 1) := by
     have h := hread (i + 1) (by omega)
     rwa [show 32 * (i + 1) = 32 * i + 32 by omega] at h
@@ -94,7 +94,7 @@ theorem readWord_offset16_wide (memory : ByteArray) (offset : Nat)
     (hcurrent128 : current.toNat < 2 ^ 128)
     (hnext128 : next.toNat < 2 ^ 128) :
     MachineState.readWord memory (offset + 16) =
-      UInt256.shiftLeft current (UInt256.ofNat 128) := by
+      UInt256.shiftLeft current (UInt256.ofNat 156) := by
   have hsmall1 : (MachineState.readWord memory offset).toNat < 2 ^ 128 := by
     rw [hcurrent]; exact hcurrent128
   have hsmall2 : (MachineState.readWord memory (offset + 32)).toNat < 2 ^ 128 := by
@@ -110,12 +110,12 @@ theorem readWord_offset16_wide (memory : ByteArray) (offset : Nat)
       _ ≤ 2 ^ 128 * 2 ^ 128 :=
           Nat.mul_le_mul_right _ (Nat.succ_le_of_lt hcurrent128)
       _ = 2 ^ 256 := hpow
-  have hshift : UInt256.shiftLeft current (UInt256.ofNat 128) =
+  have hshift : UInt256.shiftLeft current (UInt256.ofNat 156) =
       UInt256.ofNat (current.toNat * 2 ^ 128) := by
     calc
-      UInt256.shiftLeft current (UInt256.ofNat 128) =
-          UInt256.shiftLeft (UInt256.ofNat current.toNat) (UInt256.ofNat 128) :=
-        congrArg (fun value => UInt256.shiftLeft value (UInt256.ofNat 128))
+      UInt256.shiftLeft current (UInt256.ofNat 156) =
+          UInt256.shiftLeft (UInt256.ofNat current.toNat) (UInt256.ofNat 156) :=
+        congrArg (fun value => UInt256.shiftLeft value (UInt256.ofNat 156))
           (Challenge.EvmProof.Word.word_eq_ofNat_toNat current)
       _ = _ := Challenge.EvmProof.Word.shiftLeft_ofNat current.val.isLt (by decide) hresult
   apply Challenge.EvmProof.Word.word_ext
@@ -129,7 +129,7 @@ theorem read_schedule_upper_wide (memory : ByteArray) (words : Nat → UInt256)
     (hbound : ∀ i, i ≤ 16 → (words i).toNat < 2 ^ 128)
     (i : Nat) (hi : i < 16) :
     MachineState.readWord memory (32 * i + 16) =
-      UInt256.shiftLeft (words i) (UInt256.ofNat 128) := by
+      UInt256.shiftLeft (words i) (UInt256.ofNat 156) := by
   have hnext : MachineState.readWord memory (32 * i + 32) = words (i + 1) := by
     have h := hread (i + 1) (by omega)
     rwa [show 32 * (i + 1) = 32 * i + 32 by omega] at h
@@ -263,7 +263,7 @@ theorem read_normalized_upper (memory : ByteArray) (words : Nat → UInt256)
     (hbound : ∀ i, i < 16 → (words i).toNat < 2 ^ 32)
     (i : Nat) (hi : i < 16) :
     MachineState.readWord (normalizedMemory memory words) (cell i + 16) =
-      UInt256.shiftLeft (words i) (UInt256.ofNat 128) := by
+      UInt256.shiftLeft (words i) (UInt256.ofNat 156) := by
   have hp := ScheduleLayout.perm_lt i hi
   have h := PairedScheduleOverlap.read_schedule_upper
     (normalizedMemory memory words)
@@ -442,7 +442,7 @@ theorem read_normalized_upper_wide (memory : ByteArray) (words : Nat → UInt256
     (hbound : ∀ i, i < 16 → (words i).toNat < 2 ^ 128)
     (i : Nat) (hi : i < 16) :
     MachineState.readWord (normalizedMemory memory words) (cell i + 16) =
-      UInt256.shiftLeft (words i) (UInt256.ofNat 128) := by
+      UInt256.shiftLeft (words i) (UInt256.ofNat 156) := by
   have hp := ScheduleLayout.perm_lt i hi
   have h := PairedScheduleOverlap.read_schedule_upper_wide
     (normalizedMemory memory words)
@@ -573,7 +573,7 @@ theorem chunkG_lt (value : UInt256) (j : Nat) (hj : j < 8) :
   by_cases hg : j = 1 ∨ j = 2
   · rcases hg with rfl | rfl
     · have h : (chunkG value 1).toNat =
-          (UInt256.shiftRight (reversedWord value) (UInt256.ofNat 192)).toNat := by
+          (UInt256.shiftRight (reversedWord value) (UInt256.ofNat 220)).toNat := by
         simp only [chunkG, DensePacked.shr]
         norm_num
       rw [h]
@@ -675,7 +675,7 @@ theorem read_normalized_extracted (memory : ByteArray) (p i : Nat) (hi : i < 16)
 
 theorem read_normalized_extracted_upper (memory : ByteArray) (p i : Nat) (hi : i < 16) :
     MachineState.readWord (normalizedMemory memory (extractedWord memory p))
-      (cell i + 16) = UInt256.shiftLeft (littleWord memory p i) (UInt256.ofNat 128) := by
+      (cell i + 16) = UInt256.shiftLeft (littleWord memory p i) (UInt256.ofNat 156) := by
   rw [read_normalized_upper _ _ (fun j _ => extractedWord_bound memory p j) _ hi,
     extractedWord_eq_littleWord]
 
@@ -795,11 +795,11 @@ theorem run_firstTemplate (s : State) (pc value : UInt256) (address : Nat)
       some { s with
         pc := pcAfter pc (firstTemplate address)
         stack := value :: rest
-        memory := writeWord s.memory address (UInt256.shiftRight value (UInt256.ofNat 224))
+        memory := writeWord s.memory address (UInt256.shiftRight value (UInt256.ofNat 252))
         activeWords := UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) } := by
   have h1 := run_duplicateShiftTemplate s pc value 224 rest hstack hrun
   have h2 := run_storeTemplate s (pcAfter pc (duplicateShiftTemplate 224))
-    (UInt256.shiftRight value (UInt256.ofNat 224)) address (value :: rest)
+    (UInt256.shiftRight value (UInt256.ofNat 252)) address (value :: rest)
     (by simp only [List.length_cons]; omega) haddress hrun
   unfold firstTemplate
   rw [DenseScheduleTrace.pcAfter_append]
@@ -858,7 +858,7 @@ open YulEvmCompiler
 open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory PairedScheduleStores
 
 def chunkValue (value : UInt256) (j : Nat) : UInt256 :=
-  if j = 0 then UInt256.shiftRight value (UInt256.ofNat 224)
+  if j = 0 then UInt256.shiftRight value (UInt256.ofNat 252)
   else if j = 7 then Challenge.EvmProof.Word.mask32 value
   else Challenge.EvmProof.Word.mask32
     (UInt256.shiftRight value (UInt256.ofNat (32 * (7 - j))))

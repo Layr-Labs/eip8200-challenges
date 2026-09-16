@@ -20,14 +20,14 @@ open private word_add_assoc word_add_ofNat_assoc add_ofNat_assoc
   from Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTrace
 
 theorem mask8_div :
-    UInt256.lnot (UInt256.ofNat 0) / UInt256.ofNat 257 = mask8 := by decide
+    UInt256.lnot (UInt256.ofNat 0) / UInt256.ofNat 285 = mask8 := by decide
 
 theorem mask16_div :
     UInt256.lnot (UInt256.ofNat 0) / UInt256.ofNat 65537 = mask16 := by decide
 
 /-- Minimal-width factors for the restored output schedule. -/
 def factorPush (shift : Nat) : Instr :=
-  if shift = 8 then .push ⟨2, by decide⟩ (UInt256.ofNat 257)
+  if shift = 8 then .push ⟨2, by decide⟩ (UInt256.ofNat 285)
   else .push ⟨3, by decide⟩ (UInt256.ofNat 65537)
 
 /-- Keep the factor below the XOR operands. -/

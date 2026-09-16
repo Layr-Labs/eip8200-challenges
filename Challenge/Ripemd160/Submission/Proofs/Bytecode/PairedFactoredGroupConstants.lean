@@ -11,14 +11,14 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace DenseScheduleTemplate
 
 theorem upper_value :
-    UInt256.shiftLeft (UInt256.ofNat 0x50a28be6) (UInt256.ofNat 128) =
+    UInt256.shiftLeft (UInt256.ofNat 0x50a28be6) (UInt256.ofNat 156) =
       UInt256.ofNat 460344169260758029377710773882198039553172832256 := by decide
 
 #print axioms upper_value
 
 theorem mixed_value :
     UInt256.lor (UInt256.ofNat 0x5a827999)
-      (UInt256.shiftLeft (UInt256.ofNat 0x5c4dd124) (UInt256.ofNat 128)) =
+      (UInt256.shiftLeft (UInt256.ofNat 0x5c4dd124) (UInt256.ofNat 156)) =
       UInt256.ofNat 526962527014005041256681316140890030896371104153 := by decide
 
 #print axioms mixed_value

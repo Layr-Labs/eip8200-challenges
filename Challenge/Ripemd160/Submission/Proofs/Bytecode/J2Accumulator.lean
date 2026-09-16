@@ -67,7 +67,7 @@ private theorem full_projection (k : Fin 32) :
 
 private theorem full_width_pos : ∀ k : Fin 32, 0 < width 1000 k.val := by decide
 
-private theorem shr256 (x : UInt256) : UInt256.shiftRight x (UInt256.ofNat 256) = 0 := by
+private theorem shr256 (x : UInt256) : UInt256.shiftRight x (UInt256.ofNat 284) = 0 := by
   rfl
 
 private theorem shrink (a b : UInt256) (p q : Nat) (hp : p < 256) (hq : q < 256)
@@ -142,7 +142,7 @@ theorem resultAcc_zero_iff (input : ByteArray) (n : Nat) (hn : Allowed n)
     exact (projection n k hn1000 hk).symm
 
 theorem modulus_constructor :
-    UInt256.shiftLeft (UInt256.ofNat 2) (UInt256.ofNat 144) =
+    UInt256.shiftLeft (UInt256.ofNat 2) (UInt256.ofNat 172) =
       UInt256.shiftLeft (UInt256.ofNat 1) (UInt256.ofNat 145) := by decide
 
 #print axioms resultAcc_zero_iff

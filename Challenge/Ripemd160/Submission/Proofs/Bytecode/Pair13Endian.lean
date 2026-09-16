@@ -23,7 +23,7 @@ def stage8 (wide : Bool) : List Instr :=
     .op .XOR,
     .op (.Dup ⟨15, by decide⟩),
     .op .AND,
-    (if wide then .push ⟨2, by decide⟩ (UInt256.ofNat 257) else .push ⟨2, by decide⟩ (UInt256.ofNat 257)),
+    (if wide then .push ⟨2, by decide⟩ (UInt256.ofNat 285) else .push ⟨2, by decide⟩ (UInt256.ofNat 285)),
     .op .MUL,
     .op .XOR ]
 
@@ -40,7 +40,7 @@ def stage16 : List Instr :=
     .op .XOR ]
 
 private def raw8 (v : UInt256) : UInt256 :=
-  UInt256.xor (UInt256.mul (UInt256.ofNat 257) (UInt256.land mask8 (UInt256.xor v (UInt256.shiftRight v (UInt256.ofNat 8))))) v
+  UInt256.xor (UInt256.mul (UInt256.ofNat 285) (UInt256.land mask8 (UInt256.xor v (UInt256.shiftRight v (UInt256.ofNat 8))))) v
 
 theorem run_stage8 (s : State) (pc v ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UInt256)
     (rho : List UInt256) (wide : Bool) (hstack : rho.length ≤ 990) (hrun : s.halt = .Running) :
@@ -231,8 +231,8 @@ def template : List Instr :=
 theorem run_template (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UInt256)
     (rho : List UInt256) (p : Nat) (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
     (hp : 1056 ≤ p) (hbound : p + 64 < 2 ^ 256)
-    (hq1 : off + UInt256.ofNat 1088 = UInt256.ofNat (p + 32))
-    (hq0 : off + UInt256.ofNat 1056 = UInt256.ofNat p) :
+    (hq1 : off + UInt256.ofNat 1116 = UInt256.ofNat (p + 32))
+    (hq0 : off + UInt256.ofNat 1084 = UInt256.ofNat p) :
     runInstrSeq template {s with pc := pc, stack := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho} =
       some {s with
         pc := pcAfter pc template
@@ -284,7 +284,7 @@ theorem run_template (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim 
   exact h
 
 theorem exact_bytes : assembleBytes template = [97,4,64,140,1,81,128,96,8,28,129,24,143,22,97,1,1,2,24,143,129,128,96,16,28,24,22,98,1,0,1,2,24,96,96,82,91,97,4,32,140,1,81,128,96,8,28,129,24,143,22,97,1,1,2,24,143,129,128,96,16,28,24,22,98,1,0,1,2,24,128,96,46,82,96,28,82] := by decide
-theorem end_pc : pcAfter (UInt256.ofNat 466) template = UInt256.ofNat 543 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 494) template = UInt256.ofNat 571 := by decide
 #print axioms run_template
 #print axioms exact_bytes
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13Endian

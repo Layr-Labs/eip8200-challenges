@@ -9,8 +9,8 @@ open PersistentStaggerTable PersistentStaggerIteration ColdHighPaddingMemory Sta
 noncomputable opaque gasSteps_normal (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0<input.size) (i : Nat)
     (hi : i<DriverTrace.blockCount input) :
-    GasSteps {paddedState input i with pc:=UInt256.ofNat 466,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (Padding.paddedWord input) maskRho}
-      {tableState input i with pc:=UInt256.ofNat 868,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (Padding.paddedWord input) maskRho} := by
+    GasSteps {paddedState input i with pc:=UInt256.ofNat 494,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (Padding.paddedWord input) maskRho}
+      {tableState input i with pc:=UInt256.ofNat 896,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (Padding.paddedWord input) maskRho} := by
   let h:=hashes input i
   let off:=DriverTrace.blockOffsetWord i
   have hc : (paddedState input i).executionEnv.code=Artifact.submissionArtifact.code := states_code input i
@@ -18,14 +18,14 @@ noncomputable opaque gasSteps_normal (input : ByteArray) (hfit : CalldataFits in
   have hr : (paddedState input i).halt=.Running := states_halt input i
   have hnp:=states_noPrecompile input i
   have hb:=messagePointer_bound input hfit i hi
-  have hq0 : off+UInt256.ofNat 1056=UInt256.ofNat (messagePointer i) := by
-    change UInt256.ofNat (DriverTrace.blockOffset i)+UInt256.ofNat 1056=_
+  have hq0 : off+UInt256.ofNat 1084=UInt256.ofNat (messagePointer i) := by
+    change UInt256.ofNat (DriverTrace.blockOffset i)+UInt256.ofNat 1084=_
     rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb;omega)]
     unfold messagePointer Padding.messageOffset
     congr 1
     omega
-  have hq1 : off+UInt256.ofNat 1088=UInt256.ofNat (messagePointer i+32) := by
-    change UInt256.ofNat (DriverTrace.blockOffset i)+UInt256.ofNat 1088=_
+  have hq1 : off+UInt256.ofNat 1116=UInt256.ofNat (messagePointer i+32) := by
+    change UInt256.ofNat (DriverTrace.blockOffset i)+UInt256.ofNat 1116=_
     rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb;omega)]
     unfold messagePointer Padding.messageOffset
     congr 1
