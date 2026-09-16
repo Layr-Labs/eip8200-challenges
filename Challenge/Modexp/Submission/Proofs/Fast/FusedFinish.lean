@@ -10,14 +10,14 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open WindowNibbleKernel WindowTwentyOneBinding
 
 def program : List Instr := [.op .JUMPDEST, .op .POP]
-def block : Block Artifact.submissionArtifact .Osaka 1047 program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 713 2 1047 program
+def block : Block Artifact.submissionArtifact .Osaka 782 program :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 564 2 782 program
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem run (s : State) (mem : ByteArray) (count : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000) :
-    runInstructions program (Exp.retTo s mem (UInt256.ofNat 1047) (count::rest)) =
-      some (Exp.retTo s mem (UInt256.ofNat 1049) rest) := by
+    runInstructions program (Exp.retTo s mem (UInt256.ofNat 782) (count::rest)) =
+      some (Exp.retTo s mem (UInt256.ofNat 784) rest) := by
   have hlen : rest.length+1 < 1024 := by omega
   simp [program, runInstructions, Challenge.EvmProof.Stepper.runInstr, Exp.retTo, hlen,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.literal_eq_ofNat]
@@ -28,8 +28,8 @@ def gasSteps (s : State) (mem : ByteArray) (count : UInt256) (rest : List UInt25
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps (Exp.retTo s mem (UInt256.ofNat 1047) (count::rest))
-      (Exp.retTo s mem (UInt256.ofNat 1049) rest) :=
+    Challenge.EvmProof.GasSteps (Exp.retTo s mem (UInt256.ofNat 782) (count::rest))
+      (Exp.retTo s mem (UInt256.ofNat 784) rest) :=
   block.steps ⟨by change submissionBytecode.size < 2^256; rw [submissionBytecode_size]; decide,
     hcode, hfork, hrun, hnp⟩ rfl (run s mem count rest hcap)
 

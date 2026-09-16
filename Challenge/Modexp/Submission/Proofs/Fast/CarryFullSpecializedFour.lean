@@ -4,8 +4,6 @@ set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
 
-noncomputable section
-
 namespace Challenge.Modexp.Submission.Proofs.Fast.CarryFull
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
@@ -14,51 +12,19 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch
 open CiosCached CiosCachedMidMemory CarryIface
+open Challenge.Modexp.Submission.Proofs.Fast.CarryRows
 open CarryRowModel CarryResult StagedOperand
 
-/-- A four-limb multiply: `mul entry` (pc 4013) → `common` → `setup` → the four rows (row head
-`hd = 4289`) → the final subtraction (pc 2432). -/
-opaque gasSteps_specializedFour (E : EntryLemmas) (s : State) (mem : ByteArray)
-    (pa pb : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 88 ≤ s.activeWords.toNat)
-    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * 4 ≤ 2048)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 4 ≤ 2048)
-    (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * 4))
-    (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * 4))
-    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * 4 - 32))
-    (hminv : inverseInvariant mem 4)
-    (hguard : MachineState.readWord mem 2720 ≠ UInt256.ofNat 1) :
-    Challenge.EvmProof.GasSteps
-      (dispatchState s mem pa pb pdst ret rest)
-      (mpCsubState s (rowsCarry (mpZeroed s (stage mem pa 4) 4) pa pb 4 4) pdst ret rest) := by
-  have hread (addr : Nat) (hd : addr+32 ≤ 2048 ∨ 2624 ≤ addr) :
-      MachineState.readWord (stage mem pa 4) addr = MachineState.readWord mem addr :=
-    read_stage_outside mem pa 4 addr (by omega)
-  have hminv' : inverseInvariant (stage mem pa 4) 4 := by
-    simpa only [inverseInvariant,
-      hread (32*4-32) (Or.inl (by decide)),
-      hread 2720 (Or.inr (by decide))] using hminv
-  refine (E.gasSteps_mulEntry s mem pa pb pdst ret rest (by omega) hrun hcode hfork hnp).trans ?_
-  refine (E.gasSteps_commonSetup s mem (UInt256.ofNat 3358) pa pb 4 pdst ret rest hcap hrun hcode
-    hfork hnp hact (by decide) (by omega) hpb (by omega) hcds hs32 hml jumpDest_rowHead hguard
-      (CiosInverseGuard.inverse_ne_zero _ _ hminv)).trans ?_
-  exact gasSteps_rowsFour s (stage mem pa 4) pa pb
-    (MachineState.readWord mem 2784) (MachineState.readWord mem 2720)
-    (MachineState.readWord mem (32*4-32)) (UInt256.ofNat (pa+32*4-32))
-    (MachineState.readWord mem 96) (MachineState.readWord mem 64)
-    (MachineState.readWord mem 32) pdst ret rest hcap hrun hcode hfork hnp hact
-    (Or.inl hpaFit) hpb hpbFit hminv'
-    ⟨htl, (hread 2720 (Or.inr (by decide))).symm,
-      (hread (32*4-32) (Or.inl (by decide))).symm, hguard⟩
-    ⟨(hread 96 (Or.inl (by decide))).symm,
-      (hread 64 (Or.inl (by decide))).symm,
-      (hread 32 (Or.inl (by decide))).symm⟩ rfl
-    (snapshot_stage mem pa 4 hpaFit)
+-- DELETED with the 3209 multiply-entry cone.  This routine began at
+-- `Cios2Dispatch.dispatchState` (pc 3209) and its first step was
+-- `E.gasSteps_mulEntry`, which located a `JUMPDEST; PUSH2 <mul row head>` block at
+-- instruction 2386.  That block is ABSENT from this artifact: the `PUSH2` was HOISTED into
+-- the fused frame program at pc 3414..3454, where the single `PUSH2 3465` in the whole
+-- 5,428-byte program sits (instruction 2766).  Instruction 2386 is pc 2919; pc 3209 is
+-- `ISZERO`; `common` at pc 3327 is entered from exactly one site, the SQUARE call.
+-- Absence of code, not a wrong constant -- there was nothing to renumber it to.
+-- Its only consumer was `CarryFullFast`, deleted with it, and that chain ended at
+-- `Exp.Subroutines.monpro`, which had zero consumers tree-wide.
+
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryFull

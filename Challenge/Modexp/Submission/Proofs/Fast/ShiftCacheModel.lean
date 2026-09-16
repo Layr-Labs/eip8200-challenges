@@ -10,10 +10,10 @@ open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
 
 /-- The conversion entry the E5 block stores at 1698. The old artifact cycled through four cell
-entries at `2951 + 39 * ((-n) &&& 3)`; the new one has exactly two, the eight-limb chain head and
-the four-limb one 0x91 bytes later, so the word is a two-way choice on the limb count. -/
+entries at `2951 + 39 * ((-n) &&& 3)`; the new one has exactly two, the eight-limb chain head (2800) and
+the four-limb one (2945) 0x91 = 145 bytes later, so the word is a two-way choice on the limb count. -/
 def entryWord (n : Nat) : UInt256 :=
-  UInt256.ofNat (if n = 4 then 2827 else 2682)
+  UInt256.ofNat (if n = 4 then 2945 else 2800)
 
 /-- The same value in the MAC chain's own vocabulary, for the section lemma's cache hypothesis. -/
 theorem entryWord_eq_entryPC (n : Nat) (hn : n = 4 ∨ n = 8) :

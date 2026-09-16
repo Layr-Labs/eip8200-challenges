@@ -33,6 +33,12 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
     (hmsz : msize = Challenge.Modexp.modulusSize input)
     (hmm : mm = Precompile.bytesToNatPadded input (96 + bsize + esize) msize)
     (hodd : mm % 2 = 1) (hradix : Limbs.radix ≤ mm) (hm : 0 < mm)
+    -- S1/S1b.  Both bail arms below (`handled_of_entryStateConcrete`'s recogniser
+    -- miss and `handled_of_asymmetric_three`'s unaccelerated width) finish in
+    -- `modexpBig`, which wants `ValidInput` and an UPPER bound on `activeWords`.
+    -- Both are already in scope at `ShiftCorrect.handled_of_dispatch`.
+    (hvalid : Challenge.Modexp.ValidInput input)
+    (hactLe : s.activeWords.toNat ≤ 289)
     (hframe : Exp.Frame mem n bsize minv)
     (hmod : Model.FastRepresents mem 0 n mm)
     (hone : Model.FastRepresents mem 768 n 0)
@@ -69,7 +75,7 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
     exact FixedDirectCorrect.prepend tr
       (RootE3Hit.handled_of_entry_asymmetric_three input s (e3Output mem input n mm k)
         n bsize msize mm minv X Y (Limbs.radix ^ (3 * k)) (Limbs.radix ^ (2 * k))
-        sub spec hcode hfork hrun hnp hdata hb hstack hact hn hn8 hmz hm32
+        sub spec hcode hfork hrun hnp hdata hb hstack hact hvalid hactLe hn hn8 hmz hm32
         hbsize hesize hmsz hmm hm (Model.coprime_radix_pow_of_odd hodd n) hradix
         (Nat.mod_lt _ hm) hxform hyform hscale hexp hf hmrep hx hy (Nat.mod_lt _ hm) ⟨0, Limbs.radix_pos, ho⟩)
   · let final := ordinaryOutput mem input n mm
@@ -77,15 +83,12 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
     let baseM := base % mm * Limbs.radix ^ n % mm
     have facts := ordinary_output_facts mem input n bsize mm minv
       hn hn8 hm hodd hframe hmod hmatch.2 hone
-    rcases facts with ⟨hf, hmrep, hbRep, haRep, ho, hr1⟩
-    have hEb : Exp.EbInv (Exp.mcopyMem final 256 1024 (32 * n)) n mm baseM
-        (Exp.expAcc mm (Limbs.radix ^ n) baseM (Exp.expBits input bsize) 0) := by
-      refine ⟨?_, ?_, ?_, ?_⟩
-      · exact Csub.fastRepresents_mcopy_disjoint _ 1024 256 (32 * n) 0 n mm (by omega) hmrep
-      · exact Csub.fastRepresents_mcopy _ 1024 256 n (Limbs.radix ^ n % mm) (by omega) hr1
-      · exact Csub.fastRepresents_mcopy_disjoint _ 1024 256 (32 * n) 512 n baseM (by omega) hbRep
-      · exact ⟨0, Limbs.radix_pos,
-          Csub.fastRepresents_mcopy_disjoint _ 1024 256 (32 * n) 768 n 0 (by omega) ho⟩
+    rcases facts with ⟨hf, hmrep, hbRep, haRep, ho, _hr1⟩
+    -- S1.  The `Exp.EbInv` witness that used to be built here fed the generic-miss
+    -- continuation argument of `handled_of_entryStateConcrete`.  That argument is
+    -- gone: the recogniser misses now bail into `modexpBig` instead of rejoining
+    -- the inherited exponent loop, so `FixedDirectCorrect.handled_of_entryState`
+    -- no longer takes a `generic` continuation at all.
     have hbForm : baseM ≡ Precompile.bytesToNatPadded input 96 bsize * Limbs.radix ^ n [MOD mm] := by
       rw [hbEq]
       exact (Nat.mod_modEq _ mm).trans ((Nat.mod_modEq base mm).mul_right _)
@@ -94,9 +97,10 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
     exact FixedDirectCorrect.prepend (ordinaryTrace hE3)
       (FixedDirectCorrect.handled_of_entryStateConcrete input s final
         n bsize esize msize mm minv baseM sub spec
-        hcode hfork hrun hnp hdata hstack hact hn hn8 hb he hmz hm32
+        hcode hfork hrun hnp hdata hstack hact hvalid hactLe hn hn8 hb he hmz hm32
         hbsize hesize hmsz hmm hodd hradix (Nat.mod_lt _ hm) hbForm
-        hf hmrep hbRep ⟨0, Limbs.radix_pos, ho⟩ hEb ⟨base % mm, haRep, (Nat.mod_modEq base mm).trans hrawForm, Nat.mod_lt _ hm⟩)
+        hf hmrep hbRep ⟨0, Limbs.radix_pos, ho⟩
+        ⟨base % mm, haRep, (Nat.mod_modEq base mm).trans hrawForm, Nat.mod_lt _ hm⟩)
 
 #print axioms handled_of_shift_hit
 end RootE3Correct
@@ -129,12 +133,15 @@ theorem handled_of_bound_shift_hit (input : ByteArray) (s : State) (mem : ByteAr
     (hone : Model.FastRepresents mem 768 n 0)
     (hmatch : FullBase.Matches mem n bsize)
     (hfast : n = 4 ∨ n = 8)
+    -- S1/S1b, threaded straight through to the two `modexpBig` bails.
+    (hvalid : Challenge.Modexp.ValidInput input)
+    (hactLe : s.activeWords.toNat ≤ 289)
     (bindings : RootE3Trace.TraceBindings s mem input n bsize esize msize) :
     FixedExponentRoute.Handled input (Shift.dispState s mem n bsize esize msize) := by
   let e : Shift.Env s := ⟨hcode, hfork, hrun, hnp, hact⟩
   apply handled_of_shift_hit input s mem n bsize esize msize mm minv sub spec
     hcode hfork hrun hnp hdata hstack hact hn hn8 hb he hmz hm32 hbsize hesize hmsz
-    hmm hodd hradix hm hframe hmod hone hmatch
+    hmm hodd hradix hm hvalid hactLe hframe hmod hone hmatch
   · intro h
     exact RootE3Trace.ordinaryTrace s mem input n bsize esize msize mm minv bindings
       hn hn8 e hm hodd hframe hmod hmatch.2 h hfast
