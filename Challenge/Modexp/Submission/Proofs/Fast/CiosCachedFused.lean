@@ -228,19 +228,31 @@ Where `c` is already zero, `PUSH0` produces the same word for one gas less.  Eve
 is that one substitution: `run_fused_zero` has the *same* conclusion as `run_fused`, only under
 the extra hypothesis `c = 0`, and is derived from `run_fused` rather than reproved. -/
 
-/-- `headProgram` with the incoming-carry `DUP4` replaced by `PUSH0` (both one byte). -/
+/-- `headProgram` with the incoming-carry `DUP4` *and* the `PUSH0; ADD` that consumed it both
+folded to `JUMPDEST`s: on a zero-carry frame `DUP4; ADD` adds `c = 0`, so the whole pair is a
+stack-neutral no-op.  Two `JUMPDEST`s keep the byte length and are three gas cheaper. -/
 private def headZeroProgram : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩),
    .op .GT, .op .SUB, .op (.Dup ⟨1, by decide⟩),
-   .push 0 0, .op .ADD]
+   .op .JUMPDEST, .op .JUMPDEST]
 
 private theorem post_zero_eq (tl ts : UInt256) :
     macFusedPostZeroProgram tl ts = (headZeroProgram ++ memoryProgram tl ts) ++ tailProgram := rfl
 
 private theorem push0_ofNat : (⟨0⟩ : UInt256) = UInt256.ofNat 0 := by decide
 
-/-- On a zero-carry frame the two heads agree: `PUSH0` and the `DUP4` of a zero slot both push
-zero, and `PUSH0` advances the pc by the same single byte. -/
+/-- `w + 0 = w` on words: the folded head leaves `lo` where the general head leaves
+`lo + ofNat 0`, and this rewrite keeps the two statements aligned. -/
+private theorem word_add_ofNat_zero (w : UInt256) : w + UInt256.ofNat 0 = w := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_add,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+  have h : w.toNat < 2 ^ 256 := w.val.isLt
+  omega
+
+/-- On a zero-carry frame the two heads agree: the folded `JUMPDEST; JUMPDEST` leaves `lo`
+where the general head's `DUP4; ADD` leaves `lo + ofNat 0`, and `word_add_ofNat_zero` closes
+the gap.  Both advance the pc by the same seven bytes. -/
 private theorem run_head_zero (template : State) (pc mm lo y : UInt256)
     (rest : List UInt256) (hrest : rest.length + 8 < 1024) :
     runInstructions headZeroProgram
@@ -252,7 +264,8 @@ private theorem run_head_zero (template : State) (pc mm lo y : UInt256)
   simp (disch := omega) [runInstructions, headZeroProgram, framed,
     Challenge.EvmProof.Stepper.runInstr, List.getElem?_cons_zero,
     List.getElem?_cons_succ, hcap, Nat.add_assoc, hc, push0_ofNat, UInt256.gt, UInt256.lt,
-    succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
+    succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod,
+    word_add_ofNat_zero]
 
 /-- The zero-carry post schedule runs exactly as the general one does. -/
 private theorem run_post_zero_eq (template : State) (pc mm lo y tl ts : UInt256)
