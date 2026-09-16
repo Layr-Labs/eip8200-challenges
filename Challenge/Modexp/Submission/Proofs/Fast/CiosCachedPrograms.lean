@@ -263,7 +263,7 @@ def l2DispatchProgram : List Instr :=
 went to the very next pc and cost 11 gas for nothing -- the copy ends in an explicit
 `PUSH2 0x0ee8 JUMP`, so the shared ladder no longer has to carry a continuation at all. -/
 def l2ExitProgram : List Instr :=
-  [.push 2 3930, .op .JUMP]
+  [.push 2 3816, .op .JUMP]
 
 def joinProgram : List Instr :=
   [.op .JUMPDEST]

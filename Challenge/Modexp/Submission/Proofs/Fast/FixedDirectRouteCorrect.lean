@@ -1,10 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Fast.FixedDirectHitCorrect
 import Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectEntryTrace
--- S1b.  The bail lands in `modexpBig`; these are the same two modules S1 imported
--- into `ShiftCorrect` for the 2350 bail.  Neither depends on the FixedDirect
--- subtree (checked: their import closures are pure `Proofs.Bytecode`), so no cycle.
-import Challenge.Modexp.Submission.Proofs.Bytecode.BigCUMain
-import Challenge.Modexp.Submission.Proofs.Bytecode.BigCUBlocks
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -20,58 +15,6 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.FixedExponentRoute
 open Challenge.Modexp.Submission.Proofs.Fast.FixedExponentRouteLogic
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
-/-- **S1b.** The diverted recogniser miss, discharged in `modexpBig`.
-
-`bigC_correct` re-reads the header from calldata and is universal in the incoming
-memory and stack, so the frame the fast path built is simply discarded; nothing
-about it has to be carried across.  `bailState` and `bigCState` are record updates
-of `s` touching only `pc`, `stack` and `memory`, so every environment field and
-both side conditions are `s`'s DEFINITIONALLY. -/
-private def bailHandled (input : ByteArray) (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hvalid : Challenge.Modexp.ValidInput input)
-    (hactLe : s.activeWords.toNat ≤ 289)
-    (hpos : 0 < Challenge.Modexp.modulusSize input)
-    (h : Challenge.EvmProof.GasSteps
-      (entryState s memory n bsize esize msize)
-      (FixedDirectStates.bailState s memory n bsize esize msize)) :
-    Handled input (entryState s memory n bsize esize msize) := by
-  have htramp := FixedDirectFallbackTrace.gasSteps_bail s memory
-    n bsize esize msize hcode hfork hrun hnp
-  -- `hdata` is stated about `s`, and `rw` is syntactic, not up to defeq; naming
-  -- the bail state's spelling once is what lets it fire below.
-  have hcd : (FixedDirectStates.bigCState s memory n bsize esize msize).executionEnv.calldata
-      = input := hdata
-  have env : WindowTwentyOneBinding.Environment Artifact.submissionArtifact .Osaka
-      (FixedDirectStates.bigCState s memory n bsize esize msize) :=
-    { sizeBound := by
-        change Challenge.Modexp.submissionBytecode.size < 2 ^ 256
-        rw [Challenge.Modexp.submissionBytecode_size]
-        decide
-      code := by
-        simpa [FixedDirectStates.bigCState, Artifact.submissionArtifact] using hcode
-      forkEq := by simpa [FixedDirectStates.bigCState] using hfork
-      running := by simpa [FixedDirectStates.bigCState] using hrun
-      noPrecompile := by simpa [FixedDirectStates.bigCState] using hnp }
-  obtain ⟨final, ⟨tail⟩, hdone, hres⟩ :=
-    BigC.U.bigC_correct BigC.UBlocks.setupBlocks BigC.UBlocks.expBlocks
-      BigC.UBlocks.mulBlocks BigC.UBlocks.unsignedBlocks
-      (FixedDirectStates.bigCState s memory n bsize esize msize)
-      env rfl
-      (by simp [FixedDirectStates.bigCState, FixedDirectStates.outer, Exp.outer])
-      (show (FixedDirectStates.bigCState s memory n bsize esize msize).activeWords.toNat
-        ≤ 289 from hactLe)
-      (show (FixedDirectStates.bigCState s memory n bsize esize msize).callStack
-        = [] from hstack)
-      (by rw [hcd]; exact hvalid)
-      (by rw [hcd]; exact hpos)
-  exact ⟨final, ⟨(h.trans htramp).trans tail⟩, hdone, by rw [hres, hcd]⟩
 
 private theorem prepend {input : ByteArray} {start middle : State}
     (head : Challenge.EvmProof.GasSteps start middle)
@@ -90,12 +33,6 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
     (hactive : 89 ≤ s.activeWords.toNat)
-    -- S1b.  `bigC_correct` needs an UPPER bound on `activeWords` (every such
-    -- hypothesis in this tree is a lower bound) and the `size < 2 ^ 64` component
-    -- of `ValidInput`, which the dispatch layer does not carry.  Both are already
-    -- in scope at `ShiftCorrect.handled_of_dispatch`, where this chain terminates.
-    (hvalid : Challenge.Modexp.ValidInput input)
-    (hactLe : s.activeWords.toNat ≤ 289)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hb : bsize ≤ 1024)
     (he : esize ≤ 1024) (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
@@ -123,13 +60,13 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
         intro hv
         apply hnot
         exact ⟨16, Case.fermat rfl hv⟩
-      exact bailHandled input s memory n bsize 3 msize
-        hcode hfork hrun hnp hdata hstack hvalid hactLe (by omega)
-        ((FixedDirectDispatchTrace.gasSteps_entry_three s memory
-          n bsize msize hcode hfork hrun hnp).trans
-          (FixedDirectValueTrace.gasSteps_check65537_miss s memory input
-            n bsize msize hb hv hdata hactive hframe.eoff
-            hcode hfork hrun hnp))
+      exact ((FixedDirectDispatchTrace.gasSteps_entry_three s memory
+        n bsize msize hcode hfork hrun hnp).trans
+        (FixedDirectValueTrace.gasSteps_check65537_miss s memory input
+          n bsize msize hb hv hdata hactive hframe.eoff
+          hcode hfork hrun hnp)).trans
+        (FixedDirectFallbackTrace.gasSteps_fallback s memory
+          n bsize 3 msize hn hn32 hactive hcode hfork hrun hnp)
     · have hentry := FixedDirectDispatchTrace.gasSteps_entry_other
         s memory n bsize esize msize h3 he hcode hfork hrun hnp
       by_cases h1 : esize = 1
@@ -138,19 +75,19 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
           intro hv
           apply hnot
           exact ⟨1, Case.three rfl hv⟩
-        exact bailHandled input s memory n bsize 1 msize
-          hcode hfork hrun hnp hdata hstack hvalid hactLe (by omega)
-          ((hentry.trans
-            (FixedDirectDispatchTrace.gasSteps_oneWidth_hit s memory
-              n bsize msize hcode hfork hrun hnp)).trans
-            (FixedDirectValueTrace.gasSteps_checkThree_miss s memory input
-              n bsize msize hb hv hdata hactive hframe.eoff
-              hcode hfork hrun hnp))
-      · exact bailHandled input s memory n bsize esize msize
-          hcode hfork hrun hnp hdata hstack hvalid hactLe (by omega)
-          (hentry.trans
-            (FixedDirectDispatchTrace.gasSteps_oneWidth_miss s memory
-              n bsize esize msize h1 he hcode hfork hrun hnp))
+        exact (((hentry.trans
+          (FixedDirectDispatchTrace.gasSteps_oneWidth_hit s memory
+            n bsize msize hcode hfork hrun hnp)).trans
+          (FixedDirectValueTrace.gasSteps_checkThree_miss s memory input
+            n bsize msize hb hv hdata hactive hframe.eoff
+            hcode hfork hrun hnp)).trans
+          (FixedDirectFallbackTrace.gasSteps_fallback s memory
+            n bsize 1 msize hn hn32 hactive hcode hfork hrun hnp))
+      · exact (hentry.trans
+          (FixedDirectDispatchTrace.gasSteps_oneWidth_miss s memory
+            n bsize esize msize h1 he hcode hfork hrun hnp)).trans
+          (FixedDirectFallbackTrace.gasSteps_fallback s memory
+            n bsize esize msize hn hn32 hactive hcode hfork hrun hnp)
   hit := by
     rcases hraw with ⟨rawBase, hrawRep, hrawForm, hrawLt⟩
     rintro ⟨count, hcase⟩
@@ -168,7 +105,7 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
         have hfixed := FixedDirectHitCorrect.handled_of_fixed input s memory
           n bsize 1 msize mm minv bM
           rawBase 1 sub spec
-          hcode hfork hrun hnp hdata hstack hactive hvalid hactLe hn hn32 hmz hm32
+          hcode hfork hrun hnp hstack hactive hn hn32 hmz hm32
           hbsize hesize hmsz hmm
           (lt_of_lt_of_le Limbs.radix_pos hradix)
           (Model.coprime_radix_pow_of_odd hodd n) hradix hbMlt hbMform
@@ -188,7 +125,7 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
         have hfixed := FixedDirectHitCorrect.handled_of_fixed input s memory
           n bsize 3 msize mm minv bM
           rawBase 16 sub spec
-          hcode hfork hrun hnp hdata hstack hactive hvalid hactLe hn hn32 hmz hm32
+          hcode hfork hrun hnp hstack hactive hn hn32 hmz hm32
           hbsize hesize hmsz hmm
           (lt_of_lt_of_le Limbs.radix_pos hradix)
           (Model.coprime_radix_pow_of_odd hodd n) hradix hbMlt hbMform
