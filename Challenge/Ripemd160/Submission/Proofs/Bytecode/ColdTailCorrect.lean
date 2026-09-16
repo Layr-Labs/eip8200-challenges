@@ -28,15 +28,15 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
   have hi : s.executionEnv.calldata = input := PadSkipEntry.entryState_calldata input
   have hm : (maskRho rho).length ≤ 880 := by simp only [maskRho, List.length_append, List.length_cons, List.length_nil]; omega
   have gx : GasSteps (StackTail.append s rho)
-      {s with pc := UInt256.ofNat 465, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (LoopCompletionControl.limit input) (maskRho rho)} := by
+      {s with pc := UInt256.ofNat 493, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (LoopCompletionControl.limit input) (maskRho rho)} := by
     by_cases hz : input.size % 64 = 0
-    · have hs : StackTail.append s rho = {s with pc := UInt256.ofNat 465, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (UInt256.ofNat input.size) (maskRho rho)} := by
+    · have hs : StackTail.append s rho = {s with pc := UInt256.ofNat 493, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (UInt256.ofNat input.size) (maskRho rho)} := by
         dsimp [s]
         rw [PaddingTrace.entryState_skip input hz]
         rfl
       exact GasSteps.cast (GasSteps.refl (StackTail.append s rho)) rfl (by
         simpa only [LoopCompletionControl.limit, LoopCompletionControl.limitNat, if_pos hz] using hs)
-    · have hs : StackTail.append s rho = {s with pc := UInt256.ofNat 465, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (Padding.paddedWord input) (maskRho rho)} := by
+    · have hs : StackTail.append s rho = {s with pc := UInt256.ofNat 493, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (Padding.paddedWord input) (maskRho rho)} := by
         dsimp [s]
         rw [PaddingTrace.entryState_miss input hz]
         rfl

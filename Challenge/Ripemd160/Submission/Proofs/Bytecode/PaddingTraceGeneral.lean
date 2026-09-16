@@ -31,7 +31,7 @@ def sentinelState (input : ByteArray) (s : State) (frame : List UInt256) : State
 
 def loopState (input : ByteArray) (s : State) (frame : List UInt256) (i : Nat) : State :=
   {s with
-    pc := UInt256.ofNat 4744
+    pc := UInt256.ofNat 4772
     stack := lengthAddr input i :: lengthShift input i :: frame
     memory := lengthMemory input s.memory i
     activeWords := lengthActive input s.activeWords i}
@@ -44,7 +44,7 @@ def exitState (input : ByteArray) (s : State) (frame : List UInt256) (i : Nat) :
 
 def resultStateAt (input : ByteArray) (s : State) (frame : List UInt256) (i : Nat) : State :=
   {s with
-    pc := UInt256.ofNat 465
+    pc := UInt256.ofNat 493
     stack := frame
     memory := lengthMemory input s.memory i
     activeWords := lengthActive input s.activeWords i}
@@ -67,7 +67,7 @@ theorem paddedWord_aligned (input : ByteArray) (hfit : CalldataFits input)
     (resultState input s frame).activeWords = lengthActive input s.activeWords (lengthStop input) := rfl
 
 private theorem valid_loop : Decode.isValidJumpDest submissionBytecode 4744 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3635 = 4744 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3629 = 4772 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   rw [← hpc]
   exact Artifact.submissionArtifact.isValidJumpDest_index 3635 (by rfl)
