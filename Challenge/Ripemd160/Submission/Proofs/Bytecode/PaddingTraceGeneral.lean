@@ -67,10 +67,10 @@ theorem paddedWord_aligned (input : ByteArray) (hfit : CalldataFits input)
     (resultState input s frame).activeWords = lengthActive input s.activeWords (lengthStop input) := rfl
 
 private theorem valid_loop : Decode.isValidJumpDest submissionBytecode 4740 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3637 = 4740 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3635 = 4740 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   rw [← hpc]
-  exact Artifact.submissionArtifact.isValidJumpDest_index 3637 (by rfl)
+  exact Artifact.submissionArtifact.isValidJumpDest_index 3635 (by rfl)
 
 private theorem word_ne_zero (x : UInt256) (hx : x ≠ ⟨0⟩) : x.toNat ≠ 0 := by
   intro h
