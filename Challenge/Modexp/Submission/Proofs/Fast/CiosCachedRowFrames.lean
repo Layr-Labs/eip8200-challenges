@@ -12,7 +12,7 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open WindowNibbleKernel
 
-/-- Kernel `setup` entry (pc 4151, 0x0f6c), reached from `common` with the row head
+/-- Kernel `setup` entry (pc 4123, 0x0f6c), reached from `common` with the row head
 `hd` above the call frame. -/
 def setupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
@@ -25,20 +25,20 @@ def outState (s : State) (mem : ByteArray) (pb n i : Nat)
     (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := hd
            stack := [UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     hd, UInt256.ofNat (pb - 32), ent, UInt256.ofNat 0, allOnes, MachineState.readWord mem 128, pdst, ret] ++ rest
+                     hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
            memory := mem }
 
-/-- After the first loop, at the middle block's `JUMPDEST` (pc 4583): the carry and
+/-- After the first loop, at the middle block's `JUMPDEST` (pc 4555): the carry and
 `b_i` above the row frame. -/
 def midState (s : State) (mem : ByteArray) (c bi : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3646
+  { s with pc := UInt256.ofNat 3639
            stack := [c, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
            memory := mem }
 
 /-- The middle-block frame at an arbitrary entry pc.  The shared ladder's middle block
-sits at 3646; the private four-limb ladder copy carries the same block at 5290, so every
+sits at 3639; the private four-limb ladder copy carries the same block at 5283, so every
 statement about it is the same statement with one number changed. -/
 def midStateAt (pc : Nat) (s : State) (mem : ByteArray) (c bi : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
@@ -52,7 +52,7 @@ def midStateAt (pc : Nat) (s : State) (mem : ByteArray) (c bi : UInt256)
 statement about the row keeps its shape. -/
 def tailState (s : State) (mem : ByteArray) (c _mu bi : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3912
+  { s with pc := UInt256.ofNat 3916
            stack := [c, bi, UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
                      hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
            memory := mem }
