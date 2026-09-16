@@ -21,7 +21,7 @@ set_option warningAsError true
 literal so that this module does not import `ShiftModel` (whose closure is `Exp`).
 
 ## Assumed from the tree (unchanged by the port), beyond `M9MacBlocks` and `M9MacRun`
-* `Challenge.Modexp.submissionBytecode_size : submissionBytecode.size = 5165` (`Submission/Bytecode.lean`).
+* `Challenge.Modexp.submissionBytecode_size : submissionBytecode.size = 5137` (`Submission/Bytecode.lean`).
 * `Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBinding.Environment` and `Block.steps`.
 * `Challenge.EvmProof.GasSteps` with `.refl`, `.trans`, `.cast`.
 * `Challenge.Modexp.Submission.Proofs.Fast.SquareModel.l1Run`, `l1Run_succ`, `l1Step_eq_l1Run`

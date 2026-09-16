@@ -108,11 +108,11 @@ theorem run_phaseSwitch (s : State) (mem : ByteArray) (n : Nat) (rest : List UIn
 #print axioms run_phaseExitHead
 #print axioms run_phaseSwitch
 
-/-- Exact relocated guard bytes at PCs 3502 through 3510. -/
+/-- Exact relocated guard bytes at PCs 3495 through 3503. -/
 theorem phaseGuardProgram_assembly : assemble phaseGuardProgram =
     ByteArray.mk #[0x61, 0x06, 0xe0, 0x51, 0x15, 0x61, 0x0c, 0x74, 0x57] := by rfl
 
-/-- Exact relocated switch bytes at PCs 3522 through 3533; PUSH0 uses Instr.push0. -/
+/-- Exact relocated switch bytes at PCs 3515 through 3526; PUSH0 uses Instr.push0. -/
 theorem phaseSwitchProgram_assembly : assemble phaseSwitchProgram =
     ByteArray.mk #[0x5f, 0x61, 0x06, 0xe0, 0x52, 0x80, 0x61, 0x08, 0x40, 0x61, 0x01, 0x00, 0x5e, 0x81, 0x60, 0x02, 0x1c, 0x61, 0x0a, 0x0d, 0x56] := by rfl
 
@@ -147,7 +147,7 @@ theorem run_phaseExitOne (s : State) (mem : ByteArray) (value : UInt256)
 open Challenge.EvmProof WindowTwentyOneBinding
 
 /-- MAIN supplies only these four artifact-location certificates.
-The instruction indices are 2627/2629/2634/2646 respectively (exit head 3493, guard 3502, switch 3511, done 3532). -/
+The instruction indices are 2627/2629/2634/2646 respectively (exit head 3493, guard 3495, switch 3504, done 3525). -/
 structure PhaseBlocks (artifact : ProgramArtifact) (fork : Fork) where
   exitHead : Block artifact fork 3156 phaseExitHeadProgram
   guard : Block artifact fork 3158 phaseGuardProgram
