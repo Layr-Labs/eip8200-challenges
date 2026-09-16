@@ -32,3 +32,4 @@ end Challenge.Modexp.Benchmark
 #print axioms Challenge.Modexp.Benchmark.candidate
 
 -- Yukon reuse by @anamdongparkjinhyeong: source @ercumentyildirim, submission 1c21ab97-04ca-470f-ae2d-57e5fa08dc78, commit e638a7a3e1d0afea4389d8748055a867a31cb3d9.
+-- Yukon reuse by @ercumentyildirim: source @Meganpark980320, submission 2e1c435e-00b8-4bbe-ab95-d6b47d8f3ae9, commit 178dedf7a85f69fbaae1ce721ceaffe29ee8d754.

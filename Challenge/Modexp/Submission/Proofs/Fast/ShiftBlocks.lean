@@ -46,88 +46,88 @@ def blk2896b :
 /-- The add-round body up to its store (`blk3157` instructions 0..22). -/
 def blk3157a :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2257 .JUMPDEST,
-   opAt 2258 (.Dup ⟨0, by decide⟩),
+  [opAt 2253 .JUMPDEST,
+   opAt 2254 (.Dup ⟨0, by decide⟩),
+   opAt 2255 .MLOAD,
+   pushAt 2256 3 2112,
+   opAt 2257 (.Dup ⟨2, by decide⟩),
+   opAt 2258 .SUB,
    opAt 2259 .MLOAD,
-   pushAt 2260 3 2112,
-   opAt 2261 (.Dup ⟨2, by decide⟩),
-   opAt 2262 .SUB,
-   opAt 2263 .MLOAD,
-   opAt 2264 (.Dup ⟨1, by decide⟩),
-   opAt 2265 .ADD,
-   opAt 2266 (.Swap ⟨0, by decide⟩),
-   opAt 2267 (.Dup ⟨1, by decide⟩),
-   opAt 2268 .LT,
-   opAt 2269 (.Swap ⟨0, by decide⟩),
-   opAt 2270 (.Dup ⟨3, by decide⟩),
-   opAt 2271 .ADD,
-   opAt 2272 (.Swap ⟨2, by decide⟩),
-   opAt 2273 (.Dup ⟨3, by decide⟩),
-   opAt 2274 .LT,
-   opAt 2275 .OR,
-   opAt 2276 (.Swap ⟨1, by decide⟩),
-   opAt 2277 (.Dup ⟨1, by decide⟩),
-   opAt 2278 .MSTORE]
+   opAt 2260 (.Dup ⟨1, by decide⟩),
+   opAt 2261 .ADD,
+   opAt 2262 (.Swap ⟨0, by decide⟩),
+   opAt 2263 (.Dup ⟨1, by decide⟩),
+   opAt 2264 .LT,
+   opAt 2265 (.Swap ⟨0, by decide⟩),
+   opAt 2266 (.Dup ⟨3, by decide⟩),
+   opAt 2267 .ADD,
+   opAt 2268 (.Swap ⟨2, by decide⟩),
+   opAt 2269 (.Dup ⟨3, by decide⟩),
+   opAt 2270 .LT,
+   opAt 2271 .OR,
+   opAt 2272 (.Swap ⟨1, by decide⟩),
+   opAt 2273 (.Dup ⟨1, by decide⟩),
+   opAt 2274 .MSTORE]
 
 /-- The exit test of the add-round body (`blk3157` instructions 23..30). -/
 def blk3157b :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 2279 1 31,
-   opAt 2280 .NOT,
-   opAt 2281 .ADD,
-   pushAt 2282 2 2111,
-   opAt 2283 (.Dup ⟨1, by decide⟩),
-   opAt 2284 .GT,
-   pushAt 2285 2 3024,
-   opAt 2286 .JUMPI]
+  [pushAt 2275 1 31,
+   opAt 2276 .NOT,
+   opAt 2277 .ADD,
+   pushAt 2278 2 2111,
+   opAt 2279 (.Dup ⟨1, by decide⟩),
+   opAt 2280 .GT,
+   pushAt 2281 2 3024,
+   opAt 2282 .JUMPI]
 
 /-- The five padding `JUMPDEST`s on the add-round fall-through (indices 2413 to 2417). -/
 def blk3157c :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2287 .JUMPDEST,
-   opAt 2288 .JUMPDEST,
-   opAt 2289 .JUMPDEST,
-   opAt 2290 .JUMPDEST,
-   opAt 2291 .JUMPDEST]
+  [opAt 2283 .JUMPDEST,
+   opAt 2284 .JUMPDEST,
+   opAt 2285 .JUMPDEST,
+   opAt 2286 .JUMPDEST,
+   opAt 2287 .JUMPDEST]
 
 /-- The subtract-round body up to its exit test (`blk3213` instructions 0..22). -/
 def blk3213a :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2316 .JUMPDEST,
-   opAt 2317 (.Dup ⟨0, by decide⟩),
+  [opAt 2312 .JUMPDEST,
+   opAt 2313 (.Dup ⟨0, by decide⟩),
+   opAt 2314 .MLOAD,
+   pushAt 2315 2 2112,
+   opAt 2316 (.Dup ⟨2, by decide⟩),
+   opAt 2317 .SUB,
    opAt 2318 .MLOAD,
-   pushAt 2319 2 2112,
-   opAt 2320 (.Dup ⟨2, by decide⟩),
-   opAt 2321 .SUB,
-   opAt 2322 .MLOAD,
-   opAt 2323 (.Dup ⟨1, by decide⟩),
-   opAt 2324 (.Dup ⟨1, by decide⟩),
-   opAt 2325 .GT,
-   opAt 2326 (.Swap ⟨1, by decide⟩),
-   opAt 2327 .SUB,
-   opAt 2328 (.Dup ⟨3, by decide⟩),
-   opAt 2329 (.Dup ⟨1, by decide⟩),
-   opAt 2330 .LT,
-   opAt 2331 (.Swap ⟨0, by decide⟩),
-   opAt 2332 (.Dup ⟨4, by decide⟩),
-   opAt 2333 (.Swap ⟨0, by decide⟩),
-   opAt 2334 .SUB,
-   opAt 2335 (.Dup ⟨3, by decide⟩),
-   opAt 2336 .MSTORE,
-   opAt 2337 .OR]
+   opAt 2319 (.Dup ⟨1, by decide⟩),
+   opAt 2320 (.Dup ⟨1, by decide⟩),
+   opAt 2321 .GT,
+   opAt 2322 (.Swap ⟨1, by decide⟩),
+   opAt 2323 .SUB,
+   opAt 2324 (.Dup ⟨3, by decide⟩),
+   opAt 2325 (.Dup ⟨1, by decide⟩),
+   opAt 2326 .LT,
+   opAt 2327 (.Swap ⟨0, by decide⟩),
+   opAt 2328 (.Dup ⟨4, by decide⟩),
+   opAt 2329 (.Swap ⟨0, by decide⟩),
+   opAt 2330 .SUB,
+   opAt 2331 (.Dup ⟨3, by decide⟩),
+   opAt 2332 .MSTORE,
+   opAt 2333 .OR]
 
 /-- The exit test of the subtract-round body (`blk3213` instructions 23..31). -/
 def blk3213b :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2338 (.Swap ⟨1, by decide⟩),
-   opAt 2339 .POP,
-   pushAt 2340 1 31,
-   opAt 2341 .NOT,
-   opAt 2342 .ADD,
-   pushAt 2343 2 2111,
-   opAt 2344 (.Dup ⟨1, by decide⟩),
-   opAt 2345 .GT,
-   pushAt 2346 2 3103,
-   opAt 2347 .JUMPI]
+  [opAt 2334 (.Swap ⟨1, by decide⟩),
+   opAt 2335 .POP,
+   pushAt 2336 1 31,
+   opAt 2337 .NOT,
+   opAt 2338 .ADD,
+   pushAt 2339 2 2111,
+   opAt 2340 (.Dup ⟨1, by decide⟩),
+   opAt 2341 .GT,
+   pushAt 2342 2 3103,
+   opAt 2343 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast
