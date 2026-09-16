@@ -24,11 +24,11 @@ abbrev outer := Exp.outer
 /-- Program counters of the appended routine. -/
 def pcDispatch : Nat := 2339
 def pcHit : Nat := 2354
--- 3309, not ticket 4's 3286: the recogniser-miss JUMPDEST is instruction 2433 here (it was 2438),
--- and this is the one pc in the table the regenerator could not rewrite, because 3286 has no image
+-- 3310, not ticket 4's 3282: the recogniser-miss JUMPDEST is instruction 2433 here (it was 2438),
+-- and this is the one pc in the table the regenerator could not rewrite, because 3282 has no image
 -- in the pc map -- R-ONE2 deleted the instruction it used to sit on, so the map row is empty and
--- the literal was left standing.  `ShiftPCs.pc2889` states instruction 2433's pc as 3309 by `rfl`,
--- and `blk2889` is located there, so a stale 3286 makes `runLocatedBlock blk2889 (missState …)`
+-- the literal was left standing.  `ShiftPCs.pc2889` states instruction 2433's pc as 3310 by `rfl`,
+-- and `blk2889` is located there, so a stale 3282 makes `runLocatedBlock blk2889 (missState …)`
 -- return `none`.  Nothing but the build checked this def: it is a bare `Nat` with no tie to the
 -- artifact, unlike every `instructionPC`/`opAt`/`pushAt` fact around it.
 def pcMiss : Nat := 2373
@@ -78,7 +78,7 @@ def kState (s : State) (mem : ByteArray) (pc k : Nat) (n bsize esize msize : Nat
            stack := UInt256.ofNat k :: outer n bsize esize msize
            memory := mem }
 
-/-- The dispatcher entry (pc 4076), reached from `R1B` with the outer frame. -/
+/-- The dispatcher entry (pc 4104), reached from `R1B` with the outer frame. -/
 def dispState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   frameState s mem pcDispatch n bsize esize msize
 
