@@ -15,7 +15,7 @@ theorem calldata_lt_uint256 (input : ByteArray) (hfit : CalldataFits input) :
   unfold CalldataFits at hfit
   omega
 
-theorem messagePointer_aligned (i : Nat) : PairedBlockModel.messagePointer i % 32 = 0 := by
+theorem messagePointer_aligned (i : Nat) : PairedBlockModel.messagePointer i % 32 = 31 := by
   unfold PairedBlockModel.messagePointer Padding.messageOffset DriverTrace.blockOffset
   omega
 

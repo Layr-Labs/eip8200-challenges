@@ -199,25 +199,6 @@ theorem entryState_lowClear (input : ByteArray) (hfit : CalldataFits input) :
         (Or.inl (by unfold Padding.messageOffset; omega)), hbase]
     decide
 
-theorem entryState_zero_below (input : ByteArray) (hfit : CalldataFits input)
-    (a : Nat) (ha : a < Padding.messageOffset) :
-    (PadSkipEntry.entryState input).memory[a]?.getD 0 = 0 := by
-  have hbase : (PaddingTrace.padLengthReady input).memory = ByteArray.empty := rfl
-  have hp : 64 ≤ Padding.paddedLength input.size := by
-    unfold Padding.paddedLength
-    omega
-  unfold PadSkipEntry.entryState PaddingTrace.entryState
-  split
-  · change (MachineState.writeBytes (PaddingTrace.padLengthReady input).memory
-      (MachineState.readPadded input 0 input.size) Padding.messageOffset)[a]?.getD 0 = 0
-    rw [MachineState.writeBytes_getElem?_getD, if_neg (by omega), hbase]
-    simp
-  · rw [PaddingTrace.padReturned_getD_window input hfit _ (by omega)]
-    simp only [Padding.paddedMemory, Padding.sentinelMemory, Padding.copiedMemory,
-      MachineState.writeBytes_getElem?_getD]
-    rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), hbase]
-    simp
-
 theorem entryState_gapClear (input : ByteArray) (hfit : CalldataFits input) :
     GapClear (PadSkipEntry.entryState input).memory := by
   intro j hj k hk0 hk1

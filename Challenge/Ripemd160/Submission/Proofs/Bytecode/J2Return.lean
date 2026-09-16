@@ -10,7 +10,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Return
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open J2Sites J2Moves RecognitionSelectorRaw RecognitionSelectorResult
 
-def source (s : State) : UInt256 := selected (UInt256.ofNat 4930) s.executionEnv.calldata.size
+def source (s : State) : UInt256 := selected (UInt256.ofNat 4944) s.executionEnv.calldata.size
 
 def beforeCopy (s : State) (rho : List UInt256) : State :=
   atState s 318 (12 :: source s :: 20 :: rho)
@@ -47,7 +47,7 @@ def gasSteps (s : State) (e : Env s) (rho : List UInt256)
     GasSteps (atState s 297 rho) (output s rho) := by
   have hp : StackRoundTrace.runInstrSeq J2ReturnSites.selector.template
       (atState s 297 rho) = some (beforeCopy s rho) := by
-    have h := run_prefix s (UInt256.ofNat 297) (UInt256.ofNat 4930) rho (by omega) e.run
+    have h := run_prefix s (UInt256.ofNat 297) (UInt256.ofNat 4944) rho (by omega) e.run
     simpa only [J2ReturnSites.selector.end_pc, beforeCopy, atState, source] using h
   have gp := J2ReturnSites.selector.lift s (beforeCopy s rho) e rho hp
   have gc : GasSteps (beforeCopy s rho) (afterCopy s rho) :=

@@ -19,9 +19,9 @@ def normalTemplate : List Instr := (DeferredNormalInterleaved.template ++ Stagge
 
 theorem run_normal (s : State) (pc returnPC : UInt256) (p : Nat) (rest : List UInt256)
     (hstack : rest.length ≤ 896) (hrun : s.halt = .Running)
-    (hp : 1056 ≤ p) (hbound : p + 64 < 2 ^ 256)
+    (hp : 1087 ≤ p) (hbound : p + 64 < 2 ^ 256)
     (hlow : (MachineState.readWord s.memory 0).toNat < 2 ^ 32)
-    (hoff : rest[9]? = some (UInt256.ofNat (p - 1056))) :
+    (hoff : rest[9]? = some (UInt256.ofNat (p - 1087))) :
     runInstrSeq normalTemplate {s with pc := pc, stack := UInt256.ofNat p :: mask8 :: mask16 :: returnPC :: maskWord :: rest} =
       some {s with pc := pcAfter pc normalTemplate, stack := returnPC :: maskWord :: rest, memory := StaggerTableLayout.resultMemory s.memory (StaggerScratch.dirtyWord s.memory p), activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
   let words := StaggerScratch.dirtyWord s.memory p

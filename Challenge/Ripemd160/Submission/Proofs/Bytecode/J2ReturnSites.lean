@@ -11,7 +11,7 @@ private theorem code_bound : Artifact.submissionArtifact.code.size < 2^256 := by
   rw [referenceBytecode_size]
   decide
 namespace selector
-abbrev template : List Instr := RecognitionSelectorRaw.prefixTemplate (UInt256.ofNat 4930)
+abbrev template : List Instr := RecognitionSelectorRaw.prefixTemplate (UInt256.ofNat 4944)
 theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 199).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
   StackSiteBuilder.ofSlice template 199 actual_slice

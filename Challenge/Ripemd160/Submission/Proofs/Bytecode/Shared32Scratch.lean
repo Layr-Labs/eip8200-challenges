@@ -63,16 +63,16 @@ theorem sparse_eq_writeWord (memory : ByteArray) (hsize : 128 ≤ memory.size)
     · rw [if_neg (by omega), if_neg (by omega), if_neg (by omega)]
 
 def copiedMemory (input : ByteArray) : ByteArray :=
-  MachineState.writeBytes ByteArray.empty input 1056
+  MachineState.writeBytes ByteArray.empty input 1087
 
 theorem copiedMemory_size (input : ByteArray) (hn : 0 < input.size) :
-    (copiedMemory input).size = 1056 + input.size := by
+    (copiedMemory input).size = 1087 + input.size := by
   have hne : input ≠ ByteArray.empty := by intro h; subst input; exact Nat.not_lt_zero _ hn
   simp [copiedMemory, MachineState.writeBytes_size, hne]
 
-theorem copiedMemory_zero (input : ByteArray) (a : Nat) (ha : a < 1056) :
+theorem copiedMemory_zero (input : ByteArray) (a : Nat) (ha : a < 1087) :
     (copiedMemory input)[a]?.getD 0 = 0 := by
-  simp [copiedMemory, MachineState.writeBytes_getElem?_getD, show ¬1056 ≤ a by omega]
+  simp [copiedMemory, MachineState.writeBytes_getElem?_getD, show ¬1087 ≤ a by omega]
 
 theorem copiedMemory_sparse (input : ByteArray) (hn : 0 < input.size) :
     sparseMemory (copiedMemory input) = writeWord (copiedMemory input) 96 highWord :=
@@ -163,7 +163,7 @@ theorem fanWord_lt (low high : UInt256) (i : Nat) : (fanWord low high i).toNat <
   rw [fanWord, mask32_toNat_mod]
   exact Nat.mod_lt _ (by norm_num)
 
-theorem writeWord_getD (memory : ByteArray) (address : Nat) (value : UInt256) (a : Nat) :
+private theorem writeWord_getD (memory : ByteArray) (address : Nat) (value : UInt256) (a : Nat) :
     (writeWord memory address value)[a]?.getD 0 =
       if address ≤ a ∧ a < address + 32 then
         (Data.Bytes.natToBytesPadded value.toNat 32)[a - address]?.getD 0
@@ -171,7 +171,7 @@ theorem writeWord_getD (memory : ByteArray) (address : Nat) (value : UInt256) (a
   rw [writeWord, MachineState.writeBytes_getElem?_getD,
     YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
 
-theorem copied_getD (m : ByteArray) (a : Nat) :
+private theorem copied_getD (m : ByteArray) (a : Nat) :
     (Pair13PoolRaw.copied m)[a]?.getD 0 =
       if 130 ≤ a ∧ a < 146 then m[a - 18]?.getD 0
       else if 78 ≤ a ∧ a < 94 then m[a + 18]?.getD 0
@@ -192,7 +192,7 @@ theorem copied_getD (m : ByteArray) (a : Nat) :
       if_neg (by omega)]
   · rw [if_neg ha, if_neg (by omega), hone]
 
-theorem scratch3_getD (memory : ByteArray) (low high : UInt256) (a : Nat) :
+private theorem scratch3_getD (memory : ByteArray) (low high : UInt256) (a : Nat) :
     (Pair13Endian.scratch3 memory low high)[a]?.getD 0 =
       if 28 ≤ a ∧ a < 60 then (Data.Bytes.natToBytesPadded low.toNat 32)[a - 28]?.getD 0
       else if 60 ≤ a ∧ a < 78 then (Data.Bytes.natToBytesPadded low.toNat 32)[a - 46]?.getD 0
@@ -403,12 +403,12 @@ theorem fan_lanes (memory : ByteArray) (low high : UInt256) (i : Nat)
 `2 ^ 144 + 1` dual-lane broadcast of the very schedule word the S48 pool produced. -/
 theorem fan_poolWord (memory : ByteArray) (low high : UInt256)
     (hlow : (MachineState.readWord memory 0).toNat % 2 ^ 144 < 2 ^ 32) (i : Nat) (hi : i < 16) :
-    Pair13PoolRaw.cleanPoolWord (fanMemory memory low high) i =
+    Pair13PoolRaw.poolWord (fanMemory memory low high) i =
       dualOf (StaggerScratch.poolWordD (StaggerScratch.scratchMemory memory low high)) i := by
   by_cases h2 : i ≤ 2
   · have hsmall : i = 0 ∨ i = 1 ∨ i = 2 := by omega
     have hp : Pair13PoolRaw.poolAddr i = 4 * i := by interval_cases i <;> rfl
-    rw [Pair13PoolRaw.cleanPoolWord, if_pos hsmall, dualOf, if_pos (show i < 3 by omega),
+    rw [Pair13PoolRaw.poolWord, if_pos hsmall, dualOf, if_pos (show i < 3 by omega),
       StaggerScratch.poolWordD, if_pos h2, Pair13PoolRaw.rawLoad, hp]
     apply Word.word_ext
     rw [Bytes.readWord_toNat, Bytes.readWord_toNat]

@@ -32,7 +32,7 @@ def finalMemory (input : ByteArray) (i : Nat) : ByteArray :=
 
 theorem finalMemory_byte (input : ByteArray) (hfit : CalldataFits input) (hz : input.size%64=0)
     (hpositive : 0 < input.size)
-    (i a : Nat) (ha : 1056+input.size≤a) (hb : a<1056+Padding.paddedLength input.size) :
+    (i a : Nat) (ha : 1087+input.size≤a) (hb : a<1087+Padding.paddedLength input.size) :
     (finalMemory input i)[a]?.getD 0 =
       (Padding.paddedMemory (PaddingTrace.padLengthReady input).memory input)[a]?.getD 0 := by
   have he : (StaggerTablePad.padRealChain (states input i).memory
@@ -66,7 +66,7 @@ theorem finalMemory_blockAt (input : ByteArray) (hfit : CalldataFits input) (hpo
   · exact hb
 
 theorem lengthMemory_below (input memory : ByteArray) (hfit : CalldataFits input)
-    (i : Nat) (hi : i≤9) (a : Nat) (ha : a<1056) :
+    (i : Nat) (hi : i≤9) (a : Nat) (ha : a<1087) :
     (lengthMemory input memory i)[a]?.getD 0 = memory[a]?.getD 0 := by
   have hb : 64≤Padding.paddedLength input.size := by unfold Padding.paddedLength;omega
   induction i with
@@ -88,7 +88,7 @@ theorem lengthMemory_read0 (input memory : ByteArray) (hfit : CalldataFits input
 
 /-- The pad block keeps the first word clean BELOW BIT 144 -- not zero.  Bytes 10..13 carry
 the dual lane the writer's slot-0 store leaves once the mask at pc 873 is gone, and the length
-loop writes at 1056 and above, so the incoming weakened invariant survives verbatim. -/
+loop writes at 1087 and above, so the incoming weakened invariant survives verbatim. -/
 theorem finalMemory_lowClear (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (i : Nat) (hi : i ≤ DriverTrace.blockCount input) :
     (MachineState.readWord (finalMemory input i) 0).toNat % 2 ^ 144 = 0 := by
@@ -108,19 +108,6 @@ theorem finalMemory_gapClear (input : ByteArray) (hfit : CalldataFits input)
     omega
   exact (lengthMemory_below input _ hfit _ (PaddingTrace.lengthStop_le input) _ (by omega)).trans
     (h j hj k hk hk')
-
-theorem finalMemory_extraClear (input : ByteArray) (hfit : CalldataFits input) (i : Nat) :
-    PoolInvariant.ExtraClear (finalMemory input i) := by
-  intro a ha
-  have hb : a < 1056 := by simp only [List.mem_cons, List.not_mem_nil, or_false] at ha; omega
-  unfold finalMemory
-  rw [lengthMemory_below input _ hfit _ (PaddingTrace.lengthStop_le input) a hb]
-  simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
-  rcases ha with rfl | rfl | rfl | rfl
-  all_goals simp only [StaggerTablePad.padRealChain, StaggerTablePad.lowChainOver,
-    PairedScheduleMemory.writeWord, MachineState.writeBytes_getElem?_getD,
-    YulEvmCompiler.BytesLemmas.natToBytesPadded_size, StaggerTableSparse.zeroSuffix_getD]
-  all_goals norm_num
 
 #print axioms finalMemory_blockAt
 #print axioms finalMemory_lowClear
