@@ -89,7 +89,7 @@ def start : List Located :=
 
 /-- Loop head: store the remaining square count at `0x2440` (read by the
 kernel's in-kernel loop) and call `SQUARE(0x800) → 0x800`, entering the kernel's
-`common` block with `hd = sq_row` and return address 3292. -/
+`common` block with `hd = sq_row` and return address 3294. -/
 def squareCall : List Located :=
   [opAt 1671 .JUMPDEST,
    opAt 1672 (.Dup ⟨0, by decide⟩),
@@ -99,7 +99,7 @@ def squareCall : List Located :=
    pushAt 1676 2 512,
    opAt 1677 (.Dup ⟨0, by decide⟩),
    opAt 1678 (.Dup ⟨0, by decide⟩),
-   pushAt 1679 2 4394,
+   pushAt 1679 2 4366,
    pushAt 1680 2 3213,
    opAt 1681 .JUMP]
 

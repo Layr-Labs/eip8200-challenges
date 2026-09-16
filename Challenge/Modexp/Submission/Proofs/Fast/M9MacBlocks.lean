@@ -14,11 +14,11 @@ shape of `KernelChainBlocks.l1Block1..7`: the instruction slice at `<index>` dec
 `instructionPC <index> = <pc>` (`rfl`), and the program is linear except possibly its last instruction.
 
 ## Assumed from the tree (artifact-side; the port tree must carry the M9-T13 artifact,
-raw sha256 ad60d3dac181092e39562b72c2003578a87e3734cffecc962593cd33f56332f7, 3981 instruction rows)
+raw sha256 ad60d3dac181092e39562b72c2003578a87e3734cffecc962593cd33f56332f7, 3953 instruction rows)
 * `Challenge.Modexp.Submission.Proofs.Bytecode.Artifact.submissionArtifact : Challenge.EvmProof.ProgramArtifact`,
-  `Artifact.submissionInstructions : List Instr` (3981 rows), `Artifact.allWellFormed`,
+  `Artifact.submissionInstructions : List Instr` (3953 rows), `Artifact.allWellFormed`,
   `Artifact.isValidJumpDest_index (index) (hget : submissionInstructions[index]? = some (.op .JUMPDEST))`.
-* `Challenge.Modexp.submissionBytecode : ByteArray` (= the 5165 M9-T13 bytes).
+* `Challenge.Modexp.submissionBytecode : ByteArray` (= the 5137 M9-T13 bytes).
 * `Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBinding.Block (artifact) (fork) (pc : Nat) (instructions)`
   and `WindowTwentyOneSlice.block` (`Proofs/Bytecode/WindowTwentyOneSlice.lean`).
 -/
@@ -29,14 +29,9 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 
 /-- Block 0: instructions 1977..2007, pc 2682..2718,
-`-N` limb at 1504 (0x5e0), `t` limb at 2336 (0x920).
-
-Block 0 carries the `PUSH0` schedule (`headZeroProgram`, instruction 1992 / pc 2699), not the
-general `headProgram`: it is the row head of every chain that reaches it, so its incoming carry
-is the literal zero `entryProgram` pushes at pc 2676.  `block4` keeps `headProgram` — pc 2827 is
-also *fallen into* from block 3, whose outgoing carry is not zero. -/
-def block0 : Block Artifact.submissionArtifact .Osaka 2682 (headZeroProgram 1504 2336) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 1977 31 2682 (headZeroProgram 1504 2336)
+`-N` limb at 1504 (0x5e0), `t` limb at 2336 (0x920). -/
+def block0 : Block Artifact.submissionArtifact .Osaka 2682 (headProgram 1504 2336) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1977 31 2682 (headProgram 1504 2336)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 1: instructions 2008..2037, pc 2719..2754,
