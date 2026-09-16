@@ -74,24 +74,31 @@ theorem isZero_ofNat_of_ne {a : Nat} (ha : a < 2 ^ 256) (h : a ≠ 0) :
 theorem isZero_ofNat_zero : UInt256.isZero (UInt256.ofNat 0) = UInt256.ofNat 1 := by
   decide
 
-/-- The zero the block pushes with `PUSH0` reaches `NOT` as the raw word, so the rewrite has to be
-stated on that form rather than on `UInt256.ofNat 0`. `PUSH0; NOT` is the all-ones word, and the
-dispatcher's `EQ` against the last modulus word is then zero exactly when that word is not all ones.
-This is the Montgomery-inverse side of the entry test. -/
--- deliberately NOT @[simp]: as a global rewrite it turns `lnot 0` into `ofNat (radix - 1)` inside
--- unrelated `decide` proofs, where the literal is then too large to evaluate. It is named explicitly
--- by the two entry-check lemmas that need it.
-theorem lnot_zero_raw :
-    UInt256.lnot ⟨0⟩ = UInt256.ofNat (Limbs.radix - 1) := by
-  unfold UInt256.lnot Limbs.radix
-  norm_num [UInt256.size, UInt256.toNat]
 
-theorem eq_maxWord_of_ne (w : UInt256)
+/-- The folded entry check: `NOT; ISZERO` on the last modulus word is zero exactly when that
+word is not all ones. This replaces the `PUSH0; NOT; EQ` test — `isZero (lnot w)` is the same
+predicate as `eq maxWord w`, one gas cheaper. -/
+theorem isZero_lnot_of_ne (w : UInt256)
     (h : w ≠ UInt256.ofNat (Limbs.radix - 1)) :
-    UInt256.eq (UInt256.ofNat (Limbs.radix - 1)) w = UInt256.ofNat 0 := by
-  rw [UInt256.eq, if_neg]
+    UInt256.isZero (UInt256.lnot w) = UInt256.ofNat 0 := by
+  rw [UInt256.isZero, if_neg]
   intro hc
-  exact h (Challenge.EvmProof.Word.word_ext hc).symm
+  apply h
+  apply Challenge.EvmProof.Word.word_ext
+  rw [UInt256.lnot, Challenge.EvmProof.Word.word_toNat_ofNat] at hc
+  have hlt : w.toNat < 2 ^ 256 := w.val.isLt
+  unfold Limbs.radix
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (by norm_num : (2:Nat) ^ 256 - 1 < 2 ^ 256)]
+  unfold UInt256.size at hc
+  omega
+/-- The complement of `isZero_lnot_of_ne`: `NOT; ISZERO` is one when the last modulus word is
+all ones. -/
+theorem isZero_lnot_of_eq (w : UInt256) (h : w = UInt256.ofNat (Limbs.radix - 1)) :
+    UInt256.isZero (UInt256.lnot w) = UInt256.ofNat 1 := by
+  rw [h, UInt256.isZero, if_pos]
+  unfold UInt256.lnot Limbs.radix UInt256.size
+  norm_num [Challenge.EvmProof.Word.word_toNat_ofNat]
 
 /-- `PUSH1 0x7f; AND` on the padded width is zero exactly when the width is a multiple of 128,
 which for `32 * limbs` means a limb count divisible by four. -/
@@ -754,7 +761,7 @@ theorem run_oddCheck_pass (s : State) (input : ByteArray)
      oddCheckState, setupEntryState, outerStack, hdata, hrun, hsub, hmodmod,
      land_one_lastWord input h32, hodd, isZero_ofNat_one, isZero_ofNat_zero,
      -- the two conditions the rewritten block adds
-     lnot_zero_raw, eq_maxWord_of_ne _ hnprime, List.exchange,
+     isZero_lnot_of_ne _ hnprime, List.exchange,
      land_mask_of_mod (modulusSize input) (modulusSize_lt input) hwidth,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -805,11 +812,6 @@ theorem land_mask_isTrue_of_not_mod (n : Nat) (hn : n < 2 ^ 256) (h : n % 128 �
   rw [this, Nat.and_comm, Nat.and_two_pow_sub_one_eq_mod]
   simpa using h
 
-/-- The Montgomery-inverse side of the bail: `EQ` against the all-ones word is one when the last
-modulus word is all ones (the complement of `eq_maxWord_of_ne`). -/
-theorem eq_maxWord_of_eq (w : UInt256) (h : w = UInt256.ofNat (Limbs.radix - 1)) :
-    UInt256.eq (UInt256.ofNat (Limbs.radix - 1)) w = UInt256.ofNat 1 := by
-  rw [h, UInt256.eq, if_pos rfl]
 
 set_option linter.unusedSimpArgs false in
 theorem run_oddCheck_bail (s : State) (input : ByteArray)
@@ -839,7 +841,7 @@ theorem run_oddCheck_bail (s : State) (input : ByteArray)
        Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
        oddCheckState, bail6State, outerStack, hdata, hcode, hrun, hsub, hmodmod,
        land_one_lastWord input h32, hodd, isZero_ofNat_zero, jumpDest1826,
-       lnot_zero_raw, isTrue_lor_iff, List.exchange,
+       isTrue_lor_iff, List.exchange,
        Challenge.EvmProof.Word.literal_eq_ofNat,
        Challenge.EvmProof.Word.succ_ofNat_mod,
        Challenge.EvmProof.Word.ofNat_add_mod,
@@ -851,7 +853,7 @@ theorem run_oddCheck_bail (s : State) (input : ByteArray)
        Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
        oddCheckState, bail6State, outerStack, hdata, hcode, hrun, hsub, hmodmod,
        land_one_lastWord input h32, jumpDest1826,
-       lnot_zero_raw, isTrue_lor_iff, List.exchange,
+       isTrue_lor_iff, List.exchange,
        land_mask_isTrue_of_not_mod (modulusSize input) (modulusSize_lt input) hwidth,
        Challenge.EvmProof.Word.literal_eq_ofNat,
        Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -864,7 +866,7 @@ theorem run_oddCheck_bail (s : State) (input : ByteArray)
        Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
        oddCheckState, bail6State, outerStack, hdata, hcode, hrun, hsub, hmodmod,
        land_one_lastWord input h32, jumpDest1826,
-       lnot_zero_raw, eq_maxWord_of_eq _ hnprime, isTrue_lor_iff, List.exchange,
+       isZero_lnot_of_eq _ hnprime, isTrue_lor_iff, List.exchange,
        Challenge.EvmProof.Word.literal_eq_ofNat,
        Challenge.EvmProof.Word.succ_ofNat_mod,
        Challenge.EvmProof.Word.ofNat_add_mod,
