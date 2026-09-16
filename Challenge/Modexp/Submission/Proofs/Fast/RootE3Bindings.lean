@@ -23,20 +23,20 @@ def entryGuard : Block Artifact.submissionArtifact .Osaka 2546 RootE3Guard.progr
 
 /-- The phase exit is split where the conditional branch changes control flow. -/
 def phases : RootE3PhaseRun.PhaseBlocks Artifact.submissionArtifact .Osaka where
-  exitHead := WindowTwentyOneSlice.block Artifact.allWellFormed 2356 2 3156
+  exitHead := WindowTwentyOneSlice.block Artifact.allWellFormed 2354 2 3156
     RootE3PhaseRun.phaseExitHeadProgram (by decide) (by rfl) (by rfl) (by decide)
-  guard := WindowTwentyOneSlice.block Artifact.allWellFormed 2358 5 3158
+  guard := WindowTwentyOneSlice.block Artifact.allWellFormed 2356 5 3158
     RootE3PhaseRun.phaseGuardProgram (by decide) (by rfl) (by rfl) (by decide)
-  switch := WindowTwentyOneSlice.block Artifact.allWellFormed 2363 12 3167
+  switch := WindowTwentyOneSlice.block Artifact.allWellFormed 2361 12 3167
     RootE3PhaseRun.phaseSwitchProgram (by decide) (by rfl) (by rfl) (by decide)
-  done := WindowTwentyOneSlice.block Artifact.allWellFormed 2375 1 3188
+  done := WindowTwentyOneSlice.block Artifact.allWellFormed 2373 1 3188
     RootE3PhaseRun.phaseDoneProgram (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest3039 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2573 = true :=
   Artifact.isValidJumpDest_index 1901 (by rfl)
 
 theorem jumpDest3542 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3188 = true :=
-  Artifact.isValidJumpDest_index 2375 (by rfl)
+  Artifact.isValidJumpDest_index 2373 (by rfl)
 
 /-- The inherited loop guard consumes no memory and reaches the new phase test. -/
 def headSteps (s : State) (mem : ByteArray) (n bsize esize msize : Nat) (e : Env s) :

@@ -22,7 +22,7 @@ open EvmSemantics.EVM
 open YulEvmCompiler
 
 def submissionInstructions : List Instr :=
-[ .push 0 0,
+[.push 0 0,
  .op .CALLDATALOAD,
  .push 1 32,
  .op .CALLDATALOAD,
@@ -474,12 +474,12 @@ def submissionInstructions : List Instr :=
  .op .ADD,
  .op (.Dup { idx := 0 }),
  .op .CALLDATALOAD,
- .push 1 255,
+ .op (.Dup { idx := 6 }),
+ .op (.Dup { idx := 3 }),
+ .op .SUB,
+ .push 1 3,
+ .op .SHL,
  .op .SHR,
- .op .JUMPDEST,
- .op .JUMPDEST,
- .op .JUMPDEST,
- .op .JUMPDEST,
  .op .ISZERO,
  .push 2 1065,
  .op .JUMPI,
@@ -498,7 +498,7 @@ def submissionInstructions : List Instr :=
  .op .AND,
  .op .ISZERO,
  .op .OR,
- .op (.Dup { idx := 6 }),
+ .op (.Dup { idx := 2 }),
  .push 1 127,
  .op .AND,
  .op .OR,
@@ -523,15 +523,15 @@ def submissionInstructions : List Instr :=
  .op .ADD,
  .push 2 2784,
  .op .MSTORE,
- .op .JUMPDEST,
- .op .JUMPDEST,
- .op .JUMPDEST,
- .op .JUMPDEST,
+ .op (.Dup { idx := 2 }),
+ .op .CALLDATASIZE,
+ .push 0 0,
+ .op .CALLDATACOPY,
  .op (.Dup { idx := 6 }),
  .op (.Dup { idx := 2 }),
- .op .JUMPDEST,
- .op .JUMPDEST,
- .push 0 0,
+ .op (.Dup { idx := 1 }),
+ .op (.Dup { idx := 5 }),
+ .op .SUB,
  .op .CALLDATACOPY,
  .op (.Swap { idx := 0 }),
  .op .POP,
@@ -2261,9 +2261,7 @@ def submissionInstructions : List Instr :=
  .op (.Dup { idx := 0 }),
  .push 2 2080,
  .op .MSTORE,
- .op (.Dup { idx := 1 }),
- .op .OR,
- .push 2 3012,
+ .push 4 3012,
  .op .JUMPI,
  .op .JUMPDEST,
  .op .NOT,
@@ -4117,7 +4115,7 @@ def submissionInstructions : List Instr :=
  .push 2 3816,
  .op .JUMP]
 
-theorem submissionInstructions_count : submissionInstructions.length = 4094 := by
+theorem submissionInstructions_count : submissionInstructions.length = 4092 := by
   decide
 
 theorem assemble_submissionInstructions :

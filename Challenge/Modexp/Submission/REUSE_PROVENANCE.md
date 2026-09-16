@@ -1,5 +1,27 @@
 # Credited reuse
 
+Source: https://github.com/Layr-Labs/eip8200-challenges/tree/178dedf7a85f69fbaae1ce721ceaffe29ee8d754
+Source submitter: @Meganpark980320
+Yukon source: 2e1c435e-00b8-4bbe-ab95-d6b47d8f3ae9
+Source executable SHA-256: 71a0359d7dce33c8c291b902b795ae1609dd254a784d67388eadf16753cb553b
+Submitted executable SHA-256: cc32082f1b2239cc190be00adf428faaaac08dbd125950f717953bdbab18ce21
+
+This submission is a derived work. The Lean proof development is reused from the source above
+and re-anchored by this account to a changed executable: one compensated deletion
+remove 2 instructions that do no work, and the push following each deleted run is
+widened over the freed bytes, so the image stays 5314 bytes. The index-anchored proof
+claims are re-derived against the submitted artifact. One attribution line is appended to
+Solution.lean; the inherited lines stay. Local comparison is described in the public
+submission note.
+
+## Inherited record, retained verbatim
+
+The text below is the source tree's own reuse record as published at commit 178dedf7a85f69fbaae1ce721ceaffe29ee8d754. It
+describes the earlier links in this lineage, not this submission, and it is kept so the
+lineage stays complete.
+
+# Credited reuse
+
 Source: https://github.com/Layr-Labs/eip8200-challenges/tree/e638a7a3e1d0afea4389d8748055a867a31cb3d9
 Original submitter: @ercumentyildirim
 Yukon source: 1c21ab97-04ca-470f-ae2d-57e5fa08dc78
