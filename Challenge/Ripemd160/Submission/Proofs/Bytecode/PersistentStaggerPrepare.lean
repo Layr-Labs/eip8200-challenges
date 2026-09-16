@@ -23,7 +23,7 @@ theorem pointer_eq (input : ByteArray) (i : Nat) (hfit : CalldataFits input)
     (hi : i < DriverTrace.blockCount input) :
     StaggerPersistentEntryRaw.pointer (DriverTrace.blockOffsetWord i) = UInt256.ofNat (messagePointer i) := by
   have hb := messagePointer_bound input hfit i hi
-  change UInt256.ofNat 1056 + UInt256.ofNat (DriverTrace.blockOffset i) = _
+  change UInt256.ofNat 1120 + UInt256.ofNat (DriverTrace.blockOffset i) = _
   rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb; omega)]
   rfl
 
@@ -74,7 +74,7 @@ def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
 def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.HashState)
     (limit : UInt256) (rho : List UInt256) (hs : rho.length ≤ 880)
     (tail : List UInt256) (hrho : rho = DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: tail)
-    (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input) (ctx : Context s input i)
+    (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input) (ctx : Context s input)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hr : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -91,7 +91,7 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     have gp := StaggerPersistentPadPrefix.gasSteps_prefix s (frame h off limit rho)
       (by simp only [frame, List.length_append, List.length_cons, List.length_nil]; omega)
       hr hcode hfork hnp
-    have ha : 35 ≤ s.activeWords.toNat := ctx.active
+    have ha : 37 ≤ s.activeWords.toNat := ctx.active
     have gb := gasSteps_padAll s Paired144WordRound.factorPlusWord r (by rfl) hrs hr (by omega) ctx.lowClear hf hcode hfork hnp
     have hhs : s.executionEnv.calldata.size = DriverTrace.blockOffset i := by rw [ctx.calldata]; exact hh
     rw [scheduledState_hit s i hhs]
@@ -108,14 +108,14 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     rw [scheduledState_miss s i hhs]
     subst hrho
     have hb := messagePointer_bound input hfit i hi
-    have hq0 : off + UInt256.ofNat 1056 = UInt256.ofNat (messagePointer i) := by
-      change UInt256.ofNat (DriverTrace.blockOffset i) + UInt256.ofNat 1056 = _
+    have hq0 : off + UInt256.ofNat 1120 = UInt256.ofNat (messagePointer i) := by
+      change UInt256.ofNat (DriverTrace.blockOffset i) + UInt256.ofNat 1120 = _
       rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb; omega)]
       unfold messagePointer Padding.messageOffset
       congr 1
       omega
-    have hq1 : off + UInt256.ofNat 1088 = UInt256.ofNat (messagePointer i + 32) := by
-      change UInt256.ofNat (DriverTrace.blockOffset i) + UInt256.ofNat 1088 = _
+    have hq1 : off + UInt256.ofNat 1152 = UInt256.ofNat (messagePointer i + 32) := by
+      change UInt256.ofNat (DriverTrace.blockOffset i) + UInt256.ofNat 1152 = _
       rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb; omega)]
       unfold messagePointer Padding.messageOffset
       congr 1

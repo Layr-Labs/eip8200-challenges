@@ -17,7 +17,7 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
   · exact Shared32Correct.correct input h32 entryPrefix
   · exact ColdCorrect.correct input hfit hpositive h32 entryPrefix
 theorem correct_tail (input : ByteArray) (hfit : CalldataFits input)
-    (hpositive : 0 < input.size) (hsmall : input.size < 5224)
+    (hpositive : 0 < input.size) (hsmall : input.size < 5220)
     (rho : List UInt256) (hcap : rho.length ≤ 20)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0)
       (StackTail.append (Execution.atPC input 336) rho)) :

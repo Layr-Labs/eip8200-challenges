@@ -15,60 +15,32 @@ abbrev normalTemplate := Pair13NormalTrace.normalTemplate
 
 theorem run_normal (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UInt256)
     (rho : List UInt256) (p : Nat) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
-    (hp : 1056 ≤ p) (hbound : p + 64 < 2 ^ 256)
-    (hq1 : off + UInt256.ofNat 1088 = UInt256.ofNat (p + 32))
-    (hq0 : off + UInt256.ofNat 1056 = UInt256.ofNat p)
-    (hlow : (MachineState.readWord s.memory 0).toNat % 2 ^ 144 < 2 ^ 32)
+    (hp : 1120 ≤ p) (hbound : p + 64 < 2 ^ 256)
+    (hq1 : off + UInt256.ofNat 1152 = UInt256.ofNat (p + 32))
+    (hq0 : off + UInt256.ofNat 1120 = UInt256.ofNat p)
     (hgap : PairStoreGap.GapClear s.memory) :
     runInstrSeq normalTemplate {s with pc := pc, stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho} =
       some {s with
         pc := pcAfter pc normalTemplate
         stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho
-        memory := StaggerTableLayout.resultMemory0 s.memory (StaggerScratch.dirtyWord s.memory p)
+        memory := Pair13Memory.resultMemoryJ s.memory
+          (Shared32Scratch.wordsJ s.memory
+            (PairedScheduleData.reversedWord (MachineState.readWord s.memory p))
+            (PairedScheduleData.reversedWord (MachineState.readWord s.memory (p + 32))))
         activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
-  let words := StaggerScratch.dirtyWord s.memory p
-  let wordsR := StaggerScratch.poolWordD (StaggerScratch.scratchMemory s.memory
-    (PairedScheduleData.reversedWord (MachineState.readWord s.memory p))
-    (PairedScheduleData.reversedWord (MachineState.readWord s.memory (p + 32))))
-  let scratch := Shared32Scratch.fanMemory s.memory
-    (PairedScheduleData.reversedWord (MachineState.readWord s.memory p))
-    (PairedScheduleData.reversedWord (MachineState.readWord s.memory (p + 32)))
+  let low := PairedScheduleData.reversedWord (MachineState.readWord s.memory p)
+  let high := PairedScheduleData.reversedWord (MachineState.readWord s.memory (p + 32))
+  let words := Shared32Scratch.wordsJ s.memory low high
+  let scratch := Shared32Scratch.fanMemory s.memory low high
   have h := Pair13NormalTrace.run_normal s pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho p
-    hstack hrun hp hbound hq1 hq0 hlow
-  have hclean : ∀ i, 3 ≤ i → i < 16 → (words i).toNat < 2 ^ 32 := by
-    intro i hi _
-    have hnot : ¬ (i = 1 ∨ i = 2) := by omega
-    simp only [words, StaggerScratch.dirtyWord, if_neg hnot]
-    exact PairedScheduleData.extractedWord_bound s.memory p i
-  have hscratchgap : PairStoreGap.GapClear scratch :=
-    Shared32Scratch.fanMemory_gapClear s.memory _ _ hgap
-  have hcleanR : ∀ i, 3 ≤ i → i < 16 → (wordsR i).toNat < 2 ^ 32 := by
-    intro i hi hi16
-    have hnot : ¬ (i = 1 ∨ i = 2) := by omega
-    show (StaggerScratch.poolWordD (StaggerScratch.scratchMemory s.memory _ _) i).toNat < _
-    rw [StaggerScratch.poolWordD_eq_dirty_high s.memory p i hi16 (by omega),
-      StaggerScratch.dirtyWord, if_neg hnot]
-    exact PairedScheduleData.extractedWord_bound s.memory p i
-  have hm : Pair13WriterRaw.writerMemory scratch wordsR
-      = StaggerTableLayout.resultMemory0 scratch words := by
-    rw [Pair13Memory.writerMemory_eq_resultMemoryD scratch wordsR hcleanR hscratchgap,
-      Pair13Memory.resultMemoryD_congr_mod _ wordsR words
-        (by simp only [Pair13WriterRaw.dualW]
-            rw [show wordsR 6 = words 6 from
-              StaggerScratch.poolWordD_eq_dirty_high s.memory p 6 (by decide) (by decide)])
-        (fun j _ hj => by
-          simp only [StaggerTableLayout.tableWords]
-          exact StaggerScratch.poolWordD_eq_dirty s.memory p _
-            (StaggerTableLayout.slots_lt j hj) hlow),
-      Pair13Memory.resultMemoryD_eq _ _ (hclean 6 (by decide) (by decide))]
-  have herase : StaggerTableLayout.resultMemory0 scratch words = StaggerTableLayout.resultMemory0 s.memory words :=
-    congrArg
-      (fun m => PairedScheduleMemory.writeWord m 0
-        (StaggerTableLayout.dualLane (words 6)))
-      (Shared32Scratch.erase_fan s.memory (StaggerTableLayout.tableWords words) _ _)
-  change runInstrSeq normalTemplate {s with pc := pc, stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho} =
-    some {s with pc := pcAfter pc normalTemplate, stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho, memory := StaggerTableLayout.resultMemory0 s.memory words, activeWords := loadedActiveWords s (UInt256.ofNat p)}
-  rw [← herase, ← hm]
+    hstack hrun hp hbound hq1 hq0
+  have hm : Pair13WriterRaw.writerMemory scratch words
+      = Pair13Memory.resultMemoryJ s.memory words := by
+    rw [Pair13Memory.writerMemory_eq_resultMemoryJ scratch words
+        (Shared32Scratch.fanMemory_gapClear s.memory _ _ hgap),
+      Pair13Memory.resultMemoryJ, Pair13Memory.resultMemoryJ,
+      Shared32Scratch.erase_fan s.memory (Pair13Memory.tableJ words) _ _]
+  rw [← hm]
   exact h
 
 #print axioms run_normal

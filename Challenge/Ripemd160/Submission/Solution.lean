@@ -17,5 +17,6 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
+-- redraw marker 2026-09-15T09:15:23Z
 -- Yukon reuse by @ercumentyildirim: source @i34-9, submission e1481dcc-c9a9-4364-82b3-0903851f0c06, commit 7a6785a7e139fe90f0d16f78b70221ae7926d355.
--- redraw marker 2026-09-16T05:14:12Z
+-- Yukon reuse by @ercumentyildirim: source @Meganpark980320, submission b328bfd0-d474-4de5-92ba-67934f030773, commit fa7aec485cbeffb87af152e28d77c6e99544a419.
