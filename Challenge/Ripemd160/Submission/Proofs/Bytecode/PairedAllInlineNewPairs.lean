@@ -288,7 +288,7 @@ def inline28Template : List Instr :=
    .op .ADD,
    .push ⟨2, by decide⟩ (UInt256.ofNat 256),
    .op .MLOAD,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 336),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 364),
    .op .MLOAD,
    .op .OR,
    .op .ADD,

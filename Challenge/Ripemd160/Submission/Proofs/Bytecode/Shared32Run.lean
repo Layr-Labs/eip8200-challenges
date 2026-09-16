@@ -82,7 +82,7 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
   simpa only [template, DenseScheduleTrace.pcAfter_append, s3, s2, s1, hmem, scratch, words,
     rest, stk] using h
 
-theorem end_pc : pcAfter (UInt256.ofNat 503) template = UInt256.ofNat 868 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 503) template = UInt256.ofNat 896 := by decide
 
 #print axioms run_table
 #print axioms end_pc

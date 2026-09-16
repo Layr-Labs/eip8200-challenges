@@ -48,15 +48,15 @@ theorem run_template (s : State) (pc off limit : UInt256) (h : Compression.HashS
   all_goals repeat first | apply And.intro | rfl
 
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 3568).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3565).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3568 actual_slice
-    (by change 3568 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3565 actual_slice
+    (by change 3565 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 4653 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3568) = UInt256.ofNat 4653
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3565) = UInt256.ofNat 4653
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction :=
   Table80SiteCommon.coreAdvancesAll_sound template (by decide)

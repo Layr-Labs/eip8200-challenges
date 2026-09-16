@@ -16,10 +16,10 @@ public lineage. Our local source parent is the proved 1087-buffer commit
 
 ## Artifact
 
-- SHA-256: `959e34cb39e0da35b8d3eea31c70d45f7a1c9b754e2f867422fc05d60f9b6ec7`.
-- Size: 5224 bytes = 4944 executable bytes + 280 data bytes.
-- Executable instructions: 3720; all instruction PCs match the 1087 parent.
-- Local seed-zero and median score: 666,834.
+- SHA-256: `59272d7ea0c633a8941b015f1300dbb0a6f1ec741812faa666ce9fec702415d8`.
+- Size: 5252 bytes = 4972 executable bytes + 280 data bytes.
+- Executable instructions: 3717; fold112 patterned-scan mask DIV→PUSH32.
+- Local seed-zero score: 666,694.
 - Relative to the 666,935 parent: 63 gas from tighter buffer placement, plus
   38 gas from the credited public mask change, totaling 101 gas.
 - Relative to the public 666,982 mask artifact: 148 gas from buffer reuse.
