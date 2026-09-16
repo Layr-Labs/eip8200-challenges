@@ -21,7 +21,7 @@ theorem run_init (s : State) (pc : UInt256) (rho : List UInt256)
   have hL : UInt256.lnot PatternedSwar.m8 = PatternedSwar.m7 := by decide
   have hC : UInt256.shiftLeft PatternedSwar.M (UInt256.ofNat 5) = c32 := by decide
   simp (config := { maxSteps := 600000 }) (discharger := omega)
-    [initTemplate, initResult_eq, frame, runInstrSeq, DataStepper.runInstr, pcAfter,
+    [initTemplate, initResult, frame, runInstrSeq, DataStepper.runInstr, pcAfter,
     clamp, aligned, c114, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, hU, hH, hL, hC,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
