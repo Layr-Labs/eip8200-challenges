@@ -1,42 +1,27 @@
-# RIPEMD-160: input buffer 1056 with a proved allocation transition
+# RIPEMD-160: consume every remaining last-use copy in the compression body
 
-The artifact copies the input at address 1056 and consumes both words of each
-block before schedule writes reuse its bytes. The next block starts at 1120,
-above the last schedule byte at 1111. The exact-32 route starts with 34 allocated
-words and grows to 35 at the schedule store to address 1080. Its padding marker
-is the explicit byte 0x80 inherited from our 1087-buffer artifact.
+The submitted runtime uses 669769 gas on the original 49-vector clean corpus and the same total on the corresponding dirty-frame corpus. It is 5219 bytes: 4939 executable bytes followed by the unchanged 280-byte digest payload. There are 3734 executable instructions. The raw-byte SHA-256 is `badd23b793ab2679687d8edd0ca88ad90bf85f69912e17f6780d8df469f87aac`.
 
-The clamped alignment masks at PCs 144 and 275 use the public `PUSH1 224;
-JUMPDEST` change by i34-9, source commit
-`3ff323e5a631bf0bd2d6897e2825f68ad2e86889`, promoted submission
-`5a7c448f-36db-401e-810d-a438a65c271c`. The three corresponding J2 proof modules
-are reused verbatim. See REUSE_PROVENANCE.md for attribution and the earlier
-public lineage. Our local source parent is the proved 1087-buffer commit
-`8737eba882613ff6a76fe7c64d7fd9b0fdf6c7d2`, submitted as `808bfe37`.
+The source base is the public source `a685c5bb55ed8553b8dd1b847cc30c448c78d761`, whose bytecode (5219 bytes, raw-byte SHA-256 `ba94a3b28840365c1c425623e4f8378249a85d7b3fd4a461a91e648199cca5e6`) uses 670084 gas on the same corpus. This version saves five gas per compression invocation, 315 gas across the measured corpus: five gas on each 32-byte generated input, ten on each 64-byte input and fifteen on each 128-byte input, while the seventeen memoised and recognised inputs keep their measured gas. Compared with the 670855-gas ancestor `fdd0717d031168693e7aa55b68dead6b305fa2e1` on the same inputs, it saves seventeen gas per compression.
 
-## Artifact
+## Last-use consumption change
 
-- SHA-256: `959e34cb39e0da35b8d3eea31c70d45f7a1c9b754e2f867422fc05d60f9b6ec7`.
-- Size: 5224 bytes = 4944 executable bytes + 280 data bytes.
-- Executable instructions: 3720; all instruction PCs match the 1087 parent.
-- Local seed-zero and median score: 666,834.
-- Relative to the 666,935 parent: 63 gas from tighter buffer placement, plus
-  38 gas from the credited public mask change, totaling 101 gas.
-- Relative to the public 666,982 mask artifact: 148 gas from buffer reuse.
-- The digest selector and digest-table payload are unchanged.
+Seven resident cells of the compression body were still copied at their final read and discarded later: the round-key words read for the last time at base PCs 2361, 3032, 3923 and 4561, the two packed prologue words read for the last time at 3912 and 4477, and the cached message word read at 4208; each was dropped afterwards by a SWAP and POP pair. This implementation consumes each existing cell directly at its last read and removes the DUP and the later POP. The transports of the three cells the base already consumed are chosen jointly with the seven new ones, so that the carried register order composes to the identity at the end of the loop body: the base's two-SWAP restore before the loop back-edge is no longer needed. Later DUP and SWAP indices are retargeted on the permuted layout. No arithmetic mask, memory operation or required RIPEMD operation is removed.
 
-## Proof and validation
+The freed opcode bytes are balanced by two PUSH1 immediates widened to PUSH2 with a leading zero, and 28 stack-effect-identical rewrites (commuted operands of commutative operations and same-value DUP sources) keep the encoding within the original artifact loader's recursion-depth check. Every byte before PC 899 and from PC 4641 onward, all fifteen jump destinations, every direct jump operand and the digest-payload CODECOPY base are unchanged. The payload starts at byte 4939.
 
-The proof retains the indexed invariant for unread input blocks. The early
-shared-32 loader and pool lemmas now allow 34 active words; a separate schedule
-lemma proves growth to 35, after which the existing compression proof applies.
-The general 35-word interfaces are preserved for all other routes.
+## Proof structure
 
-The exact artifact has passed all 120 local corpus seeds, 2500 fuzz cases,
-reassembly, runtime jumps, CODECOPY bounds, and the actual read-only loader.
-Full Lean validation passed all 3720 jobs. The final candidate depends only on
-`propext`, `Classical.choice`, and `Quot.sound`. The original protected benchmark
-must also pass before submission; its exact result belongs in the final upload note.
-No protected benchmark scripts or verification options are changed.
+The logical RIPEMD round definitions retain their meaning. Each affected raw execution theorem states the precise physical order of its input and output stack for the new instruction slice. The semantic round wrappers use the same permutation, including the round-boundary shapes in StaggerCore; the six rounds that keep an additional live copy of a word state the longer frame explicitly. The unpack and left-lane boundary rounds and ScheduledTailRaw carry the final permutation through each tail chunk and restore the persistent frame before returning to the driver.
 
-Model used for the new integration and buffer proof: GPT-6.
+The existing associativity and commutativity lemmas connect reordered expressions to the original formulas. The local stack-height bounds are unchanged; no verification option is increased. The entry, special 32-byte, ordinary, padding and large-input paths retain their universal contracts with the relocated program counters and instruction indices. Concrete instruction slices, cached located paths, the executable assembly and the serialized byte chunks all refer to this same byte array. Full Solution verification and the independent Comparator run are performed for this exact encoding; their results are recorded in the submission note.
+
+## Runtime validation
+
+The original native scorer passed all 98 clean and dirty runs, totaling 669769 gas in each frame. On 393 differential inputs against the base artifact (four seeded corpora, random lengths 0 to 129, boundary lengths up to 8192 bytes, exact-32 neighbours, constant and patterned inputs) the output equals the base artifact's and the reference digest on every input, each of the four corpus seeds shows the same 315-gas reduction, and no input is more expensive than with the base artifact (largest single-input change -645 gas).
+
+## Attribution and scope
+
+This work builds on the public source `a685c5bb55ed8553b8dd1b847cc30c448c78d761` and retains its accepted RIPEMD chain: the resident frame, deferred loop limit, literal moduli, guard before partial rounding, descending serialization stores, J2 size reads, permuted chaining words, the J2 initializer CALLDATASIZE substitution adapted from jacklightChen's public `cdeec6a3` branch, the three-cell last-use consumption with register transport, and the shorter J2 segment transition. The current contribution is the last-use consumption of the seven remaining cells, the jointly chosen transport without a loop-boundary restore, the balanced encoding and the regenerated proof integration. Previously published benchmark implementation and proofs remain the foundation.
+
+Only Challenge/Ripemd160/Submission is changed. The original specification, EVM semantics, protected scorer and artifact generator, compiler and Lean kernel, dependency pins and benchmark settings are used as supplied. No axiom, admission or native_decide is added. Exploratory candidates and their scripts are kept outside the submitted worktree.

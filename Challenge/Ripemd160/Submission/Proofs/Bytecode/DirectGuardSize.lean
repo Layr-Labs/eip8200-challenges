@@ -14,7 +14,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open KnownInputCompactState
 
-def guardEntry (input : ByteArray) : State := atPC input 4831
+def guardEntry (input : ByteArray) : State := atPC input 4830
 
 /-- `UInt256.eq` is `if a.toNat = b.toNat then 1 else 0`, and both operands are
 below `2 ^ 256`, so the test reduces to the underlying `Nat` comparison. -/
@@ -65,9 +65,9 @@ private theorem pc_g16 : Artifact.submissionArtifact.instructionPC 16 = 24 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 theorem generic_dest : Decode.isValidJumpDest submissionBytecode 336 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 223 = 336 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 225 = 336 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 223 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 225 (by rfl)
   rwa [hpc] at h
 
 theorem run_gate_prefix (input : ByteArray) :
