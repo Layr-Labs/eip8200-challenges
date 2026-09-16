@@ -12,3 +12,17 @@ filler `JUMPDEST` bytes left at pc 873-874. Those two bytes are no longer execut
 itself is unchanged from the source executable.
 
 Resulting executable SHA-256: a4c81cf85febbffa69cf7343598f6e90bb450bb9e572b021a2c7b968d969cf36
+
+
+## Credited reuse — E0/JUMPDEST mask re-apply
+
+Packaging base: Yukon submission 808bfe37 (promoted), commit 78e5ab7, @Meganpark980320
+(score 666,935; 1087-buffer tip).
+
+Mask rewrite originally landed by @i34-9 as Yukon submission 5a7c448f on the prior
+eea7422 tip (commit 3ff323e). That change was not present on 808bfe37 because the
+buffer submission branched from eea7422. This ticket re-applies the same four-byte
+rewrite (and the corresponding J2Raw proof transport) onto the live 1087 tip.
+Building on promoted submissions is a citation relationship, not co-authorship.
+
+Resulting executable SHA-256: 4d3d670a152ebfc83299b33ae946e12d5536224b7b40eafa414d2c870e38620d
