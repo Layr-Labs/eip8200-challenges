@@ -1,9 +1,7 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerAdaptiveWord
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerLaneSafe
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Paired80Algorithm
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.JD8Congr
 set_option warningAsError true
 set_option maxRecDepth 10000
-set_option maxHeartbeats 4000000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerAlgorithm
 open EvmSemantics PairedLaneUInt256Bridge Paired144Core Paired144WordRound
 open Paired80Algorithm (leftFold rightFold)
@@ -53,31 +51,18 @@ above the low bit length). -/
 def Dirty (k : Nat) : Prop := k = 1 ∨ k = 2 ∨ k = 14
 instance (k : Nat) : Decidable (Dirty k) := inferInstanceAs (Decidable (_ ∨ _))
 
-/-- The schedule words that can reach a round carrying junk under THIS artifact: 1 and 2 from
-the data-block loader, 14 from the pad-only block, and 3, 10, 12, 13, 15 from the six lane masks
-it does not emit.  **Words 8 and 11 are deliberately absent.**  Rounds 75 and 76 take the
-previous round's UNMASKED C output as their `d` lane, so their `raw` term's low 144 bits are
-large rather than below `2 ^ 34`, and the zero at bit 121 that licenses the exception tolerates
-addends below `2 ^ 120` only.  Those two rounds read words 8 and 11, so those two stay masked
-and their message junk is exactly zero. -/
-def JDirty (k : Nat) : Prop :=
-  k = 1 ∨ k = 2 ∨ k = 3 ∨ k = 10 ∨ k = 12 ∨ k = 13 ∨ k = 14 ∨ k = 15
-instance (k : Nat) : Decidable (JDirty k) := inferInstanceAs (Decidable (_ ∨ _))
-
-theorem jdirty_of_dirty {k : Nat} (h : Dirty k) : JDirty k := by
-  rcases h with rfl | rfl | rfl <;> simp only [JDirty] <;> tauto
-
-theorem ne15_of_not_jdirty {k : Nat} (h : ¬ JDirty k) : k ≠ 15 := by
-  intro hk
-  exact h (by rw [hk]; simp only [JDirty]; tauto)
-
-/-- Dead bits allowed above the lanes of round `i`'s message word.  A word this artifact still
-masks carries NONE; an unmasked one carries up to the carry threshold `2 ^ 112 - 4`, which is
-all `normalize` can absorb (`JD8Congr.normalize_ofNat_junk_jrfree`). -/
+/-- Dead bits allowed above the lanes of round `i`'s message word: none for a clean word other
+than word 15 and fewer than 23 for word 15 (the pad-only block leaves `n / 2 ^ 61 < 8` dead
+lanes above it), up to 64 bits in each half, at most 35 in the lower half when the round
+rotates through `compact` (the low half then stays below bit 72, which `compact` folds onto the
+upper lane), and at most 32 in the lower half for every word other than 2 and 14. -/
 def JunkBound (i jl jr : Nat) : Prop :=
-  jl < 2 ^ 112 - 4 ∧
-    (¬ JDirty Crypto.Ripemd160.r[i]! → jl = 0) ∧
-    (¬ JDirty Crypto.Ripemd160.rP[i + 3]! → jr = 0)
+  jl < 2 ^ 64 ∧ jr < 2 ^ 64 ∧
+    (Paired144WordRound.usesCompact Crypto.Ripemd160.s[i]! Crypto.Ripemd160.sP[i + 3]! →
+      jl < 2 ^ 35) ∧
+    (¬ Dirty Crypto.Ripemd160.r[i]! → jl < 2 ^ 23 ∧ (Crypto.Ripemd160.r[i]! ≠ 15 → jl = 0)) ∧
+    (¬ Dirty Crypto.Ripemd160.rP[i + 3]! → jr < 2 ^ 23 ∧ (Crypto.Ripemd160.rP[i + 3]! ≠ 15 → jr = 0)) ∧
+    (Crypto.Ripemd160.r[i]! ≠ 2 → Crypto.Ripemd160.r[i]! ≠ 14 → jl < 2 ^ 32)
 
 theorem adaptive_rounds (i : Fin 77) :
     StaggerAdaptiveWord.usesAdaptive Crypto.Ripemd160.s[i.val]! Crypto.Ripemd160.sP[i.val + 3]! ↔
@@ -103,26 +88,24 @@ theorem adaptive_schedule (i : Fin 77)
         ¬ Dirty Crypto.Ripemd160.r[j.val]!) := by decide
   exact hf i h
 
-def MessageWord (message : UInt256) (words : Nat → UInt32) (i : Nat) : Prop :=
+def LegacyMessageWord (message : UInt256) (words : Nat → UInt32) (i : Nat) : Prop :=
   ∃ jl jr, JunkBound i jl jr ∧ bits message =
     (pack (words Crypto.Ripemd160.r[i]!).toBitVec (words Crypto.Ripemd160.rP[i + 3]!).toBitVec) +
       StaggerRound.junk jl jr
 
+/-- The terminal round keeps the legacy clean representation. Other rounds
+may carry arbitrary inter-lane bits if their lower half cannot carry. -/
+def MessageWord (message : UInt256) (words : Nat → UInt32) (i : Nat) : Prop :=
+  LegacyMessageWord message words i ∨
+    (i ≠ 76 ∧ StaggerLaneSafe.Safe message
+      (words Crypto.Ripemd160.r[i]!) (words Crypto.Ripemd160.rP[i+3]!))
+
 def MessageReady (message : Nat → UInt256) (words : Nat → UInt32) (count : Nat) : Prop :=
   ∀ i < count, MessageWord (message i) words i
 
-/-- The round step at the ORIGINAL, narrow junk budget.  Retained because the widened version
-below reduces to it with `jl = jr = 0`. -/
-theorem step_of_crypto_narrow (words : Nat → UInt32) (i : Nat) (hi : i < 77)
-    (message : UInt256) (l q : CryptoLane) (jl jr : Nat)
-    (hjl : jl < 2 ^ 64) (hjr : jr < 2 ^ 64)
-    (hc : usesCompact Crypto.Ripemd160.s[i]! Crypto.Ripemd160.sP[i + 3]! → jl < 2 ^ 35)
-    (hclean : ¬ Dirty Crypto.Ripemd160.r[i]! →
-      jl < 2 ^ 23 ∧ (Crypto.Ripemd160.r[i]! ≠ 15 → jl = 0))
-    (hn2 : Crypto.Ripemd160.r[i]! ≠ 2 → Crypto.Ripemd160.r[i]! ≠ 14 → jl < 2 ^ 32)
-    (hmsg : bits message =
-      (pack (words Crypto.Ripemd160.r[i]!).toBitVec
-        (words Crypto.Ripemd160.rP[i + 3]!).toBitVec) + StaggerRound.junk jl jr) :
+theorem step_of_crypto_legacy (words : Nat → UInt32) (i : Nat) (hi : i < 77)
+    (message : UInt256) (l q : CryptoLane)
+    (hm : LegacyMessageWord message words i) :
     step i message (packCrypto l q) =
       packCrypto
         (cryptoStep (i / 16) Crypto.Ripemd160.s[i]!
@@ -132,6 +115,7 @@ theorem step_of_crypto_narrow (words : Nat → UInt32) (i : Nat) (hi : i < 77)
   obtain ⟨hl0, hl, _, _⟩ := rotation_bounds ⟨i, by omega⟩
   obtain ⟨_, _, hr0, hr⟩ := rotation_bounds ⟨i + 3, by omega⟩
   obtain ⟨hmode, hleft, hright⟩ := mode_valid ⟨i, hi⟩
+  obtain ⟨jl, jr, ⟨hjl, hjr, hc, hclean, _, hn2⟩, hmsg⟩ := hm
   by_cases ha : StaggerAdaptiveWord.usesAdaptive Crypto.Ripemd160.s[i]! Crypto.Ripemd160.sP[i + 3]!
   · have hg := adaptive_schedule ⟨i, hi⟩ ha
     have hj : (StaggerAdaptiveWord.gap Crypto.Ripemd160.s[i]! Crypto.Ripemd160.sP[i + 3]! = 68 ∨
@@ -149,20 +133,34 @@ theorem step_of_crypto_narrow (words : Nat → UInt32) (i : Nat) (hi : i < 77)
       Crypto.Ripemd160.K[i / 16]! Crypto.Ripemd160.KP[(i + 3) / 16]! l q message jl jr hjl hjr hc hmsg
     simpa only [step, ha, if_neg, ite_false, physicalKey, key, packed32, hleft, hright] using h
 
-/-- Both dispatch branches read the message word only through `normalize`, so a round step is
-invariant under any junk `normalize` removes. -/
-theorem step_congr (i : Nat) (message message' : UInt256) (q : Paired144WordRound.WordLane)
-    (h : normalize (bits (StaggerWord.sum (mode i) q.a q.b q.c q.d message (physicalKey i)))
-       = normalize (bits (StaggerWord.sum (mode i) q.a q.b q.c q.d message' (physicalKey i)))) :
-    step i message q = step i message' q := by
-  unfold step
-  split_ifs
-  · exact JD8Congr.adaptive_step_of_normalize _ _ _ message message' _ q h
-  · exact JD8Congr.staggerWord_step_of_normalize _ _ _ message message' _ q h
+theorem message_lanes (message : UInt256) (words : Nat → UInt32) (i : Nat)
+    (h : MessageWord message words i) :
+    message.toNat % 2^32 = (words Crypto.Ripemd160.r[i]!).toNat ∧
+    message.toNat / 2^144 % 2^32 = (words Crypto.Ripemd160.rP[i+3]!).toNat := by
+  rcases h with ⟨jl, jr, hb, he⟩ | ⟨_, hs⟩
+  · have hl := (words Crypto.Ripemd160.r[i]!).toBitVec.isLt
+    have hr := (words Crypto.Ripemd160.rP[i+3]!).toBitVec.isLt
+    have hjl := hb.1
+    have hjr := hb.2.1
+    have hn := StaggerRound.normalize_ofNat_junk
+      (words Crypto.Ripemd160.r[i]!).toBitVec.toNat
+      (words Crypto.Ripemd160.rP[i+3]!).toBitVec.toNat jl jr
+      (by omega) (by omega)
+    rw [← pack_eq_ofNat] at hn
+    rw [normalize_pack] at hn
+    have hnorm : normalize (bits message) =
+        pack (words Crypto.Ripemd160.r[i]!).toBitVec
+          (words Crypto.Ripemd160.rP[i+3]!).toBitVec := by rw [he]; exact hn
+    obtain ⟨hlo, hhi⟩ := pack_injective hnorm
+    constructor
+    · have h := congrArg BitVec.toNat hlo
+      simpa only [low, BitVec.extractLsb'_toNat, Nat.shiftRight_zero,
+        bits_toNat, UInt32.toNat_toBitVec] using h
+    · have h := congrArg BitVec.toNat hhi
+      simpa only [high, BitVec.extractLsb'_toNat, Nat.shiftRight_eq_div_pow,
+        bits_toNat, UInt32.toNat_toBitVec] using h
+  · exact ⟨hs.low, hs.high⟩
 
-/-- **The round step at the JD8 budget.**  `JunkBound` is now the single conjunct
-`jl < 2 ^ 112 - 4`; `jr` is unbounded.  The proof reduces the junk case to the clean case
-rather than reproving either branch. -/
 theorem step_of_crypto (words : Nat → UInt32) (i : Nat) (hi : i < 77)
     (message : UInt256) (l q : CryptoLane)
     (hm : MessageWord message words i) :
@@ -172,31 +170,21 @@ theorem step_of_crypto (words : Nat → UInt32) (i : Nat) (hi : i < 77)
           (words Crypto.Ripemd160.r[i]!) Crypto.Ripemd160.K[i / 16]! l)
         (cryptoStep (4 - (i + 3) / 16) Crypto.Ripemd160.sP[i + 3]!
           (words Crypto.Ripemd160.rP[i + 3]!) Crypto.Ripemd160.KP[(i + 3) / 16]! q) := by
-  obtain ⟨jl, jr, ⟨hjl, -, -⟩, hmsg⟩ := hm
-  have hmode := (mode_valid ⟨i, hi⟩).1
-  have hmsg' : bits (word (pack (words Crypto.Ripemd160.r[i]!).toBitVec
-        (words Crypto.Ripemd160.rP[i + 3]!).toBitVec))
-      = pack (words Crypto.Ripemd160.r[i]!).toBitVec
-          (words Crypto.Ripemd160.rP[i + 3]!).toBitVec := bits_word _
-  have hnorm : normalize (bits (StaggerWord.sum (mode i)
-        (packCrypto l q).a (packCrypto l q).b (packCrypto l q).c (packCrypto l q).d message
-        (physicalKey i)))
-      = normalize (bits (StaggerWord.sum (mode i)
-        (packCrypto l q).a (packCrypto l q).b (packCrypto l q).c (packCrypto l q).d
-        (word (pack (words Crypto.Ripemd160.r[i]!).toBitVec
-          (words Crypto.Ripemd160.rP[i + 3]!).toBitVec))
-        (physicalKey i))) := by
-    have h1 := JD8Congr.sum_normalize_wide (mode i) hmode l q
-      (words Crypto.Ripemd160.r[i]!) (words Crypto.Ripemd160.rP[i + 3]!)
-      Crypto.Ripemd160.K[i / 16]! Crypto.Ripemd160.KP[(i + 3) / 16]! message jl jr hjl hmsg
-    have h2 := (StaggerWord.sum_inputs (mode i) hmode l q
-      (words Crypto.Ripemd160.r[i]!) (words Crypto.Ripemd160.rP[i + 3]!)
-      Crypto.Ripemd160.K[i / 16]! Crypto.Ripemd160.KP[(i + 3) / 16]! _ hmsg').2
-    exact h1.trans h2.symm
-  refine (step_congr i message _ (packCrypto l q) hnorm).trans ?_
-  refine step_of_crypto_narrow words i hi _ l q 0 0 (by norm_num) (by norm_num)
-    (fun _ => by norm_num) (fun _ => ⟨by norm_num, fun _ => rfl⟩) (fun _ _ => by norm_num) ?_
-  rw [bits_word, JD8Congr.add_junk_zero]
+  rcases hm with hm | ⟨_, hs⟩
+  · exact step_of_crypto_legacy words i hi message l q hm
+  · let clean := word (pack (words Crypto.Ripemd160.r[i]!).toBitVec
+      (words Crypto.Ripemd160.rP[i+3]!).toBitVec)
+    have hc : LegacyMessageWord clean words i := by
+      refine ⟨0, 0, ?_, ?_⟩
+      · simp [JunkBound]
+      · simp [clean, bits_word, StaggerRound.junk]
+    have he : step i message (packCrypto l q) = step i clean (packCrypto l q) := by
+      unfold step physicalKey key packed32
+      split
+      · exact StaggerLaneSafe.adaptive_step_congr _ _ _ (mode_valid ⟨i, hi⟩).1 l q _ _ _ _ message hs
+      · exact StaggerLaneSafe.step_congr _ _ _ (mode_valid ⟨i, hi⟩).1 l q _ _ _ _ message hs
+    rw [he]
+    exact step_of_crypto_legacy words i hi clean l q hc
 
 theorem fold_crypto (message : Nat → UInt256) (words : Nat → UInt32)
     (count : Nat) (hcount : count ≤ 77) (l q : CryptoLane)
@@ -211,7 +199,6 @@ theorem fold_crypto (message : Nat → UInt256) (words : Nat → UInt32)
     exact step_of_crypto words i (by omega) (message i) _ _ (hm i (by omega))
 
 #print axioms mode_valid
-#print axioms step_of_crypto_narrow
 #print axioms step_of_crypto
 #print axioms fold_crypto
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerAlgorithm

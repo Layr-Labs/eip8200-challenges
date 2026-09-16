@@ -14,7 +14,7 @@ private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
 def firstLoad : List Instr := [.op .MLOAD]
 def secondLoad : List Instr :=
   [ .op (.Dup ⟨13, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 1152),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 1088),
     .op .ADD,
     .op .MLOAD ]
 def template : List Instr :=
@@ -38,9 +38,9 @@ private theorem run_secondLoad (s : State) (pc ret off : UInt256) (rest : List U
     runInstrSeq secondLoad {s with pc := pc, stack := mask8 :: mask16 :: ret :: maskWord :: rest} =
       some {s with
         pc := pcAfter pc secondLoad
-        stack := MachineState.readWord s.memory (off + UInt256.ofNat 1152).toNat ::
+        stack := MachineState.readWord s.memory (off + UInt256.ofNat 1088).toNat ::
           mask8 :: mask16 :: ret :: maskWord :: rest
-        activeWords := activeAfterWord s.activeWords (off + UInt256.ofNat 1152)} := by
+        activeWords := activeAfterWord s.activeWords (off + UInt256.ofNat 1088)} := by
   have hcap (n : Nat) (hn : n ≤ 27) : rest.length + n < 1024 := by omega
   simp [secondLoad, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ,
     Instr.size, hrun, hcap, Nat.add_assoc, activeAfterWord, State.activeWordsAfterUInt256,
@@ -49,7 +49,7 @@ private theorem run_secondLoad (s : State) (pc ret off : UInt256) (rest : List U
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 
 private theorem first_active_ge34 (s : State) (p : Nat)
-    (hp : 1120 ≤ p) (hbound : p + 64 < 2 ^ 256) :
+    (hp : 1056 ≤ p) (hbound : p + 64 < 2 ^ 256) :
     34 ≤ (activeAfterWord s.activeWords (UInt256.ofNat p)).toNat := by
   have hptr : (UInt256.ofNat p).toNat = p := by
     rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
@@ -81,8 +81,8 @@ private theorem scratch_comm (memory : ByteArray) (low high : UInt256) :
 
 theorem run_template (s : State) (pc ret : UInt256) (p : Nat) (rest : List UInt256)
     (hstack : rest.length ≤ 896) (hrun : s.halt = .Running)
-    (hp : 1120 ≤ p) (hbound : p + 64 < 2 ^ 256)
-    (hoff : rest[9]? = some (UInt256.ofNat (p - 1120))) :
+    (hp : 1056 ≤ p) (hbound : p + 64 < 2 ^ 256)
+    (hoff : rest[9]? = some (UInt256.ofNat (p - 1056))) :
     runInstrSeq template {s with pc := pc, stack := UInt256.ofNat p :: mask8 :: mask16 :: ret :: maskWord :: rest} =
       some {s with
         pc := pcAfter pc template
@@ -101,7 +101,7 @@ theorem run_template (s : State) (pc ret : UInt256) (p : Nat) (rest : List UInt2
   let s3 : State := {s2 with memory := writeWord s1.memory 60 hi}
   have hptr : (UInt256.ofNat p).toNat = p := by
     rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
-  have haddr : UInt256.ofNat (p - 1120) + UInt256.ofNat 1152 = UInt256.ofNat p + UInt256.ofNat 32 := by
+  have haddr : UInt256.ofNat (p - 1056) + UInt256.ofNat 1088 = UInt256.ofNat p + UInt256.ofNat 32 := by
     rw [Word.ofNat_add_ofNat (by omega), Word.ofNat_add_ofNat (by omega)]
     congr 1; omega
   have hread : MachineState.readWord s1.memory (p + 32) = MachineState.readWord s.memory (p + 32) := by
@@ -110,7 +110,7 @@ theorem run_template (s : State) (pc ret : UInt256) (p : Nat) (rest : List UInt2
     exact Or.inr (by omega)
   have ha0 : 34 ≤ a0.toNat := first_active_ge34 s p hp hbound
   have ha1 : 34 ≤ a1.toNat := by
-    exact Nat.le_trans (by decide) (Stagger144Active.loaded_active_ge37 s p hp hbound)
+    exact Nat.le_trans (by decide) (Stagger144Active.loaded_active_ge35 s p hp hbound)
   have h1 := run_firstLoad s pc (UInt256.ofNat p) (mask8 :: mask16 :: ret :: maskWord :: rest) (by simp; omega) hrun
   rw [hptr] at h1
   have h2 := run_lowerFirst s0 (pcAfter pc firstLoad) (MachineState.readWord s.memory p) ret rest (by omega) hrun
@@ -123,7 +123,7 @@ theorem run_template (s : State) (pc ret : UInt256) (p : Nat) (rest : List UInt2
   have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
   have h4 := run_secondLoad s1
     (pcAfter (pcAfter (pcAfter pc firstLoad) DeferredNormalEndian.lowerReverseFirst) lowerStore)
-    ret (UInt256.ofNat (p - 1120)) rest (by omega) hrun hoff
+    ret (UInt256.ofNat (p - 1056)) rest (by omega) hrun hoff
   rw [haddr, PairedScheduleContract.pointer_add32_toNat p hbound, hread] at h4
   have h1234 := DenseScheduleTrace.runInstrSeq_append_running h123 (by exact hrun) h4
   have h5 := run_final s2

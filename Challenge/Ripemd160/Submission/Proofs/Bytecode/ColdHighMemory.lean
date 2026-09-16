@@ -1,6 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerTablePad
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairStoreGap
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.JD8Pool
 set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 6000000
@@ -112,32 +111,6 @@ theorem padRealChain_gapClear (memory : ByteArray) (n : UInt256) (hn : n.toNat<2
   rw [hagree.2 (18 * j + k) (by have := lowerPairSlots_bounds j hj; omega)]
   exact h j hj k hk hk'
 
-theorem lowChain_poolClear (memory : ByteArray) (n : UInt256) (hn : n.toNat<2^64) :
-    PoolClear (lowChain memory n) := by
-  have hv : (lowDirty n).toNat<2^112 := by
-    rw [lowDirty, lowDirty_shift n hn]
-    simp only [Nat.reducePow] at *
-    omega
-  have hz (i : Nat) (hi : i<18) := encoded_prefix_zero (lowDirty n) hv i hi
-  have hb : ∀ a : Nat, a = 26 ∨ a = 27 ∨ a = 94 ∨ a = 95 ∨ a = 128 ∨ a = 129 →
-      (lowChain memory n)[a]?.getD 0 = 0 := by
-    intro a ha
-    rcases ha with rfl | rfl | rfl | rfl | rfl | rfl
-    all_goals simp only [lowChain, writeWord, MachineState.writeBytes_getElem?_getD,
-      YulEvmCompiler.BytesLemmas.natToBytesPadded_size, zeroMemory_getD]
-    all_goals norm_num only
-    all_goals first | exact hz _ (by decide) | rfl
-  exact ⟨JD8Pool.window2_of_bytes _ 26 (hb 26 (by tauto)) (hb 27 (by tauto)),
-    JD8Pool.window2_of_bytes _ 94 (hb 94 (by tauto)) (hb 95 (by tauto)),
-    JD8Pool.window2_of_bytes _ 128 (hb 128 (by tauto)) (hb 129 (by tauto))⟩
-
-theorem padRealChain_poolClear (memory : ByteArray) (n : UInt256) (hn : n.toNat<2^64)
-    (hlow : (MachineState.readWord memory 0).toNat % 2 ^ 144 < 2 ^ 32) :
-    PoolClear (padRealChain memory n) := by
-  have h := lowChain_poolClear memory n hn
-  have hagree := StaggerTablePad.padRealChain_agree memory n hlow
-  exact PairStoreGap.poolClear_congr _ _ (fun a hA => hagree.2 a (by omega)) h
-
 #print axioms lowChain_size
 #print axioms lowChain_outside
 #print axioms lowChain_read0
@@ -145,5 +118,4 @@ theorem padRealChain_poolClear (memory : ByteArray) (n : UInt256) (hn : n.toNat<
 #print axioms padRealChain_outside
 #print axioms padRealChain_read0_mod
 #print axioms padRealChain_gapClear
-#print axioms padRealChain_poolClear
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdHighMemory

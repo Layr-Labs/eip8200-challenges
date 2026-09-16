@@ -70,8 +70,13 @@ theorem final_shape (message : Nat → UInt256) (words : Nat → UInt32)
       (words Crypto.Ripemd160.rP[79]!).toBitVec) := by
       apply bits_injective
       rw [bits_word]
-      obtain ⟨jl, jr, ⟨-, h0l, h0r⟩, hmsg⟩ := hm 76 (by decide)
-      rw [h0l (by decide), h0r (by decide)] at hmsg
+      have hm76 := hm 76 (by decide)
+      have hlegacy : StaggerAlgorithm.LegacyMessageWord (message 76) words 76 := by
+        rcases hm76 with h | ⟨hn, _⟩
+        · exact h
+        · exact False.elim (hn rfl)
+      obtain ⟨jl, jr, ⟨-, -, -, h0l, h0r, _⟩, hmsg⟩ := hlegacy
+      rw [(h0l (by decide)).2 (by decide), (h0r (by decide)).2 (by decide)] at hmsg
       rw [hmsg, show StaggerRound.junk 0 0 = (0 : BitVec 256) from rfl]
       exact BitVec.add_zero _
     rw [hm76] at h76 ⊢

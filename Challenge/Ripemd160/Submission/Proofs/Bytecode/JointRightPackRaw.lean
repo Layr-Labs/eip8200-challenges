@@ -85,9 +85,7 @@ def template : List Instr :=
     .op (.Dup ⟨11, by decide⟩),
     .op .OR,
     .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
-    .op (.Dup ⟨7, by decide⟩),
-    .op (.Dup ⟨1, by decide⟩),
-    .op .OR ]
+    .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) ]
 
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
   [ x.rd, x.k, x.rb, x.rc, x.ra, x.re, x.factor, x.lower, x.cache140, x.cache350, x.cache310, x.cache190, x.h4, x.h3, x.h2, x.h1, x.h0, x.off, x.limit ] ++ rho
@@ -142,7 +140,8 @@ private theorem actualOutput_eq (memory : ByteArray) (x : Input) (rho : List UIn
     RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
 private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 35 ≤ s.activeWords.toNat) :
+    (hactive : 35 ≤ s.activeWords.toNat)
+    (hlower : x.lower = UInt256.ofNat 4294967295) :
     runInstrSeq template {s with pc := pc, stack := inputStack x rho} =
       some {s with pc := pcAfter pc template, stack := actualOutput s.memory x rho} := by
   have hbase : rho.length < 1024 := by omega
@@ -157,12 +156,13 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
     State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat,
     RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
   all_goals simp only [neutral_hadd, neutral_hmul, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
-  all_goals repeat first | apply And.intro | exact True.intro | rfl
+  all_goals repeat first | apply And.intro | exact True.intro | rfl | (rw [hlower]; decide)
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 35 ≤ s.activeWords.toNat) :
+    (hactive : 35 ≤ s.activeWords.toNat)
+    (hlower : x.lower = UInt256.ofNat 4294967295) :
     runInstrSeq template {s with pc := pc, stack := inputStack x rho} =
       some {s with pc := pcAfter pc template, stack := outputStack s.memory x rho} := by
-  simpa only [actualOutput_eq] using run_generated s pc x rho hstack hrun hactive
+  simpa only [actualOutput_eq] using run_generated s pc x rho hstack hrun hactive hlower
 #print axioms run_actual
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.JointRightPackRaw

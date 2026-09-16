@@ -49,6 +49,69 @@ def transitionResult (f : Frame) : Frame :=
            stop := e
            full := UInt256.add f.stop (aligned (UInt256.sub e f.stop)) }
 
+/-! ### Masking with `0xE0` instead of `~0x1F`
+
+`aligned x = x &&& ~0x1F` clears the low five bits of `x`.  Whenever `x < 256`
+the high bits of `x` are already zero, so masking with the single byte `0xE0`
+does the same job -- and `PUSH1 224; JUMPDEST` costs 4 gas where
+`PUSH1 31; NOT` costs 6.
+
+The `< 256` side condition is discharged from the *definition* of `clamp`, not
+from any sample of calldata: `clamp x = x + (251 < x)·(251 - x)` is `min x 251`
+by `clamp_lt` below, for every `x : UInt256` and hence for every calldata
+length, including lengths at or above `2 ^ 61`. -/
+
+theorem nat_and_e0 (m : Nat) (h : m < 256) : m &&& 224 = m &&& (2 ^ 256 - 32) := by
+  interval_cases m <;> decide
+
+theorem add_sub_self (a b : UInt256) : UInt256.add a (UInt256.sub b a) = b := by
+  unfold UInt256.add UInt256.sub
+  congr 1
+  exact add_sub_cancel a.val b.val
+
+theorem sub_add_self (a b : UInt256) : UInt256.sub (UInt256.add a b) a = b := by
+  unfold UInt256.add UInt256.sub
+  congr 1
+  exact add_sub_cancel_left a.val b.val
+
+theorem land224_eq_aligned (x : UInt256) (h : x.toNat < 256) :
+    UInt256.land x (UInt256.ofNat 224) = aligned x := by
+  unfold aligned UInt256.land
+  congr 1
+  apply Fin.ext
+  show (x.val.val &&& 224) % 2 ^ 256 = (x.val.val &&& (2 ^ 256 - 32)) % 2 ^ 256
+  rw [nat_and_e0 x.val.val h]
+
+/-- `clamp` never exceeds 251, so its result always fits in a single byte. -/
+theorem clamp_lt (x : UInt256) : (clamp x).toNat < 256 := by
+  unfold clamp UInt256.lt
+  split
+  · next _ =>
+    have h1 : UInt256.mul (UInt256.ofNat 1) (UInt256.sub (UInt256.ofNat 251) x)
+        = UInt256.sub (UInt256.ofNat 251) x := by
+      unfold UInt256.mul; congr 1; exact one_mul _
+    rw [h1, add_sub_self]
+    decide
+  · next hle =>
+    have h0 : UInt256.mul (UInt256.ofNat 0) (UInt256.sub (UInt256.ofNat 251) x)
+        = UInt256.ofNat 0 := by
+      unfold UInt256.mul; congr 1; exact zero_mul _
+    have hx : UInt256.add x (UInt256.ofNat 0) = x := by
+      unfold UInt256.add; congr 1; exact add_zero _
+    rw [h0, hx]
+    have h251 : (UInt256.ofNat 251).toNat = 251 := rfl
+    rw [h251] at hle
+    omega
+
+/-- `initResult` with the `0xE0` mask in place of `~0x1F`.  The operand is left
+in its unreduced form so that it still matches what the template's symbolic
+execution produces. -/
+theorem initResult_eq (n : Nat) : initResult n =
+    ⟨0, 0, PatternedSwar.P,
+      UInt256.land (clamp (UInt256.ofNat n)) (UInt256.ofNat 224),
+      clamp (UInt256.ofNat n), UInt256.ofNat n⟩ := by
+  rw [initResult, land224_eq_aligned _ (clamp_lt _)]
+
 def initTemplate : List Instr := [
   .push ⟨1, by decide⟩ (UInt256.ofNat 255),
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
@@ -76,8 +139,8 @@ def initTemplate : List Instr := [
   .op .MUL,
   .op .ADD,
   .op (.Dup ⟨0, by decide⟩),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 31),
-  .op .NOT,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+  .op .JUMPDEST,
   .op .AND,
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
@@ -85,7 +148,7 @@ def initTemplate : List Instr := [
 
 def firstTemplate : List Instr := [ .op (.Dup ⟨3, by decide⟩),
     .op .ISZERO,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 216),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 217),
     .op .JUMPI ]
 
 def normalTemplate : List Instr := [
@@ -112,12 +175,11 @@ def normalTemplate : List Instr := [
   .op (.Swap ⟨2, by decide⟩),
   .op .POP]
 
-def normalGuardTemplate : List Instr := [
-  .op (.Dup ⟨3, by decide⟩),
-  .op (.Dup ⟨2, by decide⟩),
-  .op .LT,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 187),
-  .op .JUMPI]
+def normalGuardTemplate : List Instr := [ .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨2, by decide⟩),
+    .op .LT,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 188),
+    .op .JUMPI ]
 
 def tailTemplate : List Instr := [
   .op .JUMPDEST,
@@ -139,7 +201,7 @@ def tailTemplate : List Instr := [
 def finishTemplate : List Instr := [ .op .CALLDATASIZE,
     .op (.Dup ⟨5, by decide⟩),
     .op .EQ,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 294),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 292),
     .op .JUMPI ]
 
 def transitionTemplate : List Instr := [ .op (.Dup ⟨9, by decide⟩),
@@ -161,7 +223,7 @@ def transitionTemplate : List Instr := [ .op (.Dup ⟨9, by decide⟩),
     .op .CALLDATASIZE,
     .op .SUB,
     .op (.Dup ⟨0, by decide⟩),
-    .push ⟨4, by decide⟩ (UInt256.ofNat 251),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 251),
     .op .LT,
     .op (.Dup ⟨1, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 251),
@@ -173,24 +235,22 @@ def transitionTemplate : List Instr := [ .op (.Dup ⟨9, by decide⟩),
     .op (.Swap ⟨4, by decide⟩),
     .op (.Dup ⟨5, by decide⟩),
     .op .SUB,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 31),
-    .op .NOT,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+    .op .JUMPDEST,
     .op .AND,
     .op (.Dup ⟨2, by decide⟩),
     .op .ADD,
     .op (.Swap ⟨3, by decide⟩),
     .op .POP ]
 
-def transitionGuardTemplate : List Instr := [
-  .op (.Dup ⟨3, by decide⟩),
-  .op (.Dup ⟨2, by decide⟩),
-  .op .LT,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 187),
-  .op .JUMPI]
+def transitionGuardTemplate : List Instr := [ .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨2, by decide⟩),
+    .op .LT,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 188),
+    .op .JUMPI ]
 
-def toTailTemplate : List Instr := [
-  .push ⟨1, by decide⟩ (UInt256.ofNat 216),
-  .op .JUMP]
+def toTailTemplate : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 217),
+    .op .JUMP ]
 
 def resultTemplate : List Instr := [ .op .JUMPDEST,
     .push ⟨2, by decide⟩ (UInt256.ofNat 336),

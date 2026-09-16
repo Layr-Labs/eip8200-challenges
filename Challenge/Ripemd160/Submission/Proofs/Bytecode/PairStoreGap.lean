@@ -18,50 +18,6 @@ def GapClear (memory : ByteArray) : Prop :=
   ∀ j, j ∈ lowerPairSlots → ∀ k, 14 ≤ k → k < 18 →
     memory[18 * j + k]?.getD 0 = 0
 
-/-- The six bytes the schedule fan does not write, and which the eight unmasked pool loads
-therefore read out of the previous table image.  `Shared32Scratch.fanMemory` writes
-`28..45`, `46..77`, `78..93`, `96..127` and `130..145`; the fourteen-byte junk window of every
-unmasked word lies inside those ranges except for these six, which are the two bytes below each
-of the three fan bases 28, 96 and 130.  Keeping them zero is what bounds the junk below the
-carry threshold `2 ^ 112 - 4` that `normalize` needs. -/
-def PoolClear (memory : ByteArray) : Prop :=
-  Precompile.bytesToNatPadded memory 26 2 = 0 ∧
-    Precompile.bytesToNatPadded memory 94 2 = 0 ∧
-    Precompile.bytesToNatPadded memory 128 2 = 0
-
-/-- `PoolClear` reads only six bytes, so any image agreeing on them inherits it. -/
-theorem poolClear_congr (m m' : ByteArray)
-    (h : ∀ a, (26 ≤ a ∧ a < 28) ∨ (94 ≤ a ∧ a < 96) ∨ (128 ≤ a ∧ a < 130) →
-      m'[a]?.getD 0 = m[a]?.getD 0) (hp : PoolClear m) : PoolClear m' := by
-  refine ⟨?_, ?_, ?_⟩
-  · rw [StaggerTableMemory.bytesToNatPadded_congrOffset m' m 26 26 2
-      (fun i hi => h (26 + i) (by omega))]
-    exact hp.1
-  · rw [StaggerTableMemory.bytesToNatPadded_congrOffset m' m 94 94 2
-      (fun i hi => h (94 + i) (by omega))]
-    exact hp.2.1
-  · rw [StaggerTableMemory.bytesToNatPadded_congrOffset m' m 128 128 2
-      (fun i hi => h (128 + i) (by omega))]
-    exact hp.2.2
-
-/-- Any store whose thirty-two byte window misses all six bytes keeps the invariant. -/
-theorem writeWord_preserves_poolClear (memory : ByteArray) (value : UInt256) (address : Nat)
-    (ha : ∀ a, (26 ≤ a ∧ a < 28) ∨ (94 ≤ a ∧ a < 96) ∨ (128 ≤ a ∧ a < 130) →
-      ¬ (address ≤ a ∧ a < address + 32))
-    (hg : PoolClear memory) :
-    PoolClear (writeWord memory address value) := by
-  refine poolClear_congr memory _ (fun a hA => ?_) hg
-  simp only [writeWord, MachineState.writeBytes_getElem?_getD,
-    YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
-  rw [if_neg (ha a hA)]
-
-theorem scratchMemory_poolClear (memory : ByteArray) (low high : UInt256)
-    (hg : PoolClear memory) :
-    PoolClear (StaggerScratch.scratchMemory memory low high) := by
-  unfold StaggerScratch.scratchMemory
-  refine writeWord_preserves_poolClear _ _ _ (by intro a h; omega) ?_
-  exact writeWord_preserves_poolClear _ _ _ (by intro a h; omega) hg
-
 theorem lowerPairSlots_bounds (j : Nat) (hj : j ∈ lowerPairSlots) :
     8 ≤ j ∧ j ≤ 57 := by
   simp only [lowerPairSlots, List.mem_cons, List.not_mem_nil, or_false] at hj
@@ -117,5 +73,4 @@ theorem scratchMemory_gapClear (memory : ByteArray) (low high : UInt256)
 
 #print axioms resultMemory_gapClear
 #print axioms scratchMemory_gapClear
-#print axioms poolClear_congr
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PairStoreGap
