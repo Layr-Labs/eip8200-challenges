@@ -39,15 +39,15 @@ def lastProgram : List Instr :=
   [.op .POP, .op .POP, .push 2 3298, .push 2 2368, .push 2 4361, .op .JUMP]
 
 def sqExitBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 4033 sqExitProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3025 12 4033 sqExitProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3019 12 4033 sqExitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def lastBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 4055 lastProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3037 6 4055 lastProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3031 6 4055 lastProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDestLazy : Decode.isValidJumpDest TnM128Candidate.bytecode 4361 = true :=
-  TnM128CandidateArtifact.isValidJumpDest_index 3260 (by rfl)
+  TnM128CandidateArtifact.isValidJumpDest_index 3254 (by rfl)
 
 abbrev environment := TnM128SquareSteps.environment
 
