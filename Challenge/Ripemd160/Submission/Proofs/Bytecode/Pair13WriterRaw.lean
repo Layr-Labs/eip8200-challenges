@@ -622,7 +622,7 @@ def template5 : List Instr :=
     .op .MSTORE,
     .push ⟨2, by decide⟩ (UInt256.ofNat 324),
     .op .MSTORE,
-    .push ⟨3, by decide⟩ (UInt256.ofNat 252),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 252),
     .op .MSTORE,
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .MSTORE,

@@ -8,8 +8,8 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdHighTrace
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PersistentStaggerTable PersistentStaggerIteration ColdHighPaddingMemory StaggerPersistentFrame
 noncomputable opaque gasSteps_padding (input : ByteArray) (hfit : CalldataFits input) (hn32 : input.size≠32) (i : Nat) :
-    GasSteps {lowState input i with pc:=UInt256.ofNat 4705,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (UInt256.ofNat input.size) maskRho}
-      {paddedState input i with pc:=UInt256.ofNat 480,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (Padding.paddedWord input) maskRho} := by
+    GasSteps {lowState input i with pc:=UInt256.ofNat 4709,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (UInt256.ofNat input.size) maskRho}
+      {paddedState input i with pc:=UInt256.ofNat 466,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (Padding.paddedWord input) maskRho} := by
   let h:=hashes input i
   let off:=DriverTrace.blockOffsetWord i
   have hc : (lowState input i).executionEnv.code=Artifact.submissionArtifact.code := states_code input i
@@ -25,8 +25,8 @@ noncomputable opaque gasSteps_padding (input : ByteArray) (hfit : CalldataFits i
     (frame h off (Padding.paddedWord input) maskRho) (by simp [frame,maskRho]) (by rfl)
     hcal hr hc hf hnp hfit hn32
   have gpad' : GasSteps
-      {lowState input i with pc:=UInt256.ofNat 4705,stack:=frame h off (UInt256.ofNat input.size) maskRho}
-      {paddedState input i with pc:=UInt256.ofNat 479,stack:=frame h off (Padding.paddedWord input) maskRho} := gp.trans gpad
+      {lowState input i with pc:=UInt256.ofNat 4709,stack:=frame h off (UInt256.ofNat input.size) maskRho}
+      {paddedState input i with pc:=UInt256.ofNat 465,stack:=frame h off (Padding.paddedWord input) maskRho} := gp.trans gpad
   have gj:=StaggerPersistentLoopSites.gasSteps_join (paddedState input i)
     (frame h off (Padding.paddedWord input) maskRho) (by simp [frame,maskRho]) hr hc hf hnp
   exact ColdTraceCompose.two gpad' gj
