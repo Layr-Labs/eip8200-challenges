@@ -242,19 +242,67 @@ theorem run_updateM (template : State) (pc base modulus exponent : UInt256)
   simpa only [updateProgramM, state, List.cons_append,
     show 15 - (power + 1) = 14 - power by omega] using both
 
+/-! ### The final table multiply carries the lookup mask
+
+The base is the deepest of the three `MULMOD` operands, so the last multiply has
+to reach past two words for it.  Pushing the window's `480` mask *first* turns
+that reach into a `SWAP3`, and the mask is then already in place when the store
+consumes the product -- the window's `POP; PUSH2 480` prologue disappears.  The
+three instructions replace the four of `DUP3; MULMOD` plus that prologue, in one
+byte less and for two gas less: both spellings pay `MULMOD` and one `PUSH2`, but
+reaching the base with `DUP3` then discarding the copy with `POP` costs 5 where
+the mask-first `SWAP3` costs 3. -/
+
+def lastMultiplyProgram : List Instr :=
+  [.push 2 480, .op (.Swap ⟨2, by decide⟩), .op .MULMOD]
+
+theorem run_lastMultiply (template : State) (pc base modulus exponent : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1000) :
+    runInstructions lastMultiplyProgram
+      (state template pc base modulus exponent 14 rest) =
+    some (framed template (advancePC 5 pc) base modulus 15
+      (WindowMath.tableWord base modulus 15 ::
+        ([UInt256.ofNat 480, exponent] ++ rest))) := by
+  have hnext : WindowMath.tableWord base modulus 15 =
+      UInt256.mulMod base (WindowMath.tableWord base modulus 14) modulus := by
+    rw [WindowMath.tableWord, if_neg (by omega), mulMod_comm]
+  have hcap0 : rest.length + 4 < 1024 := by omega
+  have hcap1 : rest.length + 5 < 1024 := by omega
+  have hp3 : UInt256.ofNat 3 = UInt256.ofNat 1 + (UInt256.ofNat 1 + UInt256.ofNat 1) := by decide
+  simp (disch := omega)
+    [runInstructions, lastMultiplyProgram, state, framed,
+     Challenge.EvmProof.Stepper.runInstr,
+     List.exchange, List.getElem?_cons_zero, Option.bind_some,
+     Challenge.EvmProof.Word.literal_eq_ofNat,
+     show (15 : Nat) - 14 = 1 by decide, List.replicate_succ, List.replicate_zero,
+     List.cons_append, List.nil_append, Nat.add_assoc,
+     hcap0, hcap1, hnext, advancePC, succ_eq_add, hp3, word_add_assoc]
+
+theorem hasMsize_lastMultiply : hasMsize lastMultiplyProgram = false := by
+  simp [lastMultiplyProgram, hasMsize]
+
+theorem run_lastMultiplyX (template : State) (pc base modulus exponent : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1000) :
+    runInstructionsX lastMultiplyProgram
+      (state template pc base modulus exponent 14 rest) =
+    some (framed template (advancePC 5 pc) base modulus 15
+      (WindowMath.tableWord base modulus 15 ::
+        ([UInt256.ofNat 480, exponent] ++ rest))) := by
+  rw [runInstructionsX_eq _ hasMsize_lastMultiply]
+  exact run_lastMultiply template pc base modulus exponent rest hrest
+
 def lastUpdateProgramM : List Instr :=
-  multiplyProgram 14 (by decide) ++ lastStoreProgramM
+  lastMultiplyProgram ++ lastStoreProgramM
 
 theorem run_last_updateM (template : State) (pc base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructionsX lastUpdateProgramM
       (state template pc base modulus exponent 14 rest) =
-    some (framed template (lastStorePCM (advancePC 2 pc)) base modulus 16
-      ([base, exponent] ++ rest)) := by
-  have hm := run_multiplyX template pc base modulus exponent 14 (by decide) (by decide) rest hrest
-  have hs := run_store_lastM template (advancePC 2 pc) base modulus 15 (by decide)
-    ([base, exponent] ++ rest) (by simp; omega)
-  simp only [show 14 - 14 = 0 by decide, List.replicate_zero] at hm
+    some (framed template (lastStorePCM (advancePC 5 pc)) base modulus 16
+      ([UInt256.ofNat 480, exponent] ++ rest)) := by
+  have hm := run_lastMultiplyX template pc base modulus exponent rest hrest
+  have hs := run_store_lastM template (advancePC 5 pc) base modulus 15 (by decide)
+    ([UInt256.ofNat 480, exponent] ++ rest) (by simp; omega)
   exact runInstructionsX_append_some _ _ _ _ _ hm hs
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneTable
