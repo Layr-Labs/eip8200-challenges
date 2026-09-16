@@ -15,27 +15,19 @@ def transitionATemplate : List Instr := transitionTemplate.take 15
 def transitionBTemplate : List Instr := transitionTemplate.drop 15
 def transitionAResult (f : Frame) : Frame := {f with word := advance 114 f.word, off := f.stop}
 def transitionBResult (f : Frame) : Frame :=
-  let e := UInt256.add f.off (clamp (UInt256.sub f.len f.off))
-  {f with stop := e, full := UInt256.add f.off (aligned (UInt256.sub e f.off))}
+  {f with stop := UInt256.add f.off (clamp (UInt256.sub f.len f.off)),
+          full := UInt256.add f.off
+            (UInt256.land (UInt256.sub f.len f.off) (UInt256.ofNat 224))}
 
-/-- The operand of `aligned` here is `e - off`, and `e = off + clamp (len - off)`,
-so the operand is exactly `clamp (len - off)` and is therefore below 256. -/
-theorem transitionB_operand_lt (f : Frame) :
-    (UInt256.sub (UInt256.add f.off (clamp (UInt256.sub f.len f.off))) f.off).toNat
-      < 256 := by
-  rw [sub_add_self]
-  exact clamp_lt _
-
-/-- `transitionBResult` with the `0xE0` mask in place of `~0x1F`.  The operand
-`e - off` is deliberately left unreduced, because that is the form the
-template's symbolic execution produces. -/
+/-- The template masks `len - off` directly (`CALLDATASIZE ; SUB ; PUSH1 224 ; AND`) rather than the
+clamped `e - off`, so no `land224_eq_aligned` bridge belongs here: the mask below is the one the
+bytecode applies.  The two forms agree only under the reachability facts, and that obligation now
+lives where it is decidable -- the last conjunct of `J2Frame.Facts`, discharged by `decide` over the
+fourteen `Allowed` lengths. -/
 theorem transitionBResult_eq (f : Frame) : transitionBResult f =
     {f with stop := UInt256.add f.off (clamp (UInt256.sub f.len f.off)),
-            full := UInt256.add f.off (UInt256.land
-              (UInt256.sub (UInt256.add f.off (clamp (UInt256.sub f.len f.off))) f.off)
-              (UInt256.ofNat 224))} := by
-  unfold transitionBResult
-  rw [land224_eq_aligned _ (transitionB_operand_lt f)]
+            full := UInt256.add f.off
+              (UInt256.land (UInt256.sub f.len f.off) (UInt256.ofNat 224))} := rfl
 
 theorem run_transitionA (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running) :
