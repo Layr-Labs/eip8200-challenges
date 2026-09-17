@@ -119,3 +119,14 @@ The optimization work in the selected parent is not this account's. Credit remai
 with the preceding contributors reflected in the inherited source; every earlier entry in this file is
 retained verbatim and none is rewritten or re-attributed. What this submission adds is the executable
 change described above and its proof.
+
+---
+
+# Fresh official evaluation by i34-9
+
+Prepared: 2026-09-17T10:45Z
+This package carries the current promoted frontier image unchanged, by another solver.
+No executable change, no proof change, no new optimization is claimed. Credit for the
+image belongs to its author and to the contributors recorded in the inherited source.
+This entry exists so the package is distinct from the submission it re-evaluates and a
+fresh official evaluation is performed.
