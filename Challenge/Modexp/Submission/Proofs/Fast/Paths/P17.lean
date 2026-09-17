@@ -19,6 +19,27 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
+/-- Instructions 1943..1948, pc 2744..3189. -/
+def blk1816 :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 935 .JUMPDEST,
+   opAt 936 (.Dup ⟨0, by decide⟩),
+   pushAt 937 2 1024,
+   opAt 938 .EQ,
+   pushAt 939 2 837,
+   opAt 940 .JUMPI]
+
+/-- Instructions 1952..1952, pc 1824..2767: the multiply's call frame. -/
+def blk1822 :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [pushAt 941 2 837,
+   pushAt 942 2 1536,
+   opAt 943 (.Dup ⟨2, by decide⟩),
+   pushAt 944 2 1536,
+   pushAt 945 2 3209,
+   opAt 946 .JUMP]
+
+/-- Instructions 1955..1957, pc 2768..2772: the skip. -/
 def blk1828 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   []

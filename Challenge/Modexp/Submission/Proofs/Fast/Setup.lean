@@ -369,7 +369,7 @@ def fallbackState (s : State) : State :=
 
 /-- Entry of `BAIL1` (pc 2016): one live stack word. -/
 def bail1State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 794, stack := [UInt256.ofNat (modulusSize input)] }
+  { s with pc := UInt256.ofNat 1059, stack := [UInt256.ofNat (modulusSize input)] }
 
 /-- After the `msize > 32` check (pc 1456). -/
 def sizeCheckState (s : State) (input : ByteArray) : State :=
@@ -621,7 +621,7 @@ def oddCheckState (s : State) (input : ByteArray) : State :=
 
 /-- Entry of `BAIL6` (pc 1053): six live stack words. -/
 def bail6State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 800
+  { s with pc := UInt256.ofNat 1065
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 
 /-- Where `BAIL6` lands: the wide-modulus fallback entry (pc 236) with the six live
@@ -870,47 +870,6 @@ theorem run_oddCheck_bail (s : State) (input : ByteArray)
        Challenge.EvmProof.Word.ofNat_add_mod,
        Challenge.EvmProof.Word.word_toNat_ofNat]
 
-/-! Program-counter certificates for the two bail blocks `blk1341` (instruction
-indices 574..577, pc 794..799) and `blk1351` (indices 578..580, pc 800..803).
-`Fast.Defs` used to cover these indices with the range lemma `fastPC4`, which was
-dropped when its index range stopped being contiguous; the individual facts below
-are what the block reductions actually need. -/
-
-private theorem pcIdx574 :
-    Artifact.submissionArtifact.instructionPC 574 = 794 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-private theorem pcIdx575 :
-    Artifact.submissionArtifact.instructionPC 575 = 795 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-private theorem pcIdx576 :
-    Artifact.submissionArtifact.instructionPC 576 = 796 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-private theorem pcIdx577 :
-    Artifact.submissionArtifact.instructionPC 577 = 799 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-private theorem pcIdx578 :
-    Artifact.submissionArtifact.instructionPC 578 = 800 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-private theorem pcIdx579 :
-    Artifact.submissionArtifact.instructionPC 579 = 801 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-private theorem pcIdx580 :
-    Artifact.submissionArtifact.instructionPC 580 = 803 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
 set_option linter.unusedSimpArgs false in
 theorem run_bail1 (s : State) (input : ByteArray)
     (hcode : s.executionEnv.code = submissionBytecode) (hrun : s.halt = .Running) :
@@ -921,7 +880,6 @@ theorem run_bail1 (s : State) (input : ByteArray)
      Challenge.EvmProof.Stepper.runLocatedBlock,
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
      bail1State, fallbackState, hcode, hrun, jumpDest1196,
-     pcIdx574, pcIdx575, pcIdx576, pcIdx577,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
@@ -937,7 +895,6 @@ theorem run_bail6 (s : State) (input : ByteArray)
      Challenge.EvmProof.Stepper.runLocatedBlock,
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
      bail6State, outerStack, bigBailState, hcode, hrun, jumpDestBig,
-     pcIdx578, pcIdx579, pcIdx580,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
@@ -1398,82 +1355,78 @@ def setupPathA :
    opAt 498 .ADD,
    pushAt 499 2 2784,
    opAt 500 .MSTORE,
-   opAt 501 .JUMPDEST,
-   opAt 502 .JUMPDEST,
-   opAt 503 .JUMPDEST,
-   opAt 504 .JUMPDEST,
-   opAt 505 (.Dup ⟨6, by decide⟩),
-   opAt 506 (.Dup ⟨2, by decide⟩),
-   opAt 507 .JUMPDEST,
-   opAt 508 .JUMPDEST,
-   pushAt 509 0 0,
-   opAt 510 .CALLDATACOPY,
-   opAt 511 (.Swap ⟨0, by decide⟩),
-   opAt 512 .POP,
-   opAt 513 (.Dup ⟨0, by decide⟩),
-   opAt 514 .MLOAD]
+   opAt 501 (.Dup ⟨6, by decide⟩),
+   opAt 502 (.Dup ⟨2, by decide⟩),
+   pushAt 503 4 0,
+   opAt 504 .POP,
+   pushAt 505 0 0,
+   opAt 506 .CALLDATACOPY,
+   opAt 507 (.Swap ⟨0, by decide⟩),
+   opAt 508 .POP,
+   opAt 509 (.Dup ⟨0, by decide⟩),
+   opAt 510 .MLOAD]
 
 /-- Instructions 1206..1230: `x := 1` and the first four Newton steps. -/
 def setupPathB :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 515 (.Dup ⟨0, by decide⟩),
-   pushAt 516 1 3,
-   opAt 517 .MUL,
-   pushAt 518 1 2,
-   opAt 519 .XOR,
-   opAt 520 (.Dup ⟨0, by decide⟩),
-   opAt 521 (.Dup ⟨2, by decide⟩),
-   opAt 522 .MUL,
-   pushAt 523 1 2,
-   opAt 524 .SUB,
-   opAt 525 .MUL,
-   opAt 526 (.Dup ⟨0, by decide⟩),
-   opAt 527 (.Dup ⟨2, by decide⟩),
-   opAt 528 .MUL,
-   pushAt 529 1 2,
-   opAt 530 .SUB,
-   opAt 531 .MUL,
-   opAt 532 (.Dup ⟨0, by decide⟩),
-   opAt 533 (.Dup ⟨2, by decide⟩),
-   opAt 534 .MUL,
-   pushAt 535 1 2,
-   opAt 536 .SUB,
-   opAt 537 .MUL]
+  [opAt 511 (.Dup ⟨0, by decide⟩),
+   pushAt 512 1 3,
+   opAt 513 .MUL,
+   pushAt 514 1 2,
+   opAt 515 .XOR,
+   opAt 516 (.Dup ⟨0, by decide⟩),
+   opAt 517 (.Dup ⟨2, by decide⟩),
+   opAt 518 .MUL,
+   pushAt 519 1 2,
+   opAt 520 .SUB,
+   opAt 521 .MUL,
+   opAt 522 (.Dup ⟨0, by decide⟩),
+   opAt 523 (.Dup ⟨2, by decide⟩),
+   opAt 524 .MUL,
+   pushAt 525 1 2,
+   opAt 526 .SUB,
+   opAt 527 .MUL,
+   opAt 528 (.Dup ⟨0, by decide⟩),
+   opAt 529 (.Dup ⟨2, by decide⟩),
+   opAt 530 .MUL,
+   pushAt 531 1 2,
+   opAt 532 .SUB,
+   opAt 533 .MUL]
 
 /-- Instructions 1231..1254: the last four Newton steps. -/
 def setupPathC :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 538 (.Dup ⟨0, by decide⟩),
-   opAt 539 (.Dup ⟨2, by decide⟩),
-   opAt 540 .MUL,
-   pushAt 541 1 2,
-   opAt 542 .SUB,
-   opAt 543 .MUL,
-   opAt 544 (.Dup ⟨0, by decide⟩),
-   opAt 545 (.Dup ⟨2, by decide⟩),
-   opAt 546 .MUL,
-   pushAt 547 1 2,
-   opAt 548 .SUB,
-   opAt 549 .MUL,
-   opAt 550 (.Dup ⟨0, by decide⟩),
-   opAt 551 (.Dup ⟨2, by decide⟩),
-   opAt 552 .MUL,
-   pushAt 553 1 2,
-   opAt 554 .SUB,
-   opAt 555 .MUL]
+  [opAt 534 (.Dup ⟨0, by decide⟩),
+   opAt 535 (.Dup ⟨2, by decide⟩),
+   opAt 536 .MUL,
+   pushAt 537 1 2,
+   opAt 538 .SUB,
+   opAt 539 .MUL,
+   opAt 540 (.Dup ⟨0, by decide⟩),
+   opAt 541 (.Dup ⟨2, by decide⟩),
+   opAt 542 .MUL,
+   pushAt 543 1 2,
+   opAt 544 .SUB,
+   opAt 545 .MUL,
+   opAt 546 (.Dup ⟨0, by decide⟩),
+   opAt 547 (.Dup ⟨2, by decide⟩),
+   opAt 548 .MUL,
+   pushAt 549 1 2,
+   opAt 550 .SUB,
+   opAt 551 .MUL]
 
 /-- Instructions 1255..1271: `MSTORE V_MINV`, `MSTORE R1 1` and the tail call
 into the `R1B` guard. -/
 def setupPathD :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 556 0 0,
-   opAt 557 .SUB,
-   pushAt 558 2 2720,
-   opAt 559 .MSTORE,
-   opAt 560 .POP,
-   opAt 561 .POP,
-   pushAt 562 2 2474,
-   opAt 563 .JUMP]
+  [pushAt 552 0 0,
+   opAt 553 .SUB,
+   pushAt 554 2 2720,
+   opAt 555 .MSTORE,
+   opAt 556 .POP,
+   opAt 557 .POP,
+   pushAt 558 2 2339,
+   opAt 559 .JUMP]
 
 /-- After the variable stores and the modulus load (pc 1579). -/
 def modLoadedState (s : State) (input : ByteArray) (m0 : Nat) : State :=
@@ -1494,7 +1447,7 @@ def newtonState (s : State) (input : ByteArray) (m0 x p : Nat) : State :=
 /-- State at the `R1B` guard entry `JUMPDEST` (pc 2674).  The guard dispatches
 to `DOUBLE256` itself when the modulus's top bit is clear. -/
 def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
-  { s with pc := UInt256.ofNat 2474
+  { s with pc := UInt256.ofNat 2339
            stack := outerStack input
            memory := setupMem s.memory input m0
            activeWords := setupWords s.activeWords input }
@@ -1606,15 +1559,8 @@ theorem run_setupC (s : State) (input : ByteArray) (m0 : Nat)
 /-- The dispatcher entry `JUMPDEST` (instruction 2660, pc 2016).  The setup path jumps
 here directly instead of calling the Montgomery-form conversion first. -/
 private theorem jumpDest3296 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2474 = true :=
-  Artifact.isValidJumpDest_index 2050 (by rfl)
-
-/-- The `JUMP` closing `setupPathD` (instruction index 563, pc 781).  Same story as
-the bail blocks above: `Fast.Defs.fastPC4` used to supply this. -/
-private theorem pcIdx563 :
-    Artifact.submissionArtifact.instructionPC 563 = 781 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2339 = true :=
+  Artifact.isValidJumpDest_index 1732 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupD (s : State) (input : ByteArray) (m0 : Nat)
@@ -1632,7 +1578,7 @@ theorem run_setupD (s : State) (input : ByteArray) (m0 : Nat)
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
      newtonState, setupExitState, outerStack, setupMem, mstoreAt, setupWords,
      awNext, State.activeWordsAfterUInt256, hcode, hrun, push0_word, neg_word,
-     hmodminv, jumpDest3296, pcIdx563,
+     hmodminv, jumpDest3296,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
@@ -2005,7 +1951,7 @@ theorem fastSetupState_memory (input : ByteArray) :
 /-- The setup block hands over at the dispatcher entry with a plain outer stack,
 rather than at the Montgomery-form conversion call with its two argument words. -/
 theorem fastSetupState_pc (input : ByteArray) :
-    (fastSetupState input).pc = UInt256.ofNat 2474 := rfl
+    (fastSetupState input).pc = UInt256.ofNat 2339 := rfl
 
 theorem fastSetupState_stack (input : ByteArray) :
     (fastSetupState input).stack = outerStack input := rfl
@@ -2145,4 +2091,3 @@ theorem fastPath_em (input : ByteArray) : FastPath input ∨ ¬ FastPath input :
 
 
 end Challenge.Modexp.Submission.Proofs.Fast.Setup
--- redraw marker 2026-09-17T03:32:05Z

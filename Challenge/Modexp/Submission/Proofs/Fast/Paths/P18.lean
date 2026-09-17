@@ -22,4 +22,39 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
+/-- Instructions 2692..2696, pc 4347..3840: the `w = 0` test. -/
+def blk2557 :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 1621 .JUMPDEST,
+   opAt 1622 (.Dup ⟨1, by decide⟩),
+   opAt 1623 .ISZERO,
+   pushAt 1624 2 962,
+   opAt 1625 .JUMPI]
+
+/-- Instructions 2697..2703, pc 3872..3840: `ACC := BASE`, then the shift. -/
+def blk2562 :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [pushAt 1626 2 2688,
+   opAt 1627 .MLOAD,
+   pushAt 1628 2 512,
+   pushAt 1629 2 256,
+   opAt 1630 .MCOPY,
+   pushAt 1631 2 1003,
+   opAt 1632 .JUMP]
+
+/-- PC table for the relocated leading-bit shortcut.  This range is outside
+the inherited `Fast.Defs` tables, so execution proofs need a local certificate
+instead of unfolding the complete bytecode prefix at every instruction. -/
+@[simp] theorem leadingBitPC (i : Nat)
+    (hi : 1625 ≤ i) (hii : i ≤ 1637) :
+    Artifact.submissionArtifact.instructionPC i =
+      ([2160,2161,2162,2163,2166,2167,2170,2171,2174,2177,2178,2181,2182] : List Nat)[i - 1625]! := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  interval_cases i <;> rfl
+
+theorem jumpDest3829 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2160 = true :=
+  Artifact.isValidJumpDest_index 1625 (by rfl)
+
+
 end Challenge.Modexp.Submission.Proofs.Fast

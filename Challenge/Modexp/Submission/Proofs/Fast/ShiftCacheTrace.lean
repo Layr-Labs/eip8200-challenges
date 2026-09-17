@@ -21,7 +21,7 @@ caller has it (`gasSteps_prologue`'s `hn32`). -/
 theorem run_cache (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hact : 88 ≤ s.activeWords.toNat) (hn8 : n ≤ 8) :
     runInstructions ShiftUnrollBindings.cacheProgram (cacheState s mem n bsize esize msize) =
-      some (Shift.kState s (ShiftCacheModel.cacheMem mem n) 2664 n n bsize esize msize) := by
+      some (Shift.kState s (ShiftCacheModel.cacheMem mem n) 2546 n n bsize esize msize) := by
   have haw : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1698 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   -- `entryWord` is now a two-way choice on `n`, so the nine reachable limb counts are taken
