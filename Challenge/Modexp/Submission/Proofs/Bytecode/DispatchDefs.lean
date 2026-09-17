@@ -104,13 +104,13 @@ set_option maxRecDepth 400000 in
 /-- The recogniser's entry, in what the inherited image used as padding. -/
 @[simp] theorem jumpMemo :
     Decode.isValidJumpDest submissionBytecode 5251 = true :=
-  Artifact.isValidJumpDest_index 4245 (by rfl)
+  Artifact.isValidJumpDest_index 4212 (by rfl)
 
 set_option maxRecDepth 400000 in
 /-- The appended answer block's entry. -/
 @[simp] theorem jumpAnswer :
     Decode.isValidJumpDest submissionBytecode 5428 = true :=
-  Artifact.isValidJumpDest_index 4385 (by rfl)
+  Artifact.isValidJumpDest_index 4352 (by rfl)
 
 @[simp] theorem jump517 :
     Decode.isValidJumpDest submissionBytecode 135 = true :=
@@ -119,8 +119,8 @@ set_option maxRecDepth 400000 in
 set_option maxRecDepth 20000 in
 @[simp] theorem jump3000 :
     Decode.isValidJumpDest submissionBytecode 804 = true := by
-  have hpc : Artifact.instructionPC 581 = 804 := by decide
-  simpa only [hpc] using Artifact.isValidJumpDest_index 581 (by rfl)
+  have hpc : Artifact.instructionPC 568 = 804 := by decide
+  simpa only [hpc] using Artifact.isValidJumpDest_index 568 (by rfl)
 
 def zeroSizeFinalState (input : ByteArray) : State :=
   { Main.headerState input with

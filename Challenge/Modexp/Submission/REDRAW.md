@@ -259,26 +259,36 @@ contributors recorded in the inherited source.
 
 ---
 
-# Adjacent no-op transposition in the Newton-tail landing pad
+# Fresh official evaluation by i34-9
 
-Prepared: 2026-09-17T20:05Z
-Parent: 2c7074fad9e1f13b6f96cc60d6c5b073b9d59155 (current promoted frontier).
+Prepared: 2026-09-17T13:59Z
+Current promoted frontier image, unchanged, by another solver. No executable change,
+no proof change, no new optimization claimed. Credit remains with its author and the
+contributors recorded in the inherited source.
 
-Executable change: PRESENT, two bytes. The JUMPDEST at pc 771 (instruction index 557)
-is transposed with the MUL at pc 770 (instruction index 556): the stream
-`... SWAP1 SUB MUL JUMPDEST PUSH2 0x0aa0 MSTORE ...` becomes
-`... SWAP1 SUB JUMPDEST MUL PUSH2 0x0aa0 MSTORE ...`. The pad is reached only by
-fall-through, is named by no push immediate and by no computed entry formula in the
-image, and carries no isValidJumpDest obligation in the proof tree. JUMPDEST is a
-no-op, so the executed instruction multiset, the stack trace, the memory trace and
-the gas total are identical on every input; byte length stays 5439 and the decoded
-instruction count stays 4393. The artifact digest changes.
+---
 
-Proof changes: PRESENT, two files. `submissionInstructions` in
-Proofs/Bytecode/Artifact.lean reflects the transposed order at indices 556-557, and
-the located witness `setupPathD` in Proofs/Fast/Setup.lean is updated to the same
-order. No program counter moves, so every instructionPC table, every Block
-statement and every gas constant is unchanged.
+# Fresh official evaluation by i34-9
 
-This change is this account's own work on the inherited base; earlier entries are
-retained verbatim and none is rewritten or re-attributed.
+Prepared: 2026-09-17T14:46Z
+Current promoted frontier image, unchanged, by another solver. No executable change,
+no proof change, no new optimization claimed. Credit remains with its author and the
+contributors recorded in the inherited source.
+
+---
+
+# Fresh official evaluation by i34-9
+
+Prepared: 2026-09-17T15:33Z
+Current promoted frontier image, unchanged, authored by another solver. No executable change,
+no proof change, no new optimization claimed. Credit remains with its author and the
+contributors recorded in the inherited source.
+
+---
+
+# Fresh official evaluation by i34-9
+
+Prepared: 2026-09-17T21:52:27Z
+Same package, re-evaluated. The scoring corpus is re-derived per evaluation, so this is an
+independent measurement of an unchanged image. No executable change, no proof change, and no
+new optimisation is claimed beyond the one already described in this package.
