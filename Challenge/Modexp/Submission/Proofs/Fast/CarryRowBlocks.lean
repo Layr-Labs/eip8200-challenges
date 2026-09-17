@@ -52,12 +52,12 @@ def mid : Block Artifact.submissionArtifact .Osaka 3753 CarryRowPrograms.middleB
 /-- The same middle block inside the private four-limb ladder copy at 5283, where it keeps
 the narrow `PUSH2` because the copy is a byte copy of base 3528-3665. -/
 def midCopy : Block Artifact.submissionArtifact .Osaka 5397 CarryRowPrograms.middleBlock :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4373 23 5397 CarryRowPrograms.middleBlock
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4360 23 5397 CarryRowPrograms.middleBlock
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The copy's own tail, `PUSH2 0x0ee8 JUMP`, replacing the shared `DUP10 JUMP`. -/
 def l2Exit : Block Artifact.submissionArtifact .Osaka 5424 l2ExitProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4396 2 5424 l2ExitProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4383 2 5424 l2ExitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The first eight-limb second-loop cell loads its modulus word with `PUSH10 0xc0`. -/
@@ -118,7 +118,7 @@ theorem jumpDest5112 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecod
 
 /-- The private ladder copy's middle-block entry. -/
 theorem jumpDestMidCopy : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5397 = true :=
-  Artifact.isValidJumpDest_index 4373 (by rfl)
+  Artifact.isValidJumpDest_index 4360 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryRowBlocks
 
