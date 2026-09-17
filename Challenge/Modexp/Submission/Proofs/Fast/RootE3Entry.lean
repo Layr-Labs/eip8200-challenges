@@ -63,10 +63,6 @@ theorem handled_of_asymmetric_three (input : ByteArray) (s : State) (memory : By
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hstack : s.callStack = []) (hactive : 89 ≤ s.activeWords.toNat)
-    -- S1b.  Needed only by the unaccelerated-width bail into `modexpBig`.
-    (hdata : s.executionEnv.calldata = input)
-    (hvalid : Challenge.Modexp.ValidInput input)
-    (hactLe : s.activeWords.toNat ≤ 289)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmz : 32 < msize)
     (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
@@ -89,52 +85,8 @@ theorem handled_of_asymmetric_three (input : ByteArray) (s : State) (memory : By
       Model.FastRepresents memory 768 n one) :
     FixedExponentRoute.Handled input
       (special s memory n bsize esize msize 1) := by
-  by_cases hfast : (n = 4 ∨ n = 8) ∧ minv ≠ 1
-  case neg =>
-    -- **S1b.**  Same bail as `FixedDirectHitCorrect.handled_of_fixed`: the kernel
-    -- does not accelerate this width, so it honours the return address
-    -- `squareCall` pushed (800, the trampoline into `modexpBig` at pc 238).
-    -- `bigC_correct` re-reads the header from calldata and is universal in the
-    -- incoming memory and stack.
-    have hhead := FixedDirectChainTrace.gasSteps_start s memory
-      n bsize esize msize 1 hn hn32 hactive hcode hfork hrun hnp
-    have hstep := gasSteps_squareBail s sub memory esize msize 1 bM rawBase
-      hfast hn32 hbMlt hactive hframe ⟨hmod, hrawAcc, hbase, hone⟩ hcode hfork hrun hnp
-    have hcd : (Exp.retTo s (sub.sqMem (Exp.storeWord memory 2624 (UInt256.ofNat 1)))
-      (UInt256.ofNat 238) (UInt256.ofNat 1 :: Exp.outer n bsize esize msize)).executionEnv.calldata
-        = input := hdata
-    have env : WindowTwentyOneBinding.Environment Artifact.submissionArtifact .Osaka
-        (Exp.retTo s (sub.sqMem (Exp.storeWord memory 2624 (UInt256.ofNat 1)))
-          (UInt256.ofNat 238)
-          (UInt256.ofNat 1 :: Exp.outer n bsize esize msize)) :=
-      { sizeBound := by
-          change Challenge.Modexp.submissionBytecode.size < 2 ^ 256
-          rw [Challenge.Modexp.submissionBytecode_size]
-          decide
-        code := by simpa [Exp.retTo, Artifact.submissionArtifact] using hcode
-        forkEq := by simpa [Exp.retTo] using hfork
-        running := by simpa [Exp.retTo] using hrun
-        noPrecompile := by simpa [Exp.retTo] using hnp }
-    obtain ⟨final, ⟨tail⟩, hdone, hres⟩ :=
-      BigC.U.bigC_correct BigC.UBlocks.setupBlocks BigC.UBlocks.expBlocks
-        BigC.UBlocks.mulBlocks BigC.UBlocks.unsignedBlocks
-        (Exp.retTo s (sub.sqMem (Exp.storeWord memory 2624 (UInt256.ofNat 1)))
-          (UInt256.ofNat 238)
-          (UInt256.ofNat 1 :: Exp.outer n bsize esize msize))
-        env rfl
-        (by simp [Exp.retTo, Exp.outer])
-        (show (Exp.retTo s (sub.sqMem (Exp.storeWord memory 2624 (UInt256.ofNat 1)))
-          (UInt256.ofNat 238) (UInt256.ofNat 1 :: Exp.outer n bsize esize msize)).activeWords.toNat
-            ≤ 289 from hactLe)
-        (show (Exp.retTo s (sub.sqMem (Exp.storeWord memory 2624 (UInt256.ofNat 1)))
-          (UInt256.ofNat 238) (UInt256.ofNat 1 :: Exp.outer n bsize esize msize)).callStack
-            = [] from hstack)
-        (by rw [hcd]; exact hvalid)
-        (by rw [hcd, ← hmsz]; omega)
-    exact ⟨final, ⟨(hhead.trans hstep).trans tail⟩, hdone, by rw [hres, hcd]⟩
-  -- The accelerated widths complete the chain in the kernel, as before.
   let ch := chain_of_fixed s sub spec memory esize msize 1 bM rawBase
-    hfast hm hn hn32 (by omega) (by omega) hbMlt hactive
+    hm hn hn32 (by omega) (by omega) hbMlt hactive
     hframe hmod hbase hrawAcc hrawLt hone hcode hfork hrun hnp
   let sqVal := fixedDirectValue mm (Limbs.radix ^ n) bM 1
   let prodVal := Model.montMul mm (Limbs.radix ^ n) sqVal rawBase
@@ -167,9 +119,6 @@ theorem handled_of_entry_asymmetric_three (input : ByteArray) (s : State) (memor
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hb : bsize ≤ 1024)
     (hstack : s.callStack = []) (hactive : 89 ≤ s.activeWords.toNat)
-    -- S1b, threaded straight through to `handled_of_asymmetric_three`'s bail.
-    (hvalid : Challenge.Modexp.ValidInput input)
-    (hactLe : s.activeWords.toNat ≤ 289)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmz : 32 < msize)
     (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
@@ -200,8 +149,7 @@ theorem handled_of_entry_asymmetric_three (input : ByteArray) (s : State) (memor
     (FixedDirectValueTrace.gasSteps_checkThree_hit s memory input
       n bsize msize hb hexp hdata hactive hframe.eoff hcode hfork hrun hnp)
   have hfixed := handled_of_asymmetric_three input s memory n bsize 1 msize mm minv
-    bM rawBase S T sub spec hcode hfork hrun hnp hstack hactive hdata hvalid hactLe
-    hn hn32 hmz hm32
+    bM rawBase S T sub spec hcode hfork hrun hnp hstack hactive hn hn32 hmz hm32
     hbsize hesize hmsz hmm hm hcop _hradix hbMlt hbMform hrawForm hscale hexp
     hframe hmod hbase hrawAcc hrawLt hone
   rcases hfixed with ⟨final, ⟨tail⟩, hdone, hresult⟩

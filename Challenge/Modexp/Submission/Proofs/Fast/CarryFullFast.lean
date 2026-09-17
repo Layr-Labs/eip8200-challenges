@@ -59,21 +59,166 @@ open CiosCached CiosCachedMidMemory CarryIface
 open Challenge.Modexp.Submission.Proofs.Fast.CarryRows
 open CarryRowModel CarryResult StagedOperand
 
--- DELETED with the 3209 multiply-entry cone: `gasSteps_toCsubFast`,
--- `gasSteps_monproCsubFast`, `gasSteps_monproFullOfFast` and `gasSteps_monproFullFast`.
---
--- All four began at `Cios2Dispatch.dispatchState`, the `MONPRO` call state at pc 3209, and
--- all four routed through `EntryLemmas.gasSteps_mulEntry`, which located a
--- `JUMPDEST; PUSH2 <mul row head>` block at instruction 2386.  That block is ABSENT from
--- this artifact -- not moved, absent.  Its `PUSH2` was HOISTED into the fused frame program
--- at pc 3414..3454, and the head it pushed, 3465, is pushed EXACTLY ONCE in the whole
--- 5,428-byte program, there, at instruction 2766.  Independently: instruction 2386 is
--- pc 2919; pc 3209 decodes to `ISZERO`; and `common` (pc 3327) is entered from exactly one
--- site in the artifact, which is the SQUARE call.  There is no multiply entry to renumber.
---
--- The only consumer was `ExpSubs.subsMonpro` -> `Exp.Subroutines.monpro`, which had ZERO
--- consumers tree-wide after the unaccelerated per-square route was removed.  `rowLemmas`
--- and the row family survive -- `FusedProductTrace` still uses `gasSteps_rowsFour/Eight`.
+/-- `gasSteps_toCsub` restricted to eligible widths: `mul entry` → the four- or eight-limb rows →
+the `CSUB` entry.  The `¬ eligible` branch (the generic `MONPRO` fallback) is gone. -/
+opaque gasSteps_toCsubFast (L : RowLemmas) (E : EntryLemmas) (s : State) (mem : ByteArray)
+    (pa pb n : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 88 ≤ s.activeWords.toNat) (hn32 : n ≤ 8)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 2048)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2816)
+    (hcds : s.executionEnv.calldata.size < 2 ^ 256)
+    (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
+    (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
+    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (hminv : inverseInvariant mem n)
+    (he : eligible mem n) :
+    Challenge.EvmProof.GasSteps
+      (dispatchState s mem pa pb pdst ret rest)
+      (mpCsubState s (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) pdst ret rest) := by
+  have hprepared : eligible (mpZeroed s (inputMemory mem pa n) n) n :=
+    (eligible_zeroed s _ n hn32).2 ((eligible_inputMemory mem pa n).2 he)
+  rw [selectedRows, if_pos hprepared, inputMemory, if_pos he]
+  by_cases hn4 : n = 4
+  · subst n
+    exact gasSteps_specializedFour L E s mem pa pb pdst ret rest hcap hrun hcode
+      hfork hnp hact hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv he.2
+  · have hn8 : n = 8 := he.1.resolve_left hn4
+    subst n
+    exact gasSteps_specializedEight L E s mem pa pb pdst ret rest hcap hrun hcode
+      hfork hnp hact hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv he.2
+
+/-- `gasSteps_monproCsub` for eligible widths: through the rows and the final subtraction. -/
+opaque gasSteps_monproCsubFast (L : RowLemmas) (E : EntryLemmas) (s : State) (mem : ByteArray)
+    (pa pb n : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 88 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * n ≤ 2048)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2816)
+    (hcds : s.executionEnv.calldata.size < 2 ^ 256)
+    (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
+    (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
+    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (hminv : inverseInvariant mem n)
+    (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
+    (hdstFit : pdst.toNat + 32 * n ≤ 2816)
+    (htn : (MachineState.readWord (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) 2080).toNat
+      ≤ 1)
+    (he : eligible mem n) :
+    Challenge.EvmProof.GasSteps
+      (dispatchState s mem pa pb pdst ret rest)
+      (Csub.csReturnedState s (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n n pdst ret
+        rest) :=
+  (gasSteps_toCsubFast L E s mem pa pb n pdst ret rest (by omega) hrun hcode hfork hnp hact
+      hn32 hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv he).trans
+    (Csub.gasSteps_csub s (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n pdst ret rest
+      (by omega) hcode hfork hrun hnp hact hn hn32 hjump
+      ((readWord_selected_preserved s mem pa pb n n 2752 hn32 (by omega)).trans hml)
+      ((readWord_selected_preserved s mem pa pb n n 2784 hn32 (by omega)).trans htl)
+      ((Csub.csStep_readWord_disjoint (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n 2688
+            (by omega) (Or.inr (by omega)) n (Nat.le_refl n)).trans
+        ((readWord_selected_preserved s mem pa pb n n 2688 hn32 (by omega)).trans hs32))
+      hdstFit
+      (by
+        rw [Csub.csStep_readWord_disjoint (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n
+          2080 (by omega) (Or.inr (by omega)) n (Nat.le_refl n)]
+        exact htn) he.1)
+
+/-- `gasSteps_monproFullOf` for eligible widths. -/
+opaque gasSteps_monproFullOfFast (L : RowLemmas) (E : EntryLemmas) (s : State) (mem : ByteArray)
+    (pa pb p : Nat) (a b mm : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 88 ≤ s.activeWords.toNat) (hn32 : p + 2 ≤ 8)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * (p + 2) ≤ 2048)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * (p + 2) ≤ 2048)
+    (hcds : s.executionEnv.calldata.size < 2 ^ 256)
+    (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * (p + 2)))
+    (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * (p + 2)))
+    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * (p + 2) - 32))
+    (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
+    (hdstFit : pdst.toNat + 32 * (p + 2) ≤ 2816)
+    (ha : Model.FastRepresents mem pa (p + 2) a)
+    (hb : Model.FastRepresents mem pb (p + 2) b)
+    (hm : Model.FastRepresents mem 0 (p + 2) mm)
+    (ham : a < mm) (hmpos : 0 < mm)
+    (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
+        (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0)
+    (he : eligible mem (p + 2)) :
+    Challenge.EvmProof.GasSteps
+      (dispatchState s mem pa pb pdst ret rest)
+      (Csub.csReturnedState s
+        (selectedRows (mpZeroed s (inputMemory mem pa (p+2)) (p + 2)) pa pb (p + 2) (p + 2)) (p + 2) (p + 2)
+        pdst ret rest) :=
+  gasSteps_monproCsubFast L E s mem pa pb (p + 2) pdst ret rest (by omega) hrun hcode hfork hnp
+    hact (by omega) hn32 hpa (by omega) hpb (by omega) hcds hs32 htl hml hminv hjump
+    hdstFit
+    (by
+      let prepared := inputMemory mem pa (p+2)
+      have ha' : Model.FastRepresents prepared pa (p+2) a :=
+        (fastRepresents_inputMemory mem pa (p+2) pa (p+2) a hpaFit).2 ha
+      have hb' : Model.FastRepresents prepared pb (p+2) b :=
+        (fastRepresents_inputMemory mem pa (p+2) pb (p+2) b hpbFit).2 hb
+      have hm' : Model.FastRepresents prepared 0 (p+2) mm :=
+        (fastRepresents_inputMemory mem pa (p+2) 0 (p+2) mm (by omega)).2 hm
+      have hminv' : ((MachineState.readWord prepared (32*(p+2)-32)).toNat *
+          (MachineState.readWord prepared 2720).toNat + 1) % 2^256 = 0 := by
+        simpa only [prepared,
+          read_inputMemory_outside mem pa (p+2) (32*(p+2)-32) (Or.inl (by omega)),
+          read_inputMemory_outside mem pa (p+2) 2720 (Or.inr (by decide))] using hminv
+      have hr := selectedRows_agree (mpZeroed s prepared (p+2)) pa pb (p+2) (p+2)
+        hpaFit hpbFit (by omega) hn32 (by omega)
+      rw [CarryScratchAgreement.readWord_eq hr 2080 (Or.inr (by decide))]
+      exact Monpro.monpro_tn_le_one s prepared pa pb p a b mm hn32 hpaFit hpbFit ha' hb' hm' ham
+        hmpos hminv')
+    he
+
+/-- **The sqCP1m multiply kernel for the surviving widths** (`MonPro(pa, pb) → pdst`): from the
+`mul entry` to the return of the final subtraction, four and eight limbs through the kernel
+rows.  Statement = `gasSteps_monproFull` + `he`. -/
+opaque gasSteps_monproFullFast (s : State) (mem : ByteArray) (pa pb p : Nat)
+    (a b mm : Nat) (pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 88 ≤ s.activeWords.toNat) (hn32 : p + 2 ≤ 8)
+    (hpa : 32 ≤ pa) (hpaFit : pa + 32 * (p + 2) ≤ 2048)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * (p + 2) ≤ 2048)
+    (hcds : s.executionEnv.calldata.size < 2 ^ 256)
+    (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * (p + 2)))
+    (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * (p + 2)))
+    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * (p + 2) - 32))
+    (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
+    (hdstFit : pdst.toNat + 32 * (p + 2) ≤ 2816)
+    (ha : Model.FastRepresents mem pa (p + 2) a)
+    (hb : Model.FastRepresents mem pb (p + 2) b)
+    (hm : Model.FastRepresents mem 0 (p + 2) mm)
+    (ham : a < mm) (hmpos : 0 < mm)
+    (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
+        (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0)
+    (he : eligible mem (p + 2)) :
+    Challenge.EvmProof.GasSteps
+      (dispatchState s mem pa pb pdst ret rest)
+      (Csub.csReturnedState s
+        (selectedRows (mpZeroed s (inputMemory mem pa (p+2)) (p + 2)) pa pb (p + 2) (p + 2)) (p + 2) (p + 2)
+        pdst ret rest) :=
+  gasSteps_monproFullOfFast rowLemmas entryLemmas s mem pa pb p a b mm pdst ret rest hcap hrun hcode
+    hfork hnp hact hn32 hpa hpaFit hpb hpbFit hcds hs32 htl hml hjump hdstFit ha hb hm ham hmpos hminv he
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryFull
 
+#print axioms Challenge.Modexp.Submission.Proofs.Fast.CarryFull.gasSteps_toCsubFast
+#print axioms Challenge.Modexp.Submission.Proofs.Fast.CarryFull.gasSteps_monproFullFast
