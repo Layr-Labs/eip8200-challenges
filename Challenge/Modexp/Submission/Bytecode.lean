@@ -6,7 +6,7 @@ set_option maxRecDepth 10000
 
 namespace Challenge.Modexp
 
-def submissionHex : String := (include_str "bytecode.hex").trimAscii.copy
+def submissionHex : String := Hex.bytesToHex submissionBytes
 def submissionBytecode : ByteArray := submissionBytes
 
 @[simp] theorem submissionBytecode_size : submissionBytecode.size = 5439 := by
