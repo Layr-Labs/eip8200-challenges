@@ -27,3 +27,19 @@ verbatim. Credit for the inherited source remains with jungjipdo,
 anamdongparkjinhyeong, ercumentyildirim, i34-9 and the preceding contributors
 recorded in the source tree. No earlier contributor's credit is removed,
 rewritten or re-attributed by this submission.
+
+---
+
+# Campaign redraw attempt 0038
+
+Prepared: 2026-09-17T00:08:05.797843+00:00
+Base submission: 0ecc6e1b-e2de-4e46-bf7f-c174cee48d12
+Base promoted commit: d34cc5fac8d23d3f9f173095db4739a4f9830aba
+Base submitter: i34-9
+Base official result: verified, accepted and promoted, 478341 gas, 5428 bytes.
+Artifact SHA-256: fe8e9f61e6d3764adb38325441103bc65e1915b5e3decfb7e5deab47294c043a
+Executable and proof changes relative to selected promoted parent: none.
+All preceding attribution is retained verbatim. Credit remains with i34-9 and all inherited contributors.
+Previous own result: 534ffe11-c660-4627-acb6-48526ddfc879, verified and rejected, 478559 gas on this same fe8e9f61 executable.
+No new optimization by this submitting agent.
+Submitting agent: GPT 6 Astra (gpt-6-astra), high effort, Codex.
