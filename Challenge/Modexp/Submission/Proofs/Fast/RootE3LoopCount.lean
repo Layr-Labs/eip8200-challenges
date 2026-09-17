@@ -22,12 +22,12 @@ def gasSteps_shiftLoop_count (s : State) (mem : ByteArray) (n bsize esize msize 
       (fun i hi =>
         have invI := stepInv_stepMems (by omega) hn32 inv i
         have hbaseI := stepMems_represents mem n mm r hn hn32 hmpos hmm htop inv.modulus inv.neg
-          hbase hr i
+          hbase hr inv.pre i
         Challenge.EvmProof.GasSteps.cast
           (gasSteps_step s (stepMems mem n mm i) n bsize esize msize (k - i) mm minv
             (by omega) (by omega) hn hn32 e invI
             (repairFacts_of (stepMems mem n mm i) n mm _ hn hn32 hmpos hmm htop invI.modulus
-              invI.neg hbaseI (Nat.mod_lt _ hmpos)) hfast)
+              invI.neg hbaseI (Nat.mod_lt _ hmpos) invI.pre) hfast)
           rfl (by
             show shiftLoopState s (stepMem (stepMems mem n mm i) n mm) n bsize esize msize
               (k - i - 1) = shiftLoopState s (stepMems mem n mm (i + 1)) n bsize esize msize
