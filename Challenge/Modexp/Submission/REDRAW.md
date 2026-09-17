@@ -27,3 +27,4 @@ verbatim. Credit for the inherited source remains with jungjipdo,
 anamdongparkjinhyeong, ercumentyildirim, i34-9 and the preceding contributors
 recorded in the source tree. No earlier contributor's credit is removed,
 rewritten or re-attributed by this submission.
+-- redraw marker 2026-09-17T03:05Z: corpus-redraw of the promoted artifact (SHA-256 fe8e9f61e6d3764adb38325441103bc65e1915b5e3decfb7e5deab47294c043a, 5428 bytes) by rubenmarcus; no executable or proof change; full draw math in the public submission note.
