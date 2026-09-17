@@ -1,4 +1,3 @@
-import Challenge.Modexp.Submission.Proofs.Bytecode.MemoHit
 import Challenge.Modexp.Submission.Proofs.Bytecode.SubmissionCorrect
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowRoute
 
@@ -103,11 +102,7 @@ def handledOf (route : WindowRoute.Route) (input : ByteArray)
   have hpositive : 0 < modulusSize input := by omega
   by_cases hword : modulusSize input ≤ 32
   · let header := Main.gasSteps_header input hvalid entry
-    by_cases hmemo : MemoLogic.guardDiff input = 0
-    · -- the appended block recognises the input and returns the specified result
-      exact prepend (header.trans (Dispatch.gasSteps_guardEnter input hvalid hpositive))
-        (Memo.hitHandled input hvalid ((MemoLogic.guardDiff_eq_zero_iff input).mp hmemo))
-    let entered := header.trans (route.enter input hvalid hpositive hword hmemo)
+    let entered := header.trans (route.enter input hvalid hpositive hword)
     by_cases hmatch : WindowRoute.Matches input
     · exact prepend entered (route.hit input hvalid hpositive hword hmatch)
     · let missed := entered.trans

@@ -20,6 +20,112 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.FullBase
 
+/-- The multiply entry `JUMPDEST` at pc 4013 (0x0f50, instruction 3190), the `MONPRO` call target. -/
+private theorem jumpDestMulEntry :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3209 = true :=
+  Artifact.isValidJumpDest_index 2386 (by rfl)
+
+set_option linter.unusedSimpArgs false in
+theorem run_redirect (s : State) (memory : ByteArray)
+    (n bsize esize msize : Nat)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1195
+      (redirectState s memory n bsize esize msize) =
+      some (entryState s memory n bsize esize msize) := by
+  simp [blk1195, opAt, pushAt, wfOp,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated,
+    Challenge.EvmProof.Stepper.runInstr,
+    redirectState, entryState, outer, hcode, hrun, jumpDest3146,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+
+set_option linter.unusedSimpArgs false in
+theorem run_guard (s : State) (memory : ByteArray)
+    (n bsize esize msize : Nat) (hn32 : n ≤ 8)
+    (hb : bsize < 2 ^ 256) (hactive : 89 ≤ s.activeWords.toNat)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blkFullBaseGuard
+      (entryState s memory n bsize esize msize) =
+      some (if Matches memory n bsize
+        then copyState s memory n bsize esize msize
+        else fallbackState s memory n bsize esize msize) := by
+  have hzeroNat : (⟨0⟩ : UInt256).toNat = 0 := rfl
+  have haw : UInt256.ofNat
+      (MachineState.activeWordsAfter s.activeWords.toNat 0 32) = s.activeWords := by
+    have hnat : MachineState.activeWordsAfter s.activeWords.toNat 0 32 =
+        s.activeWords.toNat := by
+      simp only [MachineState.activeWordsAfter, if_neg (by decide : ¬(32 = 0))]
+      exact Nat.max_eq_left (by omega)
+    rw [hnat]
+    exact (Challenge.EvmProof.Word.word_eq_ofNat_toNat _).symm
+  have hgw := guardWord_eq memory n bsize hn32 hb
+  by_cases hm : Matches memory n bsize
+  · rw [if_pos hm] at hgw
+    have hc : ¬ UInt256.isTrue (guardWord memory n bsize) := by
+      rw [hgw]
+      decide
+    change ¬(((UInt256.shiftRight (MachineState.readWord memory 0) (UInt256.ofNat 255)).land
+      ((UInt256.ofNat bsize).eq (UInt256.ofNat (32 * n)))).isZero.isTrue) at hc
+    simp (config := { maxSteps := 300000 })
+      [blkFullBaseGuard, opAt, pushAt, wfOp,
+        Challenge.EvmProof.Stepper.runLocatedBlock,
+        Challenge.EvmProof.Stepper.runLocated,
+        Challenge.EvmProof.Stepper.runInstr,
+        entryState, copyState, outer, hcode, hrun, hactive, hzeroNat, haw,
+        fullBasePC, jumpDest3184, hm, guardWord, hc,
+        State.activeWordsAfterUInt256,
+        Challenge.EvmProof.Word.literal_eq_ofNat,
+        Challenge.EvmProof.Word.word_toNat_ofNat,
+        Challenge.EvmProof.Word.succ_ofNat_mod,
+        Challenge.EvmProof.Word.ofNat_add_mod]
+  · rw [if_neg hm] at hgw
+    have hc : UInt256.isTrue (guardWord memory n bsize) := by
+      rw [hgw]
+      decide
+    change (((UInt256.shiftRight (MachineState.readWord memory 0) (UInt256.ofNat 255)).land
+      ((UInt256.ofNat bsize).eq (UInt256.ofNat (32 * n)))).isZero.isTrue) at hc
+    simp (config := { maxSteps := 300000 })
+      [blkFullBaseGuard, opAt, pushAt, wfOp,
+        Challenge.EvmProof.Stepper.runLocatedBlock,
+        Challenge.EvmProof.Stepper.runLocated,
+        Challenge.EvmProof.Stepper.runInstr,
+        entryState, fallbackState, outer, hcode, hrun, hactive, hzeroNat, haw,
+        fullBasePC, jumpDest3184, hm, guardWord, hc,
+        State.activeWordsAfterUInt256,
+        Challenge.EvmProof.Word.literal_eq_ofNat,
+        Challenge.EvmProof.Word.word_toNat_ofNat,
+        Challenge.EvmProof.Word.succ_ofNat_mod,
+        Challenge.EvmProof.Word.ofNat_add_mod]
+
+set_option linter.unusedSimpArgs false in
+theorem run_copyAdd (s : State) (memory input : ByteArray)
+    (n bsize esize msize : Nat) (hn32 : n ≤ 8)
+    (hactive : 89 ≤ s.activeWords.toNat)
+    (hdata : s.executionEnv.calldata = input)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blkFullBaseCopyAdd
+      (copyState s memory n bsize esize msize) =
+      some (addCallState s memory input n bsize esize msize) := by
+  rw [show Challenge.EvmProof.Stepper.runLocatedBlock blkFullBaseCopyAdd
+      (copyState s memory n bsize esize msize) =
+      runInstructions copyAddProgram (copyState s memory n bsize esize msize) by
+    simp (config := { maxSteps := 300000 })
+      [blkFullBaseCopyAdd, copyAddProgram, runInstructions, opAt, pushAt, wfOp,
+        Challenge.EvmProof.Stepper.runLocatedBlock,
+        Challenge.EvmProof.Stepper.runLocated,
+        Challenge.EvmProof.Stepper.runInstr,
+        copyState, outer, hcode, hrun, fullBasePC, jumpDestMulEntry,
+        Challenge.EvmProof.Word.literal_eq_ofNat,
+        Challenge.EvmProof.Word.word_toNat_ofNat,
+        Challenge.EvmProof.Word.succ_ofNat_mod,
+        Challenge.EvmProof.Word.ofNat_add_mod]]
+  exact Challenge.Modexp.Submission.Proofs.Fast.FullBase.run_copyAdd
+    s memory input n bsize esize msize hn32 hactive hdata
+      (by simpa [hcode] using jumpDestMulEntry)
 
 private def sound {s t : State}
     (path : List (Challenge.EvmProof.Stepper.Located
@@ -33,3 +139,48 @@ private def sound {s t : State}
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka path hcode hfork h hrun hnp
 
+def gasSteps_redirect (s : State) (memory : ByteArray)
+    (n bsize esize msize : Nat)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (redirectState s memory n bsize esize msize)
+      (entryState s memory n bsize esize msize) :=
+  sound blk1195 (run_redirect s memory n bsize esize msize hcode hrun)
+    hcode hfork hrun hnp
+
+def gasSteps_guard (s : State) (memory : ByteArray)
+    (n bsize esize msize : Nat) (hn32 : n ≤ 8)
+    (hb : bsize < 2 ^ 256) (hactive : 89 ≤ s.activeWords.toNat)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (entryState s memory n bsize esize msize)
+      (if Matches memory n bsize
+        then copyState s memory n bsize esize msize
+        else fallbackState s memory n bsize esize msize) :=
+  sound blkFullBaseGuard
+    (run_guard s memory n bsize esize msize hn32 hb hactive hcode hrun)
+    hcode hfork hrun hnp
+
+def gasSteps_copyAdd (s : State) (memory input : ByteArray)
+    (n bsize esize msize : Nat) (hn32 : n ≤ 8)
+    (hactive : 89 ≤ s.activeWords.toNat)
+    (hdata : s.executionEnv.calldata = input)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (copyState s memory n bsize esize msize)
+      (addCallState s memory input n bsize esize msize) :=
+  sound blkFullBaseCopyAdd
+    (run_copyAdd s memory input n bsize esize msize hn32 hactive hdata hcode hrun)
+    hcode hfork hrun hnp
+
+
+end Challenge.Modexp.Submission.Proofs.Bytecode.FullBaseHitTrace
