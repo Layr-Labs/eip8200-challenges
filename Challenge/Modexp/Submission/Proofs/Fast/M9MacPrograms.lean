@@ -36,20 +36,6 @@ def blockProgram (a t : UInt256) : List Instr :=
 def headProgram (a t : UInt256) : List Instr :=
   [.op .JUMPDEST] ++ blockProgram a t
 
-/-- One straight MAC block on a known-zero incoming carry: `macFusedZeroProgram` DROPS the `DUP4`
-that reproduces the carry and the `ADD` that consumes it, and widens the load's `PUSH2` to a
-`PUSH4` to keep the byte count.  Same 36 bytes, two gas cheaper (28 instructions). -/
-def blockZeroProgram (a t : UInt256) : List Instr :=
-  loadProgram a ++ CiosCached.macFusedZeroProgram t t
-
-/-- Block 0 only, `JUMPDEST` included (29 instructions, 37 bytes).  Block 4 must *not* use this
-schedule: pc 2827 is both jumped to (four limbs, carry zero) and fallen into from block 3
-(carry nonzero), so its incoming carry is not known to be zero.  Block 0's `JUMPDEST` at pc 2682
-has no fall-through predecessor — pc 2681 is an unconditional `JUMP` — and its only jump
-predecessor is that `JUMP`, which enters with the literal `PUSH0` of `entryProgram` on top. -/
-def headZeroProgram (a t : UInt256) : List Instr :=
-  [.op .JUMPDEST] ++ blockZeroProgram a t
-
 /-- `SWAP1 SWAP2 POP`: drop the mask, leaving `[carry, q]` above the shift counter. -/
 def exitProgram : List Instr :=
   [.op (.Swap ⟨0, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .POP]
