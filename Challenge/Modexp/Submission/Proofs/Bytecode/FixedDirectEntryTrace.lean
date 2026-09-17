@@ -31,6 +31,7 @@ theorem run_entry (s : State) (memory : ByteArray)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       Exp.bDone, entryState, Exp.outer, hrun,
+      FixedDirectPaths.jumpDest3892,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
