@@ -17,6 +17,25 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
+-- executable edd78ac56ece15e4283762b16ff54409cb244adb6dec492dc5d609e34a37c604, 5212 bytes,
+-- 663636 gas at corpus seed 0, 8187 units of the 8194 literal-encoding budget. Derived from
+-- 124d01057f5628e32d5d539622bf89afd5fc56287d8718d300eefa534d4a2842 (5212 bytes, 663683 gas) by
+-- deleting three unreachable JUMPDESTs. Every JUMP and JUMPI in that image is immediately
+-- preceded by a literal PUSH, so the set of reachable jump destinations is statically complete;
+-- the JUMPDESTs at offsets 142, 143 and 225 are named by no PUSH immediate and are therefore
+-- pure fall-through cost, executed 14, 14 and 19 times respectively over the scored corpus, 47
+-- gas in total. Each freed byte is returned by widening a later PUSH: PUSH1 0xfb at offset 146
+-- becomes PUSH3 0x0000fb and PUSH1 0x03 at offset 233 becomes PUSH2 0x0003. A PUSH costs three
+-- gas at every width and zero-extension does not change the pushed value, so the compensation is
+-- free. The length stays 5212, so the trailing 280-byte digest table keeps its CODESIZE-relative
+-- position; 14 bytes differ, all inside offsets 142..146 and 225..233, and every program counter
+-- outside those two windows is unchanged. Two further unreachable JUMPDESTs, at offsets 5086 and
+-- 5152, lie inside that digest table: they are data rather than code, are never executed, and are
+-- left untouched. The instruction list goes from 3706 to 3703 entries, so indices shift by 0
+-- below 89, by -2 over 91..132 and by -3 from 142 up; the code region remains 4932 bytes.
+--
+-- NOTE FOR THE FILER: every line below this point was inherited with the base tree and describes
+-- an EARLIER artifact, not this one. Provenance and attribution have not been touched here.
 -- redraw marker 2026-09-15T09:15:23Z
 -- Yukon reuse by @i34-9: source @ercumentyildirim, submission b6cd6b15-6fe8-48e2-bf2d-18d7d4b77aa9, commit ef17a52c1.
 -- provenance marker RIPC0-30e4ab42-v1
