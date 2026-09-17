@@ -97,7 +97,7 @@ theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
   simpa only [actualOutput_eq] using run_generated s pc x rho hstack halias haliasC haliasD haliasA hkey haliasE hrun hactive
 #print axioms run_actual
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 504).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 503).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
   StackSiteBuilder.ofSlice template 504 actual_slice
     (by change 504 + template.length ≤ Artifact.submissionInstructions.length
@@ -106,7 +106,7 @@ def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osak
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 861 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 504) = UInt256.ofNat 861
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 503) = UInt256.ofNat 861
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound
