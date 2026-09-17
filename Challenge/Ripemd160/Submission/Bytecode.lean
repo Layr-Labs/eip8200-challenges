@@ -6,7 +6,7 @@ set_option maxRecDepth 10000
 
 /-!
 
-The candidate bytecode has 5214 bytes and SHA-256 `2f718f9ea5113462f011f4fd7683703f9ec24cfd783c8b142d79f9a149459699`. The hex file remains the external raw input.
+The candidate bytecode has 5214 bytes and SHA-256 `72fc7159f6fb894b90a1c6e00c31e36e284298e973136484aaa518c81f831336`. The hex file remains the external raw input.
 -/
 
 namespace Challenge.Ripemd160
