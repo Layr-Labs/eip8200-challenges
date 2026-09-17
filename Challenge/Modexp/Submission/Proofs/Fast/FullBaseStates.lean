@@ -52,7 +52,7 @@ def addCallState (s : State) (memory input : ByteArray)
 /-- Return from the conversion, immediately before inherited `bDone`. -/
 def rejoinState (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2396
+  { s with pc := UInt256.ofNat 2182
            stack := outer n bsize esize msize
            memory := memory }
 

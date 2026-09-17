@@ -12,9 +12,7 @@ open Challenge.Modexp.Submission.Proofs.Fast
 
 /-- WP-K2's `Cios2Dispatch` traces: `mul entry`, `common` + `setup`, `common` fallback. -/
 def entryLemmas : EntryLemmas where
-  -- `gasSteps_mulEntry := Cios2Dispatch.gasSteps_mulEntry` is deleted with the field:
-  -- the `mul entry` block it located is absent from this artifact (its `PUSH2` was hoisted
-  -- into the fused frame at pc 3414..3454).  See `CarryIface.EntryLemmas`.
+  gasSteps_mulEntry := Cios2Dispatch.gasSteps_mulEntry
   gasSteps_commonSetup := Cios2Dispatch.gasSteps_commonSetup
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryIface
