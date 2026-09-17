@@ -85,49 +85,45 @@ def blk3157b :
 def blk3157c :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2593 .JUMPDEST,
-   opAt 2594 .JUMPDEST,
-   opAt 2595 .JUMPDEST,
-   opAt 2596 .JUMPDEST,
-   opAt 2597 .JUMPDEST]
 
 /-- The subtract-round body up to its exit test (`blk3213` instructions 0..22). -/
 def blk3213a :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2622 .JUMPDEST,
-   opAt 2623 (.Dup ⟨0, by decide⟩),
+  [opAt 2618 .JUMPDEST,
+   opAt 2619 (.Dup ⟨0, by decide⟩),
+   opAt 2620 .MLOAD,
+   pushAt 2621 2 2112,
+   opAt 2622 (.Dup ⟨2, by decide⟩),
+   opAt 2623 .SUB,
    opAt 2624 .MLOAD,
-   pushAt 2625 2 2112,
-   opAt 2626 (.Dup ⟨2, by decide⟩),
-   opAt 2627 .SUB,
-   opAt 2628 .MLOAD,
-   opAt 2629 (.Dup ⟨1, by decide⟩),
-   opAt 2630 (.Dup ⟨1, by decide⟩),
-   opAt 2631 .GT,
-   opAt 2632 (.Swap ⟨1, by decide⟩),
-   opAt 2633 .SUB,
-   opAt 2634 (.Dup ⟨3, by decide⟩),
-   opAt 2635 (.Dup ⟨1, by decide⟩),
-   opAt 2636 .LT,
-   opAt 2637 (.Swap ⟨0, by decide⟩),
-   opAt 2638 (.Dup ⟨4, by decide⟩),
-   opAt 2639 (.Swap ⟨0, by decide⟩),
-   opAt 2640 .SUB,
-   opAt 2641 (.Dup ⟨3, by decide⟩),
-   opAt 2642 .MSTORE,
-   opAt 2643 .OR]
+   opAt 2625 (.Dup ⟨1, by decide⟩),
+   opAt 2626 (.Dup ⟨1, by decide⟩),
+   opAt 2627 .GT,
+   opAt 2628 (.Swap ⟨1, by decide⟩),
+   opAt 2629 .SUB,
+   opAt 2630 (.Dup ⟨3, by decide⟩),
+   opAt 2631 (.Dup ⟨1, by decide⟩),
+   opAt 2632 .LT,
+   opAt 2633 (.Swap ⟨0, by decide⟩),
+   opAt 2634 (.Dup ⟨4, by decide⟩),
+   opAt 2635 (.Swap ⟨0, by decide⟩),
+   opAt 2636 .SUB,
+   opAt 2637 (.Dup ⟨3, by decide⟩),
+   opAt 2638 .MSTORE,
+   opAt 2639 .OR]
 
 /-- The exit test of the subtract-round body (`blk3213` instructions 23..31). -/
 def blk3213b :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2644 (.Swap ⟨1, by decide⟩),
-   opAt 2645 .POP,
-   pushAt 2646 1 31,
-   opAt 2647 .NOT,
-   opAt 2648 .ADD,
-   pushAt 2649 2 2111,
-   opAt 2650 (.Dup ⟨1, by decide⟩),
-   opAt 2651 .GT,
-   pushAt 2652 2 3221,
-   opAt 2653 .JUMPI]
+  [opAt 2640 (.Swap ⟨1, by decide⟩),
+   opAt 2641 .POP,
+   pushAt 2642 1 31,
+   opAt 2643 .NOT,
+   opAt 2644 .ADD,
+   pushAt 2645 2 2111,
+   opAt 2646 (.Dup ⟨1, by decide⟩),
+   opAt 2647 .GT,
+   pushAt 2648 2 3217,
+   opAt 2649 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast

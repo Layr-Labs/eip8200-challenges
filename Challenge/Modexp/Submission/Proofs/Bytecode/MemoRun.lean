@@ -23,11 +23,11 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.Dispatch
 
 /-- State at the recogniser's own hit exit: the jump to the answer block. -/
 def hitJumpState (input : ByteArray) : State :=
-  { guardEntryState input with pc := UInt256.ofNat 5280 }
+  { guardEntryState input with pc := UInt256.ofNat 5276 }
 
 /-- State at the first instruction of the appended answer block. -/
 def hitEntryState (input : ByteArray) : State :=
-  { guardEntryState input with pc := UInt256.ofNat 5428 }
+  { guardEntryState input with pc := UInt256.ofNat 5424 }
 
 /-- The accumulator in the shape the evaluator leaves it: `toNat` distributed
 over the `OR`s and the `SUB`s, with the header words reduced. -/
@@ -102,8 +102,8 @@ theorem run_hitJump (input : ByteArray) (hvalid : ValidInput input)
   have hmodNat : modulusSize input % 2 ^ 256 ≠ 0 := by
     rw [Nat.mod_eq_of_lt hm']; omega
   norm_num at hmodNat
-  have h5428 : (5428 : UInt256).toNat = 5428 := by decide
-  have h5428Word : (5428 : UInt256) = UInt256.ofNat 5428 := by decide
+  have h5428 : (5424 : UInt256).toNat = 5428 := by decide
+  have h5428Word : (5424 : UInt256) = UInt256.ofNat 5424 := by decide
   have htrue : UInt256.isTrue (UInt256.ofNat (modulusSize input)) := hmodNat
   simp only [hitJumpState, hitEntryState, guardEntryState, wordDispatchState, Main.headerState]
   generalize htemplate : initialState submissionBytecode input 0 = template

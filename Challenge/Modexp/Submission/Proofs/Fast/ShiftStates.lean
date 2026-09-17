@@ -53,24 +53,24 @@ def pcMacSetup : Nat := 2791   -- E6, the rewritten conversion entry
 def pcMid : Nat := 3093   -- the fall-through after the eight straight blocks
 def pcAddLoop : Nat := 3136
 def pcAddInner : Nat := 3142
-def pcAddTail : Nat := 3185
+def pcAddTail : Nat := 3181
 /-- The add body after `OR`, before the pointer step and exit test. -/
 def pcAddMid : Nat := 3167
 /-- The fall-through padding after the add-round exit test. -/
 def pcAddPad : Nat := 3180
-def pcSubCheck : Nat := 3203
-def pcSubEntry : Nat := 3215
-def pcSubInner : Nat := 3221
-def pcSubTail : Nat := 3260
+def pcSubCheck : Nat := 3199
+def pcSubEntry : Nat := 3211
+def pcSubInner : Nat := 3217
+def pcSubTail : Nat := 3256
 /-- The subtract body after `OR`, before the pointer step and exit test. -/
-def pcSubMid : Nat := 3245
+def pcSubMid : Nat := 3241
 def pcCsubCall : Nat := 3120
 /-- `UNC`: the middle block's jump target when `neg ||| TN ≠ 0`. -/
 def pcUnc : Nat := 3130
 /-- `CSUB(BASE)` returns straight to the shift loop head (`pcShiftLoop`); the call block
 already decremented the counter. -/
 def pcAfterCsub : Nat := 2691
-def pcShiftDone : Nat := 3274
+def pcShiftDone : Nat := 3270
 
 /-- A state with the outer frame only. -/
 def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat) : State :=

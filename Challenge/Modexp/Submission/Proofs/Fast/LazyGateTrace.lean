@@ -25,15 +25,15 @@ def gasSteps_lazy {artifact : Challenge.EvmProof.ProgramArtifact}
     (hdstFit : dst.toNat+32*n ≤ 2816)
     (hjump : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true)
     (hsubJump : Decode.isValidJumpDest s.executionEnv.code 4244 = true)
-    (subTrace : Challenge.EvmProof.GasSteps (atState s mem 4244 dst ret rest)
+    (subTrace : Challenge.EvmProof.GasSteps (atState s mem 4240 dst ret rest)
       (returnedState s (Csub.subResultMemory mem n dst.toNat) ret rest)) :
-    Challenge.EvmProof.GasSteps (atState s mem 4447 dst ret rest)
+    Challenge.EvmProof.GasSteps (atState s mem 4443 dst ret rest)
       (returnedState s (LazyCsub.resultMemory mem n dst.toNat) ret rest) := by
-  have hc := gateBlock.steps (env.transfer (t := atState s mem 4447 dst ret rest) rfl rfl) rfl
+  have hc := gateBlock.steps (env.transfer (t := atState s mem 4443 dst ret rest) rfl rfl) rfl
     (run_gate s mem dst ret rest hcap hact hsubJump)
   by_cases hz : (MachineState.readWord mem 2080).toNat = 0
   · rw [if_pos hz] at hc
-    have hk := copyBlock.steps (env.transfer (t := atState s mem 4456 dst ret rest) rfl rfl) rfl
+    have hk := copyBlock.steps (env.transfer (t := atState s mem 4452 dst ret rest) rfl rfl) rfl
       (run_copy s mem n dst ret rest hcap hact hn hn32 hs32 hdstFit hjump)
     simpa only [LazyCsub.resultMemory,if_pos hz] using hc.trans hk
   · rw [if_neg hz] at hc

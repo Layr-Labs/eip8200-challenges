@@ -59,48 +59,48 @@ open WindowNibbleKernel WindowTwentyOneBinding
 (`hd = 4261` after the `mul entry`, `hd = 2464` for the square). -/
 def commonState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3327
+  { s with pc := UInt256.ofNat 3323
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
 
 /-- The `common` JUMPDEST (instruction 3190, pc 4104 = 0x0f54). -/
 theorem jumpDestCommon :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3327 = true := by
-  exact Artifact.isValidJumpDest_index 2692 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3323 = true := by
+  exact Artifact.isValidJumpDest_index 2688 (by rfl)
 
 /-- The kernel `setup` JUMPDEST (instruction 3190, pc 4123 = 0x0f6c). -/
 theorem jumpDestSetup :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3328 = true := by
-  exact Artifact.isValidJumpDest_index 2693 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3324 = true := by
+  exact Artifact.isValidJumpDest_index 2689 (by rfl)
 
 /-- The multiply row head (instruction 1760, pc 4261 = 0x0fc5). -/
 theorem jumpDestRowHead :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3465 = true := by
-  exact Artifact.isValidJumpDest_index 2785 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3461 = true := by
+  exact Artifact.isValidJumpDest_index 2781 (by rfl)
 
 /-- The square row head `sq_row` (instruction 3559, pc 2464 = 0x1266). -/
 theorem jumpDestSqRow :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4179 = true := by
-  exact Artifact.isValidJumpDest_index 3359 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4175 = true := by
+  exact Artifact.isValidJumpDest_index 3355 (by rfl)
 
 /-- `jumpDestRowHead` in the `hd.toNat` form taken by `gasSteps_setup`/`gasSteps_commonSetup`. -/
 theorem jumpDestRowHead' :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 3465).toNat = true := by
-  rw [show (UInt256.ofNat 3465).toNat = 3465 by decide]
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 3461).toNat = true := by
+  rw [show (UInt256.ofNat 3461).toNat = 3465 by decide]
   exact jumpDestRowHead
 
 /-- `jumpDestSqRow` in the `hd.toNat` form taken by `gasSteps_setup`/`gasSteps_commonSetup`. -/
 theorem jumpDestSqRow' :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 4179).toNat = true := by
-  rw [show (UInt256.ofNat 4179).toNat = 4179 by decide]
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 4175).toNat = true := by
+  rw [show (UInt256.ofNat 4175).toNat = 4179 by decide]
   exact jumpDestSqRow
 
 /-- The square call state (`Exp.sqCall s mem ret tail`) is definitionally `commonState`
 with `hd = 2464` and `pa = pb = pdst = 2048`. -/
 example (s : State) (mem : ByteArray) (ret : UInt256) (tail : List UInt256) :
-    ({ s with pc := UInt256.ofNat 3327
-              stack := UInt256.ofNat 4179 :: UInt256.ofNat 512 :: UInt256.ofNat 512 ::
+    ({ s with pc := UInt256.ofNat 3323
+              stack := UInt256.ofNat 4175 :: UInt256.ofNat 512 :: UInt256.ofNat 512 ::
                 UInt256.ofNat 512 :: ret :: tail
               memory := mem } : State) =
       commonState s mem 4179 512 512 (UInt256.ofNat 512) ret tail := rfl
@@ -148,8 +148,8 @@ set_option linter.unusedSimpArgs false in
 
 
 /-- The kernel `setup`: instructions 3189..3189 (pc 4123 = 0x0f6c .. 4260), 62 instructions. -/
-def setup : Block Artifact.submissionArtifact .Osaka 3328 StagedOperand.fullEntryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2693 59 3328 StagedOperand.fullEntryProgram
+def setup : Block Artifact.submissionArtifact .Osaka 3324 StagedOperand.fullEntryProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2689 59 3324 StagedOperand.fullEntryProgram
     (by decide) (by decide) (by rfl) (by decide)
 
 def environment (s : State)

@@ -268,7 +268,7 @@ theorem run_eMul (s : State) (i bl el ml : Nat) (rest : List UInt256)
     (hJ : ExpJumps s.executionEnv.code) :
     runInstructions eMulProgram
       (st s 366 (UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest) mem AW) =
-        some (st s 413 (UInt256.ofNat 381 :: UInt256.ofNat 3072 :: UInt256.ofNat 5120 ::
+        some (st s 413 (UInt256.ofNat 381 :: UInt256.ofNat 3072 :: UInt256.ofNat 5116 ::
           UInt256.ofNat bl :: UInt256.ofNat i :: UInt256.ofNat el :: UInt256.ofNat ml :: rest)
           mem AW) := by
   have hc := caps _ hcap

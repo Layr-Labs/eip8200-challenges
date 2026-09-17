@@ -23,7 +23,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.Dispatch
 /-- State after the two operand pushes, at the `EXP`. -/
 def expArgState (input : ByteArray) : State :=
   { guardEntryState input with
-    pc := UInt256.ofNat 5434
+    pc := UInt256.ofNat 5430
     stack := UInt256.ofNat 3 :: UInt256.ofNat 65535 ::
       [UInt256.ofNat (modulusSize input), UInt256.ofNat (exponentSize input),
         UInt256.ofNat (baseSize input)] }
@@ -50,7 +50,7 @@ theorem exp_decodes (s : State)
     (hpc : s.pc.toNat = 5434) :
     s.decodedOp = some .EXP := by
   have hdec := Challenge.EvmProof.Stepper.decodes_of_artifact
-    Artifact.submissionArtifact s 4388 (.op .EXP) hcode
+    Artifact.submissionArtifact s 4384 (.op .EXP) hcode
     (by rw [hpc]; rfl) (by rfl) expAt.wellFormed
   change s.decodedOp = some .EXP at hdec
   exact hdec

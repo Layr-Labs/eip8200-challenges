@@ -93,8 +93,8 @@ def squareCall : List Located :=
    pushAt 2044 2 512,
    opAt 2045 (.Dup ⟨0, by decide⟩),
    opAt 2046 (.Dup ⟨0, by decide⟩),
-   pushAt 2047 2 4480,
-   pushAt 2048 2 3327,
+   pushAt 2047 2 4476,
+   pushAt 2048 2 3323,
    opAt 2049 .JUMP]
 
 /-- **S1b.** The six-word bail trampoline, located.  Transcribed from the
