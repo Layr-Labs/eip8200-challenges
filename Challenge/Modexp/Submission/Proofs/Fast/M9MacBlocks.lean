@@ -31,8 +31,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 /-- Block 0: instructions 1977..2007, pc 2682..2718,
 `-N` limb at 1504 (0x5e0), `t` limb at 2336 (0x920).
 
-Block 0 carries the `PUSH0` schedule (`headZeroProgram`, instruction 1992 / pc 2699), not the
-general `headProgram`: it is the row head of every chain that reaches it, so its incoming carry
+Block 0 carries the folded zero-carry schedule (`headZeroProgram`, instructions 2302–2303 /
+pc 2817–2818), not the general `headProgram`: it is the row head of every chain that reaches it, so its incoming carry
 is the literal zero `entryProgram` pushes at pc 2676.  `block4` keeps `headProgram` — pc 2827 is
 also *fallen into* from block 3, whose outgoing carry is not zero. -/
 def block0 : Block Artifact.submissionArtifact .Osaka 2800 (headZeroProgram 1504 2336) :=

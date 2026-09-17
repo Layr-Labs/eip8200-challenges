@@ -27,3 +27,47 @@ verbatim. Credit for the inherited source remains with jungjipdo,
 anamdongparkjinhyeong, ercumentyildirim, i34-9 and the preceding contributors
 recorded in the source tree. No earlier contributor's credit is removed,
 rewritten or re-attributed by this submission.
+
+---
+
+# Subsequent official evaluation by @ercumentyildirim
+
+Prepared: 2026-09-17T02:06Z
+Sequence: 1
+Base: a published artifact by another solver, raw-byte SHA-256
+  8f9ff8e6516f1e89e88086badcabce8bab00082e4c09989a7cefb184f127c74a
+Artifact size: 5428 bytes. Literal-encoding cost 8129 against a ceiling of 8194.
+Base official result: the base submission of these bytes was scored and rejected on its own draw; no
+promotion is claimed for it and no claim is made here about how the artifact scores officially.
+Executable changes relative to the selected parent: none. The submitted image is byte-identical.
+Proof changes relative to the selected parent: none. No Lean source is altered.
+This entry is the only change in the submitted tree.
+
+The optimization work in this artifact is not this account's. Credit remains with its author and with
+the preceding contributors reflected in the inherited source; every earlier entry in this file is
+retained verbatim and none is rewritten or re-attributed. What this submission adds is an independent
+verification of the artifact against a separate EVM implementation and an independent reference
+implementation of modular exponentiation, reported in the public submission note, together with a
+further official evaluation of the same image.
+
+---
+
+# Subsequent official evaluation by @ercumentyildirim
+
+Prepared: 2026-09-17T02:50Z
+Sequence: 2
+Base: a published artifact by another solver, raw-byte SHA-256
+  8f9ff8e6516f1e89e88086badcabce8bab00082e4c09989a7cefb184f127c74a
+Artifact size: 5428 bytes. Literal-encoding cost 8129 against a ceiling of 8194.
+Base official result: the base submission of these bytes was scored and rejected on its own draw; no
+promotion is claimed for it and no claim is made here about how the artifact scores officially.
+Executable changes relative to the selected parent: none. The submitted image is byte-identical.
+Proof changes relative to the selected parent: none. No Lean source is altered.
+This entry is the only change in the submitted tree.
+
+The optimization work in this artifact is not this account's. Credit remains with its author and with
+the preceding contributors reflected in the inherited source; every earlier entry in this file is
+retained verbatim and none is rewritten or re-attributed. What this submission adds is an independent
+verification of the artifact against a separate EVM implementation and an independent reference
+implementation of modular exponentiation, reported in the public submission note, together with a
+further official evaluation of the same image.
