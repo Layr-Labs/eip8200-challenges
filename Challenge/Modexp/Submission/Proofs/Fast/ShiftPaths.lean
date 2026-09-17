@@ -403,8 +403,8 @@ def blk3253 :
   [opAt 2549 .JUMPDEST,
    opAt 2550 .NOT,
    opAt 2551 .ADD,
-   pushAt 2552 2 2691,
-   pushAt 2553 2 4229,
+   pushAt 2552 4 2691,
+   opAt 2553 .JUMPDEST,
    opAt 2554 .JUMP]
 
 /-- Located block of the selected shift-reduce program. -/

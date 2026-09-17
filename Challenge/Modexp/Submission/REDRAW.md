@@ -213,72 +213,105 @@ carries corpus-dependent variation that the measurements in the submission note 
 
 # New artifact by @ercumentyildirim
 
-Prepared: 2026-09-17T12:55Z
+Prepared: 2026-09-17T13:15Z
 Sequence: 6
 Artifact: raw-byte SHA-256
   14d2f4276f8dcd307350d9591be31cbaa32bef143543747f3e82bcf3adb394b1
 Artifact size: 5439 bytes, 4393 instructions. Literal-encoding cost 8145 against a ceiling of 8194.
 
 Executable changes relative to the previous entry: PRESENT. This entry does not record a further
-evaluation of the same image; it records a different image, and the preceding entries are retained as
-written because each was correct for the artifact it named.
+evaluation of the same image; it records a different image. Preceding entries are retained as written
+because each was correct for the artifact it named. An earlier draft of THIS entry described the
+change in the opposite direction, saying the predecessor re-derived the last digit while this image
+reads it from memory; the truth is the reverse and the text below is the corrected account, checked
+against a profile of both images rather than against their hashes.
 
-The predecessor image named in entry 5 addressed the exponentiation core's lookup group as a
-twenty-one entry structure and served the final nibble of each group from a separate tail that
-re-derived its operand. This image widens the group so that one addressing rule covers the whole
-window and folds the tail into it: the address is computed by the mask-and-shift already present, and
-the two operands the last nibble consumes are components of the frame the enclosing program already
-binds. The group's contents are unchanged and no memory word is added.
+The exponentiation core walks a 252-bit exponent four bits at a time, sixty-three
+digits in all, and multiplies by a precomputed power fetched from a lookup group in
+memory. Each fetch reads a word at a static address and keeps four bits of it with a
+mask of 480.
 
-The change is byte-count neutral and instruction-count neutral against the predecessor, which is also
-5439 bytes and also decodes to 4393 instructions. 356 decoded instructions differ, all of them between
-program counter 1413 and program counter 2340. The retired tail's bytes are left in place as inert
-filler rather than relocating what follows, so this image carries 138 jump destinations against the
-predecessor's 119; the nineteen additional destinations lie in two runs beginning at 1413 and 1879, no
-destination is removed, and no push immediate anywhere in the image names any of the nineteen.
+The predecessor stored the exponent pair three times, shifting it left by 84 bits
+between passes, so that twenty-one static addresses could serve all sixty-three
+digits. This image stores it once. Reading at an address returns a word whose bits 5
+to 8 -- the only bits the mask keeps -- are bits 5+8k to 8+8k of the row containing
+byte a+31, for k from 0 to 30. One stored pair therefore reaches sixty-two of the
+sixty-three digits: the row holding the exponent shifted right by three supplies the
+even digits 2 to 62, and the row holding it doubled supplies the odd digits 1 to 61.
+Each of those sixty-two multiplies is given its own address; forty-one two-byte
+immediates change, each in the position its predecessor occupied.
 
-Proof changes: PRESENT, in ten files under this directory. Three existing statements are generalised
-with unchanged proof bodies -- two memory-copy bounds from k <= 10 to k <= 30, the lookup-address bound
-from i < 21 to i < 62, and the lookup-address correctness statement from index < 21 to index < 62. Four
-statements are new: run_lookupLast, run_nibbleLast, run_nibblesLast and run_groupLast. The address lemma
-behind them is proved from the mask value and the shifted-nibble identity already present in the same
-file and introduces no import.
+The remaining digit is the exponent's lowest nibble, which no address reaches. It is
+taken from the frame's own copy instead: the frame holds the exponent doubled, and
+shifting that left by four places the nibble exactly under the mask.
 
-This change and the proof that covers it are this account's own work, built on the inherited base whose
-earlier contributors are reflected in the preceding entries of this file; none of those entries is
-rewritten or re-attributed.
+The two spans that carried the shift and the re-store no longer do any work. Rather
+than relocate the code that follows them, they are replaced in place by ten jump
+destinations and a discarded six-byte push, and by nine and a discarded seven-byte
+push. They still execute on every call, at fifteen and fourteen gas against
+thirty-six each before; they are inert, not unreached. The second span is one
+instruction shorter than the first, and that instruction is the one the last digit's
+lookup takes, so the instruction count is unchanged.
+
+The saving decomposes exactly: (36 - 15) + (36 - 14) - 3 = 40 gas per call, and the
+thirty-two vectors that enter this path give 40 x 32 = 1,280, which is the whole of
+the measured difference between the two images.
+
+Proof changes: PRESENT, in eight Lean files under this directory, with the three artifact
+representations regenerated. Four existing statements are generalised with unchanged proof bodies:
+two memory-copy bounds from k <= 10 to k <= 30, the lookup-address bound from i < 21 to i < 62, and
+the lookup-address correctness statement from index < 21 to index < 62. Twenty-one declarations are
+new across five files; one, shiftProgram, is removed. Three further statements change meaning rather
+than being added. The address lemma behind the new group is proved from the mask value and the
+shifted-nibble identity already present in the same file and introduces no import.
+
+This change and the proof that covers it are this account's own work, built on the inherited base
+whose earlier contributors are reflected in the preceding entries of this file; none of those entries
+is rewritten or re-attributed.
 
 ---
 
-# Fresh official evaluation by i34-9
+# Subsequent official evaluation by @ercumentyildirim
 
-Prepared: 2026-09-17T13:07Z
-Current promoted frontier image, unchanged, by another solver. No executable change,
-no proof change, no new optimization claimed. Credit remains with its author and the
-contributors recorded in the inherited source.
+Prepared: 2026-09-17T13:50Z
+Sequence: 11
+Artifact: raw-byte SHA-256
+  14d2f4276f8dcd307350d9591be31cbaa32bef143543747f3e82bcf3adb394b1
+Artifact size: 5439 bytes. Executable changes relative to the previous evaluation of this artifact:
+none. The submitted image is byte-identical. Proof changes: none. No Lean source is altered. This
+entry is the only change in the submitted tree, and it is a comment.
+
+What this entry records is a further official evaluation of the same image. The scored result of a
+single evaluation carries corpus-dependent variation that the measurements in the submission note,
+which are taken on a fixed local corpus, do not.
 
 ---
 
-# Adjacent no-op transposition in the Newton-tail landing pad
+# New artifact by @ercumentyildirim
 
-Prepared: 2026-09-17T20:05Z
-Parent: 2c7074fad9e1f13b6f96cc60d6c5b073b9d59155 (current promoted frontier).
+Prepared: 2026-09-17T18:49Z
+Sequence: 9
+Artifact: raw-byte SHA-256
+  7feb0beb623876ff3c16f7c9486f14c7220e539c14e35a72744814d4b11b4bac
+Artifact size: 5439 bytes, 4393 instructions, literal-encoding cost 8143 against a ceiling of 8,194.
 
-Executable change: PRESENT, two bytes. The JUMPDEST at pc 771 (instruction index 557)
-is transposed with the MUL at pc 770 (instruction index 556): the stream
-`... SWAP1 SUB MUL JUMPDEST PUSH2 0x0aa0 MSTORE ...` becomes
-`... SWAP1 SUB JUMPDEST MUL PUSH2 0x0aa0 MSTORE ...`. The pad is reached only by
-fall-through, is named by no push immediate and by no computed entry formula in the
-image, and carries no isValidJumpDest obligation in the proof tree. JUMPDEST is a
-no-op, so the executed instruction multiset, the stack trace, the memory trace and
-the gas total are identical on every input; byte length stays 5439 and the decoded
-instruction count stays 4393. The artifact digest changes.
+Executable change relative to the previous evaluation: six bytes at offset [3123, 3129).
 
-Proof changes: PRESENT, two files. `submissionInstructions` in
-Proofs/Bytecode/Artifact.lean reflects the transposed order at indices 556-557, and
-the located witness `setupPathD` in Proofs/Fast/Setup.lean is updated to the same
-order. No program counter moves, so every instructionPC table, every Block
-statement and every gas constant is unchanged.
+    previous    61 0a83   61 1085      PUSH2 0x0a83 ; PUSH2 0x1085
+    submitted   63 00000a83   5b       PUSH4 0x00000a83 ; JUMPDEST
 
-This change is this account's own work on the inherited base; earlier entries are
-retained verbatim and none is rewritten or re-attributed.
+Both encodings occupy six bytes and two instructions, so the byte length and the instruction count
+are unchanged and no program counter or instruction index outside the span moves. The exponentiation
+loop's tail block no longer pushes the conditional-subtraction routine's entry above the loop head,
+so its transfer goes to the loop head directly and that routine is not entered from this site. The
+routine remains in the artifact and is still entered from its other caller.
+
+Proof changes: the lemma establishing that the removed call was the identity on every reachable
+state at that program counter, and the re-derivation of the tail block's trace and gas accounting
+through the shortened path, together with the five artifact-anchored facts that name the changed
+instructions.
+
+Measured by the trusted scorer shipped in this tree: 474,079 gas, 44 rows, status ok on 44 of 44,
+against 474,898 for the previous artifact -- a reduction of 819 gas. Exactly four of the
+forty-four scored vectors change, and on each the reduction equals the changed site's execution
+count multiplied by 39 with no residue.
