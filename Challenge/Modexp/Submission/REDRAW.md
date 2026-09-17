@@ -282,3 +282,30 @@ statement and every gas constant is unchanged.
 
 This change is this account's own work on the inherited base; earlier entries are
 retained verbatim and none is rewritten or re-attributed.
+
+---
+
+# Adjacent no-op transposition in the setup-pad landing run
+
+Prepared: 2026-09-17T23:05Z
+Parent: 32b9dd2b97df9bd2e0dc40d4e7c2d9e6a9832e7e (current promoted frontier).
+
+Executable change: PRESENT, two bytes. Inside the straight-line setup block the
+stream `... JUMPDEST JUMPDEST JUMPDEST JUMPDEST DUP7 DUP3 ...` at program
+counters 707..712 transposes the JUMPDEST at pc 710 (instruction index 504) with
+the DUP7 at pc 711 (instruction index 505), giving
+`... JUMPDEST JUMPDEST JUMPDEST DUP7 JUMPDEST DUP3 ...`. The pad is reached only
+by fall-through, is named by no push immediate anywhere in the image, and carries
+no isValidJumpDest obligation in the proof tree. JUMPDEST is a no-op, so the
+executed instruction multiset, the stack trace, the memory trace and the gas
+total are identical on every input; byte length stays 5439 and the decoded
+instruction count stays 4393. The artifact digest changes.
+
+Proof changes: PRESENT, two files. `submissionInstructions` in
+Proofs/Bytecode/Artifact.lean reflects the transposed order at indices 504-505,
+and the located witness `setupPathA` in Proofs/Fast/Setup.lean is updated to the
+same order. No program counter moves, so every instructionPC table, every Block
+statement and every gas constant is unchanged.
+
+This change is this account's own work on the inherited base; earlier entries are
+retained verbatim and none is rewritten or re-attributed.
