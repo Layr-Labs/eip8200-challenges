@@ -117,12 +117,12 @@ passes are the same 17-instruction program at a different pc.
 | body0 |  728 | 401 |  970 |
 | link0 | 1129 |  17 | 1413 |
 | body1 | 1146 | 401 | 1436 |
-| link1 | 1547 |  17 | 1879 |
-| body2 | 1564 | 401 | 1902 | -/
+| link1 | 1547 |  16 | 1879 |
+| body2 | 1563 | 402 | 1902 | -/
 
 private def nine_body0 :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 970 WindowTwentyOneLoop.bodyProgram :=
-  WindowTwentyOneSlice.block allWellFormed 728 401 970 WindowTwentyOneLoop.bodyProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 970 (WindowTwentyOneLoop.bodyProgram (21 * 0)) :=
+  WindowTwentyOneSlice.block allWellFormed 728 401 970 (WindowTwentyOneLoop.bodyProgram (21 * 0))
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
@@ -133,20 +133,20 @@ private def nine_link0 :
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_body1 :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1436 WindowTwentyOneLoop.bodyProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1146 401 1436 WindowTwentyOneLoop.bodyProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1436 (WindowTwentyOneLoop.bodyProgram (21 * 1)) :=
+  WindowTwentyOneSlice.block allWellFormed 1146 401 1436 (WindowTwentyOneLoop.bodyProgram (21 * 1))
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_link1 :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1879 WindowTwentyOneLoop.linkProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1547 17 1879 WindowTwentyOneLoop.linkProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1879 WindowTwentyOneLoop.linkProgramB :=
+  WindowTwentyOneSlice.block allWellFormed 1547 16 1879 WindowTwentyOneLoop.linkProgramB
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_body2 :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1902 WindowTwentyOneLoop.bodyProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1564 401 1902 WindowTwentyOneLoop.bodyProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1902 (WindowTwentyOneLoop.bodyProgramLast 42) :=
+  WindowTwentyOneSlice.block allWellFormed 1563 402 1902 (WindowTwentyOneLoop.bodyProgramLast 42)
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 

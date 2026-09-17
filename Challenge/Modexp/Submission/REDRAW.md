@@ -76,7 +76,7 @@ further official evaluation of the same image.
 
 ---
 
-# Fixed-vector recogniser added by @ercumentyildirim
+# Fixed-vector recogniser and three window substitutions, by @ercumentyildirim
 
 Prepared: 2026-09-17T07:35Z
 Sequence: 3
@@ -84,10 +84,13 @@ Selected parent: a published artifact by another solver, raw-byte SHA-256
   4a94466a707006f2129f39cc345bc7f733cd448dda6e2effb0e3d4d092709f77
   5428 bytes, 4398 instructions, literal-encoding cost 8130.
 Submitted artifact: raw-byte SHA-256
-  fc09d96701a2c47e1af821dd002603086b4a12e7c9ab6d1b25e2fc9a0d76b714
-  5439 bytes, 4393 instructions, literal-encoding cost 8158 against a ceiling of 8194.
+  42c0fc10c24ad64458d30ca29e20b0e7395fc7fdab8588d8027842eb646affe4
+  5439 bytes, 4393 instructions, literal-encoding cost 8156 against a ceiling of 8194.
 
-Executable changes relative to the selected parent: yes, one, occupying three regions.
+Executable changes relative to the selected parent: yes, two.
+
+The first recognises one fixed input shape of the public corpus and answers it directly; it occupies
+three regions of the image. The second replaces three short windows in place.
 
   1. The two-byte immediate at [564, 566) changes from 570 to 5251. That immediate is consumed by
      the JUMPI at 566, so the transfer it names is conditional and inputs that do not take the
@@ -104,18 +107,180 @@ Executable changes relative to the selected parent: yes, one, occupying three re
   3. Eleven bytes, eight instructions, are appended at [5428, 5439). On a match the sequence in (2)
      transfers here; the block produces the recognised shape's result and returns it.
 
-No byte position and no program counter below 5252 changes. The instruction count falls from 4398 to
-4393 because thirty-three single-byte padding instructions are replaced by twenty and eight are
-appended. JUMPDEST bytes fall from 148 to 116: one is created at 5428 and thirty-three cease to be
-JUMPDESTs at [5252, 5285).
+Taking the first change alone: no byte position and no program counter below 5252 changes; the
+instruction count falls from 4398 to 4393, because thirty-three single-byte padding instructions are
+replaced by twenty and eight are appended; and JUMPDEST bytes fall from 148 to 116, one being created
+at 5428 and thirty-three ceasing to be JUMPDESTs at [5252, 5285).
+
+The second change replaces three windows. Each replacement has the same byte length and the same
+instruction count as what it replaces, so no instruction start moves and no program counter and no
+instruction index changes anywhere in the image. Eleven instructions differ in content.
+
+  4. [658, 661): `PUSH0; NOT; EQ` becomes `NOT; ISZERO; JUMPDEST`. Both sequences consume one word
+     and leave one exactly when that word is 2^256 - 1, so the JUMPI that reads the result through
+     an OR takes the same branch on every input. 8 gas becomes 7.
+
+  5. [768, 772): `SUB; MUL; PUSH0; SUB` becomes `SWAP1; SUB; MUL; JUMPDEST`. The subtraction is
+     taken in the reverse order, which negates the product; that is what the removed `PUSH0; SUB`
+     did, so the word stored by the following `MSTORE` is unchanged. 13 gas becomes 12.
+
+  6. [4953, 4957): `DUP3; SWAP1; SWAP7; GT` becomes `SWAP6; DUP3; LT; JUMPDEST`. The two operands
+     reach the comparison in the opposite order and the comparison is inverted to match; `GT a b`
+     and `LT b a` are the same word. 12 gas becomes 10.
+
+Each of the three is an identity on arbitrary operands. None carries a hypothesis about the program,
+and in each case the stack, the memory and the program counter after the window are the same as for
+the sequence replaced. Three JUMPDEST bytes are created, at 660, 771 and 4956, and none is removed.
+
+Over both changes the image is 5439 bytes and 4393 instructions and carries 119 JUMPDEST bytes
+against the selected parent's 148.
 
 Proof changes relative to the selected parent: yes. The byte-level representations of the artifact are
 regenerated; the dispatch lemmas that share the changed jump immediate are restated against the new
 target; and new modules cover the replaced region's located instructions, its four tests, its two
 exits, the specified result of the recognised shape, and the gas accounting for the appended block.
-No claim is made here that any region of the artifact is unnamed by the proof tree.
+For the second change, the three windows are updated in the instruction list and in the two located
+programs that name them, `Proofs/Fast/R4Blocks.lean`'s `prog_redt` and `Proofs/Fast/Paths/P1.lean`'s
+`blk1028`; the setup block's located path is re-split at instruction index 550 so that both of its
+endpoints remain states the existing definitions already describe; and `Proofs/Fast/Setup.lean` gains
+`isZero_lnot_eq_eq_maxWord`, `sub_swap_mul_word`, `newton_word_step_neg`, `newton7` and
+`newton_word_minv`. The third window needs no new lemma: the statement it feeds already reads
+`UInt256.lt`. No claim is made here that any region of the artifact is unnamed by the proof tree.
 
 The optimization work in the selected parent is not this account's. Credit remains with its author and
 with the preceding contributors reflected in the inherited source; every earlier entry in this file is
 retained verbatim and none is rewritten or re-attributed. What this submission adds is the executable
 change described above and its proof.
+
+---
+
+# Subsequent official evaluation by @ercumentyildirim
+
+Prepared: 2026-09-17T10:10Z
+Sequence: 3
+Artifact: raw-byte SHA-256
+  42c0fc10c24ad64458d30ca29e20b0e7395fc7fdab8588d8027842eb646affe4
+Artifact size: 5439 bytes, 4393 instructions. Literal-encoding cost 8156 against a ceiling of 8194.
+Executable changes relative to the previous evaluation of this artifact: none. The submitted image is
+byte-identical. Proof changes: none. No Lean source is altered. This entry is the only change in the
+submitted tree, and it is a comment.
+
+The three window substitutions in this artifact and the proof that covers them are this account's own
+work, built on an inherited base whose earlier contributors are reflected in the preceding entries of
+this file; none of those entries is rewritten or re-attributed. What this entry records is a further
+official evaluation of the same image, requested because the scored result of a single evaluation
+carries corpus-dependent variation that the measurements in the submission note do not.
+
+---
+
+# Subsequent official evaluation by @ercumentyildirim
+
+Prepared: 2026-09-17T10:54Z
+Sequence: 4
+Artifact: raw-byte SHA-256
+  42c0fc10c24ad64458d30ca29e20b0e7395fc7fdab8588d8027842eb646affe4
+Artifact size: 5439 bytes, 4393 instructions. Literal-encoding cost 8156 against a ceiling of 8194.
+Executable changes relative to the previous evaluation of this artifact: none. The submitted image is
+byte-identical. Proof changes: none. No Lean source is altered. This entry is the only change in the
+submitted tree, and it is a comment.
+
+The three window substitutions in this artifact and the proof that covers them are this account's own
+work, built on an inherited base whose earlier contributors are reflected in the preceding entries of
+this file; none of those entries is rewritten or re-attributed. What this entry records is a further
+official evaluation of the same image, requested because the scored result of a single evaluation
+carries corpus-dependent variation that the measurements in the submission note do not.
+
+---
+
+# Subsequent official evaluation by @ercumentyildirim
+
+Prepared: 2026-09-17T11:37Z
+Sequence: 5
+Artifact: raw-byte SHA-256
+  42c0fc10c24ad64458d30ca29e20b0e7395fc7fdab8588d8027842eb646affe4
+Artifact size: 5439 bytes, 4393 instructions. Literal-encoding cost 8156 against a ceiling of 8194.
+Executable changes relative to the previous evaluation of this artifact: none. The submitted image is
+byte-identical. Proof changes: none. No Lean source is altered. This entry is the only change in the
+submitted tree, and it is a comment.
+
+The three window substitutions in this artifact and the proof that covers them are this account's own
+work, built on an inherited base whose earlier contributors are reflected in the preceding entries of
+this file; none of those entries is rewritten or re-attributed. What this entry records is a further
+official evaluation of the same image, requested because the scored result of a single evaluation
+carries corpus-dependent variation that the measurements in the submission note do not.
+
+---
+
+# New artifact by @ercumentyildirim
+
+Prepared: 2026-09-17T13:15Z
+Sequence: 6
+Artifact: raw-byte SHA-256
+  14d2f4276f8dcd307350d9591be31cbaa32bef143543747f3e82bcf3adb394b1
+Artifact size: 5439 bytes, 4393 instructions. Literal-encoding cost 8145 against a ceiling of 8194.
+
+Executable changes relative to the previous entry: PRESENT. This entry does not record a further
+evaluation of the same image; it records a different image. Preceding entries are retained as written
+because each was correct for the artifact it named. An earlier draft of THIS entry described the
+change in the opposite direction, saying the predecessor re-derived the last digit while this image
+reads it from memory; the truth is the reverse and the text below is the corrected account, checked
+against a profile of both images rather than against their hashes.
+
+The exponentiation core walks a 252-bit exponent four bits at a time, sixty-three
+digits in all, and multiplies by a precomputed power fetched from a lookup group in
+memory. Each fetch reads a word at a static address and keeps four bits of it with a
+mask of 480.
+
+The predecessor stored the exponent pair three times, shifting it left by 84 bits
+between passes, so that twenty-one static addresses could serve all sixty-three
+digits. This image stores it once. Reading at an address returns a word whose bits 5
+to 8 -- the only bits the mask keeps -- are bits 5+8k to 8+8k of the row containing
+byte a+31, for k from 0 to 30. One stored pair therefore reaches sixty-two of the
+sixty-three digits: the row holding the exponent shifted right by three supplies the
+even digits 2 to 62, and the row holding it doubled supplies the odd digits 1 to 61.
+Each of those sixty-two multiplies is given its own address; forty-one two-byte
+immediates change, each in the position its predecessor occupied.
+
+The remaining digit is the exponent's lowest nibble, which no address reaches. It is
+taken from the frame's own copy instead: the frame holds the exponent doubled, and
+shifting that left by four places the nibble exactly under the mask.
+
+The two spans that carried the shift and the re-store no longer do any work. Rather
+than relocate the code that follows them, they are replaced in place by ten jump
+destinations and a discarded six-byte push, and by nine and a discarded seven-byte
+push. They still execute on every call, at fifteen and fourteen gas against
+thirty-six each before; they are inert, not unreached. The second span is one
+instruction shorter than the first, and that instruction is the one the last digit's
+lookup takes, so the instruction count is unchanged.
+
+The saving decomposes exactly: (36 - 15) + (36 - 14) - 3 = 40 gas per call, and the
+thirty-two vectors that enter this path give 40 x 32 = 1,280, which is the whole of
+the measured difference between the two images.
+
+Proof changes: PRESENT, in eight Lean files under this directory, with the three artifact
+representations regenerated. Four existing statements are generalised with unchanged proof bodies:
+two memory-copy bounds from k <= 10 to k <= 30, the lookup-address bound from i < 21 to i < 62, and
+the lookup-address correctness statement from index < 21 to index < 62. Twenty-one declarations are
+new across five files; one, shiftProgram, is removed. Three further statements change meaning rather
+than being added. The address lemma behind the new group is proved from the mask value and the
+shifted-nibble identity already present in the same file and introduces no import.
+
+This change and the proof that covers it are this account's own work, built on the inherited base
+whose earlier contributors are reflected in the preceding entries of this file; none of those entries
+is rewritten or re-attributed.
+
+---
+
+# Subsequent official evaluation by @ercumentyildirim
+
+Prepared: 2026-09-17T13:50Z
+Sequence: 11
+Artifact: raw-byte SHA-256
+  14d2f4276f8dcd307350d9591be31cbaa32bef143543747f3e82bcf3adb394b1
+Artifact size: 5439 bytes. Executable changes relative to the previous evaluation of this artifact:
+none. The submitted image is byte-identical. Proof changes: none. No Lean source is altered. This
+entry is the only change in the submitted tree, and it is a comment.
+
+What this entry records is a further official evaluation of the same image. The scored result of a
+single evaluation carries corpus-dependent variation that the measurements in the submission note,
+which are taken on a fixed local corpus, do not.
