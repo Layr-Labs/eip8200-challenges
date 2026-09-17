@@ -103,7 +103,8 @@ theorem hitFinal_base (mem input : ByteArray) (n mm : Nat)
       (fastRepresents_negStep _ n 2112 n _ (Or.inr (by unfold NEG; omega))
         (m1_base mem input n mm hn hn32 hmpos hodd hmod htop) n le_rfl)
   exact stepMems_represents (m2Of mem input n) n mm _ hn hn32 hmpos hmm htop' hmod2 hneg2
-    hbase2 (Nat.mod_lt _ hmpos) n
+    hbase2 (Nat.mod_lt _ hmpos)
+    (PreOK_cacheMem _ n (PreOK_preMem _)) n
 
 private theorem readWord_setupMem_operand (input : ByteArray) (m0 target : Nat)
     (hm : Challenge.Modexp.modulusSize input ≤ 256)

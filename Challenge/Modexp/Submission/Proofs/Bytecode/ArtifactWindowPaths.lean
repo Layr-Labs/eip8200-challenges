@@ -110,15 +110,15 @@ private def nine_trampoline :
 /-! The window loop is unrolled in this image: the three passes are three
 straight-line regions, not one block reached three times.  Each body is the same
 401-instruction program at a different pc, and the two links between consecutive
-passes are the same 17-instruction program at a different pc.
+passes are the same 7-instruction program at a different pc.
 
 | block | instruction index | count | pc |
 |-------|-------------------|-------|----|
 | body0 |  728 | 401 |  970 |
-| link0 | 1129 |  17 | 1413 |
-| body1 | 1146 | 401 | 1436 |
-| link1 | 1547 |  16 | 1879 |
-| body2 | 1563 | 402 | 1902 | -/
+| link0 | 1129 |   7 | 1413 |
+| body1 | 1136 | 401 | 1436 |
+| link1 | 1537 |   7 | 1879 |
+| body2 | 1544 | 402 | 1902 | -/
 
 private def nine_body0 :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 970 (WindowTwentyOneLoop.bodyProgram (21 * 0)) :=
@@ -128,31 +128,31 @@ private def nine_body0 :
 
 private def nine_link0 :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 1413 WindowTwentyOneLoop.linkProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1129 17 1413 WindowTwentyOneLoop.linkProgram
+  WindowTwentyOneSlice.block allWellFormed 1129 7 1413 WindowTwentyOneLoop.linkProgram
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_body1 :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 1436 (WindowTwentyOneLoop.bodyProgram (21 * 1)) :=
-  WindowTwentyOneSlice.block allWellFormed 1146 401 1436 (WindowTwentyOneLoop.bodyProgram (21 * 1))
+  WindowTwentyOneSlice.block allWellFormed 1136 401 1436 (WindowTwentyOneLoop.bodyProgram (21 * 1))
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_link1 :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 1879 WindowTwentyOneLoop.linkProgramB :=
-  WindowTwentyOneSlice.block allWellFormed 1547 16 1879 WindowTwentyOneLoop.linkProgramB
+  WindowTwentyOneSlice.block allWellFormed 1537 7 1879 WindowTwentyOneLoop.linkProgramB
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_body2 :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 1902 (WindowTwentyOneLoop.bodyProgramLast 42) :=
-  WindowTwentyOneSlice.block allWellFormed 1563 402 1902 (WindowTwentyOneLoop.bodyProgramLast 42)
+  WindowTwentyOneSlice.block allWellFormed 1544 402 1902 (WindowTwentyOneLoop.bodyProgramLast 42)
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_finish :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 2345 WindowTwentyOneReturn.program :=
-  WindowTwentyOneSlice.block allWellFormed 1965 5 2345 WindowTwentyOneReturn.program
+  WindowTwentyOneSlice.block allWellFormed 1946 5 2345 WindowTwentyOneReturn.program
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 

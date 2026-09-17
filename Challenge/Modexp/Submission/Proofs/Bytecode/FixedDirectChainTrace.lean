@@ -56,9 +56,9 @@ longer exist.  `squareCall` does still exist, so its eleven counters are restate
 here — the only module that locates that block.  Transcribed from the artifact:
 `JUMPDEST; DUP1; PUSH2 0x0a40; MSTORE; PUSH2 0x0320; PUSH2 0x0200; DUP1; DUP1;
 PUSH2 0x1180; PUSH2 0x0cff; JUMP` at pc 2453..2473. -/
-@[simp] theorem directPC1 (i : Nat) (hi : 2039 ≤ i) (hii : i ≤ 2049) :
+@[simp] theorem directPC1 (i : Nat) (hi : 2020 ≤ i) (hii : i ≤ 2030) :
     Artifact.submissionArtifact.instructionPC i =
-      ([2453,2454,2455,2458,2459,2462,2465,2466,2467,2470,2473] : List Nat)[i - 2039]! := by
+      ([2453,2454,2455,2458,2459,2462,2465,2466,2467,2470,2473] : List Nat)[i - 2020]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
@@ -71,7 +71,7 @@ It lives here rather than in `FixedDirectPaths` so that adding it does not
 invalidate the four sibling trace modules that already import `Paths`. -/
 theorem jumpDestSqCommon :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3327 = true :=
-  Artifact.isValidJumpDest_index 2692 (by rfl)
+  Artifact.isValidJumpDest_index 2673 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_squareCall (s : State) (memory : ByteArray)
