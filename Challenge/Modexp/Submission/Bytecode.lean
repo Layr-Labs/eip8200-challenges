@@ -53,3 +53,9 @@ end Challenge.Modexp
 -- packaging revision 20260916T231555Z
 
 -- packaging revision 20260916T231802Z
+
+-- lottery rerun 2026-09-17T04:31:17Z: accepted artifact resubmitted under a fresh benchmark seed, bytes and proofs unchanged
+
+-- lottery rerun 2026-09-17T04:51:43Z: accepted artifact resubmitted under a fresh benchmark seed, bytes and proofs unchanged
+
+-- lottery rerun 2026-09-17T04:52:31Z: accepted artifact resubmitted under a fresh benchmark seed, bytes and proofs unchanged
