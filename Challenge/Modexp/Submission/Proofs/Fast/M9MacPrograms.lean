@@ -32,7 +32,7 @@ def loadProgram (a : UInt256) : List Instr :=
 def blockProgram (a t : UInt256) : List Instr :=
   loadProgram a ++ CiosCached.macFusedProgram t t
 
-/-- Blocks 0 and 4, `JUMPDEST` included (31 instructions, 37 bytes). -/
+/-- Blocks 0 and 4, `JUMPDEST` included (29 instructions, 37 bytes). -/
 def headProgram (a t : UInt256) : List Instr :=
   [.op .JUMPDEST] ++ blockProgram a t
 
@@ -42,7 +42,7 @@ cheaper (30 instructions). -/
 def blockZeroProgram (a t : UInt256) : List Instr :=
   loadProgram a ++ CiosCached.macFusedZeroProgram t t
 
-/-- Block 0 only, `JUMPDEST` included (31 instructions, 37 bytes).  Block 4 must *not* use this
+/-- Block 0 only, `JUMPDEST` included (29 instructions, 37 bytes).  Block 4 must *not* use this
 schedule: pc 2827 is both jumped to (four limbs, carry zero) and fallen into from block 3
 (carry nonzero), so its incoming carry is not known to be zero.  Block 0's `JUMPDEST` at pc 2682
 has no fall-through predecessor — pc 2681 is an unconditional `JUMP` — and its only jump
