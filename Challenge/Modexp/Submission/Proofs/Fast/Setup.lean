@@ -93,6 +93,27 @@ theorem eq_maxWord_of_ne (w : UInt256)
   intro hc
   exact h (Challenge.EvmProof.Word.word_ext hc).symm
 
+/-- `NOT; ISZERO` decides "all ones" exactly as the `PUSH0; NOT; EQ` it replaces:
+`lnot w` is zero precisely when `w` is the maximal word. -/
+theorem isZero_lnot_eq_eq_maxWord (w : UInt256) :
+    UInt256.isZero (UInt256.lnot w) =
+      UInt256.eq (UInt256.ofNat (Limbs.radix - 1)) w := by
+  have hw : w.toNat < 2 ^ 256 := by
+    simp [UInt256.size, UInt256.toNat]
+  have hn : (UInt256.lnot w).toNat = 2 ^ 256 - 1 - w.toNat := by
+    show (UInt256.ofNat (UInt256.size - 1 - w.toNat)).toNat = 2 ^ 256 - 1 - w.toNat
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat]
+    show (2 ^ 256 - 1 - w.toNat) % 2 ^ 256 = 2 ^ 256 - 1 - w.toNat
+    exact Nat.mod_eq_of_lt (by omega)
+  have hm : (UInt256.ofNat (Limbs.radix - 1)).toNat = 2 ^ 256 - 1 := by
+    show (UInt256.ofNat (2 ^ 256 - 1)).toNat = 2 ^ 256 - 1
+    exact toNat_ofNat_self (by omega)
+  unfold UInt256.isZero UInt256.eq
+  rw [hn, hm]
+  by_cases h : w.toNat = 2 ^ 256 - 1
+  · rw [if_pos (by omega), if_pos h.symm]
+  · rw [if_neg (by omega), if_neg (fun hc => h hc.symm)]
+
 /-- `PUSH1 0x7f; AND` on the padded width is zero exactly when the width is a multiple of 128,
 which for `32 * limbs` means a limb count divisible by four. -/
 theorem land_mask_of_mod (n : Nat) (hn : n < 2 ^ 256) (h : n % 128 = 0) :
@@ -754,7 +775,7 @@ theorem run_oddCheck_pass (s : State) (input : ByteArray)
      oddCheckState, setupEntryState, outerStack, hdata, hrun, hsub, hmodmod,
      land_one_lastWord input h32, hodd, isZero_ofNat_one, isZero_ofNat_zero,
      -- the two conditions the rewritten block adds
-     lnot_zero_raw, eq_maxWord_of_ne _ hnprime, List.exchange,
+     lnot_zero_raw, isZero_lnot_eq_eq_maxWord, eq_maxWord_of_ne _ hnprime, List.exchange,
      land_mask_of_mod (modulusSize input) (modulusSize_lt input) hwidth,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -839,7 +860,7 @@ theorem run_oddCheck_bail (s : State) (input : ByteArray)
        Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
        oddCheckState, bail6State, outerStack, hdata, hcode, hrun, hsub, hmodmod,
        land_one_lastWord input h32, hodd, isZero_ofNat_zero, jumpDest1826,
-       lnot_zero_raw, isTrue_lor_iff, List.exchange,
+       lnot_zero_raw, isZero_lnot_eq_eq_maxWord, isTrue_lor_iff, List.exchange,
        Challenge.EvmProof.Word.literal_eq_ofNat,
        Challenge.EvmProof.Word.succ_ofNat_mod,
        Challenge.EvmProof.Word.ofNat_add_mod,
@@ -851,7 +872,7 @@ theorem run_oddCheck_bail (s : State) (input : ByteArray)
        Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
        oddCheckState, bail6State, outerStack, hdata, hcode, hrun, hsub, hmodmod,
        land_one_lastWord input h32, jumpDest1826,
-       lnot_zero_raw, isTrue_lor_iff, List.exchange,
+       lnot_zero_raw, isZero_lnot_eq_eq_maxWord, isTrue_lor_iff, List.exchange,
        land_mask_isTrue_of_not_mod (modulusSize input) (modulusSize_lt input) hwidth,
        Challenge.EvmProof.Word.literal_eq_ofNat,
        Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -864,7 +885,7 @@ theorem run_oddCheck_bail (s : State) (input : ByteArray)
        Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
        oddCheckState, bail6State, outerStack, hdata, hcode, hrun, hsub, hmodmod,
        land_one_lastWord input h32, jumpDest1826,
-       lnot_zero_raw, eq_maxWord_of_eq _ hnprime, isTrue_lor_iff, List.exchange,
+       lnot_zero_raw, isZero_lnot_eq_eq_maxWord, eq_maxWord_of_eq _ hnprime, isTrue_lor_iff, List.exchange,
        Challenge.EvmProof.Word.literal_eq_ofNat,
        Challenge.EvmProof.Word.succ_ofNat_mod,
        Challenge.EvmProof.Word.ofNat_add_mod,
@@ -1288,6 +1309,25 @@ theorem neg_word (v : Nat) :
   rw [Nat.mod_mod_of_dvd _ (dvd_refl (2 ^ 256))]
   congr 1
 
+/-- Reversing a subtraction negates the product: the word ring is commutative. -/
+theorem sub_swap_mul_word (a b c : UInt256) :
+    (a - b) * c = UInt256.ofNat 0 - ((b - a) * c) := by
+  change UInt256.mk ((a.val - b.val) * c.val)
+       = UInt256.mk ((UInt256.ofNat 0).val - (b.val - a.val) * c.val)
+  congr 1
+  have h0 : (UInt256.ofNat 0).val = (0 : Fin UInt256.size) := rfl
+  rw [h0, zero_sub, ← neg_mul, neg_sub]
+
+/-- One `DUP1; DUP3; MUL; PUSH1 2; SWAP1; SUB; MUL` group is one Newton step with
+its subtraction reversed, which negates the result — exactly the value
+`MSTORE V_MINV` stores. -/
+theorem newton_word_step_neg (m0 x : Nat) :
+    (UInt256.ofNat m0 * UInt256.ofNat x - UInt256.ofNat 2) * UInt256.ofNat x =
+      UInt256.ofNat (negWord (Model.newtonStep m0 x)) := by
+  rw [← neg_word (Model.newtonStep m0 x), ← newton_word_step m0 x,
+    sub_swap_mul_word (UInt256.ofNat m0 * UInt256.ofNat x) (UInt256.ofNat 2)
+      (UInt256.ofNat x)]
+
 /-- The first four Newton steps. -/
 def newton4 (m0 : Nat) : Nat :=
   NewtonSeed.iter m0 3
@@ -1298,6 +1338,17 @@ def newton8 (m0 : Nat) : Nat :=
 
 theorem newton8_eq (m0 : Nat) (hodd : m0 % 2 = 1) :
     newton8 m0 = Model.newtonIter m0 8 := NewtonSeed.six_eq_old hodd
+
+/-- The first seven Newton steps; `newton8` is exactly one further step. -/
+def newton7 (m0 : Nat) : Nat :=
+  Model.newtonStep m0 (Model.newtonStep m0 (newton4 m0))
+
+/-- The negated Montgomery inverse, as the last Newton group now leaves it. -/
+theorem newton_word_minv (m0 : Nat) :
+    (UInt256.ofNat m0 * UInt256.ofNat (newton7 m0) - UInt256.ofNat 2) *
+        UInt256.ofNat (newton7 m0) =
+      UInt256.ofNat (negWord (newton8 m0)) :=
+  newton_word_step_neg m0 (newton7 m0)
 
 /-- **Overwriting a write.** Two writes of equal length at the same address collapse to the
 second: the first is entirely covered. This is what kills the zero-fill `CALLDATACOPY` — with
@@ -1440,7 +1491,8 @@ def setupPathB :
    opAt 536 .SUB,
    opAt 537 .MUL]
 
-/-- Instructions 1231..1254: the last four Newton steps. -/
+/-- Instruction indices 538..549, pc 749..762: two of the last three Newton steps.
+The block ends on a completed step, so both of its endpoints are `newtonState`s. -/
 def setupPathC :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 538 (.Dup ⟨0, by decide⟩),
@@ -1454,20 +1506,22 @@ def setupPathC :
    opAt 546 .MUL,
    pushAt 547 1 2,
    opAt 548 .SUB,
-   opAt 549 .MUL,
-   opAt 550 (.Dup ⟨0, by decide⟩),
+   opAt 549 .MUL]
+
+/-- Instruction indices 550..563, pc 763..781: the last Newton step, whose
+subtraction is taken in the reverse order so the step comes out already negated,
+then `MSTORE V_MINV`, `MSTORE R1 1` and the tail call into the `R1B` guard.
+Reversing the subtraction is what removes the separate `PUSH0; SUB`. -/
+def setupPathD :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 550 (.Dup ⟨0, by decide⟩),
    opAt 551 (.Dup ⟨2, by decide⟩),
    opAt 552 .MUL,
    pushAt 553 1 2,
-   opAt 554 .SUB,
-   opAt 555 .MUL]
-
-/-- Instructions 1255..1271: `MSTORE V_MINV`, `MSTORE R1 1` and the tail call
-into the `R1B` guard. -/
-def setupPathD :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 556 0 0,
-   opAt 557 .SUB,
+   opAt 554 (.Swap ⟨0, by decide⟩),
+   opAt 555 .SUB,
+   opAt 556 .MUL,
+   opAt 557 .JUMPDEST,
    pushAt 558 2 2720,
    opAt 559 .MSTORE,
    opAt 560 .POP,
@@ -1592,12 +1646,12 @@ theorem run_setupC (s : State) (input : ByteArray) (m0 : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupPathC
         (newtonState s input m0 (newton4 m0) 749) =
-      some (newtonState s input m0 (newton8 m0) 770) := by
+      some (newtonState s input m0 (newton7 m0) 763) := by
   simp (config := { maxSteps := 1000000 })
     [setupPathC, opAt, pushAt, wfOp,
      Challenge.EvmProof.Stepper.runLocatedBlock,
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-     newtonState, outerStack, newton8, hrun, newton_word_step,
+     newtonState, outerStack, newton7, hrun, newton_word_step,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
@@ -1620,7 +1674,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_setupD (s : State) (input : ByteArray) (m0 : Nat)
     (hcode : s.executionEnv.code = submissionBytecode) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupPathD
-        (newtonState s input m0 (newton8 m0) 770) =
+        (newtonState s input m0 (newton7 m0) 763) =
       some (setupExitState s input m0) := by
   have hmodminv : ∀ v : Nat,
       negWord v %
@@ -1632,7 +1686,7 @@ theorem run_setupD (s : State) (input : ByteArray) (m0 : Nat)
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
      newtonState, setupExitState, outerStack, setupMem, mstoreAt, setupWords,
      awNext, State.activeWordsAfterUInt256, hcode, hrun, push0_word, neg_word,
-     hmodminv, jumpDest3296, pcIdx563,
+     newton_word_minv, hmodminv, jumpDest3296, pcIdx563, List.exchange,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
@@ -1956,7 +2010,7 @@ def gasSteps_setup (s : State) (input : ByteArray) (m0 : Nat)
             (run_setupC s input m0 hrun) hrun hnp).trans
         (Challenge.EvmProof.Stepper.runLocatedBlock_sound
           Artifact.submissionArtifact .Osaka setupPathD
-            (s := newtonState s input m0 (newton8 m0) 770) hcode hfork
+            (s := newtonState s input m0 (newton7 m0) 763) hcode hfork
             (run_setupD s input m0 hcode hrun) hrun hnp)))
 
 def gasSteps_fastPath_of (s : State) (input : ByteArray) (m0 : Nat)
@@ -2145,4 +2199,4 @@ theorem fastPath_em (input : ByteArray) : FastPath input ∨ ¬ FastPath input :
 
 
 end Challenge.Modexp.Submission.Proofs.Fast.Setup
--- redraw marker 2026-09-17T07:56:01Z
+-- redraw marker 2026-09-17T10:14:43Z
