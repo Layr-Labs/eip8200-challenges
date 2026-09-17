@@ -1,5 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBody
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneTail
+import Challenge.Modexp.Submission.Proofs.Bytecode.FrontierFirstCopy
 
 set_option warningAsError true
 
@@ -49,7 +50,7 @@ thirteen instructions, eighteen bytes.  Shared by the trampoline and the link. -
 def storesProgram : List Instr := setupTailProgram ++ WindowTwentyOneStage.stageHead
 
 /-- The first pass's trampoline at 951; only this copy carries the `JUMPDEST`. -/
-def trampolineProgram : List Instr := .op .JUMPDEST :: storesProgram
+def trampolineProgram : List Instr := .op .JUMPDEST :: FrontierFirstCopy.storesProgram
 
 /-- The first inter-pass span (pc 1413-1430).  The exponent is never shifted now: one
 store serves all sixty-two addressed digits, so these eighteen bytes carry no work.
@@ -206,17 +207,20 @@ theorem run_stores (template : State) (pc : UInt256) (mem : ByteArray) (active :
 stores, landing on the body at 970. -/
 theorem run_trampoline (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions trampolineProgram (entryState template base modulus exponent rest) =
+    WindowTwentyOneMsize.runInstructionsX trampolineProgram
+      (entryState template base modulus exponent rest) =
     some (headState template (UInt256.ofNat 970) base modulus exponent 0 rest) := by
   have hhead := WindowTwentyOneTail.run_head template (UInt256.ofNat 951)
     (WindowTableMemory.tableMemory base modulus) 16 modulus
     (WindowTwentyOneMath.accumulator base modulus exponent.toNat 0)
     (eAt exponent 0) (UInt256.ofNat 2) rest hrest
-  have hs := run_stores template (UInt256.ofNat 951).succ
-    (WindowTableMemory.tableMemory base modulus) 16 (by omega) modulus
+  have hs := FrontierFirstCopy.run_stores template (UInt256.ofNat 951).succ
+    (WindowTableMemory.tableMemory base modulus) modulus
     (WindowTwentyOneMath.accumulator base modulus exponent.toNat 0)
     (eAt exponent 0) (UInt256.ofNat 2) rest hrest
-  have hall := runInstructions_append_some _ _ _ _ _ hhead hs
+  have hheadX := (WindowTwentyOneMsize.runInstructionsX_eq
+    [.op .JUMPDEST] (by decide) _).trans hhead
+  have hall := WindowTwentyOneMsize.runInstructionsX_append_some _ _ _ _ _ hheadX hs
   have hpc : advancePC 18 (UInt256.ofNat 951).succ = UInt256.ofNat 970 := by decide
   simpa only [trampolineProgram, entryState, headState, loopMem, hpc,
     List.cons_append, List.nil_append] using hall

@@ -45,6 +45,41 @@ def result (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
       (guardWord mem s.executionEnv.calldata n esize) :: Exp.outer n bsize esize msize
     memory := Exp.storeWord mem 1760 (guardWord mem s.executionEnv.calldata n esize)}
 
+private def guardPrefixProgram : List Instr :=
+  [.op (.Dup ⟨4, by decide⟩), .push 1 1, .op .EQ,
+   .push 2 2816, .op .MLOAD, .op .CALLDATALOAD, .push 0 0, .op .BYTE,
+   .push 1 3, .op .EQ, .op .AND]
+
+private def guardWidthProgram : List Instr :=
+  [.op (.Dup ⟨1, by decide⟩), .push 1 3, .op .AND, .op .ISZERO, .op .AND]
+
+private def guardStoreShiftProgram : List Instr :=
+  [.op (.Dup ⟨0, by decide⟩), .push 2 1760, .op .MSTORE, .op .SHR]
+
+private theorem program_split :
+    program = (guardPrefixProgram ++ guardWidthProgram) ++ guardStoreShiftProgram := by
+  rfl
+
+private def exponentMatchWord (mem input : ByteArray) (esize : Nat) : UInt256 :=
+  UInt256.land (UInt256.eq (UInt256.ofNat 3) (exponentByte mem input))
+    (UInt256.eq (UInt256.ofNat 1) (UInt256.ofNat esize))
+
+private def afterPrefix (s : State) (mem : ByteArray)
+    (n bsize esize msize : Nat) : State :=
+  { s with
+    pc := UInt256.ofNat 2679
+    stack := exponentMatchWord mem s.executionEnv.calldata esize ::
+      UInt256.ofNat n :: Exp.outer n bsize esize msize
+    memory := mem }
+
+private def afterGuard (s : State) (mem : ByteArray)
+    (n bsize esize msize : Nat) : State :=
+  { s with
+    pc := UInt256.ofNat 2685
+    stack := guardWord mem s.executionEnv.calldata n esize ::
+      UInt256.ofNat n :: Exp.outer n bsize esize msize
+    memory := mem }
+
 theorem run_guard (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hact : 89 ≤ s.activeWords.toNat) :
     runInstructions program (entry s mem n bsize esize msize) =
@@ -53,14 +88,42 @@ theorem run_guard (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       s.activeWords := Exp.activeWords_fix s 2816 32 (by decide) (by omega) (by omega)
   have haw2 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1760 32) =
       s.activeWords := Monpro.activeWords_fix s 1760 32 (by decide) (by omega) (by omega)
-  simp (config := {maxSteps := 300000})
-    [program, runInstructions, Challenge.EvmProof.Stepper.runInstr, entry, result,
-     Exp.outer, Exp.storeWord, guardWord, exponentByte,
-     State.activeWordsAfterUInt256, haw1, haw2, Exp.push0_word,
-     Challenge.EvmProof.Word.literal_eq_ofNat,
-     Challenge.EvmProof.Word.word_toNat_ofNat,
-     Challenge.EvmProof.Word.succ_ofNat_mod,
-     Challenge.EvmProof.Word.ofNat_add_mod]
+  have hprefix :
+      runInstructions guardPrefixProgram (entry s mem n bsize esize msize) =
+        some (afterPrefix s mem n bsize esize msize) := by
+    simp (config := {maxSteps := 100000})
+      [guardPrefixProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+       entry, afterPrefix, exponentMatchWord, Exp.outer, exponentByte,
+       State.activeWordsAfterUInt256, haw1, Exp.push0_word,
+       Challenge.EvmProof.Word.literal_eq_ofNat,
+       Challenge.EvmProof.Word.word_toNat_ofNat,
+       Challenge.EvmProof.Word.succ_ofNat_mod,
+       Challenge.EvmProof.Word.ofNat_add_mod]
+  have hwidth :
+      runInstructions guardWidthProgram (afterPrefix s mem n bsize esize msize) =
+        some (afterGuard s mem n bsize esize msize) := by
+    simp (config := {maxSteps := 50000})
+      [guardWidthProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+       afterPrefix, afterGuard, exponentMatchWord, guardWord, Exp.outer,
+       Challenge.EvmProof.Word.literal_eq_ofNat,
+       Challenge.EvmProof.Word.word_toNat_ofNat,
+       Challenge.EvmProof.Word.succ_ofNat_mod,
+       Challenge.EvmProof.Word.ofNat_add_mod]
+  have htail :
+      runInstructions guardStoreShiftProgram (afterGuard s mem n bsize esize msize) =
+        some (result s mem n bsize esize msize) := by
+    simp (config := {maxSteps := 50000})
+      [guardStoreShiftProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+       afterGuard, result, Exp.outer, Exp.storeWord, guardWord,
+       State.activeWordsAfterUInt256, haw2,
+       Challenge.EvmProof.Word.literal_eq_ofNat,
+       Challenge.EvmProof.Word.word_toNat_ofNat,
+       Challenge.EvmProof.Word.succ_ofNat_mod,
+       Challenge.EvmProof.Word.ofNat_add_mod]
+  have h12 := runInstructions_append_some _ _ _ _ _ hprefix hwidth
+  have hall := runInstructions_append_some _ _ _ _ _ h12 htail
+  rw [program_split]
+  exact hall
 
 #print axioms run_guard
 end RootE3Guard
