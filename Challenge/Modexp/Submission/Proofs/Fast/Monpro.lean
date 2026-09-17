@@ -508,7 +508,7 @@ def mpEntryState (s : State) (mem : ByteArray) (pa pb : Nat) (pdst ret : UInt256
 /-- `CSUB` entry, pc 2432, with stack `[pd, ret]`. -/
 def mpCsubState (s : State) (mem : ByteArray) (pdst ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 4077
+  { s with pc := UInt256.ofNat 3963
            stack := [pdst, ret] ++ rest
            memory := mem }
 
