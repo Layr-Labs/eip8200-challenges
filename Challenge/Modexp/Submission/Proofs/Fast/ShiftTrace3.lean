@@ -582,15 +582,16 @@ theorem run_subTail (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- `blk3253`: `k := k - 1` (`NOT ADD` on the zero above `k`), then call the retained `CSUB` entry returning straight to the loop head. -/
+/-- `blk3253`: `k := k - 1` (`NOT ADD` on the zero above `k`), then jump STRAIGHT to the loop
+head.  The `CSUB` call this block used to make is the identity on every reachable state
+(`repair_lt_mm`), so the artifact no longer makes it. -/
 theorem run_csubCall (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hk : 1 ≤ k) (hk32 : k ≤ 32)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3253
       (csubCallState s mem n bsize esize msize k) =
-      some (RetainedT.entryState s mem (UInt256.ofNat pcAfterCsub)
-        (UInt256.ofNat (k - 1) :: outer n bsize esize msize)) := by
+      some (afterCsubState s mem n bsize esize msize k) := by
   have hdec : UInt256.lnot (UInt256.ofNat 0) + UInt256.ofNat k =
       UInt256.ofNat (k - 1) := by
     interval_cases k <;> decide
@@ -600,8 +601,8 @@ theorem run_csubCall (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      csubCallState, kState, pcCsubCall, pcAfterCsub, RetainedT.entryState,
-      outer, Exp.outer, hcode, hrun, hdec, hdec', RetainedT.jumpDest4486,
+      csubCallState, kState, pcCsubCall, pcAfterCsub, afterCsubState,
+      outer, Exp.outer, hcode, hrun, hdec, hdec', jumpDest4839,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
