@@ -28,7 +28,7 @@ private theorem copy_decoded (s : State) (e : Env s) (rho : List UInt256) :
     (by rfl) (by decide) trivial
   apply Artifact.submissionArtifact.state_decodedOp_of (beforeCopy s rho) 213
     e.code ?_ .CODECOPY none hd (by change Operation.CODECOPY.availableInFork s.fork = true; rw [e.fork]; rfl)
-  change (UInt256.ofNat 325).toNat = Artifact.submissionArtifact.instructionPC 213
+  change (UInt256.ofNat 325).toNat = Artifact.submissionArtifact.instructionPC 212
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -38,7 +38,7 @@ private theorem size_decoded (s : State) (e : Env s) (rho : List UInt256) :
     (by rfl) (by decide) trivial
   apply Artifact.submissionArtifact.state_decodedOp_of
     (copied (beforeCopy s rho) (source s) rho) 214 e.code ?_ .MSIZE none hd (by change Operation.MSIZE.availableInFork s.fork = true; rw [e.fork]; rfl)
-  change (UInt256.ofNat 326).toNat = Artifact.submissionArtifact.instructionPC 214
+  change (UInt256.ofNat 326).toNat = Artifact.submissionArtifact.instructionPC 213
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
