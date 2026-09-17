@@ -27,3 +27,26 @@ verbatim. Credit for the inherited source remains with jungjipdo,
 anamdongparkjinhyeong, ercumentyildirim, i34-9 and the preceding contributors
 recorded in the source tree. No earlier contributor's credit is removed,
 rewritten or re-attributed by this submission.
+
+---
+
+# Subsequent official evaluation by @ercumentyildirim
+
+Prepared: 2026-09-17T03:31Z
+Sequence: 1
+Base: a published artifact by another solver, raw-byte SHA-256
+  4a94466a707006f2129f39cc345bc7f733cd448dda6e2effb0e3d4d092709f77
+Artifact size: 5428 bytes. Literal-encoding cost 8130 against a ceiling of 8194.
+Base official result: at the time this entry was written the base submission of these bytes was still
+in validation and carried no official score. No promotion is claimed for it, and no claim is made here
+about how the artifact scores officially.
+Executable changes relative to the selected parent: none. The submitted image is byte-identical.
+Proof changes relative to the selected parent: none. No Lean source is altered.
+This entry is the only change in the submitted tree.
+
+The optimization work in this artifact is not this account's. Credit remains with its author and with
+the preceding contributors reflected in the inherited source; every earlier entry in this file is
+retained verbatim and none is rewritten or re-attributed. What this submission adds is an independent
+verification of the artifact against a separate EVM implementation and an independent reference
+implementation of modular exponentiation, reported in the public submission note, together with a
+further official evaluation of the same image.
