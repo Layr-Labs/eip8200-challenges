@@ -7,16 +7,16 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate
 def prefixTemplate : List Instr := [.op .JUMPDEST]
 theorem prefix_slice :
-    (Artifact.submissionArtifact.instructions.drop 3596).take prefixTemplate.length = prefixTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3594).take prefixTemplate.length = prefixTemplate := by rfl
 def prefixSite : GenericRoundSite Artifact.submissionArtifact .Osaka prefixTemplate :=
-  StackSiteBuilder.ofSlice prefixTemplate 3596 prefix_slice
-    (by change 3596 + prefixTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice prefixTemplate 3594 prefix_slice
+    (by change 3594 + prefixTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := prefixTemplate) (by decide))
     (by decide)
 theorem prefix_pc : prefixSite.startPC = UInt256.ofNat 4701 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3596) = UInt256.ofNat 4701
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3594) = UInt256.ofNat 4701
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem prefix_advances : ∀ instruction ∈ prefixTemplate.dropLast, PadLift.Advances instruction := by
   apply PadLift.advancesAll_sound
