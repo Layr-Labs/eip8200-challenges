@@ -256,3 +256,4 @@ Prepared: 2026-09-17T13:07Z
 Current promoted frontier image, unchanged, by another solver. No executable change,
 no proof change, no new optimization claimed. Credit remains with its author and the
 contributors recorded in the inherited source.
+-- redraw marker 2026-09-17T18:05Z: corpus-redraw of the promoted artifact (SHA-256 54a54fd7502a80d506632534d358426339402a76882b3649807d66f0fed55d40, 5439 bytes) by rubenmarcus; no executable or proof change; full draw math in the public submission note.
