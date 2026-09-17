@@ -53,22 +53,19 @@ def trampolineProgram : List Instr := .op .JUMPDEST :: storesProgram
 
 /-- The first inter-pass span (pc 1413-1430).  The exponent is never shifted now: one
 store serves all sixty-two addressed digits, so these eighteen bytes carry no work.
-Ten `JUMPDEST` and a dead `PUSH6; POP`: twelve instructions, eighteen bytes, fifteen gas,
-which is the provable minimum for a stack-neutral filler of that shape. -/
+The eighteen bytes are consumed by one dead `PUSH16; POP`: two instructions, five gas.
+The sixteen immediate bytes are the former ten `JUMPDEST`s, the former `PUSH6` opcode and
+its six immediates, so no byte other than the one at 1413 differs from the image that
+carried the twelve-instruction filler. -/
 def padProgramA : List Instr :=
-  [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .push 6 100447932865371, .op .POP]
+  [.push 16 121434099567864314412422772696005958491, .op .POP]
 
-/-- The second inter-pass span (pc 1879-1896).  Eleven instructions in the same eighteen
-bytes -- one fewer than `padProgramA`, which is what pays for the extra instruction the
-final group's nibble-0 lookup costs, so the instruction COUNT of the artifact is
-unchanged and the RETURN block's index never moves.  The `PUSH7` opcode sits at 1888
-deliberately: 1888 is the only pc in either span that the artifact itself pushes. -/
+/-- The second inter-pass span (pc 1879-1896): the same shape, one dead `PUSH16; POP` over
+eighteen bytes whose immediates are the former nine `JUMPDEST`s, the former `PUSH7` opcode
+at 1888 and its seven immediates.  The pc 1888 is still the only pc in either span that the
+artifact itself pushes; it now lies inside an immediate and is never executed. -/
 def padProgramB : List Instr :=
-  [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .push 7 25714670813535067, .op .POP]
+  [.push 16 121434099567864314413212591480656059227, .op .POP]
 
 /-- Between two passes: the dead span, then replay the staging head.  Twenty-three bytes. -/
 def linkProgram : List Instr := padProgramA ++ WindowTwentyOneStage.stageHead
@@ -267,9 +264,8 @@ private theorem run_padA (template : State) (pc : UInt256) (mem : ByteArray)
       exponent counter 0 rest) := by
   have hcap5 : rest.length + 5 < 1024 := by omega
   have hcap6 : rest.length + 6 < 1024 := by omega
-  have hpush : UInt256.ofNat 7 =
-      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
-      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
+  have hpush : UInt256.ofNat 17 =
+      UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1)))))))))))))))) := by decide
   simp [runInstructions, padProgramA, WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
     Challenge.EvmProof.Stepper.runInstr, hcap5, hcap6, advancePC, succ_eq_add, hpush, word_add_assoc]
 
@@ -282,9 +278,8 @@ private theorem run_padB (template : State) (pc : UInt256) (mem : ByteArray)
       exponent counter 0 rest) := by
   have hcap5 : rest.length + 5 < 1024 := by omega
   have hcap6 : rest.length + 6 < 1024 := by omega
-  have hpush : UInt256.ofNat 8 =
-      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
-      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
+  have hpush : UInt256.ofNat 17 =
+      UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1)))))))))))))))) := by decide
   simp [runInstructions, padProgramB, WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
     Challenge.EvmProof.Stepper.runInstr, hcap5, hcap6, advancePC, succ_eq_add, hpush, word_add_assoc]
 
@@ -338,7 +333,7 @@ theorem run_link (template : State) (pc : Nat) (base modulus exponent : UInt256)
       run_padA template pc mem modulus accumulator exponent counter rest hrest)
     template pc base modulus exponent count rest hrest
 
-/-- Between passes 1 and 2 (pc 1879): the same eighteen bytes in eleven instructions. -/
+/-- Between passes 1 and 2 (pc 1879): the same eighteen bytes in two instructions. -/
 theorem run_linkB (template : State) (pc : Nat) (base modulus exponent : UInt256)
     (count : Nat) (_hcount : count < 2) (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions linkProgramB
