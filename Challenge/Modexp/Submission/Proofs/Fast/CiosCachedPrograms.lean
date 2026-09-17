@@ -93,20 +93,20 @@ def macFusedPostProgram (tl ts : UInt256) : List Instr :=
 def macFusedProgram (tl ts : UInt256) : List Instr :=
   macProductProgram.take 6 ++ macFusedPostProgram tl ts
 
-/-- `macFusedPostProgram` with the incoming-carry `DUP4` **and the `ADD` that consumes it** both
-deleted: same byte length, two gas cheaper, and equivalent *only* on a frame whose incoming carry
-is already zero.  The `DUP4` reproduces the cell's incoming carry `c` and the `ADD` adds it to the
-low product word, so dropping the pair is sound exactly where `c = 0` — the row-head cell of a
-conversion chain, never a cell fed by a predecessor.  The two freed bytes are absorbed by widening
-the load's `PUSH2` to a `PUSH4` of the same value, so the cell still occupies 36 bytes and no pc
-after it moves. -/
+/-- `macFusedPostProgram` with the incoming-carry `DUP4` replaced by `DUP1; POP`: same byte
+length, one gas cheaper, and equivalent *only* on a frame whose incoming carry is already zero.
+The `DUP4` it replaces reproduces the cell's incoming carry `c`, so this schedule is sound
+exactly where `c = 0` — the row-head cell of a conversion chain, never a cell fed by a
+predecessor.  `DUP1; POP` is the same no-op `PUSH0; ADD` performed, one gas cheaper. -/
 def macFusedPostZeroProgram (tl ts : UInt256) : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨2, by decide⟩),
    .op .GT,
    .op .SUB,
    .op (.Dup ⟨1, by decide⟩),
-   .push 4 tl,
+   .op (.Dup ⟨0, by decide⟩),
+   .op .POP,
+   .push 2 tl,
    .op .MLOAD,
    .op (.Dup ⟨1, by decide⟩),
    .op .ADD,
@@ -264,7 +264,7 @@ def l2DispatchProgram : List Instr :=
 went to the very next pc and cost 11 gas for nothing -- the copy ends in an explicit
 `PUSH2 0x0ee8 JUMP`, so the shared ladder no longer has to carry a continuation at all. -/
 def l2ExitProgram : List Instr :=
-  [.push 2 3930, .op .JUMP]
+  [.push 2 3816, .op .JUMP]
 
 def joinProgram : List Instr :=
   [.op .JUMPDEST]

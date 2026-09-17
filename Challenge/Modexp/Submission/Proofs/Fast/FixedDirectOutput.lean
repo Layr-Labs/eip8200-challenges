@@ -171,10 +171,10 @@ structure Handler (s : State) (mem input : ByteArray)
   enter : Challenge.EvmProof.GasSteps
     (Exp.bDone s mem n bsize esize msize)
     (FixedExponentRoute.entryState s mem n bsize esize msize)
-  /-- **S1b.** A miss bails to `modexpBig`; it does not rejoin the generic loop. -/
   miss : ¬ FixedExponentRoute.Matches input bsize esize →
-    FixedExponentRoute.Handled input
+    Challenge.EvmProof.GasSteps
       (FixedExponentRoute.entryState s mem n bsize esize msize)
+      (FixedExponentRoute.missState s mem n bsize esize msize)
   hit : ∀ count : Nat, FixedExponentRoute.Case input bsize esize count →
     FixedExponentRoute.Handled input
       (FixedExponentRoute.entryState s mem n bsize esize msize)
@@ -190,12 +190,15 @@ def Handler.toRoute (handler : Handler s mem input n bsize esize msize) :
 
 /-- Compose a direct-output handler with the generic miss proof. -/
 def handled_of_bDoneWithGeneric
-    (handler : Handler s mem input n bsize esize msize) :
+    (handler : Handler s mem input n bsize esize msize)
+    (generic : FixedExponentRoute.Handled input
+      (FixedExponentRoute.missState s mem n bsize esize msize)) :
     FixedExponentRoute.Handled input (Exp.bDone s mem n bsize esize msize) := by
   by_cases hmatch : FixedExponentRoute.Matches input bsize esize
   · rcases handler.toRoute.hit hmatch with ⟨final, ⟨tail⟩, hdone, hresult⟩
     exact ⟨final, ⟨handler.enter.trans tail⟩, hdone, hresult⟩
-  · rcases handler.miss hmatch with ⟨final, ⟨tail⟩, hdone, hresult⟩
-    exact ⟨final, ⟨handler.enter.trans tail⟩, hdone, hresult⟩
+  · rcases generic with ⟨final, ⟨tail⟩, hdone, hresult⟩
+    exact ⟨final, ⟨(handler.enter.trans (handler.miss hmatch)).trans tail⟩,
+      hdone, hresult⟩
 
 end Challenge.Modexp.Submission.Proofs.Fast.FixedDirectOutput

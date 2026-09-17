@@ -20,9 +20,9 @@ def blk1028 :
    opAt 465 .SUB,
    opAt 466 .CALLDATALOAD,
    opAt 467 (.Dup ⟨0, by decide⟩),
-   pushAt 468 0 0,
-   opAt 469 .NOT,
-   opAt 470 .EQ,
+   opAt 468 .NOT,
+   opAt 469 .ISZERO,
+   opAt 470 .JUMPDEST,
    opAt 471 (.Swap ⟨0, by decide⟩),
    pushAt 472 1 1,
    opAt 473 .AND,
@@ -32,7 +32,7 @@ def blk1028 :
    pushAt 477 1 127,
    opAt 478 .AND,
    opAt 479 .OR,
-   pushAt 480 2 800,
+   pushAt 480 2 1065,
    opAt 481 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast

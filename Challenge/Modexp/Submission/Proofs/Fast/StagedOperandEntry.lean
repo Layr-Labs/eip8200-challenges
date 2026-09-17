@@ -64,8 +64,8 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (EntryPrefix.displacement mem) rest hcap
   have hlow := EntryPrefix.run_low { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb)
-    (UInt256.ofNat 3494 + EntryPrefix.displacement mem)
-    (UInt256.ofNat 3782 + EntryPrefix.displacement mem)
+    (UInt256.ofNat 3380 + EntryPrefix.displacement mem)
+    (UInt256.ofNat 3668 + EntryPrefix.displacement mem)
     dst ret m0 inv aEnd tl m96 m32 rest hcap hact
   have hprefix := runInstructions_append_some _ _ _ _ _
     (runInstructions_append_some _ _ _ _ _ hreads hshuffle) hlow
@@ -74,10 +74,10 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
   -- 192, 224 (n = 5,6,7), where the mask is still set.  `n = 4 ∨ n = 8` is what makes this
   -- step true, and it holds because the kernel is only ever entered from the two
   -- specialised width carriers.
-  have hdisp1 : UInt256.ofNat 3494 + EntryPrefix.displacement mem = l1Target n := by
+  have hdisp1 : UInt256.ofNat 3380 + EntryPrefix.displacement mem = l1Target n := by
     rcases hn4 with rfl | rfl <;>
       rw [EntryPrefix.displacement, hs32] <;> decide
-  have hdisp2 : UInt256.ofNat 3782 + EntryPrefix.displacement mem = l2Target n := by
+  have hdisp2 : UInt256.ofNat 3668 + EntryPrefix.displacement mem = l2Target n := by
     rcases hn4 with rfl | rfl <;>
       rw [EntryPrefix.displacement, hs32] <;> decide
   have hmasked :
