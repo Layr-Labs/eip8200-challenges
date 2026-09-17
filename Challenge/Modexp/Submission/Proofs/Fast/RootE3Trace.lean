@@ -15,7 +15,7 @@ open Shift RootE3Phase
 /-- Exact cache/prologue endpoint in v4, before the phase/count guard. -/
 def guardEntry (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   { s with
-    pc := UInt256.ofNat 2664
+    pc := UInt256.ofNat 2809
     stack := UInt256.ofNat n :: Exp.outer n bsize esize msize
     memory := mem }
 
@@ -64,8 +64,7 @@ def ordinaryTrace (s : State) (mem input : ByteArray) (n bsize esize msize mm mi
     (hn : 2 ≤ n) (hn8 : n ≤ 8) (e : Env s)
     (hm : 0 < mm) (hodd : mm % 2 = 1)
     (hframe : Exp.Frame mem n bsize minv) (hmod : Model.FastRepresents mem 0 n mm)
-    (htop : R1.TopBitSet mem) (hmiss : ¬ Eligible input n bsize esize)
-    (hfast : n = 4 ∨ n = 8) :
+    (htop : R1.TopBitSet mem) (hmiss : ¬ Eligible input n bsize esize) :
     GasSteps (dispState s mem n bsize esize msize)
       (FixedExponentRoute.entryState s (ordinaryOutput mem input n mm) n bsize esize msize) := by
   have inv0 := m2_stepInv mem input n bsize mm minv hn hn8 hm hframe hmod
@@ -76,7 +75,7 @@ def ordinaryTrace (s : State) (mem input : ByteArray) (n bsize esize msize mm mi
   have htwo := R1.radix_pow_lt_two_mul (by omega) hodd hmod htop
   have loop := gasSteps_shiftLoop_count s (flagSet (m2Of mem input n) (UInt256.ofNat 0))
     n bsize esize msize mm minv _ n (by omega) hn hn8 e hm (Model.fastRepresents_lt hmod)
-    htwo invPrep hbasePrep (Nat.mod_lt _ hm) hfast
+    htwo invPrep hbasePrep (Nat.mod_lt _ hm)
   have invFinal := stepInv_stepMems (by omega) hn8 invPrep n
   have hflag := flag_after_steps (m2Of mem input n) (UInt256.ofNat 0) n mm n (by omega) hn8
   exact ((bindings.prologue.trans (bindings.ordinaryGuard hmiss)).trans loop).trans
@@ -101,7 +100,7 @@ def e3Trace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv k :
   have htwo := R1.radix_pow_lt_two_mul (by omega) hodd hmod htop
   have firstLoop := gasSteps_shiftLoop_count s (e3Prepared mem input n)
     n bsize esize msize mm minv _ (2 * k) (by omega) hn hn8 e hm
-    (Model.fastRepresents_lt hmod) htwo invPrep hbasePrep (Nat.mod_lt _ hm) hhit.2.2
+    (Model.fastRepresents_lt hmod) htwo invPrep hbasePrep (Nat.mod_lt _ hm)
   have invFirst := stepInv_stepMems (by omega) hn8 invPrep (2 * k)
   have hbaseFirst := stepMems_represents (e3Prepared mem input n) n mm _ hn hn8 hm
     (Model.fastRepresents_lt hmod) htwo invPrep.modulus invPrep.neg hbasePrep
@@ -112,7 +111,7 @@ def e3Trace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv k :
   have secondLoop := gasSteps_shiftLoop_count s
     (RootE3Phase.phaseSwitch (stepMems (e3Prepared mem input n) n mm (2 * k)) n)
     n bsize esize msize mm minv _ k (by omega) hn hn8 e hm
-    (Model.fastRepresents_lt hmod) htwo invSwitch hbaseSwitch (Nat.mod_lt _ hm) hhit.2.2
+    (Model.fastRepresents_lt hmod) htwo invSwitch hbaseSwitch (Nat.mod_lt _ hm)
   have invFinal := stepInv_stepMems (by omega) hn8 invSwitch k
   have hflagFirst : MachineState.readWord (stepMems (e3Prepared mem input n) n mm (2 * k)) 1760 =
       UInt256.ofNat 1 := flag_after_steps (m2Of mem input n) _ n mm (2 * k) (by omega) hn8

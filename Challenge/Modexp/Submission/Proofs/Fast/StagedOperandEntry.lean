@@ -28,7 +28,6 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998)
     (hact : 88 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
-    (hn4 : n = 4 ∨ n = 8)
     (hpaFit : pa+32*n ≤ 2816)
     (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 2816)
     (hcds : s.executionEnv.calldata.size < 2^256)
@@ -64,30 +63,19 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (EntryPrefix.displacement mem) rest hcap
   have hlow := EntryPrefix.run_low { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb)
-    (UInt256.ofNat 3494 + EntryPrefix.displacement mem)
-    (UInt256.ofNat 3782 + EntryPrefix.displacement mem)
+    (UInt256.ofNat 3549 + EntryPrefix.displacement mem)
+    (UInt256.ofNat 3837 + EntryPrefix.displacement mem)
     dst ret m0 inv aEnd tl m96 m32 rest hcap hact
   have hprefix := runInstructions_append_some _ _ _ _ _
     (runInstructions_append_some _ _ _ _ _ hreads hshuffle) hlow
-  -- The artifact now computes the ladder displacement as `14 * (s32 &&& 128)` instead of
-  -- `148 * [s32 = 128]`.  The two agree at s32 = 128 and s32 = 256 but NOT at s32 = 160,
-  -- 192, 224 (n = 5,6,7), where the mask is still set.  `n = 4 ∨ n = 8` is what makes this
-  -- step true, and it holds because the kernel is only ever entered from the two
-  -- specialised width carriers.
-  have hdisp1 : UInt256.ofNat 3494 + EntryPrefix.displacement mem = l1Target n := by
-    rcases hn4 with rfl | rfl <;>
-      rw [EntryPrefix.displacement, hs32] <;> decide
-  have hdisp2 : UInt256.ofNat 3782 + EntryPrefix.displacement mem = l2Target n := by
-    rcases hn4 with rfl | rfl <;>
-      rw [EntryPrefix.displacement, hs32] <;> decide
   have hmasked :
       runInstructions ((EntryPrefix.loadProgram ++ EntryPrefix.shuffleProgram) ++
           EntryPrefix.lowProgram)
         (setupState s mem hd pa pb dst ret rest) =
       some (cachedSetupState s mem hd pa pb n inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) := by
-    simpa only [setupState, cachedSetupState, hdisp1, hdisp2,
-      hs32, tl, inv, m0, aEnd, m96, m64, m32,
+    simpa only [setupState, cachedSetupState, EntryPrefix.displacement,
+      hs32, l1Target, l2Target, isFour, tl, inv, m0, aEnd, m96, m64, m32,
       List.cons_append, List.nil_append] using hprefix
   have hzero := run_zero s mem hd pa pb n inv m0
     (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)

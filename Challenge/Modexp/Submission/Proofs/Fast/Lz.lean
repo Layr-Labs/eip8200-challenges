@@ -85,33 +85,33 @@ theorem topExp_le (w : Nat) (hw : w < 256) (hne : w ≠ 0) : 2 ^ topExp w ≤ w 
 /-- The `LZ` entry, pc 2695.  The driver frame below the byte index is left
 abstract so that this module does not depend on `Fast.Exp`. -/
 def lzEntry (s : State) (mem : ByteArray) (i : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1299
+  { s with pc := UInt256.ofNat 1560
            stack := UInt256.ofNat i :: rest
            memory := mem }
 
 /-- pc 2711, the arm every byte after the first takes. -/
 def lzOther (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1315
+  { s with pc := UInt256.ofNat 1576
            stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
 /-- pc 2720, the arm byte `0` takes. -/
 def lzFirst (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1321
+  { s with pc := UInt256.ofNat 1582
            stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
 /-- The bit-loop head both arms rejoin, pc 1916. -/
 def lzJoin (s : State) (mem : ByteArray) (i w mask : Nat)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 962
+  { s with pc := UInt256.ofNat 951
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
 /-- The state handed to the relocated leading-bit shortcut at pc3865. -/
 def lzBase (s : State) (mem : ByteArray) (i w mask : Nat)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2160
+  { s with pc := UInt256.ofNat 2421
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
@@ -119,6 +119,89 @@ def lzBase (s : State) (mem : ByteArray) (i w mask : Nat)
 
 The byte the block loads is left abstract, as `hbyte`, so that this module
 does not need `Fast.Exp`'s `expByte`. -/
+
+/-- Instructions 1908..1792 with `i = 0`: load the byte, take the first-byte arm. -/
+theorem run_lzHead_first (s : State) (mem input : ByteArray) (bsize i w : Nat)
+    (rest : List UInt256) (hcap : rest.length ≤ 1008)
+    (hdata : s.executionEnv.calldata = input)
+    (hb : bsize ≤ 1024) (hi : i ≤ 1024) (hact : 89 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord mem 2816 = UInt256.ofNat (96 + bsize))
+    (hbyte : UInt256.byteAt ⟨0⟩ (MachineState.readWord input (96 + bsize + i)) =
+      UInt256.ofNat w)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) (hzero : i = 0) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1781
+      (lzEntry s mem i rest) = some (lzFirst s mem i w rest) := by
+  subst hzero
+  have hmod : (96 + bsize + 0) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936
+      = 96 + bsize + 0 :=
+    Setup.mod_word_self (Nat.lt_of_le_of_lt (show 96 + bsize + 0 ≤ 2144 by omega)
+      (by norm_num))
+  have hfix : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      2816 32) = s.activeWords :=
+    activeWords_fix s 2816 32 (by omega) (by omega) hact
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have htrue : UInt256.isTrue (UInt256.ofNat 1) := by decide
+  have hiz : UInt256.isZero (UInt256.ofNat 0) = UInt256.ofNat 1 := by decide
+  simp only [Nat.add_zero] at hmod hbyte
+  simp (config := { maxSteps := 600000 }) [blk1781, opAt, pushAt,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    lzEntry, lzFirst, hdata, hrun, hcode, heoff, hmod, hfix, hbyte, hiz, htrue,
+    hc1, hc2, hc3, hc4, jumpDest2365, State.activeWordsAfterUInt256,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+
+/-- Instructions 1908..1792 with `i ≠ 0`: load the byte, fall through. -/
+theorem run_lzHead_other (s : State) (mem input : ByteArray) (bsize i w : Nat)
+    (rest : List UInt256) (hcap : rest.length ≤ 1008)
+    (hdata : s.executionEnv.calldata = input)
+    (hb : bsize ≤ 1024) (hi : i ≤ 1024) (hact : 89 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord mem 2816 = UInt256.ofNat (96 + bsize))
+    (hbyte : UInt256.byteAt ⟨0⟩ (MachineState.readWord input (96 + bsize + i)) =
+      UInt256.ofNat w)
+    (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) (hne : i ≠ 0) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1781
+      (lzEntry s mem i rest) = some (lzOther s mem i w rest) := by
+  have hmod : (96 + bsize + i) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936
+      = 96 + bsize + i :=
+    Setup.mod_word_self (Nat.lt_of_le_of_lt (show 96 + bsize + i ≤ 2144 by omega)
+      (by norm_num))
+  have hfix : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
+      2816 32) = s.activeWords :=
+    activeWords_fix s 2816 32 (by omega) (by omega) hact
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hiz : UInt256.isZero (UInt256.ofNat i) = UInt256.ofNat 0 := by
+    have hti : (UInt256.ofNat i).toNat = i := by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat]
+      exact Nat.mod_eq_of_lt (Nat.lt_of_le_of_lt hi (by norm_num))
+    simp only [UInt256.isZero, hti, if_neg hne]
+  have hfalse : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
+  simp (config := { maxSteps := 600000 }) [blk1781, opAt, pushAt,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    lzEntry, lzOther, hdata, hrun, heoff, hmod, hfix, hbyte, hiz, hfalse,
+    hc1, hc2, hc3, hc4, State.activeWordsAfterUInt256,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+
+/-! ## Word arithmetic for the smear
+
+`Fast.Exp` carries `shr_ofNat` and a `land` companion, but it imports this
+module. -/
 
 theorem shr_ofNat' (v k : Nat) (hv : v < 2 ^ 256) (hk : k < 256) :
     UInt256.shiftRight (UInt256.ofNat v) (UInt256.ofNat k) =
@@ -141,3 +224,69 @@ theorem sm_lt (w : Nat) (hw : w < 256) :
 
 /-! ## The two rejoining arms -/
 
+/-- Instructions 1790..1920: every byte after the first starts the bit loop at
+`0x80`, exactly as the code this replaces did. -/
+theorem run_lzOther (s : State) (mem : ByteArray) (i w : Nat)
+    (rest : List UInt256) (hcap : rest.length ≤ 1008)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1793
+      (lzOther s mem i w rest) = some (lzJoin s mem i w 128 rest) := by
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  simp (config := { maxSteps := 400000 }) [blk1793, opAt, pushAt,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    lzOther, lzJoin, hrun, hcode, hc2, hc3, hc4, jumpDest1715,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+
+/-- Instructions 1875..1942: byte `0` starts the bit loop at its highest set
+bit, so the exponent's leading zeros are never squared over. -/
+theorem run_lzFirst (s : State) (mem : ByteArray) (i w : Nat)
+    (rest : List UInt256) (hcap : rest.length ≤ 1008) (hw : w < 256)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk1796
+      (lzFirst s mem i w rest) = some (lzBase s mem i w (topBit w) rest) := by
+  obtain ⟨h1, h2, h3⟩ := sm_lt w hw
+  have b0 : w < 2 ^ 256 := by omega
+  have b1 : sm1 w < 2 ^ 256 := by omega
+  have b2 : sm2 w < 2 ^ 256 := by omega
+  have b3 : sm3 w < 2 ^ 256 := by omega
+  have e1 : UInt256.shiftRight (UInt256.ofNat w) (UInt256.ofNat 1) =
+      UInt256.ofNat (w >>> 1) := shr_ofNat' w 1 b0 (by norm_num)
+  have e2 : UInt256.lor (UInt256.ofNat (w >>> 1)) (UInt256.ofNat w) =
+      UInt256.ofNat (sm1 w) :=
+    lor_ofNat _ _ (by omega) b0
+  have e3 : UInt256.shiftRight (UInt256.ofNat (sm1 w)) (UInt256.ofNat 2) =
+      UInt256.ofNat (sm1 w >>> 2) := shr_ofNat' _ 2 b1 (by norm_num)
+  have e4 : UInt256.lor (UInt256.ofNat (sm1 w >>> 2)) (UInt256.ofNat (sm1 w)) =
+      UInt256.ofNat (sm2 w) :=
+    lor_ofNat _ _ (by omega) b1
+  have e5 : UInt256.shiftRight (UInt256.ofNat (sm2 w)) (UInt256.ofNat 4) =
+      UInt256.ofNat (sm2 w >>> 4) := shr_ofNat' _ 4 b2 (by norm_num)
+  have e6 : UInt256.lor (UInt256.ofNat (sm2 w >>> 4)) (UInt256.ofNat (sm2 w)) =
+      UInt256.ofNat (sm3 w) :=
+    lor_ofNat _ _ (by omega) b2
+  have e7 : UInt256.shiftRight (UInt256.ofNat (sm3 w)) (UInt256.ofNat 1) =
+      UInt256.ofNat (sm3 w >>> 1) := shr_ofNat' _ 1 b3 (by norm_num)
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hcomm : (1 : Nat) + (sm3 w >>> 1) = topBit w := by
+    simp only [topBit]; omega
+  simp (config := { maxSteps := 600000 }) [blk1796, opAt, pushAt,
+    Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+    lzFirst, lzBase, hrun, hcode, hc2, hc3, hc4, hc5, hcomm, jumpDest3829,
+    e1, e2, e3, e4, e5, e6, e7,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+
+end Challenge.Modexp.Submission.Proofs.Fast.Lz
