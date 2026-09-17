@@ -11,7 +11,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory Pair13Endian
 
 def lowerTemplate : List Instr :=
-  (loadTemplate 1056 ++ (stage8 false ++ stage16)) ++ lowStore
+  (loadTemplate 1056 ++ (stage8 false ++ stage16 false)) ++ lowStore
 
 theorem run_lower (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
@@ -21,7 +21,8 @@ theorem run_lower (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt2
       some {s with
         pc := pcAfter pc lowerTemplate
         stack := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho
-        memory := writeWord (writeWord s.memory 46
+        memory := writeWord (writeWord (writeWord s.memory 46
+            (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1056))) 10
             (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1056))) 28
           (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1056))} := by
   let F := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho
@@ -38,13 +39,13 @@ theorem run_lower (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt2
   have h2 := run_reverse s pc1 (MachineState.readWord s.memory 1056)
     ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho false (by omega) hrun
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
-  let pc2 := pcAfter (pcAfter pc1 (stage8 false)) stage16
+  let pc2 := pcAfter (pcAfter pc1 (stage8 false)) (stage16 false)
   have h3 := run_lowStore_of_small s pc2 low F hF hrun ha
   have h := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
   simpa only [lowerTemplate, DenseScheduleTrace.pcAfter_append, pc1, pc2, low] using h
 
 theorem lower_bytes : assembleBytes lowerTemplate =
-    [97,4,32,140,1,81,128,96,8,28,129,24,143,22,97,1,1,2,24,143,129,128,96,16,28,24,22,98,1,0,1,2,24,128,96,46,82,96,28,82] := by decide
+    [97,4,32,140,1,81,128,97,0,8,28,129,24,143,22,97,1,1,2,24,143,129,128,97,0,16,28,24,22,98,1,0,1,2,24,128,97,0,46,82,128,97,0,10,82,97,0,28,82] := by decide
 
 #print axioms run_lower
 #print axioms lower_bytes

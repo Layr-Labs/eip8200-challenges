@@ -54,6 +54,7 @@ theorem eval_incoming (m : ByteArray) (lo hi : UInt256) (hc : Clear m) (a : Nat)
 
 def scratchSource (a : Nat) : Source :=
   if 28 ≤ a ∧ a < 60 then .low (a-28)
+  else if 10 ≤ a ∧ a < 28 then .low (a-10)
   else if 60 ≤ a ∧ a < 78 then .low (a-46)
   else if 96 ≤ a ∧ a < 128 then .high (a-96)
   else incoming a
@@ -95,12 +96,11 @@ theorem byte_mask (x : UInt256) (j : Nat) (hj : j < 32) :
 
 def loadSource (i j : Nat) : Source := fanSource (Pair13PoolRaw.poolAddr i+j)
 
+/-- Since the four masks at m0..m3 the masked set is the complement of the seven unmasked
+sources, i.e. exactly the measured junk-free set {0,1,2,3,4,5,6,7,11}; the `i = 3` join
+disappeared with its `DUP1; SHL 144; OR` doubling. -/
 def poolSource (clean : Bool) (i j : Nat) : Source :=
-  if i < 3 then loadSource i j
-  else if i = 3 then
-    let source := fun k => if clean then maskSource k (loadSource 3 k) else loadSource 3 k
-    join (if j < 14 then source (j+18) else .zero) (source j)
-  else if clean || decide (i ∈ [4,5,6,7,11]) then maskSource j (loadSource i j)
+  if clean || decide (i ∈ [0,1,2,3,4,5,6,7,11]) then maskSource j (loadSource i j)
   else loadSource i j
 
 def poolValue (clean : Bool) (m : ByteArray) : Nat → UInt256 :=
@@ -120,7 +120,51 @@ theorem pool_shape (m : ByteArray) (lo hi : UInt256) (hc : Clear m)
       Pair13PoolRaw.cleanPoolWord, PoolByte.lor, PoolByte.shl144,
       byte_mask, hr, maskSource, laneByte, eval_join, Source.eval]
 
-def writes : List (Nat × Nat) := [ (126,11), (900,9), (216,10), (882,3), (864,11), (846,3), (828,9), (558,8), (684,6), (936,8), (108,5), (792,1), (774,1), (540,1), (756,9), (522,0), (90,12), (72,4), (54,0), (36,0), (666,14), (504,1), (1080,5), (1062,13), (486,5), (972,3), (648,15), (1008,15), (630,10), (612,15), (738,8), (288,7), (594,11), (1044,6), (414,6), (360,2), (720,5), (270,15), (396,4), (468,1), (18,4), (342,2), (198,13), (324,10), (252,7), (0,6), (450,12), (162,14) ]
+def writes : List (Nat × Nat) :=  [ (126,11),
+    (900,9),
+    (216,10),
+    (882,3),
+    (864,11),
+    (846,3),
+    (828,9),
+    (558,8),
+    (684,6),
+    (936,8),
+    (108,5),
+    (792,1),
+    (540,1),
+    (756,9),
+    (522,0),
+    (90,12),
+    (72,4),
+    (54,0),
+    (666,14),
+    (504,1),
+    (1080,5),
+    (1062,13),
+    (486,5),
+    (972,3),
+    (648,15),
+    (1008,15),
+    (630,10),
+    (612,15),
+    (738,8),
+    (288,7),
+    (594,11),
+    (1044,6),
+    (414,6),
+    (720,5),
+    (270,15),
+    (396,4),
+    (468,1),
+    (18,4),
+    (360,2),
+    (198,13),
+    (324,10),
+    (252,7),
+    (0,6),
+    (450,12),
+    (162,14) ]
 
 theorem rawWrites_eq (words : Nat → UInt256) :
     PoolRawWriter.rawWrites words = writes.map (fun x => (x.1,words x.2)) := rfl

@@ -66,7 +66,7 @@ theorem lowChain_gapClear (memory : ByteArray) (n : UInt256) (hn : n.toNat<2^64)
   have hz (i : Nat) (hi : i<18) := encoded_prefix_zero (lowDirty n) hv i hi
   intro j hj k hk0 hk1
   simp only [lowerPairSlots, List.mem_cons, List.not_mem_nil, or_false] at hj
-  rcases hj with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  rcases hj with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals interval_cases k
   all_goals simp only [lowChain, writeWord, MachineState.writeBytes_getElem?_getD,
     YulEvmCompiler.BytesLemmas.natToBytesPadded_size, zeroMemory_getD]

@@ -23,7 +23,7 @@ theorem writeChain_cons (memory : ByteArray) (x : Nat × UInt256) (l : List (Nat
 /-- The value the schedule loads leave on the stack: the plain word for the three
 unmasked sources, the dual-lane broadcast for the rest. -/
 def dualW (words : Nat → UInt256) (i : Nat) : UInt256 :=
-  if i < 3 then words i else UInt256.mul coefficient (words i)
+  UInt256.mul coefficient (words i)
 
 theorem coefficient_toNat : coefficient.toNat = 2 ^ 144 + 1 := by
   rw [coefficient, Word.word_toNat_ofNat]
@@ -34,11 +34,15 @@ theorem dual_toNat (w : UInt256) (hw : w.toNat < 2 ^ 32) :
   rw [PairStoreMerge.mul_toNat, coefficient_toNat, Nat.mul_comm]
   exact Nat.mod_eq_of_lt ((PairStoreMerge.pack_nat_bound _ hw).trans (by norm_num))
 
+theorem dual_toNat' (w : UInt256) (hw : w.toNat < 2 ^ 112) :
+    (UInt256.mul coefficient w).toNat = w.toNat * (2 ^ 144 + 1) := by
+  rw [PairStoreMerge.mul_toNat, coefficient_toNat, Nat.mul_comm]
+  exact Nat.mod_eq_of_lt (PairStoreMerge.pack_nat_bound' _ hw)
+
 theorem mask_dual (words : Nat → UInt256) (i : Nat) (hi : 3 ≤ i)
     (hw : (words i).toNat < 2 ^ 32) :
     UInt256.land (UInt256.ofNat 4294967295) (dualW words i) = words i := by
-  have hne : ¬ (i < 3) := by omega
-  rw [dualW, if_neg hne]
+  rw [dualW]
   apply Word.word_ext
   rw [Word.word_toNat_land, Word.word_toNat_ofNat, dual_toNat _ hw,
     Nat.mod_eq_of_lt (by norm_num : 4294967295 < 2 ^ 256), Nat.and_comm,
@@ -65,7 +69,7 @@ theorem writeWord_comm (memory : ByteArray) (a b : Nat) (v u : UInt256)
 /-- Overwriting the eighteen bytes below a slot erases the dual lane the broadcast
 adds, so the packed and the plain word are interchangeable there. -/
 theorem absorb (memory : ByteArray) (a b : Nat) (hab : b + 18 = a) (w u : UInt256)
-    (hw : w.toNat < 2 ^ 32) :
+    (hw : w.toNat < 2 ^ 112) :
     writeWord (writeWord memory a (UInt256.mul coefficient w)) b u =
       writeWord (writeWord memory a w) b u := by
   apply ByteArray.ext_getElem
@@ -81,8 +85,8 @@ theorem absorb (memory : ByteArray) (a b : Nat) (hab : b + 18 = a) (w u : UInt25
       · rw [if_pos ha, if_pos ha,
           YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD _ _ _ (by omega),
           YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD _ _ _ (by omega),
-          dual_toNat w hw,
-          PairStoreMerge.byte_pack_nat w.toNat (i - a) hw (by omega), if_neg (by omega)]
+          dual_toNat' w hw,
+          PairStoreMerge.byte_pack_nat' w.toNat (i - a) hw (by omega), if_neg (by omega)]
       · rw [if_neg ha, if_neg ha]
 
 /-! ### Reordering the interleaved stores
@@ -237,6 +241,7 @@ def writes0 (words : Nat → UInt256) : List (Nat × UInt256) :=
     (846, dualW words 3),
     (828, dualW words 9),
     (558, dualW words 8) ]
+
 def memory0 (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
   writeChain memory (writes0 words)
 
@@ -288,10 +293,8 @@ def template1 : List Instr :=
     .push ⟨2, by decide⟩ (UInt256.ofNat 792),
     .op .MSTORE,
     .op (.Dup ⟨7, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 774),
-    .op .MSTORE,
-    .op (.Dup ⟨7, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 540),
+    .op .JUMPDEST,
     .op .MSTORE,
     .push ⟨2, by decide⟩ (UInt256.ofNat 756),
     .op .MSTORE,
@@ -337,10 +340,10 @@ def writes1 (words : Nat → UInt256) : List (Nat × UInt256) :=
     (936, dualW words 8),
     (108, dualW words 5),
     (792, dualW words 1),
-    (774, dualW words 1),
     (540, dualW words 1),
     (756, dualW words 9),
     (522, dualW words 0) ]
+
 def memory1 (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
   writeChain memory (writes1 words)
 
@@ -385,10 +388,7 @@ def template2 : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 72),
     .op .MSTORE,
-    .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 54),
-    .op .MSTORE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 36),
     .op .MSTORE,
     .op (.Dup ⟨13, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 666),
@@ -438,11 +438,11 @@ def writes2 (words : Nat → UInt256) : List (Nat × UInt256) :=
   [ (90, dualW words 12),
     (72, dualW words 4),
     (54, dualW words 0),
-    (36, dualW words 0),
     (666, dualW words 14),
     (504, dualW words 1),
     (1080, dualW words 5),
     (1062, dualW words 13) ]
+
 def memory2 (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
   writeChain memory (writes2 words)
 
@@ -493,6 +493,7 @@ def template3 : List Instr :=
     .push ⟨2, by decide⟩ (UInt256.ofNat 486),
     .op .MSTORE,
     .push ⟨2, by decide⟩ (UInt256.ofNat 972),
+    .op .JUMPDEST,
     .op .MSTORE,
     .op (.Dup ⟨3, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 648),
@@ -549,6 +550,7 @@ def writes3 (words : Nat → UInt256) : List (Nat × UInt256) :=
     (612, dualW words 15),
     (738, dualW words 8),
     (288, dualW words 7) ]
+
 def memory3 (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
   writeChain memory (writes3 words)
 
@@ -583,9 +585,6 @@ def template4 : List Instr :=
     .op .MSTORE,
     .op (.Dup ⟨8, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 414),
-    .op .MSTORE,
-    .op (.Dup ⟨4, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 360),
     .op .MSTORE,
     .push ⟨2, by decide⟩ (UInt256.ofNat 720),
     .op .MSTORE,
@@ -623,11 +622,11 @@ def writes4 (words : Nat → UInt256) : List (Nat × UInt256) :=
   [ (594, dualW words 11),
     (1044, dualW words 6),
     (414, dualW words 6),
-    (360, dualW words 2),
     (720, dualW words 5),
     (270, dualW words 15),
     (396, dualW words 4),
     (468, dualW words 1) ]
+
 def memory4 (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
   writeChain memory (writes4 words)
 
@@ -657,7 +656,7 @@ theorem run_chunk4 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : L
 def template5 : List Instr :=
   [ .push ⟨1, by decide⟩ (UInt256.ofNat 18),
     .op .MSTORE,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 342),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 360),
     .op .MSTORE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 198),
     .op .MSTORE,
@@ -685,13 +684,14 @@ def outputStack5 (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :
   rho
 def writes5 (words : Nat → UInt256) : List (Nat × UInt256) :=
   [ (18, dualW words 4),
-    (342, dualW words 2),
+    (360, dualW words 2),
     (198, dualW words 13),
     (324, dualW words 10),
     (252, dualW words 7),
     (0, dualW words 6),
     (450, dualW words 12),
     (162, dualW words 14) ]
+
 def memory5 (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
   writeChain memory (writes5 words)
 
@@ -736,14 +736,12 @@ def rawWrites (words : Nat → UInt256) : List (Nat × UInt256) :=
     (936, dualW words 8),
     (108, dualW words 5),
     (792, dualW words 1),
-    (774, dualW words 1),
     (540, dualW words 1),
     (756, dualW words 9),
     (522, dualW words 0),
     (90, dualW words 12),
     (72, dualW words 4),
     (54, dualW words 0),
-    (36, dualW words 0),
     (666, dualW words 14),
     (504, dualW words 1),
     (1080, dualW words 5),
@@ -759,13 +757,12 @@ def rawWrites (words : Nat → UInt256) : List (Nat × UInt256) :=
     (594, dualW words 11),
     (1044, dualW words 6),
     (414, dualW words 6),
-    (360, dualW words 2),
     (720, dualW words 5),
     (270, dualW words 15),
     (396, dualW words 4),
     (468, dualW words 1),
     (18, dualW words 4),
-    (342, dualW words 2),
+    (360, dualW words 2),
     (198, dualW words 13),
     (324, dualW words 10),
     (252, dualW words 7),
@@ -786,7 +783,6 @@ def sortedWrites (words : Nat → UInt256) : List (Nat × UInt256) :=
     (846, dualW words 3),
     (828, dualW words 9),
     (792, dualW words 1),
-    (774, dualW words 1),
     (756, dualW words 9),
     (738, dualW words 8),
     (720, dualW words 5),
@@ -806,7 +802,6 @@ def sortedWrites (words : Nat → UInt256) : List (Nat × UInt256) :=
     (414, dualW words 6),
     (396, dualW words 4),
     (360, dualW words 2),
-    (342, dualW words 2),
     (324, dualW words 10),
     (288, dualW words 7),
     (270, dualW words 15),
@@ -819,57 +814,53 @@ def sortedWrites (words : Nat → UInt256) : List (Nat × UInt256) :=
     (90, dualW words 12),
     (72, dualW words 4),
     (54, dualW words 0),
-    (36, dualW words 0),
     (18, dualW words 4),
     (0, dualW words 6) ]
 
 def writerWrites (words : Nat → UInt256) : List (Nat × UInt256) :=
   [ (1080, words 5),
     (1062, words 13),
-    (1044, (UInt256.mul (coefficient) (words 6))),
-    (1008, (UInt256.mul (coefficient) (words 15))),
-    (972, (UInt256.mul (coefficient) (words 3))),
-    (936, (UInt256.mul (coefficient) (words 8))),
+    (1044, dualW words 6),
+    (1008, dualW words 15),
+    (972, dualW words 3),
+    (936, dualW words 8),
     (900, words 9),
     (882, words 3),
     (864, words 11),
     (846, words 3),
-    (828, (UInt256.mul (coefficient) (words 9))),
-    (792, words 1),
-    (774, words 1),
+    (828, dualW words 9),
+    (792, dualW words 1),
     (756, words 9),
     (738, words 8),
-    (720, (UInt256.mul (coefficient) (words 5))),
+    (720, dualW words 5),
     (684, words 6),
     (666, words 14),
     (648, words 15),
     (630, words 10),
     (612, words 15),
-    (594, (UInt256.mul (coefficient) (words 11))),
+    (594, dualW words 11),
     (558, words 8),
     (540, words 1),
     (522, words 0),
     (504, words 1),
     (486, words 5),
     (468, words 1),
-    (450, (UInt256.mul (coefficient) (words 12))),
+    (450, dualW words 12),
     (414, words 6),
-    (396, (UInt256.mul (coefficient) (words 4))),
-    (360, words 2),
-    (342, words 2),
-    (324, (UInt256.mul (coefficient) (words 10))),
+    (396, dualW words 4),
+    (360, dualW words 2),
+    (324, dualW words 10),
     (288, words 7),
     (270, words 15),
-    (252, (UInt256.mul (coefficient) (words 7))),
+    (252, dualW words 7),
     (216, words 10),
-    (198, (UInt256.mul (coefficient) (words 13))),
-    (162, (UInt256.mul (words 14) (coefficient))),
+    (198, dualW words 13),
+    (162, dualW words 14),
     (126, words 11),
     (108, words 5),
     (90, words 12),
     (72, words 4),
-    (54, words 0),
-    (36, words 0),
+    (54, dualW words 0),
     (18, words 4),
     (0, dualW words 6) ]
 
@@ -877,9 +868,9 @@ def writerMemory (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
   writeChain memory (writerWrites words)
 
 def slotOrder : List Nat :=
-  [126, 900, 216, 882, 864, 846, 828, 558, 684, 936, 108, 792, 774, 540, 756, 522, 90, 72, 54,
-   36, 666, 504, 1080, 1062, 486, 972, 648, 1008, 630, 612, 738, 288, 594, 1044, 414, 360,
-   720, 270, 396, 468, 18, 342, 198, 324, 252, 0, 450, 162]
+  [126, 900, 216, 882, 864, 846, 828, 558, 684, 936, 108, 792, 540, 756, 522, 90, 72, 54, 666,
+  504, 1080, 1062, 486, 972, 648, 1008, 630, 612, 738, 288, 594, 1044, 414, 720, 270, 396, 468,
+  18, 360, 198, 324, 252, 0, 450, 162]
 
 theorem slotOrder_eq (words : Nat → UInt256) :
     (rawWrites words).map Prod.fst = slotOrder := by rfl
@@ -894,20 +885,18 @@ not fit this module's heartbeats (measured), so the sort is carried out on a CLO
 Key `16` is the slot-0 entry, whose value the writer has already masked back to a plain word. -/
 
 def rawKeys : List (Nat × Nat) :=
-  [(126, 11), (900, 9), (216, 10), (882, 3), (864, 11), (846, 3), (828, 9), (558, 8),
-   (684, 6), (936, 8), (108, 5), (792, 1), (774, 1), (540, 1), (756, 9), (522, 0), (90, 12),
-   (72, 4), (54, 0), (36, 0), (666, 14), (504, 1), (1080, 5), (1062, 13), (486, 5), (972, 3),
-   (648, 15), (1008, 15), (630, 10), (612, 15), (738, 8), (288, 7), (594, 11), (1044, 6),
-   (414, 6), (360, 2), (720, 5), (270, 15), (396, 4), (468, 1), (18, 4), (342, 2), (198, 13),
-   (324, 10), (252, 7), (0, 6), (450, 12), (162, 14)]
+  [(126, 11), (900, 9), (216, 10), (882, 3), (864, 11), (846, 3), (828, 9), (558, 8), (684, 6),
+  (936, 8), (108, 5), (792, 1), (540, 1), (756, 9), (522, 0), (90, 12), (72, 4), (54, 0), (666,
+  14), (504, 1), (1080, 5), (1062, 13), (486, 5), (972, 3), (648, 15), (1008, 15), (630, 10),
+  (612, 15), (738, 8), (288, 7), (594, 11), (1044, 6), (414, 6), (720, 5), (270, 15), (396, 4),
+  (468, 1), (18, 4), (360, 2), (198, 13), (324, 10), (252, 7), (0, 6), (450, 12), (162, 14)]
 
 def sortedKeys : List (Nat × Nat) :=
   [(1080, 5), (1062, 13), (1044, 6), (1008, 15), (972, 3), (936, 8), (900, 9), (882, 3), (864,
-   11), (846, 3), (828, 9), (792, 1), (774, 1), (756, 9), (738, 8), (720, 5), (684, 6), (666,
-   14), (648, 15), (630, 10), (612, 15), (594, 11), (558, 8), (540, 1), (522, 0), (504, 1),
-   (486, 5), (468, 1), (450, 12), (414, 6), (396, 4), (360, 2), (342, 2), (324, 10), (288, 7),
-   (270, 15), (252, 7), (216, 10), (198, 13), (162, 14), (126, 11), (108, 5), (90, 12), (72,
-   4), (54, 0), (36, 0), (18, 4), (0, 6)]
+  11), (846, 3), (828, 9), (792, 1), (756, 9), (738, 8), (720, 5), (684, 6), (666, 14), (648, 15),
+  (630, 10), (612, 15), (594, 11), (558, 8), (540, 1), (522, 0), (504, 1), (486, 5), (468, 1),
+  (450, 12), (414, 6), (396, 4), (360, 2), (324, 10), (288, 7), (270, 15), (252, 7), (216, 10),
+  (198, 13), (162, 14), (126, 11), (108, 5), (90, 12), (72, 4), (54, 0), (18, 4), (0, 6)]
 
 def gW (words : Nat → UInt256) (p : Nat × Nat) : Nat × UInt256 :=
   (p.1, if p.2 < 16 then dualW words p.2 else words 6)
@@ -951,37 +940,40 @@ theorem sorted_eq (words : Nat → UInt256) :
 
 /-- The emitted interleaving writes the same table image as the inherited descending order. -/
 theorem raw_eq_writer (memory : ByteArray) (words : Nat → UInt256)
-    (hclean : ∀ i, 3 ≤ i → i < 16 → (words i).toNat < 2 ^ 32) :
+    (hclean : ∀ i, i < 16 → (words i).toNat < 2 ^ 112) :
     writeChain memory (rawWrites words) = writerMemory memory words := by
   rw [chain_isort memory (rawWrites words) (by rw [slotOrder_eq]; exact slotOrder_ok),
     sorted_eq]
   simp only [writerMemory, writerWrites, sortedWrites, dualW, writeChain,
     List.foldl_cons, List.foldl_nil, Nat.reduceLT, reduceIte]
-  rw [absorb _ 1080 1062 (by norm_num) (words 5) _ (hclean 5 (by decide) (by decide))]
-  rw [absorb _ 1062 1044 (by norm_num) (words 13) _ (hclean 13 (by decide) (by decide))]
-  rw [absorb _ 900 882 (by norm_num) (words 9) _ (hclean 9 (by decide) (by decide))]
-  rw [absorb _ 882 864 (by norm_num) (words 3) _ (hclean 3 (by decide) (by decide))]
-  rw [absorb _ 864 846 (by norm_num) (words 11) _ (hclean 11 (by decide) (by decide))]
-  rw [absorb _ 846 828 (by norm_num) (words 3) _ (hclean 3 (by decide) (by decide))]
-  rw [absorb _ 756 738 (by norm_num) (words 9) _ (hclean 9 (by decide) (by decide))]
-  rw [absorb _ 738 720 (by norm_num) (words 8) _ (hclean 8 (by decide) (by decide))]
-  rw [absorb _ 684 666 (by norm_num) (words 6) _ (hclean 6 (by decide) (by decide))]
-  rw [absorb _ 666 648 (by norm_num) (words 14) _ (hclean 14 (by decide) (by decide))]
-  rw [absorb _ 648 630 (by norm_num) (words 15) _ (hclean 15 (by decide) (by decide))]
-  rw [absorb _ 630 612 (by norm_num) (words 10) _ (hclean 10 (by decide) (by decide))]
-  rw [absorb _ 612 594 (by norm_num) (words 15) _ (hclean 15 (by decide) (by decide))]
-  rw [absorb _ 558 540 (by norm_num) (words 8) _ (hclean 8 (by decide) (by decide))]
-  rw [absorb _ 486 468 (by norm_num) (words 5) _ (hclean 5 (by decide) (by decide))]
-  rw [absorb _ 414 396 (by norm_num) (words 6) _ (hclean 6 (by decide) (by decide))]
-  rw [absorb _ 288 270 (by norm_num) (words 7) _ (hclean 7 (by decide) (by decide))]
-  rw [absorb _ 270 252 (by norm_num) (words 15) _ (hclean 15 (by decide) (by decide))]
-  rw [absorb _ 216 198 (by norm_num) (words 10) _ (hclean 10 (by decide) (by decide))]
-  rw [absorb _ 126 108 (by norm_num) (words 11) _ (hclean 11 (by decide) (by decide))]
-  rw [absorb _ 108 90 (by norm_num) (words 5) _ (hclean 5 (by decide) (by decide))]
-  rw [absorb _ 90 72 (by norm_num) (words 12) _ (hclean 12 (by decide) (by decide))]
-  rw [absorb _ 72 54 (by norm_num) (words 4) _ (hclean 4 (by decide) (by decide))]
-  rw [absorb _ 18 0 (by norm_num) (words 4) _ (hclean 4 (by decide) (by decide))]
-  rw [RawExpressionAC.mul_comm coefficient (words 14)]
+  rw [absorb _ 1080 1062 (by norm_num) (words 5) _ (hclean 5 (by decide))]
+  rw [absorb _ 1062 1044 (by norm_num) (words 13) _ (hclean 13 (by decide))]
+  rw [absorb _ 900 882 (by norm_num) (words 9) _ (hclean 9 (by decide))]
+  rw [absorb _ 882 864 (by norm_num) (words 3) _ (hclean 3 (by decide))]
+  rw [absorb _ 864 846 (by norm_num) (words 11) _ (hclean 11 (by decide))]
+  rw [absorb _ 846 828 (by norm_num) (words 3) _ (hclean 3 (by decide))]
+  rw [absorb _ 756 738 (by norm_num) (words 9) _ (hclean 9 (by decide))]
+  rw [absorb _ 738 720 (by norm_num) (words 8) _ (hclean 8 (by decide))]
+  rw [absorb _ 684 666 (by norm_num) (words 6) _ (hclean 6 (by decide))]
+  rw [absorb _ 666 648 (by norm_num) (words 14) _ (hclean 14 (by decide))]
+  rw [absorb _ 648 630 (by norm_num) (words 15) _ (hclean 15 (by decide))]
+  rw [absorb _ 630 612 (by norm_num) (words 10) _ (hclean 10 (by decide))]
+  rw [absorb _ 612 594 (by norm_num) (words 15) _ (hclean 15 (by decide))]
+  rw [absorb _ 558 540 (by norm_num) (words 8) _ (hclean 8 (by decide))]
+  rw [absorb _ 540 522 (by norm_num) (words 1) _ (hclean 1 (by decide))]
+  rw [absorb _ 522 504 (by norm_num) (words 0) _ (hclean 0 (by decide))]
+  rw [absorb _ 504 486 (by norm_num) (words 1) _ (hclean 1 (by decide))]
+  rw [absorb _ 486 468 (by norm_num) (words 5) _ (hclean 5 (by decide))]
+  rw [absorb _ 468 450 (by norm_num) (words 1) _ (hclean 1 (by decide))]
+  rw [absorb _ 414 396 (by norm_num) (words 6) _ (hclean 6 (by decide))]
+  rw [absorb _ 288 270 (by norm_num) (words 7) _ (hclean 7 (by decide))]
+  rw [absorb _ 270 252 (by norm_num) (words 15) _ (hclean 15 (by decide))]
+  rw [absorb _ 216 198 (by norm_num) (words 10) _ (hclean 10 (by decide))]
+  rw [absorb _ 126 108 (by norm_num) (words 11) _ (hclean 11 (by decide))]
+  rw [absorb _ 108 90 (by norm_num) (words 5) _ (hclean 5 (by decide))]
+  rw [absorb _ 90 72 (by norm_num) (words 12) _ (hclean 12 (by decide))]
+  rw [absorb _ 72 54 (by norm_num) (words 4) _ (hclean 4 (by decide))]
+  rw [absorb _ 18 0 (by norm_num) (words 4) _ (hclean 4 (by decide))]
 
 #print axioms keys_sorted
 #print axioms slotOrder_ok
@@ -991,7 +983,8 @@ theorem raw_eq_writer (memory : ByteArray) (words : Nat → UInt256)
 theorem run_writer (s : State) (pc ret : UInt256) (words : Nat → UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 898) (hrun : s.halt = .Running)
     (hactive : 35 ≤ s.activeWords.toNat)
-    (hclean : ∀ i, 3 ≤ i → i < 16 → (words i).toNat < 2 ^ 32) :
+    (hclean : ∀ i, 3 ≤ i → i < 16 → (words i).toNat < 2 ^ 32)
+    (hwide : ∀ i, i < 16 → (words i).toNat < 2 ^ 112) :
     runInstrSeq writerTemplate
         {s with
           pc := pc
@@ -1028,7 +1021,7 @@ theorem run_writer (s : State) (pc ret : UInt256) (words : Nat → UInt256) (res
   have hmem : memory5 (memory4 (memory3 (memory2 (memory1
       (memory0 s.memory words) words) words) words) words) words
       = writerMemory s.memory words := by
-    have h := raw_eq_writer s.memory words hclean
+    have h := raw_eq_writer s.memory words hwide
     simp only [rawWrites, writeChain, List.foldl_cons, List.foldl_nil] at h
     simpa only [memory0, memory1, memory2, memory3, memory4, memory5,
       writes0, writes1, writes2, writes3, writes4, writes5,
@@ -1039,7 +1032,8 @@ theorem run_writer (s : State) (pc ret : UInt256) (words : Nat → UInt256) (res
 theorem run_writer_grow (s : State) (pc ret : UInt256) (words : Nat → UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 898) (hrun : s.halt = .Running)
     (hactive : s.activeWords = UInt256.ofNat 34)
-    (hclean : ∀ i, 3 ≤ i → i < 16 → (words i).toNat < 2 ^ 32) :
+    (hclean : ∀ i, 3 ≤ i → i < 16 → (words i).toNat < 2 ^ 32)
+    (hwide : ∀ i, i < 16 → (words i).toNat < 2 ^ 112) :
     runInstrSeq writerTemplate
         {s with
           pc := pc
@@ -1081,7 +1075,7 @@ theorem run_writer_grow (s : State) (pc ret : UInt256) (words : Nat → UInt256)
   have hmem : memory5 (memory4 (memory3 (memory2 (memory1
       (memory0 s.memory words) words) words) words) words) words
       = writerMemory s.memory words := by
-    have h := raw_eq_writer s.memory words hclean
+    have h := raw_eq_writer s.memory words hwide
     simp only [rawWrites, writeChain, List.foldl_cons, List.foldl_nil] at h
     simpa only [memory0, memory1, memory2, memory3, memory4, memory5,
       writes0, writes1, writes2, writes3, writes4, writes5,
