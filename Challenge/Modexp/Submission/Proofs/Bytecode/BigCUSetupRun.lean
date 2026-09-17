@@ -43,8 +43,8 @@ def setupProgram : List Instr :=
 def zLoopProgram : List Instr :=
   [.op .JUMPDEST,
    .push 0 0,
+   .op .SUB,
    .op .NOT,
-   .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
    .push 2 1024,
    .op .ADD,

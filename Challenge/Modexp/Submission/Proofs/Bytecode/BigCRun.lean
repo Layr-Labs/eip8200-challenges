@@ -62,12 +62,14 @@ theorem aw_keep (off sz : Nat) (h : off + sz ≤ 9248) :
     omega
 
 theorem dec_ofNat (i : Nat) (hi : 1 ≤ i) (hi' : i < 2 ^ 256) :
-    UInt256.lnot (UInt256.ofNat 0) + UInt256.ofNat i = UInt256.ofNat (i - 1) := by
+    UInt256.lnot (UInt256.ofNat 0 - UInt256.ofNat i) = UInt256.ofNat (i - 1) := by
   apply Challenge.EvmProof.Word.word_ext
-  rw [Challenge.EvmProof.Word.word_toNat_add]
-  simp only [UInt256.lnot, Challenge.EvmProof.Word.word_toNat_ofNat, UInt256.size]
-  have h1 : (2 ^ 256 - 1 - 0 % 2 ^ 256) % 2 ^ 256 = 2 ^ 256 - 1 := by norm_num
-  rw [h1, Nat.mod_eq_of_lt hi', Nat.mod_eq_of_lt (by omega : i - 1 < 2 ^ 256)]
+  simp only [UInt256.lnot, Challenge.EvmProof.Word.word_toNat_sub,
+    Challenge.EvmProof.Word.word_toNat_ofNat, UInt256.size]
+  rw [Nat.zero_mod, Nat.add_zero, Nat.mod_eq_of_lt hi',
+    Nat.mod_eq_of_lt (by omega : 2 ^ 256 - i < 2 ^ 256),
+    Nat.mod_eq_of_lt (by omega : 2 ^ 256 - 1 - (2 ^ 256 - i) < 2 ^ 256),
+    Nat.mod_eq_of_lt (by omega : i - 1 < 2 ^ 256)]
   omega
 
 theorem shl3_ofNat (n : Nat) (h : n < 2 ^ 240) :

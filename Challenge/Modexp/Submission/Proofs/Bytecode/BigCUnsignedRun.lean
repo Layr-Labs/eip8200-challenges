@@ -28,8 +28,8 @@ def initProgram : List Instr :=
 def cellProgram : List Instr :=
   [.op .JUMPDEST,
    .push 0 0,
+   .op .SUB,
    .op .NOT,
-   .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨5, by decide⟩),
    .op .ADD,
