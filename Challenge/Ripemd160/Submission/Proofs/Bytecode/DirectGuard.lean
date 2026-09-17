@@ -3,6 +3,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.EntryGateLogic
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Entry
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardTail
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionAccumulator
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.EntryPrefilter
 
 set_option warningAsError true
 set_option maxRecDepth 100000
@@ -34,9 +35,10 @@ private def gasSteps_loop (input : ByteArray) :
 /-- A first byte other than 7 with a size below four or exactly 1000 reaches the
 first-word test. -/
 private def gasSteps_matched (input : ByteArray) (hfit : CalldataFits input)
+    (hpass : EntryPrefilter.condition input = 0)
     (hbyte : firstByte input ≠ 7) (hsmall : input.size < 4 ∨ input.size = 1000) :
     GasSteps (initialState submissionBytecode input 0) (sizeMatched input) :=
-  (Execution.gasSteps_start input).trans
+  (EntryPrefilter.gasSteps_fall input hpass).trans
     ((sound bytePath (run_byte_fall input hbyte)).trans
       (sound gatePath (run_gate_fall input hfit hsmall)))
 
@@ -60,6 +62,7 @@ def gasSteps_target :
     rw [KnownInputData.targetInput_size]
     norm_num
   (gasSteps_matched KnownInputData.targetInput hfit
+      (EntryPrefilter.condition_of_fullWord _ href)
       (firstByte_of_fullWord _ href) (Or.inr KnownInputData.targetInput_size)).trans
     ((sound checkEntryPath (run_checkEntry KnownInputData.targetInput href)).trans
       ((gasSteps_loop KnownInputData.targetInput).trans
@@ -97,7 +100,8 @@ private def gasSteps_repeat_miss (input : ByteArray) (hfit : CalldataFits input)
     (href : referenceWord input = KnownInputData.fullWord)
     (hne : input ≠ KnownInputData.targetInput) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) :=
-  (gasSteps_matched input hfit (firstByte_of_fullWord input href) (Or.inr hsize)).trans
+  (gasSteps_matched input hfit (EntryPrefilter.condition_of_fullWord _ href)
+    (firstByte_of_fullWord input href) (Or.inr hsize)).trans
     ((sound checkEntryPath (run_checkEntry input href)).trans
       ((gasSteps_loop input).trans
         ((sound tailPath (run_tail_divert input hsize hne)).trans
@@ -115,6 +119,11 @@ theorem correct_of_recognition
         Eval (initialState submissionBytecode input gas) (.returned (spec input))) :
     Correct submissionBytecode := by
   intro input hfit
+  by_cases hpass : EntryPrefilter.condition input = 0
+  swap
+  · exact StackCorrect.correct input hfit
+      (EntryPrefilter.positive_of_taken input hpass)
+      (EntryPrefilter.gasSteps_taken input hpass)
   by_cases hbyte : firstByte input = 7
   · have hpositive : 0 < input.size := by
       by_contra hn
@@ -122,7 +131,7 @@ theorem correct_of_recognition
       rw [he] at hbyte
       exact firstByte_empty hbyte
     have hstart : GasSteps (initialState submissionBytecode input 0) (guardEntry input) :=
-      (Execution.gasSteps_start input).trans (sound bytePath (run_byte_taken input hbyte))
+      (EntryPrefilter.gasSteps_fall input hpass).trans (sound bytePath (run_byte_taken input hbyte))
     by_cases hallowed : RecognitionAccumulator.Allowed input.size
     · exact scannerCorrect input hfit hallowed
         (hstart.trans (Patterned128Entry.gasSteps_allowed input hfit hallowed))
@@ -130,7 +139,7 @@ theorem correct_of_recognition
         (hstart.trans (Patterned128Entry.gasSteps_disallowed input hfit hbyte hallowed))
   by_cases hgate : 4 ≤ input.size ∧ input.size ≠ 1000
   · exact StackCorrect.correct input hfit (by omega)
-      ((Execution.gasSteps_start input).trans
+      ((EntryPrefilter.gasSteps_fall input hpass).trans
         ((sound bytePath (run_byte_fall input hbyte)).trans
           (sound gatePath (run_gate_taken input hfit hgate.1 hgate.2))))
   have hsmall : input.size < 4 ∨ input.size = 1000 := by omega
@@ -145,7 +154,7 @@ theorem correct_of_recognition
     · exact StackCorrect.correct input hfit (by omega)
         (gasSteps_repeat_miss input hfit h1000 href ht)
   have hguard : GasSteps (initialState submissionBytecode input 0) (guardEntry input) :=
-    (gasSteps_matched input hfit hbyte hsmall).trans (gasSteps_checkEarly input href)
+    (gasSteps_matched input hfit hpass hbyte hsmall).trans (gasSteps_checkEarly input href)
   by_cases hallowed : RecognitionAccumulator.Allowed input.size
   · exact scannerCorrect input hfit hallowed
       (hguard.trans (Patterned128Entry.gasSteps_allowed input hfit hallowed))

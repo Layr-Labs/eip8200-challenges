@@ -31,7 +31,7 @@ theorem from_entry (input : ByteArray)
     (hentry : GasSteps (initialState submissionBytecode input 0) (PatternedScan.patternedEntry input))
     (hgeneric : ∀ rho : List UInt256, rho.length ≤ 20 →
       GasSteps (initialState submissionBytecode input 0)
-        (J2Moves.atState (initialState submissionBytecode input 0) 330 rho) →
+        (J2Moves.atState (initialState submissionBytecode input 0) 343 rho) →
       ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
         Eval (initialState submissionBytecode input gas) (.returned (spec input))) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →

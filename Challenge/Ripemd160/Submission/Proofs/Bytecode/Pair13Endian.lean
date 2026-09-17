@@ -284,7 +284,7 @@ theorem run_template (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim 
   exact h
 
 theorem exact_bytes : assembleBytes template = [97,4,64,140,1,81,128,96,8,28,129,24,143,22,97,1,1,2,24,143,129,128,96,16,28,24,22,98,1,0,1,2,24,96,96,82,91,97,4,32,140,1,81,128,96,8,28,129,24,143,22,97,1,1,2,24,143,129,128,96,16,28,24,22,98,1,0,1,2,24,128,96,46,82,96,28,82] := by decide
-theorem end_pc : pcAfter (UInt256.ofNat 474) template = UInt256.ofNat 551 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 472) template = UInt256.ofNat 549 := by decide
 #print axioms run_template
 #print axioms exact_bytes
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13Endian
