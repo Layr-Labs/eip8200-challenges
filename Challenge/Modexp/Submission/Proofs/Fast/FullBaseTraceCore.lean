@@ -23,7 +23,7 @@ def copyAddProgram : List Instr :=
    .push ⟨2, by decide⟩ (UInt256.ofNat 512),
    .push ⟨2, by decide⟩ (UInt256.ofNat 256),
    .push ⟨2, by decide⟩ (UInt256.ofNat 1536),
-   .push ⟨2, by decide⟩ (UInt256.ofNat 3209), .op .JUMP]
+   .push ⟨2, by decide⟩ (UInt256.ofNat 3205), .op .JUMP]
 
 theorem run_copyAdd (s : State) (memory input : ByteArray)
     (n bsize esize msize : Nat) (hn32 : n ≤ 8)

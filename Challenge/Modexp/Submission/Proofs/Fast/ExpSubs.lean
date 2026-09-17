@@ -139,7 +139,7 @@ theorem sqLoopMem_frame' {s : State} {mem : ByteArray} {n bsize minv : Nat} (k :
 
 /-- The in-kernel square-loop step of the concrete instance: for `n ∈ {4, 8}`
 the kernel performs all `k` squares without leaving its row frame and returns to
-the caller's `after_sq` (pc 3360) (`Fast.SquareLoop.gasSteps_squareLoop`). -/
+the caller's `after_sq` (pc 3356) (`Fast.SquareLoop.gasSteps_squareLoop`). -/
 def subsSquareLoop (s : State) (n bsize mm minv : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)

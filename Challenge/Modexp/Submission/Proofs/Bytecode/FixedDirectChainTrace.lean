@@ -70,8 +70,8 @@ PUSH2 0x1180; PUSH2 0x0cff; JUMP` at pc 2453..2473. -/
 It lives here rather than in `FixedDirectPaths` so that adding it does not
 invalidate the four sibling trace modules that already import `Paths`. -/
 theorem jumpDestSqCommon :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3327 = true :=
-  Artifact.isValidJumpDest_index 2692 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3323 = true :=
+  Artifact.isValidJumpDest_index 2688 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_squareCall (s : State) (memory : ByteArray)

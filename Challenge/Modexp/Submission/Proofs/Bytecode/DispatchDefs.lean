@@ -40,7 +40,7 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 def zeroSizePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 396 (.Dup ⟨0, by decide⟩),
-   pushAt 397 2 5251,
+   pushAt 397 2 5247,
    opAt 398 .JUMPI,
    pushAt 399 0 0,
    pushAt 400 0 0,
@@ -49,7 +49,7 @@ def zeroSizePath :
 def wordEntryPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 396 (.Dup ⟨0, by decide⟩),
-   pushAt 397 2 5251,
+   pushAt 397 2 5247,
    opAt 398 .JUMPI,
    opAt 402 .JUMPDEST,
    opAt 403 (.Dup ⟨2, by decide⟩),
@@ -103,14 +103,14 @@ def wordTailPath := wordRestPath.drop 12
 set_option maxRecDepth 400000 in
 /-- The recogniser's entry, in what the inherited image used as padding. -/
 @[simp] theorem jumpMemo :
-    Decode.isValidJumpDest submissionBytecode 5251 = true :=
-  Artifact.isValidJumpDest_index 4245 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 5247 = true :=
+  Artifact.isValidJumpDest_index 4241 (by rfl)
 
 set_option maxRecDepth 400000 in
 /-- The appended answer block's entry. -/
 @[simp] theorem jumpAnswer :
-    Decode.isValidJumpDest submissionBytecode 5428 = true :=
-  Artifact.isValidJumpDest_index 4385 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 5424 = true :=
+  Artifact.isValidJumpDest_index 4381 (by rfl)
 
 @[simp] theorem jump517 :
     Decode.isValidJumpDest submissionBytecode 135 = true :=
@@ -146,7 +146,7 @@ def wordDispatchState (input : ByteArray) : State :=
 exactly the stack the pc-570 dispatcher expects, so a miss can restore
 `wordDispatchState` by changing nothing but the program counter. -/
 def guardEntryState (input : ByteArray) : State :=
-  { wordDispatchState input with pc := UInt256.ofNat 5251 }
+  { wordDispatchState input with pc := UInt256.ofNat 5247 }
 
 def wordCheckedState (input : ByteArray) : State :=
   { Main.headerState input with

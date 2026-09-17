@@ -33,16 +33,16 @@ Base transcribed from the artifact, not adjusted: the computation is literally
 results are `JUMPDEST`s (3494 and 5286); the previous base 3380 is `SWAP4` and
 5172 is `MSTORE`, neither of which can be jumped to. -/
 def l1Target (n : Nat) : UInt256 :=
-  UInt256.ofNat 3494 + UInt256.ofNat 1792 * isFour n
+  UInt256.ofNat 3490 + UInt256.ofNat 1792 * isFour n
 
 /-- Second-loop entry (`ent + 0x12b`), fixed for the whole kernel call. -/
 def l2Target (n : Nat) : UInt256 :=
-  UInt256.ofNat 3782 + UInt256.ofNat 1792 * isFour n
+  UInt256.ofNat 3778 + UInt256.ofNat 1792 * isFour n
 
-@[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 5286 := by decide
-@[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 3494 := by decide
-@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 5574 := by decide
-@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 3782 := by decide
+@[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 5282 := by decide
+@[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 3490 := by decide
+@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 5570 := by decide
+@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 3778 := by decide
 
 /-! ## Row frames
 

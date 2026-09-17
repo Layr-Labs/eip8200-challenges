@@ -21,7 +21,7 @@ theorem run_middle (s : State) (mem : ByteArray) (c bi : UInt256)
     runInstructions CarryRowPrograms.middleBlock
       (CiosCached.midState s mem c bi pb n i hd ent inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
-    some (CiosCached.l2At 3780 s (midMem1 mem c) (overflow mem c)
+    some (CiosCached.l2At 3776 s (midMem1 mem c) (overflow mem c)
       (rowMu mem n) (rowC0 mem n) pb n i 0 hd ent inv m0
       (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) := by
   have hmem := middle_agree mem mem (refl mem) c
@@ -43,7 +43,7 @@ theorem run_middle (s : State) (mem : ByteArray) (c bi : UInt256)
   have hjd : runInstructions [.op .JUMPDEST]
       (CiosCached.midState s mem c bi pb n i hd ent inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
-      some (framed {s with memory := mem} (UInt256.ofNat 3754)
+      some (framed {s with memory := mem} (UInt256.ofNat 3750)
         ([c,bi,UInt256.ofNat (ptrAt (pb+32*n-32) i),hd,
           UInt256.ofNat (pb-32),ent,negative32,allOnes,l2Target n,inv] ++
           (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))) := by
@@ -75,7 +75,7 @@ theorem run_middleWide (s : State) (mem : ByteArray) (c bi : UInt256)
     runInstructions CarryRowPrograms.middleBlockWide
       (CiosCached.midState s mem c bi pb n i hd ent inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
-    some (CiosCached.l2At 3782 s (midMem1 mem c) (overflow mem c)
+    some (CiosCached.l2At 3778 s (midMem1 mem c) (overflow mem c)
       (rowMu mem n) (rowC0 mem n) pb n i 0 hd ent inv m0
       (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) := by
   have hmem := middle_agree mem mem (refl mem) c
@@ -97,7 +97,7 @@ theorem run_middleWide (s : State) (mem : ByteArray) (c bi : UInt256)
   have hjd : runInstructions [.op .JUMPDEST]
       (CiosCached.midState s mem c bi pb n i hd ent inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
-      some (framed {s with memory := mem} (UInt256.ofNat 3754)
+      some (framed {s with memory := mem} (UInt256.ofNat 3750)
         ([c,bi,UInt256.ofNat (ptrAt (pb+32*n-32) i),hd,
           UInt256.ofNat (pb-32),ent,negative32,allOnes,l2Target n,inv] ++
           (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))) := by
@@ -128,7 +128,7 @@ theorem run_middleCopy (s : State) (mem : ByteArray) (c bi : UInt256)
     (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hc : ReadonlyCache mem n tl inv m0) (hminv : inverseInvariant mem n) :
     runInstructions CarryRowPrograms.middleBlock
-      (CiosCached.midStateAt 5397 s mem c bi pb n i hd ent inv m0
+      (CiosCached.midStateAt 5393 s mem c bi pb n i hd ent inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
     some (CiosCached.l2At 5424 s (midMem1 mem c) (overflow mem c)
       (rowMu mem n) (rowC0 mem n) pb n i 0 hd ent inv m0
@@ -150,9 +150,9 @@ theorem run_middleCopy (s : State) (mem : ByteArray) (c bi : UInt256)
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hjd : runInstructions [.op .JUMPDEST]
-      (CiosCached.midStateAt 5397 s mem c bi pb n i hd ent inv m0
+      (CiosCached.midStateAt 5393 s mem c bi pb n i hd ent inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
-      some (framed {s with memory := mem} (UInt256.ofNat 5398)
+      some (framed {s with memory := mem} (UInt256.ofNat 5394)
         ([c,bi,UInt256.ofNat (ptrAt (pb+32*n-32) i),hd,
           UInt256.ofNat (pb-32),ent,negative32,allOnes,l2Target n,inv] ++
           (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))) := by

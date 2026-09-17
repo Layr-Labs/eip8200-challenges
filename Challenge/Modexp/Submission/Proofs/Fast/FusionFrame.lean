@@ -46,8 +46,8 @@ def frameProgram (head finish : UInt256) : List Instr :=
 variable (s : State) (p oldHead oldEnd ent neg mask ent2 inv m0 tl m96 m64 m32 aprev dst ret head finish : UInt256) (rest : List UInt256)
 
 theorem run_a (hcap : rest.length ≤ 1005) :
-    runInstructions (chunkA) { s with pc := 3414, stack := [p,oldHead,oldEnd,ent,neg,mask,ent2,inv,m0,tl,m96,m64,m32,aprev,dst,ret] ++ rest } =
-      some { s with pc := 3422, stack := [p,oldHead,oldEnd,ent,neg,mask,ent2,inv,m0,tl,m96,m64,m32,tl+256,dst,ret] ++ rest } := by
+    runInstructions (chunkA) { s with pc := 3410, stack := [p,oldHead,oldEnd,ent,neg,mask,ent2,inv,m0,tl,m96,m64,m32,aprev,dst,ret] ++ rest } =
+      some { s with pc := 3418, stack := [p,oldHead,oldEnd,ent,neg,mask,ent2,inv,m0,tl,m96,m64,m32,tl+256,dst,ret] ++ rest } := by
   have h16 : rest.length + 16 < 1024 := by omega
   have h17 : rest.length + 17 < 1024 := by omega
   have h18 : rest.length + 18 < 1024 := by omega
@@ -56,7 +56,7 @@ theorem run_a (hcap : rest.length ≤ 1005) :
   decide
 
 theorem run_b (hcap : rest.length ≤ 1005) :
-    runInstructions (chunkB head) { s with pc := 3422, stack := [p,oldHead,oldEnd,ent,neg,mask,ent2,inv,m0,tl,m96,m64,m32,tl+256,dst,ret] ++ rest } =
+    runInstructions (chunkB head) { s with pc := 3418, stack := [p,oldHead,oldEnd,ent,neg,mask,ent2,inv,m0,tl,m96,m64,m32,tl+256,dst,ret] ++ rest } =
       some { s with pc := 3438, stack := [tl-1856,head,224,ent,neg,mask,ent2,inv,m0,tl,m96,m64,m32,tl+256,dst,ret] ++ rest } := by
   have h15 : rest.length + 15 < 1024 := by omega
   have h16 : rest.length + 16 < 1024 := by omega
@@ -67,7 +67,7 @@ theorem run_b (hcap : rest.length ≤ 1005) :
   decide
 
 theorem run_c (hcap : rest.length ≤ 1005) :
-    runInstructions (chunkC finish) { s with pc := 3438, stack := [tl-1856,head,224,ent,neg,mask,ent2,inv,m0,tl,m96,m64,m32,tl+256,dst,ret] ++ rest } =
+    runInstructions (chunkC finish) { s with pc := 3434, stack := [tl-1856,head,224,ent,neg,mask,ent2,inv,m0,tl,m96,m64,m32,tl+256,dst,ret] ++ rest } =
       some { s with pc := 3455, stack := [tl-1856,head,224,ent2-288,neg,mask,ent2,inv,m0,tl,m96,m64,m32,tl+256,256,finish] ++ rest } := by
   have h16 : rest.length + 16 < 1024 := by omega
   have h17 : rest.length + 17 < 1024 := by omega
@@ -77,7 +77,7 @@ theorem run_c (hcap : rest.length ≤ 1005) :
   decide
 
 theorem run_prefix (hcap : rest.length ≤ 1005) :
-    runInstructions (frameProgram head finish) { s with pc := 3414, stack := [p,oldHead,oldEnd,ent,neg,mask,ent2,inv,m0,tl,m96,m64,m32,aprev,dst,ret] ++ rest } =
+    runInstructions (frameProgram head finish) { s with pc := 3410, stack := [p,oldHead,oldEnd,ent,neg,mask,ent2,inv,m0,tl,m96,m64,m32,aprev,dst,ret] ++ rest } =
       some { s with pc := 3455, stack := [tl-1856,head,224,ent2-288,neg,mask,ent2,inv,m0,tl,m96,m64,m32,tl+256,256,finish] ++ rest } := by
   have ha := run_a (s := s) (p := p) (oldHead := oldHead) (oldEnd := oldEnd) (ent := ent) (neg := neg) (mask := mask) (ent2 := ent2) (inv := inv) (m0 := m0) (tl := tl) (m96 := m96) (m64 := m64) (m32 := m32) (aprev := aprev) (dst := dst) (ret := ret) (rest := rest) hcap
   have hb := run_b (s := s) (p := p) (oldHead := oldHead) (oldEnd := oldEnd) (ent := ent) (neg := neg) (mask := mask) (ent2 := ent2) (inv := inv) (m0 := m0) (tl := tl) (m96 := m96) (m64 := m64) (m32 := m32) (dst := dst) (ret := ret) (head := head) (rest := rest) hcap
