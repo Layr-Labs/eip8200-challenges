@@ -18,8 +18,9 @@ end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
 -- redraw marker 2026-09-15T09:15:23Z
--- Yukon reuse by @ercumentyildirim: source @i34-9, submission e1481dcc-c9a9-4364-82b3-0903851f0c06, commit 7a6785a7e139fe90f0d16f78b70221ae7926d355.
--- provenance marker RIPC0-72fc7159-v1
--- base is NOT our work: submission c4aa345e-120f-4089-9d8f-cba6c117af0c, commit 21f6b53741bd2f2083481248dc716d11aa69ef0d, executable 2b921623d6506b377af3e9376d411aa4e82c71fbb1de7573e3a615cf1778f629, 5214 bytes, 664775 gas.
--- predecessor 2f718f9ea5113462f011f4fd7683703f9ec24cfd783c8b142d79f9a149459699, 5214 bytes, 664770 gas.
--- executable 72fc7159f6fb894b90a1c6e00c31e36e284298e973136484aaa518c81f831336, 5214 bytes, 664670 gas, 8194 units of the 8194 budget, derived from 2f718f9ea5113462f011f4fd7683703f9ec24cfd783c8b142d79f9a149459699 at 664770 gas by three changes: the eagerly-built recogniser constant 114*M at offset 125 is deleted and rebuilt at its single reader at offset 243; the five DUP9 that crossed the removed stack slot become DUP8; and the memoisation multiplier at offset 298 is re-chosen (392382779957 -> 464734958227) with the fourteen-slot answer table permuted to match, which is gas-neutral and frees the two byte-wall units the rebuild costs.
+-- Yukon reuse by @i34-9: source @ercumentyildirim, submission b6cd6b15-6fe8-48e2-bf2d-18d7d4b77aa9, commit ef17a52c1.
+-- provenance marker RIPC0-30e4ab42-v1
+-- base is NOT our work: submission b6cd6b15-6fe8-48e2-bf2d-18d7d4b77aa9, executable cf3e0c0d3449e0ea4304b0807ab90cf3a11e8e690d1dcbafc94c00ce7c975004, 5212 bytes, 664022 gas.
+-- predecessor cf3e0c0d3449e0ea4304b0807ab90cf3a11e8e690d1dcbafc94c00ce7c975004, 5212 bytes, 664022 gas.
+-- executable 30e4ab4256a50425c21370d99efee74f8f942e1265fa23a0c751b68f4cf39189, 5212 bytes, 664008 gas, 8187 units of the 8194 budget, derived from cf3e0c0d3449e0ea4304b0807ab90cf3a11e8e690d1dcbafc94c00ce7c975004 at 664022 gas by a single change. The predecessor line deletes an eagerly-built recogniser constant and leaves a one-byte JUMPDEST at offset 138 as padding; that JUMPDEST is dead. No PUSH immediate names offset 138, and every JUMP and JUMPI in the artifact is immediately preceded by a literal PUSH, so the set of reachable jump targets is statically complete and does not contain it. It is therefore pure fall-through cost, one gas on each of the fourteen scored vectors that reach the ordinary path. Deleting it frees one byte, which is returned by widening the PUSH2 0x00fb at offset 141 to PUSH3 0x0000fb: a PUSH costs three gas at every width and the pushed value is unchanged. The length stays 5212, so the digest table keeps its CODESIZE-relative position, and every instruction from offset 144 onward keeps its exact program counter. Three bytes differ from the predecessor.
+-- model Claude Opus 5 (1M context), harness Claude Code.

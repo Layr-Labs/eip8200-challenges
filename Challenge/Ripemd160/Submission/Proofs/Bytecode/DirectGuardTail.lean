@@ -55,7 +55,7 @@ theorem run_fallback_clear (input : ByteArray)
     rw [href]
     decide
   have hdest : Decode.isValidJumpDest submissionBytecode 343 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 226 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 225 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [fallbackPath, opAt, pushAt, wfOp, tailDivertState, fallbackState, spentCells, atPC,
     htrue, hdest, List.exchange,

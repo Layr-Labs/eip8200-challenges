@@ -15,17 +15,17 @@ open StackRoundTrace StackRoundTemplate PairedHelperBooleanTrace Table80Setup
 def actualNormalTemplate : List Instr := PersistentMaskEndian.normalTemplate
 
 theorem normal_slice :
-    (Artifact.submissionArtifact.instructions.drop 262).take actualNormalTemplate.length = actualNormalTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 261).take actualNormalTemplate.length = actualNormalTemplate := by rfl
 
 def normalSite : GenericRoundSite Artifact.submissionArtifact .Osaka actualNormalTemplate :=
-  StackSiteBuilder.ofSlice actualNormalTemplate 262 normal_slice
-    (by change 262 + actualNormalTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice actualNormalTemplate 261 normal_slice
+    (by change 261 + actualNormalTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := actualNormalTemplate) (by decide))
     (by decide)
 theorem normal_pc : normalSite.startPC = UInt256.ofNat 472 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 262) = UInt256.ofNat 472
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 261) = UInt256.ofNat 472
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-- `MCOPY` is a straight-line instruction, but it is outside `PadLift.advancesCheck`'s
@@ -102,17 +102,17 @@ private def normal_gasSteps_of_raw (s t : State)
 theorem normal_end : pcAfter (UInt256.ofNat 472) actualNormalTemplate = UInt256.ofNat 860 := by decide
 
 theorem low_slice :
-    (Artifact.submissionArtifact.instructions.drop 3601).take StaggerPad.lowTemplate.length = StaggerPad.lowTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3600).take StaggerPad.lowTemplate.length = StaggerPad.lowTemplate := by rfl
 
 def lowSite : GenericRoundSite Artifact.submissionArtifact .Osaka StaggerPad.lowTemplate :=
-  StackSiteBuilder.ofSlice StaggerPad.lowTemplate 3601 low_slice
-    (by change 3601 + StaggerPad.lowTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice StaggerPad.lowTemplate 3600 low_slice
+    (by change 3600 + StaggerPad.lowTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := StaggerPad.lowTemplate) (by decide))
     (by decide)
 theorem low_pc : lowSite.startPC = UInt256.ofNat 4702 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3601) = UInt256.ofNat 4702
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3600) = UInt256.ofNat 4702
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem low_advances : ∀ instruction ∈ StaggerPad.lowTemplate.dropLast, PadLift.Advances instruction := by
@@ -124,17 +124,17 @@ theorem low_end : pcAfter (UInt256.ofNat 4702) StaggerPad.lowTemplate = UInt256.
 open StaggerPad (branchTemplate)
 
 theorem branch_slice :
-    (Artifact.submissionArtifact.instructions.drop 3625).take branchTemplate.length = branchTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3624).take branchTemplate.length = branchTemplate := by rfl
 
 def branchSite : GenericRoundSite Artifact.submissionArtifact .Osaka branchTemplate :=
-  StackSiteBuilder.ofSlice branchTemplate 3625 branch_slice
-    (by change 3625 + branchTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice branchTemplate 3624 branch_slice
+    (by change 3624 + branchTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := branchTemplate) (by decide))
     (by decide)
 theorem branch_pc : branchSite.startPC = UInt256.ofNat 4757 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3625) = UInt256.ofNat 4757
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3624) = UInt256.ofNat 4757
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem branch_advances : ∀ instruction ∈ branchTemplate.dropLast, PadLift.Advances instruction := by
@@ -145,9 +145,9 @@ theorem branch_end : pcAfter (UInt256.ofNat 4757) branchTemplate = UInt256.ofNat
 
 theorem valid_rounds (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 860).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 503 = 860 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 502 = 860 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 503 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 502 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 860 = true
   rw [hcode]
