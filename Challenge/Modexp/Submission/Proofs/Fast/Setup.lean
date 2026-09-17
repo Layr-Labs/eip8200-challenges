@@ -369,7 +369,7 @@ def fallbackState (s : State) : State :=
 
 /-- Entry of `BAIL1` (pc 2016): one live stack word. -/
 def bail1State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 794, stack := [UInt256.ofNat (modulusSize input)] }
+  { s with pc := UInt256.ofNat 1059, stack := [UInt256.ofNat (modulusSize input)] }
 
 /-- After the `msize > 32` check (pc 1456). -/
 def sizeCheckState (s : State) (input : ByteArray) : State :=
@@ -621,7 +621,7 @@ def oddCheckState (s : State) (input : ByteArray) : State :=
 
 /-- Entry of `BAIL6` (pc 1053): six live stack words. -/
 def bail6State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 800
+  { s with pc := UInt256.ofNat 1065
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 
 /-- Where `BAIL6` lands: the wide-modulus fallback entry (pc 236) with the six live
@@ -870,47 +870,6 @@ theorem run_oddCheck_bail (s : State) (input : ByteArray)
        Challenge.EvmProof.Word.ofNat_add_mod,
        Challenge.EvmProof.Word.word_toNat_ofNat]
 
-/-! Program-counter certificates for the two bail blocks `blk1341` (instruction
-indices 574..577, pc 794..799) and `blk1351` (indices 578..580, pc 800..803).
-`Fast.Defs` used to cover these indices with the range lemma `fastPC4`, which was
-dropped when its index range stopped being contiguous; the individual facts below
-are what the block reductions actually need. -/
-
-private theorem pcIdx574 :
-    Artifact.submissionArtifact.instructionPC 574 = 794 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-private theorem pcIdx575 :
-    Artifact.submissionArtifact.instructionPC 575 = 795 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-private theorem pcIdx576 :
-    Artifact.submissionArtifact.instructionPC 576 = 796 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-private theorem pcIdx577 :
-    Artifact.submissionArtifact.instructionPC 577 = 799 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-private theorem pcIdx578 :
-    Artifact.submissionArtifact.instructionPC 578 = 800 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-private theorem pcIdx579 :
-    Artifact.submissionArtifact.instructionPC 579 = 801 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-private theorem pcIdx580 :
-    Artifact.submissionArtifact.instructionPC 580 = 803 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
 set_option linter.unusedSimpArgs false in
 theorem run_bail1 (s : State) (input : ByteArray)
     (hcode : s.executionEnv.code = submissionBytecode) (hrun : s.halt = .Running) :
@@ -921,7 +880,6 @@ theorem run_bail1 (s : State) (input : ByteArray)
      Challenge.EvmProof.Stepper.runLocatedBlock,
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
      bail1State, fallbackState, hcode, hrun, jumpDest1196,
-     pcIdx574, pcIdx575, pcIdx576, pcIdx577,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
@@ -937,7 +895,6 @@ theorem run_bail6 (s : State) (input : ByteArray)
      Challenge.EvmProof.Stepper.runLocatedBlock,
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
      bail6State, outerStack, bigBailState, hcode, hrun, jumpDestBig,
-     pcIdx578, pcIdx579, pcIdx580,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
@@ -1472,7 +1429,7 @@ def setupPathD :
    opAt 559 .MSTORE,
    opAt 560 .POP,
    opAt 561 .POP,
-   pushAt 562 2 2474,
+   pushAt 562 2 2339,
    opAt 563 .JUMP]
 
 /-- After the variable stores and the modulus load (pc 1579). -/
@@ -1494,7 +1451,7 @@ def newtonState (s : State) (input : ByteArray) (m0 x p : Nat) : State :=
 /-- State at the `R1B` guard entry `JUMPDEST` (pc 2674).  The guard dispatches
 to `DOUBLE256` itself when the modulus's top bit is clear. -/
 def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
-  { s with pc := UInt256.ofNat 2474
+  { s with pc := UInt256.ofNat 2339
            stack := outerStack input
            memory := setupMem s.memory input m0
            activeWords := setupWords s.activeWords input }
@@ -1606,15 +1563,8 @@ theorem run_setupC (s : State) (input : ByteArray) (m0 : Nat)
 /-- The dispatcher entry `JUMPDEST` (instruction 2660, pc 2016).  The setup path jumps
 here directly instead of calling the Montgomery-form conversion first. -/
 private theorem jumpDest3296 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2474 = true :=
-  Artifact.isValidJumpDest_index 2050 (by rfl)
-
-/-- The `JUMP` closing `setupPathD` (instruction index 563, pc 781).  Same story as
-the bail blocks above: `Fast.Defs.fastPC4` used to supply this. -/
-private theorem pcIdx563 :
-    Artifact.submissionArtifact.instructionPC 563 = 781 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2339 = true :=
+  Artifact.isValidJumpDest_index 1732 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupD (s : State) (input : ByteArray) (m0 : Nat)
@@ -1632,7 +1582,7 @@ theorem run_setupD (s : State) (input : ByteArray) (m0 : Nat)
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
      newtonState, setupExitState, outerStack, setupMem, mstoreAt, setupWords,
      awNext, State.activeWordsAfterUInt256, hcode, hrun, push0_word, neg_word,
-     hmodminv, jumpDest3296, pcIdx563,
+     hmodminv, jumpDest3296,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
@@ -2005,7 +1955,7 @@ theorem fastSetupState_memory (input : ByteArray) :
 /-- The setup block hands over at the dispatcher entry with a plain outer stack,
 rather than at the Montgomery-form conversion call with its two argument words. -/
 theorem fastSetupState_pc (input : ByteArray) :
-    (fastSetupState input).pc = UInt256.ofNat 2474 := rfl
+    (fastSetupState input).pc = UInt256.ofNat 2339 := rfl
 
 theorem fastSetupState_stack (input : ByteArray) :
     (fastSetupState input).stack = outerStack input := rfl
@@ -2145,3 +2095,4 @@ theorem fastPath_em (input : ByteArray) : FastPath input ∨ ¬ FastPath input :
 
 
 end Challenge.Modexp.Submission.Proofs.Fast.Setup
+-- redraw marker 2026-09-16T06:16:41Z
