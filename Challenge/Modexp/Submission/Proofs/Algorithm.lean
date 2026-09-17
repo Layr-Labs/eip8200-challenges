@@ -7,7 +7,6 @@ set_option warningAsError true
 /-!
 # Mathematical MODEXP facts
 
-paths.  In particular, it proves the pinned precompile implementation's
 tail-recursive `modPow` definition agrees with ordinary exponentiation modulo
 the modulus; the EVM loop proofs can therefore target a small algebraic
 invariant instead of the implementation recursion.
