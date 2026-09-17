@@ -53,22 +53,36 @@ def trampolineProgram : List Instr := .op .JUMPDEST :: storesProgram
 
 /-- The first inter-pass span (pc 1413-1430).  The exponent is never shifted now: one
 store serves all sixty-two addressed digits, so these eighteen bytes carry no work.
-Ten `JUMPDEST` and a dead `PUSH6; POP`: twelve instructions, eighteen bytes, fifteen gas,
-which is the provable minimum for a stack-neutral filler of that shape. -/
-def padProgramA : List Instr :=
-  [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .push 6 100447932865371, .op .POP]
 
-/-- The second inter-pass span (pc 1879-1896).  Eleven instructions in the same eighteen
-bytes -- one fewer than `padProgramA`, which is what pays for the extra instruction the
-final group's nibble-0 lookup costs, so the instruction COUNT of the artifact is
-unchanged and the RETURN block's index never moves.  The `PUSH7` opcode sits at 1888
-deliberately: 1888 is the only pc in either span that the artifact itself pushes. -/
+The span used to be spelled as ten `JUMPDEST` and a dead `PUSH6; POP` -- twelve
+instructions and fifteen gas.  It is now a single `PUSH16` at 1413 whose sixteen-byte
+immediate covers pc 1414..1429, followed by the same `POP` at 1430: **two instructions,
+the same eighteen bytes, five gas**.  Length is unchanged, so every pc from 1431 on is
+unmoved, and the span is still stack-neutral -- `PUSH16` pushes one word and `POP`
+removes it on the spot, so the pushed value is never read.
+
+The immediate is sixteen zero bytes.  Its value is unconstrained precisely because the
+`POP` discards it, and zeroing it keeps the image's 64-byte-chunk value density -- and
+hence the build's `w8` figure -- identical to the pre-edit artifact.
+
+This is what the earlier note called "the provable minimum for a stack-neutral filler
+of that shape"; that claim was about the `JUMPDEST` spelling, not about the span, and
+it is ten gas short of the minimum for the span. -/
+def padProgramA : List Instr :=
+  [.push 16 0, .op .POP]
+
+/-- The second inter-pass span (pc 1879-1896): the same rewrite, a `PUSH16` at 1879 with
+a sixteen-zero-byte immediate over pc 1880..1895 and the same `POP` at 1896.  The two
+spans now hold the same number of instructions, where the old spelling held twelve and
+eleven.
+
+The old note recorded that the `PUSH7` opcode sat at 1888 deliberately, 1888 being the
+only pc in either span the artifact itself pushes.  That is still true of the bytes and
+is still the reason this rewrite is safe to make: pc 1888 is the `PUSH7` opcode byte and
+was never a `JUMPDEST`, and both of its uses (at pc 4111 and pc 4357) are `MSTORE`
+addresses, not jump operands.  No pc inside either span is pushed anywhere. -/
 def padProgramB : List Instr :=
-  [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .push 7 25714670813535067, .op .POP]
+  [.push 16 0, .op .POP]
 
 /-- Between two passes: the dead span, then replay the staging head.  Twenty-three bytes. -/
 def linkProgram : List Instr := padProgramA ++ WindowTwentyOneStage.stageHead
@@ -267,9 +281,11 @@ private theorem run_padA (template : State) (pc : UInt256) (mem : ByteArray)
       exponent counter 0 rest) := by
   have hcap5 : rest.length + 5 < 1024 := by omega
   have hcap6 : rest.length + 6 < 1024 := by omega
-  have hpush : UInt256.ofNat 7 =
-      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
-      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
+  have hpush : UInt256.ofNat 17 =
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
+      UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
   simp [runInstructions, padProgramA, WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
     Challenge.EvmProof.Stepper.runInstr, hcap5, hcap6, advancePC, succ_eq_add, hpush, word_add_assoc]
 
@@ -282,9 +298,11 @@ private theorem run_padB (template : State) (pc : UInt256) (mem : ByteArray)
       exponent counter 0 rest) := by
   have hcap5 : rest.length + 5 < 1024 := by omega
   have hcap6 : rest.length + 6 < 1024 := by omega
-  have hpush : UInt256.ofNat 8 =
-      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
-      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
+  have hpush : UInt256.ofNat 17 =
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
+      UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
   simp [runInstructions, padProgramB, WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
     Challenge.EvmProof.Stepper.runInstr, hcap5, hcap6, advancePC, succ_eq_add, hpush, word_add_assoc]
 
