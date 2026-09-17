@@ -103,8 +103,8 @@ accumulator as `ptr + 0x1840`, which is correct only for an operand at `0x800`;
 the only caller (the fixed-exponent chain) squares `0x800` in place. -/
 def sqCall (s : State) (mem : ByteArray) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3327
-           stack := UInt256.ofNat 4480 :: UInt256.ofNat 512 :: UInt256.ofNat 512 ::
+  { s with pc := UInt256.ofNat 3323
+           stack := UInt256.ofNat 4476 :: UInt256.ofNat 512 :: UInt256.ofNat 512 ::
              UInt256.ofNat 512 :: ret :: tail
            memory := mem }
 

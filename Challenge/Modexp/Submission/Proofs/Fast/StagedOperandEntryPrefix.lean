@@ -27,7 +27,7 @@ def loadProgram : List Instr :=
 
 def shuffleProgram : List Instr :=
   [
-   .push 2 3494,
+   .push 2 3490,
    .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
    .push 2 288,
@@ -59,9 +59,9 @@ theorem run_reads (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     (haddr : addr + 32 ≤ 2816)
     (hml : MachineState.readWord s.memory 2752 = UInt256.ofNat addr) :
     runInstructions readsProgram
-      {s with pc := UInt256.ofNat 3328, stack := [hd, pa, pb, dst, ret] ++ rest} =
+      {s with pc := UInt256.ofNat 3324, stack := [hd, pa, pb, dst, ret] ++ rest} =
     some {s with
-        pc := UInt256.ofNat 3354
+        pc := UInt256.ofNat 3350
         stack := [MachineState.readWord s.memory 32, (pa + UInt256.ofNat addr), MachineState.readWord s.memory 2720, MachineState.readWord s.memory addr, MachineState.readWord s.memory 2784, MachineState.readWord s.memory 96, hd, pa, pb, dst, ret] ++ rest} := by
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
@@ -107,10 +107,10 @@ theorem run_setup (s : State) (hd pa pb dst ret value inverse aEnd tailPointer l
     (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions setupProgram
       {s with
-        pc := UInt256.ofNat 3354
+        pc := UInt256.ofNat 3350
         stack := [low32, aEnd, inverse, value, tailPointer, low96, hd, pa, pb, dst, ret] ++ rest} =
     some {s with
-      pc := UInt256.ofNat 3367
+      pc := UInt256.ofNat 3363
       stack := [displacement s.memory, negative32,
         low32, aEnd, inverse, value, tailPointer, low96, hd, pa, pb, dst, ret] ++ rest} := by
   have hc4 : rest.length + 4 < 1024 := by omega
@@ -139,9 +139,9 @@ theorem run_load (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     (haddr : addr + 32 ≤ 2816)
     (hml : MachineState.readWord s.memory 2752 = UInt256.ofNat addr) :
     runInstructions loadProgram
-      {s with pc := UInt256.ofNat 3328, stack := [hd, pa, pb, dst, ret] ++ rest} =
+      {s with pc := UInt256.ofNat 3324, stack := [hd, pa, pb, dst, ret] ++ rest} =
     some {s with
-        pc := UInt256.ofNat 3367
+        pc := UInt256.ofNat 3363
         stack := [displacement s.memory, negative32,
         MachineState.readWord s.memory 32, (pa + UInt256.ofNat addr), MachineState.readWord s.memory 2720, MachineState.readWord s.memory addr, MachineState.readWord s.memory 2784, MachineState.readWord s.memory 96, hd, pa, pb, dst, ret] ++ rest} := by
   change runInstructions (readsProgram ++ setupProgram) _ = _
@@ -153,18 +153,18 @@ theorem run_load (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
   exact runInstructions_append_some _ _ _ _ _ hr hs
 
 /-- `PUSH2 0x0fe4; ADD; DUP1; PUSH2 0x12b; ADD; SWAP4; SWAP11; PUSH0; NOT; SWAP4; SWAP11`
-(pc 4162 → 4177): `ent = 4296 + delta` and `l2T = 292 + ent` enter the frame; `hd`
+(pc 4158 → 4177): `ent = 4296 + delta` and `l2T = 292 + ent` enter the frame; `hd`
 moves down to slot 10 (it is swapped back up by `lowProgram`). -/
 theorem run_shuffle (s : State) (hd pa pb dst ret value inverse aEnd tailPointer low96 low32 delta : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) :
     runInstructions shuffleProgram
       {s with
-        pc := UInt256.ofNat 3367
+        pc := UInt256.ofNat 3363
         stack := [delta, negative32, low32, aEnd, inverse, value, tailPointer, low96, hd, pa, pb, dst, ret] ++ rest} =
     some {s with
-        pc := UInt256.ofNat 3382
-        stack := [pa, pb, UInt256.ofNat 3494 + delta, negative32, allOnes,
-        UInt256.ofNat 3782 + delta, inverse, value, tailPointer, low96, hd, low32, aEnd, dst, ret] ++ rest} := by
+        pc := UInt256.ofNat 3378
+        stack := [pa, pb, UInt256.ofNat 3490 + delta, negative32, allOnes,
+        UInt256.ofNat 3778 + delta, inverse, value, tailPointer, low96, hd, low32, aEnd, dst, ret] ++ rest} := by
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
@@ -187,10 +187,10 @@ theorem run_low (s : State) (hd pa pb l1 l2 dst ret value inverse aEnd tailPoint
     (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions lowProgram
       {s with
-        pc := UInt256.ofNat 3382
+        pc := UInt256.ofNat 3378
         stack := [pa, pb, l1, negative32, allOnes, l2, inverse, value, tailPointer, low96, hd, low32, aEnd, dst, ret] ++ rest} =
     some {s with
-        pc := UInt256.ofNat 3386
+        pc := UInt256.ofNat 3382
         stack := [hd, pa, pb, l1, negative32, allOnes, l2, inverse, value, tailPointer, low96,
           MachineState.readWord s.memory 64, low32, aEnd, dst, ret] ++ rest} := by
   have hc15 : rest.length + 15 < 1024 := by omega

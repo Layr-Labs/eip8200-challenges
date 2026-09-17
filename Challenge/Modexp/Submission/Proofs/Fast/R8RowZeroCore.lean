@@ -98,12 +98,12 @@ theorem run_tail (s : State) (pc C lo b2 P hd w3 ent : UInt256)
     runInstructions tailProgram
       { s with pc := pc, stack := C :: lo :: b2 :: P :: hd :: w3 :: ent :: rest } =
     some { s with pc := ent,
-                  stack := C :: b2 :: P :: hd :: w3 :: (UInt256.ofNat 3779) :: rest,
+                  stack := C :: b2 :: P :: hd :: w3 :: (UInt256.ofNat 3775) :: rest,
                   memory := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded lo.toNat 32) w3.toNat } := by
   have h6 : rest.length + 6 < 1024 := by omega
   have h7 : rest.length + 7 < 1024 := by omega
   have h8 : rest.length + 8 < 1024 := by omega
-  have h3779 : (3779 : UInt256) = UInt256.ofNat 3779 := by decide
+  have h3779 : (3775 : UInt256) = UInt256.ofNat 3775 := by decide
   simp [tailProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     h6, h7, h8, List.exchange, State.activeWordsAfterUInt256, h3779, hact, hjump]
 

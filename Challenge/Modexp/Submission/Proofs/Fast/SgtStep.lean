@@ -17,7 +17,7 @@ only `SGT` of the candidate bytecode: instruction 3739 at pc 4807 (0x126c) in th
 square row `sq_row` (`JUMPDEST DUP1 MLOAD DUP1 SWAP15 PUSH0 SGT ...`).
 
 Use: split `sq_row` at the `SGT` — a `Block` for idx 3559..3698 (pc 2464..2464),
-`gasSteps_sqRowSgt`, then a `Block` for idx 3700..3840 (pc 4923..).
+`gasSteps_sqRowSgt`, then a `Block` for idx 3700..3840 (pc 4919..).
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.SgtStep
@@ -53,7 +53,7 @@ theorem sqRowSgt_pc : Artifact.submissionArtifact.instructionPC 3365 = 4185 := b
 
 theorem decodedOp_sqRowSgt (s : State)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka) (hpc : s.pc = UInt256.ofNat 4185) :
+    (hfork : s.fork = .Osaka) (hpc : s.pc = UInt256.ofNat 4181) :
     s.decodedOp = some .SGT := by
   have hpcNat : s.pc.toNat = Artifact.submissionArtifact.instructionPC 3365 := by
     rw [hpc, sqRowSgt_pc]; decide
@@ -63,7 +63,7 @@ theorem decodedOp_sqRowSgt (s : State)
   exact Stepper.decodes_of_artifact Artifact.submissionArtifact s 3365 (.op .SGT)
     hcode hpcNat sqRowSgt_index hwf
 
-theorem succ_4716 : (UInt256.ofNat 4185).succ = UInt256.ofNat 4186 := by
+theorem succ_4716 : (UInt256.ofNat 4181).succ = UInt256.ofNat 4182 := by
   decide
 
 /-- The `SGT` of `sq_row` (pc 4807 → 4927): pops `a, b`, pushes `UInt256.sgt a b`.
@@ -72,13 +72,13 @@ In `sq_row` the operands are `a = 0` (from `PUSH0`) and `b = aprev`; see
 def gasSteps_sqRowSgt (s : State) (a b : UInt256) (rest : List UInt256)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
-    (hpc : s.pc = UInt256.ofNat 4185)
+    (hpc : s.pc = UInt256.ofNat 4181)
     (hstack : s.stack = a :: b :: rest)
     (hcap : rest.length ≤ 1021)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    GasSteps s { s with stack := UInt256.sgt a b :: rest, pc := UInt256.ofNat 4186 } := by
+    GasSteps s { s with stack := UInt256.sgt a b :: rest, pc := UInt256.ofNat 4182 } := by
   have hcap' : s.stack.length + Operation.pushArity .SGT ≤
       1024 + Operation.popArity .SGT := by
     rw [hstack]
@@ -100,9 +100,9 @@ def gasSteps_sqRowSgt_framed (t : State) (m : ByteArray) (a b : UInt256)
     (hrun : t.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig t.executionEnv.precompileConfig t.executionEnv.fork
       t.executionEnv.codeAddr = false) :
-    GasSteps { t with pc := UInt256.ofNat 4185, stack := a :: b :: rest, memory := m }
-      { t with pc := UInt256.ofNat 4186, stack := UInt256.sgt a b :: rest, memory := m } :=
-  gasSteps_sqRowSgt { t with pc := UInt256.ofNat 4185, stack := a :: b :: rest, memory := m }
+    GasSteps { t with pc := UInt256.ofNat 4181, stack := a :: b :: rest, memory := m }
+      { t with pc := UInt256.ofNat 4182, stack := UInt256.sgt a b :: rest, memory := m } :=
+  gasSteps_sqRowSgt { t with pc := UInt256.ofNat 4181, stack := a :: b :: rest, memory := m }
     a b rest hcode hfork rfl rfl hcap hrun hnp
 
 end Challenge.Modexp.Submission.Proofs.Fast.SgtStep
