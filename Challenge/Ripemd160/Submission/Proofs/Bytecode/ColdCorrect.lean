@@ -12,8 +12,8 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 noncomputable opaque highTrace (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (hn32 : input.size ≠ 32)
     (i : Nat) (hi : i < DriverTrace.blockCount input)
-    (hh : input.size = DriverTrace.blockOffset i) (hlarge : 5214 ≤ input.size)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 330)) :
+    (hh : input.size = DriverTrace.blockOffset i) (hlarge : 5212 ≤ input.size)
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 343)) :
     GasSteps (initialState submissionBytecode input 0) (ColdHighFinish.resultState input i) :=
   ColdTraceCompose.two (ColdHighPrefix.gasSteps input hfit hpositive hn32 i hi hh entryPrefix)
     (ColdTraceCompose.two (ColdHighTrace.gasSteps_setup input hfit hpositive i hi hh hlarge)
@@ -21,12 +21,12 @@ noncomputable opaque highTrace (input : ByteArray) (hfit : CalldataFits input)
 
 theorem correct (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (hn32 : input.size ≠ 32)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 330)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 343)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   classical
   by_cases ho : ∀ i, i < DriverTrace.blockCount input →
-      input.size = DriverTrace.blockOffset i → input.size < 5214
+      input.size = DriverTrace.blockOffset i → input.size < 5212
   · exact ColdOrdinaryCorrect.correct input hfit hpositive hn32 ho entryPrefix
   · push Not at ho
     obtain ⟨i, hi, hh, hlarge⟩ := ho

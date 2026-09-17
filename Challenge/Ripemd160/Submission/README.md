@@ -1,4 +1,69 @@
-# RIPEMD-160: 664,670 gas in 5,214 bytes
+# RIPEMD-160: entry-word prefilter, 5,212 bytes
+
+The current executable has SHA-256
+`cf3e0c0d3449e0ea4304b0807ab90cf3a11e8e690d1dcbafc94c00ce7c975004`.
+Its local seed-zero score is **664,022**, a reduction of **648 gas** from
+the immediate parent. Official scoring uses a fresh corpus seed.
+
+The immediate parent is ercumentyildirim's public submission
+`ed1f93af-fac8-4fb9-9f73-c9ecc91d7685`, promoted source
+`09d99dc0b92fc9385c8b766281f3cb1ce85e20e8`, with official score 664,670.
+The inherited implementation, proofs, payload and attribution chain remain
+credited to their authors, including i34-9, ercumentyildirim and
+Meganpark980320. This prefilter and its proof integration were researched
+using GPT-6. The earlier parent's description is retained below as history.
+
+At PC 0, six new instructions execute:
+
+```text
+PUSH5 0x108c86821c
+PUSH0
+CALLDATALOAD
+AND
+PUSH2 343
+JUMPI
+```
+
+The mask selects twelve bits in the low five bytes of the first calldata
+word. It was selected from zero bits shared by the existing focused input
+prefixes. When any selected bit is nonzero, execution enters the general
+RIPEMD implementation at PC 343. Otherwise it continues the complete
+inherited recognizer, now at PC 13. Thus the new branch only chooses an
+implementation path; all digest recognition conditions remain in force.
+
+`EntryPrefilter` proves the actual six-instruction trace for arbitrary
+calldata and both branch outcomes. A nonzero condition implies nonempty
+calldata because the condition is zero on the empty input. `DirectGuard`
+connects this branch to `StackCorrect.correct`, and connects the other
+branch to the inherited universal recognizer proof. The repeated-word
+special case also proves that its first word passes the filter. The final
+target remains `Correct` for every calldata with size below 2^64 and every
+sufficiently large gas budget.
+
+The prefix adds 13 bytes. To fund it, the parent's PC-405 `PUSH27` constant
+is encoded as `PUSH9 0x020000000000000001; PUSH1 144; SHL`. This produces the
+same 256-bit word, saves 15 bytes, and costs six more gas each time the
+generic initializer runs. The net byte reduction is two. The executable
+prefix has 3,707 instructions and 4,932 bytes; the trailing 280-byte digest
+payload is byte-for-byte unchanged. All moved control-flow references and
+exact instruction/byte witnesses are rebound to this image.
+
+In the seed-zero corpus, 32 generated inputs save 33 gas each and 17 focused
+inputs cost 24 more each: `32 * (-33) + 17 * 24 = -648`. Inputs that pass the
+filter and use the generic path can instead cost 30 more gas. The full
+120-seed local corpus check was correct on every input, and all 120 sampled
+scores improved on 664,670. This is an empirical probability estimate,
+rather than a proved gas bound or a guarantee about future official draws.
+
+Local validation also covers 2,500 fuzz inputs, the prior terminal-carry
+counterexample, and 1,430 additional boundary and near-match cases through
+65,537-byte calldata. Exact executable reassembly and the unchanged payload
+were checked independently. The unmodified official artifact renderer and
+Lean loader accepted this image. The complete Solution build passed all
+3,729 jobs; the final theorem uses only `propext`, `Classical.choice` and
+`Quot.sound`. Protected Comparator verification is required before submission.
+
+## Inherited parent description: 664,670 gas in 5,214 bytes
 
 This executable is `72fc7159f6fb894b90a1c6e00c31e36e284298e973136484aaa518c81f831336`, 5,214 bytes, **664,670 gas**, 8,194 units of the 8,194 budget.
 
