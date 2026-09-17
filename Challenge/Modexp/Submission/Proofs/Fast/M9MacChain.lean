@@ -65,7 +65,7 @@ def entryPC : Nat → Nat
 
 /-- Block `b` (`b < 8`) performs limb step `j = b + n - 8` of width `n` on any MAC state.
 
-Block 0 alone runs the `PUSH0` schedule, so it alone needs its incoming carry to be zero;
+Block 0 alone runs the folded zero-carry schedule, so it alone needs its incoming carry to be zero;
 `hcarry` is vacuous for every other `b`.  The chain below discharges it because block 0 is only
 ever entered from the E6 entry, which sets the carry to the literal zero. -/
 def gasSteps_block (b : Nat) (hb : b < 8) (s : State) (m : MacState) (bi : UInt256)
