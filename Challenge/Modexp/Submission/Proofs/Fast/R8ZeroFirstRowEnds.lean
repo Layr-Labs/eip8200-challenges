@@ -51,22 +51,22 @@ theorem run_diagonal (s : State)
     let x := MachineState.readWord s.memory 2592
     runInstructions (diagonalProgram next)
       { s with pc := pc,
-               stack := UInt256.ofNat 2592 :: hd :: UInt256.ofNat 2336 :: ent :: stride :: maxWord ::
-                 target :: inv :: m0 :: tl :: m96 :: m64 :: m32 :: aprev :: rest } =
+               stack := UInt256.ofNat 2592 :: hd :: UInt256.ofNat 2336 :: ent :: m64 :: maxWord ::
+                 target :: m32 :: m0 :: tl :: m96 :: stride :: inv :: aprev :: rest } =
     some { s with pc := advancePC 30 pc,
                   stack := (diagonal s.memory).carry :: (x+x) :: UInt256.ofNat 2592 :: hd ::
-                    UInt256.ofNat 2336 :: next :: stride :: maxWord :: target :: inv :: m0 :: tl :: m96 :: m64 :: m32 :: x :: rest,
+                    UInt256.ofNat 2336 :: next :: m64 :: maxWord :: target :: m32 :: m0 :: tl :: m96 :: stride :: inv :: x :: rest,
                   memory := (diagonal s.memory).memory } := by
   let x := MachineState.readWord s.memory 2592
   have hn : (UInt256.ofNat 2592).toNat = 2592 := by decide
   have hP : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat (UInt256.ofNat 2592).toNat 32) = s.activeWords := by
     rw [hn]
     exact activeWords_fix s 2592 32 (by decide) (by decide) hact
-  have h0 := R8RowZero.run_core s pc (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) ent stride maxWord target inv m0 tl m96 m64 m32 aprev rest hcap hP
+  have h0 := R8RowZero.run_core s pc (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) ent m64 maxWord target m32 m0 tl m96 stride inv aprev rest hcap hP
   have h1 := run_diagonalTail s (advancePC 22 pc)
     ((UInt256.mulMod x x maxWord - UInt256.lt (UInt256.mulMod x x maxWord) (x*x)) - (x*x))
     (x*x) (x+x) (UInt256.ofNat 2592) hd ent next
-    (stride :: maxWord :: target :: inv :: m0 :: tl :: m96 :: m64 :: m32 :: x :: rest)
+    (m64 :: maxWord :: target :: m32 :: m0 :: tl :: m96 :: stride :: inv :: x :: rest)
     (by simp only [List.length_cons]; omega) hact
   have h := runInstructions_append_some _ _ _ _ _ h0 h1
   have hpc : advancePC 8 (advancePC 22 pc) = advancePC 30 pc := (advancePC_add 22 8 pc).symm

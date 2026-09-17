@@ -20,8 +20,8 @@ def program (next : UInt256) : List Instr :=
 def initial (s : State) (pc hd ent stride target inv m0 m96 m64 m32 aprev : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := pc,
-           stack := UInt256.ofNat 2592 :: hd :: UInt256.ofNat 2336 :: ent :: stride :: maxWord ::
-             target :: inv :: m0 :: UInt256.ofNat 2336 :: m96 :: m64 :: m32 :: aprev :: rest }
+           stack := UInt256.ofNat 2592 :: hd :: UInt256.ofNat 2336 :: ent :: m64 :: maxWord ::
+             target :: m32 :: m0 :: UInt256.ofNat 2336 :: m96 :: stride :: inv :: aprev :: rest }
 
 def result (s : State) (hd next stride target inv m0 m96 m64 m32 : UInt256)
     (rest : List UInt256) : State :=
@@ -47,18 +47,18 @@ theorem run_program (s : State)
   let x7 := MachineState.readWord q6.memory (SquareModel.aAddr 8 7)
   have h0 := run_diagonal s pc hd ent next stride target inv m0 (UInt256.ofNat 2336)
     m96 m64 m32 aprev rest hcap hact
-  have h1 := run_cells s (advancePC 30 pc) bi (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next stride
+  have h1 := run_cells s (advancePC 30 pc) bi (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next m64
     (diagonal s.memory)
-    (target :: inv :: m0 :: UInt256.ofNat 2336 :: m96 :: m64 :: m32 :: x :: rest)
+    (target :: m32 :: m0 :: UInt256.ofNat 2336 :: m96 :: stride :: inv :: x :: rest)
     (by simp only [List.length_cons]; omega) hact 6 (by decide)
   have h1b := run_cellAB { s with memory := q6.memory } (advancePC 198 pc) q6.carry bi
-    (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next stride maxWord (SquareModel.aAddr 8 7)
-    (target :: inv :: m0 :: UInt256.ofNat 2336 :: m96 :: m64 :: m32 :: x :: rest)
+    (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next m64 maxWord (SquareModel.aAddr 8 7)
+    (target :: m32 :: m0 :: UInt256.ofNat 2336 :: m96 :: stride :: inv :: x :: rest)
     (by simp only [List.length_cons]; omega) (by unfold SquareModel.aAddr; omega) hact
   have h2 := run_finishStore { s with memory := q6.memory } (advancePC 221 pc)
     (R4Math.zCarry x7 bi q6.carry maxWord) (R4Math.zSum x7 bi q6.carry) bi
-    (UInt256.ofNat 2592 :: hd :: UInt256.ofNat 2336 :: next :: stride :: maxWord :: target ::
-      inv :: m0 :: UInt256.ofNat 2336 :: m96 :: m64 :: m32 :: x :: rest)
+    (UInt256.ofNat 2592 :: hd :: UInt256.ofNat 2336 :: next :: m64 :: maxWord :: target ::
+      m32 :: m0 :: UInt256.ofNat 2336 :: m96 :: stride :: inv :: x :: rest)
     (by simp only [List.length_cons]; omega) hact
   have hmem : MachineState.writeBytes
       (MachineState.writeBytes q6.memory

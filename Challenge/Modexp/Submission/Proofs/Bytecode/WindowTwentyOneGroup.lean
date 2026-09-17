@@ -70,53 +70,6 @@ theorem run_nibble (template : State) (pc : UInt256) (mem : ByteArray)
   simpa only [nibbleProgram, state, tail, squared, WindowMath.nibbleWordStep,
     ← advancePC_add, show 8 + 8 = 16 by decide, List.cons_append] using both
 
-/-- The ladder's final nibble: same four squarings, but the digit is read off the
-frame's shifted exponent rather than from an exponent-row address.  Sixteen bytes and
-sixteen instructions -- one more instruction than `nibbleProgram`, the same width. -/
-def nibbleProgramLast : List Instr :=
-  WindowTwentyOneStage.fourSquaresProgram ++ WindowTwentyOneLookup.programLast
-
-theorem run_nibbleLast (template : State) (pc : UInt256) (mem : ByteArray)
-    (base modulus accumulator exponent counter : UInt256)
-    (htable : ∀ i, i < 16 → MachineState.readWord mem (32 * i) = WindowMath.tableWord base modulus i)
-    (index : Nat) (hindex : index < 16)
-    (haddress :
-      (UInt256.land (UInt256.ofNat 480) (UInt256.shiftLeft exponent 4)).toNat = 32 * index)
-    (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions nibbleProgramLast
-      (state template pc mem 18 modulus accumulator exponent counter 5 rest) =
-    some (state template (advancePC 16 pc) mem 18 modulus
-      (WindowMath.nibbleWordStep modulus base accumulator index)
-      exponent counter 0 rest) := by
-  let tail := List.replicate 0 modulus ++
-    ([modulus, exponent, UInt256.ofNat 480, counter] ++ rest)
-  let core := WindowTwentyOneLookup.framed template pc mem 18 []
-  let squared := WindowMath.squareWordAfter modulus 4 accumulator
-  have hsquare := WindowTwentyOneStage.run_fourSquares core pc accumulator modulus
-    (modulus :: tail)
-    (by simp only [tail, List.length_cons, List.length_append, List.length_replicate,
-          List.length_nil]; omega)
-  have hsquare' :
-      runInstructions WindowTwentyOneStage.fourSquaresProgram
-        (state template pc mem 18 modulus accumulator exponent counter 5 rest) =
-      some (WindowTwentyOneLookup.framed template (advancePC 8 pc) mem 18
-        (squared :: modulus :: tail)) := by
-    simpa only [state, core, tail, squared, WindowTwentyOneStage.framed,
-      WindowTwentyOneLookup.framed, List.replicate_succ, List.cons_append,
-      List.nil_append, List.replicate_zero] using hsquare
-  have hexp : tail[1]? = some exponent := by dsimp only [tail]; rfl
-  have hmask : tail[2]? = some (UInt256.ofNat 480) := by dsimp only [tail]; rfl
-  have hlookup := WindowTwentyOneLookup.run_lookupLast template (advancePC 8 pc) mem
-    base modulus squared exponent tail index hindex hexp hmask
-    (htable index hindex) haddress
-    (by simp only [tail, List.length_append, List.length_replicate,
-          List.length_cons, List.length_nil]; omega)
-  rw [mulMod_comm (WindowMath.tableWord base modulus index) squared modulus] at hlookup
-  have both := runInstructions_append_some _ _ _ _ _ hsquare' hlookup
-  simpa only [nibbleProgramLast, state, tail, squared, WindowMath.nibbleWordStep,
-    ← advancePC_add, show 8 + 8 = 16 by decide, List.cons_append,
-    List.replicate_zero, List.nil_append] using both
-
 def nibblesProgram (l0 l1 l2 : Nat) : List Instr :=
   nibbleProgram 10 (by decide) l0 ++ nibbleProgram 5 (by decide) l1 ++ nibbleProgram 0 (by decide) l2
 
@@ -220,70 +173,5 @@ theorem run_restGroup (template : State) (pc : UInt256) (mem : ByteArray)
     l0 l1 l2 hl0 hl1 hl2 htable index0 index1 index2 hi0 hi1 hi2 ha0 ha1 ha2 rest hrest
   have hall := runInstructions_append_some _ _ _ _ _ hs' hn
   simpa only [restProgram, ← advancePC_add, show 11 + 48 = 59 by decide] using hall
-
-/-- The ladder's final group: two addressed nibbles and then nibble 0, read off the
-frame's shifted exponent.  Sixty-four bytes, exactly as `program`. -/
-def nibblesProgramLast (l0 l1 : Nat) : List Instr :=
-  nibbleProgram 10 (by decide) l0 ++ nibbleProgram 5 (by decide) l1 ++ nibbleProgramLast
-
-def programLast (l0 l1 : Nat) : List Instr :=
-  WindowTwentyOneStage.stageProgram ++ nibblesProgramLast l0 l1
-
-theorem run_nibblesLast (template : State) (pc : UInt256) (mem : ByteArray)
-    (base modulus accumulator exponent counter : UInt256)
-    (l0 l1 : Nat) (hl0 : l0 + 32 ≤ 576) (hl1 : l1 + 32 ≤ 576)
-    (htable : ∀ i, i < 16 → MachineState.readWord mem (32 * i) = WindowMath.tableWord base modulus i)
-    (index0 index1 index2 : Nat)
-    (hi0 : index0 < 16) (hi1 : index1 < 16) (hi2 : index2 < 16)
-    (ha0 : address mem l0 = 32 * index0)
-    (ha1 : address mem l1 = 32 * index1)
-    (ha2 : (UInt256.land (UInt256.ofNat 480) (UInt256.shiftLeft exponent 4)).toNat = 32 * index2)
-    (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions (nibblesProgramLast l0 l1)
-      (state template pc mem 18 modulus accumulator exponent counter 15 rest) =
-    some (state template (advancePC 48 pc) mem 18 modulus
-      (accumulatorAfter base modulus accumulator index0 index1 index2)
-      exponent counter 0 rest) := by
-  let a1 := WindowMath.nibbleWordStep modulus base accumulator index0
-  let a2 := WindowMath.nibbleWordStep modulus base a1 index1
-  have h0 := run_nibble template pc mem base modulus accumulator exponent counter
-    10 (by decide) l0 hl0 htable index0 hi0 ha0 rest hrest
-  have h1 := run_nibble template (advancePC 16 pc) mem base modulus a1 exponent counter
-    5 (by decide) l1 hl1 htable index1 hi1 ha1 rest hrest
-  have h2 := run_nibbleLast template (advancePC 16 (advancePC 16 pc)) mem
-    base modulus a2 exponent counter htable index2 hi2 ha2 rest hrest
-  have h01 := runInstructions_append_some _ _ _ _ _ h0 h1
-  have hall := runInstructions_append_some _ _ _ _ _ h01 h2
-  simpa only [nibblesProgramLast, a1, a2, accumulatorAfter, ← advancePC_add,
-    show 16 + 16 + 16 = 48 by decide] using hall
-
-theorem run_groupLast (template : State) (pc : UInt256) (mem : ByteArray)
-    (base modulus accumulator exponent counter : UInt256)
-    (l0 l1 : Nat) (hl0 : l0 + 32 ≤ 576) (hl1 : l1 + 32 ≤ 576)
-    (htable : ∀ i, i < 16 → MachineState.readWord mem (32 * i) = WindowMath.tableWord base modulus i)
-    (index0 index1 index2 : Nat)
-    (hi0 : index0 < 16) (hi1 : index1 < 16) (hi2 : index2 < 16)
-    (ha0 : address mem l0 = 32 * index0)
-    (ha1 : address mem l1 = 32 * index1)
-    (ha2 : (UInt256.land (UInt256.ofNat 480) (UInt256.shiftLeft exponent 4)).toNat = 32 * index2)
-    (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions (programLast l0 l1)
-      (state template pc mem 18 modulus accumulator exponent counter 0 rest) =
-    some (state template (advancePC 64 pc) mem 18 modulus
-      (accumulatorAfter base modulus accumulator index0 index1 index2)
-      exponent counter 0 rest) := by
-  let core := WindowTwentyOneLookup.framed template pc mem 18 []
-  have hs := WindowTwentyOneStage.run_stage core pc accumulator modulus exponent
-    (UInt256.ofNat 480) counter rest hrest
-  have hs' :
-      runInstructions WindowTwentyOneStage.stageProgram
-        (state template pc mem 18 modulus accumulator exponent counter 0 rest) =
-      some (state template (advancePC 16 pc) mem 18 modulus accumulator exponent counter 15 rest) := by
-    simpa only [state, core, WindowTwentyOneStage.framed, WindowTwentyOneLookup.framed,
-      List.replicate_zero, List.nil_append, List.cons_append, List.append_assoc] using hs
-  have hn := run_nibblesLast template (advancePC 16 pc) mem base modulus accumulator exponent counter
-    l0 l1 hl0 hl1 htable index0 index1 index2 hi0 hi1 hi2 ha0 ha1 ha2 rest hrest
-  have hall := runInstructions_append_some _ _ _ _ _ hs' hn
-  simpa only [programLast, ← advancePC_add, show 16 + 48 = 64 by decide] using hall
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneGroup

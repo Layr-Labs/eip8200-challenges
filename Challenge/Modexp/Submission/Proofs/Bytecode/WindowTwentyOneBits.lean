@@ -72,7 +72,7 @@ theorem lookupAddress_toNat (value : UInt256) (shift : Nat) (hshift : shift < 25
 /-- An exponent shifted by `processed` nibbles exposes the next twenty-one lookup
 addresses using the seven physical groups' shifts 247,243,...,167. -/
 theorem shifted_lookupAddress (exponent : UInt256) (processed index : Nat)
-    (hpositive : 1 ≤ processed) (hindex : index < 62) (hinside : processed + index < 64) :
+    (hpositive : 1 ≤ processed) (hindex : index < 21) (hinside : processed + index < 64) :
     (lookupAddress
       (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed - 3)))
       (244 - 4 * index)).toNat =
@@ -88,25 +88,5 @@ theorem shifted_lookupAddress (exponent : UInt256) (processed index : Nat)
   have hpow (n : Nat) : (2 : Nat) ^ (4 * n) = 16 ^ n := by
     rw [Nat.pow_mul]
   rw [hpow]
-
-/-- Nibble 0, the one digit no exponent-row address reaches.  Two thirty-two-byte rows
-admit exactly thirty-one clean addresses each, so 62 of the 63 ladder digits come from
-memory and this one is read off the frame's own shifted exponent: the frame carries
-`e <<< 1`, and `(e <<< 1) <<< 4 = e <<< 5` puts nibble 0 exactly under the 480 mask. -/
-theorem shifted_lookupAddressLast (exponent : UInt256) :
-    (UInt256.land (UInt256.ofNat 480)
-      (UInt256.shiftLeft (UInt256.shiftLeft exponent (UInt256.ofNat 1)) 4)).toNat =
-      32 * (exponent.toNat % 16) := by
-  have h4 : (4 : UInt256) = UInt256.ofNat 4 := rfl
-  rw [h4, Challenge.EvmProof.Word.word_toNat_land,
-    show (UInt256.ofNat 480).toNat = 480 from rfl,
-    shiftLeft_toNat_mod _ 4 (by omega), shiftLeft_toNat_mod _ 1 (by omega),
-    Nat.and_comm, mask480_nat,
-    shifted_nibble_nat ((exponent.toNat <<< 1) % 2 ^ 256) 4 5 (by omega) (by omega),
-    show (5 : Nat) - 4 = 1 from rfl,
-    shifted_nibble_nat exponent.toNat 1 1 (by omega) (by omega),
-    show (1 : Nat) - 1 = 0 from rfl, Nat.shiftRight_zero, Nat.shiftLeft_eq]
-  norm_num only [Nat.reducePow]
-  exact Nat.mul_comm _ 32
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBits

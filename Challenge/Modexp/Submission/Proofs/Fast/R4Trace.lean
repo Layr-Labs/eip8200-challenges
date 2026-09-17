@@ -72,27 +72,27 @@ local macro "seg " blk:term:max run:term : tactic =>
 local macro "lenOK" : tactic =>
   `(tactic| ((try simp only [List.length_cons, List.length_append, win] at *) <;> omega))
 
-theorem jd5158 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4856 = true :=
-  Artifact.isValidJumpDest_index 3905 (by rfl)
+theorem jd5158 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4944 = true :=
+  Artifact.isValidJumpDest_index 3758 (by rfl)
 
 theorem jd4903 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (4616 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 3693 (by rfl)
+    (4704 : UInt256).toNat = true :=
+  Artifact.isValidJumpDest_index 3546 (by rfl)
 
 theorem jd5020 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (4728 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 3793 (by rfl)
+    (4816 : UInt256).toNat = true :=
+  Artifact.isValidJumpDest_index 3646 (by rfl)
 
 theorem jd5108 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (4811 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 3866 (by rfl)
+    (4899 : UInt256).toNat = true :=
+  Artifact.isValidJumpDest_index 3719 (by rfl)
 
 theorem jd5274 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (4962 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 4011 (by rfl)
+    (5050 : UInt256).toNat = true :=
+  Artifact.isValidJumpDest_index 3864 (by rfl)
 
-theorem jd4379 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4119 = true :=
-  Artifact.isValidJumpDest_index 3325 (by rfl)
+theorem jd4379 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4174 = true :=
+  Artifact.isValidJumpDest_index 3159 (by rfl)
 
 section
 variable (s : State)
@@ -112,7 +112,7 @@ def gasSteps_red (ret v : UInt256) (P : W5) (k n0 n1 n2 n3 np : UInt256) (rest :
     (hk : k = Monpro.maxWord)
     (hminv : (n0.toNat * np.toNat + 1) % 2^256 = 0)
     (hguard : np ≠ UInt256.ofNat 1) :
-    GasSteps { s with pc := UInt256.ofNat 4856,
+    GasSteps { s with pc := UInt256.ofNat 4944,
                       stack := ret :: v :: win P (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) }
       { s with pc := ret,
                stack := win (red n0 n1 n2 n3 np k P v) (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) } := by
@@ -133,11 +133,11 @@ def gasSteps_row0 (k n0 n1 n2 n3 np a0 a1 a2 a3 : UInt256) (rest : List UInt256)
     (ha1 : MachineState.readWord s.memory 2432 = a1)
     (ha2 : MachineState.readWord s.memory 2400 = a2)
     (ha3 : MachineState.readWord s.memory 2368 = a3) :
-    GasSteps { s with pc := UInt256.ofNat 4537, stack := dHi a0 k :: (a0 * a0) :: (a0 + a0) :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest }
-      { s with pc := UInt256.ofNat 4856,
-               stack := (4616 : UInt256) :: (⟨0⟩ : UInt256) ::
+    GasSteps { s with pc := UInt256.ofNat 4625, stack := dHi a0 k :: (a0 * a0) :: (a0 + a0) :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest }
+      { s with pc := UInt256.ofNat 4944,
+               stack := (4704 : UInt256) :: (⟨0⟩ : UInt256) ::
                  win (row0 a0 a1 a2 a3 k) (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) } := by
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 4856 = true := by rw [hcode]; exact jd5158
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 4944 = true := by rw [hcode]; exact jd5158
   simp only [win]
   seg block_r0z1 (run_r0z1 s (hcap := by lenOK) (ha1 := ha1) (hact := hact) ..)
   seg block_r0z2 (run_r0z2 s (hcap := by lenOK) (ha2 := ha2) (hact := hact) ..)
@@ -152,14 +152,14 @@ def gasSteps_row1 (P : W5) (k n0 n1 n2 n3 np a0 a1 a2 a3 : UInt256) (rest : List
     (ha1 : MachineState.readWord s.memory 2432 = a1)
     (ha2 : MachineState.readWord s.memory 2400 = a2)
     (ha3 : MachineState.readWord s.memory 2368 = a3) :
-    GasSteps { s with pc := UInt256.ofNat 4616, stack := win P (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) }
-      { s with pc := UInt256.ofNat 4856,
-               stack := (4728 : UInt256) :: (row1 a0 a1 a2 a3 k P).2 ::
+    GasSteps { s with pc := UInt256.ofNat 4704, stack := win P (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) }
+      { s with pc := UInt256.ofNat 4944,
+               stack := (4816 : UInt256) :: (row1 a0 a1 a2 a3 k P).2 ::
                  win (row1 a0 a1 a2 a3 k P).1 (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) } := by
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 4856 = true := by rw [hcode]; exact jd5158
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 4944 = true := by rw [hcode]; exact jd5158
   simp only [win]
   seg block_r1h (run_r1h s (hcap := by lenOK) (ha1 := ha1) (ha0 := ha0) (hact := hact) ..)
-  refine GasSteps.trans (gasSteps_sgtAt 3699 4626 (by rfl) (by rfl) (by norm_num) s _ _ _
+  refine GasSteps.trans (gasSteps_sgtAt 3552 4714 (by rfl) (by rfl) (by norm_num) s _ _ _
     hcode hfork (by lenOK) hrun hnp) ?_
   seg block_r1d (run_r1d s (hcap := by lenOK) (hk := hk) (htb := R4Value.tb_le_one _) ..)
   seg block_r1c2 (run_r1c2 s (hcap := by lenOK) (ha2 := ha2) (hact := hact) ..)
@@ -173,14 +173,14 @@ def gasSteps_row2 (P : W5) (k n0 n1 n2 n3 np a1 a2 a3 : UInt256) (rest : List UI
     (ha1 : MachineState.readWord s.memory 2432 = a1)
     (ha2 : MachineState.readWord s.memory 2400 = a2)
     (ha3 : MachineState.readWord s.memory 2368 = a3) :
-    GasSteps { s with pc := UInt256.ofNat 4728, stack := win P (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) }
-      { s with pc := UInt256.ofNat 4856,
-               stack := (4811 : UInt256) :: (row2 a1 a2 a3 k P).2 ::
+    GasSteps { s with pc := UInt256.ofNat 4816, stack := win P (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) }
+      { s with pc := UInt256.ofNat 4944,
+               stack := (4899 : UInt256) :: (row2 a1 a2 a3 k P).2 ::
                  win (row2 a1 a2 a3 k P).1 (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) } := by
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 4856 = true := by rw [hcode]; exact jd5158
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 4944 = true := by rw [hcode]; exact jd5158
   simp only [win]
   seg block_r2h (run_r2h s (hcap := by lenOK) (ha2 := ha2) (ha1 := ha1) (hact := hact) ..)
-  refine GasSteps.trans (gasSteps_sgtAt 3799 4738 (by rfl) (by rfl) (by norm_num) s _ _ _
+  refine GasSteps.trans (gasSteps_sgtAt 3652 4826 (by rfl) (by rfl) (by norm_num) s _ _ _
     hcode hfork (by lenOK) hrun hnp) ?_
   seg block_r2d (run_r2d s (hcap := by lenOK) (hk := hk) (htb := R4Value.tb_le_one _) ..)
   seg block_r2c3 (run_r2c3 s (hcap := by lenOK) (ha3 := ha3) (hact := hact) ..)
@@ -192,13 +192,13 @@ def gasSteps_row3 (P : W5) (k n0 n1 n2 n3 np a2 a3 : UInt256) (rest : List UInt2
     (hcap : rest.length ≤ 1003) (hact : 88 ≤ s.activeWords.toNat)
     (ha2 : MachineState.readWord s.memory 2400 = a2)
     (ha3 : MachineState.readWord s.memory 2368 = a3) :
-    GasSteps { s with pc := UInt256.ofNat 4811, stack := win P (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) }
-      { s with pc := UInt256.ofNat 4856,
-               stack := (4962 : UInt256) :: (row3 a2 a3 k P).2 ::
+    GasSteps { s with pc := UInt256.ofNat 4899, stack := win P (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) }
+      { s with pc := UInt256.ofNat 4944,
+               stack := (5050 : UInt256) :: (row3 a2 a3 k P).2 ::
                  win (row3 a2 a3 k P).1 (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) } := by
   simp only [win]
   seg block_r3h (run_r3h s (hcap := by lenOK) (ha3 := ha3) (ha2 := ha2) (hact := hact) ..)
-  refine GasSteps.trans (gasSteps_sgtAt 3872 4821 (by rfl) (by rfl) (by norm_num) s _ _ _
+  refine GasSteps.trans (gasSteps_sgtAt 3725 4909 (by rfl) (by rfl) (by norm_num) s _ _ _
     hcode hfork (by lenOK) hrun hnp) ?_
   seg block_r3d (run_r3d s (hcap := by lenOK) (hk := hk) (htb := R4Value.tb_le_one _) ..)
   exact SquareRow.stepsOf block_r3e (run_r3e s (hcap := by lenOK) ..) rfl hcode hfork hrun hnp
@@ -208,7 +208,7 @@ end
 /-! ## 整个例程 -/
 
 /-- **R4**：帧 `e0..e12 ++ rest` 在 4792 → 同一栈在 `sq_exit`（4379），内存为 `r4Mem`。
-帧槽：`e5 = k`，`e7 = np`，`e8 = n0`，`e11 = n1`，`e12 = n2`。 -/
+帧槽：`e5 = k`，`e12 = np`，`e8 = n0`，`e4 = n1`，`e7 = n2`。 -/
 def gasSteps_r4 (s : State) (e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 990)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -217,17 +217,17 @@ def gasSteps_r4 (s : State) (e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 : UInt256
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat)
     (hk : e5 = Monpro.maxWord)
-    (hminv : (e8.toNat * e7.toNat + 1) % 2^256 = 0)
-    (hguard : e7 ≠ UInt256.ofNat 1) :
+    (hminv : (e8.toNat * e12.toNat + 1) % 2^256 = 0)
+    (hguard : e12 ≠ UInt256.ofNat 1) :
     GasSteps
-      { s with pc := UInt256.ofNat 4508,
+      { s with pc := UInt256.ofNat 4596,
                stack := e0 :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest }
-      { s with pc := UInt256.ofNat 4119,
+      { s with pc := UInt256.ofNat 4174,
                stack := e0 :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest,
-               memory := r4Mem s.memory (r4Final s.memory e5 e8 e11 e12 e7) } := by
+               memory := r4Mem s.memory (r4Final s.memory e5 e8 e4 e7 e12) } := by
   have hj (r : UInt256) (h : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode r.toNat = true) :
       Decode.isValidJumpDest s.executionEnv.code r.toNat = true := by rw [hcode]; exact h
-  have hj4379 : Decode.isValidJumpDest s.executionEnv.code 4119 = true := by rw [hcode]; exact jd4379
+  have hj4379 : Decode.isValidJumpDest s.executionEnv.code 4174 = true := by rw [hcode]; exact jd4379
   -- 名字
   generalize ha0 : MachineState.readWord s.memory 2464 = a0
   generalize ha1 : MachineState.readWord s.memory 2432 = a1
@@ -236,28 +236,28 @@ def gasSteps_r4 (s : State) (e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 : UInt256
   generalize hn3 : MachineState.readWord s.memory 0 = n3
   let E := e0 :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest
   have hE : E.length ≤ 1003 := by simp only [E, List.length_cons]; omega
-  let K := fun (tail : List UInt256) => e5 :: e8 :: e11 :: e12 :: n3 :: e7 :: tail
-  let W1 := red e8 e11 e12 n3 e7 e5 (row0 a0 a1 a2 a3 e5) ⟨0⟩
+  let K := fun (tail : List UInt256) => e5 :: e8 :: e4 :: e7 :: n3 :: e12 :: tail
+  let W1 := red e8 e4 e7 n3 e12 e5 (row0 a0 a1 a2 a3 e5) ⟨0⟩
   let R1 := row1 a0 a1 a2 a3 e5 W1
-  let W2 := red e8 e11 e12 n3 e7 e5 R1.1 R1.2
+  let W2 := red e8 e4 e7 n3 e12 e5 R1.1 R1.2
   let R2 := row2 a1 a2 a3 e5 W2
-  let W3 := red e8 e11 e12 n3 e7 e5 R2.1 R2.2
+  let W3 := red e8 e4 e7 n3 e12 e5 R2.1 R2.2
   let R3 := row3 a2 a3 e5 W3
-  let W4 := red e8 e11 e12 n3 e7 e5 R3.1 R3.2
+  let W4 := red e8 e4 e7 n3 e12 e5 R3.1 R3.2
   have g0 := SquareRow.stepsOf block_prodiag
     (run_prodiag s e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 n3 a0 rest (by omega) hn3 ha0 hact) rfl
     hcode hfork hrun hnp
-  have g1 := gasSteps_row0 s hcode hfork hrun hnp e5 e8 e11 e12 n3 e7 a0 a1 a2 a3 E hE hact ha0 ha1 ha2 ha3
-  have g2 := gasSteps_red s hcode hfork hrun hnp 4616 ⟨0⟩ (row0 a0 a1 a2 a3 e5) e5 e8 e11 e12 n3 e7 E hE
+  have g1 := gasSteps_row0 s hcode hfork hrun hnp e5 e8 e4 e7 n3 e12 a0 a1 a2 a3 E hE hact ha0 ha1 ha2 ha3
+  have g2 := gasSteps_red s hcode hfork hrun hnp 4704 ⟨0⟩ (row0 a0 a1 a2 a3 e5) e5 e8 e4 e7 n3 e12 E hE
     (hj _ jd4903) hk hminv hguard
-  have g3 := gasSteps_row1 (hk := hk) s hcode hfork hrun hnp W1 e5 e8 e11 e12 n3 e7 a0 a1 a2 a3 E hE hact ha0 ha1 ha2 ha3
-  have g4 := gasSteps_red s hcode hfork hrun hnp 4728 R1.2 R1.1 e5 e8 e11 e12 n3 e7 E hE (hj _ jd5020) hk hminv hguard
-  have g5 := gasSteps_row2 (hk := hk) s hcode hfork hrun hnp W2 e5 e8 e11 e12 n3 e7 a1 a2 a3 E hE hact ha1 ha2 ha3
-  have g6 := gasSteps_red s hcode hfork hrun hnp 4811 R2.2 R2.1 e5 e8 e11 e12 n3 e7 E hE (hj _ jd5108) hk hminv hguard
-  have g7 := gasSteps_row3 (hk := hk) s hcode hfork hrun hnp W3 e5 e8 e11 e12 n3 e7 a2 a3 E hE hact ha2 ha3
-  have g8 := gasSteps_red s hcode hfork hrun hnp 4962 R3.2 R3.1 e5 e8 e11 e12 n3 e7 E hE (hj _ jd5274) hk hminv hguard
+  have g3 := gasSteps_row1 (hk := hk) s hcode hfork hrun hnp W1 e5 e8 e4 e7 n3 e12 a0 a1 a2 a3 E hE hact ha0 ha1 ha2 ha3
+  have g4 := gasSteps_red s hcode hfork hrun hnp 4816 R1.2 R1.1 e5 e8 e4 e7 n3 e12 E hE (hj _ jd5020) hk hminv hguard
+  have g5 := gasSteps_row2 (hk := hk) s hcode hfork hrun hnp W2 e5 e8 e4 e7 n3 e12 a1 a2 a3 E hE hact ha1 ha2 ha3
+  have g6 := gasSteps_red s hcode hfork hrun hnp 4899 R2.2 R2.1 e5 e8 e4 e7 n3 e12 E hE (hj _ jd5108) hk hminv hguard
+  have g7 := gasSteps_row3 (hk := hk) s hcode hfork hrun hnp W3 e5 e8 e4 e7 n3 e12 a2 a3 E hE hact ha2 ha3
+  have g8 := gasSteps_red s hcode hfork hrun hnp 5050 R3.2 R3.1 e5 e8 e4 e7 n3 e12 E hE (hj _ jd5274) hk hminv hguard
   have g9 := SquareRow.stepsOf block_exit
-    (run_exit s W4.t3 W4.t2 W4.t1 W4.t0 W4.t4 e5 e8 e11 e12 n3 e7 E
+    (run_exit s W4.t3 W4.t2 W4.t1 W4.t0 W4.t4 e5 e8 e4 e7 n3 e12 E
       (le_trans hE (by norm_num)) hact hj4379) rfl
     hcode hfork hrun hnp
   refine (((((((((g0.trans g1).trans g2).trans g3).trans g4).trans g5).trans g6).trans g7).trans

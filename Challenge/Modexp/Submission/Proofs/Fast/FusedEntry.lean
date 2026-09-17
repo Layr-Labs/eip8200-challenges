@@ -11,42 +11,41 @@ open WindowNibbleKernel WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro CiosCached SquareLoopBlocks
 
-def prefixProgram : List Instr := FusionFrame.frameProgram 3465 782
+def prefixProgram : List Instr := FusionFrame.frameProgram 3520 1036
 def clearProgram : List Instr :=
   [.push 2 2016, .op (.Dup ⟨10, by decide⟩), .op .SUB,
    .op .CALLDATASIZE, .push 2 2048, .op .CALLDATACOPY]
 
-def prefixBlock : Block Artifact.submissionArtifact .Osaka 3414 prefixProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2752 27 3414 prefixProgram
+def prefixBlock : Block Artifact.submissionArtifact .Osaka 3469 prefixProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2586 27 3469 prefixProgram
     (by decide) (by rfl) (by rfl) (by decide)
-def clearBlock : Block Artifact.submissionArtifact .Osaka 3455 clearProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2779 6 3455 clearProgram
+def clearBlock : Block Artifact.submissionArtifact .Osaka 3510 clearProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2613 6 3510 clearProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def rowReady (s : State) (mem : ByteArray) (n : Nat)
     (tl inv m0 m96 m64 m32 : UInt256) (rest : List UInt256) : State :=
-  outState s mem 256 n 0 (UInt256.ofNat 3465) (l1Target n) inv m0
-    (tl :: m96 :: m64 :: m32 :: UInt256.ofNat (2368+32*n-32) ::
-      UInt256.ofNat 256 :: UInt256.ofNat 782 :: rest)
+  outState s mem 256 n 0 (UInt256.ofNat 3520) (l1Target n) m64 m32 (m0 :: tl :: m96 :: negative32 :: inv :: UInt256.ofNat (2368+32*n-32) ::
+      UInt256.ofNat 256 :: UInt256.ofNat 1036 :: rest)
 
 def prefixState (s : State) (mem : ByteArray) (n : Nat)
     (tl inv m0 m96 m64 m32 : UInt256) (rest : List UInt256) : State :=
-  { rowReady s mem n tl inv m0 m96 m64 m32 rest with pc := UInt256.ofNat 3455 }
+  { rowReady s mem n tl inv m0 m96 m64 m32 rest with pc := UInt256.ofNat 3510 }
 
 theorem run_prefix (s : State) (mem : ByteArray) (n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000) (hn : n = 4 ∨ n = 8)
     (htl : tl = UInt256.ofNat (2080+32*n)) :
     runInstructions prefixProgram
-      (frameAt 3414 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
+      (frameAt 3469 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
       some (prefixState s mem n tl inv m0 m96 m64 m32 rest) := by
   rcases hn with rfl | rfl <;> subst tl <;>
     exact FusionFrame.run_prefix (s := {s with memory := mem}) (p := pbi)
-      (oldHead := UInt256.ofNat 4179) (oldEnd := UInt256.ofNat (2368-32))
-      (ent := ent) (neg := negative32) (mask := allOnes) (ent2 := l2Target _)
-      (inv := inv) (m0 := m0) (tl := _) (m96 := m96) (m64 := m64) (m32 := m32)
-      (aprev := aprev) (dst := pdst) (ret := ret) (head := UInt256.ofNat 3465)
-      (finish := UInt256.ofNat 782) (rest := rest) (by omega)
+      (oldHead := UInt256.ofNat 4234) (oldEnd := UInt256.ofNat (2368-32))
+      (ent := ent) (neg := m64) (mask := allOnes) (ent2 := l2Target _)
+      (inv := m32) (m0 := m0) (tl := _) (m96 := m96) (m64 := negative32) (m32 := inv)
+      (aprev := aprev) (dst := pdst) (ret := ret) (head := UInt256.ofNat 3520)
+      (finish := UInt256.ofNat 1036) (rest := rest) (by omega)
 
 theorem run_clear (s : State) (mem : ByteArray) (n : Nat)
     (tl inv m0 m96 m64 m32 : UInt256) (rest : List UInt256)
@@ -87,10 +86,10 @@ def gasSteps_entry (s : State) (mem : ByteArray) (n : Nat)
     (hact : 88 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
     (htl : tl = UInt256.ofNat (2080+32*n)) :
     Challenge.EvmProof.GasSteps
-      (frameAt 3414 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
+      (frameAt 3469 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
       (rowReady s (mpZeroed s mem n) n tl inv m0 m96 m64 m32 rest) :=
   (prefixBlock.steps (CarryRowBlocks.environment
-    (frameAt 3414 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) hcode hfork hrun hnp) rfl
+    (frameAt 3469 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) hcode hfork hrun hnp) rfl
     (run_prefix s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hn htl)).trans
   (clearBlock.steps (CarryRowBlocks.environment
     (prefixState s mem n tl inv m0 m96 m64 m32 rest) hcode hfork hrun hnp) rfl

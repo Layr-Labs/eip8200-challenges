@@ -66,41 +66,4 @@ theorem run_lookup (template : State) (pc : UInt256) (mem : ByteArray)
       hmask, haddress, hread, hactive, hactive', State.activeWordsAfterUInt256,
       advancePC, succ_eq_add, hpush3, word_add_assoc]
 
-/-- The FINAL digit of the ladder (nibble 0).  Two thirty-two-byte exponent rows admit
-exactly thirty-one clean addresses each, so nibble 0 is the one digit no `laddr` reaches;
-it is read from the frame's own shifted exponent instead.  Seven instructions and
-**eight bytes**, the same width as `program`, so the pc advance is unchanged. -/
-def programLast : List Instr :=
-  [.op (.Dup ⟨3, by omega⟩), .push 1 4, .op .SHL,
-   .op (.Dup ⟨5, by omega⟩), .op .AND,
-   .op .MLOAD, .op .MULMOD]
-
-/-- As `run_lookup`, but the table index comes from `tail[1]` (the frame's shifted
-exponent) masked with `tail[2]` (the frame's 480), instead of from memory at `laddr`. -/
-theorem run_lookupLast (template : State) (pc : UInt256) (mem : ByteArray)
-    (base modulus accumulator exponent : UInt256)
-    (tail : List UInt256)
-    (index : Nat) (hindex : index < 16)
-    (hexp : tail[1]? = some exponent)
-    (hmask : tail[2]? = some (UInt256.ofNat 480))
-    (hread : MachineState.readWord mem (32 * index) = WindowMath.tableWord base modulus index)
-    (haddress :
-      (UInt256.land (UInt256.ofNat 480) (UInt256.shiftLeft exponent 4)).toNat = 32 * index)
-    (hcap : tail.length + 4 < 1024) :
-    runInstructions programLast
-      (framed template pc mem 18 (accumulator :: modulus :: tail)) =
-    some (framed template (advancePC 8 pc) mem 18
-      (UInt256.mulMod (WindowMath.tableWord base modulus index)
-        accumulator modulus :: tail)) := by
-  have hcap2 : tail.length + 2 < 1024 := by omega
-  have hcap3 : tail.length + 3 < 1024 := by omega
-  have h18 : (UInt256.ofNat 18).toNat = 18 := rfl
-  have hactive := activeWordsAfter_table index hindex
-  have hpush2 : UInt256.ofNat 2 = UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
-  simp (disch := omega)
-    [runInstructions, programLast, framed, Challenge.EvmProof.Stepper.runInstr,
-      hcap, hcap2, hcap3, List.getElem?_cons_succ, h18,
-      hexp, hmask, haddress, hread, hactive, State.activeWordsAfterUInt256,
-      advancePC, succ_eq_add, hpush2, word_add_assoc]
-
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneLookup

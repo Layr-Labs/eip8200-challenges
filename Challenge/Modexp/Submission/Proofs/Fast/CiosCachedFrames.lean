@@ -23,33 +23,25 @@ def isFour (n : Nat) : UInt256 :=
 
 
 /-- First-loop entry of the multiply rows (frame slot `ent`): the setup computes
-`0x0da6 + 14 * (s32 &&& 128)`: for eight limbs `s32 = 256`, the mask is zero and the
-entry is the shared k1 JUMPDEST 3494; for four limbs `s32 = 128`, adding `14*128 = 1792`
-gives 5286, the entry of the private ladder copy that keeps its own tail jump.
-
-Base transcribed from the artifact, not adjusted: the computation is literally
-`PUSH1 0xe; MUL; PUSH2 0xda6; ADD` at indices 2719..2722 (pc 3364..3370) of
-`fe8e9f61e6d3764a`, so the base is the `0x0da6 = 3494` the code pushes. Both
-results are `JUMPDEST`s (3494 and 5286); the previous base 3380 is `SWAP4` and
-5172 is `MSTORE`, neither of which can be jumped to. -/
+`0x0fe4 + 0x98 * [n = 4]` (k1 JUMPDEST for eight limbs, k5 JUMPDEST for four). -/
 def l1Target (n : Nat) : UInt256 :=
-  UInt256.ofNat 3494 + UInt256.ofNat 1792 * isFour n
+  UInt256.ofNat 3549 + UInt256.ofNat 148 * isFour n
 
 /-- Second-loop entry (`ent + 0x12b`), fixed for the whole kernel call. -/
 def l2Target (n : Nat) : UInt256 :=
-  UInt256.ofNat 3782 + UInt256.ofNat 1792 * isFour n
+  UInt256.ofNat 3837 + UInt256.ofNat 148 * isFour n
 
-@[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 5286 := by decide
-@[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 3494 := by decide
-@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 5574 := by decide
-@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 3782 := by decide
+@[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 3697 := by decide
+@[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 3549 := by decide
+@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 3985 := by decide
+@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 3837 := by decide
 
 /-! ## Row frames
 
 The kernel keeps, below the per-step words, the row frame
-`[pbi, hd, pb - 32, ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest`
+`[pbi, hd, pb - 32, ent, pdst, allOnes, l2Target n, ret] ++ rest`
 (`pdst, ret, rest` are generic; the multiply instantiates them with
-`inv, m0, tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest`).
+`m64, m32, m0 :: tl :: m96 :: negative32 :: inv :: aEnd :: dst :: ret :: rest`).
 `hd` is the row head the tail returns to (`JUMPI` via `DUP3`; 4261 for the multiply,
 the `sq_row` pc 2464 for the square) and `ent` is the first-loop entry
 (`l1Target n` for the multiply; the square rows advance it by 38 per row). -/
@@ -60,7 +52,7 @@ def l1Q (pc : Nat) (s : State) (q : MacState) (bi : UInt256)
   { s with pc := UInt256.ofNat pc
            stack := [q.carry, bi,
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
+                     hd, UInt256.ofNat (pb - 32), ent, pdst, allOnes, l2Target n, ret] ++ rest
            memory := q.memory }
 
 /-- Before first-loop step `j` of a multiply row: `q = l1Step mem bi pa n j`. -/
@@ -74,7 +66,7 @@ def firstAt (pc : Nat) (s : State) (mem : ByteArray) (bi : UInt256)
   { s with pc := UInt256.ofNat pc
            stack := [bi, UInt256.ofNat (ptrAt (pb+32*n-32) i),
              hd, UInt256.ofNat (pb-32), ent,
-             negative32, allOnes, l2Target n, pdst, ret] ++ rest
+             pdst, allOnes, l2Target n, ret] ++ rest
            memory := mem }
 
 /-- Before second-loop step `k` of row `i`: only the carry and `mu` above
@@ -84,7 +76,7 @@ def l2At (pc : Nat) (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
   { s with pc := UInt256.ofNat pc
            stack := [(l2Step mid mu c0 n k).carry, mu, bi,
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
+                     hd, UInt256.ofNat (pb - 32), ent, pdst, allOnes, l2Target n, ret] ++ rest
            memory := (l2Step mid mu c0 n k).memory }
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCached

@@ -21,20 +21,20 @@ def productProgram : List Instr := midProgram.drop 10
 theorem program_eq : midProgram = storeProgram ++ productProgram := rfl
 
 def baseStack (bi pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) : List UInt256 :=
-  [bi, pbi, paEnd, pbEnd, flag, negative32, allOnes, dst, ret] ++ rest
+  [bi, pbi, paEnd, pbEnd, flag, dst, allOnes, ret] ++ rest
 
 def input (s : State) (c bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=
-  framed s (UInt256.ofNat 3766) ([c] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)
+  framed s (UInt256.ofNat 3821) ([c] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)
 
 def stored (s : State) (c bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=
-  framed { s with memory := midMem s.memory c } (UInt256.ofNat 3771)
+  framed { s with memory := midMem s.memory c } (UInt256.ofNat 3826)
     (baseStack bi pbi paEnd pbEnd flag dst ret rest)
 
 def product (s : State) (n : Nat) (bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=
-  framed s (UInt256.ofNat 3795)
+  framed s (UInt256.ofNat 3850)
     ([rowC0 s.memory n, rowMu s.memory n] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMidDefs
