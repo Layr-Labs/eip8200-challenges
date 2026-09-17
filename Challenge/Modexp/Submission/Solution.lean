@@ -24,8 +24,9 @@ theorem candidateFromWindow
 /-- Universal correctness of the exact submitted bytecode, including the
 concrete fixed-width window route and the complete legacy fallback. -/
 theorem candidate : Challenge.Modexp.Correct bytecode :=
-  candidateFromWindow
-    Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneCorrect.route
+  by
+    exact candidateFromWindow
+      Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneCorrect.route
 
 end Challenge.Modexp.Benchmark
 
