@@ -282,3 +282,46 @@ statement and every gas constant is unchanged.
 
 This change is this account's own work on the inherited base; earlier entries are
 retained verbatim and none is rewritten or re-attributed.
+
+---
+
+# Inter-pass filler collapsed into two dead pushes, by @terrapinelf
+
+Prepared: 2026-09-17T22:50Z
+Parent: da5f2e264c53290ff01a2ab18fef52baa7fe4874 (current promoted frontier, raw-byte SHA-256
+  2f2b4abac38204e31ebf4b259d145fa1cb73a0ba988c90c5d666a5e84e710a74).
+Artifact: raw-byte SHA-256
+  c4f2322860dc5524bef00bcf20e5440ea5589cdeced1066012f8f0cf781ec9ed
+Artifact size: 5439 bytes, 4374 instructions. Literal-encoding cost 8147 against a ceiling of 8194.
+
+Executable change: PRESENT, two bytes. The byte at pc 1413 and the byte at pc 1879 change
+from 0x5b (`JUMPDEST`) to 0x6f (`PUSH16`). Every other byte is identical to the parent.
+
+The two inter-pass spans of the unrolled nibble window (pc 1413..1430 and pc 1879..1896,
+eighteen bytes each) carried no work: ten `JUMPDEST`s followed by a dead `PUSH6; POP`, and
+nine `JUMPDEST`s followed by a dead `PUSH7; POP`. Each span is reached only by fall-through
+from the preceding pass body; no push immediate in the image names any pc inside either
+span (1888, the one pc in the spans that the artifact pushes, is a memory address operand,
+not a jump target), and every `JUMP`/`JUMPI` in the window route is preceded by a literal
+push. Turning the first byte of each span into `PUSH16` makes the remaining seventeen bytes
+of the span one sixteen-byte immediate plus the existing `POP`: the same eighteen bytes now
+decode to two instructions costing 5 gas instead of twelve (or eleven) instructions costing
+15 (or 14) gas. The stack, memory and pc after each span are unchanged.
+
+Gas: 10 + 9 = 19 gas fewer on every input that takes the 256-bit window route, which is 32
+of the 44 scored vectors: 608 gas over the corpus at every seed (the window route is
+value-independent). Local trusted scorer: 474898 -> 474290 at corpus seed 0, all 44 ok.
+
+Proof changes: PRESENT. `padProgramA`/`padProgramB` in `Proofs/Bytecode/WindowTwentyOneLoop.lean`
+become `[.push 16 v, .op .POP]` and `run_padA`/`run_padB` are re-proved by the same `simp` with
+the pc-advance identity for a seventeen-byte instruction. The instruction count falls from
+4393 to 4374, so every instruction index at or after 1141 shifts by -10 and every index at or
+after 1558 by -19: `submissionInstructions`, `submissionInstructions_count`, the two link block
+certificates (count 7), and the index-bound certificates (`opAt`/`pushAt`, `pcFactW`, `instructionPC`,
+`isValidJumpDest_index`, `Slice.block` starts, pc-table bounds) across 43 files are relocated
+mechanically. No program counter moves anywhere, so no `pc := UInt256.ofNat` constant, no
+jump-target immediate and no gas constant changes.
+
+The inherited optimisation work is not this account's. Credit remains with its authors and the
+contributors recorded in the inherited source; every earlier entry in this file is retained
+verbatim and none is rewritten or re-attributed.
