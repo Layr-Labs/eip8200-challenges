@@ -18,11 +18,11 @@ structure Paths (artifact : ProgramArtifact) (fork : Fork) where
   init : Block artifact fork 932 WindowTwentyOneInit.program
   entry : Block artifact fork 951 WindowTwentyOneLoop.entryProgram
   trampoline : Block artifact fork 951 WindowTwentyOneLoop.trampolineProgram
-  body0 : Block artifact fork 970 WindowTwentyOneLoop.bodyProgram
+  body0 : Block artifact fork 970 (WindowTwentyOneLoop.bodyProgram (21 * 0))
   link0 : Block artifact fork 1413 WindowTwentyOneLoop.linkProgram
-  body1 : Block artifact fork 1436 WindowTwentyOneLoop.bodyProgram
-  link1 : Block artifact fork 1879 WindowTwentyOneLoop.linkProgram
-  body2 : Block artifact fork 1902 WindowTwentyOneLoop.bodyProgram
+  body1 : Block artifact fork 1436 (WindowTwentyOneLoop.bodyProgram (21 * 1))
+  link1 : Block artifact fork 1879 WindowTwentyOneLoop.linkProgramB
+  body2 : Block artifact fork 1902 (WindowTwentyOneLoop.bodyProgramLast 42)
   finish : Block artifact fork 2345 WindowTwentyOneReturn.program
 
 /-- The three unrolled passes, from the loop head at 951 to the return entry at
@@ -69,13 +69,13 @@ def steps_three {artifact : ProgramArtifact} {fork : Fork}
     paths.link1.steps
       (s := WindowTwentyOneLoop.postState template (UInt256.ofNat 1879) base modulus exponent 1 rest)
       (env.transfer rfl rfl) rfl
-      (WindowTwentyOneLoop.run_link template 1879 base modulus exponent 1 (by decide) rest hrest)
+      (WindowTwentyOneLoop.run_linkB template 1879 base modulus exponent 1 (by decide) rest hrest)
   have b2 : GasSteps (WindowTwentyOneLoop.headState template (UInt256.ofNat 1902) base modulus exponent 2 rest)
       (WindowTwentyOneLoop.finishState template base modulus exponent rest) :=
     paths.body2.steps
       (s := WindowTwentyOneLoop.headState template (UInt256.ofNat 1902) base modulus exponent 2 rest)
       (env.transfer rfl rfl) rfl
-      (WindowTwentyOneLoop.run_body template 1902 base modulus exponent 2 (by decide) rest hrest)
+      (WindowTwentyOneLoop.run_bodyLast template 1902 base modulus exponent rest hrest)
   exact ((((((e0.trans t0).trans b0).trans l0).trans b1).trans l1).trans b2)
 
 /-- Table, init, three bodies and the return, from the normalized state at 840.
