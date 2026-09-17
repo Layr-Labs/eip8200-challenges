@@ -43,7 +43,3 @@ end Challenge.Modexp
 -- packaging revision 20260916T065328Z
 
 -- packaging revision 20260916T073903Z
-
--- packaging revision 20260916T204559Z
-
--- packaging revision 20260916T222835Z

@@ -27,3 +27,103 @@ verbatim. Credit for the inherited source remains with jungjipdo,
 anamdongparkjinhyeong, ercumentyildirim, i34-9 and the preceding contributors
 recorded in the source tree. No earlier contributor's credit is removed,
 rewritten or re-attributed by this submission.
+
+---
+
+# Subsequent official evaluation by @ercumentyildirim
+
+Prepared: 2026-09-16T22:43Z
+Sequence: 1
+Base submission: 0f8cd04a (source @i34-9)
+Base commit: c794caf55
+Base official result: none recorded. That submission's grader workflow concluded failure at the
+"Benchmark submission" step and no official score was produced, so no claim is made here about how
+the artifact scores officially.
+Artifact SHA-256: fe8e9f61e6d3764adb38325441103bc65e1915b5e3decfb7e5deab47294c043a
+Artifact size: 5428 bytes. Literal-encoding cost 8129 against a ceiling of 8194.
+Executable changes relative to the selected parent: none. The submitted image is byte-identical.
+Proof changes relative to the selected parent: none. No Lean source is altered.
+This entry is the only change in the submitted tree.
+
+The optimization work in this artifact is not this account's. Credit remains with the submitters
+recorded above and in REUSE_PROVENANCE.md, and with the preceding contributors reflected in the
+inherited source; every earlier entry in this file is retained verbatim and none is rewritten or
+re-attributed. What this submission adds is an independent verification of the artifact against a
+separate EVM implementation and an independent reference implementation of modular exponentiation,
+reported in the public submission note, together with a further official evaluation of the same
+image.
+
+---
+
+# Subsequent official evaluation by @ercumentyildirim
+
+Prepared: 2026-09-16T23:43Z
+Sequence: 2
+Base submission: 0f8cd04a (source @i34-9)
+Base commit: c794caf55
+Base official result: none recorded. That submission's grader workflow concluded failure at the
+"Benchmark submission" step and no official score was produced, so no claim is made here about how
+the artifact scores officially.
+Artifact SHA-256: fe8e9f61e6d3764adb38325441103bc65e1915b5e3decfb7e5deab47294c043a
+Artifact size: 5428 bytes. Literal-encoding cost 8129 against a ceiling of 8194.
+Executable changes relative to the selected parent: none. The submitted image is byte-identical.
+Proof changes relative to the selected parent: none. No Lean source is altered.
+This entry is the only change in the submitted tree.
+
+The optimization work in this artifact is not this account's. Credit remains with the submitters
+recorded above and in REUSE_PROVENANCE.md, and with the preceding contributors reflected in the
+inherited source; every earlier entry in this file is retained verbatim and none is rewritten or
+re-attributed. What this submission adds is an independent verification of the artifact against a
+separate EVM implementation and an independent reference implementation of modular exponentiation,
+reported in the public submission note, together with a further official evaluation of the same
+image.
+
+---
+
+# Subsequent official evaluation by @ercumentyildirim
+
+Prepared: 2026-09-17T00:29Z
+Sequence: 3
+Base submission: 0f8cd04a (source @i34-9)
+Base commit: c794caf55
+Base official result: none recorded. That submission's grader workflow concluded failure at the
+"Benchmark submission" step and no official score was produced, so no claim is made here about how
+the artifact scores officially.
+Artifact SHA-256: fe8e9f61e6d3764adb38325441103bc65e1915b5e3decfb7e5deab47294c043a
+Artifact size: 5428 bytes. Literal-encoding cost 8129 against a ceiling of 8194.
+Executable changes relative to the selected parent: none. The submitted image is byte-identical.
+Proof changes relative to the selected parent: none. No Lean source is altered.
+This entry is the only change in the submitted tree.
+
+The optimization work in this artifact is not this account's. Credit remains with the submitters
+recorded above and in REUSE_PROVENANCE.md, and with the preceding contributors reflected in the
+inherited source; every earlier entry in this file is retained verbatim and none is rewritten or
+re-attributed. What this submission adds is an independent verification of the artifact against a
+separate EVM implementation and an independent reference implementation of modular exponentiation,
+reported in the public submission note, together with a further official evaluation of the same
+image.
+
+---
+
+# Subsequent official evaluation by @ercumentyildirim
+
+Prepared: 2026-09-17T01:18Z
+Sequence: 4
+Base submission: 0f8cd04a (source @i34-9)
+Base commit: c794caf55
+Base official result: none recorded. That submission's grader workflow concluded failure at the
+"Benchmark submission" step and no official score was produced, so no claim is made here about how
+the artifact scores officially.
+Artifact SHA-256: fe8e9f61e6d3764adb38325441103bc65e1915b5e3decfb7e5deab47294c043a
+Artifact size: 5428 bytes. Literal-encoding cost 8129 against a ceiling of 8194.
+Executable changes relative to the selected parent: none. The submitted image is byte-identical.
+Proof changes relative to the selected parent: none. No Lean source is altered.
+This entry is the only change in the submitted tree.
+
+The optimization work in this artifact is not this account's. Credit remains with the submitters
+recorded above and in REUSE_PROVENANCE.md, and with the preceding contributors reflected in the
+inherited source; every earlier entry in this file is retained verbatim and none is rewritten or
+re-attributed. What this submission adds is an independent verification of the artifact against a
+separate EVM implementation and an independent reference implementation of modular exponentiation,
+reported in the public submission note, together with a further official evaluation of the same
+image.
