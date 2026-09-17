@@ -127,7 +127,7 @@ private theorem window_low (bs : ByteArray) (off k : Nat) (v : UInt256) (hk : k 
   rw [hp, ← Nat.div_div_eq_div_mul]
   omega
 
-theorem land480_copyA (mem : ByteArray) (e : UInt256) (k : Nat) (hk : k ≤ 10) :
+theorem land480_copyA (mem : ByteArray) (e : UInt256) (k : Nat) (hk : k ≤ 30) :
     UInt256.land (UInt256.ofNat 480) (MachineState.readWord (copyMem mem e) (482 + k)) =
       UInt256.land (UInt256.ofNat 480) (UInt256.shiftRight e (UInt256.ofNat (244 - 8 * k))) := by
   apply Challenge.EvmProof.Word.word_ext
@@ -153,7 +153,7 @@ theorem land480_copyA (mem : ByteArray) (e : UInt256) (k : Nat) (hk : k ≤ 10) 
   rw [hw, Challenge.EvmProof.Word.shiftRight_toNat _ (by omega), Nat.shiftRight_eq_div_pow,
     Nat.shiftRight_eq_div_pow, Nat.div_div_eq_div_mul, hp]
 
-theorem land480_copyB (mem : ByteArray) (e : UInt256) (k : Nat) (hk : k ≤ 10) :
+theorem land480_copyB (mem : ByteArray) (e : UInt256) (k : Nat) (hk : k ≤ 30) :
     UInt256.land (UInt256.ofNat 480) (MachineState.readWord (copyMem mem e) (514 + k)) =
       UInt256.land (UInt256.ofNat 480) (UInt256.shiftRight e (UInt256.ofNat (240 - 8 * k))) := by
   apply Challenge.EvmProof.Word.word_ext
@@ -185,7 +185,7 @@ theorem activeWordsAfter_eighteen (a : Nat) (ha : a + 32 ≤ 576) :
 /-- Word addresses of the twenty-one lookups: even digits read copy A, odd digits copy B. -/
 def laddr (i : Nat) : Nat := if i % 2 = 0 then 482 + i / 2 else 514 + i / 2
 
-theorem land480_laddr (mem : ByteArray) (e : UInt256) (i : Nat) (hi : i < 21) :
+theorem land480_laddr (mem : ByteArray) (e : UInt256) (i : Nat) (hi : i < 62) :
     UInt256.land (UInt256.ofNat 480) (MachineState.readWord (copyMem mem e) (laddr i)) =
       UInt256.land (UInt256.ofNat 480) (UInt256.shiftRight e (UInt256.ofNat (244 - 4 * i))) := by
   unfold laddr
