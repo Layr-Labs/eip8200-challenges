@@ -1,0 +1,18 @@
+[
+ {
+  "kind": "PUSH_POP",
+  "pc": 1423,
+  "execs_per_corpus": 128,
+  "save_per_exec": 5,
+  "total_save_corpus": 640,
+  "save_per_seed": 160.0
+ },
+ {
+  "kind": "PUSH_POP",
+  "pc": 1888,
+  "execs_per_corpus": 128,
+  "save_per_exec": 5,
+  "total_save_corpus": 640,
+  "save_per_seed": 160.0
+ }
+]
