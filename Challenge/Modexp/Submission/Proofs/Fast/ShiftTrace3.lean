@@ -105,9 +105,9 @@ theorem run_mid_unc (s : State) (um : ByteArray) (q : UInt256) (n bsize esize ms
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hor1 : UInt256.isTrue (UInt256.lor (negOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q) (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q)) := isTrue_lor_of _ _ hor
   have hor2 : UInt256.isTrue (UInt256.lor (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q) (negOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q)) := isTrue_lor_of _ _ hor.symm
-  -- The block now tests `TN` alone (`DUP2; OR` DELETED, absorbed into the widened PUSH), so
-  -- the exit condition is `isTrue TN`.  It follows from `hor` both ways: directly on the
-  -- right, and through `tnOf_ne_zero_of_negOf` on the left.
+  -- The block now tests `TN` alone (`PUSH0; POP` in place of `DUP2; OR`), so the exit condition
+  -- is `isTrue TN`.  It follows from `hor` in both cases: directly on the right, and through
+  -- `tnOf_ne_zero_of_negOf` on the left.
   have htn : UInt256.isTrue (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q) :=
     hor.elim (tnOf_ne_zero_of_negOf _ _ _) id
   unfold negOf bwOf cwOf tnOf wN at hor1 hor2
@@ -621,10 +621,10 @@ theorem run_shiftDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3264
-      (frameState s mem 3307 n bsize esize msize) =
+      (frameState s mem 3189 n bsize esize msize) =
       some { Exp.bDone s (Exp.mcopyMem (Exp.mcopyMem mem 512 2112 (32 * n)) 1024 1280 (32 * n))
                n bsize esize msize with
-               pc := UInt256.ofNat 2396 } := by
+               pc := UInt256.ofNat 2182 } := by
   have hsize : (UInt256.ofNat (32 * n)).toNat = 32 * n := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
     exact lt_of_le_of_lt (show 32 * n ≤ 1024 by omega) (by decide)
