@@ -7,6 +7,7 @@ set_option warningAsError true
 /-!
 # Mathematical MODEXP facts
 
+This file contains bytecode-independent arithmetic used by both execution
 paths.  In particular, it proves the pinned precompile implementation's
 tail-recursive `modPow` definition agrees with ordinary exponentiation modulo
 the modulus; the EVM loop proofs can therefore target a small algebraic
