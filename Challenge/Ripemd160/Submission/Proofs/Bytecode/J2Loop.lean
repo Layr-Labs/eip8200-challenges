@@ -24,7 +24,7 @@ theorem finish_iff (s : State) (n k : Nat) (hn : Allowed n) (hk : k≤last n) (h
 
 def route_normal (s : State) (rho : List UInt256) (moves : Moves s rho)
     (n k : Nat) (hn : Allowed n) (hk : k≤last n) :
-    GasSteps (atState s 218 (frame (current s.executionEnv.calldata n k) rho)) (loopState s n k rho) := by
+    GasSteps (atState s 217 (frame (current s.executionEnv.calldata n k) rho)) (loopState s n k rho) := by
   have g := moves.normalGuard (current s.executionEnv.calldata n k)
   have h := full_iff s.executionEnv.calldata n k hn hk
   by_cases ht : isTail n k
@@ -67,7 +67,7 @@ def one (s : State) (rho : List UInt256) (moves : Moves s rho)
     simpa only [loopState, if_pos ht] using g012.trans (route_transition s rho moves n (k+1) hn (by omega))
   · have g0 := moves.normal (current s.executionEnv.calldata n k)
     have g1 : GasSteps (atState s 195 (frame (current s.executionEnv.calldata n k) rho))
-        (atState s 218 (frame (current s.executionEnv.calldata n (k+1)) rho)) := by
+        (atState s 217 (frame (current s.executionEnv.calldata n (k+1)) rho)) := by
       simpa only [normal_next s n k hn (by omega) ht] using g0
     simpa only [loopState, if_neg ht] using g1.trans (route_normal s rho moves n (k+1) hn (by omega))
 

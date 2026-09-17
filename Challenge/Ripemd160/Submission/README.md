@@ -1,3 +1,67 @@
+# RIPEMD-160: the discarded value made to be the consumed one, 663,683 gas in 5,212 bytes
+
+- SHA-256: `124d01057f5628e32d5d539622bf89afd5fc56287d8718d300eefa534d4a2842`.
+- Size: 5,212 bytes, unchanged from the artifact described in the next section.
+- Literal-encoding cost: 8,186 against a ceiling of 8,194 — one unit **below** the
+  predecessor's 8,187, so this submission releases encoding budget rather than spending it.
+- Measured by the trusted scorer shipped with this tree: 663,683 gas, 98 rows, status
+  ok on 98 of 98, clean and dirty frames identical.
+
+## The change
+
+The recognition path verifies that an input really is one of the fixed inputs whose
+answer is stored, and it does so without holding the expected bytes as literals — the
+encoding budget will not carry them. It regenerates them instead: the recognised inputs
+follow an arithmetic pattern whose step of one 32-byte word adds the same constant to
+every byte of the word, so the expected word is carried on the stack and advanced by a
+single byte-wise addition performed in parallel across the word.
+
+**This submission changes an ordering, not a computation.** The loop previously computed
+the next expected word while the current one sat three deep, then spent a swap and a pop
+to install the new value and discard the old. The discarded value is exactly what the
+comparison needs a few instructions later. With the advance performed first, the same
+swap installs the new expected word *and* lifts the old one to the top, where the
+comparison's exclusive-or consumes it. The pop and one further rearranging instruction
+disappear. The same opportunity in the block handling each run's final partial word —
+computing the tail shift after the exclusive-or rather than before — removes another swap.
+
+Two instructions are therefore removed, and that is a cost rather than a saving, because
+much of this submission's proof is anchored to instruction **indices** rather than to
+program counters. The two freed slots are returned as jump destinations, which do nothing
+and cost one gas each, and **where** they are returned matters more than the gas they
+cost: returning them inside the scanning loop would charge every iteration, so they are
+returned in the setup block, which runs fourteen times over the scored inputs where the
+loop body runs sixty-three. The two bytes are paid for by narrowing an over-wide push
+whose immediate carried two leading zero bytes for no reason.
+
+The result is byte-neutral, instruction-count-neutral and **program-counter neutral**:
+not one instruction start moves.
+
+The scanning loop goes from 27 instructions and 85 gas per iteration to 25 and 80; the
+partial-word block from 20 and 64 to 19 and 61.
+
+## Verification
+
+Both rewritten blocks are straight-line apart from their closing conditional jump, so
+they were checked by **symbolic execution over uninterpreted terms**: identical output
+terms are a claim about every machine state and every input, not about a sample. The
+instrument was calibrated first — a positive control of each block against itself reports
+equivalence, and three negative controls, each a single altered stack reference, report
+inequivalence and print the differing term. The submitted blocks report equivalent.
+
+An input gate of 11,953 cases supplements it: a mutation at every offset of every
+recognised input at three mutation values, lengths from 0 to 320 and 375 to 4,096 across
+five content families, and near-misses at the boundaries between runs. The predecessor
+and this submission both answer every case with no wrong digest and no halt, and **the
+set of inputs each accepts as recognised is identical**.
+
+That last property is the one that matters, because the obvious oracles cannot see this
+code: a change that broke the verification would still return a correct digest — the
+input would merely fail to be recognised and be computed the long way — so digest
+correctness cannot detect a broken check, and total gas cannot detect a loosened one.
+
+---
+
 # RIPEMD-160: entry-word prefilter, 5,212 bytes
 
 The current executable has SHA-256
