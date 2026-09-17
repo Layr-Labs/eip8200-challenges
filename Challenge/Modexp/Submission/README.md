@@ -87,46 +87,62 @@ certificates are bound to the complete bytecode artifact. Source and
 bytecode length are feasibility constraints; the optimization objective is
 executed EVM gas.
 
-## Fourth change: one addressing rule for the whole nibble window
+## Fourth change: one stored exponent pair instead of three
 
-The exponentiation core walks the exponent a nibble at a time and multiplies by
-a precomputed power taken from a lookup group held in memory. In the predecessor
-that group was addressed as a twenty-one entry structure, and the final nibble of
-each group was served by a separate tail that re-derived its operand instead of
-reading it from the frame already on hand.
+The exponentiation core walks a 252-bit exponent four bits at a time, sixty-three
+digits in all, and multiplies by a precomputed power fetched from a lookup group in
+memory. Each fetch reads a word at a static address and keeps four bits of it with a
+mask of 480.
 
-This image widens the group so a single addressing rule covers the whole window
-and folds the tail into that rule. The address the last nibble needs is computed
-by the mask-and-shift that already existed, and the two operands it consumes are
-components of the frame the enclosing program had already named. The group's
-contents are unchanged, no new memory word is touched, and nothing new is written
-to memory.
+The predecessor stored the exponent pair three times, shifting it left by 84 bits
+between passes, so that twenty-one static addresses could serve all sixty-three
+digits. This image stores it once. Reading at an address returns a word whose bits 5
+to 8 -- the only bits the mask keeps -- are bits 5+8k to 8+8k of the row containing
+byte a+31, for k from 0 to 30. One stored pair therefore reaches sixty-two of the
+sixty-three digits: the row holding the exponent shifted right by three supplies the
+even digits 2 to 62, and the row holding it doubled supplies the odd digits 1 to 61.
+Each of those sixty-two multiplies is given its own address; forty-one two-byte
+immediates change, each in the position its predecessor occupied.
+
+The remaining digit is the exponent's lowest nibble, which no address reaches. It is
+taken from the frame's own copy instead: the frame holds the exponent doubled, and
+shifting that left by four places the nibble exactly under the mask.
+
+The two spans that carried the shift and the re-store no longer do any work. Rather
+than relocate the code that follows them, they are replaced in place by ten jump
+destinations and a discarded six-byte push, and by nine and a discarded seven-byte
+push. They still execute on every call, at fifteen and fourteen gas against
+thirty-six each before; they are inert, not unreached. The second span is one
+instruction shorter than the first, and that instruction is the one the last digit's
+lookup takes, so the instruction count is unchanged.
+
+The saving decomposes exactly: (36 - 15) + (36 - 14) - 3 = 40 gas per call, and the
+thirty-two vectors that enter this path give 40 x 32 = 1,280, which is the whole of
+the measured difference between the two images.
 
 The change is byte-count neutral and instruction-count neutral: this image and its
-predecessor are both 5,439 bytes and both decode to 4,393 instructions. 356 decoded
-instructions differ, and every one lies between program counter 1413 and program
-counter 2340; no instruction outside that span differs in opcode or in immediate.
+predecessor are both 5,439 bytes and both decode to 4,393 instructions. Compared at
+matching instruction indices 356 differ, all between program counter 1413 and
+program counter 2340, a count that includes the 402-instruction last body wholesale
+because its indices shift by one; compared byte by byte the difference is 103 bytes
+in 44 runs. No instruction outside that span differs.
 
-Because the tail no longer re-derives what the frame already carries, the region
-that implemented it is not executed. Its bytes are left in place as inert filler
-rather than relocating the code that follows, which is why this image carries 138
-JUMPDEST bytes against the predecessor's 119. The nineteen additional destinations
-form two runs, beginning at 1413 and at 1879. No destination is removed, and no
-push immediate anywhere in this image names any of the nineteen, so no transfer of
-control encoded in the image can land in the filler.
+Leaving the two spans in place rather than relocating what follows is why this image
+carries 138 jump destination bytes against the predecessor's 119. The nineteen
+additional destinations form two runs, beginning at 1413 and at 1879. No destination
+is removed, and no push immediate anywhere in this image names any of the nineteen,
+so no transfer of control encoded in the image can land in them.
 
-Three existing statements are generalised with no change to their proof bodies:
-the two memory-copy bounds move from `k <= 10` to `k <= 30`, the lookup-address
-bound moves from `i < 21` to `i < 62`, and the lookup-address correctness statement
-moves from `index < 21` to `index < 62`. That none needed a new tactic is the
-substantive fact: the addressing arithmetic was never specific to the old width.
-Four statements are new -- `run_lookupLast`, the program serving the final nibble;
-`run_nibbleLast` and `run_nibblesLast`, its step and iterated step; and
-`run_groupLast`, the group-level statement tying them together. The address lemma
-behind them states that masking the twice-shifted exponent with 480 yields
-thirty-two times the exponent's low nibble, and is proved from the numeric value
-of the mask and the shifted-nibble identity already present in the same file,
-introducing no import.
+Four existing statements are generalised with no change to their proof bodies: the
+two memory-copy bounds move from `k <= 10` to `k <= 30`, the lookup-address bound
+moves from `i < 21` to `i < 62`, and the lookup-address correctness statement moves
+from `index < 21` to `index < 62`. That none needed a new tactic is the substantive
+fact: the addressing arithmetic was never specific to the old width. Twenty-one
+declarations are new across five files and one is removed -- `shiftProgram`, which
+existed only to re-store the shifted exponent between passes. Three further
+statements change meaning rather than being added. The existing group programs and
+their run lemmas are unchanged; the final group of the last pass is a new program
+that differs from them only in its third lookup.
 
 Literal-encoding cost is 8,145 against the ceiling of 8,194. Measured gas is
 reported by the scorer shipped with the tree; no score is asserted in this file.
