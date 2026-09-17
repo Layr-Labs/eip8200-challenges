@@ -2324,9 +2324,7 @@ def submissionInstructions : List Instr :=
  .op .GT,
  .op .SUB,
  .op (.Dup { idx := 1 }),
- .push 0 0,
- .op .ADD,
- .push 2 2336,
+ .push 4 2336,
  .op .MLOAD,
  .op (.Dup { idx := 1 }),
  .op .ADD,
@@ -2571,9 +2569,7 @@ def submissionInstructions : List Instr :=
  .op (.Dup { idx := 0 }),
  .push 2 2080,
  .op .MSTORE,
- .op (.Dup { idx := 1 }),
- .op .OR,
- .push 2 3130,
+ .push 4 3130,
  .op .JUMPI,
  .op .JUMPDEST,
  .op .NOT,
@@ -4425,7 +4421,7 @@ def submissionInstructions : List Instr :=
  .push 2 3930,
  .op .JUMP]
 
-theorem submissionInstructions_count : submissionInstructions.length = 4402 := by
+theorem submissionInstructions_count : submissionInstructions.length = 4398 := by
   decide
 
 theorem assemble_submissionInstructions :
