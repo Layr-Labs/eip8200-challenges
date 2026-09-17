@@ -51,38 +51,56 @@ def storesProgram : List Instr := setupTailProgram ++ WindowTwentyOneStage.stage
 /-- The first pass's trampoline at 951; only this copy carries the `JUMPDEST`. -/
 def trampolineProgram : List Instr := .op .JUMPDEST :: storesProgram
 
-/-- The exponent shift that ends a continuing pass: four instructions, five
-bytes.  This is what remains of the old loop tail. -/
-def shiftProgram : List Instr :=
-  [.op (.Swap ⟨1, by decide⟩), .push 1 84, .op .SHL, .op (.Swap ⟨1, by decide⟩)]
+/-- The first inter-pass span (pc 1413-1430).  The exponent is never shifted now: one
+store serves all sixty-two addressed digits, so these eighteen bytes carry no work.
+Ten `JUMPDEST` and a dead `PUSH6; POP`: twelve instructions, eighteen bytes, fifteen gas,
+which is the provable minimum for a stack-neutral filler of that shape. -/
+def padProgramA : List Instr :=
+  [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
+   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
+   .push 6 100447932865371, .op .POP]
 
-/-- Between two passes (pc 1413 and pc 1879): shift the exponent, store the next
-pass's copies, replay the staging head.  Seventeen instructions, twenty-three
-bytes. -/
-def linkProgram : List Instr := shiftProgram ++ storesProgram
+/-- The second inter-pass span (pc 1879-1896).  Eleven instructions in the same eighteen
+bytes -- one fewer than `padProgramA`, which is what pays for the extra instruction the
+final group's nibble-0 lookup costs, so the instruction COUNT of the artifact is
+unchanged and the RETURN block's index never moves.  The `PUSH7` opcode sits at 1888
+deliberately: 1888 is the only pc in either span that the artifact itself pushes. -/
+def padProgramB : List Instr :=
+  [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
+   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
+   .push 7 25714670813535067, .op .POP]
 
-/-- One pass's body: the twenty-one nibbles and nothing else.  Four hundred and
-one instructions, four hundred and forty-three bytes, at 970, 1436 and 1902. -/
-def bodyProgram : List Instr := WindowTwentyOneBody.program
+/-- Between two passes: the dead span, then replay the staging head.  Twenty-three bytes. -/
+def linkProgram : List Instr := padProgramA ++ WindowTwentyOneStage.stageHead
 
-def eAt (exponent : UInt256) (count : Nat) : UInt256 :=
-  UInt256.shiftLeft exponent (UInt256.ofNat (4 * (1 + 21 * count) - 3))
+def linkProgramB : List Instr := padProgramB ++ WindowTwentyOneStage.stageHead
+
+/-- One pass's body: twenty-one nibbles at address offset `off`.  Four hundred and
+forty-three bytes, at 970, 1436 and 1902. -/
+def bodyProgram (off : Nat) : List Instr := WindowTwentyOneBody.program off
+
+/-- The last pass's body: its final digit is nibble 0, read off the frame. -/
+def bodyProgramLast (off : Nat) : List Instr := WindowTwentyOneBody.programLastPass off
+
+/-- The stored exponent, which no longer depends on the pass: ONE store at 951 serves
+every addressed digit. -/
+def eAt (exponent : UInt256) (_count : Nat) : UInt256 :=
+  UInt256.shiftLeft exponent (UInt256.ofNat 1)
 
 def loopMem (base modulus exponent : UInt256) : Nat → ByteArray
   | 0 => WindowTableMemory.tableMemory base modulus
-  | count + 1 => WindowCopyMemory.copyMem (loopMem base modulus exponent count) (eAt exponent count)
+  | _ + 1 => WindowCopyMemory.copyMem (WindowTableMemory.tableMemory base modulus)
+      (eAt exponent 0)
 
 theorem loopMem_table (base modulus exponent : UInt256) (count : Nat) :
     ∀ i, i < 16 → MachineState.readWord (loopMem base modulus exponent count) (32 * i) =
       WindowMath.tableWord base modulus i := by
-  induction count with
-  | zero =>
-      intro i hi
-      exact WindowTableMemory.readWord_tableMemory base modulus i hi
-  | succ count ih =>
-      intro i hi
+  intro i hi
+  cases count with
+  | zero => exact WindowTableMemory.readWord_tableMemory base modulus i hi
+  | succ c =>
       rw [loopMem, WindowCopyMemory.readWord_copyMem_low _ _ _ (by omega)]
-      exact ih i hi
+      exact WindowTableMemory.readWord_tableMemory base modulus i hi
 
 /-- The loop head at 951, as the table prelude leaves it: sixteen active words
 (the table only) and the counter `2` the init pushed. -/
@@ -203,60 +221,132 @@ theorem run_trampoline (template : State) (base modulus exponent : UInt256)
   simpa only [trampolineProgram, entryState, headState, loopMem, hpc,
     List.cons_append, List.nil_append] using hall
 
-/-- One pass's twenty-one nibbles, at any of the three body pcs.  Four hundred
-and forty-three bytes; the exponent and the dead counter are preserved. -/
+/-- One pass's twenty-one nibbles at body pc 970 or 1436.  Four hundred and forty-three
+bytes; the exponent and the dead counter are preserved. -/
 theorem run_body (template : State) (pc : Nat) (base modulus exponent : UInt256)
-    (count : Nat) (hcount : count ≤ 2) (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions bodyProgram
+    (count : Nat) (hcount : count < 2) (rest : List UInt256) (hrest : rest.length ≤ 1000) :
+    runInstructions (bodyProgram (21 * count))
       (headState template (UInt256.ofNat pc) base modulus exponent count rest) =
     some (postState template (UInt256.ofNat (pc + 443)) base modulus exponent count rest) := by
   have hb := WindowTwentyOneBody.run_twentyOne template (UInt256.ofNat pc)
-    (loopMem base modulus exponent count) base modulus
+    (WindowTableMemory.tableMemory base modulus) base modulus
     (WindowTwentyOneMath.accumulator base modulus exponent.toNat (21 * count)) exponent
-    (UInt256.ofNat 2) (loopMem_table base modulus exponent count)
-    (1 + 21 * count) (by omega) (by omega) rest hrest
+    (UInt256.ofNat 2) (loopMem_table base modulus exponent 0)
+    (21 * count) (by omega) rest hrest
   have ha : WindowTwentyOneMath.advance base modulus exponent.toNat (1 + 21 * count) 21
       (WindowTwentyOneMath.accumulator base modulus exponent.toNat (21 * count)) =
-      WindowTwentyOneMath.accumulator base modulus exponent.toNat (21 * count + 21) := by
-    rw [WindowTwentyOneMath.accumulator_twentyOne]
+      WindowTwentyOneMath.accumulator base modulus exponent.toNat (21 * count + 21) :=
+    (WindowTwentyOneMath.accumulator_twentyOne base modulus exponent.toNat (21 * count)).symm
   rw [ha, advancePC_ofNat] at hb
   simpa only [bodyProgram, headState, postState, loopMem, eAt] using hb
 
-/-- The link between two passes: shift the exponent by one window, store the next
-pass's copies, replay the staging head.  Twenty-three bytes. -/
-theorem run_link (template : State) (pc : Nat) (base modulus exponent : UInt256)
-    (count : Nat) (hcount : count < 2) (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions linkProgram
-      (postState template (UInt256.ofNat pc) base modulus exponent count rest) =
-    some (headState template (UInt256.ofNat (pc + 23)) base modulus exponent (count + 1) rest) := by
+/-- The final pass at 1902: digits 42..62, the last of them nibble 0. -/
+theorem run_bodyLast (template : State) (pc : Nat) (base modulus exponent : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1000) :
+    runInstructions (bodyProgramLast 42)
+      (headState template (UInt256.ofNat pc) base modulus exponent 2 rest) =
+    some (postState template (UInt256.ofNat (pc + 443)) base modulus exponent 2 rest) := by
+  have hb := WindowTwentyOneBody.run_twentyOneLast template (UInt256.ofNat pc)
+    (WindowTableMemory.tableMemory base modulus) base modulus
+    (WindowTwentyOneMath.accumulator base modulus exponent.toNat 42) exponent
+    (UInt256.ofNat 2) (loopMem_table base modulus exponent 0)
+    42 rfl rest hrest
+  have ha : WindowTwentyOneMath.advance base modulus exponent.toNat (1 + 42) 21
+      (WindowTwentyOneMath.accumulator base modulus exponent.toNat 42) =
+      WindowTwentyOneMath.accumulator base modulus exponent.toNat (42 + 21) :=
+    (WindowTwentyOneMath.accumulator_twentyOne base modulus exponent.toNat 42).symm
+  rw [ha, advancePC_ofNat] at hb
+  simpa only [bodyProgramLast, headState, postState, loopMem, eAt] using hb
+
+private theorem run_padA (template : State) (pc : UInt256) (mem : ByteArray)
+    (modulus accumulator exponent counter : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1000) :
+    runInstructions padProgramA
+      (WindowTwentyOneGroup.state template pc mem 18 modulus accumulator exponent counter 0 rest) =
+    some (WindowTwentyOneGroup.state template (advancePC 18 pc) mem 18 modulus accumulator
+      exponent counter 0 rest) := by
   have hcap5 : rest.length + 5 < 1024 := by omega
   have hcap6 : rest.length + 6 < 1024 := by omega
-  have hpush : UInt256.ofNat 2 = UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
-  have hshift : UInt256.shiftLeft (eAt exponent count) (UInt256.ofNat 84) = eAt exponent (count + 1) := by
-    unfold eAt
-    rw [WindowTwentyOneTail.shift_twentyOne exponent (1 + 21 * count) (by omega) (by omega)]
-    congr 2
-  have hsh : runInstructions shiftProgram
+  have hpush : UInt256.ofNat 7 =
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
+  simp [runInstructions, padProgramA, WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
+    Challenge.EvmProof.Stepper.runInstr, hcap5, hcap6, advancePC, succ_eq_add, hpush, word_add_assoc]
+
+private theorem run_padB (template : State) (pc : UInt256) (mem : ByteArray)
+    (modulus accumulator exponent counter : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1000) :
+    runInstructions padProgramB
+      (WindowTwentyOneGroup.state template pc mem 18 modulus accumulator exponent counter 0 rest) =
+    some (WindowTwentyOneGroup.state template (advancePC 18 pc) mem 18 modulus accumulator
+      exponent counter 0 rest) := by
+  have hcap5 : rest.length + 5 < 1024 := by omega
+  have hcap6 : rest.length + 6 < 1024 := by omega
+  have hpush : UInt256.ofNat 8 =
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
+  simp [runInstructions, padProgramB, WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
+    Challenge.EvmProof.Stepper.runInstr, hcap5, hcap6, advancePC, succ_eq_add, hpush, word_add_assoc]
+
+private theorem run_linkOf (pad : List Instr)
+    (hpad : ∀ (template : State) (pc : UInt256) (mem : ByteArray)
+      (modulus accumulator exponent counter : UInt256) (rest : List UInt256),
+      rest.length ≤ 1000 →
+      runInstructions pad
+        (WindowTwentyOneGroup.state template pc mem 18 modulus accumulator exponent counter 0 rest) =
+      some (WindowTwentyOneGroup.state template (advancePC 18 pc) mem 18 modulus accumulator
+        exponent counter 0 rest))
+    (template : State) (pc : Nat) (base modulus exponent : UInt256)
+    (count : Nat) (rest : List UInt256) (hrest : rest.length ≤ 1000) :
+    runInstructions (pad ++ WindowTwentyOneStage.stageHead)
       (postState template (UInt256.ofNat pc) base modulus exponent count rest) =
-      some (WindowTwentyOneGroup.state template (advancePC 5 (UInt256.ofNat pc))
+    some (headState template (UInt256.ofNat (pc + 23)) base modulus exponent (count + 1) rest) := by
+  have hp := hpad template (UInt256.ofNat pc) (loopMem base modulus exponent (count + 1))
+    modulus (WindowTwentyOneMath.accumulator base modulus exponent.toNat (21 * count + 21))
+    (eAt exponent count) (UInt256.ofNat 2) rest hrest
+  let core := WindowTwentyOneLookup.framed template (advancePC 18 (UInt256.ofNat pc))
+    (loopMem base modulus exponent (count + 1)) 18 []
+  have hh := WindowTwentyOneStage.run_stageHead core (advancePC 18 (UInt256.ofNat pc))
+    (WindowTwentyOneMath.accumulator base modulus exponent.toNat (21 * count + 21)) modulus
+    (eAt exponent count) (UInt256.ofNat 480) (UInt256.ofNat 2) rest hrest
+  have hh' : runInstructions WindowTwentyOneStage.stageHead
+      (WindowTwentyOneGroup.state template (advancePC 18 (UInt256.ofNat pc))
         (loopMem base modulus exponent (count + 1)) 18 modulus
         (WindowTwentyOneMath.accumulator base modulus exponent.toNat (21 * count + 21))
-        (eAt exponent (count + 1)) (UInt256.ofNat 2) 0 rest) := by
-    rw [← hshift]
-    simp [runInstructions, shiftProgram, postState, WindowTwentyOneGroup.state,
-      WindowTwentyOneLookup.framed, Challenge.EvmProof.Stepper.runInstr,
-      hcap5, hcap6, Nat.add_assoc, List.exchange,
-      advancePC, succ_eq_add, hpush, word_add_assoc,
-      Challenge.EvmProof.Word.literal_eq_ofNat]
-  have hs := run_stores template (advancePC 5 (UInt256.ofNat pc))
-    (loopMem base modulus exponent (count + 1)) 18 (by omega) modulus
-    (WindowTwentyOneMath.accumulator base modulus exponent.toNat (21 * count + 21))
-    (eAt exponent (count + 1)) (UInt256.ofNat 2) rest hrest
-  have hall := runInstructions_append_some _ _ _ _ _ hsh hs
-  rw [advancePC_ofNat] at hall
-  rw [advancePC_ofNat] at hall
-  have hacc : 21 * count + 21 = 21 * (count + 1) := by omega
-  have hpc : pc + 5 + 18 = pc + 23 := by omega
-  simpa only [linkProgram, headState, loopMem, hacc, hpc] using hall
+        (eAt exponent count) (UInt256.ofNat 2) 0 rest) =
+      some (WindowTwentyOneGroup.headState template (advancePC 5 (advancePC 18 (UInt256.ofNat pc)))
+        (loopMem base modulus exponent (count + 1)) 18 modulus
+        (WindowTwentyOneMath.accumulator base modulus exponent.toNat (21 * count + 21))
+        (eAt exponent count) (UInt256.ofNat 2) rest) := by
+    simpa only [WindowTwentyOneGroup.state, WindowTwentyOneGroup.headState, core,
+      WindowTwentyOneStage.framed, WindowTwentyOneLookup.framed,
+      List.replicate_zero, List.nil_append, List.cons_append, List.append_assoc] using hh
+  have hall := runInstructions_append_some _ _ _ _ _ (by simpa only [postState] using hp) hh'
+  rw [advancePC_ofNat, advancePC_ofNat] at hall
+  have hpc : pc + 18 + 5 = pc + 23 := by omega
+  rw [hpc] at hall
+  simpa only [postState, headState, loopMem, eAt, Nat.mul_add, Nat.mul_one] using hall
+
+/-- Between passes 0 and 1 (pc 1413): eighteen dead bytes, then the staging head. -/
+theorem run_link (template : State) (pc : Nat) (base modulus exponent : UInt256)
+    (count : Nat) (_hcount : count < 2) (rest : List UInt256) (hrest : rest.length ≤ 1000) :
+    runInstructions linkProgram
+      (postState template (UInt256.ofNat pc) base modulus exponent count rest) =
+    some (headState template (UInt256.ofNat (pc + 23)) base modulus exponent (count + 1) rest) :=
+  run_linkOf padProgramA
+    (fun template pc mem modulus accumulator exponent counter rest hrest =>
+      run_padA template pc mem modulus accumulator exponent counter rest hrest)
+    template pc base modulus exponent count rest hrest
+
+/-- Between passes 1 and 2 (pc 1879): the same eighteen bytes in eleven instructions. -/
+theorem run_linkB (template : State) (pc : Nat) (base modulus exponent : UInt256)
+    (count : Nat) (_hcount : count < 2) (rest : List UInt256) (hrest : rest.length ≤ 1000) :
+    runInstructions linkProgramB
+      (postState template (UInt256.ofNat pc) base modulus exponent count rest) =
+    some (headState template (UInt256.ofNat (pc + 23)) base modulus exponent (count + 1) rest) :=
+  run_linkOf padProgramB
+    (fun template pc mem modulus accumulator exponent counter rest hrest =>
+      run_padB template pc mem modulus accumulator exponent counter rest hrest)
+    template pc base modulus exponent count rest hrest
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneLoop
