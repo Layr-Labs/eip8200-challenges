@@ -316,32 +316,19 @@ theorem jumpD4692 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat pcCsubReturn).toNat = true :=
   Exp.jumpD pcCsubReturn (by decide) jumpDest4657
 
-/-- `CSUB(BASE)` from the routine's call block back to `AFTER_CSUB`. -/
+/-- `blk3253` now returns straight to the loop head: the `CSUB` it used to call is the identity
+on every reachable state (`repair_lt_mm`), so the artifact does not call it.  The hypotheses the
+call needed are kept so that the call sites are unchanged. -/
 def gasSteps_csubStep (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
-    (hk : 1 ≤ k) (hk32 : k ≤ 32) (hn : 2 ≤ n) (hn32 : n ≤ 8) (e : Env s)
-    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
-    (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
-    (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
-    (htn : (MachineState.readWord mem 2080).toNat ≤ 1)
-    (hfast : n = 4 ∨ n = 8) :
+    (hk : 1 ≤ k) (hk32 : k ≤ 32) (_hn : 2 ≤ n) (_hn32 : n ≤ 8) (e : Env s)
+    (_hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (_htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
+    (_hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
+    (_htn : (MachineState.readWord mem 2080).toNat ≤ 1)
+    (_hfast : n = 4 ∨ n = 8) :
     Challenge.EvmProof.GasSteps (csubCallState s mem n bsize esize msize k)
-      (afterCsubState s (RetainedTNormalizer.resultMemory mem n) n bsize esize msize k) :=
-  have hs32' : MachineState.readWord (Csub.csStep mem n n).memory 2688 =
-      UInt256.ofNat (32 * n) := by
-    rw [Csub.csStep_readWord_disjoint mem n 2688 (by omega) (Or.inr (by omega)) n le_rfl]
-    exact hs32
-  have htn' : (MachineState.readWord (Csub.csStep mem n n).memory 2080).toNat ≤ 1 := by
-    rw [Csub.csStep_readWord_disjoint mem n 2080 (by omega) (Or.inr (by omega)) n le_rfl]
-    exact htn
-  have hlen : (UInt256.ofNat (k - 1) :: outer n bsize esize msize).length ≤ 1008 := by
-    simp [outer, Exp.outer]
-  Challenge.EvmProof.GasSteps.cast
-    ((soundEnv blk3253 e
-        (run_csubCall s mem n bsize esize msize k hk hk32 e.code e.run)).trans
-      (RetainedT.gasSteps_retained s mem n (UInt256.ofNat pcAfterCsub)
-        (UInt256.ofNat (k - 1) :: outer n bsize esize msize) hlen e.code e.fork e.run e.np
-        e.act296 hn (by omega) jumpD5357 hml htl hs32' htn' hfast))
-    rfl rfl
+      (afterCsubState s mem n bsize esize msize k) :=
+  soundEnv blk3253 e (run_csubCall s mem n bsize esize msize k hk hk32 e.code e.run)
 
 /-- The first `CSUB(BASE)`, reducing the raw base, from `HIT` to `AFTER_CSUB0`. -/
 def canonicalCopyBlock : WindowTwentyOneBinding.Block Artifact.submissionArtifact .Osaka 2508
@@ -404,6 +391,7 @@ structure StepInv (mem : ByteArray) (n bsize mm minv : Nat) : Prop where
   modulus : Model.FastRepresents mem 0 n mm
   neg : Model.FastRepresents mem NEG n (Limbs.radix ^ n - mm)
   cache : MachineState.readWord mem 1698 = ShiftCacheModel.entryWord n
+  pre : PreOK mem
 
 theorem negOf_cases (mem : ByteArray) (c q : UInt256) :
     negOf mem c q = UInt256.ofNat 0 ∨ negOf mem c q = UInt256.ofNat 1 := by
@@ -579,8 +567,7 @@ def gasSteps_step (s : State) (mem : ByteArray) (n bsize esize msize k mm minv :
       exact (start.trans adds).trans tail
   have g4 : Challenge.EvmProof.GasSteps
       (csubCallState s (fixMem (stepMid mem n) n mm (stepNeg mem n)) n bsize esize msize k)
-      (afterCsubState s (RetainedTNormalizer.resultMemory (fixMem (stepMid mem n) n mm (stepNeg mem n)) n)
-        n bsize esize msize k) :=
+      (afterCsubState s (fixMem (stepMid mem n) n mm (stepNeg mem n)) n bsize esize msize k) :=
     gasSteps_csubStep s (fixMem (stepMid mem n) n mm (stepNeg mem n)) n bsize esize msize k
       hk hk32 hn hn32 e
       (by rw [hhighFix 2752 (by omega)]; exact hml0)

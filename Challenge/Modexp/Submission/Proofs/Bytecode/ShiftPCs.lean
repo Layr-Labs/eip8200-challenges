@@ -1451,7 +1451,7 @@ open EvmSemantics.EVM
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc3258 : Artifact.submissionArtifact.instructionPC 2553 = 3126 := by
+@[simp] theorem pc3258 : Artifact.submissionArtifact.instructionPC 2553 = 3128 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
