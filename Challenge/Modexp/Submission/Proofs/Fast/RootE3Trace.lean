@@ -105,7 +105,7 @@ def e3Trace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv k :
   have invFirst := stepInv_stepMems (by omega) hn8 invPrep (2 * k)
   have hbaseFirst := stepMems_represents (e3Prepared mem input n) n mm _ hn hn8 hm
     (Model.fastRepresents_lt hmod) htwo invPrep.modulus invPrep.neg hbasePrep
-    (Nat.mod_lt _ hm) (2 * k)
+    (Nat.mod_lt _ hm) invPrep.pre (2 * k)
   have invSwitch := phaseSwitch_inv _ n bsize mm minv hn8 invFirst
   have hbaseSwitch := phaseSwitch_preserves _ n 2112 n _ (Or.inr (by omega))
     (Or.inl (by omega)) hbaseFirst
