@@ -12,7 +12,7 @@ open PairedScheduleMemory StaggerTableMemory StaggerTableLayout
 
 /-- The four bytes not overwritten when a clean adjacent pair is stored once.
 The pair at address 36 is deliberately absent: it overlaps the endian scratch. -/
-def lowerPairSlots : List Nat := [57, 55, 53, 51, 45, 39, 32, 24, 21, 17, 13, 10, 8]
+def lowerPairSlots : List Nat := [57, 55, 53, 51, 45, 43, 39, 32, 24, 21, 19, 17, 13, 10, 8]
 
 def GapClear (memory : ByteArray) : Prop :=
   ∀ j, j ∈ lowerPairSlots → ∀ k, 14 ≤ k → k < 18 →
@@ -21,7 +21,8 @@ def GapClear (memory : ByteArray) : Prop :=
 theorem lowerPairSlots_bounds (j : Nat) (hj : j ∈ lowerPairSlots) :
     8 ≤ j ∧ j ≤ 57 := by
   simp only [lowerPairSlots, List.mem_cons, List.not_mem_nil, or_false] at hj
-  rcases hj with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> decide
+  rcases hj with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
+    rfl <;> decide
 
 theorem encoded_prefix_zero (value : UInt256) (hv : value.toNat < 2 ^ 112)
     (i : Nat) (hi : i < 18) :

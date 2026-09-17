@@ -66,6 +66,79 @@ theorem read_result_outside (clean : Bool) (m : ByteArray) (lo hi : UInt256) (a 
   exact StaggerTableMemory.bytesToNatPadded_congrOffset _ _ _ _ _
     (fun i _ => result_outside clean m lo hi (a+i) (by omega))
 
+/-! ### Transporting `Ready` across the four exposed gap bytes
+
+The 45-write writer drops the store at 36, so bytes [50,54) keep whatever the caller left.
+Of everything `Ready` reads, exactly one field touches them: `Safe.slack` at round 25, the
+only round whose message word (slot 2, address 36) spans the gap.  Both lanes of every slot
+and the `scalar` field lie outside it, and `LegacyMessageWord`'s junk `jl * 2 ^ 32 +
+jr * 2 ^ 176` cannot represent bits [112,144), so round 25 is forced onto the `Safe`
+disjunct rather than choosing it. -/
+
+private theorem lanes_gap (W T : ByteArray) (j : Nat)
+    (hb : ∀ i, i < 50 ∨ 54 ≤ i → W[i]?.getD 0 = T[i]?.getD 0) :
+    (MachineState.readWord W (18*j)).toNat % 2^32
+        = (MachineState.readWord T (18*j)).toNat % 2^32 ∧
+      (MachineState.readWord W (18*j)).toNat / 2^144 % 2^32
+        = (MachineState.readWord T (18*j)).toNat / 2^144 % 2^32 := by
+  constructor
+  · rw [PoolFacts.low_value, PoolFacts.low_value]
+    apply StaggerTableMemory.bytesToNatPadded_congrOffset
+    intro k hk
+    exact hb _ (by omega)
+  · rw [PoolFacts.high_value, PoolFacts.high_value]
+    apply StaggerTableMemory.bytesToNatPadded_congrOffset
+    intro k hk
+    exact hb _ (by omega)
+
+private theorem word_gap (W T : ByteArray) (p : Nat) (hp : p ≤ 1 ∨ 3 ≤ p)
+    (hb : ∀ i, i < 50 ∨ 54 ≤ i → W[i]?.getD 0 = T[i]?.getD 0) :
+    MachineState.readWord W (18*p) = MachineState.readWord T (18*p) := by
+  apply Word.word_ext
+  rw [Bytes.readWord_toNat, Bytes.readWord_toNat]
+  apply StaggerTableMemory.bytesToNatPadded_congrOffset
+  intro k hk
+  exact hb _ (by omega)
+
+theorem ready_of_gap (W T : ByteArray) (words : Nat → UInt32)
+    (hb : ∀ i, i < 50 ∨ 54 ≤ i → W[i]?.getD 0 = T[i]?.getD 0)
+    (hz : W[54]?.getD 0 = 0)
+    (h : StaggerMessage.Ready T words) : StaggerMessage.Ready W words := by
+  constructor
+  · intro i hi77
+    by_cases hp : StaggerTableLayout.pairIndices[i]! ≤ 1 ∨ 3 ≤ StaggerTableLayout.pairIndices[i]!
+    · have hm : StaggerCoreModel.message W i = StaggerCoreModel.message T i :=
+        word_gap W T _ hp hb
+      rw [hm]
+      exact h.paired i hi77
+    · have h2 : StaggerTableLayout.pairIndices[i]! = 2 := by omega
+      have hne : i ≠ 76 := by
+        intro he
+        rw [he] at h2
+        exact absurd h2 (by decide)
+      have hmW : StaggerCoreModel.message W i = MachineState.readWord W (18*2) := by
+        show MachineState.readWord W (18 * StaggerTableLayout.pairIndices[i]!) = _
+        rw [h2]
+      have hmT : StaggerCoreModel.message T i = MachineState.readWord T (18*2) := by
+        show MachineState.readWord T (18 * StaggerTableLayout.pairIndices[i]!) = _
+        rw [h2]
+      have hl := StaggerAlgorithm.message_lanes _ _ _ (h.paired i hi77)
+      rw [hmT] at hl
+      apply Or.inr
+      refine ⟨hne, ?_, ?_, ?_⟩
+      · rw [hmW]
+        exact (lanes_gap W T 2 hb).1.trans hl.1
+      · rw [hmW]
+        exact (lanes_gap W T 2 hb).2.trans hl.2
+      · rw [hmW]
+        refine PoolFacts.zero_byte_slack _ 18 (by decide) (by decide) ?_
+        rw [PoolByte.read _ _ _ (by decide)]
+        exact hz
+  · intro j hj
+    apply UInt32.toNat_inj.mp
+    have hp := congrArg UInt32.toNat (h.scalar j hj)
+    exact (lanes_gap W T j hb).1.trans hp
+
 theorem ready (m : ByteArray) (lo hi : UInt256) (hc : Clear m) (words : Nat → UInt32)
     (h : StaggerMessage.Ready (resultMemory true m lo hi) words) :
     StaggerMessage.Ready (resultMemory false m lo hi) words := by

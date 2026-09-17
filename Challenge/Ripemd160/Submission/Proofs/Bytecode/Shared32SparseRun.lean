@@ -49,7 +49,9 @@ theorem sparse_read_input (input : ByteArray) (hn : 0 < input.size) :
 /-- The exact-32 route places the upper scratch word with the two sparse MSTORE8s and the
 lower one with the doubled store, which together build exactly `Pair13Endian.scratch3`. -/
 theorem sparse_lower_memory (input : ByteArray) (hn : 0 < input.size) :
-    writeWord (writeWord (sparseMemory (copiedMemory input)) 46
+    writeWord (writeWord (writeWord (sparseMemory (copiedMemory input)) 46
+        (PairedScheduleData.reversedWord
+          (MachineState.readWord (sparseMemory (copiedMemory input)) 1056))) 10
         (PairedScheduleData.reversedWord
           (MachineState.readWord (sparseMemory (copiedMemory input)) 1056))) 28
       (PairedScheduleData.reversedWord

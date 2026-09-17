@@ -153,7 +153,7 @@ def fanWord (low high : UInt256) (i : Nat) : UInt256 :=
 
 /-- The dual-lane value the writer stores, as a function of the plain schedule words. -/
 def dualOf (words : Nat → UInt256) (i : Nat) : UInt256 :=
-  if i < 3 then words i else UInt256.mul Pair13PoolRaw.coefficient (words i)
+  UInt256.mul Pair13PoolRaw.coefficient (words i)
 
 private theorem mask32_toNat_mod (x : UInt256) : (Word.mask32 x).toNat = x.toNat % 2 ^ 32 := by
   rw [Word.mask32_toNat, show (0xffffffff : Nat) = 2 ^ 32 - 1 by norm_num,
@@ -195,43 +195,26 @@ theorem copied_getD (m : ByteArray) (a : Nat) :
 theorem scratch3_getD (memory : ByteArray) (low high : UInt256) (a : Nat) :
     (Pair13Endian.scratch3 memory low high)[a]?.getD 0 =
       if 28 ≤ a ∧ a < 60 then (Data.Bytes.natToBytesPadded low.toNat 32)[a - 28]?.getD 0
+      else if 10 ≤ a ∧ a < 28 then (Data.Bytes.natToBytesPadded low.toNat 32)[a - 10]?.getD 0
       else if 60 ≤ a ∧ a < 78 then (Data.Bytes.natToBytesPadded low.toNat 32)[a - 46]?.getD 0
       else if 96 ≤ a ∧ a < 128 then (Data.Bytes.natToBytesPadded high.toNat 32)[a - 96]?.getD 0
       else memory[a]?.getD 0 := by
-  rw [Pair13Endian.scratch3, writeWord_getD, writeWord_getD, writeWord_getD]
+  rw [Pair13Endian.scratch3, writeWord_getD, writeWord_getD, writeWord_getD, writeWord_getD]
   by_cases h1 : 28 ≤ a ∧ a < 28 + 32
   · rw [if_pos h1, if_pos (by omega : 28 ≤ a ∧ a < 60)]
   · rw [if_neg h1, if_neg (by omega : ¬ (28 ≤ a ∧ a < 60))]
-    by_cases h2 : 46 ≤ a ∧ a < 46 + 32
-    · rw [if_pos h2, if_pos (by omega : 60 ≤ a ∧ a < 78)]
-    · rw [if_neg h2, if_neg (by omega : ¬ (60 ≤ a ∧ a < 78))]
+    by_cases h0 : 10 ≤ a ∧ a < 10 + 32
+    · rw [if_pos h0, if_pos (by omega : 10 ≤ a ∧ a < 28)]
+    · rw [if_neg h0, if_neg (by omega : ¬ (10 ≤ a ∧ a < 28))]
+      by_cases h2 : 46 ≤ a ∧ a < 46 + 32
+      · rw [if_pos h2, if_pos (by omega : 60 ≤ a ∧ a < 78)]
+      · rw [if_neg h2, if_neg (by omega : ¬ (60 ≤ a ∧ a < 78))]
 
 /-- Above the copied block the fan image is the incoming memory verbatim. -/
 theorem fan_getD_high (memory : ByteArray) (low high : UInt256) (a : Nat) (ha : 146 ≤ a) :
     (fanMemory memory low high)[a]?.getD 0 = memory[a]?.getD 0 := by
   rw [fanMemory, copied_getD, if_neg (by omega), if_neg (by omega), scratch3_getD,
-    if_neg (by omega), if_neg (by omega), if_neg (by omega)]
-
-/-- Below the endian scratch the fan image agrees with the S48 scratch image. -/
-theorem fan_prefix (memory : ByteArray) (low high : UInt256) (a n : Nat) (h : a + n ≤ 60) :
-    Precompile.bytesToNatPadded (fanMemory memory low high) a n =
-      Precompile.bytesToNatPadded (StaggerScratch.scratchMemory memory low high) a n := by
-  apply StaggerTableMemory.bytesToNatPadded_congrOffset
-  intro i hi
-  rw [fanMemory, copied_getD, if_neg (by omega), if_neg (by omega), scratch3_getD,
-    if_neg (by omega : ¬ (60 ≤ a + i ∧ a + i < 78)),
-    if_neg (by omega : ¬ (96 ≤ a + i ∧ a + i < 128)),
-    StaggerScratch.scratchMemory, writeWord_getD, writeWord_getD,
-    if_neg (by omega : ¬ (60 ≤ a + i ∧ a + i < 60 + 32))]
-
-/-- Below the endian scratch the fan image is the incoming memory. -/
-theorem fan_prefix_memory (memory : ByteArray) (low high : UInt256) (a n : Nat) (h : a + n ≤ 28) :
-    Precompile.bytesToNatPadded (fanMemory memory low high) a n =
-      Precompile.bytesToNatPadded memory a n := by
-  apply StaggerTableMemory.bytesToNatPadded_congrOffset
-  intro i hi
-  rw [fanMemory, copied_getD, if_neg (by omega), if_neg (by omega), scratch3_getD,
-    if_neg (by omega), if_neg (by omega), if_neg (by omega)]
+    if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega)]
 
 theorem fan_read_low (memory : ByteArray) (low high : UInt256) :
     MachineState.readWord (fanMemory memory low high) 28 = low := by
@@ -250,6 +233,7 @@ theorem fan_read_high (memory : ByteArray) (low high : UInt256) :
       (Or.inr (by rw [Memory.readPadded_size]; omega)),
     Pair13Endian.scratch3,
     read_writeWord_disjoint _ _ _ _ (Or.inr (by omega)),
+    read_writeWord_disjoint _ _ _ _ (Or.inr (by omega)),
     read_writeWord_disjoint _ _ _ _ (Or.inr (by omega)), read_writeWord]
 
 /-- The eighteen-byte duplication the two MCOPYs and the double low store create. -/
@@ -260,7 +244,8 @@ theorem fan_dup (memory : ByteArray) (low high : UInt256) (x : Nat)
   · rw [fanMemory, copied_getD, if_neg (by omega), if_neg (by omega),
       copied_getD, if_neg (by omega), if_neg (by omega),
       scratch3_getD, if_pos (by omega), scratch3_getD,
-      if_neg (by omega), if_pos (by omega), show x + 18 - 46 = x - 28 by omega]
+      if_neg (by omega), if_neg (by omega), if_pos (by omega),
+      show x + 18 - 46 = x - 28 by omega]
   · rw [fanMemory, copied_getD, if_neg (by omega), if_pos (by omega),
       copied_getD, if_neg (by omega), if_neg (by omega)]
   · rw [fanMemory, copied_getD, if_neg (by omega), if_neg (by omega),
@@ -301,18 +286,6 @@ theorem fan_high_chunk (memory : ByteArray) (low high : UInt256) (j a k : Nat)
   subst hk
   rw [fan_chunk memory low high high 96 j (by omega) hj (fan_read_high memory low high),
     fanWord, if_neg (by omega), show (j + 8) % 8 = j by omega]
-
-/-- The zero prefix `[0,28)` survives the fan, which is what makes word 3's upper lane zero. -/
-theorem fan_zero (memory : ByteArray) (low high : UInt256)
-    (hlow : (MachineState.readWord memory 0).toNat % 2 ^ 144 < 2 ^ 32) :
-    Precompile.bytesToNatPadded (fanMemory memory low high) 22 4 = 0 := by
-  rw [fan_prefix_memory memory low high 22 4 (by omega)]
-  have h6 := StaggerScratch.low_zero memory hlow 22 (by omega) (by omega)
-  have hsplit := Bytes.bytesToNatPadded_add memory 22 4 2
-  rw [show (4 : Nat) + 2 = 28 - 22 by norm_num] at hsplit
-  rw [h6] at hsplit
-  simp only [show (256 : Nat) ^ 2 = 65536 by norm_num] at hsplit
-  omega
 
 theorem fan_lanes (memory : ByteArray) (low high : UInt256) (i : Nat)
     (hi0 : 4 ≤ i) (hi1 : i < 16) :
@@ -399,32 +372,52 @@ theorem fan_lanes (memory : ByteArray) (low high : UInt256) (i : Nat)
       W 124 (by intro j hj; omega)]
     exact hd
 
-/-- The S51 pool loads: the three unmasked sources verbatim, every other source as the
-`2 ^ 144 + 1` dual-lane broadcast of the very schedule word the S48 pool produced. -/
+/-- The `+10` lane of the low four words.  The third staging copy writes `low` at address 10 and
+the later `28` store writes it again, so bytes `[10,28)` and `[28,46)` agree pointwise on the
+first eighteen bytes -- which is exactly the two-different-start-offsets shape
+`bytesToNatPadded_congrOffset` wants. -/
+theorem fan_low_chunk_10 (memory : ByteArray) (low high : UInt256) (j : Nat) (hj : j < 4) :
+    Precompile.bytesToNatPadded (fanMemory memory low high) (10 + 4 * j) 4 =
+      (fanWord low high j).toNat := by
+  have hshift : Precompile.bytesToNatPadded (fanMemory memory low high) (10 + 4 * j) 4 =
+      Precompile.bytesToNatPadded (fanMemory memory low high) (28 + 4 * j) 4 := by
+    refine Pair13PoolRaw.window_congr _ (10 + 4 * j) (28 + 4 * j) 4 (fun i hi => ?_)
+    rw [fanMemory, copied_getD, if_neg (by omega), if_neg (by omega),
+      copied_getD, if_neg (by omega), if_neg (by omega),
+      scratch3_getD, if_neg (by omega), if_pos (by omega),
+      scratch3_getD, if_pos (by omega),
+      show 10 + 4 * j + i - 10 = 28 + 4 * j + i - 28 by omega]
+  rw [hshift, fan_low_chunk memory low high j (28 + 4 * j) (by omega) rfl]
+
+/-- Both lanes of the low four words, the counterpart of `fan_lanes` below index four. -/
+theorem fan_lanes_low (memory : ByteArray) (low high : UInt256) (i : Nat) (hi : i < 4) :
+    Precompile.bytesToNatPadded (fanMemory memory low high) (Pair13PoolRaw.poolAddr i + 28) 4 =
+        (fanWord low high i).toNat ∧
+      Precompile.bytesToNatPadded (fanMemory memory low high) (Pair13PoolRaw.poolAddr i + 10) 4 =
+        (fanWord low high i).toNat := by
+  have hp : Pair13PoolRaw.poolAddr i = 4 * i := by interval_cases i <;> rfl
+  rw [hp]
+  refine ⟨?_, ?_⟩
+  · rw [show 4 * i + 28 = 28 + 4 * i by omega]
+    exact fan_low_chunk memory low high i (28 + 4 * i) (by omega) rfl
+  · rw [show 4 * i + 10 = 10 + 4 * i by omega]
+    exact fan_low_chunk_10 memory low high i hi
+
 theorem fan_poolWord (memory : ByteArray) (low high : UInt256)
-    (hlow : (MachineState.readWord memory 0).toNat % 2 ^ 144 < 2 ^ 32) (i : Nat) (hi : i < 16) :
+    (_hlow : (MachineState.readWord memory 0).toNat % 2 ^ 144 < 2 ^ 32) (i : Nat) (hi : i < 16) :
     Pair13PoolRaw.cleanPoolWord (fanMemory memory low high) i =
-      dualOf (StaggerScratch.poolWordD (StaggerScratch.scratchMemory memory low high)) i := by
-  by_cases h2 : i ≤ 2
-  · have hsmall : i = 0 ∨ i = 1 ∨ i = 2 := by omega
-    have hp : Pair13PoolRaw.poolAddr i = 4 * i := by interval_cases i <;> rfl
-    rw [Pair13PoolRaw.cleanPoolWord, if_pos hsmall, dualOf, if_pos (show i < 3 by omega),
-      StaggerScratch.poolWordD, if_pos h2, Pair13PoolRaw.rawLoad, hp]
-    apply Word.word_ext
-    rw [Bytes.readWord_toNat, Bytes.readWord_toNat]
-    exact fan_prefix memory low high (4 * i) 32 (by omega)
-  · have h3 : ¬ (i = 0 ∨ i = 1 ∨ i = 2) := by omega
-    have hval : StaggerScratch.poolWordD (StaggerScratch.scratchMemory memory low high) i
-        = fanWord low high i := by
-      rw [StaggerScratch.poolWordD, if_neg h2, StaggerScratch.poolWord_eq _ _ _ _ hi, fanWord]
-    rw [dualOf, if_neg (show ¬ (i < 3) by omega), hval]
-    by_cases he : i = 3
-    · subst he
-      exact Pair13PoolRaw.poolWord_three _ _ (fanWord_lt low high 3)
-        (fan_low_chunk memory low high 3 40 (by omega) (by omega))
-        (fan_zero memory low high hlow)
-    · obtain ⟨hlo, hhi⟩ := fan_lanes memory low high i (by omega) hi
-      exact Pair13PoolRaw.poolWord_dual _ i (by omega) _ (fanWord_lt low high i) hlo hhi
+      dualOf (StaggerScratch.poolWord (StaggerScratch.scratchMemory memory low high)) i := by
+  -- `poolWord`, not `poolWordD`: the composed pool masks words 0..3, while `poolWordD`'s
+  -- `i <= 2` case belongs to StaggerRawNormalPool's DIFFERENT, unmasked 58-row template.
+  have hval : StaggerScratch.poolWord (StaggerScratch.scratchMemory memory low high) i
+      = fanWord low high i := by
+    rw [StaggerScratch.poolWord_eq _ _ _ _ hi, fanWord]
+  rw [dualOf, hval]
+  by_cases h4 : i < 4
+  · obtain ⟨hlo, hhi⟩ := fan_lanes_low memory low high i h4
+    exact Pair13PoolRaw.poolWord_dual _ i _ (fanWord_lt low high i) hlo hhi
+  · obtain ⟨hlo, hhi⟩ := fan_lanes memory low high i (by omega) hi
+    exact Pair13PoolRaw.poolWord_dual _ i _ (fanWord_lt low high i) hlo hhi
 
 theorem fanMemory_size (memory : ByteArray) (low high : UInt256) :
     (fanMemory memory low high).size = max memory.size 146 := by
@@ -437,7 +430,7 @@ theorem fanMemory_size (memory : ByteArray) (low high : UInt256) :
   rw [fanMemory, Pair13PoolRaw.copied, MachineState.writeBytes_size, if_neg h16,
     Pair13PoolRaw.copiedOnce, MachineState.writeBytes_size, if_neg h16',
     Memory.readPadded_size, Memory.readPadded_size,
-    Pair13Endian.scratch3, writeWord_size, writeWord_size, writeWord_size]
+    Pair13Endian.scratch3, writeWord_size, writeWord_size, writeWord_size, writeWord_size]
   omega
 
 /-- Every byte the fan touches lies below the table, so the table erases the whole image. -/
