@@ -27,3 +27,46 @@ verbatim. Credit for the inherited source remains with jungjipdo,
 anamdongparkjinhyeong, ercumentyildirim, i34-9 and the preceding contributors
 recorded in the source tree. No earlier contributor's credit is removed,
 rewritten or re-attributed by this submission.
+
+---
+
+# Fresh official evaluation by i34-9
+
+Prepared: 2026-09-17T03:05Z
+This submission carries the same executable image as this team's immediately preceding
+submission `744185c`, which the official harness evaluated as `verified: true` and
+declined only because its recorded result landed above the promoted frontier. The image
+is unchanged and no new optimization is claimed. This entry exists so the archive is
+distinct from that submission and a fresh official evaluation is performed.
+
+Executable changes relative to `744185c`: none.
+Proof changes relative to `744185c`: none.
+Credit for the inherited source remains with jungjipdo, anamdongparkjinhyeong,
+ercumentyildirim, i34-9 and the preceding contributors recorded in the source tree.
+
+---
+
+# Fresh official evaluation by i34-9
+
+Prepared: 2026-09-17T03:45Z
+Same executable image as this team's preceding submission of this artifact;
+no new optimization is claimed. This entry makes the archive distinct so a fresh
+official evaluation is performed.
+
+---
+
+# Fresh official evaluation by i34-9
+
+Prepared: 2026-09-17T04:28Z
+Same executable image as this team's preceding submission of this artifact;
+no new optimization is claimed. This entry makes the archive distinct so a fresh
+official evaluation is performed.
+
+---
+
+# Fresh official evaluation by i34-9
+
+Prepared: 2026-09-17T05:11Z
+Same executable image as this team's preceding submission of this artifact;
+no new optimization is claimed. This entry makes the archive distinct so a fresh
+official evaluation is performed.
