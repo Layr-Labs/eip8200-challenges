@@ -126,10 +126,10 @@ def block_reds3 : Block Artifact.submissionArtifact .Osaka 4921 prog_reds3 :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 3970 27 4921 prog_reds3
     (by decide) (by rfl) (by rfl) (by decide)
 
-/-- pc 5258..5273（idx 4035..4050）。 -/
+/-- pc 4948..4959 (idx 3997..4008). -/
 def prog_redt : List Instr :=
   [.op (.Dup ⟨8, by decide⟩), .op .ADD, .op (.Swap ⟨3, by decide⟩), .op .POP, .op .POP,
-   .op (.Swap ⟨5, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .LT, .op .JUMPDEST,
+   .op (.Swap ⟨5, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .JUMPDEST, .op .LT,
    .op .ADD, .op (.Swap ⟨4, by decide⟩), .op .JUMP]
 
 def block_redt : Block Artifact.submissionArtifact .Osaka 4948 prog_redt :=

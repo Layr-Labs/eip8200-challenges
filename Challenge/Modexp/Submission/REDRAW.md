@@ -282,3 +282,37 @@ statement and every gas constant is unchanged.
 
 This change is this account's own work on the inherited base; earlier entries are
 retained verbatim and none is rewritten or re-attributed.
+
+---
+
+# Adjacent no-op transposition at the 4956 landing pad
+
+Prepared: 2026-09-17T21:05Z
+Parent: da5f2e264c53290ff01a2ab18fef52baa7fe4874 (current promoted frontier).
+Artifact: raw-byte SHA-256
+  f9e19fd9547fc8696e73347ec09115967bcd96804596e4a83835ee0c81778dec
+Artifact size: 5439 bytes, 4393 instructions.
+
+Executable change: PRESENT, two bytes at one position. The window [4955, 4957)
+reads `LT; JUMPDEST` in the parent and `JUMPDEST; LT` in this image. The JUMPDEST
+at 4956 is one of the four created by the window substitutions recorded above; no
+push immediate anywhere in the image names 4955, 4956 or 4957, no computed target
+formula reaches the offset, and the block that contains the window (`prog_redt`,
+pc 4948..4959) is entered only by fall-through -- its head at 4948 is not a jump
+destination. On every input the two sequences execute the same instructions in
+the same order with the same stack, memory and program counter, so the gas of
+every path through the window is unchanged; the image differs only in which byte
+carries the marker.
+
+Proof changes: PRESENT, in three files under this directory. The byte-level chunk
+that carries the window is regenerated; the instruction list in
+`Proofs/Bytecode/Artifact.lean` swaps the two entries at indices 4004 and 4005 to
+match; and `Proofs/Fast/R4Blocks.lean`'s `prog_redt` is updated in the same way.
+The block's run theorem is unaffected: it executes the program list symbolically
+and its postcondition is unchanged. No program counter moves, so every
+`instructionPC` table, every `isValidJumpDest` certificate and every gas constant
+is unchanged.
+
+This change and the proof that covers it are this account's own work, built on
+the inherited base whose earlier contributors are reflected in the preceding
+entries of this file; none of those entries is rewritten or re-attributed.
