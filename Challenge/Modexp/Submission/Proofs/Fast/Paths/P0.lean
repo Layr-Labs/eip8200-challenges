@@ -59,8 +59,8 @@ def blk1003 :
    opAt 454 .JUMPDEST,
    opAt 455 .JUMPDEST,
    opAt 456 .JUMPDEST,
-   opAt 457 .JUMPDEST,
-   opAt 458 .ISZERO,
+   opAt 457 .ISZERO,
+   opAt 458 .JUMPDEST,
    pushAt 459 2 800,
    opAt 460 .JUMPI]
 

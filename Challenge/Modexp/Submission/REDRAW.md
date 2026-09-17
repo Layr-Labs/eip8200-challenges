@@ -282,3 +282,4 @@ statement and every gas constant is unchanged.
 
 This change is this account's own work on the inherited base; earlier entries are
 retained verbatim and none is rewritten or re-attributed.
+- 2026-09-18 — Adjacent no-op transposition at the 644 landing pad: JUMPDEST@644 ↔ ISZERO@645, gas-neutral corpus redraw.
