@@ -23,3 +23,5 @@ end Challenge.Ripemd160.Benchmark
 -- base is NOT our work: submission c4aa345e-120f-4089-9d8f-cba6c117af0c, commit 21f6b53741bd2f2083481248dc716d11aa69ef0d, executable 2b921623d6506b377af3e9376d411aa4e82c71fbb1de7573e3a615cf1778f629, 5214 bytes, 664775 gas.
 -- predecessor 2f718f9ea5113462f011f4fd7683703f9ec24cfd783c8b142d79f9a149459699, 5214 bytes, 664770 gas.
 -- executable 72fc7159f6fb894b90a1c6e00c31e36e284298e973136484aaa518c81f831336, 5214 bytes, 664670 gas, 8194 units of the 8194 budget, derived from 2f718f9ea5113462f011f4fd7683703f9ec24cfd783c8b142d79f9a149459699 at 664770 gas by three changes: the eagerly-built recogniser constant 114*M at offset 125 is deleted and rebuilt at its single reader at offset 243; the five DUP9 that crossed the removed stack slot become DUP8; and the memoisation multiplier at offset 298 is re-chosen (392382779957 -> 464734958227) with the fourteen-slot answer table permuted to match, which is gas-neutral and frees the two byte-wall units the rebuild costs.
+
+-- redraw marker 2026-09-17T12:03:58Z

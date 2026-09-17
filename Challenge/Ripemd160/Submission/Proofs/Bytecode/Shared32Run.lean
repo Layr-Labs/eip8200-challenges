@@ -60,7 +60,7 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     s3, s2, s1, scratch, Shared32Table.tableMemory, PoolShape.resultMemory, PoolShape.poolValue,
     Bool.false_eq_true, if_false, Shared32Scratch.fanMemory, rest, stk] using h
 
-theorem end_pc : pcAfter (UInt256.ofNat 511) template = UInt256.ofNat 862 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 509) template = UInt256.ofNat 860 := by decide
 
 #print axioms run_table
 #print axioms end_pc
