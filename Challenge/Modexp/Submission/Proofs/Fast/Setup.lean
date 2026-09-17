@@ -2145,4 +2145,4 @@ theorem fastPath_em (input : ByteArray) : FastPath input ∨ ¬ FastPath input :
 
 
 end Challenge.Modexp.Submission.Proofs.Fast.Setup
--- redraw marker 2026-09-17T03:32:05Z
+-- redraw marker 2026-09-17T06:24:05Z
