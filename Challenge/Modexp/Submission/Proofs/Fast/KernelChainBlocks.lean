@@ -29,32 +29,32 @@ def environment (s : State)
   ⟨by change Challenge.Modexp.submissionBytecode.size < 2^256; rw [Challenge.Modexp.submissionBytecode_size]; decide,
     hcode, hfork, hrun, hnp⟩
 
-def l1Block1 : Block Artifact.submissionArtifact .Osaka 3494 (stepProgram 192 2304) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2814 31 3494 (stepProgram 192 2304)
+def l1Block1 : Block Artifact.submissionArtifact .Osaka 3380 (stepProgram 192 2304) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2509 31 3380 (stepProgram 192 2304)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Block2 : Block Artifact.submissionArtifact .Osaka 3531 (stepProgram 160 2272) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2845 31 3531 (stepProgram 160 2272)
+def l1Block2 : Block Artifact.submissionArtifact .Osaka 3417 (stepProgram 160 2272) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2540 31 3417 (stepProgram 160 2272)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Block3 : Block Artifact.submissionArtifact .Osaka 3568 (stepProgram 128 2240) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2876 31 3568 (stepProgram 128 2240)
+def l1Block3 : Block Artifact.submissionArtifact .Osaka 3454 (stepProgram 128 2240) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2571 31 3454 (stepProgram 128 2240)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Block4 : Block Artifact.submissionArtifact .Osaka 3605 (stepProgram 96 2208) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2907 31 3605 (stepProgram 96 2208)
+def l1Block4 : Block Artifact.submissionArtifact .Osaka 3491 (stepProgram 96 2208) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2602 31 3491 (stepProgram 96 2208)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Block5 : Block Artifact.submissionArtifact .Osaka 3642 (stepProgram 64 2176) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2938 31 3642 (stepProgram 64 2176)
+def l1Block5 : Block Artifact.submissionArtifact .Osaka 3528 (stepProgram 64 2176) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2633 31 3528 (stepProgram 64 2176)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Block6 : Block Artifact.submissionArtifact .Osaka 3679 (stepProgram 32 2144) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2969 31 3679 (stepProgram 32 2144)
+def l1Block6 : Block Artifact.submissionArtifact .Osaka 3565 (stepProgram 32 2144) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2664 31 3565 (stepProgram 32 2144)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Block7 : Block Artifact.submissionArtifact .Osaka 3716 (stepProgram 0 2112) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3000 31 3716 (stepProgram 0 2112)
+def l1Block7 : Block Artifact.submissionArtifact .Osaka 3602 (stepProgram 0 2112) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2695 31 3602 (stepProgram 0 2112)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-! ## The private four-limb ladder copy (5172-5313)
@@ -64,50 +64,48 @@ The four-limb multiply rows no longer share the ladder at 3528: the setup comput
 the copy is byte-identical, blocks k5..k7 reuse the very same `stepProgram` literals -- only
 the instruction indices and program counters differ. -/
 
-def l1Block5Copy : Block Artifact.submissionArtifact .Osaka 5286 (stepProgram 64 2176) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4280 31 5286 (stepProgram 64 2176)
+def l1Block5Copy : Block Artifact.submissionArtifact .Osaka 5172 (stepProgram 64 2176) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3975 31 5172 (stepProgram 64 2176)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Block6Copy : Block Artifact.submissionArtifact .Osaka 5323 (stepProgram 32 2144) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4311 31 5323 (stepProgram 32 2144)
+def l1Block6Copy : Block Artifact.submissionArtifact .Osaka 5209 (stepProgram 32 2144) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4006 31 5209 (stepProgram 32 2144)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l1Block7Copy : Block Artifact.submissionArtifact .Osaka 5360 (stepProgram 0 2112) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4342 31 5360 (stepProgram 0 2112)
+def l1Block7Copy : Block Artifact.submissionArtifact .Osaka 5246 (stepProgram 0 2112) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4037 31 5246 (stepProgram 0 2112)
     (by decide) (by rfl) (by rfl) (by decide)
 
-theorem jumpDest5172 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5286 = true :=
-  Artifact.isValidJumpDest_index 4280 (by rfl)
-theorem jumpDest5209 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5323 = true :=
-  Artifact.isValidJumpDest_index 4311 (by rfl)
-theorem jumpDest5246 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5360 = true :=
-  Artifact.isValidJumpDest_index 4342 (by rfl)
+theorem jumpDest5172 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5172 = true :=
+  Artifact.isValidJumpDest_index 3976 (by rfl)
+theorem jumpDest5209 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5209 = true :=
+  Artifact.isValidJumpDest_index 4007 (by rfl)
+theorem jumpDest5246 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5246 = true :=
+  Artifact.isValidJumpDest_index 4038 (by rfl)
 
 /-! ## Jump destinations of the chain entries (block `k` for `k = 1..7`, and the
 middle `JUMPDEST` = entry `k = 8`) -/
 
-theorem jumpDest4068 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3494 = true :=
-  Artifact.isValidJumpDest_index 2814 (by rfl)
-theorem jumpDest4106 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3531 = true :=
-  Artifact.isValidJumpDest_index 2845 (by rfl)
-theorem jumpDest4144 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3568 = true :=
-  Artifact.isValidJumpDest_index 2876 (by rfl)
-theorem jumpDest4182 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3605 = true :=
-  Artifact.isValidJumpDest_index 2907 (by rfl)
-theorem jumpDest4220 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3642 = true :=
-  Artifact.isValidJumpDest_index 2938 (by rfl)
-theorem jumpDest4258 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3679 = true :=
-  Artifact.isValidJumpDest_index 2969 (by rfl)
-theorem jumpDest4296 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3716 = true :=
-  Artifact.isValidJumpDest_index 3000 (by rfl)
-theorem jumpDest4334 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3753 = true :=
-  Artifact.isValidJumpDest_index 3031 (by rfl)
+theorem jumpDest4068 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3380 = true :=
+  Artifact.isValidJumpDest_index 2510 (by rfl)
+theorem jumpDest4106 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3417 = true :=
+  Artifact.isValidJumpDest_index 2541 (by rfl)
+theorem jumpDest4144 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3454 = true :=
+  Artifact.isValidJumpDest_index 2572 (by rfl)
+theorem jumpDest4182 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3491 = true :=
+  Artifact.isValidJumpDest_index 2603 (by rfl)
+theorem jumpDest4220 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3528 = true :=
+  Artifact.isValidJumpDest_index 2634 (by rfl)
+theorem jumpDest4258 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3565 = true :=
+  Artifact.isValidJumpDest_index 2665 (by rfl)
+theorem jumpDest4296 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3602 = true :=
+  Artifact.isValidJumpDest_index 2696 (by rfl)
+theorem jumpDest4334 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3639 = true :=
+  Artifact.isValidJumpDest_index 2727 (by rfl)
 
-/-- Every chain entry `3494 + 37(k-1)`, `1 ≤ k ≤ 8`, is a valid jump destination.
-Base transcribed: the eight cited theorems prove pcs 3494 3531 3568 3605 3642 3679
-3716 3753, all confirmed JUMPDESTs in `fe8e9f61e6d3764a`; 3494 is also `l1Target 8`. -/
+/-- Every chain entry `4296 + 37(k-1)`, `1 ≤ k ≤ 8`, is a valid jump destination. -/
 theorem jumpDest_l1Entry (k : Nat) (hk1 : 1 ≤ k) (hk8 : k ≤ 8) :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (3494 + 37 * (k - 1)) = true := by
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (3380 + 37 * (k - 1)) = true := by
   match k, hk1, hk8 with
   | 1, _, _ => exact jumpDest4068
   | 2, _, _ => exact jumpDest4106
@@ -120,14 +118,14 @@ theorem jumpDest_l1Entry (k : Nat) (hk1 : 1 ≤ k) (hk8 : k ≤ 8) :
   | 0, h, _ => exact absurd h (by decide)
   | k + 9, _, h => exact absurd h (by omega)
 
-/-- The copy's middle-block entry, pc 5397 (= `5138 + 37*7`). -/
-theorem jumpDest5283 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5397 = true :=
-  Artifact.isValidJumpDest_index 4373 (by rfl)
+/-- The copy's middle-block entry, 5283 (= `5024 + 37*7`). -/
+theorem jumpDest5283 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5283 = true :=
+  Artifact.isValidJumpDest_index 4069 (by rfl)
 
-/-- Every chain entry of the private four-limb ladder copy, `5138 + 37(k-1)` for
+/-- Every chain entry of the private four-limb ladder copy, `5024 + 37(k-1)` for
 `5 ≤ k ≤ 8`, is a valid jump destination -- the mirror of `jumpDest_l1Entry`. -/
 theorem jumpDest_l1EntryCopy (k : Nat) (hk5 : 5 ≤ k) (hk8 : k ≤ 8) :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (5138 + 37 * (k - 1)) = true := by
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (5024 + 37 * (k - 1)) = true := by
   match k, hk5, hk8 with
   | 5, _, _ => exact jumpDest5172
   | 6, _, _ => exact jumpDest5209

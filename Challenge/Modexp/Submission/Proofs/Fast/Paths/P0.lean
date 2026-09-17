@@ -21,7 +21,7 @@ def blk977 :
    opAt 428 .SUB,
    pushAt 429 1 223,
    opAt 430 .LT,
-   pushAt 431 2 794,
+   pushAt 431 2 1059,
    opAt 432 .JUMPI]
 
 /-- Instructions 986..989, pc 1133..1137.  The EIP-7823 oversize test that used to
@@ -61,7 +61,7 @@ def blk1003 :
    opAt 456 .JUMPDEST,
    opAt 457 .JUMPDEST,
    opAt 458 .ISZERO,
-   pushAt 459 2 800,
+   pushAt 459 2 1065,
    opAt 460 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast
