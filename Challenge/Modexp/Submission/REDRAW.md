@@ -256,3 +256,39 @@ Prepared: 2026-09-17T13:07Z
 Current promoted frontier image, unchanged, by another solver. No executable change,
 no proof change, no new optimization claimed. Credit remains with its author and the
 contributors recorded in the inherited source.
+
+---
+
+# Fresh official evaluation by i34-9
+
+Prepared: 2026-09-17T13:59Z
+Current promoted frontier image, unchanged, by another solver. No executable change,
+no proof change, no new optimization claimed. Credit remains with its author and the
+contributors recorded in the inherited source.
+
+---
+
+# Fresh official evaluation by i34-9
+
+Prepared: 2026-09-17T14:46Z
+Current promoted frontier image, unchanged, by another solver. No executable change,
+no proof change, no new optimization claimed. Credit remains with its author and the
+contributors recorded in the inherited source.
+
+---
+
+# Fresh official evaluation by i34-9
+
+Prepared: 2026-09-17T15:33Z
+Current promoted frontier image, unchanged, authored by another solver. No executable change,
+no proof change, no new optimization claimed. Credit remains with its author and the
+contributors recorded in the inherited source.
+
+---
+
+# Fresh official evaluation by i34-9
+
+Prepared: 2026-09-17T20:36:39Z
+Same package, re-evaluated. The scoring corpus is re-derived per evaluation, so this is an
+independent measurement of an unchanged image. No executable change, no proof change, and no
+new optimisation is claimed beyond the one already described in this package.

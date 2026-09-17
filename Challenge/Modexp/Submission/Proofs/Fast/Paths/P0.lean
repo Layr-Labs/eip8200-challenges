@@ -36,7 +36,7 @@ def blk986 :
    pushAt 435 0 0,
    opAt 436 .CALLDATALOAD]
 
-/-- Instructions 1003..1027, pc 1353..1384. -/
+/-- Instruction indices 437..456, pc 623..649. -/
 def blk1003 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 437 1 31,
@@ -54,14 +54,10 @@ def blk1003 :
    opAt 449 .ADD,
    opAt 450 (.Dup ⟨0, by decide⟩),
    opAt 451 .CALLDATALOAD,
-   pushAt 452 1 255,
+   pushAt 452 5 255,
    opAt 453 .SHR,
-   opAt 454 .JUMPDEST,
-   opAt 455 .JUMPDEST,
-   opAt 456 .JUMPDEST,
-   opAt 457 .JUMPDEST,
-   opAt 458 .ISZERO,
-   pushAt 459 2 800,
-   opAt 460 .JUMPI]
+   opAt 454 .ISZERO,
+   pushAt 455 2 800,
+   opAt 456 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast

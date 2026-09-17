@@ -420,56 +420,54 @@ def returnedState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
            hReturn := MachineState.readPadded mem (256 + 32 * n - msize) msize }
 
 
-/-! Program-counter certificates for `blk1333` (instruction indices 566..573,
+/-! Program-counter certificates for `blk1333` (instruction indices 554..560,
 pc 784..793).  `Fast.Defs` used to cover these with a `fastPC` range lemma, which
 was dropped when the unroll made its index range non-contiguous; these are the
 individual facts the block reduction actually needs, in the same form
-`Fast.Setup` uses for `blk1341`/`blk1351`.  Transcribed from the decode of the
-5,428-byte artifact `fe8e9f61e6d3764a`, where indices 566..573 read
-JUMPDEST, DUP5, DUP1, DUP3, PUSH2 0x100, ADD, SUB, RETURN -- matching `blk1333`
-instruction for instruction.  Note the 788 -> 791 step: index 570 is a `PUSH2`. -/
-private theorem pcIdx566 :
-    Artifact.submissionArtifact.instructionPC 566 = 784 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
+`Fast.Setup` uses for `blk1341`/`blk1351`.  Read off the decode of the 5,439-byte
+artifact this tree carries, where indices 554..560 are
+DUP5, DUP1, DUP3, PUSH3 0x100, ADD, SUB, RETURN -- matching `blk1333` instruction
+for instruction.  The `JUMPDEST` that used to head the block at pc 784 is deleted:
+no `PUSH` literal in the image holds 784 and no computed jump reaches it.  Note the
+787 -> 791 step: index 557 is a `PUSH3` (a zero-extended `PUSH2`, same value, same
+3 gas), which is what pays for the deleted byte and keeps pc 791 where it was. -/
 private theorem pcIdx567 :
-    Artifact.submissionArtifact.instructionPC 567 = 785 := by
+    Artifact.submissionArtifact.instructionPC 554 = 784 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx568 :
-    Artifact.submissionArtifact.instructionPC 568 = 786 := by
+    Artifact.submissionArtifact.instructionPC 555 = 785 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx569 :
-    Artifact.submissionArtifact.instructionPC 569 = 787 := by
+    Artifact.submissionArtifact.instructionPC 556 = 786 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx570 :
-    Artifact.submissionArtifact.instructionPC 570 = 788 := by
+    Artifact.submissionArtifact.instructionPC 557 = 787 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx571 :
-    Artifact.submissionArtifact.instructionPC 571 = 791 := by
+    Artifact.submissionArtifact.instructionPC 558 = 791 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx572 :
-    Artifact.submissionArtifact.instructionPC 572 = 792 := by
+    Artifact.submissionArtifact.instructionPC 559 = 792 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx573 :
-    Artifact.submissionArtifact.instructionPC 573 = 793 := by
+    Artifact.submissionArtifact.instructionPC 560 = 793 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 set_option linter.unusedSimpArgs false in
-/-- `blk1333` (instruction indices 566..573, pc 784..793):
+/-- `blk1333` (instruction indices 554..560, pc 784..793):
 `RETURN(ACC + s32 - msize, msize)`. -/
 theorem run_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hm : 32 < msize) (hm32 : msize ≤ 32 * n)
@@ -497,7 +495,7 @@ theorem run_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     finHead, returnedState, outer, hrun, hsub, hmodOff, hmodSz, hfix,
-    pcIdx566, pcIdx567, pcIdx568, pcIdx569, pcIdx570, pcIdx571, pcIdx572, pcIdx573,
+    pcIdx567, pcIdx568, pcIdx569, pcIdx570, pcIdx571, pcIdx572, pcIdx573,
     State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -1969,7 +1967,7 @@ theorem fastSetup_notPrecompile (input : ByteArray) :
       (Setup.fastSetupState input).executionEnv.codeAddr = false :=
   Challenge.Modexp.deployAddress_not_precompile
 
-/-- The setup block ends at the dispatcher entry (pc 2474, instruction index 2050)
+/-- The setup block ends at the dispatcher entry (pc 2474, instruction index 2031)
 with the plain outer frame, instead of at the Montgomery-form conversion call.
 `Shift.dispState` is definitionally this state; it cannot be named here because
 `ShiftStates` sits above this module.
@@ -1981,7 +1979,7 @@ the decode rather than reconciled against each other: pc 2474 is a `JUMPDEST`
 reached by the `PUSH2 0xcff; JUMP` at indices 2048..2049 and followed by
 `DUP1; DUP4; EQ`, which is the dispatcher's compare chain.  `Fast.Setup` agrees
 from two directions -- `fastSetupState_pc` is `UInt256.ofNat 2474` by `rfl`, and
-its `jumpDest3296` certifies pc 2474 via `isValidJumpDest_index 2050`. -/
+its `jumpDest3296` certifies pc 2474 via `isValidJumpDest_index 2017`. -/
 theorem fastSetup_entry_eq (input : ByteArray) :
     Setup.fastSetupState input =
       retTo (Setup.fastSetupState input) (Setup.fastSetupMemory input) (UInt256.ofNat 2474)

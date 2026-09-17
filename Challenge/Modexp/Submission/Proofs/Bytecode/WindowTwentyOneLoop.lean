@@ -13,12 +13,14 @@ distinct straight-line regions rather than one block reached three times.
 
 | pass | stores + staging head | body (21 nibbles) | link |
 |------|-----------------------|-------------------|------|
-| 0    | 951..969 (`JUMPDEST` + `storesProgram`) | 970..1412  | 1413..1435 |
+| 0    | 951..969 (`storesProgram`)              | 970..1412  | 1413..1435 |
 | 1    | carried by pass 0's link                | 1436..1878 | 1879..1901 |
 | 2    | carried by pass 1's link                | 1902..2344 | falls into the return at 2345 |
 
-`JUMPDEST` at 951 is the only one in the region and nothing pushes it; it is the
-fall-through head left by the unroller.  Because control never returns to it, the
+The `JUMPDEST` at 951 was the only one in the region and nothing pushed it; it was the
+fall-through head left by the unroller, and it is now deleted -- the byte is absorbed
+into the `PUSH2 4` of `setupTailProgram`, so pc 951 is still the loop head and pc 970
+is still the body.  Because control never returned to it, the
 old loop tail -- the counter decrement `PUSH1 1; DUP6; SUB; SWAP5` and the
 `PUSH2 951; JUMPI` -- is gone.  All that survives of it is the four-instruction
 exponent shift `SWAP2; PUSH1 84; SHL; SWAP2`, which opens each `linkProgram`.
@@ -35,40 +37,60 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneLoop
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open WindowNibbleKernel
 
-/-- The loop head at 951.  Nothing jumps to it; it costs no instruction. -/
+/-- The loop head at 951.  Nothing jumps to it; it costs no instruction, and since
+sub-lane B it costs no byte either. -/
 def entryProgram : List Instr := []
 
-/-- The two exponent-copy stores, without the leading `JUMPDEST`: eight
-instructions, thirteen bytes. -/
+/-- The two exponent-copy stores: eight instructions, fourteen bytes.  The `PUSH2 4`
+is a zero-extended `PUSH1 4` -- same value, same 3 gas, one byte wider.  That byte is
+what pays for the deleted `JUMPDEST` at pc 951, which is why the stores now begin at
+951 rather than 952 and the body still begins at 970. -/
 def setupTailProgram : List Instr :=
-  [.op (.Dup ⟨2, by decide⟩), .push 1 4, .op .SHR, .push 2 512, .op .MSTORE,
+  [.op (.Dup ⟨2, by decide⟩), .push 2 4, .op .SHR, .push 2 512, .op .MSTORE,
    .op (.Dup ⟨2, by decide⟩), .push 2 544, .op .MSTORE]
 
 /-- The stores followed by the five staging instructions the body expects:
-thirteen instructions, eighteen bytes.  Shared by the trampoline and the link. -/
+thirteen instructions, nineteen bytes.  Used at pc 951 only -- the two inter-pass
+links use `linkProgram`/`linkProgramB`, which are a dead `PUSH16; POP` span plus the
+same staging head. -/
 def storesProgram : List Instr := setupTailProgram ++ WindowTwentyOneStage.stageHead
 
-/-- The first pass's trampoline at 951; only this copy carries the `JUMPDEST`. -/
-def trampolineProgram : List Instr := .op .JUMPDEST :: storesProgram
+/-- The first pass's trampoline at 951.  The fall-through `JUMPDEST` that used to head
+it is deleted: nothing jumps to 951, so the byte bought nothing but one gas per pass. -/
+def trampolineProgram : List Instr := storesProgram
 
 /-- The first inter-pass span (pc 1413-1430).  The exponent is never shifted now: one
 store serves all sixty-two addressed digits, so these eighteen bytes carry no work.
-Ten `JUMPDEST` and a dead `PUSH6; POP`: twelve instructions, eighteen bytes, fifteen gas,
-which is the provable minimum for a stack-neutral filler of that shape. -/
-def padProgramA : List Instr :=
-  [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .push 6 100447932865371, .op .POP]
 
-/-- The second inter-pass span (pc 1879-1896).  Eleven instructions in the same eighteen
-bytes -- one fewer than `padProgramA`, which is what pays for the extra instruction the
-final group's nibble-0 lookup costs, so the instruction COUNT of the artifact is
-unchanged and the RETURN block's index never moves.  The `PUSH7` opcode sits at 1888
-deliberately: 1888 is the only pc in either span that the artifact itself pushes. -/
+The span used to be spelled as ten `JUMPDEST` and a dead `PUSH6; POP` -- twelve
+instructions and fifteen gas.  It is now a single `PUSH16` at 1413 whose sixteen-byte
+immediate covers pc 1414..1429, followed by the same `POP` at 1430: **two instructions,
+the same eighteen bytes, five gas**.  Length is unchanged, so every pc from 1431 on is
+unmoved, and the span is still stack-neutral -- `PUSH16` pushes one word and `POP`
+removes it on the spot, so the pushed value is never read.
+
+The immediate is sixteen zero bytes.  Its value is unconstrained precisely because the
+`POP` discards it, and zeroing it keeps the image's 64-byte-chunk value density -- and
+hence the build's `w8` figure -- identical to the pre-edit artifact.
+
+This is what the earlier note called "the provable minimum for a stack-neutral filler
+of that shape"; that claim was about the `JUMPDEST` spelling, not about the span, and
+it is ten gas short of the minimum for the span. -/
+def padProgramA : List Instr :=
+  [.push 16 0, .op .POP]
+
+/-- The second inter-pass span (pc 1879-1896): the same rewrite, a `PUSH16` at 1879 with
+a sixteen-zero-byte immediate over pc 1880..1895 and the same `POP` at 1896.  The two
+spans now hold the same number of instructions, where the old spelling held twelve and
+eleven.
+
+The old note recorded that the `PUSH7` opcode sat at 1888 deliberately, 1888 being the
+only pc in either span the artifact itself pushes.  That is still true of the bytes and
+is still the reason this rewrite is safe to make: pc 1888 is the `PUSH7` opcode byte and
+was never a `JUMPDEST`, and both of its uses (at pc 4111 and pc 4357) are `MSTORE`
+addresses, not jump operands.  No pc inside either span is pushed anywhere. -/
 def padProgramB : List Instr :=
-  [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .push 7 25714670813535067, .op .POP]
+  [.push 16 0, .op .POP]
 
 /-- Between two passes: the dead span, then replay the staging head.  Twenty-three bytes. -/
 def linkProgram : List Instr := padProgramA ++ WindowTwentyOneStage.stageHead
@@ -146,12 +168,13 @@ theorem run_entry (template : State) (base modulus exponent : UInt256)
     some (entryState template base modulus exponent rest) := by
   rfl
 
+set_option linter.unusedSimpArgs false in
 theorem run_setupTail (template : State) (pc : UInt256) (mem : ByteArray) (active : Nat)
     (hactive : active ≤ 18) (modulus accumulator exponent counter : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions setupTailProgram
       (WindowTwentyOneGroup.state template pc mem active modulus accumulator exponent counter 0 rest) =
-    some (WindowTwentyOneLookup.framed template (advancePC 13 pc)
+    some (WindowTwentyOneLookup.framed template (advancePC 14 pc)
       (WindowCopyMemory.copyMem mem exponent) 18
       ([accumulator, modulus, exponent, UInt256.ofNat 480, counter] ++ rest)) := by
   have hcap5 : rest.length + 5 < 1024 := by omega
@@ -175,51 +198,45 @@ theorem run_setupTail (template : State) (pc : UInt256) (mem : ByteArray) (activ
     Challenge.EvmProof.Word.literal_eq_ofNat,
     advancePC, succ_eq_add, hpush, hpush3, word_add_assoc]
 
-/-- The stores and the staging head, shared by the trampoline at 951 and the two
-links at 1413 and 1879.  Eighteen bytes. -/
+/-- The stores and the staging head at pc 951.  Nineteen bytes. -/
 theorem run_stores (template : State) (pc : UInt256) (mem : ByteArray) (active : Nat)
     (hactive : active ≤ 18) (modulus accumulator exponent counter : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions storesProgram
       (WindowTwentyOneGroup.state template pc mem active modulus accumulator exponent counter 0 rest) =
-    some (WindowTwentyOneGroup.headState template (advancePC 18 pc)
+    some (WindowTwentyOneGroup.headState template (advancePC 19 pc)
       (WindowCopyMemory.copyMem mem exponent) 18 modulus accumulator exponent counter rest) := by
   have hs := run_setupTail template pc mem active hactive modulus accumulator exponent counter rest hrest
-  let core := WindowTwentyOneLookup.framed template (advancePC 13 pc)
+  let core := WindowTwentyOneLookup.framed template (advancePC 14 pc)
     (WindowCopyMemory.copyMem mem exponent) 18 []
-  have hh := WindowTwentyOneStage.run_stageHead core (advancePC 13 pc)
+  have hh := WindowTwentyOneStage.run_stageHead core (advancePC 14 pc)
     accumulator modulus exponent (UInt256.ofNat 480) counter rest hrest
   have hh' : runInstructions WindowTwentyOneStage.stageHead
-      (WindowTwentyOneLookup.framed template (advancePC 13 pc)
+      (WindowTwentyOneLookup.framed template (advancePC 14 pc)
         (WindowCopyMemory.copyMem mem exponent) 18
         ([accumulator, modulus, exponent, UInt256.ofNat 480, counter] ++ rest)) =
-      some (WindowTwentyOneLookup.framed template (advancePC 5 (advancePC 13 pc))
+      some (WindowTwentyOneLookup.framed template (advancePC 5 (advancePC 14 pc))
         (WindowCopyMemory.copyMem mem exponent) 18
         (List.replicate 5 modulus ++
           ([accumulator, modulus, exponent, UInt256.ofNat 480, counter] ++ rest))) := by
     simpa only [core, WindowTwentyOneStage.framed, WindowTwentyOneLookup.framed] using hh
   have hall := runInstructions_append_some _ _ _ _ _ hs hh'
-  have hpc : advancePC 5 (advancePC 13 pc) = advancePC 18 pc := rfl
+  have hpc : advancePC 5 (advancePC 14 pc) = advancePC 19 pc := rfl
   simpa only [storesProgram, WindowTwentyOneGroup.headState, hpc] using hall
 
-/-- The first pass's trampoline: the fall-through `JUMPDEST` at 951 and the
-stores, landing on the body at 970. -/
+/-- The first pass's trampoline: the stores, starting at the loop head 951 and landing
+on the body at 970.  Nineteen bytes, thirteen instructions -- the `JUMPDEST` that used
+to occupy pc 951 is deleted and the byte lives inside the `PUSH2 4`. -/
 theorem run_trampoline (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions trampolineProgram (entryState template base modulus exponent rest) =
     some (headState template (UInt256.ofNat 970) base modulus exponent 0 rest) := by
-  have hhead := WindowTwentyOneTail.run_head template (UInt256.ofNat 951)
-    (WindowTableMemory.tableMemory base modulus) 16 modulus
-    (WindowTwentyOneMath.accumulator base modulus exponent.toNat 0)
-    (eAt exponent 0) (UInt256.ofNat 2) rest hrest
-  have hs := run_stores template (UInt256.ofNat 951).succ
+  have hs := run_stores template (UInt256.ofNat 951)
     (WindowTableMemory.tableMemory base modulus) 16 (by omega) modulus
     (WindowTwentyOneMath.accumulator base modulus exponent.toNat 0)
     (eAt exponent 0) (UInt256.ofNat 2) rest hrest
-  have hall := runInstructions_append_some _ _ _ _ _ hhead hs
-  have hpc : advancePC 18 (UInt256.ofNat 951).succ = UInt256.ofNat 970 := by decide
-  simpa only [trampolineProgram, entryState, headState, loopMem, hpc,
-    List.cons_append, List.nil_append] using hall
+  have hpc : advancePC 19 (UInt256.ofNat 951) = UInt256.ofNat 970 := by decide
+  simpa only [trampolineProgram, entryState, headState, loopMem, hpc] using hs
 
 /-- One pass's twenty-one nibbles at body pc 970 or 1436.  Four hundred and forty-three
 bytes; the exponent and the dead counter are preserved. -/
@@ -267,9 +284,11 @@ private theorem run_padA (template : State) (pc : UInt256) (mem : ByteArray)
       exponent counter 0 rest) := by
   have hcap5 : rest.length + 5 < 1024 := by omega
   have hcap6 : rest.length + 6 < 1024 := by omega
-  have hpush : UInt256.ofNat 7 =
-      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
-      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
+  have hpush : UInt256.ofNat 17 =
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
+      UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
   simp [runInstructions, padProgramA, WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
     Challenge.EvmProof.Stepper.runInstr, hcap5, hcap6, advancePC, succ_eq_add, hpush, word_add_assoc]
 
@@ -282,9 +301,11 @@ private theorem run_padB (template : State) (pc : UInt256) (mem : ByteArray)
       exponent counter 0 rest) := by
   have hcap5 : rest.length + 5 < 1024 := by omega
   have hcap6 : rest.length + 6 < 1024 := by omega
-  have hpush : UInt256.ofNat 8 =
-      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
-      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
+  have hpush : UInt256.ofNat 17 =
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
+      UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
   simp [runInstructions, padProgramB, WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
     Challenge.EvmProof.Stepper.runInstr, hcap5, hcap6, advancePC, succ_eq_add, hpush, word_add_assoc]
 
