@@ -21,20 +21,20 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
 open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro CiosCached SquareModel CarryRowModel CarryScratchAgreement
 
-def program : List Instr := R8ZeroFirstRow.program (UInt256.ofNat 3531)
+def program : List Instr := R8ZeroFirstRow.program (UInt256.ofNat 3417)
 
-def block : Block Artifact.submissionArtifact .Osaka 5003 program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4034 213 5003 program
+def block : Block Artifact.submissionArtifact .Osaka 4889 program :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3736 213 4889 program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
 
-theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5003 = true :=
-  Artifact.isValidJumpDest_index 4034 (by rfl)
+theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4889 = true :=
+  Artifact.isValidJumpDest_index 3736 (by rfl)
 
 /-- The second-loop entry the row jumps to (`l2Target 8`). -/
-theorem jumpDestL2 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3782 = true :=
-  Artifact.isValidJumpDest_index 3058 (by rfl)
+theorem jumpDestL2 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3668 = true :=
+  Artifact.isValidJumpDest_index 2750 (by rfl)
 
-theorem l2Target_eight_toNat : (l2Target 8).toNat = 3782 := by decide
+theorem l2Target_eight_toNat : (l2Target 8).toNat = 3668 := by decide
 
 theorem allOnes_eq_maxWord : allOnes = maxWord := rfl
 
@@ -54,18 +54,18 @@ vocabulary of the square rows. -/
 theorem run_rowZero (s : State) (mem : ByteArray) (pc hd : UInt256) (e : Nat)
     (inv m0 m96 m64 m32 aprev : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 3782 = true) :
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 3668 = true) :
     runInstructions program
       { outState s mem 2368 8 0 hd (UInt256.ofNat e) inv m0
         (UInt256.ofNat 2336 :: m96 :: m64 :: m32 :: aprev :: rest) with pc := pc } =
-    some (R8ZeroFirstRow.result { s with memory := mem } hd (UInt256.ofNat 3531) negative32
+    some (R8ZeroFirstRow.result { s with memory := mem } hd (UInt256.ofNat 3417) negative32
       (l2Target 8) inv m0 m96 m64 m32 rest) := by
   have hj : Decode.isValidJumpDest ({ s with memory := mem } : State).executionEnv.code
       (l2Target 8).toNat = true := by
     rw [l2Target_eight_toNat]; exact hjump
   rw [entry_eq]
   exact R8ZeroFirstRow.run_program { s with memory := mem } pc hd (UInt256.ofNat e)
-    (UInt256.ofNat 3531) negative32 (l2Target 8) inv m0 m96 m64 m32 aprev rest hcap hact hj
+    (UInt256.ofNat 3417) negative32 (l2Target 8) inv m0 m96 m64 m32 aprev rest hcap hact hj
 
 def gasSteps_prologue (s : State) (mem : ByteArray) (e : Nat)
     (inv m0 m96 m64 m32 aprev : UInt256) (rest : List UInt256)
@@ -76,12 +76,12 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (e : Nat)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      { outState s mem 2368 8 0 (UInt256.ofNat 4179) (UInt256.ofNat e) inv m0
-        (UInt256.ofNat 2336 :: m96 :: m64 :: m32 :: aprev :: rest) with pc := UInt256.ofNat 5003 }
-      (R8ZeroFirstRow.result { s with memory := mem } (UInt256.ofNat 4179) (UInt256.ofNat 3531)
+      { outState s mem 2368 8 0 (UInt256.ofNat 4065) (UInt256.ofNat e) inv m0
+        (UInt256.ofNat 2336 :: m96 :: m64 :: m32 :: aprev :: rest) with pc := UInt256.ofNat 4889 }
+      (R8ZeroFirstRow.result { s with memory := mem } (UInt256.ofNat 4065) (UInt256.ofNat 3417)
         negative32 (l2Target 8) inv m0 m96 m64 m32 rest) :=
   SquareRow.stepsOf block
-    (run_rowZero s mem (UInt256.ofNat 5003) (UInt256.ofNat 4179) e inv m0 m96 m64 m32 aprev rest
+    (run_rowZero s mem (UInt256.ofNat 4889) (UInt256.ofNat 4065) e inv m0 m96 m64 m32 aprev rest
       hcap hact (by rw [hcode]; exact jumpDestL2)) rfl hcode hfork hrun hnp
 
 #print axioms run_rowZero

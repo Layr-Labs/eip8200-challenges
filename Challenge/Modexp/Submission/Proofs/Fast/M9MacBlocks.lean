@@ -29,75 +29,70 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 
 /-- Block 0: instructions 1977..2007, pc 2682..2718,
-`-N` limb at 1504 (0x5e0), `t` limb at 2336 (0x920).
-
-Block 0 carries the `PUSH0` schedule (`headZeroProgram`, instruction 1992 / pc 2699), not the
-general `headProgram`: it is the row head of every chain that reaches it, so its incoming carry
-is the literal zero `entryProgram` pushes at pc 2676.  `block4` keeps `headProgram` — pc 2827 is
-also *fallen into* from block 3, whose outgoing carry is not zero. -/
-def block0 : Block Artifact.submissionArtifact .Osaka 2800 (headZeroProgram 1504 2336) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2287 31 2800 (headZeroProgram 1504 2336)
+`-N` limb at 1504 (0x5e0), `t` limb at 2336 (0x920). -/
+def block0 : Block Artifact.submissionArtifact .Osaka 2682 (headProgram 1504 2336) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1977 31 2682 (headProgram 1504 2336)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 1: instructions 2008..2037, pc 2719..2754,
 `-N` limb at 1472 (0x5c0), `t` limb at 2304 (0x900). -/
-def block1 : Block Artifact.submissionArtifact .Osaka 2837 (blockProgram 1472 2304) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2318 30 2837 (blockProgram 1472 2304)
+def block1 : Block Artifact.submissionArtifact .Osaka 2719 (blockProgram 1472 2304) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2008 30 2719 (blockProgram 1472 2304)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 2: instructions 2038..2067, pc 2755..2790,
 `-N` limb at 1440 (0x5a0), `t` limb at 2272 (0x8e0). -/
-def block2 : Block Artifact.submissionArtifact .Osaka 2873 (blockProgram 1440 2272) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2348 30 2873 (blockProgram 1440 2272)
+def block2 : Block Artifact.submissionArtifact .Osaka 2755 (blockProgram 1440 2272) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2038 30 2755 (blockProgram 1440 2272)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 3: instructions 2068..2097, pc 2791..2826,
 `-N` limb at 1408 (0x580), `t` limb at 2240 (0x8c0). -/
-def block3 : Block Artifact.submissionArtifact .Osaka 2909 (blockProgram 1408 2240) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2378 30 2909 (blockProgram 1408 2240)
+def block3 : Block Artifact.submissionArtifact .Osaka 2791 (blockProgram 1408 2240) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2068 30 2791 (blockProgram 1408 2240)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 4: instructions 2098..2128, pc 2827..2863,
 `-N` limb at 1376 (0x560), `t` limb at 2208 (0x8a0). -/
-def block4 : Block Artifact.submissionArtifact .Osaka 2945 (headProgram 1376 2208) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2408 31 2945 (headProgram 1376 2208)
+def block4 : Block Artifact.submissionArtifact .Osaka 2827 (headProgram 1376 2208) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2098 31 2827 (headProgram 1376 2208)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 5: instructions 2129..2158, pc 2864..2899,
 `-N` limb at 1344 (0x540), `t` limb at 2176 (0x880). -/
-def block5 : Block Artifact.submissionArtifact .Osaka 2982 (blockProgram 1344 2176) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2439 30 2982 (blockProgram 1344 2176)
+def block5 : Block Artifact.submissionArtifact .Osaka 2864 (blockProgram 1344 2176) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2129 30 2864 (blockProgram 1344 2176)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 6: instructions 2159..2188, pc 2900..2935,
 `-N` limb at 1312 (0x520), `t` limb at 2144 (0x860). -/
-def block6 : Block Artifact.submissionArtifact .Osaka 3018 (blockProgram 1312 2144) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2469 30 3018 (blockProgram 1312 2144)
+def block6 : Block Artifact.submissionArtifact .Osaka 2900 (blockProgram 1312 2144) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2159 30 2900 (blockProgram 1312 2144)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 7: instructions 2189..2218, pc 2936..2971,
 `-N` limb at 1280 (0x500), `t` limb at 2112 (0x840). -/
-def block7 : Block Artifact.submissionArtifact .Osaka 3054 (blockProgram 1280 2112) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2499 30 3054 (blockProgram 1280 2112)
+def block7 : Block Artifact.submissionArtifact .Osaka 2936 (blockProgram 1280 2112) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2189 30 2936 (blockProgram 1280 2112)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The exit `SWAP1 SWAP2 POP`: instructions 2219..2221, pc 2972..2974; falls into pc 2975. -/
-def exitBlock : Block Artifact.submissionArtifact .Osaka 3090 exitProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2529 3 3090 exitProgram
+def exitBlock : Block Artifact.submissionArtifact .Osaka 2972 exitProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2219 3 2972 exitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- E6, the section entry: instructions 1970..1976, pc 2673..2681 (old pc 2936..2950). -/
-def entryBlock : Block Artifact.submissionArtifact .Osaka 2791 entryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2280 7 2791 entryProgram
+def entryBlock : Block Artifact.submissionArtifact .Osaka 2673 entryProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1970 7 2673 entryProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The eight-limb entry (block 0's `JUMPDEST`, instruction 1977). -/
-theorem jumpDest2682 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2800 = true :=
-  Artifact.isValidJumpDest_index 2287 (by rfl)
+theorem jumpDest2682 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2682 = true :=
+  Artifact.isValidJumpDest_index 1977 (by rfl)
 
 /-- The four-limb entry (block 4's `JUMPDEST`, instruction 2098, = 2682 + 0x91). -/
-theorem jumpDest2827 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2945 = true :=
-  Artifact.isValidJumpDest_index 2408 (by rfl)
+theorem jumpDest2827 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2827 = true :=
+  Artifact.isValidJumpDest_index 2098 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast.M9Mac
 

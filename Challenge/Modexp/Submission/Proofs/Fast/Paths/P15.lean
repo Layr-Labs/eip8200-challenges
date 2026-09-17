@@ -29,4 +29,27 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
+/-- Instructions 1895..1902, pc 2674..3046: the top-bit test and the branch
+back into `DOUBLE256`. -/
+def blk1768 :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 891 .JUMPDEST,
+   pushAt 892 0 0,
+   opAt 893 .MLOAD,
+   pushAt 894 1 255,
+   opAt 895 .SHR,
+   opAt 896 .ISZERO,
+   pushAt 897 2 1069,
+   opAt 898 .JUMPI]
+
+/-- Instructions 1824..1907, pc 2688..3015: `t[n] := 1` and the tail call into
+`CSUB`. -/
+def blk1776 :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [pushAt 899 1 1,
+   pushAt 900 2 2080,
+   opAt 901 .MSTORE,
+   pushAt 902 2 3963,
+   opAt 903 .JUMP]
+
 end Challenge.Modexp.Submission.Proofs.Fast
