@@ -37,8 +37,8 @@ theorem run_tail_divert_acc (input : ByteArray) (hneAcc : finalAcc input ≠ 0) 
     apply hneAcc
     apply Challenge.EvmProof.Word.word_ext
     simpa using hz
-  have hdest : Decode.isValidJumpDest submissionBytecode 102 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 62 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 115 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 68 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [tailPath, opAt, pushAt, wfOp, loopExitState, tailDivertState, spentCells, atPC,
     htrue, hdest, List.exchange,
@@ -54,8 +54,8 @@ theorem run_fallback_clear (input : ByteArray)
   have htrue : UInt256.isTrue (referenceWord input) := by
     rw [href]
     decide
-  have hdest : Decode.isValidJumpDest submissionBytecode 330 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 220 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 343 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 226 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [fallbackPath, opAt, pushAt, wfOp, tailDivertState, fallbackState, spentCells, atPC,
     htrue, hdest, List.exchange,
@@ -100,14 +100,14 @@ def gasSteps_direct_return (input : ByteArray) :
   have gs := DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     returnPath (by rfl) (by rfl) (run_return_store input) (by rfl)
     deployAddress_not_precompile
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 59 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 65 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedReturnState input).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 59 := by
+      Artifact.submissionArtifact.instructionPC 65 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
   have hop : (storedReturnState input).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 59
+    Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 65
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop
     (by change (2 : Nat) < 1024; decide) (by rfl)
