@@ -1969,7 +1969,7 @@ theorem fastSetup_notPrecompile (input : ByteArray) :
       (Setup.fastSetupState input).executionEnv.codeAddr = false :=
   Challenge.Modexp.deployAddress_not_precompile
 
-/-- The setup block ends at the dispatcher entry (pc 2474, instruction index 2050)
+/-- The setup block ends at the dispatcher entry (pc 2474, instruction index 2031)
 with the plain outer frame, instead of at the Montgomery-form conversion call.
 `Shift.dispState` is definitionally this state; it cannot be named here because
 `ShiftStates` sits above this module.
@@ -1981,7 +1981,7 @@ the decode rather than reconciled against each other: pc 2474 is a `JUMPDEST`
 reached by the `PUSH2 0xcff; JUMP` at indices 2048..2049 and followed by
 `DUP1; DUP4; EQ`, which is the dispatcher's compare chain.  `Fast.Setup` agrees
 from two directions -- `fastSetupState_pc` is `UInt256.ofNat 2474` by `rfl`, and
-its `jumpDest3296` certifies pc 2474 via `isValidJumpDest_index 2050`. -/
+its `jumpDest3296` certifies pc 2474 via `isValidJumpDest_index 2031`. -/
 theorem fastSetup_entry_eq (input : ByteArray) :
     Setup.fastSetupState input =
       retTo (Setup.fastSetupState input) (Setup.fastSetupMemory input) (UInt256.ofNat 2474)
