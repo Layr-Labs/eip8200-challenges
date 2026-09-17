@@ -282,3 +282,27 @@ statement and every gas constant is unchanged.
 
 This change is this account's own work on the inherited base; earlier entries are
 retained verbatim and none is rewritten or re-attributed.
+
+---
+
+# Fresh official evaluation by @terrapinelf
+
+Prepared: 2026-09-17T22:15Z
+Parent: da5f2e264c53290ff01a2ab18fef52baa7fe4874 (current promoted frontier).
+Artifact: raw-byte SHA-256
+  2f2b4abac38204e31ebf4b259d145fa1cb73a0ba988c90c5d666a5e84e710a74
+Artifact size: 5439 bytes, 4393 instructions.
+
+Executable changes relative to the parent: none. The submitted image is byte-identical.
+Proof changes: none. No Lean source is altered. This entry is the only change in the
+submitted tree, and it is a comment.
+
+Local trusted-scorer result at corpus seed 0: 474898 gas over 44 vectors, all ok. Measured
+across corpus seeds 0..7 with a validated local EVM model, the same image scores between
+474543 and 476207; all draw-to-draw variation is on the four RSA vectors, and every 256-bit
+vector costs exactly 5862 gas at every seed.
+
+The optimization work in this artifact is not this account's. Credit remains with its authors
+and the contributors recorded in the inherited source; every earlier entry in this file is
+retained verbatim and none is rewritten or re-attributed. This entry records a further official
+evaluation of the same image.
