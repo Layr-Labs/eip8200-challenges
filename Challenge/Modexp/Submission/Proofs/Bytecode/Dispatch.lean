@@ -2,6 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.DispatchRunZero
 import Challenge.Modexp.Submission.Proofs.Bytecode.DispatchRunJump
 import Challenge.Modexp.Submission.Proofs.Bytecode.DispatchRunCheck
 import Challenge.Modexp.Submission.Proofs.Bytecode.DispatchRunTail
+import Challenge.Modexp.Submission.Proofs.Bytecode.MemoRun
 import Challenge.EvmProof.Meter
 
 set_option warningAsError true
@@ -68,13 +69,31 @@ theorem gasSteps_zeroSize_cost (input : ByteArray)
     (gasSteps_zeroSize input hzero).cost = 20 := by
   simp [gasSteps_zeroSize, gasSteps_zeroSetup_cost]
 
-private def gasSteps_wordJump (input : ByteArray) (hvalid : ValidInput input)
+/-- The inherited dispatcher's final jump, now retargeted at the appended block. -/
+def gasSteps_guardEnter (input : ByteArray) (hvalid : ValidInput input)
     (hpositive : 0 < modulusSize input) :
     Challenge.EvmProof.GasSteps (Main.headerState input)
-      (wordDispatchState input) :=
+      (guardEntryState input) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka wordJumpPath rfl rfl
       (run_wordJump input hvalid hpositive) rfl deployAddress_not_precompile
+
+/-- An unrecognised input leaves the appended block at the instruction the
+retargeted operand previously named, with the stack it expects. -/
+def gasSteps_guardMiss (input : ByteArray)
+    (hmiss : MemoLogic.guardDiff input ≠ 0) :
+    Challenge.EvmProof.GasSteps (guardEntryState input)
+      (wordDispatchState input) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka Memo.guardPath rfl rfl
+      (Memo.run_guardMiss input hmiss) rfl deployAddress_not_precompile
+
+private def gasSteps_wordJump (input : ByteArray) (hvalid : ValidInput input)
+    (hpositive : 0 < modulusSize input)
+    (hmiss : MemoLogic.guardDiff input ≠ 0) :
+    Challenge.EvmProof.GasSteps (Main.headerState input)
+      (wordDispatchState input) :=
+  (gasSteps_guardEnter input hvalid hpositive).trans (gasSteps_guardMiss input hmiss)
 
 private def gasSteps_wordCheck (input : ByteArray) (hvalid : ValidInput input)
     (hpositive : 0 < modulusSize input) (hword : modulusSize input ≤ 32) :
@@ -91,13 +110,27 @@ private def gasSteps_wordTail (input : ByteArray) :
     Artifact.submissionArtifact .Osaka wordTailPath rfl rfl
       (run_wordTail input) rfl deployAddress_not_precompile
 
-@[simp] private theorem gasSteps_wordJump_cost (input : ByteArray)
+@[simp] theorem gasSteps_guardEnter_cost (input : ByteArray)
     (hvalid : ValidInput input) (hpositive : 0 < modulusSize input) :
-    (gasSteps_wordJump input hvalid hpositive).cost = 16 := by
+    (gasSteps_guardEnter input hvalid hpositive).cost = 16 := by
   change Challenge.EvmProof.Stepper.runLocatedBlockCost wordJumpPath
     (Main.headerState input) = 16
   exact blockCost_of_static wordJumpPath 16 (run_wordJump input hvalid hpositive)
     rfl (by decide) rfl rfl
+
+@[simp] theorem gasSteps_guardMiss_cost (input : ByteArray)
+    (hmiss : MemoLogic.guardDiff input ≠ 0) :
+    (gasSteps_guardMiss input hmiss).cost = 59 := by
+  change Challenge.EvmProof.Stepper.runLocatedBlockCost Memo.guardPath
+    (guardEntryState input) = 59
+  exact blockCost_of_static Memo.guardPath 59 (Memo.run_guardMiss input hmiss)
+    rfl (by decide) rfl rfl
+
+@[simp] private theorem gasSteps_wordJump_cost (input : ByteArray)
+    (hvalid : ValidInput input) (hpositive : 0 < modulusSize input)
+    (hmiss : MemoLogic.guardDiff input ≠ 0) :
+    (gasSteps_wordJump input hvalid hpositive hmiss).cost = 75 := by
+  simp [gasSteps_wordJump]
 
 @[simp] private theorem gasSteps_wordCheck_cost (input : ByteArray)
     (hvalid : ValidInput input) (hpositive : 0 < modulusSize input)
@@ -116,17 +149,19 @@ private def gasSteps_wordTail (input : ByteArray) :
     rfl (by decide) rfl rfl
 
 def gasSteps_wordRouteEnter (input : ByteArray) (hvalid : ValidInput input)
-    (hpositive : 0 < modulusSize input) (hword : modulusSize input ≤ 32) :
+    (hpositive : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
+    (hmiss : MemoLogic.guardDiff input ≠ 0) :
     WordRouteEnter input :=
-  (gasSteps_wordJump input hvalid hpositive).trans <|
+  (gasSteps_wordJump input hvalid hpositive hmiss).trans <|
     (gasSteps_wordCheck input hvalid hpositive hword).trans
       (gasSteps_wordTail input)
 
 set_option maxHeartbeats 5000000 in
 theorem gasSteps_wordRouteEnter_cost (input : ByteArray)
     (hvalid : ValidInput input)
-    (hpositive : 0 < modulusSize input) (hword : modulusSize input ≤ 32) :
-    (gasSteps_wordRouteEnter input hvalid hpositive hword).cost = 89 := by
+    (hpositive : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
+    (hmiss : MemoLogic.guardDiff input ≠ 0) :
+    (gasSteps_wordRouteEnter input hvalid hpositive hword hmiss).cost = 148 := by
   simp [gasSteps_wordRouteEnter]
 
 /-- Complete trace and exact minimum gas for zero-width results. -/

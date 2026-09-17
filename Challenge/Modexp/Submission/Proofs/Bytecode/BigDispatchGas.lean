@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Bytecode.MemoCert
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatchCheck
 import Challenge.EvmProof.Meter
 set_option warningAsError true
@@ -68,39 +69,40 @@ theorem gasSteps_bigCheck_cost (input : ByteArray) (hvalid : ValidInput input)
     gasSteps_bigCheckMod_cost, gasSteps_bigCheckCompare_cost,
     gasSteps_bigCheckJump_cost]
 
+/-- A modulus wider than 32 bytes is never recognised by the appended block, so
+the wide route always takes its miss exit. -/
+theorem bigMiss (input : ByteArray) (hvalid : ValidInput input)
+    (hbig : 32 < modulusSize input) : MemoLogic.guardDiff input ≠ 0 := by
+  intro h
+  obtain ⟨hms, -, -, -⟩ :=
+    MemoCert.pins input hvalid ((MemoLogic.guardDiff_eq_zero_iff input).mp h)
+  omega
+
 def gasSteps_bigJump (input : ByteArray) (hvalid : ValidInput input)
-    (hpositive : 0 < modulusSize input) :
+    (hpositive : 0 < modulusSize input)
+    (hmiss : MemoLogic.guardDiff input ≠ 0) :
     Challenge.EvmProof.GasSteps (Main.headerState input)
       (Dispatch.wordDispatchState input) :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka Dispatch.wordJumpPath rfl rfl
-      (Dispatch.run_wordJump input hvalid hpositive) rfl
-      deployAddress_not_precompile
+  (Dispatch.gasSteps_guardEnter input hvalid hpositive).trans
+    (Dispatch.gasSteps_guardMiss input hmiss)
 
 theorem gasSteps_bigJump_cost (input : ByteArray) (hvalid : ValidInput input)
-    (hpositive : 0 < modulusSize input) :
-    (gasSteps_bigJump input hvalid hpositive).cost = 16 := by
-  have hmeter := Challenge.EvmProof.Meter.runLocatedBlock_cost_potential_of_copyFree
-    Dispatch.wordJumpPath 16 (Dispatch.run_wordJump input hvalid hpositive)
-      (by rfl) (by decide) (by decide)
-  have hactive : (Main.headerState input).activeWords =
-      (Dispatch.wordDispatchState input).activeWords := by rfl
-  rw [hactive] at hmeter
-  have hcost : Challenge.EvmProof.Stepper.runLocatedBlockCost
-      Dispatch.wordJumpPath (Main.headerState input) = 16 := by omega
-  simpa [gasSteps_bigJump] using hcost
+    (hpositive : 0 < modulusSize input)
+    (hmiss : MemoLogic.guardDiff input ≠ 0) :
+    (gasSteps_bigJump input hvalid hpositive hmiss).cost = 75 := by
+  simp [gasSteps_bigJump]
 
 /-- From the header state to the fallback entry: the dispatcher's jump and its
 size check.  No trampoline frame is built any more. -/
 def gasSteps_bigEntry (input : ByteArray) (hvalid : ValidInput input)
     (hpositive : 0 < modulusSize input) (hbig : 32 < modulusSize input) :
     Challenge.EvmProof.GasSteps (Main.headerState input) (bigEntryState input) :=
-  (gasSteps_bigJump input hvalid hpositive).trans
+  (gasSteps_bigJump input hvalid hpositive (bigMiss input hvalid hbig)).trans
     (gasSteps_bigCheck input hvalid hbig)
 
 theorem gasSteps_bigEntry_cost (input : ByteArray) (hvalid : ValidInput input)
     (hpositive : 0 < modulusSize input) (hbig : 32 < modulusSize input) :
-    (gasSteps_bigEntry input hvalid hpositive hbig).cost = 57 := by
+    (gasSteps_bigEntry input hvalid hpositive hbig).cost = 116 := by
   simp [gasSteps_bigEntry, gasSteps_bigJump_cost, gasSteps_bigCheck_cost]
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatch

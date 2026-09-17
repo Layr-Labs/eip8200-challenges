@@ -65,23 +65,23 @@ the copy is byte-identical, blocks k5..k7 reuse the very same `stepProgram` lite
 the instruction indices and program counters differ. -/
 
 def l1Block5Copy : Block Artifact.submissionArtifact .Osaka 5286 (stepProgram 64 2176) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4280 31 5286 (stepProgram 64 2176)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4267 31 5286 (stepProgram 64 2176)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block6Copy : Block Artifact.submissionArtifact .Osaka 5323 (stepProgram 32 2144) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4311 31 5323 (stepProgram 32 2144)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4298 31 5323 (stepProgram 32 2144)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def l1Block7Copy : Block Artifact.submissionArtifact .Osaka 5360 (stepProgram 0 2112) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4342 31 5360 (stepProgram 0 2112)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4329 31 5360 (stepProgram 0 2112)
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest5172 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5286 = true :=
-  Artifact.isValidJumpDest_index 4280 (by rfl)
+  Artifact.isValidJumpDest_index 4267 (by rfl)
 theorem jumpDest5209 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5323 = true :=
-  Artifact.isValidJumpDest_index 4311 (by rfl)
+  Artifact.isValidJumpDest_index 4298 (by rfl)
 theorem jumpDest5246 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5360 = true :=
-  Artifact.isValidJumpDest_index 4342 (by rfl)
+  Artifact.isValidJumpDest_index 4329 (by rfl)
 
 /-! ## Jump destinations of the chain entries (block `k` for `k = 1..7`, and the
 middle `JUMPDEST` = entry `k = 8`) -/
@@ -122,7 +122,7 @@ theorem jumpDest_l1Entry (k : Nat) (hk1 : 1 ≤ k) (hk8 : k ≤ 8) :
 
 /-- The copy's middle-block entry, pc 5397 (= `5138 + 37*7`). -/
 theorem jumpDest5283 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5397 = true :=
-  Artifact.isValidJumpDest_index 4373 (by rfl)
+  Artifact.isValidJumpDest_index 4360 (by rfl)
 
 /-- Every chain entry of the private four-limb ladder copy, `5138 + 37(k-1)` for
 `5 ≤ k ≤ 8`, is a valid jump destination -- the mirror of `jumpDest_l1Entry`. -/

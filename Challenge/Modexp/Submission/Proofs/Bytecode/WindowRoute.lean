@@ -46,6 +46,7 @@ already-proved state at pc 599.
 structure Control where
   enter : ∀ input : ByteArray, ValidInput input →
     0 < modulusSize input → modulusSize input ≤ 32 →
+    MemoLogic.guardDiff input ≠ 0 →
     Dispatch.WordRouteEnter input
   miss : ∀ input : ByteArray, ValidInput input →
     0 < modulusSize input → modulusSize input ≤ 32 → ¬ Matches input →

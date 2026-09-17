@@ -13,18 +13,18 @@ set_option linter.unusedSimpArgs false in
 theorem run_wordJump (input : ByteArray) (hvalid : ValidInput input)
     (hpositive : 0 < modulusSize input) :
     Challenge.EvmProof.Stepper.runLocatedBlock wordJumpPath
-      (Main.headerState input) = some (wordDispatchState input) := by
+      (Main.headerState input) = some (guardEntryState input) := by
   rcases hvalid with ⟨_, _, _, hm⟩
   have hm' : modulusSize input < 2 ^ 256 := by omega
   have hmodNat : modulusSize input % 2 ^ 256 ≠ 0 := by
     rw [Nat.mod_eq_of_lt hm']
     omega
   norm_num at hmodNat
-  have h1237 : (570 : UInt256).toNat = 570 := by decide
-  have h1237Word : (570 : UInt256) = UInt256.ofNat 570 := by decide
+  have h1237 : (5251 : UInt256).toNat = 5251 := by decide
+  have h1237Word : (5251 : UInt256) = UInt256.ofNat 5251 := by decide
   have htrue : UInt256.isTrue (UInt256.ofNat (modulusSize input)) := by
     exact hmodNat
-  simp only [wordDispatchState, Main.headerState]
+  simp only [guardEntryState, wordDispatchState, Main.headerState]
   generalize htemplate : initialState submissionBytecode input 0 = template
   have hcode : template.executionEnv.code = submissionBytecode := by rw [← htemplate]; rfl
   have hrun : template.halt = .Running := by rw [← htemplate]; rfl
