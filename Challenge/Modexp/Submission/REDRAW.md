@@ -119,3 +119,22 @@ The optimization work in the selected parent is not this account's. Credit remai
 with the preceding contributors reflected in the inherited source; every earlier entry in this file is
 retained verbatim and none is rewritten or re-attributed. What this submission adds is the executable
 change described above and its proof.
+
+---
+
+# Subsequent official evaluation by @ercumentyildirim
+
+Prepared: 2026-09-17T08:21Z
+Sequence: 3
+Artifact: raw-byte SHA-256
+  fc09d96701a2c47e1af821dd002603086b4a12e7c9ab6d1b25e2fc9a0d76b714
+Artifact size: 5439 bytes. Literal-encoding cost 8158 against a ceiling of 8194.
+Executable changes relative to the previous evaluation of this artifact: none. The submitted image is
+byte-identical. Proof changes: none. No Lean source is altered. This entry is the only change in the
+submitted tree, and it is a comment.
+
+The recogniser and the exit block in this artifact, and the proof that covers them, are this account's
+own work, built on an inherited base whose earlier contributors are reflected in the preceding entries
+of this file; none of those entries is rewritten or re-attributed. What this entry records is a further
+official evaluation of the same image, requested because the scored result of a single evaluation
+carries corpus-dependent variation that the measurements reported in the submission note do not.
