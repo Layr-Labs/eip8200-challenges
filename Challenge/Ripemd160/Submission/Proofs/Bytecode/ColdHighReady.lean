@@ -23,38 +23,36 @@ theorem extracted_words (input : ByteArray) (hfit : CalldataFits input) (hpositi
 private theorem ready_model (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size) (i : Nat)
     (hi : i < DriverTrace.blockCount input) (hh : input.size = DriverTrace.blockOffset i) :
     StaggerMessage.Ready (StaggerTableLayout.resultMemory0 (finalMemory input i)
-      (StaggerScratch.dirtyWord (finalMemory input i) (messagePointer i))) (blockWords input i) := by
-  have hsplit (k : Nat) := StaggerScratch.dirtyWord_split (finalMemory input i) (messagePointer i) k
-  -- the dual lane at address 0 is invisible to `Ready`: slot 0 is read only through `low32`
+      (PairedScheduleData.extractedWord (finalMemory input i) (messagePointer i))) (blockWords input i) := by
   refine StaggerMessage.ready_dual0 (finalMemory input i)
-    (StaggerScratch.dirtyWord (finalMemory input i) (messagePointer i)) (blockWords input i)
-    (Nat.lt_of_div_eq_zero (by norm_num) ((hsplit 6).2.2.2 (by decide))) ?_
-  exact StaggerMessage.ready_junk (finalMemory input i) (StaggerScratch.dirtyWord (finalMemory input i) (messagePointer i)) (blockWords input i)
-    (fun k => (StaggerScratch.dirtyWord (finalMemory input i) (messagePointer i) k).toNat / 2 ^ 32)
+    (PairedScheduleData.extractedWord (finalMemory input i) (messagePointer i)) (blockWords input i)
+    (PairedScheduleData.extractedWord_bound _ _ 6) ?_
+  exact StaggerMessage.ready_junk (finalMemory input i)
+    (PairedScheduleData.extractedWord (finalMemory input i) (messagePointer i)) (blockWords input i)
+    (fun _ => 0)
     (fun k hk => by
-      show (StaggerScratch.dirtyWord (finalMemory input i) (messagePointer i) k).toNat = _
-      conv_lhs => rw [(hsplit k).1]
-      rw [extracted_words input hfit hpositive i hi hh k hk, Word.ofUInt32_toNat])
-    (fun k _ => (hsplit k).2.1)
-    (fun k _ h2 => Nat.lt_trans ((hsplit k).2.2.1 h2) (by decide))
-    (fun k _ h2 _ => (hsplit k).2.2.1 h2)
-    (fun k _ hd => by
-      have hd' : ¬ (k = 1 ∨ k = 2) := fun h =>
-        hd (h.elim (fun h1 => Or.inl h1) (fun h2 => Or.inr (Or.inl h2)))
-      have h0 : (StaggerScratch.dirtyWord (finalMemory input i) (messagePointer i) k).toNat / 2 ^ 32 = 0 := (hsplit k).2.2.2 hd'
-      exact ⟨by show (StaggerScratch.dirtyWord (finalMemory input i) (messagePointer i) k).toNat / 2 ^ 32 < 2 ^ 23; rw [h0]; decide, fun _ => h0⟩)
+      rw [extracted_words input hfit hpositive i hi hh k hk, Word.ofUInt32_toNat]
+      omega)
+    (fun k _ => by norm_num)
+    (fun k _ _ => by norm_num)
+    (fun k _ _ _ => by norm_num)
+    (fun k _ _ => ⟨by norm_num, fun _ => rfl⟩)
 
 private theorem ready_transfer (memory : ByteArray) (p : Nat) (words : Nat → UInt32)
     (hc : PoolShape.Clear memory)
     (hr : StaggerMessage.Ready (StaggerTableLayout.resultMemory0 memory
-      (StaggerScratch.dirtyWord memory p)) words) :
+      (PairedScheduleData.extractedWord memory p)) words) :
     StaggerMessage.Ready (PoolReference.dataMemory memory p) words := by
   have hreference : StaggerMessage.Ready (PoolShape.resultMemory true memory
       (PairedScheduleData.reversedWord (MachineState.readWord memory p))
       (PairedScheduleData.reversedWord (MachineState.readWord memory (p+32)))) words := by
-    rw [PoolReference.reference_data_eq memory p
-      (PoolInvariant.clear_low memory hc) (PoolInvariant.clear_gap memory hc)]
-    exact hr
+    refine PoolInvariant.ready_of_gap _ _ _
+      (fun q hq => PoolReference.reference_data_getD memory p
+        (PoolInvariant.clear_low memory hc) (PoolInvariant.clear_gap memory hc) q hq) ?_ hr
+    rw [PoolReference.reference_data_getD memory p
+      (PoolInvariant.clear_low memory hc) (PoolInvariant.clear_gap memory hc) 54 (by omega)]
+    exact Pair13Memory.resultMemory0_byte54 memory _
+      (fun k _ => Nat.lt_trans (PairedScheduleData.extractedWord_bound memory p k) (by norm_num))
   exact PoolInvariant.ready memory
     (PairedScheduleData.reversedWord (MachineState.readWord memory p))
     (PairedScheduleData.reversedWord (MachineState.readWord memory (p+32))) hc words hreference

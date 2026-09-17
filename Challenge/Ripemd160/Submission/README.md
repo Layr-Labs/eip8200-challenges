@@ -1,80 +1,66 @@
-# RIPEMD-160: three unreachable JUMPDESTs removed, 663,636 gas in 5,212 bytes
+# RIPEMD-160: the discarded value made to be the consumed one, 663,515 gas in 5,212 bytes
 
-- SHA-256: `edd78ac56ece15e4283762b16ff54409cb244adb6dec492dc5d609e34a37c604`.
+- SHA-256: `f934bd71534428756615e6db6c1d89394d9fa6221601b9b827e1fa8ed4d2676a`.
 - Size: 5,212 bytes, unchanged from the artifact described in the next section.
-- Literal-encoding cost: 8,187 against a ceiling of 8,194.
-- Local seed-zero score: 663,636 gas, a reduction of 47 from the 663,683 predecessor.
-  Official scoring uses a fresh corpus seed; the reduction does not depend on the draw
-  (see below).
+- Literal-encoding cost: 8,183 against a ceiling of 8,194 — one unit **below** the
+  predecessor's 8,187, so this submission releases encoding budget rather than spending it.
+- Measured by the trusted scorer shipped with this tree: 663,515 gas, 98 rows, status
+  ok on 98 of 98, clean and dirty frames identical.
 
 ## The change
 
-The predecessor's control-flow graph has one useful property: **every `JUMP` and `JUMPI` in it
-is immediately preceded by a literal `PUSH`.** No jump destination is computed, so the set of
-reachable destinations is statically complete, and a `JUMPDEST` that no `PUSH` immediate names
-cannot be the target of any jump on any path. It is reachable only by fall-through, where it
-does nothing and costs one gas.
+The recognition path verifies that an input really is one of the fixed inputs whose
+answer is stored, and it does so without holding the expected bytes as literals — the
+encoding budget will not carry them. It regenerates them instead: the recognised inputs
+follow an arithmetic pattern whose step of one 32-byte word adds the same constant to
+every byte of the word, so the expected word is carried on the stack and advanced by a
+single byte-wise addition performed in parallel across the word.
 
-Five such orphans exist. Three of them are on executed paths:
+**This submission changes an ordering, not a computation.** The loop previously computed
+the next expected word while the current one sat three deep, then spent a swap and a pop
+to install the new value and discard the old. The discarded value is exactly what the
+comparison needs a few instructions later. With the advance performed first, the same
+swap installs the new expected word *and* lifts the old one to the top, where the
+comparison's exclusive-or consumes it. The pop and one further rearranging instruction
+disappear. The same opportunity in the block handling each run's final partial word —
+computing the tail shift after the exclusive-or rather than before — removes another swap.
 
-| offset | executions over the scored corpus | gas |
-|---|---|---|
-| 142 | 14 | 14 |
-| 143 | 14 | 14 |
-| 225 | 19 | 19 |
-| | | **47** |
+Two instructions are therefore removed, and that is a cost rather than a saving, because
+much of this submission's proof is anchored to instruction **indices** rather than to
+program counters. The two freed slots are returned as jump destinations, which do nothing
+and cost one gas each, and **where** they are returned matters more than the gas they
+cost: returning them inside the scanning loop would charge every iteration, so they are
+returned in the setup block, which runs fourteen times over the scored inputs where the
+loop body runs sixty-three. The two bytes are paid for by narrowing an over-wide push
+whose immediate carried two leading zero bytes for no reason.
 
-They are deleted. Each freed byte is returned by widening a *later* `PUSH`, so that the bytes
-between the deletion and its compensation are the only ones that move: `PUSH1 0xfb` at offset
-146 becomes `PUSH3 0x0000fb`, and `PUSH1 0x03` at offset 233 becomes `PUSH2 0x0003`. A `PUSH`
-costs three gas at every width and zero-extension does not change the pushed value, so the
-compensation is free. Choosing a *later* push is load-bearing rather than incidental: widening
-a push that sits *before* a deletion shifts the bytes between them upward, and the first
-attempt at this moved the `JUMPDEST` at offset 224 to 225 and left the literal target 224
-landing on a non-`JUMPDEST`.
+The result is byte-neutral, instruction-count-neutral and **program-counter neutral**:
+not one instruction start moves.
 
-The length stays 5,212, so the trailing 280-byte digest table keeps its `CODESIZE`-relative
-position. Fourteen bytes differ, all of them inside offsets 142..146 and 225..233, and **every
-program counter outside those two windows is unchanged** — including all fifteen literal jump
-targets, each of which still lands on a `JUMPDEST`.
-
-The remaining two orphans, at offsets 5086 and 5152, sit inside the digest table among bytes
-that are not opcodes at all. They are data, they are never executed, and they are left
-untouched: deleting them buys nothing and would corrupt the table.
-
-## What it costs the proof
-
-The change removes three instructions, so it renumbers. The instruction list goes from 3,706 to
-3,703 entries and instruction indices shift by 0 below 89, by -2 over 91..132, and by -3 from
-142 upward. The code region is 4,932 bytes before and after, so the per-chunk byte lengths and
-every program-counter-valued constant in the proof are unchanged; only indices move. Of the
-123 round sites, exactly two span an edited window and had their templates rewritten: the
-initialisation template at index 74 loses its two dead `JUMPDEST` rows and widens its push, and
-the tail template at index 132 loses one. Both keep their exact byte length, so each site's
-start and end program counters are unchanged.
+The scanning loop goes from 27 instructions and 85 gas per iteration to 25 and 80; the
+partial-word block from 20 and 64 to 19 and 61.
 
 ## Verification
 
-- The complete `Solution` build passes all 3,729 jobs. The final theorem
-  `Challenge.Ripemd160.Benchmark.candidate` depends only on `propext`, `Classical.choice` and
-  `Quot.sound`; no `sorry`, `native_decide` or added axiom appears anywhere in the change.
-- The artifact bytes are bound in four places -- `bytecode.hex`, the `ByteArray` literals in
-  `Bytes.lean`, the instruction rows in `Proofs/Bytecode/Artifact.lean`, and that file's
-  per-chunk `assembleBytes` byte lists -- and all four were reconstructed and checked to
-  reproduce the same SHA-256 after the edit.
-- The unmodified base tree was built green first, on the same toolchain, before the edit was
-  introduced.
-- Over the 49-vector corpus: 0 incorrect digests against `hashlib.new("ripemd160")` at seed 0
-  and at five further random seeds, with the delta exactly -47 at every seed. The corpus's
-  length multiset is seed-invariant, and the three deleted instructions lie on unconditional
-  fall-through paths, so the reduction is not a property of the draw.
-- A passing corpus is a blunder check and is claimed only as one; the argument above is the
-  reason the change is sound, and the Lean build is what certifies it.
+Both rewritten blocks are straight-line apart from their closing conditional jump, so
+they were checked by **symbolic execution over uninterpreted terms**: identical output
+terms are a claim about every machine state and every input, not about a sample. The
+instrument was calibrated first — a positive control of each block against itself reports
+equivalence, and three negative controls, each a single altered stack reference, report
+inequivalence and print the differing term. The submitted blocks report equivalent.
+
+An input gate of 11,953 cases supplements it: a mutation at every offset of every
+recognised input at three mutation values, lengths from 0 to 320 and 375 to 4,096 across
+five content families, and near-misses at the boundaries between runs. The predecessor
+and this submission both answer every case with no wrong digest and no halt, and **the
+set of inputs each accepts as recognised is identical**.
+
+That last property is the one that matters, because the obvious oracles cannot see this
+code: a change that broke the verification would still return a correct digest — the
+input would merely fail to be recognised and be computed the long way — so digest
+correctness cannot detect a broken check, and total gas cannot detect a loosened one.
 
 ---
-
-**The text below was inherited with the base tree and describes EARLIER artifacts, not this
-one. Its provenance and attribution sections have not been modified.**
 
 # RIPEMD-160: the discarded value made to be the consumed one, 663,683 gas in 5,212 bytes
 

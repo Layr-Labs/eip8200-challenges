@@ -214,25 +214,24 @@ theorem ready (s : State) (input : ByteArray) (i : Nat)
   · rw [scheduledState_miss s i hh]
     rw [ctx.calldata] at hh
     apply PoolInvariant.ready _ _ _ (ctx.clear s input i)
-    rw [PoolReference.reference_data_eq _ _ ctx.lowClear ctx.gapClear]
-    have hsplit (k : Nat) := StaggerScratch.dirtyWord_split s.memory (messagePointer i) k
-    refine StaggerMessage.ready_dual0 s.memory (selectedWords s i) (blockWords input i)
-      (Nat.lt_of_div_eq_zero (by norm_num) ((hsplit 6).2.2.2 (by decide))) ?_
-    exact StaggerMessage.ready_junk s.memory (selectedWords s i) (blockWords input i)
-      (fun k => (selectedWords s i k).toNat / 2 ^ 32)
-      (fun k hk => by
-        show (StaggerScratch.dirtyWord s.memory (messagePointer i) k).toNat = _
-        conv_lhs => rw [(hsplit k).1]
-        rw [extracted_words s input i hfit hi ctx hh k hk, Word.ofUInt32_toNat]
-        rfl)
-      (fun k _ => (hsplit k).2.1)
-      (fun k _ h2 => Nat.lt_trans ((hsplit k).2.2.1 h2) (by decide))
-      (fun k _ h2 _ => (hsplit k).2.2.1 h2)
-      (fun k _ hd => by
-        have hd' : ¬ (k = 1 ∨ k = 2) := fun h =>
-          hd (h.elim (fun h1 => Or.inl h1) (fun h2 => Or.inr (Or.inl h2)))
-        have h0 : (selectedWords s i k).toNat / 2 ^ 32 = 0 := (hsplit k).2.2.2 hd'
-        exact ⟨by show (selectedWords s i k).toNat / 2 ^ 32 < 2 ^ 23; rw [h0]; decide, fun _ => h0⟩)
+    refine PoolInvariant.ready_of_gap _ _ _
+      (fun q hq => PoolReference.reference_data_getD _ _ ctx.lowClear ctx.gapClear q hq) ?_ ?_
+    · rw [PoolReference.reference_data_getD _ _ ctx.lowClear ctx.gapClear 54 (by omega)]
+      exact Pair13Memory.resultMemory0_byte54 _ _
+        (fun k _ => Nat.lt_trans (PairedScheduleData.extractedWord_bound _ _ k) (by norm_num))
+    · refine StaggerMessage.ready_dual0 s.memory
+        (PairedScheduleData.extractedWord s.memory (messagePointer i)) (blockWords input i)
+        (PairedScheduleData.extractedWord_bound _ _ 6) ?_
+      exact StaggerMessage.ready_junk s.memory
+        (PairedScheduleData.extractedWord s.memory (messagePointer i)) (blockWords input i)
+        (fun _ => 0)
+        (fun k hk => by
+          rw [extracted_words s input i hfit hi ctx hh k hk, Word.ofUInt32_toNat]
+          omega)
+        (fun k _ => by norm_num)
+        (fun k _ _ => by norm_num)
+        (fun k _ _ _ => by norm_num)
+        (fun k _ _ => ⟨by norm_num, fun _ => rfl⟩)
 
 theorem scheduled_word_above (s : State) (i address : Nat) (ha : 1120 ≤ address) :
     MachineState.readWord (scheduledState s i).memory address = MachineState.readWord s.memory address := by

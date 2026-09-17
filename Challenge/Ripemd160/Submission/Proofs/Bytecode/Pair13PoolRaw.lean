@@ -34,11 +34,7 @@ def rawLoad (memory : ByteArray) (i : Nat) : UInt256 :=
 /-- Word 3's upper lane falls inside the zero prefix `[0,28)`, so it is rebuilt with
 `DUP1; SHL 144; OR` instead of being read twice. -/
 def cleanPoolWord (memory : ByteArray) (i : Nat) : UInt256 :=
-  if i = 0 ∨ i = 1 ∨ i = 2 then rawLoad memory i
-  else if i = 3 then
-    UInt256.lor (UInt256.shiftLeft (UInt256.land poolMask (rawLoad memory 3)) (UInt256.ofNat 144))
-      (UInt256.land poolMask (rawLoad memory 3))
-  else UInt256.land poolMask (rawLoad memory i)
+  UInt256.land poolMask (rawLoad memory i)
 
 /-- Keep word 11 masked: the terminal paired round receives an unmasked D.
 Word 9's mask is dropped at the bytecode level (S51 pops the mask instead of
@@ -46,9 +42,7 @@ applying it); like the eight other unmasked sources it is normalized by the
 ordinary round-sum mask, and `PoolCertificates.slack_sources` re-witnesses the
 three table slots whose zero byte word 9 now occupies. -/
 def poolWord (memory : ByteArray) (i : Nat) : UInt256 :=
-  if i = 3 then
-    UInt256.lor (UInt256.shiftLeft (rawLoad memory 3) (UInt256.ofNat 144)) (rawLoad memory 3)
-  else if i ∈ [0, 1, 2, 8, 9, 10, 12, 13, 14, 15] then rawLoad memory i
+  if i ∈ [8, 9, 10, 12, 13, 14, 15] then rawLoad memory i
   else UInt256.land poolMask (rawLoad memory i)
 
 /-- The two sixteen-byte copies that duplicate the upper scratch word's lanes. -/
@@ -103,12 +97,16 @@ def template : List Instr :=
     .op .MLOAD,
     .push ⟨1, by decide⟩ (UInt256.ofNat 8),
     .op .MLOAD,
+    .op (.Dup ⟨6, by decide⟩),
+    .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 34),
     .op .MLOAD,
     .op (.Dup ⟨7, by decide⟩),
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 4),
     .op .MLOAD,
+    .op (.Dup ⟨8, by decide⟩),
+    .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 114),
     .op .MLOAD,
     .op (.Dup ⟨9, by decide⟩),
@@ -123,12 +121,12 @@ def template : List Instr :=
     .op .MLOAD,
     .push ⟨1, by decide⟩ (UInt256.ofNat 12),
     .op .MLOAD,
-    .op (.Dup ⟨0, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
-    .op .SHL,
-    .op .OR,
+    .op (.Dup ⟨13, by decide⟩),
+    .op .AND,
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .MLOAD,
+    .op (.Dup ⟨14, by decide⟩),
+    .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 110),
     .op .MLOAD,
     .op (.Swap ⟨14, by decide⟩),
@@ -267,14 +265,12 @@ theorem lane_hi (memory : ByteArray) (A : Nat) :
   exact Nat.mod_eq_of_lt (Bytes.bytesToNatPadded_lt_pow _ _ _)
 
 /-- A masked load whose two lanes hold the same four bytes is the broadcast of that field. -/
-theorem poolWord_dual (memory : ByteArray) (i : Nat) (hi : 4 ≤ i) (w : UInt256)
+theorem poolWord_dual (memory : ByteArray) (i : Nat) (w : UInt256)
     (hw : w.toNat < 2 ^ 32)
     (hlo : Precompile.bytesToNatPadded memory (poolAddr i + 28) 4 = w.toNat)
     (hhi : Precompile.bytesToNatPadded memory (poolAddr i + 10) 4 = w.toNat) :
     cleanPoolWord memory i = UInt256.mul coefficient w := by
-  have h0 : ¬ (i = 0 ∨ i = 1 ∨ i = 2) := by omega
-  have h3 : ¬ (i = 3) := by omega
-  rw [cleanPoolWord, if_neg h0, if_neg h3, rawLoad]
+  rw [cleanPoolWord, rawLoad]
   apply Word.word_ext
   rw [Word.word_toNat_land, poolMask, Word.word_toNat_ofNat,
     Nat.mod_eq_of_lt (by norm_num :
@@ -288,32 +284,12 @@ theorem poolWord_dual (memory : ByteArray) (i : Nat) (hi : 4 ≤ i) (w : UInt256
 produces the same broadcast. -/
 theorem poolWord_three (memory : ByteArray) (w : UInt256) (hw : w.toNat < 2 ^ 32)
     (hlo : Precompile.bytesToNatPadded memory 40 4 = w.toNat)
-    (hhi : Precompile.bytesToNatPadded memory 22 4 = 0) :
-    cleanPoolWord memory 3 = UInt256.mul coefficient w := by
-  have h0 : ¬ ((3:Nat) = 0 ∨ (3:Nat) = 1 ∨ (3:Nat) = 2) := by decide
-  have hmask : UInt256.land poolMask (rawLoad memory 3) = w := by
-    apply Word.word_ext
-    rw [rawLoad, Word.word_toNat_land, poolMask, Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt (by norm_num :
-        95780971281817308448866066055358605703522837925462015 < 2 ^ 256),
-      Nat.and_comm,
-      land_poolMask_nat _ w.toNat 0 hw (by norm_num)
-        (by rw [lane_lo]; exact hlo) (by rw [lane_hi]; exact hhi),
-      Nat.mul_zero, Nat.zero_add]
-  rw [cleanPoolWord, if_neg h0, if_pos rfl, hmask]
-  apply Word.word_ext
-  have h1 : w.toNat * 2 ^ 144 < 2 ^ 32 * 2 ^ 144 :=
-    (Nat.mul_lt_mul_right (by norm_num : 0 < 2 ^ 144)).mpr hw
-  have hb : w.toNat * 2 ^ 144 < 2 ^ 256 :=
-    Nat.lt_of_lt_of_le h1 (by norm_num)
-  have hsl : (UInt256.shiftLeft w (UInt256.ofNat 144)).toNat = w.toNat * 2 ^ 144 := by
-    conv_lhs => rw [Word.word_eq_ofNat_toNat w]
-    rw [Word.shiftLeft_ofNat (by exact w.val.isLt) (by norm_num) hb, Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt hb]
-  rw [Word.word_toNat_lor, mul_coefficient_toNat w hw, hsl,
-    lor_mul_eq w.toNat w.toNat (by omega)]
+    (hhi : Precompile.bytesToNatPadded memory 22 4 = w.toNat) :
+    cleanPoolWord memory 3 = UInt256.mul coefficient w :=
+  -- the third staging copy at address 10 gives word 3 BOTH lanes, so it is no longer a
+  -- special case: poolAddr 3 = 12, hence 12 + 28 = 40 and 12 + 10 = 22.
+  poolWord_dual memory 3 w hw hlo hhi
 
-#print axioms run_actual
 #print axioms poolWord_dual
 #print axioms poolWord_three
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13PoolRaw
