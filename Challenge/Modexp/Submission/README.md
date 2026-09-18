@@ -1,90 +1,3 @@
-# MODEXP: the frontier with this account's candidates B and C, 472,993 gas at seed 0
-
-- SHA-256: `30b67ddc0c2dbd1c9e837a5effc4aad91b166c5c89450fbe162efe4544b6ccd1`.
-- Size: 5,439 bytes; 4,354 instructions (4,374 in the parent).
-- Literal-encoding estimate (length + distinct bytes per 64-byte chunk + 8 per chunk): 8144
-  against a ceiling of 8,194.
-- Trusted scorer at corpus seed 0: 472,993 gas, 44 of 44 ok (parent 473,471; −478 at every seed).
-
-The parent is the frontier described in the next section. On top of it, this image applies the
-five byte-length-preserving windows of the section "Five dead-instruction windows folded into
-wider pushes" (−172) and the first-row cell rewrite of the section "Zero-accumulator cells of the
-eight-limb first row, one instruction shorter" (−306); both sections are further below. No other
-byte differs from the parent.
-
----
-
-**The text below describes the parent and earlier artifacts.**
-
-# MODEXP: an identity call removed, and nineteen unreachable pads swallowed by two pushes
-
-- SHA-256: `472b47df890b090e362285c0c8fcef25855e426e02b06a3e7e8c0cfdaddd4385`.
-- Size: 5,439 bytes, unchanged from the artifact described in the next section.
-- Instructions: 4,393 to 4,374; nineteen pad instructions cease to exist.
-- Literal-encoding cost: 8,143 against a ceiling of 8,194 — two units **below** the
-  predecessor's 8,145, so this submission releases encoding budget rather than spending it.
-- Measured by the trusted scorer shipped with this tree: 473,471 gas, 44 rows, status
-  ok on 44 of 44.
-- `assemble(decode(raw)) == raw`: the image decodes completely.
-
-## The changes
-
-Ten bytes, in two disjoint edits in two unrelated regions. There is no third difference.
-
-**Edit 1, six bytes at `[3123, 3129)`:**
-
-    predecessor   61 0a 83  61 10 85        PUSH2 0x0a83 ; PUSH2 0x1085
-    submitted     63 00 00 0a 83  5b        PUSH4 0x00000a83 ; JUMPDEST
-
-The exponentiation loop's tail block used to push two addresses before its transfer: the loop
-head at 0x0a83, and above it the entry of the conditional-subtraction routine at 0x1085, so the
-`JUMP` at 3129 entered that routine and the routine returned to the loop head. The submitted
-artifact pushes the loop head only — the `PUSH2` is widened to a `PUSH4` carrying the same value
-with two leading zero bytes, which consumes the following instruction's opcode byte — and the
-`JUMP` transfers directly to the loop head. At this site the routine was the identity on every
-reachable state: the value reaching it has already been bounded below the modulus by the phase
-that produced it, because that phase's termination condition is exactly the bound the subtraction
-would restore. The accompanying proof states and discharges that as a lemma over every reachable
-state at that program counter. The routine remains in the artifact and is still entered from its
-other caller. Both encodings occupy six bytes and two instructions, so this edit moves no program
-counter and no instruction index.
-
-**Edit 2, two bytes inside `[1413, 1431)` and two inside `[1879, 1897)`:**
-
-    predecessor   5b x10  65 5b 5b 5b 5b 5b 5b  50     ten JUMPDEST ; PUSH6 ; POP
-    submitted     6f  5b x16                     50     PUSH16 ; POP
-    predecessor   5b x9   66 5b 5b 5b 5b 5b 5b 5b  50   nine JUMPDEST ; PUSH7 ; POP
-    submitted     6f  5b x16                       50   PUSH16 ; POP
-
-Each span holds stack-neutral filler whose only purpose is to occupy bytes at a fixed length, and
-each is eighteen bytes before and after. Widening each push to a `PUSH16` carries the intervening
-bytes as its immediate instead of executing them one at a time, so nineteen `JUMPDEST`
-instructions cease to exist. Every byte in both spans other than the two push opcodes and the two
-`POP`s was already `0x5b`, so no immediate value that any instruction reads is changed.
-
-The nineteen pads were no kind of jump target: this edit removes nineteen valid jump destinations
-and adds none. Over the whole submission, against the predecessor as baseline, the number of valid
-destinations goes from 138 to 120 — edit 1 adds the one it leaves at 3128 and this edit removes
-nineteen, so 138 + 1 − 19 = 120. No push immediate names any of the nineteen removed destinations,
-and none appears among the sixty-two dynamic jump targets observed over the whole scored corpus at
-six corpus seeds.
-
-## The saving
-
-    predecessor 474,898 gas -> submitted 473,471 gas, a reduction of 1,427.
-
-Scored separately on the same predecessor, edit 1 alone gives 474,079 (−819) and edit 2 alone
-gives 474,290 (−608); −819 + −608 = −1,427, so the cross term is exactly zero.
-
-Edit 1's saving is the changed site's execution count multiplied by 39, with no residue — three,
-four, six and eight executions giving −117, −156, −234 and −312 on four vectors. Edit 2's saving
-is nineteen gas on each of the thirty-two vectors that enter the exponentiation ladder, one gas
-for each pad removed: 32 × 19 = 608. The remaining twelve vectors never enter the ladder.
-
-Per-program-counter execution counts are identical at every position outside the two spans of edit
-2, over all forty-four scored vectors. The set of program counters executed anywhere in the corpus
-falls from 3,988 to 3,969: exactly the nineteen that stop being instruction starts are removed, and
-none is added.
 # MODEXP: a conditional subtraction that is the identity, removed in six bytes
 
 - SHA-256: `7feb0beb623876ff3c16f7c9486f14c7220e539c14e35a72744814d4b11b4bac`.
@@ -145,76 +58,47 @@ The lower-is-better score is gas summed over the public vectors.
 Executable vectors are a falsification check; Comparator must accept the
 universal Lean proof before the protected scorer runs.
 
-## Zero-accumulator cells of the eight-limb first row, one instruction shorter
+## This submission: the slot-15 carry channel on the 500a727f image (5,444 bytes, 4,374 instructions)
 
-This image (5,439 bytes, 4,354 instructions, raw SHA-256
-cab745a9721fca77609c96086fabfc21e5e81ce9c797a4c17d00eecc461c29ea) rewrites the
-six full zero-accumulator cells of the eight-limb square's first row (pc 5033,
-5061, 5089, 5117, 5145, 5173) from twenty-four instructions and 79 gas to
-twenty-three instructions and 76 gas, in the same twenty-eight bytes:
+`bytecode.hex` in this directory is NOT the 5,439-byte artifact described in the
+sections above and below (that text is kept because it documents the lineage this
+image is derived from). One mechanical change is stacked on the promoted 500a727f
+image (i34-9; all four of its changes -- the collapsed relocation spans, the
+identity conditional-subtraction removal, the size-derived address and the five
+small regions -- are carried unchanged, every byte below pc 3438 is theirs except
+five remapped jump-target immediates):
 
-    PUSH2 a; MLOAD; DUP1; DUP4; MUL; DUP10; DUP5; DUP3; DUP6; ADD; DUP1;
-    PUSH3 t; MSTORE; SWAP4; MULMOD; DUP1; DUP3; GT; SUB; ADD; SWAP2; GT; SUB
+The slot-15 carry channel (-870 gas/seed, constant): the CIOS row-carry message
+that the inherited kernel parks in `mem[0x820]` between the row head and the row
+writeback now rides absolute stack position 15, which was occupied by the
+body-entry constant (`0xec6` / `0x15c6`). That constant is read at six sites only
+and is re-materialised there as `PUSH2` at identical gas, so the eviction is
+free. The row head, the row writeback and the four-limb head shrink by 4 gas
+each; the inter-modmul parks become `SWAP9; POP`; the post-loop reader at the old
+`mem[0x820]` load becomes `DUP9`; one final flush restores `mem[0x820]` for the
+post-loop readers and one boundary reload re-reads it after the staging
+`CALLDATACOPY` that clobbers it. All jump-target immediates after the first edit
+are remapped by the byte-displacement map. Thirteen byte-level edits in total,
+all at pc >= 3438; the ladder, the dispatch stride arithmetic and the 37-byte
+stride are byte-stable. The same image transformation was first shipped on the
+lineage tree as submission 06631d78 (validated and scored; its proof closure
+built on the platform), and is re-based here onto the 500a727f tree.
 
-The sum c + x*b is stored as soon as it exists, and the low product is folded
-into the high-word correction with one `ADD` (a - (u + v) = a - u - v), which
-removes a `SWAP`. The store address is a `PUSH3`, so every cell keeps its
-program counters at its boundaries. Local trusted scorer at corpus seed 0:
-474,118 to 473,812 (-306), all 44 vectors ok. The sequence was found by an
-exhaustive cost-bounded search over stack programs for one limb step.
+Raw SHA-256 of the shipped `bytecode.hex` file:
+`d1e7ee0407253c62fb5e3c0a9a508ad767fa4ad672918abc9cd51fa5b674ee2f`.
+The Lean proof is the 500a727f proof tree with the kernel-side modules of the
+06631d78 port composed in: every positional literal class (`opAt`, `pushAt`,
+`isValidJumpDest_index`, `instructionPC`, window slices, `pcFactW`,
+`gasSteps_sgtAt`, `decodes_of_artifact`, PC-table binder ranges) is renumbered
+into the composed image's numbering, and the redesigned blocks (row head,
+writeback, four-limb head, staging base reconstruction, flush, reload, the two
+parks) carry straight-line program proofs under the existing `iterateBounded`
+row induction. The row-carry invariant is stated on the stack slot (`rowsS`)
+with a bridge lemma (`rowsS_flush`) showing the flushed memory equals the
+inherited `rowsCarry` specification, so downstream consumers are unchanged.
 
-Proof: `Proofs/Fast/R8ZeroFirstRowRuns.lean` defines the new `cellProgram`
-(the old cell survives as `cellProgramOld` for the last, store-merged cell) and
-re-proves `run_cell` with an unchanged statement; the stack-room hypotheses of
-the first-row lemmas tighten by one or two words (the caller has room). The
-first-row block count becomes 207 and later instruction indices shift by -6.
-
-## Five dead-instruction windows folded into wider pushes
-
-This image (5,439 bytes, 4,360 instructions, raw SHA-256
-00b00110cf189012829a85c264ac822d71b29778c0b4506ff0a4460c91e891c6) differs from
-its parent (5,439 bytes, 4,374 instructions) in five short windows. Each window
-is replaced by the same number of bytes, so no program counter moves anywhere
-in the image; fourteen instructions fewer are decoded, and every instruction
-index at or after 454 shifts down accordingly.
-
-  1. [638, 646): `PUSH1 0xff; SHR; JUMPDEST x4; ISZERO` becomes `PUSH5 0xff; SHR;
-     ISZERO`. The four fall-through `JUMPDEST`s of the top-bit check are
-     absorbed into the immediate of a wider push of the same value.
-  2. [660, 664): `JUMPDEST; SWAP1; PUSH1 1` becomes `SWAP1; PUSH2 1`.
-  3. [707, 717): `JUMPDEST x4; DUP7; DUP3; JUMPDEST; JUMPDEST; PUSH0;
-     CALLDATACOPY` becomes `DUP7; DUP3; PUSH6 0; CALLDATACOPY`.
-  4. [770, 775): `JUMPDEST; MUL; PUSH2 0x0aa0` becomes `MUL; PUSH3 0x0aa0`.
-  5. [933, 952): `PUSH2 0x1e0; ...; DUP4; PUSH1 2; SWAP4; JUMPDEST` becomes
-     `PUSH5 0x1e0; ...; DUP4; DUP4`. The nibble-window init used to plant the
-     constant 2 -- the pass counter of a loop that this lineage has since
-     unrolled -- beneath the exponent frame. No instruction in the three
-     unrolled passes reads that slot, so the init now leaves a second copy of
-     the initial accumulator there instead and the `JUMPDEST` that headed the
-     former loop, which nothing pushes, is dropped.
-
-None of the removed `JUMPDEST`s is named by a push immediate or by a computed
-jump target, and none carries an `isValidJumpDest` obligation in the proof tree;
-the remaining computed targets (784, 3328, 5323, 5360, 5397) are left as they are.
-Windows 1 to 4 lie on the Montgomery entry path and cost 4, 1, 5 and 1 gas less
-on each of the four RSA vectors; window 5 costs 4 gas less on each of the 32
-vectors that take the 256-bit window route. Local trusted scorer at corpus seed
-0: 474,290 to 474,118 gas over the 44 vectors, all ok.
-
-In the proof, windows 1 to 4 are located paths (`Fast/Paths/P0`, `P1`,
-`Fast/Setup`): their `opAt`/`pushAt` entries are rewritten, the interior
-program-counter tables `fastPC1..3` in `Fast/Defs.lean` are regenerated, and the
-`run_*` reductions go through unchanged because a `JUMPDEST` is a no-op and a
-wider push of the same value pushes the same word. Window 5 changes
-`WindowTwentyOneInit.cleanProgram` and `frameLoadProgram`; the loop states in
-`WindowTwentyOneLoop` carry `spare base modulus exponent` -- the copied
-accumulator -- where they carried `UInt256.ofNat 2`, which is possible because
-every body and link statement was already generic in that slot. The loop head
-moves from pc 951 to 952, the trampoline block loses its leading `JUMPDEST`, and
-the `isValidJumpDest 951` fact, unused since the loop was unrolled, is removed
-from the route interface. Index-bound certificates across the closure are
-relocated mechanically; no `pc := UInt256.ofNat` constant, no jump-target
-immediate and no gas constant changes.
+Full design narrative, composition method, per-edit gas accounting and
+verification evidence are in the public submission note.
 
 ## A fixed-vector recogniser on the four- and eight-limb kernel lineage
 

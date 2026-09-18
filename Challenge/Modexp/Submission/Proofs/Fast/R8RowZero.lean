@@ -21,67 +21,62 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
 open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro CiosCached SquareModel CarryRowModel CarryScratchAgreement
 
-def program : List Instr := R8ZeroFirstRow.program (UInt256.ofNat 3531)
+def program : List Instr := R8ZeroFirstRow.program (UInt256.ofNat 3547)
 
-def block : Block Artifact.submissionArtifact .Osaka 5003 program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3990 207 5003 program
+def block : Block Artifact.submissionArtifact .Osaka 5013 program :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4012 213 5013 program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
 
-theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5003 = true :=
-  Artifact.isValidJumpDest_index 3990 (by rfl)
+theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5013 = true :=
+  Artifact.isValidJumpDest_index 4012 (by rfl)
 
-/-- The second-loop entry the row jumps to (`l2Target 8`). -/
-theorem jumpDestL2 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3782 = true :=
-  Artifact.isValidJumpDest_index 3014 (by rfl)
-
-theorem l2Target_eight_toNat : (l2Target 8).toNat = 3782 := by decide
+/-- The second-loop join the row jumps to (the immediate of E4, `PUSH2 0x0ecf`). -/
+theorem jumpDestL2 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3791 = true :=
+  Artifact.isValidJumpDest_index 3032 (by rfl)
 
 theorem allOnes_eq_maxWord : allOnes = maxWord := rfl
 
 /-- The chain's row-0 entry frame (`tl = 2336`, the eight-limb `T` base) is the new row's
-`initial` frame. -/
-theorem entry_eq (s : State) (mem : ByteArray) (pc hd : UInt256) (e : Nat)
+`initial` frame; the cell `cy` is the row's `target` slot, whatever it holds. -/
+theorem entry_eq (s : State) (mem : ByteArray) (pc hd cy : UInt256) (e : Nat)
     (inv m0 m96 m64 m32 aprev : UInt256) (rest : List UInt256) :
-    ({ outState s mem 2368 8 0 hd (UInt256.ofNat e) inv m0
+    ({ outState s mem 2368 8 0 hd (UInt256.ofNat e) cy inv m0
         (UInt256.ofNat 2336 :: m96 :: m64 :: m32 :: aprev :: rest) with pc := pc } : State) =
       R8ZeroFirstRow.initial { s with memory := mem } pc hd (UInt256.ofNat e) negative32
-        (l2Target 8) inv m0 m96 m64 m32 aprev rest := by
+        cy inv m0 m96 m64 m32 aprev rest := by
   simp only [outState, R8ZeroFirstRow.initial, ptrAt_zero, allOnes_eq_maxWord]
   rfl
 
 /-- The row from the chain's entry state: `R8ZeroFirstRow.run_program` in the frame
 vocabulary of the square rows. -/
-theorem run_rowZero (s : State) (mem : ByteArray) (pc hd : UInt256) (e : Nat)
+theorem run_rowZero (s : State) (mem : ByteArray) (pc hd cy : UInt256) (e : Nat)
     (inv m0 m96 m64 m32 aprev : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 3782 = true) :
+    (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat)
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 3791 = true) :
     runInstructions program
-      { outState s mem 2368 8 0 hd (UInt256.ofNat e) inv m0
+      { outState s mem 2368 8 0 hd (UInt256.ofNat e) cy inv m0
         (UInt256.ofNat 2336 :: m96 :: m64 :: m32 :: aprev :: rest) with pc := pc } =
-    some (R8ZeroFirstRow.result { s with memory := mem } hd (UInt256.ofNat 3531) negative32
-      (l2Target 8) inv m0 m96 m64 m32 rest) := by
-  have hj : Decode.isValidJumpDest ({ s with memory := mem } : State).executionEnv.code
-      (l2Target 8).toNat = true := by
-    rw [l2Target_eight_toNat]; exact hjump
+    some (R8ZeroFirstRow.result { s with memory := mem } hd (UInt256.ofNat 3547) negative32
+      inv m0 m96 m64 m32 rest) := by
   rw [entry_eq]
   exact R8ZeroFirstRow.run_program { s with memory := mem } pc hd (UInt256.ofNat e)
-    (UInt256.ofNat 3531) negative32 (l2Target 8) inv m0 m96 m64 m32 aprev rest hcap hact hj
+    (UInt256.ofNat 3547) negative32 cy inv m0 m96 m64 m32 aprev rest hcap hact hjump
 
 def gasSteps_prologue (s : State) (mem : ByteArray) (e : Nat)
-    (inv m0 m96 m64 m32 aprev : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hrun : s.halt = .Running)
+    (cy inv m0 m96 m64 m32 aprev : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1002) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      { outState s mem 2368 8 0 (UInt256.ofNat 4179) (UInt256.ofNat e) inv m0
-        (UInt256.ofNat 2336 :: m96 :: m64 :: m32 :: aprev :: rest) with pc := UInt256.ofNat 5003 }
-      (R8ZeroFirstRow.result { s with memory := mem } (UInt256.ofNat 4179) (UInt256.ofNat 3531)
-        negative32 (l2Target 8) inv m0 m96 m64 m32 rest) :=
+      { outState s mem 2368 8 0 (UInt256.ofNat 4190) (UInt256.ofNat e) cy inv m0
+        (UInt256.ofNat 2336 :: m96 :: m64 :: m32 :: aprev :: rest) with pc := UInt256.ofNat 5013 }
+      (R8ZeroFirstRow.result { s with memory := mem } (UInt256.ofNat 4190) (UInt256.ofNat 3547)
+        negative32 inv m0 m96 m64 m32 rest) :=
   SquareRow.stepsOf block
-    (run_rowZero s mem (UInt256.ofNat 5003) (UInt256.ofNat 4179) e inv m0 m96 m64 m32 aprev rest
+    (run_rowZero s mem (UInt256.ofNat 5013) (UInt256.ofNat 4190) cy e inv m0 m96 m64 m32 aprev rest
       hcap hact (by rw [hcode]; exact jumpDestL2)) rfl hcode hfork hrun hnp
 
 #print axioms run_rowZero

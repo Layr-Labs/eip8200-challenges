@@ -10,7 +10,7 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneInit
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open WindowNibbleKernel
 
-def cleanProgram : List Instr := [.op .POP, .push 5 480]
+def cleanProgram : List Instr := [.op .POP, .push 2 480]
 
 def addressProgram : List Instr :=
   [.op (.Dup ⟨1, by decide⟩), .push 1 247, .op .SHR,
@@ -40,12 +40,11 @@ private theorem run_clean (template : State) (pc base modulus exponent : UInt256
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions cleanProgram
       (WindowTwentyOneTable.framed template pc base modulus 16 ([base, exponent] ++ rest)) =
-    some (WindowTwentyOneTable.framed template (advancePC 7 pc) base modulus 16
+    some (WindowTwentyOneTable.framed template (advancePC 4 pc) base modulus 16
       ([UInt256.ofNat 480, exponent] ++ rest)) := by
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hcap2 : rest.length + 2 < 1024 := by omega
-  have hp26 : UInt256.ofNat 6 = UInt256.ofNat 1 + (UInt256.ofNat 1 + (UInt256.ofNat 1 +
-      (UInt256.ofNat 1 + (UInt256.ofNat 1 + UInt256.ofNat 1)))) := by decide
+  have hp26 : UInt256.ofNat 3 = UInt256.ofNat 1 + (UInt256.ofNat 1 + UInt256.ofNat 1) := by decide
   simp [runInstructions, cleanProgram, WindowTwentyOneTable.framed,
     Challenge.EvmProof.Stepper.runInstr, hcap1, hcap2, Nat.add_assoc,
     Challenge.EvmProof.Word.literal_eq_ofNat, advancePC, succ_eq_add, hp26, word_add_assoc]
@@ -88,27 +87,25 @@ theorem run_lookup (template : State) (pc base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions lookupProgram
       (WindowTwentyOneTable.framed template pc base modulus 16 ([base, exponent] ++ rest)) =
-    some (WindowTwentyOneTable.framed template (advancePC 14 pc) base modulus 16
+    some (WindowTwentyOneTable.framed template (advancePC 11 pc) base modulus 16
       ([WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat,
         UInt256.ofNat 480, exponent] ++ rest)) := by
   have hc := run_clean template pc base modulus exponent rest hrest
-  have ha := run_address template (advancePC 7 pc) base modulus exponent rest hrest
-  have hl := run_load template (advancePC 6 (advancePC 7 pc)) base modulus exponent rest hrest
+  have ha := run_address template (advancePC 4 pc) base modulus exponent rest hrest
+  have hl := run_load template (advancePC 6 (advancePC 4 pc)) base modulus exponent rest hrest
   have hca := runInstructions_append_some _ _ _ _ _ hc ha
   have hall := runInstructions_append_some _ _ _ _ _ hca hl
-  have hpc : (advancePC 6 (advancePC 7 pc)).succ = advancePC 14 pc := rfl
+  have hpc : (advancePC 6 (advancePC 4 pc)).succ = advancePC 11 pc := rfl
   simpa only [lookupProgram, hpc] using hall
 
 def frameArrangeProgram : List Instr :=
   [.op (.Swap ⟨1, by decide⟩), .push 1 1, .op .SHL]
 
-/-- The spare modulus copy sits at depth four under the frame, so the loop's
-modulus register is a plain `DUP4`.  The second `DUP4` lifts the accumulator back
-on top; the slot beneath the frame, which formerly held the pass counter `2`,
-now holds a second copy of the accumulator.  Nothing in the unrolled passes reads
-that slot. -/
+/-- The spare modulus copy left at 1783 sits at depth four under the frame, so
+the loop's modulus register is a plain `DUP5 SWAP1`. -/
 def frameLoadProgram : List Instr :=
-  [.op (.Dup ⟨3, by decide⟩), .op (.Dup ⟨3, by decide⟩)]
+  [.op (.Dup ⟨3, by decide⟩), .push 1 2,
+   .op (.Swap ⟨3, by decide⟩)]
 
 def frameProgram : List Instr := frameArrangeProgram ++ frameLoadProgram
 
@@ -136,15 +133,18 @@ private theorem run_frameLoad (template : State)
       (WindowTwentyOneTable.framed template pc base modulus 16
         ([UInt256.shiftLeft exponent (UInt256.ofNat 1), UInt256.ofNat 480,
           accumulator] ++ rest)) =
-    some (WindowTwentyOneTable.framed template (advancePC 2 pc) base modulus 16
+    some (WindowTwentyOneTable.framed template (advancePC 4 pc) base modulus 16
       ([accumulator, modulus, UInt256.shiftLeft exponent (UInt256.ofNat 1),
-        UInt256.ofNat 480, accumulator] ++ rest)) := by
+        UInt256.ofNat 480, UInt256.ofNat 2] ++ rest)) := by
   have hcap3 : rest.length + 3 < 1024 := by omega
   have hcap4 : rest.length + 4 < 1024 := by omega
+  have hcap5 : rest.length + 5 < 1024 := by omega
+  have hp2 : UInt256.ofNat 2 = UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
   simp [runInstructions, frameLoadProgram, WindowTwentyOneTable.framed,
-    Challenge.EvmProof.Stepper.runInstr, hcap3, hcap4, Nat.add_assoc,
-    List.getElem?_cons_succ, hmod,
-    advancePC, succ_eq_add, word_add_assoc]
+    Challenge.EvmProof.Stepper.runInstr, hcap3, hcap4, hcap5, Nat.add_assoc,
+    List.getElem?_cons_succ, hmod, List.exchange,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    advancePC, succ_eq_add, hp2, word_add_assoc]
 
 theorem run_frame (template : State) (pc base modulus exponent accumulator : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
@@ -152,15 +152,15 @@ theorem run_frame (template : State) (pc base modulus exponent accumulator : UIn
     runInstructions frameProgram
       (WindowTwentyOneTable.framed template pc base modulus 16
         ([accumulator, UInt256.ofNat 480, exponent] ++ rest)) =
-    some (WindowTwentyOneGroup.state template (advancePC 6 pc) (WindowTableMemory.tableMemory base modulus) 16 modulus accumulator
-      (UInt256.shiftLeft exponent (UInt256.ofNat 1)) accumulator 0 rest) := by
+    some (WindowTwentyOneGroup.state template (advancePC 8 pc) (WindowTableMemory.tableMemory base modulus) 16 modulus accumulator
+      (UInt256.shiftLeft exponent (UInt256.ofNat 1)) (UInt256.ofNat 2) 0 rest) := by
   have ha := run_arrange template pc base modulus exponent accumulator rest hrest
   have hl := run_frameLoad template (advancePC 4 pc) base modulus exponent
     accumulator rest hrest hmod
   have both := runInstructions_append_some _ _ _ _ _ ha hl
   simpa only [frameProgram, WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
     WindowTwentyOneTable.framed, WindowTableMemory.tableMemory, List.replicate_zero,
-    List.nil_append, List.cons_append, ← advancePC_add, show 4 + 2 = 6 by decide] using both
+    List.nil_append, List.cons_append, ← advancePC_add, show 4 + 4 = 8 by decide] using both
 
 def program : List Instr := lookupProgram ++ frameProgram
 
@@ -169,15 +169,14 @@ theorem run_enter (template : State) (base modulus exponent : UInt256)
     (hmod : rest[0]? = some modulus) :
     runInstructions program
       (WindowTwentyOneTable.framed template (UInt256.ofNat 932) base modulus 16 ([base, exponent] ++ rest)) =
-    some (WindowTwentyOneGroup.state template (UInt256.ofNat 952) (WindowTableMemory.tableMemory base modulus) 16 modulus
+    some (WindowTwentyOneGroup.state template (UInt256.ofNat 951) (WindowTableMemory.tableMemory base modulus) 16 modulus
       (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat)
-      (UInt256.shiftLeft exponent (UInt256.ofNat 1))
-      (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat) 0 rest) := by
+      (UInt256.shiftLeft exponent (UInt256.ofNat 1)) (UInt256.ofNat 2) 0 rest) := by
   have hl := run_lookup template (UInt256.ofNat 932) base modulus exponent rest hrest
-  have hf := run_frame template (advancePC 14 (UInt256.ofNat 932)) base modulus exponent
+  have hf := run_frame template (advancePC 11 (UInt256.ofNat 932)) base modulus exponent
     (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat) rest hrest hmod
   have both := runInstructions_append_some _ _ _ _ _ hl hf
-  have hpc : advancePC 6 (advancePC 14 (UInt256.ofNat 932)) = UInt256.ofNat 952 := by decide
+  have hpc : advancePC 8 (advancePC 11 (UInt256.ofNat 932)) = UInt256.ofNat 951 := by decide
   rw [hpc] at both
   simpa only [program] using both
 

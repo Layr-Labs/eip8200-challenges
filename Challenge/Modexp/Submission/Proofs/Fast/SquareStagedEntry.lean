@@ -14,25 +14,25 @@ open Monpro CiosCached
 
 /-- Rebase the square's B pointer onto the already staged operand. -/
 def program : List Instr :=
-  [.op .JUMPDEST, .push 2 4179, .op (.Swap ⟨1, by decide⟩), .op .POP,
+  [.op .JUMPDEST, .push 2 4190, .op (.Swap ⟨1, by decide⟩), .op .POP,
    .push 2 2336, .op (.Swap ⟨2, by decide⟩), .op .POP,
    .push 2 1856, .op .ADD]
 
-def block : Block Artifact.submissionArtifact .Osaka 4480 program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3541 9 4480 program
+def block : Block Artifact.submissionArtifact .Osaka 4488 program :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3560 9 4488 program
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 4480).toNat = true :=
-  Artifact.isValidJumpDest_index 3541 (by rfl)
+    (UInt256.ofNat 4488).toNat = true :=
+  Artifact.isValidJumpDest_index 3560 (by rfl)
 
 theorem run_entry (s : State) (mem : ByteArray) (n : Nat)
-    (ent inv m0 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1012)
+    (ent cy inv m0 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1012)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
     runInstructions program
-      (outState s mem 512 n 0 (UInt256.ofNat 4480) ent inv m0 rest) =
-    some { outState s mem 2368 n 0 (UInt256.ofNat 4179) ent inv m0 rest with
-      pc := UInt256.ofNat 4495 } := by
+      (outState s mem 512 n 0 (UInt256.ofNat 4488) ent cy inv m0 rest) =
+    some { outState s mem 2368 n 0 (UInt256.ofNat 4190) ent cy inv m0 rest with
+      pc := UInt256.ofNat 4503 } := by
   have h9 : rest.length + 9 < 1024 := by omega
   have h10 : rest.length + 10 < 1024 := by omega
   have hp : UInt256.ofNat 1856 + UInt256.ofNat (512 + 32 * n - 32) =
@@ -46,17 +46,17 @@ theorem run_entry (s : State) (mem : ByteArray) (n : Nat)
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
 def gasSteps_entry (s : State) (mem : ByteArray) (n : Nat)
-    (ent inv m0 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1012)
+    (ent cy inv m0 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1012)
     (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (outState s mem 512 n 0 (UInt256.ofNat 4480) ent inv m0 rest)
-      { outState s mem 2368 n 0 (UInt256.ofNat 4179) ent inv m0 rest with
-        pc := UInt256.ofNat 4495 } :=
+      (outState s mem 512 n 0 (UInt256.ofNat 4488) ent cy inv m0 rest)
+      { outState s mem 2368 n 0 (UInt256.ofNat 4190) ent cy inv m0 rest with
+        pc := UInt256.ofNat 4503 } :=
   block.steps (SquareRow.environment _ hcode hfork hrun hnp) rfl
-    (run_entry s mem n ent inv m0 rest hcap hcode)
+    (run_entry s mem n ent cy inv m0 rest hcap hcode)
 
 end Challenge.Modexp.Submission.Proofs.Fast.SquareStagedEntry

@@ -23,7 +23,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.Dispatch
 /-- State after the two operand pushes, at the `EXP`. -/
 def expArgState (input : ByteArray) : State :=
   { guardEntryState input with
-    pc := UInt256.ofNat 5434
+    pc := UInt256.ofNat 5439
     stack := UInt256.ofNat 3 :: UInt256.ofNat 65535 ::
       [UInt256.ofNat (modulusSize input), UInt256.ofNat (exponentSize input),
         UInt256.ofNat (baseSize input)] }
@@ -44,13 +44,13 @@ theorem run_hitPre (input : ByteArray) :
     Challenge.EvmProof.Word.succ_ofNat_mod]
   exact ⟨by decide, by decide⟩
 
-/-- The `EXP` at index 4388 decodes from the artifact like any other instruction. -/
+/-- The `EXP` at index 4382 decodes from the artifact like any other instruction. -/
 theorem exp_decodes (s : State)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code)
-    (hpc : s.pc.toNat = 5434) :
+    (hpc : s.pc.toNat = 5439) :
     s.decodedOp = some .EXP := by
   have hdec := Challenge.EvmProof.Stepper.decodes_of_artifact
-    Artifact.submissionArtifact s 4342 (.op .EXP) hcode
+    Artifact.submissionArtifact s 4369 (.op .EXP) hcode
     (by rw [hpc]; rfl) (by rfl) expAt.wellFormed
   change s.decodedOp = some .EXP at hdec
   exact hdec

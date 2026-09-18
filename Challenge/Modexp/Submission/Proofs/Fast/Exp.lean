@@ -104,7 +104,7 @@ the only caller (the fixed-exponent chain) squares `0x800` in place. -/
 def sqCall (s : State) (mem : ByteArray) (ret : UInt256)
     (tail : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3327
-           stack := UInt256.ofNat 4480 :: UInt256.ofNat 512 :: UInt256.ofNat 512 ::
+           stack := UInt256.ofNat 4488 :: UInt256.ofNat 512 :: UInt256.ofNat 512 ::
              UInt256.ofNat 512 :: ret :: tail
            memory := mem }
 
@@ -420,16 +420,18 @@ def returnedState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
            hReturn := MachineState.readPadded mem (256 + 32 * n - msize) msize }
 
 
-/-! Program-counter certificates for `blk1333` (instruction indices 566..573,
+/-! Program-counter certificates for `blk1333` (instruction indices 554..560,
 pc 784..793).  `Fast.Defs` used to cover these with a `fastPC` range lemma, which
 was dropped when the unroll made its index range non-contiguous; these are the
 individual facts the block reduction actually needs, in the same form
-`Fast.Setup` uses for `blk1341`/`blk1351`.  Transcribed from the decode of the
-5,428-byte artifact `fe8e9f61e6d3764a`, where indices 566..573 read
-JUMPDEST, DUP5, DUP1, DUP3, PUSH2 0x100, ADD, SUB, RETURN -- matching `blk1333`
-instruction for instruction.  In this image the block's leading `JUMPDEST` at pc 784 is
-removed (it was reached only by fall-through), so the block starts at the `DUP5` at 784
-(index 554) and the `PUSH3 0x100` at 787 runs to 791. -/
+`Fast.Setup` uses for `blk1341`/`blk1351`.  Read off the decode of the artifact
+this tree carries, where indices 554..560 are
+DUP5, DUP1, DUP3, PUSH3 0x100, ADD, SUB, RETURN -- matching `blk1333` instruction
+for instruction.  Note the 787 -> 791 step: index 557 is the widened `PUSH3`.
+
+The orphan `JUMPDEST` at pc 784 that used to open this block is deleted, so the
+block now starts at the `DUP5`; the certificate for it (`pcIdx566`) is gone with
+it, and there is no index that could replace it. -/
 private theorem pcIdx567 :
     Artifact.submissionArtifact.instructionPC 554 = 784 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
@@ -1978,7 +1980,7 @@ the decode rather than reconciled against each other: pc 2474 is a `JUMPDEST`
 reached by the `PUSH2 0xcff; JUMP` at indices 2048..2049 and followed by
 `DUP1; DUP4; EQ`, which is the dispatcher's compare chain.  `Fast.Setup` agrees
 from two directions -- `fastSetupState_pc` is `UInt256.ofNat 2474` by `rfl`, and
-its `jumpDest3296` certifies pc 2474 via `isValidJumpDest_index 2016`. -/
+its `jumpDest3296` certifies pc 2474 via `isValidJumpDest_index 2018`. -/
 theorem fastSetup_entry_eq (input : ByteArray) :
     Setup.fastSetupState input =
       retTo (Setup.fastSetupState input) (Setup.fastSetupMemory input) (UInt256.ofNat 2474)

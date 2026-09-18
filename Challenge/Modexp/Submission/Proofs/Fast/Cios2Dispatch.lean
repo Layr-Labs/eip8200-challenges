@@ -21,7 +21,7 @@ proved piecewise in `StagedOperandEntry{Prefix,Zero}`) stages the first operand 
 zeroes the scratch block and jumps (`DUP2; JUMP`) to the row head `hd` with the row-0 frame
 `CiosCached.outState … 0 hd (l1Target n) …`.
 
-Exports: `commonState` (`Exp.sqCall` is definitionally `commonState s mem 4480 512 512
+Exports: `commonState` (`Exp.sqCall` is definitionally `commonState s mem 4488 512 512
 (UInt256.ofNat 512) ret tail`), `gasSteps_common`, `gasSteps_commonFallback(OfWidth)`,
 `gasSteps_setup`, `gasSteps_commonSetup(Input)`, and the `common`/`setup`/row-head jump
 destinations.
@@ -67,43 +67,43 @@ def commonState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
 /-- The `common` JUMPDEST (instruction 3190, pc 4104 = 0x0f54). -/
 theorem jumpDestCommon :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3327 = true := by
-  exact Artifact.isValidJumpDest_index 2652 (by rfl)
+  exact Artifact.isValidJumpDest_index 2660 (by rfl)
 
 /-- The kernel `setup` JUMPDEST (instruction 3190, pc 4123 = 0x0f6c). -/
 theorem jumpDestSetup :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3328 = true := by
-  exact Artifact.isValidJumpDest_index 2653 (by rfl)
+  exact Artifact.isValidJumpDest_index 2661 (by rfl)
 
 /-- The multiply row head (instruction 1760, pc 4261 = 0x0fc5). -/
 theorem jumpDestRowHead :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3465 = true := by
-  exact Artifact.isValidJumpDest_index 2745 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3481 = true := by
+  exact Artifact.isValidJumpDest_index 2764 (by rfl)
 
 /-- The square row head `sq_row` (instruction 3559, pc 2464 = 0x1266). -/
 theorem jumpDestSqRow :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4179 = true := by
-  exact Artifact.isValidJumpDest_index 3319 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4190 = true := by
+  exact Artifact.isValidJumpDest_index 3339 (by rfl)
 
 /-- `jumpDestRowHead` in the `hd.toNat` form taken by `gasSteps_setup`/`gasSteps_commonSetup`. -/
 theorem jumpDestRowHead' :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 3465).toNat = true := by
-  rw [show (UInt256.ofNat 3465).toNat = 3465 by decide]
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 3481).toNat = true := by
+  rw [show (UInt256.ofNat 3481).toNat = 3481 by decide]
   exact jumpDestRowHead
 
 /-- `jumpDestSqRow` in the `hd.toNat` form taken by `gasSteps_setup`/`gasSteps_commonSetup`. -/
 theorem jumpDestSqRow' :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 4179).toNat = true := by
-  rw [show (UInt256.ofNat 4179).toNat = 4179 by decide]
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 4190).toNat = true := by
+  rw [show (UInt256.ofNat 4190).toNat = 4190 by decide]
   exact jumpDestSqRow
 
 /-- The square call state (`Exp.sqCall s mem ret tail`) is definitionally `commonState`
 with `hd = 2464` and `pa = pb = pdst = 2048`. -/
 example (s : State) (mem : ByteArray) (ret : UInt256) (tail : List UInt256) :
     ({ s with pc := UInt256.ofNat 3327
-              stack := UInt256.ofNat 4179 :: UInt256.ofNat 512 :: UInt256.ofNat 512 ::
+              stack := UInt256.ofNat 4190 :: UInt256.ofNat 512 :: UInt256.ofNat 512 ::
                 UInt256.ofNat 512 :: ret :: tail
               memory := mem } : State) =
-      commonState s mem 4179 512 512 (UInt256.ofNat 512) ret tail := rfl
+      commonState s mem 4190 512 512 (UInt256.ofNat 512) ret tail := rfl
 
 private theorem activeWords9344 (s : State) (hact : 88 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2688 32) =
@@ -149,7 +149,7 @@ set_option linter.unusedSimpArgs false in
 
 /-- The kernel `setup`: instructions 3189..3189 (pc 4123 = 0x0f6c .. 4260), 62 instructions. -/
 def setup : Block Artifact.submissionArtifact .Osaka 3328 StagedOperand.fullEntryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2653 59 3328 StagedOperand.fullEntryProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2661 59 3328 StagedOperand.fullEntryProgram
     (by decide) (by decide) (by rfl) (by decide)
 
 def environment (s : State)
@@ -201,7 +201,7 @@ opaque gasSteps_setup (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Na
     Challenge.EvmProof.GasSteps
       (CiosCached.setupState s mem hd pa pb pdst ret rest)
       (CiosCached.outState s (mpZeroed s (StagedOperand.stage mem pa n) n) pb n 0 hd
-        (CiosCached.l1Target n)
+        (CiosCached.l1Target n) (CiosCached.l2Target n)
         (MachineState.readWord mem 2720) (MachineState.readWord mem (32 * n - 32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
           MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
@@ -232,7 +232,7 @@ opaque gasSteps_commonSetup (s : State) (mem : ByteArray) (hd : UInt256) (pa pb 
     Challenge.EvmProof.GasSteps
       (commonState s mem hd pa pb pdst ret rest)
       (CiosCached.outState s (mpZeroed s (StagedOperand.stage mem pa n) n) pb n 0 hd
-        (CiosCached.l1Target n)
+        (CiosCached.l1Target n) (CiosCached.l2Target n)
         (MachineState.readWord mem 2720) (MachineState.readWord mem (32 * n - 32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
           MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
@@ -270,7 +270,7 @@ opaque gasSteps_commonSetupInput (s : State) (mem : ByteArray) (hd : UInt256) (p
     Challenge.EvmProof.GasSteps
       (commonState s mem hd pa pb pdst ret rest)
       (CiosCached.outState s (mpZeroed s (StagedOperand.inputMemory mem pa n) n) pb n 0 hd
-        (CiosCached.l1Target n)
+        (CiosCached.l1Target n) (CiosCached.l2Target n)
         (MachineState.readWord mem 2720) (MachineState.readWord mem (32 * n - 32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
           MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::

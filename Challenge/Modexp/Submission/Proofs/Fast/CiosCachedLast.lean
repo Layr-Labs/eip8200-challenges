@@ -304,22 +304,22 @@ theorem run_stepLast (w : Fin 33) (template : State) (pc : UInt256) (mem : ByteA
 
 /-- On the row frame: the last copy of row `i` lands on the row tail frame (pc 4833). -/
 theorem run_l2Last (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
-    (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
+    (pb n i : Nat) (hd ent cy pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005) (hact : 88 ≤ s.activeWords.toNat)
     (hn32 : n ≤ 8) (hn : 2 ≤ n) :
     runInstructions (l2LastProgram 0 0 2112 2144)
-      (l2At 3997 s mid bi mu c0 pb n i (n-2) hd ent pdst ret rest) =
+      (l2At 4006 s mid bi mu c0 pb n i (n-2) hd ent cy pdst ret rest) =
       some (tailState s (l2Step mid mu c0 n (n-1)).memory
-        (l2Step mid mu c0 n (n-1)).carry mu bi pb n i hd ent pdst ret rest) := by
-  have h := run_stepLast 0 s (UInt256.ofNat 3997) mid bi mu c0 n (n-2) 0 2112 2144
+        (l2Step mid mu c0 n (n-1)).carry mu bi pb n i hd ent cy pdst ret rest) := by
+  have h := run_stepLast 0 s (UInt256.ofNat 4006) mid bi mu c0 n (n-2) 0 2112 2144
     (by rw [show n - 2 - (n - 2) = 0 by omega]; decide)
     (by rw [show n - 2 - (n - 2) = 0 by omega]; decide)
     (by rw [show n - 1 - (n - 2) = 1 by omega]; decide)
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) hd
-    (UInt256.ofNat (pb-32)) ent (l2Target n) pdst (ret :: rest)
+    (UInt256.ofNat (pb-32)) ent cy pdst (ret :: rest)
     (by simp only [List.length_cons]; omega) hact hn32 (by omega) (by decide)
   have hnn : n - 2 + 1 = n - 1 := by omega
-  have hpc : UInt256.ofNat 3997 + UInt256.ofNat ((0 : Fin 33).val + 33) = UInt256.ofNat 4030 := by
+  have hpc : UInt256.ofNat 4006 + UInt256.ofNat ((0 : Fin 33).val + 33) = UInt256.ofNat 4039 := by
     decide
   rw [hnn, hpc] at h
   simpa only [List.cons_append, List.nil_append, CiosCachedL2.state, lastState, l2At,

@@ -44,4 +44,37 @@ theorem Snapshot.rows_stage {mem : ByteArray} {pa n : Nat} (h : Snapshot mem pa 
   · exact h.rows pb i hn hfit
   · intro k _; rfl
 
+/-! ### The reassembled rows (`rowsS`): the same reads, without the scratch-word store. -/
+
+theorem read_rowS_high (mem : ByteArray) (cy : UInt256) (pa pb n i addr : Nat)
+    (hn : n ≤ 8) (ha : 2368 ≤ addr) :
+    MachineState.readWord (rowMemS mem cy pa pb n i) addr = MachineState.readWord mem addr := by
+  unfold rowMemS fromMemS fromL2S tailMemS
+  rw [readWord_storeWord_outside _ _ 2112 addr (by omega),
+    read_l2_high _ _ _ n addr (n-1) hn ha]
+  unfold rowL1
+  exact read_l1_high mem _ pa n addr n hn ha
+
+theorem Snapshot.rowS {mem : ByteArray} {pa n : Nat} (h : Snapshot mem pa n) (cy : UInt256)
+    (pb i : Nat) (hn : n ≤ 8) (hpa : pa+32*n ≤ 2048) :
+    Snapshot (rowMemS mem cy pa pb n i) pa n := by
+  intro k hk
+  rw [read_rowS_high _ _ _ _ _ _ _ hn (by omega),
+    readWord_rowMemS _ _ _ _ _ _ _ (by omega) (Or.inl (by omega))]
+  exact h k hk
+
+theorem Snapshot.rowsS {mem : ByteArray} {pa n : Nat} (h : Snapshot mem pa n) (cy : UInt256)
+    (pb i : Nat) (hn : n ≤ 8) (hpa : pa+32*n ≤ 2048) :
+    Snapshot (CarryRowModel.rowsS mem cy pa pb n i).memory pa n := by
+  induction i with
+  | zero => exact h
+  | succ i ih => exact ih.rowS _ pb i hn hpa
+
+theorem Snapshot.rowsS_stage {mem : ByteArray} {pa n : Nat} (h : Snapshot mem pa n) (cy : UInt256)
+    (pb i : Nat) (hn : n ≤ 8) (hpa : pa + 32*n ≤ 2048 ∨ pa = 2368) :
+    Snapshot (CarryRowModel.rowsS mem cy pa pb n i).memory pa n := by
+  rcases hpa with hfit | rfl
+  · exact h.rowsS cy pb i hn hfit
+  · intro k _; rfl
+
 end Challenge.Modexp.Submission.Proofs.Fast.StagedOperand

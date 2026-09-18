@@ -16,22 +16,24 @@ consecutive passes is the same seventeen-instruction program at both of its. -/
 structure Paths (artifact : ProgramArtifact) (fork : Fork) where
   table : Block artifact fork 840 WindowTwentyOneTableBuild.program
   init : Block artifact fork 932 WindowTwentyOneInit.program
-  entry : Block artifact fork 952 WindowTwentyOneLoop.entryProgram
-  trampoline : Block artifact fork 952 WindowTwentyOneLoop.trampolineProgram
+  entry : Block artifact fork 951 WindowTwentyOneLoop.entryProgram
+  trampoline : Block artifact fork 951 WindowTwentyOneLoop.trampolineProgram
   body0 : Block artifact fork 970 (WindowTwentyOneLoop.bodyProgram (21 * 0))
   link0 : Block artifact fork 1413 WindowTwentyOneLoop.linkProgram
-  body1 : Block artifact fork 1418 (WindowTwentyOneLoop.bodyProgram (21 * 1))
-  link1 : Block artifact fork 1861 WindowTwentyOneLoop.linkProgramB
-  body2 : Block artifact fork 1866 (WindowTwentyOneLoop.bodyProgramLast 42)
-  finish : Block artifact fork 2309 WindowTwentyOneReturn.program
+  body1 : Block artifact fork 1436 (WindowTwentyOneLoop.bodyProgram (21 * 1))
+  link1 : Block artifact fork 1879 WindowTwentyOneLoop.linkProgramB
+  body2 : Block artifact fork 1902 (WindowTwentyOneLoop.bodyProgramLast 42)
+  finish : Block artifact fork 2345 WindowTwentyOneReturn.program
 
-/-- The three unrolled passes, from the loop head at 952 to the return entry at
-2309.  Pass 0 is entered through the trampoline at 952; passes 1 and 2 are
-entered through the links at 1413 and 1861.  No instruction in the chain is a
-jump. -/
+/-- The three unrolled passes, from the loop head at 951 to the return entry at
+2345.  Pass 0 is entered through the trampoline at 951; passes 1 and 2 are
+entered through the links at 1413 and 1879.  No instruction in the chain is a
+jump, so the `951` jump-destination fact is not needed -- it is retained in the
+signature only so the route above does not have to change. -/
 def steps_three {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
-    (base modulus exponent : UInt256) (rest : List UInt256) (hrest : rest.length ≤ 1000) :
+    (base modulus exponent : UInt256) (rest : List UInt256) (hrest : rest.length ≤ 1000)
+    (_htramp : Decode.isValidJumpDest template.executionEnv.code 951 = true) :
     GasSteps (WindowTwentyOneLoop.entryState template base modulus exponent rest)
       (WindowTwentyOneLoop.finishState template base modulus exponent rest) := by
   have e0 : GasSteps (WindowTwentyOneLoop.entryState template base modulus exponent rest)
@@ -52,29 +54,29 @@ def steps_three {artifact : ProgramArtifact} {fork : Fork}
       (env.transfer rfl rfl) rfl
       (WindowTwentyOneLoop.run_body template 970 base modulus exponent 0 (by decide) rest hrest)
   have l0 : GasSteps (WindowTwentyOneLoop.postState template (UInt256.ofNat 1413) base modulus exponent 0 rest)
-      (WindowTwentyOneLoop.headState template (UInt256.ofNat 1418) base modulus exponent 1 rest) :=
+      (WindowTwentyOneLoop.headState template (UInt256.ofNat 1436) base modulus exponent 1 rest) :=
     paths.link0.steps
       (s := WindowTwentyOneLoop.postState template (UInt256.ofNat 1413) base modulus exponent 0 rest)
       (env.transfer rfl rfl) rfl
       (WindowTwentyOneLoop.run_link template 1413 base modulus exponent 0 (by decide) rest hrest)
-  have b1 : GasSteps (WindowTwentyOneLoop.headState template (UInt256.ofNat 1418) base modulus exponent 1 rest)
-      (WindowTwentyOneLoop.postState template (UInt256.ofNat 1861) base modulus exponent 1 rest) :=
+  have b1 : GasSteps (WindowTwentyOneLoop.headState template (UInt256.ofNat 1436) base modulus exponent 1 rest)
+      (WindowTwentyOneLoop.postState template (UInt256.ofNat 1879) base modulus exponent 1 rest) :=
     paths.body1.steps
-      (s := WindowTwentyOneLoop.headState template (UInt256.ofNat 1418) base modulus exponent 1 rest)
+      (s := WindowTwentyOneLoop.headState template (UInt256.ofNat 1436) base modulus exponent 1 rest)
       (env.transfer rfl rfl) rfl
-      (WindowTwentyOneLoop.run_body template 1418 base modulus exponent 1 (by decide) rest hrest)
-  have l1 : GasSteps (WindowTwentyOneLoop.postState template (UInt256.ofNat 1861) base modulus exponent 1 rest)
-      (WindowTwentyOneLoop.headState template (UInt256.ofNat 1866) base modulus exponent 2 rest) :=
+      (WindowTwentyOneLoop.run_body template 1436 base modulus exponent 1 (by decide) rest hrest)
+  have l1 : GasSteps (WindowTwentyOneLoop.postState template (UInt256.ofNat 1879) base modulus exponent 1 rest)
+      (WindowTwentyOneLoop.headState template (UInt256.ofNat 1902) base modulus exponent 2 rest) :=
     paths.link1.steps
-      (s := WindowTwentyOneLoop.postState template (UInt256.ofNat 1861) base modulus exponent 1 rest)
+      (s := WindowTwentyOneLoop.postState template (UInt256.ofNat 1879) base modulus exponent 1 rest)
       (env.transfer rfl rfl) rfl
-      (WindowTwentyOneLoop.run_linkB template 1861 base modulus exponent 1 (by decide) rest hrest)
-  have b2 : GasSteps (WindowTwentyOneLoop.headState template (UInt256.ofNat 1866) base modulus exponent 2 rest)
+      (WindowTwentyOneLoop.run_linkB template 1879 base modulus exponent 1 (by decide) rest hrest)
+  have b2 : GasSteps (WindowTwentyOneLoop.headState template (UInt256.ofNat 1902) base modulus exponent 2 rest)
       (WindowTwentyOneLoop.finishState template base modulus exponent rest) :=
     paths.body2.steps
-      (s := WindowTwentyOneLoop.headState template (UInt256.ofNat 1866) base modulus exponent 2 rest)
+      (s := WindowTwentyOneLoop.headState template (UInt256.ofNat 1902) base modulus exponent 2 rest)
       (env.transfer rfl rfl) rfl
-      (WindowTwentyOneLoop.run_bodyLast template 1866 base modulus exponent rest hrest)
+      (WindowTwentyOneLoop.run_bodyLast template 1902 base modulus exponent rest hrest)
   exact ((((((e0.trans t0).trans b0).trans l0).trans b1).trans l1).trans b2)
 
 /-- Table, init, three bodies and the return, from the normalized state at 840.
@@ -83,7 +85,8 @@ def steps_core {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (he : rest[1]? = some exponent) (hm : rest[0]? = some modulus) :
+    (he : rest[1]? = some exponent) (hm : rest[0]? = some modulus)
+    (htramp : Decode.isValidJumpDest template.executionEnv.code 951 = true) :
     GasSteps (WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 840) base modulus rest)
       (WindowTwentyOneCore.returnedState template base modulus exponent rest) := by
   have ht := Block.stepsX paths.table
@@ -95,12 +98,11 @@ def steps_core {artifact : ProgramArtifact} {fork : Fork}
       (WindowTwentyOneTable.framed template (UInt256.ofNat 932) base modulus 16 ([base, exponent] ++ rest)) =
       some (WindowTwentyOneLoop.entryState template base modulus exponent rest) := by
     simpa only [WindowTwentyOneLoop.entryState, WindowTwentyOneLoop.eAt,
-      WindowTwentyOneLoop.spare,
       WindowTwentyOneMath.accumulator, WindowTwentyOneMath.advance] using hi
   have hinit := paths.init.steps
     (s := WindowTwentyOneTable.framed template (UInt256.ofNat 932) base modulus 16 ([base, exponent] ++ rest))
     (env.transfer rfl rfl) rfl hi'
-  have hloop := steps_three paths template env base modulus exponent rest hrest
+  have hloop := steps_three paths template env base modulus exponent rest hrest htramp
   have hfinish := paths.finish.steps
     (s := WindowTwentyOneLoop.finishState template base modulus exponent rest)
     (env.transfer rfl rfl) rfl
