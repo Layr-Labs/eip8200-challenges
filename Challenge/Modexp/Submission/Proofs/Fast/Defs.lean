@@ -70,22 +70,22 @@ private theorem fastPCAnchor1 :
   rfl
 
 private theorem fastPCAnchor2 :
-    Artifact.submissionArtifact.instructionPC 496 = 698 := by
+    Artifact.submissionArtifact.instructionPC 491 = 698 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor3 :
-    Artifact.submissionArtifact.instructionPC 531 = 741 := by
+    Artifact.submissionArtifact.instructionPC 520 = 741 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor4 :
-    Artifact.submissionArtifact.instructionPC 563 = 781 := by
+    Artifact.submissionArtifact.instructionPC 551 = 781 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor9 :
-    Artifact.submissionArtifact.instructionPC 570 = 788 := by
+    Artifact.submissionArtifact.instructionPC 557 = 787 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -101,26 +101,26 @@ private theorem fastPCAnchor9 :
   rw [← PCFast.byteLength_eq_assemble]
   interval_cases i <;> rfl
 
-@[simp] theorem fastPC1 (i : Nat) (hi : 451 ≤ i) (hii : i ≤ 495) :
+@[simp] theorem fastPC1 (i : Nat) (hi : 451 ≤ i) (hii : i ≤ 490) :
     Artifact.submissionArtifact.instructionPC i =
-      [637,638,640,641,642,643,644,645,646,649,650,652,653,654,655,656,657,658,659,660,661,662,664,665,666,667,668,670,671,672,675,676,677,680,681,682,684,685,688,689,691,692,693,694,697][i - 451]! := by
+      [637,638,644,645,646,649,650,652,653,654,655,656,657,658,659,660,661,664,665,666,667,668,670,671,672,675,676,677,680,681,682,684,685,688,689,691,692,693,694,697][i - 451]! := by
   have hsplit : i = 451 + (i - 451) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor1]
   rw [← PCFast.byteLength_eq_assemble]
   interval_cases i <;> rfl
 
-@[simp] theorem fastPC2 (i : Nat) (hi : 496 ≤ i) (hii : i ≤ 530) :
+@[simp] theorem fastPC2 (i : Nat) (hi : 491 ≤ i) (hii : i ≤ 519) :
     Artifact.submissionArtifact.instructionPC i =
-      [698,699,702,703,706,707,708,709,710,711,712,713,714,715,716,717,718,719,720,721,722,724,725,727,728,729,730,731,733,734,735,736,737,738,740][i - 496]! := by
-  have hsplit : i = 496 + (i - 496) := by omega
+      [698,699,702,703,712,713,714,715,716,717,718,719,720,721,722,724,725,727,728,729,730,731,733,734,735,736,737,738,740][i - 491]! := by
+  have hsplit : i = 491 + (i - 491) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor2]
   rw [← PCFast.byteLength_eq_assemble]
   interval_cases i <;> rfl
 
-@[simp] theorem fastPC3 (i : Nat) (hi : 531 ≤ i) (hii : i ≤ 562) :
+@[simp] theorem fastPC3 (i : Nat) (hi : 520 ≤ i) (hii : i ≤ 550) :
     Artifact.submissionArtifact.instructionPC i =
-      [741,742,743,744,745,747,748,749,750,751,752,754,755,756,757,758,759,761,762,763,764,765,766,768,769,770,771,772,775,776,777,778][i - 531]! := by
-  have hsplit : i = 531 + (i - 531) := by omega
+      [741,742,743,744,745,747,748,749,750,751,752,754,755,756,757,758,759,761,762,763,764,765,766,768,769,770,771,775,776,777,778][i - 520]! := by
+  have hsplit : i = 520 + (i - 520) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor3]
   rw [← PCFast.byteLength_eq_assemble]
   interval_cases i <;> rfl
@@ -145,7 +145,7 @@ theorem jumpDest1196 :
 
 theorem jumpDest3412 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2396 = true :=
-  Artifact.isValidJumpDest_index 1986 (by rfl)
+  Artifact.isValidJumpDest_index 1973 (by rfl)
 
 
 
@@ -153,17 +153,18 @@ theorem jumpDest3412 :
 
 
 
-theorem jumpDest1802 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 784 = true :=
-  Artifact.isValidJumpDest_index 566 (by rfl)
+-- `jumpDest1802` (pc 784 is a valid jump destination) is gone: that `JUMPDEST` was an
+-- orphan -- no `PUSH` immediate anywhere in the image holds 784 and it is in none of the
+-- resolved destination sets of the non-literal jump sites -- so the byte was deleted and
+-- the pc is no longer a jump destination.  The theorem had no users in this tree.
 
 theorem jumpDest1812 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 794 = true :=
-  Artifact.isValidJumpDest_index 574 (by rfl)
+  Artifact.isValidJumpDest_index 561 (by rfl)
 
 theorem jumpDest1826 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 800 = true :=
-  Artifact.isValidJumpDest_index 578 (by rfl)
+  Artifact.isValidJumpDest_index 565 (by rfl)
 
 
 
@@ -185,15 +186,15 @@ theorem jumpDest1826 :
 
 
 theorem jumpDest4976 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4077 = true :=
-  Artifact.isValidJumpDest_index 3279 (by rfl)
+  Artifact.isValidJumpDest_index 3266 (by rfl)
 
 theorem jumpDestSub : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4244 = true :=
-  Artifact.isValidJumpDest_index 3396 (by rfl)
+  Artifact.isValidJumpDest_index 3383 (by rfl)
 
 theorem jumpDestCopyResume : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4467 = true :=
-  Artifact.isValidJumpDest_index 3553 (by rfl)
+  Artifact.isValidJumpDest_index 3540 (by rfl)
 
 theorem jumpDestEarlyCopy : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4456 = true :=
-  Artifact.isValidJumpDest_index 3546 (by rfl)
+  Artifact.isValidJumpDest_index 3533 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

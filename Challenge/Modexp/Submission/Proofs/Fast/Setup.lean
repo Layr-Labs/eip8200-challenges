@@ -898,37 +898,37 @@ dropped when its index range stopped being contiguous; the individual facts belo
 are what the block reductions actually need. -/
 
 private theorem pcIdx574 :
-    Artifact.submissionArtifact.instructionPC 574 = 794 := by
+    Artifact.submissionArtifact.instructionPC 561 = 794 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx575 :
-    Artifact.submissionArtifact.instructionPC 575 = 795 := by
+    Artifact.submissionArtifact.instructionPC 562 = 795 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx576 :
-    Artifact.submissionArtifact.instructionPC 576 = 796 := by
+    Artifact.submissionArtifact.instructionPC 563 = 796 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx577 :
-    Artifact.submissionArtifact.instructionPC 577 = 799 := by
+    Artifact.submissionArtifact.instructionPC 564 = 799 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx578 :
-    Artifact.submissionArtifact.instructionPC 578 = 800 := by
+    Artifact.submissionArtifact.instructionPC 565 = 800 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx579 :
-    Artifact.submissionArtifact.instructionPC 579 = 801 := by
+    Artifact.submissionArtifact.instructionPC 566 = 801 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx580 :
-    Artifact.submissionArtifact.instructionPC 580 = 803 := by
+    Artifact.submissionArtifact.instructionPC 567 = 803 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -1430,83 +1430,77 @@ def setupWords (w : UInt256) (input : ByteArray) : UInt256 :=
 `MLOAD` of its least significant limb. -/
 def setupPathA :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 482 (.Dup ⟨1, by decide⟩),
-   pushAt 483 2 2688,
+  [opAt 477 (.Dup ⟨1, by decide⟩),
+   pushAt 478 2 2688,
+   opAt 479 .MSTORE,
+   opAt 480 (.Dup ⟨3, by decide⟩),
+   pushAt 481 1 96,
+   opAt 482 .ADD,
+   pushAt 483 2 2816,
    opAt 484 .MSTORE,
-   opAt 485 (.Dup ⟨3, by decide⟩),
-   pushAt 486 1 96,
-   opAt 487 .ADD,
-   pushAt 488 2 2816,
-   opAt 489 .MSTORE,
-   pushAt 490 1 32,
+   pushAt 485 1 32,
+   opAt 486 (.Dup ⟨2, by decide⟩),
+   opAt 487 .SUB,
+   opAt 488 (.Dup ⟨0, by decide⟩),
+   pushAt 489 2 2752,
+   opAt 490 .MSTORE,
    opAt 491 (.Dup ⟨2, by decide⟩),
-   opAt 492 .SUB,
-   opAt 493 (.Dup ⟨0, by decide⟩),
-   pushAt 494 2 2752,
+   pushAt 492 2 2080,
+   opAt 493 .ADD,
+   pushAt 494 8 2784,
    opAt 495 .MSTORE,
-   opAt 496 (.Dup ⟨2, by decide⟩),
-   pushAt 497 2 2080,
-   opAt 498 .ADD,
-   pushAt 499 2 2784,
-   opAt 500 .MSTORE,
-   opAt 501 .JUMPDEST,
-   opAt 502 .JUMPDEST,
-   opAt 503 .JUMPDEST,
-   opAt 504 .JUMPDEST,
-   opAt 505 (.Dup ⟨6, by decide⟩),
-   opAt 506 (.Dup ⟨2, by decide⟩),
-   opAt 507 .JUMPDEST,
-   opAt 508 .JUMPDEST,
-   pushAt 509 0 0,
-   opAt 510 .CALLDATACOPY,
-   opAt 511 (.Swap ⟨0, by decide⟩),
-   opAt 512 .POP,
-   opAt 513 (.Dup ⟨0, by decide⟩),
-   opAt 514 .MLOAD]
+   opAt 496 (.Dup ⟨6, by decide⟩),
+   opAt 497 (.Dup ⟨2, by decide⟩),
+   pushAt 498 0 0,
+   opAt 499 .CALLDATACOPY,
+   opAt 500 (.Swap ⟨0, by decide⟩),
+   opAt 501 .POP,
+   opAt 502 (.Dup ⟨0, by decide⟩),
+   opAt 503 .MLOAD]
 
 /-- Instructions 1206..1230: `x := 1` and the first four Newton steps. -/
 def setupPathB :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 515 (.Dup ⟨0, by decide⟩),
-   pushAt 516 1 3,
+  [opAt 504 (.Dup ⟨0, by decide⟩),
+   pushAt 505 1 3,
+   opAt 506 .MUL,
+   pushAt 507 1 2,
+   opAt 508 .XOR,
+   opAt 509 (.Dup ⟨0, by decide⟩),
+   opAt 510 (.Dup ⟨2, by decide⟩),
+   opAt 511 .MUL,
+   pushAt 512 1 2,
+   opAt 513 .SUB,
+   opAt 514 .MUL,
+   opAt 515 (.Dup ⟨0, by decide⟩),
+   opAt 516 (.Dup ⟨2, by decide⟩),
    opAt 517 .MUL,
    pushAt 518 1 2,
-   opAt 519 .XOR,
-   opAt 520 (.Dup ⟨0, by decide⟩),
-   opAt 521 (.Dup ⟨2, by decide⟩),
-   opAt 522 .MUL,
-   pushAt 523 1 2,
-   opAt 524 .SUB,
-   opAt 525 .MUL,
-   opAt 526 (.Dup ⟨0, by decide⟩),
-   opAt 527 (.Dup ⟨2, by decide⟩),
-   opAt 528 .MUL,
-   pushAt 529 1 2,
-   opAt 530 .SUB,
-   opAt 531 .MUL,
-   opAt 532 (.Dup ⟨0, by decide⟩),
-   opAt 533 (.Dup ⟨2, by decide⟩),
-   opAt 534 .MUL,
-   pushAt 535 1 2,
-   opAt 536 .SUB,
-   opAt 537 .MUL]
+   opAt 519 .SUB,
+   opAt 520 .MUL,
+   opAt 521 (.Dup ⟨0, by decide⟩),
+   opAt 522 (.Dup ⟨2, by decide⟩),
+   opAt 523 .MUL,
+   pushAt 524 1 2,
+   opAt 525 .SUB,
+   opAt 526 .MUL]
 
 /-- Instruction indices 538..549, pc 749..762: two of the last three Newton steps.
 The block ends on a completed step, so both of its endpoints are `newtonState`s. -/
 def setupPathC :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 538 (.Dup ⟨0, by decide⟩),
-   opAt 539 (.Dup ⟨2, by decide⟩),
-   opAt 540 .MUL,
-   pushAt 541 1 2,
-   opAt 542 .SUB,
-   opAt 543 .MUL,
-   opAt 544 (.Dup ⟨0, by decide⟩),
-   opAt 545 (.Dup ⟨2, by decide⟩),
-   opAt 546 .MUL,
-   pushAt 547 1 2,
-   opAt 548 .SUB,
-   opAt 549 .MUL]
+  [opAt 527 (.Dup ⟨0, by decide⟩),
+   opAt 528 (.Dup ⟨2, by decide⟩),
+   opAt 529 .MUL,
+   pushAt 530 1 2,
+   opAt 531 .SUB,
+   opAt 532 .MUL,
+   opAt 533 (.Dup ⟨0, by decide⟩),
+   opAt 534 (.Dup ⟨2, by decide⟩),
+   opAt 535 .MUL,
+   pushAt 536 1 2,
+   opAt 537 .SUB,
+   opAt 538 .MUL]
 
 /-- Instruction indices 550..563, pc 763..781: the last Newton step, whose
 subtraction is taken in the reverse order so the step comes out already negated,
@@ -1514,20 +1508,19 @@ then `MSTORE V_MINV`, `MSTORE R1 1` and the tail call into the `R1B` guard.
 Reversing the subtraction is what removes the separate `PUSH0; SUB`. -/
 def setupPathD :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 550 (.Dup ⟨0, by decide⟩),
-   opAt 551 (.Dup ⟨2, by decide⟩),
-   opAt 552 .MUL,
-   pushAt 553 1 2,
-   opAt 554 (.Swap ⟨0, by decide⟩),
-   opAt 555 .SUB,
-   opAt 556 .MUL,
-   opAt 557 .JUMPDEST,
-   pushAt 558 2 2720,
-   opAt 559 .MSTORE,
-   opAt 560 .POP,
-   opAt 561 .POP,
-   pushAt 562 2 2474,
-   opAt 563 .JUMP]
+  [opAt 539 (.Dup ⟨0, by decide⟩),
+   opAt 540 (.Dup ⟨2, by decide⟩),
+   opAt 541 .MUL,
+   pushAt 542 1 2,
+   opAt 543 (.Swap ⟨0, by decide⟩),
+   opAt 544 .SUB,
+   opAt 545 .MUL,
+   pushAt 546 3 2720,
+   opAt 547 .MSTORE,
+   opAt 548 .POP,
+   opAt 549 .POP,
+   pushAt 550 2 2474,
+   opAt 551 .JUMP]
 
 /-- After the variable stores and the modulus load (pc 1579). -/
 def modLoadedState (s : State) (input : ByteArray) (m0 : Nat) : State :=
@@ -1661,12 +1654,12 @@ theorem run_setupC (s : State) (input : ByteArray) (m0 : Nat)
 here directly instead of calling the Montgomery-form conversion first. -/
 private theorem jumpDest3296 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2474 = true :=
-  Artifact.isValidJumpDest_index 2031 (by rfl)
+  Artifact.isValidJumpDest_index 2018 (by rfl)
 
 /-- The `JUMP` closing `setupPathD` (instruction index 563, pc 781).  Same story as
 the bail blocks above: `Fast.Defs.fastPC4` used to supply this. -/
 private theorem pcIdx563 :
-    Artifact.submissionArtifact.instructionPC 563 = 781 := by
+    Artifact.submissionArtifact.instructionPC 551 = 781 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
