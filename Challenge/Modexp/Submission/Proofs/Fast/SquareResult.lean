@@ -54,6 +54,77 @@ theorem sqRowsCarry_succ (mem : ByteArray) (n i : Nat) :
     sqRowsCarry mem n (i + 1) =
       sqRowCarry (sqRowsCarry mem n i) n i (sqTb (sqRowsCarry mem n i) n i) := rfl
 
+/-! ## The slot channel on the square rows
+
+The reassembled kernel runs the square rows on `unflush R M` (the model memory `M` with
+the entry scratch word of the real memory `R` re-installed) with the cell holding the
+model's scratch word; the bridge below is `CarryRowModel.fromS_bridge` lifted through the
+square prologue and first loop. -/
+
+theorem l1StepOn_unflush (R : ByteArray) (q : MacState) (bi : UInt256) (pa n j : Nat)
+    (hpa : pa + 32 * n ≤ 2048 ∨ 2112 ≤ pa) (hj : j < n) :
+    l1StepOn ⟨unflush R q.memory, q.carry⟩ bi pa n j =
+      ⟨unflush R (l1StepOn q bi pa n j).memory, (l1StepOn q bi pa n j).carry⟩ := by
+  have hx := readWord_unflush R q.memory (pa + 32 * (n - 1 - j)) (by omega)
+  have ht := readWord_unflush R q.memory (2112 + 32 * (n - 1 - j)) (Or.inr (by omega))
+  simp only [l1StepOn, hx, ht]
+  rw [unflush_writeBytes]
+  rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
+  omega
+
+theorem l1Run_unflush (R : ByteArray) (q : MacState) (bi : UInt256) (pa n j0 : Nat)
+    (hpa : pa + 32 * n ≤ 2048 ∨ 2112 ≤ pa) :
+    ∀ k, j0 + k ≤ n →
+      l1Run ⟨unflush R q.memory, q.carry⟩ bi pa n j0 k =
+        ⟨unflush R (l1Run q bi pa n j0 k).memory, (l1Run q bi pa n j0 k).carry⟩ := by
+  intro k
+  induction k with
+  | zero => intro _; rfl
+  | succ k ih =>
+    intro hk
+    rw [l1Run_succ, l1Run_succ, ih (by omega), l1StepOn_unflush R _ bi pa n (j0 + k) hpa (by omega)]
+
+theorem sqX_unflush (R M : ByteArray) (n i : Nat) : sqX (unflush R M) n i = sqX M n i := by
+  unfold sqX
+  exact readWord_unflush _ _ _ (Or.inr (by unfold aAddr; omega))
+
+theorem sqPro_unflush (R M : ByteArray) (n i : Nat) (tb : UInt256) :
+    sqPro (unflush R M) n i tb = ⟨unflush R (sqPro M n i tb).memory, (sqPro M n i tb).carry⟩ := by
+  have ht := readWord_unflush R M (tAddr n i) (Or.inr (by unfold tAddr; omega))
+  simp only [sqPro, sqSum, sqCarry, sqX_unflush, ht]
+  rw [unflush_writeBytes]
+  rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
+  right; unfold tAddr; omega
+
+theorem sqL1_unflush (R M : ByteArray) (n i : Nat) (tb : UInt256) (hi : i < n) :
+    sqL1 (unflush R M) n i tb = ⟨unflush R (sqL1 M n i tb).memory, (sqL1 M n i tb).carry⟩ := by
+  unfold sqL1
+  rw [sqX_unflush, sqPro_unflush, l1Run_unflush R _ _ 2368 n (i + 1) (Or.inr (by omega))
+    (n - 1 - i) (by omega)]
+
+theorem readWord_sqL1_2080 (M : ByteArray) (n i : Nat) (tb : UInt256) (hi : i < n) :
+    MachineState.readWord (sqL1 M n i tb).memory 2080 = MachineState.readWord M 2080 :=
+  readWord_sqL1 M n i 2080 tb hi (Or.inl (by decide))
+
+/-- One reassembled square row from the real state `(unflush R M, mem[2080] of M)`. -/
+theorem sqRow_unflush (R M : ByteArray) (n i : Nat) (tb : UInt256) (hi : i < n)
+    (hn : 2 ≤ n) (hn8 : n ≤ 8) :
+    fromMemS (sqL1 (unflush R M) n i tb) (MachineState.readWord M 2080) n =
+        unflush R (sqRowCarry M n i tb) ∧
+      fromSlot (sqL1 (unflush R M) n i tb) (MachineState.readWord M 2080) n =
+        MachineState.readWord (sqRowCarry M n i tb) 2080 := by
+  rw [sqL1_unflush R M n i tb hi, ← readWord_sqL1_2080 M n i tb hi]
+  exact fromS_bridge R (sqL1 M n i tb) n hn hn8
+
+theorem sqRowsCarry_unflush_flush (R M : ByteArray) (n i : Nat) :
+    flushS (unflush R (sqRowsCarry M n (i + 1)))
+        (MachineState.readWord (sqRowsCarry M n (i + 1)) 2080) =
+      sqRowsCarry M n (i + 1) := by
+  rw [sqRowsCarry_succ]
+  unfold flushS sqRowCarry rowFromCarry tailCarry
+  rw [Challenge.EvmProof.Memory.readWord_writeWord]
+  exact flush_unflush _ _ _ (YulEvmCompiler.BytesLemmas.natToBytesPadded_size _ _)
+
 /-! ## Agreement with the Monpro-style model -/
 
 theorem rowFrom_agree (a b : MacState) (h : Agree a.memory b.memory) (hc : a.carry = b.carry)

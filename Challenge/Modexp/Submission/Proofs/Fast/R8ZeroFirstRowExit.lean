@@ -16,7 +16,9 @@ def quotientA : List Instr :=
 def quotientB : List Instr :=
   [.op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨13, by decide⟩), .op .MULMOD, .op (.Dup ⟨13, by decide⟩), .op .MLOAD, .op .ADDMOD]
-def quotientJump : List Instr := [.op (.Dup ⟨9, by decide⟩), .op .JUMP]
+/-- The back-jump feed (E4): the second-loop join 3791 is pushed as an immediate (the
+cell, which used to hold it, now carries the row carry). -/
+def quotientJump : List Instr := [.push 2 3791, .op .JUMP]
 def exitProgram : List Instr := (quotientA ++ quotientB) ++ quotientJump
 
 def endFrame (flag P hd tt next stride M target inv m0 m96 m64 m32 x : UInt256)
@@ -62,25 +64,27 @@ theorem run_quotientB (s : State)
 theorem run_quotientJump (s : State)
     (pc c0 mu flag P hd tt next stride M target inv m0 m96 m64 m32 x : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1002)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code target.toNat = true) :
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 3791 = true) :
     runInstructions quotientJump
       { s with pc := pc, stack := c0 :: mu :: endFrame flag P hd tt next stride M target inv m0 m96 m64 m32 x rest } =
-    some { s with pc := target,
+    some { s with pc := UInt256.ofNat 3791,
                   stack := c0 :: mu :: endFrame flag P hd tt next stride M target inv m0 m96 m64 m32 x rest } := by
   have h17 : rest.length + 17 < 1024 := by omega
   have h18 : rest.length + 18 < 1024 := by omega
+  have h3791 : (3791 : UInt256).toNat = 3791 := by decide
+  have heq3791 : (3791 : UInt256) = UInt256.ofNat 3791 := by decide
   simp [quotientJump, endFrame, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    h17, h18, hjump]
+    h17, h18, h3791, heq3791, hjump]
 
 theorem run_exit (s : State)
     (pc flag P hd tt next stride M target inv m0 m96 m64 m32 x : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code target.toNat = true) :
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 3791 = true) :
     let t0 := MachineState.readWord s.memory 2336
     let mu := t0*inv
     runInstructions exitProgram
       { s with pc := pc, stack := endFrame flag P hd tt next stride M target inv m0 m96 m64 m32 x rest } =
-    some { s with pc := target,
+    some { s with pc := UInt256.ofNat 3791,
                   stack := UInt256.addMod t0 (UInt256.mulMod m0 mu M) M :: mu ::
                     endFrame flag P hd tt next stride M target inv m0 m96 m64 m32 x rest } := by
   let t0 := MachineState.readWord s.memory 2336

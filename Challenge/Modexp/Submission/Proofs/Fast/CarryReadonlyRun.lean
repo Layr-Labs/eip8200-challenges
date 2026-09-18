@@ -13,167 +13,86 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro CiosCached CiosCachedMacCore CarryRowModel CarryScratchAgreement
 open CiosCachedMidMemory CiosReadonly
 
+/-- The shared ladder's middle block at 3769: the carry merge on the cell (E1) and the
+cached product, falling through into the second-loop join `JUMPDEST` 3791.  The memory
+is untouched; the cell advances from `cy` to `cy + c`. -/
 theorem run_middle (s : State) (mem : ByteArray) (c bi : UInt256)
-    (pb n i : Nat) (hd ent tl inv m0 aEnd m96 m64 m32 dst ret : UInt256) (rest : List UInt256)
+    (pb n i : Nat) (hd ent cy tl inv m0 aEnd m96 m64 m32 dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8)
+    (_hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hc : ReadonlyCache mem n tl inv m0) (hminv : inverseInvariant mem n) :
     runInstructions CarryRowPrograms.middleBlock
-      (CiosCached.midState s mem c bi pb n i hd ent inv m0
+      (CiosCached.midState s mem c bi pb n i hd ent cy inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
-    some (CiosCached.l2At 3780 s (midMem1 mem c) (overflow mem c)
-      (rowMu mem n) (rowC0 mem n) pb n i 0 hd ent inv m0
+    some (CiosCached.l2At 3791 s mem (slotOverflow cy c)
+      (rowMu mem n) (rowC0 mem n) pb n i 0 hd ent (cy + c) inv m0
       (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) := by
-  have hmem := middle_agree mem mem (refl mem) c
-  have hmu : rowMu (midMem1 mem c) n = rowMu mem n :=
-    (CarryRowModel.rowMu_eq _ _ hmem n).trans (rowMu_mid mem c n hn)
-  have hc0 : rowC0 (midMem1 mem c) n = rowC0 mem n :=
-    (CarryRowModel.rowC0_eq _ _ hmem n hn32).trans (rowC0_mid mem c n hn hn32)
-  have hcache : ReadonlyCache (midMem1 mem c) n tl inv m0 :=
-    hc.of_preserved
-      (readWord_midMem1 mem c 2720 (Or.inr (by decide)))
-      (readWord_midMem1 mem c (32*n-32) (Or.inl (by omega)))
-  have hminv' : inverseInvariant (midMem1 mem c) n := by
-    unfold inverseInvariant
-    rw [readWord_midMem1 mem c (32*n-32) (Or.inl (by omega)),
-      readWord_midMem1 mem c 2720 (Or.inr (by decide))]
-    exact hminv
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hjd : runInstructions [.op .JUMPDEST]
-      (CiosCached.midState s mem c bi pb n i hd ent inv m0
+      (CiosCached.midState s mem c bi pb n i hd ent cy inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
-      some (framed {s with memory := mem} (UInt256.ofNat 3754)
+      some (framed {s with memory := mem} (UInt256.ofNat 3770)
         ([c,bi,UInt256.ofNat (ptrAt (pb+32*n-32) i),hd,
-          UInt256.ofNat (pb-32),ent,negative32,allOnes,l2Target n,inv] ++
+          UInt256.ofNat (pb-32),ent,negative32,allOnes,cy,inv] ++
           (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))) := by
     simp [runInstructions, Challenge.EvmProof.Stepper.runInstr, CiosCached.midState, framed,
       hc18, hc17, Challenge.EvmProof.Word.succ_ofNat_mod]
   have hs := CarryRowTrace.run_middleStore {s with memory := mem} c bi
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) hd
-    (UInt256.ofNat (pb-32)) ent (l2Target n) inv
+    (UInt256.ofNat (pb-32)) ent cy inv
     (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)
-    (by simp only [List.length_cons]; omega) hact
-  have hp := run_cachedProduct_model {s with memory := midMem1 mem c}
-    (overflow mem c) (UInt256.ofNat (ptrAt (pb+32*n-32) i)) hd
-    (UInt256.ofNat (pb-32)) ent (l2Target n) tl inv m0 aEnd m96 m64 m32
-    dst ret n rest hcap hn32 hact hcache hminv'
+    (by simp only [List.length_cons]; omega)
+  have hp := run_cachedProduct_modelWide {s with memory := mem}
+    (slotOverflow cy c) (UInt256.ofNat (ptrAt (pb+32*n-32) i)) hd
+    (UInt256.ofNat (pb-32)) ent (cy + c) tl inv m0 aEnd m96 m64 m32
+    dst ret n rest hcap hn32 hact hc hminv
   have h := runInstructions_append_some _ _ _ _ _ hs hp
   have h2 := runInstructions_append_some _ _ _ _ _ hjd h
   simpa only [CarryRowPrograms.middleBlock, CarryRowPrograms.middle, CiosCached.l2At,
-    l2Step, cacheStack, CiosCachedMidDefs.baseStack, framed, hmu, hc0, List.append_assoc,
+    l2Step, cacheStack, CiosCachedMidDefs.baseStack, framed, List.append_assoc,
     List.cons_append, List.nil_append] using h2
 
+#print axioms run_middle
 
-/-- The shared ladder's middle block at 3639.  Its trailing `DUP10 JUMP` is gone, so the
-block now runs to 3668 and falls through into the join `JUMPDEST` the jump used to target. -/
-theorem run_middleWide (s : State) (mem : ByteArray) (c bi : UInt256)
-    (pb n i : Nat) (hd ent tl inv m0 aEnd m96 m64 m32 dst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8)
-    (hc : ReadonlyCache mem n tl inv m0) (hminv : inverseInvariant mem n) :
-    runInstructions CarryRowPrograms.middleBlockWide
-      (CiosCached.midState s mem c bi pb n i hd ent inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
-    some (CiosCached.l2At 3782 s (midMem1 mem c) (overflow mem c)
-      (rowMu mem n) (rowC0 mem n) pb n i 0 hd ent inv m0
-      (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) := by
-  have hmem := middle_agree mem mem (refl mem) c
-  have hmu : rowMu (midMem1 mem c) n = rowMu mem n :=
-    (CarryRowModel.rowMu_eq _ _ hmem n).trans (rowMu_mid mem c n hn)
-  have hc0 : rowC0 (midMem1 mem c) n = rowC0 mem n :=
-    (CarryRowModel.rowC0_eq _ _ hmem n hn32).trans (rowC0_mid mem c n hn hn32)
-  have hcache : ReadonlyCache (midMem1 mem c) n tl inv m0 :=
-    hc.of_preserved
-      (readWord_midMem1 mem c 2720 (Or.inr (by decide)))
-      (readWord_midMem1 mem c (32*n-32) (Or.inl (by omega)))
-  have hminv' : inverseInvariant (midMem1 mem c) n := by
-    unfold inverseInvariant
-    rw [readWord_midMem1 mem c (32*n-32) (Or.inl (by omega)),
-      readWord_midMem1 mem c 2720 (Or.inr (by decide))]
-    exact hminv
-  have hc18 : rest.length + 18 < 1024 := by omega
-  have hc17 : rest.length + 17 < 1024 := by omega
-  have hjd : runInstructions [.op .JUMPDEST]
-      (CiosCached.midState s mem c bi pb n i hd ent inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
-      some (framed {s with memory := mem} (UInt256.ofNat 3754)
-        ([c,bi,UInt256.ofNat (ptrAt (pb+32*n-32) i),hd,
-          UInt256.ofNat (pb-32),ent,negative32,allOnes,l2Target n,inv] ++
-          (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))) := by
-    simp [runInstructions, Challenge.EvmProof.Stepper.runInstr, CiosCached.midState, framed,
-      hc18, hc17, Challenge.EvmProof.Word.succ_ofNat_mod]
-  have hs := CarryRowTrace.run_middleStoreWide {s with memory := mem} c bi
-    (UInt256.ofNat (ptrAt (pb+32*n-32) i)) hd
-    (UInt256.ofNat (pb-32)) ent (l2Target n) inv
-    (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)
-    (by simp only [List.length_cons]; omega) hact
-  have hp := run_cachedProduct_modelWide {s with memory := midMem1 mem c}
-    (overflow mem c) (UInt256.ofNat (ptrAt (pb+32*n-32) i)) hd
-    (UInt256.ofNat (pb-32)) ent (l2Target n) tl inv m0 aEnd m96 m64 m32
-    dst ret n rest hcap hn32 hact hcache hminv'
-  have h := runInstructions_append_some _ _ _ _ _ hs hp
-  have h2 := runInstructions_append_some _ _ _ _ _ hjd h
-  simpa only [CarryRowPrograms.middleBlockWide, CarryRowPrograms.middleWide, CiosCached.l2At,
-    l2Step, cacheStack, CiosCachedMidDefs.baseStack, framed, hmu, hc0, List.append_assoc,
-    List.cons_append, List.nil_append] using h2
-
-#print axioms run_middleWide
-
-/-- The private four-limb ladder copy's middle block at 5283, narrow `PUSH2`, ending at
-5310 where the copy's own `PUSH2 0x0ee8 JUMP` leaves for 3816. -/
+/-- The private four-limb ladder copy's middle block at 5407 (E3), ending at 5429 where
+the copy's own `PUSH2 0x0f63 JUMP` leaves for 3939. -/
 theorem run_middleCopy (s : State) (mem : ByteArray) (c bi : UInt256)
-    (pb n i : Nat) (hd ent tl inv m0 aEnd m96 m64 m32 dst ret : UInt256) (rest : List UInt256)
+    (pb n i : Nat) (hd ent cy tl inv m0 aEnd m96 m64 m32 dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8)
+    (_hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hc : ReadonlyCache mem n tl inv m0) (hminv : inverseInvariant mem n) :
     runInstructions CarryRowPrograms.middleBlock
-      (CiosCached.midStateAt 5397 s mem c bi pb n i hd ent inv m0
+      (CiosCached.midStateAt 5407 s mem c bi pb n i hd ent cy inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
-    some (CiosCached.l2At 5424 s (midMem1 mem c) (overflow mem c)
-      (rowMu mem n) (rowC0 mem n) pb n i 0 hd ent inv m0
+    some (CiosCached.l2At 5429 s mem (slotOverflow cy c)
+      (rowMu mem n) (rowC0 mem n) pb n i 0 hd ent (cy + c) inv m0
       (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) := by
-  have hmem := middle_agree mem mem (refl mem) c
-  have hmu : rowMu (midMem1 mem c) n = rowMu mem n :=
-    (CarryRowModel.rowMu_eq _ _ hmem n).trans (rowMu_mid mem c n hn)
-  have hc0 : rowC0 (midMem1 mem c) n = rowC0 mem n :=
-    (CarryRowModel.rowC0_eq _ _ hmem n hn32).trans (rowC0_mid mem c n hn hn32)
-  have hcache : ReadonlyCache (midMem1 mem c) n tl inv m0 :=
-    hc.of_preserved
-      (readWord_midMem1 mem c 2720 (Or.inr (by decide)))
-      (readWord_midMem1 mem c (32*n-32) (Or.inl (by omega)))
-  have hminv' : inverseInvariant (midMem1 mem c) n := by
-    unfold inverseInvariant
-    rw [readWord_midMem1 mem c (32*n-32) (Or.inl (by omega)),
-      readWord_midMem1 mem c 2720 (Or.inr (by decide))]
-    exact hminv
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hjd : runInstructions [.op .JUMPDEST]
-      (CiosCached.midStateAt 5397 s mem c bi pb n i hd ent inv m0
+      (CiosCached.midStateAt 5407 s mem c bi pb n i hd ent cy inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
-      some (framed {s with memory := mem} (UInt256.ofNat 5398)
+      some (framed {s with memory := mem} (UInt256.ofNat 5408)
         ([c,bi,UInt256.ofNat (ptrAt (pb+32*n-32) i),hd,
-          UInt256.ofNat (pb-32),ent,negative32,allOnes,l2Target n,inv] ++
+          UInt256.ofNat (pb-32),ent,negative32,allOnes,cy,inv] ++
           (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))) := by
     simp [runInstructions, Challenge.EvmProof.Stepper.runInstr, CiosCached.midStateAt, framed,
       hc18, hc17, Challenge.EvmProof.Word.succ_ofNat_mod]
   have hs := CarryRowTrace.run_middleStoreCopy {s with memory := mem} c bi
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) hd
-    (UInt256.ofNat (pb-32)) ent (l2Target n) inv
+    (UInt256.ofNat (pb-32)) ent cy inv
     (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)
-    (by simp only [List.length_cons]; omega) hact
-  have hp := run_cachedProduct_modelCopy {s with memory := midMem1 mem c}
-    (overflow mem c) (UInt256.ofNat (ptrAt (pb+32*n-32) i)) hd
-    (UInt256.ofNat (pb-32)) ent (l2Target n) tl inv m0 aEnd m96 m64 m32
-    dst ret n rest hcap hn32 hact hcache hminv'
+    (by simp only [List.length_cons]; omega)
+  have hp := run_cachedProduct_modelCopy {s with memory := mem}
+    (slotOverflow cy c) (UInt256.ofNat (ptrAt (pb+32*n-32) i)) hd
+    (UInt256.ofNat (pb-32)) ent (cy + c) tl inv m0 aEnd m96 m64 m32
+    dst ret n rest hcap hn32 hact hc hminv
   have h := runInstructions_append_some _ _ _ _ _ hs hp
   have h2 := runInstructions_append_some _ _ _ _ _ hjd h
   simpa only [CarryRowPrograms.middleBlock, CarryRowPrograms.middle, CiosCached.l2At,
-    l2Step, cacheStack, CiosCachedMidDefs.baseStack, framed, hmu, hc0, List.append_assoc,
+    l2Step, cacheStack, CiosCachedMidDefs.baseStack, framed, List.append_assoc,
     List.cons_append, List.nil_append] using h2
 
 #print axioms run_middleCopy
-
-#print axioms run_middle
 end Challenge.Modexp.Submission.Proofs.Fast.CarryReadonlyRun

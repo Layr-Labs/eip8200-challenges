@@ -221,4 +221,252 @@ theorem readWord_rowsCarry (mem : ByteArray) (pa pb n addr : Nat) (hn : n ≤ 8)
     unfold rowsCarry
     rw [readWord_rowCarry _ pa pb n i addr hn hout, ih]
 
+/-! ## The slot channel (the reassembled kernel)
+
+The reassembled row head/writeback keep the row carry in the frame cell at absolute
+stack position 15 instead of the scratch word `mem[2080]`: the head reads the cell
+(`DUP10`), installs `cy + c` into it (`SWAP9 POP`) and emits `lt (cy + c) c`; the
+writeback stores `cy' + c'` at 2112 and installs `f + lt (cy' + c') c'` into the cell.
+`mem[2080]` is untouched inside the rows and only written back at the kernel exit
+(E14).  `rowsCarry` stays the specification; `rowsS` is what the machine computes,
+and `rowsS_memory` / `rowsS_slot` / `rowsS_flush` relate the two exactly. -/
+
+def slotOverflow (cy c : UInt256) : UInt256 := UInt256.lt (cy + c) c
+
+/-- `t[n-1] := cy + c` (the writeback's limb store; the scratch word is not touched). -/
+def tailMemS (mem : ByteArray) (cy c : UInt256) : ByteArray :=
+  MachineState.writeBytes mem (Data.Bytes.natToBytesPadded (cy + c).toNat 32) 2112
+
+/-- The kernel-exit flush (E14, `DUP9 PUSH2 0x820 MSTORE`): the cell written back to the
+scratch word for the post-loop readers. -/
+def flushS (mem : ByteArray) (cy : UInt256) : ByteArray :=
+  MachineState.writeBytes mem (Data.Bytes.natToBytesPadded cy.toNat 32) 2080
+
+/-- The second loop of a row from the first-loop result `q`, on the real memory
+(no `midMem1` store in between). -/
+def fromL2S (q : MacState) (n : Nat) : MacState :=
+  l2Step q.memory (rowMu q.memory n) (rowC0 q.memory n) n (n - 1)
+
+/-- Real memory after a row whose first loop ended in `q` with the cell holding `cy`. -/
+def fromMemS (q : MacState) (cy : UInt256) (n : Nat) : ByteArray :=
+  tailMemS (fromL2S q n).memory (cy + q.carry) (fromL2S q n).carry
+
+/-- The cell after that row: the writeback's overflow plus the head's overflow (the
+writeback's `ADD` has the fresh `LT` on top). -/
+def fromSlot (q : MacState) (cy : UInt256) (n : Nat) : UInt256 :=
+  slotOverflow (cy + q.carry) (fromL2S q n).carry + slotOverflow cy q.carry
+
+def rowMemS (mem : ByteArray) (cy : UInt256) (pa pb n i : Nat) : ByteArray :=
+  fromMemS (rowL1 mem pa pb n i) cy n
+
+def rowSlot (mem : ByteArray) (cy : UInt256) (pa pb n i : Nat) : UInt256 :=
+  fromSlot (rowL1 mem pa pb n i) cy n
+
+/-- Memory together with the carry cell. -/
+structure SlotState where
+  memory : ByteArray
+  slot : UInt256
+
+/-- Memory and cell after `i` complete rows of the reassembled kernel. -/
+def rowsS (mem : ByteArray) (cy : UInt256) (pa pb n : Nat) : Nat → SlotState
+  | 0 => ⟨mem, cy⟩
+  | i+1 => ⟨rowMemS (rowsS mem cy pa pb n i).memory (rowsS mem cy pa pb n i).slot pa pb n i,
+            rowSlot (rowsS mem cy pa pb n i).memory (rowsS mem cy pa pb n i).slot pa pb n i⟩
+
+theorem rowsS_succ (mem : ByteArray) (cy : UInt256) (pa pb n i : Nat) :
+    rowsS mem cy pa pb n (i+1) =
+      ⟨rowMemS (rowsS mem cy pa pb n i).memory (rowsS mem cy pa pb n i).slot pa pb n i,
+        rowSlot (rowsS mem cy pa pb n i).memory (rowsS mem cy pa pb n i).slot pa pb n i⟩ := rfl
+
+/-! ### Reads outside the working region -/
+
+theorem readWord_tailMemS (mem : ByteArray) (cy c : UInt256) (addr : Nat)
+    (hout : addr + 32 ≤ 2048 ∨ 2624 ≤ addr) :
+    MachineState.readWord (tailMemS mem cy c) addr = MachineState.readWord mem addr := by
+  unfold tailMemS
+  rw [readWord_writeLimb _ _ _ _ (by omega) (by omega) hout]
+
+theorem readWord_fromMemS (q : MacState) (cy : UInt256) (n addr : Nat) (hn : n ≤ 8)
+    (hout : addr + 32 ≤ 2048 ∨ 2624 ≤ addr) :
+    MachineState.readWord (fromMemS q cy n) addr = MachineState.readWord q.memory addr := by
+  unfold fromMemS fromL2S
+  rw [readWord_tailMemS _ _ _ addr hout, readWord_l2Step _ _ _ n addr (n-1) hn hout]
+
+theorem readWord_rowMemS (mem : ByteArray) (cy : UInt256) (pa pb n i addr : Nat) (hn : n ≤ 8)
+    (hout : addr + 32 ≤ 2048 ∨ 2624 ≤ addr) :
+    MachineState.readWord (rowMemS mem cy pa pb n i) addr = MachineState.readWord mem addr := by
+  unfold rowMemS
+  rw [readWord_fromMemS _ _ n addr hn hout]
+  unfold rowL1
+  exact readWord_l1Step mem _ pa n addr n hn hout
+
+theorem readWord_rowsS (mem : ByteArray) (cy : UInt256) (pa pb n addr : Nat) (hn : n ≤ 8)
+    (hout : addr + 32 ≤ 2048 ∨ 2624 ≤ addr) (i : Nat) :
+    MachineState.readWord (rowsS mem cy pa pb n i).memory addr = MachineState.readWord mem addr := by
+  induction i with
+  | zero => rfl
+  | succ i ih =>
+    rw [rowsS_succ]
+    exact (readWord_rowMemS _ _ pa pb n i addr hn hout).trans ih
+
+/-! ### The bridge to the specification `rowsCarry`
+
+Invariant: the real memory is `unflush m0` of the model memory (the model's scratch
+word replaced by the entry word of `m0`) and the cell holds the model's scratch word. -/
+
+/-- The scratch-word store of `midMem1` leaves every word outside `[2080, 2112)` alone. -/
+theorem readWord_midMem1_high (mem : ByteArray) (c : UInt256) (addr : Nat)
+    (haddr : addr + 32 ≤ 2080 ∨ 2112 ≤ addr) :
+    MachineState.readWord (midMem1 mem c) addr = MachineState.readWord mem addr := by
+  unfold midMem1
+  apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
+  rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
+  omega
+
+theorem l1Step_unflush (m0 M : ByteArray) (bi : UInt256) (pa n : Nat)
+    (hpa : pa + 32 * n ≤ 2048 ∨ 2112 ≤ pa) (j : Nat) (hj : j ≤ n) :
+    l1Step (unflush m0 M) bi pa n j =
+      ⟨unflush m0 (l1Step M bi pa n j).memory, (l1Step M bi pa n j).carry⟩ := by
+  induction j with
+  | zero => rfl
+  | succ j ih =>
+    have hx := readWord_unflush m0 (l1Step M bi pa n j).memory (pa + 32 * (n - 1 - j))
+      (by omega)
+    have ht := readWord_unflush m0 (l1Step M bi pa n j).memory (2112 + 32 * (n - 1 - j))
+      (Or.inr (by omega))
+    simp only [l1Step, ih (by omega), hx, ht]
+    rw [unflush_writeBytes]
+    rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
+    omega
+
+theorem l2Step_unflush (m0 M : ByteArray) (mu c0 : UInt256) (n : Nat) (hn : 2 ≤ n) (hn8 : n ≤ 8)
+    (k : Nat) (hk : k + 1 ≤ n) :
+    l2Step (unflush m0 M) mu c0 n k =
+      ⟨unflush m0 (l2Step M mu c0 n k).memory, (l2Step M mu c0 n k).carry⟩ := by
+  induction k with
+  | zero => rfl
+  | succ k ih =>
+    have hx := readWord_unflush m0 (l2Step M mu c0 n k).memory (32 * (n - 2 - k))
+      (Or.inl (by omega))
+    have ht := readWord_unflush m0 (l2Step M mu c0 n k).memory (2112 + 32 * (n - 2 - k))
+      (Or.inr (by omega))
+    simp only [l2Step, ih (by omega), hx, ht]
+    rw [unflush_writeBytes]
+    rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
+    omega
+
+theorem rowMu_unflush (m0 M : ByteArray) (n : Nat) (hn : 1 ≤ n) :
+    rowMu (unflush m0 M) n = rowMu M n := by
+  unfold rowMu
+  rw [readWord_unflush _ _ 2720 (Or.inr (by omega)),
+    readWord_unflush _ _ (2080 + 32 * n) (Or.inr (by omega))]
+
+theorem rowC0_unflush (m0 M : ByteArray) (n : Nat) (hn : 1 ≤ n) (hn8 : n ≤ 8) :
+    rowC0 (unflush m0 M) n = rowC0 M n := by
+  unfold rowC0
+  rw [readWord_unflush _ _ (32 * n - 32) (Or.inl (by omega)), rowMu_unflush m0 M n hn]
+
+/-- One row: from the model first-loop state `Q` (with the cell holding the model's
+scratch word) the reassembled row lands on `unflush m0` of the model row memory with
+the cell holding the model's new scratch word. -/
+theorem fromS_bridge (m0 : ByteArray) (Q : MacState) (n : Nat) (hn : 2 ≤ n) (hn8 : n ≤ 8) :
+    fromMemS ⟨unflush m0 Q.memory, Q.carry⟩ (MachineState.readWord Q.memory 2080) n =
+        unflush m0 (tailCarry (l2Step (midMem1 Q.memory Q.carry) (rowMu Q.memory n)
+          (rowC0 Q.memory n) n (n - 1)).memory
+          (l2Step (midMem1 Q.memory Q.carry) (rowMu Q.memory n) (rowC0 Q.memory n) n (n - 1)).carry
+          (overflow Q.memory Q.carry)) ∧
+      fromSlot ⟨unflush m0 Q.memory, Q.carry⟩ (MachineState.readWord Q.memory 2080) n =
+        MachineState.readWord (tailCarry (l2Step (midMem1 Q.memory Q.carry) (rowMu Q.memory n)
+          (rowC0 Q.memory n) n (n - 1)).memory
+          (l2Step (midMem1 Q.memory Q.carry) (rowMu Q.memory n) (rowC0 Q.memory n) n (n - 1)).carry
+          (overflow Q.memory Q.carry)) 2080 := by
+  -- the second loop runs on `unflush m0 (midMem1 …)`, which is `unflush m0 Q.memory`
+  have hmid : unflush m0 (midMem1 Q.memory Q.carry) = unflush m0 Q.memory := by
+    unfold midMem1
+    exact unflush_writeWord _ _ _ (YulEvmCompiler.BytesLemmas.natToBytesPadded_size _ _)
+  have hmu : rowMu (midMem1 Q.memory Q.carry) n = rowMu Q.memory n := by
+    unfold rowMu
+    rw [readWord_midMem1 _ _ 2720 (Or.inr (by omega)),
+      readWord_midMem1_high _ _ (2080 + 32 * n) (Or.inr (by omega))]
+  have hc0 : rowC0 (midMem1 Q.memory Q.carry) n = rowC0 Q.memory n := by
+    unfold rowC0
+    rw [readWord_midMem1 _ _ (32 * n - 32) (Or.inl (by omega)), hmu]
+  have hl2 := l2Step_unflush m0 (midMem1 Q.memory Q.carry) (rowMu Q.memory n) (rowC0 Q.memory n)
+    n hn hn8 (n - 1) (by omega)
+  rw [hmid] at hl2
+  -- the model's scratch word after the first loop and after the second loop
+  have hsw : MachineState.readWord (midMem1 Q.memory Q.carry) 2080 =
+      MachineState.readWord Q.memory 2080 + Q.carry := by
+    unfold midMem1
+    exact Challenge.EvmProof.Memory.readWord_writeWord _ _ _
+  have hsw2 : MachineState.readWord (l2Step (midMem1 Q.memory Q.carry) (rowMu Q.memory n)
+      (rowC0 Q.memory n) n (n - 1)).memory 2080 =
+      MachineState.readWord Q.memory 2080 + Q.carry := by
+    rw [readWord_l2Step_low _ _ _ n 2080 (n - 1) (by omega), hsw]
+  constructor
+  · unfold fromMemS fromL2S tailMemS
+    simp only [rowMu_unflush m0 Q.memory n (by omega), rowC0_unflush m0 Q.memory n (by omega) hn8,
+      hl2]
+    unfold tailCarry tailMem1
+    rw [unflush_writeWord _ _ _ (YulEvmCompiler.BytesLemmas.natToBytesPadded_size _ _),
+      unflush_writeBytes _ _ _ 2112 (Or.inr le_rfl), hsw2]
+  · unfold fromSlot fromL2S slotOverflow overflow tailCarry
+    simp only [rowMu_unflush m0 Q.memory n (by omega), rowC0_unflush m0 Q.memory n (by omega) hn8,
+      hl2]
+    rw [Challenge.EvmProof.Memory.readWord_writeWord, hsw2,
+      Challenge.EvmProof.Word.word_add_comm]
+
+theorem rowsS_bridge (m0 : ByteArray) (pa pb n : Nat) (hsz : 2112 ≤ m0.size)
+    (hpa : pa + 32 * n ≤ 2048 ∨ 2112 ≤ pa) (hpb : pb + 32 * n ≤ 2048 ∨ 2112 ≤ pb)
+    (hn : 2 ≤ n) (hn8 : n ≤ 8) (i : Nat) :
+    (rowsS m0 (MachineState.readWord m0 2080) pa pb n i).memory =
+        unflush m0 (rowsCarry m0 pa pb n i) ∧
+      (rowsS m0 (MachineState.readWord m0 2080) pa pb n i).slot =
+        MachineState.readWord (rowsCarry m0 pa pb n i) 2080 := by
+  induction i with
+  | zero =>
+    exact ⟨(unflush_self m0 hsz).symm, rfl⟩
+  | succ i ih =>
+    rw [rowsS_succ, ih.1, ih.2]
+    have hbi : rowBi (unflush m0 (rowsCarry m0 pa pb n i)) pb n i =
+        rowBi (rowsCarry m0 pa pb n i) pb n i := by
+      unfold rowBi
+      exact readWord_unflush _ _ _ (by omega)
+    have hl1 := l1Step_unflush m0 (rowsCarry m0 pa pb n i) (rowBi (rowsCarry m0 pa pb n i) pb n i)
+      pa n hpa n le_rfl
+    have hb := fromS_bridge m0 (rowL1 (rowsCarry m0 pa pb n i) pa pb n i) n hn hn8
+    have hsw : MachineState.readWord (rowL1 (rowsCarry m0 pa pb n i) pa pb n i).memory 2080 =
+        MachineState.readWord (rowsCarry m0 pa pb n i) 2080 := by
+      unfold rowL1
+      exact readWord_l1Step_low _ _ pa n 2080 n (by omega)
+    rw [hsw] at hb
+    simp only [rowMemS, rowSlot, rowL1, hbi, hl1]
+    change fromMemS ⟨unflush m0 (rowL1 (rowsCarry m0 pa pb n i) pa pb n i).memory,
+        (rowL1 (rowsCarry m0 pa pb n i) pa pb n i).carry⟩ _ n = _ ∧
+      fromSlot ⟨unflush m0 (rowL1 (rowsCarry m0 pa pb n i) pa pb n i).memory,
+        (rowL1 (rowsCarry m0 pa pb n i) pa pb n i).carry⟩ _ n = _
+    rw [hb.1, hb.2]
+    exact ⟨rfl, rfl⟩
+
+/-- The exit flush (`DUP9 PUSH2 0x820 MSTORE`) after `i+1` rows reproduces the
+specification memory exactly. -/
+theorem rowsS_flush (m0 : ByteArray) (pa pb n : Nat) (hsz : 2112 ≤ m0.size)
+    (hpa : pa + 32 * n ≤ 2048 ∨ 2112 ≤ pa) (hpb : pb + 32 * n ≤ 2048 ∨ 2112 ≤ pb)
+    (hn : 2 ≤ n) (hn8 : n ≤ 8) (i : Nat) (hi : 0 < i) :
+    flushS (rowsS m0 (MachineState.readWord m0 2080) pa pb n i).memory
+        (rowsS m0 (MachineState.readWord m0 2080) pa pb n i).slot =
+      rowsCarry m0 pa pb n i := by
+  obtain ⟨i, rfl⟩ : ∃ j, i = j + 1 := ⟨i - 1, by omega⟩
+  have hb := rowsS_bridge m0 pa pb n hsz hpa hpb hn hn8 (i+1)
+  unfold flushS
+  rw [hb.1, hb.2]
+  -- the last write of `rowCarry` is the scratch word
+  show MachineState.writeBytes (unflush m0 (rowCarry (rowsCarry m0 pa pb n i) pa pb n i))
+      (Data.Bytes.natToBytesPadded
+        (MachineState.readWord (rowCarry (rowsCarry m0 pa pb n i) pa pb n i) 2080).toNat 32) 2080 =
+    rowCarry (rowsCarry m0 pa pb n i) pa pb n i
+  simp only [rowCarry, tailCarry]
+  rw [Challenge.EvmProof.Memory.readWord_writeWord]
+  exact flush_unflush _ _ _ (YulEvmCompiler.BytesLemmas.natToBytesPadded_size _ _)
+
 end Challenge.Modexp.Submission.Proofs.Fast.CarryRowModel

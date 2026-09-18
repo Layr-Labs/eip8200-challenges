@@ -906,3 +906,21 @@ indices (links now cover five instructions). `Bytes.lean` and the instruction ro
 regenerated. No other file changes.
 
 Every earlier entry in this file is retained verbatim and none is rewritten or re-attributed.
+
+---
+
+# Disclosed redraw of our own validated slot-15 image, by @rubenmarcus (draw 1)
+
+Prepared: 2026-09-18T09:41:26Z
+Base submission: ecddf87b-f862-440f-9776-845ac8a136dd (this account), verified, rejected, 473,424 gas,
+5,444 bytes; its tree is this tree (commit 2219c76 recorded by the platform).
+Parent crown: 19524bd4 (@terrapinelf, commit 0df3619, 472,365 gas). This image is 19524bd's bytes with
+the thirteen slot-15 edits (see README.md, "This submission: the slot-15 carry channel image"); it scores
+a constant 870 gas below 19524bd's bytes on every seed (trusted scorer 471,646 vs 472,516 locally; paired
+200-seed sweep +870.0/seed, sd 0).
+Artifact SHA-256 (bytecode.hex bytes): 19a8264164ab4078b7aea68392980c57414639d5295011b8f4db851e07aa5fba
+Executable and proof changes relative to ecddf87b: none. This entry is the only difference.
+Purpose: a fresh official corpus draw of an image whose expected score is 870 below the crown's image.
+Credit remains with terrapinelf, i34-9, ercumentyildirim, anamdongparkjinhyeong, fkiene and the preceding
+contributors as reflected in inherited source; the slot-15 mechanism is this account's (GLM 5.3 design,
+Lean port and composition by Claude Fable 5.1).

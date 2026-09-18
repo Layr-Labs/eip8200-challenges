@@ -23,33 +23,38 @@ theorem pointer_next (base i : Nat) :
     negative32_value
   rw [hK, Challenge.EvmProof.Word.ofNat_add_mod, ptrAt_succ]
 
+/-- Not the last row: the writeback stores the limb, installs the row's carry out into
+the cell and the `DUP3 JUMPI` returns to the row head `hd`. -/
 theorem run_next (s : State) (mem : ByteArray) (c mu bi : UInt256)
-    (pb n i : Nat) (hd ent dst ret : UInt256) (rest : List UInt256)
+    (pb n i : Nat) (hd ent cy dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005) (hact : 88 ≤ s.activeWords.toNat)
     (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 2816) (hi : i+1 < n)
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions CarryRowPrograms.tail
-      (CiosCached.tailState s mem c mu bi pb n i hd ent dst ret rest) =
-    some (CiosCached.outState s (tailCarry mem c bi) pb n (i+1) hd ent dst ret rest) := by
+      (CiosCached.tailState s mem c mu bi pb n i hd ent cy dst ret rest) =
+    some (CiosCached.outState s (tailMemS mem cy c) pb n (i+1) hd ent
+      (slotOverflow cy c + bi) dst ret rest) := by
   have hp := pointer_next (pb+32*n-32) i
   have hcond : UInt256.isTrue
       (UInt256.gt (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) (UInt256.ofNat (pb-32))) :=
     (l1_condition pb n (i+1) hpb hpbFit (by omega)).mpr hi
   have trace := CarryRowRun.run_tail { s with memory := mem } c bi
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) hd (UInt256.ofNat (pb-32))
-    ent (l2Target n) dst (ret :: rest) (by simp only [List.length_cons]; omega) hact htarget
+    ent cy dst (ret :: rest) (by simp only [List.length_cons]; omega) hact htarget
   simpa only [List.cons_append, List.nil_append, input, result, baseStack, framed, CiosCached.tailState,
     CiosCached.outState, hp, if_pos hcond, List.cons_append, List.nil_append] using trace
 
+/-- The last row: the `DUP3 JUMPI` falls through into the kernel-exit dispatch. -/
 theorem run_last (s : State) (mem : ByteArray) (c mu bi : UInt256)
-    (pb n i : Nat) (hd ent dst ret : UInt256) (rest : List UInt256)
+    (pb n i : Nat) (hd ent cy dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005) (hact : 88 ≤ s.activeWords.toNat)
     (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 2816) (hi : i+1 = n)
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions CarryRowPrograms.tail
-      (CiosCached.tailState s mem c mu bi pb n i hd ent dst ret rest) =
-    some (exitState s (tailCarry mem c bi)
-      (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) pb n hd ent dst ret rest) := by
+      (CiosCached.tailState s mem c mu bi pb n i hd ent cy dst ret rest) =
+    some (exitState s (tailMemS mem cy c)
+      (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) pb n hd ent (slotOverflow cy c + bi)
+      dst ret rest) := by
   have hp := pointer_next (pb+32*n-32) i
   have hcond : ¬UInt256.isTrue
       (UInt256.gt (UInt256.ofNat (ptrAt (pb+32*n-32) (i+1))) (UInt256.ofNat (pb-32))) := by
@@ -57,7 +62,7 @@ theorem run_last (s : State) (mem : ByteArray) (c mu bi : UInt256)
     omega
   have trace := CarryRowRun.run_tail { s with memory := mem } c bi
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) hd (UInt256.ofNat (pb-32))
-    ent (l2Target n) dst (ret :: rest) (by simp only [List.length_cons]; omega) hact htarget
+    ent cy dst (ret :: rest) (by simp only [List.length_cons]; omega) hact htarget
   simpa only [List.cons_append, List.nil_append, input, result, baseStack, framed, CiosCached.tailState,
     exitState, hp, if_neg hcond, List.cons_append, List.nil_append] using trace
 
