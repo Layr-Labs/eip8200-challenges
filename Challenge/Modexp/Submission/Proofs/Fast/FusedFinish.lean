@@ -11,7 +11,7 @@ open WindowNibbleKernel WindowTwentyOneBinding
 
 def program : List Instr := [.op .JUMPDEST, .op .POP]
 def block : Block Artifact.submissionArtifact .Osaka 782 program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 564 2 782 program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 552 2 782 program
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem run (s : State) (mem : ByteArray) (count : UInt256) (rest : List UInt256)
