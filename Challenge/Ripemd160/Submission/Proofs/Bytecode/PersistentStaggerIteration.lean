@@ -74,7 +74,8 @@ theorem initial_context (input : ByteArray) (hfit : CalldataFits input) (hpos : 
     fun a ha => PadSkipEntry.entryState_zero_below input hfit a
       (by simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
           change a < 1056
-          omega)⟩
+          omega),
+    PadSkipEntry.entryState_zero_below input hfit 0 (by decide)⟩
 
 theorem states_context (input : ByteArray) (hfit : CalldataFits input) (hpos : 0 < input.size)
     (n : Nat) (hn : n ≤ DriverTrace.blockCount input) : Context (states input n) input n := by

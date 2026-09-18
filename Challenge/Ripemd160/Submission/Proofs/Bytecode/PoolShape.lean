@@ -13,8 +13,8 @@ open PairedScheduleMemory
 
 /-- Bytes that the next block's overlapping loads require to be zero. -/
 def zeroAddresses : List Nat :=
-  (List.range 14).map (· + 14) ++ [94,95,128,129] ++
-    PairStoreGap.lowerPairSlots.flatMap (fun j => (List.range 4).map (fun k => 18*j+14+k))
+  0 :: ((List.range 14).map (· + 14) ++ [94,95,128,129] ++
+    PairStoreGap.lowerPairSlots.flatMap (fun j => (List.range 4).map (fun k => 18*j+14+k)))
 
 def Clear (memory : ByteArray) : Prop :=
   ∀ a, a ∈ zeroAddresses → memory[a]?.getD 0 = 0

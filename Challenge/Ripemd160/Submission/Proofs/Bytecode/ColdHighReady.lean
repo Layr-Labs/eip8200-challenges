@@ -65,7 +65,8 @@ theorem ready (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < i
     decide
   exact ready_transfer (finalMemory input i) (messagePointer i) (blockWords input i)
     (PoolInvariant.clear_of_parts (finalMemory input i) hl
-      (finalMemory_gapClear input hfit hpositive i (by omega)) (finalMemory_extraClear input hfit i))
+      (finalMemory_gapClear input hfit hpositive i (by omega)) (finalMemory_extraClear input hfit i)
+      (finalMemory_zero0 input hfit hpositive i (by omega)))
     (ready_model input hfit hpositive i hi hh)
 
 #print axioms ready

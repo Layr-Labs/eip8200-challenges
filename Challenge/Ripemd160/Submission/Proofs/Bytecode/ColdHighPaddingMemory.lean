@@ -122,6 +122,19 @@ theorem finalMemory_extraClear (input : ByteArray) (hfit : CalldataFits input) (
     YulEvmCompiler.BytesLemmas.natToBytesPadded_size, StaggerTableSparse.zeroSuffix_getD]
   all_goals norm_num
 
+/-- Byte 0 survives the pad chain (all six low-block stores are at 36 and above, `zeroSuffix`
+clears from 28) and the length loop (which writes at 1056 and above). -/
+theorem finalMemory_zero0 (input : ByteArray) (hfit : CalldataFits input)
+    (hpositive : 0 < input.size) (i : Nat) (hi : i ≤ DriverTrace.blockCount input) :
+    (finalMemory input i)[0]?.getD 0 = 0 := by
+  unfold finalMemory
+  rw [lengthMemory_below input _ hfit _ (PaddingTrace.lengthStop_le input) 0 (by decide)]
+  simp only [StaggerTablePad.padRealChain, StaggerTablePad.lowChainOver,
+    PairedScheduleMemory.writeWord, MachineState.writeBytes_getElem?_getD,
+    YulEvmCompiler.BytesLemmas.natToBytesPadded_size, StaggerTableSparse.zeroSuffix_getD]
+  norm_num
+  exact (states_context input hfit hpositive i hi).zero0
+
 #print axioms finalMemory_blockAt
 #print axioms finalMemory_lowClear
 #print axioms finalMemory_gapClear

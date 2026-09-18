@@ -130,7 +130,7 @@ theorem writer_memory (memory : ByteArray) (hgap : PairStoreGap.GapClear memory)
     (erase_fan memory (StaggerTableLayout.tableWords (words memory)) _ _)
 
 def tableMemory (memory : ByteArray) : ByteArray :=
-  PoolShape.resultMemory false memory
+  PoolShapeV2.resultMemoryV2 memory
     (PairedScheduleData.reversedWord (MachineState.readWord memory 1056)) highWord
 
 theorem tableMemory_ready (memory : ByteArray) (hc : PoolShape.Clear memory)

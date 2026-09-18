@@ -6,15 +6,19 @@ set_option maxHeartbeats 8000000
 set_option linter.unusedSimpArgs false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolInvariant
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
-open PoolShape
+open PoolShape PoolShapeV2
 
 def ExtraClear (m : ByteArray) : Prop := ∀ a ∈ [94,95,128,129], m[a]?.getD 0 = 0
 
 theorem clear_of_parts (m : ByteArray)
     (hlow : (MachineState.readWord m 0).toNat % 2^144 < 2^32)
-    (hgap : PairStoreGap.GapClear m) (hextra : ExtraClear m) : Clear m := by
+    (hgap : PairStoreGap.GapClear m) (hextra : ExtraClear m)
+    (hzero0 : m[0]?.getD 0 = 0) : Clear m := by
   intro a ha
-  simp only [zeroAddresses, List.mem_append, List.mem_map, List.mem_flatMap, List.mem_range] at ha
+  rw [zeroAddresses, List.mem_cons] at ha
+  rcases ha with rfl | ha
+  · exact hzero0
+  simp only [List.mem_append, List.mem_map, List.mem_flatMap, List.mem_range] at ha
   rcases ha with (⟨k,hk,rfl⟩ | ha) | ⟨j,hj,k,hk,rfl⟩
   · have h := PoolFacts.zero_from_window m 14 14 k (StaggerScratch.low_zero m hlow 14 (by decide) (by decide)) hk
     simpa [Nat.add_comm] using h
@@ -26,19 +30,26 @@ theorem clear_low (m : ByteArray) (hc : Clear m) :
   apply PoolFacts.low_clear
   intro k hl hu
   apply hc
-  simp only [zeroAddresses, List.mem_append, List.mem_map, List.mem_range]
+  rw [zeroAddresses, List.mem_cons]
+  right
+  simp only [List.mem_append, List.mem_map, List.mem_range]
   exact Or.inl (Or.inl ⟨k-14, by omega, by omega⟩)
 
 theorem clear_gap (m : ByteArray) (hc : Clear m) : PairStoreGap.GapClear m := by
   intro j hj k hl hu
   apply hc
-  simp only [zeroAddresses, List.mem_append, List.mem_flatMap, List.mem_map, List.mem_range]
+  rw [zeroAddresses, List.mem_cons]
+  right
+  simp only [List.mem_append, List.mem_flatMap, List.mem_map, List.mem_range]
   exact Or.inr ⟨j,hj,k-14,by omega,by omega⟩
 
 theorem clear_extra (m : ByteArray) (hc : Clear m) : ExtraClear m := by
   intro a ha
   apply hc
-  exact List.mem_append_left _ (List.mem_append_right _ ha)
+  exact List.mem_cons_of_mem _ (List.mem_append_left _ (List.mem_append_right _ ha))
+
+theorem clear_zero0 (m : ByteArray) (hc : Clear m) : m[0]?.getD 0 = 0 :=
+  hc 0 (List.mem_cons_self ..)
 
 theorem clear_of_zero (m : ByteArray) (hz : ∀ a, a < 1056 → m[a]?.getD 0 = 0) : Clear m :=
   fun a ha => hz a (PoolCertificates.zeroAddresses_bound a ha)
@@ -65,6 +76,26 @@ theorem read_result_outside (clean : Bool) (m : ByteArray) (lo hi : UInt256) (a 
   rw [Bytes.readWord_toNat, Bytes.readWord_toNat]
   exact StaggerTableMemory.bytesToNatPadded_congrOffset _ _ _ _ _
     (fun i _ => result_outside clean m lo hi (a+i) (by omega))
+
+/-- Above the copied block the v2m fan image is the incoming memory verbatim. -/
+theorem fanV2_getD_high (m : ByteArray) (lo hi : UInt256) (a : Nat) (ha : 146 ≤ a) :
+    (fanMemoryV2 m lo hi)[a]?.getD 0 = m[a]?.getD 0 := by
+  rw [fanMemoryV2, PoolShapeV2.copiedV2_getD, if_neg (by omega), Shared32Scratch.copied_getD,
+    if_neg (by omega), if_neg (by omega), PoolShapeV2.scratchV2_getD,
+    if_neg (by omega), if_neg (by omega), if_neg (by omega)]
+
+theorem resultV2_outside (m : ByteArray) (lo hi : UInt256) (a : Nat) (ha : 1112 ≤ a) :
+    (resultMemoryV2 m lo hi)[a]?.getD 0 = m[a]?.getD 0 := by
+  rw [resultMemoryV2, PoolRawWriter.writerMemory, rawWrites_eq,
+    writeChain_outside _ _ _ _ (fun x hx => (PoolCertificates.writes_bound x hx).1.trans ha),
+    fanV2_getD_high _ _ _ _ (by omega)]
+
+theorem read_resultV2_outside (m : ByteArray) (lo hi : UInt256) (a : Nat) (ha : 1112 ≤ a) :
+    MachineState.readWord (resultMemoryV2 m lo hi) a = MachineState.readWord m a := by
+  apply Word.word_ext
+  rw [Bytes.readWord_toNat, Bytes.readWord_toNat]
+  exact StaggerTableMemory.bytesToNatPadded_congrOffset _ _ _ _ _
+    (fun i _ => resultV2_outside m lo hi (a+i) (by omega))
 
 /-! ### Transporting `Ready` across the four exposed gap bytes
 
@@ -141,13 +172,13 @@ theorem ready_of_gap (W T : ByteArray) (words : Nat → UInt32)
 
 theorem ready (m : ByteArray) (lo hi : UInt256) (hc : Clear m) (words : Nat → UInt32)
     (h : StaggerMessage.Ready (resultMemory true m lo hi) words) :
-    StaggerMessage.Ready (resultMemory false m lo hi) words := by
+    StaggerMessage.Ready (resultMemoryV2 m lo hi) words := by
   constructor
   · intro i hi77
     by_cases hi76 : i = 76
     · subst i
       have ht := PoolFacts.result_terminal m lo hi hc
-      have hm : StaggerCoreModel.message (resultMemory false m lo hi) 76 =
+      have hm : StaggerCoreModel.message (resultMemoryV2 m lo hi) 76 =
           StaggerCoreModel.message (resultMemory true m lo hi) 76 := ht
       rw [hm]
       exact h.paired 76 hi77

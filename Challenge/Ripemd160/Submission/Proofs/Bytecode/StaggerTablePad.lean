@@ -60,6 +60,38 @@ theorem resultMemoryOver_agree {b b' : ByteArray} (h : StaggerTableLayout.AgreeF
     StaggerTableLayout.AgreeFrom14 (resultMemoryOver b n) (resultMemoryOver b' n) :=
   storeSelected_agree h _ _ 0 61
 
+/-- Selected stores never touch an address that every selected window misses. -/
+theorem getD_storeSelected_skip (memory : ByteArray) (words : Nat → UInt256)
+    (keep : Nat → Bool) (first count address : Nat)
+    (hout : ∀ k, first ≤ k → k < first + count →
+      keep k = false ∨ address < 18 * k ∨ 18 * k + 32 ≤ address) :
+    (StaggerTableSparse.storeSelected memory words keep first count)[address]?.getD 0 =
+      memory[address]?.getD 0 := by
+  induction count generalizing first with
+  | zero => rfl
+  | succ count ih =>
+    rw [StaggerTableSparse.storeSelected]
+    have hrest := ih (first + 1) (fun k hk hk' => hout k (by omega) (by omega))
+    split
+    · rename_i hkeep
+      simp only [PairedScheduleMemory.writeWord, MachineState.writeBytes_getElem?_getD,
+        YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
+      have h := hout first (by omega) (by omega)
+      rw [if_neg (by simp only [hkeep, Bool.true_eq_false, false_or] at h; omega)]
+      exact hrest
+    · exact hrest
+
+/-- The pad-only block leaves byte 0 exactly as it found it: slot 0 is never selected and
+`zeroSuffix` clears only from byte 28 up. -/
+theorem padRealResult_zero0 (memory : ByteArray) (n : UInt256) :
+    (padRealResult memory n)[0]?.getD 0 = memory[0]?.getD 0 := by
+  rw [padRealResult, resultMemoryOver,
+    getD_storeSelected_skip _ _ _ 0 61 0 (fun k _ hk => by
+      by_cases hk0 : k = 0
+      · subst hk0; exact Or.inl (by decide)
+      · exact Or.inr (Or.inl (by omega))),
+    StaggerTableSparse.zeroSuffix_getD, if_neg (by omega)]
+
 /-- Reality versus model for the whole pad table, at EVERY calldata size. -/
 theorem padRealResult_agree (memory : ByteArray) (n : UInt256)
     (hlow : (MachineState.readWord memory 0).toNat % 2 ^ 144 < 2 ^ 32) :

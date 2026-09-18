@@ -41,10 +41,15 @@ structure Context (s : State) (input : ByteArray) (next : Nat) : Prop where
   /-- Four skipped-store gap bytes for each of the thirteen equal table pairs. -/
   gapClear : GapClear s.memory
   extraClear : PoolInvariant.ExtraClear s.memory
+  /-- Byte 0 is zero: the raw (unmasked) schedule word 0 carries it into byte 18 of table
+  slot 2, the slack byte `PoolCertificatesV2.slack_sources` witnesses for round 25.  Every
+  data block restores it (slot 0 receives the masked word 6) and the pad-only block never
+  touches it. -/
+  zero0 : s.memory[0]?.getD 0 = 0
 
 theorem Context.clear (s : State) (input : ByteArray) (i : Nat) (ctx : Context s input i) :
     PoolShape.Clear s.memory :=
-  PoolInvariant.clear_of_parts s.memory ctx.lowClear ctx.gapClear ctx.extraClear
+  PoolInvariant.clear_of_parts s.memory ctx.lowClear ctx.gapClear ctx.extraClear ctx.zero0
 
 def blockWords (input : ByteArray) (i : Nat) : Nat → UInt32 :=
   fun k => (CompressionCorrect.schedule (Padding.paddedMessage input)
@@ -240,7 +245,7 @@ theorem scheduled_word_above (s : State) (i address : Nat) (ha : 1120 ≤ addres
     change MachineState.readWord (StaggerTablePad.padRealResult s.memory _) address = _
     exact StaggerTablePad.read_padRealResult_outside _ _ _ (by omega)
   · rw [scheduledState_miss s i hh]
-    exact PoolInvariant.read_result_outside false _ _ _ address (by omega)
+    exact PoolInvariant.read_resultV2_outside _ _ _ address (by omega)
 
 theorem scheduled_env (s : State) (i : Nat) :
     (scheduledState s i).executionEnv = s.executionEnv := by
@@ -302,11 +307,22 @@ theorem scheduled_extraClear (s : State) (input : ByteArray) (i : Nat)
   · rw [scheduledState_miss s i hh]
     exact PoolInvariant.clear_extra _ (PoolFacts.result_clear _ _ _ (ctx.clear s input i))
 
+theorem scheduled_zero0 (s : State) (input : ByteArray) (i : Nat)
+    (ctx : Context s input i) :
+    (scheduledState s i).memory[0]?.getD 0 = 0 := by
+  by_cases hh : s.executionEnv.calldata.size = DriverTrace.blockOffset i
+  · rw [scheduledState_hit s i hh]
+    change (StaggerTablePad.padRealResult s.memory _)[0]?.getD 0 = 0
+    rw [StaggerTablePad.padRealResult_zero0]
+    exact ctx.zero0
+  · rw [scheduledState_miss s i hh]
+    exact PoolInvariant.clear_zero0 _ (PoolFacts.result_clear _ _ _ (ctx.clear s input i))
+
 theorem Context.scheduled (s : State) (input : ByteArray) (i : Nat)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input)
     (ctx : Context s input i) : Context (scheduledState s i) input (i + 1) := by
   have hm := scheduled_active_mono s input i hfit hi
-  refine ⟨?_, ctx.active.trans hm, ?_, ?_, ctx.separated, ?_, scheduled_gapClear s input i hfit ctx, scheduled_extraClear s input i hfit ctx⟩
+  refine ⟨?_, ctx.active.trans hm, ?_, ?_, ctx.separated, ?_, scheduled_gapClear s input i hfit ctx, scheduled_extraClear s input i hfit ctx, scheduled_zero0 s input i ctx⟩
   · rw [scheduled_env]; exact ctx.calldata
   · intro j hj hne; exact (ctx.allocated j hj hne).trans hm
   · intro j hnext hj hne k hk

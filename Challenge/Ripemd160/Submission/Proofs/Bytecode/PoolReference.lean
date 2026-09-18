@@ -1,4 +1,4 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolShape
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolShapeV2
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13Memory
 
 set_option warningAsError true
@@ -41,7 +41,7 @@ theorem reference_eq_writer (m : ByteArray) (lo hi : UInt256)
   exact Nat.lt_trans (Shared32Scratch.fanWord_lt lo hi i) (by norm_num)
 
 def dataMemory (m : ByteArray) (p : Nat) : ByteArray :=
-  PoolShape.resultMemory false m
+  PoolShapeV2.resultMemoryV2 m
     (PairedScheduleData.reversedWord (MachineState.readWord m p))
     (PairedScheduleData.reversedWord (MachineState.readWord m (p+32)))
 

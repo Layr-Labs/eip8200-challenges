@@ -22,7 +22,7 @@ theorem poolWord_eq_dualW (memory : ByteArray) (low high : UInt256)
   rw [Pair13WriterRaw.dualW, Shared32Scratch.dualOf] at *
   exact h
 
-def normalTemplate : List Instr := (template ++ Pair13PoolRaw.template) ++ Pair13WriterRaw.writerTemplate
+def normalTemplate : List Instr := (templateV2 ++ Pair13PoolRaw.templateV2) ++ Pair13WriterRaw.writerTemplate
 
 theorem run_normal (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UInt256)
     (rho : List UInt256) (p : Nat) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
@@ -41,28 +41,27 @@ theorem run_normal (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UIn
   let F := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho
   let low := PairedScheduleData.reversedWord (MachineState.readWord s.memory p)
   let high := PairedScheduleData.reversedWord (MachineState.readWord s.memory (p + 32))
-  let words := Pair13PoolRaw.poolWord (Shared32Scratch.fanMemory s.memory low high)
-  let scratch := Pair13Endian.scratch3 s.memory low high
+  let words := Pair13PoolRaw.poolWordV2 (PoolShapeV2.fanMemoryV2 s.memory low high)
+  let scratch := Pair13Endian.scratchV2 s.memory low high
   let s1 : State := {s with activeWords := loadedActiveWords s (UInt256.ofNat p)}
   let s2 : State := {s1 with memory := scratch}
-  let s3 : State := {s2 with memory := Pair13PoolRaw.copied scratch}
+  let s3 : State := {s2 with memory := Pair13PoolRaw.copiedV2 scratch}
   have ha : 35 ≤ s1.activeWords.toNat := Stagger144Active.loaded_active_ge35 s p hp hbound
   have ha2 : 35 ≤ s2.activeWords.toNat := ha
   have ha3 : 35 ≤ s3.activeWords.toNat := ha
   have hF : F.length ≤ 900 := by simp [F, stk]; omega
   have hrest : rest.length ≤ 898 := by simp only [rest, List.length_cons]; omega
-  have h1 := run_template s pc ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho p
+  have h1 := run_templateV2 s pc ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho p
     (by omega) hrun hp hbound hq1 hq0
-  have h3 := Pair13PoolRaw.run_actual s2 (pcAfter pc template) F hF hrun (by omega)
+  have h3 := Pair13PoolRaw.run_actualV2 s2 (pcAfter pc templateV2) F hF hrun (by omega)
   have h13 := DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h3
   have h4 := PoolRawWriter.run_writer s3
-    (pcAfter (pcAfter pc template) Pair13PoolRaw.template) ret words rest hrest hrun (by omega)
+    (pcAfter (pcAfter pc templateV2) Pair13PoolRaw.templateV2) ret words rest hrest hrun (by omega)
   have h := DenseScheduleTrace.runInstrSeq_append_running h13 (by exact hrun) h4
   simpa only [PoolRawWriter.template_eq, normalTemplate, DenseScheduleTrace.pcAfter_append, s3, s2, s1, scratch, words,
-    PoolReference.dataMemory, PoolShape.resultMemory, PoolShape.poolValue,
-    Bool.false_eq_true, if_false, Shared32Scratch.fanMemory, low, high, rest, stk] using h
+    PoolReference.dataMemory, PoolShapeV2.resultMemoryV2, PoolShapeV2.fanMemoryV2, low, high, rest, stk] using h
 
-theorem exact_bytes : assembleBytes normalTemplate = [97,4,64,140,1,81,128,96,8,28,129,24,143,22,97,1,1,2,24,143,129,128,96,16,28,24,22,98,1,0,1,2,24,96,96,82,91,97,4,32,140,1,81,128,97,0,8,28,129,24,143,22,97,1,1,2,24,143,129,128,97,0,16,28,24,22,98,1,0,1,2,24,128,97,0,46,82,128,97,0,10,82,97,0,28,82,96,16,128,96,96,96,78,94,96,112,96,130,94,117,255,255,255,255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,255,255,255,96,102,81,129,96,42,81,22,96,46,81,131,22,96,76,81,96,106,81,96,8,81,134,22,96,34,81,135,22,96,4,81,136,22,96,114,81,137,96,38,81,22,96,80,81,139,22,96,68,81,98,0,0,12,81,141,22,96,110,81,157,95,81,22,96,72,81,132,96,126,82,128,97,3,132,82,139,96,216,82,130,97,3,114,82,132,97,3,96,82,130,97,3,78,82,128,97,3,60,82,131,97,2,46,82,141,97,2,172,82,131,97,3,168,82,133,96,108,82,135,97,3,24,82,135,98,0,2,28,82,97,2,244,82,128,97,2,10,82,141,96,90,82,135,96,72,82,96,54,82,141,97,2,154,82,133,97,1,248,82,131,97,4,56,82,136,97,4,38,82,131,97,1,230,82,98,0,3,204,82,131,97,2,136,82,131,97,3,240,82,136,97,2,118,82,131,97,2,100,82,97,2,226,82,136,97,1,32,82,97,2,82,82,136,97,4,20,82,136,97,1,158,82,97,2,208,82,97,1,14,82,129,97,1,140,82,97,1,212,82,96,18,82,97,1,104,82,96,198,82,97,1,68,82,96,252,82,95,82,97,1,194,82,96,162,82] := by decide
+theorem exact_bytes : assembleBytes normalTemplate = [97,4,64,140,1,81,128,96,8,28,129,24,143,22,97,1,1,2,24,143,129,128,96,16,28,24,22,98,1,0,1,2,24,96,96,82,91,97,4,32,140,1,81,128,97,0,8,28,129,24,143,22,97,1,1,2,24,143,129,128,97,0,16,28,24,22,98,1,0,1,2,24,128,97,0,46,82,96,28,82,96,16,128,128,96,96,96,78,94,96,112,96,130,94,96,28,96,10,94,117,255,255,255,255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,255,255,255,96,102,81,96,42,81,130,22,96,46,81,131,22,96,76,81,96,106,81,96,8,81,96,34,81,135,22,96,4,81,96,114,81,96,38,81,138,22,96,110,81,154,96,80,81,22,96,68,81,96,12,81,95,81,96,72,81,132,97,0,126,82,128,98,0,3,132,82,139,97,0,216,82,130,98,0,3,114,82,132,98,0,3,96,82,130,98,0,3,78,82,128,98,0,3,60,82,131,98,0,2,46,82,141,98,0,2,172,82,131,98,0,3,168,82,133,97,0,108,82,135,98,0,3,24,82,135,97,2,28,82,97,2,244,82,128,97,2,10,82,141,96,90,82,135,96,72,82,96,54,82,141,97,2,154,82,133,97,1,248,82,131,97,4,56,82,136,97,4,38,82,131,97,1,230,82,97,3,204,82,131,97,2,136,82,131,97,3,240,82,136,97,2,118,82,131,97,2,100,82,97,2,226,82,136,97,1,32,82,97,2,82,82,136,97,4,20,82,136,97,1,158,82,97,2,208,82,97,1,14,82,129,97,1,140,82,97,1,212,82,96,18,82,97,1,104,82,96,198,82,97,1,68,82,96,252,82,95,82,97,1,194,82,96,162,82] := by decide
 theorem end_pc : pcAfter (UInt256.ofNat 472) normalTemplate = UInt256.ofNat 860 := by decide
 #print axioms run_normal
 #print axioms exact_bytes

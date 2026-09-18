@@ -17,6 +17,19 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
+-- executable 815073da176a6ee327fb5cff48b9e268def819556d9208f24bf083127cb09820, 5212 bytes,
+-- 662418 gas at corpus seeds 0..2, 8180 units of the 8194 literal-encoding budget. Derived from
+-- 87b2202df9e69ecd0fc6c4d7cc1aa64c8bebac4989adccb2a978371b576c481a (5212 bytes, 663258 gas):
+-- the schedule builder makes its third staging copy with MCOPY(0xa <- 0x1c, 16) instead of a
+-- store and stores the four diagonal words (0..3) unmasked; only words 4, 5, 6, 7 and 11 keep
+-- the two-lane mask. Lanes and the terminal slot are byte-identical to the predecessor; the
+-- unmasked words leave message bytes only between the lanes, where every paired read keeps a
+-- provably-zero byte (PoolCertificatesV2.slack_sources). 3692 instructions (nine fewer), bytes
+-- 549..772 differ, every program counter outside the window is unchanged.
+-- model Claude Opus 5, harness Claude Code.
+--
+-- NOTE FOR THE FILER: every line below this point was inherited with the base tree and describes
+-- an EARLIER artifact, not this one. Provenance and attribution have not been touched here.
 -- executable edd78ac56ece15e4283762b16ff54409cb244adb6dec492dc5d609e34a37c604, 5212 bytes,
 -- 663636 gas at corpus seed 0, 8187 units of the 8194 literal-encoding budget. Derived from
 -- 124d01057f5628e32d5d539622bf89afd5fc56287d8718d300eefa534d4a2842 (5212 bytes, 663683 gas) by

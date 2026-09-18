@@ -168,6 +168,130 @@ theorem run_actual (s : State) (pc : UInt256) (rho : List UInt256)
         memory := copied s.memory} := by
   exact run_actual_of_small s pc rho hstack hrun (by omega)
 
+
+/-! ### The v2m pool block
+
+Three sixteen-byte copies (`96→78`, `112→130`, `28→10`); only words 4, 5, 6, 7 and 11 are
+masked, the other eleven are stored raw and normalized by the round-sum mask
+(`PoolFacts.result_slack` witnesses a zero gap byte in every slot). -/
+
+def copiedV2 (memory : ByteArray) : ByteArray :=
+  MachineState.writeBytes (copied memory)
+    (MachineState.readPadded (copied memory) 28 16) 10
+
+def poolWordV2 (memory : ByteArray) (i : Nat) : UInt256 :=
+  if i ∈ [4, 5, 6, 7, 11] then UInt256.land poolMask (rawLoad memory i)
+  else rawLoad memory i
+
+theorem copy3_active_preserved (current : UInt256) (o1 o2 o3 : Nat)
+    (hc : 34 ≤ current.toNat) (h1 : o1 ≤ 1000) (h2 : o2 ≤ 1000) (h3 : o3 ≤ 1000) :
+    UInt256.ofNat (MachineState.activeWordsAfter (MachineState.activeWordsAfter
+      (MachineState.activeWordsAfter current.toNat o1 16) o2 16) o3 16) = current := by
+  have h : ∀ o, o ≤ 1000 → MachineState.activeWordsAfter current.toNat o 16 = current.toNat := by
+    intro o ho
+    simp only [MachineState.activeWordsAfter, if_neg (by decide : (16 : Nat) ≠ 0)]
+    exact Nat.max_eq_left (by omega)
+  rw [h o1 h1, h o2 h2, h o3 h3]
+  exact (Word.word_eq_ofNat_toNat _).symm
+
+def templateV2 : List Instr :=
+  [ .push ⟨1, by decide⟩ (UInt256.ofNat 16),
+    .op (.Dup ⟨0, by decide⟩),
+    .op (.Dup ⟨0, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 96),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 78),
+    .op .MCOPY,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 112),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 130),
+    .op .MCOPY,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 28),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 10),
+    .op .MCOPY,
+    .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 102),
+    .op .MLOAD,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 42),
+    .op .MLOAD,
+    .op (.Dup ⟨2, by decide⟩),
+    .op .AND,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 46),
+    .op .MLOAD,
+    .op (.Dup ⟨3, by decide⟩),
+    .op .AND,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 76),
+    .op .MLOAD,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 106),
+    .op .MLOAD,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 8),
+    .op .MLOAD,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 34),
+    .op .MLOAD,
+    .op (.Dup ⟨7, by decide⟩),
+    .op .AND,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 4),
+    .op .MLOAD,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 114),
+    .op .MLOAD,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 38),
+    .op .MLOAD,
+    .op (.Dup ⟨10, by decide⟩),
+    .op .AND,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 110),
+    .op .MLOAD,
+    .op (.Swap ⟨10, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 80),
+    .op .MLOAD,
+    .op .AND,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 68),
+    .op .MLOAD,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 12),
+    .op .MLOAD,
+    .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+    .op .MLOAD,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 72),
+    .op .MLOAD ]
+
+theorem run_actualV2_of_small (s : State) (pc : UInt256) (rho : List UInt256)
+    (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
+    (hactive : 34 ≤ s.activeWords.toNat) :
+    runInstrSeq templateV2 {s with pc := pc, stack := rho} =
+      some {s with
+        pc := pcAfter pc templateV2
+        stack := poolStack (poolWordV2 (copiedV2 s.memory)) rho
+        memory := copiedV2 s.memory} := by
+  have hbase : rho.length < 1024 := by omega
+  have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
+  have hcap (n : Nat) (hn : n ≤ 40) : rho.length + n < 1024 := by omega
+  have hactiveAt (address : Nat) (haddress : address ≤ 1056) :
+      UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
+    Stagger144Active.word_active_preserved_of_small s.activeWords address hactive haddress
+  have hactiveCopy (o1 o2 : Nat) (h1 : o1 ≤ 1000) (h2 : o2 ≤ 1000) :
+      UInt256.ofNat (MachineState.activeWordsAfter
+        (MachineState.activeWordsAfter s.activeWords.toNat o1 16) o2 16) = s.activeWords :=
+    copy_active_preserved s.activeWords o1 o2 hactive h1 h2
+  have hactiveCopy3 (o1 o2 o3 : Nat) (h1 : o1 ≤ 1000) (h2 : o2 ≤ 1000) (h3 : o3 ≤ 1000) :
+      UInt256.ofNat (MachineState.activeWordsAfter (MachineState.activeWordsAfter
+        (MachineState.activeWordsAfter s.activeWords.toNat o1 16) o2 16) o3 16) = s.activeWords :=
+    copy3_active_preserved s.activeWords o1 o2 o3 hactive h1 h2 h3
+  simp (config := { maxSteps := 900000 }) (discharger := omega)
+    [templateV2, poolStack, poolWordV2, poolMask, rawLoad, poolAddr, copiedV2, copied, copiedOnce, runInstrSeq,
+     DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size, List.exchange,
+     List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
+     State.activeWordsAfterUInt256, State.activeWordsAfterUInt256_2, hactiveAt, hactiveCopy, hactiveCopy3,
+     Word.word_toNat_ofNat, Word.literal_eq_ofNat, RawExpressionAC.land_comm]
+  all_goals repeat first | apply And.intro | rfl
+
+theorem run_actualV2 (s : State) (pc : UInt256) (rho : List UInt256)
+    (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
+    (hactive : 35 ≤ s.activeWords.toNat) :
+    runInstrSeq templateV2 {s with pc := pc, stack := rho} =
+      some {s with
+        pc := pcAfter pc templateV2
+        stack := poolStack (poolWordV2 (copiedV2 s.memory)) rho
+        memory := copiedV2 s.memory} := by
+  exact run_actualV2_of_small s pc rho hstack hrun (by omega)
+#print axioms run_actualV2
+
 /-! ### The dual-lane mask
 
 `poolMask` keeps bytes `10..14` and `28..32` of the loaded word.  Where the scratch has

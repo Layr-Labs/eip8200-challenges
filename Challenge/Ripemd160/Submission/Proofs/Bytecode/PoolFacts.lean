@@ -1,4 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolCertificates
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolCertificatesV2
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerMessage
 
 set_option warningAsError true
@@ -7,7 +8,7 @@ set_option maxHeartbeats 8000000
 set_option linter.unusedSimpArgs false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolFacts
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
-open PoolShape
+open PoolShape PoolShapeV2
 
 theorem window_zero (m : ByteArray) (a n : Nat)
     (hz : ∀ k, k < n → m[a+k]?.getD 0 = 0) :
@@ -63,44 +64,44 @@ theorem low_clear (m : ByteArray) (hz : ∀ k, 14 ≤ k → k < 28 → m[k]?.get
   simpa using Bytes.bytesToNatPadded_lt_pow m 28 4
 
 theorem result_lanes (m : ByteArray) (lo hi : UInt256) (hc : Clear m) (j : Nat) (hj : j < 61) :
-    (MachineState.readWord (resultMemory false m lo hi) (18*j)).toNat % 2^32 =
+    (MachineState.readWord (resultMemoryV2 m lo hi) (18*j)).toNat % 2^32 =
       (MachineState.readWord (resultMemory true m lo hi) (18*j)).toNat % 2^32 ∧
-    (MachineState.readWord (resultMemory false m lo hi) (18*j)).toNat / 2^144 % 2^32 =
+    (MachineState.readWord (resultMemoryV2 m lo hi) (18*j)).toNat / 2^144 % 2^32 =
       (MachineState.readWord (resultMemory true m lo hi) (18*j)).toNat / 2^144 % 2^32 := by
   constructor
   · rw [low_value, low_value]
     apply StaggerTableMemory.bytesToNatPadded_congrOffset
     intro k hk
-    rw [result_shape m lo hi hc, result_shape m lo hi hc,
-      (PoolCertificates.lane_sources ⟨j,hj⟩ ⟨k,hk⟩).2]
+    rw [resultV2_shape m lo hi hc, result_shape m lo hi hc,
+      (PoolCertificatesV2.lane_sources ⟨j,hj⟩ ⟨k,hk⟩).2]
   · rw [high_value, high_value]
     apply StaggerTableMemory.bytesToNatPadded_congrOffset
     intro k hk
-    rw [result_shape m lo hi hc, result_shape m lo hi hc,
-      (PoolCertificates.lane_sources ⟨j,hj⟩ ⟨k,hk⟩).1]
+    rw [resultV2_shape m lo hi hc, result_shape m lo hi hc,
+      (PoolCertificatesV2.lane_sources ⟨j,hj⟩ ⟨k,hk⟩).1]
 
 theorem result_slack (m : ByteArray) (lo hi : UInt256) (hc : Clear m) (j : Nat) (hj : j < 61) :
-    (MachineState.readWord (resultMemory false m lo hi) (18*j)).toNat % 2^144 + 2^40 ≤ 2^144 := by
-  obtain ⟨hl,hu,hz⟩ := PoolCertificates.slack_sources ⟨j,hj⟩
+    (MachineState.readWord (resultMemoryV2 m lo hi) (18*j)).toNat % 2^144 + 2^40 ≤ 2^144 := by
+  obtain ⟨hl,hu,hz⟩ := PoolCertificatesV2.slack_sources ⟨j,hj⟩
   apply zero_byte_slack _ _ hl hu
-  rw [PoolByte.read _ _ _ (by omega), result_shape m lo hi hc, hz]
+  rw [PoolByte.read _ _ _ (by omega), resultV2_shape m lo hi hc, hz]
   rfl
 
 theorem result_clear (m : ByteArray) (lo hi : UInt256) (hc : Clear m) :
-    Clear (resultMemory false m lo hi) := by
+    Clear (resultMemoryV2 m lo hi) := by
   intro a ha
-  rw [result_shape m lo hi hc, PoolCertificates.clear_sources a ha]
+  rw [resultV2_shape m lo hi hc, PoolCertificatesV2.clear_sources a ha]
   rfl
 
 theorem result_terminal (m : ByteArray) (lo hi : UInt256) (hc : Clear m) :
-    MachineState.readWord (resultMemory false m lo hi) 594 =
+    MachineState.readWord (resultMemoryV2 m lo hi) 594 =
       MachineState.readWord (resultMemory true m lo hi) 594 := by
   apply Word.word_ext
   rw [Bytes.readWord_toNat, Bytes.readWord_toNat]
   apply StaggerTableMemory.bytesToNatPadded_congrOffset
   intro k hk
-  rw [result_shape m lo hi hc, result_shape m lo hi hc,
-    PoolCertificates.terminal_sources ⟨k,hk⟩]
+  rw [resultV2_shape m lo hi hc, result_shape m lo hi hc,
+    PoolCertificatesV2.terminal_sources ⟨k,hk⟩]
 
 #print axioms result_lanes
 #print axioms result_slack

@@ -1,46 +1,144 @@
-# RIPEMD-160: two padding instructions absorbed into the pushes in front of them, 663,174 gas in 5,212 bytes
+# RIPEMD-160: the diagonal schedule words come from a copy, not from masks — 662,418 gas in 5,212 bytes
 
-- SHA-256: `c770132b5bd43a26d4b649243116d964b18c48d9b23ffd8826e5a545f5f4044c`.
-- Size: 5,212 bytes, unchanged from the artifact described in the next section; 3,786 instructions,
-  two fewer.
-- Literal-encoding cost: 8,184 to 8,186 against a ceiling of 8,194.
-- Scored gas: 663,174, a reduction of 84. The scoring tool reports 98 rows, status `ok` on all 98.
+- SHA-256: `815073da176a6ee327fb5cff48b9e268def819556d9208f24bf083127cb09820`.
+- Size: 5,212 bytes; 3,692 instructions (nine fewer than the predecessor, so instruction indices
+  from 369 up are renumbered; every program counter outside the edited window is unchanged).
+- Literal-encoding cost: 8,180 against a ceiling of 8,194 (predecessor 8,184).
+- Local score: 662,418 gas at corpus seeds 0, 1 and 2, a reduction of 840 from the 663,258
+  predecessor. The corpus's length multiset is seed-invariant and the change is executed once per
+  data block, so the reduction does not depend on the draw.
 
 ## The change
 
-Four bytes differ, at two sites, and nothing else in the image differs.
+Every edited byte lies in `[549, 773)`, inside the per-block schedule builder (the window
+`[472, 860)` that turns a message block into the packed schedule table). The predecessor stages
+the byte-swapped low word three times (at 46, 10 and 28) and then masks the four "diagonal" loads
+at 0, 4, 8 and 12 with the two-lane mask before storing them, because the third staging store
+makes each of those words carry its neighbours in the bytes between the lanes.
 
-The predecessor held its instruction count constant across an earlier edit by inserting two
-`JUMPDEST` instructions as filler. That was worth doing — a change in instruction count renumbers
-every later index — but a `JUMPDEST` costs one gas each time control passes through it, and both of
-these sit in the message-schedule region, which runs forty-two times per vector.
+This artifact stages the low word twice (46 and 28) and makes the third copy with the pool's own
+copy instruction — `MCOPY(0xa ← 0x1c, 16)` next to the two `MCOPY`s that already fan out the
+high word — and then **stores the four diagonal words unmasked**, as it already did for words
+8, 9, 10, 12, 13, 14 and 15. Only words 4, 5, 6, 7 and 11 keep their masks: 11 because the
+terminal paired round reads its slot exactly, the others because their slots would otherwise lose
+the zero byte the proof needs (see below). The saving is the four dropped mask pairs and the
+two `JUMPDEST` padding bytes the predecessor carried inside the window, less the extra copy; the
+freed bytes are returned by widening push immediates, which is free in gas.
 
-Both fillers are removed here without changing the byte length and without moving any instruction
-start, by absorbing each into the immediate of the push in front of it:
+The 45 stores are unchanged in address, order and source word, so the packed lanes of every table
+slot are byte-for-byte those of the predecessor. What changes is the **garbage between the lanes**:
+the unmasked diagonal words leave message bytes in word bytes 0..9 and 14..27 of the slots that
+receive them (142 differing bytes per data block, none in a lane, none in the terminal slot at
+594). This is safe by the same argument the predecessor already relied on for its seven unmasked
+words: a packed round adds three 32-bit summands below the upper lane, so it cannot carry into
+that lane as long as the low half of the loaded word keeps at least one provably-zero byte among
+word bytes 14..26, and bits 176 and above are discarded by the lane mask. Every one of the 58
+paired reads has such a byte; the witness list is in the proof.
 
-    pc 719   PUSH2 0x021c ; JUMPDEST   ->   PUSH3 0x00021c
-    pc 769   PUSH2 0x03cc ; JUMPDEST   ->   PUSH3 0x0003cc
+## What it costs the proof
 
-A push's immediate is data. Widening it by one byte and prefixing a zero leaves the pushed value
-identical — 540 and 972, both memory offsets consumed by the `MSTORE` that follows — and consumes
-exactly the byte the `JUMPDEST` occupied. `PUSH2` and `PUSH3` cost the same three gas, so the entire
-saving is the two removed `JUMPDEST` executions: 42 + 42 = 84, which is the measured difference
-exactly.
+The clean, fully masked table image stays the mathematical reference; the proof now carries a
+second byte-level model of the artifact's actual builder and shows, by `decide`, that the two agree
+on both lanes of all 61 slots and on all 32 bytes of the terminal slot, and that the actual image
+has a zero byte at the witnessed position of every slot (`PoolShapeV2`, `PoolCertificatesV2`).
+`PoolFacts`, `PoolInvariant.ready` and `PoolReference.dataMemory` are re-pointed from the old
+actual image to the new one; nothing in the compression body changes.
 
-**Reachability.** A `JUMPDEST` may be removed only if nothing can jump to it. Neither offset, 722 or
-772, is the value of any push immediate anywhere in the image, and the two-byte big-endian encodings
-of both are absent from all 5,212 bytes, so no immediate could name either even by accident of
-alignment. Both checks were run against the finished image rather than against the one it was
-derived from. The artifact's jump targets were separately enumerated by execution rather than by
-scanning for values that happen to be valid instruction starts: twenty-one distinct offsets are
-observed across the corpus, the two dynamic jumps take only two of them, and neither removed offset
-appears.
+One new invariant: slot 2 (address 36) receives the raw word 0, whose byte 0 is the byte at
+address 0 of the incoming memory, and that byte is the slack byte the round reading slot 2 needs.
+The block context therefore records that byte 0 is zero; every data block restores it (slot 0
+receives the masked word 6), the pad-only block never touches it, the cold path's pad chain and
+length loop write at 36 and above, and memory starts zeroed. The builder templates and their
+symbolic run lemmas (`Pair13Endian.templateV2`, `Pair13PoolRaw.templateV2`, the writer chunk
+templates) are regenerated from the bytes; the writer's store list and every lemma downstream of it
+are untouched. Instruction indices from 369 up are renumbered in the site certificates.
 
-**Encoding cost.** The cost is the byte length plus, per 64-byte chunk, the number of distinct byte
-values, plus eight per chunk. Each site's chunk loses the value `0x5b` — one occurrence, the removed
-`JUMPDEST` — and gains two values it did not hold, the zero pad `0x00` and the `PUSH3` opcode
-`0x62`: net one per site. The chunk covering bytes 704 to 768 goes from 28 distinct values to 29,
-and the one covering 768 to 832 from 21 to 22. No other chunk changes.
+## Verification
+
+- `lake build Challenge.Ripemd160.Submission.Solution` passes; the final theorem
+  `Challenge.Ripemd160.Benchmark.candidate` depends only on `propext`, `Classical.choice` and
+  `Quot.sound`; no `sorry`, `native_decide` or added axiom appears anywhere in the change.
+- The artifact bytes are bound in `bytecode.hex`, `Bytes.lean`, and the instruction rows and
+  per-chunk byte lists of `Proofs/Bytecode/Artifact.lean`; all reproduce the same SHA-256.
+- Corpus at seeds 0, 1, 2: 0 wrong digests against `hashlib.new("ripemd160")`, delta −840 at
+  every seed; a further 2,005 adversarial inputs (saturated `0xff` words, zero words, every length
+  0..599 with all-`0xff` and all-`0x00` content, and inputs around and above 5,212 bytes) return
+  the reference digest.
+- The change was researched and the proof carried over by Claude Opus 5 (Claude Code harness).
+
+---
+
+**The text below was inherited with the base tree and describes EARLIER artifacts, not this one.
+Its provenance and attribution sections have not been modified.**
+
+# RIPEMD-160: message-schedule staging restructure with a last-use move, 663,258 gas in 5,212 bytes
+
+- SHA-256: `87b2202df9e69ecd0fc6c4d7cc1aa64c8bebac4989adccb2a978371b576c481a`.
+- Size: 5,212 bytes and 3,788 instructions, both unchanged from the artifact described in the
+  next section.
+- Literal-encoding cost: 8,184 against a ceiling of 8,194 — two lower than the predecessor's 8,186.
+- Scored gas: 663,258, a reduction of 168. The scoring tool reports 98 rows, status `ok` on all 98.
+
+## The change
+
+Every edited byte lies in the single window `[516, 840)`, which builds the per-block message
+schedule. Nothing outside that window differs, and because the instruction count is unchanged,
+every instruction start outside the window is bit-for-bit identical to the predecessor's.
+
+The window previously worked in three passes: stage the byte-swapped input words into scratch
+memory, double each word into its high lane at the point of use, then store the packed results
+into the schedule array. The restructure makes the doubling happen once, structurally, at staging
+time, so that the per-use doubling disappears.
+
+**A third staging store.** A third copy of the byte-swapped block is written at scratch byte 10,
+between the two stores already present at `0x2e` and `0x1c`. Words m0 through m4 then arrive
+already duplicated into both halves of each packed lane, at exactly the scratch addresses the
+packing section already loads from — 0, 4, 8 and 12. No load address changed.
+
+**Four masks.** Because the words now arrive doubled, each must be masked against the two-lane mask
+before it is combined, or one word's high lane contaminates its partner's low lane. Four masking
+pairs were inserted, for m0, m1, m2 and m3. Every proper subset of the four is clean on the
+benchmark corpus and produces wrong digests on saturated inputs where every message byte is `0xff`.
+All four are load-bearing and all four are kept.
+
+**One doubling deleted.** With the words pre-doubled, m3's explicit `DUP1; PUSH1 0x90; SHL; OR`
+is dead and is removed. Its four bytes pay for one of the masks above.
+
+**Three array stores deleted, one re-pointed.** The stores into schedule slots 43, 2 and 20 now
+write values already present at their destinations as a side effect of the packing, and are
+removed. A later store that wrote into slot 19 is re-pointed to slot 20 so it consumes the value
+the deleted slot-20 store used to consume. The schedule array after the window is identical word
+for word to the predecessor's, checked by dumping the full array from both images on every
+benchmark vector.
+
+**A move instead of a copy at the mask's last use.** The predecessor obtained one packed value by
+copying the two-lane mask, masking with the copy, then destroying the original with a swap and pop:
+`PUSH0; MLOAD; DUP15; AND; PUSH1 0x6e; MLOAD; SWAP15; POP`. That is replaced by a sequence that
+loads the partner first and consumes the mask in place: `PUSH1 0x6e; MLOAD; SWAP14; PUSH0; MLOAD;
+AND`. The final stack is identical slot for slot, and the sequence is five gas cheaper on each of
+its forty-two executions per vector.
+
+This substitution is valid only at the mask's **last** use. The staging restructure above gives the
+mask three subsequent uses, and a value that is still needed cannot be moved out of place. An
+earlier variant applied it at the first use, was clean across the entire benchmark corpus, and
+diverged on 208 adversarial inputs; it was discarded and is not what ships here.
+
+**Holding the length and the instruction count.** The deletions free bytes that had to be spent
+without changing the instruction count, since a count change renumbers every later index. They were
+spent on two `JUMPDEST` instructions added inside the window, costing two gas each per execution,
+and on widening push immediates, which is free in gas. The opcode census over `[500, 900)` against
+the predecessor records the whole balance: `AND` 9 to 13, `SHL` 1 to 0, `OR` 2 to 1, `MSTORE` 51 to
+49, `SWAP11` 1 to 0, `SWAP14` 0 to 1, `JUMPDEST` 2 to 4, `PUSH1` 38 to 32 and `PUSH2` 39 to 42,
+with the window's instruction count unchanged at 249 and the image's at 3,788. Both added
+`JUMPDEST` offsets, 722 and 772, were checked against every push
+immediate in the finished image: neither occurs as the value of any push, so neither is reachable
+by any jump or conditional jump and neither can become a branch target. The check was run on the
+finished image rather than on the image it was derived from.
+
+Both added `JUMPDEST` bytes fall in 64-byte chunks that already contained a `JUMPDEST`, so they
+add no distinct byte value to their chunk and cost nothing against the encoding ceiling. The net
+encoding movement is one distinct value added in the chunk covering `[512, 576)` and three removed
+in the chunk covering `[576, 640)`, which is why the total falls from 8,186 to 8,184.
 
 ---
 
