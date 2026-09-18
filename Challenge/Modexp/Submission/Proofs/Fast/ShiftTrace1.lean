@@ -22,6 +22,20 @@ precomputation.
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.Shift
 
+
+
+/-- The pointer step was `DUP1; PUSH1 0x1f; NOT; ADD` (`p + ~31`) and is now
+`PUSH1 0x20; DUP2; SUB` (`p - 32`).  Equal in the word, by wrapping subtraction. -/
+private theorem sub32_eq_add (p : EvmSemantics.UInt256) :
+    p - EvmSemantics.UInt256.ofNat 32 =
+      EvmSemantics.UInt256.ofNat
+        115792089237316195423570985008687907853269984665640564039457584007913129639904 + p := by
+  apply Challenge.EvmProof.Word.word_ext
+  have hp : p.toNat < 2 ^ 256 := p.val.isLt
+  simp only [Challenge.EvmProof.Word.word_toNat_sub, Challenge.EvmProof.Word.word_toNat_add,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+  omega
+
 attribute [local simp] CompactConstants.notThirtyOne
 
 open EvmSemantics
@@ -31,32 +45,32 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs
 
-@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2109 = 2600 := by
+@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2108 = 2600 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2115 = 2607 := by
+@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2114 = 2607 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2121 = 2614 := by
+@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2120 = 2614 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2127 = 2621 := by
+@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2126 = 2621 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2133 = 2628 := by
+@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2132 = 2628 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2139 = 2635 := by
+@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2138 = 2635 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 /-- The `DUP2` that ends `blk2982`; the E5 cache block starts at the next index (1872, pc 2531). -/
-@[simp] private theorem followupPC1871 : Artifact.submissionArtifact.instructionPC 2149 = 2648 := by
+@[simp] private theorem followupPC1871 : Artifact.submissionArtifact.instructionPC 2148 = 2648 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -247,7 +261,7 @@ theorem run_negBodyA (s : State) (mem : ByteArray) (p : UInt256) (n bsize esize 
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt, List.exchange]
+      Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt, List.exchange, sub32_eq_add]
 
 /-- `blk2896b` with a nonzero pointer: step the pointer and jump back to the loop head. -/
 theorem run_negTail (s : State) (m : ByteArray) (p c : UInt256) (n bsize esize msize : Nat)
@@ -271,7 +285,7 @@ theorem run_negTail (s : State) (m : ByteArray) (p c : UInt256) (n bsize esize m
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt, List.exchange]
+      Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt, List.exchange, sub32_eq_add]
 
 /-- `blk2896b` on the zero pointer: fall through into `NEG_DONE`. -/
 theorem run_negExit (s : State) (m : ByteArray) (p c : UInt256) (n bsize esize msize : Nat)
@@ -295,7 +309,7 @@ theorem run_negExit (s : State) (m : ByteArray) (p c : UInt256) (n bsize esize m
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt, List.exchange]
+      Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt, List.exchange, sub32_eq_add]
 
 /-- `blk2919`: drop the loop words, store `L`, `dodd`, `X`, `Bmod`. -/
 theorem run_negDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)

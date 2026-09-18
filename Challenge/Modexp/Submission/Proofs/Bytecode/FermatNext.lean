@@ -14,11 +14,10 @@ exponent and modulus words, keeps the exponent offset, and jumps straight to the
 window core at 1780 unless `exponent = modulus - 1`, in which case it falls
 through to the special-prime test at 45. -/
 def entryProgram : List Instr :=
-  [.op .JUMPDEST, .op (.Dup ⟨2, by decide⟩), .push 1 96, .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .op .CALLDATALOAD,
-   .push 1 32, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op .CALLDATALOAD,
-   .op (.Dup ⟨1, by decide⟩), .op .NOT, .op (.Dup ⟨1, by decide⟩), .op .ADD,
-   .push 2 827, .op .JUMPI]
+  [.op .JUMPDEST, .op (.Dup ⟨2, by decide⟩), .push 1 96, .op .ADD, .op (.Dup ⟨0, by decide⟩),
+   .op .CALLDATALOAD, .push 1 32, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op .CALLDATALOAD,
+   .op (.Dup ⟨1, by decide⟩), .op .NOT, .op (.Dup ⟨1, by decide⟩), .op .ADD, .push 2 827,
+   .op .JUMPI]
 
 /-- `modulus + ~exponent`, zero exactly when `exponent = modulus - 1` (mod 2^256). -/
 def fermatDiff (modulus exponent : UInt256) : UInt256 :=

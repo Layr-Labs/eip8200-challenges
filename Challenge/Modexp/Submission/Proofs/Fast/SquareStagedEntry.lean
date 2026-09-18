@@ -14,17 +14,16 @@ open Monpro CiosCached
 
 /-- Rebase the square's B pointer onto the already staged operand. -/
 def program : List Instr :=
-  [.op .JUMPDEST, .push 2 4179, .op (.Swap ⟨1, by decide⟩), .op .POP,
-   .push 2 2336, .op (.Swap ⟨2, by decide⟩), .op .POP,
-   .push 2 1856, .op .ADD]
+  [.op .JUMPDEST, .push 2 4179, .op (.Swap ⟨1, by decide⟩), .op .POP, .push 2 2336,
+   .op (.Swap ⟨2, by decide⟩), .op .POP, .push 2 1856, .op .ADD]
 
 def block : Block Artifact.submissionArtifact .Osaka 4480 program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3549 9 4480 program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3547 9 4480 program
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 4480).toNat = true :=
-  Artifact.isValidJumpDest_index 3549 (by rfl)
+  Artifact.isValidJumpDest_index 3547 (by rfl)
 
 theorem run_entry (s : State) (mem : ByteArray) (n : Nat)
     (ent inv m0 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1012)

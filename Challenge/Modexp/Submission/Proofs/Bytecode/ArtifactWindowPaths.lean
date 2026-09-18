@@ -112,12 +112,6 @@ straight-line regions, not one block reached three times.  Each body is the same
 401-instruction program at a different pc, and the two links between consecutive
 passes are the same 7-instruction program at a different pc.
 
-Each link is an eighteen-byte dead span followed by the five-instruction staging
-head.  The dead span is a single `PUSH16` whose sixteen-byte immediate swallows
-the whole span, then `POP`: the two links therefore have the SAME instruction
-count now, where they used to differ (17 and 16).  No pc moves -- the span is
-still eighteen bytes -- so only the instruction indices below change.
-
 | block | instruction index | count | pc |
 |-------|-------------------|-------|----|
 | body0 |  728 | 401 |  970 |

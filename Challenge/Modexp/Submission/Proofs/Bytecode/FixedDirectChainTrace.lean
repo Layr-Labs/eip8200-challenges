@@ -71,7 +71,7 @@ It lives here rather than in `FixedDirectPaths` so that adding it does not
 invalidate the four sibling trace modules that already import `Paths`. -/
 theorem jumpDestSqCommon :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3327 = true :=
-  Artifact.isValidJumpDest_index 2660 (by rfl)
+  Artifact.isValidJumpDest_index 2658 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_squareCall (s : State) (memory : ByteArray)

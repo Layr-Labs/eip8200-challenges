@@ -28,22 +28,21 @@ theorem activeWords_fix (s : State) (off sz : Nat) (hsz : sz ≠ 0)
 
 
 def checkProgram : List Instr :=
-  [.op .JUMPDEST, .push 0 0, .op .MLOAD, .push 2 2112, .op .MLOAD,
-   .op .LT, .push 2 2080, .op .MLOAD, .op .LT,
-   .push 2 4456, .op .JUMPI]
+  [.op .JUMPDEST, .push 0 0, .op .MLOAD, .push 2 2112, .op .MLOAD, .op .LT, .push 2 2080,
+   .op .MLOAD, .op .LT, .push 2 4456, .op .JUMPI]
 def jumpProgram : List Instr := [.push 2 4244, .op .JUMP]
 def copyProgram : List Instr :=
-  [.op .JUMPDEST, .push 2 2112, .push 2 2688, .op .MLOAD,
-   .op (.Swap ⟨1, by decide⟩), .op .MCOPY, .op .JUMP]
+  [.op .JUMPDEST, .push 2 2112, .push 2 2688, .op .MLOAD, .op (.Swap ⟨1, by decide⟩), .op .MCOPY,
+   .op .JUMP]
 
 def checkBlock : Block Artifact.submissionArtifact .Osaka 4077 checkProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3266 11 4077 checkProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3264 11 4077 checkProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def jumpBlock : Block Artifact.submissionArtifact .Osaka 4094 jumpProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3277 2 4094 jumpProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3275 2 4094 jumpProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def copyBlock : Block Artifact.submissionArtifact .Osaka 4456 copyProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3533 7 4456 copyProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3531 7 4456 copyProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def atState (s : State) (mem : ByteArray) (pc : Nat) (dst ret : UInt256)

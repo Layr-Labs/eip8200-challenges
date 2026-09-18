@@ -43,8 +43,7 @@ def steps_three {artifact : ProgramArtifact} {fork : Fork}
       (WindowTwentyOneLoop.run_entry template base modulus exponent rest hrest)
   have t0 : GasSteps (WindowTwentyOneLoop.entryState template base modulus exponent rest)
       (WindowTwentyOneLoop.headState template (UInt256.ofNat 970) base modulus exponent 0 rest) :=
-    Block.stepsX paths.trampoline
-      (s := WindowTwentyOneLoop.entryState template base modulus exponent rest)
+    paths.trampoline.steps (s := WindowTwentyOneLoop.entryState template base modulus exponent rest)
       (env.transfer rfl rfl) rfl
       (WindowTwentyOneLoop.run_trampoline template base modulus exponent rest hrest)
   have b0 : GasSteps (WindowTwentyOneLoop.headState template (UInt256.ofNat 970) base modulus exponent 0 rest)

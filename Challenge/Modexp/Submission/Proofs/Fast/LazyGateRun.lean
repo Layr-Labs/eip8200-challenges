@@ -47,8 +47,8 @@ theorem run_gate (s : State) (mem : ByteArray) (dst ret : UInt256) (rest : List 
 #print axioms run_gate
 
 def copyProgram : List Instr :=
-  [.op .JUMPDEST, .push 2 2112, .push 2 2688, .op .MLOAD,
-   .op (.Swap ⟨1, by decide⟩), .op .MCOPY, .op .JUMP]
+  [.op .JUMPDEST, .push 2 2112, .push 2 2688, .op .MLOAD, .op (.Swap ⟨1, by decide⟩), .op .MCOPY,
+   .op .JUMP]
 
 def returnedState (s : State) (mem : ByteArray) (ret : UInt256)
     (rest : List UInt256) : State :=
