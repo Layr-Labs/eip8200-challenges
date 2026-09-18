@@ -31,32 +31,32 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs
 
-@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2141 = 2600 := by
+@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2109 = 2600 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2147 = 2607 := by
+@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2115 = 2607 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2153 = 2614 := by
+@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2121 = 2614 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2159 = 2621 := by
+@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2127 = 2621 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2165 = 2628 := by
+@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2133 = 2628 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2171 = 2635 := by
+@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2139 = 2635 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 /-- The `DUP2` that ends `blk2982`; the E5 cache block starts at the next index (1872, pc 2531). -/
-@[simp] private theorem followupPC1871 : Artifact.submissionArtifact.instructionPC 2181 = 2648 := by
+@[simp] private theorem followupPC1871 : Artifact.submissionArtifact.instructionPC 2149 = 2648 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -126,15 +126,15 @@ pushes itself, so the outer frame crosses unchanged and only `pc` moves.
 The block this replaces (`blk2889`, the `R1` seeding block) is still located where
 it always was; what changed is that nothing reaches it.  Its lemma was not merely
 stale, it was FALSE -- `missState` is at pc 800 and `blk2889` is not. -/
-theorem pcTramp578 : Artifact.submissionArtifact.instructionPC 578 = 800 := by
+theorem pcTramp578 : Artifact.submissionArtifact.instructionPC 565 = 800 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-theorem pcTramp579 : Artifact.submissionArtifact.instructionPC 579 = 801 := by
+theorem pcTramp579 : Artifact.submissionArtifact.instructionPC 566 = 801 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-theorem pcTramp580 : Artifact.submissionArtifact.instructionPC 580 = 803 := by
+theorem pcTramp580 : Artifact.submissionArtifact.instructionPC 567 = 803 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 

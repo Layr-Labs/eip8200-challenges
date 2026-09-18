@@ -40,6 +40,20 @@ theorem phaseSwitch_copyY (mem : ByteArray) (n value : Nat) (hn : 1 ≤ n) (_hn8
 theorem phaseSwitch_inv (mem : ByteArray) (n bsize mm minv : Nat) (hn8 : n ≤ 8)
     (inv : StepInv mem n bsize mm minv) :
     StepInv (phaseSwitch mem n) n bsize mm minv where
+  pre := by
+    obtain ⟨p1, p2, p3, p4, p5⟩ := inv.pre
+    have hz := phaseSwitch_readWord mem n 0 (Or.inl (by omega)) (Or.inl (by omega))
+    refine ⟨?_, ?_, ?_, ?_, ?_⟩
+    · rw [phaseSwitch_readWord mem n PRE_L (Or.inl (by simp only [PRE_L]; omega))
+        (Or.inr (by simp only [PRE_L]; omega)), hz]; exact p1
+    · rw [phaseSwitch_readWord mem n PRE_DODD (Or.inl (by simp only [PRE_DODD]; omega))
+        (Or.inr (by simp only [PRE_DODD]; omega)), hz]; exact p2
+    · rw [phaseSwitch_readWord mem n PRE_X (Or.inl (by simp only [PRE_X]; omega))
+        (Or.inr (by simp only [PRE_X]; omega)), hz]; exact p3
+    · rw [phaseSwitch_readWord mem n PRE_BMOD (Or.inl (by simp only [PRE_BMOD]; omega))
+        (Or.inr (by simp only [PRE_BMOD]; omega)), hz]; exact p4
+    · rw [phaseSwitch_readWord mem n PRE_DINV (Or.inl (by simp only [PRE_DINV]; omega))
+        (Or.inr (by simp only [PRE_DINV]; omega)), hz]; exact p5
   frame := {
     s32 := (phaseSwitch_readWord mem n 2688 (Or.inr (by omega)) (Or.inr (by omega))).trans inv.frame.s32
     minvW := (phaseSwitch_readWord mem n 2720 (Or.inr (by omega)) (Or.inr (by omega))).trans inv.frame.minvW
@@ -71,12 +85,12 @@ theorem two_phase_values (mem : ByteArray) (n bsize mm minv r k : Nat)
   dsimp only
   have invFirst := stepInv_stepMems (by omega) hn8 inv (2 * k)
   have firstBase := stepMems_represents mem n mm r hn hn8 hm hmm htop inv.modulus inv.neg
-    hbase hr (2 * k)
+    hbase hr inv.pre (2 * k)
   have invBetween := phaseSwitch_inv _ n bsize mm minv hn8 invFirst
   have baseBetween := phaseSwitch_preserves _ n 2112 n _ (Or.inr (by omega))
     (Or.inl (by omega)) firstBase
   have hsecond := stepMems_represents _ n mm _ hn hn8 hm hmm htop invBetween.modulus
-    invBetween.neg baseBetween (Nat.mod_lt _ hm) k
+    invBetween.neg baseBetween (Nat.mod_lt _ hm) invBetween.pre k
   have hvalue : r * Limbs.radix ^ (2 * k) % mm * Limbs.radix ^ k % mm =
       r * Limbs.radix ^ (3 * k) % mm := by
     rw [Nat.mod_mul_mod, Nat.mul_assoc, ← Nat.pow_add]
@@ -103,6 +117,18 @@ theorem flagSet_preserves (mem : ByteArray) (flag : UInt256) (ptr cnt value : Na
 theorem flagSet_inv (mem : ByteArray) (flag : UInt256) (n bsize mm minv : Nat)
     (hn8 : n ≤ 8) (inv : StepInv mem n bsize mm minv) :
     StepInv (flagSet mem flag) n bsize mm minv where
+  pre := by
+    obtain ⟨p1, p2, p3, p4, p5⟩ := inv.pre
+    have hz := flagSet_readWord mem flag 0 (Or.inl (by omega))
+    refine ⟨?_, ?_, ?_, ?_, ?_⟩
+    · rw [flagSet_readWord mem flag PRE_L (Or.inl (by simp only [PRE_L]; omega)), hz]; exact p1
+    · rw [flagSet_readWord mem flag PRE_DODD (Or.inl (by simp only [PRE_DODD]; omega)), hz]
+      exact p2
+    · rw [flagSet_readWord mem flag PRE_X (Or.inl (by simp only [PRE_X]; omega)), hz]; exact p3
+    · rw [flagSet_readWord mem flag PRE_BMOD (Or.inl (by simp only [PRE_BMOD]; omega)), hz]
+      exact p4
+    · rw [flagSet_readWord mem flag PRE_DINV (Or.inl (by simp only [PRE_DINV]; omega)), hz]
+      exact p5
   frame := {
     s32 := (flagSet_readWord mem flag 2688 (Or.inr (by omega))).trans inv.frame.s32
     minvW := (flagSet_readWord mem flag 2720 (Or.inr (by omega))).trans inv.frame.minvW
@@ -275,7 +301,7 @@ theorem ordinary_output_facts (mem input : ByteArray) (n bsize mm minv : Nat)
   have htwo := R1.radix_pow_lt_two_mul (by omega) hodd hmod htop
   have hbaseFinal := stepMems_represents (flagSet (m2Of mem input n) (UInt256.ofNat 0))
     n mm _ hn hn8 hm (Model.fastRepresents_lt hmod) htwo invPrep.modulus invPrep.neg
-    hbasePrep (Nat.mod_lt _ hm) n
+    hbasePrep (Nat.mod_lt _ hm) invPrep.pre n
   have hacc2 := m2_acc_value mem input n mm hn hn8 hm hodd hmod htop
   have haccPrep := flagSet_preserves _ (UInt256.ofNat 0) 256 n _ (Or.inl (by omega)) hacc2
   have haccFinal := represents_acc_after_steps _ n mm _ n (by omega) hn8 haccPrep
