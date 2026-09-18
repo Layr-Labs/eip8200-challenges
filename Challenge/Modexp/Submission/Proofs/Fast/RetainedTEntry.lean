@@ -21,26 +21,26 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
 open Challenge.EvmProof.Word
 
 def entryProgram : List Instr :=
-  [.op .JUMPDEST, .push 0 0, .op .MLOAD, .push 2 2112, .op .MLOAD, .op .LT,
-   .push 2 5249, .op .JUMPI]
+  [.op .JUMPDEST, .push 0 0, .op .MLOAD, .push 2 2112, .op .MLOAD, .op .LT, .push 2 5249,
+   .op .JUMPI]
 /-- The fall-through push of the retained destination, ahead of the subtraction entry 4501. -/
 def pushProgram : List Instr := [.push 2 2112]
 def tailProgram : List Instr := [.op .JUMPDEST, .op .JUMP]
 
 def entryBlock : Block Artifact.submissionArtifact .Osaka 4229 entryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3374 8 4229 entryProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3372 8 4229 entryProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def pushBlock : Block Artifact.submissionArtifact .Osaka 4241 pushProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3382 1 4241 pushProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3380 1 4241 pushProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def tailBlock : Block Artifact.submissionArtifact .Osaka 5249 tailProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4211 2 5249 tailProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4209 2 5249 tailProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest4486 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4229 = true :=
-  Artifact.isValidJumpDest_index 3374 (by rfl)
+  Artifact.isValidJumpDest_index 3372 (by rfl)
 theorem jumpDest5326 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5249 = true :=
-  Artifact.isValidJumpDest_index 4211 (by rfl)
+  Artifact.isValidJumpDest_index 4209 (by rfl)
 
 /-- The comparison word the entry block tests. -/
 def skipWord (mem : ByteArray) : UInt256 :=

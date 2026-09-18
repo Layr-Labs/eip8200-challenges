@@ -23,9 +23,8 @@ def phaseGuardProgram : List Instr :=
 def phaseExitHeadProgram : List Instr := [.op .JUMPDEST, .op .POP]
 
 def phaseSwitchProgram : List Instr :=
-  [.push 0 0, .push 2 1760, .op .MSTORE,
-   .op (.Dup ⟨0, by decide⟩), .push 2 2112, .push 2 256, .op .MCOPY,
-   .op (.Dup ⟨1, by decide⟩), .push 1 2, .op .SHR, .push 2 2691, .op .JUMP]
+  [.push 0 0, .push 2 1760, .op .MSTORE, .op (.Dup ⟨0, by decide⟩), .push 2 2112, .push 2 256,
+   .op .MCOPY, .op (.Dup ⟨1, by decide⟩), .push 1 2, .op .SHR, .push 2 2691, .op .JUMP]
 
 /-- The flag is cleared before MCOPY reads the retained accumulator at 2112. -/
 def phaseSwitchMemory (mem : ByteArray) (n : Nat) : ByteArray :=

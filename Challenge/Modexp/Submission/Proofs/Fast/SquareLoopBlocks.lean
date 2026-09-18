@@ -79,8 +79,8 @@ theorem frameAt_eq_nxJdState (s : State) (mem : ByteArray) (n : Nat)
 back, and call the CSUB directly while rounds remain. -/
 def sqExitProgram : List Instr :=
   [.op .JUMPDEST, .push 2 4153, .push 2 2368, .push 2 2624, .op .MLOAD,
-   .op (.Dup ⟨8, by decide⟩), .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .push 2 2624, .op .MSTORE, .push 2 4447, .op .JUMPI]
+   .op (.Dup ⟨8, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩), .push 2 2624, .op .MSTORE,
+   .push 2 4447, .op .JUMPI]
 
 /-- `last`: drop the unused call pair, then call the CSUB as a subroutine returning to the
 post-loop block. -/
@@ -91,37 +91,35 @@ def lastProgram : List Instr :=
 row-zero entry.  The accumulator is no longer cleared here: the new first row writes
 every word of `T` before reading it. -/
 def againProgram : List Instr :=
-  [.push 2 2688, .op .MLOAD,
-   .op .ADD, .push 2 288, .op (.Dup ⟨7, by decide⟩), .op .SUB,
-   .op (.Swap ⟨3, by decide⟩), .op .POP,
-   .push 2 5003, .op .JUMP]
+  [.push 2 2688, .op .MLOAD, .op .ADD, .push 2 288, .op (.Dup ⟨7, by decide⟩), .op .SUB,
+   .op (.Swap ⟨3, by decide⟩), .op .POP, .push 2 5003, .op .JUMP]
 
 /-! ## Located blocks -/
 
 def sqExitBlock : Block Artifact.submissionArtifact .Osaka 4119 sqExitProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3293 12 4119 sqExitProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3291 12 4119 sqExitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def lastBlock : Block Artifact.submissionArtifact .Osaka 4141 lastProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3305 6 4141 lastProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3303 6 4141 lastProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def againBlock : Block Artifact.submissionArtifact .Osaka 4163 againProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3317 10 4163 againProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3315 10 4163 againProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-! ## Jump destinations of the loop -/
 
 theorem jumpDest4683 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4077 = true :=
-  Artifact.isValidJumpDest_index 3266 (by rfl)
+  Artifact.isValidJumpDest_index 3264 (by rfl)
 
 /-! ## The counter word -/
 
 /-- The memory after `sq_exit`'s `MSTORE`: the counter word 2624 holds `c`. -/
 theorem jumpDestLazy :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4447 = true :=
-  Artifact.isValidJumpDest_index 3528 (by rfl)
+  Artifact.isValidJumpDest_index 3526 (by rfl)
 
 def countMem (mem : ByteArray) (c : Nat) : ByteArray :=
   MachineState.writeBytes mem (Data.Bytes.natToBytesPadded c 32) 2624

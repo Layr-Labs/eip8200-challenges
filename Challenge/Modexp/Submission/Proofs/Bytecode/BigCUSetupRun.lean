@@ -13,73 +13,30 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.BigC
 
 /-- Exact U raw interval [236,271). -/
 def setupProgram : List Instr :=
-  [.op .JUMPDEST,
-   .push 2 9248,
-   .op .CALLDATASIZE,
-   .push 0 0,
-   .op .CALLDATACOPY,
-   .push 1 64,
-   .op .CALLDATALOAD,
-   .push 1 32,
-   .op .CALLDATALOAD,
-   .push 0 0,
-   .op .CALLDATALOAD,
-   .op (.Dup ⟨2, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
-   .op .ADD,
-   .push 1 96,
-   .op .ADD,
-   .push 2 1024,
-   .op .CALLDATACOPY,
-   .op (.Dup ⟨0, by decide⟩),
-   .push 1 96,
-   .push 2 5120,
-   .op .CALLDATACOPY,
-   .push 0 0,
-   .op (.Dup ⟨3, by decide⟩)]
+  [.op .JUMPDEST, .push 2 9248, .op .CALLDATASIZE, .push 0 0, .op .CALLDATACOPY, .push 1 64,
+   .op .CALLDATALOAD, .push 1 32, .op .CALLDATALOAD, .push 0 0, .op .CALLDATALOAD,
+   .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .ADD,
+   .push 1 96, .op .ADD, .push 2 1024, .op .CALLDATACOPY, .op (.Dup ⟨0, by decide⟩), .push 1 96,
+   .push 2 5120, .op .CALLDATACOPY, .push 0 0, .op (.Dup ⟨3, by decide⟩)]
 
 /-- Exact U raw interval [271,290). -/
 def zLoopProgram : List Instr :=
-  [.op .JUMPDEST,
-   .push 0 0,
-   .op .NOT,
-   .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .push 2 1024,
-   .op .ADD,
-   .op .MLOAD,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Swap ⟨1, by decide⟩),
-   .op .OR,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
-   .push 2 273,
-   .op .JUMPI]
+  [.op .JUMPDEST, .push 0 0, .op .NOT, .op .ADD, .op (.Dup ⟨0, by decide⟩), .push 2 1024,
+   .op .ADD, .op .MLOAD, .op (.Swap ⟨0, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .OR,
+   .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩), .push 2 273, .op .JUMPI]
 
 /-- Exact U raw interval [290,295). -/
 def zExitProgram : List Instr :=
-  [.op .POP,
-   .push 2 301,
-   .op .JUMPI]
+  [.op .POP, .push 2 301, .op .JUMPI]
 
 /-- Exact U raw interval [295,299). -/
 def zeroRetProgram : List Instr :=
-  [.op .JUMPDEST,
-   .op (.Dup ⟨2, by decide⟩),
-   .push 0 0,
-   .op .RETURN]
+  [.op .JUMPDEST, .op (.Dup ⟨2, by decide⟩), .push 0 0, .op .RETURN]
 
 /-- Exact U raw interval [299,310). -/
 def nzProgram : List Instr :=
-  [.op .JUMPDEST,
-   .push 1 1,
-   .op (.Dup ⟨3, by decide⟩),
-   .push 2 3071,
-   .op .ADD,
-   .op .MSTORE8,
-   .op .POP,
-   .push 0 0]
+  [.op .JUMPDEST, .push 1 1, .op (.Dup ⟨3, by decide⟩), .push 2 3071, .op .ADD, .op .MSTORE8,
+   .op .POP, .push 0 0]
 
 structure SetupJumps (code : ByteArray) : Prop where
   j236 : Decode.isValidJumpDest code 238 = true
