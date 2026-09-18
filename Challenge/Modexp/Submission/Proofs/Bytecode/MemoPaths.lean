@@ -24,60 +24,60 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.Dispatch
 /-- The recognition prefix: eighteen instructions ending in the miss branch. -/
 def guardPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 4199 .JUMPDEST,
-   opAt 4200 (.Dup ⟨2, by decide⟩),
-   pushAt 4201 1 1,
-   opAt 4202 .SUB,
-   pushAt 4203 5 137506062208,
-   pushAt 4204 1 68,
-   opAt 4205 .CALLDATALOAD,
-   opAt 4206 .SUB,
-   opAt 4207 .OR,
-   pushAt 4208 1 100,
-   opAt 4209 .CALLDATALOAD,
-   opAt 4210 .OR,
-   opAt 4211 (.Dup ⟨2, by decide⟩),
-   pushAt 4212 1 2,
-   opAt 4213 .SUB,
-   opAt 4214 .OR,
-   pushAt 4215 2 570,
-   opAt 4216 .JUMPI]
+  [opAt 4213 .JUMPDEST,
+   opAt 4214 (.Dup ⟨2, by decide⟩),
+   pushAt 4215 1 1,
+   opAt 4216 .SUB,
+   pushAt 4217 5 137506062208,
+   pushAt 4218 1 68,
+   opAt 4219 .CALLDATALOAD,
+   opAt 4220 .SUB,
+   opAt 4221 .OR,
+   pushAt 4222 1 100,
+   opAt 4223 .CALLDATALOAD,
+   opAt 4224 .OR,
+   opAt 4225 (.Dup ⟨2, by decide⟩),
+   pushAt 4226 1 2,
+   opAt 4227 .SUB,
+   opAt 4228 .OR,
+   pushAt 4229 2 570,
+   opAt 4230 .JUMPI]
 
 /-- On a match the recogniser jumps to the appended answer block. -/
 def hitJumpPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 4217 (.Dup ⟨0, by decide⟩),
-   pushAt 4218 2 5428,
-   opAt 4219 .JUMPI]
+  [opAt 4231 (.Dup ⟨0, by decide⟩),
+   pushAt 4232 2 5433,
+   opAt 4233 .JUMPI]
 
 def hitPrePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 4339 .JUMPDEST,
-   pushAt 4340 2 65535,
-   pushAt 4341 1 3]
+  [opAt 4352 .JUMPDEST,
+   pushAt 4353 2 65535,
+   pushAt 4354 1 3]
 
 def hitPostPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 4343 0 0,
-   opAt 4344 .MSTORE,
-   pushAt 4345 0 0,
-   opAt 4346 .RETURN]
+  [pushAt 4356 0 0,
+   opAt 4357 .MSTORE,
+   pushAt 4358 0 0,
+   opAt 4359 .RETURN]
 
 /-- The `EXP`, kept as a located witness so its opcode and fork availability are
 discharged from the artifact like every other one. -/
 def expAt : Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
-  opAt 4342 .EXP
+  opAt 4355 .EXP
 
-@[simp] theorem guardPCs (i : Nat) (hi : 4199 ≤ i) (hii : i ≤ 4219) :
+@[simp] theorem guardPCs (i : Nat) (hi : 4213 ≤ i) (hii : i ≤ 4233) :
     Artifact.submissionArtifact.instructionPC i =
-      ([5251,5252,5253,5255,5256,5262,5264,5265,5266,5267,5269,5270,5271,5272,
-        5274,5275,5276,5279,5280,5281,5284] : List Nat)[i - 4199]! := by
+      ([5261,5262,5263,5265,5266,5272,5274,5275,5276,5277,5279,5280,5281,5282,
+        5284,5285,5286,5289,5290,5291,5294] : List Nat)[i - 4213]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
-@[simp] theorem answerPCs (i : Nat) (hi : 4339 ≤ i) (hii : i ≤ 4346) :
+@[simp] theorem answerPCs (i : Nat) (hi : 4352 ≤ i) (hii : i ≤ 4359) :
     Artifact.submissionArtifact.instructionPC i =
-      ([5428,5429,5432,5434,5435,5436,5437,5438] : List Nat)[i - 4339]! := by
+      ([5433,5434,5437,5439,5440,5441,5442,5443] : List Nat)[i - 4352]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 

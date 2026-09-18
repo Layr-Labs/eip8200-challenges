@@ -105,7 +105,7 @@ theorem run_pointersJump (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Na
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2816)
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions pointersJumpProgram (clearedSetupState s mem hd pb n dst ret rest) =
-      some (outState s (mpZeroed s mem n) pb n 0 hd (l1Target n) dst ret rest) := by
+      some (outState s (mpZeroed s mem n) pb n 0 hd (l1Target n) (l2Target n) dst ret rest) := by
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega
