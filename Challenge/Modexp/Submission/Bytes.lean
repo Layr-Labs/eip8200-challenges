@@ -20,7 +20,7 @@ private abbrev submissionChunk1 : ByteArray := ByteArray.mk #[
 ]
 
 private abbrev submissionChunk2 : ByteArray := ByteArray.mk #[
-  0x50, 0x50, 0x50, 0x61, 0x02, 0x57, 0x56, 0x5b, 0x85, 0x35, 0x83, 0x60,
+  0x61, 0x15, 0x3f, 0x57, 0x5f, 0x5f, 0xf3, 0x5b, 0x85, 0x35, 0x83, 0x60,
   0x20, 0x03, 0x60, 0x03, 0x1b, 0x1c, 0x80, 0x60, 0x99, 0x57, 0x83, 0x5f,
   0xf3, 0x5b, 0x5f, 0x5f, 0x5b, 0x83, 0x81, 0x10, 0x15, 0x60, 0xba, 0x57,
   0x82, 0x81, 0x88, 0x01, 0x35, 0x5f, 0x1a, 0x84, 0x61, 0x01, 0x00, 0x85,
@@ -763,14 +763,18 @@ private abbrev submissionChunk84 : ByteArray := ByteArray.mk #[
   0x08, 0x20, 0x51, 0x01, 0x80, 0x61, 0x08, 0x20, 0x52, 0x10, 0x90, 0x50,
   0x88, 0x8b, 0x51, 0x02, 0x87, 0x80, 0x82, 0x8d, 0x09, 0x8d, 0x51, 0x08,
   0x61, 0x0f, 0x5a, 0x56, 0x5b, 0x61, 0xff, 0xff, 0x60, 0x03, 0x0a, 0x5f,
-  0x52, 0x5f, 0xf3
+  0x52, 0x5f, 0xf3, 0x5b
 ]
 
 
-def submissionBytes : ByteArray :=
-  submissionChunk0 ++ submissionChunk1 ++ submissionChunk2 ++ submissionChunk3 ++ submissionChunk4 ++ submissionChunk5 ++ submissionChunk6 ++ submissionChunk7 ++ submissionChunk8 ++ submissionChunk9 ++ submissionChunk10 ++ submissionChunk11 ++ submissionChunk12 ++ submissionChunk13 ++ submissionChunk14 ++ submissionChunk15 ++ submissionChunk16 ++ submissionChunk17 ++ submissionChunk18 ++ submissionChunk19 ++ submissionChunk20 ++ submissionChunk21 ++ submissionChunk22 ++ submissionChunk23 ++ submissionChunk24 ++ submissionChunk25 ++ submissionChunk26 ++ submissionChunk27 ++ submissionChunk28 ++ submissionChunk29 ++ submissionChunk30 ++ submissionChunk31 ++ submissionChunk32 ++ submissionChunk33 ++ submissionChunk34 ++ submissionChunk35 ++ submissionChunk36 ++ submissionChunk37 ++ submissionChunk38 ++ submissionChunk39 ++ submissionChunk40 ++ submissionChunk41 ++ submissionChunk42 ++ submissionChunk43 ++ submissionChunk44 ++ submissionChunk45 ++ submissionChunk46 ++ submissionChunk47 ++ submissionChunk48 ++ submissionChunk49 ++ submissionChunk50 ++ submissionChunk51 ++ submissionChunk52 ++ submissionChunk53 ++ submissionChunk54 ++ submissionChunk55 ++ submissionChunk56 ++ submissionChunk57 ++ submissionChunk58 ++ submissionChunk59 ++ submissionChunk60 ++ submissionChunk61 ++ submissionChunk62 ++ submissionChunk63 ++ submissionChunk64 ++ submissionChunk65 ++ submissionChunk66 ++ submissionChunk67 ++ submissionChunk68 ++ submissionChunk69 ++ submissionChunk70 ++ submissionChunk71 ++ submissionChunk72 ++ submissionChunk73 ++ submissionChunk74 ++ submissionChunk75 ++ submissionChunk76 ++ submissionChunk77 ++ submissionChunk78 ++ submissionChunk79 ++ submissionChunk80 ++ submissionChunk81 ++ submissionChunk82 ++ submissionChunk83 ++ submissionChunk84
+private abbrev submissionChunk85 : ByteArray := ByteArray.mk #[
+  0x50, 0x50, 0x61, 0x02, 0x57, 0x56
+]
 
-@[simp] theorem submissionBytes_size : submissionBytes.size = 5439 := by
+def submissionBytes : ByteArray :=
+  submissionChunk0 ++ submissionChunk1 ++ submissionChunk2 ++ submissionChunk3 ++ submissionChunk4 ++ submissionChunk5 ++ submissionChunk6 ++ submissionChunk7 ++ submissionChunk8 ++ submissionChunk9 ++ submissionChunk10 ++ submissionChunk11 ++ submissionChunk12 ++ submissionChunk13 ++ submissionChunk14 ++ submissionChunk15 ++ submissionChunk16 ++ submissionChunk17 ++ submissionChunk18 ++ submissionChunk19 ++ submissionChunk20 ++ submissionChunk21 ++ submissionChunk22 ++ submissionChunk23 ++ submissionChunk24 ++ submissionChunk25 ++ submissionChunk26 ++ submissionChunk27 ++ submissionChunk28 ++ submissionChunk29 ++ submissionChunk30 ++ submissionChunk31 ++ submissionChunk32 ++ submissionChunk33 ++ submissionChunk34 ++ submissionChunk35 ++ submissionChunk36 ++ submissionChunk37 ++ submissionChunk38 ++ submissionChunk39 ++ submissionChunk40 ++ submissionChunk41 ++ submissionChunk42 ++ submissionChunk43 ++ submissionChunk44 ++ submissionChunk45 ++ submissionChunk46 ++ submissionChunk47 ++ submissionChunk48 ++ submissionChunk49 ++ submissionChunk50 ++ submissionChunk51 ++ submissionChunk52 ++ submissionChunk53 ++ submissionChunk54 ++ submissionChunk55 ++ submissionChunk56 ++ submissionChunk57 ++ submissionChunk58 ++ submissionChunk59 ++ submissionChunk60 ++ submissionChunk61 ++ submissionChunk62 ++ submissionChunk63 ++ submissionChunk64 ++ submissionChunk65 ++ submissionChunk66 ++ submissionChunk67 ++ submissionChunk68 ++ submissionChunk69 ++ submissionChunk70 ++ submissionChunk71 ++ submissionChunk72 ++ submissionChunk73 ++ submissionChunk74 ++ submissionChunk75 ++ submissionChunk76 ++ submissionChunk77 ++ submissionChunk78 ++ submissionChunk79 ++ submissionChunk80 ++ submissionChunk81 ++ submissionChunk82 ++ submissionChunk83 ++ submissionChunk84 ++ submissionChunk85
+
+@[simp] theorem submissionBytes_size : submissionBytes.size = 5446 := by
   rfl
 
 end Challenge.Modexp

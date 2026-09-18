@@ -49,19 +49,22 @@ def handledOf (route : WindowRoute.Route)
     (bigBailHandled : BigBailHandled)
     (input : ByteArray) (hvalid : ValidInput input) :
     WindowBodyCorrect.Handled input := by
-  by_cases hmatch : WindowTwentyOneInput.Matches input
-  · exact EarlyWordCorrect.hit input hmatch
-  · by_cases hfast : Setup.FastPath input
-    · rcases fastHandled input hvalid hfast with
-        ⟨final, ⟨fastTrace⟩, hdone, hresult⟩
-      exact ⟨final, ⟨(EarlyWordCorrect.legacy input hmatch).trans fastTrace⟩,
-        hdone, hresult⟩
-    · rcases Setup.gasSteps_fallback input hvalid hfast with
-        ⟨_, steps⟩ | ⟨h32, hupper, steps⟩
-      · exact WindowBodyCorrect.handledOf route input hvalid
-          ((EarlyWordCorrect.legacy input hmatch).trans steps)
-      · exact bigBailHandled input hvalid h32 hupper
-          ((EarlyWordCorrect.legacy input hmatch).trans steps)
+  by_cases hzero : modulusSize input = 0
+  · exact EarlyWordCorrect.zero input hzero
+  ·
+    by_cases hmatch : WindowTwentyOneInput.Matches input
+    · exact EarlyWordCorrect.hit input hmatch
+    · by_cases hfast : Setup.FastPath input
+      · rcases fastHandled input hvalid hfast with
+          ⟨final, ⟨fastTrace⟩, hdone, hresult⟩
+        exact ⟨final, ⟨(EarlyWordCorrect.legacy input hmatch (Nat.pos_of_ne_zero hzero)).trans fastTrace⟩,
+          hdone, hresult⟩
+      · rcases Setup.gasSteps_fallback input hvalid hfast with
+          ⟨_, steps⟩ | ⟨h32, hupper, steps⟩
+        · exact WindowBodyCorrect.handledOf route input hvalid
+            ((EarlyWordCorrect.legacy input hmatch (Nat.pos_of_ne_zero hzero)).trans steps)
+        · exact bigBailHandled input hvalid h32 hupper
+            ((EarlyWordCorrect.legacy input hmatch (Nat.pos_of_ne_zero hzero)).trans steps)
 
 private noncomputable def chosenFinal (route : WindowRoute.Route)
     (fastHandled : ∀ input : ByteArray, ValidInput input →

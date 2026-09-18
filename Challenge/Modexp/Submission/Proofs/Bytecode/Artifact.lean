@@ -95,11 +95,11 @@ def submissionInstructions : List Instr :=
  .push 1 25,
  .op .JUMP,
  .op .JUMPDEST,
- .op .POP,
- .op .POP,
- .op .POP,
- .push 2 599,
- .op .JUMP,
+ .push 2 5439,
+ .op .JUMPI,
+ .push 0 0,
+ .push 0 0,
+ .op .RETURN,
  .op .JUMPDEST,
  .op (.Dup { idx := 5 }),
  .op .CALLDATALOAD,
@@ -4368,9 +4368,14 @@ def submissionInstructions : List Instr :=
  .push 0 0,
  .op .MSTORE,
  .push 0 0,
- .op .RETURN]
+ .op .RETURN,
+ .op .JUMPDEST,
+ .op .POP,
+ .op .POP,
+ .push 2 599,
+ .op .JUMP]
 
-theorem submissionInstructions_count : submissionInstructions.length = 4347 := by
+theorem submissionInstructions_count : submissionInstructions.length = 4352 := by
   decide
 
 theorem assemble_submissionInstructions :

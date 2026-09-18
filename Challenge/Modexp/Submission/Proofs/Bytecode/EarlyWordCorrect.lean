@@ -37,15 +37,27 @@ private def environment (input : ByteArray) :
   running := rfl
   noPrecompile := deployAddress_not_precompile
 
-/-- Every non-matching header reaches the unchanged legacy entry exactly. -/
-def legacy (input : ByteArray) (hmiss : ¬ WindowTwentyOneInput.Matches input) :
+/-- Every positive-length non-matching header reaches the unchanged legacy entry. -/
+def legacy (input : ByteArray) (hmiss : ¬ WindowTwentyOneInput.Matches input)
+    (hpositive : 0 < modulusSize input) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (Main.trampolineState input 599) := by
   have tail := EarlyWordGas.steps_miss Artifact.earlyWordPaths
-    (initialState submissionBytecode input 0) (environment input) input rfl hmiss
+    (initialState submissionBytecode input 0) (environment input) input rfl hmiss hpositive
   change Challenge.EvmProof.GasSteps (Main.trampolineState input 0)
     (Main.trampolineState input 599) at tail
   exact (Main.gasSteps_entryHop input).trans tail
+
+/-- The zero-width result is complete independently of base/exponent values. -/
+def zero (input : ByteArray) (hzero : modulusSize input = 0) : Handled input := by
+  let final := EarlyWordProgram.zeroFinal (initialState submissionBytecode input 0) input
+  have trace := EarlyWordGas.steps_zero Artifact.earlyWordPaths
+    (initialState submissionBytecode input 0) (environment input) input rfl hzero
+  change Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0) final at trace
+  refine ⟨final, ⟨trace⟩, ?_, ?_⟩
+  · rfl
+  · change ExecutionResult.returned ByteArray.empty = .returned (spec input)
+    simp [spec, hzero]
 
 /-- Every matching header has a complete initial-state correctness trace. -/
 def hit (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
