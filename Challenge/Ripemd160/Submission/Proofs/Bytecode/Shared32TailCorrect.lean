@@ -18,9 +18,6 @@ def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
   have hframe : PaddingTrace.initialFrame input ++ rho = entryFrame ++ rho := by rw [entry_frame_eq input h32]
   have hactive : s.activeWords = UInt256.ofNat 34 := copied_active input h32
   have hsize : (frame ++ rho).length ≤ 900 := by simp only [List.length_append]; change 15 + rho.length ≤ 900; omega
-  have hgap : PairStoreGap.GapClear s.memory := by
-    rw [show s.memory = copiedMemory input from copied_memory input]
-    exact copiedMemory_gapClear input
   have g0 := PaddingTail.gasSteps_prefix input hfit rho hcap
   have g1 : GasSteps (StackTail.append (PaddingTrace.padFramed input) rho)
       (atState s 4761 (entryFrame ++ rho)) := by
@@ -44,8 +41,7 @@ def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
     (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 32) rho (by omega) hactive
-    (Nat.lt_of_le_of_lt (Nat.mod_le _ _) (copied_low input)) hgap
-  have hm : sparseMemory s.memory = PairedScheduleMemory.writeWord s.memory 28 highWord := by
+  have hm : sparseMemory s.memory = PairedScheduleMemory.writeWord s.memory 162 highWord := by
     rw [show s.memory = copiedMemory input from copied_memory input]
     exact copiedMemory_sparse input (by omega)
   rw [hm] at g4

@@ -171,15 +171,15 @@ theorem run_actual (s : State) (pc : UInt256) (rho : List UInt256)
 
 /-! ### The C2 pool block
 
-Four sixteen-byte copies (`28→10`, `44→62`, `616→598`, `632→650`) give every schedule word its
-two lanes eighteen bytes apart, with a two-byte zero hole inside every load's gap; only words 6
-and 11 keep the two-lane mask. -/
+Four sixteen-byte copies (`162→144`, `178→196`, `252→234`, `268→286`) give every schedule word
+its two lanes eighteen bytes apart, with a two-byte zero hole inside every load's gap; only word
+11 keeps the two-lane mask. -/
 
 def poolAddrV2 : Nat → Nat
-  | 0 => 588  | 1 => 592  | 2 => 596  | 3 => 600
-  | 4 => 622  | 5 => 626  | 6 => 630  | 7 => 634
-  | 8 => 0    | 9 => 4    | 10 => 8   | 11 => 12
-  | 12 => 34  | 13 => 38  | 14 => 42  | _ => 46
+  | 0 => 224  | 1 => 228  | 2 => 232  | 3 => 236
+  | 4 => 258  | 5 => 262  | 6 => 266  | 7 => 270
+  | 8 => 134  | 9 => 138  | 10 => 142 | 11 => 146
+  | 12 => 168 | 13 => 172 | 14 => 176 | _ => 180
 
 def rawLoadV2 (memory : ByteArray) (i : Nat) : UInt256 :=
   MachineState.readWord memory (poolAddrV2 i)
@@ -188,10 +188,10 @@ def copyV2 (memory : ByteArray) (src dst : Nat) : ByteArray :=
   MachineState.writeBytes memory (MachineState.readPadded memory src 16) dst
 
 def copiedV2 (memory : ByteArray) : ByteArray :=
-  copyV2 (copyV2 (copyV2 (copyV2 memory 28 10) 44 62) 616 598) 632 650
+  copyV2 (copyV2 (copyV2 (copyV2 memory 162 144) 178 196) 252 234) 268 286
 
 def poolWordV2 (memory : ByteArray) (i : Nat) : UInt256 :=
-  if i ∈ [6, 11] then UInt256.land poolMask (rawLoadV2 memory i)
+  if i ∈ [11] then UInt256.land poolMask (rawLoadV2 memory i)
   else rawLoadV2 memory i
 
 def templateV2 : List Instr :=
@@ -199,54 +199,52 @@ def templateV2 : List Instr :=
     .op (.Dup ⟨0, by decide⟩),
     .op (.Dup ⟨0, by decide⟩),
     .op (.Dup ⟨0, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 28),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 10),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 162),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .MCOPY,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 44),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 62),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 178),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 196),
     .op .MCOPY,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 616),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 598),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 252),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 234),
     .op .MCOPY,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 632),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 650),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 268),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 286),
     .op .MCOPY,
     .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 34),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 168),
     .op .MLOAD,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 630),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 266),
     .op .MLOAD,
-    .op (.Dup ⟨2, by decide⟩),
-    .op .AND,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 634),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 270),
     .op .MLOAD,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 8),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 142),
     .op .MLOAD,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 38),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 172),
     .op .MLOAD,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 596),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 232),
     .op .MLOAD,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 622),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 258),
     .op .MLOAD,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 592),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 228),
     .op .MLOAD,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 46),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 180),
     .op .MLOAD,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 626),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 262),
     .op .MLOAD,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 42),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 176),
     .op .MLOAD,
     .op (.Swap ⟨10, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 12),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 146),
     .op .MLOAD,
     .op .AND,
-    .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 134),
     .op .MLOAD,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 600),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 236),
     .op .MLOAD,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 588),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 224),
     .op .MLOAD,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 4),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 138),
     .op .MLOAD ]
 
 theorem run_actualV2_of_small (s : State) (pc : UInt256) (rho : List UInt256)

@@ -117,7 +117,7 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
       (Word.ofUInt32 h.h4) (Word.ofUInt32 h.h3) (Word.ofUInt32 h.h2) (Word.ofUInt32 h.h1)
       (Word.ofUInt32 h.h0) off limit tail (messagePointer i)
       (by simp only [List.length_cons] at hs; omega) hr
-      (messagePointer_lower i) hb hq1 hq0 ctx.lowClear ctx.gapClear hcode hfork hnp
+      (messagePointer_lower i) hb hq1 hq0 hcode hfork hnp
     simpa only [LoopCompletionControl.blockPC, DriverTrace.blockOffset, if_neg hh, off, frame, selectedWords,
       PersistentMaskEndian.stk, Pair13Endian.stk, List.cons_append, List.nil_append] using gn
 

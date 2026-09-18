@@ -35,10 +35,7 @@ noncomputable opaque gasSteps_normal (input : ByteArray) (hfit : CalldataFits in
     (Paired144WordRound.fusedCoefficientWord 0 3) (Paired144WordRound.fusedCoefficientWord 0 2)
     (Word.ofUInt32 h.h4) (Word.ofUInt32 h.h3) (Word.ofUInt32 h.h2) (Word.ofUInt32 h.h1)
     (Word.ofUInt32 h.h0) off (Padding.paddedWord input) [] (messagePointer i) (by decide) hr
-    (messagePointer_lower i) hb hq1 hq0
-    (by change (MachineState.readWord (finalMemory input i) 0).toNat % 2 ^ 144<2^32
-        rw [finalMemory_lowClear input hfit hpositive i (by omega)];decide)
-    (finalMemory_gapClear input hfit hpositive i (by omega)) hc hf hnp
+    (messagePointer_lower i) hb hq1 hq0 hc hf hnp
   exact gn.cast
     (by simp only [h,off,frame,maskRho,PersistentMaskEndian.stk,Pair13Endian.stk,List.cons_append,List.nil_append])
     (by simp only [h,off,tableState,ColdHighReady.tableMemory,paddedState,frame,maskRho,

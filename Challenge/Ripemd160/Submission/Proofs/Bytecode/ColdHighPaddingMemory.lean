@@ -86,57 +86,17 @@ theorem lengthMemory_read0 (input memory : ByteArray) (hfit : CalldataFits input
   intro a ha
   simpa only [Nat.zero_add] using lengthMemory_below input memory hfit i hi a (by omega)
 
-/-- The pad block keeps the first word clean BELOW BIT 144 -- not zero.  Bytes 10..13 carry
-the dual lane the writer's slot-0 store leaves once the mask at pc 873 is gone, and the length
-loop writes at 1056 and above, so the incoming weakened invariant survives verbatim. -/
-theorem finalMemory_lowClear (input : ByteArray) (hfit : CalldataFits input)
-    (hpositive : 0 < input.size) (i : Nat) (hi : i ≤ DriverTrace.blockCount input) :
-    (MachineState.readWord (finalMemory input i) 0).toNat % 2 ^ 144 = 0 := by
-  unfold finalMemory
-  rw [lengthMemory_read0 input _ hfit _ (PaddingTrace.lengthStop_le input)]
-  exact ColdHighMemory.padRealChain_read0_mod (states input i).memory (UInt256.ofNat input.size)
-    (states_context input hfit hpositive i hi).lowClear
-
-theorem finalMemory_gapClear (input : ByteArray) (hfit : CalldataFits input)
-    (hpositive : 0 < input.size) (i : Nat) (hi : i ≤ DriverTrace.blockCount input) :
-    PairStoreGap.GapClear (finalMemory input i) := by
-  have h := ColdHighMemory.padRealChain_gapClear (states input i).memory (UInt256.ofNat input.size)
-    (size_word_lt input hfit) (states_context input hfit hpositive i hi).lowClear
-  intro j hj k hk hk'
-  have hjb : j≤57 := by
-    simp only [PairStoreGap.lowerPairSlots,List.mem_cons,List.not_mem_nil,or_false] at hj
-    omega
-  exact (lengthMemory_below input _ hfit _ (PaddingTrace.lengthStop_le input) _ (by omega)).trans
-    (h j hj k hk hk')
-
-theorem finalMemory_extraClear (input : ByteArray) (hfit : CalldataFits input) (i : Nat) :
-    PoolInvariant.ExtraClear (finalMemory input i) := by
+/-- The actual image's zero set holds after the slow padding path: the pad chain's six
+stores are 18-aligned and below `2 ^ 112`, `zeroSuffix` clears from byte 28, and the length
+loop writes at 1056 and above.  No hypothesis on the incoming memory. -/
+theorem finalMemory_clear (input : ByteArray) (hfit : CalldataFits input) (i : Nat) :
+    PoolShapeV2.ClearV2 (finalMemory input i) := by
   intro a ha
-  have hb : a < 1056 := by simp only [List.mem_cons, List.not_mem_nil, or_false] at ha; omega
+  have hb := (PoolShapeV2.zeroAddressesV2_band a ha).2.1
   unfold finalMemory
   rw [lengthMemory_below input _ hfit _ (PaddingTrace.lengthStop_le input) a hb]
-  simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
-  rcases ha with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
-  all_goals simp only [StaggerTablePad.padRealChain, StaggerTablePad.lowChainOver,
-    PairedScheduleMemory.writeWord, MachineState.writeBytes_getElem?_getD,
-    YulEvmCompiler.BytesLemmas.natToBytesPadded_size, StaggerTableSparse.zeroSuffix_getD]
-  all_goals norm_num
-  all_goals rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD _ _ _ (by decide)]; rfl
-
-/-- Byte 0 survives the pad chain (all six low-block stores are at 36 and above, `zeroSuffix`
-clears from 28) and the length loop (which writes at 1056 and above). -/
-theorem finalMemory_zero0 (input : ByteArray) (hfit : CalldataFits input)
-    (hpositive : 0 < input.size) (i : Nat) (hi : i ≤ DriverTrace.blockCount input) :
-    (finalMemory input i)[0]?.getD 0 = 0 := by
-  unfold finalMemory
-  rw [lengthMemory_below input _ hfit _ (PaddingTrace.lengthStop_le input) 0 (by decide)]
-  simp only [StaggerTablePad.padRealChain, StaggerTablePad.lowChainOver,
-    PairedScheduleMemory.writeWord, MachineState.writeBytes_getElem?_getD,
-    YulEvmCompiler.BytesLemmas.natToBytesPadded_size, StaggerTableSparse.zeroSuffix_getD]
-  norm_num
-  exact (states_context input hfit hpositive i hi).zero0
+  exact PoolPadInvariant.padRealChain_clear _ _ (size_word_lt input hfit) a ha
 
 #print axioms finalMemory_blockAt
-#print axioms finalMemory_lowClear
-#print axioms finalMemory_gapClear
+#print axioms finalMemory_clear
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdHighPaddingMemory

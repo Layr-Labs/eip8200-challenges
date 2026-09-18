@@ -72,6 +72,30 @@ theorem scratchMemory_gapClear (memory : ByteArray) (low high : UInt256)
   apply writeWord_preserves_gapClear _ _ _ (by decide)
   exact writeWord_preserves_gapClear _ _ _ (by decide) hg
 
+/-! ### Band bytes
+
+A byte `a` with `14 ≤ a % 18` is covered by at most one 18-aligned 32-byte store, and there it
+is one of the store's bytes 14..17 -- zero for any value below `2 ^ 112`. -/
+
+theorem writeWord_band (memory : ByteArray) (address : Nat) (value : UInt256)
+    (hs : address % 18 = 0) (hv : value.toNat < 2 ^ 112) (a : Nat) (hk : 14 ≤ a % 18)
+    (hz : memory[a]?.getD 0 = 0) :
+    (writeWord memory address value)[a]?.getD 0 = 0 := by
+  simp only [writeWord, MachineState.writeBytes_getElem?_getD,
+    YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
+  split
+  · exact encoded_prefix_zero _ hv _ (by omega)
+  · exact hz
+
+theorem table_band (memory : ByteArray) (words : Nat → UInt256)
+    (hw : ∀ i, i < 16 → (words i).toNat < 2 ^ 112) (a : Nat) (h18 : 18 ≤ a) (ha : a < 1098)
+    (hk : 14 ≤ a % 18) :
+    (resultMemory memory words)[a]?.getD 0 = 0 := by
+  have he : a = 18 * (a / 18) + a % 18 := (Nat.div_add_mod a 18).symm
+  change (storeDescending memory (tableWords words) 0 61)[a]?.getD 0 = 0
+  rw [he, getD_pair _ _ _ _ _ _ (by omega) (by omega) (by omega), if_neg (by omega)]
+  exact encoded_prefix_zero _ (hw _ (slots_lt _ (by omega))) _ (by omega)
+
 #print axioms resultMemory_gapClear
 #print axioms scratchMemory_gapClear
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PairStoreGap

@@ -80,9 +80,6 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32)
   have hframe : PaddingTrace.initialFrame input = entryFrame := entry_frame_eq input h32
   have hactive : s.activeWords = UInt256.ofNat 34 := copied_active input h32
   have hcap : frame.length ≤ 900 := by decide
-  have hgap : PairStoreGap.GapClear s.memory := by
-    rw [show s.memory = copiedMemory input from copied_memory input]
-    exact copiedMemory_gapClear input
   have g0 := (Main.gasSteps_initialize input entryPrefix).trans
     ((PaddingTrace.gasSteps_enterPad input).trans ((PaddingTrace.gasSteps_paddedLength input).trans
       ((PaddingTrace.gasSteps_lengthCopy input hfit).trans (PaddingTrace.gasSteps_push input))))
@@ -104,8 +101,7 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
     (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 32) [] (by decide) hactive
-    (Nat.lt_of_le_of_lt (Nat.mod_le _ _) (copied_low input)) hgap
-  have hm : sparseMemory s.memory = PairedScheduleMemory.writeWord s.memory 28 highWord := by
+  have hm : sparseMemory s.memory = PairedScheduleMemory.writeWord s.memory 162 highWord := by
     rw [show s.memory = copiedMemory input from copied_memory input]
     exact copiedMemory_sparse input (by omega)
   rw [hm] at g4
@@ -118,6 +114,7 @@ theorem table_ready (input : ByteArray) (h32 : input.size = 32) :
       (fun k => (CompressionCorrect.schedule (Padding.paddedMessage input) 0)[k]!) := by
   apply Shared32Table.tableMemory_ready _
     (PoolInvariant.clear_of_zero _ (Shared32Scratch.copiedMemory_zero input))
+    (PoolInvariant.clearV2_of_zero _ (Shared32Scratch.copiedMemory_zero input))
   exact StaggerMessage.ready_dual0 (copiedMemory input) (Shared32Table.words (copiedMemory input)) _
     (Shared32Table.words_clean (copiedMemory input) 6 (by decide) (by decide))
     (Shared32Spec.ready_spec input h32)

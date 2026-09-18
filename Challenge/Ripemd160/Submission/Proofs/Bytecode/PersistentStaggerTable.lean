@@ -32,24 +32,11 @@ structure Context (s : State) (input : ByteArray) (next : Nat) : Prop where
       (Padding.paddedMessage input) (DriverTrace.blockOffset i)
   separated : ∀ i, i < DriverTrace.blockCount input → ∀ k, k < 16 →
     1056 + i * 64 ≤ (Schedule.loadOffsetWord (DriverTrace.messageOffsetWord i) k).toNat
-  /-- The first memory word is a clean 32-bit word BELOW BIT 144, so the unmasked loads of
-  schedule words 1 and 2 see zero bytes at 14..27.  Bytes 10..13 may carry the dual lane the
-  writer's slot-0 store leaves behind once the mask at pc 873 is gone; that lane lives at
-  bits 144..175 and is erased again by the store eighteen bytes below every slot that
-  carries it. -/
-  lowClear : (MachineState.readWord s.memory 0).toNat % 2 ^ 144 < 2 ^ 32
-  /-- Four skipped-store gap bytes for each of the thirteen equal table pairs. -/
-  gapClear : GapClear s.memory
-  extraClear : PoolInvariant.ExtraClear s.memory
-  /-- Byte 0 is zero: the raw (unmasked) schedule word 0 carries it into byte 18 of table
-  slot 2, the slack byte `PoolCertificatesV2.slack_sources` witnesses for round 25.  Every
-  data block restores it (slot 0 receives the masked word 6) and the pad-only block never
-  touches it. -/
-  zero0 : s.memory[0]?.getD 0 = 0
-
-theorem Context.clear (s : State) (input : ByteArray) (i : Nat) (ctx : Context s input i) :
-    PoolShape.Clear s.memory :=
-  PoolInvariant.clear_of_parts s.memory ctx.lowClear ctx.gapClear ctx.extraClear ctx.zero0
+  /-- The actual image's own zero set (`PoolShapeV2.zeroAddressesV2`): sixty band bytes
+between 50 and 1044, each `18 * j + k` with `14 ≤ k < 18`.  Nothing below byte 50 is
+constrained: the first memory word may carry whatever the raw schedule word 6 drags into
+table slot 0. -/
+  clear : PoolShapeV2.ClearV2 s.memory
 
 def blockWords (input : ByteArray) (i : Nat) : Nat → UInt32 :=
   fun k => (CompressionCorrect.schedule (Padding.paddedMessage input)
@@ -186,12 +173,8 @@ theorem ready (s : State) (input : ByteArray) (i : Nat)
   · rw [scheduledState_hit s i hh]
     change StaggerMessage.Ready (StaggerTablePad.padRealResult s.memory
       (UInt256.ofNat s.executionEnv.calldata.size)) (blockWords input i)
-    -- The real table differs from the model only below byte 14, and `Ready` reads the table
-    -- only from byte 14 up plus the low 32 bits at address 0.
-    have hagree := StaggerTablePad.padRealResult_agree s.memory
-      (UInt256.ofNat s.executionEnv.calldata.size) ctx.lowClear
-    refine StaggerMessage.ready_congr_high _ _ _ hagree.2
-      (StaggerTablePad.read_zero_low32_of_agree hagree) ?_
+    -- The real table agrees with the model from byte 28, and slot 1 is carried onto `Safe`.
+    apply PoolPadInvariant.pad_ready
     rw [ctx.calldata] at hh ⊢
     rw [StaggerTablePad.resultMemory_eq_table _ _ (size_word_lt input hfit)]
     have hj (k : Nat) := padJunk_lt input hfit k
@@ -218,24 +201,19 @@ theorem ready (s : State) (input : ByteArray) (i : Nat)
           fun h15 => by simp only [padJunk, if_neg h14, if_neg h15]⟩)
   · rw [scheduledState_miss s i hh]
     rw [ctx.calldata] at hh
-    apply PoolInvariant.ready _ _ _ (ctx.clear s input i)
-    refine PoolInvariant.ready_of_gap _ _ _
-      (fun q hq => PoolReference.reference_data_getD _ _ ctx.lowClear ctx.gapClear q hq) ?_ ?_
-    · rw [PoolReference.reference_data_getD _ _ ctx.lowClear ctx.gapClear 54 (by omega)]
-      exact Pair13Memory.resultMemory0_byte54 _ _
-        (fun k _ => Nat.lt_trans (PairedScheduleData.extractedWord_bound _ _ k) (by norm_num))
-    · refine StaggerMessage.ready_dual0 s.memory
-        (PairedScheduleData.extractedWord s.memory (messagePointer i)) (blockWords input i)
-        (PairedScheduleData.extractedWord_bound _ _ 6) ?_
-      exact StaggerMessage.ready_junk s.memory
-        (PairedScheduleData.extractedWord s.memory (messagePointer i)) (blockWords input i)
-        (fun _ => 0)
-        (fun k hk => by
-          rw [extracted_words s input i hfit hi ctx hh k hk, Word.ofUInt32_toNat]
-          omega)
-        (fun k _ => by norm_num)
-        (fun k _ _ => by norm_num)
-        (fun k _ _ _ => by norm_num)
+    apply PoolReference.data_ready _ _ (messagePointer_lower i) ctx.clear
+    refine StaggerMessage.ready_dual0 (PoolInvariant.sanitize s.memory)
+      (PairedScheduleData.extractedWord s.memory (messagePointer i)) (blockWords input i)
+      (PairedScheduleData.extractedWord_bound _ _ 6) ?_
+    exact StaggerMessage.ready_junk (PoolInvariant.sanitize s.memory)
+      (PairedScheduleData.extractedWord s.memory (messagePointer i)) (blockWords input i)
+      (fun _ => 0)
+      (fun k hk => by
+        rw [extracted_words s input i hfit hi ctx hh k hk, Word.ofUInt32_toNat]
+        omega)
+      (fun k _ => by norm_num)
+      (fun k _ _ => by norm_num)
+      (fun k _ _ _ => by norm_num)
         (fun k _ _ => ⟨by norm_num, fun _ => rfl⟩)
 
 theorem scheduled_word_above (s : State) (i address : Nat) (ha : 1120 ≤ address) :
@@ -274,55 +252,23 @@ theorem dirtyWords_bound (memory : ByteArray) (p i : Nat) :
   have hj := hs.2.1
   omega
 
-/-- Preservation belongs to the existing scheduled-state model, so one generic
-lemma supplies all thirteen gap ranges after both ordinary and pad-only blocks. -/
-theorem scheduled_gapClear (s : State) (input : ByteArray) (i : Nat)
+/-- The zero set survives both kinds of block: the data block by `clear_sources`, the
+pad-only block because every one of its stores is 18-aligned and below `2 ^ 112`. -/
+theorem scheduled_clear (s : State) (input : ByteArray) (i : Nat)
     (hfit : CalldataFits input) (ctx : Context s input i) :
-    GapClear (scheduledState s i).memory := by
+    PoolShapeV2.ClearV2 (scheduledState s i).memory := by
   by_cases hh : s.executionEnv.calldata.size = DriverTrace.blockOffset i
   · rw [scheduledState_hit s i hh]
-    change GapClear (StaggerTablePad.padRealResult s.memory
-      (UInt256.ofNat s.executionEnv.calldata.size))
-    have hmodel : GapClear (StaggerTablePad.resultMemory s.memory
-        (UInt256.ofNat s.executionEnv.calldata.size)) := by
-      rw [ctx.calldata, StaggerTablePad.resultMemory_eq_table _ _ (size_word_lt input hfit)]
-      exact resultMemory_gapClear s.memory _
-        (fun k _ => StaggerTablePad.padWordsDirty_bound _ (size_word_lt input hfit) k)
-    -- every gap byte is `18 * j + k` with `8 ≤ j` and `14 ≤ k`, i.e. at least 158
-    have hagree := StaggerTablePad.padRealResult_agree s.memory
-      (UInt256.ofNat s.executionEnv.calldata.size) ctx.lowClear
-    intro j hj k hk hk'
-    rw [hagree.2 (18 * j + k) (by have := lowerPairSlots_bounds j hj; omega)]
-    exact hmodel j hj k hk hk'
+    exact PoolPadInvariant.padRealResult_clear _ _
+      (by rw [ctx.calldata]; exact size_word_lt input hfit)
   · rw [scheduledState_miss s i hh]
-    exact PoolInvariant.clear_gap _ (PoolFacts.result_clear _ _ _ (ctx.clear s input i))
-
-theorem scheduled_extraClear (s : State) (input : ByteArray) (i : Nat)
-    (hfit : CalldataFits input) (ctx : Context s input i) :
-    PoolInvariant.ExtraClear (scheduledState s i).memory := by
-  by_cases hh : s.executionEnv.calldata.size = DriverTrace.blockOffset i
-  · rw [scheduledState_hit s i hh]
-    exact PoolPadInvariant.extra_clear _ _
-      (by rw [ctx.calldata]; exact size_word_lt input hfit) ctx.lowClear
-  · rw [scheduledState_miss s i hh]
-    exact PoolInvariant.clear_extra _ (PoolFacts.result_clear _ _ _ (ctx.clear s input i))
-
-theorem scheduled_zero0 (s : State) (input : ByteArray) (i : Nat)
-    (ctx : Context s input i) :
-    (scheduledState s i).memory[0]?.getD 0 = 0 := by
-  by_cases hh : s.executionEnv.calldata.size = DriverTrace.blockOffset i
-  · rw [scheduledState_hit s i hh]
-    change (StaggerTablePad.padRealResult s.memory _)[0]?.getD 0 = 0
-    rw [StaggerTablePad.padRealResult_zero0]
-    exact ctx.zero0
-  · rw [scheduledState_miss s i hh]
-    exact PoolInvariant.clear_zero0 _ (PoolFacts.result_clear _ _ _ (ctx.clear s input i))
+    exact PoolFacts.result_clear _ _ _ ctx.clear
 
 theorem Context.scheduled (s : State) (input : ByteArray) (i : Nat)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input)
     (ctx : Context s input i) : Context (scheduledState s i) input (i + 1) := by
   have hm := scheduled_active_mono s input i hfit hi
-  refine ⟨?_, ctx.active.trans hm, ?_, ?_, ctx.separated, ?_, scheduled_gapClear s input i hfit ctx, scheduled_extraClear s input i hfit ctx, scheduled_zero0 s input i ctx⟩
+  refine ⟨?_, ctx.active.trans hm, ?_, ?_, ctx.separated, scheduled_clear s input i hfit ctx⟩
   · rw [scheduled_env]; exact ctx.calldata
   · intro j hj hne; exact (ctx.allocated j hj hne).trans hm
   · intro j hnext hj hne k hk
@@ -331,23 +277,6 @@ theorem Context.scheduled (s : State) (input : ByteArray) (i : Nat)
     unfold ScheduleCorrect.expectedWord Schedule.readLEWord
     rw [hw]
     exact ctx.messageBlock j (by omega) hj hne k hk
-  · by_cases hh : s.executionEnv.calldata.size = DriverTrace.blockOffset i
-    · rw [scheduledState_hit s i hh]
-      change (MachineState.readWord (StaggerTablePad.padRealResult s.memory _) 0).toNat % 2 ^ 144 < _
-      -- `% 2 ^ 144` is bytes 14..31, which `AgreeFrom14` fixes; address 0 itself is not readable
-      -- through `AgreeFrom14.readWord`.
-      rw [StaggerTablePad.read_zero_mod_of_agree (StaggerTablePad.padRealResult_agree s.memory
-        (UInt256.ofNat s.executionEnv.calldata.size) ctx.lowClear)]
-      refine Nat.lt_of_le_of_lt (Nat.mod_le _ _) ?_
-      rw [ctx.calldata] at hh ⊢
-      rw [StaggerTablePad.resultMemory_eq_table _ _ (size_word_lt input hfit),
-        StaggerTableLayout.read_zero,
-        StaggerTablePad.padWordsDirty_ne _ StaggerTableLayout.slots[0]! (by decide) (by decide),
-        pad_words input i hfit hh _ (StaggerTableLayout.slots_lt 0 (by decide)),
-        Word.ofUInt32_toNat]
-      exact (blockWords input i _).toBitVec.isLt
-    · rw [scheduledState_miss s i hh]
-      exact PoolInvariant.clear_low _ (PoolFacts.result_clear _ _ _ (ctx.clear s input i))
 
 theorem calldata_lt_uint256 (input : ByteArray) (hfit : CalldataFits input) :
     input.size < 2^256 := by

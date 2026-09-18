@@ -295,18 +295,18 @@ theorem exact_bytes : assembleBytes template = [97,4,64,140,1,81,128,96,8,28,129
 theorem end_pc : pcAfter (UInt256.ofNat 472) template = UInt256.ofNat 558 := by decide
 #print axioms run_template
 
-/-! ### The C2 staging layout
+/-! ### The single-store staging layout
 
-The high word is stored once at `28` and the low word once at `616`; the pool block's four
+The high word is stored once at `162` and the low word once at `252`; the pool block's four
 sixteen-byte copies then duplicate each half's quartets eighteen bytes away. -/
 
-def highStoreV2 : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 28), .op .MSTORE ]
+def highStoreV2 : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 162), .op .MSTORE ]
 
-def lowStoreV2 : List Instr := [ .push ⟨2, by decide⟩ (UInt256.ofNat 616), .op .MSTORE ]
+def lowStoreV2 : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 252), .op .MSTORE ]
 
 /-- The scratch image the C2 endian stage leaves behind. -/
 def scratchV2 (memory : ByteArray) (low high : UInt256) : ByteArray :=
-  writeWord (writeWord memory 28 high) 616 low
+  writeWord (writeWord memory 162 high) 252 low
 
 theorem run_highStoreV2 (s : State) (pc value : UInt256) (rest : List UInt256)
     (hstack : rest.length < 1022) (hrun : s.halt = .Running)
@@ -315,12 +315,12 @@ theorem run_highStoreV2 (s : State) (pc value : UInt256) (rest : List UInt256)
       some { s with
         pc := pcAfter pc highStoreV2
         stack := rest
-        memory := writeWord s.memory 28 value} := by
+        memory := writeWord s.memory 162 value} := by
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hcap : rest.length + 1 + 1 < 1024 := by omega
-  have haddr : (UInt256.ofNat 28).toNat = 28 := by decide
-  have hact : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 28 32) = s.activeWords :=
-    Stagger144Active.word_active_preserved s.activeWords 28 hactive (by decide)
+  have haddr : (UInt256.ofNat 162).toNat = 162 := by decide
+  have hact : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 162 32) = s.activeWords :=
+    Stagger144Active.word_active_preserved s.activeWords 162 hactive (by decide)
   simp [highStoreV2, writeWord, runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, hrun, hcap1, hcap,
     UInt256.succ, Instr.size, State.activeWordsAfterUInt256, haddr, hact]
   all_goals rfl
@@ -332,12 +332,12 @@ theorem run_lowStoreV2_of_small (s : State) (pc value : UInt256) (rest : List UI
       some { s with
         pc := pcAfter pc lowStoreV2
         stack := rest
-        memory := writeWord s.memory 616 value} := by
+        memory := writeWord s.memory 252 value} := by
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hcap : rest.length + 1 + 1 < 1024 := by omega
-  have haddr : (UInt256.ofNat 616).toNat = 616 := by decide
-  have hact : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 616 32) = s.activeWords :=
-    Stagger144Active.word_active_preserved_of_small s.activeWords 616 hactive (by decide)
+  have haddr : (UInt256.ofNat 252).toNat = 252 := by decide
+  have hact : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 252 32) = s.activeWords :=
+    Stagger144Active.word_active_preserved_of_small s.activeWords 252 hactive (by decide)
   simp [lowStoreV2, writeWord, runInstrSeq, Challenge.EvmProof.DataStepper.runInstr, pcAfter, hrun,
     hcap1, hcap, UInt256.succ, Instr.size, State.activeWordsAfterUInt256, haddr, hact,
     List.getElem?_cons_zero]
@@ -350,7 +350,7 @@ theorem run_lowStoreV2 (s : State) (pc value : UInt256) (rest : List UInt256)
       some { s with
         pc := pcAfter pc lowStoreV2
         stack := rest
-        memory := writeWord s.memory 616 value} := by
+        memory := writeWord s.memory 252 value} := by
   exact run_lowStoreV2_of_small s pc value rest hstack hrun (by omega)
 
 def templateV2 : List Instr :=
@@ -375,7 +375,7 @@ theorem run_templateV2 (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off li
   let a1 := activeAfterWord s.activeWords (UInt256.ofNat (p + 32))
   have ha1 : 35 ≤ a1.toNat := active_ge35 s.activeWords p hp hbound
   let s1 : State := {s with activeWords := a1}
-  let s2 : State := {s1 with memory := writeWord s.memory 28 high}
+  let s2 : State := {s1 with memory := writeWord s.memory 162 high}
   let F := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho
   have hF : F.length ≤ 1005 := by simp [F, stk]; omega
   have h1 := run_load s pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho 1088 (p + 32) hstack hrun hq1 (by omega)
@@ -412,7 +412,7 @@ theorem run_templateV2 (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off li
   rw [hloaded]
   exact h
 
-theorem end_pcV2 : pcAfter (UInt256.ofNat 472) templateV2 = UInt256.ofNat 548 := by decide
+theorem end_pcV2 : pcAfter (UInt256.ofNat 472) templateV2 = UInt256.ofNat 547 := by decide
 #print axioms run_templateV2
 #print axioms exact_bytes
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13Endian

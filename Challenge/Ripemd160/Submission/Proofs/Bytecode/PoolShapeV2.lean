@@ -6,11 +6,12 @@ set_option maxHeartbeats 8000000
 set_option linter.unusedSimpArgs false
 
 /-!
-# Byte-source model of the v2m builder (the ACTUAL image)
+# Byte-source model of the mask1 builder (the ACTUAL image)
 
 `PoolShape.resultMemory true` stays the clean reference image.  The artifact's builder now
-stages the low word at `46` and `28`, copies sixteen bytes `28 → 10` with a third `MCOPY`, and
-masks only words 4, 5, 6, 7 and 11; this file describes that image byte for byte with the same
+stores the high word once at `162` and the low word once at `252`, fans them out with four
+sixteen-byte `MCOPY`s (`162 → 144`, `178 → 196`, `252 → 234`, `268 → 286`) and masks only
+word 11; this file describes that image byte for byte with the same
 `Source` terms so the certificates can be checked by `decide` against the reference.
 -/
 
@@ -18,10 +19,50 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolShapeV2
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PairedScheduleMemory PoolShape
 
+/-- The actual image's OWN zero set: bytes the next block's raw loads carry into a table gap
+byte (`18*j+k`, `14 ≤ k < 18`) that a certificate needs to be zero.  Unlike the reference's
+`PoolShape.zeroAddresses` it contains nothing below byte 50: the first memory word may hold
+anything, which is what lets the layout drop the mask on schedule word 6. -/
+def zeroAddressesV2 : List Nat := [50,51,52,53,160,161,194,195,250,251,284,285,320,321,322,323,356,357,358,359,392,393,394,395,446,447,448,449,590,591,592,593,716,717,718,719,788,789,790,791,824,825,826,827,932,933,934,935,968,969,970,971,1004,1005,1006,1007,1040,1041,1042,1043]
+
+theorem zeroAddressesV2_band : ∀ a ∈ zeroAddressesV2, 36 ≤ a ∧ a < 1056 ∧ 14 ≤ a % 18 := by
+  decide
+
+def ClearV2 (memory : ByteArray) : Prop :=
+  ∀ a, a ∈ zeroAddressesV2 → memory[a]?.getD 0 = 0
+
+def incomingV2 (a : Nat) : Source := if a ∈ zeroAddressesV2 then .zero else .memory a
+
+theorem eval_incomingV2 (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (a : Nat) :
+    m[a]?.getD 0 = (incomingV2 a).eval m lo hi := by
+  unfold incomingV2
+  split
+  · exact hc a ‹_›
+  · rfl
+
+/-- A term with no `.memory` leaf evaluates the same over every memory. -/
+def Source.memFree : Source → Bool
+  | .zero => true
+  | .memory _ => false
+  | .low _ => true
+  | .high _ => true
+  | .join a b => Source.memFree a && Source.memFree b
+
+theorem eval_memFree (m m' : ByteArray) (lo hi : UInt256) (s : Source)
+    (h : Source.memFree s = true) : s.eval m lo hi = s.eval m' lo hi := by
+  induction s with
+  | zero => rfl
+  | memory a => simp [Source.memFree] at h
+  | low i => rfl
+  | high i => rfl
+  | join a b iha ihb =>
+    simp only [Source.memFree, Bool.and_eq_true] at h
+    simp only [Source.eval, iha h.1, ihb h.2]
+
 theorem scratchV2_getD (memory : ByteArray) (low high : UInt256) (a : Nat) :
     (Pair13Endian.scratchV2 memory low high)[a]?.getD 0 =
-      if 616 ≤ a ∧ a < 648 then (Data.Bytes.natToBytesPadded low.toNat 32)[a - 616]?.getD 0
-      else if 28 ≤ a ∧ a < 60 then (Data.Bytes.natToBytesPadded high.toNat 32)[a - 28]?.getD 0
+      if 252 ≤ a ∧ a < 284 then (Data.Bytes.natToBytesPadded low.toNat 32)[a - 252]?.getD 0
+      else if 162 ≤ a ∧ a < 194 then (Data.Bytes.natToBytesPadded high.toNat 32)[a - 162]?.getD 0
       else memory[a]?.getD 0 := by
   rw [Pair13Endian.scratchV2, Shared32Scratch.writeWord_getD, Shared32Scratch.writeWord_getD]
 
@@ -37,10 +78,10 @@ theorem copyV2_getD (m : ByteArray) (src dst a : Nat) :
 /-- Every copy source lies outside every earlier copy's destination, so the four copies
 compose to a single address map. -/
 def copiedAddressV2 (a : Nat) : Nat :=
-  if 650 ≤ a ∧ a < 666 then a-18
-  else if 598 ≤ a ∧ a < 614 then a+18
-  else if 62 ≤ a ∧ a < 78 then a-18
-  else if 10 ≤ a ∧ a < 26 then a+18 else a
+  if 286 ≤ a ∧ a < 302 then a-18
+  else if 234 ≤ a ∧ a < 250 then a+18
+  else if 196 ≤ a ∧ a < 212 then a-18
+  else if 144 ≤ a ∧ a < 160 then a+18 else a
 
 theorem copiedV2_getD (m : ByteArray) (a : Nat) :
     (Pair13PoolRaw.copiedV2 m)[a]?.getD 0 = m[copiedAddressV2 a]?.getD 0 := by
@@ -48,9 +89,9 @@ theorem copiedV2_getD (m : ByteArray) (a : Nat) :
   split_ifs <;> first | rfl | (exfalso; omega) | (congr 2; omega)
 
 def scratchSourceV2 (a : Nat) : Source :=
-  if 616 ≤ a ∧ a < 648 then .low (a-616)
-  else if 28 ≤ a ∧ a < 60 then .high (a-28)
-  else incoming a
+  if 252 ≤ a ∧ a < 284 then .low (a-252)
+  else if 162 ≤ a ∧ a < 194 then .high (a-162)
+  else incomingV2 a
 
 def fanSourceV2 (a : Nat) : Source := scratchSourceV2 (copiedAddressV2 a)
 
@@ -58,24 +99,24 @@ def fanSourceV2 (a : Nat) : Source := scratchSourceV2 (copiedAddressV2 a)
 def fanMemoryV2 (memory : ByteArray) (low high : UInt256) : ByteArray :=
   Pair13PoolRaw.copiedV2 (Pair13Endian.scratchV2 memory low high)
 
-theorem scratchV2_shape (m : ByteArray) (lo hi : UInt256) (hc : Clear m) (a : Nat) :
+theorem scratchV2_shape (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (a : Nat) :
     (Pair13Endian.scratchV2 m lo hi)[a]?.getD 0 = (scratchSourceV2 a).eval m lo hi := by
   rw [scratchV2_getD]
   unfold scratchSourceV2
-  split_ifs <;> simp (discharger := omega) only [Source.eval, PoolByte.encoded, eval_incoming m lo hi hc]
+  split_ifs <;> simp (discharger := omega) only [Source.eval, PoolByte.encoded, eval_incomingV2 m lo hi hc]
 
-theorem fanV2_shape (m : ByteArray) (lo hi : UInt256) (hc : Clear m) (a : Nat) :
+theorem fanV2_shape (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (a : Nat) :
     (fanMemoryV2 m lo hi)[a]?.getD 0 = (fanSourceV2 a).eval m lo hi := by
   rw [fanMemoryV2, copiedV2_getD, fanSourceV2]
   exact scratchV2_shape m lo hi hc _
 
 def loadSourceV2 (i j : Nat) : Source := fanSourceV2 (Pair13PoolRaw.poolAddrV2 i+j)
 
-/-- Only words 6 and 11 are masked; everything else is stored raw. -/
+/-- Only word 11 is masked; everything else is stored raw. -/
 def poolSourceV2 (i j : Nat) : Source :=
-  if decide (i ∈ [6,11]) then maskSource j (loadSourceV2 i j) else loadSourceV2 i j
+  if decide (i ∈ [11]) then maskSource j (loadSourceV2 i j) else loadSourceV2 i j
 
-theorem poolV2_shape (m : ByteArray) (lo hi : UInt256) (hc : Clear m)
+theorem poolV2_shape (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m)
     (i j : Nat) (hi16 : i < 16) (hj : j < 32) :
     PoolByte.byte (Pair13PoolRaw.poolWordV2 (fanMemoryV2 m lo hi) i) j =
       (poolSourceV2 i j).eval m lo hi := by
@@ -93,7 +134,7 @@ def resultSourceV2 : Nat → Source := storeSources poolSourceV2 fanSourceV2 wri
 def resultMemoryV2 (m : ByteArray) (lo hi : UInt256) : ByteArray :=
   PoolRawWriter.writerMemory (fanMemoryV2 m lo hi) (Pair13PoolRaw.poolWordV2 (fanMemoryV2 m lo hi))
 
-theorem resultV2_shape (m : ByteArray) (lo hi : UInt256) (hc : Clear m) (a : Nat) :
+theorem resultV2_shape (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (a : Nat) :
     (resultMemoryV2 m lo hi)[a]?.getD 0 = (resultSourceV2 a).eval m lo hi := by
   rw [resultMemoryV2, PoolRawWriter.writerMemory, rawWrites_eq]
   have hindices : ∀ x ∈ writes, x.2 < 16 := by decide

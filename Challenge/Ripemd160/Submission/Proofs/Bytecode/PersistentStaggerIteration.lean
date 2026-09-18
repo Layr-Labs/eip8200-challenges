@@ -69,13 +69,10 @@ theorem initial_context (input : ByteArray) (hfit : CalldataFits input) (hpos : 
   ⟨PadSkipEntry.entryState_calldata input, PadSkipEntry.entryState_active input hfit hpos,
     PadSkipEntry.entryState_allocated input hfit, (fun i _ hi hn => PadSkipEntry.entryState_blockAt input hfit i hi hn),
     fun i hi => PaddedBlockBridge.padReturned_blockIndexSeparated input hfit i hi,
-    Nat.lt_of_le_of_lt (Nat.mod_le _ _) (PadSkipEntry.entryState_lowClear input hfit),
-    PadSkipEntry.entryState_gapClear input hfit,
     fun a ha => PadSkipEntry.entryState_zero_below input hfit a
-      (by simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
+      (by have := (PoolShapeV2.zeroAddressesV2_band a ha).2.1
           change a < 1056
-          omega),
-    PadSkipEntry.entryState_zero_below input hfit 0 (by decide)⟩
+          omega)⟩
 
 theorem states_context (input : ByteArray) (hfit : CalldataFits input) (hpos : 0 < input.size)
     (n : Nat) (hn : n ≤ DriverTrace.blockCount input) : Context (states input n) input n := by

@@ -8,25 +8,6 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolInvariant
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PoolShape PoolShapeV2
 
-/-- The copy holes of the C2 staging (60, 61, 614, 615, 648, 649) and the two bytes of the
-terminal slot (594, 595) that the raw word 0 carries into the table's hole at 60, 61. -/
-def ExtraClear (m : ByteArray) : Prop := ∀ a ∈ [60,61,594,595,614,615,648,649], m[a]?.getD 0 = 0
-
-theorem clear_of_parts (m : ByteArray)
-    (hlow : (MachineState.readWord m 0).toNat % 2^144 < 2^32)
-    (hgap : PairStoreGap.GapClear m) (hextra : ExtraClear m)
-    (hzero0 : m[0]?.getD 0 = 0) : Clear m := by
-  intro a ha
-  rw [zeroAddresses, List.mem_cons] at ha
-  rcases ha with rfl | ha
-  · exact hzero0
-  simp only [List.mem_append, List.mem_map, List.mem_flatMap, List.mem_range] at ha
-  rcases ha with (⟨k,hk,rfl⟩ | ha) | ⟨j,hj,k,hk,rfl⟩
-  · have h := PoolFacts.zero_from_window m 14 14 k (StaggerScratch.low_zero m hlow 14 (by decide) (by decide)) hk
-    simpa [Nat.add_comm] using h
-  · exact hextra a ha
-  · simpa only [Nat.add_assoc] using hgap j hj (14+k) (by omega) (by omega)
-
 theorem clear_low (m : ByteArray) (hc : Clear m) :
     (MachineState.readWord m 0).toNat % 2^144 < 2^32 := by
   apply PoolFacts.low_clear
@@ -45,16 +26,53 @@ theorem clear_gap (m : ByteArray) (hc : Clear m) : PairStoreGap.GapClear m := by
   simp only [List.mem_append, List.mem_flatMap, List.mem_map, List.mem_range]
   exact Or.inr ⟨j,hj,k-14,by omega,by omega⟩
 
-theorem clear_extra (m : ByteArray) (hc : Clear m) : ExtraClear m := by
-  intro a ha
-  apply hc
-  exact List.mem_cons_of_mem _ (List.mem_append_left _ (List.mem_append_right _ ha))
-
-theorem clear_zero0 (m : ByteArray) (hc : Clear m) : m[0]?.getD 0 = 0 :=
-  hc 0 (List.mem_cons_self ..)
-
 theorem clear_of_zero (m : ByteArray) (hz : ∀ a, a < 1056 → m[a]?.getD 0 = 0) : Clear m :=
   fun a ha => hz a (PoolCertificates.zeroAddresses_bound a ha)
+
+theorem clearV2_of_zero (m : ByteArray) (hz : ∀ a, a < 1056 → m[a]?.getD 0 = 0) : ClearV2 m :=
+  fun a ha => hz a (zeroAddressesV2_band a ha).2.1
+
+/-! ### The zeroed-memory reference
+
+The clean reference image assumes `PoolShape.Clear` of its base (bytes 0 and 14..27 zero,
+the thirteen pairs' gap bytes zero, ...), which the actual image no longer maintains: with
+word 6 raw, table slot 0 carries whatever the raw load drags along.  The reference is
+therefore always evaluated over `sanitize m` -- the incoming memory with everything below the
+message (byte 1056) cleared -- and the certificates prove its lane terms read no memory. -/
+
+def sanitize (m : ByteArray) : ByteArray :=
+  MachineState.writeBytes m (ByteArray.mk (Array.replicate 1056 (0 : UInt8))) 0
+
+theorem sanitize_getD (m : ByteArray) (a : Nat) :
+    (sanitize m)[a]?.getD 0 = if a < 1056 then 0 else m[a]?.getD 0 := by
+  rw [sanitize, MachineState.writeBytes_getElem?_getD]
+  have hs : (ByteArray.mk (Array.replicate 1056 (0 : UInt8))).size = 1056 := rfl
+  rw [hs]
+  by_cases ha : a < 1056
+  · rw [if_pos (by omega), if_pos ha]
+    change (Array.replicate 1056 (0 : UInt8))[a - 0]?.getD 0 = 0
+    rw [getElem?_pos _ _ (by simpa using ha)]
+    simp
+  · rw [if_neg (by omega), if_neg ha]
+
+theorem sanitize_zero (m : ByteArray) (a : Nat) (ha : a < 1056) : (sanitize m)[a]?.getD 0 = 0 := by
+  rw [sanitize_getD, if_pos ha]
+
+theorem sanitize_clear (m : ByteArray) : Clear (sanitize m) :=
+  clear_of_zero _ (sanitize_zero m)
+
+theorem read_sanitize (m : ByteArray) (a : Nat) (ha : 1056 ≤ a) :
+    MachineState.readWord (sanitize m) a = MachineState.readWord m a := by
+  apply Word.word_ext
+  rw [Bytes.readWord_toNat, Bytes.readWord_toNat]
+  exact StaggerTableMemory.bytesToNatPadded_congrOffset _ _ _ _ _
+    (fun i _ => by rw [sanitize_getD, if_neg (by omega)])
+
+theorem extracted_sanitize (m : ByteArray) (p : Nat) (hp : 1056 ≤ p) :
+    PairedScheduleData.extractedWord (sanitize m) p = PairedScheduleData.extractedWord m p := by
+  funext i
+  unfold PairedScheduleData.extractedWord
+  rw [read_sanitize m _ (by omega)]
 
 theorem writeChain_outside (m : ByteArray) (words : Nat → UInt256) (ws : List (Nat × Nat))
     (a : Nat) (ha : ∀ x ∈ ws, x.1+32 ≤ a) :
@@ -79,7 +97,7 @@ theorem read_result_outside (clean : Bool) (m : ByteArray) (lo hi : UInt256) (a 
   exact StaggerTableMemory.bytesToNatPadded_congrOffset _ _ _ _ _
     (fun i _ => result_outside clean m lo hi (a+i) (by omega))
 
-/-- Above the copied block the v2m fan image is the incoming memory verbatim. -/
+/-- Above the copied block the actual fan image is the incoming memory verbatim. -/
 theorem fanV2_getD_high (m : ByteArray) (lo hi : UInt256) (a : Nat) (ha : 1112 ≤ a) :
     (fanMemoryV2 m lo hi)[a]?.getD 0 = m[a]?.getD 0 := by
   rw [fanMemoryV2, PoolShapeV2.copiedV2_getD, PoolShapeV2.copiedAddressV2,
@@ -172,31 +190,100 @@ theorem ready_of_gap (W T : ByteArray) (words : Nat → UInt32)
     have hp := congrArg UInt32.toNat (h.scalar j hj)
     exact (lanes_gap W T j hb).1.trans hp
 
-theorem ready (m : ByteArray) (lo hi : UInt256) (hc : Clear m) (words : Nat → UInt32)
-    (h : StaggerMessage.Ready (resultMemory true m lo hi) words) :
+theorem ready (m r : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (hr : Clear r)
+    (words : Nat → UInt32)
+    (h : StaggerMessage.Ready (resultMemory true r lo hi) words) :
     StaggerMessage.Ready (resultMemoryV2 m lo hi) words := by
   constructor
   · intro i hi77
     by_cases hi76 : i = 76
     · subst i
-      have ht := PoolFacts.result_terminal m lo hi hc
+      have ht := PoolFacts.result_terminal m r lo hi hc hr
       have hm : StaggerCoreModel.message (resultMemoryV2 m lo hi) 76 =
-          StaggerCoreModel.message (resultMemory true m lo hi) 76 := ht
+          StaggerCoreModel.message (resultMemory true r lo hi) 76 := ht
       rw [hm]
       exact h.paired 76 hi77
     · apply Or.inr
       refine ⟨hi76, ?_, ?_, ?_⟩
       · have ht := (StaggerTableLayout.layout_valid ⟨i,hi77⟩).2.1
         have hp := (StaggerAlgorithm.message_lanes _ _ _ (h.paired i hi77)).1
-        exact (PoolFacts.result_lanes m lo hi hc _ ht).1.trans hp
+        exact (PoolFacts.result_lanes m r lo hi hc hr _ ht).1.trans hp
       · have ht := (StaggerTableLayout.layout_valid ⟨i,hi77⟩).2.1
         have hp := (StaggerAlgorithm.message_lanes _ _ _ (h.paired i hi77)).2
-        exact (PoolFacts.result_lanes m lo hi hc _ ht).2.trans hp
+        exact (PoolFacts.result_lanes m r lo hi hc hr _ ht).2.trans hp
       · exact PoolFacts.result_slack m lo hi hc _ (StaggerTableLayout.layout_valid ⟨i,hi77⟩).2.1
   · intro j hj
     apply UInt32.toNat_inj.mp
     have hp := congrArg UInt32.toNat (h.scalar j hj)
-    exact (PoolFacts.result_lanes m lo hi hc j hj).1.trans hp
+    exact (PoolFacts.result_lanes m r lo hi hc hr j hj).1.trans hp
+
+/-! ### Transporting `Ready` from byte 28
+
+The pad-only block's real table keeps bytes [0,28) of the incoming memory, which the actual
+image no longer keeps clean, while the model clears them.  `Ready` reads nothing below byte 28
+except through slot 1's slack (bytes 32..49 -- all from 28) and slot 1's upper bits, which only
+`LegacyMessageWord` could inspect: slot 1 is forced onto the `Safe` disjunct with byte 32 as
+its zero slack byte, and slot 0 is never a round's pair word. -/
+
+theorem ready_of_from28 (W T : ByteArray) (words : Nat → UInt32)
+    (hb : ∀ i, 28 ≤ i → W[i]?.getD 0 = T[i]?.getD 0)
+    (hz : W[32]?.getD 0 = 0)
+    (h : StaggerMessage.Ready T words) : StaggerMessage.Ready W words := by
+  have hlow (j : Nat) :
+      (MachineState.readWord W (18*j)).toNat % 2^32
+        = (MachineState.readWord T (18*j)).toNat % 2^32 := by
+    rw [PoolFacts.low_value, PoolFacts.low_value]
+    apply StaggerTableMemory.bytesToNatPadded_congrOffset
+    intro k hk
+    exact hb _ (by omega)
+  have hhigh : (MachineState.readWord W (18*1)).toNat / 2^144 % 2^32
+      = (MachineState.readWord T (18*1)).toNat / 2^144 % 2^32 := by
+    rw [PoolFacts.high_value, PoolFacts.high_value]
+    apply StaggerTableMemory.bytesToNatPadded_congrOffset
+    intro k hk
+    exact hb _ (by omega)
+  constructor
+  · intro i hi77
+    have hpos := (StaggerTableLayout.layout_valid ⟨i, hi77⟩).1
+    change 1 ≤ StaggerTableLayout.pairIndices[i]! at hpos
+    by_cases hp : 2 ≤ StaggerTableLayout.pairIndices[i]!
+    · have hm : StaggerCoreModel.message W i = StaggerCoreModel.message T i := by
+        show MachineState.readWord W (18 * StaggerTableLayout.pairIndices[i]!) =
+          MachineState.readWord T (18 * StaggerTableLayout.pairIndices[i]!)
+        apply Word.word_ext
+        rw [Bytes.readWord_toNat, Bytes.readWord_toNat]
+        apply StaggerTableMemory.bytesToNatPadded_congrOffset
+        intro k hk
+        exact hb _ (by omega)
+      rw [hm]
+      exact h.paired i hi77
+    · have h1 : StaggerTableLayout.pairIndices[i]! = 1 := by omega
+      have hne : i ≠ 76 := by
+        intro he
+        rw [he] at h1
+        exact absurd h1 (by decide)
+      have hmW : StaggerCoreModel.message W i = MachineState.readWord W (18*1) := by
+        show MachineState.readWord W (18 * StaggerTableLayout.pairIndices[i]!) = _
+        rw [h1]
+      have hmT : StaggerCoreModel.message T i = MachineState.readWord T (18*1) := by
+        show MachineState.readWord T (18 * StaggerTableLayout.pairIndices[i]!) = _
+        rw [h1]
+      have hl := StaggerAlgorithm.message_lanes _ _ _ (h.paired i hi77)
+      rw [hmT] at hl
+      apply Or.inr
+      refine ⟨hne, ?_, ?_, ?_⟩
+      · rw [hmW]
+        exact (hlow 1).trans hl.1
+      · rw [hmW]
+        exact hhigh.trans hl.2
+      · rw [hmW]
+        refine PoolFacts.zero_byte_slack _ 14 (by decide) (by decide) ?_
+        rw [PoolByte.read _ _ _ (by decide)]
+        exact hz
+  · intro j hj
+    apply UInt32.toNat_inj.mp
+    have hp := congrArg UInt32.toNat (h.scalar j hj)
+    exact (hlow j).trans hp
 
 #print axioms ready
 #print axioms result_outside

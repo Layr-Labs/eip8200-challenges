@@ -134,10 +134,10 @@ def tableMemory (memory : ByteArray) : ByteArray :=
     (PairedScheduleData.reversedWord (MachineState.readWord memory 1056)) highWord
 
 theorem tableMemory_ready (memory : ByteArray) (hc : PoolShape.Clear memory)
-    (scalar : Nat → UInt32)
+    (hc2 : PoolShapeV2.ClearV2 memory) (scalar : Nat → UInt32)
     (hr : StaggerMessage.Ready (StaggerTableLayout.resultMemory0 memory (words memory)) scalar) :
     StaggerMessage.Ready (tableMemory memory) scalar := by
-  apply PoolInvariant.ready _ _ _ hc
+  apply PoolInvariant.ready memory memory _ _ hc2 hc
   rw [PoolReference.reference_eq_writer _ _ _ (PoolInvariant.clear_low memory hc)]
   change StaggerMessage.Ready (Pair13WriterRaw.writerMemory
     (fanMemory memory (PairedScheduleData.reversedWord (MachineState.readWord memory 1056)) highWord)

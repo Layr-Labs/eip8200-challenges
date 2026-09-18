@@ -17,15 +17,13 @@ def template : List Instr :=
 
 theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
-    (hactive : s.activeWords = UInt256.ofNat 34)
-    (_hlow : (MachineState.readWord s.memory 0).toNat % 2 ^ 144 < 2 ^ 32)
-    (_hgap : PairStoreGap.GapClear s.memory) :
+    (hactive : s.activeWords = UInt256.ofNat 34) :
     runInstrSeq template
       {s with
         pc := pc
         stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10
           (UInt256.ofNat 0) lim rho
-        memory := writeWord s.memory 28 highWord} =
+        memory := writeWord s.memory 162 highWord} =
       some {s with
         pc := pcAfter pc template
         stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10
@@ -38,7 +36,7 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (UInt256.ofNat 0) lim rho
   let scratch := Pair13Endian.scratchV2 s.memory
     (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1056)) highWord
-  let s1 : State := {s with memory := writeWord s.memory 28 highWord}
+  let s1 : State := {s with memory := writeWord s.memory 162 highWord}
   let s2 : State := {s with memory := scratch}
   let s3 : State := {s with memory := Pair13PoolRaw.copiedV2 scratch}
   have ha : 34 ≤ s2.activeWords.toNat := by change 34 ≤ s.activeWords.toNat; rw [hactive]; decide

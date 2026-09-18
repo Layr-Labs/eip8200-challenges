@@ -1,5 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolShapeV2
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13Memory
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolInvariant
 
 set_option warningAsError true
 set_option maxRecDepth 30000
@@ -94,6 +95,32 @@ theorem reference_data_getD (memory : ByteArray) (p : Nat)
       (Shared32Scratch.erase_fan memory (StaggerTableLayout.tableWords words) _ _)
   exact hm.trans (congrArg (fun m => m[q]?.getD 0) herase)
 
+
+/-- A data block's `Ready` from the model table over the zeroed-memory reference: the clean
+reference is evaluated over `sanitize m` (where every clean-base hypothesis holds), related to
+the model table there by `reference_data_getD` and `ready_of_gap`, and transported to the
+actual image over `m` by the certificates. -/
+theorem data_ready (m : ByteArray) (p : Nat) (hp : 1056 ≤ p) (hc : PoolShapeV2.ClearV2 m)
+    (words : Nat → UInt32)
+    (hr : StaggerMessage.Ready (StaggerTableLayout.resultMemory0 (PoolInvariant.sanitize m)
+      (PairedScheduleData.extractedWord m p)) words) :
+    StaggerMessage.Ready (dataMemory m p) words := by
+  have hr0 := PoolInvariant.sanitize_clear m
+  have hlow := PoolInvariant.clear_low _ hr0
+  have hgap := PoolInvariant.clear_gap _ hr0
+  have h0 := PoolInvariant.read_sanitize m p hp
+  have h1 := PoolInvariant.read_sanitize m (p+32) (by omega)
+  have href := PoolInvariant.ready_of_gap _ _ words
+    (fun q hq => reference_data_getD (PoolInvariant.sanitize m) p hlow hgap q hq)
+    (by
+      rw [reference_data_getD (PoolInvariant.sanitize m) p hlow hgap 54 (by omega)]
+      exact Pair13Memory.resultMemory0_byte54 _ _
+        (fun k _ => Nat.lt_trans (PairedScheduleData.extractedWord_bound _ _ k) (by norm_num)))
+    (by rwa [PoolInvariant.extracted_sanitize m p hp])
+  rw [h0, h1] at href
+  exact PoolInvariant.ready m _ _ _ hc hr0 words href
+
+#print axioms data_ready
 
 #print axioms reference_data_getD
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolReference

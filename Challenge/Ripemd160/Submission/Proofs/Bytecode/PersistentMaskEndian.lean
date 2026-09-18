@@ -17,9 +17,7 @@ theorem run_normal (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UIn
     (rho : List UInt256) (p : Nat) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
     (hp : 1056 ≤ p) (hbound : p + 64 < 2 ^ 256)
     (hq1 : off + UInt256.ofNat 1088 = UInt256.ofNat (p + 32))
-    (hq0 : off + UInt256.ofNat 1056 = UInt256.ofNat p)
-    (hlow : (MachineState.readWord s.memory 0).toNat % 2 ^ 144 < 2 ^ 32)
-    (_hgap : PairStoreGap.GapClear s.memory) :
+    (hq0 : off + UInt256.ofNat 1056 = UInt256.ofNat p) :
     runInstrSeq normalTemplate {s with pc := pc, stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho} =
       some {s with
         pc := pcAfter pc normalTemplate
@@ -27,7 +25,7 @@ theorem run_normal (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UIn
         memory := PoolReference.dataMemory s.memory p
         activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
   exact Pair13NormalTrace.run_normal s pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho p
-    hstack hrun hp hbound hq1 hq0 hlow
+    hstack hrun hp hbound hq1 hq0
 
 #print axioms run_normal
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PersistentMaskEndian

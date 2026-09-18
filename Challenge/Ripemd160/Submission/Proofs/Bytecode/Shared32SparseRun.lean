@@ -12,10 +12,10 @@ open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory Pair13Endian
 open Shared32Scratch
 
 def template : List Instr :=
-  [ .push ⟨1, by decide⟩ (UInt256.ofNat 31),
+  [ .push ⟨1, by decide⟩ (UInt256.ofNat 165),
     .op .MSTORE8,
     .op (.Dup ⟨4, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 54),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 188),
     .op .MSTORE8 ]
 
 theorem run_sparse (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
@@ -38,7 +38,7 @@ theorem run_sparse (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt
     hactive, MachineState.activeWordsAfter, hbyte, sparseMemory]
   rfl
 
-theorem bytes_exact : assembleBytes template = [96,31,83,132,96,54,83] := by decide
+theorem bytes_exact : assembleBytes template = [96,165,83,132,96,188,83] := by decide
 
 theorem sparse_read_input (input : ByteArray) (hn : 0 < input.size) :
     MachineState.readWord (sparseMemory (copiedMemory input)) 1056 =

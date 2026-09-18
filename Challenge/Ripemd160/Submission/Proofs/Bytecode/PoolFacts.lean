@@ -63,45 +63,51 @@ theorem low_clear (m : ByteArray) (hz : ∀ k, 14 ≤ k → k < 28 → m[k]?.get
     window_zero m 14 14 (fun k hk => hz (14+k) (by omega) (by omega))]
   simpa using Bytes.bytesToNatPadded_lt_pow m 28 4
 
-theorem result_lanes (m : ByteArray) (lo hi : UInt256) (hc : Clear m) (j : Nat) (hj : j < 61) :
+/-- The actual image over `m` against the clean reference over ANY base `r` the reference
+model accepts: the certificates' lane terms are equal and read no memory. -/
+theorem result_lanes (m r : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (hr : Clear r)
+    (j : Nat) (hj : j < 61) :
     (MachineState.readWord (resultMemoryV2 m lo hi) (18*j)).toNat % 2^32 =
-      (MachineState.readWord (resultMemory true m lo hi) (18*j)).toNat % 2^32 ∧
+      (MachineState.readWord (resultMemory true r lo hi) (18*j)).toNat % 2^32 ∧
     (MachineState.readWord (resultMemoryV2 m lo hi) (18*j)).toNat / 2^144 % 2^32 =
-      (MachineState.readWord (resultMemory true m lo hi) (18*j)).toNat / 2^144 % 2^32 := by
+      (MachineState.readWord (resultMemory true r lo hi) (18*j)).toNat / 2^144 % 2^32 := by
   constructor
   · rw [low_value, low_value]
     apply StaggerTableMemory.bytesToNatPadded_congrOffset
     intro k hk
-    rw [resultV2_shape m lo hi hc, result_shape m lo hi hc,
-      (PoolCertificatesV2.lane_sources ⟨j,hj⟩ ⟨k,hk⟩).2]
+    obtain ⟨-, h2, -, f2⟩ := PoolCertificatesV2.lane_sources ⟨j,hj⟩ ⟨k,hk⟩
+    rw [resultV2_shape m lo hi hc, result_shape r lo hi hr, h2]
+    exact eval_memFree _ _ _ _ _ f2
   · rw [high_value, high_value]
     apply StaggerTableMemory.bytesToNatPadded_congrOffset
     intro k hk
-    rw [resultV2_shape m lo hi hc, result_shape m lo hi hc,
-      (PoolCertificatesV2.lane_sources ⟨j,hj⟩ ⟨k,hk⟩).1]
+    obtain ⟨h1, -, f1, -⟩ := PoolCertificatesV2.lane_sources ⟨j,hj⟩ ⟨k,hk⟩
+    rw [resultV2_shape m lo hi hc, result_shape r lo hi hr, h1]
+    exact eval_memFree _ _ _ _ _ f1
 
-theorem result_slack (m : ByteArray) (lo hi : UInt256) (hc : Clear m) (j : Nat) (hj : j < 61) :
+theorem result_slack (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (j : Nat) (hj : j < 61) :
     (MachineState.readWord (resultMemoryV2 m lo hi) (18*j)).toNat % 2^144 + 2^40 ≤ 2^144 := by
   obtain ⟨hl,hu,hz⟩ := PoolCertificatesV2.slack_sources ⟨j,hj⟩
   apply zero_byte_slack _ _ hl hu
   rw [PoolByte.read _ _ _ (by omega), resultV2_shape m lo hi hc, hz]
   rfl
 
-theorem result_clear (m : ByteArray) (lo hi : UInt256) (hc : Clear m) :
-    Clear (resultMemoryV2 m lo hi) := by
+theorem result_clear (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) :
+    ClearV2 (resultMemoryV2 m lo hi) := by
   intro a ha
   rw [resultV2_shape m lo hi hc, PoolCertificatesV2.clear_sources a ha]
   rfl
 
-theorem result_terminal (m : ByteArray) (lo hi : UInt256) (hc : Clear m) :
+theorem result_terminal (m r : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (hr : Clear r) :
     MachineState.readWord (resultMemoryV2 m lo hi) 594 =
-      MachineState.readWord (resultMemory true m lo hi) 594 := by
+      MachineState.readWord (resultMemory true r lo hi) 594 := by
   apply Word.word_ext
   rw [Bytes.readWord_toNat, Bytes.readWord_toNat]
   apply StaggerTableMemory.bytesToNatPadded_congrOffset
   intro k hk
-  rw [resultV2_shape m lo hi hc, result_shape m lo hi hc,
-    PoolCertificatesV2.terminal_sources ⟨k,hk⟩]
+  obtain ⟨h, f⟩ := PoolCertificatesV2.terminal_sources ⟨k,hk⟩
+  rw [resultV2_shape m lo hi hc, result_shape r lo hi hr, h]
+  exact eval_memFree _ _ _ _ _ f
 
 #print axioms result_lanes
 #print axioms result_slack

@@ -1,3 +1,81 @@
+# RIPEMD-160: schedule word 6 unmasked, with a zeroed-memory proof reference — 661,704 gas in 5,212 bytes
+
+- SHA-256: `02483f1554b094391c5803025591d9f8fc296350dd34bf7f9641cf922d235d73`.
+- Size: 5,212 bytes; 3,685 instructions (two fewer than the predecessor, so instruction indices
+  in and after the schedule builder are renumbered). Every edited byte lies in the schedule
+  builder `[506, 739)` plus the two sparse pad-byte immediates of the 32-byte route at pc 333 and
+  337; no instruction start outside the builder moves.
+- Local score: 661,704 gas at corpus seeds 0, 1 and 2, a reduction of 210 from the 661,914
+  predecessor. The builder runs once per data block (42 times over the corpus), and each run is
+  5 gas cheaper, so the reduction does not depend on the draw.
+
+## The change
+
+The predecessor masked schedule words 6 and 11. The mask on word 11 is needed because the
+terminal paired round reads its slot exactly. The mask on word 6 was never needed by the
+schedule: the zero bytes it leaves at table bytes 14..27 existed only for the proof. The pad-only
+block's real-versus-model agreement ("from byte 14"), and the clean reference image's
+`lowClear`/`GapClear` hypotheses, both read those bytes. No single-mask layout keeps `GapClear`
+true, so this change removes the need for it in the proof instead.
+
+The staging moves to the one-store-per-half layout the layout search ranks cheapest among the
+single-mask schemes. The high word is stored once at 162 and the low word once at 252. Four
+sixteen-byte `MCOPY`s fan them out: `162→144`, `178→196`, `252→234` and `268→286`. Sixteen raw
+loads follow, and only word 11 is masked. The 45 table stores are unchanged in address, order and
+source word. The 32-byte route pre-writes its two pad bytes relative to the moved high word, at
+165 and 188.
+
+Per block the builder's static cost falls by 6 gas (the `DUP` and `AND` of word 6's mask); the
+measured net is 5 gas per data block.
+
+## What it costs the proof
+
+- **An own zero set for the actual image.** `PoolShapeV2.ClearV2` names 60 band bytes between 50
+  and 1043. Each is `18*j + k` with `14 ≤ k < 18` and is computed as a closure over the new layout.
+  `Context` replaces `lowClear`, `gapClear`, `extraClear` and `zero0` with this single field.
+  Nothing below byte 50 is constrained any more.
+- **A zeroed-memory reference.** The clean reference image (`PoolShape.resultMemory true`) and
+  its whole chain down to the model table (`reference_data_getD`, `ready_of_gap`) are untouched.
+  They are now evaluated over `sanitize m`, the incoming memory with bytes below 1056 cleared,
+  where every clean-base hypothesis holds trivially. The `decide` certificates
+  (`PoolCertificatesV2`) prove that the actual and reference lane and terminal-slot terms are
+  equal. They also prove that the reference terms read no memory (`Source.memFree`), so the two
+  images agree whatever either base holds. `PoolReference.data_ready` packages this for the data
+  block, the cold padding path and (with `r = m`) the 32-byte route.
+- **Pad-block agreement from byte 28.** The pad-only block's real table (over `zeroSuffix`) and
+  its model (over `zeroMemory`) agree from byte 28 with no hypothesis on the incoming memory.
+  `PoolInvariant.ready_of_from28` moves `Ready` across that gap: slot 0 is never a round's pair
+  word, the scalars read bytes ≥ 28, and the rounds on slot 1 are carried onto the `Safe`
+  disjunct with byte 32 as the zero slack byte.
+- **Preservation.** `ClearV2` is re-established by the certificate after a data block. After the
+  pad-only block and on the cold path it holds because every pad store is 18-aligned and below
+  `2 ^ 112` (`PairStoreGap.writeWord_band`, `table_band`). At entry it holds because memory below
+  1056 is zero.
+- **Retired hypotheses.** The unused `lowClear`/`GapClear` parameters are dropped from the normal
+  and 32-byte run lemmas.
+- **Regenerated from the bytes.** The endian, pool and writer templates and their run lemmas are
+  regenerated from the bytes, and instruction indices are renumbered by the relocation tool.
+
+These pieces are layout-independent, so they carry over to a follow-up that also drops the mask on
+word 11.
+
+## Verification
+
+- `lake build Challenge.Ripemd160.Submission.Solution` passes all 3,731 jobs; the final theorem
+  `Challenge.Ripemd160.Benchmark.candidate` depends only on `propext`, `Classical.choice` and
+  `Quot.sound`; no `sorry`, `native_decide` or added axiom appears anywhere in the change.
+- Local comparator (`BENCHMARK_INSECURE_LOCAL=1 ./benchmark.sh ripemd160`): verified gas 661,704,
+  49/49 correctness vectors, Lean comparator accepted. 1,041 further fuzz and adversarial inputs
+  (random lengths 0..299, all-`0xff` 0..599, zeros, words of `0xff`/`0x00`, inputs up to 6,000
+  bytes and around the code size) return the reference digest.
+- Researched and proved by Claude Opus 5 (Claude Code harness), building on the inherited work
+  credited below.
+
+---
+
+**The text below was inherited with the base tree and describes EARLIER artifacts, not this one.
+Its provenance and attribution sections have not been modified.**
+
 # RIPEMD-160: the schedule scratch moved so the copies leave the zero bytes — 661,914 gas in 5,212 bytes
 
 - SHA-256: `592f0bb0ed6a9c7d15003049c02929b346a1b137c81c649b9a18c5d8ea3d0fe7`.
@@ -57,11 +135,6 @@ downstream of it are untouched. Instruction indices are renumbered by the reloca
   inputs up to 6,000 bytes and around the code size) return the reference digest.
 - Researched and proved by Claude Opus 5 (Claude Code harness), building on the inherited work
   credited below.
-
----
-
-**The text below was inherited with the base tree and describes EARLIER artifacts, not this one.
-Its provenance and attribution sections have not been modified.**
 
 # RIPEMD-160: the diagonal schedule words come from a copy, not from masks — 662,418 gas in 5,212 bytes
 

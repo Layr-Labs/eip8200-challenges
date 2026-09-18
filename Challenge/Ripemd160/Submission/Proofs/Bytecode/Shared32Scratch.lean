@@ -15,8 +15,8 @@ def highWord : UInt256 := UInt256.ofNat (2 ^ 231 + 2 ^ 40)
 
 def sparseMemory (memory : ByteArray) : ByteArray :=
   MachineState.writeBytes
-    (MachineState.writeBytes memory (ByteArray.mk #[128]) 31)
-    (ByteArray.mk #[1]) 54
+    (MachineState.writeBytes memory (ByteArray.mk #[128]) 165)
+    (ByteArray.mk #[1]) 188
 
 theorem highWord_bytes : Data.Bytes.natToBytesPadded highWord.toNat 32 =
     ByteArray.mk #[0, 0, 0, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -30,9 +30,9 @@ theorem highWord_bytes : Data.Bytes.natToBytesPadded highWord.toNat 32 =
     interval_cases i <;> norm_num [highWord, Word.word_toNat_ofNat] <;> rfl
 
 /-- The sparse stores equal the upper endian scratch word on fresh scratch bytes. -/
-theorem sparse_eq_writeWord (memory : ByteArray) (hsize : 60 ≤ memory.size)
-    (hzero : ∀ a, 28 ≤ a → a < 60 → memory[a]?.getD 0 = 0) :
-    sparseMemory memory = writeWord memory 28 highWord := by
+theorem sparse_eq_writeWord (memory : ByteArray) (hsize : 194 ≤ memory.size)
+    (hzero : ∀ a, 162 ≤ a → a < 194 → memory[a]?.getD 0 = 0) :
+    sparseMemory memory = writeWord memory 162 highWord := by
   apply ByteArray.ext_getElem
   · simp only [sparseMemory, MachineState.writeBytes_size, writeWord, highWord_bytes]
     have h1 : (ByteArray.mk #[1]) ≠ ByteArray.empty := by decide
@@ -45,18 +45,18 @@ theorem sparse_eq_writeWord (memory : ByteArray) (hsize : 60 ≤ memory.size)
       contradiction
     rw [highWord_bytes] at h32
     try simp only [if_neg h32]
-    change max (max memory.size 32) 55 = max memory.size 60
+    change max (max memory.size 166) 189 = max memory.size 194
     omega
   · intro a hA hB
     rw [← Memory.getD0_eq_getElem _ _ hA, ← Memory.getD0_eq_getElem _ _ hB]
     simp only [sparseMemory, writeWord, highWord_bytes,
       MachineState.writeBytes_getElem?_getD]
-    change (if 54 ≤ a ∧ a < 55 then (ByteArray.mk #[1])[a - 54]?.getD 0
-      else if 31 ≤ a ∧ a < 32 then (ByteArray.mk #[128])[a - 31]?.getD 0
+    change (if 188 ≤ a ∧ a < 189 then (ByteArray.mk #[1])[a - 188]?.getD 0
+      else if 165 ≤ a ∧ a < 166 then (ByteArray.mk #[128])[a - 165]?.getD 0
       else memory[a]?.getD 0) =
-      if 28 ≤ a ∧ a < 60 then _ else memory[a]?.getD 0
-    by_cases h60 : 28 ≤ a
-    · by_cases h92 : a < 60
+      if 162 ≤ a ∧ a < 194 then _ else memory[a]?.getD 0
+    by_cases h60 : 162 ≤ a
+    · by_cases h92 : a < 194
       · have hz := hzero a h60 h92
         interval_cases a <;> simp_all <;> rfl
       · rw [if_neg (by omega), if_neg (by omega), if_neg (by omega)]
@@ -75,7 +75,7 @@ theorem copiedMemory_zero (input : ByteArray) (a : Nat) (ha : a < 1056) :
   simp [copiedMemory, MachineState.writeBytes_getElem?_getD, show ¬1056 ≤ a by omega]
 
 theorem copiedMemory_sparse (input : ByteArray) (hn : 0 < input.size) :
-    sparseMemory (copiedMemory input) = writeWord (copiedMemory input) 28 highWord :=
+    sparseMemory (copiedMemory input) = writeWord (copiedMemory input) 162 highWord :=
   sparse_eq_writeWord _ (by rw [copiedMemory_size input hn]; omega)
     (fun a _ h => copiedMemory_zero input a (by omega))
 
