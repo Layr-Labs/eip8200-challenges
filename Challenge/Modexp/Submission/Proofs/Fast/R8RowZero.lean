@@ -24,15 +24,15 @@ open Monpro CiosCached SquareModel CarryRowModel CarryScratchAgreement
 def program : List Instr := R8ZeroFirstRow.program (UInt256.ofNat 3531)
 
 def block : Block Artifact.submissionArtifact .Osaka 5003 program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3998 213 5003 program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3996 207 5003 program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
 
 theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5003 = true :=
-  Artifact.isValidJumpDest_index 3998 (by rfl)
+  Artifact.isValidJumpDest_index 3996 (by rfl)
 
 /-- The second-loop entry the row jumps to (`l2Target 8`). -/
 theorem jumpDestL2 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3782 = true :=
-  Artifact.isValidJumpDest_index 3022 (by rfl)
+  Artifact.isValidJumpDest_index 3020 (by rfl)
 
 theorem l2Target_eight_toNat : (l2Target 8).toNat = 3782 := by decide
 
@@ -53,7 +53,7 @@ theorem entry_eq (s : State) (mem : ByteArray) (pc hd : UInt256) (e : Nat)
 vocabulary of the square rows. -/
 theorem run_rowZero (s : State) (mem : ByteArray) (pc hd : UInt256) (e : Nat)
     (inv m0 m96 m64 m32 aprev : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest s.executionEnv.code 3782 = true) :
     runInstructions program
       { outState s mem 2368 8 0 hd (UInt256.ofNat e) inv m0
@@ -69,7 +69,7 @@ theorem run_rowZero (s : State) (mem : ByteArray) (pc hd : UInt256) (e : Nat)
 
 def gasSteps_prologue (s : State) (mem : ByteArray) (e : Nat)
     (inv m0 m96 m64 m32 aprev : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1002) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 1000) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
