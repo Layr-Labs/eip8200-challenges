@@ -57,6 +57,7 @@ def exitProgram : List Instr :=
 /-- E6: `PUSH0 NOT SWAP1 PUSH0 PUSH2 0x6a2 MLOAD JUMP` — build the chain frame `[0, q, 2^256-1]` and
 jump to the entry cached at `0x6a2 = 1698`. -/
 def entryProgram : List Instr :=
-  [.push 0 0, .op .NOT, .op (.Swap ⟨0, by decide⟩), .push 0 0, .push 2 1698, .op .MLOAD, .op .JUMP]
+  [.push 0 0, .op .NOT, .op (.Swap ⟨0, by decide⟩), .push 0 0, .push 2 1698, .op .MLOAD,
+   .op .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast.M9Mac

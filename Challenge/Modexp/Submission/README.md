@@ -1,3 +1,137 @@
+# MODEXP: fourteen unreachable pads absorbed, and one address computation replaced, 473,258 gas in 5,439 bytes
+
+- SHA-256: `70499f366106e7ba3ff78ad080b1c57681d2dc2233bd86114f8a05f151802bba`.
+- Size: 5,439 bytes, unchanged from the artifact described in the next section.
+- Instructions: 4,374 to 4,359; fourteen pad instructions cease to exist and one moves.
+- Literal-encoding cost: 8,146 against a ceiling of 8,194 — forty-eight units of headroom.
+- Scored gas: 473,258 on the shipped scoring tool, 44 rows, status `ok` on all 44, a reduction of
+  213 from the predecessor's 473,471.
+
+## The change
+
+Nine byte runs differ and nothing else does. Six of them absorb padding, one replaces an address
+computation, and two are the two halves of a single instruction moving inside its own block.
+
+**Six runs absorb fourteen `JUMPDEST` pads.** Each run is taken into the immediate of the push in
+front of it. A push's immediate is data, so widening a push by the number of bytes the padding
+occupied and prefixing that many zeros leaves the pushed value identical while consuming the
+padding; a push costs three gas whatever its immediate's width, so the whole saving is the removed
+executions. The largest instance:
+
+    PUSH1 0xff ; SHR ; JUMPDEST x4       60 ff 1c 5b 5b 5b 5b
+    PUSH5 0x00000000ff ; SHR             64 00 00 00 00 ff 1c
+
+The six runs carry four pads, six pads, and one pad at each of the remaining four sites.
+
+**One address computation is replaced.** At byte 2,539 the artifact computed an address as the
+operand plus the bitwise complement of 31 — the two's-complement way of subtracting 32:
+
+    DUP1 ; PUSH1 0x1f ; NOT ; ADD        80 60 1f 19 01
+    PUSH2 0x0020 ; DUP2 ; SUB            61 0020 81 03
+
+Four instructions at twelve gas become three at nine, in the same five bytes, leaving the same value
+in the same stack position. The two agree on every 256-bit word, which is an identity about modular
+arithmetic and is discharged as one rather than by reduction.
+
+**One pad moves rather than vanishing.** At byte 4,956 a `JUMPDEST` at the head of a block moves to
+its tail, where it joins three already-dead pads. The block's three executed instructions become
+two. This is net zero on the pad count and is why the census below reads fourteen rather than
+fifteen.
+
+**Reachability.** A pad may be absorbed only if nothing can jump to it, and that was established by
+EXECUTION rather than by scanning: the artifact's jump targets were enumerated by running it and
+recording, for each `JUMP` and `JUMPI` reached, which push produced the operand it consumed. The
+distinction is load-bearing here, because this artifact contains immediates that are valid
+instruction starts and are not jump targets at all — memory addresses and length thresholds among
+them — and a scan by value would have relocated those and broken the artifact silently.
+
+A second check retired three further candidates that the first would have passed. Three pads
+elsewhere are never reached on any test input and appear as no push immediate anywhere — and they
+are targets of a jump whose destination is COMPUTED, as a base plus a multiple of a stride. Neither
+of their offsets occurs in the image; only the base and the stride do. Absorbing them would have
+been unsound rather than merely unproven, and they are not part of this change.
+
+## The opcode census
+
+Every line of it corresponds to one of the three mechanisms above, and nothing else moves:
+
+    JUMPDEST         120 -> 106      the fourteen absorbed pads
+    PUSH1 -3, PUSH2 -1, PUSH4 -1     the pushes that widened
+    PUSH3 +2, PUSH5 +2, PUSH8 +1     what they widened into
+    DUP1 -1, NOT -1, ADD -1          the replaced address computation
+    DUP2 +1, SUB +1                  what replaced it
+
+---
+
+# MODEXP: an identity call removed, and nineteen unreachable pads swallowed by two pushes
+
+- SHA-256: `472b47df890b090e362285c0c8fcef25855e426e02b06a3e7e8c0cfdaddd4385`.
+- Size: 5,439 bytes, unchanged from the artifact described in the next section.
+- Instructions: 4,393 to 4,374; nineteen pad instructions cease to exist.
+- Literal-encoding cost: 8,143 against a ceiling of 8,194 — two units **below** the
+  predecessor's 8,145, so this submission releases encoding budget rather than spending it.
+- Measured by the trusted scorer shipped with this tree: 473,471 gas, 44 rows, status
+  ok on 44 of 44.
+- `assemble(decode(raw)) == raw`: the image decodes completely.
+
+## The changes
+
+Ten bytes, in two disjoint edits in two unrelated regions. There is no third difference.
+
+**Edit 1, six bytes at `[3123, 3129)`:**
+
+    predecessor   61 0a 83  61 10 85        PUSH2 0x0a83 ; PUSH2 0x1085
+    submitted     63 00 00 0a 83  5b        PUSH4 0x00000a83 ; JUMPDEST
+
+The exponentiation loop's tail block used to push two addresses before its transfer: the loop
+head at 0x0a83, and above it the entry of the conditional-subtraction routine at 0x1085, so the
+`JUMP` at 3129 entered that routine and the routine returned to the loop head. The submitted
+artifact pushes the loop head only — the `PUSH2` is widened to a `PUSH4` carrying the same value
+with two leading zero bytes, which consumes the following instruction's opcode byte — and the
+`JUMP` transfers directly to the loop head. At this site the routine was the identity on every
+reachable state: the value reaching it has already been bounded below the modulus by the phase
+that produced it, because that phase's termination condition is exactly the bound the subtraction
+would restore. The accompanying proof states and discharges that as a lemma over every reachable
+state at that program counter. The routine remains in the artifact and is still entered from its
+other caller. Both encodings occupy six bytes and two instructions, so this edit moves no program
+counter and no instruction index.
+
+**Edit 2, two bytes inside `[1413, 1431)` and two inside `[1879, 1897)`:**
+
+    predecessor   5b x10  65 5b 5b 5b 5b 5b 5b  50     ten JUMPDEST ; PUSH6 ; POP
+    submitted     6f  5b x16                     50     PUSH16 ; POP
+    predecessor   5b x9   66 5b 5b 5b 5b 5b 5b 5b  50   nine JUMPDEST ; PUSH7 ; POP
+    submitted     6f  5b x16                       50   PUSH16 ; POP
+
+Each span holds stack-neutral filler whose only purpose is to occupy bytes at a fixed length, and
+each is eighteen bytes before and after. Widening each push to a `PUSH16` carries the intervening
+bytes as its immediate instead of executing them one at a time, so nineteen `JUMPDEST`
+instructions cease to exist. Every byte in both spans other than the two push opcodes and the two
+`POP`s was already `0x5b`, so no immediate value that any instruction reads is changed.
+
+The nineteen pads were no kind of jump target: this edit removes nineteen valid jump destinations
+and adds none. Over the whole submission, against the predecessor as baseline, the number of valid
+destinations goes from 138 to 120 — edit 1 adds the one it leaves at 3128 and this edit removes
+nineteen, so 138 + 1 − 19 = 120. No push immediate names any of the nineteen removed destinations,
+and none appears among the sixty-two dynamic jump targets observed over the whole scored corpus at
+six corpus seeds.
+
+## The saving
+
+    predecessor 474,898 gas -> submitted 473,471 gas, a reduction of 1,427.
+
+Scored separately on the same predecessor, edit 1 alone gives 474,079 (−819) and edit 2 alone
+gives 474,290 (−608); −819 + −608 = −1,427, so the cross term is exactly zero.
+
+Edit 1's saving is the changed site's execution count multiplied by 39, with no residue — three,
+four, six and eight executions giving −117, −156, −234 and −312 on four vectors. Edit 2's saving
+is nineteen gas on each of the thirty-two vectors that enter the exponentiation ladder, one gas
+for each pad removed: 32 × 19 = 608. The remaining twelve vectors never enter the ladder.
+
+Per-program-counter execution counts are identical at every position outside the two spans of edit
+2, over all forty-four scored vectors. The set of program counters executed anywhere in the corpus
+falls from 3,988 to 3,969: exactly the nineteen that stop being instruction starts are removed, and
+none is added.
 # MODEXP: a conditional subtraction that is the identity, removed in six bytes
 
 - SHA-256: `7feb0beb623876ff3c16f7c9486f14c7220e539c14e35a72744814d4b11b4bac`.

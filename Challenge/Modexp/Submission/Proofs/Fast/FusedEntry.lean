@@ -13,14 +13,14 @@ open Monpro CiosCached SquareLoopBlocks
 
 def prefixProgram : List Instr := FusionFrame.frameProgram 3465 782
 def clearProgram : List Instr :=
-  [.push 2 2016, .op (.Dup ⟨10, by decide⟩), .op .SUB,
-   .op .CALLDATASIZE, .push 2 2048, .op .CALLDATACOPY]
+  [.push 2 2016, .op (.Dup ⟨10, by decide⟩), .op .SUB, .op .CALLDATASIZE, .push 2 2048,
+   .op .CALLDATACOPY]
 
 def prefixBlock : Block Artifact.submissionArtifact .Osaka 3414 prefixProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2720 27 3414 prefixProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2718 27 3414 prefixProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def clearBlock : Block Artifact.submissionArtifact .Osaka 3455 clearProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2747 6 3455 clearProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2745 6 3455 clearProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def rowReady (s : State) (mem : ByteArray) (n : Nat)

@@ -197,8 +197,8 @@ theorem run_modulus (template : State)
 /-- 1783: load the base word at the preloaded calldata offset 96 and normalize it by the declared base
 width, which now sits at depth five under the two modulus copies. -/
 def normalizeProgram : List Instr :=
-  [.op .CALLDATALOAD, .op (.Dup ⟨7, by decide⟩),
-   .push 1 32, .op .SUB, .push 1 3, .op .SHL, .op .SHR]
+  [.op .CALLDATALOAD, .op (.Dup ⟨7, by decide⟩), .push 1 32, .op .SUB, .push 1 3, .op .SHL,
+   .op .SHR]
 
 theorem run_normalize (template : State) (modulus : UInt256)
     (baseSize : Nat) (hwidth : baseSize ≤ 32)

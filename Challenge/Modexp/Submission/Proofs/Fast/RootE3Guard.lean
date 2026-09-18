@@ -17,11 +17,10 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 
 /-- Exact new v4 bytecode at PCs 3013 through 3038. -/
 def program : List Instr :=
-  [.op (.Dup ⟨4, by decide⟩), .push 1 1, .op .EQ,
-   .push 2 2816, .op .MLOAD, .op .CALLDATALOAD, .push 0 0, .op .BYTE,
-   .push 1 3, .op .EQ, .op .AND, .op (.Dup ⟨1, by decide⟩),
-   .push 1 3, .op .AND, .op .ISZERO, .op .AND,
-   .op (.Dup ⟨0, by decide⟩), .push 2 1760, .op .MSTORE, .op .SHR]
+  [.op (.Dup ⟨4, by decide⟩), .push 1 1, .op .EQ, .push 2 2816, .op .MLOAD, .op .CALLDATALOAD,
+   .push 0 0, .op .BYTE, .push 1 3, .op .EQ, .op .AND, .op (.Dup ⟨1, by decide⟩), .push 1 3,
+   .op .AND, .op .ISZERO, .op .AND, .op (.Dup ⟨0, by decide⟩), .push 2 1760, .op .MSTORE,
+   .op .SHR]
 
 def exponentByte (mem input : ByteArray) : UInt256 :=
   UInt256.byteAt (UInt256.ofNat 0)

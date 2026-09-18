@@ -13,87 +13,37 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.BigC
 
 /-- Exact U raw interval [310,321). -/
 def eGuardProgram : List Instr :=
-  [.op .JUMPDEST,
-   .op (.Dup ⟨1, by decide⟩),
-   .push 1 3,
-   .op .SHL,
-   .op (.Dup ⟨1, by decide⟩),
-   .op .EQ,
-   .push 2 396,
-   .op .JUMPI]
+  [.op .JUMPDEST, .op (.Dup ⟨1, by decide⟩), .push 1 3, .op .SHL, .op (.Dup ⟨1, by decide⟩),
+   .op .EQ, .push 2 396, .op .JUMPI]
 
 /-- Exact U raw interval [321,333). -/
 def eSquareProgram : List Instr :=
-  [.op (.Dup ⟨2, by decide⟩),
-   .push 2 3072,
-   .op (.Dup ⟨0, by decide⟩),
-   .push 2 335,
-   .push 2 413,
+  [.op (.Dup ⟨2, by decide⟩), .push 2 3072, .op (.Dup ⟨0, by decide⟩), .push 2 335, .push 2 413,
    .op .JUMP]
 
 /-- Exact U raw interval [333,364). -/
 def e2Program : List Instr :=
-  [.op .JUMPDEST,
-   .op (.Dup ⟨2, by decide⟩),
-   .push 0 0,
-   .push 2 3072,
-   .op .MCOPY,
-   .op (.Dup ⟨0, by decide⟩),
-   .push 1 3,
-   .op .SHR,
-   .push 0 0,
-   .op .CALLDATALOAD,
-   .op .ADD,
-   .push 1 96,
-   .op .ADD,
-   .op .CALLDATALOAD,
-   .op (.Dup ⟨1, by decide⟩),
-   .push 1 7,
-   .op .AND,
-   .op .SHL,
-   .push 1 255,
-   .op .SHR,
-   .op .ISZERO,
-   .push 2 388,
-   .op .JUMPI]
+  [.op .JUMPDEST, .op (.Dup ⟨2, by decide⟩), .push 0 0, .push 2 3072, .op .MCOPY,
+   .op (.Dup ⟨0, by decide⟩), .push 1 3, .op .SHR, .push 0 0, .op .CALLDATALOAD, .op .ADD,
+   .push 1 96, .op .ADD, .op .CALLDATALOAD, .op (.Dup ⟨1, by decide⟩), .push 1 7, .op .AND,
+   .op .SHL, .push 1 255, .op .SHR, .op .ISZERO, .push 2 388, .op .JUMPI]
 
 /-- Exact U raw interval [364,379). -/
 def eMulProgram : List Instr :=
-  [.push 0 0,
-   .op .CALLDATALOAD,
-   .push 2 5120,
-   .push 2 3072,
-   .push 2 381,
-   .push 2 413,
-   .op .JUMP]
+  [.push 0 0, .op .CALLDATALOAD, .push 2 5120, .push 2 3072, .push 2 381, .push 2 413, .op .JUMP]
 
 /-- Exact U raw interval [379,386). -/
 def e4Program : List Instr :=
-  [.op .JUMPDEST,
-   .op (.Dup ⟨2, by decide⟩),
-   .push 0 0,
-   .push 2 3072,
-   .op .MCOPY]
+  [.op .JUMPDEST, .op (.Dup ⟨2, by decide⟩), .push 0 0, .push 2 3072, .op .MCOPY]
 
 /-- Exact U raw interval [386,394). -/
 def e3Program : List Instr :=
-  [.op .JUMPDEST,
-   .push 1 1,
-   .op .ADD,
-   .push 2 312,
-   .op .JUMP]
+  [.op .JUMPDEST, .push 1 1, .op .ADD, .push 2 312, .op .JUMP]
 
 /-- Exact U raw interval [394,411). -/
 def e9Program : List Instr :=
-  [.op .JUMPDEST,
-   .op (.Dup ⟨2, by decide⟩),
-   .push 2 3072,
-   .push 0 0,
-   .op .MCOPY,
-   .push 2 8192,
-   .push 2 297,
-   .push 2 484,
-   .op .JUMP]
+  [.op .JUMPDEST, .op (.Dup ⟨2, by decide⟩), .push 2 3072, .push 0 0, .op .MCOPY, .push 2 8192,
+   .push 2 297, .push 2 484, .op .JUMP]
 
 structure ExpJumps (code : ByteArray) : Prop where
   j295 : Decode.isValidJumpDest code 297 = true
