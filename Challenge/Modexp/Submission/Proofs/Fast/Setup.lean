@@ -898,37 +898,37 @@ dropped when its index range stopped being contiguous; the individual facts belo
 are what the block reductions actually need. -/
 
 private theorem pcIdx574 :
-    Artifact.submissionArtifact.instructionPC 561 = 794 := by
+    Artifact.submissionArtifact.instructionPC 562 = 794 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx575 :
-    Artifact.submissionArtifact.instructionPC 562 = 795 := by
+    Artifact.submissionArtifact.instructionPC 563 = 795 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx576 :
-    Artifact.submissionArtifact.instructionPC 563 = 796 := by
+    Artifact.submissionArtifact.instructionPC 564 = 796 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx577 :
-    Artifact.submissionArtifact.instructionPC 564 = 799 := by
+    Artifact.submissionArtifact.instructionPC 565 = 799 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx578 :
-    Artifact.submissionArtifact.instructionPC 565 = 800 := by
+    Artifact.submissionArtifact.instructionPC 566 = 800 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx579 :
-    Artifact.submissionArtifact.instructionPC 566 = 801 := by
+    Artifact.submissionArtifact.instructionPC 567 = 801 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx580 :
-    Artifact.submissionArtifact.instructionPC 567 = 803 := by
+    Artifact.submissionArtifact.instructionPC 568 = 803 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -1447,11 +1447,11 @@ def setupPathA :
    opAt 491 (.Dup ⟨2, by decide⟩),
    pushAt 492 2 2080,
    opAt 493 .ADD,
-   pushAt 494 8 2784,
+   pushAt 494 2 2784,
    opAt 495 .MSTORE,
    opAt 496 (.Dup ⟨6, by decide⟩),
    opAt 497 (.Dup ⟨2, by decide⟩),
-   pushAt 498 0 0,
+   pushAt 498 6 0,
    opAt 499 .CALLDATACOPY,
    opAt 500 (.Swap ⟨0, by decide⟩),
    opAt 501 .POP,
@@ -1654,7 +1654,7 @@ theorem run_setupC (s : State) (input : ByteArray) (m0 : Nat)
 here directly instead of calling the Montgomery-form conversion first. -/
 private theorem jumpDest3296 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2474 = true :=
-  Artifact.isValidJumpDest_index 2018 (by rfl)
+  Artifact.isValidJumpDest_index 2017 (by rfl)
 
 /-- The `JUMP` closing `setupPathD` (instruction index 563, pc 781).  Same story as
 the bail blocks above: `Fast.Defs.fastPC4` used to supply this. -/
