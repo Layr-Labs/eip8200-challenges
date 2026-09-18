@@ -22,7 +22,7 @@ open EvmSemantics.EVM
 open YulEvmCompiler
 
 def submissionInstructions : List Instr :=
-[.push 0 0,
+[ .push 0 0,
  .op .CALLDATALOAD,
  .push 1 32,
  .op .CALLDATALOAD,
@@ -725,12 +725,12 @@ def submissionInstructions : List Instr :=
  .op (.Swap { idx := 3 }),
  .op .JUMPDEST,
  .op (.Dup { idx := 2 }),
- .push 5 4,
+ .push 1 4,
  .op .SHR,
- .op .MSIZE,
+ .push 2 512,
  .op .MSTORE,
  .op (.Dup { idx := 2 }),
- .op .MSIZE,
+ .push 2 544,
  .op .MSTORE,
  .op (.Dup { idx := 1 }),
  .op (.Dup { idx := 0 }),
@@ -1138,7 +1138,7 @@ def submissionInstructions : List Instr :=
  .op .AND,
  .op .MLOAD,
  .op .MULMOD,
- .push 16 121434099567864314412422772696005958491,
+ .push 16 121434099567864314412419957946238851931,
  .op .POP,
  .op (.Dup { idx := 1 }),
  .op (.Dup { idx := 0 }),
@@ -1546,7 +1546,7 @@ def submissionInstructions : List Instr :=
  .op .AND,
  .op .MLOAD,
  .op .MULMOD,
- .push 16 121434099567864314413212591480656059227,
+ .push 16 121434099567864314412419957946238851931,
  .op .POP,
  .op (.Dup { idx := 1 }),
  .op (.Dup { idx := 0 }),
@@ -2084,10 +2084,9 @@ def submissionInstructions : List Instr :=
  .push 2 1280,
  .op .ADD,
  .op .MSTORE,
- .op (.Dup { idx := 0 }),
- .push 1 31,
- .op .NOT,
- .op .ADD,
+ .push 2 32,
+ .op (.Dup { idx := 1 }),
+ .op .SUB,
  .op (.Swap { idx := 0 }),
  .push 2 2523,
  .op .JUMPI,
@@ -2542,8 +2541,7 @@ def submissionInstructions : List Instr :=
  .op .JUMPDEST,
  .op .NOT,
  .op .ADD,
- .push 4 2691,
- .op .JUMPDEST,
+ .push 5 2691,
  .op .JUMP,
  .op .JUMPDEST,
  .op .ISZERO,
@@ -3995,10 +3993,10 @@ def submissionInstructions : List Instr :=
  .op (.Swap { idx := 5 }),
  .op (.Dup { idx := 2 }),
  .op .LT,
- .op .JUMPDEST,
  .op .ADD,
  .op (.Swap { idx := 4 }),
  .op .JUMP,
+ .op .JUMPDEST,
  .op .JUMPDEST,
  .op .JUMPDEST,
  .op .JUMPDEST,
@@ -4384,7 +4382,7 @@ def submissionInstructions : List Instr :=
  .push 0 0,
  .op .RETURN]
 
-theorem submissionInstructions_count : submissionInstructions.length = 4361 := by
+theorem submissionInstructions_count : submissionInstructions.length = 4359 := by
   decide
 
 theorem assemble_submissionInstructions :

@@ -14,79 +14,37 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.BigC
 
 /-- Exact U bytes [482,486). -/
 def entryProgram : List Instr :=
-  [.op .JUMPDEST,
-   .push 2 1024]
+  [.op .JUMPDEST, .push 2 1024]
 
 /-- Exact U bytes [486,492). -/
 def initProgram : List Instr :=
-  [.op .JUMPDEST,
-   .push 1 1,
-   .push 1 64,
-   .op .CALLDATALOAD]
+  [.op .JUMPDEST, .push 1 1, .push 1 64, .op .CALLDATALOAD]
 
 /-- Exact U bytes [492,527). -/
 def cellProgram : List Instr :=
-  [.op .JUMPDEST,
-   .push 0 0,
-   .op .NOT,
-   .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
-   .op .ADD,
-   .op .MLOAD,
-   .push 0 0,
-   .op .BYTE,
-   .op (.Dup ⟨1, by decide⟩),
-   .op .MLOAD,
-   .push 0 0,
-   .op .BYTE,
-   .op .ADD,
-   .op (.Dup ⟨3, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
-   .op .ADD,
-   .op .MLOAD,
-   .push 0 0,
-   .op .BYTE,
-   .push 1 255,
-   .op .SUB,
-   .op .ADD,
-   .op (.Dup ⟨2, by decide⟩),
-   .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
-   .op .MSTORE8,
-   .push 1 8,
-   .op .SHR,
-   .op (.Swap ⟨1, by decide⟩),
-   .op .POP]
+  [.op .JUMPDEST, .push 0 0, .op .NOT, .op .ADD, .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup ⟨5, by decide⟩), .op .ADD, .op .MLOAD, .push 0 0, .op .BYTE,
+   .op (.Dup ⟨1, by decide⟩), .op .MLOAD, .push 0 0, .op .BYTE, .op .ADD,
+   .op (.Dup ⟨3, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .ADD, .op .MLOAD, .push 0 0,
+   .op .BYTE, .push 1 255, .op .SUB, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD,
+   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MSTORE8, .push 1 8, .op .SHR,
+   .op (.Swap ⟨1, by decide⟩), .op .POP]
 
 /-- Exact U bytes [527,532). -/
 def guardProgram : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩),
-   .push 2 494,
-   .op .JUMPI]
+  [.op (.Dup ⟨0, by decide⟩), .push 2 494, .op .JUMPI]
 
 /-- Exact U bytes [532,537). -/
 def decideProgram : List Instr :=
-  [.op .POP,
-   .push 2 548,
-   .op .JUMPI]
+  [.op .POP, .push 2 548, .op .JUMPI]
 
 /-- Exact U bytes [537,546). -/
 def retryProgram : List Instr :=
-  [.op (.Swap ⟨1, by decide⟩),
-   .op .POP,
-   .push 2 8192,
-   .push 2 488,
-   .op .JUMP]
+  [.op (.Swap ⟨1, by decide⟩), .op .POP, .push 2 8192, .push 2 488, .op .JUMP]
 
 /-- Exact U bytes [546,551). -/
 def finishProgram : List Instr :=
-  [.op .JUMPDEST,
-   .op .POP,
-   .op (.Swap ⟨0, by decide⟩),
-   .op .POP,
-   .op .JUMP]
+  [.op .JUMPDEST, .op .POP, .op (.Swap ⟨0, by decide⟩), .op .POP, .op .JUMP]
 
 syntax "unsigned_run" "[" Lean.Parser.Tactic.simpLemma,* "]" : tactic
 macro_rules

@@ -23,8 +23,7 @@ def hitProgram : List Instr :=
    .push 2 2508, .push 2 4229, .op .JUMP]
 
 def copyProgram : List Instr :=
-  [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .push 2 2112, .push 2 256,
-   .op .MCOPY]
+  [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .push 2 2112, .push 2 256, .op .MCOPY]
 
 def frame (s : State) (mem : ByteArray) (pc n : Nat) (rest : List UInt256) : State :=
   {s with pc := UInt256.ofNat pc, memory := mem, stack := UInt256.ofNat (32*n) :: rest}

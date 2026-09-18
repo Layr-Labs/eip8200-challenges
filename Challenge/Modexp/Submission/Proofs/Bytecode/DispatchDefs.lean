@@ -104,13 +104,13 @@ set_option maxRecDepth 400000 in
 /-- The recogniser's entry, in what the inherited image used as padding. -/
 @[simp] theorem jumpMemo :
     Decode.isValidJumpDest submissionBytecode 5251 = true :=
-  Artifact.isValidJumpDest_index 4213 (by rfl)
+  Artifact.isValidJumpDest_index 4211 (by rfl)
 
 set_option maxRecDepth 400000 in
 /-- The appended answer block's entry. -/
 @[simp] theorem jumpAnswer :
     Decode.isValidJumpDest submissionBytecode 5428 = true :=
-  Artifact.isValidJumpDest_index 4353 (by rfl)
+  Artifact.isValidJumpDest_index 4351 (by rfl)
 
 @[simp] theorem jump517 :
     Decode.isValidJumpDest submissionBytecode 135 = true :=

@@ -13,75 +13,35 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.BigC
 
 /-- Exact U raw interval [411,419). -/
 def mEntryProgram : List Instr :=
-  [.op .JUMPDEST,
-   .push 1 64,
-   .op .CALLDATALOAD,
-   .op .CALLDATASIZE,
-   .push 0 0,
-   .op .CALLDATACOPY,
+  [.op .JUMPDEST, .push 1 64, .op .CALLDATALOAD, .op .CALLDATASIZE, .push 0 0, .op .CALLDATACOPY,
    .push 0 0]
 
 /-- Exact U raw interval [419,430). -/
 def mGuardProgram : List Instr :=
-  [.op .JUMPDEST,
-   .op (.Dup ⟨4, by decide⟩),
-   .push 1 3,
-   .op .SHL,
-   .op (.Dup ⟨1, by decide⟩),
-   .op .EQ,
-   .push 2 477,
-   .op .JUMPI]
+  [.op .JUMPDEST, .op (.Dup ⟨4, by decide⟩), .push 1 3, .op .SHL, .op (.Dup ⟨1, by decide⟩),
+   .op .EQ, .push 2 477, .op .JUMPI]
 
 /-- Exact U raw interval [430,438). -/
 def mDoubleProgram : List Instr :=
-  [.push 0 0,
-   .push 2 440,
-   .push 2 484,
-   .op .JUMP]
+  [.push 0 0, .push 2 440, .push 2 484, .op .JUMP]
 
 /-- Exact U raw interval [438,459). -/
 def m2Program : List Instr :=
-  [.op .JUMPDEST,
-   .op (.Dup ⟨0, by decide⟩),
-   .push 1 3,
-   .op .SHR,
-   .op (.Dup ⟨4, by decide⟩),
-   .op .ADD,
-   .op .MLOAD,
-   .op (.Dup ⟨1, by decide⟩),
-   .push 1 7,
-   .op .AND,
-   .op .SHL,
-   .push 1 255,
-   .op .SHR,
-   .op .ISZERO,
-   .push 2 469,
-   .op .JUMPI]
+  [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .push 1 3, .op .SHR, .op (.Dup ⟨4, by decide⟩),
+   .op .ADD, .op .MLOAD, .op (.Dup ⟨1, by decide⟩), .push 1 7, .op .AND, .op .SHL, .push 1 255,
+   .op .SHR, .op .ISZERO, .push 2 469, .op .JUMPI]
 
 /-- Exact U raw interval [459,467). -/
 def mAddProgram : List Instr :=
-  [.op (.Dup ⟨2, by decide⟩),
-   .push 2 469,
-   .push 2 484,
-   .op .JUMP]
+  [.op (.Dup ⟨2, by decide⟩), .push 2 469, .push 2 484, .op .JUMP]
 
 /-- Exact U raw interval [467,475). -/
 def m3Program : List Instr :=
-  [.op .JUMPDEST,
-   .push 1 1,
-   .op .ADD,
-   .push 2 421,
-   .op .JUMP]
+  [.op .JUMPDEST, .push 1 1, .op .ADD, .push 2 421, .op .JUMP]
 
 /-- Exact U raw interval [475,482). -/
 def m9Program : List Instr :=
-  [.op .JUMPDEST,
-   .op .POP,
-   .op (.Swap ⟨2, by decide⟩),
-   .op .POP,
-   .op .POP,
-   .op .POP,
-   .op .JUMP]
+  [.op .JUMPDEST, .op .POP, .op (.Swap ⟨2, by decide⟩), .op .POP, .op .POP, .op .POP, .op .JUMP]
 
 structure MulJumps (code : ByteArray) : Prop where
   j419 : Decode.isValidJumpDest code 421 = true
