@@ -1,3 +1,26 @@
+# RIPEMD-160: two unreachable JUMPDESTs folded into their preceding pushes, 663,224 gas in 5,212 bytes
+
+- Size: 5,212 bytes, unchanged; 3,786 instructions, two fewer than the artifact described in the
+  next section.
+- Scored gas: 663,224, a reduction of 34.
+
+## The change
+
+The predecessor added two `JUMPDEST` instructions at byte offsets 722 and 772 purely to hold the
+instruction count constant while spending freed bytes. Its own reachability check — every push
+immediate in the finished image — shows neither offset is named by any push, so neither can be a
+branch target: both are dead padding on the fall-through path, costing one gas each on every
+execution of the schedule-staging window.
+
+Each sits immediately after a `PUSH2`, so each pair `PUSH2 imm; JUMPDEST` (four bytes) is folded
+into a single `PUSH3 0x00imm` (four bytes): the pushed value, the byte length, and every program
+counter in the image are unchanged, while the two dead instructions disappear. The instruction
+count drops by two, so every instruction index at or after the first removed row shifts by one or
+two; every index witness in the proof tree is retargeted in the same patch. Gas falls by two per
+vector — thirty-four over the seventeen-vector corpus.
+
+---
+
 # RIPEMD-160: message-schedule staging restructure with a last-use move, 663,258 gas in 5,212 bytes
 
 - SHA-256: `87b2202df9e69ecd0fc6c4d7cc1aa64c8bebac4989adccb2a978371b576c481a`.

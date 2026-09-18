@@ -14,7 +14,7 @@ open StackRoundTrace StackRoundTemplate StaggerPersistentLoopRaw
 def postTemplate : List Instr := StaggerPersistentLoopRaw.template 471
 
 theorem post_slice :
-    (Artifact.submissionArtifact.instructions.drop 3537).take postTemplate.length = postTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3535).take postTemplate.length = postTemplate := by rfl
 
 def postSite : GenericRoundSite Artifact.submissionArtifact .Osaka postTemplate :=
   StackSiteBuilder.ofSlice postTemplate 3537 post_slice
@@ -25,7 +25,7 @@ def postSite : GenericRoundSite Artifact.submissionArtifact .Osaka postTemplate 
     (by decide)
 
 theorem post_pc : postSite.startPC = UInt256.ofNat 4626 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3537) = UInt256.ofNat 4626
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3535) = UInt256.ofNat 4626
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def joinTemplate : List Instr := [.op .JUMPDEST]

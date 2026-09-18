@@ -32,7 +32,7 @@ theorem site_pc : site.startPC = UInt256.ofNat 463 := by
 
 theorem valid_padding (s : State) (e : Env s) :
     Decode.isValidJumpDest s.executionEnv.code 4761 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3621 = 4761 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3619 = 4761 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   have h := Artifact.submissionArtifact.isValidJumpDest_index 3621 (by rfl)
   rw [hpc] at h
