@@ -354,7 +354,7 @@ theorem run_lowStoreV2 (s : State) (pc value : UInt256) (rest : List UInt256)
   exact run_lowStoreV2_of_small s pc value rest hstack hrun (by omega)
 
 def templateV2 : List Instr :=
-  loadTemplate 1088 ++ (stage8 true ++ stage16 true) ++ highStoreV2 ++ [.op .JUMPDEST] ++ loadTemplate 1056 ++ (stage8 false ++ stage16 false) ++
+  loadTemplate 1088 ++ (stage8 true ++ stage16 true) ++ highStoreV2 ++ [.op .JUMPDEST] ++ loadTemplate 1056 ++ (stage8 true ++ stage16 true) ++
     lowStoreV2
 
 theorem run_templateV2 (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UInt256)
@@ -402,9 +402,9 @@ theorem run_templateV2 (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off li
   have h1234 := DenseScheduleTrace.runInstrSeq_append_running h123j (by exact hrun) h4
   let pc4 := pcAfter pc3 (loadTemplate 1056)
   have h5 := run_reverse s2 pc4 (MachineState.readWord s.memory p)
-    ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho false hstack hrun
+    ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho true hstack hrun
   have h12345 := DenseScheduleTrace.runInstrSeq_append_running h1234 (by exact hrun) h5
-  have h6 := run_lowStoreV2 s2 (pcAfter (pcAfter pc4 (stage8 false)) (stage16 false)) low F (by omega) hrun
+  have h6 := run_lowStoreV2 s2 (pcAfter (pcAfter pc4 (stage8 true)) (stage16 true)) low F (by omega) hrun
     (by change 35 ≤ a1.toNat; omega)
   have h := DenseScheduleTrace.runInstrSeq_append_running h12345 (by exact hrun) h6
   have hloaded : loadedActiveWords s (UInt256.ofNat p) = a1 := active_swap s.activeWords p hbound
@@ -412,7 +412,7 @@ theorem run_templateV2 (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off li
   rw [hloaded]
   exact h
 
-theorem end_pcV2 : pcAfter (UInt256.ofNat 472) templateV2 = UInt256.ofNat 547 := by decide
+theorem end_pcV2 : pcAfter (UInt256.ofNat 486) templateV2 = UInt256.ofNat 559 := by decide
 #print axioms run_templateV2
 #print axioms exact_bytes
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13Endian

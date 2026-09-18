@@ -15,7 +15,7 @@ noncomputable opaque gasSteps (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (hn32 : input.size ≠ 32)
     (i : Nat) (hi : i < DriverTrace.blockCount input)
     (hh : input.size = DriverTrace.blockOffset i)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 343)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 342)) :
     GasSteps (initialState submissionBytecode input 0)
       {states input i with
         pc := UInt256.ofNat 4701

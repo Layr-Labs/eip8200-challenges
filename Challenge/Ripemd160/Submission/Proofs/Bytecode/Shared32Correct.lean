@@ -41,7 +41,7 @@ def resultState (input : ByteArray) : State :=
   Shared32Core.resultState (Shared32Start.tableState input)
 
 def gasSteps (input : ByteArray) (h32 : input.size = 32)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 343)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 342)) :
     GasSteps (initialState submissionBytecode input 0) (resultState input) := by
   let s := Shared32Start.tableState input
   have e : Shared32Sites.Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
@@ -51,7 +51,7 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32)
 
 /-- Exact32 correctness uses an opaque generic trace-to-evaluation bridge. -/
 theorem correct (input : ByteArray) (h32 : input.size = 32)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 343)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 342)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   exact eval_of_initial_returned input (resultState input) (gasSteps input h32 entryPrefix)

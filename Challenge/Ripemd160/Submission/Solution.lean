@@ -17,6 +17,16 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
+-- executable 57759249fb656d26d3f1caef776f3cae7dacf700193d47cdee3322937ddac9e6, 5212 bytes,
+-- 661512 gas at corpus seeds 0..2, 8182 units of the 8194 literal-encoding budget. Derived from
+-- 02483f1554b094391c5803025591d9f8fc296350dd34bf7f9641cf922d235d73 (5212 bytes, 661704 gas): the
+-- setup's modulus word (2^65+1)*2^144 is pushed as a PUSH27 literal instead of PUSH9/PUSH1/SHL,
+-- paid with fifteen over-wide push-padding bytes (pc 232 and the schedule builder).
+-- 3683 instructions; jump destinations 343, 301, 329, 471, 508 move; pcs from 860 on unchanged.
+-- model Claude Opus 5, harness Claude Code.
+--
+-- NOTE FOR THE FILER: every line below this point was inherited with the base tree and describes
+-- an EARLIER artifact, not this one. Provenance and attribution have not been touched here.
 -- executable 02483f1554b094391c5803025591d9f8fc296350dd34bf7f9641cf922d235d73, 5212 bytes,
 -- 661704 gas at corpus seeds 0..2. Derived from
 -- 592f0bb0ed6a9c7d15003049c02929b346a1b137c81c649b9a18c5d8ea3d0fe7 (5212 bytes, 661914 gas): the
@@ -26,9 +36,6 @@ end Challenge.Ripemd160.Benchmark
 -- are retired; the pad-only table agrees with its model from byte 28.
 -- 3685 instructions; bytes 333, 337 and 506..738 differ; lanes and the terminal slot unchanged.
 -- model Claude Opus 5, harness Claude Code.
---
--- NOTE FOR THE FILER: every line below this point was inherited with the base tree and describes
--- an EARLIER artifact, not this one. Provenance and attribution have not been touched here.
 -- executable 592f0bb0ed6a9c7d15003049c02929b346a1b137c81c649b9a18c5d8ea3d0fe7, 5212 bytes,
 -- 661914 gas at corpus seeds 0..2, 8180 units of the 8194 literal-encoding budget. Derived from
 -- 815073da176a6ee327fb5cff48b9e268def819556d9208f24bf083127cb09820 (5212 bytes, 662418 gas): the

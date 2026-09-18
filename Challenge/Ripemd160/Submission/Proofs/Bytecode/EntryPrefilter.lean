@@ -18,7 +18,7 @@ def condition (input : ByteArray) : UInt256 :=
 
 def filterPrefix : List Located :=
   [pushAt 0 5 mask, pushAt 1 0 0, opAt 2 .CALLDATALOAD,
-   opAt 3 .AND, pushAt 4 2 343]
+   opAt 3 .AND, pushAt 4 2 342]
 def path : List Located := filterPrefix ++ [opAt 5 .JUMPI]
 
 private theorem pc0 : Artifact.submissionArtifact.instructionPC 0 = 0 := by
@@ -36,7 +36,7 @@ private theorem pc5 : Artifact.submissionArtifact.instructionPC 5 = 12 := by
 
 theorem run_prefix (input : ByteArray) :
     run filterPrefix (PatternedScan.stS input 0 []) =
-      some (PatternedScan.stS input 12 [343, condition input]) := by
+      some (PatternedScan.stS input 12 [342, condition input]) := by
   let w := MachineState.readWord input 0
   let l0 : Located := pushAt 0 5 mask
   have h0 := PatternedScan.blockOfS l0
@@ -55,10 +55,10 @@ theorem run_prefix (input : ByteArray) :
   have h3 := PatternedScan.blockOfS l3
     (PatternedScan.pcFactS input 3 8 [w, mask] (by norm_num) pc3)
     (PatternedScan.stepS_and input 8 w mask [] (by simp) (by norm_num))
-  let l4 : Located := pushAt 4 2 343
+  let l4 : Located := pushAt 4 2 342
   have h4 := PatternedScan.blockOfS l4
     (PatternedScan.pcFactS input 4 9 [condition input] (by norm_num) pc4)
-    (PatternedScan.stepS_push input 9 2 343 [condition input]
+    (PatternedScan.stepS_push input 9 2 342 [condition input]
       (by simp) (by decide) (by decide) (by norm_num))
   have h01 := DataStepper.runLocatedBlock_append [l0] [l1] _ _ _ h0 rfl h1
   have h012 := DataStepper.runLocatedBlock_append [l0,l1] [l2] _ _ _ h01 rfl h2
@@ -71,18 +71,18 @@ theorem run_fall (input : ByteArray) (h : condition input = 0) :
   have hp := run_prefix input
   rw [h] at hp
   have hj := PatternedScan.blockOfS (opAt 5 .JUMPI)
-    (PatternedScan.pcFactS input 5 12 [343, 0] (by norm_num) pc5)
-    (PatternedScan.stepS_jumpi_fall input 12 343 0 []
+    (PatternedScan.pcFactS input 5 12 [342, 0] (by norm_num) pc5)
+    (PatternedScan.stepS_jumpi_fall input 12 342 0 []
       (by simp) (by norm_num) (by decide))
   exact DataStepper.runLocatedBlock_append filterPrefix [opAt 5 .JUMPI] _ _ _ hp rfl hj
 
 theorem run_taken (input : ByteArray) (h : condition input ≠ 0) :
     run path (PatternedScan.stS input 0 []) =
-      some (PatternedScan.stS input 343 []) := by
+      some (PatternedScan.stS input 342 []) := by
   have hp := run_prefix input
   have hj := PatternedScan.blockOfS (opAt 5 .JUMPI)
-    (PatternedScan.pcFactS input 5 12 [343, condition input] (by norm_num) pc5)
-    (PatternedScan.stepS_jumpi_taken input 12 343 343 (condition input) []
+    (PatternedScan.pcFactS input 5 12 [342, condition input] (by norm_num) pc5)
+    (PatternedScan.stepS_jumpi_taken input 12 342 342 (condition input) []
       (by simp) (by norm_num) (by rfl)
       (by
         intro hz
@@ -97,7 +97,7 @@ def gasSteps_fall (input : ByteArray) (h : condition input = 0) :
     path rfl rfl (run_fall input h) rfl deployAddress_not_precompile
 
 def gasSteps_taken (input : ByteArray) (h : condition input ≠ 0) :
-    GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 343) :=
+    GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 342) :=
   DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     path rfl rfl (run_taken input h) rfl deployAddress_not_precompile
 

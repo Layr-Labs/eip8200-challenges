@@ -184,7 +184,7 @@ def tailTemplate : List Instr := [
   .op (.Dup ⟨2, by decide⟩),
   .op (.Dup ⟨6, by decide⟩),
   .op .SUB,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 3),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 3),
   .op .SHL,
   .push ⟨2, by decide⟩ (UInt256.ofNat 256),
   .op .SUB,
@@ -194,7 +194,7 @@ def tailTemplate : List Instr := [
 def finishTemplate : List Instr := [ .op .CALLDATASIZE,
     .op (.Dup ⟨5, by decide⟩),
     .op .EQ,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 301),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 300),
     .op .JUMPI ]
 
 def transitionTemplate : List Instr := [
@@ -249,7 +249,7 @@ def toTailTemplate : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 224
     .op .JUMP ]
 
 def resultTemplate : List Instr := [ .op .JUMPDEST,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 343),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 342),
     .op .JUMPI ]
 
 

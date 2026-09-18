@@ -1,3 +1,65 @@
+# RIPEMD-160: a setup constant pushed as a literal instead of shifted — 661,512 gas in 5,212 bytes
+
+- SHA-256: `57759249fb656d26d3f1caef776f3cae7dacf700193d47cdee3322937ddac9e6`.
+- Size: 5,212 bytes; 3,683 instructions (two fewer than the predecessor). Instruction starts in
+  `[233, 860)` move (by −1 up to pc 417, by up to +14 in the schedule builder); every program
+  counter from 860 on is unchanged.
+- Literal-encoding cost: 8,182 against a ceiling of 8,194 (predecessor 8,184). The ceiling was
+  calibrated empirically: the generated `Benchmark/Artifact.lean` literal elaborates at every
+  sampled cost up to 8,194 and hits Lean's default recursion limit at 8,195 and above.
+- Local score: 661,512 gas at corpus seeds 0, 1 and 2, a reduction of 192 from the 661,704
+  predecessor. The setup block runs once per vector that reaches the compressor (32 times over
+  the corpus) and each run is 6 gas cheaper.
+
+## The change
+
+The per-vector setup built the resident modulus word `(2^65 + 1) · 2^144` at run time with
+`PUSH9 0x20000000000000001 PUSH1 0x90 SHL` (9 gas). It is now one `PUSH27` of the same value
+(3 gas). The 15 extra bytes are paid for with over-wide push immediates that earlier changes
+had left behind as length padding: one byte at pc 232 (`PUSH2 0x0003` → `PUSH1 0x03`) and
+fourteen in the schedule builder (the low half's endian shifts `8` and `16`, and eleven writer
+addresses). The length therefore stays 5,212, so the CODESIZE-relative digest table does not
+move. Five jump destinations move (343 → 342, 301 → 300, 329 → 328, 471 → 485, 508 → 522)
+and their ten `PUSH2` immediates are rewritten.
+
+Among the other run-time constants on the hot paths, the builder shows no further byte-neutral
+fold: the remaining candidates (`0xffff0000…` and `0xff00ff00…` built with `DIV`, the second
+modulus word, the entry path's `0x0101…01`) each need 15 to 28 extra bytes, and only 4 padding
+bytes are left.
+
+## What it costs the proof
+
+A mechanical relocation (`ri-tools/relocate.py`), plus the following hand edits:
+
+- `StaggerPersistentStart.initialTemplate`: the three rows become one `PUSH27`, and
+  `run_initial` goes through unchanged.
+- The builder's low-half endian stage now uses the narrow `stage8 true` / `stage16 true` form
+  (`Pair13Endian.templateV2`, `Shared32Lower`).
+- The writer chunk templates in `PoolRawWriter` are re-synchronised with `Pair13WriterRaw`.
+- The opaque jump templates take the moved destinations (`PadJump.template 485 / 522`,
+  `StaggerPersistentLoopRaw.template 485`).
+- Moved destinations are also rewritten where they appear as values: stack words, `stS`/`atPC`
+  states and `jumpi` targets in `EntryPrefilter`, `DirectGuardSize`, `AbcArm`, `J2RawControl`,
+  `J2Correct`, `J2Return`, `PaddingTrace`, `LoopCompletionControl` and `Shared32Trace`.
+
+## Verification
+
+- `lake build Challenge.Ripemd160.Submission.Solution` passes all 3,731 jobs; the final theorem
+  `Challenge.Ripemd160.Benchmark.candidate` depends only on `propext`, `Classical.choice` and
+  `Quot.sound`; no `sorry`, `native_decide` or added axiom appears anywhere in the change.
+- Local comparator (`BENCHMARK_INSECURE_LOCAL=1 ./benchmark.sh ripemd160`): verified gas 661,512,
+  49/49 correctness vectors, Lean comparator accepted.
+- Fuzz and adversarial inputs (`fuzz_ri.py`, 1,069 cases per seed, now including 28 targeted
+  inputs that drive the terminal round's carry condition) return the reference digest at
+  three seeds.
+- Researched and proved by Claude Opus 5 (Claude Code harness), building on the inherited work
+  credited below.
+
+---
+
+**The text below was inherited with the base tree and describes EARLIER artifacts, not this one.
+Its provenance and attribution sections have not been modified.**
+
 # RIPEMD-160: schedule word 6 unmasked, with a zeroed-memory proof reference — 661,704 gas in 5,212 bytes
 
 - SHA-256: `02483f1554b094391c5803025591d9f8fc296350dd34bf7f9641cf922d235d73`.
@@ -70,11 +132,6 @@ word 11.
   bytes and around the code size) return the reference digest.
 - Researched and proved by Claude Opus 5 (Claude Code harness), building on the inherited work
   credited below.
-
----
-
-**The text below was inherited with the base tree and describes EARLIER artifacts, not this one.
-Its provenance and attribution sections have not been modified.**
 
 # RIPEMD-160: the schedule scratch moved so the copies leave the zero bytes — 661,914 gas in 5,212 bytes
 

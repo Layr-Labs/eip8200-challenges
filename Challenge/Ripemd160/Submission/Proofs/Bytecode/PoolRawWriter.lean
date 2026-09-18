@@ -19,13 +19,13 @@ open Pair13WriterRaw (writeChain)
 
 def template0 : List Instr :=
   [ .op (.Dup ⟨4, by decide⟩),
-    .push ⟨3, by decide⟩ (UInt256.ofNat 126),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 126),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
-    .push ⟨3, by decide⟩ (UInt256.ofNat 900),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 900),
     .op .MSTORE,
     .op (.Dup ⟨11, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 216),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 216),
     .op .MSTORE,
     .op (.Dup ⟨2, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 882),
@@ -132,7 +132,7 @@ def template1 : List Instr :=
     .push ⟨2, by decide⟩ (UInt256.ofNat 936),
     .op .MSTORE,
     .op (.Dup ⟨5, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 108),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 108),
     .op .MSTORE,
     .op (.Dup ⟨7, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 792),
@@ -227,12 +227,12 @@ theorem run_chunk1 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : L
 
 def template2 : List Instr :=
   [ .op (.Dup ⟨13, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 90),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 90),
     .op .MSTORE,
     .op (.Dup ⟨7, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 72),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 72),
     .op .MSTORE,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 54),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 54),
     .op .MSTORE,
     .op (.Dup ⟨13, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 666),
@@ -497,21 +497,21 @@ theorem run_chunk4 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : L
 #print axioms run_chunk4
 
 def template5 : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 18),
+  [ .push ⟨1, by decide⟩ (UInt256.ofNat 18),
     .op .MSTORE,
     .push ⟨2, by decide⟩ (UInt256.ofNat 360),
     .op .MSTORE,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 198),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 198),
     .op .MSTORE,
     .push ⟨2, by decide⟩ (UInt256.ofNat 324),
     .op .MSTORE,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 252),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 252),
     .op .MSTORE,
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .MSTORE,
     .push ⟨2, by decide⟩ (UInt256.ofNat 450),
     .op .MSTORE,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 162),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 162),
     .op .MSTORE ]
 
 def stack5 (words : Nat → UInt256) (rho : List UInt256) : List UInt256 :=

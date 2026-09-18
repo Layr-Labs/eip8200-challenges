@@ -11,7 +11,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory Pair13Endian
 
 def lowerTemplate : List Instr :=
-  (loadTemplate 1056 ++ (stage8 false ++ stage16 false)) ++ lowStoreV2
+  (loadTemplate 1056 ++ (stage8 true ++ stage16 true)) ++ lowStoreV2
 
 theorem run_lower (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
@@ -35,15 +35,15 @@ theorem run_lower (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt2
   rw [hloadActive] at h1
   let pc1 := pcAfter pc (loadTemplate 1056)
   have h2 := run_reverse s pc1 (MachineState.readWord s.memory 1056)
-    ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho false (by omega) hrun
+    ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho true (by omega) hrun
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
-  let pc2 := pcAfter (pcAfter pc1 (stage8 false)) (stage16 false)
+  let pc2 := pcAfter (pcAfter pc1 (stage8 true)) (stage16 true)
   have h3 := run_lowStoreV2_of_small s pc2 low F hF hrun ha
   have h := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
   simpa only [lowerTemplate, DenseScheduleTrace.pcAfter_append, pc1, pc2, low] using h
 
 theorem lower_bytes : assembleBytes lowerTemplate =
-    [97,4,32,140,1,81,128,97,0,8,28,129,24,143,22,97,1,1,2,24,143,129,128,97,0,16,28,24,22,98,1,0,1,2,24,96,252,82] := by decide
+    [97,4,32,140,1,81,128,96,8,28,129,24,143,22,97,1,1,2,24,143,129,128,96,16,28,24,22,98,1,0,1,2,24,96,252,82] := by decide
 
 #print axioms run_lower
 #print axioms lower_bytes
