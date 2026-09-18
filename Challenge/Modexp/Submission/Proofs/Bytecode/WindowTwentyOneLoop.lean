@@ -51,24 +51,20 @@ def storesProgram : List Instr := setupTailProgram ++ WindowTwentyOneStage.stage
 /-- The first pass's trampoline at 951; only this copy carries the `JUMPDEST`. -/
 def trampolineProgram : List Instr := .op .JUMPDEST :: storesProgram
 
-/-- The first inter-pass span (pc 1413-1430).  The exponent is never shifted now: one
+/-! The first inter-pass span (pc 1413-1430).  The exponent is never shifted now: one
 store serves all sixty-two addressed digits, so these eighteen bytes carry no work.
-Ten `JUMPDEST` and a dead `PUSH6; POP`: twelve instructions, eighteen bytes, fifteen gas,
-which is the provable minimum for a stack-neutral filler of that shape. -/
+A dead `PUSH16; POP`: two instructions, eighteen bytes, five gas.  The sixteen
+immediate bytes swallow the former `JUMPDEST`/`PUSH6` filler as push data, so the
+span stays stack-neutral and pc-neutral while costing a fifth of the gas.-/
 def padProgramA : List Instr :=
-  [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .push 6 100447932865371, .op .POP]
+  [.push 16 121434099567864314412419957946238851931, .op .POP]
 
-/-- The second inter-pass span (pc 1879-1896).  Eleven instructions in the same eighteen
-bytes -- one fewer than `padProgramA`, which is what pays for the extra instruction the
-final group's nibble-0 lookup costs, so the instruction COUNT of the artifact is
-unchanged and the RETURN block's index never moves.  The `PUSH7` opcode sits at 1888
-deliberately: 1888 is the only pc in either span that the artifact itself pushes. -/
+/-! The second inter-pass span (pc 1879-1896).  The same two-instruction filler in
+eighteen bytes.  The swallowed bytes still place a `0x5b` at what was the `PUSH7`
+opcode position, so the artifact's two `1888` data references stay honest as
+non-jump-destination bytes; the pc 1888 they name does not move.-/
 def padProgramB : List Instr :=
-  [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .push 7 25714670813535067, .op .POP]
+  [.push 16 121434099567864314412419957946238851931, .op .POP]
 
 /-- Between two passes: the dead span, then replay the staging head.  Twenty-three bytes. -/
 def linkProgram : List Instr := padProgramA ++ WindowTwentyOneStage.stageHead
@@ -267,9 +263,12 @@ private theorem run_padA (template : State) (pc : UInt256) (mem : ByteArray)
       exponent counter 0 rest) := by
   have hcap5 : rest.length + 5 < 1024 := by omega
   have hcap6 : rest.length + 6 < 1024 := by omega
-  have hpush : UInt256.ofNat 7 =
+  have hpush : UInt256.ofNat 17 =
       UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
-      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
+      UInt256.ofNat 1 := by decide
   simp [runInstructions, padProgramA, WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
     Challenge.EvmProof.Stepper.runInstr, hcap5, hcap6, advancePC, succ_eq_add, hpush, word_add_assoc]
 
@@ -282,9 +281,12 @@ private theorem run_padB (template : State) (pc : UInt256) (mem : ByteArray)
       exponent counter 0 rest) := by
   have hcap5 : rest.length + 5 < 1024 := by omega
   have hcap6 : rest.length + 6 < 1024 := by omega
-  have hpush : UInt256.ofNat 8 =
+  have hpush : UInt256.ofNat 17 =
       UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
-      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
+      UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 +
+      UInt256.ofNat 1 := by decide
   simp [runInstructions, padProgramB, WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
     Challenge.EvmProof.Stepper.runInstr, hcap5, hcap6, advancePC, succ_eq_add, hpush, word_add_assoc]
 

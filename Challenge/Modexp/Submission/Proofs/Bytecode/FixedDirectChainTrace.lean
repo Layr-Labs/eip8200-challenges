@@ -47,7 +47,7 @@ theorem run_start (s : State) (memory : ByteArray)
       Challenge.EvmProof.Word.ofNat_add_mod]
 
 /-- Program counters for the loop head `FixedDirectPaths.squareCall`
-(instruction indices 2039..2049).
+(instruction indices 2020..2030).
 
 `FixedDirectPaths.directPC0` stops at index 2038, the last instruction of the
 recogniser; the companion `directPC1` that used to cover the chain was dropped
@@ -56,14 +56,14 @@ longer exist.  `squareCall` does still exist, so its eleven counters are restate
 here — the only module that locates that block.  Transcribed from the artifact:
 `JUMPDEST; DUP1; PUSH2 0x0a40; MSTORE; PUSH2 0x0320; PUSH2 0x0200; DUP1; DUP1;
 PUSH2 0x1180; PUSH2 0x0cff; JUMP` at pc 2453..2473. -/
-@[simp] theorem directPC1 (i : Nat) (hi : 2039 ≤ i) (hii : i ≤ 2049) :
+@[simp] theorem directPC1 (i : Nat) (hi : 2020 ≤ i) (hii : i ≤ 2030) :
     Artifact.submissionArtifact.instructionPC i =
-      ([2453,2454,2455,2458,2459,2462,2465,2466,2467,2470,2473] : List Nat)[i - 2039]! := by
+      ([2453,2454,2455,2458,2459,2462,2465,2466,2467,2470,2473] : List Nat)[i - 2020]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 /-- The kernel's shared `common` block at pc 3327 (`0x0cff`), the target of the
-`JUMP` that ends `squareCall`.  Instruction index 2696 is `JUMPDEST` at pc 3327;
+`JUMP` that ends `squareCall`.  Instruction index 2673 is `JUMPDEST` at pc 3327;
 `squareCall`'s own last two pushes are `PUSH2 0x1180` (4480 = `sq_row`) and
 `PUSH2 0x0cff` (3327), so this is the block the square call enters.
 
@@ -71,7 +71,7 @@ It lives here rather than in `FixedDirectPaths` so that adding it does not
 invalidate the four sibling trace modules that already import `Paths`. -/
 theorem jumpDestSqCommon :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3327 = true :=
-  Artifact.isValidJumpDest_index 2692 (by rfl)
+  Artifact.isValidJumpDest_index 2673 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_squareCall (s : State) (memory : ByteArray)
