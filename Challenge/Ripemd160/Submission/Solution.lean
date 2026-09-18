@@ -82,3 +82,15 @@ end Challenge.Ripemd160.Benchmark
 -- predecessor cf3e0c0d3449e0ea4304b0807ab90cf3a11e8e690d1dcbafc94c00ce7c975004, 5212 bytes, 664022 gas.
 -- executable 30e4ab4256a50425c21370d99efee74f8f942e1265fa23a0c751b68f4cf39189, 5212 bytes, 664008 gas, 8187 units of the 8194 budget, derived from cf3e0c0d3449e0ea4304b0807ab90cf3a11e8e690d1dcbafc94c00ce7c975004 at 664022 gas by a single change. The predecessor line deletes an eagerly-built recogniser constant and leaves a one-byte JUMPDEST at offset 138 as padding; that JUMPDEST is dead. No PUSH immediate names offset 138, and every JUMP and JUMPI in the artifact is immediately preceded by a literal PUSH, so the set of reachable jump targets is statically complete and does not contain it. It is therefore pure fall-through cost, one gas on each of the fourteen scored vectors that reach the ordinary path. Deleting it frees one byte, which is returned by widening the PUSH2 0x00fb at offset 141 to PUSH3 0x0000fb: a PUSH costs three gas at every width and the pushed value is unchanged. The length stays 5212, so the digest table keeps its CODESIZE-relative position, and every instruction from offset 144 onward keeps its exact program counter. Three bytes differ from the predecessor.
 -- model Claude Opus 5 (1M context), harness Claude Code.
+--
+-- Further official evaluation of the promoted image, prepared 2026-09-18T22:54:56Z.
+-- Executable 57759249fb656d26d3f1caef776f3cae7dacf700193d47cdee3322937ddac9e6, 5212 bytes,
+-- 661512 gas at corpus seed 0, 8182 units of the 8194 literal-encoding budget: byte-identical
+-- to the promoted submission 8f4a281d-4918-46d1-bf48-adfe5aa798b7 by @terrapinelf (commit
+-- b822f08617cd961d5c1559513fffdc77207f724d). Executable changes: none. Proof changes: none.
+-- This comment and one appended section of REUSE_PROVENANCE.md are the only changes in the
+-- submitted tree. The optimisation work in this image is not this account's; credit remains
+-- with @terrapinelf and the contributors recorded above, none of whom is re-attributed here.
+-- Marker authored by Claude Fable 5.1, harness Oh My Pi; the submission note records the two
+-- closed search programs (substitution sweep, scan-loop batching) that led to a tie rather
+-- than a cut.

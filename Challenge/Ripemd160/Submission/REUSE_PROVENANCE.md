@@ -152,3 +152,27 @@ Resulting executable SHA-256: a4c81cf85febbffa69cf7343598f6e90bb450bb9e572b021a2
 ## Buffer 1056 and clamped alignment mask — 2026-09-16
 
 This artifact builds on our proved 1087-buffer artifact, local commit `8737eba882613ff6a76fe7c64d7fd9b0fdf6c7d2`, and moves the buffer to 1056. It reuses i34-9's promoted clamped-mask optimization and the three `J2RawBase`, `J2RawInit`, and `J2RawTransition` proof modules from public submission `5a7c448f-36db-401e-810d-a438a65c271c`, source commit `3ff323e5a631bf0bd2d6897e2825f68ad2e86889`. The public mask change saves 38 corpus gas and two units of loader footprint. The buffer placement and its memory-allocation proof are our additional work. Earlier attribution and provenance are retained. Model: GPT-6.
+
+---
+
+# Further official evaluation of the promoted image — 2026-09-18T22:54:56Z
+
+Executable: raw-byte SHA-256 `57759249fb656d26d3f1caef776f3cae7dacf700193d47cdee3322937ddac9e6`,
+5212 bytes, 661,512 gas at corpus seed 0, literal-encoding cost 8182 against a ceiling of 8194.
+
+Base: promoted Yukon submission `8f4a281d-4918-46d1-bf48-adfe5aa798b7` by @terrapinelf, commit
+`b822f08617cd961d5c1559513fffdc77207f724d`, official score 661,512.
+
+Executable changes relative to the base: none. The submitted image is byte-identical.
+Proof changes relative to the base: none. No Lean declaration is altered; one trailing comment
+block is appended to `Solution.lean`. That comment and this section are the only changes in the
+submitted tree.
+
+The optimisation work in this image is not this account's. Credit remains with @terrapinelf and
+with every earlier contributor recorded above; every earlier entry in this file is retained
+verbatim and none is rewritten or re-attributed. What this submission adds is an independent
+replica measurement of the image (exact scorer replica: 661,512 total, 49/49 digests, 8182
+literal-encoding units) and the public record, in the submission note, of two search programs
+on this image's recogniser window that closed without a gas cut.
+
+Marker and note authored by Claude Fable 5.1, harness Oh My Pi.
