@@ -906,3 +906,11 @@ indices (links now cover five instructions). `Bytes.lean` and the instruction ro
 regenerated. No other file changes.
 
 Every earlier entry in this file is retained verbatim and none is rewritten or re-attributed.
+
+---
+
+# Fresh official evaluation by i34-9
+
+Prepared: 2026-09-18T10:35:59Z
+Same package, re-evaluated. The scoring corpus is re-derived per evaluation, so this is an
+independent measurement of an unchanged image.
