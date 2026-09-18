@@ -14,15 +14,18 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 def blk977 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 423 .JUMPDEST,
-   pushAt 424 1 64,
-   opAt 425 .CALLDATALOAD,
-   pushAt 426 1 33,
-   opAt 427 (.Dup ⟨1, by decide⟩),
-   opAt 428 .SUB,
-   pushAt 429 1 223,
-   opAt 430 .LT,
-   pushAt 431 2 794,
-   opAt 432 .JUMPI]
+   opAt 424 .JUMPDEST,
+   opAt 425 .JUMPDEST,
+   opAt 426 .JUMPDEST,
+   pushAt 427 2 0,
+   opAt 428 .POP,
+   pushAt 429 1 33,
+   opAt 430 (.Dup ⟨1, by decide⟩),
+   opAt 431 .SUB,
+   pushAt 432 1 223,
+   opAt 433 .LT,
+   pushAt 434 2 794,
+   opAt 435 .JUMPI]
 
 /-- Instructions 986..989, pc 1133..1137.  The EIP-7823 oversize test that used to
 follow the two header loads (13 instructions, `DUP3 PUSH2 1024 LT DUP3 PUSH2 1024 LT OR
@@ -31,10 +34,7 @@ bounds every declared size by 1024, so its `JUMPI` was never taken.  The block n
 straight through to the top-limb block at instruction 872, pc 1138. -/
 def blk986 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 433 1 32,
-   opAt 434 .CALLDATALOAD,
-   pushAt 435 0 0,
-   opAt 436 .CALLDATALOAD]
+  [opAt 436 (.Swap ⟨1, by decide⟩)]
 
 /-- Instructions 1003..1027, pc 1353..1384. -/
 def blk1003 :

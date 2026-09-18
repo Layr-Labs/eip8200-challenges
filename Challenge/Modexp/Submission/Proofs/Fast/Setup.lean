@@ -378,23 +378,36 @@ constrained only by `s.executionEnv.calldata`, `s.executionEnv.code` and
 calls makes them unfold the frozen bytecode literal, which does not terminate
 in reasonable memory. -/
 
-/-- Gas-erased state at the fast-path entry: pc 1396, empty stack. -/
+/-- Gas-erased state at the fast-path entry with all three decoded lengths. -/
 def entryState (s : State) : State :=
-  { s with pc := UInt256.ofNat 599, stack := [] }
+  { s with
+    pc := UInt256.ofNat 599
+    stack := [UInt256.ofNat (modulusSize s.executionEnv.calldata),
+      UInt256.ofNat (exponentSize s.executionEnv.calldata),
+      UInt256.ofNat (baseSize s.executionEnv.calldata)] }
 
-/-- The fallback target: pc 1326 with an empty stack; memory and `activeWords`
-are untouched because indices 1112..1120 and the bail blocks contain no memory
-opcode. -/
+/-- Header-body fallback target with the same retained frame.  Memory and
+`activeWords` are untouched by the entry and bail blocks. -/
 def fallbackState (s : State) : State :=
-  { s with pc := UInt256.ofNat 553, stack := [] }
+  { s with
+    pc := UInt256.ofNat 553
+    stack := [UInt256.ofNat (modulusSize s.executionEnv.calldata),
+      UInt256.ofNat (exponentSize s.executionEnv.calldata),
+      UInt256.ofNat (baseSize s.executionEnv.calldata)] }
 
-/-- Entry of `BAIL1` (pc 2016): one live stack word. -/
+/-- Entry of `BAIL1` with the retained header. -/
 def bail1State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 794, stack := [UInt256.ofNat (modulusSize input)] }
+  { s with
+    pc := UInt256.ofNat 794
+    stack := [UInt256.ofNat (modulusSize input),
+      UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
-/-- After the `msize > 32` check (pc 1456). -/
+/-- Fall-through state after the width test, before the final `SWAP2`. -/
 def sizeCheckState (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 614, stack := [UInt256.ofNat (modulusSize input)] }
+  { s with
+    pc := UInt256.ofNat 618
+    stack := [UInt256.ofNat (modulusSize input),
+      UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 /-- Unsigned subtraction rejects values below 33 by wrapping, and values above
 256 by an ordinary difference.  The passing interval is exactly 33..256. -/
@@ -431,7 +444,7 @@ theorem run_entry_pass (s : State) (input : ByteArray)
     [blk977, opAt, pushAt, wfOp,
      Challenge.EvmProof.Stepper.runLocatedBlock,
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-     entryState, sizeCheckState, hdata, hrun, read_modulus, hgt, List.exchange,
+     entryState, sizeCheckState, hdata, hrun, hgt, List.exchange,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
@@ -449,7 +462,7 @@ theorem run_entry_bail (s : State) (input : ByteArray)
     [blk977, opAt, pushAt, wfOp,
      Challenge.EvmProof.Stepper.runLocatedBlock,
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-     entryState, bail1State, hdata, hcode, hrun, read_modulus, hgt, List.exchange,
+     entryState, bail1State, hdata, hcode, hrun, hgt, List.exchange,
      jumpDest1812,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -504,13 +517,11 @@ theorem run_sizeCheck_pass (s : State) (input : ByteArray)
     (hm : modulusSize input ≤ 1024) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk986 (sizeCheckState s input) =
       some (topCheckState s input) := by
-  have hcond := sizeCond_zero input hb he hm
   simp (config := { maxSteps := 400000 })
-    [blk986, opAt, pushAt, wfOp,
+    [blk986, opAt, wfOp,
      Challenge.EvmProof.Stepper.runLocatedBlock,
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-     sizeCheckState, topCheckState, sizesOkStack, hdata, hrun, push0_word,
-     read_base, read_exponent, hcond,
+     sizeCheckState, topCheckState, sizesOkStack, hrun, List.exchange,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
@@ -1128,8 +1139,9 @@ def gasSteps_bail6 (s : State) (input : ByteArray)
 /-! ## The fallback trace
 
 A calldata that fails the fast-path precondition lands in one of two places:
-the header dispatcher (pc 551, empty stack) when the modulus is at most one
-word or longer than 256 bytes, or the wide-modulus fallback entry (pc 236) with
+the header dispatcher (pc 553, retained three-word header) when the modulus is
+at most one word or longer than 256 bytes, or the wide-modulus fallback entry
+(pc 238) with
 the six live words when the modulus is 33..256 bytes but has a zero top limb or
 is even.  Memory and `activeWords` are untouched on both routes. -/
 
@@ -1209,25 +1221,26 @@ def gasSteps_fallback_of (s : State) (input : ByteArray)
 
 theorem entryState_initial (input : ByteArray) :
     entryState (initialState submissionBytecode input 0) =
-      Main.trampolineState input 599 := rfl
+      Main.fastEntryState input := rfl
 
 theorem fallbackState_initial (input : ByteArray) :
     fallbackState (initialState submissionBytecode input 0) =
-      Main.trampolineState input 553 := rfl
+      Main.headerBodyState input := rfl
 
 /-- The two landing sites of a declined fast path, from the public entry state. -/
 inductive Fallback (input : ByteArray) : Type
   | header (hsize : modulusSize input ≤ 32 ∨ 256 < modulusSize input)
-      (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 599)
-        (Main.trampolineState input 553))
+      (steps : Challenge.EvmProof.GasSteps (Main.fastEntryState input)
+        (Main.headerBodyState input))
   | big (h32 : 32 < modulusSize input) (hupper : modulusSize input ≤ 256)
-      (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 599)
+      (steps : Challenge.EvmProof.GasSteps (Main.fastEntryState input)
         (bigBailState (initialState submissionBytecode input 0) input))
 
 /-- **Fallback certificate.**  For every calldata in the challenge domain that fails
 the fast-path precondition, the entry block runs from the state the retargeted
-entry `PUSH2 597; JUMP` produces either to `Main.trampolineState input 551` — the
-header dispatcher, empty stack, untouched memory and `activeWords` — or, for a
+retained-header entry produces either to `Main.headerBodyState input` — the
+header dispatcher with the three decoded lengths, untouched memory and
+`activeWords` — or, for a
 33..256-byte modulus with a zero top limb or an even value, straight to the
 wide-modulus fallback entry at pc 236 with the six live words.
 
@@ -2062,7 +2075,7 @@ precondition (and the `ValidInput` bound on the calldata length), execution
 runs from the state the retargeted entry produces to the `R1B` guard, with the modulus loaded, `minv` computed and `R1` initialised. -/
 def gasSteps_fastSetup (input : ByteArray) (hsize : input.size < 2 ^ 256)
     (hpath : FastPath input) :
-    Challenge.EvmProof.GasSteps (Main.trampolineState input 599)
+    Challenge.EvmProof.GasSteps (Main.fastEntryState input)
       (fastSetupState input) :=
   Challenge.EvmProof.GasSteps.cast
     (gasSteps_fastPath_of (initialState submissionBytecode input 0) input

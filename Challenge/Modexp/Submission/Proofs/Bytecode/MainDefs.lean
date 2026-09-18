@@ -51,15 +51,16 @@ def trampoline2Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 389 .JUMPDEST]
 
-/-- Three EIP-198 header loads. -/
+/-- The fallback header block no longer reloads calldata.  It preserves the
+retained `[modulusSize, exponentSize, baseSize]` frame in eight bytes. -/
 def headerLoadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 390 0 0,
-   opAt 391 .CALLDATALOAD,
-   pushAt 392 1 32,
-   opAt 393 .CALLDATALOAD,
-   pushAt 394 1 64,
-   opAt 395 .CALLDATALOAD]
+  [opAt 390 .JUMPDEST,
+   opAt 391 .JUMPDEST,
+   opAt 392 .JUMPDEST,
+   opAt 393 .JUMPDEST,
+   pushAt 394 2 0,
+   opAt 395 .POP]
 
 /-- Direct hop over the EIP-7823 checks, justified by `Correct`'s valid-input
 precondition. The last header load uses `PUSH3 64`, which frees two bytes for two `JUMPDEST`s,
@@ -80,9 +81,26 @@ def tramp7DestPath := [opAt 389 .JUMPDEST]
 def trampolineState (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
 
-/-- Gas-erased state at the public entry point. -/
+/-- Fast-path entry after an early-width miss, retaining all three header words. -/
+def fastEntryState (input : ByteArray) : State :=
+  { initialState submissionBytecode input 0 with
+    pc := UInt256.ofNat 599
+    stack := [UInt256.ofNat (modulusSize input),
+      UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
+
+/-- Header-body entry reached by a declined fast path with the same retained frame. -/
+def headerBodyState (input : ByteArray) : State :=
+  { initialState submissionBytecode input 0 with
+    pc := UInt256.ofNat 553
+    stack := [UInt256.ofNat (modulusSize input),
+      UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
+
+/-- Gas-erased state after the body's own `JUMPDEST`. -/
 def headerEntryState (input : ByteArray) : State :=
-  { initialState submissionBytecode input 0 with pc := UInt256.ofNat 554 }
+  { initialState submissionBytecode input 0 with
+    pc := UInt256.ofNat 554
+    stack := [UInt256.ofNat (modulusSize input),
+      UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 /-- Gas-erased state after loading the three header words. -/
 def headerLoadedState (input : ByteArray) : State :=

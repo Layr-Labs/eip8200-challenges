@@ -23,9 +23,11 @@ def branchProgram : List Instr := [.push 1 127, .op .JUMPI]
 /-- Nineteen instructions at pc 0, ending at the conditional branch. -/
 def guardProgram : List Instr := headerProgram ++ guardValueProgram ++ branchProgram
 
-/-- Every width miss restores the unchanged legacy entry with an empty stack. -/
+/-- Every width miss retains the already-decoded EIP-198 header and reaches
+the fast entry with exactly those three words. -/
 def missProgram : List Instr :=
-  [.op .JUMPDEST, .op .POP, .op .POP, .op .POP, .push 2 599, .op .JUMP]
+  [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
+   .push 2 599, .op .JUMP]
 
 open WindowTwentyOnePositive (headerStack)
 
@@ -108,7 +110,7 @@ theorem guard_zero_iff (input : ByteArray) :
 theorem run_miss (template : State) (input : ByteArray)
     (hjump : Decode.isValidJumpDest template.executionEnv.code 599 = true) :
     runInstructions missProgram (framed template (UInt256.ofNat 127) (headerStack input)) =
-      some (framed template (UInt256.ofNat 599) []) := by
+      some (framed template (UInt256.ofNat 599) (headerStack input)) := by
   simp [missProgram, runInstructions, framed, headerStack, Stepper.runInstr, hjump,
     Word.literal_eq_ofNat, Word.word_toNat_ofNat]
 

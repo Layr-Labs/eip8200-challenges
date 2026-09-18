@@ -24,7 +24,7 @@ def blk1333 :
 def blk1341 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 561 .JUMPDEST,
-   opAt 562 .POP,
+   opAt 562 .JUMPDEST,
    pushAt 563 2 553,
    opAt 564 .JUMP]
 

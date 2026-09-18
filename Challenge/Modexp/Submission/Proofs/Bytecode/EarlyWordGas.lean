@@ -28,12 +28,13 @@ def steps_hit {artifact : ProgramArtifact} {fork : Fork}
   exact paths.guard.steps
     (env.transfer (t := framed template (UInt256.ofNat 0) []) rfl rfl) rfl hg
 
-/-- Every width miss reaches exactly the old entry with an empty stack. -/
+/-- Every width miss reaches the fast entry with the decoded header retained. -/
 def steps_miss {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (input : ByteArray) (hdata : template.executionEnv.calldata = input)
     (hmatch : ¬ WindowTwentyOneInput.Matches input) :
-    GasSteps (framed template (UInt256.ofNat 0) []) (framed template (UInt256.ofNat 599) []) := by
+    GasSteps (framed template (UInt256.ofNat 0) [])
+      (framed template (UInt256.ofNat 599) (headerStack input)) := by
   have hg := run_guard template input hdata (jump_env env paths.missJump)
   have hn : (WindowTwentyOneInput.guardDiff input).toNat ≠ 0 := by
     intro hz
