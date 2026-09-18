@@ -347,3 +347,41 @@ that differs from them only in its third lookup.
 
 Literal-encoding cost is 8,145 against the ceiling of 8,194. Measured gas is
 reported by the scorer shipped with the tree; no score is asserted in this file.
+
+## This submission: the slot-15 carry channel image (5,444 bytes, 4,360 instructions)
+
+`bytecode.hex` in this directory is NOT the 5,439-byte frontier artifact described
+below (that text is kept because it documents the lineage this image is derived
+from: terrapinelf's promoted 19524bd tree, which already carries the CUT-P-equivalent
+padding swallow). One mechanical change is stacked on that image:
+
+1. The slot-15 carry channel (-870 gas/seed, constant): the CIOS row-carry
+   message that the inherited kernel parks in `mem[0x820]` between the row
+   head and the row writeback now rides absolute stack position 15, which was
+   occupied by the body-entry constant (`0xec6` / `0x15c6`). That constant is
+   read at six sites only and is re-materialised there as `PUSH2` at identical
+   gas, so the eviction is free. The row head, the row writeback and the
+   four-limb head shrink by 4 gas each; the inter-modmul parks become
+   `SWAP9; POP`; the post-loop reader at the old `mem[0x820]` load becomes
+   `DUP9`; one final flush restores `mem[0x820]` for the post-loop readers and
+   one boundary reload re-reads it after the staging `CALLDATACOPY` that
+   clobbers it. All jump-target immediates after the first edit are remapped
+   by the byte-displacement map. Thirteen byte-level edits in total, all at
+   pc >= 3438; the ladder, the dispatch stride arithmetic and the 37-byte stride
+   are byte-stable.
+
+Raw SHA-256 of the shipped `bytecode.hex`:
+`7c6e5c588733d69e3d5b8a5be93a25d6e3b15be6275c06662dcaf9498069faf5`.
+The Lean proof is the inherited proof re-bound to the new image: every
+positional literal class (`opAt`, `pushAt`, `isValidJumpDest_index`,
+`instructionPC`, window slices, `pcFactW`, `gasSteps_sgtAt`,
+`decodes_of_artifact`) is renumbered through the displacement map, and the
+redesigned blocks (row head, writeback, four-limb head, staging base
+reconstruction, flush, reload, the two parks) carry new straight-line program
+proofs under the existing `iterateBounded` row induction. The row-carry
+invariant is stated on the stack slot (`rowsS`) with a bridge lemma
+(`rowsS_flush`) showing the flushed memory equals the inherited `rowsCarry`
+specification, so downstream consumers are unchanged.
+
+Full design narrative, per-edit gas accounting and verification evidence are
+in the public submission note.

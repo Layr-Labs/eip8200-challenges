@@ -32,17 +32,17 @@ def gasSteps_rows (s : State) (mem : ByteArray) (n : Nat)
   · subst n
     exact CarryFull.gasSteps_rowsFour CarryIface.rowLemmas s mem 2368 256 tl inv m0
       (UInt256.ofNat (2368+32*4-32)) m96 m64 m32 (UInt256.ofNat 256) (UInt256.ofNat 782)
-      rest hcap hrun hcode hfork hnp hact (Or.inr rfl) (by decide) (by decide)
+      rest hcap hrun hcode hfork hnp hact (Or.inr rfl) (by decide) (by decide) (Or.inl (by decide))
       hminv hc he rfl (by intro _ _; rfl)
   · have h8 : n = 8 := hn.resolve_left h4
     subst n
     exact CarryFull.gasSteps_rowsEight CarryIface.rowLemmas s mem 2368 256 tl inv m0
       (UInt256.ofNat (2368+32*8-32)) m96 m64 m32 (UInt256.ofNat 256) (UInt256.ofNat 782)
-      rest hcap hrun hcode hfork hnp hact (Or.inr rfl) (by decide) (by decide)
+      rest hcap hrun hcode hfork hnp hact (Or.inr rfl) (by decide) (by decide) (Or.inl (by decide))
       hminv hc he rfl (by intro _ _; rfl)
 
 def gasSteps_product (s : State) (mem : ByteArray) (p a mm : Nat)
-    (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
+    (pbi ent cy tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hn : p+2 = 4 ∨ p+2 = 8)
     (hrun : s.halt = .Running) (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
@@ -56,13 +56,14 @@ def gasSteps_product (s : State) (mem : ByteArray) (p a mm : Nat)
     (hm : Model.FastRepresents mem 0 (p+2) mm) (ham : a < Limbs.radix^(p+2)) (hmpos : 0 < mm)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32*(p+2)-32))
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080+32*(p+2)))
-    (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*(p+2))) :
+    (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*(p+2)))
+    (hent : ent = stagedEnt (p+2)) :
     Challenge.EvmProof.GasSteps
-      (frameAt 3414 s mem (p+2) pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
+      (frameAt 3414 s mem (p+2) pbi ent cy tl inv m0 m96 m64 m32 aprev pdst ret rest)
       {s with pc := UInt256.ofNat 782, stack := rest, memory := StagedProduct.memory s mem (p+2)} := by
   have hn8 : p+2 ≤ 8 := by omega
-  have g1 := gasSteps_entry s mem (p+2) pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest
-    (by omega) hn hrun hcode hfork hnp hact hcds hc.lowAddress
+  have g1 := gasSteps_entry s mem (p+2) pbi ent cy tl inv m0 m96 m64 m32 aprev pdst ret rest
+    (by omega) hn hrun hcode hfork hnp hact hcds hc.lowAddress hent
   have g2 := gasSteps_rows s mem (p+2) tl inv m0 m96 m64 m32 rest hcap hn hrun hcode hfork hnp
     hact hminv hc he
   have hj : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode

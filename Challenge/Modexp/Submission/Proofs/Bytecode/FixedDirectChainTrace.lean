@@ -47,7 +47,7 @@ theorem run_start (s : State) (memory : ByteArray)
       Challenge.EvmProof.Word.ofNat_add_mod]
 
 /-- Program counters for the loop head `FixedDirectPaths.squareCall`
-(instruction indices 2039..2049).
+(instruction indices 2020..2030).
 
 `FixedDirectPaths.directPC0` stops at index 2038, the last instruction of the
 recogniser; the companion `directPC1` that used to cover the chain was dropped
@@ -63,7 +63,7 @@ PUSH2 0x1180; PUSH2 0x0cff; JUMP` at pc 2453..2473. -/
   interval_cases i <;> rfl
 
 /-- The kernel's shared `common` block at pc 3327 (`0x0cff`), the target of the
-`JUMP` that ends `squareCall`.  Instruction index 2696 is `JUMPDEST` at pc 3327;
+`JUMP` that ends `squareCall`.  Instruction index 2673 is `JUMPDEST` at pc 3327;
 `squareCall`'s own last two pushes are `PUSH2 0x1180` (4480 = `sq_row`) and
 `PUSH2 0x0cff` (3327), so this is the block the square call enters.
 

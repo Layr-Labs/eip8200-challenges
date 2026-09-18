@@ -29,12 +29,12 @@ def input (s : State) (c bi pbi paEnd pbEnd flag dst ret : UInt256)
 
 def stored (s : State) (c bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=
-  framed { s with memory := midMem s.memory c } (UInt256.ofNat 3771)
+  framed { s with memory := midMem s.memory c } (UInt256.ofNat 3780)
     (baseStack bi pbi paEnd pbEnd flag dst ret rest)
 
 def product (s : State) (n : Nat) (bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=
-  framed s (UInt256.ofNat 3795)
+  framed s (UInt256.ofNat 3804)
     ([rowC0 s.memory n, rowMu s.memory n] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMidDefs

@@ -150,16 +150,16 @@ theorem run_step (template : State) (pc : UInt256) (q : MacState)
 
 /-- The same block on the kernel's row frame `CiosCached.l1Q`. -/
 theorem run_stepQ (pc : Nat) (off t : UInt256) (s : State) (q : MacState) (bi : UInt256)
-    (pa pb n i j : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
+    (pa pb n i j : Nat) (hd ent cy pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005) (hact : 88 ≤ s.activeWords.toNat)
     (hn : n ≤ 8) (hj : j < n) (hoff : off.toNat = 32 * (n - 1 - j))
     (ht : t.toNat = 2112 + 32 * (n - 1 - j))
     (hsnapshot : Snapshot q.memory pa n) :
-    runInstructions (stepProgram off t) (l1Q pc s q bi pb n i hd ent pdst ret rest) =
-      some (l1Q (pc+37) s (SquareModel.l1StepOn q bi pa n j) bi pb n i hd ent pdst ret rest) := by
+    runInstructions (stepProgram off t) (l1Q pc s q bi pb n i hd ent cy pdst ret rest) =
+      some (l1Q (pc+37) s (SquareModel.l1StepOn q bi pa n j) bi pb n i hd ent cy pdst ret rest) := by
   have h := run_step s (UInt256.ofNat pc) q bi pa n j off t hoff ht
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) hd
-    (UInt256.ofNat (pb-32)) ent (l2Target n) pdst (ret :: rest)
+    (UInt256.ofNat (pb-32)) ent cy pdst (ret :: rest)
     (by simp only [List.length_cons]; omega) hact hn hj hsnapshot
   simpa only [List.cons_append, List.nil_append, qState, l1Q,
     Challenge.EvmProof.Word.ofNat_add_mod] using h
