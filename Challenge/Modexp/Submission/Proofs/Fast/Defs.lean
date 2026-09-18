@@ -84,10 +84,6 @@ private theorem fastPCAnchor4 :
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-private theorem fastPCAnchor9 :
-    Artifact.submissionArtifact.instructionPC 557 = 787 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
 
 
 
@@ -111,7 +107,7 @@ private theorem fastPCAnchor9 :
 
 @[simp] theorem fastPC2 (i : Nat) (hi : 491 ≤ i) (hii : i ≤ 519) :
     Artifact.submissionArtifact.instructionPC i =
-      [698,699,702,703,712,713,714,715,716,717,718,719,720,721,722,724,725,727,728,729,730,731,733,734,735,736,737,738,740][i - 491]! := by
+      [698,699,702,703,706,707,708,709,716,717,718,719,720,721,722,724,725,727,728,729,730,731,733,734,735,736,737,738,740][i - 491]! := by
   have hsplit : i = 491 + (i - 491) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor2]
   rw [← PCFast.byteLength_eq_assemble]
@@ -145,7 +141,7 @@ theorem jumpDest1196 :
 
 theorem jumpDest3412 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2396 = true :=
-  Artifact.isValidJumpDest_index 1973 (by rfl)
+  Artifact.isValidJumpDest_index 1971 (by rfl)
 
 
 
@@ -153,10 +149,9 @@ theorem jumpDest3412 :
 
 
 
--- `jumpDest1802` (pc 784 is a valid jump destination) is gone: that `JUMPDEST` was an
--- orphan -- no `PUSH` immediate anywhere in the image holds 784 and it is in none of the
--- resolved destination sets of the non-literal jump sites -- so the byte was deleted and
--- the pc is no longer a jump destination.  The theorem had no users in this tree.
+-- `jumpDest1802` (pc 784 a valid jump destination) is gone: that `JUMPDEST` was reached
+-- only by fall-through from pc 783, no push immediate names 784, and the fact had no users,
+-- so the byte was removed (the `PUSH2 0x100` that follows is widened to `PUSH3`).
 
 theorem jumpDest1812 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 794 = true :=
@@ -186,15 +181,15 @@ theorem jumpDest1826 :
 
 
 theorem jumpDest4976 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4077 = true :=
-  Artifact.isValidJumpDest_index 3266 (by rfl)
+  Artifact.isValidJumpDest_index 3258 (by rfl)
 
 theorem jumpDestSub : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4244 = true :=
-  Artifact.isValidJumpDest_index 3383 (by rfl)
+  Artifact.isValidJumpDest_index 3375 (by rfl)
 
 theorem jumpDestCopyResume : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4467 = true :=
-  Artifact.isValidJumpDest_index 3540 (by rfl)
+  Artifact.isValidJumpDest_index 3532 (by rfl)
 
 theorem jumpDestEarlyCopy : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4456 = true :=
-  Artifact.isValidJumpDest_index 3533 (by rfl)
+  Artifact.isValidJumpDest_index 3525 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

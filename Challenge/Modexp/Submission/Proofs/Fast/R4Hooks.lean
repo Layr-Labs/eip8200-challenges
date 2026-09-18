@@ -37,25 +37,25 @@ def h1Program : List Instr :=
 def h1FallProgram : List Instr := [.push 2 5003, .op .JUMP]
 
 def h1Block : Block Artifact.submissionArtifact .Osaka 4495 h1Program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3558 5 4495 h1Program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3550 5 4495 h1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
 def h1FallBlock : Block Artifact.submissionArtifact .Osaka 4504 h1FallProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3563 2 4504 h1FallProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3555 2 4504 h1FallProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def h2Block : Block Artifact.submissionArtifact .Osaka 4153 hookProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3311 6 4153 hookProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3303 6 4153 hookProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDestR4 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4508 = true :=
-  Artifact.isValidJumpDest_index 3565 (by rfl)
+  Artifact.isValidJumpDest_index 3557 (by rfl)
 
 theorem jumpDestH2 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4153 = true :=
-  Artifact.isValidJumpDest_index 3311 (by rfl)
+  Artifact.isValidJumpDest_index 3303 (by rfl)
 
 theorem jumpDestRow : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4179 = true :=
-  Artifact.isValidJumpDest_index 3327 (by rfl)
+  Artifact.isValidJumpDest_index 3319 (by rfl)
 
 theorem cond_four : UInt256.isTrue ((UInt256.ofNat 5574).eq (l2Target 4)) := by decide
 

@@ -318,62 +318,591 @@ count multiplied by 39 with no residue.
 
 ---
 
-# Combination of two independent improvements over the 474,383 record
+# New artifact by @ercumentyildirim
 
-Prepared: 2026-09-17
+Prepared: 2026-09-17T21:20Z
+Sequence: 10
+Artifact: raw-byte SHA-256
+  472b47df890b090e362285c0c8fcef25855e426e02b06a3e7e8c0cfdaddd4385
+Artifact size: 5439 bytes, 4374 instructions, literal-encoding cost 8143 against a ceiling of 8,194.
 
-This image is the exact composition of two disjoint changes over the promoted record image
-`14d2f4276f8dcd30` (5,439 bytes, 4,393 instructions). The two touch **no byte position in
-common**, and the saving was measured rather than assumed to add:
+Executable change relative to the previous evaluation: ten bytes, in two disjoint edits in two
+unrelated regions of the program. There is no third difference in the image.
 
-| part | bytes changed | gas | author |
-|---|---|---|---|
-| conditional-subtract call removed at pc 3123..3128 | 6 | -819 | **@ercumentyildirim**, submission `5e970228-cfe3-4c7c-bc49-538574874450` |
-| relocation pads re-encoded at pc 1413 and 1879 | 34 | -608 | this submitter |
-| combined | 40 | **-1,427** (exactly the sum, measured over the 44 vectors) | |
+Edit 1, six bytes at offset [3123, 3129):
 
-## Not this submitter's work, and reused unchanged
+    previous    61 0a 83  61 10 85        PUSH2 0x0a83 ; PUSH2 0x1085
+    submitted   63 00 00 0a 83  5b        PUSH4 0x00000a83 ; JUMPDEST
 
-The six bytes at pc 3123..3128 turn `PUSH2 0x0a83 ; PUSH2 0x1085` into
-`PUSH4 0x00000a83 ; JUMPDEST`, deleting the call to the retained conditional-subtract
-routine so the following `JUMP` returns straight to the shift-loop head. That deletion is
-sound only because the accumulator is already below the modulus, and the proof of that
-bound — `Proofs/Fast/QHatBound.lean` ("the quotient estimate never under-shoots",
-`div_top_ge` with no normalisation hypothesis, and `d3_gt`, the Knuth D3 correction
-criterion proved by contradiction) together with the supporting additions in
-`Proofs/Fast/ShiftModel.lean`, `ShiftCorrect.lean`, `ShiftTrace3.lean`, `ShiftTrace4.lean`,
-`ShiftTrace5.lean`, `RootE3LoopCount.lean`, `RootE3Memory.lean` and `RootE3Trace.lean` —
-is **entirely @ercumentyildirim's work**. It is reused here unmodified except where this
-submitter's own edit renumbers instruction indices (see below). None of their provenance
-text, README or REDRAW content has been removed, reworded or reattributed.
+Both encodings occupy six bytes and two instructions. The exponentiation loop's tail block no
+longer pushes the conditional-subtraction routine's entry above the loop head, so its transfer goes
+to the loop head directly and that routine is not entered from this site. The routine remains in
+the artifact and is still entered from its other caller.
 
-## This submitter's work
+Edit 2, two bytes inside offset [1413, 1431) and two inside [1879, 1897):
 
-The two 18-byte relocation pads at pc 1413 and pc 1879 were spelled as ten and nine
-`JUMPDEST` followed by a dead `PUSH6 ; POP` / `PUSH7 ; POP` (15 and 14 gas). Each is now a
-single `PUSH16` with a sixteen-zero-byte immediate followed by the same `POP` (5 gas each):
-the same eighteen bytes, so no program counter moves and the image length is unchanged, and
-the span is still stack-neutral because the `POP` discards the pushed word on the spot. The
-immediate is zeroed rather than left as the covered bytes so that the 64-byte-chunk value
-density, and hence the build's `w8` figure, is not increased.
+    previous    5b x10  65 5b x6  50      ten JUMPDEST ; PUSH6 ; POP
+    submitted   6f  5b x16       50       PUSH16 ; POP
+    previous    5b x9   66 5b x7  50      nine JUMPDEST ; PUSH7 ; POP
+    submitted   6f  5b x16       50       PUSH16 ; POP
 
-Removing nineteen instructions shifts instruction *indices* above each pad (by -10 between
-the pads and -19 above both) while every program counter is unmoved. The renumbering was
-derived from the two artifacts by role — same pc and same decoded instruction — never by a
-uniform delta, and re-checked afterwards by an independent checker that reads each index
-claim and asks the artifact whether it is true.
+Each span holds stack-neutral filler and is eighteen bytes before and after. Widening each push
+carries the intervening bytes as its immediate instead of executing them one at a time, so
+nineteen JUMPDEST instructions cease to exist and the instruction count falls from 4,393 to 4,374.
+Every byte in both spans other than the two push opcodes and the two POPs was already 0x5b, so no
+immediate value that any instruction reads is changed. This edit removes nineteen valid jump
+destinations and adds none; counted over the whole submission against the previous artifact as
+baseline, valid destinations go from 138 to 120, since edit 1 adds the one it leaves at 3128 and
+this edit removes nineteen. No push immediate names any of the nineteen removed destinations.
 
-## Figures
+No program counter moves under either edit, so no jump immediate required adjustment.
 
-    image            5f9006e7205bf5cf (sha256 prefix)
-    bytes            5,439      instructions 4,374      w8 8,143 (build wall 8,194)
-    44-vector gas    473,471 at the reference seed, 44/44 status ok
+Proof changes: the lemma establishing that the removed call was the identity on every reachable
+state at that program counter, and the strengthening of the preceding phase's postcondition it
+rests on; the re-derivation of the tail block's located instruction path, trace and gas accounting
+through the shortened transfer; the two located instruction paths covering the rewritten filler
+spans; and the decrement of every instruction index above each filler span, since nineteen
+instructions cease to exist.
+
+Measured by the trusted scorer shipped in this tree: 473,471 gas, 44 rows, status ok on 44 of 44,
+against 474,898 for the previous artifact -- a reduction of 1,427 gas. Scored separately on the
+same previous artifact, edit 1 alone gives 474,079 and edit 2 alone gives 474,290, and
+-819 + -608 = -1,427, so the two edits do not interact. Exactly four of the forty-four scored
+vectors change under edit 1, and on each the reduction equals the changed site's execution count
+multiplied by 39 with no residue; exactly thirty-two change under edit 2, each by nineteen gas,
+one for each pad removed. Per-program-counter execution counts are identical at every position
+outside the two filler spans on all forty-four vectors, and the set of program counters executed
+anywhere in the corpus falls from 3,988 to 3,969 with exactly those nineteen removed and none
+added.
 
 ---
 
-# Fresh official evaluation by i34-9
+# New artifact by @ercumentyildirim
 
-Prepared: 2026-09-18T02:32:52Z
-Same package, re-evaluated. The scoring corpus is re-derived per evaluation, so this is an
-independent measurement of an unchanged image. No executable change, no proof change, and no
-new optimisation is claimed beyond the one already described in this package.
+Prepared: 2026-09-17T22:12Z
+Sequence: 12
+Artifact: raw-byte SHA-256
+  472b47df890b090e362285c0c8fcef25855e426e02b06a3e7e8c0cfdaddd4385
+Artifact size: 5439 bytes, 4374 instructions, literal-encoding cost 8143 against a ceiling of 8,194.
+
+Executable change relative to the previous evaluation: ten bytes, in two disjoint edits in two
+unrelated regions of the program. There is no third difference in the image.
+
+Edit 1, six bytes at offset [3123, 3129):
+
+    previous    61 0a 83  61 10 85        PUSH2 0x0a83 ; PUSH2 0x1085
+    submitted   63 00 00 0a 83  5b        PUSH4 0x00000a83 ; JUMPDEST
+
+Both encodings occupy six bytes and two instructions. The exponentiation loop's tail block no
+longer pushes the conditional-subtraction routine's entry above the loop head, so its transfer goes
+to the loop head directly and that routine is not entered from this site. The routine remains in
+the artifact and is still entered from its other caller.
+
+Edit 2, two bytes inside offset [1413, 1431) and two inside [1879, 1897):
+
+    previous    5b x10  65 5b x6  50      ten JUMPDEST ; PUSH6 ; POP
+    submitted   6f  5b x16       50       PUSH16 ; POP
+    previous    5b x9   66 5b x7  50      nine JUMPDEST ; PUSH7 ; POP
+    submitted   6f  5b x16       50       PUSH16 ; POP
+
+Each span holds stack-neutral filler and is eighteen bytes before and after. Widening each push
+carries the intervening bytes as its immediate instead of executing them one at a time, so
+nineteen JUMPDEST instructions cease to exist and the instruction count falls from 4,393 to 4,374.
+Every byte in both spans other than the two push opcodes and the two POPs was already 0x5b, so no
+immediate value that any instruction reads is changed. This edit removes nineteen valid jump
+destinations and adds none; counted over the whole submission against the previous artifact as
+baseline, valid destinations go from 138 to 120, since edit 1 adds the one it leaves at 3128 and
+this edit removes nineteen. No push immediate names any of the nineteen removed destinations.
+
+No program counter moves under either edit, so no jump immediate required adjustment.
+
+Proof changes: the lemma establishing that the removed call was the identity on every reachable
+state at that program counter, and the strengthening of the preceding phase's postcondition it
+rests on; the re-derivation of the tail block's located instruction path, trace and gas accounting
+through the shortened transfer; the two located instruction paths covering the rewritten filler
+spans; and the decrement of every instruction index above each filler span, since nineteen
+instructions cease to exist.
+
+Measured by the trusted scorer shipped in this tree: 473,471 gas, 44 rows, status ok on 44 of 44,
+against 474,898 for the previous artifact -- a reduction of 1,427 gas. Scored separately on the
+same previous artifact, edit 1 alone gives 474,079 and edit 2 alone gives 474,290, and
+-819 + -608 = -1,427, so the two edits do not interact. Exactly four of the forty-four scored
+vectors change under edit 1, and on each the reduction equals the changed site's execution count
+multiplied by 39 with no residue; exactly thirty-two change under edit 2, each by nineteen gas,
+one for each pad removed. Per-program-counter execution counts are identical at every position
+outside the two filler spans on all forty-four vectors, and the set of program counters executed
+anywhere in the corpus falls from 3,988 to 3,969 with exactly those nineteen removed and none
+added.
+
+---
+
+# New artifact by @ercumentyildirim
+
+Prepared: 2026-09-17T22:58Z
+Sequence: 13
+Artifact: raw-byte SHA-256
+  472b47df890b090e362285c0c8fcef25855e426e02b06a3e7e8c0cfdaddd4385
+Artifact size: 5439 bytes, 4374 instructions, literal-encoding cost 8143 against a ceiling of 8,194.
+
+Executable change relative to the previous evaluation: ten bytes, in two disjoint edits in two
+unrelated regions of the program. There is no third difference in the image.
+
+Edit 1, six bytes at offset [3123, 3129):
+
+    previous    61 0a 83  61 10 85        PUSH2 0x0a83 ; PUSH2 0x1085
+    submitted   63 00 00 0a 83  5b        PUSH4 0x00000a83 ; JUMPDEST
+
+Both encodings occupy six bytes and two instructions. The exponentiation loop's tail block no
+longer pushes the conditional-subtraction routine's entry above the loop head, so its transfer goes
+to the loop head directly and that routine is not entered from this site. The routine remains in
+the artifact and is still entered from its other caller.
+
+Edit 2, two bytes inside offset [1413, 1431) and two inside [1879, 1897):
+
+    previous    5b x10  65 5b x6  50      ten JUMPDEST ; PUSH6 ; POP
+    submitted   6f  5b x16       50       PUSH16 ; POP
+    previous    5b x9   66 5b x7  50      nine JUMPDEST ; PUSH7 ; POP
+    submitted   6f  5b x16       50       PUSH16 ; POP
+
+Each span holds stack-neutral filler and is eighteen bytes before and after. Widening each push
+carries the intervening bytes as its immediate instead of executing them one at a time, so
+nineteen JUMPDEST instructions cease to exist and the instruction count falls from 4,393 to 4,374.
+Every byte in both spans other than the two push opcodes and the two POPs was already 0x5b, so no
+immediate value that any instruction reads is changed. This edit removes nineteen valid jump
+destinations and adds none; counted over the whole submission against the previous artifact as
+baseline, valid destinations go from 138 to 120, since edit 1 adds the one it leaves at 3128 and
+this edit removes nineteen. No push immediate names any of the nineteen removed destinations.
+
+No program counter moves under either edit, so no jump immediate required adjustment.
+
+Proof changes: the lemma establishing that the removed call was the identity on every reachable
+state at that program counter, and the strengthening of the preceding phase's postcondition it
+rests on; the re-derivation of the tail block's located instruction path, trace and gas accounting
+through the shortened transfer; the two located instruction paths covering the rewritten filler
+spans; and the decrement of every instruction index above each filler span, since nineteen
+instructions cease to exist.
+
+Measured by the trusted scorer shipped in this tree: 473,471 gas, 44 rows, status ok on 44 of 44,
+against 474,898 for the previous artifact -- a reduction of 1,427 gas. Scored separately on the
+same previous artifact, edit 1 alone gives 474,079 and edit 2 alone gives 474,290, and
+-819 + -608 = -1,427, so the two edits do not interact. Exactly four of the forty-four scored
+vectors change under edit 1, and on each the reduction equals the changed site's execution count
+multiplied by 39 with no residue; exactly thirty-two change under edit 2, each by nineteen gas,
+one for each pad removed. Per-program-counter execution counts are identical at every position
+outside the two filler spans on all forty-four vectors, and the set of program counters executed
+anywhere in the corpus falls from 3,988 to 3,969 with exactly those nineteen removed and none
+added.
+
+---
+
+# New artifact by @ercumentyildirim
+
+Prepared: 2026-09-17T23:49Z
+Sequence: 14
+Artifact: raw-byte SHA-256
+  472b47df890b090e362285c0c8fcef25855e426e02b06a3e7e8c0cfdaddd4385
+Artifact size: 5439 bytes, 4374 instructions, literal-encoding cost 8143 against a ceiling of 8,194.
+
+Executable change relative to the previous evaluation: ten bytes, in two disjoint edits in two
+unrelated regions of the program. There is no third difference in the image.
+
+Edit 1, six bytes at offset [3123, 3129):
+
+    previous    61 0a 83  61 10 85        PUSH2 0x0a83 ; PUSH2 0x1085
+    submitted   63 00 00 0a 83  5b        PUSH4 0x00000a83 ; JUMPDEST
+
+Both encodings occupy six bytes and two instructions. The exponentiation loop's tail block no
+longer pushes the conditional-subtraction routine's entry above the loop head, so its transfer goes
+to the loop head directly and that routine is not entered from this site. The routine remains in
+the artifact and is still entered from its other caller.
+
+Edit 2, two bytes inside offset [1413, 1431) and two inside [1879, 1897):
+
+    previous    5b x10  65 5b x6  50      ten JUMPDEST ; PUSH6 ; POP
+    submitted   6f  5b x16       50       PUSH16 ; POP
+    previous    5b x9   66 5b x7  50      nine JUMPDEST ; PUSH7 ; POP
+    submitted   6f  5b x16       50       PUSH16 ; POP
+
+Each span holds stack-neutral filler and is eighteen bytes before and after. Widening each push
+carries the intervening bytes as its immediate instead of executing them one at a time, so
+nineteen JUMPDEST instructions cease to exist and the instruction count falls from 4,393 to 4,374.
+Every byte in both spans other than the two push opcodes and the two POPs was already 0x5b, so no
+immediate value that any instruction reads is changed. This edit removes nineteen valid jump
+destinations and adds none; counted over the whole submission against the previous artifact as
+baseline, valid destinations go from 138 to 120, since edit 1 adds the one it leaves at 3128 and
+this edit removes nineteen. No push immediate names any of the nineteen removed destinations.
+
+No program counter moves under either edit, so no jump immediate required adjustment.
+
+Proof changes: the lemma establishing that the removed call was the identity on every reachable
+state at that program counter, and the strengthening of the preceding phase's postcondition it
+rests on; the re-derivation of the tail block's located instruction path, trace and gas accounting
+through the shortened transfer; the two located instruction paths covering the rewritten filler
+spans; and the decrement of every instruction index above each filler span, since nineteen
+instructions cease to exist.
+
+Measured by the trusted scorer shipped in this tree: 473,471 gas, 44 rows, status ok on 44 of 44,
+against 474,898 for the previous artifact -- a reduction of 1,427 gas. Scored separately on the
+same previous artifact, edit 1 alone gives 474,079 and edit 2 alone gives 474,290, and
+-819 + -608 = -1,427, so the two edits do not interact. Exactly four of the forty-four scored
+vectors change under edit 1, and on each the reduction equals the changed site's execution count
+multiplied by 39 with no residue; exactly thirty-two change under edit 2, each by nineteen gas,
+one for each pad removed. Per-program-counter execution counts are identical at every position
+outside the two filler spans on all forty-four vectors, and the set of program counters executed
+anywhere in the corpus falls from 3,988 to 3,969 with exactly those nineteen removed and none
+added.
+
+---
+
+# New artifact by @ercumentyildirim
+
+Prepared: 2026-09-18T00:39Z
+Sequence: 15
+Artifact: raw-byte SHA-256
+  472b47df890b090e362285c0c8fcef25855e426e02b06a3e7e8c0cfdaddd4385
+Artifact size: 5439 bytes, 4374 instructions, literal-encoding cost 8143 against a ceiling of 8,194.
+
+Executable change relative to the previous evaluation: ten bytes, in two disjoint edits in two
+unrelated regions of the program. There is no third difference in the image.
+
+Edit 1, six bytes at offset [3123, 3129):
+
+    previous    61 0a 83  61 10 85        PUSH2 0x0a83 ; PUSH2 0x1085
+    submitted   63 00 00 0a 83  5b        PUSH4 0x00000a83 ; JUMPDEST
+
+Both encodings occupy six bytes and two instructions. The exponentiation loop's tail block no
+longer pushes the conditional-subtraction routine's entry above the loop head, so its transfer goes
+to the loop head directly and that routine is not entered from this site. The routine remains in
+the artifact and is still entered from its other caller.
+
+Edit 2, two bytes inside offset [1413, 1431) and two inside [1879, 1897):
+
+    previous    5b x10  65 5b x6  50      ten JUMPDEST ; PUSH6 ; POP
+    submitted   6f  5b x16       50       PUSH16 ; POP
+    previous    5b x9   66 5b x7  50      nine JUMPDEST ; PUSH7 ; POP
+    submitted   6f  5b x16       50       PUSH16 ; POP
+
+Each span holds stack-neutral filler and is eighteen bytes before and after. Widening each push
+carries the intervening bytes as its immediate instead of executing them one at a time, so
+nineteen JUMPDEST instructions cease to exist and the instruction count falls from 4,393 to 4,374.
+Every byte in both spans other than the two push opcodes and the two POPs was already 0x5b, so no
+immediate value that any instruction reads is changed. This edit removes nineteen valid jump
+destinations and adds none; counted over the whole submission against the previous artifact as
+baseline, valid destinations go from 138 to 120, since edit 1 adds the one it leaves at 3128 and
+this edit removes nineteen. No push immediate names any of the nineteen removed destinations.
+
+No program counter moves under either edit, so no jump immediate required adjustment.
+
+Proof changes: the lemma establishing that the removed call was the identity on every reachable
+state at that program counter, and the strengthening of the preceding phase's postcondition it
+rests on; the re-derivation of the tail block's located instruction path, trace and gas accounting
+through the shortened transfer; the two located instruction paths covering the rewritten filler
+spans; and the decrement of every instruction index above each filler span, since nineteen
+instructions cease to exist.
+
+Measured by the trusted scorer shipped in this tree: 473,471 gas, 44 rows, status ok on 44 of 44,
+against 474,898 for the previous artifact -- a reduction of 1,427 gas. Scored separately on the
+same previous artifact, edit 1 alone gives 474,079 and edit 2 alone gives 474,290, and
+-819 + -608 = -1,427, so the two edits do not interact. Exactly four of the forty-four scored
+vectors change under edit 1, and on each the reduction equals the changed site's execution count
+multiplied by 39 with no residue; exactly thirty-two change under edit 2, each by nineteen gas,
+one for each pad removed. Per-program-counter execution counts are identical at every position
+outside the two filler spans on all forty-four vectors, and the set of program counters executed
+anywhere in the corpus falls from 3,988 to 3,969 with exactly those nineteen removed and none
+added.
+
+---
+
+# New artifact by @ercumentyildirim
+
+Prepared: 2026-09-18T01:23Z
+Sequence: 16
+Artifact: raw-byte SHA-256
+  472b47df890b090e362285c0c8fcef25855e426e02b06a3e7e8c0cfdaddd4385
+Artifact size: 5439 bytes, 4374 instructions, literal-encoding cost 8143 against a ceiling of 8,194.
+
+Executable change relative to the previous evaluation: ten bytes, in two disjoint edits in two
+unrelated regions of the program. There is no third difference in the image.
+
+Edit 1, six bytes at offset [3123, 3129):
+
+    previous    61 0a 83  61 10 85        PUSH2 0x0a83 ; PUSH2 0x1085
+    submitted   63 00 00 0a 83  5b        PUSH4 0x00000a83 ; JUMPDEST
+
+Both encodings occupy six bytes and two instructions. The exponentiation loop's tail block no
+longer pushes the conditional-subtraction routine's entry above the loop head, so its transfer goes
+to the loop head directly and that routine is not entered from this site. The routine remains in
+the artifact and is still entered from its other caller.
+
+Edit 2, two bytes inside offset [1413, 1431) and two inside [1879, 1897):
+
+    previous    5b x10  65 5b x6  50      ten JUMPDEST ; PUSH6 ; POP
+    submitted   6f  5b x16       50       PUSH16 ; POP
+    previous    5b x9   66 5b x7  50      nine JUMPDEST ; PUSH7 ; POP
+    submitted   6f  5b x16       50       PUSH16 ; POP
+
+Each span holds stack-neutral filler and is eighteen bytes before and after. Widening each push
+carries the intervening bytes as its immediate instead of executing them one at a time, so
+nineteen JUMPDEST instructions cease to exist and the instruction count falls from 4,393 to 4,374.
+Every byte in both spans other than the two push opcodes and the two POPs was already 0x5b, so no
+immediate value that any instruction reads is changed. This edit removes nineteen valid jump
+destinations and adds none; counted over the whole submission against the previous artifact as
+baseline, valid destinations go from 138 to 120, since edit 1 adds the one it leaves at 3128 and
+this edit removes nineteen. No push immediate names any of the nineteen removed destinations.
+
+No program counter moves under either edit, so no jump immediate required adjustment.
+
+Proof changes: the lemma establishing that the removed call was the identity on every reachable
+state at that program counter, and the strengthening of the preceding phase's postcondition it
+rests on; the re-derivation of the tail block's located instruction path, trace and gas accounting
+through the shortened transfer; the two located instruction paths covering the rewritten filler
+spans; and the decrement of every instruction index above each filler span, since nineteen
+instructions cease to exist.
+
+Measured by the trusted scorer shipped in this tree: 473,471 gas, 44 rows, status ok on 44 of 44,
+against 474,898 for the previous artifact -- a reduction of 1,427 gas. Scored separately on the
+same previous artifact, edit 1 alone gives 474,079 and edit 2 alone gives 474,290, and
+-819 + -608 = -1,427, so the two edits do not interact. Exactly four of the forty-four scored
+vectors change under edit 1, and on each the reduction equals the changed site's execution count
+multiplied by 39 with no residue; exactly thirty-two change under edit 2, each by nineteen gas,
+one for each pad removed. Per-program-counter execution counts are identical at every position
+outside the two filler spans on all forty-four vectors, and the set of program counters executed
+anywhere in the corpus falls from 3,988 to 3,969 with exactly those nineteen removed and none
+added.
+
+---
+
+# New artifact by @ercumentyildirim
+
+Prepared: 2026-09-18T02:10Z
+Sequence: 17
+Artifact: raw-byte SHA-256
+  472b47df890b090e362285c0c8fcef25855e426e02b06a3e7e8c0cfdaddd4385
+Artifact size: 5439 bytes, 4374 instructions, literal-encoding cost 8143 against a ceiling of 8,194.
+
+Executable change relative to the previous evaluation: ten bytes, in two disjoint edits in two
+unrelated regions of the program. There is no third difference in the image.
+
+Edit 1, six bytes at offset [3123, 3129):
+
+    previous    61 0a 83  61 10 85        PUSH2 0x0a83 ; PUSH2 0x1085
+    submitted   63 00 00 0a 83  5b        PUSH4 0x00000a83 ; JUMPDEST
+
+Both encodings occupy six bytes and two instructions. The exponentiation loop's tail block no
+longer pushes the conditional-subtraction routine's entry above the loop head, so its transfer goes
+to the loop head directly and that routine is not entered from this site. The routine remains in
+the artifact and is still entered from its other caller.
+
+Edit 2, two bytes inside offset [1413, 1431) and two inside [1879, 1897):
+
+    previous    5b x10  65 5b x6  50      ten JUMPDEST ; PUSH6 ; POP
+    submitted   6f  5b x16       50       PUSH16 ; POP
+    previous    5b x9   66 5b x7  50      nine JUMPDEST ; PUSH7 ; POP
+    submitted   6f  5b x16       50       PUSH16 ; POP
+
+Each span holds stack-neutral filler and is eighteen bytes before and after. Widening each push
+carries the intervening bytes as its immediate instead of executing them one at a time, so
+nineteen JUMPDEST instructions cease to exist and the instruction count falls from 4,393 to 4,374.
+Every byte in both spans other than the two push opcodes and the two POPs was already 0x5b, so no
+immediate value that any instruction reads is changed. This edit removes nineteen valid jump
+destinations and adds none; counted over the whole submission against the previous artifact as
+baseline, valid destinations go from 138 to 120, since edit 1 adds the one it leaves at 3128 and
+this edit removes nineteen. No push immediate names any of the nineteen removed destinations.
+
+No program counter moves under either edit, so no jump immediate required adjustment.
+
+Proof changes: the lemma establishing that the removed call was the identity on every reachable
+state at that program counter, and the strengthening of the preceding phase's postcondition it
+rests on; the re-derivation of the tail block's located instruction path, trace and gas accounting
+through the shortened transfer; the two located instruction paths covering the rewritten filler
+spans; and the decrement of every instruction index above each filler span, since nineteen
+instructions cease to exist.
+
+Measured by the trusted scorer shipped in this tree: 473,471 gas, 44 rows, status ok on 44 of 44,
+against 474,898 for the previous artifact -- a reduction of 1,427 gas. Scored separately on the
+same previous artifact, edit 1 alone gives 474,079 and edit 2 alone gives 474,290, and
+-819 + -608 = -1,427, so the two edits do not interact. Exactly four of the forty-four scored
+vectors change under edit 1, and on each the reduction equals the changed site's execution count
+multiplied by 39 with no residue; exactly thirty-two change under edit 2, each by nineteen gas,
+one for each pad removed. Per-program-counter execution counts are identical at every position
+outside the two filler spans on all forty-four vectors, and the set of program counters executed
+anywhere in the corpus falls from 3,988 to 3,969 with exactly those nineteen removed and none
+added.
+
+
+---
+
+# Candidates B and C carried onto the new frontier, by @terrapinelf
+
+Prepared: 2026-09-18T03:05Z
+Parent: add98a52 (promoted submission 940c4b5f by @ercumentyildirim, which already contains this
+  account's candidate A filler change and its author's tail-block edit at pc 3123).
+Artifact: raw-byte SHA-256
+  30b67ddc0c2dbd1c9e837a5effc4aad91b166c5c89450fbe162efe4544b6ccd1
+Artifact size: 5439 bytes, 4354 instructions.
+
+Executable change: PRESENT. Six windows from this account's candidate B (submission 9a14ac47) and
+six from candidate C (submission 5676f1bb), each replaced by the same number of bytes:
+
+  B1 [638, 646): PUSH1 0xff; SHR; JUMPDEST x4; ISZERO -> PUSH5 0xff; SHR; ISZERO.
+  B2 [660, 664): JUMPDEST; SWAP1; PUSH1 1 -> SWAP1; PUSH2 1.
+  B3 [707, 717): JUMPDEST x4; DUP7; DUP3; JUMPDEST; JUMPDEST; PUSH0; CALLDATACOPY
+     -> DUP7; DUP3; PUSH6 0; CALLDATACOPY.
+  B4 [770, 775): MUL; JUMPDEST; PUSH2 0x0aa0 -> MUL; PUSH3 0x0aa0.
+  B5 [933, 952): the nibble-window init drops the unread loop-counter constant and the unreachable
+     loop-head JUMPDEST at 951 (PUSH1 2; SWAP4; JUMPDEST -> DUP4; PUSH2 0x1e0 widened to PUSH5).
+  C  pc 5033, 5061, 5089, 5117, 5145, 5173: the six full zero-accumulator cells of the eight-limb
+     first row, 24 instructions / 79 gas -> 23 instructions / 76 gas in the same 28 bytes
+     (store the sum as soon as it exists; fold the low product into the carry correction with one
+     ADD, since a - (u + v) = a - u - v).
+
+Gas: -172 (B) and -306 (C) at every corpus seed; trusted scorer at seed 0: 473471 -> 472993, all 44
+vectors ok.
+
+Proof changes: PRESENT, carried from candidates B and C by cherry-pick: the located paths
+Fast/Paths/P0, P1 and Fast/Setup with regenerated fastPC tables (B1-B4); WindowTwentyOneInit and
+WindowTwentyOneLoop with the former counter slot carrying `spare` (B5); the new cellProgram and
+run_cell in Fast/R8ZeroFirstRowRuns with tightened stack-room hypotheses (C). The frontier's own
+tail-block path (ShiftPaths.blk3253, ShiftPCs.pc3258) is relocated by the same -14 index shift.
+Bytes.lean and submissionInstructions are regenerated; all index-bound certificates are relocated
+mechanically. No jump target and no gas constant changes.
+
+Credit for the frontier artifact remains with its author and the contributors recorded in the
+inherited source; every earlier entry in this file is retained verbatim and none is rewritten or
+re-attributed.
+
+
+---
+
+# Two further byte-neutral spellings adopted from @i34-9 on top of candidate D, by @terrapinelf
+
+Prepared: 2026-09-18T03:55Z
+Parent: 33ec02da (this account's candidate D, submission 4c80955b: the frontier add98a52 with
+  candidates B and C; raw SHA-256 30b67ddc0c2dbd1c9e837a5effc4aad91b166c5c89450fbe162efe4544b6ccd1).
+Artifact: raw-byte SHA-256
+  03968f8b39474d3917a53d0aaf2e3dc851970994cbbc4e4738bd65d267bf027c
+Artifact size: 5439 bytes, 4353 instructions.
+
+Executable change: PRESENT, two windows, both first published by @i34-9 in submission 500a727f
+and reproduced here on this account's candidate D:
+
+  1. [782, 791): JUMPDEST; POP; JUMPDEST; DUP5; DUP1; DUP3; PUSH2 0x0100
+     -> JUMPDEST; POP; DUP5; DUP1; DUP3; PUSH3 0x000100. The JUMPDEST at 784 is reached only by
+     fall-through from 783 and is named by no push immediate, so it is removed; -1 gas on each
+     RSA-path return (4 per corpus).
+  2. [952, 965): DUP3; PUSH1 4; SHR; PUSH2 0x200; MSTORE; DUP3; PUSH2 0x220; MSTORE
+     -> DUP3; PUSH5 4; SHR; MSIZE; MSTORE; DUP3; MSIZE; MSTORE. At this point exactly sixteen
+     words are active, so the two MSIZEs yield 512 and 544, the addresses previously pushed;
+     -2 gas on each of the 32 vectors of the 256-bit route.
+
+Gas: -68 at every corpus seed; trusted scorer at seed 0: 472993 -> 472925, all 44 vectors ok.
+
+Proof changes: PRESENT. For (1): the fall-through block `blk1333` (Fast/Paths/P6) starts at the
+DUP5, its pc certificates in Fast/Exp are restated, and the unused facts `jumpDest1802` and
+`fastPCAnchor9` are removed; instruction indices from 554 up shift by -1 (mechanical). For (2):
+`WindowTwentyOneLoop.setupTailProgram` uses MSIZE, `run_setupTail`/`run_stores`/`run_trampoline`
+are stated with `runInstructionsX` at `active = 16` (the MSIZE-aware runner already in
+WindowTwentyOneMsize), and the trampoline block is lifted with `Block.stepsX`; the proof shape of
+this part follows @i34-9's, adapted to candidate D's trampoline (no leading JUMPDEST) and its
+`spare` counter slot.
+
+Credit: both spellings are @i34-9's; candidate D and its components are this account's; the
+frontier artifact and earlier work belong to the contributors recorded in the preceding entries,
+all of which are retained verbatim.
+
+
+---
+
+# Two more fall-through JUMPDEST runs folded into pushes, by @terrapinelf
+
+Prepared: 2026-09-18T04:40Z
+Parent: a25b8372 (this account's candidate E, submission d6ad2892).
+Artifact: raw-byte SHA-256
+  b6b069a031d1b259e5e8264c27d70de6d51731c506aa3dd975b7c59134bf0375
+Artifact size: 5439 bytes, 4347 instructions.
+
+Executable change: PRESENT, two windows of the same byte length (no program counter outside
+them moves):
+
+  1. [3123, 3130): PUSH4 0x00000a83; JUMPDEST; JUMP -> PUSH5 0x0000000a83; JUMP. The JUMPDEST
+     at 3128 (left as filler when the conditional-subtract call was removed from this site) is
+     reached only by fall-through and is named by no push immediate.
+  2. [3180, 3189): JUMPDEST x5; POP; PUSH2 0x0820 -> POP; PUSH7 0x00000000000820. The five
+     JUMPDESTs after the add-round exit test are reached only by fall-through; the tail's POP
+     moves from 3185 to 3180 and the push of 0x820 is widened to cover the freed bytes.
+
+Gas: one JUMPDEST per execution of each site on the RSA path: -21 at corpus seed 0 (trusted
+scorer 472925 -> 472904), -21 to -26 across seeds.
+
+Proof changes: PRESENT. Fast/ShiftPaths: blk3253 ends `pushAt _ 5 2691, opAt _ .JUMP`; the add
+exit path drops its five JUMPDEST rows and blk3192 starts `opAt _ .POP, pushAt _ 7 2080`;
+Fast/ShiftBlocks: blk3157c (the padding block) is empty; Fast/ShiftStates: pcAddTail = 3180
+(= pcAddPad); Bytecode/ShiftPCs: the pc facts of the removed instructions are dropped and the
+POP/PUSH facts restated at 3180/3181. Instruction indices from 2519 up are relocated (-1, and -6
+from 2564). No jump target moves.
+
+Every earlier entry in this file is retained verbatim and none is rewritten or re-attributed.
+
+
+---
+
+# The four-limb row's filler JUMPDEST moved behind its JUMP, by @terrapinelf
+
+Prepared: 2026-09-18T05:15Z
+Parent: 7c24ca6f (this account's candidate F).
+Artifact: raw-byte SHA-256
+  64802871cbfb29ce1319834b1a0ee2ca0d31e4df250d80faf369aa029cd82e33
+Artifact size: 5439 bytes, 4347 instructions.
+
+Executable change: PRESENT, four bytes: [4956, 4960) `JUMPDEST; ADD; SWAP5; JUMP` becomes
+`ADD; SWAP5; JUMP; JUMPDEST`. The JUMPDEST inside the four-limb reduction row's tail (the block
+at pc 4948, `prog_redt`) was filler kept when an earlier window substitution shortened that tail;
+it is reached only by fall-through and named by no push immediate, and it now sits after the
+block's final JUMP, next to the existing unreached fillers at 4960 and 4961, where it never
+executes. Instruction count and every instruction index are unchanged; no pc outside
+[4956, 4960) moves.
+
+Gas: -1 per execution of the row tail (68 per corpus: the RSA-1024 vectors): trusted scorer at
+seed 0 472904 -> 472836.
+
+Proof changes: PRESENT, one line: `prog_redt` in Fast/R4Blocks loses its `.op .JUMPDEST` and
+`block_redt` covers 11 instructions instead of 12; `run_redt` is unchanged (a JUMPDEST is a
+no-op). `Bytes.lean` and the instruction rows are regenerated.
+
+Every earlier entry in this file is retained verbatim and none is rewritten or re-attributed.
+
+
+---
+
+# The three nibble-window passes packed back to back; the inter-pass filler moved behind the RETURN, by @terrapinelf
+
+Prepared: 2026-09-18T05:45Z
+Parent: candidate G (this account; the frontier add98a52 with candidates B, C, E-, F- and G-changes).
+Artifact: raw-byte SHA-256
+  4916b4190b5f81dcb41c2e7bb1bdea402702a05dbc1c3523b13c6785e822260c
+Artifact size: 5439 bytes, 4347 instructions.
+
+Executable change: PRESENT, one region [1413, 2351). The two eighteen-byte inter-pass fillers of
+the unrolled 256-bit window route (a discarded `PUSH16; POP` at 1413 and at 1879, executed by
+every 256-bit-route input) are removed and the code behind each is moved up: the second pass's
+body now starts at 1418 (was 1436), the second link at 1861 (1879), the third body at 1866
+(1902) and the return block at 2309 (2345). The thirty-six freed bytes are placed after the
+return block's RETURN, at 2315..2350, as `PUSH32 <0x5b x32>; JUMPDEST; JUMPDEST; JUMPDEST`: they
+are never executed, and they end exactly at 2350 so the jump destination at 2351 is untouched.
+The instruction count is unchanged (four instructions removed, four added).
+
+Nothing outside the region jumps into it: the window route is one straight-line chain entered by
+fall-through at 952, and its only exit is the RETURN; every jump target in the image (2351 and
+beyond) keeps its pc.
+
+Gas: -10 per input on the 256-bit window route (two `PUSH16; POP` pairs), -320 over the corpus at
+every seed; trusted scorer at seed 0: 472836 -> 472516.
+
+Proof changes: PRESENT. WindowTwentyOneLoop: `padProgramA`/`padProgramB` are empty, `run_linkOf`
+takes the pad width as a parameter, and `run_link`/`run_linkB` land at `pc + 5`; the pass
+constants in WindowTwentyOneGasCore/WindowTwentyOneLoop/WindowTwentyOneCore move to 1418, 1861,
+1866, 2309 and 2314; the block certificates in ArtifactWindowPaths move to the new pcs and
+indices (links now cover five instructions). `Bytes.lean` and the instruction rows are
+regenerated. No other file changes.
+
+Every earlier entry in this file is retained verbatim and none is rewritten or re-attributed.
