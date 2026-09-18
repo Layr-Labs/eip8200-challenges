@@ -53,7 +53,7 @@ def pcMacSetup : Nat := 2791   -- E6, the rewritten conversion entry
 def pcMid : Nat := 3093   -- the fall-through after the eight straight blocks
 def pcAddLoop : Nat := 3136
 def pcAddInner : Nat := 3142
-def pcAddTail : Nat := 3185
+def pcAddTail : Nat := 3180
 /-- The add body after `OR`, before the pointer step and exit test. -/
 def pcAddMid : Nat := 3167
 /-- The fall-through padding after the add-round exit test. -/

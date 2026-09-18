@@ -16,8 +16,8 @@ consecutive passes is the same seventeen-instruction program at both of its. -/
 structure Paths (artifact : ProgramArtifact) (fork : Fork) where
   table : Block artifact fork 840 WindowTwentyOneTableBuild.program
   init : Block artifact fork 932 WindowTwentyOneInit.program
-  entry : Block artifact fork 951 WindowTwentyOneLoop.entryProgram
-  trampoline : Block artifact fork 951 WindowTwentyOneLoop.trampolineProgram
+  entry : Block artifact fork 952 WindowTwentyOneLoop.entryProgram
+  trampoline : Block artifact fork 952 WindowTwentyOneLoop.trampolineProgram
   body0 : Block artifact fork 970 (WindowTwentyOneLoop.bodyProgram (21 * 0))
   link0 : Block artifact fork 1413 WindowTwentyOneLoop.linkProgram
   body1 : Block artifact fork 1436 (WindowTwentyOneLoop.bodyProgram (21 * 1))
@@ -25,15 +25,13 @@ structure Paths (artifact : ProgramArtifact) (fork : Fork) where
   body2 : Block artifact fork 1902 (WindowTwentyOneLoop.bodyProgramLast 42)
   finish : Block artifact fork 2345 WindowTwentyOneReturn.program
 
-/-- The three unrolled passes, from the loop head at 951 to the return entry at
-2345.  Pass 0 is entered through the trampoline at 951; passes 1 and 2 are
+/-- The three unrolled passes, from the loop head at 952 to the return entry at
+2345.  Pass 0 is entered through the trampoline at 952; passes 1 and 2 are
 entered through the links at 1413 and 1879.  No instruction in the chain is a
-jump, so the `951` jump-destination fact is not needed -- it is retained in the
-signature only so the route above does not have to change. -/
+jump. -/
 def steps_three {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
-    (base modulus exponent : UInt256) (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (_htramp : Decode.isValidJumpDest template.executionEnv.code 951 = true) :
+    (base modulus exponent : UInt256) (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     GasSteps (WindowTwentyOneLoop.entryState template base modulus exponent rest)
       (WindowTwentyOneLoop.finishState template base modulus exponent rest) := by
   have e0 : GasSteps (WindowTwentyOneLoop.entryState template base modulus exponent rest)
@@ -85,8 +83,7 @@ def steps_core {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (he : rest[1]? = some exponent) (hm : rest[0]? = some modulus)
-    (htramp : Decode.isValidJumpDest template.executionEnv.code 951 = true) :
+    (he : rest[1]? = some exponent) (hm : rest[0]? = some modulus) :
     GasSteps (WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 840) base modulus rest)
       (WindowTwentyOneCore.returnedState template base modulus exponent rest) := by
   have ht := Block.stepsX paths.table
@@ -98,11 +95,12 @@ def steps_core {artifact : ProgramArtifact} {fork : Fork}
       (WindowTwentyOneTable.framed template (UInt256.ofNat 932) base modulus 16 ([base, exponent] ++ rest)) =
       some (WindowTwentyOneLoop.entryState template base modulus exponent rest) := by
     simpa only [WindowTwentyOneLoop.entryState, WindowTwentyOneLoop.eAt,
+      WindowTwentyOneLoop.spare,
       WindowTwentyOneMath.accumulator, WindowTwentyOneMath.advance] using hi
   have hinit := paths.init.steps
     (s := WindowTwentyOneTable.framed template (UInt256.ofNat 932) base modulus 16 ([base, exponent] ++ rest))
     (env.transfer rfl rfl) rfl hi'
-  have hloop := steps_three paths template env base modulus exponent rest hrest htramp
+  have hloop := steps_three paths template env base modulus exponent rest hrest
   have hfinish := paths.finish.steps
     (s := WindowTwentyOneLoop.finishState template base modulus exponent rest)
     (env.transfer rfl rfl) rfl
