@@ -89,31 +89,32 @@ theorem writeBytes_comm_disjoint (bs b1 b2 : ByteArray) (a1 a2 : Nat)
   simp only [MachineState.writeBytes_getElem?_getD]
   split_ifs <;> first | rfl | omega
 
-/-- The tail of the first row after the last cell's arithmetic (E12): the carry is
-installed into the frame cell (`SWAP9 POP`, the evicted entry constant `target` goes),
-the last cell's sum is stored to `0x840` (store address widened to `PUSH3`), then the
+/-- The tail of the first row after the last cell's arithmetic: the carry is stored to
+`0x820`, the last cell's sum to `0x840` (store address widened to `PUSH3`), then the
 loop counter is dropped and the quotient word starts at zero. -/
 def finishStore : List Instr :=
-  [.op (.Swap ⟨8, by decide⟩), .op .POP, .push 3 2112, .op .MSTORE, .op .POP, .push 0 0]
+  [.push 2 2080, .op .MSTORE, .push 2 2112, .op .MSTORE, .op .POP, .push 0 0]
 
-theorem run_finishStore (s : State) (pc c u bi w1 w2 w3 w4 w5 w6 target : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1012) (hact : 88 ≤ s.activeWords.toNat) :
+theorem run_finishStore (s : State) (pc c u bi : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1019) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions finishStore
-      { s with pc := pc, stack := c :: u :: bi :: w1 :: w2 :: w3 :: w4 :: w5 :: w6 :: target :: rest } =
-    some { s with pc := advancePC 9 pc,
-                  stack := UInt256.ofNat 0 :: w1 :: w2 :: w3 :: w4 :: w5 :: w6 :: c :: rest,
-                  memory := MachineState.writeBytes s.memory
+      { s with pc := pc, stack := c :: u :: bi :: rest } =
+    some { s with pc := advancePC 10 pc, stack := UInt256.ofNat 0 :: rest,
+                  memory := MachineState.writeBytes
+                    (MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded c.toNat 32) 2080)
                     (Data.Bytes.natToBytesPadded u.toNat 32) 2112 } := by
-  have h7 : rest.length + 7 < 1024 := by omega
-  have h8 : rest.length + 8 < 1024 := by omega
-  have h9 : rest.length + 9 < 1024 := by omega
-  have h10 : rest.length + 10 < 1024 := by omega
-  have h11 : rest.length + 11 < 1024 := by omega
+  have h0 : rest.length < 1024 := by omega
+  have h1 : rest.length + 1 < 1024 := by omega
+  have h2 : rest.length + 2 < 1024 := by omega
+  have h3 : rest.length + 3 < 1024 := by omega
+  have h4 : rest.length + 4 < 1024 := by omega
+  have ht : (2080 : UInt256).toNat = 2080 := by decide
   have ht2 : (2112 : UInt256).toNat = 2112 := by decide
+  have hT := activeWords_fix s 2080 32 (by decide) (by decide) hact
   have hT2 := activeWords_fix s 2112 32 (by decide) (by decide) hact
   have hz : (⟨0⟩ : UInt256) = UInt256.ofNat 0 := by decide
   simp [finishStore, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    List.exchange, h7, h8, h9, h10, h11, State.activeWordsAfterUInt256, ht2, hT2, hz, advancePC]
+    List.exchange, h0, h1, h2, h3, h4, State.activeWordsAfterUInt256, ht, ht2, hT, hT2, hz, advancePC]
   simp only [succ_eq_add, word_add_assoc]
   rfl
 

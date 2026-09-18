@@ -18,7 +18,7 @@ def entryProgram : List Instr :=
    .op (.Dup ⟨0, by decide⟩), .op .CALLDATALOAD,
    .push 1 32, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op .CALLDATALOAD,
    .op (.Dup ⟨1, by decide⟩), .op .NOT, .op (.Dup ⟨1, by decide⟩), .op .ADD,
-   .push 2 827, .op .JUMPI]
+   .push 2 866, .op .JUMPI]
 
 /-- `modulus + ~exponent`, zero exactly when `exponent = modulus - 1` (mod 2^256). -/
 def fermatDiff (modulus exponent : UInt256) : UInt256 :=
@@ -48,17 +48,17 @@ def primeValueProgram : List Instr :=
    .op .EQ, .op .OR]
 
 def primeProgram : List Instr :=
-  primeValueProgram ++ WindowTwentyOneEntry.testProgram (UInt256.ofNat 827)
+  primeValueProgram ++ WindowTwentyOneEntry.testProgram (UInt256.ofNat 866)
 
 theorem run_entry (template : State) (b e m : UInt256)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 827 = true) :
+    (htarget : Decode.isValidJumpDest template.executionEnv.code 866 = true) :
     runInstructions entryProgram (framed template (UInt256.ofNat 25) [m, e, b]) =
     some (framed template
       (if (fermatDiff
           (MachineState.readWord template.executionEnv.calldata
             ((UInt256.ofNat 96 + b) + UInt256.ofNat 32).toNat)
           (MachineState.readWord template.executionEnv.calldata (UInt256.ofNat 96 + b).toNat)).toNat = 0
-        then UInt256.ofNat 45 else UInt256.ofNat 827)
+        then UInt256.ofNat 45 else UInt256.ofNat 866)
       [MachineState.readWord template.executionEnv.calldata
           ((UInt256.ofNat 96 + b) + UInt256.ofNat 32).toNat,
         MachineState.readWord template.executionEnv.calldata (UInt256.ofNat 96 + b).toNat,
@@ -76,11 +76,11 @@ theorem run_entry (template : State) (b e m : UInt256)
 
 theorem run_prime (template : State) (modulus : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 999)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 827 = true) :
+    (htarget : Decode.isValidJumpDest template.executionEnv.code 866 = true) :
     runInstructions primeProgram (framed template (UInt256.ofNat 45) (modulus :: rest)) =
     some (framed template
       (if (FermatProgram.primeValue modulus).toNat = 0
-        then UInt256.ofNat 827 else UInt256.ofNat 96)
+        then UInt256.ofNat 866 else UInt256.ofNat 96)
       (modulus :: rest)) := by
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -96,7 +96,7 @@ theorem run_prime (template : State) (modulus : UInt256) (rest : List UInt256)
         Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3, hc4, hsecp,
         Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
   have ht := WindowTwentyOneEntry.run_test template (UInt256.ofNat 91)
-    (UInt256.ofNat 827) (FermatProgram.primeValue modulus) (modulus :: rest)
+    (UInt256.ofNat 866) (FermatProgram.primeValue modulus) (modulus :: rest)
     (by simp; omega) htarget
   have both := runInstructions_append_some _ _ _ _ _ hv ht
   have hpc : advancePC 5 (UInt256.ofNat 91) = UInt256.ofNat 96 := by decide
@@ -106,7 +106,7 @@ structure Paths (artifact : Challenge.EvmProof.ProgramArtifact) (fork : Fork) wh
   entry : WindowTwentyOneBinding.Block artifact fork 25 entryProgram
   prime : WindowTwentyOneBinding.Block artifact fork 45 primeProgram
   result : WindowTwentyOneBinding.Block artifact fork 96 FermatProgram.returnProgram
-  legacyJump : Decode.isValidJumpDest artifact.code 827 = true
+  legacyJump : Decode.isValidJumpDest artifact.code 866 = true
 
 #print axioms run_prime
 end Challenge.Modexp.Submission.Proofs.Bytecode.FermatNext

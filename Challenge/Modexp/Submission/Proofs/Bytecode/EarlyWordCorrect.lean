@@ -1,7 +1,9 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.ArtifactEarlyWordPaths
 import Challenge.Modexp.Submission.Proofs.Bytecode.EarlyWordGas
+import Challenge.Modexp.Submission.Proofs.Bytecode.MemoHit
 import Challenge.Modexp.Submission.Proofs.Bytecode.MainGas
 import Challenge.Modexp.Submission.Proofs.Bytecode.FermatGas
+import Challenge.Modexp.Submission.Proofs.Bytecode.ArtifactWindowPaths
 import Challenge.Modexp.Submission.Proofs.PrimeCertificates
 
 set_option warningAsError true
@@ -37,15 +39,30 @@ private def environment (input : ByteArray) :
   running := rfl
   noPrecompile := deployAddress_not_precompile
 
-/-- Every non-matching header reaches the unchanged legacy entry exactly. -/
-def legacy (input : ByteArray) (hmiss : ¬ WindowTwentyOneInput.Matches input) :
+/-- Every non-matching header reaches the fixed-vector recogniser's entry exactly. -/
+def recogniserEntry (input : ByteArray) (hmiss : ¬ WindowTwentyOneInput.Matches input) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Main.trampolineState input 599) := by
+      (Memo.entryState input) := by
   have tail := EarlyWordGas.steps_miss Artifact.earlyWordPaths
     (initialState submissionBytecode input 0) (environment input) input rfl hmiss
   change Challenge.EvmProof.GasSteps (Main.trampolineState input 0)
-    (Main.trampolineState input 599) at tail
+    (Main.trampolineState input 795) at tail
   exact (Main.gasSteps_entryHop input).trans tail
+
+/-- Every non-matching header the recogniser does not claim reaches the unchanged
+legacy entry exactly. -/
+def legacy (input : ByteArray) (hmiss : ¬ WindowTwentyOneInput.Matches input)
+    (hmemo : ¬ MemoLogic.Matches input) :
+    Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
+      (Main.trampolineState input 599) :=
+  (recogniserEntry input hmiss).trans (Memo.gasSteps_miss input hmemo)
+
+/-- Every header the recogniser claims returns the specified result. -/
+def memoHit (input : ByteArray) (hvalid : ValidInput input)
+    (hmiss : ¬ WindowTwentyOneInput.Matches input)
+    (hmemo : MemoLogic.Matches input) : Handled input := by
+  obtain ⟨final, ⟨tail⟩, done, result⟩ := Memo.hitHandled input hvalid hmemo
+  exact ⟨final, ⟨(recogniserEntry input hmiss).trans tail⟩, done, result⟩
 
 /-- Every matching header has a complete initial-state correctness trace. -/
 def hit (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :

@@ -85,33 +85,33 @@ theorem topExp_le (w : Nat) (hw : w < 256) (hne : w ≠ 0) : 2 ^ topExp w ≤ w 
 /-- The `LZ` entry, pc 2695.  The driver frame below the byte index is left
 abstract so that this module does not depend on `Fast.Exp`. -/
 def lzEntry (s : State) (mem : ByteArray) (i : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1299
+  { s with pc := UInt256.ofNat 1018
            stack := UInt256.ofNat i :: rest
            memory := mem }
 
 /-- pc 2711, the arm every byte after the first takes. -/
 def lzOther (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1315
+  { s with pc := UInt256.ofNat 1034
            stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
 /-- pc 2720, the arm byte `0` takes. -/
 def lzFirst (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1321
+  { s with pc := UInt256.ofNat 1040
            stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
 /-- The bit-loop head both arms rejoin, pc 1916. -/
 def lzJoin (s : State) (mem : ByteArray) (i w mask : Nat)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 962
+  { s with pc := UInt256.ofNat 952
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
 /-- The state handed to the relocated leading-bit shortcut at pc3865. -/
 def lzBase (s : State) (mem : ByteArray) (i w mask : Nat)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 2160
+  { s with pc := UInt256.ofNat 2441
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
@@ -119,6 +119,11 @@ def lzBase (s : State) (mem : ByteArray) (i w mask : Nat)
 
 The byte the block loads is left abstract, as `hbyte`, so that this module
 does not need `Fast.Exp`'s `expByte`. -/
+
+/-! ## Word arithmetic for the smear
+
+`Fast.Exp` carries `shr_ofNat` and a `land` companion, but it imports this
+module. -/
 
 theorem shr_ofNat' (v k : Nat) (hv : v < 2 ^ 256) (hk : k < 256) :
     UInt256.shiftRight (UInt256.ofNat v) (UInt256.ofNat k) =
@@ -141,3 +146,4 @@ theorem sm_lt (w : Nat) (hw : w < 256) :
 
 /-! ## The two rejoining arms -/
 
+end Challenge.Modexp.Submission.Proofs.Fast.Lz

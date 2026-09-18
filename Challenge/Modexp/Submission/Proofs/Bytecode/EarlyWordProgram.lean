@@ -23,9 +23,11 @@ def branchProgram : List Instr := [.push 1 127, .op .JUMPI]
 /-- Nineteen instructions at pc 0, ending at the conditional branch. -/
 def guardProgram : List Instr := headerProgram ++ guardValueProgram ++ branchProgram
 
-/-- Every width miss restores the unchanged legacy entry with an empty stack. -/
+/-- Every width miss drops the header words and enters the fixed-vector
+recogniser at pc 1064 with an empty stack; the recogniser's own miss exits
+restore the unchanged legacy entry at pc 598. -/
 def missProgram : List Instr :=
-  [.op .JUMPDEST, .op .POP, .op .POP, .op .POP, .push 2 599, .op .JUMP]
+  [.op .JUMPDEST, .op .POP, .op .POP, .op .POP, .push 2 795, .op .JUMP]
 
 open WindowTwentyOnePositive (headerStack)
 
@@ -34,7 +36,8 @@ structure Paths (artifact : ProgramArtifact) (fork : Fork) where
   guard : WindowTwentyOneBinding.Block artifact fork 0 guardProgram
   miss : WindowTwentyOneBinding.Block artifact fork 127 missProgram
   missJump : Decode.isValidJumpDest artifact.code 127 = true
-  legacyJump : Decode.isValidJumpDest artifact.code 599 = true
+  /-- The fixed-vector recogniser's entry, where the width miss now lands. -/
+  legacyJump : Decode.isValidJumpDest artifact.code 795 = true
 
 /-- Context reset is valid only with the three explicit carrier premises. -/
 theorem framed_eq_state (template : State) (input : ByteArray) (pc : UInt256)
@@ -106,9 +109,9 @@ theorem guard_zero_iff (input : ByteArray) :
     rfl
 
 theorem run_miss (template : State) (input : ByteArray)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 599 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 795 = true) :
     runInstructions missProgram (framed template (UInt256.ofNat 127) (headerStack input)) =
-      some (framed template (UInt256.ofNat 599) []) := by
+      some (framed template (UInt256.ofNat 795) []) := by
   simp [missProgram, runInstructions, framed, headerStack, Stepper.runInstr, hjump,
     Word.literal_eq_ofNat, Word.word_toNat_ofNat]
 

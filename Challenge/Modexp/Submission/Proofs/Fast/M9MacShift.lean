@@ -34,10 +34,10 @@ def gasSteps_macSection (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteA
     (hact : 88 ≤ s.activeWords.toNat)
     (hcache : MachineState.readWord um 1698 = UInt256.ofNat (entryPC n)) :
     Challenge.EvmProof.GasSteps
-      { s with pc := UInt256.ofNat 2791,
+      { s with pc := UInt256.ofNat 2860,
                 stack := q :: UInt256.ofNat k :: Exp.outer n bsize esize msize,
                 memory := um }
-      { s with pc := UInt256.ofNat 3093,
+      { s with pc := UInt256.ofNat 3162,
                 stack := (l1Step um q Shift.NEG n n).carry :: q :: UInt256.ofNat k ::
                   Exp.outer n bsize esize msize,
                 memory := (l1Step um q Shift.NEG n n).memory } :=

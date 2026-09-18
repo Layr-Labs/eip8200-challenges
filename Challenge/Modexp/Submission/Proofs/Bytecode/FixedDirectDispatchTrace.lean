@@ -47,7 +47,7 @@ theorem run_entry_three (s : State) (memory : ByteArray)
       Challenge.EvmProof.Stepper.runInstr,
       entryState, Exp.bDone, FixedDirectStates.check65537, Exp.outer,
       hcode, hrun, heq,
-      Exp.isTrue_one, jumpDestCheck65537,
+      Exp.isTrue_one, jumpDest3895,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,

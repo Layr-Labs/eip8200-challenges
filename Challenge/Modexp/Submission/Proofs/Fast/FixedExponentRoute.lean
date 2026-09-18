@@ -38,10 +38,10 @@ def Matches (input : ByteArray) (bsize esize : Nat) : Prop :=
   ∃ count : Nat, Case input bsize esize count
 
 /-- State after the replacement in `BDONE` jumps to the appended dispatcher
-at pc 3252. -/
+at pc 3250. -/
 abbrev entryState (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { Exp.bDone s mem n bsize esize msize with pc := UInt256.ofNat 2396 }
+  { Exp.bDone s mem n bsize esize msize with pc := UInt256.ofNat 2441 }
 
 /-- Exact inherited exponent-loop state restored by every dispatcher miss. -/
 abbrev missState (s : State) (mem : ByteArray)
@@ -62,11 +62,10 @@ structure Route (s : State) (mem input : ByteArray)
   enter : Challenge.EvmProof.GasSteps
     (Exp.bDone s mem n bsize esize msize)
     (entryState s mem n bsize esize msize)
-  /-- **S1b.** A recogniser miss is no longer a rejoin, it is a BAIL.  All three
-  checks (`esize = 1`, first byte `3`, top three bytes `65537`) `JUMPI` to the
-  six-word trampoline at pc 800, which lands on `modexpBig` at pc 238.  The class
-  is therefore FINISHED here rather than handed back to the generic exponent
-  loop, so the field carries `Handled` and not a `GasSteps` into `missState`. -/
+  /-- A recogniser miss is a bail, not a rejoin: all three checks (`esize = 1`,
+  first byte `3`, top three bytes `65537`) `JUMPI` to the six-word trampoline at
+  pc 1054, which lands on `modexpBig` at pc 237.  The class is finished there, so
+  the field carries `Handled` and not a `GasSteps` into `missState`. -/
   miss : ¬ Matches input bsize esize →
     Handled input (entryState s mem n bsize esize msize)
   hit : Matches input bsize esize →

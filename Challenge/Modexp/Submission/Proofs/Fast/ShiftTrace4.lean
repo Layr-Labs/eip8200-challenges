@@ -112,7 +112,7 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32)) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
-      (kState s (ShiftCacheModel.cacheMem (preMem (negStep mem n n).memory) n) 2664 n n bsize esize msize) :=
+      (kState s (ShiftCacheModel.cacheMem (preMem (negStep mem n n).memory) n) 2733 n n bsize esize msize) :=
   (  ((((soundEnv blk2892 e
       (run_negEntry s mem n bsize esize msize hn hn32 e.act296 hml e.code e.run)).trans
     (gasSteps_negLoop s mem n bsize esize msize hn hn32 e)).trans
@@ -331,9 +331,9 @@ def gasSteps_csubStep (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
   soundEnv blk3253 e (run_csubCall s mem n bsize esize msize k hk hk32 e.code e.run)
 
 /-- The first `CSUB(BASE)`, reducing the raw base, from `HIT` to `AFTER_CSUB0`. -/
-def canonicalCopyBlock : WindowTwentyOneBinding.Block Artifact.submissionArtifact .Osaka 2508
+def canonicalCopyBlock : WindowTwentyOneBinding.Block Artifact.submissionArtifact .Osaka 2577
     ShiftProducerSplitRun.copyProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2038 5 2508 ShiftProducerSplitRun.copyProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2094 5 2577 ShiftProducerSplitRun.copyProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def gasSteps_hitCsub (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)

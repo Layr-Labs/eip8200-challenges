@@ -2,6 +2,8 @@ import Challenge.Modexp.Submission.Proofs.Fast.RootE3Correct
 import Challenge.Modexp.Submission.Proofs.Fast.RootE3Bindings
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftTrace5
 import Challenge.Modexp.Submission.Proofs.Fast.ExpSubs
+-- The full-base miss bails into `modexpBig`; its cold-path proof and location
+-- certificates are pure `Proofs.Bytecode`.
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigCUMain
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigCUBlocks
 
@@ -13,7 +15,7 @@ set_option maxHeartbeats 16000000
 # Fast-path certificate with the shift-reduce base conversion
 
 After `Fast.Setup` and the `R1B` guard, execution reaches the dispatcher at
-pc 4022.  When the base is exactly `n` words wide and the modulus has its top
+pc 4050.  When the base is exactly `n` words wide and the modulus has its top
 bit set, the shift-reduce routine converts the base and rejoins the exponent
 phase at `BDONE`; otherwise the old `r0` block runs the unchanged RR-leading
 chain.
@@ -26,11 +28,10 @@ open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
-open Challenge.Modexp.Submission.Proofs.Fast.RrLeadingTraceCore
 
 theorem jumpD4643 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 2474).toNat = true :=
-  Exp.jumpD 2474 (by decide) jumpDest4608
+    (UInt256.ofNat 2543).toNat = true :=
+  Exp.jumpD 2543 (by decide) jumpDest4608
 
 /-! ## Facts at `BDONE` on the hit path -/
 
@@ -201,15 +202,10 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     -- kernel composition applicable, so they travel with the dispatch rather than being
     -- rediscovered inside it.
     (hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1)
-    -- S1.  Both are needed only on the diverted miss arm, and both are free where
-    -- they are produced.  `bigC_correct` wants `ValidInput`, whose `size < 2 ^ 64`
-    -- component `handled_of_dispatch` cannot derive (`hcds` only gives `< 2 ^ 256`);
-    -- `gasSteps_handled` has it as a hypothesis.  And it wants an UPPER bound on
-    -- `activeWords`, where every bound in this tree is a lower one -- but the carrier
-    -- is `Setup.fastSetupState input`, whose `activeWords` is proved to be exactly
-    -- 89, and every named fast-path state is a record update of it touching only
-    -- `pc`/`stack`/`memory`, so the bound crosses definitionally and 89 <= 289 has
-    -- 200 words of slack.
+    -- Both are needed only on the diverted miss arms, and both are free where they
+    -- are produced.  `bigC_correct` wants `ValidInput`, whose `size < 2 ^ 64`
+    -- component `hcds` cannot supply, and an upper bound on `activeWords`, which the
+    -- carrier `Setup.fastSetupState input` fixes at exactly 89.
     (hvalid : Challenge.Modexp.ValidInput input)
     (hactLe : s.activeWords.toNat ≤ 289) :
     ∃ final : State,
@@ -240,23 +236,15 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
       hvalid hactLe
       (RootE3Bindings.build s mem input n bsize esize msize minv hn hn32 hb he e hdata hframe0 hmatch
         hfast)
-  · -- **S1: the diverted miss.**  The dispatcher's `PUSH2` operand no longer names
-    -- the `r0` seeding block, so this whole class leaves the fast path at the bail
-    -- trampoline and enters `modexpBig` at pc 238.  `bigC_correct` re-reads the
-    -- header from calldata and is universal in the incoming memory and stack, so
-    -- the frame the fast path built is simply discarded; nothing about it has to be
-    -- carried across.
-    --
-    -- The `r0 -> RR-leading -> FullBase -> RrLeadingTail` subtree that used to
-    -- discharge this arm is dead from here.  It is retired by track S2, not by this
-    -- edit: deleting it before the bail exists would destroy the evidence that it
-    -- is dead.
+  · -- The diverted miss.  The dispatcher's `JUMPI` no longer names the `R1`
+    -- seeding block: this whole class leaves the fast path at `BAIL6` and enters
+    -- `modexpBig` at pc 237.  `bigC_correct` re-reads the header from calldata and
+    -- is universal in the incoming memory and stack, so the frame the fast path
+    -- built is simply discarded.
     have hbail := gasSteps_missPath s mem n bsize esize msize hn32 e hbword hmatch
     -- `bigCState` is a record update of `s` touching only `pc`, `stack` and
-    -- `memory`, so every environment field is `s`'s DEFINITIONALLY.  Naming that
-    -- once, as a hypothesis carrying the bail state's spelling, is what lets `rw`
-    -- fire below: `hdata` is stated about `s`, and `rw` is syntactic, not up to
-    -- defeq.  `▸` would have to guess the motive here; this does not.
+    -- `memory`, so every environment field is `s`'s definitionally; naming that once
+    -- with the bail state's spelling is what lets `rw` fire below.
     have hcd : (bigCState s mem n bsize esize msize).executionEnv.calldata = input := hdata
     have hpos : 0 < Challenge.Modexp.modulusSize input := by omega
     obtain ⟨final, ⟨tail⟩, hdone, hres⟩ :=
@@ -306,7 +294,7 @@ theorem gasSteps_handled (input : ByteArray)
   have hcds : (Setup.fastSetupState input).executionEnv.calldata.size < 2 ^ 256 := by
     rw [Exp.fastSetup_calldata input]
     exact hsize
-  -- S1.  The upper bound the bail needs, from the same lemma as the lower one.
+  -- The upper bound the bails need, from the same lemma as the lower one.
   have hactLe : (Setup.fastSetupState input).activeWords.toNat ≤ 289 := by
     rw [Setup.fastSetup_activeWords input hpath, Exp.toNat_ofNat_self (by norm_num)]
     norm_num
