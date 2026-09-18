@@ -16,23 +16,43 @@ theorem extra_clear (m : ByteArray) (n : UInt256) (hn : n.toNat < 2^64)
   have ha14 : 14 ≤ a := by simp only [List.mem_cons, List.not_mem_nil, or_false] at ha; omega
   rw [hagree.2 a ha14, StaggerTablePad.resultMemory_eq_table m n hn]
   simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
-  rcases ha with rfl | rfl | rfl | rfl
-  · change (StaggerTableMemory.storeDescending m _ 0 61)[18*4+22]?.getD 0 = 0
+  rcases ha with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  · change (StaggerTableMemory.storeDescending m _ 0 61)[18*2+24]?.getD 0 = 0
     rw [StaggerTableMemory.getD_pair _ _ _ _ _ _ (by decide) (by decide) (by decide)]
     simp [StaggerTableLayout.tableWords, StaggerTableLayout.slots, StaggerTablePad.padWordsDirty, PadOnlySchedule.padWords]
     rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD _ _ _ (by decide)]
     rfl
-  · change (StaggerTableMemory.storeDescending m _ 0 61)[18*4+23]?.getD 0 = 0
+  · change (StaggerTableMemory.storeDescending m _ 0 61)[18*2+25]?.getD 0 = 0
     rw [StaggerTableMemory.getD_pair _ _ _ _ _ _ (by decide) (by decide) (by decide)]
     simp [StaggerTableLayout.tableWords, StaggerTableLayout.slots, StaggerTablePad.padWordsDirty, PadOnlySchedule.padWords]
     rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD _ _ _ (by decide)]
     rfl
-  · change (StaggerTableMemory.storeDescending m _ 0 61)[18*6+20]?.getD 0 = 0
+  · change (StaggerTableMemory.storeDescending m _ 0 61)[18*32+18]?.getD 0 = 0
     rw [StaggerTableMemory.getD_pair _ _ _ _ _ _ (by decide) (by decide) (by decide)]
     simp [StaggerTableLayout.tableWords, StaggerTableLayout.slots, StaggerTablePad.padWordsDirty, PadOnlySchedule.padWords]
     rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD _ _ _ (by decide)]
     rfl
-  · change (StaggerTableMemory.storeDescending m _ 0 61)[18*6+21]?.getD 0 = 0
+  · change (StaggerTableMemory.storeDescending m _ 0 61)[18*32+19]?.getD 0 = 0
+    rw [StaggerTableMemory.getD_pair _ _ _ _ _ _ (by decide) (by decide) (by decide)]
+    simp [StaggerTableLayout.tableWords, StaggerTableLayout.slots, StaggerTablePad.padWordsDirty, PadOnlySchedule.padWords]
+    rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD _ _ _ (by decide)]
+    rfl
+  · change (StaggerTableMemory.storeDescending m _ 0 61)[18*33+20]?.getD 0 = 0
+    rw [StaggerTableMemory.getD_pair _ _ _ _ _ _ (by decide) (by decide) (by decide)]
+    simp [StaggerTableLayout.tableWords, StaggerTableLayout.slots, StaggerTablePad.padWordsDirty, PadOnlySchedule.padWords]
+    rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD _ _ _ (by decide)]
+    rfl
+  · change (StaggerTableMemory.storeDescending m _ 0 61)[18*33+21]?.getD 0 = 0
+    rw [StaggerTableMemory.getD_pair _ _ _ _ _ _ (by decide) (by decide) (by decide)]
+    simp [StaggerTableLayout.tableWords, StaggerTableLayout.slots, StaggerTablePad.padWordsDirty, PadOnlySchedule.padWords]
+    rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD _ _ _ (by decide)]
+    rfl
+  · change (StaggerTableMemory.storeDescending m _ 0 61)[18*35+18]?.getD 0 = 0
+    rw [StaggerTableMemory.getD_pair _ _ _ _ _ _ (by decide) (by decide) (by decide)]
+    simp [StaggerTableLayout.tableWords, StaggerTableLayout.slots, StaggerTablePad.padWordsDirty, PadOnlySchedule.padWords]
+    rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD _ _ _ (by decide)]
+    rfl
+  · change (StaggerTableMemory.storeDescending m _ 0 61)[18*35+19]?.getD 0 = 0
     rw [StaggerTableMemory.getD_pair _ _ _ _ _ _ (by decide) (by decide) (by decide)]
     simp [StaggerTableLayout.tableWords, StaggerTableLayout.slots, StaggerTablePad.padWordsDirty, PadOnlySchedule.padWords]
     rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD _ _ _ (by decide)]

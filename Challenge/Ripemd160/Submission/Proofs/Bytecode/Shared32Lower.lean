@@ -21,8 +21,7 @@ theorem run_lower (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt2
       some {s with
         pc := pcAfter pc lowerTemplate
         stack := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho
-        memory := writeWord (writeWord s.memory 46
-            (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1056))) 28
+        memory := writeWord s.memory 616
           (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1056))} := by
   let F := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho
   let low := PairedScheduleData.reversedWord (MachineState.readWord s.memory 1056)
@@ -44,7 +43,7 @@ theorem run_lower (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt2
   simpa only [lowerTemplate, DenseScheduleTrace.pcAfter_append, pc1, pc2, low] using h
 
 theorem lower_bytes : assembleBytes lowerTemplate =
-    [97,4,32,140,1,81,128,97,0,8,28,129,24,143,22,97,1,1,2,24,143,129,128,97,0,16,28,24,22,98,1,0,1,2,24,128,97,0,46,82,96,28,82] := by decide
+    [97,4,32,140,1,81,128,97,0,8,28,129,24,143,22,97,1,1,2,24,143,129,128,97,0,16,28,24,22,98,1,0,1,2,24,97,2,104,82] := by decide
 
 #print axioms run_lower
 #print axioms lower_bytes

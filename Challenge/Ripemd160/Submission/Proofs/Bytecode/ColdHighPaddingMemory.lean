@@ -116,11 +116,12 @@ theorem finalMemory_extraClear (input : ByteArray) (hfit : CalldataFits input) (
   unfold finalMemory
   rw [lengthMemory_below input _ hfit _ (PaddingTrace.lengthStop_le input) a hb]
   simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
-  rcases ha with rfl | rfl | rfl | rfl
+  rcases ha with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals simp only [StaggerTablePad.padRealChain, StaggerTablePad.lowChainOver,
     PairedScheduleMemory.writeWord, MachineState.writeBytes_getElem?_getD,
     YulEvmCompiler.BytesLemmas.natToBytesPadded_size, StaggerTableSparse.zeroSuffix_getD]
   all_goals norm_num
+  all_goals rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD _ _ _ (by decide)]; rfl
 
 /-- Byte 0 survives the pad chain (all six low-block stores are at 36 and above, `zeroSuffix`
 clears from 28) and the length loop (which writes at 1056 and above). -/

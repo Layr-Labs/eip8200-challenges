@@ -25,7 +25,7 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
         pc := pc
         stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10
           (UInt256.ofNat 0) lim rho
-        memory := writeWord s.memory 96 highWord} =
+        memory := writeWord s.memory 28 highWord} =
       some {s with
         pc := pcAfter pc template
         stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10
@@ -38,7 +38,7 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (UInt256.ofNat 0) lim rho
   let scratch := Pair13Endian.scratchV2 s.memory
     (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1056)) highWord
-  let s1 : State := {s with memory := writeWord s.memory 96 highWord}
+  let s1 : State := {s with memory := writeWord s.memory 28 highWord}
   let s2 : State := {s with memory := scratch}
   let s3 : State := {s with memory := Pair13PoolRaw.copiedV2 scratch}
   have ha : 34 ≤ s2.activeWords.toNat := by change 34 ≤ s.activeWords.toNat; rw [hactive]; decide

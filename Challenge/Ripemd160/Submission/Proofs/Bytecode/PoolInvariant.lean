@@ -8,7 +8,9 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolInvariant
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PoolShape PoolShapeV2
 
-def ExtraClear (m : ByteArray) : Prop := ∀ a ∈ [94,95,128,129], m[a]?.getD 0 = 0
+/-- The copy holes of the C2 staging (60, 61, 614, 615, 648, 649) and the two bytes of the
+terminal slot (594, 595) that the raw word 0 carries into the table's hole at 60, 61. -/
+def ExtraClear (m : ByteArray) : Prop := ∀ a ∈ [60,61,594,595,614,615,648,649], m[a]?.getD 0 = 0
 
 theorem clear_of_parts (m : ByteArray)
     (hlow : (MachineState.readWord m 0).toNat % 2^144 < 2^32)
@@ -78,11 +80,11 @@ theorem read_result_outside (clean : Bool) (m : ByteArray) (lo hi : UInt256) (a 
     (fun i _ => result_outside clean m lo hi (a+i) (by omega))
 
 /-- Above the copied block the v2m fan image is the incoming memory verbatim. -/
-theorem fanV2_getD_high (m : ByteArray) (lo hi : UInt256) (a : Nat) (ha : 146 ≤ a) :
+theorem fanV2_getD_high (m : ByteArray) (lo hi : UInt256) (a : Nat) (ha : 1112 ≤ a) :
     (fanMemoryV2 m lo hi)[a]?.getD 0 = m[a]?.getD 0 := by
-  rw [fanMemoryV2, PoolShapeV2.copiedV2_getD, if_neg (by omega), Shared32Scratch.copied_getD,
-    if_neg (by omega), if_neg (by omega), PoolShapeV2.scratchV2_getD,
-    if_neg (by omega), if_neg (by omega), if_neg (by omega)]
+  rw [fanMemoryV2, PoolShapeV2.copiedV2_getD, PoolShapeV2.copiedAddressV2,
+    if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega),
+    PoolShapeV2.scratchV2_getD, if_neg (by omega), if_neg (by omega)]
 
 theorem resultV2_outside (m : ByteArray) (lo hi : UInt256) (a : Nat) (ha : 1112 ≤ a) :
     (resultMemoryV2 m lo hi)[a]?.getD 0 = m[a]?.getD 0 := by

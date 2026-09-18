@@ -1,3 +1,68 @@
+# RIPEMD-160: the schedule scratch moved so the copies leave the zero bytes — 661,914 gas in 5,212 bytes
+
+- SHA-256: `592f0bb0ed6a9c7d15003049c02929b346a1b137c81c649b9a18c5d8ea3d0fe7`.
+- Size: 5,212 bytes; 3,687 instructions (five fewer than the predecessor, so instruction indices
+  from 311 up are renumbered). Every edited byte lies in the schedule builder `[506, 858)` plus
+  the two sparse pad-byte immediates of the 32-byte route at pc 333 and 337; no instruction start
+  outside the builder moves.
+- Literal-encoding cost: 8180 against a ceiling of 8,194.
+- Local score: 661,914 gas at corpus seeds 0, 1 and 2, a reduction of 504 from the 662,418
+  predecessor. The builder runs once per data block (42 times over the corpus) and every
+  execution saves 12 gas, so the reduction does not depend on the draw.
+
+## The change
+
+The predecessor stored the byte-swapped low message word twice (at 46 and 28) and masked schedule
+words 4, 5, 6 and 7 with the two-lane mask. Those masks were not optional: an unmasked word may
+only enter the table if its load keeps a provably-zero byte between the lanes (word bytes 14..26),
+and the two-store layout packs `[28, 78)` solid with message bytes, leaving words 4..7 no zero
+byte. Two of the masks did double duty: the zero bytes the masked words 4 and 5 leave in the table
+are what make the next block's high-half scratch holes (94, 95 and 128, 129) zero.
+
+A search over staging layouts, load addresses and mask sets (a byte-exact symbolic model of the
+builder with a greatest-fixpoint computation of the addresses that are provably zero at every
+block entry) shows that the cheapest scheme gives each half **one** store and **two** sixteen-byte
+`MCOPY`s eighteen bytes away, which leaves a two-byte zero hole inside every load's gap, and that
+the holes can be made zero at entry by *where* the scratch lives: the high half now stages at
+28 (the old low scratch location) and the low half at 616, with the copies `28→10`, `44→62`,
+`616→598` and `632→650`. Only words 6 and 11 keep their masks: word 11 because the terminal paired
+round reads its slot exactly, word 6 because the zero bytes it leaves at table bytes 14..27 are
+what the pad-only block's real-versus-model agreement needs. The 45 table stores are unchanged in
+address, order and source word, so every lane of every slot is byte-for-byte the predecessor's;
+the 32-byte route pre-writes its two pad bytes relative to the moved high word (`PUSH1 0x63` →
+`0x1f`, `PUSH1 0x7a` → `0x36`).
+
+Per block: four masks dropped (−24), one store dropped and one copy added (+6), total −12.
+
+## What it costs the proof
+
+The byte-level model of the actual builder (`PoolShapeV2`) is rewritten for the new scratch and
+load addresses; the four `decide` certificates (`PoolCertificatesV2`: lanes, terminal slot, the
+cleared addresses and one zero witness per slot) are re-derived. The addresses the proof requires
+to be zero at every block entry change from the predecessor's four scratch holes to
+60, 61, 594, 595, 614, 615, 648 and 649 (`PoolInvariant.ExtraClear`); each is re-established after a
+data block (by the certificate), after the pad-only block and on the cold path (new byte lemmas
+over the pad table), and holds at entry. The endian and pool templates and their symbolic run
+lemmas are regenerated from the bytes, as are the writer chunk templates; the 32-byte route's
+sparse stores and its scratch lemma move from 96 to 28. The clean reference image and everything
+downstream of it are untouched. Instruction indices are renumbered by the relocation tool.
+
+## Verification
+
+- `lake build Challenge.Ripemd160.Submission.Solution` passes all 3,731 jobs; the final theorem
+  `Challenge.Ripemd160.Benchmark.candidate` depends only on `propext`, `Classical.choice` and
+  `Quot.sound`; no `sorry`, `native_decide` or added axiom appears anywhere in the change.
+- Corpus at seeds 0, 1, 2: 0 wrong digests, delta −504 at every seed; 1,041 further fuzz and
+  adversarial inputs (random lengths 0..299, all-`0xff` 0..599, zeros, words of `0xff`/`0x00`,
+  inputs up to 6,000 bytes and around the code size) return the reference digest.
+- Researched and proved by Claude Opus 5 (Claude Code harness), building on the inherited work
+  credited below.
+
+---
+
+**The text below was inherited with the base tree and describes EARLIER artifacts, not this one.
+Its provenance and attribution sections have not been modified.**
+
 # RIPEMD-160: the diagonal schedule words come from a copy, not from masks — 662,418 gas in 5,212 bytes
 
 - SHA-256: `815073da176a6ee327fb5cff48b9e268def819556d9208f24bf083127cb09820`.

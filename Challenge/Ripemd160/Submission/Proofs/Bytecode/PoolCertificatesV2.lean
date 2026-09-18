@@ -16,10 +16,9 @@ theorem clear_sources : ∀ a ∈ zeroAddresses, resultSourceV2 a = .zero := by 
 theorem terminal_sources : ∀ k : Fin 32,
     resultSourceV2 (594+k.val) = resultSource true (594+k.val) := by decide
 
-/-- One provably-zero byte among word bytes 14..26 of every slot.  Slot 2 (address 36) is
-witnessed at byte 18, i.e. table byte 54: the raw word 0 stored at 54 carries the incoming
-byte 0 there, which `Clear` now requires to be zero. -/
-def zeroByte : Array Nat := #[14,14,18,26,14,26,14,14,14,18,14,22,18,14,14,14,14,14,18,14,18,14,14,14,14,26,22,14,22,26,22,26,14,14,14,18,14,18,14,14,14,26,22,14,22,14,22,14,14,14,22,14,26,14,14,14,14,14,14,22,14]
+/-- One provably-zero byte among word bytes 14..26 of every slot: either a masked word's gap
+or one of the two-byte holes the four copies leave in every raw word's gap. -/
+def zeroByte : Array Nat := #[14,26,20,26,26,26,22,14,14,18,14,22,18,14,14,14,14,14,18,14,18,14,26,14,14,26,22,22,22,26,22,26,14,14,14,18,14,18,14,14,22,26,22,14,22,14,22,14,14,14,22,14,26,14,14,14,14,14,14,22,22]
 
 theorem slack_sources : ∀ j : Fin 61,
     14 ≤ zeroByte[j.val]! ∧ zeroByte[j.val]! ≤ 26 ∧

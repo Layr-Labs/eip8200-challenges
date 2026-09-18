@@ -47,15 +47,15 @@ def tail : List Instr := [
   .push 0 0,
   op 0xf3
 ]
-private theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3653 = tail := by rfl
-private theorem pc_base : Artifact.submissionArtifact.instructionPC 3653 = 4819 := by
+private theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3648 = tail := by rfl
+private theorem pc_base : Artifact.submissionArtifact.instructionPC 3648 = 4819 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 theorem get (index : Nat) :
-    Artifact.submissionArtifact.instructions[3653+index]? = tail[index]? := by
+    Artifact.submissionArtifact.instructions[3648+index]? = tail[index]? := by
   rw [← InstructionWindow.get_drop, tail_eq]
 theorem pc (index : Nat) :
-    Artifact.submissionArtifact.instructionPC (3653+index) = 4819+byteLength (tail.take index) := by
+    Artifact.submissionArtifact.instructionPC (3648+index) = 4819+byteLength (tail.take index) := by
   rw [InstructionWindow.pc_drop, pc_base, tail_eq]
 #print axioms get
 #print axioms pc

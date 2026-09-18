@@ -12,10 +12,10 @@ open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory Pair13Endian
 open Shared32Scratch
 
 def template : List Instr :=
-  [ .push ⟨1, by decide⟩ (UInt256.ofNat 99),
+  [ .push ⟨1, by decide⟩ (UInt256.ofNat 31),
     .op .MSTORE8,
     .op (.Dup ⟨4, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 122),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 54),
     .op .MSTORE8 ]
 
 theorem run_sparse (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
@@ -38,7 +38,7 @@ theorem run_sparse (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt
     hactive, MachineState.activeWordsAfter, hbyte, sparseMemory]
   rfl
 
-theorem bytes_exact : assembleBytes template = [96,99,83,132,96,122,83] := by decide
+theorem bytes_exact : assembleBytes template = [96,31,83,132,96,54,83] := by decide
 
 theorem sparse_read_input (input : ByteArray) (hn : 0 < input.size) :
     MachineState.readWord (sparseMemory (copiedMemory input)) 1056 =
@@ -46,23 +46,6 @@ theorem sparse_read_input (input : ByteArray) (hn : 0 < input.size) :
   rw [copiedMemory_sparse input hn]
   exact read_writeWord_disjoint _ _ _ _ (Or.inr (by decide))
 
-/-- The exact-32 route places the upper scratch word with the two sparse MSTORE8s and the
-lower one with the doubled store, which together build exactly `Pair13Endian.scratch3`. -/
-theorem sparse_lower_memory (input : ByteArray) (hn : 0 < input.size) :
-    writeWord (writeWord (writeWord (sparseMemory (copiedMemory input)) 46
-        (PairedScheduleData.reversedWord
-          (MachineState.readWord (sparseMemory (copiedMemory input)) 1056))) 10
-        (PairedScheduleData.reversedWord
-          (MachineState.readWord (sparseMemory (copiedMemory input)) 1056))) 28
-      (PairedScheduleData.reversedWord
-        (MachineState.readWord (sparseMemory (copiedMemory input)) 1056)) =
-      Pair13Endian.scratch3 (copiedMemory input)
-        (PairedScheduleData.reversedWord (MachineState.readWord (copiedMemory input) 1056))
-        highWord := by
-  rw [sparse_read_input input hn, copiedMemory_sparse input hn]
-  rfl
-
 #print axioms run_sparse
 #print axioms bytes_exact
-#print axioms sparse_lower_memory
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32SparseRun

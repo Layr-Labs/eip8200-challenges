@@ -45,7 +45,7 @@ def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
     (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 32) rho (by omega) hactive
     (Nat.lt_of_le_of_lt (Nat.mod_le _ _) (copied_low input)) hgap
-  have hm : sparseMemory s.memory = PairedScheduleMemory.writeWord s.memory 96 highWord := by
+  have hm : sparseMemory s.memory = PairedScheduleMemory.writeWord s.memory 28 highWord := by
     rw [show s.memory = copiedMemory input from copied_memory input]
     exact copiedMemory_sparse input (by omega)
   rw [hm] at g4

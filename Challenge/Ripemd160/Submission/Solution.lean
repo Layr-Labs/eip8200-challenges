@@ -17,6 +17,16 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
+-- executable 592f0bb0ed6a9c7d15003049c02929b346a1b137c81c649b9a18c5d8ea3d0fe7, 5212 bytes,
+-- 661914 gas at corpus seeds 0..2, 8180 units of the 8194 literal-encoding budget. Derived from
+-- 815073da176a6ee327fb5cff48b9e268def819556d9208f24bf083127cb09820 (5212 bytes, 662418 gas): the
+-- schedule scratch is restaged as one store plus two 16-byte MCOPYs per half (high at 28, low at
+-- 616), so every load keeps a zero byte between its lanes and only words 6 and 11 stay masked.
+-- 3687 instructions; bytes 333, 337 and 506..857 differ; lanes and the terminal slot unchanged.
+-- model Claude Opus 5, harness Claude Code.
+--
+-- NOTE FOR THE FILER: every line below this point was inherited with the base tree and describes
+-- an EARLIER artifact, not this one. Provenance and attribution have not been touched here.
 -- executable 815073da176a6ee327fb5cff48b9e268def819556d9208f24bf083127cb09820, 5212 bytes,
 -- 662418 gas at corpus seeds 0..2, 8180 units of the 8194 literal-encoding budget. Derived from
 -- 87b2202df9e69ecd0fc6c4d7cc1aa64c8bebac4989adccb2a978371b576c481a (5212 bytes, 663258 gas):
