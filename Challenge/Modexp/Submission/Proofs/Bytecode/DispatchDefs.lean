@@ -40,7 +40,7 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 def zeroSizePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 396 (.Dup ⟨0, by decide⟩),
-   pushAt 397 2 5251,
+   pushAt 397 2 5261,
    opAt 398 .JUMPI,
    pushAt 399 0 0,
    pushAt 400 0 0,
@@ -49,7 +49,7 @@ def zeroSizePath :
 def wordEntryPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 396 (.Dup ⟨0, by decide⟩),
-   pushAt 397 2 5251,
+   pushAt 397 2 5261,
    opAt 398 .JUMPI,
    opAt 402 .JUMPDEST,
    opAt 403 (.Dup ⟨2, by decide⟩),
@@ -103,14 +103,14 @@ def wordTailPath := wordRestPath.drop 12
 set_option maxRecDepth 400000 in
 /-- The recogniser's entry, in what the inherited image used as padding. -/
 @[simp] theorem jumpMemo :
-    Decode.isValidJumpDest submissionBytecode 5251 = true :=
-  Artifact.isValidJumpDest_index 4213 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 5261 = true :=
+  Artifact.isValidJumpDest_index 4240 (by rfl)
 
 set_option maxRecDepth 400000 in
 /-- The appended answer block's entry. -/
 @[simp] theorem jumpAnswer :
-    Decode.isValidJumpDest submissionBytecode 5428 = true :=
-  Artifact.isValidJumpDest_index 4353 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 5433 = true :=
+  Artifact.isValidJumpDest_index 4379 (by rfl)
 
 @[simp] theorem jump517 :
     Decode.isValidJumpDest submissionBytecode 135 = true :=
@@ -119,8 +119,8 @@ set_option maxRecDepth 400000 in
 set_option maxRecDepth 20000 in
 @[simp] theorem jump3000 :
     Decode.isValidJumpDest submissionBytecode 804 = true := by
-  have hpc : Artifact.instructionPC 568 = 804 := by decide
-  simpa only [hpc] using Artifact.isValidJumpDest_index 568 (by rfl)
+  have hpc : Artifact.instructionPC 581 = 804 := by decide
+  simpa only [hpc] using Artifact.isValidJumpDest_index 581 (by rfl)
 
 def zeroSizeFinalState (input : ByteArray) : State :=
   { Main.headerState input with
@@ -146,7 +146,7 @@ def wordDispatchState (input : ByteArray) : State :=
 exactly the stack the pc-570 dispatcher expects, so a miss can restore
 `wordDispatchState` by changing nothing but the program counter. -/
 def guardEntryState (input : ByteArray) : State :=
-  { wordDispatchState input with pc := UInt256.ofNat 5251 }
+  { wordDispatchState input with pc := UInt256.ofNat 5261 }
 
 def wordCheckedState (input : ByteArray) : State :=
   { Main.headerState input with

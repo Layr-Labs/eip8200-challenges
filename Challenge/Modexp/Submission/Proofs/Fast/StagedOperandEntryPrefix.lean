@@ -27,7 +27,7 @@ def loadProgram : List Instr :=
 
 def shuffleProgram : List Instr :=
   [
-   .push 2 3494,
+   .push 2 3510,
    .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
    .push 2 288,
@@ -163,8 +163,8 @@ theorem run_shuffle (s : State) (hd pa pb dst ret value inverse aEnd tailPointer
         stack := [delta, negative32, low32, aEnd, inverse, value, tailPointer, low96, hd, pa, pb, dst, ret] ++ rest} =
     some {s with
         pc := UInt256.ofNat 3382
-        stack := [pa, pb, UInt256.ofNat 3494 + delta, negative32, allOnes,
-        UInt256.ofNat 3782 + delta, inverse, value, tailPointer, low96, hd, low32, aEnd, dst, ret] ++ rest} := by
+        stack := [pa, pb, UInt256.ofNat 3510 + delta, negative32, allOnes,
+        UInt256.ofNat 3798 + delta, inverse, value, tailPointer, low96, hd, low32, aEnd, dst, ret] ++ rest} := by
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega

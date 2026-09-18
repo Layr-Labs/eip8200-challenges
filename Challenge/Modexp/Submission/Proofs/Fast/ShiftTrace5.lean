@@ -28,33 +28,14 @@ theorem repairFacts_of (mem : ByteArray) (n mm r : Nat)
     (htop : Limbs.radix ^ n < 2 * mm)
     (hmod : Model.FastRepresents mem 0 n mm)
     (hneg : Model.FastRepresents mem NEG n (Limbs.radix ^ n - mm))
-    (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm) (hpre : PreOK mem) :
+    (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm) :
     RepairFacts
       (midMem (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
         (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n)))
       n mm
       (negOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
         (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))) :=
-  (step_spec mem n mm r hn (by omega) hmpos hmm htop hmod hneg hbase hr hpre).1
-
-/-- The estimator words survive the cache store, which writes at 1698 -- two bytes above
-`PRE_DINV`'s word, which ends at 1696. -/
-theorem PreOK_cacheMem (mem : ByteArray) (n : Nat) (h : PreOK mem) :
-    PreOK (ShiftCacheModel.cacheMem mem n) := by
-  obtain ⟨h1, h2, h3, h4, h5⟩ := h
-  have hread : ∀ a : Nat, a + 32 ≤ 1698 →
-      MachineState.readWord (ShiftCacheModel.cacheMem mem n) a = MachineState.readWord mem a := by
-    intro a ha
-    show MachineState.readWord (Exp.storeWord mem 1698 _) a = _
-    unfold Exp.storeWord
-    exact Csub.readWord_write_disjoint _ _ _ _ (by omega)
-  have hz := hread 0 (by omega)
-  refine ⟨?_, ?_, ?_, ?_, ?_⟩
-  · rw [hread PRE_L (by simp only [PRE_L]; omega), hz]; exact h1
-  · rw [hread PRE_DODD (by simp only [PRE_DODD]; omega), hz]; exact h2
-  · rw [hread PRE_X (by simp only [PRE_X]; omega), hz]; exact h3
-  · rw [hread PRE_BMOD (by simp only [PRE_BMOD]; omega), hz]; exact h4
-  · rw [hread PRE_DINV (by simp only [PRE_DINV]; omega), hz]; exact h5
+  (step_spec mem n mm r hn (by omega) hmpos hmm htop hmod hneg hbase hr).1
 
 /-- The configuration words survive a step. -/
 theorem frame_stepMem {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n) (hn32 : n ≤ 8)
@@ -77,7 +58,6 @@ theorem frame_stepMem {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n) (
 
 theorem stepInv_stepMem {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (inv : StepInv mem n bsize mm minv) : StepInv (stepMem mem n mm) n bsize mm minv where
-  pre := PreOK_stepMem mem n mm hn hn32 inv.pre
   frame := frame_stepMem hn hn32 inv.frame
   modulus := fastRepresents_stepMem mem n mm 0 n mm hn
     ⟨Or.inl (by omega), Or.inl (by omega), Or.inl (by omega)⟩ inv.modulus
@@ -110,12 +90,12 @@ def gasSteps_shiftLoop (s : State) (mem : ByteArray) (n bsize esize msize mm min
       (fun i hi =>
         have invI := stepInv_stepMems (by omega) hn32 inv i
         have hbaseI := stepMems_represents mem n mm r hn hn32 hmpos hmm htop inv.modulus inv.neg
-          hbase hr inv.pre i
+          hbase hr i
         Challenge.EvmProof.GasSteps.cast
           (gasSteps_step s (stepMems mem n mm i) n bsize esize msize (n - i) mm minv
             (by omega) (by omega) hn hn32 e invI
             (repairFacts_of (stepMems mem n mm i) n mm _ hn hn32 hmpos hmm htop invI.modulus
-              invI.neg hbaseI (Nat.mod_lt _ hmpos) invI.pre) hfast)
+              invI.neg hbaseI (Nat.mod_lt _ hmpos)) hfast)
           rfl (by
             show shiftLoopState s (stepMem (stepMems mem n mm i) n mm) n bsize esize msize
               (n - i - 1) = shiftLoopState s (stepMems mem n mm (i + 1)) n bsize esize msize
@@ -234,8 +214,7 @@ theorem m2_stepInv (mem input : ByteArray) (n bsize mm minv : Nat)
     refine ShiftCacheModel.represents_cache _ n NEG n _ (Or.inl (by unfold NEG; omega)) ?_
     exact fastRepresents_preMemOf _ _ NEG n _ (Or.inl (by unfold NEG PRE_L; omega))
       (neg_represents (m1Of mem input n) n mm (by omega) (by omega) hmpos hmod1)
-  exact ⟨hframe2, hmod2, hneg2, ShiftCacheModel.read_cache _ n,
-    PreOK_cacheMem _ n (PreOK_preMem _)⟩
+  exact ⟨hframe2, hmod2, hneg2, ShiftCacheModel.read_cache _ n⟩
 
 /-- From the dispatcher entry on a miss to the Montgomery-form conversion call.
 
