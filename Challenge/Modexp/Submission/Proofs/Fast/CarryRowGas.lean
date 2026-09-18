@@ -374,7 +374,7 @@ private theorem toNat_ne_of_ne {a b : UInt256} (h : a ≠ b) : a.toNat ≠ b.toN
 
 theorem jumpDest4726 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4119 = true :=
-  Artifact.isValidJumpDest_index 3325 (by rfl)
+  Artifact.isValidJumpDest_index 3292 (by rfl)
 
 
 /-! ## R0: the kernel-exit dispatch (pc 4846)
@@ -389,13 +389,13 @@ def dispatchProgram : List Instr :=
 /-- The dispatch block: the `JUMPI` ends it, taken for a square and not taken for a
 multiply (which then continues at the `nx` `JUMPDEST` 4855). -/
 def dispatchBlock : Block Artifact.submissionArtifact .Osaka 4054 dispatchProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3279 5 4054 dispatchProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3246 5 4054 dispatchProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The `nx` `JUMPDEST` (reached by the dispatch's fall-through and by `sq_exit`'s last
 square). -/
 def nxJd : Block Artifact.submissionArtifact .Osaka 4063 [] :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3284 0 4063 []
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3251 0 4063 []
     (by decide) (by rfl) (by rfl) (by decide)
 
 set_option linter.unusedSimpArgs false in

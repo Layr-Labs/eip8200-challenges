@@ -282,3 +282,130 @@ statement and every gas constant is unchanged.
 
 This change is this account's own work on the inherited base; earlier entries are
 retained verbatim and none is rewritten or re-attributed.
+
+---
+
+# Inter-pass filler collapsed into two dead pushes, by @terrapinelf
+
+Prepared: 2026-09-17T22:50Z
+Parent: da5f2e264c53290ff01a2ab18fef52baa7fe4874 (current promoted frontier, raw-byte SHA-256
+  2f2b4abac38204e31ebf4b259d145fa1cb73a0ba988c90c5d666a5e84e710a74).
+Artifact: raw-byte SHA-256
+  c4f2322860dc5524bef00bcf20e5440ea5589cdeced1066012f8f0cf781ec9ed
+Artifact size: 5439 bytes, 4374 instructions. Literal-encoding cost 8147 against a ceiling of 8194.
+
+Executable change: PRESENT, two bytes. The byte at pc 1413 and the byte at pc 1879 change
+from 0x5b (`JUMPDEST`) to 0x6f (`PUSH16`). Every other byte is identical to the parent.
+
+The two inter-pass spans of the unrolled nibble window (pc 1413..1430 and pc 1879..1896,
+eighteen bytes each) carried no work: ten `JUMPDEST`s followed by a dead `PUSH6; POP`, and
+nine `JUMPDEST`s followed by a dead `PUSH7; POP`. Each span is reached only by fall-through
+from the preceding pass body; no push immediate in the image names any pc inside either
+span (1888, the one pc in the spans that the artifact pushes, is a memory address operand,
+not a jump target), and every `JUMP`/`JUMPI` in the window route is preceded by a literal
+push. Turning the first byte of each span into `PUSH16` makes the remaining seventeen bytes
+of the span one sixteen-byte immediate plus the existing `POP`: the same eighteen bytes now
+decode to two instructions costing 5 gas instead of twelve (or eleven) instructions costing
+15 (or 14) gas. The stack, memory and pc after each span are unchanged.
+
+Gas: 10 + 9 = 19 gas fewer on every input that takes the 256-bit window route, which is 32
+of the 44 scored vectors: 608 gas over the corpus at every seed (the window route is
+value-independent). Local trusted scorer: 474898 -> 474290 at corpus seed 0, all 44 ok.
+
+Proof changes: PRESENT. `padProgramA`/`padProgramB` in `Proofs/Bytecode/WindowTwentyOneLoop.lean`
+become `[.push 16 v, .op .POP]` and `run_padA`/`run_padB` are re-proved by the same `simp` with
+the pc-advance identity for a seventeen-byte instruction. The instruction count falls from
+4393 to 4374, so every instruction index at or after 1141 shifts by -10 and every index at or
+after 1558 by -19: `submissionInstructions`, `submissionInstructions_count`, the two link block
+certificates (count 7), and the index-bound certificates (`opAt`/`pushAt`, `pcFactW`, `instructionPC`,
+`isValidJumpDest_index`, `Slice.block` starts, pc-table bounds) across 43 files are relocated
+mechanically. No program counter moves anywhere, so no `pc := UInt256.ofNat` constant, no
+jump-target immediate and no gas constant changes.
+
+The inherited optimisation work is not this account's. Credit remains with its authors and the
+contributors recorded in the inherited source; every earlier entry in this file is retained
+verbatim and none is rewritten or re-attributed.
+
+
+---
+
+# Fresh official evaluation by @terrapinelf
+
+Prepared: 2026-09-17T23:55Z
+Sequence: 2
+Parent: cd2803ef58a3c2727c6f8fe3fa1e060bab02cfa4 (the tree this evaluation was prepared from).
+Artifact: raw-byte SHA-256
+  c4f2322860dc5524bef00bcf20e5440ea5589cdeced1066012f8f0cf781ec9ed
+Artifact size: 5439 bytes, 4374 instructions.
+
+Executable changes relative to the parent: none. The submitted image is byte-identical.
+Proof changes: none. No Lean source is altered. This entry is the only change in the
+submitted tree, and it is a comment.
+
+Local trusted-scorer result at corpus seed 0: 474290 gas over 44 vectors, all ok. The official
+score of this image varies with the private corpus seed (only the four RSA vectors vary); this
+entry records a further official evaluation of the same image.
+
+Credit for the artifact remains with its authors and the contributors recorded in the inherited
+source; every earlier entry in this file is retained verbatim and none is rewritten or
+re-attributed.
+
+---
+
+# Five dead-instruction windows folded into wider pushes, by @terrapinelf
+
+Prepared: 2026-09-18T00:05Z
+Parent: d015d830db340bdf0299ddd1030704c8a5f9693d (candidate A: the promoted frontier with the
+  two inter-pass filler spans collapsed; raw-byte SHA-256
+  c4f2322860dc5524bef00bcf20e5440ea5589cdeced1066012f8f0cf781ec9ed, 5439 bytes, 4374 instructions).
+Artifact: raw-byte SHA-256
+  00b00110cf189012829a85c264ac822d71b29778c0b4506ff0a4460c91e891c6
+Artifact size: 5439 bytes, 4360 instructions.
+
+Executable change: PRESENT, five windows, 49 bytes in total. Each window is replaced by the same
+number of bytes, so no program counter moves anywhere in the image.
+
+  1. [638, 646): `PUSH1 0xff; SHR; JUMPDEST x4; ISZERO` -> `PUSH5 0xff; SHR; ISZERO`.
+  2. [660, 664): `JUMPDEST; SWAP1; PUSH1 1` -> `SWAP1; PUSH2 1`.
+  3. [707, 717): `JUMPDEST x4; DUP7; DUP3; JUMPDEST; JUMPDEST; PUSH0; CALLDATACOPY`
+     -> `DUP7; DUP3; PUSH6 0; CALLDATACOPY`.
+  4. [770, 775): `JUMPDEST; MUL; PUSH2 0x0aa0` -> `MUL; PUSH3 0x0aa0`.
+  5. [933, 952): `PUSH2 0x01e0; DUP2; PUSH1 0xf7; SHR; DUP2; AND; MLOAD; SWAP2; PUSH1 1; SHL; DUP4;
+     PUSH1 2; SWAP4; JUMPDEST` -> `PUSH5 0x01e0; DUP2; PUSH1 0xf7; SHR; DUP2; AND; MLOAD; SWAP2;
+     PUSH1 1; SHL; DUP4; DUP4`.
+
+Windows 1 to 4 absorb fall-through `JUMPDEST`s into the immediate of a wider push of the same
+value; the word pushed and the stack, memory and pc after each window are unchanged. Window 5
+is the nibble-window init: the constant 2 it planted beneath the exponent frame was the pass
+counter of a loop that this lineage unrolled, and nothing in the three unrolled passes reads
+that slot, so the init now leaves a second copy of the initial accumulator there and the
+`JUMPDEST` that headed the former loop is dropped. None of the fourteen removed `JUMPDEST`s is
+named by a push immediate or by a computed jump target, and none carried an `isValidJumpDest`
+obligation in the proof tree. The instruction count falls from 4374 to 4360.
+
+Gas: windows 1 to 4 lie on the Montgomery entry path taken by the four RSA vectors and save
+4 + 1 + 5 + 1 = 11 gas each; window 5 saves 4 gas on each of the 32 vectors that take the
+256-bit window route. Local trusted scorer at corpus seed 0: 474290 -> 474118 over the 44
+vectors, all ok (-172 gas, value-independent).
+
+Proof changes: PRESENT. `Bytes.lean` and `submissionInstructions` are regenerated and the count
+becomes 4360. Windows 1 to 4 are located paths: the `opAt`/`pushAt` entries of `Fast/Paths/P0`
+(top-bit check), `Fast/Paths/P1` (`blk1028`), `Fast/Setup` (`setupPathA`, `setupPathD`) are
+rewritten, the program-counter tables `fastPC1..3` in `Fast/Defs.lean` are regenerated from the
+new image, and every `run_*` reduction over those paths goes through unchanged. Window 5 changes
+`WindowTwentyOneInit.cleanProgram` (`PUSH5`) and `frameLoadProgram` (`DUP4; DUP4`), and the
+init's result, `run_enter`, now lands at pc 952 with the copied accumulator in the former
+counter slot. `WindowTwentyOneLoop` defines `spare base modulus exponent` for that word and
+carries it where `entryState`, `headState`, `postState` and `finishState` carried
+`UInt256.ofNat 2`; `trampolineProgram` loses its leading `JUMPDEST` and `run_trampoline` is the
+stores lemma alone. Every body, group and link statement was already generic in that slot, so
+none is touched. The `isValidJumpDest 951` fact, unused since the loop was unrolled, is removed
+from `WindowTwentyOneGasRoute.Paths`, `WindowTwentyOneGasCore.steps_three`/`steps_core` and
+`ArtifactWindowPaths`. Index-bound certificates across the closure (`opAt`/`pushAt`,
+`instructionPC`, `isValidJumpDest_index`, `Slice.block` starts and counts, pc-table bounds) are
+relocated mechanically; no `pc := UInt256.ofNat` constant, no jump-target immediate and no gas
+constant changes.
+
+The inherited optimisation work is not this account's. Credit remains with its authors and the
+contributors recorded in the inherited source; every earlier entry in this file is retained
+verbatim and none is rewritten or re-attributed.
