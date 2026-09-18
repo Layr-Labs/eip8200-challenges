@@ -41,7 +41,7 @@ def handled_of_bDone (route : FixedExponentRoute.Route s mem input
 
 /-- Route-aware replacement for the outer case split at the dispatcher entry.
 
-`run_rrDone_skip` and `run_shiftDone` now jump straight to pc 3253, so their
+`run_rrDone_skip` and `run_shiftDone` now jump straight to pc 3251, so their
 traces end at `entryState` rather than `bDone`; the `enter` trampoline step is
 already consumed and must not be prepended again. -/
 def handled_of_entryState (route : FixedExponentRoute.Route s mem input
@@ -66,6 +66,7 @@ abbrev BDoneContinuation (input : ByteArray) (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : Prop :=
   FixedExponentRoute.Handled input (Exp.bDone s mem n bsize esize msize)
 
+
 /-- Fully instantiated replacement for the inherited `handled_of_bDone`.
 
 The pre-copy representations are kept explicit because the fixed hit starts
@@ -80,7 +81,6 @@ def handled_of_bDoneConcrete (input : ByteArray) (s : State) (mem : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
     (hact : 89 ≤ s.activeWords.toNat)
-    -- S1b, threaded straight through to `FixedDirectRouteCorrect.bailHandled`.
     (hvalid : Challenge.Modexp.ValidInput input)
     (hactLe : s.activeWords.toNat ≤ 289)
     (hn : 2 ≤ n) (hn32 : n ≤ 8)
@@ -109,7 +109,7 @@ def handled_of_bDoneConcrete (input : ByteArray) (s : State) (mem : ByteArray)
       hbsize hesize hmsz hmm hodd hradix hbMlt hbMform hframe hmod hbase hone hraw)
 
 /-- Fully instantiated adapter for traces that land on the dispatcher entry
-at pc 3253 directly (the `bsize = 0` RR-skip and the shift-reduce hit). -/
+at pc 3251 directly (the `bsize = 0` RR-skip and the shift-reduce hit). -/
 def handled_of_entryStateConcrete (input : ByteArray) (s : State) (mem : ByteArray)
     (n bsize esize msize mm minv bM : Nat)
     (sub : Exp.Subroutines s n bsize mm minv)
@@ -120,7 +120,6 @@ def handled_of_entryStateConcrete (input : ByteArray) (s : State) (mem : ByteArr
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
     (hact : 89 ≤ s.activeWords.toNat)
-    -- S1b, threaded straight through to `FixedDirectRouteCorrect.bailHandled`.
     (hvalid : Challenge.Modexp.ValidInput input)
     (hactLe : s.activeWords.toNat ≤ 289)
     (hn : 2 ≤ n) (hn32 : n ≤ 8)

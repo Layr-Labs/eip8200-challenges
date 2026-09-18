@@ -1,4 +1,5 @@
-import Challenge.Modexp.Submission.Proofs.Bytecode.ArtifactWindowPaths
+import Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneSlice
 import Challenge.Modexp.Submission.Proofs.Bytecode.EarlyWordProgram
 set_option warningAsError true
 set_option maxRecDepth 20000
@@ -13,6 +14,6 @@ def earlyWordPaths : EarlyWordProgram.Paths submissionArtifact .Osaka where
   guard := earlyWord_guard
   miss := earlyWord_miss
   missJump := by exact isValidJumpDest_index 72 (by rfl)
-  legacyJump := by exact isValidJumpDest_index 423 (by rfl)
+  legacyJump := by exact isValidJumpDest_index 572 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Artifact

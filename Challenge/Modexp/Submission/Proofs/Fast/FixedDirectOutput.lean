@@ -171,7 +171,7 @@ structure Handler (s : State) (mem input : ByteArray)
   enter : Challenge.EvmProof.GasSteps
     (Exp.bDone s mem n bsize esize msize)
     (FixedExponentRoute.entryState s mem n bsize esize msize)
-  /-- **S1b.** A miss bails to `modexpBig`; it does not rejoin the generic loop. -/
+  /-- A miss bails to `modexpBig`; it does not rejoin the generic loop. -/
   miss : ¬ FixedExponentRoute.Matches input bsize esize →
     FixedExponentRoute.Handled input
       (FixedExponentRoute.entryState s mem n bsize esize msize)
@@ -188,7 +188,7 @@ def Handler.toRoute (handler : Handler s mem input n bsize esize msize) :
     rintro ⟨count, hcase⟩
     exact handler.hit count hcase
 
-/-- Compose a direct-output handler with the generic miss proof. -/
+/-- Compose a direct-output handler: both arms finish on their own. -/
 def handled_of_bDoneWithGeneric
     (handler : Handler s mem input n bsize esize msize) :
     FixedExponentRoute.Handled input (Exp.bDone s mem n bsize esize msize) := by

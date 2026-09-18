@@ -96,14 +96,14 @@ PUSH2 2377 JUMPI`. It re-enters the single body while the counter is below seven
 after incrementing the counter; on the eighth bit it falls through to the exit at
 pc 2413 with the counter at eight. -/
 def controlProgram : List Instr :=
-  [.push 2 1, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩),
+  [.push 1 1, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩),
    .push 1 7, .op .GT,
-   .push 2 2356, .op .JUMPI]
+   .push 2 2402, .op .JUMPI]
 
 theorem run_start (hcap : rest.length ≤ 1000) :
     runInstructions [.op .JUMPDEST]
-      (framed s 2356 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) =
-      some (framed s 2357 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) := by
+      (framed s 2402 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) =
+      some (framed s 2403 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) := by
   have h8 : rest.length + 8 < 1024 := by omega
   simp [runInstructions, Challenge.EvmProof.Stepper.runInstr, framed, h8]
   decide
@@ -122,15 +122,15 @@ theorem gt_seven_seven :
 /-- One pass of the loop control with the counter at `c`: bits zero to six jump
 back to the body head at 2377, the seventh bit falls through to the exit at 2413. -/
 theorem run_control (c : Nat) (hc : c < 8) (hcap : rest.length ≤ 1000)
-    (hjd : Decode.isValidJumpDest s.executionEnv.code 2356 = true) :
+    (hjd : Decode.isValidJumpDest s.executionEnv.code 2402 = true) :
     runInstructions controlProgram
-      (framed s 2379 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m] ++ rest)) =
-      some (framed s (if c < 7 then 2356 else 2392)
+      (framed s 2425 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m] ++ rest)) =
+      some (framed s (if c < 7 then 2402 else 2437)
         ([Bm1,UInt256.ofNat (c+1),byte,offset,outerW,acc,base,m] ++ rest)) := by
   have h8 : rest.length + 8 < 1024 := by omega
   have h9 : rest.length + 9 < 1024 := by omega
   have h10 : rest.length + 10 < 1024 := by omega
-  have htarget : (2356 : UInt256).toNat = 2356 := by decide
+  have htarget : (2402 : UInt256).toNat = 2402 := by decide
   have ht1 : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have ht0 : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
   by_cases h7 : c < 7

@@ -40,7 +40,7 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 def zeroSizePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 396 (.Dup ⟨0, by decide⟩),
-   pushAt 397 2 5261,
+   pushAt 397 2 570,
    opAt 398 .JUMPI,
    pushAt 399 0 0,
    pushAt 400 0 0,
@@ -49,7 +49,7 @@ def zeroSizePath :
 def wordEntryPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 396 (.Dup ⟨0, by decide⟩),
-   pushAt 397 2 5261,
+   pushAt 397 2 570,
    opAt 398 .JUMPI,
    opAt 402 .JUMPDEST,
    opAt 403 (.Dup ⟨2, by decide⟩),
@@ -70,7 +70,7 @@ def wordEntryPath :
    opAt 418 (.Dup ⟨6, by decide⟩),
    opAt 419 (.Dup ⟨8, by decide⟩),
    opAt 420 (.Dup ⟨10, by decide⟩),
-   pushAt 421 2 804,
+   pushAt 421 2 843,
    opAt 422 .JUMP]
 
 def zeroSetupPath := zeroSizePath.take 5
@@ -100,27 +100,15 @@ def wordTailPath := wordRestPath.drop 12
     Decode.isValidJumpDest submissionBytecode 570 = true :=
   Artifact.isValidJumpDest_index 402 (by rfl)
 
-set_option maxRecDepth 400000 in
-/-- The recogniser's entry, in what the inherited image used as padding. -/
-@[simp] theorem jumpMemo :
-    Decode.isValidJumpDest submissionBytecode 5261 = true :=
-  Artifact.isValidJumpDest_index 4213 (by rfl)
-
-set_option maxRecDepth 400000 in
-/-- The appended answer block's entry. -/
-@[simp] theorem jumpAnswer :
-    Decode.isValidJumpDest submissionBytecode 5433 = true :=
-  Artifact.isValidJumpDest_index 4352 (by rfl)
-
 @[simp] theorem jump517 :
     Decode.isValidJumpDest submissionBytecode 135 = true :=
   Artifact.isValidJumpDest_index 78 (by rfl)
 
 set_option maxRecDepth 20000 in
 @[simp] theorem jump3000 :
-    Decode.isValidJumpDest submissionBytecode 804 = true := by
-  have hpc : Artifact.instructionPC 568 = 804 := by decide
-  simpa only [hpc] using Artifact.isValidJumpDest_index 568 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 843 = true := by
+  have hpc : Artifact.instructionPC 602 = 843 := by decide
+  simpa only [hpc] using Artifact.isValidJumpDest_index 602 (by rfl)
 
 def zeroSizeFinalState (input : ByteArray) : State :=
   { Main.headerState input with
@@ -141,12 +129,6 @@ def wordDispatchState (input : ByteArray) : State :=
     pc := UInt256.ofNat 570
     stack := [UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
-
-/-- Entry state of the appended fixed-vector block.  The retargeted jump carries
-exactly the stack the pc-570 dispatcher expects, so a miss can restore
-`wordDispatchState` by changing nothing but the program counter. -/
-def guardEntryState (input : ByteArray) : State :=
-  { wordDispatchState input with pc := UInt256.ofNat 5261 }
 
 def wordCheckedState (input : ByteArray) : State :=
   { Main.headerState input with
@@ -183,7 +165,7 @@ submission artifact has been regenerated.
 
 /-- State reached by the retargeted one-word dispatcher at the appended route. -/
 def wordRouteEntryState (input : ByteArray) : State :=
-  { wordEntryState input with pc := UInt256.ofNat 804 }
+  { wordEntryState input with pc := UInt256.ofNat 843 }
 
 /-- The unchanged dispatcher prefix followed by its retargeted final jump. -/
 abbrev WordRouteEnter (input : ByteArray) : Type :=

@@ -52,32 +52,6 @@ theorem isTrue_lor_of (a b : UInt256) (h : a.toNat ≠ 0 ∨ b.toNat ≠ 0) :
   · exact isTrue_lor_left a b h
   · exact isTrue_lor_right a b h
 
-/-- **`neg` nonzero forces `TN` nonzero.**
-
-`negOf` is "borrowed without carrying": `negOf = GT bwOf cwOf` with both flags in `{0,1}`, so
-`negOf ≠ 0` forces `bwOf = 1`, i.e. `wN < q`.  Then `tnOf = wN - q` wraps to `2^256 - (q - wN)`,
-which is nonzero because `q < 2^256`.
-
-Consequence, and the reason the middle block's `DUP2; OR` is redundant: `neg ||| TN` and `TN`
-have the same truth value, so the three-way exit test can read `TN` alone. -/
-theorem tnOf_ne_zero_of_negOf (mem : ByteArray) (c q : UInt256)
-    (hneg : (negOf mem c q).toNat ≠ 0) : (tnOf mem c q).toNat ≠ 0 := by
-  have hgt0 : ∀ a b : UInt256, a.toNat = 0 → (UInt256.gt a b).toNat = 0 := by
-    intro a b ha
-    unfold UInt256.gt
-    rw [if_neg (by omega), Challenge.EvmProof.Word.word_toNat_ofNat, Nat.zero_mod]
-  have hlt : (wN mem c).toNat < q.toNat := by
-    by_contra hge
-    apply hneg
-    unfold negOf
-    apply hgt0
-    unfold bwOf UInt256.lt
-    rw [if_neg hge, Challenge.EvmProof.Word.word_toNat_ofNat, Nat.zero_mod]
-  unfold tnOf
-  rw [Challenge.EvmProof.Word.word_toNat_sub_cond, if_pos hlt]
-  have hq : q.toNat < 2 ^ 256 := q.val.isLt
-  omega
-
 theorem midMem_tn (mem : ByteArray) (c q : UInt256) :
     MachineState.readWord (midMem mem c q) 2080 = tnOf mem c q := by
   unfold midMem Exp.storeWord
@@ -105,13 +79,7 @@ theorem run_mid_unc (s : State) (um : ByteArray) (q : UInt256) (n bsize esize ms
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hor1 : UInt256.isTrue (UInt256.lor (negOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q) (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q)) := isTrue_lor_of _ _ hor
   have hor2 : UInt256.isTrue (UInt256.lor (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q) (negOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q)) := isTrue_lor_of _ _ hor.symm
-  -- The block now tests `TN` alone (`DUP2; OR` DELETED, absorbed into the widened PUSH), so
-  -- the exit condition is `isTrue TN`.  It follows from `hor` both ways: directly on the
-  -- right, and through `tnOf_ne_zero_of_negOf` on the left.
-  have htn : UInt256.isTrue (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q) :=
-    hor.elim (tnOf_ne_zero_of_negOf _ _ _) id
   unfold negOf bwOf cwOf tnOf wN at hor1 hor2
-  unfold tnOf wN at htn
   simp only [midGtSwap] at hor1 hor2
   simp (config := { maxSteps := 500000 })
     [blk3125, midGtSwap, opAt, pushAt, wfOp,
@@ -119,7 +87,7 @@ theorem run_mid_unc (s : State) (um : ByteArray) (q : UInt256) (n bsize esize ms
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       midState, uncState, pcMid, pcUnc, midMem, negOf, bwOf, cwOf, tnOf, wN, Exp.storeWord,
-      outer, Exp.outer, hcode, hrun, hTN, hor1, hor2, htn, jumpDestUnc,
+      outer, Exp.outer, hcode, hrun, hTN, hor1, hor2, jumpDestUnc,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -622,10 +590,10 @@ theorem run_shiftDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3264
-      (frameState s mem 3307 n bsize esize msize) =
+      (frameState s mem 3370 n bsize esize msize) =
       some { Exp.bDone s (Exp.mcopyMem (Exp.mcopyMem mem 512 2112 (32 * n)) 1024 1280 (32 * n))
                n bsize esize msize with
-               pc := UInt256.ofNat 2396 } := by
+               pc := UInt256.ofNat 2441 } := by
   have hsize : (UInt256.ofNat (32 * n)).toNat = 32 * n := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
     exact lt_of_le_of_lt (show 32 * n ≤ 1024 by omega) (by decide)

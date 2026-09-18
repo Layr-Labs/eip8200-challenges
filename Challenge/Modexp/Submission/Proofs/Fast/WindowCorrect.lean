@@ -51,17 +51,20 @@ def handledOf (route : WindowRoute.Route)
     WindowBodyCorrect.Handled input := by
   by_cases hmatch : WindowTwentyOneInput.Matches input
   · exact EarlyWordCorrect.hit input hmatch
-  · by_cases hfast : Setup.FastPath input
+  · by_cases hmemo : MemoLogic.Matches input
+    · -- the fixed-vector recogniser claims the input and returns the specified result
+      exact EarlyWordCorrect.memoHit input hvalid hmatch hmemo
+    by_cases hfast : Setup.FastPath input
     · rcases fastHandled input hvalid hfast with
         ⟨final, ⟨fastTrace⟩, hdone, hresult⟩
-      exact ⟨final, ⟨(EarlyWordCorrect.legacy input hmatch).trans fastTrace⟩,
+      exact ⟨final, ⟨(EarlyWordCorrect.legacy input hmatch hmemo).trans fastTrace⟩,
         hdone, hresult⟩
     · rcases Setup.gasSteps_fallback input hvalid hfast with
         ⟨_, steps⟩ | ⟨h32, hupper, steps⟩
       · exact WindowBodyCorrect.handledOf route input hvalid
-          ((EarlyWordCorrect.legacy input hmatch).trans steps)
+          ((EarlyWordCorrect.legacy input hmatch hmemo).trans steps)
       · exact bigBailHandled input hvalid h32 hupper
-          ((EarlyWordCorrect.legacy input hmatch).trans steps)
+          ((EarlyWordCorrect.legacy input hmatch hmemo).trans steps)
 
 private noncomputable def chosenFinal (route : WindowRoute.Route)
     (fastHandled : ∀ input : ByteArray, ValidInput input →

@@ -22,55 +22,53 @@ open Challenge.Modexp.Submission.Proofs.Fast
 abbrev outer := Exp.outer
 
 /-- Program counters of the appended routine. -/
-def pcDispatch : Nat := 2474
-def pcHit : Nat := 2489
--- S1.  The recogniser miss is DIVERTED.  The old miss target (2373 in the previous
--- image) is an entry into never-executed code that this artifact deletes, so it has
--- no image under the pc map and no mechanical pass may invent one -- `fixpcconst`
--- reports it as SKIPPED-deleted-no-image for exactly that reason.  The dispatcher's
--- `PUSH2` operand at instruction 2060 now names the six-word bail trampoline
--- (`blk1351`: `JUMPDEST; PUSH1 0xee; JUMP`), which lands on the wide-modulus
--- fallback entry.  This value is TRANSCRIBED from the artifact's own immediate, not
--- derived from the divert rule: a second oracle that re-derives the rule disagreed
--- with the assembled image at four push sites, and two oracles that disagree do not
--- error, they diverge.
-def pcMiss : Nat := 800
-
-/-- The wide-modulus fallback entry `modexpBig`, where the diverted miss lands. -/
+def pcDispatch : Nat := 2543
+def pcHit : Nat := 2558
+-- 3310, not ticket 4's 3282: the recogniser-miss JUMPDEST is instruction 2433 here (it was 2438),
+-- and this is the one pc in the table the regenerator could not rewrite, because 3282 has no image
+-- in the pc map -- R-ONE2 deleted the instruction it used to sit on, so the map row is empty and
+-- the literal was left standing.  `ShiftPCs.pc2889` states instruction 2433's pc as 3310 by `rfl`,
+-- and `blk2889` is located there, so a stale 3282 makes `runLocatedBlock blk2889 (missState …)`
+-- return `none`.  Nothing but the build checked this def: it is a bare `Nat` with no tie to the
+-- artifact, unlike every `instructionPC`/`opAt`/`pushAt` fact around it.
+/-- The full-base miss no longer seeds `R1` and converts: the dispatcher's `JUMPI`
+names the six-word bail trampoline (`BAIL6`, pc 1054), which lands on `modexpBig`. -/
+def pcMiss : Nat := 790
+/-- `modexpBig`, where the trampoline lands. -/
 def pcBigC : Nat := 238
-def pcCsubReturn : Nat := 2508
-def pcAfterCsub0 : Nat := 2517
-def pcNegLoop : Nat := 2523
+def pcCsubReturn : Nat := 2577
+def pcAfterCsub0 : Nat := 2586
+def pcNegLoop : Nat := 2592
 /-- The negation body after its store, before the exit test. -/
-def pcNegMid : Nat := 2539
-def pcNegDone : Nat := 2549
-def pcPreNewton : Nat := 2592
-def pcNewtonB : Nat := 2620
-def pcShiftLoop : Nat := 2691
-def pcShiftBody : Nat := 2698
-def pcEstimate : Nat := 2712
-def pcMacSetup : Nat := 2791   -- E6, the rewritten conversion entry
-def pcMid : Nat := 3093   -- the fall-through after the eight straight blocks
-def pcAddLoop : Nat := 3136
-def pcAddInner : Nat := 3142
-def pcAddTail : Nat := 3180
+def pcNegMid : Nat := 2608
+def pcNegDone : Nat := 2618
+def pcPreNewton : Nat := 2661
+def pcNewtonB : Nat := 2689
+def pcShiftLoop : Nat := 2760
+def pcShiftBody : Nat := 2767
+def pcEstimate : Nat := 2781
+def pcMacSetup : Nat := 2860   -- E6, the rewritten conversion entry
+def pcMid : Nat := 3162   -- the fall-through after the eight straight blocks
+def pcAddLoop : Nat := 3205
+def pcAddInner : Nat := 3211
+def pcAddTail : Nat := 3248
 /-- The add body after `OR`, before the pointer step and exit test. -/
-def pcAddMid : Nat := 3167
+def pcAddMid : Nat := 3235
 /-- The fall-through padding after the add-round exit test. -/
-def pcAddPad : Nat := 3180
-def pcSubCheck : Nat := 3203
-def pcSubEntry : Nat := 3215
-def pcSubInner : Nat := 3221
-def pcSubTail : Nat := 3260
+def pcAddPad : Nat := 3248
+def pcSubCheck : Nat := 3266
+def pcSubEntry : Nat := 3278
+def pcSubInner : Nat := 3284
+def pcSubTail : Nat := 3323
 /-- The subtract body after `OR`, before the pointer step and exit test. -/
-def pcSubMid : Nat := 3245
-def pcCsubCall : Nat := 3120
+def pcSubMid : Nat := 3308
+def pcCsubCall : Nat := 3189
 /-- `UNC`: the middle block's jump target when `neg ||| TN ≠ 0`. -/
-def pcUnc : Nat := 3130
+def pcUnc : Nat := 3199
 /-- `CSUB(BASE)` returns straight to the shift loop head (`pcShiftLoop`); the call block
 already decremented the counter. -/
-def pcAfterCsub : Nat := 2691
-def pcShiftDone : Nat := 3274
+def pcAfterCsub : Nat := 2760
+def pcShiftDone : Nat := 3337
 
 /-- A state with the outer frame only. -/
 def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat) : State :=
@@ -84,7 +82,7 @@ def kState (s : State) (mem : ByteArray) (pc k : Nat) (n bsize esize msize : Nat
            stack := UInt256.ofNat k :: outer n bsize esize msize
            memory := mem }
 
-/-- The dispatcher entry (pc 4076), reached from `R1B` with the outer frame. -/
+/-- The dispatcher entry (pc 4104), reached from `R1B` with the outer frame. -/
 def dispState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   frameState s mem pcDispatch n bsize esize msize
 
@@ -143,7 +141,7 @@ def newtonBState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : Sta
 
 /-- The prologue state before storing the unrolled entry point. -/
 def cacheSetupState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  kState s mem 2649 n n bsize esize msize
+  kState s mem 2718 n n bsize esize msize
 
 /-- The shift loop head with `k` steps to go. -/
 def shiftLoopState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=

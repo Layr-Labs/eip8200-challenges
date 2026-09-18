@@ -16,13 +16,13 @@ def cacheProgram : List Instr :=
    .op .EQ,
    .push 1 145,
    .op .MUL,
-   .push 2 2800,
+   .push 2 2869,
    .op .ADD,
    .push 2 1698,
    .op .MSTORE]
 
-def cache : Block Artifact.submissionArtifact .Osaka 2649 cacheProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2148 9 2649 cacheProgram
+def cache : Block Artifact.submissionArtifact .Osaka 2718 cacheProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2204 9 2718 cacheProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 #print axioms cache
