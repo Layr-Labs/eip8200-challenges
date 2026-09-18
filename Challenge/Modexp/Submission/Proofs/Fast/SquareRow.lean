@@ -90,16 +90,16 @@ def programB : List Instr :=
 /-! ## Location certificates -/
 
 def blockA : Block Artifact.submissionArtifact .Osaka 4179 programA :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3359 6 4179 programA
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3326 6 4179 programA
     (by decide) (by rfl) (by rfl) (by decide)
 
 def blockB : Block Artifact.submissionArtifact .Osaka 4186 programB :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3366 40 4186 programB
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3333 40 4186 programB
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- `sq_row` itself is a jump destination (the frame's row head for square calls). -/
 theorem jumpDest4710 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4179 = true :=
-  Artifact.isValidJumpDest_index 3359 (by rfl)
+  Artifact.isValidJumpDest_index 3326 (by rfl)
 
 def environment (s : State)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)

@@ -12,22 +12,22 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 
 def blk1333 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 566 .JUMPDEST,
-   opAt 567 (.Dup ⟨4, by decide⟩),
-   opAt 568 (.Dup ⟨0, by decide⟩),
-   opAt 569 (.Dup ⟨2, by decide⟩),
-   pushAt 570 2 256,
-   opAt 571 .ADD,
-   opAt 572 .SUB,
-   opAt 573 .RETURN]
+  [opAt 554 .JUMPDEST,
+   opAt 555 (.Dup ⟨4, by decide⟩),
+   opAt 556 (.Dup ⟨0, by decide⟩),
+   opAt 557 (.Dup ⟨2, by decide⟩),
+   pushAt 558 2 256,
+   opAt 559 .ADD,
+   opAt 560 .SUB,
+   opAt 561 .RETURN]
 
 /-- Instructions 1471..1344, pc 2016..2016. -/
 def blk1341 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 574 .JUMPDEST,
-   opAt 575 .POP,
-   pushAt 576 2 553,
-   opAt 577 .JUMP]
+  [opAt 562 .JUMPDEST,
+   opAt 563 .POP,
+   pushAt 564 2 553,
+   opAt 565 .JUMP]
 
 /- `blk1345` (the oversize bail target `BAIL3`, pristine instructions 1345..1350) is
 deleted with the size test that was its only predecessor: nothing jumps to it any more,
@@ -39,8 +39,8 @@ fallback re-reads the header itself, so the live words are no longer dropped and
 block jumps straight to the fallback entry at pc 236. -/
 def blk1351 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 578 .JUMPDEST,
-   pushAt 579 1 238,
-   opAt 580 .JUMP]
+  [opAt 566 .JUMPDEST,
+   pushAt 567 1 238,
+   opAt 568 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

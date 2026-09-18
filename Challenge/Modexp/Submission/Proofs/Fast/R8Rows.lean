@@ -120,7 +120,7 @@ def gasSteps_rowZeroToTail (s : State) (mem : ByteArray)
           (sqL1 (mpZeroed s mem 8) 8 0 (UInt256.ofNat 0)).carry)
         2368 8 0 (UInt256.ofNat 4179) (UInt256.ofNat (sqEnt 8 0 + 37)) inv m0
         (tl :: m96 :: m64 :: m32 :: sqX (mpZeroed s mem 8) 8 0 :: pdst :: ret :: rest)) := by
-  have hcap2 : (pdst :: ret :: rest).length ≤ 1002 := by simp only [List.length_cons]; omega
+  have hcap2 : (pdst :: ret :: rest).length ≤ 1000 := by simp only [List.length_cons]; omega
   have gP := R8RowZero.gasSteps_prologue s mem (sqEnt 8 0) inv m0 m96 m64 m32 aprev
     (pdst :: ret :: rest) hcap2 hrun hcode hfork hnp hact
   rw [result_eq_l2At s mem tl inv m0 m96 m64 m32 pdst ret rest hscr hminv hc] at gP

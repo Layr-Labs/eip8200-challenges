@@ -37,7 +37,7 @@ def result (s : State) (hd next stride target inv m0 m96 m64 m32 : UInt256)
 and final computed target abstract. Incoming T and scratch memory are arbitrary. -/
 theorem run_program (s : State)
     (pc hd ent next stride target inv m0 m96 m64 m32 aprev : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat)
+    (rest : List UInt256) (hcap : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest s.executionEnv.code target.toNat = true) :
     runInstructions (program next) (initial s pc hd ent stride target inv m0 m96 m64 m32 aprev rest) =
       some (result s hd next stride target inv m0 m96 m64 m32 rest) := by
@@ -46,7 +46,7 @@ theorem run_program (s : State)
   let q6 := zeroRun (diagonal s.memory) bi 6
   let x7 := MachineState.readWord q6.memory (SquareModel.aAddr 8 7)
   have h0 := run_diagonal s pc hd ent next stride target inv m0 (UInt256.ofNat 2336)
-    m96 m64 m32 aprev rest hcap hact
+    m96 m64 m32 aprev rest (by omega) hact
   have h1 := run_cells s (advancePC 30 pc) bi (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next stride
     (diagonal s.memory)
     (target :: inv :: m0 :: UInt256.ofNat 2336 :: m96 :: m64 :: m32 :: x :: rest)
@@ -73,7 +73,7 @@ theorem run_program (s : State)
   rw [hmem] at h2
   have h3 := run_exit { s with memory := firstMemory s.memory } (advancePC 232 pc)
     (UInt256.ofNat 0) (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next stride maxWord target
-    inv m0 m96 m64 m32 x rest hcap hact hjump
+    inv m0 m96 m64 m32 x rest (by omega) hact hjump
   have h01 := runInstructions_append_some _ _ _ _ _ h0 h1
   have h01b := runInstructions_append_some _ _ _ _ _ h01 h1b
   have h012 := runInstructions_append_some _ _ _ _ _ h01b h2
@@ -82,7 +82,7 @@ theorem run_program (s : State)
 /-- Full instruction semantics together with the exact old-model bridge. -/
 theorem run_program_bridge (s : State)
     (pc hd ent next stride target inv m0 m96 m64 m32 aprev : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat)
+    (rest : List UInt256) (hcap : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest s.executionEnv.code target.toNat = true) :
     runInstructions (program next) (initial s pc hd ent stride target inv m0 m96 m64 m32 aprev rest) =
         some (result s hd next stride target inv m0 m96 m64 m32 rest) ∧

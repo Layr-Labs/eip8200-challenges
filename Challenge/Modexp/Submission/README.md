@@ -15,6 +15,77 @@ The lower-is-better score is gas summed over the public vectors.
 Executable vectors are a falsification check; Comparator must accept the
 universal Lean proof before the protected scorer runs.
 
+## Zero-accumulator cells of the eight-limb first row, one instruction shorter
+
+This image (5,439 bytes, 4,354 instructions, raw SHA-256
+cab745a9721fca77609c96086fabfc21e5e81ce9c797a4c17d00eecc461c29ea) rewrites the
+six full zero-accumulator cells of the eight-limb square's first row (pc 5033,
+5061, 5089, 5117, 5145, 5173) from twenty-four instructions and 79 gas to
+twenty-three instructions and 76 gas, in the same twenty-eight bytes:
+
+    PUSH2 a; MLOAD; DUP1; DUP4; MUL; DUP10; DUP5; DUP3; DUP6; ADD; DUP1;
+    PUSH3 t; MSTORE; SWAP4; MULMOD; DUP1; DUP3; GT; SUB; ADD; SWAP2; GT; SUB
+
+The sum c + x*b is stored as soon as it exists, and the low product is folded
+into the high-word correction with one `ADD` (a - (u + v) = a - u - v), which
+removes a `SWAP`. The store address is a `PUSH3`, so every cell keeps its
+program counters at its boundaries. Local trusted scorer at corpus seed 0:
+474,118 to 473,812 (-306), all 44 vectors ok. The sequence was found by an
+exhaustive cost-bounded search over stack programs for one limb step.
+
+Proof: `Proofs/Fast/R8ZeroFirstRowRuns.lean` defines the new `cellProgram`
+(the old cell survives as `cellProgramOld` for the last, store-merged cell) and
+re-proves `run_cell` with an unchanged statement; the stack-room hypotheses of
+the first-row lemmas tighten by one or two words (the caller has room). The
+first-row block count becomes 207 and later instruction indices shift by -6.
+
+## Five dead-instruction windows folded into wider pushes
+
+This image (5,439 bytes, 4,360 instructions, raw SHA-256
+00b00110cf189012829a85c264ac822d71b29778c0b4506ff0a4460c91e891c6) differs from
+its parent (5,439 bytes, 4,374 instructions) in five short windows. Each window
+is replaced by the same number of bytes, so no program counter moves anywhere
+in the image; fourteen instructions fewer are decoded, and every instruction
+index at or after 454 shifts down accordingly.
+
+  1. [638, 646): `PUSH1 0xff; SHR; JUMPDEST x4; ISZERO` becomes `PUSH5 0xff; SHR;
+     ISZERO`. The four fall-through `JUMPDEST`s of the top-bit check are
+     absorbed into the immediate of a wider push of the same value.
+  2. [660, 664): `JUMPDEST; SWAP1; PUSH1 1` becomes `SWAP1; PUSH2 1`.
+  3. [707, 717): `JUMPDEST x4; DUP7; DUP3; JUMPDEST; JUMPDEST; PUSH0;
+     CALLDATACOPY` becomes `DUP7; DUP3; PUSH6 0; CALLDATACOPY`.
+  4. [770, 775): `JUMPDEST; MUL; PUSH2 0x0aa0` becomes `MUL; PUSH3 0x0aa0`.
+  5. [933, 952): `PUSH2 0x1e0; ...; DUP4; PUSH1 2; SWAP4; JUMPDEST` becomes
+     `PUSH5 0x1e0; ...; DUP4; DUP4`. The nibble-window init used to plant the
+     constant 2 -- the pass counter of a loop that this lineage has since
+     unrolled -- beneath the exponent frame. No instruction in the three
+     unrolled passes reads that slot, so the init now leaves a second copy of
+     the initial accumulator there instead and the `JUMPDEST` that headed the
+     former loop, which nothing pushes, is dropped.
+
+None of the removed `JUMPDEST`s is named by a push immediate or by a computed
+jump target, and none carries an `isValidJumpDest` obligation in the proof tree;
+the remaining computed targets (784, 3328, 5323, 5360, 5397) are left as they are.
+Windows 1 to 4 lie on the Montgomery entry path and cost 4, 1, 5 and 1 gas less
+on each of the four RSA vectors; window 5 costs 4 gas less on each of the 32
+vectors that take the 256-bit window route. Local trusted scorer at corpus seed
+0: 474,290 to 474,118 gas over the 44 vectors, all ok.
+
+In the proof, windows 1 to 4 are located paths (`Fast/Paths/P0`, `P1`,
+`Fast/Setup`): their `opAt`/`pushAt` entries are rewritten, the interior
+program-counter tables `fastPC1..3` in `Fast/Defs.lean` are regenerated, and the
+`run_*` reductions go through unchanged because a `JUMPDEST` is a no-op and a
+wider push of the same value pushes the same word. Window 5 changes
+`WindowTwentyOneInit.cleanProgram` and `frameLoadProgram`; the loop states in
+`WindowTwentyOneLoop` carry `spare base modulus exponent` -- the copied
+accumulator -- where they carried `UInt256.ofNat 2`, which is possible because
+every body and link statement was already generic in that slot. The loop head
+moves from pc 951 to 952, the trampoline block loses its leading `JUMPDEST`, and
+the `isValidJumpDest 951` fact, unused since the loop was unrolled, is removed
+from the route interface. Index-bound certificates across the closure are
+relocated mechanically; no `pc := UInt256.ofNat` constant, no jump-target
+immediate and no gas constant changes.
+
 ## A fixed-vector recogniser on the four- and eight-limb kernel lineage
 
 This artifact (5,439 bytes, 4,393 instructions, raw SHA-256

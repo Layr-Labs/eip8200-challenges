@@ -429,42 +429,42 @@ individual facts the block reduction actually needs, in the same form
 JUMPDEST, DUP5, DUP1, DUP3, PUSH2 0x100, ADD, SUB, RETURN -- matching `blk1333`
 instruction for instruction.  Note the 788 -> 791 step: index 570 is a `PUSH2`. -/
 private theorem pcIdx566 :
-    Artifact.submissionArtifact.instructionPC 566 = 784 := by
+    Artifact.submissionArtifact.instructionPC 554 = 784 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx567 :
-    Artifact.submissionArtifact.instructionPC 567 = 785 := by
+    Artifact.submissionArtifact.instructionPC 555 = 785 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx568 :
-    Artifact.submissionArtifact.instructionPC 568 = 786 := by
+    Artifact.submissionArtifact.instructionPC 556 = 786 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx569 :
-    Artifact.submissionArtifact.instructionPC 569 = 787 := by
+    Artifact.submissionArtifact.instructionPC 557 = 787 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx570 :
-    Artifact.submissionArtifact.instructionPC 570 = 788 := by
+    Artifact.submissionArtifact.instructionPC 558 = 788 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx571 :
-    Artifact.submissionArtifact.instructionPC 571 = 791 := by
+    Artifact.submissionArtifact.instructionPC 559 = 791 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx572 :
-    Artifact.submissionArtifact.instructionPC 572 = 792 := by
+    Artifact.submissionArtifact.instructionPC 560 = 792 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem pcIdx573 :
-    Artifact.submissionArtifact.instructionPC 573 = 793 := by
+    Artifact.submissionArtifact.instructionPC 561 = 793 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -1981,7 +1981,7 @@ the decode rather than reconciled against each other: pc 2474 is a `JUMPDEST`
 reached by the `PUSH2 0xcff; JUMP` at indices 2048..2049 and followed by
 `DUP1; DUP4; EQ`, which is the dispatcher's compare chain.  `Fast.Setup` agrees
 from two directions -- `fastSetupState_pc` is `UInt256.ofNat 2474` by `rfl`, and
-its `jumpDest3296` certifies pc 2474 via `isValidJumpDest_index 2050`. -/
+its `jumpDest3296` certifies pc 2474 via `isValidJumpDest_index 2017`. -/
 theorem fastSetup_entry_eq (input : ByteArray) :
     Setup.fastSetupState input =
       retTo (Setup.fastSetupState input) (Setup.fastSetupMemory input) (UInt256.ofNat 2474)
