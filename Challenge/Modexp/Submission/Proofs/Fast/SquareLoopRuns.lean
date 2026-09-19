@@ -52,18 +52,17 @@ def lastAt (s : State) (mem : ByteArray) (n : Nat)
              frameStack mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest
            memory := mem }
 
-/-- `sq_exit` with a counter above one: store `c` and call the CSUB guard as a subroutine
-with `[pdst, again]` on top of the retained frame. -/
+/-- Decrement the counter in the destination slot; memory remains unchanged. -/
 theorem run_sqExit_more (s : State) (mem : ByteArray) (n c : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hact : 88 ≤ s.activeWords.toNat) (hcpos : 0 < c) (hc16 : c + 1 ≤ 16)
-    (hcount : MachineState.readWord mem 2624 = UInt256.ofNat (c + 1)) :
+    (_hact : 88 ≤ s.activeWords.toNat) (hcpos : 0 < c) (hc16 : c + 1 ≤ 16)
+    (hcount : pdst = UInt256.ofNat (c + 1)) :
     runInstructions sqExitProgram
       (frameAt pcSqExit s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
-    some (lazyCsubState s (countMem mem c) (UInt256.ofNat 2368) (UInt256.ofNat 4242)
-      (frameStack mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)) := by
+    some (lazyCsubState s mem (UInt256.ofNat 2368) (UInt256.ofNat 4242)
+      (frameStack mem n pbi ent tl inv m0 m96 m64 m32 aprev (UInt256.ofNat c) ret rest)) := by
   have hc16' : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
@@ -80,23 +79,21 @@ theorem run_sqExit_more (s : State) (mem : ByteArray) (n c : Nat)
     rw [hcNat]; omega
   have hjd : Decode.isValidJumpDest s.executionEnv.code 4528 = true := by
     rw [hcode]; exact jumpDestLazy
-  have h9280 : (2624 : UInt256).toNat = 2624 := by decide
   simp [sqExitProgram, TnM128SquareExit.sqExitProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    frameAt, frameStack, pcSqExit, lazyCsubState, LazyGate.atState, countMem, hcount, hdec, hcNat, htrue, hjd, h9280,
-    State.activeWordsAfterUInt256, activeWords9280 s hact,
+    frameAt, frameStack, pcSqExit, lazyCsubState, LazyGate.atState, hcount, hdec, hcNat, htrue, hjd,
     hc16', hc17, hc18, hc19, hc20, hc21, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- `sq_exit` with the counter at one: store zero and fall through to `last`. -/
+/-- With one round left, install zero in the counter slot and fall through. -/
 theorem run_sqExit_last (s : State) (mem : ByteArray) (n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000)
-    (hact : 88 ≤ s.activeWords.toNat)
-    (hcount : MachineState.readWord mem 2624 = UInt256.ofNat 1) :
+    (_hact : 88 ≤ s.activeWords.toNat)
+    (hcount : pdst = UInt256.ofNat 1) :
     runInstructions sqExitProgram
       (frameAt pcSqExit s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
-    some (lastAt s (countMem mem 0) n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) := by
+    some (lastAt s mem n pbi ent tl inv m0 m96 m64 m32 aprev (UInt256.ofNat 0) ret rest) := by
   have hc16' : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
@@ -105,35 +102,36 @@ theorem run_sqExit_last (s : State) (mem : ByteArray) (n : Nat)
   have hc21 : rest.length + 21 < 1024 := by omega
   have hdec : allOnes + UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
   have hfalse : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
-  have h9280 : (2624 : UInt256).toNat = 2624 := by decide
   have hzero : (UInt256.ofNat 0).toNat = 0 := by decide
-  simp only [lastAt, frameStack, readWord_countMem_disjoint mem 0 128 (Or.inl (by decide))]
   simp [sqExitProgram, TnM128SquareExit.sqExitProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    frameAt, frameStack, lastAt, pcSqExit, pcLast, pcAgain, pcH2, countMem, hcount, hdec, hzero,
-    hfalse, h9280,
-    State.activeWordsAfterUInt256, activeWords9280 s hact,
+    frameAt, frameStack, lastAt, pcSqExit, pcLast, pcAgain, pcH2, hcount, hdec, hzero,
+    hfalse,
     hc16', hc17, hc18, hc19, hc20, hc21, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- `last`: drop the unused call pair, then call the CSUB guard as a subroutine with
-`[pdst, after]` on top of the retained frame. -/
+/-- Restore the physical counter word to zero, then enter the final CSUB. -/
 theorem run_last (s : State) (mem : ByteArray) (n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions lastProgram
       (lastAt s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
-    some (lazyCsubState s mem (UInt256.ofNat 2368) (UInt256.ofNat 3481)
+    some (lazyCsubState s (countMem mem 0) (UInt256.ofNat 2368) (UInt256.ofNat 3481)
       (frameStack mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)) := by
   have hc16' : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc19 : rest.length + 19 < 1024 := by omega
+  have hc20 : rest.length + 20 < 1024 := by omega
   have hjd : Decode.isValidJumpDest s.executionEnv.code 4528 = true := by
     rw [hcode]; exact jumpDestLazy
+  have hzero : ({ val := 0 } : UInt256).toNat = 0 := by decide
   simp [lastProgram, TnM128SquareExit.lastProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    frameAt, frameStack, lastAt, pcLast, lazyCsubState, LazyGate.atState, hjd, hc16', hc17, hc18, hc19, List.exchange,
+    frameAt, frameStack, lastAt, pcLast, lazyCsubState, LazyGate.atState, countMem,
+    State.activeWordsAfterUInt256, activeWords9280 s hact, hzero,
+    hjd, hc16', hc17, hc18, hc19, hc20, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
@@ -148,11 +146,11 @@ def gasSteps_sqExitMore (s : State) (mem : ByteArray) (n c : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) (hcpos : 0 < c) (hc16 : c + 1 ≤ 16)
-    (hcount : MachineState.readWord mem 2624 = UInt256.ofNat (c + 1)) :
+    (hcount : pdst = UInt256.ofNat (c + 1)) :
     Challenge.EvmProof.GasSteps
       (frameAt pcSqExit s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
-      (lazyCsubState s (countMem mem c) (UInt256.ofNat 2368) (UInt256.ofNat 4242)
-        (frameStack mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)) :=
+      (lazyCsubState s mem (UInt256.ofNat 2368) (UInt256.ofNat 4242)
+        (frameStack mem n pbi ent tl inv m0 m96 m64 m32 aprev (UInt256.ofNat c) ret rest)) :=
   sqExitBlock.steps
     (environment (frameAt pcSqExit s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
       hcode hfork hrun hnp) rfl
@@ -168,10 +166,10 @@ def gasSteps_sqExitLast (s : State) (mem : ByteArray) (n : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat)
-    (hcount : MachineState.readWord mem 2624 = UInt256.ofNat 1) :
+    (hcount : pdst = UInt256.ofNat 1) :
     Challenge.EvmProof.GasSteps
       (frameAt pcSqExit s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
-      (lastAt s (countMem mem 0) n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) :=
+      (lastAt s mem n pbi ent tl inv m0 m96 m64 m32 aprev (UInt256.ofNat 0) ret rest) :=
   sqExitBlock.steps
     (environment (frameAt pcSqExit s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
       hcode hfork hrun hnp) rfl
@@ -185,15 +183,16 @@ def gasSteps_last (s : State) (mem : ByteArray) (n : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 88 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
       (lastAt s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
-      (lazyCsubState s mem (UInt256.ofNat 2368) (UInt256.ofNat 3481)
+      (lazyCsubState s (countMem mem 0) (UInt256.ofNat 2368) (UInt256.ofNat 3481)
         (frameStack mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)) :=
   lastBlock.steps
     (environment (lastAt s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
       hcode hfork hrun hnp) rfl
-    (run_last s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hcode)
+    (run_last s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hcode hact)
 
 /-- The final conditional subtraction on an abstract memory: `[2048, ret]` above `tail`. -/
 def gasSteps_lazyCsubAt (s : State) (X : ByteArray) (n dst : Nat) (ret : UInt256)

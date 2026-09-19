@@ -92,7 +92,7 @@ noncomputable def subsMonpro (s : State) (n bsize mm minv : Nat)
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0)
     (hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1) :
     ∀ (pa pb pd : Nat) (ret : UInt256) (tail : List UInt256)
-      (mem : ByteArray) (a b : Nat), tail.length ≤ 998 →
+      (mem : ByteArray) (a b : Nat), tail.length ≤ 991 →
       32 ≤ pa → pa + 32 * n ≤ 2048 → 32 ≤ pb → pb + 32 * n ≤ 2048 →
       pd + 32 * n ≤ 2048 →
       Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true →
@@ -120,12 +120,12 @@ noncomputable def subsMonpro (s : State) (n bsize mm minv : Nat)
         rw [hf.minvW, toNat_ofNat_self hminvlt]
       exact Challenge.EvmProof.GasSteps.cast
         (CarryFull.gasSteps_monproFullFast s mem pa pb p a b mm (UInt256.ofNat pd) ret tail
-          (by omega) hrun hcode hfork hnp hact (by omega) hpa hpaFit hpb hpbFit hcds
+          hcap hrun hcode hfork hnp hact (by omega) hpa hpaFit hpb hpbFit hcds
           hf.s32 hf.tl hf.ml hjump (by omega) ha hb hm ham hmpos
           (by rw [hlow, hmi]; exact hminvA)
           (eligible_of_frame hf hfast hminv1 hminvlt))
         rfl
-        (by simp only [Csub.csReturnedState_eq_result, retTo, CarryResult.monproMem_def, hpdN])
+        (by simp only [retTo, CarryResult.monproMem_def, hpdN])
 
 /-- The Montgomery-inverse side condition forces an odd modulus. -/
 theorem odd_of_minvA {mm minv : Nat}
@@ -189,12 +189,11 @@ noncomputable def subsSquareLoop (s : State) (n bsize mm minv : Nat)
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
     ∀ (k : Nat) (ret : UInt256) (tail : List UInt256) (mem : ByteArray) (a : Nat),
       (n = 4 ∨ n = 8) ∧ minv ≠ 1 → 1 ≤ k → k ≤ 16 → tail.length ≤ 982 →
-      MachineState.readWord mem 2624 = UInt256.ofNat k →
       Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
       Model.FastRepresents mem 512 n a → a < mm →
-      Challenge.EvmProof.GasSteps (sqCall s mem ret tail)
-        (retTo s (FusedMemory.memory s n k mem) (UInt256.ofNat 772) tail) := by
-  intro k ret tail mem a hfast hk hk16 hcap hcount hf hm ha ham
+      GenericReturnAdapter.TerminalTrace (sqLoopCall s mem k ret tail)
+        s (FusedMemory.memory s n k mem) := by
+  intro k ret tail mem a hfast hk hk16 hcap hf hm ha ham
   -- `GasSteps` lives in `Type`, so the limb count has to be split by `cases`.
   cases n with
   | zero => exact absurd hn (by omega)
@@ -216,11 +215,9 @@ noncomputable def subsSquareLoop (s : State) (n bsize mm minv : Nat)
         have hv := congrArg UInt256.toNat hw
         rw [toNat_ofNat_self hminvlt, toNat_ofNat_self (by decide)] at hv
         exact hfast.2 hv
-      exact Challenge.EvmProof.GasSteps.cast
-        (SquareLoop.gasSteps_squareLoop s mem p a mm k ret tail hcap hrun hcode hfork
-          hnp hact (by omega) hfast.1 hk hk16 hcount hcds hf.s32 hf.tl hf.ml ha hm ham hmpos
-          (odd_of_minvA hminvA) (by rw [hlow, hmi]; exact hminvA) hguard)
-        rfl rfl
+      exact SquareLoop.gasSteps_squareLoop s mem p a mm k ret tail hcap hrun hcode hfork
+          hnp hact (by omega) hfast.1 hk hk16 hcds hf.s32 hf.tl hf.ml ha hm ham hmpos
+          (odd_of_minvA hminvA) (by rw [hlow, hmi]; exact hminvA) hguard
 
 /-- The concrete subroutine contracts. -/
 noncomputable def subs (s : State) (n bsize mm minv : Nat)
@@ -271,6 +268,8 @@ noncomputable def subs (s : State) (n bsize mm minv : Nat)
     obtain ⟨p, rfl⟩ : ∃ p, n = p + 2 := ⟨n - 2, by omega⟩
     exact FusedMemory.represents s mem p a b mm k hfast (by omega) hk ha hb hm
       (odd_of_minvA hminvA) ham hbm (by rw [hlow, hmi]; exact hminvA)
+  hfast := hfast
+  hminv1 := hminv1
 
 /-- The value-level contract the concrete pair satisfies. -/
 theorem specOf (s : State) (n mm minv : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)

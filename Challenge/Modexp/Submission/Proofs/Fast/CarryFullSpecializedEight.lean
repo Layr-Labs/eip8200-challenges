@@ -20,7 +20,7 @@ open CarryRowModel CarryResult StagedOperand
 `hd = 4289`) → the final subtraction (pc 2432). -/
 opaque gasSteps_specializedEight (E : EntryLemmas) (s : State) (mem : ByteArray)
     (pa pb : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 991) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -36,7 +36,14 @@ opaque gasSteps_specializedEight (E : EntryLemmas) (s : State) (mem : ByteArray)
     (hguard : MachineState.readWord mem 2720 ≠ UInt256.ofNat 1) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
-      (mpCsubState s (rowsCarry (mpZeroed s (stage mem pa 8) 8) pa pb 8 8) pdst ret rest) := by
+      (mpCsubState s (rowsCarry (mpZeroed s (stage mem pa 8) 8) pa pb 8 8) pdst
+        (UInt256.ofNat GenericReturnAdapter.genericShimPC)
+        (TnM128InitialMultiply.retainedFrame s (stage mem pa 8) pa pb 8
+          (MachineState.readWord mem 2784) (MachineState.readWord mem 2720)
+          (MachineState.readWord mem (32*8-32)) (UInt256.ofNat (pa+32*8-32))
+          (MachineState.readWord mem 96) (MachineState.readWord mem 64)
+          (MachineState.readWord mem 32) pdst (UInt256.ofNat GenericReturnAdapter.genericShimPC)
+          (ret :: rest))) := by
   have hread (addr : Nat) (hd : addr+32 ≤ 2048 ∨ 2624 ≤ addr) :
       MachineState.readWord (stage mem pa 8) addr = MachineState.readWord mem addr :=
     read_stage_outside mem pa 8 addr (by omega)
@@ -44,15 +51,19 @@ opaque gasSteps_specializedEight (E : EntryLemmas) (s : State) (mem : ByteArray)
     simpa only [inverseInvariant,
       hread (32*8-32) (Or.inl (by decide)),
       hread 2720 (Or.inr (by decide))] using hminv
-  refine (E.gasSteps_mulEntry s mem pa pb pdst ret rest (by omega) hrun hcode hfork hnp).trans ?_
-  refine (E.gasSteps_commonSetup s mem (UInt256.ofNat 3543) pa pb 8 pdst ret rest hcap hrun hcode
-    hfork hnp hact (by decide) (by omega) hpb (by omega) hcds hs32 hml jumpDest_rowHead hguard
+  refine (E.gasSteps_mulEntry s mem pa pb 8 pdst ret rest hcap hrun hcode hfork hnp
+    hact (by decide) hcds hs32).trans ?_
+  have htail : (ret :: rest).length ≤ 998 := by simp; omega
+  refine (E.gasSteps_commonSetup s mem (UInt256.ofNat 3543) pa pb 8 pdst
+    (UInt256.ofNat GenericReturnAdapter.genericShimPC) (ret :: rest) htail hrun hcode
+    hfork hnp hact (by decide) (by omega) (Or.inl hpaFit) hpb (by omega) hcds hs32 hml jumpDest_rowHead hguard
       (CiosInverseGuard.inverse_ne_zero _ _ hminv)).trans ?_
   exact gasSteps_rowsEight s (stage mem pa 8) pa pb
     (MachineState.readWord mem 2784) (MachineState.readWord mem 2720)
     (MachineState.readWord mem (32*8-32)) (UInt256.ofNat (pa+32*8-32))
     (MachineState.readWord mem 96) (MachineState.readWord mem 64)
-    (MachineState.readWord mem 32) pdst ret rest hcap hrun hcode hfork hnp hact
+    (MachineState.readWord mem 32) pdst (UInt256.ofNat GenericReturnAdapter.genericShimPC)
+    (ret :: rest) htail hrun hcode hfork hnp hact
     (Or.inl hpaFit) hpb hpbFit hminv'
     ⟨htl, (hread 2720 (Or.inr (by decide))).symm,
       (hread (32*8-32) (Or.inl (by decide))).symm, hguard⟩
