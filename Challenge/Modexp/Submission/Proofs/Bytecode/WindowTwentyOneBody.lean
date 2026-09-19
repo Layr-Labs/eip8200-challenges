@@ -1,4 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneGroup
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneLastGroup
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowCopyMemory
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBits
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneMath
@@ -23,7 +24,7 @@ def program (off : Nat) : List Instr :=
     WindowTwentyOneGroup.program (WindowCopyMemory.laddr (off + 18)) (WindowCopyMemory.laddr (off + 19)) (WindowCopyMemory.laddr (off + 20))
 
 /-- The final pass: digits 42..62 of the ladder.  Digit 62 is nibble 0 of the exponent, the
-one digit no address reaches, so the last group is `WindowTwentyOneGroup.programLast`. -/
+one digit no address reaches. The last group consumes the unused modulus copy. -/
 def programLastPass (off : Nat) : List Instr :=
   WindowTwentyOneGroup.restProgram (WindowCopyMemory.laddr (off + 0)) (WindowCopyMemory.laddr (off + 1)) (WindowCopyMemory.laddr (off + 2)) ++
     WindowTwentyOneGroup.program (WindowCopyMemory.laddr (off + 3)) (WindowCopyMemory.laddr (off + 4)) (WindowCopyMemory.laddr (off + 5)) ++
@@ -31,7 +32,7 @@ def programLastPass (off : Nat) : List Instr :=
     WindowTwentyOneGroup.program (WindowCopyMemory.laddr (off + 9)) (WindowCopyMemory.laddr (off + 10)) (WindowCopyMemory.laddr (off + 11)) ++
     WindowTwentyOneGroup.program (WindowCopyMemory.laddr (off + 12)) (WindowCopyMemory.laddr (off + 13)) (WindowCopyMemory.laddr (off + 14)) ++
     WindowTwentyOneGroup.program (WindowCopyMemory.laddr (off + 15)) (WindowCopyMemory.laddr (off + 16)) (WindowCopyMemory.laddr (off + 17)) ++
-    WindowTwentyOneGroup.programLast (WindowCopyMemory.laddr (off + 18)) (WindowCopyMemory.laddr (off + 19))
+    WindowTwentyOneLastGroup.program (WindowCopyMemory.laddr (off + 18)) (WindowCopyMemory.laddr (off + 19))
 
 private theorem land_comm (a b : UInt256) : UInt256.land a b = UInt256.land b a := by
   apply Challenge.EvmProof.Word.word_ext
@@ -151,11 +152,10 @@ theorem run_twentyOneLast (template : State) (pc : UInt256) (mem : ByteArray)
         (WindowCopyMemory.copyMem mem (UInt256.shiftLeft exponent (UInt256.ofNat 1))) 18
         modulus accumulator
         (UInt256.shiftLeft exponent (UInt256.ofNat 1)) counter rest) =
-    some (WindowTwentyOneGroup.state template (advancePC 443 pc)
+    some (WindowTwentyOneLastGroup.outState template (advancePC 442 pc)
       (WindowCopyMemory.copyMem mem (UInt256.shiftLeft exponent (UInt256.ofNat 1))) 18
-      modulus
       (WindowTwentyOneMath.advance base modulus exponent.toNat (1 + off) 21 accumulator)
-      (UInt256.shiftLeft exponent (UInt256.ofNat 1)) counter 0 rest) := by
+      (UInt256.shiftLeft exponent (UInt256.ofNat 1)) counter rest) := by
   let shifted := UInt256.shiftLeft exponent (UInt256.ofNat 1)
   let cm := WindowCopyMemory.copyMem mem shifted
   let digit := fun index => WindowTwentyOneMath.nibble exponent.toNat (1 + off + index)
@@ -212,7 +212,7 @@ theorem run_twentyOneLast (template : State) (pc : UInt256) (mem : ByteArray)
     (hb 15 (by omega)) (hb 16 (by omega)) (hb 17 (by omega)) ht
     (digit 15) (digit 16) (digit 17) (hi 15) (hi 16) (hi 17)
     (ha 15 (by omega)) (ha 16 (by omega)) (ha 17 (by omega)) rest hrest
-  have h6 := WindowTwentyOneGroup.run_groupLast template (advancePC 64 (advancePC 64 (advancePC 64 (advancePC 64 (advancePC 64 (advancePC 59 pc)))))) cm base modulus a6 shifted counter
+  have h6 := WindowTwentyOneLastGroup.run_group template (advancePC 64 (advancePC 64 (advancePC 64 (advancePC 64 (advancePC 64 (advancePC 59 pc)))))) cm base modulus a6 shifted counter
     (WindowCopyMemory.laddr (off + 18)) (WindowCopyMemory.laddr (off + 19))
     (hb 18 (by omega)) (hb 19 (by omega)) ht
     (digit 18) (digit 19) (digit 20) (hi 18) (hi 19) (hi 20)
@@ -225,6 +225,6 @@ theorem run_twentyOneLast (template : State) (pc : UInt256) (mem : ByteArray)
   have hall6 := runInstructions_append_some _ _ _ _ _ hall5 h6
   simpa only [program, programLastPass, shifted, cm, a1, a2, a3, a4, a5, a6, digit,
     WindowTwentyOneGroup.accumulatorAfter, WindowTwentyOneMath.advance, Nat.add_zero,
-    ← advancePC_add, show 59 + 64 + 64 + 64 + 64 + 64 + 64 = 443 by decide] using hall6
+    ← advancePC_add, show 59 + 64 + 64 + 64 + 64 + 64 + 63 = 442 by decide] using hall6
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBody
