@@ -23,7 +23,7 @@ structure Paths (artifact : ProgramArtifact) (fork : Fork) where
   body1 : Block artifact fork 1457 (WindowTwentyOneLoop.bodyProgram (21 * 1))
   link1 : Block artifact fork 1900 WindowTwentyOneLoop.linkProgramB
   body2 : Block artifact fork 1905 (WindowTwentyOneLoop.bodyProgramLast 42)
-  finish : Block artifact fork 2348 WindowTwentyOneReturn.program
+  finish : Block artifact fork 2347 WindowTwentyOneReturn.program
 
 /-- The three unrolled passes, from the loop head at 952 to the return entry at
 2309.  Pass 0 is entered through the trampoline at 952; passes 1 and 2 are
