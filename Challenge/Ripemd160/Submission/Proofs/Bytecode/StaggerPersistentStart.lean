@@ -75,7 +75,7 @@ theorem initial_pc : initialSite.startPC = UInt256.ofNat 363 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 236) = UInt256.ofNat 363
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
-def jumpCode := PadJump.template 485
+def jumpCode := PadJump.template 486
 
 theorem jump_slice :
     (Artifact.submissionArtifact.instructions.drop 3642).take jumpCode.length = jumpCode := by rfl
@@ -92,12 +92,12 @@ theorem jump_pc : jumpSite.startPC = UInt256.ofNat 4815 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_loop (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
-    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 485).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 255 = 485 := by
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 486).toNat = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 256 = 486 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 255 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 256 (by rfl)
   rw [hpc] at h
-  change Decode.isValidJumpDest s.executionEnv.code 485 = true
+  change Decode.isValidJumpDest s.executionEnv.code 486 = true
   rw [hcode]
   exact h
 
@@ -124,10 +124,10 @@ def gasSteps_jump (s : State) (frame : List UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 4815, stack := frame}
-      {s with pc := UInt256.ofNat 485, stack := frame} := by
+      {s with pc := UInt256.ofNat 486, stack := frame} := by
   apply PadLift.gasSteps_of_raw jumpSite {s with pc := UInt256.ofNat 4815, stack := frame} _ hcode hfork hrun hnp jump_pc.symm
   · apply PadLift.advancesAll_sound; decide
-  · exact PadJump.run_template s (UInt256.ofNat 4815) frame 485 (by omega) hrun (valid_loop s hcode)
+  · exact PadJump.run_template s (UInt256.ofNat 4815) frame 486 (by omega) hrun (valid_loop s hcode)
 def roundTemplate : List Instr :=
   [.op (.Swap ⟨11, by decide⟩), .push 1 72, .op .ADD,
    .push 1 63, .op .NOT, .op .AND, .op (.Swap ⟨11, by decide⟩)]
