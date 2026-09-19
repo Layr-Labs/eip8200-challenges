@@ -187,16 +187,19 @@ set_option linter.unusedVariables false in
 structure EntryLemmas : Type where
   /-- Statement of WP-K2 `Cios2Dispatch.gasSteps_mulEntry`: `mul entry` (pc 3989) →
   `common` (pc 3993) with the multiply row head `hd = 3973`. -/
-  gasSteps_mulEntry : ∀ (s : State) (mem : ByteArray) (pa pb : Nat)
+  gasSteps_mulEntry : ∀ (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false),
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 88 ≤ s.activeWords.toNat) (hn : n = 4 ∨ n = 8)
+    (hcds : s.executionEnv.calldata.size < 2 ^ 256)
+    (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n)),
     Challenge.EvmProof.GasSteps
       (Cios2Dispatch.dispatchState s mem pa pb pdst ret rest)
-      (Cios2Dispatch.commonState s mem (UInt256.ofNat 3543) pa pb pdst ret rest)
+      (Cios2Dispatch.commonState s (mpZeroed s mem n) (UInt256.ofNat 3543) pa pb pdst ret rest)
   /-- Statement of WP-K2 `Cios2Dispatch.gasSteps_commonSetup`: `common` → `setup` →
   row 0 at `hd` (widths four and eight limbs). -/
   gasSteps_commonSetup : ∀ (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
@@ -208,6 +211,7 @@ structure EntryLemmas : Type where
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) (hn : n = 4 ∨ n = 8)
     (hpaFit : pa + 32 * n ≤ 2816)
+    (hpaOutside : pa + 32 * n ≤ 2048 ∨ pa = 2368)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2816)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
@@ -216,7 +220,7 @@ structure EntryLemmas : Type where
     (hguard : MachineState.readWord mem 2720 ≠ UInt256.ofNat 1)
     (hzero : MachineState.readWord mem 2720 ≠ UInt256.ofNat 0),
     Challenge.EvmProof.GasSteps
-      (Cios2Dispatch.commonState s mem hd pa pb pdst ret rest)
+      (Cios2Dispatch.commonState s (mpZeroed s mem n) hd pa pb pdst ret rest)
       (outState s (mpZeroed s (StagedOperand.stage mem pa n) n) pb n 0 hd (l1Target n)
         (MachineState.readWord mem 2720) (MachineState.readWord mem (32*n-32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::

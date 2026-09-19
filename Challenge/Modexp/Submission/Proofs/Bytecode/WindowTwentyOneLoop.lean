@@ -129,11 +129,17 @@ def postState (template : State) (pc : UInt256) (base modulus exponent : UInt256
     modulus (WindowTwentyOneMath.accumulator base modulus exponent.toNat (21 * count + 21))
     (eAt exponent count) (spare base modulus exponent) 0 rest
 
-/-- The return entry at 2309, where the third pass falls through.  The spare slot
-still holds the copy the init left: nothing ever touched it. -/
+/-- The last pass consumes the modulus copy; the unused frame words remain. -/
+def postStateLast (template : State) (pc : UInt256) (base modulus exponent : UInt256)
+    (rest : List UInt256) : State :=
+  WindowTwentyOneLastGroup.outState template pc (loopMem base modulus exponent 3) 18
+    (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63)
+    (eAt exponent 2) (spare base modulus exponent) rest
+
+/-- The last pass falls through to the return at 2347. -/
 def finishState (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) : State :=
-  postState template (UInt256.ofNat 2348) base modulus exponent 2 rest
+  postStateLast template (UInt256.ofNat 2347) base modulus exponent rest
 
 private theorem advancePC_ofNat (count pc : Nat) :
     advancePC count (UInt256.ofNat pc) = UInt256.ofNat (pc + count) := by
@@ -243,7 +249,7 @@ theorem run_bodyLast (template : State) (pc : Nat) (base modulus exponent : UInt
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions (bodyProgramLast 42)
       (headState template (UInt256.ofNat pc) base modulus exponent 2 rest) =
-    some (postState template (UInt256.ofNat (pc + 443)) base modulus exponent 2 rest) := by
+    some (postStateLast template (UInt256.ofNat (pc + 442)) base modulus exponent rest) := by
   have hb := WindowTwentyOneBody.run_twentyOneLast template (UInt256.ofNat pc)
     (WindowTableMemory.tableMemory base modulus) base modulus
     (WindowTwentyOneMath.accumulator base modulus exponent.toNat 42) exponent
@@ -254,7 +260,7 @@ theorem run_bodyLast (template : State) (pc : Nat) (base modulus exponent : UInt
       WindowTwentyOneMath.accumulator base modulus exponent.toNat (42 + 21) :=
     (WindowTwentyOneMath.accumulator_twentyOne base modulus exponent.toNat 42).symm
   rw [ha, advancePC_ofNat] at hb
-  simpa only [bodyProgramLast, headState, postState, loopMem, eAt] using hb
+  simpa only [bodyProgramLast, headState, postStateLast, loopMem, eAt] using hb
 
 private theorem run_padA (template : State) (pc : UInt256) (mem : ByteArray)
     (modulus accumulator exponent counter : UInt256)
