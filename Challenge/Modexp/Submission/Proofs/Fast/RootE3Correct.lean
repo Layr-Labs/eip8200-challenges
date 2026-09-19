@@ -28,6 +28,7 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
     (hact : 89 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn8 : n ≤ 8) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
+    (hfull : msize = 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
     (hmsz : msize = Challenge.Modexp.modulusSize input)
@@ -72,7 +73,7 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
     exact FixedDirectCorrect.prepend tr
       (RootE3Hit.handled_of_entry_asymmetric_three input s (e3Output mem input n mm k)
         n bsize msize mm minv X Y (Limbs.radix ^ (3 * k)) (Limbs.radix ^ (2 * k))
-        sub spec hcode hfork hrun hnp hdata hb hstack hact hn hn8 hmz hm32
+        sub spec hcode hfork hrun hnp hdata hb hstack hact hn hn8 hmz hm32 hfull
         hbsize hesize hmsz hmm hm (Model.coprime_radix_pow_of_odd hodd n) hradix
         (Nat.mod_lt _ hm) hxform hyform hscale hexp hf hmrep hx hy (Nat.mod_lt _ hm) ⟨0, Limbs.radix_pos, ho⟩)
   · let final := ordinaryOutput mem input n mm
@@ -89,7 +90,7 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
     exact FixedDirectCorrect.prepend (ordinaryTrace hE3)
       (FixedDirectCorrect.handled_of_entryStateConcrete input s final
         n bsize esize msize mm minv baseM sub spec
-        hcode hfork hrun hnp hdata hstack hact hvalid hactLe hn hn8 hb he hmz hm32
+        hcode hfork hrun hnp hdata hstack hact hvalid hactLe hn hn8 hb he hmz hm32 hfull
         hbsize hesize hmsz hmm hodd hradix (Nat.mod_lt _ hm) hbForm
         hf hmrep hbRep ⟨0, Limbs.radix_pos, ho⟩ ⟨base % mm, haRep, (Nat.mod_modEq base mm).trans hrawForm, Nat.mod_lt _ hm⟩)
 
@@ -114,6 +115,7 @@ theorem handled_of_bound_shift_hit (input : ByteArray) (s : State) (mem : ByteAr
     (hact : 89 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn8 : n ≤ 8) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
+    (hfull : msize = 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
     (hmsz : msize = Challenge.Modexp.modulusSize input)
@@ -130,7 +132,7 @@ theorem handled_of_bound_shift_hit (input : ByteArray) (s : State) (mem : ByteAr
     FixedExponentRoute.Handled input (Shift.dispState s mem n bsize esize msize) := by
   let e : Shift.Env s := ⟨hcode, hfork, hrun, hnp, hact⟩
   apply handled_of_shift_hit input s mem n bsize esize msize mm minv sub spec
-    hcode hfork hrun hnp hdata hstack hact hn hn8 hb he hmz hm32 hbsize hesize hmsz
+    hcode hfork hrun hnp hdata hstack hact hn hn8 hb he hmz hm32 hfull hbsize hesize hmsz
     hmm hodd hradix hm hframe hmod hone hmatch hvalid hactLe
   · intro h
     exact RootE3Trace.ordinaryTrace s mem input n bsize esize msize mm minv bindings
