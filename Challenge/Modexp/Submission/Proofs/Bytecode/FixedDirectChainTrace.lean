@@ -42,29 +42,22 @@ theorem run_start (s : State) (memory : ByteArray)
       Challenge.EvmProof.Word.ofNat_add_mod]
 
 set_option linter.unusedSimpArgs false in
-theorem run_squareCall (s : State) (memory : ByteArray)
+theorem run_sqLoopCall (s : State) (memory : ByteArray)
     (n bsize esize msize count : Nat)
-    (hactive : 89 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.squareCall
       (FixedDirectStates.square s memory n bsize esize msize count) =
-      some (Exp.sqCall s (Exp.storeWord memory 2624 (UInt256.ofNat count))
-        (UInt256.ofNat 2519)
+      some (Exp.sqLoopCall s memory count (UInt256.ofNat 2519)
         (UInt256.ofNat count :: Exp.outer n bsize esize msize)) := by
-  have haddr : (UInt256.ofNat 2624).toNat = 2624 := by decide
-  have hfix : UInt256.ofNat
-      (MachineState.activeWordsAfter s.activeWords.toNat 2624 32) = s.activeWords :=
-    Exp.activeWords_fix s 2624 32 (by omega) (by omega) hactive
-  simp (config := { maxSteps := 600000 })
+  simp (config := { maxSteps := 400000 })
     [FixedDirectPaths.squareCall, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      FixedDirectStates.square, Exp.sqCall, Exp.storeWord, Exp.outer,
-      hcode, hrun, haddr, hfix,
+      FixedDirectStates.square, Exp.sqLoopCall, Exp.outer,
+      hcode, hrun,
       FixedDirectPaths.jumpDestSqCommon,
-      State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -171,7 +164,7 @@ def gasSteps_start (s : State) (memory : ByteArray)
     (run_start s memory n bsize esize msize count hn hn32 hactive hrun)
     hcode hfork hrun hnp
 
-def gasSteps_squareCall (s : State) (memory : ByteArray)
+def gasSteps_sqLoopCall (s : State) (memory : ByteArray)
     (n bsize esize msize count : Nat)
     (hactive : 89 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -180,11 +173,10 @@ def gasSteps_squareCall (s : State) (memory : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (FixedDirectStates.square s memory n bsize esize msize count)
-      (Exp.sqCall s (Exp.storeWord memory 2624 (UInt256.ofNat count))
-        (UInt256.ofNat 2519)
+      (Exp.sqLoopCall s memory count (UInt256.ofNat 2519)
         (UInt256.ofNat count :: Exp.outer n bsize esize msize)) :=
   sound FixedDirectPaths.squareCall
-    (run_squareCall s memory n bsize esize msize count hactive hcode hrun)
+    (run_sqLoopCall s memory n bsize esize msize count hcode hrun)
     hcode hfork hrun hnp
 
 def gasSteps_squareReturnLoop (s : State) (memory : ByteArray)
@@ -229,5 +221,5 @@ def gasSteps_product (s : State) (memory : ByteArray)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectChainTrace
 
-#print axioms Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectChainTrace.run_squareCall
+#print axioms Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectChainTrace.run_sqLoopCall
 #print axioms Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectChainTrace.run_product
