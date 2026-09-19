@@ -31,7 +31,7 @@ def tail : List Instr :=
 ]
 theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3663 = tail := by rfl
 
-theorem pc_base : Artifact.submissionArtifact.instructionPC 3663 = 4866 := by
+theorem pc_base : Artifact.submissionArtifact.instructionPC 3663 = 4883 := by
   rw [instructionPC_eq_byteLength]
   rfl
 

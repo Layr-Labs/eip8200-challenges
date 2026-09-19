@@ -19,8 +19,8 @@ def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem pc : site.startPC = UInt256.ofNat 4689 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 217) = UInt256.ofNat 4689
+theorem pc : site.startPC = UInt256.ofNat 4706 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 217) = UInt256.ofNat 4706
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def gasSteps (s : State) (ret : UInt256) (rho : List UInt256)
@@ -29,9 +29,9 @@ def gasSteps (s : State) (ret : UInt256) (rho : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4689, stack := ret :: rho}
+    GasSteps {s with pc := UInt256.ofNat 4706, stack := ret :: rho}
       {s with pc := ret, stack := rho} := by
-  apply PadLift.gasSteps_of_raw site {s with pc := UInt256.ofNat 4689, stack := ret :: rho}
+  apply PadLift.gasSteps_of_raw site {s with pc := UInt256.ofNat 4706, stack := ret :: rho}
     _ hcode hfork hr hnp pc.symm (by simp [template])
   have hc : rho.length + 1 < 1024 := by omega
   simp [template, runInstrSeq, DataStepper.runInstr, hr, hv, hc]

@@ -7157,7 +7157,7 @@ structure WholeCoreSites (artifact : DataProgramArtifact) (fork : Fork) where
   inline77 : {site : GenericRoundSite artifact fork inline77Template // site.startPC = UInt256.ofNat 4755}
   inline78 : {site : GenericRoundSite artifact fork inline78Template // site.startPC = UInt256.ofNat 4827}
   inline79 : {site : GenericRoundSite artifact fork inline79Template // site.startPC = UInt256.ofNat 4882}
-  coreExit : {site : GenericRoundSite artifact fork coreExitTemplate // site.startPC = UInt256.ofNat 4932}
+  coreExit : {site : GenericRoundSite artifact fork coreExitTemplate // site.startPC = UInt256.ofNat 4915}
   helper : {site : GenericRoundSite artifact fork fullTemplate // site.startPC = UInt256.ofNat 4985}
 
 #print axioms call16Template_terminal_advances
