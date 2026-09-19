@@ -92,7 +92,7 @@ noncomputable def subsMonpro (s : State) (n bsize mm minv : Nat)
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0)
     (hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1) :
     ∀ (pa pb pd : Nat) (ret : UInt256) (tail : List UInt256)
-      (mem : ByteArray) (a b : Nat), tail.length ≤ 998 →
+      (mem : ByteArray) (a b : Nat), tail.length ≤ 991 →
       32 ≤ pa → pa + 32 * n ≤ 2048 → 32 ≤ pb → pb + 32 * n ≤ 2048 →
       pd + 32 * n ≤ 2048 →
       Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true →
@@ -120,12 +120,12 @@ noncomputable def subsMonpro (s : State) (n bsize mm minv : Nat)
         rw [hf.minvW, toNat_ofNat_self hminvlt]
       exact Challenge.EvmProof.GasSteps.cast
         (CarryFull.gasSteps_monproFullFast s mem pa pb p a b mm (UInt256.ofNat pd) ret tail
-          (by omega) hrun hcode hfork hnp hact (by omega) hpa hpaFit hpb hpbFit hcds
+          hcap hrun hcode hfork hnp hact (by omega) hpa hpaFit hpb hpbFit hcds
           hf.s32 hf.tl hf.ml hjump (by omega) ha hb hm ham hmpos
           (by rw [hlow, hmi]; exact hminvA)
           (eligible_of_frame hf hfast hminv1 hminvlt))
         rfl
-        (by simp only [Csub.csReturnedState_eq_result, retTo, CarryResult.monproMem_def, hpdN])
+        (by simp only [retTo, CarryResult.monproMem_def, hpdN])
 
 /-- The Montgomery-inverse side condition forces an odd modulus. -/
 theorem odd_of_minvA {mm minv : Nat}
@@ -193,7 +193,7 @@ noncomputable def subsSquareLoop (s : State) (n bsize mm minv : Nat)
       Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
       Model.FastRepresents mem 512 n a → a < mm →
       Challenge.EvmProof.GasSteps (sqCall s mem ret tail)
-        (retTo s (FusedMemory.memory s n k mem) (UInt256.ofNat 772) tail) := by
+        (GenericReturnAdapter.terminalOutput s (FusedMemory.memory s n k mem) tail) := by
   intro k ret tail mem a hfast hk hk16 hcap hcount hf hm ha ham
   -- `GasSteps` lives in `Type`, so the limb count has to be split by `cases`.
   cases n with

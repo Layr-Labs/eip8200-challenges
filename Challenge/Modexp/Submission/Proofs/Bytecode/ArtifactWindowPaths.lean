@@ -149,13 +149,13 @@ private def nine_link1 :
 
 private def nine_body2 :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 1905 (WindowTwentyOneLoop.bodyProgramLast 42) :=
-  WindowTwentyOneSlice.block allWellFormed 1559 402 1905 (WindowTwentyOneLoop.bodyProgramLast 42)
+  WindowTwentyOneSlice.block allWellFormed 1559 401 1905 (WindowTwentyOneLoop.bodyProgramLast 42)
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_finish :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2348 WindowTwentyOneReturn.program :=
-  WindowTwentyOneSlice.block allWellFormed 1961 5 2348 WindowTwentyOneReturn.program
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2347 WindowTwentyOneReturn.program :=
+  WindowTwentyOneSlice.block allWellFormed 1960 5 2347 WindowTwentyOneReturn.program
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 

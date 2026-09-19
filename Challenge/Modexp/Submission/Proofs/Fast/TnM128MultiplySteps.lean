@@ -20,7 +20,11 @@ noncomputable def finish_steps (s : State)
     (tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
     GasSteps (rowState s z pb n n tl inv m0 aEnd m96 m64 m32 dst ret rest)
-      (framed {s with memory := lift z.memory z.tn} (UInt256.ofNat 4166) (dst :: ret :: rest)) := by
+      (framed {s with memory := lift z.memory z.tn} (UInt256.ofNat 4166)
+        (dst :: ret :: TnCacheFrameOps.frame (pointer pb n n) (UInt256.ofNat 3543)
+          (UInt256.ofNat (pb-32)) (UInt256.ofNat (l1PC n)) z.tn
+          (MachineState.readWord z.memory 128) inv
+          (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))) := by
   let tail := m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest
   let st : State := {s with memory := z.memory}
   let aft : State := {s with memory := lift z.memory z.tn}
@@ -53,20 +57,21 @@ noncomputable def multiply_steps (s : State)
     (hact : 88 ≤ s.activeWords.toNat)
     (hpa : pa+32*n ≤ 2048 ∨ pa = 2368)
     (hpb : 32 ≤ pb) (hfit : pb+32*n ≤ 2816)
-    (hpbLift : pb+32*n ≤ 2080 ∨ 2112 ≤ pb)
+    (_hpbLift : pb+32*n ≤ 2080 ∨ 2112 ≤ pb)
     (ha : aEnd.toNat = pa+32*(n-1))
     (hc : Cached z.memory pa n tl inv m0 m96 m64 m32) :
     GasSteps (rowState s z pb n 0 tl inv m0 aEnd m96 m64 m32 dst ret rest)
-      (framed {s with memory := CarryRowModel.rowsCarry (lift z.memory z.tn) pa pb n n}
-        (UInt256.ofNat 4166) (dst :: ret :: rest)) := by
+      (framed {s with memory := lift (rows z pa pb n n).memory (rows z pa pb n n).tn}
+        (UInt256.ofNat 4166)
+        (dst :: ret :: TnCacheFrameOps.frame (pointer pb n n) (UInt256.ofNat 3543)
+          (UInt256.ofNat (pb-32)) (UInt256.ofNat (l1PC n))
+          (rows z pa pb n n).tn (MachineState.readWord (rows z pa pb n n).memory 128) inv
+          (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))) := by
   have hr := rows_steps s env z pa pb n hn tl inv m0 aEnd m96 m64 m32 dst ret rest
     hcap hact hpa hpb hfit ha hc n le_rfl
   have hf := finish_steps s env (rows z pa pb n n) pb n
     tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hact
-  have hlift := rows_lift z pa pb n n (by rcases hpa with h | rfl <;> omega)
-    hpbLift (by omega) (by omega)
   have both := hr.trans hf
-  rw [← hlift] at both
   exact both
 
 #print axioms finish_steps

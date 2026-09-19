@@ -69,7 +69,7 @@ def guard : Block submissionArtifact .Osaka 4143 (TnCacheExitTrace.normalGuard) 
     (by decide) (by rfl) (by rfl) (by decide)
 
 def drop : Block submissionArtifact .Osaka 4152 (TnCacheExitTrace.drop) :=
-  WindowTwentyOneSlice.block allWellFormed 3314 14 4152 (TnCacheExitTrace.drop)
+  WindowTwentyOneSlice.block allWellFormed 3314 4 4152 (TnCacheExitTrace.drop)
     (by decide) (by rfl) (by rfl) (by decide)
 
 end Challenge.Modexp.Submission.Proofs.Fast.TnM128L1Blocks

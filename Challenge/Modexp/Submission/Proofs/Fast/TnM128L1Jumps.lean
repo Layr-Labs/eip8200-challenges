@@ -22,7 +22,7 @@ theorem entry_jump (k : Nat) (hk : k ≤ 7) :
   · exact TnM128CandidateArtifact.isValidJumpDest_index 2846 (by rfl)
 
 theorem square_jump : Decode.isValidJumpDest TnM128Candidate.bytecode 4268 = true :=
-  TnM128CandidateArtifact.isValidJumpDest_index 3389 (by rfl)
+  TnM128CandidateArtifact.isValidJumpDest_index 3379 (by rfl)
 
 #print axioms entry_jump
 end Challenge.Modexp.Submission.Proofs.Fast.TnM128L1Jumps

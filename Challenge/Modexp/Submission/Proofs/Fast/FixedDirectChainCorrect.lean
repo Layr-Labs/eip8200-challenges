@@ -1,4 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Fast.FusedFinish
+import Challenge.Modexp.Submission.Proofs.Fast.GenericReturnAdapter
 import Challenge.Modexp.Submission.Proofs.Fast.FixedDirectOutput
 import Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectChainTrace
 
@@ -40,6 +41,10 @@ theorem jumpD3970 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
 theorem jumpD3997 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 774).toNat = true :=
   Exp.jumpD 774 (by decide) jumpDest1802
+
+theorem fixedDirectOuter_bound (n bsize esize msize : Nat) :
+    (Exp.outer n bsize esize msize).length ≤ 991 := by
+  simp [Exp.outer]
 
 /-- The memory word the loop head writes holds the remaining square count. -/
 theorem readWord_countStore (mem : ByteArray) (count : Nat) :
@@ -128,9 +133,9 @@ def gasSteps_squareLoopFast (s : State) {n bsize mm minv : Nat}
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (square s memory n bsize esize msize count)
-      (Exp.retTo s
+      (GenericReturnAdapter.terminalOutput s
         (sub.sqLoopMem count (Exp.storeWord memory 2624 (UInt256.ofNat count)))
-        (UInt256.ofNat 772) (UInt256.ofNat count :: Exp.outer n bsize esize msize)) :=
+        (UInt256.ofNat count :: Exp.outer n bsize esize msize)) :=
   have hinv0 := countStore_inv count hn32 hinv
   (FixedDirectChainTrace.gasSteps_squareCall s memory
       n bsize esize msize count hactive hcode hfork hrun hnp).trans
@@ -141,6 +146,14 @@ def gasSteps_squareLoopFast (s : State) {n bsize mm minv : Nat}
       (readWord_countStore memory count)
       (countStore_frame count hframe) hinv0.modulus hinv0.squareBase hbM)
 
+def chainFinal (s : State) {n bsize minv : Nat} (memory : ByteArray)
+    (esize msize count : Nat) (mem : ByteArray) : State :=
+  if (hfast : (n = 4 ∨ n = 8) ∧ minv ≠ 1) then
+    GenericReturnAdapter.terminalOutput s mem
+      (UInt256.ofNat count :: Exp.outer n bsize esize msize)
+  else
+    Exp.finHead s mem n bsize esize msize
+
 /-- Both width routes deliver the final mixed-domain product at the output block. -/
 structure Chain (s : State) {n bsize mm minv : Nat}
     (_sub : Exp.Subroutines s n bsize mm minv) (memory : ByteArray)
@@ -148,7 +161,7 @@ structure Chain (s : State) {n bsize mm minv : Nat}
   mem : ByteArray
   trace : Challenge.EvmProof.GasSteps
     (special s memory n bsize esize msize count)
-    (Exp.finHead s mem n bsize esize msize)
+    (chainFinal s memory esize msize count mem)
   value : Model.FastRepresents mem 256 n
     (Model.montMul mm (Limbs.radix^n) (fixedDirectValue mm (Limbs.radix^n) bM count) rawBase)
 
@@ -184,9 +197,8 @@ def chain_of_fixed (s : State) {n bsize mm minv : Nat}
         hi0.squareBase hi0.rawAcc hbM hrawLt
     have hs := gasSteps_squareLoopFast s sub memory esize msize count bM rawBase hfast hcount
       hcount16 hn32 hbM hactive hframe hinv hcode hfork hrun hnp
-    have hf := FusedFinish.gasSteps s out (UInt256.ofNat count) (Exp.outer n bsize esize msize)
-      (by simp [Exp.outer]) hcode hfork hrun hnp
-    exact ⟨out, (hhead.trans hs).trans hf, hv⟩
+    refine ⟨out, ?_, hv⟩
+    simpa only [chainFinal, if_pos hfast] using hhead.trans hs
   · let memSq := fixedDirectMems sub.sqMem memory count
     let sqVal := fixedDirectValue mm (Limbs.radix^n) bM count
     have hfSq : Exp.Frame memSq n bsize minv := fixedDirectMems_frame sub count memory hframe
@@ -197,11 +209,13 @@ def chain_of_fixed (s : State) {n bsize mm minv : Nat}
       hcount hcount16 hbM hactive hframe hinv hcode hfork hrun hnp
     have hpc := FixedDirectChainTrace.gasSteps_product s memSq n bsize esize msize 0 hcode hfork hrun hnp
     have hmp := sub.monpro 512 256 256 (UInt256.ofNat 774) (Exp.outer n bsize esize msize)
-      memSq sqVal rawBase (by simp [Exp.outer]) (by omega) (by omega) (by omega) (by omega)
+      memSq sqVal rawBase (fixedDirectOuter_bound n bsize esize msize)
+      (by omega) (by omega) (by omega) (by omega)
       (by omega) jumpD3997 hfSq hiSq.modulus hiSq.squareBase hiSq.rawAcc hsqLt
     have hv := spec.mpValueRaw 512 256 256 memSq sqVal rawBase
       (by omega) (by omega) (by omega) hiSq.modulus hfSq.minvW hiSq.squareBase hiSq.rawAcc hsqLt
-    exact ⟨_, ((hhead.trans hs).trans hpc).trans hmp, hv⟩
+    refine ⟨_, ?_, hv⟩
+    simpa only [chainFinal, if_neg hfast] using ((hhead.trans hs).trans hpc).trans hmp
 
 end Challenge.Modexp.Submission.Proofs.Fast.FixedDirectChainCorrect
 #print axioms Challenge.Modexp.Submission.Proofs.Fast.FixedDirectChainCorrect.chain_of_fixed

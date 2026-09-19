@@ -29,7 +29,7 @@ def middle : Block submissionArtifact .Osaka 3832 (TnCacheRowTrace.middle) :=
     (by decide) (by rfl) (by rfl) (by decide)
 
 def middleCopy : Block submissionArtifact .Osaka 5431 (TnCacheRowTrace.middle ++ [.push 2 3987, .op .JUMP]) :=
-  WindowTwentyOneSlice.block allWellFormed 4367 21 5431 (TnCacheRowTrace.middle ++ [.push 2 3987, .op .JUMP])
+  WindowTwentyOneSlice.block allWellFormed 4357 21 5431 (TnCacheRowTrace.middle ++ [.push 2 3987, .op .JUMP])
     (by decide) (by rfl) (by rfl) (by decide)
 
 def tail : Block submissionArtifact .Osaka 4087 (TnCacheRowTrace.tail) :=
@@ -45,7 +45,7 @@ def afterSquareReset : Block submissionArtifact .Osaka 3482 (TnCacheFrameOps.res
     (by decide) (by rfl) (by rfl) (by decide)
 
 def againReset : Block submissionArtifact .Osaka 4252 (TnCacheFrameOps.reset) :=
-  WindowTwentyOneSlice.block allWellFormed 3379 3 4252 (TnCacheFrameOps.reset)
+  WindowTwentyOneSlice.block allWellFormed 3369 3 4252 (TnCacheFrameOps.reset)
     (by decide) (by rfl) (by rfl) (by decide)
 
 end Challenge.Modexp.Submission.Proofs.Fast.TnM128CandidateBlocks
