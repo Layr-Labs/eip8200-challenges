@@ -211,7 +211,11 @@ def templateV2 : List Instr :=
     .push ⟨2, by decide⟩ (UInt256.ofNat 268),
     .push ⟨2, by decide⟩ (UInt256.ofNat 286),
     .op .MCOPY,
-    .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
+    /- Load word 14 exactly once before the other pool words. The executed
+       JUMPDEST replaces SWAP11 without changing the stack; the mask is pushed
+       after word 14 and immediately before masked word 11. -/
+    .push ⟨1, by decide⟩ (UInt256.ofNat 176),
+    .op .MLOAD,
     .push ⟨1, by decide⟩ (UInt256.ofNat 168),
     .op .MLOAD,
     .push ⟨2, by decide⟩ (UInt256.ofNat 266),
@@ -232,9 +236,8 @@ def templateV2 : List Instr :=
     .op .MLOAD,
     .push ⟨2, by decide⟩ (UInt256.ofNat 262),
     .op .MLOAD,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 176),
-    .op .MLOAD,
-    .op (.Swap ⟨10, by decide⟩),
+    .op .JUMPDEST,
+    .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
     .push ⟨1, by decide⟩ (UInt256.ofNat 146),
     .op .MLOAD,
     .op .AND,
