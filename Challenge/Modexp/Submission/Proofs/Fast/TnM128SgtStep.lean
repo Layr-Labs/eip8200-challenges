@@ -35,11 +35,11 @@ def gasStep_sgt {s : State} {a b : UInt256} {rest : List UInt256}
     StepRunning.sgt (withGas s gas) a b rest hop hgas hstack hcap
 
 /-- The SGT instruction in the eight-limb square row. -/
-theorem sqRowSgt_index : TnM128CandidateArtifact.submissionInstructions[3395]? = some (.op .SGT) := by
+theorem sqRowSgt_index : TnM128CandidateArtifact.submissionInstructions[3393]? = some (.op .SGT) := by
   rfl
 
 /-- Its exact byte address. -/
-theorem sqRowSgt_pc : TnM128CandidateArtifact.submissionArtifact.instructionPC 3395 = 4274 := by
+theorem sqRowSgt_pc : TnM128CandidateArtifact.submissionArtifact.instructionPC 3393 = 4274 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -47,12 +47,12 @@ theorem decodedOp_sqRowSgt (s : State)
     (hcode : s.executionEnv.code = TnM128Candidate.bytecode)
     (hfork : s.fork = .Osaka) (hpc : s.pc = UInt256.ofNat 4274) :
     s.decodedOp = some .SGT := by
-  have hpcNat : s.pc.toNat = TnM128CandidateArtifact.submissionArtifact.instructionPC 3395 := by
+  have hpcNat : s.pc.toNat = TnM128CandidateArtifact.submissionArtifact.instructionPC 3393 := by
     rw [hpc, sqRowSgt_pc]; decide
   have hwf : Stepper.WellFormed s.fork (.op .SGT) := by
     rw [hfork]
     exact ⟨by decide, trivial, rfl⟩
-  exact Stepper.decodes_of_artifact TnM128CandidateArtifact.submissionArtifact s 3395 (.op .SGT)
+  exact Stepper.decodes_of_artifact TnM128CandidateArtifact.submissionArtifact s 3393 (.op .SGT)
     hcode hpcNat sqRowSgt_index hwf
 
 theorem succ_4716 : (UInt256.ofNat 4274).succ = UInt256.ofNat 4275 := by
