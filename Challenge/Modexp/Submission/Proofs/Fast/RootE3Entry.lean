@@ -65,6 +65,7 @@ theorem handled_of_asymmetric_three (input : ByteArray) (s : State) (memory : By
     (hstack : s.callStack = []) (hactive : 89 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmz : 32 < msize)
     (hm32 : msize ≤ 32 * n)
+    (hfull : msize = 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
     (hmsz : msize = Challenge.Modexp.modulusSize input)
@@ -93,7 +94,7 @@ theorem handled_of_asymmetric_three (input : ByteArray) (s : State) (memory : By
   let memOut := ch.mem
   have houtRep : Model.FastRepresents memOut 256 n prodVal := ch.value
   have htraceReturn := Exp.gasSteps_return s memOut n bsize esize msize
-    hn hn32 hmz hm32 hactive hcode hfork hrun hnp
+    hn hn32 hmz hm32 hfull hactive hcode hfork hrun hnp
   have htrace : Challenge.EvmProof.GasSteps
       (special s memory n bsize esize msize 1)
       (Exp.returnedState s memOut n bsize esize msize) :=
@@ -121,6 +122,7 @@ theorem handled_of_entry_asymmetric_three (input : ByteArray) (s : State) (memor
     (hstack : s.callStack = []) (hactive : 89 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmz : 32 < msize)
     (hm32 : msize ≤ 32 * n)
+    (hfull : msize = 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : 1 = Challenge.Modexp.exponentSize input)
     (hmsz : msize = Challenge.Modexp.modulusSize input)
@@ -149,7 +151,7 @@ theorem handled_of_entry_asymmetric_three (input : ByteArray) (s : State) (memor
     (FixedDirectValueTrace.gasSteps_checkThree_hit s memory input
       n bsize msize hb hexp hdata hactive hframe.eoff hcode hfork hrun hnp)
   have hfixed := handled_of_asymmetric_three input s memory n bsize 1 msize mm minv
-    bM rawBase S T sub spec hcode hfork hrun hnp hstack hactive hn hn32 hmz hm32
+    bM rawBase S T sub spec hcode hfork hrun hnp hstack hactive hn hn32 hmz hm32 hfull
     hbsize hesize hmsz hmm hm hcop _hradix hbMlt hbMform hrawForm hscale hexp
     hframe hmod hbase hrawAcc hrawLt hone
   rcases hfixed with ⟨final, ⟨tail⟩, hdone, hresult⟩
