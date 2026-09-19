@@ -91,7 +91,7 @@ def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osak
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 1090 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 714) = UInt256.ofNat 1090
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 708) = UInt256.ofNat 1088
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound

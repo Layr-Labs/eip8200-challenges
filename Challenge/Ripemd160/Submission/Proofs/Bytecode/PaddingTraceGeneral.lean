@@ -44,7 +44,7 @@ def exitState (input : ByteArray) (s : State) (frame : List UInt256) (i : Nat) :
 
 def resultStateAt (input : ByteArray) (s : State) (frame : List UInt256) (i : Nat) : State :=
   {s with
-    pc := UInt256.ofNat 486
+    pc := UInt256.ofNat 508
     stack := frame
     memory := lengthMemory input s.memory i
     activeWords := lengthActive input s.activeWords i}
@@ -67,10 +67,10 @@ theorem paddedWord_aligned (input : ByteArray) (hfit : CalldataFits input)
     (resultState input s frame).activeWords = lengthActive input s.activeWords (lengthStop input) := rfl
 
 private theorem valid_loop : Decode.isValidJumpDest submissionBytecode 4796 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3627 = 4796 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3623 = 4796 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   rw [← hpc]
-  exact Artifact.submissionArtifact.isValidJumpDest_index 3627 (by rfl)
+  exact Artifact.submissionArtifact.isValidJumpDest_index 3623 (by rfl)
 
 private theorem word_ne_zero (x : UInt256) (hx : x ≠ ⟨0⟩) : x.toNat ≠ 0 := by
   intro h

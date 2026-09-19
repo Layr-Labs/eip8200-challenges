@@ -73,7 +73,7 @@ def gasSteps_align (input : ByteArray) (h32 : input.size = 32) :
 
 def gasSteps (input : ByteArray) (h32 : input.size = 32)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 342)) :
-    GasSteps (initialState submissionBytecode input 0) (atState (tableState input) 860 frame) := by
+    GasSteps (initialState submissionBytecode input 0) (atState (tableState input) 858 frame) := by
   have hfit : CalldataFits input := by change input.size < 2 ^ 64; rw [h32]; decide
   let s := PaddingTrace.padCopied input
   have e : Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩

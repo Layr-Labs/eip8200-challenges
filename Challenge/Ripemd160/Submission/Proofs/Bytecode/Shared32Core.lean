@@ -22,7 +22,7 @@ def gasSteps_body (s : State) (e : Env s) (h : Compression.HashState)
     (off limit : UInt256) (rho : List UInt256) (hstack : rho.length ≤ 894)
     (hactive : 35 ≤ s.activeWords.toNat) :
     GasSteps
-      {s with pc := UInt256.ofNat 860, stack := StaggerPersistentFrame.frame h off limit rho}
+      {s with pc := UInt256.ofNat 858, stack := StaggerPersistentFrame.frame h off limit rho}
       {s with
         pc := UInt256.ofNat 4626
         stack := StaggerPersistentFrame.frame (Functional.result s.memory h) off limit rho} := by
@@ -43,7 +43,7 @@ def gasSteps_body (s : State) (e : Env s) (h : Compression.HashState)
 
 def entryState (s : State) : State :=
   {s with
-    pc := UInt256.ofNat 860
+    pc := UInt256.ofNat 858
     stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState
       (UInt256.ofNat 0) (UInt256.ofNat 32) maskRho}
 
