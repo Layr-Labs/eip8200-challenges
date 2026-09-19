@@ -16,6 +16,15 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 open CiosCachedMidMemory TnCacheRowModel TnCacheRowPreserves
 open TnM128RowsSteps TnM128RowSteps TnM128ReductionSteps
 
+def retainedFrame (s : State) (mem : ByteArray) (pa pb n : Nat)
+    (tl inv m0 aEnd m96 m64 m32 dst ret : UInt256) (rest : List UInt256) : List UInt256 :=
+  TnCacheFrameOps.frame (TnCacheRowPointers.pointer pb n n) (UInt256.ofNat 3543)
+    (UInt256.ofNat (pb-32)) (UInt256.ofNat (l1PC n))
+    (TnCacheRowModel.rows ⟨mpZeroed s mem n, UInt256.ofNat 0⟩ pa pb n n).tn
+    (MachineState.readWord
+      (TnCacheRowModel.rows ⟨mpZeroed s mem n, UInt256.ofNat 0⟩ pa pb n n).memory 128) inv
+    (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)
+
 /-- The initialized kernel exposes the same completed carry-row memory as the
 existing caller interface. The second operand lies below the scratch region. -/
 noncomputable def rows_steps (s : State)
@@ -32,7 +41,8 @@ noncomputable def rows_steps (s : State)
         (TnM128Setup.l1Target n) inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))
       (framed {s with memory := CarryRowModel.rowsCarry (mpZeroed s mem n) pa pb n n}
-        (UInt256.ofNat 4166) (dst :: ret :: rest)) := by
+        (UInt256.ofNat 4166)
+        (dst :: ret :: retainedFrame s mem pa pb n tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
   let z : CacheState := ⟨mpZeroed s mem n, UInt256.ofNat 0⟩
   have hn8 : n ≤ 8 := by omega
   have hz : Cached z.memory pa n tl inv m0 m96 m64 m32 :=
@@ -50,11 +60,15 @@ noncomputable def rows_steps (s : State)
       (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest) =
       rowState s z pb n 0 tl inv m0 aEnd m96 m64 m32 dst ret rest := by
     rcases hn with rfl | rfl <;>
-      simp [TnM128Setup.outState, TnM128Setup.l1Target,
+        simp [TnM128Setup.outState, TnM128Setup.l1Target,
         TnM128Setup.zeroTn, rowState, TnCacheRowPointers.pointer, l1PC, l2PC,
-        isFour, z, TnCacheFrameOps.frame, framed] <;> decide
+        isFour, z, TnCacheFrameOps.frame, retainedFrame, framed] <;> decide
+  have hpaLift : pa + 32*n ≤ 2080 ∨ 2112 ≤ pa := by
+    rcases hpa with h | rfl <;> omega
+  have hlift := rows_lift z pa pb n n hpaLift (Or.inl (by omega)) (by omega) (by omega)
+  rw [← hlift] at g
   rw [hstart]
-  simpa only [z, TnCacheInitialMemory.lift_zeroed] using g
+  simpa only [z, retainedFrame, TnCacheInitialMemory.lift_zeroed] using g
 
 #print axioms rows_steps
 end Challenge.Modexp.Submission.Proofs.Fast.TnM128InitialMultiply
