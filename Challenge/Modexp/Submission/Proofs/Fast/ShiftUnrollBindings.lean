@@ -22,7 +22,7 @@ def cacheProgram : List Instr :=
    .op .MSTORE]
 
 def cache : Block Artifact.submissionArtifact .Osaka 2718 cacheProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2204 9 2718 cacheProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2202 9 2718 cacheProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 #print axioms cache

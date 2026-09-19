@@ -84,7 +84,7 @@ def pointersJumpProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩), .op .ADD,
    .op (.Dup ⟨1, by decide⟩), .op .JUMP]
 
-private theorem negative32_add_ofNat (x : Nat) (hx : 32 ≤ x)
+theorem negative32_add_ofNat (x : Nat) (hx : 32 ≤ x)
     (hx' : x < 115792089237316195423570985008687907853269984665640564039457584007913129639936) :
     negative32 + UInt256.ofNat x = UInt256.ofNat (x - 32) := by
   have hneg : negative32 = UInt256.ofNat
