@@ -18,7 +18,7 @@ noncomputable opaque gasSteps_setup (input : ByteArray) (hfit : CalldataFits inp
         stack := frame (hashes input i) (DriverTrace.blockOffsetWord i)
           (LoopCompletionControl.limit input) maskRho}
       {tableState input i with
-        pc := UInt256.ofNat 860
+        pc := UInt256.ofNat 858
         stack := frame (hashes input i) (DriverTrace.blockOffsetWord i)
           (Padding.paddedWord input) maskRho} :=
   ColdTraceCompose.two (gasSteps_lowRoute input hfit hpositive i hi hh hlarge)
