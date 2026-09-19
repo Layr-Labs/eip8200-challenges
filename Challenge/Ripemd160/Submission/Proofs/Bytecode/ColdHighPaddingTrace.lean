@@ -9,7 +9,7 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PersistentStaggerTable PersistentStaggerIteration ColdHighPaddingMemory StaggerPersistentFrame
 noncomputable opaque gasSteps_padding (input : ByteArray) (hfit : CalldataFits input) (hn32 : input.size≠32) (i : Nat) :
     GasSteps {lowState input i with pc:=UInt256.ofNat 4761,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (UInt256.ofNat input.size) maskRho}
-      {paddedState input i with pc:=UInt256.ofNat 486,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (Padding.paddedWord input) maskRho} := by
+      {paddedState input i with pc:=UInt256.ofNat 487,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (Padding.paddedWord input) maskRho} := by
   let h:=hashes input i
   let off:=DriverTrace.blockOffsetWord i
   have hc : (lowState input i).executionEnv.code=Artifact.submissionArtifact.code := states_code input i

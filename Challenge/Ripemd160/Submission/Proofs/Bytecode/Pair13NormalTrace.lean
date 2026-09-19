@@ -72,7 +72,7 @@ theorem exact_bytes : assembleBytes normalTemplate = [
   97, 1, 30, 94, 96, 176, 81, 96, 168, 81, 97,
   1, 10, 81, 97, 1, 14, 81, 96, 142, 81, 96, 172,
   81, 96, 232, 81, 97, 1, 2, 81, 96, 228, 81, 96,
-  180, 81, 97, 1, 6, 81, 91, 117, 255, 255, 255, 255, 0,
+  180, 81, 97, 1, 6, 81, 117, 255, 255, 255, 255, 255, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 255, 255, 255, 255, 96, 146, 81, 22, 96, 134, 81,
   96, 236, 81, 96, 224, 81, 96, 138, 81, 132, 96, 126,
@@ -94,7 +94,7 @@ theorem exact_bytes : assembleBytes normalTemplate = [
   68, 82, 96, 252, 82, 95, 82, 97, 1, 194, 82, 96,
   162, 82
 ] := by decide
-theorem end_pc : pcAfter (UInt256.ofNat 486) normalTemplate = UInt256.ofNat 860 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 487) normalTemplate = UInt256.ofNat 860 := by decide
 #print axioms run_normal
 #print axioms exact_bytes
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13NormalTrace
