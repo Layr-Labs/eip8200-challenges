@@ -96,66 +96,44 @@ private def nine_init :
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_entry :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 991 WindowTwentyOneLoop.entryProgram :=
-  WindowTwentyOneSlice.block allWellFormed 734 0 991 WindowTwentyOneLoop.entryProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 988 WindowTwentyOneLoop.entryProgram :=
+  WindowTwentyOneSlice.block allWellFormed 734 0 988 WindowTwentyOneLoop.entryProgram
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_trampoline :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 991 WindowTwentyOneLoop.trampolineProgram :=
-  WindowTwentyOneSlice.block allWellFormed 734 13 991 WindowTwentyOneLoop.trampolineProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 988 WindowTwentyOneLoop.trampolineProgram :=
+  WindowTwentyOneSlice.block allWellFormed 734 8 988 WindowTwentyOneLoop.trampolineProgram
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
-
-/-! The window loop is unrolled in this image: the three passes are three
-straight-line regions, not one block reached three times.  Each body is the same
-401-instruction program at a different pc, and the two links between consecutive
-passes are the same 5-instruction staging head at a different pc; the passes are packed
-back to back and the bytes the old inter-pass filler occupied now sit, unexecuted, after the
-final `RETURN`.
-
-| block | instruction index | count | pc |
-|-------|-------------------|-------|----|
-| body0 |  713 | 401 |  970 |
-| link0 | 1114 |   5 | 1413 |
-| body1 | 1119 | 401 | 1418 |
-| link1 | 1520 |   5 | 1861 |
-| body2 | 1525 | 402 | 1866 |
-| finish | 1927 |  5 | 2309 | -/
 
 private def nine_body0 :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1009 (WindowTwentyOneLoop.bodyProgram (21 * 0)) :=
-  WindowTwentyOneSlice.block allWellFormed 747 401 1009 (WindowTwentyOneLoop.bodyProgram (21 * 0))
-    (by decide) (by rfl)
-    (by rw [locations_map_instruction]; rfl) (by decide)
-
-private def nine_link0 :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1452 WindowTwentyOneLoop.linkProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1148 5 1452 WindowTwentyOneLoop.linkProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 997 (WindowTwentyOneLoop.bodyProgram (16 * 0)) :=
+  WindowTwentyOneSlice.block allWellFormed 742 309 997 (WindowTwentyOneLoop.bodyProgram (16 * 0))
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_body1 :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1457 (WindowTwentyOneLoop.bodyProgram (21 * 1)) :=
-  WindowTwentyOneSlice.block allWellFormed 1153 401 1457 (WindowTwentyOneLoop.bodyProgram (21 * 1))
-    (by decide) (by rfl)
-    (by rw [locations_map_instruction]; rfl) (by decide)
-
-private def nine_link1 :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1900 WindowTwentyOneLoop.linkProgramB :=
-  WindowTwentyOneSlice.block allWellFormed 1554 5 1900 WindowTwentyOneLoop.linkProgramB
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1348 (WindowTwentyOneLoop.bodyProgram (16 * 1)) :=
+  WindowTwentyOneSlice.block allWellFormed 1051 309 1348 (WindowTwentyOneLoop.bodyProgram (16 * 1))
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_body2 :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1905 (WindowTwentyOneLoop.bodyProgramLast 42) :=
-  WindowTwentyOneSlice.block allWellFormed 1559 402 1905 (WindowTwentyOneLoop.bodyProgramLast 42)
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1699 (WindowTwentyOneLoop.bodyProgram (16 * 2)) :=
+  WindowTwentyOneSlice.block allWellFormed 1360 309 1699 (WindowTwentyOneLoop.bodyProgram (16 * 2))
+    (by decide) (by rfl)
+    (by rw [locations_map_instruction]; rfl) (by decide)
+
+private def nine_bodyLast :
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2050 (WindowTwentyOneLoop.bodyProgramLast 48) :=
+  WindowTwentyOneSlice.block allWellFormed 1669 290 2050 (WindowTwentyOneLoop.bodyProgramLast 48)
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_finish :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2348 WindowTwentyOneReturn.program :=
-  WindowTwentyOneSlice.block allWellFormed 1961 5 2348 WindowTwentyOneReturn.program
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2377 WindowTwentyOneReturn.program :=
+  WindowTwentyOneSlice.block allWellFormed 1959 5 2377 WindowTwentyOneReturn.program
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
@@ -195,10 +173,9 @@ def twentyOnePaths : WindowTwentyOneGasRoute.Paths submissionArtifact .Osaka whe
   entry := nine_entry
   trampoline := nine_trampoline
   body0 := nine_body0
-  link0 := nine_link0
   body1 := nine_body1
-  link1 := nine_link1
   body2 := nine_body2
+  bodyLast := nine_bodyLast
   finish := nine_finish
   adapterJump := by
     have h := isValidJumpDest_index 62 (by rfl)
