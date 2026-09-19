@@ -183,6 +183,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
+    (hfull : msize = 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
     (hmsz : msize = Challenge.Modexp.modulusSize input)
@@ -231,7 +232,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
   -- make.  In the previous layout both arms inherited `R1` from one call before the split.
   by_cases hmatch : FullBase.Matches mem n bsize
   · exact RootE3Correct.handled_of_bound_shift_hit input s mem n bsize esize msize mm minv
-      sub hspec hcode hfork hrun hnp hdata hstack hact hn hn32 hb he hmz hm32
+      sub hspec hcode hfork hrun hnp hdata hstack hact hn hn32 hb he hmz hm32 hfull
       hbsize hesize hmsz hmm hodd hradix hmpos hframe0 hmod0 hone0 hmatch hfast
       hvalid hactLe
       (RootE3Bindings.build s mem input n bsize esize msize minv hn hn32 hb he e hdata hframe0 hmatch
@@ -273,6 +274,8 @@ theorem gasSteps_handled (input : ByteArray)
   have hsize : input.size < 2 ^ 256 := lt_trans hvalid.1 (by norm_num)
   have hn : 2 ≤ Setup.limbs input := Setup.limbs_ge_two input hpath.1
   have hn32 : Setup.limbs input ≤ 8 := Setup.fastSetup_limbs_le_8 input hpath
+  have hfull : Challenge.Modexp.modulusSize input = 32 * Setup.limbs input := by
+    simpa [Setup.s32] using (Setup.s32_eq_of_mask input (Setup.fastPath_width input hpath)).symm
   have hodd : Setup.modulus input % 2 = 1 := Setup.fastPath_odd input hpath
   have hradix : Limbs.radix ≤ Setup.modulus input := by
     have h1 : Limbs.radix ^ 1 ≤ Limbs.radix ^ (Setup.limbs input - 1) :=
@@ -306,7 +309,7 @@ theorem gasSteps_handled (input : ByteArray)
       (Exp.fastSetup_code input) (Exp.fastSetup_fork input) (Exp.fastSetup_halt input)
       (Exp.fastSetup_notPrecompile input) (Exp.fastSetup_calldata input)
       (Exp.fastSetup_callStack input) hact hcds hn hn32 hpath.2.1.1 hpath.2.1.2.1 hpath.1
-      (Setup.modulusSize_le_s32 input) rfl rfl rfl (Setup.fastSetup_modulus_eq input)
+      (Setup.modulusSize_le_s32 input) hfull rfl rfl rfl (Setup.fastSetup_modulus_eq input)
       hodd hradix hmpos hminvlt hminvA hxlt
       ⟨Setup.fastSetup_V_S32 input hpath, Setup.fastSetup_V_MINV input,
        Setup.fastSetup_V_ML input hpath, Setup.fastSetup_V_TL input hpath,
