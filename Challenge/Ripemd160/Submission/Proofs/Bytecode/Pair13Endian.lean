@@ -412,7 +412,7 @@ theorem run_templateV2 (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off li
   rw [hloaded]
   exact h
 
-theorem end_pcV2 : pcAfter (UInt256.ofNat 486) templateV2 = UInt256.ofNat 559 := by decide
+theorem end_pcV2 : pcAfter (UInt256.ofNat 487) templateV2 = UInt256.ofNat 560 := by decide
 #print axioms run_templateV2
 #print axioms exact_bytes
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13Endian

@@ -28,7 +28,7 @@ def gasSteps_sparse (s : State) (e : Env s)
     (hbyte : UInt8.ofNat (a4.toNat % 256) = 1) :
     GasSteps
       (atState s 328 (stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho))
-      (atState {s with memory := sparseMemory s.memory} 523
+      (atState {s with memory := sparseMemory s.memory} 524
         (stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho)) := by
   let F := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho
   have hF : F.length ≤ 900 := by simp only [F, stk, List.length_cons]; omega
@@ -49,14 +49,14 @@ def gasSteps_sparse (s : State) (e : Env s)
     have h := Shared32SparseRun.run_sparse s (UInt256.ofNat 331) ret mw a2 a3 a4
       a5 a6 a7 a8 a9 a10 lim rho hstack e.run hactive hbyte
     simpa only [sparse.template, sparse.end_pc, atState, sM, F] using h
-  have g3 : GasSteps (atState sM 338 F) (atState sM 522 F) := by
-    apply jump.lift sM (atState sM 522 F) eM F
-    exact PadJump.run_template sM (UInt256.ofNat 338) F 522 (by omega) e.run
-      (by simpa only [show (UInt256.ofNat 522).toNat = 522 by decide] using valid_lower sM eM)
-  have g4 : GasSteps (atState sM 522 F) (atState sM 523 F) := by
-    apply lower.lift sM (atState sM 523 F) eM F
-    simpa only [lower.template, atState, show UInt256.ofNat 522 + UInt256.ofNat 1 = UInt256.ofNat 523 by decide] using
-      PadJump.run_merge sM (UInt256.ofNat 522) F (by omega) e.run
+  have g3 : GasSteps (atState sM 338 F) (atState sM 523 F) := by
+    apply jump.lift sM (atState sM 523 F) eM F
+    exact PadJump.run_template sM (UInt256.ofNat 338) F 523 (by omega) e.run
+      (by simpa only [show (UInt256.ofNat 523).toNat = 523 by decide] using valid_lower sM eM)
+  have g4 : GasSteps (atState sM 523 F) (atState sM 524 F) := by
+    apply lower.lift sM (atState sM 524 F) eM F
+    simpa only [lower.template, atState, show UInt256.ofNat 523 + UInt256.ofNat 1 = UInt256.ofNat 524 by decide] using
+      PadJump.run_merge sM (UInt256.ofNat 523) F (by omega) e.run
   exact g0.trans (g1.trans (g2.trans (g3.trans g4)))
 
 def gasSteps_table (s : State) (e : Env s)
@@ -64,14 +64,14 @@ def gasSteps_table (s : State) (e : Env s)
     (rho : List UInt256) (hstack : rho.length ≤ 880)
     (hactive : s.activeWords = UInt256.ofNat 34) :
     GasSteps
-      (atState {s with memory := writeWord s.memory 162 highWord} 523
+      (atState {s with memory := writeWord s.memory 162 highWord} 524
         (stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho))
       (atState {s with memory := Shared32Table.tableMemory s.memory, activeWords := UInt256.ofNat 35} 860
         (stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 0) lim rho)) := by
   let s1 : State := {s with memory := writeWord s.memory 162 highWord}
   have e1 : Env s1 := ⟨e.code, e.fork, e.run, e.np⟩
   apply table.lift s1 _ e1 _
-  have h := Shared32Run.run_table s (UInt256.ofNat 523) ret a2 a3 a4 a5 a6 a7
+  have h := Shared32Run.run_table s (UInt256.ofNat 524) ret a2 a3 a4 a5 a6 a7
     a8 a9 a10 lim rho hstack e.run hactive
   simpa only [table.template, Shared32Run.end_pc, atState, s1] using h
 
