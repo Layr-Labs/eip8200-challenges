@@ -236,7 +236,6 @@ def templateV2 : List Instr :=
     .op .MLOAD,
     .push ⟨2, by decide⟩ (UInt256.ofNat 262),
     .op .MLOAD,
-    .op .JUMPDEST,
     .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
     .push ⟨1, by decide⟩ (UInt256.ofNat 146),
     .op .MLOAD,
