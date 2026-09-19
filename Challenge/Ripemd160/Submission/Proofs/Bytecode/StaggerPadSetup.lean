@@ -18,7 +18,7 @@ low bit-length word `n <<< 3` (two `JUMPDEST`s keep the block's length where the
 to be applied; the resident `0xffffffff` stays four deep on the stack) and `0x80`, then leave
 `iszero (n >>> 29)` for the branch at 4829. -/
 def lowTemplate : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 1084),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 1108),
     .op .CALLDATASIZE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 28),
     .op .CALLDATACOPY,
@@ -29,7 +29,7 @@ def lowTemplate : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 162),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 666),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 690),
     .op .MSTORE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .MSTORE,
@@ -43,12 +43,12 @@ def lowTemplate : List Instr :=
     .op .CALLDATASIZE,
     .op .LT ]
 
-/-- `PUSH2 0398 JUMPI` at 4778: straight to the rounds when the high word is zero. -/
+/-- `PUSH2 0398 JUMPI` at 4800: straight to the rounds when the high word is zero. -/
 def branchTemplate : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 860),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 882),
     .op .JUMPI ]
 
-/-- Pad-only high block (pc 4833..4860), reached only when `n >>> 29 ≠ 0`. -/
+/-- Pad-only high block (pc 4833..4882), reached only when `n >>> 29 ≠ 0`. -/
 def highTemplate : List Instr :=
   [ .op .CALLDATASIZE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 29),
@@ -60,7 +60,7 @@ def highTemplate : List Instr :=
     .push ⟨2, by decide⟩ (UInt256.ofNat 990),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 648),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 672),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 612),
@@ -71,15 +71,15 @@ def highTemplate : List Instr :=
 private theorem add_eq_hAdd (x y : UInt256) : UInt256.add x y = x + y := rfl
 
 /-- The fast padding path is valid for lengths below the artifact's byte size. -/
-def highZero (n : UInt256) : UInt256 := UInt256.lt n (UInt256.ofNat 5212)
+def highZero (n : UInt256) : UInt256 := UInt256.lt n (UInt256.ofNat 5234)
 
 theorem highZero_true_iff (n : UInt256) :
-    UInt256.isTrue (highZero n) ↔ n.toNat < 5212 := by
-  change (UInt256.lt n (UInt256.ofNat 5212)).toNat ≠ 0 ↔ n.toNat < 5212
+    UInt256.isTrue (highZero n) ↔ n.toNat < 5234 := by
+  change (UInt256.lt n (UInt256.ofNat 5234)).toNat ≠ 0 ↔ n.toNat < 5234
   rw [Word.word_toNat_lt]
-  have hc : (UInt256.ofNat 5212).toNat = 5212 := by decide
+  have hc : (UInt256.ofNat 5234).toNat = 5234 := by decide
   rw [hc]
-  by_cases hn : n.toNat < 5212 <;> simp [hn]
+  by_cases hn : n.toNat < 5234 <;> simp [hn]
 
 theorem highZero_true_imp (n : UInt256) (h : UInt256.isTrue (highZero n)) :
     StaggerTablePad.highDirty n = UInt256.ofNat 0 := by
@@ -94,7 +94,7 @@ theorem highZero_true_imp (n : UInt256) (h : UInt256.isTrue (highZero n)) :
 
 theorem run_low (s : State) (pc returnPC : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 995) (hrun : s.halt = .Running) (hactive : 35 ≤ s.activeWords.toNat)
-    (hfit : s.executionEnv.calldata.size < 2 ^ 256) (hcode : s.executionEnv.code.size = 5212) :
+    (hfit : s.executionEnv.calldata.size < 2 ^ 256) (hcode : s.executionEnv.code.size = 5234) :
     runInstrSeq lowTemplate {s with pc := pc, stack := returnPC :: UInt256.ofNat 4294967295 :: rest} =
       some {s with
              pc := pcAfter pc lowTemplate
@@ -156,9 +156,9 @@ theorem run_high (s : State) (pc returnPC : UInt256) (rest : List UInt256)
 
 theorem run_branch_taken (s : State) (pc c : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running) (hc : UInt256.isTrue c)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 860).toNat = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 882).toNat = true) :
     runInstrSeq branchTemplate {s with pc := pc, stack := c :: rho} =
-      some {s with pc := UInt256.ofNat 860, stack := rho} := by
+      some {s with pc := UInt256.ofNat 882, stack := rho} := by
   have hcap : rho.length < 1024 := by omega
   have hcap1 : rho.length + 1 < 1024 := by omega
   have hcap2 : rho.length + 2 < 1024 := by omega

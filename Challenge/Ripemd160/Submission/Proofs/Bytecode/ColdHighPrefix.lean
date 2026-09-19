@@ -18,7 +18,7 @@ noncomputable opaque gasSteps (input : ByteArray) (hfit : CalldataFits input)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 342)) :
     GasSteps (initialState submissionBytecode input 0)
       {states input i with
-        pc := UInt256.ofNat 4701
+        pc := UInt256.ofNat 4723
         stack := StaggerPersistentFrame.frame (hashes input i) (DriverTrace.blockOffsetWord i)
           (LoopCompletionControl.limit input) ColdHighTrace.maskRho} := by
   have gs := StaggerPersistentCorrect.gasSteps_start input hfit hpositive hn32 entryPrefix
@@ -30,7 +30,7 @@ noncomputable opaque gasSteps (input : ByteArray) (hfit : CalldataFits input)
     ColdHighTrace.maskRho hfit (by decide) i hi ga (by
       intro j hj
       have hjc : j < DriverTrace.blockCount input := by omega
-      have ho : input.size = DriverTrace.blockOffset j → input.size < 5212 := by
+      have ho : input.size = DriverTrace.blockOffset j → input.size < 5234 := by
         intro h
         rw [DriverTrace.blockOffset] at h hh
         omega

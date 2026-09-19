@@ -40,7 +40,7 @@ private def gasSteps_matched (input : ByteArray) (hfit : CalldataFits input)
     GasSteps (initialState submissionBytecode input 0) (sizeMatched input) :=
   (EntryPrefilter.gasSteps_fall input hpass).trans
     ((sound bytePath (run_byte_fall input hbyte)).trans
-      (sound gatePath (run_gate_fall input hfit hsmall)))
+      (sound gateFallPath (run_gate_fall input hfit hsmall)))
 
 /-- The repeated `0x61` word has first byte `0x61`. -/
 private theorem firstByte_of_fullWord (input : ByteArray)

@@ -144,7 +144,7 @@ def initTemplate : List Instr := [
 
 def firstTemplate : List Instr := [ .op (.Dup ⟨3, by decide⟩),
     .op .ISZERO,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 223),
     .op .JUMPI ]
 
 def normalTemplate : List Instr := [
@@ -194,7 +194,7 @@ def tailTemplate : List Instr := [
 def finishTemplate : List Instr := [ .op .CALLDATASIZE,
     .op (.Dup ⟨5, by decide⟩),
     .op .EQ,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 300),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 299),
     .op .JUMPI ]
 
 def transitionTemplate : List Instr := [
@@ -245,11 +245,11 @@ def transitionGuardTemplate : List Instr := [ .op (.Dup ⟨3, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 195),
     .op .JUMPI ]
 
-def toTailTemplate : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+def toTailTemplate : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 223),
     .op .JUMP ]
 
 def resultTemplate : List Instr := [ .op .JUMPDEST,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 342),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 341),
     .op .JUMPI ]
 
 

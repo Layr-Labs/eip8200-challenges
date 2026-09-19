@@ -6,7 +6,7 @@ set_option maxRecDepth 100000
 set_option maxHeartbeats 20000000
 set_option linter.unusedSimpArgs false
 
-/-! The entry byte gate: `PUSH1 7 PUSH0 CALLDATALOAD PUSH0 BYTE EQ PUSH2 4819 JUMPI`. -/
+/-! The entry byte gate: `PUSH1 7 PUSH0 CALLDATALOAD PUSH0 BYTE EQ PUSH2 4841 JUMPI`. -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
 
@@ -64,8 +64,8 @@ private theorem pc_b7 : Artifact.submissionArtifact.instructionPC 13 = 23 := by
 private theorem pc_b0 : Artifact.submissionArtifact.instructionPC 6 = 13 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-theorem guard_dest : Decode.isValidJumpDest submissionBytecode 4819 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3644 = 4819 := by
+theorem guard_dest : Decode.isValidJumpDest submissionBytecode 4841 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3640 = 4841 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
   have h := Artifact.submissionArtifact.isValidJumpDest_index 3644 (by rfl)
@@ -73,7 +73,7 @@ theorem guard_dest : Decode.isValidJumpDest submissionBytecode 4819 = true := by
 
 theorem run_byte_prefix (input : ByteArray) :
     run bytePrefix (PatternedScan.stS input 13 []) =
-      some (PatternedScan.stS input 23 [4819, byteCondition input]) := by
+      some (PatternedScan.stS input 23 [4841, byteCondition input]) := by
   let w := MachineState.readWord input 0
   let b := UInt256.byteAt 0 w
   let v := UInt256.eq b 7
@@ -101,7 +101,7 @@ theorem run_byte_prefix (input : ByteArray) :
   have h5 := PatternedScan.blockOfS l5
     (PatternedScan.pcFactS input 11 19 [b, 7] (by norm_num) pc_b5)
     (PatternedScan.stepS_eq input 19 b 7 [] (by simp) (by norm_num))
-  let l6 : Located := pushAt 12 2 4819
+  let l6 : Located := pushAt 12 2 4841
   have h6 := PatternedScan.blockOfS l6
     (PatternedScan.pcFactS input 12 20 [v] (by norm_num) pc_b6)
     (PatternedScan.stepS_push input 20 2 4819 [v] (by simp) (by decide) (by decide) (by norm_num))
@@ -118,15 +118,15 @@ theorem run_byte_prefix (input : ByteArray) :
   exact hseq6
 
 theorem run_byte_taken (input : ByteArray) (hbyte : firstByte input = 7) :
-    run bytePath (PatternedScan.stS input 13 []) = some (PatternedScan.stS input 4819 []) := by
+    run bytePath (PatternedScan.stS input 13 []) = some (PatternedScan.stS input 4841 []) := by
   have hp := run_byte_prefix input
   rw [byteCondition_one input hbyte] at hp
   have hj : run [opAt 13 .JUMPI]
-      (PatternedScan.stS input 23 [4819, UInt256.ofNat 1]) =
-      some (PatternedScan.stS input 4819 []) := by
+      (PatternedScan.stS input 23 [4841, UInt256.ofNat 1]) =
+      some (PatternedScan.stS input 4841 []) := by
     exact PatternedScan.blockOfS _
       (PatternedScan.pcFactS input 13 23 _ (by norm_num) pc_b7)
-      (PatternedScan.stepS_jumpi_taken input 23 4819 4819 (UInt256.ofNat 1) []
+      (PatternedScan.stepS_jumpi_taken input 23 4841 4841 (UInt256.ofNat 1) []
         (by simp) (by norm_num) (by simpa using Word.literal_eq_ofNat _) (by decide) guard_dest)
   exact DataStepper.runLocatedBlock_append bytePrefix [opAt 13 .JUMPI] _ _ _ hp rfl hj
 
@@ -135,11 +135,11 @@ theorem run_byte_fall (input : ByteArray) (hbyte : firstByte input ≠ 7) :
   have hp := run_byte_prefix input
   rw [byteCondition_zero input hbyte] at hp
   have hj : run [opAt 13 .JUMPI]
-      (PatternedScan.stS input 23 [4819, UInt256.ofNat 0]) =
+      (PatternedScan.stS input 23 [4841, UInt256.ofNat 0]) =
       some (PatternedScan.stS input 24 []) := by
     exact PatternedScan.blockOfS _
       (PatternedScan.pcFactS input 13 23 _ (by norm_num) pc_b7)
-      (PatternedScan.stepS_jumpi_fall input 23 4819 (UInt256.ofNat 0) []
+      (PatternedScan.stepS_jumpi_fall input 23 4841 (UInt256.ofNat 0) []
         (by simp) (by norm_num) (by decide))
   exact DataStepper.runLocatedBlock_append bytePrefix [opAt 13 .JUMPI] _ _ _ hp rfl hj
 

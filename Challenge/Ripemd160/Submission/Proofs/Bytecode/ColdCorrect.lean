@@ -12,7 +12,7 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 noncomputable opaque highTrace (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (hn32 : input.size ≠ 32)
     (i : Nat) (hi : i < DriverTrace.blockCount input)
-    (hh : input.size = DriverTrace.blockOffset i) (hlarge : 5212 ≤ input.size)
+    (hh : input.size = DriverTrace.blockOffset i) (hlarge : 5234 ≤ input.size)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 342)) :
     GasSteps (initialState submissionBytecode input 0) (ColdHighFinish.resultState input i) :=
   ColdTraceCompose.two (ColdHighPrefix.gasSteps input hfit hpositive hn32 i hi hh entryPrefix)
@@ -26,7 +26,7 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   classical
   by_cases ho : ∀ i, i < DriverTrace.blockCount input →
-      input.size = DriverTrace.blockOffset i → input.size < 5212
+      input.size = DriverTrace.blockOffset i → input.size < 5234
   · exact ColdOrdinaryCorrect.correct input hfit hpositive hn32 ho entryPrefix
   · push Not at ho
     obtain ⟨i, hi, hh, hlarge⟩ := ho
