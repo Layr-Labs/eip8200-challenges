@@ -198,9 +198,10 @@ theorem ready (m r : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (hr : Clear r
   · intro i hi77
     by_cases hi76 : i = 76
     · subst i
-      have ht := PoolFacts.result_terminal m r lo hi hc hr
+      have ht := PoolFacts.result_terminal_projected m r lo hi hc hr
       have hm : StaggerCoreModel.message (resultMemoryV2 m lo hi) 76 =
-          StaggerCoreModel.message (resultMemory true r lo hi) 76 := ht
+          StaggerCoreModel.message (resultMemory true r lo hi) 76 := by
+        simpa [StaggerCoreModel.message, Paired144WordRound.pairWord] using ht
       rw [hm]
       exact h.paired 76 hi77
     · apply Or.inr
