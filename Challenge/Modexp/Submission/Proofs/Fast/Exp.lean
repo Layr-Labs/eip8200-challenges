@@ -130,20 +130,17 @@ def outer (n bsize esize msize : Nat) : List UInt256 :=
   [UInt256.ofNat (32 * n), UInt256.ofNat n, UInt256.ofNat bsize,
    UInt256.ofNat esize, UInt256.ofNat msize]
 
-/-- The `MONPRO` call state: the kernel's multiply entry,
+/-- The `MONPRO` call state: the full-preclear entry at 5454,
 stack `[pa, pb, pd, ret] ++ tail`. -/
 def mpCall (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3390
+  { s with pc := UInt256.ofNat 5454
            stack := UInt256.ofNat pa :: UInt256.ofNat pb :: UInt256.ofNat pd ::
              ret :: tail
            memory := mem }
 
-/-- The `SQUARE` call state: the kernel's shared `common` block, entered with
-`hd = sq_row` and all three operands at `0x800`, stack
-`[sq_row, 2048, 2048, 2048, ret] ++ tail`.  The square rows address the
-accumulator as `ptr + 0x1840`, which is correct only for an operand at `0x800`;
-the only caller (the fixed-exponent chain) squares `0x800` in place. -/
+/-- The `SQUARE` call state: shared partial-clear entry at 3394, with
+`hd = 4561`, source and destination 512, and the caller's return address. -/
 def sqCall (s : State) (mem : ByteArray) (ret : UInt256)
     (tail : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3394
@@ -488,40 +485,33 @@ def finHead (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
 /-- The halted state after `RETURN`. -/
 def returnedState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 783
+  { s with pc := UInt256.ofNat 779
            stack := outer n bsize esize msize
            memory := mem
            halt := .Returned
            hReturn := MachineState.readPadded mem (256 + 32 * n - msize) msize }
 
 set_option linter.unusedSimpArgs false in
-/-- `blk1333` (pc 1938..2012): `RETURN(ACC + s32 - msize, msize)`. -/
+/-- `blk1333` (pc 774..779): `RETURN(256, msize)`. -/
 theorem run_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hm : 32 < msize) (hm32 : msize ≤ 32 * n)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hm : 32 < msize) (_hm32 : msize ≤ 32 * n)
+    (hfull : msize = 32 * n)
     (hact : 89 ≤ s.activeWords.toNat) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1333
       (finHead s mem n bsize esize msize) =
       some (returnedState s mem n bsize esize msize) := by
-  have hsub : UInt256.ofNat (256 + 32 * n) - UInt256.ofNat msize =
-      UInt256.ofNat (256 + 32 * n - msize) :=
-    Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega)
-      (Nat.lt_of_le_of_lt (show 256 + 32 * n ≤ 512 by omega) (by norm_num))
-  have hmodOff : (256 + 32 * n - msize) %
-      115792089237316195423570985008687907853269984665640564039457584007913129639936
-      = 256 + 32 * n - msize :=
-    mod_word_self (Nat.lt_of_le_of_lt
-      (show 256 + 32 * n - msize ≤ 512 by omega) (by norm_num))
+  have hoff : 256 + 32 * n - msize = 256 := by omega
   have hmodSz : msize %
       115792089237316195423570985008687907853269984665640564039457584007913129639936
       = msize :=
     mod_word_self (Nat.lt_of_le_of_lt (show msize ≤ 256 by omega) (by norm_num))
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
-      (256 + 32 * n - msize) msize) = s.activeWords :=
-    activeWords_fix s (256 + 32 * n - msize) msize (by omega) (by omega) hact
+      256 msize) = s.activeWords :=
+    activeWords_fix s 256 msize (by omega) (by omega) hact
   simp (config := { maxSteps := 600000 }) [blk1333, opAt, pushAt, wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    finHead, returnedState, outer, hrun, hsub, hmodOff, hmodSz, hfix,
+    finHead, returnedState, outer, hrun, hoff, hmodSz, hfix,
     State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -532,6 +522,7 @@ theorem run_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 
 def gasSteps_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hm : 32 < msize) (hm32 : msize ≤ 32 * n)
+    (hfull : msize = 32 * n)
     (hact : 89 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -541,7 +532,7 @@ def gasSteps_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       (returnedState s mem n bsize esize msize) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka blk1333 hcode hfork
-      (run_return s mem n bsize esize msize hn hn32 hm hm32 hact hrun) hrun hnp
+      (run_return s mem n bsize esize msize hn hn32 hm hm32 hfull hact hrun) hrun hnp
 
 /-! ### Bit arithmetic for the exponent loop -/
 
