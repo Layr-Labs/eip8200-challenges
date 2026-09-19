@@ -2,6 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.ArtifactEarlyWordPaths
 import Challenge.Modexp.Submission.Proofs.Bytecode.EarlyWordGas
 import Challenge.Modexp.Submission.Proofs.Bytecode.MainGas
 import Challenge.Modexp.Submission.Proofs.Bytecode.FermatGas
+import Challenge.Modexp.Submission.Proofs.Bytecode.ArtifactWindowPaths
 import Challenge.Modexp.Submission.Proofs.PrimeCertificates
 
 set_option warningAsError true

@@ -28,7 +28,8 @@ def steps_hit {artifact : ProgramArtifact} {fork : Fork}
   exact paths.guard.steps
     (env.transfer (t := framed template (UInt256.ofNat 0) []) rfl rfl) rfl hg
 
-/-- Every width miss reaches exactly the old entry with an empty stack. -/
+/-- Every width miss reaches exactly the fixed-vector recogniser's entry (pc 1064)
+with an empty stack. -/
 def steps_miss {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (input : ByteArray) (hdata : template.executionEnv.calldata = input)

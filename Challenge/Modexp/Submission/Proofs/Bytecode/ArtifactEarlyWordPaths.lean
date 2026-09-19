@@ -1,4 +1,5 @@
-import Challenge.Modexp.Submission.Proofs.Bytecode.ArtifactWindowPaths
+import Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneSlice
 import Challenge.Modexp.Submission.Proofs.Bytecode.EarlyWordProgram
 set_option warningAsError true
 set_option maxRecDepth 20000

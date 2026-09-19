@@ -251,7 +251,7 @@ def gasSteps_missPath (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   have h := soundEnv blk2862 e
     (run_dispatch s mem n bsize esize msize hn32 hb e.act296 e.code e.run)
   rw [if_neg hmiss] at h
-  exact h.trans (soundEnv blk1351 e
+  exact h.trans (soundEnv bailBlock e
     (run_bailMiss s mem n bsize esize msize e.code e.run))
 
 end Challenge.Modexp.Submission.Proofs.Fast.Shift

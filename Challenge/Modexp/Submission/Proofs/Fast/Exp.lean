@@ -10,12 +10,10 @@ import Challenge.Modexp.Submission.Proofs.Fast.Monpro
 import Challenge.Modexp.Submission.Proofs.Fast.Setup
 import Challenge.Modexp.Submission.Proofs.Fast.Double
 import Challenge.Modexp.Submission.Proofs.Fast.Ccb
-import Challenge.Modexp.Submission.Proofs.Fast.CcbSeed
 import Challenge.Modexp.Submission.Proofs.Fast.R1
 import Challenge.Modexp.Submission.Proofs.Fast.Lz
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P17
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P18
-import Challenge.Modexp.Submission.Proofs.Bytecode.RrLeadingTraceCore
 
 -- Keep the caller proofs in their original word normal form.
 set_option warningAsError true
@@ -35,7 +33,7 @@ appended path runs three loops and returns:
    flagless square-and-multiply steps producing `ACC = φ(b ^ e)`, the final
    `MonPro(ACC, 1)` and the `RETURN`.
 
-`MONPRO` (pc 4667) and `ADDMOD` (pc 2347) are developed in `Fast.Monpro` and
+`MONPRO` (pc 4695) and `ADDMOD` (pc 2347) are developed in `Fast.Monpro` and
 `Fast.Csub`; here they enter only through the abstract `Subroutines` contract,
 so this module does not depend on those developments.
 -/
@@ -54,15 +52,59 @@ open Challenge.Modexp.Submission.Proofs.Fast
 -- reduce inside the block-reduction `simp` calls without it.
 attribute [local simp] List.getElem?_cons_zero
 
+/-! ## Word-level helpers -/
+
+theorem word_toNat_mul (a b : UInt256) :
+    (a * b).toNat = a.toNat * b.toNat % 2 ^ 256 := by
+  change (a.val * b.val).val = _
+  rw [Fin.val_mul]
+  rfl
+
+theorem ofNat_mul_mod (a b : Nat) :
+    UInt256.ofNat a * UInt256.ofNat b = UInt256.ofNat (a * b) := by
+  apply Challenge.EvmProof.Word.word_ext
+  simp only [word_toNat_mul, Challenge.EvmProof.Word.word_toNat_ofNat, ← Nat.mul_mod]
 
 theorem toNat_ofNat_self {a : Nat} (ha : a < 2 ^ 256) :
     (UInt256.ofNat a).toNat = a := by
   rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt ha]
 
+theorem shr_ofNat (v k : Nat) (hv : v < 2 ^ 256) (hk : k < 256) :
+    UInt256.shiftRight (UInt256.ofNat v) (UInt256.ofNat k) =
+      UInt256.ofNat (v / 2 ^ k) := by
+  rw [Challenge.EvmProof.Word.shiftRight_ofNat hv hk, Nat.shiftRight_eq_div_pow]
+
+theorem and_one (v : Nat) : 1 &&& v = v % 2 := by
+  rw [Nat.and_comm, Nat.and_one_is_mod]
+
+theorem land_one (v : Nat) :
+    UInt256.land (UInt256.ofNat 1) (UInt256.ofNat v) = UInt256.ofNat (v % 2) := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_land,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (show (1 : Nat) < 2 ^ 256 by norm_num), and_one,
+    Nat.mod_mod_of_dvd v (show (2 : Nat) ∣ 2 ^ 256 by exact ⟨2 ^ 255, by norm_num⟩),
+    Nat.mod_eq_of_lt
+      (Nat.lt_of_lt_of_le (Nat.mod_lt v (by norm_num)) (by norm_num))]
+
+theorem land_ofNat (a b : Nat) (ha : a < 2 ^ 256) (hb : b < 2 ^ 256) :
+    UInt256.land (UInt256.ofNat a) (UInt256.ofNat b) = UInt256.ofNat (a &&& b) := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_land,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt ha, Nat.mod_eq_of_lt hb,
+    Nat.mod_eq_of_lt (Nat.and_lt_two_pow a hb)]
 
 theorem isZero_ofNat_zero : UInt256.isZero (UInt256.ofNat 0) = UInt256.ofNat 1 := by
   decide
 
+theorem isZero_ofNat_of_ne {a : Nat} (ha : a < 2 ^ 256) (h : a ≠ 0) :
+    UInt256.isZero (UInt256.ofNat a) = UInt256.ofNat 0 := by
+  rw [UInt256.isZero, toNat_ofNat_self ha, if_neg h]
 
 theorem isZero_ofNat_one : UInt256.isZero (UInt256.ofNat 1) = UInt256.ofNat 0 := by
   decide
@@ -71,6 +113,11 @@ theorem isTrue_one : UInt256.isTrue (UInt256.ofNat 1) := by decide
 
 theorem not_isTrue_zero : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
 
+theorem isTrue_ofNat {a : Nat} (ha : a < 2 ^ 256) (h : a ≠ 0) :
+    UInt256.isTrue (UInt256.ofNat a) := by
+  show (UInt256.ofNat a).toNat ≠ 0
+  rw [toNat_ofNat_self ha]
+  exact h
 
 /-! ## The stack frame and the subroutine contracts
 
@@ -83,18 +130,14 @@ def outer (n bsize esize msize : Nat) : List UInt256 :=
   [UInt256.ofNat (32 * n), UInt256.ofNat n, UInt256.ofNat bsize,
    UInt256.ofNat esize, UInt256.ofNat msize]
 
--- `mpCall` -- the `MONPRO` call state at the kernel's multiply entry -- is DELETED, not
--- renumbered.  There is no multiply entry in this artifact to renumber it to.  The old
--- entry was `JUMPDEST; PUSH2 <mul row head>` falling through into `common`; that `PUSH2`
--- was HOISTED into the fused frame program at pc 3414..3454, where it is the single
--- `PUSH2 3465` in the whole 5,428-byte program (instruction index 2766).  Measured four
--- ways: instruction 2386 is pc 2919, not 3209; pc 3209 decodes to `ISZERO`;
--- `JUMPDEST; PUSH2 3465` occurs zero times; and `common` (pc 3327) is reached from exactly
--- one site in the artifact, `PUSH2 800; PUSH2 512; DUP1; DUP1; PUSH2 4480; PUSH2 3327;
--- JUMP`, which is the SQUARE call.  Nothing enters it as a multiply.
--- The `monpro` field below went with it; `mpMem`, `amMem` and `mpFrame` stay, because the
--- memory effect and frame preservation are still consumed through `SubSpec`.
-
+/-- The `MONPRO` call state: the kernel's multiply entry,
+stack `[pa, pb, pd, ret] ++ tail`. -/
+def mpCall (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256)
+    (tail : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 3390
+           stack := UInt256.ofNat pa :: UInt256.ofNat pb :: UInt256.ofNat pd ::
+             ret :: tail
+           memory := mem }
 
 /-- The `SQUARE` call state: the kernel's shared `common` block, entered with
 `hd = sq_row` and all three operands at `0x800`, stack
@@ -103,8 +146,8 @@ accumulator as `ptr + 0x1840`, which is correct only for an operand at `0x800`;
 the only caller (the fixed-exponent chain) squares `0x800` in place. -/
 def sqCall (s : State) (mem : ByteArray) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3327
-           stack := UInt256.ofNat 4488 :: UInt256.ofNat 512 :: UInt256.ofNat 512 ::
+  { s with pc := UInt256.ofNat 3394
+           stack := UInt256.ofNat 4561 :: UInt256.ofNat 512 :: UInt256.ofNat 512 ::
              UInt256.ofNat 512 :: ret :: tail
            memory := mem }
 
@@ -112,7 +155,6 @@ def sqCall (s : State) (mem : ByteArray) (ret : UInt256)
 def retTo (s : State) (mem : ByteArray) (ret : UInt256)
     (tail : List UInt256) : State :=
   { s with pc := ret, stack := tail, memory := mem }
-
 
 /-! ### The configuration words
 
@@ -160,7 +202,6 @@ theorem amMemOf_frame {mem : ByteArray} {n bsize minv : Nat} (pa pb pd : Nat)
          by rw [key 2784 (by omega)]; exact hf.tl,
          by rw [key 2816 (by omega)]; exact hf.eoff⟩
 
-
 /-- The subroutines the driver calls, as abstract single-step contracts
 carrying exactly the side conditions `Fast.CarryFull.gasSteps_monproFull`,
 `Fast.SquareFull.gasSteps_squareFull` and
@@ -181,12 +222,16 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
   /-- `ADDMOD` preserves the configuration words. -/
   amFrame : ∀ (pa pb pd : Nat) (mem : ByteArray), pd ≤ 1536 →
     Frame mem n bsize minv → Frame (amMem pa pb pd mem) n bsize minv
-  -- The `monpro` GasSteps field is DELETED with `mpCall` above: it was the only thing that
-  -- named the multiply entry, the entry is absent from this artifact (see the note at
-  -- `mpCall`), and it had ZERO consumers tree-wide once the unaccelerated per-square route
-  -- was removed.  `mpMem` and `mpFrame` are retained -- the VALUE side of `MONPRO` is still
-  -- live through `SubSpec`, which `ShiftCorrect`, `RootE3Correct` and `FixedDirectCorrect`
-  -- all consume.  Only the control-flow contract is gone.
+  /-- `MONPRO` at pc 4700. -/
+  monpro : ∀ (pa pb pd : Nat) (ret : UInt256) (tail : List UInt256)
+    (mem : ByteArray) (a b : Nat), tail.length ≤ 998 →
+    32 ≤ pa → pa + 32 * n ≤ 2048 → 32 ≤ pb → pb + 32 * n ≤ 2048 →
+    pd + 32 * n ≤ 2048 →
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true →
+    Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
+    Model.FastRepresents mem pa n a → Model.FastRepresents mem pb n b → a < mm →
+    Challenge.EvmProof.GasSteps (mpCall s mem pa pb pd ret tail)
+      (retTo s (mpMem pa pb pd mem) ret tail)
   /-- The memory effect of the in-place `SQUARE(0x800) → 0x800`. -/
   sqMem : ByteArray → ByteArray
   /-- `SQUARE` preserves the configuration words. -/
@@ -227,7 +272,7 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
     Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
     Model.FastRepresents mem 512 n a → a < mm →
     Challenge.EvmProof.GasSteps (sqCall s mem ret tail)
-      (retTo s (sqLoopMem k mem) (UInt256.ofNat 782) tail)
+      (retTo s (sqLoopMem k mem) (UInt256.ofNat 772) tail)
   /-- The raw factor retained in ACC decodes the Montgomery square chain. -/
   sqLoopValue : ∀ (k : Nat) (mem : ByteArray) (a b : Nat), n = 4 ∨ n = 8 → 1 ≤ k →
     Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
@@ -265,24 +310,23 @@ def selOf (n k : Nat) : Nat := 1024 + 256 * bitAt n k
 
 /-- `RRL`, pc 1569, at the top of iteration `k`. -/
 def rrHead (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
-  { s with pc := UInt256.ofNat 804
+  { s with pc := UInt256.ofNat 794
            stack := UInt256.ofNat k :: outer n bsize esize msize
            memory := mem }
 
-
 /-- `BDONE`, pc 1883, where the base chain rejoins. -/
 def bDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2396
+  { s with pc := UInt256.ofNat 2441
            stack := outer n bsize esize msize
            memory := mem }
 
+/-! ### Block reductions for the `RR` chain -/
 
 /-! ### The `RR` loop -/
 
 @[simp] theorem outer_length (n bsize esize msize : Nat) :
     (outer n bsize esize msize).length = 5 := by
   simp [outer]
-
 
 /-- One `RR` round: square, and multiply by `CC` only when bit `k` of `n` is
 set.  When it is clear the selector would be `R1`, the Montgomery form of one,
@@ -298,10 +342,29 @@ def rrMem (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (n : Nat)
   | 0 => mem
   | i + 1 => rrStep mpMem n (5 - i) (rrMem mpMem n mem i)
 
+/-! ## The base chain
+
+`BL` (pc 1746) walks `j` from `1` to `pb = ⌈bsize / 32⌉`, alternating
+`MonPro(ACC, CC) → ACC` and `AddMod(ACC, ONE) → ACC`; the most significant
+partial limb of the base is stored before the loop and limb `pb - 1 - j` is
+stored into `ONE` inside iteration `j`. -/
+
+theorem lt_ofNat_of_lt {a b : Nat} (ha : a < 2 ^ 256) (hb : b < 2 ^ 256)
+    (h : a < b) :
+    UInt256.lt (UInt256.ofNat a) (UInt256.ofNat b) = UInt256.ofNat 1 := by
+  rw [UInt256.lt, toNat_ofNat_self ha, toNat_ofNat_self hb, if_pos h]
+
+theorem lt_ofNat_of_le {a b : Nat} (ha : a < 2 ^ 256) (hb : b < 2 ^ 256)
+    (h : b ≤ a) :
+    UInt256.lt (UInt256.ofNat a) (UInt256.ofNat b) = UInt256.ofNat 0 := by
+  rw [UInt256.lt, toNat_ofNat_self ha, toNat_ofNat_self hb,
+    if_neg (Nat.not_lt.mpr h)]
 
 /-- The number of limbs of the base. -/
 def pbOf (bsize : Nat) : Nat := (31 + bsize) / 32
 
+/-- The width in bytes of the most significant (partial) base limb. -/
+def topWidth (bsize : Nat) : Nat := bsize - 32 * (pbOf bsize - 1)
 
 /-! ### Memory writes and the active-word high-water mark
 
@@ -370,12 +433,26 @@ theorem activeWords_fix2 (s : State) (off1 sz1 off2 sz2 : Nat)
     activeWordsAfter_fix _ off2 sz2 hsz2 hoff2 hact]
   exact (Challenge.EvmProof.Word.word_eq_ofNat_toNat _).symm
 
+/-! ### The head of the base chain and the loop body -/
+
+/-- The most significant, possibly partial, limb of the base. -/
+def topLimbOf (input : ByteArray) (bsize : Nat) : Nat :=
+  Precompile.bytesToNatPadded input 96 (topWidth bsize)
 
 /-- The base limb iteration `j` stores into `ONE`: limb `pb - 1 - j` counted
 from the least significant. -/
 def baseLimbWord (input : ByteArray) (bsize pb j : Nat) : UInt256 :=
   MachineState.readWord input (96 + (bsize - 32 * (pb - j)))
 
+/- Disabled after pc1639 became the full-base dispatcher.  The relocated
+fallback certificate is supplied downstream by `FullBaseFallbackCorrect`.
+-/
+
+/-! ### The base loop -/
+
+/- Disabled with `run_baseHead`; the relocated wrapper lives in
+`FullBaseFallbackCorrect`.
+-/
 
 /-- The memory after `t` iterations of the Horner loop. -/
 def blMems (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray)
@@ -385,7 +462,6 @@ def blMems (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray)
       amMem 256 768 256
         (storeWord (mpMem 256 1280 256 (blMems mpMem amMem input n bsize pb mem t))
           (736 + 32 * n) (baseLimbWord input bsize pb (t + 1)))
-
 
 /-! ## The exponent loop
 
@@ -399,75 +475,27 @@ def expByte (input : ByteArray) (bsize i : Nat) : Nat :=
 
 /-- `EB`, pc 1838, at the top of exponent byte `i`. -/
 def ebHead (s : State) (mem : ByteArray) (n bsize esize msize i : Nat) : State :=
-  { s with pc := UInt256.ofNat 950
+  { s with pc := UInt256.ofNat 940
            stack := UInt256.ofNat i :: outer n bsize esize msize
            memory := mem }
 
-
 /-- pc 1938, back from the final `MonPro(ACC, ONE)`. -/
 def finHead (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 784
+  { s with pc := UInt256.ofNat 774
            stack := outer n bsize esize msize
            memory := mem }
 
 /-- The halted state after `RETURN`. -/
 def returnedState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 793
+  { s with pc := UInt256.ofNat 783
            stack := outer n bsize esize msize
            memory := mem
            halt := .Returned
            hReturn := MachineState.readPadded mem (256 + 32 * n - msize) msize }
 
-
-/-! Program-counter certificates for `blk1333` (instruction indices 566..573,
-pc 784..793).  `Fast.Defs` used to cover these with a `fastPC` range lemma, which
-was dropped when the unroll made its index range non-contiguous; these are the
-individual facts the block reduction actually needs, in the same form
-`Fast.Setup` uses for `blk1341`/`blk1351`.  Transcribed from the decode of the
-5,428-byte artifact `fe8e9f61e6d3764a`, where indices 566..573 read
-JUMPDEST, DUP5, DUP1, DUP3, PUSH2 0x100, ADD, SUB, RETURN -- matching `blk1333`
-instruction for instruction.  In this image the block's leading `JUMPDEST` at pc 784 is
-removed (it was reached only by fall-through), so the block starts at the `DUP5` at 784
-(index 554) and the `PUSH3 0x100` at 787 runs to 791. -/
-private theorem pcIdx567 :
-    Artifact.submissionArtifact.instructionPC 554 = 784 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-private theorem pcIdx568 :
-    Artifact.submissionArtifact.instructionPC 555 = 785 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-private theorem pcIdx569 :
-    Artifact.submissionArtifact.instructionPC 556 = 786 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-private theorem pcIdx570 :
-    Artifact.submissionArtifact.instructionPC 557 = 787 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-private theorem pcIdx571 :
-    Artifact.submissionArtifact.instructionPC 558 = 791 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-private theorem pcIdx572 :
-    Artifact.submissionArtifact.instructionPC 559 = 792 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-private theorem pcIdx573 :
-    Artifact.submissionArtifact.instructionPC 560 = 793 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
 set_option linter.unusedSimpArgs false in
-/-- `blk1333` (instruction indices 566..573, pc 784..793):
-`RETURN(ACC + s32 - msize, msize)`. -/
+/-- `blk1333` (pc 1938..2012): `RETURN(ACC + s32 - msize, msize)`. -/
 theorem run_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hm : 32 < msize) (hm32 : msize ≤ 32 * n)
     (hact : 89 ≤ s.activeWords.toNat) (hrun : s.halt = .Running) :
@@ -494,13 +522,13 @@ theorem run_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     finHead, returnedState, outer, hrun, hsub, hmodOff, hmodSz, hfix,
-    pcIdx567, pcIdx568, pcIdx569, pcIdx570, pcIdx571, pcIdx572, pcIdx573,
     State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
+/-! ### Gas traces for the exponent blocks -/
 
 def gasSteps_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hm : 32 < msize) (hm32 : msize ≤ 32 * n)
@@ -515,6 +543,41 @@ def gasSteps_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     Artifact.submissionArtifact .Osaka blk1333 hcode hfork
       (run_return s mem n bsize esize msize hn hn32 hm hm32 hact hrun) hrun hnp
 
+/-! ### Bit arithmetic for the exponent loop -/
+
+theorem bitAt_eq_zero_iff (w r : Nat) : bitAt w r = 0 ↔ w.testBit r = false := by
+  rw [bitAt, Model.bit_eq_testBit]
+  cases w.testBit r <;> simp
+
+theorem and_two_pow_eq_zero_iff (w r : Nat) :
+    2 ^ r &&& w = 0 ↔ w.testBit r = false := by
+  constructor
+  · intro h
+    have h2 : (2 ^ r &&& w).testBit r = false := by rw [h]; simp
+    rw [Nat.testBit_and, Nat.testBit_two_pow_self] at h2
+    simpa using h2
+  · intro h
+    apply Nat.eq_of_testBit_eq
+    intro k
+    rw [Nat.testBit_and, Nat.testBit_two_pow, Nat.zero_testBit]
+    by_cases hk : r = k
+    · subst hk
+      simp [h]
+    · simp [hk]
+
+theorem two_pow_ge_two {k : Nat} (hk : 1 ≤ k) : 2 ≤ 2 ^ k := by
+  calc (2 : Nat) = 2 ^ 1 := by norm_num
+    _ ≤ 2 ^ k := Nat.pow_le_pow_right (by norm_num) hk
+
+theorem two_pow_le_128 {k : Nat} (hk : k ≤ 7) : 2 ^ k ≤ 128 := by
+  calc (2 : Nat) ^ k ≤ 2 ^ 7 := Nat.pow_le_pow_right (by norm_num) hk
+    _ = 128 := by norm_num
+
+theorem two_pow_shift {j : Nat} (hj : j < 7) :
+    2 ^ (7 - j) / 2 = 2 ^ (7 - (j + 1)) := by
+  have he : 7 - j = 7 - (j + 1) + 1 := by omega
+  rw [he, pow_succ, Nat.mul_div_assoc _ (dvd_refl 2), Nat.div_self (by norm_num),
+    Nat.mul_one]
 
 /-! ### The bit loop -/
 
@@ -523,7 +586,6 @@ def bitStep (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (mem : Byt
     Nat → ByteArray
   | 0 => mpMem 256 256 256 mem
   | _ + 1 => mpMem 256 512 256 (mpMem 256 256 256 mem)
-
 
 /-- The memory after `k` bits of exponent byte `w`, started at bit index `j0`. -/
 def bitMemsFrom (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (w : Nat)
@@ -555,7 +617,6 @@ def ebMems (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (input : By
   | 0 => mem
   | i + 1 => byteMemAt mpMem input bsize n (ebMems mpMem input bsize n mem i) i
 
-
 /-! ### Preservation of `V_EOFF` across the exponent loop -/
 
 theorem readWord_bitStep (mpMem : Nat → Nat → Nat → ByteArray → ByteArray)
@@ -572,7 +633,6 @@ theorem readWord_bitStep (mpMem : Nat → Nat → Nat → ByteArray → ByteArra
       show MachineState.readWord (mpMem 256 512 256 (mpMem 256 256 256 mem))
         addr = _
       rw [hkeep 256 512 _, hkeep 256 256 mem]
-
 
 theorem readWord_bitMemsFrom (mpMem : Nat → Nat → Nat → ByteArray → ByteArray)
     (addr : Nat)
@@ -608,7 +668,6 @@ theorem readWord_ebMems (mpMem : Nat → Nat → Nat → ByteArray → ByteArray
       · rw [readWord_bitMemsFrom mpMem addr hkeep,
           readWord_mcopyMem_disjoint _ 256 512 (32 * n) addr (Or.inr (by omega)), ih]
       · rw [readWord_bitMemsFrom mpMem addr hkeep, ih]
-
 
 /-! ## The returned byte string
 
@@ -667,7 +726,6 @@ theorem bytesToNatPadded_of_fastRepresents {mem : ByteArray} {ptr count value : 
     (hrep : Model.FastRepresents mem ptr count value) :
     Precompile.bytesToNatPadded mem ptr (32 * count) = value := by
   rw [bytesToNatPadded_block mem count ptr, Model.value_of_fastRepresents hrep]
-
 
 /-- Byte `k` of a big-endian read. -/
 theorem bytesToNatPadded_digit (bs : ByteArray) (off w k : Nat) (hk : k < w) :
@@ -775,14 +833,12 @@ theorem bitAt_expByte (input : ByteArray) (bsize esize i r : Nat)
     Nat.mod_mod_of_dvd _ (dvd_pow_self 2 (by omega)), Nat.div_div_eq_div_mul,
     ← pow_add]
 
-
 /-- One left-to-right step of the accumulated exponent. -/
 theorem expPrefix_step (e B t : Nat) (ht : t < B) :
     Model.expPrefix e (B - t - 1) =
       2 * Model.expPrefix e (B - t) + bitAt e (B - t - 1) := by
   have h := Model.expPrefix_succ e (B - t - 1)
   rwa [show B - t - 1 + 1 = B - t from by omega] at h
-
 
 /-! ## The arithmetic of the three loops
 
@@ -1200,6 +1256,13 @@ theorem write_low_limb {mem : ByteArray} {n one : Nat} (word : UInt256)
   rw [show (768 : Nat) + 32 * (n - 1 - 0) = 736 + 32 * n from by omega] at h
   exact h
 
+/-! ## The hand-over from `Fast.Setup`
+
+`Fast.Setup` stops at pc 2038 — the `DOUBLE256` entry — with stack
+`[R1, 1610] ++ OUTER`.  Two `DOUBLE256` calls with the two `MCOPY` blocks `r0`
+(pc 1610) and `r1` (pc 1680) between and after them lead into the `RR` chain at
+pc 1569.  `DOUBLE256` enters through the same kind of abstract contract as
+`MONPRO` and `ADDMOD`; `Fast.Double.gasSteps_double256_addmod` supplies it. -/
 
 /-! ### The base chain, at the level of memory -/
 
@@ -1260,6 +1323,30 @@ theorem blValue_lt {mm b pb : Nat} (hm : 0 < mm) (t : Nat) :
   | zero => exact Nat.mod_lt _ hm
   | succ t => exact Nat.mod_lt _ hm
 
+/-- The most significant partial base limb is the top limb of the base. -/
+theorem topLimbOf_value (input : ByteArray) (bsize : Nat) (hb0 : 1 ≤ bsize) :
+    topLimbOf input bsize =
+      Precompile.bytesToNatPadded input 96 bsize / Limbs.radix ^ (pbOf bsize - 1) := by
+  have hw : topWidth bsize + (bsize - topWidth bsize) = bsize := by
+    unfold topWidth pbOf; omega
+  have hexp : bsize - topWidth bsize = 32 * (pbOf bsize - 1) := by
+    unfold topWidth pbOf; omega
+  have hpow : (256 : Nat) ^ (bsize - topWidth bsize) =
+      Limbs.radix ^ (pbOf bsize - 1) := by
+    rw [hexp, Limbs.pow_radix]
+  have hsplit := Challenge.EvmProof.Bytes.bytesToNatPadded_add input 96 (topWidth bsize)
+    (bsize - topWidth bsize)
+  rw [hw] at hsplit
+  have htail := Challenge.EvmProof.Bytes.bytesToNatPadded_lt_pow input
+    (96 + topWidth bsize) (bsize - topWidth bsize)
+  rw [hpow] at htail
+  have hsplit' : Precompile.bytesToNatPadded input 96 bsize =
+      Limbs.radix ^ (pbOf bsize - 1) * topLimbOf input bsize +
+        Precompile.bytesToNatPadded input (96 + topWidth bsize)
+          (bsize - topWidth bsize) := by
+    rw [hsplit, topLimbOf, hpow]; ring
+  rw [hsplit', Nat.mul_add_div (pow_pos Limbs.radix_pos _), Nat.div_eq_of_lt htail,
+    Nat.add_zero]
 
 /-- The blocks the Horner loop reads and writes: the modulus, `ACC`, `ONE`
 (whose value always fits in one limb), `CC` and `RR`. -/
@@ -1426,7 +1513,6 @@ theorem blMem_base {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArra
   rwa [Model.montMul_const_form hm hcop hrr (b % mm),
     show b % mm * R % mm = b * R % mm from ((Nat.mod_modEq b mm).mul_right R)] at h
 
-
 /-! ### The exponent loop, at the level of memory -/
 
 /-- The bit the loop consumes at global step `t`: bit `7 - t % 8` of exponent
@@ -1498,7 +1584,6 @@ theorem bitStep_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArr
         hbase1
     · exact ⟨one, honelt, spec.mpFrame 256 512 256 768 one _ (by omega)
         (Or.inl (by omega)) hone1⟩
-
 
 theorem bitAt_zero_of_lt {w r j : Nat} (hw : w < 2 ^ (r + 1)) (hj : r < j) :
     bitAt w j = 0 := by
@@ -1581,7 +1666,6 @@ theorem bitMemsFrom_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → Byt
       rw [show t0 + j0 + (k + 1) = t0 + j0 + k + 1 from rfl, expAcc_succ,
         hbits k (by omega)]
       exact hstep
-
 
 /-- The bits the loop skips are leading zeros of the exponent, so the
 accumulator it starts from is the one the unskipped loop would have had. -/
@@ -1811,7 +1895,6 @@ theorem returnedState_toResult (s : State) (mem input : ByteArray)
     returned_eq_spec s mem input n bsize esize msize result hn hm hmpos hbsize hesize
       hmsz hrep hres]
 
-
 /-! ### The shape `Fast.Correct.FastPath.handled` wants
 
 `Challenge.EvmProof.GasSteps` is `Type`, not `Prop`, so the literal
@@ -1826,7 +1909,7 @@ into this file's dependency graph.  The final assembly therefore belongs in
 one-liner it needs. -/
 
 /-- **The `handled` obligation, from a trace and the value of the `ACC` block.**
-`entry` is the state the entry hop produces (`Main.trampolineState input 1362`),
+`entry` is the state the entry hop produces (`Main.trampolineState input 844`),
 `s` the carrier of the fast-path states (`initialState submissionBytecode input 0`,
 whose `callStack` is `[]` by `rfl`). -/
 theorem handled_of_trace (input : ByteArray) (entry s : State) (mem : ByteArray)
@@ -1852,7 +1935,6 @@ theorem handled_of_trace (input : ByteArray) (entry s : State) (mem : ByteArray)
     returnedState_toResult s mem input n bsize esize msize result hn hmsz32 hmpos
       hbsize hesize hmsz hrep hres⟩
 
-
 #print axioms blMem_final
 #print axioms blMem_base
 #print axioms ebMem_final
@@ -1871,6 +1953,55 @@ theorem jumpD (pc : Nat) (hpc : (UInt256.ofNat pc).toNat = pc)
       (UInt256.ofNat pc).toNat = true := by
   rw [hpc]; exact hj
 
+/- The former base chain ran from `RRE`'s fallthrough at pc1639 to `BDONE`.
+The relocated wrapper below starts at the helper's miss state instead. -/
+
+/-! ### The exponent loop, re-threaded -/
+
+/-! ### The bit loop started at an arbitrary bit
+
+Byte `0` enters the loop at its highest set bit rather than at bit 7.  The
+skipped iterations would have squared `Mont 1`, which leaves it unchanged, so
+the accumulator the loop starts from is the same one; only the memory chain has
+to be re-indexed. -/
+
+/-! ### The hand-over from `Fast.Setup`, re-threaded -/
+
+/-! ## Blocks the loops leave untouched
+
+`rrMem` writes only `RR`; `blMems` writes only `ACC` and the `ONE` scratch
+slot.  Both therefore carry an arbitrary disjoint block through. -/
+
+/-! ## The base loop -/
+
+/-! ## From the head of the `RR` loop to the `RETURN` -/
+
+/- This legacy RR closure enters the old pc1639 block directly.  The active
+RR-leading tail is downstream and composes the dispatcher-aware theorem.
+
+-/
+
+/-! ## The two `DOUBLE256` calls of the setup hand-over -/
+
+/-! ## The guarded `R1` block
+
+`R1B` (pc 2674) stands in front of the first `DOUBLE256` call.  When the
+modulus's most significant bit is set, `radix ^ n < 2 * m`, so `R mod m` is
+just `radix ^ n - m`.  `CSUB` already reduces `t[n] * radix ^ n + t_low`
+against `m`, and at this point in the setup the `t` block is still zero, so
+storing `t[n] := 1` turns a single `CSUB` pass into the whole of `R mod m`,
+in place of the 256 modular doublings `DOUBLE256` performs.  A modulus whose
+top bit is clear keeps the `DOUBLE256` path unchanged. -/
+
+/-! ## The `CCB` call of the setup hand-over
+
+`CCB` (pc 2624) replaces the second `DOUBLE256`.  It doubles the block at
+`px` once through `ADDMOD` and then squares it eight times through `MONPRO`.
+`MonPro` needs only `V_MINV`, never `R1`, so it may be used here: the block
+starts at `R mod m`, the Montgomery residue of `1`; doubling makes it the
+residue of `2`; and eight Montgomery squarings make it the residue of
+`2 ^ (2 ^ 8) = radix`, i.e. `radix * R mod m` — exactly what the 256 modular
+doublings produced. -/
 
 /-! ## The setup memory outside the modulus and `R1` blocks -/
 
@@ -1966,24 +2097,26 @@ theorem fastSetup_notPrecompile (input : ByteArray) :
       (Setup.fastSetupState input).executionEnv.codeAddr = false :=
   Challenge.Modexp.deployAddress_not_precompile
 
-/-- The setup block ends at the dispatcher entry (pc 2474, instruction index 2031)
-with the plain outer frame, instead of at the Montgomery-form conversion call.
-`Shift.dispState` is definitionally this state; it cannot be named here because
-`ShiftStates` sits above this module.
-
-Both numbers this comment and the term below used to carry -- pc 3374 and 2339 --
-were pre-unroll and are not instruction starts in the 5,428-byte artifact
-`fe8e9f61e6d3764a` at all: each lands inside a `PUSH` immediate.  Transcribed from
-the decode rather than reconciled against each other: pc 2474 is a `JUMPDEST`
-reached by the `PUSH2 0xcff; JUMP` at indices 2048..2049 and followed by
-`DUP1; DUP4; EQ`, which is the dispatcher's compare chain.  `Fast.Setup` agrees
-from two directions -- `fastSetupState_pc` is `UInt256.ofNat 2474` by `rfl`, and
-its `jumpDest3296` certifies pc 2474 via `isValidJumpDest_index 2016`. -/
+/-- The setup block ends at the dispatcher (pc 3381) with the plain outer frame,
+instead of at the Montgomery-form conversion call.  `Shift.dispState` is definitionally this
+state; it cannot be named here because `ShiftStates` sits above this module. -/
 theorem fastSetup_entry_eq (input : ByteArray) :
     Setup.fastSetupState input =
-      retTo (Setup.fastSetupState input) (Setup.fastSetupMemory input) (UInt256.ofNat 2474)
+      retTo (Setup.fastSetupState input) (Setup.fastSetupMemory input) (UInt256.ofNat 2543)
         (outer (Setup.limbs input) (Challenge.Modexp.baseSize input)
           (Challenge.Modexp.exponentSize input) (Challenge.Modexp.modulusSize input)) := rfl
 
 /-! ## The top-level certificate -/
 
+/- Disabled parent-candidate closure. The RR-leading closure with the same
+public theorem signature lives in `Fast.RrLeadingCorrect`; retaining this
+source block documents the unchanged legacy argument without introducing an
+assumption into the new proof. -/
+/- /-- Everything after `Fast.Setup`: the hand-over, the three loops and the
+`RETURN`.  Stated over an abstract hand-over state so that every `subs`
+projection is a projection at variables. -/
+
+
+-/
+
+end Challenge.Modexp.Submission.Proofs.Fast.Exp

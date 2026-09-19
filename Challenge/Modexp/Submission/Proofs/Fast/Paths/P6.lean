@@ -10,23 +10,25 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
+/-- Instructions 1463..1470, pc 2003..2012. -/
 def blk1333 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 554 (.Dup ⟨4, by decide⟩),
-   opAt 555 (.Dup ⟨0, by decide⟩),
-   opAt 556 (.Dup ⟨2, by decide⟩),
-   pushAt 557 3 256,
-   opAt 558 .ADD,
-   opAt 559 .SUB,
-   opAt 560 .RETURN]
+  [opAt 556 .JUMPDEST,
+   opAt 557 (.Dup ⟨4, by decide⟩),
+   opAt 558 (.Dup ⟨0, by decide⟩),
+   opAt 559 (.Dup ⟨2, by decide⟩),
+   pushAt 560 2 256,
+   opAt 561 .ADD,
+   opAt 562 .SUB,
+   opAt 563 .RETURN]
 
 /-- Instructions 1471..1344, pc 2016..2016. -/
 def blk1341 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 561 .JUMPDEST,
-   opAt 562 .POP,
-   pushAt 563 2 553,
-   opAt 564 .JUMP]
+  [opAt 564 .JUMPDEST,
+   opAt 565 .POP,
+   pushAt 566 2 795,
+   opAt 567 .JUMP]
 
 /- `blk1345` (the oversize bail target `BAIL3`, pristine instructions 1345..1350) is
 deleted with the size test that was its only predecessor: nothing jumps to it any more,
@@ -38,8 +40,8 @@ fallback re-reads the header itself, so the live words are no longer dropped and
 block jumps straight to the fallback entry at pc 236. -/
 def blk1351 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 565 .JUMPDEST,
-   pushAt 566 1 238,
-   opAt 567 .JUMP]
+  [opAt 568 .JUMPDEST,
+   pushAt 569 1 238,
+   opAt 570 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

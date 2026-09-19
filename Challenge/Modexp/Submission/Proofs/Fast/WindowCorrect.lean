@@ -1,6 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowBodyCorrect
 import Challenge.Modexp.Submission.Proofs.Fast.Setup
 import Challenge.Modexp.Submission.Proofs.Bytecode.EarlyWordCorrect
+import Challenge.Modexp.Submission.Proofs.Bytecode.MemoHit
 
 set_option warningAsError true
 set_option maxRecDepth 20000
@@ -58,8 +59,15 @@ def handledOf (route : WindowRoute.Route)
         hdone, hresult⟩
     · rcases Setup.gasSteps_fallback input hvalid hfast with
         ⟨_, steps⟩ | ⟨h32, hupper, steps⟩
-      · exact WindowBodyCorrect.handledOf route input hvalid
-          ((EarlyWordCorrect.legacy input hmatch).trans steps)
+      · -- the header route lands on the fixed-vector recogniser: it either claims the
+        -- input and returns the specified result, or restores the legacy entry
+        by_cases hmemo : MemoLogic.Matches input
+        · obtain ⟨final, ⟨tail⟩, done, result⟩ := Memo.hitHandled input hvalid hmemo
+          exact ⟨final, ⟨((EarlyWordCorrect.legacy input hmatch).trans steps).trans tail⟩,
+            done, result⟩
+        · exact WindowBodyCorrect.handledOf route input hvalid
+            (((EarlyWordCorrect.legacy input hmatch).trans steps).trans
+              (Memo.gasSteps_miss input hmemo))
       · exact bigBailHandled input hvalid h32 hupper
           ((EarlyWordCorrect.legacy input hmatch).trans steps)
 

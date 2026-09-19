@@ -1,8 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Fast.FixedDirectHitCorrect
 import Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectEntryTrace
--- S1b.  The bail lands in `modexpBig`; these are the same two modules S1 imported
--- into `ShiftCorrect` for the 2350 bail.  Neither depends on the FixedDirect
--- subtree (checked: their import closures are pure `Proofs.Bytecode`), so no cycle.
+-- The recogniser misses bail into `modexpBig`; its cold-path proof and location
+-- certificates are pure `Proofs.Bytecode` and do not depend on this subtree.
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigCUMain
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigCUBlocks
 
@@ -21,13 +20,18 @@ open Challenge.Modexp.Submission.Proofs.Fast.FixedExponentRoute
 open Challenge.Modexp.Submission.Proofs.Fast.FixedExponentRouteLogic
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- **S1b.** The diverted recogniser miss, discharged in `modexpBig`.
+private theorem prepend {input : ByteArray} {start middle : State}
+    (head : Challenge.EvmProof.GasSteps start middle)
+    (suffix : Handled input middle) : Handled input start := by
+  rcases suffix with ⟨final, ⟨tail⟩, hdone, hresult⟩
+  exact ⟨final, ⟨head.trans tail⟩, hdone, hresult⟩
+
+/-- The diverted recogniser miss, discharged in `modexpBig`.
 
 `bigC_correct` re-reads the header from calldata and is universal in the incoming
-memory and stack, so the frame the fast path built is simply discarded; nothing
-about it has to be carried across.  `bailState` and `bigCState` are record updates
-of `s` touching only `pc`, `stack` and `memory`, so every environment field and
-both side conditions are `s`'s DEFINITIONALLY. -/
+memory and stack, so the frame the fast path built is simply discarded.  `bailState`
+and `bigCState` are record updates of `s` touching only `pc`, `stack` and `memory`,
+so every environment field and both side conditions are `s`'s definitionally. -/
 private def bailHandled (input : ByteArray) (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -44,8 +48,6 @@ private def bailHandled (input : ByteArray) (s : State) (memory : ByteArray)
     Handled input (entryState s memory n bsize esize msize) := by
   have htramp := FixedDirectFallbackTrace.gasSteps_bail s memory
     n bsize esize msize hcode hfork hrun hnp
-  -- `hdata` is stated about `s`, and `rw` is syntactic, not up to defeq; naming
-  -- the bail state's spelling once is what lets it fire below.
   have hcd : (FixedDirectStates.bigCState s memory n bsize esize msize).executionEnv.calldata
       = input := hdata
   have env : WindowTwentyOneBinding.Environment Artifact.submissionArtifact .Osaka
@@ -73,12 +75,6 @@ private def bailHandled (input : ByteArray) (s : State) (memory : ByteArray)
       (by rw [hcd]; exact hpos)
   exact ⟨final, ⟨(h.trans htramp).trans tail⟩, hdone, by rw [hres, hcd]⟩
 
-private theorem prepend {input : ByteArray} {start middle : State}
-    (head : Challenge.EvmProof.GasSteps start middle)
-    (suffix : Handled input middle) : Handled input start := by
-  rcases suffix with ⟨final, ⟨tail⟩, hdone, hresult⟩
-  exact ⟨final, ⟨head.trans tail⟩, hdone, hresult⟩
-
 /-- Instantiate the complete concrete dispatcher contract. -/
 def route (input : ByteArray) (s : State) (memory : ByteArray)
     (n bsize esize msize mm minv bM : Nat)
@@ -90,10 +86,8 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
     (hactive : 89 ≤ s.activeWords.toNat)
-    -- S1b.  `bigC_correct` needs an UPPER bound on `activeWords` (every such
-    -- hypothesis in this tree is a lower bound) and the `size < 2 ^ 64` component
-    -- of `ValidInput`, which the dispatch layer does not carry.  Both are already
-    -- in scope at `ShiftCorrect.handled_of_dispatch`, where this chain terminates.
+    -- `bigC_correct` needs an upper bound on `activeWords` and the `size < 2 ^ 64`
+    -- component of `ValidInput`; both are in scope at `ShiftCorrect.handled_of_dispatch`.
     (hvalid : Challenge.Modexp.ValidInput input)
     (hactLe : s.activeWords.toNat ≤ 289)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hb : bsize ≤ 1024)
@@ -168,7 +162,7 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
         have hfixed := FixedDirectHitCorrect.handled_of_fixed input s memory
           n bsize 1 msize mm minv bM
           rawBase 1 sub spec
-          hcode hfork hrun hnp hdata hstack hactive hvalid hactLe hn hn32 hmz hm32
+          hcode hfork hrun hnp hstack hactive hn hn32 hmz hm32
           hbsize hesize hmsz hmm
           (lt_of_lt_of_le Limbs.radix_pos hradix)
           (Model.coprime_radix_pow_of_odd hodd n) hradix hbMlt hbMform
@@ -188,7 +182,7 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
         have hfixed := FixedDirectHitCorrect.handled_of_fixed input s memory
           n bsize 3 msize mm minv bM
           rawBase 16 sub spec
-          hcode hfork hrun hnp hdata hstack hactive hvalid hactLe hn hn32 hmz hm32
+          hcode hfork hrun hnp hstack hactive hn hn32 hmz hm32
           hbsize hesize hmsz hmm
           (lt_of_lt_of_le Limbs.radix_pos hradix)
           (Model.coprime_radix_pow_of_odd hodd n) hradix hbMlt hbMform

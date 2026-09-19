@@ -108,7 +108,7 @@ def spare (base modulus exponent : UInt256) : UInt256 :=
 only) and the spare accumulator copy beneath the frame. -/
 def entryState (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) : State :=
-  WindowTwentyOneGroup.state template (UInt256.ofNat 952)
+  WindowTwentyOneGroup.state template (UInt256.ofNat 991)
     (WindowTableMemory.tableMemory base modulus) 16
     modulus (WindowTwentyOneMath.accumulator base modulus exponent.toNat 0)
     (eAt exponent 0) (spare base modulus exponent) 0 rest
@@ -133,7 +133,7 @@ def postState (template : State) (pc : UInt256) (base modulus exponent : UInt256
 still holds the copy the init left: nothing ever touched it. -/
 def finishState (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) : State :=
-  postState template (UInt256.ofNat 2309) base modulus exponent 2 rest
+  postState template (UInt256.ofNat 2348) base modulus exponent 2 rest
 
 private theorem advancePC_ofNat (count pc : Nat) :
     advancePC count (UInt256.ofNat pc) = UInt256.ofNat (pc + count) := by
@@ -211,12 +211,12 @@ theorem run_stores (template : State) (pc : UInt256) (mem : ByteArray) (active :
 theorem run_trampoline (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructionsX trampolineProgram (entryState template base modulus exponent rest) =
-    some (headState template (UInt256.ofNat 970) base modulus exponent 0 rest) := by
-  have hs := run_stores template (UInt256.ofNat 952)
+    some (headState template (UInt256.ofNat 1009) base modulus exponent 0 rest) := by
+  have hs := run_stores template (UInt256.ofNat 991)
     (WindowTableMemory.tableMemory base modulus) 16 rfl modulus
     (WindowTwentyOneMath.accumulator base modulus exponent.toNat 0)
     (eAt exponent 0) (spare base modulus exponent) rest hrest
-  have hpc : advancePC 18 (UInt256.ofNat 952) = UInt256.ofNat 970 := by decide
+  have hpc : advancePC 18 (UInt256.ofNat 991) = UInt256.ofNat 1009 := by decide
   simpa only [trampolineProgram, entryState, headState, loopMem, hpc] using hs
 
 /-- One pass's twenty-one nibbles at body pc 970 or 1418.  Four hundred and forty-three

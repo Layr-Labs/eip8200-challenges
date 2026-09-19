@@ -1,5 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CarryResult
-import Challenge.Modexp.Submission.Proofs.Fast.CarryRows
+import Challenge.Modexp.Submission.Proofs.Fast.CarryIface
 import Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch
 
 set_option warningAsError true
@@ -14,7 +14,6 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch
 open CiosCached CiosCachedMidMemory
-open Challenge.Modexp.Submission.Proofs.Fast.CarryRows
 open CarryRowModel CarryResult StagedOperand
 
 theorem readonlyCache_rowsCarry {mem : ByteArray} {n : Nat} {tl inv m0 : UInt256}
@@ -39,39 +38,6 @@ opaque inverse_rowsCarry (mem : ByteArray) (pa pb n i : Nat)
   rw [readWord_rowsCarry mem pa pb n (32*n-32) hn (Or.inl (by omega)) i,
     readWord_rowsCarry mem pa pb n 2720 hn (Or.inr (by decide)) i]
   exact hminv
-
-/-! ### The reassembled rows (`rowsS`) -/
-
-theorem readonlyCache_rowsS {mem : ByteArray} {n : Nat} {tl inv m0 : UInt256}
-    (hc : CiosReadonly.ReadonlyCache mem n tl inv m0) (hn : n ≤ 8) (cy : UInt256) (pa pb i : Nat) :
-    CiosReadonly.ReadonlyCache (rowsS mem cy pa pb n i).memory n tl inv m0 :=
-  hc.of_preserved
-    (readWord_rowsS mem cy pa pb n 2720 hn (Or.inr (by decide)) i)
-    (readWord_rowsS mem cy pa pb n (32*n-32) hn (Or.inl (by omega)) i)
-
-theorem extraCache_rowsS {mem : ByteArray} {m96 m64 m32 : UInt256}
-    (hc : CiosReadonlyExtra.ExtraCache mem m96 m64 m32) (cy : UInt256) (pa pb n i : Nat) (hn : n ≤ 8) :
-    CiosReadonlyExtra.ExtraCache (rowsS mem cy pa pb n i).memory m96 m64 m32 :=
-  hc.of_preserved
-    (readWord_rowsS mem cy pa pb n 96 hn (Or.inl (by decide)) i)
-    (readWord_rowsS mem cy pa pb n 64 hn (Or.inl (by decide)) i)
-    (readWord_rowsS mem cy pa pb n 32 hn (Or.inl (by decide)) i)
-
-opaque inverse_rowsS (mem : ByteArray) (cy : UInt256) (pa pb n i : Nat)
-    (hn : n ≤ 8) (hminv : inverseInvariant mem n) :
-    inverseInvariant (rowsS mem cy pa pb n i).memory n := by
-  unfold inverseInvariant at *
-  rw [readWord_rowsS mem cy pa pb n (32*n-32) hn (Or.inl (by omega)) i,
-    readWord_rowsS mem cy pa pb n 2720 hn (Or.inr (by decide)) i]
-  exact hminv
-
-/-- The prologue's `CALLDATACOPY` zero-fill leaves at least the scratch word inside the
-memory, which the exit-flush bridge `rowsS_flush` needs. -/
-theorem size_mpZeroed (s : State) (mem : ByteArray) (n : Nat) :
-    2112 ≤ (mpZeroed s mem n).size := by
-  unfold mpZeroed
-  rw [MachineState.writeBytes_size, Challenge.EvmProof.Memory.readPadded_size]
-  split_ifs <;> omega
 
 theorem readWord_selected_preserved (s : State) (memory : ByteArray)
     (pa pb n i addr : Nat) (hn : n ≤ 8)

@@ -54,36 +54,36 @@ def loopStack (px k : Nat) (ret : UInt256) (rest : List UInt256) : List UInt256 
 /-- Subroutine entry, pc 2038, stack `[px, ret]`. -/
 def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1069
+  { s with pc := UInt256.ofNat 794
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
 /-- The loop head `DBL`, pc 1968, with the counter at `k`. -/
 def loopState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1073
+  { s with pc := UInt256.ofNat 797
            stack := loopStack px k ret rest
            memory := mem }
 
 /-- The `ADDMOD` call, pc 2347, with the frame `[px, px, px, 1931]` pushed. -/
 def callState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1097
+  { s with pc := UInt256.ofNat 817
            stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
-                     UInt256.ofNat 1084] ++ loopStack px k ret rest
+                     UInt256.ofNat 804] ++ loopStack px k ret rest
            memory := mem }
 
 /-- The return point, pc 1931, with the counter still at `k`. -/
 def retState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1084
+  { s with pc := UInt256.ofNat 804
            stack := loopStack px k ret rest
            memory := mem }
 
 /-- The loop exit, pc 1984, with the counter at zero. -/
 def exitState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 1094
+  { s with pc := UInt256.ofNat 1083
            stack := loopStack px 0 ret rest
            memory := mem }
 
@@ -96,7 +96,20 @@ def doneState (s : State) (mem : ByteArray) (ret : UInt256)
 
 /-! ## Block reductions -/
 
-set_option linter.unusedSimpArgs false in
+/-! ## Gas traces for the individual blocks -/
+
+/-! ## The doubling loop
+
+`ADDMOD` enters here through the indexed contract
+
+```
+∀ i < 256, GasSteps (callState s (mems i) px (256 - i) ret rest)
+                    (retState s (mems (i + 1)) px (256 - i) ret rest)
+```
+
+where `mems i` is the memory after `i` calls.  `Fast.Csub` supplies it; the
+instantiation is `gasSteps_double256_addmod` below. -/
+
 /-- `i` applications of a memory transformer. -/
 def iterMem (f : ByteArray → ByteArray) (mem : ByteArray) : Nat → ByteArray
   | 0 => mem
@@ -113,6 +126,13 @@ at `256 - i`. -/
 def loopFamily (s : State) (px : Nat) (ret : UInt256) (rest : List UInt256)
     (mems : Nat → ByteArray) (i : Nat) : State :=
   loopState s (mems i) px (256 - i) ret rest
+
+/-! ## The functional postcondition
+
+`ADDMOD(px, px, px)` doubles the value of the block at `px` modulo `m`; 256
+such steps multiply it by `radix`.  Both facts are stated over an abstract
+step contract so that they compose with `Fast.Csub.addmod_csub_correct`
+without this module depending on it. -/
 
 /-- The doubling invariant: after `i` steps the block at `px` holds
 `x * 2 ^ i mod m`. -/
@@ -156,7 +176,6 @@ theorem iterMem_preserves (f : ByteArray → ByteArray) (mem : ByteArray)
   induction i with
   | zero => simpa using hrep
   | succ i ih => exact hpres _ ih
-
 
 /-! ## Wiring in the concrete `ADDMOD` subroutine
 
@@ -222,11 +241,13 @@ theorem vars_iterMem (mem : ByteArray) (px n : Nat) (hn : 2 ≤ n) (hn32 : n ≤
 theorem csReturned_eq (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt256)
     (rest : List UInt256) (hpx : px < 2 ^ 256) :
     Csub.csReturnedState s (Csub.amResultMemory mem px px n) n n (UInt256.ofNat px)
-        (UInt256.ofNat 1084) (loopStack px k ret rest) =
+        (UInt256.ofNat 804) (loopStack px k ret rest) =
       retState s (dblStep px n mem) px k ret rest := by
   have hpxN : (UInt256.ofNat px).toNat = px := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hpx]
   simp only [Csub.csReturnedState, Csub.subReturnedState, Csub.subResultMemory, retState, dblStep, Csub.csResultMemory, hpxN]
+
+/-! ## Functional correctness against the concrete `ADDMOD` -/
 
 /-- One `ADDMOD(px, px, px)` call doubles the block at `px` modulo `m`. -/
 theorem dblStep_represents (mem : ByteArray) (px n mm x : Nat)
@@ -299,6 +320,5 @@ theorem double256_addmod_preserves (mem : ByteArray) (px n ptr cnt v : Nat)
   induction i with
   | zero => exact hrep
   | succ i ih => exact dblStep_preserves _ px n ptr cnt v hn hdisjT hdisjSubb hdisjDst ih
-
 
 end Challenge.Modexp.Submission.Proofs.Fast.Double

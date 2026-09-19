@@ -31,32 +31,32 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs
 
-@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2107 = 2600 := by
+@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2163 = 2669 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2113 = 2607 := by
+@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2169 = 2676 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2119 = 2614 := by
+@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2175 = 2683 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2125 = 2621 := by
+@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2181 = 2690 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2131 = 2628 := by
+@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2187 = 2697 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2137 = 2635 := by
+@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2193 = 2704 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 /-- The `DUP2` that ends `blk2982`; the E5 cache block starts at the next index (1872, pc 2531). -/
-@[simp] private theorem followupPC1871 : Artifact.submissionArtifact.instructionPC 2147 = 2648 := by
+@[simp] private theorem followupPC1871 : Artifact.submissionArtifact.instructionPC 2203 = 2717 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -93,7 +93,7 @@ theorem run_dispatch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
         dispState, hitState, frameState, pcDispatch, pcHit, outer, Exp.outer,
-        hcode, hrun, hzeroNat, haw, jumpDest1826, hm, FullBase.guardWord, hc,
+        hcode, hrun, hzeroNat, haw, jumpDestBail6, hm, FullBase.guardWord, hc,
         State.activeWordsAfterUInt256,
         Challenge.EvmProof.Word.literal_eq_ofNat,
         Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -110,47 +110,42 @@ theorem run_dispatch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
         dispState, missState, frameState, pcDispatch, pcMiss, outer, Exp.outer,
-        hcode, hrun, hzeroNat, haw, jumpDest1826, hm, FullBase.guardWord, hc,
+        hcode, hrun, hzeroNat, haw, jumpDestBail6, hm, FullBase.guardWord, hc,
         State.activeWordsAfterUInt256,
         Challenge.EvmProof.Word.literal_eq_ofNat,
         Challenge.EvmProof.Word.word_toNat_ofNat,
         Challenge.EvmProof.Word.succ_ofNat_mod,
         Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- **S1.** `blk1351`: the diverted recogniser miss.  The dispatcher's `PUSH2`
-operand names the six-word bail trampoline, so this class leaves the fast path
-here instead of seeding `R1` and running the conversion.  `JUMPDEST; PUSH1 0xee;
-JUMP` reads no memory, takes no branch, and consumes nothing beyond the target it
-pushes itself, so the outer frame crosses unchanged and only `pc` moves.
-
-The block this replaces (`blk2889`, the `R1` seeding block) is still located where
-it always was; what changed is that nothing reaches it.  Its lemma was not merely
-stale, it was FALSE -- `missState` is at pc 800 and `blk2889` is not. -/
-theorem pcTramp578 : Artifact.submissionArtifact.instructionPC 565 = 800 := by
+theorem pcTramp717 : Artifact.submissionArtifact.instructionPC 568 = 790 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-theorem pcTramp579 : Artifact.submissionArtifact.instructionPC 566 = 801 := by
+theorem pcTramp718 : Artifact.submissionArtifact.instructionPC 569 = 791 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-theorem pcTramp580 : Artifact.submissionArtifact.instructionPC 567 = 803 := by
+theorem pcTramp719 : Artifact.submissionArtifact.instructionPC 570 = 793 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
+/-- `bailBlock`: the full-base miss no longer seeds `R1` and converts.  The
+dispatcher's `JUMPI` names `BAIL6`, three data-independent instructions that land on
+`modexpBig` at pc 237 with the outer frame untouched; the wide-modulus fallback
+re-reads the header from calldata and is universal in the incoming memory and stack. -/
 theorem run_bailMiss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk1351
+    Challenge.EvmProof.Stepper.runLocatedBlock bailBlock
       (missState s mem n bsize esize msize) =
       some (bigCState s mem n bsize esize msize) := by
   simp (config := { maxSteps := 400000 })
-    [blk1351, opAt, pushAt, wfOp,
+    [bailBlock, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       missState, bigCState, frameState, pcMiss, pcBigC, outer, Exp.outer,
-      hcode, hrun, Setup.jumpDestBig, pcTramp578, pcTramp579, pcTramp580,
+      hcode, hrun, jumpDestBigC, pcTramp717, pcTramp718, pcTramp719,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,

@@ -5,10 +5,11 @@ set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
 
 /-!
-# Generic fallback from the fixed-exponent dispatcher
+# Bail from the fixed-exponent dispatcher
 
-Every nonmatching exponent copies `R1` to `ACC` and rejoins the unchanged
-generic exponent loop at its exact entry state.
+Every nonmatching exponent leaves the fast path through the six-word bail
+trampoline `BAIL6` (pc 1054) and lands on `modexpBig` (pc 237) with the outer
+frame untouched.  The generic exponent loop is no longer reachable from here.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectFallbackTrace
@@ -19,14 +20,10 @@ open Challenge.Modexp.Submission.Proofs.Fast.FixedExponentRoute
 open Challenge.Modexp.Submission.Proofs.Fast.FixedDirectStates
 open Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths
 
-/-- **S1b.** `bail`: the diverted recogniser miss.  All three recogniser checks
-push the trampoline, so this class leaves the fast path here instead of copying
-`R1` to `ACC` and rejoining the generic exponent loop.
-
-The block this replaces (`FixedDirectPaths.fallback`, the `MCOPY` rejoin) is gone
-from the artifact and its table was already removed; the lemma over it was not
-merely stale, it was FALSE -- the miss state is at pc 800 and that block is not
-located there. -/
+set_option linter.unusedSimpArgs false in
+/-- `bail`: the trampoline the three recogniser misses name.  It is three
+data-independent instructions that touch no memory and pop only the target the
+`JUMP` itself pushed, so the only field that moves is `pc`. -/
 theorem run_bail (s : State) (memory : ByteArray)
     (n bsize esize msize : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -42,8 +39,8 @@ theorem run_bail (s : State) (memory : ByteArray)
       FixedDirectStates.bailState, FixedDirectStates.bigCState, Exp.outer,
       hcode, hrun,
       FixedDirectPaths.jumpDestBigC,
-      FixedDirectPaths.pcTramp578, FixedDirectPaths.pcTramp579,
-      FixedDirectPaths.pcTramp580,
+      FixedDirectPaths.pcTramp717, FixedDirectPaths.pcTramp718,
+      FixedDirectPaths.pcTramp719,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
