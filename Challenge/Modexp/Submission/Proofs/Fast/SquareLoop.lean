@@ -54,8 +54,10 @@ def rowZero (s : State) (mem : ByteArray) (n : Nat) : ByteArray :=
 
 /-- The specialized first eight-limb row keeps the ordinary frame and changes only its entry PC. -/
 def rowZeroState (s : State) (a0 : UInt256) (M0 : ByteArray) (n : Nat)
-    (tl inv m0 m96 m64 m32 pdst ret : UInt256) (rest : List UInt256) : State :=
-  { rowState s a0 M0 n tl inv m0 m96 m64 m32 pdst ret rest 0 with pc := UInt256.ofNat 5072 }
+    (tl inv m0 m96 m64 m32 pdst ret : UInt256) (rest : List UInt256)
+    (ent : UInt256 := UInt256.ofNat (sqEnt n 0)) : State :=
+  { CiosCached.outState s M0 2368 n 0 (UInt256.ofNat 4268) ent inv m0
+      (tl :: m96 :: m64 :: m32 :: a0 :: pdst :: ret :: rest) with pc := UInt256.ofNat 5072 }
 
 theorem rowZero_eq_input (s : State) (mem : ByteArray) (n : Nat) (hn : n = 4 ∨ n = 8)
     (hguard : MachineState.readWord mem 2720 ≠ UInt256.ofNat 1) :
@@ -268,12 +270,13 @@ def gasSteps_roundMore (s : State) (M : ByteArray) (p c a mm : Nat)
     (hcpos : 0 < c) (hc16 : c + 1 ≤ 16)
     (hcount : MachineState.readWord M 2624 = UInt256.ofNat (c + 1))
     (h8 : p = 6) (hscr : R8RowZeroExact.ScratchZero M)
-    (h : Entry s M p a mm tl inv m0 m96 m64 m32) :
+    (h : Entry s M p a mm tl inv m0 m96 m64 m32)
+    (ent : UInt256 := UInt256.ofNat (sqEnt (p + 2) 0)) :
     Challenge.EvmProof.GasSteps
       (rowZeroState s a0 M (p + 2) tl inv m0 m96 m64 m32
-        (UInt256.ofNat 512) ret rest)
+        (UInt256.ofNat 512) ret rest ent)
       (rowZeroState s (sqLast (rowZero s M (p + 2)) (p + 2)) (SquareLoopMem.sqRound s (p + 2) c M) (p + 2)
-        tl inv m0 m96 m64 m32 (UInt256.ofNat 512) ret rest) := by
+        tl inv m0 m96 m64 m32 (UInt256.ofNat 512) ret rest (UInt256.ofNat 3868)) := by
   subst p
   have hcode' := hcode.trans TnM128GlobalBinding.bytecode_eq
   let env := TnM128SquareSteps.environment s hcode' hfork hrun hnp
@@ -287,10 +290,10 @@ def gasSteps_roundMore (s : State) (M : ByteArray) (p c a mm : Nat)
     ⟨⟨h.tlv, h.invw.symm, h.m0w.symm, h.inverseGuard⟩,
       ⟨h.m96w.symm, h.m64w.symm, h.m32w.symm⟩, h.minv', fun _ _ => rfl⟩
   have g1 := TnM128SquareFullSteps.square_steps s env M a0 tl inv m0 m96 m64 m32
-    (UInt256.ofNat 512) ret rest (by omega) hact hc hscr
+    (UInt256.ofNat 512) ret rest (by omega) hact hc hscr ent
   have hinput : TnM128SquareFirstSteps.input s M a0 tl inv m0 m96 m64 m32
-      (UInt256.ofNat 512) ret rest =
-      rowZeroState s a0 M 8 tl inv m0 m96 m64 m32 (UInt256.ofNat 512) ret rest := rfl
+      (UInt256.ofNat 512) ret rest ent =
+      rowZeroState s a0 M 8 tl inv m0 m96 m64 m32 (UInt256.ofNat 512) ret rest ent := rfl
   have hcountRows : MachineState.readWord X 2624 = UInt256.ofNat (c+1) := by
     dsimp only [X]
     rw [readWord_sqRowsCarry _ 8 2624 (by decide) (Or.inr (by decide)) 8 le_rfl,
@@ -316,9 +319,9 @@ def gasSteps_roundMore (s : State) (M : ByteArray) (p c a mm : Nat)
     simp only [TnM128Again.input, TnCacheFrameOps.frame, TnM128SquareExit.frameStack,
       retained, X, rows128, round128, framed, List.cons_append, List.nil_append]
   have ho : TnM128SquareFirstSteps.input s (SquareLoopMem.sqRound s 8 c M) prev
-      tl inv m0 m96 m64 m32 (UInt256.ofNat 512) ret rest =
+      tl inv m0 m96 m64 m32 (UInt256.ofNat 512) ret rest (UInt256.ofNat 3868) =
       rowZeroState s (sqLast (rowZero s M 8) 8) (SquareLoopMem.sqRound s 8 c M) 8
-        tl inv m0 m96 m64 m32 (UInt256.ofNat 512) ret rest := by
+        tl inv m0 m96 m64 m32 (UInt256.ofNat 512) ret rest (UInt256.ofNat 3868) := by
     rw [sqLast_eight]; rfl
   exact (((g1.cast hinput rfl).trans g2).trans g3).trans (g4.cast hi ho)
 
@@ -336,10 +339,11 @@ def gasSteps_roundLast (s : State) (M : ByteArray) (p a mm : Nat)
     (hcds : s.executionEnv.calldata.size < 2^256) (hodd : mm % 2 = 1)
     (hcount : MachineState.readWord M 2624 = UInt256.ofNat 1)
     (h8 : p = 6) (hscr : R8RowZeroExact.ScratchZero M)
-    (h : Entry s M p a mm tl inv m0 m96 m64 m32) :
+    (h : Entry s M p a mm tl inv m0 m96 m64 m32)
+    (ent : UInt256 := UInt256.ofNat (sqEnt (p + 2) 0)) :
     Challenge.EvmProof.GasSteps
       (rowZeroState s a0 M (p + 2) tl inv m0 m96 m64 m32
-        (UInt256.ofNat 512) ret rest)
+        (UInt256.ofNat 512) ret rest ent)
       { s with pc := UInt256.ofNat 772, stack := rest,
                memory := StagedProduct.memory s (SquareLoopMem.sqRound s (p + 2) 0 M) (p+2) } := by
   subst p
@@ -355,10 +359,10 @@ def gasSteps_roundLast (s : State) (M : ByteArray) (p a mm : Nat)
     ⟨⟨h.tlv, h.invw.symm, h.m0w.symm, h.inverseGuard⟩,
       ⟨h.m96w.symm, h.m64w.symm, h.m32w.symm⟩, h.minv', fun _ _ => rfl⟩
   have g1 := TnM128SquareFullSteps.square_steps s env M a0 tl inv m0 m96 m64 m32
-    (UInt256.ofNat 512) ret rest (by omega) hact hc hscr
+    (UInt256.ofNat 512) ret rest (by omega) hact hc hscr ent
   have hinput : TnM128SquareFirstSteps.input s M a0 tl inv m0 m96 m64 m32
-      (UInt256.ofNat 512) ret rest =
-      rowZeroState s a0 M 8 tl inv m0 m96 m64 m32 (UInt256.ofNat 512) ret rest := rfl
+      (UInt256.ofNat 512) ret rest ent =
+      rowZeroState s a0 M 8 tl inv m0 m96 m64 m32 (UInt256.ofNat 512) ret rest ent := rfl
   have hcountRows : MachineState.readWord X 2624 = UInt256.ofNat 1 := by
     dsimp only [X]
     rw [readWord_sqRowsCarry _ 8 2624 (by decide) (Or.inr (by decide)) 8 le_rfl,
@@ -408,30 +412,31 @@ def gasSteps_loop (s : State) (p mm : Nat) (tl inv m0 m96 m64 m32 ret : UInt256)
     (hfast : p + 2 = 4 ∨ p + 2 = 8)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hodd : mm % 2 = 1) (hmpos : 0 < mm) (h8 : p = 6) :
-    ∀ (k : Nat) (M : ByteArray) (a : Nat) (a0 : UInt256), 1 ≤ k → k ≤ 16 →
+    ∀ (k : Nat) (M : ByteArray) (a : Nat) (a0 ent : UInt256), 1 ≤ k → k ≤ 16 →
       MachineState.readWord M 2624 = UInt256.ofNat k →
       R8RowZeroExact.ScratchZero M →
       Entry s M p a mm tl inv m0 m96 m64 m32 →
       Challenge.EvmProof.GasSteps
         (rowZeroState s a0 M (p + 2) tl inv m0 m96 m64 m32
-          (UInt256.ofNat 512) ret rest)
+          (UInt256.ofNat 512) ret rest ent)
         { s with pc := UInt256.ofNat 772, stack := rest,
                  memory := StagedProduct.memory s (SquareLoopMem.sqRunMem s (p + 2) k M) (p+2) } := by
   intro k
   induction k with
-  | zero => intro M a a0 hk; exact absurd hk (by omega)
+  | zero => intro M a a0 ent hk; exact absurd hk (by omega)
   | succ j ih =>
-      intro M a a0 _ hk16 hcount hscr h
+      intro M a a0 ent _ hk16 hcount hscr h
       match j, ih with
       | 0, _ =>
           exact gasSteps_roundLast s M p a mm a0 tl inv m0 m96 m64 m32 ret rest hcap hrun hcode
-            hfork hnp hact hn32 hfast hcds hodd hcount h8 hscr h
+            hfork hnp hact hn32 hfast hcds hodd hcount h8 hscr h ent
       | (i + 1), ih =>
           exact (gasSteps_roundMore s M p (i + 1) a mm a0 tl inv m0 m96 m64 m32 ret rest hcap
-            hrun hcode hfork hnp hact hn32 hfast hcds (by omega) (by omega) hcount h8 hscr h).trans
+            hrun hcode hfork hnp hact hn32 hfast hcds (by omega) (by omega) hcount h8 hscr h ent).trans
             (ih (SquareLoopMem.sqRound s (p + 2) (i + 1) M)
               (SquareLoopMem.sqRoundValue s (p+2) (i+1) M mm)
               (sqLast (rowZero s M (p + 2)) (p + 2))
+              (UInt256.ofNat 3868)
               (by omega) (by omega)
               (SquareLoopMem.sqRound_count s M (p + 2) (i + 1) (by omega) hn32 hfast (by omega))
               (SquareLoopMem.scratchZero_sqRound s (p + 2) (i + 1) M (by omega) hn32)
@@ -855,7 +860,7 @@ def gasSteps_squareLoop (s : State) (mem : ByteArray) (p a mm k : Nat)
       (MachineState.readWord mem 96) (MachineState.readWord mem 64)
       (MachineState.readWord mem 32) ret rest hcap hrun hcode hfork hnp hact hn32 hfast hcds
       hodd hmpos h6 k (rowZero s (stage mem 512 (p + 2)) (p + 2)) a
-      (UInt256.ofNat (512 + 32 * (p + 2) - 32)) hk hk16
+      (UInt256.ofNat (512 + 32 * (p + 2) - 32)) (UInt256.ofNat (sqEnt (p + 2) 0)) hk hk16
       ((hz 2624 (Or.inr le_rfl)).trans ((hs 2624 (Or.inr (by decide))).trans hcount))
       (R8RowZeroExact.scratchZero_mpZeroed s _ (p + 2) (by omega)) hentryZ)
 
