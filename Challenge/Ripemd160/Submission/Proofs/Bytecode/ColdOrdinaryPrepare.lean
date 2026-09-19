@@ -32,15 +32,15 @@ theorem pointer_eq (input : ByteArray) (i : Nat) (hfit : CalldataFits input)
 def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
     (hmask : rest.head? = some (UInt256.ofNat 4294967295))
     (hstack : rest.length ≤ 896) (hrun : s.halt = .Running)
-    (hsmall : s.executionEnv.calldata.size < 5211)
+    (hsmall : s.executionEnv.calldata.size < 5212)
     (hactive : 35 ≤ s.activeWords.toNat)
     (hfit : s.executionEnv.calldata.size < 2 ^ 256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4701, stack := ret :: rest}
+    GasSteps {s with pc := UInt256.ofNat 4702, stack := ret :: rest}
       {s with
-        pc := UInt256.ofNat 859
+        pc := UInt256.ofNat 858
         stack := ret :: rest
         memory := StaggerTablePad.padRealResult s.memory
           (UInt256.ofNat s.executionEnv.calldata.size)} := by
@@ -53,8 +53,8 @@ def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
     {s with memory := (StaggerTablePad.padRealChain s.memory
       (UInt256.ofNat s.executionEnv.calldata.size))}
     _ (ret :: rest) (by simp only [List.length_cons]; omega) hrun hz hcode hfork hnp
-  -- The branch is taken exactly when `n < 5211` on the aligned hit route.
-  -- That existing aligned-domain fact is what `padRealChain_eq` consumes.  Above `2 ^ 29`
+  -- The branch is taken exactly when `n < 5212`, which is the conservative proxy for
+  -- `highDirty n = 0`; that hypothesis is what `padRealChain_eq` consumes.  Above `2 ^ 29`
   -- this block runs the high stores as well and never reaches here.
   have heq : StaggerTablePad.padRealChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)
       = StaggerTablePad.padRealResult s.memory (UInt256.ofNat s.executionEnv.calldata.size) :=
@@ -71,7 +71,7 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := LoopCompletionControl.blockPC input i, stack := frame h (DriverTrace.blockOffsetWord i) limit rho}
-      {scheduledState s i with pc := UInt256.ofNat 859, stack := frame h (DriverTrace.blockOffsetWord i) limit rho} := by
+      {scheduledState s i with pc := UInt256.ofNat 858, stack := frame h (DriverTrace.blockOffsetWord i) limit rho} := by
   let off := DriverTrace.blockOffsetWord i
   let r := rest h off limit rho
   have hrs : r.length ≤ 896 := by simp only [r, rest, List.length_append, List.length_cons, List.length_nil]; omega
@@ -83,20 +83,13 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
       (by simp only [frame, List.length_append, List.length_cons, List.length_nil]; omega)
       hr hcode hfork hnp
     have ha : 35 ≤ s.activeWords.toNat := ctx.active
-    have hsmall : input.size < 5211 := by
-      have hlt := hordinary hh
-      have hmod : input.size % 64 = 0 := by
-        rw [hh]
-        omega
-      omega
-    have gb := gasSteps_padAll s Paired144WordRound.factorPlusWord r (by rfl) hrs hr
-      (by rw [ctx.calldata]; exact hsmall) (by omega) hf hcode hfork hnp
+    have gb := gasSteps_padAll s Paired144WordRound.factorPlusWord r (by rfl) hrs hr (by rw [ctx.calldata]; exact hordinary hh) (by omega) hf hcode hfork hnp
     have hhs : s.executionEnv.calldata.size = DriverTrace.blockOffset i := by rw [ctx.calldata]; exact hh
     rw [scheduledState_hit s i hhs]
     let qh : State :=
       {s with memory := StaggerTablePad.padRealResult s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
-    have gb' : GasSteps {s with pc := UInt256.ofNat 4701, stack := frame h off limit rho}
-        {qh with pc := UInt256.ofNat 859, stack := frame h off limit rho} := by
+    have gb' : GasSteps {s with pc := UInt256.ofNat 4702, stack := frame h off limit rho}
+        {qh with pc := UInt256.ofNat 858, stack := frame h off limit rho} := by
       apply gb.cast rfl
       rfl
     simpa only [LoopCompletionControl.blockPC, DriverTrace.blockOffset, if_pos hh] using gp.trans gb'

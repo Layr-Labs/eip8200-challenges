@@ -11,7 +11,7 @@ def gasSteps_entry (input : ByteArray) (rho : List UInt256) (hcap : rho.length �
     GasSteps (StackTail.append (Execution.atPC input 342) rho)
       (StackTail.append (Main.initializedState input) rho) := by
   apply StackTail.gasSteps Execution.path_3ee rho
-  · change 0 + rho.length + 1 < 1024
+  · change 0 + rho.length + 0 < 1024
     omega
   · simp [Execution.path_3ee, DataStepper.runLocatedBlock, DataStepper.runLocated,
       DataStepper.runInstr, Execution.atPC, Main.initializedState, Execution.mainStart,

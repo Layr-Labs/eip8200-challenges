@@ -85,6 +85,42 @@ theorem result_lanes (m r : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (hr : 
     rw [resultV2_shape m lo hi hc, result_shape r lo hi hr, h1]
     exact eval_memFree _ _ _ _ _ f1
 
+theorem result_terminal_projected (m r : ByteArray) (lo hi : UInt256)
+    (hc : ClearV2 m) (hr : Clear r) :
+    UInt256.land (MachineState.readWord (resultMemoryV2 m lo hi) 594)
+        Pair13PoolRaw.poolMask =
+      UInt256.land (MachineState.readWord (resultMemory true r lo hi) 594)
+        Pair13PoolRaw.poolMask := by
+  have hlanes := PoolFacts.result_lanes m r lo hi hc hr 33 (by decide)
+  have hlo :
+      (MachineState.readWord (resultMemoryV2 m lo hi) 594).toNat % 2^32 =
+        (MachineState.readWord (resultMemory true r lo hi) 594).toNat % 2^32 := by
+    simpa only [show 18 * 33 = 594 by norm_num] using hlanes.1
+  have hhi :
+      (MachineState.readWord (resultMemoryV2 m lo hi) 594).toNat / 2^144 % 2^32 =
+        (MachineState.readWord (resultMemory true r lo hi) 594).toNat / 2^144 % 2^32 := by
+    simpa only [show 18 * 33 = 594 by norm_num] using hlanes.2
+  have hraw :
+      (MachineState.readWord (resultMemoryV2 m lo hi) 594).toNat &&&
+          95780971281817308448866066055358605703522837925462015 =
+        2^144 * ((MachineState.readWord (resultMemoryV2 m lo hi) 594).toNat /
+          2^144 % 2^32) +
+          ((MachineState.readWord (resultMemoryV2 m lo hi) 594).toNat % 2^32) :=
+    Pair13PoolRaw.land_poolMask_nat _ _ _ (by omega) (by omega) rfl rfl
+  have href :
+      (MachineState.readWord (resultMemory true r lo hi) 594).toNat &&&
+          95780971281817308448866066055358605703522837925462015 =
+        2^144 * ((MachineState.readWord (resultMemory true r lo hi) 594).toNat /
+          2^144 % 2^32) +
+          ((MachineState.readWord (resultMemory true r lo hi) 594).toNat % 2^32) :=
+    Pair13PoolRaw.land_poolMask_nat _ _ _ (by omega) (by omega) rfl rfl
+  apply Word.word_ext
+  rw [Word.word_toNat_land, Word.word_toNat_land,
+    Pair13PoolRaw.poolMask, Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (by norm_num :
+      95780971281817308448866066055358605703522837925462015 < 2^256),
+    hraw, href, hlo, hhi]
+
 theorem result_slack (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (j : Nat) (hj : j < 61) :
     (MachineState.readWord (resultMemoryV2 m lo hi) (18*j)).toNat % 2^144 + 2^40 ≤ 2^144 := by
   obtain ⟨hl,hu,hz⟩ := PoolCertificatesV2.slack_sources ⟨j,hj⟩
@@ -97,17 +133,6 @@ theorem result_clear (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) :
   intro a ha
   rw [resultV2_shape m lo hi hc, PoolCertificatesV2.clear_sources a ha]
   rfl
-
-theorem result_terminal (m r : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (hr : Clear r) :
-    MachineState.readWord (resultMemoryV2 m lo hi) 594 =
-      MachineState.readWord (resultMemory true r lo hi) 594 := by
-  apply Word.word_ext
-  rw [Bytes.readWord_toNat, Bytes.readWord_toNat]
-  apply StaggerTableMemory.bytesToNatPadded_congrOffset
-  intro k hk
-  obtain ⟨h, f⟩ := PoolCertificatesV2.terminal_sources ⟨k,hk⟩
-  rw [resultV2_shape m lo hi hc, result_shape r lo hi hr, h]
-  exact eval_memFree _ _ _ _ _ f
 
 #print axioms result_lanes
 #print axioms result_slack

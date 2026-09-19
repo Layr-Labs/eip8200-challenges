@@ -112,9 +112,8 @@ theorem fanV2_shape (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (a : Nat)
 
 def loadSourceV2 (i j : Nat) : Source := fanSourceV2 (Pair13PoolRaw.poolAddrV2 i+j)
 
-/-- Only word 11 is masked; everything else is stored raw. -/
-def poolSourceV2 (i j : Nat) : Source :=
-  if decide (i ∈ [11]) then maskSource j (loadSourceV2 i j) else loadSourceV2 i j
+/-- All pool words are stored raw. The terminal round restores its lane mask at the load site. -/
+def poolSourceV2 (i j : Nat) : Source := loadSourceV2 i j
 
 theorem poolV2_shape (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m)
     (i j : Nat) (hi16 : i < 16) (hj : j < 32) :

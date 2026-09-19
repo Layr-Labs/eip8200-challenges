@@ -16,10 +16,6 @@ theorem lane_sources : ∀ j : Fin 61, ∀ k : Fin 4,
 
 theorem clear_sources : ∀ a ∈ zeroAddressesV2, resultSourceV2 a = .zero := by decide
 
-theorem terminal_sources : ∀ k : Fin 32,
-    resultSourceV2 (594+k.val) = resultSource true (594+k.val) ∧
-    Source.memFree (resultSource true (594+k.val)) = true := by decide
-
 /-- One provably-zero byte among word bytes 14..26 of every slot: word 11's masked gap or one
 of the bytes the single stores and four copies leave zero in a raw word's gap. -/
 def zeroByte : Array Nat := #[18,26,14,26,26,26,22,14,16,18,14,22,18,16,14,14,14,14,18,14,18,14,26,18,14,26,22,22,22,26,22,26,14,14,14,18,14,18,18,14,22,26,22,14,22,14,22,14,14,14,22,14,26,14,14,14,14,14,18,22,22]
