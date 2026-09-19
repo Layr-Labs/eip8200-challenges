@@ -94,7 +94,7 @@ theorem exact_bytes : assembleBytes normalTemplate = [
   68, 82, 96, 252, 82, 95, 82, 97, 1, 194, 82, 96,
   162, 82
 ] := by decide
-theorem end_pc : pcAfter (UInt256.ofNat 487) normalTemplate = UInt256.ofNat 860 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 486) normalTemplate = UInt256.ofNat 859 := by decide
 #print axioms run_normal
 #print axioms exact_bytes
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13NormalTrace
