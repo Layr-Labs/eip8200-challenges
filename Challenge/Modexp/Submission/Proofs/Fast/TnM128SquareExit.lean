@@ -36,14 +36,14 @@ def sqExitProgram : List Instr :=
    .push 2 2624, .op .MSTORE, .push 2 4528, .op .JUMPI]
 
 def lastProgram : List Instr :=
-  [.op .POP, .op .POP, .push 2 3481, .push 2 2368, .push 2 4528, .op .JUMP]
+  [.push 4 3481, .op (.Swap ⟨1, by decide⟩), .op .POP, .push 2 4528, .op .JUMP]
 
 def sqExitBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 4208 sqExitProgram :=
   WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3355 12 4208 sqExitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def lastBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 4230 lastProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3367 6 4230 lastProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3367 5 4230 lastProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDestLazy : Decode.isValidJumpDest TnM128Candidate.bytecode 4528 = true :=
@@ -141,7 +141,7 @@ theorem run_sqExit_last (tn m128 : UInt256) (s : State) (mem : ByteArray) (n : N
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- `last`: drop the unused call pair, then call the CSUB guard as a subroutine with
+/-- `last`: replace the continuation and retain the destination, then call the CSUB guard with
 `[pdst, after]` on top of the retained frame. -/
 theorem run_last (tn m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
