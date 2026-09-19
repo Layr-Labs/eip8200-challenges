@@ -42,24 +42,41 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
       s.executionEnv.fork s.executionEnv.codeAddr = false := PadSkipEntry.entryState_noPrecompile input
   have hi : s.executionEnv.calldata = input := PadSkipEntry.entryState_calldata input
   have heta := PaddingTrace.entryState_eta input
-  have gx : GasSteps s {s with pc := UInt256.ofNat 485, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (LoopCompletionControl.limit input) maskRho} := by
-    by_cases hz : input.size % 64 = 0
-    · have hs : s = {s with pc := UInt256.ofNat 485, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (UInt256.ofNat input.size) maskRho} := by
+  have gp := PaddingTrace.gasSteps_pad input hfit hn32 entryPrefix
+  by_cases hz : input.size % 64 = 0
+  · have gx : GasSteps s (
+        {s with pc := UInt256.ofNat 485,
+          stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0)
+            (LoopCompletionControl.limit input) maskRho}) := by
+      have hs : s = {s with pc := UInt256.ofNat 485,
+          stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0)
+            (UInt256.ofNat input.size) maskRho} := by
         simpa only [if_pos hz, PaddingTrace.initialFrame, maskRho] using heta
       exact GasSteps.cast (GasSteps.refl s) rfl (by
         simpa only [LoopCompletionControl.limit, LoopCompletionControl.limitNat, if_pos hz] using hs)
-    · have hs : s = {s with pc := UInt256.ofNat 485, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (Padding.paddedWord input) maskRho} := by
+    have gj := StaggerPersistentLoopSites.gasSteps_join s
+      (StaggerPersistentFrame.frame h (UInt256.ofNat 0) (LoopCompletionControl.limit input) maskRho)
+      (by simp [StaggerPersistentFrame.frame, maskRho]) hr hc hf hn
+    have g := gp.trans (gx.trans gj)
+    simpa only [loopState, LoopCompletionControl.blockPC, Nat.zero_mul,
+      if_neg (show input.size ≠ 0 by omega), offsetWord] using g
+  · have gx : GasSteps s (
+        {s with pc := UInt256.ofNat 486,
+          stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0)
+            (LoopCompletionControl.limit input) maskRho}) := by
+      have hs : s = {s with pc := UInt256.ofNat 486,
+          stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0)
+            (Padding.paddedWord input) maskRho} := by
         simpa only [if_neg hz, PaddingTrace.padFrame, maskRho] using heta
       exact GasSteps.cast (GasSteps.refl s) rfl (by
         simpa only [LoopCompletionControl.limit, LoopCompletionControl.limitNat, if_neg hz,
           Padding.paddedWord_eq input hfit] using hs)
-  have gj := StaggerPersistentLoopSites.gasSteps_join s
-    (StaggerPersistentFrame.frame h (UInt256.ofNat 0) (LoopCompletionControl.limit input) maskRho)
-    (by simp [StaggerPersistentFrame.frame, maskRho]) hr hc hf hn
-  have gp := PaddingTrace.gasSteps_pad input hfit hn32 entryPrefix
-  have g := gp.trans (gx.trans gj)
-  simpa only [loopState, LoopCompletionControl.blockPC, Nat.zero_mul,
-    if_neg (show input.size ≠ 0 by omega), offsetWord] using g
+    have gj := StaggerPersistentLoopSites.gasSteps_loop_join s
+      (StaggerPersistentFrame.frame h (UInt256.ofNat 0) (LoopCompletionControl.limit input) maskRho)
+      (by simp [StaggerPersistentFrame.frame, maskRho]) hr hc hf hn
+    have g := gp.trans (gx.trans gj)
+    simpa only [loopState, LoopCompletionControl.blockPC, Nat.zero_mul,
+      if_neg (show input.size ≠ 0 by omega), offsetWord] using g
 
 def result (input : ByteArray) (states : Nat → State) (hashes : Nat → Compression.HashState) : State :=
   StaggerPersistentSerialize.result (states (DriverTrace.blockCount input))
