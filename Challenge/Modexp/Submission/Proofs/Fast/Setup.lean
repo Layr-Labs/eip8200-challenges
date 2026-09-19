@@ -1567,7 +1567,7 @@ theorem run_setupC (s : State) (input : ByteArray) (m0 : Nat)
 here directly instead of calling the Montgomery-form conversion first. -/
 private theorem jumpDest3296 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2543 = true :=
-  Artifact.isValidJumpDest_index 2072 (by rfl)
+  Artifact.isValidJumpDest_index 2069 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupD (s : State) (input : ByteArray) (m0 : Nat)

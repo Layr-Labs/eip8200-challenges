@@ -12,23 +12,23 @@ open WindowNibbleKernel WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro CiosCached
 
-def prefixProgram : List Instr := TnM128FusionFrame.frameProgram 3543 772
+def prefixProgram : List Instr := TnM128FusionFrame.frameProgram 3543 4158
 def clearProgram : List Instr :=
   [.push 2 2016, .op (.Dup ⟨10, by decide⟩), .op .SUB,
    .op .CALLDATASIZE, .push 2 2048, .op .CALLDATACOPY]
 
 def prefixBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3481 prefixProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2775 36 3481 prefixProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2772 36 3481 prefixProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def clearBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3533 clearProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2811 6 3533 clearProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2808 6 3533 clearProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def rowReady (s : State) (mem : ByteArray) (n : Nat)
     (tl inv m0 m96 m64 m32 : UInt256) (rest : List UInt256) : State :=
   TnM128Setup.outState s mem 256 n 0 (UInt256.ofNat 3543) (TnM128Setup.l1Target n) inv m0
     (tl :: m96 :: m64 :: m32 :: UInt256.ofNat (2368+32*n-32) ::
-      UInt256.ofNat 256 :: UInt256.ofNat 772 :: rest)
+      UInt256.ofNat 256 :: UInt256.ofNat 4158 :: rest)
 
 def prefixState (s : State) (mem : ByteArray) (n : Nat)
     (tl inv m0 m96 m64 m32 : UInt256) (rest : List UInt256) : State :=
@@ -47,7 +47,7 @@ theorem run_prefix (tn : UInt256) (s : State) (mem : ByteArray) (n : Nat)
       (ent := ent) (neg := tn) (mask := allOnes) (ent2 := MachineState.readWord mem 128)
       (inv := inv) (m0 := m0) (tl := _) (m96 := m96) (m64 := m64) (m32 := m32)
       (aprev := aprev) (dst := pdst) (ret := ret) (head := UInt256.ofNat 3543)
-      (finish := UInt256.ofNat 772) (rest := rest) (by omega)
+      (finish := UInt256.ofNat 4158) (rest := rest) (by omega)
 
 theorem run_clear (s : State) (mem : ByteArray) (n : Nat)
     (tl inv m0 m96 m64 m32 : UInt256) (rest : List UInt256)
