@@ -34,25 +34,25 @@ def h1Program : List Instr :=
 def h1FallProgram : List Instr := [.push 2 5072, .op .JUMP]
 
 def h1Block : Block Artifact.submissionArtifact .Osaka 4576 h1Program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3620 5 4576 h1Program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3619 5 4576 h1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
 def h1FallBlock : Block Artifact.submissionArtifact .Osaka 4585 h1FallProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3625 2 4585 h1FallProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3624 2 4585 h1FallProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def h2Block : Block Artifact.submissionArtifact .Osaka 4242 hookProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3373 6 4242 hookProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3372 6 4242 hookProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDestR4 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4589 = true :=
-  Artifact.isValidJumpDest_index 3627 (by rfl)
+  Artifact.isValidJumpDest_index 3626 (by rfl)
 
 theorem jumpDestH2 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4242 = true :=
-  Artifact.isValidJumpDest_index 3373 (by rfl)
+  Artifact.isValidJumpDest_index 3372 (by rfl)
 
 theorem jumpDestRow : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4268 = true :=
-  Artifact.isValidJumpDest_index 3389 (by rfl)
+  Artifact.isValidJumpDest_index 3388 (by rfl)
 
 theorem cond_four : UInt256.isTrue ((UInt256.ofNat 2208).eq (UInt256.ofNat 2208)) := by decide
 
@@ -148,7 +148,7 @@ theorem run_h1FallJump (s : State) (mem : ByteArray)
   have hc16 : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hjd : Decode.isValidJumpDest s.executionEnv.code 5072 = true := by
-    rw [hcode]; exact Artifact.isValidJumpDest_index 4058 (by rfl)
+    rw [hcode]; exact Artifact.isValidJumpDest_index 4057 (by rfl)
   simp [h1FallProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     frameAt, frameStack, pcH1Fall, hc16, hc17, hjd, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
