@@ -20,7 +20,7 @@ def paddedState (input : ByteArray) (i : Nat) : State :=
 def tableState (input : ByteArray) (i : Nat) : State :=
   {paddedState input i with memory:=ColdHighReady.tableMemory input i, activeWords:=DenseScheduleTemplate.loadedActiveWords (paddedState input i) (UInt256.ofNat (messagePointer i))}
 
-theorem large_branch (input : ByteArray) (hfit : CalldataFits input) (hlarge : 5212 ≤ input.size) :
+theorem large_branch (input : ByteArray) (hfit : CalldataFits input) (hlarge : 5225 ≤ input.size) :
     ¬UInt256.isTrue (StaggerPad.highZero (UInt256.ofNat input.size)) := by
   intro h
   have hn := (StaggerPad.highZero_true_iff _).mp h
