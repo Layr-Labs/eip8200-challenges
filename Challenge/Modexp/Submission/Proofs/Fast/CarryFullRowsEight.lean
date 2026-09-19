@@ -39,7 +39,8 @@ opaque gasSteps_rowsEight (s : State) (mem : ByteArray) (pa pb : Nat)
     Challenge.EvmProof.GasSteps
       (outState s (mpZeroed s mem 8) pb 8 0 (UInt256.ofNat 3543) (l1Target 8) inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
-      (mpCsubState s (rowsCarry (mpZeroed s mem 8) pa pb 8 8) pdst ret rest) := by
+      (mpCsubState s (rowsCarry (mpZeroed s mem 8) pa pb 8 8) pdst ret
+        (TnM128InitialMultiply.retainedFrame s mem pa pb 8 tl inv m0 aEnd m96 m64 m32 pdst ret rest)) := by
   have hcode' : s.executionEnv.code = TnM128Candidate.bytecode :=
     hcode.trans TnM128GlobalBinding.bytecode_eq
   have env := TnM128SquareSteps.environment s hcode' hfork hrun hnp
@@ -48,6 +49,7 @@ opaque gasSteps_rowsEight (s : State) (mem : ByteArray) (pa pb : Nat)
     hpaFit hpb hpbFit hminv hc ⟨he.word96, he.word64, he.word32⟩ hAend hsnapshot
   simpa only [outState, TnM128Setup.outState, TnM128Setup.zeroTn,
     l1Target, TnM128Setup.l1Target,
-    mpCsubState, CiosCachedMacCore.framed, List.cons_append, List.nil_append] using g
+    mpCsubState, TnM128InitialMultiply.retainedFrame,
+    CiosCachedMacCore.framed, List.cons_append, List.nil_append] using g
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryFull

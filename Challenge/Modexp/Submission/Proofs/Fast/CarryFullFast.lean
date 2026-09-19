@@ -2,6 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.CarryFullSpecializedFour
 import Challenge.Modexp.Submission.Proofs.Fast.CarryFullSpecializedEight
 import Challenge.Modexp.Submission.Proofs.Fast.CarryFullBase
 import Challenge.Modexp.Submission.Proofs.Fast.CarryEntryLemmas
+import Challenge.Modexp.Submission.Proofs.Fast.GenericReturnAdapter
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -58,12 +59,61 @@ open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch
 open CiosCached CiosCachedMidMemory CarryIface
 open CarryRowModel CarryResult StagedOperand
+open TnM128RowSteps
+
+def retainedFrameFastAt (s : State) (mem : ByteArray) (pa pb n : Nat)
+    (pdst ret : UInt256) (rest : List UInt256) : List UInt256 :=
+  TnM128InitialMultiply.retainedFrame s mem pa pb n
+    (MachineState.readWord mem 2784) (MachineState.readWord mem 2720)
+    (MachineState.readWord mem (32*n-32)) (UInt256.ofNat (pa+32*n-32))
+    (MachineState.readWord mem 96) (MachineState.readWord mem 64)
+    (MachineState.readWord mem 32) pdst ret rest
+
+def retainedFrameFast (s : State) (mem : ByteArray) (pa pb n : Nat)
+    (pdst : UInt256) : List UInt256 :=
+  retainedFrameFastAt s (stage mem pa n) pa pb n pdst
+    (UInt256.ofNat GenericReturnAdapter.genericShimPC) []
+
+private theorem retainedFrameFast_eq (s : State) (mem : ByteArray) (pa pb n : Nat)
+    (pdst : UInt256) (hn : n ≤ 8) :
+    retainedFrameFast s mem pa pb n pdst =
+      TnM128InitialMultiply.retainedFrame s (stage mem pa n) pa pb n
+        (MachineState.readWord mem 2784) (MachineState.readWord mem 2720)
+        (MachineState.readWord mem (32*n-32)) (UInt256.ofNat (pa+32*n-32))
+        (MachineState.readWord mem 96) (MachineState.readWord mem 64)
+        (MachineState.readWord mem 32) pdst
+        (UInt256.ofNat GenericReturnAdapter.genericShimPC) [] := by
+  unfold retainedFrameFast retainedFrameFastAt
+  rw [read_stage_outside mem pa n 2784 (Or.inr (by omega)),
+    read_stage_outside mem pa n 2720 (Or.inr (by omega)),
+    read_stage_outside mem pa n (32*n-32) (Or.inl (by omega)),
+    read_stage_outside mem pa n 96 (Or.inl (by omega)),
+    read_stage_outside mem pa n 64 (Or.inl (by omega)),
+    read_stage_outside mem pa n 32 (Or.inl (by omega))]
+
+theorem genericShim_jumpDest : Decode.isValidJumpDest
+    Challenge.Modexp.submissionBytecode
+    (UInt256.ofNat GenericReturnAdapter.genericShimPC).toNat = true := by
+  change Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2383 = true
+  exact Artifact.isValidJumpDest_index 1964 (by rfl)
+
+theorem retainedFrameFast_length (s : State) (mem : ByteArray) (pa pb n : Nat)
+    (pdst : UInt256) :
+    (retainedFrameFast s mem pa pb n pdst).length = 16 := by
+  simp [retainedFrameFast, retainedFrameFastAt, TnM128InitialMultiply.retainedFrame,
+    TnCacheFrameOps.frame]
+
+theorem retainedFrameFastAt_length (s : State) (mem : ByteArray) (pa pb n : Nat)
+    (pdst ret : UInt256) (rest : List UInt256) :
+    (retainedFrameFastAt s mem pa pb n pdst ret rest).length = 16 + rest.length := by
+  simp [retainedFrameFastAt, TnM128InitialMultiply.retainedFrame,
+    TnCacheFrameOps.frame]
 
 /-- `gasSteps_toCsub` restricted to eligible widths: `mul entry` → the four- or eight-limb rows →
 the `CSUB` entry.  The `¬ eligible` branch (the generic `MONPRO` fallback) is gone. -/
 opaque gasSteps_toCsubFast (E : EntryLemmas) (s : State) (mem : ByteArray)
     (pa pb n : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 991) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -79,23 +129,31 @@ opaque gasSteps_toCsubFast (E : EntryLemmas) (s : State) (mem : ByteArray)
     (he : eligible mem n) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
-      (mpCsubState s (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) pdst ret rest) := by
+      (mpCsubState s (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) pdst
+        (UInt256.ofNat GenericReturnAdapter.genericShimPC)
+        (retainedFrameFast s mem pa pb n pdst ++ ret :: rest)) := by
   have hprepared : eligible (mpZeroed s (inputMemory mem pa n) n) n :=
     (eligible_zeroed s _ n hn32).2 ((eligible_inputMemory mem pa n).2 he)
   rw [selectedRows, if_pos hprepared, inputMemory, if_pos he]
   by_cases hn4 : n = 4
   · subst n
-    exact gasSteps_specializedFour E s mem pa pb pdst ret rest hcap hrun hcode
-      hfork hnp hact hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv he.2
+    simpa [retainedFrameFast_eq s mem pa pb 4 pdst (by decide),
+      TnM128InitialMultiply.retainedFrame,
+      TnCacheFrameOps.frame] using
+      (gasSteps_specializedFour E s mem pa pb pdst ret rest hcap hrun hcode
+        hfork hnp hact hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv he.2)
   · have hn8 : n = 8 := he.1.resolve_left hn4
     subst n
-    exact gasSteps_specializedEight E s mem pa pb pdst ret rest hcap hrun hcode
-      hfork hnp hact hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv he.2
+    simpa [retainedFrameFast_eq s mem pa pb 8 pdst (by decide),
+      TnM128InitialMultiply.retainedFrame,
+      TnCacheFrameOps.frame] using
+      (gasSteps_specializedEight E s mem pa pb pdst ret rest hcap hrun hcode
+        hfork hnp hact hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv he.2)
 
 /-- `gasSteps_monproCsub` for eligible widths: through the rows and the final subtraction. -/
 opaque gasSteps_monproCsubFast (E : EntryLemmas) (s : State) (mem : ByteArray)
     (pa pb n : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 991) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -115,27 +173,39 @@ opaque gasSteps_monproCsubFast (E : EntryLemmas) (s : State) (mem : ByteArray)
     (he : eligible mem n) :
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
-      (Csub.csReturnedState s (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n n pdst ret
-        rest) :=
-  (gasSteps_toCsubFast E s mem pa pb n pdst ret rest (by omega) hrun hcode hfork hnp hact
-      hn32 hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv he).trans
-    (Csub.gasSteps_csub s (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n pdst ret rest
-      (by omega) hcode hfork hrun hnp hact hn hn32 hjump
+      (Csub.csReturnedState s (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n n pdst
+        (UInt256.ofNat GenericReturnAdapter.genericShimPC)
+        (retainedFrameFast s mem pa pb n pdst ++ ret :: rest)) := by
+  have hto := gasSteps_toCsubFast E s mem pa pb n pdst ret rest hcap hrun hcode hfork hnp hact
+      hn32 hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv he
+  have hsuffix :
+      (retainedFrameFast s mem pa pb n pdst ++ ret :: rest).length ≤ 1008 := by
+    rw [List.length_append, retainedFrameFast_length]
+    simp
+    omega
+  have hcsub := Csub.gasSteps_csub s
+      (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n pdst
+      (UInt256.ofNat GenericReturnAdapter.genericShimPC)
+      (retainedFrameFast s mem pa pb n pdst ++ ret :: rest)
+      hsuffix hcode hfork hrun hnp hact hn hn32 genericShim_jumpDest
       ((readWord_selected_preserved s mem pa pb n n 2752 hn32 (by omega)).trans hml)
       ((readWord_selected_preserved s mem pa pb n n 2784 hn32 (by omega)).trans htl)
-      ((Csub.csStep_readWord_disjoint (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n 2688
+      ((Csub.csStep_readWord_disjoint
+          (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n 2688
             (by omega) (Or.inr (by omega)) n (Nat.le_refl n)).trans
         ((readWord_selected_preserved s mem pa pb n n 2688 hn32 (by omega)).trans hs32))
       hdstFit
       (by
-        rw [Csub.csStep_readWord_disjoint (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n
+        rw [Csub.csStep_readWord_disjoint
+          (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n
           2080 (by omega) (Or.inr (by omega)) n (Nat.le_refl n)]
-        exact htn) he.1)
+        exact htn) he.1
+  simpa only [mpCsubState, Csub.csEntryState] using hto.trans hcsub
 
 /-- `gasSteps_monproFullOf` for eligible widths. -/
 opaque gasSteps_monproFullOfFast (E : EntryLemmas) (s : State) (mem : ByteArray)
     (pa pb p : Nat) (a b mm : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 991) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -159,37 +229,90 @@ opaque gasSteps_monproFullOfFast (E : EntryLemmas) (s : State) (mem : ByteArray)
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
       (Csub.csReturnedState s
-        (selectedRows (mpZeroed s (inputMemory mem pa (p+2)) (p + 2)) pa pb (p + 2) (p + 2)) (p + 2) (p + 2)
-        pdst ret rest) :=
-  gasSteps_monproCsubFast E s mem pa pb (p + 2) pdst ret rest (by omega) hrun hcode hfork hnp
-    hact (by omega) hn32 hpa (by omega) hpb (by omega) hcds hs32 htl hml hminv hjump
-    hdstFit
-    (by
-      let prepared := inputMemory mem pa (p+2)
-      have ha' : Model.FastRepresents prepared pa (p+2) a :=
-        (fastRepresents_inputMemory mem pa (p+2) pa (p+2) a hpaFit).2 ha
-      have hb' : Model.FastRepresents prepared pb (p+2) b :=
-        (fastRepresents_inputMemory mem pa (p+2) pb (p+2) b hpbFit).2 hb
-      have hm' : Model.FastRepresents prepared 0 (p+2) mm :=
-        (fastRepresents_inputMemory mem pa (p+2) 0 (p+2) mm (by omega)).2 hm
-      have hminv' : ((MachineState.readWord prepared (32*(p+2)-32)).toNat *
-          (MachineState.readWord prepared 2720).toNat + 1) % 2^256 = 0 := by
-        simpa only [prepared,
-          read_inputMemory_outside mem pa (p+2) (32*(p+2)-32) (Or.inl (by omega)),
-          read_inputMemory_outside mem pa (p+2) 2720 (Or.inr (by decide))] using hminv
-      have hr := selectedRows_agree (mpZeroed s prepared (p+2)) pa pb (p+2) (p+2)
-        hpaFit hpbFit (by omega) hn32 (by omega)
-      rw [CarryScratchAgreement.readWord_eq hr 2080 (Or.inr (by decide))]
-      exact Monpro.monpro_tn_le_one s prepared pa pb p a b mm hn32 hpaFit hpbFit ha' hb' hm' ham
-        hmpos hminv')
-    he
+        (selectedRows (mpZeroed s (inputMemory mem pa (p+2)) (p + 2)) pa pb (p + 2) (p + 2))
+        (p + 2) (p + 2) pdst ret rest) := by
+  let prepared := inputMemory mem pa (p+2)
+  let selected := selectedRows (mpZeroed s prepared (p+2)) pa pb (p+2) (p+2)
+  have ha' : Model.FastRepresents prepared pa (p+2) a :=
+    (fastRepresents_inputMemory mem pa (p+2) pa (p+2) a hpaFit).2 ha
+  have hb' : Model.FastRepresents prepared pb (p+2) b :=
+    (fastRepresents_inputMemory mem pa (p+2) pb (p+2) b hpbFit).2 hb
+  have hm' : Model.FastRepresents prepared 0 (p+2) mm :=
+    (fastRepresents_inputMemory mem pa (p+2) 0 (p+2) mm (by omega)).2 hm
+  have hminv' : ((MachineState.readWord prepared (32*(p+2)-32)).toNat *
+      (MachineState.readWord prepared 2720).toNat + 1) % 2^256 = 0 := by
+    simpa only [prepared,
+      read_inputMemory_outside mem pa (p+2) (32*(p+2)-32) (Or.inl (by omega)),
+      read_inputMemory_outside mem pa (p+2) 2720 (Or.inr (by decide))] using hminv
+  have hr := selectedRows_agree (mpZeroed s prepared (p+2)) pa pb (p+2) (p+2)
+    hpaFit hpbFit (by omega) hn32 (by omega)
+  have htn' : (MachineState.readWord selected 2080).toNat ≤ 1 := by
+    rw [CarryScratchAgreement.readWord_eq hr 2080 (Or.inr (by decide))]
+    exact Monpro.monpro_tn_le_one s prepared pa pb p a b mm hn32 hpaFit hpbFit ha' hb' hm' ham
+      hmpos hminv'
+  have hc := gasSteps_monproCsubFast E s mem pa pb (p+2) pdst ret rest hcap hrun hcode hfork hnp
+    hact (by omega) hn32 hpa (by omega) hpb (by omega) hcds hs32 htl hml hminv hjump hdstFit htn' he
+  have hshape :
+      Csub.csReturnedState s selected (p+2) (p+2) pdst
+          (UInt256.ofNat GenericReturnAdapter.genericShimPC)
+          (retainedFrameFast s mem pa pb (p+2) pdst ++ ret :: rest) =
+        GenericReturnAdapter.returnInput s
+          (Csub.csResultMemory selected (p+2) pdst.toNat)
+          (TnCacheRowPointers.pointer pb (p+2) (p+2)) (UInt256.ofNat 3543)
+          (UInt256.ofNat (pb-32)) (UInt256.ofNat (l1PC (p+2)))
+          (TnCacheRowModel.rows
+            ⟨mpZeroed s (stage mem pa (p+2)) (p+2), UInt256.ofNat 0⟩ pa pb (p+2) (p+2)).tn
+          allOnes
+          (MachineState.readWord
+            (TnCacheRowModel.rows
+              ⟨mpZeroed s (stage mem pa (p+2)) (p+2), UInt256.ofNat 0⟩ pa pb (p+2) (p+2)).memory 128)
+          (MachineState.readWord mem 2720)
+          (MachineState.readWord mem (32*(p+2)-32))
+          (MachineState.readWord mem 2784)
+          (MachineState.readWord mem 96) (MachineState.readWord mem 64)
+          (MachineState.readWord mem 32)
+          (UInt256.ofNat (pa+32*(p+2)-32)) pdst
+          (UInt256.ofNat GenericReturnAdapter.genericShimPC) ret rest := by
+    rw [Csub.csReturnedState_eq_result]
+    simp [retainedFrameFast_eq s mem pa pb (p+2) pdst hn32,
+      TnM128InitialMultiply.retainedFrame,
+      TnCacheFrameOps.frame, GenericReturnAdapter.returnInput,
+      GenericReturnAdapter.frame16, GenericReturnAdapter.atState]
+  rw [hshape] at hc
+  have hret := GenericReturnAdapter.gasSteps_genericReturn s
+    (Csub.csResultMemory selected (p+2) pdst.toNat)
+    (TnCacheRowPointers.pointer pb (p+2) (p+2)) (UInt256.ofNat 3543)
+    (UInt256.ofNat (pb-32)) (UInt256.ofNat (l1PC (p+2)))
+    (TnCacheRowModel.rows
+      ⟨mpZeroed s (stage mem pa (p+2)) (p+2), UInt256.ofNat 0⟩ pa pb (p+2) (p+2)).tn
+    allOnes
+    (MachineState.readWord
+      (TnCacheRowModel.rows
+        ⟨mpZeroed s (stage mem pa (p+2)) (p+2), UInt256.ofNat 0⟩ pa pb (p+2) (p+2)).memory 128)
+    (MachineState.readWord mem 2720)
+    (MachineState.readWord mem (32*(p+2)-32))
+    (MachineState.readWord mem 2784)
+    (MachineState.readWord mem 96) (MachineState.readWord mem 64)
+    (MachineState.readWord mem 32)
+    (UInt256.ofNat (pa+32*(p+2)-32)) pdst
+    (UInt256.ofNat GenericReturnAdapter.genericShimPC) ret rest (by omega)
+    hrun hcode hfork hnp (by simpa only [hcode] using hjump)
+  have hretword : UInt256.ofNat ret.toNat = ret :=
+    (Challenge.EvmProof.Word.word_eq_ofNat_toNat ret).symm
+  have hfinal :
+      GenericReturnAdapter.returnOutput s
+          (Csub.csResultMemory selected (p+2) pdst.toNat) ret rest =
+        Csub.csReturnedState s selected (p+2) (p+2) pdst ret rest := by
+    rw [Csub.csReturnedState_eq_result]
+    simp [GenericReturnAdapter.returnOutput, GenericReturnAdapter.atState, hretword]
+  simpa only [selected, prepared] using hc.trans (hret.cast rfl hfinal)
 
 /-- **The sqCP1m multiply kernel for the surviving widths** (`MonPro(pa, pb) → pdst`): from the
 `mul entry` to the return of the final subtraction, four and eight limbs through the kernel
 rows.  Statement = `gasSteps_monproFull` + `he`. -/
 opaque gasSteps_monproFullFast (s : State) (mem : ByteArray) (pa pb p : Nat)
     (a b mm : Nat) (pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
+    (hcap : rest.length ≤ 991) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -213,8 +336,8 @@ opaque gasSteps_monproFullFast (s : State) (mem : ByteArray) (pa pb p : Nat)
     Challenge.EvmProof.GasSteps
       (dispatchState s mem pa pb pdst ret rest)
       (Csub.csReturnedState s
-        (selectedRows (mpZeroed s (inputMemory mem pa (p+2)) (p + 2)) pa pb (p + 2) (p + 2)) (p + 2) (p + 2)
-        pdst ret rest) :=
+        (selectedRows (mpZeroed s (inputMemory mem pa (p+2)) (p + 2)) pa pb (p + 2) (p + 2))
+        (p + 2) (p + 2) pdst ret rest) :=
   gasSteps_monproFullOfFast entryLemmas s mem pa pb p a b mm pdst ret rest hcap hrun hcode
     hfork hnp hact hn32 hpa hpaFit hpb hpbFit hcds hs32 htl hml hjump hdstFit ha hb hm ham hmpos hminv he
 

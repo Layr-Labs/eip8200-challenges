@@ -62,9 +62,11 @@ theorem handled_of_asymmetric_three (input : ByteArray) (s : State) (memory : By
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hdata : s.executionEnv.calldata = input)
     (hstack : s.callStack = []) (hactive : 89 ≤ s.activeWords.toNat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmz : 32 < msize)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (_hmz : 32 < msize)
     (hm32 : msize ≤ 32 * n)
+    (hfull : msize = 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
     (hmsz : msize = Challenge.Modexp.modulusSize input)
@@ -92,21 +94,22 @@ theorem handled_of_asymmetric_three (input : ByteArray) (s : State) (memory : By
   let prodVal := Model.montMul mm (Limbs.radix ^ n) sqVal rawBase
   let memOut := ch.mem
   have houtRep : Model.FastRepresents memOut 256 n prodVal := ch.value
-  have htraceReturn := Exp.gasSteps_return s memOut n bsize esize msize
-    hn hn32 hmz hm32 hactive hcode hfork hrun hnp
-  have htrace : Challenge.EvmProof.GasSteps
-      (special s memory n bsize esize msize 1)
-      (Exp.returnedState s memOut n bsize esize msize) :=
-    ch.trace.trans htraceReturn
   have houtEq : prodVal =
       Precompile.bytesToNatPadded input 96 bsize ^ 3 % mm :=
     RootE3Scale.asymmetric_cube hm hcop hbMform hrawForm hscale
-  refine Exp.handled_of_trace input
-    (special s memory n bsize esize msize 1) s memOut
-    n bsize esize msize prodVal hstack htrace hn hm32 (by omega)
-    hbsize hesize hmsz houtRep ?_
-  rw [← hmm, Model.modPow_eq_pow_mod hm, hexp]
-  exact houtEq
+  have hres : prodVal = Precompile.modPow
+      (Precompile.bytesToNatPadded input 96 bsize)
+      (Precompile.bytesToNatPadded input (96 + bsize) esize)
+      (Precompile.bytesToNatPadded input (96 + bsize + esize) msize) := by
+    rw [← hmm, Model.modPow_eq_pow_mod hm, hexp]
+    exact houtEq
+  have htrace : Challenge.EvmProof.GasSteps
+      (special s memory n bsize esize msize 1)
+      (GenericReturnAdapter.terminalOutput s memOut ch.trace.rest) := ch.trace.steps
+  exact Challenge.Modexp.Submission.Proofs.Fast.FixedDirectHitCorrect.handled_of_terminal_trace
+    input (special s memory n bsize esize msize 1) s memOut ch.trace.rest
+    n bsize esize msize prodVal hdata hstack htrace hn hn32 hm32 (by omega)
+    hfull hbsize hesize hmsz houtRep hres
 
 
 theorem handled_of_entry_asymmetric_three (input : ByteArray) (s : State) (memory : ByteArray)
@@ -121,6 +124,7 @@ theorem handled_of_entry_asymmetric_three (input : ByteArray) (s : State) (memor
     (hstack : s.callStack = []) (hactive : 89 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmz : 32 < msize)
     (hm32 : msize ≤ 32 * n)
+    (hfull : msize = 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : 1 = Challenge.Modexp.exponentSize input)
     (hmsz : msize = Challenge.Modexp.modulusSize input)
@@ -149,7 +153,7 @@ theorem handled_of_entry_asymmetric_three (input : ByteArray) (s : State) (memor
     (FixedDirectValueTrace.gasSteps_checkThree_hit s memory input
       n bsize msize hb hexp hdata hactive hframe.eoff hcode hfork hrun hnp)
   have hfixed := handled_of_asymmetric_three input s memory n bsize 1 msize mm minv
-    bM rawBase S T sub spec hcode hfork hrun hnp hstack hactive hn hn32 hmz hm32
+    bM rawBase S T sub spec hcode hfork hrun hnp hdata hstack hactive hn hn32 hmz hm32 hfull
     hbsize hesize hmsz hmm hm hcop _hradix hbMlt hbMform hrawForm hscale hexp
     hframe hmod hbase hrawAcc hrawLt hone
   rcases hfixed with ⟨final, ⟨tail⟩, hdone, hresult⟩
