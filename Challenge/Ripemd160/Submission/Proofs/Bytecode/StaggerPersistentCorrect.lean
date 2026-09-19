@@ -60,17 +60,17 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
     have g := gp.trans (gx.trans gj)
     simpa only [loopState, LoopCompletionControl.blockPC, Nat.zero_mul,
       if_neg (show input.size ≠ 0 by omega), offsetWord] using g
-  · let block486 : State :=
+  · let block485 : State :=
       {s with
-        pc := UInt256.ofNat 486
+        pc := UInt256.ofNat 485
         stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0)
           (LoopCompletionControl.limit input) maskRho}
-    have gx : GasSteps s block486 := by
-      have hs : s = block486 := by
-        simpa only [block486, LoopCompletionControl.limit, LoopCompletionControl.limitNat, if_neg hz,
+    have gx : GasSteps s block485 := by
+      have hs : s = block485 := by
+        simpa only [block485, LoopCompletionControl.limit, LoopCompletionControl.limitNat, if_neg hz,
           PaddingTrace.padFrame, Padding.paddedWord_eq input hfit, maskRho] using heta
       exact GasSteps.cast (GasSteps.refl s) rfl hs
-    have gj := StaggerPersistentLoopSites.gasSteps_loop_join s
+    have gj := StaggerPersistentLoopSites.gasSteps_join s
       (StaggerPersistentFrame.frame h (UInt256.ofNat 0) (LoopCompletionControl.limit input) maskRho)
       (by simp [StaggerPersistentFrame.frame, maskRho]) hr hc hf hn
     have g := gp.trans (gx.trans gj)
