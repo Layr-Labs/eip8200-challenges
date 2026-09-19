@@ -191,8 +191,7 @@ def copiedV2 (memory : ByteArray) : ByteArray :=
   copyV2 (copyV2 (copyV2 (copyV2 memory 162 144) 178 196) 252 234) 268 286
 
 def poolWordV2 (memory : ByteArray) (i : Nat) : UInt256 :=
-  if i ∈ [11] then UInt256.land poolMask (rawLoadV2 memory i)
-  else rawLoadV2 memory i
+  rawLoadV2 memory i
 
 def templateV2 : List Instr :=
   [ .push ⟨1, by decide⟩ (UInt256.ofNat 16),
@@ -211,11 +210,6 @@ def templateV2 : List Instr :=
     .push ⟨2, by decide⟩ (UInt256.ofNat 268),
     .push ⟨2, by decide⟩ (UInt256.ofNat 286),
     .op .MCOPY,
-    /- Load word 14 exactly once before the other pool words. The executed
-       JUMPDEST replaces SWAP11 without changing the stack; the mask is pushed
-       after word 14 and immediately before masked word 11. -/
-    .push ⟨1, by decide⟩ (UInt256.ofNat 176),
-    .op .MLOAD,
     .push ⟨1, by decide⟩ (UInt256.ofNat 168),
     .op .MLOAD,
     .push ⟨2, by decide⟩ (UInt256.ofNat 266),
@@ -236,11 +230,10 @@ def templateV2 : List Instr :=
     .op .MLOAD,
     .push ⟨2, by decide⟩ (UInt256.ofNat 262),
     .op .MLOAD,
-    .op .JUMPDEST,
-    .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 176),
+    .op .MLOAD,
     .push ⟨1, by decide⟩ (UInt256.ofNat 146),
     .op .MLOAD,
-    .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 134),
     .op .MLOAD,
     .push ⟨1, by decide⟩ (UInt256.ofNat 236),
@@ -249,6 +242,61 @@ def templateV2 : List Instr :=
     .op .MLOAD,
     .push ⟨1, by decide⟩ (UInt256.ofNat 138),
     .op .MLOAD ]
+
+def copyTemplateV2 : List Instr :=
+  [ .push ⟨1, by decide⟩ (UInt256.ofNat 16),
+    .op (.Dup ⟨0, by decide⟩),
+    .op (.Dup ⟨0, by decide⟩),
+    .op (.Dup ⟨0, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 162),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+    .op .MCOPY,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 178),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 196),
+    .op .MCOPY,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 252),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 234),
+    .op .MCOPY,
+    .push ⟨2, by decide⟩ (UInt256.ofNat 268),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 286),
+    .op .MCOPY ]
+
+def loadTemplateV2 : List Instr :=
+  [ .push ⟨1, by decide⟩ (UInt256.ofNat 168),
+    .op .MLOAD,
+    .push ⟨2, by decide⟩ (UInt256.ofNat 266),
+    .op .MLOAD,
+    .push ⟨2, by decide⟩ (UInt256.ofNat 270),
+    .op .MLOAD,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 142),
+    .op .MLOAD,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 172),
+    .op .MLOAD,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 232),
+    .op .MLOAD,
+    .push ⟨2, by decide⟩ (UInt256.ofNat 258),
+    .op .MLOAD,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 228),
+    .op .MLOAD,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 180),
+    .op .MLOAD,
+    .push ⟨2, by decide⟩ (UInt256.ofNat 262),
+    .op .MLOAD,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 176),
+    .op .MLOAD,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 146),
+    .op .MLOAD,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 134),
+    .op .MLOAD,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 236),
+    .op .MLOAD,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+    .op .MLOAD,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 138),
+    .op .MLOAD ]
+
+theorem templateV2_eq : templateV2 = copyTemplateV2 ++ loadTemplateV2 := by
+  rfl
 
 theorem run_actualV2_of_small (s : State) (pc : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
@@ -264,17 +312,68 @@ theorem run_actualV2_of_small (s : State) (pc : UInt256) (rho : List UInt256)
   have hactiveAt (address : Nat) (haddress : address ≤ 1056) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     Stagger144Active.word_active_preserved_of_small s.activeWords address hactive haddress
-  have hactiveCopy (o1 o2 : Nat) (h1 : o1 ≤ 1000) (h2 : o2 ≤ 1000) :
+  have hactiveCopy1 :
       UInt256.ofNat (MachineState.activeWordsAfter
-        (MachineState.activeWordsAfter s.activeWords.toNat o1 16) o2 16) = s.activeWords :=
-    copy_active_preserved s.activeWords o1 o2 hactive h1 h2
-  simp (config := { maxSteps := 900000 }) (discharger := omega)
-    [templateV2, poolStack, poolWordV2, poolMask, rawLoadV2, poolAddrV2, copiedV2, copyV2, runInstrSeq,
-     DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size, List.exchange,
-     List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
-     State.activeWordsAfterUInt256, State.activeWordsAfterUInt256_2, hactiveAt, hactiveCopy,
-     Word.word_toNat_ofNat, Word.literal_eq_ofNat, RawExpressionAC.land_comm]
-  all_goals repeat first | apply And.intro | rfl
+        (MachineState.activeWordsAfter s.activeWords.toNat 144 16) 162 16) = s.activeWords :=
+    copy_active_preserved s.activeWords 144 162 hactive (by omega) (by omega)
+  have hactiveCopy2 :
+      UInt256.ofNat (MachineState.activeWordsAfter
+        (MachineState.activeWordsAfter s.activeWords.toNat 196 16) 178 16) = s.activeWords :=
+    copy_active_preserved s.activeWords 196 178 hactive (by omega) (by omega)
+  have hactiveCopy3 :
+      UInt256.ofNat (MachineState.activeWordsAfter
+        (MachineState.activeWordsAfter s.activeWords.toNat 234 16) 252 16) = s.activeWords :=
+    copy_active_preserved s.activeWords 234 252 hactive (by omega) (by omega)
+  have hactiveCopy4 :
+      UInt256.ofNat (MachineState.activeWordsAfter
+        (MachineState.activeWordsAfter s.activeWords.toNat 286 16) 268 16) = s.activeWords :=
+    copy_active_preserved s.activeWords 286 268 hactive (by omega) (by omega)
+  let copiedState : State := {s with
+    pc := pcAfter pc copyTemplateV2
+    stack := rho
+    memory := copiedV2 s.memory}
+  have hcopy :
+      runInstrSeq copyTemplateV2 {s with pc := pc, stack := rho} = some copiedState := by
+    simp (config := { maxSteps := 900000 }) (discharger := omega)
+      [copiedState, copyTemplateV2, copiedV2, copyV2, runInstrSeq,
+       DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size, List.exchange,
+       List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
+       State.activeWordsAfterUInt256, State.activeWordsAfterUInt256_2,
+       hactiveCopy1, hactiveCopy2, hactiveCopy3, hactiveCopy4,
+       Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+    all_goals repeat first | apply And.intro | rfl
+  have hload :
+      runInstrSeq loadTemplateV2 copiedState =
+        some {s with
+          pc := pcAfter (pcAfter pc copyTemplateV2) loadTemplateV2
+          stack :=
+            [ MachineState.readWord (copiedV2 s.memory) 138,
+              MachineState.readWord (copiedV2 s.memory) 224,
+              MachineState.readWord (copiedV2 s.memory) 236,
+              MachineState.readWord (copiedV2 s.memory) 134,
+              MachineState.readWord (copiedV2 s.memory) 146,
+              MachineState.readWord (copiedV2 s.memory) 262,
+              MachineState.readWord (copiedV2 s.memory) 180,
+              MachineState.readWord (copiedV2 s.memory) 228,
+              MachineState.readWord (copiedV2 s.memory) 258,
+              MachineState.readWord (copiedV2 s.memory) 232,
+              MachineState.readWord (copiedV2 s.memory) 172,
+              MachineState.readWord (copiedV2 s.memory) 142,
+              MachineState.readWord (copiedV2 s.memory) 270,
+              MachineState.readWord (copiedV2 s.memory) 266,
+              MachineState.readWord (copiedV2 s.memory) 168,
+              MachineState.readWord (copiedV2 s.memory) 176 ] ++ rho
+          memory := copiedV2 s.memory} := by
+    simp (config := { maxSteps := 900000 }) (discharger := omega)
+      [copiedState, loadTemplateV2, runInstrSeq, DataStepper.runInstr, pcAfter,
+       UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
+       Nat.add_assoc, hrun, hbase, hzero, hcap, hactiveAt,
+       State.activeWordsAfterUInt256, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+    all_goals repeat first | apply And.intro | rfl
+  have hrun := DenseScheduleTrace.runInstrSeq_append_running hcopy
+    (by simpa [copiedState] using hrun) hload
+  simpa only [templateV2_eq, DenseScheduleTrace.pcAfter_append, copiedState,
+    poolStack, poolWordV2, rawLoadV2, poolAddrV2] using hrun
 
 theorem run_actualV2 (s : State) (pc : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
