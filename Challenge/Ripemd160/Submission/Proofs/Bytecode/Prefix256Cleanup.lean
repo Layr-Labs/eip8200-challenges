@@ -10,24 +10,24 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Prefix256Cleanup
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open PatternedScan PatternedSwar
 
-@[simp] private theorem branchPC0 : Artifact.submissionArtifact.instructionPC 164 = 258 := rfl
-@[simp] private theorem branchPC1 : Artifact.submissionArtifact.instructionPC 165 = 259 := rfl
-@[simp] private theorem branchPC2 : Artifact.submissionArtifact.instructionPC 166 = 260 := rfl
-@[simp] private theorem cleanupDupPC : Artifact.submissionArtifact.instructionPC 168 = 264 := rfl
+@[simp] private theorem branchPC0 : Artifact.submissionArtifact.instructionPC 164 = 257 := rfl
+@[simp] private theorem branchPC1 : Artifact.submissionArtifact.instructionPC 165 = 258 := rfl
+@[simp] private theorem branchPC2 : Artifact.submissionArtifact.instructionPC 166 = 259 := rfl
+@[simp] private theorem cleanupDupPC : Artifact.submissionArtifact.instructionPC 168 = 263 := rfl
 @[simp] private theorem fallbackDest : Decode.isValidJumpDest submissionBytecode 272 = true :=
   Artifact.submissionArtifact.isValidJumpDest_index 176 (by rfl)
 
-@[simp] private theorem e4PC165 : Artifact.submissionArtifact.instructionPC 168 = 264 := rfl
-@[simp] private theorem e4PC166 : Artifact.submissionArtifact.instructionPC 169 = 265 := rfl
-@[simp] private theorem e4PC167 : Artifact.submissionArtifact.instructionPC 170 = 266 := rfl
-@[simp] private theorem e4PC168 : Artifact.submissionArtifact.instructionPC 171 = 267 := rfl
-@[simp] private theorem e4PC169 : Artifact.submissionArtifact.instructionPC 172 = 268 := rfl
-@[simp] private theorem e4PC170 : Artifact.submissionArtifact.instructionPC 173 = 269 := rfl
-@[simp] private theorem e4PC171 : Artifact.submissionArtifact.instructionPC 174 = 270 := rfl
-@[simp] private theorem e4PC172 : Artifact.submissionArtifact.instructionPC 175 = 271 := rfl
-@[simp] private theorem e4PC173 : Artifact.submissionArtifact.instructionPC 176 = 272 := rfl
+@[simp] private theorem e4PC165 : Artifact.submissionArtifact.instructionPC 168 = 263 := rfl
+@[simp] private theorem e4PC166 : Artifact.submissionArtifact.instructionPC 169 = 264 := rfl
+@[simp] private theorem e4PC167 : Artifact.submissionArtifact.instructionPC 170 = 265 := rfl
+@[simp] private theorem e4PC168 : Artifact.submissionArtifact.instructionPC 171 = 266 := rfl
+@[simp] private theorem e4PC169 : Artifact.submissionArtifact.instructionPC 172 = 267 := rfl
+@[simp] private theorem e4PC170 : Artifact.submissionArtifact.instructionPC 173 = 268 := rfl
+@[simp] private theorem e4PC171 : Artifact.submissionArtifact.instructionPC 174 = 269 := rfl
+@[simp] private theorem e4PC172 : Artifact.submissionArtifact.instructionPC 175 = 270 := rfl
+@[simp] private theorem e4PC173 : Artifact.submissionArtifact.instructionPC 176 = 271 := rfl
 
-@[simp] private theorem branchJumpPC : Artifact.submissionArtifact.instructionPC 167 = 263 := rfl
+@[simp] private theorem branchJumpPC : Artifact.submissionArtifact.instructionPC 167 = 262 := rfl
 @[simp] private theorem selectorDest : Decode.isValidJumpDest submissionBytecode 4837 = true :=
   Artifact.submissionArtifact.isValidJumpDest_index 3867 (by rfl)
 

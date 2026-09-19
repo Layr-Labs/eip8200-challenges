@@ -50,7 +50,7 @@ def bytePrefix : List Located :=
    pushAt 9 0 0,
    opAt 10 .BYTE,
    opAt 11 .EQ,
-   pushAt 12 2 4819]
+   pushAt 12 2 4841]
 
 /-- Entry size gate: `(size >> 2) * (size ^ 1000) != 0` jumps to the generic arm. -/
 def gatePrefix : List Located :=
@@ -61,7 +61,9 @@ def gatePrefix : List Located :=
    pushAt 18 1 2,
    opAt 19 .SHR,
    opAt 20 .MUL,
-   pushAt 21 2 342]
+   pushAt 21 2 341]
+
+def entryDest : Located := opAt 222 .JUMPDEST
 
 def checkEntryPath : List Located :=
   [pushAt 23 0 0,
@@ -73,7 +75,7 @@ def checkEntryPath : List Located :=
    opAt 29 .DIV,
    opAt 30 .MUL,
    opAt 31 .XOR,
-   pushAt 32 2 4819,
+   pushAt 32 2 4841,
    opAt 33 .JUMPI,
    pushAt 34 0 0,
    opAt 35 .CALLDATALOAD,
@@ -115,8 +117,9 @@ def tailPath : List Located :=
 def fallbackPath : List Located :=
   [opAt 68 .JUMPDEST,
    opAt 69 .POP,
-   pushAt 70 2 342,
-   opAt 71 .JUMPI]
+   pushAt 70 2 341,
+   opAt 71 .JUMPI,
+   entryDest]
 
 def returnPath : List Located :=
   [pushAt 62 20 972889429405991776604892044862621566948497025487,

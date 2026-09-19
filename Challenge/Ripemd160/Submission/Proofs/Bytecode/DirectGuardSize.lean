@@ -14,7 +14,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open KnownInputCompactState
 
-def guardEntry (input : ByteArray) : State := atPC input 4819
+def guardEntry (input : ByteArray) : State := atPC input 4841
 
 /-- `UInt256.eq` is `if a.toNat = b.toNat then 1 else 0`, and both operands are
 below `2 ^ 256`, so the test reduces to the underlying `Nat` comparison. -/
@@ -34,7 +34,8 @@ theorem size_eq_one (input : ByteArray) (k : Nat)
   unfold UInt256.eq
   simp
 
-def gatePath : List Located := gatePrefix ++ [opAt 22 .JUMPI]
+def gatePath : List Located := gatePrefix ++ [opAt 22 .JUMPI, entryDest]
+def gateFallPath : List Located := gatePrefix ++ [opAt 22 .JUMPI]
 
 private theorem stepS_calldatasize (input : ByteArray) (pc : Nat) (stk : List UInt256)
     (hlen : stk.length < 1024) (hpc : pc + 1 < 2 ^ 256) :
@@ -64,15 +65,15 @@ private theorem pc_g15 : Artifact.submissionArtifact.instructionPC 21 = 34 := by
 private theorem pc_g16 : Artifact.submissionArtifact.instructionPC 22 = 37 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-theorem generic_dest : Decode.isValidJumpDest submissionBytecode 342 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 222 = 342 := by
+theorem generic_dest : Decode.isValidJumpDest submissionBytecode 341 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 222 = 341 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have h := Artifact.submissionArtifact.isValidJumpDest_index 222 (by rfl)
   rwa [hpc] at h
 
 theorem run_gate_prefix (input : ByteArray) :
     run gatePrefix (PatternedScan.stS input 24 []) =
-      some (PatternedScan.stS input 37 [342, EntryGateLogic.gateWord input.size]) := by
+      some (PatternedScan.stS input 37 [341, EntryGateLogic.gateWord input.size]) := by
   let n := UInt256.ofNat input.size
   let s := UInt256.shiftRight n 2
   let x := UInt256.xor n 1000
@@ -104,10 +105,10 @@ theorem run_gate_prefix (input : ByteArray) :
   have h6 := PatternedScan.blockOfS l6
     (PatternedScan.pcFactS input 20 33 [s, x] (by norm_num) pc_g14)
     (PatternedScan.stepS_mul input 33 s x [] (by simp) (by norm_num))
-  let l7 : Located := pushAt 21 2 342
+  let l7 : Located := pushAt 21 2 341
   have h7 := PatternedScan.blockOfS l7
     (PatternedScan.pcFactS input 21 34 [s * x] (by norm_num) pc_g15)
-    (PatternedScan.stepS_push input 34 2 342 [s * x] (by simp) (by decide) (by decide) (by norm_num))
+    (PatternedScan.stepS_push input 34 2 341 [s * x] (by simp) (by decide) (by decide) (by norm_num))
   have hseq1 := DataStepper.runLocatedBlock_append [l0] [l1] _ _ _ h0 rfl h1
   have hseq2 := DataStepper.runLocatedBlock_append [l0, l1] [l2] _ _ _ hseq1 rfl h2
   have hseq3 := DataStepper.runLocatedBlock_append [l0, l1, l2] [l3] _ _ _ hseq2 rfl h3
@@ -125,25 +126,33 @@ theorem run_gate_taken (input : ByteArray) (hfit : CalldataFits input)
     (h4 : 4 ≤ input.size) (h1000 : input.size ≠ 1000) :
     run gatePath (PatternedScan.stS input 24 []) = some (PatternedScan.stS input 342 []) := by
   have hj : run [opAt 22 .JUMPI]
-      (PatternedScan.stS input 37 [342, EntryGateLogic.gateWord input.size]) =
-      some (PatternedScan.stS input 342 []) := by
+      (PatternedScan.stS input 37 [341, EntryGateLogic.gateWord input.size]) =
+      some (PatternedScan.stS input 341 []) := by
     exact PatternedScan.blockOfS _
       (PatternedScan.pcFactS input 22 37 _ (by norm_num) pc_g16)
-      (PatternedScan.stepS_jumpi_taken input 37 342 342 _ []
+      (PatternedScan.stepS_jumpi_taken input 37 341 341 _ []
         (by simp) (by norm_num) (by simpa using Word.literal_eq_ofNat _)
         (EntryGateLogic.gateWord_true input.size hfit h4 h1000) generic_dest)
-  exact DataStepper.runLocatedBlock_append gatePrefix [opAt 22 .JUMPI] _ _ _
-    (run_gate_prefix input) rfl hj
+  have hd : run [entryDest] (PatternedScan.stS input 341 []) =
+      some (PatternedScan.stS input 342 []) := by
+    exact PatternedScan.blockOfS entryDest
+      (PatternedScan.pcFactS input 222 341 [] (by norm_num)
+        (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl))
+      (PatternedScan.stepS_jumpdest input 341 [] (by simp) (by norm_num))
+  have hje := DataStepper.runLocatedBlock_append [opAt 22 .JUMPI] [entryDest]
+    _ _ _ hj rfl hd
+  exact DataStepper.runLocatedBlock_append gatePrefix [opAt 22 .JUMPI, entryDest]
+    _ _ _ (run_gate_prefix input) rfl hje
 
 theorem run_gate_fall (input : ByteArray) (hfit : CalldataFits input)
     (hsmall : input.size < 4 ∨ input.size = 1000) :
-    run gatePath (PatternedScan.stS input 24 []) = some (PatternedScan.stS input 38 []) := by
+    run gateFallPath (PatternedScan.stS input 24 []) = some (PatternedScan.stS input 38 []) := by
   have hj : run [opAt 22 .JUMPI]
-      (PatternedScan.stS input 37 [342, EntryGateLogic.gateWord input.size]) =
+      (PatternedScan.stS input 37 [341, EntryGateLogic.gateWord input.size]) =
       some (PatternedScan.stS input 38 []) := by
     exact PatternedScan.blockOfS _
       (PatternedScan.pcFactS input 22 37 _ (by norm_num) pc_g16)
-      (PatternedScan.stepS_jumpi_fall input 37 342 _ []
+      (PatternedScan.stepS_jumpi_fall input 37 341 _ []
         (by simp) (by norm_num) (EntryGateLogic.gateWord_false input.size hfit hsmall))
   exact DataStepper.runLocatedBlock_append gatePrefix [opAt 22 .JUMPI] _ _ _
     (run_gate_prefix input) rfl hj

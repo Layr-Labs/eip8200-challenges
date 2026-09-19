@@ -22,15 +22,15 @@ def template : List Instr :=
     .op .MLOAD,
     .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295),
     .push ⟨5, by decide⟩ (UInt256.ofNat 4294967297),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 960),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 984),
     .op .MLOAD,
     .push ⟨2, by decide⟩ (UInt256.ofNat 928),
     .op .MLOAD,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 896),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 920),
     .op .MLOAD,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 864),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 888),
     .op .MLOAD,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 832),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 856),
     .op .MLOAD,
     .push ⟨4, by decide⟩ (UInt256.ofNat 1352829926) ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
@@ -67,16 +67,16 @@ theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
   all_goals repeat first | apply And.intro | rfl
 #print axioms run_actual
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 609).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 611).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 609 actual_slice
-    (by change 609 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 611 actual_slice
+    (by change 611 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 1020 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 609) = UInt256.ofNat 1020
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 605) = UInt256.ofNat 1018
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply Table80SiteCommon.coreAdvancesAll_sound
