@@ -52,11 +52,11 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
       if_neg (show input.size ≠ 0 by omega), offsetWord] using g
   · have gx : GasSteps (StackTail.append s rho)
         {s with
-          pc := UInt256.ofNat 486
+          pc := UInt256.ofNat 485
           stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0)
             (LoopCompletionControl.limit input) (maskRho rho)} := by
       have hs : StackTail.append s rho = {s with
-          pc := UInt256.ofNat 486
+          pc := UInt256.ofNat 485
           stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0)
             (Padding.paddedWord input) (maskRho rho)} := by
         dsimp [s]
@@ -65,7 +65,7 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
       exact GasSteps.cast (GasSteps.refl (StackTail.append s rho)) rfl (by
         simpa only [LoopCompletionControl.limit, LoopCompletionControl.limitNat, if_neg hz,
           Padding.paddedWord_eq input hfit] using hs)
-    have gj := StaggerPersistentLoopSites.gasSteps_loop_join s
+    have gj := StaggerPersistentLoopSites.gasSteps_join s
       (StaggerPersistentFrame.frame h (UInt256.ofNat 0) (LoopCompletionControl.limit input) (maskRho rho))
       (by simp only [StaggerPersistentFrame.frame, List.length_append, List.length_cons, List.length_nil]; omega)
       hr hc hf hn
