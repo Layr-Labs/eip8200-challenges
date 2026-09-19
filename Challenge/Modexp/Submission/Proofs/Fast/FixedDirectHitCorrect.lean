@@ -37,6 +37,7 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
     (hstack : s.callStack = []) (hactive : 89 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmz : 32 < msize)
     (hm32 : msize ≤ 32 * n)
+    (hfull : msize = 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
     (hmsz : msize = Challenge.Modexp.modulusSize input)
@@ -66,7 +67,7 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
   let memOut := ch.mem
   have houtRep : Model.FastRepresents memOut 256 n prodVal := ch.value
   have htraceReturn := Exp.gasSteps_return s memOut n bsize esize msize
-    hn hn32 hmz hm32 hactive hcode hfork hrun hnp
+    hn hn32 hmz hm32 hfull hactive hcode hfork hrun hnp
   have htrace : Challenge.EvmProof.GasSteps
       (special s memory n bsize esize msize count)
       (Exp.returnedState s memOut n bsize esize msize) :=

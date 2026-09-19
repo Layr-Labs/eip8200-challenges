@@ -43,11 +43,11 @@ def gasStep_sgt {s : State} {a b : UInt256} {rest : List UInt256}
     StepRunning.sgt (withGas s gas) a b rest hop hgas hstack hcap
 
 /-- The candidate's only `SGT` is instruction 3742. -/
-theorem sqRowSgt_index : Artifact.submissionInstructions[3395]? = some (.op .SGT) := by
+theorem sqRowSgt_index : Artifact.submissionInstructions[3393]? = some (.op .SGT) := by
   rfl
 
 /-- ... at program counter 4835 (0x126c). -/
-theorem sqRowSgt_pc : Artifact.submissionArtifact.instructionPC 3395 = 4274 := by
+theorem sqRowSgt_pc : Artifact.submissionArtifact.instructionPC 3393 = 4274 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -55,7 +55,7 @@ theorem decodedOp_sqRowSgt (s : State)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hpc : s.pc = UInt256.ofNat 4274) :
     s.decodedOp = some .SGT := by
-  have hpcNat : s.pc.toNat = Artifact.submissionArtifact.instructionPC 3395 := by
+  have hpcNat : s.pc.toNat = Artifact.submissionArtifact.instructionPC 3393 := by
     rw [hpc, sqRowSgt_pc]; decide
   have hwf : Stepper.WellFormed s.fork (.op .SGT) := by
     rw [hfork]
