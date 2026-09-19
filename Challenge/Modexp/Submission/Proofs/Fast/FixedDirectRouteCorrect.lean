@@ -92,6 +92,7 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
     (hactLe : s.activeWords.toNat ≤ 289)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hb : bsize ≤ 1024)
     (he : esize ≤ 1024) (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
+    (hfull : msize = 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
     (hmsz : msize = Challenge.Modexp.modulusSize input)
@@ -162,7 +163,7 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
         have hfixed := FixedDirectHitCorrect.handled_of_fixed input s memory
           n bsize 1 msize mm minv bM
           rawBase 1 sub spec
-          hcode hfork hrun hnp hstack hactive hn hn32 hmz hm32
+          hcode hfork hrun hnp hdata hstack hactive hn hn32 hmz hm32 hfull
           hbsize hesize hmsz hmm
           (lt_of_lt_of_le Limbs.radix_pos hradix)
           (Model.coprime_radix_pow_of_odd hodd n) hradix hbMlt hbMform
@@ -182,7 +183,7 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
         have hfixed := FixedDirectHitCorrect.handled_of_fixed input s memory
           n bsize 3 msize mm minv bM
           rawBase 16 sub spec
-          hcode hfork hrun hnp hstack hactive hn hn32 hmz hm32
+          hcode hfork hrun hnp hdata hstack hactive hn hn32 hmz hm32 hfull
           hbsize hesize hmsz hmm
           (lt_of_lt_of_le Limbs.radix_pos hradix)
           (Model.coprime_radix_pow_of_odd hodd n) hradix hbMlt hbMform
