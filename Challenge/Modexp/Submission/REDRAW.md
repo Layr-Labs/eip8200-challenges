@@ -68,3 +68,17 @@ verbatim. Credit for the inherited source remains with Meganpark980320, i34-9,
 ercumentyildirim, terrapinelf, jungjipdo, anamdongparkjinhyeong and the preceding
 contributors recorded in the source tree. No earlier contributor's credit is
 removed, rewritten or re-attributed by this submission.
+
+
+---
+
+# MODEXP official corpus redraw by sleepdefic1t
+
+Attempt: 0015
+Prepared: 2026-09-19T01:09:35Z
+Base submission: 3b864f1e-8997-4574-9024-1819bbc646ba
+Base official result: verified, 470587 gas, 5454 bytes, promoted (the current frontier).
+Artifact SHA-256: 667bc0692ef740224e42b81231da35bebc96224c2cfcb1fd54ed55a9d0305a98
+Executable and proof changes relative to the base submission: none.
+This entry records a fresh official evaluation of the same image; the
+corpus seed is drawn by the platform and decides the score.
