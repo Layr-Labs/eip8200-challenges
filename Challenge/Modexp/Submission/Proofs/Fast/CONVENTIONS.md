@@ -1,8 +1,8 @@
 # Fast-path proof conventions (read before writing any Lean)
 
-Repository: /home/ubuntu/eip8200-challenges
+Repository: <historical benchmark checkout>
 Artifact:   Challenge/Modexp/Submission/bytecode.hex  (2901 bytes, 1768 instructions)
-Disassembly of the appended region: /home/ubuntu/work/fastdis.txt
+Disassembly of the appended region: historical-work/fastdis.txt
   columns: `index  pc  mnemonic  operand`, index 0 = first instruction of the whole image.
 Appended fast path: instruction indices 977..1767, pc 1314..2900.
   Indices 1742..1767 (pc 2863..2900) are `CCB`, which replaced the second
@@ -16,10 +16,10 @@ DO NOT BUILD `Challenge.Modexp.Submission.Proofs.Fast.Paths` or
 modules by name instead: `...Fast.Setup`, `...Fast.Exp`, `...Fast.Ccb`,
 `...Fast.Correct`.
 
-The design notes are /home/ubuntu/work-mont/PROOF_PLAN.md (section `## Simple variant`)
-and /home/ubuntu/work-mont/simple/BLOCKS_simple.md.  THOSE USE A DIFFERENT BASE:
+The design notes are historical-work-mont/PROOF_PLAN.md (section `## Simple variant`)
+and historical-work-mont/simple/BLOCKS_simple.md.  THOSE USE A DIFFERENT BASE:
 their instruction indices are 16 LOWER and their pcs are 30 LOWER than the real
-artifact.  Always re-derive indices and pcs from /home/ubuntu/work/fastdis.txt,
+artifact.  Always re-derive indices and pcs from historical-work/fastdis.txt,
 never copy them from the plan.
 
 ## Foundation already in place
@@ -131,7 +131,7 @@ A single Lean module in this project can peak above 20 GB, so two concurrent bui
 freeze the machine.  NEVER call `lake` or `lean` directly.  Build only with
 
 ```
-/home/ubuntu/work/safebuild.sh Challenge.Modexp.Submission.Proofs.Fast.<Module>
+historical-work/safebuild.sh Challenge.Modexp.Submission.Proofs.Fast.<Module>
 ```
 
 which takes a global lock (so builds run one at a time across all agents) and caps the
@@ -149,7 +149,7 @@ whole machine down.  Therefore:
 * **Never let a file grow while unverified.**  Write at most ~50 lines, build, fix, and
   only then write the next chunk.  A file that has never compiled is worthless; a file
   that compiles after every increment is progress you cannot lose.
-* Build only with `/home/ubuntu/work/safebuild.sh <Module> [timeout-seconds]`.  It takes
+* Build only with `historical-work/safebuild.sh <Module> [timeout-seconds]`.  It takes
   a global lock, caps memory at 22 GB and kills the build after the timeout, printing
   `SAFEBUILD: KILLED` or `SAFEBUILD: TIMED OUT`.  If you see either, you have written
   something whose elaboration diverges — do not raise the timeout, simplify the code.
@@ -158,7 +158,7 @@ whole machine down.  Therefore:
   condition or unfold the chain hundreds of times.  Keep block-boundary states shallow,
   state reduction lemmas over an arbitrary state constrained by `pc`/`stack` hypotheses,
   and mark any bit-extraction helper `@[irreducible]` before it appears under an `if`.
-* Earlier drafts of `Setup.lean` and `Double.lean` are in `/home/ubuntu/work/fast-drafts/`.
+* Earlier drafts of `Setup.lean` and `Double.lean` are in `historical-work/fast-drafts/`.
   They are UNVERIFIED and at least one of them diverges.  Mine them for block layouts and
   state definitions if useful, but re-derive and re-verify everything incrementally.
 
@@ -175,7 +175,7 @@ def blk<i> : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifac
 
 where `<i>` is the instruction index of the block's FIRST instruction.  Blocks break at
 every `JUMPDEST` and after every `JUMP`/`JUMPI`/`RETURN`/`INVALID`/`STOP`.  The full list
-with index and pc ranges is `/home/ubuntu/work/fastblocks.txt`.
+with index and pc ranges is `historical-work/fastblocks.txt`.
 
 Import only the group you need (e.g. `import Challenge.Modexp.Submission.Proofs.Fast.Paths.P5`)
 rather than the umbrella `Fast.Paths`, so your module does not pull in blocks it never
