@@ -48,7 +48,9 @@ theorem from_entry (input : ByteArray)
     exact of_returned input _ trace (J2Return.output_halt s rho) rfl
       (J2Return.output_spec s e rho hn hz)
   · have gm := J2Loop.gasSteps_miss s [] (J2Sites.moves s e [] (by decide)) input.size hn rfl hz
-    exact hgeneric _ (by simp [J2Raw.finishRest]) (hentry.trans gm)
+    have ge := J2Sites.gasSteps_generic_entry s e
+      (J2Raw.finishRest (J2End.endFrame s input.size) []) (by simp [J2Raw.finishRest])
+    exact hgeneric _ (by simp [J2Raw.finishRest]) (hentry.trans (gm.trans ge))
 
 #print axioms of_returned
 #print axioms from_entry

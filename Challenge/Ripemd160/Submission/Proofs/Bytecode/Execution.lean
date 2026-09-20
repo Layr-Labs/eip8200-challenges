@@ -30,13 +30,12 @@ private def wfOp {op : Operation}
 def atPC (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
 
-def mainStart (input : ByteArray) : State := atPC input 343
+def mainStart (input : ByteArray) : State := atPC input 342
 
 def path_start : List (Challenge.EvmProof.DataStepper.Located Artifact.submissionArtifact .Osaka) := []
 
 def path_3ee : List
-    (Challenge.EvmProof.DataStepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨222, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
+    (Challenge.EvmProof.DataStepper.Located Artifact.submissionArtifact .Osaka) := []
 
 def gasSteps_start (input : ByteArray) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0) (atPC input 0) :=
@@ -44,18 +43,7 @@ def gasSteps_start (input : ByteArray) :
 
 def gasSteps_3ee (input : ByteArray) :
     Challenge.EvmProof.GasSteps (atPC input 342) (mainStart input) := by
-  have hrun : Challenge.EvmProof.DataStepper.runLocatedBlock path_3ee
-      (atPC input 342) = some (mainStart input) := by
-    simp [path_3ee, Challenge.EvmProof.DataStepper.runLocatedBlock,
-      Challenge.EvmProof.DataStepper.runLocated, Challenge.EvmProof.DataStepper.runInstr,
-      atPC, mainStart, initialState]
-  apply Challenge.EvmProof.DataStepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka path_3ee
-  · rfl
-  · rfl
-  · exact hrun
-  · rfl
-  · exact deployAddress_not_precompile
+  exact Challenge.EvmProof.GasSteps.refl _
 
 def gasSteps_entry (input : ByteArray)
     (entryPrefix : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)

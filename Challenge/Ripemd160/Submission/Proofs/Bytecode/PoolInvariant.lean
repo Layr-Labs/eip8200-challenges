@@ -158,8 +158,9 @@ theorem ready_of_gap (W T : ByteArray) (words : Nat → UInt32)
   constructor
   · intro i hi77
     by_cases hp : StaggerTableLayout.pairIndices[i]! ≤ 1 ∨ 3 ≤ StaggerTableLayout.pairIndices[i]!
-    · have hm : StaggerCoreModel.message W i = StaggerCoreModel.message T i :=
-        word_gap W T _ hp hb
+    · have hm : StaggerCoreModel.message W i = StaggerCoreModel.message T i := by
+        have hw := word_gap W T _ hp hb
+        simp only [StaggerCoreModel.message, hw]
       rw [hm]
       exact h.paired i hi77
     · have h2 : StaggerTableLayout.pairIndices[i]! = 2 := by omega
@@ -168,11 +169,9 @@ theorem ready_of_gap (W T : ByteArray) (words : Nat → UInt32)
         rw [he] at h2
         exact absurd h2 (by decide)
       have hmW : StaggerCoreModel.message W i = MachineState.readWord W (18*2) := by
-        show MachineState.readWord W (18 * StaggerTableLayout.pairIndices[i]!) = _
-        rw [h2]
+        simp only [StaggerCoreModel.message, if_neg hne, h2]
       have hmT : StaggerCoreModel.message T i = MachineState.readWord T (18*2) := by
-        show MachineState.readWord T (18 * StaggerTableLayout.pairIndices[i]!) = _
-        rw [h2]
+        simp only [StaggerCoreModel.message, if_neg hne, h2]
       have hl := StaggerAlgorithm.message_lanes _ _ _ (h.paired i hi77)
       rw [hmT] at hl
       apply Or.inr
@@ -198,20 +197,26 @@ theorem ready (m r : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (hr : Clear r
   · intro i hi77
     by_cases hi76 : i = 76
     · subst i
-      have ht := PoolFacts.result_terminal m r lo hi hc hr
+      have ht := PoolFacts.result_terminal_projected m r lo hi hc hr
       have hm : StaggerCoreModel.message (resultMemoryV2 m lo hi) 76 =
-          StaggerCoreModel.message (resultMemory true r lo hi) 76 := ht
+          StaggerCoreModel.message (resultMemory true r lo hi) 76 := by
+        have haddr : 18 * StaggerTableLayout.pairIndices[76]! = 594 := by decide
+        have hmask : Paired144WordRound.pairWord = Pair13PoolRaw.poolMask := by decide
+        simpa only [StaggerCoreModel.message, if_pos rfl, haddr, hmask, ite_true] using ht
       rw [hm]
       exact h.paired 76 hi77
     · apply Or.inr
       refine ⟨hi76, ?_, ?_, ?_⟩
       · have ht := (StaggerTableLayout.layout_valid ⟨i,hi77⟩).2.1
         have hp := (StaggerAlgorithm.message_lanes _ _ _ (h.paired i hi77)).1
+        simp only [StaggerCoreModel.message, if_neg hi76] at hp ⊢
         exact (PoolFacts.result_lanes m r lo hi hc hr _ ht).1.trans hp
       · have ht := (StaggerTableLayout.layout_valid ⟨i,hi77⟩).2.1
         have hp := (StaggerAlgorithm.message_lanes _ _ _ (h.paired i hi77)).2
+        simp only [StaggerCoreModel.message, if_neg hi76] at hp ⊢
         exact (PoolFacts.result_lanes m r lo hi hc hr _ ht).2.trans hp
-      · exact PoolFacts.result_slack m lo hi hc _ (StaggerTableLayout.layout_valid ⟨i,hi77⟩).2.1
+      · simp only [StaggerCoreModel.message, if_neg hi76]
+        exact PoolFacts.result_slack m lo hi hc _ (StaggerTableLayout.layout_valid ⟨i,hi77⟩).2.1
   · intro j hj
     apply UInt32.toNat_inj.mp
     have hp := congrArg UInt32.toNat (h.scalar j hj)
@@ -247,14 +252,15 @@ theorem ready_of_from28 (W T : ByteArray) (words : Nat → UInt32)
     have hpos := (StaggerTableLayout.layout_valid ⟨i, hi77⟩).1
     change 1 ≤ StaggerTableLayout.pairIndices[i]! at hpos
     by_cases hp : 2 ≤ StaggerTableLayout.pairIndices[i]!
-    · have hm : StaggerCoreModel.message W i = StaggerCoreModel.message T i := by
-        show MachineState.readWord W (18 * StaggerTableLayout.pairIndices[i]!) =
-          MachineState.readWord T (18 * StaggerTableLayout.pairIndices[i]!)
+    · have hw : MachineState.readWord W (18 * StaggerTableLayout.pairIndices[i]!) =
+          MachineState.readWord T (18 * StaggerTableLayout.pairIndices[i]!) := by
         apply Word.word_ext
         rw [Bytes.readWord_toNat, Bytes.readWord_toNat]
         apply StaggerTableMemory.bytesToNatPadded_congrOffset
         intro k hk
         exact hb _ (by omega)
+      have hm : StaggerCoreModel.message W i = StaggerCoreModel.message T i := by
+        simp only [StaggerCoreModel.message, hw]
       rw [hm]
       exact h.paired i hi77
     · have h1 : StaggerTableLayout.pairIndices[i]! = 1 := by omega
@@ -263,11 +269,9 @@ theorem ready_of_from28 (W T : ByteArray) (words : Nat → UInt32)
         rw [he] at h1
         exact absurd h1 (by decide)
       have hmW : StaggerCoreModel.message W i = MachineState.readWord W (18*1) := by
-        show MachineState.readWord W (18 * StaggerTableLayout.pairIndices[i]!) = _
-        rw [h1]
+        simp only [StaggerCoreModel.message, if_neg hne, h1]
       have hmT : StaggerCoreModel.message T i = MachineState.readWord T (18*1) := by
-        show MachineState.readWord T (18 * StaggerTableLayout.pairIndices[i]!) = _
-        rw [h1]
+        simp only [StaggerCoreModel.message, if_neg hne, h1]
       have hl := StaggerAlgorithm.message_lanes _ _ _ (h.paired i hi77)
       rw [hmT] at hl
       apply Or.inr
