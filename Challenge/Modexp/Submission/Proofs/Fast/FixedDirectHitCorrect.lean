@@ -25,6 +25,52 @@ open Challenge.Modexp.Submission.Proofs.Fast.FixedDirectStates
 open Challenge.Modexp.Submission.Proofs.Fast.FixedDirectChainCorrect
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
+theorem handled_of_terminal_trace (input : ByteArray) (entry s : State) (mem : ByteArray)
+    (rest : List UInt256) (n bsize esize msize result : Nat)
+    (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
+    (htrace : Challenge.EvmProof.GasSteps entry
+      (GenericReturnAdapter.terminalOutput s mem rest))
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hm32 : msize ≤ 32 * n) (hmpos : 0 < msize)
+    (hfull : msize = 32 * n)
+    (hbsize : bsize = Challenge.Modexp.baseSize input)
+    (hesize : esize = Challenge.Modexp.exponentSize input)
+    (hmsz : msize = Challenge.Modexp.modulusSize input)
+    (hrep : Model.FastRepresents mem 256 n result)
+    (hres : result = Precompile.modPow
+      (Precompile.bytesToNatPadded input 96 bsize)
+      (Precompile.bytesToNatPadded input (96 + bsize) esize)
+      (Precompile.bytesToNatPadded input (96 + bsize + esize) msize)) :
+    FixedExponentRoute.Handled input entry := by
+  have hmodlt : Challenge.Modexp.modulusSize input < 2 ^ 256 := by
+    have hmodle : Challenge.Modexp.modulusSize input ≤ 256 := by omega
+    have hp : (256 : Nat) < 2 ^ 256 := by norm_num
+    omega
+  have hcalldata : (MachineState.readWord s.executionEnv.calldata 64).toNat = msize := by
+    calc
+      (MachineState.readWord s.executionEnv.calldata 64).toNat =
+          (UInt256.ofNat (Challenge.Modexp.modulusSize input)).toNat := by
+            rw [hdata]
+            rfl
+      _ = Challenge.Modexp.modulusSize input := by
+        rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hmodlt]
+      _ = msize := hmsz.symm
+  have hspec := Exp.returned_eq_spec s mem input n bsize esize msize result hn hm32 hmpos
+    hbsize hesize hmsz hrep hres
+  have hreturn :
+      (GenericReturnAdapter.terminalOutput s mem rest).hReturn =
+        Challenge.Modexp.spec input := by
+    change MachineState.readPadded mem 256
+      (MachineState.readWord s.executionEnv.calldata 64).toNat = _
+    rw [hcalldata]
+    simpa [Exp.returnedState, hfull] using hspec
+  have hdone :
+      (GenericReturnAdapter.terminalOutput s mem rest).isDone = true := by
+    simp [State.isDone, State.isHalted, State.isRunning,
+      GenericReturnAdapter.terminalOutput, GenericReturnAdapter.atState, hstack]
+  refine ⟨GenericReturnAdapter.terminalOutput s mem rest, ⟨htrace⟩, hdone, ?_⟩
+  rw [State.toResult_returned _ (by rfl)]
+  exact congrArg ExecutionResult.returned hreturn
+
 /-- Exact correctness for either fixed chain, with arbitrary valid operands. -/
 theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
     (n bsize esize msize mm minv bM rawBase count : Nat)
@@ -34,9 +80,11 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hdata : s.executionEnv.calldata = input)
     (hstack : s.callStack = []) (hactive : 89 ≤ s.activeWords.toNat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmz : 32 < msize)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (_hmz : 32 < msize)
     (hm32 : msize ≤ 32 * n)
+    (hfull : msize = 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
     (hmsz : msize = Challenge.Modexp.modulusSize input)
@@ -65,21 +113,22 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
   let prodVal := Model.montMul mm (Limbs.radix ^ n) sqVal rawBase
   let memOut := ch.mem
   have houtRep : Model.FastRepresents memOut 256 n prodVal := ch.value
-  have htraceReturn := Exp.gasSteps_return s memOut n bsize esize msize
-    hn hn32 hmz hm32 hactive hcode hfork hrun hnp
-  have htrace : Challenge.EvmProof.GasSteps
-      (special s memory n bsize esize msize count)
-      (Exp.returnedState s memOut n bsize esize msize) :=
-    ch.trace.trans htraceReturn
   have houtEq : prodVal =
       Precompile.bytesToNatPadded input 96 bsize ^ (2 ^ count + 1) % mm :=
     directProduct_value hm hcop hbMform hrawForm
-  refine Exp.handled_of_trace input
-    (special s memory n bsize esize msize count) s memOut
-    n bsize esize msize prodVal hstack htrace hn hm32 (by omega)
-    hbsize hesize hmsz houtRep ?_
-  rw [← hmm, Model.modPow_eq_pow_mod hm, hexp]
-  exact houtEq
+  have hres : prodVal = Precompile.modPow
+      (Precompile.bytesToNatPadded input 96 bsize)
+      (Precompile.bytesToNatPadded input (96 + bsize) esize)
+      (Precompile.bytesToNatPadded input (96 + bsize + esize) msize) := by
+    rw [← hmm, Model.modPow_eq_pow_mod hm, hexp]
+    exact houtEq
+  have htrace : Challenge.EvmProof.GasSteps
+      (special s memory n bsize esize msize count)
+      (GenericReturnAdapter.terminalOutput s memOut ch.trace.rest) := ch.trace.steps
+  exact handled_of_terminal_trace input
+    (special s memory n bsize esize msize count) s memOut ch.trace.rest
+    n bsize esize msize prodVal hdata hstack htrace hn hn32 hm32 (by omega)
+    hfull hbsize hesize hmsz houtRep hres
 
 end Challenge.Modexp.Submission.Proofs.Fast.FixedDirectHitCorrect
 
