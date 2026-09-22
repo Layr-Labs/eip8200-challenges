@@ -1,5 +1,4 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.PCFast
-import Challenge.Modexp.Submission.Proofs.Fast.ShiftCacheTrace
 import Challenge.Modexp.Submission.Proofs.Fast.CompactConstants
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftStates
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftPaths
@@ -31,27 +30,27 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs
 
-@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2163 = 2669 := by
+@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2163 = 2670 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2169 = 2676 := by
+@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2169 = 2677 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2175 = 2683 := by
+@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2175 = 2684 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2181 = 2690 := by
+@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2181 = 2691 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2187 = 2697 := by
+@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2187 = 2698 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2193 = 2704 := by
+@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2193 = 2705 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -355,20 +354,44 @@ theorem run_newtonB (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock blk2982
       (newtonBState s mem n bsize esize msize) =
       some (cacheSetupState s (preMem mem) n bsize esize msize) := by
-  have haw : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1664 32) =
+  have haw1312 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1312 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  simp (config := { maxSteps := 600000 })
+  have haw1344 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1344 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have haw1376 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1376 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have haw1408 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1408 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have haw1440 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1440 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have haw1472 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1472 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have haw1504 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1504 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have haw1536 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1536 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have haw1568 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1568 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have haw1600 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1600 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have haw1632 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1632 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have haw1664 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1664 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  simp (config := { maxSteps := 2500000 })
     [blk2982, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      newtonBState, preNewtonState, cacheSetupState, kState, pcNewtonB,
-      preMem, preMemOf, preDinv, newton8W, newtonW, PRE_DINV, Exp.storeWord,
-      outer, Exp.outer, hcode, hrun, haw,
+      newtonBState, preNewtonState, cacheSetupState, slotState, rideSlots, pcNewtonB,
+      preMem, preMemOf, preDinv, newton8W, newton4W, newtonW, Exp.storeWord, PRE_DINV,
+      outer, Exp.outer, hcode, hrun, haw1312, haw1344, haw1376, haw1408, haw1440,
+      haw1472, haw1504, haw1536, haw1568, haw1600, haw1632, haw1664,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
+  all_goals (first | rfl | simp [UInt256.ofNat, Fin.ofNat] | decide)
 
 end Challenge.Modexp.Submission.Proofs.Fast.Shift

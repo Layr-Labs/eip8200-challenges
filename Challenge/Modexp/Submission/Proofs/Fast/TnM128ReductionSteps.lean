@@ -9,8 +9,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 open CiosReadonly CiosCachedMidMemory
 
-def middlePC (n : Nat) : Nat := if n = 4 then 5431 else 3832
-def l2PC (n : Nat) : Nat := if n = 4 then 3987 else 3851
+def middlePC (n : Nat) : Nat := if n = 4 then 5421 else 3822
+def l2PC (n : Nat) : Nat := if n = 4 then 3977 else 3841
 
 noncomputable def reduction_steps (s : State)
     (env : Environment TnM128CandidateArtifact.submissionArtifact .Osaka s)
@@ -27,7 +27,7 @@ noncomputable def reduction_steps (s : State)
       (framed {s with memory := q.memory} (UInt256.ofNat (middlePC n))
         ([q.carry,bi,pbi,hd,pb,ent,tn,allOnes,m128,inv,m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest))
       (framed {s with memory := (TnCacheSquareModel.fromL1 q tn n).memory}
-        (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb) then hd else UInt256.ofNat 4138)
+        (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb) then hd else UInt256.ofNat 4128)
         (TnCacheFrameOps.frame (negative32+pbi) hd pb ent
           (TnCacheSquareModel.fromL1 q tn n).tn m128 inv
           (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))) := by

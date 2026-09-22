@@ -22,12 +22,12 @@ def loadProgram : List Instr :=
    .push 2 2720, .op .MLOAD,
    .push 2 2752, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .ADD,
    .push 1 32, .op .MLOAD,
-   .push 0 0, .push 2 2688, .op .MLOAD,
+   .push 0 0, .op (.Dup ⟨14, by decide⟩),
    .push 1 128, .op .AND, .op .ISZERO, .op .ISZERO, .push 2 1747, .op .MUL]
 
 def shuffleProgram : List Instr :=
   [
-   .push 2 3572,
+   .push 2 3562,
    .op .ADD,
    .push 1 128,
    .op .MLOAD,
@@ -42,10 +42,11 @@ def shuffleProgram : List Instr :=
 def lowProgram : List Instr :=
   [.push 1 64, .op .MLOAD, .op (.Swap ⟨10, by decide⟩)]
 
-/-- The four-limb displacement.  `PUSH1 128 AND ISZERO ISZERO PUSH2 1747 MUL`
-normalizes the masked bit to 0/1 before scaling, so the distance is a free
-`PUSH2` literal rather than a multiple of 128.  It still agrees with
-`1747 * isFour n` only for `n = 4` and `n = 8` (at `n = 5,6,7` the mask bit is
+/-- The four-limb displacement.  The selector word is no longer loaded: `DUP15` pulls the
+F5[4] length slot off the riding frame (pinned to `readWord mem 2688` by `hslot`), then
+`PUSH1 128 AND ISZERO ISZERO PUSH2 1747 MUL` normalizes its bit 7 to 0/1 before scaling,
+so the distance is a free `PUSH2` literal rather than a multiple of 128.  It still agrees
+with `1747 * isFour n` only for `n = 4` and `n = 8` (at `n = 5,6,7` the mask bit is
 also set), so every consumer carries `n = 4 ∨ n = 8`. -/
 def displacement (mem : ByteArray) : UInt256 :=
   UInt256.ofNat 1747 * CapDispatch.selectBit (MachineState.readWord mem 2688)
@@ -58,9 +59,9 @@ theorem run_reads (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     (haddr : addr + 32 ≤ 2816)
     (hml : MachineState.readWord s.memory 2752 = UInt256.ofNat addr) :
     runInstructions readsProgram
-      {s with pc := UInt256.ofNat 3395, stack := [hd, pa, pb, dst, ret] ++ rest} =
+      {s with pc := UInt256.ofNat 3388, stack := [hd, pa, pb, dst, ret] ++ rest} =
     some {s with
-        pc := UInt256.ofNat 3420
+        pc := UInt256.ofNat 3413
         stack := [MachineState.readWord s.memory 32, (pa + UInt256.ofNat addr), MachineState.readWord s.memory 2720, MachineState.readWord s.memory addr, MachineState.readWord s.memory 2784, MachineState.readWord s.memory 96, hd, pa, pb, dst, ret] ++ rest} := by
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
@@ -103,13 +104,14 @@ theorem run_reads (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
   try exact ⟨rfl, rfl⟩
 
 theorem run_setup (s : State) (hd pa pb dst ret value inverse aEnd tailPointer low96 low32 : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
+    (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
+    (hslot : rest[2]? = some (MachineState.readWord s.memory 2688)) :
     runInstructions setupProgram
       {s with
-        pc := UInt256.ofNat 3420
+        pc := UInt256.ofNat 3413
         stack := [low32, aEnd, inverse, value, tailPointer, low96, hd, pa, pb, dst, ret] ++ rest} =
     some {s with
-      pc := UInt256.ofNat 3434
+      pc := UInt256.ofNat 3424
       stack := [displacement s.memory, zeroTn,
         low32, aEnd, inverse, value, tailPointer, low96, hd, pa, pb, dst, ret] ++ rest} := by
   have hc4 : rest.length + 4 < 1024 := by omega
@@ -128,7 +130,41 @@ theorem run_setup (s : State) (hd pa pb dst ret value inverse aEnd tailPointer l
   have h9344 : (2688 : UInt256).toNat = 2688 := by decide
   have hact3 := activeWords_fix s 2688 32 (by decide) (by omega) hact
   simp [zeroTn, setupProgram, loadProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    displacement,  h9344, State.activeWordsAfterUInt256, hact3,
+    displacement,  h9344, State.activeWordsAfterUInt256, hact3, hslot,
+    hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, ← word_add_assoc]
+  try exact ⟨rfl, rfl⟩
+
+/-- `run_setup` with the riding width slot pinned to an arbitrary word `w` instead of the
+memory word at 2688: the square-loop frame rides the limb count there, for which the
+normalized selector vanishes. -/
+theorem run_setup_w (s : State) (hd pa pb dst ret value inverse aEnd tailPointer low96 low32
+      w : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 998) (_hact : 88 ≤ s.activeWords.toNat)
+    (hslot : rest[2]? = some w) :
+    runInstructions setupProgram
+      {s with
+        pc := UInt256.ofNat 3413
+        stack := [low32, aEnd, inverse, value, tailPointer, low96, hd, pa, pb, dst, ret] ++ rest} =
+    some {s with
+      pc := UInt256.ofNat 3424
+      stack := [UInt256.ofNat 1747 * CapDispatch.selectBit w, zeroTn,
+        low32, aEnd, inverse, value, tailPointer, low96, hd, pa, pb, dst, ret] ++ rest} := by
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  have hc16 : rest.length + 16 < 1024 := by omega
+  simp [zeroTn, setupProgram, loadProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    CapDispatch.selectBit, hslot,
     hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, ← word_add_assoc]
   try exact ⟨rfl, rfl⟩
@@ -136,11 +172,12 @@ theorem run_setup (s : State) (hd pa pb dst ret value inverse aEnd tailPointer l
 theorem run_load (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     (addr : Nat) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
     (haddr : addr + 32 ≤ 2816)
-    (hml : MachineState.readWord s.memory 2752 = UInt256.ofNat addr) :
+    (hml : MachineState.readWord s.memory 2752 = UInt256.ofNat addr)
+    (hslot : rest[2]? = some (MachineState.readWord s.memory 2688)) :
     runInstructions loadProgram
-      {s with pc := UInt256.ofNat 3395, stack := [hd, pa, pb, dst, ret] ++ rest} =
+      {s with pc := UInt256.ofNat 3388, stack := [hd, pa, pb, dst, ret] ++ rest} =
     some {s with
-        pc := UInt256.ofNat 3434
+        pc := UInt256.ofNat 3424
         stack := [displacement s.memory, zeroTn,
         MachineState.readWord s.memory 32, (pa + UInt256.ofNat addr), MachineState.readWord s.memory 2720, MachineState.readWord s.memory addr, MachineState.readWord s.memory 2784, MachineState.readWord s.memory 96, hd, pa, pb, dst, ret] ++ rest} := by
   change runInstructions (readsProgram ++ setupProgram) _ = _
@@ -148,7 +185,27 @@ theorem run_load (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
   have hs := run_setup s hd pa pb dst ret (MachineState.readWord s.memory addr)
     (MachineState.readWord s.memory 2720) ((pa + UInt256.ofNat addr))
     (MachineState.readWord s.memory 2784) (MachineState.readWord s.memory 96)
-    (MachineState.readWord s.memory 32) rest hcap hact
+    (MachineState.readWord s.memory 32) rest hcap hact hslot
+  exact runInstructions_append_some _ _ _ _ _ hr hs
+
+/-- `run_load` for a riding width slot pinned to an arbitrary word `w`. -/
+theorem run_load_w (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
+    (addr : Nat) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
+    (haddr : addr + 32 ≤ 2816)
+    (hml : MachineState.readWord s.memory 2752 = UInt256.ofNat addr)
+    (w : UInt256) (hslot : rest[2]? = some w) :
+    runInstructions loadProgram
+      {s with pc := UInt256.ofNat 3388, stack := [hd, pa, pb, dst, ret] ++ rest} =
+    some {s with
+        pc := UInt256.ofNat 3424
+        stack := [UInt256.ofNat 1747 * CapDispatch.selectBit w, zeroTn,
+        MachineState.readWord s.memory 32, (pa + UInt256.ofNat addr), MachineState.readWord s.memory 2720, MachineState.readWord s.memory addr, MachineState.readWord s.memory 2784, MachineState.readWord s.memory 96, hd, pa, pb, dst, ret] ++ rest} := by
+  change runInstructions (readsProgram ++ setupProgram) _ = _
+  have hr := run_reads s hd pa pb dst ret rest addr hcap hact haddr hml
+  have hs := run_setup_w s hd pa pb dst ret (MachineState.readWord s.memory addr)
+    (MachineState.readWord s.memory 2720) ((pa + UInt256.ofNat addr))
+    (MachineState.readWord s.memory 2784) (MachineState.readWord s.memory 96)
+    (MachineState.readWord s.memory 32) w rest hcap hact hslot
   exact runInstructions_append_some _ _ _ _ _ hr hs
 
 /-- `PUSH2 0x0fe4; ADD; DUP1; PUSH2 0x12b; ADD; SWAP4; SWAP11; PUSH0; NOT; SWAP4; SWAP11`
@@ -158,11 +215,11 @@ theorem run_shuffle (s : State) (hd pa pb dst ret value inverse aEnd tailPointer
     (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions shuffleProgram
       {s with
-        pc := UInt256.ofNat 3434
+        pc := UInt256.ofNat 3424
         stack := [delta, zeroTn, low32, aEnd, inverse, value, tailPointer, low96, hd, pa, pb, dst, ret] ++ rest} =
     some {s with
-        pc := UInt256.ofNat 3447
-        stack := [pa, pb, UInt256.ofNat 3572 + delta, zeroTn, allOnes,
+        pc := UInt256.ofNat 3437
+        stack := [pa, pb, UInt256.ofNat 3562 + delta, zeroTn, allOnes,
         MachineState.readWord s.memory 128, inverse, value, tailPointer, low96, hd, low32, aEnd, dst, ret] ++ rest} := by
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
@@ -188,10 +245,10 @@ theorem run_low (s : State) (hd pa pb l1 l2 dst ret value inverse aEnd tailPoint
     (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions lowProgram
       {s with
-        pc := UInt256.ofNat 3447
+        pc := UInt256.ofNat 3437
         stack := [pa, pb, l1, zeroTn, allOnes, l2, inverse, value, tailPointer, low96, hd, low32, aEnd, dst, ret] ++ rest} =
     some {s with
-        pc := UInt256.ofNat 3451
+        pc := UInt256.ofNat 3441
         stack := [hd, pa, pb, l1, zeroTn, allOnes, l2, inverse, value, tailPointer, low96,
           MachineState.readWord s.memory 64, low32, aEnd, dst, ret] ++ rest} := by
   have hc15 : rest.length + 15 < 1024 := by omega

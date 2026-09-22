@@ -23,16 +23,6 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 
-/-- Memory after the caller's square loop has run down from `k` remaining
-in-place Montgomery squares of BASE, `sq` being the memory effect of one
-`SQUARE(0x800) → 0x800` call.  Each iteration first stores the remaining count
-in memory word `0x2440 = 2624` (the loop head's `MSTORE`, read by the kernel's
-own square loop) and then calls the kernel. -/
-def fixedDirectMems
-    (sq : ByteArray → ByteArray) : ByteArray → Nat → ByteArray
-  | mem, 0 => mem
-  | mem, k + 1 =>
-      fixedDirectMems sq (sq (Exp.storeWord mem 2624 (UInt256.ofNat (k + 1)))) k
 
 /-- Arithmetic value represented by BASE after `t` in-place squares. -/
 def fixedDirectValue (mm R bM : Nat) : Nat → Nat
@@ -82,7 +72,7 @@ normal-domain residue while BASE is in Montgomery form. -/
 structure Inv (mem : ByteArray) (n mm rawBase squareBase : Nat) : Prop where
   modulus : Model.FastRepresents mem 0 n mm
   rawAcc : Model.FastRepresents mem 256 n rawBase
-  squareBase : Model.FastRepresents mem 512 n squareBase
+  squareBase : Model.FastRepresents mem 2112 n squareBase
   oneBlock : ∃ one, one < Limbs.radix ∧
     Model.FastRepresents mem 768 n one
 
@@ -100,48 +90,11 @@ theorem countStore_inv {mem : ByteArray} {n mm rawBase squareBase : Nat} (c : Na
   obtain ⟨one, honeLt, honeRep⟩ := hinv.oneBlock
   exact ⟨Exp.storeWord_frame mem 2624 0 n mm _ (Or.inr (by omega)) hinv.modulus,
     Exp.storeWord_frame mem 2624 256 n rawBase _ (Or.inr (by omega)) hinv.rawAcc,
-    Exp.storeWord_frame mem 2624 512 n squareBase _ (Or.inr (by omega))
+    Exp.storeWord_frame mem 2624 2112 n squareBase _ (Or.inr (by omega))
       hinv.squareBase,
     ⟨one, honeLt,
       Exp.storeWord_frame mem 2624 768 n one _ (Or.inr (by omega)) honeRep⟩⟩
 
-theorem fixedDirectMems_frame {s : State} {n bsize mm minv : Nat}
-    (sub : Exp.Subroutines s n bsize mm minv) :
-    ∀ (t : Nat) (mem : ByteArray), Exp.Frame mem n bsize minv →
-      Exp.Frame (fixedDirectMems sub.sqMem mem t) n bsize minv := by
-  intro t
-  induction t with
-  | zero => exact fun _ hframe => hframe
-  | succ t ih =>
-      exact fun mem hframe =>
-        ih _ (sub.sqFrame _ (countStore_frame (t + 1) hframe))
-
-/-- In-place BASE squaring preserves modulus, raw ACC, and ONE. -/
-theorem fixedDirectMems_inv {s : State} {n bsize mm minv : Nat}
-    (sub : Exp.Subroutines s n bsize mm minv)
-    (hm : 0 < mm) (hn32 : n ≤ 8) (rawBase : Nat) :
-    ∀ (t : Nat) (mem : ByteArray) (bM : Nat), bM < mm →
-      Exp.Frame mem n bsize minv → Inv mem n mm rawBase bM →
-      Inv (fixedDirectMems sub.sqMem mem t) n mm rawBase
-        (fixedDirectValue mm (Limbs.radix ^ n) bM t) := by
-  intro t
-  induction t with
-  | zero => exact fun _ _ _ _ hinv => hinv
-  | succ t ih =>
-      intro mem bM hbM hframe hinv
-      have hinv0 := countStore_inv (t + 1) hn32 hinv
-      have hframe0 := countStore_frame (t + 1) hframe
-      obtain ⟨one, honeLt, honeRep⟩ := hinv0.oneBlock
-      have hstep : Inv (sub.sqMem (Exp.storeWord mem 2624 (UInt256.ofNat (t + 1))))
-          n mm rawBase (Model.montMul mm (Limbs.radix ^ n) bM bM) :=
-        ⟨sub.sqKeep 0 mm _ (by omega) (Or.inr (by omega)) hinv0.modulus,
-         sub.sqKeep 256 rawBase _ (by omega) (Or.inr (by omega)) hinv0.rawAcc,
-         sub.sqValue _ _ hframe0 hinv0.modulus hinv0.squareBase hbM,
-         ⟨one, honeLt, sub.sqKeep 768 one _ (by omega) (Or.inl (by omega)) honeRep⟩⟩
-      have hrec := ih _ _ (Model.montMul_lt hm (Limbs.radix ^ n) bM bM)
-        (sub.sqFrame _ hframe0) hstep
-      rw [fixedDirectValue_step] at hrec
-      exact hrec
 
 /-- A Montgomery-form left operand times a normal-form right operand is a
 normal-domain product. -/

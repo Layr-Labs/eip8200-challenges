@@ -27,16 +27,17 @@ def isFour (n : Nat) : UInt256 :=
 entry is the shared k1 JUMPDEST 3622; for four limbs `s32 = 128` adding 1747 gives 5369,
 the entry of the private ladder copy that keeps its own tail jump. -/
 def l1Target (n : Nat) : UInt256 :=
-  UInt256.ofNat 3572 + UInt256.ofNat 1747 * isFour n
+  UInt256.ofNat 3562 + UInt256.ofNat 1747 * isFour n
 
-/-- Second-loop entry (`ent + 0x12b`), fixed for the whole kernel call. -/
-def l2Target (n : Nat) : UInt256 :=
-  UInt256.ofNat 3851 + UInt256.ofNat 1747 * isFour n
+/-- Second-loop entry, fixed for the whole kernel call: the four-limb ladder tail pushes
+it directly (`PUSH2 3841; JUMP`, instruction 4273) — shared by both widths. -/
+def l2Target (_n : Nat) : UInt256 :=
+  UInt256.ofNat 3841
 
-@[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 5319 := by decide
-@[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 3572 := by decide
-@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 5598 := by decide
-@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 3851 := by decide
+@[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 5309 := by decide
+@[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 3562 := by decide
+@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 3841 := by decide
+@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 3841 := by decide
 
 /-! ## Row frames
 

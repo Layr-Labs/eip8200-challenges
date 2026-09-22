@@ -12,7 +12,7 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro SquareModel StagedOperand
 open TnM128L1Blocks
 
 def suffix (k : Nat) (hk : k ≤ 7) :
-    Block TnM128CandidateArtifact.submissionArtifact .Osaka (3831-37*k) (TnCacheL1Suffix.program k) := by
+    Block TnM128CandidateArtifact.submissionArtifact .Osaka (3821-37*k) (TnCacheL1Suffix.program k) := by
   interval_cases k
   · exact common0
   · exact common1
@@ -31,21 +31,21 @@ noncomputable def suffix_steps (s : State)
     (hactive : 88 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hk : j0+k = n)
     (hpa : pa+32*n ≤ 2048 ∨ pa = 2368) (hsnapshot : Snapshot q.memory pa n) :
     GasSteps
-      (TnCacheL1Trace.qState s (UInt256.ofNat (3831-37*k)) q bi
+      (TnCacheL1Trace.qState s (UInt256.ofNat (3821-37*k)) q bi
         pbi hd pbEnd flag tn destination returnPC rest)
-      (TnCacheL1Trace.qState s (UInt256.ofNat 3832) (l1Run q bi pa n j0 k)
+      (TnCacheL1Trace.qState s (UInt256.ofNat 3822) (l1Run q bi pa n j0 k)
         bi pbi hd pbEnd flag tn destination returnPC rest) := by
-  have hr := TnCacheL1Suffix.run_suffix s (3831-37*k) q bi pa n j0 k
+  have hr := TnCacheL1Suffix.run_suffix s (3821-37*k) q bi pa n j0 k
     pbi hd pbEnd flag tn destination returnPC rest hcap hactive hn hk hpa hsnapshot
-  have hpc : 3831-37*k+37*k+1 = 3832 := by omega
+  have hpc : 3821-37*k+37*k+1 = 3822 := by omega
   rw [hpc] at hr
   exact (suffix k hk7).steps
-    (s := TnCacheL1Trace.qState s (UInt256.ofNat (3831-37*k)) q bi
+    (s := TnCacheL1Trace.qState s (UInt256.ofNat (3821-37*k)) q bi
       pbi hd pbEnd flag tn destination returnPC rest)
     (env.transfer rfl rfl) rfl hr
 
 def privateSuffix (k : Nat) (hk : k ≤ 3) :
-    Block TnM128CandidateArtifact.submissionArtifact .Osaka (5430-37*k) (TnCacheL1Suffix.program k) := by
+    Block TnM128CandidateArtifact.submissionArtifact .Osaka (5420-37*k) (TnCacheL1Suffix.program k) := by
   interval_cases k
   · exact private0
   · exact private1
@@ -60,16 +60,16 @@ noncomputable def private_steps (s : State)
     (hactive : 88 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hk : j0+k = n)
     (hpa : pa+32*n ≤ 2048 ∨ pa = 2368) (hsnapshot : Snapshot q.memory pa n) :
     GasSteps
-      (TnCacheL1Trace.qState s (UInt256.ofNat (5430-37*k)) q bi
+      (TnCacheL1Trace.qState s (UInt256.ofNat (5420-37*k)) q bi
         pbi hd pbEnd flag tn destination returnPC rest)
-      (TnCacheL1Trace.qState s (UInt256.ofNat 5431) (l1Run q bi pa n j0 k)
+      (TnCacheL1Trace.qState s (UInt256.ofNat 5421) (l1Run q bi pa n j0 k)
         bi pbi hd pbEnd flag tn destination returnPC rest) := by
-  have hr := TnCacheL1Suffix.run_suffix s (5430-37*k) q bi pa n j0 k
+  have hr := TnCacheL1Suffix.run_suffix s (5420-37*k) q bi pa n j0 k
     pbi hd pbEnd flag tn destination returnPC rest hcap hactive hn hk hpa hsnapshot
-  have hpc : 5430-37*k+37*k+1 = 5431 := by omega
+  have hpc : 5420-37*k+37*k+1 = 5421 := by omega
   rw [hpc] at hr
   exact (privateSuffix k hk7).steps
-    (s := TnCacheL1Trace.qState s (UInt256.ofNat (5430-37*k)) q bi
+    (s := TnCacheL1Trace.qState s (UInt256.ofNat (5420-37*k)) q bi
       pbi hd pbEnd flag tn destination returnPC rest)
     (env.transfer rfl rfl) rfl hr
 
