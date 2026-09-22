@@ -83,7 +83,7 @@ def handled_of_bDoneConcrete (input : ByteArray) (s : State) (mem : ByteArray)
     (hact : 89 ≤ s.activeWords.toNat)
     (hvalid : Challenge.Modexp.ValidInput input)
     (hactLe : s.activeWords.toNat ≤ 289)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hn48 : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1)
     (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
@@ -96,7 +96,7 @@ def handled_of_bDoneConcrete (input : ByteArray) (s : State) (mem : ByteArray)
       Limbs.radix ^ n [MOD mm])
     (hframe : Exp.Frame mem n bsize minv)
     (hmod : Model.FastRepresents mem 0 n mm)
-    (hbase : Model.FastRepresents mem 512 n bM)
+    (hbase : Model.FastRepresents mem 2112 n bM)
     (hone : ∃ one, one < Limbs.radix ∧
       Model.FastRepresents mem 768 n one)
     (hraw : ∃ rawBase, Model.FastRepresents mem 256 n rawBase ∧
@@ -105,7 +105,7 @@ def handled_of_bDoneConcrete (input : ByteArray) (s : State) (mem : ByteArray)
   handled_of_bDone
     (FixedDirectRouteCorrect.route input s mem n bsize esize msize mm minv bM
       sub spec hcode hfork hrun hnp hdata hstack hact hvalid hactLe
-      hn hn32 hb he hmz hm32
+      hn hn32 hn48 hminv1 hb he hmz hm32
       hbsize hesize hmsz hmm hodd hradix hbMlt hbMform hframe hmod hbase hone hraw)
 
 /-- Fully instantiated adapter for traces that land on the dispatcher entry
@@ -124,6 +124,7 @@ def handled_of_entryStateConcrete (input : ByteArray) (s : State) (mem : ByteArr
     (hactLe : s.activeWords.toNat ≤ 289)
     (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hb : bsize ≤ 1024) (he : esize ≤ 1024)
+    (hn48 : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
@@ -135,7 +136,7 @@ def handled_of_entryStateConcrete (input : ByteArray) (s : State) (mem : ByteArr
       Limbs.radix ^ n [MOD mm])
     (hframe : Exp.Frame mem n bsize minv)
     (hmod : Model.FastRepresents mem 0 n mm)
-    (hbase : Model.FastRepresents mem 512 n bM)
+    (hbase : Model.FastRepresents mem 2112 n bM)
     (hone : ∃ one, one < Limbs.radix ∧
       Model.FastRepresents mem 768 n one)
     (hraw : ∃ rawBase, Model.FastRepresents mem 256 n rawBase ∧
@@ -144,7 +145,7 @@ def handled_of_entryStateConcrete (input : ByteArray) (s : State) (mem : ByteArr
   handled_of_entryState
     (FixedDirectRouteCorrect.route input s mem n bsize esize msize mm minv bM
       sub spec hcode hfork hrun hnp hdata hstack hact hvalid hactLe
-      hn hn32 hb he hmz hm32
+      hn hn32 hn48 hminv1 hb he hmz hm32
       hbsize hesize hmsz hmm hodd hradix hbMlt hbMform hframe hmod hbase hone hraw)
 
 end Challenge.Modexp.Submission.Proofs.Fast.FixedDirectCorrect

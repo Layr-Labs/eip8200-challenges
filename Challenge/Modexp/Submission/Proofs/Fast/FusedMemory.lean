@@ -19,7 +19,7 @@ theorem mont_mul_congr_left (mm R a b c : Nat) (h : a % mm = b % mm) :
 
 theorem represents (s : State) (mem : ByteArray) (p a b mm k : Nat)
     (hfast : p+2 = 4 ∨ p+2 = 8) (hn : p+2 ≤ 8) (hk : 1 ≤ k)
-    (ha : Model.FastRepresents mem 512 (p+2) a)
+    (ha : Model.FastRepresents mem 2112 (p+2) a)
     (hb : Model.FastRepresents mem 256 (p+2) b)
     (hm : Model.FastRepresents mem 0 (p+2) mm) (hodd : mm % 2 = 1) (_ham : a < mm) (hbm : b < mm)
     (hminv : ((MachineState.readWord mem (32*(p+2)-32)).toNat *

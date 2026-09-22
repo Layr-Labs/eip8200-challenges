@@ -12,41 +12,41 @@ open WindowNibbleKernel WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro CiosCached
 
-def prefixProgram : List Instr := TnM128FusionFrame.frameProgram 3543 772
+def prefixProgram : List Instr := TnM128FusionFrame.frameProgram 3533 772
 def clearProgram : List Instr :=
   [.push 2 2016, .op (.Dup ⟨10, by decide⟩), .op .SUB,
    .op .CALLDATASIZE, .push 2 2048, .op .CALLDATACOPY]
 
-def prefixBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3481 prefixProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2775 36 3481 prefixProgram
+def prefixBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3471 prefixProgram :=
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2779 36 3471 prefixProgram
     (by decide) (by rfl) (by rfl) (by decide)
-def clearBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3533 clearProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2811 6 3533 clearProgram
+def clearBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3523 clearProgram :=
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2815 6 3523 clearProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def rowReady (s : State) (mem : ByteArray) (n : Nat)
     (tl inv m0 m96 m64 m32 : UInt256) (rest : List UInt256) : State :=
-  TnM128Setup.outState s mem 256 n 0 (UInt256.ofNat 3543) (TnM128Setup.l1Target n) inv m0
+  TnM128Setup.outState s mem 256 n 0 (UInt256.ofNat 3533) (TnM128Setup.l1Target n) inv m0
     (tl :: m96 :: m64 :: m32 :: UInt256.ofNat (2368+32*n-32) ::
       UInt256.ofNat 256 :: UInt256.ofNat 772 :: rest)
 
 def prefixState (s : State) (mem : ByteArray) (n : Nat)
     (tl inv m0 m96 m64 m32 : UInt256) (rest : List UInt256) : State :=
-  { rowReady s mem n tl inv m0 m96 m64 m32 rest with pc := UInt256.ofNat 3533 }
+  { rowReady s mem n tl inv m0 m96 m64 m32 rest with pc := UInt256.ofNat 3523 }
 
 theorem run_prefix (tn : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000) (hn : n = 4 ∨ n = 8)
     (htl : tl = UInt256.ofNat (2080+32*n)) :
     runInstructions prefixProgram
-      (TnM128SquareExit.frameAt tn (MachineState.readWord mem 128) 3481 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
+      (TnM128SquareExit.frameAt tn (MachineState.readWord mem 128) 3471 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
       some (prefixState s mem n tl inv m0 m96 m64 m32 rest) := by
   rcases hn with rfl | rfl <;> subst tl <;>
     exact TnM128FusionFrame.run_prefix (s := {s with memory := mem}) (p := pbi)
-      (oldHead := UInt256.ofNat 4268) (oldEnd := UInt256.ofNat (2368-32))
+      (oldHead := UInt256.ofNat 4258) (oldEnd := UInt256.ofNat (2368-32))
       (ent := ent) (neg := tn) (mask := allOnes) (ent2 := MachineState.readWord mem 128)
       (inv := inv) (m0 := m0) (tl := _) (m96 := m96) (m64 := m64) (m32 := m32)
-      (aprev := aprev) (dst := pdst) (ret := ret) (head := UInt256.ofNat 3543)
+      (aprev := aprev) (dst := pdst) (ret := ret) (head := UInt256.ofNat 3533)
       (finish := UInt256.ofNat 772) (rest := rest) (by omega)
 
 theorem run_clear (s : State) (mem : ByteArray) (n : Nat)
@@ -90,10 +90,10 @@ noncomputable def gasSteps_entry (tn : UInt256) (s : State) (mem : ByteArray) (n
     (hact : 88 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
     (htl : tl = UInt256.ofNat (2080+32*n)) :
     Challenge.EvmProof.GasSteps
-      (TnM128SquareExit.frameAt tn (MachineState.readWord mem 128) 3481 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
+      (TnM128SquareExit.frameAt tn (MachineState.readWord mem 128) 3471 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
       (rowReady s (mpZeroed s mem n) n tl inv m0 m96 m64 m32 rest) :=
   (prefixBlock.steps (TnM128SquareSteps.environment
-    (TnM128SquareExit.frameAt tn (MachineState.readWord mem 128) 3481 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) hcode hfork hrun hnp) rfl
+    (TnM128SquareExit.frameAt tn (MachineState.readWord mem 128) 3471 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) hcode hfork hrun hnp) rfl
     (run_prefix tn s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hn htl)).trans
   (clearBlock.steps (TnM128SquareSteps.environment
     (prefixState s mem n tl inv m0 m96 m64 m32 rest) hcode hfork hrun hnp) rfl

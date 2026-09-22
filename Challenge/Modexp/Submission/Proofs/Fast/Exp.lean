@@ -134,20 +134,22 @@ def outer (n bsize esize msize : Nat) : List UInt256 :=
 stack `[pa, pb, pd, ret] ++ tail`. -/
 def mpCall (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3390
+  { s with pc := UInt256.ofNat 3383
            stack := UInt256.ofNat pa :: UInt256.ofNat pb :: UInt256.ofNat pd ::
              ret :: tail
            memory := mem }
 
 /-- The `SQUARE` call state: the kernel's shared `common` block, entered with
-`hd = sq_row` and all three operands at `0x800`, stack
-`[sq_row, 2048, 2048, 2048, ret] ++ tail`.  The square rows address the
-accumulator as `ptr + 0x1840`, which is correct only for an operand at `0x800`;
-the only caller (the fixed-exponent chain) squares `0x800` in place. -/
+`hd = sq_row`, the source operand at `0x840` (the retained Montgomery base
+`TS`), and the kernel's destination/second operand at `0x200`, stack
+`[sq_row, 2112, 512, 512, ret] ++ tail`.  The base publish from `TS` now goes
+through the CIOS trampoline itself (the kernel stages the `0x840` block and
+writes the square chain to `0x200`), so the caller no longer copies `TS` to
+`BASE` first; the only caller is the fixed-exponent chain. -/
 def sqCall (s : State) (mem : ByteArray) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3394
-           stack := UInt256.ofNat 4561 :: UInt256.ofNat 512 :: UInt256.ofNat 512 ::
+  { s with pc := UInt256.ofNat 3387
+           stack := UInt256.ofNat 4551 :: UInt256.ofNat 2112 :: UInt256.ofNat 512 ::
              UInt256.ofNat 512 :: ret :: tail
            memory := mem }
 
@@ -228,6 +230,7 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
     32 ≤ pa → pa + 32 * n ≤ 2048 → 32 ≤ pb → pb + 32 * n ≤ 2048 →
     pd + 32 * n ≤ 2048 →
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true →
+    tail[2]? = some (MachineState.readWord mem 2688) →
     Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
     Model.FastRepresents mem pa n a → Model.FastRepresents mem pb n b → a < mm →
     Challenge.EvmProof.GasSteps (mpCall s mem pa pb pd ret tail)
@@ -238,7 +241,8 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
   sqFrame : ∀ (mem : ByteArray),
     Frame mem n bsize minv → Frame (sqMem mem) n bsize minv
   /-- `SQUARE`, entered at the kernel's `common` block with
-  `hd = sq_row` and all three operands at `0x800`.
+  `hd = sq_row`, the source operand at `0x840` (the retained `TS`) and the
+  kernel's other slots at `0x200`.
 
   Only for the widths the kernel does *not* accelerate: for `n ∈ {4, 8}` the
   kernel keeps its frame and loops internally (`squareLoop` below), so it never
@@ -247,16 +251,17 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
     ¬ ((n = 4 ∨ n = 8) ∧ minv ≠ 1) → tail.length ≤ 998 →
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true →
     Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
-    Model.FastRepresents mem 512 n a → a < mm →
+    Model.FastRepresents mem 2112 n a → a < mm →
     Challenge.EvmProof.GasSteps (sqCall s mem ret tail)
       (retTo s (sqMem mem) ret tail)
-  /-- `SQUARE` writes the Montgomery square of the block at `0x800` back to
-  `0x800`. -/
+  /-- `SQUARE` writes the Montgomery square of the block at `0x840` (the
+  retained `TS`) to `0x200`. -/
   sqValue : ∀ (mem : ByteArray) (a : Nat),
     Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
-    Model.FastRepresents mem 512 n a → a < mm →
+    Model.FastRepresents mem 2112 n a → a < mm →
     Model.FastRepresents (sqMem mem) 512 n
       (Model.montMul mm (Limbs.radix ^ n) a a)
+
   /-- `SQUARE` leaves every other named block alone. -/
   sqKeep : ∀ (ptr v : Nat) (mem : ByteArray),
     ptr + 32 * n ≤ 1792 → (512 + 32 * n ≤ ptr ∨ ptr + 32 * n ≤ 512) →
@@ -269,14 +274,15 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
     (mem : ByteArray) (a : Nat), (n = 4 ∨ n = 8) ∧ minv ≠ 1 → 1 ≤ k → k ≤ 16 →
     tail.length ≤ 982 →
     MachineState.readWord mem 2624 = UInt256.ofNat k →
+    tail[2]? = some (UInt256.ofNat n) →
     Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
-    Model.FastRepresents mem 512 n a → a < mm →
+    Model.FastRepresents mem 2112 n a → a < mm →
     Challenge.EvmProof.GasSteps (sqCall s mem ret tail)
       (retTo s (sqLoopMem k mem) (UInt256.ofNat 772) tail)
   /-- The raw factor retained in ACC decodes the Montgomery square chain. -/
   sqLoopValue : ∀ (k : Nat) (mem : ByteArray) (a b : Nat), n = 4 ∨ n = 8 → 1 ≤ k →
     Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
-    Model.FastRepresents mem 512 n a → Model.FastRepresents mem 256 n b → a < mm → b < mm →
+    Model.FastRepresents mem 2112 n a → Model.FastRepresents mem 256 n b → a < mm → b < mm →
     Model.FastRepresents (sqLoopMem k mem) 256 n
       (Model.montMul mm (Limbs.radix ^ n)
         ((fun x => Model.montMul mm (Limbs.radix ^ n) x x)^[k] a) b)
@@ -2102,7 +2108,7 @@ instead of at the Montgomery-form conversion call.  `Shift.dispState` is definit
 state; it cannot be named here because `ShiftStates` sits above this module. -/
 theorem fastSetup_entry_eq (input : ByteArray) :
     Setup.fastSetupState input =
-      retTo (Setup.fastSetupState input) (Setup.fastSetupMemory input) (UInt256.ofNat 2543)
+      retTo (Setup.fastSetupState input) (Setup.fastSetupMemory input) (UInt256.ofNat 2545)
         (outer (Setup.limbs input) (Challenge.Modexp.baseSize input)
           (Challenge.Modexp.exponentSize input) (Challenge.Modexp.modulusSize input)) := rfl
 

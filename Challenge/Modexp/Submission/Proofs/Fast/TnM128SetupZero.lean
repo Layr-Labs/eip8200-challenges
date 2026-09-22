@@ -24,7 +24,7 @@ def zeroProgram : List Instr :=
 /-- After `lowProgram`: `hd` above the operand pointers and the row frame. -/
 def cachedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3451
+  { s with pc := UInt256.ofNat 3441
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb,
              l1Target n, zeroTn, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
            memory := mem }
@@ -32,7 +32,7 @@ def cachedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
 /-- After staging and zeroing: `hd` above the width word. -/
 def clearedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3470
+  { s with pc := UInt256.ofNat 3460
            stack := [hd, UInt256.ofNat (32*n), UInt256.ofNat pb,
              l1Target n, zeroTn, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
            memory := mpZeroed s mem n }
@@ -70,6 +70,63 @@ theorem run_zero (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     read_stage_outside mem pa n 128 (Or.inl (by decide))]
   simp (config := { maxSteps := 200000 }) [zeroProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     cachedSetupState, clearedSetupState, stage, mpZeroed, hs32,
+    State.activeWordsAfterUInt256, State.activeWordsAfterUInt256_2, hactS, hactC, hactD, hactA,
+    h9344, h8960, h8192, h64, hactN,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,
+    Challenge.EvmProof.Word.word_toNat_ofNat, hpaN, hszN, hsizeN, hcdsN,
+    hc8, hc9, hc10, hc11, hc12, hc13, hc14, List.exchange]
+
+/-- `cachedSetupState` with the square frame's constant row head: the square-loop riding
+frame keeps the limb count (not the width word) in the setup's width slot, so the
+normalized selector vanishes and the displaced head is `3562` for both widths. -/
+def cachedSetupStateSq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb _n : Nat)
+    (dst ret : UInt256) (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 3441
+           stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb,
+             UInt256.ofNat 3562, zeroTn, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
+           memory := mem }
+
+/-- `clearedSetupState` for the square frame (row head 3562). -/
+def clearedSetupStateSq (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
+    (dst ret : UInt256) (rest : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 3460
+           stack := [hd, UInt256.ofNat (32*n), UInt256.ofNat pb,
+             UInt256.ofNat 3562, zeroTn, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
+           memory := mpZeroed s mem n }
+
+theorem run_zero_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
+    (dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1005)
+    (hact : 88 ≤ s.activeWords.toNat) (hnpos : 0 < n) (hn : n ≤ 8) (hpa : pa+32*n ≤ 2816)
+    (hcds : s.executionEnv.calldata.size < 115792089237316195423570985008687907853269984665640564039457584007913129639936)
+    (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*n)) :
+    runInstructions zeroProgram (cachedSetupStateSq s mem hd pa pb n dst ret rest) =
+      some (clearedSetupStateSq s (stage mem pa n) hd pb n dst ret rest) := by
+  have hc8 : rest.length+8 < 1024 := by omega
+  have hc9 : rest.length+9 < 1024 := by omega
+  have hc10 : rest.length+10 < 1024 := by omega
+  have hc11 : rest.length+11 < 1024 := by omega
+  have hc12 : rest.length+12 < 1024 := by omega
+  have hc13 : rest.length+13 < 1024 := by omega
+  have hc14 : rest.length+14 < 1024 := by omega
+  have hpaN : pa % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = pa := Nat.mod_eq_of_lt (by omega)
+  have hszN : (32*n) % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = 32*n := Nat.mod_eq_of_lt (by omega)
+  have hsizeN : (64+32*n) % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = 64+32*n := Nat.mod_eq_of_lt (by omega)
+  have hcdsN : s.executionEnv.calldata.size % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = s.executionEnv.calldata.size :=
+    Nat.mod_eq_of_lt hcds
+  have hactS := activeWords_fix s 2688 32 (by decide) (by omega) hact
+  have hactC := activeWords_fix s 2048 (64+32*n) (by omega) (by omega) hact
+  have hactD := activeWordsAfter_fix s.activeWords.toNat 2368 (32*n) (by omega) (by omega) hact
+  have hactA := activeWordsAfter_fix s.activeWords.toNat pa (32*n) (by omega) (by omega) hact
+  have hactN : s.activeWords.toNat % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = s.activeWords.toNat :=
+    Nat.mod_eq_of_lt s.activeWords.val.isLt
+  have h9344 : (2688 : UInt256).toNat = 2688 := by decide
+  have h8960 : (2368 : UInt256).toNat = 2368 := by decide
+  have h8192 : (2048 : UInt256).toNat = 2048 := by decide
+  have h64 : (64 : UInt256) = UInt256.ofNat 64 := by decide
+  simp only [cachedSetupStateSq, clearedSetupStateSq,
+    read_stage_outside mem pa n 128 (Or.inl (by decide))]
+  simp (config := { maxSteps := 200000 }) [zeroProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    cachedSetupStateSq, clearedSetupStateSq, stage, mpZeroed, hs32,
     State.activeWordsAfterUInt256, State.activeWordsAfterUInt256_2, hactS, hactC, hactD, hactA,
     h9344, h8960, h8192, h64, hactN,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,
@@ -128,6 +185,36 @@ theorem run_pointersJump (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Na
     StagedMonpro.readWord_mpZeroed s mem n 128 hn (Or.inl (by decide))]
   simp [pointersJumpProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     clearedSetupState, outState, ← negative32_not, hc9, hc10, hc11, hc12, htarget, hsum, hend, hlow, hsumLow,
+    ptrAt_zero, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod]
+  simp only [show UInt256.lnot (31 : UInt256) = negative32 by decide,
+    hlow, hsumLow, and_self]
+
+/-- `run_pointersJump` for the square frame (constant row head 3562). -/
+theorem run_pointersJump_sq (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
+    (dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1005)
+    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2816) (hn : n ≤ 8)
+    (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
+    runInstructions pointersJumpProgram (clearedSetupStateSq s mem hd pb n dst ret rest) =
+      some (outState s (mpZeroed s mem n) pb n 0 hd (UInt256.ofNat 3562) dst ret rest) := by
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hsum : UInt256.ofNat pb + UInt256.ofNat (32 * n) = UInt256.ofNat (pb + 32 * n) :=
+    Challenge.EvmProof.Word.ofNat_add_mod pb (32 * n)
+  have hend : negative32 + UInt256.ofNat (pb + 32 * n) = UInt256.ofNat (pb + 32 * n - 32) :=
+    negative32_add_ofNat (pb + 32 * n) (by omega) (by omega)
+  have hlow : negative32 + UInt256.ofNat pb = UInt256.ofNat (pb - 32) :=
+    negative32_add_ofNat pb hpb (by omega)
+  have hsumLow : UInt256.ofNat (pb - 32) + UInt256.ofNat (32 * n) =
+      UInt256.ofNat (pb + 32 * n - 32) := by
+    rw [Challenge.EvmProof.Word.ofNat_add_mod]
+    congr 1
+    omega
+  simp only [clearedSetupStateSq, outState,
+    StagedMonpro.readWord_mpZeroed s mem n 128 hn (Or.inl (by decide))]
+  simp [pointersJumpProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    clearedSetupStateSq, outState, ← negative32_not, hc9, hc10, hc11, hc12, htarget, hsum, hend, hlow, hsumLow,
     ptrAt_zero, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod]
   simp only [show UInt256.lnot (31 : UInt256) = negative32 by decide,
     hlow, hsumLow, and_self]

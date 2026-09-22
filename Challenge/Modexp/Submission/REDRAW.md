@@ -68,3 +68,11 @@ verbatim. Credit for the inherited source remains with Meganpark980320, i34-9,
 ercumentyildirim, terrapinelf, jungjipdo, anamdongparkjinhyeong and the preceding
 contributors recorded in the source tree. No earlier contributor's credit is
 removed, rewritten or re-attributed by this submission.
+
+## Redraw entry 2026-09-22T23:55Z (rubenmarcus, lane ModexpCut1)
+
+Unchanged executable bytes and proof tree of submission
+98486593-3fec-481a-bf06-693106d25fe4 (hex sha256 115c2790...1a56), repackaged
+with this entry as the only change. Disclosed corpus redraw: the image is 546 gas
+below promoted image 3b864f1e on every corpus seed (2,000-seed paired simulation,
+difference sd 0); probability that one fresh draw lands below 470,587 is about 9%.

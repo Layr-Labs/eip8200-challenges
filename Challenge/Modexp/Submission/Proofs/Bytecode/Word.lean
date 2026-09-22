@@ -103,8 +103,11 @@ def baseCallPath :
 
 def baseTailHeadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 110 (.Dup ⟨4, by decide⟩), pushAt 111 2 256,
-   opAt 112 (.Dup ⟨5, by decide⟩), opAt 113 .MULMOD, opAt 114 .ADDMOD]
+  [opAt 110 (.Dup ⟨4, by decide⟩),
+   pushAt 111 2 256,
+   opAt 112 (.Dup ⟨5, by decide⟩),
+   opAt 113 .MULMOD,
+   opAt 114 .ADDMOD]
 
 def baseTailSwapPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
