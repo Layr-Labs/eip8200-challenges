@@ -86,6 +86,7 @@ def handled_of_bDoneConcrete (input : ByteArray) (s : State) (mem : ByteArray)
     (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
+    (hfull : msize = 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
     (hmsz : msize = Challenge.Modexp.modulusSize input)
@@ -105,7 +106,7 @@ def handled_of_bDoneConcrete (input : ByteArray) (s : State) (mem : ByteArray)
   handled_of_bDone
     (FixedDirectRouteCorrect.route input s mem n bsize esize msize mm minv bM
       sub spec hcode hfork hrun hnp hdata hstack hact hvalid hactLe
-      hn hn32 hb he hmz hm32
+      hn hn32 hb he hmz hm32 hfull
       hbsize hesize hmsz hmm hodd hradix hbMlt hbMform hframe hmod hbase hone hraw)
 
 /-- Fully instantiated adapter for traces that land on the dispatcher entry
@@ -125,6 +126,7 @@ def handled_of_entryStateConcrete (input : ByteArray) (s : State) (mem : ByteArr
     (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
+    (hfull : msize = 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
     (hmsz : msize = Challenge.Modexp.modulusSize input)
@@ -144,7 +146,7 @@ def handled_of_entryStateConcrete (input : ByteArray) (s : State) (mem : ByteArr
   handled_of_entryState
     (FixedDirectRouteCorrect.route input s mem n bsize esize msize mm minv bM
       sub spec hcode hfork hrun hnp hdata hstack hact hvalid hactLe
-      hn hn32 hb he hmz hm32
+      hn hn32 hb he hmz hm32 hfull
       hbsize hesize hmsz hmm hodd hradix hbMlt hbMform hframe hmod hbase hone hraw)
 
 end Challenge.Modexp.Submission.Proofs.Fast.FixedDirectCorrect

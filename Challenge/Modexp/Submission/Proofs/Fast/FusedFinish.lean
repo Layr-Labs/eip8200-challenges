@@ -1,4 +1,4 @@
-import Challenge.Modexp.Submission.Proofs.Fast.Exp
+import Challenge.Modexp.Submission.Proofs.Fast.GenericReturnAdapter
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneSlice
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
@@ -9,28 +9,31 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open WindowNibbleKernel WindowTwentyOneBinding
 
-def program : List Instr := [.op .JUMPDEST, .op .POP]
-def block : Block Artifact.submissionArtifact .Osaka 772 program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 554 2 772 program
+def program : List Instr := GenericReturnAdapter.terminalReturnProgram
+def block : Block TnM128CandidateArtifact.submissionArtifact .Osaka
+    GenericReturnAdapter.terminalReturnPC program :=
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3315 5
+    GenericReturnAdapter.terminalReturnPC program
     (by decide) (by rfl) (by rfl) (by decide)
 
-theorem run (s : State) (mem : ByteArray) (count : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) :
-    runInstructions program (Exp.retTo s mem (UInt256.ofNat 772) (count::rest)) =
-      some (Exp.retTo s mem (UInt256.ofNat 774) rest) := by
-  have hlen : rest.length+1 < 1024 := by omega
-  simp [program, runInstructions, Challenge.EvmProof.Stepper.runInstr, Exp.retTo, hlen,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.literal_eq_ofNat]
+theorem run (s : State) (mem : ByteArray) (rest : List UInt256)
+    (hcap : rest.length ≤ 1021) :
+    runInstructions program (GenericReturnAdapter.terminalInput s mem rest) =
+      some (GenericReturnAdapter.terminalOutput s mem rest) := by
+  simpa [program] using GenericReturnAdapter.run_terminalReturn s mem rest hcap
 
-def gasSteps (s : State) (mem : ByteArray) (count : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000)
+def gasSteps (s : State) (mem : ByteArray) (rest : List UInt256)
+    (hcap : rest.length ≤ 1021)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps (Exp.retTo s mem (UInt256.ofNat 772) (count::rest))
-      (Exp.retTo s mem (UInt256.ofNat 774) rest) :=
-  block.steps ⟨by change submissionBytecode.size < 2^256; rw [submissionBytecode_size]; decide,
-    hcode, hfork, hrun, hnp⟩ rfl (run s mem count rest hcap)
+    Challenge.EvmProof.GasSteps (GenericReturnAdapter.terminalInput s mem rest)
+      (GenericReturnAdapter.terminalOutput s mem rest) :=
+  block.steps ⟨by
+      change TnM128Candidate.bytecode.size < 2^256
+      rw [TnM128Candidate.bytecode_size]
+      decide,
+    hcode, hfork, hrun, hnp⟩ rfl (run s mem rest hcap)
 
 end Challenge.Modexp.Submission.Proofs.Fast.FusedFinish
