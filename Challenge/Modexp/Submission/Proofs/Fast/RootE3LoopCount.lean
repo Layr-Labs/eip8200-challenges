@@ -9,7 +9,7 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 def gasSteps_shiftLoop_count (s : State) (mem : ByteArray) (n bsize esize msize mm minv r k : Nat)
     (hk32 : k ≤ 32)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8) (e : Env s) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hbs : bsize = 32 * n) (e : Env s) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (htop : Limbs.radix ^ n < 2 * mm)
     (inv : StepInv mem n bsize mm minv)
     (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm)
@@ -25,7 +25,7 @@ def gasSteps_shiftLoop_count (s : State) (mem : ByteArray) (n bsize esize msize 
           hbase hr inv.pre i
         Challenge.EvmProof.GasSteps.cast
           (gasSteps_step s (stepMems mem n mm i) n bsize esize msize (k - i) mm minv
-            (by omega) (by omega) hn hn32 e invI
+            (by omega) (by omega) hn hn32 hbs hmpos hmm htop e invI hbaseI (Nat.mod_lt _ hmpos)
             (repairFacts_of (stepMems mem n mm i) n mm _ hn hn32 hmpos hmm htop invI.modulus
               invI.neg hbaseI (Nat.mod_lt _ hmpos) invI.pre) hfast)
           rfl (by

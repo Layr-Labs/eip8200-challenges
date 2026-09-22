@@ -13,7 +13,7 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 open CiosReadonly CiosCachedMidMemory WindowTwentyOneBinding TnCacheReductionTrace
 open Challenge.EvmProof
 
-def l2PC : Nat := 3851
+def l2PC : Nat := 3841
 
 /-- The current eight-limb fallthrough middle, seven reduction cells, and
 long-immediate tail implement the carry-cache model for arbitrary carry words. -/
@@ -29,7 +29,7 @@ noncomputable def reduction_steps (s : State)
     (hcache : m128 = MachineState.readWord q.memory 128)
     (hjd : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     GasSteps
-      (framed {s with memory := q.memory} (UInt256.ofNat 3832)
+      (framed {s with memory := q.memory} (UInt256.ofNat 3822)
         ([q.carry,bi,pbi,hd,pb,ent,tn,allOnes,m128,inv,m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest))
       (framed {s with memory := (TnCacheSquareModel.fromL1 q tn 8).memory}
       (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb) then hd
@@ -43,10 +43,10 @@ noncomputable def reduction_steps (s : State)
   let carry2 := (l2Step q.memory (rowMu q.memory 8) (rowC0 q.memory 8) 8 (8-1)).carry
   let tail := m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest
   have htail : tail.length ≤ 1006 := by simp only [tail, List.length_cons]; omega
-  have hmid := TnCacheRowTrace.run_middle 3832 st q.carry bi pbi hd pb ent tn
+  have hmid := TnCacheRowTrace.run_middle 3822 st q.carry bi pbi hd pb ent tn
     m128 tl inv m0 aEnd m96 m64 m32 dst ret 8 rest hcap (by omega) hact hc hi
   have hmidRun : runInstructions TnCacheRowTrace.middle
-      (framed st (UInt256.ofNat 3832)
+      (framed st (UInt256.ofNat 3822)
         ([q.carry,bi,pbi,hd,pb,ent,tn,allOnes,m128,inv,m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest)) =
       some (TnCacheL2Trace.state st (UInt256.ofNat l2PC) q.memory flag
         (rowMu q.memory 8) (rowC0 q.memory 8) 8 0 pbi hd pb ent (tn+q.carry)
@@ -76,7 +76,7 @@ noncomputable def reduction_steps (s : State)
     simpa only [TnCacheLastTrace.lastState, st, framed, mem2, carry2,
       TnCacheSquareModel.fromL1, flag] using htailrun
   have g0 := TnM128CandidateBlocks.middle.steps
-    (s := framed st (UInt256.ofNat 3832)
+    (s := framed st (UInt256.ofNat 3822)
       ([q.carry,bi,pbi,hd,pb,ent,tn,allOnes,m128,inv,
         m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest))
     (env.transfer rfl rfl) rfl hmidRun
@@ -92,8 +92,8 @@ noncomputable def reduction_steps (s : State)
       (UInt256.ofNat (l2PC+TnMod128Chain.fullSize 8)) q.memory flag
       (rowMu q.memory 8) (rowC0 q.memory 8) 8 (8-1)
       pbi hd pb ent (tn+q.carry) m128 inv tail).pc =
-      UInt256.ofNat 4087 := by
-    change UInt256.ofNat (l2PC+TnMod128Chain.fullSize 8) = UInt256.ofNat 4087
+      UInt256.ofNat 4077 := by
+    change UInt256.ofNat (l2PC+TnMod128Chain.fullSize 8) = UInt256.ofNat 4077
     rfl
   have g2 := TnM128CandidateBlocks.tail.steps
     (s := TnCacheLastTrace.lastState st

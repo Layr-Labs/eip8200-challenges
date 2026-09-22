@@ -97,7 +97,7 @@ theorem stepInv_stepMems {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n
 /-! ## The shift loop -/
 
 def gasSteps_shiftLoop (s : State) (mem : ByteArray) (n bsize esize msize mm minv r : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8) (e : Env s) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hbs : bsize = 32 * n) (e : Env s) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (htop : Limbs.radix ^ n < 2 * mm)
     (inv : StepInv mem n bsize mm minv)
     (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm)
@@ -113,7 +113,7 @@ def gasSteps_shiftLoop (s : State) (mem : ByteArray) (n bsize esize msize mm min
           hbase hr inv.pre i
         Challenge.EvmProof.GasSteps.cast
           (gasSteps_step s (stepMems mem n mm i) n bsize esize msize (n - i) mm minv
-            (by omega) (by omega) hn hn32 e invI
+            (by omega) (by omega) hn hn32 hbs hmpos hmm htop e invI hbaseI (Nat.mod_lt _ hmpos)
             (repairFacts_of (stepMems mem n mm i) n mm _ hn hn32 hmpos hmm htop invI.modulus
               invI.neg hbaseI (Nat.mod_lt _ hmpos) invI.pre) hfast)
           rfl (by
@@ -169,17 +169,19 @@ theorem hitFinal_neg (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 :
 /-- The base value the first `CSUB` leaves in the retained `TS`: `b mod m`. -/
 theorem m1_base (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hmpos : 0 < mm) (hodd : mm % 2 = 1)
-    (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem) :
+    (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem)
+    (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0) :
     Model.FastRepresents (m1Of mem input n) 2112 n
       (Precompile.bytesToNatPadded input 96 (32 * n) % mm) :=
-  ShiftProducerCanonical.canonical_base mem input n mm hn hn32 hmpos hodd hmod htop
+  ShiftProducerCanonical.canonical_base mem input n mm hn hn32 hmpos hodd hmod htop htn0
 
 theorem m1_acc (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hmpos : 0 < mm) (hodd : mm % 2 = 1)
-    (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem) :
+    (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem)
+    (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0) :
     Model.FastRepresents (m1Of mem input n) 256 n
       (Precompile.bytesToNatPadded input 96 (32 * n) % mm) :=
-  ShiftProducerCanonical.canonical_acc mem input n mm hn hn32 hmpos hodd hmod htop
+  ShiftProducerCanonical.canonical_acc mem input n mm hn hn32 hmpos hodd hmod htop htn0
 
 theorem m2_readWord_disjoint (mem input : ByteArray) (n addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hdisj : (addr + 32 ≤ 256 ∨ 256 + 32 * n ≤ addr) ∧

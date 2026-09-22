@@ -37,7 +37,7 @@ opaque gasSteps_rowsFour (s : State) (mem : ByteArray) (pa pb : Nat)
     (hAend : aEnd = UInt256.ofNat (pa+32*4-32))
     (hsnapshot : StagedOperand.Snapshot mem pa 4) :
     Challenge.EvmProof.GasSteps
-      (outState s (mpZeroed s mem 4) pb 4 0 (UInt256.ofNat 3543) (l1Target 4) inv m0
+      (outState s (mpZeroed s mem 4) pb 4 0 (UInt256.ofNat 3533) (l1Target 4) inv m0
         (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
       (mpCsubState s (rowsCarry (mpZeroed s mem 4) pa pb 4 4) pdst ret rest) := by
   have hcode' : s.executionEnv.code = TnM128Candidate.bytecode :=
