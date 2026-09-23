@@ -37,7 +37,7 @@ def coreProgram : List Instr :=
 
 def tailProgram : List Instr :=
   [.op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MSTORE,
-   .push 2 3729, .op (.Swap ⟨5, by decide⟩), .op .JUMP]
+   .push 2 3989, .op (.Swap ⟨5, by decide⟩), .op .JUMP]
 
 
 def headProgram : List Instr := coreProgram.take 8
@@ -98,12 +98,12 @@ theorem run_tail (s : State) (pc C lo b2 P hd w3 ent : UInt256)
     runInstructions tailProgram
       { s with pc := pc, stack := C :: lo :: b2 :: P :: hd :: w3 :: ent :: rest } =
     some { s with pc := ent,
-                  stack := C :: b2 :: P :: hd :: w3 :: (UInt256.ofNat 3729) :: rest,
+                  stack := C :: b2 :: P :: hd :: w3 :: (UInt256.ofNat 3989) :: rest,
                   memory := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded lo.toNat 32) w3.toNat } := by
   have h6 : rest.length + 6 < 1024 := by omega
   have h7 : rest.length + 7 < 1024 := by omega
   have h8 : rest.length + 8 < 1024 := by omega
-  have h3729 : (3729 : UInt256) = UInt256.ofNat 3729 := by decide
+  have h3729 : (3989 : UInt256) = UInt256.ofNat 3989 := by decide
   simp [tailProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     h6, h7, h8, List.exchange, State.activeWordsAfterUInt256, h3729, hact, hjump]
 

@@ -34,7 +34,7 @@ abbrev Located :=
 
 @[simp] theorem directPC1 (i : Nat) (hi : 2047 ≤ i) (hii : i ≤ 2071) :
     Artifact.submissionArtifact.instructionPC i =
-      ([2498,2499,2500,2503,2504,2507,2510,2511,2512,2515,2518,2519,2520,2521,2522,2523,2524,2527,2528,2529,2532,2535,2536,2539,2542] : List Nat)[i - 2047]! := by
+      ([2498,2499,2500,2503,2504,2507,2510,2511,2514,2517,2520,2521,2522,2523,2524,2525,2526,2529,2530,2531,2534,2537,2538,2541,2544] : List Nat)[i - 2047]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
@@ -98,9 +98,9 @@ def squareCall : List Located :=
    pushAt 2051 2 2519,
    pushAt 2052 2 512,
    opAt 2053 (.Dup ⟨0, by decide⟩),
-   opAt 2054 (.Dup ⟨0, by decide⟩),
-   pushAt 2055 2 4561,
-   pushAt 2056 2 3394,
+   pushAt 2054 2 2112,
+   pushAt 2055 2 4551,
+   pushAt 2056 2 3387,
    opAt 2057 .JUMP]
 
 def squareReturn : List Located :=
@@ -121,7 +121,7 @@ def product : List Located :=
    pushAt 2067 2 256,
    opAt 2068 (.Dup ⟨0, by decide⟩),
    pushAt 2069 2 512,
-   pushAt 2070 2 3390,
+   pushAt 2070 2 3383,
    opAt 2071 .JUMP]
 
 
@@ -138,7 +138,7 @@ theorem jumpDest3953 :
   Artifact.isValidJumpDest_index 2047 (by rfl)
 
 theorem jumpDest3970 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2519 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2521 = true :=
   Artifact.isValidJumpDest_index 2058 (by rfl)
 
 /-- `BAIL6` (pc 1054), the target of all three recogniser misses. -/
@@ -171,13 +171,13 @@ def bail : List Located :=
 
 /-- The kernel's multiply entry `0x0f50` (the final mixed-domain product). -/
 theorem jumpDestSqMulEntry :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3390 = true :=
-  Artifact.isValidJumpDest_index 2713 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3383 = true :=
+  Artifact.isValidJumpDest_index 2718 (by rfl)
 
 /-- The kernel's shared `common` block `0x0f54` (entered by the square call). -/
 theorem jumpDestSqCommon :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3394 = true :=
-  Artifact.isValidJumpDest_index 2715 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3387 = true :=
+  Artifact.isValidJumpDest_index 2720 (by rfl)
 
 
 /- `after_sq` (pc 3304): the target the in-kernel square loop rewrites the
