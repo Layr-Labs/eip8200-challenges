@@ -9,11 +9,13 @@ set_option linter.unusedVariables false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired37
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
+private theorem add_comm_local (a b : UInt256) : UInt256.add a b = UInt256.add b a :=
+  RawExpressionAC.add_comm a b
 def template : List Instr :=
-  [ .op (.Swap ⟨7, by decide⟩),
-    .op (.Dup ⟨8, by decide⟩),
-    .op (.Dup ⟨10, by decide⟩),
-    .op (.Dup ⟨8, by decide⟩),
+  [ .op (.Swap ⟨10, by decide⟩),
+    .op (.Dup ⟨11, by decide⟩),
+    .op (.Dup ⟨13, by decide⟩),
+    .op (.Dup ⟨11, by decide⟩),
     .op .NOT,
     .op .OR,
     .op .XOR,
@@ -21,17 +23,13 @@ def template : List Instr :=
     .push ⟨2, by decide⟩ (UInt256.ofNat 612),
     .op .MLOAD,
     .op .ADD,
-    .op (.Dup ⟨5, by decide⟩),
+    .op (.Dup ⟨8, by decide⟩),
     .op .ADD,
-    .op (.Dup ⟨14, by decide⟩),
-    .op (.Dup ⟨13, by decide⟩),
-    .op (.Swap ⟨1, by decide⟩),
-    .op (.Dup ⟨5, by decide⟩),
+    .op (.Dup ⟨6, by decide⟩),
     .op .AND,
     .op .MULMOD,
-    .op (.Dup ⟨7, by decide⟩),
+    .op (.Dup ⟨8, by decide⟩),
     .op .SHR,
-    .op (.Dup ⟨1, by decide⟩),
     .op .ADD,
     .op (.Dup ⟨3, by decide⟩),
     .op .AND,
@@ -44,6 +42,9 @@ def template : List Instr :=
     .op .AND ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
   [ x.v0,
+    x.v14,
+    x.v12,
+    x.v7,
     x.v7,
     x.v2,
     x.v3,
@@ -85,7 +86,7 @@ def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UI
     x.v3,
     x.v4,
     x.v5,
-    (UInt256.land x.v3 (UInt256.add x.v7 (UInt256.shiftRight (UInt256.mulMod (UInt256.land x.v3 (UInt256.add x.v5 (UInt256.add (MachineState.readWord memory 612) (UInt256.add (UInt256.xor (UInt256.lor (UInt256.lnot x.v6) x.v9) x.v0) x.v8)))) x.v14 x.v12) (UInt256.ofNat 23)))),
+    (UInt256.land x.v3 (UInt256.add (UInt256.shiftRight (UInt256.mulMod (UInt256.land x.v3 (UInt256.add x.v5 (UInt256.add (MachineState.readWord memory 612) (UInt256.add (UInt256.xor (UInt256.lor (UInt256.lnot x.v6) x.v9) x.v0) x.v8)))) x.v14 x.v12) (UInt256.ofNat 23)) x.v7)),
     (UInt256.ofNat 23),
     x.v0,
     x.v9,
@@ -97,7 +98,9 @@ def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UI
     x.v15,
     x.v16 ] ++ rho
 private theorem actualOutput_eq (memory : ByteArray) (x : Input) (rho : List UInt256) :
-    actualOutput memory x rho = outputStack memory x rho := by rfl
+    actualOutput memory x rho = outputStack memory x rho := by
+  unfold actualOutput outputStack
+  simp only [add_comm_local]
 private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 35 ≤ s.activeWords.toNat) :
@@ -105,7 +108,7 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
       some {s with pc := pcAfter pc template, stack := actualOutput s.memory x rho} := by
   have hbase : rho.length < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
-  have hcap (n : Nat) (hn : n ≤ 48) : rho.length + n < 1024 := by omega
+  have hcap (n : Nat) (hn : n ≤ 40) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 1088) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     Stagger144Active.word_active_preserved s.activeWords address hactive haddress

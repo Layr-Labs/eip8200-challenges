@@ -24,7 +24,7 @@ def gasSteps_body (s : State) (e : Env s) (h : Compression.HashState)
     GasSteps
       {s with pc := UInt256.ofNat 861, stack := StaggerPersistentFrame.frame h off limit rho}
       {s with
-        pc := UInt256.ofNat 4613
+        pc := UInt256.ofNat 4612
         stack := StaggerPersistentFrame.frame (Functional.result s.memory h) off limit rho} := by
   have gb := StaggerPersistentBootstrapBridge.gasSteps_body s h off limit rho
     hstack e.run hactive e.code e.fork e.np

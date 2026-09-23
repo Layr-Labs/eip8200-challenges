@@ -75,11 +75,11 @@ private opaque finish (s : State) (e : Shared32Sites.Env s)
     e.run e.code e.fork e.np
   have hend :
       ({s with
-        pc := UInt256.ofNat 4632
+        pc := UInt256.ofNat 4631
         stack := frame (PersistentStaggerFunctional.result s.memory h)
           (StaggerPersistentLoopRaw.nextOffset off) limit maskRho} : State) =
       {s with
-        pc := UInt256.ofNat 4632
+        pc := UInt256.ofNat 4631
         stack := frame (PersistentStaggerFunctional.result s.memory h) limit limit maskRho} := by
     rw [hnext]
   exact compose3 gb (ge.cast rfl hend) go
