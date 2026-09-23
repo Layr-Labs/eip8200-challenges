@@ -35,8 +35,8 @@ def gasSteps (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4533, stack := stack s.memory h4 [ .d, .c, .a, .e, .ar, .cachedMessage 360, .k, .b, .er, .cr, .literal 23, .dr, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (UInt256.ofNat 2840853838) rho}
-      {s with pc := UInt256.ofNat 4563, stack := stack s.memory h4 [ .b, .e, .a, .d, .cachedMessage 360, .k, .c, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (StaggerCoreModel.left79 s.memory q) (right) (UInt256.ofNat 2840853838) rho} := by
+    GasSteps {s with pc := UInt256.ofNat 4547, stack := stack s.memory h4 [ .d, .c, .a, .e, .ar, .cachedMessage 360, .k, .b, .er, .cr, .literal 23, .dr, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (UInt256.ofNat 2840853838) rho}
+      {s with pc := UInt256.ofNat 4577, stack := stack s.memory h4 [ .b, .e, .a, .d, .cachedMessage 360, .k, .c, .er, .cr, .ar, .dr, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (StaggerCoreModel.left79 s.memory q) (right) (UInt256.ofNat 2840853838) rho} := by
   have h := StaggerRawLeft79.gasSteps s (input s.memory h4 q right (UInt256.ofNat 2840853838)) rho hs hr ha hcode hfork hnp
   rw [output_eq] at h
   exact h

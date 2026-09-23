@@ -13,36 +13,36 @@ abbrev template : List Instr :=
   [ .push ⟨1, by decide⟩ (UInt256.ofNat 63),
     .op .CALLDATASIZE,
     .op .AND,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 4747),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 4761),
     .op .JUMPI ]
 
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 247).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 245).take template.length = template := by rfl
 
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 247 actual_slice
-    (by change 247 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 245 actual_slice
+    (by change 245 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 
-theorem site_pc : site.startPC = UInt256.ofNat 498 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 247) = UInt256.ofNat 498
+theorem site_pc : site.startPC = UInt256.ofNat 512 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 245) = UInt256.ofNat 512
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_padding (s : State) (e : Env s) :
-    Decode.isValidJumpDest s.executionEnv.code 4747 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3585 = 4747 := by
+    Decode.isValidJumpDest s.executionEnv.code 4761 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3583 = 4761 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3585 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3583 (by rfl)
   rw [hpc] at h
   rw [e.code]
   exact h
 
 def gasSteps (s : State) (e : Env s) (F : List UInt256)
     (hstack : F.length ≤ 900) (h32 : s.executionEnv.calldata.size = 32) :
-    GasSteps (atState s 498 F) (atState s 4747 F) := by
-  apply PadLift.gasSteps_of_raw site (atState s 498 F) (atState s 4747 F)
+    GasSteps (atState s 512 F) (atState s 4761 F) := by
+  apply PadLift.gasSteps_of_raw site (atState s 512 F) (atState s 4761 F)
     e.code e.fork e.run e.np site_pc.symm
   · apply PadLift.advancesAll_sound; decide
   · have h0 : F.length < 1024 := by omega
