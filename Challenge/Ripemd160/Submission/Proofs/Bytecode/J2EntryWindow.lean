@@ -13,7 +13,7 @@ def tail : List Instr := [
   op 0x36,
   op 0x1c,
   op 0x16,
-  .push 1 122,
+  .push 1 249,
   op 0x57,
   .push 2 1016,
   .push 5 6308489473,
@@ -24,7 +24,7 @@ def tail : List Instr := [
   op 0x16,
   op 0x36,
   op 0x14,
-  .push 1 122,
+  .push 1 249,
   op 0x57,
   .push 0 0,
   op 0x35,
@@ -34,7 +34,7 @@ def tail : List Instr := [
   .push 3 2127393,
   op 0x02,
   op 0x18,
-  .push 2 310,
+  .push 2 568,
   op 0x57,
   .push 20 95383801997447390147238369573240532004699299169,
   op 0x36,
@@ -47,16 +47,24 @@ def tail : List Instr := [
   .push 0 0,
   op 0xf3
 ]
-private theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3624 = tail := by rfl
-private theorem pc_base : Artifact.submissionArtifact.instructionPC 3624 = 4828 := by
+private theorem tail_eq : (Artifact.submissionArtifact.instructions.drop 269).take tail.length = tail := by rfl
+private theorem pc_base : Artifact.submissionArtifact.instructionPC 269 = 427 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
-theorem get (index : Nat) :
-    Artifact.submissionArtifact.instructions[3624+index]? = tail[index]? := by
-  rw [← InstructionWindow.get_drop, tail_eq]
-theorem pc (index : Nat) :
-    Artifact.submissionArtifact.instructionPC (3624+index) = 4828+byteLength (tail.take index) := by
-  rw [InstructionWindow.pc_drop, pc_base, tail_eq]
+theorem get (index : Nat) (h : index < tail.length := by decide) :
+    Artifact.submissionArtifact.instructions[269 + index]? = tail[index]? := by
+  have ht := congrArg (fun l : List Instr => l[index]?) tail_eq
+  simp only [List.getElem?_take_of_lt h] at ht
+  rw [← InstructionWindow.get_drop]
+  exact ht
+theorem pc (index : Nat) (h : index ≤ tail.length := by decide) :
+    Artifact.submissionArtifact.instructionPC (269 + index) =
+      427 + byteLength (tail.take index) := by
+  have ht : (Artifact.submissionArtifact.instructions.drop 269).take index = tail.take index := by
+    have ht0 := congrArg (List.take index) tail_eq
+    rw [List.take_take, Nat.min_eq_left h] at ht0
+    exact ht0
+  rw [InstructionWindow.pc_drop, pc_base, ht]
 #print axioms get
 #print axioms pc
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.J2EntryWindow
