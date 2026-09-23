@@ -78,10 +78,10 @@ theorem output_spec (s : State) (e : Env s) (rho : List UInt256)
       ((RecognitionAccumulator.resultAcc_zero_iff _ _ hn rfl).mpr
         ((J2Accumulator.resultAcc_zero_iff _ _ hn rfl).mp hz))
   change MachineState.readPadded s.executionEnv.code (source s).toNat 20 = _
-  have hsz : Artifact.submissionArtifact.code.size = 5215 := by
-    change submissionBytecode.size = 5215
+  have hsz : Artifact.submissionArtifact.code.size = 5214 := by
+    change submissionBytecode.size = 5214
     rw [referenceBytecode_size]
-  have hsrc : source s = selected (UInt256.ofNat 5215) s.executionEnv.calldata.size := by
+  have hsrc : source s = selected (UInt256.ofNat 5214) s.executionEnv.calldata.size := by
     simp only [source, e.code, hsz]
   rw [e.code, hsrc]
   exact J2Payload.read_selected _ hn

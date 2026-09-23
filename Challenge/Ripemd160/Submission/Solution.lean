@@ -17,6 +17,17 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
+-- executable 6c83026f03003e9be4c0786fb485d5eee637c2dbcecd6b2bbd15a5379c0b7ec3, 5214 bytes,
+-- 661024 gas at corpus seeds 0..2, 8182 units of the 8194 literal-encoding budget. Derived from
+-- the promoted 522f1bcb image (5215 bytes, 661150 gas): round 76 consumes its dead `.pair` lane
+-- mask in place (`DUP11 SWAP4 AND` instead of `DUP4 AND`, leaving a copy of `.factor` in that
+-- slot), so the unpack becomes `SWAP8 SWAP3 DUP10 SWAP5 POP` and already supplies the factor copy
+-- that round 77 used to `DUP10`: net -1 instruction and -2 gas per block (x 63 blocks = -126).
+-- 3679 instructions; pcs >= 4478 move by +1 up to 4485, pcs >= 4522 by -1.
+-- model Claude Opus 5.5, harness Claude Code.
+--
+-- NOTE FOR THE FILER: every line below this point was inherited with the base tree and describes
+-- an EARLIER artifact, not this one.
 -- executable d13618dbd733a6c2ab9f681ad64d832dbc88cc487e49e8a30835c4a661ad8000, 5215 bytes,
 -- 661150 gas at corpus seeds 0..2, 8181 units of the 8194 literal-encoding budget. Derived from
 -- the promoted c19d26e2 image (5212 bytes, 661192 gas): the terminal round's `DUP5 AND` lane

@@ -15,8 +15,7 @@ open StackRoundTrace StaggerRaw
 private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
 def template : List Instr :=
-  [ .op (.Dup ⟨9, by decide⟩),
-    .op (.Dup ⟨6, by decide⟩),
+  [ .op (.Dup ⟨6, by decide⟩),
     .op .MUL,
     .op (.Dup ⟨7, by decide⟩),
     .op .SHR,
@@ -46,7 +45,8 @@ def template : List Instr :=
     .op .AND,
     .op (.Dup ⟨10, by decide⟩) ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ x.v10,
+  [ x.v13,
+    x.v10,
     x.v5,
     x.v0,
     x.v7,
@@ -155,9 +155,9 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 4491, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 4522, stack := outputStack s.memory x rho} := by
+      {s with pc := UInt256.ofNat 4521, stack := outputStack s.memory x rho} := by
   have hraw := run_actual s (UInt256.ofNat 4491) x rho hstack haliasA haliasE haliasD haliasR hrun hactive
-  have hend : pcAfter (UInt256.ofNat 4491) template = UInt256.ofNat 4522 := by decide
+  have hend : pcAfter (UInt256.ofNat 4491) template = UInt256.ofNat 4521 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps
