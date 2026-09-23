@@ -83,10 +83,10 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32)
   have g0 := (Main.gasSteps_initialize input entryPrefix).trans
     ((PaddingTrace.gasSteps_enterPad input).trans ((PaddingTrace.gasSteps_paddedLength input).trans
       ((PaddingTrace.gasSteps_lengthCopy input hfit).trans (PaddingTrace.gasSteps_push input))))
-  have g1 : GasSteps (PaddingTrace.padFramed input) (atState s 4753 entryFrame) := by
+  have g1 : GasSteps (PaddingTrace.padFramed input) (atState s 4752 entryFrame) := by
     simpa only [PaddingTrace.padGuardTaken, PaddingTrace.padGuardMiss, hframe, atState, s] using
       gasSteps_align input h32
-  have g2 : GasSteps (atState s 4753 entryFrame) (atState s 4754 frame) := by
+  have g2 : GasSteps (atState s 4752 entryFrame) (atState s 4753 frame) := by
     exact StaggerPersistentStart.gasSteps_entry s entryFrame (by decide) e.run e.code e.fork e.np
   have g3 := Shared32Trace.gasSteps_guard s e frame hcap h32
   have g4 := Shared32Trace.gasSteps_sparse s e factorPlusWord (UInt256.ofNat 4294967295)
