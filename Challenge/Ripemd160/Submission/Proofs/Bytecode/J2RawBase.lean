@@ -42,12 +42,17 @@ def tailResult (s : State) (f : Frame) : Frame :=
     acc := UInt256.lor
       (UInt256.shiftRight (UInt256.xor f.word (MachineState.readWord s.executionEnv.calldata f.off.toNat))
         (UInt256.sub (UInt256.ofNat 256) (UInt256.shiftLeft (UInt256.sub f.stop f.off) (UInt256.ofNat 3)))) f.acc }
+/-- Segment end after a transition: `min (stop + 251) len`, in the exact shape the bytecode computes
+(`DUP5 PUSH1 251 ADD DUP1 CALLDATASIZE LT DUP2 CALLDATASIZE SUB MUL ADD`). -/
+def emin (stop len : UInt256) : UInt256 :=
+  UInt256.add (UInt256.mul (UInt256.sub len (UInt256.add (UInt256.ofNat 251) stop))
+      (UInt256.lt len (UInt256.add (UInt256.ofNat 251) stop)))
+    (UInt256.add (UInt256.ofNat 251) stop)
 def transitionResult (f : Frame) : Frame :=
-  let e := UInt256.add f.stop (clamp (UInt256.sub f.len f.stop))
   { f with word := advance 114 f.word
            off := f.stop
-           stop := e
-           full := UInt256.add f.stop (UInt256.land (UInt256.sub f.len f.stop) (UInt256.ofNat 224)) }
+           stop := emin f.stop f.len
+           full := UInt256.sub (emin f.stop f.len) (UInt256.ofNat 32) }
 
 /-! ### Masking with `0xE0` instead of `~0x1F`
 
@@ -210,32 +215,26 @@ def transitionTemplate : List Instr := [
   .op .MUL,
   .op .ADD,
   .op .XOR,
-  .op (.Dup ⟨5, by decide⟩),
   .op (.Swap ⟨2, by decide⟩),
   .op .POP,
-  .op (.Swap ⟨2, by decide⟩),
-  .op .POP,
-  .op (.Dup ⟨1, by decide⟩),
-  .op .CALLDATASIZE,
-  .op .SUB,
-  .op (.Dup ⟨0, by decide⟩),
+  .op (.Dup ⟨4, by decide⟩),
   .push ⟨1, by decide⟩ (UInt256.ofNat 251),
+  .op .ADD,
+  .op (.Dup ⟨0, by decide⟩),
+  .op .CALLDATASIZE,
   .op .LT,
   .op (.Dup ⟨1, by decide⟩),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 251),
+  .op .CALLDATASIZE,
   .op .SUB,
   .op .MUL,
   .op .ADD,
-  .op (.Dup ⟨2, by decide⟩),
-  .op .ADD,
-  .op (.Swap ⟨4, by decide⟩),
-  .op .CALLDATASIZE,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 32),
+  .op (.Dup ⟨1, by decide⟩),
   .op .SUB,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 224),
-  .op .AND,
-  .op (.Dup ⟨2, by decide⟩),
-  .op .ADD,
-  .op (.Swap ⟨3, by decide⟩),
+  .op (.Swap ⟨4, by decide⟩),
+  .op .POP,
+  .op (.Swap ⟨4, by decide⟩),
+  .op (.Swap ⟨1, by decide⟩),
   .op .POP
 ]
 

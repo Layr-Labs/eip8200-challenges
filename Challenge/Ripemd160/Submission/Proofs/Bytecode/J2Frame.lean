@@ -10,7 +10,7 @@ open RecognitionAccumulator J2Accumulator J2Raw
 def last (n : Nat) : Nat := 8*((n-1)/251)+(n-251*((n-1)/251))/32
 def blockStart (k : Nat) : Nat := 251*(k/8)
 def stop (n k : Nat) : Nat := min n (blockStart k+251)
-def full (n k : Nat) : Nat := blockStart k+32*((stop n k-blockStart k)/32)
+def full (n k : Nat) : Nat := if k < 8 then blockStart k+32*((stop n k-blockStart k)/32) else stop n k - 32
 def current (input : ByteArray) (n k : Nat) : J2Raw.Frame :=
   ⟨J2Accumulator.accumulate input n k, UInt256.ofNat (offset k), wordAt k,
     UInt256.ofNat (full n k), UInt256.ofNat (stop n k), UInt256.ofNat n⟩
@@ -36,11 +36,8 @@ def Facts (n k : Nat) : Prop :=
        J2Accumulator.shift n k) ∧
   (isTail n k → k < last n →
     UInt256.ofNat (stop n k) = UInt256.ofNat (offset (k+1)) ∧
-    UInt256.add (UInt256.ofNat (stop n k)) (clamp (UInt256.sub (UInt256.ofNat n) (UInt256.ofNat (stop n k)))) =
-      UInt256.ofNat (stop n (k+1)) ∧
-    UInt256.add (UInt256.ofNat (stop n k))
-      (UInt256.land (UInt256.sub (UInt256.ofNat n) (UInt256.ofNat (stop n k)))
-        (UInt256.ofNat 224)) = UInt256.ofNat (full n (k+1)))
+    emin (UInt256.ofNat (stop n k)) (UInt256.ofNat n) = UInt256.ofNat (stop n (k+1)) ∧
+    UInt256.sub (UInt256.ofNat (stop n (k+1))) (UInt256.ofNat 32) = UInt256.ofNat (full n (k+1)))
 
 private theorem facts_closed (n : Nat) (hn : Allowed n) :
     ∀ k : Fin 32, k.val ≤ last n → Facts n k.val := by
@@ -94,7 +91,7 @@ theorem transition_next (s : State) (n k : Nat) (hn : Allowed n) (hk : k<last n)
   have hm : k%8=7 := by rcases ht with h|h; omega; exact h
   rw [tail_acc s n k hn (by omega) ht]
   simp only [transitionResult, current, word_next_tail k hm]
-  rw [hfn, hen, ha]
+  rw [hen, hfn, ha]
 
 #print axioms facts
 #print axioms normal_next

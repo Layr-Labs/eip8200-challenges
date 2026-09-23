@@ -35,13 +35,13 @@ def route_normal (s : State) (rho : List UInt256) (moves : Moves s rho)
 
 def route_transition (s : State) (rho : List UInt256) (moves : Moves s rho)
     (n k : Nat) (hn : Allowed n) (hk : k≤last n) :
-    GasSteps (atState s 416 (frame (current s.executionEnv.calldata n k) rho)) (loopState s n k rho) := by
+    GasSteps (atState s 409 (frame (current s.executionEnv.calldata n k) rho)) (loopState s n k rho) := by
   have g := moves.transitionGuard (current s.executionEnv.calldata n k)
   have h := full_iff s.executionEnv.calldata n k hn hk
   by_cases ht : isTail n k
   · have hc := h.not.mpr (not_not_intro ht)
-    have g0 : GasSteps (atState s 416 (frame (current s.executionEnv.calldata n k) rho))
-        (atState s 423 (frame (current s.executionEnv.calldata n k) rho)) := by
+    have g0 : GasSteps (atState s 409 (frame (current s.executionEnv.calldata n k) rho))
+        (atState s 416 (frame (current s.executionEnv.calldata n k) rho)) := by
       simpa only [if_neg hc] using g
     simpa only [loopState, if_pos ht] using g0.trans (moves.toTail _)
   · have hc := h.mpr ht
@@ -62,7 +62,7 @@ def one (s : State) (rho : List UInt256) (moves : Moves s rho)
       simpa only [if_neg hf] using g0.trans g1
     have g2 := moves.transition (tailResult s (current s.executionEnv.calldata n k)) (by simp only [tailResult, current, hsize])
     have g012 : GasSteps (atState s 349 (frame (current s.executionEnv.calldata n k) rho))
-        (atState s 416 (frame (current s.executionEnv.calldata n (k+1)) rho)) := by
+        (atState s 409 (frame (current s.executionEnv.calldata n (k+1)) rho)) := by
       simpa only [transition_next s n k hn hk ht] using g01.trans g2
     simpa only [loopState, if_pos ht] using g012.trans (route_transition s rho moves n (k+1) hn (by omega))
   · have g0 := moves.normal (current s.executionEnv.calldata n k)
