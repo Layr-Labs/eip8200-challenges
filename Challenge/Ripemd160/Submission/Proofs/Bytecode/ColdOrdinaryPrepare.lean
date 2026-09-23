@@ -32,13 +32,13 @@ theorem pointer_eq (input : ByteArray) (i : Nat) (hfit : CalldataFits input)
 def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
     (hmask : rest.head? = some (UInt256.ofNat 4294967295))
     (hstack : rest.length ≤ 896) (hrun : s.halt = .Running)
-    (hsmall : s.executionEnv.calldata.size < 5200)
+    (hsmall : s.executionEnv.calldata.size < 5199)
     (hactive : 35 ≤ s.activeWords.toNat)
     (hfit : s.executionEnv.calldata.size < 2 ^ 256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4690, stack := ret :: rest}
+    GasSteps {s with pc := UInt256.ofNat 4689, stack := ret :: rest}
       {s with
         pc := UInt256.ofNat 861
         stack := ret :: rest
@@ -53,7 +53,7 @@ def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
     {s with memory := (StaggerTablePad.padRealChain s.memory
       (UInt256.ofNat s.executionEnv.calldata.size))}
     _ (ret :: rest) (by simp only [List.length_cons]; omega) hrun hz hcode hfork hnp
-  -- The branch is taken exactly when `n < 5200`, which is the conservative proxy for
+  -- The branch is taken exactly when `n < 5199`, which is the conservative proxy for
   -- `highDirty n = 0`; that hypothesis is what `padRealChain_eq` consumes.  Above `2 ^ 29`
   -- this block runs the high stores as well and never reaches here.
   have heq : StaggerTablePad.padRealChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)
@@ -65,7 +65,7 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     (limit : UInt256) (rho : List UInt256) (hs : rho.length ≤ 880)
     (tail : List UInt256) (hrho : rho = DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: tail)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input) (ctx : Context s input i)
-    (hordinary : input.size = DriverTrace.blockOffset i → input.size < 5200)
+    (hordinary : input.size = DriverTrace.blockOffset i → input.size < 5199)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hr : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -88,7 +88,7 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     rw [scheduledState_hit s i hhs]
     let qh : State :=
       {s with memory := StaggerTablePad.padRealResult s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
-    have gb' : GasSteps {s with pc := UInt256.ofNat 4690, stack := frame h off limit rho}
+    have gb' : GasSteps {s with pc := UInt256.ofNat 4689, stack := frame h off limit rho}
         {qh with pc := UInt256.ofNat 861, stack := frame h off limit rho} := by
       apply gb.cast rfl
       rfl

@@ -10,10 +10,10 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired35
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
 def template : List Instr :=
-  [ .op (.Swap ⟨7, by decide⟩),
-    .op (.Dup ⟨8, by decide⟩),
+  [ .op (.Swap ⟨9, by decide⟩),
     .op (.Dup ⟨10, by decide⟩),
-    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨12, by decide⟩),
+    .op (.Dup ⟨10, by decide⟩),
     .op .NOT,
     .op .OR,
     .op .XOR,
@@ -21,11 +21,8 @@ def template : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 18),
     .op .MLOAD,
     .op .ADD,
-    .op (.Dup ⟨5, by decide⟩),
+    .op (.Dup ⟨7, by decide⟩),
     .op .ADD,
-    .op (.Dup ⟨10, by decide⟩),
-    .op (.Dup ⟨14, by decide⟩),
-    .op (.Swap ⟨1, by decide⟩),
     .op (.Dup ⟨5, by decide⟩),
     .op .AND,
     .op .MULMOD,
@@ -44,6 +41,8 @@ def template : List Instr :=
     .op .AND ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
   [ x.v0,
+    x.v10,
+    x.v13,
     x.v7,
     x.v2,
     x.v3,
@@ -105,7 +104,7 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
       some {s with pc := pcAfter pc template, stack := actualOutput s.memory x rho} := by
   have hbase : rho.length < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
-  have hcap (n : Nat) (hn : n ≤ 22) : rho.length + n < 1024 := by omega
+  have hcap (n : Nat) (hn : n ≤ 40) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 1088) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     Stagger144Active.word_active_preserved s.activeWords address hactive haddress

@@ -71,15 +71,15 @@ def highTemplate : List Instr :=
 private theorem add_eq_hAdd (x y : UInt256) : UInt256.add x y = x + y := rfl
 
 /-- The fast padding path is valid for lengths below the artifact's byte size. -/
-def highZero (n : UInt256) : UInt256 := UInt256.lt n (UInt256.ofNat 5200)
+def highZero (n : UInt256) : UInt256 := UInt256.lt n (UInt256.ofNat 5199)
 
 theorem highZero_true_iff (n : UInt256) :
-    UInt256.isTrue (highZero n) ↔ n.toNat < 5200 := by
-  change (UInt256.lt n (UInt256.ofNat 5200)).toNat ≠ 0 ↔ n.toNat < 5200
+    UInt256.isTrue (highZero n) ↔ n.toNat < 5199 := by
+  change (UInt256.lt n (UInt256.ofNat 5199)).toNat ≠ 0 ↔ n.toNat < 5199
   rw [Word.word_toNat_lt]
-  have hc : (UInt256.ofNat 5200).toNat = 5200 := by decide
+  have hc : (UInt256.ofNat 5199).toNat = 5199 := by decide
   rw [hc]
-  by_cases hn : n.toNat < 5200 <;> simp [hn]
+  by_cases hn : n.toNat < 5199 <;> simp [hn]
 
 theorem highZero_true_imp (n : UInt256) (h : UInt256.isTrue (highZero n)) :
     StaggerTablePad.highDirty n = UInt256.ofNat 0 := by
@@ -94,7 +94,7 @@ theorem highZero_true_imp (n : UInt256) (h : UInt256.isTrue (highZero n)) :
 
 theorem run_low (s : State) (pc returnPC : UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 995) (hrun : s.halt = .Running) (hactive : 35 ≤ s.activeWords.toNat)
-    (hfit : s.executionEnv.calldata.size < 2 ^ 256) (hcode : s.executionEnv.code.size = 5200) :
+    (hfit : s.executionEnv.calldata.size < 2 ^ 256) (hcode : s.executionEnv.code.size = 5199) :
     runInstrSeq lowTemplate {s with pc := pc, stack := returnPC :: UInt256.ofNat 4294967295 :: rest} =
       some {s with
              pc := pcAfter pc lowTemplate

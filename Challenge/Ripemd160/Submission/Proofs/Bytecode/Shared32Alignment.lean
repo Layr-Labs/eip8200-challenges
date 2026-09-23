@@ -13,7 +13,7 @@ abbrev template : List Instr :=
   [ .push ⟨1, by decide⟩ (UInt256.ofNat 63),
     .op .CALLDATASIZE,
     .op .AND,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 4749),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 4748),
     .op .JUMPI ]
 
 theorem actual_slice :
@@ -31,18 +31,18 @@ theorem site_pc : site.startPC = UInt256.ofNat 498 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_padding (s : State) (e : Env s) :
-    Decode.isValidJumpDest s.executionEnv.code 4749 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3587 = 4749 := by
+    Decode.isValidJumpDest s.executionEnv.code 4748 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3586 = 4748 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3587 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3586 (by rfl)
   rw [hpc] at h
   rw [e.code]
   exact h
 
 def gasSteps (s : State) (e : Env s) (F : List UInt256)
     (hstack : F.length ≤ 900) (h32 : s.executionEnv.calldata.size = 32) :
-    GasSteps (atState s 498 F) (atState s 4749 F) := by
-  apply PadLift.gasSteps_of_raw site (atState s 498 F) (atState s 4749 F)
+    GasSteps (atState s 498 F) (atState s 4748 F) := by
+  apply PadLift.gasSteps_of_raw site (atState s 498 F) (atState s 4748 F)
     e.code e.fork e.run e.np site_pc.symm
   · apply PadLift.advancesAll_sound; decide
   · have h0 : F.length < 1024 := by omega
