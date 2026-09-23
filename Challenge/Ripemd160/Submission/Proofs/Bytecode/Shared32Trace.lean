@@ -12,7 +12,7 @@ open Shared32Scratch Shared32Sites
 
 def gasSteps_guard (s : State) (e : Env s) (F : List UInt256)
     (hstack : F.length ≤ 900) (h32 : s.executionEnv.calldata.size = 32) :
-    GasSteps (atState s 4758 F) (atState s 327 F) := by
+    GasSteps (atState s 4757 F) (atState s 327 F) := by
   apply guard.lift s (atState s 327 F) e F
   have h0 : F.length < 1024 := by omega
   have h1 : F.length + 1 < 1024 := by omega
