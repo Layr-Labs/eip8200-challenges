@@ -1432,7 +1432,7 @@ def setupPathD :
    opAt 549 .MSTORE,
    opAt 550 .POP,
    opAt 551 .POP,
-   pushAt 552 2 2543,
+   pushAt 552 2 2545,
    opAt 553 .JUMP]
 
 /-- After the variable stores and the modulus load (pc 1579). -/
@@ -1454,7 +1454,7 @@ def newtonState (s : State) (input : ByteArray) (m0 x p : Nat) : State :=
 /-- State at the `R1B` guard entry `JUMPDEST` (pc 2674).  The guard dispatches
 to `DOUBLE256` itself when the modulus's top bit is clear. -/
 def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
-  { s with pc := UInt256.ofNat 2543
+  { s with pc := UInt256.ofNat 2545
            stack := outerStack input
            memory := setupMem s.memory input m0
            activeWords := setupWords s.activeWords input }
@@ -1566,7 +1566,7 @@ theorem run_setupC (s : State) (input : ByteArray) (m0 : Nat)
 /-- The dispatcher entry `JUMPDEST` (instruction 2660, pc 2016).  The setup path jumps
 here directly instead of calling the Montgomery-form conversion first. -/
 private theorem jumpDest3296 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2543 = true :=
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2545 = true :=
   Artifact.isValidJumpDest_index 2072 (by rfl)
 
 set_option linter.unusedSimpArgs false in
@@ -1958,7 +1958,7 @@ theorem fastSetupState_memory (input : ByteArray) :
 /-- The setup block hands over at the dispatcher entry with a plain outer stack,
 rather than at the Montgomery-form conversion call with its two argument words. -/
 theorem fastSetupState_pc (input : ByteArray) :
-    (fastSetupState input).pc = UInt256.ofNat 2543 := rfl
+    (fastSetupState input).pc = UInt256.ofNat 2545 := rfl
 
 theorem fastSetupState_stack (input : ByteArray) :
     (fastSetupState input).stack = outerStack input := rfl

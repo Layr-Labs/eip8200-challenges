@@ -34,10 +34,10 @@ theorem c0_eq (Q : ByteArray) (m0 : UInt256) (hm0 : m0 = MachineState.readWord Q
   exact N0Carry.addMod_row_carry _ _ _ hinvQ hguard
 
 def input (s : State) (mem : ByteArray) (aprev tl inv m0 m96 m64 m32 dst ret : UInt256)
-    (rest : List UInt256) : State :=
+    (rest : List UInt256) (ent : UInt256 := UInt256.ofNat 3562) : State :=
   {TnM128SquareSteps.outState (UInt256.ofNat 0) (MachineState.readWord mem 128) s mem 2368 8 0
-      (UInt256.ofNat 4268) (UInt256.ofNat 3572) inv m0
-      (tl :: m96 :: m64 :: m32 :: aprev :: dst :: ret :: rest) with pc := UInt256.ofNat 5072}
+      (UInt256.ofNat 4258) ent inv m0
+      (tl :: m96 :: m64 :: m32 :: aprev :: dst :: ret :: rest) with pc := UInt256.ofNat 5062}
 
 /-- The specialized first product and its reduction enter the general square
 loop with the exact cached memory model and the correct previous operand. -/
@@ -45,22 +45,23 @@ noncomputable def steps (s : State)
     (env : Environment TnM128CandidateArtifact.submissionArtifact .Osaka s)
     (mem : ByteArray) (aprev tl inv m0 m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
-    (hc : Cached mem 2368 8 tl inv m0 m96 m64 m32) :
-    GasSteps (input s mem aprev tl inv m0 m96 m64 m32 dst ret rest)
+    (hc : Cached mem 2368 8 tl inv m0 m96 m64 m32)
+    (ent : UInt256 := UInt256.ofNat 3562) :
+    GasSteps (input s mem aprev tl inv m0 m96 m64 m32 dst ret rest ent)
       (TnM128SquareTailSteps.state s (first mem) 8 1 tl inv m0 m96 m64 m32 dst ret rest) := by
   let q := firstProduct mem
   let st : State := {s with memory := mem}
-  have hL2 : Decode.isValidJumpDest st.executionEnv.code (UInt256.ofNat 3851).toNat = true := by
+  have hL2 : Decode.isValidJumpDest st.executionEnv.code (UInt256.ofNat 3841).toNat = true := by
     rw [show st.executionEnv.code = TnM128CandidateArtifact.submissionArtifact.code from env.code]
-    exact TnM128CandidateArtifact.isValidJumpDest_index 3083 (by rfl)
-  have hhead : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4268).toNat = true := by
+    exact TnM128CandidateArtifact.isValidJumpDest_index 3087 (by rfl)
+  have hhead : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4258).toNat = true := by
     rw [env.code]; exact TnM128L1Jumps.square_jump
-  have hp := TnM128R8FirstRow.run_program st (UInt256.ofNat 5072) (UInt256.ofNat 4268)
-    (UInt256.ofNat 3572) (UInt256.ofNat 3609) (UInt256.ofNat 0) (MachineState.readWord mem 128)
-    (UInt256.ofNat 3851) inv m0 m96 m64 m32 aprev (dst :: ret :: rest)
+  have hp := TnM128R8FirstRow.run_program st (UInt256.ofNat 5062) (UInt256.ofNat 4258)
+    ent (UInt256.ofNat 3599) (UInt256.ofNat 0) (MachineState.readWord mem 128)
+    (UInt256.ofNat 3841) inv m0 m96 m64 m32 aprev (dst :: ret :: rest)
     (by simp only [List.length_cons]; omega) hact hL2
   have g0 := TnM128R8FirstRow.block.steps
-    (s := initial st (UInt256.ofNat 5072) (UInt256.ofNat 4268) (UInt256.ofNat 3572)
+    (s := initial st (UInt256.ofNat 5062) (UInt256.ofNat 4258) ent
       (UInt256.ofNat 0) (MachineState.readWord mem 128) inv m0 m96 m64 m32 aprev (dst :: ret :: rest))
     (env.transfer rfl rfl) rfl hp
   have hq := product_cached s hc
@@ -74,15 +75,15 @@ noncomputable def steps (s : State)
     unfold UInt256.lt
     simp
   have g1 := TnM128R8SuffixSteps.suffix_steps s env q (UInt256.ofNat 0)
-    (UInt256.ofNat 2592) (UInt256.ofNat 4268) (UInt256.ofNat 2336) (UInt256.ofNat 3609)
+    (UInt256.ofNat 2592) (UInt256.ofNat 4258) (UInt256.ofNat 2336) (UInt256.ofNat 3599)
     (MachineState.readWord mem 128) tl inv m0 (MachineState.readWord mem 2592) m96 m64 m32 dst ret
     rest hcap hact hq.extra hm hhead
   rw [hz, hf] at g1
-  have hjoin : TnM128R8FirstRow.result st (UInt256.ofNat 4268) (UInt256.ofNat 3609)
-      (MachineState.readWord mem 128) (UInt256.ofNat 3851) inv m0 m96 m64 m32 (dst :: ret :: rest) =
-      TnCacheL2Trace.state {s with memory := q.memory} (UInt256.ofNat 3851)
+  have hjoin : TnM128R8FirstRow.result st (UInt256.ofNat 4258) (UInt256.ofNat 3599)
+      (MachineState.readWord mem 128) (UInt256.ofNat 3841) inv m0 m96 m64 m32 (dst :: ret :: rest) =
+      TnCacheL2Trace.state {s with memory := q.memory} (UInt256.ofNat 3841)
         q.memory (UInt256.ofNat 0) (rowMu q.memory 8) (rowC0 q.memory 8) 8 0
-        (UInt256.ofNat 2592) (UInt256.ofNat 4268) (UInt256.ofNat 2336) (UInt256.ofNat 3609)
+        (UInt256.ofNat 2592) (UInt256.ofNat 4258) (UInt256.ofNat 2336) (UInt256.ofNat 3599)
         q.carry (MachineState.readWord mem 128) inv
         (m0 :: tl :: m96 :: m64 :: m32 :: MachineState.readWord mem 2592 :: dst :: ret :: rest) := by
     simp only [TnM128R8FirstRow.result, st, ← show q = firstProduct mem from rfl,
@@ -94,9 +95,9 @@ noncomputable def steps (s : State)
   have h128 := first_read s mem 128 (Or.inl (by decide))
   have ha0 := first_read s mem 2592 (Or.inr (by decide))
   simp only [hcond, if_true, hptr] at both
-  have hstart : initial st (UInt256.ofNat 5072) (UInt256.ofNat 4268) (UInt256.ofNat 3572)
+  have hstart : initial st (UInt256.ofNat 5062) (UInt256.ofNat 4258) ent
       (UInt256.ofNat 0) (MachineState.readWord mem 128) inv m0 m96 m64 m32 aprev (dst :: ret :: rest) =
-      input s mem aprev tl inv m0 m96 m64 m32 dst ret rest := by
+      input s mem aprev tl inv m0 m96 m64 m32 dst ret rest ent := by
     simp only [input, TnM128SquareSteps.outState, initial, st, hc.readonly.lowAddress,
       ptrAt_zero, TnCacheFrameOps.frame, framed]
     rfl

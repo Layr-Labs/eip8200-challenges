@@ -56,12 +56,12 @@ def sqRunMem (s : State) (n : Nat) : Nat → ByteArray → ByteArray
 
 def sqLoopMem (s : State) (n : Nat) : Nat → ByteArray → ByteArray
   | 0, mem => mem
-  | k + 1, mem => sqRunMem s n (k + 1) (stage mem 512 n)
+  | k + 1, mem => sqRunMem s n (k + 1) (stage mem 2112 n)
 
 theorem sqLoopMem_zero (s : State) (n : Nat) (mem : ByteArray) : sqLoopMem s n 0 mem = mem := rfl
 
 theorem sqLoopMem_succ (s : State) (n k : Nat) (mem : ByteArray) :
-    sqLoopMem s n (k + 1) mem = sqRunMem s n (k + 1) (stage mem 512 n) := rfl
+    sqLoopMem s n (k + 1) mem = sqRunMem s n (k + 1) (stage mem 2112 n) := rfl
 
 theorem sqRunMem_zero (s : State) (n : Nat) (mem : ByteArray) : sqRunMem s n 0 mem = mem := rfl
 
@@ -242,7 +242,7 @@ theorem sqLoopMem_readWord_outside (s : State) (mem : ByteArray) (n k addr : Nat
   | zero => rfl
   | succ k =>
       rw [sqLoopMem_succ, sqRunMem_readWord_outside s _ n (k + 1) addr hfast hn hn32 hsubb hscratch hdst hcount,
-        read_stage_outside mem 512 n addr (by omega)]
+        read_stage_outside mem 2112 n addr (by omega)]
 
 theorem sqLoopMem_readWord_high (s : State) (mem : ByteArray) (n k addr : Nat)
     (hfast : n = 4 ∨ n = 8) (hn : 1 ≤ n) (hn32 : n ≤ 8) (haddr : 2656 ≤ addr) :
@@ -277,7 +277,7 @@ theorem sqLoopMem_fastRepresents_outside (s : State) (mem : ByteArray) (n k ptr 
 
 theorem sqLoopMem_represents (s : State) (mem : ByteArray) (p a mm k : Nat)
     (hfast : p + 2 = 4 ∨ p + 2 = 8) (hn32 : p + 2 ≤ 8) (hk : 1 ≤ k) (h4 : p+2 ≠ 4)
-    (ha : Model.FastRepresents mem 512 (p + 2) a)
+    (ha : Model.FastRepresents mem 2112 (p + 2) a)
     (hm : Model.FastRepresents mem 0 (p + 2) mm)
     (hodd : mm % 2 = 1) (har : a < Limbs.radix^(p+2)) (hmpos : 0 < mm)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
@@ -288,16 +288,16 @@ theorem sqLoopMem_represents (s : State) (mem : ByteArray) (p a mm k : Nat)
   cases k with
   | zero => omega
   | succ k =>
-      have hm' : Model.FastRepresents (stage mem 512 (p + 2)) 0 (p + 2) mm := by
+      have hm' : Model.FastRepresents (stage mem 2112 (p + 2)) 0 (p + 2) mm := by
         refine (Model.fastRepresents_congr (a := mem) ?_ mm).1 hm
         intro j hj
-        rw [read_stage_outside mem 512 (p + 2) (0 + 32 * j) (Or.inl (by omega))]
-      have hminv' : ((MachineState.readWord (stage mem 512 (p + 2)) (32 * (p + 2) - 32)).toNat *
-          (MachineState.readWord (stage mem 512 (p + 2)) 2720).toNat + 1) % 2 ^ 256 = 0 := by
-        rw [read_stage_outside mem 512 (p + 2) (32 * (p + 2) - 32) (Or.inl (by omega)),
-          read_stage_outside mem 512 (p + 2) 2720 (Or.inr (by omega))]
+        rw [read_stage_outside mem 2112 (p + 2) (0 + 32 * j) (Or.inl (by omega))]
+      have hminv' : ((MachineState.readWord (stage mem 2112 (p + 2)) (32 * (p + 2) - 32)).toNat *
+          (MachineState.readWord (stage mem 2112 (p + 2)) 2720).toNat + 1) % 2 ^ 256 = 0 := by
+        rw [read_stage_outside mem 2112 (p + 2) (32 * (p + 2) - 32) (Or.inl (by omega)),
+          read_stage_outside mem 2112 (p + 2) 2720 (Or.inr (by omega))]
         exact hminv
-      exact sqRunMem_represents s (stage mem 512 (p + 2)) p a mm (k + 1) hfast hn32 (by omega) h4
+      exact sqRunMem_represents s (stage mem 2112 (p + 2)) p a mm (k + 1) hfast hn32 (by omega) h4
         (represents_stage mem (p + 2) a ha) hm' hodd har hmpos hminv'
 
 end Challenge.Modexp.Submission.Proofs.Fast.SquareLoopMem

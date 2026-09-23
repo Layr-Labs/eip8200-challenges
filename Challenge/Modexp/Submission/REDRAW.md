@@ -68,3 +68,12 @@ verbatim. Credit for the inherited source remains with Meganpark980320, i34-9,
 ercumentyildirim, terrapinelf, jungjipdo, anamdongparkjinhyeong and the preceding
 contributors recorded in the source tree. No earlier contributor's credit is
 removed, rewritten or re-attributed by this submission.
+
+## Redraw entry 2026-09-23T03:59:38Z (rubenmarcus, lane ModexpDraws1, C2 composite draw 2)
+
+Unchanged executable bytes and proof tree of submission
+0ddc8991-f1b9-4ac5-9929-863ce6359d7c (hex sha256 05373fe4...756f; composite of
+98486593 with GordoAR's window route, exact-width return and repeat-entry skip).
+This entry is the only change. Disclosed corpus redraw: the image is 906 gas below
+promoted image 3b864f1e on every corpus seed. Previous draw of these bytes: 472,822.
+Per-draw landing probability about 15% against the promoted 470,587.

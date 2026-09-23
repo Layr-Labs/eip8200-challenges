@@ -56,11 +56,11 @@ noncomputable def prologue_steps (s : State) (mem : ByteArray) (tn m128 : UInt25
     (hjump : Decode.isValidJumpDest TnM128Candidate.bytecode e = true)
     (he : e + 37 < 2 ^ 256) :
     Challenge.EvmProof.GasSteps
-      (outState tn m128 s mem 2368 n i (UInt256.ofNat 4268) (UInt256.ofNat e) pdst ret
+      (outState tn m128 s mem 2368 n i (UInt256.ofNat 4258) (UInt256.ofNat e) pdst ret
         (w10 :: w11 :: w12 :: w13 :: aprev :: rest))
       (l1Q tn m128 e s (sqPro mem n i (UInt256.sgt (UInt256.ofNat 0) aprev))
         (sqB2 (sqX mem n i) (UInt256.sgt (UInt256.ofNat 0) aprev)) 2368 n i
-        (UInt256.ofNat 4268) (UInt256.ofNat (e + 37)) pdst ret
+        (UInt256.ofNat 4258) (UInt256.ofNat (e + 37)) pdst ret
         (w10 :: w11 :: w12 :: w13 :: sqX mem n i :: rest)) := by
   let P : UInt256 := UInt256.ofNat (ptrAt (2368 + 32 * n - 32) i)
   let s' : State := { s with memory := mem }
@@ -77,21 +77,21 @@ noncomputable def prologue_steps (s : State) (mem : ByteArray) (tn m128 : UInt25
     change Decode.isValidJumpDest s.executionEnv.code e = true
     rw [hcode]; exact hjump
   -- block A
-  have hA := run_A s' P (UInt256.ofNat 4268) (UInt256.ofNat (2368 - 32)) (UInt256.ofNat e)
+  have hA := run_A s' P (UInt256.ofNat 4258) (UInt256.ofNat (2368 - 32)) (UInt256.ofNat e)
     tn allOnes m128 pdst ret w10 w11 w12 w13 aprev rest (by omega) hactP
   rw [push0_eq] at hA
   have gA := stepsOf blockA hA rfl hcode hfork hrun hnp
   -- the SGT
   have gS := TnM128SgtStep.gasSteps_sqRowSgt
-    { s' with pc := UInt256.ofNat 4274,
+    { s' with pc := UInt256.ofNat 4264,
               stack := UInt256.ofNat 0 :: aprev :: MachineState.readWord s'.memory P.toNat :: P ::
-                UInt256.ofNat 4268 :: UInt256.ofNat (2368 - 32) :: UInt256.ofNat e :: tn ::
+                UInt256.ofNat 4258 :: UInt256.ofNat (2368 - 32) :: UInt256.ofNat e :: tn ::
                 allOnes :: m128 :: pdst :: ret :: w10 :: w11 :: w12 :: w13 ::
                 MachineState.readWord s'.memory P.toNat :: rest }
     (UInt256.ofNat 0) aprev _ hcode hfork rfl rfl (by simp only [List.length_cons]; omega) hrun hnp
   -- block B
   have hB := run_B s' (UInt256.sgt (UInt256.ofNat 0) aprev) (MachineState.readWord s'.memory P.toNat) P
-    (UInt256.ofNat 4268) (UInt256.ofNat (2368 - 32)) (UInt256.ofNat e) tn allOnes
+    (UInt256.ofNat 4258) (UInt256.ofNat (2368 - 32)) (UInt256.ofNat e) tn allOnes
     (m128 :: pdst :: ret :: w10 :: w11 :: w12 :: w13 ::
       MachineState.readWord s'.memory P.toNat :: rest)
     (by simp only [List.length_cons]; omega) hactT hjumpE

@@ -28,6 +28,7 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
     (hact : 89 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn8 : n ≤ 8) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
+    (hfull : msize = 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
     (hmsz : msize = Challenge.Modexp.modulusSize input)
@@ -37,15 +38,17 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
     (hmod : Model.FastRepresents mem 0 n mm)
     (hone : Model.FastRepresents mem 768 n 0)
     (hmatch : FullBase.Matches mem n bsize)
+    (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0)
+    (hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1)
     -- Threaded straight through to `FixedDirectRouteCorrect.bailHandled`.
     (hvalid : Challenge.Modexp.ValidInput input)
     (hactLe : s.activeWords.toNat ≤ 289)
     (ordinaryTrace : ¬ Eligible input n bsize esize → Challenge.EvmProof.GasSteps
       (Shift.dispState s mem n bsize esize msize)
-      (FixedExponentRoute.entryState s (ordinaryOutput mem input n mm) n bsize esize msize))
+      (FixedExponentRoute.entryState s (ordinaryFinal mem input n mm) n bsize esize msize))
     (e3Trace : Eligible input n bsize esize → Challenge.EvmProof.GasSteps
       (Shift.dispState s mem n bsize esize msize)
-      (FixedExponentRoute.entryState s (e3Output mem input n mm (n / 4)) n bsize esize msize)) :
+      (FixedExponentRoute.entryState s (e3Final mem input n mm (n / 4)) n bsize esize msize)) :
     FixedExponentRoute.Handled input (Shift.dispState s mem n bsize esize msize) := by
   have hbEq : bsize = 32 * n := hmatch.1
   by_cases hE3 : Eligible input n bsize esize
@@ -57,7 +60,7 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
     let X := base % mm * Limbs.radix ^ (3 * k) % mm
     let Y := base % mm * Limbs.radix ^ (2 * k) % mm
     have facts := e3_output_facts mem input n bsize mm minv k
-      hn hn8 hm hodd hframe hmod hmatch.2 hone
+      hn hn8 hm hodd hframe hmod hmatch.2 htn0 hone
     rcases facts with ⟨hf, hmrep, hx, hy, ho⟩
     have hxform : X ≡ Precompile.bytesToNatPadded input 96 bsize * Limbs.radix ^ (3 * k) [MOD mm] := by
       rw [hbEq]
@@ -70,17 +73,17 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
       conv_rhs => rw [hn4]
       exact RootE3Scale.quarter_scale Limbs.radix k
     exact FixedDirectCorrect.prepend tr
-      (RootE3Hit.handled_of_entry_asymmetric_three input s (e3Output mem input n mm k)
+      (RootE3Hit.handled_of_entry_asymmetric_three input s (e3Final mem input n mm k)
         n bsize msize mm minv X Y (Limbs.radix ^ (3 * k)) (Limbs.radix ^ (2 * k))
-        sub spec hcode hfork hrun hnp hdata hb hstack hact hn hn8 hmz hm32
+        sub spec hcode hfork hrun hnp hdata hb hstack hact hn hn8 hn48 hminv1 hmz hm32 hfull
         hbsize hesize hmsz hmm hm (Model.coprime_radix_pow_of_odd hodd n) hradix
         (Nat.mod_lt _ hm) hxform hyform hscale hexp hf hmrep hx hy (Nat.mod_lt _ hm) ⟨0, Limbs.radix_pos, ho⟩)
-  · let final := ordinaryOutput mem input n mm
+  · let final := ordinaryFinal mem input n mm
     let base := Precompile.bytesToNatPadded input 96 (32 * n)
     let baseM := base % mm * Limbs.radix ^ n % mm
     have facts := ordinary_output_facts mem input n bsize mm minv
-      hn hn8 hm hodd hframe hmod hmatch.2 hone
-    rcases facts with ⟨hf, hmrep, hbRep, haRep, ho, _hr1⟩
+      hn hn8 hm hodd hframe hmod hmatch.2 htn0 hone
+    rcases facts with ⟨hf, hmrep, hbRep, haRep, ho⟩
     have hbForm : baseM ≡ Precompile.bytesToNatPadded input 96 bsize * Limbs.radix ^ n [MOD mm] := by
       rw [hbEq]
       exact (Nat.mod_modEq _ mm).trans ((Nat.mod_modEq base mm).mul_right _)
@@ -89,7 +92,7 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
     exact FixedDirectCorrect.prepend (ordinaryTrace hE3)
       (FixedDirectCorrect.handled_of_entryStateConcrete input s final
         n bsize esize msize mm minv baseM sub spec
-        hcode hfork hrun hnp hdata hstack hact hvalid hactLe hn hn8 hb he hmz hm32
+        hcode hfork hrun hnp hdata hstack hact hvalid hactLe hn hn8 hb he hfast hminv1 hmz hm32 hfull
         hbsize hesize hmsz hmm hodd hradix (Nat.mod_lt _ hm) hbForm
         hf hmrep hbRep ⟨0, Limbs.radix_pos, ho⟩ ⟨base % mm, haRep, (Nat.mod_modEq base mm).trans hrawForm, Nat.mod_lt _ hm⟩)
 
@@ -114,6 +117,7 @@ theorem handled_of_bound_shift_hit (input : ByteArray) (s : State) (mem : ByteAr
     (hact : 89 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn8 : n ≤ 8) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
+    (hfull : msize = 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
     (hmsz : msize = Challenge.Modexp.modulusSize input)
@@ -123,22 +127,23 @@ theorem handled_of_bound_shift_hit (input : ByteArray) (s : State) (mem : ByteAr
     (hmod : Model.FastRepresents mem 0 n mm)
     (hone : Model.FastRepresents mem 768 n 0)
     (hmatch : FullBase.Matches mem n bsize)
-    (hfast : n = 4 ∨ n = 8)
+    (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0)
+    (hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1)
     (hvalid : Challenge.Modexp.ValidInput input)
     (hactLe : s.activeWords.toNat ≤ 289)
     (bindings : RootE3Trace.TraceBindings s mem input n bsize esize msize) :
     FixedExponentRoute.Handled input (Shift.dispState s mem n bsize esize msize) := by
   let e : Shift.Env s := ⟨hcode, hfork, hrun, hnp, hact⟩
   apply handled_of_shift_hit input s mem n bsize esize msize mm minv sub spec
-    hcode hfork hrun hnp hdata hstack hact hn hn8 hb he hmz hm32 hbsize hesize hmsz
-    hmm hodd hradix hm hframe hmod hone hmatch hvalid hactLe
+    hcode hfork hrun hnp hdata hstack hact hn hn8 hb he hmz hm32 hfull hbsize hesize hmsz
+    hmm hodd hradix hm hframe hmod hone hmatch htn0 hfast hminv1 hvalid hactLe
   · intro h
     exact RootE3Trace.ordinaryTrace s mem input n bsize esize msize mm minv bindings
-      hn hn8 e hm hodd hframe hmod hmatch.2 h hfast
+      hn hn8 hmatch.1 e hm hodd hframe hmod hmatch.2 htn0 h hfast
   · intro h
     have hn4 : n = 4 * (n / 4) := by rcases h.2.2 with h4 | h8 <;> omega
     exact RootE3Trace.e3Trace s mem input n bsize esize msize mm minv (n / 4) bindings
-      hn hn8 hn4 e hm hodd hframe hmod hmatch.2 h
+      hn hn8 hmatch.1 hn4 e hm hodd hframe hmod hmatch.2 htn0 h
 
 #print axioms handled_of_bound_shift_hit
 end RootE3Correct

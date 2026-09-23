@@ -14,8 +14,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
     existing subtraction trace as explicit premises. The e570 binding module
     supplies these once the shared artifact's mechanical proof passes. -/
 def gasSteps_lazy {artifact : Challenge.EvmProof.ProgramArtifact}
-    (gateBlock : Block artifact .Osaka 4528 program)
-    (copyBlock : Block artifact .Osaka 4537 copyProgram)
+    (gateBlock : Block artifact .Osaka 4518 program)
+    (copyBlock : Block artifact .Osaka 4527 copyProgram)
     (s : State) (mem : ByteArray) (n : Nat) (dst ret : UInt256)
     (rest : List UInt256)
     (env : Environment artifact .Osaka s)
@@ -24,16 +24,16 @@ def gasSteps_lazy {artifact : Challenge.EvmProof.ProgramArtifact}
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*n))
     (hdstFit : dst.toNat+32*n ≤ 2816)
     (hjump : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true)
-    (hsubJump : Decode.isValidJumpDest s.executionEnv.code 4333 = true)
-    (subTrace : Challenge.EvmProof.GasSteps (atState s mem 4333 dst ret rest)
+    (hsubJump : Decode.isValidJumpDest s.executionEnv.code 4323 = true)
+    (subTrace : Challenge.EvmProof.GasSteps (atState s mem 4323 dst ret rest)
       (returnedState s (Csub.subResultMemory mem n dst.toNat) ret rest)) :
-    Challenge.EvmProof.GasSteps (atState s mem 4528 dst ret rest)
+    Challenge.EvmProof.GasSteps (atState s mem 4518 dst ret rest)
       (returnedState s (LazyCsub.resultMemory mem n dst.toNat) ret rest) := by
-  have hc := gateBlock.steps (env.transfer (t := atState s mem 4528 dst ret rest) rfl rfl) rfl
+  have hc := gateBlock.steps (env.transfer (t := atState s mem 4518 dst ret rest) rfl rfl) rfl
     (run_gate s mem dst ret rest hcap hact hsubJump)
   by_cases hz : (MachineState.readWord mem 2080).toNat = 0
   · rw [if_pos hz] at hc
-    have hk := copyBlock.steps (env.transfer (t := atState s mem 4537 dst ret rest) rfl rfl) rfl
+    have hk := copyBlock.steps (env.transfer (t := atState s mem 4527 dst ret rest) rfl rfl) rfl
       (run_copy s mem n dst ret rest hcap hact hn hn32 hs32 hdstFit hjump)
     simpa only [LazyCsub.resultMemory,if_pos hz] using hc.trans hk
   · rw [if_neg hz] at hc
