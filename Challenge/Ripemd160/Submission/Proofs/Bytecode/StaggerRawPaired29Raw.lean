@@ -15,8 +15,6 @@ private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
 def template : List Instr :=
   [ .op (.Swap ⟨7, by decide⟩),
-    .op .POP,
-    .push ⟨22, by decide⟩ (UInt256.ofNat 40945789247971450477386360121479348807026276516919705),
     .op (.Swap ⟨0, by decide⟩),
     .op (.Dup ⟨8, by decide⟩),
     .op (.Dup ⟨5, by decide⟩),
@@ -76,12 +74,12 @@ def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
     x.v16 ] ++ rho
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.land x.v3 (UInt256.shiftRight (UInt256.mul x.v10 x.v6) (UInt256.ofNat 23))),
-    (UInt256.ofNat 40945789247971450477386360121479348807026276516919705),
+    x.v8,
     x.v2,
     x.v3,
     x.v4,
     x.v5,
-    (UInt256.land x.v3 (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mulMod (UInt256.land x.v3 (UInt256.add (UInt256.ofNat 40945789247971450477386360121479348807026276516919705) (UInt256.add (MachineState.readWord memory 666) (UInt256.add (UInt256.xor (UInt256.xor (UInt256.land (UInt256.xor x.v4 x.v9) (UInt256.xor (UInt256.land x.v0 x.v9) x.v6)) x.v4) x.v0) x.v7)))) x.v15 x.v12) (UInt256.ofNat 25)))),
+    (UInt256.land x.v3 (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mulMod (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.add (MachineState.readWord memory 666) (UInt256.add (UInt256.xor (UInt256.xor (UInt256.land (UInt256.xor x.v4 x.v9) (UInt256.xor (UInt256.land x.v0 x.v9) x.v6)) x.v4) x.v0) x.v7)))) x.v15 x.v12) (UInt256.ofNat 25)))),
     (UInt256.ofNat 23),
     x.v0,
     x.v9,
@@ -94,12 +92,12 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     x.v16 ] ++ rho
 def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.land x.v3 (UInt256.shiftRight (UInt256.mul x.v10 x.v6) (UInt256.ofNat 23))),
-    (UInt256.ofNat 40945789247971450477386360121479348807026276516919705),
+    x.v8,
     x.v2,
     x.v3,
     x.v4,
     x.v5,
-    (UInt256.land x.v3 (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mulMod (UInt256.land x.v3 (UInt256.add (UInt256.ofNat 40945789247971450477386360121479348807026276516919705) (UInt256.add (MachineState.readWord memory 666) (UInt256.add (UInt256.xor (UInt256.xor (UInt256.land (UInt256.xor x.v4 x.v9) (UInt256.xor (UInt256.land x.v0 x.v9) x.v6)) x.v4) x.v0) x.v7)))) x.v15 x.v12) (UInt256.ofNat 25)))),
+    (UInt256.land x.v3 (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mulMod (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.add (MachineState.readWord memory 666) (UInt256.add (UInt256.xor (UInt256.xor (UInt256.land (UInt256.xor x.v4 x.v9) (UInt256.xor (UInt256.land x.v0 x.v9) x.v6)) x.v4) x.v0) x.v7)))) x.v15 x.v12) (UInt256.ofNat 25)))),
     (UInt256.ofNat 23),
     x.v0,
     x.v9,

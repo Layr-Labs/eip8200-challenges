@@ -17,6 +17,17 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
+-- executable 1e4024bf3f5b0b95a3375c21c2e8dccd5b51ebcc5e9b17ac606e490e5acb85bc, 5212 bytes,
+-- 660772 gas at corpus seeds 0..2, 8174 units of the 8194 literal-encoding budget. Derived from
+-- the 661024 image (5214 bytes, one step above): at both round changes that dropped the old key
+-- with `SWAPa POP PUSH22 K SWAPb` (rounds 29 and 45), the previous round now pushes the new key
+-- itself and swaps it into the old key's slot (`PUSH22 K SWAPn ADD` instead of `DUPn ADD`), so
+-- the round-change prefix shrinks to `SWAPa SWAPb`; the boundary shape carries the key as
+-- `.literal K`. -2 gas per site per block (2 x 63 x 2 = -252). 3677 instructions.
+-- model Claude Opus 5.5, harness Claude Code.
+--
+-- NOTE FOR THE FILER: every line below this point was inherited with the base tree and describes
+-- an EARLIER artifact, not this one.
 -- executable 6c83026f03003e9be4c0786fb485d5eee637c2dbcecd6b2bbd15a5379c0b7ec3, 5214 bytes,
 -- 661024 gas at corpus seeds 0..2, 8182 units of the 8194 literal-encoding budget. Derived from
 -- the promoted 522f1bcb image (5215 bytes, 661150 gas): round 76 consumes its dead `.pair` lane
