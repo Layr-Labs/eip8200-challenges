@@ -97,36 +97,36 @@ def words (s : State) (rho : List UInt256) (moves : Moves s rho)
 
 def accumulate (s : State) (rho : List UInt256) (moves : Moves s rho)
     (n : Nat) (hn : Allowed n) (hsize : s.executionEnv.calldata.size=n) :
-    GasSteps (atState s 123 rho) (atState s 296 (frame (endFrame s n) rho)) := by
+    GasSteps (atState s 123 rho) (atState s 4699 (frame (endFrame s n) rho)) := by
   have g0 := (start s rho moves n hn hsize).trans (words s rho moves n (last n) hn (by omega) hsize)
   have ht : isTail n (last n) := Or.inl rfl
   have g1 : GasSteps (loopState s n (last n) rho) (atState s 237 (frame (endFrame s n) rho)) := by
     simpa only [loopState, if_pos ht, endFrame] using moves.tail (current s.executionEnv.calldata n (last n))
   have hc := (finish_iff s n (last n) hn (by omega) ht).mpr rfl
-  have g2 : GasSteps (atState s 237 (frame (endFrame s n) rho)) (atState s 296 (frame (endFrame s n) rho)) := by
+  have g2 : GasSteps (atState s 237 (frame (endFrame s n) rho)) (atState s 4699 (frame (endFrame s n) rho)) := by
     simpa only [endFrame, if_pos hc] using moves.finish (endFrame s n) (by simp only [endFrame, tailResult, current, hsize])
   exact g0.trans (g1.trans g2)
 
 def gasSteps_hit (s : State) (rho : List UInt256) (moves : Moves s rho)
     (n : Nat) (hn : Allowed n) (hsize : s.executionEnv.calldata.size=n)
     (hzero : J2Accumulator.resultAcc s.executionEnv.calldata n=0) :
-    GasSteps (atState s 123 rho) (atState s 301 (finishRest (endFrame s n) rho)) := by
+    GasSteps (atState s 123 rho) (atState s 4704 (finishRest (endFrame s n) rho)) := by
   have hc : (endFrame s n).acc.toNat=0 := by rw [end_acc s n hn, hzero]; rfl
   have g := moves.result (endFrame s n)
-  have gr : GasSteps (atState s 296 (frame (endFrame s n) rho)) (atState s 301 (finishRest (endFrame s n) rho)) := by
+  have gr : GasSteps (atState s 4699 (frame (endFrame s n) rho)) (atState s 4704 (finishRest (endFrame s n) rho)) := by
     simpa only [if_pos hc] using g
   exact (accumulate s rho moves n hn hsize).trans gr
 
 def gasSteps_miss (s : State) (rho : List UInt256) (moves : Moves s rho)
     (n : Nat) (hn : Allowed n) (hsize : s.executionEnv.calldata.size=n)
     (hzero : J2Accumulator.resultAcc s.executionEnv.calldata n≠0) :
-    GasSteps (atState s 123 rho) (atState s 338 (finishRest (endFrame s n) rho)) := by
+    GasSteps (atState s 123 rho) (atState s 310 (finishRest (endFrame s n) rho)) := by
   have hc : (endFrame s n).acc.toNat≠0 := by
     intro h; apply hzero; apply Word.word_ext
     change (J2Accumulator.resultAcc s.executionEnv.calldata n).toNat = 0
     simpa only [end_acc s n hn] using h
   have g := moves.result (endFrame s n)
-  have gr : GasSteps (atState s 296 (frame (endFrame s n) rho)) (atState s 338 (finishRest (endFrame s n) rho)) := by
+  have gr : GasSteps (atState s 4699 (frame (endFrame s n) rho)) (atState s 310 (finishRest (endFrame s n) rho)) := by
     simpa only [if_neg hc] using g
   exact (accumulate s rho moves n hn hsize).trans gr
 

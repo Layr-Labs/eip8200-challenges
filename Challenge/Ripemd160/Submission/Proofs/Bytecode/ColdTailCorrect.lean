@@ -15,7 +15,7 @@ def maskRho (rho : List UInt256) : List UInt256 :=
 noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (hn32 : input.size ≠ 32)
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
-    GasSteps (StackTail.append (Execution.atPC input 339) rho)
+    GasSteps (StackTail.append (Execution.atPC input 311) rho)
       (loopState input (PaddingTrace.entryState input) StackRunBridge.initialHashState 0
         (DriverTrace.blockCount input) (maskRho rho)) := by
   let s := PaddingTrace.entryState input
@@ -28,15 +28,15 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
   have hi : s.executionEnv.calldata = input := PadSkipEntry.entryState_calldata input
   have hm : (maskRho rho).length ≤ 880 := by simp only [maskRho, List.length_append, List.length_cons, List.length_nil]; omega
   have gx : GasSteps (StackTail.append s rho)
-      {s with pc := UInt256.ofNat 520, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (LoopCompletionControl.limit input) (maskRho rho)} := by
+      {s with pc := UInt256.ofNat 518, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (LoopCompletionControl.limit input) (maskRho rho)} := by
     by_cases hz : input.size % 64 = 0
-    · have hs : StackTail.append s rho = {s with pc := UInt256.ofNat 520, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (UInt256.ofNat input.size) (maskRho rho)} := by
+    · have hs : StackTail.append s rho = {s with pc := UInt256.ofNat 518, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (UInt256.ofNat input.size) (maskRho rho)} := by
         dsimp [s]
         rw [PaddingTrace.entryState_skip input hz]
         rfl
       exact GasSteps.cast (GasSteps.refl (StackTail.append s rho)) rfl (by
         simpa only [LoopCompletionControl.limit, LoopCompletionControl.limitNat, if_pos hz] using hs)
-    · have hs : StackTail.append s rho = {s with pc := UInt256.ofNat 520, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (Padding.paddedWord input) (maskRho rho)} := by
+    · have hs : StackTail.append s rho = {s with pc := UInt256.ofNat 518, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 0) (Padding.paddedWord input) (maskRho rho)} := by
         dsimp [s]
         rw [PaddingTrace.entryState_miss input hz]
         rfl
@@ -54,10 +54,10 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
 
 /-- The ordinary hash route retains its arbitrary bounded suffix through every block. -/
 theorem correct (input : ByteArray) (hfit : CalldataFits input)
-    (hpositive : 0 < input.size) (hn32 : input.size ≠ 32) (hsmall : input.size < 5212)
+    (hpositive : 0 < input.size) (hn32 : input.size ≠ 32) (hsmall : input.size < 5221)
     (rho : List UInt256) (hcap : rho.length ≤ 20)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0)
-      (StackTail.append (Execution.atPC input 339) rho)) :
+      (StackTail.append (Execution.atPC input 311) rho)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   have hm : (maskRho rho).length ≤ 880 := by

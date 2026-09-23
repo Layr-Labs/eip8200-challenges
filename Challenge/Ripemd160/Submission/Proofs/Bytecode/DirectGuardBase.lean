@@ -50,7 +50,7 @@ def bytePrefix : List Located :=
    pushAt 9 0 0,
    opAt 10 .BYTE,
    opAt 11 .EQ,
-   pushAt 12 2 4819]
+   pushAt 12 2 4828]
 
 /-- Entry size gate: `(size >> 2) * (size ^ 1000) != 0` jumps to the generic arm. -/
 def gatePrefix : List Located :=
@@ -61,9 +61,9 @@ def gatePrefix : List Located :=
    pushAt 18 1 2,
    opAt 19 .SHR,
    opAt 20 .MUL,
-   pushAt 21 2 338]
+   pushAt 21 2 310]
 
-def entryDest : Located := opAt 222 .JUMPDEST
+def entryDest : Located := opAt 204 .JUMPDEST
 
 def checkEntryPath : List Located :=
   [pushAt 23 0 0,
@@ -75,7 +75,7 @@ def checkEntryPath : List Located :=
    opAt 29 .DIV,
    opAt 30 .MUL,
    opAt 31 .XOR,
-   pushAt 32 2 4819,
+   pushAt 32 2 4828,
    opAt 33 .JUMPI,
    pushAt 34 0 0,
    opAt 35 .CALLDATALOAD,
@@ -117,7 +117,7 @@ def tailPath : List Located :=
 def fallbackPath : List Located :=
   [opAt 68 .JUMPDEST,
    opAt 69 .POP,
-   pushAt 70 2 338,
+   pushAt 70 2 310,
    opAt 71 .JUMPI,
    entryDest]
 
@@ -153,7 +153,7 @@ attribute [simp] Challenge.Ripemd160.initialState_stack
   Challenge.Ripemd160.initialState_calldata
 
 def sizeMatched (input : ByteArray) : State := atPC input 38
-def fallbackState (input : ByteArray) : State := atPC input 339
+def fallbackState (input : ByteArray) : State := atPC input 311
 
 def loopState (input : ByteArray) (n : Nat) : State :=
   { initialState submissionBytecode input 0 with
