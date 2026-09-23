@@ -54,7 +54,7 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
 
 /-- The ordinary hash route retains its arbitrary bounded suffix through every block. -/
 theorem correct (input : ByteArray) (hfit : CalldataFits input)
-    (hpositive : 0 < input.size) (hn32 : input.size ≠ 32) (hsmall : input.size < 5206)
+    (hpositive : 0 < input.size) (hn32 : input.size ≠ 32) (hsmall : input.size < 5205)
     (rho : List UInt256) (hcap : rho.length ≤ 20)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0)
       (StackTail.append (Execution.atPC input 342) rho)) :
