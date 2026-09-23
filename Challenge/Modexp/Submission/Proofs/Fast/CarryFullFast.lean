@@ -75,6 +75,7 @@ opaque gasSteps_toCsubFast (E : EntryLemmas) (s : State) (mem : ByteArray)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (hslot : rest[2]? = some (MachineState.readWord mem 2688))
     (hminv : inverseInvariant mem n)
     (he : eligible mem n) :
     Challenge.EvmProof.GasSteps
@@ -86,11 +87,11 @@ opaque gasSteps_toCsubFast (E : EntryLemmas) (s : State) (mem : ByteArray)
   by_cases hn4 : n = 4
   · subst n
     exact gasSteps_specializedFour E s mem pa pb pdst ret rest hcap hrun hcode
-      hfork hnp hact hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv he.2
+      hfork hnp hact hpa hpaFit hpb hpbFit hcds hs32 htl hml hslot hminv he.2
   · have hn8 : n = 8 := he.1.resolve_left hn4
     subst n
     exact gasSteps_specializedEight E s mem pa pb pdst ret rest hcap hrun hcode
-      hfork hnp hact hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv he.2
+      hfork hnp hact hpa hpaFit hpb hpbFit hcds hs32 htl hml hslot hminv he.2
 
 /-- `gasSteps_monproCsub` for eligible widths: through the rows and the final subtraction. -/
 opaque gasSteps_monproCsubFast (E : EntryLemmas) (s : State) (mem : ByteArray)
@@ -107,6 +108,7 @@ opaque gasSteps_monproCsubFast (E : EntryLemmas) (s : State) (mem : ByteArray)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (hslot : rest[2]? = some (MachineState.readWord mem 2688))
     (hminv : inverseInvariant mem n)
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
     (hdstFit : pdst.toNat + 32 * n ≤ 2816)
@@ -118,7 +120,7 @@ opaque gasSteps_monproCsubFast (E : EntryLemmas) (s : State) (mem : ByteArray)
       (Csub.csReturnedState s (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n n pdst ret
         rest) :=
   (gasSteps_toCsubFast E s mem pa pb n pdst ret rest (by omega) hrun hcode hfork hnp hact
-      hn32 hpa hpaFit hpb hpbFit hcds hs32 htl hml hminv he).trans
+      hn32 hpa hpaFit hpb hpbFit hcds hs32 htl hml hslot hminv he).trans
     (Csub.gasSteps_csub s (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n pdst ret rest
       (by omega) hcode hfork hrun hnp hact hn hn32 hjump
       ((readWord_selected_preserved s mem pa pb n n 2752 hn32 (by omega)).trans hml)
@@ -147,6 +149,7 @@ opaque gasSteps_monproFullOfFast (E : EntryLemmas) (s : State) (mem : ByteArray)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * (p + 2)))
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * (p + 2)))
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * (p + 2) - 32))
+    (hslot : rest[2]? = some (MachineState.readWord mem 2688))
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
     (hdstFit : pdst.toNat + 32 * (p + 2) ≤ 2816)
     (ha : Model.FastRepresents mem pa (p + 2) a)
@@ -162,7 +165,7 @@ opaque gasSteps_monproFullOfFast (E : EntryLemmas) (s : State) (mem : ByteArray)
         (selectedRows (mpZeroed s (inputMemory mem pa (p+2)) (p + 2)) pa pb (p + 2) (p + 2)) (p + 2) (p + 2)
         pdst ret rest) :=
   gasSteps_monproCsubFast E s mem pa pb (p + 2) pdst ret rest (by omega) hrun hcode hfork hnp
-    hact (by omega) hn32 hpa (by omega) hpb (by omega) hcds hs32 htl hml hminv hjump
+    hact (by omega) hn32 hpa (by omega) hpb (by omega) hcds hs32 htl hml hslot hminv hjump
     hdstFit
     (by
       let prepared := inputMemory mem pa (p+2)
@@ -201,6 +204,7 @@ opaque gasSteps_monproFullFast (s : State) (mem : ByteArray) (pa pb p : Nat)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * (p + 2)))
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * (p + 2)))
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * (p + 2) - 32))
+    (hslot : rest[2]? = some (MachineState.readWord mem 2688))
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
     (hdstFit : pdst.toNat + 32 * (p + 2) ≤ 2816)
     (ha : Model.FastRepresents mem pa (p + 2) a)
@@ -216,7 +220,7 @@ opaque gasSteps_monproFullFast (s : State) (mem : ByteArray) (pa pb p : Nat)
         (selectedRows (mpZeroed s (inputMemory mem pa (p+2)) (p + 2)) pa pb (p + 2) (p + 2)) (p + 2) (p + 2)
         pdst ret rest) :=
   gasSteps_monproFullOfFast entryLemmas s mem pa pb p a b mm pdst ret rest hcap hrun hcode
-    hfork hnp hact hn32 hpa hpaFit hpb hpbFit hcds hs32 htl hml hjump hdstFit ha hb hm ham hmpos hminv he
+    hfork hnp hact hn32 hpa hpaFit hpb hpbFit hcds hs32 htl hml hslot hjump hdstFit ha hb hm ham hmpos hminv he
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryFull
 

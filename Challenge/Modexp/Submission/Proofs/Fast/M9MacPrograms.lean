@@ -36,27 +36,26 @@ def blockProgram (a t : UInt256) : List Instr :=
 def headProgram (a t : UInt256) : List Instr :=
   [.op .JUMPDEST] ++ blockProgram a t
 
-/-- One straight MAC block on a known-zero incoming carry: `macFusedZeroProgram` spends `PUSH0`
-where `macFusedProgram` spends the `DUP4` that reproduces the carry.  Same 36 bytes, one gas
-cheaper (30 instructions). -/
-def blockZeroProgram (a t : UInt256) : List Instr :=
-  loadProgram a ++ CiosCached.macFusedZeroProgram t t
 
-/-- Block 0 only, `JUMPDEST` included (31 instructions, 37 bytes).  Block 4 must *not* use this
-schedule: pc 2827 is both jumped to (four limbs, carry zero) and fallen into from block 3
-(carry nonzero), so its incoming carry is not known to be zero.  Block 0's `JUMPDEST` at pc 2682
-has no fall-through predecessor — pc 2681 is an unconditional `JUMP` — and its only jump
-predecessor is that `JUMP`, which enters with the literal `PUSH0` of `entryProgram` on top. -/
-def headZeroProgram (a t : UInt256) : List Instr :=
-  [.op .JUMPDEST] ++ blockZeroProgram a t
+/-- One straight MAC block whose `-N` limb rides in a stack slot (phases 9/10 chunk
+mirroring): `DUP (d+1)` reproduces the limb, `DUP4` lifts the mask (29 instructions,
+33 bytes — no `MLOAD`). -/
+def rideProgram (d : Fin 16) (t : UInt256) : List Instr :=
+  [.op (.Dup { idx := d }), .op (.Dup ⟨3, by decide⟩)] ++ CiosCached.macFusedProgram t t
+
+/-- The riding form of block 0: the incoming carry is the literal zero, so the fused
+post-schedule spends `PUSH0` where `rideProgram` spends the `DUP4` that reproduces the
+carry. -/
+def rideZeroProgram (d : Fin 16) (t : UInt256) : List Instr :=
+  [.op (.Dup { idx := d }), .op (.Dup ⟨3, by decide⟩)] ++ CiosCached.macFusedZeroProgram t t
 
 /-- `SWAP1 SWAP2 POP`: drop the mask, leaving `[carry, q]` above the shift counter. -/
 def exitProgram : List Instr :=
   [.op (.Swap ⟨0, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .POP]
-
-/-- E6: `PUSH0 NOT SWAP1 PUSH0 PUSH2 0x6a2 MLOAD JUMP` — build the chain frame `[0, q, 2^256-1]` and
-jump to the entry cached at `0x6a2 = 1698`. -/
+/-- E6: `PUSH0 NOT SWAP1 PUSH0 DUP5 JUMP` — build the chain frame `[0, q, 2^256-1]` and
+jump to the entry parked in the scratch slot (the first riding slot, `shiftEntry`). -/
 def entryProgram : List Instr :=
-  [.push 0 0, .op .NOT, .op (.Swap ⟨0, by decide⟩), .push 0 0, .push 2 1698, .op .MLOAD, .op .JUMP]
+  [.push 0 0, .op .NOT, .op (.Swap ⟨0, by decide⟩), .push 0 0,
+   .op (.Dup ⟨4, by decide⟩), .op .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast.M9Mac

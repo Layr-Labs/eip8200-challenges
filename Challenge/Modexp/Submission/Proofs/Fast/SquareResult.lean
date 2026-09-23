@@ -245,16 +245,16 @@ theorem readWord_mpZeroed_far (s : State) (mem : ByteArray) (n addr : Nat)
 
 /-- The staged copy represents the input operand. -/
 theorem represents_stage (mem : ByteArray) (n a : Nat)
-    (ha : Model.FastRepresents mem 512 n a) :
-    Model.FastRepresents (stage mem 512 n) 2368 n a := by
+    (ha : Model.FastRepresents mem 2112 n a) :
+    Model.FastRepresents (stage mem 2112 n) 2368 n a := by
   unfold Model.FastRepresents Model.fastLimbs at *
   have heq : (List.range n).map (fun k =>
-      (MachineState.readWord (stage mem 512 n) (2368 + 32 * (n - 1 - k))).toNat) =
-      (List.range n).map (fun k => (MachineState.readWord mem (512 + 32 * (n - 1 - k))).toNat) := by
+      (MachineState.readWord (stage mem 2112 n) (2368 + 32 * (n - 1 - k))).toNat) =
+      (List.range n).map (fun k => (MachineState.readWord mem (2112 + 32 * (n - 1 - k))).toNat) := by
     apply List.map_congr_left
     intro k hk
     have hk' := List.mem_range.mp hk
-    rw [read_stage_member mem 512 n (n - 1 - k) (by omega)]
+    rw [read_stage_member mem 2112 n (n - 1 - k) (by omega)]
   simpa only [heq] using ha
 
 /-- The accumulator zeroing preserves the staged operand. -/
@@ -267,20 +267,20 @@ theorem represents_zeroed_stage (s : State) (mem : ByteArray) (n a : Nat) (hn : 
 
 /-! ## The square subroutine's result memory -/
 
-/-- The memory a whole `SQUARE(2048) → 2048` call leaves behind. -/
+/-- The memory a whole `SQUARE(0x840 → 0x200)` call leaves behind. -/
 def sqMem (s : State) (mem : ByteArray) (n : Nat) : ByteArray :=
   if eligible mem n then
-    Csub.csResultMemory (sqRowsCarry (mpZeroed s (inputMemory mem 512 n) n) n n) n 512
-  else CarryResult.monproMem s mem 512 512 n 512
+    Csub.csResultMemory (sqRowsCarry (mpZeroed s (inputMemory mem 2112 n) n) n n) n 512
+  else CarryResult.monproMem s mem 2112 512 n 512
 
 theorem sqMem_of_fast (s : State) (mem : ByteArray) (n : Nat) (h : eligible mem n) :
     sqMem s mem n =
-      Csub.csResultMemory (sqRowsCarry (mpZeroed s (inputMemory mem 512 n) n) n n) n 512 := by
+      Csub.csResultMemory (sqRowsCarry (mpZeroed s (inputMemory mem 2112 n) n) n n) n 512 := by
   unfold sqMem
   rw [if_pos h]
 
 theorem sqMem_of_not_fast (s : State) (mem : ByteArray) (n : Nat) (h : ¬ eligible mem n) :
-    sqMem s mem n = Monpro.monproMem s mem 512 512 n 512 := by
+    sqMem s mem n = Monpro.monproMem s mem 2112 512 n 512 := by
   rw [sqMem, if_neg h, CarryResult.monproMem, inputMemory, if_neg h]
   have hz : ¬ eligible (mpZeroed s mem n) n := by
     intro he
@@ -291,50 +291,48 @@ theorem sqMem_of_not_fast (s : State) (mem : ByteArray) (n : Nat) (h : ¬ eligib
 /-- The fast-path call ends with exactly this memory (the `CSUB` return state). -/
 theorem csReturnedState_memory_sqMem (s : State) (mem : ByteArray) (n : Nat) (h : eligible mem n)
     (ret : UInt256) (rest : List UInt256) :
-    (Csub.csReturnedState s (sqRowsCarry (mpZeroed s (inputMemory mem 512 n) n) n n) n n
+    (Csub.csReturnedState s (sqRowsCarry (mpZeroed s (inputMemory mem 2112 n) n) n n) n n
       (UInt256.ofNat 512) ret rest).memory = sqMem s mem n := by
   rw [Csub.csReturnedState_memory, sqMem_of_fast s mem n h]
   rfl
 
-/-- `SQUARE(2048) → 2048` writes the Montgomery square `a · a · R⁻¹ mod m`. -/
+/-- `SQUARE(0x840 → 0x200)` writes the Montgomery square `a · a · R⁻¹ mod m`
+(the accelerated widths; the generic fallback is vacuous at every fixed-chain
+call site, where `n ∈ {4, 8}` holds). -/
 theorem sqMem_represents (s : State) (mem : ByteArray) (p a mm : Nat)
-    (hn32 : p + 2 ≤ 8)
-    (ha : Model.FastRepresents mem 512 (p + 2) a)
+    (hn32 : p + 2 ≤ 8) (he : eligible mem (p + 2))
+    (ha : Model.FastRepresents mem 2112 (p + 2) a)
     (hm : Model.FastRepresents mem 0 (p + 2) mm)
     (hodd : mm % 2 = 1) (ham : a < mm)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
       (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) :
     Model.FastRepresents (sqMem s mem (p + 2)) 512 (p + 2)
       (Model.montMul mm (Limbs.radix ^ (p + 2)) a a) := by
-  unfold sqMem
-  split
-  · let prepared := inputMemory mem 512 (p + 2)
-    have hfast : eligible mem (p + 2) := by assumption
-    have hn8 : p + 2 ≤ 8 := by rcases hfast.1 with h | h <;> omega
-    have ha' : Model.FastRepresents prepared 2368 (p + 2) a := by
-      simpa only [prepared, inputMemory, if_pos hfast] using represents_stage mem (p + 2) a ha
-    have hm' : Model.FastRepresents prepared 0 (p + 2) mm :=
-      (fastRepresents_inputMemory mem 512 (p + 2) 0 (p + 2) mm (by omega)).2 hm
-    have hminv' : ((MachineState.readWord prepared (32 * (p + 2) - 32)).toNat *
-        (MachineState.readWord prepared 2720).toNat + 1) % 2 ^ 256 = 0 := by
-      simpa only [prepared,
-        read_inputMemory_outside mem 512 (p + 2) (32 * (p + 2) - 32) (Or.inl (by omega)),
-        read_inputMemory_outside mem 512 (p + 2) 2720 (Or.inr (by decide))] using hminv
-    have ha0 : Model.FastRepresents (mpZeroed s prepared (p + 2)) 2368 (p + 2) a :=
-      represents_zeroed_stage s prepared (p + 2) a hn8 ha'
-    have hm0 : Model.FastRepresents (mpZeroed s prepared (p + 2)) 0 (p + 2) mm := by
-      refine (Model.fastRepresents_congr (a := prepared) ?_ mm).1 hm'
-      intro j hj
-      rw [readWord_mpZeroed s prepared (p + 2) (0 + 32 * j) hn32 (Or.inl (by omega))]
-    have hminv0 : ((MachineState.readWord (mpZeroed s prepared (p + 2)) (32 * (p + 2) - 32)).toNat *
-        (MachineState.readWord (mpZeroed s prepared (p + 2)) 2720).toNat + 1) % 2 ^ 256 = 0 := by
-      rw [readWord_mpZeroed s prepared (p + 2) (32 * (p + 2) - 32) hn32 (Or.inl (by omega)),
-        readWord_mpZeroed s prepared (p + 2) 2720 hn32 (Or.inr (by omega))]
-      exact hminv'
-    exact sqRowsCarry_represents (mpZeroed s prepared (p + 2)) p a mm 512 hn8 (by omega)
-      ha0 hm0 hodd ham hminv0 (tValue_mpZeroed s prepared (p + 2))
-  · exact CarryResult.monproMem_represents s mem 512 512 p 512 a a mm hn32
-      (by omega) (by omega) (by omega) ha ha hm hodd ham hminv
+  rw [sqMem, if_pos he]
+  let prepared := inputMemory mem 2112 (p + 2)
+  have hn8 : p + 2 ≤ 8 := by rcases he.1 with h | h <;> omega
+  have ha' : Model.FastRepresents prepared 2368 (p + 2) a := by
+    simpa only [prepared, inputMemory, if_pos he] using represents_stage mem (p + 2) a ha
+  have hm' : Model.FastRepresents prepared 0 (p + 2) mm :=
+    (fastRepresents_inputMemory mem 2112 (p + 2) 0 (p + 2) mm (by omega)).2 hm
+  have hminv' : ((MachineState.readWord prepared (32 * (p + 2) - 32)).toNat *
+      (MachineState.readWord prepared 2720).toNat + 1) % 2 ^ 256 = 0 := by
+    simpa only [prepared,
+      read_inputMemory_outside mem 2112 (p + 2) (32 * (p + 2) - 32) (Or.inl (by omega)),
+      read_inputMemory_outside mem 2112 (p + 2) 2720 (Or.inr (by decide))] using hminv
+  have ha0 : Model.FastRepresents (mpZeroed s prepared (p + 2)) 2368 (p + 2) a :=
+    represents_zeroed_stage s prepared (p + 2) a hn8 ha'
+  have hm0 : Model.FastRepresents (mpZeroed s prepared (p + 2)) 0 (p + 2) mm := by
+    refine (Model.fastRepresents_congr (a := prepared) ?_ mm).1 hm'
+    intro j hj
+    rw [readWord_mpZeroed s prepared (p + 2) (0 + 32 * j) hn32 (Or.inl (by omega))]
+  have hminv0 : ((MachineState.readWord (mpZeroed s prepared (p + 2)) (32 * (p + 2) - 32)).toNat *
+      (MachineState.readWord (mpZeroed s prepared (p + 2)) 2720).toNat + 1) % 2 ^ 256 = 0 := by
+    rw [readWord_mpZeroed s prepared (p + 2) (32 * (p + 2) - 32) hn32 (Or.inl (by omega)),
+      readWord_mpZeroed s prepared (p + 2) 2720 hn32 (Or.inr (by omega))]
+    exact hminv'
+  exact sqRowsCarry_represents (mpZeroed s prepared (p + 2)) p a mm 512 hn8 (by omega)
+    ha0 hm0 hodd ham hminv0 (tValue_mpZeroed s prepared (p + 2))
 
 /-- Every word outside `SUBB`, outside the CIOS scratch `[2048, 2624)` and
 outside the operand/destination block at `2048` survives a `SQUARE` call. -/
@@ -349,8 +347,8 @@ theorem sqMem_readWord_outside (s : State) (mem : ByteArray) (n addr : Nat)
   · rw [csResultMemory_readWord_outside _ n 512 addr hn hsubb hdst,
       readWord_sqRowsCarry _ n addr hn32 hscratch n le_rfl,
       readWord_mpZeroed s _ n addr hn32 hscratch,
-      read_inputMemory_outside mem 512 n addr hscratch]
-  · exact CarryResult.monproMem_readWord_outside s mem 512 512 n 512 addr hn hn32
+      read_inputMemory_outside mem 2112 n addr hscratch]
+  · exact CarryResult.monproMem_readWord_outside s mem 2112 512 n 512 addr hn hn32
       hsubb hscratch hdst
 
 /-- Everything at or above `2624` survives a `SQUARE` call. -/

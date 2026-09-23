@@ -30,8 +30,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
 theorem jumpD4643 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 2543).toNat = true :=
-  Exp.jumpD 2543 (by decide) jumpDest4608
+    (UInt256.ofNat 2545).toNat = true :=
+  Exp.jumpD 2545 (by decide) jumpDest4608
 
 /-! ## Facts at `BDONE` on the hit path -/
 
@@ -67,17 +67,19 @@ theorem hitFinal_preserves (mem input : ByteArray) (n mm ptr cnt v : Nat) (hn : 
 /-- `ACC` still holds the raw base at `BDONE`. -/
 theorem hitFinal_acc (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hm : 0 < mm) (hodd : mm % 2 = 1)
-    (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem) :
+    (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem)
+    (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0) :
     Model.FastRepresents (hitFinalMem mem input n mm) 256 n
       (Precompile.bytesToNatPadded input 96 (32 * n) % mm) :=
   RootE3Phase.represents_acc_after_steps _ n mm _ n (by omega) hn32
-    (RootE3Phase.m2_acc_value mem input n mm hn hn32 hm hodd hmod htop)
+    (RootE3Phase.m2_acc_value mem input n mm hn hn32 hm hodd hmod htop htn0)
 
 /-- The retained `TS` holds the Montgomery residue of the base at `BDONE`. -/
 theorem hitFinal_base (mem input : ByteArray) (n mm : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hodd : mm % 2 = 1)
     (hmm : mm < Limbs.radix ^ n) (htop : R1.TopBitSet mem)
-    (hmod : Model.FastRepresents mem 0 n mm) :
+    (hmod : Model.FastRepresents mem 0 n mm)
+    (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0) :
     Model.FastRepresents (hitFinalMem mem input n mm) 2112 n
       (Precompile.bytesToNatPadded input 96 (32 * n) % mm * Limbs.radix ^ n % mm) := by
   have htop' : Limbs.radix ^ n < 2 * mm := R1.radix_pow_lt_two_mul (by omega) hodd hmod htop
@@ -102,7 +104,7 @@ theorem hitFinal_base (mem input : ByteArray) (n mm : Nat)
     refine ShiftCacheModel.represents_cache _ n 2112 n _ (Or.inr (by omega)) ?_
     exact fastRepresents_preMemOf _ _ 2112 n _ (Or.inr (by unfold PRE_DINV; omega))
       (fastRepresents_negStep _ n 2112 n _ (Or.inr (by unfold NEG; omega))
-        (m1_base mem input n mm hn hn32 hmpos hodd hmod htop) n le_rfl)
+        (m1_base mem input n mm hn hn32 hmpos hodd hmod htop htn0) n le_rfl)
   exact stepMems_represents (m2Of mem input n) n mm _ hn hn32 hmpos hmm htop' hmod2 hneg2
     hbase2 (Nat.mod_lt _ hmpos)
     (PreOK_cacheMem _ n (PreOK_preMem _)) n
@@ -202,6 +204,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     -- kernel composition applicable, so they travel with the dispatch rather than being
     -- rediscovered inside it.
     (hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1)
+    (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0)
     -- Both are needed only on the diverted miss arms, and both are free where they
     -- are produced.  `bigC_correct` wants `ValidInput`, whose `size < 2 ^ 64`
     -- component `hcds` cannot supply, and an upper bound on `activeWords`, which the
@@ -232,10 +235,10 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
   by_cases hmatch : FullBase.Matches mem n bsize
   · exact RootE3Correct.handled_of_bound_shift_hit input s mem n bsize esize msize mm minv
       sub hspec hcode hfork hrun hnp hdata hstack hact hn hn32 hb he hmz hm32
-      hbsize hesize hmsz hmm hodd hradix hmpos hframe0 hmod0 hone0 hmatch hfast
-      hvalid hactLe
+      hbsize hesize hmsz hmm hodd hradix hmpos hframe0 hmod0 hone0 hmatch htn0 hfast
+      hminv1 hvalid hactLe
       (RootE3Bindings.build s mem input n bsize esize msize minv hn hn32 hb he e hdata hframe0 hmatch
-        hfast)
+        htn0 hfast)
   · -- The diverted miss.  The dispatcher's `JUMPI` no longer names the `R1`
     -- seeding block: this whole class leaves the fast path at `BAIL6` and enters
     -- `modexpBig` at pc 237.  `bigC_correct` re-reads the header from calldata and
@@ -320,6 +323,9 @@ theorem gasSteps_handled (input : ByteArray)
       (Setup.limbs_four_or_eight input hpath.1 hpath.2.1.2.2 (Setup.fastPath_width input hpath))
       (Setup.minv_ne_one_of_entry input (Setup.minvValue input) hpath.1
         (Setup.fastPath_nprime input hpath) hminvA)
+      (by rw [Setup.fastSetupMemory,
+        Exp.readWord_setupMem_high input (Setup.lowLimb input) 2080 hpath.2.1.2.2
+          (by omega) (by omega)])
       hvalid hactLe
   exact ⟨final, ⟨(Challenge.EvmProof.GasSteps.cast
     (Setup.gasSteps_fastSetup input hsize hpath) rfl (Exp.fastSetup_entry_eq input)).trans
