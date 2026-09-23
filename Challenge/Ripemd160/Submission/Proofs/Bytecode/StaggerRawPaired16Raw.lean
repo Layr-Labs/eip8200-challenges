@@ -14,48 +14,49 @@ open StackRoundTrace StaggerRaw
 private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
 def template : List Instr :=
-  [ .op (.Swap ⟨4, by decide⟩),
+  [ .op (.Swap ⟨5, by decide⟩),
     .push ⟨4, by decide⟩ (UInt256.ofNat 1518500249),
     .op .ADD,
-    .op (.Swap ⟨7, by decide⟩),
-    .op (.Dup ⟨5, by decide⟩),
-    .op (.Dup ⟨10, by decide⟩),
-    .op (.Dup ⟨7, by decide⟩),
+    .op (.Swap ⟨8, by decide⟩),
+    .op (.Dup ⟨6, by decide⟩),
+    .op (.Dup ⟨11, by decide⟩),
+    .op (.Dup ⟨1, by decide⟩),
     .op .OR,
+    .op (.Dup ⟨9, by decide⟩),
     .op (.Dup ⟨8, by decide⟩),
-    .op (.Dup ⟨7, by decide⟩),
     .op .XOR,
     .op .AND,
     .op .XOR,
-    .op (.Dup ⟨10, by decide⟩),
-    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨11, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
     .op .AND,
     .op .OR,
     .op .ADD,
     .push ⟨1, by decide⟩ (UInt256.ofNat 252),
     .op .MLOAD,
     .op .ADD,
-    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
     .op .ADD,
-    .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨4, by decide⟩),
     .op .AND,
-    .op (.Dup ⟨10, by decide⟩),
+    .op (.Dup ⟨11, by decide⟩),
     .op .MUL,
     .push ⟨1, by decide⟩ (UInt256.ofNat 26),
     .op .SHR,
-    .op (.Dup ⟨1, by decide⟩),
+    .op (.Dup ⟨2, by decide⟩),
     .op .ADD,
-    .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨4, by decide⟩),
     .op .AND,
-    .op (.Swap ⟨8, by decide⟩),
-    .op (.Dup ⟨10, by decide⟩),
+    .op (.Swap ⟨9, by decide⟩),
+    .op (.Dup ⟨11, by decide⟩),
     .op .MUL,
-    .op (.Dup ⟨7, by decide⟩),
+    .op (.Dup ⟨8, by decide⟩),
     .op .SHR,
-    .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨4, by decide⟩),
     .op .AND ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
   [ x.v0,
+    x.v12,
     x.v7,
     x.v2,
     x.v3,
@@ -74,6 +75,7 @@ def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
     x.v16 ] ++ rho
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.land x.v3 (UInt256.shiftRight (UInt256.mul x.v10 x.v9) (UInt256.ofNat 23))),
+    x.v12,
     x.v7,
     x.v2,
     x.v3,
@@ -92,6 +94,7 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     x.v16 ] ++ rho
 def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.land x.v3 (UInt256.shiftRight (UInt256.mul x.v10 x.v9) (UInt256.ofNat 23))),
+    x.v12,
     x.v7,
     x.v2,
     x.v3,
@@ -117,7 +120,7 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
       some {s with pc := pcAfter pc template, stack := actualOutput s.memory x rho} := by
   have hbase : rho.length < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
-  have hcap (n : Nat) (hn : n ≤ 22) : rho.length + n < 1024 := by omega
+  have hcap (n : Nat) (hn : n ≤ 40) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 1088) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     Stagger144Active.word_active_preserved s.activeWords address hactive haddress
