@@ -10,7 +10,7 @@ open PersistentStaggerIteration StaggerPersistentLoopInduction
 
 theorem correct (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (hn32 : input.size ≠ 32)
-    (hordinary : ∀ i, i<DriverTrace.blockCount input → input.size=DriverTrace.blockOffset i → input.size<5207)
+    (hordinary : ∀ i, i<DriverTrace.blockCount input → input.size=DriverTrace.blockOffset i → input.size<5206)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 342)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
