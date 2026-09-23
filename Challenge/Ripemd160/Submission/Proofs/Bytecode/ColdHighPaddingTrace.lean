@@ -8,7 +8,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdHighTrace
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PersistentStaggerTable PersistentStaggerIteration ColdHighPaddingMemory StaggerPersistentFrame
 noncomputable opaque gasSteps_padding (input : ByteArray) (hfit : CalldataFits input) (hn32 : input.size≠32) (i : Nat) :
-    GasSteps {lowState input i with pc:=UInt256.ofNat 4759,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (UInt256.ofNat input.size) maskRho}
+    GasSteps {lowState input i with pc:=UInt256.ofNat 4758,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (UInt256.ofNat input.size) maskRho}
       {paddedState input i with pc:=UInt256.ofNat 509,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (Padding.paddedWord input) maskRho} := by
   let h:=hashes input i
   let off:=DriverTrace.blockOffsetWord i
@@ -25,7 +25,7 @@ noncomputable opaque gasSteps_padding (input : ByteArray) (hfit : CalldataFits i
     (frame h off (Padding.paddedWord input) maskRho) (by simp [frame,maskRho]) (by rfl)
     hcal hr hc hf hnp hfit hn32
   have gpad' : GasSteps
-      {lowState input i with pc:=UInt256.ofNat 4759,stack:=frame h off (UInt256.ofNat input.size) maskRho}
+      {lowState input i with pc:=UInt256.ofNat 4758,stack:=frame h off (UInt256.ofNat input.size) maskRho}
       {paddedState input i with pc:=UInt256.ofNat 508,stack:=frame h off (Padding.paddedWord input) maskRho} := gp.trans gpad
   have gj:=StaggerPersistentLoopSites.gasSteps_join (paddedState input i)
     (frame h off (Padding.paddedWord input) maskRho) (by simp [frame,maskRho]) hr hc hf hnp
