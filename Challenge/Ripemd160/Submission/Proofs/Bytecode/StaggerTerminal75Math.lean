@@ -183,6 +183,124 @@ theorem t_d_eq (l r : CryptoLane) (d : UInt256) (wl wr kl kr : BitVec 32)
   exact congrArg (fun z : UInt256 => UInt256.land
     (UInt256.add (wordShift z 22) (packCrypto l r).e) pairWord) hs
 
+/-! ### The unmasked terminal message word
+
+The terminal round reads slot 594 without its lane mask. Its lower half is below `2 ^ 120`
+(bytes 14..16 of the slot are zero), so the round's sum `a + f + X + K` still cannot carry
+out of bit 143: `f`'s only junk sits in bits 122..143 with bit 121 clear, and
+`a + X + K < 2 ^ 121`. -/
+
+theorem add_small_no_carry144_121 (x : BitVec 144) (e : Nat)
+    (he : e < 2 ^ 121) (hgap : x.getLsbD 121 = false) :
+    x.toNat + e < 2 ^ 144 := by
+  have hx := x.isLt
+  have hbit : ¬ x.toNat / 2 ^ 121 % 2 = 1 := by
+    simpa only [← BitVec.testBit_toNat, Nat.testBit_eq_decide_div_mod_eq,
+      decide_eq_false_iff_not] using hgap
+  simp only [Nat.reducePow] at *
+  omega
+
+theorem normalize_add_gap_121 (x y : BitVec 256)
+    (hy : y.toNat % 2 ^ 144 < 2 ^ 121) (hgap : x.getLsbD 121 = false) :
+    normalize (x + y) = normalize (normalize x + y) := by
+  have hgap' : (x.extractLsb' 0 144).getLsbD 121 = false := by
+    simpa only [BitVec.getLsbD_extractLsb', Nat.zero_add,
+      show decide (121 < 144) = true from rfl, Bool.true_and] using hgap
+  have hcarry : x.toNat % 2 ^ 144 + y.toNat % 2 ^ 144 < 2 ^ 144 := by
+    simpa only [BitVec.extractLsb'_toNat, Nat.shiftRight_zero] using
+      add_small_no_carry144_121 (x.extractLsb' 0 144) (y.toNat % 2 ^ 144) hy hgap'
+  have hnorm : (normalize x).toNat % 2 ^ 144 < 2 ^ 32 := by
+    rw [normalize, pack_toNat]
+    have hlo := (low x).isLt
+    simp only [Nat.reducePow] at *
+    omega
+  have hcarry' : (normalize x).toNat % 2 ^ 144 + y.toNat % 2 ^ 144 < 2 ^ 144 := by
+    simp only [Nat.reducePow] at *
+    omega
+  have hlo : low (x + y) = low (normalize x + y) := by
+    change (x + y).extractLsb' 0 32 = (normalize x + y).extractLsb' 0 32
+    rw [BitVec.extractLsb'_add (by decide), BitVec.extractLsb'_add (by decide)]
+    change low x + low y = low (pack (low x) (high x)) + low y
+    rw [low_pack]
+  have hhi : high (x + y) = high (normalize x + y) := by
+    apply BitVec.eq_of_toNat_eq
+    simp only [high, BitVec.extractLsb'_toNat, BitVec.toNat_add,
+      Nat.shiftRight_eq_div_pow]
+    rw [high_add_general _ _ hcarry, high_add_general _ _ hcarry']
+    have hn : (normalize x).toNat / 2 ^ 144 % 2 ^ 32 = x.toNat / 2 ^ 144 % 2 ^ 32 := by
+      have h := congrArg BitVec.toNat (high_pack (low x) (high x))
+      simpa only [high, BitVec.extractLsb'_toNat, Nat.shiftRight_eq_div_pow, normalize] using h
+    rw [hn]
+  change pack (low (x + y)) (high (x + y)) = pack (low (normalize x + y)) (high (normalize x + y))
+  rw [hlo, hhi]
+
+theorem normalize_add_change_121 (x x' y : BitVec 256)
+    (hy : y.toNat % 2^144 < 2^121)
+    (hx : x.getLsbD 121 = false) (hx' : x'.getLsbD 121 = false)
+    (he : normalize x = normalize x') :
+    normalize (x+y) = normalize (x'+y) := by
+  rw [normalize_add_gap_121 x y hy hx,normalize_add_gap_121 x' y hy hx',he]
+
+theorem three_small_msg (a b kl kr : BitVec 32) (m : BitVec 256)
+    (hm : m.toNat % 2^144 < 2^120) :
+    ((pack a b + m) + pack kl kr).toNat % 2^144 < 2^121 := by
+  simp only [BitVec.toNat_add, pack_toNat]
+  have ha:=a.isLt
+  have hk:=kl.isLt
+  simp only [Nat.reducePow] at *
+  omega
+
+theorem sum_normalize_d_msg (l r : CryptoLane) (d m : UInt256)
+    (kl kr : BitVec 32) (hm : (bits m).toNat % 2^144 < 2^120)
+    (hd : (bits d).getLsbD 121 = false) :
+    normalize (bits (StaggerWord.sum 4 (packCrypto l r).a (packCrypto l r).b
+      (packCrypto l r).c d m (word (pack kl kr)))) =
+    normalize (bits (StaggerWord.sum 4 (packCrypto l r).a (packCrypto l r).b
+      (packCrypto l r).c (UInt256.land d pairWord)
+      m (word (pack kl kr)))) := by
+  have hb : (bits (packCrypto l r).b).getLsbD 121 = false := by
+    change (bits (word (pack _ _))).getLsbD 121 = false
+    rw [bits_word]
+    exact pack_gap _ _
+  have hc : (bits (packCrypto l r).c).getLsbD 121 = false := by
+    change (bits (word (pack _ _))).getLsbD 121 = false
+    rw [bits_word]
+    exact pack_gap _ _
+  let y := (bits (packCrypto l r).a + bits m) + pack kl kr
+  have hy : y.toNat % 2^144 < 2^121 := by
+    change ((bits (word (pack _ _)) + bits m) + pack kl kr).toNat % 2^144 < 2^121
+    rw [bits_word]
+    exact three_small_msg _ _ _ _ _ hm
+  have h := normalize_add_change_121
+    (bits (StaggerWord.raw 4 (StaggerWord.selector 4) (packCrypto l r).b (packCrypto l r).c d))
+    (bits (StaggerWord.raw 4 (StaggerWord.selector 4) (packCrypto l r).b
+      (packCrypto l r).c (UInt256.land d pairWord))) y hy
+    (raw4_gap _ _ _ hb hc hd) (raw4_gap _ _ _ hb hc (masked_gap d))
+    (raw4_normalize_d _ _ _ _)
+  simp only [StaggerWord.sum,bits_add,bits_word]
+  convert h using 1 <;> congr 1 <;> dsimp only [y] <;> ac_rfl
+
+theorem t_d_eq_msg (l r : CryptoLane) (d m : UInt256) (kl kr : BitVec 32)
+    (hm : (bits m).toNat % 2^144 < 2^120)
+    (hd : (bits d).getLsbD 121 = false)
+    (he : UInt256.land d pairWord = (packCrypto l r).d) :
+    StaggerWord.t 4 11 11 m (word (pack kl kr))
+      {packCrypto l r with d:=d} =
+    StaggerWord.t 4 11 11 m (word (pack kl kr)) (packCrypto l r) := by
+  have h := sum_normalize_d_msg l r d m kl kr hm hd
+  have hn := h.trans (congrArg (fun z : UInt256 => normalize (bits
+    (StaggerWord.sum 4 (packCrypto l r).a (packCrypto l r).b
+      (packCrypto l r).c z m (word (pack kl kr))))) he)
+  have hs := mask_eq_of_normalize _ _ hn
+  change UInt256.land (UInt256.add (wordRotate
+    (StaggerWord.sum 4 (packCrypto l r).a (packCrypto l r).b
+      (packCrypto l r).c d m (word (pack kl kr))) 11 11)
+        (packCrypto l r).e) pairWord = _
+  simp only [StaggerWord.t,rotate11]
+  exact congrArg (fun z : UInt256 => UInt256.land
+    (UInt256.add (wordShift z 22) (packCrypto l r).e) pairWord) hs
+
 #print axioms sum_normalize_d
 #print axioms t_d_eq
+#print axioms t_d_eq_msg
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerTerminal75Math

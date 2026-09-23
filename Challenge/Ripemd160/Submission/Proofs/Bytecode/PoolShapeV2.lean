@@ -128,14 +128,37 @@ theorem poolV2_shape (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m)
     simp (config := { maxSteps := 200000 }) (discharger := omega) [poolSourceV2, Pair13PoolRaw.poolWordV2,
       byte_mask, hr, maskSource, laneByte, Source.eval]
 
-def resultSourceV2 : Nat → Source := storeSources poolSourceV2 fanSourceV2 writes
+/-- The builder ends with `PUSH0 PUSH2 0x262 MSTORE8`: byte 610 (byte 16 of the terminal
+round's slot 594) is cleared after the 45 table stores, so the terminal round can read its
+message word unmasked (bits 120..143 of the slot are then provably zero). -/
+def clearTerminal (m : ByteArray) : ByteArray :=
+  MachineState.writeBytes m (ByteArray.mk #[(0 : UInt8)]) 610
+
+theorem clearTerminal_getD (m : ByteArray) (a : Nat) :
+    (clearTerminal m)[a]?.getD 0 = if a = 610 then 0 else m[a]?.getD 0 := by
+  rw [clearTerminal, MachineState.writeBytes_getElem?_getD]
+  have hs : (ByteArray.mk #[(0 : UInt8)]).size = 1 := rfl
+  rw [hs]
+  by_cases ha : a = 610
+  · subst ha
+    rw [if_pos (by omega), if_pos rfl]
+    rfl
+  · rw [if_neg (by omega), if_neg ha]
+
+def resultSourceV2 (a : Nat) : Source :=
+  if a = 610 then .zero else storeSources poolSourceV2 fanSourceV2 writes a
 
 def resultMemoryV2 (m : ByteArray) (lo hi : UInt256) : ByteArray :=
-  PoolRawWriter.writerMemory (fanMemoryV2 m lo hi) (Pair13PoolRaw.poolWordV2 (fanMemoryV2 m lo hi))
+  clearTerminal
+    (PoolRawWriter.writerMemory (fanMemoryV2 m lo hi) (Pair13PoolRaw.poolWordV2 (fanMemoryV2 m lo hi)))
 
 theorem resultV2_shape (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (a : Nat) :
     (resultMemoryV2 m lo hi)[a]?.getD 0 = (resultSourceV2 a).eval m lo hi := by
-  rw [resultMemoryV2, PoolRawWriter.writerMemory, rawWrites_eq]
+  rw [resultMemoryV2, clearTerminal_getD, resultSourceV2]
+  by_cases ha : a = 610
+  · rw [if_pos ha, if_pos ha]
+    rfl
+  rw [if_neg ha, if_neg ha, PoolRawWriter.writerMemory, rawWrites_eq]
   have hindices : ∀ x ∈ writes, x.2 < 16 := by decide
   exact writeChain_shape _ m lo hi _ _ _ writes (fanV2_shape m lo hi hc)
     (fun x hx j hj => poolV2_shape m lo hi hc x.2 j (hindices x hx) hj) a

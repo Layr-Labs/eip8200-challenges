@@ -93,11 +93,11 @@ def LegacyMessageWord (message : UInt256) (words : Nat → UInt32) (i : Nat) : P
     (pack (words Crypto.Ripemd160.r[i]!).toBitVec (words Crypto.Ripemd160.rP[i + 3]!).toBitVec) +
       StaggerRound.junk jl jr
 
-/-- The terminal round keeps the legacy clean representation. Other rounds
-may carry arbitrary inter-lane bits if their lower half cannot carry. -/
+/-- Rounds may carry arbitrary inter-lane bits if their lower half cannot carry. The
+terminal round (read unmasked) additionally needs its lower half below `2 ^ 120`. -/
 def MessageWord (message : UInt256) (words : Nat → UInt32) (i : Nat) : Prop :=
   LegacyMessageWord message words i ∨
-    (i ≠ 76 ∧ StaggerLaneSafe.Safe message
+    ((i ≠ 76 ∨ message.toNat % 2 ^ 144 < 2 ^ 120) ∧ StaggerLaneSafe.Safe message
       (words Crypto.Ripemd160.r[i]!) (words Crypto.Ripemd160.rP[i+3]!))
 
 def MessageReady (message : Nat → UInt256) (words : Nat → UInt32) (count : Nat) : Prop :=

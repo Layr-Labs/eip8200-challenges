@@ -121,6 +121,18 @@ theorem result_terminal_projected (m r : ByteArray) (lo hi : UInt256)
       95780971281817308448866066055358605703522837925462015 < 2^256),
     hraw, href, hlo, hhi]
 
+/-- The terminal round's message word has no bits between 120 and 143: it reads unmasked. -/
+theorem result_terminal_bound (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) :
+    (MachineState.readWord (resultMemoryV2 m lo hi) 594).toNat % 2^144 < 2^120 := by
+  have h := StaggerTableMemory.readWord_mod_pow (resultMemoryV2 m lo hi) 594 18 (by decide)
+  change (MachineState.readWord (resultMemoryV2 m lo hi) 594).toNat % 2^144 =
+    Precompile.bytesToNatPadded (resultMemoryV2 m lo hi) 608 18 at h
+  rw [h, show (18:Nat)=3+15 from rfl, Bytes.bytesToNatPadded_add,
+    window_zero (resultMemoryV2 m lo hi) 608 3 (fun k hk => by
+      rw [resultV2_shape m lo hi hc, PoolCertificatesV2.terminal_gap_sources ⟨k, hk⟩]
+      rfl)]
+  simpa using Bytes.bytesToNatPadded_lt_pow (resultMemoryV2 m lo hi) (608+3) 15
+
 theorem result_slack (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (j : Nat) (hj : j < 61) :
     (MachineState.readWord (resultMemoryV2 m lo hi) (18*j)).toNat % 2^144 + 2^40 ≤ 2^144 := by
   obtain ⟨hl,hu,hz⟩ := PoolCertificatesV2.slack_sources ⟨j,hj⟩

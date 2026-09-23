@@ -17,6 +17,16 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
+-- executable d13618dbd733a6c2ab9f681ad64d832dbc88cc487e49e8a30835c4a661ad8000, 5215 bytes,
+-- 661150 gas at corpus seeds 0..2, 8181 units of the 8194 literal-encoding budget. Derived from
+-- the promoted c19d26e2 image (5212 bytes, 661192 gas): the terminal round's `DUP5 AND` lane
+-- mask (63 runs) is deleted and the schedule builder instead clears table byte 610 once per data
+-- block with `PUSH0 PUSH2 0x262 MSTORE8` (42 runs), so the unmasked terminal word stays below
+-- 2^120 in its lower half. 3680 instructions; pcs >= 858 move by +5, >= 4463 by +3.
+-- model Claude Opus 5.5, harness Claude Code.
+--
+-- NOTE FOR THE FILER: every line below this point was inherited with the base tree and describes
+-- an EARLIER artifact, not this one.
 -- executable 57759249fb656d26d3f1caef776f3cae7dacf700193d47cdee3322937ddac9e6, 5212 bytes,
 -- 661512 gas at corpus seeds 0..2, 8182 units of the 8194 literal-encoding budget. Derived from
 -- 02483f1554b094391c5803025591d9f8fc296350dd34bf7f9641cf922d235d73 (5212 bytes, 661704 gas): the

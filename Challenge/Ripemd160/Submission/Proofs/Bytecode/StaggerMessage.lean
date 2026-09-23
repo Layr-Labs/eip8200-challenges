@@ -49,54 +49,16 @@ theorem ready_junk (memory : ByteArray) (words : Nat → UInt256) (scalar : Nat 
         hclean _ hl, hclean _ hr, hg32 _ hl⟩, ?_⟩
     apply BitVec.eq_of_toNat_eq
     rw [bits_toNat, BitVec.toNat_add, pack_toNat, StaggerRound.junk, BitVec.toNat_ofNat]
-    by_cases hi76 : i = 76
-    · subst i
-      have hgl : g Crypto.Ripemd160.r[76]! = 0 := by
-        exact ((hclean Crypto.Ripemd160.r[76]! (by decide) (by decide)).2 (by decide))
-      have hgr : g Crypto.Ripemd160.rP[79]! = 0 := by
-        exact ((hclean Crypto.Ripemd160.rP[79]! (by decide) (by decide)).2 (by decide))
-      have hword :
-          MachineState.readWord (StaggerTableLayout.resultMemory memory words)
-              (18 * StaggerTableLayout.pairIndices[76]!) =
-            word (pack (scalar Crypto.Ripemd160.r[76]!).toBitVec
-              (scalar Crypto.Ripemd160.rP[79]!).toBitVec) := by
-        apply Word.word_ext
-        rw [StaggerTableLayout.read_round_wide memory words 76 (by decide) hb]
-        simp only [hwords Crypto.Ripemd160.r[76]! (by decide),
-          hwords Crypto.Ripemd160.rP[79]! (by decide), hgl, hgr,
-          Nat.zero_mul, Nat.add_zero]
-        rw [← bits_toNat, bits_word, pack_toNat, UInt32.toNat_toBitVec]
-        simp only [UInt32.toNat_toBitVec]
-      have hx :
-          Paired144Core.normalize (bits
-              (MachineState.readWord (StaggerTableLayout.resultMemory memory words)
-                (18 * StaggerTableLayout.pairIndices[76]!))) =
-            pack (scalar Crypto.Ripemd160.r[76]!).toBitVec
-              (scalar Crypto.Ripemd160.rP[79]!).toBitVec := by
-        rw [hword, bits_word, normalize_pack]
-      have hmasked :
-          (UInt256.land
-              (MachineState.readWord (StaggerTableLayout.resultMemory memory words)
-                (18 * StaggerTableLayout.pairIndices[76]!))
-              Paired144WordRound.pairWord).toNat =
-            (scalar Crypto.Ripemd160.r[76]!).toBitVec.toNat +
-              (scalar Crypto.Ripemd160.rP[79]!).toBitVec.toNat * 2 ^ 144 := by
-        rw [← bits_toNat, bits_land, Paired144WordRound.pairWord, bits_word,
-          ← normalize_eq_and, hx, pack_toNat]
-      simp only [StaggerCoreModel.message, if_pos]
-      rw [hmasked]
-      have h1 := hs Crypto.Ripemd160.r[76]!; have h2 := hs Crypto.Ripemd160.rP[79]!
-      have h3 := hg Crypto.Ripemd160.r[76]! (by decide)
-      have h4 := hg Crypto.Ripemd160.rP[79]! (by decide)
-      simp only [show 76 + 3 = (79 : Nat) by decide, hgl, hgr,
-        Nat.zero_mul, Nat.add_zero, UInt32.toNat_toBitVec] at *
-      omega
-    · simp only [StaggerCoreModel.message, if_neg hi76]
-      rw [StaggerTableLayout.read_round_wide memory words i hi hb, hwords _ hl, hwords _ hr]
-      have h1 := hs Crypto.Ripemd160.r[i]!; have h2 := hs Crypto.Ripemd160.rP[i + 3]!
-      have h3 := hg _ hl; have h4 := hg _ hr
-      simp only [UInt32.toNat_toBitVec] at *
-      omega
+    have hmsg : StaggerCoreModel.message (StaggerTableLayout.resultMemory memory words) i =
+        MachineState.readWord (StaggerTableLayout.resultMemory memory words)
+          (18 * StaggerTableLayout.pairIndices[i]!) := by
+      unfold StaggerCoreModel.message
+      split <;> rfl
+    rw [hmsg, StaggerTableLayout.read_round_wide memory words i hi hb, hwords _ hl, hwords _ hr]
+    have h1 := hs Crypto.Ripemd160.r[i]!; have h2 := hs Crypto.Ripemd160.rP[i + 3]!
+    have h3 := hg _ hl; have h4 := hg _ hr
+    simp only [UInt32.toNat_toBitVec] at *
+    omega
   · intro j hj
     apply UInt32.toNat_inj.mp
     change (MachineState.readWord (StaggerTableLayout.resultMemory memory words) (18*j)).toNat % 2^32 = _
@@ -138,8 +100,7 @@ theorem ready_congr_high (m m' : ByteArray) (scalar : Nat → UInt32)
       by_cases hi76 : i = 76
       · subst i
         simp only [StaggerCoreModel.message, if_pos]
-        exact congrArg (fun x => UInt256.land x Paired144WordRound.pairWord)
-          (hread _ (by omega))
+        exact hread _ (by omega)
       · simp only [StaggerCoreModel.message, if_neg hi76]
         exact hread _ (by omega)
     rw [heq]

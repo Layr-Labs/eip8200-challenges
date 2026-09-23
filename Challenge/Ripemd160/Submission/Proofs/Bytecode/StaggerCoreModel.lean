@@ -19,9 +19,7 @@ def left (q : WordLane) : WordLane := q
 
 def message (memory : ByteArray) (i : Nat) : UInt256 :=
   if i = 76 then
-    UInt256.land
-      (MachineState.readWord memory (18 * StaggerTableLayout.pairIndices[i]!))
-      Paired144WordRound.pairWord
+    MachineState.readWord memory (18 * StaggerTableLayout.pairIndices[i]!)
   else MachineState.readWord memory (18 * StaggerTableLayout.pairIndices[i]!)
 def right0 (memory : ByteArray) (q : WordLane) : WordLane :=
   StaggerScalarWord.step true false 4 8 (MachineState.readWord memory 486) (UInt256.ofNat 1352829926) q
