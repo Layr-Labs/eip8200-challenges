@@ -13,7 +13,7 @@ abbrev template : List Instr :=
   [ .push ⟨1, by decide⟩ (UInt256.ofNat 63),
     .op .CALLDATASIZE,
     .op .AND,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 4752),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 4749),
     .op .JUMPI ]
 
 theorem actual_slice :
@@ -26,23 +26,23 @@ def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 
-theorem site_pc : site.startPC = UInt256.ofNat 500 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 247) = UInt256.ofNat 500
+theorem site_pc : site.startPC = UInt256.ofNat 498 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 247) = UInt256.ofNat 498
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_padding (s : State) (e : Env s) :
-    Decode.isValidJumpDest s.executionEnv.code 4752 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3588 = 4752 := by
+    Decode.isValidJumpDest s.executionEnv.code 4749 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3587 = 4749 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3588 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3587 (by rfl)
   rw [hpc] at h
   rw [e.code]
   exact h
 
 def gasSteps (s : State) (e : Env s) (F : List UInt256)
     (hstack : F.length ≤ 900) (h32 : s.executionEnv.calldata.size = 32) :
-    GasSteps (atState s 500 F) (atState s 4752 F) := by
-  apply PadLift.gasSteps_of_raw site (atState s 500 F) (atState s 4752 F)
+    GasSteps (atState s 498 F) (atState s 4749 F) := by
+  apply PadLift.gasSteps_of_raw site (atState s 498 F) (atState s 4749 F)
     e.code e.fork e.run e.np site_pc.symm
   · apply PadLift.advancesAll_sound; decide
   · have h0 : F.length < 1024 := by omega

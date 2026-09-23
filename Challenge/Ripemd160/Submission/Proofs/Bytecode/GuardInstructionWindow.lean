@@ -16,7 +16,7 @@ def tail : List Instr :=
   .push 3 2127393,
   op 0x02,
   op 0x18,
-  .push 2 341,
+  .push 2 339,
   op 0x57,
   .push 20 95383801997447390147238369573240532004699299169,
   op 0x36,
@@ -29,19 +29,19 @@ def tail : List Instr :=
   .push 0 0,
   op 0xf3
 ]
-theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3648 = tail := by rfl
+theorem tail_eq : Artifact.submissionArtifact.instructions.drop 3647 = tail := by rfl
 
-theorem pc_base : Artifact.submissionArtifact.instructionPC 3648 = 4857 := by
+theorem pc_base : Artifact.submissionArtifact.instructionPC 3647 = 4854 := by
   rw [instructionPC_eq_byteLength]
   rfl
 
 theorem get (index : Nat) :
-    Artifact.submissionArtifact.instructions[3648 + index]? = tail[index]? := by
+    Artifact.submissionArtifact.instructions[3647 + index]? = tail[index]? := by
   rw [← InstructionWindow.get_drop, tail_eq]
 
 theorem pc (index : Nat) :
-    Artifact.submissionArtifact.instructionPC (3648 + index) =
-      4857 + byteLength (tail.take index) := by
+    Artifact.submissionArtifact.instructionPC (3647 + index) =
+      4854 + byteLength (tail.take index) := by
   rw [InstructionWindow.pc_drop, pc_base, tail_eq]
 
 #print axioms get
