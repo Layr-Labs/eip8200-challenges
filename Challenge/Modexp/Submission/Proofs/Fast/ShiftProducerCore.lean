@@ -17,9 +17,12 @@ placed at 2112, the leading-limb guard reduces it in place (`RetainedTNormalizer
 and the reduced value is copied from 2112 to ACC before scale.
 These facts do not certify the artifact locations or complete input theorem. -/
 
+/-! The phase-9 image no longer zeroes `TN` (2080) on the hit path — the first
+`CSUB` entry owns that store now (instruction 3311, pc 4129) — so the hit model is
+the raw copy alone, and the zero is threaded as a hypothesis where the csub's
+`TN` precondition needs it. -/
 def hitMemory (mem input : ByteArray) (n : Nat) : ByteArray :=
-  Exp.storeWord (MachineState.writeBytes mem
-    (MachineState.readPadded input 96 (32*n)) 2112) 2080 (UInt256.ofNat 0)
+  MachineState.writeBytes mem (MachineState.readPadded input 96 (32*n)) 2112
 
 def reducedMemory (mem input : ByteArray) (n : Nat) : ByteArray :=
   RetainedTNormalizer.resultMemory (hitMemory mem input n) n
@@ -30,8 +33,7 @@ def canonicalMemory (mem input : ByteArray) (n : Nat) : ByteArray :=
 theorem hit_t (mem input : ByteArray) (n : Nat) :
     Model.FastRepresents (hitMemory mem input n) 2112 n
       (Precompile.bytesToNatPadded input 96 (32*n)) := by
-  unfold hitMemory Exp.storeWord
-  refine Model.fastRepresents_writeWord_disjoint _ 2080 2112 n _ _ (Or.inl (by omega)) ?_
+  unfold hitMemory
   have hsource := Setup.fastRepresents_bytes input 96 n
   apply Model.fastRepresents_of_limbs hsource.1
   intro k hk
@@ -41,21 +43,24 @@ theorem hit_t (mem input : ByteArray) (n : Nat) :
 theorem hit_modulus (mem input : ByteArray) (n mm : Nat) (hn32 : n ≤ 8)
     (hmod : Model.FastRepresents mem 0 n mm) :
     Model.FastRepresents (hitMemory mem input n) 0 n mm := by
-  unfold hitMemory Exp.storeWord
-  refine Model.fastRepresents_writeWord_disjoint _ 2080 0 n mm _ (Or.inr (by omega)) ?_
+  unfold hitMemory
   apply Model.fastRepresents_writeBytes_disjoint
   · rw [Challenge.EvmProof.Memory.readPadded_size]; omega
   · exact hmod
 
-theorem hit_high_zero (mem input : ByteArray) (n : Nat) :
+theorem hit_high_zero_of (mem input : ByteArray) (n : Nat)
+    (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0) :
     (MachineState.readWord (hitMemory mem input n) 2080).toNat = 0 := by
-  unfold hitMemory Exp.storeWord
-  rw [Challenge.EvmProof.Memory.readWord_writeWord]
-  decide
+  rw [show (hitMemory mem input n) = MachineState.writeBytes mem
+      (MachineState.readPadded input 96 (32*n)) 2112 from rfl]
+  rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _
+    (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)]
+  rw [htn0]; decide
 
 theorem reduced_base (mem input : ByteArray) (n mm : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hm : 0 < mm) (hodd : mm % 2 = 1)
-    (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem) :
+    (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem)
+    (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0) :
     Model.FastRepresents (reducedMemory mem input n) 2112 n
       (Precompile.bytesToNatPadded input 96 (32*n) % mm) := by
   have hb : Precompile.bytesToNatPadded input 96 (32*n) < 2 * mm :=
@@ -63,29 +68,31 @@ theorem reduced_base (mem input : ByteArray) (n mm : Nat)
   exact RetainedTNormalizer.result_correct (hitMemory mem input n) n
     (Precompile.bytesToNatPadded input 96 (32*n)) mm hn hn32
     (hit_t mem input n) (hit_modulus mem input n mm hn32 hmod)
-    (hit_high_zero mem input n) hm hb
+    (hit_high_zero_of mem input n htn0) hm hb
 
 theorem canonical_acc (mem input : ByteArray) (n mm : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hm : 0 < mm) (hodd : mm % 2 = 1)
-    (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem) :
+    (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem)
+    (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0) :
     Model.FastRepresents (canonicalMemory mem input n) 256 n
       (Precompile.bytesToNatPadded input 96 (32*n) % mm) :=
   Exp.fastRepresents_mcopyMem _ 256 2112 n _ (by omega)
-    (reduced_base mem input n mm hn hn32 hm hodd hmod htop)
+    (reduced_base mem input n mm hn hn32 hm hodd hmod htop htn0)
 
 theorem canonical_base (mem input : ByteArray) (n mm : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hm : 0 < mm) (hodd : mm % 2 = 1)
-    (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem) :
+    (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem)
+    (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0) :
     Model.FastRepresents (canonicalMemory mem input n) 2112 n
       (Precompile.bytesToNatPadded input 96 (32*n) % mm) :=
   Exp.fastRepresents_mcopyMem_disjoint _ 256 2112 (32*n) 2112 n _ (Or.inl (by omega))
-    (reduced_base mem input n mm hn hn32 hm hodd hmod htop)
+    (reduced_base mem input n mm hn hn32 hm hodd hmod htop htn0)
 
 theorem canonical_lt (input : ByteArray) (n mm : Nat) (hm : 0 < mm) :
     Precompile.bytesToNatPadded input 96 (32*n) % mm < mm := Nat.mod_lt _ hm
 
 theorem canonical_readWord (mem input : ByteArray) (n addr : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8)
+    (hn : 1 ≤ n) (_hn32 : n ≤ 8)
     (hd : (addr+32 ≤ 256 ∨ 256+32*n ≤ addr) ∧
       (addr+32 ≤ 512 ∨ 512+32*n ≤ addr) ∧
       (addr+32 ≤ 1792 ∨ 1792+32*n ≤ addr) ∧
@@ -97,7 +104,6 @@ theorem canonical_readWord (mem input : ByteArray) (n addr : Nat)
     RetainedTNormalizer.readWord_outside _ n addr hn hd.2.2.1
       (hd.2.2.2.elim (fun h => Or.inl (by omega)) (fun h => Or.inr h))]
   unfold hitMemory
-  rw [Exp.storeWord_readWord_disjoint _ 2080 addr (UInt256.ofNat 0) (by omega)]
   apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
   rw [Challenge.EvmProof.Memory.readPadded_size]
   omega

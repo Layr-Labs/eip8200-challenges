@@ -35,7 +35,8 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hstack : s.callStack = []) (hactive : 89 ≤ s.activeWords.toNat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmz : 32 < msize)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hn48 : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1)
+    (hmz : 32 < msize)
     (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
@@ -51,7 +52,7 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
       2 ^ count + 1)
     (hframe : Exp.Frame memory n bsize minv)
     (hmod : Model.FastRepresents memory 0 n mm)
-    (hbase : Model.FastRepresents memory 512 n bM)
+    (hbase : Model.FastRepresents memory 2112 n bM)
     (hrawAcc : Model.FastRepresents memory 256 n rawBase)
     (hrawLt : rawBase < mm)
     (hone : ∃ one, one < Limbs.radix ∧
@@ -59,7 +60,7 @@ theorem handled_of_fixed (input : ByteArray) (s : State) (memory : ByteArray)
     FixedExponentRoute.Handled input
       (special s memory n bsize esize msize count) := by
   let ch := chain_of_fixed s sub spec memory esize msize count bM rawBase
-    hm hn hn32 hcount hcount16 hbMlt hactive
+    ⟨hn48, hminv1⟩ hm hn hn32 hcount hcount16 hbMlt hactive
     hframe hmod hbase hrawAcc hrawLt hone hcode hfork hrun hnp
   let sqVal := fixedDirectValue mm (Limbs.radix ^ n) bM count
   let prodVal := Model.montMul mm (Limbs.radix ^ n) sqVal rawBase

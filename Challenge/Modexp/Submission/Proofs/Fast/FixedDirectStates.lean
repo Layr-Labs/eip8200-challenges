@@ -48,7 +48,7 @@ def square (s : State) (mem : ByteArray)
 
 def squareReturn (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 2519
+  { s with pc := UInt256.ofNat 2521
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
@@ -58,7 +58,7 @@ then still the one the caller pushed), and for the unaccelerated widths the
 caller's own loop falls through to it with the count decremented to `0`. -/
 def product (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 2528
+  { s with pc := UInt256.ofNat 2530
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
@@ -84,7 +84,7 @@ def bigCState (s : State) (mem : ByteArray)
 all three misses divert to `bailState`. -/
 def fallback (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2543
+  { s with pc := UInt256.ofNat 2545
            stack := outer n bsize esize msize
            memory := mem }
 

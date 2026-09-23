@@ -1286,6 +1286,67 @@ theorem repair_lt_mm (mem : ByteArray) (n mm : Nat) (neg : UInt256) (u q : Nat)
     rw [hfix]
     exact hlt'
 
+/-- The subtract repair rounds never run: with the estimate never under-shooting,
+`repair_lt_mm`'s arithmetic shows the value after the (possibly empty) add rounds
+is already below `mm`, hence below `radix ^ n`, so `subCount` is zero and `fixMem`
+is exactly the add rounds.  The artifact's subtract-round jumps are unreachable. -/
+theorem fixMem_subCount_zero (mem : ByteArray) (n mm : Nat) (neg : UInt256) (u q : Nat)
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
+    (hmod : Model.FastRepresents mem 0 n mm)
+    (hrel : u + neg.toNat * Limbs.radix ^ (n + 1) = q * mm + tv mem n)
+    (hlt : tv mem n < Limbs.radix ^ (n + 1)) (hneg : neg.toNat ≤ 1)
+    (hq : u / mm ≤ q) :
+    subCount (addRounds mem n (addCount mem n mm neg)) n mm = 0 ∧
+      tv (addRounds mem n (addCount mem n mm neg)) n < mm ∧
+      fixMem mem n mm neg = addRounds mem n (addCount mem n mm neg) := by
+  have hnegCases : neg.toNat = 0 ∨ neg.toNat = 1 := by omega
+  rcases hnegCases with hn0 | hn1
+  · have hcount : addCount mem n mm neg = 0 := by unfold addCount; rw [if_pos hn0]
+    rw [hn0, Nat.zero_mul, Nat.add_zero] at hrel
+    have hqle : q ≤ u / mm := (Nat.le_div_iff_mul_le hmpos).mpr (by omega)
+    have hqeq : q = u / mm := by omega
+    have hdm := Nat.div_add_mod' u mm
+    have hmod2 : u % mm < mm := Nat.mod_lt _ hmpos
+    have htvlt : tv mem n < mm := by rw [hqeq] at hrel; omega
+    have hsc : subCount mem n mm = 0 := by
+      unfold subCount; rw [if_pos (lt_trans htvlt hmm)]
+    refine ⟨by rw [hcount]; exact hsc, by rw [hcount]; exact htvlt, ?_⟩
+    unfold fixMem
+    rw [hcount, addRounds_zero, hsc, subRounds_zero]
+  · have hcount : addCount mem n mm neg =
+        (Limbs.radix ^ (n + 1) - tv mem n + mm - 1) / mm := by
+      unfold addCount; rw [if_neg (by omega)]
+    generalize hk : (Limbs.radix ^ (n + 1) - tv mem n + mm - 1) / mm = k at hcount
+    generalize hD : Limbs.radix ^ (n + 1) - tv mem n = D at *
+    have hD1 : 1 ≤ D := by omega
+    have hk1 : 1 ≤ k := by rw [← hk]; exact Nat.div_pos (by omega) hmpos
+    have hkm : D ≤ k * mm := by
+      have h := Nat.div_add_mod (D + mm - 1) mm
+      have hmodlt := Nat.mod_lt (D + mm - 1) hmpos
+      rw [hk] at h
+      rw [Nat.mul_comm]
+      omega
+    have hkm' : k * mm < D + mm := by
+      have h := Nat.div_mul_le_self (D + mm - 1) mm
+      rw [hk] at h
+      omega
+    have hlt1 : tv mem n + (k - 1) * mm < Limbs.radix ^ (n + 1) := by
+      rw [Nat.sub_one_mul]; omega
+    have hlast := addRounds_last mem n mm (k - 1) hn hn32 hmod hlt1
+      (by rw [Nat.sub_add_cancel hk1]; omega)
+    rw [Nat.sub_add_cancel hk1] at hlast
+    have hlt' : tv (addRounds mem n k) n < mm := by
+      have := hlast.2
+      rw [Nat.sub_one_mul] at hlt1
+      omega
+    have hltP : tv (addRounds mem n k) n < Limbs.radix ^ n := lt_trans hlt' hmm
+    have hsc : subCount (addRounds mem n k) n mm = 0 := by
+      unfold subCount; rw [if_pos hltP]
+    refine ⟨by rw [hcount]; exact hsc, by rw [hcount]; exact hlt', ?_⟩
+    unfold fixMem
+    rw [hcount, hsc, subRounds_zero]
+
+
 theorem fixMem_value (mem : ByteArray) (n mm : Nat) (neg : UInt256) (u q : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (hmod : Model.FastRepresents mem 0 n mm)
@@ -1913,6 +1974,74 @@ theorem qhatOf_ge (mem : ByteArray) (n mm u : Nat)
       rw [this]; simp [hd]
 
 end QHatGe
+
+/-- With the sign flag clear the middle block's top-limb indicator is zero: the
+estimate never under-shoots, so `tv` is already below `mm`, a fortiori below
+`radix ^ n`.  The `UNC`-into-`SUBL` branch is unreachable. -/
+theorem mid_neg_tn_zero (mem : ByteArray) (n mm r : Nat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
+    (htop : Limbs.radix ^ n < 2 * mm)
+    (hmod : Model.FastRepresents mem 0 n mm)
+    (hneg : Model.FastRepresents mem NEG n (Limbs.radix ^ n - mm))
+    (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm) (hpre : PreOK mem)
+    (h0 : negOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
+            (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry
+            (qhatOf (uMem mem n)) = UInt256.ofNat 0) :
+    tnOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
+        (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry
+        (qhatOf (uMem mem n)) = UInt256.ofNat 0 := by
+  have hmodU : Model.FastRepresents (uMem mem n) 0 n mm := by
+    refine (Model.fastRepresents_congr ?_ mm).2 hmod
+    intro i hi
+    exact uMem_readWord_disjoint mem n _ (Or.inl (by omega))
+  have hnegU : Model.FastRepresents (uMem mem n) NEG n (Limbs.radix ^ n - mm) := by
+    refine (Model.fastRepresents_congr ?_ _).2 hneg
+    intro i hi
+    exact uMem_readWord_disjoint mem n _ (Or.inl (by unfold NEG; omega))
+  have hu : tv (uMem mem n) n = r * Limbs.radix := uMem_tv mem n r hn hn32 hbase
+  have hulo : r * Limbs.radix < Limbs.radix ^ (n + 1) := by
+    rw [pow_succ]
+    exact Nat.mul_lt_mul_of_pos_right (lt_trans hr hmm) Limbs.radix_pos
+  obtain ⟨hrel, hltmid, hneg1⟩ :=
+    mid_relation (uMem mem n) n mm (qhatOf (uMem mem n)) (r * Limbs.radix) hn hn32 hmm hmodU
+      hnegU hu hulo
+  have hqge : (r * Limbs.radix) / mm ≤ (qhatOf (uMem mem n)).toNat :=
+    qhatOf_ge (uMem mem n) n mm (r * Limbs.radix) hn hn32 htop hmodU
+      (PreOK_uMem mem n hn32 hpre) hu
+      (Nat.mul_lt_mul_of_pos_right hr Limbs.radix_pos)
+  have h0' : (negOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
+      (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))).toNat = 0 := by
+    rw [h0] <;> decide
+  rw [h0', Nat.zero_mul, Nat.add_zero] at hrel
+  obtain ⟨Q, hQ⟩ : ∃ Q, (qhatOf (uMem mem n)).toNat = Q := ⟨_, rfl⟩
+  rw [hQ] at hrel hqge
+  have hdm := Nat.div_add_mod' (r * Limbs.radix) mm
+  have hmodlt := Nat.mod_lt (r * Limbs.radix) hmpos
+  have htv : tv (midMem (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
+      (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))) n < mm := by
+    by_cases hQD : Q ≤ (r * Limbs.radix) / mm
+    · have hqeq : Q = (r * Limbs.radix) / mm := by omega
+      rw [hqeq] at hrel
+      omega
+    · have hle : (r * Limbs.radix) / mm + 1 ≤ Q := by omega
+      have hstep : ((r * Limbs.radix) / mm + 1) * mm ≤ Q * mm :=
+        Nat.mul_le_mul_right mm hle
+      have hmul : (r * Limbs.radix) / mm * mm + mm ≤ Q * mm := by
+        have h1 : ((r * Limbs.radix) / mm + 1) * mm =
+            (r * Limbs.radix) / mm * mm + mm := by rw [Nat.add_mul, Nat.one_mul]
+        omega
+      omega
+  have htn := tn_zero_of_lt (midMem (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
+    (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))) n
+    (lt_trans htv hmm)
+  have hrd : MachineState.readWord (midMem (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
+      (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))) 2080 =
+      tnOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
+        (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n)) := by
+    unfold midMem Exp.storeWord tnOf wN
+    rw [Challenge.EvmProof.Memory.readWord_writeWord]
+  rw [← hrd]
+  exact Challenge.EvmProof.Word.word_ext (htn.trans (by decide))
 
 /-- The value-side facts of one step: the repair facts and the result. -/
 theorem step_spec (mem : ByteArray) (n mm r : Nat)

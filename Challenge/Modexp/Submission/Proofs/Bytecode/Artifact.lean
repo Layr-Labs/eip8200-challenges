@@ -1,6 +1,8 @@
 import Challenge.Modexp.Submission.Proofs.Fast.TnM128CandidateArtifact
 import Challenge.Modexp.Submission.Bytecode
 set_option warningAsError true
+set_option maxRecDepth 40000
+set_option maxHeartbeats 8000000
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
 open Challenge.Modexp.Submission.Proofs.Fast
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler

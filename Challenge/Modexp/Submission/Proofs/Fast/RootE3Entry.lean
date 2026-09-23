@@ -63,7 +63,8 @@ theorem handled_of_asymmetric_three (input : ByteArray) (s : State) (memory : By
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hstack : s.callStack = []) (hactive : 89 ≤ s.activeWords.toNat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmz : 32 < msize)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hn48 : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1)
+    (hmz : 32 < msize)
     (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : esize = Challenge.Modexp.exponentSize input)
@@ -78,7 +79,7 @@ theorem handled_of_asymmetric_three (input : ByteArray) (s : State) (memory : By
       3)
     (hframe : Exp.Frame memory n bsize minv)
     (hmod : Model.FastRepresents memory 0 n mm)
-    (hbase : Model.FastRepresents memory 512 n bM)
+    (hbase : Model.FastRepresents memory 2112 n bM)
     (hrawAcc : Model.FastRepresents memory 256 n rawBase)
     (hrawLt : rawBase < mm)
     (hone : ∃ one, one < Limbs.radix ∧
@@ -86,7 +87,7 @@ theorem handled_of_asymmetric_three (input : ByteArray) (s : State) (memory : By
     FixedExponentRoute.Handled input
       (special s memory n bsize esize msize 1) := by
   let ch := chain_of_fixed s sub spec memory esize msize 1 bM rawBase
-    hm hn hn32 (by omega) (by omega) hbMlt hactive
+    ⟨hn48, hminv1⟩ hm hn hn32 (by omega) (by omega) hbMlt hactive
     hframe hmod hbase hrawAcc hrawLt hone hcode hfork hrun hnp
   let sqVal := fixedDirectValue mm (Limbs.radix ^ n) bM 1
   let prodVal := Model.montMul mm (Limbs.radix ^ n) sqVal rawBase
@@ -119,7 +120,8 @@ theorem handled_of_entry_asymmetric_three (input : ByteArray) (s : State) (memor
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hb : bsize ≤ 1024)
     (hstack : s.callStack = []) (hactive : 89 ≤ s.activeWords.toNat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmz : 32 < msize)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hn48 : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1)
+    (hmz : 32 < msize)
     (hm32 : msize ≤ 32 * n)
     (hbsize : bsize = Challenge.Modexp.baseSize input)
     (hesize : 1 = Challenge.Modexp.exponentSize input)
@@ -134,7 +136,7 @@ theorem handled_of_entry_asymmetric_three (input : ByteArray) (s : State) (memor
       3)
     (hframe : Exp.Frame memory n bsize minv)
     (hmod : Model.FastRepresents memory 0 n mm)
-    (hbase : Model.FastRepresents memory 512 n bM)
+    (hbase : Model.FastRepresents memory 2112 n bM)
     (hrawAcc : Model.FastRepresents memory 256 n rawBase)
     (hrawLt : rawBase < mm)
     (hone : ∃ one, one < Limbs.radix ∧
@@ -149,7 +151,7 @@ theorem handled_of_entry_asymmetric_three (input : ByteArray) (s : State) (memor
     (FixedDirectValueTrace.gasSteps_checkThree_hit s memory input
       n bsize msize hb hexp hdata hactive hframe.eoff hcode hfork hrun hnp)
   have hfixed := handled_of_asymmetric_three input s memory n bsize 1 msize mm minv
-    bM rawBase S T sub spec hcode hfork hrun hnp hstack hactive hn hn32 hmz hm32
+    bM rawBase S T sub spec hcode hfork hrun hnp hstack hactive hn hn32 hn48 hminv1 hmz hm32
     hbsize hesize hmsz hmm hm hcop _hradix hbMlt hbMform hrawForm hscale hexp
     hframe hmod hbase hrawAcc hrawLt hone
   rcases hfixed with ⟨final, ⟨tail⟩, hdone, hresult⟩

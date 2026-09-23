@@ -17,13 +17,13 @@ def r4RunMem : Nat → ByteArray → ByteArray
 
 def r4LoopMem (s : State) : Nat → ByteArray → ByteArray
   | 0, mem => mem
-  | k + 1, mem => r4RunMem (k + 1) (mpZeroed s (stage mem 512 4) 4)
+  | k + 1, mem => r4RunMem (k + 1) (mpZeroed s (stage mem 2112 4) 4)
 
 theorem r4RunMem_succ (k : Nat) (mem : ByteArray) :
     r4RunMem (k + 1) mem = r4RunMem k (r4Round k mem) := rfl
 
 theorem r4LoopMem_succ (s : State) (k : Nat) (mem : ByteArray) :
-    r4LoopMem s (k + 1) mem = r4RunMem (k + 1) (mpZeroed s (stage mem 512 4) 4) := rfl
+    r4LoopMem s (k + 1) mem = r4RunMem (k + 1) (mpZeroed s (stage mem 2112 4) 4) := rfl
 
 theorem r4Round_readWord_outside (mem : ByteArray) (c addr : Nat)
     (hsubb : addr + 32 ≤ 1792 ∨ 1792 + 32 * 4 ≤ addr)
@@ -118,7 +118,7 @@ theorem r4LoopMem_readWord_outside (s : State) (mem : ByteArray) (k addr : Nat)
   | succ k =>
       rw [r4LoopMem_succ, r4RunMem_readWord_outside (k + 1) _ addr hsubb hscratch hdst hcount,
         readWord_mpZeroed s _ 4 addr (by norm_num) hscratch,
-        read_stage_outside mem 512 4 addr (by omega)]
+        read_stage_outside mem 2112 4 addr (by omega)]
 
 theorem r4LoopMem_frame (s : State) (mem : ByteArray) (k : Nat) :
     MachineState.readWord (r4LoopMem s k mem) 2688 = MachineState.readWord mem 2688 ∧
@@ -149,7 +149,7 @@ theorem r4LoopMem_fastRepresents_outside (s : State) (mem : ByteArray) (k ptr cn
     (by omega)]
 
 theorem r4LoopMem_represents (s : State) (mem : ByteArray) (a mm k : Nat) (hk : 1 ≤ k)
-    (ha : Model.FastRepresents mem 512 4 a) (hm : Model.FastRepresents mem 0 4 mm)
+    (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
     (hodd : mm % 2 = 1) (har : a < Limbs.radix^4) (hmpos : 0 < mm)
     (hminv : ((MachineState.readWord mem 96).toNat *
       (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) :
@@ -159,18 +159,18 @@ theorem r4LoopMem_represents (s : State) (mem : ByteArray) (a mm k : Nat) (hk : 
   | zero => omega
   | succ k =>
       have hrd (addr : Nat) (hd : addr + 32 ≤ 2048 ∨ 2624 ≤ addr) :
-          MachineState.readWord (mpZeroed s (stage mem 512 4) 4) addr =
+          MachineState.readWord (mpZeroed s (stage mem 2112 4) 4) addr =
             MachineState.readWord mem addr := by
         rw [readWord_mpZeroed s _ 4 addr (by norm_num) hd,
-          read_stage_outside mem 512 4 addr (by omega)]
-      have ha' := represents_zeroed_stage s (stage mem 512 4) 4 a (by norm_num)
+          read_stage_outside mem 2112 4 addr (by omega)]
+      have ha' := represents_zeroed_stage s (stage mem 2112 4) 4 a (by norm_num)
         (represents_stage mem 4 a ha)
-      have hm' : Model.FastRepresents (mpZeroed s (stage mem 512 4) 4) 0 4 mm := by
+      have hm' : Model.FastRepresents (mpZeroed s (stage mem 2112 4) 4) 0 4 mm := by
         refine (Model.fastRepresents_congr (a := mem) ?_ mm).1 hm
         intro j hj
         rw [hrd (0 + 32 * j) (Or.inl (by omega))]
-      have hminv' : ((MachineState.readWord (mpZeroed s (stage mem 512 4) 4) 96).toNat *
-          (MachineState.readWord (mpZeroed s (stage mem 512 4) 4) 2720).toNat + 1) %
+      have hminv' : ((MachineState.readWord (mpZeroed s (stage mem 2112 4) 4) 96).toNat *
+          (MachineState.readWord (mpZeroed s (stage mem 2112 4) 4) 2720).toNat + 1) %
             2 ^ 256 = 0 := by
         rw [hrd 96 (Or.inl (by norm_num)), hrd 2720 (Or.inr (by norm_num))]
         exact hminv
@@ -228,7 +228,7 @@ theorem loopMem_fastRepresents_outside (s : State) (mem : ByteArray) (n k ptr cn
 
 theorem loopMem_represents (s : State) (mem : ByteArray) (p a mm k : Nat)
     (hfast : p + 2 = 4 ∨ p + 2 = 8) (hn32 : p + 2 ≤ 8) (hk : 1 ≤ k)
-    (ha : Model.FastRepresents mem 512 (p + 2) a)
+    (ha : Model.FastRepresents mem 2112 (p + 2) a)
     (hm : Model.FastRepresents mem 0 (p + 2) mm)
     (hodd : mm % 2 = 1) (har : a < Limbs.radix^(p+2)) (hmpos : 0 < mm)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
