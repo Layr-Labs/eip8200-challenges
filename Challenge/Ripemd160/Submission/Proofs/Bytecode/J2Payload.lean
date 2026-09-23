@@ -44,7 +44,7 @@ private def codePrefix : ByteArray :=
  ++   submissionByteChunk17
  ++   submissionByteChunk18
  ++   submissionByteChunk19
-private theorem codePrefix_size : codePrefix.size = 4621 := by
+private theorem codePrefix_size : codePrefix.size = 4620 := by
   simp only [codePrefix, ByteArray.size_append,
     submissionByteChunk0_size,
     submissionByteChunk1_size,
@@ -69,7 +69,7 @@ private theorem codePrefix_size : codePrefix.size = 4621 := by
 private theorem code_split : submissionBytecode = codePrefix ++ submissionByteChunk20 := rfl
 
 private theorem tableRead (n : Nat) :
-    MachineState.readPadded submissionBytecode (5211 - 20*((464734958227/n)%16)) 20 =
+    MachineState.readPadded submissionBytecode (5210 - 20*((464734958227/n)%16)) 20 =
       MachineState.readPadded submissionByteChunk20 (590 - 20*((464734958227/n)%16)) 20 := by
   rw [code_split, readPadded_append_right _ _ _ _ (by rw [codePrefix_size]; omega), codePrefix_size]
   congr 1
@@ -82,12 +82,12 @@ private theorem tablePayload (n : Nat) (hn : Allowed n) :
   all_goals decide
 
 private theorem selected_nat (n : Nat) (hn : Allowed n) :
-    (selected (UInt256.ofNat 5211) n).toNat = 5211 - 20*((464734958227/n)%16) := by
+    (selected (UInt256.ofNat 5210) n).toNat = 5210 - 20*((464734958227/n)%16) := by
   rcases hn with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals decide
 
 theorem read_selected (n : Nat) (hn : Allowed n) :
-    MachineState.readPadded submissionBytecode (selected (UInt256.ofNat 5211) n).toNat 20 =
+    MachineState.readPadded submissionBytecode (selected (UInt256.ofNat 5210) n).toNat 20 =
       MachineState.readPadded payload (280 - 20*((464734958227/n)%16)) 20 := by
   rw [selected_nat n hn, tableRead]
   exact tablePayload n hn
