@@ -29,6 +29,8 @@ def template : List Instr :=
     .op .ADD,
     .push ⟨2, by decide⟩ (UInt256.ofNat 594),
     .op .MLOAD,
+    .op .JUMPDEST,
+    .op .JUMPDEST,
     .op .ADD,
     .op (.Dup ⟨8, by decide⟩),
     .op .ADD,

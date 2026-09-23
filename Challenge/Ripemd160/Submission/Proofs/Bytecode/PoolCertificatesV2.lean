@@ -24,10 +24,6 @@ theorem slack_sources : ∀ j : Fin 61,
     14 ≤ zeroByte[j.val]! ∧ zeroByte[j.val]! ≤ 26 ∧
     resultSourceV2 (18*j.val+zeroByte[j.val]!) = .zero := by decide
 
-/-- Bytes 14..16 of the terminal round's slot 594 (addresses 608..610) are zero in the actual
-image: 608 and 609 are gap bytes no store fills, 610 is cleared by the builder's `MSTORE8`. -/
-theorem terminal_gap_sources : ∀ k : Fin 3, resultSourceV2 (608 + k.val) = .zero := by decide
-
 #print axioms lane_sources
 #print axioms slack_sources
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolCertificatesV2

@@ -13,8 +13,7 @@ open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory Pair13Endian
 open Shared32Scratch
 
 def template : List Instr :=
-  ((Shared32Lower.lowerTemplate ++ Pair13PoolRaw.templateV2) ++ Pair13WriterRaw.writerTemplate) ++
-    Pair13NormalTrace.clearTemplate
+  (Shared32Lower.lowerTemplate ++ Pair13PoolRaw.templateV2) ++ Pair13WriterRaw.writerTemplate
 
 theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
@@ -54,20 +53,11 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
   have h3 := PoolRawWriter.run_writer_grow s3
     (pcAfter (pcAfter pc Shared32Lower.lowerTemplate) Pair13PoolRaw.templateV2)
     ret (Pair13PoolRaw.poolWordV2 (Pair13PoolRaw.copiedV2 scratch)) rest hrest hrun ha3
-  have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
-  have h4 := Pair13NormalTrace.run_clear
-    {s3 with
-      memory := (PoolRawWriter.writerMemory s3.memory (Pair13PoolRaw.poolWordV2 (Pair13PoolRaw.copiedV2 scratch)))
-      activeWords := UInt256.ofNat 35}
-    (pcAfter (pcAfter (pcAfter pc Shared32Lower.lowerTemplate) Pair13PoolRaw.templateV2)
-      PoolRawWriter.writerTemplate)
-    (ret :: UInt256.ofNat 4294967295 :: rest) (by simp only [List.length_cons]; omega) hrun
-    (by show 20 ≤ (UInt256.ofNat 35).toNat; decide)
-  have h := DenseScheduleTrace.runInstrSeq_append_running h123 (by exact hrun) h4
+  have h := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
   simpa only [PoolRawWriter.template_eq, template, DenseScheduleTrace.pcAfter_append,
     s3, s2, s1, scratch, Shared32Table.tableMemory, PoolShapeV2.resultMemoryV2, PoolShapeV2.fanMemoryV2, rest, stk] using h
 
-theorem end_pc : pcAfter (UInt256.ofNat 546) template = UInt256.ofNat 863 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 546) template = UInt256.ofNat 858 := by decide
 
 #print axioms run_table
 #print axioms end_pc

@@ -40,38 +40,6 @@ theorem step76_d (l r : CryptoLane) (d : UInt256) (wl wr : UInt32)
   exact congrArg (fun t : UInt256 => (⟨(packCrypto l r).e,t,(packCrypto l r).b,
     UInt256.land (wordShift (packCrypto l r).c 23) pairWord,d⟩ : WordLane)) ht
 
-theorem step76_d_msg (l r : CryptoLane) (d m : UInt256)
-    (hm : (bits m).toNat % 2^144 < 2^120)
-    (hd : (bits d).getLsbD 121 = false)
-    (he : UInt256.land d pairWord = (packCrypto l r).d) :
-    StaggerAlgorithm.step 76 m {packCrypto l r with d:=d} =
-      {StaggerAlgorithm.step 76 m (packCrypto l r) with e:=d} := by
-  have ht := t_d_eq_msg l r d m
-    Crypto.Ripemd160.K[4]!.toBitVec Crypto.Ripemd160.KP[4]!.toBitVec hm hd he
-  change (⟨(packCrypto l r).e, _, (packCrypto l r).b,
-      UInt256.land (wordShift (packCrypto l r).c 23) pairWord,d⟩ : WordLane) = _
-  exact congrArg (fun t : UInt256 => (⟨(packCrypto l r).e,t,(packCrypto l r).b,
-    UInt256.land (wordShift (packCrypto l r).c 23) pairWord,d⟩ : WordLane)) ht
-
-/-- Every admissible terminal message word has a lower half below `2 ^ 120`. -/
-theorem message76_small (m : UInt256) (words : Nat → UInt32)
-    (h : StaggerAlgorithm.MessageWord m words 76) :
-    (bits m).toNat % 2^144 < 2^120 := by
-  rcases h with hlegacy | ⟨hc, -⟩
-  · obtain ⟨jl, jr, ⟨-, -, -, h0l, h0r, _⟩, hmsg⟩ := hlegacy
-    rw [(h0l (by decide)).2 (by decide), (h0r (by decide)).2 (by decide)] at hmsg
-    rw [hmsg, show StaggerRound.junk 0 0 = (0 : BitVec 256) from rfl, BitVec.toNat_add,
-      pack_toNat]
-    have h1 := (words Crypto.Ripemd160.r[76]!).toBitVec.isLt
-    have h0 : (0 : BitVec 256).toNat = 0 := rfl
-    rw [h0]
-    simp only [Nat.reducePow] at *
-    omega
-  · rcases hc with hc | hc
-    · exact absurd rfl hc
-    · rw [bits_toNat]
-      exact hc
-
 theorem final_shape (message : Nat → UInt256) (words : Nat → UInt32)
     (l r : CryptoLane) (hm : StaggerAlgorithm.MessageReady message words 77) :
     ∃ d e : UInt256,
@@ -96,8 +64,22 @@ theorem final_shape (message : Nat → UInt256) (words : Nat → UInt32)
   have he : UInt256.land e pairWord = q76.d :=
     congrArg (fun q : WordLane => q.d) h75
   have hlast : StaggerAlgorithm.step 76 (message 76) {q76 with d:=e} = {q77 with e:=e} := by
-    have hh := step76_d_msg (leftFold words 76 l) (rightFold words 79 r) e (message 76)
-      (message76_small (message 76) words (hm 76 (by decide))) hgap he
+    have hh := step76_d (leftFold words 76 l) (rightFold words 79 r) e
+      (words Crypto.Ripemd160.r[76]!) (words Crypto.Ripemd160.rP[79]!) hgap he
+    have hm76 : message 76 = word (pack (words Crypto.Ripemd160.r[76]!).toBitVec
+      (words Crypto.Ripemd160.rP[79]!).toBitVec) := by
+      apply bits_injective
+      rw [bits_word]
+      have hm76 := hm 76 (by decide)
+      have hlegacy : StaggerAlgorithm.LegacyMessageWord (message 76) words 76 := by
+        rcases hm76 with h | ⟨hn, _⟩
+        · exact h
+        · exact False.elim (hn rfl)
+      obtain ⟨jl, jr, ⟨-, -, -, h0l, h0r, _⟩, hmsg⟩ := hlegacy
+      rw [(h0l (by decide)).2 (by decide), (h0r (by decide)).2 (by decide)] at hmsg
+      rw [hmsg, show StaggerRound.junk 0 0 = (0 : BitVec 256) from rfl]
+      exact BitVec.add_zero _
+    rw [hm76] at h76 ⊢
     exact hh.trans (congrArg (fun q : WordLane => {q with e:=e}) h76)
   refine ⟨d,e,?_,?_,?_⟩
   · rw [fold,step,if_pos (Or.inr rfl),fold,step,if_pos (Or.inl rfl),
@@ -115,6 +97,5 @@ theorem final_shape (message : Nat → UInt256) (words : Nat → UInt32)
 
 #print axioms fold_prefix
 #print axioms step76_d
-#print axioms step76_d_msg
 #print axioms final_shape
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerTerminal75

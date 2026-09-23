@@ -10,7 +10,7 @@ noncomputable opaque gasSteps_normal (input : ByteArray) (hfit : CalldataFits in
     (hpositive : 0 < input.size) (i : Nat)
     (hi : i<DriverTrace.blockCount input) :
     GasSteps {paddedState input i with pc:=UInt256.ofNat 509,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (Padding.paddedWord input) maskRho}
-      {tableState input i with pc:=UInt256.ofNat 863,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (Padding.paddedWord input) maskRho} := by
+      {tableState input i with pc:=UInt256.ofNat 858,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (Padding.paddedWord input) maskRho} := by
   let h:=hashes input i
   let off:=DriverTrace.blockOffsetWord i
   have hc : (paddedState input i).executionEnv.code=Artifact.submissionArtifact.code := states_code input i

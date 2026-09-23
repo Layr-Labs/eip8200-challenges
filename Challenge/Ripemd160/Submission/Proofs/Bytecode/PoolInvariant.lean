@@ -106,7 +106,7 @@ theorem fanV2_getD_high (m : ByteArray) (lo hi : UInt256) (a : Nat) (ha : 1112 �
 
 theorem resultV2_outside (m : ByteArray) (lo hi : UInt256) (a : Nat) (ha : 1112 ≤ a) :
     (resultMemoryV2 m lo hi)[a]?.getD 0 = m[a]?.getD 0 := by
-  rw [resultMemoryV2, clearTerminal_getD, if_neg (by omega), PoolRawWriter.writerMemory, rawWrites_eq,
+  rw [resultMemoryV2, PoolRawWriter.writerMemory, rawWrites_eq,
     writeChain_outside _ _ _ _ (fun x hx => (PoolCertificates.writes_bound x hx).1.trans ha),
     fanV2_getD_high _ _ _ _ (by omega)]
 
@@ -175,7 +175,7 @@ theorem ready_of_gap (W T : ByteArray) (words : Nat → UInt32)
       have hl := StaggerAlgorithm.message_lanes _ _ _ (h.paired i hi77)
       rw [hmT] at hl
       apply Or.inr
-      refine ⟨Or.inl hne, ?_, ?_, ?_⟩
+      refine ⟨hne, ?_, ?_, ?_⟩
       · rw [hmW]
         exact (lanes_gap W T 2 hb).1.trans hl.1
       · rw [hmW]
@@ -195,25 +195,28 @@ theorem ready (m r : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (hr : Clear r
     StaggerMessage.Ready (resultMemoryV2 m lo hi) words := by
   constructor
   · intro i hi77
-    apply Or.inr
-    refine ⟨?_, ?_, ?_, ?_⟩
-    · by_cases hi76 : i = 76
-      · subst i
-        apply Or.inr
+    by_cases hi76 : i = 76
+    · subst i
+      have ht := PoolFacts.result_terminal_projected m r lo hi hc hr
+      have hm : StaggerCoreModel.message (resultMemoryV2 m lo hi) 76 =
+          StaggerCoreModel.message (resultMemory true r lo hi) 76 := by
         have haddr : 18 * StaggerTableLayout.pairIndices[76]! = 594 := by decide
-        simp only [StaggerCoreModel.message, ite_self, haddr]
-        exact PoolFacts.result_terminal_bound m lo hi hc
-      · exact Or.inl hi76
-    · have ht := (StaggerTableLayout.layout_valid ⟨i,hi77⟩).2.1
-      have hp := (StaggerAlgorithm.message_lanes _ _ _ (h.paired i hi77)).1
-      simp only [StaggerCoreModel.message, ite_self] at hp ⊢
-      exact (PoolFacts.result_lanes m r lo hi hc hr _ ht).1.trans hp
-    · have ht := (StaggerTableLayout.layout_valid ⟨i,hi77⟩).2.1
-      have hp := (StaggerAlgorithm.message_lanes _ _ _ (h.paired i hi77)).2
-      simp only [StaggerCoreModel.message, ite_self] at hp ⊢
-      exact (PoolFacts.result_lanes m r lo hi hc hr _ ht).2.trans hp
-    · simp only [StaggerCoreModel.message, ite_self]
-      exact PoolFacts.result_slack m lo hi hc _ (StaggerTableLayout.layout_valid ⟨i,hi77⟩).2.1
+        have hmask : Paired144WordRound.pairWord = Pair13PoolRaw.poolMask := by decide
+        simpa only [StaggerCoreModel.message, if_pos rfl, haddr, hmask, ite_true] using ht
+      rw [hm]
+      exact h.paired 76 hi77
+    · apply Or.inr
+      refine ⟨hi76, ?_, ?_, ?_⟩
+      · have ht := (StaggerTableLayout.layout_valid ⟨i,hi77⟩).2.1
+        have hp := (StaggerAlgorithm.message_lanes _ _ _ (h.paired i hi77)).1
+        simp only [StaggerCoreModel.message, if_neg hi76] at hp ⊢
+        exact (PoolFacts.result_lanes m r lo hi hc hr _ ht).1.trans hp
+      · have ht := (StaggerTableLayout.layout_valid ⟨i,hi77⟩).2.1
+        have hp := (StaggerAlgorithm.message_lanes _ _ _ (h.paired i hi77)).2
+        simp only [StaggerCoreModel.message, if_neg hi76] at hp ⊢
+        exact (PoolFacts.result_lanes m r lo hi hc hr _ ht).2.trans hp
+      · simp only [StaggerCoreModel.message, if_neg hi76]
+        exact PoolFacts.result_slack m lo hi hc _ (StaggerTableLayout.layout_valid ⟨i,hi77⟩).2.1
   · intro j hj
     apply UInt32.toNat_inj.mp
     have hp := congrArg UInt32.toNat (h.scalar j hj)
@@ -272,7 +275,7 @@ theorem ready_of_from28 (W T : ByteArray) (words : Nat → UInt32)
       have hl := StaggerAlgorithm.message_lanes _ _ _ (h.paired i hi77)
       rw [hmT] at hl
       apply Or.inr
-      refine ⟨Or.inl hne, ?_, ?_, ?_⟩
+      refine ⟨hne, ?_, ?_, ?_⟩
       · rw [hmW]
         exact (hlow 1).trans hl.1
       · rw [hmW]

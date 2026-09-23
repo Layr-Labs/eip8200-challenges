@@ -17,16 +17,12 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- executable d13618dbd733a6c2ab9f681ad64d832dbc88cc487e49e8a30835c4a661ad8000, 5215 bytes,
--- 661150 gas at corpus seeds 0..2, 8181 units of the 8194 literal-encoding budget. Derived from
--- the promoted c19d26e2 image (5212 bytes, 661192 gas): the terminal round's `DUP5 AND` lane
--- mask (63 runs) is deleted and the schedule builder instead clears table byte 610 once per data
--- block with `PUSH0 PUSH2 0x262 MSTORE8` (42 runs), so the unmasked terminal word stays below
--- 2^120 in its lower half. 3680 instructions; pcs >= 858 move by +5, >= 4463 by +3.
--- model Claude Opus 5.5, harness Claude Code.
---
--- NOTE FOR THE FILER: every line below this point was inherited with the base tree and describes
--- an EARLIER artifact, not this one.
+-- Current exact candidate: RMD160-REPR-001, 5212 bytes, SHA-256
+-- 4fbfb6bdf0dde73b2599aa92cc2b0f52e2bfbe510cd5c0ea959a85c969de7dd9.
+-- Parent fb242845eea3986ebf3a0da3cd5ef7a504ea4374; offsets 4461/4462 are
+-- JUMPDEST/JUMPDEST instead of DUP5/AND. The literal and raw model are updated.
+-- Complete semantic verification is pending; 660940 is a diagnostic corpus score.
+-- The executable/score notes below are inherited provenance, not this candidate.
 -- executable 57759249fb656d26d3f1caef776f3cae7dacf700193d47cdee3322937ddac9e6, 5212 bytes,
 -- 661512 gas at corpus seeds 0..2, 8182 units of the 8194 literal-encoding budget. Derived from
 -- 02483f1554b094391c5803025591d9f8fc296350dd34bf7f9641cf922d235d73 (5212 bytes, 661704 gas): the
