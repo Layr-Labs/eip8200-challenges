@@ -8,15 +8,15 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached SquareRows
 
-def pcNx : Nat := 4152
-def pcSqExit : Nat := 4208
-def pcLast : Nat := 4230
-def pcAgain : Nat := 4252
-def pcH2 : Nat := 4242
+def pcNx : Nat := 4142
+def pcSqExit : Nat := 4198
+def pcLast : Nat := 4220
+def pcAgain : Nat := 4242
+def pcH2 : Nat := 4232
 
 def frameStack (mem : ByteArray) (_n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) : List UInt256 :=
-  [pbi, UInt256.ofNat 4268, UInt256.ofNat 2336, ent, UInt256.ofNat 0, allOnes,
+  [pbi, UInt256.ofNat 4258, UInt256.ofNat 2336, ent, UInt256.ofNat 0, allOnes,
     MachineState.readWord mem 128, inv, m0, tl, m96, m64, m32, aprev, pdst, ret] ++ rest
 
 def frameAt (pc : Nat) (s : State) (mem : ByteArray) (n : Nat)

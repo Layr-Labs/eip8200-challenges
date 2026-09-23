@@ -22,11 +22,12 @@ noncomputable def square_steps (s : State)
     (mem : ByteArray) (aprev tl inv m0 m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
     (hc : Cached mem 2368 8 tl inv m0 m96 m64 m32)
-    (hscr : R8RowZeroExact.ScratchZero mem) :
-    GasSteps (TnM128SquareFirstSteps.input s mem aprev tl inv m0 m96 m64 m32 dst ret rest)
+    (hscr : R8RowZeroExact.ScratchZero mem)
+    (ent : UInt256 := UInt256.ofNat 3562) :
+    GasSteps (TnM128SquareFirstSteps.input s mem aprev tl inv m0 m96 m64 m32 dst ret rest ent)
       (exitState s (sqRowsCarry (mpZeroed s mem 8) 8 8) (finalCache mem).tn 8
         (sqX mem 8 7) tl inv m0 m96 m64 m32 dst ret rest) := by
-  have g0 := TnM128SquareFirstSteps.steps s env mem aprev tl inv m0 m96 m64 m32 dst ret rest hcap hact hc
+  have g0 := TnM128SquareFirstSteps.steps s env mem aprev tl inv m0 m96 m64 m32 dst ret rest hcap hact hc ent
   have g1 := TnM128SquareTailSteps.steps s env (first mem) 8 1 rfl
     tl inv m0 m96 m64 m32 dst ret rest hcap hact (first_cached s hc) 7 (by decide)
   have g2 := finish_steps s env (finalCache mem) 8 (by decide)
