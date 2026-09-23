@@ -79,6 +79,8 @@ def render_artifact(track: Track, artifact: str) -> str:
 /- Generated from the protected submission by scripts/yukon_benchmark.py. -/
 import Challenge.{track.lean_name}.Benchmark.Target
 
+set_option maxRecDepth 40000
+
 namespace Challenge.{track.lean_name}.Benchmark
 
 {declarations_text}
