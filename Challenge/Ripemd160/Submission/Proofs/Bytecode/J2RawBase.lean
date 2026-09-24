@@ -211,8 +211,9 @@ def finishTemplate : List Instr := [ .op .CALLDATASIZE,
     .op .JUMPI ]
 
 def transitionTemplate : List Instr := [
-  .op (.Dup ⟨6, by decide⟩),
-  .op (.Dup ⟨3, by decide⟩),
+  .op (.Swap ⟨1, by decide⟩),
+  .op (.Dup ⟨0, by decide⟩),
+  .op (.Dup ⟨7, by decide⟩),
   .op .OR,
   .op (.Dup ⟨8, by decide⟩),
   .push ⟨1, by decide⟩ (UInt256.ofNat 14),
@@ -220,10 +221,8 @@ def transitionTemplate : List Instr := [
   .op (.Dup ⟨1, by decide⟩),
   .op .SUB,
   .op .XOR,
-  .op (.Dup ⟨3, by decide⟩),
   .op .XOR,
-  .op (.Swap ⟨2, by decide⟩),
-  .op .POP,
+  .op (.Swap ⟨1, by decide⟩),
   .op (.Dup ⟨4, by decide⟩),
   .push ⟨1, by decide⟩ (UInt256.ofNat 251),
   .op .ADD,
