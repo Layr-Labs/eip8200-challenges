@@ -28,7 +28,7 @@ theorem run_transitionA_aux (s : State) (pc : UInt256) (f : Frame) (rho : List U
       some {s with pc := pcAfter pc (transitionTemplate.take 14), stack := frame ({f with word := advance 114 f.word} : Frame) rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
-  simp (config := { maxSteps := 600000 }) (discharger := omega) [transitionTemplate, frame, c32, c114,
+  simp (config := { maxSteps := 600000 }) (discharger := omega) [transitionTemplate, frame, c96, c114,
     clamp, aligned, advance, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hcap,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
@@ -42,7 +42,7 @@ theorem run_transitionB_aux (s : State) (pc : UInt256) (f : Frame) (rho : List U
       some {s with pc := pcAfter pc (transitionTemplate.drop 14), stack := frame ({f with off := f.stop, stop := emin f.stop f.len, full := UInt256.sub (emin f.stop f.len) (UInt256.ofNat 32)} : Frame) rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
-  simp (config := { maxSteps := 600000 }) (discharger := omega) [transitionTemplate, frame, c32, c114,
+  simp (config := { maxSteps := 600000 }) (discharger := omega) [transitionTemplate, frame, c96, c114,
     emin, clamp, aligned, advance, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hcap, ← hlen,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
@@ -71,7 +71,7 @@ theorem run_transition_aux (s : State) (pc : UInt256) (f : Frame) (rho : List UI
       some {s with pc := pcAfter pc transitionTemplate, stack := frame ({f with word := advance 114 f.word, off := f.stop, stop := emin f.stop f.len, full := UInt256.sub (emin f.stop f.len) (UInt256.ofNat 32)} : Frame) rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
-  simp (config := { maxSteps := 600000 }) (discharger := omega) [transitionTemplate, frame, c32, c114,
+  simp (config := { maxSteps := 600000 }) (discharger := omega) [transitionTemplate, frame, c96, c114,
     emin, clamp, aligned, advance, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hcap, ← hlen,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]

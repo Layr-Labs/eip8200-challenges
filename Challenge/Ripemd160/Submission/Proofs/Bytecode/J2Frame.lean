@@ -57,6 +57,12 @@ private theorem shr0 (x : UInt256) : UInt256.shiftRight x (UInt256.ofNat 0) = x 
   rw [Word.shiftRight_toNat x (by decide)]
   simp only [Nat.shiftRight_zero]
 
+private theorem nw_closed : ∀ k : Fin 32, k.val % 8 ≠ 7 →
+    J2Raw.nw (wordAt k.val) = wordAt (k.val+1) := by decide
+
+private theorem nw_next (k : Nat) (hk32 : k < 32) (hk : k%8≠7) :
+    J2Raw.nw (wordAt k) = wordAt (k+1) := nw_closed ⟨k, hk32⟩ hk
+
 private theorem word_next_normal (k : Nat) (hk : k%8≠7) :
     RecognitionRecurrence.advance 32 (wordAt k) = wordAt (k+1) := by simp only [wordAt, if_neg hk]
 
@@ -71,7 +77,7 @@ theorem normal_next (s : State) (n k : Nat) (hn : Allowed n) (hk : k≤last n)
   have hm : k%8≠7 := by intro h; exact ht (Or.inr h)
   simp only [normalResult, current, J2Accumulator.accumulate, J2Accumulator.piece,
     J2Accumulator.shift, hw, Nat.sub_self, Nat.zero_mul, shr0, ho, ha, hfn, hen,
-    word_next_normal k hm]
+    nw_next k (by have := last_lt n hn; omega) hm]
 
 theorem tail_acc (s : State) (n k : Nat) (hn : Allowed n) (hk : k≤last n)
     (ht : isTail n k) :

@@ -14,7 +14,7 @@ theorem run_tail (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
       some {s with pc := pcAfter pc tailTemplate, stack := frame (tailResult s f) rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
-  simp (config := { maxSteps := 600000 }) (discharger := omega) [tailTemplate, tailResult, frame, c32, c114,
+  simp (config := { maxSteps := 600000 }) (discharger := omega) [tailTemplate, tailResult, frame, c96, c114,
     clamp, aligned, advance, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hcap,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
