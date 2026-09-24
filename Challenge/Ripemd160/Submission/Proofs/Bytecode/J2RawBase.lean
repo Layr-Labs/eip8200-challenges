@@ -24,7 +24,7 @@ def c96 : UInt256 := UInt256.mul (UInt256.ofNat 96) PatternedSwar.M
 def c114 : UInt256 := UInt256.mul (UInt256.ofNat 114) PatternedSwar.M
 def frame (f : Frame) (rho : List UInt256) : List UInt256 :=
   [f.acc, f.off, f.word, f.full, f.stop, c96,
-    UInt256.ofNat 0, PatternedSwar.m8, PatternedSwar.M] ++ rho
+    PatternedSwar.m8, PatternedSwar.M] ++ rho
 
 def clamp (x : UInt256) : UInt256 := UInt256.add x
   (UInt256.mul (UInt256.lt (UInt256.ofNat 251) x) (UInt256.sub (UInt256.ofNat 251) x))
@@ -137,8 +137,7 @@ def initTemplate : List Instr := [
   .op (.Dup ⟨0, by decide⟩),
   .push ⟨1, by decide⟩ (UInt256.ofNat 7),
   .op .SHL,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  .op (.Dup ⟨2, by decide⟩),
+  .op (.Dup ⟨1, by decide⟩),
   .push ⟨1, by decide⟩ (UInt256.ofNat 96),
   .op .MUL,
   .op .CALLDATASIZE,
@@ -161,12 +160,12 @@ def initTemplate : List Instr := [
 def firstTemplate : List Instr := [ .op (.Dup ⟨3, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 219),
     .op .LT,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 349),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 348),
     .op .JUMPI ]
 
 def normalTemplate : List Instr := [
   .op .JUMPDEST,
-  .op (.Dup ⟨7, by decide⟩),
+  .op (.Dup ⟨6, by decide⟩),
   .op (.Dup ⟨3, by decide⟩),
   .op .OR,
   .op (.Dup ⟨6, by decide⟩),
@@ -188,7 +187,7 @@ def normalTemplate : List Instr := [
 def normalGuardTemplate : List Instr := [ .op (.Dup ⟨3, by decide⟩),
     .op (.Dup ⟨2, by decide⟩),
     .op .LT,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 322),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 321),
     .op .JUMPI ]
 
 def tailTemplate : List Instr := [
@@ -212,10 +211,10 @@ def finishTemplate : List Instr := [ .op .CALLDATASIZE,
     .op .JUMPI ]
 
 def transitionTemplate : List Instr := [
-  .op (.Dup ⟨7, by decide⟩),
+  .op (.Dup ⟨6, by decide⟩),
   .op (.Dup ⟨3, by decide⟩),
   .op .OR,
-  .op (.Dup ⟨9, by decide⟩),
+  .op (.Dup ⟨8, by decide⟩),
   .push ⟨1, by decide⟩ (UInt256.ofNat 14),
   .op .MUL,
   .op (.Dup ⟨1, by decide⟩),
@@ -249,10 +248,10 @@ def transitionTemplate : List Instr := [
 def transitionGuardTemplate : List Instr := [ .op (.Dup ⟨3, by decide⟩),
     .op (.Dup ⟨2, by decide⟩),
     .op .LT,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 322),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 321),
     .op .JUMPI ]
 
-def toTailTemplate : List Instr := [ .push ⟨2, by decide⟩ (UInt256.ofNat 349),
+def toTailTemplate : List Instr := [ .push ⟨2, by decide⟩ (UInt256.ofNat 348),
     .op .JUMP ]
 
 def resultTemplate : List Instr := [ .op .JUMPDEST,
