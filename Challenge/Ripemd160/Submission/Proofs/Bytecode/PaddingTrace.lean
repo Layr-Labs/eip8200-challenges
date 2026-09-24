@@ -35,7 +35,7 @@ private def wfOp {op : Operation}
 through into the driver entry, so no return address is pushed. -/
 def padEntry (input : ByteArray) : State :=
   { Main.initializedState input with
-    pc := UInt256.ofNat 629
+    pc := UInt256.ofNat 310
     stack := [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16] }
 
 @[simp] private theorem padEntry_halt (input : ByteArray) :
@@ -51,7 +51,7 @@ def padEntry (input : ByteArray) : State :=
     (padEntry input).executionEnv.calldata = input := by rfl
 
 @[simp] private theorem initializedPC764 :
-    Artifact.instructionPC 304 = 566 := by change Artifact.submissionArtifact.instructionPC 304 = 566; rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+    Artifact.instructionPC 148 = 247 := by change Artifact.submissionArtifact.instructionPC 148 = 247; rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem initializedCalldata (input : ByteArray) :
     (Main.initializedState input).executionEnv.calldata = input := by rfl
@@ -75,9 +75,9 @@ private theorem run_enter (input : ByteArray) :
     Challenge.EvmProof.DataStepper.runLocatedBlock enterPath
       (Main.initializedState input) = some (padEntry input) := by
   have hzero : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
-  have p245 : Artifact.submissionArtifact.instructionPC 304 = 566 := by
+  have p245 : Artifact.submissionArtifact.instructionPC 148 = 247 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have p246 : Artifact.submissionArtifact.instructionPC 305 = 597 := by
+  have p246 : Artifact.submissionArtifact.instructionPC 149 = 278 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   simp [enterPath, Artifact.padEnterPath, Challenge.EvmProof.DataStepper.runLocatedBlock,
     Challenge.EvmProof.DataStepper.runLocated, Challenge.EvmProof.DataStepper.runInstr,
@@ -101,7 +101,7 @@ def paddedLengthPath : List
 
 def padLengthReady (input : ByteArray) : State :=
   { padEntry input with
-    pc := UInt256.ofNat 630
+    pc := UInt256.ofNat 311
     stack := [UInt256.ofNat input.size, DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16] }
 
 @[simp] private theorem padLengthReady_halt (input : ByteArray) :
@@ -117,13 +117,13 @@ def padLengthReady (input : ByteArray) : State :=
     (padLengthReady input).executionEnv.calldata = input := by rfl
 
 @[simp] private theorem padLengthReady_pcToNat (input : ByteArray) :
-    (padLengthReady input).pc.toNat = 630 := by rfl
+    (padLengthReady input).pc.toNat = 311 := by rfl
 
 @[simp] private theorem padLengthReady_pc (input : ByteArray) :
-    (padLengthReady input).pc = UInt256.ofNat 630 := by rfl
+    (padLengthReady input).pc = UInt256.ofNat 311 := by rfl
 
 @[simp] private theorem padLengthReady_pcSucc (input : ByteArray) :
-    (padLengthReady input).pc.succ = UInt256.ofNat 631 := by
+    (padLengthReady input).pc.succ = UInt256.ofNat 312 := by
   rw [padLengthReady_pc, Challenge.EvmProof.Word.succ_ofNat (by norm_num)]
 
 @[simp] private theorem padLengthReady_stack (input : ByteArray) :
@@ -232,7 +232,7 @@ def padFrame (input : ByteArray) : List UInt256 :=
 
 def padCopied (input : ByteArray) : State :=
   { padLengthReady input with
-    pc := UInt256.ofNat 636
+    pc := UInt256.ofNat 317
     stack := [UInt256.ofNat input.size, DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
     memory := MachineState.writeBytes (padLengthReady input).memory
       (MachineState.readPadded input 0 input.size) Padding.messageOffset
@@ -242,25 +242,25 @@ def padCopied (input : ByteArray) : State :=
 /-- State after the eleven frame pushes. -/
 def padFramed (input : ByteArray) : State :=
   { padCopied input with
-    pc := UInt256.ofNat 765
+    pc := UInt256.ofNat 446
     stack := initialFrame input }
 
 /-- Whole-block input: the padding code jumps straight to the block loop with only the
 calldata copy in memory. -/
 def padSkip (input : ByteArray) : State :=
   { padCopied input with
-    pc := UInt256.ofNat 773
+    pc := UInt256.ofNat 453
     stack := initialFrame input }
 
 /-- Partial last block: fall through into the sentinel store. -/
 def padGuardMiss (input : ByteArray) : State :=
   { padCopied input with
-    pc := UInt256.ofNat 385
+    pc := UInt256.ofNat 207
     stack := padFrame input }
 
 def padSentinel (input : ByteArray) : State :=
   { padCopied input with
-    pc := UInt256.ofNat 393
+    pc := UInt256.ofNat 215
     stack := padFrame input
     memory := MachineState.writeBytes (padCopied input).memory
       (ByteArray.mk #[0x80]) (Padding.messageOffset + input.size)
@@ -271,10 +271,10 @@ def padSentinel (input : ByteArray) : State :=
     (padCopied input).halt = .Running := by rfl
 
 @[simp] private theorem padCopied_pcToNat (input : ByteArray) :
-    (padCopied input).pc.toNat = 636 := by rfl
+    (padCopied input).pc.toNat = 317 := by rfl
 
 @[simp] private theorem padCopied_pc (input : ByteArray) :
-    (padCopied input).pc = UInt256.ofNat 636 := by rfl
+    (padCopied input).pc = UInt256.ofNat 317 := by rfl
 
 @[simp] private theorem padCopied_stack (input : ByteArray) :
     (padCopied input).stack =
@@ -291,7 +291,7 @@ def padSentinel (input : ByteArray) : State :=
     (padFramed input).halt = .Running := by rfl
 
 @[simp] private theorem padFramed_pc (input : ByteArray) :
-    (padFramed input).pc = UInt256.ofNat 765 := by rfl
+    (padFramed input).pc = UInt256.ofNat 446 := by rfl
 
 @[simp] private theorem padFramed_code (input : ByteArray) :
     (padFramed input).executionEnv.code = submissionBytecode := by rfl
@@ -303,7 +303,7 @@ def padSentinel (input : ByteArray) : State :=
     (padGuardMiss input).halt = .Running := by rfl
 
 @[simp] private theorem padGuardMiss_pc (input : ByteArray) :
-    (padGuardMiss input).pc = UInt256.ofNat 385 := by rfl
+    (padGuardMiss input).pc = UInt256.ofNat 207 := by rfl
 
 @[simp] private theorem padGuardMiss_code (input : ByteArray) :
     (padGuardMiss input).executionEnv.code = submissionBytecode := by rfl
@@ -315,13 +315,13 @@ def padSentinel (input : ByteArray) : State :=
     (padSentinel input).halt = .Running := by rfl
 
 @[simp] private theorem padSentinel_pcToNat (input : ByteArray) :
-    (padSentinel input).pc.toNat = 393 := by rfl
+    (padSentinel input).pc.toNat = 215 := by rfl
 
 @[simp] private theorem padSentinel_pc (input : ByteArray) :
-    (padSentinel input).pc = UInt256.ofNat 393 := by rfl
+    (padSentinel input).pc = UInt256.ofNat 215 := by rfl
 
 @[simp] private theorem padSentinel_pcSucc (input : ByteArray) :
-    (padSentinel input).pc.succ = UInt256.ofNat 394 := by
+    (padSentinel input).pc.succ = UInt256.ofNat 216 := by
   rw [padSentinel_pc, Challenge.EvmProof.Word.succ_ofNat (by norm_num)]
 
 @[simp] private theorem padSentinel_stack (input : ByteArray) :
@@ -348,13 +348,13 @@ def lengthSentinelStorePath := lengthSentinelPath.drop 4
 
 def padSentinelAddressReady (input : ByteArray) : State :=
   { padCopied input with
-    pc := UInt256.ofNat 392
+    pc := UInt256.ofNat 214
     stack := [UInt256.ofNat Padding.messageOffset + UInt256.ofNat input.size,
       UInt256.ofNat 128] ++ padFrame input }
 
 def padSentinelStored (input : ByteArray) : State :=
   { padSentinelAddressReady input with
-    pc := UInt256.ofNat 393
+    pc := UInt256.ofNat 215
     stack := padFrame input
     memory := MachineState.writeBytes (padSentinelAddressReady input).memory
       (ByteArray.mk #[0x80])
@@ -366,7 +366,7 @@ def padSentinelStored (input : ByteArray) : State :=
     (padSentinelAddressReady input).halt = .Running := by rfl
 
 @[simp] private theorem padSentinelAddressReady_pc (input : ByteArray) :
-    (padSentinelAddressReady input).pc = UInt256.ofNat 392 := by rfl
+    (padSentinelAddressReady input).pc = UInt256.ofNat 214 := by rfl
 
 @[simp] private theorem padSentinelAddressReady_stack (input : ByteArray) :
     (padSentinelAddressReady input).stack =
@@ -438,7 +438,7 @@ private theorem guard_isZero_miss (input : ByteArray) (hfit : CalldataFits input
   rw [if_neg (by rw [guard_toNat input hfit]; exact hnz)]
 
 def padGuardTaken (input : ByteArray) : State :=
-  {padGuardMiss input with pc := UInt256.ofNat 367, stack := initialFrame input}
+  {padGuardMiss input with pc := UInt256.ofNat 190, stack := initialFrame input}
 
 set_option maxHeartbeats 400000 in
 private theorem run_guardSkip (input : ByteArray) (hfit : CalldataFits input)
@@ -566,26 +566,26 @@ def lengthLoopActiveWords (input : ByteArray) : Nat → UInt256
       (lengthLoopActiveWords input i).toNat (lengthAddr input i).toNat 1)
 def lengthLoopState (input : ByteArray) (i : Nat) : State :=
   { padSentinel input with
-    pc := UInt256.ofNat 402
+    pc := UInt256.ofNat 224
     stack := lengthAddr input i :: lengthShift input i :: padFrame input
     memory := lengthLoopMemory input i
     activeWords := lengthLoopActiveWords input i }
 
 def lengthIterationPath : List
     (Challenge.EvmProof.DataStepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨229, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨230, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨231, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨232, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨233, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨234, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨235, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨236, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
-   ⟨237, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨238, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨239, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨240, .push ⟨2, by decide⟩ (UInt256.ofNat 402), by rfl, by decide⟩,
-   ⟨241, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨130, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨131, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨132, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨133, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨134, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
+   ⟨135, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨136, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨137, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
+   ⟨138, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨139, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨140, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨141, .push ⟨1, by decide⟩ (UInt256.ofNat 224), by rfl, by decide⟩,
+   ⟨142, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def lengthBodyPath := lengthIterationPath.take 10
 def lengthBranchPath := lengthIterationPath.drop 10
@@ -600,7 +600,7 @@ def lengthBranchPath := lengthIterationPath.drop 10
     (lengthLoopState input i).executionEnv.code = submissionBytecode := by rfl
 
 @[simp] private theorem lengthLoopState_pc (input : ByteArray) (i : Nat) :
-    (lengthLoopState input i).pc = UInt256.ofNat 402 := by rfl
+    (lengthLoopState input i).pc = UInt256.ofNat 224 := by rfl
 
 @[simp] private theorem lengthLoopState_stack (input : ByteArray) (i : Nat) :
     (lengthLoopState input i).stack =
@@ -612,25 +612,25 @@ def lengthBranchPath := lengthIterationPath.drop 10
 /-- State after one low-byte store and both register updates. -/
 def lengthSteppedState (input : ByteArray) (i : Nat) : State :=
   { lengthLoopState input i with
-    pc := UInt256.ofNat 414
+    pc := UInt256.ofNat 236
     stack := lengthAddr input (i + 1) :: lengthShift input (i + 1) :: padFrame input
     memory := lengthLoopMemory input (i + 1)
     activeWords := lengthLoopActiveWords input (i + 1) }
 
 def lengthBranchReady (input : ByteArray) (i : Nat) : State :=
   { lengthSteppedState input i with
-    pc := UInt256.ofNat 418
-    stack := [UInt256.ofNat 402, lengthShift input (i + 1)] ++
+    pc := UInt256.ofNat 239
+    stack := [UInt256.ofNat 224, lengthShift input (i + 1)] ++
       (lengthSteppedState input i).stack }
 
 def lengthBackReturned (input : ByteArray) (i : Nat) : State :=
   { lengthBranchReady input i with
-    pc := UInt256.ofNat 402
+    pc := UInt256.ofNat 224
     stack := (lengthSteppedState input i).stack }
 
 def lengthExitPending (input : ByteArray) (i : Nat) : State :=
   { lengthBranchReady input i with
-    pc := UInt256.ofNat 419
+    pc := UInt256.ofNat 240
     stack := (lengthSteppedState input i).stack }
 
 private theorem lengthBackReturned_eq (input : ByteArray) (i : Nat) :
@@ -644,13 +644,13 @@ private theorem lengthBackReturned_eq (input : ByteArray) (i : Nat) :
     (lengthSteppedState input i).halt = .Running := by rfl
 
 @[simp] private theorem lengthSteppedState_pc (input : ByteArray) (i : Nat) :
-    (lengthSteppedState input i).pc = UInt256.ofNat 414 := by rfl
+    (lengthSteppedState input i).pc = UInt256.ofNat 236 := by rfl
 
 @[simp] private theorem lengthBranchReady_halt (input : ByteArray) (i : Nat) :
     (lengthBranchReady input i).halt = .Running := by rfl
 
 @[simp] private theorem lengthBranchReady_pc (input : ByteArray) (i : Nat) :
-    (lengthBranchReady input i).pc = UInt256.ofNat 418 := by rfl
+    (lengthBranchReady input i).pc = UInt256.ofNat 239 := by rfl
 
 @[simp] private theorem lengthSteppedState_code (input : ByteArray) (i : Nat) :
     (lengthSteppedState input i).executionEnv.code = submissionBytecode := by rfl
@@ -659,10 +659,10 @@ private theorem lengthBackReturned_eq (input : ByteArray) (i : Nat) :
     (lengthBranchReady input i).executionEnv.code = submissionBytecode := by rfl
 
 @[simp] private theorem validLengthLoopHead :
-    Decode.isValidJumpDest submissionBytecode 402 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 229 = 402 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+    Decode.isValidJumpDest submissionBytecode 224 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 130 = 224 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   rw [← hpc]
-  exact Artifact.submissionArtifact.isValidJumpDest_index 229 (by rfl)
+  exact Artifact.submissionArtifact.isValidJumpDest_index 130 (by rfl)
 
 /-! ## Arithmetic bridge for the masked bit length -/
 
@@ -968,7 +968,7 @@ def padFinalMemory (input : ByteArray) : ByteArray :=
 
 def padReturned (input : ByteArray) : State :=
   { lengthLoopState input (lengthStop input) with
-    pc := UInt256.ofNat 773
+    pc := UInt256.ofNat 453
     stack := padFrame input }
 
 private theorem lengthLoopActiveWords_succ_toNat (input : ByteArray)
@@ -1015,7 +1015,7 @@ theorem padReturned_allocated (input : ByteArray) (hfit : CalldataFits input) :
   omega
 
 @[simp] theorem padReturned_pc (input : ByteArray) :
-    (padReturned input).pc = UInt256.ofNat 773 := by rfl
+    (padReturned input).pc = UInt256.ofNat 453 := by rfl
 
 @[simp] theorem padReturned_stack (input : ByteArray) :
     (padReturned input).stack = padFrame input := by rfl
@@ -1043,7 +1043,7 @@ def lengthExitPath : List
   Artifact.padExitPath
 
 def lengthExitEntered (input : ByteArray) (i : Nat) : State :=
-  { lengthLoopState input i with pc := UInt256.ofNat 419 }
+  { lengthLoopState input i with pc := UInt256.ofNat 240 }
 
 private theorem lengthExitPending_eq (input : ByteArray) (i : Nat) :
     lengthExitPending input i = lengthExitEntered input (i + 1) := by
@@ -1057,14 +1057,14 @@ private theorem lengthExitPending_eq (input : ByteArray) (i : Nat) :
 persistent frame. -/
 def lengthExitReturned (input : ByteArray) (i : Nat) : State :=
   { lengthExitEntered input i with
-    pc := UInt256.ofNat 773
+    pc := UInt256.ofNat 453
     stack := padFrame input }
 
 @[simp] private theorem lengthExitEntered_halt (input : ByteArray) (i : Nat) :
     (lengthExitEntered input i).halt = .Running := by rfl
 
 @[simp] private theorem lengthExitEntered_pc (input : ByteArray) (i : Nat) :
-    (lengthExitEntered input i).pc = UInt256.ofNat 419 := by rfl
+    (lengthExitEntered input i).pc = UInt256.ofNat 240 := by rfl
 
 @[simp] private theorem lengthExitEntered_code (input : ByteArray) (i : Nat) :
     (lengthExitEntered input i).executionEnv.code = submissionBytecode := by rfl
@@ -1435,7 +1435,7 @@ def gasSteps_lengthCopy (input : ByteArray) (hfit : CalldataFits input) :
 calldata copy and the frame pushes. -/
 private def gasSteps_padPrefix (input : ByteArray) (hfit : CalldataFits input)
     (entryPrefix : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Execution.atPC input 566)) :
+      (Execution.atPC input 247)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (padFramed input) :=
   (Main.gasSteps_initialize input entryPrefix).trans
@@ -1465,7 +1465,7 @@ theorem entryState_miss (input : ByteArray) (hnz : input.size % 64 ≠ 0) :
 
 theorem entryState_eta (input : ByteArray) :
     entryState input = {entryState input with
-      pc := UInt256.ofNat (if input.size % 64 = 0 then 773 else 773)
+      pc := UInt256.ofNat (if input.size % 64 = 0 then 453 else 453)
       stack := if input.size % 64 = 0 then initialFrame input else padFrame input} := by
   by_cases hz : input.size % 64 = 0
   · simp only [entryState_skip input hz, if_pos hz]
@@ -1476,7 +1476,7 @@ theorem entryState_eta (input : ByteArray) :
 noncomputable def gasSteps_pad (input : ByteArray) (hfit : CalldataFits input)
     (hn32 : input.size ≠ 32)
     (entryPrefix : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Execution.atPC input 566)) :
+      (Execution.atPC input 247)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (entryState input) :=
   if hz : input.size % 64 = 0 then

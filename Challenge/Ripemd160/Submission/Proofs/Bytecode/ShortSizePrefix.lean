@@ -6,7 +6,7 @@ set_option maxRecDepth 100000
 set_option maxHeartbeats 20000000
 set_option linter.unusedSimpArgs false
 
-/-! The entry byte gate: `PUSH1 7 PUSH0 CALLDATALOAD PUSH0 BYTE EQ PUSH2 425 JUMPI`. -/
+/-! The entry byte gate: `PUSH1 7 PUSH0 CALLDATALOAD PUSH0 BYTE EQ PUSH2 4681 JUMPI`. -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
 
@@ -47,64 +47,64 @@ theorem byteCondition_one (input : ByteArray) (hbyte : firstByte input = 7) :
   rw [byteCondition, firstByte_eq_byteAt, hbyte]
   decide
 
-private theorem pc_b1 : Artifact.submissionArtifact.instructionPC 7 = 15 := by
+private theorem pc_b1 : Artifact.submissionArtifact.instructionPC 7 = 14 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_b2 : Artifact.submissionArtifact.instructionPC 8 = 16 := by
+private theorem pc_b2 : Artifact.submissionArtifact.instructionPC 8 = 15 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_b3 : Artifact.submissionArtifact.instructionPC 9 = 17 := by
+private theorem pc_b3 : Artifact.submissionArtifact.instructionPC 9 = 16 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_b4 : Artifact.submissionArtifact.instructionPC 10 = 18 := by
+private theorem pc_b4 : Artifact.submissionArtifact.instructionPC 10 = 17 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_b5 : Artifact.submissionArtifact.instructionPC 11 = 19 := by
+private theorem pc_b5 : Artifact.submissionArtifact.instructionPC 11 = 18 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_b6 : Artifact.submissionArtifact.instructionPC 12 = 20 := by
+private theorem pc_b6 : Artifact.submissionArtifact.instructionPC 12 = 19 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_b7 : Artifact.submissionArtifact.instructionPC 13 = 23 := by
+private theorem pc_b7 : Artifact.submissionArtifact.instructionPC 13 = 22 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_b0 : Artifact.submissionArtifact.instructionPC 6 = 13 := by
+private theorem pc_b0 : Artifact.submissionArtifact.instructionPC 6 = 12 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-theorem guard_dest : Decode.isValidJumpDest submissionBytecode 425 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 246 = 425 := by
+theorem guard_dest : Decode.isValidJumpDest submissionBytecode 4681 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3519 = 4681 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 246 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3519 (by rfl)
   rwa [hpc] at h
 
 theorem run_byte_prefix (input : ByteArray) :
-    run bytePrefix (PatternedScan.stS input 13 []) =
-      some (PatternedScan.stS input 23 [425, byteCondition input]) := by
+    run bytePrefix (PatternedScan.stS input 12 []) =
+      some (PatternedScan.stS input 22 [4681, byteCondition input]) := by
   let w := MachineState.readWord input 0
   let b := UInt256.byteAt 0 w
   let v := UInt256.eq b 7
   let l0 : Located := pushAt 6 1 7
   have h0 := PatternedScan.blockOfS l0
-    (PatternedScan.pcFactS input 6 13 [] (by norm_num) pc_b0)
-    (PatternedScan.stepS_push input 13 1 7 [] (by simp) (by decide) (by decide) (by norm_num))
+    (PatternedScan.pcFactS input 6 12 [] (by norm_num) pc_b0)
+    (PatternedScan.stepS_push input 12 1 7 [] (by simp) (by decide) (by decide) (by norm_num))
   let l1 : Located := pushAt 7 0 0
   have h1 := PatternedScan.blockOfS l1
-    (PatternedScan.pcFactS input 7 15 [7] (by norm_num) pc_b1)
-    (PatternedScan.stepS_push0 input 15 [7] (by simp) (by norm_num))
+    (PatternedScan.pcFactS input 7 14 [7] (by norm_num) pc_b1)
+    (PatternedScan.stepS_push0 input 14 [7] (by simp) (by norm_num))
   let l2 : Located := opAt 8 .CALLDATALOAD
   have h2 := PatternedScan.blockOfS l2
-    (PatternedScan.pcFactS input 8 16 [0, 7] (by norm_num) pc_b2)
-    (PatternedScan.stepS_calldataload input 16 0 [7] (by simp) (by norm_num))
+    (PatternedScan.pcFactS input 8 15 [0, 7] (by norm_num) pc_b2)
+    (PatternedScan.stepS_calldataload input 15 0 [7] (by simp) (by norm_num))
   let l3 : Located := pushAt 9 0 0
   have h3 := PatternedScan.blockOfS l3
-    (PatternedScan.pcFactS input 9 17 [w, 7] (by norm_num) pc_b3)
-    (PatternedScan.stepS_push0 input 17 [w, 7] (by simp) (by norm_num))
+    (PatternedScan.pcFactS input 9 16 [w, 7] (by norm_num) pc_b3)
+    (PatternedScan.stepS_push0 input 16 [w, 7] (by simp) (by norm_num))
   let l4 : Located := opAt 10 .BYTE
   have h4 := PatternedScan.blockOfS l4
-    (PatternedScan.pcFactS input 10 18 [0, w, 7] (by norm_num) pc_b4)
-    (PatternedScan.stepS_byte input 18 0 w [7] (by simp) (by norm_num))
+    (PatternedScan.pcFactS input 10 17 [0, w, 7] (by norm_num) pc_b4)
+    (PatternedScan.stepS_byte input 17 0 w [7] (by simp) (by norm_num))
   let l5 : Located := opAt 11 .EQ
   have h5 := PatternedScan.blockOfS l5
-    (PatternedScan.pcFactS input 11 19 [b, 7] (by norm_num) pc_b5)
-    (PatternedScan.stepS_eq input 19 b 7 [] (by simp) (by norm_num))
-  let l6 : Located := pushAt 12 2 425
+    (PatternedScan.pcFactS input 11 18 [b, 7] (by norm_num) pc_b5)
+    (PatternedScan.stepS_eq input 18 b 7 [] (by simp) (by norm_num))
+  let l6 : Located := pushAt 12 2 4681
   have h6 := PatternedScan.blockOfS l6
-    (PatternedScan.pcFactS input 12 20 [v] (by norm_num) pc_b6)
-    (PatternedScan.stepS_push input 20 2 425 [v] (by simp) (by decide) (by decide) (by norm_num))
+    (PatternedScan.pcFactS input 12 19 [v] (by norm_num) pc_b6)
+    (PatternedScan.stepS_push input 19 2 4681 [v] (by simp) (by decide) (by decide) (by norm_num))
   have hseq1 := DataStepper.runLocatedBlock_append [l0] [l1] _ _ _ h0 rfl h1
   have hseq2 := DataStepper.runLocatedBlock_append [l0, l1] [l2] _ _ _ hseq1 rfl h2
   have hseq3 := DataStepper.runLocatedBlock_append [l0, l1, l2] [l3] _ _ _ hseq2 rfl h3
@@ -118,28 +118,28 @@ theorem run_byte_prefix (input : ByteArray) :
   exact hseq6
 
 theorem run_byte_taken (input : ByteArray) (hbyte : firstByte input = 7) :
-    run bytePath (PatternedScan.stS input 13 []) = some (PatternedScan.stS input 425 []) := by
+    run bytePath (PatternedScan.stS input 12 []) = some (PatternedScan.stS input 4681 []) := by
   have hp := run_byte_prefix input
   rw [byteCondition_one input hbyte] at hp
   have hj : run [opAt 13 .JUMPI]
-      (PatternedScan.stS input 23 [425, UInt256.ofNat 1]) =
-      some (PatternedScan.stS input 425 []) := by
+      (PatternedScan.stS input 22 [4681, UInt256.ofNat 1]) =
+      some (PatternedScan.stS input 4681 []) := by
     exact PatternedScan.blockOfS _
-      (PatternedScan.pcFactS input 13 23 _ (by norm_num) pc_b7)
-      (PatternedScan.stepS_jumpi_taken input 23 425 425 (UInt256.ofNat 1) []
+      (PatternedScan.pcFactS input 13 22 _ (by norm_num) pc_b7)
+      (PatternedScan.stepS_jumpi_taken input 22 4681 4681 (UInt256.ofNat 1) []
         (by simp) (by norm_num) (by simpa using Word.literal_eq_ofNat _) (by decide) guard_dest)
   exact DataStepper.runLocatedBlock_append bytePrefix [opAt 13 .JUMPI] _ _ _ hp rfl hj
 
 theorem run_byte_fall (input : ByteArray) (hbyte : firstByte input ≠ 7) :
-    run bytePath (PatternedScan.stS input 13 []) = some (PatternedScan.stS input 24 []) := by
+    run bytePath (PatternedScan.stS input 12 []) = some (PatternedScan.stS input 23 []) := by
   have hp := run_byte_prefix input
   rw [byteCondition_zero input hbyte] at hp
   have hj : run [opAt 13 .JUMPI]
-      (PatternedScan.stS input 23 [425, UInt256.ofNat 0]) =
-      some (PatternedScan.stS input 24 []) := by
+      (PatternedScan.stS input 22 [4681, UInt256.ofNat 0]) =
+      some (PatternedScan.stS input 23 []) := by
     exact PatternedScan.blockOfS _
-      (PatternedScan.pcFactS input 13 23 _ (by norm_num) pc_b7)
-      (PatternedScan.stepS_jumpi_fall input 23 425 (UInt256.ofNat 0) []
+      (PatternedScan.pcFactS input 13 22 _ (by norm_num) pc_b7)
+      (PatternedScan.stepS_jumpi_fall input 22 4681 (UInt256.ofNat 0) []
         (by simp) (by norm_num) (by decide))
   exact DataStepper.runLocatedBlock_append bytePrefix [opAt 13 .JUMPI] _ _ _ hp rfl hj
 

@@ -67,7 +67,7 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
   simpa only [PoolRawWriter.template_eq, template, DenseScheduleTrace.pcAfter_append,
     s3, s2, s1, scratch, Shared32Table.tableMemory, PoolShapeV2.resultMemoryV2, PoolShapeV2.fanMemoryV2, rest, stk] using h
 
-theorem end_pc : pcAfter (UInt256.ofNat 811) template = UInt256.ofNat 1128 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 491) template = UInt256.ofNat 808 := by decide
 
 #print axioms run_table
 #print axioms end_pc

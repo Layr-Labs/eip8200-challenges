@@ -10,8 +10,8 @@ open Shared32Scratch Shared32Sites Paired144WordRound Shared32Start
 
 def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
-    GasSteps (StackTail.append (Execution.atPC input 566) rho)
-      (atState (tableState input) 1128 (frame ++ rho)) := by
+    GasSteps (StackTail.append (Execution.atPC input 247) rho)
+      (atState (tableState input) 808 (frame ++ rho)) := by
   have hfit : CalldataFits input := by change input.size < 2 ^ 64; rw [h32]; decide
   let s := PaddingTrace.padCopied input
   have e : Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
@@ -20,11 +20,11 @@ def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
   have hsize : (frame ++ rho).length ≤ 900 := by simp only [List.length_append]; change 15 + rho.length ≤ 900; omega
   have g0 := PaddingTail.gasSteps_prefix input hfit rho hcap
   have g1 : GasSteps (StackTail.append (PaddingTrace.padFramed input) rho)
-      (atState s 367 (entryFrame ++ rho)) := by
+      (atState s 190 (entryFrame ++ rho)) := by
     have ga := Shared32Alignment.gasSteps s e (PaddingTrace.initialFrame input ++ rho)
       (by rw [List.length_append, PaddingTrace.initialFrame_length]; omega) h32
     simpa only [PaddingTrace.padFramed, StackTail.append, hframe, atState, s] using ga
-  have g2 : GasSteps (atState s 367 (entryFrame ++ rho)) (atState s 368 (frame ++ rho)) := by
+  have g2 : GasSteps (atState s 190 (entryFrame ++ rho)) (atState s 191 (frame ++ rho)) := by
     exact StaggerPersistentStart.gasSteps_entry s (entryFrame ++ rho)
       (by simp only [entryFrame, StaggerPersistentFrame.frame, maskRho, List.length_append,
         List.length_cons, List.length_nil]; omega) e.run e.code e.fork e.np
@@ -90,7 +90,7 @@ def gasSteps_core (s : State) (e : Env s) (input : ByteArray)
 theorem correct (input : ByteArray) (h32 : input.size = 32)
     (rho : List UInt256) (hcap : rho.length ≤ 20)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0)
-      (StackTail.append (Execution.atPC input 566) rho)) :
+      (StackTail.append (Execution.atPC input 247) rho)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   let s := Shared32Start.tableState input

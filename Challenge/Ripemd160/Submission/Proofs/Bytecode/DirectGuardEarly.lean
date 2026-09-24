@@ -36,21 +36,21 @@ private theorem stepG_dup2 (input : ByteArray) (pc : Nat) (a b : UInt256)
     | none => none) = _
   simp only [stG, Challenge.EvmProof.Word.succ_ofNat hpc]
 
-private theorem pc_e17 : Artifact.submissionArtifact.instructionPC 23 = 38 := by
+private theorem pc_e17 : Artifact.submissionArtifact.instructionPC 23 = 36 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_e18 : Artifact.submissionArtifact.instructionPC 24 = 39 := by
+private theorem pc_e18 : Artifact.submissionArtifact.instructionPC 24 = 37 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_e25 : Artifact.submissionArtifact.instructionPC 31 = 48 := by
+private theorem pc_e25 : Artifact.submissionArtifact.instructionPC 31 = 46 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_e26 : Artifact.submissionArtifact.instructionPC 32 = 49 := by
+private theorem pc_e26 : Artifact.submissionArtifact.instructionPC 32 = 47 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_e27 : Artifact.submissionArtifact.instructionPC 33 = 52 := by
+private theorem pc_e27 : Artifact.submissionArtifact.instructionPC 33 = 50 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 /-- A first word other than the repeated `0x61` word jumps to the patterned guard. -/
 def gasSteps_checkEarly (input : ByteArray)
     (href : referenceWord input ≠ KnownInputData.fullWord) :
-    GasSteps (sizeMatched input) (stG input 425 []) := by
+    GasSteps (sizeMatched input) (stG input 4681 []) := by
   have hxor : UInt256.xor KnownInputData.fullWord (referenceWord input) ≠ 0 := by
     intro hz
     exact href (((KnownInputLogic.wordXor_eq_zero_iff
@@ -63,31 +63,31 @@ def gasSteps_checkEarly (input : ByteArray)
       apply Challenge.EvmProof.Word.word_ext
       exact hnat
     simpa using h
-  rw [show sizeMatched input = stG input 38 [] from rfl]
+  rw [show sizeMatched input = stG input 36 [] from rfl]
   have step0 := soundG (pushAt 23 0 0)
-    (blockOf _ (pcFactG input 23 38 [] (by norm_num) pc_e17)
-      (stepG_push0 input 38 [] (by simp) (by norm_num)))
+    (blockOf _ (pcFactG input 23 36 [] (by norm_num) pc_e17)
+      (stepG_push0 input 36 [] (by simp) (by norm_num)))
   have step1 := soundG (opAt 24 .CALLDATALOAD)
-    (blockOf _ (pcFactG input 24 39 [(⟨0⟩ : UInt256)] (by norm_num) pc_e18)
-      (stepG_calldataload input 39 ⟨0⟩ [] (by simp) (by norm_num)))
+    (blockOf _ (pcFactG input 24 37 [(⟨0⟩ : UInt256)] (by norm_num) pc_e18)
+      (stepG_calldataload input 37 ⟨0⟩ [] (by simp) (by norm_num)))
   rw [refW_eq] at step1
   have step2 := RepeatedByteWordSite.gasSteps_fullWord
     (initialState submissionBytecode input 0) [referenceWord input]
     (by simp) rfl rfl rfl deployAddress_not_precompile
   have step3 := soundG (opAt 31 .XOR)
-    (blockOf _ (pcFactG input 31 48 [KnownInputData.fullWord, referenceWord input]
+    (blockOf _ (pcFactG input 31 46 [KnownInputData.fullWord, referenceWord input]
       (by norm_num) pc_e25)
-      (stepG_xor input 48 KnownInputData.fullWord (referenceWord input) [] (by simp) (by norm_num)))
-  have step4 := soundG (pushAt 32 2 (UInt256.ofNat 425))
-    (blockOf _ (pcFactG input 32 49 [UInt256.xor KnownInputData.fullWord (referenceWord input)]
+      (stepG_xor input 46 KnownInputData.fullWord (referenceWord input) [] (by simp) (by norm_num)))
+  have step4 := soundG (pushAt 32 2 (UInt256.ofNat 4681))
+    (blockOf _ (pcFactG input 32 47 [UInt256.xor KnownInputData.fullWord (referenceWord input)]
       (by norm_num) pc_e26)
-      (stepG_push input 49 2 (UInt256.ofNat 425)
+      (stepG_push input 47 2 (UInt256.ofNat 4681)
         [UInt256.xor KnownInputData.fullWord (referenceWord input)]
         (by simp) (by decide) (by decide) (by norm_num)))
   have step5 := soundG (opAt 33 .JUMPI)
-    (blockOf _ (pcFactG input 33 52 [425, UInt256.xor KnownInputData.fullWord (referenceWord input)]
+    (blockOf _ (pcFactG input 33 50 [4681, UInt256.xor KnownInputData.fullWord (referenceWord input)]
       (by norm_num) pc_e27)
-      (stepG_jumpi_taken input 52 425 (UInt256.xor KnownInputData.fullWord (referenceWord input))
+      (stepG_jumpi_taken input 50 4681 (UInt256.xor KnownInputData.fullWord (referenceWord input))
         [] (by simp) (by norm_num) htrue guard_dest))
   exact step0.trans (step1.trans (step2.trans (step3.trans (step4.trans step5))))
 

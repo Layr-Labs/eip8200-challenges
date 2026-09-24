@@ -156,7 +156,7 @@ def initTemplate : List Instr := [
 def firstTemplate : List Instr := [ .op (.Dup ⟨3, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 219),
     .op .LT,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 241),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 4920),
     .op .JUMPI ]
 
 def normalTemplate : List Instr := [
@@ -183,7 +183,7 @@ def normalTemplate : List Instr := [
 def normalGuardTemplate : List Instr := [ .op (.Dup ⟨3, by decide⟩),
     .op (.Dup ⟨2, by decide⟩),
     .op .LT,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 215),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 4893),
     .op .JUMPI ]
 
 def tailTemplate : List Instr := [
@@ -202,11 +202,12 @@ def tailTemplate : List Instr := [
 
 def finishTemplate : List Instr := [ .op .CALLDATASIZE,
     .op (.Dup ⟨5, by decide⟩),
-    .op .EQ,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 538),
+    .op .SUB,
+    .push ⟨2, by decide⟩ (UInt256.ofNat 4633),
     .op .JUMPI ]
 
 def transitionTemplate : List Instr := [
+  .op .JUMPDEST,
   .op (.Swap ⟨1, by decide⟩),
   .op (.Dup ⟨0, by decide⟩),
   .op (.Dup ⟨7, by decide⟩),
@@ -221,8 +222,8 @@ def transitionTemplate : List Instr := [
   .op .XOR,
   .op .XOR,
   .op (.Swap ⟨1, by decide⟩),
-  .op (.Dup ⟨4, by decide⟩),
   .push ⟨1, by decide⟩ (UInt256.ofNat 251),
+  .op (.Dup ⟨5, by decide⟩),
   .op .ADD,
   .op (.Dup ⟨0, by decide⟩),
   .op .CALLDATASIZE,
@@ -245,14 +246,13 @@ def transitionTemplate : List Instr := [
 def transitionGuardTemplate : List Instr := [ .op (.Dup ⟨3, by decide⟩),
     .op (.Dup ⟨2, by decide⟩),
     .op .LT,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 215),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 4893),
     .op .JUMPI ]
 
-def toTailTemplate : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 241),
+def toTailTemplate : List Instr := [ .push ⟨2, by decide⟩ (UInt256.ofNat 4920),
     .op .JUMP ]
 
-def resultTemplate : List Instr := [ .op .JUMPDEST,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 565),
+def resultTemplate : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 246),
     .op .JUMPI ]
 
 
