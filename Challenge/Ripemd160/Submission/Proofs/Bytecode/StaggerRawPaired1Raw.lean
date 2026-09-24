@@ -16,8 +16,8 @@ private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
 def template : List Instr :=
   [ .op (.Swap ⟨6, by decide⟩),
     .op (.Dup ⟨7, by decide⟩),
-    .op (.Dup ⟨7, by decide⟩),
-    .op (.Dup ⟨10, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
+    .op (.Dup ⟨8, by decide⟩),
     .op .AND,
     .op .OR,
     .op (.Dup ⟨7, by decide⟩),

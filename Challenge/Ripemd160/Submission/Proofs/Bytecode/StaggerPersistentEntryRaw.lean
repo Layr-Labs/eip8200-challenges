@@ -14,7 +14,7 @@ open StackRoundTrace StaggerPersistentFrame PairedMask32Cache
 
 def dispatchTemplate (dest : Nat) : List Instr :=
   [.op .CALLDATASIZE, .op (.Dup ⟨12, by decide⟩), .op .EQ,
-   .push ⟨1, by decide⟩ (UInt256.ofNat dest), .op .JUMPI]
+   .push ⟨2, by decide⟩ (UInt256.ofNat dest), .op .JUMPI]
 
 theorem run_miss (s : State) (pc off limit : UInt256) (h : Compression.HashState) (rho : List UInt256)
     (dest : Nat) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)

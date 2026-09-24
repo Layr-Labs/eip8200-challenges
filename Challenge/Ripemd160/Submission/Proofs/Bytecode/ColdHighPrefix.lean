@@ -15,10 +15,10 @@ noncomputable opaque gasSteps (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (hn32 : input.size ≠ 32)
     (i : Nat) (hi : i < DriverTrace.blockCount input)
     (hh : input.size = DriverTrace.blockOffset i)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 437)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 566)) :
     GasSteps (initialState submissionBytecode input 0)
       {states input i with
-        pc := UInt256.ofNat 132
+        pc := UInt256.ofNat 306
         stack := StaggerPersistentFrame.frame (hashes input i) (DriverTrace.blockOffsetWord i)
           (LoopCompletionControl.limit input) ColdHighTrace.maskRho} := by
   have gs := StaggerPersistentCorrect.gasSteps_start input hfit hpositive hn32 entryPrefix
@@ -30,7 +30,7 @@ noncomputable opaque gasSteps (input : ByteArray) (hfit : CalldataFits input)
     ColdHighTrace.maskRho hfit (by decide) i hi ga (by
       intro j hj
       have hjc : j < DriverTrace.blockCount input := by omega
-      have ho : input.size = DriverTrace.blockOffset j → input.size < 5244 := by
+      have ho : input.size = DriverTrace.blockOffset j → input.size < 5248 := by
         intro h
         rw [DriverTrace.blockOffset] at h hh
         omega
@@ -42,7 +42,7 @@ noncomputable opaque gasSteps (input : ByteArray) (hfit : CalldataFits input)
   have hstart : GasSteps (initialState submissionBytecode input 0)
       (loopState input (states input 0) (hashes input 0) 0 (DriverTrace.blockCount input)
         ColdHighTrace.maskRho) := gs
-  have hpc : LoopCompletionControl.blockPC input i = UInt256.ofNat 132 := by
+  have hpc : LoopCompletionControl.blockPC input i = UInt256.ofNat 306 := by
     unfold LoopCompletionControl.blockPC
     rw [show input.size = i * 64 by simpa [DriverTrace.blockOffset] using hh]
     simp
