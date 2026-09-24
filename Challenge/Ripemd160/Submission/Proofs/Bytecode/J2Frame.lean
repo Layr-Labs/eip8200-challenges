@@ -7,13 +7,13 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Frame
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open RecognitionAccumulator J2Accumulator J2Raw
 
-def last (n : Nat) : Nat := 8*((n-1)/251)+(n-251*((n-1)/251))/32
+def last (n : Nat) : Nat := 8*((n-1)/251)+(n-251*((n-1)/251)-1)/32+(if n = 32 then 1 else 0)
 def blockStart (k : Nat) : Nat := 251*(k/8)
 def stop (n k : Nat) : Nat := min n (blockStart k+251)
-def full (n k : Nat) : Nat := if k < 8 then blockStart k+32*((stop n k-blockStart k)/32) else stop n k - 32
+def fullW (n k : Nat) : UInt256 := UInt256.sub (UInt256.ofNat (stop n k)) (UInt256.ofNat 32)
 def current (input : ByteArray) (n k : Nat) : J2Raw.Frame :=
   ⟨J2Accumulator.accumulate input n k, UInt256.ofNat (offset k), wordAt k,
-    UInt256.ofNat (full n k), UInt256.ofNat (stop n k), UInt256.ofNat n⟩
+    fullW n k, UInt256.ofNat (stop n k), UInt256.ofNat n⟩
 def isTail (n k : Nat) : Prop := k=last n ∨ k%8=7
 instance (n k : Nat) : Decidable (isTail n k) := inferInstanceAs (Decidable (_ ∨ _))
 
@@ -23,21 +23,20 @@ theorem last_lt (n : Nat) (hn : Allowed n) : last n < 32 := by
 
 def Facts (n k : Nat) : Prop :=
   (UInt256.ofNat (offset k)).toNat = offset k ∧
-  (UInt256.ofNat (full n k)).toNat = full n k ∧
+  (k = 0 → (219 < (fullW n k).toNat ↔ isTail n k)) ∧
   (UInt256.ofNat (stop n k)).toNat = stop n k ∧
   (UInt256.ofNat n).toNat = n ∧
-  (offset k < full n k ↔ ¬ isTail n k) ∧
+  (0 < k → (offset k < (fullW n k).toNat ↔ ¬ isTail n k)) ∧
   (isTail n k → (stop n k = n ↔ k=last n)) ∧
   (¬ isTail n k → J2Accumulator.width n k = 32 ∧
     UInt256.add (UInt256.ofNat 32) (UInt256.ofNat (offset k)) = UInt256.ofNat (offset (k+1)) ∧
-    full n k = full n (k+1) ∧ stop n k = stop n (k+1)) ∧
-  (isTail n k → UInt256.sub (UInt256.ofNat 256)
-    (UInt256.shiftLeft (UInt256.sub (UInt256.ofNat (stop n k)) (UInt256.ofNat (offset k))) (UInt256.ofNat 3)) =
+    fullW n k = fullW n (k+1) ∧ stop n k = stop n (k+1)) ∧
+  (isTail n k → UInt256.shiftLeft (UInt256.sub (UInt256.ofNat (offset k)) (fullW n k)) (UInt256.ofNat 3) =
        J2Accumulator.shift n k) ∧
   (isTail n k → k < last n →
     UInt256.ofNat (stop n k) = UInt256.ofNat (offset (k+1)) ∧
     emin (UInt256.ofNat (stop n k)) (UInt256.ofNat n) = UInt256.ofNat (stop n (k+1)) ∧
-    UInt256.sub (UInt256.ofNat (stop n (k+1))) (UInt256.ofNat 32) = UInt256.ofNat (full n (k+1)))
+    UInt256.sub (UInt256.ofNat (stop n (k+1))) (UInt256.ofNat 32) = fullW n (k+1))
 
 private theorem facts_closed (n : Nat) (hn : Allowed n) :
     ∀ k : Fin 32, k.val ≤ last n → Facts n k.val := by
