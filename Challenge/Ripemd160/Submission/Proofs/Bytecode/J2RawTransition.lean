@@ -19,11 +19,15 @@ theorem run_transition_aux (s : State) (pc : UInt256) (f : Frame) (rho : List UI
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
   have hM7 : UInt256.shiftRight PatternedSwar.m8 (UInt256.ofNat 7) = PatternedSwar.M := by decide
+  have hK : UInt256.shiftRight (UInt256.xor (UInt256.mul (UInt256.ofNat 96) PatternedSwar.M) PatternedSwar.m8)
+      (UInt256.ofNat 4) = UInt256.mul (UInt256.ofNat 14) PatternedSwar.M := by decide
+  have hK' : UInt256.shiftRight (UInt256.xor PatternedSwar.m8 (UInt256.mul (UInt256.ofNat 96) PatternedSwar.M))
+      (UInt256.ofNat 4) = UInt256.mul (UInt256.ofNat 14) PatternedSwar.M := by decide
   simp (config := { maxSteps := 600000 }) (discharger := omega) [transitionTemplate, frame, c96, c114,
     tw, emin, clamp, aligned, advance, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
-    List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hcap, hM7, ← hlen,
+    List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hcap, hM7, hK, hK', ← hlen,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals simp only [hM7, hsub_eq, hadd_eq, hmul_eq, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
+  all_goals simp only [hM7, hK, hK', hsub_eq, hadd_eq, hmul_eq, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 
 theorem run_transition (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
