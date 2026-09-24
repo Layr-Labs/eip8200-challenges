@@ -10,6 +10,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch
 import Challenge.Modexp.Submission.Proofs.Fast.SquareStagedEntry
 import Challenge.Modexp.Submission.Proofs.Fast.R4Loop
 import Challenge.Modexp.Submission.Proofs.Fast.R4Hooks
+import Challenge.Modexp.Submission.Proofs.Fast.R4SquareScratchAgreement
 import Challenge.Modexp.Submission.Proofs.Fast.R4Trace
 
 set_option warningAsError true
@@ -63,6 +64,13 @@ theorem rowZero_eq_input (s : State) (mem : ByteArray) (n : Nat) (hn : n = 4 ∨
     (hguard : MachineState.readWord mem 2720 ≠ UInt256.ofNat 1) :
     mpZeroed s (inputMemory mem 2112 n) n = rowZero s (stage mem 2112 n) n := by
   rw [rowZero, show inputMemory mem 2112 n = stage mem 2112 n from by
+    unfold inputMemory; rw [if_pos (show eligible mem n from ⟨hn,hguard⟩)]]
+
+theorem partial_eq_input (mem : ByteArray) (n : Nat) (hn : n = 4 ∨ n = 8)
+    (hguard : MachineState.readWord mem 2720 ≠ UInt256.ofNat 1) :
+    SquarePartialClear.memory (inputMemory mem 2112 n) =
+      SquarePartialClear.memory (stage mem 2112 n) := by
+  rw [show inputMemory mem 2112 n = stage mem 2112 n from by
     unfold inputMemory; rw [if_pos (show eligible mem n from ⟨hn,hguard⟩)]]
 
 theorem sqRound_eq (s : State) (mem : ByteArray) (n c : Nat) :
@@ -754,8 +762,8 @@ def gasSteps_squareLoop (s : State) (mem : ByteArray) (p a mm k : Nat)
     (UInt256.ofNat 512) ret rest (by omega) hrun hcode hfork hnp hact hfast (by omega)
     (by decide) (by omega) hcds hs32 hml hslotn SquareStagedEntry.jumpDest hguard
       (CiosInverseGuard.inverse_ne_zero _ _ hminv)
-  rw [rowZero_eq_input s mem (p + 2) hfast hguard] at g1
-  have g2 := SquareStagedEntry.gasSteps_entry s (rowZero s (stage mem 2112 (p + 2)) (p + 2)) (p + 2)
+  rw [partial_eq_input mem (p + 2) hfast hguard] at g1
+  have g2 := SquareStagedEntry.gasSteps_entry s (SquarePartialClear.memory (stage mem 2112 (p + 2))) (p + 2)
     (UInt256.ofNat 3562) (MachineState.readWord mem 2720)
     (MachineState.readWord mem (32 * (p + 2) - 32))
     (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 :: MachineState.readWord mem 64 ::
@@ -765,10 +773,10 @@ def gasSteps_squareLoop (s : State) (mem : ByteArray) (p a mm k : Nat)
   by_cases hp : p = 2
   · subst hp
     have hz (addr : Nat) (hd : addr + 32 ≤ 2048 ∨ 2624 ≤ addr) :
-        MachineState.readWord (rowZero s (stage mem 2112 (2 + 2)) (2 + 2)) addr =
+        MachineState.readWord (SquarePartialClear.memory (stage mem 2112 (2 + 2))) addr =
           MachineState.readWord (stage mem 2112 (2 + 2)) addr :=
-      read_rowZero s _ (2 + 2) addr (by norm_num) (Or.inl rfl) hd
-    have hentry4 : Entry s (rowZero s (stage mem 2112 (2 + 2)) (2 + 2)) 2 a mm
+      SquarePartialClear.readWord_outside _ addr (by omega)
+    have hentry4 : Entry s (SquarePartialClear.memory (stage mem 2112 (2 + 2))) 2 a mm
         (MachineState.readWord mem 2784) (MachineState.readWord mem 2720)
         (MachineState.readWord mem (32 * (2 + 2) - 32)) (MachineState.readWord mem 96)
         (MachineState.readWord mem 64) (MachineState.readWord mem 32) :=
@@ -780,11 +788,11 @@ def gasSteps_squareLoop (s : State) (mem : ByteArray) (p a mm k : Nat)
         (hz 96 (Or.inl (by decide))).trans hentry.m96w,
         (hz 64 (Or.inl (by decide))).trans hentry.m64w,
         (hz 32 (Or.inl (by decide))).trans hentry.m32w, hentry.minv, hentry.inverseGuard,
-        represents_zeroed_stage s _ (2 + 2) a (by norm_num) hentry.arep,
+        SquarePartialClear.fastRepresents_outside _ 2368 (2 + 2) a (Or.inr (by decide)) hentry.arep,
         (Model.fastRepresents_congr (a := stage mem 2112 (2 + 2))
           (by intro j hj; rw [hz (0 + 32 * j) (Or.inl (by omega))]) mm).1 hentry.mrep,
         hentry.alt, hentry.mpos⟩
-    have g3 := R4Hooks.gasSteps_h1Taken s (rowZero s (stage mem 2112 (2 + 2)) (2 + 2))
+    have g3 := R4Hooks.gasSteps_h1Taken s (SquarePartialClear.memory (stage mem 2112 (2 + 2)))
       (UInt256.ofNat (ptrAt (2368 + 32 * (2 + 2) - 32) 0)) (UInt256.ofNat 3562)
       (MachineState.readWord mem 2784) (MachineState.readWord mem 2720)
       (MachineState.readWord mem (32 * (2 + 2) - 32)) (MachineState.readWord mem 96)
@@ -796,15 +804,17 @@ def gasSteps_squareLoop (s : State) (mem : ByteArray) (p a mm k : Nat)
       (MachineState.readWord mem 96) (MachineState.readWord mem 64)
       (MachineState.readWord mem 32) ret rest hcap hrun hcode hfork hnp hact hcds hodd hmpos
       (UInt256.ofNat (ptrAt (2368 + 32 * (2 + 2) - 32) 0)) (UInt256.ofNat 3562)
-      (UInt256.ofNat (2112 + 32 * (2 + 2) - 32)) k (rowZero s (stage mem 2112 (2 + 2)) (2 + 2)) a
+      (UInt256.ofNat (2112 + 32 * (2 + 2) - 32)) k (SquarePartialClear.memory (stage mem 2112 (2 + 2))) a
       hk hk16 ((hz 2624 (Or.inr le_rfl)).trans ((hs 2624 (Or.inr (by decide))).trans hcount))
       hentry4
     have hcall : R4Loop.loopMem s (2 + 2) k mem =
-        R4Loop.r4RunMem k (rowZero s (stage mem 2112 (2 + 2)) (2 + 2)) := by
+        R4Loop.r4RunMem k (SquarePartialClear.memory (stage mem 2112 (2 + 2))) := by
       rw [R4Loop.loopMem, if_pos (show (2 + 2 : Nat) = 4 by norm_num)]
       cases k with
       | zero => omega
-      | succ k => rfl
+      | succ k =>
+          exact (R4SquareScratchAgreement.r4RunMem_partial_eq s (stage mem 2112 4)
+            (k + 1) (by omega)).symm
     change Challenge.EvmProof.GasSteps _
       { s with
         pc := UInt256.ofNat 772
@@ -814,7 +824,7 @@ def gasSteps_squareLoop (s : State) (mem : ByteArray) (p a mm k : Nat)
     exact ((g1.trans g2).trans g3).trans g4
   · have h6 : p = 6 := by omega
     subst h6
-    have g3 := R4Hooks.gasSteps_h1Fall s (rowZero s (stage mem 2112 (6 + 2)) (6 + 2))
+    have g3 := R4Hooks.gasSteps_h1Fall s (SquarePartialClear.memory (stage mem 2112 (6 + 2)))
       (UInt256.ofNat (ptrAt (2368 + 32 * (6 + 2) - 32) 0)) (UInt256.ofNat (sqEnt (6 + 2) 0))
       (MachineState.readWord mem 2784) (MachineState.readWord mem 2720)
       (MachineState.readWord mem (32 * (6 + 2) - 32)) (MachineState.readWord mem 96)
@@ -822,17 +832,17 @@ def gasSteps_squareLoop (s : State) (mem : ByteArray) (p a mm k : Nat)
       (UInt256.ofNat (2112 + 32 * (6 + 2) - 32)) (UInt256.ofNat 512) ret rest (by omega)
       hrun hcode hfork hnp (6 + 2) (by omega) htl
     have hcall : R4Loop.loopMem s (6 + 2) k mem =
-        SquareLoopMem.sqRunMem s (6 + 2) k (rowZero s (stage mem 2112 (6 + 2)) (6 + 2)) := by
-      rw [rowZero, SquareLoopMem.sqRunMem_mpZeroed s (6 + 2) k _ hk, R4Loop.loopMem,
+        SquareLoopMem.sqRunMem s (6 + 2) k (SquarePartialClear.memory (stage mem 2112 (6 + 2))) := by
+      rw [SquarePartialClear.sqRunMem_eq s (6 + 2) k _ hk, R4Loop.loopMem,
         if_neg (show ¬ (6 + 2 = 4) by omega)]
       cases k with
       | zero => omega
       | succ k => rfl
     have hz (addr : Nat) (hd : addr + 32 ≤ 2048 ∨ 2624 ≤ addr) :
-        MachineState.readWord (rowZero s (stage mem 2112 (6 + 2)) (6 + 2)) addr =
+        MachineState.readWord (SquarePartialClear.memory (stage mem 2112 (6 + 2))) addr =
           MachineState.readWord (stage mem 2112 (6 + 2)) addr :=
-      read_rowZero s _ (6 + 2) addr hn32 hfast hd
-    have hentryZ : Entry s (rowZero s (stage mem 2112 (6 + 2)) (6 + 2)) 6 a mm
+      SquarePartialClear.readWord_outside _ addr (by omega)
+    have hentryZ : Entry s (SquarePartialClear.memory (stage mem 2112 (6 + 2))) 6 a mm
         (MachineState.readWord mem 2784) (MachineState.readWord mem 2720)
         (MachineState.readWord mem (32 * (6 + 2) - 32)) (MachineState.readWord mem 96)
         (MachineState.readWord mem 64) (MachineState.readWord mem 32) :=
@@ -844,7 +854,7 @@ def gasSteps_squareLoop (s : State) (mem : ByteArray) (p a mm k : Nat)
         (hz 96 (Or.inl (by decide))).trans hentry.m96w,
         (hz 64 (Or.inl (by decide))).trans hentry.m64w,
         (hz 32 (Or.inl (by decide))).trans hentry.m32w, hentry.minv, hentry.inverseGuard,
-        represents_zeroed_stage s _ (6 + 2) a hn32 hentry.arep,
+        SquarePartialClear.fastRepresents_outside _ 2368 (6 + 2) a (Or.inr (by decide)) hentry.arep,
         (Model.fastRepresents_congr (a := stage mem 2112 (6 + 2))
           (by intro j hj; rw [hz (0 + 32 * j) (Or.inl (by omega))]) mm).1 hentry.mrep,
         hentry.alt, hentry.mpos⟩
@@ -858,9 +868,9 @@ def gasSteps_squareLoop (s : State) (mem : ByteArray) (p a mm k : Nat)
       (MachineState.readWord mem 2720) (MachineState.readWord mem (32 * (6 + 2) - 32))
       (MachineState.readWord mem 96) (MachineState.readWord mem 64)
       (MachineState.readWord mem 32) ret rest hcap hrun hcode hfork hnp hact hn32 hfast hcds
-      hodd hmpos rfl k (rowZero s (stage mem 2112 (6 + 2)) (6 + 2)) a
+      hodd hmpos rfl k (SquarePartialClear.memory (stage mem 2112 (6 + 2))) a
       (UInt256.ofNat (2112 + 32 * (6 + 2) - 32)) (UInt256.ofNat (sqEnt (6 + 2) 0)) hk hk16
       ((hz 2624 (Or.inr le_rfl)).trans ((hs 2624 (Or.inr (by decide))).trans hcount))
-      (R8RowZeroExact.scratchZero_mpZeroed s _ (6 + 2) (by omega)) hentryZ)
+      (SquarePartialClear.scratchZero _) hentryZ)
 
 end Challenge.Modexp.Submission.Proofs.Fast.SquareLoop
