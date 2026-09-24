@@ -15,7 +15,7 @@ noncomputable opaque gasSteps (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (hn32 : input.size ≠ 32)
     (i : Nat) (hi : i < DriverTrace.blockCount input)
     (hh : input.size = DriverTrace.blockOffset i)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 569)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 437)) :
     GasSteps (initialState submissionBytecode input 0)
       {states input i with
         pc := UInt256.ofNat 132
@@ -30,7 +30,7 @@ noncomputable opaque gasSteps (input : ByteArray) (hfit : CalldataFits input)
     ColdHighTrace.maskRho hfit (by decide) i hi ga (by
       intro j hj
       have hjc : j < DriverTrace.blockCount input := by omega
-      have ho : input.size = DriverTrace.blockOffset j → input.size < 5235 := by
+      have ho : input.size = DriverTrace.blockOffset j → input.size < 5244 := by
         intro h
         rw [DriverTrace.blockOffset] at h hh
         omega

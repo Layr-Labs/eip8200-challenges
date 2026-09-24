@@ -91,8 +91,8 @@ theorem run_tail_divert_acc (input : ByteArray) (hneAcc : finalAcc input ≠ 0)
       (UInt256.lor (finalAcc input) (UInt256.ofNat 0) * referenceWord input) := by
     rw [href]
     exact condWord_isTrue _ hneAcc
-  have hdest : Decode.isValidJumpDest submissionBytecode 568 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 326 (by rfl)
+  have hdest : Decode.isValidJumpDest submissionBytecode 436 = true :=
+    Artifact.submissionArtifact.isValidJumpDest_index 251 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [tailPath, opAt, pushAt, wfOp, loopExitState, tailDivertState, spentCells, atPC,
     htrue, hdest, List.exchange,

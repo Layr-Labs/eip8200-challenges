@@ -9,7 +9,7 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PersistentStaggerTable PersistentStaggerIteration ColdHighPaddingMemory StaggerPersistentFrame
 noncomputable opaque gasSteps_lowRoute (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size)
     (i : Nat) (hi : i<DriverTrace.blockCount input) (hh : input.size=DriverTrace.blockOffset i)
-    (hlarge : 5235 ≤ input.size) :
+    (hlarge : 5244 ≤ input.size) :
     GasSteps
       {states input i with pc:=UInt256.ofNat 132, stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (LoopCompletionControl.limit input) maskRho}
       {lowState input i with pc:=UInt256.ofNat 193, stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (UInt256.ofNat input.size) maskRho} := by

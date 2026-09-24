@@ -10,8 +10,8 @@ open Shared32Scratch Shared32Sites Paired144WordRound Shared32Start
 
 def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
-    GasSteps (StackTail.append (Execution.atPC input 569) rho)
-      (atState (tableState input) 1130 (frame ++ rho)) := by
+    GasSteps (StackTail.append (Execution.atPC input 437) rho)
+      (atState (tableState input) 998 (frame ++ rho)) := by
   have hfit : CalldataFits input := by change input.size < 2 ^ 64; rw [h32]; decide
   let s := PaddingTrace.padCopied input
   have e : Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
@@ -90,7 +90,7 @@ def gasSteps_core (s : State) (e : Env s) (input : ByteArray)
 theorem correct (input : ByteArray) (h32 : input.size = 32)
     (rho : List UInt256) (hcap : rho.length ≤ 20)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0)
-      (StackTail.append (Execution.atPC input 569) rho)) :
+      (StackTail.append (Execution.atPC input 437) rho)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   let s := Shared32Start.tableState input

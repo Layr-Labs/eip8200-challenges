@@ -17,17 +17,17 @@ abbrev template : List Instr :=
     .op .JUMPI ]
 
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 346).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 271).take template.length = template := by rfl
 
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 346 actual_slice
-    (by change 346 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 271 actual_slice
+    (by change 271 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 
-theorem site_pc : site.startPC = UInt256.ofNat 768 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 346) = UInt256.ofNat 768
+theorem site_pc : site.startPC = UInt256.ofNat 636 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 271) = UInt256.ofNat 636
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_padding (s : State) (e : Env s) :
@@ -41,8 +41,8 @@ theorem valid_padding (s : State) (e : Env s) :
 
 def gasSteps (s : State) (e : Env s) (F : List UInt256)
     (hstack : F.length ≤ 900) (h32 : s.executionEnv.calldata.size = 32) :
-    GasSteps (atState s 768 F) (atState s 193 F) := by
-  apply PadLift.gasSteps_of_raw site (atState s 768 F) (atState s 193 F)
+    GasSteps (atState s 636 F) (atState s 193 F) := by
+  apply PadLift.gasSteps_of_raw site (atState s 636 F) (atState s 193 F)
     e.code e.fork e.run e.np site_pc.symm
   · apply PadLift.advancesAll_sound; decide
   · have h0 : F.length < 1024 := by omega

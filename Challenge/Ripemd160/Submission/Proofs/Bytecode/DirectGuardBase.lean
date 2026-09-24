@@ -50,7 +50,7 @@ def bytePrefix : List Located :=
    pushAt 9 0 0,
    opAt 10 .BYTE,
    opAt 11 .EQ,
-   pushAt 12 2 427]
+   pushAt 12 2 4851]
 
 /-- Entry size gate: `(size >> 2) * (size ^ 1000) != 0` jumps to the generic arm. -/
 def gatePrefix : List Located :=
@@ -61,9 +61,9 @@ def gatePrefix : List Located :=
    pushAt 18 1 2,
    opAt 19 .SHR,
    opAt 20 .MUL,
-   pushAt 21 2 568]
+   pushAt 21 2 436]
 
-def entryDest : Located := opAt 326 .JUMPDEST
+def entryDest : Located := opAt 251 .JUMPDEST
 
 def checkEntryPath : List Located :=
   [pushAt 23 0 0,
@@ -75,7 +75,7 @@ def checkEntryPath : List Located :=
    opAt 29 .DIV,
    opAt 30 .MUL,
    opAt 31 .XOR,
-   pushAt 32 2 427,
+   pushAt 32 2 4851,
    opAt 33 .JUMPI,
    pushAt 34 0 0,
    opAt 35 .CALLDATALOAD,
@@ -114,7 +114,7 @@ zero product falls into the digest store with an empty stack. -/
 def tailPath : List Located :=
   [opAt 60 .OR,
    opAt 61 .MUL,
-   pushAt 62 2 568,
+   pushAt 62 2 436,
    opAt 63 .JUMPI]
 
 /-- Off the measured path: the divert lands on the generic arm's entry. -/
@@ -153,7 +153,7 @@ attribute [simp] Challenge.Ripemd160.initialState_stack
   Challenge.Ripemd160.initialState_calldata
 
 def sizeMatched (input : ByteArray) : State := atPC input 38
-def fallbackState (input : ByteArray) : State := atPC input 569
+def fallbackState (input : ByteArray) : State := atPC input 437
 
 def loopState (input : ByteArray) (n : Nat) : State :=
   { initialState submissionBytecode input 0 with
@@ -176,7 +176,7 @@ def returnEntry (input : ByteArray) : State :=
 
 def tailDivertState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 568
+    pc := UInt256.ofNat 436
     stack := spentCells input }
 
 def storeWord (memory : ByteArray) (address : Nat) (word : UInt256) : ByteArray :=
