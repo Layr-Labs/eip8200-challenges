@@ -9,13 +9,13 @@ open StackRoundTrace RecognitionRecurrence
 
 def finishRest (f : Frame) (rho : List UInt256) : List UInt256 :=
   [f.off, f.word, f.full, f.stop, c96,
-    PatternedSwar.m7, PatternedSwar.m8, PatternedSwar.M] ++ rho
+    UInt256.ofNat 0, PatternedSwar.m8, PatternedSwar.M] ++ rho
 
 theorem run_first (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 350 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 349 = true) :
     runInstrSeq firstTemplate {s with pc := pc, stack := frame f rho} =
-      some {s with pc := if 219 < f.full.toNat then UInt256.ofNat 350 else pcAfter pc firstTemplate,
+      some {s with pc := if 219 < f.full.toNat then UInt256.ofNat 349 else pcAfter pc firstTemplate,
                    stack := frame f rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
@@ -28,9 +28,9 @@ theorem run_first (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
 
 theorem run_normalGuard (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 323 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 322 = true) :
     runInstrSeq normalGuardTemplate {s with pc := pc, stack := frame f rho} =
-      some {s with pc := if f.off.toNat < f.full.toNat then UInt256.ofNat 323 else pcAfter pc normalGuardTemplate,
+      some {s with pc := if f.off.toNat < f.full.toNat then UInt256.ofNat 322 else pcAfter pc normalGuardTemplate,
                    stack := frame f rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
@@ -59,9 +59,9 @@ theorem run_finish (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
 
 theorem run_transitionGuard (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 323 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 322 = true) :
     runInstrSeq transitionGuardTemplate {s with pc := pc, stack := frame f rho} =
-      some {s with pc := if f.off.toNat < f.full.toNat then UInt256.ofNat 323 else pcAfter pc transitionGuardTemplate,
+      some {s with pc := if f.off.toNat < f.full.toNat then UInt256.ofNat 322 else pcAfter pc transitionGuardTemplate,
                    stack := frame f rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
@@ -89,9 +89,9 @@ theorem run_result (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
 
 theorem run_toTail (s : State) (pc : UInt256) (stack : List UInt256)
     (hstack : stack.length ≤ 1022) (hrun : s.halt = .Running)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 350 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 349 = true) :
     runInstrSeq toTailTemplate {s with pc := pc, stack := stack} =
-      some {s with pc := UInt256.ofNat 350, stack := stack} := by
+      some {s with pc := UInt256.ofNat 349, stack := stack} := by
   have hb : stack.length < 1024 := by omega
   have hc : stack.length + 1 < 1024 := by omega
   simp (discharger := omega) [hb, hc, Nat.add_comm, toTailTemplate, runInstrSeq, DataStepper.runInstr, pcAfter,

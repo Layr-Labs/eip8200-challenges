@@ -66,6 +66,12 @@ private theorem nw_next (k : Nat) (hk32 : k < 32) (hk : k%8≠7) :
 private theorem word_next_normal (k : Nat) (hk : k%8≠7) :
     RecognitionRecurrence.advance 32 (wordAt k) = wordAt (k+1) := by simp only [wordAt, if_neg hk]
 
+private theorem tw_closed : ∀ k : Fin 32, k.val % 8 = 7 →
+    J2Raw.tw (wordAt k.val) = wordAt (k.val+1) := by decide
+
+private theorem tw_next (k : Nat) (hk32 : k < 32) (hk : k%8=7) :
+    J2Raw.tw (wordAt k) = wordAt (k+1) := tw_closed ⟨k, hk32⟩ hk
+
 private theorem word_next_tail (k : Nat) (hk : k%8=7) :
     RecognitionRecurrence.advance 114 (wordAt k) = wordAt (k+1) := by simp only [wordAt, if_pos hk]
 
@@ -95,7 +101,7 @@ theorem transition_next (s : State) (n k : Nat) (hn : Allowed n) (hk : k<last n)
   obtain ⟨ha,hen,hfn⟩ := hnext ht hk
   have hm : k%8=7 := by rcases ht with h|h; omega; exact h
   rw [tail_acc s n k hn (by omega) ht]
-  simp only [transitionResult, current, word_next_tail k hm]
+  simp only [transitionResult, current, tw_next k (by have := last_lt n hn; omega) hm]
   rw [hen, hfn, ha]
 
 #print axioms facts
