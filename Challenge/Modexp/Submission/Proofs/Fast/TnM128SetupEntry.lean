@@ -5,9 +5,9 @@ set_option warningAsError true
 set_option maxHeartbeats 1000000
 
 /-!
-# The kernel setup entry (60 instructions)
+# The kernel setup entry (55 instructions)
 
-`load` (24) · `shuffle` (11) · `low` (3) · `zero` (13: `MCOPY` staging + `CALLDATACOPY`
+`load` (24) · `shuffle` (11) · `low` (3) · `zero` (9: `MCOPY` staging + scratch-word `MSTORE`
 zeroing) · `pointersJump` (9, ending `DUP2; JUMP` to the row head `hd`).
 -/
 
@@ -20,7 +20,7 @@ def fullEntryProgram : List Instr :=
   ((EntryPrefix.loadProgram ++ EntryPrefix.shuffleProgram) ++ EntryPrefix.lowProgram) ++
     (zeroProgram ++ pointersJumpProgram)
 
-theorem fullEntryProgram_length : fullEntryProgram.length = 58 := rfl
+theorem fullEntryProgram_length : fullEntryProgram.length = 55 := rfl
 
 /-- The whole `setup`: from `setupState` (pc 4123, `[hd, pa, pb, dst, ret] ++ rest`) to the
 row-0 head at `hd` with the staged, zeroed memory and `ent = l1Target n`. -/
@@ -37,7 +37,7 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (hslot : rest[2]? = some (MachineState.readWord mem 2688))
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions fullEntryProgram (setupState s mem hd pa pb dst ret rest) =
-    some (outState s (mpZeroed s (stage mem pa n) n) pb n 0 hd (l1Target n)
+    some (outState s (SquarePartialClear.memory (stage mem pa n)) pb n 0 hd (l1Target n)
       (MachineState.readWord mem 2720) (MachineState.readWord mem (32*n-32))
       (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
         MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
@@ -112,7 +112,7 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
     (hslot : rest[2]? = some (UInt256.ofNat n))
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions fullEntryProgram (setupState s mem hd pa pb dst ret rest) =
-    some (outState s (mpZeroed s (stage mem pa n) n) pb n 0 hd (UInt256.ofNat 3562)
+    some (outState s (SquarePartialClear.memory (stage mem pa n)) pb n 0 hd (UInt256.ofNat 3562)
       (MachineState.readWord mem 2720) (MachineState.readWord mem (32*n-32))
       (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
         MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
