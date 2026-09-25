@@ -1,3 +1,5 @@
+-- ZARAR-20260925-062159-D8: independent official re-measurement marker.
+-- ZARAR-20260925-062159-D7: independent official re-measurement marker.
 import Challenge.EvmProof.Bytecode
 import Challenge.Modexp.Submission.Bytes
 import EvmSemantics.Data.Hex
