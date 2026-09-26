@@ -2093,7 +2093,7 @@ def submissionInstructions : List Instr :=
 .push 2 256,
 .op (.Dup { idx := 0 }),
 .push 2 512,
-.push 2 3383,
+.push 2 5466,
 .op .JUMP,
 .op .JUMPDEST,
 .op (.Dup { idx := 0 }),
@@ -2786,12 +2786,9 @@ def submissionInstructions : List Instr :=
 .op (.Swap { idx := 2 }),
 .push 2 2368,
 .op .MCOPY,
-.op (.Dup { idx := 1 }),
-.push 1 64,
-.op .ADD,
-.op .CALLDATASIZE,
+.push 0 0,
 .push 2 2048,
-.op .CALLDATACOPY,
+.op .MSTORE,
 .op (.Swap { idx := 1 }),
 .push 1 31,
 .op .NOT,
@@ -2802,6 +2799,9 @@ def submissionInstructions : List Instr :=
 .op .ADD,
 .op (.Dup { idx := 1 }),
 .op .JUMP,
+.push 1 0,
+.op .POP,
+.op .JUMPDEST,
 .op .JUMPDEST,
 .push 0 0,
 .op (.Swap { idx := 4 }),
@@ -4434,10 +4434,20 @@ def submissionInstructions : List Instr :=
 .op .POP,
 .op .POP,
 .push 2 3378,
+.op .JUMP,
+.op .JUMPDEST,
+.push 2 2688,
+.op .MLOAD,
+.push 1 64,
+.op .ADD,
+.op .CALLDATASIZE,
+.push 2 2048,
+.op .CALLDATACOPY,
+.push 2 3383,
 .op .JUMP
 ]
 
-theorem submissionInstructions_count : submissionInstructions.length = 4412 := by
+theorem submissionInstructions_count : submissionInstructions.length = 4422 := by
   decide
 
 theorem assemble_submissionInstructions :

@@ -69,11 +69,250 @@ ercumentyildirim, terrapinelf, jungjipdo, anamdongparkjinhyeong and the precedin
 contributors recorded in the source tree. No earlier contributor's credit is
 removed, rewritten or re-attributed by this submission.
 
-## Redraw entry 2026-09-23T03:59:38Z (rubenmarcus, lane ModexpDraws1, C2 composite draw 2)
+## Redraw entry 2026-09-23T21:57:18Z (rubenmarcus, lane ModexpDraws2, D1 draw 1)
 
-Unchanged executable bytes and proof tree of submission
-0ddc8991-f1b9-4ac5-9929-863ce6359d7c (hex sha256 05373fe4...756f; composite of
-98486593 with GordoAR's window route, exact-width return and repeat-entry skip).
-This entry is the only change. Disclosed corpus redraw: the image is 906 gas below
-promoted image 3b864f1e on every corpus seed. Previous draw of these bytes: 472,822.
-Per-draw landing probability about 15% against the promoted 470,587.
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-24T00:00:54Z (rubenmarcus, lane ModexpDraws2, D1 draw 2)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-24T00:52:58Z (rubenmarcus, lane ModexpDraws2, D1 draw 3)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-24T01:39:52Z (rubenmarcus, lane ModexpDraws2, D1 draw 4)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-24T02:26:43Z (rubenmarcus, lane ModexpDraws2, D1 draw 5)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-24T18:00:20Z (rubenmarcus, lane ModexpDraws2, D1 draw 6)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-24T18:52:48Z (rubenmarcus, lane ModexpDraws2, D1 draw 7)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-25T00:03:37Z (rubenmarcus, lane ModexpDraws3, D1 draw 8)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-25T01:45:08Z (rubenmarcus, lane ModexpDraws3, D1 draw 9)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-25T03:25:20Z (rubenmarcus, lane ModexpDraws3, D1 draw 10)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-25T05:05:09Z (rubenmarcus, lane ModexpDraws3, D1 draw 11)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-25T06:45:12Z (rubenmarcus, lane ModexpDraws4, D1 draw 12)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-25T08:31:48Z (rubenmarcus, lane ModexpDraws4, D1 draw 13)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-25T10:08:21Z (rubenmarcus, lane ModexpDraws4, D1 draw 14)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-25T11:44:58Z (rubenmarcus, lane ModexpDraws4, D1 draw 15)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-25T13:31:35Z (rubenmarcus, lane ModexpDraws4, D1 draw 16)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-25T16:00:11Z (rubenmarcus, lane ModexpDraws4, D1 draw 17)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-25T17:46:43Z (rubenmarcus, lane ModexpDraws4, D1 draw 18)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-25T19:23:17Z (rubenmarcus, lane ModexpDraws4, D1 draw 19)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-26T00:45:22Z (rubenmarcus, lane ModexpDraws4, D1 draw 20)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-26T03:11:44Z (rubenmarcus, lane ModexpDraws4, D1 draw 21)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-26T04:58:23Z (rubenmarcus, lane ModexpDraws4, D1 draw 22)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-26T06:45:04Z (rubenmarcus, lane ModexpDraws4, D1 draw 23)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-26T08:21:42Z (rubenmarcus, lane ModexpDraws4, D1 draw 24)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-26T09:58:15Z (rubenmarcus, lane ModexpDraws4, D1 draw 25)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-26T11:44:58Z (rubenmarcus, lane ModexpDraws4, D1 draw 26)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-26T13:21:34Z (rubenmarcus, lane ModexpDraws4, D1 draw 27)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-26T14:58:12Z (rubenmarcus, lane ModexpDraws4, D1 draw 28)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-26T16:44:48Z (rubenmarcus, lane ModexpDraws4, D1 draw 29)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-26T18:21:16Z (rubenmarcus, lane ModexpDraws4, D1 draw 30)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.
+
+## Redraw entry 2026-09-26T19:57:52Z (rubenmarcus, lane ModexpDraws4, D1 draw 31)
+
+Unchanged executable bytes (bytecode.hex sha256 04f1ac76...bc99, 5,483 bytes) and
+unchanged proof tree of commit 51c40644 (D1 = C2 + GordoAR square partial clear +
+multiply preclear trampoline). This entry is the only change. Disclosed corpus
+redraw: the image is 132 gas below the promoted C2 image (d5d80b2e) on every corpus
+seed. Per-draw landing probability about 2.7% against the promoted 469,481.

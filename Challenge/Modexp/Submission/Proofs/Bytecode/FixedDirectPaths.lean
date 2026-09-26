@@ -121,7 +121,7 @@ def product : List Located :=
    pushAt 2067 2 256,
    opAt 2068 (.Dup ⟨0, by decide⟩),
    pushAt 2069 2 512,
-   pushAt 2070 2 3383,
+   pushAt 2070 2 5466,
    opAt 2071 .JUMP]
 
 
@@ -169,10 +169,11 @@ def bail : List Located :=
    pushAt 569 1 238,
    opAt 570 .JUMP]
 
-/-- The kernel's multiply entry `0x0f50` (the final mixed-domain product). -/
+/-- The kernel's multiply entry trampoline `0x155a` (the final mixed-domain product): it
+clears the product block and jumps to the multiply entry `0x0d37`. -/
 theorem jumpDestSqMulEntry :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3383 = true :=
-  Artifact.isValidJumpDest_index 2718 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5466 = true :=
+  Artifact.isValidJumpDest_index 4412 (by rfl)
 
 /-- The kernel's shared `common` block `0x0f54` (entered by the square call). -/
 theorem jumpDestSqCommon :
