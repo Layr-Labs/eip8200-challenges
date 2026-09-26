@@ -1,3 +1,4 @@
+-- ZARAR-20260926-194126-D28: independent official re-measurement marker.
 import Challenge.EvmProof.Bytecode
 import Challenge.Modexp.Submission.Bytes
 import EvmSemantics.Data.Hex
