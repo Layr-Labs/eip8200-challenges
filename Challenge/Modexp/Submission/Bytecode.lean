@@ -1,3 +1,4 @@
+-- ZARAR-20260926-075855-D13: independent official re-measurement marker.
 import Challenge.EvmProof.Bytecode
 import Challenge.Modexp.Submission.Bytes
 import EvmSemantics.Data.Hex
