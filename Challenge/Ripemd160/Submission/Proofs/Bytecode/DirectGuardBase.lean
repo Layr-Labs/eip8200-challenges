@@ -111,22 +111,21 @@ def loopPath : List Located :=
 the subsequent branch; the generic implementation carries them as a suffix. -/
 def tailPath : List Located :=
   [opAt 60 .JUMPDEST,
-   opAt 61 .JUMPDEST,
-   pushAt 62 1 246,
-   opAt 63 .JUMPI]
+   pushAt 61 1 246,
+   opAt 62 .JUMPI]
 
 /-- Off the measured path: the divert lands on the generic arm's entry. -/
 def fallbackPath : List Located :=
   [entryDest]
 
 def returnPath : List Located :=
-  [pushAt 64 20 972889429405991776604892044862621566948497025487,
-   pushAt 65 0 0,
-   opAt 66 .MSTORE]
+  [pushAt 63 20 972889429405991776604892044862621566948497025487,
+   pushAt 64 0 0,
+   opAt 65 .MSTORE]
 
 def returnFinishPath : List Located :=
-  [pushAt 68 0 0,
-   opAt 69 .RETURN]
+  [pushAt 67 0 0,
+   opAt 68 .RETURN]
 
 def atPC (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
@@ -170,7 +169,7 @@ def loopExitState (input : ByteArray) : State :=
 
 def returnEntry (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 89
+    pc := UInt256.ofNat 88
     stack := spentCells input }
 
 def tailDivertState (input : ByteArray) : State :=
@@ -186,7 +185,7 @@ def answerMemory : ByteArray :=
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 114
+    pc := UInt256.ofNat 113
     stack := spentCells input
     memory := answerMemory
     activeWords := UInt256.ofNat 1
@@ -195,14 +194,14 @@ def returnedState (input : ByteArray) : State :=
 
 def storedReturnState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 112
+    pc := UInt256.ofNat 111
     stack := spentCells input
     memory := answerMemory
     activeWords := UInt256.ofNat 1 }
 
 def sizedReturnState (input : ByteArray) : State :=
   { storedReturnState input with
-    pc := UInt256.ofNat 113
+    pc := UInt256.ofNat 112
     stack := UInt256.ofNat 32 :: spentCells input }
 
 abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
@@ -325,11 +324,11 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_58 : Artifact.submissionArtifact.instructionPC 61 = 85 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_59 : Artifact.submissionArtifact.instructionPC 62 = 86 := by
+@[simp] theorem pc_direct_59 : Artifact.submissionArtifact.instructionPC 62 = 87 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_60 : Artifact.submissionArtifact.instructionPC 63 = 88 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_61 : Artifact.submissionArtifact.instructionPC 64 = 89 := by
+@[simp] theorem pc_direct_61 : Artifact.submissionArtifact.instructionPC 64 = 109 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_62 : Artifact.submissionArtifact.instructionPC 65 = 110 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
