@@ -1,3 +1,4 @@
+-- ZARAR-20260927-051640-D40: independent official re-measurement marker.
 import Challenge.EvmProof.Bytecode
 import Challenge.Modexp.Submission.Bytes
 import EvmSemantics.Data.Hex
