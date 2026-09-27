@@ -73,24 +73,21 @@ theorem run_tail_target :
     (RootOverlapGuard.finalAcc_zero_iff_target KnownInputData.targetInput
       KnownInputData.targetInput_size).2 rfl
   have hzero' : finalAcc KnownInputData.targetInput = UInt256.ofNat 0 := hzero
-  have hc := condWord_zero (referenceWord KnownInputData.targetInput)
   simp (config := { maxSteps := 1000000 })
     [tailPath, opAt, pushAt, wfOp, loopExitState, returnEntry, spentCells, atPC,
-    hzero', hc, List.exchange, UInt256.isTrue,
+    hzero', List.exchange, UInt256.isTrue,
     Challenge.EvmProof.DataStepper.runLocatedBlock, Challenge.EvmProof.DataStepper.runLocated,
     Challenge.EvmProof.DataStepper.runInstr,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
 
-/-- The divert needs a nonzero accumulator and the odd anchor word: their scaled
-merge is then nonzero, and the jump lands on the generic arm with an empty stack. -/
+/-- A nonzero accumulator diverts to the generic arm with a two-word suffix. -/
 theorem run_tail_divert_acc (input : ByteArray) (hneAcc : finalAcc input ≠ 0)
-    (href : referenceWord input = KnownInputData.fullWord) :
+    (_href : referenceWord input = KnownInputData.fullWord) :
     run tailPath (loopExitState input) = some (tailDivertState input) := by
-  have htrue : UInt256.isTrue
-      (UInt256.lor (finalAcc input) (UInt256.ofNat 0) * referenceWord input) := by
-    rw [href]
-    exact condWord_isTrue _ hneAcc
+  have htrue : UInt256.isTrue (finalAcc input) := by
+    intro hn
+    exact hneAcc (Challenge.EvmProof.Word.word_ext hn)
   have hdest : Decode.isValidJumpDest submissionBytecode 246 = true :=
     Artifact.submissionArtifact.isValidJumpDest_index 147 (by rfl)
   simp (config := { maxSteps := 1000000 })
@@ -105,7 +102,8 @@ theorem run_tail_divert_acc (input : ByteArray) (hneAcc : finalAcc input ≠ 0)
 theorem run_fallback_clear (input : ByteArray) :
     run fallbackPath (tailDivertState input) = some (fallbackState input) := by
   simp (config := { maxSteps := 1000000 })
-    [fallbackPath, entryDest, opAt, pushAt, wfOp, tailDivertState, fallbackState, spentCells, atPC,
+    [fallbackPath, entryDest, opAt, pushAt, wfOp, tailDivertState, fallbackState,
+    StackTail.append, spentCells, atPC,
     List.exchange,
     Challenge.EvmProof.DataStepper.runLocatedBlock, Challenge.EvmProof.DataStepper.runLocated,
     Challenge.EvmProof.DataStepper.runInstr,
@@ -159,7 +157,7 @@ def gasSteps_direct_return (input : ByteArray) :
     Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 67
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop
-    (by change (0 : Nat) < 1024; decide) (by rfl)
+    (by simp [storedReturnState, spentCells]) (by rfl)
     deployAddress_not_precompile
   have gm : GasSteps (storedReturnState input) (sizedReturnState input) := by
     simpa [storedReturnState, sizedReturnState, spentCells, initialState,

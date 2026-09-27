@@ -151,7 +151,8 @@ theorem correct_of_recognition
     by_cases ht : input = KnownInputData.targetInput
     · subst input
       exact correct_target
-    · exact StackCorrect.correct input hfit (by omega)
+    · exact StackCorrect.correct_tail input hfit (by omega) (by omega)
+        (spentCells input) (by simp [spentCells])
         (gasSteps_repeat_miss input hfit h1000 href ht)
   have hguard : GasSteps (initialState submissionBytecode input 0) (guardEntry input) :=
     (gasSteps_matched input hfit hpass hbyte hsmall).trans (gasSteps_checkEarly input href)

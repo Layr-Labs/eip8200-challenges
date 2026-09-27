@@ -313,7 +313,7 @@ def gasSteps_to_arm (input : ByteArray) (hfit : CalldataFits input)
 def gasSteps_disallowed (input : ByteArray) (hfit : CalldataFits input)
     (hbyte : DirectGuard.firstByte input = 7)
     (hdis : ¬ RecognitionAccumulator.Allowed input.size) :
-    GasSteps (DirectGuard.guardEntry input) (DirectGuard.fallbackState input) :=
+    GasSteps (DirectGuard.guardEntry input) (AbcArm.fallbackState input) :=
   (gasSteps_to_arm input hfit hdis).trans
     (AbcArm.gasSteps_miss input (EntryGateLogic.wordCond_ne_zero_of_byte7 input hfit hbyte))
 

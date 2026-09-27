@@ -7,6 +7,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionEntryPrelude
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Execution
 import Challenge.EvmProof.Memory
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardGrouping
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackTail
 
 set_option warningAsError true
 set_option maxRecDepth 100000
@@ -106,14 +107,11 @@ def loopPath : List Located :=
    pushAt 58 1 62,
    opAt 59 .JUMPI]
 
-/-- The exit test folds the three loop cells into one condition word:
-`OR` merges the accumulator with the spent (zero) counter and `MUL` scales it by
-the odd anchor word, so the product is zero exactly when the accumulator is.
-A nonzero product jumps straight into the generic arm with an empty stack; a
-zero product falls into the digest store with an empty stack. -/
+/-- Keep the zero counter and anchor below the accumulator. Neither is read by
+the subsequent branch; the generic implementation carries them as a suffix. -/
 def tailPath : List Located :=
-  [opAt 60 .OR,
-   opAt 61 .MUL,
+  [opAt 60 .JUMPDEST,
+   opAt 61 .JUMPDEST,
    pushAt 62 1 246,
    opAt 63 .JUMPI]
 
@@ -153,7 +151,12 @@ attribute [simp] Challenge.Ripemd160.initialState_stack
   Challenge.Ripemd160.initialState_calldata
 
 def sizeMatched (input : ByteArray) : State := atPC input 36
-def fallbackState (input : ByteArray) : State := atPC input 247
+
+def spentCells (input : ByteArray) : List UInt256 :=
+  [UInt256.ofNat 0, referenceWord input]
+
+def fallbackState (input : ByteArray) : State :=
+  StackTail.append (atPC input 247) (spentCells input)
 
 def loopState (input : ByteArray) (n : Nat) : State :=
   { initialState submissionBytecode input 0 with
@@ -164,10 +167,6 @@ def loopExitState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
     pc := UInt256.ofNat 84
     stack := [finalAcc input, UInt256.ofNat 0, referenceWord input] }
-
-/-- The exit test consumes all three loop cells, so nothing is left behind. -/
-def spentCells (_input : ByteArray) : List UInt256 :=
-  []
 
 def returnEntry (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
