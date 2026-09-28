@@ -1,4 +1,3 @@
--- ZARAR-20260927-051640-D40: independent official re-measurement marker.
 import Challenge.EvmProof.Bytecode
 import Challenge.Modexp.Submission.Bytes
 import EvmSemantics.Data.Hex
@@ -10,8 +9,8 @@ namespace Challenge.Modexp
 def submissionHex : String := (include_str "bytecode.hex").trimAscii.copy
 def submissionBytecode : ByteArray := submissionBytes
 
-@[simp] theorem submissionBytecode_size : submissionBytecode.size = 5466 := by
-  change submissionBytes.size = 5466
+@[simp] theorem submissionBytecode_size : submissionBytecode.size = 5483 := by
+  change submissionBytes.size = 5483
   exact submissionBytes_size
 
 theorem submissionBytecode_roundtrip :
