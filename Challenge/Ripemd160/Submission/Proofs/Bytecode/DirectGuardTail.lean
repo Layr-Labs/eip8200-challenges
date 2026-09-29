@@ -108,9 +108,10 @@ theorem run_fallback_clear (input : ByteArray) :
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
 
 theorem run_tail_divert (input : ByteArray) (hsize : input.size = 1000)
+    (href : referenceWord input = KnownInputData.fullWord)
     (hne : input ≠ KnownInputData.targetInput) :
     run tailPath (loopExitState input) = some (tailDivertState input) :=
-  run_tail_divert_acc input (fun hz => hne (reverseAcc_zero_target input hsize hz))
+  run_tail_divert_acc input (fun hz => hne (reverseAcc_zero_target input hsize href hz))
 
 theorem run_return_store (input : ByteArray) :
     run returnPath (returnEntry input) = some (storedReturnState input) := by
@@ -142,14 +143,14 @@ def gasSteps_direct_return (input : ByteArray) :
   have gs := DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     returnPath (by rfl) (by rfl) (run_return_store input) (by rfl)
     deployAddress_not_precompile
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 67 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 57 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedReturnState input).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 67 := by
+      Artifact.submissionArtifact.instructionPC 57 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
   have hop : (storedReturnState input).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 67
+    Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 57
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop
     (by simp [storedReturnState, spentCells]) (by rfl)

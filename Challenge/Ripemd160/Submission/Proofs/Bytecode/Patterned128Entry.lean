@@ -309,12 +309,4 @@ def gasSteps_to_arm (input : ByteArray) (hfit : CalldataFits input)
   exact (gasSteps_mask_fail input hfit hbad).trans
     (gasSteps_length_fail input hfit (by omega) (by omega) (by omega))
 
-/-- With first byte 7, a length without a stored digest reaches the generic arm. -/
-def gasSteps_disallowed (input : ByteArray) (hfit : CalldataFits input)
-    (hbyte : DirectGuard.firstByte input = 7)
-    (hdis : ¬ RecognitionAccumulator.Allowed input.size) :
-    GasSteps (DirectGuard.guardEntry input) (AbcArm.fallbackState input) :=
-  (gasSteps_to_arm input hfit hdis).trans
-    (AbcArm.gasSteps_miss input (EntryGateLogic.wordCond_ne_zero_of_byte7 input hfit hbyte))
-
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Entry

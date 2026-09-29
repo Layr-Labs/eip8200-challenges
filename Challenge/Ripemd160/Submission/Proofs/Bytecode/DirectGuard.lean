@@ -32,28 +32,15 @@ private def gasSteps_loop (input : ByteArray) :
   exact (GasSteps.iterateBounded 9 step).trans
     (sound loopPath (run_loop_last input))
 
-/-- A first byte other than 7 with size exactly 1000 reaches the seed block. -/
-private def gasSteps_matched (input : ByteArray) (hfit : CalldataFits input)
-    (hpass : EntryPrefilter.condition input = 0)
-    (hbyte : ¬ firstByte input < 8) (hsize : input.size = 1000) :
+/-- A 1000-byte input whose first word is the repeated `0x61` word reaches the
+seed block. -/
+private def gasSteps_matched (input : ByteArray)
+    (hpass : EntryPrefilter.condition input = 0) (hsize : input.size = 1000)
+    (href : referenceWord input = KnownInputData.fullWord) :
     GasSteps (initialState submissionBytecode input 0) (sizeMatched input) :=
   (EntryPrefilter.gasSteps_fall input hpass).trans
-    ((sound bytePath (run_byte_fall input hbyte)).trans
-      ((sound guardPath (run_guard_fall input hfit (by omega))).trans
-        (sound sizeFallPath (run_size_fall input hsize))))
-
-/-- The repeated `0x61` word has first byte `0x61`. -/
-private theorem firstByte_of_fullWord (input : ByteArray)
-    (href : referenceWord input = KnownInputData.fullWord) : ¬ firstByte input < 8 := by
-  intro h8
-  have h := firstByte_eq_byteAt input
-  rw [show MachineState.readWord input 0 = referenceWord input from rfl, href] at h
-  have hv : firstByte input = 0x61 := by
-    have hn := congrArg UInt256.toNat h
-    rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt (Nat.lt_trans (firstByte_lt input) (by norm_num))] at hn
-    rw [← hn]
-    decide
-  omega
+    ((sound sizePath (run_size_fall input hsize)).trans
+      (sound anchorPath (run_anchor_fall input href)))
 
 def gasSteps_target :
     GasSteps (initialState submissionBytecode KnownInputData.targetInput 0)
@@ -61,13 +48,8 @@ def gasSteps_target :
   have href : referenceWord KnownInputData.targetInput = KnownInputData.fullWord := by
     simpa [referenceWord, KnownInputData.expectedWord] using
       (KnownInputData.targetInput_readWord 0 (by decide))
-  have hfit : CalldataFits KnownInputData.targetInput := by
-    change KnownInputData.targetInput.size < 2 ^ 64
-    rw [KnownInputData.targetInput_size]
-    norm_num
-  (gasSteps_matched KnownInputData.targetInput hfit
-      (EntryPrefilter.condition_of_fullWord _ href)
-      (firstByte_of_fullWord _ href) KnownInputData.targetInput_size).trans
+  (gasSteps_matched KnownInputData.targetInput
+      (EntryPrefilter.condition_of_fullWord _ href) KnownInputData.targetInput_size href).trans
     ((gasSteps_checkEntry KnownInputData.targetInput).trans
       ((gasSteps_loop KnownInputData.targetInput).trans
         ((sound tailPath run_tail_target).trans
@@ -99,35 +81,16 @@ private theorem correct_target :
   rw [show ExactGuardData.targetInput = KnownInputData.targetInput by rfl] at heval
   simpa [GasCost.withGas_initialState_zero] using heval
 
-private def gasSteps_repeat_miss (input : ByteArray) (hfit : CalldataFits input)
-    (hpass : EntryPrefilter.condition input = 0) (hbyte : ¬ firstByte input < 8)
-    (hsize : input.size = 1000)
+private def gasSteps_repeat_miss (input : ByteArray)
+    (hpass : EntryPrefilter.condition input = 0) (hsize : input.size = 1000)
+    (href : referenceWord input = KnownInputData.fullWord)
     (hne : input ≠ KnownInputData.targetInput) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) :=
-  (gasSteps_matched input hfit hpass hbyte hsize).trans
+  (gasSteps_matched input hpass hsize href).trans
     ((gasSteps_checkEntry input).trans
       ((gasSteps_loop input).trans
-        ((sound tailPath (run_tail_divert input hsize hne)).trans
+        ((sound tailPath (run_tail_divert input hsize href hne)).trans
           (sound fallbackPath (run_fallback_clear input)))))
-
-/-- A first byte below 8 lets the small-input arm match only the empty input. -/
-private theorem size_zero_of_wordCond_byte_lt (input : ByteArray) (hfit : CalldataFits input)
-    (hbyte : (TinyGuardLogic.byte input 0).toNat < 8)
-    (hz : EntryGateLogic.wordCond input = 0) : input.size = 0 := by
-  have h := (EntryGateLogic.wordCond_ne_zero_iff input hfit).mp hz
-  rw [TinyGuardLogic.prefix_toNat] at h
-  have b1 := (TinyGuardLogic.byte input 1).toNat_lt
-  have b2 := (TinyGuardLogic.byte input 2).toNat_lt
-  have hl : (TinyGuardLogic.byte input 0).toNat * 65536 +
-      (TinyGuardLogic.byte input 1).toNat * 256 +
-      (TinyGuardLogic.byte input 2).toNat < 0x207621 := by
-    clear h hz hfit
-    omega
-  rw [h] at hl
-  by_contra hs
-  have hk : 0x207621 ≤ input.size * 0x207621 :=
-    Nat.le_mul_of_pos_left _ (Nat.pos_of_ne_zero hs)
-  exact absurd hl (Nat.not_lt.mpr hk)
 
 /-- Combine the common scanner contract with the entry dispatch and generic arm. -/
 theorem correct_of_recognition
@@ -143,63 +106,50 @@ theorem correct_of_recognition
   · exact StackCorrect.correct input hfit
       (EntryPrefilter.positive_of_taken input hpass)
       (EntryPrefilter.gasSteps_taken input hpass)
-  by_cases hbyte : firstByte input < 8
-  · have hstart : GasSteps (initialState submissionBytecode input 0) (guardEntry input) :=
-      (EntryPrefilter.gasSteps_fall input hpass).trans (sound bytePath (run_byte_taken input hbyte))
-    by_cases hallowed : RecognitionAccumulator.Allowed input.size
-    · exact scannerCorrect input hfit hallowed
-        (hstart.trans (Patterned128Entry.gasSteps_allowed input hfit hallowed))
-    have harm : GasSteps (initialState submissionBytecode input 0) (AbcArm.armEntry input) :=
-      hstart.trans (Patterned128Entry.gasSteps_to_arm input hfit hallowed)
-    by_cases hw : AbcArm.wordCond input = 0
-    · have hb : (TinyGuardLogic.byte input 0).toNat < 8 := hbyte
-      exact AbcArm.correct_empty input hfit (TinyGuardLogic.input_eq_empty input
-        (size_zero_of_wordCond_byte_lt input hfit hb hw)) harm
-    · have hpositive : 0 < input.size := by
-        by_contra hn
-        have he := TinyGuardLogic.input_eq_empty input (by omega)
-        apply hw
-        rw [he]
-        have hc := TinyGuardLogic.condition_empty
-        exact ((KnownInputLogic.wordOr_eq_zero_iff _ _).mp hc).1
-      exact StackCorrect.correct input hfit hpositive
-        (harm.trans (AbcArm.gasSteps_miss input hw))
-  by_cases hsmall : input.size < 4
-  · have hguard : GasSteps (initialState submissionBytecode input 0) (guardEntry input) :=
-      (EntryPrefilter.gasSteps_fall input hpass).trans
-        ((sound bytePath (run_byte_fall input hbyte)).trans
-          (sound guardPath (run_guard_taken input hfit hsmall)))
+  -- Every input that reaches the patterned guard is handled by the scanner or the
+  -- sign-extending small-input arm.
+  have fromGuard : GasSteps (initialState submissionBytecode input 0) (guardEntry input) →
+      ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
+        Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
+    intro hguard
     by_cases hallowed : RecognitionAccumulator.Allowed input.size
     · exact scannerCorrect input hfit hallowed
         (hguard.trans (Patterned128Entry.gasSteps_allowed input hfit hallowed))
     have harm : GasSteps (initialState submissionBytecode input 0) (AbcArm.armEntry input) :=
       hguard.trans (Patterned128Entry.gasSteps_to_arm input hfit hallowed)
     by_cases hw : AbcArm.wordCond input = 0
-    · by_cases hempty : input.size = 0
+    · have hs4 := AbcArm.size_lt_four_of_wordCond input hfit hw
+      by_cases hempty : input.size = 0
       · exact AbcArm.correct_empty input hfit (TinyGuardLogic.input_eq_empty input hempty) harm
-      · exact AbcArm.correct_abc input hfit
-          (EntryGateLogic.wordCond_zero_size_pos input hfit (by omega) hsmall hw) harm
+      · have hwU : EntryGateLogic.wordCond input = 0 := by
+          have h := AbcArm.wordCond_eq_U input (AbcArm.small_of_wordCond input hfit hw)
+          rw [h] at hw
+          exact hw
+        exact AbcArm.correct_abc input hfit
+          (EntryGateLogic.wordCond_zero_size_pos input hfit (by omega) hs4 hwU) harm
     · have hpositive : 0 < input.size := by
         by_contra hn
         have he := TinyGuardLogic.input_eq_empty input (by omega)
         apply hw
         rw [he]
-        have hc := TinyGuardLogic.condition_empty
-        exact ((KnownInputLogic.wordOr_eq_zero_iff _ _).mp hc).1
+        exact AbcArm.wordCond_empty
       exact StackCorrect.correct input hfit hpositive
         (harm.trans (AbcArm.gasSteps_miss input hw))
   by_cases h1000 : input.size = 1000
-  · by_cases ht : input = KnownInputData.targetInput
-    · subst input
-      exact correct_target
-    · exact StackCorrect.correct_tail input hfit (by omega) (by omega)
-        (spentCells input) (by simp [spentCells])
-        (gasSteps_repeat_miss input hfit hpass hbyte h1000 ht)
-  · exact StackCorrect.correct input hfit (by omega)
-      ((EntryPrefilter.gasSteps_fall input hpass).trans
-        ((sound bytePath (run_byte_fall input hbyte)).trans
-          ((sound guardPath (run_guard_fall input hfit (by omega))).trans
-            (sound sizePath (run_size_taken input hfit h1000)))))
+  swap
+  · exact fromGuard ((EntryPrefilter.gasSteps_fall input hpass).trans
+      (sound sizePath (run_size_taken input hfit h1000)))
+  by_cases href : referenceWord input = KnownInputData.fullWord
+  swap
+  · exact fromGuard ((EntryPrefilter.gasSteps_fall input hpass).trans
+      ((sound sizePath (run_size_fall input h1000)).trans
+        (sound anchorPath (run_anchor_taken input href))))
+  by_cases ht : input = KnownInputData.targetInput
+  · subst input
+    exact correct_target
+  · exact StackCorrect.correct_tail input hfit (by omega) (by omega)
+      (spentCells input) (by simp [spentCells])
+      (gasSteps_repeat_miss input hpass h1000 href ht)
 
 #print axioms correct_of_recognition
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard

@@ -106,10 +106,9 @@ def tailDiff (input : ByteArray) : UInt256 :=
 def fullTerm (input : ByteArray) : UInt256 :=
   referenceWord input * UInt256.ofNat 255 + UInt256.ofNat 97
 
-/-- The accumulator seed built before the paired loop. -/
+/-- The accumulator seed built before the loop. -/
 def seedAcc (input : ByteArray) : UInt256 :=
-  UInt256.lor (UInt256.xor (referenceWord input) (MachineState.readWord input 968))
-    (fullTerm input)
+  UInt256.xor (referenceWord input) (MachineState.readWord input 968)
 
 /-- The three-word loop accumulation from an arbitrary seed. -/
 def revFrom (input : ByteArray) (seed : UInt256) : Nat → UInt256
@@ -194,13 +193,6 @@ theorem fullTerm_eq_zero (input : ByteArray) (h : fullTerm input = 0) :
   unfold Nat.ModEq at hm3
   rwa [Nat.mod_eq_of_lt hr, Nat.mod_eq_of_lt hf] at hm3
 
-/-- The final accumulator splits into the anchor test and the accumulator of
-the previous guard. -/
-theorem reverseAcc_split (input : ByteArray) :
-    reverseAcc input 10 = UInt256.lor (fullTerm input)
-      (revFrom input (UInt256.xor (referenceWord input) (MachineState.readWord input 968)) 10) := by
-  rw [reverseAcc_eq, seedAcc, lor_comm' (UInt256.xor _ _) (fullTerm input), revFrom_lor]
-
 theorem xor_comm' (a b : UInt256) : UInt256.xor a b = UInt256.xor b a := by
   apply Challenge.EvmProof.Word.word_ext
   change (a.val ^^^ b.val).val = (b.val ^^^ a.val).val
@@ -223,28 +215,24 @@ theorem finalAcc_of_anchor (input : ByteArray)
   rw [lor_comm' (tailDiff input), hz, lor_zero_left, tailDiff, xor_comm']
 
 theorem reverseAcc_zero_target (input : ByteArray) (hsize : input.size = 1000)
+    (href : referenceWord input = KnownInputData.fullWord)
     (h : reverseAcc input 10 = 0) : input = KnownInputData.targetInput := by
-  rw [reverseAcc_split] at h
-  rcases (KnownInputLogic.wordOr_eq_zero_iff _ _).1 h with ⟨hf, hloop⟩
-  have href := fullTerm_eq_zero input hf
   apply (RootOverlapGuard.finalAcc_zero_iff_target input hsize).1
   change finalAcc input = 0
   rw [finalAcc_of_anchor input href]
-  exact hloop
+  rw [reverseAcc_eq] at h
+  exact h
 
 theorem reverseAcc_target_zero : reverseAcc KnownInputData.targetInput 10 = 0 := by
   have href : referenceWord KnownInputData.targetInput = KnownInputData.fullWord := by
     simpa [referenceWord, KnownInputData.expectedWord] using
       (KnownInputData.targetInput_readWord 0 (by decide))
-  have hf : fullTerm KnownInputData.targetInput = 0 := by
-    rw [fullTerm, href]
-    exact fullWord_anchor
   have hloop := (RootOverlapGuard.finalAcc_zero_iff_target KnownInputData.targetInput
     KnownInputData.targetInput_size).2 rfl
   change finalAcc KnownInputData.targetInput = 0 at hloop
   rw [finalAcc_of_anchor _ href] at hloop
-  rw [reverseAcc_split, hf, hloop]
-  decide
+  rw [reverseAcc_eq]
+  exact hloop
 
 #print axioms reverseAcc_zero_target
 #print axioms reverseAcc_target_zero
