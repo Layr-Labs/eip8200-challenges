@@ -44,7 +44,7 @@ def exitState (input : ByteArray) (s : State) (frame : List UInt256) (i : Nat) :
 
 def resultStateAt (input : ByteArray) (s : State) (frame : List UInt256) (i : Nat) : State :=
   {s with
-    pc := UInt256.ofNat 455
+    pc := UInt256.ofNat 457
     stack := frame
     memory := lengthMemory input s.memory i
     activeWords := lengthActive input s.activeWords i}

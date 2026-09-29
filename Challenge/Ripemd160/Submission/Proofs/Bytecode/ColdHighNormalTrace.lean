@@ -9,7 +9,7 @@ open PersistentStaggerTable PersistentStaggerIteration ColdHighPaddingMemory Sta
 noncomputable opaque gasSteps_normal (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (i : Nat)
     (hi : i<DriverTrace.blockCount input) :
-    GasSteps {paddedState input i with pc:=UInt256.ofNat 456,stack:=frame (hashes input i) (DriverTrace.messageOffsetWord i) (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size)) maskRho}
+    GasSteps {paddedState input i with pc:=UInt256.ofNat 458,stack:=frame (hashes input i) (DriverTrace.messageOffsetWord i) (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size)) maskRho}
       {tableState input i with pc:=UInt256.ofNat 808,stack:=frame (hashes input i) (DriverTrace.messageOffsetWord i) (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size)) maskRho} := by
   let h:=hashes input i
   let off:=DriverTrace.messageOffsetWord i

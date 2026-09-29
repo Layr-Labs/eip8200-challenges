@@ -377,7 +377,7 @@ theorem run_lowStoreV2 (s : State) (pc value : UInt256) (rest : List UInt256)
 
 def templateV2 : List Instr :=
   loadTemplate 32 ++ (stage8 true ++ stage16 true) ++ highStoreV2 ++
-    [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST] ++ loadDirectTemplate ++ (stage8 true ++ stage16 true) ++
+    [.op .JUMPDEST] ++ loadDirectTemplate ++ (stage8 true ++ stage16 true) ++
     lowStoreV2
 
 theorem run_templateV2 (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UInt256)
@@ -409,8 +409,8 @@ theorem run_templateV2 (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off li
     (by omega) hrun (by change 35 ≤ a1.toNat; omega)
   have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
   let pcJ := pcAfter (pcAfter (pcAfter (pcAfter pc (loadTemplate 32)) (stage8 true)) (stage16 true)) highStoreV2
-  let pc3 := pcAfter pcJ [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
-  have hj : runInstrSeq [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST] {s2 with pc := pcJ, stack := F} =
+  let pc3 := pcAfter pcJ [.op .JUMPDEST]
+  have hj : runInstrSeq [.op .JUMPDEST] {s2 with pc := pcJ, stack := F} =
       some {s2 with pc := pc3, stack := F} := by
     have hcap : F.length < 1024 := by omega
     simp [runInstrSeq, DataStepper.runInstr, pcAfter, pc3, Instr.size,
@@ -435,7 +435,7 @@ theorem run_templateV2 (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off li
   rw [hloaded]
   exact h
 
-theorem end_pcV2 : pcAfter (UInt256.ofNat 486) templateV2 = UInt256.ofNat 557 := by decide
+theorem end_pcV2 : pcAfter (UInt256.ofNat 486) templateV2 = UInt256.ofNat 555 := by decide
 #print axioms run_templateV2
 #print axioms exact_bytes
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13Endian
