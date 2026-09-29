@@ -225,48 +225,167 @@ theorem run_fused (template : State) (pc x y c tl ts : UInt256)
 
 /-! ## The known-zero incoming carry
 
-`headProgram`'s sixth instruction is the `DUP4` that reproduces the cell's incoming carry `c`.
-Where `c` is already zero, `PUSH0` produces the same word for one gas less.  Everything below
-is that one substitution: `run_fused_zero` has the *same* conclusion as `run_fused`, only under
-the extra hypothesis `c = 0`, and is derived from `run_fused` rather than reproved. -/
+Where the incoming carry `c` is already zero, `macFusedPostZeroProgram` replaces the
+incoming-carry add `DUP4 ADD` by two `JUMPDEST`s (the identity), and the first carry test
+`c > lo + c` (constantly zero) with its `DUP2 GT SWAP4` parking by `SWAP1 JUMPDEST JUMPDEST`;
+the zero carry slot is consumed by the final `ADD`.  Same bytes and instruction count as
+`macFusedPostProgram`, seven gas cheaper.  `run_fused_zero` has the *same* conclusion as
+`run_fused`, only under the extra hypothesis `c = 0`, and is derived from `run_fused`. -/
 
-/-- `headProgram` with the incoming-carry `DUP4` replaced by `PUSH0` (both one byte). -/
 private def headZeroProgram : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩),
    .op .GT, .op .SUB, .op (.Dup ⟨1, by decide⟩),
-   .push 0 0, .op .ADD]
+   .op .JUMPDEST, .op .JUMPDEST]
+
+private def memoryZeroProgram (tl ts : UInt256) : List Instr :=
+  [.push 2 tl, .op .MLOAD, .op (.Dup ⟨1, by decide⟩), .op .ADD,
+   .op (.Dup ⟨0, by decide⟩), .push 2 ts, .op .MSTORE]
+
+private def tailZeroProgram : List Instr :=
+  [.op (.Swap ⟨0, by decide⟩), .op .JUMPDEST, .op .JUMPDEST, .op .GT,
+   .op .SUB, .op .SUB, .op .ADD]
 
 private theorem post_zero_eq (tl ts : UInt256) :
-    macFusedPostZeroProgram tl ts = (headZeroProgram ++ memoryProgram tl ts) ++ tailProgram := rfl
+    macFusedPostZeroProgram tl ts =
+      (headZeroProgram ++ memoryZeroProgram tl ts) ++ tailZeroProgram := rfl
 
-private theorem push0_ofNat : (⟨0⟩ : UInt256) = UInt256.ofNat 0 := by decide
-
-/-- On a zero-carry frame the two heads agree: `PUSH0` and the `DUP4` of a zero slot both push
-zero, and `PUSH0` advances the pc by the same single byte. -/
 private theorem run_head_zero (template : State) (pc mm lo y : UInt256)
     (rest : List UInt256) (hrest : rest.length + 8 < 1024) :
     runInstructions headZeroProgram
       (framed template pc ([mm, lo, UInt256.ofNat 0, y] ++ rest)) =
     some (framed template (pc + UInt256.ofNat 7)
-      ([lo + UInt256.ofNat 0, UInt256.lt mm lo - mm, lo, UInt256.ofNat 0, y] ++ rest)) := by
+      ([lo, UInt256.lt mm lo - mm, lo, UInt256.ofNat 0, y] ++ rest)) := by
   have hcap (n : Nat) (hn : n ≤ 8) : rest.length + n < 1024 := by omega
-  have hc := add_comm (UInt256.ofNat 0) lo
   simp (disch := omega) [runInstructions, headZeroProgram, framed,
     Challenge.EvmProof.Stepper.runInstr, List.getElem?_cons_zero,
-    List.getElem?_cons_succ, hcap, Nat.add_assoc, hc, push0_ofNat, UInt256.gt, UInt256.lt,
+    List.getElem?_cons_succ, hcap, Nat.add_assoc, UInt256.gt, UInt256.lt,
     succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- The zero-carry post schedule runs exactly as the general one does. -/
-private theorem run_post_zero_eq (template : State) (pc mm lo y tl ts : UInt256)
+private theorem run_store_only (template : State) (pc value sum borrow lo c y ts : UInt256)
+    (rest : List UInt256) (hrest : rest.length + 8 < 1024)
+    (hstore : UInt256.ofNat (MachineState.activeWordsAfter
+      template.activeWords.toNat ts.toNat 32) = template.activeWords) :
+    runInstructions [.op (.Dup ⟨0, by decide⟩), .push 2 ts, .op .MSTORE]
+      (framed template pc ([value, sum, borrow, lo, c, y] ++ rest)) =
+    some (framed
+      { template with
+        memory := MachineState.writeBytes template.memory
+          (Data.Bytes.natToBytesPadded value.toNat 32) ts.toNat }
+      (pc + UInt256.ofNat 5)
+      ([value, sum, borrow, lo, c, y] ++ rest)) := by
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  simp [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr,
+    List.getElem?_cons_zero, List.getElem?_cons_succ, hc6, hc7, hrest, Nat.add_assoc,
+    State.activeWordsAfterUInt256, hstore,
+    succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
+
+private theorem run_memory_zero (template : State) (pc sum borrow lo c y tl ts : UInt256)
+    (rest : List UInt256) (hrest : rest.length + 8 < 1024)
+    (hload : UInt256.ofNat (MachineState.activeWordsAfter
+      template.activeWords.toNat tl.toNat 32) = template.activeWords)
+    (hstore : UInt256.ofNat (MachineState.activeWordsAfter
+      template.activeWords.toNat ts.toNat 32) = template.activeWords) :
+    runInstructions (memoryZeroProgram tl ts)
+      (framed template pc ([sum, borrow, lo, c, y] ++ rest)) =
+    some (framed
+      { template with
+        memory := MachineState.writeBytes template.memory
+          (Data.Bytes.natToBytesPadded
+            (sum + MachineState.readWord template.memory tl.toNat).toNat 32) ts.toNat }
+      (pc + UInt256.ofNat 11)
+      ([sum + MachineState.readWord template.memory tl.toNat,
+          sum, borrow, lo, c, y] ++ rest)) := by
+  have hl := run_load_word template pc sum borrow lo c y tl rest hrest hload
+  have hs := run_form_sum template (pc + UInt256.ofNat 4)
+    (MachineState.readWord template.memory tl.toNat) sum borrow lo c y rest hrest
+  have hw := run_store_only template ((pc + UInt256.ofNat 4) + UInt256.ofNat 2)
+    (sum + MachineState.readWord template.memory tl.toNat)
+    sum borrow lo c y ts rest hrest hstore
+  have both := runInstructions_append_some _ _ _ _ _ hl hs
+  have all := runInstructions_append_some _ _ _ _ _ both hw
+  simpa only [memoryZeroProgram, List.cons_append, List.nil_append, pc_add_add,
+    Nat.reduceAdd] using all
+
+private theorem run_tail_zero (template : State) (pc value sum borrow lo c y : UInt256)
     (rest : List UInt256) (hrest : rest.length + 8 < 1024) :
+    runInstructions tailZeroProgram
+      (framed template pc ([value, sum, borrow, lo, c, y] ++ rest)) =
+    some (framed template (pc + UInt256.ofNat 7)
+      ([((UInt256.lt value sum - borrow) - lo) + c, y] ++ rest)) := by
+  have hcap (n : Nat) (hn : n ≤ 8) : rest.length + n < 1024 := by omega
+  simp (disch := omega) [runInstructions, tailZeroProgram, framed,
+    Challenge.EvmProof.Stepper.runInstr, List.getElem?_cons_zero,
+    List.getElem?_cons_succ, hcap, Nat.add_assoc, List.exchange, UInt256.gt, UInt256.lt,
+    succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
+
+private theorem run_post_zero (template : State) (pc mm lo y tl ts : UInt256)
+    (rest : List UInt256) (hrest : rest.length + 8 < 1024)
+    (hload : UInt256.ofNat (MachineState.activeWordsAfter
+      template.activeWords.toNat tl.toNat 32) = template.activeWords)
+    (hstore : UInt256.ofNat (MachineState.activeWordsAfter
+      template.activeWords.toNat ts.toNat 32) = template.activeWords) :
+    runInstructions (macFusedPostZeroProgram tl ts)
+      (framed template pc ([mm, lo, UInt256.ofNat 0, y] ++ rest)) =
+    some (framed
+      { template with
+        memory := MachineState.writeBytes template.memory
+          (Data.Bytes.natToBytesPadded
+            (lo + MachineState.readWord template.memory tl.toNat).toNat 32)
+          ts.toNat }
+      (pc + UInt256.ofNat 25)
+      ([((UInt256.lt (lo + MachineState.readWord template.memory tl.toNat) lo -
+          (UInt256.lt mm lo - mm)) - lo) + UInt256.ofNat 0, y] ++ rest)) := by
+  let t := MachineState.readWord template.memory tl.toNat
+  let stored : State :=
+    { template with
+      memory := MachineState.writeBytes template.memory
+        (Data.Bytes.natToBytesPadded (lo + t).toNat 32) ts.toNat }
+  have hh := run_head_zero template pc mm lo y rest hrest
+  have hm := run_memory_zero template (pc + UInt256.ofNat 7)
+    lo (UInt256.lt mm lo - mm) lo (UInt256.ofNat 0) y tl ts rest hrest hload hstore
+  have ht := run_tail_zero stored ((pc + UInt256.ofNat 7) + UInt256.ofNat 11)
+    (lo + t) lo (UInt256.lt mm lo - mm) lo (UInt256.ofNat 0) y rest hrest
+  have both := runInstructions_append_some _ _ _ _ _ hh hm
+  have all := runInstructions_append_some _ _ _ _ _ both ht
+  simpa only [post_zero_eq, stored, t, pc_add_add, Nat.reduceAdd] using all
+
+private theorem word_add_zero (a : UInt256) : a + UInt256.ofNat 0 = a := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_add, Challenge.EvmProof.Word.word_toNat_ofNat]
+  have ha : a.toNat < 2 ^ 256 := a.val.isLt
+  omega
+
+private theorem gt_zero_left (a : UInt256) : UInt256.gt (UInt256.ofNat 0) a = UInt256.ofNat 0 := by
+  unfold UInt256.gt
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat]
+  simp
+
+private theorem carry_zero_eq (b lo l : UInt256) :
+    ((UInt256.ofNat 0 - b) - lo) + l = ((l - b) - lo) + UInt256.ofNat 0 := by
+  apply Challenge.EvmProof.Word.word_ext
+  simp only [Challenge.EvmProof.Word.word_toNat_add, Challenge.EvmProof.Word.word_toNat_sub,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+  have hb : b.toNat < 2 ^ 256 := b.val.isLt
+  have hlo : lo.toNat < 2 ^ 256 := lo.val.isLt
+  have hl : l.toNat < 2 ^ 256 := l.val.isLt
+  omega
+
+/-- The zero-carry post schedule runs exactly as the general one does on a zero-carry frame. -/
+private theorem run_post_zero_eq (template : State) (pc mm lo y tl ts : UInt256)
+    (rest : List UInt256) (hrest : rest.length + 8 < 1024)
+    (hload : UInt256.ofNat (MachineState.activeWordsAfter
+      template.activeWords.toNat tl.toNat 32) = template.activeWords)
+    (hstore : UInt256.ofNat (MachineState.activeWordsAfter
+      template.activeWords.toNat ts.toNat 32) = template.activeWords) :
     runInstructions (macFusedPostZeroProgram tl ts)
       (framed template pc ([mm, lo, UInt256.ofNat 0, y] ++ rest)) =
     runInstructions (macFusedPostProgram tl ts)
       (framed template pc ([mm, lo, UInt256.ofNat 0, y] ++ rest)) := by
-  rw [post_eq, post_zero_eq]
-  simp only [runInstructions_append]
-  rw [run_head_zero template pc mm lo y rest hrest, run_head template pc mm lo (UInt256.ofNat 0) y
-    rest hrest]
+  rw [run_post_zero template pc mm lo y tl ts rest hrest hload hstore,
+    run_post template pc mm lo (UInt256.ofNat 0) y tl ts rest hrest hload hstore,
+    gt_zero_left, carry_zero_eq]
+  simp only [word_add_zero]
 
 /-- **The rider.**  Identical conclusion to `run_fused`, under `c = 0`. -/
 theorem run_fused_zero (template : State) (pc x y c tl ts : UInt256)
@@ -306,7 +425,7 @@ theorem run_fused_zero (template : State) (pc x y c tl ts : UInt256)
           = macProductProgram.take 6 ++ macFusedPostProgram tl ts from rfl,
       hsplit macFusedPostZeroProgram, hsplit macFusedPostProgram,
       run_post_zero_eq template (advancePC 6 pc) (UInt256.mulMod y x maxWord) (x * y) y tl ts
-        rest hrest]
+        rest hrest hload hstore]
   rw [key]
   exact run_fused template pc x y (UInt256.ofNat 0) tl ts rest hrest hload hstore
 
