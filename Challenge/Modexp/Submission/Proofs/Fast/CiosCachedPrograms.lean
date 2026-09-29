@@ -93,18 +93,21 @@ def macFusedPostProgram (tl ts : UInt256) : List Instr :=
 def macFusedProgram (tl ts : UInt256) : List Instr :=
   macProductProgram.take 6 ++ macFusedPostProgram tl ts
 
-/-- `macFusedPostProgram` with the incoming-carry `DUP4` replaced by `PUSH0`: same byte length,
-one gas cheaper, and equivalent *only* on a frame whose incoming carry is already zero.  The
-`DUP4` it replaces reproduces the cell's incoming carry `c`, so this schedule is sound exactly
-where `c = 0` — the row-head cell of a conversion chain, never a cell fed by a predecessor. -/
+/-- `macFusedPostProgram` specialised to a known-zero incoming carry `c = 0`: same byte length
+and instruction count, seven gas cheaper, and equivalent *only* on a frame whose incoming carry
+is already zero (the row-head cell of a conversion chain, never a cell fed by a predecessor).
+With `c = 0` the incoming-carry add `DUP4 ADD` is the identity (two `JUMPDEST`s), and the
+first carry test `c > lo + c` is the constant zero, so the `DUP2 GT SWAP4` that computes and
+parks it collapses to one `SWAP1` (plus two `JUMPDEST`s); the zero carry slot is consumed by
+the final `ADD`. -/
 def macFusedPostZeroProgram (tl ts : UInt256) : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨2, by decide⟩),
    .op .GT,
    .op .SUB,
    .op (.Dup ⟨1, by decide⟩),
-   .push 0 0,
-   .op .ADD,
+   .op .JUMPDEST,
+   .op .JUMPDEST,
    .push 2 tl,
    .op .MLOAD,
    .op (.Dup ⟨1, by decide⟩),
@@ -112,9 +115,9 @@ def macFusedPostZeroProgram (tl ts : UInt256) : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .push 2 ts,
    .op .MSTORE,
-   .op (.Dup ⟨1, by decide⟩),
-   .op .GT,
-   .op (.Swap ⟨3, by decide⟩),
+   .op (.Swap ⟨0, by decide⟩),
+   .op .JUMPDEST,
+   .op .JUMPDEST,
    .op .GT,
    .op .SUB,
    .op .SUB,
