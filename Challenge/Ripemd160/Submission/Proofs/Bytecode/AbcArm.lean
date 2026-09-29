@@ -67,7 +67,7 @@ def wordPath : List Located :=
   [⟨3538, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by exact GuardInstructionWindow.get 0, by decide⟩,
    ⟨3539, .op .CALLDATALOAD, by exact GuardInstructionWindow.get 1, ⟨by decide, trivial, rfl⟩⟩,
    ⟨3540, .push ⟨1, by decide⟩ (UInt256.ofNat 232), by exact GuardInstructionWindow.get 2, by decide⟩,
-   ⟨3541, .op .SHR, by exact GuardInstructionWindow.get 3, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨3541, .op .SAR, by exact GuardInstructionWindow.get 3, ⟨by decide, trivial, rfl⟩⟩,
    ⟨3542, .op .CALLDATASIZE, by exact GuardInstructionWindow.get 4, ⟨by decide, trivial, rfl⟩⟩,
    ⟨3543, .push ⟨3, by decide⟩ (UInt256.ofNat 2127393), by exact GuardInstructionWindow.get 5, by decide⟩,
    ⟨3544, .op .MUL, by exact GuardInstructionWindow.get 6, ⟨by decide, trivial, rfl⟩⟩,
@@ -92,7 +92,14 @@ def finishPath : List Located :=
 
 def sizeCond (input : ByteArray) : UInt256 :=
   UInt256.shiftRight (UInt256.ofNat input.size) (UInt256.ofNat 2)
+/-- The arm's lead word: `calldata[0] SAR 232` (sign-extending). -/
+def leadWordS (input : ByteArray) : UInt256 :=
+  UInt256.sar (MachineState.readWord input 0) (UInt256.ofNat 232)
 def wordCond (input : ByteArray) : UInt256 :=
+  UInt256.xor (leadWordS input)
+    (UInt256.mul (UInt256.ofNat input.size) (UInt256.ofNat 0x207621))
+/-- The unsigned form used by `TinyGuardLogic.condition`. -/
+def wordCondU (input : ByteArray) : UInt256 :=
   UInt256.xor (leadWord input)
     (UInt256.mul (UInt256.ofNat input.size) (UInt256.ofNat 0x207621))
 def armEntry (input : ByteArray) : State := Execution.atPC input 4730
@@ -138,35 +145,194 @@ private theorem valid_generic : Decode.isValidJumpDest submissionBytecode 246 = 
   have h := Artifact.submissionArtifact.isValidJumpDest_index 147 (by rfl)
   rw [pc_176] at h
   exact h
-def wordHead : List Located := wordPath.take 5
-def wordCalc : List Located := (wordPath.drop 5).take 4
+/-! ### Sign-extending shift facts -/
+
+theorem sar_toNat_small (v : UInt256) (h : v.toNat < 2 ^ 255) :
+    (UInt256.sar v (UInt256.ofNat 232)).toNat = v.toNat / 2 ^ 232 := by
+  unfold UInt256.sar UInt256.toSignedNat UInt256.ofSignedInt
+  have h232 : (UInt256.ofNat 232).toNat = 232 := by decide
+  have hs : UInt256.size = 2 ^ 256 := rfl
+  rw [h232, if_neg (by norm_num)]
+  simp only [hs]
+  rw [if_pos (by rw [show (2:Nat) ^ 256 / 2 = 2 ^ 255 by norm_num]; exact h)]
+  rw [Word.word_toNat_ofNat]
+  have hv : v.toNat < 2 ^ 256 := v.val.isLt
+  generalize hx : v.toNat = x at h hv ⊢
+  have hlt : ((x : Int) / (2 ^ 232 : Int) % ((2 ^ 256 : Nat) : Int)).toNat < 2 ^ 256 := by
+    omega
+  have key : ((x : Int) / (2 ^ 232 : Int) % ((2 ^ 256 : Nat) : Int)).toNat = x / 2 ^ 232 := by
+    omega
+  rw [Nat.mod_eq_of_lt (by push_cast at hlt ⊢; exact hlt)]
+  push_cast at key ⊢
+  exact key
+
+theorem sar_toNat_big (v : UInt256) (h : 2 ^ 255 ≤ v.toNat) :
+    2 ^ 255 ≤ (UInt256.sar v (UInt256.ofNat 232)).toNat := by
+  unfold UInt256.sar UInt256.toSignedNat UInt256.ofSignedInt
+  have h232 : (UInt256.ofNat 232).toNat = 232 := by decide
+  have hs : UInt256.size = 2 ^ 256 := rfl
+  have hv : v.toNat < 2 ^ 256 := v.val.isLt
+  rw [h232, if_neg (by norm_num)]
+  simp only [hs]
+  rw [if_neg (by rw [show (2:Nat) ^ 256 / 2 = 2 ^ 255 by norm_num]; omega)]
+  rw [Word.word_toNat_ofNat]
+  generalize hx : v.toNat = x at h hv
+  have key : 2 ^ 255 ≤ (((x : Int) - ((2 ^ 256 : Nat) : Int)) / (2 ^ 232 : Int) %
+      ((2 ^ 256 : Nat) : Int)).toNat := by
+    omega
+  have hlt : (((x : Int) - ((2 ^ 256 : Nat) : Int)) / (2 ^ 232 : Int) %
+      ((2 ^ 256 : Nat) : Int)).toNat < 2 ^ 256 := by
+    omega
+  rw [Nat.mod_eq_of_lt (by push_cast at hlt ⊢; exact hlt)]
+  push_cast at key ⊢
+  exact key
+
+private theorem word_toNat_mulG (x y : UInt256) :
+    (x * y).toNat = (x.toNat * y.toNat) % 2 ^ 256 := by
+  show (x.val * y.val).val = _
+  rw [Fin.val_mul]
+  rfl
+
+private theorem mul_size_toNat' (input : ByteArray) (hfit : CalldataFits input) :
+    (UInt256.mul (UInt256.ofNat input.size) (UInt256.ofNat 0x207621)).toNat =
+      input.size * 0x207621 := by
+  have hs : input.size < 2 ^ 64 := hfit
+  have hm : (UInt256.mul (UInt256.ofNat input.size) (UInt256.ofNat 0x207621)).toNat =
+      ((UInt256.ofNat input.size).toNat * (UInt256.ofNat 0x207621).toNat) % 2 ^ 256 :=
+    word_toNat_mulG _ _
+  rw [hm, Word.word_toNat_ofNat, Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (Nat.lt_trans hs (by norm_num)),
+    Nat.mod_eq_of_lt (by norm_num : (0x207621 : Nat) < 2 ^ 256)]
+  apply Nat.mod_eq_of_lt
+  have h1 : input.size * 0x207621 < 2 ^ 64 * 0x207621 :=
+    Nat.mul_lt_mul_of_pos_right hs (by norm_num)
+  exact lt_of_lt_of_le h1 (by norm_num)
+
+theorem leadWordS_eq (input : ByteArray)
+    (h : (MachineState.readWord input 0).toNat < 2 ^ 255) : leadWordS input = leadWord input := by
+  apply Word.word_ext
+  rw [leadWordS, sar_toNat_small _ h, leadWord, Word.shiftRight_toNat _ (by decide),
+    Nat.shiftRight_eq_div_pow]
+
+theorem wordCond_eq_U (input : ByteArray)
+    (h : (MachineState.readWord input 0).toNat < 2 ^ 255) : wordCond input = wordCondU input := by
+  rw [wordCond, wordCondU, leadWordS_eq input h]
+
+/-- A zero sign-extended word test forces a clear top bit. -/
+theorem small_of_wordCond (input : ByteArray) (hfit : CalldataFits input)
+    (hz : wordCond input = 0) : (MachineState.readWord input 0).toNat < 2 ^ 255 := by
+  by_contra hn
+  have hbig := sar_toNat_big _ (Nat.le_of_not_lt hn)
+  have heq := congrArg UInt256.toNat ((KnownInputLogic.wordXor_eq_zero_iff _ _).mp hz)
+  rw [mul_size_toNat' input hfit] at heq
+  change (leadWordS input).toNat = _ at heq
+  have hs : input.size < 2 ^ 64 := hfit
+  unfold leadWordS at heq
+  omega
+
+/-- The top bit is clear exactly when the unsigned lead word is below `2^23`. -/
+theorem small_of_lead (input : ByteArray) (h : (leadWord input).toNat < 2 ^ 23) :
+    (MachineState.readWord input 0).toNat < 2 ^ 255 := by
+  rw [leadWord, Word.shiftRight_toNat _ (by decide), Nat.shiftRight_eq_div_pow] at h
+  omega
+
+theorem lead_of_small (input : ByteArray)
+    (h : (MachineState.readWord input 0).toNat < 2 ^ 255) : (leadWord input).toNat < 2 ^ 23 := by
+  rw [leadWord, Word.shiftRight_toNat _ (by decide), Nat.shiftRight_eq_div_pow]
+  omega
+
+/-- The sign-extended arm test can only match inputs shorter than four bytes. -/
+theorem size_lt_four_of_wordCond (input : ByteArray) (hfit : CalldataFits input)
+    (hz : wordCond input = 0) : input.size < 4 := by
+  have hsmall := small_of_wordCond input hfit hz
+  rw [wordCond_eq_U input hsmall] at hz
+  have heq := congrArg UInt256.toNat ((KnownInputLogic.wordXor_eq_zero_iff _ _).mp hz)
+  rw [mul_size_toNat' input hfit] at heq
+  have hl := lead_of_small input hsmall
+  rw [heq] at hl
+  by_contra hn
+  have hk : 4 * 0x207621 ≤ input.size * 0x207621 := Nat.mul_le_mul_right _ (by omega)
+  omega
+
+private def sarStep {s : State} {shift value : UInt256} {rest : List UInt256}
+    (hop : s.decodedOp = some .SAR)
+    (hstack : s.stack = shift :: value :: rest)
+    (hcap : s.stack.length + Operation.pushArity .SAR ≤ 1024 + Operation.popArity .SAR)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    GasSteps s { s with stack := UInt256.sar value shift :: rest, pc := s.pc.succ } := by
+  let cost := Gas.baseCost s.fork .SAR
+  apply GasStep.of_running cost hrun hnp
+  intro gas hgas
+  simpa [withGas, cost] using
+    StepRunning.sar (withGas s gas) shift value rest hop hgas hstack hcap
+
+/-! ### The word test, with the sign-extending shift stepped directly -/
+
+def wordHead : List Located := wordPath.take 3
+def wordCalc : List Located := (wordPath.drop 4).take 5
 def wordBranch : Located :=
   ⟨3547, .op .JUMPI, by exact GuardInstructionWindow.get 9, ⟨by decide, trivial, rfl⟩⟩
-def wordMiddle (input : ByteArray) : State :=
+def wordLoaded (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4736
-    stack := [UInt256.ofNat input.size, leadWord input] }
+    pc := UInt256.ofNat 4734
+    stack := [UInt256.ofNat 232, MachineState.readWord input 0] }
+def wordShifted (input : ByteArray) : State :=
+  { initialState submissionBytecode input 0 with
+    pc := UInt256.ofNat 4735
+    stack := [leadWordS input] }
 def wordTested (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
     pc := UInt256.ofNat 4744
     stack := [UInt256.ofNat 246, wordCond input] }
 
 private theorem run_word_head (input : ByteArray) :
-    DataStepper.runLocatedBlock wordHead (armEntry input) = some (wordMiddle input) := by
+    DataStepper.runLocatedBlock wordHead (armEntry input) = some (wordLoaded input) := by
   simp [wordHead, wordPath, DataStepper.runLocatedBlock, DataStepper.runLocated, DataStepper.runInstr,
-    armEntry, wordMiddle, Execution.atPC, initialState, UInt256.succ, leadWord,
+    armEntry, wordLoaded, Execution.atPC, initialState, UInt256.succ,
     Word.ofNat_add_mod, Word.word_toNat_ofNat]
 private theorem run_word_calc (input : ByteArray) :
-    DataStepper.runLocatedBlock wordCalc (wordMiddle input) = some (wordTested input) := by
+    DataStepper.runLocatedBlock wordCalc (wordShifted input) = some (wordTested input) := by
   simp [wordCalc, wordPath, DataStepper.runLocatedBlock, DataStepper.runLocated, DataStepper.runInstr,
-    wordMiddle, wordTested, wordCond, Execution.atPC, initialState, UInt256.succ,
+    wordShifted, wordTested, wordCond, Execution.atPC, initialState, UInt256.succ,
     Word.ofNat_add_mod, Word.word_toNat_ofNat, mul_op, RawExpressionAC.mul_comm, RawExpressionAC.xor_comm]
-private theorem run_word_prefix (input : ByteArray) :
-    DataStepper.runLocatedBlock (wordPath.take 9) (armEntry input) = some (wordTested input) := by
-  exact DataStepper.runLocatedBlock_append wordHead wordCalc _ _ _ (run_word_head input) rfl (run_word_calc input)
+
+private def gasSteps_sar (input : ByteArray) : GasSteps (wordLoaded input) (wordShifted input) := by
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3541 .SAR
+    (by exact GuardInstructionWindow.get 3) (by decide) trivial
+  have hp : (wordLoaded input).pc.toNat = Artifact.submissionArtifact.instructionPC 3541 := by
+    rw [pc_4098]; rfl
+  have hop : (wordLoaded input).decodedOp = some .SAR :=
+    Artifact.submissionArtifact.state_decodedOp_of (wordLoaded input) 3541 rfl hp .SAR none hd rfl
+  have g := sarStep (s := wordLoaded input) (shift := UInt256.ofNat 232)
+    (value := MachineState.readWord input 0) (rest := []) hop rfl
+    (by show 2 + Operation.pushArity .SAR ≤ 1024 + Operation.popArity .SAR; decide) rfl
+    deployAddress_not_precompile
+  have ht : { wordLoaded input with
+      stack := UInt256.sar (MachineState.readWord input 0) (UInt256.ofNat 232) :: [],
+      pc := (wordLoaded input).pc.succ } = wordShifted input := by
+    simp [wordLoaded, wordShifted, leadWordS, initialState, Word.succ_ofNat_mod,
+      Word.word_toNat_ofNat]
+  exact ht ▸ g
+
+private def soundW (path : List Located) {s t : State}
+    (h : DataStepper.runLocatedBlock path s = some t)
+    (hc : s.executionEnv.code = Artifact.submissionArtifact.code := by rfl)
+    (hf : s.fork = .Osaka := by rfl) (hr : s.halt = .Running := by rfl)
+    (hn : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false := by exact deployAddress_not_precompile) :
+    GasSteps s t :=
+  DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka path hc hf h hr hn
+
+private def gasSteps_word_prefix (input : ByteArray) :
+    GasSteps (armEntry input) (wordTested input) :=
+  (soundW wordHead (run_word_head input)).trans
+    ((gasSteps_sar input).trans (soundW wordCalc (run_word_calc input)))
 
 theorem run_word_miss (input : ByteArray) (hm : wordCond input ≠ 0) :
-    DataStepper.runLocatedBlock wordMissPath (armEntry input) = some (fallbackState input) := by
+    DataStepper.runLocatedBlock [wordBranch, entryDest] (wordTested input) =
+      some (fallbackState input) := by
   have hbranch : DataStepper.runLocatedBlock [wordBranch] (wordTested input) =
       some (PatternedScan.stS input 246 []) :=
     PatternedScan.blockOfS wordBranch
@@ -178,20 +344,16 @@ theorem run_word_miss (input : ByteArray) (hm : wordCond input ≠ 0) :
     exact PatternedScan.blockOfS entryDest
       (PatternedScan.pcFactS input 147 246 [] (by norm_num) pc_176)
       (PatternedScan.stepS_jumpdest input 246 [] (by simp) (by norm_num))
-  have hbe := DataStepper.runLocatedBlock_append [wordBranch] [entryDest]
+  exact DataStepper.runLocatedBlock_append [wordBranch] [entryDest]
     _ _ _ hbranch rfl hd
-  exact DataStepper.runLocatedBlock_append (wordPath.take 9) [wordBranch, entryDest]
-    _ _ _ (run_word_prefix input) rfl hbe
 
 theorem run_word_hit (input : ByteArray) (hm : wordCond input = 0) :
-    DataStepper.runLocatedBlock wordPath (armEntry input) = some (Execution.atPC input 4745) := by
+    DataStepper.runLocatedBlock [wordBranch] (wordTested input) = some (Execution.atPC input 4745) := by
   have ht : ¬ UInt256.isTrue (wordCond input) := by rw [hm]; decide
-  have hbranch : DataStepper.runLocatedBlock [wordBranch] (wordTested input) = some (Execution.atPC input 4745) :=
-    PatternedScan.blockOfS wordBranch
-      (PatternedScan.pcFactS input 3547 4744 [UInt256.ofNat 246, wordCond input] (by norm_num) pc_4104)
-      (PatternedScan.stepS_jumpi_fall input 4744 (UInt256.ofNat 246) (wordCond input) []
-        (by simp) (by norm_num) ht)
-  exact DataStepper.runLocatedBlock_append (wordPath.take 9) [wordBranch] _ _ _ (run_word_prefix input) rfl hbranch
+  exact PatternedScan.blockOfS wordBranch
+    (PatternedScan.pcFactS input 3547 4744 [UInt256.ofNat 246, wordCond input] (by norm_num) pc_4104)
+    (PatternedScan.stepS_jumpi_fall input 4744 (UInt256.ofNat 246) (wordCond input) []
+      (by simp) (by norm_num) ht)
 
 theorem run_store (input : ByteArray) :
     DataStepper.runLocatedBlock storePath (Execution.atPC input 4745) = some (stored input) := by
@@ -219,11 +381,11 @@ private def sound (path : List Located) {s t : State}
 
 def gasSteps_miss (input : ByteArray) (hw : wordCond input ≠ 0) :
     GasSteps (armEntry input) (fallbackState input) :=
-  sound wordMissPath (run_word_miss input hw)
+  (gasSteps_word_prefix input).trans (sound [wordBranch, entryDest] (run_word_miss input hw))
 
 def gasSteps_hit (input : ByteArray) (hw : wordCond input = 0) :
     GasSteps (armEntry input) (returned input) := by
-  have gw := sound wordPath (run_word_hit input hw)
+  have gw := (gasSteps_word_prefix input).trans (sound [wordBranch] (run_word_hit input hw))
   have gs := sound storePath (run_store input)
   have hd := Artifact.submissionArtifact.decodeAt_op_index 3555 .MSIZE
     (by exact GuardInstructionWindow.get 17) (by decide) trivial
@@ -251,9 +413,12 @@ theorem correct_hit (input : ByteArray) (hfit : CalldataFits input)
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   let trace := entryPrefix.trans (gasSteps_hit input hw)
+  have hwU : wordCondU input = 0 := by
+    rw [← wordCond_eq_U input (small_of_wordCond input hfit hw)]
+    exact hw
   have hc : condition input = 0 := by
-    change UInt256.lor (wordCond input) (sizeCond input) = 0
-    rw [hw, hs]
+    change UInt256.lor (wordCondU input) (sizeCond input) = 0
+    rw [hwU, hs]
     decide
   have hspec : spec input = answerBytes input := by
     rcases zero_cases input hfit hc with h | h
@@ -279,22 +444,44 @@ theorem correct_abc (input : ByteArray) (hfit : CalldataFits input)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0) (armEntry input)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  have hc := condition_abc
-  change UInt256.lor (wordCond AbcInputData.abcInput) (sizeCond AbcInputData.abcInput) = 0 at hc
-  obtain ⟨hw, hs⟩ := (KnownInputLogic.wordOr_eq_zero_iff _ _).mp hc
   subst input
-  exact correct_hit _ hfit hs hw entryPrefix
+  have hc := condition_abc
+  change UInt256.lor (wordCondU AbcInputData.abcInput) (sizeCond AbcInputData.abcInput) = 0 at hc
+  obtain ⟨hw, hs⟩ := (KnownInputLogic.wordOr_eq_zero_iff _ _).mp hc
+  have hlead : (leadWord AbcInputData.abcInput).toNat < 2 ^ 23 := by
+    rw [leadWord_abc, Word.word_toNat_ofNat]
+    norm_num
+  have hwS : wordCond AbcInputData.abcInput = 0 := by
+    rw [wordCond_eq_U _ (small_of_lead _ hlead)]
+    exact hw
+  exact correct_hit _ hfit hs hwS entryPrefix
+
+theorem wordCond_empty : wordCond ByteArray.empty = 0 := by
+  have hc := condition_empty
+  change UInt256.lor (wordCondU ByteArray.empty) (sizeCond ByteArray.empty) = 0 at hc
+  obtain ⟨hw, _⟩ := (KnownInputLogic.wordOr_eq_zero_iff _ _).mp hc
+  have hlead : (leadWord ByteArray.empty).toNat < 2 ^ 23 := by
+    rw [leadWord_empty]
+    decide
+  rw [wordCond_eq_U _ (small_of_lead _ hlead)]
+  exact hw
 
 theorem correct_empty (input : ByteArray) (hfit : CalldataFits input)
     (heq : input = ByteArray.empty)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0) (armEntry input)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  have hc := condition_empty
-  change UInt256.lor (wordCond ByteArray.empty) (sizeCond ByteArray.empty) = 0 at hc
-  obtain ⟨hw, hs⟩ := (KnownInputLogic.wordOr_eq_zero_iff _ _).mp hc
   subst input
-  exact correct_hit _ hfit hs hw entryPrefix
+  have hc := condition_empty
+  change UInt256.lor (wordCondU ByteArray.empty) (sizeCond ByteArray.empty) = 0 at hc
+  obtain ⟨hw, hs⟩ := (KnownInputLogic.wordOr_eq_zero_iff _ _).mp hc
+  have hlead : (leadWord ByteArray.empty).toNat < 2 ^ 23 := by
+    rw [leadWord_empty]
+    decide
+  have hwS : wordCond ByteArray.empty = 0 := by
+    rw [wordCond_eq_U _ (small_of_lead _ hlead)]
+    exact hw
+  exact correct_hit _ hfit hs hwS entryPrefix
 
 #print axioms correct_hit
 #print axioms gasSteps_miss
