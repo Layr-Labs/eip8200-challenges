@@ -12,54 +12,54 @@ open DirectGuard
 
 /-- A passing prefilter continues the full inherited recognizer. A nonzero result
 only selects the general RIPEMD implementation; it never authorizes a digest. -/
-def mask : UInt256 := UInt256.ofNat 0x108c86821c
+def mask : UInt256 := UInt256.ofNat 0x821c
 def condition (input : ByteArray) : UInt256 :=
   UInt256.land (MachineState.readWord input 0) mask
 
 def filterPrefix : List Located :=
-  [pushAt 0 5 mask, pushAt 1 0 0, opAt 2 .CALLDATALOAD,
+  [pushAt 0 2 mask, pushAt 1 0 0, opAt 2 .CALLDATALOAD,
    opAt 3 .AND, pushAt 4 1 246]
 def path : List Located := filterPrefix ++ [opAt 5 .JUMPI]
 def takenPath : List Located := filterPrefix ++ [opAt 5 .JUMPI, entryDest]
 
 private theorem pc0 : Artifact.submissionArtifact.instructionPC 0 = 0 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc1 : Artifact.submissionArtifact.instructionPC 1 = 6 := by
+private theorem pc1 : Artifact.submissionArtifact.instructionPC 1 = 3 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc2 : Artifact.submissionArtifact.instructionPC 2 = 7 := by
+private theorem pc2 : Artifact.submissionArtifact.instructionPC 2 = 4 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc3 : Artifact.submissionArtifact.instructionPC 3 = 8 := by
+private theorem pc3 : Artifact.submissionArtifact.instructionPC 3 = 5 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc4 : Artifact.submissionArtifact.instructionPC 4 = 9 := by
+private theorem pc4 : Artifact.submissionArtifact.instructionPC 4 = 6 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc5 : Artifact.submissionArtifact.instructionPC 5 = 11 := by
+private theorem pc5 : Artifact.submissionArtifact.instructionPC 5 = 8 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 theorem run_prefix (input : ByteArray) :
     run filterPrefix (PatternedScan.stS input 0 []) =
-      some (PatternedScan.stS input 11 [246, condition input]) := by
+      some (PatternedScan.stS input 8 [246, condition input]) := by
   let w := MachineState.readWord input 0
-  let l0 : Located := pushAt 0 5 mask
+  let l0 : Located := pushAt 0 2 mask
   have h0 := PatternedScan.blockOfS l0
     (PatternedScan.pcFactS input 0 0 [] (by norm_num) pc0)
-    (PatternedScan.stepS_push input 0 5 mask []
+    (PatternedScan.stepS_push input 0 2 mask []
       (by simp) (by decide) (by decide) (by norm_num))
   let l1 : Located := pushAt 1 0 0
   have h1 := PatternedScan.blockOfS l1
-    (PatternedScan.pcFactS input 1 6 [mask] (by norm_num) pc1)
-    (PatternedScan.stepS_push0 input 6 [mask] (by simp) (by norm_num))
+    (PatternedScan.pcFactS input 1 3 [mask] (by norm_num) pc1)
+    (PatternedScan.stepS_push0 input 3 [mask] (by simp) (by norm_num))
   let l2 : Located := opAt 2 .CALLDATALOAD
   have h2 := PatternedScan.blockOfS l2
-    (PatternedScan.pcFactS input 2 7 [0, mask] (by norm_num) pc2)
-    (PatternedScan.stepS_calldataload input 7 0 [mask] (by simp) (by norm_num))
+    (PatternedScan.pcFactS input 2 4 [0, mask] (by norm_num) pc2)
+    (PatternedScan.stepS_calldataload input 4 0 [mask] (by simp) (by norm_num))
   let l3 : Located := opAt 3 .AND
   have h3 := PatternedScan.blockOfS l3
-    (PatternedScan.pcFactS input 3 8 [w, mask] (by norm_num) pc3)
-    (PatternedScan.stepS_and input 8 w mask [] (by simp) (by norm_num))
+    (PatternedScan.pcFactS input 3 5 [w, mask] (by norm_num) pc3)
+    (PatternedScan.stepS_and input 5 w mask [] (by simp) (by norm_num))
   let l4 : Located := pushAt 4 1 246
   have h4 := PatternedScan.blockOfS l4
-    (PatternedScan.pcFactS input 4 9 [condition input] (by norm_num) pc4)
-    (PatternedScan.stepS_push input 9 1 246 [condition input]
+    (PatternedScan.pcFactS input 4 6 [condition input] (by norm_num) pc4)
+    (PatternedScan.stepS_push input 6 1 246 [condition input]
       (by simp) (by decide) (by decide) (by norm_num))
   have h01 := DataStepper.runLocatedBlock_append [l0] [l1] _ _ _ h0 rfl h1
   have h012 := DataStepper.runLocatedBlock_append [l0,l1] [l2] _ _ _ h01 rfl h2
@@ -68,12 +68,12 @@ theorem run_prefix (input : ByteArray) :
 
 theorem run_fall (input : ByteArray) (h : condition input = 0) :
     run path (PatternedScan.stS input 0 []) =
-      some (PatternedScan.stS input 12 []) := by
+      some (PatternedScan.stS input 9 []) := by
   have hp := run_prefix input
   rw [h] at hp
   have hj := PatternedScan.blockOfS (opAt 5 .JUMPI)
-    (PatternedScan.pcFactS input 5 11 [246, 0] (by norm_num) pc5)
-    (PatternedScan.stepS_jumpi_fall input 11 246 0 []
+    (PatternedScan.pcFactS input 5 8 [246, 0] (by norm_num) pc5)
+    (PatternedScan.stepS_jumpi_fall input 8 246 0 []
       (by simp) (by norm_num) (by decide))
   exact DataStepper.runLocatedBlock_append filterPrefix [opAt 5 .JUMPI] _ _ _ hp rfl hj
 
@@ -82,8 +82,8 @@ theorem run_taken (input : ByteArray) (h : condition input ≠ 0) :
       some (PatternedScan.stS input 247 []) := by
   have hp := run_prefix input
   have hj := PatternedScan.blockOfS (opAt 5 .JUMPI)
-    (PatternedScan.pcFactS input 5 11 [246, condition input] (by norm_num) pc5)
-    (PatternedScan.stepS_jumpi_taken input 11 246 246 (condition input) []
+    (PatternedScan.pcFactS input 5 8 [246, condition input] (by norm_num) pc5)
+    (PatternedScan.stepS_jumpi_taken input 8 246 246 (condition input) []
       (by simp) (by norm_num) (by rfl)
       (by
         intro hz
@@ -102,7 +102,7 @@ theorem run_taken (input : ByteArray) (h : condition input ≠ 0) :
     _ _ _ hp rfl hje
 
 def gasSteps_fall (input : ByteArray) (h : condition input = 0) :
-    GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 12) :=
+    GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 9) :=
   DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     path rfl rfl (run_fall input h) rfl deployAddress_not_precompile
 

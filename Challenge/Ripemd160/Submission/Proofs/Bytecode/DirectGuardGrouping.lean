@@ -111,22 +111,26 @@ def seedAcc (input : ByteArray) : UInt256 :=
   UInt256.lor (UInt256.xor (referenceWord input) (MachineState.readWord input 968))
     (fullTerm input)
 
-/-- The paired loop accumulation from an arbitrary seed. -/
+/-- The three-word loop accumulation from an arbitrary seed. -/
 def revFrom (input : ByteArray) (seed : UInt256) : Nat → UInt256
   | 0 => seed
   | n + 1 => UInt256.lor
-      (UInt256.xor (MachineState.readWord input (928 - 64 * n)) (referenceWord input))
+      (UInt256.xor (MachineState.readWord input (960 - 96 * n)) (referenceWord input))
       (UInt256.lor
-        (UInt256.xor (MachineState.readWord input (960 - 64 * n)) (referenceWord input))
-        (revFrom input seed n))
+        (UInt256.xor (MachineState.readWord input (896 - 96 * n)) (referenceWord input))
+        (UInt256.lor
+          (UInt256.xor (MachineState.readWord input (928 - 96 * n)) (referenceWord input))
+          (revFrom input seed n)))
 
 def reverseAcc (input : ByteArray) : Nat → UInt256
   | 0 => seedAcc input
   | n + 1 => UInt256.lor
-      (UInt256.xor (MachineState.readWord input (928 - 64 * n)) (referenceWord input))
+      (UInt256.xor (MachineState.readWord input (960 - 96 * n)) (referenceWord input))
       (UInt256.lor
-        (UInt256.xor (MachineState.readWord input (960 - 64 * n)) (referenceWord input))
-        (reverseAcc input n))
+        (UInt256.xor (MachineState.readWord input (896 - 96 * n)) (referenceWord input))
+        (UInt256.lor
+          (UInt256.xor (MachineState.readWord input (928 - 96 * n)) (referenceWord input))
+          (reverseAcc input n)))
 
 theorem reverseAcc_eq (input : ByteArray) (n : Nat) :
     reverseAcc input n = revFrom input (seedAcc input) n := by
@@ -150,7 +154,7 @@ theorem revFrom_lor (input : ByteArray) (a b : UInt256) (n : Nat) :
       ac_rfl
 
 theorem revFrom_final (input : ByteArray) :
-    revFrom input (UInt256.lor (tailDiff input) (loopAcc input 0)) 15 = finalAcc input := by
+    revFrom input (UInt256.lor (tailDiff input) (loopAcc input 0)) 10 = finalAcc input := by
   norm_num only [revFrom, loopAcc, tailDiff, finalAcc, RootOverlapGuard.finalAcc]
   apply Challenge.EvmProof.Word.word_ext
   simp only [Challenge.EvmProof.Word.word_toNat_lor]
@@ -193,8 +197,8 @@ theorem fullTerm_eq_zero (input : ByteArray) (h : fullTerm input = 0) :
 /-- The final accumulator splits into the anchor test and the accumulator of
 the previous guard. -/
 theorem reverseAcc_split (input : ByteArray) :
-    reverseAcc input 15 = UInt256.lor (fullTerm input)
-      (revFrom input (UInt256.xor (referenceWord input) (MachineState.readWord input 968)) 15) := by
+    reverseAcc input 10 = UInt256.lor (fullTerm input)
+      (revFrom input (UInt256.xor (referenceWord input) (MachineState.readWord input 968)) 10) := by
   rw [reverseAcc_eq, seedAcc, lor_comm' (UInt256.xor _ _) (fullTerm input), revFrom_lor]
 
 theorem xor_comm' (a b : UInt256) : UInt256.xor a b = UInt256.xor b a := by
@@ -211,7 +215,7 @@ private theorem lor_zero_left (a : UInt256) : UInt256.lor 0 a = a := by
 theorem finalAcc_of_anchor (input : ByteArray)
     (href : referenceWord input = KnownInputData.fullWord) :
     finalAcc input =
-      revFrom input (UInt256.xor (referenceWord input) (MachineState.readWord input 968)) 15 := by
+      revFrom input (UInt256.xor (referenceWord input) (MachineState.readWord input 968)) 10 := by
   rw [← revFrom_final]
   have hz : loopAcc input 0 = 0 := by
     rw [loopAcc, href]
@@ -219,7 +223,7 @@ theorem finalAcc_of_anchor (input : ByteArray)
   rw [lor_comm' (tailDiff input), hz, lor_zero_left, tailDiff, xor_comm']
 
 theorem reverseAcc_zero_target (input : ByteArray) (hsize : input.size = 1000)
-    (h : reverseAcc input 15 = 0) : input = KnownInputData.targetInput := by
+    (h : reverseAcc input 10 = 0) : input = KnownInputData.targetInput := by
   rw [reverseAcc_split] at h
   rcases (KnownInputLogic.wordOr_eq_zero_iff _ _).1 h with ⟨hf, hloop⟩
   have href := fullTerm_eq_zero input hf
@@ -228,7 +232,7 @@ theorem reverseAcc_zero_target (input : ByteArray) (hsize : input.size = 1000)
   rw [finalAcc_of_anchor input href]
   exact hloop
 
-theorem reverseAcc_target_zero : reverseAcc KnownInputData.targetInput 15 = 0 := by
+theorem reverseAcc_target_zero : reverseAcc KnownInputData.targetInput 10 = 0 := by
   have href : referenceWord KnownInputData.targetInput = KnownInputData.fullWord := by
     simpa [referenceWord, KnownInputData.expectedWord] using
       (KnownInputData.targetInput_readWord 0 (by decide))

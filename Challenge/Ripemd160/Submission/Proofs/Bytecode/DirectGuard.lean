@@ -27,9 +27,9 @@ private def sound (path : List Located) {s t : State}
 
 private def gasSteps_loop (input : ByteArray) :
     GasSteps (loopState input 0) (loopExitState input) := by
-  let step : ∀ n, n < 14 → GasSteps (loopState input n) (loopState input (n + 1)) :=
+  let step : ∀ n, n < 9 → GasSteps (loopState input n) (loopState input (n + 1)) :=
     fun n hn => sound loopPath (run_loop_more input n hn)
-  exact (GasSteps.iterateBounded 14 step).trans
+  exact (GasSteps.iterateBounded 9 step).trans
     (sound loopPath (run_loop_last input))
 
 /-- A first byte other than 7 with size exactly 1000 reaches the seed block. -/

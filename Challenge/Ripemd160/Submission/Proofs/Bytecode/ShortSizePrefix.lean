@@ -85,19 +85,19 @@ theorem stepS_lt (input : ByteArray) (pc : Nat) (a b : UInt256) (rest : List UIn
   rw [if_pos (by simpa using hlen)]
   simp only [PatternedScan.stS, Challenge.EvmProof.Word.succ_ofNat hpc]
 
-private theorem pc_b0 : Artifact.submissionArtifact.instructionPC 6 = 12 := by
+private theorem pc_b0 : Artifact.submissionArtifact.instructionPC 6 = 9 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_b1 : Artifact.submissionArtifact.instructionPC 7 = 13 := by
+private theorem pc_b1 : Artifact.submissionArtifact.instructionPC 7 = 10 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_b2 : Artifact.submissionArtifact.instructionPC 8 = 14 := by
+private theorem pc_b2 : Artifact.submissionArtifact.instructionPC 8 = 11 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_b3 : Artifact.submissionArtifact.instructionPC 9 = 16 := by
+private theorem pc_b3 : Artifact.submissionArtifact.instructionPC 9 = 13 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_b4 : Artifact.submissionArtifact.instructionPC 10 = 17 := by
+private theorem pc_b4 : Artifact.submissionArtifact.instructionPC 10 = 14 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_b5 : Artifact.submissionArtifact.instructionPC 11 = 18 := by
+private theorem pc_b5 : Artifact.submissionArtifact.instructionPC 11 = 15 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_b6 : Artifact.submissionArtifact.instructionPC 12 = 21 := by
+private theorem pc_b6 : Artifact.submissionArtifact.instructionPC 12 = 18 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 theorem guard_dest : Decode.isValidJumpDest submissionBytecode 4681 = true := by
@@ -108,34 +108,34 @@ theorem guard_dest : Decode.isValidJumpDest submissionBytecode 4681 = true := by
   rwa [hpc] at h
 
 theorem run_byte_prefix (input : ByteArray) :
-    run bytePrefix (PatternedScan.stS input 12 []) =
-      some (PatternedScan.stS input 21 [4681, byteCondition input]) := by
+    run bytePrefix (PatternedScan.stS input 9 []) =
+      some (PatternedScan.stS input 18 [4681, byteCondition input]) := by
   let w := MachineState.readWord input 0
   let t := UInt256.shiftRight w 251
   let l0 : Located := pushAt 6 0 0
   have h0 := PatternedScan.blockOfS l0
-    (PatternedScan.pcFactS input 6 12 [] (by norm_num) pc_b0)
-    (PatternedScan.stepS_push0 input 12 [] (by simp) (by norm_num))
+    (PatternedScan.pcFactS input 6 9 [] (by norm_num) pc_b0)
+    (PatternedScan.stepS_push0 input 9 [] (by simp) (by norm_num))
   let l1 : Located := opAt 7 .CALLDATALOAD
   have h1 := PatternedScan.blockOfS l1
-    (PatternedScan.pcFactS input 7 13 [0] (by norm_num) pc_b1)
-    (PatternedScan.stepS_calldataload input 13 0 [] (by simp) (by norm_num))
+    (PatternedScan.pcFactS input 7 10 [0] (by norm_num) pc_b1)
+    (PatternedScan.stepS_calldataload input 10 0 [] (by simp) (by norm_num))
   let l2 : Located := pushAt 8 1 251
   have h2 := PatternedScan.blockOfS l2
-    (PatternedScan.pcFactS input 8 14 [w] (by norm_num) pc_b2)
-    (PatternedScan.stepS_push input 14 1 251 [w] (by simp) (by decide) (by decide) (by norm_num))
+    (PatternedScan.pcFactS input 8 11 [w] (by norm_num) pc_b2)
+    (PatternedScan.stepS_push input 11 1 251 [w] (by simp) (by decide) (by decide) (by norm_num))
   let l3 : Located := opAt 9 .SHR
   have h3 := PatternedScan.blockOfS l3
-    (PatternedScan.pcFactS input 9 16 [251, w] (by norm_num) pc_b3)
-    (PatternedScan.stepS_shr input 16 251 w [] (by simp) (by norm_num))
+    (PatternedScan.pcFactS input 9 13 [251, w] (by norm_num) pc_b3)
+    (PatternedScan.stepS_shr input 13 251 w [] (by simp) (by norm_num))
   let l4 : Located := opAt 10 .ISZERO
   have h4 := PatternedScan.blockOfS l4
-    (PatternedScan.pcFactS input 10 17 [t] (by norm_num) pc_b4)
-    (stepS_iszero' input 17 t [] (by simp) (by norm_num))
+    (PatternedScan.pcFactS input 10 14 [t] (by norm_num) pc_b4)
+    (stepS_iszero' input 14 t [] (by simp) (by norm_num))
   let l5 : Located := pushAt 11 2 4681
   have h5 := PatternedScan.blockOfS l5
-    (PatternedScan.pcFactS input 11 18 [UInt256.isZero t] (by norm_num) pc_b5)
-    (PatternedScan.stepS_push input 18 2 4681 [UInt256.isZero t]
+    (PatternedScan.pcFactS input 11 15 [UInt256.isZero t] (by norm_num) pc_b5)
+    (PatternedScan.stepS_push input 15 2 4681 [UInt256.isZero t]
       (by simp) (by decide) (by decide) (by norm_num))
   have hseq1 := DataStepper.runLocatedBlock_append [l0] [l1] _ _ _ h0 rfl h1
   have hseq2 := DataStepper.runLocatedBlock_append [l0, l1] [l2] _ _ _ hseq1 rfl h2
@@ -145,26 +145,26 @@ theorem run_byte_prefix (input : ByteArray) :
   exact hseq5
 
 theorem run_byte_taken (input : ByteArray) (hbyte : firstByte input < 8) :
-    run bytePath (PatternedScan.stS input 12 []) = some (PatternedScan.stS input 4681 []) := by
+    run bytePath (PatternedScan.stS input 9 []) = some (PatternedScan.stS input 4681 []) := by
   have hj : run [opAt 12 .JUMPI]
-      (PatternedScan.stS input 21 [4681, byteCondition input]) =
+      (PatternedScan.stS input 18 [4681, byteCondition input]) =
       some (PatternedScan.stS input 4681 []) := by
     exact PatternedScan.blockOfS _
-      (PatternedScan.pcFactS input 12 21 _ (by norm_num) pc_b6)
-      (PatternedScan.stepS_jumpi_taken input 21 4681 4681 _ []
+      (PatternedScan.pcFactS input 12 18 _ (by norm_num) pc_b6)
+      (PatternedScan.stepS_jumpi_taken input 18 4681 4681 _ []
         (by simp) (by norm_num) (by simpa using Word.literal_eq_ofNat _)
         (byteCondition_true input hbyte) guard_dest)
   exact DataStepper.runLocatedBlock_append bytePrefix [opAt 12 .JUMPI] _ _ _
     (run_byte_prefix input) rfl hj
 
 theorem run_byte_fall (input : ByteArray) (hbyte : ¬ firstByte input < 8) :
-    run bytePath (PatternedScan.stS input 12 []) = some (PatternedScan.stS input 22 []) := by
+    run bytePath (PatternedScan.stS input 9 []) = some (PatternedScan.stS input 19 []) := by
   have hj : run [opAt 12 .JUMPI]
-      (PatternedScan.stS input 21 [4681, byteCondition input]) =
-      some (PatternedScan.stS input 22 []) := by
+      (PatternedScan.stS input 18 [4681, byteCondition input]) =
+      some (PatternedScan.stS input 19 []) := by
     exact PatternedScan.blockOfS _
-      (PatternedScan.pcFactS input 12 21 _ (by norm_num) pc_b6)
-      (PatternedScan.stepS_jumpi_fall input 21 4681 _ []
+      (PatternedScan.pcFactS input 12 18 _ (by norm_num) pc_b6)
+      (PatternedScan.stepS_jumpi_fall input 18 4681 _ []
         (by simp) (by norm_num) (byteCondition_false input hbyte))
   exact DataStepper.runLocatedBlock_append bytePrefix [opAt 12 .JUMPI] _ _ _
     (run_byte_prefix input) rfl hj
