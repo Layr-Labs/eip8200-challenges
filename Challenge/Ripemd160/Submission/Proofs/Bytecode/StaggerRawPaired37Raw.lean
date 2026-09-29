@@ -13,11 +13,11 @@ private theorem add_comm_local (a b : UInt256) : UInt256.add a b = UInt256.add b
   RawExpressionAC.add_comm a b
 def template : List Instr :=
   [ .op (.Swap ⟨10, by decide⟩),
-    .op (.Dup ⟨11, by decide⟩),
-    .op (.Dup ⟨13, by decide⟩),
-    .op (.Dup ⟨11, by decide⟩),
+    .op (.Dup ⟨12, by decide⟩),
+    .op (.Dup ⟨10, by decide⟩),
     .op .NOT,
     .op .OR,
+    .op (.Dup ⟨12, by decide⟩),
     .op .XOR,
     .op .ADD,
     .push ⟨2, by decide⟩ (UInt256.ofNat 612),
@@ -97,6 +97,7 @@ def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UI
     x.v14,
     x.v15,
     x.v16 ] ++ rho
+private theorem neutral_hadd37 (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem actualOutput_eq (memory : ByteArray) (x : Input) (rho : List UInt256) :
     actualOutput memory x rho = outputStack memory x rho := by
   unfold actualOutput outputStack
@@ -116,7 +117,8 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
     runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
     State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals repeat first | apply And.intro | rfl
+  all_goals simp only [neutral_hadd37, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
+  all_goals repeat first | apply And.intro | exact True.intro | rfl
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 35 ≤ s.activeWords.toNat) :

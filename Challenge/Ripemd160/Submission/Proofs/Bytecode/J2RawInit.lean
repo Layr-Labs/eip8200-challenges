@@ -16,9 +16,9 @@ theorem run_init (s : State) (pc : UInt256) (rho : List UInt256)
       some {s with pc := pcAfter pc initTemplate, stack := frame (initResult s.executionEnv.calldata.size) rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
-  have hU : UInt256.ofNat 0x8080808080808080808080808080808080808080808080808080808080808080 = PatternedSwar.m8 := rfl
-  have hH : UInt256.sub PatternedSwar.m8 (UInt256.shiftRight PatternedSwar.m8 (UInt256.ofNat 2)) = c96 := by decide
-  have hL : PatternedSwar.m8 - UInt256.shiftRight PatternedSwar.m8 (UInt256.ofNat 2) = c96 := hH
+  have hU : UInt256.ofNat 0x9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f = m9f := rfl
+  have hH : UInt256.lnot m9f = c96 := by decide
+  have hL : ~~~m9f = c96 := hH
   have hC : UInt256.ofNat 96 * PatternedSwar.M = c96 := rfl
   have hC2 : UInt256.mul (UInt256.ofNat 96) PatternedSwar.M = c96 := rfl
   simp (config := { maxSteps := 600000 }) (discharger := omega)
