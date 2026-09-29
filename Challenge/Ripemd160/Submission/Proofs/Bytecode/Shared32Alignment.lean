@@ -10,7 +10,8 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate Shared32Sites
 
 abbrev template : List Instr :=
-  [ .push ⟨1, by decide⟩ (UInt256.ofNat 63),
+  [ .push ⟨1, by decide⟩ (UInt256.ofNat 192),
+    .op .NOT,
     .op .CALLDATASIZE,
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 190),
@@ -49,7 +50,7 @@ def gasSteps (s : State) (e : Env s) (F : List UInt256)
     have h1 : F.length + 1 < 1024 := by omega
     have h2 : F.length + 2 < 1024 := by omega
     have hv := valid_padding s e
-    have hn : (UInt256.land (UInt256.ofNat 32) (UInt256.ofNat 63)).toNat ≠ 0 := by decide
+    have hn : (UInt256.land (UInt256.ofNat 32) (UInt256.lnot (UInt256.ofNat 192))).toNat ≠ 0 := by decide
     simp [template, atState, runInstrSeq, DataStepper.runInstr, e.run,
       h0, h1, h2, h32, UInt256.isTrue, hv, hn]
 

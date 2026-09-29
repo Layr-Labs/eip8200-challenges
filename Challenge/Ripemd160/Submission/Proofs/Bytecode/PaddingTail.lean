@@ -40,7 +40,7 @@ def gasSteps_prefix (input : ByteArray) (hfit : CalldataFits input)
       ((tail_copy input hfit rho hcap).trans (gasSteps_push input rho hcap))))
 
 def gasSteps_guardMiss (input : ByteArray) (hfit : CalldataFits input)
-    (hn32 : input.size ≠ 32) (hnz : input.size % 64 ≠ 0)
+    (hn32 : input.size ≠ 32) (hnz : ¬ (input.size % 64 = 0 ∧ input.size < 256))
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
     GasSteps (StackTail.append (padFramed input) rho)
       (StackTail.append (padGuardMiss input) rho) := by
@@ -138,7 +138,7 @@ noncomputable def gasSteps_pad (input : ByteArray) (hfit : CalldataFits input)
     GasSteps (StackTail.append (Execution.atPC input 247) rho)
       (StackTail.append (entryState input) rho) := by
   have gp := gasSteps_prefix input hfit rho hcap
-  by_cases hz : input.size % 64 = 0
+  by_cases hz : input.size % 64 = 0 ∧ input.size < 256
   · rw [entryState_skip input hz]
     exact gp.trans (tail_guardSkip input hfit hz rho hcap)
   · rw [entryState_miss input hz]

@@ -13,7 +13,7 @@ theorem from_entry (input : ByteArray) (hfit : CalldataFits input)
   apply J2Correct.from_entry input hn hentry
   intro rho hcap hg
   have hb := RecognitionAccumulator.allowed_bounds input.size hn
-  exact StackCorrect.correct_tail input hfit hb.1 (by omega) rho hcap hg
+  exact StackCorrect.correct_tail input hfit hb.1 rho hcap hg
 
 #print axioms from_entry
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionCorrect

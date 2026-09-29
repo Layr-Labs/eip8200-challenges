@@ -64,14 +64,14 @@ def run_blocks (input : ByteArray) (states : Nat → State) (hashes : Nat → Co
       exact Nat.mod_eq_of_lt (by omega)
     have hl := LoopCompletionControl.limit_toNat input hsize
     by_cases hn : i + 1 < count
-    · by_cases hh : input.size = (i+1)*64
+    · by_cases hh : input.size = (i+1)*64 ∧ input.size < 256
       · have gp := StaggerPersistentLoopSites.gasSteps_pad (states (i+1)) (hashes (i+1))
           (offsetWord i) (LoopCompletionControl.limit input) rho (by omega) a.running
           (by rw [hl, ho]; have := LoopCompletionControl.pad_bound input i hh; omega)
           (by
             rw [next_offset i count hi hbound]
-            have hz : input.size % 64 = 0 := by omega
-            rw [LoopCompletionControl.limit_aligned input hz, hh]
+            have hz : input.size % 64 = 0 ∧ input.size < 256 := by omega
+            rw [LoopCompletionControl.limit_aligned input hz, hh.1]
             rfl)
           a.code a.fork a.notPrecompile
         rw [next_offset i count hi hbound] at gp

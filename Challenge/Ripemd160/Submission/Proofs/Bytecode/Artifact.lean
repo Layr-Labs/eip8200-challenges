@@ -9,7 +9,7 @@ set_option maxHeartbeats 2000000
 # Structural certificate for the frozen RIPEMD-160 artifact
 
 The exact candidate has 5245 bytes, 3643 executable instructions and 280 data bytes, and SHA-256
-`4a9966bee748662423d61123a52a5d32b55d0e7ed90bf0f085160745a8a121ae`. PUSH rows carry their typed width and value.
+`ba0bc04ac0e3139ec5aaccbd80c8d2f7dbbb2121da95d6797b008779e2571375`. PUSH rows carry their typed width and value.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
@@ -126,11 +126,11 @@ private def submissionInstructionsChunk0 : List Instr :=
   .push 20 2854495385411919762116571938898990272765493376,
   .push 1 54,
   op 0x52,
-  op 0x38,
-  op 0x36,
-  op 0x10,
   .push 2 808,
-  op 0x57,
+  op 0x56,
+  op 0x00,
+  op 0x00,
+  op 0x00,
   op 0x5b,
   op 0x36,
   .push 1 32,
@@ -198,12 +198,12 @@ private def submissionInstructionsChunk1 : List Instr :=
   .push 27 822752278660603021055183846080144629349832214544141570168324096,
   .push 4 4294967295,
   .push 13 158456325065422163343096938498,
-  .push 1 63,
+  .push 1 192,
+  op 0x19,
   op 0x36,
   op 0x16,
   .push 1 190,
   op 0x57,
-  op 0x5b,
   op 0x5b,
   op 0x5b,
   .push 2 32,
@@ -3834,7 +3834,7 @@ private theorem submissionInstructionsChunk0_assemble : assembleBytes submission
   0x52, 0x80, 0x61, 0x02, 0x9a, 0x52, 0x60, 0x90, 0x52, 0x60, 0x80, 0x61,
   0x02, 0x0a, 0x52, 0x73, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80,
-  0x60, 0x36, 0x52, 0x38, 0x36, 0x10, 0x61, 0x03, 0x28, 0x57, 0x5b, 0x36,
+  0x60, 0x36, 0x52, 0x61, 0x03, 0x28, 0x56, 0x00, 0x00, 0x00, 0x5b, 0x36,
   0x60, 0x20, 0x14, 0x60, 0x73, 0x57, 0x36, 0x61, 0x04, 0x08, 0x01, 0x60,
   0x3f, 0x17, 0x9c, 0x50, 0x60, 0x80, 0x61, 0x04, 0x20, 0x36, 0x01, 0x53,
   0x36, 0x60, 0x03, 0x1b, 0x60, 0x19, 0x8e, 0x01, 0x5b, 0x81, 0x81, 0x53,
@@ -3859,8 +3859,8 @@ private theorem submissionInstructionsChunk1_assemble : assembleBytes submission
   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x63, 0xff, 0xff, 0xff, 0xff, 0x6c, 0x02, 0x00, 0x00, 0x00, 0x02, 0x00,
-  0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x02, 0x60, 0x3f, 0x36, 0x16, 0x60,
-  0xbe, 0x57, 0x5b, 0x5b, 0x5b, 0x61, 0x00, 0x20, 0x8c, 0x01, 0x51, 0x80,
+  0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x02, 0x60, 0xc0, 0x19, 0x36, 0x16,
+  0x60, 0xbe, 0x57, 0x5b, 0x5b, 0x61, 0x00, 0x20, 0x8c, 0x01, 0x51, 0x80,
   0x60, 0x08, 0x1c, 0x81, 0x18, 0x8f, 0x16, 0x61, 0x01, 0x01
 ] := by decide
 
@@ -5340,13 +5340,13 @@ def initStores : List InitStore := []
   rfl
 
 @[simp] theorem pcU2_267 :
-    submissionArtifact.instructionPC 171 = 454 := by
+    submissionArtifact.instructionPC 171 = 453 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_267 :
-    instructionPC 171 = 454 := by
-  change submissionArtifact.instructionPC 171 = 454
+    instructionPC 171 = 453 := by
+  change submissionArtifact.instructionPC 171 = 453
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -5666,11 +5666,11 @@ def initStores : List InitStore := []
   exact h
 
 @[simp] theorem validJumpDest_initialize :
-    Decode.isValidJumpDest submissionBytecode 455 = true := by
-  have hp : submissionArtifact.instructionPC 172 = 455 := by
+    Decode.isValidJumpDest submissionBytecode 456 = true := by
+  have hp : submissionArtifact.instructionPC 173 = 456 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
-  have h := submissionArtifact.isValidJumpDest_index 172 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 173 (by rfl)
   rw [hp] at h
   exact h
 
@@ -5717,15 +5717,16 @@ def padCopyPath : List
    ⟨152, .push ⟨2, by decide⟩ (UInt256.ofNat 1056), by rfl, by decide⟩,
    ⟨153, .op .CALLDATACOPY, by rfl, wfOp (by decide) trivial rfl⟩]
 
-/-- Cached located path for the whole-block test: a length that is a multiple of 64 goes
-straight to the block loop. -/
+/-- Cached located path for the fast-entry test: only the lengths 64, 128 and 192 (the
+calldata size has no bit outside `0xc0`) go straight to the block loop. -/
 def padGuardPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨167, .push ⟨1, by decide⟩ (UInt256.ofNat 63), by rfl, by decide⟩,
-   ⟨168, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨169, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨170, .push ⟨1, by decide⟩ (UInt256.ofNat 190), by rfl, by decide⟩,
-   ⟨171, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨167, .push ⟨1, by decide⟩ (UInt256.ofNat 192), by rfl, by decide⟩,
+   ⟨168, .op .NOT, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨169, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨170, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨171, .push ⟨1, by decide⟩ (UInt256.ofNat 190), by rfl, by decide⟩,
+   ⟨172, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 /-- Cached located path for the sentinel byte. -/
 def padSentinelPath : List

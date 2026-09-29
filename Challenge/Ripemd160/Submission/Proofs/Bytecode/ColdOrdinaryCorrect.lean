@@ -10,7 +10,6 @@ open PersistentStaggerIteration StaggerPersistentLoopInduction
 
 theorem correct (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (hn32 : input.size ≠ 32)
-    (hordinary : ∀ i, i<DriverTrace.blockCount input → input.size=DriverTrace.blockOffset i → input.size<5245)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 247)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
@@ -25,7 +24,7 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
     exact ColdOrdinaryBlock.gasSteps (states input i) input i (hashes input i)
       (LoopCompletionControl.limit input) [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
       (by decide) [] rfl hfit hi
-      (states_context input hfit hpositive i (Nat.le_of_lt hi)) (hordinary i hi)
+      (states_context input hfit hpositive i (Nat.le_of_lt hi))
       (states_code input i) (states_fork input i) (states_halt input i)
       (states_noPrecompile input i)
 #print axioms correct

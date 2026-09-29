@@ -190,11 +190,11 @@ def padFramed (input : ByteArray) : State :=
     pc := UInt256.ofNat 448
     stack := initialFrame input }
 
-/-- Whole-block input: the padding code jumps straight to the block loop with only the
-calldata copy in memory. -/
+/-- Fast-entry input (64, 128 or 192 bytes): the padding code falls straight into the block
+loop with only the calldata copy in memory. -/
 def padSkip (input : ByteArray) : State :=
   { padCopied input with
-    pc := UInt256.ofNat 455
+    pc := UInt256.ofNat 456
     stack := initialFrame input }
 
 /-- Partial last block: fall through into the sentinel store. -/
@@ -357,68 +357,79 @@ def gasSteps_push (input : ByteArray) :
 
 /-! ## Whole-block test -/
 
-private theorem guard_toNat (input : ByteArray) (hfit : CalldataFits input) :
-    (UInt256.land (UInt256.ofNat input.size) (UInt256.ofNat 63)).toNat = input.size % 64 := by
+private theorem xor_zero_iff (a b : Nat) : a ^^^ b = 0 ↔ a = b := by
+  constructor
+  · intro h
+    have e : a ^^^ (a ^^^ b) = a ^^^ 0 := by rw [h]
+    rw [← Nat.xor_assoc, Nat.xor_self, Nat.zero_xor, Nat.xor_zero] at e
+    exact e.symm
+  · intro h
+    rw [h, Nat.xor_self]
+
+private theorem mask_c0 (n : Nat) (hn : n < 2 ^ 256) :
+    n &&& ((2 ^ 256 - 1) ^^^ 192) = 0 ↔ (n % 64 = 0 ∧ n < 256) := by
+  rw [Nat.and_xor_distrib_left, Nat.and_two_pow_sub_one_eq_mod, Nat.mod_eq_of_lt hn,
+    xor_zero_iff]
+  constructor
+  · intro h
+    have hle : n ≤ 192 := by
+      have : n &&& 192 ≤ 192 := Nat.and_le_right
+      omega
+    have h63 : n &&& 63 = 0 := by
+      have e : n &&& 63 = (n &&& 192) &&& 63 := by rw [← h]
+      rw [e, Nat.and_assoc, show (192 &&& 63 : Nat) = 0 by decide, Nat.and_zero]
+    rw [show (63:Nat) = 2 ^ 6 - 1 by norm_num, Nat.and_two_pow_sub_one_eq_mod] at h63
+    omega
+  · intro ⟨h1, h2⟩
+    have : n = 0 ∨ n = 64 ∨ n = 128 ∨ n = 192 := by omega
+    rcases this with h | h | h | h <;> rw [h] <;> decide
+
+private theorem lnot192_toNat : (UInt256.lnot (UInt256.ofNat 192)).toNat = (2 ^ 256 - 1) ^^^ 192 := by
+  decide
+
+private theorem guard_zero_iff (input : ByteArray) (hfit : CalldataFits input) :
+    (UInt256.land (UInt256.ofNat input.size) (UInt256.lnot (UInt256.ofNat 192))).toNat = 0 ↔
+      (input.size % 64 = 0 ∧ input.size < 256) := by
   have hsize : input.size < 2 ^ 256 := Nat.lt_trans hfit (by norm_num)
-  rw [Challenge.EvmProof.Word.word_toNat_land, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hsize,
-    Nat.mod_eq_of_lt (by norm_num : (63:Nat) < 2 ^ 256)]
-  have h63 : (63:Nat) = 2 ^ 6 - 1 := by norm_num
-  rw [h63, Nat.and_two_pow_sub_one_eq_mod]
-
-private theorem guard_toNat_mirrored (input : ByteArray) (hfit : CalldataFits input) :
-    (UInt256.land (UInt256.ofNat 63) (UInt256.ofNat input.size)).toNat = input.size % 64 := by
-  rw [RawExpressionAC.land_comm]
-  exact guard_toNat input hfit
-
-private theorem guard_isZero_skip (input : ByteArray) (hfit : CalldataFits input)
-    (hz : input.size % 64 = 0) :
-    UInt256.isZero (UInt256.land (UInt256.ofNat input.size) (UInt256.ofNat 63)) =
-      UInt256.ofNat 1 := by
-  unfold UInt256.isZero
-  rw [if_pos (by rw [guard_toNat input hfit, hz])]
-
-private theorem guard_isZero_miss (input : ByteArray) (hfit : CalldataFits input)
-    (hnz : input.size % 64 ≠ 0) :
-    UInt256.isZero (UInt256.land (UInt256.ofNat input.size) (UInt256.ofNat 63)) =
-      UInt256.ofNat 0 := by
-  unfold UInt256.isZero
-  rw [if_neg (by rw [guard_toNat input hfit]; exact hnz)]
+  rw [Challenge.EvmProof.Word.word_toNat_land, lnot192_toNat,
+    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hsize]
+  exact mask_c0 input.size hsize
 
 def padGuardTaken (input : ByteArray) : State :=
   {padGuardMiss input with pc := UInt256.ofNat 190, stack := initialFrame input}
 
 set_option maxHeartbeats 400000 in
 private theorem run_guardSkip (input : ByteArray) (hfit : CalldataFits input)
-    (hz : input.size % 64 = 0) :
+    (hz : input.size % 64 = 0 ∧ input.size < 256) :
     Challenge.EvmProof.DataStepper.runLocatedBlock guardPath
       (padFramed input) = some (padSkip input) := by
+  have hv := (guard_zero_iff input hfit).mpr hz
   simp [guardPath, Artifact.padGuardPath,
     Challenge.EvmProof.DataStepper.runLocatedBlock,
     Challenge.EvmProof.DataStepper.runLocated, Challenge.EvmProof.DataStepper.runInstr,
-    padFramed, padSkip, UInt256.isTrue,
-    guard_toNat input hfit, hz]
+    padFramed, padSkip, UInt256.isTrue, hv]
 
 set_option maxHeartbeats 400000 in
 private theorem run_guardMiss (input : ByteArray) (hfit : CalldataFits input)
-    (hnz : input.size % 64 ≠ 0) :
+    (hnz : ¬ (input.size % 64 = 0 ∧ input.size < 256)) :
     Challenge.EvmProof.DataStepper.runLocatedBlock guardPath
       (padFramed input) = some (padGuardTaken input) := by
+  have hv : (UInt256.land (UInt256.ofNat input.size) (UInt256.lnot (UInt256.ofNat 192))).toNat ≠ 0 :=
+    fun h => hnz ((guard_zero_iff input hfit).mp h)
   simp [guardPath, Artifact.padGuardPath,
     Challenge.EvmProof.DataStepper.runLocatedBlock,
     Challenge.EvmProof.DataStepper.runLocated, Challenge.EvmProof.DataStepper.runInstr,
-    padFramed, padGuardTaken, padGuardMiss, UInt256.isTrue,
-    guard_toNat input hfit, hnz]
+    padFramed, padGuardTaken, padGuardMiss, UInt256.isTrue, hv]
 
 def gasSteps_guardSkip (input : ByteArray) (hfit : CalldataFits input)
-    (hz : input.size % 64 = 0) :
+    (hz : input.size % 64 = 0 ∧ input.size < 256) :
     Challenge.EvmProof.GasSteps (padFramed input) (padSkip input) :=
   Challenge.EvmProof.DataStepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka guardPath (by rfl) (by rfl)
     (run_guardSkip input hfit hz) (by rfl) deployAddress_not_precompile
 
 def gasSteps_guardMiss (input : ByteArray) (hfit : CalldataFits input)
-    (hn32 : input.size ≠ 32) (hnz : input.size % 64 ≠ 0) :
+    (hn32 : input.size ≠ 32) (hnz : ¬ (input.size % 64 = 0 ∧ input.size < 256)) :
     Challenge.EvmProof.GasSteps (padFramed input) (padGuardMiss input) := by
   have g := Challenge.EvmProof.DataStepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka guardPath (by rfl) (by rfl)
@@ -1430,31 +1441,32 @@ private def gasSteps_padPrefix (input : ByteArray) (hfit : CalldataFits input)
       ((gasSteps_lengthCopy input hfit).trans ((gasSteps_msize input).trans (gasSteps_push input)))))
 
 noncomputable def gasSteps_padBody (input : ByteArray) (hfit : CalldataFits input)
-    (hn32 : input.size ≠ 32) (hnz : input.size % 64 ≠ 0) :
+    (hn32 : input.size ≠ 32) (hnz : ¬ (input.size % 64 = 0 ∧ input.size < 256)) :
     Challenge.EvmProof.GasSteps (padFramed input) (padReturned input) :=
   (gasSteps_guardMiss input hfit hn32 hnz).trans
     ((gasSteps_lengthSetup input hfit).trans (gasSteps_lengthLoop input hfit))
 
-/-- Block-loop entry state.  A whole-block input skips the sentinel and footer stores: its
-pad-only block is scheduled from the table and never reads message memory. -/
+/-- Block-loop entry state.  A fast-entry input skips the sentinel and footer stores: its
+pad-only block is scheduled from the table and never reads message memory.  Every other
+input (including whole-block inputs of 256 bytes or more) writes the sentinel and footer. -/
 def entryState (input : ByteArray) : State :=
-  if input.size % 64 = 0 then padSkip input else padReturned input
+  if input.size % 64 = 0 ∧ input.size < 256 then padSkip input else padReturned input
 
-theorem entryState_skip (input : ByteArray) (hz : input.size % 64 = 0) :
+theorem entryState_skip (input : ByteArray) (hz : input.size % 64 = 0 ∧ input.size < 256) :
     entryState input = padSkip input := by
   unfold entryState
   rw [if_pos hz]
 
-theorem entryState_miss (input : ByteArray) (hnz : input.size % 64 ≠ 0) :
+theorem entryState_miss (input : ByteArray) (hnz : ¬ (input.size % 64 = 0 ∧ input.size < 256)) :
     entryState input = padReturned input := by
   unfold entryState
   rw [if_neg hnz]
 
 theorem entryState_eta (input : ByteArray) :
     entryState input = {entryState input with
-      pc := UInt256.ofNat (if input.size % 64 = 0 then 455 else 457)
-      stack := if input.size % 64 = 0 then initialFrame input else padFrame input} := by
-  by_cases hz : input.size % 64 = 0
+      pc := UInt256.ofNat (if input.size % 64 = 0 ∧ input.size < 256 then 456 else 457)
+      stack := if input.size % 64 = 0 ∧ input.size < 256 then initialFrame input else padFrame input} := by
+  by_cases hz : input.size % 64 = 0 ∧ input.size < 256
   · simp only [entryState_skip input hz, if_pos hz]
     rfl
   · simp only [entryState_miss input hz, if_neg hz]
@@ -1466,7 +1478,7 @@ noncomputable def gasSteps_pad (input : ByteArray) (hfit : CalldataFits input)
       (Execution.atPC input 247)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (entryState input) :=
-  if hz : input.size % 64 = 0 then
+  if hz : input.size % 64 = 0 ∧ input.size < 256 then
     Challenge.EvmProof.GasSteps.cast
       ((gasSteps_padPrefix input hfit entryPrefix).trans (gasSteps_guardSkip input hfit hz))
       rfl (entryState_skip input hz).symm
@@ -1508,17 +1520,17 @@ def tail_copy (input : ByteArray) (hfit : CalldataFits input)
   (liftTail lengthCopyPath (run_lengthCopy input hfit) (by change 6 ≤ 100; decide) rho hcap rfl rfl rfl
     deployAddress_not_precompile).trans (gasSteps_msizeTail input rho hcap)
 
-def tail_guardSkip (input : ByteArray) (hfit : CalldataFits input) (hz : input.size % 64 = 0)
+def tail_guardSkip (input : ByteArray) (hfit : CalldataFits input) (hz : input.size % 64 = 0 ∧ input.size < 256)
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
     Challenge.EvmProof.GasSteps (StackTail.append (padFramed input) rho)
       (StackTail.append (padSkip input) rho) :=
-  liftTail guardPath (run_guardSkip input hfit hz) (by change 20 ≤ 100; decide) rho hcap rfl rfl rfl deployAddress_not_precompile
+  liftTail guardPath (run_guardSkip input hfit hz) (by change 21 ≤ 100; decide) rho hcap rfl rfl rfl deployAddress_not_precompile
 
-def tail_guardTaken (input : ByteArray) (hfit : CalldataFits input) (hnz : input.size % 64 ≠ 0)
+def tail_guardTaken (input : ByteArray) (hfit : CalldataFits input) (hnz : ¬ (input.size % 64 = 0 ∧ input.size < 256))
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
     Challenge.EvmProof.GasSteps (StackTail.append (padFramed input) rho)
       (StackTail.append (padGuardTaken input) rho) :=
-  liftTail guardPath (run_guardMiss input hfit hnz) (by change 20 ≤ 100; decide) rho hcap rfl rfl rfl deployAddress_not_precompile
+  liftTail guardPath (run_guardMiss input hfit hnz) (by change 21 ≤ 100; decide) rho hcap rfl rfl rfl deployAddress_not_precompile
 
 def tail_sentinelAddress (input : ByteArray)
     (rho : List UInt256) (hcap : rho.length ≤ 20) :

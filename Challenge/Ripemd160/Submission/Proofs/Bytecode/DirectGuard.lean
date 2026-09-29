@@ -147,7 +147,7 @@ theorem correct_of_recognition
   by_cases ht : input = KnownInputData.targetInput
   · subst input
     exact correct_target
-  · exact StackCorrect.correct_tail input hfit (by omega) (by omega)
+  · exact StackCorrect.correct_tail input hfit (by omega)
       (spentCells input) (by simp [spentCells])
       (gasSteps_repeat_miss input hpass h1000 href ht)
 

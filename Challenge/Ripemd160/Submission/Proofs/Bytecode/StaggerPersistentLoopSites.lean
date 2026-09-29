@@ -64,22 +64,22 @@ def gasSteps_join (s : State) (rho : List UInt256) (hstack : rho.length < 1024)
   · simp [joinTemplate, runInstrSeq, DataStepper.runInstr, hrun, hstack]
     rfl
 
-/-- Fall-through entry from the whole-block guard: two filler `JUMPDEST`s, then the loop head. -/
-def fillTemplate : List Instr := [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
+/-- Fall-through entry from the fast-entry guard: one filler `JUMPDEST`, then the loop head. -/
+def fillTemplate : List Instr := [.op .JUMPDEST, .op .JUMPDEST]
 
 theorem fill_slice :
-    (Artifact.submissionArtifact.instructions.drop 172).take fillTemplate.length = fillTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 173).take fillTemplate.length = fillTemplate := by rfl
 
 def fillSite : GenericRoundSite Artifact.submissionArtifact .Osaka fillTemplate :=
-  StackSiteBuilder.ofSlice fillTemplate 172 fill_slice
-    (by change 172 + fillTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice fillTemplate 173 fill_slice
+    (by change 173 + fillTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := fillTemplate) (by decide))
     (by decide)
 
-theorem fill_pc : fillSite.startPC = UInt256.ofNat 455 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 172) = UInt256.ofNat 455
+theorem fill_pc : fillSite.startPC = UInt256.ofNat 456 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 173) = UInt256.ofNat 456
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def gasSteps_fill (s : State) (rho : List UInt256) (hstack : rho.length < 1024)
@@ -87,9 +87,9 @@ def gasSteps_fill (s : State) (rho : List UInt256) (hstack : rho.length < 1024)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 455, stack := rho}
+    GasSteps {s with pc := UInt256.ofNat 456, stack := rho}
       {s with pc := UInt256.ofNat 458, stack := rho} := by
-  apply PadLift.gasSteps_of_raw fillSite {s with pc := UInt256.ofNat 455, stack := rho} _
+  apply PadLift.gasSteps_of_raw fillSite {s with pc := UInt256.ofNat 456, stack := rho} _
     hcode hfork hrun hnp fill_pc.symm
   · apply PadLift.advancesAll_sound
     decide

@@ -89,7 +89,7 @@ theorem entryState_active (input : ByteArray) (hfit : CalldataFits input)
     omega
 
 theorem entryState_allocated (input : ByteArray) (hfit : CalldataFits input) :
-    ∀ i, i < DriverTrace.blockCount input → input.size ≠ DriverTrace.blockOffset i →
+    ∀ i, i < DriverTrace.blockCount input → ¬ (input.size = DriverTrace.blockOffset i ∧ input.size < 256) →
       (PersistentStaggerTable.messagePointer i + 95) / 32 ≤ (entryState input).activeWords.toNat := by
   intro i hi hne
   unfold entryState PaddingTrace.entryState
@@ -125,7 +125,7 @@ private theorem skip_getD (input : ByteArray) (a : Nat)
   rw [Challenge.EvmProof.Memory.readPadded_zero_size]
 
 theorem entryState_blockAt (input : ByteArray) (hfit : CalldataFits input) :
-    ∀ i, i < DriverTrace.blockCount input → input.size ≠ DriverTrace.blockOffset i →
+    ∀ i, i < DriverTrace.blockCount input → ¬ (input.size = DriverTrace.blockOffset i ∧ input.size < 256) →
       ScheduleCorrect.MessageBlockAt (entryState input).memory (DriverTrace.messageOffsetWord i)
         (Padding.paddedMessage input) (DriverTrace.blockOffset i) := by
   intro i hi hne

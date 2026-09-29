@@ -17,7 +17,7 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
   · exact Shared32Correct.correct input h32 entryPrefix
   · exact ColdCorrect.correct input hfit hpositive h32 entryPrefix
 theorem correct_tail (input : ByteArray) (hfit : CalldataFits input)
-    (hpositive : 0 < input.size) (hsmall : input.size < 5245)
+    (hpositive : 0 < input.size)
     (rho : List UInt256) (hcap : rho.length ≤ 20)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0)
       (StackTail.append (Execution.atPC input 247) rho)) :
@@ -25,7 +25,7 @@ theorem correct_tail (input : ByteArray) (hfit : CalldataFits input)
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   by_cases h32 : input.size = 32
   · exact Shared32TailCorrect.correct input h32 rho hcap entryPrefix
-  · exact ColdTailCorrect.correct input hfit hpositive h32 hsmall rho hcap entryPrefix
+  · exact ColdTailCorrect.correct input hfit hpositive h32 rho hcap entryPrefix
 #print axioms correct_tail
 #print axioms correct
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect

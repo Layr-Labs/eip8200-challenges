@@ -37,8 +37,8 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
   have hi : s.executionEnv.calldata = input := PadSkipEntry.entryState_calldata input
   have heta := PaddingTrace.entryState_eta input
   have gx : GasSteps s {s with pc := UInt256.ofNat 458, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (LoopCompletionControl.limit input) maskRho} := by
-    by_cases hz : input.size % 64 = 0
-    · have hs : s = {s with pc := UInt256.ofNat 455, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (PaddingTrace.copiedLimit input) maskRho} := by
+    by_cases hz : input.size % 64 = 0 ∧ input.size < 256
+    · have hs : s = {s with pc := UInt256.ofNat 456, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (PaddingTrace.copiedLimit input) maskRho} := by
         simpa only [if_pos hz, PaddingTrace.initialFrame, maskRho] using heta
       have gf := StaggerPersistentLoopSites.gasSteps_fill s (StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (LoopCompletionControl.limit input) maskRho)
         (by simp [StaggerPersistentFrame.frame, maskRho]) hr hc hf hn
@@ -57,7 +57,7 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
   have gp := PaddingTrace.gasSteps_pad input hfit hn32 entryPrefix
   have g := gp.trans gx
   simpa only [loopState, LoopCompletionControl.blockPC, Nat.zero_mul,
-    if_neg (show input.size ≠ 0 by omega), offsetWord, DriverTrace.messageOffsetWord,
+    if_neg (show ¬ (input.size = 0 ∧ input.size < 256) by omega), offsetWord, DriverTrace.messageOffsetWord,
     DriverTrace.blockOffset, Padding.messageOffset, Nat.add_zero] using g
 
 def result (input : ByteArray) (states : Nat → State) (hashes : Nat → Compression.HashState) : State :=

@@ -4,17 +4,18 @@ set_option linter.unusedSimpArgs false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.LoopCompletionControl
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 
-/-- The loop limit relative to the block pointer base 1056.  Aligned inputs stop at their
-own length (and then take the dedicated padding block); partial inputs store
-`1023 + paddedLength`, i.e. 33 below the padded end relative to the base. -/
+/-- The loop limit relative to the block pointer base 1056.  Fast-entry inputs (64, 128 or
+192 bytes) stop at their own length (and then take the dedicated padding block); every other
+input, including whole-block inputs of 256 bytes or more, stores `1023 + paddedLength`, i.e.
+33 below the padded end relative to the base. -/
 def limitNat (input : ByteArray) : Nat :=
-  if input.size % 64 = 0 then input.size else Padding.paddedLength input.size - 33
+  if input.size % 64 = 0 ∧ input.size < 256 then input.size else Padding.paddedLength input.size - 33
 
 /-- The raw limit slot: block pointers are absolute memory addresses `1056 + 64 i`. -/
 def limit (input : ByteArray) : UInt256 := UInt256.ofNat (1056 + limitNat input)
 
 def blockPC (input : ByteArray) (i : Nat) : UInt256 :=
-  UInt256.ofNat (if input.size = i * 64 then 129 else 458)
+  UInt256.ofNat (if input.size = i * 64 ∧ input.size < 256 then 129 else 458)
 
 theorem limit_le_padded (input : ByteArray) : limitNat input ≤ Padding.paddedLength input.size := by
   unfold limitNat Padding.paddedLength
@@ -37,7 +38,7 @@ theorem limit_toNat (input : ByteArray) (hsize : input.size < 2^64) :
 
 theorem continue_lt (input : ByteArray) (i : Nat)
     (hi : i + 1 < DriverTrace.blockCount input)
-    (hne : input.size ≠ (i + 1) * 64) :
+    (hne : ¬ (input.size = (i + 1) * 64 ∧ input.size < 256)) :
     (i + 1) * 64 < limitNat input := by
   unfold limitNat
   unfold DriverTrace.blockCount Padding.paddedLength at hi
@@ -47,8 +48,8 @@ theorem continue_lt (input : ByteArray) (i : Nat)
     omega
 
 theorem pad_bound (input : ByteArray) (i : Nat)
-    (heq : input.size = (i + 1) * 64) : limitNat input ≤ (i + 1) * 64 := by
-  have hz : input.size % 64 = 0 := by omega
+    (heq : input.size = (i + 1) * 64 ∧ input.size < 256) : limitNat input ≤ (i + 1) * 64 := by
+  have hz : input.size % 64 = 0 ∧ input.size < 256 := by omega
   simp only [limitNat, if_pos hz]
   omega
 
@@ -61,11 +62,11 @@ theorem finish_miss (input : ByteArray) : input.size ≠ DriverTrace.blockCount 
   unfold Padding.paddedLength
   omega
 
-theorem limit_aligned (input : ByteArray) (hz : input.size % 64 = 0) :
+theorem limit_aligned (input : ByteArray) (hz : input.size % 64 = 0 ∧ input.size < 256) :
     limit input = UInt256.ofNat (1056 + input.size) := by
   simp only [limit, limitNat, if_pos hz]
 
-theorem limit_cold (input : ByteArray) (hz : ¬ input.size % 64 = 0) :
+theorem limit_cold (input : ByteArray) (hz : ¬ (input.size % 64 = 0 ∧ input.size < 256)) :
     limit input = UInt256.ofNat (1023 + Padding.paddedLength input.size) := by
   simp only [limit, limitNat, if_neg hz]
   congr 1
