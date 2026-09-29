@@ -69,10 +69,8 @@ theorem condWord_zero (r : UInt256) :
 theorem run_tail_target :
     run tailPath (loopExitState KnownInputData.targetInput) =
       some (returnEntry KnownInputData.targetInput) := by
-  have hzero : finalAcc KnownInputData.targetInput = 0 :=
-    (RootOverlapGuard.finalAcc_zero_iff_target KnownInputData.targetInput
-      KnownInputData.targetInput_size).2 rfl
-  have hzero' : finalAcc KnownInputData.targetInput = UInt256.ofNat 0 := hzero
+  have hzero' : reverseAcc KnownInputData.targetInput 15 = UInt256.ofNat 0 :=
+    reverseAcc_target_zero
   simp (config := { maxSteps := 1000000 })
     [tailPath, opAt, pushAt, wfOp, loopExitState, returnEntry, spentCells, atPC,
     hzero', List.exchange, UInt256.isTrue,
@@ -82,10 +80,9 @@ theorem run_tail_target :
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
 
 /-- A nonzero accumulator diverts to the generic arm with a two-word suffix. -/
-theorem run_tail_divert_acc (input : ByteArray) (hneAcc : finalAcc input ≠ 0)
-    (_href : referenceWord input = KnownInputData.fullWord) :
+theorem run_tail_divert_acc (input : ByteArray) (hneAcc : reverseAcc input 15 ≠ 0) :
     run tailPath (loopExitState input) = some (tailDivertState input) := by
-  have htrue : UInt256.isTrue (finalAcc input) := by
+  have htrue : UInt256.isTrue (reverseAcc input 15) := by
     intro hn
     exact hneAcc (Challenge.EvmProof.Word.word_ext hn)
   have hdest : Decode.isValidJumpDest submissionBytecode 246 = true :=
@@ -111,11 +108,9 @@ theorem run_fallback_clear (input : ByteArray) :
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
 
 theorem run_tail_divert (input : ByteArray) (hsize : input.size = 1000)
-    (hne : input ≠ KnownInputData.targetInput)
-    (href : referenceWord input = KnownInputData.fullWord) :
+    (hne : input ≠ KnownInputData.targetInput) :
     run tailPath (loopExitState input) = some (tailDivertState input) :=
-  run_tail_divert_acc input (fun hz =>
-    hne ((RootOverlapGuard.finalAcc_zero_iff_target input hsize).1 hz)) href
+  run_tail_divert_acc input (fun hz => hne (reverseAcc_zero_target input hsize hz))
 
 theorem run_return_store (input : ByteArray) :
     run returnPath (returnEntry input) = some (storedReturnState input) := by
@@ -147,14 +142,14 @@ def gasSteps_direct_return (input : ByteArray) :
   have gs := DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     returnPath (by rfl) (by rfl) (run_return_store input) (by rfl)
     deployAddress_not_precompile
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 65 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 61 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedReturnState input).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 65 := by
+      Artifact.submissionArtifact.instructionPC 61 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
   have hop : (storedReturnState input).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 65
+    Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 61
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop
     (by simp [storedReturnState, spentCells]) (by rfl)

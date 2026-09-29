@@ -1,6 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputCompactState
 import Challenge.EvmProof.Word
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RootOverlapGuard
+import Mathlib.Data.Nat.ModEq
 
 set_option warningAsError true
 
@@ -101,19 +102,146 @@ abbrev finalAcc := RootOverlapGuard.finalAcc
 def tailDiff (input : ByteArray) : UInt256 :=
   UInt256.xor (MachineState.readWord input 968) (referenceWord input)
 
+/-- The anchor test `R * 255 + 97`: zero exactly at the repeated `0x61` word. -/
+def fullTerm (input : ByteArray) : UInt256 :=
+  referenceWord input * UInt256.ofNat 255 + UInt256.ofNat 97
+
+/-- The accumulator seed built before the paired loop. -/
+def seedAcc (input : ByteArray) : UInt256 :=
+  UInt256.lor (UInt256.xor (referenceWord input) (MachineState.readWord input 968))
+    (fullTerm input)
+
+/-- The paired loop accumulation from an arbitrary seed. -/
+def revFrom (input : ByteArray) (seed : UInt256) : Nat → UInt256
+  | 0 => seed
+  | n + 1 => UInt256.lor
+      (UInt256.xor (MachineState.readWord input (928 - 64 * n)) (referenceWord input))
+      (UInt256.lor
+        (UInt256.xor (MachineState.readWord input (960 - 64 * n)) (referenceWord input))
+        (revFrom input seed n))
+
 def reverseAcc (input : ByteArray) : Nat → UInt256
-  | 0 => UInt256.lor (tailDiff input) (loopAcc input 0)
+  | 0 => seedAcc input
   | n + 1 => UInt256.lor
       (UInt256.xor (MachineState.readWord input (928 - 64 * n)) (referenceWord input))
       (UInt256.lor
         (UInt256.xor (MachineState.readWord input (960 - 64 * n)) (referenceWord input))
         (reverseAcc input n))
 
-theorem reverseAcc_final (input : ByteArray) : reverseAcc input 15 = finalAcc input := by
-  norm_num only [reverseAcc, loopAcc, tailDiff, finalAcc, RootOverlapGuard.finalAcc]
+theorem reverseAcc_eq (input : ByteArray) (n : Nat) :
+    reverseAcc input n = revFrom input (seedAcc input) n := by
+  induction n with
+  | zero => rfl
+  | succ n ih => simp only [reverseAcc, revFrom, ih]
+
+theorem lor_comm' (a b : UInt256) : UInt256.lor a b = UInt256.lor b a := by
+  apply Challenge.EvmProof.Word.word_ext
+  simp only [Challenge.EvmProof.Word.word_toNat_lor]
+  exact Nat.or_comm _ _
+
+theorem revFrom_lor (input : ByteArray) (a b : UInt256) (n : Nat) :
+    revFrom input (UInt256.lor a b) n = UInt256.lor a (revFrom input b n) := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+      simp only [revFrom, ih]
+      apply Challenge.EvmProof.Word.word_ext
+      simp only [Challenge.EvmProof.Word.word_toNat_lor]
+      ac_rfl
+
+theorem revFrom_final (input : ByteArray) :
+    revFrom input (UInt256.lor (tailDiff input) (loopAcc input 0)) 15 = finalAcc input := by
+  norm_num only [revFrom, loopAcc, tailDiff, finalAcc, RootOverlapGuard.finalAcc]
   apply Challenge.EvmProof.Word.word_ext
   simp only [Challenge.EvmProof.Word.word_toNat_lor]
   ac_rfl
 
-#print axioms reverseAcc_final
+private theorem word_toNat_mul' (x y : UInt256) :
+    (x * y).toNat = (x.toNat * y.toNat) % 2 ^ 256 := by
+  show (x.val * y.val).val = _
+  rw [Fin.val_mul]
+  rfl
+
+theorem fullWord_anchor :
+    KnownInputData.fullWord * UInt256.ofNat 255 + UInt256.ofNat 97 = 0 := by
+  decide
+
+theorem fullTerm_eq_zero (input : ByteArray) (h : fullTerm input = 0) :
+    referenceWord input = KnownInputData.fullWord := by
+  have hn := congrArg UInt256.toNat h
+  have hc := congrArg UInt256.toNat fullWord_anchor
+  unfold fullTerm at hn
+  rw [Challenge.EvmProof.Word.word_toNat_add, word_toNat_mul',
+    Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat] at hn hc
+  change _ = 0 at hn hc
+  apply Challenge.EvmProof.Word.word_ext
+  have hr : (referenceWord input).toNat < 2 ^ 256 := (referenceWord input).val.isLt
+  have hf : KnownInputData.fullWord.toNat < 2 ^ 256 := KnownInputData.fullWord.val.isLt
+  have e255 : (255 : Nat) % 2 ^ 256 = 255 := by norm_num
+  have e97 : (97 : Nat) % 2 ^ 256 = 97 := by norm_num
+  rw [e255, e97, Nat.mod_add_mod] at hn hc
+  have hm : (referenceWord input).toNat * 255 + 97 ≡
+      KnownInputData.fullWord.toNat * 255 + 97 [MOD 2 ^ 256] := by
+    unfold Nat.ModEq
+    rw [hn, hc]
+  have hm2 := Nat.ModEq.add_right_cancel' 97 hm
+  have hm3 := Nat.ModEq.cancel_right_of_coprime
+    (by simp [Nat.gcd_comm]) hm2
+  unfold Nat.ModEq at hm3
+  rwa [Nat.mod_eq_of_lt hr, Nat.mod_eq_of_lt hf] at hm3
+
+/-- The final accumulator splits into the anchor test and the accumulator of
+the previous guard. -/
+theorem reverseAcc_split (input : ByteArray) :
+    reverseAcc input 15 = UInt256.lor (fullTerm input)
+      (revFrom input (UInt256.xor (referenceWord input) (MachineState.readWord input 968)) 15) := by
+  rw [reverseAcc_eq, seedAcc, lor_comm' (UInt256.xor _ _) (fullTerm input), revFrom_lor]
+
+theorem xor_comm' (a b : UInt256) : UInt256.xor a b = UInt256.xor b a := by
+  apply Challenge.EvmProof.Word.word_ext
+  change (a.val ^^^ b.val).val = (b.val ^^^ a.val).val
+  rw [Fin.xor_val, Fin.xor_val, Nat.xor_comm]
+
+private theorem lor_zero_left (a : UInt256) : UInt256.lor 0 a = a := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_lor]
+  exact Nat.zero_or _
+
+/-- With the anchor word in place, the old final accumulator is the loop part. -/
+theorem finalAcc_of_anchor (input : ByteArray)
+    (href : referenceWord input = KnownInputData.fullWord) :
+    finalAcc input =
+      revFrom input (UInt256.xor (referenceWord input) (MachineState.readWord input 968)) 15 := by
+  rw [← revFrom_final]
+  have hz : loopAcc input 0 = 0 := by
+    rw [loopAcc, href]
+    exact (KnownInputLogic.wordXor_eq_zero_iff _ _).2 rfl
+  rw [lor_comm' (tailDiff input), hz, lor_zero_left, tailDiff, xor_comm']
+
+theorem reverseAcc_zero_target (input : ByteArray) (hsize : input.size = 1000)
+    (h : reverseAcc input 15 = 0) : input = KnownInputData.targetInput := by
+  rw [reverseAcc_split] at h
+  rcases (KnownInputLogic.wordOr_eq_zero_iff _ _).1 h with ⟨hf, hloop⟩
+  have href := fullTerm_eq_zero input hf
+  apply (RootOverlapGuard.finalAcc_zero_iff_target input hsize).1
+  change finalAcc input = 0
+  rw [finalAcc_of_anchor input href]
+  exact hloop
+
+theorem reverseAcc_target_zero : reverseAcc KnownInputData.targetInput 15 = 0 := by
+  have href : referenceWord KnownInputData.targetInput = KnownInputData.fullWord := by
+    simpa [referenceWord, KnownInputData.expectedWord] using
+      (KnownInputData.targetInput_readWord 0 (by decide))
+  have hf : fullTerm KnownInputData.targetInput = 0 := by
+    rw [fullTerm, href]
+    exact fullWord_anchor
+  have hloop := (RootOverlapGuard.finalAcc_zero_iff_target KnownInputData.targetInput
+    KnownInputData.targetInput_size).2 rfl
+  change finalAcc KnownInputData.targetInput = 0 at hloop
+  rw [finalAcc_of_anchor _ href] at hloop
+  rw [reverseAcc_split, hf, hloop]
+  decide
+
+#print axioms reverseAcc_zero_target
+#print axioms reverseAcc_target_zero
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard

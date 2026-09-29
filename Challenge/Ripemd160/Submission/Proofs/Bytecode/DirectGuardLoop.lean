@@ -19,18 +19,18 @@ theorem run_reverse_pair (s : State) (input : ByteArray) (n : Nat) (hn : n < 15)
     (hinput : s.executionEnv.calldata = input) :
     run loopPath
       { s with
-        pc := UInt256.ofNat 62
+        pc := UInt256.ofNat 58
         stack := [a, UInt256.ofNat (960 - 64 * n), r] ++ rest } =
     some { s with
-      pc := UInt256.ofNat (if n < 14 then 62 else 84)
+      pc := UInt256.ofNat (if n < 14 then 58 else 80)
       stack := [UInt256.lor
           (UInt256.xor (MachineState.readWord input (928 - 64 * n)) r)
           (UInt256.lor
             (UInt256.xor (MachineState.readWord input (960 - 64 * n)) r) a),
         UInt256.ofNat (896 - 64 * n), r] ++ rest } := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 62 = true := by
-    have h := Artifact.submissionArtifact.isValidJumpDest_index 41 (by rfl)
-    rw [pc_direct_38] at h
+  have hdest : Decode.isValidJumpDest submissionBytecode 58 = true := by
+    have h := Artifact.submissionArtifact.isValidJumpDest_index 37 (by rfl)
+    rw [pc_direct_37] at h
     exact h
   have hcap3 : rest.length + 1 + 1 + 1 < 1024 := by omega
   have hcap4 : rest.length + 1 + 1 + 1 + 1 < 1024 := by omega
@@ -112,7 +112,6 @@ theorem run_loop_last (input : ByteArray) :
         (UInt256.lor
           (UInt256.xor (MachineState.readWord input 64) (referenceWord input))
           (reverseAcc input 14)) := rfl
-  rw [reverseAcc_final] at ha
   simpa only [loopState, loopExitState, show ¬ 14 < 14 by decide, if_false,
     List.append_nil, show 896 - 64 * 14 = 0 by decide,
     show 928 - 64 * 14 = 32 by decide, show 960 - 64 * 14 = 64 by decide, ← ha] using h
