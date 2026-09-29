@@ -23,53 +23,53 @@ private def sS (l : Located) {s t : State}
   Challenge.EvmProof.DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     [l] hcode hfork h hrun hnp
 
-/-- The straight-line seed block from PC 39 to the loop head at PC 58. -/
+/-- The straight-line seed block from PC 38 to the loop head at PC 57. -/
 def gasSteps_checkEntry (input : ByteArray) :
     GasSteps (sizeMatched input) (loopState input 0) := by
   let R := referenceWord input
   let W := MachineState.readWord input 968
   let f : UInt256 := R * UInt256.ofNat 255 + UInt256.ofNat 97
-  rw [show sizeMatched input = PatternedScan.stS input 39 [] from rfl]
-  have s0 := sS (pushAt 24 0 0) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 24 39 [] (by norm_num) pc_direct_24)
-    (PatternedScan.stepS_push0 input 39 [] (by simp) (by norm_num)))
-  have s1 := sS (opAt 25 .CALLDATALOAD) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 25 40 [0] (by norm_num) pc_direct_25)
-    (PatternedScan.stepS_calldataload input 40 0 [] (by simp) (by norm_num)))
-  have s2 := sS (pushAt 26 2 960) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 26 41 [R] (by norm_num) pc_direct_26)
-    (PatternedScan.stepS_push input 41 2 960 [R] (by simp) (by decide) (by decide) (by norm_num)))
-  have s3 := sS (pushAt 27 1 97) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 27 44 [960, R] (by norm_num) pc_direct_27)
-    (PatternedScan.stepS_push input 44 1 97 [960, R] (by simp) (by decide) (by decide) (by norm_num)))
-  have s4 := sS (pushAt 28 1 255) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 28 46 [97, 960, R] (by norm_num) pc_direct_28)
-    (PatternedScan.stepS_push input 46 1 255 [97, 960, R] (by simp) (by decide) (by decide) (by norm_num)))
-  have s5 := sS (opAt 29 (.Dup ⟨3, by decide⟩)) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 29 48 [255, 97, 960, R] (by norm_num) pc_direct_29)
-    (PatternedScan.stepS_dup input 48 3 (by decide) [255, 97, 960, R] R rfl (by simp) (by norm_num)))
-  have s6 := sS (opAt 30 .MUL) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 30 49 [R, 255, 97, 960, R] (by norm_num) pc_direct_30)
-    (PatternedScan.stepS_mul input 49 R 255 [97, 960, R] (by simp) (by norm_num)))
-  have s7 := sS (opAt 31 .ADD) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 31 50 [R * 255, 97, 960, R] (by norm_num) pc_direct_31)
-    (PatternedScan.stepS_add input 50 (R * 255) 97 [960, R] (by simp) (by norm_num)))
-  have s8 := sS (pushAt 32 2 968) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 32 51 [f, 960, R] (by norm_num) pc_direct_32)
-    (PatternedScan.stepS_push input 51 2 968 [f, 960, R] (by simp) (by decide) (by decide) (by norm_num)))
-  have s9 := sS (opAt 33 .CALLDATALOAD) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 33 54 [968, f, 960, R] (by norm_num) pc_direct_33)
-    (PatternedScan.stepS_calldataload input 54 968 [f, 960, R] (by simp) (by norm_num)))
-  have s10 := sS (opAt 34 (.Dup ⟨3, by decide⟩)) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 34 55 [W, f, 960, R] (by norm_num) pc_direct_34)
-    (PatternedScan.stepS_dup input 55 3 (by decide) [W, f, 960, R] R rfl (by simp) (by norm_num)))
-  have s11 := sS (opAt 35 .XOR) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 35 56 [R, W, f, 960, R] (by norm_num) pc_direct_35)
-    (PatternedScan.stepS_xor input 56 R W [f, 960, R] (by simp) (by norm_num)))
-  have s12 := sS (opAt 36 .OR) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 36 57 [UInt256.xor R W, f, 960, R] (by norm_num) pc_direct_36)
-    (PatternedScan.stepS_or input 57 (UInt256.xor R W) f [960, R] (by simp) (by norm_num)))
-  have hend : PatternedScan.stS input (57 + 1) [UInt256.lor (UInt256.xor R W) f, 960, R] =
+  rw [show sizeMatched input = PatternedScan.stS input 38 [] from rfl]
+  have s0 := sS (pushAt 23 0 0) (PatternedScan.blockOfS _
+    (PatternedScan.pcFactS input 23 38 [] (by norm_num) pc_direct_23)
+    (PatternedScan.stepS_push0 input 38 [] (by simp) (by norm_num)))
+  have s1 := sS (opAt 24 .CALLDATALOAD) (PatternedScan.blockOfS _
+    (PatternedScan.pcFactS input 24 39 [0] (by norm_num) pc_direct_24)
+    (PatternedScan.stepS_calldataload input 39 0 [] (by simp) (by norm_num)))
+  have s2 := sS (pushAt 25 2 960) (PatternedScan.blockOfS _
+    (PatternedScan.pcFactS input 25 40 [R] (by norm_num) pc_direct_25)
+    (PatternedScan.stepS_push input 40 2 960 [R] (by simp) (by decide) (by decide) (by norm_num)))
+  have s3 := sS (pushAt 26 1 97) (PatternedScan.blockOfS _
+    (PatternedScan.pcFactS input 26 43 [960, R] (by norm_num) pc_direct_26)
+    (PatternedScan.stepS_push input 43 1 97 [960, R] (by simp) (by decide) (by decide) (by norm_num)))
+  have s4 := sS (pushAt 27 1 255) (PatternedScan.blockOfS _
+    (PatternedScan.pcFactS input 27 45 [97, 960, R] (by norm_num) pc_direct_27)
+    (PatternedScan.stepS_push input 45 1 255 [97, 960, R] (by simp) (by decide) (by decide) (by norm_num)))
+  have s5 := sS (opAt 28 (.Dup ⟨3, by decide⟩)) (PatternedScan.blockOfS _
+    (PatternedScan.pcFactS input 28 47 [255, 97, 960, R] (by norm_num) pc_direct_28)
+    (PatternedScan.stepS_dup input 47 3 (by decide) [255, 97, 960, R] R rfl (by simp) (by norm_num)))
+  have s6 := sS (opAt 29 .MUL) (PatternedScan.blockOfS _
+    (PatternedScan.pcFactS input 29 48 [R, 255, 97, 960, R] (by norm_num) pc_direct_29)
+    (PatternedScan.stepS_mul input 48 R 255 [97, 960, R] (by simp) (by norm_num)))
+  have s7 := sS (opAt 30 .ADD) (PatternedScan.blockOfS _
+    (PatternedScan.pcFactS input 30 49 [R * 255, 97, 960, R] (by norm_num) pc_direct_30)
+    (PatternedScan.stepS_add input 49 (R * 255) 97 [960, R] (by simp) (by norm_num)))
+  have s8 := sS (pushAt 31 2 968) (PatternedScan.blockOfS _
+    (PatternedScan.pcFactS input 31 50 [f, 960, R] (by norm_num) pc_direct_31)
+    (PatternedScan.stepS_push input 50 2 968 [f, 960, R] (by simp) (by decide) (by decide) (by norm_num)))
+  have s9 := sS (opAt 32 .CALLDATALOAD) (PatternedScan.blockOfS _
+    (PatternedScan.pcFactS input 32 53 [968, f, 960, R] (by norm_num) pc_direct_32)
+    (PatternedScan.stepS_calldataload input 53 968 [f, 960, R] (by simp) (by norm_num)))
+  have s10 := sS (opAt 33 (.Dup ⟨3, by decide⟩)) (PatternedScan.blockOfS _
+    (PatternedScan.pcFactS input 33 54 [W, f, 960, R] (by norm_num) pc_direct_33)
+    (PatternedScan.stepS_dup input 54 3 (by decide) [W, f, 960, R] R rfl (by simp) (by norm_num)))
+  have s11 := sS (opAt 34 .XOR) (PatternedScan.blockOfS _
+    (PatternedScan.pcFactS input 34 55 [R, W, f, 960, R] (by norm_num) pc_direct_34)
+    (PatternedScan.stepS_xor input 55 R W [f, 960, R] (by simp) (by norm_num)))
+  have s12 := sS (opAt 35 .OR) (PatternedScan.blockOfS _
+    (PatternedScan.pcFactS input 35 56 [UInt256.xor R W, f, 960, R] (by norm_num) pc_direct_35)
+    (PatternedScan.stepS_or input 56 (UInt256.xor R W) f [960, R] (by simp) (by norm_num)))
+  have hend : PatternedScan.stS input (56 + 1) [UInt256.lor (UInt256.xor R W) f, 960, R] =
       loopState input 0 := rfl
   rw [hend] at s12
   exact s0.trans (s1.trans (s2.trans (s3.trans (s4.trans (s5.trans (s6.trans (s7.trans
