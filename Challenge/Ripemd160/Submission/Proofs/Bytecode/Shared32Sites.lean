@@ -43,21 +43,21 @@ end special
 
 namespace lower
 abbrev template : List Instr := [.op .JUMPDEST]
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 199).take template.length = template := by rfl
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 201).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 199 actual_slice
-    (by change 199 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 201 actual_slice
+    (by change 201 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 490 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 199) = UInt256.ofNat 490
+theorem site_pc : site.startPC = UInt256.ofNat 494 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 201) = UInt256.ofNat 494
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem end_pc : pcAfter (UInt256.ofNat 490) template = UInt256.ofNat 491 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 494) template = UInt256.ofNat 495 := by decide
 def lift (s t : State) (e : Env s) (stack : List UInt256)
-    (h : runInstrSeq template (atState s 490 stack) = some t) :
-    GasSteps (atState s 490 stack) t := by
-  apply PadLift.gasSteps_of_raw site (atState s 490 stack) t e.code e.fork e.run e.np site_pc.symm
+    (h : runInstrSeq template (atState s 494 stack) = some t) :
+    GasSteps (atState s 494 stack) t := by
+  apply PadLift.gasSteps_of_raw site (atState s 494 stack) t e.code e.fork e.run e.np site_pc.symm
   · apply PadLift.advancesAll_sound; decide
   · exact h
 end lower
@@ -124,7 +124,7 @@ def lift (s t : State) (e : Env s) (stack : List UInt256)
 end sparse
 
 namespace jump
-abbrev template : List Instr := PadJump.template 490
+abbrev template : List Instr := PadJump.template 494
 theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 77).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
   StackSiteBuilder.ofSlice template 77 actual_slice
@@ -146,17 +146,17 @@ end jump
 
 namespace table
 abbrev template : List Instr := Shared32Run.template
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 200).take template.length = template := by rfl
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 202).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 200 actual_slice
-    (by change 200 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 202 actual_slice
+    (by change 202 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 491 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 200) = UInt256.ofNat 491
+theorem site_pc : site.startPC = UInt256.ofNat 495 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 202) = UInt256.ofNat 495
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem end_pc : pcAfter (UInt256.ofNat 491) template = UInt256.ofNat 808 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 495) template = UInt256.ofNat 808 := by decide
 
 /-- `MCOPY` advances the pc like any straight-line instruction, but it is outside
 `PadLift.advancesCheck`'s whitelist and the S51 schedule fan uses two of them. -/
@@ -204,9 +204,9 @@ private theorem advances (instruction : Instr) (hi : instruction ∈ template.dr
   exact advancesCheck_sound instruction ((List.all_eq_true.mp hall) instruction hi) hr
 
 def lift (s t : State) (e : Env s) (stack : List UInt256)
-    (h : runInstrSeq template (atState s 491 stack) = some t) :
-    GasSteps (atState s 491 stack) t := by
-  let u := atState s 491 stack
+    (h : runInstrSeq template (atState s 495 stack) = some t) :
+    GasSteps (atState s 495 stack) t := by
+  let u := atState s 495 stack
   apply DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka site.path (s := u) (t := t) e.code e.fork
   · have hl := runLocatedBlock_eq_raw_terminal_sites site.sites template
       site.instruction_eq site.contiguous u
@@ -259,10 +259,10 @@ theorem valid_special (s : State) (e : Env s) :
   exact h
 
 theorem valid_lower (s : State) (e : Env s) :
-    Decode.isValidJumpDest s.executionEnv.code 490 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 199 = 490 := by
+    Decode.isValidJumpDest s.executionEnv.code 494 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 201 = 494 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 199 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 201 (by rfl)
   rw [hpc] at h
   rw [e.code]
   exact h

@@ -14,7 +14,8 @@ def resultHash (input : ByteArray) (i : Nat) : Compression.HashState :=
 
 def resultState (input : ByteArray) (i : Nat) : State :=
   StaggerPersistentSerialize.result (tableState input i) (resultHash input i)
-    (Padding.paddedWord input) (Padding.paddedWord input) maskRho
+    (StaggerPersistentLoopRaw.nextOffset (DriverTrace.messageOffsetWord i))
+    (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size)) maskRho
 
 theorem last_index (input : ByteArray) (i : Nat)
     (hh : input.size = DriverTrace.blockOffset i) :
@@ -26,29 +27,33 @@ private theorem aligned (input : ByteArray) (i : Nat)
     (hh : input.size = DriverTrace.blockOffset i) : input.size % 64 = 0 := by
   simp [hh, DriverTrace.blockOffset]
 
-private theorem next_eq (input : ByteArray) (hfit : CalldataFits input) (i : Nat)
-    (hh : input.size = DriverTrace.blockOffset i) :
-    StaggerPersistentLoopRaw.nextOffset (DriverTrace.blockOffsetWord i) =
-      Padding.paddedWord input := by
-  have hsum : input.size + 64 < 2^256 := by
-    unfold CalldataFits at hfit
-    norm_num at hfit ⊢
-    omega
-  rw [PaddingTraceGeneral.paddedWord_aligned input hfit (aligned input i hh)]
-  change UInt256.ofNat (DriverTrace.blockOffset i) + UInt256.ofNat 64 = _
-  rw [← hh, Word.ofNat_add_ofNat hsum]
-
 private theorem next_nat (input : ByteArray) (hfit : CalldataFits input) (i : Nat)
     (hh : input.size = DriverTrace.blockOffset i) :
-    (StaggerPersistentLoopRaw.nextOffset (DriverTrace.blockOffsetWord i)).toNat =
-      input.size + 64 := by
-  have hsum : input.size + 64 < 2^256 := by
+    (StaggerPersistentLoopRaw.nextOffset (DriverTrace.messageOffsetWord i)).toNat =
+      1120 + input.size := by
+  have hsum : 1120 + input.size < 2^256 := by
     unfold CalldataFits at hfit
     norm_num at hfit ⊢
     omega
-  rw [next_eq input hfit i hh,
-    PaddingTraceGeneral.paddedWord_aligned input hfit (aligned input i hh),
-    Word.word_toNat_ofNat, Nat.mod_eq_of_lt hsum]
+  change (UInt256.ofNat (Padding.messageOffset + DriverTrace.blockOffset i) + UInt256.ofNat 64).toNat = _
+  rw [Word.ofNat_add_ofNat (by unfold Padding.messageOffset; omega), Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (by unfold Padding.messageOffset; omega)]
+  unfold Padding.messageOffset
+  omega
+
+private theorem limit_nat (input : ByteArray) (hfit : CalldataFits input) (i : Nat)
+    (hh : input.size = DriverTrace.blockOffset i) :
+    (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size)).toNat = 1087 + input.size := by
+  have hsum : 1087 + input.size < 2^256 := by
+    unfold CalldataFits at hfit
+    norm_num at hfit ⊢
+    omega
+  rw [PadLimitArithmetic.coldRounded_input input hfit, Word.word_toNat_ofNat]
+  have hz := aligned input i hh
+  have hp : Padding.paddedLength input.size = input.size + 64 := by
+    unfold Padding.paddedLength; omega
+  rw [hp, Nat.mod_eq_of_lt (by omega)]
+  omega
 
 private opaque compose3 {s t u v : State}
     (a : GasSteps s t) (b : GasSteps t u) (c : GasSteps u v) : GasSteps s v :=
@@ -58,31 +63,21 @@ private opaque compose3 {s t u v : State}
 private opaque finish (s : State) (e : Shared32Sites.Env s)
     (h : Compression.HashState) (off limit : UInt256)
     (hactive : 35 ≤ s.activeWords.toNat)
-    (hnext : StaggerPersistentLoopRaw.nextOffset off = limit)
-    (hfit : s.executionEnv.calldata.size < 2^256)
-    (hdispatch : s.executionEnv.calldata.size ≠
-      (StaggerPersistentLoopRaw.nextOffset off).toNat) :
+    (hbound : limit.toNat ≤ (StaggerPersistentLoopRaw.nextOffset off).toNat)
+    (hmiss : StaggerPersistentLoopRaw.nextOffset off ≠ limit) :
     GasSteps
       {s with pc := UInt256.ofNat 808, stack := frame h off limit maskRho}
       (StaggerPersistentSerialize.result s
-        (PersistentStaggerFunctional.result s.memory h) limit limit maskRho) := by
+        (PersistentStaggerFunctional.result s.memory h)
+        (StaggerPersistentLoopRaw.nextOffset off) limit maskRho) := by
   have gb := Shared32Core.gasSteps_body s e h off limit maskRho (by decide) hactive
   have ge := StaggerPersistentLoopSites.gasSteps_exit s
     (PersistentStaggerFunctional.result s.memory h) off limit maskRho (by decide)
-    e.run (by rw [hnext]) hfit hdispatch e.code e.fork e.np
-  have go := StaggerPersistentSerialize.gasSteps s limit limit
+    e.run hbound hmiss e.code e.fork e.np
+  have go := StaggerPersistentSerialize.gasSteps s (StaggerPersistentLoopRaw.nextOffset off) limit
     (PersistentStaggerFunctional.result s.memory h) [] (by decide)
     e.run e.code e.fork e.np
-  have hend :
-      ({s with
-        pc := UInt256.ofNat 4577
-        stack := frame (PersistentStaggerFunctional.result s.memory h)
-          (StaggerPersistentLoopRaw.nextOffset off) limit maskRho} : State) =
-      {s with
-        pc := UInt256.ofNat 4577
-        stack := frame (PersistentStaggerFunctional.result s.memory h) limit limit maskRho} := by
-    rw [hnext]
-  exact compose3 gb (ge.cast rfl hend) go
+  exact compose3 gb ge go
 
 opaque gasSteps (input : ByteArray) (hfit : CalldataFits input) (i : Nat)
     (hi : i < DriverTrace.blockCount input)
@@ -90,19 +85,21 @@ opaque gasSteps (input : ByteArray) (hfit : CalldataFits input) (i : Nat)
     GasSteps
       {tableState input i with
         pc := UInt256.ofNat 808
-        stack := frame (hashes input i) (DriverTrace.blockOffsetWord i)
-          (Padding.paddedWord input) maskRho}
+        stack := frame (hashes input i) (DriverTrace.messageOffsetWord i)
+          (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size)) maskRho}
       (resultState input i) := by
   have he : Shared32Sites.Env (tableState input i) :=
     ⟨states_code input i, states_fork input i, states_halt input i,
       states_noPrecompile input i⟩
-  have hcal : (tableState input i).executionEnv.calldata = input := states_calldata input i
   exact finish (tableState input i) he (hashes input i)
-    (DriverTrace.blockOffsetWord i) (Padding.paddedWord input)
+    (DriverTrace.messageOffsetWord i) (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size))
     (by have ha := tableState_active input hfit i hi; omega)
-    (next_eq input hfit i hh)
-    (by rw [hcal]; unfold CalldataFits at hfit; norm_num at hfit ⊢; omega)
-    (by rw [hcal, next_nat input hfit i hh]; omega)
+    (by rw [next_nat input hfit i hh, limit_nat input hfit i hh]; omega)
+    (by
+      intro heq
+      have ht := congrArg UInt256.toNat heq
+      rw [next_nat input hfit i hh, limit_nat input hfit i hh] at ht
+      omega)
 
 theorem resultHash_spec (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (i : Nat) (hi : i < DriverTrace.blockCount input)
@@ -122,7 +119,8 @@ theorem returned_spec (input : ByteArray) (hfit : CalldataFits input)
     (hh : input.size = DriverTrace.blockOffset i) :
     (resultState input i).hReturn = spec input :=
   StaggerPersistentSerialize.returned_spec_of_hashArray (tableState input i) input
-    (Padding.paddedWord input) (Padding.paddedWord input) maskRho (resultHash input i)
+    (StaggerPersistentLoopRaw.nextOffset (DriverTrace.messageOffsetWord i))
+    (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size)) maskRho (resultHash input i)
     (resultHash_spec input hfit hpositive i hi hh)
 
 @[simp] theorem resultState_halt (input : ByteArray) (i : Nat) :

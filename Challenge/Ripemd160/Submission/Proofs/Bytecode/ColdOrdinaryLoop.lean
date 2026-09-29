@@ -17,32 +17,37 @@ def run_until (input : ByteArray) (states : Nat → State) (hashes : Nat → Com
     GasSteps (loopState input (states 0) (hashes 0) 0 (DriverTrace.blockCount input) rho)
       (loopState input (states target) (hashes target) target (DriverTrace.blockCount input) rho) := by
   let count:=DriverTrace.blockCount input
-  have hbound : count*64<2^256 := LoopCompletionControl.padded_bound input hsize
+  have hbound : 1056 + count*64<2^256 := by
+    rw [← DriverTrace.paddedLength_eq_blockCount]
+    have h := Padding.paddedLength_lt input.size
+    have h2 : (2:Nat)^64 + 2000 < 2^256 := by decide
+    omega
   let I : Nat → State := fun i=>loopState input (states i) (hashes i) i count rho
   have hb : ∀ i, i<target → GasSteps (I i) (I (i+1)) := by
     intro i hi
     have hic : i<count := by omega
     have hn : i+1<count := by omega
     have a:=hambient (i+1) (by omega)
-    have hfit : (states (i+1)).executionEnv.calldata.size<2^256 := by
-      rw [a.calldata]
-      have : (2:Nat)^64<2^256 := by decide
-      omega
-    have ho : (nextOffset (offsetWord i)).toNat=(i+1)*64 := by
+    have ho : (nextOffset (offsetWord i)).toNat=1056+(i+1)*64 := by
       rw [next_offset i count hic hbound]
-      change ((i+1)*64)%2^256=(i+1)*64
+      change (1056+(i+1)*64)%2^256=1056+(i+1)*64
       exact Nat.mod_eq_of_lt (by omega)
     have hl:=LoopCompletionControl.limit_toNat input hsize
     by_cases hh : input.size=(i+1)*64
     · have gp:=StaggerPersistentLoopSites.gasSteps_pad (states (i+1)) (hashes (i+1))
         (offsetWord i) (LoopCompletionControl.limit input) rho (by omega) a.running
-        (by rw [hl,ho];exact LoopCompletionControl.pad_bound input i hh) hfit
-        (by rw [a.calldata,ho];exact hh) a.code a.fork a.notPrecompile
+        (by rw [hl,ho]; have := LoopCompletionControl.pad_bound input i hh; omega)
+        (by
+          rw [next_offset i count hic hbound]
+          have hz : input.size % 64 = 0 := by omega
+          rw [LoopCompletionControl.limit_aligned input hz, hh]
+          rfl)
+        a.code a.fork a.notPrecompile
       rw [next_offset i count hic hbound] at gp
       simpa only [I,loopState,postState,LoopCompletionControl.blockPC,if_pos hh] using (hblock i hi).trans gp
     · have gp:=StaggerPersistentLoopSites.gasSteps_continue (states (i+1)) (hashes (i+1))
         (offsetWord i) (LoopCompletionControl.limit input) rho (by omega) a.running
-        (by rw [hl,ho];exact LoopCompletionControl.continue_lt input i hn hh)
+        (by rw [hl,ho]; have := LoopCompletionControl.continue_lt input i hn hh; omega)
         a.code a.fork a.notPrecompile
       rw [next_offset i count hic hbound] at gp
       simpa only [I,loopState,postState,LoopCompletionControl.blockPC,if_neg hh] using (hblock i hi).trans gp

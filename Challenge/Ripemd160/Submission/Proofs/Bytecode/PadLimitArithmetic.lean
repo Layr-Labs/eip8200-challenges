@@ -71,5 +71,63 @@ theorem rounded_input (input : ByteArray) :
   rw [rounded, land_not63]
   rfl
 
+theorem or63_nat (x : Nat) : x ||| 63 = x / 64 * 64 + 63 := by
+  apply Nat.eq_of_testBit_eq
+  intro i
+  have h63 : (63:Nat) = 2^6 - 1 := by norm_num
+  have hr : x / 64 * 64 + 63 = 2^6 * (x / 2^6) + (2^6 - 1) := by
+    rw [show (2:Nat)^6 = 64 by rfl]; omega
+  rw [hr, Nat.testBit_or, h63, Nat.testBit_two_pow_mul_add _ (by norm_num : 2^6 - 1 < 2^6),
+    Nat.testBit_two_pow_sub_one]
+  by_cases hi : i < 6
+  · simp [hi]
+  · simp only [hi, if_false, decide_false, Bool.or_false]
+    rw [Nat.testBit_div_two_pow, show i - 6 + 6 = i by omega]
+
+theorem coldRounded_eq (n : Nat) (hn : n < 2^64) :
+    (UInt256.ofNat 63).lor (UInt256.ofNat 1032 + UInt256.ofNat n) =
+      UInt256.ofNat (1023 + Padding.paddedLength n) := by
+  have hs : 1032 + n < 2^256 := by
+    have : (2:Nat)^64 + 1032 < 2^256 := by norm_num
+    omega
+  rw [Word.ofNat_add_ofNat hs]
+  apply Word.word_ext
+  rw [Word.word_toNat_lor, Word.word_toNat_ofNat, Word.word_toNat_ofNat, Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt hs, Nat.mod_eq_of_lt (by norm_num : (63:Nat) < 2^256)]
+  unfold Padding.paddedLength
+  have hb : 1023 + (n + 72) / 64 * 64 < 2^256 := by
+    have : (2:Nat)^64 + 2000 < 2^256 := by norm_num
+    have : (n + 72) / 64 * 64 ≤ n + 72 := Nat.div_mul_le_self _ _
+    omega
+  rw [Nat.mod_eq_of_lt hb, Nat.or_comm, or63_nat]
+  omega
+
+/-- The partial-block route writes `(size + 1032) | 63 = 1023 + paddedLength size` into the limit
+slot: strictly between the last block pointer and the padded end, and never equal to a block
+pointer, so the loop stops after the last padded block and the dispatch never takes the
+aligned-padding route. -/
+def coldRounded (size : UInt256) : UInt256 :=
+  (UInt256.ofNat 63).lor (UInt256.ofNat 1032 + size)
+
+theorem coldRounded_input (input : ByteArray) (hfit : input.size < 2^64) :
+    coldRounded (UInt256.ofNat input.size) = UInt256.ofNat (1023 + Padding.paddedLength input.size) :=
+  coldRounded_eq input.size hfit
+
+theorem footer_addr (input : ByteArray) (hfit : input.size < 2^64) :
+    UInt256.ofNat (1023 + Padding.paddedLength input.size) + UInt256.ofNat 25 =
+      Padding.paddedWord input + UInt256.ofNat 1048 := by
+  have hp := Padding.paddedLength_lt input.size
+  have hs1 : 1023 + Padding.paddedLength input.size + 25 < 2^256 := by
+    have : (2:Nat)^64 + 2000 < 2^256 := by norm_num
+    omega
+  have hs2 : Padding.paddedLength input.size + 1048 < 2^256 := by
+    have : (2:Nat)^64 + 2000 < 2^256 := by norm_num
+    omega
+  rw [Padding.paddedWord_eq input hfit, Word.ofNat_add_ofNat hs1, Word.ofNat_add_ofNat hs2]
+  congr 1
+  omega
+
 #print axioms rounded_input
+#print axioms coldRounded_input
+#print axioms footer_addr
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PadLimitArithmetic

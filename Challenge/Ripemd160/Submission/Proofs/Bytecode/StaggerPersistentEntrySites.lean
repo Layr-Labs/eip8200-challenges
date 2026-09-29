@@ -32,8 +32,7 @@ theorem valid_pad (s : State) (hcode : s.executionEnv.code = Artifact.submission
 
 def gasSteps_hit (s : State) (off limit : UInt256) (h : Compression.HashState)
     (rho : List UInt256) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hfit : s.executionEnv.calldata.size < 2^256)
-    (hhit : s.executionEnv.calldata.size = off.toNat)
+    (hhit : off = limit)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
@@ -41,13 +40,12 @@ def gasSteps_hit (s : State) (off limit : UInt256) (h : Compression.HashState)
       {s with pc := UInt256.ofNat 129, stack := frame h off limit rho} := by
   apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4571, stack := frame h off limit rho} _ hcode hfork hrun hnp dispatch_pc.symm
   · exact PadLift.advancesAll_sound _ (by decide)
-  · have hr := run_hit s (UInt256.ofNat 4571) off limit h rho 129 hstack hrun hfit hhit (valid_pad s hcode)
+  · have hr := run_hit s (UInt256.ofNat 4571) off limit h rho 129 hstack hrun hhit (valid_pad s hcode)
     exact hr
 
 def gasSteps_miss (s : State) (off limit : UInt256) (h : Compression.HashState)
     (rho : List UInt256) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hfit : s.executionEnv.calldata.size < 2^256)
-    (hmiss : s.executionEnv.calldata.size ≠ off.toNat)
+    (hmiss : off ≠ limit)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
@@ -55,7 +53,7 @@ def gasSteps_miss (s : State) (off limit : UInt256) (h : Compression.HashState)
       {s with pc := UInt256.ofNat 4577, stack := frame h off limit rho} := by
   apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4571, stack := frame h off limit rho} _ hcode hfork hrun hnp dispatch_pc.symm
   · exact PadLift.advancesAll_sound _ (by decide)
-  · have hr := run_miss s (UInt256.ofNat 4571) off limit h rho 129 hstack hrun hfit hmiss
+  · have hr := run_miss s (UInt256.ofNat 4571) off limit h rho 129 hstack hrun hmiss
     have he : pcAfter (UInt256.ofNat 4571) (dispatchTemplate 129) = UInt256.ofNat 4577 := by decide
     rw [he] at hr
     exact hr

@@ -23,18 +23,18 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
       {s with
         pc := pc
         stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10
-          (UInt256.ofNat 0) lim rho
+          (UInt256.ofNat 1056) lim rho
         memory := writeWord s.memory 162 highWord} =
       some {s with
         pc := pcAfter pc template
         stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10
-          (UInt256.ofNat 0) lim rho
+          (UInt256.ofNat 1056) lim rho
         memory := Shared32Table.tableMemory s.memory
         activeWords := UInt256.ofNat 35} := by
   let rest : List UInt256 :=
-    a2 :: a3 :: a4 :: a5 :: a6 :: a7 :: a8 :: a9 :: a10 :: UInt256.ofNat 0 :: lim :: mask8 :: mask16 :: rho
+    a2 :: a3 :: a4 :: a5 :: a6 :: a7 :: a8 :: a9 :: a10 :: UInt256.ofNat 1056 :: lim :: mask8 :: mask16 :: rho
   let F := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10
-    (UInt256.ofNat 0) lim rho
+    (UInt256.ofNat 1056) lim rho
   let scratch := Pair13Endian.scratchV2 s.memory
     (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1056)) highWord
   let s1 : State := {s with memory := writeWord s.memory 162 highWord}
@@ -67,7 +67,7 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
   simpa only [PoolRawWriter.template_eq, template, DenseScheduleTrace.pcAfter_append,
     s3, s2, s1, scratch, Shared32Table.tableMemory, PoolShapeV2.resultMemoryV2, PoolShapeV2.fanMemoryV2, rest, stk] using h
 
-theorem end_pc : pcAfter (UInt256.ofNat 491) template = UInt256.ofNat 808 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 495) template = UInt256.ofNat 808 := by decide
 
 #print axioms run_table
 #print axioms end_pc

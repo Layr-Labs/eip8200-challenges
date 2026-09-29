@@ -9,32 +9,24 @@ open PersistentStaggerTable PersistentStaggerIteration ColdHighPaddingMemory Sta
 noncomputable opaque gasSteps_normal (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (i : Nat)
     (hi : i<DriverTrace.blockCount input) :
-    GasSteps {paddedState input i with pc:=UInt256.ofNat 454,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (Padding.paddedWord input) maskRho}
-      {tableState input i with pc:=UInt256.ofNat 808,stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (Padding.paddedWord input) maskRho} := by
+    GasSteps {paddedState input i with pc:=UInt256.ofNat 456,stack:=frame (hashes input i) (DriverTrace.messageOffsetWord i) (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size)) maskRho}
+      {tableState input i with pc:=UInt256.ofNat 808,stack:=frame (hashes input i) (DriverTrace.messageOffsetWord i) (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size)) maskRho} := by
   let h:=hashes input i
-  let off:=DriverTrace.blockOffsetWord i
+  let off:=DriverTrace.messageOffsetWord i
   have hc : (paddedState input i).executionEnv.code=Artifact.submissionArtifact.code := states_code input i
   have hf : (paddedState input i).fork=.Osaka := states_fork input i
   have hr : (paddedState input i).halt=.Running := states_halt input i
   have hnp:=states_noPrecompile input i
   have hb:=messagePointer_bound input hfit i hi
-  have hq0 : off+UInt256.ofNat 1056=UInt256.ofNat (messagePointer i) := by
-    change UInt256.ofNat (DriverTrace.blockOffset i)+UInt256.ofNat 1056=_
-    rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb;omega)]
-    unfold messagePointer Padding.messageOffset
-    congr 1
-    omega
-  have hq1 : off+UInt256.ofNat 1088=UInt256.ofNat (messagePointer i+32) := by
-    change UInt256.ofNat (DriverTrace.blockOffset i)+UInt256.ofNat 1088=_
-    rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb;omega)]
-    unfold messagePointer Padding.messageOffset
-    congr 1
-    omega
+  have hq0 : off=UInt256.ofNat (messagePointer i) := rfl
+  have hq1 : off+UInt256.ofNat 32=UInt256.ofNat (messagePointer i+32) := by
+    change UInt256.ofNat (messagePointer i)+UInt256.ofNat 32=_
+    rw [Word.ofNat_add_ofNat (by omega)]
   have gn:=ColdOrdinarySites.gasSteps_normal (paddedState input i) Paired144WordRound.factorPlusWord
     (Paired144WordRound.fusedModulusWord 5 7) (Paired144WordRound.fusedModulusWord 8 5)
     (Paired144WordRound.fusedCoefficientWord 0 3) (Paired144WordRound.fusedCoefficientWord 0 2)
     (Word.ofUInt32 h.h4) (Word.ofUInt32 h.h3) (Word.ofUInt32 h.h2) (Word.ofUInt32 h.h1)
-    (Word.ofUInt32 h.h0) off (Padding.paddedWord input) [] (messagePointer i) (by decide) hr
+    (Word.ofUInt32 h.h0) off (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size)) [] (messagePointer i) (by decide) hr
     (messagePointer_lower i) hb hq1 hq0 hc hf hnp
   exact gn.cast
     (by simp only [h,off,frame,maskRho,PersistentMaskEndian.stk,Pair13Endian.stk,List.cons_append,List.nil_append])

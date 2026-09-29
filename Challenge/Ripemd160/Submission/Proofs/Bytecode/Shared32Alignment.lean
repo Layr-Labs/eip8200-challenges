@@ -26,8 +26,8 @@ def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 
-theorem site_pc : site.startPC = UInt256.ofNat 446 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 167) = UInt256.ofNat 446
+theorem site_pc : site.startPC = UInt256.ofNat 448 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 167) = UInt256.ofNat 448
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_padding (s : State) (e : Env s) :
@@ -41,8 +41,8 @@ theorem valid_padding (s : State) (e : Env s) :
 
 def gasSteps (s : State) (e : Env s) (F : List UInt256)
     (hstack : F.length ≤ 900) (h32 : s.executionEnv.calldata.size = 32) :
-    GasSteps (atState s 446 F) (atState s 190 F) := by
-  apply PadLift.gasSteps_of_raw site (atState s 446 F) (atState s 190 F)
+    GasSteps (atState s 448 F) (atState s 190 F) := by
+  apply PadLift.gasSteps_of_raw site (atState s 448 F) (atState s 190 F)
     e.code e.fork e.run e.np site_pc.symm
   · apply PadLift.advancesAll_sound; decide
   · have h0 : F.length < 1024 := by omega

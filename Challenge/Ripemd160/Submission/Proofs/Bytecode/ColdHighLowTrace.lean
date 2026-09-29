@@ -11,11 +11,11 @@ noncomputable opaque gasSteps_lowRoute (input : ByteArray) (hfit : CalldataFits 
     (i : Nat) (hi : i<DriverTrace.blockCount input) (hh : input.size=DriverTrace.blockOffset i)
     (hlarge : 5245 ≤ input.size) :
     GasSteps
-      {states input i with pc:=UInt256.ofNat 129, stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (LoopCompletionControl.limit input) maskRho}
-      {lowState input i with pc:=UInt256.ofNat 190, stack:=frame (hashes input i) (DriverTrace.blockOffsetWord i) (UInt256.ofNat input.size) maskRho} := by
+      {states input i with pc:=UInt256.ofNat 129, stack:=frame (hashes input i) (DriverTrace.messageOffsetWord i) (LoopCompletionControl.limit input) maskRho}
+      {lowState input i with pc:=UInt256.ofNat 190, stack:=frame (hashes input i) (DriverTrace.messageOffsetWord i) (UInt256.ofNat (1056 + input.size)) maskRho} := by
   let s:=states input i
   let h:=hashes input i
-  let off:=DriverTrace.blockOffsetWord i
+  let off:=DriverTrace.messageOffsetWord i
   let lim:=LoopCompletionControl.limit input
   let r:=ColdOrdinaryPrepare.rest h off lim maskRho
   have hc : s.executionEnv.code=Artifact.submissionArtifact.code := states_code input i
@@ -26,7 +26,7 @@ noncomputable opaque gasSteps_lowRoute (input : ByteArray) (hfit : CalldataFits 
   have ctx:=states_context input hfit hpositive i (by omega)
   have hsz : s.executionEnv.calldata.size<2^256 := by rw [hcal];exact calldata_lt_uint256 input hfit
   have hz : input.size%64=0 := by rw [hh,DriverTrace.blockOffset];omega
-  have hlim : lim=UInt256.ofNat input.size := by simp only [lim,LoopCompletionControl.limit,LoopCompletionControl.limitNat,if_pos hz]
+  have hlim : lim=UInt256.ofNat (1056 + input.size) := LoopCompletionControl.limit_aligned input hz
   have gp:=StaggerPersistentPadPrefix.gasSteps_prefix s (frame h off lim maskRho)
     (by simp [frame,maskRho]) hr hc hf hnp
   have ha : 35≤s.activeWords.toNat := ctx.active

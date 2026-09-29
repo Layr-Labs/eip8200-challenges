@@ -13,20 +13,18 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerPersistentFrame PairedMask32Cache
 
 def dispatchTemplate (dest : Nat) : List Instr :=
-  [.op .CALLDATASIZE, .op (.Dup ⟨12, by decide⟩), .op .EQ,
+  [.op (.Dup ⟨12, by decide⟩), .op (.Dup ⟨12, by decide⟩), .op .EQ,
    .push ⟨1, by decide⟩ (UInt256.ofNat dest), .op .JUMPI]
 
 theorem run_miss (s : State) (pc off limit : UInt256) (h : Compression.HashState) (rho : List UInt256)
     (dest : Nat) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hfit : s.executionEnv.calldata.size < 2 ^ 256)
-    (hmiss : s.executionEnv.calldata.size ≠ off.toNat) :
+    (hmiss : off ≠ limit) :
     runInstrSeq (dispatchTemplate dest) {s with pc := pc, stack := frame h off limit rho} =
       some {s with pc := pcAfter pc (dispatchTemplate dest), stack := frame h off limit rho} := by
   have hcap (n : Nat) (hn : n ≤ 100) : rho.length + n < 1024 := by omega
-  have heq : UInt256.eq off (UInt256.ofNat s.executionEnv.calldata.size) = UInt256.ofNat 0 := by
+  have heq : UInt256.eq off limit = UInt256.ofNat 0 := by
     unfold UInt256.eq
-    rw [Word.word_toNat_ofNat]
-    rw [Nat.mod_eq_of_lt hfit, if_neg hmiss.symm]
+    rw [if_neg (fun h => hmiss (Word.word_ext h))]
   simp (discharger := omega) [dispatchTemplate, frame, runInstrSeq, DataStepper.runInstr,
     hrun, hcap, heq, List.length_cons, List.getElem?_cons_zero, Nat.add_assoc, pcAfter, UInt256.succ, Instr.size,
     Word.literal_eq_ofNat, UInt256.isTrue]
@@ -34,16 +32,14 @@ theorem run_miss (s : State) (pc off limit : UInt256) (h : Compression.HashState
 
 theorem run_hit (s : State) (pc off limit : UInt256) (h : Compression.HashState) (rho : List UInt256)
     (dest : Nat) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hfit : s.executionEnv.calldata.size < 2 ^ 256)
-    (hhit : s.executionEnv.calldata.size = off.toNat)
+    (hhit : off = limit)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat dest).toNat = true) :
     runInstrSeq (dispatchTemplate dest) {s with pc := pc, stack := frame h off limit rho} =
       some {s with pc := UInt256.ofNat dest, stack := frame h off limit rho} := by
   have hcap (n : Nat) (hn : n ≤ 100) : rho.length + n < 1024 := by omega
-  have heq : UInt256.eq off (UInt256.ofNat s.executionEnv.calldata.size) = UInt256.ofNat 1 := by
+  have heq : UInt256.eq off limit = UInt256.ofNat 1 := by
     unfold UInt256.eq
-    rw [Word.word_toNat_ofNat]
-    rw [Nat.mod_eq_of_lt hfit, if_pos hhit.symm]
+    rw [if_pos (by rw [hhit])]
   simp only [Word.word_toNat_ofNat] at hvalid
   norm_num only at hvalid
   simp (discharger := omega) [dispatchTemplate, frame, runInstrSeq, DataStepper.runInstr,

@@ -19,14 +19,6 @@ def rest (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256) 
    Word.ofUInt32 h.h4, Word.ofUInt32 h.h3, Word.ofUInt32 h.h2, Word.ofUInt32 h.h1,
    Word.ofUInt32 h.h0, off, limit] ++ rho
 
-theorem pointer_eq (input : ByteArray) (i : Nat) (hfit : CalldataFits input)
-    (hi : i < DriverTrace.blockCount input) :
-    StaggerPersistentEntryRaw.pointer (DriverTrace.blockOffsetWord i) = UInt256.ofNat (messagePointer i) := by
-  have hb := messagePointer_bound input hfit i hi
-  change UInt256.ofNat 1056 + UInt256.ofNat (DriverTrace.blockOffset i) = _
-  rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb; omega)]
-  rfl
-
 /-- The pad-only block (M3b): the low block, then `JUMPI` straight to the rounds when
 `n >>> 29 = 0`, otherwise the high block and the jump. Both paths leave the pad table. -/
 def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
@@ -70,9 +62,9 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     (hr : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := LoopCompletionControl.blockPC input i, stack := frame h (DriverTrace.blockOffsetWord i) limit rho}
-      {scheduledState s i with pc := UInt256.ofNat 808, stack := frame h (DriverTrace.blockOffsetWord i) limit rho} := by
-  let off := DriverTrace.blockOffsetWord i
+    GasSteps {s with pc := LoopCompletionControl.blockPC input i, stack := frame h (DriverTrace.messageOffsetWord i) limit rho}
+      {scheduledState s i with pc := UInt256.ofNat 808, stack := frame h (DriverTrace.messageOffsetWord i) limit rho} := by
+  let off := DriverTrace.messageOffsetWord i
   let r := rest h off limit rho
   have hrs : r.length ≤ 896 := by simp only [r, rest, List.length_append, List.length_cons, List.length_nil]; omega
   by_cases hh : input.size = DriverTrace.blockOffset i
@@ -99,18 +91,10 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     rw [scheduledState_miss s i hhs]
     subst hrho
     have hb := messagePointer_bound input hfit i hi
-    have hq0 : off + UInt256.ofNat 1056 = UInt256.ofNat (messagePointer i) := by
-      change UInt256.ofNat (DriverTrace.blockOffset i) + UInt256.ofNat 1056 = _
-      rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb; omega)]
-      unfold messagePointer Padding.messageOffset
-      congr 1
-      omega
-    have hq1 : off + UInt256.ofNat 1088 = UInt256.ofNat (messagePointer i + 32) := by
-      change UInt256.ofNat (DriverTrace.blockOffset i) + UInt256.ofNat 1088 = _
-      rw [Word.ofNat_add_ofNat (by unfold messagePointer Padding.messageOffset at hb; omega)]
-      unfold messagePointer Padding.messageOffset
-      congr 1
-      omega
+    have hq0 : off = UInt256.ofNat (messagePointer i) := rfl
+    have hq1 : off + UInt256.ofNat 32 = UInt256.ofNat (messagePointer i + 32) := by
+      change UInt256.ofNat (messagePointer i) + UInt256.ofNat 32 = _
+      rw [Word.ofNat_add_ofNat (by omega)]
     have gn := ColdOrdinarySites.gasSteps_normal s Paired144WordRound.factorPlusWord
       (Paired144WordRound.fusedModulusWord 5 7) (Paired144WordRound.fusedModulusWord 8 5)
       (Paired144WordRound.fusedCoefficientWord 0 3) (Paired144WordRound.fusedCoefficientWord 0 2)

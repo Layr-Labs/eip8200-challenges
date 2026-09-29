@@ -19,7 +19,7 @@ noncomputable opaque gasSteps (input : ByteArray) (hfit : CalldataFits input)
     GasSteps (initialState submissionBytecode input 0)
       {states input i with
         pc := UInt256.ofNat 129
-        stack := StaggerPersistentFrame.frame (hashes input i) (DriverTrace.blockOffsetWord i)
+        stack := StaggerPersistentFrame.frame (hashes input i) (DriverTrace.messageOffsetWord i)
           (LoopCompletionControl.limit input) ColdHighTrace.maskRho} := by
   have gs := StaggerPersistentCorrect.gasSteps_start input hfit hpositive hn32 entryPrefix
   have ga : ∀ j, j ≤ i → Ambient input (states input j) := by
@@ -47,7 +47,7 @@ noncomputable opaque gasSteps (input : ByteArray) (hfit : CalldataFits input)
     rw [show input.size = i * 64 by simpa [DriverTrace.blockOffset] using hh]
     simp
   exact (ColdTraceCompose.two hstart gb).cast rfl (by
-    simp only [loopState, hpc, offsetWord, DriverTrace.blockOffsetWord, DriverTrace.blockOffset])
+    simp only [loopState, hpc, offsetWord])
 
 #print axioms gasSteps
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdHighPrefix
