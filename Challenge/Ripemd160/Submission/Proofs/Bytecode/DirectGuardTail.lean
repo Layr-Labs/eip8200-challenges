@@ -143,14 +143,14 @@ def gasSteps_direct_return (input : ByteArray) :
   have gs := DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     returnPath (by rfl) (by rfl) (run_return_store input) (by rfl)
     deployAddress_not_precompile
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 57 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 58 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedReturnState input).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 57 := by
+      Artifact.submissionArtifact.instructionPC 58 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
   have hop : (storedReturnState input).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 57
+    Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 58
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop
     (by simp [storedReturnState, spentCells]) (by rfl)

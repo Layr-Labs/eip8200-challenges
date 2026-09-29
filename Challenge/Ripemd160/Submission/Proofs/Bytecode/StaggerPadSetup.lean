@@ -67,15 +67,15 @@ def highTemplate : List Instr :=
 private theorem add_eq_hAdd (x y : UInt256) : UInt256.add x y = x + y := rfl
 
 /-- The fast padding path is valid for lengths below the artifact's byte size. -/
-def highZero (n : UInt256) : UInt256 := UInt256.lt n (UInt256.ofNat 5245)
+def highZero (n : UInt256) : UInt256 := UInt256.lt n (UInt256.ofNat 5248)
 
 theorem highZero_true_iff (n : UInt256) :
-    UInt256.isTrue (highZero n) ↔ n.toNat < 5245 := by
-  change (UInt256.lt n (UInt256.ofNat 5245)).toNat ≠ 0 ↔ n.toNat < 5245
+    UInt256.isTrue (highZero n) ↔ n.toNat < 5248 := by
+  change (UInt256.lt n (UInt256.ofNat 5248)).toNat ≠ 0 ↔ n.toNat < 5248
   rw [Word.word_toNat_lt]
-  have hc : (UInt256.ofNat 5245).toNat = 5245 := by decide
+  have hc : (UInt256.ofNat 5248).toNat = 5248 := by decide
   rw [hc]
-  by_cases hn : n.toNat < 5245 <;> simp [hn]
+  by_cases hn : n.toNat < 5248 <;> simp [hn]
 
 theorem highZero_true_imp (n : UInt256) (h : UInt256.isTrue (highZero n)) :
     StaggerTablePad.highDirty n = UInt256.ofNat 0 := by

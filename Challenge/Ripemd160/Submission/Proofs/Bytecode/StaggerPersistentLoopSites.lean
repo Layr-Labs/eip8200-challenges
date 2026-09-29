@@ -3,6 +3,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionLift
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentLoopRaw
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80SiteCommon
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadLift
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.ExitLift
 set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
@@ -12,7 +13,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentLoopSi
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate StaggerPersistentLoopRaw
 
-def postTemplate : List Instr := StaggerPersistentLoopRaw.template 129
+def postTemplate : List Instr := StaggerPersistentLoopRaw.template 4581
 
 theorem post_slice :
     (Artifact.submissionArtifact.instructions.drop 3421).take postTemplate.length = postTemplate := by rfl
@@ -100,18 +101,19 @@ private theorem next_ne_of_lt {off limit : UInt256}
     (h : (nextOffset off).toNat < limit.toNat) : nextOffset off ≠ limit := by
   intro he; rw [he] at h; exact Nat.lt_irrefl _ h
 
+/-- Offset advance and finish test, not taken. -/
 def gasSteps_step (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hmiss : nextOffset off ≠ limit)
+    (hle : (nextOffset off).toNat ≤ limit.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 4559, stack := StaggerPersistentFrame.frame h off limit rho}
-      {s with pc := UInt256.ofNat 4570, stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
-  apply PadLift.gasSteps_of_raw postSite {s with pc := UInt256.ofNat 4559, stack := StaggerPersistentFrame.frame h off limit rho} _ hcode hfork hrun hnp post_pc.symm
-  · exact PadLift.advancesAll_sound _ (by decide)
-  · have hr := run_miss s (UInt256.ofNat 4559) h off limit rho 129 (by omega) hrun hmiss
-    have he : pcAfter (UInt256.ofNat 4559) (StaggerPersistentLoopRaw.template 129) = UInt256.ofNat 4570 := by decide
+      {s with pc := UInt256.ofNat 4570, stack := StaggerPersistentFrame.exitFrame h (nextOffset off) limit rho} := by
+  apply ExitLift.gasSteps_of_raw postSite {s with pc := UInt256.ofNat 4559, stack := StaggerPersistentFrame.frame h off limit rho} _ hcode hfork hrun hnp post_pc.symm
+  · exact ExitLift.advancesAll_sound _ (by decide)
+  · have hr := run_le s (UInt256.ofNat 4559) h off limit rho 4581 (by omega) hrun hle
+    have he : pcAfter (UInt256.ofNat 4559) (StaggerPersistentLoopRaw.template 4581) = UInt256.ofNat 4570 := by decide
     rw [he] at hr
     exact hr
 
@@ -123,11 +125,13 @@ def gasSteps_continue (s : State) (h : Compression.HashState) (off limit : UInt2
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 4559, stack := StaggerPersistentFrame.frame h off limit rho}
       {s with pc := UInt256.ofNat 458, stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
-  have gp : GasSteps {s with pc := UInt256.ofNat 4559, stack := StaggerPersistentFrame.frame h off limit rho}
-      {s with pc := UInt256.ofNat 4570, stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} :=
-    gasSteps_step s h off limit rho hstack hrun (next_ne_of_lt hmiss) hcode hfork hnp
-  have g2 := StaggerPersistentEntrySites.gasSteps_lt s (nextOffset off) limit h rho hstack hrun hmiss hcode hfork hnp
-  exact (gp.trans g2).trans (gasSteps_join s (StaggerPersistentFrame.frame h (nextOffset off) limit rho)
+  have gp := gasSteps_step s h off limit rho hstack hrun (Nat.le_of_lt hmiss) hcode hfork hnp
+  have g2 := StaggerPersistentEntrySites.gasSteps_padMiss s (nextOffset off) limit h rho hstack hrun
+    (next_ne_of_lt hmiss) hcode hfork hnp
+  have g3 := StaggerPersistentEntrySites.gasSteps_back s
+    (StaggerPersistentFrame.frame h (nextOffset off) limit rho)
+    (by simp [StaggerPersistentFrame.frame]; omega) hrun hcode hfork hnp
+  exact ((gp.trans g2).trans g3).trans (gasSteps_join s (StaggerPersistentFrame.frame h (nextOffset off) limit rho)
     (by simp [StaggerPersistentFrame.frame]; omega) hrun hcode hfork hnp)
 
 def gasSteps_pad (s : State) (h : Compression.HashState) (off limit : UInt256)
@@ -139,11 +143,11 @@ def gasSteps_pad (s : State) (h : Compression.HashState) (off limit : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 4559, stack := StaggerPersistentFrame.frame h off limit rho}
       {s with pc := UInt256.ofNat 129, stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
-  apply PadLift.gasSteps_of_raw postSite {s with pc := UInt256.ofNat 4559, stack := StaggerPersistentFrame.frame h off limit rho} _ hcode hfork hrun hnp post_pc.symm
-  · exact PadLift.advancesAll_sound _ (by decide)
-  · exact run_hit s (UInt256.ofNat 4559) h off limit rho 129 (by omega) hrun hdispatch
-      (StaggerPersistentEntrySites.valid_pad s hcode)
+  have gp := gasSteps_step s h off limit rho hstack hrun (by rw [hdispatch]) hcode hfork hnp
+  exact gp.trans (StaggerPersistentEntrySites.gasSteps_padHit s (nextOffset off) limit h rho hstack hrun
+    hdispatch hcode hfork hnp)
 
+/-- Finish test taken: the output starts at the `JUMPDEST` at 4581 with the offset on top. -/
 def gasSteps_exit (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hbound : limit.toNat ≤ (nextOffset off).toNat)
@@ -152,10 +156,17 @@ def gasSteps_exit (s : State) (h : Compression.HashState) (off limit : UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 4559, stack := StaggerPersistentFrame.frame h off limit rho}
-      {s with pc := UInt256.ofNat 4577, stack := StaggerPersistentFrame.frame h (nextOffset off) limit rho} := by
-  exact (gasSteps_step s h off limit rho hstack hrun hdispatch hcode hfork hnp).trans
-    (StaggerPersistentEntrySites.gasSteps_ge s (nextOffset off) limit h rho hstack hrun hbound hcode hfork hnp)
+      {s with pc := UInt256.ofNat 4581, stack := StaggerPersistentFrame.exitFrame h (nextOffset off) limit rho} := by
+  have hgt : limit.toNat < (nextOffset off).toNat := by
+    rcases Nat.lt_or_eq_of_le hbound with hl | he
+    · exact hl
+    · exact absurd (Word.word_ext he.symm) hdispatch
+  apply ExitLift.gasSteps_of_raw postSite {s with pc := UInt256.ofNat 4559, stack := StaggerPersistentFrame.frame h off limit rho} _ hcode hfork hrun hnp post_pc.symm
+  · exact ExitLift.advancesAll_sound _ (by decide)
+  · exact run_gt s (UInt256.ofNat 4559) h off limit rho 4581 (by omega) hrun hgt
+      (StaggerPersistentEntrySites.valid_finish s hcode)
 
 #print axioms gasSteps_continue
+#print axioms gasSteps_pad
 #print axioms gasSteps_exit
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentLoopSites

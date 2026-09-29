@@ -48,7 +48,7 @@ def sizePrefix : List Located :=
   [opAt 6 .CALLDATASIZE,
    pushAt 7 2 1000,
    opAt 8 .SUB,
-   pushAt 9 2 4681]
+   pushAt 9 2 4686]
 
 /-- Anchor gate: `97 + 255 * calldata[0] != 0` (first word is not the repeated
 `0x61` word) jumps to the patterned guard at 4681. -/
@@ -59,7 +59,7 @@ def anchorPrefix : List Located :=
    opAt 14 .MUL,
    pushAt 15 1 97,
    opAt 16 .ADD,
-   pushAt 17 2 4681]
+   pushAt 17 2 4686]
 
 def entryDest : Located := opAt 147 .JUMPDEST
 
@@ -113,12 +113,13 @@ def fallbackPath : List Located :=
 
 def returnPath : List Located :=
   [pushAt 54 20 972889429405991776604892044862621566948497025487,
-   pushAt 55 0 0,
-   opAt 56 .MSTORE]
+   opAt 55 .JUMPDEST,
+   pushAt 56 0 0,
+   opAt 57 .MSTORE]
 
 def returnFinishPath : List Located :=
-  [pushAt 58 0 0,
-   opAt 59 .RETURN]
+  [pushAt 59 0 0,
+   opAt 60 .RETURN]
 
 def atPC (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
@@ -178,7 +179,7 @@ def answerMemory : ByteArray :=
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 102
+    pc := UInt256.ofNat 103
     stack := spentCells input
     memory := answerMemory
     activeWords := UInt256.ofNat 1
@@ -187,14 +188,14 @@ def returnedState (input : ByteArray) : State :=
 
 def storedReturnState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 100
+    pc := UInt256.ofNat 101
     stack := spentCells input
     memory := answerMemory
     activeWords := UInt256.ofNat 1 }
 
 def sizedReturnState (input : ByteArray) : State :=
   { storedReturnState input with
-    pc := UInt256.ofNat 101
+    pc := UInt256.ofNat 102
     stack := UInt256.ofNat 32 :: spentCells input }
 
 abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
@@ -311,7 +312,7 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_60 : Artifact.submissionArtifact.instructionPC 60 = 103 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_61 : Artifact.submissionArtifact.instructionPC 61 = 106 := by
+@[simp] theorem pc_direct_61 : Artifact.submissionArtifact.instructionPC 61 = 104 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_62 : Artifact.submissionArtifact.instructionPC 62 = 107 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl

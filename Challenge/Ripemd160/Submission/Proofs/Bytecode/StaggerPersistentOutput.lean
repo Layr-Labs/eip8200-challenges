@@ -1,6 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.MemoryPackedOutput
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentFrame
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Table80SiteCommon
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadLift
 set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 2000000
@@ -32,15 +33,15 @@ def prepared (s : State) (h : Compression.HashState) : State :=
 
 theorem run_template (s : State) (pc off limit : UInt256) (h : Compression.HashState)
     (rho : List UInt256) (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running) :
-    runInstrSeq template {s with pc := pc, stack := StaggerPersistentFrame.frame h off limit rho} =
-      some {prepared s h with pc := pcAfter pc template, stack := packedHash h :: off :: limit :: rho} := by
+    runInstrSeq template {s with pc := pc, stack := StaggerPersistentFrame.exitFrame h off limit rho} =
+      some {prepared s h with pc := pcAfter pc template, stack := packedHash h :: Paired144WordRound.factorPlusWord :: limit :: rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
   have hread := MemoryPackedOutput.readWord_eq s.memory h
   have hpack : PackedOutputMath.pack5 h.h0 h.h1 h.h2 h.h3 h.h4 = packedHash h := by
     simp only [PackedOutputMath.pack5, PackedOutputMath.append32, packedHash, Word.lor_comm]
   simp only [MemoryPackedOutput.memory, MemoryPackedOutput.store, hpack] at hread
   simp (discharger := omega) [template, prefixTemplate, bodyTemplate,
-    StaggerPersistentFrame.frame, prepared, stored, MemoryPackedOutput.store,
+    StaggerPersistentFrame.exitFrame, prepared, stored, MemoryPackedOutput.store,
     runInstrSeq, DataStepper.runInstr, UInt256.succ, pcAfter, Instr.size,
     hrun, hcap, Nat.add_assoc, List.getElem?_cons_zero, List.exchange,
     Word.ofUInt32_toNat, Word.word_toNat_ofNat, Word.literal_eq_ofNat, hread,
@@ -48,32 +49,62 @@ theorem run_template (s : State) (pc off limit : UInt256) (h : Compression.HashS
   all_goals repeat first | apply And.intro | rfl
 
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 3435).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3438).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3435 actual_slice
-    (by change 3435 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3438 actual_slice
+    (by change 3438 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 4577 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3435) = UInt256.ofNat 4577
+theorem site_pc : site.startPC = UInt256.ofNat 4582 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3438) = UInt256.ofNat 4582
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction :=
   Table80SiteCommon.coreAdvancesAll_sound template (by decide)
+
+def entryTemplate : List Instr := [.op .JUMPDEST]
+theorem entry_slice :
+    (Artifact.submissionArtifact.instructions.drop 3437).take entryTemplate.length = entryTemplate := by rfl
+def entrySite : StackRoundTemplate.GenericRoundSite Artifact.submissionArtifact .Osaka entryTemplate :=
+  StackSiteBuilder.ofSlice entryTemplate 3437 entry_slice
+    (by change 3437 + entryTemplate.length ≤ Artifact.submissionInstructions.length
+        rw [Artifact.referenceInstructions_count]; decide)
+    (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
+    (StackRoundData.templateWellFormed_mem (instructions := entryTemplate) (by decide)) (by decide)
+theorem entry_pc : entrySite.startPC = UInt256.ofNat 4581 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3437) = UInt256.ofNat 4581
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
+
+def gasSteps_entry (s : State) (rho : List UInt256) (hstack : rho.length < 1024)
+    (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    GasSteps {s with pc := UInt256.ofNat 4581, stack := rho}
+      {s with pc := UInt256.ofNat 4582, stack := rho} := by
+  apply PadLift.gasSteps_of_raw entrySite {s with pc := UInt256.ofNat 4581, stack := rho} _
+    hcode hfork hrun hnp entry_pc.symm
+  · apply PadLift.advancesAll_sound
+    decide
+  · simp [entryTemplate, runInstrSeq, DataStepper.runInstr, hrun, hstack]
+    rfl
 
 def gasSteps (s : State) (off limit : UInt256) (h : Compression.HashState)
     (rho : List UInt256) (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4577, stack := StaggerPersistentFrame.frame h off limit rho}
-      {prepared s h with pc := UInt256.ofNat 4600, stack := packedHash h :: off :: limit :: rho} := by
+    GasSteps {s with pc := UInt256.ofNat 4581, stack := StaggerPersistentFrame.exitFrame h off limit rho}
+      {prepared s h with pc := UInt256.ofNat 4605, stack := packedHash h :: Paired144WordRound.factorPlusWord :: limit :: rho} := by
+  have ge := gasSteps_entry s (StaggerPersistentFrame.exitFrame h off limit rho)
+    (by simp [StaggerPersistentFrame.exitFrame]; omega) hrun hcode hfork hnp
+  refine ge.trans ?_
   apply DenseScheduleLift.gasSteps_of_raw site
-    {s with pc := UInt256.ofNat 4577, stack := StaggerPersistentFrame.frame h off limit rho}
-    {prepared s h with pc := UInt256.ofNat 4600, stack := packedHash h :: off :: limit :: rho}
+    {s with pc := UInt256.ofNat 4582, stack := StaggerPersistentFrame.exitFrame h off limit rho}
+    {prepared s h with pc := UInt256.ofNat 4605, stack := packedHash h :: Paired144WordRound.factorPlusWord :: limit :: rho}
     hcode hfork hrun hnp site_pc.symm advances
-  have hraw := run_template s (UInt256.ofNat 4577) off limit h rho hstack hrun
-  have hend : pcAfter (UInt256.ofNat 4577) template = UInt256.ofNat 4600 := by decide
+  have hraw := run_template s (UInt256.ofNat 4582) off limit h rho hstack hrun
+  have hend : pcAfter (UInt256.ofNat 4582) template = UInt256.ofNat 4605 := by decide
   rw [hend] at hraw
   exact hraw
 

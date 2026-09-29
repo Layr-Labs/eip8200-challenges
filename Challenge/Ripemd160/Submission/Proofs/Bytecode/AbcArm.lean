@@ -19,76 +19,85 @@ abbrev Located := DataStepper.Located Artifact.submissionArtifact .Osaka
 
 @[simp] theorem pc_176 : Artifact.submissionArtifact.instructionPC 147 = 246 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4095 : Artifact.submissionArtifact.instructionPC 3538 = 4730 := by
+@[simp] theorem pc_4095 : Artifact.submissionArtifact.instructionPC 3541 = 4735 := by
   exact GuardInstructionWindow.pc 0
-@[simp] theorem pc_4096 : Artifact.submissionArtifact.instructionPC 3539 = 4731 := by
+@[simp] theorem pc_4096 : Artifact.submissionArtifact.instructionPC 3542 = 4736 := by
   exact GuardInstructionWindow.pc 1
-@[simp] theorem pc_4097 : Artifact.submissionArtifact.instructionPC 3540 = 4732 := by
+@[simp] theorem pc_4097 : Artifact.submissionArtifact.instructionPC 3543 = 4737 := by
   exact GuardInstructionWindow.pc 2
-@[simp] theorem pc_4098 : Artifact.submissionArtifact.instructionPC 3541 = 4734 := by
+@[simp] theorem pc_4098 : Artifact.submissionArtifact.instructionPC 3544 = 4739 := by
   exact GuardInstructionWindow.pc 3
-@[simp] theorem pc_4099 : Artifact.submissionArtifact.instructionPC 3542 = 4735 := by
+@[simp] theorem pc_4099 : Artifact.submissionArtifact.instructionPC 3545 = 4740 := by
   exact GuardInstructionWindow.pc 4
-@[simp] theorem pc_4100 : Artifact.submissionArtifact.instructionPC 3543 = 4736 := by
+@[simp] theorem pc_4100 : Artifact.submissionArtifact.instructionPC 3546 = 4741 := by
   exact GuardInstructionWindow.pc 5
-@[simp] theorem pc_4101 : Artifact.submissionArtifact.instructionPC 3544 = 4740 := by
+@[simp] theorem pc_4101 : Artifact.submissionArtifact.instructionPC 3547 = 4745 := by
   exact GuardInstructionWindow.pc 6
-@[simp] theorem pc_4102 : Artifact.submissionArtifact.instructionPC 3545 = 4741 := by
+@[simp] theorem pc_4102 : Artifact.submissionArtifact.instructionPC 3548 = 4746 := by
   exact GuardInstructionWindow.pc 7
-@[simp] theorem pc_4103 : Artifact.submissionArtifact.instructionPC 3546 = 4742 := by
+@[simp] theorem pc_4103 : Artifact.submissionArtifact.instructionPC 3549 = 4747 := by
   exact GuardInstructionWindow.pc 8
-@[simp] theorem pc_4104 : Artifact.submissionArtifact.instructionPC 3547 = 4744 := by
+@[simp] theorem pc_4104 : Artifact.submissionArtifact.instructionPC 3550 = 4749 := by
   exact GuardInstructionWindow.pc 9
-@[simp] theorem pc_4105 : Artifact.submissionArtifact.instructionPC 3548 = 4745 := by
+@[simp] theorem pc_4105 : Artifact.submissionArtifact.instructionPC 3551 = 4750 := by
   exact GuardInstructionWindow.pc 10
-@[simp] theorem pc_4106 : Artifact.submissionArtifact.instructionPC 3549 = 4766 := by
+@[simp] theorem pc_4106 : Artifact.submissionArtifact.instructionPC 3552 = 4771 := by
   exact GuardInstructionWindow.pc 11
-@[simp] theorem pc_4107 : Artifact.submissionArtifact.instructionPC 3550 = 4767 := by
+@[simp] theorem pc_4107 : Artifact.submissionArtifact.instructionPC 3553 = 4772 := by
   exact GuardInstructionWindow.pc 12
-@[simp] theorem pc_4108 : Artifact.submissionArtifact.instructionPC 3551 = 4768 := by
+@[simp] theorem pc_4108 : Artifact.submissionArtifact.instructionPC 3554 = 4773 := by
   exact GuardInstructionWindow.pc 13
-@[simp] theorem pc_4109 : Artifact.submissionArtifact.instructionPC 3552 = 4789 := by
+@[simp] theorem pc_4109 : Artifact.submissionArtifact.instructionPC 3555 = 4794 := by
   exact GuardInstructionWindow.pc 14
-@[simp] theorem pc_241 : Artifact.submissionArtifact.instructionPC 3553 = 4790 := by
+@[simp] theorem pc_241 : Artifact.submissionArtifact.instructionPC 3556 = 4795 := by
   exact GuardInstructionWindow.pc 15
-@[simp] theorem pc_242 : Artifact.submissionArtifact.instructionPC 3554 = 4791 := by
+@[simp] theorem pc_242 : Artifact.submissionArtifact.instructionPC 3557 = 4797 := by
   exact GuardInstructionWindow.pc 16
-@[simp] theorem pc_243 : Artifact.submissionArtifact.instructionPC 3555 = 4792 := by
-  exact GuardInstructionWindow.pc 17
-@[simp] theorem pc_244 : Artifact.submissionArtifact.instructionPC 3556 = 4793 := by
-  exact GuardInstructionWindow.pc 18
-@[simp] theorem pc_245 : Artifact.submissionArtifact.instructionPC 3557 = 4794 := by
-  exact GuardInstructionWindow.pc 19
+@[simp] theorem pc_ret55 : Artifact.submissionArtifact.instructionPC 55 = 98 := by
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] theorem pc_ret56 : Artifact.submissionArtifact.instructionPC 56 = 99 := by
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] theorem pc_ret57 : Artifact.submissionArtifact.instructionPC 57 = 100 := by
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] theorem pc_ret58 : Artifact.submissionArtifact.instructionPC 58 = 101 := by
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] theorem pc_ret59 : Artifact.submissionArtifact.instructionPC 59 = 102 := by
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] theorem pc_ret60 : Artifact.submissionArtifact.instructionPC 60 = 103 := by
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 def entryDest : Located :=
   ⟨147, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩
 
 def wordPath : List Located :=
-  [⟨3538, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by exact GuardInstructionWindow.get 0, by decide⟩,
-   ⟨3539, .op .CALLDATALOAD, by exact GuardInstructionWindow.get 1, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3540, .push ⟨1, by decide⟩ (UInt256.ofNat 232), by exact GuardInstructionWindow.get 2, by decide⟩,
-   ⟨3541, .op .SAR, by exact GuardInstructionWindow.get 3, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3542, .op .CALLDATASIZE, by exact GuardInstructionWindow.get 4, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3543, .push ⟨3, by decide⟩ (UInt256.ofNat 2127393), by exact GuardInstructionWindow.get 5, by decide⟩,
-   ⟨3544, .op .MUL, by exact GuardInstructionWindow.get 6, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3545, .op .XOR, by exact GuardInstructionWindow.get 7, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3546, .push ⟨1, by decide⟩ (UInt256.ofNat 246), by exact GuardInstructionWindow.get 8, by decide⟩,
-   ⟨3547, .op .JUMPI, by exact GuardInstructionWindow.get 9, ⟨by decide, trivial, rfl⟩⟩]
+  [⟨3541, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by exact GuardInstructionWindow.get 0, by decide⟩,
+   ⟨3542, .op .CALLDATALOAD, by exact GuardInstructionWindow.get 1, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨3543, .push ⟨1, by decide⟩ (UInt256.ofNat 232), by exact GuardInstructionWindow.get 2, by decide⟩,
+   ⟨3544, .op .SAR, by exact GuardInstructionWindow.get 3, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨3545, .op .CALLDATASIZE, by exact GuardInstructionWindow.get 4, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨3546, .push ⟨3, by decide⟩ (UInt256.ofNat 2127393), by exact GuardInstructionWindow.get 5, by decide⟩,
+   ⟨3547, .op .MUL, by exact GuardInstructionWindow.get 6, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨3548, .op .XOR, by exact GuardInstructionWindow.get 7, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨3549, .push ⟨1, by decide⟩ (UInt256.ofNat 246), by exact GuardInstructionWindow.get 8, by decide⟩,
+   ⟨3550, .op .JUMPI, by exact GuardInstructionWindow.get 9, ⟨by decide, trivial, rfl⟩⟩]
 
 def wordMissPath : List Located := wordPath ++ [entryDest]
 
 def storePath : List Located :=
-  [⟨3548, .push ⟨20, by decide⟩ (UInt256.ofNat 95383801997447390147238369573240532004699299169), by exact GuardInstructionWindow.get 10, by decide⟩,
-   ⟨3549, .op .CALLDATASIZE, by exact GuardInstructionWindow.get 11, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3550, .op .SHR, by exact GuardInstructionWindow.get 12, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3551, .push ⟨20, by decide⟩ (UInt256.ofNat 802931186561056611446976448233794645126013734992), by exact GuardInstructionWindow.get 13, by decide⟩,
-   ⟨3552, .op .XOR, by exact GuardInstructionWindow.get 14, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3553, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by exact GuardInstructionWindow.get 15, by decide⟩,
-   ⟨3554, .op .MSTORE, by exact GuardInstructionWindow.get 16, ⟨by decide, trivial, rfl⟩⟩]
+  [⟨3551, .push ⟨20, by decide⟩ (UInt256.ofNat 95383801997447390147238369573240532004699299169), by exact GuardInstructionWindow.get 10, by decide⟩,
+   ⟨3552, .op .CALLDATASIZE, by exact GuardInstructionWindow.get 11, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨3553, .op .SHR, by exact GuardInstructionWindow.get 12, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨3554, .push ⟨20, by decide⟩ (UInt256.ofNat 802931186561056611446976448233794645126013734992), by exact GuardInstructionWindow.get 13, by decide⟩,
+   ⟨3555, .op .XOR, by exact GuardInstructionWindow.get 14, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨3556, .push ⟨1, by decide⟩ (UInt256.ofNat 98), by exact GuardInstructionWindow.get 15, by decide⟩,
+   ⟨3557, .op .JUMP, by exact GuardInstructionWindow.get 16, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨55, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨56, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨57, .op .MSTORE, by rfl, ⟨by decide, trivial, rfl⟩⟩]
 
 def finishPath : List Located :=
-  [⟨3556, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by exact GuardInstructionWindow.get 18, by decide⟩,
-   ⟨3557, .op .RETURN, by exact GuardInstructionWindow.get 19, ⟨by decide, trivial, rfl⟩⟩]
+  [⟨59, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨60, .op .RETURN, by rfl, ⟨by decide, trivial, rfl⟩⟩]
 
 def sizeCond (input : ByteArray) : UInt256 :=
   UInt256.shiftRight (UInt256.ofNat input.size) (UInt256.ofNat 2)
@@ -102,7 +111,7 @@ def wordCond (input : ByteArray) : UInt256 :=
 def wordCondU (input : ByteArray) : UInt256 :=
   UInt256.xor (leadWord input)
     (UInt256.mul (UInt256.ofNat input.size) (UInt256.ofNat 0x207621))
-def armEntry (input : ByteArray) : State := Execution.atPC input 4730
+def armEntry (input : ByteArray) : State := Execution.atPC input 4735
 def fallbackState (input : ByteArray) : State := Execution.atPC input 247
 def answerWord (input : ByteArray) : UInt256 :=
   UInt256.xor (UInt256.ofNat 802931186561056611446976448233794645126013734992)
@@ -114,14 +123,14 @@ def answerMemory (input : ByteArray) : ByteArray :=
   MachineState.writeBytes ByteArray.empty (answerBytes input) 0
 def stored (input : ByteArray) : State :=
   {initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4792
+    pc := UInt256.ofNat 101
     memory := answerMemory input
     activeWords := UInt256.ofNat 1}
 def sized (input : ByteArray) : State :=
-  {stored input with pc := UInt256.ofNat 4793, stack := [UInt256.ofNat 32]}
+  {stored input with pc := UInt256.ofNat 102, stack := [UInt256.ofNat 32]}
 def returned (input : ByteArray) : State :=
   {stored input with
-    pc := UInt256.ofNat 4794
+    pc := UInt256.ofNat 103
     halt := .Returned
     hReturn := MachineState.readPadded (answerMemory input) 0 32}
 
@@ -140,6 +149,11 @@ private theorem true_of_ne_zero (w : UInt256) (h : w ≠ 0) : UInt256.isTrue w =
     apply Word.word_ext
     exact hn
   simpa using ht
+
+@[simp] theorem valid_ret : Decode.isValidJumpDest submissionBytecode 98 = true := by
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 55 (by rfl)
+  rw [pc_ret55] at h
+  exact h
 
 private theorem valid_generic : Decode.isValidJumpDest submissionBytecode 246 = true := by
   have h := Artifact.submissionArtifact.isValidJumpDest_index 147 (by rfl)
@@ -273,18 +287,18 @@ private def sarStep {s : State} {shift value : UInt256} {rest : List UInt256}
 def wordHead : List Located := wordPath.take 3
 def wordCalc : List Located := (wordPath.drop 4).take 5
 def wordBranch : Located :=
-  ⟨3547, .op .JUMPI, by exact GuardInstructionWindow.get 9, ⟨by decide, trivial, rfl⟩⟩
+  ⟨3550, .op .JUMPI, by exact GuardInstructionWindow.get 9, ⟨by decide, trivial, rfl⟩⟩
 def wordLoaded (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4734
+    pc := UInt256.ofNat 4739
     stack := [UInt256.ofNat 232, MachineState.readWord input 0] }
 def wordShifted (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4735
+    pc := UInt256.ofNat 4740
     stack := [leadWordS input] }
 def wordTested (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4744
+    pc := UInt256.ofNat 4749
     stack := [UInt256.ofNat 246, wordCond input] }
 
 private theorem run_word_head (input : ByteArray) :
@@ -299,12 +313,12 @@ private theorem run_word_calc (input : ByteArray) :
     Word.ofNat_add_mod, Word.word_toNat_ofNat, mul_op, RawExpressionAC.mul_comm, RawExpressionAC.xor_comm]
 
 private def gasSteps_sar (input : ByteArray) : GasSteps (wordLoaded input) (wordShifted input) := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3541 .SAR
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3544 .SAR
     (by exact GuardInstructionWindow.get 3) (by decide) trivial
-  have hp : (wordLoaded input).pc.toNat = Artifact.submissionArtifact.instructionPC 3541 := by
+  have hp : (wordLoaded input).pc.toNat = Artifact.submissionArtifact.instructionPC 3544 := by
     rw [pc_4098]; rfl
   have hop : (wordLoaded input).decodedOp = some .SAR :=
-    Artifact.submissionArtifact.state_decodedOp_of (wordLoaded input) 3541 rfl hp .SAR none hd rfl
+    Artifact.submissionArtifact.state_decodedOp_of (wordLoaded input) 3544 rfl hp .SAR none hd rfl
   have g := sarStep (s := wordLoaded input) (shift := UInt256.ofNat 232)
     (value := MachineState.readWord input 0) (rest := []) hop rfl
     (by show 2 + Operation.pushArity .SAR ≤ 1024 + Operation.popArity .SAR; decide) rfl
@@ -336,8 +350,8 @@ theorem run_word_miss (input : ByteArray) (hm : wordCond input ≠ 0) :
   have hbranch : DataStepper.runLocatedBlock [wordBranch] (wordTested input) =
       some (PatternedScan.stS input 246 []) :=
     PatternedScan.blockOfS wordBranch
-      (PatternedScan.pcFactS input 3547 4744 [UInt256.ofNat 246, wordCond input] (by norm_num) pc_4104)
-      (PatternedScan.stepS_jumpi_taken input 4744 246 (UInt256.ofNat 246) (wordCond input) []
+      (PatternedScan.pcFactS input 3550 4749 [UInt256.ofNat 246, wordCond input] (by norm_num) pc_4104)
+      (PatternedScan.stepS_jumpi_taken input 4749 246 (UInt256.ofNat 246) (wordCond input) []
         (by simp) (by norm_num) rfl (by simpa using true_of_ne_zero (wordCond input) hm) valid_generic)
   have hd : DataStepper.runLocatedBlock [entryDest] (PatternedScan.stS input 246 []) =
       some (fallbackState input) := by
@@ -348,17 +362,17 @@ theorem run_word_miss (input : ByteArray) (hm : wordCond input ≠ 0) :
     _ _ _ hbranch rfl hd
 
 theorem run_word_hit (input : ByteArray) (hm : wordCond input = 0) :
-    DataStepper.runLocatedBlock [wordBranch] (wordTested input) = some (Execution.atPC input 4745) := by
+    DataStepper.runLocatedBlock [wordBranch] (wordTested input) = some (Execution.atPC input 4750) := by
   have ht : ¬ UInt256.isTrue (wordCond input) := by rw [hm]; decide
   exact PatternedScan.blockOfS wordBranch
-    (PatternedScan.pcFactS input 3547 4744 [UInt256.ofNat 246, wordCond input] (by norm_num) pc_4104)
-    (PatternedScan.stepS_jumpi_fall input 4744 (UInt256.ofNat 246) (wordCond input) []
+    (PatternedScan.pcFactS input 3550 4749 [UInt256.ofNat 246, wordCond input] (by norm_num) pc_4104)
+    (PatternedScan.stepS_jumpi_fall input 4749 (UInt256.ofNat 246) (wordCond input) []
       (by simp) (by norm_num) ht)
 
 theorem run_store (input : ByteArray) :
-    DataStepper.runLocatedBlock storePath (Execution.atPC input 4745) = some (stored input) := by
+    DataStepper.runLocatedBlock storePath (Execution.atPC input 4750) = some (stored input) := by
   simp [storePath, DataStepper.runLocatedBlock, DataStepper.runLocated, DataStepper.runInstr,
-    Execution.atPC, initialState, stored, answerMemory, answerBytes, answerWord,
+    Execution.atPC, initialState, stored, answerMemory, answerBytes, answerWord, valid_ret,
     EmptySpec.digestNat, UInt256.succ, State.activeWordsAfterUInt256,
     MachineState.activeWordsAfter, Word.word_toNat_ofNat, Word.ofNat_add_mod,
     mul_op, sub_op, List.exchange, List.getElem?_cons_zero]
@@ -387,12 +401,12 @@ def gasSteps_hit (input : ByteArray) (hw : wordCond input = 0) :
     GasSteps (armEntry input) (returned input) := by
   have gw := (gasSteps_word_prefix input).trans (sound [wordBranch] (run_word_hit input hw))
   have gs := sound storePath (run_store input)
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3555 .MSIZE
-    (by exact GuardInstructionWindow.get 17) (by decide) trivial
-  have hp : (stored input).pc.toNat = Artifact.submissionArtifact.instructionPC 3555 := by
-    rw [pc_243]; rfl
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 58 .MSIZE
+    (by rfl) (by decide) trivial
+  have hp : (stored input).pc.toNat = Artifact.submissionArtifact.instructionPC 58 := by
+    rw [pc_ret58]; rfl
   have hop : (stored input).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (stored input) 3555 rfl hp .MSIZE none hd rfl
+    Artifact.submissionArtifact.state_decodedOp_of (stored input) 58 rfl hp .MSIZE none hd rfl
   have gmraw := Msize.step hop (by change (0 : Nat) < 1024; decide)
     rfl deployAddress_not_precompile
   have gm : GasSteps (stored input) (sized input) := by

@@ -24,7 +24,7 @@ def rest (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256) 
 def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
     (hmask : rest.head? = some (UInt256.ofNat 4294967295))
     (hstack : rest.length ≤ 896) (hrun : s.halt = .Running)
-    (hsmall : s.executionEnv.calldata.size < 5245)
+    (hsmall : s.executionEnv.calldata.size < 5248)
     (hactive : 35 ≤ s.activeWords.toNat)
     (hfit : s.executionEnv.calldata.size < 2 ^ 256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
@@ -45,7 +45,7 @@ def gasSteps_padAll (s : State) (ret : UInt256) (rest : List UInt256)
     {s with memory := (StaggerTablePad.padRealChain s.memory
       (UInt256.ofNat s.executionEnv.calldata.size))}
     (ret :: rest) (by simp only [List.length_cons]; omega) hrun hcode hfork hnp
-  -- `n < 5245` bounds `highDirty n = 0`, which is what `padRealChain_eq` consumes.
+  -- `n < 5248` bounds `highDirty n = 0`, which is what `padRealChain_eq` consumes.
   have heq : StaggerTablePad.padRealChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)
       = StaggerTablePad.padRealResult s.memory (UInt256.ofNat s.executionEnv.calldata.size) :=
     StaggerTablePad.padRealChain_eq s.memory _ (StaggerPad.highZero_true_imp _ hz)
