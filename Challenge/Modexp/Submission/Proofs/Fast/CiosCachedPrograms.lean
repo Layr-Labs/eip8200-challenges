@@ -93,18 +93,21 @@ def macFusedPostProgram (tl ts : UInt256) : List Instr :=
 def macFusedProgram (tl ts : UInt256) : List Instr :=
   macProductProgram.take 6 ++ macFusedPostProgram tl ts
 
-/-- `macFusedPostProgram` with the incoming-carry `DUP4` replaced by `PUSH0`: same byte length,
-one gas cheaper, and equivalent *only* on a frame whose incoming carry is already zero.  The
-`DUP4` it replaces reproduces the cell's incoming carry `c`, so this schedule is sound exactly
-where `c = 0` — the row-head cell of a conversion chain, never a cell fed by a predecessor. -/
+/-- `macFusedPostProgram` specialised to a known-zero incoming carry `c = 0`: same byte length
+and instruction count, seven gas cheaper, and equivalent *only* on a frame whose incoming carry
+is already zero (the row-head cell of a conversion chain, never a cell fed by a predecessor).
+With `c = 0` the incoming-carry add `DUP4 ADD` is the identity (two `JUMPDEST`s), and the
+first carry test `c > lo + c` is the constant zero, so the `DUP2 GT SWAP4` that computes and
+parks it collapses to one `SWAP1` (plus two `JUMPDEST`s); the zero carry slot is consumed by
+the final `ADD`. -/
 def macFusedPostZeroProgram (tl ts : UInt256) : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨2, by decide⟩),
    .op .GT,
    .op .SUB,
    .op (.Dup ⟨1, by decide⟩),
-   .push 0 0,
-   .op .ADD,
+   .op .JUMPDEST,
+   .op .JUMPDEST,
    .push 2 tl,
    .op .MLOAD,
    .op (.Dup ⟨1, by decide⟩),
@@ -112,9 +115,9 @@ def macFusedPostZeroProgram (tl ts : UInt256) : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .push 2 ts,
    .op .MSTORE,
-   .op (.Dup ⟨1, by decide⟩),
-   .op .GT,
-   .op (.Swap ⟨3, by decide⟩),
+   .op (.Swap ⟨0, by decide⟩),
+   .op .JUMPDEST,
+   .op .JUMPDEST,
    .op .GT,
    .op .SUB,
    .op .SUB,
@@ -123,6 +126,31 @@ def macFusedPostZeroProgram (tl ts : UInt256) : List Instr :=
 /-- `macFusedProgram` on a known-zero incoming carry. -/
 def macFusedZeroProgram (tl ts : UInt256) : List Instr :=
   macProductProgram.take 6 ++ macFusedPostZeroProgram tl ts
+
+/-! ## Block-0 schedule on a known-zero carry *and* a known-zero accumulator word
+
+The M9 conversion's eight-limb row head reads the top accumulator word right after the shift
+zeroed it and runs on the literal zero carry.  With `t = c = 0` the cell only has to store
+`x * y` and leave `mulHi x y`: `DUP2 PUSH2 ts MSTORE` stores the low word, and
+`DUP1 DUP3 GT PUSH2 0 SUB ADD SUB` forms `(0 - (mm < lo) + mm) - lo`.  The zero carry is popped
+before the product (see `M9Mac.rideTopProgram`); ten `JUMPDEST`s keep the block's bytes and
+instruction count. -/
+def topProductProgram : List Instr :=
+  [.op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MUL,
+   .op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MULMOD]
+
+def topStoreProgram (ts : UInt256) : List Instr :=
+  [.op (.Dup ⟨1, by decide⟩), .push 2 ts, .op .MSTORE]
+
+def topCarryProgram : List Instr :=
+  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT,
+   .push 2 (UInt256.ofNat 0), .op .SUB, .op .ADD, .op .SUB]
+
+def topFillProgram : List Instr := List.replicate 10 (.op .JUMPDEST)
+
+def macTopZeroProgram (ts : UInt256) : List Instr :=
+  ((topProductProgram ++ topStoreProgram ts) ++ topCarryProgram) ++ topFillProgram
+
 
 /-- Load at the cached base plus an immediate byte offset. -/
 def l1LoadProgram (off : UInt256) : List Instr :=
