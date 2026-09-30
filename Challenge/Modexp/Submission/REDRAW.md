@@ -69,11 +69,10 @@ ercumentyildirim, terrapinelf, jungjipdo, anamdongparkjinhyeong and the precedin
 contributors recorded in the source tree. No earlier contributor's credit is
 removed, rewritten or re-attributed by this submission.
 
-## Redraw entry 2026-09-23T03:59:38Z (rubenmarcus, lane ModexpDraws1, C2 composite draw 2)
+## F1 first submission 2026-09-30T00:27:48Z (rubenmarcus, lane ModexpDrawsF1, stream draw 65, F1 draw 1)
 
-Unchanged executable bytes and proof tree of submission
-0ddc8991-f1b9-4ac5-9929-863ce6359d7c (hex sha256 05373fe4...756f; composite of
-98486593 with GordoAR's window route, exact-width return and repeat-entry skip).
-This entry is the only change. Disclosed corpus redraw: the image is 906 gas below
-promoted image 3b864f1e on every corpus seed. Previous draw of these bytes: 472,822.
-Per-draw landing probability about 15% against the promoted 470,587.
+New code against E1 (commit 6158ce11): F1 (commit 48d1c0af) rewrites block 0 of the M9
+conversion section (pc 2899..2932) for its known-zero accumulator word and zero carry
+(same length 5,483 bytes and same instruction indices), -182 gas on every corpus seed vs
+E1. bytecode.hex sha256 ed9a0ba9...ffed. This entry is the only change against commit
+48d1c0af. Per-draw landing probability against 469,281 is about 3.3%.
