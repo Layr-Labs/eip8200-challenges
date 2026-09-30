@@ -36,12 +36,13 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 /-- Block 0: instructions 2329..2358, pc 2899..2932 (JUMPDEST included),
 `-N` limb riding in slot 7 (`Dup 12`, address 1504 = 0x5e0), `t` limb at 2336 (0x920).
 
-Block 0 carries the `PUSH0` schedule (`rideZeroProgram`): it is the row head of every chain
-that reaches it, so its incoming carry is the literal zero `entryProgram` pushes.  Block 4
-keeps the fused schedule — pc 3032 is both jumped to (four limbs, carry zero) and fallen into
-from block 3 (carry nonzero). -/
-def block0 : Block Artifact.submissionArtifact .Osaka 2899 ([.op .JUMPDEST] ++ rideZeroProgram 11 2336) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2329 30 2899 ([.op .JUMPDEST] ++ rideZeroProgram 11 2336)
+Block 0 carries the top-word schedule (`rideTopProgram`): it is the row head of every chain
+that reaches it, so its incoming carry is the literal zero `entryProgram` pushes and the
+accumulator word it reads (`0x920`) is the limb the shift just zeroed.  It pops the carry, so
+the limb rides in `Dup 10`.  Block 4 keeps the fused schedule — pc 3032 is both jumped to
+(four limbs, carry zero) and fallen into from block 3 (carry nonzero). -/
+def block0 : Block Artifact.submissionArtifact .Osaka 2899 ([.op .JUMPDEST] ++ rideTopProgram 10 2336) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2329 30 2899 ([.op .JUMPDEST] ++ rideTopProgram 10 2336)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 1: instructions 2359..2387, pc 2933..2965,
