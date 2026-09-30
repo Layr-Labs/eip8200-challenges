@@ -49,6 +49,13 @@ carry. -/
 def rideZeroProgram (d : Fin 16) (t : UInt256) : List Instr :=
   [.op (.Dup { idx := d }), .op (.Dup ⟨3, by decide⟩)] ++ CiosCached.macFusedZeroProgram t t
 
+/-- The top-word form of block 0: the incoming carry is the literal zero *and* the accumulator
+word it reads was just zeroed by the shift (`ShiftModel.uMem_readWord_limb`, limb `0`), so the
+block pops the zero carry, reproduces the `-N` limb (`DUP (d+1)`) and the mask (`DUP3`), and runs
+`CiosCached.macTopZeroProgram` (33 bytes, 29 instructions, like `rideZeroProgram`). -/
+def rideTopProgram (d : Fin 16) (t : UInt256) : List Instr :=
+  [.op .POP, .op (.Dup { idx := d }), .op (.Dup ⟨2, by decide⟩)] ++ CiosCached.macTopZeroProgram t
+
 /-- `SWAP1 SWAP2 POP`: drop the mask, leaving `[carry, q]` above the shift counter. -/
 def exitProgram : List Instr :=
   [.op (.Swap ⟨0, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .POP]
