@@ -69,11 +69,59 @@ ercumentyildirim, terrapinelf, jungjipdo, anamdongparkjinhyeong and the precedin
 contributors recorded in the source tree. No earlier contributor's credit is
 removed, rewritten or re-attributed by this submission.
 
-## Redraw entry 2026-09-23T03:59:38Z (rubenmarcus, lane ModexpDraws1, C2 composite draw 2)
+## F1 first submission 2026-09-30T00:27:48Z (rubenmarcus, lane ModexpDrawsF1, stream draw 65, F1 draw 1)
 
-Unchanged executable bytes and proof tree of submission
-0ddc8991-f1b9-4ac5-9929-863ce6359d7c (hex sha256 05373fe4...756f; composite of
-98486593 with GordoAR's window route, exact-width return and repeat-entry skip).
-This entry is the only change. Disclosed corpus redraw: the image is 906 gas below
-promoted image 3b864f1e on every corpus seed. Previous draw of these bytes: 472,822.
-Per-draw landing probability about 15% against the promoted 470,587.
+New code against E1 (commit 6158ce11): F1 (commit 48d1c0af) rewrites block 0 of the M9
+conversion section (pc 2899..2932) for its known-zero accumulator word and zero carry
+(same length 5,483 bytes and same instruction indices), -182 gas on every corpus seed vs
+E1. bytecode.hex sha256 ed9a0ba9...ffed. This entry is the only change against commit
+48d1c0af. Per-draw landing probability against 469,281 is about 3.3%.
+
+## Redraw entry 2026-09-30T01:49:23Z (rubenmarcus, lane ModexpDrawsF1, stream draw 66, F1 draw 2)
+
+Unchanged executable bytes (bytecode.hex sha256 ed9a0ba9...ffed, 5,483 bytes) and
+unchanged proof tree of commit 48d1c0af (F1 = E1 + M9 block-0 top-word cell).
+This entry is the only change. Disclosed corpus redraw: the image is 182 gas below E1
+on every corpus seed. Per-draw landing probability against 469,281 is about 3.3%.
+
+## Redraw entry 2026-09-30T03:10:55Z (rubenmarcus, lane ModexpDrawsF1, stream draw 67, F1 draw 3)
+
+Unchanged executable bytes (bytecode.hex sha256 ed9a0ba9...ffed, 5,483 bytes) and
+unchanged proof tree of commit 48d1c0af (F1 = E1 + M9 block-0 top-word cell).
+This entry is the only change. Disclosed corpus redraw: the image is 182 gas below E1
+on every corpus seed. Per-draw landing probability against 469,281 is about 3.3%.
+
+## Redraw entry 2026-09-30T04:32:28Z (rubenmarcus, lane ModexpDrawsF1, stream draw 68, F1 draw 4)
+
+Unchanged executable bytes (bytecode.hex sha256 ed9a0ba9...ffed, 5,483 bytes) and
+unchanged proof tree of commit 48d1c0af (F1 = E1 + M9 block-0 top-word cell).
+This entry is the only change. Disclosed corpus redraw: the image is 182 gas below E1
+on every corpus seed. Per-draw landing probability against 469,281 is about 3.3%.
+
+## Redraw entry 2026-09-30T05:54:01Z (rubenmarcus, lane ModexpDrawsF1, stream draw 69, F1 draw 5)
+
+Unchanged executable bytes (bytecode.hex sha256 ed9a0ba9...ffed, 5,483 bytes) and
+unchanged proof tree of commit 48d1c0af (F1 = E1 + M9 block-0 top-word cell).
+This entry is the only change. Disclosed corpus redraw: the image is 182 gas below E1
+on every corpus seed. Per-draw landing probability against 469,281 is about 3.3%.
+
+## Redraw entry 2026-09-30T07:25:42Z (rubenmarcus, lane ModexpDrawsF1, stream draw 70, F1 draw 6)
+
+Unchanged executable bytes (bytecode.hex sha256 ed9a0ba9...ffed, 5,483 bytes) and
+unchanged proof tree of commit 48d1c0af (F1 = E1 + M9 block-0 top-word cell).
+This entry is the only change. Disclosed corpus redraw: the image is 182 gas below E1
+on every corpus seed. Per-draw landing probability against 469,281 is about 3.3%.
+
+## Redraw entry 2026-09-30T08:57:20Z (rubenmarcus, lane ModexpDrawsF1, stream draw 71, F1 draw 7)
+
+Unchanged executable bytes (bytecode.hex sha256 ed9a0ba9...ffed, 5,483 bytes) and
+unchanged proof tree of commit 48d1c0af (F1 = E1 + M9 block-0 top-word cell).
+This entry is the only change. Disclosed corpus redraw: the image is 182 gas below E1
+on every corpus seed. Per-draw landing probability against 469,281 is about 3.3%.
+
+## Redraw entry 2026-09-30T10:18:54Z (rubenmarcus, lane ModexpDrawsF1, stream draw 72, F1 draw 8)
+
+Unchanged executable bytes (bytecode.hex sha256 ed9a0ba9...ffed, 5,483 bytes) and
+unchanged proof tree of commit 48d1c0af (F1 = E1 + M9 block-0 top-word cell).
+This entry is the only change. Disclosed corpus redraw: the image is 182 gas below E1
+on every corpus seed. Per-draw landing probability against 469,281 is about 3.3%.
