@@ -462,6 +462,9 @@ def gasSteps_step (s : State) (mem : ByteArray) (n bsize esize msize k mm minv :
       (macSetupState s mem n bsize esize msize k)
       (midState s (stepU mem n) (stepQ mem n) n bsize esize msize k) :=
     M9Mac.gasSteps_macSection n hfast s (stepU mem n) (stepQ mem n) bsize esize msize k
+      (fun h8 => by
+        subst h8
+        simpa using uMem_readWord_limb mem 8 0 (by decide) (by decide))
       e.run e.code e.fork e.np e.act296
   have htlMid : MachineState.readWord (stepMid mem n) 2784 = UInt256.ofNat (2080 + 32 * n) := by
     rw [hhighMid 2784 (by omega)]; exact htl0
