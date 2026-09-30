@@ -57,7 +57,9 @@ theorem rest_length (um : ByteArray) (n bsize esize msize k : Nat) :
 quotient guess above the counter, slots and outer frame over `um`, to the middle block at
 pc 3171 with `[carry, q̂]` above the unchanged riding frame. -/
 def gasSteps_macSection (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArray) (q : UInt256)
-    (bsize esize msize k : Nat) (hrun : s.halt = .Running)
+    (bsize esize msize k : Nat)
+    (htop : n = 8 → MachineState.readWord um 2336 = UInt256.ofNat 0)
+    (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -78,7 +80,7 @@ def gasSteps_macSection (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteA
     (by rw [rest_length um n bsize esize msize k]; omega)
     (entrySlots_ride um n bsize esize msize k)
     (entrySlots_scratch um n bsize esize msize k hn)
-    hrun hcode hfork hnp hact
+    htop hrun hcode hfork hnp hact
 
 end Challenge.Modexp.Submission.Proofs.Fast.M9Mac
 

@@ -130,11 +130,11 @@ def outer (n bsize esize msize : Nat) : List UInt256 :=
   [UInt256.ofNat (32 * n), UInt256.ofNat n, UInt256.ofNat bsize,
    UInt256.ofNat esize, UInt256.ofNat msize]
 
-/-- The `MONPRO` call state: the kernel's multiply entry,
-stack `[pa, pb, pd, ret] ++ tail`. -/
+/-- The `MONPRO` call state: the kernel's multiply entry (its product-block preclear
+trampoline at pc 5466), stack `[pa, pb, pd, ret] ++ tail`. -/
 def mpCall (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3383
+  { s with pc := UInt256.ofNat 5466
            stack := UInt256.ofNat pa :: UInt256.ofNat pb :: UInt256.ofNat pd ::
              ret :: tail
            memory := mem }
