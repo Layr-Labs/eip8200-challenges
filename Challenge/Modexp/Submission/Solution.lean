@@ -32,3 +32,5 @@ end Challenge.Modexp.Benchmark
 #print axioms Challenge.Modexp.Benchmark.candidate
 
 -- Yukon reuse by @anamdongparkjinhyeong: source @ercumentyildirim, submission 1c21ab97-04ca-470f-ae2d-57e5fa08dc78, commit e638a7a3e1d0afea4389d8748055a867a31cb3d9.
+
+-- Fresh official corpus evaluation, attempt 4 (2026-10-02T07:27Z). No executable or proof change.
