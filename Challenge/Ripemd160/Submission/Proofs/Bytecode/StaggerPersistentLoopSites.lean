@@ -65,38 +65,6 @@ def gasSteps_join (s : State) (rho : List UInt256) (hstack : rho.length < 1024)
   · simp [joinTemplate, runInstrSeq, DataStepper.runInstr, hrun, hstack]
     rfl
 
-/-- Fall-through entry from the fast-entry guard: one filler `JUMPDEST`, then the loop head. -/
-def fillTemplate : List Instr := [.op .JUMPDEST, .op .JUMPDEST]
-
-theorem fill_slice :
-    (Artifact.submissionArtifact.instructions.drop 173).take fillTemplate.length = fillTemplate := by rfl
-
-def fillSite : GenericRoundSite Artifact.submissionArtifact .Osaka fillTemplate :=
-  StackSiteBuilder.ofSlice fillTemplate 173 fill_slice
-    (by change 173 + fillTemplate.length ≤ Artifact.submissionInstructions.length
-        rw [Artifact.referenceInstructions_count]; decide)
-    StackRoundData.artifact_code_bound
-    (StackRoundData.templateWellFormed_mem (instructions := fillTemplate) (by decide))
-    (by decide)
-
-theorem fill_pc : fillSite.startPC = UInt256.ofNat 456 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 173) = UInt256.ofNat 456
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-
-def gasSteps_fill (s : State) (rho : List UInt256) (hstack : rho.length < 1024)
-    (hrun : s.halt = .Running)
-    (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 456, stack := rho}
-      {s with pc := UInt256.ofNat 458, stack := rho} := by
-  apply PadLift.gasSteps_of_raw fillSite {s with pc := UInt256.ofNat 456, stack := rho} _
-    hcode hfork hrun hnp fill_pc.symm
-  · apply PadLift.advancesAll_sound
-    decide
-  · simp [fillTemplate, runInstrSeq, DataStepper.runInstr, hrun, hstack, pcAfter, Instr.size, UInt256.succ]
-    all_goals rfl
-
 private theorem next_ne_of_lt {off limit : UInt256}
     (h : (nextOffset off).toNat < limit.toNat) : nextOffset off ≠ limit := by
   intro he; rw [he] at h; exact Nat.lt_irrefl _ h

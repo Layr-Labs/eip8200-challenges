@@ -30,11 +30,11 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
   have gx : GasSteps (StackTail.append s rho)
       {s with pc := UInt256.ofNat 458, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (LoopCompletionControl.limit input) (maskRho rho)} := by
     by_cases hz : input.size % 64 = 0 ∧ input.size < 256
-    · have hs : StackTail.append s rho = {s with pc := UInt256.ofNat 456, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (PaddingTrace.copiedLimit input) (maskRho rho)} := by
+    · have hs : StackTail.append s rho = {s with pc := UInt256.ofNat 457, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (PaddingTrace.copiedLimit input) (maskRho rho)} := by
         dsimp [s]
         rw [PaddingTrace.entryState_skip input hz]
         rfl
-      have gf := StaggerPersistentLoopSites.gasSteps_fill s (StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (LoopCompletionControl.limit input) (maskRho rho))
+      have gf := StaggerPersistentLoopSites.gasSteps_join s (StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (LoopCompletionControl.limit input) (maskRho rho))
         (by simp only [StaggerPersistentFrame.frame, maskRho, List.length_append, List.length_cons, List.length_nil]; omega) hr hc hf hn
       exact GasSteps.cast gf (by
         rw [LoopCompletionControl.limit_aligned input hz,

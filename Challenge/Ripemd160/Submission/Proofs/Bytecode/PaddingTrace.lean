@@ -53,7 +53,7 @@ def padEntry (input : ByteArray) : State :=
     (padEntry input).executionEnv.calldata = input := by rfl
 
 @[simp] private theorem initializedPC764 :
-    Artifact.instructionPC 148 = 247 := by change Artifact.submissionArtifact.instructionPC 148 = 247; rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+    Artifact.instructionPC 149 = 247 := by change Artifact.submissionArtifact.instructionPC 149 = 247; rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem initializedCalldata (input : ByteArray) :
     (Main.initializedState input).executionEnv.calldata = input := by rfl
@@ -77,9 +77,9 @@ private theorem run_enter (input : ByteArray) :
     Challenge.EvmProof.DataStepper.runLocatedBlock enterPath
       (Main.initializedState input) = some (padEntry input) := by
   have hzero : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
-  have p245 : Artifact.submissionArtifact.instructionPC 148 = 247 := by
+  have p245 : Artifact.submissionArtifact.instructionPC 149 = 247 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have p246 : Artifact.submissionArtifact.instructionPC 149 = 278 := by
+  have p246 : Artifact.submissionArtifact.instructionPC 150 = 278 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   simp [enterPath, Artifact.padEnterPath, Challenge.EvmProof.DataStepper.runLocatedBlock,
     Challenge.EvmProof.DataStepper.runLocated, Challenge.EvmProof.DataStepper.runInstr,
@@ -194,7 +194,7 @@ def padFramed (input : ByteArray) : State :=
 loop with only the calldata copy in memory. -/
 def padSkip (input : ByteArray) : State :=
   { padCopied input with
-    pc := UInt256.ofNat 456
+    pc := UInt256.ofNat 457
     stack := initialFrame input }
 
 /-- Partial last block: fall through into the sentinel store. -/
@@ -531,19 +531,19 @@ def lengthLoopState (input : ByteArray) (i : Nat) : State :=
 
 def lengthIterationPath : List
     (Challenge.EvmProof.DataStepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨130, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨131, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨131, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨132, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨133, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨134, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨135, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨136, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨137, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
-   ⟨138, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨139, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨140, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨141, .push ⟨1, by decide⟩ (UInt256.ofNat 224), by rfl, by decide⟩,
-   ⟨142, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨133, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨134, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨135, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
+   ⟨136, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨137, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨138, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
+   ⟨139, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨140, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨141, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨142, .push ⟨1, by decide⟩ (UInt256.ofNat 224), by rfl, by decide⟩,
+   ⟨143, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def lengthBodyPath := lengthIterationPath.take 10
 def lengthBranchPath := lengthIterationPath.drop 10
@@ -618,9 +618,9 @@ private theorem lengthBackReturned_eq (input : ByteArray) (i : Nat) :
 
 @[simp] private theorem validLengthLoopHead :
     Decode.isValidJumpDest submissionBytecode 224 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 130 = 224 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc : Artifact.submissionArtifact.instructionPC 131 = 224 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   rw [← hpc]
-  exact Artifact.submissionArtifact.isValidJumpDest_index 130 (by rfl)
+  exact Artifact.submissionArtifact.isValidJumpDest_index 131 (by rfl)
 
 /-! ## Arithmetic bridge for the masked bit length -/
 
@@ -1400,11 +1400,11 @@ def gasSteps_msizeTail (input : ByteArray) (rho : List UInt256) (hcap : rho.leng
     Challenge.EvmProof.GasSteps (StackTail.append (padCopyDone input) rho)
       (StackTail.append (padCopied input) rho) := by
   let s := StackTail.append (padCopyDone input) rho
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 154 .MSIZE (by rfl) (by decide) trivial
-  have hp : s.pc.toNat = Artifact.submissionArtifact.instructionPC 154 := by
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 155 .MSIZE (by rfl) (by decide) trivial
+  have hp : s.pc.toNat = Artifact.submissionArtifact.instructionPC 155 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hop : s.decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of s 154 rfl hp .MSIZE none hd rfl
+    Artifact.submissionArtifact.state_decodedOp_of s 155 rfl hp .MSIZE none hd rfl
   have g := Msize.step hop (by
       change (StackTail.append (padCopyDone input) rho).stack.length < 1024
       simp [StackTail.append, padCopyDone, padLengthReady, padEntry]; omega)
@@ -1416,11 +1416,11 @@ def gasSteps_msizeTail (input : ByteArray) (rho : List UInt256) (hcap : rho.leng
 def gasSteps_msize (input : ByteArray) :
     Challenge.EvmProof.GasSteps (padCopyDone input) (padCopied input) := by
   let s := padCopyDone input
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 154 .MSIZE (by rfl) (by decide) trivial
-  have hp : s.pc.toNat = Artifact.submissionArtifact.instructionPC 154 := by
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 155 .MSIZE (by rfl) (by decide) trivial
+  have hp : s.pc.toNat = Artifact.submissionArtifact.instructionPC 155 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hop : s.decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of s 154 rfl hp .MSIZE none hd rfl
+    Artifact.submissionArtifact.state_decodedOp_of s 155 rfl hp .MSIZE none hd rfl
   have g := Msize.step hop (by
       change (padCopyDone input).stack.length < 1024
       simp [padCopyDone, padLengthReady, padEntry])
@@ -1464,7 +1464,7 @@ theorem entryState_miss (input : ByteArray) (hnz : ¬ (input.size % 64 = 0 ∧ i
 
 theorem entryState_eta (input : ByteArray) :
     entryState input = {entryState input with
-      pc := UInt256.ofNat (if input.size % 64 = 0 ∧ input.size < 256 then 456 else 457)
+      pc := UInt256.ofNat 457
       stack := if input.size % 64 = 0 ∧ input.size < 256 then initialFrame input else padFrame input} := by
   by_cases hz : input.size % 64 = 0 ∧ input.size < 256
   · simp only [entryState_skip input hz, if_pos hz]

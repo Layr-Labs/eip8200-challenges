@@ -17,7 +17,7 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open TinyGuardLogic
 abbrev Located := DataStepper.Located Artifact.submissionArtifact .Osaka
 
-@[simp] theorem pc_176 : Artifact.submissionArtifact.instructionPC 147 = 246 := by
+@[simp] theorem pc_176 : Artifact.submissionArtifact.instructionPC 148 = 246 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_4095 : Artifact.submissionArtifact.instructionPC 3546 = 4740 := by
   exact GuardInstructionWindow.pc 0
@@ -67,7 +67,7 @@ abbrev Located := DataStepper.Located Artifact.submissionArtifact .Osaka
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 def entryDest : Located :=
-  ⟨147, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩
+  ⟨148, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩
 
 def wordPath : List Located :=
   [⟨3546, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by exact GuardInstructionWindow.get 0, by decide⟩,
@@ -156,7 +156,7 @@ private theorem true_of_ne_zero (w : UInt256) (h : w ≠ 0) : UInt256.isTrue w =
   exact h
 
 private theorem valid_generic : Decode.isValidJumpDest submissionBytecode 246 = true := by
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 147 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 148 (by rfl)
   rw [pc_176] at h
   exact h
 /-! ### Sign-extending shift facts -/
@@ -356,7 +356,7 @@ theorem run_word_miss (input : ByteArray) (hm : wordCond input ≠ 0) :
   have hd : DataStepper.runLocatedBlock [entryDest] (PatternedScan.stS input 246 []) =
       some (fallbackState input) := by
     exact PatternedScan.blockOfS entryDest
-      (PatternedScan.pcFactS input 147 246 [] (by norm_num) pc_176)
+      (PatternedScan.pcFactS input 148 246 [] (by norm_num) pc_176)
       (PatternedScan.stepS_jumpdest input 246 [] (by simp) (by norm_num))
   exact DataStepper.runLocatedBlock_append [wordBranch] [entryDest]
     _ _ _ hbranch rfl hd

@@ -17,6 +17,17 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
+-- executable a14a87a0e3133cf59de8893f3825f1a2f83285e001b01a046635f23ba1bebab2, 5248 bytes,
+-- 656083 gas, 8193 units of the 8194 literal-encoding budget. Derived from the promoted 003a8217
+-- image (4c8e1d4f11945ed6c54ab5a8d35e9ee6fc7cfa2caa598dad46a9864f25ce31de, 5248 bytes, 656104 gas).
+-- The fast-entry guard pushes its target as PUSH2 0x00be, so its JUMPI falls straight into the loop
+-- head at 457 and the filler JUMPDEST at 456 is gone (-1 gas x 21 whole-block inputs = -21); the
+-- dead PUSH2 0x0101 at 104 becomes PUSH1 0x01 ADD, so 3645 instructions and every pc and instruction
+-- index from 457 on are unchanged (instructions at pcs 107..453 move up one index).
+-- model Claude Opus 5.5, harness Claude Code.
+--
+-- NOTE FOR THE FILER: every line below this point was inherited with the base tree and describes
+-- an EARLIER artifact, not this one.
 -- executable 1e4024bf3f5b0b95a3375c21c2e8dccd5b51ebcc5e9b17ac606e490e5acb85bc, 5212 bytes,
 -- 660772 gas at corpus seeds 0..2, 8174 units of the 8194 literal-encoding budget. Derived from
 -- the 661024 image (5214 bytes, one step above): at both round changes that dropped the old key

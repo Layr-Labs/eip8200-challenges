@@ -38,9 +38,9 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
   have heta := PaddingTrace.entryState_eta input
   have gx : GasSteps s {s with pc := UInt256.ofNat 458, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (LoopCompletionControl.limit input) maskRho} := by
     by_cases hz : input.size % 64 = 0 ∧ input.size < 256
-    · have hs : s = {s with pc := UInt256.ofNat 456, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (PaddingTrace.copiedLimit input) maskRho} := by
+    · have hs : s = {s with pc := UInt256.ofNat 457, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (PaddingTrace.copiedLimit input) maskRho} := by
         simpa only [if_pos hz, PaddingTrace.initialFrame, maskRho] using heta
-      have gf := StaggerPersistentLoopSites.gasSteps_fill s (StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (LoopCompletionControl.limit input) maskRho)
+      have gf := StaggerPersistentLoopSites.gasSteps_join s (StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (LoopCompletionControl.limit input) maskRho)
         (by simp [StaggerPersistentFrame.frame, maskRho]) hr hc hf hn
       exact GasSteps.cast gf (by
         rw [LoopCompletionControl.limit_aligned input hz,

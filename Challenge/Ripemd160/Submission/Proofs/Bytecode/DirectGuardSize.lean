@@ -75,9 +75,9 @@ private theorem pc_g18 : Artifact.submissionArtifact.instructionPC 18 = 32 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 theorem generic_dest : Decode.isValidJumpDest submissionBytecode 246 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 147 = 246 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 148 = 246 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 147 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 148 (by rfl)
   rwa [hpc] at h
 
 /-- The size word `1000 - size`. -/

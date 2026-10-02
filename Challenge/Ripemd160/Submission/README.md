@@ -1,3 +1,59 @@
+# RIPEMD-160: the fast-entry guard falls straight into the block loop — 656,083 gas in 5,248 bytes
+
+- SHA-256: `a14a87a0e3133cf59de8893f3825f1a2f83285e001b01a046635f23ba1bebab2`.
+- Size: 5,248 bytes; 3,645 instructions (unchanged); literal-encoding cost 8,193 (ceiling 8,194,
+  unchanged).
+- Base: promoted `003a8217` (`4c8e1d4f…31de`, 656,104 gas). Local protected scorer: 656,083 gas
+  (−21), 49/49.
+
+## The change
+
+The whole-block guard at pc 448 (`PUSH1 0xc0 NOT CALLDATASIZE AND PUSH1 0xbe JUMPI`) sends every
+length other than 64, 128 and 192 to the padding code at 190 and otherwise falls through. The
+fall-through crossed a filler `JUMPDEST` at pc 456 before reaching the block-loop head at 457;
+the 21 whole-block inputs of the corpus (the 64- and 128-byte vectors) paid one gas each for it.
+The guard now pushes its target as `PUSH2 0x00be` (same value, same 3 gas), so the `JUMPI` sits
+at 456 and falls straight into the loop head, and the filler is gone: bytes 453..456
+`60 be 57 5b` become `61 00 be 57`.
+
+That window loses one instruction. The unreachable padding at 104..114 (`PUSH2 0x0101 ADD×8`,
+named by no jump) is rewritten byte-for-byte in place as `PUSH1 0x01 ADD×9`, which gains one.
+So the length, the instruction count, every jump target, every pc and every instruction index
+from 457 on are unchanged. The instructions at pcs 107..453 keep their pcs and move up one
+instruction index; the guard's `JUMPI` goes from index 172 at pc 455 to index 173 at pc 456.
+
+## What it costs the proof
+
+- Byte certificates regenerated from the hex with the old chunk partition (`Bytes.lean`; the
+  instruction chunks 0 and 1 of `Artifact.lean` hold 142 and 45 instructions).
+- Index relocation (+1) for the instructions at pcs 107..453 and the moved `JUMPI` wherever a
+  proof names them: the pc facts and located paths in `Artifact.lean` (`padEnterPath`,
+  `padCopyPath`, `padGuardPath`, `padSentinelPath`, `padFooterSetupPath`, `padExitPath`), and the
+  sites, located rows and pc facts in `AbcArm`, `ColdOrdinarySites`, `DirectGuardBase`,
+  `DirectGuardSize`, `DirectGuardTail`, `EntryPrefilter`, `J2Sites`, `Main`, `PaddingTrace`,
+  `Shared32Alignment`, `Shared32Sites`, `StaggerPersistentEntrySites`,
+  `StaggerPersistentPadPrefix` and `StaggerPersistentStart`.
+- The guard's push is two bytes wide in `Artifact.padGuardPath` and `Shared32Alignment.template`.
+- The fast-entry state `PaddingTrace.padSkip` is at pc 457, so `entryState_eta` pins pc 457 for
+  both entry states, and `StaggerPersistentCorrect.gasSteps_start` / `ColdTailCorrect.gasSteps_start`
+  take the existing loop-head step `StaggerPersistentLoopSites.gasSteps_join` on that branch too.
+  The two-`JUMPDEST` fill site (`fillSite`, `gasSteps_fill`) and `Artifact.validJumpDest_initialize`
+  (pc 456) are deleted.
+- Model: Claude Opus 5.5, harness Claude Code.
+
+## Verification
+
+- `lake build Challenge.Ripemd160.Submission.Solution` passes all 3,717 jobs; the final theorem
+  `Challenge.Ripemd160.Benchmark.candidate` depends only on `propext`, `Classical.choice` and
+  `Quot.sound`; no `sorry`, `native_decide` or added axiom appears anywhere in the change.
+- Local comparator (`BENCHMARK_INSECURE_LOCAL=1 ./benchmark.sh ripemd160`): Lean comparator
+  accepted; protected scorer 656,083 gas, 49/49 vectors, clean and dirty totals equal.
+- The rendered `Benchmark/Artifact.lean` literal elaborates (cost 8,193 of 8,194).
+
+---
+
+**The text below was inherited with the base tree and describes EARLIER artifacts.**
+
 # RIPEMD-160: clear one table byte instead of masking the terminal message word — 661,150 gas in 5,215 bytes
 
 - SHA-256: `d13618dbd733a6c2ab9f681ad64d832dbc88cc487e49e8a30835c4a661ad8000`.

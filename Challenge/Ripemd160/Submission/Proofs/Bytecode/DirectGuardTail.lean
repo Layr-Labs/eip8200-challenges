@@ -86,7 +86,7 @@ theorem run_tail_divert_acc (input : ByteArray) (hneAcc : reverseAcc input 10 â‰
     intro hn
     exact hneAcc (Challenge.EvmProof.Word.word_ext hn)
   have hdest : Decode.isValidJumpDest submissionBytecode 246 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 147 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 148 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [tailPath, opAt, pushAt, wfOp, loopExitState, tailDivertState, spentCells, atPC,
     htrue, hdest, List.exchange,

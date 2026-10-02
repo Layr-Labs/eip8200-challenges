@@ -214,14 +214,14 @@ end resultSite
 
 namespace genericEntrySite
 def template : List Instr := [.op .JUMPDEST]
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 147).take template.length = template := by rfl
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 148).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 147 actual_slice
-    (by change 147 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 148 actual_slice
+    (by change 148 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 246 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 147) = UInt256.ofNat 246
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 148) = UInt256.ofNat 246
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem form : ∀ instruction ∈ template.dropLast, RecognitionLift.Advances instruction :=
   RecognitionLift.advancesAll_sound _ (by decide)
@@ -261,8 +261,8 @@ theorem valid_298 (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEn
 
 theorem valid_341 (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEnv.code 246 = true := by
   rw [e.code]
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 147 (by rfl)
-  have hp : Artifact.submissionArtifact.instructionPC 147 = 246 := by
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 148 (by rfl)
+  have hp : Artifact.submissionArtifact.instructionPC 148 = 246 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   simpa only [hp] using h
 
