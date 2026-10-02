@@ -126,7 +126,7 @@ def gasSteps_jump (s : State) (frame : List UInt256)
   · apply PadLift.advancesAll_sound; decide
   · exact PadJump.run_template s (UInt256.ofNat 242) frame 457 (by omega) hrun (valid_loop s hcode)
 def roundTemplate : List Instr :=
-  [.op .CALLDATASIZE, .push 2 1032, .op .ADD,
+  [.op .CALLDATASIZE, .push 2 968, .op .ADD,
    .push 1 63, .op .OR, .op (.Swap ⟨12, by decide⟩), .op .POP]
 theorem round_slice :
     (Artifact.submissionArtifact.instructions.drop 113).take roundTemplate.length = roundTemplate := by rfl
@@ -161,7 +161,7 @@ def guard32Template : List Instr :=
   [ .op .CALLDATASIZE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 32),
     .op .EQ,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 115),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 112),
     .op .JUMPI ]
 theorem guard32_slice :
     (Artifact.submissionArtifact.instructions.drop 108).take guard32Template.length = guard32Template := by rfl

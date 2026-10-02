@@ -53,7 +53,7 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
   have gp := PaddingTail.gasSteps_pad input hfit hn32 rho hcap
   have g := gp.trans gx
   simpa only [loopState, LoopCompletionControl.blockPC, Nat.zero_mul,
-    if_neg (show ¬ (input.size = 0 ∧ input.size < 256) by omega), offsetWord, DriverTrace.messageOffsetWord,
+    StaggerPersistentLoopRaw.entryStack, if_neg (show ¬ (input.size = 0 ∧ input.size < 256) by omega), offsetWord, DriverTrace.messageOffsetWord,
     DriverTrace.blockOffset, Padding.messageOffset, Nat.add_zero] using g
 
 /-- The ordinary hash route retains its arbitrary bounded suffix through every block. -/
@@ -87,7 +87,7 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
   let count := DriverTrace.blockCount input
   have a := hambient count (Nat.le_refl _)
   have go := StaggerPersistentSerialize.gasSteps (states input count)
-    (limitWord count) (LoopCompletionControl.limit input) (hashes input count) rho
+    (StaggerPersistentLoopRaw.blockMark input (count - 1) (offsetWord (count - 1))) (LoopCompletionControl.limit input) (hashes input count) rho
     (by omega) a.running a.code a.fork a.notPrecompile
   have trace := entryPrefix.trans (gs.trans (gb.trans go))
   apply Shared32Correct.eval_of_initial_returned input _ trace rfl

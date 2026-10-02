@@ -15,10 +15,15 @@ def gasSteps (s : State) (input : ByteArray) (i : Nat) (h : Compression.HashStat
     (hr : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := LoopCompletionControl.blockPC input i, stack := frame h (DriverTrace.messageOffsetWord i) limit rho}
-      {scheduledState s i with pc := UInt256.ofNat 4559, stack := frame (result (scheduledState s i).memory h) (DriverTrace.messageOffsetWord i) limit rho} := by
+    GasSteps {s with
+        pc := LoopCompletionControl.blockPC input i
+        stack := StaggerPersistentLoopRaw.entryStack input i h (DriverTrace.messageOffsetWord i) limit rho}
+      {scheduledState s i with
+        pc := UInt256.ofNat 4559
+        stack := frame (result (scheduledState s i).memory h)
+          (StaggerPersistentLoopRaw.blockMark input i (DriverTrace.messageOffsetWord i)) limit rho} := by
   let q := scheduledState s i
-  let off := DriverTrace.messageOffsetWord i
+  let off := StaggerPersistentLoopRaw.blockMark input i (DriverTrace.messageOffsetWord i)
   have gp := ColdOrdinaryPrepare.gasSteps_prepare s input i h limit rho hs tail hrho hfit hi ctx hcode hfork hr hnp
   have henv : q.executionEnv = s.executionEnv := scheduled_env s i
   have hrq : q.halt = .Running := (scheduled_halt s i).trans hr

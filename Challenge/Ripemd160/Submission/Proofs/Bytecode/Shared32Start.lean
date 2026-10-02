@@ -17,6 +17,9 @@ def frame : List UInt256 := StaggerPersistentFrame.frame StackRunBridge.initialH
   (UInt256.ofNat 1056) (UInt256.ofNat 1088) maskRho
 def entryFrame : List UInt256 := StaggerPersistentFrame.frame StackRunBridge.initialHashState
   (UInt256.ofNat 1056) (UInt256.ofNat 1088) maskRho
+/-- After the 32-byte block the limit slot holds zero, so the single block finishes. -/
+def bodyFrame : List UInt256 := StaggerPersistentFrame.frame StackRunBridge.initialHashState
+  (UInt256.ofNat 1056) (UInt256.ofNat 0) maskRho
 
 theorem rounded_32 : PadLimitArithmetic.rounded (UInt256.ofNat 32) = UInt256.ofNat 64 := by decide
 
@@ -75,7 +78,7 @@ def gasSteps_align (input : ByteArray) (h32 : input.size = 32) :
 
 def gasSteps (input : ByteArray) (h32 : input.size = 32)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 247)) :
-    GasSteps (initialState submissionBytecode input 0) (atState (tableState input) 808 frame) := by
+    GasSteps (initialState submissionBytecode input 0) (atState (tableState input) 808 bodyFrame) := by
   have hfit : CalldataFits input := by change input.size < 2 ^ 64; rw [h32]; decide
   let s := PaddingTrace.padCopied input
   have e : Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
@@ -103,13 +106,13 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32)
     (fusedCoefficientWord 0 2)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
-    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 1088) [] (by decide) hactive
+    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 0) [] (by decide) hactive
   have hm : sparseMemory s.memory = PairedScheduleMemory.writeWord s.memory 162 highWord := by
     rw [show s.memory = copiedMemory input from copied_memory input]
     exact copiedMemory_sparse input (by omega)
   rw [hm] at g4
   have g := g0.trans (g1.trans (g2.trans (g3.trans (g4.trans g5))))
-  simpa only [atState, tableState, s, copied_memory, frame, maskRho,
+  simpa only [atState, tableState, s, copied_memory, frame, bodyFrame, maskRho,
     StaggerPersistentFrame.frame, Pair13Endian.stk, List.cons_append, List.nil_append] using g
 
 theorem table_ready (input : ByteArray) (h32 : input.size = 32) :

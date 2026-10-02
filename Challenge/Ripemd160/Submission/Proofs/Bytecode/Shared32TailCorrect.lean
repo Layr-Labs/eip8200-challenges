@@ -11,7 +11,7 @@ open Shared32Scratch Shared32Sites Paired144WordRound Shared32Start
 def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
     GasSteps (StackTail.append (Execution.atPC input 247) rho)
-      (atState (tableState input) 808 (frame ++ rho)) := by
+      (atState (tableState input) 808 (bodyFrame ++ rho)) := by
   have hfit : CalldataFits input := by change input.size < 2 ^ 64; rw [h32]; decide
   let s := PaddingTrace.padCopied input
   have e : Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
@@ -40,13 +40,13 @@ def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
     (fusedCoefficientWord 0 2)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
-    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 1088) rho (by omega) hactive
+    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 0) rho (by omega) hactive
   have hm : sparseMemory s.memory = PairedScheduleMemory.writeWord s.memory 162 highWord := by
     rw [show s.memory = copiedMemory input from copied_memory input]
     exact copiedMemory_sparse input (by omega)
   rw [hm] at g4
   have g := g0.trans (g1.trans (g2.trans (g3.trans (g4.trans g5))))
-  simpa only [atState, tableState, s, copied_memory, frame, maskRho,
+  simpa only [atState, tableState, s, copied_memory, frame, bodyFrame, maskRho,
     StaggerPersistentFrame.frame, Pair13Endian.stk, List.append_assoc, List.cons_append, List.nil_append] using g
 
 
@@ -67,21 +67,19 @@ def gasSteps_core (s : State) (e : Env s) (input : ByteArray)
   let masks := Shared32Core.maskRho ++ rho
   have hm : masks.length ≤ 880 := by simp only [masks, Shared32Core.maskRho, List.length_append, List.length_cons, List.length_nil]; omega
   have gb := Shared32Core.gasSteps_body s e StackRunBridge.initialHashState
-    (UInt256.ofNat 1056) (UInt256.ofNat 1088) masks (by omega)
+    (UInt256.ofNat 1056) (UInt256.ofNat 0) masks (by omega)
     (by rw [hactive]; decide)
   have ge := StaggerPersistentLoopSites.gasSteps_exit s (Shared32Core.resultHash s)
-    (UInt256.ofNat 1056) (UInt256.ofNat 1088) masks (by omega) e.run
-    (by decide) (by decide)
+    (UInt256.ofNat 1056) (UInt256.ofNat 0) masks (by omega) e.run
+    (by decide)
     e.code e.fork e.np
-  have go := StaggerPersistentSerialize.gasSteps s (UInt256.ofNat 1120) (UInt256.ofNat 1088)
+  have go := StaggerPersistentSerialize.gasSteps s (UInt256.ofNat 1056) (UInt256.ofNat 0)
     (Shared32Core.resultHash s) rho (by omega) e.run e.code e.fork e.np
-  have hoff : StaggerPersistentLoopRaw.nextOffset (UInt256.ofNat 1056) = UInt256.ofNat 1120 := by decide
-  rw [hoff] at ge
   have hresult : StackTail.append (Shared32Core.resultState s) rho =
       StaggerPersistentSerialize.result s (Shared32Core.resultHash s)
-        (UInt256.ofNat 1120) (UInt256.ofNat 1088) masks :=
-    serialize_append s (Shared32Core.resultHash s) (UInt256.ofNat 1120)
-      (UInt256.ofNat 1088) Shared32Core.maskRho rho
+        (UInt256.ofNat 1056) (UInt256.ofNat 0) masks :=
+    serialize_append s (Shared32Core.resultHash s) (UInt256.ofNat 1056)
+      (UInt256.ofNat 0) Shared32Core.maskRho rho
   rw [hresult]
   simpa only [StackTail.append, Shared32Core.entryState,
     StaggerPersistentFrame.frame, Shared32Core.maskRho, masks,

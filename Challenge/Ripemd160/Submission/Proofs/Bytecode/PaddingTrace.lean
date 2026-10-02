@@ -160,7 +160,7 @@ def bitLengthWord (input : ByteArray) : UInt256 :=
   UInt256.shiftLeft (UInt256.ofNat input.size) (UInt256.ofNat 3)
 
 def lengthOffsetWord (input : ByteArray) : UInt256 :=
-  PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 25
+  PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 89
 
 /-- The persistent block-loop frame at hash entry: the initial chaining words and the six
 resident round constants above the zero offset and the padded limit. -/
@@ -1359,8 +1359,8 @@ set_option maxHeartbeats 800000 in
 private theorem run_lengthFooterSetup (input : ByteArray) :
     Challenge.EvmProof.DataStepper.runLocatedBlock lengthFooterSetupPath
       (padSentinel input) = some (lengthLoopState input 0) := by
-  have haddressOrder : UInt256.ofNat 25 + PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) =
-      PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 25 :=
+  have haddressOrder : UInt256.ofNat 89 + PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) =
+      PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 89 :=
     Challenge.EvmProof.Word.word_add_comm _ _
   simp [lengthFooterSetupPath, Artifact.padFooterSetupPath,
     Challenge.EvmProof.DataStepper.runLocatedBlock,

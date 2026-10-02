@@ -57,13 +57,13 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
   have gp := PaddingTrace.gasSteps_pad input hfit hn32 entryPrefix
   have g := gp.trans gx
   simpa only [loopState, LoopCompletionControl.blockPC, Nat.zero_mul,
-    if_neg (show ¬ (input.size = 0 ∧ input.size < 256) by omega), offsetWord, DriverTrace.messageOffsetWord,
+    StaggerPersistentLoopRaw.entryStack, if_neg (show ¬ (input.size = 0 ∧ input.size < 256) by omega), offsetWord, DriverTrace.messageOffsetWord,
     DriverTrace.blockOffset, Padding.messageOffset, Nat.add_zero] using g
 
 def result (input : ByteArray) (states : Nat → State) (hashes : Nat → Compression.HashState) : State :=
   StaggerPersistentSerialize.result (states (DriverTrace.blockCount input))
     (hashes (DriverTrace.blockCount input))
-    (limitWord (DriverTrace.blockCount input)) (LoopCompletionControl.limit input) maskRho
+    (StaggerPersistentLoopRaw.blockMark input (DriverTrace.blockCount input - 1) (offsetWord (DriverTrace.blockCount input - 1))) (LoopCompletionControl.limit input) maskRho
 
 noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size) (hn32 : input.size ≠ 32)
     (states : Nat → State) (hashes : Nat → Compression.HashState)
@@ -79,7 +79,7 @@ noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input) (hpo
   have gb := run_blocks input states hashes maskRho hfit (by decide) hambient hblock
   have a := hambient (DriverTrace.blockCount input) (Nat.le_refl _)
   have go := StaggerPersistentSerialize.gasSteps (states (DriverTrace.blockCount input))
-    (limitWord (DriverTrace.blockCount input)) (LoopCompletionControl.limit input)
+    (StaggerPersistentLoopRaw.blockMark input (DriverTrace.blockCount input - 1) (offsetWord (DriverTrace.blockCount input - 1))) (LoopCompletionControl.limit input)
     (hashes (DriverTrace.blockCount input)) [] (by decide) a.running a.code a.fork a.notPrecompile
   rw [← hszero, ← hhzero] at gs
   exact gs.trans (gb.trans go)

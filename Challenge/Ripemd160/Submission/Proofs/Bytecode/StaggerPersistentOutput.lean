@@ -33,15 +33,15 @@ def prepared (s : State) (h : Compression.HashState) : State :=
 
 theorem run_template (s : State) (pc off limit : UInt256) (h : Compression.HashState)
     (rho : List UInt256) (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running) :
-    runInstrSeq template {s with pc := pc, stack := StaggerPersistentFrame.exitFrame h off limit rho} =
-      some {prepared s h with pc := pcAfter pc template, stack := packedHash h :: Paired144WordRound.factorPlusWord :: limit :: rho} := by
+    runInstrSeq template {s with pc := pc, stack := StaggerPersistentFrame.frame h off limit rho} =
+      some {prepared s h with pc := pcAfter pc template, stack := packedHash h :: off :: limit :: rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
   have hread := MemoryPackedOutput.readWord_eq s.memory h
   have hpack : PackedOutputMath.pack5 h.h0 h.h1 h.h2 h.h3 h.h4 = packedHash h := by
     simp only [PackedOutputMath.pack5, PackedOutputMath.append32, packedHash, Word.lor_comm]
   simp only [MemoryPackedOutput.memory, MemoryPackedOutput.store, hpack] at hread
   simp (discharger := omega) [template, prefixTemplate, bodyTemplate,
-    StaggerPersistentFrame.exitFrame, prepared, stored, MemoryPackedOutput.store,
+    StaggerPersistentFrame.frame, prepared, stored, MemoryPackedOutput.store,
     runInstrSeq, DataStepper.runInstr, UInt256.succ, pcAfter, Instr.size,
     hrun, hcap, Nat.add_assoc, List.getElem?_cons_zero, List.exchange,
     Word.ofUInt32_toNat, Word.word_toNat_ofNat, Word.literal_eq_ofNat, hread,
@@ -94,14 +94,14 @@ def gasSteps (s : State) (off limit : UInt256) (h : Compression.HashState)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4581, stack := StaggerPersistentFrame.exitFrame h off limit rho}
-      {prepared s h with pc := UInt256.ofNat 4605, stack := packedHash h :: Paired144WordRound.factorPlusWord :: limit :: rho} := by
-  have ge := gasSteps_entry s (StaggerPersistentFrame.exitFrame h off limit rho)
-    (by simp [StaggerPersistentFrame.exitFrame]; omega) hrun hcode hfork hnp
+    GasSteps {s with pc := UInt256.ofNat 4581, stack := StaggerPersistentFrame.frame h off limit rho}
+      {prepared s h with pc := UInt256.ofNat 4605, stack := packedHash h :: off :: limit :: rho} := by
+  have ge := gasSteps_entry s (StaggerPersistentFrame.frame h off limit rho)
+    (by simp [StaggerPersistentFrame.frame]; omega) hrun hcode hfork hnp
   refine ge.trans ?_
   apply DenseScheduleLift.gasSteps_of_raw site
-    {s with pc := UInt256.ofNat 4582, stack := StaggerPersistentFrame.exitFrame h off limit rho}
-    {prepared s h with pc := UInt256.ofNat 4605, stack := packedHash h :: Paired144WordRound.factorPlusWord :: limit :: rho}
+    {s with pc := UInt256.ofNat 4582, stack := StaggerPersistentFrame.frame h off limit rho}
+    {prepared s h with pc := UInt256.ofNat 4605, stack := packedHash h :: off :: limit :: rho}
     hcode hfork hrun hnp site_pc.symm advances
   have hraw := run_template s (UInt256.ofNat 4582) off limit h rho hstack hrun
   have hend : pcAfter (UInt256.ofNat 4582) template = UInt256.ofNat 4605 := by decide

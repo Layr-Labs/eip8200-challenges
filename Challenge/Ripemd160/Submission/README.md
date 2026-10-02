@@ -1,3 +1,77 @@
+# RIPEMD-160: finish test on the unadvanced block offset — 655,967 gas in 5,248 bytes
+
+- SHA-256: `7691072c881f41cee99a07ee580c5fa84a3a200fda344ff826f813f1211472f2`.
+- Size: 5,248 bytes; 3,645 instructions (unchanged); literal-encoding cost 8,194 (ceiling 8,194).
+- Base: promoted `b760d0a2` (`a14a87a0…bab2`, 656,083 gas). Local protected scorer: 655,967 gas
+  (−116), 49/49.
+
+## The change
+
+Every compressed block ends in the exit block at 4559..4580. The base advanced the offset first
+(`SWAP11 PUSH1 40 ADD`) and then tested `off + 64 > limit` for the finish, so the 32 finishing
+blocks of the corpus paid for an advance they never use. The exit is now (same 22 bytes, same 16
+instructions):
+
+```
+4559  DUP13 DUP13 GT PUSH2 11e5 JUMPI     ; off > limit -> output (frame unchanged)
+4566  SWAP11 PUSH1 40 ADD                 ; advance; off' on top, factor word in slot 12
+4570  DUP13 DUP2 EQ PUSH1 81 JUMPI        ; off' == limit -> pad-only block, off' still on top
+4576  SWAP11 PUSH2 01c9 JUMP              ; otherwise back into slot 12, loop
+```
+
+The last block of each route must now leave a slot-12/13 pair with `limit < off`:
+
+- **Pad-only block (64/128/192 bytes).** It is entered with `off'` on top. Its zeroing copy
+  takes `off'` as the calldata source offset (`SWAP1` instead of `CALLDATASIZE`; any offset past
+  the calldata reads zeros), and its `PUSH20` mark word is duplicated and parked in slot 12
+  (`DUP1 … SWAP11`), which is far above the limit. The two extra bytes take two of the three
+  dead `STOP`s after the block.
+- **32-byte block.** `PUSH0 SWAP13 DUP1 ADD` zeroes the limit slot and doubles the old limit
+  `1088` into `0x880`, whose low byte is the `0x80` sentinel stored at 165 (replacing
+  `PUSH1 80`); the length byte comes from `PUSH1 01` instead of `DUP5`. The block moves 3 bytes
+  down into the dead padding (JUMPDEST 115 → 112) and the 190 guard targets 0x70.
+- **Cold route.** The limit becomes `(size + 968) | 63 = 959 + paddedLength` (was `+1032`/`1023`),
+  between the second-to-last and the last block offset and never equal to an advanced offset;
+  the footer address constant becomes `0x59`.
+
+Gas: finish −9 × 32, pad path +4 × 21, 32-byte path +8 × 11, continue path unchanged: −116.
+The byte choices keep the literal-encoding cost at the 8,194 ceiling (`0x84` leaves chunk 1,
+`0x9c` enters it; chunk 3 trades `0x19`/`0x73` for `0x59`/`0x70`/`0xc8`).
+
+## What it costs the proof
+
+- `Bytes.lean`, `Artifact.lean` chunks 0 and 19 regenerated from the hex with the old
+  partition; `padFooterSetupPath` constant 89.
+- Exit: `StaggerPersistentLoopRaw` (new finish/advance/pad/back templates and run lemmas, the
+  `padMark`, `entryStack`, `blockMark` helpers), `StaggerPersistentLoopSites`,
+  `StaggerPersistentEntrySites`, `StaggerPersistentLoopInduction` (block entry stack and exit
+  mark per block), `LoopCompletionControl` (absolute limit, exit facts),
+  `StaggerPersistentOutput`/`Serialize` (output starts from the plain frame).
+- Pad-only: `StaggerPadSetup`, `PadZeroPrefix.readPadded_ge`, `ColdOrdinarySites`,
+  `ColdOrdinaryPrepare`, `ColdOrdinaryBlock`.
+- 32-byte: `Shared32SparseRun`, `Shared32Sites`, `Shared32Trace`, `Shared32Start`,
+  `Shared32Core`, `Shared32TailCorrect`, `DirectGuardBase` pc facts.
+- Cold: `PadLimitArithmetic`, `StaggerPersistentStart`, `PaddingTrace`.
+- `StaggerPersistentCorrect`, `ColdTailCorrect`: exit offset is the last block's mark.
+
+## Verification
+
+- `lake build Challenge.Ripemd160.Submission.Solution` (via the benchmark) passes all 3,717 jobs;
+  `Challenge.Ripemd160.Benchmark.candidate` depends only on `propext`, `Classical.choice` and
+  `Quot.sound`; no `sorry`, `native_decide` or `bv_decide` in the change.
+- Local comparator (`BENCHMARK_INSECURE_LOCAL=1 ./benchmark.sh ripemd160`): accepted; protected
+  scorer 655,967 gas, 49/49 vectors, clean and dirty totals equal.
+- The rendered `Benchmark/Artifact.lean` literal elaborates at cost 8,194 (8,195 was checked to
+  hit the recursion limit).
+- A Python replica of the scorer's gas model reproduces 656,083 for the base and 655,967 here,
+  identical for other corpus seeds, and the candidate returns the correct digest on 2,070 extra
+  inputs (sizes 0..399 and up to 5,300 bytes; zero, patterned, repeated and random data).
+- Model: Claude Opus 5.5, harness Claude Code.
+
+---
+
+**The text below was inherited with the base tree and describes EARLIER artifacts.**
+
 # RIPEMD-160: the fast-entry guard falls straight into the block loop — 656,083 gas in 5,248 bytes
 
 - SHA-256: `a14a87a0e3133cf59de8893f3825f1a2f83285e001b01a046635f23ba1bebab2`.

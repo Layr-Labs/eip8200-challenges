@@ -61,29 +61,29 @@ theorem terminal_pc : terminalSite.startPC = UInt256.ofNat 4632 := by
 
 def value (h : Compression.HashState) : UInt256 :=
   DenseScheduleTemplate.packedWord (StaggerPersistentOutput.packedHash h)
-/-- The finish path leaves the resident factor word (not the offset) below the result. -/
-def result (s : State) (h : Compression.HashState) (_off limit : UInt256)
+/-- The finish path leaves the exit offset word below the result. -/
+def result (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) : State :=
   StaggerPersistentReturn.result (StaggerPersistentOutput.prepared s h) (UInt256.ofNat 4632) (value h)
-    (Paired144WordRound.factorPlusWord :: limit :: rho)
+    (off :: limit :: rho)
 
 def gasSteps (s : State) (off limit : UInt256) (h : Compression.HashState)
     (rho : List UInt256) (hstack : rho.length ≤ 980) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4581, stack := StaggerPersistentFrame.exitFrame h off limit (DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)}
+    GasSteps {s with pc := UInt256.ofNat 4581, stack := StaggerPersistentFrame.frame h off limit (DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)}
       (result s h off limit (DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)) := by
   have gp := StaggerPersistentOutput.gasSteps s off limit h
     (DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho) (by simp; omega) hrun hcode hfork hnp
   have g8 := Serialized675316Endian8.gasSteps8 endian8Site
-    (StaggerPersistentOutput.prepared s h) (StaggerPersistentOutput.packedHash h) Paired144WordRound.factorPlusWord limit (DenseScheduleTemplate.mask16 :: rho)
+    (StaggerPersistentOutput.prepared s h) (StaggerPersistentOutput.packedHash h) off limit (DenseScheduleTemplate.mask16 :: rho)
     (by simp; omega) hcode hfork hrun hnp
   have g16 := Serialized675316Endian16.gasSteps_endian endian16Site
     (StaggerPersistentOutput.prepared s h) (DenseScheduleTemplate.packedStage (StaggerPersistentOutput.packedHash h) 8 DenseScheduleTemplate.mask8)
-    Paired144WordRound.factorPlusWord limit DenseScheduleTemplate.mask8 rho (by omega) hcode hfork hrun hnp
+    off limit DenseScheduleTemplate.mask8 rho (by omega) hcode hfork hrun hnp
   have gt := StaggerPersistentReturn.gasSteps_site terminalSite (StaggerPersistentOutput.prepared s h) (value h)
-    (Paired144WordRound.factorPlusWord :: limit :: DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)
+    (off :: limit :: DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)
     (by simp; omega) hcode hfork hrun hnp
   rw [endian8_pc,endian8_end] at g8
   rw [endian16_pc,endian16_end] at g16

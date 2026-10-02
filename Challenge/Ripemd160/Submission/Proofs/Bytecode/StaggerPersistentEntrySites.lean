@@ -36,6 +36,22 @@ theorem jump_pc : jumpSite.startPC = UInt256.ofNat 4577 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3435) = UInt256.ofNat 4577
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
+def swapCode : List Instr := StaggerPersistentLoopRaw.backTemplate
+
+theorem swap_slice :
+    (Artifact.submissionArtifact.instructions.drop 3434).take swapCode.length = swapCode := by rfl
+
+def swapSite : GenericRoundSite Artifact.submissionArtifact .Osaka swapCode :=
+  StackSiteBuilder.ofSlice swapCode 3434 swap_slice
+    (by change 3434 + swapCode.length ≤ Artifact.submissionInstructions.length
+        rw [Artifact.referenceInstructions_count]; decide)
+    StackRoundData.artifact_code_bound
+    (StackRoundData.templateWellFormed_mem (instructions := swapCode) (by decide)) (by decide)
+
+theorem swap_pc : swapSite.startPC = UInt256.ofNat 4576 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3434) = UInt256.ofNat 4576
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
+
 theorem valid_finish (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4581).toNat = true := by
   have hpc : Artifact.submissionArtifact.instructionPC 3437 = 4581 := by
@@ -74,15 +90,15 @@ def gasSteps_padMiss (s : State) (off limit : UInt256) (h : Compression.HashStat
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 4570, stack := exitFrame h off limit rho}
-      {s with pc := UInt256.ofNat 4577, stack := frame h off limit rho} := by
+      {s with pc := UInt256.ofNat 4576, stack := exitFrame h off limit rho} := by
   apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4570, stack := exitFrame h off limit rho} _ hcode hfork hrun hnp dispatch_pc.symm
   · exact PadLift.advancesAll_sound _ (by decide)
   · have hr := StaggerPersistentLoopRaw.run_miss s (UInt256.ofNat 4570) h off limit rho 129 (by omega) hrun hmiss
-    have he : pcAfter (UInt256.ofNat 4570) (StaggerPersistentLoopRaw.padTemplate 129) = UInt256.ofNat 4577 := by decide
+    have he : pcAfter (UInt256.ofNat 4570) (StaggerPersistentLoopRaw.padTemplate 129) = UInt256.ofNat 4576 := by decide
     rw [he] at hr
     exact hr
 
-/-- Pad test hit: jump to the pad-only block setup. -/
+/-- Pad test hit: jump to the pad-only block setup with the advanced offset still on top. -/
 def gasSteps_padHit (s : State) (off limit : UInt256) (h : Compression.HashState)
     (rho : List UInt256) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hhit : off = limit)
@@ -90,11 +106,26 @@ def gasSteps_padHit (s : State) (off limit : UInt256) (h : Compression.HashState
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 4570, stack := exitFrame h off limit rho}
-      {s with pc := UInt256.ofNat 129, stack := frame h off limit rho} := by
+      {s with pc := UInt256.ofNat 129, stack := exitFrame h off limit rho} := by
   apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4570, stack := exitFrame h off limit rho} _ hcode hfork hrun hnp dispatch_pc.symm
   · exact PadLift.advancesAll_sound _ (by decide)
   · exact StaggerPersistentLoopRaw.run_hit s (UInt256.ofNat 4570) h off limit rho 129 (by omega) hrun hhit
       (valid_pad s hcode)
+
+/-- Neither finish nor pad: the advanced offset goes back into slot 12. -/
+def gasSteps_swapBack (s : State) (off limit : UInt256) (h : Compression.HashState)
+    (rho : List UInt256) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    GasSteps {s with pc := UInt256.ofNat 4576, stack := exitFrame h off limit rho}
+      {s with pc := UInt256.ofNat 4577, stack := frame h off limit rho} := by
+  apply PadLift.gasSteps_of_raw swapSite {s with pc := UInt256.ofNat 4576, stack := exitFrame h off limit rho} _ hcode hfork hrun hnp swap_pc.symm
+  · exact PadLift.advancesAll_sound _ (by decide)
+  · have hr := StaggerPersistentLoopRaw.run_back s (UInt256.ofNat 4576) h off limit rho (by omega) hrun
+    have he : pcAfter (UInt256.ofNat 4576) StaggerPersistentLoopRaw.backTemplate = UInt256.ofNat 4577 := by decide
+    rw [he] at hr
+    exact hr
 
 /-- Neither finish nor pad: jump back to the loop head. -/
 def gasSteps_back (s : State) (rho : List UInt256) (hstack : rho.length ≤ 1000)
@@ -111,4 +142,5 @@ def gasSteps_back (s : State) (rho : List UInt256) (hstack : rho.length ≤ 1000
 #print axioms gasSteps_padMiss
 #print axioms gasSteps_padHit
 #print axioms gasSteps_back
+#print axioms gasSteps_swapBack
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentEntrySites

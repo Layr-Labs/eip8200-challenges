@@ -17,6 +17,21 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
+-- executable 7691072c881f41cee99a07ee580c5fa84a3a200fda344ff826f813f1211472f2, 5248 bytes,
+-- 655967 gas, 8194 units of the 8194 literal-encoding budget. Derived from the promoted b760d0a2
+-- image (a14a87a0e3133cf59de8893f3825f1a2f83285e001b01a046635f23ba1bebab2, 5248 bytes, 656083 gas).
+-- The block exit tests the finish first on the unadvanced offset (`DUP13 DUP13 GT`, off > limit),
+-- so the 32 finishing blocks no longer pay the offset advance (-9 gas each); the advance then runs
+-- only on the pad/continue paths and hands the pad-only block the advanced offset on top, which the
+-- pad-only block consumes as its zero-copy source and replaces by its PUSH20 mark word in slot 12
+-- (+4 gas x 21); the 32-byte block zeroes the limit slot and derives its 0x80 sentinel from twice
+-- the old limit (+8 gas x 11); the cold route stores (size + 968) | 63. Net -116 gas. Length,
+-- instruction count (3645) and every pc from 129 on outside the pad-only tail (180..189) and the
+-- exit (4559..4580) are unchanged.
+-- model Claude Opus 5.5, harness Claude Code.
+--
+-- NOTE FOR THE FILER: every line below this point was inherited with the base tree and describes
+-- an EARLIER artifact, not this one.
 -- executable a14a87a0e3133cf59de8893f3825f1a2f83285e001b01a046635f23ba1bebab2, 5248 bytes,
 -- 656083 gas, 8193 units of the 8194 literal-encoding budget. Derived from the promoted 003a8217
 -- image (4c8e1d4f11945ed6c54ab5a8d35e9ee6fc7cfa2caa598dad46a9864f25ce31de, 5248 bytes, 656104 gas).

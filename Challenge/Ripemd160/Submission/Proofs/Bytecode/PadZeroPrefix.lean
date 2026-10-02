@@ -59,4 +59,9 @@ theorem readPadded_end (input : ByteArray) :
 
 #print axioms prefix_zero
 #print axioms write_suffix_eq
+/-- Any copy offset at or past the end of the calldata reads zeros. -/
+theorem readPadded_ge (input : ByteArray) (start : Nat) (h : input.size ≤ start) :
+    MachineState.readPadded input start 1084 = zeroBytes := by
+  simp [MachineState.readPadded, zeroBytes, Nat.min_eq_right h]
+
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PadZeroPrefix
