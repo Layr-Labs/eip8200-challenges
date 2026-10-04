@@ -8,9 +8,10 @@ set_option warningAsError true
 
 Each block `b = 0..7` of the M9 conversion product section is
 `PUSH2 (0x5e0 - 32b); MLOAD; DUP4` followed by `CiosCached.macFusedProgram T T`, `T = 0x920 - 32b`
-(30 instructions, 36 bytes).  Blocks 0 and 4 carry the entry `JUMPDEST`s (pc 2682 and 2827).  The section is
-entered by E6 (`PUSH0 NOT SWAP1 PUSH0 PUSH2 0x6a2 MLOAD JUMP`, pc 2673) and left through `SWAP1 SWAP2 POP`
-(pc 2972), falling into the unchanged top-limb fixup at pc 2975.
+(30 instructions, 36 bytes).  Blocks 0 and 4 carry the entry `JUMPDEST`s.
+
+The section is entered by E6 and left through `JUMPDEST JUMPDEST JUMPDEST` (pc 3168..3170),
+falling into the top-limb fixup at pc 3171 with the chain frame untouched.
 
 ## Assumed from the tree (unchanged by the port)
 * `Challenge.Modexp.Submission.Proofs.Fast.CiosCached.macFusedProgram : UInt256 → UInt256 → List Instr`
@@ -56,9 +57,13 @@ block pops the zero carry, reproduces the `-N` limb (`DUP (d+1)`) and the mask (
 def rideTopProgram (d : Fin 16) (t : UInt256) : List Instr :=
   [.op .POP, .op (.Dup { idx := d }), .op (.Dup ⟨2, by decide⟩)] ++ CiosCached.macTopZeroProgram t
 
-/-- `SWAP1 SWAP2 POP`: drop the mask, leaving `[carry, q]` above the shift counter. -/
+/-- `JUMPDEST JUMPDEST JUMPDEST`: the chain frame `[carry, q, 2^256-1] ++ rest` survives the
+fall-through into the top-limb fixup at pc 3171 unchanged, and the fixup gives the mask back
+to its slot with `SWAP3 POP` at pc 3184..3185 before `SUB`.  The three former `SWAP1 SWAP2 POP`
+opcodes cost 8 gas where three `JUMPDEST`s cost 3. -/
 def exitProgram : List Instr :=
-  [.op (.Swap ⟨0, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .POP]
+  [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
+
 /-- E6: `PUSH0 NOT SWAP1 PUSH0 DUP5 JUMP` — build the chain frame `[0, q, 2^256-1]` and
 jump to the entry parked in the scratch slot (the first riding slot, `shiftEntry`). -/
 def entryProgram : List Instr :=

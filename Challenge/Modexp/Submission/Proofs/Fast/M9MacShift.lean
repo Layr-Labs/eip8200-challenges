@@ -14,7 +14,9 @@ five-word outer frame (`Exp.outer`).  The riding hypotheses discharge definition
 `shiftEntry`/`entryPC` scratch.  `-N` base `Shift.NEG` (= 1280).  This is the statement that
 replaces `Shift.gasSteps_macLoop` together with the old `run_macSetup`/`ShiftDispatchTrace.run_dispatch`
 prefix: from `macSetupState` pc 2893 with `[q, k] ++ slots ++ outer` over `um` to pc 3171 with
-`[carry, q, k] ++ slots ++ outer` over `Monpro.l1Step um q NEG n n`.
+`[carry, q, 2^256-1, k] ++ slots ++ outer` over `Monpro.l1Step um q NEG n n`.  The three
+`JUMPDEST`s at pc 3168..3170 leave the chain frame in place; the fixup's `SWAP3 POP`
+(pc 3184..3185) spends the mask again before `SUB`.
 
 ## Assumed from the tree (unchanged by the port)
 * `Challenge.Modexp.Submission.Proofs.Fast.Exp.outer (n bsize esize msize : Nat) : List UInt256` (five words).
@@ -55,7 +57,7 @@ theorem rest_length (um : ByteArray) (n bsize esize msize k : Nat) :
 
 /-- The section on the conversion frame: from `macSetupState` (E6, pc 2893) with the
 quotient guess above the counter, slots and outer frame over `um`, to the middle block at
-pc 3171 with `[carry, q̂]` above the unchanged riding frame. -/
+pc 3171 with `[carry, q̂, 2^256-1]` above the unchanged riding frame. -/
 def gasSteps_macSection (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArray) (q : UInt256)
     (bsize esize msize k : Nat)
     (htop : n = 8 → MachineState.readWord um 2336 = UInt256.ofNat 0)
@@ -71,8 +73,8 @@ def gasSteps_macSection (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteA
                  Exp.outer n bsize esize msize,
                memory := um }
       { s with pc := UInt256.ofNat 3171,
-               stack := (Monpro.l1Step um q Shift.NEG n n).carry :: q :: UInt256.ofNat k ::
-                 Shift.entrySlots um n bsize esize ++ Exp.outer n bsize esize msize,
+               stack := (Monpro.l1Step um q Shift.NEG n n).carry :: q :: Monpro.maxWord ::
+                 UInt256.ofNat k :: Shift.entrySlots um n bsize esize ++ Exp.outer n bsize esize msize,
                memory := (Monpro.l1Step um q Shift.NEG n n).memory } :=
   gasSteps_macChain n hn s um q
     (UInt256.ofNat k :: Shift.entrySlots um n bsize esize ++ Exp.outer n bsize esize msize)
