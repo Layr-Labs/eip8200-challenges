@@ -153,3 +153,31 @@ Unchanged executable bytes (bytecode.hex sha256 ed9a0ba9...ffed, 5,483 bytes) an
 unchanged proof tree of commit 48d1c0af (F1 = E1 + M9 block-0 top-word cell).
 This entry is the only change. Disclosed corpus redraw: the image is 182 gas below E1
 on every corpus seed. Per-draw landing probability against 469,281 is about 3.3%.
+
+## Redraw entry 2026-10-04T09:36:13Z (rubenmarcus, lane ModexpDrawsF1, stream draw 77, F1 draw 13)
+
+Unchanged executable bytes (bytecode.hex sha256 ed9a0ba9...ffed, 5,483 bytes) and
+unchanged proof tree of commit 48d1c0af (F1 = E1 + M9 block-0 top-word cell).
+This entry is the only change. Disclosed corpus redraw: the image is 182 gas below E1
+on every corpus seed. Per-draw landing probability against 469,281 is about 3.3%.
+
+## Redraw entry 2026-10-04T10:58:01Z (rubenmarcus, lane ModexpDrawsF1, stream draw 78, F1 draw 14)
+
+Unchanged executable bytes (bytecode.hex sha256 ed9a0ba9...ffed, 5,483 bytes) and
+unchanged proof tree of commit 48d1c0af (F1 = E1 + M9 block-0 top-word cell).
+This entry is the only change. Disclosed corpus redraw: the image is 182 gas below E1
+on every corpus seed. Per-draw landing probability against 469,281 is about 3.3%.
+
+## Redraw entry 2026-10-04T12:19:40Z (rubenmarcus, lane ModexpDrawsF1, stream draw 79, F1 draw 15)
+
+Unchanged executable bytes (bytecode.hex sha256 ed9a0ba9...ffed, 5,483 bytes) and
+unchanged proof tree of commit 48d1c0af (F1 = E1 + M9 block-0 top-word cell).
+This entry is the only change. Disclosed corpus redraw: the image is 182 gas below E1
+on every corpus seed. Per-draw landing probability against 469,281 is about 3.3%.
+
+## Redraw entry 2026-10-04T13:41:19Z (rubenmarcus, lane ModexpDrawsF1, stream draw 80, F1 draw 16)
+
+Unchanged executable bytes (bytecode.hex sha256 ed9a0ba9...ffed, 5,483 bytes) and
+unchanged proof tree of commit 48d1c0af (F1 = E1 + M9 block-0 top-word cell).
+This entry is the only change. Disclosed corpus redraw: the image is 182 gas below E1
+on every corpus seed. Per-draw landing probability against 469,281 is about 3.3%.
