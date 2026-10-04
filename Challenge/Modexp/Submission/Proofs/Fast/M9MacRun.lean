@@ -47,11 +47,6 @@ def chainState (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
     (rest : List UInt256) : State :=
   { template with pc := pc, stack := [m.carry, bi, maxWord] ++ rest, memory := m.memory }
 
-/-- After the exit: `[carry, q] ++ rest`. -/
-def exitState (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
-    (rest : List UInt256) : State :=
-  { template with pc := pc, stack := [m.carry, bi] ++ rest, memory := m.memory }
-
 /-- The section entry state: `q` above `rest`, memory `um`. -/
 def setupState (template : State) (pc : UInt256) (um : ByteArray) (bi : UInt256)
     (rest : List UInt256) : State :=
@@ -306,13 +301,15 @@ theorem l1StepOn_readWord_below (q : Monpro.MacState) (bi : UInt256) (pa n j add
   simp only [SquareModel.l1StepOn]
   exact Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _ (Or.inl (by omega))
 
-/-- `SWAP1 SWAP2 POP`: `[carry, q, mask] ++ rest` becomes `[carry, q] ++ rest`. -/
+/-- `JUMPDEST JUMPDEST JUMPDEST`: the chain frame `[carry, q, mask] ++ rest` reaches the top-limb
+fixup at `pc + 3` exactly as it left the last straight block; the mask stays in its slot until
+`SWAP3 POP` at pc 3184..3185 gives it back. -/
 theorem run_exit (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1014) :
     runInstructions exitProgram (chainState template pc m bi rest) =
-    some (exitState template (pc + UInt256.ofNat 3) m bi rest) := by
+    some (chainState template (pc + UInt256.ofNat 3) m bi rest) := by
   have hc : rest.length + 3 < 1024 := by omega
-  simp (disch := omega) [runInstructions, exitProgram, chainState, exitState,
+  simp (disch := omega) [runInstructions, exitProgram, chainState,
     Challenge.EvmProof.Stepper.runInstr, hc, List.exchange,
     List.getElem?_cons_zero, List.getElem?_cons_succ, List.cons_append, List.nil_append,
     succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
