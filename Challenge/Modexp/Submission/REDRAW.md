@@ -153,3 +153,75 @@ Unchanged executable bytes (bytecode.hex sha256 ed9a0ba9...ffed, 5,483 bytes) an
 unchanged proof tree of commit 48d1c0af (F1 = E1 + M9 block-0 top-word cell).
 This entry is the only change. Disclosed corpus redraw: the image is 182 gas below E1
 on every corpus seed. Per-draw landing probability against 469,281 is about 3.3%.
+
+## Redraw entry 2026-10-04T09:36:13Z (rubenmarcus, lane ModexpDrawsF1, stream draw 77, F1 draw 13)
+
+Unchanged executable bytes (bytecode.hex sha256 ed9a0ba9...ffed, 5,483 bytes) and
+unchanged proof tree of commit 48d1c0af (F1 = E1 + M9 block-0 top-word cell).
+This entry is the only change. Disclosed corpus redraw: the image is 182 gas below E1
+on every corpus seed. Per-draw landing probability against 469,281 is about 3.3%.
+
+## Redraw entry 2026-10-04T10:58:01Z (rubenmarcus, lane ModexpDrawsF1, stream draw 78, F1 draw 14)
+
+Unchanged executable bytes (bytecode.hex sha256 ed9a0ba9...ffed, 5,483 bytes) and
+unchanged proof tree of commit 48d1c0af (F1 = E1 + M9 block-0 top-word cell).
+This entry is the only change. Disclosed corpus redraw: the image is 182 gas below E1
+on every corpus seed. Per-draw landing probability against 469,281 is about 3.3%.
+
+## G2 first submission 2026-10-04T14:36:48Z (rubenmarcus, lane ModexpDrawsG2, stream draw 1, G2 draw 1)
+
+New code against F1 (commit 48d1c0af): G2 (commit 9ca6c88b) turns the M9 conversion
+section's exit SWAP1 SWAP2 POP (pc 3168..3170) into three JUMPDESTs and gives the mask back
+with SWAP3 POP at pc 3184..3185 (same 5,483 bytes, same 4,422 instructions, so no instruction
+PC moved), -126 gas on every corpus seed vs F1. bytecode.hex sha256 d4ad92f0...5bc66. This
+entry is the only change against commit 9ca6c88b. Per-draw landing probability against
+468,808 lies in the honest bracket 1.16%-1.56% per draw.
+
+## Redraw entry 2026-10-04T15:58:30Z (rubenmarcus, lane ModexpDrawsG2, stream draw 2, G2 draw 2)
+
+Unchanged executable bytes (bytecode.hex sha256 d4ad92f0...5bc66, 5,483 bytes) and
+unchanged proof tree of commit 9ca6c88b (G2 = F1 + the M9 exit JUMPDEST/SWAP3 cut).
+This entry is the only change. Disclosed corpus redraw: the image is 126 gas below F1
+on every corpus seed. Per-draw landing probability against 468,808 lies in the honest bracket 1.16%-1.56% per draw.
+
+## Redraw entry 2026-10-04T17:20:09Z (rubenmarcus, lane ModexpDrawsG2, stream draw 3, G2 draw 3)
+
+Unchanged executable bytes (bytecode.hex sha256 d4ad92f0...5bc66, 5,483 bytes) and
+unchanged proof tree of commit 9ca6c88b (G2 = F1 + the M9 exit JUMPDEST/SWAP3 cut).
+This entry is the only change. Disclosed corpus redraw: the image is 126 gas below F1
+on every corpus seed. Per-draw landing probability against 468,808 lies in the honest bracket 1.16%-1.56% per draw.
+
+## Redraw entry 2026-10-04T18:41:45Z (rubenmarcus, lane ModexpDrawsG2, stream draw 4, G2 draw 4)
+
+Unchanged executable bytes (bytecode.hex sha256 d4ad92f0...5bc66, 5,483 bytes) and
+unchanged proof tree of commit 9ca6c88b (G2 = F1 + the M9 exit JUMPDEST/SWAP3 cut).
+This entry is the only change. Disclosed corpus redraw: the image is 126 gas below F1
+on every corpus seed. Per-draw landing probability against 468,808 lies in the honest bracket 1.16%-1.56% per draw.
+
+## Redraw entry 2026-10-04T20:03:21Z (rubenmarcus, lane ModexpDrawsG2, stream draw 5, G2 draw 5)
+
+Unchanged executable bytes (bytecode.hex sha256 d4ad92f0...5bc66, 5,483 bytes) and
+unchanged proof tree of commit 9ca6c88b (G2 = F1 + the M9 exit JUMPDEST/SWAP3 cut).
+This entry is the only change. Disclosed corpus redraw: the image is 126 gas below F1
+on every corpus seed. Per-draw landing probability against 468,808 lies in the honest bracket 1.16%-1.56% per draw.
+
+## Redraw entry 2026-10-04T21:24:54Z (rubenmarcus, lane ModexpDrawsG2, stream draw 6, G2 draw 6)
+
+Unchanged executable bytes (bytecode.hex sha256 d4ad92f0...5bc66, 5,483 bytes) and
+unchanged proof tree of commit 9ca6c88b (G2 = F1 + the M9 exit JUMPDEST/SWAP3 cut).
+This entry is the only change. Disclosed corpus redraw: the image is 126 gas below F1
+on every corpus seed. Per-draw landing probability against 468,808 lies in the honest bracket 1.16%-1.56% per draw.
+
+## Redraw entry 2026-10-04T22:46:31Z (rubenmarcus, lane ModexpDrawsG2, stream draw 7, G2 draw 7)
+
+Unchanged executable bytes (bytecode.hex sha256 d4ad92f0...5bc66, 5,483 bytes) and
+unchanged proof tree of commit 9ca6c88b (G2 = F1 + the M9 exit JUMPDEST/SWAP3 cut).
+This entry is the only change. Disclosed corpus redraw: the image is 126 gas below F1
+on every corpus seed. Per-draw landing probability against 468,808 lies in the honest bracket 1.16%-1.56% per draw.
+
+## Redraw entry 2026-10-05T00:08:07Z (rubenmarcus, lane ModexpDrawsG2, stream draw 8, G2 draw 8)
+
+Unchanged executable bytes (bytecode.hex sha256 d4ad92f0...5bc66, 5,483 bytes) and
+unchanged proof tree of commit 9ca6c88b (G2 = F1 + the M9 exit JUMPDEST/SWAP3 cut).
+This entry is the only change. Disclosed corpus redraw: the image is 126 gas below F1
+on every corpus seed. Per-draw landing probability against 468,808 lies in the honest bracket 1.16%-1.56% per draw.
