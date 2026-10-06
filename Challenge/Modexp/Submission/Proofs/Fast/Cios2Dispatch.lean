@@ -51,22 +51,22 @@ def commonState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
 /-- The `mul entry` JUMPDEST (instruction 3190, pc 4013 = 0x0f50). -/
 theorem jumpDest4012 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3383 = true := by
-  exact Artifact.isValidJumpDest_index 2718 (by rfl)
+  exact Artifact.isValidJumpDest_index 2699 (by rfl)
 
 /-- The `common` JUMPDEST (instruction 3190, pc 4132 = 0x0f54). -/
 theorem jumpDestCommon :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3387 = true := by
-  exact Artifact.isValidJumpDest_index 2720 (by rfl)
+  exact Artifact.isValidJumpDest_index 2701 (by rfl)
 
 /-- The multiply row head (instruction 2703, pc 3543). -/
 theorem jumpDestRowHead :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3533 = true := by
-  exact Artifact.isValidJumpDest_index 2821 (by rfl)
+  exact Artifact.isValidJumpDest_index 2802 (by rfl)
 
 /-- The square row head `sq_row` (instruction 3275, pc 4268). -/
 theorem jumpDestSqRow :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4258 = true := by
-  exact Artifact.isValidJumpDest_index 3393 (by rfl)
+  exact Artifact.isValidJumpDest_index 3373 (by rfl)
 
 /-- `jumpDestRowHead` in the `hd.toNat` form taken by `gasSteps_setup`/`gasSteps_commonSetup`. -/
 theorem jumpDestRowHead' :
@@ -152,7 +152,7 @@ set_option linter.unusedSimpArgs false in
 
 /-- The kernel `setup`: instructions 2602..2660 (pc 3445..3531), 59 instructions. -/
 def setup : Block Artifact.submissionArtifact .Osaka 3388 TnM128Setup.fullEntryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2721 55 3388 TnM128Setup.fullEntryProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2702 55 3388 TnM128Setup.fullEntryProgram
     (by decide) (by decide) (by rfl) (by decide)
 
 def environment (s : State)
@@ -166,7 +166,7 @@ def environment (s : State)
 
 /-- The preclear trampoline (instruction 4412, pc 5466). -/
 def preclear : Block Artifact.submissionArtifact .Osaka 5466 TnM128Setup.preclearProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4412 10 5466 TnM128Setup.preclearProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4389 10 5466 TnM128Setup.preclearProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- trampoline → `mul entry` → `common` with `hd = 3533`; the product block is cleared. -/

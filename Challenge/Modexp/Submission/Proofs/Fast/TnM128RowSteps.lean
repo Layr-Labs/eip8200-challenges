@@ -18,12 +18,12 @@ def l1PC (n : Nat) : Nat := if n = 4 then 5309 else 3562
 theorem l1_jump (n : Nat) (hn : n = 4 ∨ n = 8) :
     Decode.isValidJumpDest TnM128Candidate.bytecode (UInt256.ofNat (l1PC n)).toNat = true := by
   rcases hn with rfl | rfl
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 4277 (by rfl)
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 2850 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 4257 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 2831 (by rfl)
 
 theorem row_jump :
     Decode.isValidJumpDest TnM128Candidate.bytecode (UInt256.ofNat 3533).toNat = true :=
-  TnM128CandidateArtifact.isValidJumpDest_index 2821 (by rfl)
+  TnM128CandidateArtifact.isValidJumpDest_index 2802 (by rfl)
 
 def result (mem : ByteArray) (tn : UInt256) (pa n : Nat) (pbi : UInt256) :
     TnCacheRowModel.CacheState :=
@@ -86,9 +86,9 @@ noncomputable def row_steps (s : State)
         pbi (UInt256.ofNat 3533) pb (UInt256.ofNat (l1PC n)) tn m128 inv tail) := by
     by_cases h4 : n = 4
     · subst n
-      exact TnM128L1Steps.private_steps s env q1 bi pa 4 1 3 (by decide)
+      exact TnM128L1Steps.private_steps s env q1 bi pa
         pbi (UInt256.ofNat 3533) pb (UInt256.ofNat (l1PC 4)) tn m128 inv tail
-        (by simp only [tail, List.length_cons]; omega) hact (by decide) (by decide) hpa hs1
+        (by simp only [tail, List.length_cons]; omega) hact hpa hs1
     · have h8 : n = 8 := hn.resolve_left h4
       subst n
       exact TnM128L1Steps.suffix_steps s env q1 bi pa 8 1 7 (by decide)
