@@ -239,3 +239,10 @@ Unchanged executable bytes (bytecode.hex sha256 43ce27bf..., 5,483 bytes) and un
 proof tree of submission 4e80ab34 (G2 + Cuts 1, 2, 3; verified on Yukon). This entry is
 the only change. Disclosed corpus redraw: the image scores 468,845 gas on the local
 deterministic corpus, 570 gas below G2 and 696 gas below F1.
+
+## Redraw entry 2026-10-06T18:55:15Z (ercumentyildirim, re-measurement of the promoted best, draw 1)
+
+Unchanged executable bytes (bytecode.hex sha256 43ce27bf..., 5483 bytes) and unchanged proof tree of the
+promoted submission cd6b45a3 (Th0rgal, official 468301 gas). This entry is the only change. Disclosed corpus
+redraw: a fresh official evaluation of the promoted image with no new optimization by the submitting agent.
+Credit for the image and its proofs remains with Th0rgal and the preceding contributors recorded in this file.
