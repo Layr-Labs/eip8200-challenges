@@ -149,6 +149,79 @@ theorem run_step (template : State) (pc : UInt256) (q : MacState)
   exact h
 
 
+def loadProgramW3 (off : UInt256) : List Instr :=
+  [.push 3 (UInt256.ofNat 2368 + off), .op .MLOAD, .op (.Dup ⟨8, by decide⟩)]
+
+def stepProgramW3 (off t : UInt256) : List Instr :=
+  loadProgramW3 off ++ CiosCached.macFusedProgram t t
+
+theorem run_loadW3 (template : State)
+    (pc off carry bi pbi hd pbEnd flag tn destination returnPC : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1006)
+    (hactive : UInt256.ofNat (MachineState.activeWordsAfter
+      template.activeWords.toNat (UInt256.ofNat 2368 + off).toNat 32) = template.activeWords) :
+    runInstructions (loadProgramW3 off)
+      (framed template pc
+        ([carry, bi, pbi, hd, pbEnd, flag, tn, allOnes, destination, returnPC] ++ rest)) =
+    some (framed template (pc + UInt256.ofNat 6)
+      ([maxWord, MachineState.readWord template.memory (UInt256.ofNat 2368 + off).toNat,
+        carry, bi, pbi, hd, pbEnd, flag, tn, allOnes, destination, returnPC] ++ rest)) := by
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  simp only [Challenge.EvmProof.Word.word_toNat_add,
+    Challenge.EvmProof.Word.word_toNat_ofNat,
+    show (2 : Nat)^256 = 115792089237316195423570985008687907853269984665640564039457584007913129639936 from by decide,
+    Nat.reduceMod] at hactive
+  simp [runInstructions, loadProgramW3, framed, Challenge.EvmProof.Stepper.runInstr,
+    hc10, hc11, hc12, State.activeWordsAfterUInt256, hactive, allOnes_value,
+    succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
+
+theorem run_stepW3 (template : State) (pc : UInt256) (q : MacState)
+    (bi : UInt256) (pa n j : Nat) (off t : UInt256)
+    (hoff : off.toNat = 32 * (n - 1 - j))
+    (ht : t.toNat = 2112 + 32 * (n - 1 - j))
+    (pbi hd pbEnd flag tn destination returnPC : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1006)
+    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
+    (hsnapshot : Snapshot q.memory pa n) :
+    runInstructions (stepProgramW3 off t)
+      (qState template pc q bi pbi hd pbEnd flag tn destination returnPC rest) =
+    some (qState template (pc + UInt256.ofNat 37) (SquareModel.l1StepOn q bi pa n j)
+      bi pbi hd pbEnd flag tn destination returnPC rest) := by
+  have hsaddr : (UInt256.ofNat 2368 + off).toNat = 2368 + 32*(n-1-j) := by
+    rw [CiosCachedL1.base_offset_toNat 2368 off (by omega), hoff]
+  have hsread : MachineState.readWord q.memory (UInt256.ofNat 2368 + off).toNat =
+      MachineState.readWord q.memory (pa + 32*(n-1-j)) := by
+    rw [hsaddr]
+    exact snapshot_read q.memory pa n j hsnapshot hj
+  have hactA : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
+      (2368 + 32*(n-1-j)) 32) = template.activeWords :=
+    activeWords_fix template _ 32 (by decide) (by omega) hactive
+  have hactT : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
+      (2112 + 32*(n-1-j)) 32) = template.activeWords :=
+    activeWords_fix template _ 32 (by decide) (by omega) hactive
+  let st : State := { template with memory := q.memory }
+  have hA : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat
+      (UInt256.ofNat 2368 + off).toNat 32) = st.activeWords := by
+    simpa only [st, hsaddr] using hactA
+  have hT : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat t.toNat 32) =
+      st.activeWords := by simpa only [st, ht] using hactT
+  have hl := run_loadW3 st pc off q.carry bi pbi hd
+    pbEnd flag tn destination returnPC rest hrest hA
+  rw [show MachineState.readWord st.memory (UInt256.ofNat 2368 + off).toNat =
+    MachineState.readWord q.memory (pa + 32*(n-1-j)) from hsread] at hl
+  have hf := CiosCachedFused.run_fused st (pc + UInt256.ofNat 6)
+    (MachineState.readWord q.memory (pa + 32*(n-1-j))) bi q.carry t t
+    ([pbi, hd, pbEnd, flag, tn, allOnes, destination, returnPC] ++ rest)
+    (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) hT hT
+  have hall := runInstructions_append_some _ _ _ _ _ hl hf
+  have hpc : (pc + UInt256.ofNat 6) + UInt256.ofNat 31 =
+      pc + UInt256.ofNat 37 := by
+    simp [word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
+  simpa only [stepProgramW3, st, qState, framed, SquareModel.l1StepOn, ht, hpc,
+    List.cons_append, List.nil_append] using hall
+
 #print axioms run_load
 #print axioms run_l1
 #print axioms run_step

@@ -109,10 +109,10 @@ theorem jumpSites_eq : jumpSites =
     [18, 34, 45, 71, 77, 89, 102, 120, 132, 142, 150, 204, 207, 227, 233, 256,
      263, 273, 282, 297, 301, 317, 321, 326, 333, 375, 378, 383, 388, 398, 413, 422,
      432, 456, 477, 553, 567, 570, 578, 592, 615, 619, 2009, 2012, 2018, 2023, 2032, 2035,
-     2045, 2057, 2064, 2071, 2083, 2090, 2119, 2264, 2328, 2587, 2592, 2597, 2631, 2643, 2650, 2687,
-     2695, 2702, 2714, 2717, 2775, 2849, 3309, 3317, 3342, 3344, 3358, 3370, 3376, 3382, 3389, 3439,
-     3447, 3455, 3593, 3598, 3605, 3614, 3628, 3630, 3726, 3826, 3899, 4041, 4061, 4274, 4276, 4391,
-     4411, 4421] := by decide
+     2045, 2057, 2064, 2071, 2083, 2090, 2119, 2264, 2328, 2566, 2571, 2578, 2612, 2624, 2631, 2668,
+     2676, 2683, 2695, 2698, 2756, 2830, 3289, 3297, 3322, 3324, 3338, 3350, 3356, 3362, 3369, 3419,
+     3427, 3435, 3573, 3578, 3585, 3594, 3608, 3610, 3706, 3806, 3879, 4021, 4041, 4246, 4248, 4360,
+     4380, 4390] := by decide
 
 theorem literalJumpTargets_eq : literalJumpTargets =
     [127, 866, 866, 25, 599, 153, 186, 156, 222, 2397, 193, 273, 301, 396, 413, 388,
@@ -124,7 +124,7 @@ theorem literalJumpTargets_eq : literalJumpTargets =
 
 /-- The eleven sites whose destination is a stack word, in program order. -/
 theorem dataDependentJumpSites_eq : dataDependentJumpSites =
-    [333, 388, 2328, 2775, 2849, 3309, 3439, 3605, 3614, 4041, 4276] := by decide
+    [333, 388, 2328, 2756, 2830, 3289, 3419, 3585, 3594, 4021, 4248] := by decide
 
 /-- **No literal jump destination is the M9 exit.**  None of the 87 destinations the image
 names with a `PUSH` immediate is pc 3168, 3169 or 3170. -/
@@ -139,31 +139,17 @@ destination, so no value equal to 3168..3170 can reach a jump operand. -/
 theorem noLiteralPush_window :
     pushImmediates.all fun n => decide (n ≠ 3168 ∧ n ≠ 3169 ∧ n ≠ 3170) = true := by decide
 
-/-- The three new `JUMPDEST`s are real instructions of the artifact, at instructions 2564, 2565
-and 2566, and the fixup's `SWAP3 POP` is at instructions 2578 and 2579. -/
+/-- The widened `PUSH5 2080` is at instruction 2546,
+and the fixup's `SWAP3 POP` is at instructions 2557 and 2558. -/
 theorem m9Exit_is_jumpdest :
-    Artifact.submissionInstructions[2564]? = some (.op .JUMPDEST) ∧
-      Artifact.submissionInstructions[2565]? = some (.op .JUMPDEST) ∧
-      Artifact.submissionInstructions[2566]? = some (.op .JUMPDEST) ∧
-      Artifact.submissionInstructions[2578]? = some (.op (.Swap ⟨2, by decide⟩)) ∧
-      Artifact.submissionInstructions[2579]? = some (.op .POP) :=
-  ⟨by rfl, by rfl, by rfl, by rfl, by rfl⟩
+    Artifact.submissionInstructions[2546]? = some (.push 5 2080) ∧
+      Artifact.submissionInstructions[2557]? = some (.op (.Swap ⟨2, by decide⟩)) ∧
+      Artifact.submissionInstructions[2558]? = some (.op .POP) :=
+  ⟨by rfl, by rfl, by rfl⟩
 
-/-- The program counters the three new `JUMPDEST`s sit at: 3168, 3169, 3170. -/
+/-- The program counter the exit `PUSH5 2080` sits at: 3168. -/
 theorem m9Exit_pcs :
-    Artifact.instructionPC 2564 = 3168 ∧ Artifact.instructionPC 2565 = 3169 ∧
-      Artifact.instructionPC 2566 = 3170 := by decide
-
-theorem m9Exit_validJumpDests :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-        (Artifact.instructionPC 2564) = true ∧
-      Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-        (Artifact.instructionPC 2565) = true ∧
-      Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-        (Artifact.instructionPC 2566) = true :=
-  ⟨Artifact.isValidJumpDest_index 2564 (by rfl),
-   Artifact.isValidJumpDest_index 2565 (by rfl),
-   Artifact.isValidJumpDest_index 2566 (by rfl)⟩
+    Artifact.instructionPC 2546 = 3168 := by decide
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.ShiftJumpTargets
 
