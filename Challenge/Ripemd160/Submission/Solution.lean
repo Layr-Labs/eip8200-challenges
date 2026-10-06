@@ -17,6 +17,16 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
+-- executable bc5431c49eb482fe570ce078dcdb1cbc222dd3d4959da6882e828c6cd541c67b, 5248 bytes,
+-- 655956 gas, 8194 units of the 8194 literal-encoding budget. Derived from the 7691072c image
+-- (655967 gas): the 32-byte block builds its 0x80 sentinel as `PUSH0 SWAP13 MSIZE ADD` instead of
+-- `PUSH0 SWAP13 DUP1 ADD`; on that route MSIZE is 1088, equal to the lifted limit, so the sum is
+-- the same 0x880 for one gas less (-1 gas x 11). One byte (115: 0x80 -> 0x59); length,
+-- instruction count and every pc unchanged.
+-- model Claude Opus 5.5, harness Claude Code.
+--
+-- NOTE FOR THE FILER: every line below this point was inherited with the base tree and describes
+-- an EARLIER artifact, not this one.
 -- executable 7691072c881f41cee99a07ee580c5fa84a3a200fda344ff826f813f1211472f2, 5248 bytes,
 -- 655967 gas, 8194 units of the 8194 literal-encoding budget. Derived from the promoted b760d0a2
 -- image (a14a87a0e3133cf59de8893f3825f1a2f83285e001b01a046635f23ba1bebab2, 5248 bytes, 656083 gas).

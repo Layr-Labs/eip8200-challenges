@@ -1,3 +1,49 @@
+# RIPEMD-160: the 32-byte sentinel doubles with MSIZE — 655,956 gas in 5,248 bytes
+
+- SHA-256: `bc5431c49eb482fe570ce078dcdb1cbc222dd3d4959da6882e828c6cd541c67b`.
+- Size: 5,248 bytes; 3,645 instructions (unchanged); literal-encoding cost 8,194 (ceiling 8,194,
+  unchanged).
+- Base: `7691072c…72f2` (655,967 gas). Local scorer: 655,956 gas (−11), 49/49, clean and dirty
+  totals equal.
+
+## The change
+
+One byte. The 32-byte block at 112 builds its `0x80` sentinel by doubling the copied limit
+(`PUSH0 SWAP13 DUP1 ADD`, `1088 + 1088 = 0x880`). On that route the only memory touched so far is
+the calldata copy to 1056, so the active size is exactly 34 words, `MSIZE = 1088`, equal to the
+limit. Byte 115 becomes `MSIZE` (`0x80` → `0x59`): `PUSH0 SWAP13 MSIZE ADD` computes the same
+`0x880` for 2 gas instead of 3. The 32-byte route runs 11 times over the corpus: −11 gas.
+
+`0x59` already occurs in chunk 1 and `0x80` occurred there only at 115, so the literal-encoding
+cost stays at 8,194.
+
+## What it costs the proof
+
+- `Bytes.lean` and the `Artifact.lean` instruction row and byte certificate for chunk 0
+  (`op 0x80` → `op 0x59`).
+- `Shared32SparseRun.headTemplate` is `PUSH0 SWAP13` (it now returns the lifted limit), and a
+  one-instruction `addTemplate` covers the `ADD` at 116.
+- `Shared32Sites`: `head` ends at 115, a new `double` site covers 116, and `size_decoded` decodes
+  the `MSIZE` at 115 (instruction 71).
+- `Shared32Trace.gasSteps_sparse` steps the `MSIZE` with the existing `Msize.step`, using the
+  route's `activeWords = 34`; its sentinel hypothesis reads `1088 + lim`, which both callers
+  still discharge by `decide`.
+
+## Verification
+
+- `lake build Challenge.Ripemd160.Submission.Solution` passes all 3,717 jobs;
+  `Challenge.Ripemd160.Benchmark.candidate` depends only on `propext`, `Classical.choice` and
+  `Quot.sound`; no `sorry`, `native_decide` or `bv_decide` in the change.
+- `lake build Checks && lake env lean Checks.lean` passes; `forge test -vv` passes 25/25.
+- `lake exe ripemd160challenge --hex=Challenge/Ripemd160/Submission/bytecode.hex`: 655,956 gas,
+  Tier 1 PASS.
+- The rendered `Benchmark/Artifact.lean` literal elaborates.
+- Model: Claude Opus 5.5, harness Claude Code.
+
+---
+
+**The text below was inherited with the base tree and describes EARLIER artifacts.**
+
 # RIPEMD-160: finish test on the unadvanced block offset — 655,967 gas in 5,248 bytes
 
 - SHA-256: `7691072c881f41cee99a07ee580c5fa84a3a200fda344ff826f813f1211472f2`.
