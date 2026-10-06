@@ -199,12 +199,14 @@ def macSetupState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : 
              outer n bsize esize msize
            memory := uMem mem n }
 
-/-- The middle block entry: the eight straight blocks leave `[carry, q]` above the
-counter and the riding slots. -/
+/-- The middle block entry: the eight straight blocks leave `[carry, q, 2^256-1]` above the
+counter and the riding slots.  The mask survives pc 3168..3170 (three `JUMPDEST`s) and is spent
+by `SWAP3 POP` at pc 3184..3185, so it is still in its slot here; every state from pc 3186 on
+has the `[carry, q]` shape the block used to start from. -/
 def midState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat) :
     State :=
   { s with pc := UInt256.ofNat pcMid
-           stack := (Monpro.l1Step um q NEG n n).carry :: q :: UInt256.ofNat k ::
+           stack := (Monpro.l1Step um q NEG n n).carry :: q :: Monpro.maxWord :: UInt256.ofNat k ::
              entrySlots um n bsize esize ++ outer n bsize esize msize
            memory := (Monpro.l1Step um q NEG n n).memory }
 

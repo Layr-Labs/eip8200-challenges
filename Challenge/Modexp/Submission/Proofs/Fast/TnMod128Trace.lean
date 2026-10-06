@@ -14,6 +14,10 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 def loadProgram : List Instr :=
   [.op (.Dup ⟨9, by decide⟩), .op (.Dup ⟨9, by decide⟩)]
 
+def fusedHead : List Instr :=
+  [.op .JUMPDEST, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨10, by decide⟩), .op .MUL,
+   .op (.Dup ⟨9, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .MULMOD]
+
 theorem run_load (s : State)
     (pc carry mu bi pbi hd pb ent tn m128 inv : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
@@ -27,7 +31,26 @@ theorem run_load (s : State)
     framed, h11, h12, allOnes_value, succ_eq_add, word_add_assoc,
     Challenge.EvmProof.Word.ofNat_add_mod]
 
-def program : List Instr := loadProgram ++ macFusedProgram 2240 2272
+private theorem run_fusedHead (s : State)
+    (pc carry mu bi pbi hd pb ent tn m128 inv : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1006) :
+    runInstructions fusedHead
+      (framed s pc ([carry,mu,bi,pbi,hd,pb,ent,tn,allOnes,m128,inv] ++ rest)) =
+    runInstructions (loadProgram ++ macProductProgram.take 6)
+      (framed s pc ([carry,mu,bi,pbi,hd,pb,ent,tn,allOnes,m128,inv] ++ rest)) := by
+  have h11 : rest.length+11 < 1024 := by omega
+  have h12 : rest.length+12 < 1024 := by omega
+  have h13 : rest.length+13 < 1024 := by omega
+  have h14 : rest.length+14 < 1024 := by omega
+  have h15 : rest.length+15 < 1024 := by omega
+  simp [fusedHead, loadProgram, macProductProgram, runInstructions,
+    Challenge.EvmProof.Stepper.runInstr, framed, List.exchange, Nat.add_assoc,
+    h11, h12, h13, h14, h15, allOnes_value, succ_eq_add, word_add_assoc,
+    Challenge.EvmProof.Word.ofNat_add_mod]
+
+def legacyProgram : List Instr := loadProgram ++ macFusedProgram 2240 2272
+
+def program : List Instr := fusedHead ++ macFusedPostProgram 2240 2272
 
 /-- The third reduction cell of an eight-limb row, with arbitrary carry and
 operands. The cached modulus word is preserved and no longer loaded from memory. -/
@@ -61,9 +84,20 @@ theorem run_step (s : State) (pc : UInt256) (mem : ByteArray)
     simp [word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
   have htl : (2240 : UInt256).toNat = 2240 := by decide
   have hts : (2272 : UInt256).toNat = 2272 := by decide
-  simpa only [program, st, TnCacheL2Trace.state, framed, l2Step, hpc,
-    hm, htl, hts, Nat.reduceSub, Nat.reduceMul, Nat.reduceAdd,
-    List.cons_append, List.nil_append] using h01
+  have hleg : runInstructions ((loadProgram ++ macProductProgram.take 6) ++ macFusedPostProgram 2240 2272)
+      (TnCacheL2Trace.state s pc mem bi mu c0 8 2 pbi hd pb ent tn m128 inv rest) =
+    some (TnCacheL2Trace.state s (pc + UInt256.ofNat 33) mem bi mu c0 8 3
+      pbi hd pb ent tn m128 inv rest) := by
+    simpa only [macFusedProgram, List.append_assoc, st, TnCacheL2Trace.state, framed, l2Step, hpc,
+      hm, htl, hts, Nat.reduceSub, Nat.reduceMul, Nat.reduceAdd,
+      List.cons_append, List.nil_append] using h01
+  have hf := run_fusedHead st pc (l2Step mem mu c0 8 2).carry mu bi pbi hd pb ent tn m128 inv rest hcap
+  rw [program, WindowNibbleKernel.runInstructions_append]
+  rw [WindowNibbleKernel.runInstructions_append] at hleg
+  change (runInstructions fusedHead
+    (framed st pc ([ (l2Step mem mu c0 8 2).carry, mu, bi, pbi, hd, pb, ent, tn, allOnes, m128, inv ] ++ rest))).bind _ = _
+  rw [hf]
+  exact hleg
 
 /-- The cached T-base distinguishes four and eight limbs without using the
 register that has been repurposed for the modulus limb. -/

@@ -250,7 +250,10 @@ def blk3026 :
 
 
 
-/-- The middle block: flags, `TN := Wn - q`, and the three-way exit test on `neg ||| TN`. -/
+/-- The middle block: flags, `TN := Wn - q`, and the three-way exit test on `neg ||| TN`.
+Instructions 2578..2579 are `SWAP3 POP` (pc 3184..3185): they lift the `2^256-1` mask that the
+three `JUMPDEST`s at pc 3168..3170 left in place and drop it, restoring the `[carry, q]` shape
+before `SUB`. -/
 def blk3125 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   -- the three pops that discarded the old pointer loop's carried words are gone; the block now
@@ -266,8 +269,8 @@ def blk3125 :
    opAt 2575 (.Dup ⟨3, by decide⟩),
    opAt 2576 .GT,
    opAt 2577 .GT,
-   opAt 2578 (.Swap ⟨1, by decide⟩),
-   opAt 2579 (.Swap ⟨0, by decide⟩),
+   opAt 2578 (.Swap ⟨2, by decide⟩),
+   opAt 2579 .POP,
    opAt 2580 .SUB,
    opAt 2581 (.Dup ⟨0, by decide⟩),
    pushAt 2582 2 2080,
