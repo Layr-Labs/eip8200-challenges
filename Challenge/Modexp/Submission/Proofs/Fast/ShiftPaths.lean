@@ -258,27 +258,27 @@ def blk3125 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   -- the three pops that discarded the old pointer loop's carried words are gone; the block now
   -- starts at the fall-through after the eight straight blocks
-  [pushAt 2567 2 2080,
-   opAt 2568 .MLOAD,
-   opAt 2569 (.Dup ⟨1, by decide⟩),
-   opAt 2570 .ADD,
-   opAt 2571 (.Dup ⟨0, by decide⟩),
-   opAt 2572 (.Swap ⟨1, by decide⟩),
-   opAt 2573 .GT,
-   opAt 2574 (.Dup ⟨1, by decide⟩),
-   opAt 2575 (.Dup ⟨3, by decide⟩),
-   opAt 2576 .GT,
-   opAt 2577 .GT,
-   opAt 2578 (.Swap ⟨2, by decide⟩),
-   opAt 2579 .POP,
-   opAt 2580 .SUB,
-   opAt 2581 (.Dup ⟨0, by decide⟩),
-   pushAt 2582 2 2080,
-   opAt 2583 .MSTORE,
-   opAt 2584 (.Dup ⟨1, by decide⟩),
-   opAt 2585 .OR,
-   pushAt 2586 2 3208,
-   opAt 2587 .JUMPI]
+  [pushAt 2565 4 2080,
+   opAt 2566 .MLOAD,
+   opAt 2567 (.Dup ⟨1, by decide⟩),
+   opAt 2568 .ADD,
+   opAt 2569 (.Dup ⟨0, by decide⟩),
+   opAt 2570 (.Swap ⟨1, by decide⟩),
+   opAt 2571 .GT,
+   opAt 2572 (.Dup ⟨1, by decide⟩),
+   opAt 2573 (.Dup ⟨3, by decide⟩),
+   opAt 2574 .GT,
+   opAt 2575 .GT,
+   opAt 2576 (.Swap ⟨2, by decide⟩),
+   opAt 2577 .POP,
+   opAt 2578 .SUB,
+   opAt 2579 (.Dup ⟨0, by decide⟩),
+   pushAt 2580 2 2080,
+   opAt 2581 .MSTORE,
+   opAt 2582 (.Dup ⟨1, by decide⟩),
+   opAt 2583 .OR,
+   pushAt 2584 2 3208,
+   opAt 2585 .JUMPI]
 
 /-- `UNC`: `neg ≠ 0` falls into `ADD_LOOP`, `neg = 0` jumps to `SUBL`. -/
 def blkUnc :
@@ -428,11 +428,11 @@ def blk3245 :
 /-- `k := k - 1` (`NOT ADD` on the zero above `k`), jump straight to the loop head (the `CSUB` call is the identity on every reachable state). -/
 def blk3253 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2588 .JUMPDEST,
-   opAt 2589 .NOT,
-   opAt 2590 .ADD,
-   pushAt 2591 4 2811,
-   opAt 2592 .JUMP]
+  [opAt 2586 .JUMPDEST,
+   opAt 2587 .NOT,
+   opAt 2588 .ADD,
+   pushAt 2589 2 2811,
+   opAt 2590 .JUMP]
 
 /-- Located block of the selected shift-reduce program. -/
 def blk3264 :
@@ -493,7 +493,7 @@ theorem jumpDestSubl :
 
 theorem jumpDest5311 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3198 = true :=
-  Artifact.isValidJumpDest_index 2588 (by rfl)
+  Artifact.isValidJumpDest_index 2586 (by rfl)
 
 theorem jumpDest5366 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3346 = true :=

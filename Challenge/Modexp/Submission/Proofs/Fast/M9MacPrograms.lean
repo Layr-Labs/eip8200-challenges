@@ -100,7 +100,7 @@ fall-through into the top-limb fixup at pc 3171 unchanged, and the fixup gives t
 to its slot with `SWAP3 POP` at pc 3184..3185 before `SUB`.  The three former `SWAP1 SWAP2 POP`
 opcodes cost 8 gas where three `JUMPDEST`s cost 3. -/
 def exitProgram : List Instr :=
-  [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
+  [.op .JUMPDEST]
 
 /-- E6: `PUSH0 NOT SWAP1 PUSH0 DUP5 JUMP` — build the chain frame `[0, q, 2^256-1]` and
 jump to the entry parked in the scratch slot (the first riding slot, `shiftEntry`). -/

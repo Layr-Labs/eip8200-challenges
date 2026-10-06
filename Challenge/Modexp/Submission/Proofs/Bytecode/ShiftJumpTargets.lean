@@ -109,7 +109,7 @@ theorem jumpSites_eq : jumpSites =
     [18, 34, 45, 71, 77, 89, 102, 120, 132, 142, 150, 204, 207, 227, 233, 256,
      263, 273, 282, 297, 301, 317, 321, 326, 333, 375, 378, 383, 388, 398, 413, 422,
      432, 456, 477, 553, 567, 570, 578, 592, 615, 619, 2009, 2012, 2018, 2023, 2032, 2035,
-     2045, 2057, 2064, 2071, 2083, 2090, 2119, 2264, 2328, 2587, 2592, 2597, 2631, 2643, 2650, 2687,
+     2045, 2057, 2064, 2071, 2083, 2090, 2119, 2264, 2328, 2585, 2590, 2597, 2631, 2643, 2650, 2687,
      2695, 2702, 2714, 2717, 2775, 2849, 3309, 3317, 3342, 3344, 3358, 3370, 3376, 3382, 3389, 3439,
      3447, 3455, 3593, 3598, 3605, 3614, 3628, 3630, 3726, 3826, 3899, 4041, 4061, 4274, 4276, 4391,
      4411, 4421] := by decide
@@ -139,31 +139,22 @@ destination, so no value equal to 3168..3170 can reach a jump operand. -/
 theorem noLiteralPush_window :
     pushImmediates.all fun n => decide (n ≠ 3168 ∧ n ≠ 3169 ∧ n ≠ 3170) = true := by decide
 
-/-- The three new `JUMPDEST`s are real instructions of the artifact, at instructions 2564, 2565
-and 2566, and the fixup's `SWAP3 POP` is at instructions 2578 and 2579. -/
+/-- The new `JUMPDEST` is a real instruction of the artifact at instruction 2564,
+and the fixup's `SWAP3 POP` is at instructions 2576 and 2577. -/
 theorem m9Exit_is_jumpdest :
     Artifact.submissionInstructions[2564]? = some (.op .JUMPDEST) ∧
-      Artifact.submissionInstructions[2565]? = some (.op .JUMPDEST) ∧
-      Artifact.submissionInstructions[2566]? = some (.op .JUMPDEST) ∧
-      Artifact.submissionInstructions[2578]? = some (.op (.Swap ⟨2, by decide⟩)) ∧
-      Artifact.submissionInstructions[2579]? = some (.op .POP) :=
-  ⟨by rfl, by rfl, by rfl, by rfl, by rfl⟩
+      Artifact.submissionInstructions[2576]? = some (.op (.Swap ⟨2, by decide⟩)) ∧
+      Artifact.submissionInstructions[2577]? = some (.op .POP) :=
+  ⟨by rfl, by rfl, by rfl⟩
 
-/-- The program counters the three new `JUMPDEST`s sit at: 3168, 3169, 3170. -/
+/-- The program counter the exit `JUMPDEST` sits at: 3168. -/
 theorem m9Exit_pcs :
-    Artifact.instructionPC 2564 = 3168 ∧ Artifact.instructionPC 2565 = 3169 ∧
-      Artifact.instructionPC 2566 = 3170 := by decide
+    Artifact.instructionPC 2564 = 3168 := by decide
 
 theorem m9Exit_validJumpDests :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-        (Artifact.instructionPC 2564) = true ∧
-      Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-        (Artifact.instructionPC 2565) = true ∧
-      Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-        (Artifact.instructionPC 2566) = true :=
-  ⟨Artifact.isValidJumpDest_index 2564 (by rfl),
-   Artifact.isValidJumpDest_index 2565 (by rfl),
-   Artifact.isValidJumpDest_index 2566 (by rfl)⟩
+        (Artifact.instructionPC 2564) = true :=
+  Artifact.isValidJumpDest_index 2564 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.ShiftJumpTargets
 

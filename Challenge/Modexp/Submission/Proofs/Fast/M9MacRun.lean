@@ -511,7 +511,7 @@ fixup at `pc + 3` exactly as it left the last straight block; the mask stays in 
 theorem run_exit (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1014) :
     runInstructions exitProgram (chainState template pc m bi rest) =
-    some (chainState template (pc + UInt256.ofNat 3) m bi rest) := by
+    some (chainState template (pc + UInt256.ofNat 1) m bi rest) := by
   have hc : rest.length + 3 < 1024 := by omega
   simp (disch := omega) [runInstructions, exitProgram, chainState,
     Challenge.EvmProof.Stepper.runInstr, hc, List.exchange,

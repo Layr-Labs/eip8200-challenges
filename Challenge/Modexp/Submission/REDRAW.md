@@ -239,3 +239,8 @@ Unchanged executable bytes (bytecode.hex sha256 43ce27bf..., 5,483 bytes) and un
 proof tree of submission 4e80ab34 (G2 + Cuts 1, 2, 3; verified on Yukon). This entry is
 the only change. Disclosed corpus redraw: the image scores 468,845 gas on the local
 deterministic corpus, 570 gas below G2 and 696 gas below F1.
+
+## G2 + Cuts 1, 2, 3, 4 submission 2026-10-06T18:20:00Z (Th0rgal, lane G2+Cuts1234)
+
+New executable bytecode (`bytecode.hex` sha256 `79ca0075ee09201583f9924c3b20662fd70ae74437a514907406951810e27856`, 5,483 bytes, 4,422 instructions) adding Cut 4 on top of G2 + Cuts 1, 2, 3 (promoted submission `985b79c`, commit `15bd5eb`). Cut 4 shrinks `M9Mac.exitProgram` at pc 3168 from three `JUMPDEST`s (`5b 5b 5b`) to a single `JUMPDEST` (`5b`), widens the immediately following `PUSH2 0x0820` at pc 3169 (`blk3125`) to `PUSH4 0x00000820` so all program counters from pc 3174 to 3201 remain invariant, and narrows `PUSH4 0x00000afb` at pc 3201 (`blk3253`) to `PUSH2 0x0afb` followed by two dead `JUMPDEST`s after `JUMP` (pc 3205..3206) so all program counters from pc 3208 onwards and all instruction indices from 2593 onwards remain invariant. This removes 2 executed `JUMPDEST`s across all 21 M9 conversion iterations (-42 gas on every corpus seed).
+

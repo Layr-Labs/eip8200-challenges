@@ -89,7 +89,7 @@ def block7 : Block Artifact.submissionArtifact .Osaka 3132 (blockProgram 1280 21
 
 /-- The exit `SWAP1 SWAP2 POP`: instructions 2564..2566, pc 3168..3170; falls into pc 3171. -/
 def exitBlock : Block Artifact.submissionArtifact .Osaka 3168 exitProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2564 3 3168 exitProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2564 1 3168 exitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- E6, the section entry: instructions 2323..2328, pc 2893..2898 (`Dup 5` = the scratch slot). -/
