@@ -31,7 +31,7 @@ def chunkB (head : UInt256) : List Instr :=
    .op .POP]
 
 def chunkC (finish : UInt256) : List Instr :=
-  [.push 1 128, .op (.Dup ⟨10, by decide⟩), .op .AND, .op .ISZERO, .op .ISZERO,
+  [.push 1 128, .op (.Dup ⟨10, by decide⟩), .op .AND, .push 0 0, .op .LT,
    .push 2 1747, .op .MUL, .push 2 3562, .op .ADD,
    .op (.Swap ⟨3, by decide⟩),
    .op .POP,
