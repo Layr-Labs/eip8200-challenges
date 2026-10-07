@@ -39,17 +39,17 @@ theorem from_entry (input : ByteArray)
   let s := initialState submissionBytecode input 0
   have e : J2Sites.Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
   by_cases hz : J2Accumulator.resultAcc input input.size = 0
-  · let rho := J2Raw.finishRest (J2End.endFrame s input.size) []
+  · let rho := J2Raw.finishRest (J2End.endFrame s input.size) [J2Raw.clamp (UInt256.ofNat input.size)]
     have hc : rho.length ≤ 990 := by simp [rho, J2Raw.finishRest]
-    have gh := J2Loop.gasSteps_hit s [] (J2Sites.moves s e [] (by decide)) input.size hn rfl hz
+    have gh := J2Loop.gasSteps_hit s _ (J2Sites.moves s e [] (by decide)) input.size hn rfl hz
     have gr := J2Return.gasSteps s e rho hc rfl rfl
     have trace : GasSteps (initialState submissionBytecode input 0) (J2Return.output s rho) :=
       hentry.trans (gh.trans gr)
     exact of_returned input _ trace (J2Return.output_halt s rho) rfl
       (J2Return.output_spec s e rho hn hz)
-  · have gm := J2Loop.gasSteps_miss s [] (J2Sites.moves s e [] (by decide)) input.size hn rfl hz
+  · have gm := J2Loop.gasSteps_miss s _ (J2Sites.moves s e [] (by decide)) input.size hn rfl hz
     have ge := J2Sites.gasSteps_generic_entry s e
-      (J2Raw.finishRest (J2End.endFrame s input.size) []) (by simp [J2Raw.finishRest])
+      (J2Raw.finishRest (J2End.endFrame s input.size) [J2Raw.clamp (UInt256.ofNat input.size)]) (by simp [J2Raw.finishRest])
     exact hgeneric _ (by simp [J2Raw.finishRest]) (hentry.trans (gm.trans ge))
 
 #print axioms of_returned

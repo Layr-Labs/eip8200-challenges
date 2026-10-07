@@ -9,7 +9,7 @@ def atState (s : State) (pc : Nat) (stack : List UInt256) : State :=
   {s with pc := UInt256.ofNat pc, stack := stack}
 
 structure Moves (s : State) (rho : List UInt256) where
-  init : GasSteps (atState s 4804 rho)
+  init : GasSteps (atState s 4814 rho)
     (atState s 4889 (frame (initResult s.executionEnv.calldata.size) rho))
   first (f : J2Raw.Frame) : GasSteps (atState s 4889 (frame f rho))
     (atState s (if 219 < f.full.toNat then 4924 else 4897) (frame f rho))

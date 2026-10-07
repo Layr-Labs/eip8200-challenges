@@ -8,12 +8,13 @@ open EvmSemantics YulEvmCompiler Challenge.EvmProof ArtifactByteLength
 open Artifact (op)
 def tail : List Instr := [
   op 0x5b,
+  op 0x36,
   .push 1 1,
   .push 17 342276208914615837337402008677671501826,
   op 0x36,
   op 0x1c,
   op 0x16,
-  .push 2 4803,
+  .push 2 4813,
   op 0x57,
   .push 2 1016,
   .push 5 6308489473,
@@ -22,9 +23,8 @@ def tail : List Instr := [
   op 0x16,
   op 0x1c,
   op 0x16,
-  op 0x36,
   op 0x14,
-  .push 2 4803,
+  .push 2 4810,
   op 0x57,
   .push 0 0,
   op 0x35,
@@ -42,7 +42,16 @@ def tail : List Instr := [
   .push 20 802931186561056611446976448233794645126013734992,
   op 0x18,
   .push 1 98,
-  op 0x56
+  op 0x56,
+  .push 1 1,
+  op 0x01,
+  op 0x01,
+  op 0x01,
+  op 0x01,
+  op 0x01,
+  op 0x5b,
+  .push 1 251,
+  op 0x5b
 ]
 private theorem tail_eq : (Artifact.submissionArtifact.instructions.drop 3527).take tail.length = tail := by rfl
 private theorem pc_base : Artifact.submissionArtifact.instructionPC 3527 = 4691 := by

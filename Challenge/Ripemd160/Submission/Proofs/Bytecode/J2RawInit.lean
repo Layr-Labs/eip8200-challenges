@@ -10,10 +10,13 @@ private theorem hadd_eq (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem hsub_eq (a b : UInt256) : a - b = UInt256.sub a b := rfl
 private theorem hdiv_eq (a b : UInt256) : a / b = UInt256.div a b := rfl
 private theorem hmul_eq (a b : UInt256) : a * b = UInt256.mul a b := rfl
+/-- The init block now starts with the segment end `min (size, 251)` already on the stack (pushed by the
+size-dispatch arm that jumped here) and copies it with `DUP3` instead of recomputing it.  The pushed word
+stays below the frame. -/
 theorem run_init (s : State) (pc : UInt256) (rho : List UInt256)
-    (hstack : rho.length ≤ 990) (hrun : s.halt = .Running) :
-    runInstrSeq initTemplate {s with pc := pc, stack := rho} =
-      some {s with pc := pcAfter pc initTemplate, stack := frame (initResult s.executionEnv.calldata.size) rho} := by
+    (hstack : rho.length ≤ 989) (hrun : s.halt = .Running) :
+    runInstrSeq initTemplate {s with pc := pc, stack := clamp (UInt256.ofNat s.executionEnv.calldata.size) :: rho} =
+      some {s with pc := pcAfter pc initTemplate, stack := frame (initResult s.executionEnv.calldata.size) (clamp (UInt256.ofNat s.executionEnv.calldata.size) :: rho)} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
   have hU : UInt256.ofNat 0x9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f = m9f := rfl
