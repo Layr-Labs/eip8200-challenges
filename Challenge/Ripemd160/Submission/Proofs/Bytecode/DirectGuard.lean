@@ -141,9 +141,11 @@ theorem correct_of_recognition
       (sound sizePath (run_size_taken input hfit h1000)))
   by_cases href : referenceWord input = KnownInputData.fullWord
   swap
-  · exact fromGuard ((EntryPrefilter.gasSteps_fall input hpass).trans
-      ((sound sizePath (run_size_fall input h1000)).trans
-        (sound anchorPath (run_anchor_taken input href))))
+  · exact scannerCorrect input hfit (by unfold RecognitionAccumulator.Allowed; omega)
+      ((EntryPrefilter.gasSteps_fall input hpass).trans
+        ((sound sizePath (run_size_fall input h1000)).trans
+          ((sound anchorPath (run_anchor_taken input href)).trans
+            (Patterned128Entry.gasSteps_big_entry input (Or.inr (Or.inr h1000))))))
   by_cases ht : input = KnownInputData.targetInput
   · subst input
     exact correct_target

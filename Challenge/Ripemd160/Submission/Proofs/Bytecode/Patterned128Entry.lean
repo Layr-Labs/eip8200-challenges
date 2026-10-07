@@ -314,6 +314,12 @@ private def gasSteps_length_fail (input : ByteArray) (hfit : CalldataFits input)
 
 /-! ## Public routes -/
 
+/-- The long-length entry at 4810 reaches the scanner with the segment end 251 pushed. -/
+def gasSteps_big_entry (input : ByteArray) (hsize : input.size = 256 ∨ input.size = 376 ∨ input.size = 1000) :
+    GasSteps (PatternedScan.stS input 4810 []) (PatternedScan.patternedEntry input) :=
+  (sound bigTail (run_big_tail input)).trans
+    (sound guardMatchTail (run_guard_match_tail input _ (segEnd_large input.size hsize)))
+
 private theorem small_or_large (n : Nat) (h : RecognitionAccumulator.Allowed n) :
     (n = 56 ∨ n = 120 ∨ n = 63 ∨ n = 64 ∨ n = 65 ∨ n = 128 ∨ n = 119 ∨ n = 55 ∨ n = 1 ∨ n = 31 ∨ n = 32) ∨
       (n ≠ 56 ∧ n ≠ 120 ∧ n ≠ 63 ∧ n ≠ 64 ∧ n ≠ 65 ∧ n ≠ 128 ∧ n ≠ 119 ∧ n ≠ 55 ∧ n ≠ 1 ∧ n ≠ 31 ∧ n ≠ 32) ∧

@@ -51,7 +51,8 @@ def sizePrefix : List Located :=
    pushAt 9 2 4691]
 
 /-- Anchor gate: `97 + 255 * calldata[0] != 0` (first word is not the repeated
-`0x61` word) jumps to the patterned guard at 4681. -/
+`0x61` word) jumps straight to the recogniser's long-length entry at 4810 (the size is
+already known to be 1000 here). -/
 def anchorPrefix : List Located :=
   [pushAt 11 0 0,
    opAt 12 .CALLDATALOAD,
@@ -59,7 +60,7 @@ def anchorPrefix : List Located :=
    opAt 14 .MUL,
    pushAt 15 1 97,
    opAt 16 .ADD,
-   pushAt 17 2 4691]
+   pushAt 17 2 4810]
 
 def entryDest : Located := opAt 148 .JUMPDEST
 
