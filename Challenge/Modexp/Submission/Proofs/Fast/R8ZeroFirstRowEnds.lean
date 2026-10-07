@@ -118,5 +118,71 @@ theorem run_finishStore (s : State) (pc c u bi : UInt256)
   simp only [succ_eq_add, word_add_assoc]
   rfl
 
+def diagonalMathTailM128 (next : UInt256) : List Instr :=
+  [.op (.Dup ⟨6, by decide⟩), .op (.Dup ⟨15, by decide⟩), .op (.Dup ⟨0, by decide⟩),
+   .op .MULMOD, .op (.Dup ⟨15, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op .MUL,
+   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨6, by decide⟩), .op .MSTORE,
+   .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .GT,
+   .op (.Swap ⟨1, by decide⟩), .op .SUB, .op .SUB,
+   .push 3 next, .op (.Swap ⟨5, by decide⟩), .op .POP]
+
+def diagonalProgramM128 (next : UInt256) : List Instr :=
+  R8RowZero.headProgram ++ diagonalMathTailM128 next
+
+private theorem sub_sub_comm_diag (a b c : UInt256) : (a - b) - c = (a - c) - b := by
+  apply Challenge.EvmProof.Word.word_ext
+  change ((a.val - b.val) - c.val).val = ((a.val - c.val) - b.val).val
+  rw [sub_right_comm]
+
+theorem run_diagonalMathTailM128 (s : State) (pc bi P hd ent next stride target inv m0 tl m96 m64 m32 x : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat) :
+    let lo := x * x
+    let mm := UInt256.mulMod x x maxWord
+    runInstructions (diagonalMathTailM128 next)
+      { s with pc := pc,
+               stack := bi :: P :: hd :: UInt256.ofNat 2336 :: ent :: stride :: maxWord ::
+                 target :: inv :: m0 :: tl :: m96 :: m64 :: m32 :: x :: rest } =
+    some { s with pc := advancePC 22 pc,
+                  stack := ((mm - UInt256.lt mm lo) - lo) :: bi :: P :: hd ::
+                    UInt256.ofNat 2336 :: next :: stride :: maxWord :: target :: inv :: m0 :: tl :: m96 :: m64 :: m32 :: x :: rest,
+                  memory := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded lo.toNat 32) 2336 } := by
+  have h14 : rest.length + 14 < 1024 := by omega
+  have h15 : rest.length + 15 < 1024 := by omega
+  have h16 : rest.length + 16 < 1024 := by omega
+  have h17 : rest.length + 17 < 1024 := by omega
+  have h18 : rest.length + 18 < 1024 := by omega
+  have h19 : rest.length + 19 < 1024 := by omega
+  have h20 : rest.length + 20 < 1024 := by omega
+  have ht : (UInt256.ofNat 2336).toNat = 2336 := by decide
+  have hT := activeWords_fix s 2336 32 (by decide) (by decide) hact
+  simp [diagonalMathTailM128, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    List.exchange, h14, h15, h16, h17, h18, h19, h20, State.activeWordsAfterUInt256, ht, hT, advancePC]
+  simp only [succ_eq_add, word_add_assoc, R4Math.gt_eq_lt, sub_sub_comm_diag]
+  exact ⟨congrArg (pc + ·) (by decide), trivial⟩
+
+theorem run_diagonalM128 (s : State)
+    (pc hd ent next stride target inv m0 tl m96 m64 m32 aprev : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat) :
+    let x := MachineState.readWord s.memory 2592
+    runInstructions (diagonalProgramM128 next)
+      { s with pc := pc,
+               stack := UInt256.ofNat 2592 :: hd :: UInt256.ofNat 2336 :: ent :: stride :: maxWord ::
+                 target :: inv :: m0 :: tl :: m96 :: m64 :: m32 :: aprev :: rest } =
+    some { s with pc := advancePC 30 pc,
+                  stack := (diagonal s.memory).carry :: (x+x) :: UInt256.ofNat 2592 :: hd ::
+                    UInt256.ofNat 2336 :: next :: stride :: maxWord :: target :: inv :: m0 :: tl :: m96 :: m64 :: m32 :: x :: rest,
+                  memory := (diagonal s.memory).memory } := by
+  let x := MachineState.readWord s.memory 2592
+  have hn : (UInt256.ofNat 2592).toNat = 2592 := by decide
+  have hP : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat (UInt256.ofNat 2592).toNat 32) = s.activeWords := by
+    rw [hn]
+    exact activeWords_fix s 2592 32 (by decide) (by decide) hact
+  have h0 := R8RowZero.run_head s pc (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) ent stride maxWord target inv m0 tl m96 m64 m32 aprev rest hcap hP
+  have h1 := run_diagonalMathTailM128 s (advancePC 8 pc) (x+x) (UInt256.ofNat 2592) hd ent next stride target inv m0 tl m96 m64 m32 x rest hcap hact
+  have h := runInstructions_append_some _ _ _ _ _ h0 h1
+  have hpc : advancePC 22 (advancePC 8 pc) = advancePC 30 pc := (advancePC_add 8 22 pc).symm
+  simpa only [diagonalProgramM128, diagonal, hn, subtract_hi, x, hpc] using h
+
 #print axioms run_finishStore
+#print axioms run_diagonalM128
 end Challenge.Modexp.Submission.Proofs.Fast.R8ZeroFirstRow

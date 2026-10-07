@@ -143,6 +143,91 @@ theorem run_cells (s : State) (pc bi w0 w1 w2 w3 w4 : UInt256)
         congr 1
       simpa only [cellsProgram, zeroRun, zeroStep, hpc] using h
 
+private theorem sub_sub_comm_word (a b c : UInt256) : (a - b) - c = (a - c) - b := by
+  apply Challenge.EvmProof.Word.word_ext
+  change ((a.val - b.val) - c.val).val = ((a.val - c.val) - b.val).val
+  rw [sub_right_comm]
+
+private theorem gt_add_comm_word (c lo : UInt256) : UInt256.gt lo (lo + c) = UInt256.gt c (c + lo) := by
+  rw [R4Math.gt_eq_lt, R4Math.gt_eq_lt, Challenge.EvmProof.Word.word_add_comm lo c]
+  exact (R4Math.lt_add_left_eq c lo).symm
+
+def cellFastBC (t : UInt256) : List Instr :=
+  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT, .op .SUB,
+   .op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .ADD,
+   .op (.Dup ⟨0, by decide⟩), .push 3 t, .op .MSTORE,
+   .op (.Dup ⟨1, by decide⟩), .op .GT, .op .SUB, .op .SUB]
+
+def cellProgramM128 (a t : UInt256) : List Instr :=
+  cellA a ++ cellFastBC t
+
+theorem run_cellFastBC (s : State) (pc mm lo c : UInt256) (t : Nat)
+    (rest : List UInt256) (hcap : rest.length ≤ 1017)
+    (ht : t + 32 ≤ 2816) (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions (cellFastBC (UInt256.ofNat t))
+      { s with pc := pc, stack := mm :: lo :: c :: rest } =
+    some { s with pc := advancePC 17 pc,
+                  stack := ((UInt256.gt c (c + lo) - (UInt256.gt lo mm - mm)) - lo) :: rest,
+                  memory := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded (c + lo).toNat 32) t } := by
+  have h2 : rest.length + 2 < 1024 := by omega
+  have h3 : rest.length + 3 < 1024 := by omega
+  have h4 : rest.length + 4 < 1024 := by omega
+  have h5 : rest.length + 5 < 1024 := by omega
+  have htn : (UInt256.ofNat t).toNat = t := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  have hT := activeWords_fix s t 32 (by decide) ht hact
+  simp [cellFastBC, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    List.exchange, h2, h3, h4, h5, State.activeWordsAfterUInt256, htn, hT, advancePC]
+  simp only [succ_eq_add, word_add_assoc, Nat.add_comm lo.toNat c.toNat, gt_add_comm_word, sub_sub_comm_word]
+  exact ⟨trivial, congrArg (pc + ·) (by decide), trivial⟩
+
+theorem run_cellM128 (s : State) (pc c bi w0 w1 w2 w3 w4 M : UInt256)
+    (a t : Nat) (rest : List UInt256) (hcap : rest.length ≤ 1010)
+    (ha : a + 32 ≤ 2816) (ht : t + 32 ≤ 2816) (hact : 88 ≤ s.activeWords.toNat) :
+    let x := MachineState.readWord s.memory a
+    runInstructions (cellProgramM128 (UInt256.ofNat a) (UInt256.ofNat t))
+      { s with pc := pc, stack := c :: bi :: w0 :: w1 :: w2 :: w3 :: w4 :: M :: rest } =
+    some { s with pc := advancePC 28 pc,
+                  stack := R4Math.zCarry x bi c M :: bi :: w0 :: w1 :: w2 :: w3 :: w4 :: M :: rest,
+                  memory := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded (R4Math.zSum x bi c).toNat 32) t } := by
+  let x := MachineState.readWord s.memory a
+  have h0 := run_cellA s pc c bi w0 w1 w2 w3 w4 M a rest hcap ha hact
+  have h1 := run_cellFastBC s (advancePC 11 pc) (UInt256.mulMod bi x M) (x*bi) c t
+    (bi :: w0 :: w1 :: w2 :: w3 :: w4 :: M :: rest) (by simp only [List.length_cons]; omega) ht hact
+  exact runInstructions_append_some _ _ _ _ _ h0 h1
+
+def cellsProgramM128 : Nat → List Instr
+  | 0 => []
+  | k+1 => cellsProgramM128 k ++ cellProgramM128 (UInt256.ofNat (SquareModel.aAddr 8 (k+1)))
+      (UInt256.ofNat (Monpro.tAddr 8 (k+1)))
+
+theorem run_cellsM128 (s : State) (pc bi w0 w1 w2 w3 w4 : UInt256)
+    (q : MacState) (rest : List UInt256) (hcap : rest.length ≤ 1010)
+    (hact : 88 ≤ s.activeWords.toNat) :
+    ∀ k, k ≤ 7 →
+      runInstructions (cellsProgramM128 k)
+        { s with pc := pc, stack := q.carry :: bi :: w0 :: w1 :: w2 :: w3 :: w4 :: maxWord :: rest,
+                 memory := q.memory } =
+      some { s with pc := advancePC (28*k) pc,
+                    stack := (zeroRun q bi k).carry :: bi :: w0 :: w1 :: w2 :: w3 :: w4 :: maxWord :: rest,
+                    memory := (zeroRun q bi k).memory } := by
+  intro k
+  induction k with
+  | zero => intro _; rfl
+  | succ k ih =>
+      intro hk
+      have h0 := ih (by omega)
+      have h1 := run_cellM128 { s with memory := (zeroRun q bi k).memory }
+        (advancePC (28*k) pc) (zeroRun q bi k).carry bi w0 w1 w2 w3 w4 maxWord
+        (SquareModel.aAddr 8 (k+1)) (Monpro.tAddr 8 (k+1)) rest hcap
+        (by unfold SquareModel.aAddr; omega) (by unfold Monpro.tAddr; omega) hact
+      have h := runInstructions_append_some _ _ _ _ _ h0 h1
+      have hpc : advancePC 28 (advancePC (28*k) pc) = advancePC (28*(k+1)) pc := by
+        rw [← advancePC_add]
+        congr 1
+      simpa only [cellsProgramM128, zeroRun, zeroStep, hpc] using h
+
 #print axioms run_cell
 #print axioms run_cells
+#print axioms run_cellsM128
 end Challenge.Modexp.Submission.Proofs.Fast.R8ZeroFirstRow
