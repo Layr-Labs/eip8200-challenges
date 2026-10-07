@@ -47,5 +47,38 @@ theorem run_suffix (s : State) (pc : Nat) (q : MacState) (bi : UInt256)
       Challenge.EvmProof.Word.succ_ofNat_mod]
   exact runInstructions_append_some _ _ _ _ _ chain hd
 
+def privateProgram3 : List Instr :=
+  (TnCacheL1Trace.stepProgram 64 2176 ++ TnCacheL1Trace.stepProgramW3 32 2144) ++
+    TnCacheL1Trace.stepProgramW3 0 2112
+
+theorem run_private3 (s : State) (pc : Nat) (q : MacState) (bi : UInt256)
+    (pa : Nat) (pbi hd pbEnd flag tn destination returnPC : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1006)
+    (hactive : 88 ≤ s.activeWords.toNat)
+    (hpa : pa+32*4 ≤ 2048 ∨ pa = 2368) (hsnapshot : Snapshot q.memory pa 4) :
+    runInstructions privateProgram3
+      (TnCacheL1Trace.qState s (UInt256.ofNat pc) q bi pbi hd pbEnd flag tn destination returnPC rest) =
+    some (TnCacheL1Trace.qState s (UInt256.ofNat (pc+111)) (l1Run q bi pa 4 1 3)
+      bi pbi hd pbEnd flag tn destination returnPC rest) := by
+  have hs0 : Snapshot (l1Run q bi pa 4 1 0).memory pa 4 := hsnapshot
+  have hs1 : Snapshot (l1Run q bi pa 4 1 1).memory pa 4 :=
+    TnCacheL1Chain.snapshot_l1Run_pres hsnapshot bi 1 (by decide) hpa 1 (by decide)
+  have hs2 : Snapshot (l1Run q bi pa 4 1 2).memory pa 4 :=
+    TnCacheL1Chain.snapshot_l1Run_pres hsnapshot bi 1 (by decide) hpa 2 (by decide)
+  have c0 := TnCacheL1Trace.run_step s (UInt256.ofNat pc) (l1Run q bi pa 4 1 0)
+    bi pa 4 1 64 2176 (by decide) (by decide) pbi hd pbEnd flag tn destination returnPC
+    rest hcap hactive (by decide) (by decide) hs0
+  have c1 := TnCacheL1Trace.run_stepW3 s (UInt256.ofNat (pc+37)) (l1Run q bi pa 4 1 1)
+    bi pa 4 2 32 2144 (by decide) (by decide) pbi hd pbEnd flag tn destination returnPC
+    rest hcap hactive (by decide) (by decide) hs1
+  have c2 := TnCacheL1Trace.run_stepW3 s (UInt256.ofNat (pc+74)) (l1Run q bi pa 4 1 2)
+    bi pa 4 3 0 2112 (by decide) (by decide) pbi hd pbEnd flag tn destination returnPC
+    rest hcap hactive (by decide) (by decide) hs2
+  simp only [Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, Nat.reduceAdd] at c0 c1 c2
+  have c01 := runInstructions_append_some _ _ _ _ _ c0 c1
+  have c012 := runInstructions_append_some _ _ _ _ _ c01 c2
+  simpa only [privateProgram3, l1Run] using c012
+
 #print axioms run_suffix
+#print axioms run_private3
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheL1Suffix

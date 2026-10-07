@@ -38,11 +38,10 @@ def headProgram (a t : UInt256) : List Instr :=
   [.op .JUMPDEST] ++ blockProgram a t
 
 
-/-- Fused head for a riding straight MAC block: `JUMPDEST DUP2 DUP(d+2) MUL DUP4 DUP(d+3) DUP5 MULMOD`. -/
+/-- Fused head for a riding straight MAC block: `DUP2 DUP(d+2) MUL DUP4 DUP(d+3) DUP5 MULMOD`. -/
 def rideHead (d : Fin 16) : List Instr :=
   if h : d.val ≤ 13 then
-    [.op .JUMPDEST,
-     .op (.Dup ⟨1, by decide⟩),
+    [.op (.Dup ⟨1, by decide⟩),
      .op (.Dup ⟨d.val + 1, by omega⟩),
      .op .MUL,
      .op (.Dup ⟨3, by decide⟩),
@@ -53,10 +52,10 @@ def rideHead (d : Fin 16) : List Instr :=
     [.op (.Dup { idx := d }), .op (.Dup ⟨3, by decide⟩)] ++ CiosCached.macProductProgram.take 6
 
 /-- One straight MAC block whose `-N` limb rides in a stack slot (phases 9/10 chunk
-mirroring): fused `rideHead d` followed by `macFusedPostProgram t t` (29 instructions,
-33 bytes — no `MLOAD`, no `SWAP2`). -/
+mirroring): fused `rideHead d` followed by `macFusedPostProgramW3 t t` (28 instructions,
+33 bytes — no `MLOAD`, no `SWAP2`, no `JUMPDEST`). -/
 def rideProgram (d : Fin 16) (t : UInt256) : List Instr :=
-  rideHead d ++ CiosCached.macFusedPostProgram t t
+  rideHead d ++ CiosCached.macFusedPostProgramW3 t t
 
 /-- The riding form of block 0: the incoming carry is the literal zero, so the fused
 post-schedule spends `PUSH0` where `rideProgram` spends the `DUP4` that reproduces the
@@ -64,11 +63,10 @@ carry. -/
 def rideZeroProgram (d : Fin 16) (t : UInt256) : List Instr :=
   [.op (.Dup { idx := d }), .op (.Dup ⟨3, by decide⟩)] ++ CiosCached.macFusedZeroProgram t t
 
-/-- Fused head for the top-word riding block 0: `JUMPDEST POP DUP1 DUP(d+2) MUL DUP3 DUP(d+3) DUP4 MULMOD`. -/
+/-- Fused head for the top-word riding block 0: `POP DUP1 DUP(d+2) MUL DUP3 DUP(d+3) DUP4 MULMOD`. -/
 def rideTopHead (d : Fin 16) : List Instr :=
   if h : d.val ≤ 13 then
-    [.op .JUMPDEST,
-     .op .POP,
+    [.op .POP,
      .op (.Dup ⟨0, by decide⟩),
      .op (.Dup ⟨d.val + 1, by omega⟩),
      .op .MUL,
@@ -80,27 +78,23 @@ def rideTopHead (d : Fin 16) : List Instr :=
     [.op .POP, .op (.Dup { idx := d }), .op (.Dup ⟨2, by decide⟩)] ++ CiosCached.topProductProgram
 
 def rideTopStore (ts : UInt256) : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .push 4 ts, .op .MSTORE]
+  [.op (.Dup ⟨1, by decide⟩), .push 16 ts, .op .MSTORE]
 
 def rideTopCarry : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT,
    .op (.Swap ⟨0, by decide⟩), .op .SUB, .op .SUB]
 
-def rideTopFill : List Instr := List.replicate 11 (.op .JUMPDEST)
+def rideTopFill : List Instr := []
 
 /-- The top-word form of block 0: the incoming carry is the literal zero *and* the accumulator
 word it reads was just zeroed by the shift (`ShiftModel.uMem_readWord_limb`, limb `0`), so the
-block pops the zero carry, fuses the `-N` limb multiply, stores the low word with `PUSH4`,
-computes the carry with `SWAP1 SUB SUB`, and pads with 11 `JUMPDEST`s (33 bytes, 29 instructions). -/
+block pops the zero carry, fuses the `-N` limb multiply, stores the low word with `PUSH16`,
+and computes the carry with `SWAP1 SUB SUB` (33 bytes, 17 instructions). -/
 def rideTopProgram (d : Fin 16) (t : UInt256) : List Instr :=
   rideTopHead d ++ ((rideTopStore t ++ rideTopCarry) ++ rideTopFill)
 
-/-- `JUMPDEST JUMPDEST JUMPDEST`: the chain frame `[carry, q, 2^256-1] ++ rest` survives the
-fall-through into the top-limb fixup at pc 3171 unchanged, and the fixup gives the mask back
-to its slot with `SWAP3 POP` at pc 3184..3185 before `SUB`.  The three former `SWAP1 SWAP2 POP`
-opcodes cost 8 gas where three `JUMPDEST`s cost 3. -/
 def exitProgram : List Instr :=
-  [.op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
+  []
 
 /-- E6: `PUSH0 NOT SWAP1 PUSH0 DUP5 JUMP` — build the chain frame `[0, q, 2^256-1]` and
 jump to the entry parked in the scratch slot (the first riding slot, `shiftEntry`). -/

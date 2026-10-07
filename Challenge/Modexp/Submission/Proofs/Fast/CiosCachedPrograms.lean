@@ -93,6 +93,32 @@ def macFusedPostProgram (tl ts : UInt256) : List Instr :=
 def macFusedProgram (tl ts : UInt256) : List Instr :=
   macProductProgram.take 6 ++ macFusedPostProgram tl ts
 
+def macFusedPostProgramW3 (tl ts : UInt256) : List Instr :=
+  [.op (.Dup ⟨0, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩),
+   .op .GT,
+   .op .SUB,
+   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup ⟨3, by decide⟩),
+   .op .ADD,
+   .push 3 tl,
+   .op .MLOAD,
+   .op (.Dup ⟨1, by decide⟩),
+   .op .ADD,
+   .op (.Dup ⟨0, by decide⟩),
+   .push 2 ts,
+   .op .MSTORE,
+   .op (.Dup ⟨1, by decide⟩),
+   .op .GT,
+   .op (.Swap ⟨3, by decide⟩),
+   .op .GT,
+   .op .SUB,
+   .op .SUB,
+   .op .ADD]
+
+def macFusedProgramW3 (tl ts : UInt256) : List Instr :=
+  macProductProgram.take 6 ++ macFusedPostProgramW3 tl ts
+
 /-- `macFusedPostProgram` specialised to a known-zero incoming carry `c = 0`: same byte length
 and instruction count, seven gas cheaper, and equivalent *only* on a frame whose incoming carry
 is already zero (the row-head cell of a conversion chain, never a cell fed by a predecessor).

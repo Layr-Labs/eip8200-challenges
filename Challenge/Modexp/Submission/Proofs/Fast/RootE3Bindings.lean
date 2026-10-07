@@ -21,11 +21,11 @@ open WindowTwentyOneBinding Shift
 exit head at idx 2696 (pc 3346), guard at idx 2698 (pc 3348, `JUMPI` to the
 cleanup tail at 5444), switch at idx 2703 (pc 3357, jump back to 2811). -/
 def phases : RootE3PhaseRun.PhaseBlocks Artifact.submissionArtifact .Osaka where
-  exitHead := WindowTwentyOneSlice.block Artifact.allWellFormed 2696 2 3346
+  exitHead := WindowTwentyOneSlice.block Artifact.allWellFormed 2677 2 3346
     RootE3PhaseRun.phaseExitHeadProgram (by decide) (by rfl) (by rfl) (by decide)
-  guard := WindowTwentyOneSlice.block Artifact.allWellFormed 2698 5 3348
+  guard := WindowTwentyOneSlice.block Artifact.allWellFormed 2679 5 3348
     RootE3PhaseRun.phaseGuardProgram (by decide) (by rfl) (by rfl) (by decide)
-  switch := WindowTwentyOneSlice.block Artifact.allWellFormed 2703 12 3357
+  switch := WindowTwentyOneSlice.block Artifact.allWellFormed 2684 12 3357
     RootE3PhaseRun.phaseSwitchProgram (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest2811 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2811 = true :=
