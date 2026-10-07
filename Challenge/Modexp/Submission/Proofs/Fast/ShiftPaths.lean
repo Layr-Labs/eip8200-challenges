@@ -501,7 +501,7 @@ theorem jumpDest5366 :
 
 theorem jumpDest5444 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5444 = true :=
-  Artifact.isValidJumpDest_index 4361 (by rfl)
+  Artifact.isValidJumpDest_index 4360 (by rfl)
 
 theorem jumpDest3378 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3378 = true :=
@@ -563,7 +563,8 @@ def blk3346 :
 restoring the bare outer frame, then jump to the done stub. -/
 def blk5444 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 4361 .JUMPDEST,
+  [opAt 4360 .JUMPDEST,
+   opAt 4361 .POP,
    opAt 4362 .POP,
    opAt 4363 .POP,
    opAt 4364 .POP,
@@ -580,9 +581,8 @@ def blk5444 :
    opAt 4375 .POP,
    opAt 4376 .POP,
    opAt 4377 .POP,
-   opAt 4378 .POP,
-   pushAt 4379 2 3378,
-   opAt 4380 .JUMP]
+   pushAt 4378 2 3378,
+   opAt 4379 .JUMP]
 
 /-- The done stub (pcs 3378-3382): jump to the exponent phase's dispatcher. -/
 def blk3378 :

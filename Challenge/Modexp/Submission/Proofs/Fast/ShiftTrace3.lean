@@ -793,7 +793,7 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   rfl
 
 @[simp] private theorem pcFact4392 :
-    Artifact.submissionArtifact.instructionPC 4361 = 5444 := by
+    Artifact.submissionArtifact.instructionPC 4360 = 5444 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -828,45 +828,45 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
 @[simp] private theorem pc2715 : Artifact.submissionArtifact.instructionPC 2696 = 3378 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4393 : Artifact.submissionArtifact.instructionPC 4362 = 5445 := by
+@[simp] private theorem pc4393 : Artifact.submissionArtifact.instructionPC 4361 = 5445 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4394 : Artifact.submissionArtifact.instructionPC 4363 = 5446 := by
+@[simp] private theorem pc4394 : Artifact.submissionArtifact.instructionPC 4362 = 5446 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4395 : Artifact.submissionArtifact.instructionPC 4364 = 5447 := by
+@[simp] private theorem pc4395 : Artifact.submissionArtifact.instructionPC 4363 = 5447 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4396 : Artifact.submissionArtifact.instructionPC 4365 = 5448 := by
+@[simp] private theorem pc4396 : Artifact.submissionArtifact.instructionPC 4364 = 5448 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4397 : Artifact.submissionArtifact.instructionPC 4366 = 5449 := by
+@[simp] private theorem pc4397 : Artifact.submissionArtifact.instructionPC 4365 = 5449 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4398 : Artifact.submissionArtifact.instructionPC 4367 = 5450 := by
+@[simp] private theorem pc4398 : Artifact.submissionArtifact.instructionPC 4366 = 5450 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4399 : Artifact.submissionArtifact.instructionPC 4368 = 5451 := by
+@[simp] private theorem pc4399 : Artifact.submissionArtifact.instructionPC 4367 = 5451 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4400 : Artifact.submissionArtifact.instructionPC 4369 = 5452 := by
+@[simp] private theorem pc4400 : Artifact.submissionArtifact.instructionPC 4368 = 5452 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4403 : Artifact.submissionArtifact.instructionPC 4372 = 5455 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-
-@[simp] private theorem pc4402 : Artifact.submissionArtifact.instructionPC 4371 = 5454 := by
+@[simp] private theorem pc4403 : Artifact.submissionArtifact.instructionPC 4371 = 5455 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem pc4401 : Artifact.submissionArtifact.instructionPC 4370 = 5453 := by
+@[simp] private theorem pc4402 : Artifact.submissionArtifact.instructionPC 4370 = 5454 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4404 : Artifact.submissionArtifact.instructionPC 4373 = 5456 := by
+
+@[simp] private theorem pc4401 : Artifact.submissionArtifact.instructionPC 4369 = 5453 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4405 : Artifact.submissionArtifact.instructionPC 4374 = 5457 := by
+@[simp] private theorem pc4404 : Artifact.submissionArtifact.instructionPC 4372 = 5456 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4406 : Artifact.submissionArtifact.instructionPC 4375 = 5458 := by
+@[simp] private theorem pc4405 : Artifact.submissionArtifact.instructionPC 4373 = 5457 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4407 : Artifact.submissionArtifact.instructionPC 4376 = 5459 := by
+@[simp] private theorem pc4406 : Artifact.submissionArtifact.instructionPC 4374 = 5458 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4408 : Artifact.submissionArtifact.instructionPC 4377 = 5460 := by
+@[simp] private theorem pc4407 : Artifact.submissionArtifact.instructionPC 4375 = 5459 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4409 : Artifact.submissionArtifact.instructionPC 4378 = 5461 := by
+@[simp] private theorem pc4408 : Artifact.submissionArtifact.instructionPC 4376 = 5460 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4410 : Artifact.submissionArtifact.instructionPC 4379 = 5462 := by
+@[simp] private theorem pc4409 : Artifact.submissionArtifact.instructionPC 4377 = 5461 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4411 : Artifact.submissionArtifact.instructionPC 4380 = 5465 := by
+@[simp] private theorem pc4410 : Artifact.submissionArtifact.instructionPC 4378 = 5462 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pc4411 : Artifact.submissionArtifact.instructionPC 4379 = 5465 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
 
 /-- `blk3346` with the squaring flag clear: drop the counter and jump to the

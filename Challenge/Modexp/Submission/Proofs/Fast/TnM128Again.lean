@@ -24,10 +24,10 @@ def program : List Instr :=
 def guardProgram : List Instr := program.take 6
 
 def guardBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 4232 guardProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3357 6 4232 guardProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3356 6 4232 guardProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def bodyBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 4242 bodyProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3363 7 4242 bodyProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3362 7 4242 bodyProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def input (s : State) (mem : ByteArray) (tn aprev tl inv m0 m96 m64 m32 dst ret : UInt256)
@@ -98,7 +98,7 @@ noncomputable def steps (s : State)
         (UInt256.ofNat 3858)) := by
   have hj : Decode.isValidJumpDest s.executionEnv.code 5062 = true := by
     rw [env.code]
-    exact TnM128CandidateArtifact.isValidJumpDest_index 4042 (by rfl)
+    exact TnM128CandidateArtifact.isValidJumpDest_index 4041 (by rfl)
   have g0 := guardBlock.steps (s := input s mem tn aprev tl inv m0 m96 m64 m32 dst ret rest)
     (env.transfer rfl rfl) rfl (run_guard s mem tn aprev tl inv m0 m96 m64 m32 dst ret rest hcap htl)
   have g1 := bodyBlock.steps
