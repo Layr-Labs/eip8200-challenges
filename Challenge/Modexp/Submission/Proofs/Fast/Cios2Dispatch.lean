@@ -61,12 +61,12 @@ theorem jumpDestCommon :
 /-- The multiply row head (instruction 2703, pc 3543). -/
 theorem jumpDestRowHead :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3533 = true := by
-  exact Artifact.isValidJumpDest_index 2802 (by rfl)
+  exact Artifact.isValidJumpDest_index 2801 (by rfl)
 
 /-- The square row head `sq_row` (instruction 3275, pc 4268). -/
 theorem jumpDestSqRow :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4258 = true := by
-  exact Artifact.isValidJumpDest_index 3373 (by rfl)
+  exact Artifact.isValidJumpDest_index 3372 (by rfl)
 
 /-- `jumpDestRowHead` in the `hd.toNat` form taken by `gasSteps_setup`/`gasSteps_commonSetup`. -/
 theorem jumpDestRowHead' :
@@ -166,7 +166,7 @@ def environment (s : State)
 
 /-- The preclear trampoline (instruction 4412, pc 5466). -/
 def preclear : Block Artifact.submissionArtifact .Osaka 5466 TnM128Setup.preclearProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4381 10 5466 TnM128Setup.preclearProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4380 10 5466 TnM128Setup.preclearProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- trampoline → `mul entry` → `common` with `hd = 3533`; the product block is cleared. -/

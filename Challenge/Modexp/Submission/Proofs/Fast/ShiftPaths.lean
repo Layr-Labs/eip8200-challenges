@@ -501,7 +501,7 @@ theorem jumpDest5366 :
 
 theorem jumpDest5444 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5444 = true :=
-  Artifact.isValidJumpDest_index 4361 (by rfl)
+  Artifact.isValidJumpDest_index 4360 (by rfl)
 
 theorem jumpDest3378 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3378 = true :=

@@ -12,18 +12,18 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwentyOneBinding
 
 def gateBlock : Block Artifact.submissionArtifact .Osaka 4518 LazyGate.program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3574 5 4518 LazyGate.program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3573 5 4518 LazyGate.program
     (by decide) (by rfl) (by rfl) (by decide)
 
 def copyBlock : Block Artifact.submissionArtifact .Osaka 4527 LazyGate.copyProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3579 7 4527 LazyGate.copyProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3578 7 4527 LazyGate.copyProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDestGate : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4518 = true :=
-  Artifact.isValidJumpDest_index 3574 (by rfl)
+  Artifact.isValidJumpDest_index 3573 (by rfl)
 
 theorem jumpDestCopy : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4527 = true :=
-  Artifact.isValidJumpDest_index 3579 (by rfl)
+  Artifact.isValidJumpDest_index 3578 (by rfl)
 
 def gasSteps_csub_lazy (s : State) (memory : ByteArray) (n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)

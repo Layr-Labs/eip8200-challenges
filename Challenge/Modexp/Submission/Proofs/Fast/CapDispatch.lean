@@ -1,4 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedFrames
+import Challenge.Modexp.Submission.Proofs.Fast.NonzeroSelector
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
@@ -9,7 +10,7 @@ set_option linter.unusedSimpArgs false
 The ladder entry is a computed jump `base + distance * [bit 7 of s32]`.  The old
 artifact carried the distance as a multiplier on the masked bit itself
 (`PUSH1 0x80 AND PUSH1 0x0e MUL PUSH2 base ADD`), which forces the distance to be a
-multiple of 128.  Normalizing the mask with `ISZERO ISZERO` first turns the
+multiple of 128.  Normalizing the mask with `PUSH0 LT` first turns the
 selector into a plain 0/1, so any distance fits in a `PUSH2` literal.
 
 Everything here is generic in the entry program counter, the base and the
@@ -27,7 +28,12 @@ open Challenge.Modexp.Submission.Proofs.Fast.CiosCached
 
 /-- The normalized four-limb selector: `1` when bit 7 of `x` is set, else `0`. -/
 def selectBit (x : UInt256) : UInt256 :=
-  UInt256.isZero (UInt256.isZero (UInt256.land (UInt256.ofNat 128) x))
+  UInt256.lt ({ val := 0 } : UInt256) (UInt256.land (UInt256.ofNat 128) x)
+
+/-- The cheaper instruction pair preserves the preceding selector on every word. -/
+theorem selectBit_eq_double_isZero (x : UInt256) :
+    selectBit x = UInt256.isZero (UInt256.isZero (UInt256.land (UInt256.ofNat 128) x)) :=
+  NonzeroSelector.zero_lt_eq_double_isZero _
 
 @[simp] theorem selectBit_128 : selectBit (UInt256.ofNat 128) = UInt256.ofNat 1 := by decide
 
@@ -91,11 +97,11 @@ entry program counter.
 -/
 
 def targetProgram (dist base : UInt256) : List Instr :=
-  [.push 1 128, .op .AND, .op .ISZERO, .op .ISZERO,
+  [.push 1 128, .op .AND, .push 0 0, .op .LT,
    .push 2 dist, .op .MUL, .push 2 base, .op .ADD]
 
 def targetProgramDup (k : Operation.DupOp) (dist base : UInt256) : List Instr :=
-  [.push 1 128, .op (.Dup k), .op .AND, .op .ISZERO, .op .ISZERO,
+  [.push 1 128, .op (.Dup k), .op .AND, .push 0 0, .op .LT,
    .push 2 dist, .op .MUL, .push 2 base, .op .ADD]
 
 theorem land_comm' (a b : UInt256) : UInt256.land a b = UInt256.land b a := by

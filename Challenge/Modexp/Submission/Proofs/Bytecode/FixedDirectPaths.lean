@@ -173,7 +173,7 @@ def bail : List Located :=
 clears the product block and jumps to the multiply entry `0x0d37`. -/
 theorem jumpDestSqMulEntry :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5466 = true :=
-  Artifact.isValidJumpDest_index 4381 (by rfl)
+  Artifact.isValidJumpDest_index 4380 (by rfl)
 
 /-- The kernel's shared `common` block `0x0f54` (entered by the square call). -/
 theorem jumpDestSqCommon :
