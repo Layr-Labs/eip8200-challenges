@@ -50,39 +50,30 @@ theorem run_exit (s : State)
   have h01 := runInstructions_append_some _ _ _ _ _ h0 h1
   exact runInstructions_append_some _ _ _ _ _ h01 h2
 
-/-- The first row's store as the M128 artifact spells it: the `t[n-1]` address push is
-narrowed to `PUSH2`, so the block is eight bytes rather than nine.  `TnR8FirstRow` keeps
-the wide form for the other candidate artifact. -/
+/-- The first row's store as the M128 artifact spells it: all 7 cells use `cellsProgramM128 7`
+(storing `t[1..7]` directly via `cellFastBC`), and the 3-byte suffix swaps the carry with
+`tn = 0` and drops `bi`. -/
 def finishStoreNarrow : List Instr :=
-  [.op (.Swap ⟨6, by decide⟩), .op .POP,
-   .push 2 2112, .op .MSTORE, .op .POP, .push 0 0]
+  [.op (.Swap ⟨5, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .POP]
 
 theorem run_finishStoreNarrow (s : State)
-    (pc c u bi P hd tt next tn M target inv m0 tl m96 m64 m32 x : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat) :
+    (pc c bi P hd tt next tn M target inv m0 tl m96 m64 m32 x : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1002) :
     runInstructions finishStoreNarrow
-      {s with pc := pc, stack := c :: u :: bi :: P :: hd :: tt :: next :: tn :: M ::
+      {s with pc := pc, stack := c :: bi :: P :: hd :: tt :: next :: tn :: M ::
         target :: inv :: m0 :: tl :: m96 :: m64 :: m32 :: x :: rest} =
     some {s with
-      pc := advancePC 8 pc
-      stack := UInt256.ofNat 0 :: P :: hd :: tt :: next :: c :: M ::
-        target :: inv :: m0 :: tl :: m96 :: m64 :: m32 :: x :: rest
-      memory := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded u.toNat 32) 2112} := by
+      pc := advancePC 3 pc
+      stack := tn :: P :: hd :: tt :: next :: c :: M ::
+        target :: inv :: m0 :: tl :: m96 :: m64 :: m32 :: x :: rest} := by
   have h14 : rest.length + 14 < 1024 := by omega
   have h15 : rest.length + 15 < 1024 := by omega
   have h16 : rest.length + 16 < 1024 := by omega
-  have h17 : rest.length + 17 < 1024 := by omega
-  have h18 : rest.length + 18 < 1024 := by omega
-  have ht : (2112 : UInt256).toNat = 2112 := by decide
-  have hT := activeWords_fix s 2112 32 (by decide) (by decide) hact
-  have hz : (⟨0⟩ : UInt256) = UInt256.ofNat 0 := by decide
   simp [finishStoreNarrow, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    List.exchange, h14, h15, h16, h17, h18, State.activeWordsAfterUInt256, ht, hT, hz, advancePC]
-  simp only [succ_eq_add, word_add_assoc]
-  rfl
+    List.exchange, h14, h15, h16, advancePC]
 
 def program (next destination : UInt256) : List Instr :=
-  (((diagonalProgram next ++ cellsProgram 6) ++ cellAB (UInt256.ofNat (SquareModel.aAddr 8 7)))
+  ((diagonalProgramM128 next ++ cellsProgramM128 7)
     ++ finishStoreNarrow) ++ exitProgram destination
 
 def result (s : State) (hd next m128 destination inv m0 m96 m64 m32 : UInt256)
@@ -99,45 +90,44 @@ def result (s : State) (hd next m128 destination inv m0 m96 m64 m32 : UInt256)
         (MachineState.readWord s.memory 2592) rest}
 
 /-- The complete specialized first row for arbitrary incoming scratch memory
-and carry-register value. This is a universal instruction-semantics theorem. -/
+and zero incoming carry-register value. This is a universal instruction-semantics theorem. -/
 theorem run_program (s : State)
-    (pc hd ent next tn m128 destination inv m0 m96 m64 m32 aprev : UInt256)
+    (pc hd ent next m128 destination inv m0 m96 m64 m32 aprev : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest s.executionEnv.code destination.toNat = true) :
     runInstructions (program next destination)
-      (initial s pc hd ent tn m128 inv m0 m96 m64 m32 aprev rest) =
+      (initial s pc hd ent (UInt256.ofNat 0) m128 inv m0 m96 m64 m32 aprev rest) =
       some (result s hd next m128 destination inv m0 m96 m64 m32 rest) := by
   let x := MachineState.readWord s.memory 2592
   let bi := x + x
-  let q6 := zeroRun (diagonal s.memory) bi 6
-  let x7 := MachineState.readWord q6.memory (SquareModel.aAddr 8 7)
-  have h0 := run_diagonal s pc hd ent next tn m128 inv m0 (UInt256.ofNat 2336)
+  have h0 := run_diagonalM128 s pc hd ent next (UInt256.ofNat 0) m128 inv m0 (UInt256.ofNat 2336)
     m96 m64 m32 aprev rest hcap hact
-  have h1 := run_cells s (advancePC 30 pc) bi (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next tn
+  have h1 := run_cellsM128 s (advancePC 30 pc) bi (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next (UInt256.ofNat 0)
     (diagonal s.memory)
     (m128 :: inv :: m0 :: UInt256.ofNat 2336 :: m96 :: m64 :: m32 :: x :: rest)
-    (by simp only [List.length_cons]; omega) hact 6 (by decide)
-  have h1b := run_cellAB {s with memory := q6.memory} (advancePC 198 pc) q6.carry bi
-    (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next tn maxWord (SquareModel.aAddr 8 7)
-    (m128 :: inv :: m0 :: UInt256.ofNat 2336 :: m96 :: m64 :: m32 :: x :: rest)
-    (by simp only [List.length_cons]; omega) (by unfold SquareModel.aAddr; omega) hact
-  have h2 := run_finishStoreNarrow {s with memory := q6.memory} (advancePC 221 pc)
-    (R4Math.zCarry x7 bi q6.carry maxWord) (R4Math.zSum x7 bi q6.carry) bi
-    (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next tn maxWord m128 inv m0
-    (UInt256.ofNat 2336) m96 m64 m32 x rest hcap hact
+    (by simp only [List.length_cons]; omega) hact 7 (by decide)
+  have hpc1 : advancePC (28 * 7) (advancePC 30 pc) = advancePC 226 pc := by
+    rw [← advancePC_add]
+  rw [hpc1] at h1
+  have h2 := run_finishStoreNarrow {s with memory := (firstProduct s.memory).memory} (advancePC 226 pc)
+    (firstProduct s.memory).carry bi
+    (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next (UInt256.ofNat 0) maxWord m128 inv m0
+    (UInt256.ofNat 2336) m96 m64 m32 x rest hcap
+  have hpc2 : advancePC 3 (advancePC 226 pc) = advancePC 229 pc := by
+    rw [← advancePC_add]
+  rw [hpc2] at h2
   have h3 := run_exit {s with memory := (firstProduct s.memory).memory} (advancePC 229 pc)
     (UInt256.ofNat 0) (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next
     (firstProduct s.memory).carry maxWord m128 inv m0 m96 m64 m32 x destination rest hcap hact hjump
   have h01 := runInstructions_append_some _ _ _ _ _ h0 h1
-  have h01b := runInstructions_append_some _ _ _ _ _ h01 h1b
-  have h012 := runInstructions_append_some _ _ _ _ _ h01b h2
+  have h012 := runInstructions_append_some _ _ _ _ _ h01 h2
   exact runInstructions_append_some _ _ _ _ _ h012 h3
 
 
 /-- Binding to the exact preferred 5314-byte research runtime. -/
 def block : Block TnM128CandidateArtifact.submissionArtifact .Osaka 5062
     (program (UInt256.ofNat 3599) (UInt256.ofNat 3841)) :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 4062 213 5062
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 4042 205 5062
     (program (UInt256.ofNat 3599) (UInt256.ofNat 3841))
     (by decide) (by rfl) (by rfl) (by decide)
 

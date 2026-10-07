@@ -72,7 +72,7 @@ def gasSteps_macSection (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteA
                stack := q :: UInt256.ofNat k :: Shift.entrySlots um n bsize esize ++
                  Exp.outer n bsize esize msize,
                memory := um }
-      { s with pc := UInt256.ofNat 3171,
+      { s with pc := UInt256.ofNat 3168,
                stack := (Monpro.l1Step um q Shift.NEG n n).carry :: q :: Monpro.maxWord ::
                  UInt256.ofNat k :: Shift.entrySlots um n bsize esize ++ Exp.outer n bsize esize msize,
                memory := (Monpro.l1Step um q Shift.NEG n n).memory } :=

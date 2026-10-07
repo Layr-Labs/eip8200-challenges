@@ -44,32 +44,22 @@ noncomputable def suffix_steps (s : State)
       pbi hd pbEnd flag tn destination returnPC rest)
     (env.transfer rfl rfl) rfl hr
 
-def privateSuffix (k : Nat) (hk : k ≤ 3) :
-    Block TnM128CandidateArtifact.submissionArtifact .Osaka (5420-37*k) (TnCacheL1Suffix.program k) := by
-  interval_cases k
-  · exact private0
-  · exact private1
-  · exact private2
-  · exact private3
-
 noncomputable def private_steps (s : State)
     (env : Environment TnM128CandidateArtifact.submissionArtifact .Osaka s)
-    (q : MacState) (bi : UInt256) (pa n j0 k : Nat) (hk7 : k ≤ 3)
+    (q : MacState) (bi : UInt256) (pa : Nat)
     (pbi hd pbEnd flag tn destination returnPC : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006)
-    (hactive : 88 ≤ s.activeWords.toNat) (hn : n ≤ 8) (hk : j0+k = n)
-    (hpa : pa+32*n ≤ 2048 ∨ pa = 2368) (hsnapshot : Snapshot q.memory pa n) :
+    (hactive : 88 ≤ s.activeWords.toNat)
+    (hpa : pa+32*4 ≤ 2048 ∨ pa = 2368) (hsnapshot : Snapshot q.memory pa 4) :
     GasSteps
-      (TnCacheL1Trace.qState s (UInt256.ofNat (5420-37*k)) q bi
+      (TnCacheL1Trace.qState s (UInt256.ofNat 5309) q bi
         pbi hd pbEnd flag tn destination returnPC rest)
-      (TnCacheL1Trace.qState s (UInt256.ofNat 5421) (l1Run q bi pa n j0 k)
+      (TnCacheL1Trace.qState s (UInt256.ofNat 5420) (l1Run q bi pa 4 1 3)
         bi pbi hd pbEnd flag tn destination returnPC rest) := by
-  have hr := TnCacheL1Suffix.run_suffix s (5420-37*k) q bi pa n j0 k
-    pbi hd pbEnd flag tn destination returnPC rest hcap hactive hn hk hpa hsnapshot
-  have hpc : 5420-37*k+37*k+1 = 5421 := by omega
-  rw [hpc] at hr
-  exact (privateSuffix k hk7).steps
-    (s := TnCacheL1Trace.qState s (UInt256.ofNat (5420-37*k)) q bi
+  have hr := TnCacheL1Suffix.run_private3 s 5309 q bi pa
+    pbi hd pbEnd flag tn destination returnPC rest hcap hactive hpa hsnapshot
+  exact private3.steps
+    (s := TnCacheL1Trace.qState s (UInt256.ofNat 5309) q bi
       pbi hd pbEnd flag tn destination returnPC rest)
     (env.transfer rfl rfl) rfl hr
 

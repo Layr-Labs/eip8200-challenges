@@ -223,6 +223,129 @@ theorem run_fused (template : State) (pc x y c tl ts : UInt256)
   simpa only [macFusedProgram, macProductProgram, L2.multiplyProgram, List.take,
     hpc] using both
 
+private def memoryProgramW3 (tl ts : UInt256) : List Instr :=
+  [.push 3 tl, .op .MLOAD, .op (.Dup ⟨1, by decide⟩), .op .ADD,
+   .op (.Dup ⟨0, by decide⟩), .push 2 ts, .op .MSTORE,
+   .op (.Dup ⟨1, by decide⟩), .op .GT]
+
+private theorem postW3_eq (tl ts : UInt256) :
+    macFusedPostProgramW3 tl ts = (headProgram ++ memoryProgramW3 tl ts) ++ tailProgram := rfl
+
+private theorem run_load_wordW3 (template : State) (pc sum borrow lo c y tl : UInt256)
+    (rest : List UInt256) (hrest : rest.length + 8 < 1024)
+    (hload : UInt256.ofNat (MachineState.activeWordsAfter
+      template.activeWords.toNat tl.toNat 32) = template.activeWords) :
+    runInstructions [.push 3 tl, .op .MLOAD]
+      (framed template pc ([sum, borrow, lo, c, y] ++ rest)) =
+    some (framed template (pc + UInt256.ofNat 5)
+      ([MachineState.readWord template.memory tl.toNat, sum, borrow, lo, c, y] ++ rest)) := by
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  simp [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr,
+    hc5, hc6, State.activeWordsAfterUInt256, hload, Nat.add_assoc,
+    succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
+
+private theorem run_memoryW3 (template : State) (pc sum borrow lo c y tl ts : UInt256)
+    (rest : List UInt256) (hrest : rest.length + 8 < 1024)
+    (hload : UInt256.ofNat (MachineState.activeWordsAfter
+      template.activeWords.toNat tl.toNat 32) = template.activeWords)
+    (hstore : UInt256.ofNat (MachineState.activeWordsAfter
+      template.activeWords.toNat ts.toNat 32) = template.activeWords) :
+    runInstructions (memoryProgramW3 tl ts)
+      (framed template pc ([sum, borrow, lo, c, y] ++ rest)) =
+    some (framed
+      { template with
+        memory := MachineState.writeBytes template.memory
+          (Data.Bytes.natToBytesPadded
+            (sum + MachineState.readWord template.memory tl.toNat).toNat 32) ts.toNat }
+      (pc + UInt256.ofNat 14)
+      ([UInt256.lt (sum + MachineState.readWord template.memory tl.toNat)
+          sum, sum, borrow, lo, c, y] ++ rest)) := by
+  have hl := run_load_wordW3 template pc sum borrow lo c y tl rest hrest hload
+  have hs := run_form_sum template (pc + UInt256.ofNat 5)
+    (MachineState.readWord template.memory tl.toNat) sum borrow lo c y rest hrest
+  have hw := run_store_word template ((pc + UInt256.ofNat 5) + UInt256.ofNat 2)
+    (sum + MachineState.readWord template.memory tl.toNat)
+    sum borrow lo c y ts rest hrest hstore
+  have both := runInstructions_append_some _ _ _ _ _ hl hs
+  have all := runInstructions_append_some _ _ _ _ _ both hw
+  simpa only [memoryProgramW3, List.cons_append, List.nil_append, pc_add_add, Nat.reduceAdd] using all
+
+theorem run_postW3 (template : State) (pc mm lo c y tl ts : UInt256)
+    (rest : List UInt256) (hrest : rest.length + 8 < 1024)
+    (hload : UInt256.ofNat (MachineState.activeWordsAfter
+      template.activeWords.toNat tl.toNat 32) = template.activeWords)
+    (hstore : UInt256.ofNat (MachineState.activeWordsAfter
+      template.activeWords.toNat ts.toNat 32) = template.activeWords) :
+    runInstructions (macFusedPostProgramW3 tl ts)
+      (framed template pc ([mm, lo, c, y] ++ rest)) =
+    some (framed
+      { template with
+        memory := MachineState.writeBytes template.memory
+          (Data.Bytes.natToBytesPadded
+            ((lo + c) + MachineState.readWord template.memory tl.toNat).toNat 32)
+          ts.toNat }
+      (pc + UInt256.ofNat 26)
+      ([((UInt256.gt c (lo + c) - (UInt256.lt mm lo - mm)) - lo) +
+          UInt256.lt ((lo + c) + MachineState.readWord template.memory tl.toNat)
+            (lo + c), y] ++ rest)) := by
+  let t := MachineState.readWord template.memory tl.toNat
+  let stored : State :=
+    { template with
+      memory := MachineState.writeBytes template.memory
+        (Data.Bytes.natToBytesPadded ((lo + c) + t).toNat 32) ts.toNat }
+  have hh := run_head template pc mm lo c y rest hrest
+  have hm := run_memoryW3 template (pc + UInt256.ofNat 7)
+    (lo + c) (UInt256.lt mm lo - mm) lo c y tl ts rest hrest hload hstore
+  have ht := run_tail stored ((pc + UInt256.ofNat 7) + UInt256.ofNat 14)
+    (UInt256.lt ((lo + c) + t) (lo + c)) (lo + c) (UInt256.lt mm lo - mm) lo c y rest hrest
+  have both := runInstructions_append_some _ _ _ _ _ hh hm
+  have all := runInstructions_append_some _ _ _ _ _ both ht
+  simpa only [postW3_eq, stored, t, pc_add_add, Nat.reduceAdd] using all
+
+theorem run_fusedW3 (template : State) (pc x y c tl ts : UInt256)
+    (rest : List UInt256) (hrest : rest.length + 8 < 1024)
+    (hload : UInt256.ofNat (MachineState.activeWordsAfter
+      template.activeWords.toNat tl.toNat 32) = template.activeWords)
+    (hstore : UInt256.ofNat (MachineState.activeWordsAfter
+      template.activeWords.toNat ts.toNat 32) = template.activeWords) :
+    runInstructions (macFusedProgramW3 tl ts)
+      (framed template pc ([maxWord, x, c, y] ++ rest)) =
+    some (framed
+      { template with
+        memory := MachineState.writeBytes template.memory
+          (Data.Bytes.natToBytesPadded
+            (macSum x y (MachineState.readWord template.memory tl.toNat) c).toNat 32)
+          ts.toNat }
+      (pc + UInt256.ofNat 32)
+      ([macCarry x y (MachineState.readWord template.memory tl.toNat) c, y] ++ rest)) := by
+  have hm := L2.run_multiply template pc x y c rest (by omega)
+  have hp := run_postW3 template (advancePC 6 pc)
+    (UInt256.mulMod y x maxWord) (x * y) c y tl ts rest hrest hload hstore
+  have hc : partialCarry x y c +
+      UInt256.lt ((x * y + c) + MachineState.readWord template.memory tl.toNat)
+        (x * y + c) =
+      macCarry x y (MachineState.readWord template.memory tl.toNat) c := by
+    rw [add_comm (partialCarry x y c)]
+    simpa only [UInt256.gt, UInt256.lt,
+      add_comm (x * y + c) (MachineState.readWord template.memory tl.toNat)] using
+      carry_eq x y (MachineState.readWord template.memory tl.toNat) c
+  have hs : (x * y + c) + MachineState.readWord template.memory tl.toNat =
+      macSum x y (MachineState.readWord template.memory tl.toNat) c := by
+    rw [add_comm]
+    exact sum_eq x y (MachineState.readWord template.memory tl.toNat) c
+  change runInstructions (macFusedPostProgramW3 tl ts)
+      (framed template (advancePC 6 pc)
+        ([UInt256.mulMod y x maxWord, x * y, c, y] ++ rest)) = _ at hp
+  change runInstructions (macFusedPostProgramW3 tl ts) _ =
+    some (framed _ _ ([partialCarry x y c + _, y] ++ rest)) at hp
+  rw [hc, hs] at hp
+  have both := runInstructions_append_some _ _ _ _ _ hm hp
+  have hpc : advancePC 6 pc + UInt256.ofNat 26 = pc + UInt256.ofNat 32 := by
+    simp [advancePC, succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
+  simpa only [macFusedProgramW3, macProductProgram, L2.multiplyProgram, List.take,
+    hpc] using both
+
 /-! ## The known-zero incoming carry
 
 Where the incoming carry `c` is already zero, `macFusedPostZeroProgram` replaces the
