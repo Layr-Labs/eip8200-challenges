@@ -24,7 +24,7 @@ def loopState (input : ByteArray) (s : State) (h : Compression.HashState) (i _co
   {s with pc := LoopCompletionControl.blockPC input i, stack := entryStack input i h (offsetWord i) (LoopCompletionControl.limit input) rho}
 
 def postState (input : ByteArray) (s : State) (h : Compression.HashState) (i _count : Nat) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 4558, stack := StaggerPersistentFrame.frame h (blockMark input i (offsetWord i)) (LoopCompletionControl.limit input) rho}
+  {s with pc := UInt256.ofNat 4557, stack := StaggerPersistentFrame.frame h (blockMark input i (offsetWord i)) (LoopCompletionControl.limit input) rho}
 
 def exitState (input : ByteArray) (s : State) (h : Compression.HashState) (count : Nat) (rho : List UInt256) : State :=
   {s with pc := UInt256.ofNat 4581, stack := StaggerPersistentFrame.frame h (blockMark input (count - 1) (offsetWord (count - 1))) (LoopCompletionControl.limit input) rho}
