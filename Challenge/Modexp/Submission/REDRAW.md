@@ -276,3 +276,45 @@ Unchanged executable bytes (bytecode.hex sha256 e2183e39...8326, 5,483 bytes, 4,
 instructions) and unchanged proof tree of Th0rgal's submission 6b050f05 (467,959 local,
 verified on Yukon, rejected only on its corpus draw). This entry is the only change.
 Disclosed corpus redraw; all optimization credit to Th0rgal and the trees it builds on.
+
+## Redraw entry 2026-10-07T21:30:08Z (rubenmarcus, lane ModexpDrawsT2, stream draw 4, T2 draw 4 by this account)
+
+Unchanged executable bytes (bytecode.hex sha256 e2183e39...8326, 5,483 bytes, 4,391
+instructions) and unchanged proof tree of Th0rgal's submission 6b050f05 (467,959 local,
+verified on Yukon, rejected only on its corpus draw). This entry is the only change.
+Disclosed corpus redraw; all optimization credit to Th0rgal and the trees it builds on.
+
+## Redraw entry 2026-10-07T22:52:04Z (rubenmarcus, lane ModexpDrawsT2, stream draw 5, T2 draw 5 by this account)
+
+Unchanged executable bytes (bytecode.hex sha256 e2183e39...8326, 5,483 bytes, 4,391
+instructions) and unchanged proof tree of Th0rgal's submission 6b050f05 (467,959 local,
+verified on Yukon, rejected only on its corpus draw). This entry is the only change.
+Disclosed corpus redraw; all optimization credit to Th0rgal and the trees it builds on.
+
+## Redraw entry 2026-10-08T00:13:58Z (rubenmarcus, lane ModexpDrawsT2, stream draw 6, T2 draw 6 by this account)
+
+Unchanged executable bytes (bytecode.hex sha256 e2183e39...8326, 5,483 bytes, 4,391
+instructions) and unchanged proof tree of Th0rgal's submission 6b050f05 (467,959 local,
+verified on Yukon, rejected only on its corpus draw). This entry is the only change.
+Disclosed corpus redraw; all optimization credit to Th0rgal and the trees it builds on.
+
+## Redraw entry 2026-10-08T01:35:40Z (rubenmarcus, lane ModexpDrawsT2, stream draw 7, T2 draw 7 by this account)
+
+Unchanged executable bytes (bytecode.hex sha256 e2183e39...8326, 5,483 bytes, 4,391
+instructions) and unchanged proof tree of Th0rgal's submission 6b050f05 (467,959 local,
+verified on Yukon, rejected only on its corpus draw). This entry is the only change.
+Disclosed corpus redraw; all optimization credit to Th0rgal and the trees it builds on.
+
+## Redraw entry 2026-10-08T03:07:19Z (rubenmarcus, lane ModexpDrawsT2, stream draw 8, T2 draw 8 by this account)
+
+Unchanged executable bytes (bytecode.hex sha256 e2183e39...8326, 5,483 bytes, 4,391
+instructions) and unchanged proof tree of Th0rgal's submission 6b050f05 (467,959 local,
+verified on Yukon, rejected only on its corpus draw). This entry is the only change.
+Disclosed corpus redraw; all optimization credit to Th0rgal and the trees it builds on.
+
+## Redraw entry 2026-10-08T04:28:55Z (rubenmarcus, lane ModexpDrawsT2, stream draw 9, T2 draw 9 by this account)
+
+Unchanged executable bytes (bytecode.hex sha256 e2183e39...8326, 5,483 bytes, 4,391
+instructions) and unchanged proof tree of Th0rgal's submission 6b050f05 (467,959 local,
+verified on Yukon, rejected only on its corpus draw). This entry is the only change.
+Disclosed corpus redraw; all optimization credit to Th0rgal and the trees it builds on.
