@@ -17,24 +17,18 @@ def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
   have e : Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
   have hframe : PaddingTrace.initialFrame input ++ rho = entryFrame ++ rho := by rw [entry_frame_eq input h32]
   have hactive : s.activeWords = UInt256.ofNat 34 := copied_active input h32
-  have hsize : (frame ++ rho).length ≤ 900 := by simp only [List.length_append]; change 15 + rho.length ≤ 900; omega
   have g0 := PaddingTail.gasSteps_prefix input hfit rho hcap
   have g1 : GasSteps (StackTail.append (PaddingTrace.padFramed input) rho)
-      (atState s 190 (entryFrame ++ rho)) := by
+      (atState s 104 (entryFrame ++ rho)) := by
     have ga := Shared32Alignment.gasSteps s e (PaddingTrace.initialFrame input ++ rho)
       (by rw [List.length_append, PaddingTrace.initialFrame_length]; omega) h32
     simpa only [PaddingTrace.padFramed, StackTail.append, hframe, atState, s] using ga
-  have g2 : GasSteps (atState s 190 (entryFrame ++ rho)) (atState s 191 (frame ++ rho)) := by
-    exact StaggerPersistentStart.gasSteps_entry s (entryFrame ++ rho)
-      (by simp only [entryFrame, StaggerPersistentFrame.frame, maskRho, List.length_append,
-        List.length_cons, List.length_nil]; omega) e.run e.code e.fork e.np
-  have g3 := Shared32Trace.gasSteps_guard s e (frame ++ rho) hsize h32
   have g4 := Shared32Trace.gasSteps_sparse s e factorPlusWord (UInt256.ofNat 4294967295)
     (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)
     (fusedCoefficientWord 0 2)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
-    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 1088) rho (by omega) hactive (by decide)
+    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 1088) rho (by omega) hactive (by decide) h32
   have g5 := Shared32Trace.gasSteps_table s e factorPlusWord
     (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)
     (fusedCoefficientWord 0 2)
@@ -45,7 +39,7 @@ def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
     rw [show s.memory = copiedMemory input from copied_memory input]
     exact copiedMemory_sparse input (by omega)
   rw [hm] at g4
-  have g := g0.trans (g1.trans (g2.trans (g3.trans (g4.trans g5))))
+  have g := g0.trans (g1.trans (g4.trans g5))
   simpa only [atState, tableState, s, copied_memory, frame, bodyFrame, maskRho,
     StaggerPersistentFrame.frame, Pair13Endian.stk, List.append_assoc, List.cons_append, List.nil_append] using g
 

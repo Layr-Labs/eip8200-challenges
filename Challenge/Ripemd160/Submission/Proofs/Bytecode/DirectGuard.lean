@@ -108,15 +108,16 @@ theorem correct_of_recognition
       (EntryPrefilter.gasSteps_taken input hpass)
   -- Every input that reaches the patterned guard is handled by the scanner or the
   -- sign-extending small-input arm.
-  have fromGuard : GasSteps (initialState submissionBytecode input 0) (guardEntry input) →
+  have fromGuard : input.size ≠ 1000 →
+      GasSteps (initialState submissionBytecode input 0) (guardEntry input) →
       ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
         Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-    intro hguard
+    intro h1000 hguard
     by_cases hallowed : RecognitionAccumulator.Allowed input.size
     · exact scannerCorrect input hfit hallowed
-        (hguard.trans (Patterned128Entry.gasSteps_allowed input hfit hallowed))
+        (hguard.trans (Patterned128Entry.gasSteps_allowed input hfit hallowed h1000))
     have harm : GasSteps (initialState submissionBytecode input 0) (AbcArm.armEntry input) :=
-      hguard.trans (Patterned128Entry.gasSteps_to_arm input hfit hallowed)
+      hguard.trans (Patterned128Entry.gasSteps_to_arm input hfit hallowed h1000)
     by_cases hw : AbcArm.wordCond input = 0
     · have hs4 := AbcArm.size_lt_four_of_wordCond input hfit hw
       by_cases hempty : input.size = 0
@@ -137,7 +138,7 @@ theorem correct_of_recognition
         (harm.trans (AbcArm.gasSteps_miss input hw))
   by_cases h1000 : input.size = 1000
   swap
-  · exact fromGuard ((EntryPrefilter.gasSteps_fall input hpass).trans
+  · exact fromGuard h1000 ((EntryPrefilter.gasSteps_fall input hpass).trans
       (sound sizePath (run_size_taken input hfit h1000)))
   by_cases href : referenceWord input = KnownInputData.fullWord
   swap

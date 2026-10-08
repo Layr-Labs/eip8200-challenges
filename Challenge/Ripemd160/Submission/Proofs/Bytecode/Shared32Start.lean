@@ -84,23 +84,19 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32)
   have e : Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
   have hframe : PaddingTrace.initialFrame input = entryFrame := entry_frame_eq input h32
   have hactive : s.activeWords = UInt256.ofNat 34 := copied_active input h32
-  have hcap : frame.length ≤ 900 := by decide
   have g0 := (Main.gasSteps_initialize input entryPrefix).trans
     ((PaddingTrace.gasSteps_enterPad input).trans ((PaddingTrace.gasSteps_lengthReady input).trans
       ((PaddingTrace.gasSteps_lengthCopy input hfit).trans ((PaddingTrace.gasSteps_msize input).trans
         (PaddingTrace.gasSteps_push input)))))
-  have g1 : GasSteps (PaddingTrace.padFramed input) (atState s 190 entryFrame) := by
+  have g1 : GasSteps (PaddingTrace.padFramed input) (atState s 104 entryFrame) := by
     simpa only [PaddingTrace.padGuardTaken, PaddingTrace.padGuardMiss, hframe, atState, s] using
       gasSteps_align input h32
-  have g2 : GasSteps (atState s 190 entryFrame) (atState s 191 frame) := by
-    exact StaggerPersistentStart.gasSteps_entry s entryFrame (by decide) e.run e.code e.fork e.np
-  have g3 := Shared32Trace.gasSteps_guard s e frame hcap h32
   have g4 := Shared32Trace.gasSteps_sparse s e factorPlusWord (UInt256.ofNat 4294967295)
     (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)
     (fusedCoefficientWord 0 2)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
-    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 1088) [] (by decide) hactive (by decide)
+    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 1088) [] (by decide) hactive (by decide) h32
   have g5 := Shared32Trace.gasSteps_table s e factorPlusWord
     (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)
     (fusedCoefficientWord 0 2)
@@ -111,7 +107,7 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32)
     rw [show s.memory = copiedMemory input from copied_memory input]
     exact copiedMemory_sparse input (by omega)
   rw [hm] at g4
-  have g := g0.trans (g1.trans (g2.trans (g3.trans (g4.trans g5))))
+  have g := g0.trans (g1.trans (g4.trans g5))
   simpa only [atState, tableState, s, copied_memory, frame, bodyFrame, maskRho,
     StaggerPersistentFrame.frame, Pair13Endian.stk, List.cons_append, List.nil_append] using g
 

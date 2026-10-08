@@ -147,7 +147,7 @@ def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
 theorem site_pc : site.startPC = UInt256.ofNat 4638 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3481) = UInt256.ofNat 4638
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem end_pc : pcAfter (UInt256.ofNat 4638) template = UInt256.ofNat 4679 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 4638) template = UInt256.ofNat 4680 := by decide
 theorem form : ∀ instruction ∈ template.dropLast, RecognitionLift.Advances instruction :=
   RecognitionLift.advancesAll_sound _ (by decide)
 def lift (s t : State) (e : Env s) (stack : List UInt256)
@@ -157,20 +157,20 @@ end transitionSite
 
 namespace transitionGuardSite
 abbrev template : List Instr := J2Raw.transitionGuardTemplate
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3519).take template.length = template := by rfl
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3520).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3519 actual_slice
-    (by change 3519 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3520 actual_slice
+    (by change 3520 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 4679 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3519) = UInt256.ofNat 4679
+theorem site_pc : site.startPC = UInt256.ofNat 4680 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3520) = UInt256.ofNat 4680
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem end_pc : pcAfter (UInt256.ofNat 4679) template = UInt256.ofNat 4687 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 4680) template = UInt256.ofNat 4687 := by decide
 theorem form : ∀ instruction ∈ template.dropLast, RecognitionLift.Advances instruction :=
   RecognitionLift.advancesAll_sound _ (by decide)
 def lift (s t : State) (e : Env s) (stack : List UInt256)
-    (h : runInstrSeq template (atState s 4679 stack) = some t) : GasSteps (atState s 4679 stack) t :=
+    (h : runInstrSeq template (atState s 4680 stack) = some t) : GasSteps (atState s 4680 stack) t :=
   RecognitionLift.gasSteps_of_raw site _ _ e.code e.fork e.run e.np site_pc.symm form h
 end transitionGuardSite
 
@@ -279,10 +279,10 @@ def movesOf (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length≤990)
   transition f hlen := by
     apply transitionSite.lift s _ e (frame f rho)
     simpa only [atState, transitionSite.end_pc] using run_transition s (UInt256.ofNat 4638) f rho hs e.run hlen
-  first f hlen := by
+  first f := by
     apply firstSite.lift s _ e (frame f rho)
-    have h := run_first s (UInt256.ofNat 4889) f rho hs e.run hlen (valid_219 s e)
-    by_cases hc : f.len.toNat < 33
+    have h := run_first s (UInt256.ofNat 4889) f rho hs e.run (valid_219 s e)
+    by_cases hc : f.stop.toNat < 33
     · simpa only [atState, firstSite.end_pc, if_pos hc] using h
     · simpa only [atState, firstSite.end_pc, if_neg hc] using h
   normalGuard f := by
@@ -303,10 +303,10 @@ def movesOf (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length≤990)
     by_cases hc : f.acc.toNat=0
     · simpa only [atState, resultSite.end_pc, if_pos hc] using h
     · simpa only [atState, resultSite.end_pc, if_neg hc] using h
-  transitionGuard x f := by
-    apply transitionGuardSite.lift s _ e (x :: frame f rho)
-    have h := run_transitionGuard s (UInt256.ofNat 4679) x f rho hs e.run (valid_190 s e)
-    by_cases hc : x.toNat<f.full.toNat
+  transitionGuard f := by
+    apply transitionGuardSite.lift s _ e (frame f rho)
+    have h := run_transitionGuard s (UInt256.ofNat 4680) f rho hs e.run (valid_190 s e)
+    by_cases hc : f.off.toNat<f.full.toNat
     · simpa only [atState, transitionGuardSite.end_pc, if_pos hc] using h
     · simpa only [atState, transitionGuardSite.end_pc, if_neg hc] using h
   toTail f := by

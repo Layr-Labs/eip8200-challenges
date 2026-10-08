@@ -96,19 +96,13 @@ theorem mul_size_toNat (input : ByteArray) (hfit : CalldataFits input) :
     (UInt256.mul (UInt256.ofNat input.size) (UInt256.ofNat 0x207621)).toNat =
       input.size * 0x207621 := by
   have hs : input.size < 2 ^ 64 := hfit
-  have h1 : (UInt256.ofNat input.size).toNat = input.size := by
-    rw [Word.word_toNat_ofNat]
-    exact Nat.mod_eq_of_lt (Nat.lt_trans hs (by norm_num))
-  have h2 : (UInt256.ofNat 0x207621).toNat = 0x207621 := by
-    rw [Word.word_toNat_ofNat]
-    exact Nat.mod_eq_of_lt (by norm_num)
-  have hmul : ∀ a b : UInt256,
-      (UInt256.mul a b).toNat = (a.toNat * b.toNat) % UInt256.size := fun _ _ => rfl
-  rw [hmul, h1, h2]
+  change ((UInt256.ofNat input.size).toNat * (UInt256.ofNat 0x207621).toNat) % UInt256.size = _
+  rw [Word.word_toNat_ofNat, Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (show input.size < 2 ^ 256 by omega),
+    Nat.mod_eq_of_lt (show (0x207621 : Nat) < 2 ^ 256 by norm_num)]
   apply Nat.mod_eq_of_lt
-  have hb : input.size * 0x207621 < 2 ^ 64 * 0x207621 :=
-    Nat.mul_lt_mul_of_pos_right hs (by norm_num)
-  exact Nat.lt_trans hb (by unfold UInt256.size; norm_num)
+  unfold UInt256.size
+  omega
 
 theorem wordCond_ne_zero_iff (input : ByteArray) (hfit : CalldataFits input) :
     wordCond input = 0 ↔ (leadWord input).toNat = input.size * 0x207621 := by

@@ -93,6 +93,31 @@ theorem run_load (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UI
   rw [hm]
   exact ⟨rfl, rfl, rfl⟩
 
+/-- The high half of the shared message load: `DUP12 PUSH2 address ADD MLOAD` (the
+offset is copied first, so the sum is `address + off`). -/
+def loadSwapTemplate (address : Nat) : List Instr :=
+  [ .op (.Dup ⟨11, by decide⟩), .push ⟨2, by decide⟩ (UInt256.ofNat address), .op .ADD, .op .MLOAD ]
+
+theorem run_loadSwap (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UInt256)
+    (rho : List UInt256) (address q : Nat) (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
+    (hq : off + UInt256.ofNat address = UInt256.ofNat q) (hqb : q < 2 ^ 256) :
+    runInstrSeq (loadSwapTemplate address) {s with pc := pc, stack := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho} =
+      some {s with
+        pc := pcAfter pc (loadSwapTemplate address)
+        stack := MachineState.readWord s.memory q :: stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho
+        activeWords := activeAfterWord s.activeWords (UInt256.ofNat q)} := by
+  have hcap (n : Nat) (hn : n ≤ 27) : rho.length + n < 1024 := by omega
+  have hqn : (UInt256.ofNat q).toNat = q := by rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt hqb]
+  have hq' : UInt256.ofNat address + off = UInt256.ofNat q := by
+    rw [← hq]; exact Word.word_add_comm _ _
+  simp (discharger := omega) [loadSwapTemplate, stk, activeAfterWord,
+    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size, hrun, hcap,
+    Nat.add_assoc, List.getElem?_cons_zero, List.exchange, Word.literal_eq_ofNat, State.activeWordsAfterUInt256]
+  rw [hq', hqn]
+  have hm : q % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = q := Nat.mod_eq_of_lt hqb
+  rw [hm]
+  exact ⟨rfl, rfl, rfl⟩
+
 /-- The low half is read straight through the absolute block pointer: `DUP12 MLOAD`. -/
 def loadDirectTemplate : List Instr :=
   [ .op (.Dup ⟨11, by decide⟩), .op .MLOAD ]
@@ -376,7 +401,7 @@ theorem run_lowStoreV2 (s : State) (pc value : UInt256) (rest : List UInt256)
   exact run_lowStoreV2_of_small s pc value rest hstack hrun (by omega)
 
 def templateV2 : List Instr :=
-  loadTemplate 32 ++ (stage8 true ++ stage16 true) ++ highStoreV2 ++
+  loadSwapTemplate 32 ++ (stage8 true ++ stage16 true) ++ highStoreV2 ++
     [.op .JUMPDEST] ++ loadDirectTemplate ++ (stage8 true ++ stage16 true) ++
     lowStoreV2
 
@@ -401,14 +426,14 @@ theorem run_templateV2 (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off li
   let s2 : State := {s1 with memory := writeWord s.memory 162 high}
   let F := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho
   have hF : F.length ≤ 1005 := by simp [F, stk]; omega
-  have h1 := run_load s pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho 32 (p + 32) hstack hrun hq1 (by omega)
-  have h2 := run_reverse s1 (pcAfter pc (loadTemplate 32)) (MachineState.readWord s.memory (p + 32))
+  have h1 := run_loadSwap s pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho 32 (p + 32) hstack hrun hq1 (by omega)
+  have h2 := run_reverse s1 (pcAfter pc (loadSwapTemplate 32)) (MachineState.readWord s.memory (p + 32))
     ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho true hstack hrun
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
-  have h3 := run_highStoreV2 s1 (pcAfter (pcAfter (pcAfter pc (loadTemplate 32)) (stage8 true)) (stage16 true)) high F
+  have h3 := run_highStoreV2 s1 (pcAfter (pcAfter (pcAfter pc (loadSwapTemplate 32)) (stage8 true)) (stage16 true)) high F
     (by omega) hrun (by change 35 ≤ a1.toNat; omega)
   have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
-  let pcJ := pcAfter (pcAfter (pcAfter (pcAfter pc (loadTemplate 32)) (stage8 true)) (stage16 true)) highStoreV2
+  let pcJ := pcAfter (pcAfter (pcAfter (pcAfter pc (loadSwapTemplate 32)) (stage8 true)) (stage16 true)) highStoreV2
   let pc3 := pcAfter pcJ [.op .JUMPDEST]
   have hj : runInstrSeq [.op .JUMPDEST] {s2 with pc := pcJ, stack := F} =
       some {s2 with pc := pc3, stack := F} := by

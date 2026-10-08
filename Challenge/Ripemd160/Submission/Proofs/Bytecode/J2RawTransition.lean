@@ -15,7 +15,7 @@ theorem run_transition_aux (s : State) (pc : UInt256) (f : Frame) (rho : List UI
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
     (hlen : f.len = UInt256.ofNat s.executionEnv.calldata.size) :
     runInstrSeq transitionTemplate {s with pc := pc, stack := frame f rho} =
-      some {s with pc := pcAfter pc transitionTemplate, stack := f.off :: frame ({f with word := tw f.word, off := f.stop, stop := emin f.stop f.len, full := UInt256.sub (emin f.stop f.len) (UInt256.ofNat 32)} : Frame) rho} := by
+      some {s with pc := pcAfter pc transitionTemplate, stack := frame ({f with word := tw f.word, off := f.stop, stop := emin f.stop f.len, full := UInt256.sub (emin f.stop f.len) (UInt256.ofNat 32)} : Frame) rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
   have hM7 : UInt256.shiftRight PatternedSwar.m8 (UInt256.ofNat 7) = PatternedSwar.M := by decide
@@ -36,7 +36,7 @@ theorem run_transition (s : State) (pc : UInt256) (f : Frame) (rho : List UInt25
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
     (hlen : f.len = UInt256.ofNat s.executionEnv.calldata.size) :
     runInstrSeq transitionTemplate {s with pc := pc, stack := frame f rho} =
-      some {s with pc := pcAfter pc transitionTemplate, stack := f.off :: frame (transitionResult f) rho} := by
+      some {s with pc := pcAfter pc transitionTemplate, stack := frame (transitionResult f) rho} := by
   simp only [transitionResult]
   exact run_transition_aux s pc f rho hstack hrun hlen
 

@@ -221,15 +221,14 @@ private def gasSteps_mask_fail (input : ByteArray) (hfit : CalldataFits input)
 /-! ## The 256 / 376 / 1000 test -/
 
 private def lengthCond (input : ByteArray) : UInt256 :=
-  UInt256.lor
-    (UInt256.lor (UInt256.eq 1000 (UInt256.ofNat input.size)) (UInt256.eq 376 (UInt256.ofNat input.size)))
+  UInt256.lor (UInt256.eq 376 (UInt256.ofNat input.size))
     (UInt256.eq 256 (UInt256.ofNat input.size))
 
 private def lengthPrefix : List Located :=
-  [DirectGuard.pushAt 3536 2 1016 (by exact J2EntryWindow.get 9),
-   DirectGuard.pushAt 3537 5 6308489473 (by exact J2EntryWindow.get 10),
+  [DirectGuard.pushAt 3536 2 376 (by exact J2EntryWindow.get 9),
+   DirectGuard.pushAt 3537 5 24641792 (by exact J2EntryWindow.get 10),
    DirectGuard.opAt 3538 .CALLDATASIZE (by exact J2EntryWindow.get 11),
-   DirectGuard.pushAt 3539 1 24 (by exact J2EntryWindow.get 12),
+   DirectGuard.pushAt 3539 1 16 (by exact J2EntryWindow.get 12),
    DirectGuard.opAt 3540 .AND (by exact J2EntryWindow.get 13),
    DirectGuard.opAt 3541 .SHR (by exact J2EntryWindow.get 14),
    DirectGuard.opAt 3542 .AND (by exact J2EntryWindow.get 15),
@@ -257,38 +256,30 @@ private theorem run_length_prefix (input : ByteArray) :
     packedPC3740, packedPC3741, packedPC3742, packedPC3743,
     heq, RawExpressionAC.land_comm]
 
-private theorem lengthCond_true (input : ByteArray) (hsize : input.size = 256 ∨ input.size = 376 ∨ input.size = 1000) :
+private theorem lengthCond_true (input : ByteArray) (hsize : input.size = 256 ∨ input.size = 376) :
     UInt256.isTrue (lengthCond input) := by
   have hlt : input.size < 2 ^ 256 := by omega
-  rcases hsize with h | h | h
-  · rw [lengthCond, Word.literal_eq_ofNat 256, Word.literal_eq_ofNat 376, Word.literal_eq_ofNat 1000,
+  rcases hsize with h | h
+  · rw [lengthCond, Word.literal_eq_ofNat 256, Word.literal_eq_ofNat 376,
       DirectGuard.size_eq_one input 256 h,
-      DirectGuard.size_eq_zero input 376 hlt (by norm_num) (by omega),
-      DirectGuard.size_eq_zero input 1000 hlt (by norm_num) (by omega)]
+      DirectGuard.size_eq_zero input 376 hlt (by norm_num) (by omega)]
     decide
-  · rw [lengthCond, Word.literal_eq_ofNat 256, Word.literal_eq_ofNat 376, Word.literal_eq_ofNat 1000,
+  · rw [lengthCond, Word.literal_eq_ofNat 256, Word.literal_eq_ofNat 376,
       DirectGuard.size_eq_zero input 256 hlt (by norm_num) (by omega),
-      DirectGuard.size_eq_one input 376 h,
-      DirectGuard.size_eq_zero input 1000 hlt (by norm_num) (by omega)]
-    decide
-  · rw [lengthCond, Word.literal_eq_ofNat 256, Word.literal_eq_ofNat 376, Word.literal_eq_ofNat 1000,
-      DirectGuard.size_eq_zero input 256 hlt (by norm_num) (by omega),
-      DirectGuard.size_eq_zero input 376 hlt (by norm_num) (by omega),
-      DirectGuard.size_eq_one input 1000 h]
+      DirectGuard.size_eq_one input 376 h]
     decide
 
 private theorem lengthCond_false (input : ByteArray) (hfit : CalldataFits input)
-    (h256 : input.size ≠ 256) (h376 : input.size ≠ 376) (h1000 : input.size ≠ 1000) :
+    (h256 : input.size ≠ 256) (h376 : input.size ≠ 376) :
     ¬ UInt256.isTrue (lengthCond input) := by
   have hlt : input.size < 2 ^ 256 := Nat.lt_trans hfit (by norm_num)
-  rw [lengthCond, Word.literal_eq_ofNat 256, Word.literal_eq_ofNat 376, Word.literal_eq_ofNat 1000,
+  rw [lengthCond, Word.literal_eq_ofNat 256, Word.literal_eq_ofNat 376,
     DirectGuard.size_eq_zero input 256 hlt (by norm_num) h256,
-    DirectGuard.size_eq_zero input 376 hlt (by norm_num) h376,
-    DirectGuard.size_eq_zero input 1000 hlt (by norm_num) h1000]
+    DirectGuard.size_eq_zero input 376 hlt (by norm_num) h376]
   decide
 
 private def gasSteps_length_match (input : ByteArray)
-    (hsize : input.size = 256 ∨ input.size = 376 ∨ input.size = 1000) :
+    (hsize : input.size = 256 ∨ input.size = 376) :
     GasSteps (PatternedScan.stS input 4720 [UInt256.ofNat input.size]) (PatternedScan.patternedEntry input) := by
   have hj : DirectGuard.run lengthJump (PatternedScan.stS input 4739 [4810, lengthCond input]) =
       some (PatternedScan.stS input 4810 []) :=
@@ -299,17 +290,18 @@ private def gasSteps_length_match (input : ByteArray)
         (lengthCond_true input hsize) guard_big_dest)
   exact (sound lengthPrefix (run_length_prefix input)).trans
     ((sound lengthJump hj).trans ((sound bigTail (run_big_tail input)).trans
-      (sound guardMatchTail (run_guard_match_tail input _ (segEnd_large input.size hsize)))))
+      (sound guardMatchTail (run_guard_match_tail input _
+        (segEnd_large input.size (hsize.elim Or.inl (fun h => Or.inr (Or.inl h))))))))
 
 private def gasSteps_length_fail (input : ByteArray) (hfit : CalldataFits input)
-    (h256 : input.size ≠ 256) (h376 : input.size ≠ 376) (h1000 : input.size ≠ 1000) :
+    (h256 : input.size ≠ 256) (h376 : input.size ≠ 376) :
     GasSteps (PatternedScan.stS input 4720 [UInt256.ofNat input.size]) (AbcArm.armEntry input) := by
   have hj : DirectGuard.run lengthJump (PatternedScan.stS input 4739 [4810, lengthCond input]) =
       some (AbcArm.armEntry input) :=
     PatternedScan.blockOfS _
       (PatternedScan.pcFactS input 3545 4739 _ (by norm_num) packedPC3745)
       (PatternedScan.stepS_jumpi_fall input 4739 4810 (lengthCond input) []
-        (by simp) (by norm_num) (lengthCond_false input hfit h256 h376 h1000))
+        (by simp) (by norm_num) (lengthCond_false input hfit h256 h376))
   exact (sound lengthPrefix (run_length_prefix input)).trans (sound lengthJump hj)
 
 /-! ## Public routes -/
@@ -329,24 +321,24 @@ private theorem small_or_large (n : Nat) (h : RecognitionAccumulator.Allowed n) 
 
 /-- An allowed length with first byte 7 reaches the scanner. -/
 def gasSteps_allowed (input : ByteArray) (hfit : CalldataFits input)
-    (hallowed : RecognitionAccumulator.Allowed input.size) :
+    (hallowed : RecognitionAccumulator.Allowed input.size) (h1000 : input.size ≠ 1000) :
     GasSteps (DirectGuard.guardEntry input) (PatternedScan.patternedEntry input) := by
   by_cases hsmall : input.size = 56 ∨ input.size = 120 ∨ input.size = 63 ∨ input.size = 64 ∨ input.size = 65 ∨ input.size = 128 ∨ input.size = 119 ∨ input.size = 55 ∨ input.size = 1 ∨ input.size = 31 ∨ input.size = 32
   · exact gasSteps_mask_match input hsmall
   · have hcases := small_or_large input.size hallowed
     have hbad : input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119 ∧ input.size ≠ 55 ∧ input.size ≠ 1 ∧ input.size ≠ 31 ∧ input.size ≠ 32 := by
       omega
-    have hlarge : input.size = 256 ∨ input.size = 376 ∨ input.size = 1000 := by omega
+    have hlarge : input.size = 256 ∨ input.size = 376 := by omega
     exact (gasSteps_mask_fail input hfit hbad).trans (gasSteps_length_match input hlarge)
 
 /-- Any other length falls through into the tiny-input arm. -/
 def gasSteps_to_arm (input : ByteArray) (hfit : CalldataFits input)
-    (hdis : ¬ RecognitionAccumulator.Allowed input.size) :
+    (hdis : ¬ RecognitionAccumulator.Allowed input.size) (_h1000 : input.size ≠ 1000) :
     GasSteps (DirectGuard.guardEntry input) (AbcArm.armEntry input) := by
   unfold RecognitionAccumulator.Allowed at hdis
   have hbad : input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119 ∧ input.size ≠ 55 ∧ input.size ≠ 1 ∧ input.size ≠ 31 ∧ input.size ≠ 32 := by
     omega
   exact (gasSteps_mask_fail input hfit hbad).trans
-    (gasSteps_length_fail input hfit (by omega) (by omega) (by omega))
+    (gasSteps_length_fail input hfit (by omega) (by omega))
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Entry

@@ -64,9 +64,9 @@ theorem valid_finish (s : State) (hcode : s.executionEnv.code = Artifact.submiss
 
 theorem valid_pad (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 129).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 80 = 129 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 79 = 129 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 80 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 79 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 129 = true
   rw [hcode]

@@ -4,6 +4,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.RawExpressionAC
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Trace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Main
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentStart
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdGuardFixup
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataStepper
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Msize
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadLimitArithmetic
@@ -396,7 +397,45 @@ private theorem guard_zero_iff (input : ByteArray) (hfit : CalldataFits input) :
   exact mask_c0 input.size hsize
 
 def padGuardTaken (input : ByteArray) : State :=
-  {padGuardMiss input with pc := UInt256.ofNat 190, stack := initialFrame input}
+  {padGuardMiss input with pc := UInt256.ofNat 104, stack := initialFrame input}
+
+theorem padGuardMiss_memory (input : ByteArray) :
+    (padGuardMiss input).memory = Shared32Scratch.copiedMemory input := by
+  change MachineState.writeBytes ByteArray.empty
+    (MachineState.readPadded input 0 input.size) 1056 = Shared32Scratch.copiedMemory input
+  rw [Challenge.EvmProof.Memory.readPadded_zero_size]
+  rfl
+
+theorem padGuardMiss_active (input : ByteArray) (hfit : CalldataFits input)
+    (hpos : 0 < input.size) : 34 ≤ (padGuardMiss input).activeWords.toNat := by
+  have hsize : input.size < 2 ^ 64 := hfit
+  change 34 ≤ (UInt256.ofNat (MachineState.activeWordsAfter
+    (padLengthReady input).activeWords.toNat Padding.messageOffset input.size)).toNat
+  have h0 : (padLengthReady input).activeWords.toNat = 0 := by rfl
+  rw [h0]
+  unfold MachineState.activeWordsAfter
+  rw [if_neg (by omega)]
+  dsimp only
+  unfold Padding.messageOffset
+  have hv : Nat.max 0 ((1056 + input.size - 1) / 32 + 1) = (1055 + input.size) / 32 + 1 := by
+    change max 0 ((1056 + input.size - 1) / 32 + 1) = _
+    rw [Nat.max_eq_right (Nat.zero_le _)]
+    omega
+  have hlt : (1055 + input.size) / 32 + 1 < 2 ^ 256 :=
+    Nat.lt_trans (by omega : (1055 + input.size) / 32 + 1 < 2 ^ 64) (by norm_num)
+  rw [hv, Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hlt]
+  omega
+
+theorem padGuardMiss_msize (input : ByteArray) (hpos : 0 < input.size) :
+    189 ≤ (padGuardMiss input).memory.size := by
+  rw [padGuardMiss_memory, Shared32Scratch.copiedMemory_size input hpos]
+  omega
+
+theorem padGuardMiss_zero (input : ByteArray) :
+    ∀ a, 157 ≤ a → a < 189 → (padGuardMiss input).memory[a]?.getD 0 = 0 := by
+  intro a _ ha
+  rw [padGuardMiss_memory]
+  exact Shared32Scratch.copiedMemory_zero input a (by omega)
 
 set_option maxHeartbeats 400000 in
 private theorem run_guardSkip (input : ByteArray) (hfit : CalldataFits input)
@@ -434,11 +473,15 @@ def gasSteps_guardMiss (input : ByteArray) (hfit : CalldataFits input)
   have g := Challenge.EvmProof.DataStepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka guardPath (by rfl) (by rfl)
     (run_guardMiss input hfit hnz) (by rfl) deployAddress_not_precompile
-  have gp := StaggerPersistentStart.gasSteps_partial (padGuardMiss input)
+  have hpos : 0 < input.size := by
+    by_contra h
+    exact hnz ⟨by omega, by omega⟩
+  have gp := ColdGuardFixup.gasSteps_partial (padGuardMiss input)
     StackRunBridge.initialHashState (UInt256.ofNat 1056) (copiedLimit input)
     [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
     (by decide) rfl rfl rfl deployAddress_not_precompile
     (by exact Nat.lt_trans hfit (by norm_num)) hn32
+    (padGuardMiss_active input hfit hpos) (padGuardMiss_msize input hpos) (padGuardMiss_zero input)
   exact g.trans gp
 
 set_option maxHeartbeats 400000 in
