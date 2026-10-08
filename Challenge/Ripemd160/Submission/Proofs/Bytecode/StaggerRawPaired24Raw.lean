@@ -14,8 +14,7 @@ open StackRoundTrace StaggerRaw
 private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
 def template : List Instr :=
-  [ .op .JUMPDEST,
-    .op (.Dup ⟨13, by decide⟩),
+  [ .op (.Dup ⟨13, by decide⟩),
     .op (.Dup ⟨1, by decide⟩),
     .op (.Swap ⟨6, by decide⟩),
     .op (.Dup ⟨7, by decide⟩),
