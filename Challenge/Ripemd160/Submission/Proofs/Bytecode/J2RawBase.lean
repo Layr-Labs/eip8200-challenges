@@ -49,11 +49,14 @@ def tailResult (s : State) (f : Frame) : Frame :=
     acc := UInt256.lor
       (UInt256.shiftRight (UInt256.xor f.word (MachineState.readWord s.executionEnv.calldata f.off.toNat))
         (UInt256.shiftLeft (UInt256.sub f.off f.full) (UInt256.ofNat 3))) f.acc }
-/-- Segment end after a transition: `min (stop + 251) len`, in the exact shape the bytecode computes
-(`DUP5 PUSH1 251 ADD DUP1 CALLDATASIZE LT DUP2 CALLDATASIZE SUB MUL ADD`). -/
+/-- Segment end after a transition, in the exact shape the bytecode computes
+(`PUSH1 251 DUP6 ADD DUP1 CALLDATASIZE SUB DUP1 CALLDATASIZE SAR AND ADD`): with `x = stop + 251` and
+`d = len - x`, it is `x + (d &&& (d sar len))`.  Transitions only happen on the long lengths
+(`len ≥ 256`), where `d sar len` is the sign mask of `d`, so this is `min x len`; the frame facts
+check it by `decide` at every transition point (`J2Frame.Facts`). -/
 def emin (stop len : UInt256) : UInt256 :=
-  UInt256.add (UInt256.mul (UInt256.sub len (UInt256.add (UInt256.ofNat 251) stop))
-      (UInt256.lt len (UInt256.add (UInt256.ofNat 251) stop)))
+  UInt256.add (UInt256.land (UInt256.sub len (UInt256.add (UInt256.ofNat 251) stop))
+      (UInt256.sar (UInt256.sub len (UInt256.add (UInt256.ofNat 251) stop)) len))
     (UInt256.add (UInt256.ofNat 251) stop)
 /-- Segment-boundary SWAR step (`+0xf2` bytewise) as the bytecode computes it:
 `u = w ||| 0x80..80`, `w'' = w ^^^ ((u - 0x0e..0e) ^^^ u)`; the bytecode derives `0x80..80 = (c96 + c96) &&& 0x9f..9f`
@@ -223,11 +226,11 @@ def transitionTemplate : List Instr := [
   .op .ADD,
   .op (.Dup ⟨0, by decide⟩),
   .op .CALLDATASIZE,
-  .op .LT,
-  .op (.Dup ⟨1, by decide⟩),
-  .op .CALLDATASIZE,
   .op .SUB,
-  .op .MUL,
+  .op (.Dup ⟨0, by decide⟩),
+  .op .CALLDATASIZE,
+  .op .SAR,
+  .op .AND,
   .op .ADD,
   .push ⟨1, by decide⟩ (UInt256.ofNat 32),
   .op (.Dup ⟨1, by decide⟩),

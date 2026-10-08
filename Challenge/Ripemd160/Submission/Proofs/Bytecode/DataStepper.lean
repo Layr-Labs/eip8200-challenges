@@ -119,6 +119,10 @@ def runInstr (instruction : Instr) (s : State) : Option State :=
         | shift :: value :: rest => some { s with
             stack := UInt256.shiftRight value shift :: rest, pc := s.pc.succ }
         | _ => none
+    | .op .SAR => match s.stack with
+        | shift :: value :: rest => some { s with
+            stack := UInt256.sar value shift :: rest, pc := s.pc.succ }
+        | _ => none
     | .op .POP => match s.stack with
         | _ :: rest => some { s with stack := rest, pc := s.pc.succ }
         | _ => none
@@ -283,6 +287,26 @@ makeBinarySound sound_or for .OR via GasStep.lor
 makeBinarySound sound_xor for .XOR via GasStep.xor
 makeBinarySound sound_shl for .SHL via GasStep.shl
 makeBinarySound sound_shr for .SHR via GasStep.shr
+
+/-- `SAR` as a gas-parametric step (the shared `GasStep` module has no `SAR` wrapper). -/
+private def gasStepSar {s : State} {shift value : UInt256} {rest : List UInt256}
+    (hop : s.decodedOp = some .SAR)
+    (hstack : s.stack = shift :: value :: rest)
+    (hcap : s.stack.length + Operation.pushArity .SAR ≤
+      1024 + Operation.popArity .SAR)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    GasSteps s { s with
+      stack := UInt256.sar value shift :: rest
+      pc := s.pc.succ } := by
+  let cost := Gas.baseCost s.fork .SAR
+  apply GasStep.of_running cost hrun hnp
+  intro gas hgas
+  simpa [withGas, cost] using
+    StepRunning.sar (withGas s gas) shift value rest hop hgas hstack hcap
+
+makeBinarySound sound_sar for .SAR via gasStepSar
 makeUnarySound sound_iszero for .ISZERO via GasStep.iszero
 makeUnarySound sound_not for .NOT via GasStep.lnot
 makeUnarySound sound_pop for .POP via GasStep.pop
@@ -685,6 +709,7 @@ def runInstr_sound {instruction : Instr} {s t : State}
         | exact (sound_not hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_shl hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_shr hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_sar hdecode hresult hrun hnp).trace gas hgas
         | simp [runInstr] at hresult
     | Env op =>
       cases op <;> first
