@@ -16,35 +16,35 @@ open StackRoundTrace StackRoundTemplate StaggerPersistentLoopRaw
 def postTemplate : List Instr := StaggerPersistentLoopRaw.template 4581
 
 theorem post_slice :
-    (Artifact.submissionArtifact.instructions.drop 3406).take postTemplate.length = postTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3405).take postTemplate.length = postTemplate := by rfl
 
 def postSite : GenericRoundSite Artifact.submissionArtifact .Osaka postTemplate :=
-  StackSiteBuilder.ofSlice postTemplate 3406 post_slice
-    (by change 3406 + postTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice postTemplate 3405 post_slice
+    (by change 3405 + postTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := postTemplate) (by decide))
     (by decide)
 
 theorem post_pc : postSite.startPC = UInt256.ofNat 4557 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3406) = UInt256.ofNat 4557
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3405) = UInt256.ofNat 4557
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def incTemplate : List Instr := StaggerPersistentLoopRaw.incTemplate
 
 theorem inc_slice :
-    (Artifact.submissionArtifact.instructions.drop 3411).take incTemplate.length = incTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3410).take incTemplate.length = incTemplate := by rfl
 
 def incSite : GenericRoundSite Artifact.submissionArtifact .Osaka incTemplate :=
-  StackSiteBuilder.ofSlice incTemplate 3411 inc_slice
-    (by change 3411 + incTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice incTemplate 3410 inc_slice
+    (by change 3410 + incTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := incTemplate) (by decide))
     (by decide)
 
 theorem inc_pc : incSite.startPC = UInt256.ofNat 4564 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3411) = UInt256.ofNat 4564
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3410) = UInt256.ofNat 4564
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def joinTemplate : List Instr := [.op .JUMPDEST]
