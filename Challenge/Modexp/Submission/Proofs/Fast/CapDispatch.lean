@@ -1,4 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedFrames
+import Challenge.Modexp.Submission.Proofs.Fast.NonzeroSelector
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
@@ -9,7 +10,7 @@ set_option linter.unusedSimpArgs false
 The ladder entry is a computed jump `base + distance * [bit 7 of s32]`.  The old
 artifact carried the distance as a multiplier on the masked bit itself
 (`PUSH1 0x80 AND PUSH1 0x0e MUL PUSH2 base ADD`), which forces the distance to be a
-multiple of 128.  Normalizing the mask with `ISZERO ISZERO` first turns the
+multiple of 128.  Normalizing the mask with `PUSH0 LT` first turns the
 selector into a plain 0/1, so any distance fits in a `PUSH2` literal.
 
 Everything here is generic in the entry program counter, the base and the
@@ -27,7 +28,23 @@ open Challenge.Modexp.Submission.Proofs.Fast.CiosCached
 
 /-- The normalized four-limb selector: `1` when bit 7 of `x` is set, else `0`. -/
 def selectBit (x : UInt256) : UInt256 :=
-  UInt256.isZero (UInt256.isZero (UInt256.land (UInt256.ofNat 128) x))
+  UInt256.lt ({ val := 0 } : UInt256) (UInt256.land (UInt256.ofNat 128) x)
+
+/-- Selector for the concrete direct setup site. Its reachable word is either
+32*n on ordinary setup or n on square setup, with n = 4 or 8. This definition
+is not claimed equivalent to selectBit on arbitrary words. -/
+def directSelector (x : UInt256) : UInt256 := UInt256.eq (UInt256.ofNat 128) x
+
+theorem directSelector_eq_selectBit (x : UInt256)
+    (hx : x = UInt256.ofNat 4 ∨ x = UInt256.ofNat 8 ∨
+      x = UInt256.ofNat 128 ∨ x = UInt256.ofNat 256) :
+    directSelector x = selectBit x := by
+  rcases hx with h | h | h | h <;> subst x <;> decide
+
+/-- The cheaper instruction pair preserves the preceding selector on every word. -/
+theorem selectBit_eq_double_isZero (x : UInt256) :
+    selectBit x = UInt256.isZero (UInt256.isZero (UInt256.land (UInt256.ofNat 128) x)) :=
+  NonzeroSelector.zero_lt_eq_double_isZero _
 
 @[simp] theorem selectBit_128 : selectBit (UInt256.ofNat 128) = UInt256.ofNat 1 := by decide
 
@@ -84,18 +101,19 @@ theorem target_isValidJumpDest (code : ByteArray) (base dist : UInt256) (n : Nat
 
 /-! ## The two dispatch programs
 
-`targetProgram` is the site that consumes the width word already on top of the
-stack; `targetProgramDup` is the site that reaches it with a `DUP`.  Both are
-thirteen and fourteen bytes respectively, and both are stated at an arbitrary
-entry program counter.
+These retained generic mask templates consume the width word directly or via
+`DUP`; they model `selectBit` for arbitrary words. They occupy thirteen and
+fourteen bytes respectively, at an arbitrary entry program counter. The current
+concrete direct setup uses `directSelector` and EQ128 with two JUMPDEST padding
+bytes, whose exact execution is proved in TnM128SetupPrefix.
 -/
 
 def targetProgram (dist base : UInt256) : List Instr :=
-  [.push 1 128, .op .AND, .op .ISZERO, .op .ISZERO,
+  [.push 1 128, .op .AND, .push 0 0, .op .LT,
    .push 2 dist, .op .MUL, .push 2 base, .op .ADD]
 
 def targetProgramDup (k : Operation.DupOp) (dist base : UInt256) : List Instr :=
-  [.push 1 128, .op (.Dup k), .op .AND, .op .ISZERO, .op .ISZERO,
+  [.push 1 128, .op (.Dup k), .op .AND, .push 0 0, .op .LT,
    .push 2 dist, .op .MUL, .push 2 base, .op .ADD]
 
 theorem land_comm' (a b : UInt256) : UInt256.land a b = UInt256.land b a := by

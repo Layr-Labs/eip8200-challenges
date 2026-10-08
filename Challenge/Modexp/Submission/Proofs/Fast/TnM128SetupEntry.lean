@@ -70,11 +70,8 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     dst ret m0 inv aEnd tl m96 m32 rest hcap hact
   have hprefix := runInstructions_append_some _ _ _ _ _
     (runInstructions_append_some _ _ _ _ _ hreads hshuffle) hlow
-  -- The artifact now computes the ladder displacement as `14 * (s32 &&& 128)` instead of
-  -- `148 * [s32 = 128]`.  The two agree at s32 = 128 and s32 = 256 but NOT at s32 = 160,
-  -- 192, 224 (n = 5,6,7), where the mask is still set.  `n = 4 ∨ n = 8` is what makes this
-  -- step true, and it holds because the kernel is only ever entered from the two
-  -- specialised width carriers.
+  -- EQ128 on ordinary setup receives 32*n. The existing two-width
+  -- hypothesis proves equality with l1Target without an arbitrary-word claim.
   have hdisp1 : UInt256.ofNat 3562 + EntryPrefix.displacement mem = l1Target n := by
     rcases hn4 with rfl | rfl <;>
       rw [EntryPrefix.displacement, hs32] <;> decide
@@ -137,16 +134,16 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
   rw [hAend] at hreads
   have hshuffle := EntryPrefix.run_shuffle { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret m0 inv aEnd tl m96 m32
-    (UInt256.ofNat 1747 * CapDispatch.selectBit (UInt256.ofNat n)) rest hcap hact
+    (UInt256.ofNat 1747 * CapDispatch.directSelector (UInt256.ofNat n)) rest hcap hact
   have hlow := EntryPrefix.run_low { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb)
-    (UInt256.ofNat 3562 + (UInt256.ofNat 1747 * CapDispatch.selectBit (UInt256.ofNat n)))
+    (UInt256.ofNat 3562 + (UInt256.ofNat 1747 * CapDispatch.directSelector (UInt256.ofNat n)))
     (MachineState.readWord mem 128)
     dst ret m0 inv aEnd tl m96 m32 rest hcap hact
   have hprefix := runInstructions_append_some _ _ _ _ _
     (runInstructions_append_some _ _ _ _ _ hreads hshuffle) hlow
   have hdisp1 : UInt256.ofNat 3562 +
-      (UInt256.ofNat 1747 * CapDispatch.selectBit (UInt256.ofNat n)) =
+      (UInt256.ofNat 1747 * CapDispatch.directSelector (UInt256.ofNat n)) =
       UInt256.ofNat 3562 := by
     rcases hn4 with rfl | rfl <;> decide
   have hmasked :
