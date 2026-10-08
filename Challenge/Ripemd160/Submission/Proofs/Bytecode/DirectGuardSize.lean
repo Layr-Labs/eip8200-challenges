@@ -180,7 +180,7 @@ theorem anchorWord_false (input : ByteArray)
 
 /-- The recogniser's long-length entry (`JUMPDEST PUSH1 251`). -/
 theorem big_dest : Decode.isValidJumpDest submissionBytecode 4810 = true :=
-  Artifact.submissionArtifact.isValidJumpDest_index 3552 (by rfl)
+  Artifact.submissionArtifact.isValidJumpDest_index 3551 (by rfl)
 
 theorem run_anchor_prefix (input : ByteArray) :
     run anchorPrefix (PatternedScan.stS input 21 []) =

@@ -1,3 +1,18 @@
+# RIPEMD-160: pre-stage modulus, factor, and addend for the step-73 rotation — 651,806 gas in 5,248 bytes
+
+- SHA-256: `75709c5d561ec852a78510be246bc8c15c3bc42dfe6654399955788e9526a455`.
+- Size: 5,248 bytes; 3,626 instructions (−1); literal-encoding cost 8,194 (ceiling 8,194).
+- Base: promoted `ff838343` (source `2b2c8e9b`, 651,995 gas). Local scorer: 651,806 gas (−189), 49/49.
+- Model: Gemini 3.1 Pro, harness Antigravity.
+
+## The change
+
+At step 73 (pc 4276, `Paired73`), the fused rotation `MULMOD(x, f, m)` uses both a cached modulus `m` (`.cache 140`, `x.v12`) and a cached factor `f` (`.cache 310`, `x.v14`), followed by adding `e` (`x.v0` at the entry of `Paired72`). In the base image (`2b2c8e9b`), `Paired73` staged those operands locally with `DUP15 DUP14 SWAP2` before `DUP6 AND MULMOD` and `DUP6 ADD` after `PUSH1 14 SHR` (12 gas of staging overhead).
+
+We instead open `Paired72` (pc 4214) with `DUP13 DUP16 DUP3 SWAP8`, parking `[f, m, e]` directly below the top word while swapping the top `e` into `c`'s slot. To avoid pushing `x.v11` (`msg_prev`) past the `DUP16` limit during the Boolean function `F` in `Paired72` and `Paired73` (and to keep Chunk 65's literal-encoding cost within the 8,194 ceiling), `Paired72` interleaves `XOR`/`AND`/`OR` with its `DUP`s (`8c 8f 18 8f 8e 16 85 17 8b 18 18 01`), and `Paired73` computes `x.v6 & x.v11` (`89 8f 16`) before pushing `x.v0` (`85 17`). In `Paired73`, `DUP15 DUP14 SWAP2` and `DUP6` are removed (−12 gas, −4 bytes) and `PUSH1 14` is widened to `PUSH2 0014` (+1 byte, 0 gas), keeping the combined byte length of `Paired72 ++ Paired73` at 77 bytes. Net: −3 gas per compression block × 63 blocks = **−189 gas** (**651,806**).
+
+---
+
 # RIPEMD-160: stage only the MULMOD modulus at 10 fused-rotation sites — 653,759 gas in 5,248 bytes
 
 - SHA-256: `6f9bc501257104e174e21e36b4dc046f59ac041f2d6e056b909d85f26edca8c2`.

@@ -17,6 +17,15 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
+-- executable 75709c5d561ec852a78510be246bc8c15c3bc42dfe6654399955788e9526a455, 5248 bytes,
+-- 651806 gas, 8194 units of the 8194 literal-encoding budget. Derived from the promoted ff838343
+-- image (2b2c8e9b, 651995 gas): Paired72 opens with `DUP13 DUP16 DUP3 SWAP8`, pre-staging the
+-- cached factor (`.cache 310`), cached modulus (`.cache 140`), and post-rotation addend (`.e`) for
+-- the step-73 fused rotation in Paired73 (-3 gas per block x 63 blocks = -189 gas).
+-- model Gemini 3.1 Pro, harness Antigravity.
+--
+-- NOTE FOR THE FILER: every line below this point was inherited with the base tree and describes
+-- an EARLIER artifact, not this one.
 -- executable bc5431c49eb482fe570ce078dcdb1cbc222dd3d4959da6882e828c6cd541c67b, 5248 bytes,
 -- 655956 gas, 8194 units of the 8194 literal-encoding budget. Derived from the 7691072c image
 -- (655967 gas): the 32-byte block builds its 0x80 sentinel as `PUSH0 SWAP13 MSIZE ADD` instead of
