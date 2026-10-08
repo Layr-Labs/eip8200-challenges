@@ -144,8 +144,8 @@ def initTemplate : List Instr := [
   .push ⟨0, by decide⟩ (UInt256.ofNat 0)
 ]
 
-def firstTemplate : List Instr := [ .op (.Dup ⟨3, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 219),
+def firstTemplate : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 33),
+    .op (.Dup ⟨5, by decide⟩),
     .op .LT,
     .push ⟨2, by decide⟩ (UInt256.ofNat 4924),
     .op .JUMPI ]

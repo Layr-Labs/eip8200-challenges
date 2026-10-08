@@ -17,7 +17,7 @@ theorem full_iff (input : ByteArray) (n k : Nat) (hn : Allowed n) (hk : k≤last
   simpa only [current, ho] using hr hk0
 
 theorem first_iff (input : ByteArray) (n : Nat) (hn : Allowed n) :
-    219 < (current input n 0).full.toNat ↔ isTail n 0 := by
+    (current input n 0).stop.toNat < 33 ↔ isTail n 0 := by
   obtain ⟨ho,hf,he,hl,hr,_⟩ := facts n 0 hn (by omega)
   simpa only [current] using hf rfl
 
@@ -86,7 +86,7 @@ def start (s : State) (rho : List UInt256) (moves : Moves s rho)
   by_cases ht : isTail n 0
   · have hc := h.mpr ht
     simpa only [if_pos hc, loopState, if_pos ht] using g0.trans g1
-  · have hc : ¬ 219 < (current s.executionEnv.calldata n 0).full.toNat := fun x => ht (h.mp x)
+  · have hc : ¬ (current s.executionEnv.calldata n 0).stop.toNat < 33 := fun x => ht (h.mp x)
     simpa only [if_neg hc, loopState, if_neg ht] using g0.trans g1
 
 def words (s : State) (rho : List UInt256) (moves : Moves s rho)

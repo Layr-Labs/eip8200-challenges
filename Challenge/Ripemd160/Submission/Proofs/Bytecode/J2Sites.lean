@@ -282,7 +282,7 @@ def movesOf (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length≤990)
   first f := by
     apply firstSite.lift s _ e (frame f rho)
     have h := run_first s (UInt256.ofNat 4889) f rho hs e.run (valid_219 s e)
-    by_cases hc : 219 < f.full.toNat
+    by_cases hc : f.stop.toNat < 33
     · simpa only [atState, firstSite.end_pc, if_pos hc] using h
     · simpa only [atState, firstSite.end_pc, if_neg hc] using h
   normalGuard f := by

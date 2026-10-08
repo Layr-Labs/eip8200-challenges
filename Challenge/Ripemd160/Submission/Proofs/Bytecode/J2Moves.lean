@@ -12,7 +12,7 @@ structure Moves (s : State) (rho : List UInt256) where
   init : GasSteps (atState s 4814 rho)
     (atState s 4889 (frame (initResult s.executionEnv.calldata.size) rho))
   first (f : J2Raw.Frame) : GasSteps (atState s 4889 (frame f rho))
-    (atState s (if 219 < f.full.toNat then 4924 else 4897) (frame f rho))
+    (atState s (if f.stop.toNat < 33 then 4924 else 4897) (frame f rho))
   normal (f : J2Raw.Frame) : GasSteps (atState s 4897 (frame f rho))
     (atState s 4917 (frame (normalResult s f) rho))
   normalGuard (f : J2Raw.Frame) : GasSteps (atState s 4917 (frame f rho))

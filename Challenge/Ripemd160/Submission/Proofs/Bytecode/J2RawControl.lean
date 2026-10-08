@@ -15,11 +15,11 @@ theorem run_first (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code 4924 = true) :
     runInstrSeq firstTemplate {s with pc := pc, stack := frame f rho} =
-      some {s with pc := if 219 < f.full.toNat then UInt256.ofNat 4924 else pcAfter pc firstTemplate,
+      some {s with pc := if f.stop.toNat < 33 then UInt256.ofNat 4924 else pcAfter pc firstTemplate,
                    stack := frame f rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
-  by_cases hc : 219 < f.full.toNat
+  by_cases hc : f.stop.toNat < 33
   all_goals simp (discharger := omega) [firstTemplate, frame, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
     Nat.add_assoc, hrun, hbase, hcap, UInt256.gt, UInt256.lt, UInt256.eq, UInt256.isZero, UInt256.isTrue,

@@ -7,7 +7,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Frame
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open RecognitionAccumulator J2Accumulator J2Raw
 
-def last (n : Nat) : Nat := 8*((n-1)/251)+(n-251*((n-1)/251)-1)/32+(if n = 32 then 1 else 0)
+def last (n : Nat) : Nat := 8*((n-1)/251)+(n-251*((n-1)/251)-1)/32
 def blockStart (k : Nat) : Nat := 251*(k/8)
 def stop (n k : Nat) : Nat := min n (blockStart k+251)
 def fullW (n k : Nat) : UInt256 := UInt256.sub (UInt256.ofNat (stop n k)) (UInt256.ofNat 32)
@@ -23,7 +23,7 @@ theorem last_lt (n : Nat) (hn : Allowed n) : last n < 32 := by
 
 def Facts (n k : Nat) : Prop :=
   (UInt256.ofNat (offset k)).toNat = offset k ∧
-  (k = 0 → (219 < (fullW n k).toNat ↔ isTail n k)) ∧
+  (k = 0 → ((UInt256.ofNat (stop n k)).toNat < 33 ↔ isTail n k)) ∧
   (UInt256.ofNat (stop n k)).toNat = stop n k ∧
   (UInt256.ofNat n).toNat = n ∧
   (0 < k → (offset k < (fullW n k).toNat ↔ ¬ isTail n k)) ∧
