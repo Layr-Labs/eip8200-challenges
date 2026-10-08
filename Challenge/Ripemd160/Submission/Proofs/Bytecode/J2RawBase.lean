@@ -138,8 +138,7 @@ def initTemplate : List Instr := [
   .push ⟨32, by decide⟩ (UInt256.ofNat 0x6060606060606060606060606060606060606060606060606060606060606060),
   .op (.Dup ⟨0, by decide⟩),
   .op .NOT,
-  .op .JUMPDEST,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 32),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 32),
   .op (.Dup ⟨3, by decide⟩),
   .op .SUB,
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
@@ -243,9 +242,7 @@ def transitionTemplate : List Instr := [
 
 def transitionGuardTemplate : List Instr := [ .op (.Dup ⟨4, by decide⟩),
     .op .GT,
-    .op .JUMPDEST,
-    .op .JUMPDEST,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 4897),
+    .push ⟨4, by decide⟩ (UInt256.ofNat 4897),
     .op .JUMPI ]
 
 def toTailTemplate : List Instr := [ .push ⟨2, by decide⟩ (UInt256.ofNat 4924),
