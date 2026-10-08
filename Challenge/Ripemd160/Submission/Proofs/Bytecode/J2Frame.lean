@@ -23,7 +23,7 @@ theorem last_lt (n : Nat) (hn : Allowed n) : last n < 32 := by
 
 def Facts (n k : Nat) : Prop :=
   (UInt256.ofNat (offset k)).toNat = offset k ∧
-  (k = 0 → ((UInt256.ofNat (stop n k)).toNat < 33 ↔ isTail n k)) ∧
+  (k = 0 → ((UInt256.ofNat n).toNat < 33 ↔ isTail n k)) ∧
   (UInt256.ofNat (stop n k)).toNat = stop n k ∧
   (UInt256.ofNat n).toNat = n ∧
   (0 < k → (offset k < (fullW n k).toNat ↔ ¬ isTail n k)) ∧
@@ -36,7 +36,9 @@ def Facts (n k : Nat) : Prop :=
   (isTail n k → k < last n →
     UInt256.ofNat (stop n k) = UInt256.ofNat (offset (k+1)) ∧
     emin (UInt256.ofNat (stop n k)) (UInt256.ofNat n) = UInt256.ofNat (stop n (k+1)) ∧
-    UInt256.sub (UInt256.ofNat (stop n (k+1))) (UInt256.ofNat 32) = fullW n (k+1))
+    UInt256.sub (UInt256.ofNat (stop n (k+1))) (UInt256.ofNat 32) = fullW n (k+1) ∧
+    ((UInt256.ofNat (offset k)).toNat < (fullW n (k+1)).toNat ↔
+      offset (k+1) < (fullW n (k+1)).toNat))
 
 private theorem facts_closed (n : Nat) (hn : Allowed n) :
     ∀ k : Fin 32, k.val ≤ last n → Facts n k.val := by
@@ -98,11 +100,18 @@ theorem transition_next (s : State) (n k : Nat) (hn : Allowed n) (hk : k<last n)
     transitionResult (tailResult s (current s.executionEnv.calldata n k)) =
       current s.executionEnv.calldata n (k+1) := by
   obtain ⟨ho,hf,he,hl,hr,hfin,hnormal,htail,hnext⟩ := facts n k hn (by omega)
-  obtain ⟨ha,hen,hfn⟩ := hnext ht hk
+  obtain ⟨ha,hen,hfn,_⟩ := hnext ht hk
   have hm : k%8=7 := by rcases ht with h|h; omega; exact h
   rw [tail_acc s n k hn (by omega) ht]
   simp only [transitionResult, current, tw_next k (by have := last_lt n hn; omega) hm]
   rw [hen, hfn, ha]
+
+/-- At a transition the guard reads the old offset; it agrees with the new one against the new `full`. -/
+theorem transition_guard_iff (n k : Nat) (hn : Allowed n) (hk : k<last n) (ht : isTail n k) :
+    (UInt256.ofNat (offset k)).toNat < (fullW n (k+1)).toNat ↔
+      offset (k+1) < (fullW n (k+1)).toNat := by
+  obtain ⟨ho,hf,he,hl,hr,hfin,hnormal,htail,hnext⟩ := facts n k hn (by omega)
+  exact (hnext ht hk).2.2.2
 
 #print axioms facts
 #print axioms normal_next

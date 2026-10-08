@@ -148,7 +148,7 @@ def initTemplate : List Instr := [
 ]
 
 def firstTemplate : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 33),
-    .op (.Dup ⟨5, by decide⟩),
+    .op .CALLDATASIZE,
     .op .LT,
     .push ⟨2, by decide⟩ (UInt256.ofNat 4924),
     .op .JUMPI ]
@@ -238,13 +238,13 @@ def transitionTemplate : List Instr := [
   .op (.Swap ⟨4, by decide⟩),
   .op .POP,
   .op (.Swap ⟨4, by decide⟩),
-  .op (.Swap ⟨1, by decide⟩),
-  .op .POP
+  .op (.Swap ⟨1, by decide⟩)
 ]
 
-def transitionGuardTemplate : List Instr := [ .op (.Dup ⟨3, by decide⟩),
-    .op (.Dup ⟨2, by decide⟩),
-    .op .LT,
+def transitionGuardTemplate : List Instr := [ .op (.Dup ⟨4, by decide⟩),
+    .op .GT,
+    .op .JUMPDEST,
+    .op .JUMPDEST,
     .push ⟨2, by decide⟩ (UInt256.ofNat 4897),
     .op .JUMPI ]
 
