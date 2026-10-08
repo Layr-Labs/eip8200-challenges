@@ -12,12 +12,12 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCoreLeft78
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof PairedLaneUInt256Bridge
 open Paired144WordRound Paired144WordRotation StaggerCoreCommon
 def input (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (k : UInt256) : StaggerRaw.Input :=
-  ⟨word memory h4 (.d) q right k, word memory h4 (.b) q right k, word memory h4 (.e) q right k, word memory h4 (.a) q right k, word memory h4 (.literal 23) q right k, word memory h4 (.cachedMessage 360) q right k, word memory h4 (.k) q right k, word memory h4 (.c) q right k, word memory h4 (.er) q right k, word memory h4 (.cr) q right k, word memory h4 (.ar) q right k, word memory h4 (.dr) q right k, word memory h4 (.br) q right k, word memory h4 (.factor) q right k, word memory h4 (.lower) q right k, word memory h4 (.cache 140) q right k, word memory h4 (.cache 350) q right k, word memory h4 (.cache 310) q right k, word memory h4 (.cache 190) q right k, word memory h4 (.cache 500) q right k⟩
-theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho : List UInt256) :
+  ⟨word memory h4 (.b) q right k, word memory h4 (.d) q right k, word memory h4 (.e) q right k, word memory h4 (.ar) q right k, word memory h4 (.cachedMessage 360) q right k, word memory h4 (.pair) q right k, word memory h4 (.upper) q right k, word memory h4 (.er) q right k, word memory h4 (.cr) q right k, word memory h4 (.literal 23) q right k, word memory h4 (.k) q right k, word memory h4 (.c) q right k, word memory h4 (.factor) q right k, word memory h4 (.lower) q right k, word memory h4 (.cache 140) q right k, word memory h4 (.cache 350) q right k, word memory h4 (.cache 310) q right k, word memory h4 (.cache 190) q right k, word memory h4 (.cache 500) q right k, UInt256.ofNat 0⟩
+theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho : List UInt256) (hsame : right.e = q.a) (hsame2 : right.d = q.e) (hsame3 : right.b = q.c) :
     StaggerRawLeft78.outputStack memory (input memory h4 q right (UInt256.ofNat 2840853838)) rho =
-      stack memory h4 [ .d, .c, .a, .e, .ar, .cachedMessage 360, .k, .b, .er, .cr, .literal 23, .dr, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (StaggerCoreModel.left78 memory q) (right) (UInt256.ofNat 2840853838) rho := by
+      stack memory h4 [ .d, .b, .c, .e, .a, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .literal 23, .k, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190 ] (StaggerCoreModel.left78 memory q) (right) (UInt256.ofNat 2840853838) (h4 :: rho) := by
   simp only [StaggerRawLeft78.outputStack, input, stack, List.map_cons, List.map_nil,
-    List.cons_append, List.nil_append, StaggerCoreCommon.word,
+    List.cons_append, List.nil_append, StaggerCoreCommon.word, hsame, hsame2, hsame3,
     StaggerCoreModel.initial, StaggerCoreModel.pair, StaggerCoreModel.pairWord, StaggerCoreModel.left,
     StaggerCoreModel.right0, StaggerCoreModel.right1, StaggerCoreModel.right2,
     StaggerCoreModel.left77, StaggerCoreModel.left78, StaggerCoreModel.left79,
@@ -30,17 +30,15 @@ theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho 
     StaggerCoreCommon.xor_left_comm, StaggerCoreCommon.xor_assoc]
   all_goals first | rfl | trivial
 #print axioms output_eq
-def gasSteps (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
-    (hsame : right.e = q.a)
+def gasSteps (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256) (hsame : right.e = q.a) (hsame2 : right.d = q.e) (hsame3 : right.b = q.c)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4452, stack := stack s.memory h4 [ .e, .b, .e, .d, .ar, .cachedMessage 360, .k, .c, .er, .cr, .literal 23, .dr, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (UInt256.ofNat 2840853838) rho}
-      {s with pc := UInt256.ofNat 4480, stack := stack s.memory h4 [ .d, .c, .a, .e, .ar, .cachedMessage 360, .k, .b, .er, .cr, .literal 23, .dr, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (StaggerCoreModel.left78 s.memory q) (right) (UInt256.ofNat 2840853838) rho} := by
-  have h := StaggerRawLeft78.gasSteps s (input s.memory h4 q right (UInt256.ofNat 2840853838)) rho hs
-    (by simp only [input, StaggerCoreCommon.word, hsame]) hr ha hcode hfork hnp
-  rw [output_eq] at h
+    GasSteps {s with pc := UInt256.ofNat 4445, stack := stack s.memory h4 [ .b, .d, .e, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .literal 23, .k, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (UInt256.ofNat 2840853838) rho}
+      {s with pc := UInt256.ofNat 4475, stack := stack s.memory h4 [ .d, .b, .c, .e, .a, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .literal 23, .k, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190 ] (StaggerCoreModel.left78 s.memory q) (right) (UInt256.ofNat 2840853838) (h4 :: rho)} := by
+  have h := StaggerRawLeft78.gasSteps s (input s.memory h4 q right (UInt256.ofNat 2840853838)) rho hs hr ha hcode hfork hnp
+  rw [output_eq s.memory h4 q right rho hsame hsame2 hsame3] at h
   exact h
 #print axioms gasSteps
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCoreLeft78
