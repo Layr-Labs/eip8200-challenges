@@ -19,7 +19,7 @@ def gasSteps (s : State) (input : ByteArray) (i : Nat) (h : Compression.HashStat
         pc := LoopCompletionControl.blockPC input i
         stack := StaggerPersistentLoopRaw.entryStack input i h (DriverTrace.messageOffsetWord i) limit rho}
       {scheduledState s i with
-        pc := UInt256.ofNat 4559
+        pc := UInt256.ofNat 4558
         stack := frame (result (scheduledState s i).memory h)
           (StaggerPersistentLoopRaw.blockMark input i (DriverTrace.messageOffsetWord i)) limit rho} := by
   let q := scheduledState s i

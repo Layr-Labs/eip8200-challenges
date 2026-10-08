@@ -15,21 +15,20 @@ open StackRoundTrace StaggerRaw
 private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
 def template : List Instr :=
-  [ .op (.Dup ⟨13, by decide⟩),
-    .op (.Dup ⟨8, by decide⟩),
-    .op (.Dup ⟨2, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 612),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 612),
     .op .MLOAD,
-    .op (.Swap ⟨0, by decide⟩),
-    .op (.Dup ⟨15, by decide⟩),
-    .op (.Dup ⟨6, by decide⟩),
+    .op (.Dup ⟨11, by decide⟩),
+    .op (.Dup ⟨2, by decide⟩),
+    .op (.Dup ⟨14, by decide⟩),
+    .op (.Dup ⟨5, by decide⟩),
     .op .NOT,
     .op .OR,
     .op .XOR,
+    .op .ADD,
+    .op .ADD,
+    .op (.Dup ⟨8, by decide⟩),
+    .op .ADD,
     .op (.Dup ⟨14, by decide⟩),
-    .op .ADD,
-    .op .ADD,
-    .op .ADD,
     .op .AND,
     .op (.Dup ⟨13, by decide⟩),
     .op .MUL,
@@ -64,7 +63,7 @@ def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
     x.v18 ] ++ rho
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.shiftRight (UInt256.mul x.v12 x.v11) (UInt256.ofNat 23)),
-    (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul x.v12 (UInt256.land (UInt256.add (UInt256.add (UInt256.add x.v10 (UInt256.xor (UInt256.lor (UInt256.lnot x.v1) x.v11) x.v0)) (MachineState.readWord memory 612)) x.v7) x.v13)) (UInt256.ofNat 28))),
+    (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul x.v12 (UInt256.land x.v13 (UInt256.add x.v7 (UInt256.add (UInt256.add (UInt256.xor (UInt256.lor (UInt256.lnot x.v1) x.v11) x.v0) x.v10) (MachineState.readWord memory 612))))) (UInt256.ofNat 28))),
     x.v0,
     x.v1,
     x.v2,
@@ -86,7 +85,7 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     x.v18 ] ++ rho
 def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.shiftRight (UInt256.mul x.v12 x.v11) (UInt256.ofNat 23)),
-    (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul x.v12 (UInt256.land (UInt256.add (UInt256.add (UInt256.add x.v10 (UInt256.xor (UInt256.lor (UInt256.lnot x.v1) x.v11) x.v0)) (MachineState.readWord memory 612)) x.v7) x.v13)) (UInt256.ofNat 28))),
+    (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul x.v12 (UInt256.land x.v13 (UInt256.add x.v7 (UInt256.add (UInt256.add (UInt256.xor (UInt256.lor (UInt256.lnot x.v1) x.v11) x.v0) x.v10) (MachineState.readWord memory 612))))) (UInt256.ofNat 28))),
     x.v0,
     x.v1,
     x.v2,
@@ -157,9 +156,9 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 4445, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 4475, stack := outputStack s.memory x rho} := by
+      {s with pc := UInt256.ofNat 4474, stack := outputStack s.memory x rho} := by
   have hraw := run_actual s (UInt256.ofNat 4445) x rho hstack hrun hactive
-  have hend : pcAfter (UInt256.ofNat 4445) template = UInt256.ofNat 4475 := by decide
+  have hend : pcAfter (UInt256.ofNat 4445) template = UInt256.ofNat 4474 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps
