@@ -1,3 +1,52 @@
+# RIPEMD-160: two recogniser guards read cheaper operands — 655,486 gas in 5,248 bytes
+
+- SHA-256: `b3e6a0315fe5a984fc7b3d962ece0137fdfc2e68ea29b403693fba417aeead31`.
+- Size: 5,248 bytes; 3,645 instructions (unchanged); every pc and instruction index unchanged.
+- Base: promoted `6309b263` (source `cc70575a`, SHA-256 `8dc8de10…ebc9`, 655,515 gas).
+  Local protected scorer: 655,486 gas (−29), 49/49, clean and dirty totals equal.
+- Model: Claude Opus 5.5, harness Claude Code.
+
+## 1. First-segment guard reads CALLDATASIZE (−14)
+
+The J2 recogniser's first guard at pc 4889 was `PUSH1 33 DUP6 LT PUSH2 133c JUMPI`: `DUP6` reads
+the clamped segment end `stop = min(size, 251)`, and the guard jumps straight to the tail compare
+when `stop < 33`. Byte 4891 becomes `CALLDATASIZE` (`0x85` → `0x36`): the guard tests `size < 33`
+for 2 gas instead of 3. For every size, `min(size, 251) < 33 ↔ size < 33`, so the branch is the
+same on every input. It runs once per recogniser entry, 14 times over the corpus.
+
+## 2. Segment-transition guard compares the offset it already has (−15)
+
+At a 251-byte segment boundary the transition block ended `… SWAP2 POP` (dropping the old block
+offset) and the guard then ran `DUP4 DUP3 LT` to test `off' < full'` with `off' = old stop`. Bytes
+4679..4682 (`POP DUP4 DUP3 LT`) become `DUP5 GT JUMPDEST JUMPDEST`: the old offset left on top is
+compared with the new `full'` and consumed by `GT`. On every transition the recogniser can reach
+(lengths 256, 376 and 1000) `old off < full' ↔ off' < full'`; this is a new conjunct of the
+per-length `J2Frame.Facts`, closed by `decide` like the others. 8 gas instead of 11, five
+transitions over the corpus.
+
+## What it costs the proof
+
+- `bytecode.hex`, `Bytes.lean`, the `Artifact.lean` rows (indices 3519..3522 and 3583) and the
+  chunk-19/20 byte certificates; the stale SHA-256 in the `Artifact.lean` docstring names this image.
+- `J2RawBase`: `firstTemplate` uses `CALLDATASIZE`; `transitionTemplate` drops its final `POP`;
+  `transitionGuardTemplate` is `DUP5 GT JUMPDEST JUMPDEST PUSH2 1321 JUMPI`.
+- `J2RawControl.run_first` takes `hlen : f.len = ofNat calldata.size` (as `run_finish` does) and
+  branches on `f.len`; `run_transitionGuard` takes the extra top word `x` and branches on
+  `x < f.full`. `J2RawTransition` leaves `f.off` on top of the new frame.
+- `RecognitionLift.Advances`/`advancesCheck` admit `GT` (DataStepper already had `sound_gt`).
+- `J2Moves`, `J2Sites` (transition site ends at 4679; the guard site starts at index 3519),
+  `J2Frame` (first-guard fact on `ofNat n`; new transition fact and `transition_guard_iff`),
+  `J2Loop` (`first_iff`/`start` use `len`; `route_transition` takes the old offset).
+- `EntryGateLogic.mul_size_toNat` (no bytecode relevance, same statement): the old proof's
+  `change` made the kernel reduce a concrete `UInt256` product and needed ~16 GB on a 18 GB
+  machine (over an hour without finishing); it now goes through a generic
+  `(UInt256.mul a b).toNat = a.toNat * b.toNat % UInt256.size` (by `rfl`) and the module checks
+  in seconds.
+
+---
+
+**The text below was inherited with the base tree and describes EARLIER artifacts.**
+
 # RIPEMD-160: the 32-byte sentinel doubles with MSIZE — 655,956 gas in 5,248 bytes
 
 - SHA-256: `bc5431c49eb482fe570ce078dcdb1cbc222dd3d4959da6882e828c6cd541c67b`.
