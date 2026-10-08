@@ -267,7 +267,7 @@ theorem valid_341 (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEn
   simpa only [hp] using h
 
 def movesOf (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length≤990)
-    (hinit : GasSteps (atState s 4814 rho)
+    (hinit : GasSteps (atState s 4814 (clamp (UInt256.ofNat s.executionEnv.calldata.size) :: rho))
       (atState s 4889 (frame (initResult s.executionEnv.calldata.size) rho))) : Moves s rho where
   init := hinit
   normal f := by
@@ -314,10 +314,10 @@ def movesOf (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length≤990)
     have hc : (frame f rho).length≤1022 := by simp only [frame, List.length_append, List.length_cons, List.length_nil]; omega
     simpa only [atState] using run_toTail s (UInt256.ofNat 4687) (frame f rho) hc e.run (valid_219 s e)
 
-/-- The scanner's moves when the segment end `clamp size` was pushed below the frame by the dispatch. -/
+/-- The scanner's moves; the segment end `clamp size` pushed by the dispatch becomes the frame's `stop` slot. -/
 def moves (s : State) (e : Env s) (rest : List UInt256) (hs : rest.length≤989) :
-    Moves s (clamp (UInt256.ofNat s.executionEnv.calldata.size) :: rest) :=
-  movesOf s e _ (by simp only [List.length_cons]; omega) (by
+    Moves s rest :=
+  movesOf s e _ (by omega) (by
     apply initSite.lift s _ e _
     simpa only [atState, initSite.end_pc] using run_init s (UInt256.ofNat 4814) rest hs e.run)
 

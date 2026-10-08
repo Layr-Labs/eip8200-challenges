@@ -8,8 +8,8 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace RecognitionRecurrence
 
 def finishRest (f : Frame) (rho : List UInt256) : List UInt256 :=
-  [f.off, f.word, f.full, f.stop, c96,
-    m9f] ++ rho
+  [f.off, f.word, f.full, m9f, c96,
+    f.stop] ++ rho
 
 theorem run_first (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)

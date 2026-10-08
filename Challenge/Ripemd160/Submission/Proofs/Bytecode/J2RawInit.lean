@@ -10,18 +10,18 @@ private theorem hadd_eq (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem hsub_eq (a b : UInt256) : a - b = UInt256.sub a b := rfl
 private theorem hdiv_eq (a b : UInt256) : a / b = UInt256.div a b := rfl
 private theorem hmul_eq (a b : UInt256) : a * b = UInt256.mul a b := rfl
-/-- The init block now starts with the segment end `min (size, 251)` already on the stack (pushed by the
-size-dispatch arm that jumped here) and copies it with `DUP3` instead of recomputing it.  The pushed word
-stays below the frame. -/
+/-- The init block starts with the segment end `min (size, 251)` already on the stack (pushed by the
+size-dispatch arm that jumped here).  The two SWAR constants are pushed above it and the pushed word becomes
+the frame's bottom slot (`stop`) in place, so no copy of it is made. -/
 theorem run_init (s : State) (pc : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 989) (hrun : s.halt = .Running) :
     runInstrSeq initTemplate {s with pc := pc, stack := clamp (UInt256.ofNat s.executionEnv.calldata.size) :: rho} =
-      some {s with pc := pcAfter pc initTemplate, stack := frame (initResult s.executionEnv.calldata.size) (clamp (UInt256.ofNat s.executionEnv.calldata.size) :: rho)} := by
+      some {s with pc := pcAfter pc initTemplate, stack := frame (initResult s.executionEnv.calldata.size) rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
-  have hU : UInt256.ofNat 0x9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f = m9f := rfl
-  have hH : UInt256.lnot m9f = c96 := by decide
-  have hL : ~~~m9f = c96 := hH
+  have hU : UInt256.ofNat 0x6060606060606060606060606060606060606060606060606060606060606060 = c96 := rfl
+  have hH : UInt256.lnot c96 = m9f := by decide
+  have hL : ~~~c96 = m9f := hH
   have hC : UInt256.ofNat 96 * PatternedSwar.M = c96 := rfl
   have hC2 : UInt256.mul (UInt256.ofNat 96) PatternedSwar.M = c96 := rfl
   simp (config := { maxSteps := 600000 }) (discharger := omega)

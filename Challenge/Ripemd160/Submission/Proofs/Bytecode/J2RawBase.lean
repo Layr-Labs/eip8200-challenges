@@ -24,8 +24,8 @@ def c96 : UInt256 := UInt256.mul (UInt256.ofNat 96) PatternedSwar.M
 def m9f : UInt256 := UInt256.ofNat 0x9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f
 def c114 : UInt256 := UInt256.mul (UInt256.ofNat 114) PatternedSwar.M
 def frame (f : Frame) (rho : List UInt256) : List UInt256 :=
-  [f.acc, f.off, f.word, f.full, f.stop, c96,
-    m9f] ++ rho
+  [f.acc, f.off, f.word, f.full, m9f, c96,
+    f.stop] ++ rho
 
 def clamp (x : UInt256) : UInt256 := UInt256.add x
   (UInt256.mul (UInt256.lt (UInt256.ofNat 251) x) (UInt256.sub (UInt256.ofNat 251) x))
@@ -135,12 +135,12 @@ theorem initResult_eq (n : Nat) : initResult n =
       clamp (UInt256.ofNat n), UInt256.ofNat n⟩ := rfl
 
 def initTemplate : List Instr := [
-  .push ⟨32, by decide⟩ (UInt256.ofNat 0x9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f),
+  .push ⟨32, by decide⟩ (UInt256.ofNat 0x6060606060606060606060606060606060606060606060606060606060606060),
   .op (.Dup ⟨0, by decide⟩),
   .op .NOT,
-  .op (.Dup ⟨2, by decide⟩),
+  .op .JUMPDEST,
   .push ⟨1, by decide⟩ (UInt256.ofNat 32),
-  .op (.Dup ⟨1, by decide⟩),
+  .op (.Dup ⟨3, by decide⟩),
   .op .SUB,
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
@@ -155,7 +155,7 @@ def firstTemplate : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 33),
 
 def normalTemplate : List Instr := [
   .op .JUMPDEST,
-  .op (.Dup ⟨6, by decide⟩),
+  .op (.Dup ⟨4, by decide⟩),
   .op (.Dup ⟨3, by decide⟩),
   .op .OR,
   .op (.Dup ⟨6, by decide⟩),
@@ -195,7 +195,7 @@ def tailTemplate : List Instr := [
   .op .OR]
 
 def finishTemplate : List Instr := [ .op .CALLDATASIZE,
-    .op (.Dup ⟨5, by decide⟩),
+    .op (.Dup ⟨7, by decide⟩),
     .op .SUB,
     .push ⟨2, by decide⟩ (UInt256.ofNat 4638),
     .op .JUMPI ]
@@ -206,7 +206,7 @@ def transitionTemplate : List Instr := [
   .op (.Dup ⟨5, by decide⟩),
   .op (.Dup ⟨0, by decide⟩),
   .op .ADD,
-  .op (.Dup ⟨7, by decide⟩),
+  .op (.Dup ⟨5, by decide⟩),
   .op .AND,
   .op (.Dup ⟨1, by decide⟩),
   .op (.Dup ⟨1, by decide⟩),
@@ -222,7 +222,7 @@ def transitionTemplate : List Instr := [
   .op .XOR,
   .op (.Swap ⟨1, by decide⟩),
   .push ⟨1, by decide⟩ (UInt256.ofNat 251),
-  .op (.Dup ⟨5, by decide⟩),
+  .op (.Dup ⟨7, by decide⟩),
   .op .ADD,
   .op (.Dup ⟨0, by decide⟩),
   .op .CALLDATASIZE,
@@ -237,7 +237,7 @@ def transitionTemplate : List Instr := [
   .op .SUB,
   .op (.Swap ⟨4, by decide⟩),
   .op .POP,
-  .op (.Swap ⟨4, by decide⟩),
+  .op (.Swap ⟨6, by decide⟩),
   .op (.Swap ⟨1, by decide⟩)
 ]
 
