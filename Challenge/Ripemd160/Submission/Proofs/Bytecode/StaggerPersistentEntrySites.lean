@@ -13,26 +13,26 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate StaggerPersistentEntryRaw StaggerPersistentFrame PairedMask32Cache
 def dispatchCode : List Instr := StaggerPersistentLoopRaw.padTemplate 129
 theorem dispatch_slice :
-    (Artifact.submissionArtifact.instructions.drop 3414).take dispatchCode.length = dispatchCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3413).take dispatchCode.length = dispatchCode := by rfl
 def dispatchSite : GenericRoundSite Artifact.submissionArtifact .Osaka dispatchCode :=
-  StackSiteBuilder.ofSlice dispatchCode 3414 dispatch_slice
-    (by change 3414 + dispatchCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice dispatchCode 3413 dispatch_slice
+    (by change 3413 + dispatchCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := dispatchCode) (by decide)) (by decide)
 theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4569 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3414) = UInt256.ofNat 4569
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3413) = UInt256.ofNat 4569
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-- The `MSIZE` at 4568 (instruction 3427) that reads the pad-test bound. -/
 theorem msize_decoded (s : State) (stack : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka) :
     ({s with pc := UInt256.ofNat 4568, stack := stack} : State).decodedOp = some .MSIZE := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3413 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3412 .MSIZE
     (by rfl) (by decide) trivial
-  apply Artifact.submissionArtifact.state_decodedOp_of ({s with pc := UInt256.ofNat 4568, stack := stack} : State) 3413
+  apply Artifact.submissionArtifact.state_decodedOp_of ({s with pc := UInt256.ofNat 4568, stack := stack} : State) 3412
     hcode ?_ .MSIZE none hd (by change Operation.MSIZE.availableInFork s.fork = true; rw [hfork]; rfl)
-  change (UInt256.ofNat 4568).toNat = Artifact.submissionArtifact.instructionPC 3413
+  change (UInt256.ofNat 4568).toNat = Artifact.submissionArtifact.instructionPC 3412
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -53,38 +53,38 @@ def gasSteps_msize (s : State) (off limit : UInt256) (h : Compression.HashState)
 
 def jumpCode : List Instr := PadJump.template 457
 theorem jump_slice :
-    (Artifact.submissionArtifact.instructions.drop 3419).take jumpCode.length = jumpCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3418).take jumpCode.length = jumpCode := by rfl
 def jumpSite : GenericRoundSite Artifact.submissionArtifact .Osaka jumpCode :=
-  StackSiteBuilder.ofSlice jumpCode 3419 jump_slice
-    (by change 3419 + jumpCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice jumpCode 3418 jump_slice
+    (by change 3418 + jumpCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := jumpCode) (by decide)) (by decide)
 theorem jump_pc : jumpSite.startPC = UInt256.ofNat 4575 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3419) = UInt256.ofNat 4575
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3418) = UInt256.ofNat 4575
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def swapCode : List Instr := StaggerPersistentLoopRaw.backTemplate
 
 theorem swap_slice :
-    (Artifact.submissionArtifact.instructions.drop 3418).take swapCode.length = swapCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3417).take swapCode.length = swapCode := by rfl
 
 def swapSite : GenericRoundSite Artifact.submissionArtifact .Osaka swapCode :=
-  StackSiteBuilder.ofSlice swapCode 3418 swap_slice
-    (by change 3418 + swapCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice swapCode 3417 swap_slice
+    (by change 3417 + swapCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := swapCode) (by decide)) (by decide)
 
 theorem swap_pc : swapSite.startPC = UInt256.ofNat 4574 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3418) = UInt256.ofNat 4574
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3417) = UInt256.ofNat 4574
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_finish (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4581).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3423 = 4581 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3422 = 4581 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3423 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3422 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 4581 = true
   rw [hcode]

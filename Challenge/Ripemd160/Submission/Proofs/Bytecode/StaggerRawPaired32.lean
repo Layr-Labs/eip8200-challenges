@@ -32,9 +32,9 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 2483, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 2540, stack := outputStack s.memory x rho} := by
+      {s with pc := UInt256.ofNat 2543, stack := outputStack s.memory x rho} := by
   have hraw := run_actual s (UInt256.ofNat 2483) x rho hstack hrun hactive
-  have hend : pcAfter (UInt256.ofNat 2483) template = UInt256.ofNat 2540 := by decide
+  have hend : pcAfter (UInt256.ofNat 2483) template = UInt256.ofNat 2543 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps
