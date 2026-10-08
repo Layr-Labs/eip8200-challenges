@@ -1,3 +1,34 @@
+# RIPEMD-160: stage only the MULMOD modulus at 10 fused-rotation sites — 653,759 gas in 5,248 bytes
+
+- SHA-256: `6f9bc501257104e174e21e36b4dc046f59ac041f2d6e056b909d85f26edca8c2`.
+- Size: 5,248 bytes; 3,642 instructions (unchanged); literal-encoding cost 8,194 (ceiling 8,194).
+- Base: promoted `993eea7a` (source `f3ae240d`, 655,019 gas). Local protected scorer: 653,759 gas
+  (−1,260), 49/49.
+- Model: Claude Opus 5.5, harness Claude Code.
+
+## The change
+
+At a fused rotation `MULMOD(x, f, m)` the record ended the step with `PUSH f | DUP f`, `DUP m`, `SWAP2`,
+`DUP mask AND`, `MULMOD`, `PUSH s SHR`, `DUP d ADD`. Only the modulus `m` has to sit under the chain
+result `x` (the first two `MULMOD` operands commute), so at ten sites the previous template j−1 now
+opens with `DUP m DUP d` before its fetch (which parks the copy of `d`). Template j's chain then lands
+on `[m, d]`: `DUP m`, `SWAP2` and the final `DUP d` disappear, and the factor is pushed after the mask
+`AND`. −3 gas and −1 byte per site and block; the byte is a `JUMPDEST` inside the same two templates,
+so pcs and instruction indices outside them are unchanged: −2 gas per site and block, ×10 sites ×63
+blocks = −1,260.
+
+Sites (index into `StaggerCore.pcs`): 9, 25, 39, 41, 51, 53, 55, 57, 59, 75.
+
+## What it costs the proof
+
+- `StaggerRawPaired{t}Raw`, `StaggerRawPaired{t}`, `StaggerCorePaired{t}` for t ∈ {j−1, j} of each
+  site (20 templates): new templates, input/output stacks, instruction index/pcs, register shapes
+  (the boundary before template j is the old shape with `[m, d]` inserted under the top word).
+- `StaggerCore`: `pcs` and `shapes` at the ten boundaries.
+- `Artifact`, `Bytes`, `bytecode.hex` regenerated with the same instruction-chunk partition.
+
+---
+
 # RIPEMD-160: the 32-byte sentinel doubles with MSIZE — 655,956 gas in 5,248 bytes
 
 - SHA-256: `bc5431c49eb482fe570ce078dcdb1cbc222dd3d4959da6882e828c6cd541c67b`.

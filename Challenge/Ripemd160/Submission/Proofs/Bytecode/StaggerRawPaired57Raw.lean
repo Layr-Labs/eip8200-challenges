@@ -14,15 +14,15 @@ open StackRoundTrace StaggerRaw
 private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
 def template : List Instr :=
-  [ .op (.Swap ⟨4, by decide⟩),
-    .op (.Dup ⟨6, by decide⟩),
-    .op (.Dup ⟨10, by decide⟩),
+  [ .op (.Swap ⟨6, by decide⟩),
+    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨12, by decide⟩),
     .op (.Dup ⟨1, by decide⟩),
-    .op (.Dup ⟨7, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
     .op .OR,
     .op .XOR,
-    .op (.Dup ⟨7, by decide⟩),
-    .op (.Dup ⟨7, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
     .op (.Dup ⟨3, by decide⟩),
     .op .AND,
     .op .XOR,
@@ -32,17 +32,15 @@ def template : List Instr :=
     .push ⟨2, by decide⟩ (UInt256.ofNat 846),
     .op .MLOAD,
     .op .ADD,
-    .op (.Dup ⟨1, by decide⟩),
+    .op (.Dup ⟨3, by decide⟩),
     .op .ADD,
-    .push ⟨13, by decide⟩ (UInt256.ofNat 475368975196266490020700880900),
-    .op (.Dup ⟨14, by decide⟩),
-    .op (.Swap ⟨1, by decide⟩),
+    .op .JUMPDEST,
     .op (.Dup ⟨5, by decide⟩),
     .op .AND,
+    .push ⟨13, by decide⟩ (UInt256.ofNat 475368975196266490020700880900),
     .op .MULMOD,
     .push ⟨1, by decide⟩ (UInt256.ofNat 20),
     .op .SHR,
-    .op (.Dup ⟨8, by decide⟩),
     .op .ADD,
     .op (.Dup ⟨3, by decide⟩),
     .op .AND,
@@ -55,58 +53,60 @@ def template : List Instr :=
     .op .AND ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
   [ x.v0,
-    x.v7,
+    x.v1,
     x.v2,
     x.v3,
     x.v4,
     x.v5,
     x.v6,
-    (UInt256.ofNat 23),
+    x.v7,
     x.v8,
-    x.v9,
+    (UInt256.ofNat 23),
     x.v10,
     x.v11,
     x.v12,
     x.v13,
     x.v14,
     x.v15,
-    x.v16 ] ++ rho
+    x.v16,
+    x.v17,
+    x.v18 ] ++ rho
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ (UInt256.land x.v3 (UInt256.shiftRight (UInt256.mul x.v10 x.v6) (UInt256.ofNat 23))),
-    x.v7,
-    x.v2,
+  [ (UInt256.land x.v5 (UInt256.shiftRight (UInt256.mul x.v12 x.v8) (UInt256.ofNat 23))),
     x.v3,
     x.v4,
+    x.v5,
+    x.v6,
     x.v0,
-    (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.shiftRight (UInt256.mulMod (UInt256.land x.v3 (UInt256.add x.v7 (UInt256.add (MachineState.readWord memory 846) (UInt256.add (UInt256.xor x.v6 (UInt256.land (UInt256.xor (UInt256.lor x.v4 x.v6) x.v9) (UInt256.xor (UInt256.land x.v4 x.v6) x.v0))) x.v5)))) (UInt256.ofNat 475368975196266490020700880900) x.v13) (UInt256.ofNat 20)))),
+    (UInt256.land x.v5 (UInt256.add (UInt256.shiftRight (UInt256.mulMod (UInt256.ofNat 475368975196266490020700880900) (UInt256.land x.v5 (UInt256.add x.v3 (UInt256.add (MachineState.readWord memory 846) (UInt256.add (UInt256.xor (UInt256.land (UInt256.xor (UInt256.land x.v8 x.v6) x.v0) (UInt256.xor (UInt256.lor x.v6 x.v8) x.v11)) x.v8) x.v7)))) x.v1) (UInt256.ofNat 20)) x.v2)),
     (UInt256.ofNat 23),
-    x.v8,
-    x.v9,
     x.v10,
     x.v11,
     x.v12,
     x.v13,
     x.v14,
     x.v15,
-    x.v16 ] ++ rho
+    x.v16,
+    x.v17,
+    x.v18 ] ++ rho
 def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ (UInt256.land x.v3 (UInt256.shiftRight (UInt256.mul x.v10 x.v6) (UInt256.ofNat 23))),
-    x.v7,
-    x.v2,
+  [ (UInt256.land x.v5 (UInt256.shiftRight (UInt256.mul x.v12 x.v8) (UInt256.ofNat 23))),
     x.v3,
     x.v4,
+    x.v5,
+    x.v6,
     x.v0,
-    (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.shiftRight (UInt256.mulMod (UInt256.land x.v3 (UInt256.add x.v7 (UInt256.add (MachineState.readWord memory 846) (UInt256.add (UInt256.xor x.v6 (UInt256.land (UInt256.xor (UInt256.lor x.v4 x.v6) x.v9) (UInt256.xor (UInt256.land x.v4 x.v6) x.v0))) x.v5)))) (UInt256.ofNat 475368975196266490020700880900) x.v13) (UInt256.ofNat 20)))),
+    (UInt256.land x.v5 (UInt256.add (UInt256.shiftRight (UInt256.mulMod (UInt256.ofNat 475368975196266490020700880900) (UInt256.land x.v5 (UInt256.add x.v3 (UInt256.add (MachineState.readWord memory 846) (UInt256.add (UInt256.xor (UInt256.land (UInt256.xor (UInt256.land x.v8 x.v6) x.v0) (UInt256.xor (UInt256.lor x.v6 x.v8) x.v11)) x.v8) x.v7)))) x.v1) (UInt256.ofNat 20)) x.v2)),
     (UInt256.ofNat 23),
-    x.v8,
-    x.v9,
     x.v10,
     x.v11,
     x.v12,
     x.v13,
     x.v14,
     x.v15,
-    x.v16 ] ++ rho
+    x.v16,
+    x.v17,
+    x.v18 ] ++ rho
 private theorem actualOutput_eq (memory : ByteArray) (x : Input) (rho : List UInt256) :
     actualOutput memory x rho = outputStack memory x rho := by rfl
 private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
@@ -116,7 +116,7 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
       some {s with pc := pcAfter pc template, stack := actualOutput s.memory x rho} := by
   have hbase : rho.length < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
-  have hcap (n : Nat) (hn : n ≤ 22) : rho.length + n < 1024 := by omega
+  have hcap (n : Nat) (hn : n ≤ 48) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 1088) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     Stagger144Active.word_active_preserved s.activeWords address hactive haddress
