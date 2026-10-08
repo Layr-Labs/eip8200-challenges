@@ -23,7 +23,6 @@ def template : List Instr :=
     .op .ADD,
     .op (.Dup ⟨7, by decide⟩),
     .op .ADD,
-    .op .JUMPDEST,
     .op (.Dup ⟨5, by decide⟩),
     .op .AND,
     .push ⟨13, by decide⟩ (UInt256.ofNat 4912146077028087063374012088321),

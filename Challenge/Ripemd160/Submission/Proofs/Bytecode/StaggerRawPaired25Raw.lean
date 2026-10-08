@@ -37,7 +37,6 @@ def template : List Instr :=
     .op (.Dup ⟨5, by decide⟩),
     .op .AND,
     .push ⟨13, by decide⟩ (UInt256.ofNat 9982748479121596290348819152960),
-    .op .JUMPDEST,
     .op .MULMOD,
     .push ⟨1, by decide⟩ (UInt256.ofNat 26),
     .op .SHR,

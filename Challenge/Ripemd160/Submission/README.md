@@ -1,30 +1,32 @@
-# RIPEMD-160: stage only the MULMOD modulus at 10 fused-rotation sites — 653,759 gas in 5,248 bytes
+# RIPEMD-160: stage only the MULMOD modulus at 13 fused-rotation sites — 653,192 gas in 5,248 bytes
 
-- SHA-256: `6f9bc501257104e174e21e36b4dc046f59ac041f2d6e056b909d85f26edca8c2`.
-- Size: 5,248 bytes; 3,642 instructions (unchanged); literal-encoding cost 8,194 (ceiling 8,194).
-- Base: promoted `993eea7a` (source `f3ae240d`, 655,019 gas). Local protected scorer: 653,759 gas
-  (−1,260), 49/49.
+- SHA-256: `adb8da56edc3684b5c2d771e10c89d9b9505c3630382e2dcc3c7db50166ae0df`.
+- Size: 5,248 bytes; instruction count unchanged; literal-encoding cost 8,194 (ceiling 8,194).
+- Base: promoted `22a3f44c` (source `9d8ffba0`, 654,830 gas). Local protected scorer: 653,192 gas
+  (−1,638), 49/49.
 - Model: Claude Opus 5.5, harness Claude Code.
 
 ## The change
 
 At a fused rotation `MULMOD(x, f, m)` the record ended the step with `PUSH f | DUP f`, `DUP m`, `SWAP2`,
 `DUP mask AND`, `MULMOD`, `PUSH s SHR`, `DUP d ADD`. Only the modulus `m` has to sit under the chain
-result `x` (the first two `MULMOD` operands commute), so at ten sites the previous template j−1 now
-opens with `DUP m DUP d` before its fetch (which parks the copy of `d`). Template j's chain then lands
-on `[m, d]`: `DUP m`, `SWAP2` and the final `DUP d` disappear, and the factor is pushed after the mask
-`AND`. −3 gas and −1 byte per site and block; the byte is a `JUMPDEST` inside the same two templates,
-so pcs and instruction indices outside them are unchanged: −2 gas per site and block, ×10 sites ×63
-blocks = −1,260.
+result `x` (the first two `MULMOD` operands commute), so at 13 sites the previous template j−1 now opens
+its fetch with `DUP m DUP d` (the fetch parks the copy of `d`). Template j's chain lands on `[m, d]`:
+`DUP m`, `SWAP2` and the final `DUP d` disappear and the factor is pushed after the mask `AND`. −3 gas
+and −1 byte per site and block; the byte is a `JUMPDEST` placed inside the same two templates (positions
+chosen jointly to keep the literal-encoding cost at 8,194), so pcs and instruction indices outside them
+are unchanged: −2 gas per site and block, ×13 sites ×63 blocks = −1,638.
 
-Sites (index into `StaggerCore.pcs`): 9, 25, 39, 41, 51, 53, 55, 57, 59, 75.
+Sites (index into `StaggerCore.pcs`): 9, 19, 21, 23, 25, 39, 41, 51, 53, 55, 57, 59, 75.
 
 ## What it costs the proof
 
 - `StaggerRawPaired{t}Raw`, `StaggerRawPaired{t}`, `StaggerCorePaired{t}` for t ∈ {j−1, j} of each
-  site (20 templates): new templates, input/output stacks, instruction index/pcs, register shapes
-  (the boundary before template j is the old shape with `[m, d]` inserted under the top word).
-- `StaggerCore`: `pcs` and `shapes` at the ten boundaries.
+  site (26 templates): new templates, input/output stacks, instruction index/pcs, register shapes
+  (the boundary before template j is the old shape with `[m, d]` inserted under the top word). The
+  Raw output keeps the executed `mulMod f a m` order; the Core `output_eq` simp set gains
+  `RawExpressionAC.mulMod_comm`.
+- `StaggerCore`: `pcs` and `shapes` at the 13 boundaries.
 - `Artifact`, `Bytes`, `bytecode.hex` regenerated with the same instruction-chunk partition.
 
 ---
