@@ -22,9 +22,9 @@ def template (dest : Nat) : List Instr :=
 def incTemplate : List Instr :=
   [.op (.Swap ⟨10, by decide⟩), .push ⟨1, by decide⟩ (UInt256.ofNat 64), .op .ADD]
 
-/-- Test the advanced offset (still on top) for the pad-only block. -/
+/-- Test the advanced offset (just under the `MSIZE` word on top) for the pad-only block. -/
 def padTemplate (dest : Nat) : List Instr :=
-  [.op (.Dup ⟨12, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .EQ,
+  [.op (.Dup ⟨1, by decide⟩), .op .EQ,
    .push ⟨1, by decide⟩ (UInt256.ofNat dest), .op .JUMPI]
 
 /-- Swap the advanced offset back into slot 12. -/
@@ -110,14 +110,14 @@ theorem run_inc (s : State) (pc : UInt256) (h : Compression.HashState)
 theorem run_hit (s : State) (pc : UInt256) (h : Compression.HashState)
     (off limit : UInt256) (rho : List UInt256) (dest : Nat)
     (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running)
-    (hhit : off = limit)
+    (m : UInt256) (hhit : off = m)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat dest).toNat = true) :
-    runInstrSeq (padTemplate dest) {s with pc := pc, stack := StaggerPersistentFrame.exitFrame h off limit rho} =
+    runInstrSeq (padTemplate dest) {s with pc := pc, stack := m :: StaggerPersistentFrame.exitFrame h off limit rho} =
       some {s with
         pc := UInt256.ofNat dest
         stack := StaggerPersistentFrame.exitFrame h off limit rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
-  have heq : UInt256.eq off limit = UInt256.ofNat 1 := by
+  have heq : UInt256.eq off m = UInt256.ofNat 1 := by
     unfold UInt256.eq
     rw [if_pos (by rw [hhit])]
   simp only [Word.word_toNat_ofNat] at hvalid
@@ -131,13 +131,13 @@ theorem run_hit (s : State) (pc : UInt256) (h : Compression.HashState)
 theorem run_miss (s : State) (pc : UInt256) (h : Compression.HashState)
     (off limit : UInt256) (rho : List UInt256) (dest : Nat)
     (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running)
-    (hmiss : off ≠ limit) :
-    runInstrSeq (padTemplate dest) {s with pc := pc, stack := StaggerPersistentFrame.exitFrame h off limit rho} =
+    (m : UInt256) (hmiss : off ≠ m) :
+    runInstrSeq (padTemplate dest) {s with pc := pc, stack := m :: StaggerPersistentFrame.exitFrame h off limit rho} =
       some {s with
         pc := pcAfter pc (padTemplate dest)
         stack := StaggerPersistentFrame.exitFrame h off limit rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
-  have heq : UInt256.eq off limit = UInt256.ofNat 0 := by
+  have heq : UInt256.eq off m = UInt256.ofNat 0 := by
     unfold UInt256.eq
     rw [if_neg (fun h => hmiss (Word.word_ext h))]
   simp (discharger := omega) [padTemplate, StaggerPersistentFrame.exitFrame,

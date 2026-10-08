@@ -83,7 +83,8 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
       (states_code input i) (states_fork input i) (states_halt input i)
       (states_noPrecompile input i)
   have gs := gasSteps_start input hfit hpositive hn32 rho hcap
-  have gb := run_blocks input (states input) (hashes input) (maskRho rho) hfit hm hambient hblock
+  have gb := run_blocks input (states input) (hashes input) (maskRho rho) hfit hm hambient
+    (fun i hi => states_msize input hfit hpositive i hi) hblock
   let count := DriverTrace.blockCount input
   have a := hambient count (Nat.le_refl _)
   have go := StaggerPersistentSerialize.gasSteps (states input count)

@@ -39,6 +39,11 @@ theorem next_offset (i count : Nat) (hi : i < count) (hbound : 1056 + count * 64
 def run_blocks (input : ByteArray) (states : Nat → State) (hashes : Nat → Compression.HashState)
     (rho : List UInt256) (hsize : input.size < 2^64) (hstack : rho.length ≤ 880)
     (hambient : ∀ i, i ≤ DriverTrace.blockCount input → Ambient input (states i))
+    (hmsize : ∀ i, i + 1 < DriverTrace.blockCount input →
+      ((input.size = (i + 1) * 64 ∧ input.size < 256) →
+        UInt256.ofNat (32 * (states (i + 1)).activeWords.toNat) = offsetWord (i + 1)) ∧
+      (¬ (input.size = (i + 1) * 64 ∧ input.size < 256) →
+        UInt256.ofNat (32 * (states (i + 1)).activeWords.toNat) ≠ offsetWord (i + 1)))
     (hblock : ∀ i, i < DriverTrace.blockCount input →
       GasSteps (loopState input (states i) (hashes i) i (DriverTrace.blockCount input) rho)
         (postState input (states (i + 1)) (hashes (i + 1)) i (DriverTrace.blockCount input) rho)) :
@@ -81,8 +86,7 @@ def run_blocks (input : ByteArray) (states : Nat → State) (hashes : Nat → Co
           (offsetWord i) (LoopCompletionControl.limit input) rho (by omega) a.running hle
           (by
             rw [next_offset i count hi hbound]
-            change UInt256.ofNat (1056 + (i + 1) * 64) = UInt256.ofNat (LoopCompletionControl.limitNat input)
-            rw [← LoopCompletionControl.pad_hit input i hh])
+            exact ((hmsize i hn).1 hh).symm)
           a.code a.fork a.notPrecompile
         rw [next_offset i count hi hbound] at gp
         simp only [postState, hmark] at gb
@@ -91,10 +95,8 @@ def run_blocks (input : ByteArray) (states : Nat → State) (hashes : Nat → Co
       · have gp := StaggerPersistentLoopSites.gasSteps_continue (states (i+1)) (hashes (i+1))
           (offsetWord i) (LoopCompletionControl.limit input) rho (by omega) a.running hle
           (by
-            intro heq
-            have ht := congrArg UInt256.toNat heq
-            rw [ho, hl] at ht
-            exact LoopCompletionControl.pad_miss input i hh ht)
+            rw [next_offset i count hi hbound]
+            exact fun heq => (hmsize i hn).2 hh heq.symm)
           a.code a.fork a.notPrecompile
         rw [next_offset i count hi hbound] at gp
         simp only [postState, hmark] at gb

@@ -70,13 +70,18 @@ noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input) (hpo
     (hszero : states 0 = PaddingTrace.entryState input)
     (hhzero : hashes 0 = StackRunBridge.initialHashState)
     (hambient : ∀ i, i ≤ DriverTrace.blockCount input → Ambient input (states i))
+    (hmsize : ∀ i, i + 1 < DriverTrace.blockCount input →
+      ((input.size = (i + 1) * 64 ∧ input.size < 256) →
+        UInt256.ofNat (32 * (states (i + 1)).activeWords.toNat) = offsetWord (i + 1)) ∧
+      (¬ (input.size = (i + 1) * 64 ∧ input.size < 256) →
+        UInt256.ofNat (32 * (states (i + 1)).activeWords.toNat) ≠ offsetWord (i + 1)))
     (hblock : ∀ i, i < DriverTrace.blockCount input →
       GasSteps (loopState input (states i) (hashes i) i (DriverTrace.blockCount input) maskRho)
         (postState input (states (i + 1)) (hashes (i + 1)) i (DriverTrace.blockCount input) maskRho))
     (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 247)) :
     GasSteps (initialState submissionBytecode input 0) (result input states hashes) := by
   have gs := gasSteps_start input hfit hpositive hn32 entryPrefix
-  have gb := run_blocks input states hashes maskRho hfit (by decide) hambient hblock
+  have gb := run_blocks input states hashes maskRho hfit (by decide) hambient hmsize hblock
   have a := hambient (DriverTrace.blockCount input) (Nat.le_refl _)
   have go := StaggerPersistentSerialize.gasSteps (states (DriverTrace.blockCount input))
     (StaggerPersistentLoopRaw.blockMark input (DriverTrace.blockCount input - 1) (offsetWord (DriverTrace.blockCount input - 1))) (LoopCompletionControl.limit input)
@@ -89,6 +94,11 @@ theorem correct_of_blocks (input : ByteArray) (hfit : CalldataFits input) (hposi
     (hszero : states 0 = PaddingTrace.entryState input)
     (hhzero : hashes 0 = StackRunBridge.initialHashState)
     (hambient : ∀ i, i ≤ DriverTrace.blockCount input → Ambient input (states i))
+    (hmsize : ∀ i, i + 1 < DriverTrace.blockCount input →
+      ((input.size = (i + 1) * 64 ∧ input.size < 256) →
+        UInt256.ofNat (32 * (states (i + 1)).activeWords.toNat) = offsetWord (i + 1)) ∧
+      (¬ (input.size = (i + 1) * 64 ∧ input.size < 256) →
+        UInt256.ofNat (32 * (states (i + 1)).activeWords.toNat) ≠ offsetWord (i + 1)))
     (hblock : ∀ i, i < DriverTrace.blockCount input →
       GasSteps (loopState input (states i) (hashes i) i (DriverTrace.blockCount input) maskRho)
         (postState input (states (i + 1)) (hashes (i + 1)) i (DriverTrace.blockCount input) maskRho))
@@ -98,7 +108,7 @@ theorem correct_of_blocks (input : ByteArray) (hfit : CalldataFits input) (hposi
     (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 247)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  let trace := fullTrace input hfit hpositive hn32 states hashes hszero hhzero hambient hblock entryPrefix
+  let trace := fullTrace input hfit hpositive hn32 states hashes hszero hhzero hambient hmsize hblock entryPrefix
   have hr : (result input states hashes).halt = .Returned := rfl
   have hc : (result input states hashes).callStack = [] := hcalls
   have hb : (result input states hashes).hReturn = spec input :=

@@ -111,7 +111,7 @@ def gasSteps_step (s : State) (h : Compression.HashState) (off limit : UInt256)
 
 def gasSteps_continue (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hle : off.toNat ≤ limit.toNat) (hmiss : nextOffset off ≠ limit)
+    (hle : off.toNat ≤ limit.toNat) (hmiss : nextOffset off ≠ UInt256.ofNat (32 * s.activeWords.toNat))
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
@@ -128,11 +128,11 @@ def gasSteps_continue (s : State) (h : Compression.HashState) (off limit : UInt2
   exact (((gp.trans g2).trans g3).trans g4).trans (gasSteps_join s (StaggerPersistentFrame.frame h (nextOffset off) limit rho)
     (by simp [StaggerPersistentFrame.frame]; omega) hrun hcode hfork hnp)
 
-/-- The advanced offset meets the limit: the pad-only block starts with it still on top. -/
+/-- The advanced offset meets the active memory size: the pad-only block starts with it still on top. -/
 def gasSteps_pad (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hle : off.toNat ≤ limit.toNat)
-    (hdispatch : nextOffset off = limit)
+    (hdispatch : nextOffset off = UInt256.ofNat (32 * s.activeWords.toNat))
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :

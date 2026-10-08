@@ -5,6 +5,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadLift
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionLift
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentLoopRaw
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadJump
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Msize
 set_option warningAsError true
 set_option maxRecDepth 30000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentEntrySites
@@ -12,16 +13,43 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate StaggerPersistentEntryRaw StaggerPersistentFrame PairedMask32Cache
 def dispatchCode : List Instr := StaggerPersistentLoopRaw.padTemplate 129
 theorem dispatch_slice :
-    (Artifact.submissionArtifact.instructions.drop 3429).take dispatchCode.length = dispatchCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3430).take dispatchCode.length = dispatchCode := by rfl
 def dispatchSite : GenericRoundSite Artifact.submissionArtifact .Osaka dispatchCode :=
-  StackSiteBuilder.ofSlice dispatchCode 3429 dispatch_slice
-    (by change 3429 + dispatchCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice dispatchCode 3430 dispatch_slice
+    (by change 3430 + dispatchCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := dispatchCode) (by decide)) (by decide)
-theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4570 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3429) = UInt256.ofNat 4570
+theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4571 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3430) = UInt256.ofNat 4571
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
+
+/-- The `MSIZE` at 4570 (instruction 3429) that reads the pad-test bound. -/
+theorem msize_decoded (s : State) (stack : List UInt256)
+    (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka) :
+    ({s with pc := UInt256.ofNat 4570, stack := stack} : State).decodedOp = some .MSIZE := by
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3429 .MSIZE
+    (by rfl) (by decide) trivial
+  apply Artifact.submissionArtifact.state_decodedOp_of ({s with pc := UInt256.ofNat 4570, stack := stack} : State) 3429
+    hcode ?_ .MSIZE none hd (by change Operation.MSIZE.availableInFork s.fork = true; rw [hfork]; rfl)
+  change (UInt256.ofNat 4570).toNat = Artifact.submissionArtifact.instructionPC 3429
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]
+  decide
+
+/-- `MSIZE` pushes the active memory size above the exit frame. -/
+def gasSteps_msize (s : State) (off limit : UInt256) (h : Compression.HashState)
+    (rho : List UInt256) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    GasSteps {s with pc := UInt256.ofNat 4570, stack := exitFrame h off limit rho}
+      {s with pc := UInt256.ofNat 4571, stack := UInt256.ofNat (32 * s.activeWords.toNat) :: exitFrame h off limit rho} := by
+  have hcap : ({s with pc := UInt256.ofNat 4570, stack := exitFrame h off limit rho} : State).stack.length < 1024 := by
+    change (exitFrame h off limit rho).length < 1024
+    simp [exitFrame]; omega
+  have g := Msize.step (msize_decoded s (exitFrame h off limit rho) hcode hfork) hcap hrun hnp
+  exact g.cast rfl (by
+    simp only [Word.succ_ofNat_mod])
 
 def jumpCode : List Instr := PadJump.template 457
 theorem jump_slice :
@@ -82,35 +110,44 @@ theorem valid_loop (s : State) (hcode : s.executionEnv.code = Artifact.submissio
   rw [hcode]
   exact h
 
-/-- Pad test after the finish test failed: the offset differs from the limit. -/
+/-- Pad test after the finish test failed: the offset differs from the active memory size. -/
 def gasSteps_padMiss (s : State) (off limit : UInt256) (h : Compression.HashState)
     (rho : List UInt256) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hmiss : off ≠ limit)
+    (hmiss : off ≠ UInt256.ofNat (32 * s.activeWords.toNat))
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 4570, stack := exitFrame h off limit rho}
       {s with pc := UInt256.ofNat 4576, stack := exitFrame h off limit rho} := by
-  apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4570, stack := exitFrame h off limit rho} _ hcode hfork hrun hnp dispatch_pc.symm
-  · exact PadLift.advancesAll_sound _ (by decide)
-  · have hr := StaggerPersistentLoopRaw.run_miss s (UInt256.ofNat 4570) h off limit rho 129 (by omega) hrun hmiss
-    have he : pcAfter (UInt256.ofNat 4570) (StaggerPersistentLoopRaw.padTemplate 129) = UInt256.ofNat 4576 := by decide
-    rw [he] at hr
-    exact hr
+  have g1 := gasSteps_msize s off limit h rho hstack hrun hcode hfork hnp
+  have g2 : GasSteps {s with pc := UInt256.ofNat 4571, stack := UInt256.ofNat (32 * s.activeWords.toNat) :: exitFrame h off limit rho}
+      {s with pc := UInt256.ofNat 4576, stack := exitFrame h off limit rho} := by
+    apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4571, stack := UInt256.ofNat (32 * s.activeWords.toNat) :: exitFrame h off limit rho} _ hcode hfork hrun hnp dispatch_pc.symm
+    · exact PadLift.advancesAll_sound _ (by decide)
+    · have hr := StaggerPersistentLoopRaw.run_miss s (UInt256.ofNat 4571) h off limit rho 129 (by omega) hrun
+        _ hmiss
+      have he : pcAfter (UInt256.ofNat 4571) (StaggerPersistentLoopRaw.padTemplate 129) = UInt256.ofNat 4576 := by decide
+      rw [he] at hr
+      exact hr
+  exact g1.trans g2
 
-/-- Pad test hit: jump to the pad-only block setup with the advanced offset still on top. -/
+/-- Pad test hit: jump to the pad-only block with the advanced offset still on top. -/
 def gasSteps_padHit (s : State) (off limit : UInt256) (h : Compression.HashState)
     (rho : List UInt256) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hhit : off = limit)
+    (hhit : off = UInt256.ofNat (32 * s.activeWords.toNat))
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 4570, stack := exitFrame h off limit rho}
       {s with pc := UInt256.ofNat 129, stack := exitFrame h off limit rho} := by
-  apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4570, stack := exitFrame h off limit rho} _ hcode hfork hrun hnp dispatch_pc.symm
-  · exact PadLift.advancesAll_sound _ (by decide)
-  · exact StaggerPersistentLoopRaw.run_hit s (UInt256.ofNat 4570) h off limit rho 129 (by omega) hrun hhit
-      (valid_pad s hcode)
+  have g1 := gasSteps_msize s off limit h rho hstack hrun hcode hfork hnp
+  have g2 : GasSteps {s with pc := UInt256.ofNat 4571, stack := UInt256.ofNat (32 * s.activeWords.toNat) :: exitFrame h off limit rho}
+      {s with pc := UInt256.ofNat 129, stack := exitFrame h off limit rho} := by
+    apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4571, stack := UInt256.ofNat (32 * s.activeWords.toNat) :: exitFrame h off limit rho} _ hcode hfork hrun hnp dispatch_pc.symm
+    · exact PadLift.advancesAll_sound _ (by decide)
+    · exact StaggerPersistentLoopRaw.run_hit s (UInt256.ofNat 4571) h off limit rho 129 (by omega) hrun
+        _ hhit (valid_pad s hcode)
+  exact g1.trans g2
 
 /-- Neither finish nor pad: the advanced offset goes back into slot 12. -/
 def gasSteps_swapBack (s : State) (off limit : UInt256) (h : Compression.HashState)

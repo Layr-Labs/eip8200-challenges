@@ -116,6 +116,42 @@ theorem hashArray_hashes (input : ByteArray) (hfit : CalldataFits input) (hpos :
     rw [ih (by omega), StackRunBridge.hashAfter_succ]
     rfl
 
+/-- What the block-exit `MSIZE` reads after block `i`: exactly the end of the copied input on
+the fast entry when the pad-only block is next, and above the next block pointer otherwise. -/
+theorem states_msize (input : ByteArray) (hfit : CalldataFits input) (hpos : 0 < input.size)
+    (i : Nat) (hi : i + 1 < DriverTrace.blockCount input) :
+    ((input.size = (i + 1) * 64 ∧ input.size < 256) →
+        UInt256.ofNat (32 * (states input (i + 1)).activeWords.toNat) =
+          DriverTrace.messageOffsetWord (i + 1)) ∧
+      (¬ (input.size = (i + 1) * 64 ∧ input.size < 256) →
+        UInt256.ofNat (32 * (states input (i + 1)).activeWords.toNat) ≠
+          DriverTrace.messageOffsetWord (i + 1)) := by
+  have hsize : input.size < 2 ^ 64 := hfit
+  have hctx := states_context input hfit hpos (i + 1) (by omega)
+  have hact := states_activeWords input hfit hpos (i + 1) (by omega)
+  have hle := PaddingTrace.entryState_active_le input hfit
+  have hcount : DriverTrace.blockCount input * 64 < input.size + 73 := by
+    rw [← DriverTrace.paddedLength_eq_blockCount]
+    exact Padding.paddedLength_lt input.size
+  constructor
+  · intro hh
+    rw [hact]
+    change UInt256.ofNat (32 * (PaddingTrace.entryState input).activeWords.toNat) = _
+    rw [PaddingTrace.entryState_msize_aligned input hfit (by omega) hpos]
+    unfold DriverTrace.messageOffsetWord DriverTrace.blockOffset Padding.messageOffset
+    congr 1
+    omega
+  · intro hh heq
+    have hal := hctx.allocated (i + 1) hi (by unfold DriverTrace.blockOffset; exact hh)
+    have hA : (states input (i + 1)).activeWords.toNat ≤ 2 ^ 70 := by
+      rw [hact]; exact hle
+    have ht := congrArg UInt256.toNat heq
+    unfold DriverTrace.messageOffsetWord DriverTrace.blockOffset Padding.messageOffset at ht
+    rw [Word.word_toNat_ofNat, Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (by omega), Nat.mod_eq_of_lt (by omega)] at ht
+    unfold messagePointer Padding.messageOffset DriverTrace.blockOffset at hal
+    omega
+
 #print axioms initial_context
 #print axioms states_context
 #print axioms states_activeWords

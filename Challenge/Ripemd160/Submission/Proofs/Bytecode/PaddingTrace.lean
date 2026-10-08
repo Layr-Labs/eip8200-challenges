@@ -1625,6 +1625,51 @@ theorem tail_exit_eq (input : ByteArray) (i : Nat) : lengthExitPending input i =
 
 theorem tail_returned_eq (input : ByteArray) (hfit : CalldataFits input) : lengthExitReturned input (lengthStop input) = padReturned input := lengthExitReturned_eq_stop input hfit
 
+/-- The entry state's active size stays far below the word range, so `MSIZE` never wraps. -/
+theorem entryState_active_le (input : ByteArray) (hfit : CalldataFits input) :
+    (entryState input).activeWords.toNat ≤ 2 ^ 70 := by
+  have hsize : input.size < 2 ^ 64 := hfit
+  have hcopy : (padCopyDone input).activeWords.toNat ≤ 2 ^ 70 := by
+    change (UInt256.ofNat (MachineState.activeWordsAfter
+      (padLengthReady input).activeWords.toNat Padding.messageOffset input.size)).toNat ≤ _
+    have h0 : (padLengthReady input).activeWords.toNat = 0 := by rfl
+    rw [h0, Challenge.EvmProof.Word.word_toNat_ofNat]
+    refine Nat.le_trans (Nat.mod_le _ _) ?_
+    unfold MachineState.activeWordsAfter Padding.messageOffset
+    split
+    · omega
+    · dsimp only
+      exact Nat.max_le.mpr ⟨by omega, by omega⟩
+  have hloop : ∀ j, j ≤ 9 → (lengthLoopActiveWords input j).toNat ≤ 2 ^ 70 := by
+    intro j
+    induction j with
+    | zero =>
+      intro _
+      change (UInt256.ofNat (MachineState.activeWordsAfter
+        (padCopyDone input).activeWords.toNat (Padding.messageOffset + input.size) 1)).toNat ≤ _
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat]
+      refine Nat.le_trans (Nat.mod_le _ _) ?_
+      unfold MachineState.activeWordsAfter Padding.messageOffset
+      rw [if_neg (by decide)]
+      dsimp only
+      exact Nat.max_le.mpr ⟨hcopy, by omega⟩
+    | succ j ih =>
+      intro hj
+      rw [lengthLoopActiveWords_succ_toNat input hfit j (by omega)]
+      have hl := Padding.paddedLength_lt input.size
+      exact Nat.max_le.mpr ⟨ih (by omega), by unfold Padding.messageOffset; omega⟩
+  unfold entryState
+  split
+  · exact hcopy
+  · exact hloop _ (lengthStop_le input)
+
+/-- On the fast entry the active size ends exactly at the copied input. -/
+theorem entryState_msize_aligned (input : ByteArray) (hfit : CalldataFits input)
+    (hz : input.size % 64 = 0 ∧ input.size < 256) (hpos : 0 < input.size) :
+    UInt256.ofNat (32 * (entryState input).activeWords.toNat) = UInt256.ofNat (1056 + input.size) := by
+  rw [entryState_skip input hz]
+  exact copiedLimit_aligned input hfit (by omega) hpos
+
 #print axioms gasSteps_pad
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PaddingTrace
