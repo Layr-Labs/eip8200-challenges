@@ -31,7 +31,7 @@ def chunkB (head : UInt256) : List Instr :=
    .op .POP]
 
 def chunkC (finish : UInt256) : List Instr :=
-  [.push 1 128, .op (.Dup ⟨10, by decide⟩), .op .AND, .op .ISZERO, .op .ISZERO,
+  [.push 1 128, .op (.Dup ⟨10, by decide⟩), .op .AND, .push 0 0, .op .LT,
    .push 2 1747, .op .MUL, .push 2 3562, .op .ADD,
    .op (.Swap ⟨3, by decide⟩),
    .op .POP,
@@ -76,7 +76,7 @@ theorem run_c (hcap : rest.length ≤ 1005) :
   have h18 : rest.length + 18 < 1024 := by omega
   simp [chunkC, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     List.exchange, h16, h17, h18, Challenge.EvmProof.Word.word_add_comm,
-    CapDispatch.selectBit, CapDispatch.land_comm',
+    CapDispatch.selectBit, CapDispatch.zero_lt_eq_double_isZero, CapDispatch.land_comm',
     Challenge.EvmProof.Word.literal_eq_ofNat]
   decide
 
