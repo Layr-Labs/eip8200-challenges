@@ -17,6 +17,18 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
+-- executable 7a5cf801da879a552c6993346eb6795574e7819b62ff70e735320452f6cbf2e5, 5248 bytes,
+-- 651617 gas, 8193 units of the 8194 literal-encoding budget. Derived from the promoted 75709c5d
+-- image (19fcdc3b, 651806 gas): the per-block ScheduledTailRaw epilogue (pcs 4506..4556) reorders
+-- its right-lane 144-bit shifts and pair additions (`D = (rd >> 144) + lc`, `C = lb + (rc >> 144)`,
+-- `E = (re >> 144) + ld`) before entering the 5-word chaining cycle `[E, D, C, B, A]`, cutting the
+-- setup permutation from 8 SWAPs to 7 SWAPs (`SWAP5`, `SWAP2`, `SWAP10`, `SWAP7`, `SWAP3`, `SWAP3`,
+-- `SWAP3`: -1 instruction = -3 gas per block x 63 blocks = -189 gas) and returning the freed byte
+-- as a dead `ADD` at pc 4580 so the 3626 instruction count and all pcs from 4581 on are unchanged.
+-- model Gemini 3.1 Pro, harness Antigravity.
+--
+-- NOTE FOR THE FILER: every line below this point was inherited with the base tree and describes
+-- an EARLIER artifact, not this one.
 -- executable 75709c5d561ec852a78510be246bc8c15c3bc42dfe6654399955788e9526a455, 5248 bytes,
 -- 651806 gas, 8194 units of the 8194 literal-encoding budget. Derived from the promoted ff838343
 -- image (2b2c8e9b, 651995 gas): Paired72 opens with `DUP13 DUP16 DUP3 SWAP8`, pre-staging the

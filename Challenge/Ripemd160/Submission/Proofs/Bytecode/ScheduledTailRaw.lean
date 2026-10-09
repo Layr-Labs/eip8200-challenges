@@ -6,6 +6,8 @@ set_option warningAsError true
 set_option maxRecDepth 30000
 set_option maxHeartbeats 3000000
 set_option linter.unusedSimpArgs false
+set_option linter.unusedTactic false
+set_option linter.unreachableTactic false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.ScheduledTailRaw
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace
@@ -63,20 +65,20 @@ def stack0 (q : Input) (rho : List UInt256) : List UInt256 := [ q.lb,
     q.off,
     q.limit ] ++ rho
 
-def chunk0 : List Instr := [ .op (.Swap ⟨6, by decide⟩),
+def chunk0 : List Instr := [ .op (.Swap ⟨4, by decide⟩),
+    .op (.Swap ⟨1, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHR,
-    .op (.Swap ⟨7, by decide⟩),
+    .op (.Swap ⟨9, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+    .op .SHR,
+    .op (.Swap ⟨6, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+    .op .SHR,
     .op (.Swap ⟨2, by decide⟩),
-    .op .POP,
-    .op (.Swap ⟨7, by decide⟩),
-    .op (.Swap ⟨0, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
-    .op .SHR,
-    .op .ADD,
-    .op (.Swap ⟨7, by decide⟩) ]
+    .op .POP ]
 
-def stack1 (q : Input) (rho : List UInt256) : List UInt256 := [ q.rb, q.la, q.ld, q.lc, q.re, q.lb, (UInt256.shiftRight q.rc (UInt256.ofNat 144)), q.rd, (UInt256.add (UInt256.shiftRight q.ra (UInt256.ofNat 144)) q.le), q.factor, q.lower, q.cache140, q.cache350, q.cache310, q.cache190, q.h4, q.h3, q.h2, q.h1, q.h0, q.off, q.limit ] ++ rho
+def stack1 (q : Input) (rho : List UInt256) : List UInt256 := [ q.rd, q.lc, (UInt256.shiftRight q.rc (UInt256.ofNat 144)), q.ld, q.lb, q.re, (UInt256.shiftRight q.rb (UInt256.ofNat 144)), q.la, q.le, (UInt256.shiftRight q.ra (UInt256.ofNat 144)), q.factor, q.lower, q.cache140, q.cache350, q.cache310, q.cache190, q.h4, q.h3, q.h2, q.h1, q.h0, q.off, q.limit ] ++ rho
 theorem run_chunk0 (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 980) (hrun : s.halt = .Running) :
     runInstrSeq chunk0 {s with pc := pc, stack := stack0 q rho} =
@@ -93,17 +95,17 @@ theorem run_chunk0 (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
 def chunk1 : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHR,
     .op .ADD,
-    .op (.Swap ⟨5, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
-    .op .SHR,
+    .op (.Swap ⟨2, by decide⟩),
+    .op .ADD,
     .op (.Swap ⟨2, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHR,
     .op .ADD,
     .op (.Dup ⟨15, by decide⟩),
-    .op .ADD ]
+    .op .ADD,
+    .op (.Dup ⟨8, by decide⟩) ]
 
-def stack2 (q : Input) (rho : List UInt256) : List UInt256 := [ (UInt256.add q.h2 (UInt256.add (UInt256.shiftRight q.re (UInt256.ofNat 144)) q.ld)), q.lc, (UInt256.shiftRight q.rd (UInt256.ofNat 144)), q.lb, (UInt256.shiftRight q.rc (UInt256.ofNat 144)), (UInt256.add (UInt256.shiftRight q.rb (UInt256.ofNat 144)) q.la), (UInt256.add (UInt256.shiftRight q.ra (UInt256.ofNat 144)) q.le), q.factor, q.lower, q.cache140, q.cache350, q.cache310, q.cache190, q.h4, q.h3, q.h2, q.h1, q.h0, q.off, q.limit ] ++ rho
+def stack2 (q : Input) (rho : List UInt256) : List UInt256 := [ q.lower, (UInt256.add q.h2 (UInt256.add (UInt256.shiftRight q.re (UInt256.ofNat 144)) q.ld)), (UInt256.add (UInt256.shiftRight q.rd (UInt256.ofNat 144)) q.lc), (UInt256.add q.lb (UInt256.shiftRight q.rc (UInt256.ofNat 144))), (UInt256.shiftRight q.rb (UInt256.ofNat 144)), q.la, q.le, (UInt256.shiftRight q.ra (UInt256.ofNat 144)), q.factor, q.lower, q.cache140, q.cache350, q.cache310, q.cache190, q.h4, q.h3, q.h2, q.h1, q.h0, q.off, q.limit ] ++ rho
 theorem run_chunk1 (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 980) (hrun : s.halt = .Running) :
     runInstrSeq chunk1 {s with pc := pc, stack := stack1 q rho} =
@@ -117,20 +119,19 @@ theorem run_chunk1 (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 #print axioms run_chunk1
 
-def chunk2 : List Instr := [ .op (.Dup ⟨8, by decide⟩),
+def chunk2 : List Instr := [ .op .AND,
+    .op (.Swap ⟨15, by decide⟩),
+    .op .ADD,
+    .op (.Dup ⟨7, by decide⟩),
     .op .AND,
     .op (.Swap ⟨15, by decide⟩),
     .op .ADD,
-    .op .ADD,
     .op (.Dup ⟨6, by decide⟩),
     .op .AND,
-    .op (.Swap ⟨14, by decide⟩),
-    .op .ADD,
-    .op .ADD,
-    .op (.Dup ⟨4, by decide⟩),
-    .op .AND ]
+    .op (.Swap ⟨10, by decide⟩),
+    .op .ADD ]
 
-def stack3 (q : Input) (rho : List UInt256) : List UInt256 := [ (UInt256.land q.lower (UInt256.add (UInt256.add q.h0 q.lb) (UInt256.shiftRight q.rc (UInt256.ofNat 144)))), (UInt256.add (UInt256.shiftRight q.rb (UInt256.ofNat 144)) q.la), (UInt256.add (UInt256.shiftRight q.ra (UInt256.ofNat 144)) q.le), q.factor, q.lower, q.cache140, q.cache350, q.cache310, q.cache190, q.h4, q.h3, q.h2, (UInt256.land q.lower (UInt256.add q.h2 (UInt256.add (UInt256.shiftRight q.re (UInt256.ofNat 144)) q.ld))), (UInt256.land q.lower (UInt256.add (UInt256.add q.h1 q.lc) (UInt256.shiftRight q.rd (UInt256.ofNat 144)))), q.off, q.limit ] ++ rho
+def stack3 (q : Input) (rho : List UInt256) : List UInt256 := [ (UInt256.add q.h4 (UInt256.shiftRight q.rb (UInt256.ofNat 144))), q.la, q.le, (UInt256.shiftRight q.ra (UInt256.ofNat 144)), q.factor, q.lower, q.cache140, q.cache350, q.cache310, q.cache190, (UInt256.land q.lower (UInt256.add q.h0 (UInt256.add q.lb (UInt256.shiftRight q.rc (UInt256.ofNat 144))))), q.h3, q.h2, (UInt256.land q.lower (UInt256.add q.h2 (UInt256.add (UInt256.shiftRight q.re (UInt256.ofNat 144)) q.ld))), (UInt256.land q.lower (UInt256.add q.h1 (UInt256.add (UInt256.shiftRight q.rd (UInt256.ofNat 144)) q.lc))), q.off, q.limit ] ++ rho
 theorem run_chunk2 (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 980) (hrun : s.halt = .Running) :
     runInstrSeq chunk2 {s with pc := pc, stack := stack2 q rho} =
@@ -144,11 +145,11 @@ theorem run_chunk2 (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 #print axioms run_chunk2
 
-def chunk3 : List Instr := [ .op (.Swap ⟨8, by decide⟩),
-    .op .ADD,
-    .op (.Dup ⟨3, by decide⟩),
+def chunk3 : List Instr := [ .op .ADD,
+    .op (.Dup ⟨4, by decide⟩),
     .op .AND,
-    .op (.Swap ⟨8, by decide⟩),
+    .op (.Swap ⟨9, by decide⟩),
+    .op .ADD,
     .op .ADD,
     .op (.Dup ⟨2, by decide⟩),
     .op .AND,

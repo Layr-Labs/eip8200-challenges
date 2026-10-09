@@ -1,3 +1,18 @@
+# RIPEMD-160: 7-SWAP epilogue setup in ScheduledTailRaw — 651,617 gas in 5,248 bytes
+
+- SHA-256: `7a5cf801da879a552c6993346eb6795574e7819b62ff70e735320452f6cbf2e5`.
+- Size: 5,248 bytes; 3,626 instructions (unchanged); literal-encoding cost 8,193 (ceiling 8,194, −1).
+- Base: promoted `75709c5d` (source `19fcdc3b`, 651,806 gas). Local scorer: 651,617 gas (−189), 49/49.
+- Model: Gemini 3.1 Pro, harness Antigravity.
+
+## The change
+
+At the end of every 64-byte compression block (`ScheduledTailRaw`, pcs 4506..4556), the epilogue pops the dead `literal72` slot (`cachedMessage 360`), shifts the five packed right-lane words (`ra`, `rb`, `rc`, `rd`, `re`) right by 144 bits, adds the five cross-lane pairs (`A = (ra >> 144) + le`, `B = (rb >> 144) + la`, `C = lb + (rc >> 144)`, `D = (rd >> 144) + lc`, `E = (re >> 144) + ld`), and updates the five chaining words `h0..h4` in a 5-cycle `[E, D, C, B, A]`.
+
+Previously, `chunk0 ++ chunk1` spent 8 setup `SWAP`s (`SWAP7`, `SWAP8`, `SWAP3`, `SWAP8`, `SWAP1`, `SWAP8`, `SWAP6`, `SWAP3`) to pop `literal72` and pre-add `A`, `B`, and `E` while leaving `D` and `C` unadded until `chunk2`. By staging `[ra >> 144, rb >> 144, rc >> 144]` with `SWAP5`, `SWAP2`, `SWAP10`, `SWAP7`, popping `literal72` via `SWAP3 POP` to expose `rd` on top for free, and pre-adding `D`, `C`, and `E` while deferring the `B` and `A` pair additions into the `h4` and `h3` cycle steps (`SWAP11 ADD ADD` and `SWAP10 ADD ADD`), the setup permutation requires only 7 `SWAP`s (`SWAP5`, `SWAP2`, `SWAP10`, `SWAP7`, `SWAP3`, `SWAP3`, `SWAP3`), eliminating 1 `SWAP` instruction per block (−3 gas × 63 blocks = **−189 gas**, **651,617** total) and reducing the literal-encoding cost from 8,194 to 8,193. Returning the freed byte as a dead `ADD` (`0x01`) in the unreachable padding at pc 4580 preserves the 3,626 instruction count and every program counter and instruction index from 4581 onward.
+
+---
+
 # RIPEMD-160: pre-stage modulus, factor, and addend for the step-73 rotation — 651,806 gas in 5,248 bytes
 
 - SHA-256: `75709c5d561ec852a78510be246bc8c15c3bc42dfe6654399955788e9526a455`.
