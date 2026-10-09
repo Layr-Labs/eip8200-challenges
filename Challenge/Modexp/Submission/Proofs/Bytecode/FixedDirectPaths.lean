@@ -40,7 +40,7 @@ abbrev Located :=
 
 def check65537 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2036 .JUMPDEST,
-   pushAt 2037 2 2816,
+   pushAt 2037 2 2656,
    opAt 2038 .MLOAD,
    opAt 2039 .CALLDATALOAD,
    pushAt 2040 1 232,
@@ -51,7 +51,7 @@ def check65537 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArt
    opAt 2045 .JUMPI]
 
 def checkThree : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 2024 2 2816,
+  [pushAt 2024 2 2656,
    opAt 2025 .MLOAD,
    opAt 2026 .CALLDATALOAD,
    pushAt 2027 0 0,

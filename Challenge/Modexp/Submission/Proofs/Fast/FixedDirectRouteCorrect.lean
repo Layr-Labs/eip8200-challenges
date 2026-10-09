@@ -85,7 +85,7 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hactive : 89 ≤ s.activeWords.toNat)
+    (hactive : 88 ≤ s.activeWords.toNat)
     -- `bigC_correct` needs an upper bound on `activeWords` and the `size < 2 ^ 64`
     -- component of `ValidInput`; both are in scope at `ShiftCorrect.handled_of_dispatch`.
     (hvalid : Challenge.Modexp.ValidInput input)

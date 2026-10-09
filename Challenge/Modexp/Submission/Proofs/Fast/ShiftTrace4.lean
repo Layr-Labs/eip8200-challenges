@@ -33,7 +33,7 @@ structure Env (s : State) : Prop where
   run : s.halt = .Running
   np : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
     s.executionEnv.fork s.executionEnv.codeAddr = false
-  act : 89 ≤ s.activeWords.toNat
+  act : 88 ≤ s.activeWords.toNat
 
 /-- Lift a block reduction to a trace.  Every state of the routine is a record
 update of the carrier `s` on `pc`, `stack` and `memory`, so the environment,
@@ -64,7 +64,7 @@ def bindingEnv {s st : State} (e : Env s)
   noPrecompile := by rw [henv]; exact e.np
 
 theorem Env.act296 {s : State} (e : Env s) : 88 ≤ s.activeWords.toNat :=
-  Nat.le_trans (by norm_num) e.act
+  e.act
 
 theorem ptrWord_step (base j : Nat) :
     UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 +
@@ -155,7 +155,7 @@ def gasSteps_prologue_slow (s : State) (mem : ByteArray) (n bsize esize msize : 
     (hsize1 : UInt256.ofNat esize = UInt256.ofNat 1)
     (hbyteNe : UInt256.byteAt (UInt256.ofNat 0)
       (MachineState.readWord s.executionEnv.calldata
-        (MachineState.readWord (preMem (negStep mem n n).memory) 2816).toNat) ≠
+        (MachineState.readWord (preMem (negStep mem n n).memory) 2656).toNat) ≠
       UInt256.ofNat 3)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32)) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
@@ -174,7 +174,7 @@ def gasSteps_prologue_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Na
     (hsize1 : UInt256.ofNat esize = UInt256.ofNat 1)
     (hbyte3 : UInt256.byteAt (UInt256.ofNat 0)
       (MachineState.readWord s.executionEnv.calldata
-        (MachineState.readWord (preMem (negStep mem n n).memory) 2816).toNat) =
+        (MachineState.readWord (preMem (negStep mem n n).memory) 2656).toNat) =
       UInt256.ofNat 3)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32)) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)

@@ -169,7 +169,7 @@ structure Frame (mem : ByteArray) (n bsize minv : Nat) : Prop where
   minvW : MachineState.readWord mem 2720 = UInt256.ofNat minv
   ml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32)
   tl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n)
-  eoff : MachineState.readWord mem 2816 = UInt256.ofNat (96 + bsize)
+  eoff : MachineState.readWord mem 2656 = UInt256.ofNat (96 + bsize)
 
 /-! ### The combined `ADDMOD` transformer
 
@@ -183,7 +183,7 @@ def amMemOf (mem : ByteArray) (pa pb n pd : Nat) : ByteArray :=
 
 /-- `ADDMOD` writes only below `2112`, so nothing at or above `V_S32` moves. -/
 theorem amMemOf_readWord_high (mem : ByteArray) (pa pb n pd addr : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hpd : pd + 32 * n ≤ 2048) (haddr : 2688 ≤ addr) :
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hpd : pd + 32 * n ≤ 2048) (haddr : 2656 ≤ addr) :
     MachineState.readWord (amMemOf mem pa pb n pd) addr =
       MachineState.readWord mem addr := by
   rw [amMemOf,
@@ -194,7 +194,7 @@ theorem amMemOf_readWord_high (mem : ByteArray) (pa pb n pd addr : Nat)
 theorem amMemOf_frame {mem : ByteArray} {n bsize minv : Nat} (pa pb pd : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (hpd : pd + 32 * n ≤ 2048)
     (hf : Frame mem n bsize minv) : Frame (amMemOf mem pa pb n pd) n bsize minv := by
-  have key : ∀ addr, 2688 ≤ addr →
+  have key : ∀ addr, 2656 ≤ addr →
       MachineState.readWord (amMemOf mem pa pb n pd) addr =
         MachineState.readWord mem addr :=
     fun addr haddr => amMemOf_readWord_high mem pa pb n pd addr hn hn32 hpd haddr
@@ -202,7 +202,7 @@ theorem amMemOf_frame {mem : ByteArray} {n bsize minv : Nat} (pa pb pd : Nat)
          by rw [key 2720 (by omega)]; exact hf.minvW,
          by rw [key 2752 (by omega)]; exact hf.ml,
          by rw [key 2784 (by omega)]; exact hf.tl,
-         by rw [key 2816 (by omega)]; exact hf.eoff⟩
+         by rw [key 2656 (by omega)]; exact hf.eoff⟩
 
 /-- The subroutines the driver calls, as abstract single-step contracts
 carrying exactly the side conditions `Fast.CarryFull.gasSteps_monproFull`,
@@ -414,7 +414,7 @@ theorem fastRepresents_mcopyMem_disjoint (mem : ByteArray) (dst src sz ptr cnt v
   Csub.fastRepresents_mcopy_disjoint mem src dst sz ptr cnt v hdisj hrep
 
 theorem activeWordsAfter_fix (curr off sz : Nat) (hsz : sz ≠ 0)
-    (hoff : off + sz ≤ 2848) (hcurr : 89 ≤ curr) :
+    (hoff : off + sz ≤ 2816) (hcurr : 88 ≤ curr) :
     MachineState.activeWordsAfter curr off sz = curr := by
   unfold MachineState.activeWordsAfter
   simp only [hsz, if_false]
@@ -422,7 +422,7 @@ theorem activeWordsAfter_fix (curr off sz : Nat) (hsz : sz ≠ 0)
   exact Nat.max_eq_left hle
 
 theorem activeWords_fix (s : State) (off sz : Nat) (hsz : sz ≠ 0)
-    (hoff : off + sz ≤ 2848) (hact : 89 ≤ s.activeWords.toNat) :
+    (hoff : off + sz ≤ 2816) (hact : 88 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat off sz) =
       s.activeWords := by
   rw [activeWordsAfter_fix _ off sz hsz hoff hact]
@@ -430,8 +430,8 @@ theorem activeWords_fix (s : State) (off sz : Nat) (hsz : sz ≠ 0)
 
 theorem activeWords_fix2 (s : State) (off1 sz1 off2 sz2 : Nat)
     (hsz1 : sz1 ≠ 0) (hsz2 : sz2 ≠ 0)
-    (hoff1 : off1 + sz1 ≤ 2848) (hoff2 : off2 + sz2 ≤ 2848)
-    (hact : 89 ≤ s.activeWords.toNat) :
+    (hoff1 : off1 + sz1 ≤ 2816) (hoff2 : off2 + sz2 ≤ 2816)
+    (hact : 88 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter
       (MachineState.activeWordsAfter s.activeWords.toNat off1 sz1) off2 sz2) =
       s.activeWords := by
@@ -505,7 +505,7 @@ set_option linter.unusedSimpArgs false in
 theorem run_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hm : 32 < msize) (_hm32 : msize ≤ 32 * n)
     (hfull : msize = 32 * n)
-    (hact : 89 ≤ s.activeWords.toNat) (hrun : s.halt = .Running) :
+    (hact : 88 ≤ s.activeWords.toNat) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1333
       (finHead s mem n bsize esize msize) =
       some (returnedState s mem n bsize esize msize) := by
@@ -532,7 +532,7 @@ theorem run_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 def gasSteps_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hm : 32 < msize) (hm32 : msize ≤ 32 * n)
     (hfull : msize = 32 * n)
-    (hact : 89 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -1282,7 +1282,7 @@ theorem storeWord_readWord_disjoint (mem : ByteArray) (addr a : Nat) (w : UInt25
 
 /-- A store below `V_S32` preserves the configuration words. -/
 theorem frame_storeWord {mem : ByteArray} {n bsize minv addr : Nat} (w : UInt256)
-    (haddr : addr + 32 ≤ 2688) (hf : Frame mem n bsize minv) :
+    (haddr : addr + 32 ≤ 2656) (hf : Frame mem n bsize minv) :
     Frame (storeWord mem addr w) n bsize minv where
   s32 := by
     rw [storeWord_readWord_disjoint mem addr 2688 w (Or.inr (by omega))]; exact hf.s32
@@ -1294,12 +1294,12 @@ theorem frame_storeWord {mem : ByteArray} {n bsize minv addr : Nat} (w : UInt256
   tl := by
     rw [storeWord_readWord_disjoint mem addr 2784 w (Or.inr (by omega))]; exact hf.tl
   eoff := by
-    rw [storeWord_readWord_disjoint mem addr 2816 w (Or.inr (by omega))]
+    rw [storeWord_readWord_disjoint mem addr 2656 w (Or.inr (by omega))]
     exact hf.eoff
 
 /-- An `MCOPY` below `V_S32` preserves the configuration words. -/
 theorem frame_mcopyMem {mem : ByteArray} {n bsize minv dst src sz : Nat}
-    (hfit : dst + sz ≤ 2688) (hf : Frame mem n bsize minv) :
+    (hfit : dst + sz ≤ 2656) (hf : Frame mem n bsize minv) :
     Frame (mcopyMem mem dst src sz) n bsize minv where
   s32 := by
     rw [readWord_mcopyMem_disjoint mem dst src sz 2688 (Or.inr (by omega))]
@@ -1314,7 +1314,7 @@ theorem frame_mcopyMem {mem : ByteArray} {n bsize minv dst src sz : Nat}
     rw [readWord_mcopyMem_disjoint mem dst src sz 2784 (Or.inr (by omega))]
     exact hf.tl
   eoff := by
-    rw [readWord_mcopyMem_disjoint mem dst src sz 2816 (Or.inr (by omega))]
+    rw [readWord_mcopyMem_disjoint mem dst src sz 2656 (Or.inr (by omega))]
     exact hf.eoff
 
 theorem blValue_lt {mm b pb : Nat} (hm : 0 < mm) (t : Nat) :
@@ -2041,7 +2041,7 @@ theorem fastSetup_zero_block (input : ByteArray) (hpath : Setup.FastPath input)
 /-- Nothing the setup block writes lands between `0x1020` and the variables. -/
 theorem readWord_setupMem_high (input : ByteArray) (m0 target : Nat)
     (hm : Challenge.Modexp.modulusSize input ≤ 256)
-    (hlo : 2048 ≤ target) (hhi : target + 32 ≤ 2688) :
+    (hlo : 2048 ≤ target) (hhi : target + 32 ≤ 2656) :
     MachineState.readWord (Setup.setupMem ByteArray.empty input m0) target =
       UInt256.ofNat 0 := by
   have hS := Setup.s32_le_256 input hm

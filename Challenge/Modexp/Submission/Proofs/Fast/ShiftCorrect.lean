@@ -111,7 +111,7 @@ theorem hitFinal_base (mem input : ByteArray) (n mm : Nat)
 
 private theorem readWord_setupMem_operand (input : ByteArray) (m0 target : Nat)
     (hm : Challenge.Modexp.modulusSize input ≤ 256)
-    (hlo : 256 ≤ target) (hhi : target + 32 ≤ 2688) :
+    (hlo : 256 ≤ target) (hhi : target + 32 ≤ 2656) :
     MachineState.readWord (Setup.setupMem ByteArray.empty input m0) target =
       UInt256.ofNat 0 := by
   have hS := Setup.s32_le_256 input hm
@@ -181,7 +181,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 89 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
@@ -217,8 +217,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
         (dispState s mem n bsize esize msize) final) ∧
         final.isDone = true ∧
         final.toResult = .returned (Challenge.Modexp.spec input) := by
-  have hact296 : 88 ≤ s.activeWords.toNat :=
-    Nat.le_trans (show 88 ≤ 89 by norm_num) hact
+  have hact296 : 88 ≤ s.activeWords.toNat := hact
   have e : Env s := ⟨hcode, hfork, hrun, hnp, hact⟩
   let sub := Exp.subs s n bsize mm minv hcode hfork hrun hnp hact296 hcds hn hn32 hmpos
     hminvlt hminvA hfast hminv1
@@ -295,7 +294,7 @@ theorem gasSteps_handled (input : ByteArray)
     exact h
   have hxlt : Limbs.radix ^ (Setup.limbs input - 1) < Setup.modulus input :=
     Model.radix_pow_lt_of_odd hn hpath.2.2.1 hodd
-  have hact : 89 ≤ (Setup.fastSetupState input).activeWords.toNat := by
+  have hact : 88 ≤ (Setup.fastSetupState input).activeWords.toNat := by
     rw [Setup.fastSetup_activeWords input hpath, Exp.toNat_ofNat_self (by norm_num)]
   have hcds : (Setup.fastSetupState input).executionEnv.calldata.size < 2 ^ 256 := by
     rw [Exp.fastSetup_calldata input]

@@ -33,7 +33,7 @@ def csubEntry (s : State) (mem : ByteArray) (n : Nat) (rest : List UInt256) : St
 
 theorem run_hit (s : State) (mem input : ByteArray) (n : Nat) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hn : 1 ≤ n) (hn32 : n ≤ 8)
-    (hact : 89 ≤ s.activeWords.toNat) (hdata : s.executionEnv.calldata = input)
+    (hact : 88 ≤ s.activeWords.toNat) (hdata : s.executionEnv.calldata = input)
     (hjump : Decode.isValidJumpDest s.executionEnv.code 4308 = true) :
     runInstructions hitProgram (frame s mem 2558 n rest) =
       some (csubEntry s (hitMemory mem input n) n rest) := by
@@ -55,7 +55,7 @@ theorem run_hit (s : State) (mem input : ByteArray) (n : Nat) (rest : List UInt2
 
 theorem run_copy (s : State) (mem : ByteArray) (n : Nat) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hn : 1 ≤ n) (hn32 : n ≤ 8)
-    (hact : 89 ≤ s.activeWords.toNat) :
+    (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions copyProgram (frame s mem 2574 n rest) =
       some (frame s (Exp.mcopyMem mem 256 2112 (32*n)) 2583 n rest) := by
   have hc1 : rest.length+1 < 1024 := by omega

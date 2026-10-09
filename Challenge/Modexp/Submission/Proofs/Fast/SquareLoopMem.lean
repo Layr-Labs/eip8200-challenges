@@ -190,12 +190,12 @@ theorem sqRunMem_frame (s : State) (mem : ByteArray) (n k : Nat) (hfast : n = 4 
       MachineState.readWord (sqRunMem s n k mem) 2720 = MachineState.readWord mem 2720 ∧
       MachineState.readWord (sqRunMem s n k mem) 2752 = MachineState.readWord mem 2752 ∧
       MachineState.readWord (sqRunMem s n k mem) 2784 = MachineState.readWord mem 2784 ∧
-      MachineState.readWord (sqRunMem s n k mem) 2816 = MachineState.readWord mem 2816 :=
+      MachineState.readWord (sqRunMem s n k mem) 2656 = MachineState.readWord mem 2656 :=
   ⟨sqRunMem_readWord_high s mem n k 2688 hfast hn hn32 (by omega),
    sqRunMem_readWord_high s mem n k 2720 hfast hn hn32 (by omega),
    sqRunMem_readWord_high s mem n k 2752 hfast hn hn32 (by omega),
    sqRunMem_readWord_high s mem n k 2784 hfast hn hn32 (by omega),
-   sqRunMem_readWord_high s mem n k 2816 hfast hn hn32 (by omega)⟩
+   sqRunMem_readWord_high s mem n k 2656 hfast hn hn32 (by omega)⟩
 
 theorem sqRunMem_fastRepresents_outside (s : State) (mem : ByteArray) (n k ptr cnt v : Nat)
     (hfast : n = 4 ∨ n = 8) (hn : 1 ≤ n) (hn32 : n ≤ 8)
@@ -256,12 +256,12 @@ theorem sqLoopMem_frame (s : State) (mem : ByteArray) (n k : Nat) (hfast : n = 4
       MachineState.readWord (sqLoopMem s n k mem) 2720 = MachineState.readWord mem 2720 ∧
       MachineState.readWord (sqLoopMem s n k mem) 2752 = MachineState.readWord mem 2752 ∧
       MachineState.readWord (sqLoopMem s n k mem) 2784 = MachineState.readWord mem 2784 ∧
-      MachineState.readWord (sqLoopMem s n k mem) 2816 = MachineState.readWord mem 2816 :=
+      MachineState.readWord (sqLoopMem s n k mem) 2656 = MachineState.readWord mem 2656 :=
   ⟨sqLoopMem_readWord_high s mem n k 2688 hfast hn hn32 (by omega),
    sqLoopMem_readWord_high s mem n k 2720 hfast hn hn32 (by omega),
    sqLoopMem_readWord_high s mem n k 2752 hfast hn hn32 (by omega),
    sqLoopMem_readWord_high s mem n k 2784 hfast hn hn32 (by omega),
-   sqLoopMem_readWord_high s mem n k 2816 hfast hn hn32 (by omega)⟩
+   sqLoopMem_readWord_high s mem n k 2656 hfast hn hn32 (by omega)⟩
 
 theorem sqLoopMem_fastRepresents_outside (s : State) (mem : ByteArray) (n k ptr cnt v : Nat)
     (hfast : n = 4 ∨ n = 8) (hn : 1 ≤ n) (hn32 : n ≤ 8)

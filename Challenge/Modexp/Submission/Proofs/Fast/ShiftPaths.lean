@@ -525,7 +525,7 @@ def blk2764 :
    opAt 2237 (.Dup ⟨12, by decide⟩),
    pushAt 2238 1 1,
    opAt 2239 .EQ,
-   pushAt 2240 2 2816,
+   pushAt 2240 2 2656,
    opAt 2241 .MLOAD,
    opAt 2242 .CALLDATALOAD,
    pushAt 2243 0 0,

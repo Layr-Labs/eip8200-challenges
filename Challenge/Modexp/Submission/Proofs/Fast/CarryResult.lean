@@ -81,13 +81,13 @@ theorem monproMem_frame (s : State) (mem : ByteArray) (pa pb n pdst : Nat)
         MachineState.readWord mem 2752 ∧
       MachineState.readWord (monproMem s mem pa pb n pdst) 2784 =
         MachineState.readWord mem 2784 ∧
-      MachineState.readWord (monproMem s mem pa pb n pdst) 2816 =
-        MachineState.readWord mem 2816 :=
+      MachineState.readWord (monproMem s mem pa pb n pdst) 2656 =
+        MachineState.readWord mem 2656 :=
   ⟨monproMem_readWord_high s mem pa pb n pdst 2688 hn hn32 hdst (by omega),
    monproMem_readWord_high s mem pa pb n pdst 2720 hn hn32 hdst (by omega),
    monproMem_readWord_high s mem pa pb n pdst 2752 hn hn32 hdst (by omega),
    monproMem_readWord_high s mem pa pb n pdst 2784 hn hn32 hdst (by omega),
-   monproMem_readWord_high s mem pa pb n pdst 2816 hn hn32 hdst (by omega)⟩
+   monproMem_readWord_high s mem pa pb n pdst 2656 hn hn32 hdst (by omega)⟩
 
 /-- Every represented block disjoint from `SUBB`, from the CIOS scratch and
 from the destination survives a `MONPRO` call. -/

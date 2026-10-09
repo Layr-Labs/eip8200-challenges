@@ -27,7 +27,7 @@ def copyAddProgram : List Instr :=
 
 theorem run_copyAdd (s : State) (memory input : ByteArray)
     (n bsize esize msize : Nat) (hn32 : n ≤ 8)
-    (hactive : 89 ≤ s.activeWords.toNat)
+    (hactive : 88 ≤ s.activeWords.toNat)
     (hdata : s.executionEnv.calldata = input)
     (hjump : Decode.isValidJumpDest s.executionEnv.code 3383 = true) :
     runInstructions copyAddProgram (copyState s memory n bsize esize msize) =

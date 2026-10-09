@@ -274,7 +274,7 @@ theorem run_shiftHead_done (s : State) (mem : ByteArray) (n bsize esize msize : 
 
 /-- `blk3018`: `MCOPY(TN, TS, s32)` (the retained accumulator shifted up one limb) and `t[0] := 0`. -/
 theorem run_shiftBody (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hact : 89 ≤ s.activeWords.toNat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hact : 88 ≤ s.activeWords.toNat)
     (hbs : bsize = 32 * n)
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)

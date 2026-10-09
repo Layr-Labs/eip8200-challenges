@@ -201,7 +201,7 @@ theorem loopStack_length (px k : Nat) (ret : UInt256) (rest : List UInt256) :
 
 /-- `ADDMOD` touches nothing at or above `0x2480`. -/
 theorem readWord_amResultMemory_high (mem : ByteArray) (pa pb n addr : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (haddr : 2688 ≤ addr) :
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (haddr : 2656 ≤ addr) :
     MachineState.readWord (Csub.amResultMemory mem pa pb n) addr =
       MachineState.readWord mem addr := by
   rw [Csub.amResultMemory_def,
@@ -211,7 +211,7 @@ theorem readWord_amResultMemory_high (mem : ByteArray) (pa pb n addr : Nat)
 /-- `CSUB` touches nothing at or above `0x2480` either, as long as its
 destination block stays below. -/
 theorem readWord_csResultMemory_high (mem : ByteArray) (n pdst addr : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hpdst : pdst + 32 * n ≤ 2688) (haddr : 2688 ≤ addr) :
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hpdst : pdst + 32 * n ≤ 2656) (haddr : 2656 ≤ addr) :
     MachineState.readWord (Csub.csResultMemory mem n pdst) addr =
       MachineState.readWord mem addr :=
   Csub.guarded_readWord_outside mem n pdst addr hn (Or.inr (by omega))

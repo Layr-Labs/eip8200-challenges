@@ -25,7 +25,7 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 89 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn8 : n ≤ 8) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
     (hfull : msize = 32 * n)
@@ -114,7 +114,7 @@ theorem handled_of_bound_shift_hit (input : ByteArray) (s : State) (mem : ByteAr
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 89 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn8 : n ≤ 8) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
     (hfull : msize = 32 * n)

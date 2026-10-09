@@ -125,7 +125,7 @@ theorem r4LoopMem_frame (s : State) (mem : ByteArray) (k : Nat) :
       MachineState.readWord (r4LoopMem s k mem) 2720 = MachineState.readWord mem 2720 ∧
       MachineState.readWord (r4LoopMem s k mem) 2752 = MachineState.readWord mem 2752 ∧
       MachineState.readWord (r4LoopMem s k mem) 2784 = MachineState.readWord mem 2784 ∧
-      MachineState.readWord (r4LoopMem s k mem) 2816 = MachineState.readWord mem 2816 :=
+      MachineState.readWord (r4LoopMem s k mem) 2656 = MachineState.readWord mem 2656 :=
   ⟨r4LoopMem_readWord_outside s mem k 2688 (Or.inr (by omega)) (Or.inr (by omega))
       (Or.inr (by omega)) (Or.inr (by omega)),
    r4LoopMem_readWord_outside s mem k 2720 (Or.inr (by omega)) (Or.inr (by omega))
@@ -134,7 +134,7 @@ theorem r4LoopMem_frame (s : State) (mem : ByteArray) (k : Nat) :
       (Or.inr (by omega)) (Or.inr (by omega)),
    r4LoopMem_readWord_outside s mem k 2784 (Or.inr (by omega)) (Or.inr (by omega))
       (Or.inr (by omega)) (Or.inr (by omega)),
-   r4LoopMem_readWord_outside s mem k 2816 (Or.inr (by omega)) (Or.inr (by omega))
+   r4LoopMem_readWord_outside s mem k 2656 (Or.inr (by omega)) (Or.inr (by omega))
       (Or.inr (by omega)) (Or.inr (by omega))⟩
 
 theorem r4LoopMem_fastRepresents_outside (s : State) (mem : ByteArray) (k ptr cnt v : Nat)
@@ -207,12 +207,12 @@ theorem loopMem_frame (s : State) (mem : ByteArray) (n k : Nat) (hfast : n = 4 �
       MachineState.readWord (loopMem s n k mem) 2720 = MachineState.readWord mem 2720 ∧
       MachineState.readWord (loopMem s n k mem) 2752 = MachineState.readWord mem 2752 ∧
       MachineState.readWord (loopMem s n k mem) 2784 = MachineState.readWord mem 2784 ∧
-      MachineState.readWord (loopMem s n k mem) 2816 = MachineState.readWord mem 2816 :=
+      MachineState.readWord (loopMem s n k mem) 2656 = MachineState.readWord mem 2656 :=
   ⟨loopMem_readWord_high s mem n k 2688 hfast hn hn32 (by omega),
    loopMem_readWord_high s mem n k 2720 hfast hn hn32 (by omega),
    loopMem_readWord_high s mem n k 2752 hfast hn hn32 (by omega),
    loopMem_readWord_high s mem n k 2784 hfast hn hn32 (by omega),
-   loopMem_readWord_high s mem n k 2816 hfast hn hn32 (by omega)⟩
+   loopMem_readWord_high s mem n k 2656 hfast hn hn32 (by omega)⟩
 
 theorem loopMem_fastRepresents_outside (s : State) (mem : ByteArray) (n k ptr cnt v : Nat)
     (hfast : n = 4 ∨ n = 8) (hn : 1 ≤ n) (hn32 : n ≤ 8)

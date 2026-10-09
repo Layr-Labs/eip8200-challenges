@@ -97,12 +97,12 @@ widths the dispatcher selects between. -/
 theorem shiftEntry_eq_entryWord (n : Nat) (hn : n = 4 ∨ n = 8) :
     Shift.shiftEntry n = ShiftCacheModel.entryWord n := by
   rcases hn with rfl | rfl <;> rfl
-/-- The word at 2816 (the exponent offset) survives the cache store at 1698. -/
+/-- The word at 2656 (the exponent offset) survives the cache store at 1698. -/
 theorem m2_readWord_2816 (mem input : ByteArray) (n : Nat) :
-    MachineState.readWord (preMem (negStep (m1Of mem input n) n n).memory) 2816 =
-      MachineState.readWord (m2Of mem input n) 2816 := by
+    MachineState.readWord (preMem (negStep (m1Of mem input n) n n).memory) 2656 =
+      MachineState.readWord (m2Of mem input n) 2656 := by
   unfold m2Of
-  rw [ShiftCacheModel.read_disjoint _ n 2816 (Or.inr (by omega))]
+  rw [ShiftCacheModel.read_disjoint _ n 2656 (Or.inr (by omega))]
 
 /-- The E3 prologue's published memory in the cache model's spelling. -/
 theorem prologue_e3_end_eq (mem input : ByteArray) (n : Nat) :
@@ -181,12 +181,12 @@ def build (s : State) (mem input : ByteArray) (n bsize esize msize minv : Nat)
     rw [m1_readWord_disjoint mem input n 2752 (by omega) hn8
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩]
     exact hframe.ml
-  have heoff : MachineState.readWord (m2Of mem input n) 2816 = UInt256.ofNat (96 + bsize) := by
-    rw [m2_readWord_disjoint mem input n 2816 (by omega) hn8
+  have heoff : MachineState.readWord (m2Of mem input n) 2656 = UInt256.ofNat (96 + bsize) := by
+    rw [m2_readWord_disjoint mem input n 2656 (by omega) hn8
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by unfold NEG; omega),
         Or.inr (by unfold PRE_DINV; omega), Or.inr (by omega), Or.inr (by omega)⟩]
     exact hframe.eoff
-  have heoff' : MachineState.readWord (preMem (negStep (m1Of mem input n) n n).memory) 2816 =
+  have heoff' : MachineState.readWord (preMem (negStep (m1Of mem input n) n n).memory) 2656 =
       UInt256.ofNat (96 + bsize) :=
     (m2_readWord_2816 mem input n).trans heoff
   have hse := shiftEntry_eq_entryWord n hfast

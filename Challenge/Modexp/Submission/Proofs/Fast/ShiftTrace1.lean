@@ -152,7 +152,7 @@ theorem run_bailMiss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 
 /-- `blk2874`: copy the raw base to `TS`, clear `TN`, call the retained `CSUB` entry with the return address only. -/
 theorem run_hit (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hact : 89 ≤ s.activeWords.toNat)
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (hact : 88 ≤ s.activeWords.toNat)
     (hdata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :

@@ -80,7 +80,7 @@ def handled_of_bDoneConcrete (input : ByteArray) (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 89 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hvalid : Challenge.Modexp.ValidInput input)
     (hactLe : s.activeWords.toNat ≤ 289)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hn48 : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1)
@@ -120,7 +120,7 @@ def handled_of_entryStateConcrete (input : ByteArray) (s : State) (mem : ByteArr
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 89 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hvalid : Challenge.Modexp.ValidInput input)
     (hactLe : s.activeWords.toNat ≤ 289)
     (hn : 2 ≤ n) (hn32 : n ≤ 8)

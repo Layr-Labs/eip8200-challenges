@@ -446,7 +446,7 @@ zero, the counter is the outer `n` itself, and the scratch slot takes the
 unrolled-conversion entry `2899 + 133·[n = 4]`. -/
 theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hfast : n = 4 ∨ n = 8)
-    (hact : 89 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hesize : UInt256.ofNat esize ≠ UInt256.ofNat 1)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
@@ -476,7 +476,7 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw1760 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1760 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have haw2816 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2816 32) =
+  have haw2816 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hv4 : (2899 + (UInt256.ofNat 133 * UInt256.ofNat 1).toNat) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 = 3032 := by
@@ -541,10 +541,10 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 width sets the squaring flag and halves the loop counter. -/
 theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hfast : n = 4 ∨ n = 8)
-    (hact : 89 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hsize1 : UInt256.ofNat esize = UInt256.ofNat 1)
     (hbyte3 : UInt256.byteAt (UInt256.ofNat 0)
-      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2816).toNat) =
+      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).toNat) =
       UInt256.ofNat 3)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
@@ -557,7 +557,7 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw1760 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1760 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have haw2816 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2816 32) =
+  have haw2816 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hmod : esize % 2 ^ 256 = 1 % 2 ^ 256 := by
     have h := congrArg UInt256.toNat hsize1
@@ -574,17 +574,17 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     rw [if_pos hmod]
   have hb3 : UInt256.eq (UInt256.ofNat 3)
       (UInt256.byteAt (UInt256.ofNat 0)
-        (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2816).toNat)) =
+        (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).toNat)) =
       UInt256.ofNat 1 := by
     rw [hbyte3]
     unfold UInt256.eq
     simp
   have hb3t : UInt256.byteAt ⟨(0 : Fin UInt256.size)⟩
-      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2816).toNat) =
+      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).toNat) =
       UInt256.ofNat 3 :=
     hbyte3
   have hb3m : UInt256.byteAt ⟨(0 : Fin UInt256.size)⟩
-      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2816).val.val) =
+      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).val.val) =
       UInt256.ofNat 3 :=
     hbyte3
   have hmodl : esize %
@@ -658,10 +658,10 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 is not `3` leaves the squaring flag at zero and the loop counter at `n`. -/
 theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hfast : n = 4 ∨ n = 8)
-    (hact : 89 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hsize1 : UInt256.ofNat esize = UInt256.ofNat 1)
     (hbyteNe : UInt256.byteAt (UInt256.ofNat 0)
-      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2816).toNat) ≠
+      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).toNat) ≠
       UInt256.ofNat 3)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
@@ -674,7 +674,7 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw1760 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1760 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have haw2816 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2816 32) =
+  have haw2816 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hmod : esize % 2 ^ 256 = 1 % 2 ^ 256 := by
     have h := congrArg UInt256.toNat hsize1
@@ -695,15 +695,15 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Word.word_toNat_ofNat]
     rw [if_pos hmod]
   have hb3tne : UInt256.byteAt ⟨(0 : Fin UInt256.size)⟩
-      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2816).toNat) ≠
+      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).toNat) ≠
       UInt256.ofNat 3 := hbyteNe
   have hb3mne : UInt256.byteAt ⟨(0 : Fin UInt256.size)⟩
-      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2816).val.val) ≠
+      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).val.val) ≠
       UInt256.ofNat 3 := hbyteNe
   have hthree256 : (3 : Nat) % 2 ^ 256 = 3 := Nat.mod_eq_of_lt (by norm_num)
   have hbnT : ¬ (3 = (UInt256.byteAt ⟨(0 : Fin UInt256.size)⟩
       (MachineState.readWord s.executionEnv.calldata
-        (MachineState.readWord mem 2816).toNat)).toNat) := by
+        (MachineState.readWord mem 2656).toNat)).toNat) := by
     intro h
     apply hbyteNe
     refine Challenge.EvmProof.Word.word_ext ?_
@@ -711,7 +711,7 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     exact h.symm
   have hbn : ¬ (3 = (UInt256.byteAt ⟨(0 : Fin UInt256.size)⟩
       (MachineState.readWord s.executionEnv.calldata
-        (MachineState.readWord mem 2816).val.val)).toNat) := by
+        (MachineState.readWord mem 2656).val.val)).toNat) := by
     intro h
     apply hbyteNe
     refine Challenge.EvmProof.Word.word_ext ?_
@@ -719,7 +719,7 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     exact h.symm
   have hbn2 : ¬ (3 = ((UInt256.byteAt ⟨(0 : Fin UInt256.size)⟩
       (MachineState.readWord s.executionEnv.calldata
-        (MachineState.readWord mem 2816).val.val)).val).val) := by
+        (MachineState.readWord mem 2656).val.val)).val).val) := by
     intro h
     apply hbyteNe
     refine Challenge.EvmProof.Word.word_ext ?_
@@ -872,7 +872,7 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 /-- `blk3346` with the squaring flag clear: drop the counter and jump to the
 cleanup tail. -/
 theorem run_shiftDone_check (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hact : 89 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hflag : MachineState.readWord mem 1760 = UInt256.ofNat 0)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
