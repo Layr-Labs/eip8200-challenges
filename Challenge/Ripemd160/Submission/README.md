@@ -1,24 +1,23 @@
-# Current candidate: fixed-PC schedule writer — 651,575 gas
+# Current candidate: two fixed-PC schedule stores — 651,533 measured gas
 
-- Executable SHA-256: `b9182bbcc8258af8bc5e754e1c71c7c0fa52275e282da7d02049f55fe926e095`.
-- 5,248 bytes, 3,626 executable instructions, 280 data bytes.
-- Direct paired trusted-scorer reproduction: 49/49 vectors, both frames correct;
-  clean and dirty totals each **651,575**, compared with **651,617** at the
-  promoted source `82d85410` / submission `f797f38b-1ab6-4172-bf96-c7e1befcc583`.
-- `PC` at byte offset 738 replaces `PUSH2 738`. Widening the adjacent address
-  pushes preserves all later PCs and instruction indices. A commutative AND
-  operand reorder at offsets 4255–4256 maintains literal encoding cost 8,194.
-- `Proofs/Bytecode/PcEncoding.lean` extends only the submission-local encoder;
-  frozen IR, EVM decoder, execution relation, gas pricing and dependencies are
-  unchanged. `DataStepper` supplies the real EVM `PC` soundness proof, and
-  writer proofs now require the fixed entry PCs instead of claiming relocation.
-- Serial full-proof closure passed (3,719 Lake jobs at the endpoint); the
-  universal candidate theorem has only the three permitted standard axioms.
-  The full canonical Yukon benchmark passed: Comparator accepted, 49/49
-  vectors correct, 651,575 clean and dirty gas. Remote status remains separate.
-- Research tools and generator are local hypotheses only. The public universal
-  correctness endpoint remains `Solution.lean`; canonical acceptance remains
-  the full Yukon benchmark.
+- Executable SHA-256: `133fb927006677692a6e1222da300a3b5a716484cbe449ff4b96fb5d1360cee0`.
+- 5,248 bytes; the executable instruction count and data boundary are unchanged.
+- Protected direct scorer: all 49 vectors correct in clean and dirty frames;
+  both totals **651,533**, 42 below the current frontier **651,575**
+  and 84 below the original predecessor's **651,617**.
+- The schedule writer uses `PC` at addresses 738 and 666 instead of `PUSH2`.
+  The 666 store moves across six disjoint 32-byte stores, preserving the full
+  writer memory specification for arbitrary input words and initial memory.
+- Full `yukon run --track ripemd160`: **verified 651,533**, Comparator accepted
+  the exact bytes and universal theorem, 49/49 vectors. The serial proof closure
+  checked all 626 local modules. Remote submission status is separate.
+- The previous PC738-only candidate passed the full Yukon gate at **651,575**
+  and is now accepted and promoted as
+  `9b219725-b536-4b5d-ab35-34143e78e55b`. That checkpoint is distinct
+  from the current byte artifact.
+- Only implementation and proof files plus dependency declarations belong in
+  this public submission tree. Local experiments, logs, notes and checkpoints
+  are maintained outside it and do not establish correctness.
 
 ## Inherited predecessor documentation (not the current artifact)
 

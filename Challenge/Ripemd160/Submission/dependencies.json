@@ -1,7 +1,12 @@
 [
   {
+    "submissionId": "9b219725-b536-4b5d-ab35-34143e78e55b",
+    "rationale": "Continues the now-promoted PC738-only candidate and its submission-local PC encoder/stepper correctness proof, adding the disjoint moved PC666 store and its execution proofs.",
+    "evidence": "Retains PC at byte738, fixed-PC writer premises and its complete universal proof. New edit moves word14 store to PC666 and compensates widths; exact executable SHA256 becomes 133fb927006677692a6e1222da300a3b5a716484cbe449ff4b96fb5d1360cee0."
+  },
+  {
     "submissionId": "f797f38b-1ab6-4172-bf96-c7e1befcc583",
     "rationale": "Uses the complete promoted 651617-gas bytecode and universal Lean proof as the base, retaining the predecessor's staged paired compressor and seven-SWAP feed-forward epilogue.",
-    "evidence": "The executable byte diff is limited to the schedule writer at PCs 733..743 and a commutative operand reorder at PCs 4255..4256. The local PC instruction extension is wired into the inherited DataProgram/DataStepper proof, and all other compression and recognition behavior is retained."
+    "evidence": "Retains the paired compressor, feed-forward epilogue and universal Lean proof, with exact-byte changes in the schedule writer, two same-size PUSH-width compensations in step23 and a commutative AND operand reorder in step73. A locally proved PC encoder/stepper supports the two fixed-PC writer stores; compression and recognition behavior are retained."
   }
 ]

@@ -17,10 +17,10 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Current executable SHA-256: b9182bbcc8258af8bc5e754e1c71c7c0fa52275e282da7d02049f55fe926e095.
--- 5248 bytes, 3626 instructions, 280 data bytes; trusted-scorer total 651575.
+-- Current executable SHA-256: 133fb927006677692a6e1222da300a3b5a716484cbe449ff4b96fb5d1360cee0.
+-- 5248 bytes, 3626 instructions, 280 data bytes; protected direct scorer 651533.
 -- Base: promoted f797f38b / source 82d85410 (651617).
--- At PC 738 the schedule writer uses PC instead of PUSH2 738 (one gas saved
--- per invocation); adjacent PUSH2s become PUSH3s to preserve later PCs and indices.
--- Paired73 commutes its AND operand duplicates to fit the trusted byte literal
--- budget. The final theorem still covers arbitrary valid calldata, not just vectors.
+-- PC738 replaces PUSH2 738; adjacent wider pushes preserve byte endpoints.
+-- PC666 stores word14 earlier across six disjoint memory windows. Fixed-PC
+-- hypotheses and complete writer memory are proved, not assumed relocatable.
+-- Integrated full proof/canonical gate remain the authoritative verification.

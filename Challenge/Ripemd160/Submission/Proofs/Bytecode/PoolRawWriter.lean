@@ -17,15 +17,19 @@ private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
 
 open Pair13WriterRaw (writeChain)
 
+private theorem add_literals (a b : Nat) :
+    UInt256.add (UInt256.ofNat a) (UInt256.ofNat b) = UInt256.ofNat (a + b) :=
+  Word.ofNat_add_mod a b
+
 def template0 : List Instr :=
   [ .op (.Dup ⟨4, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 126),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 126),
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 900),
     .op .MSTORE,
     .op (.Dup ⟨11, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 216),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 216),
     .op .MSTORE,
     .op (.Dup ⟨2, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 882),
@@ -137,6 +141,9 @@ def template1 : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 792),
     .op .MSTORE,
+    .op (.Dup ⟨15, by decide⟩),
+    .op .PC,
+    .op .MSTORE,
     .op (.Dup ⟨7, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 540),
     .op .MSTORE,
@@ -184,6 +191,7 @@ def writes1 (words : Nat → UInt256) : List (Nat × UInt256) :=
     (936, words 8),
     (108, words 5),
     (792, words 1),
+    (666, words 14),
     (540, words 1),
     (756, words 9),
     (522, words 0) ]
@@ -193,7 +201,7 @@ def memory1 (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
 
 theorem run_chunk1_of_small (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat) :
+    (hactive : 34 ≤ s.activeWords.toNat) (hpc : pc = UInt256.ofNat 646) :
     runInstrSeq template1 {s with pc := pc, stack := stack1 words rho} =
       some {s with
         pc := pcAfter pc template1
@@ -205,23 +213,34 @@ theorem run_chunk1_of_small (s : State) (pc : UInt256) (words : Nat → UInt256)
   have hactiveAt (address : Nat) (haddress : address ≤ 1056) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     Stagger144Active.word_active_preserved_of_small s.activeWords address hactive haddress
+  have hactivePC : MachineState.activeWordsAfter s.activeWords.toNat 666 32 % UInt256.size =
+      s.activeWords.toNat := congrArg UInt256.toNat (hactiveAt 666 (by decide))
+  have hactive540 : MachineState.activeWordsAfter s.activeWords.toNat 540 32 % UInt256.size =
+      s.activeWords.toNat := congrArg UInt256.toNat (hactiveAt 540 (by decide))
+  have hactive756 : MachineState.activeWordsAfter s.activeWords.toNat 756 32 % UInt256.size =
+      s.activeWords.toNat := congrArg UInt256.toNat (hactiveAt 756 (by decide))
+  norm_num [UInt256.size] at hactivePC hactive540 hactive756
   simp (config := { maxSteps := 600000 }) (discharger := omega)
-    [template1, stack1, outputStack1, memory1, writes1, writeChain,
+    [hpc, add_literals, template1, stack1, outputStack1, memory1, writes1, writeChain,
      writeWord, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
      List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
      State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals try simp only [neutral_hadd, neutral_hmul, RawExpressionAC.add_assoc]
+  all_goals try simp (config := { maxSteps := 600000 }) (discharger := omega)
+    [add_literals, Word.word_toNat_ofNat, hactivePC, hactiveAt]
+  all_goals try (rw [hactivePC])
+  all_goals try (rw [hactive540, hactive756]; exact hactiveAt 522 (by decide))
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 
 theorem run_chunk1 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 35 ≤ s.activeWords.toNat) :
+    (hactive : 35 ≤ s.activeWords.toNat) (hpc : pc = UInt256.ofNat 646) :
     runInstrSeq template1 {s with pc := pc, stack := stack1 words rho} =
       some {s with
         pc := pcAfter pc template1
         stack := outputStack1 words rho
         memory := memory1 s.memory words} := by
-  exact run_chunk1_of_small s pc words rho hstack hrun (by omega)
+  exact run_chunk1_of_small s pc words rho hstack hrun (by omega) hpc
 
 #print axioms run_chunk1
 
@@ -233,9 +252,6 @@ def template2 : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 72),
     .op .MSTORE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 54),
-    .op .MSTORE,
-    .op (.Dup ⟨13, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 666),
     .op .MSTORE,
     .op (.Dup ⟨5, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 504),
@@ -282,7 +298,6 @@ def writes2 (words : Nat → UInt256) : List (Nat × UInt256) :=
   [ (90, words 12),
     (72, words 4),
     (54, words 0),
-    (666, words 14),
     (504, words 1),
     (1080, words 5),
     (1062, words 13) ]
@@ -396,10 +411,6 @@ def writes3 (words : Nat → UInt256) : List (Nat × UInt256) :=
 
 def memory3 (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
   writeChain memory (writes3 words)
-
-private theorem add_literals (a b : Nat) :
-    UInt256.add (UInt256.ofNat a) (UInt256.ofNat b) = UInt256.ofNat (a + b) :=
-  Word.ofNat_add_mod a b
 
 theorem run_chunk3 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
@@ -643,7 +654,7 @@ theorem run_writer (s : State) (pc ret : UInt256) (words : Nat → UInt256) (res
   have h0 := run_chunk0 s0 pc0 words (ret :: UInt256.ofNat 4294967295 :: rest) hrho hrun hactive
   let s1 : State := {s0 with memory := memory0 s0.memory words}
   let pc1 := pcAfter pc0 template0
-  have h1 := run_chunk1 s1 pc1 words (ret :: UInt256.ofNat 4294967295 :: rest) hrho hrun hactive
+  have h1 := run_chunk1 s1 pc1 words (ret :: UInt256.ofNat 4294967295 :: rest) hrho hrun hactive (by simp only [pc1, pc0, hpc]; decide)
   let s2 : State := {s1 with memory := memory1 s1.memory words}
   let pc2 := pcAfter pc1 template1
   have h2 := run_chunk2 s2 pc2 words (ret :: UInt256.ofNat 4294967295 :: rest) hrho hrun hactive
@@ -664,7 +675,16 @@ theorem run_writer (s : State) (pc ret : UInt256) (words : Nat → UInt256) (res
   have hmem : memory5 (memory4 (memory3 (memory2 (memory1
       (memory0 s.memory words) words) words) words) words) words
       = writerMemory s.memory words := by
-    rfl
+    simp only [memory0, memory1, memory2, memory3, memory4, memory5,
+      writes0, writes1, writes2, writes3, writes4, writes5,
+      writeChain, List.foldl_cons, List.foldl_nil]
+    simp only [writerMemory, rawWrites, writeChain, List.foldl_cons, List.foldl_nil]
+    rw [Pair13WriterRaw.writeWord_comm _ 666 540 _ _ (by decide),
+      Pair13WriterRaw.writeWord_comm _ 666 756 _ _ (by decide),
+      Pair13WriterRaw.writeWord_comm _ 666 522 _ _ (by decide),
+      Pair13WriterRaw.writeWord_comm _ 666 90 _ _ (by decide),
+      Pair13WriterRaw.writeWord_comm _ 666 72 _ _ (by decide),
+      Pair13WriterRaw.writeWord_comm _ 666 54 _ _ (by decide)]
   simpa only [writerTemplate, DenseScheduleTrace.pcAfter_append,
     s0, s1, s2, s3, s4, s5, pc0, pc1, pc2, pc3, pc4, pc5,
     stack0, Pair13PoolRaw.poolStack, outputStack5, hmem] using h05
@@ -688,7 +708,7 @@ theorem run_writer_grow (s : State) (pc ret : UInt256) (words : Nat → UInt256)
   have h0 := run_chunk0_of_small s0 pc0 words (ret :: UInt256.ofNat 4294967295 :: rest) hrho hrun ha
   let s1 : State := {s0 with memory := memory0 s0.memory words}
   let pc1 := pcAfter pc0 template0
-  have h1 := run_chunk1_of_small s1 pc1 words (ret :: UInt256.ofNat 4294967295 :: rest) hrho hrun ha
+  have h1 := run_chunk1_of_small s1 pc1 words (ret :: UInt256.ofNat 4294967295 :: rest) hrho hrun ha (by simp only [pc1, pc0, hpc]; decide)
   let s2 : State := {s1 with memory := memory1 s1.memory words}
   let pc2 := pcAfter pc1 template1
   have h2 := run_chunk2_grow s2 pc2 words (ret :: UInt256.ofNat 4294967295 :: rest) hrho hrun hactive
@@ -712,7 +732,16 @@ theorem run_writer_grow (s : State) (pc ret : UInt256) (words : Nat → UInt256)
   have hmem : memory5 (memory4 (memory3 (memory2 (memory1
       (memory0 s.memory words) words) words) words) words) words
       = writerMemory s.memory words := by
-    rfl
+    simp only [memory0, memory1, memory2, memory3, memory4, memory5,
+      writes0, writes1, writes2, writes3, writes4, writes5,
+      writeChain, List.foldl_cons, List.foldl_nil]
+    simp only [writerMemory, rawWrites, writeChain, List.foldl_cons, List.foldl_nil]
+    rw [Pair13WriterRaw.writeWord_comm _ 666 540 _ _ (by decide),
+      Pair13WriterRaw.writeWord_comm _ 666 756 _ _ (by decide),
+      Pair13WriterRaw.writeWord_comm _ 666 522 _ _ (by decide),
+      Pair13WriterRaw.writeWord_comm _ 666 90 _ _ (by decide),
+      Pair13WriterRaw.writeWord_comm _ 666 72 _ _ (by decide),
+      Pair13WriterRaw.writeWord_comm _ 666 54 _ _ (by decide)]
   simpa only [writerTemplate, DenseScheduleTrace.pcAfter_append,
     s0, s1, s2, s3, s4, s5, pc0, pc1, pc2, pc3, pc4, pc5,
     stack0, Pair13PoolRaw.poolStack, outputStack5, hmem] using h05

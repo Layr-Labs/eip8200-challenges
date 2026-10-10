@@ -1,5 +1,0 @@
-Commutative DUP pair audit on the 651575 PC candidate.
-These are unproved neutral-gas hypotheses, not a submitted candidate.
-(4416, 4418, 1, 134, 139, 138, 135)
-Greedy consistent subset: [(4416, 134, 139, 138, 135, 1)]
-Distinct-value savings 1

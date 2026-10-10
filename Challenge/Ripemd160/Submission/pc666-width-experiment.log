@@ -1,2 +1,0 @@
-'Challenge.Ripemd160.Submission.Proofs.Bytecode.Pc666WidthExperiment.run_actual' depends on axioms: [propext,
- Quot.sound]

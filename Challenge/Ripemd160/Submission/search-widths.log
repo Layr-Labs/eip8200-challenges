@@ -1,7 +1,0 @@
-Base literal cost: 8194
-Best independent gas-neutral pair per uniquely located raw block:
-(1, 'StaggerRawPaired41Raw.lean', 2833, 2878, [(2841, 2, 234, 1), (2850, 13, 4912146077028087063374012088321, 14)])
-(1, 'StaggerRawPaired33Raw.lean', 2543, 2590, [(2575, 2, 24, 1), (2560, 13, 4912146077028087063507156074528, 14)])
-(1, 'StaggerRawPaired23Raw.lean', 2045, 2098, [(2060, 3, 954, 2), (2085, 1, 20, 2)])
-(1, 'StaggerRawPaired21Raw.lean', 1950, 2003, [(1965, 3, 684, 2), (1975, 13, 475368975196266490020700880900, 14)])
-These reductions are not necessarily additive across shared chunks.
