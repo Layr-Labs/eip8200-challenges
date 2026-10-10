@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Padding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackTail
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RawExpressionAC
@@ -28,7 +29,7 @@ open EvmSemantics.EVM
 @[simp] private theorem literalZeroNat : (⟨0⟩ : UInt256).toNat = 0 := rfl
 
 private def wfOp {op : Operation}
-    (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
+    (hopcode : Decode.opcodeOf (Challenge.EvmProof.PcEncoding.opByte op) = some op)
     (hplain : YulEvmCompiler.plainOp op)
     (havailable : op.availableInFork .Osaka = true) :
     Challenge.EvmProof.DataStepper.WellFormed .Osaka (.op op) :=

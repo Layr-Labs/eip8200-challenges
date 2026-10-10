@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ClosedEndianReuse
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTemplate
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataMeter
@@ -103,8 +104,8 @@ def fastOutputTemplate : List Instr :=
   rfl
 
 theorem fastOutputTemplate_byteLength :
-    (assembleBytes fastOutputTemplate).length = 76 := by
-  rw [fastOutputTemplate, assembleBytes_append,
+    (Challenge.EvmProof.PcEncoding.assembleBytes fastOutputTemplate).length = 76 := by
+  rw [fastOutputTemplate, Challenge.EvmProof.PcEncoding.assembleBytes_append,
     List.length_append, assembleBytes_length, assembleBytes_length]
   simp [fastOutputBeforeReturnTemplate, fastPackTemplate, fastLoad0,
     fastPackStep, fastEndianStage8, fastEndianStage16, ClosedEndianReuse.code,

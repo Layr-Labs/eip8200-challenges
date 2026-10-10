@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import EvmSemantics.EVM.Step
 import YulEvmCompiler.Decode
 set_option warningAsError true
@@ -23,27 +24,27 @@ structure DataProgramArtifact where
   code : ByteArray
   instructions : List Instr
   data : List UInt8
-  assembly_eq : mkCode (assembleBytes instructions ++ data) = code
+  assembly_eq : mkCode (Challenge.EvmProof.PcEncoding.assembleBytes instructions ++ data) = code
 
 namespace DataProgramArtifact
 
 /-- Byte offset of an instruction index. -/
 def instructionPC (p : DataProgramArtifact) (index : Nat) : Nat :=
-  (assembleBytes (p.instructions.take index)).length
+  (Challenge.EvmProof.PcEncoding.assembleBytes (p.instructions.take index)).length
 
 theorem instructionPC_le_code_size (p : DataProgramArtifact) (index : Nat) :
     p.instructionPC index ≤ p.code.size := by
   have hsplit := List.take_append_drop index p.instructions
-  have hbytes : assembleBytes (p.instructions.take index) ++
-      assembleBytes (p.instructions.drop index) = assembleBytes p.instructions := by
-    rw [← assembleBytes_append, hsplit]
+  have hbytes : Challenge.EvmProof.PcEncoding.assembleBytes (p.instructions.take index) ++
+      Challenge.EvmProof.PcEncoding.assembleBytes (p.instructions.drop index) = Challenge.EvmProof.PcEncoding.assembleBytes p.instructions := by
+    rw [← Challenge.EvmProof.PcEncoding.assembleBytes_append, hsplit]
   have hlen := congrArg List.length hbytes
   have hsize := congrArg ByteArray.size p.assembly_eq
-  have hlen' : (assembleBytes (p.instructions.take index)).length +
-      (assembleBytes (p.instructions.drop index)).length =
-        (assembleBytes p.instructions).length := by simpa using hlen
-  have hsize' : (assembleBytes p.instructions).length + p.data.length = p.code.size := by
-    change (assembleBytes p.instructions ++ p.data).toArray.size = p.code.size at hsize
+  have hlen' : (Challenge.EvmProof.PcEncoding.assembleBytes (p.instructions.take index)).length +
+      (Challenge.EvmProof.PcEncoding.assembleBytes (p.instructions.drop index)).length =
+        (Challenge.EvmProof.PcEncoding.assembleBytes p.instructions).length := by simpa using hlen
+  have hsize' : (Challenge.EvmProof.PcEncoding.assembleBytes p.instructions).length + p.data.length = p.code.size := by
+    change (Challenge.EvmProof.PcEncoding.assembleBytes p.instructions ++ p.data).toArray.size = p.code.size at hsize
     simpa only [List.size_toArray, List.length_append] using hsize
   unfold instructionPC
   omega
@@ -59,30 +60,30 @@ private theorem split_at_get {α : Type} {xs : List α} {index : Nat} {x : α}
 
 theorem decodeAt_op_index (p : DataProgramArtifact) (index : Nat) (o : Operation)
     (hget : p.instructions[index]? = some (.op o))
-    (hopcode : Decode.opcodeOf (Instr.opByte o) = some o)
+    (hopcode : Decode.opcodeOf (Challenge.EvmProof.PcEncoding.opByte o) = some o)
     (hplain : YulEvmCompiler.plainOp o) :
     Decode.decodeAt p.code (p.instructionPC index) = some (o, none) := by
   have hsplit := split_at_get hget
   rw [← p.assembly_eq]
   unfold instructionPC
-  change Decode.decodeAt (mkCode (assembleBytes p.instructions ++ p.data))
-    (assembleBytes (List.take index p.instructions)).length = _
-  have hbytes : assembleBytes p.instructions =
-      assembleBytes (p.instructions.take index) ++ (Instr.op o).bytes ++
-        assembleBytes (p.instructions.drop (index + 1)) := by
+  change Decode.decodeAt (mkCode (Challenge.EvmProof.PcEncoding.assembleBytes p.instructions ++ p.data))
+    (Challenge.EvmProof.PcEncoding.assembleBytes (List.take index p.instructions)).length = _
+  have hbytes : Challenge.EvmProof.PcEncoding.assembleBytes p.instructions =
+      Challenge.EvmProof.PcEncoding.assembleBytes (p.instructions.take index) ++ (PcEncoding.instrBytes (.op o)) ++
+        Challenge.EvmProof.PcEncoding.assembleBytes (p.instructions.drop (index + 1)) := by
     calc
-      assembleBytes p.instructions = assembleBytes
+      Challenge.EvmProof.PcEncoding.assembleBytes p.instructions = Challenge.EvmProof.PcEncoding.assembleBytes
           (p.instructions.take index ++
             Instr.op o :: p.instructions.drop (index + 1)) :=
-        congrArg assembleBytes hsplit
+        congrArg Challenge.EvmProof.PcEncoding.assembleBytes hsplit
       _ = _ := by
-        rw [assembleBytes_append, assembleBytes_cons]
+        rw [Challenge.EvmProof.PcEncoding.assembleBytes_append, Challenge.EvmProof.PcEncoding.assembleBytes_cons]
         simp [List.append_assoc]
   rw [hbytes]
   simp only [List.append_assoc]
-  simpa only [List.append_assoc] using YulEvmCompiler.decodeAt_op
-    (assembleBytes (p.instructions.take index))
-    (assembleBytes (p.instructions.drop (index + 1)) ++ p.data) o hopcode hplain
+  simpa only [List.append_assoc, PcEncoding.mkCode, YulEvmCompiler.mkCode] using PcEncoding.decodeAt_op
+    (Challenge.EvmProof.PcEncoding.assembleBytes (p.instructions.take index))
+    (Challenge.EvmProof.PcEncoding.assembleBytes (p.instructions.drop (index + 1)) ++ p.data) o hopcode hplain
 
 theorem decodeAt_push_index (p : DataProgramArtifact) (index : Nat)
     (width : Fin 33) (value : UInt256)
@@ -93,25 +94,25 @@ theorem decodeAt_push_index (p : DataProgramArtifact) (index : Nat)
   have hsplit := split_at_get hget
   rw [← p.assembly_eq]
   unfold instructionPC
-  change Decode.decodeAt (mkCode (assembleBytes p.instructions ++ p.data))
-    (assembleBytes (List.take index p.instructions)).length = _
-  have hbytes : assembleBytes p.instructions =
-      assembleBytes (p.instructions.take index) ++
-        (Instr.push width value).bytes ++
-          assembleBytes (p.instructions.drop (index + 1)) := by
+  change Decode.decodeAt (mkCode (Challenge.EvmProof.PcEncoding.assembleBytes p.instructions ++ p.data))
+    (Challenge.EvmProof.PcEncoding.assembleBytes (List.take index p.instructions)).length = _
+  have hbytes : Challenge.EvmProof.PcEncoding.assembleBytes p.instructions =
+      Challenge.EvmProof.PcEncoding.assembleBytes (p.instructions.take index) ++
+        (PcEncoding.instrBytes (.push width value)) ++
+          Challenge.EvmProof.PcEncoding.assembleBytes (p.instructions.drop (index + 1)) := by
     calc
-      assembleBytes p.instructions = assembleBytes
+      Challenge.EvmProof.PcEncoding.assembleBytes p.instructions = Challenge.EvmProof.PcEncoding.assembleBytes
           (p.instructions.take index ++
             Instr.push width value :: p.instructions.drop (index + 1)) :=
-        congrArg assembleBytes hsplit
+        congrArg Challenge.EvmProof.PcEncoding.assembleBytes hsplit
       _ = _ := by
-        rw [assembleBytes_append, assembleBytes_cons]
+        rw [Challenge.EvmProof.PcEncoding.assembleBytes_append, Challenge.EvmProof.PcEncoding.assembleBytes_cons]
         simp [List.append_assoc]
   rw [hbytes]
   simp only [List.append_assoc]
-  simpa only [List.append_assoc] using YulEvmCompiler.decodeAt_push
-    (assembleBytes (p.instructions.take index))
-    (assembleBytes (p.instructions.drop (index + 1)) ++ p.data) width value hfit
+  simpa only [List.append_assoc, PcEncoding.mkCode, YulEvmCompiler.mkCode] using PcEncoding.decodeAt_push
+    (Challenge.EvmProof.PcEncoding.assembleBytes (p.instructions.take index))
+    (Challenge.EvmProof.PcEncoding.assembleBytes (p.instructions.drop (index + 1)) ++ p.data) width value hfit
 
 theorem isValidJumpDest_index (p : DataProgramArtifact) (index : Nat)
     (hget : p.instructions[index]? = some (.op .JUMPDEST)) :
@@ -119,25 +120,25 @@ theorem isValidJumpDest_index (p : DataProgramArtifact) (index : Nat)
   have hsplit := split_at_get hget
   rw [← p.assembly_eq]
   unfold instructionPC
-  change Decode.isValidJumpDest (mkCode (assembleBytes p.instructions ++ p.data))
-    (assembleBytes (List.take index p.instructions)).length = true
-  have hbytes : assembleBytes p.instructions =
-      assembleBytes (p.instructions.take index) ++
-        (Instr.op .JUMPDEST).bytes ++
-          assembleBytes (p.instructions.drop (index + 1)) := by
+  change Decode.isValidJumpDest (mkCode (Challenge.EvmProof.PcEncoding.assembleBytes p.instructions ++ p.data))
+    (Challenge.EvmProof.PcEncoding.assembleBytes (List.take index p.instructions)).length = true
+  have hbytes : Challenge.EvmProof.PcEncoding.assembleBytes p.instructions =
+      Challenge.EvmProof.PcEncoding.assembleBytes (p.instructions.take index) ++
+        (PcEncoding.instrBytes (.op .JUMPDEST)) ++
+          Challenge.EvmProof.PcEncoding.assembleBytes (p.instructions.drop (index + 1)) := by
     calc
-      assembleBytes p.instructions = assembleBytes
+      Challenge.EvmProof.PcEncoding.assembleBytes p.instructions = Challenge.EvmProof.PcEncoding.assembleBytes
           (p.instructions.take index ++
             Instr.op .JUMPDEST :: p.instructions.drop (index + 1)) :=
-        congrArg assembleBytes hsplit
+        congrArg Challenge.EvmProof.PcEncoding.assembleBytes hsplit
       _ = _ := by
-        rw [assembleBytes_append, assembleBytes_cons]
+        rw [Challenge.EvmProof.PcEncoding.assembleBytes_append, Challenge.EvmProof.PcEncoding.assembleBytes_cons]
         simp [List.append_assoc]
   rw [hbytes]
   simp only [List.append_assoc]
-  simpa only [List.append_assoc] using YulEvmCompiler.isValidJumpDest_boundary
+  simpa only [List.append_assoc, PcEncoding.mkCode, YulEvmCompiler.mkCode] using PcEncoding.isValidJumpDest_boundary
     (p.instructions.take index)
-    (assembleBytes (p.instructions.drop (index + 1)) ++ p.data)
+    (Challenge.EvmProof.PcEncoding.assembleBytes (p.instructions.drop (index + 1)) ++ p.data)
 
 /-- Install a certified decoder fact into an arbitrary machine state. Gas,
 memory, stack, and world fields are irrelevant to decoding. -/

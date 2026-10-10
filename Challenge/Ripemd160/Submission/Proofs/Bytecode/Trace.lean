@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
 import Challenge.EvmProof.Ops
 import Challenge.EvmProof.Word
@@ -34,7 +35,7 @@ theorem decodedOpAt (s : State) (index : Nat) (op : Operation)
     (hcode : s.executionEnv.code = submissionBytecode)
     (hpc : s.pc = UInt256.ofNat (Artifact.instructionPC index))
     (hget : Artifact.submissionInstructions[index]? = some (.op op))
-    (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
+    (hopcode : Decode.opcodeOf (Challenge.EvmProof.PcEncoding.opByte op) = some op)
     (hplain : YulEvmCompiler.plainOp op)
     (havailable : op.availableInFork s.fork = true) :
     s.decodedOp = some op := by

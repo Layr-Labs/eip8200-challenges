@@ -85,7 +85,7 @@ def gasSteps_table (s : State) (e : Env s)
   have e1 : Env s1 := ⟨e.code, e.fork, e.run, e.np⟩
   apply table.lift s1 _ e1 _
   have h := Shared32Run.run_table s (UInt256.ofNat 495) ret a2 a3 a4 a5 a6 a7
-    a8 a9 a10 lim rho hstack e.run hactive
+    a8 a9 a10 lim rho hstack e.run hactive rfl
   simpa only [table.template, Shared32Run.end_pc, atState, s1] using h
 
 #print axioms gasSteps_sparse

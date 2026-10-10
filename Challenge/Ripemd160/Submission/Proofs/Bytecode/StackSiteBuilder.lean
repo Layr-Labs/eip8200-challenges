@@ -34,8 +34,8 @@ private theorem instructionPC_succ (artifact : DataProgramArtifact) (index : Nat
     artifact.instructionPC (index + 1) =
       artifact.instructionPC index + artifact.instructions[index].size := by
   unfold DataProgramArtifact.instructionPC
-  rw [← List.take_append_getElem hi, assembleBytes_append]
-  simp [Instr.size]
+  rw [← List.take_append_getElem hi, PcEncoding.assembleBytes_append]
+  simp [PcEncoding.instrBytes_length]
 
 private theorem headPC_finRange_map
     : ∀ {artifact : DataProgramArtifact} {fork : Fork} (n : Nat)

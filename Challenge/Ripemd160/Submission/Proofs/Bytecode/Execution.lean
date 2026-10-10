@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataStepper
 import Challenge.EvmProof.Word
 import Challenge.Ripemd160.ProofSupport.InitialState
@@ -13,7 +14,7 @@ open EvmSemantics
 open EvmSemantics.EVM
 
 private def wfOp {op : Operation}
-    (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
+    (hopcode : Decode.opcodeOf (Challenge.EvmProof.PcEncoding.opByte op) = some op)
     (hplain : YulEvmCompiler.plainOp op)
     (havailable : op.availableInFork .Osaka = true) :
     Challenge.EvmProof.DataStepper.WellFormed .Osaka (.op op) :=

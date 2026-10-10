@@ -1,0 +1,9 @@
+✔ [995/997] Built Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding (3.7s)
+ℹ [996/997] Built Challenge.Ripemd160.Submission.Proofs.Bytecode.DataProgram (843ms)
+info: Challenge/Ripemd160/Submission/Proofs/Bytecode/DataProgram.lean:172:0: 'Challenge.EvmProof.DataProgramArtifact.decodeAt_op_index' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Challenge/Ripemd160/Submission/Proofs/Bytecode/DataProgram.lean:173:0: 'Challenge.EvmProof.DataProgramArtifact.decodeAt_push_index' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Challenge/Ripemd160/Submission/Proofs/Bytecode/DataProgram.lean:174:0: 'Challenge.EvmProof.DataProgramArtifact.isValidJumpDest_index' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+✔ [997/997] Built Challenge.Ripemd160.Submission.Proofs.Bytecode.DataStepper (10s)
+Build completed successfully (997 jobs).

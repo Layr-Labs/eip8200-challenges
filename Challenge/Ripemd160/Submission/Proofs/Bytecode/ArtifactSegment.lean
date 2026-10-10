@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataProgram
 
 set_option warningAsError true
@@ -21,9 +22,9 @@ theorem mkCode_append (a b : List UInt8) :
   simp [mkCode, List.append_toArray]
 
 theorem assemble_append (left right : List Instr) :
-    assemble (left ++ right) = assemble left ++ assemble right := by
+    Challenge.EvmProof.PcEncoding.assemble (left ++ right) = Challenge.EvmProof.PcEncoding.assemble left ++ Challenge.EvmProof.PcEncoding.assemble right := by
   apply ByteArray.ext
-  simp [assemble, assembleBytes_append, List.append_toArray]
+  simp [Challenge.EvmProof.PcEncoding.assemble, Challenge.EvmProof.PcEncoding.assembleBytes_append, List.append_toArray]
 
 theorem getElem?_segment (p : DataProgramArtifact) (before segment after : List Instr)
     (hsplit : p.instructions = before ++ segment ++ after)
@@ -38,21 +39,21 @@ theorem instructionPC_segment (p : DataProgramArtifact)
     (hsplit : p.instructions = before ++ segment ++ after)
     (i : Nat) (hi : i ≤ segment.length) :
     p.instructionPC (before.length + i) =
-      (assembleBytes before).length + (assembleBytes (segment.take i)).length := by
+      (Challenge.EvmProof.PcEncoding.assembleBytes before).length + (Challenge.EvmProof.PcEncoding.assembleBytes (segment.take i)).length := by
   unfold DataProgramArtifact.instructionPC
   rw [hsplit, List.append_assoc, List.take_append,
     List.take_of_length_le (by omega : before.length ≤ before.length + i)]
   simp only [Nat.add_sub_cancel_left]
-  rw [List.take_append_of_le_length hi, assembleBytes_append, List.length_append]
+  rw [List.take_append_of_le_length hi, Challenge.EvmProof.PcEncoding.assembleBytes_append, List.length_append]
 
 theorem instructionPC_segment_of_bounds (p : DataProgramArtifact)
     (before segment after : List Instr) (startIndex startPC : Nat)
     (hsplit : p.instructions = before ++ segment ++ after)
     (hindex : before.length = startIndex)
-    (hpc : (assembleBytes before).length = startPC)
+    (hpc : (Challenge.EvmProof.PcEncoding.assembleBytes before).length = startPC)
     (i : Nat) (hi : i ≤ segment.length) :
     p.instructionPC (startIndex + i) =
-      startPC + (assembleBytes (segment.take i)).length := by
+      startPC + (Challenge.EvmProof.PcEncoding.assembleBytes (segment.take i)).length := by
   simpa only [hindex, hpc] using
     instructionPC_segment p before segment after hsplit i hi
 

@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RepeatedByteWord
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ExactGuardSpec
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.KnownInputCompactLogic
@@ -22,7 +23,7 @@ open KnownInputCompactState
 @[simp] private theorem zeroWordNat : (0 : UInt256).toNat = 0 := rfl
 
 def wfOp {op : Operation}
-    (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
+    (hopcode : Decode.opcodeOf (Challenge.EvmProof.PcEncoding.opByte op) = some op)
     (hplain : YulEvmCompiler.plainOp op)
     (havailable : op.availableInFork .Osaka = true) :
     Challenge.EvmProof.DataStepper.WellFormed .Osaka (.op op) :=
@@ -32,7 +33,7 @@ abbrev Located := Challenge.EvmProof.DataStepper.Located Artifact.submissionArti
 
 def opAt (index : Nat) (op : Operation)
     (hget : Artifact.submissionInstructions[index]? = some (.op op) := by rfl)
-    (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op := by decide)
+    (hopcode : Decode.opcodeOf (Challenge.EvmProof.PcEncoding.opByte op) = some op := by decide)
     (hplain : YulEvmCompiler.plainOp op := by trivial)
     (havailable : op.availableInFork .Osaka = true := by rfl) : Located :=
   ⟨index, .op op, hget, wfOp hopcode hplain havailable⟩

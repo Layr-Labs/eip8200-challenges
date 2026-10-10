@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Scratch
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13Endian
 
@@ -42,7 +43,7 @@ theorem run_lower (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt2
   have h := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
   simpa only [lowerTemplate, DenseScheduleTrace.pcAfter_append, pc1, pc2, low] using h
 
-theorem lower_bytes : assembleBytes lowerTemplate =
+theorem lower_bytes : Challenge.EvmProof.PcEncoding.assembleBytes lowerTemplate =
     [139,81,128,96,8,28,129,24,143,22,97,1,1,2,24,143,129,128,96,16,28,24,22,98,1,0,1,2,24,96,252,82] := by decide
 
 #print axioms run_lower

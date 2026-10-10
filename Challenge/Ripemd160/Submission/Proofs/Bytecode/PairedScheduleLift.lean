@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleLift
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseEndianMultiply
@@ -1240,7 +1241,7 @@ theorem fullTemplate_length : fullTemplate.length = 152 := by
     PairedSchedulePrimitives.duplicateShiftTemplate, PairedSchedulePrimitives.maskTemplate,
     PairedSchedulePrimitives.storeTemplate, sentinelTemplate]
 
-theorem fullTemplate_byteLength : (assembleBytes fullTemplate).length = 384 := by
+theorem fullTemplate_byteLength : (Challenge.EvmProof.PcEncoding.assembleBytes fullTemplate).length = 384 := by
   rw [DenseScheduleTemplate.assembleBytes_length]
   norm_num [fullTemplate, initialTemplate, reversedHalfTemplate, endianStage8, endianStage16,
     endianStage, endianMaskPush, endianFactorPush, endianFactor,

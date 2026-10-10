@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataMeter
 import YulEvmCompiler.Instr
@@ -121,46 +122,43 @@ def denseWindowTemplate : List Instr := denseFullTemplate ++ paddingTemplate
 @[simp] theorem denseWindowTemplate_length : denseWindowTemplate.length = 56 := by rfl
 
 theorem assembleBytes_length (instructions : List Instr) :
-    (assembleBytes instructions).length =
+    (Challenge.EvmProof.PcEncoding.assembleBytes instructions).length =
       (instructions.map Instr.size).sum := by
   induction instructions with
   | nil => rfl
   | cons instruction rest ih =>
-      simp only [assembleBytes_cons, List.length_append, List.map_cons,
-        List.sum_cons]
-      change instruction.bytes.length + (assembleBytes rest).length =
-        instruction.bytes.length + (rest.map Instr.size).sum
-      rw [ih]
+      simp only [Challenge.EvmProof.PcEncoding.assembleBytes_cons, List.length_append,
+        Challenge.EvmProof.PcEncoding.instrBytes_length, List.map_cons, List.sum_cons, ih]
 
 theorem denseHalfTemplate_byteLength (half : Nat) :
-    (assembleBytes (denseHalfTemplate half)).length = 91 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes (denseHalfTemplate half)).length = 91 := by
   rw [assembleBytes_length]
   simp [denseHalfTemplate, endianStage8, endianStage16, endianStage, endianMaskPush,
     endianFactorPush, endianFactor, op, push1, push2, push3, dup1,
     denseStoreAddress]
 
 theorem denseBeforeJumpTemplate_byteLength :
-    (assembleBytes denseBeforeJumpTemplate).length = 190 := by
-  rw [denseBeforeJumpTemplate, assembleBytes_append, List.length_append,
+    (Challenge.EvmProof.PcEncoding.assembleBytes denseBeforeJumpTemplate).length = 190 := by
+  rw [denseBeforeJumpTemplate, Challenge.EvmProof.PcEncoding.assembleBytes_append, List.length_append,
     assembleBytes_length]
   simp [denseHalfTemplate, initialTemplate, endianStage8, endianStage16,
     endianStage, endianMaskPush, endianFactorPush, endianFactor, op, push1, push2, push3,
     dup1, swap1, denseStoreAddress]
 
 theorem denseFullTemplate_byteLength :
-    (assembleBytes denseFullTemplate).length = 191 := by
-  rw [denseFullTemplate, assembleBytes_append, List.length_append,
+    (Challenge.EvmProof.PcEncoding.assembleBytes denseFullTemplate).length = 191 := by
+  rw [denseFullTemplate, Challenge.EvmProof.PcEncoding.assembleBytes_append, List.length_append,
     denseBeforeJumpTemplate_byteLength]
   rfl
 
 theorem paddingTemplate_byteLength :
-    (assembleBytes paddingTemplate).length = 126 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes paddingTemplate).length = 126 := by
   rw [assembleBytes_length]
   norm_num [paddingTemplate, push32]
 
 theorem denseWindowTemplate_byteLength :
-    (assembleBytes denseWindowTemplate).length = 317 := by
-  rw [denseWindowTemplate, assembleBytes_append, List.length_append,
+    (Challenge.EvmProof.PcEncoding.assembleBytes denseWindowTemplate).length = 317 := by
+  rw [denseWindowTemplate, Challenge.EvmProof.PcEncoding.assembleBytes_append, List.length_append,
     denseFullTemplate_byteLength, paddingTemplate_byteLength]
 
 def staticGas (instructions : List Instr) : Nat :=

@@ -18,7 +18,7 @@ def template : List Instr :=
 
 theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
-    (hactive : s.activeWords = UInt256.ofNat 34) :
+    (hactive : s.activeWords = UInt256.ofNat 34) (hpc : pc = UInt256.ofNat 495) :
     runInstrSeq template
       {s with
         pc := pc
@@ -53,7 +53,7 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
   have h3 := PoolRawWriter.run_writer_grow s3
     (pcAfter (pcAfter pc Shared32Lower.lowerTemplate) Pair13PoolRaw.templateV2)
-    ret (Pair13PoolRaw.poolWordV2 (Pair13PoolRaw.copiedV2 scratch)) rest hrest hrun ha3
+    ret (Pair13PoolRaw.poolWordV2 (Pair13PoolRaw.copiedV2 scratch)) rest hrest hrun ha3 (by rw [hpc]; decide)
   have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
   have h4 := Pair13NormalTrace.run_clear
     {s3 with

@@ -1,0 +1,24 @@
+'Challenge.Ripemd160.Submission.Proofs.Bytecode.Pc666PackedExperiment.run_chunk0' depends on axioms: [propext,
+ Quot.sound]
+'Challenge.Ripemd160.Submission.Proofs.Bytecode.Pc666PackedExperiment.run_chunk1' depends on axioms: [propext,
+ Quot.sound]
+'Challenge.Ripemd160.Submission.Proofs.Bytecode.Pc666PackedExperiment.run_chunk2' depends on axioms: [propext,
+ Quot.sound]
+'Challenge.Ripemd160.Submission.Proofs.Bytecode.Pc666PackedExperiment.run_chunk3' depends on axioms: [propext,
+ Quot.sound]
+'Challenge.Ripemd160.Submission.Proofs.Bytecode.Pc666PackedExperiment.run_chunk4' depends on axioms: [propext,
+ Quot.sound]
+'Challenge.Ripemd160.Submission.Proofs.Bytecode.Pc666PackedExperiment.run_chunk5' depends on axioms: [propext,
+ Quot.sound]
+'Challenge.Ripemd160.Submission.Proofs.Bytecode.Pc666PackedExperiment.keys_sorted' does not depend on any axioms
+'Challenge.Ripemd160.Submission.Proofs.Bytecode.Pc666PackedExperiment.slotOrder_ok' does not depend on any axioms
+'Challenge.Ripemd160.Submission.Proofs.Bytecode.Pc666PackedExperiment.sorted_eq' depends on axioms: [propext]
+'Challenge.Ripemd160.Submission.Proofs.Bytecode.Pc666PackedExperiment.raw_eq_writer' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Challenge.Ripemd160.Submission.Proofs.Bytecode.Pc666PackedExperiment.run_writer_grow' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Challenge.Ripemd160.Submission.Proofs.Bytecode.Pc666PackedExperiment.run_writer' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

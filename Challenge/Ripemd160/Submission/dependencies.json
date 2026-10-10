@@ -1,0 +1,7 @@
+[
+  {
+    "submissionId": "f797f38b-1ab6-4172-bf96-c7e1befcc583",
+    "rationale": "Uses the complete promoted 651617-gas bytecode and universal Lean proof as the base, retaining the predecessor's staged paired compressor and seven-SWAP feed-forward epilogue.",
+    "evidence": "The executable byte diff is limited to the schedule writer at PCs 733..743 and a commutative operand reorder at PCs 4255..4256. The local PC instruction extension is wired into the inherited DataProgram/DataStepper proof, and all other compression and recognition behavior is retained."
+  }
+]

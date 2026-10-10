@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.EvmProof.Ops
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataProgram
 import YulEvmCompiler.Instr
@@ -132,6 +133,7 @@ def runInstr (instruction : Instr) (s : State) : Option State :=
     | .op (.Swap n) => match s.stack.exchange 0 (n.idx.val + 1) with
         | some stack => some { s with stack := stack, pc := s.pc.succ }
         | none => none
+    | .op .PC => some { s with stack := s.pc :: s.stack, pc := s.pc.succ }
     | .op .CODESIZE => some { s with
         stack := UInt256.ofNat s.executionEnv.code.size :: s.stack
         pc := s.pc.succ }
@@ -444,6 +446,24 @@ private def sound_codesize {s t : State}
     exact g.trace gas hgas
   · simp [runInstr, hcap] at hresult
 
+private def sound_pc {s t : State}
+    (hdecode : s.decodedOp = some .PC)
+    (hresult : runInstr (.op .PC) s = some t)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) : GasSteps s t := by
+  refine ⟨instrCost (.op .PC) s, ?_⟩
+  intro gas hgas
+  by_cases hcap : s.stack.length < 1024
+  · simp only [runInstr, if_pos hcap] at hresult
+    cases hresult
+    let g : GasSteps s {s with stack := s.pc :: s.stack, pc := s.pc.succ} :=
+      GasStep.of_running (Gas.baseCost s.fork .PC) hrun hnp
+        (fun fuel hfuel => by
+          simpa [withGas] using StepRunning.pc (withGas s fuel) hdecode hfuel hcap)
+    exact g.trace gas hgas
+  · simp [runInstr, hcap] at hresult
+
 private def sound_calldataload {s t : State}
     (hdecode : s.decodedOp = some .CALLDATALOAD)
     (hresult : runInstr (.op .CALLDATALOAD) s = some t)
@@ -720,6 +740,7 @@ def runInstr_sound {instruction : Instr} {s t : State}
         | simp [runInstr] at hresult
     | StackMemFlow op =>
       cases op <;> first
+        | exact (sound_pc hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_pop hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_mload hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_mstore hdecode hresult hrun hnp).trace gas hgas
@@ -764,7 +785,7 @@ def WellFormed (fork : Fork) : Instr → Prop
       value.toNat < 256 ^ width.val ∧
         (Operation.Push ⟨width⟩).availableInFork fork = true
   | .op op =>
-      Decode.opcodeOf (Instr.opByte op) = some op ∧
+      Decode.opcodeOf (Challenge.EvmProof.PcEncoding.opByte op) = some op ∧
         YulEvmCompiler.plainOp op ∧ op.availableInFork fork = true
 
 instance (fork : Fork) (instruction : Instr) :

@@ -1,0 +1,20 @@
+depth 0 states 14 best -3.0
+depth 1 states 192 best -2.7
+depth 2 states 2492 best -0.7000000000000002
+depth 3 states 30398 best -0.3999999999999999
+depth 4 states 346636 best 3.3000000000000003
+depth 5 states 1591324 best 3.6
+depth 6 states 1631860 best 3.9
+depth 7 states 1770590 best 7.1000000000000005
+depth 8 states 1919882 best 7.3999999999999995
+depth 9 states 1829142 best 11.1
+depth 10 states 1945409 best 11.399999999999999
+depth 11 states 2027614 best 11.7
+depth 12 states 2197898 best 15.099999999999998
+depth 13 states 2211033 best 15.399999999999999
+depth 14 states 1893536 best 19.099999999999998
+depth 15 states 2171854 best 23.299999999999997
+depth 16 states 2059534 best 23.599999999999998
+depth 17 states 2001569 best 30.0
+depth 18 states 2004927 best 30.6
+FOUND 19 ('SWAP2', 'DUP5', 'DUP7', 'DUP1', 'ADD', 'AND', 'DUP7', 'DUP2', 'DUP4', 'OR', 'SWAP2', 'OR', 'PUSH1 4', 'SHR', 'DUP2', 'SUB', 'XOR', 'XOR', 'SWAP2')

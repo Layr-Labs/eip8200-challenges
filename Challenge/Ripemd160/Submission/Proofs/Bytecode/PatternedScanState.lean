@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Batteries.Tactic.OpenPrivate
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactSegment
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedSwar
@@ -120,7 +121,7 @@ private theorem artifact_scan_split :
   simp only [scanBefore, scanSuffix, List.append_assoc, List.append_nil]
 
 private theorem scanBefore_pc :
-    (YulEvmCompiler.assembleBytes scanBefore).length = 76 := by rfl
+    (Challenge.EvmProof.PcEncoding.assembleBytes scanBefore).length = 76 := by rfl
 
 private theorem artifact_instruction_projection :
     Artifact.submissionArtifact.instructions = Artifact.submissionInstructions := by rfl
@@ -139,7 +140,7 @@ private theorem scan_instruction_at (index : Nat)
 private theorem scan_instruction_pc (index : Nat)
     (hlo : 56 ≤ index) (hhi : index ≤ 3904) :
     Artifact.submissionArtifact.instructionPC index =
-      76 + (YulEvmCompiler.assembleBytes (scanSuffix.take (index - 56))).length := by
+      76 + (Challenge.EvmProof.PcEncoding.assembleBytes (scanSuffix.take (index - 56))).length := by
   have hi : index - 56 ≤ scanSuffix.length := by
     rw [scanSuffix_length]
     omega
@@ -149,7 +150,7 @@ private theorem scan_instruction_pc (index : Nat)
   simpa only [Nat.add_sub_of_le hlo] using h
 
 def wfOp {op : Operation}
-    (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
+    (hopcode : Decode.opcodeOf (Challenge.EvmProof.PcEncoding.opByte op) = some op)
     (hplain : YulEvmCompiler.plainOp op)
     (havailable : op.availableInFork .Osaka = true) :
     Challenge.EvmProof.DataStepper.WellFormed .Osaka (.op op) :=
@@ -162,7 +163,7 @@ def opAt (index : Nat) (op : Operation)
       first
       | rw [scan_instruction_at] <;> first | rfl | decide
       | rfl)
-    (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op := by decide)
+    (hopcode : Decode.opcodeOf (Challenge.EvmProof.PcEncoding.opByte op) = some op := by decide)
     (hplain : YulEvmCompiler.plainOp op := by trivial)
     (havailable : op.availableInFork .Osaka = true := by rfl) : Located :=
   ⟨index, .op op, hget, wfOp hopcode hplain havailable⟩

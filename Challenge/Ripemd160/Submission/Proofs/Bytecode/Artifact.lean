@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataStepper
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactSegment
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.newArtifactByteLength
@@ -8,8 +9,8 @@ set_option maxHeartbeats 2000000
 /-!
 # Structural certificate for the frozen RIPEMD-160 artifact
 
-The exact candidate has 5248 bytes, 3642 executable instructions and 280 data bytes, and SHA-256
-`bc5431c49eb482fe570ce078dcdb1cbc222dd3d4959da6882e828c6cd541c67b`. PUSH rows carry their typed width and value.
+The exact candidate has 5248 bytes, 3626 executable instructions and 280 data bytes, and SHA-256
+`b9182bbcc8258af8bc5e754e1c71c7c0fa52275e282da7d02049f55fe926e095`. PUSH rows carry their typed width and value.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
@@ -396,12 +397,12 @@ private def submissionInstructionsChunk3 : List Instr :=
   .push 2 630,
   op 0x52,
   op 0x83,
-  .push 2 612,
+  .push 3 612,
   op 0x52,
-  .push 2 738,
+  op 0x58,
   op 0x52,
   op 0x88,
-  .push 2 288,
+  .push 3 288,
   op 0x52,
   .push 2 594,
   op 0x52,
@@ -3266,8 +3267,8 @@ private def submissionInstructionsChunk17 : List Instr :=
   op 0x86,
   op 0x16,
   op 0x93,
-  op 0x89,
-  op 0x8f,
+  op 0x8e,
+  op 0x8a,
   op 0x16
 ]
 
@@ -3801,7 +3802,7 @@ submissionInstructionsChunk0
 theorem referenceInstructions_count : submissionInstructions.length = 3626 := by
   simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length, submissionInstructionsChunk20_length]
 
-private theorem submissionInstructionsChunk0_assemble : assembleBytes submissionInstructionsChunk0 = [
+private theorem submissionInstructionsChunk0_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk0 = [
   0x64, 0x10, 0x8c, 0x86, 0x82, 0x1c, 0x5f, 0x35, 0x16, 0x60, 0xf6, 0x57,
   0x36, 0x61, 0x03, 0xe8, 0x03, 0x61, 0x12, 0x53, 0x57, 0x5f, 0x35, 0x60,
   0xff, 0x02, 0x60, 0x61, 0x01, 0x61, 0x12, 0xca, 0x57, 0x5f, 0x35, 0x61,
@@ -3824,7 +3825,7 @@ private theorem submissionInstructionsChunk0_assemble : assembleBytes submission
   0x60, 0x01, 0x01, 0x90, 0x60, 0x08, 0x1c, 0x90, 0x81
 ] := by decide
 
-private theorem submissionInstructionsChunk1_assemble : assembleBytes submissionInstructionsChunk1 = [
+private theorem submissionInstructionsChunk1_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk1 = [
   0x60, 0xe0, 0x57, 0x50, 0x50, 0x61, 0x01, 0xc9, 0x56, 0x5b, 0x7d, 0xff,
   0xff, 0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0xff,
   0xff, 0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0xff,
@@ -3847,7 +3848,7 @@ private theorem submissionInstructionsChunk1_assemble : assembleBytes submission
   0x60, 0x08, 0x1c, 0x81, 0x18, 0x8f, 0x16, 0x61, 0x01, 0x01
 ] := by decide
 
-private theorem submissionInstructionsChunk2_assemble : assembleBytes submissionInstructionsChunk2 = [
+private theorem submissionInstructionsChunk2_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk2 = [
   0x02, 0x18, 0x8f, 0x81, 0x80, 0x60, 0x10, 0x1c, 0x18, 0x16, 0x62, 0x01,
   0x00, 0x01, 0x02, 0x18, 0x60, 0xa2, 0x52, 0x5b, 0x8b, 0x51, 0x80, 0x60,
   0x08, 0x1c, 0x81, 0x18, 0x8f, 0x16, 0x61, 0x01, 0x01, 0x02, 0x18, 0x8f,
@@ -3870,10 +3871,10 @@ private theorem submissionInstructionsChunk2_assemble : assembleBytes submission
   0x88, 0x61, 0x04, 0x26, 0x52, 0x83, 0x61, 0x01, 0xe6
 ] := by decide
 
-private theorem submissionInstructionsChunk3_assemble : assembleBytes submissionInstructionsChunk3 = [
+private theorem submissionInstructionsChunk3_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk3 = [
   0x52, 0x61, 0x03, 0xcc, 0x52, 0x83, 0x61, 0x02, 0x88, 0x52, 0x83, 0x61,
-  0x03, 0xf0, 0x52, 0x88, 0x61, 0x02, 0x76, 0x52, 0x83, 0x61, 0x02, 0x64,
-  0x52, 0x61, 0x02, 0xe2, 0x52, 0x88, 0x61, 0x01, 0x20, 0x52, 0x61, 0x02,
+  0x03, 0xf0, 0x52, 0x88, 0x61, 0x02, 0x76, 0x52, 0x83, 0x62, 0x00, 0x02,
+  0x64, 0x52, 0x58, 0x52, 0x88, 0x62, 0x00, 0x01, 0x20, 0x52, 0x61, 0x02,
   0x52, 0x52, 0x88, 0x61, 0x04, 0x14, 0x52, 0x88, 0x61, 0x01, 0x9e, 0x52,
   0x61, 0x02, 0xd0, 0x52, 0x61, 0x01, 0x0e, 0x52, 0x81, 0x61, 0x01, 0x8c,
   0x52, 0x61, 0x01, 0xd4, 0x52, 0x60, 0x12, 0x52, 0x61, 0x01, 0x68, 0x52,
@@ -3895,7 +3896,7 @@ private theorem submissionInstructionsChunk3_assemble : assembleBytes submission
   0x00, 0x00, 0x00
 ] := by decide
 
-private theorem submissionInstructionsChunk4_assemble : assembleBytes submissionInstructionsChunk4 = [
+private theorem submissionInstructionsChunk4_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk4 = [
   0x75, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0x61,
   0x01, 0x68, 0x51, 0x60, 0x17, 0x8c, 0x8a, 0x75, 0x50, 0xa2, 0x8b, 0xe6,
@@ -3917,7 +3918,7 @@ private theorem submissionInstructionsChunk4_assemble : assembleBytes submission
   0x01, 0x8c
 ] := by decide
 
-private theorem submissionInstructionsChunk5_assemble : assembleBytes submissionInstructionsChunk5 = [
+private theorem submissionInstructionsChunk5_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk5 = [
   0x51, 0x01, 0x87, 0x01, 0x83, 0x16, 0x8a, 0x02, 0x60, 0x1c, 0x1c, 0x85,
   0x01, 0x83, 0x16, 0x98, 0x8a, 0x02, 0x81, 0x1c, 0x83, 0x16, 0x94, 0x86,
   0x85, 0x87, 0x81, 0x83, 0x16, 0x17, 0x18, 0x18, 0x8a, 0x18, 0x01, 0x61,
@@ -3940,7 +3941,7 @@ private theorem submissionInstructionsChunk5_assemble : assembleBytes submission
   0x83, 0x16, 0x8d, 0x81, 0x99, 0x88
 ] := by decide
 
-private theorem submissionInstructionsChunk6_assemble : assembleBytes submissionInstructionsChunk6 = [
+private theorem submissionInstructionsChunk6_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk6 = [
   0x8c, 0x88, 0x18, 0x18, 0x83, 0x8d, 0x89, 0x16, 0x17, 0x18, 0x01, 0x61,
   0x01, 0x44, 0x51, 0x01, 0x89, 0x01, 0x85, 0x16, 0x8c, 0x02, 0x60, 0x13,
   0x1c, 0x87, 0x01, 0x85, 0x16, 0x9a, 0x8c, 0x02, 0x83, 0x1c, 0x85, 0x16,
@@ -3963,7 +3964,7 @@ private theorem submissionInstructionsChunk6_assemble : assembleBytes submission
   0x87, 0x16, 0x09, 0x89, 0x1c, 0x83, 0x01, 0x85
 ] := by decide
 
-private theorem submissionInstructionsChunk7_assemble : assembleBytes submissionInstructionsChunk7 = [
+private theorem submissionInstructionsChunk7_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk7 = [
   0x16, 0x9a, 0x8c, 0x02, 0x89, 0x1c, 0x85, 0x16, 0x92, 0x83, 0x8c, 0x88,
   0x82, 0x16, 0x8b, 0x82, 0x8b, 0x16, 0x18, 0x17, 0x18, 0x18, 0x01, 0x61,
   0x03, 0xde, 0x51, 0x01, 0x87, 0x01, 0x85, 0x16, 0x6c, 0xfe, 0x00, 0x00,
@@ -3986,7 +3987,7 @@ private theorem submissionInstructionsChunk7_assemble : assembleBytes submission
   0x00, 0x00, 0x00, 0x1e, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x10
 ] := by decide
 
-private theorem submissionInstructionsChunk8_assemble : assembleBytes submissionInstructionsChunk8 = [
+private theorem submissionInstructionsChunk8_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk8 = [
   0x09, 0x88, 0x1c, 0x01, 0x83, 0x16, 0x95, 0x8a, 0x02, 0x87, 0x1c, 0x83,
   0x16, 0x8d, 0x81, 0x96, 0x87, 0x8c, 0x89, 0x17, 0x8a, 0x89, 0x18, 0x16,
   0x18, 0x8c, 0x8a, 0x16, 0x17, 0x01, 0x61, 0x01, 0x44, 0x51, 0x01, 0x8a,
@@ -4009,7 +4010,7 @@ private theorem submissionInstructionsChunk8_assemble : assembleBytes submission
   0x16, 0x8c, 0x02, 0x60, 0x1a
 ] := by decide
 
-private theorem submissionInstructionsChunk9_assemble : assembleBytes submissionInstructionsChunk9 = [
+private theorem submissionInstructionsChunk9_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk9 = [
   0x1c, 0x83, 0x01, 0x85, 0x16, 0x9a, 0x8c, 0x02, 0x89, 0x1c, 0x85, 0x16,
   0x92, 0x83, 0x89, 0x85, 0x17, 0x8d, 0x89, 0x18, 0x16, 0x18, 0x8c, 0x8a,
   0x16, 0x17, 0x01, 0x61, 0x00, 0x24, 0x51, 0x01, 0x8a, 0x01, 0x85, 0x16,
@@ -4032,7 +4033,7 @@ private theorem submissionInstructionsChunk9_assemble : assembleBytes submission
   0x18, 0x8e, 0x82, 0x18, 0x16, 0x18, 0x18, 0x01, 0x61, 0x02, 0x9a
 ] := by decide
 
-private theorem submissionInstructionsChunk10_assemble : assembleBytes submissionInstructionsChunk10 = [
+private theorem submissionInstructionsChunk10_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk10 = [
   0x51, 0x01, 0x83, 0x01, 0x85, 0x16, 0x09, 0x60, 0x19, 0x1c, 0x85, 0x01,
   0x83, 0x16, 0x95, 0x8a, 0x02, 0x87, 0x1c, 0x83, 0x16, 0x94, 0x85, 0x85,
   0x18, 0x8a, 0x88, 0x88, 0x16, 0x18, 0x88, 0x87, 0x18, 0x16, 0x18, 0x01,
@@ -4055,7 +4056,7 @@ private theorem submissionInstructionsChunk10_assemble : assembleBytes submissio
   0x17, 0x18, 0x01, 0x60, 0xa2, 0x51
 ] := by decide
 
-private theorem submissionInstructionsChunk11_assemble : assembleBytes submissionInstructionsChunk11 = [
+private theorem submissionInstructionsChunk11_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk11 = [
   0x01, 0x87, 0x01, 0x85, 0x16, 0x81, 0x02, 0x60, 0x1b, 0x1c, 0x8a, 0x01,
   0x85, 0x16, 0x9a, 0x81, 0x02, 0x89, 0x1c, 0x85, 0x16, 0x99, 0x8a, 0x8c,
   0x8a, 0x19, 0x17, 0x18, 0x01, 0x60, 0x12, 0x51, 0x01, 0x87, 0x01, 0x85,
@@ -4078,7 +4079,7 @@ private theorem submissionInstructionsChunk11_assemble : assembleBytes submissio
   0x89, 0x1c, 0x85, 0x16, 0x99, 0x8a, 0x8c, 0x8a, 0x19
 ] := by decide
 
-private theorem submissionInstructionsChunk12_assemble : assembleBytes submissionInstructionsChunk12 = [
+private theorem submissionInstructionsChunk12_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk12 = [
   0x17, 0x18, 0x01, 0x61, 0x00, 0xea, 0x51, 0x01, 0x87, 0x01, 0x85, 0x16,
   0x6c, 0x3e, 0x00, 0x00, 0x00, 0x3e, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00,
   0x00, 0x01, 0x09, 0x60, 0x18, 0x1c, 0x01, 0x83, 0x16, 0x95, 0x8a, 0x02,
@@ -4101,7 +4102,7 @@ private theorem submissionInstructionsChunk12_assemble : assembleBytes submissio
   0x16, 0x18, 0x18, 0x01, 0x61, 0x02, 0xbe, 0x51
 ] := by decide
 
-private theorem submissionInstructionsChunk13_assemble : assembleBytes submissionInstructionsChunk13 = [
+private theorem submissionInstructionsChunk13_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk13 = [
   0x01, 0x88, 0x01, 0x6c, 0x06, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00,
   0x04, 0x00, 0x00, 0x00, 0x04, 0x8e, 0x91, 0x85, 0x16, 0x09, 0x60, 0x1b,
   0x1c, 0x85, 0x01, 0x83, 0x16, 0x98, 0x8a, 0x02, 0x87, 0x1c, 0x83, 0x16,
@@ -4124,7 +4125,7 @@ private theorem submissionInstructionsChunk13_assemble : assembleBytes submissio
   0x83
 ] := by decide
 
-private theorem submissionInstructionsChunk14_assemble : assembleBytes submissionInstructionsChunk14 = [
+private theorem submissionInstructionsChunk14_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk14 = [
   0x01, 0x85, 0x16, 0x6d, 0x03, 0xfe, 0x00, 0x00, 0x03, 0xfe, 0x00, 0x00,
   0x02, 0x00, 0x00, 0x00, 0x02, 0x00, 0x09, 0x61, 0x00, 0x1a, 0x1c, 0x01,
   0x83, 0x16, 0x95, 0x8a, 0x02, 0x87, 0x1c, 0x83, 0x16, 0x8d, 0x81, 0x99,
@@ -4148,7 +4149,7 @@ private theorem submissionInstructionsChunk14_assemble : assembleBytes submissio
   0x60, 0xc6, 0x51, 0x01
 ] := by decide
 
-private theorem submissionInstructionsChunk15_assemble : assembleBytes submissionInstructionsChunk15 = [
+private theorem submissionInstructionsChunk15_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk15 = [
   0x83, 0x01, 0x85, 0x16, 0x8c, 0x02, 0x60, 0x18, 0x1c, 0x87, 0x01, 0x85,
   0x16, 0x9a, 0x8c, 0x02, 0x89, 0x1c, 0x85, 0x16, 0x96, 0x88, 0x8c, 0x81,
   0x89, 0x17, 0x18, 0x89, 0x89, 0x83, 0x16, 0x18, 0x16, 0x18, 0x01, 0x61,
@@ -4171,7 +4172,7 @@ private theorem submissionInstructionsChunk15_assemble : assembleBytes submissio
   0x60, 0x6c, 0x51, 0x01, 0x87, 0x01, 0x85, 0x16
 ] := by decide
 
-private theorem submissionInstructionsChunk16_assemble : assembleBytes submissionInstructionsChunk16 = [
+private theorem submissionInstructionsChunk16_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk16 = [
   0x09, 0x60, 0x1a, 0x1c, 0x88, 0x01, 0x83, 0x16, 0x95, 0x8a, 0x02, 0x87,
   0x1c, 0x83, 0x16, 0x97, 0x88, 0x8a, 0x88, 0x18, 0x86, 0x17, 0x16, 0x85,
   0x88, 0x16, 0x18, 0x8a, 0x18, 0x01, 0x61, 0x04, 0x02, 0x51, 0x01, 0x85,
@@ -4194,7 +4195,7 @@ private theorem submissionInstructionsChunk16_assemble : assembleBytes submissio
   0x84, 0x16, 0x91, 0x8c, 0x88, 0x84, 0x82, 0x82, 0x16
 ] := by decide
 
-private theorem submissionInstructionsChunk17_assemble : assembleBytes submissionInstructionsChunk17 = [
+private theorem submissionInstructionsChunk17_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk17 = [
   0x17, 0x18, 0x18, 0x8b, 0x18, 0x01, 0x61, 0x02, 0xf4, 0x51, 0x01, 0x89,
   0x01, 0x8f, 0x8e, 0x91, 0x86, 0x16, 0x09, 0x60, 0x15, 0x1c, 0x86, 0x01,
   0x84, 0x16, 0x96, 0x8b, 0x02, 0x88, 0x1c, 0x84, 0x16, 0x95, 0x86, 0x8b,
@@ -4211,36 +4212,36 @@ private theorem submissionInstructionsChunk17_assemble : assembleBytes submissio
   0xd8, 0x51, 0x01, 0x88, 0x01, 0x6c, 0x7e, 0x00, 0x00, 0x00, 0x7e, 0x00,
   0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x40, 0x8e, 0x91, 0x85, 0x16, 0x09,
   0x60, 0x1a, 0x1c, 0x85, 0x01, 0x83, 0x16, 0x95, 0x8a, 0x02, 0x87, 0x1c,
-  0x83, 0x16, 0x8c, 0x8f, 0x82, 0x97, 0x8c, 0x8f, 0x18, 0x8f, 0x8e,
-  0x16, 0x85, 0x17, 0x8b, 0x18, 0x18, 0x01, 0x60, 0xa2, 0x51, 0x01, 0x8b,
-  0x01, 0x86, 0x16, 0x8d, 0x02, 0x60, 0x1c, 0x1c, 0x84, 0x01, 0x86, 0x16,
-  0x9b, 0x8d, 0x02, 0x8a, 0x1c, 0x86, 0x16, 0x93, 0x89, 0x8f, 0x16
+  0x83, 0x16, 0x8c, 0x8f, 0x82, 0x97, 0x8c, 0x8f, 0x18, 0x8f, 0x8e, 0x16,
+  0x85, 0x17, 0x8b, 0x18, 0x18, 0x01, 0x60, 0xa2, 0x51, 0x01, 0x8b, 0x01,
+  0x86, 0x16, 0x8d, 0x02, 0x60, 0x1c, 0x1c, 0x84, 0x01, 0x86, 0x16, 0x9b,
+  0x8d, 0x02, 0x8a, 0x1c, 0x86, 0x16, 0x93, 0x8e, 0x8a, 0x16
 ] := by decide
 
-private theorem submissionInstructionsChunk18_assemble : assembleBytes submissionInstructionsChunk18 = [
+private theorem submissionInstructionsChunk18_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk18 = [
   0x85, 0x17, 0x8a, 0x18, 0x8f, 0x8e, 0x18, 0x18, 0x01, 0x61, 0x02, 0x1c,
   0x51, 0x01, 0x8b, 0x01, 0x86, 0x16, 0x09, 0x61, 0x00, 0x14, 0x1c, 0x01,
   0x83, 0x16, 0x95, 0x8a, 0x02, 0x87, 0x1c, 0x83, 0x16, 0x8d, 0x81, 0x96,
-  0x8d, 0x8c, 0x81, 0x81, 0x16, 0x8a, 0x17, 0x18, 0x8a, 0x18,
-  0x18, 0x01, 0x61, 0x03, 0xcc, 0x51, 0x01, 0x8a, 0x01, 0x85, 0x16, 0x8c,
-  0x02, 0x60, 0x14, 0x1c, 0x83, 0x01, 0x85, 0x16, 0x9a, 0x8c, 0x02, 0x89,
-  0x1c, 0x85, 0x16, 0x92, 0x8d, 0x89, 0x81, 0x81, 0x16, 0x86, 0x17, 0x18,
-  0x18, 0x8c, 0x18, 0x01, 0x61, 0x03, 0x96, 0x51, 0x01, 0x8a, 0x01, 0x85,
-  0x16, 0x6c, 0x0e, 0x00, 0x00, 0x00, 0x0e, 0x00, 0x00, 0x00, 0x08, 0x00,
-  0x00, 0x00, 0x08, 0x09, 0x61, 0x00, 0x15, 0x1c, 0x01, 0x83, 0x16, 0x95,
-  0x8a, 0x02, 0x87, 0x1c, 0x94, 0x8b, 0x8a, 0x81, 0x81, 0x16, 0x88, 0x17,
-  0x18, 0x88, 0x18, 0x18, 0x01, 0x61, 0x02, 0x52, 0x51, 0x01, 0x88, 0x01,
-  0x83, 0x16, 0x8a, 0x02, 0x60, 0x16, 0x1c, 0x81, 0x01, 0x83, 0x16, 0x98,
-  0x8a, 0x02, 0x87, 0x1c, 0x86, 0x8b, 0x02, 0x88, 0x1c, 0x8c, 0x8b, 0x83,
-  0x19, 0x8a, 0x17, 0x18, 0x5f, 0x51, 0x85, 0x01, 0x01, 0x8b, 0x01, 0x16,
-  0x8c, 0x02, 0x60, 0x19, 0x1c, 0x87, 0x01, 0x8d, 0x16, 0x61, 0x02, 0x64,
-  0x51, 0x8b, 0x82, 0x8e, 0x85, 0x19, 0x17, 0x18, 0x01, 0x01, 0x88, 0x01,
-  0x8e, 0x16, 0x8d, 0x02, 0x60, 0x1c, 0x1c, 0x83, 0x01, 0x8c, 0x8e, 0x02,
-  0x8b, 0x1c, 0x9b, 0x81, 0x83, 0x8e, 0x19, 0x17, 0x18, 0x85, 0x01, 0x60,
-  0xc6, 0x51, 0x01, 0x01, 0x8f, 0x16, 0x8e, 0x02, 0x60, 0x1b
+  0x8d, 0x8c, 0x81, 0x81, 0x16, 0x8a, 0x17, 0x18, 0x8a, 0x18, 0x18, 0x01,
+  0x61, 0x03, 0xcc, 0x51, 0x01, 0x8a, 0x01, 0x85, 0x16, 0x8c, 0x02, 0x60,
+  0x14, 0x1c, 0x83, 0x01, 0x85, 0x16, 0x9a, 0x8c, 0x02, 0x89, 0x1c, 0x85,
+  0x16, 0x92, 0x8d, 0x89, 0x81, 0x81, 0x16, 0x86, 0x17, 0x18, 0x18, 0x8c,
+  0x18, 0x01, 0x61, 0x03, 0x96, 0x51, 0x01, 0x8a, 0x01, 0x85, 0x16, 0x6c,
+  0x0e, 0x00, 0x00, 0x00, 0x0e, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00,
+  0x08, 0x09, 0x61, 0x00, 0x15, 0x1c, 0x01, 0x83, 0x16, 0x95, 0x8a, 0x02,
+  0x87, 0x1c, 0x94, 0x8b, 0x8a, 0x81, 0x81, 0x16, 0x88, 0x17, 0x18, 0x88,
+  0x18, 0x18, 0x01, 0x61, 0x02, 0x52, 0x51, 0x01, 0x88, 0x01, 0x83, 0x16,
+  0x8a, 0x02, 0x60, 0x16, 0x1c, 0x81, 0x01, 0x83, 0x16, 0x98, 0x8a, 0x02,
+  0x87, 0x1c, 0x86, 0x8b, 0x02, 0x88, 0x1c, 0x8c, 0x8b, 0x83, 0x19, 0x8a,
+  0x17, 0x18, 0x5f, 0x51, 0x85, 0x01, 0x01, 0x8b, 0x01, 0x16, 0x8c, 0x02,
+  0x60, 0x19, 0x1c, 0x87, 0x01, 0x8d, 0x16, 0x61, 0x02, 0x64, 0x51, 0x8b,
+  0x82, 0x8e, 0x85, 0x19, 0x17, 0x18, 0x01, 0x01, 0x88, 0x01, 0x8e, 0x16,
+  0x8d, 0x02, 0x60, 0x1c, 0x1c, 0x83, 0x01, 0x8c, 0x8e, 0x02, 0x8b, 0x1c,
+  0x9b, 0x81, 0x83, 0x8e, 0x19, 0x17, 0x18, 0x85, 0x01, 0x60, 0xc6, 0x51,
+  0x01, 0x01, 0x8f, 0x16, 0x8e, 0x02, 0x60, 0x1b
 ] := by decide
 
-private theorem submissionInstructionsChunk19_assemble : assembleBytes submissionInstructionsChunk19 = [
+private theorem submissionInstructionsChunk19_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk19 = [
   0x1c, 0x96, 0x50, 0x96, 0x50, 0x8c, 0x02, 0x81, 0x99, 0x1c, 0x94, 0x01,
   0x94, 0x91, 0x60, 0x90, 0x1c, 0x99, 0x60, 0x90, 0x1c, 0x96, 0x60, 0x90,
   0x1c, 0x92, 0x50, 0x60, 0x90, 0x1c, 0x01, 0x92, 0x01, 0x92, 0x60, 0x90,
@@ -4263,7 +4264,7 @@ private theorem submissionInstructionsChunk19_assemble : assembleBytes submissio
   0x78, 0x64, 0x00, 0x01, 0x78, 0x01, 0x00, 0x36, 0x60, 0x10
 ] := by decide
 
-private theorem submissionInstructionsChunk20_assemble : assembleBytes submissionInstructionsChunk20 = [
+private theorem submissionInstructionsChunk20_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk20 = [
   0x16, 0x1c, 0x16, 0x14, 0x61, 0x12, 0xca, 0x57, 0x5f, 0x35, 0x60, 0xe8,
   0x1d, 0x36, 0x62, 0x20, 0x76, 0x21, 0x02, 0x18, 0x60, 0xf6, 0x57, 0x73,
   0x10, 0xb5, 0x28, 0x59, 0x05, 0x16, 0xb2, 0x62, 0xaf, 0xd6, 0x90, 0x1a,
@@ -4287,84 +4288,84 @@ private theorem submissionInstructionsChunk20_assemble : assembleBytes submissio
 ] := by decide
 
 private theorem assemble_chunk0 :
-    assemble submissionInstructionsChunk0 = submissionByteChunk0 := by
-  rw [assemble, submissionInstructionsChunk0_assemble]
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk0 = submissionByteChunk0 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk0_assemble]
 
 private theorem assemble_chunk1 :
-    assemble submissionInstructionsChunk1 = submissionByteChunk1 := by
-  rw [assemble, submissionInstructionsChunk1_assemble]
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk1 = submissionByteChunk1 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk1_assemble]
 
 private theorem assemble_chunk2 :
-    assemble submissionInstructionsChunk2 = submissionByteChunk2 := by
-  rw [assemble, submissionInstructionsChunk2_assemble]
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk2 = submissionByteChunk2 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk2_assemble]
 
 private theorem assemble_chunk3 :
-    assemble submissionInstructionsChunk3 = submissionByteChunk3 := by
-  rw [assemble, submissionInstructionsChunk3_assemble]
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk3 = submissionByteChunk3 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk3_assemble]
 
 private theorem assemble_chunk4 :
-    assemble submissionInstructionsChunk4 = submissionByteChunk4 := by
-  rw [assemble, submissionInstructionsChunk4_assemble]
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk4 = submissionByteChunk4 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk4_assemble]
 
 private theorem assemble_chunk5 :
-    assemble submissionInstructionsChunk5 = submissionByteChunk5 := by
-  rw [assemble, submissionInstructionsChunk5_assemble]
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk5 = submissionByteChunk5 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk5_assemble]
 
 private theorem assemble_chunk6 :
-    assemble submissionInstructionsChunk6 = submissionByteChunk6 := by
-  rw [assemble, submissionInstructionsChunk6_assemble]
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk6 = submissionByteChunk6 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk6_assemble]
 
 private theorem assemble_chunk7 :
-    assemble submissionInstructionsChunk7 = submissionByteChunk7 := by
-  rw [assemble, submissionInstructionsChunk7_assemble]
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk7 = submissionByteChunk7 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk7_assemble]
 
 private theorem assemble_chunk8 :
-    assemble submissionInstructionsChunk8 = submissionByteChunk8 := by
-  rw [assemble, submissionInstructionsChunk8_assemble]
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk8 = submissionByteChunk8 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk8_assemble]
 
 private theorem assemble_chunk9 :
-    assemble submissionInstructionsChunk9 = submissionByteChunk9 := by
-  rw [assemble, submissionInstructionsChunk9_assemble]
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk9 = submissionByteChunk9 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk9_assemble]
 
 private theorem assemble_chunk10 :
-    assemble submissionInstructionsChunk10 = submissionByteChunk10 := by
-  rw [assemble, submissionInstructionsChunk10_assemble]
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk10 = submissionByteChunk10 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk10_assemble]
 
 private theorem assemble_chunk11 :
-    assemble submissionInstructionsChunk11 = submissionByteChunk11 := by
-  rw [assemble, submissionInstructionsChunk11_assemble]
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk11 = submissionByteChunk11 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk11_assemble]
 
 private theorem assemble_chunk12 :
-    assemble submissionInstructionsChunk12 = submissionByteChunk12 := by
-  rw [assemble, submissionInstructionsChunk12_assemble]
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk12 = submissionByteChunk12 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk12_assemble]
 
 private theorem assemble_chunk13 :
-    assemble submissionInstructionsChunk13 = submissionByteChunk13 := by
-  rw [assemble, submissionInstructionsChunk13_assemble]
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk13 = submissionByteChunk13 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk13_assemble]
 
 private theorem assemble_chunk14 :
-    assemble submissionInstructionsChunk14 = submissionByteChunk14 := by
-  rw [assemble, submissionInstructionsChunk14_assemble]
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk14 = submissionByteChunk14 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk14_assemble]
 
 private theorem assemble_chunk15 :
-    assemble submissionInstructionsChunk15 = submissionByteChunk15 := by
-  rw [assemble, submissionInstructionsChunk15_assemble]
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk15 = submissionByteChunk15 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk15_assemble]
 
 private theorem assemble_chunk16 :
-    assemble submissionInstructionsChunk16 = submissionByteChunk16 := by
-  rw [assemble, submissionInstructionsChunk16_assemble]
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk16 = submissionByteChunk16 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk16_assemble]
 
 private theorem assemble_chunk17 :
-    assemble submissionInstructionsChunk17 = submissionByteChunk17 := by
-  rw [assemble, submissionInstructionsChunk17_assemble]
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk17 = submissionByteChunk17 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk17_assemble]
 
 private theorem assemble_chunk18 :
-    assemble submissionInstructionsChunk18 = submissionByteChunk18 := by
-  rw [assemble, submissionInstructionsChunk18_assemble]
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk18 = submissionByteChunk18 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk18_assemble]
 
 private theorem assemble_chunk19 :
-    assemble submissionInstructionsChunk19 = submissionByteChunk19 := by
-  rw [assemble, submissionInstructionsChunk19_assemble]
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk19 = submissionByteChunk19 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk19_assemble]
 
 private def submissionData : List UInt8 := [
   0x4d, 0xe2, 0x0b, 0x6b, 0x1f, 0xb2, 0xaf, 0x44, 0x23, 0x70, 0xc4, 0x0e,
@@ -4394,14 +4395,14 @@ private def submissionData : List UInt8 := [
 ]
 
 private theorem assemble_chunk20 :
-    assemble submissionInstructionsChunk20 ++ mkCode submissionData = submissionByteChunk20 := by
-  rw [assemble, submissionInstructionsChunk20_assemble]
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk20 ++ mkCode submissionData = submissionByteChunk20 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk20_assemble]
   rfl
 
 theorem assemble_referenceInstructions :
-    mkCode (assembleBytes submissionInstructions ++ submissionData) = submissionBytecode := by
+    mkCode (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructions ++ submissionData) = submissionBytecode := by
   rw [ArtifactSegment.mkCode_append]
-  change assemble submissionInstructions ++ mkCode submissionData = submissionBytecode
+  change Challenge.EvmProof.PcEncoding.assemble submissionInstructions ++ mkCode submissionData = submissionBytecode
   simp only [submissionInstructions, ArtifactSegment.assemble_append, ByteArray.append_assoc,
     assemble_chunk0, assemble_chunk1, assemble_chunk2, assemble_chunk3, assemble_chunk4, assemble_chunk5, assemble_chunk6, assemble_chunk7, assemble_chunk8, assemble_chunk9, assemble_chunk10, assemble_chunk11, assemble_chunk12, assemble_chunk13, assemble_chunk14, assemble_chunk15, assemble_chunk16, assemble_chunk17, assemble_chunk18, assemble_chunk19, assemble_chunk20, submissionBytecode, submissionBytes]
 
@@ -4412,102 +4413,102 @@ def submissionArtifact : Challenge.EvmProof.DataProgramArtifact where
   assembly_eq := assemble_referenceInstructions
 
 private theorem chunk0_byteLength :
-    (assembleBytes submissionInstructionsChunk0).length = 237 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk0).length = 237 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk1_byteLength :
-    (assembleBytes submissionInstructionsChunk1).length = 238 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk1).length = 238 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk2_byteLength :
-    (assembleBytes submissionInstructionsChunk2).length = 237 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk2).length = 237 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk3_byteLength :
-    (assembleBytes submissionInstructionsChunk3).length = 255 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk3).length = 255 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk4_byteLength :
-    (assembleBytes submissionInstructionsChunk4).length = 218 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk4).length = 218 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk5_byteLength :
-    (assembleBytes submissionInstructionsChunk5).length = 234 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk5).length = 234 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk6_byteLength :
-    (assembleBytes submissionInstructionsChunk6).length = 236 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk6).length = 236 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk7_byteLength :
-    (assembleBytes submissionInstructionsChunk7).length = 240 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk7).length = 240 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk8_byteLength :
-    (assembleBytes submissionInstructionsChunk8).length = 233 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk8).length = 233 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk9_byteLength :
-    (assembleBytes submissionInstructionsChunk9).length = 239 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk9).length = 239 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk10_byteLength :
-    (assembleBytes submissionInstructionsChunk10).length = 234 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk10).length = 234 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk11_byteLength :
-    (assembleBytes submissionInstructionsChunk11).length = 237 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk11).length = 237 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk12_byteLength :
-    (assembleBytes submissionInstructionsChunk12).length = 236 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk12).length = 236 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk13_byteLength :
-    (assembleBytes submissionInstructionsChunk13).length = 229 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk13).length = 229 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk14_byteLength :
-    (assembleBytes submissionInstructionsChunk14).length = 244 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk14).length = 244 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk15_byteLength :
-    (assembleBytes submissionInstructionsChunk15).length = 236 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk15).length = 236 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk16_byteLength :
-    (assembleBytes submissionInstructionsChunk16).length = 237 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk16).length = 237 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk17_byteLength :
-    (assembleBytes submissionInstructionsChunk17).length = 238 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk17).length = 238 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk18_byteLength :
-    (assembleBytes submissionInstructionsChunk18).length = 236 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk18).length = 236 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk19_byteLength :
-    (assembleBytes submissionInstructionsChunk19).length = 238 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk19).length = 238 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
@@ -4536,12 +4537,12 @@ private def tailPrefix : List Instr :=
 private theorem tailPrefix_length : tailPrefix.length = 3522 := by
   simp only [tailPrefix, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length]
 
-private theorem tailPrefix_bytes_length : (assembleBytes tailPrefix).length = 4732 := by
-  simp only [tailPrefix, assembleBytes_append, List.length_append, chunk0_byteLength, chunk1_byteLength, chunk2_byteLength, chunk3_byteLength, chunk4_byteLength, chunk5_byteLength, chunk6_byteLength, chunk7_byteLength, chunk8_byteLength, chunk9_byteLength, chunk10_byteLength, chunk11_byteLength, chunk12_byteLength, chunk13_byteLength, chunk14_byteLength, chunk15_byteLength, chunk16_byteLength, chunk17_byteLength, chunk18_byteLength, chunk19_byteLength]
+private theorem tailPrefix_bytes_length : (Challenge.EvmProof.PcEncoding.assembleBytes tailPrefix).length = 4732 := by
+  simp only [tailPrefix, Challenge.EvmProof.PcEncoding.assembleBytes_append, List.length_append, chunk0_byteLength, chunk1_byteLength, chunk2_byteLength, chunk3_byteLength, chunk4_byteLength, chunk5_byteLength, chunk6_byteLength, chunk7_byteLength, chunk8_byteLength, chunk9_byteLength, chunk10_byteLength, chunk11_byteLength, chunk12_byteLength, chunk13_byteLength, chunk14_byteLength, chunk15_byteLength, chunk16_byteLength, chunk17_byteLength, chunk18_byteLength, chunk19_byteLength]
 
 private theorem instructionPC_tail (i : Nat) (hi : i ≤ 104) :
     submissionArtifact.instructionPC (3522 + i) =
-      4732 + (assembleBytes (submissionInstructionsChunk20.take i)).length := by
+      4732 + (Challenge.EvmProof.PcEncoding.assembleBytes (submissionInstructionsChunk20.take i)).length := by
   apply ArtifactSegment.instructionPC_segment_of_bounds submissionArtifact
     tailPrefix submissionInstructionsChunk20 [] 3522 4732
   · simp only [submissionArtifact, submissionInstructions, tailPrefix, List.append_nil]
@@ -5667,7 +5668,7 @@ def initStores : List InitStore := []
   exact h
 
 private def wfOp {op : Operation}
-    (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
+    (hopcode : Decode.opcodeOf (Challenge.EvmProof.PcEncoding.opByte op) = some op)
     (hplain : YulEvmCompiler.plainOp op)
     (havailable : op.availableInFork .Osaka = true) :
     Challenge.EvmProof.DataStepper.WellFormed .Osaka (.op op) :=

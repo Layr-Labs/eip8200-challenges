@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTemplate
 
@@ -126,7 +127,7 @@ private def instructionWellFormedDecidable (instruction : Instr) :
         (Operation.Push ⟨width⟩).availableInFork .Osaka = true))
   | .op operation =>
     letI := plainDecidable operation
-    inferInstanceAs (Decidable (Decode.opcodeOf (Instr.opByte operation) = some operation ∧
+    inferInstanceAs (Decidable (Decode.opcodeOf (Challenge.EvmProof.PcEncoding.opByte operation) = some operation ∧
       plainOp operation ∧ operation.availableInFork .Osaka = true))
 
 instance (instructions : List Instr) : Decidable (TemplateWellFormed instructions) :=

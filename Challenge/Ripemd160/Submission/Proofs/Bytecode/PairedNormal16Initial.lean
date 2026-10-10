@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedMask32Cache
 
 set_option warningAsError true
@@ -85,6 +86,6 @@ theorem run_cachedInitial (s : State) (pc messageOffset returnPC : UInt256)
 #print axioms run_cachedInitial
 
 theorem cachedInitial_length : cachedInitial.length = 14 := rfl
-theorem cachedInitial_byteLength : (assembleBytes cachedInitial).length = 53 := by decide
+theorem cachedInitial_byteLength : (Challenge.EvmProof.PcEncoding.assembleBytes cachedInitial).length = 53 := by decide
 theorem cachedInitial_gas : staticGas cachedInitial = 41 := by decide
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedNormal16Initial

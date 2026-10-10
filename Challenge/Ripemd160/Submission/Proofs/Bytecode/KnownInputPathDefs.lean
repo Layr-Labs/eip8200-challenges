@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DriverModel
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
 
@@ -11,7 +12,7 @@ open EvmSemantics
 open EvmSemantics.EVM
 
 def wfOp {op : Operation}
-    (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op)
+    (hopcode : Decode.opcodeOf (Challenge.EvmProof.PcEncoding.opByte op) = some op)
     (hplain : YulEvmCompiler.plainOp op)
     (havailable : op.availableInFork .Osaka = true) :
     Challenge.EvmProof.DataStepper.WellFormed .Osaka (.op op) :=
@@ -19,7 +20,7 @@ def wfOp {op : Operation}
 
 def opAt (index : Nat) (op : Operation)
     (hget : Artifact.submissionInstructions[index]? = some (.op op) := by rfl)
-    (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op := by decide)
+    (hopcode : Decode.opcodeOf (Challenge.EvmProof.PcEncoding.opByte op) = some op := by decide)
     (hplain : YulEvmCompiler.plainOp op := by trivial)
     (havailable : op.availableInFork .Osaka = true := by rfl) :
     Challenge.EvmProof.DataStepper.Located Artifact.submissionArtifact .Osaka :=

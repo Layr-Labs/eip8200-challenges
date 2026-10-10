@@ -1,0 +1,99 @@
+vector,bytes,frame,status,gas
+empty,0,clean,ok,186
+empty,0,dirty,ok,186
+abc,3,clean,ok,186
+abc,3,dirty,ok,186
+1-byte,1,clean,ok,238
+1-byte,1,dirty,ok,238
+31-byte,31,clean,ok,238
+31-byte,31,dirty,ok,238
+32-byte,32,clean,ok,238
+32-byte,32,dirty,ok,238
+55-byte,55,clean,ok,315
+55-byte,55,dirty,ok,315
+56-byte,56,clean,ok,315
+56-byte,56,dirty,ok,315
+63-byte,63,clean,ok,315
+63-byte,63,dirty,ok,315
+64-byte,64,clean,ok,315
+64-byte,64,dirty,ok,315
+65-byte,65,clean,ok,392
+65-byte,65,dirty,ok,392
+119-byte,119,clean,ok,469
+119-byte,119,dirty,ok,469
+120-byte,120,clean,ok,469
+120-byte,120,dirty,ok,469
+128-byte,128,clean,ok,469
+128-byte,128,dirty,ok,469
+256-byte,256,clean,ok,1011
+256-byte,256,dirty,ok,1011
+376-byte,376,clean,ok,1231
+376-byte,376,dirty,ok,1231
+1000-byte,1000,clean,ok,2949
+1000-byte,1000,dirty,ok,2949
+1000 a's,1000,clean,ok,956
+1000 a's,1000,dirty,ok,956
+generated #01,32,clean,ok,10459
+generated #01,32,dirty,ok,10459
+generated #02,64,clean,ok,20192
+generated #02,64,dirty,ok,20192
+generated #03,128,clean,ok,30408
+generated #03,128,dirty,ok,30408
+generated #04,32,clean,ok,10459
+generated #04,32,dirty,ok,10459
+generated #05,64,clean,ok,20192
+generated #05,64,dirty,ok,20192
+generated #06,128,clean,ok,30408
+generated #06,128,dirty,ok,30408
+generated #07,32,clean,ok,10459
+generated #07,32,dirty,ok,10459
+generated #08,64,clean,ok,20192
+generated #08,64,dirty,ok,20192
+generated #09,128,clean,ok,30408
+generated #09,128,dirty,ok,30408
+generated #10,32,clean,ok,10459
+generated #10,32,dirty,ok,10459
+generated #11,64,clean,ok,20192
+generated #11,64,dirty,ok,20192
+generated #12,128,clean,ok,30408
+generated #12,128,dirty,ok,30408
+generated #13,32,clean,ok,10459
+generated #13,32,dirty,ok,10459
+generated #14,64,clean,ok,20192
+generated #14,64,dirty,ok,20192
+generated #15,128,clean,ok,30408
+generated #15,128,dirty,ok,30408
+generated #16,32,clean,ok,10459
+generated #16,32,dirty,ok,10459
+generated #17,64,clean,ok,20192
+generated #17,64,dirty,ok,20192
+generated #18,128,clean,ok,30408
+generated #18,128,dirty,ok,30408
+generated #19,32,clean,ok,10459
+generated #19,32,dirty,ok,10459
+generated #20,64,clean,ok,20192
+generated #20,64,dirty,ok,20192
+generated #21,128,clean,ok,30408
+generated #21,128,dirty,ok,30408
+generated #22,32,clean,ok,10459
+generated #22,32,dirty,ok,10459
+generated #23,64,clean,ok,20192
+generated #23,64,dirty,ok,20192
+generated #24,128,clean,ok,30408
+generated #24,128,dirty,ok,30408
+generated #25,32,clean,ok,10459
+generated #25,32,dirty,ok,10459
+generated #26,64,clean,ok,20192
+generated #26,64,dirty,ok,20192
+generated #27,128,clean,ok,30408
+generated #27,128,dirty,ok,30408
+generated #28,32,clean,ok,10459
+generated #28,32,dirty,ok,10459
+generated #29,64,clean,ok,20192
+generated #29,64,dirty,ok,20192
+generated #30,128,clean,ok,30408
+generated #30,128,dirty,ok,30408
+generated #31,32,clean,ok,10459
+generated #31,32,dirty,ok,10459
+generated #32,64,clean,ok,20192
+generated #32,64,dirty,ok,20192

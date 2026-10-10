@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Lower
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Msize
 
@@ -71,7 +72,7 @@ theorem run_sparse (s : State) (pc v : UInt256) (F : List UInt256)
     List.getElem?_cons_zero, State.activeWordsAfterUInt256,
     hactive, MachineState.activeWordsAfter, hbyte, sparseMemory, add_eq_hAdd]
 
-theorem bytes_exact : assembleBytes template = [96,165,83,96,1,96,188,83] := by decide
+theorem bytes_exact : Challenge.EvmProof.PcEncoding.assembleBytes template = [96,165,83,96,1,96,188,83] := by decide
 
 theorem sparse_read_input (input : ByteArray) (hn : 0 < input.size) :
     MachineState.readWord (sparseMemory (copiedMemory input)) 1056 =

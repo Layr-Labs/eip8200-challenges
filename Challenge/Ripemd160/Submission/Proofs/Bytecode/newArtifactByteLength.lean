@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataProgram
 
 set_option warningAsError true
@@ -14,11 +15,11 @@ def byteLength : List Instr → Nat
   | .push width _ :: rest => (1 + width.val) + byteLength rest
 
 theorem byteLength_eq_assemble (instructions : List Instr) :
-    byteLength instructions = (assembleBytes instructions).length := by
+    byteLength instructions = (Challenge.EvmProof.PcEncoding.assembleBytes instructions).length := by
   induction instructions with
   | nil => rfl
   | cons instruction rest ih =>
-    cases instruction <;> simp [byteLength, assembleBytes_cons, ih, Nat.add_comm]
+    cases instruction <;> simp [byteLength, Challenge.EvmProof.PcEncoding.assembleBytes_cons, PcEncoding.instrBytes_length, ih, Nat.add_comm]
 
 theorem instructionPC_eq_byteLength (artifact : DataProgramArtifact) (index : Nat) :
     artifact.instructionPC index = byteLength (artifact.instructions.take index) :=

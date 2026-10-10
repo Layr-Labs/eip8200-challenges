@@ -1,3 +1,27 @@
+# Current candidate: fixed-PC schedule writer — 651,575 gas
+
+- Executable SHA-256: `b9182bbcc8258af8bc5e754e1c71c7c0fa52275e282da7d02049f55fe926e095`.
+- 5,248 bytes, 3,626 executable instructions, 280 data bytes.
+- Direct paired trusted-scorer reproduction: 49/49 vectors, both frames correct;
+  clean and dirty totals each **651,575**, compared with **651,617** at the
+  promoted source `82d85410` / submission `f797f38b-1ab6-4172-bf96-c7e1befcc583`.
+- `PC` at byte offset 738 replaces `PUSH2 738`. Widening the adjacent address
+  pushes preserves all later PCs and instruction indices. A commutative AND
+  operand reorder at offsets 4255–4256 maintains literal encoding cost 8,194.
+- `Proofs/Bytecode/PcEncoding.lean` extends only the submission-local encoder;
+  frozen IR, EVM decoder, execution relation, gas pricing and dependencies are
+  unchanged. `DataStepper` supplies the real EVM `PC` soundness proof, and
+  writer proofs now require the fixed entry PCs instead of claiming relocation.
+- Serial full-proof closure passed (3,719 Lake jobs at the endpoint); the
+  universal candidate theorem has only the three permitted standard axioms.
+  The full canonical Yukon benchmark passed: Comparator accepted, 49/49
+  vectors correct, 651,575 clean and dirty gas. Remote status remains separate.
+- Research tools and generator are local hypotheses only. The public universal
+  correctness endpoint remains `Solution.lean`; canonical acceptance remains
+  the full Yukon benchmark.
+
+## Inherited predecessor documentation (not the current artifact)
+
 # RIPEMD-160: 7-SWAP epilogue setup in ScheduledTailRaw — 651,617 gas in 5,248 bytes
 
 - SHA-256: `7a5cf801da879a552c6993346eb6795574e7819b62ff70e735320452f6cbf2e5`.

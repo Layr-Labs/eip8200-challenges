@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataMeter
 import YulEvmCompiler.Instr
@@ -127,27 +128,24 @@ def ascendingPackedFullTemplate : List Instr :=
   rfl
 
 theorem assembleBytes_length (instructions : List Instr) :
-    (assembleBytes instructions).length =
+    (Challenge.EvmProof.PcEncoding.assembleBytes instructions).length =
       (instructions.map Instr.size).sum := by
   induction instructions with
   | nil => rfl
   | cons instruction rest ih =>
-      simp only [assembleBytes_cons, List.length_append, List.map_cons,
-        List.sum_cons]
-      change instruction.bytes.length + (assembleBytes rest).length =
-        instruction.bytes.length + (rest.map Instr.size).sum
-      rw [ih]
+      simp only [Challenge.EvmProof.PcEncoding.assembleBytes_cons, List.length_append,
+        Challenge.EvmProof.PcEncoding.instrBytes_length, List.map_cons, List.sum_cons, ih]
 
 theorem ascendingPackedTemplate_byteLength :
-    (assembleBytes ascendingPackedTemplate).length = 527 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes ascendingPackedTemplate).length = 527 := by
   rw [assembleBytes_length]
   simp [ascendingPackedTemplate, initialTemplate, halfTemplate, endianStage,
     storeTemplate, storeJ0, storeJ, storeJ7, op, push1, push2, push4, push32,
     dup1, swap1]
 
 theorem ascendingPackedFullTemplate_byteLength :
-    (assembleBytes ascendingPackedFullTemplate).length = 528 := by
-  rw [ascendingPackedFullTemplate, assembleBytes_append,
+    (Challenge.EvmProof.PcEncoding.assembleBytes ascendingPackedFullTemplate).length = 528 := by
+  rw [ascendingPackedFullTemplate, Challenge.EvmProof.PcEncoding.assembleBytes_append,
     List.length_append, ascendingPackedTemplate_byteLength]
   rfl
 
