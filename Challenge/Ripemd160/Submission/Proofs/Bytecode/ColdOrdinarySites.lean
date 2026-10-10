@@ -180,7 +180,7 @@ def gasSteps_low (s : State) (off : UInt256) (rest : List UInt256)
     GasSteps {s with pc := UInt256.ofNat 130, stack := off :: rest}
       {s with
         pc := UInt256.ofNat 184
-        stack := UInt256.ofNat (128 * (1 + 2 ^ 144)) :: rest
+        stack := UInt256.ofNat 5248 :: rest
         memory := StaggerTablePad.padRealChain s.memory
           (UInt256.ofNat s.executionEnv.calldata.size)} := by
   cases rest with
@@ -191,7 +191,10 @@ def gasSteps_low (s : State) (off : UInt256) (rest : List UInt256)
     simp only [List.length_cons] at hstack
     apply PadLift.gasSteps_of_raw lowSite {s with pc := UInt256.ofNat 130, stack := off :: UInt256.ofNat 4294967295 :: tailRest} _ hcode hfork hrun hnp low_pc.symm low_advances
     have h := StaggerPad.run_low s (UInt256.ofNat 130) off tailRest (by omega) hrun hactive hfit hoff rfl
-    rw [low_end] at h
+    have hsize : s.executionEnv.code.size = 5248 := by
+      rw [hcode]
+      exact referenceBytecode_size
+    rw [low_end, hsize] at h
     exact h
 
 def gasSteps_branch_taken (s : State)

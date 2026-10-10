@@ -17,8 +17,8 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Current executable SHA-256: 33715c1ac98bc1530d8feebc1d6f89547f323fe6ca92c757f694745802347362.
--- 5248 bytes, 3626 instructions, 280 data bytes; protected direct scorer 651512.
+-- Current executable SHA-256: 8a49a304e7a86d884c3cd0aeee9f2968721963853c96c771a43c2b4f129fa5e3.
+-- 5248 bytes, 3626 instructions, 280 data bytes; protected direct scorer 651491.
 -- Base: promoted f797f38b / source 82d85410 (651617).
 -- PC738 replaces PUSH2 738; adjacent wider pushes preserve byte endpoints.
 -- PC666 stores word14 earlier across six disjoint memory windows. Fixed-PC
@@ -26,3 +26,6 @@ end Challenge.Ripemd160.Benchmark
 -- Integrated full proof/canonical gate remain the authoritative verification.
 -- PC162 pads the fast route with an early PUSH19 mark and a widened PUSH4 666.
 -- Store order is unchanged; the raw theorem requires the actual entry PC130.
+
+-- CODESIZE replaces the padding mark duplicate as the exit sentinel; the fast
+-- branch-local input bound proves limit < 5248. Padding memory is unchanged.

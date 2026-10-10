@@ -1,62 +1,58 @@
-# RIPEMD-160 submission: certified fixed-PC stores
+# RIPEMD-160 submission: certified CODESIZE exit sentinel
 
-## Current candidate
+## Current artifact
 
-This artifact retains the paired stack-resident compressor, message schedule,
-recognition paths and digest table of the accepted 651,533-gas submission
-`33955124-ad6b-4d9f-bc55-cb0ece6152b3`. It adds a fixed-PC address in the fast
-padding setup, in addition to the inherited PC666 and PC738 schedule stores.
+This candidate builds on accepted and promoted submission
+`2dfd5011-2951-4409-8536-dc925cbffc98` at **651,512 clean-state gas**.
+It retains the paired stack-resident compressor, persistent message schedule,
+recognition paths, digest data and the fixed-PC stores at PC162, PC666 and PC738.
 
-The protected direct scorer measures **651,512 clean-state gas** and the same
-dirty-state total across 49 vectors. All 98 vector/frame executions return the
-correct digest. This is **21 gas below the immediate promoted predecessor** and
-**105 below the original 651,617-gas base**. Scorer success is not the universal
-correctness proof; the canonical Yukon result is the submission gate.
+The protected direct scorer measures **651,491 clean-state gas** and the same
+dirty-state total over 49 vectors. All 98 vector/frame executions return the
+correct result. This is **21 gas below the immediate promoted predecessor**.
+The full `yukon run --track ripemd160` passed with verified score **651,491**.
+Comparator independently replayed the universal proof and accepted it; vector
+testing alone is not treated as that proof.
 
 Decoded bytecode SHA-256:
 
-`33715c1ac98bc1530d8feebc1d6f89547f323fe6ca92c757f694745802347362`
+`8a49a304e7a86d884c3cd0aeee9f2968721963853c96c771a43c2b4f129fa5e3`
 
-The bytecode remains 5,248 bytes: 4,968 executable bytes followed by 280 data
-bytes. The instruction partition remains 3,626 instructions. The exact-byte
-certificates are regenerated from the current hex, then checked by Lean.
+The bytecode remains 5,248 bytes: 4,968 executable bytes and 280 data bytes.
+Its partition remains 3,626 instructions. Exact-byte certificates are generated
+from the current hex and checked by Lean, not assumed from opcode equivalence.
 
-## New optimization: padding address 162
+## Optimization: separate the memory mark from the loop sentinel
 
-The fast padding block begins at PC130. It copies the zero suffix, constructs
-the bit-length word and performs stores to addresses 162, 666, 144, 522 and 54.
-These stores overlap, so their order must not be changed.
+At PCs 180..183, `DUP1; PUSH1 54; MSTORE` previously wrote the padding mark to
+address 54 and retained a duplicate as the loop-exit sentinel. It is replaced by
+`PUSH1 54; MSTORE; CODESIZE`. The same mark is consumed by the same memory store;
+the following CODESIZE pushes 5,248 as the sentinel. DUP1 costs 3 gas and CODESIZE
+costs 2, saving one gas on each of the 21 scored fast-padding executions.
 
-The constant `128 * (1 + 2^144)` fits in 19 payload bytes. Staging its PUSH19
-immediately after CALLDATACOPY positions the address-162 instruction at PC162.
-The former PUSH1 162 becomes PC, saving one gas whenever that route executes.
-The other length-word address, 666, uses a widened PUSH4. Together these changes
-preserve the padding block's byte length, instruction count, output stack and
-memory-write order. All entry/exit PCs and downstream jumps remain unchanged.
+The block's length and instruction count are unchanged. The branch at PC184
+still parks the sentinel in the offset slot and jumps to the rounds at PC808.
+The sentinel is not used as padding data. The compressor preserves its slot,
+and the exit test requires only that its value be greater than the loop limit.
+On this route the input size is a multiple of 64 below 256; the limit is
+`1056 + input.size`, strictly less than 5,248. This is proved using the actual
+branch condition, not a global bound for all possible calldata sizes.
 
-`StaggerPadSetup.run_low` now requires the actual entry PC130 explicitly. Its
-symbolic trace proves the same padding memory and output stack for arbitrary
-state and calldata satisfying the existing size, offset and memory hypotheses.
-`ColdOrdinarySites` supplies that fixed-PC equality at the genuine artifact
-slice and lifts execution to the pinned EVM semantics. The PC address is not
-assumed correct at an arbitrary relocation.
+`StaggerPadSetup.run_low` proves the unchanged padding memory and the code-size
+stack word for arbitrary code and state satisfying its existing hypotheses.
+`ColdOrdinarySites` binds the actual code and proves its size is 5,248.
+`StaggerPersistentLoopRaw` models the exit sentinel separately from the mark
+word used in memory. `StaggerPersistentLoopInduction` uses the fast branch's
+size bound to justify the smaller sentinel. The fallback route is unchanged.
 
-Two neutral PUSH-width redistributions in compressor rounds 21 and 33 retain
-their numeric values and block lengths. They reduce the generated trusted
-literal's recursion-cost estimate to 8,193, within the existing default budget.
-Their raw traces and exact artifact are checked, rather than inferred from the
-unchanged immediate values. No verification option or benchmark file is changed
-for this optimization.
+## Literal headroom and proof checking
 
-## Proof and reproduction
-
-`Solution.lean` proves `Challenge.Ripemd160.Correct` for the exact bytes generated
-by the benchmark. It uses the universal recognition/correctness closure, not an
-enumeration of the measured vectors. Local raw/exact-artifact checks have passed.
-The integrated closure and canonical `yukon run --track ripemd160` both passed.
-Comparator accepted the exact bytes, the final theorem uses only the three
-permitted axioms, and the verified score is 651,512 over 49/49 vectors.
-The protected verified-bytecode copy matches this artifact exactly.
+The direct rewrite raises the trusted literal's recursion-cost estimate from
+8,193 to 8,194. A gas-neutral PUSH-width redistribution in paired round41
+shrinks the address-234 PUSH2 to PUSH1 and widens the fused coefficient's PUSH13
+to PUSH14. Values, block length and instruction count are unchanged; the estimate
+returns to 8,193. The raw round proof and protected scorer check this adjustment.
+No verification option, benchmark file or trusted proof support is modified.
 
 Cheap measurement:
 
@@ -71,18 +67,14 @@ Canonical validation:
 yukon run --track ripemd160
 ```
 
-The box's concrete-execution Lean modules are memory-heavy. Build independent
-modules serially in dependency order before the canonical run rather than
-launching many giant literal elaborations simultaneously.
+Lean concrete-execution modules are memory-heavy. Build stale modules serially
+in dependency order before the canonical run. Only permitted axioms may appear
+in the final theorem. `Solution.lean` states correctness of the exact trusted
+artifact for every fitting input, not only the measured vectors.
 
-## Lineage and archive discipline
+## Attribution and archive discipline
 
-`dependencies.json` declares the immediate PC666/PC738 predecessor, the PC738-only
-intermediate and the original paired-compressor base. The new work changes only
-the padding setup, neutral PUSH widths and their proof/certificate plumbing.
-No recognition predicate, expected digest, benchmark vector or gas schedule is
-added or changed.
-
-Only bytecode, required Lean support, dependency attribution and implementation
-documentation belong in this archive. Search scripts, CSVs, logs, checkpoints,
-experimental candidates and public submission notes are kept outside Submission.
+`dependencies.json` declares the immediate predecessor and all three inherited
+material dependencies. Only bytecode, Lean support, attribution and this
+implementation documentation belong in Submission. Search scripts, logs, CSVs,
+checkpoints, experimental candidates and public notes stay outside the archive.

@@ -20,7 +20,7 @@ def rest (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256) 
    Word.ofUInt32 h.h0, off, limit] ++ rho
 
 /-- The pad-only block: the low block (copying zeros from past the calldata at the advanced
-offset the exit left on top), then `SWAP11` parks the mark word in slot 12 and `JUMP` goes
+offset the exit left on top), then `SWAP11` parks the CODESIZE exit sentinel in slot 12 and `JUMP` goes
 straight to the rounds.  Only the fast entry (lengths below 256) reaches it, so the high length
 words are zero and the table is complete. -/
 def gasSteps_padAll (s : State) (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256)
@@ -48,7 +48,7 @@ def gasSteps_padAll (s : State) (h : Compression.HashState) (off limit : UInt256
   have g2 := ColdOrdinarySites.gasSteps_branch_taken
     {s with memory := (StaggerTablePad.padRealChain s.memory
       (UInt256.ofNat s.executionEnv.calldata.size))}
-    (UInt256.ofNat (128 * (1 + 2 ^ 144))) (UInt256.ofNat 4294967295)
+    (UInt256.ofNat 5248) (UInt256.ofNat 4294967295)
     (Paired144WordRound.fusedModulusWord 5 7) (Paired144WordRound.fusedModulusWord 8 5)
     (Paired144WordRound.fusedCoefficientWord 0 3) (Paired144WordRound.fusedCoefficientWord 0 2)
     (Word.ofUInt32 h.h4) (Word.ofUInt32 h.h3) (Word.ofUInt32 h.h2) (Word.ofUInt32 h.h1)

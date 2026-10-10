@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "2dfd5011-2951-4409-8536-dc925cbffc98",
+    "rationale": "Builds directly on the accepted and promoted 651512-gas candidate and its complete universal Lean proof, retaining PC162 padding and the fixed-PC writer stores.",
+    "evidence": "Retains the paired compressor, recognition, PC162/PC666/PC738 addresses and exact-byte infrastructure. Replaces only the retained fast-padding mark sentinel with CODESIZE and a gas-neutral PUSH-width redistribution in paired round41."
+  },
+  {
     "submissionId": "33955124-ad6b-4d9f-bc55-cb0ece6152b3",
     "rationale": "Builds directly on the accepted and promoted 651533-gas candidate, retaining both fixed-PC writer stores and the complete universal proof.",
     "evidence": "Retains PC666 and PC738 writer schedules plus their exact-byte certificates; changes only the fast padding setup at PCs 130..184 and two neutral PUSH-width redistributions in compression rounds 21 and 33."

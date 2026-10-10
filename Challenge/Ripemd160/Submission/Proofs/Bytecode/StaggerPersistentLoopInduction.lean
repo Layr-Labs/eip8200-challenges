@@ -108,8 +108,9 @@ def run_blocks (input : ByteArray) (states : Nat → State) (hashes : Nat → Co
         rw [hl]
         by_cases hp : input.size = i * 64 ∧ input.size < 256
         · simp only [blockMark, if_pos hp, padMark_toNat]
-          have := LoopCompletionControl.limitNat_lt input hsize
-          have h3 : (2:Nat)^64 + 2000 ≤ 128 * (1 + 2 ^ 144) := by norm_num
+          have hmod : input.size % 64 = 0 := by omega
+          unfold LoopCompletionControl.limitNat
+          rw [if_pos ⟨hmod, hp.2⟩]
           omega
         · simp only [blockMark, if_neg hp, hoff]
           have hc := LoopCompletionControl.finish_cold input (by

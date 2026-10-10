@@ -32,8 +32,8 @@ def backTemplate : List Instr := [.op (.Swap ⟨10, by decide⟩)]
 
 def nextOffset (off : UInt256) : UInt256 := off + UInt256.ofNat 64
 
-/-- The pad-only block's `PUSH20` mark word, which it leaves in slot 12 to end the loop. -/
-def padMark : UInt256 := UInt256.ofNat (128 * (1 + 2 ^ 144))
+/-- The pad-only block's `CODESIZE` sentinel, left in slot 12 to end the loop. -/
+def padMark : UInt256 := UInt256.ofNat 5248
 
 /-- The block entry stack: the pad-only block (`size = 64 i < 256`) starts with the advanced
 offset still on top. -/
@@ -46,7 +46,7 @@ def entryStack (input : ByteArray) (i : Nat) (h : Compression.HashState) (off li
 def blockMark (input : ByteArray) (i : Nat) (off : UInt256) : UInt256 :=
   if input.size = i * 64 ∧ input.size < 256 then padMark else off
 
-theorem padMark_toNat : padMark.toNat = 128 * (1 + 2 ^ 144) := by
+theorem padMark_toNat : padMark.toNat = 5248 := by
   unfold padMark
   rw [Word.word_toNat_ofNat]
   exact Nat.mod_eq_of_lt (by norm_num)

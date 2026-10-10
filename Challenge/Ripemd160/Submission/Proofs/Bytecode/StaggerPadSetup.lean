@@ -15,7 +15,8 @@ open PairTableActive StaggerTableSparse StaggerTableLayout
 
 /-- Pad-only low block (pc 130..183): copy zero calldata over the table (the copy offset is the
 advanced block offset the exit left on top, which is past the calldata), store the unmasked
-low bit-length word `n <<< 3` and `0x80`, and leave the early `PUSH19` mark word on top.
+low bit-length word `n <<< 3` and `0x80`, and leave `CODESIZE` on top as the loop-exit sentinel. The early `PUSH19` mark is
+consumed by the final memory store.
 The address-162 store uses `PC`; this theorem fixes the template entry at PC130.  Only the fast entry (lengths 64, 128, 192) reaches
 this block, so the high length words are always zero and no guard follows. -/
 def lowTemplate : List Instr :=
@@ -38,11 +39,11 @@ def lowTemplate : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 128),
     .push ⟨2, by decide⟩ (UInt256.ofNat 522),
     .op .MSTORE,
-    .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 54),
-    .op .MSTORE ]
+    .op .MSTORE,
+    .op .CODESIZE ]
 
-/-- `SWAP11 PUSH2 0328 JUMP` at 184: park the mark word in slot 12 (so the block exit finishes)
+/-- `SWAP11 PUSH2 0328 JUMP` at 184: park the exit sentinel in slot 12 (so the block exit finishes)
 and go straight to the rounds. -/
 def branchTemplate : List Instr :=
   [ .op (.Swap ⟨10, by decide⟩),
@@ -108,7 +109,7 @@ theorem run_low (s : State) (pc off : UInt256) (rest : List UInt256)
     runInstrSeq lowTemplate {s with pc := pc, stack := off :: UInt256.ofNat 4294967295 :: rest} =
       some {s with
              pc := pcAfter pc lowTemplate
-             stack := UInt256.ofNat (128 * (1 + 2 ^ 144)) :: UInt256.ofNat 4294967295 :: rest
+             stack := UInt256.ofNat s.executionEnv.code.size :: UInt256.ofNat 4294967295 :: rest
              memory := StaggerTablePad.padRealChain s.memory
                (UInt256.ofNat s.executionEnv.calldata.size)} := by
   have hcap (n : Nat) (hn : n ≤ 28) : rest.length + n < 1024 := by omega
