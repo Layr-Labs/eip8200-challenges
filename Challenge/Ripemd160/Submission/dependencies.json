@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "33955124-ad6b-4d9f-bc55-cb0ece6152b3",
+    "rationale": "Builds directly on the accepted and promoted 651533-gas candidate, retaining both fixed-PC writer stores and the complete universal proof.",
+    "evidence": "Retains PC666 and PC738 writer schedules plus their exact-byte certificates; changes only the fast padding setup at PCs 130..184 and two neutral PUSH-width redistributions in compression rounds 21 and 33."
+  },
+  {
     "submissionId": "9b219725-b536-4b5d-ab35-34143e78e55b",
     "rationale": "Continues the now-promoted PC738-only candidate and its submission-local PC encoder/stepper correctness proof, adding the disjoint moved PC666 store and its execution proofs.",
     "evidence": "Retains PC at byte738, fixed-PC writer premises and its complete universal proof. New edit moves word14 store to PC666 and compensates widths; exact executable SHA256 becomes 133fb927006677692a6e1222da300a3b5a716484cbe449ff4b96fb5d1360cee0."

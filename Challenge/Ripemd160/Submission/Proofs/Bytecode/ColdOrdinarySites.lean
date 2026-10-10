@@ -190,7 +190,7 @@ def gasSteps_low (s : State) (off : UInt256) (rest : List UInt256)
     subst mask
     simp only [List.length_cons] at hstack
     apply PadLift.gasSteps_of_raw lowSite {s with pc := UInt256.ofNat 130, stack := off :: UInt256.ofNat 4294967295 :: tailRest} _ hcode hfork hrun hnp low_pc.symm low_advances
-    have h := StaggerPad.run_low s (UInt256.ofNat 130) off tailRest (by omega) hrun hactive hfit hoff
+    have h := StaggerPad.run_low s (UInt256.ofNat 130) off tailRest (by omega) hrun hactive hfit hoff rfl
     rw [low_end] at h
     exact h
 
