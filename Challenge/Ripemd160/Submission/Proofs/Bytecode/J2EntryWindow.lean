@@ -14,17 +14,17 @@ def tail : List Instr := [
   op 0x36,
   op 0x1c,
   op 0x16,
-  .push 2 4813,
+  .push 2 4803,
   op 0x57,
   .push 2 376,
-  .push 5 24641792,
+  .push 4 24641792,
   op 0x36,
   .push 1 16,
   op 0x16,
   op 0x1c,
   op 0x16,
   op 0x14,
-  .push 2 4810,
+  .push 2 4800,
   op 0x57,
   .push 0 0,
   op 0x35,
@@ -43,30 +43,24 @@ def tail : List Instr := [
   op 0x18,
   .push 1 98,
   op 0x56,
-  .push 1 3,
-  op 0x03,
-  op 0x03,
-  op 0x03,
-  op 0x03,
-  op 0x03,
   op 0x5b,
   .push 1 251,
   op 0x5b
 ]
-private theorem tail_eq : (Artifact.submissionArtifact.instructions.drop 3509).take tail.length = tail := by rfl
-private theorem pc_base : Artifact.submissionArtifact.instructionPC 3509 = 4691 := by
+private theorem tail_eq : (Artifact.submissionArtifact.instructions.drop 3505).take tail.length = tail := by rfl
+private theorem pc_base : Artifact.submissionArtifact.instructionPC 3505 = 4689 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 theorem get (index : Nat) (h : index < tail.length := by decide) :
-    Artifact.submissionArtifact.instructions[3509 + index]? = tail[index]? := by
+    Artifact.submissionArtifact.instructions[3505 + index]? = tail[index]? := by
   have ht := congrArg (fun l : List Instr => l[index]?) tail_eq
   simp only [List.getElem?_take_of_lt h] at ht
   rw [← InstructionWindow.get_drop]
   exact ht
 theorem pc (index : Nat) (h : index ≤ tail.length := by decide) :
-    Artifact.submissionArtifact.instructionPC (3509 + index) =
-      4691 + byteLength (tail.take index) := by
-  have ht : (Artifact.submissionArtifact.instructions.drop 3509).take index = tail.take index := by
+    Artifact.submissionArtifact.instructionPC (3505 + index) =
+      4689 + byteLength (tail.take index) := by
+  have ht : (Artifact.submissionArtifact.instructions.drop 3505).take index = tail.take index := by
     have ht0 := congrArg (List.take index) tail_eq
     rw [List.take_take, Nat.min_eq_left h] at ht0
     exact ht0

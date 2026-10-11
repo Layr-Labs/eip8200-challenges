@@ -223,7 +223,7 @@ theorem scheduled_word_above (s : State) (i address : Nat) (ha : 1120 ≤ addres
     change MachineState.readWord (StaggerTablePad.padRealResult s.memory _) address = _
     exact StaggerTablePad.read_padRealResult_outside _ _ _ (by omega)
   · rw [scheduledState_miss s i hh]
-    exact PoolInvariant.read_resultV2_outside _ _ _ address (by omega)
+    exact FusedTerminalMemory.read_result_outside _ _ _ address (by omega)
 
 theorem scheduled_env (s : State) (i : Nat) :
     (scheduledState s i).executionEnv = s.executionEnv := by
@@ -262,7 +262,7 @@ theorem scheduled_clear (s : State) (input : ByteArray) (i : Nat)
     exact PoolPadInvariant.padRealResult_clear _ _
       (by rw [ctx.calldata]; exact size_word_lt input hfit)
   · rw [scheduledState_miss s i hh]
-    exact PoolFacts.result_clear _ _ _ ctx.clear
+    exact FusedTerminalMemory.result_clear _ _ _ ctx.clear
 
 theorem Context.scheduled (s : State) (input : ByteArray) (i : Nat)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input)

@@ -17,15 +17,10 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Current executable SHA-256: 8a49a304e7a86d884c3cd0aeee9f2968721963853c96c771a43c2b4f129fa5e3.
--- 5248 bytes, 3626 instructions, 280 data bytes; protected direct scorer 651491.
--- Base: promoted f797f38b / source 82d85410 (651617).
--- PC738 replaces PUSH2 738; adjacent wider pushes preserve byte endpoints.
--- PC666 stores word14 earlier across six disjoint memory windows. Fixed-PC
--- hypotheses and complete writer memory are proved, not assumed relocatable.
--- Integrated full proof/canonical gate remain the authoritative verification.
--- PC162 pads the fast route with an early PUSH19 mark and a widened PUSH4 666.
--- Store order is unchanged; the raw theorem requires the actual entry PC130.
-
--- CODESIZE replaces the padding mark duplicate as the exit sentinel; the fast
--- branch-local input bound proves limit < 5248. Padding memory is unchanged.
+-- Current decoded SHA-256: d103f31d4724be75c9093d6ebd398ba06a66d19144f901095a67793cea2da51f.
+-- 5238 bytes, 3616 instructions, 280 trailing data bytes; direct scorer 651407.
+-- Immediate base: promoted e1007b50 (651491), with inherited PC162/666/738 stores.
+-- Mask only the terminal schedule store at address594 and remove byte610 clear.
+-- FusedTerminalMemory and both schedule-entry execution paths maintain Ready.
+-- CODESIZE exit sentinel is5238; memory-start offset remains1056.
+-- Whole-program canonical verification is authoritative; vector tests are not a proof.

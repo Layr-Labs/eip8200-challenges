@@ -136,7 +136,7 @@ def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
 theorem site_pc : site.startPC = UInt256.ofNat 495 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 202) = UInt256.ofNat 495
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem end_pc : pcAfter (UInt256.ofNat 495) template = UInt256.ofNat 808 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 495) template = UInt256.ofNat 826 := by decide
 
 /-- `MCOPY` advances the pc like any straight-line instruction, but it is outside
 `PadLift.advancesCheck`'s whitelist and the S51 schedule fan uses two of them. -/

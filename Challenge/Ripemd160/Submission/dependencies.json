@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "e1007b50-4dba-4580-8382-feb52b1263fc",
+    "rationale": "Immediate accepted/promoted 651491-gas base, including certified CODESIZE exit sentinel and complete universal proof.",
+    "evidence": "Retains predecessor stack-resident paired compressor, persistent schedule, recognition routes, output and digest data. New terminal mask replaces byte610 clear; all affected exact-byte, memory and concrete execution certificates are updated."
+  },
+  {
     "submissionId": "2dfd5011-2951-4409-8536-dc925cbffc98",
     "rationale": "Builds directly on the accepted and promoted 651512-gas candidate and its complete universal Lean proof, retaining PC162 padding and the fixed-PC writer stores.",
     "evidence": "Retains the paired compressor, recognition, PC162/PC666/PC738 addresses and exact-byte infrastructure. Replaces only the retained fast-padding mark sentinel with CODESIZE and a gas-neutral PUSH-width redistribution in paired round41."

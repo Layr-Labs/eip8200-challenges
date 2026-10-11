@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.FusedTerminalWriter
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32SparseRun
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Table
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13NormalTrace
@@ -13,8 +14,7 @@ open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory Pair13Endian
 open Shared32Scratch
 
 def template : List Instr :=
-  ((Shared32Lower.lowerTemplate ++ Pair13PoolRaw.templateV2) ++ Pair13WriterRaw.writerTemplate) ++
-    Pair13NormalTrace.clearTemplate
+  (Shared32Lower.lowerTemplate ++ Pair13PoolRaw.templateV2) ++ FusedTerminalWriter.writerTemplate
 
 theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
@@ -51,23 +51,15 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
   rw [hread] at h1
   have h2 := Pair13PoolRaw.run_actualV2_of_small s2 (pcAfter pc Shared32Lower.lowerTemplate) F hF hrun ha
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
-  have h3 := PoolRawWriter.run_writer_grow s3
+  have h3 := FusedTerminalWriter.run_writer_grow s3
     (pcAfter (pcAfter pc Shared32Lower.lowerTemplate) Pair13PoolRaw.templateV2)
     ret (Pair13PoolRaw.poolWordV2 (Pair13PoolRaw.copiedV2 scratch)) rest hrest hrun ha3 (by rw [hpc]; decide)
   have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
-  have h4 := Pair13NormalTrace.run_clear
-    {s3 with
-      memory := (PoolRawWriter.writerMemory s3.memory (Pair13PoolRaw.poolWordV2 (Pair13PoolRaw.copiedV2 scratch)))
-      activeWords := UInt256.ofNat 35}
-    (pcAfter (pcAfter (pcAfter pc Shared32Lower.lowerTemplate) Pair13PoolRaw.templateV2)
-      PoolRawWriter.writerTemplate)
-    (ret :: UInt256.ofNat 4294967295 :: rest) (by simp only [List.length_cons]; omega) hrun
-    (by show 20 ≤ (UInt256.ofNat 35).toNat; decide)
-  have h := DenseScheduleTrace.runInstrSeq_append_running h123 (by exact hrun) h4
-  simpa only [PoolRawWriter.template_eq, template, DenseScheduleTrace.pcAfter_append,
-    s3, s2, s1, scratch, Shared32Table.tableMemory, PoolShapeV2.resultMemoryV2, PoolShapeV2.fanMemoryV2, rest, stk] using h
+  simpa only [template, DenseScheduleTrace.pcAfter_append,
+    s3, s2, s1, scratch, Shared32Table.tableMemory, FusedTerminalMemory.resultMemory,
+    PoolShapeV2.fanMemoryV2, rest, stk] using h123
 
-theorem end_pc : pcAfter (UInt256.ofNat 495) template = UInt256.ofNat 808 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 495) template = UInt256.ofNat 826 := by decide
 
 #print axioms run_table
 #print axioms end_pc

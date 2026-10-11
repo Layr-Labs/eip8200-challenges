@@ -9,7 +9,7 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open Paired144WordRound StaggerCoreCommon StaggerCoreModel
 open StaggerModeSeven (physicalKey)
 open StaggerModeSeven (step fold)
-def pcs : Array Nat := #[990, 1058, 1095, 1133, 1169, 1207, 1248, 1286, 1324, 1364, 1415, 1455, 1505, 1544, 1608, 1663, 1717, 1763, 1815, 1856, 1908, 1950, 2003, 2045, 2098, 2140, 2192, 2232, 2288, 2348, 2388, 2442, 2483, 2543, 2590, 2622, 2653, 2689, 2719, 2754, 2801, 2833, 2878, 2910, 2960, 3015, 3055, 3110, 3151, 3198, 3240, 3282, 3336, 3377, 3431, 3473, 3526, 3567, 3620, 3662, 3715, 3753, 3798, 3838, 3879, 3924, 3975, 4013, 4053, 4090, 4128, 4162, 4214, 4254, 4291, 4331, 4380, 4416]
+def pcs : Array Nat := #[1008, 1076, 1113, 1151, 1187, 1225, 1266, 1304, 1342, 1382, 1432, 1472, 1522, 1561, 1625, 1680, 1733, 1779, 1831, 1872, 1923, 1965, 2017, 2059, 2111, 2153, 2204, 2244, 2300, 2360, 2400, 2454, 2495, 2556, 2602, 2634, 2665, 2701, 2731, 2766, 2812, 2844, 2888, 2920, 2970, 3025, 3065, 3120, 3161, 3208, 3250, 3292, 3345, 3386, 3439, 3481, 3533, 3574, 3626, 3667, 3720, 3758, 3803, 3843, 3884, 3929, 3980, 4018, 4058, 4095, 4133, 4167, 4219, 4259, 4295, 4335, 4383, 4419]
 def shapes : Array (List Reg) := #[
   [ .pair,
     .upper,
@@ -2275,7 +2275,7 @@ def gasSteps_prefix (s : State) (h4 : UInt256) (n : Nat) (hn : n ≤ 77) (q righ
 
 
 def suffixState (s : State) (h4 : UInt256) (q : WordLane) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 4506, stack := stack s.memory h4 [ .b, .dr, .ar, .cachedMessage 360, .d, .c, .er, .cr, .a, .e, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (epilogue s.memory q) q (UInt256.ofNat 2840853838) rho}
+  {s with pc := UInt256.ofNat 4509, stack := stack s.memory h4 [ .b, .dr, .ar, .cachedMessage 360, .d, .c, .er, .cr, .a, .e, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (epilogue s.memory q) q (UInt256.ofNat 2840853838) rho}
 
 def gasSteps_suffix (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
