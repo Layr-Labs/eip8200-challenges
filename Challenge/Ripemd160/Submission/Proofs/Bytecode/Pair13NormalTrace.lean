@@ -1,4 +1,4 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.FusedTerminalNormal
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.SecondSnapshotNormal
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13Endian
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolReference
@@ -56,8 +56,8 @@ theorem run_clear (s : State) (pc : UInt256) (stack : List UInt256)
     State.activeWordsAfterUInt256, hact, Word.word_toNat_ofNat, PoolShapeV2.clearTerminal]
   exact ⟨rfl, rfl⟩
 
-abbrev normalTemplate := FusedTerminalNormal.normalTemplate
-abbrev run_normal := FusedTerminalNormal.run_normal
-abbrev exact_bytes := FusedTerminalNormal.exact_bytes
-abbrev end_pc := FusedTerminalNormal.end_pc
+abbrev normalTemplate := SecondSnapshotNormal.normalTemplate
+abbrev run_normal := SecondSnapshotNormal.run_normal
+abbrev exact_bytes := SecondSnapshotNormal.exact_bytes
+abbrev end_pc := SecondSnapshotNormal.end_pc
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13NormalTrace

@@ -17,9 +17,8 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Current decoded SHA-256: 769cf37a78c18560c27bca378656587f554998b1da3d551f389eea51dd523b9d.
--- 5238 bytes, 3616 instructions, 280 trailing data bytes; direct scorer 651365.
--- Immediate base: promoted 7d82d5fd (651407), retaining PC162/666/738 and terminal mask.
--- Pc792Writer proves exact execution, 34-to-35 active-word growth, and masked-image equality.
--- Only byte interval606..826 changes; endpoints, chunks, downstream PCs and data stay fixed.
--- Whole-program canonical verification is authoritative; vector tests are not a proof.
+-- Current decoded SHA-256: a693eb951da4976277231d49b37cbcde7ad26461a2f571efa4f279a535ec7e67.
+-- 5238 bytes, 3616 instructions, 280 trailing data bytes; direct scorer 651113.
+-- The four-byte Repeat4 invariant is explicit in every widened-copy caller.
+-- Immediate 651239 predecessor: submission496a5db8, locally verified; remote validating.
+-- This candidate still needs its own protected canonical verification.

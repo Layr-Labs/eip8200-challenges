@@ -1,5 +1,15 @@
 [
   {
+    "submissionId": "496a5db8-1e74-4c9f-907e-7b8cbc51eb6b",
+    "rationale": "Immediate first-snapshot proof and artifact. Independently verified locally and remotely; rejected for gas651482 on a randomized CI corpus, not for correctness. This candidate additionally widens source178 to destination196.",
+    "evidence": "Retains the exact source268/destination286 snapshot, full ByteArray equality certificate, execution proof and normal/shared32 composition. Adds Repeat4 through the real schedule invariant and changes only bytes530..537 and540."
+  },
+  {
+    "submissionId": "8eb88703-c1f9-4593-9de0-8bb784b2700b",
+    "rationale": "Accepted and promoted PC792 baseline at651365, retaining the universal theorem and disjoint-store reorder.",
+    "evidence": "Retains all writer PC anchors, masked schedule image and code outside the scratch-copy interval. The two snapshot proofs compose exact final ByteArray equality and concrete normal/shared32 execution."
+  },
+  {
     "submissionId": "7d82d5fd-6155-43ed-bbba-9397bd3eb643",
     "rationale": "Immediate accepted and promoted 651407-gas implementation, terminal-store mask, and complete universal Lean proof.",
     "evidence": "Retains the masked address594 store, byte610-clear removal, fused memory invariant, PC162/666/738 stores, compressor, recognition and output. The new PC792 writer is connected through exact memory equality certified by disjoint insertion-sort swaps."

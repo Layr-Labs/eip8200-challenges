@@ -17,14 +17,15 @@ theorem run_normal (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UIn
     (rho : List UInt256) (p : Nat) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
     (hp : 1056 ≤ p) (hbound : p + 64 < 2 ^ 256)
     (hq1 : off + UInt256.ofNat 32 = UInt256.ofNat (p + 32))
-    (hq0 : off = UInt256.ofNat p) (hpc : pc = UInt256.ofNat 458) :
+    (hq0 : off = UInt256.ofNat p) (hpc : pc = UInt256.ofNat 458)
+    (hr : SecondSnapshotCertificates.Repeat4 s.memory) :
     runInstrSeq normalTemplate {s with pc := pc, stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho} =
       some {s with
         pc := pcAfter pc normalTemplate
         stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho
         memory := PoolReference.dataMemory s.memory p
         activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
-  exact Pair13NormalTrace.run_normal s pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho p
+  exact Pair13NormalTrace.run_normal s pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim hr rho p
     hstack hrun hp hbound hq1 hq0 hpc
 
 #print axioms run_normal

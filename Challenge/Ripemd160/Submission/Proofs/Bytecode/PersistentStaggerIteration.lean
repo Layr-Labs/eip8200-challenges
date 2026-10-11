@@ -69,6 +69,9 @@ theorem initial_context (input : ByteArray) (hfit : CalldataFits input) (hpos : 
   ⟨PadSkipEntry.entryState_calldata input, PadSkipEntry.entryState_active input hfit hpos,
     PadSkipEntry.entryState_allocated input hfit, (fun i _ hi hn => PadSkipEntry.entryState_blockAt input hfit i hi hn),
     fun i hi => PaddedBlockBridge.padReturned_blockIndexSeparated input hfit i hi,
+    (fun k hk => by
+      rw [PadSkipEntry.entryState_zero_below input hfit _ (by change _ < 1056; omega),
+        PadSkipEntry.entryState_zero_below input hfit _ (by change _ < 1056; omega)]),
     fun a ha => PadSkipEntry.entryState_zero_below input hfit a
       (by have := (PoolShapeV2.zeroAddressesV2_band a ha).2.1
           change a < 1056
