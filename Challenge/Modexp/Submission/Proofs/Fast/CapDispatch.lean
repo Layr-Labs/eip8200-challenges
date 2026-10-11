@@ -91,17 +91,30 @@ entry program counter.
 -/
 
 def targetProgram (dist base : UInt256) : List Instr :=
-  [.push 1 128, .op .AND, .op .ISZERO, .op .ISZERO,
+  [.push 1 128, .op .AND, .push 0 0, .op .LT,
    .push 2 dist, .op .MUL, .push 2 base, .op .ADD]
 
 def targetProgramDup (k : Operation.DupOp) (dist base : UInt256) : List Instr :=
-  [.push 1 128, .op (.Dup k), .op .AND, .op .ISZERO, .op .ISZERO,
+  [.push 1 128, .op (.Dup k), .op .AND, .push 0 0, .op .LT,
    .push 2 dist, .op .MUL, .push 2 base, .op .ADD]
 
 theorem land_comm' (a b : UInt256) : UInt256.land a b = UInt256.land b a := by
   apply Challenge.EvmProof.Word.word_ext
   rw [Challenge.EvmProof.Word.word_toNat_land,
     Challenge.EvmProof.Word.word_toNat_land, Nat.and_comm]
+
+theorem zero_lt_eq_double_isZero (x : UInt256) :
+    UInt256.lt (UInt256.ofNat 0) x = UInt256.isZero (UInt256.isZero x) := by
+  have hz : (UInt256.ofNat 0).toNat = 0 := rfl
+  simp only [UInt256.lt, UInt256.isZero, hz]
+  by_cases h : x.toNat = 0
+  · simp [h]
+  · have hpos : 0 < x.toNat := Nat.pos_of_ne_zero h
+    simp [h, hpos]
+
+@[simp] theorem lit_zero_lt_eq_double_isZero (x : UInt256) :
+    UInt256.lt { val := 0 } x = UInt256.isZero (UInt256.isZero x) :=
+  zero_lt_eq_double_isZero x
 
 /-- The direct site: the width word is on top and is consumed. -/
 theorem run_target (s : State) (pc : UInt256) (dist base x : UInt256)
@@ -115,7 +128,8 @@ theorem run_target (s : State) (pc : UInt256) (dist base x : UInt256)
   have hp2 : UInt256.ofNat 2 = UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
   have hp3 : UInt256.ofNat 3 = UInt256.ofNat 1 + (UInt256.ofNat 1 + UInt256.ofNat 1) := by decide
   simp [targetProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    target, selectBit, h1, h2, h3, land_comm', Nat.add_assoc,
+    target, selectBit, zero_lt_eq_double_isZero, lit_zero_lt_eq_double_isZero,
+    h1, h2, h3, land_comm', Nat.add_assoc,
     Challenge.EvmProof.Word.literal_eq_ofNat, advancePC, succ_eq_add, hp2, hp3,
     word_add_assoc]
 
@@ -133,7 +147,8 @@ theorem run_targetDup (s : State) (pc : UInt256) (dist base : UInt256)
   have hp2 : UInt256.ofNat 2 = UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
   have hp3 : UInt256.ofNat 3 = UInt256.ofNat 1 + (UInt256.ofNat 1 + UInt256.ofNat 1) := by decide
   simp [targetProgramDup, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    target, selectBit, h15, h16, h17, land_comm', Nat.add_assoc, List.exchange,
+    target, selectBit, zero_lt_eq_double_isZero, lit_zero_lt_eq_double_isZero,
+    h15, h16, h17, land_comm', Nat.add_assoc, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat, advancePC, succ_eq_add, hp2, hp3,
     word_add_assoc]
 

@@ -23,7 +23,7 @@ def loadProgram : List Instr :=
    .push 2 2752, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .ADD,
    .push 1 32, .op .MLOAD,
    .push 0 0, .op (.Dup ⟨14, by decide⟩),
-   .push 1 128, .op .AND, .op .ISZERO, .op .ISZERO, .push 2 1747, .op .MUL]
+   .push 1 128, .op .AND, .push 0 0, .op .LT, .push 2 1747, .op .MUL]
 
 def shuffleProgram : List Instr :=
   [
@@ -44,7 +44,7 @@ def lowProgram : List Instr :=
 
 /-- The four-limb displacement.  The selector word is no longer loaded: `DUP15` pulls the
 F5[4] length slot off the riding frame (pinned to `readWord mem 2688` by `hslot`), then
-`PUSH1 128 AND ISZERO ISZERO PUSH2 1747 MUL` normalizes its bit 7 to 0/1 before scaling,
+`PUSH1 128 AND PUSH0 LT PUSH2 1747 MUL` normalizes its bit 7 to 0/1 before scaling,
 so the distance is a free `PUSH2` literal rather than a multiple of 128.  It still agrees
 with `1747 * isFour n` only for `n = 4` and `n = 8` (at `n = 5,6,7` the mask bit is
 also set), so every consumer carries `n = 4 ∨ n = 8`. -/
@@ -130,7 +130,8 @@ theorem run_setup (s : State) (hd pa pb dst ret value inverse aEnd tailPointer l
   have h9344 : (2688 : UInt256).toNat = 2688 := by decide
   have hact3 := activeWords_fix s 2688 32 (by decide) (by omega) hact
   simp [zeroTn, setupProgram, loadProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    displacement,  h9344, State.activeWordsAfterUInt256, hact3, hslot,
+    displacement, CapDispatch.selectBit, CapDispatch.lit_zero_lt_eq_double_isZero,
+    h9344, State.activeWordsAfterUInt256, hact3, hslot,
     hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, ← word_add_assoc]
   try exact ⟨rfl, rfl⟩
@@ -164,7 +165,7 @@ theorem run_setup_w (s : State) (hd pa pb dst ret value inverse aEnd tailPointer
   have hc15 : rest.length + 15 < 1024 := by omega
   have hc16 : rest.length + 16 < 1024 := by omega
   simp [zeroTn, setupProgram, loadProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    CapDispatch.selectBit, hslot,
+    CapDispatch.selectBit, CapDispatch.lit_zero_lt_eq_double_isZero, hslot,
     hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, ← word_add_assoc]
   try exact ⟨rfl, rfl⟩

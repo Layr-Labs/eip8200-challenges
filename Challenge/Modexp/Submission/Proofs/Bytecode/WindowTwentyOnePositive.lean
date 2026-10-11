@@ -64,7 +64,7 @@ def normalized (template : State) (input : ByteArray) : State :=
 def returned (template : State) (input : ByteArray) : State :=
   WindowTwentyOneCore.returnedState (context template input) (WindowTwentyOneInput.baseWord input)
     (WindowTwentyOneInput.modulusWord input) (WindowTwentyOneInput.exponentWord input)
-    (WindowTwentyOneInput.modulusWord input :: coreStack input)
+    ((WindowTwentyOneInput.modulusWord input :: coreStack input).drop 2)
 
 /-- The core result is the specification for every accepted input, including a
 zero modulus, where the final `MULMOD` produces the zero word. -/
