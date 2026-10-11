@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "8eb88703-c1f9-4593-9de0-8bb784b2700b",
+    "rationale": "Immediate PC792 base, whole-program proof and disjoint-store reorder accepted and promoted at651365, also checked locally by the full Comparator run; this candidate replaces only the last scratch copy.",
+    "evidence": "Retains all bytes outside527..554, all three writer PC anchors and the exact masked schedule image. New scratch snapshot proofs establish pool equality, full final ByteArray equality, active memory and both normal/bootstrap concrete execution paths."
+  },
+  {
     "submissionId": "7d82d5fd-6155-43ed-bbba-9397bd3eb643",
     "rationale": "Immediate accepted and promoted 651407-gas implementation, terminal-store mask, and complete universal Lean proof.",
     "evidence": "Retains the masked address594 store, byte610-clear removal, fused memory invariant, PC162/666/738 stores, compressor, recognition and output. The new PC792 writer is connected through exact memory equality certified by disjoint insertion-sort swaps."

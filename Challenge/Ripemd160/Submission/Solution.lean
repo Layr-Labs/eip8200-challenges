@@ -17,9 +17,10 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Current decoded SHA-256: 769cf37a78c18560c27bca378656587f554998b1da3d551f389eea51dd523b9d.
--- 5238 bytes, 3616 instructions, 280 trailing data bytes; direct scorer 651365.
--- Immediate base: promoted 7d82d5fd (651407), retaining PC162/666/738 and terminal mask.
--- Pc792Writer proves exact execution, 34-to-35 active-word growth, and masked-image equality.
--- Only byte interval606..826 changes; endpoints, chunks, downstream PCs and data stay fixed.
+-- Current decoded SHA-256: 92d8625df624bc564f501de855a0a6523f2bde22027508298760a38157bd797a.
+-- 5238 bytes, 3616 instructions, 280 trailing data bytes; direct scorer 651239.
+-- Immediate base: PC792 submission 8eb88703 (651365), remote validation pending.
+-- ScratchSnapshotMemory proves exact pool/full memory equality for arbitrary memory.
+-- Both normal and 32-byte bootstrap paths compose the same writer state at826.
+-- Only byte interval527..554 changes; endpoints, chunks, downstream PCs and data stay fixed.
 -- Whole-program canonical verification is authoritative; vector tests are not a proof.
