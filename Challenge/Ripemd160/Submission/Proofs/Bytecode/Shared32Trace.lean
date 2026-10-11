@@ -75,8 +75,7 @@ def gasSteps_sparse (s : State) (e : Env s)
 def gasSteps_table (s : State) (e : Env s)
     (ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 880)
-    (hactive : s.activeWords = UInt256.ofNat 34)
-    (hr : SecondSnapshotCertificates.Repeat4 s.memory) :
+    (hactive : s.activeWords = UInt256.ofNat 34) :
     GasSteps
       (atState {s with memory := writeWord s.memory 162 highWord} 495
         (stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) lim rho))
@@ -86,7 +85,7 @@ def gasSteps_table (s : State) (e : Env s)
   have e1 : Env s1 := ⟨e.code, e.fork, e.run, e.np⟩
   apply table.lift s1 _ e1 _
   have h := Shared32Run.run_table s (UInt256.ofNat 495) ret a2 a3 a4 a5 a6 a7
-    a8 a9 a10 lim hr rho hstack e.run hactive rfl
+    a8 a9 a10 lim rho hstack e.run hactive rfl
   simpa only [table.template, Shared32Run.end_pc, atState, s1] using h
 
 #print axioms gasSteps_sparse

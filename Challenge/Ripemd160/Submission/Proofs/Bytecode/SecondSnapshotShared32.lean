@@ -2,7 +2,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.FusedTerminalWriter
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32SparseRun
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Table
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13NormalTrace
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.SecondSnapshotRun
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.BackwardSnapshotRun
 
 set_option warningAsError true
 set_option maxRecDepth 20000
@@ -15,10 +15,9 @@ open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory Pair13Endian
 open Shared32Scratch
 
 def template : List Instr :=
-  (Shared32Lower.lowerTemplate ++ SecondSnapshotRun.template) ++ FusedTerminalWriter.writerTemplate
+  (Shared32Lower.lowerTemplate ++ BackwardSnapshotRun.template) ++ FusedTerminalWriter.writerTemplate
 
 theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
-    (hr : SecondSnapshotCertificates.Repeat4 s.memory)
     (rho : List UInt256) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
     (hactive : s.activeWords = UInt256.ofNat 34) (hpc : pc = UInt256.ofNat 495) :
     runInstrSeq template
@@ -41,7 +40,7 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1056)) highWord
   let s1 : State := {s with memory := writeWord s.memory 162 highWord}
   let s2 : State := {s with memory := scratch}
-  let s3 : State := {s with memory := SecondSnapshotCertificates.copiedTwo scratch}
+  let s3 : State := {s with memory := BackwardSnapshotMemory.copiedFour scratch}
   have ha : 34 ≤ s2.activeWords.toNat := by change 34 ≤ s.activeWords.toNat; rw [hactive]; decide
   have ha3 : s3.activeWords = UInt256.ofNat 34 := hactive
   have hF : F.length ≤ 900 := by simp only [F, stk, List.length_cons]; omega
@@ -51,19 +50,15 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
   have hread : MachineState.readWord s1.memory 1056 = MachineState.readWord s.memory 1056 :=
     read_writeWord_disjoint _ _ _ _ (Or.inr (by decide))
   rw [hread] at h1
-  have h2 := SecondSnapshotRun.run_actual_of_small s2 (pcAfter pc Shared32Lower.lowerTemplate) F (SecondSnapshotCertificates.scratch_repeat _ _ _ hr) hF hrun ha
+  have h2 := BackwardSnapshotRun.run_actual_of_small s2 (pcAfter pc Shared32Lower.lowerTemplate) F hF hrun ha
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
   have h3 := FusedTerminalWriter.run_writer_grow s3
-    (pcAfter (pcAfter pc Shared32Lower.lowerTemplate) SecondSnapshotRun.template)
-    ret (Pair13PoolRaw.poolWordV2 (Pair13PoolRaw.copiedV2 scratch)) rest hrest hrun ha3 (by rw [hpc]; decide)
+    (pcAfter (pcAfter pc Shared32Lower.lowerTemplate) BackwardSnapshotRun.template)
+    ret (Pair13PoolRaw.poolWordV2 (BackwardSnapshotMemory.copiedFour scratch)) rest hrest hrun ha3 (by rw [hpc]; decide)
   have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
-  have hmem := (SecondSnapshotCertificates.second_writer_eq scratch (Pair13PoolRaw.poolWordV2 (Pair13PoolRaw.copiedV2 scratch))).trans
-    (ScratchSnapshotMemory.writer_eq scratch (Pair13PoolRaw.poolWordV2 (Pair13PoolRaw.copiedV2 scratch)))
-  simp only [s3] at h123
-  rw [hmem] at h123
   simpa only [template, DenseScheduleTrace.pcAfter_append,
-    s3, s2, s1, scratch, Shared32Table.tableMemory, FusedTerminalMemory.resultMemory,
-    PoolShapeV2.fanMemoryV2, rest, stk] using h123
+    s3, s2, s1, scratch, Shared32Table.tableMemory, BackwardSnapshotMemory.resultMemory,
+    BackwardSnapshotMemory.fanMemory, rest, stk] using h123
 
 theorem end_pc : pcAfter (UInt256.ofNat 495) template = UInt256.ofNat 826 := by decide
 

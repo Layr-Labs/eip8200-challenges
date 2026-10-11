@@ -54,12 +54,6 @@ theorem copied_memory (input : ByteArray) :
   rw [Memory.readPadded_zero_size]
   rfl
 
-theorem copied_repeat (input : ByteArray) :
-    SecondSnapshotCertificates.Repeat4 (PaddingTrace.padCopied input).memory := by
-  rw [copied_memory]
-  intro k hk
-  rw [copiedMemory_zero input _ (by omega), copiedMemory_zero input _ (by omega)]
-
 theorem copied_active (input : ByteArray) (h32 : input.size = 32) :
     (PaddingTrace.padCopied input).activeWords = UInt256.ofNat 34 := by
   change UInt256.ofNat (MachineState.activeWordsAfter 0 1056 input.size) = UInt256.ofNat 34
@@ -108,7 +102,7 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32)
     (fusedCoefficientWord 0 2)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
-    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 0) [] (by decide) hactive (copied_repeat input)
+    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 0) [] (by decide) hactive
   have hm : sparseMemory s.memory = PairedScheduleMemory.writeWord s.memory 162 highWord := by
     rw [show s.memory = copiedMemory input from copied_memory input]
     exact copiedMemory_sparse input (by omega)

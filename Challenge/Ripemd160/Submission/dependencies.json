@@ -1,8 +1,13 @@
 [
   {
+    "submissionId": "0de279b7-dd75-4eb5-a010-f11bc5a46d10",
+    "rationale": "Immediate accepted and promoted 651113-gas candidate. Retains its PC6 recognition prefilter, source178/destination196 and source268/destination286 forward snapshots, masked terminal writer, paired compressor and whole-program proof.",
+    "evidence": "Changes only decoded byte offsets527..546 to replace the first and third 16-byte MCOPY snapshots with backward full-word MLOAD/MSTORE snapshots. The result is not generally equal as a ByteArray; new universal source-map, lane, clear, slack and terminal-bound proofs transport Ready for the actual memory image. Removes the obsolete Repeat4 recurrence premise."
+  },
+  {
     "submissionId": "496a5db8-1e74-4c9f-907e-7b8cbc51eb6b",
-    "rationale": "Immediate first-snapshot proof and artifact. Independently verified locally and remotely; rejected for gas651482 on a randomized CI corpus, not for correctness. This candidate additionally widens source178 to destination196.",
-    "evidence": "Retains the exact source268/destination286 snapshot, full ByteArray equality certificate, execution proof and normal/shared32 composition. Adds Repeat4 through the real schedule invariant and changes only bytes530..537 and540."
+    "rationale": "Material first-snapshot ancestor, locally and remotely verified for correctness; rejected for gas651482 on a randomized corpus rather than proof failure.",
+    "evidence": "Retains its source268/destination286 snapshot, exact byte binding and concrete execution infrastructure. The new backward-snapshot route no longer uses full ByteArray equality as its semantic transport."
   },
   {
     "submissionId": "8eb88703-c1f9-4593-9de0-8bb784b2700b",

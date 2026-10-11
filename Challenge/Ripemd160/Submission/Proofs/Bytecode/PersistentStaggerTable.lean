@@ -37,7 +37,6 @@ structure Context (s : State) (input : ByteArray) (next : Nat) : Prop where
 between 50 and 1044, each `18 * j + k` with `14 ≤ k < 18`.  Nothing below byte 50 is
 constrained: the first memory word may carry whatever the raw schedule word 6 drags into
 table slot 0. -/
-  repeat4 : SecondSnapshotCertificates.Repeat4 s.memory
   clear : PoolShapeV2.ClearV2 s.memory
 
 def blockWords (input : ByteArray) (i : Nat) : Nat → UInt32 :=
@@ -225,7 +224,7 @@ theorem scheduled_word_above (s : State) (i address : Nat) (ha : 1120 ≤ addres
     change MachineState.readWord (StaggerTablePad.padRealResult s.memory _) address = _
     exact StaggerTablePad.read_padRealResult_outside _ _ _ (by omega)
   · rw [scheduledState_miss s i hh]
-    exact FusedTerminalMemory.read_result_outside _ _ _ address (by omega)
+    exact BackwardSnapshotMemory.read_result_outside _ _ _ address (by omega)
 
 theorem scheduled_env (s : State) (i : Nat) :
     (scheduledState s i).executionEnv = s.executionEnv := by
@@ -264,13 +263,13 @@ theorem scheduled_clear (s : State) (input : ByteArray) (i : Nat)
     exact PoolPadInvariant.padRealResult_clear _ _
       (by rw [ctx.calldata]; exact size_word_lt input hfit)
   · rw [scheduledState_miss s i hh]
-    exact FusedTerminalMemory.result_clear _ _ _ ctx.clear
+    exact BackwardSnapshotMemory.result_clear _ _ _ ctx.clear
 
 theorem Context.scheduled (s : State) (input : ByteArray) (i : Nat)
     (hfit : CalldataFits input) (hi : i < DriverTrace.blockCount input)
     (ctx : Context s input i) : Context (scheduledState s i) input (i + 1) := by
   have hm := scheduled_active_mono s input i hfit hi
-  refine ⟨?_, ctx.active.trans hm, ?_, ?_, ctx.separated, ?_, scheduled_clear s input i hfit ctx⟩
+  refine ⟨?_, ctx.active.trans hm, ?_, ?_, ctx.separated, scheduled_clear s input i hfit ctx⟩
   · rw [scheduled_env]; exact ctx.calldata
   · intro j hj hne; exact (ctx.allocated j hj hne).trans hm
   · intro j hnext hj hne k hk
@@ -279,12 +278,6 @@ theorem Context.scheduled (s : State) (input : ByteArray) (i : Nat)
     unfold ScheduleCorrect.expectedWord Schedule.readLEWord
     rw [hw]
     exact ctx.messageBlock j (by omega) hj hne k hk
-
-  · by_cases hh : s.executionEnv.calldata.size = DriverTrace.blockOffset i ∧ s.executionEnv.calldata.size < 256
-    · rw [scheduledState_hit s i hh]
-      exact SecondSnapshotCertificates.pad_repeat _ _
-    · rw [scheduledState_miss s i hh]
-      exact SecondSnapshotCertificates.result_repeat _ _ _ ctx.clear
 
 theorem calldata_lt_uint256 (input : ByteArray) (hfit : CalldataFits input) :
     input.size < 2^256 := by

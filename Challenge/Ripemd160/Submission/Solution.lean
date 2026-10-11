@@ -17,8 +17,8 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Current decoded SHA-256: a693eb951da4976277231d49b37cbcde7ad26461a2f571efa4f279a535ec7e67.
--- 5238 bytes, 3616 instructions, 280 trailing data bytes; direct scorer 651113.
--- The four-byte Repeat4 invariant is explicit in every widened-copy caller.
--- Immediate 651239 predecessor: submission496a5db8, locally verified; remote validating.
--- This candidate still needs its own protected canonical verification.
+-- Current decoded SHA-256: 0fa51d2120ac9e71418fbfcce619c440b05357a1fa5cc8aa92b6af3ce5c0b021.
+-- 5238 bytes, 3616 instructions, 280 trailing data bytes; direct scorer 650861.
+-- Backward snapshots preserve Ready by lanes/zeros/slack, not whole-memory equality.
+-- Immediate 651113 predecessor: 0de279b7-dd75-4eb5-a010-f11bc5a46d10, accepted/promoted.
+-- Canonical verification status is recorded in README.md; comments are not proof evidence.

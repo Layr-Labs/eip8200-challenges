@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.BackwardSnapshotMemory
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.FusedTerminalMemory
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolShapeV2
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13Memory
@@ -43,7 +44,7 @@ theorem reference_eq_writer (m : ByteArray) (lo hi : UInt256)
   exact Nat.lt_trans (Shared32Scratch.fanWord_lt lo hi i) (by norm_num)
 
 def dataMemory (m : ByteArray) (p : Nat) : ByteArray :=
-  FusedTerminalMemory.resultMemory m
+  BackwardSnapshotMemory.resultMemory m
     (PairedScheduleData.reversedWord (MachineState.readWord m p))
     (PairedScheduleData.reversedWord (MachineState.readWord m (p+32)))
 
@@ -119,7 +120,8 @@ theorem data_ready (m : ByteArray) (p : Nat) (hp : 1056 ≤ p) (hc : PoolShapeV2
         (fun k _ => Nat.lt_trans (PairedScheduleData.extractedWord_bound _ _ k) (by norm_num)))
     (by rwa [PoolInvariant.extracted_sanitize m p hp])
   rw [h0, h1] at href
-  exact FusedTerminalMemory.ready m _ _ _ hc hr0 words href
+  exact BackwardSnapshotMemory.ready m _ _ hc words
+    (FusedTerminalMemory.ready m _ _ _ hc hr0 words href)
 
 #print axioms data_ready
 
