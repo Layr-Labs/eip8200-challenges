@@ -1,12 +1,17 @@
 [
   {
+    "submissionId": "af797111-01d0-42b9-8aa7-b3128509e177",
+    "rationale": "Direct base: the promoted 5,483-byte image and its full Lean proof tree. This submission changes only the 26-byte setup block of the 256-bit window route (PC 968..994) and the four proof modules that certify it.",
+    "evidence": "bytecode.hex is byte-identical outside [968, 994); Bytes.lean, TnM128CandidateBytes.lean, TnM128CandidateArtifact.lean, WindowTwentyOneInit.lean, WindowTwentyOneLoop.lean, WindowTwentyOneGasCore.lean and ArtifactWindowPaths.lean are the only edited files; all other 340+ modules of the closure are reused unchanged."
+  },
+  {
     "submissionId": "a61dbcbf-4490-430e-a014-2f4f86714114",
-    "rationale": "Builds directly on the promoted 467,948-gas MODEXP implementation and universal Lean proof.",
-    "evidence": "Retains the 5,483-byte architecture, CIOS Montgomery multiplication, RSA e=3/e=65537 fast paths, and universal proof structure; replaces the 256-bit WindowTwentyOne odd-power table build and initialization stack layout plus 4-limb selector normalization."
+    "rationale": "Ancestor of the base image: 467,948-gas promoted implementation that introduced the current WindowTwentyOne table build and CIOS Montgomery RSA kernels.",
+    "evidence": "Architecture, RSA fast paths, Fermat path, dispatch and the Fast/ symbolic-execution proof framework are retained unchanged."
   },
   {
     "submissionId": "cd6b45a3-1e5c-4c27-a707-ad4b956f63d0",
-    "rationale": "Prior promoted 468,301-gas MODEXP baseline in the ancestor chain.",
-    "evidence": "Retains core Montgomery reduction and bytecode proof infrastructure."
+    "rationale": "Earlier promoted 468,301-gas baseline in the same ancestor chain.",
+    "evidence": "Core Montgomery reduction and the bytecode certificate infrastructure (slice certificates, PC tables) originate here and are reused."
   }
 ]

@@ -91,19 +91,19 @@ private def nine_table :
 
 private def nine_init :
   WindowTwentyOneBinding.Block submissionArtifact .Osaka 968 WindowTwentyOneInit.program :=
-  WindowTwentyOneSlice.block allWellFormed 718 13 968 WindowTwentyOneInit.program
-    (by decide) (by rfl)
-    (by rw [locations_map_instruction]; rfl) (by decide)
-
-private def nine_entry :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 985 WindowTwentyOneLoop.entryProgram :=
-  WindowTwentyOneSlice.block allWellFormed 731 0 985 WindowTwentyOneLoop.entryProgram
+  WindowTwentyOneSlice.block allWellFormed 718 7 968 WindowTwentyOneInit.program
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_trampoline :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 985 WindowTwentyOneLoop.trampolineProgram :=
-  WindowTwentyOneSlice.block allWellFormed 731 8 985 WindowTwentyOneLoop.trampolineProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 979 WindowTwentyOneLoop.trampolineProgram :=
+  WindowTwentyOneSlice.block allWellFormed 725 5 979 WindowTwentyOneLoop.trampolineProgram
+    (by decide) (by rfl)
+    (by rw [locations_map_instruction]; rfl) (by decide)
+
+private def nine_entry :
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 984 WindowTwentyOneLoop.entryProgram :=
+  WindowTwentyOneSlice.block allWellFormed 730 9 984 WindowTwentyOneLoop.entryProgram
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
