@@ -11,34 +11,31 @@ private theorem hadd_eq (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem hmul_eq (a b : UInt256) : a * b = UInt256.mul a b := rfl
 private theorem hsub_eq (a b : UInt256) : a - b = UInt256.sub a b := rfl
 
-theorem run_transition_aux (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
-    (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
-    (hlen : f.len = UInt256.ofNat s.executionEnv.calldata.size) :
-    runInstrSeq transitionTemplate {s with pc := pc, stack := frame f rho} =
-      some {s with pc := pcAfter pc transitionTemplate, stack := f.off :: frame ({f with word := tw f.word, off := f.stop, stop := emin f.stop f.len, full := UInt256.sub (emin f.stop f.len) (UInt256.ofNat 32)} : Frame) rho} := by
-  have hbase : rho.length < 1024 := by omega
-  have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
-  have hM7 : UInt256.shiftRight PatternedSwar.m8 (UInt256.ofNat 7) = PatternedSwar.M := by decide
-  have hS : UInt256.land (UInt256.add c96 c96) m9f = PatternedSwar.m8 := by decide
-  have hS' : UInt256.land m9f (UInt256.add c96 c96) = PatternedSwar.m8 := by decide
-  have hK : UInt256.shiftRight (UInt256.lor PatternedSwar.m8 c96)
-      (UInt256.ofNat 4) = UInt256.mul (UInt256.ofNat 14) PatternedSwar.M := by decide
-  have hK' : UInt256.shiftRight (UInt256.lor c96 PatternedSwar.m8)
-      (UInt256.ofNat 4) = UInt256.mul (UInt256.ofNat 14) PatternedSwar.M := by decide
-  simp (config := { maxSteps := 600000 }) (discharger := omega) [transitionTemplate, frame, c114,
-    tw, emin, clamp, aligned, advance, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
-    List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hcap, hM7, hS, hS', hK, hK', ← hlen,
-    Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals simp only [hM7, hS, hS', hK, hK', hsub_eq, hadd_eq, hmul_eq, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
-  all_goals repeat first | apply And.intro | exact True.intro | rfl
+theorem repunit_div : UInt256.div c96 (UInt256.ofNat 96) = PatternedSwar.M := by decide
+
+theorem repunit_hdiv : c96 / UInt256.ofNat 96 = PatternedSwar.M := by decide
+
 
 theorem run_transition (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
     (hlen : f.len = UInt256.ofNat s.executionEnv.calldata.size) :
     runInstrSeq transitionTemplate {s with pc := pc, stack := frame f rho} =
       some {s with pc := pcAfter pc transitionTemplate, stack := f.off :: frame (transitionResult f) rho} := by
-  simp only [transitionResult]
-  exact run_transition_aux s pc f rho hstack hrun hlen
+  have hbase : rho.length < 1024 := by omega
+  have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
+  simp (config := { maxSteps := 600000 }) (discharger := omega)
+    [transitionTemplate, transitionResult, frame, c114,
+      tw, emin, clamp, aligned, advance, runInstrSeq, DataStepper.runInstr,
+      pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
+      Nat.add_assoc, hrun, hbase, hcap, repunit_div, repunit_hdiv, ← hlen,
+      Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+  all_goals simp only [repunit_div, repunit_hdiv, hsub_eq, hadd_eq, hmul_eq,
+    RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm,
+    RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm,
+    RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm,
+    RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm,
+    RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
+  all_goals repeat first | apply And.intro | exact True.intro | rfl
 
 #print axioms run_transition
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Raw

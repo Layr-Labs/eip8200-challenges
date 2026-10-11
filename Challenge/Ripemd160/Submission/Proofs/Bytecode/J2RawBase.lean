@@ -59,13 +59,17 @@ def emin (stop len : UInt256) : UInt256 :=
       (UInt256.sar (UInt256.sub len (UInt256.add (UInt256.ofNat 251) stop)) len))
     (UInt256.add (UInt256.ofNat 251) stop)
 /-- Segment-boundary SWAR step (`+0xf2` bytewise) as the bytecode computes it:
-`u = w ||| 0x80..80`, `w'' = w ^^^ ((u - 0x0e..0e) ^^^ u)`; the bytecode derives `0x80..80 = (c96 + c96) &&& 0x9f..9f`
-and `0x0e..0e = (0x80..80 ||| c96) >>> 4` from the two frame constants.  Agrees with `advance 114` on the
+`u = w ||| (c96 << 2)`, `w'' = w ^^^ ((u - 0x0e..0e) ^^^ u)`; the bytecode
+derives `R = c96 DIV 96` and `0x0e..0e = 14 * R`. The shifted sentinel has
+bytes 0x81 except for its least-significant byte 0x80; the extra low bits
+do not affect this even bytewise subtraction.  Agrees with `advance 114` on the
 pattern words where a segment ends (`J2Frame.tw_next`, by `decide`). -/
 def tw (w : UInt256) : UInt256 :=
-  UInt256.xor w (UInt256.xor (UInt256.sub (UInt256.lor w PatternedSwar.m8)
+  UInt256.xor w (UInt256.xor
+    (UInt256.sub (UInt256.lor w (UInt256.shiftLeft c96 (UInt256.ofNat 2)))
       (UInt256.mul (UInt256.ofNat 14) PatternedSwar.M))
-    (UInt256.lor w PatternedSwar.m8))
+    (UInt256.lor w (UInt256.shiftLeft c96 (UInt256.ofNat 2))))
+
 def transitionResult (f : Frame) : Frame :=
   { f with word := tw f.word
            off := f.stop
@@ -202,25 +206,12 @@ def finishTemplate : List Instr := [ .op .CALLDATASIZE,
     .op .JUMPI ]
 
 def transitionTemplate : List Instr := [
-  .op .JUMPDEST,
-  .op (.Swap ⟨1, by decide⟩),
-  .op (.Dup ⟨5, by decide⟩),
-  .op (.Dup ⟨0, by decide⟩),
-  .op .ADD,
-  .op (.Dup ⟨5, by decide⟩),
-  .op .AND,
-  .op (.Dup ⟨1, by decide⟩),
-  .op (.Dup ⟨1, by decide⟩),
-  .op .OR,
-  .op (.Swap ⟨0, by decide⟩),
-  .op (.Dup ⟨7, by decide⟩),
-  .op .OR,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 4),
-  .op .SHR,
-  .op (.Dup ⟨1, by decide⟩),
-  .op .SUB,
-  .op .XOR,
-  .op .XOR,
+  .op .JUMPDEST, .op (.Swap ⟨1, by decide⟩),
+  .op (.Dup ⟨5, by decide⟩), .push ⟨2, by decide⟩ (UInt256.ofNat 2), .op .SHL,
+  .op (.Dup ⟨1, by decide⟩), .op .OR,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 96), .op (.Dup ⟨7, by decide⟩), .op .DIV,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 14), .op .MUL,
+  .op (.Dup ⟨1, by decide⟩), .op .SUB, .op .XOR, .op .XOR,
   .op (.Swap ⟨1, by decide⟩),
   .push ⟨1, by decide⟩ (UInt256.ofNat 251),
   .op (.Dup ⟨7, by decide⟩),

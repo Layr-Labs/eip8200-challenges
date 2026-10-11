@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "d6846540-c9d3-427a-84e0-cbe8c1bf15ac",
+    "rationale": "Immediate accepted/promoted650681 predecessor retains the optimized normal recognizer loop, its exact-frame raw execution proof, relocated instruction-index bindings and full verified program. The new candidate changes only the boundary transition word-update prefix to use C60 SHL2 as an even-byte sentinel and C60 DIV96 MUL14 for the subtraction constant.",
+    "evidence": "The650681 predecessor passed protected Comparator default-kernel replay and49vectors with equal clean/dirty totals, and was remotely accepted/promoted at650681. Its early-offset normal loop is byte-for-byte retained at4886..4906; all general-route and schedule proofs are inherited. New J2Raw.run_transition and J2Frame.transition_next kernel-check the exact boundary frame and reachable-word recurrence."
+  },
+  {
     "submissionId": "d48164b9-82ad-400e-adce-cdd3ec5a9551",
     "rationale": "Immediate locally and remotely verified650861 predecessor, rejected only because another submission had already promoted the same score. Retains all four disjoint full-width scratch snapshots, backward live-lane memory proof, concrete fan-store run, exact byte artifact and whole-program proof. New work changes only the normal recognizer-loop schedule at4886..4906; scratch writer, general-route hash and schedule invariants remain inherited.",
     "evidence": "Exact predecessor bytecode and whole-program Lean proof were retained outside4886..4906. The predecessor passed protected local Comparator at650861 and remote validation also reported650861; it was rejected only for a tied non-improving score. Its four backward-aligned snapshots and lane-based Ready proof are imported by the new candidate."
