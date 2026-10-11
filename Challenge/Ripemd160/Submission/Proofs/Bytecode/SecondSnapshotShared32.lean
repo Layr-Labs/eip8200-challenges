@@ -41,7 +41,7 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1056)) highWord
   let s1 : State := {s with memory := writeWord s.memory 162 highWord}
   let s2 : State := {s with memory := scratch}
-  let s3 : State := {s with memory := SecondSnapshotCertificates.copiedTwo scratch}
+  let s3 : State := {s with memory := FusedTerminalMemory.copiedFour scratch}
   have ha : 34 ≤ s2.activeWords.toNat := by change 34 ≤ s.activeWords.toNat; rw [hactive]; decide
   have ha3 : s3.activeWords = UInt256.ofNat 34 := hactive
   have hF : F.length ≤ 900 := by simp only [F, stk, List.length_cons]; omega
@@ -55,15 +55,11 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
   have h3 := FusedTerminalWriter.run_writer_grow s3
     (pcAfter (pcAfter pc Shared32Lower.lowerTemplate) SecondSnapshotRun.template)
-    ret (Pair13PoolRaw.poolWordV2 (Pair13PoolRaw.copiedV2 scratch)) rest hrest hrun ha3 (by rw [hpc]; decide)
+    ret (Pair13PoolRaw.poolWordV2 (FusedTerminalMemory.copiedFour scratch)) rest hrest hrun ha3 (by rw [hpc]; decide)
   have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
-  have hmem := (SecondSnapshotCertificates.second_writer_eq scratch (Pair13PoolRaw.poolWordV2 (Pair13PoolRaw.copiedV2 scratch))).trans
-    (ScratchSnapshotMemory.writer_eq scratch (Pair13PoolRaw.poolWordV2 (Pair13PoolRaw.copiedV2 scratch)))
-  simp only [s3] at h123
-  rw [hmem] at h123
   simpa only [template, DenseScheduleTrace.pcAfter_append,
     s3, s2, s1, scratch, Shared32Table.tableMemory, FusedTerminalMemory.resultMemory,
-    PoolShapeV2.fanMemoryV2, rest, stk] using h123
+    FusedTerminalMemory.fanMemory4, Pair13Endian.scratchV2, rest, stk] using h123
 
 theorem end_pc : pcAfter (UInt256.ofNat 495) template = UInt256.ofNat 826 := by decide
 

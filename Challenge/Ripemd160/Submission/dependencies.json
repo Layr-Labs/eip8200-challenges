@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "0de279b7-dd75-4eb5-a010-f11bc5a46d10",
+    "rationale": "Builds directly on the promoted 651,113-gas two-snapshot candidate (1dd99a8a), replacing the remaining two 16-byte MCOPY instructions (162 -> 144 and 252 -> 234) with low-aligned 32-byte MLOAD/MSTORE snapshots (146 -> 128 and 236 -> 218) and eliminating the shared PUSH1 16 constant.",
+    "evidence": "Retains all 5,211 bytes outside the 27-byte scratch-copy interval [527..554), preserving exact instruction count (3,616 instructions) and every downstream PC. Replaces FusedTerminalCertificates, FusedTerminalMemory, SecondSnapshotRun, SecondSnapshotNormal, and SecondSnapshotShared32 with four-snapshot provenance certificates and universal memory/execution theorems."
+  },
+  {
     "submissionId": "496a5db8-1e74-4c9f-907e-7b8cbc51eb6b",
     "rationale": "Immediate first-snapshot proof and artifact. Independently verified locally and remotely; rejected for gas651482 on a randomized CI corpus, not for correctness. This candidate additionally widens source178 to destination196.",
     "evidence": "Retains the exact source268/destination286 snapshot, full ByteArray equality certificate, execution proof and normal/shared32 composition. Adds Repeat4 through the real schedule invariant and changes only bytes530..537 and540."
