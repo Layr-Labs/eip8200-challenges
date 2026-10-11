@@ -7,27 +7,11 @@ set_option maxHeartbeats 8000000
 /-!
 The 594 store consumes word 11 for the last time. Masking only that store,
 not every load of word 11, can replace the later byte-610 MSTORE8.
-In addition, all four 16-byte schedule fan copies are replaced by full 32-byte
-`MLOAD`/`MSTORE` snapshots (`146 → 128`, `178 → 196`, `236 → 218`, `268 → 286`),
-whose source intervals are pairwise disjoint from all earlier snapshot destinations.
+These certificates describe the fused store's final byte provenance. They
+are independent of calldata, but are not yet a whole-bytecode certificate.
 -/
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.FusedTerminalCertificates
 open PoolShape PoolShapeV2
-
-/-- All four 32-byte snapshot sources (`[146,178)`, `[178,210)`, `[236,268)`, `[268,300)`)
-lie outside every earlier snapshot's 32-byte destination (`[128,160)`, `[196,228)`, `[218,250)`),
-so the four snapshots compose to a single flat address map. -/
-def copiedAddress4 (a : Nat) : Nat :=
-  if 286 ≤ a ∧ a < 318 then a - 18
-  else if 218 ≤ a ∧ a < 250 then a + 18
-  else if 196 ≤ a ∧ a < 218 then a - 18
-  else if 128 ≤ a ∧ a < 160 then a + 18 else a
-
-def fanSource4 (a : Nat) : Source := scratchSourceV2 (copiedAddress4 a)
-
-def loadSource4 (i j : Nat) : Source := fanSource4 (Pair13PoolRaw.poolAddrV2 i + j)
-
-def poolSource4 (i j : Nat) : Source := loadSource4 i j
 
 /-- Apply the two-lane mask at the terminal store, after all earlier stores. -/
 def fusedStoreSource (f : Nat → Source) (g : Nat → Nat → Source)
@@ -42,7 +26,7 @@ def fusedStoreSources (g : Nat → Nat → Source) :
   | f, (a,i)::rest => fusedStoreSources g (fusedStoreSource f g a i) rest
 
 def resultSource : Nat → Source :=
-  fusedStoreSources poolSource4 fanSource4 writes
+  fusedStoreSources poolSourceV2 fanSourceV2 writes
 
 /-- Every live lane byte is unchanged, including the adjacent overlapping slots. -/
 theorem lane_sources : ∀ j : Fin 61, ∀ k : Fin 4,

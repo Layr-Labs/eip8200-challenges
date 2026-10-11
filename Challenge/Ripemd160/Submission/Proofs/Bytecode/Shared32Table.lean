@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.BackwardSnapshotMemory
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolInvariant
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolReference
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Scratch
@@ -130,13 +131,14 @@ theorem writer_memory (memory : ByteArray) (hgap : PairStoreGap.GapClear memory)
     (erase_fan memory (StaggerTableLayout.tableWords (words memory)) _ _)
 
 def tableMemory (memory : ByteArray) : ByteArray :=
-  FusedTerminalMemory.resultMemory memory
+  BackwardSnapshotMemory.resultMemory memory
     (PairedScheduleData.reversedWord (MachineState.readWord memory 1056)) highWord
 
 theorem tableMemory_ready (memory : ByteArray) (hc : PoolShape.Clear memory)
     (hc2 : PoolShapeV2.ClearV2 memory) (scalar : Nat → UInt32)
     (hr : StaggerMessage.Ready (StaggerTableLayout.resultMemory0 memory (words memory)) scalar) :
     StaggerMessage.Ready (tableMemory memory) scalar := by
+  apply BackwardSnapshotMemory.ready memory _ _ hc2
   apply FusedTerminalMemory.ready memory memory _ _ hc2 hc
   rw [PoolReference.reference_eq_writer _ _ _ (PoolInvariant.clear_low memory hc)]
   change StaggerMessage.Ready (Pair13WriterRaw.writerMemory

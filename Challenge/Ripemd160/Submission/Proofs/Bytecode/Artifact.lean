@@ -9,8 +9,8 @@ set_option maxHeartbeats 2000000
 /-!
 # Structural certificate for the frozen RIPEMD-160 artifact
 
-The exact candidate has 5238 bytes, 3616 executable instructions and 280 data bytes, and SHA-256
-`0fa51d2120ac9e71418fbfcce619c440b05357a1fa5cc8aa92b6af3ce5c0b021`. PUSH rows carry their typed width and value.
+The exact candidate has 5238 bytes, 3615 executable instructions and 280 data bytes, and SHA-256
+`4ce91e1a71bb05b640d092f8b31b066d15468c05840194a8933e64dbc42c9df1`. PUSH rows carry their typed width and value.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
@@ -3705,24 +3705,23 @@ private def submissionInstructionsChunk20 : List Instr :=
   .push 2 4913,
   op 0x57,
   op 0x5b,
+  op 0x81,
+  .push 2 32,
+  op 0x01,
+  op 0x91,
+  op 0x35,
+  op 0x85,
   op 0x84,
-  op 0x83,
   op 0x17,
-  op 0x86,
+  op 0x87,
   op 0x81,
   op 0x03,
   op 0x18,
-  op 0x83,
+  op 0x84,
   op 0x18,
-  op 0x92,
-  op 0x82,
-  op 0x35,
+  op 0x93,
   op 0x18,
   op 0x17,
-  op 0x90,
-  .push 1 32,
-  op 0x01,
-  op 0x90,
   op 0x83,
   op 0x82,
   op 0x10,
@@ -3764,7 +3763,7 @@ private def submissionInstructionsChunk20 : List Instr :=
   op 0xf3
 ]
 
-@[simp] private theorem submissionInstructionsChunk20_length : submissionInstructionsChunk20.length = 98 := by rfl
+@[simp] private theorem submissionInstructionsChunk20_length : submissionInstructionsChunk20.length = 97 := by rfl
 
 def submissionInstructions : List Instr :=
 submissionInstructionsChunk0
@@ -3789,7 +3788,7 @@ submissionInstructionsChunk0
  ++ submissionInstructionsChunk19
  ++ submissionInstructionsChunk20
 
-theorem referenceInstructions_count : submissionInstructions.length = 3616 := by
+theorem referenceInstructions_count : submissionInstructions.length = 3615 := by
   simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length, submissionInstructionsChunk20_length]
 
 private theorem submissionInstructionsChunk0_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk0 = [
@@ -4269,8 +4268,8 @@ private theorem submissionInstructionsChunk20_assemble : Challenge.EvmProof.PcEn
   0xc0, 0xe5, 0x0a, 0x2f, 0x54, 0x79, 0x9e, 0xc3, 0xe8, 0x0d, 0x32, 0x57,
   0x7c, 0xa1, 0xc6, 0xeb, 0x10, 0x35, 0x5a, 0x7f, 0xa4, 0xc9, 0xee, 0x13,
   0x38, 0x5d, 0x82, 0x5f, 0x5f, 0x60, 0x21, 0x36, 0x10, 0x61, 0x13, 0x31,
-  0x57, 0x5b, 0x84, 0x83, 0x17, 0x86, 0x81, 0x03, 0x18, 0x83, 0x18, 0x92,
-  0x82, 0x35, 0x18, 0x17, 0x90, 0x60, 0x20, 0x01, 0x90, 0x83, 0x82, 0x10,
+  0x57, 0x5b, 0x81, 0x61, 0x00, 0x20, 0x01, 0x91, 0x35, 0x85, 0x84, 0x17,
+  0x87, 0x81, 0x03, 0x18, 0x84, 0x18, 0x93, 0x18, 0x17, 0x83, 0x82, 0x10,
   0x61, 0x13, 0x16, 0x57, 0x5b, 0x81, 0x35, 0x83, 0x18, 0x84, 0x83, 0x03,
   0x60, 0x03, 0x1b, 0x1c, 0x17, 0x36, 0x87, 0x03, 0x62, 0x00, 0x12, 0x1e,
   0x57, 0x60, 0xf6, 0x57, 0x60, 0x14, 0x60, 0x0f, 0x36, 0x62, 0xdb, 0x14,
@@ -4531,7 +4530,7 @@ private theorem tailPrefix_length : tailPrefix.length = 3518 := by
 private theorem tailPrefix_bytes_length : (Challenge.EvmProof.PcEncoding.assembleBytes tailPrefix).length = 4729 := by
   simp only [tailPrefix, Challenge.EvmProof.PcEncoding.assembleBytes_append, List.length_append, chunk0_byteLength, chunk1_byteLength, chunk2_byteLength, chunk3_byteLength, chunk4_byteLength, chunk5_byteLength, chunk6_byteLength, chunk7_byteLength, chunk8_byteLength, chunk9_byteLength, chunk10_byteLength, chunk11_byteLength, chunk12_byteLength, chunk13_byteLength, chunk14_byteLength, chunk15_byteLength, chunk16_byteLength, chunk17_byteLength, chunk18_byteLength, chunk19_byteLength]
 
-private theorem instructionPC_tail (i : Nat) (hi : i ≤ 98) :
+private theorem instructionPC_tail (i : Nat) (hi : i ≤ 97) :
     submissionArtifact.instructionPC (3518 + i) =
       4729 + (Challenge.EvmProof.PcEncoding.assembleBytes (submissionInstructionsChunk20.take i)).length := by
   apply ArtifactSegment.instructionPC_segment_of_bounds submissionArtifact

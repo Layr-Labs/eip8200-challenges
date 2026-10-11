@@ -10,53 +10,6 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.FusedTerminalMemory
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PoolShape PoolShapeV2 FusedTerminalCertificates
 
-def snap32 (m : ByteArray) (src dst : Nat) : ByteArray :=
-  MachineState.writeBytes m (MachineState.readPadded m src 32) dst
-
-def copiedFour (m : ByteArray) : ByteArray :=
-  snap32 (snap32 (snap32 (snap32 m 146 128) 178 196) 236 218) 268 286
-
-theorem snap32_getD (m : ByteArray) (src dst a : Nat) :
-    (snap32 m src dst)[a]?.getD 0 =
-      if dst ≤ a ∧ a < dst + 32 then m[a - dst + src]?.getD 0 else m[a]?.getD 0 := by
-  rw [snap32, MachineState.writeBytes_getElem?_getD, Memory.readPadded_size]
-  by_cases ha : dst ≤ a ∧ a < dst + 32
-  · rw [if_pos ha, if_pos (by omega), Memory.readPadded_getElem?_getD,
-      if_pos (by omega : a - dst < 32), show src + (a - dst) = a - dst + src by omega]
-  · rw [if_neg ha, if_neg (by omega)]
-
-theorem copiedFour_getD (m : ByteArray) (a : Nat) :
-    (copiedFour m)[a]?.getD 0 = m[copiedAddress4 a]?.getD 0 := by
-  simp only [copiedFour, snap32_getD, copiedAddress4]
-  split_ifs <;> first | rfl | (exfalso; omega) | (congr 2; omega)
-
-def fanMemory4 (memory : ByteArray) (low high : UInt256) : ByteArray :=
-  copiedFour (Pair13Endian.scratchV2 memory low high)
-
-theorem fan4_shape (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (a : Nat) :
-    (fanMemory4 m lo hi)[a]?.getD 0 = (fanSource4 a).eval m lo hi := by
-  rw [fanMemory4, copiedFour_getD, fanSource4]
-  exact scratchV2_shape m lo hi hc _
-
-theorem pool4_shape (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m)
-    (i j : Nat) (hi16 : i < 16) (hj : j < 32) :
-    PoolByte.byte (Pair13PoolRaw.poolWordV2 (fanMemory4 m lo hi) i) j =
-      (poolSource4 i j).eval m lo hi := by
-  have hr (i j : Nat) (hj : j < 32) :
-      PoolByte.byte (Pair13PoolRaw.rawLoadV2 (fanMemory4 m lo hi) i) j =
-        (loadSource4 i j).eval m lo hi := by
-    rw [Pair13PoolRaw.rawLoadV2, PoolByte.read _ _ _ hj, fan4_shape m lo hi hc]
-    rfl
-  interval_cases i <;> interval_cases j <;>
-    simp (config := { maxSteps := 200000 }) (discharger := omega) [poolSource4, Pair13PoolRaw.poolWordV2,
-      byte_mask, hr, maskSource, laneByte, Source.eval]
-
-theorem fan4_getD_high (m : ByteArray) (lo hi : UInt256) (a : Nat) (ha : 1112 ≤ a) :
-    (fanMemory4 m lo hi)[a]?.getD 0 = m[a]?.getD 0 := by
-  rw [fanMemory4, copiedFour_getD, copiedAddress4,
-    if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega),
-    scratchV2_getD, if_neg (by omega), if_neg (by omega)]
-
 /-- The mask applies only to the consuming store at 594, not to other uses of word 11. -/
 def storedWord (words : Nat → UInt256) (x : Nat × Nat) : UInt256 :=
   if x.1 = 594 then UInt256.land Pair13PoolRaw.poolMask (words x.2) else words x.2
@@ -65,15 +18,15 @@ def writerMemory (m : ByteArray) (words : Nat → UInt256) : ByteArray :=
   Pair13WriterRaw.writeChain m (writes.map fun x => (x.1, storedWord words x))
 
 def resultMemory (m : ByteArray) (lo hi : UInt256) : ByteArray :=
-  writerMemory (fanMemory4 m lo hi) (Pair13PoolRaw.poolWordV2 (fanMemory4 m lo hi))
+  writerMemory (fanMemoryV2 m lo hi) (Pair13PoolRaw.poolWordV2 (fanMemoryV2 m lo hi))
 
 theorem result_outside (m : ByteArray) (lo hi : UInt256) (a : Nat) (ha : 1112 ≤ a) :
     (resultMemory m lo hi)[a]?.getD 0 = m[a]?.getD 0 := by
   unfold resultMemory writerMemory
-  have he : writes.map (fun x => (x.1, storedWord (Pair13PoolRaw.poolWordV2 (fanMemory4 m lo hi)) x)) =
+  have he : writes.map (fun x => (x.1, storedWord (Pair13PoolRaw.poolWordV2 (fanMemoryV2 m lo hi)) x)) =
       writes.map (fun x => (x.1, if x.1 = 594 then
-        UInt256.land Pair13PoolRaw.poolMask (Pair13PoolRaw.poolWordV2 (fanMemory4 m lo hi) x.2)
-        else Pair13PoolRaw.poolWordV2 (fanMemory4 m lo hi) x.2)) := rfl
+        UInt256.land Pair13PoolRaw.poolMask (Pair13PoolRaw.poolWordV2 (fanMemoryV2 m lo hi) x.2)
+        else Pair13PoolRaw.poolWordV2 (fanMemoryV2 m lo hi) x.2)) := rfl
   rw [he]
   have houtside {mem : ByteArray} {ws : List (Nat × Nat)}
       (f : Nat × Nat → UInt256) (hb : ∀ x ∈ ws, x.1 + 32 ≤ a) :
@@ -85,7 +38,7 @@ theorem result_outside (m : ByteArray) (lo hi : UInt256) (a : Nat) (ha : 1112 �
       rw [ih (fun y hy => hb y (List.mem_cons_of_mem _ hy)), Shared32Scratch.writeWord_getD,
         if_neg (by have := hb x (List.mem_cons_self ..); omega)]
   rw [houtside _ (fun x hx => (PoolCertificates.writes_bound x hx).1.trans ha)]
-  exact fan4_getD_high _ _ _ _ ha
+  exact PoolInvariant.fanV2_getD_high _ _ _ _ ha
 
 theorem read_result_outside (m : ByteArray) (lo hi : UInt256) (a : Nat) (ha : 1112 ≤ a) :
     MachineState.readWord (resultMemory m lo hi) a = MachineState.readWord m a := by
@@ -129,8 +82,8 @@ theorem result_shape (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (a : Nat
     (resultMemory m lo hi)[a]?.getD 0 = (FusedTerminalCertificates.resultSource a).eval m lo hi := by
   unfold resultMemory writerMemory FusedTerminalCertificates.resultSource
   have hindices : ∀ x ∈ writes, x.2 < 16 := by decide
-  exact writeChain_shape _ m lo hi _ _ _ writes (fan4_shape m lo hi hc)
-    (fun x hx j hj => pool4_shape m lo hi hc x.2 j (hindices x hx) hj) a
+  exact writeChain_shape _ m lo hi _ _ _ writes (fanV2_shape m lo hi hc)
+    (fun x hx j hj => poolV2_shape m lo hi hc x.2 j (hindices x hx) hj) a
 
 /-- Bridge the fused image to the already-verified actual image, on the live lanes. -/
 theorem result_lanes (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m)

@@ -152,26 +152,28 @@ def firstTemplate : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 33),
     .push ⟨2, by decide⟩ (UInt256.ofNat 4913),
     .op .JUMPI ]
 
+/-- Increment the saved offset before loading the old offset. This eliminates one
+swap while preserving the exact incoming and outgoing recognizer frames. The
+PUSH2 width fills the removed opcode byte without changing any later PC. -/
 def normalTemplate : List Instr := [
   .op .JUMPDEST,
+  .op (.Dup ⟨1, by decide⟩),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 32),
+  .op .ADD,
+  .op (.Swap ⟨1, by decide⟩),
+  .op .CALLDATALOAD,
+  .op (.Dup ⟨5, by decide⟩),
   .op (.Dup ⟨4, by decide⟩),
-  .op (.Dup ⟨3, by decide⟩),
   .op .OR,
-  .op (.Dup ⟨6, by decide⟩),
+  .op (.Dup ⟨7, by decide⟩),
   .op (.Dup ⟨1, by decide⟩),
   .op .SUB,
   .op .XOR,
-  .op (.Dup ⟨3, by decide⟩),
+  .op (.Dup ⟨4, by decide⟩),
   .op .XOR,
-  .op (.Swap ⟨2, by decide⟩),
-  .op (.Dup ⟨2, by decide⟩),
-  .op .CALLDATALOAD,
+  .op (.Swap ⟨3, by decide⟩),
   .op .XOR,
-  .op .OR,
-  .op (.Swap ⟨0, by decide⟩),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 32),
-  .op .ADD,
-  .op (.Swap ⟨0, by decide⟩)]
+  .op .OR]
 
 def normalGuardTemplate : List Instr := [ .op (.Dup ⟨3, by decide⟩),
     .op (.Dup ⟨2, by decide⟩),
