@@ -19,10 +19,9 @@ def exponentOffset (input : ByteArray) : UInt256 := UInt256.ofNat (96 + baseSize
 def modulusOffset (input : ByteArray) : UInt256 :=
   UInt256.ofNat (96 + baseSize input + exponentSize input)
 
-/-- The three header sizes as the early entry at 26 sees them. -/
+/-- The base size as the early entry at 22 sees it. -/
 def headerStack (input : ByteArray) : List UInt256 :=
-  [UInt256.ofNat (modulusSize input), UInt256.ofNat (exponentSize input),
-   UInt256.ofNat (baseSize input)]
+  [UInt256.ofNat (baseSize input)]
 
 /-- The legacy route frame at 1759 (twelve words). -/
 def routeStack (input : ByteArray) : List UInt256 :=
@@ -32,12 +31,10 @@ def routeStack (input : ByteArray) : List UInt256 :=
    modulusOffset input, exponentOffset input, UInt256.ofNat (modulusSize input),
    UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)]
 
-/-- The lean core frame built by the entry at 26: the exponent word, its offset
-and the three header sizes.  The modulus word sits on top of it. -/
+/-- The lean core frame built by the entry at 22: the exponent word and the base size.
+The modulus word sits on top of it. -/
 def coreStack (input : ByteArray) : List UInt256 :=
-  [WindowTwentyOneInput.exponentWord input, exponentOffset input,
-   UInt256.ofNat (modulusSize input), UInt256.ofNat (exponentSize input),
-   UInt256.ofNat (baseSize input)]
+  [WindowTwentyOneInput.exponentWord input, UInt256.ofNat (baseSize input)]
 
 def state (template : State) (input : ByteArray) (pc : UInt256) : State :=
   WindowTwentyOneEntry.framed (context template input) pc (routeStack input)

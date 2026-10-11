@@ -8,26 +8,24 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.EarlyWordProgram
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open WindowTwentyOneEntry WindowNibbleKernel
 
-/-- The early header reader preserves every carrier field except PC and stack. -/
+/-- The early header reader and width guard at pc 0, leaving only `baseSize` on the stack. -/
 def headerProgram : List Instr :=
-  [.push 0 0, .op .CALLDATALOAD,
-   .push 1 32, .op .CALLDATALOAD, .push 1 64, .op .CALLDATALOAD]
+  [.push 0 0, .op .CALLDATALOAD]
 
 def guardValueProgram : List Instr :=
-  [.push 1 32, .op (.Dup ⟨3, by decide⟩), .op .GT,
-   .op (.Dup ⟨2, by decide⟩), .push 1 32, .op .XOR, .op .OR,
-   .op (.Dup ⟨1, by decide⟩), .push 1 32, .op .XOR, .op .OR]
+  [.push 1 32, .op (.Dup ⟨1, by decide⟩), .op .GT,
+   .push 1 32, .op (.Dup ⟨0, by decide⟩), .op .CALLDATALOAD, .op .XOR, .op .OR,
+   .push 1 64, .op .CALLDATALOAD, .push 1 32, .op .XOR, .op .OR]
 
 def branchProgram : List Instr := [.push 1 127, .op .JUMPI]
 
-/-- Nineteen instructions at pc 0, ending at the conditional branch. -/
+/-- Seventeen instructions at pc 0, ending at the conditional branch. -/
 def guardProgram : List Instr := headerProgram ++ guardValueProgram ++ branchProgram
 
-/-- Every width miss drops the header words and enters the fixed-vector
-recogniser at pc 1064 with an empty stack; the recogniser's own miss exits
-restore the unchanged legacy entry at pc 598. -/
+/-- Every width miss drops the baseSize word and enters the fixed-vector
+recogniser at pc 599 with an empty stack; two inert JUMPDESTs preserve downstream indices. -/
 def missProgram : List Instr :=
-  [.op .JUMPDEST, .op .POP, .op .POP, .op .POP, .push 2 599, .op .JUMP]
+  [.op .JUMPDEST, .op .POP, .push 2 599, .op .JUMP]
 
 open WindowTwentyOnePositive (headerStack)
 
@@ -57,24 +55,30 @@ private theorem xor_comm (a b : UInt256) : UInt256.xor a b = UInt256.xor b a := 
 theorem run_header (template : State) (input : ByteArray)
     (hdata : template.executionEnv.calldata = input) :
     runInstructions headerProgram (framed template (UInt256.ofNat 0) []) =
-      some (framed template (UInt256.ofNat 8) (headerStack input)) := by
+      some (framed template (UInt256.ofNat 2) (headerStack input)) := by
   simp [headerProgram, runInstructions, framed, Stepper.runInstr, headerStack, hdata,
+    Word.literal_eq_ofNat, Word.succ_ofNat_mod, baseSize]
+  rfl
+
+theorem run_guard_value (template : State) (input : ByteArray)
+    (hdata : template.executionEnv.calldata = input) :
+    runInstructions guardValueProgram
+      (framed template (UInt256.ofNat 2) (headerStack input)) =
+      some (framed template (UInt256.ofNat 19)
+        (WindowTwentyOneInput.guardDiff input :: headerStack input)) := by
+  have he : MachineState.readWord input 32 = UInt256.ofNat (exponentSize input) := rfl
+  have hm : MachineState.readWord input 64 = UInt256.ofNat (modulusSize input) := rfl
+  simp [guardValueProgram, runInstructions, framed, Stepper.runInstr,
+    WindowTwentyOneInput.guardDiff, headerStack, hdata, he, hm,
     Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod,
-    Word.word_toNat_ofNat, baseSize, exponentSize, modulusSize]
-  exact ⟨rfl, rfl, rfl⟩
+    Word.word_toNat_ofNat, baseSize, xor_comm]
 
-theorem run_guard_value (template : State) (b e m : UInt256) :
-    runInstructions guardValueProgram (framed template (UInt256.ofNat 8) [m, e, b]) =
-      some (framed template (UInt256.ofNat 22) (widthDiff b e m :: [m, e, b])) := by
-  simp [guardValueProgram, runInstructions, framed, Stepper.runInstr, widthDiff,
-    Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod, xor_comm]
-
-theorem run_branch (template : State) (value b e m : UInt256)
+theorem run_branch (template : State) (value b : UInt256)
     (hjump : Decode.isValidJumpDest template.executionEnv.code 127 = true) :
     runInstructions branchProgram
-      (framed template (UInt256.ofNat 22) (value :: [m, e, b])) =
+      (framed template (UInt256.ofNat 19) (value :: [b])) =
       some (framed template
-        (if value.toNat = 0 then UInt256.ofNat 25 else UInt256.ofNat 127) [m, e, b]) := by
+        (if value.toNat = 0 then UInt256.ofNat 22 else UInt256.ofNat 127) [b]) := by
   by_cases hv : value.toNat = 0 <;>
     simp [branchProgram, runInstructions, framed, Stepper.runInstr, UInt256.isTrue,
       hv, hjump, Word.literal_eq_ofNat, Word.word_toNat_ofNat,
@@ -87,13 +91,11 @@ theorem run_guard (template : State) (input : ByteArray)
     runInstructions guardProgram (framed template (UInt256.ofNat 0) []) =
       some (framed template
         (if (WindowTwentyOneInput.guardDiff input).toNat = 0
-          then UInt256.ofNat 25 else UInt256.ofNat 127) (headerStack input)) := by
+          then UInt256.ofNat 22 else UInt256.ofNat 127) (headerStack input)) := by
   have hh := run_header template input hdata
-  have hv := run_guard_value template (UInt256.ofNat (baseSize input))
-    (UInt256.ofNat (exponentSize input)) (UInt256.ofNat (modulusSize input))
+  have hv := run_guard_value template input hdata
   have hb := run_branch template (WindowTwentyOneInput.guardDiff input)
-    (UInt256.ofNat (baseSize input)) (UInt256.ofNat (exponentSize input))
-    (UInt256.ofNat (modulusSize input)) hjump
+    (UInt256.ofNat (baseSize input)) hjump
   exact runInstructions_append_some _ _ _ _ _
     (runInstructions_append_some _ _ _ _ _ hh hv) hb
 
