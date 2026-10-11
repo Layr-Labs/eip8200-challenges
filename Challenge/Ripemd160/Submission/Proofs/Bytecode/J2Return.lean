@@ -22,25 +22,36 @@ def afterCopy (s : State) (rho : List UInt256) : State :=
 def output (s : State) (rho : List UInt256) : State :=
   RecognitionSelectorRaw.returned (afterCopy s rho) (UInt256.ofNat 4956) rho
 
+private theorem pc_3607 : Artifact.submissionArtifact.instructionPC 3607 = 4954 := by
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
+
+private theorem pc_3608 : Artifact.submissionArtifact.instructionPC 3608 = 4955 := by
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
+
+private theorem beforeCopy_pc (s : State) (rho : List UInt256) :
+    (beforeCopy s rho).pc.toNat = 4954 := by
+  change (UInt256.ofNat 4954).toNat = 4954; decide
+
+private theorem copied_pc (s : State) (rho : List UInt256) :
+    (copied (beforeCopy s rho) (source s) rho).pc.toNat = 4955 := by
+  change (UInt256.ofNat 4954).succ.toNat = 4955; decide
+
 private theorem copy_decoded (s : State) (e : Env s) (rho : List UInt256) :
     (beforeCopy s rho).decodedOp = some .CODECOPY := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3608 .CODECOPY
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3607 .CODECOPY
     (by rfl) (by decide) trivial
-  apply Artifact.submissionArtifact.state_decodedOp_of (beforeCopy s rho) 3608
-    e.code ?_ .CODECOPY none hd (by change Operation.CODECOPY.availableInFork s.fork = true; rw [e.fork]; rfl)
-  change (UInt256.ofNat 4954).toNat = Artifact.submissionArtifact.instructionPC 3608
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  decide
+  exact Artifact.submissionArtifact.state_decodedOp_of (beforeCopy s rho) 3607
+    e.code ((beforeCopy_pc s rho).trans pc_3607.symm) .CODECOPY none hd
+    (by change Operation.CODECOPY.availableInFork s.fork = true; rw [e.fork]; rfl)
 
 private theorem size_decoded (s : State) (e : Env s) (rho : List UInt256) :
     (copied (beforeCopy s rho) (source s) rho).decodedOp = some .MSIZE := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3609 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3608 .MSIZE
     (by rfl) (by decide) trivial
-  apply Artifact.submissionArtifact.state_decodedOp_of
-    (copied (beforeCopy s rho) (source s) rho) 3609 e.code ?_ .MSIZE none hd (by change Operation.MSIZE.availableInFork s.fork = true; rw [e.fork]; rfl)
-  change (UInt256.ofNat 4955).toNat = Artifact.submissionArtifact.instructionPC 3609
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  decide
+  exact Artifact.submissionArtifact.state_decodedOp_of
+    (copied (beforeCopy s rho) (source s) rho) 3608 e.code
+    ((copied_pc s rho).trans pc_3608.symm) .MSIZE none hd
+    (by change Operation.MSIZE.availableInFork s.fork = true; rw [e.fork]; rfl)
 
 def gasSteps (s : State) (e : Env s) (rho : List UInt256)
     (hcap : rho.length ≤ 990) (hmem : s.memory = ByteArray.empty)
@@ -78,13 +89,19 @@ theorem output_spec (s : State) (e : Env s) (rho : List UInt256)
       ((RecognitionAccumulator.resultAcc_zero_iff _ _ hn rfl).mpr
         ((J2Accumulator.resultAcc_zero_iff _ _ hn rfl).mp hz))
   change MachineState.readPadded s.executionEnv.code (source s).toNat 20 = _
-  have hsz : Artifact.submissionArtifact.code.size = 5238 := by
-    change submissionBytecode.size = 5238
-    rw [referenceBytecode_size]
-  have hsrc : source s = selected (UInt256.ofNat 5238) s.executionEnv.calldata.size := by
-    simp only [source, e.code, hsz]
-  rw [e.code, hsrc]
-  exact J2Payload.read_selected _ hn
+  have hsz : s.executionEnv.code.size = 5238 :=
+    (congrArg ByteArray.size e.code).trans referenceBytecode_size
+  have hsrc : (source s).toNat = (selected (UInt256.ofNat 5238) s.executionEnv.calldata.size).toNat := by
+    rw [source, hsz]
+  have hread : ∀ (c : ByteArray) (st : Nat),
+      c = submissionBytecode →
+      st = (selected (UInt256.ofNat 5238) s.executionEnv.calldata.size).toNat →
+      MachineState.readPadded c st 20 =
+        MachineState.readPadded RecognitionDigest.payload (280 - 20 * ((14357627 / s.executionEnv.calldata.size) % 16)) 20 := by
+    intro c st hc hst
+    subst hc hst
+    exact J2Payload.read_selected _ hn
+  exact hread s.executionEnv.code (source s).toNat e.code hsrc
 
 #print axioms gasSteps
 #print axioms output_spec
