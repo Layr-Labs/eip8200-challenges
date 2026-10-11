@@ -17,8 +17,8 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Current decoded SHA-256: 92fe895abd1117e5841c08dc448cf72ed89572b83a714e4fe69e609137f5587a.
--- 5238 bytes, 3612 instructions, 280 trailing data bytes; direct scorer 650656.
+-- Current decoded SHA-256: 77fe6ffbf3739b66bf153dda6c43309ec2fba68e4e3d3a2aa44060ce597cf6fd.
+-- 5238 bytes, 3611 instructions, 280 trailing data bytes; direct scorer 650457.
 -- Backward snapshots preserve Ready by lanes/zeros/slack, not whole-memory equality.
 -- Immediate 651113 predecessor: 0de279b7-dd75-4eb5-a010-f11bc5a46d10, accepted/promoted.
 -- Canonical verification status is recorded in README.md; comments are not proof evidence.

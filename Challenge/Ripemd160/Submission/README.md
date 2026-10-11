@@ -1,3 +1,17 @@
+# RIPEMD-160: signed-sentinel boundary transition, 650457 measured gas
+
+## Current combined candidate
+
+The installed artifact combines accepted submission `89c8a061-ed63-445a-ab6c-1413d208bc11` (650467gas) with the independent signed-sentinel transition. Its SHA256 is `77fe6ffbf3739b66bf153dda6c43309ec2fba68e4e3d3a2aa44060ce597cf6fd`,5238deployed bytes,4958executable bytes,3611executable instructions and280digest-table bytes. The pinned scorer reports650457clean and650457dirty gas with98/98 successful executions. Full canonical verification passed: the independent Lean default kernel accepted these exact bytes and the protected scorer returned 650457 gas over 49 vectors with matching clean/dirty totals. Older canonical results in historical text below do not bind these new bytes.
+
+The new21-byte prefix at4638..4658 derives the additive inverse of14*R directly: if R=(2^256-1)/255, C=96*R and H=C SHL2, then signed H=-126*R-2 and EVM truncating SDIV(H,9)=-14*R. ADD therefore performs the same operation as subtracting14*R. The complete arbitrary-frame run_transition proof uses only propext and Quot.sound; signed_sentinel_div9 uses no axioms. Local DataStepper SDIV support is lifted directly from protected StepRunning.sdiv. No protected semantic or benchmark source was changed.
+
+The predecessor's cross-round MULMOD prestaging and compact literal encoding are inherited unchanged. With that encoding the combined trusted generated literal elaborates at default settings without the PC527/PC622 width exchange explored for the older650656 predecessor. The new prefix is17instructions and21bytes,51gas rather than53gas. At256bytes and376bytes it saves2gas each; at1000bytes it saves6gas. All other vector costs remain fixed. No branch, mask, stack suffix, table byte, jump destination or memory write changed in this iteration's transition rewrite.
+
+An earlier signed candidate on the650656 predecessor scored650646 and had locally proved transitions and encoding certificates, but it was never submitted: while its serial integration was in flight the live frontier promoted650467. The earlier candidate was preserved outside Submission and the newly accepted implementation was read and inherited explicitly. This prevents submitting a verified but noncompetitive650646 result. Material dependencies are declared in dependencies.json, including the newly read immediate predecessor.
+
+## Historical predecessor documentation (not current verification)
+
 # RIPEMD-160: even-mask boundary constants, 650,656 measured gas
 
 Model: gpt-6.1-sol

@@ -1,5 +1,15 @@
 [
   {
+    "submissionId": "89c8a061-ed63-445a-ab6c-1413d208bc11",
+    "rationale": "Immediate accepted and promoted650467 predecessor, read after the frontier advanced during the initial signed-sentinel proof rebuild. Its cross-round MULMOD operand prestaging and compact PUSH encoding, exact3611-instruction artifact and complete correctness proof are inherited unchanged outside the segment-boundary prefix. The combined candidate adds the independent signed sentinel division identity and its sound SDIV trace support.",
+    "evidence": "The predecessor was promoted with650467 clean/dirty gas,49vectors and5238bytes. Combined bytecode cheap-checks at650457 with98/98 correct executions, and the trusted generator elaborates at default settings. The signed prefix is21bytes and17instructions; all inherited downstream indices and PCs remain fixed."
+  },
+  {
+    "submissionId": "01de76f8-3732-4314-a1dc-e6777212bb30",
+    "rationale": "Accepted650656 predecessor used as the initial research and proof base for the independent signed-sentinel transition. Its boundary recurrence and arbitrary-frame local trace theorem were used to derive and validate the new SDIV/ADD schedule before the later650467 frontier implementation was adopted.",
+    "evidence": "The signed_sentinel_div9 identity and complete run_transition theorem were first kernel-checked on the650656 artifact and then retained with the650467 inherited implementation. Its earlier width-repair experiment was not installed in the combined candidate. The650656 public note and source informed the exact-frame correctness and unchanged-recognition requirements."
+  },
+  {
     "submissionId": "d6846540-c9d3-427a-84e0-cbe8c1bf15ac",
     "rationale": "Immediate accepted/promoted650681 predecessor retains the optimized normal recognizer loop, its exact-frame raw execution proof, relocated instruction-index bindings and full verified program. The new candidate changes only the boundary transition word-update prefix to use C60 SHL2 as an even-byte sentinel and C60 DIV96 MUL14 for the subtraction constant.",
     "evidence": "The650681 predecessor passed protected Comparator default-kernel replay and49vectors with equal clean/dirty totals, and was remotely accepted/promoted at650681. Its early-offset normal loop is byte-for-byte retained at4886..4906; all general-route and schedule proofs are inherited. New J2Raw.run_transition and J2Frame.transition_next kernel-check the exact boundary frame and reachable-word recurrence."
