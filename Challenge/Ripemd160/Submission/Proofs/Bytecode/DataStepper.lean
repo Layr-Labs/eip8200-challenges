@@ -73,9 +73,6 @@ def runInstr (instruction : Instr) (s : State) : Option State :=
     | .op .DIV => match s.stack with
         | a :: b :: rest => some { s with stack := (a / b) :: rest, pc := s.pc.succ }
         | _ => none
-    | .op .SDIV => match s.stack with
-        | a :: b :: rest => some { s with stack := UInt256.sdiv a b :: rest, pc := s.pc.succ }
-        | _ => none
     | .op .MOD => match s.stack with
         | a :: b :: rest => some { s with stack := (a % b) :: rest, pc := s.pc.succ }
         | _ => none
@@ -282,23 +279,6 @@ makeBinarySound sound_add for .ADD via GasStep.add
 makeBinarySound sound_mul for .MUL via GasStep.mul
 makeBinarySound sound_sub for .SUB via GasStep.sub
 makeBinarySound sound_div for .DIV via GasStep.div
-/-- Signed division lifted directly from the protected relational EVM semantics. -/
-private def gasStepSdiv {s : State} {a b : UInt256} {rest : List UInt256}
-    (hop : s.decodedOp = some .SDIV)
-    (hstack : s.stack = a :: b :: rest)
-    (hcap : s.stack.length + Operation.pushArity .SDIV ≤
-      1024 + Operation.popArity .SDIV)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
-      s.executionEnv.codeAddr = false) :
-    GasSteps s {s with stack := UInt256.sdiv a b :: rest, pc := s.pc.succ} := by
-  let cost := Gas.baseCost s.fork .SDIV
-  apply GasStep.of_running cost hrun hnp
-  intro gas hgas
-  simpa [withGas, cost] using
-    StepRunning.sdiv (withGas s gas) a b rest hop hgas hstack hcap
-
-makeBinarySound sound_sdiv for .SDIV via gasStepSdiv
 makeBinarySound sound_mod for .MOD via GasStep.mod
 makeBinarySound sound_lt for .LT via GasStep.lt
 makeBinarySound sound_gt for .GT via GasStep.gt
@@ -732,7 +712,6 @@ def runInstr_sound {instruction : Instr} {s t : State}
         | exact (sound_mul hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_sub hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_div hdecode hresult hrun hnp).trace gas hgas
-        | exact (sound_sdiv hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_mod hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_addmod hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_mulmod hdecode hresult hrun hnp).trace gas hgas

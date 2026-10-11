@@ -186,9 +186,9 @@ theorem anchorWord_false (input : ByteArray)
 
 /-- The recogniser's long-length entry (`JUMPDEST PUSH1 251`). -/
 theorem big_dest : Decode.isValidJumpDest submissionBytecode 4800 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3537 = 4800 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3536 = 4800 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  exact isValidJumpDest_of_pc 3537 4800 hpc (by rfl)
+  exact isValidJumpDest_of_pc 3536 4800 hpc (by rfl)
 
 theorem run_anchor_prefix (input : ByteArray) :
     run anchorPrefix (PatternedScan.stS input 21 []) =
