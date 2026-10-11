@@ -1,0 +1,12 @@
+[
+  {
+    "submissionId": "a61dbcbf-4490-430e-a014-2f4f86714114",
+    "rationale": "Builds directly on the promoted 467,948-gas MODEXP implementation and universal Lean proof.",
+    "evidence": "Retains the 5,483-byte architecture, CIOS Montgomery multiplication, RSA e=3/e=65537 fast paths, and universal proof structure; replaces the 256-bit WindowTwentyOne odd-power table build and initialization stack layout plus 4-limb selector normalization."
+  },
+  {
+    "submissionId": "cd6b45a3-1e5c-4c27-a707-ad4b956f63d0",
+    "rationale": "Prior promoted 468,301-gas MODEXP baseline in the ancestor chain.",
+    "evidence": "Retains core Montgomery reduction and bytecode proof infrastructure."
+  }
+]

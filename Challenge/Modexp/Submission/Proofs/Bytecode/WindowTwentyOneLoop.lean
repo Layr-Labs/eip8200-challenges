@@ -46,7 +46,7 @@ def spare (base modulus exponent : UInt256) : UInt256 :=
 
 def entryState (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) : State :=
-  WindowTwentyOneGroup.state template (UInt256.ofNat 988)
+  WindowTwentyOneGroup.state template (UInt256.ofNat 985)
     (WindowTableMemory.tableMemory base modulus) 16
     modulus (WindowTwentyOneMath.accumulator base modulus exponent.toNat 0)
     (eAt exponent 0) (spare base modulus exponent) 0 rest
@@ -66,7 +66,7 @@ def postStateLast (template : State) (pc : UInt256) (base modulus exponent : UIn
 
 def finishState (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) : State :=
-  postStateLast template (UInt256.ofNat 2377) base modulus exponent rest
+  postStateLast template (UInt256.ofNat 2374) base modulus exponent rest
 
 private theorem advancePC_ofNat (count pc : Nat) :
     advancePC count (UInt256.ofNat pc) = UInt256.ofNat (pc + count) := by
@@ -113,12 +113,12 @@ theorem run_setupTail (template : State) (pc : UInt256) (mem : ByteArray) (activ
 theorem run_trampoline (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructionsX trampolineProgram (entryState template base modulus exponent rest) =
-    some (headState template (UInt256.ofNat 997) base modulus exponent 0 rest) := by
-  have hs := run_setupTail template (UInt256.ofNat 988)
+    some (headState template (UInt256.ofNat 994) base modulus exponent 0 rest) := by
+  have hs := run_setupTail template (UInt256.ofNat 985)
     (WindowTableMemory.tableMemory base modulus) 16 rfl modulus
     (WindowTwentyOneMath.accumulator base modulus exponent.toNat 0)
     (eAt exponent 0) (spare base modulus exponent) rest hrest
-  have hpc : advancePC 9 (UInt256.ofNat 988) = UInt256.ofNat 997 := by decide
+  have hpc : advancePC 9 (UInt256.ofNat 985) = UInt256.ofNat 994 := by decide
   simpa only [trampolineProgram, entryState, headState, loopMem, hpc,
     WindowTwentyOneGroup.state, List.replicate_zero, List.nil_append,
     List.cons_append] using hs

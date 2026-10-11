@@ -85,55 +85,55 @@ private def nine_normalize :
 
 private def nine_table :
   WindowTwentyOneBinding.Block submissionArtifact .Osaka 879 WindowTwentyOneTableBuild.program :=
-  WindowTwentyOneSlice.block allWellFormed 630 91 879 WindowTwentyOneTableBuild.program
+  WindowTwentyOneSlice.block allWellFormed 630 88 879 WindowTwentyOneTableBuild.program
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_init :
-  WindowTwentyOneBinding.Block submissionArtifact .Osaka 971 WindowTwentyOneInit.program :=
-  WindowTwentyOneSlice.block allWellFormed 721 13 971 WindowTwentyOneInit.program
+  WindowTwentyOneBinding.Block submissionArtifact .Osaka 968 WindowTwentyOneInit.program :=
+  WindowTwentyOneSlice.block allWellFormed 718 13 968 WindowTwentyOneInit.program
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_entry :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 988 WindowTwentyOneLoop.entryProgram :=
-  WindowTwentyOneSlice.block allWellFormed 734 0 988 WindowTwentyOneLoop.entryProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 985 WindowTwentyOneLoop.entryProgram :=
+  WindowTwentyOneSlice.block allWellFormed 731 0 985 WindowTwentyOneLoop.entryProgram
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_trampoline :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 988 WindowTwentyOneLoop.trampolineProgram :=
-  WindowTwentyOneSlice.block allWellFormed 734 8 988 WindowTwentyOneLoop.trampolineProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 985 WindowTwentyOneLoop.trampolineProgram :=
+  WindowTwentyOneSlice.block allWellFormed 731 8 985 WindowTwentyOneLoop.trampolineProgram
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_body0 :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 997 (WindowTwentyOneLoop.bodyProgram (16 * 0)) :=
-  WindowTwentyOneSlice.block allWellFormed 742 309 997 (WindowTwentyOneLoop.bodyProgram (16 * 0))
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 994 (WindowTwentyOneLoop.bodyProgram (16 * 0)) :=
+  WindowTwentyOneSlice.block allWellFormed 739 309 994 (WindowTwentyOneLoop.bodyProgram (16 * 0))
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_body1 :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1348 (WindowTwentyOneLoop.bodyProgram (16 * 1)) :=
-  WindowTwentyOneSlice.block allWellFormed 1051 309 1348 (WindowTwentyOneLoop.bodyProgram (16 * 1))
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1345 (WindowTwentyOneLoop.bodyProgram (16 * 1)) :=
+  WindowTwentyOneSlice.block allWellFormed 1048 309 1345 (WindowTwentyOneLoop.bodyProgram (16 * 1))
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_body2 :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1699 (WindowTwentyOneLoop.bodyProgram (16 * 2)) :=
-  WindowTwentyOneSlice.block allWellFormed 1360 309 1699 (WindowTwentyOneLoop.bodyProgram (16 * 2))
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1696 (WindowTwentyOneLoop.bodyProgram (16 * 2)) :=
+  WindowTwentyOneSlice.block allWellFormed 1357 309 1696 (WindowTwentyOneLoop.bodyProgram (16 * 2))
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_bodyLast :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2050 (WindowTwentyOneLoop.bodyProgramLast 48) :=
-  WindowTwentyOneSlice.block allWellFormed 1669 290 2050 (WindowTwentyOneLoop.bodyProgramLast 48)
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2047 (WindowTwentyOneLoop.bodyProgramLast 48) :=
+  WindowTwentyOneSlice.block allWellFormed 1666 290 2047 (WindowTwentyOneLoop.bodyProgramLast 48)
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_finish :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2377 WindowTwentyOneReturn.program :=
-  WindowTwentyOneSlice.block allWellFormed 1959 5 2377 WindowTwentyOneReturn.program
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2374 WindowTwentyOneReturn.program :=
+  WindowTwentyOneSlice.block allWellFormed 1956 5 2374 WindowTwentyOneReturn.program
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 

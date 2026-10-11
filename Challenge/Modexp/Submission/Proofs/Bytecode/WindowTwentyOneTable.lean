@@ -45,11 +45,11 @@ theorem run_store (template : State) (pc base modulus : UInt256)
     hcountWord, hoffsetWord, hactive, State.activeWordsAfterUInt256,
     WindowTableMemory.tableMemoryThrough_succ, WindowTableMemory.storeWord]
 
-def state (template : State) (pc base modulus exponent : UInt256)
+def state (template : State) (pc base modulus _exponent : UInt256)
     (power : Nat) (rest : List UInt256) : State :=
   framed template pc base modulus (power + 1)
     (WindowMath.tableWord base modulus power ::
-      List.replicate (15 - power) modulus ++ ([base, exponent] ++ rest))
+      List.replicate (14 - power) modulus ++ ([base, modulus] ++ rest))
 
 /-- Only the final table store consumes the word that it writes. -/
 def lastStoreProgram (width : Fin 33) (count : Nat) : List Instr :=
@@ -80,21 +80,21 @@ theorem run_store_last (template : State) (pc base modulus : UInt256)
     WindowTableMemory.tableMemoryThrough_succ, WindowTableMemory.storeWord]
 
 def multiplyProgram (power : Nat) (hpower : 2 ≤ power) : List Instr :=
-  [.op (.Dup ⟨16 - power, by omega⟩), .op .MULMOD]
+  [.op (.Dup ⟨15 - power, by omega⟩), .op .MULMOD]
 
 theorem run_multiply (template : State) (pc base modulus exponent : UInt256)
-    (power : Nat) (hpower : 2 ≤ power) (hmax : power < 15)
+    (power : Nat) (hpower : 2 ≤ power) (hmax : power < 14)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions (multiplyProgram power hpower)
       (state template pc base modulus exponent power rest) =
     some (framed template (advancePC 2 pc) base modulus (power + 1)
       (WindowMath.tableWord base modulus (power + 1) ::
-        List.replicate (14 - power) modulus ++ ([base, exponent] ++ rest))) := by
-  have hcopies : 15 - power = (14 - power) + 1 := by omega
-  have hslot : 16 - power = (15 - power) + 1 := by omega
+        List.replicate (13 - power) modulus ++ ([base, modulus] ++ rest))) := by
+  have hcopies : 14 - power = (13 - power) + 1 := by omega
+  have hslot : 15 - power = (14 - power) + 1 := by omega
   have hbase :
       (WindowMath.tableWord base modulus power ::
-        List.replicate (15 - power) modulus ++ ([base, exponent] ++ rest))[16 - power]? =
+        List.replicate (14 - power) modulus ++ ([base, modulus] ++ rest))[15 - power]? =
       some base := by
     simp only [List.cons_append]
     rw [hslot, List.getElem?_cons_succ,
@@ -102,14 +102,14 @@ theorem run_multiply (template : State) (pc base modulus exponent : UInt256)
     simp
   have hbase' :
       (WindowMath.tableWord base modulus power :: modulus ::
-        (List.replicate (14 - power) modulus ++ base :: exponent :: rest))[16 - power]? =
+        (List.replicate (13 - power) modulus ++ base :: modulus :: rest))[15 - power]? =
       some base := by
     simpa only [hcopies, List.replicate_succ, List.cons_append, List.nil_append] using hbase
   have hnext : WindowMath.tableWord base modulus (power + 1) =
       UInt256.mulMod base (WindowMath.tableWord base modulus power) modulus := by
     rw [WindowMath.tableWord, if_neg (by omega), mulMod_comm]
-  have hcap0 : 14 - power + (rest.length + 4) < 1024 := by omega
-  have hcap1 : 14 - power + (rest.length + 5) < 1024 := by omega
+  have hcap0 : 13 - power + (rest.length + 4) < 1024 := by omega
+  have hcap1 : 13 - power + (rest.length + 5) < 1024 := by omega
   simp (disch := omega)
     [runInstructions, multiplyProgram, state, framed, Challenge.EvmProof.Stepper.runInstr,
     hbase', hcopies, List.replicate_succ, List.cons_append, List.nil_append,
@@ -120,7 +120,7 @@ def updateProgram (power : Nat) (hpower : 2 ≤ power) (width : Fin 33) : List I
   multiplyProgram power hpower ++ storeProgram width (power + 1)
 
 theorem run_update (template : State) (pc base modulus exponent : UInt256)
-    (power : Nat) (hpower : 2 ≤ power) (hmax : power < 15)
+    (power : Nat) (hpower : 2 ≤ power) (hmax : power < 14)
     (width : Fin 33) (hwidth : 0 < width.val)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions (updateProgram power hpower width)
@@ -129,26 +129,27 @@ theorem run_update (template : State) (pc base modulus exponent : UInt256)
       (power + 1) rest) := by
   have hm := run_multiply template pc base modulus exponent power hpower hmax rest hrest
   have hs := run_store template (advancePC 2 pc) base modulus (power + 1) (by omega)
-    width hwidth (List.replicate (14 - power) modulus ++ ([base, exponent] ++ rest))
+    width hwidth (List.replicate (13 - power) modulus ++ ([base, modulus] ++ rest))
     (by simp only [List.length_append, List.length_replicate, List.length_cons, List.length_nil]; omega)
   have both := runInstructions_append_some _ _ _ _ _ hm hs
   simpa only [updateProgram, state, List.cons_append,
-    show 15 - (power + 1) = 14 - power by omega] using both
+    show 14 - (power + 1) = 13 - power by omega] using both
 
-def lastUpdateProgram : List Instr :=
-  multiplyProgram 14 (by decide) ++ lastStoreProgram 2 15
+def lastMultiplyProgram : List Instr :=
+  [.op .MULMOD]
 
-theorem run_last_update (template : State) (pc base modulus exponent : UInt256)
+theorem run_last_multiply (template : State) (pc base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions lastUpdateProgram
+    runInstructions lastMultiplyProgram
       (state template pc base modulus exponent 14 rest) =
-    some (framed template (lastStorePC 2 (advancePC 2 pc)) base modulus 16
-      ([base, exponent] ++ rest)) := by
-  have hm := run_multiply template pc base modulus exponent 14 (by decide) (by decide) rest hrest
-  have hs := run_store_last template (advancePC 2 pc) base modulus 15 (by decide)
-    2 (by decide) ([base, exponent] ++ rest) (by simp; omega)
-  simp only [show 14 - 14 = 0 by decide, List.replicate_zero] at hm
-  exact runInstructions_append_some _ _ _ _ _ hm hs
+    some (framed template pc.succ base modulus 15
+      (WindowMath.tableWord base modulus 15 :: rest)) := by
+  have hnext : WindowMath.tableWord base modulus 15 =
+      UInt256.mulMod (WindowMath.tableWord base modulus 14) base modulus := by
+    rw [WindowMath.tableWord, if_neg (by decide)]
+  have hcap : rest.length < 1021 := by omega
+  simp [runInstructions, lastMultiplyProgram, state, framed, Challenge.EvmProof.Stepper.runInstr,
+    hcap, hnext]
 
 /-! ## `MSIZE`-addressed table stores
 
@@ -214,13 +215,13 @@ theorem hasMsize_multiply (power : Nat) (hpower : 2 ≤ power) :
   simp [multiplyProgram, hasMsize]
 
 theorem run_multiplyX (template : State) (pc base modulus exponent : UInt256)
-    (power : Nat) (hpower : 2 ≤ power) (hmax : power < 15)
+    (power : Nat) (hpower : 2 ≤ power) (hmax : power < 14)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructionsX (multiplyProgram power hpower)
       (state template pc base modulus exponent power rest) =
     some (framed template (advancePC 2 pc) base modulus (power + 1)
       (WindowMath.tableWord base modulus (power + 1) ::
-        List.replicate (14 - power) modulus ++ ([base, exponent] ++ rest))) := by
+        List.replicate (13 - power) modulus ++ ([base, modulus] ++ rest))) := by
   rw [runInstructionsX_eq _ (hasMsize_multiply power hpower)]
   exact run_multiply template pc base modulus exponent power hpower hmax rest hrest
 
@@ -228,7 +229,7 @@ def updateProgramM (power : Nat) (hpower : 2 ≤ power) : List Instr :=
   multiplyProgram power hpower ++ storeProgramM
 
 theorem run_updateM (template : State) (pc base modulus exponent : UInt256)
-    (power : Nat) (hpower : 2 ≤ power) (hmax : power < 15)
+    (power : Nat) (hpower : 2 ≤ power) (hmax : power < 14)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructionsX (updateProgramM power hpower)
       (state template pc base modulus exponent power rest) =
@@ -236,25 +237,28 @@ theorem run_updateM (template : State) (pc base modulus exponent : UInt256)
       (power + 1) rest) := by
   have hm := run_multiplyX template pc base modulus exponent power hpower hmax rest hrest
   have hs := run_storeM template (advancePC 2 pc) base modulus (power + 1) (by omega)
-    (List.replicate (14 - power) modulus ++ ([base, exponent] ++ rest))
+    (List.replicate (13 - power) modulus ++ ([base, modulus] ++ rest))
     (by simp only [List.length_append, List.length_replicate, List.length_cons, List.length_nil]; omega)
   have both := runInstructionsX_append_some _ _ _ _ _ hm hs
   simpa only [updateProgramM, state, List.cons_append,
-    show 15 - (power + 1) = 14 - power by omega] using both
+    show 14 - (power + 1) = 13 - power by omega] using both
 
 def lastUpdateProgramM : List Instr :=
-  multiplyProgram 14 (by decide) ++ lastStoreProgramM
+  lastMultiplyProgram ++ lastStoreProgramM
 
 theorem run_last_updateM (template : State) (pc base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructionsX lastUpdateProgramM
       (state template pc base modulus exponent 14 rest) =
-    some (framed template (lastStorePCM (advancePC 2 pc)) base modulus 16
-      ([base, exponent] ++ rest)) := by
-  have hm := run_multiplyX template pc base modulus exponent 14 (by decide) (by decide) rest hrest
-  have hs := run_store_lastM template (advancePC 2 pc) base modulus 15 (by decide)
-    ([base, exponent] ++ rest) (by simp; omega)
-  simp only [show 14 - 14 = 0 by decide, List.replicate_zero] at hm
+    some (framed template (lastStorePCM pc.succ) base modulus 16 rest) := by
+  have hm : runInstructionsX lastMultiplyProgram
+      (state template pc base modulus exponent 14 rest) =
+      some (framed template pc.succ base modulus 15
+        (WindowMath.tableWord base modulus 15 :: rest)) := by
+    rw [runInstructionsX_eq _ (by decide)]
+    exact run_last_multiply template pc base modulus exponent rest hrest
+  have hs := run_store_lastM template pc.succ base modulus 15 (by decide)
+    rest (by omega)
   exact runInstructionsX_append_some _ _ _ _ _ hm hs
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneTable
