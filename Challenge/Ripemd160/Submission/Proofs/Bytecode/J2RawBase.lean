@@ -62,10 +62,11 @@ def emin (stop len : UInt256) : UInt256 :=
 `u = w ||| 0x80..80`, `w'' = w ^^^ ((u - 0x0e..0e) ^^^ u)`; the bytecode derives `0x80..80 = (c96 + c96) &&& 0x9f..9f`
 and `0x0e..0e = (0x80..80 ||| c96) >>> 4` from the two frame constants.  Agrees with `advance 114` on the
 pattern words where a segment ends (`J2Frame.tw_next`, by `decide`). -/
+def mShl2 : UInt256 := UInt256.shiftLeft c96 (UInt256.ofNat 2)
 def tw (w : UInt256) : UInt256 :=
-  UInt256.xor w (UInt256.xor (UInt256.sub (UInt256.lor w PatternedSwar.m8)
+  UInt256.xor w (UInt256.xor (UInt256.sub (UInt256.lor w mShl2)
       (UInt256.mul (UInt256.ofNat 14) PatternedSwar.M))
-    (UInt256.lor w PatternedSwar.m8))
+    (UInt256.lor w mShl2))
 def transitionResult (f : Frame) : Frame :=
   { f with word := tw f.word
            off := f.stop
@@ -204,16 +205,15 @@ def finishTemplate : List Instr := [ .op .CALLDATASIZE,
 def transitionTemplate : List Instr := [
   .op .JUMPDEST,
   .op (.Swap ⟨1, by decide⟩),
-  .op (.Dup ⟨5, by decide⟩),
+  .op (.Dup ⟨0, by decide⟩),
+  .op (.Dup ⟨6, by decide⟩),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 2),
+  .op .SHL,
+  .op .OR,
+  .op (.Dup ⟨6, by decide⟩),
+  .op (.Dup ⟨0, by decide⟩),
   .op (.Dup ⟨0, by decide⟩),
   .op .ADD,
-  .op (.Dup ⟨5, by decide⟩),
-  .op .AND,
-  .op (.Dup ⟨1, by decide⟩),
-  .op (.Dup ⟨1, by decide⟩),
-  .op .OR,
-  .op (.Swap ⟨0, by decide⟩),
-  .op (.Dup ⟨7, by decide⟩),
   .op .OR,
   .push ⟨1, by decide⟩ (UInt256.ofNat 4),
   .op .SHR,

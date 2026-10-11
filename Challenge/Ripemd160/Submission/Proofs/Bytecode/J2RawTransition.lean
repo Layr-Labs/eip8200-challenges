@@ -18,18 +18,16 @@ theorem run_transition_aux (s : State) (pc : UInt256) (f : Frame) (rho : List UI
       some {s with pc := pcAfter pc transitionTemplate, stack := f.off :: frame ({f with word := tw f.word, off := f.stop, stop := emin f.stop f.len, full := UInt256.sub (emin f.stop f.len) (UInt256.ofNat 32)} : Frame) rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
-  have hM7 : UInt256.shiftRight PatternedSwar.m8 (UInt256.ofNat 7) = PatternedSwar.M := by decide
-  have hS : UInt256.land (UInt256.add c96 c96) m9f = PatternedSwar.m8 := by decide
-  have hS' : UInt256.land m9f (UInt256.add c96 c96) = PatternedSwar.m8 := by decide
-  have hK : UInt256.shiftRight (UInt256.lor PatternedSwar.m8 c96)
+  have hS : UInt256.shiftLeft c96 (UInt256.ofNat 2) = mShl2 := rfl
+  have hK : UInt256.shiftRight (UInt256.lor (UInt256.add c96 c96) c96)
       (UInt256.ofNat 4) = UInt256.mul (UInt256.ofNat 14) PatternedSwar.M := by decide
-  have hK' : UInt256.shiftRight (UInt256.lor c96 PatternedSwar.m8)
+  have hK' : UInt256.shiftRight (UInt256.lor c96 (UInt256.add c96 c96))
       (UInt256.ofNat 4) = UInt256.mul (UInt256.ofNat 14) PatternedSwar.M := by decide
   simp (config := { maxSteps := 600000 }) (discharger := omega) [transitionTemplate, frame, c114,
     tw, emin, clamp, aligned, advance, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
-    List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hcap, hM7, hS, hS', hK, hK', ← hlen,
+    List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hcap, hS, hK, hK', ← hlen,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals simp only [hM7, hS, hS', hK, hK', hsub_eq, hadd_eq, hmul_eq, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
+  all_goals simp only [hS, hK, hK', hsub_eq, hadd_eq, hmul_eq, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 
 theorem run_transition (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
