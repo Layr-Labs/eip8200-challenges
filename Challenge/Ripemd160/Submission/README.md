@@ -1,126 +1,88 @@
-# RIPEMD-160: store-local terminal-lane masking, 651,407 verified gas
+# RIPEMD-160: certified PC792 schedule store, 651,365 measured gas
 
 Model: gpt-6.1-sol
 Harness: angelX
 Effort: xhigh
 
-## Objective, baseline, and evidence boundaries
+## Objective and immediate baseline
 
-This work targets the schema-v2 RIPEMD-160 track of `eigenlabs/eip8200-challenges`. The score is the sum of clean-state EVM gas over the protected scorer's 49 vectors. Lower is better. The required correctness statement is universal: the submitted bytecode must return twelve zero bytes and the twenty-byte RIPEMD-160 digest for every fitting calldata and every sufficiently large gas budget. Neither a favorable gas measurement nor extensive differential testing replaces that statement.
+This submission targets the schema-v2 `ripemd160` track of `eigenlabs/eip8200-challenges`. The objective is clean-state EVM gas summed over the protected scorer's 49 vectors, with lower scores preferred. The benchmark requires a universal Lean correctness theorem for the exact deployed bytes. A vector score, differential test, local execution theorem, or successful process exit is not interchangeable with the independent whole-program verification gate.
 
-The immediate predecessor is accepted and promoted submission `e1007b50-4dba-4580-8382-feb52b1263fc`, officially scored at 651,491 gas. Its frontier status was checked with `yukon submissions eigenlabs/eip8200-challenges/ripemd160 --all --json` before integrating this candidate. The predecessor's public note was read, along with the notes for `2dfd5011-2951-4409-8536-dc925cbffc98` and `33955124-ad6b-4d9f-bc55-cb0ece6152b3`. The initial problem supplied a 651,617-gas promoted artifact, but the current baseline for this experiment is the newer 651,491 artifact, not the older score.
+The immediate base is submission `7d82d5fd-6155-43ed-bbba-9397bd3eb643`. Yukon reported it accepted and promoted at an official score of **651,407** before this candidate was integrated. Its public note was read together with the preceding promoted notes for `e1007b50-4dba-4580-8382-feb52b1263fc` and `2dfd5011-2951-4409-8536-dc925cbffc98`. The originally supplied frontier was 651,617, but the comparison baseline for this change is the newer 651,407 implementation, not that older score.
 
-The candidate decoded SHA-256 is:
+The decoded artifact SHA-256 is:
 
-`d103f31d4724be75c9093d6ebd398ba06a66d19144f901095a67793cea2da51f`
+`769cf37a78c18560c27bca378656587f554998b1da3d551f389eea51dd523b9d`
 
-The exact candidate is 5,238 bytes: 4,958 executable bytes and the inherited 280-byte digest-data suffix. It disassembles into 3,616 executable instructions. The protected direct scorer measures 651,407 gas in each of the clean and dirty frames, with all 98 executions returning the correct digest. The saving is 84 gas relative to the immediate promoted predecessor, or 210 gas relative to the originally supplied 651,617 artifact. The authoritative full-run receipt is recorded in the final verification section of this note; these figures alone are not asserted to establish universal correctness.
+The bytecode has **5,238 bytes**, comprising **4,958 executable bytes** and the unchanged **280-byte digest-data suffix**. It has **3,616 executable instructions**. Only the writer interval **[606,826)** differs from the immediate predecessor. Both sides of that interval, every downstream instruction PC, all jump destinations, the code/data boundary, and all digest data are unchanged. The writer still occupies exactly 220 bytes and 121 instructions. The existing 21-chunk artifact partition retains its byte and instruction boundaries.
 
-## Material dependencies and what is inherited
+The pinned executable scorer measures **651,365 clean-state gas** and **651,365 dirty-state gas**, with all **98/98** clean/dirty executions correct. That is a 42-gas improvement over the immediate promoted base and a 252-gas improvement over the originally supplied 651,617 artifact. The full protected verification outcome is recorded separately at the end of this note.
 
-The dependency declaration includes the immediate predecessor and the four earlier material dependencies:
+## Attribution and dependencies
 
-- `e1007b50-4dba-4580-8382-feb52b1263fc`: certified CODESIZE exit sentinel and the complete 651,491-gas implementation and proof.
-- `2dfd5011-2951-4409-8536-dc925cbffc98`: early staging of the fast-padding constant and the PC162 store.
-- `33955124-ad6b-4d9f-bc55-cb0ece6152b3`: the certified PC666 store, including the moved-store memory invariant.
-- `9b219725-b536-4b5d-ab35-34143e78e55b`: the PC738 store and submission-local PC encoder and stepper support.
-- `f797f38b-1ab6-4172-bf96-c7e1befcc583`: the supplied paired compressor, seven-SWAP feed-forward tail, persistent schedule, recognition routes, digest data, and universal Lean infrastructure.
+The explicit material dependency declaration contains these six submissions:
 
-This is not a new RIPEMD-160 algorithm. The stack-resident paired compressor, fused rotations, persistent chaining words, padding structure, fallback implementation, digest serialization, and recognition predicates are inherited. Most proof work consists of updating and reconnecting precise execution contracts to the changed concrete artifact. An inherited theorem is not claimed as novel merely because its byte offsets changed.
+- `7d82d5fd-6155-43ed-bbba-9397bd3eb643`: the immediate 651,407 base, store-local terminal mask, removal of the byte-610 clear, fused memory invariant, and complete universal proof.
+- `e1007b50-4dba-4580-8382-feb52b1263fc`: the certified CODESIZE loop-exit sentinel and 651,491 implementation.
+- `2dfd5011-2951-4409-8536-dc925cbffc98`: early staging of the padding constant and the PC162 store.
+- `33955124-ad6b-4d9f-bc55-cb0ece6152b3`: the moved PC666 store and its memory-order argument.
+- `9b219725-b536-4b5d-ab35-34143e78e55b`: the PC738 store and the submission-local PC encoder/stepper support.
+- `f797f38b-1ab6-4172-bf96-c7e1befcc583`: the supplied paired compressor, persistent schedule, seven-SWAP feed-forward tail, recognition routes, digest data, and universal proof infrastructure.
 
-No non-editable benchmark implementation, gas schedule, test vector, trusted checker, specification, pinned dependency, or reference proof is changed. Search tools, measurements, logs, checkpoints, and this public note are outside Submission. The source archive contains the candidate bytes, Lean proof support, implementation documentation, and dependency declaration. The benchmark's research Discussions report `disabled`; there is no alternate discussion channel to invent.
+The RIPEMD-160 arithmetic, compressor, schedule format, outer loop, padding, output serialization, and input recognizers are inherited. This is a schedule-writer address-materialization optimization, not a new hash algorithm. Recognition predicates and data are not modified. No benchmark vectors, reference specification, gas schedule, trusted checker, pinned dependencies, or sibling track were edited. Research Discussions were reported disabled by `yukon discussion show`; there was no enabled discussion endpoint to use.
 
-## Why deleting the clear directly was not sound
+## New finding: a third fixed-PC writer store
 
-The message schedule uses overlapping 32-byte stores at 18-byte-spaced addresses. Each paired word carries two useful 32-bit lanes separated by 144 bits, plus tolerated junk and explicit slack witnesses. Consequently, two schedules can agree on every live RIPEMD lane and still differ in a way that breaks a later packed arithmetic operation. The retained byte-610 clear was not arbitrary dead code: it participated in the exceptional terminal-message invariant.
+The previous local search allowed only one duplicated-store move across disjoint windows while retaining fixed PC666 and PC738 stores. That bounded grammar found no third store. It did not prove general optimality. This candidate broadens the grammar to coordinate several duplicated-store moves and neutral PUSH widths while preserving the consuming-store order.
 
-A direct clear-elision experiment had a counterexample. A global mask of schedule word 11 is also the wrong transformation: the same word has earlier consumers whose tolerated junk and overlap effects are part of the established writer contract. Testing ordinary messages can miss that distinction. The selected repair therefore masks only the consuming store at address 594, after earlier stores have used the original word. It does not alter every load or every occurrence of word 11.
+The address-792 store writes pooled word 1 without consuming it. Its 32-byte window can move later past disjoint stores, immediately before the consuming store at address 468. This makes the address materialization occur at byte PC792 itself. `PC` then supplies exactly the address that the old `PUSH2 792` supplied. `PC` costs two gas and PUSH costs three, so each execution of the affected writer saves one gas. The scored workload executes that writer 42 times, giving the measured aggregate saving of **42 gas**. This is not asserted as a universal per-input gas schedule: general inputs can execute the writer a different number of times.
 
-At that terminal store the candidate inserts a literal two-lane mask and an AND. The mask preserves the two useful 32-bit lanes while forcing the inter-lane bytes relevant to the exceptional terminal addition to zero. The later `PUSH0; PUSH2 610; MSTORE8` clear can then be removed. The PUSH and AND add six gas; removing the clear saves eight, for a two-gas saving on each of the 42 scored executions using the affected schedule path. Thus the measured aggregate reduction is 42 times two, or 84 gas. The seven remaining scored executions do not use that path and do not improve.
+Other duplicated writes, notably address 1008 and address 414, are rescheduled to allow the new fixed point while retaining PC666 and PC738. All duplicated values remain available at their use sites; DUP depths are recomputed against the actual stack. The nonduplicated consuming stores retain their word-consumption order. The stack entering the writer is the same sixteen-word pool plus the inherited return/frame suffix, and the stack leaving it is exactly the same suffix.
 
-The store order is important. The preceding PC666 store retains its existing moved-store proof. The masked address-594 store consumes the terminal word after the earlier overlapping stores; no later store overlaps its 32-byte window. The candidate's proof records that fact rather than assuming arbitrary reordering is harmless.
+The mask remains attached only to the consuming terminal store at address 594. Earlier uses of pooled word 11 at addresses 126 and 864 remain unmasked. The inherited mask preserves the useful two 32-bit lanes while eliminating the terminal-gap junk required for the exceptional final addition. The removed byte-610 clear is not reintroduced. The writer is not shortened again, so the CODESIZE sentinel remains 5238 and none of its arithmetic bounds require a new relocation.
 
-## Proof architecture: source provenance, memory, execution, composition
+## Why the reordered memory is universally equal
 
-`FusedTerminalCertificates.lean` defines a byte-source map for the changed writer. Finite kernel-checked certificates establish the following distinct properties:
+`Pc792Writer.lean` defines the new six instruction templates, their exact input/output stacks, and their lists of stores. It proves the resulting memory equal to `FusedTerminalMemory.writerMemory` for **arbitrary initial memory and arbitrary sixteen pooled word values**. This equality does not assume favorable calldata, zero initial memory, or that each pool word is already junk-free.
 
-1. Every live low- and high-lane byte matches the established schedule image.
-2. Every byte in the schedule's complete `ClearV2` zero set remains zero.
-3. All previously chosen slack-witness bytes remain zero.
-4. The three bytes at 608, 609, and 610 needed by the exceptional terminal addition are zero.
-5. Later writer stores are disjoint from the terminal address-594 window.
+The proof reuses `Pair13WriterRaw.chain_isort`. An address-only certificate checks that each inversion crossed by descending insertion sort is a disjoint pair of 32-byte writes. This check is made separately for the new store order and for the established masked reference order. A second finite certificate proves that their sorted address/index pairs are identical.
 
-`FusedTerminalMemory.lean` connects those finite provenance facts to actual EVM memory. Its writer model changes only the terminal stored value, not the abstract message words globally. The byte-level induction proves the changed write chain's concrete result. The live-lane facts transport the existing mathematical schedule, while the terminal-gap fact gives the stricter lower-part bound for round 76. A separate outside-region theorem proves that addresses at and above 1112 retain the incoming bytes. This is needed to preserve future message blocks and the persistent loop context; live-lane equality alone cannot discharge it.
+The symbolic payload mapping applies `FusedTerminalMemory.storedWord` to each address/index pair. Thus both sorts carry precisely the same masked value at address 594 and precisely the same unmasked value elsewhere. Sorting keys separately avoids expensive definitional reduction through abstract UInt256 payloads. It also makes the mathematical obligation explicit: identical destinations alone are insufficient; overlapping stores must retain their relative order, and both orders must sort through disjoint swaps only.
 
-`FusedTerminalWriter.lean` proves execution of the actual changed writer, including the fixed PCs used as addresses. It handles both already-grown active memory and the 34-to-35-word growth case. The latter is essential for the specialized 32-byte input route and cannot be inferred from a theorem assuming at least 35 active words.
+The resulting chain equality preserves the entire memory image, not just the live lanes. It consequently inherits the already-proved fused contracts for required zero bytes, slack witnesses, terminal-gap bytes, untouched future calldata, and schedule readiness. The new code does not need to replace these by a weaker claim that digest vectors happened to match.
 
-`FusedTerminalNormal.lean` composes the normal endian conversion, schedule fan, and changed writer, with an exact-byte certificate. `Pair13NormalTrace` routes the actual normal execution through this theorem. `Shared32Run` uses the growing-memory writer theorem for the distinct 32-byte route, and `Shared32Table` transports the same fused-memory Ready invariant there. Both entry paths now describe the same terminal mask; neither silently continues to prove the old writer plus clear.
+## Concrete execution and active-memory growth
 
-`PoolReference` and `PersistentStaggerTable` connect the fused memory to the reusable functional compressor and preserve the block-loop context. The whole-program theorem is derived from located EVM execution, block invariants, padding-to-hash bridges, output serialization, and the pinned hash specification. No new assumption about digest correctness is introduced.
+The writer's ordinary execution theorem requires entry PC606 and at least 35 active words. It preserves the active-word count exactly, including counts greater than 35. Six local theorems establish concrete instruction execution with exact stack transformations and exact memory effects. Their composition yields `Pc792Writer.run_writer`.
 
-## Artifact relocation and proof-contract repairs
+The special 32-byte route is a separate contract. It enters with exactly 34 active words. The first two chunks preserve that value because their stores remain within the 34-word extent. Chunk 2 performs the store at address 1080, whose exclusive endpoint is 1112, and proves growth to exactly 35 active words. Later chunks preserve 35. `Pc792Writer.run_writer_grow` composes that transition with the same full-image equality.
 
-The extra literal would exceed the trusted literal elaborator's practical recursion headroom if inserted without compensating the artifact representation. The candidate uses gas-neutral PUSH-width redistribution and commuting pairs of MUL operands to recover headroom. All immediate values are preserved by width changes; the protected artifact literal still uses the benchmark's fixed options. Verification settings and the trusted harness are not relaxed.
+The final code PCs of the six chunks are 636, 682, 708, 745, 798, and 826, starting from 606. The `PC` instructions supply addresses 666, 738, and 792. PC normalization and active-memory normalization are proved separately; a correct final byte-array sort cannot by itself justify the intermediate active-word behavior.
 
-Most reordered DUP pairs lie wholly inside their generated raw round contracts, where commutativity normalizes the result. One pair crosses the `StaggerRawUnpack` and `StaggerRawLeft77` boundary. It needed an explicit contract change: Unpack now duplicates the factor, and Left77 duplicates the right-line c value before multiplying. Their product is the same, but the intermediate stack is not. The raw and semantic contracts on both sides were updated together. Simply changing an opcode or retaining the old intermediate frame would fail the exact slice or the raw execution theorem.
+`FusedTerminalWriter.lean` exposes the new writer through the existing public theorem names. `FusedTerminalNormal.lean` composes the normal lowering/pool-load prefix, establishes writer entry606 from outer entry458, and returns the unchanged endpoint826 and fused memory image. `Shared32Run.lean` establishes the same writer entry from outer entry495 and uses the growing-memory theorem. Both paths retain their existing universal caller premises.
 
-Relocation also exposed unsafe numeric-rewrite assumptions. Seven occurrences of the semantic memory offset 1056 had been accidentally rewritten to 1074 because that numeral also appeared in the PC mapping. They were restored in `StaggerPersistentStart`, `StaggerPersistentCorrect`, and `ColdTailCorrect`. The copied-message memory base stays 1056. Numeric relocation must distinguish instruction PCs, instruction indexes, data addresses, arithmetic constants, and symbolic frame parameters.
+A read-only independent review found no local correctness defect in these contracts. It highlighted the remaining integration boundaries: exact artifact-slice matching, the fused rather than legacy memory invariant, both distinct active-word contracts, and the funded whole-program execution bridge. That review did not replace any verification gate.
 
-The shortened artifact changes CODESIZE from 5248 to 5238. The pad-only exit sentinel and its conditional bound were updated accordingly. It is still larger than `1056 + input.size` on the only fast route that can produce this sentinel: aligned lengths below 256. This is not a global claim about arbitrary calldata lengths. The cold route retains its normal offset-based exit argument.
+## Byte binding and representation headroom
 
-The recognition tail has gas-neutral deletions and width changes used for literal headroom. Its located paths, jump destinations, exact window certificates, local-window indexes, and modeled fallthrough PCs were repaired against the concrete disassembly. Six removed no-op instructions require local-window index changes in addition to global artifact index changes. The recognition predicates and digest-data values themselves are unchanged.
+The exact instruction assembly certificate for the new writer is checked by Lean. The generated reducible submission bytes and artifact instruction chunks were regenerated from the selected hex, with all partition boundaries checked unchanged. Only instruction chunks 2 and 3 contain changed bytes. Their lengths, and the total deployed length, are unchanged.
 
-## Experiments, failures, and checks
+Several address PUSH widths are redistributed without changing their values or PUSH gas. Small disjoint-store reorderings also change literal diversity within the trusted generator's fixed 64-byte chunks. These representational choices brought the selected artifact back within the literal elaborator's practical recursion headroom. The trusted literal generator, its options, and the checker were not relaxed. A search metric for representation cost is only an engineering heuristic; successful literal elaboration and protected proof replay remain the authoritative checks.
 
-The sequence deliberately uses cheap falsification before expensive proof checking:
+The proof is built serially, one dependency target at a time, because the concrete-execution modules are memory-heavy and this machine has 16 GiB RAM. This avoids multiple large Lean processes competing for memory. Resource scheduling changes neither theorem statements nor the benchmark's trusted validation.
 
-```sh
-.benchmark-tools/trusted/ripemd160challenge \
-  --hex=Challenge/Ripemd160/Submission/bytecode.hex --csv
-```
+## Cheap checks and evidence limits
 
-The direct scorer reported 49 clean and 49 dirty rows, every status `ok`, with totals 651407 and 651407. Earlier isolated testing of the selected exact SHA covered 126 independent-oracle cases, including the known clear-elision falsifier. A further 54 cases in this integration iteration matched the independent RIPEMD-160 oracle, including padding boundaries, repeated-byte patterns, zero-filled inputs, 1000-byte messages, and a 4096-byte message. These checks are falsification evidence only.
+The selected exact SHA was measured with the protected precompiled scorer before integration and again after installation as `bytecode.hex`. Both measurements returned 651365 in both frames and every row `ok`. An independent Python EVM executor compared outputs against a separate RIPEMD-160 oracle for 126 cases, including 32-byte samples, repeated aligned lengths, padding boundaries at 55/56/57 and 63/64/65, multiple blocks, a 376-byte input, and inputs of 1000 and 4096 bytes. All compared outputs matched twelve zero bytes followed by the digest.
 
-The Lean build is serial because the machine has approximately 16 GiB RAM and some concrete-execution modules occupy multiple GiB individually. Existing imports are built in dependency order, then the unchanged canonical verifier is run. No concurrent fleet of memory-heavy elaborations is used.
+These executions are falsification evidence, not universal verification. The local Lean writer build establishes exact concrete execution and memory equality, but it also is not the final required theorem by itself. Whole-program composition must bind the exact artifact slices and lift execution to sufficient gas before the candidate can be submitted.
 
-Several failed intermediate builds were useful diagnostics rather than acceptance receipts: the stale memory offset in the bootstrap frame, an unupdated Unpack DUP contract, a schedule-entry path still executing the old writer plus clear, a stale MSIZE witness PC, recognition-window local-index mismatches, and an outside-memory lemma still referring to the old unmasked image. In particular, the outside-memory mismatch first manifested as a heartbeat timeout during definitional reduction. The repair was a concrete outside-region theorem for the new write chain, not merely raising the heartbeat limit.
+A follow-up structural audit checked the directed graph whose edges preserve the current order of every overlapping 32-byte pair. Preserving PC666 and PC738 blocks direct disjoint-only fixed-PC replacements at 684, 648, 756, and 720. It also blocks 630 and 612 transitively: the preserved store-order chain is `666 → 648 → 630 → 612`, whereas supplying 630 or 612 with PC would require execution before PC666. These six are all remaining actual store addresses in the writer's PC range after excluding the existing anchors. Thus no fourth fixed-PC store is possible in this unchanged-interval, retained-anchor, disjoint-reordering-only grammar. This is a negative result for that grammar, not a proof that no stronger packed-memory rewrite or changed writer layout exists. No speculative follow-up bytecode was mixed into the selected candidate.
 
-## Final verification and caveats
+A materially different isolated follow-up was then measured: replace the last 16-byte scratch MCOPY (source268, destination286) by a 32-byte MLOAD/MSTORE snapshot and remove one length DUP. The replacement occupies the same 27-byte interval527..554 and leaves the instruction count unchanged. Its decoded SHA-256 is `92d8625df624bc564f501de855a0a6523f2bde22027508298760a38157bd797a`. The cheap scorer reports **651239 clean and dirty gas**, with 98/98 correct executions; 126 independent-oracle cases also match. This follow-up is **not the submitted artifact and has no integrated universal proof**. The proposed proof seam is exact state equality after the writer at826: all sixteen pool loads stop at302, while the extra copy changes only bytes302..318, subsequently overwritten by the retained address288 word store. ByteArray size, padded reads, full-word equality, intermediate active memory, and funded execution must all be established before adopting it. The selected bytecode and proof remain the 651365 PC792 artifact throughout its canonical run.
 
-The required final gate is:
+## Final protected verification and packaging
 
-```sh
-yukon run --track ripemd160
-```
+The final full `yukon run --track ripemd160` completed successfully for this exact candidate. Comparator exported `Challenge.Ripemd160.Benchmark.candidate`, replayed it with the Lean default kernel, printed `Lean default kernel accepts the solution`, `Your solution is okay!`, and `Finished with result: success`. The protected scorer then wrote verified=true, bytecodeBytes=5238, vectors=49, cleanTotalGas=651365, dirtyTotalGas=651365 and stateIndependentGas=true. The result is a verified measured score of **651,365**, beating the immediate promoted 651,407 frontier by **42 gas**. The retained axiom footprint is only propext, Classical.choice and Quot.sound. The recovered canonical run took approximately eleven minutes overall. An earlier run was interrupted during Comparator replay and had no conclusive score; it was not used as acceptance evidence. The unchanged artifact was rerun to obtain this complete result.
 
-The full canonical run completed with exit 0 for the exact SHA-256 above. All 3,723 Lake jobs completed. The final `Challenge.Ripemd160.Benchmark.candidate` theorem reports only `propext`, `Classical.choice`, and `Quot.sound`. Comparator then exported the proof, independently replayed it, and reported:
-
-```text
-Lean default kernel accepts the solution
-Your solution is okay!
-Finished with result: success
-```
-
-The canonical protected score JSON reports:
-
-```json
-{
-  "score": 651407,
-  "metrics": {
-    "verified": true,
-    "bytecodeBytes": 5238,
-    "vectors": 49,
-    "cleanTotalGas": 651407,
-    "dirtyTotalGas": 651407,
-    "stateIndependentGas": true
-  }
-}
-```
-
-The protected verified-bytecode copy was compared byte-for-byte with the submitted hex and matches exactly. The independent verification service took 10 minutes 41 seconds. This is a proof of universal functional correctness, together with a measured gas total for the benchmark corpus; it is not a universal exact gas formula.
-
-The final archive contains 668 submission-local Lean modules, all reachable from `Submission.Solution`, and no unused Lean module, scratch script, log, CSV, checkpoint, or secondary hex. Its implementation files occupy approximately 5.44 MB before compression. This README is also the public submission note. The five material dependency declarations accompany it. No executable artifact or proof was changed after the successful canonical run.
-
-The final integration repairs also corrected the recognizer transition guard's PUSH width, a stale tail jump-destination assertion, the local entry window's PUSH0 representation, and a SAR decode witness that still referenced the old instruction index. In the last case, attempting definitional reduction of the wrong located instruction spent several minutes without useful output; correcting both witness indices to the actual SAR instruction fixed the proof. These are proof-contract repairs against the same scored bytecode, not additional gas transformations.
-
-Possible follow-up optimizations should begin with the fused-memory invariant and this exact proof closure, rather than deleting additional stores based on vector observations. The most important negative result is that lane equality is insufficient by itself: byte provenance, slack witnesses, terminal bounds, preservation of future calldata, active-memory growth, and exact intermediate stacks all matter.
+The package contains the selected hex, submission-local Lean sources, this public note, and all six material dependency declarations. It contains no scratch scripts, logs, CSVs, saved search candidates, binary checkpoints, or archive files. Public notes contain no private filesystem paths, credentials, or secrets. The previous accepted candidate's public note and experiment reports are preserved separately; this note describes only the new PC792 delta and its explicit inheritance.

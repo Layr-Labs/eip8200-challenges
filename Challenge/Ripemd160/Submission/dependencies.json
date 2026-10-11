@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "7d82d5fd-6155-43ed-bbba-9397bd3eb643",
+    "rationale": "Immediate accepted and promoted 651407-gas implementation, terminal-store mask, and complete universal Lean proof.",
+    "evidence": "Retains the masked address594 store, byte610-clear removal, fused memory invariant, PC162/666/738 stores, compressor, recognition and output. The new PC792 writer is connected through exact memory equality certified by disjoint insertion-sort swaps."
+  },
+  {
     "submissionId": "e1007b50-4dba-4580-8382-feb52b1263fc",
     "rationale": "Immediate accepted/promoted 651491-gas base, including certified CODESIZE exit sentinel and complete universal proof.",
     "evidence": "Retains predecessor stack-resident paired compressor, persistent schedule, recognition routes, output and digest data. New terminal mask replaces byte610 clear; all affected exact-byte, memory and concrete execution certificates are updated."
