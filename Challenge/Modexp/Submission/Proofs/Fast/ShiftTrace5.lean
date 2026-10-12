@@ -96,29 +96,29 @@ theorem stepInv_stepMems {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n
 
 /-! ## The shift loop -/
 
-def gasSteps_shiftLoop (s : State) (mem : ByteArray) (n bsize esize msize mm minv r : Nat)
+def gasSteps_shiftLoop (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize mm minv r : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hbs : bsize = 32 * n) (e : Env s) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (htop : Limbs.radix ^ n < 2 * mm)
     (inv : StepInv mem n bsize mm minv)
     (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm)
     (hfast : n = 4 ∨ n = 8) :
-    Challenge.EvmProof.GasSteps (shiftLoopState s mem n bsize esize msize n)
-      (shiftLoopState s (stepMems mem n mm n) n bsize esize msize 0) :=
+    Challenge.EvmProof.GasSteps (shiftLoopState z s mem n bsize esize msize n)
+      (shiftLoopState z s (stepMems mem n mm n) n bsize esize msize 0) :=
   Challenge.EvmProof.GasSteps.cast
     (Challenge.EvmProof.GasSteps.iterateBounded
-      (I := fun i => shiftLoopState s (stepMems mem n mm i) n bsize esize msize (n - i)) n
+      (I := fun i => shiftLoopState z s (stepMems mem n mm i) n bsize esize msize (n - i)) n
       (fun i hi =>
         have invI := stepInv_stepMems (by omega) hn32 inv i
         have hbaseI := stepMems_represents mem n mm r hn hn32 hmpos hmm htop inv.modulus inv.neg
           hbase hr inv.pre i
         Challenge.EvmProof.GasSteps.cast
-          (gasSteps_step s (stepMems mem n mm i) n bsize esize msize (n - i) mm minv
+          (gasSteps_step z s (stepMems mem n mm i) n bsize esize msize (n - i) mm minv
             (by omega) (by omega) hn hn32 hbs hmpos hmm htop e invI hbaseI (Nat.mod_lt _ hmpos)
             (repairFacts_of (stepMems mem n mm i) n mm _ hn hn32 hmpos hmm htop invI.modulus
               invI.neg hbaseI (Nat.mod_lt _ hmpos) invI.pre) hfast)
           rfl (by
-            show shiftLoopState s (stepMem (stepMems mem n mm i) n mm) n bsize esize msize
-              (n - i - 1) = shiftLoopState s (stepMems mem n mm (i + 1)) n bsize esize msize
+            show shiftLoopState z s (stepMem (stepMems mem n mm i) n mm) n bsize esize msize
+              (n - i - 1) = shiftLoopState z s (stepMems mem n mm (i + 1)) n bsize esize msize
               (n - (i + 1))
             rw [show n - i - 1 = n - (i + 1) from by omega]
             rfl)))

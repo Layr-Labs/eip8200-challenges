@@ -323,7 +323,7 @@ theorem jumpDest_entry (n : Nat) (hn : n = 4 ∨ n = 8) :
   · exact jumpDest3032
   · exact jumpDest2899
 
-/-- E6's `DUP5 JUMP` (instruction 2328, pc 2898) is the one data-dependent jump the conversion
+/-- E6's `DUP5 JUMP` (instruction 2248, pc 2898) is the one data-dependent jump the conversion
 section feeds, and its destination is the scratch slot `rest[1]` — pinned by `hslot0` below to
 `entryPC n`.  Neither width's entry is one of the three `JUMPDEST`s the exit opened
 (`Bytecode.ShiftJumpTargets`: pc 3168, 3169, 3170). -/

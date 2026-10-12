@@ -18,24 +18,25 @@ open WindowTwentyOneBinding Shift
 
 
 /-- The phase exit is split where the conditional branch changes control flow:
-exit head at idx 2696 (pc 3346), guard at idx 2698 (pc 3348, `JUMPI` to the
-cleanup tail at 5444), switch at idx 2703 (pc 3357, jump back to 2811). -/
+exit head at idx 2597 (pc 3346), guard at idx 2599 (pc 3348, `JUMPI` to the
+cleanup tail at 5444), switch at idx 2604 (pc 3357, jump back to 2811). -/
 def phases : RootE3PhaseRun.PhaseBlocks Artifact.submissionArtifact .Osaka where
-  exitHead := WindowTwentyOneSlice.block Artifact.allWellFormed 2677 2 3346
+  exitHead := WindowTwentyOneSlice.block Artifact.allWellFormed 2597 2 3346
     RootE3PhaseRun.phaseExitHeadProgram (by decide) (by rfl) (by rfl) (by decide)
-  guard := WindowTwentyOneSlice.block Artifact.allWellFormed 2679 5 3348
+  guard := WindowTwentyOneSlice.block Artifact.allWellFormed 2599 5 3348
     RootE3PhaseRun.phaseGuardProgram (by decide) (by rfl) (by rfl) (by decide)
-  switch := WindowTwentyOneSlice.block Artifact.allWellFormed 2684 12 3357
+  switch := WindowTwentyOneSlice.block Artifact.allWellFormed 2604 14 3357
     RootE3PhaseRun.phaseSwitchProgram (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest2811 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2811 = true :=
-  Artifact.isValidJumpDest_index 2260 (by rfl)
+  Artifact.isValidJumpDest_index 2180 (by rfl)
 
 /-- The inherited loop guard consumes no memory and reaches the phase-exit head. -/
-def headSteps (s : State) (mem : ByteArray) (n bsize esize msize : Nat) (e : Env s) :
-    GasSteps (shiftLoopState s mem n bsize esize msize 0)
-      (shiftDoneState s mem n bsize esize msize) :=
-  soundEnv blk3013 e (run_shiftHead_done s mem n bsize esize msize e.code e.run)
+def headSteps (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
+    (e : Env s) :
+    GasSteps (shiftLoopState z s mem n bsize esize msize 0)
+      (shiftDoneState z s mem n bsize esize msize) :=
+  soundEnv blk3013 e (run_shiftHead_done z s mem n bsize esize msize e.code e.run)
 
 /-! ## Junction lemmas
 
@@ -46,18 +47,20 @@ is pure delta-reduction: no `entrySlots`/`readWord` application is ever whnf'd
 8M-heartbeat unifier bombs away. -/
 
 /-- `shiftDoneState` is the exit head's start frame (pc 3346, counter `0`). -/
-theorem shiftDone_eq_exitStart (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
-    shiftDoneState s mem n bsize esize msize =
+theorem shiftDone_eq_exitStart (z : UInt256) (s : State) (mem : ByteArray)
+    (n bsize esize msize : Nat) :
+    shiftDoneState z s mem n bsize esize msize =
       RootE3PhaseRun.frame s mem 3346
-        (UInt256.ofNat 0 :: Shift.entrySlots mem n bsize esize ++
+        (UInt256.ofNat 0 :: Shift.entrySlots z mem n bsize esize ++
           Exp.outer n bsize esize msize) :=
   rfl
 
 /-- The phase switch (clear flag at 1760, copy `32 n` bytes 2112 -> 256)
 touches none of the eleven frame words the riding slots read. -/
-theorem phaseSwitch_entrySlots (mem : ByteArray) (n bsize esize : Nat) (hn8 : n ≤ 8) :
-    Shift.entrySlots (RootE3Phase.phaseSwitch mem n) n bsize esize =
-      Shift.entrySlots mem n bsize esize := by
+theorem phaseSwitch_entrySlots (z : UInt256) (mem : ByteArray) (n bsize esize : Nat)
+    (hn8 : n ≤ 8) :
+    Shift.entrySlots z (RootE3Phase.phaseSwitch mem n) n bsize esize =
+      Shift.entrySlots z mem n bsize esize := by
   unfold Shift.entrySlots Shift.rideSlots
   rw [RootE3Phase.phaseSwitch_readWord mem n 1312 (Or.inl (by omega)) (Or.inr (by omega)),
     RootE3Phase.phaseSwitch_readWord mem n 1344 (Or.inl (by omega)) (Or.inr (by omega)),
@@ -76,10 +79,11 @@ theorem phaseSwitch_entrySlots (mem : ByteArray) (n bsize esize : Nat) (hn8 : n 
 theorem switchEnd_eq (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 1 ≤ n) (hn8 : n ≤ 8) :
     RootE3PhaseRun.frame s (RootE3PhaseRun.phaseSwitchMemory mem n) 2811
-        (UInt256.ofNat (n / 4) :: Shift.entrySlots mem n bsize esize ++
+        (UInt256.ofNat (n / 4) :: Shift.entrySlots (UInt256.ofNat 30) mem n bsize esize ++
           Exp.outer n bsize esize msize) =
-      shiftLoopState s (RootE3Phase.phaseSwitch mem n) n bsize esize msize (n / 4) := by
-  have hslots := phaseSwitch_entrySlots mem n bsize esize hn8
+      shiftLoopState (UInt256.ofNat 30) s (RootE3Phase.phaseSwitch mem n) n bsize esize msize
+        (n / 4) := by
+  have hslots := phaseSwitch_entrySlots (UInt256.ofNat 30) mem n bsize esize hn8
   unfold Shift.shiftLoopState Shift.slotKState RootE3PhaseRun.frame Shift.pcShiftLoop
   rw [hslots]
   rfl
@@ -125,49 +129,50 @@ private theorem nat_eq_of_word {a b : Nat} (ha : a < 2 ^ 256) (hb : b < 2 ^ 256)
   rwa [Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     Nat.mod_eq_of_lt ha, Nat.mod_eq_of_lt hb] at h'
 
-/-- Flag set: the guard falls through into the switch, which publishes the
-retained accumulator into `ACC`, halves the loop counter and jumps back to the
-shift loop head. -/
+/-- Flag set: the guard falls through into the switch, which clears the flag, sets the
+exit slot to `30`, publishes the retained accumulator into `ACC`, halves the loop counter
+and jumps back to the shift loop head. -/
 def switchSteps (s : State) (mem : ByteArray) (n bsize esize msize : Nat) (e : Env s)
     (hn : n = 4 ∨ n = 8) (hbs : bsize = 32 * n)
     (hflag : MachineState.readWord mem 1760 = UInt256.ofNat 1) :
-    GasSteps (shiftLoopState s mem n bsize esize msize 0)
-      (shiftLoopState s (RootE3Phase.phaseSwitch mem n) n bsize esize msize (n / 4)) := by
+    GasSteps (shiftLoopState (UInt256.ofNat 0) s mem n bsize esize msize 0)
+      (shiftLoopState (UInt256.ofNat 30) s (RootE3Phase.phaseSwitch mem n) n bsize esize msize
+        (n / 4)) := by
   have hd5444 : Decode.isValidJumpDest s.executionEnv.code 5444 = true := by
     rw [e.code]; exact jumpDest5444
   have hd2811 : Decode.isValidJumpDest s.executionEnv.code 2811 = true := by
     rw [e.code]; exact jumpDest2811
-  have hslots : (Shift.entrySlots mem n bsize esize ++ Exp.outer n bsize esize msize).length ≤ 1000 := by
+  have hslots : (Shift.entrySlots (UInt256.ofNat 0) mem n bsize esize ++
+      Exp.outer n bsize esize msize).length ≤ 1000 := by
     simp [Shift.entrySlots, Shift.rideSlots, Exp.outer]
   have exit := phases.exitHead.steps (bindingEnv e) rfl
     (RootE3PhaseRun.run_phaseExitHead s mem (UInt256.ofNat 0)
-      (Shift.entrySlots mem n bsize esize ++ Exp.outer n bsize esize msize) hslots)
+      (Shift.entrySlots (UInt256.ofNat 0) mem n bsize esize ++ Exp.outer n bsize esize msize)
+      hslots)
   have guard := phases.guardOneSteps s mem
-    (Shift.entrySlots mem n bsize esize ++ Exp.outer n bsize esize msize)
+    (Shift.entrySlots (UInt256.ofNat 0) mem n bsize esize ++ Exp.outer n bsize esize msize)
     hslots e.act hflag hd5444 (bindingEnv e)
   have switch := phases.switchSteps s mem n bsize esize msize
-    (Shift.entrySlots mem n bsize esize ++ Exp.outer n bsize esize msize)
+    (Shift.entrySlots (UInt256.ofNat 0) mem n bsize esize ++ Exp.outer n bsize esize msize)
     hn hbs hslots e.act rfl hd2811 (bindingEnv e)
-  exact (((headSteps s mem n bsize esize msize e).cast rfl
-      (shiftDone_eq_exitStart s mem n bsize esize msize)).trans exit).trans
+  exact (((headSteps (UInt256.ofNat 0) s mem n bsize esize msize e).cast rfl
+      (shiftDone_eq_exitStart (UInt256.ofNat 0) s mem n bsize esize msize)).trans exit).trans
     ((guard.trans switch).cast rfl
       (switchEnd_eq s mem n bsize esize msize (by omega) (by omega)))
 
-/-- Flag clear: the guard jumps to the cleanup tail (seventeen `POP`s and the
-done stub), which lands on the exponent-phase dispatcher entry at pc 2441 with
-the memory unchanged. -/
-def tailSteps (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hn : 2 ≤ n) (hn8 : n ≤ 8) (e : Env s)
-    (hflag : MachineState.readWord mem 1760 = UInt256.ofNat 0)
-    (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n)) :
-    GasSteps (shiftLoopState s mem n bsize esize msize 0)
-      (FixedExponentRoute.entryState s mem n bsize esize msize) := by
+/-- Flag clear, exit slot `d`: the guard jumps to the cleanup tail, whose sixteen `POP`s
+and `PUSH2 0989 ADD JUMP` land on `2441 + d` with the memory unchanged. -/
+def tailSteps (s : State) (mem : ByteArray) (n bsize esize msize d target : Nat) (e : Env s)
+    (htarget : 2441 + d = target) (hlt : target < 2 ^ 256)
+    (hdest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode target = true)
+    (hflag : MachineState.readWord mem 1760 = UInt256.ofNat 0) :
+    GasSteps (shiftLoopState (UInt256.ofNat d) s mem n bsize esize msize 0)
+      (frameState s mem target n bsize esize msize) := by
   have check := soundEnv blk3346 e
-    (run_shiftDone_check s mem n bsize esize msize e.act hflag e.code e.run)
-  have cleanup := soundEnv blk5444 e (run_cleanup s mem n bsize esize msize e.code e.run)
-  have stub := soundEnv blk3378 e (run_bdoneStub s mem n bsize esize msize e.code e.run)
-  exact (((headSteps s mem n bsize esize msize e).trans check).trans cleanup).trans
-    (stub.cast rfl (frameState_bdone_eq s mem n bsize esize msize))
+    (run_shiftDone_check (UInt256.ofNat d) s mem n bsize esize msize e.act hflag e.code e.run)
+  have cleanup := soundEnv blk5444 e
+    (run_cleanup s mem n bsize esize msize d target htarget hlt hdest e.code e.run)
+  exact ((headSteps (UInt256.ofNat d) s mem n bsize esize msize e).trans check).trans cleanup
 
 /-- All concrete v4 caller certificates, with no whole-loop or whole-route premise. -/
 def build (s : State) (mem input : ByteArray) (n bsize esize msize minv : Nat)
@@ -195,7 +200,7 @@ def build (s : State) (mem input : ByteArray) (n bsize esize msize minv : Nat)
   have first := soundEnv blk2862 e hdispatch
   have second := gasSteps_hitCsub s mem input n bsize esize msize hn hn8 e hdata
     hframe.ml hframe.tl hframe.s32 htn0 hfast
-  refine ⟨?_, ?_, ?_, ?_⟩
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩
   · intro hmiss
     by_cases hes1 : UInt256.ofNat esize = UInt256.ofNat 1
     · have hes : esize = 1 := nat_eq_of_word (by omega) (by decide) hes1
@@ -213,13 +218,13 @@ def build (s : State) (mem input : ByteArray) (n bsize esize msize minv : Nat)
         (by omega) hn8 e hfast hes1 hebne hm1ml
       rw [hse] at third
       exact (first.trans (second.trans third)).cast rfl
-        (congrArg (fun m => shiftLoopState s m n bsize esize msize n)
+        (congrArg (fun m => shiftLoopState (UInt256.ofNat 0) s m n bsize esize msize n)
           (flagSet_m2Of_eq mem input n (UInt256.ofNat 0)).symm)
     · have third := gasSteps_prologue s (m1Of mem input n) n bsize esize msize
         (by omega) hn8 e hfast hes1 hm1ml
       rw [hse] at third
       exact (first.trans (second.trans third)).cast rfl
-        (congrArg (fun m => shiftLoopState s m n bsize esize msize n)
+        (congrArg (fun m => shiftLoopState (UInt256.ofNat 0) s m n bsize esize msize n)
           (flagSet_m2Of_eq mem input n (UInt256.ofNat 0)).symm)
   · intro hhit
     have hes1 : UInt256.ofNat esize = UInt256.ofNat 1 := by rw [hhit.1]
@@ -232,12 +237,15 @@ def build (s : State) (mem input : ByteArray) (n bsize esize msize minv : Nat)
       (by omega) hn8 e hfast hes1 heb hm1ml
     rw [hse] at third
     exact (first.trans (second.trans third)).cast rfl
-      (congrArg (fun m => shiftLoopState s m n bsize esize msize (n / 2))
+      (congrArg (fun m => shiftLoopState (UInt256.ofNat 0) s m n bsize esize msize (n / 2))
         (prologue_e3_end_eq mem input n).symm)
   · intro hsize phaseMem hflag
     exact switchSteps s phaseMem n bsize esize msize e hsize hmatch.1 hflag
-  · intro phaseMem hflag hs32
-    exact tailSteps s phaseMem n bsize esize msize hn hn8 e hflag hs32
+  · intro phaseMem hflag _hs32
+    exact (tailSteps s phaseMem n bsize esize msize 0 2441 e rfl (by norm_num) jumpDest3412
+      hflag).cast rfl (frameState_bdone_eq s phaseMem n bsize esize msize)
+  · intro phaseMem hflag
+    exact tailSteps s phaseMem n bsize esize msize 30 2471 e rfl (by norm_num) jumpDest2471 hflag
 
 #print axioms build
 

@@ -42,12 +42,6 @@ theorem r4Round_readWord_high (mem : ByteArray) (c addr : Nat) (haddr : 2656 ≤
   r4Round_readWord_outside mem c addr (Or.inr (by omega)) (Or.inr (by omega))
     (Or.inr (by omega)) (Or.inr haddr)
 
-theorem r4Round_count (mem : ByteArray) (c : Nat) (hc : c < 2 ^ 256) :
-    MachineState.readWord (r4Round c mem) 2624 = UInt256.ofNat c := by
-  rw [r4Round, LazyCsub.result_readWord_outside _ 4 (roundDst c) 2624 (by omega) (Or.inr (by omega))
-    (by simp only [roundDst]; omega)]
-  exact SquareLoopBlocks.readWord_countMem _ c hc
-
 theorem r4Round_fastRepresents_outside (mem : ByteArray) (c ptr cnt v : Nat)
     (hsubb : ptr + 32 * cnt ≤ 1792 ∨ 1792 + 32 * 4 ≤ ptr)
     (hscratch : ptr + 32 * cnt ≤ 2048 ∨ 2624 ≤ ptr)

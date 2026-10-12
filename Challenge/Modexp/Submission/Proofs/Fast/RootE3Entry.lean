@@ -111,7 +111,9 @@ theorem handled_of_asymmetric_three (input : ByteArray) (s : State) (memory : By
   exact houtEq
 
 
-theorem handled_of_entry_asymmetric_three (input : ByteArray) (s : State) (memory : ByteArray)
+/-- The E3 hit from `e3go` (pc 2471), where the shift cleanup tail lands after the E3
+conversion: `e3go` sets the square count to `1` and the fixed chain finishes. -/
+theorem handled_of_e3go_asymmetric_three (input : ByteArray) (s : State) (memory : ByteArray)
     (n bsize msize mm minv bM rawBase S T : Nat)
     (sub : Exp.Subroutines s n bsize mm minv)
     (spec : Exp.SubSpec sub.mpMem sub.amMem n mm (Limbs.radix ^ n) minv)
@@ -119,7 +121,6 @@ theorem handled_of_entry_asymmetric_three (input : ByteArray) (s : State) (memor
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hdata : s.executionEnv.calldata = input) (hb : bsize ≤ 1024)
     (hstack : s.callStack = []) (hactive : 89 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hn48 : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1)
     (hmz : 32 < msize)
@@ -144,14 +145,9 @@ theorem handled_of_entry_asymmetric_three (input : ByteArray) (s : State) (memor
     (hone : ∃ one, one < Limbs.radix ∧
       Model.FastRepresents memory 768 n one) :
     FixedExponentRoute.Handled input
-      (FixedExponentRoute.entryState s memory n bsize 1 msize) := by
-  have htoSpecial :=
-    ((FixedDirectDispatchTrace.gasSteps_entry_other s memory
-      n bsize 1 msize (by decide) (by omega) hcode hfork hrun hnp).trans
-    (FixedDirectDispatchTrace.gasSteps_oneWidth_hit s memory
-      n bsize msize hcode hfork hrun hnp)).trans
-    (FixedDirectValueTrace.gasSteps_checkThree_hit s memory input
-      n bsize msize hb hexp hdata hactive hframe.eoff hcode hfork hrun hnp)
+      (FixedDirectStates.e3go s memory n bsize 1 msize) := by
+  have htoSpecial := FixedDirectValueTrace.gasSteps_threeHit s memory n bsize 1 msize
+    hcode hfork hrun hnp
   have hfixed := handled_of_asymmetric_three input s memory n bsize 1 msize mm minv
     bM rawBase S T sub spec hcode hfork hrun hnp hstack hactive hn hn32 hn48 hminv1 hmz hm32 hfull
     hbsize hesize hmsz hmm hm hcop _hradix hbMlt hbMform hrawForm hscale hexp
@@ -160,5 +156,5 @@ theorem handled_of_entry_asymmetric_three (input : ByteArray) (s : State) (memor
   exact ⟨final, ⟨htoSpecial.trans tail⟩, hdone, hresult⟩
 
 #print axioms handled_of_asymmetric_three
-#print axioms handled_of_entry_asymmetric_three
+#print axioms handled_of_e3go_asymmetric_three
 end RootE3Hit

@@ -30,9 +30,9 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro
 
 /-- The conversion frame's riding `-N` slots: `entrySlots`' words 1..7 are exactly the
 `readWord um (1280 + 32 i)` limbs `gasSteps_run` wants, by construction. -/
-theorem entrySlots_ride (um : ByteArray) (n bsize esize msize k : Nat) :
+theorem entrySlots_ride (z : UInt256) (um : ByteArray) (n bsize esize msize k : Nat) :
     ∀ i : Nat, i < 7 →
-      (UInt256.ofNat k :: Shift.entrySlots um n bsize esize ++
+      (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++
         Exp.outer n bsize esize msize)[8 - i]? =
       some (MachineState.readWord um (1280 + 32 * (7 - i))) := by
   intro i hi
@@ -41,24 +41,24 @@ theorem entrySlots_ride (um : ByteArray) (n bsize esize msize k : Nat) :
 
 /-- The scratch slot: `entrySlots`' word 0 is the section entry `shiftEntry n = entryPC n`
 for the two widths the routine runs. -/
-theorem entrySlots_scratch (um : ByteArray) (n bsize esize msize k : Nat)
+theorem entrySlots_scratch (z : UInt256) (um : ByteArray) (n bsize esize msize k : Nat)
     (hn : n = 4 ∨ n = 8) :
-    (UInt256.ofNat k :: Shift.entrySlots um n bsize esize ++
+    (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++
       Exp.outer n bsize esize msize)[1]? =
     some (UInt256.ofNat (entryPC n)) := by
   rcases hn with rfl | rfl <;>
     simp [Shift.entrySlots, Shift.rideSlots, Shift.shiftEntry, entryPC, Exp.outer]
 
 /-- The riding frame is twenty-three words: the counter, seventeen slots, five outer. -/
-theorem rest_length (um : ByteArray) (n bsize esize msize k : Nat) :
-    (UInt256.ofNat k :: Shift.entrySlots um n bsize esize ++
+theorem rest_length (z : UInt256) (um : ByteArray) (n bsize esize msize k : Nat) :
+    (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++
       Exp.outer n bsize esize msize).length = 23 := by
   simp [Shift.entrySlots, Shift.rideSlots, Exp.outer]
 
 /-- The section on the conversion frame: from `macSetupState` (E6, pc 2895) with the
 quotient guess above the counter, slots and outer frame over `um`, to the middle block at
 pc 3171 with `[carry, q̂, 2^256-1]` above the unchanged riding frame. -/
-def gasSteps_macSection (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArray) (q : UInt256)
+def gasSteps_macSection (z : UInt256) (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArray) (q : UInt256)
     (bsize esize msize k : Nat)
     (htop : n = 8 → MachineState.readWord um 2336 = UInt256.ofNat 0)
     (hrun : s.halt = .Running)
@@ -69,19 +69,19 @@ def gasSteps_macSection (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteA
     (hact : 88 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
       { s with pc := UInt256.ofNat 2895,
-               stack := q :: Monpro.maxWord :: UInt256.ofNat k :: Shift.entrySlots um n bsize esize ++
+               stack := q :: Monpro.maxWord :: UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++
                  Exp.outer n bsize esize msize,
                memory := um }
       { s with pc := UInt256.ofNat 3168,
                stack := (Monpro.l1Step um q Shift.NEG n n).carry :: q :: Monpro.maxWord ::
-                 UInt256.ofNat k :: Shift.entrySlots um n bsize esize ++ Exp.outer n bsize esize msize,
+                 UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++ Exp.outer n bsize esize msize,
                memory := (Monpro.l1Step um q Shift.NEG n n).memory } :=
   gasSteps_macChain n hn s um q
-    (UInt256.ofNat k :: Shift.entrySlots um n bsize esize ++ Exp.outer n bsize esize msize)
-    (by rw [rest_length um n bsize esize msize k]; omega)
-    (by rw [rest_length um n bsize esize msize k]; omega)
-    (entrySlots_ride um n bsize esize msize k)
-    (entrySlots_scratch um n bsize esize msize k hn)
+    (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++ Exp.outer n bsize esize msize)
+    (by rw [rest_length z um n bsize esize msize k]; omega)
+    (by rw [rest_length z um n bsize esize msize k]; omega)
+    (entrySlots_ride z um n bsize esize msize k)
+    (entrySlots_scratch z um n bsize esize msize k hn)
     htop hrun hcode hfork hnp hact
 
 end Challenge.Modexp.Submission.Proofs.Fast.M9Mac

@@ -31,10 +31,15 @@ def routeStack (input : ByteArray) : List UInt256 :=
    modulusOffset input, exponentOffset input, UInt256.ofNat (modulusSize input),
    UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)]
 
-/-- The lean core frame built by the entry at 22: the exponent word and the base size.
-The modulus word sits on top of it. -/
-def coreStack (input : ByteArray) : List UInt256 :=
-  [WindowTwentyOneInput.exponentWord input, UInt256.ofNat (baseSize input)]
+/-- The width shift `8 * (32 - baseSize)` the route head applies to the base word
+(zero for a full 32-byte base). -/
+def shiftWord (input : ByteArray) : UInt256 :=
+  UInt256.ofNat ((32 - baseSize input) * 8)
+
+/-- The core frame the entries at 24 and 103 build under the modulus word: the
+exponent word, the width shift, then whatever the entry leaves below. -/
+def coreStack (input : ByteArray) (tail : List UInt256) : List UInt256 :=
+  WindowTwentyOneInput.exponentWord input :: shiftWord input :: tail
 
 def state (template : State) (input : ByteArray) (pc : UInt256) : State :=
   WindowTwentyOneEntry.framed (context template input) pc (routeStack input)
@@ -53,21 +58,21 @@ theorem modulus_at (template : State) (input : ByteArray) (hmatch : WindowTwenty
   simp only [context, modulusOffset, hmatch.2.1, Challenge.EvmProof.Word.word_toNat_ofNat,
     Nat.mod_eq_of_lt hsmall, WindowTwentyOneInput.modulusWord]
 
-def normalized (template : State) (input : ByteArray) : State :=
+def normalized (template : State) (input : ByteArray) (tail : List UInt256) : State :=
   WindowTwentyOneTablePrelude.initial (context template input) (UInt256.ofNat 879)
     (WindowTwentyOneInput.baseWord input) (WindowTwentyOneInput.modulusWord input)
-    (WindowTwentyOneInput.modulusWord input :: coreStack input)
+    (WindowTwentyOneInput.modulusWord input :: coreStack input tail)
 
-def returned (template : State) (input : ByteArray) : State :=
+def returned (template : State) (input : ByteArray) (tail : List UInt256) : State :=
   WindowTwentyOneCore.returnedState (context template input) (WindowTwentyOneInput.baseWord input)
     (WindowTwentyOneInput.modulusWord input) (WindowTwentyOneInput.exponentWord input)
-    ((WindowTwentyOneInput.modulusWord input :: coreStack input).drop 2)
+    ((WindowTwentyOneInput.modulusWord input :: coreStack input tail).drop 2)
 
 /-- The core result is the specification for every accepted input, including a
 zero modulus, where the final `MULMOD` produces the zero word. -/
-theorem returned_spec (template : State) (input : ByteArray)
+theorem returned_spec (template : State) (input : ByteArray) (tail : List UInt256)
     (hmatch : WindowTwentyOneInput.Matches input) :
-    (returned template input).toResult = .returned (spec input) := by
+    (returned template input tail).toResult = .returned (spec input) := by
   by_cases hmodulus : (WindowTwentyOneInput.modulusWord input).toNat = 0
   · have hm0 : WindowTwentyOneInput.modulusValue input = 0 := by
       rw [← WindowTwentyOneInput.modulusWord_toNat]

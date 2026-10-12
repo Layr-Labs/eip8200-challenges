@@ -153,6 +153,16 @@ def sqCall (s : State) (mem : ByteArray) (ret : UInt256)
              UInt256.ofNat 512 :: ret :: tail
            memory := mem }
 
+/-- The in-kernel square-loop call state (`n ∈ {4, 8}`): `sqCall` with the remaining
+square count minus one in the frame's `pdst` slot, which the kernel's loop counts down
+(pc 3471 overwrites the slot before the final product). -/
+def sqLoopCall (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256)
+    (tail : List UInt256) : State :=
+  { s with pc := UInt256.ofNat 3387
+           stack := UInt256.ofNat 4551 :: UInt256.ofNat 2112 :: UInt256.ofNat 512 ::
+             UInt256.ofNat (k - 1) :: ret :: tail
+           memory := mem }
+
 /-- The state a subroutine returns to. -/
 def retTo (s : State) (mem : ByteArray) (ret : UInt256)
     (tail : List UInt256) : State :=
@@ -274,12 +284,11 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
   squareLoop : ∀ (k : Nat) (ret : UInt256) (tail : List UInt256)
     (mem : ByteArray) (a : Nat), (n = 4 ∨ n = 8) ∧ minv ≠ 1 → 1 ≤ k → k ≤ 16 →
     tail.length ≤ 982 →
-    MachineState.readWord mem 2624 = UInt256.ofNat k →
     tail[1]? = some (UInt256.ofNat (32 * n)) →
     tail[2]? = some (UInt256.ofNat n) →
     Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
     Model.FastRepresents mem 2112 n a → a < mm →
-    Challenge.EvmProof.GasSteps (sqCall s mem ret tail)
+    Challenge.EvmProof.GasSteps (sqLoopCall s mem k ret tail)
       (retTo s (sqLoopMem k mem) (UInt256.ofNat 772) tail)
   /-- The raw factor retained in ACC decodes the Montgomery square chain. -/
   sqLoopValue : ∀ (k : Nat) (mem : ByteArray) (a b : Nat), n = 4 ∨ n = 8 → 1 ≤ k →

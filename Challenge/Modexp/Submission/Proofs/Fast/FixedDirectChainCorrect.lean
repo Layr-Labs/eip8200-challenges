@@ -10,8 +10,8 @@ set_option maxHeartbeats 4000000
 # Direct fixed-exponent squaring chain
 
 BASE is squared in place by the `SQUARE` kernel while the reduced normal-domain
-base remains in ACC.  The loop head stores the number of remaining squares in
-memory word `0x2440 = 2624` and calls the kernel; from there the chain runs one
+base remains in ACC.  The loop head passes the number of remaining squares minus
+one in the kernel frame's `pdst` slot and calls the kernel; from there the chain runs one
 of two ways, and `Chain` is what both of them hand to the final product:
 
 * `n ∈ {4, 8}`: the kernel keeps its row frame and performs all `count` squares
@@ -47,8 +47,8 @@ def gasSteps_squareLoopFast (s : State) {n bsize mm minv : Nat}
     (sub : Exp.Subroutines s n bsize mm minv)
     (memory : ByteArray) (esize msize count bM rawBase : Nat)
     (hfast : (n = 4 ∨ n = 8) ∧ minv ≠ 1) (hcount : 1 ≤ count) (hcount16 : count ≤ 16)
-    (hn32 : n ≤ 8) (hbM : bM < mm)
-    (hactive : 89 ≤ s.activeWords.toNat)
+    (_hn32 : n ≤ 8) (hbM : bM < mm)
+    (_hactive : 89 ≤ s.activeWords.toNat)
     (hframe : Exp.Frame memory n bsize minv)
     (hinv : Inv memory n mm rawBase bM)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -57,19 +57,16 @@ def gasSteps_squareLoopFast (s : State) {n bsize mm minv : Nat}
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (square s memory n bsize esize msize count)
-      (Exp.retTo s
-        (sub.sqLoopMem count (Exp.storeWord memory 2624 (UInt256.ofNat count)))
+      (Exp.retTo s (sub.sqLoopMem count memory)
         (UInt256.ofNat 772) (UInt256.ofNat count :: Exp.outer n bsize esize msize)) :=
-  have hinv0 := countStore_inv count hn32 hinv
   (FixedDirectChainTrace.gasSteps_squareCall s memory
-      n bsize esize msize count hactive hcode hfork hrun hnp).trans
+      n bsize esize msize count hcount hcount16 hcode hfork hrun hnp).trans
     (sub.squareLoop count (UInt256.ofNat 2519)
       (UInt256.ofNat count :: Exp.outer n bsize esize msize)
-      (Exp.storeWord memory 2624 (UInt256.ofNat count)) bM
+      memory bM
       hfast hcount hcount16 (by simp [Exp.outer])
-      (readWord_countStore memory count)
       (by simp [Exp.outer]) (by simp [Exp.outer])
-      (countStore_frame count hframe) hinv0.modulus hinv0.squareBase hbM)
+      hframe hinv.modulus hinv.squareBase hbM)
 
 /-- Both width routes deliver the final mixed-domain product at the output block. -/
 structure Chain (s : State) {n bsize mm minv : Nat}
@@ -104,14 +101,12 @@ def chain_of_fixed (s : State) {n bsize mm minv : Nat}
   have hinv : Inv memory n mm rawBase bM := ⟨hmod,hrawAcc,hbase,hone⟩
   have hhead := FixedDirectChainTrace.gasSteps_start s memory
     n bsize esize msize count hn hn32 hactive hcode hfork hrun hnp
-  let out := sub.sqLoopMem count (Exp.storeWord memory 2624 (UInt256.ofNat count))
-  have hf0 := countStore_frame count hframe
-  have hi0 := countStore_inv count hn32 hinv
+  let out := sub.sqLoopMem count memory
   have hv : Model.FastRepresents out 256 n
       (Model.montMul mm (Limbs.radix^n) (fixedDirectValue mm (Limbs.radix^n) bM count) rawBase) := by
     rw [fixedDirectValue_eq_iterate]
-    exact sub.sqLoopValue count _ bM rawBase hfast.1 hcount hf0 hi0.modulus
-      hi0.squareBase hi0.rawAcc hbM hrawLt
+    exact sub.sqLoopValue count _ bM rawBase hfast.1 hcount hframe hinv.modulus
+      hinv.squareBase hinv.rawAcc hbM hrawLt
   have hs := gasSteps_squareLoopFast s sub memory esize msize count bM rawBase hfast hcount
     hcount16 hn32 hbM hactive hframe hinv hcode hfork hrun hnp
   have hf := FusedFinish.gasSteps s out (UInt256.ofNat count) (Exp.outer n bsize esize msize)

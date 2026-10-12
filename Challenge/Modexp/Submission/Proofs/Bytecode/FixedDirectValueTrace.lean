@@ -36,19 +36,30 @@ private theorem exponentValue_one (input : ByteArray) (bsize : Nat) :
   simpa using Challenge.EvmProof.Bytes.bytesToNatPadded_succ
     input (96 + bsize) 0
 
+private theorem isTrue_lor_left (a b : UInt256) (ha : a.toNat ≠ 0) :
+    UInt256.isTrue (UInt256.lor a b) := by
+  show (UInt256.lor a b).toNat ≠ 0
+  intro h
+  have h0 : UInt256.lor a b = 0 := Challenge.EvmProof.Word.word_ext (h.trans (by decide))
+  apply ha
+  rw [((Challenge.Modexp.Submission.Proofs.Bytecode.WindowGuardLogic.wordOr_eq_zero_iff
+    a b).1 h0).1]
+  decide
+
 set_option linter.unusedSimpArgs false in
-theorem run_checkThree_hit (s : State) (memory input : ByteArray)
+/-- The merged one-byte test with `esize = 1` and exponent byte `3`: both differences are zero,
+so the `JUMPI` falls through into `e3go`. -/
+theorem run_threeTest_hit (s : State) (memory input : ByteArray)
     (n bsize msize : Nat) (hb : bsize ≤ 1024)
     (hvalue : exponentValue input bsize 1 = 3)
     (hdata : s.executionEnv.calldata = input)
     (hactive : 89 ≤ s.activeWords.toNat)
     (heoff : MachineState.readWord memory 2816 = UInt256.ofNat (96 + bsize))
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock
-      (FixedDirectPaths.checkThree ++ FixedDirectPaths.threeHit)
-      (FixedDirectStates.checkThree s memory n bsize 1 msize) =
-      some (FixedDirectStates.special s memory n bsize 1 msize 1) := by
+    Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.oneWidth
+      (FixedDirectStates.otherWidth s memory n bsize 1 msize) =
+      some (FixedDirectStates.e3go s memory n bsize 1 msize) := by
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter
       s.activeWords.toNat 2816 32) = s.activeWords :=
     Exp.activeWords_fix s 2816 32 (by omega) (by omega) hactive
@@ -63,15 +74,19 @@ theorem run_checkThree_hit (s : State) (memory input : ByteArray)
     rw [← exponentValue_one, hvalue]
   have hxor : UInt256.xor (UInt256.ofNat 3) (UInt256.ofNat 3) =
       UInt256.ofNat 0 := by decide
+  have hxor1 : UInt256.xor (UInt256.ofNat 1) (UInt256.ofNat 1) =
+      UInt256.ofNat 0 := by decide
+  have hor : UInt256.lor (UInt256.ofNat 0) (UInt256.ofNat 0) =
+      UInt256.ofNat 0 := by decide
   simp (config := { maxSteps := 700000 })
-    [FixedDirectPaths.checkThree, FixedDirectPaths.threeHit,
+    [FixedDirectPaths.oneWidth,
       opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      FixedDirectStates.checkThree, FixedDirectStates.special, Exp.outer,
-      hdata, hcode, hrun, heoff, hfix, haddr, hread, hxor,
-      Exp.not_isTrue_zero, jumpDest3953,
+      FixedDirectStates.otherWidth, FixedDirectStates.e3go, Exp.outer,
+      hdata, hrun, heoff, hfix, haddr, hread, hxor, hxor1, hor,
+      Exp.not_isTrue_zero,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -79,7 +94,9 @@ theorem run_checkThree_hit (s : State) (memory input : ByteArray)
       Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
-theorem run_checkThree_miss (s : State) (memory input : ByteArray)
+/-- The merged one-byte test with `esize = 1` and exponent byte `≠ 3`: the byte difference is
+nonzero, so the `OR` is nonzero and the `JUMPI` bails to `BAIL6`. -/
+theorem run_threeTest_miss (s : State) (memory input : ByteArray)
     (n bsize msize : Nat) (hb : bsize ≤ 1024)
     (hvalue : exponentValue input bsize 1 ≠ 3)
     (hdata : s.executionEnv.calldata = input)
@@ -87,8 +104,8 @@ theorem run_checkThree_miss (s : State) (memory input : ByteArray)
     (heoff : MachineState.readWord memory 2816 = UInt256.ofNat (96 + bsize))
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.checkThree
-      (FixedDirectStates.checkThree s memory n bsize 1 msize) =
+    Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.oneWidth
+      (FixedDirectStates.otherWidth s memory n bsize 1 msize) =
       some (FixedDirectStates.bailState s memory n bsize 1 msize) := by
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter
       s.activeWords.toNat 2816 32) = s.activeWords :=
@@ -118,19 +135,43 @@ theorem run_checkThree_miss (s : State) (memory input : ByteArray)
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt hvlt] at hnat
     exact hvalue hnat.symm
-  have htrue : UInt256.isTrue
-      (UInt256.xor (UInt256.ofNat 3)
-        (UInt256.ofNat (exponentValue input bsize 1))) :=
-    isTrue_of_xor_ne _ hxor
+  have hxor1 : UInt256.xor (UInt256.ofNat 1) (UInt256.ofNat 1) =
+      UInt256.ofNat 0 := by decide
+  have htrue : ∀ y : UInt256, UInt256.isTrue
+      (UInt256.lor (UInt256.xor (UInt256.ofNat 3)
+        (UInt256.ofNat (exponentValue input bsize 1))) y) := fun y =>
+    isTrue_lor_left _ _ (isTrue_of_xor_ne _ hxor)
   simp (config := { maxSteps := 700000 })
-    [FixedDirectPaths.checkThree, opAt, pushAt, wfOp,
+    [FixedDirectPaths.oneWidth, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      FixedDirectStates.checkThree, FixedDirectStates.bailState, Exp.outer,
-      hdata, hcode, hrun, heoff, hfix, haddr, hread, hxor, htrue,
+      FixedDirectStates.otherWidth, FixedDirectStates.bailState, Exp.outer,
+      hdata, hcode, hrun, heoff, hfix, haddr, hread, hxor1, htrue,
       Exp.isTrue_one, jumpDestBail,
       State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.word_toNat_ofNat]
+
+set_option linter.unusedSimpArgs false in
+/-- `e3go`: square count `1`, jump to the loop head 2498.  Reads nothing, so it holds for
+every frame, including the one the shift cleanup tail lands with. -/
+theorem run_threeHit (s : State) (memory : ByteArray)
+    (n bsize esize msize : Nat)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.threeHit
+      (FixedDirectStates.e3go s memory n bsize esize msize) =
+      some (FixedDirectStates.special s memory n bsize esize msize 1) := by
+  simp (config := { maxSteps := 400000 })
+    [FixedDirectPaths.threeHit, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      FixedDirectStates.e3go, FixedDirectStates.special, Exp.outer,
+      hcode, hrun, jumpDest3953,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
@@ -249,7 +290,7 @@ private def sound {start finish : State}
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka path hcode hfork h hrun hnp
 
-def gasSteps_checkThree_hit (s : State) (memory input : ByteArray)
+def gasSteps_threeTest_hit (s : State) (memory input : ByteArray)
     (n bsize msize : Nat) (hb : bsize ≤ 1024)
     (hvalue : exponentValue input bsize 1 = 3)
     (hdata : s.executionEnv.calldata = input)
@@ -260,17 +301,17 @@ def gasSteps_checkThree_hit (s : State) (memory input : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (FixedDirectStates.checkThree s memory n bsize 1 msize)
-      (FixedDirectStates.special s memory n bsize 1 msize 1) :=
-  sound (FixedDirectPaths.checkThree ++ FixedDirectPaths.threeHit)
-    (run_checkThree_hit s memory input n bsize msize hb hvalue hdata hactive
+      (FixedDirectStates.otherWidth s memory n bsize 1 msize)
+      (FixedDirectStates.e3go s memory n bsize 1 msize) :=
+  sound FixedDirectPaths.oneWidth
+    (run_threeTest_hit s memory input n bsize msize hb hvalue hdata hactive
       heoff hcode hrun)
-    (by simpa [FixedDirectStates.checkThree, Artifact.submissionArtifact] using hcode)
-    (by simpa [FixedDirectStates.checkThree] using hfork)
-    (by simpa [FixedDirectStates.checkThree] using hrun)
-    (by simpa [FixedDirectStates.checkThree] using hnp)
+    (by simpa [FixedDirectStates.otherWidth, Artifact.submissionArtifact] using hcode)
+    (by simpa [FixedDirectStates.otherWidth] using hfork)
+    (by simpa [FixedDirectStates.otherWidth] using hrun)
+    (by simpa [FixedDirectStates.otherWidth] using hnp)
 
-def gasSteps_checkThree_miss (s : State) (memory input : ByteArray)
+def gasSteps_threeTest_miss (s : State) (memory input : ByteArray)
     (n bsize msize : Nat) (hb : bsize ≤ 1024)
     (hvalue : exponentValue input bsize 1 ≠ 3)
     (hdata : s.executionEnv.calldata = input)
@@ -281,15 +322,31 @@ def gasSteps_checkThree_miss (s : State) (memory input : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (FixedDirectStates.checkThree s memory n bsize 1 msize)
+      (FixedDirectStates.otherWidth s memory n bsize 1 msize)
       (FixedDirectStates.bailState s memory n bsize 1 msize) :=
-  sound FixedDirectPaths.checkThree
-    (run_checkThree_miss s memory input n bsize msize hb hvalue hdata hactive
+  sound FixedDirectPaths.oneWidth
+    (run_threeTest_miss s memory input n bsize msize hb hvalue hdata hactive
       heoff hcode hrun)
-    (by simpa [FixedDirectStates.checkThree, Artifact.submissionArtifact] using hcode)
-    (by simpa [FixedDirectStates.checkThree] using hfork)
-    (by simpa [FixedDirectStates.checkThree] using hrun)
-    (by simpa [FixedDirectStates.checkThree] using hnp)
+    (by simpa [FixedDirectStates.otherWidth, Artifact.submissionArtifact] using hcode)
+    (by simpa [FixedDirectStates.otherWidth] using hfork)
+    (by simpa [FixedDirectStates.otherWidth] using hrun)
+    (by simpa [FixedDirectStates.otherWidth] using hnp)
+
+def gasSteps_threeHit (s : State) (memory : ByteArray)
+    (n bsize esize msize : Nat)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (FixedDirectStates.e3go s memory n bsize esize msize)
+      (FixedDirectStates.special s memory n bsize esize msize 1) :=
+  sound FixedDirectPaths.threeHit
+    (run_threeHit s memory n bsize esize msize hcode hrun)
+    (by simpa [FixedDirectStates.e3go, Artifact.submissionArtifact] using hcode)
+    (by simpa [FixedDirectStates.e3go] using hfork)
+    (by simpa [FixedDirectStates.e3go] using hrun)
+    (by simpa [FixedDirectStates.e3go] using hnp)
 
 def gasSteps_check65537_hit (s : State) (memory input : ByteArray)
     (n bsize msize : Nat) (hb : bsize ≤ 1024)

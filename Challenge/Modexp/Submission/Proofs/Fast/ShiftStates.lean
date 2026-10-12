@@ -78,9 +78,11 @@ def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : N
 
 /-- The seventeen words the ported prologue parks on the stack through the shift
 window, top word first: the scratch slot, eleven frame words read from
-`0x520`-`0x680`, then `esize`, `n`, `bsize` and two zeros, all above the outer
-frame.  Every word but the scratch slot is immutable through the window. -/
-def rideSlots (mem : ByteArray) (n bsize esize : Nat) (scratch : UInt256) :
+`0x520`-`0x680`, then `esize`, `n`, `bsize`, a zero and the exit slot `z`, all above
+the outer frame.  Every word but the scratch slot is immutable through each loop.
+`E5` parks `z = 0`; the E3 phase switch sets `z = 30`.  The cleanup tail jumps to
+`2441 + z`: the exponent dispatcher, or `e3go` (2471) after the E3 conversion. -/
+def rideSlots (z : UInt256) (mem : ByteArray) (n bsize esize : Nat) (scratch : UInt256) :
     List UInt256 :=
   scratch :: MachineState.readWord mem 1312 :: MachineState.readWord mem 1344 ::
     MachineState.readWord mem 1376 :: MachineState.readWord mem 1408 ::
@@ -88,28 +90,28 @@ def rideSlots (mem : ByteArray) (n bsize esize : Nat) (scratch : UInt256) :
     MachineState.readWord mem 1504 :: MachineState.readWord mem 1632 ::
     MachineState.readWord mem 1664 :: MachineState.readWord mem 1568 ::
     MachineState.readWord mem 1536 :: UInt256.ofNat esize :: UInt256.ofNat n ::
-    UInt256.ofNat bsize :: UInt256.ofNat 0 :: UInt256.ofNat 0 :: []
+    UInt256.ofNat bsize :: UInt256.ofNat 0 :: z :: []
 
 /-- The unrolled-conversion entry the cache block stores at `0x6a2` and parks in
 the scratch slot for the rest of the window: `2899 + 133 · [n = 4]`. -/
 def shiftEntry (n : Nat) : UInt256 := UInt256.ofNat (2899 + if n = 4 then 133 else 0)
 
 /-- The window's riding slots with the scratch slot holding the conversion entry. -/
-def entrySlots (mem : ByteArray) (n bsize esize : Nat) : List UInt256 :=
-  rideSlots mem n bsize esize (shiftEntry n)
+def entrySlots (z : UInt256) (mem : ByteArray) (n bsize esize : Nat) : List UInt256 :=
+  rideSlots z mem n bsize esize (shiftEntry n)
 
 /-- A state inside the riding window: the slots above the outer frame. -/
-def slotState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat)
+def slotState (z : UInt256) (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat)
     (scratch : UInt256) : State :=
   { s with pc := UInt256.ofNat pc
-           stack := rideSlots mem n bsize esize scratch ++ outer n bsize esize msize
+           stack := rideSlots z mem n bsize esize scratch ++ outer n bsize esize msize
            memory := mem }
 
 /-- A state with the loop counter above the riding slots. -/
-def slotKState (s : State) (mem : ByteArray) (pc k : Nat) (n bsize esize msize : Nat) :
-    State :=
+def slotKState (z : UInt256) (s : State) (mem : ByteArray) (pc k : Nat)
+    (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat pc
-           stack := UInt256.ofNat k :: entrySlots mem n bsize esize ++
+           stack := UInt256.ofNat k :: entrySlots z mem n bsize esize ++
               outer n bsize esize msize
            memory := mem }
 
@@ -179,23 +181,25 @@ def newtonBState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : Sta
 /-- The cache-setup entry (`E5`, pc 2764): the prologue has just parked the riding
 slots with the outer `n` in the scratch position. -/
 def cacheSetupState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  slotState s mem 2764 n bsize esize msize (UInt256.ofNat n)
+  slotState (UInt256.ofNat 0) s mem 2764 n bsize esize msize (UInt256.ofNat n)
 
 /-- The shift loop head with `k` steps to go. -/
-def shiftLoopState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
-  slotKState s mem pcShiftLoop k n bsize esize msize
+def shiftLoopState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
+  slotKState z s mem pcShiftLoop k n bsize esize msize
 
-def shiftBodyState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
-  slotKState s mem pcShiftBody k n bsize esize msize
+def shiftBodyState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
+  slotKState z s mem pcShiftBody k n bsize esize msize
 
 /-- `ESTIMATE`, with `u` already in the `t` area. -/
-def estimateState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
-  slotKState s (uMem mem n) pcEstimate k n bsize esize msize
+def estimateState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
+    State :=
+  slotKState z s (uMem mem n) pcEstimate k n bsize esize msize
 
 /-- `MAC_SETUP`, with the quotient guess on top of the `2^256-1` mask. -/
-def macSetupState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
+def macSetupState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
+    State :=
   { s with pc := UInt256.ofNat pcMacSetup
-           stack := qhatOf (uMem mem n) :: Monpro.maxWord :: UInt256.ofNat k :: entrySlots (uMem mem n) n bsize esize ++
+           stack := qhatOf (uMem mem n) :: Monpro.maxWord :: UInt256.ofNat k :: entrySlots z (uMem mem n) n bsize esize ++
              outer n bsize esize msize
            memory := uMem mem n }
 
@@ -203,67 +207,69 @@ def macSetupState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : 
 counter and the riding slots.  The mask survives pc 3168..3170 (three `JUMPDEST`s) and is spent
 by `SWAP3 POP` at pc 3184..3185, so it is still in its slot here; every state from pc 3186 on
 has the `[carry, q]` shape the block used to start from. -/
-def midState (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat) :
+def midState (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat) :
     State :=
   { s with pc := UInt256.ofNat pcMid
            stack := (Monpro.l1Step um q NEG n n).carry :: q :: Monpro.maxWord :: UInt256.ofNat k ::
-             entrySlots um n bsize esize ++ outer n bsize esize msize
+             entrySlots z um n bsize esize ++ outer n bsize esize msize
            memory := (Monpro.l1Step um q NEG n n).memory }
 
 /-- `ADD_LOOP` head with the current `t` memory. -/
-def addLoopState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
-  slotKState s mem pcAddLoop k n bsize esize msize
+def addLoopState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
+  slotKState z s mem pcAddLoop k n bsize esize msize
 
 /-- `ADD_INNER` head after `j` limbs. -/
-def addInnerState (s : State) (mem : ByteArray) (n bsize esize msize k j : Nat) : State :=
+def addInnerState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k j : Nat) :
+    State :=
   { s with pc := UInt256.ofNat pcAddInner
            stack := UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j) ::
              (addStep mem n j).flag :: UInt256.ofNat k ::
-             entrySlots mem n bsize esize ++ outer n bsize esize msize
+             entrySlots z mem n bsize esize ++ outer n bsize esize msize
            memory := (addStep mem n j).memory }
 
 /-- The add tail block with the spent pointer on top. -/
-def addTailState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
+def addTailState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
+    State :=
   { s with pc := UInt256.ofNat pcAddTail
            stack := UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) n) ::
              (addStep mem n n).flag :: UInt256.ofNat k ::
-             entrySlots mem n bsize esize ++ outer n bsize esize msize
+             entrySlots z mem n bsize esize ++ outer n bsize esize msize
            memory := (addStep mem n n).memory }
 
-def subCheckState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
-  slotKState s mem pcSubCheck k n bsize esize msize
+def subCheckState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
+  slotKState z s mem pcSubCheck k n bsize esize msize
 
 /-- The `CSUB` call block: a zero (the spent `neg`/`TN`) above the counter. -/
-def csubCallState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
+def csubCallState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
+    State :=
   { s with pc := UInt256.ofNat pcCsubCall
            stack := UInt256.ofNat 0 :: UInt256.ofNat k ::
-             entrySlots mem n bsize esize ++ outer n bsize esize msize
+             entrySlots z mem n bsize esize ++ outer n bsize esize msize
            memory := mem }
 
 /-- `UNC` with the sign flag `f` above the counter. -/
-def uncState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) (f : UInt256) : State :=
+def uncState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
+    (f : UInt256) : State :=
   { s with pc := UInt256.ofNat pcUnc
            stack := f :: UInt256.ofNat k ::
-             entrySlots mem n bsize esize ++ outer n bsize esize msize
+             entrySlots z mem n bsize esize ++ outer n bsize esize msize
            memory := mem }
 
 /-- `CSUB(BASE)`'s return point: the loop head with the counter already at `k - 1`. -/
-def afterCsubState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
-  slotKState s mem pcAfterCsub (k - 1) n bsize esize msize
+def afterCsubState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
+    State :=
+  slotKState z s mem pcAfterCsub (k - 1) n bsize esize msize
 
 /-- The loop exit with the spent counter still on top of the slots. -/
-def shiftDoneState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  slotKState s mem pcShiftDone 0 n bsize esize msize
+def shiftDoneState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
+    State :=
+  slotKState z s mem pcShiftDone 0 n bsize esize msize
 
-/-- The cleanup tail (pc 5444): the spent counter is gone, the seventeen riding
-slots wait for the `POP` run that restores the bare outer frame. -/
-def cleanupState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  slotState s mem 5444 n bsize esize msize (shiftEntry n)
-
-/-- The bare outer frame at the cleanup stub (pc 3378), about to jump to `BDONE`'s
-area at 2441. -/
-def postCleanupState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  frameState s mem 3378 n bsize esize msize
+/-- The cleanup tail (pc 5444): the spent counter is gone; sixteen `POP`s drop all
+riding slots but the exit slot `z`, which picks the jump target `2441 + z`. -/
+def cleanupState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
+    State :=
+  slotState z s mem 5444 n bsize esize msize (shiftEntry n)
 
 /-- The wrapped `-32` the pointer walks add. -/
 theorem negK_literal :

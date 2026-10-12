@@ -11,12 +11,10 @@ open Challenge.EvmProof WindowNibbleKernel WindowTwentyOneBinding WindowTwentyOn
 structure Paths (artifact : ProgramArtifact) (fork : Fork) extends WindowTwentyOneGasCore.Paths artifact fork where
   width : Block artifact fork 843 WindowTwentyOneEntry.widthProgram
   hitTail : Block artifact fork 861 WindowTwentyOneEntry.hitTailProgram
-  adapter : Block artifact fork 112 WindowTwentyOneEntry.adapterProgram
-  base : Block artifact fork 866 WindowTwentyOneEntry.baseProgram
-  modulus : Block artifact fork 867 WindowTwentyOneEntry.modulusProgram
-  normalize : Block artifact fork 870 WindowTwentyOneEntry.normalizeProgram
-  adapterJump : Decode.isValidJumpDest artifact.code 112 = true
-  entryJump : Decode.isValidJumpDest artifact.code 22 = true
+  base : Block artifact fork 872 WindowTwentyOneEntry.baseProgram
+  modulus : Block artifact fork 873 WindowTwentyOneEntry.modulusProgram
+  normalize : Block artifact fork 876 WindowTwentyOneEntry.normalizeProgram
+  genJump : Decode.isValidJumpDest artifact.code 103 = true
   missJump : Decode.isValidJumpDest artifact.code 135 = true
 
 def context_env {artifact : ProgramArtifact} {fork : Fork} (template : State)
@@ -40,58 +38,60 @@ private theorem jump_env {artifact : ProgramArtifact} {fork : Fork} {template : 
   rw [env.code]
   exact hjump
 
-/-- The state at the core entry 827: the lean frame built at 25 with the
+/-- The state at the core entry 872: the frame built at 24 or 103 with the
 modulus word on top. -/
-def entryState (template : State) (input : ByteArray) : State :=
-  WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 866)
-    (WindowTwentyOneInput.modulusWord input :: coreStack input)
+def entryState (template : State) (input : ByteArray) (tail : List UInt256) : State :=
+  WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 872)
+    (WindowTwentyOneInput.modulusWord input :: coreStack input tail)
 
 /-- Base, spare modulus copy, normalization and the whole window core.  No
 modulus hypothesis: a zero modulus flows through the same instructions. -/
 def core_steps {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
-    (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
-    GasSteps (entryState template input) (returned template input) := by
+    (input : ByteArray) (tail : List UInt256) (htail : tail.length ≤ 590) :
+    GasSteps (entryState template input tail) (returned template input tail) := by
   let ctx := context template input
   have ec := context_env template env input
   have hb := WindowTwentyOneEntry.run_base ctx (WindowTwentyOneInput.modulusWord input)
-    (coreStack input) (by simp [coreStack])
+    (coreStack input tail) (by simp [coreStack]; omega)
   have hm := WindowTwentyOneEntry.run_modulus ctx (WindowTwentyOneInput.modulusWord input)
-    (coreStack input) (by simp [coreStack])
+    (coreStack input tail) (by simp [coreStack]; omega)
   have hn := WindowTwentyOneEntry.run_normalize ctx (WindowTwentyOneInput.modulusWord input)
-    (baseSize input) hmatch.1 (WindowTwentyOneInput.modulusWord input :: coreStack input)
-    (by simp [coreStack]) rfl
+    (shiftWord input) (WindowTwentyOneInput.modulusWord input :: coreStack input tail)
+    (by simp [coreStack]; omega) rfl
   have hn' : runInstructions WindowTwentyOneEntry.normalizeProgram
-      (WindowTwentyOneEntry.framed ctx (UInt256.ofNat 870)
+      (WindowTwentyOneEntry.framed ctx (UInt256.ofNat 876)
         (UInt256.ofNat 96 :: WindowTwentyOneInput.modulusWord input ::
-          WindowTwentyOneInput.modulusWord input :: coreStack input)) =
-      some (normalized template input) := by
+          WindowTwentyOneInput.modulusWord input :: coreStack input tail)) =
+      some (normalized template input tail) := by
     simpa only [normalized, WindowTwentyOneTablePrelude.initial, WindowTwentyOneEntry.framed,
-      WindowTwentyOneInput.baseWord, ctx, context, List.cons_append, List.nil_append] using hn
+      WindowTwentyOneInput.baseWord, shiftWord, ctx, context, List.cons_append,
+      List.nil_append] using hn
   let gb := lift paths.base hb (ec.transfer rfl rfl) rfl
   let gm := lift paths.modulus hm (ec.transfer rfl rfl) rfl
   let gn := lift paths.normalize hn' (ec.transfer rfl rfl) rfl
   have gc := WindowTwentyOneGasCore.steps_core paths.toPaths ctx ec
     (WindowTwentyOneInput.baseWord input) (WindowTwentyOneInput.modulusWord input)
     (WindowTwentyOneInput.exponentWord input)
-    (WindowTwentyOneInput.modulusWord input :: coreStack input)
-    (by simp [coreStack]) rfl rfl
-  have gc' : GasSteps (normalized template input) (returned template input) := by
+    (WindowTwentyOneInput.modulusWord input :: coreStack input tail)
+    (by simp [coreStack]; omega) rfl rfl
+  have gc' : GasSteps (normalized template input tail) (returned template input tail) := by
     simpa only [normalized, returned, ctx] using gc
   exact ((gb.trans gm).trans gn).trans gc'
 
-def Handled (template : State) (input : ByteArray) : Prop :=
-  ∃ final : State, Nonempty (GasSteps (entryState template input) final) ∧
+def Handled (template : State) (input : ByteArray) (tail : List UInt256) : Prop :=
+  ∃ final : State, Nonempty (GasSteps (entryState template input tail) final) ∧
     final.isDone = true ∧ final.toResult = .returned (spec input)
 
 /-- Every accepted width and every modulus, including zero, is handled by the
-single main path from 827. -/
+single main path from 872. -/
 def handled {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
-    (hcall : template.callStack = []) (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
-    Handled template input := by
-  refine ⟨returned template input, ⟨core_steps paths template env input hmatch⟩, ?_,
-    returned_spec template input hmatch⟩
+    (hcall : template.callStack = []) (input : ByteArray) (tail : List UInt256)
+    (htail : tail.length ≤ 590) (hmatch : WindowTwentyOneInput.Matches input) :
+    Handled template input tail := by
+  refine ⟨returned template input tail, ⟨core_steps paths template env input tail htail⟩, ?_,
+    returned_spec template input tail hmatch⟩
   change (true && template.callStack.isEmpty) = true
   rw [hcall]
   rfl
@@ -124,38 +124,27 @@ private theorem guard_zero_iff (input : ByteArray) :
     rw [h]
     rfl
 
-/-- A legacy-route hit at 843 reaches the early entry 22 with exactly the
-header stack, through the hit tail at 861 and the adapter at 112. -/
+/-- A legacy-route hit at 843 reaches the general-width entry 103 through the hit
+tail at 861, with the route frame minus its top two words on the stack. -/
 def steps_hit {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
     GasSteps (state template input (UInt256.ofNat 843))
-      (WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 22) (headerStack input)) := by
+      (WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 103)
+        ((routeStack input).drop 2)) := by
   have ec := context_env template env input
   have h := width_raw template input (jump_env env paths.missJump)
   rw [if_pos ((guard_zero_iff input).mpr hmatch)] at h
   have ht := WindowTwentyOneEntry.run_hit_tail (context template input)
     (UInt256.ofNat (baseSize input)) (UInt256.ofNat (exponentSize input))
-    ((routeStack input).drop 2) (by simp [routeStack]) (jump_env env paths.adapterJump)
+    ((routeStack input).drop 2) (by simp [routeStack]) (jump_env env paths.genJump)
   have ht' : runInstructions WindowTwentyOneEntry.hitTailProgram
       (state template input (UInt256.ofNat 861)) =
-      some (WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 112)
+      some (WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 103)
         ((routeStack input).drop 2)) := by
     simpa only [state, routeStack, List.drop_succ_cons, List.drop_zero] using ht
-  have ha := WindowTwentyOneEntry.run_adapter (context template input)
-    (UInt256.ofNat (modulusSize input)) (UInt256.ofNat 96) (exponentOffset input)
-    (modulusOffset input) (UInt256.ofNat 1186) (modulusOffset input) (exponentOffset input)
-    (UInt256.ofNat (modulusSize input)) (UInt256.ofNat (exponentSize input))
-    (headerStack input) (by simp [headerStack]) (jump_env env paths.entryJump)
-  have ha' : runInstructions WindowTwentyOneEntry.adapterProgram
-      (WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 112)
-        ((routeStack input).drop 2)) =
-      some (WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 22)
-        (headerStack input)) := by
-    simpa only [routeStack, headerStack, List.drop_succ_cons, List.drop_zero] using ha
-  exact ((lift paths.width h (ec.transfer rfl rfl) rfl).trans
-    (lift paths.hitTail ht' (ec.transfer rfl rfl) rfl)).trans
-    (lift paths.adapter ha' (ec.transfer rfl rfl) rfl)
+  exact (lift paths.width h (ec.transfer rfl rfl) rfl).trans
+    (lift paths.hitTail ht' (ec.transfer rfl rfl) rfl)
 
 def steps_miss {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)

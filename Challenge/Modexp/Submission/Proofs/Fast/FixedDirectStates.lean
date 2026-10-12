@@ -22,9 +22,11 @@ def otherWidth (s : State) (mem : ByteArray)
            stack := outer n bsize esize msize
            memory := mem }
 
-def checkThree (s : State) (mem : ByteArray)
+/-- `e3go` (pc 2471): the E3 hit block.  The merged one-byte test falls through into it, and
+the shift cleanup tail jumps to it directly after the E3 conversion. -/
+def e3go (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2458
+  { s with pc := UInt256.ofNat 2471
            stack := outer n bsize esize msize
            memory := mem }
 

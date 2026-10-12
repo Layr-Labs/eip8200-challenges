@@ -48,7 +48,7 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
       (FixedExponentRoute.entryState s (ordinaryFinal mem input n mm) n bsize esize msize))
     (e3Trace : Eligible input n bsize esize → Challenge.EvmProof.GasSteps
       (Shift.dispState s mem n bsize esize msize)
-      (FixedExponentRoute.entryState s (e3Final mem input n mm (n / 4)) n bsize esize msize)) :
+      (Shift.frameState s (e3Final mem input n mm (n / 4)) 2471 n bsize esize msize)) :
     FixedExponentRoute.Handled input (Shift.dispState s mem n bsize esize msize) := by
   have hbEq : bsize = 32 * n := hmatch.1
   by_cases hE3 : Eligible input n bsize esize
@@ -72,10 +72,13 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
         Limbs.radix ^ n * Limbs.radix ^ n := by
       conv_rhs => rw [hn4]
       exact RootE3Scale.quarter_scale Limbs.radix k
-    exact FixedDirectCorrect.prepend tr
-      (RootE3Hit.handled_of_entry_asymmetric_three input s (e3Final mem input n mm k)
+    -- The shift cleanup tail lands on `e3go` (2471) with the bare outer frame.
+    have tr' : Challenge.EvmProof.GasSteps (Shift.dispState s mem n bsize 1 msize)
+        (FixedDirectStates.e3go s (e3Final mem input n mm k) n bsize 1 msize) := tr
+    exact FixedDirectCorrect.prepend tr'
+      (RootE3Hit.handled_of_e3go_asymmetric_three input s (e3Final mem input n mm k)
         n bsize msize mm minv X Y (Limbs.radix ^ (3 * k)) (Limbs.radix ^ (2 * k))
-        sub spec hcode hfork hrun hnp hdata hb hstack hact hn hn8 hn48 hminv1 hmz hm32 hfull
+        sub spec hcode hfork hrun hnp hstack hact hn hn8 hn48 hminv1 hmz hm32 hfull
         hbsize hesize hmsz hmm hm (Model.coprime_radix_pow_of_odd hodd n) hradix
         (Nat.mod_lt _ hm) hxform hyform hscale hexp hf hmrep hx hy (Nat.mod_lt _ hm) ⟨0, Limbs.radix_pos, ho⟩)
   · let final := ordinaryFinal mem input n mm

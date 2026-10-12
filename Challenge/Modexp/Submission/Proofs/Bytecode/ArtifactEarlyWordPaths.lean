@@ -6,14 +6,14 @@ set_option maxRecDepth 20000
 set_option maxHeartbeats 2000000
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
-private def earlyWord_guard : WindowTwentyOneBinding.Block submissionArtifact .Osaka 0 EarlyWordProgram.guardProgram :=
-  WindowTwentyOneSlice.block allWellFormed 0 17 0 EarlyWordProgram.guardProgram (by decide) (by rfl) (by rfl) (by decide)
-private def earlyWord_miss : WindowTwentyOneBinding.Block submissionArtifact .Osaka 127 EarlyWordProgram.missProgram :=
-  WindowTwentyOneSlice.block allWellFormed 72 4 127 EarlyWordProgram.missProgram (by decide) (by rfl) (by rfl) (by decide)
+private def earlyWord_size : WindowTwentyOneBinding.Block submissionArtifact .Osaka 0 EarlyWordProgram.sizeProgram :=
+  WindowTwentyOneSlice.block allWellFormed 0 11 0 EarlyWordProgram.sizeProgram (by decide) (by rfl) (by rfl) (by decide)
+private def earlyWord_width : WindowTwentyOneBinding.Block submissionArtifact .Osaka 16 EarlyWordProgram.widthTestProgram :=
+  WindowTwentyOneSlice.block allWellFormed 11 6 16 EarlyWordProgram.widthTestProgram (by decide) (by rfl) (by rfl) (by decide)
 def earlyWordPaths : EarlyWordProgram.Paths submissionArtifact .Osaka where
-  guard := earlyWord_guard
-  miss := earlyWord_miss
-  missJump := by exact isValidJumpDest_index 72 (by rfl)
+  size := earlyWord_size
+  width := earlyWord_width
   legacyJump := by exact isValidJumpDest_index 423 (by rfl)
+  genJump := by exact isValidJumpDest_index 52 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Artifact

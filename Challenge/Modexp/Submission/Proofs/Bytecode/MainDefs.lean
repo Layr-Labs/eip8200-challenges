@@ -133,7 +133,7 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
     omega
 
 @[simp] theorem headerPCs0 (i : Nat) (hi : i ≤ 1) :
-    Artifact.submissionArtifact.instructionPC i = [0, 1][i]! := by
+    Artifact.submissionArtifact.instructionPC i = [0, 2][i]! := by
   interval_cases i <;> decide
 
 @[simp] theorem headerPCs899 (i : Nat)

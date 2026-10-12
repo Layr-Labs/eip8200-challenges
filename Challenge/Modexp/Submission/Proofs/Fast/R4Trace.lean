@@ -73,26 +73,26 @@ local macro "lenOK" : tactic =>
   `(tactic| ((try simp only [List.length_cons, List.length_append, win] at *) <;> omega))
 
 theorem jd5158 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4927 = true :=
-  Artifact.isValidJumpDest_index 3919 (by rfl)
+  Artifact.isValidJumpDest_index 3839 (by rfl)
 
 theorem jd4903 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (4687 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 3707 (by rfl)
+  Artifact.isValidJumpDest_index 3627 (by rfl)
 
 theorem jd5020 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (4799 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 3807 (by rfl)
+  Artifact.isValidJumpDest_index 3727 (by rfl)
 
 theorem jd5108 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (4882 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 3880 (by rfl)
+  Artifact.isValidJumpDest_index 3800 (by rfl)
 
 theorem jd5274 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (5031 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 4023 (by rfl)
+  Artifact.isValidJumpDest_index 3943 (by rfl)
 
-theorem jd4379 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4240 = true :=
-  Artifact.isValidJumpDest_index 3363 (by rfl)
+theorem jd4379 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4234 = true :=
+  Artifact.isValidJumpDest_index 3281 (by rfl)
 
 section
 variable (s : State)
@@ -159,7 +159,7 @@ def gasSteps_row1 (P : W5) (k n0 n1 n2 n3 np a0 a1 a2 a3 : UInt256) (rest : List
   have hjd : Decode.isValidJumpDest s.executionEnv.code 4927 = true := by rw [hcode]; exact jd5158
   simp only [win]
   seg block_r1h (run_r1h s (hcap := by lenOK) (ha1 := ha1) (ha0 := ha0) (hact := hact) ..)
-  refine GasSteps.trans (gasSteps_sgtAt 3713 4697 (by rfl) (by rfl) (by norm_num) s _ _ _
+  refine GasSteps.trans (gasSteps_sgtAt 3633 4697 (by rfl) (by rfl) (by norm_num) s _ _ _
     hcode hfork (by lenOK) hrun hnp) ?_
   seg block_r1d (run_r1d s (hcap := by lenOK) (hk := hk) (htb := R4Value.tb_le_one _) ..)
   seg block_r1c2 (run_r1c2 s (hcap := by lenOK) (ha2 := ha2) (hact := hact) ..)
@@ -180,7 +180,7 @@ def gasSteps_row2 (P : W5) (k n0 n1 n2 n3 np a1 a2 a3 : UInt256) (rest : List UI
   have hjd : Decode.isValidJumpDest s.executionEnv.code 4927 = true := by rw [hcode]; exact jd5158
   simp only [win]
   seg block_r2h (run_r2h s (hcap := by lenOK) (ha2 := ha2) (ha1 := ha1) (hact := hact) ..)
-  refine GasSteps.trans (gasSteps_sgtAt 3813 4809 (by rfl) (by rfl) (by norm_num) s _ _ _
+  refine GasSteps.trans (gasSteps_sgtAt 3733 4809 (by rfl) (by rfl) (by norm_num) s _ _ _
     hcode hfork (by lenOK) hrun hnp) ?_
   seg block_r2d (run_r2d s (hcap := by lenOK) (hk := hk) (htb := R4Value.tb_le_one _) ..)
   seg block_r2c3 (run_r2c3 s (hcap := by lenOK) (ha3 := ha3) (hact := hact) ..)
@@ -198,7 +198,7 @@ def gasSteps_row3 (P : W5) (k n0 n1 n2 n3 np a2 a3 : UInt256) (rest : List UInt2
                  win (row3 a2 a3 k P).1 (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) } := by
   simp only [win]
   seg block_r3h (run_r3h s (hcap := by lenOK) (ha3 := ha3) (ha2 := ha2) (hact := hact) ..)
-  refine GasSteps.trans (gasSteps_sgtAt 3886 4892 (by rfl) (by rfl) (by norm_num) s _ _ _
+  refine GasSteps.trans (gasSteps_sgtAt 3806 4892 (by rfl) (by rfl) (by norm_num) s _ _ _
     hcode hfork (by lenOK) hrun hnp) ?_
   seg block_r3d (run_r3d s (hcap := by lenOK) (hk := hk) (htb := R4Value.tb_le_one _) ..)
   exact SquareRow.stepsOf block_r3e (run_r3e s (hcap := by lenOK) ..) rfl hcode hfork hrun hnp
@@ -222,12 +222,12 @@ def gasSteps_r4 (s : State) (e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 : UInt256
     GasSteps
       { s with pc := UInt256.ofNat 4579,
                stack := e0 :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest }
-      { s with pc := UInt256.ofNat 4240,
+      { s with pc := UInt256.ofNat 4234,
                stack := e0 :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest,
                memory := r4Mem s.memory (r4Final s.memory e5 e8 e11 e12 e7) } := by
   have hj (r : UInt256) (h : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode r.toNat = true) :
       Decode.isValidJumpDest s.executionEnv.code r.toNat = true := by rw [hcode]; exact h
-  have hj4379 : Decode.isValidJumpDest s.executionEnv.code 4240 = true := by rw [hcode]; exact jd4379
+  have hj4379 : Decode.isValidJumpDest s.executionEnv.code 4234 = true := by rw [hcode]; exact jd4379
   -- 名字
   generalize ha0 : MachineState.readWord s.memory 2464 = a0
   generalize ha1 : MachineState.readWord s.memory 2432 = a1

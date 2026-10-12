@@ -44,7 +44,7 @@ theorem mpZeroed_idem (s : State) (mem : ByteArray) (n : Nat) :
 theorem scratchZero_sqRound (s : State) (n c : Nat) (M : ByteArray) (hn1 : 1 ≤ n)
     (hn : n ≤ 8) : R8RowZeroExact.ScratchZero (sqRound s n c M) := by
   have h0 := (R8RowZeroExact.scratchZero_mpZeroed s M n hn1).sqRowsCarry n n
-  have h1 := h0.store c 2624 (Or.inr (by decide))
+  have h1 := h0
   unfold sqRound LazyCsub.resultMemory SquareLoopBlocks.countMem Csub.subResultMemory roundDst
   split
   · exact h1.write _ 2368 (Or.inr (by decide))
@@ -144,13 +144,6 @@ theorem sqRound_readWord_high (s : State) (mem : ByteArray) (n c addr : Nat)
     MachineState.readWord (sqRound s n c mem) addr = MachineState.readWord mem addr :=
   sqRound_readWord_outside s mem n c addr hn hn32 hfast (Or.inr (by omega)) (Or.inr (by omega))
     (Or.inr (by omega)) (Or.inr haddr)
-
-theorem sqRound_count (s : State) (mem : ByteArray) (n c : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
-    (_hfast : n = 4 ∨ n = 8) (hc : c < 2 ^ 256) :
-    MachineState.readWord (sqRound s n c mem) 2624 = UInt256.ofNat c := by
-  rw [sqRound, LazyCsub.result_readWord_outside _ n (roundDst c) 2624 hn (Or.inr (by omega))
-    (by simp only [roundDst]; omega)]
-  exact SquareLoopBlocks.readWord_countMem _ c hc
 
 theorem sqRound_fastRepresents_outside (s : State) (mem : ByteArray) (n c ptr cnt v : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (hfast : n = 4 ∨ n = 8)

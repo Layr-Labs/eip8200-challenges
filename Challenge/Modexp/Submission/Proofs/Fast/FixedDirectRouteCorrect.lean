@@ -136,17 +136,15 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
           exact ⟨1, Case.three rfl hv⟩
         exact bailHandled input s memory n bsize 1 msize
           hcode hfork hrun hnp hdata hstack hvalid hactLe (by omega)
-          ((hentry.trans
-            (FixedDirectDispatchTrace.gasSteps_oneWidth_hit s memory
-              n bsize msize hcode hfork hrun hnp)).trans
-            (FixedDirectValueTrace.gasSteps_checkThree_miss s memory input
+          (hentry.trans
+            (FixedDirectValueTrace.gasSteps_threeTest_miss s memory input
               n bsize msize hb hv hdata hactive hframe.eoff
               hcode hfork hrun hnp))
       · exact bailHandled input s memory n bsize esize msize
           hcode hfork hrun hnp hdata hstack hvalid hactLe (by omega)
           (hentry.trans
             (FixedDirectDispatchTrace.gasSteps_oneWidth_miss s memory
-              n bsize esize msize h1 he hcode hfork hrun hnp))
+              n bsize esize msize h1 he hactive hcode hfork hrun hnp))
   hit := by
     rcases hraw with ⟨rawBase, hrawRep, hrawForm, hrawLt⟩
     rintro ⟨count, hcase⟩
@@ -156,11 +154,11 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
         have htoSpecial :=
           ((FixedDirectDispatchTrace.gasSteps_entry_other s memory
             n bsize 1 msize (by decide) (by omega) hcode hfork hrun hnp).trans
-          (FixedDirectDispatchTrace.gasSteps_oneWidth_hit s memory
-            n bsize msize hcode hfork hrun hnp)).trans
-          (FixedDirectValueTrace.gasSteps_checkThree_hit s memory input
+          (FixedDirectValueTrace.gasSteps_threeTest_hit s memory input
             n bsize msize hb hvalue hdata hactive hframe.eoff
-            hcode hfork hrun hnp)
+            hcode hfork hrun hnp)).trans
+          (FixedDirectValueTrace.gasSteps_threeHit s memory
+            n bsize 1 msize hcode hfork hrun hnp)
         have hfixed := FixedDirectHitCorrect.handled_of_fixed input s memory
           n bsize 1 msize mm minv bM
           rawBase 1 sub spec
