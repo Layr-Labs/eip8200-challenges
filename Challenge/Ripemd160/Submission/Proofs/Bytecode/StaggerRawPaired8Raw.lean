@@ -38,7 +38,7 @@ def template : List Instr :=
     .op .AND,
     .op (.Dup ⟨12, by decide⟩),
     .op .MUL,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 22),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 22),
     .op .SHR,
     .op (.Dup ⟨7, by decide⟩),
     .op .ADD,
@@ -110,7 +110,14 @@ def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UI
     x.v15,
     x.v16 ] ++ rho
 private theorem actualOutput_eq (memory : ByteArray) (x : Input) (rho : List UInt256) :
-    actualOutput memory x rho = outputStack memory x rho := by rfl
+    actualOutput memory x rho = outputStack memory x rho := by
+  simp only [actualOutput, outputStack, RawExpressionAC.add_assoc, RawExpressionAC.add_comm,
+    RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm,
+    RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm,
+    RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm,
+    RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm,
+    RawExpressionAC.xor_left_comm, RawExpressionAC.mulMod_comm]
+
 private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 35 ≤ s.activeWords.toNat) :

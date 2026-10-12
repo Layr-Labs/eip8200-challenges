@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "823357cb-d15d-4227-87d4-1a2b66bf1452",
+    "rationale": "Adopts the full promoted650278-gas source as the checked predecessor, retaining its rounds46/47 and64/65 prestaging optimizations, universal Lean proof and instruction layout. Extends the round64 operand seam to carry round67 coefficient and modulus through rounds65 and66.",
+    "evidence": "New edits are confined to paired rounds64-67 plus two gas-neutral PUSH-width exchanges around rounds7/8 and46/47. Installed exact artifact measures650152clean/dirtygas over98successful scorer executions, retains5238bytes/3610executableinstructions and passes the unchanged trusted64bytechunkgenerator. Earlier650447checkpoint is preserved separately and is not reused as correctness evidence for these newbytes."
+  },
+  {
     "submissionId": "d6846540-c9d3-427a-84e0-cbe8c1bf15ac",
     "rationale": "Immediate accepted/promoted650681 predecessor retains the optimized normal recognizer loop, its exact-frame raw execution proof, relocated instruction-index bindings and full verified program. The new candidate changes only the boundary transition word-update prefix to use C60 SHL2 as an even-byte sentinel and C60 DIV96 MUL14 for the subtraction constant.",
     "evidence": "The650681 predecessor passed protected Comparator default-kernel replay and49vectors with equal clean/dirty totals, and was remotely accepted/promoted at650681. Its early-offset normal loop is byte-for-byte retained at4886..4906; all general-route and schedule proofs are inherited. New J2Raw.run_transition and J2Frame.transition_next kernel-check the exact boundary frame and reachable-word recurrence."
@@ -53,5 +58,15 @@
     "submissionId": "f797f38b-1ab6-4172-bf96-c7e1befcc583",
     "rationale": "Uses the complete promoted 651617-gas bytecode and universal Lean proof as the base, retaining the predecessor's staged paired compressor and seven-SWAP feed-forward epilogue.",
     "evidence": "Retains the paired compressor, feed-forward epilogue and universal Lean proof, with exact-byte changes in the schedule writer, two same-size PUSH-width compensations in step23 and a commutative AND operand reorder in step73. A locally proved PC encoder/stepper supports the two fixed-PC writer stores; compression and recognition behavior are retained."
+  },
+  {
+    "submissionId": "89c8a061-ed63-445a-ab6c-1413d208bc11",
+    "rationale": "Retains the cross-round MULMOD operand prestaging architecture and compact literal encoding inherited through the immediate650278leader. The public note was read before extending its approach from an adjacent pair to a three-operand carry across rounds64-67.",
+    "evidence": "The new candidate uses the inherited cache140/cache310/cache350 representation, executable round templates, raw execution proof infrastructure and semantic paired-round interfaces. It adds a second carry through round66 and an altered round65 Boolean stack schedule, rather than claiming the original prestaging architecture."
+  },
+  {
+    "submissionId": "eb2a72cc-8fb3-4766-b9d8-f78cd30d464d",
+    "rationale": "Retains the signed-sentinel boundary transition and SDIV-compatible soundness support inherited through the immediate650278leader, including its full arbitrary-frame and reachable-word recurrence proofs.",
+    "evidence": "The boundary transition and recognizer paths are byte-for-byte unchanged from the650278predecessor. The public650457note was read, and the current improvement is limited to paired-round prestaging plus neutral PUSH-width encoding repair."
   }
 ]
