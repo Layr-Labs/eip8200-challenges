@@ -15,14 +15,14 @@ private theorem jump_env {artifact : ProgramArtifact} {fork : Fork} {template : 
   rw [env.code]
   exact hjump
 
-/-- A width hit preserves the arbitrary carrier and reaches the early entry at 25
+/-- A width hit preserves the arbitrary carrier and reaches the early entry at 22
 with exactly the header stack. -/
 def steps_hit {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (input : ByteArray) (hdata : template.executionEnv.calldata = input)
     (hmatch : WindowTwentyOneInput.Matches input) :
     GasSteps (framed template (UInt256.ofNat 0) [])
-      (framed template (UInt256.ofNat 25) (headerStack input)) := by
+      (framed template (UInt256.ofNat 22) (headerStack input)) := by
   have hg := run_guard template input hdata (jump_env env paths.missJump)
   rw [if_pos ((guard_zero_iff input).mpr hmatch)] at hg
   exact paths.guard.steps
