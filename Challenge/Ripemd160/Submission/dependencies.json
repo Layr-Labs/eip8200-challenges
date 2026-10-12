@@ -1,18 +1,18 @@
 [
   {
     "submissionId": "d67efa21-a744-4c3c-be36-81925b880660",
-    "rationale": "Immediate 650089 upload supplies the exact bytecode, multi-round64-67 prestaging, round67 alignment no-op removal, all downstream instruction-index certificates and whole-program universal proof. It passed the full local canonical gate and has since been accepted and promoted remotely at official score650089.",
-    "evidence": "The predecessor full canonical run independently replayed the Lean universal correctness theorem with Comparator, then scored 650089 over49vectors with equal clean/dirty gas. Current experimental650079 retains its hashcore and modifies only a gas-neutral PUSH-width exchange over3917..4045 and the accepted SDIV boundary-prefix region4638..4658. Remote650089 validation is accepted/promoted; the fresh650079 canonical gate passed independently at650079."
+    "rationale": "Adopts the promoted 650,089-gas submission (commit 40d69e1) as the direct base, retaining its round 64-67 multi-round prestaging, round-67 PUSH2 width alignment, paired compression core, recognizer dispatch, and universal Lean proof.",
+    "evidence": "All edits are restricted to paired rounds 29-31 (eliminating SWAP10 at the start of round 29 so .e and .k swap slots 1 and 8 across rounds 29-31 until round 31 consumes both via commutative addition, with a 1-byte PUSH2->PUSH3 width compensation on literal 666 in round 29 to preserve all round boundary PCs) and decrementing downstream instruction indices >= 1617 by 1. Total gas drops by 189 gas (3 gas x 63 compression blocks) from 650,089 to 649,900."
   },
   {
     "submissionId": "3ddb8031-c5b8-4774-8e2b-49a9838726d8",
-    "rationale": "Accepted/promoted650152 predecessor supplies the multi-round64-67 staging extension, depth-safe round65 Boolean schedule, default-generator-compatible literal encoding and complete universal Lean proof. Its successor650089 removed the round67 alignment no-op; both changes are retained in this composition.",
-    "evidence": "The650152 predecessor was remotely accepted/promoted after full verification. The650089 successor removed the single JUMPDEST by wideningvalue21; current650079 keeps the no-op removed while reallocating one immediate byte to thevalue24 push at3917 to fit the unchanged trusted generator. Neither literal value changes."
+    "rationale": "Immediate accepted/promoted650152 predecessor supplies the multi-round64-67 staging extension, depth-safe round65 Boolean schedule, default-generator-compatible literal encoding and complete universal Lean proof. This incremental candidate removes only the retained round67 alignment no-op while keeping all downstream byte PCs unchanged.",
+    "evidence": "The predecessor passed protected Comparator replay and49vectors, then remote validation accepted and promoted officialscore650152. AtPC4043 this candidate replaces60155b with610015; allotherbytes are identical. The widePUSH21 retains stackvalue and38byteroundlength, removes1gas percompression, and measured650089clean/dirty with98correct executions. Byte certificates and the round-67 raw theorem passed; the fresh full canonical run independently accepted the universal proof with Comparator and wrote verified score 650089 over 49 vectors."
   },
   {
     "submissionId": "823357cb-d15d-4227-87d4-1a2b66bf1452",
     "rationale": "Published architectural650278 predecessor supplies paired-round cross-operand staging, full universal Lean proof, cache representation and exact instruction layout. The intervening650152 predecessor extended the round64 seam across rounds65and66; those changes are retained here.",
-    "evidence": "Retains the leader\u2019s paired compressor, general-route hash, cache constants, dense memory layout and proof architecture. The intervening650152/650089 submissions extended round64 prestaging across65and66 and eliminated the round67 pad. Currentcomposition adds the separately accepted SDIVboundaryprefix and neutral literalwidth reallocation."
+    "evidence": "The newdelta relative to650152 is restricted to the3bytes at4043..4045 and downstream decodedinstruction-index rebinding. Its retained multi-round64-67 proof and two neutralPUSHwidth exchanges around7/8and46/47 came from650152; the architectural650278 bytecode/proof retains allother paths."
   },
   {
     "submissionId": "d6846540-c9d3-427a-84e0-cbe8c1bf15ac",
@@ -76,7 +76,7 @@
   },
   {
     "submissionId": "eb2a72cc-8fb3-4766-b9d8-f78cd30d464d",
-    "rationale": "Material accepted/promoted650457 predecessor supplies the exact signed-sentinel boundary transition at4638..4658, the generic modular arithmetic theorem, the submission-local SDIV evaluator and its sound lifting to protected StepRunning.sdiv, and RecognitionLift advance support. This code and its proof are now restored into the650089-derived core, not merely consulted as research.",
-    "evidence": "SDIV(c96<<2,9)=0-14*PatternedSwar.M is a kernel-decided constant identity. The restored run_transition theorem equates the ADD-negative opcode trace with the prior SUB recurrence for arbitrary frames/words, without assuming recognition matches. Exact signed source is inherited with unchanged sentinel and clamp meanings; current650079 raw theorem passed with onlypropext/Quot.sound. Generator-safe width reallocation and fullcomposition proof are newintegration work, whose fresh canonical replay passed independently at650079."
+    "rationale": "The signed-sentinel and SDIV boundary-transition research informed exploration and publicnotes were consulted. The final650278-derived code retains its earlier DIV96/MUL14 recurrence, not the experimental signed-prefix bytecode; no SDIV-specific code is claimed to survive in this candidate.",
+    "evidence": "Decoded installed transition4638..4679 contains the retained even-byte sentinel computation and DIV96/MUL14. The signed alternative was previously benchmarked during exploration but replaced when rebasing onto the650278leader. The currentdelta only removes the round67 alignmentno-op and rebinds indices; the dependency is researchprovenance, not a claim that SDIV is installed."
   }
 ]

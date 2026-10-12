@@ -60,9 +60,7 @@ def emin (stop len : UInt256) : UInt256 :=
     (UInt256.add (UInt256.ofNat 251) stop)
 /-- Segment-boundary SWAR step (`+0xf2` bytewise) as the bytecode computes it:
 `u = w ||| (c96 << 2)`, `w'' = w ^^^ ((u - 0x0e..0e) ^^^ u)`; the bytecode
-derives the additive inverse of `0x0e..0e` as `(c96 << 2) SDIV 9`.
-The signed-division and modular-addition identities are proved for all input words
-in `J2RawTransition`, not assumed from scorer vectors. The shifted sentinel has
+derives `R = c96 DIV 96` and `0x0e..0e = 14 * R`. The shifted sentinel has
 bytes 0x81 except for its least-significant byte 0x80; the extra low bits
 do not affect this even bytewise subtraction.  Agrees with `advance 114` on the
 pattern words where a segment ends (`J2Frame.tw_next`, by `decide`). -/
@@ -209,11 +207,12 @@ def finishTemplate : List Instr := [ .op .CALLDATASIZE,
 
 def transitionTemplate : List Instr := [
   .op .JUMPDEST, .op (.Swap ⟨1, by decide⟩),
-  .op (.Dup ⟨5, by decide⟩), .push ⟨3, by decide⟩ (UInt256.ofNat 2), .op .SHL,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 9), .op (.Dup ⟨1, by decide⟩), .op .SDIV,
-  .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .OR,
-  .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .ADD,
-  .op .XOR, .op .XOR, .op (.Swap ⟨1, by decide⟩),
+  .op (.Dup ⟨5, by decide⟩), .push ⟨2, by decide⟩ (UInt256.ofNat 2), .op .SHL,
+  .op (.Dup ⟨1, by decide⟩), .op .OR,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 96), .op (.Dup ⟨7, by decide⟩), .op .DIV,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 14), .op .MUL,
+  .op (.Dup ⟨1, by decide⟩), .op .SUB, .op .XOR, .op .XOR,
+  .op (.Swap ⟨1, by decide⟩),
   .push ⟨1, by decide⟩ (UInt256.ofNat 251),
   .op (.Dup ⟨7, by decide⟩),
   .op .ADD,
