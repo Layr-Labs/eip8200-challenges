@@ -14,15 +14,15 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate
 
 def endian8Code : List Instr := Serialized675316Endian8.code8
-theorem endian8_slice : (Artifact.submissionArtifact.instructions.drop 3432).take endian8Code.length = endian8Code := by rfl
+theorem endian8_slice : (Artifact.submissionArtifact.instructions.drop 3431).take endian8Code.length = endian8Code := by rfl
 def endian8Site : GenericRoundSite Artifact.submissionArtifact .Osaka endian8Code :=
-  StackSiteBuilder.ofSlice endian8Code 3432 endian8_slice
-    (by change 3432 + endian8Code.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice endian8Code 3431 endian8_slice
+    (by change 3431 + endian8Code.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := endian8Code) (by decide)) (by decide)
 theorem endian8_pc : endian8Site.startPC = UInt256.ofNat 4605 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3432) = UInt256.ofNat 4605
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3431) = UInt256.ofNat 4605
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem endian8_end : endian8Site.endPC = UInt256.ofNat 4618 := by
   have h := endPC_eq_pcAfter_sites endian8Site.sites endian8Site.startPC endian8Site.endPC
@@ -31,15 +31,15 @@ theorem endian8_end : endian8Site.endPC = UInt256.ofNat 4618 := by
   exact h.trans (by decide)
 
 def endian16Code : List Instr := Serialized675316Endian16.code
-theorem endian16_slice : (Artifact.submissionArtifact.instructions.drop 3442).take endian16Code.length = endian16Code := by rfl
+theorem endian16_slice : (Artifact.submissionArtifact.instructions.drop 3441).take endian16Code.length = endian16Code := by rfl
 def endian16Site : GenericRoundSite Artifact.submissionArtifact .Osaka endian16Code :=
-  StackSiteBuilder.ofSlice endian16Code 3442 endian16_slice
-    (by change 3442 + endian16Code.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice endian16Code 3441 endian16_slice
+    (by change 3441 + endian16Code.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := endian16Code) (by decide)) (by decide)
 theorem endian16_pc : endian16Site.startPC = UInt256.ofNat 4618 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3442) = UInt256.ofNat 4618
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3441) = UInt256.ofNat 4618
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem endian16_end : endian16Site.endPC = UInt256.ofNat 4632 := by
   have h := endPC_eq_pcAfter_sites endian16Site.sites endian16Site.startPC endian16Site.endPC
@@ -48,15 +48,15 @@ theorem endian16_end : endian16Site.endPC = UInt256.ofNat 4632 := by
   exact h.trans (by decide)
 
 def terminalCode : List Instr := StaggerPersistentReturn.template
-theorem terminal_slice : (Artifact.submissionArtifact.instructions.drop 3452).take terminalCode.length = terminalCode := by rfl
+theorem terminal_slice : (Artifact.submissionArtifact.instructions.drop 3451).take terminalCode.length = terminalCode := by rfl
 def terminalSite : GenericRoundSite Artifact.submissionArtifact .Osaka terminalCode :=
-  StackSiteBuilder.ofSlice terminalCode 3452 terminal_slice
-    (by change 3452 + terminalCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice terminalCode 3451 terminal_slice
+    (by change 3451 + terminalCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := terminalCode) (by decide)) (by decide)
 theorem terminal_pc : terminalSite.startPC = UInt256.ofNat 4632 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3452) = UInt256.ofNat 4632
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3451) = UInt256.ofNat 4632
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def value (h : Compression.HashState) : UInt256 :=
