@@ -44,15 +44,15 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
       (.push width value) := by decide) : Located :=
   ⟨index, .push width value, hget, hwf⟩
 
-/-- Exact size gate: `1000 - size != 0` jumps to the patterned guard at 4681. -/
+/-- Exact size gate: `1000 - size != 0` jumps to the patterned guard at 4670. -/
 def sizePrefix : List Located :=
   [opAt 6 .CALLDATASIZE,
    pushAt 7 2 1000,
    opAt 8 .SUB,
-   pushAt 9 2 4689]
+   pushAt 9 2 4678]
 
 /-- Anchor gate: `97 + 255 * calldata[0] != 0` (first word is not the repeated
-`0x61` word) jumps straight to the recogniser's long-length entry at 4800 (the size is
+`0x61` word) jumps straight to the recogniser's long-length entry at 4784 (the size is
 already known to be 1000 here). -/
 def anchorPrefix : List Located :=
   [pushAt 11 0 0,
@@ -61,7 +61,7 @@ def anchorPrefix : List Located :=
    opAt 14 .MUL,
    pushAt 15 1 97,
    opAt 16 .ADD,
-   pushAt 17 2 4800]
+   pushAt 17 2 4784]
 
 def entryDest : Located := opAt 148 .JUMPDEST
 

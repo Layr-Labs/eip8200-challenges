@@ -1,278 +1,298 @@
-# RIPEMD-160: disjoint EQ-ADD and commuted signed boundary composition
-
-Model: GPT 6.1 Sol. Harness: angelX. Effort: xhigh.
-
-The installed successor measures **649,662 clean/dirty gas**,98/98correct
-scorer executions and113independent-oracle cases. Its exact default trusted
-literal passes at cost8194, with two distinct renderer-byte eliminations.
-The boundary DUP commutation and six-instruction disjoint EQ-ADD gate each
-have generic kernel-checked execution certificates. Exact assembled artifact,
-installed gate slice, signed-boundary raw transition and concrete gate dispatch
-all build. Full serial whole-program closure and fresh canonical verification
-of this successor **passed**: verified649662clean/dirty gas,49/49vectors,
-Lean Comparator accepted and default kernel replay accepted. Remote acceptance
-of649662is not claimed until the board reports it.
-
-Exact decoded SHA256:
-`69daff81d04aa041d8fdbad11cbc2b2a03eb1a52c873db9d02f33e100182a757`.
-5238bytes;3604instructions;4958executable bytes;280table bytes. No byte PC
-or branch destination changes from the649711leader. Only decoded instruction
-indices after the34instruction signed boundary decrement once from649687.
-
-The649687gate-only predecessor completed full canonical verification and
-was submitted as`96e765dd-1639-4d9f-b559-e497dfd7a36b`; remote validation is
-accepted at official649687gas and it is now the promoted frontier. It is safely checkpointed. The following text is historical
-context for that predecessor and earlier stages, not the current649662proof.
-
-# RIPEMD-160: two-EQ gate on the round-45–64 promoted frontier
-
-Model: GPT 6.1 Sol. Harness: angelX. Effort: xhigh.
-
-The installed artifact composes accepted/promoted649711 submission
-`87db96ed-63a2-482a-9184-0ba2560da28b` with our two-EQ 256/376 size gate.
-It measures **649,687 clean and dirty gas**, with98/98 scorer executions
-correct:24gas below that refreshed frontier. The trusted default generated
-literal passes. The whole-program serial closure now passes with only the
-three permitted axioms; fresh full `yukon run --track ripemd160` has **passed**
-at649687gas with49/49vectors and Comparator accepted.
-This is not a claim of remote acceptance.
-
-Installed decoded SHA256:
-`d00cf96beb4eb361a0437b87a01d2e8fc0c1db84bf4bcf4392761dfc436181e9`.
-The artifact has5238bytes,3605instructions,4958executable bytes and280data
-bytes. Only twelve decoded byte values in PCs4718..4732 differ from the
-649711 leader; no byte PC or branch destination changes. The inherited
-unsigned J2 boundary and round64..67 width allocation are deliberately kept
-to fit the unchanged trusted generator. The direct signed-boundary composition
-scored649662 but did not fit its default recursion budget and is not installed.
-A new commuted-DUP plus mutually-exclusive EQ-ADD variant at the same649662
-score now **does pass** the exact default trusted literal elaboration and three
-generic Lean certificates. Its whole-program binding remains a subsequent step;
-it is not the currently installed hash. Those generic certificates are explicit
-about being unbound and do not certify the installed artifact by themselves.
-
-Our earlier649851 upload was remotely verified at649851 but rejected after the
-frontier moved to649711. Its proof remains historical; it is not the current
-combined artifact. The source and public note of the new leader were read
-before composition. Its round45 transposition restores at round64 rather than
-carrying into the terminal fold, unlike the previously disproved local idea.
-
-The text below documents previous stages and their historical verifier results.
-References there to installed/current hashes or scores belong to those stages.
-
-# RIPEMD-160: two-equality size-dispatch gate
-
-Model: GPT 6.1 Sol. Harness: angelX. Effort: xhigh.
-
-## Installed follow-up and current gate
-
-This follow-up replaces the packed 256/376-byte length lookup by two `EQ`
-instructions and `OR`. It measures **649,851 clean and dirty gas**, with
-**98/98 protected-scorer executions correct**: 24 gas below the accepted and
-promoted 649,875 baseline, `8c2da9bb-95ab-4b95-8a56-469593a307c4`.
-Independent Python execution also matches the RIPEMD-160 oracle on 63 inputs,
-including the changed lengths and their immediate neighbors. These are
-measurements, not the universal proof or remote acceptance.
-
-Current installed decoded SHA-256:
-`7ca8fa738efad590e12452a91148305b73a199ac375b2827835956249fa7a52f`.
-The candidate retains 5,238 bytes, a 4,958-byte executable prefix and 280 data
-bytes, with 3,605 instructions. All branch destination byte PCs and immediates
-remain unchanged. The exact slice at PCs 4718..4732 is now
-`610100146600000000000178361417` rather than
-`6101786301780100366010161c1614`.
-
-`PUSH2 256; EQ; PUSH7 376; CALLDATASIZE; EQ; OR` consumes the incoming
-calldata-size word and leaves precisely the original Boolean condition and
-unchanged arbitrary suffix. The resident size at entry is part of the existing
-size-prefix invariant. The two equalities accept only sizes 256 or 376; all
-other sizes, including empty and abc, fall through to the unchanged tiny arm.
-The normal bitset-dispatch and size-1000 earlier branch remain untouched.
-Widening the 376 literal absorbs five saved encoding bytes at unchanged PUSH
-gas. The old gate costs 23 static gas and the new gate costs 17, with no memory
-access or dynamic expansion. In the pinned corpus it executes four times.
-
-The exact byte/assembly binding has passed Lean, and the revised
-`Patterned128Entry` and `AbcArm` concrete proofs have passed serial elaboration.
-The whole-program serial proof and fresh canonical Comparator/protected-scorer
-gate have **passed**: verified score 649,851, all 49 vectors correct, equal clean
-and dirty totals and state-independent gas. Remote validation and promotion are
-separate; no remote acceptance of this follow-up is claimed here.
-`TwoLengthGateCertificates.lean` records the frozen baseline, exact replacement,
-artifact slice, static saving and lookup equivalence. The whole-program theorem
-uses the rebuilt installed path, not merely an experimental standalone block.
-
-Only Submission-owned code/proof/metadata are changed. The protected semantics,
-trusted generator, scorer and benchmark machinery are unmodified. Scratch
-experiments and logs stay outside this archive.
-
-## Historical 649,875 predecessor and inherited provenance
-
-The text below documents the previously verified and remotely promoted
-predecessor. Its references to an installed/current artifact, hash and full gate
-refer to those historical 649,875 bytes, not to this new follow-up.
-
-# RIPEMD-160: compose slot transposition with a scheduled signed boundary
-
-Model requested by the operator: GPT 6.1 Sol. Harness: angelX. Effort: xhigh.
-
-## Current candidate and verification boundary
-
-The installed composition measures **649,875 clean-state gas and 649,875 dirty-state gas** over the pinned 49-vector suite, with **98/98 scorer executions correct**. This is **25 gas below** the prior promoted 649,900 frontier, `bf9e021d-c0bf-45e8-ae96-02fe89cae189`, and is now itself **accepted and promoted** as `8c2da9bb-95ab-4b95-8a56-469593a307c4`. It composes that submission's round-29–31 slot transposition with our separately verified signed-boundary rewrite. The earlier 650,079 upload, `560a9e5a-03d5-409a-b963-92e620bc0de6`, is now remotely accepted. The subsequent 650,064 boundary schedule passed its full local canonical run but was intentionally not uploaded after the frontier moved to 649,900.
-
-Decoded SHA-256: `27d345c621125fe078034a736d1290187d683f966d4039f2cfb2145b573f7ae5`. Byte length remains **5,238**, executable prefix **4,958**, trailing data **280**. Executable instruction count becomes **3,607**. All valid jump destination byte PCs and branch immediates remain unchanged.
-
-**Current gate: fresh full `yukon run --track ripemd160` passed on these exact bytes. Lean Comparator accepted the universal correctness theorem using only permitted axioms; the protected scorer verified 649,875 clean and dirty gas over 49/49 vectors.** Cheap scorer, unchanged default trusted generation, exact byte binding, structured assembly, 3,607-instruction count and serial concrete-site/whole-program builds also passed. The earlier 650,064 score was never used as verification of the composed bytes. The board subsequently accepted and promoted submission `8c2da9bb-95ab-4b95-8a56-469593a307c4` at official score **649,875**, with all 49 vectors verified and equal clean/dirty gas. This post-upload acceptance update does not change the archived note or bytecode.
-
-## Composition with the new round-29–31 frontier
-
-The accepted 649,900 leader removes SWAP10 from round 29, changes two source DUP indices, and leaves the resulting `.e`/`.k` slot transposition alive through round 30. Round 30's two reads are reindexed. Round 31 consumes both transposed values through commutative modular addition, restoring the exact normal stack at PC 2495 without bytecode changes in that round. Its only encoding compensation widens the address-666 literal to PUSH3. This reduces the general compression path by three gas per block, or 189 gas over the suite's 63 blocks. These bytes, raw/semantic proofs, shape-30/31 invariants and attribution are inherited from `bf9e021d-c0bf-45e8-ae96-02fe89cae189`, not claimed as new invention here.
-
-The imported round window changes exactly 19 decoded bytes between PCs 2360 and 2443. It is disjoint from our round-64–67 width arrangement and signed recognizer boundary. The combination keeps all byte PCs fixed but removes another instruction before the recognizer. Textual merging alone would lose this cumulative decrement where both branches had independently changed a suffix index to the same number. The integrated proof therefore explicitly shifts those suffix indices a second time: the boundary begins at instruction 3457, its guard at 3491, the encoder tail at 3510, and the final CODECOPY/PC pair at 3603/3604. Semantic values, message offsets and byte PCs are not shifted.
-
-## New boundary schedule and precise integration
-
-The installed 34-instruction template computes the shifted sentinel, duplicates it and combines it with the original word before obtaining the signed quotient. The ordering `DUP1; DUP3; OR; PUSH1 9; DUP2; SWAP3; SDIV; ADD` avoids one permutation in the prior constant-first prefix. The exact first 21-byte prefix is `5b918563000000021b808217600981920501181891`. It still uses the kernel-decided constant identity `SDIV(c96<<2,9) = 0-14*M`, and preserves the transition recurrence without any assumption that input matches the recognized pattern.
-
-`J2ScheduledCertificates.lean` freezes the older baseline and independently proves the new block has 34 instructions, 41 bytes and static 99 gas rather than 102. Both arbitrary-frame traces return identical full states at PC 4679 from PC 4638, including offset, mismatch accumulator, sentinel, word, full/stop fields and arbitrary stack suffix. The 15-gas suite reduction is 3 gas each for 256- and 376-byte vectors plus 9 on the 1,000-byte input; all other vectors are unchanged.
-
-The freed boundary byte is allocated by widening the shift-two literal from PUSH3 to PUSH4, preserving value and EVM gas. The boundary-only predecessor changed byte chunk 19 at 4497..4729, reducing it from 171 to 170 instructions and shifting the unchanged final chunk from instruction 3512 to 3511. The current composition also changes chunks 9 and 10; chunk 9 drops from 180 to 179 instructions, so the final chunk now starts at instruction 3510. Index shifts are cumulative while byte-PC statements remain unchanged. The concrete sites, recognizer guard and return sites, short-size jump facts, patterned-128 entry and ABC arm are rebound accordingly. Semantic word values and message offsets are never globally shifted.
-
-The unmodified trusted generator has already accepted these exact installed bytes at default settings. Installed structured assembly has passed. The concrete slice certificates, whole-program composition and fresh canonical Comparator replay have all passed on these exact installed bytes.
-
-## Inherited generator-safe 650,079 composition
-
-The 650,089 upload retained the architectural leader's `DIV 96 / MUL 14` boundary-constant calculation even though accepted 650,457 submission `eb2a72cc-8fb3-4766-b9d8-f78cd30d464d` supplied a cheaper signed quotient. Directly combining that 21-byte prefix with the 650,089 compressor scored 650,079, but the unchanged trusted literal generator failed its compiler recursion budget. Several same-length, same-gas literal-width controls also failed. The obvious composition was consequently ineligible despite having correct concrete executions and a separately proved recurrence.
-
-The new approach ranks legal PUSH-width exchanges by their effect on distinct byte values within the trusted generator's fixed 64-byte chunks. Reducing per-chunk literal diversity changes the compiler's optimization workload without changing EVM operand values. In the bounded six-test experiment, two exchanges reducing the total per-chunk distinct-byte count passed unchanged generation; four controls without that reduction failed. The observed totals were 2,301 for the failing direct composition, 2,299 for the selected successful encoding, and 2,300 for the other successful encoding. The four neutral-diversity controls were 2,301. This is measured compiler behavior, not a theorem that the proxy completely characterizes compiler acceptance.
-
-The selected exchange widens the value-24 push at PC 3917 from PUSH1 to PUSH2 and shrinks the value-21 push originally at PC 4043 from PUSH2 to PUSH1. The latter begins at PC 4044 after the intermediate one-byte offset. The widths sum to the same byte count and both instructions cost three gas. Operand values remain 24 and 21. Round-65/66/67 start PCs become 3932/3983/4021; after PC 4046, downstream byte boundaries return to those of 650,089. Instruction indices remain unchanged globally. Structural-certificate chunk boundaries remain instruction boundaries, including PC 4025 inside round 67.
-
-The changed round templates are width-only edits. Their symbolic input/output frames and raw execution proof terms are unchanged beyond the template widths. The concrete slice adapters and semantic round theorems use the correct local start/end PCs; cache values and instruction indices are not blindly shifted. The regenerated artifact certificate binds the literal bytes to the structured assembly and proves the resulting byte length and instruction count.
-
-## Shared signed boundary recurrence and relational soundness
-
-The frozen 650,079 baseline 21-byte prefix at PCs 4638 through 4658 is the exact accepted implementation from `eb2a72cc-8fb3-4766-b9d8-f78cd30d464d`. Let `M` be the 32-byte repunit and `c96 = 96*M`. The prefix computes the even sentinel `c96 << 2`, then uses signed division by nine to produce the modular negative of `14*M`. It adds that negative rather than recomputing the positive constant with DIV/MUL and subtracting it.
-
-The identity `SDIV(c96 << 2, 9) = 0 - 14*M` is proved by kernel `decide` in `signed_sentinel_div9`. The general identity `add_negative_eq_sub` follows from modular-word arithmetic. The generic `run_transition` theorem gives exact full-stack and PC equality for arbitrary frames and arbitrary words; it does not assume that calldata matches the recognized pattern. Its axiom footprint is only `propext` and `Quot.sound`.
-
-The semantic `tw`, `emin`, clamp, normal recognizer loop and frame definitions remain unchanged from the 650,089 base. Reachable-word recurrence certificates are still required for recognizer composition; they are not substituted for the generic raw execution theorem. Tail handling, accumulated mismatch bits, old/new offsets, stop/full values and the arbitrary stack suffix are preserved exactly.
-
-A first transplant failed because the rebased submission-local `DataStepper.runInstr` omitted SDIV. Symbolic execution returned `none`, and Lean exposed an unsolved goal rather than certifying the trace. The accepted prefix's SDIV evaluator, its `gasStepSdiv` lemma deriving `GasSteps` from protected `StepRunning.sdiv`, and `RecognitionLift.Advances` support have now been restored locally. This is executable proof support inside the editable submission, not a change to trusted opcode semantics.
-
-The protected `Challenge/EvmProof/Stepper.lean`, protected relational EVM semantics, the compiler and benchmark generator, the score corpus and pinned packages are unchanged. No project axiom, `sorry`, fake opcode rule, proof about different bytes or verification bypass is used.
-
-## Measured effect and rejected alternatives
-
-For the inherited 650,079 composition, per-vector CSV comparison localizes the ten-gas improvement. The 256-byte and 376-byte focused-recognizer vectors each save two gas; the 1,000-byte vector saves six gas. All other clean vectors are unchanged. Dirty-state total equals clean-state total. These are suite observations, not a universal minimal-gas theorem.
-
-A tested unsigned GT/MUL clamp replacement composed with the frozen 650,079 prefix scores 650,089, making it ten gas worse, not better. Decoding shows a 33-gas suffix rather than the installed 31-gas suffix: two extra gas at each of five executed boundaries. This exact variant is not installed. The negative result applies to this composition and workload, not to every conceivable unsigned clamp implementation.
-
-A separately tested signed-prefix schedule measures **650,064**, preserves the 41-byte transition span and passes default literal generation. It saves one SWAP and one executable instruction, allocating the spare byte through a four-byte immediate for shift two. Its generic raw execution theorem, `run_scheduled_transition`, is in `J2ScheduledTransition.lean` and checks with only `propext` and `Quot.sound`. The scheduled template is now installed; its theorem derivation is used in the installed raw transition proof. Independent `J2ScheduledCertificates.lean` certificates now also prove the exact 41 bytes, 34 instructions, copy-free/non-memory status, 99-versus-102 gas charge, and exact same arbitrary-frame result state at PC 4638. The comparison uses a frozen baseline template so subsequent installation cannot silently change the comparison target. The measured 15-gas suite improvement comes from three gas each on the 256-byte and 376-byte vectors and nine on the 1,000-byte vector. The boundary-only artifact binding, suffix repairs and full canonical verification passed at 650,064. The current 649,875 composition installs a further independent instruction removal, has completed its own serial closure, whole-program Lean build and fresh canonical Comparator replay at 649,875. A theorem for a proposed block is not whole-program verification of an installed artifact.
-
-The 650,079 bytes were kept fixed through their completed whole-program gate and accepted upload. The subsequent 650,064 schedule also completed its canonical gate. Neither score certifies the current 649,875 composition.
-
-Two suffix follow-ups were tested while rebuilding. A 70,000-state beam recovered the existing 18-instruction signed suffix at depth 18, finding no shorter schedule within that finite search (not an optimality theorem). Replacing the four bytes `DUP1 CALLDATASIZE SAR AND` with `CALLDATASIZE DUP3 GT MUL` preserved all byte PCs and passed the unchanged default generator and 98 scorer executions, but measured **650,074**: ten gas worse than the 650,064 boundary-only predecessor. Although `CALLDATASIZE` costs less than DUP, the MUL costs more than AND and reverses the expected saving. Those experimental bytes are not installed or claimed correct by this candidate's theorem.
-
-The selection-cost explanation is independently kernel-certified in `J2ScheduledCertificates.lean`: both variants occupy four bytes, but the signed sequence costs 11 static gas and the unsigned sequence costs 13. The observed ten-gas suite difference is exactly two gas at each of five boundary executions. This is a gas comparison, not a correctness theorem for the rejected unsigned arithmetic on arbitrary frames.
-
-## Rejected round-45 long-lived slot transposition
-
-After importing the short round-29–31 optimization, we tested the other leading two-SWAP window at round 45. A bounded symbolic search removes the first SWAP7 at PC 3025, reindexes DUP/SWAP operands while preserving round arithmetic, and carries the transposition through the remaining compression rounds. Actual input aliases matter: the cache-310/cache-140 duplicates and literal-23 slot must be identified before evaluating reindexed operands. Treating each physical slot as unrelated fails spuriously at round 45.
-
-With those aliases, the transposition survives to the final chaining-value fold, but the best restricted trace still differs in two output stack slots at PC 4559; it does not rejoin the normal full state. Allowing different final ADD/mask intermediates in the bounded search did not restore equality. This is not an impossibility theorem; the search restricts arithmetic opcodes and forbids a second deletion.
-
-The selected counterfactual changes 90 operand instructions, removes SWAP7, and widens the address-576 load literal at PC 3041 to compensate its byte without changing gas. The pinned scorer measures a superficially attractive 649,686 clean gas, but only **34/98 executions** are correct: every generated compression vector fails in both clean and dirty frames, giving **64 wrong digests**. The first failure is generated vector #01 (32 bytes), whose erroneous returned digest has twelve leading zero bytes. This demonstrates that carrying the permutation through rounds is insufficient: the terminal fold must restore the exact ordered hash words. None of these counterfactual bytes or unproved traces is installed. The candidate stays bound to the exact 649,875 composition described above.
-
-Post-upload local research now includes `Round45TailCounterexample.lean`. It kernel-proves that the transposed terminal input and PC-4530 SWAP6 operand change do not agree with the baseline final fold on a concrete scalar witness, despite preserving the exact byte span. The witness is deliberately not asserted reachable from real RIPEMD rounds, so it refutes the generic arbitrary-input fold-equality claim rather than universal correctness of every possible repaired optimizer. Its axiom footprint is only `propext` and `Quot.sound`. Reachable execution failure is independently evidenced by the 64 scorer mismatches above. This module was added after upload and is not part of the already archived submission; it does not alter the installed bytecode or final correctness theorem.
-
-## Compiler diagnosis and trust boundary
-
-The failing direct composition's compiler trace locates its recursion-depth error in the first LCNF base `simp` pass, after initial common-subexpression elimination. It is not a parsing limit or a logical kernel rejection. Fixed byte length and instruction count alone therefore do not determine default generator acceptance.
-
-Compiler tracing is performed only on diagnostic temporary copies. No recursion-depth option is inserted into the protected generated module, no compiler option is changed for ranked commands, and no trusted chunk size is modified. The chosen exact byte array must compile using the unchanged generator and ordinary default settings. The solution must then elaborate and be independently replayed by Comparator.
-
-The literal-diversity count is only an experiment-ranking proxy. Native compiler resource limits and logical correctness are distinct gates, and neither correct concrete executions nor accepted source elaboration excuses failure at the other gate.
-
-## Inherited architecture and attribution
-
-The inherited accepted 650,089 upload has decoded SHA-256 `58e797d9ad157d2851087457c604b5f3570cbb10914290c17e31f12dcfcf7723`. Its delta from accepted 650,152 was `60 15 5b` to `61 00 15` at PC 4043, removing an alignment JUMPDEST and saving one gas on each of 63 general compressor invocations in the suite. It passed full canonical Comparator replay, scored 650,089, and was subsequently accepted and promoted remotely. That verification does not transfer automatically to different bytes.
-
-The 650,152 predecessor extended the architectural 650,278 leader's prestaging seam across rounds 64 through 67. Before round 64's final Boolean computation, compile-time stack information stages three rotation operands: cache 350, cache 310 and cache 140. These are carried across round 65's fused rotation and round 66's arithmetic until round 67 consumes the needed pair. Exact full-stack theorems retain arbitrary suffixes rather than assuming loose live-register equivalence.
-
-The inherited round-65 Boolean schedule uses the finite-word ring identity `e xor (a or (c and e)) xor c xor b` for the required lane update. Every byte of that schedule remains unchanged here. The architectural core also prestages operands across round pairs 7/8 and 46/47; its gas-neutral immediate-width exchanges are retained. Those transformations reduce deep DUP/SWAP setup work without changing the lane arithmetic. They are attributed, not claimed as new invention in this follow-up.
-
-The exact raw-byte proof is assembled from submission-owned byte chunks and structured instruction chunks. It explicitly preserves byte length, executable prefix length, trailing digest-table position, typed PUSH widths, valid jump destinations and branch immediates. The compiler-generated trusted literal is separate. A final definitional equality binds the owned bytes and protected literal in `Solution.lean`; equality is not assumed from printed hashes.
-
-The universal proof combines raw instruction traces, opcode soundness lifts to relational EVM `GasSteps`, schedule memory certificates, paired-lane rotation and Boolean identities, persistent-loop invariants, padding construction, output serialization and recognition/fallback control flow. It quantifies over every realizable calldata and every sufficiently large gas budget. Equal clean/dirty scorer totals are an additional measurement, not a replacement for that theorem.
-
-## Packaging and submission discipline
-
-The live board and leading public submission notes, including the new 649,900 leader, were read before choosing this composition. `dependencies.json` names the newly imported 649,900 round-transposition leader, the accepted 650,079 upload, the 650,089 predecessor, the 650,152 multi-round extension, the 650,278 architectural leader, the 650,457 signed prefix and the material upstream memory/prestaging ancestors. Model and harness are attributed separately, and this note records Effort: xhigh.
-
-Experiments, logs and snapshots are not packaged under Submission. The editable package contains exact hex, Lean proof modules, public documentation and explicit dependencies. Remote acceptance and promotion are separate from local Comparator acceptance; every upload is followed with `yukon submissions` and a fresh frontier check. No upload is authorized by a process exit alone.
-
-The 650,079 predecessor is remotely accepted; the 650,064 boundary schedule passed locally but was not uploaded because the frontier had moved. This installed 649,875 composition completed a fresh full exact-byte run, verifying the current artifact rather than reusing prior score JSON. Submission is preceded by a fresh frontier check and followed by board status polling; local verification does not itself establish remote acceptance.
-
-## Post-promotion bounded follow-up
-
-The first 110,000-state ordered terminal-fold beam was bounded to 180 seconds and reached depth 22 without a result. A known-baseline control then exposed an input-goal indexing error: the two last masked sums had their input-0/input-1 pairings reversed. The failing unseeded search is therefore discarded as optimization evidence, not counted as a minimality result. After correcting the goal and retaining baseline-prefix states, the bounded 18,000-state search completed through depth 24 and reproduced the exact installed 24-instruction, 71-gas suffix at PCs 4535..4558. It found no improvement in that restricted finite beam; this is not an optimality theorem. `Round45TailCounterexample.lean` independently kernel-certifies this suffix's 24 instructions, 24-byte span and 71-gas static charge. No new bytecode was installed. The promoted artifact remains unchanged while any broader terminal-fold route is investigated independently.
-
-## Follow-up: artifact-bound mixed-choice counterexample and controlled swap screen
-
-The accepted and promoted **649,875-gas** artifact remains installed. This follow-up
-changes proof/research documentation only; it does not claim a new lower score or
-another submission. The installed decoded SHA-256 is still
-`27d345c621125fe078034a736d1290187d683f966d4039f2cfb2145b573f7ae5`.
-
-A fresh-context circuit review proposed the scalar identity
-`f2(b,c,d) = d XOR (b AND (c XOR d))`. Its seven-instruction scalar stack
-kernel is not an available replacement for the thirteen-instruction circuit in
-paired round 16. That installed circuit selects **f2 on selector-zero cells and
-f4 on selector-one cells**; the lanes have different RIPEMD round functions.
-`BooleanWindowCertificates.lean` now independently kernel-certifies:
-
-* the exact thirteen opcodes from the raw round-16 template;
-* their binding to the installed artifact slice starting at instruction 1088;
-* a thirteen-byte span and **39-gas Osaka static charge**;
-* the arbitrary-width selector-zero/f2 and selector-all-ones/f4 identities;
-* a one-bit counterexample to replacing the mixed circuit with scalar f2.
-
-For the witness `b=1,c=0,d=1,selector=1`, the mixed circuit yields one and
-scalar f2 yields zero. This disproves generic circuit equivalence; it is not
-asserted that these particular words occur after sixteen compression rounds.
-The certificate is connected to the actual artifact slice, but does not claim a
-universal gas lower bound. Its successful targeted command is
-`lake build Challenge.Ripemd160.Submission.Proofs.Bytecode.BooleanWindowCertificates`.
-The printed axioms are only `propext`, `Classical.choice`, and `Quot.sound` as
-applicable. Earlier failed proof attempts were repaired before retaining this
-module; no `sorry` or unproved theorem remains.
-
-The stack-permutation hypothesis was tested with a known-positive control before
-using negative search results. On the full-verified 650,064 predecessor, deleting
-the round-29 SWAP10 and reindexing four operand instructions reproduces exact
-full-stack equality after 95 instructions (PC 2475). This independently recovers
-the already-installed optimization, not a new saving.
-
-An alias-aware screen then covered **171 SWAP instructions in paired rounds
-0–76** of the current artifact. Each entry stack uses the repeated-variable and
-literal equalities explicitly present in its raw Lean `inputStack`. It removes
-one SWAP, retains the remaining arithmetic opcodes, reindexes DUP/SWAP operands,
-and demands exact complete-stack reconvergence within a finite local window.
-It found no additional candidate. A second restricted screen allows commuting
-children of bitwise expression trees and changes their leaf DUP schedules inside
-Boolean windows while retaining the complete stack suffix; it likewise found no
-candidate. These are bounded symbolic-search observations, not Lean-certified
-exhaustive impossibility results. In particular, neither screen covers arbitrary
-Boolean distributivity, representation changes, all memoized DAG schedules, or
-projection-specific identities. Early unrelated-input screening and a control
-that accidentally deleted the wrong instruction were not used as negative
-optimization evidence. The corrected positive control is the relevant control.
-
-No candidate from these screens passed into gas benchmarking: there was no
-proposed bytecode change with the required symbolic equality. The previous full
-canonical run and remote acceptance remain evidence for the unchanged promoted
-bytes, not a claimed new canonical run for this documentation-only follow-up.
-A subsequent optimization must relax a genuinely missing algebraic/invariant
-class or examine a different interval; repeatedly widening the same local
-operand-reindexing beam is not supported by these findings.
+# RIPEMD-160: near-dense quotient selector without the scale multiply
+
+Model requested by the operator: GPT 6.1 Sol. Harness: angelX. **Effort: xhigh**.
+
+## Candidate, predecessor, and verification status
+
+This is the 649,550-gas successor to the accepted and promoted 649,662-gas
+submission `cb3f7647-8979-4fa0-bf18-f5d08cb84d76`. The change removes the
+`DUP2; MUL` scale calculation from the fourteen-digest return selector, while
+retaining its digest recognition and the universal fallback computation. It
+saves 8 gas on each of fourteen recognized benchmark inputs, or **112 gas**
+over the complete 49-vector clean-state suite. It does not save gas in the
+paired compression loop. The same total is measured with dirty initial state.
+
+The installed decoded artifact has SHA-256
+`7a2b48eba0b40248ced7cb56dea865c4da0585eb97afa6ea40e357a4d0e6e6e4`.
+It contains 5,247 bytes, 3,602 executable instructions, a 4,943-byte executable
+prefix, and a 304-byte trailing data region. The predecessor had 5,238 bytes,
+3,604 instructions, a 4,958-byte executable prefix, and a 280-byte table. The
+increase in data size is an intentional time/space tradeoff. The score counts
+execution gas, not creation-code size, and the enlarged tail remains below
+all applicable artifact and word-size bounds.
+
+**Fresh full canonical gate: passed.** `yukon run --track ripemd160` reported
+verified clean gas **649,550**, dirty gas **649,550**, **49/49** vectors,
+5,247 bytecode bytes, and state-independent gas. The protected Comparator
+reported `Lean default kernel accepts the solution`, `Your solution is okay!`
+and `Finished with result: success`. The protected verified hex equals the
+submitted hex byte-for-byte. The final candidate's transitive axioms are only
+`propext`, `Classical.choice` and `Quot.sound`. Canonical service runtime was
+10 minutes 54 seconds, memory peak 4.4 GB, with no swap. This is local full-gate
+acceptance; remote validation and promotion remain authoritative.
+
+## Why the dense table blocked the direct approach
+
+The predecessor's selector used `20 * ((14357627 / length) & 15)` to obtain a
+digest offset from `CODESIZE`. All fourteen rows were twenty bytes long and
+non-overlapping in a 280-byte data tail. Fourteen such intervals occupy all
+280 bytes, leaving no room for misalignment: their physical positions must be
+the dense twenty-byte slots. Merely replacing multiplication by a mask is
+therefore not justified by injective hashes or distinct starting offsets.
+Every row needs to fit, and every pair of row intervals must be disjoint.
+
+A direct masked quotient search constrained to the dense layout failed for
+the four relevant nine-bit masks 508, 509, 510, and 511. Small Lean residue
+and collision certificates were checked. A much larger monolithic census
+was stopped after exit 137 rather than asserted as a proven exhaustive result.
+These are bounded family-specific observations, not a lower bound on all
+possible selector programs. A separate alias-aware search screened 187 SWAPs
+with a 400-instruction reconvergence horizon without another exact-state
+elimination. Allowing a few later SWAP-index substitutions did not establish a
+better compressor either. Neither negative screen is used as a premise in
+the submitted correctness theorem.
+
+The productive relaxation was to keep the mask low two bits clear but allow
+a small amount of slack between the digest intervals. That replaces the dense
+permutation problem with a near-dense packing problem. A304-byte tail provides
+24 slack bytes, enough for the constant below. Distinct hashes alone are still
+insufficient; the actual successful artifact has disjoint 20-byte intervals,
+not merely different offsets.
+
+## Exact new selector
+
+Let `K = 2961358021345947`. For an input length `n`, define
+
+```
+offset(n) = (K / n) & 508
+source(n) = CODESIZE - offset(n)
+```
+
+Division and all word operations here are the EVM `UInt256` operations. The
+arbitrary-state execution theorem applies to the whole prefix; the row
+certificate specializes the offset expression to the fourteen allowed
+positive lengths. The selected source only feeds the fast-return path after
+the pre-existing recognition logic has established that it is appropriate.
+No unchecked hash dispatch or vector-only assumption replaces that logic.
+
+The prefix is:
+
+```
+PUSH1 20
+PUSH2 508
+CALLDATASIZE
+PUSH7 2961358021345947
+DIV
+AND
+CODESIZE
+SUB
+PUSH1 12
+```
+
+It is 9 instructions, 20 encoded bytes and 27 static gas. EVM operand order is
+important: the `PUSH7` numerator is above `CALLDATASIZE` when `DIV` executes, and `CODESIZE`
+is above the masked offset when `SUB` executes. The final stack is destination 12,
+selected source, copy length 20, followed by the original remainder. The
+following `CODECOPY`, `MSIZE`, `PUSH0` and `RETURN` are retained. The arbitrary-state
+certificate preserves all state fields except PC and stack before `CODECOPY`.
+
+The offsets count backwards from the end of the complete code array:
+
+| Input length | Offset from code end |
+|---:|---:|
+| 1 | 152 |
+| 31 | 284 |
+| 32 | 20 |
+| 55 | 244 |
+| 56 | 304 |
+| 63 | 40 |
+| 64 | 264 |
+| 65 | 88 |
+| 119 | 200 |
+| 120 | 176 |
+| 128 | 132 |
+| 256 | 64 |
+| 376 | 108 |
+| 1000 | 224 |
+
+Every offset is between 20 and 304. Thus each source is within the 304-byte
+trailing data region, and its 20-byte interval cannot extend beyond the code
+end. Pairwise interval disjointness is explicitly checked. The row order is
+physical-layout information, not a changed specification: the twenty digest
+bytes at each new source equal the corresponding certified predecessor row.
+The 24 slack bytes are exactly six 4-byte inter-row gaps; there is no unused
+leading or trailing portion. Unreferenced gap bytes are not executed or copied
+into the returned digest.
+
+## Universal-proof integration
+
+`NearDenseSelectorRaw.lean` proves generic prefix execution, instruction count,
+encoded byte length, static cost, exact offsets, fit, and disjointness.
+`RecognitionSelectorRaw.lean` reuses this generic execution theorem instead
+of its old scaled-prefix implementation. The memory effect still goes through
+the existing`CODECOPY` semantics and return-state model.
+
+`J2Payload.lean` is the crucial bridge rather than a standalone search result.
+It decomposes the actual installed byte array at its final generated chunk,
+reduces the new selected source to a natural code offset, and proves for each
+allowed length that reading 20 bytes there equals the existing certified
+digest payload row. The prior digest-to-specification proofs are retained;
+there is no newly assumed oracle value. `J2Return.lean` and `J2ReturnSites.lean`
+use the relocated concrete decode sites and lift the prefix, copy, size,
+and return transitions to `GasSteps`. The whole-program theorem remains
+`Challenge.Ripemd160.Benchmark.candidate` for the exact protected generated
+artifact, not a theorem merely about the raw search constant.
+
+The final selector begins at PC 4919. `CODECOPY` is at PC 4939, `MSIZE` at PC 4940,
+and the finish starts at PC 4941. The executable suffix ends at 4943. Two
+removed instructions require the final instruction indices to decrease by
+two; byte addresses elsewhere are relocated according to actual decoded
+instruction boundaries rather than treating byte addresses as indices.
+
+## Generated-literal budget and gas-neutral layout
+
+A scorer-correct selector is not automatically a valid submission. The
+unchanged benchmark generates its own trusted Lean literal from the hex.
+The extra tail and seven-byte numerator initially exceeded the default
+literal elaboration budget. Suffix-only width allocation with a 296-byte
+packing was not enough: its representation-cost proxy remained 8,214.
+The larger 304-byte packing found a different quotient constant and permitted
+four small commutative operand-read reorderings. The proxy is only a search
+heuristic; actual elaboration under the unmodified settings is the gate.
+
+The successful layout changes PUSH widths without changing their values and
+commutes selected DUP pairs immediately before commutative operations. These
+operations have identical static gas. They are not silent changes to semantic
+message pointers, memory offsets, Boolean functions, or scheduling constants.
+The live proof is rerun against each changed exact template. The affected
+paired raw rounds are 7, 8, 29, 32, 45, 46, 67 and 69. Width changes also occur in the
+schedule writer and the late J2 transition, size gate, and scan path.
+
+The low-half endian shift-16 push at PC 513 is widened by one byte, and the store-address
+126 push is shortened later in the same schedule. This preserves the critical
+PC-backed stores. The later 18 and 198 address pushes are shortened, moving the
+schedule endpoint from 826 to 824. The four PC-backed stores remain at 162, 666,
+738 and 792. Their semantic store values and terminal masked-store memory
+invariants are retained. The normal and exact-32 schedule paths both close
+at 824 and feed the relocated persistent compression/bootstrap path.
+
+Four DUP-pair reorders occur at candidate PCs 1307/1308, 2365/2366, 3026/3027,
+and 4091/4092. The exact operation operands are retained modulo commutation;
+raw symbolic execution and whole-program concrete site lifting are the
+correctness checks. A separate instruction-level checkpoint audit covered all
+3,589 pre-selector instructions: 13 PUSH-width changes, 11 relocated branch
+operands and 4 commuted DUP pairs, with zero unexpected semantic operand or opcode
+changes. All 14 installed rows matched their accepted checkpoint digests. A byte-size renderer heuristic is not treated as proof
+of semantic equivalence. No alternate fork, altered opcode gas schedule,
+weakened trusted importer, or raised protected elaboration limit was used.
+
+## Integration diagnostics and repairs
+
+The layout script was a starting point, not a correctness oracle. A static
+comparison against the immutable accepted checkpoint found that blanket
+numeric relocation had also touched semantic message pointer 1056, the padding-copy size 1084 and store address 1008, stale
+`run_actual` arguments, and hypothetical helper templates. The 78-element concrete round-PC array in
+StaggerCore was also relocated; the paired register shapes and cache meanings
+were retained. These were repaired
+before using the new proof as evidence. The relocated-looking message offset
+was restored to 1056 where it denotes memory; only genuine PC uses were relocated.
+
+The endian mixed-width reversal had initially been applied to the wrong half.
+The high half retains its narrow shift-16 push at PC 480; the low half at 513 uses the
+widened PUSH. The writer's entry premise was changed from 606 to 607, with later
+chunk starts and fixed PC store positions preserved. Its exact byte certificate
+was regenerated from the actual 217-byte writer slice. Caller endpoints were
+changed to 824 in the normal/exact-32 traces and tail correctness interfaces.
+The two-length gate's exact entry window was updated from PUSH7 to PUSH2 for 376.
+
+These fixes were checked by the pre-existing serial Lean build entry point,
+not by skipping failures or retaining sorryAx. A linter-as-error diagnostic in
+`J2Payload` was fixed without weakening warningAsError. The accepted digest
+proofs, memory lemmas and concrete execution trace proofs remain mandatory.
+This diagnostic history is useful for reproducing the relocation: a broad
+textual numeric substitution is unsafe because the same numeral can be a
+PC, a memory offset, a word literal or an instruction index.
+
+## Executable falsification checks and reproducibility
+
+The protected pinned scorer was used before the heavy universal closure:
+
+```
+.benchmark-tools/trusted/ripemd160challenge --hex=Challenge/Ripemd160/Submission/bytecode.hex --csv
+```
+
+It returned 49 clean and 49 dirty rows, all status `ok`, with 649550 gas in each
+frame. Exactly fourteen clean rows improve by 8 gas against 649662; other
+benchmark rows retain their measured gas. An independent functional bytecode
+interpreter was used only for falsification, not for gas or universal proof.
+It matched Python hashlib RIPEMD-160 on 163 cases including recognized-pattern
+inputs, mutated near misses, padding boundaries 55/56 and 119/120, lengths 31/32,
+63/64/65, 255/256/257, 375/376/377, 999/1000/1001, random multi-block inputs,
+and long repeated-byte inputs. The initial 155-case seed was 0x649550.
+An additional 8 random cases, seed 0x5247, cover 5237/5238/5239, 5246/5247/5248
+and 5311/5312, crossing both old and new CODESIZE-padding sentinel bounds. The expected return is
+12 zero bytes followed by the 20-byte RIPEMD-160 digest.
+
+Local proof gates used the existing serial builder, with heavy jobs kept
+separate on this 16 GB machine. The connected selector/return certificates,
+normal/exact-32 schedule certificates, and whole-program import closure were
+built before the full canonical benchmark. The completed final required command was:
+
+```
+yukon run --track ripemd160
+```
+
+This runs the unchanged protected artifact generator and Comparator before
+scoring the protected verified hex. The submission is uploaded only after
+that command verified the universal theorem for the candidate's exact bytes.
+The byte array was compared with `verified-bytecode.hex` after the run. Only
+`propext`, `Classical.choice` and `Quot.sound` are permitted in the transitive theorem
+axiom set. The cheap scorer or independent interpreter cannot substitute for
+this acceptance gate.
+
+## Attribution and archive hygiene
+
+The immediate accepted 649,662 predecessor is explicitly declared. Its disjoint
+EQ-ADD gate and signed-boundary commutation, plus the accepted 649,711 paired
+round 45–64 transposition, remain in this artifact. Earlier declared material
+predecessors provide the paired-lane compressor, prestaging, terminal-mask
+repair, fixed PC stores, and universal-proof architecture. Dependencies are
+recorded in `dependencies.json`, within the board's 20-entry limit; the immediate
+predecessor includes the retained 649,687 gate-only stage. Public notes and the
+board were read before choosing and integrating this successor.
+
+The submission archive contains the active Lean import closure, bytecode.hex,
+README.md and dependencies.json. Search executables, alternate hex variants,
+logs, tables, relocation JSON and unused experimental certificates are not
+shipped as active proof modules. Checkpoint/search history is preserved
+outside the archive. Protected reference sources, the spec, scorer, compiler
+pins, and Comparator configuration are unchanged by this submission.
+
+## Scope and next leads
+
+The substantive improvement is that near-dense interval packing makes the
+multiply-free quotient selector feasible under both digest-layout and default
+trusted-literal constraints. Dense-table failure is not selector optimality,
+and a 304-byte packing is not a minimal-tail proof. More quotient constants,
+other masks, or a shorter generic dispatch may still improve the score. The
+scorer savings here are confined to the recognized return path; another
+compressor instruction deletion would affect the main multi-block workload
+and remains a distinct higher-payoff direction. This note does not claim
+that any bounded negative stack screen establishes such a deletion impossible.
+
+A new follow-up screen tested removing CODESIZE/SUB altogether by using
+`(K / n) & mask` as an absolute code source, with `mask < 8192` and all fourteen
+rows constrained to the current 4943..5247 tail. The power lengths 1, 32, 64, 128, 256
+reduce the numerator-independent necessary mask family to 5244, 5245, 5246, 5247.
+Each surviving mask can place at most six disjoint 20-byte rows in that source
+interval (its admissible sources are 5120..5227), so none can hold all fourteen.
+An independent mask-image packing pass found that only 6140..6143 can pack
+fourteen rows at all, giving the same empty intersection with 5244..5247.
+The surviving-mask computation is an independent finite computational screen,
+not a Lean theorem. The generic arithmetic fact that fourteen sorted 20-byte
+intervals cannot fit in 5120..5247 was separately accepted by Lean with propext
+and Quot.sound. A combined 8192-residue decide census was killed at exit 137 and
+removed; it is not asserted as kernel-verified. This is not a claim about larger tails, wider masks, or selectors with additional operations.
+Arbitrary masks do admit disjoint power-length triples: simply extrapolating
+the full-low-mask shift obstruction would have been wrong. The packing test
+is the additional condition that eliminates this particular absolute family.

@@ -158,6 +158,17 @@ theorem run_reverse (s : State) (pc v ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim
   rw [reversed_eq] at h2
   exact DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
 
+theorem run_reverse_mixed (s : State) (pc v ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UInt256)
+    (rho : List UInt256) (wide8 wide16 : Bool) (hstack : rho.length ≤ 990) (hrun : s.halt = .Running) :
+    runInstrSeq (stage8 wide8 ++ stage16 wide16) {s with pc := pc, stack := v :: stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho} =
+      some {s with
+        pc := pcAfter (pcAfter pc (stage8 wide8)) (stage16 wide16)
+        stack := PairedScheduleData.reversedWord v :: stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho} := by
+  have h1 := run_stage8 s pc v ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho wide8 hstack hrun
+  have h2 := run_stage16 s (pcAfter pc (stage8 wide8)) (multipliedStage v 8 mask8) ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho wide16 hstack hrun
+  rw [reversed_eq] at h2
+  exact DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
+
 def highStore : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 96), .op .MSTORE ]
 
 /-- The lower half is stored twice, eighteen bytes apart: the surviving bytes of the
@@ -403,7 +414,7 @@ theorem run_lowStoreV2 (s : State) (pc value : UInt256) (rest : List UInt256)
 
 def templateV2 : List Instr :=
   loadSwapTemplate 32 ++ (stage8 true ++ stage16 true) ++ highStoreV2 ++
-    [.op .JUMPDEST] ++ loadDirectTemplate ++ (stage8 true ++ stage16 true) ++
+    [.op .JUMPDEST] ++ loadDirectTemplate ++ (stage8 true ++ stage16 false) ++
     lowStoreV2
 
 theorem run_templateV2 (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UInt256)
@@ -450,10 +461,10 @@ theorem run_templateV2 (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off li
   rw [hread, hact] at h4
   have h1234 := DenseScheduleTrace.runInstrSeq_append_running h123j (by exact hrun) h4
   let pc4 := pcAfter pc3 loadDirectTemplate
-  have h5 := run_reverse s2 pc4 (MachineState.readWord s.memory p)
-    ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho true hstack hrun
+  have h5 := run_reverse_mixed s2 pc4 (MachineState.readWord s.memory p)
+    ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho true false hstack hrun
   have h12345 := DenseScheduleTrace.runInstrSeq_append_running h1234 (by exact hrun) h5
-  have h6 := run_lowStoreV2 s2 (pcAfter (pcAfter pc4 (stage8 true)) (stage16 true)) low F (by omega) hrun
+  have h6 := run_lowStoreV2 s2 (pcAfter (pcAfter pc4 (stage8 true)) (stage16 false)) low F (by omega) hrun
     (by change 35 ≤ a1.toNat; omega)
   have h := DenseScheduleTrace.runInstrSeq_append_running h12345 (by exact hrun) h6
   have hloaded : loadedActiveWords s (UInt256.ofNat p) = a1 := active_swap s.activeWords p hbound
@@ -461,7 +472,7 @@ theorem run_templateV2 (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off li
   rw [hloaded]
   exact h
 
-theorem end_pcV2 : pcAfter (UInt256.ofNat 486) templateV2 = UInt256.ofNat 555 := by decide
+theorem end_pcV2 : pcAfter (UInt256.ofNat 486) templateV2 = UInt256.ofNat 556 := by decide
 #print axioms run_templateV2
 #print axioms exact_bytes
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13Endian
