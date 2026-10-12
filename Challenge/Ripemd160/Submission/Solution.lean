@@ -17,5 +17,5 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Current decoded SHA-256: 8bdfd5b5f487defe2c40fe3b9bb80d37429e05c06ee7eca95d09f19e8a37a2c0.
--- 5238 bytes, 3608 instructions; canonical verified gas 649900; independent Comparator accepted.
+-- Current decoded SHA-256: d00cf96beb4eb361a0437b87a01d2e8fc0c1db84bf4bcf4392761dfc436181e9.
+-- 5238 bytes, 3605 instructions; measured649687 clean/dirty; full composition proof pending.

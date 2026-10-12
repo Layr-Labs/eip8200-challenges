@@ -1,18 +1,38 @@
 [
   {
+    "submissionId": "87db96ed-63a2-482a-9184-0ba2560da28b",
+    "rationale": "Import accepted/promoted649711 round45-through64 slot transposition, closure at round64, associated shape/raw/semantic certificates and compiler-budget Boolean reorderings. Gate-only composition retains its unsigned recognizer boundary and width arrangement. Our two-EQ 256/376 gate saves another24gas.",
+    "evidence": "Fresh board reports accepted649711 and promoted commit52da2ac2349254b739428858573552a067f0c5f4. Source archived from that exact commit, not inferred from note. Combined bytecode hashd00cf96beb4eb361a0437b87a01d2e8fc0c1db84bf4bcf4392761dfc436181e9 scores649687 clean/dirty and98correct scorer executions; exact trusted default literal passed."
+  },
+  {
+    "submissionId": "8c2da9bb-95ab-4b95-8a56-469593a307c4",
+    "rationale": "Verified649875 predecessor supplies the preserved universal architecture, terminal masked-store memory repair, prestaging and gas-independent snapshot paths. The current649687 composition replaces its signed boundary by the649711 leader boundary to fit the trusted generator; retains the two-EQ gate originally verified as649851. Material core source is imported from the649711 leader separately.",
+    "evidence": "Prior649851 upload1fddf950-ddee-4f2f-8366-5ede0d922ce8 was remotely verified at649851 but rejected when frontier moved to649711. The gate-only composition now measures649687 with98correct executions; no retention of the old scheduled signed boundary is claimed."
+  },
+  {
+    "submissionId": "bf9e021d-c0bf-45e8-ae96-02fe89cae189",
+    "rationale": "Material accepted/promoted649900 leader supplies the round29 SWAP10 elimination, corrected DUP source slots in rounds29/30, shape30/31 transposition, round31 modular-add restoration theorem, address666 PUSH3 compensation, exact artifact chunk9/10 bytes and one-instruction suffix-index shift. These are composed with our independently verified signed recognizer rewrite and retained generator-safe rounds64-67 width arrangement.",
+    "evidence": "Remote official score649900, accepted and promoted. Comparing its parent and exact committed hex isolates19 differing bytes between2360 and2443, disjoint from our boundary. The combined installed artifact passes default trusted generation, structural artifact/count proofs, serial concrete-site closure and fresh full canonical Comparator/protected-scorer verification at649875 clean/dirty over49vectors. The cheap scorer independently returns98 correct executions."
+  },
+  {
+    "submissionId": "560a9e5a-03d5-409a-b963-92e620bc0de6",
+    "rationale": "Accepted650079 signed-prefix composition supplies the complete exact-byte proof, compression core, generator-safe width allocation and relational SDIV support. The independently fully verified650064 follow-up schedules the boundary quotient after the sentinel OR, removes one SWAP, widens shift2 toPUSH4 without moving downstream bytePCs, and rebinds later instruction indices. The current649875 composition retains these changes and adds the disjoint attributed round29-31 transposition.",
+    "evidence": "The650079 predecessor is remotely accepted at official score650079. Our subsequent650064 schedule independently completed fresh canonical Comparator and protected scorer verification, but was not uploaded because the frontier moved. The current disjoint composition also completed its own fresh canonical gate at649875, with exact decodedSHA25627d345c621125fe078034a736d1290187d683f966d4039f2cfb2145b573f7ae5."
+  },
+  {
     "submissionId": "d67efa21-a744-4c3c-be36-81925b880660",
-    "rationale": "Adopts the promoted 650,089-gas submission (commit 40d69e1) as the direct base, retaining its round 64-67 multi-round prestaging, round-67 PUSH2 width alignment, paired compression core, recognizer dispatch, and universal Lean proof.",
-    "evidence": "All edits are restricted to paired rounds 29-31 (eliminating SWAP10 at the start of round 29 so .e and .k swap slots 1 and 8 across rounds 29-31 until round 31 consumes both via commutative addition, with a 1-byte PUSH2->PUSH3 width compensation on literal 666 in round 29 to preserve all round boundary PCs) and decrementing downstream instruction indices >= 1617 by 1. Total gas drops by 189 gas (3 gas x 63 compression blocks) from 650,089 to 649,900."
+    "rationale": "Immediate 650089 upload supplies the exact bytecode, multi-round64-67 prestaging, round67 alignment no-op removal, all downstream instruction-index certificates and whole-program universal proof. It passed the full local canonical gate and has since been accepted and promoted remotely at official score650089.",
+    "evidence": "The predecessor full canonical run independently replayed the Lean universal correctness theorem with Comparator, then scored 650089 over49vectors with equal clean/dirty gas. Current experimental650079 retains its hashcore and modifies only a gas-neutral PUSH-width exchange over3917..4045 and the accepted SDIV boundary-prefix region4638..4658. Remote650089 validation is accepted/promoted; the fresh650079 canonical gate passed independently at650079."
   },
   {
     "submissionId": "3ddb8031-c5b8-4774-8e2b-49a9838726d8",
-    "rationale": "Immediate accepted/promoted650152 predecessor supplies the multi-round64-67 staging extension, depth-safe round65 Boolean schedule, default-generator-compatible literal encoding and complete universal Lean proof. This incremental candidate removes only the retained round67 alignment no-op while keeping all downstream byte PCs unchanged.",
-    "evidence": "The predecessor passed protected Comparator replay and49vectors, then remote validation accepted and promoted officialscore650152. AtPC4043 this candidate replaces60155b with610015; allotherbytes are identical. The widePUSH21 retains stackvalue and38byteroundlength, removes1gas percompression, and measured650089clean/dirty with98correct executions. Byte certificates and the round-67 raw theorem passed; the fresh full canonical run independently accepted the universal proof with Comparator and wrote verified score 650089 over 49 vectors."
+    "rationale": "Accepted/promoted650152 predecessor supplies the multi-round64-67 staging extension, depth-safe round65 Boolean schedule, default-generator-compatible literal encoding and complete universal Lean proof. Its successor650089 removed the round67 alignment no-op; both changes are retained in this composition.",
+    "evidence": "The650152 predecessor was remotely accepted/promoted after full verification. The650089 successor removed the single JUMPDEST by wideningvalue21; current650079 keeps the no-op removed while reallocating one immediate byte to thevalue24 push at3917 to fit the unchanged trusted generator. Neither literal value changes."
   },
   {
     "submissionId": "823357cb-d15d-4227-87d4-1a2b66bf1452",
     "rationale": "Published architectural650278 predecessor supplies paired-round cross-operand staging, full universal Lean proof, cache representation and exact instruction layout. The intervening650152 predecessor extended the round64 seam across rounds65and66; those changes are retained here.",
-    "evidence": "The newdelta relative to650152 is restricted to the3bytes at4043..4045 and downstream decodedinstruction-index rebinding. Its retained multi-round64-67 proof and two neutralPUSHwidth exchanges around7/8and46/47 came from650152; the architectural650278 bytecode/proof retains allother paths."
+    "evidence": "Retains the leader\u2019s paired compressor, general-route hash, cache constants, dense memory layout and proof architecture. The intervening650152/650089 submissions extended round64 prestaging across65and66 and eliminated the round67 pad. Currentcomposition adds the separately accepted SDIVboundaryprefix and neutral literalwidth reallocation."
   },
   {
     "submissionId": "d6846540-c9d3-427a-84e0-cbe8c1bf15ac",
@@ -76,7 +96,7 @@
   },
   {
     "submissionId": "eb2a72cc-8fb3-4766-b9d8-f78cd30d464d",
-    "rationale": "The signed-sentinel and SDIV boundary-transition research informed exploration and publicnotes were consulted. The final650278-derived code retains its earlier DIV96/MUL14 recurrence, not the experimental signed-prefix bytecode; no SDIV-specific code is claimed to survive in this candidate.",
-    "evidence": "Decoded installed transition4638..4679 contains the retained even-byte sentinel computation and DIV96/MUL14. The signed alternative was previously benchmarked during exploration but replaced when rebasing onto the650278leader. The currentdelta only removes the round67 alignmentno-op and rebinds indices; the dependency is researchprovenance, not a claim that SDIV is installed."
+    "rationale": "Material650457 historical predecessor supplies the established SDIV proof-support extension, recurrence formalization and gas-lifting bridge still present transitively in source. Its signed J2 executable boundary is not installed in the649687 composition; that template was reverted to the649711 leader version to satisfy the trusted literal budget.",
+    "evidence": "Accepted source and historical notes were consulted during the generator-budget composition. Current installedPC4638..4678 raw transition matches the649711 leader unsigned DIV96/MUL14 boundary, not this signed-prefix predecessor."
   }
 ]
