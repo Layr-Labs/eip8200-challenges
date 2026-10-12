@@ -16,7 +16,7 @@ open YulEvmCompiler
 /-! ## Artifact-agnostic readings of a certified slice
 
 `WindowTwentyOneSlice.locations` reads its slice as `artifact.instructions[start + k]` for
-each `k`; on a 4,402-instruction list that is `O(start)` work per instruction, and the two
+each `k`; on a 4,360-instruction list that is `O(start)` work per instruction, and the two
 `rfl` obligations of `block` pay it twice (elaborator and kernel).  The two lemmas below are
 proved for an ARBITRARY `artifact : ProgramArtifact`, so no concrete bytecode enters them;
 the concrete submission is then touched once per obligation, and its instruction prefix is
@@ -89,51 +89,45 @@ private def nine_table :
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
-private def nine_init :
-  WindowTwentyOneBinding.Block submissionArtifact .Osaka 968 WindowTwentyOneInit.program :=
-  WindowTwentyOneSlice.block allWellFormed 718 7 968 WindowTwentyOneInit.program
+private def nine_setup :
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 968 WindowPrecopyRoute.setupProgram :=
+  WindowTwentyOneSlice.block allWellFormed 718 6 968 WindowPrecopyRoute.setupProgram
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
-private def nine_trampoline :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 979 WindowTwentyOneLoop.trampolineProgram :=
-  WindowTwentyOneSlice.block allWellFormed 725 5 979 WindowTwentyOneLoop.trampolineProgram
+private def nine_copy :
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 976 WindowPrecopyRoute.copyProgram :=
+  WindowTwentyOneSlice.block allWellFormed 724 5 976 WindowPrecopyRoute.copyProgram
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
-private def nine_entry :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 984 WindowTwentyOneLoop.entryProgram :=
-  WindowTwentyOneSlice.block allWellFormed 730 7 984 WindowTwentyOneLoop.entryProgram
+private def nine_pool :
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 981 WindowPrecopyRoute.poolProgram :=
+  WindowTwentyOneSlice.block allWellFormed 729 315 981 WindowPrecopyRoute.poolProgram
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
-private def nine_body0 :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 992 (WindowTwentyOneLoop.bodyProgram (16 * 0)) :=
-  WindowTwentyOneSlice.block allWellFormed 737 309 992 (WindowTwentyOneLoop.bodyProgram (16 * 0))
+private def nine_first :
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1296 WindowPrecopyRoute.firstProgram :=
+  WindowTwentyOneSlice.block allWellFormed 1044 7 1296 WindowPrecopyRoute.firstProgram
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
-private def nine_body1 :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1343 (WindowTwentyOneLoop.bodyProgram (16 * 1)) :=
-  WindowTwentyOneSlice.block allWellFormed 1046 309 1343 (WindowTwentyOneLoop.bodyProgram (16 * 1))
+private def nine_head :
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1308 (WindowPrecopyRoute.routeWindows 0 60) :=
+  WindowTwentyOneSlice.block allWellFormed 1051 840 1308 (WindowPrecopyRoute.routeWindows 0 60)
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
-private def nine_body2 :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 1694 (WindowTwentyOneLoop.bodyProgram (16 * 2)) :=
-  WindowTwentyOneSlice.block allWellFormed 1355 309 1694 (WindowTwentyOneLoop.bodyProgram (16 * 2))
+private def nine_jump :
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2388 WindowPrecopyRoute.jumpProgram :=
+  WindowTwentyOneSlice.block allWellFormed 1891 2 2388 WindowPrecopyRoute.jumpProgram
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
-private def nine_bodyLast :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2045 (WindowTwentyOneLoop.bodyProgramLast 48) :=
-  WindowTwentyOneSlice.block allWellFormed 1664 290 2045 (WindowTwentyOneLoop.bodyProgramLast 48)
-    (by decide) (by rfl)
-    (by rw [locations_map_instruction]; rfl) (by decide)
-
-private def nine_finish :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2372 WindowTwentyOneReturn.program :=
-  WindowTwentyOneSlice.block allWellFormed 1954 5 2372 WindowTwentyOneReturn.program
+private def nine_tail :
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 5483 WindowPrecopyRoute.tailProgram :=
+  WindowTwentyOneSlice.block allWellFormed 4312 49 5483 WindowPrecopyRoute.tailProgram
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
@@ -169,14 +163,14 @@ def twentyOnePaths : WindowTwentyOneGasRoute.Paths submissionArtifact .Osaka whe
   modulus := nine_modulus
   normalize := nine_normalize
   table := nine_table
-  init := nine_init
-  entry := nine_entry
-  trampoline := nine_trampoline
-  body0 := nine_body0
-  body1 := nine_body1
-  body2 := nine_body2
-  bodyLast := nine_bodyLast
-  finish := nine_finish
+  setup := nine_setup
+  copy := nine_copy
+  pool := nine_pool
+  first := nine_first
+  head := nine_head
+  jump := nine_jump
+  tail := nine_tail
+  tailJump := by exact isValidJumpDest_index 4312 (by rfl)
   adapterJump := by
     have h := isValidJumpDest_index 59 (by rfl)
     exact h

@@ -322,7 +322,7 @@ def gasSteps_csubStep (s : State) (mem : ByteArray) (n bsize esize msize k : Nat
     soundEnv blk3253 e (run_csubCall s mem n bsize esize msize k hk hk32 e.code e.run)
 def canonicalCopyBlock : WindowTwentyOneBinding.Block Artifact.submissionArtifact .Osaka 2574
     ShiftProducerSplitRun.copyProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2091 5 2574 ShiftProducerSplitRun.copyProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2011 5 2574 ShiftProducerSplitRun.copyProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def gasSteps_hitCsub (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)

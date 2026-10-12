@@ -54,29 +54,29 @@ def lastProgram : List Instr :=
   [.op .POP, .op .POP, .push 2 3471, .push 2 2368, .push 2 4518, .op .JUMP]
 
 def sqExitBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 4198 sqExitProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3339 18 4198 sqExitProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3259 18 4198 sqExitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def cBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 4209 cProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3346 11 4209 cProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3266 11 4209 cProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def e4Block : Block TnM128CandidateArtifact.submissionArtifact .Osaka 4240 e4Program :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3363 4 4240 e4Program
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3283 4 4240 e4Program
     (by decide) (by rfl) (by rfl) (by decide)
 
 def lastBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 4228 lastProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3357 6 4228 lastProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3277 6 4228 lastProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDestC : Decode.isValidJumpDest TnM128Candidate.bytecode 4209 = true :=
-  TnM128CandidateArtifact.isValidJumpDest_index 3346 (by rfl)
+  TnM128CandidateArtifact.isValidJumpDest_index 3266 (by rfl)
 
 theorem jumpDestE4 : Decode.isValidJumpDest TnM128Candidate.bytecode 4240 = true :=
-  TnM128CandidateArtifact.isValidJumpDest_index 3363 (by rfl)
+  TnM128CandidateArtifact.isValidJumpDest_index 3283 (by rfl)
 
 theorem jumpDestLazy : Decode.isValidJumpDest TnM128Candidate.bytecode 4518 = true :=
-  TnM128CandidateArtifact.isValidJumpDest_index 3574 (by rfl)
+  TnM128CandidateArtifact.isValidJumpDest_index 3494 (by rfl)
 
 abbrev environment := TnM128SquareSteps.environment
 

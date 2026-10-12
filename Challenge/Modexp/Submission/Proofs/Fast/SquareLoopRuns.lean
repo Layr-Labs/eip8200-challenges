@@ -61,7 +61,7 @@ def cAt (s : State) (mem : ByteArray) (n : Nat)
            memory := mem }
 
 theorem jumpDestC : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4209 = true :=
-  Artifact.isValidJumpDest_index 3346 (by rfl)
+  Artifact.isValidJumpDest_index 3266 (by rfl)
 
 /-- `e4`: push the R4 return and jump to the shared counter block. -/
 theorem run_e4 (s : State) (mem : ByteArray) (n : Nat)

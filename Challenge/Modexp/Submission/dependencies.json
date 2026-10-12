@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "bdd36736-2faa-4674-b1da-456c272a6965",
+    "rationale": "Direct base: our own accepted submission (464,988, the record), the d0a1f9e9 + 984faab1 merge on af797111 plus our eight cuts, with their proof updates. This submission adds the precopied 256-bit window route.",
+    "evidence": "bytecode.hex equals bdd36736's bytes outside the window route [866, 2397) and appends 61 bytes at [5483, 5544). Every pc outside the route is unchanged; instruction indices from pc 2397 shift by -80. All proof modules outside the route proofs, the byte and artifact files and the index-shifted files are bdd36736's, unchanged."
+  },
+  {
     "submissionId": "d0a1f9e9-cea0-4a83-938b-a828b22ff8ed",
     "rationale": "Merged in: the EarlyWord guard and Fermat entry/return stack diet (bytes [4, 135) and [864, 872)) with its proof updates.",
     "evidence": "bytecode.hex equals this submission's bytes outside [968, 994). Its edits to EarlyWord*, Fermat*, ShiftJumpTargets, WindowTwentyOneEntry, WindowTwentyOneGasRoute and WindowTwentyOnePositive are reused unchanged; its hunks in Bytes.lean, TnM128CandidateBytes.lean, TnM128CandidateArtifact.lean and ArtifactWindowPaths.lean are merged with 984faab1's."

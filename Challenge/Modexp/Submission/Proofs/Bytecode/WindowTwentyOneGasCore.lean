@@ -9,99 +9,85 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneGasCore
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.EvmProof WindowNibbleKernel WindowTwentyOneBinding WindowTwentyOneMsize
 
-/-- Three sixteen-digit blocks followed by the final fifteen-digit block. -/
+/-- The precopy route: table, setup, row stores, the modulus pool, the first digit,
+sixty windows, the jump over the RSA code and the moved tail with the return. -/
 structure Paths (artifact : ProgramArtifact) (fork : Fork) where
   table : Block artifact fork 879 WindowTwentyOneTableBuild.program
-  init : Block artifact fork 968 WindowTwentyOneInit.program
-  trampoline : Block artifact fork 979 WindowTwentyOneLoop.trampolineProgram
-  entry : Block artifact fork 984 WindowTwentyOneLoop.entryProgram
-  body0 : Block artifact fork 992 (WindowTwentyOneLoop.bodyProgram (16 * 0))
-  body1 : Block artifact fork 1343 (WindowTwentyOneLoop.bodyProgram (16 * 1))
-  body2 : Block artifact fork 1694 (WindowTwentyOneLoop.bodyProgram (16 * 2))
-  bodyLast : Block artifact fork 2045 (WindowTwentyOneLoop.bodyProgramLast 48)
-  finish : Block artifact fork 2372 WindowTwentyOneReturn.program
+  setup : Block artifact fork 968 WindowPrecopyRoute.setupProgram
+  copy : Block artifact fork 976 WindowPrecopyRoute.copyProgram
+  pool : Block artifact fork 981 WindowPrecopyRoute.poolProgram
+  first : Block artifact fork 1296 WindowPrecopyRoute.firstProgram
+  head : Block artifact fork 1308 (WindowPrecopyRoute.routeWindows 0 60)
+  jump : Block artifact fork 2388 WindowPrecopyRoute.jumpProgram
+  tail : Block artifact fork 5483 WindowPrecopyRoute.tailProgram
+  tailJump : Decode.isValidJumpDest artifact.code 5483 = true
 
-/-- From the setup frame at 979: the exponent copies, the first-digit lookup,
-three full blocks and the last block. -/
-def steps_three {artifact : ProgramArtifact} {fork : Fork}
-    (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
-    (base modulus exponent : UInt256) (rest : List UInt256) (hrest : rest.length ≤ 999) :
-    GasSteps (WindowTwentyOneLoop.entryState template base modulus exponent rest)
-      (WindowTwentyOneLoop.finishState template base modulus exponent rest) := by
-  have t0 : GasSteps (WindowTwentyOneLoop.entryState template base modulus exponent rest)
-      (WindowTwentyOneLoop.copiedState template base modulus exponent rest) :=
-    Block.stepsX paths.trampoline
-      (s := WindowTwentyOneLoop.entryState template base modulus exponent rest)
-      (env.transfer rfl rfl) rfl
-      (WindowTwentyOneLoop.run_trampoline template base modulus exponent rest hrest)
-  have e0 : GasSteps (WindowTwentyOneLoop.copiedState template base modulus exponent rest)
-      (WindowTwentyOneLoop.headState template (UInt256.ofNat 992) base modulus exponent 0 rest) :=
-    paths.entry.steps (s := WindowTwentyOneLoop.copiedState template base modulus exponent rest)
-      (env.transfer rfl rfl) rfl
-      (WindowTwentyOneLoop.run_entry template base modulus exponent rest hrest)
-  have b0 : GasSteps (WindowTwentyOneLoop.headState template (UInt256.ofNat 992) base modulus exponent 0 rest)
-      (WindowTwentyOneLoop.headState template (UInt256.ofNat 1343) base modulus exponent 1 rest) :=
-    paths.body0.steps
-      (s := WindowTwentyOneLoop.headState template (UInt256.ofNat 992) base modulus exponent 0 rest)
-      (env.transfer rfl rfl) rfl
-      (WindowTwentyOneLoop.run_body template 992 base modulus exponent 0 (by decide) rest hrest)
-  have b1 : GasSteps (WindowTwentyOneLoop.headState template (UInt256.ofNat 1343) base modulus exponent 1 rest)
-      (WindowTwentyOneLoop.headState template (UInt256.ofNat 1694) base modulus exponent 2 rest) :=
-    paths.body1.steps
-      (s := WindowTwentyOneLoop.headState template (UInt256.ofNat 1343) base modulus exponent 1 rest)
-      (env.transfer rfl rfl) rfl
-      (WindowTwentyOneLoop.run_body template 1343 base modulus exponent 1 (by decide) rest hrest)
-  have b2 : GasSteps (WindowTwentyOneLoop.headState template (UInt256.ofNat 1694) base modulus exponent 2 rest)
-      (WindowTwentyOneLoop.headState template (UInt256.ofNat 2045) base modulus exponent 3 rest) :=
-    paths.body2.steps
-      (s := WindowTwentyOneLoop.headState template (UInt256.ofNat 1694) base modulus exponent 2 rest)
-      (env.transfer rfl rfl) rfl
-      (WindowTwentyOneLoop.run_body template 1694 base modulus exponent 2 (by decide) rest hrest)
-  have last : GasSteps (WindowTwentyOneLoop.headState template (UInt256.ofNat 2045) base modulus exponent 3 rest)
-      (WindowTwentyOneLoop.finishState template base modulus exponent rest) :=
-    paths.bodyLast.steps
-      (s := WindowTwentyOneLoop.headState template (UInt256.ofNat 2045) base modulus exponent 3 rest)
-      (env.transfer rfl rfl) rfl
-      (WindowTwentyOneLoop.run_bodyLast template 2045 base modulus exponent rest hrest)
-  exact ((((t0.trans e0).trans b0).trans b1).trans b2).trans last
-
-/-- Table, setup, copies, lookup, four blocks and the return, from the
-normalized state at 879.  The exponent word and the spare modulus copy are read
-from the route frame and stay in place under the ladder's mask. -/
+/-- Table, setup, row stores, pool, first digit, 62 windows, the last digit and the
+return, from the normalized state at 879.  The exponent word and the spare modulus
+copy are read from the route frame and stay in place under the pool. -/
 def steps_core {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (base modulus exponent : UInt256)
-    (rest : List UInt256) (hrest : rest.length ≤ 1000)
+    (rest : List UInt256) (hrest : rest.length ≤ 600)
     (he : rest[1]? = some exponent) (hm : rest[0]? = some modulus) :
     GasSteps (WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 879) base modulus rest)
       (WindowTwentyOneCore.returnedState template base modulus exponent (rest.drop 2)) := by
   have ht := Block.stepsX paths.table
     (s := WindowTwentyOneTablePrelude.initial template (UInt256.ofNat 879) base modulus rest)
     (env.transfer rfl rfl) rfl
-    (WindowTwentyOneTableBuild.run_all template base modulus exponent rest hrest he)
-  have hrest_eq : rest = [modulus, exponent] ++ rest.drop 2 := by
+    (WindowTwentyOneTableBuild.run_all template base modulus exponent rest (by omega) he)
+  have hrest_eq : rest = modulus :: exponent :: rest.drop 2 := by
     rcases rest with _ | ⟨x0, _ | ⟨x1, tail⟩⟩
     · simp at hm
     · simp at he
     · simp only [List.getElem?_cons_zero] at hm
       simp only [List.getElem?_cons_succ, List.getElem?_cons_zero] at he
       cases hm; cases he; rfl
-  have hdrop_len : (rest.drop 2).length ≤ 999 := by simp [List.length_drop]; omega
-  have hdrop_len' : (rest.drop 2).length ≤ 1000 := by omega
-  have hi := WindowTwentyOneInit.run_enter template base modulus exponent (rest.drop 2) hdrop_len'
-  have hi' : runInstructions WindowTwentyOneInit.program
-      (WindowTwentyOneTable.framed template (UInt256.ofNat 968) base modulus 16 rest) =
-      some (WindowTwentyOneLoop.entryState template base modulus exponent (rest.drop 2)) := by
-    rw [← hrest_eq] at hi
-    simpa only [WindowTwentyOneLoop.entryState] using hi
-  have hinit := paths.init.steps
+  have hdrop : (rest.drop 2).length ≤ 600 := by simp [List.length_drop]; omega
+  have hs := WindowPrecopyRoute.run_setupAt template base modulus exponent (rest.drop 2) hdrop
+  rw [← hrest_eq] at hs
+  have gs := paths.setup.steps
     (s := WindowTwentyOneTable.framed template (UInt256.ofNat 968) base modulus 16 rest)
-    (env.transfer rfl rfl) rfl hi'
-  have hloop := steps_three paths template env base modulus exponent (rest.drop 2) hdrop_len
-  have hfinish := paths.finish.steps
-    (s := WindowTwentyOneLoop.finishState template base modulus exponent (rest.drop 2))
+    (env.transfer rfl rfl) rfl hs
+  have gc := Block.stepsX paths.copy
+    (s := WindowTwentyOneTable.framed template (UInt256.ofNat 976) base modulus 16
+      (UInt256.shiftRight exponent (UInt256.ofNat 3) ::
+        WindowPrecopyRoute.frame modulus exponent (rest.drop 2)))
     (env.transfer rfl rfl) rfl
-    (WindowTwentyOneCore.run_finish template base modulus exponent (rest.drop 2) hdrop_len')
-  exact ((ht.trans hinit).trans hloop).trans hfinish
+    (WindowPrecopyRoute.run_copyAt template base modulus exponent (rest.drop 2) hdrop)
+  have gp := paths.pool.steps
+    (s := WindowPrecopyRoute.routeState template 981 base modulus exponent
+      (WindowPrecopyRoute.frame modulus exponent (rest.drop 2)))
+    (env.transfer rfl rfl) rfl
+    (WindowPrecopyRoute.run_poolAt template base modulus exponent (rest.drop 2) hdrop)
+  have gf := paths.first.steps
+    (s := WindowPrecopyRoute.routeState template 1296 base modulus exponent
+      (List.replicate 315 modulus ++ WindowPrecopyRoute.frame modulus exponent (rest.drop 2)))
+    (env.transfer rfl rfl) rfl
+    (WindowPrecopyRoute.run_firstAt template base modulus exponent (rest.drop 2) hdrop)
+  have gh := paths.head.steps
+    (s := WindowPrecopyRoute.routeState template 1308 base modulus exponent
+      (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat ::
+        List.replicate 315 modulus ++ WindowPrecopyRoute.frame modulus exponent (rest.drop 2)))
+    (env.transfer rfl rfl) rfl
+    (WindowPrecopyRoute.run_headAt template base modulus exponent (rest.drop 2) hdrop)
+  have hdest : Decode.isValidJumpDest template.executionEnv.code 5483 = true := by
+    rw [env.code]
+    exact paths.tailJump
+  have gj := paths.jump.steps
+    (s := WindowPrecopyRoute.routeState template 2388 base modulus exponent
+      (WindowTwentyOneMath.accumulator base modulus exponent.toNat 60 ::
+        List.replicate 15 modulus ++ WindowPrecopyRoute.frame modulus exponent (rest.drop 2)))
+    (env.transfer rfl rfl) rfl
+    (WindowPrecopyRoute.run_jumpAt template base modulus exponent _
+      (by simp only [WindowPrecopyRoute.frame, List.length_cons, List.length_append,
+        List.length_replicate]; omega) hdest)
+  have gt := paths.tail.steps
+    (s := WindowPrecopyRoute.routeState template 5483 base modulus exponent
+      (WindowTwentyOneMath.accumulator base modulus exponent.toNat 60 ::
+        List.replicate 15 modulus ++ WindowPrecopyRoute.frame modulus exponent (rest.drop 2)))
+    (env.transfer rfl rfl) rfl
+    (WindowPrecopyRoute.run_tailAt template base modulus exponent (rest.drop 2) hdrop)
+  exact ((((((ht.trans gs).trans gc).trans gp).trans gf).trans gh).trans gj).trans gt
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneGasCore
