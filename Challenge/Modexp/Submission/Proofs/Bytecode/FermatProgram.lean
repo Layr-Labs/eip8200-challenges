@@ -51,11 +51,11 @@ private theorem zero_lt_eq_double_isZero (x : UInt256) :
     simp [h, hzero, Nat.not_le_of_gt hp]
 
 
-/-- Fermat exit at 95: load the base word at calldata 96, normalize it by the
-declared base width (depth six under the modulus word), reduce it modulo the
+/-- Fermat exit at 92: load the base word at calldata 96, normalize it by the
+declared base width (depth three under the modulus word), reduce it modulo the
 prime and return `0 < base mod p`. -/
 def valueProgram : List Instr :=
-  [.push 1 96, .op .CALLDATALOAD, .op (.Dup ⟨6, by decide⟩),
+  [.push 1 96, .op .CALLDATALOAD, .op (.Dup ⟨3, by decide⟩),
    .push 1 32, .op .SUB, .push 1 3, .op .SHL, .op .SHR,
    .op .MOD, .push 0 0, .op .LT]
 
@@ -63,9 +63,9 @@ def returnProgram : List Instr := valueProgram ++ WindowTwentyOneReturn.program
 
 private theorem run_value (template : State) (modulus : UInt256) (rest : List UInt256)
     (baseSize : Nat) (hwidth : baseSize ≤ 32)
-    (hrest : rest.length ≤ 999) (hbase : rest[4]? = some (UInt256.ofNat baseSize)) :
-    runInstructions valueProgram (framed template (UInt256.ofNat 96) (modulus :: rest)) =
-    some (framed template (UInt256.ofNat 110)
+    (hrest : rest.length ≤ 999) (hbase : rest[1]? = some (UInt256.ofNat baseSize)) :
+    runInstructions valueProgram (framed template (UInt256.ofNat 92) (modulus :: rest)) =
+    some (framed template (UInt256.ofNat 106)
       (UInt256.isZero (UInt256.isZero (UInt256.mod
         (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata 96)
           (UInt256.ofNat ((32 - baseSize) * 8))) modulus)) :: rest)) := by
@@ -88,11 +88,11 @@ private theorem run_value (template : State) (modulus : UInt256) (rest : List UI
 
 theorem run_return (template : State) (modulus : UInt256) (rest : List UInt256)
     (baseSize : Nat) (hwidth : baseSize ≤ 32)
-    (hrest : rest.length ≤ 999) (hbase : rest[4]? = some (UInt256.ofNat baseSize))
+    (hrest : rest.length ≤ 999) (hbase : rest[1]? = some (UInt256.ofNat baseSize))
     (active : Nat) (hsmall : active ≤ 16)
     (hactive : template.activeWords = UInt256.ofNat active) :
-    runInstructions returnProgram (framed template (UInt256.ofNat 96) (modulus :: rest)) =
-    some (WindowTwentyOneReturn.returned template (UInt256.ofNat 115)
+    runInstructions returnProgram (framed template (UInt256.ofNat 92) (modulus :: rest)) =
+    some (WindowTwentyOneReturn.returned template (UInt256.ofNat 111)
       (UInt256.isZero (UInt256.isZero (UInt256.mod
         (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata 96)
           (UInt256.ofNat ((32 - baseSize) * 8))) modulus))) active rest) := by
@@ -100,10 +100,10 @@ theorem run_return (template : State) (modulus : UInt256) (rest : List UInt256)
     (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata 96)
       (UInt256.ofNat ((32 - baseSize) * 8))) modulus))
   have hv := run_value template modulus rest baseSize hwidth hrest hbase
-  have hr := WindowTwentyOneReturn.run_return template (UInt256.ofNat 110) word active
+  have hr := WindowTwentyOneReturn.run_return template (UInt256.ofNat 106) word active
     (by omega) hactive rest (by omega)
   have both := runInstructions_append_some _ _ _ _ _ hv hr
-  have hpc : advancePC 5 (UInt256.ofNat 110) = UInt256.ofNat 115 := by decide
+  have hpc : advancePC 5 (UInt256.ofNat 106) = UInt256.ofNat 111 := by decide
   simpa only [returnProgram, hpc, word] using both
 
 

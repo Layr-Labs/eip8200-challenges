@@ -9,10 +9,13 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached SquareRows
 
 def pcNx : Nat := 4142
-def pcSqExit : Nat := 4198
-def pcLast : Nat := 4220
-def pcAgain : Nat := 4242
-def pcH2 : Nat := 4232
+/-- The four-limb kernel exit `e4`: it pushes the R4 return and jumps to the shared counter
+block `TnM128SquareExit.pcC`. -/
+def pcSqExit : Nat := 4245
+def pcLast : Nat := 4221
+def pcAgain : Nat := 4233
+/-- The four-limb CSUB return: straight back into R4. -/
+def pcH2 : Nat := 4579
 
 def frameStack (mem : ByteArray) (_n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) : List UInt256 :=
@@ -29,6 +32,10 @@ def frameAt (pc : Nat) (s : State) (mem : ByteArray) (n : Nat)
 abbrev sqExitProgram := TnM128SquareExit.sqExitProgram
 abbrev lastProgram := TnM128SquareExit.lastProgram
 abbrev sqExitBlock := TnM128SquareExit.sqExitBlock
+abbrev cProgram := TnM128SquareExit.cProgram
+abbrev cBlock := TnM128SquareExit.cBlock
+abbrev e4Program := TnM128SquareExit.e4Program
+abbrev e4Block := TnM128SquareExit.e4Block
 abbrev lastBlock := TnM128SquareExit.lastBlock
 abbrev jumpDestLazy := TnM128SquareExit.jumpDestLazy
 
