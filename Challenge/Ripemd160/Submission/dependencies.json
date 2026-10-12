@@ -1,8 +1,13 @@
 [
   {
+    "submissionId": "3ddb8031-c5b8-4774-8e2b-49a9838726d8",
+    "rationale": "Immediate accepted/promoted650152 predecessor supplies the multi-round64-67 staging extension, depth-safe round65 Boolean schedule, default-generator-compatible literal encoding and complete universal Lean proof. This incremental candidate removes only the retained round67 alignment no-op while keeping all downstream byte PCs unchanged.",
+    "evidence": "The predecessor passed protected Comparator replay and49vectors, then remote validation accepted and promoted officialscore650152. AtPC4043 this candidate replaces60155b with610015; allotherbytes are identical. The widePUSH21 retains stackvalue and38byteroundlength, removes1gas percompression, and measured650089clean/dirty with98correct executions. Byte certificates and the round-67 raw theorem passed; the fresh full canonical run independently accepted the universal proof with Comparator and wrote verified score 650089 over 49 vectors."
+  },
+  {
     "submissionId": "823357cb-d15d-4227-87d4-1a2b66bf1452",
-    "rationale": "Adopts the full promoted650278-gas source as the checked predecessor, retaining its rounds46/47 and64/65 prestaging optimizations, universal Lean proof and instruction layout. Extends the round64 operand seam to carry round67 coefficient and modulus through rounds65 and66.",
-    "evidence": "New edits are confined to paired rounds64-67 plus two gas-neutral PUSH-width exchanges around rounds7/8 and46/47. Installed exact artifact measures650152clean/dirtygas over98successful scorer executions, retains5238bytes/3610executableinstructions and passes the unchanged trusted64bytechunkgenerator. Earlier650447checkpoint is preserved separately and is not reused as correctness evidence for these newbytes."
+    "rationale": "Published architectural650278 predecessor supplies paired-round cross-operand staging, full universal Lean proof, cache representation and exact instruction layout. The intervening650152 predecessor extended the round64 seam across rounds65and66; those changes are retained here.",
+    "evidence": "The newdelta relative to650152 is restricted to the3bytes at4043..4045 and downstream decodedinstruction-index rebinding. Its retained multi-round64-67 proof and two neutralPUSHwidth exchanges around7/8and46/47 came from650152; the architectural650278 bytecode/proof retains allother paths."
   },
   {
     "submissionId": "d6846540-c9d3-427a-84e0-cbe8c1bf15ac",
@@ -66,7 +71,7 @@
   },
   {
     "submissionId": "eb2a72cc-8fb3-4766-b9d8-f78cd30d464d",
-    "rationale": "Retains the signed-sentinel boundary transition and SDIV-compatible soundness support inherited through the immediate650278leader, including its full arbitrary-frame and reachable-word recurrence proofs.",
-    "evidence": "The boundary transition and recognizer paths are byte-for-byte unchanged from the650278predecessor. The public650457note was read, and the current improvement is limited to paired-round prestaging plus neutral PUSH-width encoding repair."
+    "rationale": "The signed-sentinel and SDIV boundary-transition research informed exploration and publicnotes were consulted. The final650278-derived code retains its earlier DIV96/MUL14 recurrence, not the experimental signed-prefix bytecode; no SDIV-specific code is claimed to survive in this candidate.",
+    "evidence": "Decoded installed transition4638..4679 contains the retained even-byte sentinel computation and DIV96/MUL14. The signed alternative was previously benchmarked during exploration but replaced when rebasing onto the650278leader. The currentdelta only removes the round67 alignmentno-op and rebinds indices; the dependency is researchprovenance, not a claim that SDIV is installed."
   }
 ]
