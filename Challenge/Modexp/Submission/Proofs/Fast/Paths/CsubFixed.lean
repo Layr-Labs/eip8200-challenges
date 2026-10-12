@@ -181,39 +181,55 @@ def csFixedStep8_7 : List (Challenge.EvmProof.Stepper.Located Artifact.submissio
    opAt 3564 .GT,
    opAt 3565 .OR]
 
-def csFixedTail8 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+/-- Selection tail when `use ≠ 0` (`t ≥ m`): `JUMPI` to pc 4538, which copies the
+difference block at `SUBB` (1792) to the destination and returns. -/
+def csFixedTailSub : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 3566 .ISZERO,
    pushAt 3567 2 2080,
    opAt 3568 .MLOAD,
    opAt 3569 .OR,
-   pushAt 3570 2 319,
-   opAt 3571 .NOT,
-   pushAt 3572 2 4538,
-   opAt 3573 .JUMP,
+   pushAt 3570 2 4538,
+   opAt 3571 .JUMPI,
    opAt 3586 .JUMPDEST,
-   opAt 3587 .MUL,
-   pushAt 3588 2 2112,
-   opAt 3589 .ADD,
-   pushAt 3590 2 2688,
-   opAt 3591 .MLOAD,
-   opAt 3592 (.Swap ⟨1, by decide⟩),
-   opAt 3593 .MCOPY,
-   opAt 3594 .JUMP]
+   pushAt 3587 2 1792,
+   pushAt 3588 2 2688,
+   opAt 3589 .MLOAD,
+   opAt 3590 (.Swap ⟨1, by decide⟩),
+   opAt 3591 .MCOPY,
+   opAt 3592 .JUMP]
+
+/-- Selection tail when `use = 0` (`t < m`): fall through the `JUMPI` and jump to the
+shared copy block at pc 4527, which copies `t` (2112) to the destination and returns. -/
+def csFixedTailKeep : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 3566 .ISZERO,
+   pushAt 3567 2 2080,
+   opAt 3568 .MLOAD,
+   opAt 3569 .OR,
+   pushAt 3570 2 4538,
+   opAt 3571 .JUMPI,
+   pushAt 3572 2 4527,
+   opAt 3573 .JUMP,
+   opAt 3579 .JUMPDEST,
+   pushAt 3580 2 2112,
+   pushAt 3581 2 2688,
+   opAt 3582 .MLOAD,
+   opAt 3583 (.Swap ⟨1, by decide⟩),
+   opAt 3584 .MCOPY,
+   opAt 3585 .JUMP]
 
 def csFixedStep4_0 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 3326 2 2208,
    opAt 3327 .MLOAD,
    pushAt 3328 1 96,
    opAt 3329 .MLOAD,
-   opAt 3330 (.Dup ⟨1, by decide⟩),
-   opAt 3331 (.Dup ⟨1, by decide⟩),
-   opAt 3332 .GT,
-   opAt 3333 (.Swap ⟨1, by decide⟩),
-   opAt 3334 .SUB,
-   pushAt 3335 2 1888,
-   opAt 3336 .MSTORE,
-   pushAt 3337 2 4438,
-   opAt 3338 .JUMP]
+   opAt 3330 (.Dup ⟨0, by decide⟩),
+   opAt 3331 (.Dup ⟨2, by decide⟩),
+   opAt 3332 .SUB,
+   pushAt 3333 2 1888,
+   opAt 3334 .MSTORE,
+   opAt 3335 .GT,
+   pushAt 3336 2 4438,
+   opAt 3337 .JUMP]
 
 def csFixedStep4_1 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 3514 .JUMPDEST,
@@ -272,25 +288,6 @@ def csFixedStep4_3 : List (Challenge.EvmProof.Stepper.Located Artifact.submissio
    opAt 3563 .MSTORE,
    opAt 3564 .GT,
    opAt 3565 .OR]
-
-def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 3566 .ISZERO,
-   pushAt 3567 2 2080,
-   opAt 3568 .MLOAD,
-   opAt 3569 .OR,
-   pushAt 3570 2 319,
-   opAt 3571 .NOT,
-   pushAt 3572 2 4538,
-   opAt 3573 .JUMP,
-   opAt 3586 .JUMPDEST,
-   opAt 3587 .MUL,
-   pushAt 3588 2 2112,
-   opAt 3589 .ADD,
-   pushAt 3590 2 2688,
-   opAt 3591 .MLOAD,
-   opAt 3592 (.Swap ⟨1, by decide⟩),
-   opAt 3593 .MCOPY,
-   opAt 3594 .JUMP]
 
 @[simp] theorem fixedPC3777 : Artifact.submissionArtifact.instructionPC 3425 = 4315 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
@@ -398,11 +395,11 @@ def csFixedTail4 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionA
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem fixedPC3803 : Artifact.submissionArtifact.instructionPC 3588 = 4540 := by
+@[simp] theorem fixedPC3803 : Artifact.submissionArtifact.instructionPC 3588 = 4542 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem fixedPC3804 : Artifact.submissionArtifact.instructionPC 3589 = 4543 := by
+@[simp] theorem fixedPC3804 : Artifact.submissionArtifact.instructionPC 3589 = 4545 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -1046,24 +1043,24 @@ rather than an honest error. -/
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem fixedPC3955 : Artifact.submissionArtifact.instructionPC 3588 = 4540 := by
+@[simp] theorem fixedPC3955 : Artifact.submissionArtifact.instructionPC 3588 = 4542 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem fixedPC3956 : Artifact.submissionArtifact.instructionPC 3589 = 4543 := by
+@[simp] theorem fixedPC3956 : Artifact.submissionArtifact.instructionPC 3589 = 4545 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem fixedPC3957 : Artifact.submissionArtifact.instructionPC 3590 = 4544 := by
+@[simp] theorem fixedPC3957 : Artifact.submissionArtifact.instructionPC 3590 = 4546 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem fixedPC4190 : Artifact.submissionArtifact.instructionPC 3335 = 4190 := by
+@[simp] theorem fixedPC4190 : Artifact.submissionArtifact.instructionPC 3335 = 4192 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 @[simp] theorem fixedPC4193 : Artifact.submissionArtifact.instructionPC 3336 = 4193 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem fixedPC4194 : Artifact.submissionArtifact.instructionPC 3337 = 4194 := by
+@[simp] theorem fixedPC4194 : Artifact.submissionArtifact.instructionPC 3337 = 4196 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 @[simp] theorem fixedPC4197 : Artifact.submissionArtifact.instructionPC 3338 = 4197 := by
@@ -1140,7 +1137,7 @@ rather than an honest error. -/
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem fixedPC4012 : Artifact.submissionArtifact.instructionPC 3334 = 4189 := by
+@[simp] theorem fixedPC4012 : Artifact.submissionArtifact.instructionPC 3334 = 4191 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -1260,7 +1257,7 @@ rather than an honest error. -/
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2943 : Artifact.submissionArtifact.instructionPC 3334 = 4189 := by
+@[simp] theorem earlyExtraPC2943 : Artifact.submissionArtifact.instructionPC 3334 = 4191 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 

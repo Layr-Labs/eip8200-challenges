@@ -15,7 +15,7 @@ artifact and shows that none of them can name pc 3168, 3169 or 3170.
 
 Four facts, all `decide`d against the artifact's own 4,422-instruction list:
 
-* `jumpSites_eq` pins the 98 control transfers, `literalJumpTargets_eq` the 87 destinations they
+* `jumpSites_eq` pins the 99 control transfers, `literalJumpTargets_eq` the 88 destinations they
   name with a `PUSH` immediate (68 distinct), and `dataDependentJumpSites_eq` the eleven whose
   operand is a stack word.
 * `noLiteralJumpTarget_window`: none of those 87 literal destinations is 3168, 3169 or 3170.
@@ -106,27 +106,27 @@ def pushImmediates : List Nat :=
     | _ => none
 
 theorem jumpSites_eq : jumpSites =
-    [18, 34, 45, 71, 77, 89, 102, 120, 132, 142, 150, 204, 207, 227, 233, 256,
+    [16, 31, 42, 70, 75, 89, 102, 120, 132, 142, 150, 204, 207, 227, 233, 256,
      263, 273, 282, 297, 301, 317, 321, 326, 333, 375, 378, 383, 388, 398, 413, 422,
      432, 456, 477, 553, 567, 570, 578, 592, 615, 619, 2009, 2012, 2018, 2023, 2032, 2035,
      2045, 2057, 2064, 2071, 2083, 2090, 2119, 2264, 2328, 2566, 2571, 2578, 2612, 2624, 2631, 2668,
-     2676, 2683, 2695, 2698, 2756, 2830, 3289, 3297, 3322, 3324, 3338, 3350, 3356, 3362, 3369, 3419,
-     3427, 3435, 3573, 3578, 3585, 3594, 3608, 3610, 3706, 3806, 3879, 4021, 4041, 4246, 4248, 4360,
-     4380, 4390] := by decide
+     2676, 2683, 2695, 2698, 2756, 2830, 3289, 3297, 3322, 3324, 3337, 3351, 3357, 3365, 3369, 3419,
+     3427, 3435, 3571, 3573, 3578, 3585, 3592, 3608, 3610, 3706, 3806, 3879, 4021, 4041, 4246, 4248,
+     4360, 4380, 4390] := by decide
 
 theorem literalJumpTargets_eq : literalJumpTargets =
-    [127, 866, 866, 25, 599, 153, 186, 156, 222, 2397, 193, 273, 301, 396, 413, 388,
+    [127, 866, 866, 22, 599, 153, 186, 156, 222, 2397, 193, 273, 301, 396, 413, 388,
      413, 312, 484, 477, 484, 469, 484, 421, 494, 548, 488, 570, 238, 843, 784, 790,
-     790, 2545, 795, 238, 553, 553, 135, 116, 2402, 212, 2478, 790, 790, 2498, 790, 3387,
+     790, 2545, 795, 238, 553, 553, 135, 112, 2402, 212, 2478, 790, 790, 2498, 790, 3387,
      2498, 5466, 790, 4308, 2589, 3346, 3208, 2811, 3287, 3220, 3214, 3198, 3284, 3266, 5444, 2811,
-     2441, 4198, 4527, 4323, 4438, 4518, 4518, 4579, 5062, 5307, 4177, 4538, 4323, 4579, 5062, 4927,
-     4927, 4927, 4198, 3841, 3977, 3378, 3383] := by decide
+     2441, 4198, 4527, 4323, 4438, 4518, 4518, 5062, 4202, 5307, 4177, 4538, 4527, 4323, 4579, 5062,
+     4927, 4927, 4927, 4245, 3841, 3977, 3378, 3383] := by decide
 
 /-- The eleven sites whose destination is a stack word, in program order. -/
 theorem dataDependentJumpSites_eq : dataDependentJumpSites =
-    [333, 388, 2328, 2756, 2830, 3289, 3419, 3585, 3594, 4021, 4248] := by decide
+    [333, 388, 2328, 2756, 2830, 3289, 3419, 3585, 3592, 4021, 4248] := by decide
 
-/-- **No literal jump destination is the M9 exit.**  None of the 87 destinations the image
+/-- **No literal jump destination is the M9 exit.**  None of the 88 destinations the image
 names with a `PUSH` immediate is pc 3168, 3169 or 3170. -/
 theorem noLiteralJumpTarget_window :
     literalJumpTargets.all fun n => decide (n ≠ 3168 ∧ n ≠ 3169 ∧ n ≠ 3170) = true := by decide

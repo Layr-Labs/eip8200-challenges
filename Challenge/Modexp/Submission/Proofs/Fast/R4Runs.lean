@@ -1613,19 +1613,19 @@ theorem run_exit_3 (s : State) (x0 : UInt256) (rest : List UInt256)
   simp [hc0, hz0, prog_exit_3, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, hc1, hc2, hc3, hc4, hc5, hc6]
 
 def prog_exit_4 : List Instr :=
-  [.push 2 4198, .op .JUMP]
+  [.push 2 4245, .op .JUMP]
 
 theorem run_exit_4 (s : State) (rest : List UInt256)
     (hcap : rest.length ≤ 1022)
-    (hjd : Decode.isValidJumpDest s.executionEnv.code 4198 = true) :
+    (hjd : Decode.isValidJumpDest s.executionEnv.code 4245 = true) :
     runInstructions prog_exit_4
       { s with pc := UInt256.ofNat 5058, stack := rest } =
-    some { s with pc := (4198 : UInt256),
+    some { s with pc := (4245 : UInt256),
                   stack := rest } := by
   have hc0 : rest.length < 1024 := by omega
   have hz0 : (⟨0⟩ : UInt256).toNat = 0 := rfl
   have hc1 : rest.length + 1 < 1024 := by omega
-  have hl4379 : (4198 : UInt256).toNat = 4198 := rfl
+  have hl4379 : (4245 : UInt256).toNat = 4245 := rfl
   simp [hc0, hz0, prog_exit_4, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, hc1, hl4379, hjd]
 
 /-- Two writes to disjoint windows commute (same statement and proof as
@@ -1674,10 +1674,10 @@ theorem prog_exit_split : prog_exit = prog_exit_0 ++ (prog_exit_1 ++ (prog_exit_
 theorem run_exit (s : State) (p3 p2 p1 p0 p4 k n0 n1 n2 n3 np : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1010)
     (hact : 88 ≤ s.activeWords.toNat)
-    (hjd : Decode.isValidJumpDest s.executionEnv.code 4198 = true) :
+    (hjd : Decode.isValidJumpDest s.executionEnv.code 4245 = true) :
     runInstructions prog_exit
       { s with pc := UInt256.ofNat 5031, stack := p3 :: p2 :: p1 :: p0 :: p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } =
-    some { s with pc := UInt256.ofNat 4198,
+    some { s with pc := UInt256.ofNat 4245,
                   stack := rest,
                   memory := (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes s.memory
           (Data.Bytes.natToBytesPadded p0.toNat 32) 2208)

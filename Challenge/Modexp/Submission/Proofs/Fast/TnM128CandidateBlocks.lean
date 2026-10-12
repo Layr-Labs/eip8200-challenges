@@ -44,8 +44,8 @@ def afterSquareReset : Block submissionArtifact .Osaka 3472 (TnCacheFrameOps.res
   WindowTwentyOneSlice.block allWellFormed 2761 3 3472 (TnCacheFrameOps.reset)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def againReset : Block submissionArtifact .Osaka 4242 (TnCacheFrameOps.reset) :=
-  WindowTwentyOneSlice.block allWellFormed 3363 3 4242 (TnCacheFrameOps.reset)
+def againReset : Block submissionArtifact .Osaka 4234 (TnCacheFrameOps.reset) :=
+  WindowTwentyOneSlice.block allWellFormed 3359 3 4234 (TnCacheFrameOps.reset)
     (by decide) (by rfl) (by rfl) (by decide)
 
 end Challenge.Modexp.Submission.Proofs.Fast.TnM128CandidateBlocks

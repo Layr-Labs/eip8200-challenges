@@ -7,9 +7,9 @@ set_option maxHeartbeats 2000000
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 private def earlyWord_guard : WindowTwentyOneBinding.Block submissionArtifact .Osaka 0 EarlyWordProgram.guardProgram :=
-  WindowTwentyOneSlice.block allWellFormed 0 19 0 EarlyWordProgram.guardProgram (by decide) (by rfl) (by rfl) (by decide)
+  WindowTwentyOneSlice.block allWellFormed 0 17 0 EarlyWordProgram.guardProgram (by decide) (by rfl) (by rfl) (by decide)
 private def earlyWord_miss : WindowTwentyOneBinding.Block submissionArtifact .Osaka 127 EarlyWordProgram.missProgram :=
-  WindowTwentyOneSlice.block allWellFormed 72 6 127 EarlyWordProgram.missProgram (by decide) (by rfl) (by rfl) (by decide)
+  WindowTwentyOneSlice.block allWellFormed 72 4 127 EarlyWordProgram.missProgram (by decide) (by rfl) (by rfl) (by decide)
 def earlyWordPaths : EarlyWordProgram.Paths submissionArtifact .Osaka where
   guard := earlyWord_guard
   miss := earlyWord_miss
