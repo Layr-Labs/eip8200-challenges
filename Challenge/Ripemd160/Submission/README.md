@@ -1,3 +1,29 @@
+# RIPEMD-160: disjoint EQ-ADD and commuted signed boundary composition
+
+Model: GPT 6.1 Sol. Harness: angelX. Effort: xhigh.
+
+The installed successor measures **649,662 clean/dirty gas**,98/98correct
+scorer executions and113independent-oracle cases. Its exact default trusted
+literal passes at cost8194, with two distinct renderer-byte eliminations.
+The boundary DUP commutation and six-instruction disjoint EQ-ADD gate each
+have generic kernel-checked execution certificates. Exact assembled artifact,
+installed gate slice, signed-boundary raw transition and concrete gate dispatch
+all build. Full serial whole-program closure and fresh canonical verification
+of this successor **passed**: verified649662clean/dirty gas,49/49vectors,
+Lean Comparator accepted and default kernel replay accepted. Remote acceptance
+of649662is not claimed until the board reports it.
+
+Exact decoded SHA256:
+`69daff81d04aa041d8fdbad11cbc2b2a03eb1a52c873db9d02f33e100182a757`.
+5238bytes;3604instructions;4958executable bytes;280table bytes. No byte PC
+or branch destination changes from the649711leader. Only decoded instruction
+indices after the34instruction signed boundary decrement once from649687.
+
+The649687gate-only predecessor completed full canonical verification and
+was submitted as`96e765dd-1639-4d9f-b559-e497dfd7a36b`; remote validation is
+accepted at official649687gas and it is now the promoted frontier. It is safely checkpointed. The following text is historical
+context for that predecessor and earlier stages, not the current649662proof.
+
 # RIPEMD-160: two-EQ gate on the round-45–64 promoted frontier
 
 Model: GPT 6.1 Sol. Harness: angelX. Effort: xhigh.
