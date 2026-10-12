@@ -141,6 +141,7 @@ theorem run_cachedProduct_model (pc0 : Nat) (s : State)
     (n : Nat) (rest : List UInt256) (hcap : rest.length ≤ 998) (hn : n ≤ 8)
     (hact : 88 ≤ s.activeWords.toNat)
     (hc : ReadonlyCache s.memory n tl inv m0)
+    (hm0 : m0 = MachineState.readWord s.memory (32*n-32))
     (hminv : CiosCachedMidMemory.inverseInvariant s.memory n) :
     runInstructions cachedProduct
       (framed s (UInt256.ofNat (pc0 + 0))
@@ -148,7 +149,7 @@ theorem run_cachedProduct_model (pc0 : Nat) (s : State)
     some (framed s (UInt256.ofNat (pc0 + 12))
       ([rowC0 s.memory n,rowMu s.memory n] ++
         cacheStack bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
-  rw [hc.lowAddress, hc.inverse, hc.modulusLow]
+  rw [hc.lowAddress, hc.inverse, hm0]
   have hr := run_cachedProduct pc0 s bi pbi pa pb flag tn target2
     (MachineState.readWord s.memory 2720) (MachineState.readWord s.memory (32*n-32))
     aEnd m96 m64 m32 dst ret n rest hcap hn hact
@@ -161,8 +162,76 @@ theorem run_cachedProduct_model (pc0 : Nat) (s : State)
   rw [N0Carry.addMod_comm] at hr
   simpa only [hcarry, rowC0, rowMu] using hr
 
+/-- Layout V1 eight-limb head: modulus[224] is read from memory (`PUSH1 224 MLOAD`). -/
+def cachedProduct8 : List Instr :=
+  [.op (.Dup ⟨8, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op .MLOAD,
+   .op .MUL, .op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩), .push 1 224, .op .MLOAD, .op .MULMOD,
+   .op (.Dup ⟨13, by decide⟩), .op .MLOAD, .op .ADDMOD]
+
+theorem run_cachedProduct8 (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2 inv m0 aEnd m96 m64 m32 dst ret : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 998)
+    (hact : 88 ≤ s.activeWords.toNat) :
+    let tl := UInt256.ofNat (2080+32*8)
+    let t0 := MachineState.readWord s.memory (2080+32*8)
+    runInstructions cachedProduct8
+      (framed s (UInt256.ofNat (pc0 + 0))
+        (cacheStack bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
+    some (framed s (UInt256.ofNat (pc0 + 14))
+      ([UInt256.addMod t0 (UInt256.mulMod (MachineState.readWord s.memory 224) (inv*t0) maxWord) maxWord,inv*t0] ++
+        cacheStack bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
+  have hc17 : rest.length + 17 < 1024 := by omega
+  have hc18 : rest.length + 18 < 1024 := by omega
+  have hc19 : rest.length + 19 < 1024 := by omega
+  have hc20 : rest.length + 20 < 1024 := by omega
+  have hc21 : rest.length + 21 < 1024 := by omega
+  have hc22 : rest.length + 22 < 1024 := by omega
+  have hmod : (2080+32*8) % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2080+32*8 := Nat.mod_eq_of_lt (by omega)
+  have hmul : MachineState.readWord s.memory (2080+32*8) * inv = inv * MachineState.readWord s.memory (2080+32*8) := by
+    apply Challenge.EvmProof.Word.word_ext
+    change ((MachineState.readWord s.memory (2080+32*8)).val * inv.val).val =
+      (inv.val * (MachineState.readWord s.memory (2080+32*8)).val).val
+    rw [Fin.val_mul, Fin.val_mul, Nat.mul_comm]
+  have hactQ := activeWords_fix s (2080+32*8) 32 (by decide) (by omega) hact
+  have hactN := activeWords_fix s 224 32 (by decide) (by omega) hact
+  have h224 : (224 : UInt256).toNat = 224 := by decide
+  have h224' : (UInt256.ofNat 224).toNat = 224 := by decide
+  simp (config := { maxSteps := 400000 }) [cachedProduct8, runInstructions,
+    Challenge.EvmProof.Stepper.runInstr, framed, cacheStack, baseStack,
+    Nat.add_assoc, hc17, hc18, hc19, hc20, hc21, hc22, hmul, allOnes_value,
+    State.activeWordsAfterUInt256, Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,
+    hmod, h224, h224', hactQ, hactN, List.exchange]
+
+theorem run_cachedProduct8_model (pc0 : Nat) (s : State)
+    (bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 998)
+    (hact : 88 ≤ s.activeWords.toNat)
+    (hc : ReadonlyCache s.memory 8 tl inv m0)
+    (hminv : CiosCachedMidMemory.inverseInvariant s.memory 8) :
+    runInstructions cachedProduct8
+      (framed s (UInt256.ofNat (pc0 + 0))
+        (cacheStack bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
+    some (framed s (UInt256.ofNat (pc0 + 14))
+      ([rowC0 s.memory 8,rowMu s.memory 8] ++
+        cacheStack bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
+  rw [hc.lowAddress, hc.inverse]
+  have hr := run_cachedProduct8 pc0 s bi pbi pa pb flag tn target2
+    (MachineState.readWord s.memory 2720) m0
+    aEnd m96 m64 m32 dst ret rest hcap hact
+  have hguard : MachineState.readWord s.memory 2720 ≠ UInt256.ofNat 1 := by
+    rw [← hc.inverse]
+    exact hc.inverseGuard
+  have hcarry := N0Carry.addMod_row_carry (MachineState.readWord s.memory 224)
+    (MachineState.readWord s.memory 2720) (MachineState.readWord s.memory (2080+32*8)) hminv hguard
+  dsimp only at hr
+  rw [N0Carry.addMod_comm] at hr
+  simpa only [hcarry, rowC0, rowMu, Nat.reduceMul, Nat.reduceSub, Nat.reduceAdd] using hr
+
+
 
 
 
 #print axioms run_cachedProduct_model
+#print axioms run_cachedProduct8_model
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheProductTrace

@@ -15,7 +15,7 @@ theorem sqL1_cached {mem : ByteArray} {n : Nat} {tl inv m0 m96 m64 m32 : UInt256
     Cached (sqL1 mem n i tb).memory 2368 n tl inv m0 m96 m64 m32 := by
   refine ⟨h.readonly.of_preserved
       (readWord_sqL1 mem n i 2720 tb hi (Or.inr (by omega)))
-      (readWord_sqL1 mem n i (32*n-32) tb hi (Or.inl (by omega))),
+      (readWord_sqL1 mem n i (16*n+32) tb hi (Or.inl (by omega))),
     h.extra.of_preserved
       (readWord_sqL1 mem n i 96 tb hi (Or.inl (by decide)))
       (readWord_sqL1 mem n i 64 tb hi (Or.inl (by decide)))
@@ -46,7 +46,7 @@ theorem cached_squareRows {z : CacheState} {n : Nat} {tl inv m0 m96 m64 m32 : UI
     Cached (squareRows z n i).memory 2368 n tl inv m0 m96 m64 m32 := by
   refine ⟨h.readonly.of_preserved
       (read_squareRows z n 2720 hn (Or.inr (by decide)) i hi)
-      (read_squareRows z n (32*n-32) hn (Or.inl (by omega)) i hi),
+      (read_squareRows z n (16*n+32) hn (Or.inl (by omega)) i hi),
     h.extra.of_preserved
       (read_squareRows z n 96 hn (Or.inl (by decide)) i hi)
       (read_squareRows z n 64 hn (Or.inl (by decide)) i hi)

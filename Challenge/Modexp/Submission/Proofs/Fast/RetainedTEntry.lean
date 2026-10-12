@@ -34,13 +34,13 @@ def pushBlock : Block Artifact.submissionArtifact .Osaka 4320 pushProgram :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 3428 1 4320 pushProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def tailBlock : Block Artifact.submissionArtifact .Osaka 5307 tailProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4247 2 5307 tailProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4248 2 5307 tailProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest4486 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4308 = true :=
   Artifact.isValidJumpDest_index 3420 (by rfl)
 theorem jumpDest5326 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5307 = true :=
-  Artifact.isValidJumpDest_index 4247 (by rfl)
+  Artifact.isValidJumpDest_index 4248 (by rfl)
 
 /-- The comparison word the entry block tests. -/
 def skipWord (mem : ByteArray) : UInt256 :=

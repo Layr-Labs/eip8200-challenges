@@ -5,9 +5,9 @@ set_option warningAsError true
 set_option maxHeartbeats 1000000
 
 /-!
-# The kernel setup entry (55 instructions)
+# The kernel setup entry (58 instructions)
 
-`load` (24) · `shuffle` (11) · `low` (3) · `zero` (9: `MCOPY` staging + scratch-word `MSTORE`
+`load` (27) · `shuffle` (11) · `low` (3) · `zero` (9: `MCOPY` staging + scratch-word `MSTORE`
 zeroing) · `pointersJump` (9, ending `DUP2; JUMP` to the row head `hd`).
 -/
 
@@ -20,7 +20,7 @@ def fullEntryProgram : List Instr :=
   ((EntryPrefix.loadProgram ++ EntryPrefix.shuffleProgram) ++ EntryPrefix.lowProgram) ++
     (zeroProgram ++ pointersJumpProgram)
 
-theorem fullEntryProgram_length : fullEntryProgram.length = 55 := rfl
+theorem fullEntryProgram_length : fullEntryProgram.length = 58 := rfl
 
 /-- The whole `setup`: from `setupState` (pc 4123, `[hd, pa, pb, dst, ret] ++ rest`) to the
 row-0 head at `hd` with the staged, zeroed memory and `ent = l1Target n`. -/
@@ -34,17 +34,18 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*n))
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32*n-32))
+    (hw : rest[1]? = some (UInt256.ofNat (32*n)))
     (hslot : rest[2]? = some (MachineState.readWord mem 2688))
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions fullEntryProgram (setupState s mem hd pa pb dst ret rest) =
     some (outState s (SquarePartialClear.memory (stage mem pa n)) pb n 0 hd (l1Target n)
-      (MachineState.readWord mem 2720) (MachineState.readWord mem (32*n-32))
+      (MachineState.readWord mem 2720) (MachineState.readWord mem (16*n+32))
       (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
         MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
         UInt256.ofNat (pa+32*n-32) :: dst :: ret :: rest)) := by
   let tl := MachineState.readWord mem 2784
   let inv := MachineState.readWord mem 2720
-  let m0 := MachineState.readWord mem (32*n-32)
+  let m0 := MachineState.readWord mem (16*n+32)
   let aEnd := UInt256.ofNat (pa+32*n-32)
   let m96 := MachineState.readWord mem 96
   let m64 := MachineState.readWord mem 64
@@ -52,8 +53,8 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
   have hcap' : (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest).length ≤ 1005 := by
     simp only [List.length_cons]; omega
   have hreads := EntryPrefix.run_load { s with memory := mem } hd
-    (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret rest (32*n-32)
-    hcap hact (by omega) hml hslot
+    (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret rest (32*n-32) n
+    hcap hact (by omega) hn4 hml hw hslot
   have hAend : UInt256.ofNat pa + UInt256.ofNat (32*n-32) = aEnd := by
     dsimp [aEnd]
     rw [Challenge.EvmProof.Word.ofNat_add_mod]
@@ -109,17 +110,18 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*n))
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32*n-32))
+    (hw : rest[1]? = some (UInt256.ofNat (32*n)))
     (hslot : rest[2]? = some (UInt256.ofNat n))
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions fullEntryProgram (setupState s mem hd pa pb dst ret rest) =
     some (outState s (SquarePartialClear.memory (stage mem pa n)) pb n 0 hd (UInt256.ofNat 3562)
-      (MachineState.readWord mem 2720) (MachineState.readWord mem (32*n-32))
+      (MachineState.readWord mem 2720) (MachineState.readWord mem (16*n+32))
       (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
         MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
         UInt256.ofNat (pa+32*n-32) :: dst :: ret :: rest)) := by
   let tl := MachineState.readWord mem 2784
   let inv := MachineState.readWord mem 2720
-  let m0 := MachineState.readWord mem (32*n-32)
+  let m0 := MachineState.readWord mem (16*n+32)
   let aEnd := UInt256.ofNat (pa+32*n-32)
   let m96 := MachineState.readWord mem 96
   let m64 := MachineState.readWord mem 64
@@ -127,8 +129,8 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
   have hcap' : (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest).length ≤ 1005 := by
     simp only [List.length_cons]; omega
   have hreads := EntryPrefix.run_load_w { s with memory := mem } hd
-    (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret rest (32*n-32)
-    hcap hact (by omega) hml (UInt256.ofNat n) hslot
+    (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret rest (32*n-32) n
+    hcap hact (by omega) hn4 hml hw (UInt256.ofNat n) hslot
   have hAend : UInt256.ofNat pa + UInt256.ofNat (32*n-32) = aEnd := by
     dsimp [aEnd]
     rw [Challenge.EvmProof.Word.ofNat_add_mod]

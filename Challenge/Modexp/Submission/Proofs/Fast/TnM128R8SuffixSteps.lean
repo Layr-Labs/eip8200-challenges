@@ -13,7 +13,7 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 open CiosReadonly CiosCachedMidMemory WindowTwentyOneBinding TnCacheReductionTrace
 open Challenge.EvmProof
 
-def l2PC : Nat := 3841
+def l2PC : Nat := 3843
 
 /-- The current eight-limb fallthrough middle, seven reduction cells, and
 long-immediate tail implement the carry-cache model for arbitrary carry words. -/
@@ -25,6 +25,7 @@ noncomputable def suffix_steps (s : State)
     (hact : 88 ≤ s.activeWords.toNat)
     (he : TnCacheExtraTrace.ExtraCache q.memory m96 m64 m32)
     (hcache : m128 = MachineState.readWord q.memory 128)
+    (hm0 : m0 = MachineState.readWord q.memory 160)
     (hjd : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     GasSteps
       (TnCacheL2Trace.state {s with memory := q.memory} (UInt256.ofNat l2PC)
@@ -45,7 +46,7 @@ noncomputable def suffix_steps (s : State)
   have htail : tail.length ≤ 1006 := by simp only [tail, List.length_cons]; omega
   have hreduce := TnMod128Chain.run_full st (l2PC) q.memory flag (rowMu q.memory 8)
     (rowC0 q.memory 8) 8 (Or.inr rfl) pbi hd pb ent (tn+q.carry) m128
-    tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hact he hcache
+    tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hact he hcache (fun _ => hm0)
   have htailrun := TnCacheRowTrace.run_tail ((l2PC)+TnMod128Chain.fullSize 8)
     {s with memory := mem2} carry2 flag pbi hd pb ent (tn+q.carry)
     m128 inv tail htail hact hjd

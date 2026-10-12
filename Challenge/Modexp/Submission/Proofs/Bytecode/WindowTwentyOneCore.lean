@@ -13,7 +13,7 @@ open WindowNibbleKernel
 def returnedState (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) : State :=
   let finish := WindowTwentyOneLoop.finishState template base modulus exponent rest
-  WindowTwentyOneReturn.returned finish (UInt256.ofNat 2379)
+  WindowTwentyOneReturn.returned finish (UInt256.ofNat 2377)
     (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 18 finish.stack.tail
 
 theorem run_finish (template : State) (base modulus exponent : UInt256)
@@ -28,10 +28,10 @@ theorem run_finish (template : State) (base modulus exponent : UInt256)
       WindowTwentyOneLookup.framed, List.nil_append, List.cons_append,
       List.tail_cons, List.length_cons]
     omega
-  have h := WindowTwentyOneReturn.run_return finish (UInt256.ofNat 2374)
+  have h := WindowTwentyOneReturn.run_return finish (UInt256.ofNat 2372)
     (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 18 (by decide) rfl
     finish.stack.tail htail
-  have hpc : advancePC 5 (UInt256.ofNat 2374) = UInt256.ofNat 2379 := by decide
+  have hpc : advancePC 5 (UInt256.ofNat 2372) = UInt256.ofNat 2377 := by decide
   simpa only [returnedState, finish, WindowTwentyOneReturn.framed, WindowTwentyOneLoop.finishState,
     WindowTwentyOneLoop.postStateLast,
     WindowTwentyOneLastGroup.outState, WindowTwentyOneLookup.framed,

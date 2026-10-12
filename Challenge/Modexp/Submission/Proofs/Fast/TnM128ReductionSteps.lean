@@ -10,7 +10,7 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 open CiosReadonly CiosCachedMidMemory
 
 def middlePC (n : Nat) : Nat := if n = 4 then 5420 else 3822
-def l2PC (n : Nat) : Nat := if n = 4 then 3977 else 3841
+def l2PC (n : Nat) : Nat := if n = 4 then 3977 else 3843
 
 noncomputable def reduction_steps (s : State)
     (env : Environment TnM128CandidateArtifact.submissionArtifact .Osaka s)

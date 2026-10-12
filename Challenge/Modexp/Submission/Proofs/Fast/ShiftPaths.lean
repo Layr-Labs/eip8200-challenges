@@ -240,13 +240,15 @@ def blk3026 :
    opAt 2313 .GT,
    opAt 2314 (.Swap ⟨0, by decide⟩),
    opAt 2315 .SUB,
-   opAt 2316 (.Swap ⟨0, by decide⟩),
-   opAt 2317 (.Dup ⟨13, by decide⟩),
-   opAt 2318 .GT,
-   opAt 2319 .ISZERO,
-   pushAt 2320 0 0,
-   opAt 2321 .SUB,
-   opAt 2322 .OR]
+   pushAt 2316 0 0,
+   opAt 2317 .NOT,
+   opAt 2318 (.Swap ⟨1, by decide⟩),
+   opAt 2319 (.Dup ⟨14, by decide⟩),
+   opAt 2320 .GT,
+   opAt 2321 .ISZERO,
+   pushAt 2322 0 0,
+   opAt 2323 .SUB,
+   opAt 2324 .OR]
 
 
 
@@ -501,7 +503,7 @@ theorem jumpDest5366 :
 
 theorem jumpDest5444 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5444 = true :=
-  Artifact.isValidJumpDest_index 4361 (by rfl)
+  Artifact.isValidJumpDest_index 4362 (by rfl)
 
 theorem jumpDest3378 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3378 = true :=
@@ -563,8 +565,7 @@ def blk3346 :
 restoring the bare outer frame, then jump to the done stub. -/
 def blk5444 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 4361 .JUMPDEST,
-   opAt 4362 .POP,
+  [opAt 4362 .JUMPDEST,
    opAt 4363 .POP,
    opAt 4364 .POP,
    opAt 4365 .POP,
@@ -581,8 +582,9 @@ def blk5444 :
    opAt 4376 .POP,
    opAt 4377 .POP,
    opAt 4378 .POP,
-   pushAt 4379 2 3378,
-   opAt 4380 .JUMP]
+   opAt 4379 .POP,
+   pushAt 4380 2 3378,
+   opAt 4381 .JUMP]
 
 /-- The done stub (pcs 3378-3382): jump to the exponent phase's dispatcher. -/
 def blk3378 :

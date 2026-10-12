@@ -33,7 +33,7 @@ theorem row_cached {z : CacheState} {n : Nat} {tl inv m0 m96 m64 m32 : UInt256}
     Cached (squareRow z n i).memory 2368 n tl inv m0 m96 m64 m32 := by
   refine ⟨h.readonly.of_preserved
       (read_squareRow z n i 2720 hi hn (Or.inr (by decide)))
-      (read_squareRow z n i (32*n-32) hi hn (Or.inl (by omega))),
+      (read_squareRow z n i (16*n+32) hi hn (Or.inl (by omega))),
     h.extra.of_preserved
       (read_squareRow z n i 96 hi hn (Or.inl (by decide)))
       (read_squareRow z n i 64 hi hn (Or.inl (by decide)))

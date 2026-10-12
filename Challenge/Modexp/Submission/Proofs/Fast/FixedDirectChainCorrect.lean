@@ -68,7 +68,7 @@ def gasSteps_squareLoopFast (s : State) {n bsize mm minv : Nat}
       (Exp.storeWord memory 2624 (UInt256.ofNat count)) bM
       hfast hcount hcount16 (by simp [Exp.outer])
       (readWord_countStore memory count)
-      (by simp [Exp.outer])
+      (by simp [Exp.outer]) (by simp [Exp.outer])
       (countStore_frame count hframe) hinv0.modulus hinv0.squareBase hbM)
 
 /-- Both width routes deliver the final mixed-domain product at the output block. -/

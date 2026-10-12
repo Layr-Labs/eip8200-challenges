@@ -15,7 +15,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached StagedOperand
 
 /-- Stage the first operand at 2368 (`MCOPY`) and clear the scratch word at 2048
-(`PUSH0; PUSH2 2048; MSTORE`), keeping `hd` on top: pc 3441 → 3456.  The rest of the
+(`PUSH0; PUSH2 2048; MSTORE`), keeping `hd` on top: pc 3444 → 3459.  The rest of the
 product block is not cleared here: the square rows overwrite it before reading it
 (`SquarePartialClear`, `R4SquareScratchAgreement`), and the multiply entry clears the
 whole block first (`MulPreclear`). -/
@@ -30,15 +30,15 @@ def zeroProgram : List Instr := stageProgram ++ clearProgram
 /-- After `lowProgram`: `hd` above the operand pointers and the row frame. -/
 def cachedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3441
+  { s with pc := UInt256.ofNat 3444
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb,
              l1Target n, zeroTn, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
            memory := mem }
 
-/-- After staging: `hd` above the width word (pc 3451). -/
+/-- After staging: `hd` above the width word (pc 3454). -/
 def stagedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
     (ent dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3451
+  { s with pc := UInt256.ofNat 3454
            stack := [hd, UInt256.ofNat (32*n), UInt256.ofNat pb,
              ent, zeroTn, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
            memory := mem }
@@ -46,7 +46,7 @@ def stagedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
 /-- After staging and clearing the scratch word: `hd` above the width word. -/
 def clearedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3456
+  { s with pc := UInt256.ofNat 3459
            stack := [hd, UInt256.ofNat (32*n), UInt256.ofNat pb,
              l1Target n, zeroTn, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
            memory := SquarePartialClear.memory mem }
@@ -56,7 +56,7 @@ theorem run_stageGen (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
     (hact : 88 ≤ s.activeWords.toNat) (hnpos : 0 < n) (hn : n ≤ 8) (hpa : pa+32*n ≤ 2816)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*n)) :
     runInstructions stageProgram
-      { s with pc := UInt256.ofNat 3441
+      { s with pc := UInt256.ofNat 3444
                stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb,
                  ent, zeroTn, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
                memory := mem } =
@@ -87,7 +87,7 @@ theorem run_clearGen (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions clearProgram (stagedSetupState s mem hd pb n ent dst ret rest) =
       some { stagedSetupState s (SquarePartialClear.memory mem) hd pb n ent dst ret rest with
-        pc := UInt256.ofNat 3456 } := by
+        pc := UInt256.ofNat 3459 } := by
   have hc9 : rest.length+9 < 1024 := by omega
   have hc10 : rest.length+10 < 1024 := by omega
   have hc11 : rest.length+11 < 1024 := by omega
@@ -118,7 +118,7 @@ frame keeps the limb count (not the width word) in the setup's width slot, so th
 normalized selector vanishes and the displaced head is `3562` for both widths. -/
 def cachedSetupStateSq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb _n : Nat)
     (dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3441
+  { s with pc := UInt256.ofNat 3444
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb,
              UInt256.ofNat 3562, zeroTn, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
            memory := mem }
@@ -126,7 +126,7 @@ def cachedSetupStateSq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb _n : 
 /-- `clearedSetupState` for the square frame (row head 3562). -/
 def clearedSetupStateSq (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3456
+  { s with pc := UInt256.ofNat 3459
            stack := [hd, UInt256.ofNat (32*n), UInt256.ofNat pb,
              UInt256.ofNat 3562, zeroTn, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
            memory := SquarePartialClear.memory mem }

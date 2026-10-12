@@ -32,6 +32,7 @@ opaque gasSteps_specializedEight (E : EntryLemmas) (s : State) (mem : ByteArray)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * 8))
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * 8))
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * 8 - 32))
+    (hw : rest[1]? = some (UInt256.ofNat (32 * 8)))
     (hslot : rest[2]? = some (MachineState.readWord mem 2688))
     (hminv : inverseInvariant mem 8)
     (hguard : MachineState.readWord mem 2720 ≠ UInt256.ofNat 1) :
@@ -48,16 +49,16 @@ opaque gasSteps_specializedEight (E : EntryLemmas) (s : State) (mem : ByteArray)
   refine (E.gasSteps_mulEntry s mem pa pb pdst ret rest (by omega) hrun hcode hfork hnp
     8 hact (by decide) hcds hs32).trans ?_
   refine (E.gasSteps_commonSetup s mem (UInt256.ofNat 3533) pa pb 8 pdst ret rest hcap hrun hcode
-    hfork hnp hact (by decide) (by omega) hpb (by omega) hcds hs32 hml hslot jumpDest_rowHead hguard
+    hfork hnp hact (by decide) (by omega) hpb (by omega) hcds hs32 hml hw hslot jumpDest_rowHead hguard
       (CiosInverseGuard.inverse_ne_zero _ _ hminv)).trans ?_
   exact gasSteps_rowsEight s (stage mem pa 8) pa pb
     (MachineState.readWord mem 2784) (MachineState.readWord mem 2720)
-    (MachineState.readWord mem (32*8-32)) (UInt256.ofNat (pa+32*8-32))
+    (MachineState.readWord mem (16*8+32)) (UInt256.ofNat (pa+32*8-32))
     (MachineState.readWord mem 96) (MachineState.readWord mem 64)
     (MachineState.readWord mem 32) pdst ret rest hcap hrun hcode hfork hnp hact
     (Or.inl hpaFit) hpb hpbFit hminv'
     ⟨htl, (hread 2720 (Or.inr (by decide))).symm,
-      (hread (32*8-32) (Or.inl (by decide))).symm, hguard⟩
+      (hread (16*8+32) (Or.inl (by decide))).symm, hguard⟩
     ⟨(hread 96 (Or.inl (by decide))).symm,
       (hread 64 (Or.inl (by decide))).symm,
       (hread 32 (Or.inl (by decide))).symm⟩ rfl

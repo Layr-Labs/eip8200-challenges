@@ -92,9 +92,9 @@ def exitBlock : Block Artifact.submissionArtifact .Osaka 3168 exitProgram :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 2546 0 3168 exitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-/-- E6, the section entry: instructions 2323..2328, pc 2893..2898 (`Dup 5` = the scratch slot). -/
-def entryBlock : Block Artifact.submissionArtifact .Osaka 2893 entryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2323 6 2893 entryProgram
+/-- E6, the section entry: instructions 2325..2328, pc 2895..2898 (`Dup 5` = the scratch slot). -/
+def entryBlock : Block Artifact.submissionArtifact .Osaka 2895 entryProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2325 4 2895 entryProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The eight-limb entry (block 0's `JUMPDEST`, instruction 2329). -/

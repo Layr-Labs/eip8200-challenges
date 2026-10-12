@@ -15,7 +15,7 @@ set_option maxHeartbeats 4000000
 Re-derived from the artifact image (Phase 23): every slice now sits at its true
 instruction index, and the row tails carry the true return addresses — row 0
 returns to 4687 (the row-1 head), row 1 to 4799, row 2 to 4882, row 3 pushes
-5031 and falls into RED at 4927; the exit jumps to 4198.
+5031 and falls into RED at 4927; the exit jumps to `e4` at 4240.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.R4Blocks
@@ -265,12 +265,12 @@ where a `JUMPDEST` cost 1 gas on every execution.  The five target words `0x820 
 pairwise disjoint and word-aligned, so the reordered writes commute
 (`writeBytes_comm_disjoint`), and the highest touched word is unchanged, so the
 memory-expansion charge is identical.  The eleven incoming values are dead either way: the
-block leaves with stack depth 0 and jumps to `0x1066` (4198).
+block leaves with stack depth 0 and jumps to `0x1090` (4240, `e4`).
 
 Ten instructions are deleted, so every instruction index after 3705 shifts down by 10; the
 pcs, and hence every jump destination and every pushed code pointer, are untouched. -/
 def prog_exit : List Instr :=
-  [.op .JUMPDEST, .push 2 2112, .op .MSTORE, .push 2 2144, .op .MSTORE, .push 2 2176, .op .MSTORE, .push 2 2208, .op .MSTORE, .push 2 2080, .op .MSTORE, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .push 2 4198, .op .JUMP]
+  [.op .JUMPDEST, .push 2 2112, .op .MSTORE, .push 2 2144, .op .MSTORE, .push 2 2176, .op .MSTORE, .push 2 2208, .op .MSTORE, .push 2 2080, .op .MSTORE, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .push 2 4240, .op .JUMP]
 
 def block_exit : Block Artifact.submissionArtifact .Osaka 5031 prog_exit :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 4023 19 5031 prog_exit

@@ -30,14 +30,14 @@ def l1Target (n : Nat) : UInt256 :=
   UInt256.ofNat 3562 + UInt256.ofNat 1747 * isFour n
 
 /-- Second-loop entry, fixed for the whole kernel call: the four-limb ladder tail pushes
-it directly (`PUSH2 3841; JUMP`, instruction 4273) — shared by both widths. -/
+it directly (`PUSH2 3843; JUMP`, instruction 4274) — shared by both widths. -/
 def l2Target (_n : Nat) : UInt256 :=
-  UInt256.ofNat 3841
+  UInt256.ofNat 3843
 
 @[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 5309 := by decide
 @[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 3562 := by decide
-@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 3841 := by decide
-@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 3841 := by decide
+@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 3843 := by decide
+@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 3843 := by decide
 
 /-! ## Row frames
 

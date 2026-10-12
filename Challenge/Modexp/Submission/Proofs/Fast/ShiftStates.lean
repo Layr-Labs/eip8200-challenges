@@ -47,7 +47,7 @@ def pcNewtonB : Nat := 2686
 def pcShiftLoop : Nat := 2811
 def pcShiftBody : Nat := 2818
 def pcEstimate : Nat := 2832
-def pcMacSetup : Nat := 2893   -- E6, the rewritten conversion entry
+def pcMacSetup : Nat := 2895   -- E6, the conversion entry JUMPDEST (mask already built)
 def pcMid : Nat := 3168   -- the fall-through after the eight straight blocks
 def pcAddLoop : Nat := 3214
 def pcAddInner : Nat := 3220
@@ -192,10 +192,10 @@ def shiftBodyState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
 def estimateState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
   slotKState s (uMem mem n) pcEstimate k n bsize esize msize
 
-/-- `MAC_SETUP`, with the quotient guess on top. -/
+/-- `MAC_SETUP`, with the quotient guess on top of the `2^256-1` mask. -/
 def macSetupState (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
   { s with pc := UInt256.ofNat pcMacSetup
-           stack := qhatOf (uMem mem n) :: UInt256.ofNat k :: entrySlots (uMem mem n) n bsize esize ++
+           stack := qhatOf (uMem mem n) :: Monpro.maxWord :: UInt256.ofNat k :: entrySlots (uMem mem n) n bsize esize ++
              outer n bsize esize msize
            memory := uMem mem n }
 

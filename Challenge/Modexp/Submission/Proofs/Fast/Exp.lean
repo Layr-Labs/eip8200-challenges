@@ -230,6 +230,7 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
     32 ≤ pa → pa + 32 * n ≤ 2048 → 32 ≤ pb → pb + 32 * n ≤ 2048 →
     pd + 32 * n ≤ 2048 →
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true →
+    tail[1]? = some (UInt256.ofNat (32 * n)) →
     tail[2]? = some (MachineState.readWord mem 2688) →
     Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
     Model.FastRepresents mem pa n a → Model.FastRepresents mem pb n b → a < mm →
@@ -274,6 +275,7 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
     (mem : ByteArray) (a : Nat), (n = 4 ∨ n = 8) ∧ minv ≠ 1 → 1 ≤ k → k ≤ 16 →
     tail.length ≤ 982 →
     MachineState.readWord mem 2624 = UInt256.ofNat k →
+    tail[1]? = some (UInt256.ofNat (32 * n)) →
     tail[2]? = some (UInt256.ofNat n) →
     Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
     Model.FastRepresents mem 2112 n a → a < mm →

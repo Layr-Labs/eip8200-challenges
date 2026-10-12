@@ -517,15 +517,16 @@ private theorem notZeroOfNat_maxWord : UInt256.lnot (UInt256.ofNat 0) = maxWord 
 
 private theorem push0_ofNat : (⟨0⟩ : UInt256) = UInt256.ofNat 0 := by decide
 
-/-- E6: from `[q] ++ rest` over `um` to the chain frame `[0, q, mask] ++ rest` at the entry
-parked in the scratch slot, `rest[1]` (`rest` = counter :: slots ++ frame). -/
+/-- E6: from `[q, 2^256-1] ++ rest` over `um` (the estimate block already built the mask) to
+the chain frame `[0, q, mask] ++ rest` at the entry parked in the scratch slot, `rest[1]`
+(`rest` = counter :: slots ++ frame). -/
 theorem run_entry (template : State) (pc : UInt256) (um : ByteArray) (bi : UInt256)
     (rest : List UInt256) (ent : Nat) (hrest : rest.length ≤ 1014)
     (hlen : 2 ≤ rest.length)
     (hslot : rest[1]? = some (UInt256.ofNat ent))
     (hent : ent < 2 ^ 256)
     (hjump : Decode.isValidJumpDest template.executionEnv.code ent = true) :
-    runInstructions entryProgram (setupState template pc um bi rest) =
+    runInstructions entryProgram (setupState template pc um bi (maxWord :: rest)) =
     some (chainState template (UInt256.ofNat ent) ⟨um, UInt256.ofNat 0⟩ bi rest) := by
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -536,9 +537,9 @@ theorem run_entry (template : State) (pc : UInt256) (um : ByteArray) (bi : UInt2
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hent]
   let st : State := { template with memory := um }
   have hs1 : runInstructions
-      [.push 0 0, .op .NOT, .op (.Swap ⟨0, by decide⟩), .push 0 0]
-      (setupState template pc um bi rest) =
-      some (framed st (pc + UInt256.ofNat 4)
+      [.op .JUMPDEST, .push 0 0]
+      (setupState template pc um bi (maxWord :: rest)) =
+      some (framed st (pc + UInt256.ofNat 2)
         (UInt256.ofNat 0 :: bi :: maxWord :: rest)) := by
     simp (disch := omega) [runInstructions, setupState, framed, st,
       Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3, hc4,
@@ -547,8 +548,8 @@ theorem run_entry (template : State) (pc : UInt256) (um : ByteArray) (bi : UInt2
       Challenge.EvmProof.Word.ofNat_add_mod, notZero_maxWord,
       notZeroOfNat_maxWord, push0_ofNat]
   have hs2 : runInstructions [.op (.Dup ⟨4, by decide⟩)]
-      (framed st (pc + UInt256.ofNat 4) (UInt256.ofNat 0 :: bi :: maxWord :: rest)) =
-      some (framed st (pc + UInt256.ofNat 5)
+      (framed st (pc + UInt256.ofNat 2) (UInt256.ofNat 0 :: bi :: maxWord :: rest)) =
+      some (framed st (pc + UInt256.ofNat 3)
         (UInt256.ofNat ent :: UInt256.ofNat 0 :: bi :: maxWord :: rest)) := by
     have hc6 : rest.length + 6 < 1024 := by omega
     simp only [runInstructions, framed, st,
@@ -559,7 +560,7 @@ theorem run_entry (template : State) (pc : UInt256) (um : ByteArray) (bi : UInt2
     simp (disch := omega)
     all_goals omega
   have hs3 : runInstructions [.op .JUMP]
-      (framed st (pc + UInt256.ofNat 5)
+      (framed st (pc + UInt256.ofNat 3)
         (UInt256.ofNat ent :: UInt256.ofNat 0 :: bi :: maxWord :: rest)) =
       some (framed st (UInt256.ofNat ent)
         (UInt256.ofNat 0 :: bi :: maxWord :: rest)) := by

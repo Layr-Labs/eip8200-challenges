@@ -28,6 +28,7 @@ theorem run_reduction (s : State) (pc l2pc : Nat) (q : MacState) (bi tn : UInt25
     (rest : List UInt256) (hcap : rest.length ≤ 998)
     (hact : 88 ≤ s.activeWords.toNat)
     (hc : ReadonlyCache q.memory n tl inv m0)
+    (hm0 : m0 = MachineState.readWord q.memory (32*n-32))
     (he : TnCacheExtraTrace.ExtraCache q.memory m96 m64 m32)
     (hi : inverseInvariant q.memory n)
     (hj : Decode.isValidJumpDest s.executionEnv.code l2pc = true)
@@ -49,7 +50,7 @@ theorem run_reduction (s : State) (pc l2pc : Nat) (q : MacState) (bi tn : UInt25
   let tail := m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest
   have htail : tail.length ≤ 1006 := by simp only [tail, List.length_cons]; omega
   have hmid := TnCacheRowTrace.run_middle pc st q.carry bi pbi hd pb ent tn
-    (UInt256.ofNat l2pc) tl inv m0 aEnd m96 m64 m32 dst ret n rest hcap (by omega) hact hc hi
+    (UInt256.ofNat l2pc) tl inv m0 aEnd m96 m64 m32 dst ret n rest hcap (by omega) hact hc hm0 hi
   have htarget : (UInt256.ofNat l2pc).toNat = l2pc := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hl2]
   have hjump : runInstructions dispatch

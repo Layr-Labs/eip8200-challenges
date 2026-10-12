@@ -44,7 +44,7 @@ noncomputable def reduction_steps (s : State)
   let tail := m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest
   have htail : tail.length ≤ 1006 := by simp only [tail, List.length_cons]; omega
   have hmid := TnCacheRowTrace.run_middle 5420 st q.carry bi pbi hd pb ent tn
-    m128 tl inv m0 aEnd m96 m64 m32 dst ret 4 rest hcap (by omega) hact hc hi
+    m128 tl inv m0 aEnd m96 m64 m32 dst ret 4 rest hcap (by omega) hact hc hc.modulusLow hi
   have hmidRun : runInstructions (TnCacheRowTrace.middle ++ [.push 3 3977, .op .JUMP])
       (framed st (UInt256.ofNat 5420)
         ([q.carry,bi,pbi,hd,pb,ent,tn,allOnes,m128,inv,m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest)) =
@@ -69,7 +69,7 @@ noncomputable def reduction_steps (s : State)
     exact runInstructions_append_some _ _ _ _ _ hmid hjump
   have hreduce := TnMod128Chain.run_full st (l2PC) q.memory flag (rowMu q.memory 4)
     (rowC0 q.memory 4) 4 (Or.inl rfl) pbi hd pb ent (tn+q.carry) m128
-    tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hact he hcache
+    tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hact he hcache (fun h => absurd h (by decide))
   have htailrun := TnCacheRowTrace.run_tail ((l2PC)+TnMod128Chain.fullSize 4)
     {s with memory := mem2} carry2 flag pbi hd pb ent (tn+q.carry)
     m128 inv tail htail hact hjd

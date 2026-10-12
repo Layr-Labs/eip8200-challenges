@@ -13,7 +13,7 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 open CiosReadonly CiosCachedMidMemory WindowTwentyOneBinding TnCacheReductionTrace
 open Challenge.EvmProof
 
-def l2PC : Nat := 3841
+def l2PC : Nat := 3843
 
 /-- The current eight-limb fallthrough middle, seven reduction cells, and
 long-immediate tail implement the carry-cache model for arbitrary carry words. -/
@@ -43,9 +43,9 @@ noncomputable def reduction_steps (s : State)
   let carry2 := (l2Step q.memory (rowMu q.memory 8) (rowC0 q.memory 8) 8 (8-1)).carry
   let tail := m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest
   have htail : tail.length ≤ 1006 := by simp only [tail, List.length_cons]; omega
-  have hmid := TnCacheRowTrace.run_middle 3822 st q.carry bi pbi hd pb ent tn
-    m128 tl inv m0 aEnd m96 m64 m32 dst ret 8 rest hcap (by omega) hact hc hi
-  have hmidRun : runInstructions TnCacheRowTrace.middle
+  have hmid := TnCacheRowTrace.run_middle8 3822 st q.carry bi pbi hd pb ent tn
+    m128 tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hact hc hi
+  have hmidRun : runInstructions TnCacheRowTrace.middle8
       (framed st (UInt256.ofNat 3822)
         ([q.carry,bi,pbi,hd,pb,ent,tn,allOnes,m128,inv,m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest)) =
       some (TnCacheL2Trace.state st (UInt256.ofNat l2PC) q.memory flag
@@ -55,7 +55,7 @@ noncomputable def reduction_steps (s : State)
       List.cons_append, List.nil_append] using hmid
   have hreduce := TnMod128Chain.run_full st (l2PC) q.memory flag (rowMu q.memory 8)
     (rowC0 q.memory 8) 8 (Or.inr rfl) pbi hd pb ent (tn+q.carry) m128
-    tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hact he hcache
+    tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hact he hcache (fun _ => hc.modulusLow)
   have htailrun := TnCacheRowTrace.run_tail ((l2PC)+TnMod128Chain.fullSize 8)
     {s with memory := mem2} carry2 flag pbi hd pb ent (tn+q.carry)
     m128 inv tail htail hact hjd
@@ -75,7 +75,7 @@ noncomputable def reduction_steps (s : State)
           (TnCacheSquareModel.fromL1 q tn 8).tn m128 inv tail)) := by
     simpa only [TnCacheLastTrace.lastState, st, framed, mem2, carry2,
       TnCacheSquareModel.fromL1, flag] using htailrun
-  have g0 := TnM128CandidateBlocks.middle.steps
+  have g0 := TnM128CandidateBlocks.middle8.steps
     (s := framed st (UInt256.ofNat 3822)
       ([q.carry,bi,pbi,hd,pb,ent,tn,allOnes,m128,inv,
         m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest))

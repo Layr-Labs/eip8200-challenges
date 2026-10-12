@@ -94,6 +94,81 @@ theorem run_step (s : State) (pc : UInt256) (mem : ByteArray)
     hm, htl, hts, Nat.reduceSub, Nat.reduceMul, Nat.reduceAdd,
     List.cons_append, List.nil_append] using h01
 
+/-! Layout V1: for eight limbs the `m0` frame slot (twelfth word) caches modulus[160],
+so the second reduction cell multiplies from the stack instead of loading memory. -/
+def fusedHead160 : List Instr :=
+  [.op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨12, by decide⟩), .op .MUL,
+   .op (.Dup ⟨9, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .MULMOD]
+
+def program160 : List Instr := fusedHead160 ++ CiosCached.macFusedPostProgram 2272 2304
+
+private theorem run_fusedHead160_state (s : State)
+    (pc carry mu bi pbi hd pb ent tn m128 inv m160 : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1005) :
+    runInstructions fusedHead160
+      (framed s pc ([carry,mu,bi,pbi,hd,pb,ent,tn,allOnes,m128,inv,m160] ++ rest)) =
+    some (framed s (pc + UInt256.ofNat 7)
+      ([UInt256.mulMod mu m160 maxWord, m160 * mu, carry, mu, bi, pbi, hd, pb, ent, tn, allOnes, m128, inv, m160] ++ rest)) := by
+  have h12 : rest.length+12 < 1024 := by omega
+  have h13 : rest.length+13 < 1024 := by omega
+  have h14 : rest.length+14 < 1024 := by omega
+  have h15 : rest.length+15 < 1024 := by omega
+  have h16 : rest.length+16 < 1024 := by omega
+  simp [fusedHead160, runInstructions,
+    Challenge.EvmProof.Stepper.runInstr, framed, List.exchange, Nat.add_assoc,
+    h12, h13, h14, h15, h16, allOnes_value, succ_eq_add, word_add_assoc,
+    Challenge.EvmProof.Word.ofNat_add_mod]
+
+/-- The second reduction cell of an eight-limb row with modulus[160] cached in the `m0` slot. -/
+theorem run_step160 (s : State) (pc : UInt256) (mem : ByteArray)
+    (bi mu c0 pbi hd pb ent tn m128 inv m160 : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1005)
+    (hact : 88 ≤ s.activeWords.toNat)
+    (hcache : m160 = MachineState.readWord mem 160) :
+    runInstructions program160
+      (TnCacheL2Trace.state s pc mem bi mu c0 8 1 pbi hd pb ent tn m128 inv (m160 :: rest)) =
+    some (TnCacheL2Trace.state s (pc + UInt256.ofNat 32) mem bi mu c0 8 2
+      pbi hd pb ent tn m128 inv (m160 :: rest)) := by
+  let st : State := {s with memory := (l2Step mem mu c0 8 1).memory}
+  have hm : m160 = MachineState.readWord st.memory 160 := by
+    rw [show MachineState.readWord st.memory 160 = MachineState.readWord mem 160 from
+      readWord_l2Step mem mu c0 8 160 1 (by decide) (Or.inl (by decide))]
+    exact hcache
+  have hT : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat
+      (2272 : UInt256).toNat 32) = st.activeWords :=
+    activeWords_fix s 2272 32 (by decide) (by decide) hact
+  have hW : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat
+      (2304 : UInt256).toNat 32) = st.activeWords :=
+    activeWords_fix s 2304 32 (by decide) (by decide) hact
+  have h0 := run_fusedHead160_state st pc (l2Step mem mu c0 8 1).carry mu bi pbi hd pb ent tn m128 inv m160 rest hcap
+  have h1 := CiosCachedFused.run_post st (pc + UInt256.ofNat 7)
+    (UInt256.mulMod mu m160 maxWord) (m160 * mu) (l2Step mem mu c0 8 1).carry mu 2272 2304
+    ([bi,pbi,hd,pb,ent,tn,allOnes,m128,inv,m160] ++ rest)
+    (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) hT hW
+  have hc : partialCarry m160 mu (l2Step mem mu c0 8 1).carry +
+      UInt256.lt ((m160 * mu + (l2Step mem mu c0 8 1).carry) + MachineState.readWord st.memory (2272 : UInt256).toNat)
+        (m160 * mu + (l2Step mem mu c0 8 1).carry) =
+      macCarry m160 mu (MachineState.readWord st.memory (2272 : UInt256).toNat) (l2Step mem mu c0 8 1).carry := by
+    rw [add_comm_word (partialCarry m160 mu (l2Step mem mu c0 8 1).carry)]
+    simpa only [UInt256.gt, UInt256.lt,
+      add_comm_word (m160 * mu + (l2Step mem mu c0 8 1).carry) (MachineState.readWord st.memory (2272 : UInt256).toNat)] using
+      carry_eq m160 mu (MachineState.readWord st.memory (2272 : UInt256).toNat) (l2Step mem mu c0 8 1).carry
+  have hs : (m160 * mu + (l2Step mem mu c0 8 1).carry) + MachineState.readWord st.memory (2272 : UInt256).toNat =
+      macSum m160 mu (MachineState.readWord st.memory (2272 : UInt256).toNat) (l2Step mem mu c0 8 1).carry := by
+    rw [add_comm_word]
+    exact sum_eq m160 mu (MachineState.readWord st.memory (2272 : UInt256).toNat) (l2Step mem mu c0 8 1).carry
+  change runInstructions (CiosCached.macFusedPostProgram 2272 2304) _ =
+    some (framed _ _ ([partialCarry m160 mu (l2Step mem mu c0 8 1).carry + _, mu] ++ ([bi,pbi,hd,pb,ent,tn,allOnes,m128,inv,m160] ++ rest))) at h1
+  rw [hc, hs] at h1
+  have h01 := runInstructions_append_some _ _ _ _ _ h0 h1
+  have hpc : (pc + UInt256.ofNat 7) + UInt256.ofNat 25 = pc + UInt256.ofNat 32 := by
+    simp [word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
+  have htl : (2272 : UInt256).toNat = 2272 := by decide
+  have hts : (2304 : UInt256).toNat = 2304 := by decide
+  simpa only [program160, st, TnCacheL2Trace.state, framed, l2Step, hpc,
+    hm, htl, hts, Nat.reduceSub, Nat.reduceMul, Nat.reduceAdd,
+    List.cons_append, List.nil_append] using h01
+
 /-- The cached T-base distinguishes four and eight limbs without using the
 register that has been repurposed for the modulus limb. -/
 theorem width_tag (n : Nat) (hn : n = 4 ∨ n = 8) :
@@ -107,6 +182,7 @@ theorem rebuild_entry (n : Nat) (hn : n = 4 ∨ n = 8) (base : UInt256) :
   rcases hn with rfl | rfl <;> rfl
 
 #print axioms run_step
+#print axioms run_step160
 #print axioms width_tag
 #print axioms rebuild_entry
 end Challenge.Modexp.Submission.Proofs.Fast.TnMod128Trace

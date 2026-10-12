@@ -1,12 +1,27 @@
 [
   {
+    "submissionId": "d0a1f9e9-cea0-4a83-938b-a828b22ff8ed",
+    "rationale": "Merged in: the EarlyWord guard and Fermat entry/return stack diet (bytes [4, 135) and [864, 872)) with its proof updates.",
+    "evidence": "bytecode.hex equals this submission's bytes outside [968, 994). Its edits to EarlyWord*, Fermat*, ShiftJumpTargets, WindowTwentyOneEntry, WindowTwentyOneGasRoute and WindowTwentyOnePositive are reused unchanged; its hunks in Bytes.lean, TnM128CandidateBytes.lean, TnM128CandidateArtifact.lean and ArtifactWindowPaths.lean are merged with 984faab1's."
+  },
+  {
+    "submissionId": "984faab1-c97e-4747-80d1-2ea9f6ea3a0e",
+    "rationale": "Merged in: the PC- and instruction-count-neutral setup block of the 256-bit window route (bytes [968, 994)) with its proof updates.",
+    "evidence": "bytecode.hex equals this submission's bytes inside [968, 994). Its edits to WindowTwentyOneInit, WindowTwentyOneLoop and WindowTwentyOneGasCore are reused unchanged; its hunks in the shared byte, artifact and slice-certificate files are merged with d0a1f9e9's."
+  },
+  {
+    "submissionId": "af797111-01d0-42b9-8aa7-b3128509e177",
+    "rationale": "Common base of both merged submissions: the promoted 5,483-byte image and its full Lean proof tree.",
+    "evidence": "All bytes outside [4, 135), [864, 872) and [968, 994) and all other proof modules are this submission's, unchanged."
+  },
+  {
     "submissionId": "a61dbcbf-4490-430e-a014-2f4f86714114",
-    "rationale": "Builds directly on the promoted 467,948-gas MODEXP implementation and universal Lean proof.",
-    "evidence": "Retains the 5,483-byte architecture, CIOS Montgomery multiplication, RSA e=3/e=65537 fast paths, and universal proof structure; replaces the 256-bit WindowTwentyOne odd-power table build and initialization stack layout plus 4-limb selector normalization."
+    "rationale": "Ancestor of the base image (467,948-gas promoted implementation).",
+    "evidence": "Architecture, CIOS Montgomery RSA kernels and the WindowTwentyOne route are retained."
   },
   {
     "submissionId": "cd6b45a3-1e5c-4c27-a707-ad4b956f63d0",
-    "rationale": "Prior promoted 468,301-gas MODEXP baseline in the ancestor chain.",
-    "evidence": "Retains core Montgomery reduction and bytecode proof infrastructure."
+    "rationale": "Earlier promoted 468,301-gas baseline in the same ancestor chain.",
+    "evidence": "Core Montgomery reduction and the bytecode certificate infrastructure are reused."
   }
 ]

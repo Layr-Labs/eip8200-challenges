@@ -13,7 +13,7 @@ five-word outer frame (`Exp.outer`).  The riding hypotheses discharge definition
 `entrySlots`' words 1..7 are the `readWord um (1280 + 32 i)` limbs and its word 0 is the
 `shiftEntry`/`entryPC` scratch.  `-N` base `Shift.NEG` (= 1280).  This is the statement that
 replaces `Shift.gasSteps_macLoop` together with the old `run_macSetup`/`ShiftDispatchTrace.run_dispatch`
-prefix: from `macSetupState` pc 2893 with `[q, k] ++ slots ++ outer` over `um` to pc 3171 with
+prefix: from `macSetupState` pc 2895 with `[q, 2^256-1, k] ++ slots ++ outer` over `um` to pc 3171 with
 `[carry, q, 2^256-1, k] ++ slots ++ outer` over `Monpro.l1Step um q NEG n n`.  The three
 `JUMPDEST`s at pc 3168..3170 leave the chain frame in place; the fixup's `SWAP3 POP`
 (pc 3184..3185) spends the mask again before `SUB`.
@@ -55,7 +55,7 @@ theorem rest_length (um : ByteArray) (n bsize esize msize k : Nat) :
       Exp.outer n bsize esize msize).length = 23 := by
   simp [Shift.entrySlots, Shift.rideSlots, Exp.outer]
 
-/-- The section on the conversion frame: from `macSetupState` (E6, pc 2893) with the
+/-- The section on the conversion frame: from `macSetupState` (E6, pc 2895) with the
 quotient guess above the counter, slots and outer frame over `um`, to the middle block at
 pc 3171 with `[carry, q̂, 2^256-1]` above the unchanged riding frame. -/
 def gasSteps_macSection (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArray) (q : UInt256)
@@ -68,8 +68,8 @@ def gasSteps_macSection (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteA
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      { s with pc := UInt256.ofNat 2893,
-               stack := q :: UInt256.ofNat k :: Shift.entrySlots um n bsize esize ++
+      { s with pc := UInt256.ofNat 2895,
+               stack := q :: Monpro.maxWord :: UInt256.ofNat k :: Shift.entrySlots um n bsize esize ++
                  Exp.outer n bsize esize msize,
                memory := um }
       { s with pc := UInt256.ofNat 3168,

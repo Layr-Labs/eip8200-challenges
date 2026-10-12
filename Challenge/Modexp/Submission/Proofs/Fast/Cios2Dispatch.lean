@@ -61,7 +61,7 @@ theorem jumpDestCommon :
 /-- The multiply row head (instruction 2703, pc 3543). -/
 theorem jumpDestRowHead :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3533 = true := by
-  exact Artifact.isValidJumpDest_index 2802 (by rfl)
+  exact Artifact.isValidJumpDest_index 2803 (by rfl)
 
 /-- The square row head `sq_row` (instruction 3275, pc 4268). -/
 theorem jumpDestSqRow :
@@ -152,7 +152,7 @@ set_option linter.unusedSimpArgs false in
 
 /-- The kernel `setup`: instructions 2602..2660 (pc 3445..3531), 59 instructions. -/
 def setup : Block Artifact.submissionArtifact .Osaka 3388 TnM128Setup.fullEntryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2702 55 3388 TnM128Setup.fullEntryProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2702 58 3388 TnM128Setup.fullEntryProgram
     (by decide) (by decide) (by rfl) (by decide)
 
 def environment (s : State)
@@ -166,7 +166,7 @@ def environment (s : State)
 
 /-- The preclear trampoline (instruction 4412, pc 5466). -/
 def preclear : Block Artifact.submissionArtifact .Osaka 5466 TnM128Setup.preclearProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4381 10 5466 TnM128Setup.preclearProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4382 10 5466 TnM128Setup.preclearProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- trampoline → `mul entry` → `common` with `hd = 3533`; the product block is cleared. -/
@@ -227,20 +227,21 @@ opaque gasSteps_setup (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Na
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (hw : rest[1]? = some (UInt256.ofNat (32 * n)))
     (hslot : rest[2]? = some (MachineState.readWord mem 2688))
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode hd.toNat = true) :
     Challenge.EvmProof.GasSteps
       (CiosCached.setupState s mem hd pa pb pdst ret rest)
       (CiosCached.outState s (SquarePartialClear.memory (StagedOperand.stage mem pa n)) pb n 0 hd
         (CiosCached.l1Target n)
-        (MachineState.readWord mem 2720) (MachineState.readWord mem (32 * n - 32))
+        (MachineState.readWord mem 2720) (MachineState.readWord mem (16 * n + 32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
           MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
           UInt256.ofNat (pa + 32 * n - 32) :: pdst :: ret :: rest)) :=
   setup.steps (environment (CiosCached.setupState s mem hd pa pb pdst ret rest) hcode hfork hrun hnp)
     rfl
     (TnM128Setup.run_entry s mem hd pa pb n pdst ret rest hcap hact hn hn32 hn4 hpaFit hpb hpbFit
-      hcds hs32 hml hslot (by rw [hcode]; exact hjump))
+      hcds hs32 hml hw hslot (by rw [hcode]; exact hjump))
 
 /-- `common` → `setup` → row-0 head at `hd` for a four- or eight-limb width, entered with
 the product block already cleared by the multiply trampoline: the setup's own scratch-word
@@ -258,6 +259,7 @@ opaque gasSteps_commonSetup (s : State) (mem : ByteArray) (hd : UInt256) (pa pb 
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (hw : rest[1]? = some (UInt256.ofNat (32 * n)))
     (hslot : rest[2]? = some (MachineState.readWord mem 2688))
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode hd.toNat = true)
     (hguard : MachineState.readWord mem 2720 ≠ UInt256.ofNat 1)
@@ -266,7 +268,7 @@ opaque gasSteps_commonSetup (s : State) (mem : ByteArray) (hd : UInt256) (pa pb 
       (commonState s (mpZeroed s mem n) hd pa pb pdst ret rest)
       (CiosCached.outState s (mpZeroed s (StagedOperand.stage mem pa n) n) pb n 0 hd
         (CiosCached.l1Target n)
-        (MachineState.readWord mem 2720) (MachineState.readWord mem (32 * n - 32))
+        (MachineState.readWord mem 2720) (MachineState.readWord mem (16 * n + 32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
           MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
           UInt256.ofNat (pa + 32 * n - 32) :: pdst :: ret :: rest)) := by
@@ -286,10 +288,10 @@ opaque gasSteps_commonSetup (s : State) (mem : ByteArray) (hd : UInt256) (pa pb 
     (gasSteps_setup s (mpZeroed s mem n) hd pa pb n pdst ret rest hcap hrun hcode hfork hnp hact
       (by rcases hn with rfl | rfl <;> omega) hn8 hn
       (by omega) hpb hpbFit hcds (by rw [hr 2688 (Or.inr (by decide))]; exact hs32)
-      (by rw [hr 2752 (Or.inr (by decide))]; exact hml)
+      (by rw [hr 2752 (Or.inr (by decide))]; exact hml) hw
       (by rw [hr 2688 (Or.inr (by decide))]; exact hslot) hjump)
   rw [SquarePreclearMemory.partial_stage_preclear_eq s mem pa n hn8 (Or.inl hpaFit),
-    hr 2720 (Or.inr (by decide)), hr (32 * n - 32) (Or.inl (by omega)),
+    hr 2720 (Or.inr (by decide)), hr (16 * n + 32) (Or.inl (by omega)),
     hr 2784 (Or.inr (by decide)), hr 96 (Or.inl (by decide)), hr 64 (Or.inl (by decide)),
     hr 32 (Or.inl (by decide))] at g
   exact g
@@ -311,20 +313,21 @@ opaque gasSteps_setupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : 
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (hw : rest[1]? = some (UInt256.ofNat (32 * n)))
     (hslotn : rest[2]? = some (UInt256.ofNat n))
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode hd.toNat = true) :
     Challenge.EvmProof.GasSteps
       (CiosCached.setupState s mem hd pa pb pdst ret rest)
       (CiosCached.outState s (SquarePartialClear.memory (StagedOperand.stage mem pa n)) pb n 0 hd
         (UInt256.ofNat 3562)
-        (MachineState.readWord mem 2720) (MachineState.readWord mem (32 * n - 32))
+        (MachineState.readWord mem 2720) (MachineState.readWord mem (16 * n + 32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
           MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
           UInt256.ofNat (pa + 32 * n - 32) :: pdst :: ret :: rest)) :=
   setup.steps (environment (CiosCached.setupState s mem hd pa pb pdst ret rest) hcode hfork hrun hnp)
     rfl
     (TnM128Setup.run_entry_sq s mem hd pa pb n pdst ret rest hcap hact hn hn32 hn4 hpaFit hpb hpbFit
-      hcds hs32 hml hslotn (by rw [hcode]; exact hjump))
+      hcds hs32 hml hw hslotn (by rw [hcode]; exact hjump))
 
 /-- `common` → `setup` with the square-loop frame's width slot (the limb count). -/
 opaque gasSteps_commonSetupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
@@ -340,6 +343,7 @@ opaque gasSteps_commonSetupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa p
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (hw : rest[1]? = some (UInt256.ofNat (32 * n)))
     (hslotn : rest[2]? = some (UInt256.ofNat n))
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode hd.toNat = true)
     (hguard : MachineState.readWord mem 2720 ≠ UInt256.ofNat 1)
@@ -348,7 +352,7 @@ opaque gasSteps_commonSetupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa p
       (commonState s mem hd pa pb pdst ret rest)
       (CiosCached.outState s (SquarePartialClear.memory (StagedOperand.stage mem pa n)) pb n 0 hd
         (UInt256.ofNat 3562)
-        (MachineState.readWord mem 2720) (MachineState.readWord mem (32 * n - 32))
+        (MachineState.readWord mem 2720) (MachineState.readWord mem (16 * n + 32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
           MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
           UInt256.ofNat (pa + 32 * n - 32) :: pdst :: ret :: rest)) := by
@@ -361,7 +365,7 @@ opaque gasSteps_commonSetupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa p
       hwidth hguard hzero).trans
     (gasSteps_setupSq s mem hd pa pb n pdst ret rest hcap hrun hcode hfork hnp hact
       (by rcases hn with rfl | rfl <;> omega) (by rcases hn with rfl | rfl <;> omega) hn
-      hpaFit hpb hpbFit hcds hs32 hml hslotn hjump)
+      hpaFit hpb hpbFit hcds hs32 hml hw hslotn hjump)
 
 /-- The square-loop entry: `gasSteps_commonSetupSq` with the staged memory written as
 `StagedOperand.inputMemory` (equal to `stage` for the kernel widths). -/
@@ -378,6 +382,7 @@ opaque gasSteps_commonSetupInputSq (s : State) (mem : ByteArray) (hd : UInt256) 
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (hw : rest[1]? = some (UInt256.ofNat (32 * n)))
     (hslotn : rest[2]? = some (UInt256.ofNat n))
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode hd.toNat = true)
     (hguard : MachineState.readWord mem 2720 ≠ UInt256.ofNat 1)
@@ -386,7 +391,7 @@ opaque gasSteps_commonSetupInputSq (s : State) (mem : ByteArray) (hd : UInt256) 
       (commonState s mem hd pa pb pdst ret rest)
       (CiosCached.outState s (SquarePartialClear.memory (StagedOperand.inputMemory mem pa n)) pb n 0 hd
         (UInt256.ofNat 3562)
-        (MachineState.readWord mem 2720) (MachineState.readWord mem (32 * n - 32))
+        (MachineState.readWord mem 2720) (MachineState.readWord mem (16 * n + 32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
           MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
           UInt256.ofNat (pa + 32 * n - 32) :: pdst :: ret :: rest)) := by
@@ -395,6 +400,6 @@ opaque gasSteps_commonSetupInputSq (s : State) (mem : ByteArray) (hd : UInt256) 
     rw [if_pos (show StagedOperand.eligible mem n from ⟨hn,hguard⟩)]
   rw [hin]
   exact gasSteps_commonSetupSq s mem hd pa pb n pdst ret rest hcap hrun hcode hfork hnp hact hn
-    hpaFit hpb hpbFit hcds hs32 hml hslotn hjump hguard hzero
+    hpaFit hpb hpbFit hcds hs32 hml hw hslotn hjump hguard hzero
 
 end Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch

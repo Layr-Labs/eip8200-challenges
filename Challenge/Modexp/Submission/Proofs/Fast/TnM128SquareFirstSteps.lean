@@ -51,14 +51,14 @@ noncomputable def steps (s : State)
       (TnM128SquareTailSteps.state s (first mem) 8 1 tl inv m0 m96 m64 m32 dst ret rest) := by
   let q := firstProduct mem
   let st : State := {s with memory := mem}
-  have hL2 : Decode.isValidJumpDest st.executionEnv.code (UInt256.ofNat 3841).toNat = true := by
+  have hL2 : Decode.isValidJumpDest st.executionEnv.code (UInt256.ofNat 3843).toNat = true := by
     rw [show st.executionEnv.code = TnM128CandidateArtifact.submissionArtifact.code from env.code]
-    exact TnM128CandidateArtifact.isValidJumpDest_index 3068 (by rfl)
+    exact TnM128CandidateArtifact.isValidJumpDest_index 3070 (by rfl)
   have hhead : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4258).toNat = true := by
     rw [env.code]; exact TnM128L1Jumps.square_jump
   have hp := TnM128R8FirstRow.run_program st (UInt256.ofNat 5062) (UInt256.ofNat 4258)
     ent (UInt256.ofNat 3599) (MachineState.readWord mem 128)
-    (UInt256.ofNat 3841) inv m0 m96 m64 m32 aprev (dst :: ret :: rest)
+    (UInt256.ofNat 3843) inv m0 m96 m64 m32 aprev (dst :: ret :: rest)
     (by simp only [List.length_cons]; omega) hact hL2
   have g0 := TnM128R8FirstRow.block.steps
     (s := initial st (UInt256.ofNat 5062) (UInt256.ofNat 4258) ent
@@ -68,7 +68,7 @@ noncomputable def steps (s : State)
   have hm : MachineState.readWord mem 128 = MachineState.readWord q.memory 128 :=
     (product_read s mem 128 (Or.inl (by decide))).symm
   have hmu := mu_eq q.memory inv hq.readonly.inverse
-  have hc0 := c0_eq q.memory m0 hq.readonly.modulusLow hq.inverse
+  have hc0 := c0_eq q.memory (MachineState.readWord q.memory 224) rfl hq.inverse
     (by rw [← hq.readonly.inverse]; exact hq.readonly.inverseGuard)
   have hz : UInt256.ofNat 0 + q.carry = q.carry := R8ZeroFirstRow.zero_add_word _
   have hf : UInt256.lt q.carry q.carry = UInt256.ofNat 0 := by
@@ -77,11 +77,12 @@ noncomputable def steps (s : State)
   have g1 := TnM128R8SuffixSteps.suffix_steps s env q (UInt256.ofNat 0)
     (UInt256.ofNat 2592) (UInt256.ofNat 4258) (UInt256.ofNat 2336) (UInt256.ofNat 3599)
     (MachineState.readWord mem 128) tl inv m0 (MachineState.readWord mem 2592) m96 m64 m32 dst ret
-    rest hcap hact hq.extra hm hhead
+    rest hcap hact hq.extra hm
+    (by simpa only [Nat.reduceMul, Nat.reduceAdd] using hq.readonly.modulusLow) hhead
   rw [hz, hf] at g1
   have hjoin : TnM128R8FirstRow.result st (UInt256.ofNat 4258) (UInt256.ofNat 3599)
-      (MachineState.readWord mem 128) (UInt256.ofNat 3841) inv m0 m96 m64 m32 (dst :: ret :: rest) =
-      TnCacheL2Trace.state {s with memory := q.memory} (UInt256.ofNat 3841)
+      (MachineState.readWord mem 128) (UInt256.ofNat 3843) inv m0 m96 m64 m32 (dst :: ret :: rest) =
+      TnCacheL2Trace.state {s with memory := q.memory} (UInt256.ofNat 3843)
         q.memory (UInt256.ofNat 0) (rowMu q.memory 8) (rowC0 q.memory 8) 8 0
         (UInt256.ofNat 2592) (UInt256.ofNat 4258) (UInt256.ofNat 2336) (UInt256.ofNat 3599)
         q.carry (MachineState.readWord mem 128) inv

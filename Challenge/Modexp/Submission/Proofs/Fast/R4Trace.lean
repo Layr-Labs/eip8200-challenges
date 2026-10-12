@@ -91,8 +91,8 @@ theorem jd5274 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (5031 : UInt256).toNat = true :=
   Artifact.isValidJumpDest_index 4023 (by rfl)
 
-theorem jd4379 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4198 = true :=
-  Artifact.isValidJumpDest_index 3339 (by rfl)
+theorem jd4379 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4240 = true :=
+  Artifact.isValidJumpDest_index 3363 (by rfl)
 
 section
 variable (s : State)
@@ -222,12 +222,12 @@ def gasSteps_r4 (s : State) (e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 : UInt256
     GasSteps
       { s with pc := UInt256.ofNat 4579,
                stack := e0 :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest }
-      { s with pc := UInt256.ofNat 4198,
+      { s with pc := UInt256.ofNat 4240,
                stack := e0 :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest,
                memory := r4Mem s.memory (r4Final s.memory e5 e8 e11 e12 e7) } := by
   have hj (r : UInt256) (h : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode r.toNat = true) :
       Decode.isValidJumpDest s.executionEnv.code r.toNat = true := by rw [hcode]; exact h
-  have hj4379 : Decode.isValidJumpDest s.executionEnv.code 4198 = true := by rw [hcode]; exact jd4379
+  have hj4379 : Decode.isValidJumpDest s.executionEnv.code 4240 = true := by rw [hcode]; exact jd4379
   -- 名字
   generalize ha0 : MachineState.readWord s.memory 2464 = a0
   generalize ha1 : MachineState.readWord s.memory 2432 = a1

@@ -13,6 +13,7 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 open CiosReadonly CiosCachedMidMemory
 
 def middle : List Instr := TnCacheStoreAt.middle ++ TnCacheProductTrace.cachedProduct
+def middle8 : List Instr := TnCacheStoreAt.middle ++ TnCacheProductTrace.cachedProduct8
 def tailShort : List Instr := TnCacheStoreAt.tail ++ TnCacheFrameOps.advanceShort
 
 def tail : List Instr := TnCacheStoreAt.tail ++ TnCacheFrameOps.advance
@@ -22,6 +23,7 @@ theorem run_middle (pc0 : Nat) (s : State)
     (n : Nat) (rest : List UInt256) (hcap : rest.length ≤ 998) (hn : n ≤ 8)
     (hact : 88 ≤ s.activeWords.toNat)
     (hc : ReadonlyCache s.memory n tl inv m0)
+    (hm0 : m0 = MachineState.readWord s.memory (32*n-32))
     (hminv : inverseInvariant s.memory n) :
     runInstructions middle
       (framed s (UInt256.ofNat pc0)
@@ -34,9 +36,31 @@ theorem run_middle (pc0 : Nat) (s : State)
     (by simp only [List.length_cons]; omega)
   have hp := TnCacheProductTrace.run_cachedProduct_model (pc0+7) s
     (UInt256.lt (tn+c) c) pbi hd pb ent (tn+c) target tl inv m0 aEnd m96 m64 m32 dst ret
-    n rest hcap hn hact hc hminv
+    n rest hcap hn hact hc hm0 hminv
   have both := runInstructions_append_some _ _ _ _ _ hs hp
   simpa only [middle, TnCacheProductTrace.cacheStack, List.cons_append, List.nil_append,
+    Nat.add_zero, Nat.add_assoc, Nat.reduceAdd] using both
+
+theorem run_middle8 (pc0 : Nat) (s : State)
+    (c bi pbi hd pb ent tn target tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 998)
+    (hact : 88 ≤ s.activeWords.toNat)
+    (hc : ReadonlyCache s.memory 8 tl inv m0)
+    (hminv : inverseInvariant s.memory 8) :
+    runInstructions middle8
+      (framed s (UInt256.ofNat pc0)
+        ([c,bi,pbi,hd,pb,ent,tn,allOnes,target,inv,m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest)) =
+    some (framed s (UInt256.ofNat (pc0+21))
+      ([rowC0 s.memory 8,rowMu s.memory 8,UInt256.lt (tn+c) c,
+        pbi,hd,pb,ent,tn+c,allOnes,target,inv,m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest)) := by
+  have hs := TnCacheStoreAt.run_middle pc0 s c bi pbi hd pb ent tn target inv
+    (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)
+    (by simp only [List.length_cons]; omega)
+  have hp := TnCacheProductTrace.run_cachedProduct8_model (pc0+7) s
+    (UInt256.lt (tn+c) c) pbi hd pb ent (tn+c) target tl inv m0 aEnd m96 m64 m32 dst ret
+    rest hcap hact hc hminv
+  have both := runInstructions_append_some _ _ _ _ _ hs hp
+  simpa only [middle8, TnCacheProductTrace.cacheStack, List.cons_append, List.nil_append,
     Nat.add_zero, Nat.add_assoc, Nat.reduceAdd] using both
 
 theorem run_tail (pc0 : Nat) (s : State)
@@ -76,6 +100,7 @@ theorem run_tailShort (pc0 : Nat) (s : State)
     Nat.add_zero, Nat.add_assoc, Nat.reduceAdd] using both
 
 #print axioms run_middle
+#print axioms run_middle8
 #print axioms run_tail
 #print axioms run_tailShort
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheRowTrace

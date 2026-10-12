@@ -15,7 +15,7 @@ set_option maxRecDepth 40000
 * `gasSteps_exit`      : `JUMPDEST JUMPDEST JUMPDEST`, pc 3168 → 3171 (the unchanged top-limb fixup).
 * `gasSteps_chain n`   : the whole section for `n = 4 ∨ n = 8` from the entry `JUMPDEST` (2899 for eight
                          limbs, 3032 for four) to pc 3171, with `Monpro.l1Step um q 1280 n n`.
-* `gasSteps_entry n`   : E6 from pc 2893 with `[q] ++ rest` to the entry `JUMPDEST`, through the
+* `gasSteps_entry n`   : E6 from pc 2895 with `[q, 2^256-1] ++ rest` to the entry `JUMPDEST`, through the
                          scratch slot `rest[1]`.
 * `gasSteps_macChain n`: `gasSteps_entry` then `gasSteps_chain`.
 
@@ -331,7 +331,7 @@ theorem entryPC_avoids (n : Nat) (hn : n = 4 ∨ n = 8) :
     entryPC n ≠ 3168 ∧ entryPC n ≠ 3169 ∧ entryPC n ≠ 3170 := by
   rcases hn with rfl | rfl <;> decide
 
-/-- E6 at pc 2893: `[q] ++ rest` over `um` to the chain frame at the entry parked in the
+/-- E6 at pc 2895: `[q, 2^256-1] ++ rest` over `um` to the chain frame at the entry parked in the
 scratch slot `rest[1]`. -/
 def gasSteps_entry (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArray) (q : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1014) (hlong : 9 ≤ rest.length)
@@ -342,14 +342,14 @@ def gasSteps_entry (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (setupState s (UInt256.ofNat 2893) um q rest)
+      (setupState s (UInt256.ofNat 2895) um q (maxWord :: rest))
       (chainState s (UInt256.ofNat (entryPC n)) ⟨um, UInt256.ofNat 0⟩ q rest) :=
-  entryBlock.steps (environment (setupState s (UInt256.ofNat 2893) um q rest) hcode hfork hrun hnp) rfl
-    (run_entry s (UInt256.ofNat 2893) um q rest (entryPC n) hrest (by omega) hslot0
+  entryBlock.steps (environment (setupState s (UInt256.ofNat 2895) um q (maxWord :: rest)) hcode hfork hrun hnp) rfl
+    (run_entry s (UInt256.ofNat 2895) um q rest (entryPC n) hrest (by omega) hslot0
       (by rcases hn with rfl | rfl <;> decide)
       (by rw [hcode]; exact jumpDest_entry n hn))
 
-/-- E6 followed by the section: pc 2893 with `[q] ++ rest` over `um` to pc 3168 with
+/-- E6 followed by the section: pc 2895 with `[q, 2^256-1] ++ rest` over `um` to pc 3168 with
 `[carry, q, 2^256-1] ++ rest` over `l1Step um q 1280 n n`. -/
 def gasSteps_macChain (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArray) (q : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1014) (hlong : 9 ≤ rest.length)
@@ -364,7 +364,7 @@ def gasSteps_macChain (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArr
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      (setupState s (UInt256.ofNat 2893) um q rest)
+      (setupState s (UInt256.ofNat 2895) um q (maxWord :: rest))
       (chainState s (UInt256.ofNat 3168) (l1Step um q 1280 n n) q rest) :=
   (gasSteps_entry n hn s um q rest hrest hlong hslot0 hrun hcode hfork hnp).trans
     (gasSteps_chain n hn s um q rest hrest hlong hslot htop hrun hcode hfork hnp hact)

@@ -96,12 +96,13 @@ noncomputable def subsMonpro (s : State) (n bsize mm minv : Nat)
       32 ≤ pa → pa + 32 * n ≤ 2048 → 32 ≤ pb → pb + 32 * n ≤ 2048 →
       pd + 32 * n ≤ 2048 →
       Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true →
+      tail[1]? = some (UInt256.ofNat (32 * n)) →
       tail[2]? = some (MachineState.readWord mem 2688) →
       Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
       Model.FastRepresents mem pa n a → Model.FastRepresents mem pb n b → a < mm →
       Challenge.EvmProof.GasSteps (mpCall s mem pa pb pd ret tail)
         (retTo s (CarryResult.monproMem s mem pa pb n pd) ret tail) := by
-  intro pa pb pd ret tail mem a b hcap hpa hpaFit hpb hpbFit hpdFit hjump hslot hf hm ha hb ham
+  intro pa pb pd ret tail mem a b hcap hpa hpaFit hpb hpbFit hpdFit hjump hw hslot hf hm ha hb ham
   -- `GasSteps` lives in `Type`, so the limb count has to be split by `cases`.
   cases n with
   | zero => exact absurd hn (by omega)
@@ -122,7 +123,7 @@ noncomputable def subsMonpro (s : State) (n bsize mm minv : Nat)
       exact Challenge.EvmProof.GasSteps.cast
         (CarryFull.gasSteps_monproFullFast s mem pa pb p a b mm (UInt256.ofNat pd) ret tail
           (by omega) hrun hcode hfork hnp hact (by omega) hpa hpaFit hpb hpbFit hcds
-          hf.s32 hf.tl hf.ml hslot hjump (by omega) ha hb hm ham hmpos
+          hf.s32 hf.tl hf.ml hw hslot hjump (by omega) ha hb hm ham hmpos
           (by rw [hlow, hmi]; exact hminvA)
           (eligible_of_frame hf hfast hminv1 hminvlt))
         rfl
@@ -191,12 +192,13 @@ noncomputable def subsSquareLoop (s : State) (n bsize mm minv : Nat)
     ∀ (k : Nat) (ret : UInt256) (tail : List UInt256) (mem : ByteArray) (a : Nat),
       (n = 4 ∨ n = 8) ∧ minv ≠ 1 → 1 ≤ k → k ≤ 16 → tail.length ≤ 982 →
       MachineState.readWord mem 2624 = UInt256.ofNat k →
+      tail[1]? = some (UInt256.ofNat (32 * n)) →
       tail[2]? = some (UInt256.ofNat n) →
       Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
       Model.FastRepresents mem 2112 n a → a < mm →
       Challenge.EvmProof.GasSteps (sqCall s mem ret tail)
         (retTo s (FusedMemory.memory s n k mem) (UInt256.ofNat 772) tail) := by
-  intro k ret tail mem a hfast hk hk16 hcap hcount hslotn hf hm ha ham
+  intro k ret tail mem a hfast hk hk16 hcap hcount hw hslotn hf hm ha ham
   -- `GasSteps` lives in `Type`, so the limb count has to be split by `cases`.
   cases n with
   | zero => exact absurd hn (by omega)
@@ -220,7 +222,7 @@ noncomputable def subsSquareLoop (s : State) (n bsize mm minv : Nat)
         exact hfast.2 hv
       exact Challenge.EvmProof.GasSteps.cast
         (SquareLoop.gasSteps_squareLoop s mem p a mm k ret tail hcap hrun hcode hfork
-          hnp hact (by omega) hfast.1 hk hk16 hcount hslotn hcds hf.s32 hf.tl hf.ml ha hm ham hmpos
+          hnp hact (by omega) hfast.1 hk hk16 hcount hw hslotn hcds hf.s32 hf.tl hf.ml ha hm ham hmpos
           (odd_of_minvA hminvA) (by rw [hlow, hmi]; exact hminvA) hguard)
         rfl rfl
 

@@ -215,6 +215,7 @@ structure EntryLemmas : Type where
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (hw : rest[1]? = some (UInt256.ofNat (32 * n)))
     (hslot : rest[2]? = some (MachineState.readWord mem 2688))
     (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode hd.toNat = true)
     (hguard : MachineState.readWord mem 2720 ≠ UInt256.ofNat 1)
@@ -222,7 +223,7 @@ structure EntryLemmas : Type where
     Challenge.EvmProof.GasSteps
       (Cios2Dispatch.commonState s (mpZeroed s mem n) hd pa pb pdst ret rest)
       (outState s (mpZeroed s (StagedOperand.stage mem pa n) n) pb n 0 hd (l1Target n)
-        (MachineState.readWord mem 2720) (MachineState.readWord mem (32*n-32))
+        (MachineState.readWord mem 2720) (MachineState.readWord mem (16*n+32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
           MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
           UInt256.ofNat (pa+32*n-32) :: pdst :: ret :: rest))
@@ -234,6 +235,6 @@ structure EntryLemmas : Type where
 theorem jumpDest_rowHead :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 3533).toNat = true := by
   rw [Challenge.EvmProof.Word.word_toNat_ofNat]
-  exact Artifact.isValidJumpDest_index 2802 (by rfl)
+  exact Artifact.isValidJumpDest_index 2803 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryIface
