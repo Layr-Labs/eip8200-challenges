@@ -13,13 +13,13 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory
 open PairTableActive StaggerTableSparse StaggerTableLayout
 
-/-- Pad-only low block (pc 65..102): copy zero calldata over the table (the copy offset is the
-last message block's offset in slot 11, which is past the calldata), store the unmasked low
+/-- Pad-only low block (pc 65..102): copy zero calldata over the table (the copy offset is
+CALLDATASIZE, exactly the first byte past the input), store the unmasked low
 bit-length word `n <<< 3` three times, `0x80` at 522, and the two `0x80` bytes at 67 and 85.  Only the
 fast entry (lengths 64, 128, 192) reaches this block, so the high length words are always zero. -/
 def lowTemplate : List Instr :=
   [ .push ⟨2, by decide⟩ (UInt256.ofNat 1084),
-    .op (.Dup ⟨12, by decide⟩),
+    .op .CALLDATASIZE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 28),
     .op .CALLDATACOPY,
     .op .CALLDATASIZE,
@@ -149,7 +149,7 @@ theorem run_low (s : State) (pc : UInt256) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 of
     (rest : List UInt256)
     (hstack : rest.length ≤ 980) (hrun : s.halt = .Running) (hactive : 35 ≤ s.activeWords.toNat)
     (hfit : s.executionEnv.calldata.size < 2 ^ 256)
-    (hoff : s.executionEnv.calldata.size ≤ off.toNat) :
+    (_hoff : s.executionEnv.calldata.size ≤ off.toNat) :
     runInstrSeq lowTemplate
         {s with pc := pc, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: off :: rest} =
       some {s with
@@ -179,8 +179,8 @@ theorem run_low (s : State) (pc : UInt256) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 of
     exact (Word.word_eq_ofNat_toNat _).symm
   have hsize : (UInt256.ofNat s.executionEnv.calldata.size).toNat = s.executionEnv.calldata.size := by
     rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt hfit]
-  have hzero : MachineState.readPadded s.executionEnv.calldata off.toNat 1084 = PadZeroPrefix.zeroBytes :=
-    PadZeroPrefix.readPadded_ge _ _ hoff
+  have hzero : MachineState.readPadded s.executionEnv.calldata s.executionEnv.calldata.size 1084 = PadZeroPrefix.zeroBytes :=
+    PadZeroPrefix.readPadded_ge _ _ (by omega)
   let low := StaggerTablePad.lowDirty (UInt256.ofNat s.executionEnv.calldata.size)
   let base := MachineState.writeBytes s.memory PadZeroPrefix.zeroBytes 28
   let pre := writeWord (writeWord (writeWord (writeWord base 162 low) 666 low) 144 low) 522 (UInt256.ofNat 128)

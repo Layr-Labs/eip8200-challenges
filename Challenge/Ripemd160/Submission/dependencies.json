@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "8375c07c-8aab-4cc1-8b8c-4cb8048df3b1",
+    "rationale": "Immediate promoted leader baseline, official 647969 at commit 82c124fc. All executable bytes and the complete universal proof infrastructure are retained except the one opcode at PC68 and its raw copy certificate.",
+    "evidence": "Baseline decoded SHA256 815897bac8149dd66f922b08dc13871cb648a813a0c0a8f635ef77fa0c71f12b; candidate SHA256 6506a0b06b20c978a4a12873d9298bdd7166a4973c413a029a26ed8e9395d189. DUP13 at PC68 becomes CALLDATASIZE. Both images have 5241 bytes and 3628 executable instructions."
+  },
+  {
     "submissionId": "eac16f46-05fc-4739-a431-78252bf9e5b3",
     "rationale": "The live record this image beats (648,560, our own submission CJW-b, accepted 2026-10-14) and the immediate base of this tree. Its compression body (pc 457 to 4550) and the CODESIZE-relative digest tail (280 data bytes) are kept byte for byte, together with its proof files for the body. Its loop-induction and recogniser proofs are adapted to the new layout.",
     "evidence": "5,227 bytes, decoded SHA-256 a86b46edbe4aa1fd4970c65890e5dc1cf323020fb51c241533160f155537ac65, 648,560 official. This image keeps bytes 457 to 4550 and the last 280 bytes identical to it and replaces its prologue (pc 0 to 456), its continuation-jump chain and its post-body control with phase continuations: slot 12 holds the next phase (the input size for 64, 128 and 192 bytes, the generic last-block test at pc 47 for other sizes, the output entry at pc 4748 afterwards). The generic last-block test keeps the MSIZE < offset + 128 form of eac16f46."
