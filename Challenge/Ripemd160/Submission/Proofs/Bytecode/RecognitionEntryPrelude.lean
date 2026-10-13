@@ -18,6 +18,6 @@ def segEnd (n : Nat) : UInt256 :=
 
 /-- The scanner entry: the dispatch has already pushed the segment end. -/
 def patternedEntry (input : ByteArray) : State :=
-  { initialState submissionBytecode input 0 with pc := UInt256.ofNat 4804, stack := [segEnd input.size] }
+  { initialState submissionBytecode input 0 with pc := UInt256.ofNat 4788, stack := [segEnd input.size] }
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan

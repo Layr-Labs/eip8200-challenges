@@ -42,7 +42,7 @@ def template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .AND,
     .op .MULMOD,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 27),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 27),
     .op .SHR,
     .op (.Dup ⟨10, by decide⟩),
     .op .ADD,

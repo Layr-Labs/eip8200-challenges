@@ -26,7 +26,7 @@ private theorem local_xor_comm (u v : UInt256) : UInt256.xor u v = UInt256.xor v
 def code : List Instr :=
   [ .push ⟨2, by decide⟩ (UInt256.ofNat 257),
     .op (.Dup ⟨1, by decide⟩),
-    .op (.Dup ⟨0, by decide⟩),
+    .op (.Dup ⟨2, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 8),
     .op .SHR,
     .op .XOR,

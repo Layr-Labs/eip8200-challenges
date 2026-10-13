@@ -32,8 +32,8 @@ def backTemplate : List Instr := [.op (.Swap ⟨10, by decide⟩)]
 
 def nextOffset (off : UInt256) : UInt256 := off + UInt256.ofNat 64
 
-/-- The pad-only block's `CODESIZE` sentinel, left in slot 12 to end the loop. -/
-def padMark : UInt256 := UInt256.ofNat 5238
+/-- The pad-only block's exit mark: the resident factor word it leaves in slot 11, far above any limit. -/
+def padMark : UInt256 := Paired144WordRound.factorPlusWord
 
 /-- The block entry stack: the pad-only block (`size = 64 i < 256`) starts with the advanced
 offset still on top. -/
@@ -46,10 +46,10 @@ def entryStack (input : ByteArray) (i : Nat) (h : Compression.HashState) (off li
 def blockMark (input : ByteArray) (i : Nat) (off : UInt256) : UInt256 :=
   if input.size = i * 64 ∧ input.size < 256 then padMark else off
 
-theorem padMark_toNat : padMark.toNat = 5238 := by
-  unfold padMark
+theorem padMark_toNat : padMark.toNat = 158456325065422163343096938498 := by
+  unfold padMark Paired144WordRound.factorPlusWord
   rw [Word.word_toNat_ofNat]
-  exact Nat.mod_eq_of_lt (by norm_num)
+  norm_num
 
 /-- The offset is past the limit: jump to the output with the frame unchanged. -/
 theorem run_gt (s : State) (pc : UInt256) (h : Compression.HashState)

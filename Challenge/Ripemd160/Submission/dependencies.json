@@ -1,13 +1,28 @@
 [
   {
+    "submissionId": "fc5d5ea8-02dc-4864-851b-ed41c5fdc5c7",
+    "rationale": "Accepted 649120 record (Th0rgal) supplies the round-79 epilogue protocol: left d lane left unfinished, literal 23 kept on the stack, tail combine consuming it, and the proof seam (ScheduledTail*, StaggerRawLeft79, StaggerCoreLeft79, PersistentStaggerTailBridge).",
+    "evidence": "Instruction-level diff of the fc5d5ea8 and 96e765dd bytecode and proof trees; the seam files are taken from the fc5d5ea8 tree with PCs mapped to this layout. Replica and unmodified official Scorer.lean agree on the new totals."
+  },
+  {
+    "submissionId": "a12ad85f-0917-4f14-bc90-91dfca2ecedf",
+    "rationale": "Accepted 649550 predecessor (newjordan) supplies the compression body widths, near-dense selector and the proof layout used as the base of this tree.",
+    "evidence": "Instruction-level diff against the a12ad85f image: only the round-79 epilogue and three neutral DUP edits change the compression body."
+  },
+  {
+    "submissionId": "cb3f7647-8979-4fa0-bf18-f5d08cb84d76",
+    "rationale": "Immediate accepted/promoted649662 predecessor supplies the exact universal-proof architecture, disjoint EQ-ADD gate, signed boundary and commuted operands, inherited paired compressor and PC-backed schedule stores. The near-dense selector and gas-neutral layout are new here.",
+    "evidence": "Compared against the immutable649662 checkpoint. All fourteen retained digest values agree. All fallback paths retain computation and terminal-store memory invariants; only width and commutative-DUP changes accompany relocated control PCs. The649662 public note and remote accepted status were read before integrating this successor. This immediate dependency includes the retained gate-only649687 predecessor."
+  },
+  {
     "submissionId": "87db96ed-63a2-482a-9184-0ba2560da28b",
-    "rationale": "Import accepted/promoted649711 round45-through64 slot transposition, closure at round64, associated shape/raw/semantic certificates and compiler-budget Boolean reorderings. Gate-only composition retains its unsigned recognizer boundary and width arrangement. Our two-EQ 256/376 gate saves another24gas.",
-    "evidence": "Fresh board reports accepted649711 and promoted commit52da2ac2349254b739428858573552a067f0c5f4. Source archived from that exact commit, not inferred from note. Combined bytecode hashd00cf96beb4eb361a0437b87a01d2e8fc0c1db84bf4bcf4392761dfc436181e9 scores649687 clean/dirty and98correct scorer executions; exact trusted default literal passed."
+    "rationale": "Import accepted/promoted649711 round45-through64 slot transposition, restoration at round64, exact core raw/semantic wrappers and generator-sensitive Boolean reorderings from commit52da2ac2349254b739428858573552a067f0c5f4. The649662successor composes our verified gate and signed boundary, commutes sentinel DUPs and changes disjoint EQ flags OR to ADD to fit the unchanged trusted literal budget.",
+    "evidence": "Round45-64core exactly retained from the649711accepted leader. Fresh full yukon run --track ripemd160 passed on exact SHA25669daff81d04aa041d8fdbad11cbc2b2a03eb1a52c873db9d02f33e100182a757: verified649662clean/dirty gas,49/49vectors,5238bytes, Lean Comparator and default kernel accepted; universal candidate uses only propext/Classical.choice/Quot.sound."
   },
   {
     "submissionId": "8c2da9bb-95ab-4b95-8a56-469593a307c4",
-    "rationale": "Verified649875 predecessor supplies the preserved universal architecture, terminal masked-store memory repair, prestaging and gas-independent snapshot paths. The current649687 composition replaces its signed boundary by the649711 leader boundary to fit the trusted generator; retains the two-EQ gate originally verified as649851. Material core source is imported from the649711 leader separately.",
-    "evidence": "Prior649851 upload1fddf950-ddee-4f2f-8366-5ede0d922ce8 was remotely verified at649851 but rejected when frontier moved to649711. The gate-only composition now measures649687 with98correct executions; no retention of the old scheduled signed boundary is claimed."
+    "rationale": "Verified649875 predecessor supplies the retained universal architecture, terminal masked-store memory repair, prestaging and state-independent snapshot paths. Our previously fully verified649851gate and signed boundary compose with the649711round45leader, with new disjoint-EQ ADD and boundary DUP commutation to fit the trusted renderer.",
+    "evidence": "Prior649851upload1fddf950-ddee-4f2f-8366-5ede0d922ce8 was remotely verified but frontier-rejected. The649687gate-only successor was accepted/promoted as96e765dd-1639-4d9f-b559-e497dfd7a36b; this further signed composition completed its own independent full canonical gate at649662."
   },
   {
     "submissionId": "bf9e021d-c0bf-45e8-ae96-02fe89cae189",
@@ -47,12 +62,7 @@
   {
     "submissionId": "0de279b7-dd75-4eb5-a010-f11bc5a46d10",
     "rationale": "Immediate accepted and promoted 651113-gas candidate. Retains its PC6 recognition prefilter, source178/destination196 and source268/destination286 forward snapshots, masked terminal writer, paired compressor and whole-program proof.",
-    "evidence": "Changes only decoded byte offsets527..546 to replace the first and third 16-byte MCOPY snapshots with backward full-word MLOAD/MSTORE snapshots. The result is not generally equal as a ByteArray; new universal source-map, lane, clear, slack and terminal-bound proofs transport Ready for the actual memory image. Removes the obsolete Repeat4 recurrence premise."
-  },
-  {
-    "submissionId": "496a5db8-1e74-4c9f-907e-7b8cbc51eb6b",
-    "rationale": "Material first-snapshot ancestor, locally and remotely verified for correctness; rejected for gas651482 on a randomized corpus rather than proof failure.",
-    "evidence": "Retains its source268/destination286 snapshot, exact byte binding and concrete execution infrastructure. The new backward-snapshot route no longer uses full ByteArray equality as its semantic transport."
+    "evidence": "Changes only decoded byte offsets527..546 to replace the first and third 16-byte MCOPY snapshots with backward full-word MLOAD/MSTORE snapshots. The result is not generally equal as a ByteArray; new universal source-map, lane, clear, slack and terminal-bound proofs transport Ready for the actual memory image. Removes the obsolete Repeat4 recurrence premise. Transitive first-snapshot ancestor496a5db8-1e74-4c9f-907e-7b8cbc51eb6b supplies source268/destination286 snapshot and exact execution infrastructure through this descendant; it was remotely correct but frontier-rejected. This explicit ancestor attribution is consolidated here to honor the20-declaration CLI limit."
   },
   {
     "submissionId": "8eb88703-c1f9-4593-9de0-8bb784b2700b",
@@ -88,15 +98,5 @@
     "submissionId": "f797f38b-1ab6-4172-bf96-c7e1befcc583",
     "rationale": "Uses the complete promoted 651617-gas bytecode and universal Lean proof as the base, retaining the predecessor's staged paired compressor and seven-SWAP feed-forward epilogue.",
     "evidence": "Retains the paired compressor, feed-forward epilogue and universal Lean proof, with exact-byte changes in the schedule writer, two same-size PUSH-width compensations in step23 and a commutative AND operand reorder in step73. A locally proved PC encoder/stepper supports the two fixed-PC writer stores; compression and recognition behavior are retained."
-  },
-  {
-    "submissionId": "89c8a061-ed63-445a-ab6c-1413d208bc11",
-    "rationale": "Retains the cross-round MULMOD operand prestaging architecture and compact literal encoding inherited through the immediate650278leader. The public note was read before extending its approach from an adjacent pair to a three-operand carry across rounds64-67.",
-    "evidence": "The new candidate uses the inherited cache140/cache310/cache350 representation, executable round templates, raw execution proof infrastructure and semantic paired-round interfaces. It adds a second carry through round66 and an altered round65 Boolean stack schedule, rather than claiming the original prestaging architecture."
-  },
-  {
-    "submissionId": "eb2a72cc-8fb3-4766-b9d8-f78cd30d464d",
-    "rationale": "Material650457 historical predecessor supplies the established SDIV proof-support extension, recurrence formalization and gas-lifting bridge still present transitively in source. Its signed J2 executable boundary is not installed in the649687 composition; that template was reverted to the649711 leader version to satisfy the trusted literal budget.",
-    "evidence": "Accepted source and historical notes were consulted during the generator-budget composition. Current installedPC4638..4678 raw transition matches the649711 leader unsigned DIV96/MUL14 boundary, not this signed-prefix predecessor."
   }
 ]

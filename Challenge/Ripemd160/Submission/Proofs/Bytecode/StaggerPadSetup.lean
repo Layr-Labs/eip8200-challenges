@@ -15,7 +15,7 @@ open PairTableActive StaggerTableSparse StaggerTableLayout
 
 /-- Pad-only low block (pc 130..183): copy zero calldata over the table (the copy offset is the
 advanced block offset the exit left on top, which is past the calldata), store the unmasked
-low bit-length word `n <<< 3` and `0x80`, and leave `CODESIZE` on top as the loop-exit sentinel. The early `PUSH19` mark is
+low bit-length word `n <<< 3` and `0x80`. The early `PUSH19` mark is
 consumed by the final memory store.
 The address-162 store uses `PC`; this theorem fixes the template entry at PC130.  Only the fast entry (lengths 64, 128, 192) reaches
 this block, so the high length words are always zero and no guard follows. -/
@@ -40,14 +40,13 @@ def lowTemplate : List Instr :=
     .push ⟨2, by decide⟩ (UInt256.ofNat 522),
     .op .MSTORE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 54),
-    .op .MSTORE,
-    .op .CODESIZE ]
+    .op .MSTORE ]
 
-/-- `SWAP11 PUSH2 0328 JUMP` at 184: park the exit sentinel in slot 12 (so the block exit finishes)
-and go straight to the rounds. -/
+/-- `DUP11 PUSH2 0338 JUMP` at 183: the resident factor word (slot 11, far above any limit) is copied to the
+top and stays in slot 11 as the loop-exit mark, so the block exit finishes, and go straight to the rounds. -/
 def branchTemplate : List Instr :=
-  [ .op (.Swap ⟨10, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 826),
+  [ .op (.Dup ⟨10, by decide⟩),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 824),
     .op .JUMP ]
 
 /-- Pad-only high block (pc 4833..4860), reached only when `n >>> 29 ≠ 0`. -/
@@ -81,15 +80,15 @@ private theorem hadd_literals (a b : Nat) :
 private theorem add_eq_hAdd (x y : UInt256) : UInt256.add x y = x + y := rfl
 
 /-- The fast padding path is valid for lengths below the artifact's byte size. -/
-def highZero (n : UInt256) : UInt256 := UInt256.lt n (UInt256.ofNat 5238)
+def highZero (n : UInt256) : UInt256 := UInt256.lt n (UInt256.ofNat 5247)
 
 theorem highZero_true_iff (n : UInt256) :
-    UInt256.isTrue (highZero n) ↔ n.toNat < 5238 := by
-  change (UInt256.lt n (UInt256.ofNat 5238)).toNat ≠ 0 ↔ n.toNat < 5238
+    UInt256.isTrue (highZero n) ↔ n.toNat < 5247 := by
+  change (UInt256.lt n (UInt256.ofNat 5247)).toNat ≠ 0 ↔ n.toNat < 5247
   rw [Word.word_toNat_lt]
-  have hc : (UInt256.ofNat 5238).toNat = 5238 := by decide
+  have hc : (UInt256.ofNat 5247).toNat = 5247 := by decide
   rw [hc]
-  by_cases hn : n.toNat < 5238 <;> simp [hn]
+  by_cases hn : n.toNat < 5247 <;> simp [hn]
 
 theorem highZero_true_imp (n : UInt256) (h : UInt256.isTrue (highZero n)) :
     StaggerTablePad.highDirty n = UInt256.ofNat 0 := by
@@ -109,7 +108,7 @@ theorem run_low (s : State) (pc off : UInt256) (rest : List UInt256)
     runInstrSeq lowTemplate {s with pc := pc, stack := off :: UInt256.ofNat 4294967295 :: rest} =
       some {s with
              pc := pcAfter pc lowTemplate
-             stack := UInt256.ofNat s.executionEnv.code.size :: UInt256.ofNat 4294967295 :: rest
+             stack := UInt256.ofNat 4294967295 :: rest
              memory := StaggerTablePad.padRealChain s.memory
                (UInt256.ofNat s.executionEnv.calldata.size)} := by
   have hcap (n : Nat) (hn : n ≤ 28) : rest.length + n < 1024 := by omega
@@ -167,14 +166,14 @@ theorem run_high (s : State) (pc returnPC : UInt256) (rest : List UInt256)
   all_goals simp only [add_eq_hAdd]
 
 theorem run_branch_taken (s : State) (pc : UInt256)
-    (a b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 c : UInt256) (rho : List UInt256)
+    (a b1 b2 b3 b4 b5 b6 b7 b8 b9 c : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 826).toNat = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 824).toNat = true) :
     runInstrSeq branchTemplate
-        {s with pc := pc, stack := a :: b1 :: b2 :: b3 :: b4 :: b5 :: b6 :: b7 :: b8 :: b9 :: b10 :: c :: rho} =
+        {s with pc := pc, stack := a :: b1 :: b2 :: b3 :: b4 :: b5 :: b6 :: b7 :: b8 :: b9 :: c :: rho} =
       some {s with
-        pc := UInt256.ofNat 826
-        stack := c :: b1 :: b2 :: b3 :: b4 :: b5 :: b6 :: b7 :: b8 :: b9 :: b10 :: a :: rho} := by
+        pc := UInt256.ofNat 824
+        stack := c :: a :: b1 :: b2 :: b3 :: b4 :: b5 :: b6 :: b7 :: b8 :: b9 :: c :: rho} := by
   have hcap (n : Nat) (hn : n ≤ 13) : rho.length + n < 1024 := by omega
   simp only [Word.word_toNat_ofNat] at hvalid
   norm_num only at hvalid
