@@ -13,7 +13,7 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 open CiosReadonly CiosCachedMidMemory WindowTwentyOneBinding TnCacheReductionTrace
 open Challenge.EvmProof
 
-def l2PC : Nat := 3843
+def l2PC : Nat := 3871
 
 /-- The current eight-limb fallthrough middle, seven reduction cells, and
 long-immediate tail implement the carry-cache model for arbitrary carry words. -/
@@ -79,8 +79,8 @@ noncomputable def suffix_steps (s : State)
       (UInt256.ofNat (l2PC+TnMod128Chain.fullSize 8)) q.memory flag
       (rowMu q.memory 8) (rowC0 q.memory 8) 8 (8-1)
       pbi hd pb ent m32 m128 m64 tail).pc =
-      UInt256.ofNat 4077 := by
-    change UInt256.ofNat (l2PC+TnMod128Chain.fullSize 8) = UInt256.ofNat 4077
+      UInt256.ofNat 4101 := by
+    change UInt256.ofNat (l2PC+TnMod128Chain.fullSize 8) = UInt256.ofNat 4101
     rfl
   have g2 := TnM128CandidateBlocks.tail.steps
     (s := TnCacheLastTrace.lastState st

@@ -10,8 +10,9 @@ open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro SquareModel SquareResult SquareLoopBlocks
 
+/-- The generic square rows (the n=4 rounds have their own model, `R4Loop`). -/
 def rows (s : State) (n : Nat) (mem : ByteArray) : ByteArray :=
-  if n = 4 then R4Bridge.rows4 mem else sqRowsCarry (mpZeroed s mem n) n n
+  sqRowsCarry (mpZeroed s mem n) n n
 
 def round (s : State) (n c : Nat) (mem : ByteArray) : ByteArray :=
   LazyCsub.resultMemory (countMem (rows s n mem) c) n 2368
@@ -24,9 +25,7 @@ theorem rows_read_word (s : State) (mem : ByteArray) (n addr : Nat) (hn : n ≤ 
     (hout : addr+32 ≤ 2048 ∨ 2624 ≤ addr) :
     MachineState.readWord (rows s n mem) addr = MachineState.readWord mem addr := by
   unfold rows
-  split
-  · exact R4Bridge.rows4_readWord_outside mem addr (by omega)
-  · rw [readWord_sqRowsCarry _ n addr hn hout n le_rfl, readWord_mpZeroed s mem n addr hn hout]
+  rw [readWord_sqRowsCarry _ n addr hn hout n le_rfl, readWord_mpZeroed s mem n addr hn hout]
 
 theorem round_read_word (s : State) (mem : ByteArray) (n c addr : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hout : addr+32 ≤ 1792 ∨ 2656 ≤ addr) :
@@ -52,28 +51,21 @@ theorem rows_equation (s : State) (mem : ByteArray) (p a mm : Nat)
       (MachineState.readWord mem 2720).toNat + 1) % 2^256 = 0) :
     ∃ Q, Q < Limbs.radix^(p+2) ∧
       tValue (rows s (p+2) mem) (p+2) * Limbs.radix^(p+2) = a*a + Q*mm := by
-  by_cases h4 : p+2 = 4
-  · obtain ⟨Q, hQ, heq⟩ := R4Bridge.rows4_eq mem a mm
-      (by simpa only [h4] using ha) (by simpa only [h4] using hm)
-      (by simpa only [h4] using hminv)
-    refine ⟨Q, by simpa only [h4] using hQ, ?_⟩
-    rw [rows, if_pos h4, h4]
-    exact heq
-  · have ha' := represents_zeroed_stage s mem (p+2) a hn ha
-    have hm' : Model.FastRepresents (mpZeroed s mem (p+2)) 0 (p+2) mm := by
-      refine (Model.fastRepresents_congr (a := mem) (b := mpZeroed s mem (p+2)) ?_ mm).1 hm
-      intro j hj
-      rw [readWord_mpZeroed s mem (p+2) (0+32*j) hn (Or.inl (by omega))]
-    have hi' : ((MachineState.readWord (mpZeroed s mem (p+2)) (32*(p+2)-32)).toNat *
-        (MachineState.readWord (mpZeroed s mem (p+2)) 2720).toNat + 1) % 2^256 = 0 := by
-      rw [readWord_mpZeroed s mem (p+2) (32*(p+2)-32) hn (Or.inl (by omega)),
-        readWord_mpZeroed s mem (p+2) 2720 hn (Or.inr (by omega))]
-      exact hminv
-    obtain ⟨Q, hQ, heq, _, _⟩ := LazyBounds.current_sqRows_lazy (mpZeroed s mem (p+2))
-      p a mm hn ha' hm' (by omega) hi' (tValue_mpZeroed s mem (p+2))
-    refine ⟨Q, hQ, ?_⟩
-    rw [rows, if_neg h4, LazySquareMemory.carry_accumulator _ (p+2) hn]
-    exact heq
+  have ha' := represents_zeroed_stage s mem (p+2) a hn ha
+  have hm' : Model.FastRepresents (mpZeroed s mem (p+2)) 0 (p+2) mm := by
+    refine (Model.fastRepresents_congr (a := mem) (b := mpZeroed s mem (p+2)) ?_ mm).1 hm
+    intro j hj
+    rw [readWord_mpZeroed s mem (p+2) (0+32*j) hn (Or.inl (by omega))]
+  have hi' : ((MachineState.readWord (mpZeroed s mem (p+2)) (32*(p+2)-32)).toNat *
+      (MachineState.readWord (mpZeroed s mem (p+2)) 2720).toNat + 1) % 2^256 = 0 := by
+    rw [readWord_mpZeroed s mem (p+2) (32*(p+2)-32) hn (Or.inl (by omega)),
+      readWord_mpZeroed s mem (p+2) 2720 hn (Or.inr (by omega))]
+    exact hminv
+  obtain ⟨Q, hQ, heq, _, _⟩ := LazyBounds.current_sqRows_lazy (mpZeroed s mem (p+2))
+    p a mm hn ha' hm' (by omega) hi' (tValue_mpZeroed s mem (p+2))
+  refine ⟨Q, hQ, ?_⟩
+  rw [rows, LazySquareMemory.carry_accumulator _ (p+2) hn]
+  exact heq
 
 theorem round_represents (s : State) (mem : ByteArray) (p a mm c : Nat)
     (hn : p+2 ≤ 8)

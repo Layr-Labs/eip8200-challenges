@@ -124,7 +124,7 @@ def diagonalMathTailM128 (next : UInt256) : List Instr :=
    .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨6, by decide⟩), .op .MSTORE,
    .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .GT,
    .op (.Swap ⟨1, by decide⟩), .op .SUB, .op .SUB,
-   .push 3 next, .op (.Swap ⟨5, by decide⟩), .op .POP]
+   .push 2 next, .op (.Swap ⟨5, by decide⟩), .op .POP]
 
 def diagonalProgramM128 (next : UInt256) : List Instr :=
   R8RowZero.headProgram ++ diagonalMathTailM128 next
@@ -142,7 +142,7 @@ theorem run_diagonalMathTailM128 (s : State) (pc bi P hd ent next stride target 
       { s with pc := pc,
                stack := bi :: P :: hd :: UInt256.ofNat 2336 :: ent :: stride :: maxWord ::
                  target :: inv :: m0 :: tl :: m96 :: m64 :: m32 :: x :: rest } =
-    some { s with pc := advancePC 22 pc,
+    some { s with pc := advancePC 21 pc,
                   stack := ((mm - UInt256.lt mm lo) - lo) :: bi :: P :: hd ::
                     UInt256.ofNat 2336 :: next :: stride :: maxWord :: target :: inv :: m0 :: tl :: m96 :: m64 :: m32 :: x :: rest,
                   memory := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded lo.toNat 32) 2336 } := by
@@ -168,7 +168,7 @@ theorem run_diagonalM128 (s : State)
       { s with pc := pc,
                stack := UInt256.ofNat 2592 :: hd :: UInt256.ofNat 2336 :: ent :: stride :: maxWord ::
                  target :: inv :: m0 :: tl :: m96 :: m64 :: m32 :: aprev :: rest } =
-    some { s with pc := advancePC 30 pc,
+    some { s with pc := advancePC 29 pc,
                   stack := (diagonal s.memory).carry :: (x+x) :: UInt256.ofNat 2592 :: hd ::
                     UInt256.ofNat 2336 :: next :: stride :: maxWord :: target :: inv :: m0 :: tl :: m96 :: m64 :: m32 :: x :: rest,
                   memory := (diagonal s.memory).memory } := by
@@ -180,7 +180,7 @@ theorem run_diagonalM128 (s : State)
   have h0 := R8RowZero.run_head s pc (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) ent stride maxWord target inv m0 tl m96 m64 m32 aprev rest hcap hP
   have h1 := run_diagonalMathTailM128 s (advancePC 8 pc) (x+x) (UInt256.ofNat 2592) hd ent next stride target inv m0 tl m96 m64 m32 x rest hcap hact
   have h := runInstructions_append_some _ _ _ _ _ h0 h1
-  have hpc : advancePC 22 (advancePC 8 pc) = advancePC 30 pc := (advancePC_add 8 22 pc).symm
+  have hpc : advancePC 21 (advancePC 8 pc) = advancePC 29 pc := (advancePC_add 8 21 pc).symm
   simpa only [diagonalProgramM128, diagonal, hn, subtract_hi, x, hpc] using h
 
 #print axioms run_finishStore

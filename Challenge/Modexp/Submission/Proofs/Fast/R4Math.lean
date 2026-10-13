@@ -117,6 +117,19 @@ def final (a0 a1 a2 a3 n0 n1 n2 n3 np k : UInt256) : W5 :=
   let R3 := row3 a2 a3 k W3
   red n0 n1 n2 n3 np k R3.1 R3.2
 
+/-- `rare4`: subtract the modulus limbs `n0..n3` from `t0..t3` with a borrow chain (borrow
+`(b > e) | (t < e)` for `e = n + b`); the overflow word becomes zero. -/
+def sub4 (n0 n1 n2 n3 : UInt256) (P : W5) : W5 :=
+  let b0 := UInt256.lt P.t0 n0
+  let b1 := UInt256.lor (UInt256.gt b0 (n1 + b0)) (UInt256.lt P.t1 (n1 + b0))
+  let b2 := UInt256.lor (UInt256.gt b1 (n2 + b1)) (UInt256.lt P.t2 (n2 + b1))
+  { t0 := P.t0 - n0, t1 := P.t1 - (n1 + b0), t2 := P.t2 - (n2 + b1), t3 := P.t3 - (n3 + b2),
+    t4 := ⟨0⟩ }
+
+/-- The n=4 tail: a nonzero overflow word takes `rare4`, otherwise the window is stored as is. -/
+def red4 (n0 n1 n2 n3 : UInt256) (P : W5) : W5 :=
+  if P.t4 = ⟨0⟩ then P else sub4 n0 n1 n2 n3 P
+
 /-! ## 字级算术引理
 
 `k` 在字节码里是栈上的全 1 字；下列引理都在 `k = maxWord` 下陈述，用处先 `subst`。 -/

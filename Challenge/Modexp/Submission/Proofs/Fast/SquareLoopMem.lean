@@ -202,14 +202,13 @@ theorem sqRunMem_fastRepresents_outside (s : State) (mem : ByteArray) (n k ptr c
   rw [sqRunMem_readWord_outside s mem n k (ptr + 32 * j) hfast hn hn32 (by omega) (by omega)
     (by omega) (by omega)]
 
-theorem sqRunMem_eq_run (s : State) (n k : Nat) (mem : ByteArray) (h4 : n ≠ 4) :
+theorem sqRunMem_eq_run (s : State) (n k : Nat) (mem : ByteArray) (_h4 : n ≠ 4) :
     sqRunMem s n k mem = LazyLoopMemory.run s n k mem := by
   induction k generalizing mem with
   | zero => rfl
   | succ k ih =>
       rw [sqRunMem_succ, LazyLoopMemory.run, ih]
       congr 1
-      simp only [sqRound, roundDst, LazyLoopMemory.round, LazyLoopMemory.rows, if_neg h4]
 
 theorem sqRunMem_represents (s : State) (mem : ByteArray) (p a mm k : Nat)
     (_hfast : p+2 = 4 ∨ p+2 = 8) (hn32 : p+2 ≤ 8) (hk : 1 ≤ k) (h4 : p+2 ≠ 4)

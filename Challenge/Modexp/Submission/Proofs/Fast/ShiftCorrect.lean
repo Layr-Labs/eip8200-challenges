@@ -30,8 +30,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
 theorem jumpD4643 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 2545).toNat = true :=
-  Exp.jumpD 2545 (by decide) jumpDest4608
+    (UInt256.ofNat 2592).toNat = true :=
+  Exp.jumpD 2592 (by decide) jumpDest4608
 
 /-! ## Facts at `BDONE` on the hit path -/
 

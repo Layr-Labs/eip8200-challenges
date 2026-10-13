@@ -26,19 +26,19 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open WindowTwentyOneBinding
 
 def mulEntryProgram : List Instr :=
-  [.op .JUMPDEST, .push 2 3533]
+  [.op .JUMPDEST, .push 2 3561]
 
 /-- The thirteen-instruction inverse/width guard is gone: the rewritten entry test decides both
 conditions before the fast path is entered, so `common` now falls straight through into `setup`. -/
 def commonGuardProgram : List Instr := [.op .JUMPDEST]
 
 
-def mulEntry : Block Artifact.submissionArtifact .Osaka 3383 mulEntryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2619 2 3383 mulEntryProgram
+def mulEntry : Block Artifact.submissionArtifact .Osaka 3407 mulEntryProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2660 2 3407 mulEntryProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def commonGuard : Block Artifact.submissionArtifact .Osaka 3387 commonGuardProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2621 1 3387 commonGuardProgram
+def commonGuard : Block Artifact.submissionArtifact .Osaka 3411 commonGuardProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2662 1 3411 commonGuardProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 

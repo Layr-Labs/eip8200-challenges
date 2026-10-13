@@ -19,7 +19,7 @@ the actual code's jump fact, without claiming the artifact contains these
 instructions. -/
 def hitProgram : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .push 1 96, .push 2 2112, .op .CALLDATACOPY,
-   .push 2 2574, .push 2 4308, .op .JUMP]
+   .push 2 2621, .push 2 4309, .op .JUMP]
 
 def copyProgram : List Instr :=
   [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .push 2 2112, .push 2 256,
@@ -29,12 +29,12 @@ def frame (s : State) (mem : ByteArray) (pc n : Nat) (rest : List UInt256) : Sta
   {s with pc := UInt256.ofNat pc, memory := mem, stack := UInt256.ofNat (32*n) :: rest}
 
 def csubEntry (s : State) (mem : ByteArray) (n : Nat) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 4308, memory := mem, stack := [UInt256.ofNat 2574, UInt256.ofNat (32*n)] ++ rest}
+  {s with pc := UInt256.ofNat 4309, memory := mem, stack := [UInt256.ofNat 2621, UInt256.ofNat (32*n)] ++ rest}
 
 theorem run_hit (s : State) (mem input : ByteArray) (n : Nat) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hact : 89 ≤ s.activeWords.toNat) (hdata : s.executionEnv.calldata = input)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 4308 = true) :
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 4309 = true) :
     runInstructions hitProgram (frame s mem 2558 n rest) =
       some (csubEntry s (hitMemory mem input n) n rest) := by
   have hc1 : rest.length+1 < 1024 := by omega
@@ -56,8 +56,8 @@ theorem run_hit (s : State) (mem input : ByteArray) (n : Nat) (rest : List UInt2
 theorem run_copy (s : State) (mem : ByteArray) (n : Nat) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hact : 89 ≤ s.activeWords.toNat) :
-    runInstructions copyProgram (frame s mem 2574 n rest) =
-      some (frame s (Exp.mcopyMem mem 256 2112 (32*n)) 2583 n rest) := by
+    runInstructions copyProgram (frame s mem 2621 n rest) =
+      some (frame s (Exp.mcopyMem mem 256 2112 (32*n)) 2630 n rest) := by
   have hc1 : rest.length+1 < 1024 := by omega
   have hc2 : rest.length+2 < 1024 := by omega
   have hc3 : rest.length+3 < 1024 := by omega

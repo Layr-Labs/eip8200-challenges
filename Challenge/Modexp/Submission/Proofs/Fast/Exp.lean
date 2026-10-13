@@ -134,7 +134,7 @@ def outer (n bsize esize msize : Nat) : List UInt256 :=
 trampoline at pc 5466), stack `[pa, pb, pd, ret] ++ tail`. -/
 def mpCall (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 5466
+  { s with pc := UInt256.ofNat 5520
            stack := UInt256.ofNat pa :: UInt256.ofNat pb :: UInt256.ofNat pd ::
              ret :: tail
            memory := mem }
@@ -148,8 +148,8 @@ writes the square chain to `0x200`), so the caller no longer copies `TS` to
 `BASE` first; the only caller is the fixed-exponent chain. -/
 def sqCall (s : State) (mem : ByteArray) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3387
-           stack := UInt256.ofNat 4551 :: UInt256.ofNat 2112 :: UInt256.ofNat 512 ::
+  { s with pc := UInt256.ofNat 3411
+           stack := UInt256.ofNat 4552 :: UInt256.ofNat 2112 :: UInt256.ofNat 512 ::
              UInt256.ofNat 512 :: ret :: tail
            memory := mem }
 
@@ -158,8 +158,8 @@ square count minus one in the frame's `pdst` slot, which the kernel's loop count
 (pc 3471 overwrites the slot before the final product). -/
 def sqLoopCall (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3387
-           stack := UInt256.ofNat 4551 :: UInt256.ofNat 2112 :: UInt256.ofNat 512 ::
+  { s with pc := UInt256.ofNat 3411
+           stack := UInt256.ofNat 4552 :: UInt256.ofNat 2112 :: UInt256.ofNat 512 ::
              UInt256.ofNat (k - 1) :: ret :: tail
            memory := mem }
 
@@ -215,11 +215,12 @@ theorem amMemOf_frame {mem : ByteArray} {n bsize minv : Nat} (pa pb pd : Nat)
          by rw [key 2816 (by omega)]; exact hf.eoff⟩
 
 /-- The subroutines the driver calls, as abstract single-step contracts
-carrying exactly the side conditions `Fast.CarryFull.gasSteps_monproFull`,
-`Fast.SquareFull.gasSteps_squareFull` and
+carrying exactly the side conditions `Fast.SquareFull.gasSteps_squareFull` and
 `Fast.Csub.gasSteps_addmod`/`gasSteps_csub` require: the configuration words
 (`Frame`), the pointer bounds, the return-address jump destination, and — for
-`MONPRO` and `SQUARE` — the values of the operand blocks.  The `SQUARE` fields
+`SQUARE` — the values of the operand blocks.  `MONPRO` enters only through its
+memory effect `mpMem` (and `SubSpec`): no consumer runs the generic multiply call, which
+the four-limb kernel no longer stages for (n4a).  The `SQUARE` fields
 also carry its value contract, since `SubSpec` is shared by callers that never
 square.  The concrete instance `subs` lives in `Fast.ExpSubs`, so this module
 depends on neither the multiply nor the square kernel development. -/
@@ -234,18 +235,6 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
   /-- `ADDMOD` preserves the configuration words. -/
   amFrame : ∀ (pa pb pd : Nat) (mem : ByteArray), pd ≤ 1536 →
     Frame mem n bsize minv → Frame (amMem pa pb pd mem) n bsize minv
-  /-- `MONPRO` at pc 4700. -/
-  monpro : ∀ (pa pb pd : Nat) (ret : UInt256) (tail : List UInt256)
-    (mem : ByteArray) (a b : Nat), tail.length ≤ 998 →
-    32 ≤ pa → pa + 32 * n ≤ 2048 → 32 ≤ pb → pb + 32 * n ≤ 2048 →
-    pd + 32 * n ≤ 2048 →
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true →
-    tail[1]? = some (UInt256.ofNat (32 * n)) →
-    tail[2]? = some (MachineState.readWord mem 2688) →
-    Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
-    Model.FastRepresents mem pa n a → Model.FastRepresents mem pb n b → a < mm →
-    Challenge.EvmProof.GasSteps (mpCall s mem pa pb pd ret tail)
-      (retTo s (mpMem pa pb pd mem) ret tail)
   /-- The memory effect of the in-place `SQUARE(0x800) → 0x800`. -/
   sqMem : ByteArray → ByteArray
   /-- `SQUARE` preserves the configuration words. -/
@@ -333,7 +322,7 @@ def rrHead (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :
 
 /-- `BDONE`, pc 1883, where the base chain rejoins. -/
 def bDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2441
+  { s with pc := UInt256.ofNat 2492
            stack := outer n bsize esize msize
            memory := mem }
 
@@ -2113,7 +2102,7 @@ instead of at the Montgomery-form conversion call.  `Shift.dispState` is definit
 state; it cannot be named here because `ShiftStates` sits above this module. -/
 theorem fastSetup_entry_eq (input : ByteArray) :
     Setup.fastSetupState input =
-      retTo (Setup.fastSetupState input) (Setup.fastSetupMemory input) (UInt256.ofNat 2545)
+      retTo (Setup.fastSetupState input) (Setup.fastSetupMemory input) (UInt256.ofNat 2592)
         (outer (Setup.limbs input) (Challenge.Modexp.baseSize input)
           (Challenge.Modexp.exponentSize input) (Challenge.Modexp.modulusSize input)) := rfl
 

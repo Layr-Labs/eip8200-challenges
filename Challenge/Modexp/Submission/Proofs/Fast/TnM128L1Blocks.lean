@@ -12,52 +12,52 @@ namespace Challenge.Modexp.Submission.Proofs.Fast.TnM128L1Blocks
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast TnM128CandidateArtifact
 
-def common0 : Block submissionArtifact .Osaka 3821 (TnCacheL1Suffix.program 0) :=
-  WindowTwentyOneSlice.block allWellFormed 2969 1 3821 (TnCacheL1Suffix.program 0)
+def common0 : Block submissionArtifact .Osaka 3849 (TnCacheL1Suffix.program 0) :=
+  WindowTwentyOneSlice.block allWellFormed 3014 1 3849 (TnCacheL1Suffix.program 0)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def common1 : Block submissionArtifact .Osaka 3784 (TnCacheL1Suffix.program 1) :=
-  WindowTwentyOneSlice.block allWellFormed 2938 32 3784 (TnCacheL1Suffix.program 1)
+def common1 : Block submissionArtifact .Osaka 3812 (TnCacheL1Suffix.program 1) :=
+  WindowTwentyOneSlice.block allWellFormed 2983 32 3812 (TnCacheL1Suffix.program 1)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def common2 : Block submissionArtifact .Osaka 3747 (TnCacheL1Suffix.program 2) :=
-  WindowTwentyOneSlice.block allWellFormed 2907 63 3747 (TnCacheL1Suffix.program 2)
+def common2 : Block submissionArtifact .Osaka 3775 (TnCacheL1Suffix.program 2) :=
+  WindowTwentyOneSlice.block allWellFormed 2952 63 3775 (TnCacheL1Suffix.program 2)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def common3 : Block submissionArtifact .Osaka 3710 (TnCacheL1Suffix.program 3) :=
-  WindowTwentyOneSlice.block allWellFormed 2876 94 3710 (TnCacheL1Suffix.program 3)
+def common3 : Block submissionArtifact .Osaka 3738 (TnCacheL1Suffix.program 3) :=
+  WindowTwentyOneSlice.block allWellFormed 2921 94 3738 (TnCacheL1Suffix.program 3)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def common4 : Block submissionArtifact .Osaka 3673 (TnCacheL1Suffix.program 4) :=
-  WindowTwentyOneSlice.block allWellFormed 2845 125 3673 (TnCacheL1Suffix.program 4)
+def common4 : Block submissionArtifact .Osaka 3701 (TnCacheL1Suffix.program 4) :=
+  WindowTwentyOneSlice.block allWellFormed 2890 125 3701 (TnCacheL1Suffix.program 4)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def common5 : Block submissionArtifact .Osaka 3636 (TnCacheL1Suffix.program 5) :=
-  WindowTwentyOneSlice.block allWellFormed 2814 156 3636 (TnCacheL1Suffix.program 5)
+def common5 : Block submissionArtifact .Osaka 3664 (TnCacheL1Suffix.program 5) :=
+  WindowTwentyOneSlice.block allWellFormed 2859 156 3664 (TnCacheL1Suffix.program 5)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def common6 : Block submissionArtifact .Osaka 3599 (TnCacheL1Suffix.program 6) :=
-  WindowTwentyOneSlice.block allWellFormed 2783 187 3599 (TnCacheL1Suffix.program 6)
+def common6 : Block submissionArtifact .Osaka 3627 (TnCacheL1Suffix.program 6) :=
+  WindowTwentyOneSlice.block allWellFormed 2828 187 3627 (TnCacheL1Suffix.program 6)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def common7 : Block submissionArtifact .Osaka 3562 (TnCacheL1Suffix.program 7) :=
-  WindowTwentyOneSlice.block allWellFormed 2752 218 3562 (TnCacheL1Suffix.program 7)
+def common7 : Block submissionArtifact .Osaka 3590 (TnCacheL1Suffix.program 7) :=
+  WindowTwentyOneSlice.block allWellFormed 2797 218 3590 (TnCacheL1Suffix.program 7)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def private3 : Block submissionArtifact .Osaka 5309 TnCacheL1Suffix.privateProgram3 :=
-  WindowTwentyOneSlice.block allWellFormed 4168 91 5309 TnCacheL1Suffix.privateProgram3
+def private3 : Block submissionArtifact .Osaka 5366 TnCacheL1Suffix.privateProgram3 :=
+  WindowTwentyOneSlice.block allWellFormed 4258 91 5366 TnCacheL1Suffix.privateProgram3
     (by decide) (by rfl) (by rfl) (by decide)
 
-def head : Block submissionArtifact .Osaka 3533 (TnCacheHeadTrace.program) :=
-  WindowTwentyOneSlice.block allWellFormed 2723 29 3533 (TnCacheHeadTrace.program)
+def head : Block submissionArtifact .Osaka 3561 (TnCacheHeadTrace.program) :=
+  WindowTwentyOneSlice.block allWellFormed 2768 29 3561 (TnCacheHeadTrace.program)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def guard : Block submissionArtifact .Osaka 4133 (TnCacheExitTrace.normalGuard) :=
-  WindowTwentyOneSlice.block allWellFormed 3211 5 4133 (TnCacheExitTrace.normalGuard)
+def guard : Block submissionArtifact .Osaka 4157 (TnCacheExitTrace.normalGuard) :=
+  WindowTwentyOneSlice.block allWellFormed 3256 5 4157 (TnCacheExitTrace.normalGuard)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def drop : Block submissionArtifact .Osaka 4142 (TnCacheExitTrace.drop) :=
-  WindowTwentyOneSlice.block allWellFormed 3216 14 4142 (TnCacheExitTrace.drop)
+def drop : Block submissionArtifact .Osaka 4166 (TnCacheExitTrace.drop) :=
+  WindowTwentyOneSlice.block allWellFormed 3261 14 4166 (TnCacheExitTrace.drop)
     (by decide) (by rfl) (by rfl) (by decide)
 
 end Challenge.Modexp.Submission.Proofs.Fast.TnM128L1Blocks

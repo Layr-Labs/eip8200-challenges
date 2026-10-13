@@ -1,42 +1,47 @@
 [
   {
+    "submissionId": "5788127e-caea-439f-805a-e92364af327a",
+    "rationale": "Our own earlier submission (stack-v9) and the direct base of this image: 1954e3f4 plus our N1 negation loop and P1 CIOS frame transpositions. It is the current record (462,538 at the time of writing). This image contains all of it and adds seven more cuts of ours (n4a, n4f, offsets, depad, n4t, rare4, t256) with their proof updates.",
+    "evidence": "Every cut of 5788127e is in this image. The code is 5,537 bytes and 4,400 instructions (5788127e: 5,544 and 4,359); depad and t256 shift most pcs after 2392, so the bytes are not position-aligned with 5788127e. The tree differs from 5788127e in 127 files: bytecode.hex, README.md, dependencies.json, Bytes, TnM128CandidateBytes, TnM128CandidateArtifact, ShiftJumpTargets and the proof files of the seven cuts listed in the note (122 changed, 5 dead files deleted). Solution.lean is unchanged."
+  },
+  {
     "submissionId": "1954e3f4-0898-4094-9ec8-f383d695f51c",
-    "rationale": "Our own earlier submission (stack-v8) and the direct base of this image: a87239b0 plus our B4 square counter, C2 dispatch prologue and e3skip cuts. It was rejected on score only (465,282 official, an ordinary draw: its 2,000-seed mean is 464,722 with sd about 1,000). This image contains all of it and adds two more cuts of ours (N1, a negation loop without the borrow chain, and P1, two CIOS frame transpositions) with their proof updates.",
-    "evidence": "bytecode.hex equals 1954e3f4's 5,544 bytes outside [2583, 2615), [3403, 3442), [3473, 3474), [3822, 3830), [3978, 3994), [4011, 4027), [4078, 4088), [4128, 4129), [4200, 4201), [4580, 4585), [5286, 5290) and [5420, 5428): 113 bytes differ (29 for N1, 84 for P1), all inside them. Length is unchanged. The instruction count goes from 4,361 to 4,359 (P1 shortens the n5 and n6 cells by one instruction each, so indices after 3977 move by -1 and after 4011 by -2); every pc outside those ranges and every JUMPDEST pc that 1954e3f4 has is unchanged, and N1 adds four JUMPDEST pads at 2611..2614. The Submission tree differs from 1954e3f4 in 70 files: bytecode.hex, README.md, dependencies.json, the byte and artifact files (Bytes, TnM128CandidateBytes, TnM128CandidateArtifact), ShiftJumpTargets, ShiftPCs and the proof files of N1 and P1. Solution.lean is unchanged."
+    "rationale": "Our own earlier submission (stack-v8): a87239b0 plus our B4, C2 and e3skip cuts. It was rejected on score only (465,282 official, an ordinary draw for its 464,722 mean). Contained in this image through 5788127e.",
+    "evidence": "All of it is in 5788127e and so in this image; the seven new cuts and the 5788127e cuts N1 and P1 are the only differences. Its Solution.lean is unchanged here."
   },
   {
     "submissionId": "a87239b0-9b59-4fc7-9c57-045626934916",
-    "rationale": "Our own earlier submission (stack-v6): bdd36736 plus our precopied 256-bit window route (precopy256), with its proofs. It was rejected on score only (466,077 official, an ordinary draw for its 466,144 mean). This image contains all of it and adds five more cuts of ours (B4, C2, e3skip, N1, P1) with their proof updates.",
-    "evidence": "bytecode.hex equals a87239b0's 5,544 bytes outside [0, 132), [864, 878), [2455, 2472), [2499, 2512), [2583, 2615), [3357, 3383), [3403, 3442), [3473, 3474), [3822, 3830), [3978, 3994), [4011, 4027), [4078, 4088), [4128, 4129), [4200, 4201), [4209, 4258), [4580, 4585), [5060, 5061), [5286, 5290), [5420, 5428) and [5461, 5465): 348 bytes differ, all inside them. Length is unchanged and the instruction count goes from 4,361 to 4,359. The Submission tree differs from a87239b0 in 102 files: bytecode.hex, README.md, dependencies.json, the byte and artifact files (Bytes, TnM128CandidateBytes, TnM128CandidateArtifact), ShiftJumpTargets, ShiftPCs and the proof files of the five new cuts. Solution.lean is unchanged."
+    "rationale": "Our own earlier submission (stack-v6): bdd36736 plus our precopied 256-bit window route (precopy256), with its proofs. Contained in this image through 1954e3f4 and 5788127e.",
+    "evidence": "Reached through 5788127e. This image differs from 5788127e only by the seven cuts in the note, so everything from this submission that 5788127e kept is kept here."
   },
   {
     "submissionId": "bdd36736-2faa-4674-b1da-456c272a6965",
-    "rationale": "Our own earlier submission (stack-v5), accepted at 464,988 (the current record): the d0a1f9e9 + 984faab1 merge plus our eight cuts (csub select tail, route padding, rsa-setup cuts 1 and 3, sqglue attempts 1 and 2, layout-v1, csub2) with their proof updates. This image contains all of it, through a87239b0 and 1954e3f4, and adds six more cuts of ours (precopy256, B4, C2, e3skip, N1, P1).",
-    "evidence": "In the 5,483 bytes both images share, 1,460 bytes differ from bdd36736, all inside [0, 132), [864, 2392), [2455, 2472), [2499, 2512), [2583, 2615), [3357, 3383), [3403, 3442), [3473, 3474), [3822, 3830), [3978, 3994), [4011, 4027), [4078, 4088), [4128, 4129), [4200, 4201), [4209, 4258), [4580, 4585), [5060, 5061), [5286, 5290), [5420, 5428) and [5461, 5465); 61 more bytes are appended at [5483, 5544) (the end of the precopied route). Instruction indices from pc 2397 shift by -80 and P1 shifts later ones by a further -1 and -2 (4,392 to 4,359 instructions). The Submission tree differs from bdd36736 in 115 files: bytecode.hex, README.md, dependencies.json, the byte and artifact files, the route proofs (new WindowPrecopy and WindowPrecopyRoute) and the proof files whose instruction-index facts shift or that the new cuts edit; Solution.lean is unchanged."
+    "rationale": "Our own earlier submission (stack-v5), accepted at 464,988: the d0a1f9e9 + 984faab1 merge plus eight cuts of ours (csub select tail, route padding, rsa-setup cuts 1 and 3, sqglue attempts 1 and 2, layout-v1, csub2). Contained in this image through a87239b0, 1954e3f4 and 5788127e.",
+    "evidence": "Reached through 5788127e. This image differs from 5788127e only by the seven cuts in the note, so everything from this submission that 5788127e kept is kept here."
   },
   {
     "submissionId": "d0a1f9e9-cea0-4a83-938b-a828b22ff8ed",
     "rationale": "Merged in, through bdd36736: the EarlyWord guard and the Fermat entry/return stack diet (bytes [4, 135) and [864, 872) in bdd36736, -405 gas on every seed) with its proof updates. Our C2 cut rewrites that dispatch prologue on top of it.",
-    "evidence": "This submission's changes lie in bytes [4, 135) and [864, 872). In this image C2 rewrites [0, 132) and [864, 878), so those bytes are no longer byte-identical to it; the new prologue keeps its Fermat check. The EarlyWord*, Fermat*, WindowTwentyOneEntry, WindowTwentyOneGasRoute and WindowTwentyOnePositive proof files are its versions with C2's edits (value/branch split, type ascriptions, the pc-112 adapter removed) and are unchanged by N1 and P1; its ShiftJumpTargets lists are the base of ours."
+    "evidence": "This submission's changes lie in bytes [4, 135) and [864, 872). In 5788127e our C2 cut rewrote [0, 132) and [864, 878), so those bytes are no longer identical to it; the new prologue keeps its Fermat check. The seven new cuts do not touch that prologue."
   },
   {
     "submissionId": "984faab1-c97e-4747-80d1-2ea9f6ea3a0e",
     "rationale": "Merged in, through bdd36736: the PC- and instruction-count-neutral setup block of the 256-bit window route (bytes [973, 994) in bdd36736, -128 gas on every seed) with its proof updates. Our precopy256 cut later replaced the route bytes with a precopied-pool route.",
-    "evidence": "In bdd36736 bytecode.hex equals this submission's bytes in [973, 992). In this image the route [866, 2397) is the precopy256 route, which supersedes the setup block, so those bytes differ. WindowTwentyOneInit and WindowTwentyOneLoop are unchanged from bdd36736, a87239b0 and 1954e3f4 (its versions; the padding cut changed only their entry and finish PCs). WindowTwentyOneCore, WindowTwentyOneGasCore and ArtifactWindowPaths were rebound to the new route slices in a87239b0; in this image ArtifactWindowPaths only shifts the tail block index from 4312 to 4310."
+    "evidence": "Its setup block bytes were superseded in 5788127e by our precopy256 route. None of the seven new cuts touches that setup block; t256 only moves the route's last windows inline at pc 2388."
   },
   {
     "submissionId": "af797111-01d0-42b9-8aa7-b3128509e177",
     "rationale": "Base: the promoted 5,483-byte record image (467,495) and its complete Lean proof tree, on which both merged submissions and all of our own cuts are built.",
-    "evidence": "Every byte outside the merged and changed ranges listed in the note, and every proof module the note does not list as changed, is this submission's, unchanged."
+    "evidence": "Common base of the whole chain: the promoted 5,483-byte image and its Lean proof tree. Every proof module not listed in the note is this chain's, unchanged."
   },
   {
     "submissionId": "adacb8da-4a6b-4b59-b3f3-83ba833b5c4e",
-    "rationale": "Our own earlier submission (stack-v1): the merge of d0a1f9e9 and 984faab1 plus our csub subtraction select tail with its proof updates. This image contains all of it and adds thirteen more cuts of ours.",
-    "evidence": "bytecode.hex equals adacb8da's bytes outside our later cut regions [0, 132), [864, 2392), [2455, 2472), [2499, 2512), [2583, 2615), [2883, 2896), [3357, 3383), [3395, 3470), [3473, 3474), [3822, 3830), [3836, 3887), [3978, 3994), [4011, 4027), [4078, 4088), [4128, 4129), [4185, 4518), [4580, 4585), [5058, 5062), [5251, 5306), [5420, 5428) and [5461, 5465): 1,772 bytes differ, all inside them, and 61 bytes are appended at [5483, 5544). The csub select tail is kept; the csub2 cut moves its first 14 bytes from 4504 to 4497 and pads 4511..4517 with dead PUSH0. The Submission tree differs from adacb8da in the byte and artifact files, bytecode.hex, README.md and the proof files the note lists for the later cuts; TnM128Again.lean is deleted."
+    "rationale": "Our own earlier submission (stack-v1): the merge of d0a1f9e9 and 984faab1 plus our csub subtraction select tail with its proof updates. Contained in this image through the later stacks.",
+    "evidence": "Reached through 5788127e. This image differs from 5788127e only by the seven cuts in the note, so everything from this submission that 5788127e kept is kept here."
   },
   {
     "submissionId": "91bf857a-8b15-401d-9c2b-8b26e052657f",
-    "rationale": "Our own earlier submission (stack-v3): adacb8da plus our rsa-setup cut 1, route padding move and width-specific CSUB return, with their proof updates. This image contains all of it and adds ten more cuts of ours (rsa-setup cut 3, sqglue attempt 2, layout-v1, csub2, precopy256, B4, C2, e3skip, N1, P1).",
-    "evidence": "bytecode.hex equals 91bf857a's bytes outside [0, 132), [864, 2392), [2455, 2472), [2499, 2512), [2583, 2615), [2883, 2896), [3357, 3383), [3395, 3470), [3473, 3474), [3822, 3830), [3836, 3887), [3978, 3994), [4011, 4027), [4078, 4088), [4128, 4129), [4195, 4196), [4198, 4258), [4335, 4518), [4580, 4585), [5058, 5062), [5251, 5306), [5420, 5428) and [5461, 5465): 1,759 bytes differ, all inside them, and 61 bytes are appended at [5483, 5544). The Submission tree differs from 91bf857a in bytecode.hex, README.md, the byte and artifact files and the proof files the note lists for those later cuts; TnM128Again.lean is deleted."
+    "rationale": "Our own earlier submission (stack-v3): adacb8da plus our rsa-setup cut 1, route padding move and width-specific CSUB return, with their proof updates. Contained in this image through the later stacks.",
+    "evidence": "Reached through 5788127e. This image differs from 5788127e only by the seven cuts in the note, so everything from this submission that 5788127e kept is kept here."
   }
 ]

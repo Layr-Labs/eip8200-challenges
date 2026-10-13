@@ -55,7 +55,7 @@ def rideHead (d : Fin 16) : List Instr :=
 mirroring): fused `rideHead d` followed by `macFusedPostProgramW3 t t` (28 instructions,
 33 bytes — no `MLOAD`, no `SWAP2`, no `JUMPDEST`). -/
 def rideProgram (d : Fin 16) (t : UInt256) : List Instr :=
-  rideHead d ++ CiosCached.macFusedPostProgramW3 t t
+  rideHead d ++ CiosCached.macFusedPostProgram t t
 
 /-- The riding form of block 0: the incoming carry is the literal zero, so the fused
 post-schedule spends `PUSH0` where `rideProgram` spends the `DUP4` that reproduces the
@@ -78,7 +78,7 @@ def rideTopHead (d : Fin 16) : List Instr :=
     [.op .POP, .op (.Dup { idx := d }), .op (.Dup ⟨2, by decide⟩)] ++ CiosCached.topProductProgram
 
 def rideTopStore (ts : UInt256) : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .push 16 ts, .op .MSTORE]
+  [.op (.Dup ⟨1, by decide⟩), .push 2 ts, .op .MSTORE]
 
 def rideTopCarry : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT,

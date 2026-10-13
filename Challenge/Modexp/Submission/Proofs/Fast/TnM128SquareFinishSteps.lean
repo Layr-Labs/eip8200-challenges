@@ -16,9 +16,9 @@ open TnM128SquareRowSteps TnM128SquareTailSteps TnM128ReductionSteps
 
 def exitState (s : State) (mem : ByteArray) (tn : UInt256) (_n : Nat)
     (aprev tl inv m0 m96 m64 m32 dst ret : UInt256) (rest : List UInt256) : State :=
-  framed {s with memory := mem} (UInt256.ofNat 4198)
-    (TnCacheFrameOps.frame (UInt256.ofNat 2336) (UInt256.ofNat 4258) (UInt256.ofNat 2336)
-      (UInt256.ofNat 3858) m32 (MachineState.readWord mem 128) m64
+  framed {s with memory := mem} (UInt256.ofNat 4222)
+    (TnCacheFrameOps.frame (UInt256.ofNat 2336) (UInt256.ofNat 4259) (UInt256.ofNat 2336)
+      (UInt256.ofNat 3886) m32 (MachineState.readWord mem 128) m64
       (m0 :: tl :: m96 :: inv :: tn :: aprev :: dst :: ret :: rest))
 
 noncomputable def finish_steps (s : State)
@@ -31,24 +31,24 @@ noncomputable def finish_steps (s : State)
   let tail := m0 :: tl :: m96 :: inv :: z.tn :: aprev :: dst :: ret :: rest
   let st : State := {s with memory := z.memory}
   let aft : State := {s with memory := lift z.memory z.tn}
-  let stack := TnCacheFrameOps.frame (pointer 2368 n n) (UInt256.ofNat 4258) (UInt256.ofNat 2336)
+  let stack := TnCacheFrameOps.frame (pointer 2368 n n) (UInt256.ofNat 4259) (UInt256.ofNat 2336)
     (UInt256.ofNat (sqEnt n n)) m32 (MachineState.readWord z.memory 128) m64 tail
   have htail : tail.length ≤ 1006 := by simp only [tail, List.length_cons]; omega
-  have hj : Decode.isValidJumpDest aft.executionEnv.code 4198 = true := by
+  have hj : Decode.isValidJumpDest aft.executionEnv.code 4222 = true := by
     rw [show aft.executionEnv.code = TnM128CandidateArtifact.submissionArtifact.code from env.code]
-    exact TnM128CandidateArtifact.isValidJumpDest_index 3257 (by rfl)
-  have hf := TnCacheFrameOps.run_flush13 4128 st (pointer 2368 n n) (UInt256.ofNat 4258)
+    exact TnM128CandidateArtifact.isValidJumpDest_index 3302 (by rfl)
+  have hf := TnCacheFrameOps.run_flush13 4152 st (pointer 2368 n n) (UInt256.ofNat 4259)
     (UInt256.ofNat 2336) (UInt256.ofNat (sqEnt n n)) m32 (MachineState.readWord z.memory 128) m64
     m0 tl m96 inv z.tn (aprev :: dst :: ret :: rest) (by simp only [List.length_cons]; omega) hact
   have g0 := TnM128CandidateBlocks.flush.steps
-    (s := framed st (UInt256.ofNat 4128) stack) (env.transfer rfl rfl) rfl hf
-  have hg := TnCacheExitTrace.run_square_guard aft 4133 (pointer 2368 n n)
+    (s := framed st (UInt256.ofNat 4152) stack) (env.transfer rfl rfl) rfl hf
+  have hg := TnCacheExitTrace.run_square_guard aft 4157 (pointer 2368 n n)
     (UInt256.ofNat 2336) (UInt256.ofNat (sqEnt n n)) m32 (MachineState.readWord z.memory 128) m64
     tail htail hj
   have g1 := TnM128L1Blocks.guard.steps
-    (s := framed aft (UInt256.ofNat 4133) stack) (env.transfer rfl rfl) rfl hg
+    (s := framed aft (UInt256.ofNat 4157) stack) (env.transfer rfl rfl) rfl hg
   have hp := pointer_end 2368 n (by decide) (by omega)
-  have he : sqEnt n n = 3858 := by unfold sqEnt; omega
+  have he : sqEnt n n = 3886 := by unfold sqEnt; omega
   simpa only [rowState, exitState, if_neg (Nat.lt_irrefl n), st, aft, stack, tail,
     hp, he, Nat.reduceSub,
     read_lift_outside z.memory z.tn 128 (Or.inl (by decide))] using g0.trans g1

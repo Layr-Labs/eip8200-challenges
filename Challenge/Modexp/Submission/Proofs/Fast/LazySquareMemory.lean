@@ -91,7 +91,7 @@ theorem carry_result (mem : ByteArray) (p a mm c pdst : Nat)
   exact heq
 
 theorem r4_result (mem : ByteArray) (a mm c pdst : Nat)
-    (ha : Model.FastRepresents mem 2368 4 a) (hm : Model.FastRepresents mem 0 4 mm)
+    (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
     (hodd : mm % 2 = 1)
     (hminv : ((MachineState.readWord mem 96).toNat *
       (MachineState.readWord mem 2720).toNat + 1) % 2^256 = 0) :
@@ -121,7 +121,7 @@ theorem carry_tn_le_one (mem : ByteArray) (p a mm : Nat) (hn : p+2 ≤ 8)
   exact LazyBounds.current_sqRows_lazy_tn_le_one mem p a mm hn ha hm hmpos hminv hz
 
 theorem r4_tn_le_one (mem : ByteArray) (a mm : Nat)
-    (ha : Model.FastRepresents mem 2368 4 a) (hm : Model.FastRepresents mem 0 4 mm)
+    (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
     (hmpos : 0 < mm)
     (hminv : ((MachineState.readWord mem 96).toNat *
       (MachineState.readWord mem 2720).toNat + 1) % 2^256 = 0) :
@@ -138,5 +138,70 @@ theorem r4_tn_le_one (mem : ByteArray) (a mm : Nat)
   · rw [hv]
     exact hb.1.trans hb.2
   · rfl
+
+/-- **One n=4 round** (`rows4r`, n4a + n4t + rare4): the operand window at 2112 holds the lazy
+Montgomery square `roundValue (rows4 mem)`, and the overflow word at 2080 is zero. -/
+theorem r4r_result (mem : ByteArray) (a mm : Nat)
+    (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
+    (hodd : mm % 2 = 1)
+    (hminv : ((MachineState.readWord mem 96).toNat *
+      (MachineState.readWord mem 2720).toNat + 1) % 2^256 = 0) :
+    Model.FastRepresents (R4Bridge.rows4r mem) 2112 4 (roundValue (R4Bridge.rows4 mem) 4 mm) ∧
+      roundValue (R4Bridge.rows4 mem) 4 mm < Limbs.radix^4 ∧
+      roundValue (R4Bridge.rows4 mem) 4 mm % mm = Model.montMul mm (Limbs.radix^4) a a ∧
+      MachineState.readWord (R4Bridge.rows4r mem) 2080 = ⟨0⟩ := by
+  have hmpos : 0 < mm := by omega
+  obtain ⟨Q, hQ, heq⟩ := R4Bridge.rows4_eq mem a mm ha hm hminv
+  have hR : 0 < Limbs.radix^4 := pow_pos Limbs.radix_pos _
+  have hv : tValue (R4Bridge.rows4 mem) 4 = LazyBounds.redc (Limbs.radix^4) mm a a Q := by
+    unfold LazyBounds.redc
+    rw [← heq, Nat.mul_div_assoc _ (dvd_refl _), Nat.div_self hR, Nat.mul_one]
+  have hb := LazyBounds.redc_radix_bounds hmpos hm.1 ha.1 ha.1 hQ
+  have hbound : tValue (R4Bridge.rows4 mem) 4 < Limbs.radix^4 + mm := by rw [hv]; exact hb.1
+  have hR4 : Limbs.radix^4 = (2^256)^4 := by rw [R4Bridge.radix_eq]
+  have hM : R4Value.mod4 (MachineState.readWord mem 96) (MachineState.readWord mem 64)
+      (MachineState.readWord mem 32) (MachineState.readWord mem 0) = mm := by
+    show (MachineState.readWord mem 96).toNat + (MachineState.readWord mem 64).toNat * 2 ^ 256 +
+      (MachineState.readWord mem 32).toNat * (2 ^ 256) ^ 2 +
+      (MachineState.readWord mem 0).toNat * (2 ^ 256) ^ 3 = mm
+    rw [← limbSum_fastRepresents hm, R4Bridge.limbSum_four]
+  have hT : tValue (R4Bridge.rows4 mem) 4 = R4Value.val5 (R4Bridge.r4Final mem maxWord
+      (MachineState.readWord mem 96) (MachineState.readWord mem 64)
+      (MachineState.readWord mem 32) (MachineState.readWord mem 2720)) :=
+    R4Bridge.tValue_r4Mem mem _
+  obtain ⟨hval, ht4⟩ := R4Value.red4_val (MachineState.readWord mem 96)
+    (MachineState.readWord mem 64) (MachineState.readWord mem 32) (MachineState.readWord mem 0)
+    (R4Bridge.r4Final mem maxWord (MachineState.readWord mem 96) (MachineState.readWord mem 64)
+      (MachineState.readWord mem 32) (MachineState.readWord mem 2720))
+    (by rw [hM, ← hR4]; exact hm.1) (by rw [hM, ← hR4, ← hT]; exact hbound)
+  have h2080 : MachineState.readWord (R4Bridge.rows4r mem) 2080 = ⟨0⟩ := by
+    unfold R4Bridge.rows4r
+    rw [R4Bridge.readWord_r4Mem_t4]
+    exact ht4
+  have hTY : tValue (R4Bridge.rows4r mem) 4 = R4Value.val5 (R4Math.red4
+      (MachineState.readWord mem 96) (MachineState.readWord mem 64)
+      (MachineState.readWord mem 32) (MachineState.readWord mem 0)
+      (R4Bridge.r4Final mem maxWord (MachineState.readWord mem 96) (MachineState.readWord mem 64)
+        (MachineState.readWord mem 32) (MachineState.readWord mem 2720))) :=
+    R4Bridge.tValue_r4Mem mem _
+  have hlow : Csub.lowValue (R4Bridge.rows4r mem) 2112 4 4 = R4Value.val5 (R4Math.red4
+      (MachineState.readWord mem 96) (MachineState.readWord mem 64)
+      (MachineState.readWord mem 32) (MachineState.readWord mem 0)
+      (R4Bridge.r4Final mem maxWord (MachineState.readWord mem 96) (MachineState.readWord mem 64)
+        (MachineState.readWord mem 32) (MachineState.readWord mem 2720))) := by
+    rw [← hTY]
+    unfold tValue
+    rw [h2080, R4Math.toNat_zero, Nat.zero_mul, Nat.zero_add]
+  have hrv : roundValue (R4Bridge.rows4 mem) 4 mm = R4Value.val5 (R4Math.red4
+      (MachineState.readWord mem 96) (MachineState.readWord mem 64)
+      (MachineState.readWord mem 32) (MachineState.readWord mem 0)
+      (R4Bridge.r4Final mem maxWord (MachineState.readWord mem 96) (MachineState.readWord mem 64)
+        (MachineState.readWord mem 32) (MachineState.readWord mem 2720))) := by
+    rw [roundValue, LazyCsub.value, hT, hval, hR4, hM]
+  refine ⟨?_, LazyCsub.value_lt_radix hm.1 hbound, ?_, h2080⟩
+  · rw [hrv, ← hlow]
+    exact Csub.fastRepresents_lowValue _ 2112 4
+  · rw [roundValue, LazyCsub.value_mod hm.1]
+    exact (Model.montMul_eq_mod_of_mul_eq hmpos (Model.coprime_radix_pow_of_odd hodd 4) heq).symm
 
 end Challenge.Modexp.Submission.Proofs.Fast.LazySquareMemory

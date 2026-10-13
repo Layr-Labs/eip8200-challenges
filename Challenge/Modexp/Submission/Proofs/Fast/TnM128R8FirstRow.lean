@@ -185,15 +185,15 @@ theorem run_cellsV1 (s : State) (pc bi w0 w1 w2 w3 w4 : UInt256)
     runInstructions cellsProgramV1
       { s with pc := pc, stack := q.carry :: bi :: w0 :: w1 :: w2 :: w3 :: w4 :: maxWord :: rest,
                memory := q.memory } =
-    some { s with pc := advancePC 194 pc,
+    some { s with pc := advancePC 189 pc,
                   stack := (zeroRun q bi 7).carry :: bi :: w0 :: w1 :: w2 :: w3 :: w4 :: maxWord :: rest,
                   memory := (zeroRun q bi 7).memory } := by
   have h0 := run_cellsM128 s pc bi w0 w1 w2 w3 w4 q rest hcap hact 5 (by decide)
-  have h1 := run_cellNarrowStep s (advancePC (28*5) pc) bi w0 w1 w2 w3 w4 q rest hcap hact 5 (by decide)
-  have h2 := run_cellNarrowStep s (advancePC 27 (advancePC (28*5) pc)) bi w0 w1 w2 w3 w4 q rest hcap hact
+  have h1 := run_cellNarrowStep s (advancePC (27*5) pc) bi w0 w1 w2 w3 w4 q rest hcap hact 5 (by decide)
+  have h2 := run_cellNarrowStep s (advancePC 27 (advancePC (27*5) pc)) bi w0 w1 w2 w3 w4 q rest hcap hact
     6 (by decide)
   have h := runInstructions_append_some _ _ _ _ _ (runInstructions_append_some _ _ _ _ _ h0 h1) h2
-  have hpc : advancePC 27 (advancePC 27 (advancePC (28*5) pc)) = advancePC 194 pc := by
+  have hpc : advancePC 27 (advancePC 27 (advancePC (27*5) pc)) = advancePC 189 pc := by
     rw [← advancePC_add, ← advancePC_add]
   rw [hpc] at h
   exact h
@@ -250,21 +250,21 @@ theorem run_program (s : State)
   let bi := x + x
   have h0 := run_diagonalM128 s pc hd ent next m32 m128 m64 m0 (UInt256.ofNat 2336)
     m96 inv (UInt256.ofNat 0) aprev rest hcap hact
-  have h1 := run_cellsV1 s (advancePC 30 pc) bi (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next m32
+  have h1 := run_cellsV1 s (advancePC 29 pc) bi (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next m32
     (diagonal s.memory)
     (m128 :: m64 :: m0 :: UInt256.ofNat 2336 :: m96 :: inv :: UInt256.ofNat 0 :: x :: rest)
     (by simp only [List.length_cons]; omega) hact
-  have hpc1 : advancePC 194 (advancePC 30 pc) = advancePC 224 pc := by
+  have hpc1 : advancePC 189 (advancePC 29 pc) = advancePC 218 pc := by
     rw [← advancePC_add]
   rw [hpc1] at h1
-  have h2 := run_finishStoreNarrow {s with memory := (firstProduct s.memory).memory} (advancePC 224 pc)
+  have h2 := run_finishStoreNarrow {s with memory := (firstProduct s.memory).memory} (advancePC 218 pc)
     (firstProduct s.memory).carry bi
     (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next m32 maxWord m128 m64 m0
     (UInt256.ofNat 2336) m96 inv (UInt256.ofNat 0) x rest hcap
-  have hpc2 : advancePC 3 (advancePC 224 pc) = advancePC 227 pc := by
+  have hpc2 : advancePC 3 (advancePC 218 pc) = advancePC 221 pc := by
     rw [← advancePC_add]
   rw [hpc2] at h2
-  have h3 := run_exit {s with memory := (firstProduct s.memory).memory} (advancePC 227 pc)
+  have h3 := run_exit {s with memory := (firstProduct s.memory).memory} (advancePC 221 pc)
     (UInt256.ofNat 0) (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next
     m32 maxWord m128 inv m0 m96 m64 (firstProduct s.memory).carry x destination rest hcap hact hjump
   have h01 := runInstructions_append_some _ _ _ _ _ h0 h1
@@ -273,10 +273,10 @@ theorem run_program (s : State)
 
 
 /-- Binding to the exact preferred 5314-byte research runtime. -/
-def block : Block TnM128CandidateArtifact.submissionArtifact .Osaka 5062
-    (program (UInt256.ofNat 3599) (UInt256.ofNat 3843)) :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3960 206 5062
-    (program (UInt256.ofNat 3599) (UInt256.ofNat 3843))
+def block : Block TnM128CandidateArtifact.submissionArtifact .Osaka 5125
+    (program (UInt256.ofNat 3627) (UInt256.ofNat 3871)) :=
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 4050 206 5125
+    (program (UInt256.ofNat 3627) (UInt256.ofNat 3871))
     (by decide) (by rfl) (by rfl) (by decide)
 
 #print axioms run_quotientA13

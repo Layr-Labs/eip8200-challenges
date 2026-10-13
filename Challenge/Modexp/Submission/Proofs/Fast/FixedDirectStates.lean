@@ -18,7 +18,7 @@ abbrev outer := Exp.outer
 
 def otherWidth (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2450
+  { s with pc := UInt256.ofNat 2501
            stack := outer n bsize esize msize
            memory := mem }
 
@@ -26,31 +26,31 @@ def otherWidth (s : State) (mem : ByteArray)
 the shift cleanup tail jumps to it directly after the E3 conversion. -/
 def e3go (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2471
+  { s with pc := UInt256.ofNat 2520
            stack := outer n bsize esize msize
            memory := mem }
 
 def check65537 (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2478
+  { s with pc := UInt256.ofNat 2527
            stack := outer n bsize esize msize
            memory := mem }
 
 def special (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 2498
+  { s with pc := UInt256.ofNat 2547
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
 def square (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 2498
+  { s with pc := UInt256.ofNat 2547
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
 def squareReturn (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 2521
+  { s with pc := UInt256.ofNat 2568
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
@@ -60,7 +60,7 @@ then still the one the caller pushed), and for the unaccelerated widths the
 caller's own loop falls through to it with the count decremented to `0`. -/
 def product (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 2530
+  { s with pc := UInt256.ofNat 2577
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
@@ -86,7 +86,7 @@ def bigCState (s : State) (mem : ByteArray)
 all three misses divert to `bailState`. -/
 def fallback (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2545
+  { s with pc := UInt256.ofNat 2592
            stack := outer n bsize esize msize
            memory := mem }
 

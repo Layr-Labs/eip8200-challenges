@@ -48,7 +48,7 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
       (FixedExponentRoute.entryState s (ordinaryFinal mem input n mm) n bsize esize msize))
     (e3Trace : Eligible input n bsize esize → Challenge.EvmProof.GasSteps
       (Shift.dispState s mem n bsize esize msize)
-      (Shift.frameState s (e3Final mem input n mm (n / 4)) 2471 n bsize esize msize)) :
+      (Shift.frameState s (e3Final mem input n mm (n / 4)) 2520 n bsize esize msize)) :
     FixedExponentRoute.Handled input (Shift.dispState s mem n bsize esize msize) := by
   have hbEq : bsize = 32 * n := hmatch.1
   by_cases hE3 : Eligible input n bsize esize

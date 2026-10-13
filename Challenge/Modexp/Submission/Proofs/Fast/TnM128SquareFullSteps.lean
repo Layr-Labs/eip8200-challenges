@@ -23,7 +23,7 @@ noncomputable def square_steps (s : State)
     (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
     (hc : Cached mem 2368 8 tl inv m0 m96 m64 m32)
     (hscr : R8RowZeroExact.ScratchZero mem)
-    (ent : UInt256 := UInt256.ofNat 3562) :
+    (ent : UInt256 := UInt256.ofNat 3590) :
     GasSteps (TnM128SquareFirstSteps.input s mem aprev tl inv m0 m96 m64 m32 dst ret rest ent)
       (exitState s (sqRowsCarry (mpZeroed s mem 8) 8 8) (finalCache mem).tn 8
         (sqX mem 8 7) tl inv m0 m96 m64 m32 dst ret rest) := by

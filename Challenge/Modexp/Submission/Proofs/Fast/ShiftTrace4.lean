@@ -320,9 +320,9 @@ def gasSteps_csubStep (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize
     Challenge.EvmProof.GasSteps (csubCallState z s mem n bsize esize msize k)
       (afterCsubState z s mem n bsize esize msize k) :=
     soundEnv blk3253 e (run_csubCall z s mem n bsize esize msize k hk hk32 e.code e.run)
-def canonicalCopyBlock : WindowTwentyOneBinding.Block Artifact.submissionArtifact .Osaka 2574
+def canonicalCopyBlock : WindowTwentyOneBinding.Block Artifact.submissionArtifact .Osaka 2621
     ShiftProducerSplitRun.copyProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2011 5 2574 ShiftProducerSplitRun.copyProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2052 5 2621 ShiftProducerSplitRun.copyProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def gasSteps_hitCsub (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)

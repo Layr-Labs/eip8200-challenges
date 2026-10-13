@@ -270,4 +270,137 @@ theorem final_eq (a0 a1 a2 a3 n0 n1 n2 n3 np : UInt256)
             n3.toNat * (2 ^ 256) ^ 3) :=
   final_eq_aux a0 a1 a2 a3 n0 n1 n2 n3 np _ _ _ _ _ _ rfl rfl rfl rfl rfl rfl hinv
 
+/-! ## `rare4` -/
+
+private theorem or_bits (x y : Nat) (hx : x ≤ 1) (hy : y ≤ 1) :
+    x ||| y = if x = 0 then y else 1 := by
+  interval_cases x <;> interval_cases y <;> decide
+
+/-- One `rare4` limb: `e = n + b`, `d = p - e`, outgoing borrow `(b > e) | (p < e)`. -/
+theorem sub4Limb_spec (p n b : UInt256) (hb : b.toNat ≤ 1) :
+    (p - (n + b)).toNat + n.toNat + b.toNat =
+      p.toNat + 2 ^ 256 * (UInt256.lor (UInt256.gt b (n + b)) (UInt256.lt p (n + b))).toNat ∧
+    (UInt256.lor (UInt256.gt b (n + b)) (UInt256.lt p (n + b))).toNat ≤ 1 := by
+  have hp : p.toNat < 2 ^ 256 := p.val.isLt
+  have hn : n.toNat < 2 ^ 256 := n.val.isLt
+  have h1 : (UInt256.gt b (n + b)).toNat ≤ 1 := by
+    rw [gt_eq_lt, word_toNat_lt]; split <;> omega
+  have h2 : (UInt256.lt p (n + b)).toNat ≤ 1 := by
+    rw [word_toNat_lt]; split <;> omega
+  rw [word_toNat_lor, or_bits _ _ h1 h2]
+  by_cases hnb : n.toNat + b.toNat < 2 ^ 256
+  · have he : (n + b).toNat = n.toNat + b.toNat := by
+      rw [word_toNat_add, Nat.mod_eq_of_lt hnb]
+    have hg : (UInt256.gt b (n + b)).toNat = 0 := by
+      rw [gt_eq_lt, word_toNat_lt, he, if_neg (by omega)]
+    rw [hg, if_pos rfl, word_toNat_lt, word_toNat_sub_cond, he]
+    constructor <;> split_ifs <;> omega
+  · have hb1 : b.toNat = 1 := by omega
+    have he : (n + b).toNat = 0 := by
+      rw [word_toNat_add, hb1, show n.toNat + 1 = 2 ^ 256 by omega, Nat.mod_self]
+    have hg : (UInt256.gt b (n + b)).toNat = 1 := by
+      rw [gt_eq_lt, word_toNat_lt, he, hb1, if_pos (by omega)]
+    rw [hg, if_neg (by omega), word_toNat_sub_cond, he, hb1]
+    constructor <;> (try split_ifs) <;> omega
+
+/-- The low four words of a window. -/
+def low4 (W : W5) : Nat :=
+  W.t0.toNat + W.t1.toNat * 2 ^ 256 + W.t2.toNat * (2 ^ 256) ^ 2 + W.t3.toNat * (2 ^ 256) ^ 3
+
+/-- The modulus from its four limbs, least significant first. -/
+def mod4 (n0 n1 n2 n3 : UInt256) : Nat :=
+  n0.toNat + n1.toNat * 2 ^ 256 + n2.toNat * (2 ^ 256) ^ 2 + n3.toNat * (2 ^ 256) ^ 3
+
+theorem val5_eq_low4 (W : W5) : val5 W = low4 W + W.t4.toNat * (2 ^ 256) ^ 4 := rfl
+
+theorem low4_lt (W : W5) : low4 W < (2 ^ 256) ^ 4 := by
+  have h0 : W.t0.toNat + 1 ≤ 2 ^ 256 := W.t0.val.isLt
+  have h1 : W.t1.toNat + 1 ≤ 2 ^ 256 := W.t1.val.isLt
+  have h2 : W.t2.toNat + 1 ≤ 2 ^ 256 := W.t2.val.isLt
+  have h3 : W.t3.toNat + 1 ≤ 2 ^ 256 := W.t3.val.isLt
+  unfold low4
+  generalize (2 : Nat) ^ 256 = R at *
+  nlinarith [Nat.mul_le_mul_right R h1, Nat.mul_le_mul_right (R * R) h2,
+    Nat.mul_le_mul_right (R * R * R) h3]
+
+/-- **`rare4` subtracts the modulus**: below the modulus, the borrow chain wraps once, so the
+four words become `t + R⁴ - N`. -/
+theorem sub4_low (n0 n1 n2 n3 : UInt256) (P : W5) (hlt : low4 P < mod4 n0 n1 n2 n3) :
+    low4 (sub4 n0 n1 n2 n3 P) + mod4 n0 n1 n2 n3 = low4 P + (2 ^ 256) ^ 4 := by
+  unfold low4 at hlt ⊢
+  unfold sub4
+  dsimp only
+  have l0 : (P.t0 - n0).toNat + n0.toNat =
+      P.t0.toNat + 2 ^ 256 * (UInt256.lt P.t0 n0).toNat := by
+    have hp : P.t0.toNat < 2 ^ 256 := P.t0.val.isLt
+    have hn : n0.toNat < 2 ^ 256 := n0.val.isLt
+    rw [word_toNat_sub_cond, word_toNat_lt]
+    split_ifs <;> omega
+  have hb0 : (UInt256.lt P.t0 n0).toNat ≤ 1 := lt_le_one _ _
+  generalize UInt256.lt P.t0 n0 = B0 at l0 hb0 ⊢
+  obtain ⟨l1, hb1⟩ := sub4Limb_spec P.t1 n1 B0 hb0
+  generalize UInt256.lor (UInt256.gt B0 (n1 + B0)) (UInt256.lt P.t1 (n1 + B0)) = B1 at l1 hb1 ⊢
+  obtain ⟨l2, hb2⟩ := sub4Limb_spec P.t2 n2 B1 hb1
+  generalize UInt256.lor (UInt256.gt B1 (n2 + B1)) (UInt256.lt P.t2 (n2 + B1)) = B2 at l2 hb2 ⊢
+  obtain ⟨l3, hb3⟩ := sub4Limb_spec P.t3 n3 B2 hb2
+  generalize UInt256.lor (UInt256.gt B2 (n3 + B2)) (UInt256.lt P.t3 (n3 + B2)) = B3 at l3 hb3
+  generalize (P.t0 - n0).toNat = d0 at l0 ⊢
+  generalize (P.t1 - (n1 + B0)).toNat = d1 at l1 ⊢
+  generalize (P.t2 - (n2 + B1)).toNat = d2 at l2 ⊢
+  generalize (P.t3 - (n3 + B2)).toNat = d3 at l3 ⊢
+  have key : d0 + d1 * 2 ^ 256 + d2 * (2 ^ 256) ^ 2 + d3 * (2 ^ 256) ^ 3 + mod4 n0 n1 n2 n3 =
+      (P.t0.toNat + P.t1.toNat * 2 ^ 256 + P.t2.toNat * (2 ^ 256) ^ 2 +
+        P.t3.toNat * (2 ^ 256) ^ 3) + (2 ^ 256) ^ 4 * B3.toNat := by
+    unfold mod4
+    zify at l0 l1 l2 l3 ⊢
+    linear_combination l0 + 2 ^ 256 * l1 + (2 ^ 256) ^ 2 * l2 + (2 ^ 256) ^ 3 * l3
+  generalize P.t0.toNat + P.t1.toNat * 2 ^ 256 + P.t2.toNat * (2 ^ 256) ^ 2 +
+    P.t3.toNat * (2 ^ 256) ^ 3 = x at key hlt ⊢
+  generalize d0 + d1 * 2 ^ 256 + d2 * (2 ^ 256) ^ 2 + d3 * (2 ^ 256) ^ 3 = D at key ⊢
+  generalize mod4 n0 n1 n2 n3 = N at key hlt ⊢
+  generalize ((2 : Nat) ^ 256) ^ 4 = R4 at key ⊢
+  rcases (show B3.toNat = 0 ∨ B3.toNat = 1 by omega) with h | h <;> rw [h] at key
+  · rw [Nat.mul_zero, Nat.add_zero] at key
+    omega
+  · rw [Nat.mul_one] at key
+    exact key
+
+/-- **The n=4 tail value**: with the window below `R⁴ + N`, the stored words are the lazy
+conditional subtraction of the window (`LazyCsub.value`), and the overflow word is zero. -/
+theorem red4_val (n0 n1 n2 n3 : UInt256) (W : W5)
+    (hN : mod4 n0 n1 n2 n3 < (2 ^ 256) ^ 4)
+    (hW : val5 W < (2 ^ 256) ^ 4 + mod4 n0 n1 n2 n3) :
+    val5 (red4 n0 n1 n2 n3 W) =
+        (if (2 ^ 256) ^ 4 ≤ val5 W then val5 W - mod4 n0 n1 n2 n3 else val5 W) ∧
+      (red4 n0 n1 n2 n3 W).t4 = ⟨0⟩ := by
+  have hlow := low4_lt W
+  have hv : val5 W = low4 W + W.t4.toNat * (2 ^ 256) ^ 4 := val5_eq_low4 W
+  unfold red4
+  by_cases h0 : W.t4 = ⟨0⟩
+  · rw [if_pos h0]
+    have ht : W.t4.toNat = 0 := by rw [h0]; rfl
+    rw [if_neg (by rw [hv, ht, Nat.zero_mul, Nat.add_zero]; omega)]
+    exact ⟨rfl, h0⟩
+  · rw [if_neg h0]
+    have hne : W.t4.toNat ≠ 0 := fun h => h0 (word_ext (by rw [h]; rfl))
+    have hsub := sub4_low n0 n1 n2 n3 W
+    have hz : val5 (sub4 n0 n1 n2 n3 W) = low4 (sub4 n0 n1 n2 n3 W) := by
+      rw [val5_eq_low4, show (sub4 n0 n1 n2 n3 W).t4 = ⟨0⟩ from rfl, toNat_zero, Nat.zero_mul,
+        Nat.add_zero]
+    refine ⟨?_, rfl⟩
+    rw [hz, hv]
+    rw [hv] at hW
+    generalize low4 (sub4 n0 n1 n2 n3 W) = d at hsub ⊢
+    generalize low4 W = x at hsub hW hlow ⊢
+    generalize mod4 n0 n1 n2 n3 = N at hsub hW hN ⊢
+    generalize ((2 : Nat) ^ 256) ^ 4 = R4 at hsub hW hN hlow ⊢
+    have h1 : W.t4.toNat = 1 := by
+      by_contra hc
+      have h2 : 2 * R4 ≤ W.t4.toNat * R4 := Nat.mul_le_mul_right _ (by omega)
+      omega
+    rw [h1, Nat.one_mul] at hW ⊢
+    have hs := hsub (by omega)
+    rw [if_pos (by omega)]
+    omega
+
 end Challenge.Modexp.Submission.Proofs.Fast.R4Value

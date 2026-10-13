@@ -15,69 +15,69 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 cleared flag (`blk2896` instructions 0..9). -/
 def blk2896a :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2019 .JUMPDEST,
-   opAt 2020 (.Dup ⟨1, by decide⟩),
-   opAt 2021 .MLOAD,
-   opAt 2022 .NOT,
-   opAt 2023 .ADD,
-   opAt 2024 (.Dup ⟨1, by decide⟩),
-   pushAt 2025 2 1280,
-   opAt 2026 .ADD,
-   opAt 2027 .MSTORE,
-   pushAt 2028 0 0]
+  [opAt 2060 .JUMPDEST,
+   opAt 2061 (.Dup ⟨1, by decide⟩),
+   opAt 2062 .MLOAD,
+   opAt 2063 .NOT,
+   opAt 2064 .ADD,
+   opAt 2065 (.Dup ⟨1, by decide⟩),
+   pushAt 2066 2 1280,
+   opAt 2067 .ADD,
+   opAt 2068 .MSTORE,
+   pushAt 2069 0 0]
 
 /-- The rotated exit test of the negation loop body: `p - 32` goes under the flag, the
 jump back to the loop head is taken on the old pointer `p`, and `p = 0` falls into the
 `NEG_DONE` padding. -/
 def blk2896b :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2029 (.Dup ⟨1, by decide⟩),
-   pushAt 2030 1 31,
-   opAt 2031 .NOT,
-   opAt 2032 .ADD,
-   opAt 2033 (.Swap ⟨1, by decide⟩),
-   pushAt 2034 2 2589,
-   opAt 2035 .JUMPI]
+  [opAt 2070 (.Dup ⟨1, by decide⟩),
+   pushAt 2071 1 31,
+   opAt 2072 .NOT,
+   opAt 2073 .ADD,
+   opAt 2074 (.Swap ⟨1, by decide⟩),
+   pushAt 2075 2 2636,
+   opAt 2076 .JUMPI]
 
 
 
 /-- The add-round body up to its store (`blk3157` instructions 0..22). -/
 def blk3157a :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2503 .JUMPDEST,
-   opAt 2504 (.Dup ⟨0, by decide⟩),
-   opAt 2505 .MLOAD,
-   pushAt 2506 2 2112,
-   opAt 2507 (.Dup ⟨2, by decide⟩),
-   opAt 2508 .SUB,
-   opAt 2509 .MLOAD,
-   opAt 2510 (.Dup ⟨1, by decide⟩),
-   opAt 2511 .ADD,
-   opAt 2512 (.Swap ⟨0, by decide⟩),
-   opAt 2513 (.Dup ⟨1, by decide⟩),
-   opAt 2514 .LT,
-   opAt 2515 (.Swap ⟨0, by decide⟩),
-   opAt 2516 (.Dup ⟨3, by decide⟩),
-   opAt 2517 .ADD,
-   opAt 2518 (.Swap ⟨2, by decide⟩),
-   opAt 2519 (.Dup ⟨3, by decide⟩),
-   opAt 2520 .LT,
-   opAt 2521 .OR,
-   opAt 2522 (.Swap ⟨1, by decide⟩),
-   opAt 2523 (.Dup ⟨1, by decide⟩),
-   opAt 2524 .MSTORE]
+  [opAt 2544 .JUMPDEST,
+   opAt 2545 (.Dup ⟨0, by decide⟩),
+   opAt 2546 .MLOAD,
+   pushAt 2547 2 2112,
+   opAt 2548 (.Dup ⟨2, by decide⟩),
+   opAt 2549 .SUB,
+   opAt 2550 .MLOAD,
+   opAt 2551 (.Dup ⟨1, by decide⟩),
+   opAt 2552 .ADD,
+   opAt 2553 (.Swap ⟨0, by decide⟩),
+   opAt 2554 (.Dup ⟨1, by decide⟩),
+   opAt 2555 .LT,
+   opAt 2556 (.Swap ⟨0, by decide⟩),
+   opAt 2557 (.Dup ⟨3, by decide⟩),
+   opAt 2558 .ADD,
+   opAt 2559 (.Swap ⟨2, by decide⟩),
+   opAt 2560 (.Dup ⟨3, by decide⟩),
+   opAt 2561 .LT,
+   opAt 2562 .OR,
+   opAt 2563 (.Swap ⟨1, by decide⟩),
+   opAt 2564 (.Dup ⟨1, by decide⟩),
+   opAt 2565 .MSTORE]
 
 /-- The exit test of the add-round body (`blk3157` instructions 23..30). -/
 def blk3157b :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 2525 1 31,
-   opAt 2526 .NOT,
-   opAt 2527 .ADD,
-   pushAt 2528 2 2111,
-   opAt 2529 (.Dup ⟨1, by decide⟩),
-   opAt 2530 .GT,
-   pushAt 2531 2 3220,
-   opAt 2532 .JUMPI]
+  [pushAt 2566 1 31,
+   opAt 2567 .NOT,
+   opAt 2568 .ADD,
+   pushAt 2569 2 2111,
+   opAt 2570 (.Dup ⟨1, by decide⟩),
+   opAt 2571 .GT,
+   pushAt 2572 2 3244,
+   opAt 2573 .JUMPI]
 
 /-- The five padding `JUMPDEST`s on the add-round fall-through (indices 2413 to 2417). -/
 def blk3157c :
@@ -87,41 +87,41 @@ def blk3157c :
 /-- The subtract-round body up to its exit test (`blk3213` instructions 0..22). -/
 def blk3213a :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2557 .JUMPDEST,
-   opAt 2558 (.Dup ⟨0, by decide⟩),
-   opAt 2559 .MLOAD,
-   pushAt 2560 2 2112,
-   opAt 2561 (.Dup ⟨2, by decide⟩),
-   opAt 2562 .SUB,
-   opAt 2563 .MLOAD,
-   opAt 2564 (.Dup ⟨1, by decide⟩),
-   opAt 2565 (.Dup ⟨1, by decide⟩),
-   opAt 2566 .GT,
-   opAt 2567 (.Swap ⟨1, by decide⟩),
-   opAt 2568 .SUB,
-   opAt 2569 (.Dup ⟨3, by decide⟩),
-   opAt 2570 (.Dup ⟨1, by decide⟩),
-   opAt 2571 .LT,
-   opAt 2572 (.Swap ⟨0, by decide⟩),
-   opAt 2573 (.Dup ⟨4, by decide⟩),
-   opAt 2574 (.Swap ⟨0, by decide⟩),
-   opAt 2575 .SUB,
-   opAt 2576 (.Dup ⟨3, by decide⟩),
-   opAt 2577 .MSTORE,
-   opAt 2578 .OR]
+  [opAt 2598 .JUMPDEST,
+   opAt 2599 (.Dup ⟨0, by decide⟩),
+   opAt 2600 .MLOAD,
+   pushAt 2601 2 2112,
+   opAt 2602 (.Dup ⟨2, by decide⟩),
+   opAt 2603 .SUB,
+   opAt 2604 .MLOAD,
+   opAt 2605 (.Dup ⟨1, by decide⟩),
+   opAt 2606 (.Dup ⟨1, by decide⟩),
+   opAt 2607 .GT,
+   opAt 2608 (.Swap ⟨1, by decide⟩),
+   opAt 2609 .SUB,
+   opAt 2610 (.Dup ⟨3, by decide⟩),
+   opAt 2611 (.Dup ⟨1, by decide⟩),
+   opAt 2612 .LT,
+   opAt 2613 (.Swap ⟨0, by decide⟩),
+   opAt 2614 (.Dup ⟨4, by decide⟩),
+   opAt 2615 (.Swap ⟨0, by decide⟩),
+   opAt 2616 .SUB,
+   opAt 2617 (.Dup ⟨3, by decide⟩),
+   opAt 2618 .MSTORE,
+   opAt 2619 .OR]
 
 /-- The exit test of the subtract-round body (`blk3213` instructions 23..31). -/
 def blk3213b :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2579 (.Swap ⟨1, by decide⟩),
-   opAt 2580 .POP,
-   pushAt 2581 1 31,
-   opAt 2582 .NOT,
-   opAt 2583 .ADD,
-   pushAt 2584 2 2111,
-   opAt 2585 (.Dup ⟨1, by decide⟩),
-   opAt 2586 .GT,
-   pushAt 2587 2 3284,
-   opAt 2588 .JUMPI]
+  [opAt 2620 (.Swap ⟨1, by decide⟩),
+   opAt 2621 .POP,
+   pushAt 2622 1 31,
+   opAt 2623 .NOT,
+   opAt 2624 .ADD,
+   pushAt 2625 2 2111,
+   opAt 2626 (.Dup ⟨1, by decide⟩),
+   opAt 2627 .GT,
+   pushAt 2628 2 3284,
+   opAt 2629 .JUMPI]
 
 end Challenge.Modexp.Submission.Proofs.Fast

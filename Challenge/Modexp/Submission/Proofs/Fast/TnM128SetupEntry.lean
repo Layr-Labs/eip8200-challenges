@@ -5,10 +5,10 @@ set_option warningAsError true
 set_option maxHeartbeats 1000000
 
 /-!
-# The kernel setup entry (58 instructions)
+# The kernel setup entry (62 instructions)
 
-`load` (27) · `shuffle` (11) · `low` (3) · `zero` (9: `MCOPY` staging + scratch-word `MSTORE`
-zeroing) · `pointersJump` (9, ending `DUP2; JUMP` to the row head `hd`).
+`load` (26) · `shuffle` (10) · `low` (3) · `zero` (13: `MCOPY` staging + scratch-word `MSTORE`
+zeroing) · `pointersJump` (10, ending `DUP2; JUMP` to the row head `hd`).
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.TnM128Setup
@@ -20,7 +20,7 @@ def fullEntryProgram : List Instr :=
   ((EntryPrefix.loadProgram ++ EntryPrefix.shuffleProgram) ++ EntryPrefix.lowProgram) ++
     (zeroProgram ++ pointersJumpProgram)
 
-theorem fullEntryProgram_length : fullEntryProgram.length = 58 := rfl
+theorem fullEntryProgram_length : fullEntryProgram.length = 62 := rfl
 
 /-- The whole `setup`: from `setupState` (pc 4123, `[hd, pa, pb, dst, ret] ++ rest`) to the
 row-0 head at `hd` with the staged, zeroed memory and `ent = l1Target n`. -/
@@ -38,7 +38,7 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (hslot : rest[2]? = some (MachineState.readWord mem 2688))
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions fullEntryProgram (setupState s mem hd pa pb dst ret rest) =
-    some (outState s (SquarePartialClear.memory (stage mem pa n)) pb n 0 hd (l1Target n)
+    some (outState s (SquarePartialClear.memory (stageW mem pa n)) pb n 0 hd (l1Target n)
       (MachineState.readWord mem 32) (MachineState.readWord mem 64) (MachineState.readWord mem (16*n+32))
       (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
         MachineState.readWord mem 2720 :: zeroTn ::
@@ -66,7 +66,7 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (EntryPrefix.displacement mem) rest hcap hact
   have hlow := EntryPrefix.run_low { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb)
-    (UInt256.ofNat 3562 + EntryPrefix.displacement mem)
+    (UInt256.ofNat 3590 + EntryPrefix.displacement mem)
     (MachineState.readWord mem 128)
     dst ret m0 m64 aEnd tl m96 zeroTn m32 rest hcap hact
   have hprefix := runInstructions_append_some _ _ _ _ _
@@ -76,7 +76,7 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
   -- 192, 224 (n = 5,6,7), where the mask is still set.  `n = 4 ∨ n = 8` is what makes this
   -- step true, and it holds because the kernel is only ever entered from the two
   -- specialised width carriers.
-  have hdisp1 : UInt256.ofNat 3562 + EntryPrefix.displacement mem = l1Target n := by
+  have hdisp1 : UInt256.ofNat 3590 + EntryPrefix.displacement mem = l1Target n := by
     rcases hn4 with rfl | rfl <;>
       rw [EntryPrefix.displacement, hs32] <;> decide
   have hmasked :
@@ -91,7 +91,7 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
   have hzero := run_zero s mem hd pa pb n m32 m64 m0
     (tl :: m96 :: inv :: zeroTn :: aEnd :: dst :: ret :: rest)
     hcap' hact (by omega) hn32 hpaFit hcds hs32
-  have hpointers := run_pointersJump s (stage mem pa n) hd pb n m32 m64 m0
+  have hpointers := run_pointersJump s (stageW mem pa n) hd pb n m32 m64 m0
     (tl :: m96 :: inv :: zeroTn :: aEnd :: dst :: ret :: rest)
     hcap' hpb hpbFit hn32 htarget
   have hbody := runInstructions_append_some _ _ _ _ _ hzero hpointers
@@ -114,7 +114,7 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
     (hslot : rest[2]? = some (UInt256.ofNat n))
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions fullEntryProgram (setupState s mem hd pa pb dst ret rest) =
-    some (outState s (SquarePartialClear.memory (stage mem pa n)) pb n 0 hd (UInt256.ofNat 3562)
+    some (outState s (SquarePartialClear.memory (stageW mem pa n)) pb n 0 hd (UInt256.ofNat 3590)
       (MachineState.readWord mem 32) (MachineState.readWord mem 64) (MachineState.readWord mem (16*n+32))
       (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
         MachineState.readWord mem 2720 :: zeroTn ::
@@ -139,17 +139,17 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
   rw [hAend] at hreads
   have hshuffle := EntryPrefix.run_shuffle { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret m0 m64 aEnd tl m96 zeroTn m32
-    (UInt256.ofNat 1747 * CapDispatch.selectBit (UInt256.ofNat n)) rest hcap hact
+    (UInt256.ofNat 1776 * CapDispatch.selectBit (UInt256.ofNat n)) rest hcap hact
   have hlow := EntryPrefix.run_low { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb)
-    (UInt256.ofNat 3562 + (UInt256.ofNat 1747 * CapDispatch.selectBit (UInt256.ofNat n)))
+    (UInt256.ofNat 3590 + (UInt256.ofNat 1776 * CapDispatch.selectBit (UInt256.ofNat n)))
     (MachineState.readWord mem 128)
     dst ret m0 m64 aEnd tl m96 zeroTn m32 rest hcap hact
   have hprefix := runInstructions_append_some _ _ _ _ _
     (runInstructions_append_some _ _ _ _ _ hreads hshuffle) hlow
-  have hdisp1 : UInt256.ofNat 3562 +
-      (UInt256.ofNat 1747 * CapDispatch.selectBit (UInt256.ofNat n)) =
-      UInt256.ofNat 3562 := by
+  have hdisp1 : UInt256.ofNat 3590 +
+      (UInt256.ofNat 1776 * CapDispatch.selectBit (UInt256.ofNat n)) =
+      UInt256.ofNat 3590 := by
     rcases hn4 with rfl | rfl <;> decide
   have hmasked :
       runInstructions ((EntryPrefix.loadProgram ++ EntryPrefix.shuffleProgram) ++
@@ -163,7 +163,7 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
   have hzero := run_zero_sq s mem hd pa pb n m32 m64 m0
     (tl :: m96 :: inv :: zeroTn :: aEnd :: dst :: ret :: rest)
     hcap' hact (by omega) hn32 hpaFit hcds hs32
-  have hpointers := run_pointersJump_sq s (stage mem pa n) hd pb n m32 m64 m0
+  have hpointers := run_pointersJump_sq s (stageW mem pa n) hd pb n m32 m64 m0
     (tl :: m96 :: inv :: zeroTn :: aEnd :: dst :: ret :: rest)
     hcap' hpb hpbFit hn32 htarget
   have hbody := runInstructions_append_some _ _ _ _ _ hzero hpointers
