@@ -11,7 +11,7 @@ open Shared32Scratch Shared32Sites Paired144WordRound Shared32Start
 def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
     GasSteps (StackTail.append (Execution.atPC input 247) rho)
-      (atState (tableState input) 824 (bodyFrame ++ rho)) := by
+      (atState (tableState input) 826 (bodyFrame ++ rho)) := by
   have hfit : CalldataFits input := by change input.size < 2 ^ 64; rw [h32]; decide
   let s := PaddingTrace.padCopied input
   have e : Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩

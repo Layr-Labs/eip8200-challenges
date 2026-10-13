@@ -165,7 +165,7 @@ theorem run_actual_of_small (s : State) (pc : UInt256) (rho : List UInt256)
   have h := DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
   simpa only [template, DenseScheduleTrace.pcAfter_append, s1, SecondSnapshotCertificates.second_pool_eq s.memory hr, ScratchSnapshotMemory.pool_eq] using h
 
-theorem end_pc : pcAfter (UInt256.ofNat 528) template = UInt256.ofNat 607 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 527) template = UInt256.ofNat 606 := by decide
 #print axioms run_copy
 #print axioms run_actual_of_small
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.SecondSnapshotRun

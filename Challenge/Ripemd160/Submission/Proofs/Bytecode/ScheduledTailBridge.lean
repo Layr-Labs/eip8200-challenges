@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCoreLeft79
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PersistentStaggerFunctional
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ScheduledTailFrame
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentFrame
@@ -19,13 +20,15 @@ def tailInput (memory : ByteArray) (h : Compression.HashState) (l r : WordLane)
    h4 := Word.ofUInt32 h.h4, h1 := Word.ofUInt32 h.h1, h2 := Word.ofUInt32 h.h2,
    h3 := Word.ofUInt32 h.h3, h0 := Word.ofUInt32 h.h0, off := off, limit := limit}
 
-theorem combine_eq (memory : ByteArray) (h : Compression.HashState) (l r : WordLane)
+theorem combine_eq (memory : ByteArray) (h : Compression.HashState) (q r : WordLane)
     (off limit : UInt256) :
-    ScheduledTailFrame.combine h (tailInput memory h l r off limit) = combine h l r := by
+    ScheduledTailFrame.combine h (tailInput memory h (StaggerCoreLeft79.epilogueRaw memory q) r off limit) =
+      combine h (StaggerCoreModel.epilogue memory q) r := by
   simp only [ScheduledTailFrame.combine, tailInput, combine,
     PairedCompressionBridge.combineLanes, Paired80Compression.unpackLeft,
     StaggerFinalMemory.unpackRight, ScheduledTailFrame.high,
-    StaggerFinalMemory.high32, Paired80Compression.low32, Word.toUInt32]
+    StaggerFinalMemory.high32, Paired80Compression.low32, Word.toUInt32,
+    StaggerCoreLeft79.epilogueRaw, StaggerCoreModel.epilogue, StaggerCoreLeft79.left79Raw_a, StaggerCoreLeft79.left79Raw_b, StaggerCoreLeft79.left79Raw_c, StaggerCoreLeft79.left79Raw_e, StaggerCoreLeft79.left79Raw_d_shift]
   congr 1 <;> apply UInt32.eq_of_toBitVec_eq <;>
     simp only [UInt32.toBitVec_add] <;> ac_rfl
 

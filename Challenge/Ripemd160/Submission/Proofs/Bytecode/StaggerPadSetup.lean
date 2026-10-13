@@ -47,7 +47,7 @@ def lowTemplate : List Instr :=
 and go straight to the rounds. -/
 def branchTemplate : List Instr :=
   [ .op (.Swap ⟨10, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 824),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 826),
     .op .JUMP ]
 
 /-- Pad-only high block (pc 4833..4860), reached only when `n >>> 29 ≠ 0`. -/
@@ -81,15 +81,15 @@ private theorem hadd_literals (a b : Nat) :
 private theorem add_eq_hAdd (x y : UInt256) : UInt256.add x y = x + y := rfl
 
 /-- The fast padding path is valid for lengths below the artifact's byte size. -/
-def highZero (n : UInt256) : UInt256 := UInt256.lt n (UInt256.ofNat 5247)
+def highZero (n : UInt256) : UInt256 := UInt256.lt n (UInt256.ofNat 5238)
 
 theorem highZero_true_iff (n : UInt256) :
-    UInt256.isTrue (highZero n) ↔ n.toNat < 5247 := by
-  change (UInt256.lt n (UInt256.ofNat 5247)).toNat ≠ 0 ↔ n.toNat < 5247
+    UInt256.isTrue (highZero n) ↔ n.toNat < 5238 := by
+  change (UInt256.lt n (UInt256.ofNat 5238)).toNat ≠ 0 ↔ n.toNat < 5238
   rw [Word.word_toNat_lt]
-  have hc : (UInt256.ofNat 5247).toNat = 5247 := by decide
+  have hc : (UInt256.ofNat 5238).toNat = 5238 := by decide
   rw [hc]
-  by_cases hn : n.toNat < 5247 <;> simp [hn]
+  by_cases hn : n.toNat < 5238 <;> simp [hn]
 
 theorem highZero_true_imp (n : UInt256) (h : UInt256.isTrue (highZero n)) :
     StaggerTablePad.highDirty n = UInt256.ofNat 0 := by
@@ -169,11 +169,11 @@ theorem run_high (s : State) (pc returnPC : UInt256) (rest : List UInt256)
 theorem run_branch_taken (s : State) (pc : UInt256)
     (a b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 c : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 824).toNat = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 826).toNat = true) :
     runInstrSeq branchTemplate
         {s with pc := pc, stack := a :: b1 :: b2 :: b3 :: b4 :: b5 :: b6 :: b7 :: b8 :: b9 :: b10 :: c :: rho} =
       some {s with
-        pc := UInt256.ofNat 824
+        pc := UInt256.ofNat 826
         stack := c :: b1 :: b2 :: b3 :: b4 :: b5 :: b6 :: b7 :: b8 :: b9 :: b10 :: a :: rho} := by
   have hcap (n : Nat) (hn : n ≤ 13) : rho.length + n < 1024 := by omega
   simp only [Word.word_toNat_ofNat] at hvalid
