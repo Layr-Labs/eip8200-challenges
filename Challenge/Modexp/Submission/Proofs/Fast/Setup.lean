@@ -1301,9 +1301,10 @@ def modulusMem (mem : ByteArray) (input : ByteArray) : ByteArray :=
     (MachineState.readPadded input (modOffset input) (modulusSize input))
     (s32 input - modulusSize input)
 
-/-- Memory at the end of the setup block. -/
-def setupMem (mem : ByteArray) (input : ByteArray) (m0 : Nat) : ByteArray :=
-  mstoreAt (modulusMem mem input) 2720 (negWord (newton8 m0))
+/-- Memory at the end of the setup block.  The block no longer stores `V_MINV`: the
+recogniser-hit arm stores it from one shared Newton chain (see `Shift.preMemOf`). -/
+def setupMem (mem : ByteArray) (input : ByteArray) (_m0 : Nat) : ByteArray :=
+  modulusMem mem input
 
 /-- One memory-expansion step, with the word wrapping the machine performs. -/
 def awNext (w off sz : Nat) : Nat :=
@@ -1330,16 +1331,24 @@ theorem activeWords_refill (X n : Nat) (hX : X < 2 ^ 256) (hn : n < 2 ^ 256) :
       activeWordsAfter_max _ 0 n hz, Nat.max_assoc, Nat.max_self,
       Nat.mod_eq_of_lt hmax]
 
-/-- `activeWords` after the variable stores, the copies and the `MLOAD`. -/
-def loadWords (w : UInt256) (input : ByteArray) : UInt256 :=
-  UInt256.ofNat (awNext (awNext (awNext (awNext (awNext (awNext
+/-- `activeWords_refill` without the final wrap: the outer result is already a word. -/
+theorem activeWords_refill_raw (X n : Nat) (hX : X < 2 ^ 256) (hn : n < 2 ^ 256) :
+    MachineState.activeWordsAfter (MachineState.activeWordsAfter X 0 n % 2 ^ 256) 0 n =
+      MachineState.activeWordsAfter X 0 n := by
+  by_cases hz : n = 0
+  · simp [MachineState.activeWordsAfter, hz]
+    exact lt_of_lt_of_eq hX (by norm_num)
+  · have hd : (0 + n - 1) / 32 ≤ 0 + n - 1 := Nat.div_le_self _ _
+    have hk : (0 + n - 1) / 32 + 1 < 2 ^ 256 := by omega
+    have hmax : max X ((0 + n - 1) / 32 + 1) < 2 ^ 256 := Nat.max_lt.mpr ⟨hX, hk⟩
+    rw [activeWordsAfter_max X 0 n hz, Nat.mod_eq_of_lt hmax,
+      activeWordsAfter_max _ 0 n hz, Nat.max_assoc, Nat.max_self]
+
+/-- `activeWords` at the end of the setup block: the variable stores and the copies. -/
+def setupWords (w : UInt256) (input : ByteArray) : UInt256 :=
+  UInt256.ofNat (awNext (awNext (awNext (awNext (awNext
     (MachineState.activeWordsAfter w.toNat 2688 32) 2816 32) 2752 32)
     2784 32) 0 (s32 input)) (s32 input - modulusSize input) (modulusSize input))
-    (s32 input - 32) 32)
-
-/-- `activeWords` at the end of the setup block. -/
-def setupWords (w : UInt256) (input : ByteArray) : UInt256 :=
-  UInt256.ofNat (MachineState.activeWordsAfter (loadWords w input).toNat 2720 32)
 
 /-- Instructions 1174..1205: the variables, the modulus copies and the
 `MLOAD` of its least significant limb. -/
@@ -1370,86 +1379,9 @@ def setupPathA :
    opAt 500 .CALLDATACOPY,
    opAt 501 (.Swap ⟨0, by decide⟩),
    opAt 502 .POP,
-   opAt 503 (.Dup ⟨0, by decide⟩),
-   opAt 504 .MLOAD]
-
-/-- Instructions 1206..1230: `x := 1` and the first four Newton steps. -/
-def setupPathB :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 505 (.Dup ⟨0, by decide⟩),
-   pushAt 506 1 3,
-   opAt 507 .MUL,
-   pushAt 508 1 2,
-   opAt 509 .XOR,
-   opAt 510 (.Dup ⟨0, by decide⟩),
-   opAt 511 (.Dup ⟨2, by decide⟩),
-   opAt 512 .MUL,
-   pushAt 513 1 2,
-   opAt 514 .SUB,
-   opAt 515 .MUL,
-   opAt 516 (.Dup ⟨0, by decide⟩),
-   opAt 517 (.Dup ⟨2, by decide⟩),
-   opAt 518 .MUL,
-   pushAt 519 1 2,
-   opAt 520 .SUB,
-   opAt 521 .MUL,
-   opAt 522 (.Dup ⟨0, by decide⟩),
-   opAt 523 (.Dup ⟨2, by decide⟩),
-   opAt 524 .MUL,
-   pushAt 525 1 2,
-   opAt 526 .SUB,
-   opAt 527 .MUL]
-
-/-- Instructions 1231..1254: the last four Newton steps. -/
-def setupPathC :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 528 (.Dup ⟨0, by decide⟩),
-   opAt 529 (.Dup ⟨2, by decide⟩),
-   opAt 530 .MUL,
-   pushAt 531 1 2,
-   opAt 532 .SUB,
-   opAt 533 .MUL,
-   opAt 534 (.Dup ⟨0, by decide⟩),
-   opAt 535 (.Dup ⟨2, by decide⟩),
-   opAt 536 .MUL,
-   pushAt 537 1 2,
-   opAt 538 .SUB,
-   opAt 539 .MUL,
-   opAt 540 (.Dup ⟨0, by decide⟩),
-   opAt 541 (.Dup ⟨2, by decide⟩),
-   opAt 542 .MUL,
-   pushAt 543 1 2,
-   opAt 544 .SUB,
-   opAt 545 .MUL]
-
-/-- Instructions 1255..1271: `MSTORE V_MINV`, `MSTORE R1 1` and the tail call
-into the `R1B` guard. -/
-def setupPathD :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 546 0 0,
-   opAt 547 .SUB,
-   pushAt 548 2 2720,
-   opAt 549 .MSTORE,
-   opAt 550 .POP,
-   opAt 551 .POP,
-   pushAt 552 2 2545,
-   opAt 553 .JUMP]
-
-/-- After the variable stores and the modulus load (pc 1579). -/
-def modLoadedState (s : State) (input : ByteArray) (m0 : Nat) : State :=
-  { s with pc := UInt256.ofNat 711
-           stack := UInt256.ofNat m0 :: UInt256.ofNat (s32 input - 32) ::
-             outerStack input
-           memory := modulusMem s.memory input
-           activeWords := loadWords s.activeWords input }
-
-/-- Inside the Newton chain: `x` on top of `m0` and the outer frame. -/
-def newtonState (s : State) (input : ByteArray) (m0 x p : Nat) : State :=
-  { s with pc := UInt256.ofNat p
-           stack := UInt256.ofNat x :: UInt256.ofNat m0 ::
-             UInt256.ofNat (s32 input - 32) :: outerStack input
-           memory := modulusMem s.memory input
-           activeWords := loadWords s.activeWords input }
+   opAt 503 .POP,
+   pushAt 504 2 2545,
+   opAt 505 .JUMP]
 
 /-- State at the `R1B` guard entry `JUMPDEST` (pc 2674).  The guard dispatches
 to `DOUBLE256` itself when the modulus's top bit is clear. -/
@@ -1459,17 +1391,22 @@ def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
            memory := setupMem s.memory input m0
            activeWords := setupWords s.activeWords input }
 
+/-- The dispatcher entry `JUMPDEST` (instruction 1992, pc 2545).  The setup path jumps
+here directly instead of calling the Montgomery-form conversion first. -/
+private theorem jumpDest3296 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2545 = true :=
+  Artifact.isValidJumpDest_index 1992 (by rfl)
+
 set_option linter.unusedSimpArgs false in
 theorem run_setupA (s : State) (input : ByteArray) (m0 : Nat)
-    (hdata : s.executionEnv.calldata = input) (hrun : s.halt = .Running)
+    (hdata : s.executionEnv.calldata = input)
+    (hcode : s.executionEnv.code = submissionBytecode) (hrun : s.halt = .Running)
     (hsize : input.size < 2 ^ 256)
     (hb : baseSize input ≤ 1024) (he : exponentSize input ≤ 1024)
     (hm : modulusSize input ≤ 1024) (h32 : 32 < modulusSize input)
-    (hwidth : modulusSize input % 128 = 0)
-    (hm0 : MachineState.readWord (modulusMem s.memory input) (s32 input - 32) =
-      UInt256.ofNat m0) :
+    (hwidth : modulusSize input % 128 = 0) :
     Challenge.EvmProof.Stepper.runLocatedBlock setupPathA (setupEntryState s input) =
-      some (modLoadedState s input m0) := by
+      some (setupExitState s input m0) := by
   -- With `msize % 128 = 0` the limb block needs no padding, so the deleted zero-fill copy wrote
   -- exactly the bytes the surviving operand copy then overwrote, and both memory and the
   -- active-word high-water mark are unchanged by dropping it.
@@ -1502,7 +1439,20 @@ theorem run_setupA (s : State) (input : ByteArray) (m0 : Nat)
     intro X
     rw [hpad, hs32]
     exact activeWords_refill _ (modulusSize input) (Nat.mod_lt _ (by norm_num)) (by omega)
-  simp only [modulusMem, varsMem, mstoreAt, hmem] at hm0
+  -- the block now ends at the copies, so the last expansion is not wrapped again
+  have hlw0 : ∀ X : Nat,
+      MachineState.activeWordsAfter
+          (MachineState.activeWordsAfter
+              (X % 115792089237316195423570985008687907853269984665640564039457584007913129639936)
+              0 (s32 input) %
+            115792089237316195423570985008687907853269984665640564039457584007913129639936)
+          (s32 input - modulusSize input) (modulusSize input) =
+      MachineState.activeWordsAfter
+          (X % 115792089237316195423570985008687907853269984665640564039457584007913129639936)
+          0 (modulusSize input) := by
+    intro X
+    rw [hpad, hs32]
+    exact activeWords_refill_raw _ (modulusSize input) (Nat.mod_lt _ (by norm_num)) (by omega)
   have hn2 := limbs_ge_two input h32
   have hS := s32_le_1024 input hm
   have hSge : 32 ≤ s32 input := by unfold s32; omega
@@ -1523,73 +1473,14 @@ theorem run_setupA (s : State) (input : ByteArray) (m0 : Nat)
     [setupPathA, opAt, pushAt, wfOp,
      Challenge.EvmProof.Stepper.runLocatedBlock,
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-     setupEntryState, modLoadedState, outerStack, modulusMem, varsMem, mstoreAt,
-     loadWords, awNext, State.activeWordsAfterUInt256,
-     hmem, hlw, hdata, hrun, push0_word, hsub32, hsubms, hm0,
+     setupEntryState, setupExitState, outerStack, setupMem, modulusMem, varsMem, mstoreAt,
+     setupWords, awNext, State.activeWordsAfterUInt256,
+     hmem, hlw, hlw0, hdata, hcode, hrun, push0_word, hsub32, hsubms, jumpDest3296,
      hmodS, hmodn, hmodb, hmodml, hmodtl, hmodsz, hmodms, hmodmoff, hmodsub,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
      Challenge.EvmProof.Word.word_toNat_ofNat, List.exchange]
-
-set_option linter.unusedSimpArgs false in
-theorem run_setupB (s : State) (input : ByteArray) (m0 : Nat)
-    (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock setupPathB (modLoadedState s input m0) =
-      some (newtonState s input m0 (newton4 m0) 739) := by
-  simp (config := { maxSteps := 1000000 })
-    [setupPathB, opAt, pushAt, wfOp,
-     Challenge.EvmProof.Stepper.runLocatedBlock,
-     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-     modLoadedState, newtonState, outerStack, newton4, NewtonSeed.iter, hrun, newton_word_step, NewtonSeed.word_seed,
-     Challenge.EvmProof.Word.literal_eq_ofNat,
-     Challenge.EvmProof.Word.succ_ofNat_mod,
-     Challenge.EvmProof.Word.ofNat_add_mod,
-     Challenge.EvmProof.Word.word_toNat_ofNat]
-
-set_option linter.unusedSimpArgs false in
-theorem run_setupC (s : State) (input : ByteArray) (m0 : Nat)
-    (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock setupPathC
-        (newtonState s input m0 (newton4 m0) 739) =
-      some (newtonState s input m0 (newton8 m0) 760) := by
-  simp (config := { maxSteps := 1000000 })
-    [setupPathC, opAt, pushAt, wfOp,
-     Challenge.EvmProof.Stepper.runLocatedBlock,
-     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-     newtonState, outerStack, newton8, hrun, newton_word_step,
-     Challenge.EvmProof.Word.literal_eq_ofNat,
-     Challenge.EvmProof.Word.succ_ofNat_mod,
-     Challenge.EvmProof.Word.ofNat_add_mod,
-     Challenge.EvmProof.Word.word_toNat_ofNat]
-
-/-- The dispatcher entry `JUMPDEST` (instruction 2660, pc 2016).  The setup path jumps
-here directly instead of calling the Montgomery-form conversion first. -/
-private theorem jumpDest3296 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2545 = true :=
-  Artifact.isValidJumpDest_index 1992 (by rfl)
-
-set_option linter.unusedSimpArgs false in
-theorem run_setupD (s : State) (input : ByteArray) (m0 : Nat)
-    (hcode : s.executionEnv.code = submissionBytecode) (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock setupPathD
-        (newtonState s input m0 (newton8 m0) 760) =
-      some (setupExitState s input m0) := by
-  have hmodminv : ∀ v : Nat,
-      negWord v %
-        115792089237316195423570985008687907853269984665640564039457584007913129639936 =
-      negWord v := fun v => Nat.mod_eq_of_lt (negWord_lt v)
-  simp (config := { maxSteps := 1000000 })
-    [setupPathD, opAt, pushAt, wfOp,
-     Challenge.EvmProof.Stepper.runLocatedBlock,
-     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-     newtonState, setupExitState, outerStack, setupMem, mstoreAt, setupWords,
-     awNext, State.activeWordsAfterUInt256, hcode, hrun, push0_word, neg_word,
-     hmodminv, jumpDest3296,
-     Challenge.EvmProof.Word.literal_eq_ofNat,
-     Challenge.EvmProof.Word.succ_ofNat_mod,
-     Challenge.EvmProof.Word.ofNat_add_mod,
-     Challenge.EvmProof.Word.word_toNat_ofNat]
 
 /-! ## Reading the setup block's memory back -/
 
@@ -1654,22 +1545,20 @@ theorem readWord_writeBytes_ne (mem src : ByteArray) (start target : Nat)
 /-- Reads in the variable area see straight through the modulus copies and the
 two trailing stores. -/
 theorem readWord_setupMem_var (mem : ByteArray) (input : ByteArray) (m0 target : Nat)
-    (hm : modulusSize input ≤ 1024) (hlo : 2688 ≤ target)
-    (hne : target + 32 ≤ 2720 ∨ 2720 + 32 ≤ target) :
+    (hm : modulusSize input ≤ 1024) (hlo : 2688 ≤ target) :
     MachineState.readWord (setupMem mem input m0) target =
       MachineState.readWord (varsMem mem input) target := by
   have hS := s32_le_1024 input hm
   have hms := modulusSize_le_s32 input
   unfold setupMem modulusMem
-  rw [readWord_mstoreAt_ne _ _ _ _ hne,
-    readWord_writeBytes_ne _ _ _ _ (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)),
+  rw [readWord_writeBytes_ne _ _ _ _ (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)),
     readWord_writeBytes_ne _ _ _ _ (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega))]
 
 theorem readWord_V_S32 (mem : ByteArray) (input : ByteArray) (m0 : Nat)
     (hm : modulusSize input ≤ 1024) :
     MachineState.readWord (setupMem mem input m0) 2688 =
       UInt256.ofNat (s32 input) := by
-  rw [readWord_setupMem_var mem input m0 2688 hm (by omega) (Or.inl (by omega))]
+  rw [readWord_setupMem_var mem input m0 2688 hm (by omega)]
   unfold varsMem
   rw [readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
@@ -1681,7 +1570,7 @@ theorem readWord_V_EOFF (mem : ByteArray) (input : ByteArray) (m0 : Nat)
     (hm : modulusSize input ≤ 1024) (hb : baseSize input ≤ 1024) :
     MachineState.readWord (setupMem mem input m0) 2816 =
       UInt256.ofNat (96 + baseSize input) := by
-  rw [readWord_setupMem_var mem input m0 2816 hm (by omega) (Or.inr (by omega))]
+  rw [readWord_setupMem_var mem input m0 2816 hm (by omega)]
   unfold varsMem
   rw [readWord_mstoreAt_ne _ _ _ _ (Or.inr (by omega)),
     readWord_mstoreAt_ne _ _ _ _ (Or.inr (by omega)),
@@ -1692,7 +1581,7 @@ theorem readWord_V_ML (mem : ByteArray) (input : ByteArray) (m0 : Nat)
     MachineState.readWord (setupMem mem input m0) 2752 =
       UInt256.ofNat (s32 input - 32) := by
   have hS := s32_le_1024 input hm
-  rw [readWord_setupMem_var mem input m0 2752 hm (by omega) (Or.inr (by omega))]
+  rw [readWord_setupMem_var mem input m0 2752 hm (by omega)]
   unfold varsMem
   rw [readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     readWord_mstoreAt_self _ _ _ (by omega)]
@@ -1702,15 +1591,9 @@ theorem readWord_V_TL (mem : ByteArray) (input : ByteArray) (m0 : Nat)
     MachineState.readWord (setupMem mem input m0) 2784 =
       UInt256.ofNat (2080 + s32 input) := by
   have hS := s32_le_1024 input hm
-  rw [readWord_setupMem_var mem input m0 2784 hm (by omega) (Or.inr (by omega))]
+  rw [readWord_setupMem_var mem input m0 2784 hm (by omega)]
   unfold varsMem
   rw [readWord_mstoreAt_self _ _ _ (by omega)]
-
-theorem readWord_V_MINV (mem : ByteArray) (input : ByteArray) (m0 : Nat) :
-    MachineState.readWord (setupMem mem input m0) 2720 =
-      UInt256.ofNat (negWord (newton8 m0)) := by
-  unfold setupMem
-  rw [readWord_mstoreAt_self _ _ _ (negWord_lt _)]
 
 /-! ## The modulus block -/
 
@@ -1802,9 +1685,8 @@ theorem setupMem_represents (mem : ByteArray) (input : ByteArray) (m0 : Nat)
     Model.FastRepresents (setupMem mem input m0) 0 (limbs input) (modulus input) := by
   have hS := s32_le_1024 input hm
   have h32n : 32 * limbs input = s32 input := rfl
-  unfold setupMem mstoreAt
-  exact Model.fastRepresents_writeWord_disjoint _ 2720 0 _ _ _ (Or.inr (by omega))
-    (modulusMem_represents mem input)
+  unfold setupMem
+  exact modulusMem_represents mem input
 
 /-- The least significant limb of the modulus, as the block holds it. -/
 theorem lowLimb_eq (mem : ByteArray) (input : ByteArray) (h32 : 32 < modulusSize input) :
@@ -1828,8 +1710,7 @@ theorem readWord_setupMem_high (input : ByteArray) (m0 target : Nat)
   have hS := s32_le_1024 input hm
   have hms := modulusSize_le_s32 input
   unfold setupMem modulusMem varsMem
-  rw [readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
-    readWord_writeBytes_ne _ _ _ _
+  rw [readWord_writeBytes_ne _ _ _ _
       (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)),
     readWord_writeBytes_ne _ _ _ _
       (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)),
@@ -1891,26 +1772,12 @@ def gasSteps_setup (s : State) (input : ByteArray) (m0 : Nat)
     (hsize : input.size < 2 ^ 256)
     (hb : baseSize input ≤ 1024) (he : exponentSize input ≤ 1024)
     (hm : modulusSize input ≤ 1024) (h32 : 32 < modulusSize input)
-    (hwidth : modulusSize input % 128 = 0)
-    (hm0 : MachineState.readWord (modulusMem s.memory input) (s32 input - 32) =
-      UInt256.ofNat m0) :
+    (hwidth : modulusSize input % 128 = 0) :
     Challenge.EvmProof.GasSteps (setupEntryState s input) (setupExitState s input m0) :=
-  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
       Artifact.submissionArtifact .Osaka setupPathA
         (s := setupEntryState s input) hcode hfork
-        (run_setupA s input m0 hdata hrun hsize hb he hm h32 hwidth hm0) hrun hnp).trans
-    ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-        Artifact.submissionArtifact .Osaka setupPathB
-          (s := modLoadedState s input m0) hcode hfork
-          (run_setupB s input m0 hrun) hrun hnp).trans
-      ((Challenge.EvmProof.Stepper.runLocatedBlock_sound
-          Artifact.submissionArtifact .Osaka setupPathC
-            (s := newtonState s input m0 (newton4 m0) 739) hcode hfork
-            (run_setupC s input m0 hrun) hrun hnp).trans
-        (Challenge.EvmProof.Stepper.runLocatedBlock_sound
-          Artifact.submissionArtifact .Osaka setupPathD
-            (s := newtonState s input m0 (newton8 m0) 760) hcode hfork
-            (run_setupD s input m0 hcode hrun) hrun hnp)))
+        (run_setupA s input m0 hdata hcode hrun hsize hb he hm h32 hwidth) hrun hnp
 
 def gasSteps_fastPath_of (s : State) (input : ByteArray) (m0 : Nat)
     (hdata : s.executionEnv.calldata = input)
@@ -1919,8 +1786,6 @@ def gasSteps_fastPath_of (s : State) (input : ByteArray) (m0 : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hsize : input.size < 2 ^ 256)
-    (hm0 : MachineState.readWord (modulusMem s.memory input) (s32 input - 32) =
-      UInt256.ofNat m0)
     (hpath : FastPath input) :
     Challenge.EvmProof.GasSteps (entryState s) (setupExitState s input m0) :=
   (gasSteps_entry_pass s input hdata hcode hfork hrun hnp hpath.1 hpath.2.1.2.2).trans
@@ -1935,7 +1800,7 @@ def gasSteps_fastPath_of (s : State) (input : ByteArray) (m0 : Nat)
             (fastPath_nprime input hpath)).trans
           (gasSteps_setup s input m0 hdata hcode hfork hrun hnp hsize
             hpath.2.1.1 hpath.2.1.2.1 (fastPath_modulus_le_1024 input hpath) hpath.1
-            (fastPath_width input hpath) hm0))))
+            (fastPath_width input hpath)))))
 
 /-- The least significant limb of the modulus as the loaded block holds it. -/
 def lowLimb (input : ByteArray) : Nat :=
@@ -1972,8 +1837,7 @@ def gasSteps_fastSetup (input : ByteArray) (hsize : input.size < 2 ^ 256)
       (fastSetupState input) :=
   Challenge.EvmProof.GasSteps.cast
     (gasSteps_fastPath_of (initialState submissionBytecode input 0) input
-      (lowLimb input) rfl rfl rfl rfl deployAddress_not_precompile hsize
-      (Challenge.EvmProof.Word.word_eq_ofNat_toNat _) hpath)
+      (lowLimb input) rfl rfl rfl rfl deployAddress_not_precompile hsize hpath)
     (entryState_initial input) rfl
 
 /-! ## Postconditions of the setup block -/
@@ -2004,11 +1868,6 @@ theorem fastSetup_V_EOFF (input : ByteArray) (hpath : FastPath input) :
     MachineState.readWord (fastSetupMemory input) 2816 =
       UInt256.ofNat (96 + baseSize input) :=
   readWord_V_EOFF ByteArray.empty input (lowLimb input) (fastPath_modulus_le_1024 input hpath) hpath.2.1.1
-
-theorem fastSetup_V_MINV (input : ByteArray) :
-    MachineState.readWord (fastSetupMemory input) 2720 =
-      UInt256.ofNat (minvValue input) :=
-  readWord_V_MINV ByteArray.empty input (lowLimb input)
 
 theorem fastSetup_lowLimb (input : ByteArray) (hpath : FastPath input) :
     lowLimb input = modulus input % Limbs.radix :=
@@ -2071,7 +1930,7 @@ theorem setupWords_initial (input : ByteArray) (hm : modulusSize input ≤ 1024)
   have hms := modulusSize_le_s32 input
   have hSne : s32 input ≠ 0 := by omega
   have hmsne : modulusSize input ≠ 0 := by omega
-  simp only [setupWords, loadWords, awNext,
+  simp only [setupWords, awNext,
     activeWordsAfter_eq _ _ 32 (by norm_num),
     activeWordsAfter_eq _ _ (s32 input) hSne,
     activeWordsAfter_eq _ _ (modulusSize input) hmsne,

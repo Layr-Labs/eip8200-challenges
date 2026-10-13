@@ -95,56 +95,87 @@ def blk2919 :
    pushAt 2072 2 1632,
    opAt 2073 .MSTORE]
 
-/-- Located block of the selected shift-reduce program. -/
-def blk2956 :
+/-- newton-batch head (pc 2658): load the modulus low limb `n0 = mem[mem[0xac0]]`, call the
+shared Newton chain on `dodd * n0` with return pc 2694. -/
+def blkNbHead :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2074 (.Dup ⟨0, by decide⟩),
-   pushAt 2075 1 3,
-   opAt 2076 .MUL,
-   pushAt 2077 1 2,
-   opAt 2078 .XOR,
-   opAt 2079 (.Dup ⟨0, by decide⟩),
-   opAt 2080 (.Dup ⟨2, by decide⟩),
-   opAt 2081 .MUL,
-   pushAt 2082 1 2,
-   opAt 2083 .SUB,
-   opAt 2084 .MUL,
-   opAt 2085 (.Dup ⟨0, by decide⟩),
-   opAt 2086 (.Dup ⟨2, by decide⟩),
-   opAt 2087 .MUL,
-   pushAt 2088 1 2,
-   opAt 2089 .SUB,
-   opAt 2090 .MUL,
-   opAt 2091 (.Dup ⟨0, by decide⟩),
-   opAt 2092 (.Dup ⟨2, by decide⟩),
-   opAt 2093 .MUL,
-   pushAt 2094 1 2,
-   opAt 2095 .SUB,
-   opAt 2096 .MUL]
+  [pushAt 2074 2 2752,
+   opAt 2075 .MLOAD,
+   opAt 2076 .MLOAD,
+   pushAt 2077 2 2694,
+   opAt 2078 (.Dup ⟨1, by decide⟩),
+   opAt 2079 (.Dup ⟨3, by decide⟩),
+   opAt 2080 .MUL,
+   pushAt 2081 2 714,
+   opAt 2082 .JUMP]
 
-/-- Located block of the selected shift-reduce program. -/
-def blk2982 :
+/-- The shared Newton chain (pc 714): `[p, ret]` becomes `[newton8W p]` at `ret`. -/
+def blkNbSub :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2097 (.Dup ⟨0, by decide⟩),
-   opAt 2098 (.Dup ⟨2, by decide⟩),
-   opAt 2099 .MUL,
-   pushAt 2100 1 2,
-   opAt 2101 .SUB,
-   opAt 2102 .MUL,
-   opAt 2103 (.Dup ⟨0, by decide⟩),
-   opAt 2104 (.Dup ⟨2, by decide⟩),
-   opAt 2105 .MUL,
-   pushAt 2106 1 2,
-   opAt 2107 .SUB,
-   opAt 2108 .MUL,
-   opAt 2109 (.Dup ⟨0, by decide⟩),
+  [opAt 506 .JUMPDEST,
+   opAt 507 (.Dup ⟨0, by decide⟩),
+   pushAt 508 1 3,
+   opAt 509 .MUL,
+   pushAt 510 1 2,
+   opAt 511 .XOR,
+   opAt 512 (.Dup ⟨0, by decide⟩),
+   opAt 513 (.Dup ⟨2, by decide⟩),
+   opAt 514 .MUL,
+   pushAt 515 1 2,
+   opAt 516 .SUB,
+   opAt 517 .MUL,
+   opAt 518 (.Dup ⟨0, by decide⟩),
+   opAt 519 (.Dup ⟨2, by decide⟩),
+   opAt 520 .MUL,
+   pushAt 521 1 2,
+   opAt 522 .SUB,
+   opAt 523 .MUL,
+   opAt 524 (.Dup ⟨0, by decide⟩),
+   opAt 525 (.Dup ⟨2, by decide⟩),
+   opAt 526 .MUL,
+   pushAt 527 1 2,
+   opAt 528 .SUB,
+   opAt 529 .MUL,
+   opAt 530 (.Dup ⟨0, by decide⟩),
+   opAt 531 (.Dup ⟨2, by decide⟩),
+   opAt 532 .MUL,
+   pushAt 533 1 2,
+   opAt 534 .SUB,
+   opAt 535 .MUL,
+   opAt 536 (.Dup ⟨0, by decide⟩),
+   opAt 537 (.Dup ⟨2, by decide⟩),
+   opAt 538 .MUL,
+   pushAt 539 1 2,
+   opAt 540 .SUB,
+   opAt 541 .MUL,
+   opAt 542 (.Dup ⟨0, by decide⟩),
+   opAt 543 (.Dup ⟨2, by decide⟩),
+   opAt 544 .MUL,
+   pushAt 545 1 2,
+   opAt 546 .SUB,
+   opAt 547 .MUL,
+   opAt 548 (.Swap ⟨1, by decide⟩),
+   opAt 549 (.Swap ⟨0, by decide⟩),
+   opAt 550 .POP,
+   opAt 551 .JUMP]
+
+/-- newton-batch tail (pc 2694): `dinv := x * n0`, `V_MINV := -(dodd * x)`, drop the four
+words, then the old `k := n` prologue. -/
+def blkNbTail :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 2104 .JUMPDEST,
+   opAt 2105 (.Dup ⟨1, by decide⟩),
+   opAt 2106 (.Dup ⟨1, by decide⟩),
+   opAt 2107 .MUL,
+   pushAt 2108 2 1664,
+   opAt 2109 .MSTORE,
    opAt 2110 (.Dup ⟨2, by decide⟩),
    opAt 2111 .MUL,
-   pushAt 2112 1 2,
+   pushAt 2112 0 0,
    opAt 2113 .SUB,
-   opAt 2114 .MUL,
-   pushAt 2115 2 1664,
-   opAt 2116 .MSTORE,
+   pushAt 2114 2 2720,
+   opAt 2115 .MSTORE,
+   opAt 2116 .POP,
    opAt 2117 .POP,
    opAt 2118 .POP,
    opAt 2119 .POP,
@@ -445,6 +476,14 @@ theorem jumpDest4608 :
   Artifact.isValidJumpDest_index 1992 (by rfl)
 
 /-- `BAIL6`, the target of the full-base miss. -/
+theorem jumpDest714 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 714 = true :=
+  Artifact.isValidJumpDest_index 506 (by rfl)
+
+theorem jumpDest2694 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2694 = true :=
+  Artifact.isValidJumpDest_index 2104 (by rfl)
+
 theorem jumpDestBail6 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 790 = true :=
   Artifact.isValidJumpDest_index 568 (by rfl)

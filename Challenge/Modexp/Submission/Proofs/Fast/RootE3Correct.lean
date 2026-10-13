@@ -34,8 +34,9 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
     (hmsz : msize = Challenge.Modexp.modulusSize input)
     (hmm : mm = Precompile.bytesToNatPadded input (96 + bsize + esize) msize)
     (hodd : mm % 2 = 1) (hradix : Limbs.radix ≤ mm) (hm : 0 < mm)
-    (hframe : Exp.Frame mem n bsize minv)
+    (hframe : Exp.Frame mem n bsize 0)
     (hmod : Model.FastRepresents mem 0 n mm)
+    (hminvDef : minv = Setup.negWord (Setup.newton8 (mm % Limbs.radix)))
     (hone : Model.FastRepresents mem 768 n 0)
     (hmatch : FullBase.Matches mem n bsize)
     (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0)
@@ -60,7 +61,7 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
     let X := base % mm * Limbs.radix ^ (3 * k) % mm
     let Y := base % mm * Limbs.radix ^ (2 * k) % mm
     have facts := e3_output_facts mem input n bsize mm minv k
-      hn hn8 hm hodd hframe hmod hmatch.2 htn0 hone
+      hn hn8 hm hodd hframe hmod hmatch.2 htn0 hone hminvDef
     rcases facts with ⟨hf, hmrep, hx, hy, ho⟩
     have hxform : X ≡ Precompile.bytesToNatPadded input 96 bsize * Limbs.radix ^ (3 * k) [MOD mm] := by
       rw [hbEq]
@@ -85,7 +86,7 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
     let base := Precompile.bytesToNatPadded input 96 (32 * n)
     let baseM := base % mm * Limbs.radix ^ n % mm
     have facts := ordinary_output_facts mem input n bsize mm minv
-      hn hn8 hm hodd hframe hmod hmatch.2 htn0 hone
+      hn hn8 hm hodd hframe hmod hmatch.2 htn0 hone hminvDef
     rcases facts with ⟨hf, hmrep, hbRep, haRep, ho⟩
     have hbForm : baseM ≡ Precompile.bytesToNatPadded input 96 bsize * Limbs.radix ^ n [MOD mm] := by
       rw [hbEq]
@@ -126,8 +127,9 @@ theorem handled_of_bound_shift_hit (input : ByteArray) (s : State) (mem : ByteAr
     (hmsz : msize = Challenge.Modexp.modulusSize input)
     (hmm : mm = Precompile.bytesToNatPadded input (96 + bsize + esize) msize)
     (hodd : mm % 2 = 1) (hradix : Limbs.radix ≤ mm) (hm : 0 < mm)
-    (hframe : Exp.Frame mem n bsize minv)
+    (hframe : Exp.Frame mem n bsize 0)
     (hmod : Model.FastRepresents mem 0 n mm)
+    (hminvDef : minv = Setup.negWord (Setup.newton8 (mm % Limbs.radix)))
     (hone : Model.FastRepresents mem 768 n 0)
     (hmatch : FullBase.Matches mem n bsize)
     (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0)
@@ -139,14 +141,14 @@ theorem handled_of_bound_shift_hit (input : ByteArray) (s : State) (mem : ByteAr
   let e : Shift.Env s := ⟨hcode, hfork, hrun, hnp, hact⟩
   apply handled_of_shift_hit input s mem n bsize esize msize mm minv sub spec
     hcode hfork hrun hnp hdata hstack hact hn hn8 hb he hmz hm32 hfull hbsize hesize hmsz
-    hmm hodd hradix hm hframe hmod hone hmatch htn0 hfast hminv1 hvalid hactLe
+    hmm hodd hradix hm hframe hmod hminvDef hone hmatch htn0 hfast hminv1 hvalid hactLe
   · intro h
     exact RootE3Trace.ordinaryTrace s mem input n bsize esize msize mm minv bindings
-      hn hn8 hmatch.1 e hm hodd hframe hmod hmatch.2 htn0 h hfast
+      hn hn8 hmatch.1 e hm hodd hframe hmod hminvDef hmatch.2 htn0 h hfast
   · intro h
     have hn4 : n = 4 * (n / 4) := by rcases h.2.2 with h4 | h8 <;> omega
     exact RootE3Trace.e3Trace s mem input n bsize esize msize mm minv (n / 4) bindings
-      hn hn8 hmatch.1 hn4 e hm hodd hframe hmod hmatch.2 htn0 h
+      hn hn8 hmatch.1 hn4 e hm hodd hframe hmod hminvDef hmatch.2 htn0 h
 
 #print axioms handled_of_bound_shift_hit
 end RootE3Correct

@@ -64,13 +64,14 @@ def ordinaryTrace (s : State) (mem input : ByteArray) (n bsize esize msize mm mi
     (bindings : TraceBindings s mem input n bsize esize msize)
     (hn : 2 ≤ n) (hn8 : n ≤ 8) (hbs : bsize = 32 * n) (e : Env s)
     (hm : 0 < mm) (hodd : mm % 2 = 1)
-    (hframe : Exp.Frame mem n bsize minv) (hmod : Model.FastRepresents mem 0 n mm)
+    (hframe : Exp.Frame mem n bsize 0) (hmod : Model.FastRepresents mem 0 n mm)
+    (hminvDef : minv = Setup.negWord (Setup.newton8 (mm % Limbs.radix)))
     (htop : R1.TopBitSet mem) (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0)
     (hmiss : ¬ Eligible input n bsize esize)
     (hfast : n = 4 ∨ n = 8) :
     GasSteps (dispState s mem n bsize esize msize)
       (FixedExponentRoute.entryState s (ordinaryFinal mem input n mm) n bsize esize msize) := by
-  have inv0 := m2_stepInv mem input n bsize mm minv hn hn8 hm hodd hframe hmod
+  have inv0 := m2_stepInv mem input n bsize mm minv hn hn8 hm hodd hframe hmod hminvDef
   have invPrep := flagSet_inv _ (UInt256.ofNat 0) n bsize mm minv hn8 inv0
   have hbase0 := m2_base_value mem input n mm hn hn8 hm hodd hmod htop htn0
   have hbasePrep := flagSet_preserves _ (UInt256.ofNat 0) 2112 n _
@@ -91,13 +92,14 @@ def e3Trace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv k :
     (bindings : TraceBindings s mem input n bsize esize msize)
     (hn : 2 ≤ n) (hn8 : n ≤ 8) (hbs : bsize = 32 * n) (hnk : n = 4 * k) (e : Env s)
     (hm : 0 < mm) (hodd : mm % 2 = 1)
-    (hframe : Exp.Frame mem n bsize minv) (hmod : Model.FastRepresents mem 0 n mm)
+    (hframe : Exp.Frame mem n bsize 0) (hmod : Model.FastRepresents mem 0 n mm)
+    (hminvDef : minv = Setup.negWord (Setup.newton8 (mm % Limbs.radix)))
     (htop : R1.TopBitSet mem) (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0)
     (hhit : Eligible input n bsize esize) :
     GasSteps (dispState s mem n bsize esize msize)
       (frameState s (e3Final mem input n mm k) 2471 n bsize esize msize) := by
   have hhalf : n / 2 = 2 * k := by omega
-  have inv0 := m2_stepInv mem input n bsize mm minv hn hn8 hm hodd hframe hmod
+  have inv0 := m2_stepInv mem input n bsize mm minv hn hn8 hm hodd hframe hmod hminvDef
   have hquarter : n / 4 = k := by omega
   have invPrep := flagSet_inv _ (UInt256.ofNat 1) n bsize mm minv hn8 inv0
   have hbase0 := m2_base_value mem input n mm hn hn8 hm hodd hmod htop htn0

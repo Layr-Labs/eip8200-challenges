@@ -45,11 +45,12 @@ theorem hitFinal_readWord_disjoint (mem input : ByteArray) (n mm addr : Nat) (hn
       (addr + 32 ≤ NEG ∨ NEG + 32 * n ≤ addr) ∧
       (addr + 32 ≤ PRE_L ∨ PRE_DINV + 66 ≤ addr) ∧
       (addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr) ∧
-      (addr + 32 ≤ 2080 ∨ 2112 + 32 * n ≤ addr)) :
+      (addr + 32 ≤ 2080 ∨ 2112 + 32 * n ≤ addr))
+    (h2720 : addr + 32 ≤ 2720 ∨ 2752 ≤ addr) :
     MachineState.readWord (hitFinalMem mem input n mm) addr = MachineState.readWord mem addr := by
   unfold hitFinalMem
   rw [stepMems_readWord_disjoint _ n mm addr hn ⟨hdisj.2.1, hdisj.2.2.2.2.1, hdisj.2.2.2.2.2⟩ n]
-  exact m2_readWord_disjoint mem input n addr hn hn32 hdisj
+  exact m2_readWord_disjoint mem input n addr hn hn32 hdisj h2720
 
 theorem hitFinal_preserves (mem input : ByteArray) (n mm ptr cnt v : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hdisj : (ptr + 32 * cnt ≤ 256 ∨ 256 + 32 * n ≤ ptr) ∧
@@ -58,11 +59,12 @@ theorem hitFinal_preserves (mem input : ByteArray) (n mm ptr cnt v : Nat) (hn : 
       (ptr + 32 * cnt ≤ PRE_L ∨ PRE_DINV + 66 ≤ ptr) ∧
       (ptr + 32 * cnt ≤ 1792 ∨ 1792 + 32 * n ≤ ptr) ∧
       (ptr + 32 * cnt ≤ 2080 ∨ 2112 + 32 * n ≤ ptr))
+    (hhi : ptr + 32 * cnt ≤ 2720 ∨ 2752 ≤ ptr)
     (hrep : Model.FastRepresents mem ptr cnt v) :
     Model.FastRepresents (hitFinalMem mem input n mm) ptr cnt v := by
   refine (Model.fastRepresents_congr ?_ v).2 hrep
   intro i hi
-  exact hitFinal_readWord_disjoint mem input n mm _ hn hn32 (by omega)
+  exact hitFinal_readWord_disjoint mem input n mm _ hn hn32 (by omega) (by omega)
 
 /-- `ACC` still holds the raw base at `BDONE`. -/
 theorem hitFinal_acc (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
@@ -89,20 +91,20 @@ theorem hitFinal_base (mem input : ByteArray) (n mm : Nat)
     exact m1_readWord_disjoint mem input n _ (by omega) hn32
       ⟨Or.inl (by omega), Or.inl (by omega), Or.inl (by omega), Or.inl (by omega)⟩
   have hmod2 : Model.FastRepresents (m2Of mem input n) 0 n mm := by
-    unfold m2Of preMem
+    unfold m2Of
     refine ShiftCacheModel.represents_cache _ n 0 n _ (Or.inl (by omega)) ?_
-    exact fastRepresents_preMemOf _ _ 0 n mm (Or.inl (by unfold PRE_L; omega))
+    exact fastRepresents_preMem _ 0 n mm (Or.inl (by unfold PRE_L; omega)) (by omega)
       (fastRepresents_negStep _ n 0 n mm (Or.inl (by unfold NEG; omega)) hmod1 n le_rfl)
   have hneg2 : Model.FastRepresents (m2Of mem input n) NEG n (Limbs.radix ^ n - mm) := by
-    unfold m2Of preMem
+    unfold m2Of
     refine ShiftCacheModel.represents_cache _ n NEG n _ (Or.inl (by unfold NEG; omega)) ?_
-    exact fastRepresents_preMemOf _ _ NEG n _ (Or.inl (by unfold NEG PRE_L; omega))
+    exact fastRepresents_preMem _ NEG n _ (Or.inl (by unfold NEG PRE_L; omega)) (by unfold NEG; omega)
       (neg_represents (m1Of mem input n) n mm (by omega) (by omega) hmpos hodd hmod1)
   have hbase2 : Model.FastRepresents (m2Of mem input n) 2112 n
       (Precompile.bytesToNatPadded input 96 (32 * n) % mm) := by
-    unfold m2Of preMem
+    unfold m2Of
     refine ShiftCacheModel.represents_cache _ n 2112 n _ (Or.inr (by omega)) ?_
-    exact fastRepresents_preMemOf _ _ 2112 n _ (Or.inr (by unfold PRE_DINV; omega))
+    exact fastRepresents_preMem _ 2112 n _ (Or.inr (by unfold PRE_DINV; omega)) (by omega)
       (fastRepresents_negStep _ n 2112 n _ (Or.inr (by unfold NEG; omega))
         (m1_base mem input n mm hn hn32 hmpos hodd hmod htop htn0) n le_rfl)
   exact stepMems_represents (m2Of mem input n) n mm _ hn hn32 hmpos hmm htop' hmod2 hneg2
@@ -119,8 +121,7 @@ private theorem readWord_setupMem_operand (input : ByteArray) (m0 target : Nat)
   unfold Setup.setupMem Setup.modulusMem Setup.varsMem
   -- `setupMem` does not store the R1 seed, so this read-through peels one
   -- `mstoreAt` fewer before the two `writeBytes`.
-  rw [Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
-    Setup.readWord_writeBytes_ne _ _ _ _
+  rw [Setup.readWord_writeBytes_ne _ _ _ _
       (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)),
     Setup.readWord_writeBytes_ne _ _ _ _
       (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)),
@@ -128,6 +129,23 @@ private theorem readWord_setupMem_operand (input : ByteArray) (m0 target : Nat)
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
+    Setup.readWord_empty]
+
+/-- The setup block no longer stores `V_MINV`: it reads 0 at the dispatcher. -/
+private theorem fastSetup_V_MINV_zero (input : ByteArray) (hpath : Setup.FastPath input) :
+    MachineState.readWord (Setup.fastSetupMemory input) 2720 = UInt256.ofNat 0 := by
+  have hm := hpath.2.1.2.2
+  have hS := Setup.s32_le_256 input hm
+  have hms := Setup.modulusSize_le_s32 input
+  unfold Setup.fastSetupMemory Setup.setupMem Setup.modulusMem Setup.varsMem
+  rw [Setup.readWord_writeBytes_ne _ _ _ _
+      (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)),
+    Setup.readWord_writeBytes_ne _ _ _ _
+      (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)),
+    Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
+    Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
+    Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
+    Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inr (by omega)),
     Setup.readWord_empty]
 
 private theorem fastSetup_R1_zero_compact (input : ByteArray) (hpath : Setup.FastPath input) :
@@ -194,8 +212,9 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     (hminvlt : minv < 2 ^ 256)
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0)
     (hxlt : Limbs.radix ^ (n - 1) < mm)
-    (hframe0 : Exp.Frame mem n bsize minv)
+    (hframe0 : Exp.Frame mem n bsize 0)
     (hmod0 : Model.FastRepresents mem 0 n mm)
+    (hminvDef : minv = Setup.negWord (Setup.newton8 (mm % Limbs.radix)))
     (hr1z : Model.FastRepresents mem 1024 n 0)
     (hacc0 : Model.FastRepresents mem 256 n 0)
     (hbase0 : Model.FastRepresents mem 512 n 0)
@@ -236,10 +255,10 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
   by_cases hmatch : FullBase.Matches mem n bsize
   · exact RootE3Correct.handled_of_bound_shift_hit input s mem n bsize esize msize mm minv
       sub hspec hcode hfork hrun hnp hdata hstack hact hn hn32 hb he hmz hm32 hfull
-      hbsize hesize hmsz hmm hodd hradix hmpos hframe0 hmod0 hone0 hmatch htn0 hfast
+      hbsize hesize hmsz hmm hodd hradix hmpos hframe0 hmod0 hminvDef hone0 hmatch htn0 hfast
       hminv1 hvalid hactLe
       (RootE3Bindings.build s mem input n bsize esize msize minv hn hn32 hb he e hdata hframe0 hmatch
-        htn0 hfast)
+        htn0 hfast (lowLimb_odd mem n mm (by omega) hodd hmod0))
   · -- The diverted miss.  The dispatcher's `JUMPI` no longer names the `R1`
     -- seeding block: this whole class leaves the fast path at `BAIL6` and enters
     -- `modexpBig` at pc 237.  `bigC_correct` re-reads the header from calldata and
@@ -314,10 +333,12 @@ theorem gasSteps_handled (input : ByteArray)
       (Exp.fastSetup_callStack input) hact hcds hn hn32 hpath.2.1.1 hpath.2.1.2.1 hpath.1
       (Setup.modulusSize_le_s32 input) hfull rfl rfl rfl (Setup.fastSetup_modulus_eq input)
       hodd hradix hmpos hminvlt hminvA hxlt
-      ⟨Setup.fastSetup_V_S32 input hpath, Setup.fastSetup_V_MINV input,
+      ⟨Setup.fastSetup_V_S32 input hpath, fastSetup_V_MINV_zero input hpath,
        Setup.fastSetup_V_ML input hpath, Setup.fastSetup_V_TL input hpath,
        Setup.fastSetup_V_EOFF input hpath⟩
-      (Setup.fastSetup_modulus input hpath) (fastSetup_R1_zero_compact input hpath)
+      (Setup.fastSetup_modulus input hpath)
+      (by unfold Setup.minvValue; rw [Setup.fastSetup_lowLimb input hpath])
+      (fastSetup_R1_zero_compact input hpath)
       (Exp.fastSetup_zero_block input hpath 256 (by omega) (by omega))
       (Exp.fastSetup_zero_block input hpath 512 (by omega) (by omega))
       (Exp.fastSetup_zero_block input hpath 768 (by omega) (by omega))

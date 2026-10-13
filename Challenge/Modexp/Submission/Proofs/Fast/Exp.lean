@@ -2027,8 +2027,7 @@ theorem readWord_setupMem_mid (input : ByteArray) (m0 target : Nat)
   unfold Setup.setupMem Setup.modulusMem Setup.varsMem
   -- `setupMem` does not store the R1 seed, so this read-through peels one
   -- `mstoreAt` fewer before the two `writeBytes`.
-  rw [Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
-    Setup.readWord_writeBytes_ne _ _ _ _
+  rw [Setup.readWord_writeBytes_ne _ _ _ _
       (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)),
     Setup.readWord_writeBytes_ne _ _ _ _
       (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)),
@@ -2060,8 +2059,7 @@ theorem readWord_setupMem_high (input : ByteArray) (m0 target : Nat)
   unfold Setup.setupMem Setup.modulusMem Setup.varsMem
   -- There is no seed store, so the region starts at 0x1000 rather than
   -- 0x1020 and the `Or.inr` peel that stepped over it is no longer needed.
-  rw [Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
-    Setup.readWord_writeBytes_ne _ _ _ _
+  rw [Setup.readWord_writeBytes_ne _ _ _ _
       (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)),
     Setup.readWord_writeBytes_ne _ _ _ _
       (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)),

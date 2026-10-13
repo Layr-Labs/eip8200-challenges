@@ -44,7 +44,6 @@ def pcNegMid : Nat := 2601
 /-- The four `JUMPDEST` pads on the negation loop's fall-through. -/
 def pcNegDone : Nat := 2611
 def pcPreNewton : Nat := 2658
-def pcNewtonB : Nat := 2686
 def pcShiftLoop : Nat := 2811
 def pcShiftBody : Nat := 2818
 def pcEstimate : Nat := 2832
@@ -172,13 +171,30 @@ def preNewtonState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : S
              PRE_X (preX (MachineState.readWord mem 0)))
              PRE_BMOD (preBmod (MachineState.readWord mem 0)) }
 
-/-- `NEWTON_B`: the half-way Newton iterate on top. -/
-def newtonBState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  { preNewtonState s mem n bsize esize msize with
-      pc := UInt256.ofNat pcNewtonB
-      stack := newton4W (preDodd (MachineState.readWord mem 0)) ::
-        preDodd (MachineState.readWord mem 0) :: preL (MachineState.readWord mem 0) ::
-        MachineState.readWord mem 0 :: outer n bsize esize msize }
+/-- The newton-batch head (pc 2658) over a raw memory `M`, with the top limb `d`. -/
+def nbHeadState (s : State) (M : ByteArray) (d : UInt256) (n bsize esize msize : Nat) : State :=
+  { s with pc := UInt256.ofNat pcPreNewton
+           stack := preDodd d :: preL d :: d :: outer n bsize esize msize
+           memory := M }
+
+/-- The shared Newton chain entry (pc 714): `dodd * n0` and the return pc 2694 on top. -/
+def nbSubState (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize msize : Nat) : State :=
+  { s with pc := UInt256.ofNat 714
+           stack := preDodd d * n0 :: UInt256.ofNat 2694 :: n0 :: preDodd d :: preL d :: d ::
+             outer n bsize esize msize
+           memory := M }
+
+/-- The newton-batch tail (pc 2694): the inverse of `dodd * n0` on top. -/
+def nbTailState (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize msize : Nat) : State :=
+  { s with pc := UInt256.ofNat 2694
+           stack := newton8W (preDodd d * n0) :: n0 :: preDodd d :: preL d :: d ::
+             outer n bsize esize msize
+           memory := M }
+
+/-- The memory the newton-batch tail leaves: `dinv := x * n0` and `V_MINV := -(dodd * x)`. -/
+def nbOutMem (M : ByteArray) (d n0 : UInt256) : ByteArray :=
+  Exp.storeWord (Exp.storeWord M PRE_DINV (newton8W (preDodd d * n0) * n0)) 2720
+    (UInt256.ofNat 0 - preDodd d * newton8W (preDodd d * n0))
 
 /-- The cache-setup entry (`E5`, pc 2764): the prologue has just parked the riding
 slots with the outer `n` in the scratch position. -/

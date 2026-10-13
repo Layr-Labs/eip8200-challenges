@@ -160,9 +160,10 @@ theorem hitFinal_neg (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 :
     exact m1_readWord_disjoint mem input n _ (by omega) hn32
       ⟨Or.inl (by omega), Or.inl (by omega), Or.inl (by omega), Or.inl (by omega)⟩
   have hneg2 : Model.FastRepresents (m2Of mem input n) NEG n (Limbs.radix ^ n - mm) := by
-    unfold m2Of preMem
+    unfold m2Of
     refine ShiftCacheModel.represents_cache _ n NEG n _ (Or.inl (by unfold NEG; omega)) ?_
-    exact fastRepresents_preMemOf _ _ NEG n _ (Or.inl (by unfold NEG PRE_L; omega))
+    exact fastRepresents_preMem _ NEG n _ (Or.inl (by unfold NEG PRE_L; omega))
+      (by unfold NEG; omega)
       (neg_represents (m1Of mem input n) n mm (by omega) (by omega) hmpos hodd hmod1)
   exact stepMems_neg (m2Of mem input n) n mm (by omega) hn32 hneg2 n
 
@@ -189,7 +190,8 @@ theorem m2_readWord_disjoint (mem input : ByteArray) (n addr : Nat) (hn : 1 ≤ 
       (addr + 32 ≤ NEG ∨ NEG + 32 * n ≤ addr) ∧
       (addr + 32 ≤ PRE_L ∨ PRE_DINV + 66 ≤ addr) ∧
       (addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr) ∧
-      (addr + 32 ≤ 2080 ∨ 2112 + 32 * n ≤ addr)) :
+      (addr + 32 ≤ 2080 ∨ 2112 + 32 * n ≤ addr))
+    (h2720 : addr + 32 ≤ 2720 ∨ 2752 ≤ addr) :
     MachineState.readWord (m2Of mem input n) addr = MachineState.readWord mem addr := by
   have hpre : addr + 32 ≤ PRE_L ∨ PRE_DINV + 32 ≤ addr := by
     rcases hdisj.2.2.2.1 with h | h
@@ -200,41 +202,64 @@ theorem m2_readWord_disjoint (mem input : ByteArray) (n addr : Nat) (hn : 1 ≤ 
     rcases hdisj.2.2.2.1 with h | h
     · left; unfold PRE_L at h; omega
     · right; unfold PRE_DINV at h; omega)]
-  unfold preMem
-  rw [preMemOf_readWord_disjoint _ _ addr hpre,
+  rw [preMem_readWord_disjoint _ addr hpre h2720,
     negStep_readWord_disjoint _ n addr hdisj.2.2.1 n le_rfl]
   exact m1_readWord_disjoint mem input n addr hn hn32 ⟨hdisj.1, hdisj.2.1, hdisj.2.2.2.2⟩
 
 /-- The step invariant at the shift loop entry. -/
 theorem m2_stepInv (mem input : ByteArray) (n bsize mm minv : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hodd : mm % 2 = 1)
-    (hframe : Exp.Frame mem n bsize minv) (hmod : Model.FastRepresents mem 0 n mm) :
+    (hframe : Exp.Frame mem n bsize 0) (hmod : Model.FastRepresents mem 0 n mm)
+    (hminvDef : minv = Setup.negWord (Setup.newton8 (mm % Limbs.radix))) :
     StepInv (m2Of mem input n) n bsize mm minv := by
-  have hm2high : ∀ addr, 2688 ≤ addr →
+  have hm2high : ∀ addr, 2688 ≤ addr → (addr + 32 ≤ 2720 ∨ 2752 ≤ addr) →
       MachineState.readWord (m2Of mem input n) addr = MachineState.readWord mem addr :=
-    fun addr haddr => m2_readWord_disjoint mem input n addr (by omega) hn32
+    fun addr haddr h2720 => m2_readWord_disjoint mem input n addr (by omega) hn32
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by unfold NEG; omega),
-        Or.inr (by unfold PRE_DINV; omega), Or.inr (by omega), Or.inr (by omega)⟩
+        Or.inr (by unfold PRE_DINV; omega), Or.inr (by omega), Or.inr (by omega)⟩ h2720
+  -- `V_MINV` is no longer set up before the dispatcher: the hit arm stores `-n0⁻¹`
+  -- (`preMem`) from the modulus low limb `n0 = mem[V_ML]`.
+  have hminvW : MachineState.readWord (m2Of mem input n) 2720 = UInt256.ofNat minv := by
+    have hX : ∀ addr, (addr + 32 ≤ 256 ∨ 256 + 32 * n ≤ addr) →
+        (addr + 32 ≤ NEG ∨ NEG + 32 * n ≤ addr) →
+        (addr + 32 ≤ 512 ∨ 512 + 32 * n ≤ addr) →
+        (addr + 32 ≤ 2080 ∨ 2112 + 32 * n ≤ addr) →
+        (addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr) →
+        MachineState.readWord (negStep (m1Of mem input n) n n).memory addr =
+          MachineState.readWord mem addr := by
+      intro addr h1 h2 h3 h4 h5
+      rw [negStep_readWord_disjoint _ n addr h2 n le_rfl]
+      exact m1_readWord_disjoint mem input n addr (by omega) hn32 ⟨h1, h3, h5, h4⟩
+    unfold m2Of
+    rw [ShiftCacheModel.read_disjoint _ n 2720 (Or.inr (by omega)), preMem_readWord_minv,
+      hX 2752 (Or.inr (by omega)) (Or.inr (by unfold NEG; omega)) (Or.inr (by omega))
+        (Or.inr (by omega)) (Or.inr (by omega)),
+      hframe.ml, Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (show 32 * n - 32 < 2 ^ 256 by omega),
+      hX (32 * n - 32) (Or.inl (by omega)) (Or.inl (by unfold NEG; omega)) (Or.inl (by omega))
+        (Or.inl (by omega)) (Or.inl (by omega)),
+      lowLimb_word mem n mm (by omega) hmod, newton8W_eq, Setup.neg_word, hminvDef]
   have hframe2 : Exp.Frame (m2Of mem input n) n bsize minv :=
-    ⟨by rw [hm2high 2688 le_rfl]; exact hframe.s32,
-     by rw [hm2high 2720 (by omega)]; exact hframe.minvW,
-     by rw [hm2high 2752 (by omega)]; exact hframe.ml,
-     by rw [hm2high 2784 (by omega)]; exact hframe.tl,
-     by rw [hm2high 2816 (by omega)]; exact hframe.eoff⟩
+    ⟨by rw [hm2high 2688 le_rfl (Or.inl (by omega))]; exact hframe.s32,
+     hminvW,
+     by rw [hm2high 2752 (by omega) (Or.inr le_rfl)]; exact hframe.ml,
+     by rw [hm2high 2784 (by omega) (Or.inr (by omega))]; exact hframe.tl,
+     by rw [hm2high 2816 (by omega) (Or.inr (by omega))]; exact hframe.eoff⟩
   have hmod1 : Model.FastRepresents (m1Of mem input n) 0 n mm := by
     refine (Model.fastRepresents_congr ?_ mm).2 hmod
     intro i hi
     exact m1_readWord_disjoint mem input n _ (by omega) hn32
       ⟨Or.inl (by omega), Or.inl (by omega), Or.inl (by omega), Or.inl (by omega)⟩
   have hmod2 : Model.FastRepresents (m2Of mem input n) 0 n mm := by
-    unfold m2Of preMem
+    unfold m2Of
     refine ShiftCacheModel.represents_cache _ n 0 n _ (Or.inl (by omega)) ?_
-    exact fastRepresents_preMemOf _ _ 0 n mm (Or.inl (by unfold PRE_L; omega))
+    exact fastRepresents_preMem _ 0 n mm (Or.inl (by unfold PRE_L; omega)) (by omega)
       (fastRepresents_negStep _ n 0 n mm (Or.inl (by unfold NEG; omega)) hmod1 n le_rfl)
   have hneg2 : Model.FastRepresents (m2Of mem input n) NEG n (Limbs.radix ^ n - mm) := by
-    unfold m2Of preMem
+    unfold m2Of
     refine ShiftCacheModel.represents_cache _ n NEG n _ (Or.inl (by unfold NEG; omega)) ?_
-    exact fastRepresents_preMemOf _ _ NEG n _ (Or.inl (by unfold NEG PRE_L; omega))
+    exact fastRepresents_preMem _ NEG n _ (Or.inl (by unfold NEG PRE_L; omega))
+      (by unfold NEG; omega)
       (neg_represents (m1Of mem input n) n mm (by omega) (by omega) hmpos hodd hmod1)
   exact ⟨hframe2, hmod2, hneg2, ShiftCacheModel.read_cache _ n,
     PreOK_cacheMem _ n (PreOK_preMem _)⟩
