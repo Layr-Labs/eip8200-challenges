@@ -1,158 +1,75 @@
-# EIP-8200 MODEXP: stack-v9 = 1954e3f4 (stack-v8) plus the N1 and P1 cuts
+# EIP-8200 MODEXP: stack-v10c = 5788127e (stack-v9) plus the n=8 squaring-kernel group and the 256-bit tail
 
-This image is our submission `1954e3f4` (stack-v8: `a87239b0` plus the B4, C2
-and e3skip cuts) plus two more cuts of ours: N1 (negation loop without the
-carry chain) and P1 (two CIOS frame transpositions). `a87239b0` is `bdd36736`
-(464,988 official, the record) plus precopy256, and `bdd36736` is the promoted
-image `af797111` with two merged submissions (`d0a1f9e9`, `984faab1`) and eight
-cuts of ours.
+Work by Claude Opus 5.5 agents in Claude Code, one per lane.
 
-5,544 bytes, 4,359 instructions (`1954e3f4`: 5,544 bytes, 4,361). Seed 0:
-461,838 gas (`1954e3f4` 463,094, `a87239b0` 464,354, `bdd36736` 465,890,
-`af797111` 467,695).
+This extends our `5788127e` (stack-v9, the current record at 462,538), which is `1954e3f4` plus our N1 and P1 cuts. Everything in `5788127e` is in this image. It adds fifteen cuts of ours: `p2`, `zloop`, `zreset`, `m9rot`, `dead5466`, `tl`, `msplit`, `deadbytes`, `offsets`, `depad`, `n8g`, `rarej`, `st8`, `frq` and `t256`. No cut in this image comes from another submission.
 
-## Merged from other submissions
+## Context and goal
 
-| Source | Bytes | Change | Gas, every seed |
+Minimise total gas over the 44 scorer vectors while `Correct bytecode` stays proved for the exact bytes. Direct base: our `5788127e`, 5,544 bytes, 4,359 instructions, 461,838 gas at seed 0. This image has 5,531 bytes and 4,364 instructions: 458,608 gas at seed 0, 3,230 below. `depad`, `deadbytes`, `dead5466` and `t256` change the code length, so most pcs after 2392 move. The generated `Artifact.lean` fails when S (distinct bytes per 64-byte chunk, summed) plus L (code length) plus 8 per chunk exceeds 8,194. This image: S 1,887, L 5,531, 87 chunks, so 8,114, 80 below the limit.
+
+## Setup
+
+- Source `Layr-Labs/eip8200-challenges` at `3db491e`. Lean `v4.31.0`; Comparator `v4.33.0-rc1`.
+- Gas: a Python replica of the scorer (Osaka gas plus a port of `Scorer.lean`'s corpus generator). It matched official per-vector gas on 12,144 public runs, the Lean scorer on every benched seed, and the official runs of our earlier submissions on all 44 vectors.
+- Proof check: a full `lake build Challenge.Modexp.Submission.Solution` of these exact bytes.
+
+## The cuts
+
+- **p2 and zloop.** The multiply and squaring row loops no longer carry the loop bound `pb` and the t-top address as separate constants. The frame holds the row pointer `q` (the loop exits when `q` reaches 0, so the tail is `DUP1 DUP3 JUMPI`) and `n1` in the bound slot. The squaring diagonal reads `a_i` from `mem[q + 0x920]`.
+- **zreset.** At the exit of a row loop the row pointer is exactly 0, so that value is the carry-cache reset `tn := 0` and the separate push goes.
+- **m9rot.** The M9 loop tests its counter at the bottom instead of the top. Entry counters are `n` or `n >> k`, always at least 1.
+- **dead5466.** The generic preclear trampoline [5466, 5483) is deleted. Its only predecessor was a statically dead block.
+- **tl.** The `tl` frame slot (the t-top address, 0x920 on every n=8 path) holds `n0 = mem[0xe0]`. The n=8 heads read `n0` with `DUP15`; setups read `tl` from memory.
+- **msplit.** One multiply loop per width with constant t-top addresses. The n=8 head falls through into the Duff base, the n=4 head has its own copy, and the multiply setup computes the head per width.
+- **deadbytes.** Statically unreachable filler inside the kernel is deleted (budget only).
+- **offsets.** Computed-jump offset constants become label expressions. 0 gas.
+- **depad.** Every `PUSHn` with leading zero bytes shrinks to its minimal width. 0 gas; the saved bytes pay for the other cuts under the artifact limit.
+- **n8g.** The n=8 squaring exit glue: a new block tests `tn` from the stack (`SWAP12` also resets the slot), does the `t` to `a` `MCOPY` with constants and the counter test, and jumps straight to the next first row or the multiply setup.
+- **rarej.** The `tn != 0` continuations jump straight into the width's subtraction (a new `JUMPDEST` for n=8), skipping the memory re-test and the width test.
+- **st8.** The `tn` store moves past the mode `JUMPI`; only the multiply and final fall-through need it. The rare n=8 continuation stores a nonzero word for the select.
+- **frq.** In the n=8 first row `q` is 0x100 on every entry, so `a_0 = mem[0xa20]` by constant (6 gas per n=8 squaring).
+- **t256.** The 256-bit route's last windows (a tail whose only predecessor is the jump at 2391) move inline at 2388. -12 gas per 256-bit vector. The five dead `JUMPDEST` pads at 2392 to 2396 go.
+
+Paired against `5788127e` the whole image saves 3,191 to 3,197 gas on average, and 3,087 to 3,230 on every one of the 62 seeds measured.
+
+## Proof changes
+
+- The n=8 squaring round has its own memory model (`SquareRoundC`, new): the round no longer flushes `tn` to 0x820, and the rare `tn != 0` path stores a nonzero word there for the select. `SquareLoop`, `TnM128SquareExit`, `TnM128SquareFinishSteps`, `TnM128SquareRowSteps` and the cache-trace files carry the new frame (row pointer `q`, `n1` and `n0` in frame slots) and the new exit blocks; `TnM128FusedEntry` has the per-width multiply setup; `CsubCore` splits the select tail for the nonzero-flag continuation.
+- `Exp.Subroutines.monpro` is removed. No consumer used it (dead5466 deletes its trampoline). Five dead files are deleted: `CarryEntryLemmas`, `CarryFullFast`, `CarryFullSpecializedEight`, `CarryFullSpecializedFour` and `TnM128FusionFrame`.
+- 57 more files only renumber pcs, indices or memory offsets. The tree differs from `5788127e` in 139 files in all (133 changed, 5 deleted, 1 new). `Solution.lean` is unchanged.
+
+## Cuts merged from other submissions (credited, declared)
+
+| Submission | Author | Bytes | Change | Gas, every seed |
+|---|---|---|---|---|
+| `d0a1f9e9` | Th0rgal | [4, 135), [864, 872) | EarlyWord guard; Fermat entry/return stack diet | -405 |
+| `984faab1` | UsamaInayat | [973, 994) | 256-bit window route setup block | -128 |
+
+Both entered through `bdd36736`; our C2 prologue and precopy256 route later superseded those exact bytes and kept the checks. The cuts that make up `5788127e` are listed in its own note: csub select tail, route padding, rsa-setup cuts 1 and 3, sqglue 1 and 2, layout-v1, csub2, precopy256, B4, C2, e3skip, N1 and P1.
+
+## Results
+
+Python replica, 44 vectors, 0 wrong outputs of 1,364 runs for both images in each sweep:
+
+| Sweep | Image | Mean | sd |
 |---|---|---|---|
-| `d0a1f9e9` (Th0rgal) | [4, 135), [864, 872) | EarlyWord guard; Fermat entry/return stack diet | -405 |
-| `984faab1` (UsamaInayat) | [973, 994) | 256-bit window route setup block | -128 |
+| seed 0 + 30 seeds of `random.Random(8200)` | `5788127e` (record) | 463,628.4 | 1,065.8 |
+| | **this image** | **460,436.9** | 1,074.4 |
+| 31 fresh seeds of `random.Random(20261015)` | `5788127e` (record) | 463,366.1 | 1,093.8 |
+| | **this image** | **460,169.6** | 1,111.2 |
 
-Cut 11 (C2) below rewrites the whole of [0, 135) and the route head, so the
-`d0a1f9e9` guard bytes are superseded by it; the Fermat check is carried into
-the new prologue and its proof files are rebound.
+- Paired against `5788127e`: -3,191.5 mean on the first sweep and -3,196.5 on the second, every seed negative (range -3,230 to -3,087).
+- A differential fuzz of these exact bytes against `pow` found 0 wrong of 2,050 completed inputs: 1,500 2048-bit moduli with e = 3 and 65,537 (random odd, near 2^2048 and 2^2047 plus small, bases below, near and above the modulus; 1,948 visits to the new rare `tn != 0` block), 500 1,024-bit moduli, and 50 mid-width inputs (950 more generic-width or leading-zero-limb inputs ran past the replica's step cap and are not counted).
+- Proof status: full Lean `Solution` build PASS on these exact bytes (exit 0, 2,327 jobs; `Challenge.Modexp.Benchmark.candidate` depends on axioms `[propext, Classical.choice, Quot.sound]`; no `sorry`). Comparator and official-scorer run of these exact bytes: not run before sending.
+- The official run draws its own random corpus seed, so a single run can land above the record: about 98% of draws are below 462,538 on the normal approximation of the 62 seeds.
 
-## Our cuts
+## Commands
 
-Each cut also edits `bytecode.hex`, `Bytes.lean`, `TnM128CandidateBytes` and
-the `TnM128CandidateArtifact` instruction list; `ShiftJumpTargets` is
-regenerated from the final instruction list. Cuts 1-9 are in `a87239b0`
-(1-8 in `bdd36736`), cuts 10-12 are in `1954e3f4`, and cuts 13 and 14 are new
-in this image. Cuts 10-12 keep every PC and every instruction index outside
-their own ranges. Cuts 13 and 14 keep every pc outside their own ranges and
-every existing `JUMPDEST` pc; instruction indices after 3977 move by -1 and
-after 4011 by -2 (P1).
-
-| # | Cut | Bytes | Change | Gas (31 seeds) | Main proof files |
-|---|---|---|---|---|---|
-| 1 | csub select tail | [4504, 4551) | `JUMPI` on the borrow flag instead of a branchless select | -117.3 mean | `Paths/CsubFixed`, `CsubCore` |
-| 2 | route padding | [992, 2380) | two executed padding `JUMPDEST`s move behind the route's `RETURN` | -64 every seed | `WindowTwentyOne{Init,Loop,Core,GasCore}`, `ArtifactWindowPaths` |
-| 3 | rsa-setup cut 1 | [4185, 4198) | n=4 first borrow limb uses the n=8 `DUP1 DUP3 SUB ... GT` pattern | -15.2 mean | `CsubFixed`, `ShiftPCs` |
-| 4 | sqglue attempt 1 | [4198, 4258), [5058, 5062) | each squaring exit pushes its own CSUB return | -454 every seed | `TnM128SquareExit`, `R4Hooks`, `SquareLoop*`, `R4*` |
-| 5 | rsa-setup cut 3 | [2883, 2896) | M9 quotient-estimate tail builds its all-ones mask early | -42 every seed | `ShiftPaths`, `ShiftTrace2`, `M9Mac*` |
-| 6 | sqglue attempt 2 | [4198, 4258), 5058 | n=8 squaring exit resets the carry and advances the row pointer at entry; `TnM128Again` deleted | -154 every seed | `TnM128SquareExit`, `SquareLoop*`, `R4*` |
-| 7 | layout-v1 | [3395, 3470), [3836, 3887), [5251, 5306) | the n0 frame slot holds limb n2 for n=8; +1 instruction | -420 every seed | 43 setup, reduction-row, cache and renumbering files |
-| 8 | csub2 | [4335, 4518), byte 4195 | 16-instruction trial-subtraction limb step `y = N + b; d = T - y; b' = (T < y) \| (b > y)` | -144.5 mean | `CsubFixed`, `CsubCore` |
-| 9 | precopy256 | [866, 2397), [5483, 5544) | precopied 256-bit window route | -1,536 every seed | `WindowPrecopy`, `WindowPrecopyRoute`, `WindowTwentyOne{Core,GasCore}`, `ArtifactWindowPaths`, index shift |
-| 10 | B4 | [2499, 2512), [4209, 4258), [5060, 5061) | square counter lives in the dead `pdst` slot; the n=4 counter is fused into its entry | -403 every seed | `TnM128SquareExit`, `SquareLoop{,Blocks,Mem,Runs}`, `R4{Blocks,Loop,Runs,Trace}`, `Exp`, `ExpSubs` |
-| 11 | C2 | [0, 132), [864, 878) | dispatch prologue and route head rewritten (below) | -673 every seed | `EarlyWord*`, `Fermat*`, `WindowTwentyOne{Entry,Positive,GasRoute,Correct}`, `ArtifactWindowPaths`, `MainDefs` |
-| 12 | e3skip | [2455, 2472), [3357, 3383), [5461, 5465) | skip the e=3 re-dispatch after the M9 phase switch | -184 every seed | `RootE3*`, `FixedDirect*`, `ShiftTrace{2-5}`, `M9MacShift`, `ShiftPCs` |
-| 13 | N1 | [2583, 2615) | negation loop without the borrow chain (below) | -296 every seed | `ShiftModel`, `ShiftStates`, `ShiftTrace{1,5}`, `ShiftCorrect`, `ShiftPaths`, `ShiftBlocks`, `RootE3{Memory,Trace}` |
-| 14 | P1 | 84 bytes in [3403, 5428) | two frame transpositions in the CIOS frame (below) | -960 every seed | `TnCache*`, `CiosCachedRowFrames`, `TnM128{Setup*,Row*,Rows*,Reduction*,R4Reduction,R8*,Square*}`, `R4Trace`, `SquareLoop`, `SgtStep` |
-
-Cuts 13 and 14: 113 bytes differ from `1954e3f4` (29 for N1, 84 for P1), all
-inside the ranges above.
-
-## Cut 10: B4, square counter
-
-The chain init sets `pdst := count - 1` (count 16 or 1 on the stack) and no
-longer writes `mem[0xa40]`. The per-square counter step reads `pdst` directly
-(31 gas against 38), so `pdst` counts `count - 1` down to 0, and the n=4 entry
-carries its own counter step (35 gas against a 15 gas trampoline plus 38).
-The R4 exit literal changes from `PUSH2 1090` to `PUSH2 108a`. Saving at seed 0: RSA-1024
-e=65537 -277, RSA-2048 e=65537 -112, the two e=3 vectors -7 each.
-
-## Cut 11: C2, dispatch prologue
-
-The old route path guarded on `(bs>32)|(es^32)|(ms^32)`, loaded the exponent
-and modulus at `96+bs` and `128+bs`, and sent every miss through a 14 gas
-trampoline. The new prologue tests `es` and `ms` first and sends a miss to the
-generic path with an empty stack, with no trampoline. For `bs = 32` it loads
-the exponent and modulus at fixed offsets (`CALLDATALOAD(0x80)`,
-`CALLDATALOAD(0xa0)`); for `bs < 32` a short block computes `k = 32 - bs` and
-rejoins the same code; `bs > 32` goes to the big-modulus entry (pc 238). The
-Fermat check and the route head at 872 follow. Two `JUMPDEST` pads keep the
-instruction count, and the width-hit jump at 861 now enters the new generic
-block instead of the old adapter (so the adapter at pc 112 and its proofs are
-gone). Case split in the proof: `es != 32` or `ms != 32` reaches 599 with the
-stack the old miss produced; `bs = es = ms = 32` gives `[0, e, m]` at the
-join; `bs > 32` reaches `BigCUMain.bigC_correct`, which accepts any stack.
-`MainDefs.headerPCs0` becomes `[0, 2]` (a `PUSH1` at pc 0), and the route tail
-bound in `WindowTwentyOneGasRoute` is 590 (precopy256's `steps_core` takes
-`rest <= 600`).
-
-## Cut 12: e3skip
-
-After the M9 phase switch an e=3 input used to walk back through the
-dispatcher. The phase switch now sets a marker `z = 30` (a new 14-instruction
-block `SWAP16 PUSH2 06e0 MSTORE PUSH1 1e SWAP16 ...`) and the cleanup jumps
-straight to 2471; the stub block at 3378 is no longer visited (its proof is
-deleted) and the dispatcher's width test is one merged 13-instruction test. Saving: -81 gas per e=3 vector and
--11 per e=65537 vector (-184 on every seed). In the proofs, `rideSlots` takes
-`z` as its last riding slot, `run_cleanup` goes `cleanupState (ofNat d)` to
-`frameState target` for `d` in `{0, 30}`, and `RootE3Correct` casts the e=3
-trace end `frameState 2471` to `FixedDirectStates.e3go` by `rfl`.
-
-## Cut 13: N1, negation loop
-
-A setup loop stores `NEG = 2^(256n) - m` limb by limb. The old loop ran a full
-borrow chain (68 gas per limb). The low limb of the modulus is odd on this
-route, so `NOT m0 + 1` never carries and every later limb is plain `NOT mi`.
-The new loop keeps a flag on top of the stack: `JUMPDEST DUP2 MLOAD NOT ADD
-DUP2 PUSH2 0500 ADD MSTORE PUSH0 DUP2 PUSH1 1f NOT ADD SWAP2 PUSH2 0a1d JUMPI`
-(55 gas per limb), followed by four `JUMPDEST` pads before pc 2615. Limb `j`
-stores `NOT m_j + flag`; the flag is 1 for limb 0 only, and the `PUSH0` clears
-it. The block at 2583 pushes `PUSH2 0ac0 MLOAD PUSH1 01` (pointer first, flag
-on top). The range [2574, 2615) keeps its length and its 29 instructions, so N1
-alone leaves every pc and every instruction index outside it unchanged. Saving: -48 on each of
-the two RSA-1024 vectors and -100 on each of the two RSA-2048 vectors (-296 on
-every seed). In the proofs, `negStep` stores `NOT m_j + flag` and clears the
-flag, `negStep_invariant` and `neg_represents` take the odd modulus (every
-caller already had it), and the loop and exit states carry the flag on top.
-
-## Cut 14: P1, CIOS frame transpositions
-
-In the n=8 reduction frame the cells for limbs n5 and n6 sit in slots 15 and
-16, which need the far cell form (`DUPs DUP10 DUP4 DUP3 MUL SWAP2 DUP5 MULMOD`,
-8 instructions, 31 gas). A limb in slot 14 or less uses the near form (`DUP2
-DUP(s+1) MUL DUP10 DUP(s+2) DUP5 MULMOD`, 7 instructions, 28 gas). P1 swaps
-`ninv` (slot 11) with n5 (slot 15) and `tn` (slot 8) with n6 (slot 16). `ninv`
-and `tn` are read once per row at shallow depth, so every DUP and SWAP index
-they use stays at or below 16, and only the n5 and n6 cells change gas: -3
-each. 160 rows per seed run these cells (152 n=8 rows and 8 n=4 multiply
-rows), so 160 x 2 x -3 = -960 on every seed (-24 on each RSA-1024 vector, -96
-on RSA-2048 e=3, -816 on RSA-2048 e=65537). The edits are 84 bytes in the setup
-loads, the multiply setup, the row head, the two cells (each padded to keep
-later pcs), the tail, the exit, the reset between squarings, the n=4 squaring
-entry, the first row and the n=4 multiply head. Instruction indices after 3977
-move by -1 and after 4011 by -2; no existing `JUMPDEST` pc moves.
-Six proof files needed hand merges against B4 and the new indices:
-`SgtStep`, `TnM128SgtStep`, `R4Trace`, `TnM128CandidateBlocks`,
-`TnM128SquareFinishSteps` and `SquareLoop`.
-
-## Artifact size
-
-The generated `Artifact.lean` fails when S (distinct bytes per 64-byte chunk,
-summed), L (code length) and 8 per chunk exceed 8,194. This image: S 1,935,
-L 5,544, 87 chunks, so S + L + 8 x 87 = 8,175 (19 below the limit).
-
-## Gas
-
-Python replica of the scorer, seed 0 plus 30 seeds, all 44 vectors, 0 wrong
-outputs of 1,364 runs:
-
-| Image | Seed 0 | Mean | sd |
-|---|---|---|---|
-| `af797111` | 467,695 | 469,624.4 | 1,155.8 |
-| `bdd36736` (cuts 1-8) | 465,890 | 467,680.4 | 1,065.8 |
-| `a87239b0` (cut 9) | 464,354 | 466,144.4 | 1,065.8 |
-| `1954e3f4` (cuts 10-12) | 463,094 | 464,884.4 | 1,065.8 |
-| this image (cuts 13-14) | 461,838 | 463,628.4 | 1,065.8 |
-
-The two new cuts are deterministic: -1,256 on every seed against `1954e3f4`
-(-296, -960), and exactly additive.
-
-A full build of `Challenge.Modexp.Submission.Solution` on these bytes exits 0;
-`Challenge.Modexp.Benchmark.candidate` depends on axioms
-`[propext, Classical.choice, Quot.sound]`. The Comparator and the official
-scorer have not been run on these exact bytes.
+```bash
+lake build Challenge.Modexp.Submission.Solution    # full proof build of the exact bytes
+# replica sweep; our script, not in the archive
+python3 multisweep.py v9=5788127e.hex v10c=Challenge/Modexp/Submission/bytecode.hex
+sha256sum Challenge/Modexp/Submission/bytecode.hex
+# 862e17e7636701a2cc995a7c5585645779bd67aa739bdd596cf78420ebe62298
+```

@@ -68,11 +68,11 @@ def gasSteps_macSection (z : UInt256) (n : Nat) (hn : n = 4 ∨ n = 8) (s : Stat
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      { s with pc := UInt256.ofNat 2895,
+      { s with pc := UInt256.ofNat 2936,
                stack := q :: Monpro.maxWord :: UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++
                  Exp.outer n bsize esize msize,
                memory := um }
-      { s with pc := UInt256.ofNat 3168,
+      { s with pc := UInt256.ofNat 3189,
                stack := (Monpro.l1Step um q Shift.NEG n n).carry :: q :: Monpro.maxWord ::
                  UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++ Exp.outer n bsize esize msize,
                memory := (Monpro.l1Step um q Shift.NEG n n).memory } :=

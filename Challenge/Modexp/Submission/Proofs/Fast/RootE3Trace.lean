@@ -28,23 +28,23 @@ structure TraceBindings (s : State) (mem input : ByteArray) (n bsize esize msize
   prologueE3 : Eligible input n bsize esize →
     GasSteps (dispState s mem n bsize esize msize)
       (shiftLoopState (UInt256.ofNat 0) s (e3Prepared mem input n) n bsize esize msize (n / 2))
-  /-- The switch also sets the riding exit slot from `0` to `30`. -/
+  /-- The switch also sets the riding exit slot from `0` to `28`. -/
   phaseSwitch : (n = 4 ∨ n = 8) → ∀ phaseMem : ByteArray,
     MachineState.readWord phaseMem 1760 = UInt256.ofNat 1 →
-    GasSteps (shiftLoopState (UInt256.ofNat 0) s phaseMem n bsize esize msize 0)
-      (shiftLoopState (UInt256.ofNat 30) s (RootE3Phase.phaseSwitch phaseMem n) n bsize esize
+    GasSteps (shiftDoneState (UInt256.ofNat 0) s phaseMem n bsize esize msize)
+      (shiftLoopState (UInt256.ofNat 28) s (RootE3Phase.phaseSwitch phaseMem n) n bsize esize
         msize (n / 4))
   /-- Exit slot `0`: the cleanup tail lands on the exponent dispatcher (2441). -/
   finalTail : ∀ phaseMem : ByteArray,
     MachineState.readWord phaseMem 1760 = UInt256.ofNat 0 →
     MachineState.readWord phaseMem 2688 = UInt256.ofNat (32 * n) →
-    GasSteps (shiftLoopState (UInt256.ofNat 0) s phaseMem n bsize esize msize 0)
+    GasSteps (shiftDoneState (UInt256.ofNat 0) s phaseMem n bsize esize msize)
       (FixedExponentRoute.entryState s phaseMem n bsize esize msize)
-  /-- Exit slot `30` (after the E3 switch): the cleanup tail lands on `e3go` (2471). -/
+  /-- Exit slot `28` (after the E3 switch): the cleanup tail lands on `e3go` (2471). -/
   e3Tail : ∀ phaseMem : ByteArray,
     MachineState.readWord phaseMem 1760 = UInt256.ofNat 0 →
-    GasSteps (shiftLoopState (UInt256.ofNat 30) s phaseMem n bsize esize msize 0)
-      (frameState s phaseMem 2471 n bsize esize msize)
+    GasSteps (shiftDoneState (UInt256.ofNat 28) s phaseMem n bsize esize msize)
+      (frameState s phaseMem 2520 n bsize esize msize)
 
 theorem phaseSwitch_flag_zero (mem : ByteArray) (n : Nat) (hn8 : n ≤ 8) :
     MachineState.readWord (RootE3Phase.phaseSwitch mem n) 1760 = UInt256.ofNat 0 := by
@@ -78,7 +78,7 @@ def ordinaryTrace (s : State) (mem input : ByteArray) (n bsize esize msize mm mi
   have htwo := R1.radix_pow_lt_two_mul (by omega) hodd hmod htop
   have loop := gasSteps_shiftLoop_count (UInt256.ofNat 0) s
     (flagSet (m2Of mem input n) (UInt256.ofNat 0))
-    n bsize esize msize mm minv _ n (by omega) hn hn8 hbs e hm (Model.fastRepresents_lt hmod)
+    n bsize esize msize mm minv _ n (by omega) (by omega) hn hn8 hbs e hm (Model.fastRepresents_lt hmod)
     htwo invPrep hbasePrep (Nat.mod_lt _ hm) hfast
   have invFinal := stepInv_stepMems (by omega) hn8 invPrep n
   have hflag := flag_after_steps (m2Of mem input n) (UInt256.ofNat 0) n mm n (by omega) hn8
@@ -86,7 +86,7 @@ def ordinaryTrace (s : State) (mem input : ByteArray) (n bsize esize msize mm mi
     (bindings.finalTail _ hflag invFinal.frame.s32)
 
 /-- E3 route: exactly `2k` reductions, the clear/copy phase change (which sets the exit slot
-to `30`), exactly `k` reductions, then the cleanup tail straight to `e3go` (2471). -/
+to `28`), exactly `k` reductions, then the cleanup tail straight to `e3go` (2471). -/
 def e3Trace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv k : Nat)
     (bindings : TraceBindings s mem input n bsize esize msize)
     (hn : 2 ≤ n) (hn8 : n ≤ 8) (hbs : bsize = 32 * n) (hnk : n = 4 * k) (e : Env s)
@@ -95,7 +95,7 @@ def e3Trace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv k :
     (htop : R1.TopBitSet mem) (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0)
     (hhit : Eligible input n bsize esize) :
     GasSteps (dispState s mem n bsize esize msize)
-      (frameState s (e3Final mem input n mm k) 2471 n bsize esize msize) := by
+      (frameState s (e3Final mem input n mm k) 2520 n bsize esize msize) := by
   have hhalf : n / 2 = 2 * k := by omega
   have inv0 := m2_stepInv mem input n bsize mm minv hn hn8 hm hodd hframe hmod
   have hquarter : n / 4 = k := by omega
@@ -105,7 +105,7 @@ def e3Trace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv k :
     (Or.inr (by omega)) hbase0
   have htwo := R1.radix_pow_lt_two_mul (by omega) hodd hmod htop
   have firstLoop := gasSteps_shiftLoop_count (UInt256.ofNat 0) s (e3Prepared mem input n)
-    n bsize esize msize mm minv _ (2 * k) (by omega) hn hn8 hbs e hm
+    n bsize esize msize mm minv _ (2 * k) (by omega) (by omega) hn hn8 hbs e hm
     (Model.fastRepresents_lt hmod) htwo invPrep hbasePrep (Nat.mod_lt _ hm) hhit.2.2
   have invFirst := stepInv_stepMems (by omega) hn8 invPrep (2 * k)
   have hbaseFirst := stepMems_represents (e3Prepared mem input n) n mm _ hn hn8 hm
@@ -114,9 +114,9 @@ def e3Trace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv k :
   have invSwitch := phaseSwitch_inv _ n bsize mm minv hn8 invFirst
   have hbaseSwitch := phaseSwitch_preserves _ n 2112 n _ (Or.inr (by omega))
     (Or.inl (by omega)) hbaseFirst
-  have secondLoop := gasSteps_shiftLoop_count (UInt256.ofNat 30) s
+  have secondLoop := gasSteps_shiftLoop_count (UInt256.ofNat 28) s
     (RootE3Phase.phaseSwitch (stepMems (e3Prepared mem input n) n mm (2 * k)) n)
-    n bsize esize msize mm minv _ k (by omega) hn hn8 hbs e hm
+    n bsize esize msize mm minv _ k (by omega) (by omega) hn hn8 hbs e hm
     (Model.fastRepresents_lt hmod) htwo invSwitch hbaseSwitch (Nat.mod_lt _ hm) hhit.2.2
   have hflagFirst : MachineState.readWord (stepMems (e3Prepared mem input n) n mm (2 * k)) 1760 =
       UInt256.ofNat 1 := flag_after_steps (m2Of mem input n) _ n mm (2 * k) (by omega) hn8

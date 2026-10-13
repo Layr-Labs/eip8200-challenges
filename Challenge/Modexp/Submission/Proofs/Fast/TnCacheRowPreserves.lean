@@ -51,7 +51,8 @@ theorem Cached.row {z : CacheState} {pa n : Nat} {tl inv m0 m96 m64 m32 : UInt25
     Cached (TnCacheRowModel.row z pa pb n i).memory pa n tl inv m0 m96 m64 m32 := by
   refine ⟨h.readonly.of_preserved
       (read_row z pa pb n i 2720 hn (Or.inr (by decide)))
-      (read_row z pa pb n i (16*n+32) hn (Or.inl (by omega))),
+      (read_row z pa pb n i (16*n+32) hn (Or.inl (by omega)))
+      (read_row z pa pb n i 224 hn (Or.inl (by omega))),
     h.extra.of_preserved
       (read_row z pa pb n i 96 hn (Or.inl (by decide)))
       (read_row z pa pb n i 64 hn (Or.inl (by decide)))

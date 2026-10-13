@@ -17,10 +17,10 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 open TnCacheRowModel TnCacheRowPreserves TnCacheRowPointers TnCacheSquarePreserves
 open TnM128ReductionSteps
 
-def sqEnt (n i : Nat) : Nat := 3562+37*(8-n+i)
+def sqEnt (n i : Nat) : Nat := 3579+37*(8-n+i)
 
 theorem sqEnt_suffix (n i : Nat) (hn : n ≤ 8) (hi : i < n) :
-    sqEnt n i = 3821-37*(n-1-i) := by unfold sqEnt; omega
+    sqEnt n i = 3838-37*(n-1-i) := by unfold sqEnt; omega
 
 theorem sqEnt_next (n i : Nat) : sqEnt n i + 37 = sqEnt n (i+1) := by
   unfold sqEnt; omega
@@ -28,11 +28,12 @@ theorem sqEnt_next (n i : Nat) : sqEnt n i + 37 = sqEnt n (i+1) := by
 def result (z : CacheState) (n i : Nat) (aprev : UInt256) : CacheState :=
   TnCacheSquareModel.fromL1 (sqL1 z.memory n i (UInt256.sgt (UInt256.ofNat 0) aprev)) z.tn n
 
+/-- A square row head: row pointer `q = 32·(n - i)`, third frame word `w3` (`n1`). -/
 def rowState (s : State) (z : CacheState) (n i : Nat) (aprev : UInt256)
-    (tl inv m0 m96 m64 m32 dst ret : UInt256) (rest : List UInt256) : State :=
+    (w3 tl inv m0 m96 m64 m32 dst ret : UInt256) (rest : List UInt256) : State :=
   framed {s with memory := z.memory}
-    (if i < n then UInt256.ofNat 4258 else UInt256.ofNat 4128)
-    (TnCacheFrameOps.frame (pointer 2368 n i) (UInt256.ofNat 4258) (UInt256.ofNat 2336)
+    (if i < n then UInt256.ofNat 4293 else UInt256.ofNat 4138)
+    (TnCacheFrameOps.frame (qptr n i) (UInt256.ofNat 4293) w3
       (UInt256.ofNat (sqEnt n i)) m32 (MachineState.readWord z.memory 128) m64
       (m0 :: tl :: m96 :: inv :: z.tn :: aprev :: dst :: ret :: rest))
 
@@ -41,12 +42,13 @@ and real next-row branch, with arbitrary incoming cached carry and previous limb
 noncomputable def step (s : State)
     (env : Environment TnM128CandidateArtifact.submissionArtifact .Osaka s)
     (z : CacheState) (n i : Nat) (hn : n = 8) (hi : i < n)
-    (aprev tl inv m0 m96 m64 m32 dst ret : UInt256)
+    (aprev w3 tl inv m0 m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
-    (hc : Cached z.memory 2368 n tl inv m0 m96 m64 m32) :
-    GasSteps (rowState s z n i aprev tl inv m0 m96 m64 m32 dst ret rest)
+    (hc : Cached z.memory 2368 n tl inv m0 m96 m64 m32)
+    (hw3 : w3 = MachineState.readWord z.memory 192) :
+    GasSteps (rowState s z n i aprev w3 tl inv m0 m96 m64 m32 dst ret rest)
       (rowState s (result z n i aprev) n (i+1) (sqX z.memory n i)
-        tl inv m0 m96 m64 m32 dst ret rest) := by
+        w3 tl inv m0 m96 m64 m32 dst ret rest) := by
   let tb := UInt256.sgt (UInt256.ofNat 0) aprev
   let q0 := sqPro z.memory n i tb
   let b2 := sqB2 (sqX z.memory n i) tb
@@ -56,15 +58,15 @@ noncomputable def step (s : State)
   have he := sqEnt_suffix n i hn8 hi
   have hj : Decode.isValidJumpDest TnM128Candidate.bytecode (sqEnt n i) = true := by
     rw [he]; exact TnM128L1Jumps.entry_jump (n-1-i) (by omega)
-  have hhead : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4258).toNat = true := by
-    change Decode.isValidJumpDest s.executionEnv.code 4258 = true
+  have hhead : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4293).toNat = true := by
+    change Decode.isValidJumpDest s.executionEnv.code 4293 = true
     rw [env.code]; exact TnM128L1Jumps.square_jump
   have g0 := TnM128SquareSteps.prologue_steps s z.memory m32 (MachineState.readWord z.memory 128) n i (sqEnt n i)
-    m64 m0 tl m96 inv z.tn aprev (dst :: ret :: rest)
+    w3 m64 m0 tl m96 inv z.tn aprev (dst :: ret :: rest)
     (by simp only [List.length_cons]; omega) env.running env.code env.forkEq env.noPrecompile
     hact hi hn8 hj (by unfold sqEnt; omega)
   have g1 := TnM128L1Steps.suffix_steps s env q0 b2 2368 n (i+1) (n-1-i) (by omega)
-    (pointer 2368 n i) (UInt256.ofNat 4258) (UInt256.ofNat 2336)
+    (UInt256.ofNat (32*(n-i))) (UInt256.ofNat 4293) w3
     (UInt256.ofNat (sqEnt n i+37)) m32 (MachineState.readWord z.memory 128) m64 tail
     (by simp only [tail, List.length_cons]; omega) hact hn8 (by omega)
     (Or.inr rfl) (by intro j _; rfl)
@@ -72,26 +74,29 @@ noncomputable def step (s : State)
   have g01 := g0.trans g1
   have hc1 := sqL1_cached hc i tb hi hn8
   have g2 := reduction_steps s env q1 b2 z.tn n (Or.inr hn)
-    (pointer 2368 n i) (UInt256.ofNat 4258) (UInt256.ofNat 2336)
+    (UInt256.ofNat (32*(n-i))) (UInt256.ofNat 4293) w3
     (UInt256.ofNat (sqEnt n i+37)) (MachineState.readWord z.memory 128) tl inv m0 (sqX z.memory n i) m96 m64 m32 dst ret rest
     hcap hact hc1.readonly hc1.extra hc1.inverse
-    (readWord_sqL1 z.memory n i 128 tb hi (Or.inl (by decide))).symm hhead
-  have hm : middlePC n = 3822 := by subst n; rfl
+    (readWord_sqL1 z.memory n i 128 tb hi (Or.inl (by decide))).symm
+    (fun _ => hw3.trans (readWord_sqL1 z.memory n i 192 tb hi (Or.inl (by decide))).symm) hhead
+  have hm : middlePC n = 3839 := by subst n; rfl
   rw [hm] at g2
   have both := g01.trans g2
-  have hcond := pointer_condition 2368 n i (by decide) (by omega) hi
-  rw [pointer_succ] at hcond
-  rw [pointer_succ] at both
+  have hcond := qptr_condition n i hn8 hi
+  rw [qptr_succ n i hn8 hi] at hcond
+  have hsucc := qptr_succ n i hn8 hi
+  unfold qptr at hcond hsucc
+  rw [hsucc] at both
   simp only [hcond, sqEnt_next, Nat.reduceAdd] at both
   have hcacheResult : MachineState.readWord (result z n i aprev).memory 128 =
       MachineState.readWord z.memory 128 := by
     unfold result
     rw [TnMod128Invariant.fromL1_read,
       readWord_sqL1 z.memory n i 128 _ hi (Or.inl (by decide))]
-  simp only [rowState, hcacheResult, if_pos hi]
+  simp only [rowState, hcacheResult, if_pos hi, qptr]
   simpa only [TnM128SquareSteps.outState,
     TnM128SquareSteps.l1Q, result, sqL1, q0, q1, b2, tb, tail,
-    pointer, Nat.reduceSub, TnMod128Invariant.fromL1_read,
+    Nat.reduceSub, TnMod128Invariant.fromL1_read,
     readWord_sqL1 z.memory n i 128 tb hi (Or.inl (by decide))] using both
 
 #print axioms step

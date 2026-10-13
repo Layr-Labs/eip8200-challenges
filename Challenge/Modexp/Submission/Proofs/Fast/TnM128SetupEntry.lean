@@ -40,10 +40,10 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     runInstructions fullEntryProgram (setupState s mem hd pa pb dst ret rest) =
     some (outState s (SquarePartialClear.memory (stage mem pa n)) pb n 0 hd (l1Target n)
       (MachineState.readWord mem 32) (MachineState.readWord mem 64) (MachineState.readWord mem (16*n+32))
-      (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
+      (MachineState.readWord mem 224 :: MachineState.readWord mem 96 ::
         MachineState.readWord mem 2720 :: zeroTn ::
         UInt256.ofNat (pa+32*n-32) :: dst :: ret :: rest)) := by
-  let tl := MachineState.readWord mem 2784
+  let tl := MachineState.readWord mem 224
   let inv := MachineState.readWord mem 2720
   let m0 := MachineState.readWord mem (16*n+32)
   let aEnd := UInt256.ofNat (pa+32*n-32)
@@ -66,7 +66,7 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (EntryPrefix.displacement mem) rest hcap hact
   have hlow := EntryPrefix.run_low { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb)
-    (UInt256.ofNat 3562 + EntryPrefix.displacement mem)
+    (UInt256.ofNat 3579 + EntryPrefix.displacement mem)
     (MachineState.readWord mem 128)
     dst ret m0 m64 aEnd tl m96 zeroTn m32 rest hcap hact
   have hprefix := runInstructions_append_some _ _ _ _ _
@@ -76,7 +76,7 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
   -- 192, 224 (n = 5,6,7), where the mask is still set.  `n = 4 ∨ n = 8` is what makes this
   -- step true, and it holds because the kernel is only ever entered from the two
   -- specialised width carriers.
-  have hdisp1 : UInt256.ofNat 3562 + EntryPrefix.displacement mem = l1Target n := by
+  have hdisp1 : UInt256.ofNat 3579 + EntryPrefix.displacement mem = l1Target n := by
     rcases hn4 with rfl | rfl <;>
       rw [EntryPrefix.displacement, hs32] <;> decide
   have hmasked :
@@ -114,12 +114,12 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
     (hslot : rest[2]? = some (UInt256.ofNat n))
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions fullEntryProgram (setupState s mem hd pa pb dst ret rest) =
-    some (outState s (SquarePartialClear.memory (stage mem pa n)) pb n 0 hd (UInt256.ofNat 3562)
+    some (outState s (SquarePartialClear.memory (stage mem pa n)) pb n 0 hd (UInt256.ofNat 3579)
       (MachineState.readWord mem 32) (MachineState.readWord mem 64) (MachineState.readWord mem (16*n+32))
-      (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
+      (MachineState.readWord mem 224 :: MachineState.readWord mem 96 ::
         MachineState.readWord mem 2720 :: zeroTn ::
         UInt256.ofNat (pa+32*n-32) :: dst :: ret :: rest)) := by
-  let tl := MachineState.readWord mem 2784
+  let tl := MachineState.readWord mem 224
   let inv := MachineState.readWord mem 2720
   let m0 := MachineState.readWord mem (16*n+32)
   let aEnd := UInt256.ofNat (pa+32*n-32)
@@ -139,17 +139,17 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
   rw [hAend] at hreads
   have hshuffle := EntryPrefix.run_shuffle { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret m0 m64 aEnd tl m96 zeroTn m32
-    (UInt256.ofNat 1747 * CapDispatch.selectBit (UInt256.ofNat n)) rest hcap hact
+    (UInt256.ofNat 1748 * CapDispatch.selectBit (UInt256.ofNat n)) rest hcap hact
   have hlow := EntryPrefix.run_low { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb)
-    (UInt256.ofNat 3562 + (UInt256.ofNat 1747 * CapDispatch.selectBit (UInt256.ofNat n)))
+    (UInt256.ofNat 3579 + (UInt256.ofNat 1748 * CapDispatch.selectBit (UInt256.ofNat n)))
     (MachineState.readWord mem 128)
     dst ret m0 m64 aEnd tl m96 zeroTn m32 rest hcap hact
   have hprefix := runInstructions_append_some _ _ _ _ _
     (runInstructions_append_some _ _ _ _ _ hreads hshuffle) hlow
-  have hdisp1 : UInt256.ofNat 3562 +
-      (UInt256.ofNat 1747 * CapDispatch.selectBit (UInt256.ofNat n)) =
-      UInt256.ofNat 3562 := by
+  have hdisp1 : UInt256.ofNat 3579 +
+      (UInt256.ofNat 1748 * CapDispatch.selectBit (UInt256.ofNat n)) =
+      UInt256.ofNat 3579 := by
     rcases hn4 with rfl | rfl <;> decide
   have hmasked :
       runInstructions ((EntryPrefix.loadProgram ++ EntryPrefix.shuffleProgram) ++

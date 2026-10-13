@@ -146,5 +146,84 @@ theorem run_first (pc0 : Nat) (s : State)
       Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc]
   simpa only [commonFirstProgram, frame, hpc] using hall
 
+theorem run_fusedLoadC (s : State) (t : Nat) (ht : t < 65536)
+    (pc mm lo bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 998)
+    (hactive : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat t 32) = s.activeWords) :
+    runInstructions (commonFusedLoadC t)
+      (framed s pc ([mm,lo,bi] ++ tail pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
+    some (framed s (pc+UInt256.ofNat 10)
+      ([MachineState.readWord s.memory t+lo,UInt256.lt mm lo-mm,lo,bi] ++
+        tail pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
+  have hc19 : rest.length+19 < 1024 := by omega
+  have hc20 : rest.length+20 < 1024 := by omega
+  have hc21 : rest.length+21 < 1024 := by omega
+  have htn : (UInt256.ofNat t).toNat = t := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  simp [commonFusedLoadC,runInstructions,Challenge.EvmProof.Stepper.runInstr,
+    framed,tail,hc19,hc20,hc21,State.activeWordsAfterUInt256,hactive,htn,
+    succ_eq_add,word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod]
+
+theorem run_fusedStoreC (s : State) (t : Nat) (ht : t < 65536)
+    (pc value d lo bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 998)
+    (hactive : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat t 32) = s.activeWords) :
+    runInstructions (commonFusedStoreC t)
+      (framed s pc ([value,d,lo,bi] ++ tail pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
+    some (framed {s with memory := (MachineState.writeBytes s.memory
+      (Data.Bytes.natToBytesPadded value.toNat 32) t)} (pc+UInt256.ofNat 9)
+      ([(UInt256.gt lo value-d)-lo,bi] ++ tail pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
+  have hc18 : rest.length+18 < 1024 := by omega
+  have hc19 : rest.length+19 < 1024 := by omega
+  have hc20 : rest.length+20 < 1024 := by omega
+  have hc21 : rest.length+21 < 1024 := by omega
+  have hc22 : rest.length+22 < 1024 := by omega
+  have htn : (UInt256.ofNat t).toNat = t := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  simp [commonFusedStoreC,runInstructions,Challenge.EvmProof.Stepper.runInstr,
+    framed,tail,hc18,hc19,hc20,hc21,hc22,State.activeWordsAfterUInt256,hactive,htn,
+    succ_eq_add,word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod]
+
+/-- `run_first` with the accumulator word at the code constant `t`. -/
+theorem run_firstC (pc0 : Nat) (s : State) (t : Nat) (ht : t < 65536)
+    (bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 998)
+    (hA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat aEnd.toNat 32) = s.activeWords)
+    (hT : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat t 32) = s.activeWords) :
+    runInstructions (commonFirstProgramC t)
+      (framed s (UInt256.ofNat pc0)
+        ([bi] ++ tail pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
+    some (framed {s with memory := (MachineState.writeBytes s.memory
+        (Data.Bytes.natToBytesPadded
+          (macSum (MachineState.readWord s.memory aEnd.toNat) bi
+            (MachineState.readWord s.memory t) (UInt256.ofNat 0)).toNat 32) t)}
+      (UInt256.ofNat (pc0 + 28))
+      ([macCarry (MachineState.readWord s.memory aEnd.toNat) bi
+        (MachineState.readWord s.memory t) (UInt256.ofNat 0), bi] ++
+        tail pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
+  let frame := tail pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest
+  let x := MachineState.readWord s.memory aEnd.toNat
+  have hl := run_load s (UInt256.ofNat pc0) bi pbi pa pb flag tn target2
+    tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hA
+  have hm := CiosNoDummyCarry.run_multiply s (advancePC 3 (UInt256.ofNat pc0)) x bi frame
+    (by simp only [frame, tail, List.length_append, List.length_cons, List.length_nil]; omega)
+  have hfl := run_fusedLoadC s t ht (advancePC 6 (advancePC 3 (UInt256.ofNat pc0)))
+    (UInt256.mulMod bi x maxWord) (x*bi) bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32
+    dst ret rest hcap hT
+  have hfs := run_fusedStoreC s t ht (advancePC 6 (advancePC 3 (UInt256.ofNat pc0)) + UInt256.ofNat 10)
+    (MachineState.readWord s.memory t+x*bi)
+    (UInt256.lt (UInt256.mulMod bi x maxWord) (x*bi) - UInt256.mulMod bi x maxWord) (x*bi) bi
+    pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hT
+  have hf := runInstructions_append_some _ _ _ _ _ hfl hfs
+  rw [fused_carry, fused_sum] at hf
+  have both := runInstructions_append_some _ _ _ _ _ hl hm
+  have hall := runInstructions_append_some _ _ _ _ _ both hf
+  have hpc : advancePC 6 (advancePC 3 (UInt256.ofNat pc0)) + UInt256.ofNat 10 + UInt256.ofNat 9 =
+      UInt256.ofNat (pc0 + 28) := by
+    simp [advancePC, Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc]
+  simpa only [commonFirstProgramC, frame, x, hpc] using hall
+
 #print axioms run_first
+#print axioms run_firstC
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheFirstTrace

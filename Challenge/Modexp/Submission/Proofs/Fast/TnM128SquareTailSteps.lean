@@ -33,7 +33,8 @@ theorem row_cached {z : CacheState} {n : Nat} {tl inv m0 m96 m64 m32 : UInt256}
     Cached (squareRow z n i).memory 2368 n tl inv m0 m96 m64 m32 := by
   refine ⟨h.readonly.of_preserved
       (read_squareRow z n i 2720 hi hn (Or.inr (by decide)))
-      (read_squareRow z n i (16*n+32) hi hn (Or.inl (by omega))),
+      (read_squareRow z n i (16*n+32) hi hn (Or.inl (by omega)))
+      (read_squareRow z n i 224 hi hn (Or.inl (by omega))),
     h.extra.of_preserved
       (read_squareRow z n i 96 hi hn (Or.inl (by decide)))
       (read_squareRow z n i 64 hi hn (Or.inl (by decide)))
@@ -69,19 +70,20 @@ theorem run_lift (z : CacheState) (mem : ByteArray) (n start : Nat) (hn : n ≤ 
       rfl
 
 def state (s : State) (z : CacheState) (n i : Nat)
-    (tl inv m0 m96 m64 m32 dst ret : UInt256) (rest : List UInt256) : State :=
-  rowState s z n i (previous z.memory n i) tl inv m0 m96 m64 m32 dst ret rest
+    (w3 tl inv m0 m96 m64 m32 dst ret : UInt256) (rest : List UInt256) : State :=
+  rowState s z n i (previous z.memory n i) w3 tl inv m0 m96 m64 m32 dst ret rest
 
 noncomputable def step (s : State)
     (env : Environment TnM128CandidateArtifact.submissionArtifact .Osaka s)
     (z : CacheState) (n i : Nat) (hn : n = 8) (hi : i < n)
-    (tl inv m0 m96 m64 m32 dst ret : UInt256)
+    (w3 tl inv m0 m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
-    (hc : Cached z.memory 2368 n tl inv m0 m96 m64 m32) :
-    GasSteps (state s z n i tl inv m0 m96 m64 m32 dst ret rest)
-      (state s (squareRow z n i) n (i+1) tl inv m0 m96 m64 m32 dst ret rest) := by
+    (hc : Cached z.memory 2368 n tl inv m0 m96 m64 m32)
+    (hw3 : w3 = MachineState.readWord z.memory 192) :
+    GasSteps (state s z n i w3 tl inv m0 m96 m64 m32 dst ret rest)
+      (state s (squareRow z n i) n (i+1) w3 tl inv m0 m96 m64 m32 dst ret rest) := by
   have g := TnM128SquareRowSteps.step s env z n i hn hi (previous z.memory n i)
-    tl inv m0 m96 m64 m32 dst ret rest hcap hact hc
+    w3 tl inv m0 m96 m64 m32 dst ret rest hcap hact hc hw3
   have he : result z n i (previous z.memory n i) = squareRow z n i := by
     unfold result squareRow
     rw [tb_previous]
@@ -95,19 +97,21 @@ noncomputable def step (s : State)
 noncomputable def steps (s : State)
     (env : Environment TnM128CandidateArtifact.submissionArtifact .Osaka s)
     (z : CacheState) (n start : Nat) (hn : n = 8)
-    (tl inv m0 m96 m64 m32 dst ret : UInt256)
+    (w3 tl inv m0 m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
-    (hc : Cached z.memory 2368 n tl inv m0 m96 m64 m32) :
+    (hc : Cached z.memory 2368 n tl inv m0 m96 m64 m32)
+    (hw3 : w3 = MachineState.readWord z.memory 192) :
     ∀ k, start+k ≤ n →
-      GasSteps (state s z n start tl inv m0 m96 m64 m32 dst ret rest)
-        (state s (run z n start k) n (start+k) tl inv m0 m96 m64 m32 dst ret rest)
+      GasSteps (state s z n start w3 tl inv m0 m96 m64 m32 dst ret rest)
+        (state s (run z n start k) n (start+k) w3 tl inv m0 m96 m64 m32 dst ret rest)
   | 0, _ => .refl _
   | k+1, hk => by
-      exact (steps s env z n start hn tl inv m0 m96 m64 m32 dst ret rest
-        hcap hact hc k (by omega)).trans
+      exact (steps s env z n start hn w3 tl inv m0 m96 m64 m32 dst ret rest
+        hcap hact hc hw3 k (by omega)).trans
         (step s env (run z n start k) n (start+k) hn (by omega)
-          tl inv m0 m96 m64 m32 dst ret rest hcap hact
-          (run_cached hc (by omega) start k (by omega)))
+          w3 tl inv m0 m96 m64 m32 dst ret rest hcap hact
+          (run_cached hc (by omega) start k (by omega))
+          (hw3.trans (run_read z n start 192 (by omega) (Or.inl (by decide)) k (by omega)).symm))
 
 #print axioms run_lift
 #print axioms steps

@@ -32,6 +32,25 @@ theorem rows_read (z : TnCacheRowModel.CacheState) (pa pb n k : Nat) :
   | succ k ih =>
       rw [TnCacheRowModel.rows, row_read, ih]
 
+/-- Rows leave every word below the T region alone (p2 reads `n1 = mem[0xc0]` through them). -/
+theorem row_read_low (z : TnCacheRowModel.CacheState) (pa pb n i addr : Nat)
+    (haddr : addr + 32 ≤ 2112) :
+    MachineState.readWord (TnCacheRowModel.row z pa pb n i).memory addr =
+      MachineState.readWord z.memory addr := by
+  simp only [TnCacheRowModel.row]
+  rw [read_put_outside _ _ 2112 addr (Or.inl haddr),
+    readWord_l2Step_low _ _ _ n addr (n-1) haddr,
+    readWord_l1Step_low _ _ pa n addr n haddr]
+
+theorem rows_read_low (z : TnCacheRowModel.CacheState) (pa pb n k addr : Nat)
+    (haddr : addr + 32 ≤ 2112) :
+    MachineState.readWord (TnCacheRowModel.rows z pa pb n k).memory addr =
+      MachineState.readWord z.memory addr := by
+  induction k with
+  | zero => rfl
+  | succ k ih =>
+      rw [TnCacheRowModel.rows, row_read_low _ _ _ _ _ _ haddr, ih]
+
 theorem squareRow_read (z : TnCacheRowModel.CacheState) (n i : Nat) (hi : i < n) :
     MachineState.readWord (TnCacheSquareModel.squareRow z n i).memory 128 =
       MachineState.readWord z.memory 128 := by

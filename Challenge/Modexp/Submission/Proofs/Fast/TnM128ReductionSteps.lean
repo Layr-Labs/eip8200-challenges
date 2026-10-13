@@ -9,8 +9,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 open CiosReadonly CiosCachedMidMemory
 
-def middlePC (n : Nat) : Nat := if n = 4 then 5420 else 3822
-def l2PC (n : Nat) : Nat := if n = 4 then 3977 else 3843
+def middlePC (n : Nat) : Nat := if n = 4 then 5482 else 3839
+def l2PC (n : Nat) : Nat := if n = 4 then 3991 else 3862
 
 noncomputable def reduction_steps (s : State)
     (env : Environment TnM128CandidateArtifact.submissionArtifact .Osaka s)
@@ -22,12 +22,13 @@ noncomputable def reduction_steps (s : State)
     (he : TnCacheExtraTrace.ExtraCache q.memory m96 m64 m32)
     (hi : inverseInvariant q.memory n)
     (hcache : m128 = MachineState.readWord q.memory 128)
+    (hpb : n = 8 → pb = MachineState.readWord q.memory 192)
     (hjd : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     GasSteps
       (framed {s with memory := q.memory} (UInt256.ofNat (middlePC n))
         ([q.carry,bi,pbi,hd,pb,ent,m32,allOnes,m128,m64,m0,tl,m96,inv,tn,aEnd,dst,ret] ++ rest))
       (framed {s with memory := (TnCacheSquareModel.fromL1 q tn n).memory}
-        (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb) then hd else UInt256.ofNat 4128)
+        (if UInt256.isTrue (negative32+pbi) then hd else UInt256.ofNat 4138)
         (TnCacheFrameOps.frame (negative32+pbi) hd pb ent
           m32 m128 m64
           (m0 :: tl :: m96 :: inv :: (TnCacheSquareModel.fromL1 q tn n).tn :: aEnd :: dst :: ret :: rest))) := by
@@ -38,7 +39,7 @@ noncomputable def reduction_steps (s : State)
   · have h8 : n = 8 := hn.resolve_left h4
     subst n
     exact TnM128R8Reduction.reduction_steps s env q bi tn pbi hd pb ent m128 tl inv m0
-      aEnd m96 m64 m32 dst ret rest hcap hact hc he hi hcache hjd
+      aEnd m96 m64 m32 dst ret rest hcap hact hc he hi hcache (hpb rfl) hjd
 
 #print axioms reduction_steps
 end Challenge.Modexp.Submission.Proofs.Fast.TnM128ReductionSteps

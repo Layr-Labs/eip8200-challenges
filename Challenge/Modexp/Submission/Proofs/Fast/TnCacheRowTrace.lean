@@ -22,29 +22,6 @@ def tailShort : List Instr := TnCacheStoreAt.tail ++ TnCacheFrameOps.advanceShor
 /-- P1: the row tail reads and writes the carry cache in the thirteenth frame word. -/
 def tail : List Instr := TnCacheStoreAt.tail16 ++ TnCacheFrameOps.advance
 
-theorem run_middle (pc0 : Nat) (s : State)
-    (c bi pbi hd pb ent tn target tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
-    (n : Nat) (rest : List UInt256) (hcap : rest.length ≤ 998) (hn : n ≤ 8)
-    (hact : 88 ≤ s.activeWords.toNat)
-    (hc : ReadonlyCache s.memory n tl inv m0)
-    (hm0 : m0 = MachineState.readWord s.memory (32*n-32))
-    (hminv : inverseInvariant s.memory n) :
-    runInstructions middle
-      (framed s (UInt256.ofNat pc0)
-        ([c,bi,pbi,hd,pb,ent,tn,allOnes,target,inv,m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest)) =
-    some (framed s (UInt256.ofNat (pc0+19))
-      ([rowC0 s.memory n,rowMu s.memory n,UInt256.lt (tn+c) c,
-        pbi,hd,pb,ent,tn+c,allOnes,target,inv,m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest)) := by
-  have hs := TnCacheStoreAt.run_middle pc0 s c bi pbi hd pb ent tn target inv
-    (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)
-    (by simp only [List.length_cons]; omega)
-  have hp := TnCacheProductTrace.run_cachedProduct_model (pc0+7) s
-    (UInt256.lt (tn+c) c) pbi hd pb ent (tn+c) target tl inv m0 aEnd m96 m64 m32 dst ret
-    n rest hcap hn hact hc hm0 hminv
-  have both := runInstructions_append_some _ _ _ _ _ hs hp
-  simpa only [middle, TnCacheProductTrace.cacheStack, List.cons_append, List.nil_append,
-    Nat.add_zero, Nat.add_assoc, Nat.reduceAdd] using both
-
 theorem run_middle8 (pc0 : Nat) (s : State)
     (c bi pbi hd pb ent tn target tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)
@@ -54,7 +31,7 @@ theorem run_middle8 (pc0 : Nat) (s : State)
     runInstructions middle8
       (framed s (UInt256.ofNat pc0)
         ([c,bi,pbi,hd,pb,ent,m32,allOnes,target,m64,m0,tl,m96,inv,tn,aEnd,dst,ret] ++ rest)) =
-    some (framed s (UInt256.ofNat (pc0+21))
+    some (framed s (UInt256.ofNat (pc0+23))
       ([rowC0 s.memory 8,rowMu s.memory 8,UInt256.lt (tn+c) c,
         pbi,hd,pb,ent,m32,allOnes,target,m64,m0,tl,m96,inv,tn+c,aEnd,dst,ret] ++ rest)) := by
   have hs := TnCacheStoreAt.run_middle15 pc0 s c bi pbi hd pb ent m32 target m64 m0 tl m96 inv tn
@@ -69,7 +46,7 @@ theorem run_middle8 (pc0 : Nat) (s : State)
 
 theorem run_middle4 (pc0 : Nat) (s : State)
     (c bi pbi hd pb ent tn target tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
-    (n : Nat) (rest : List UInt256) (hcap : rest.length ≤ 998) (hn : n ≤ 8)
+    (n : Nat) (rest : List UInt256) (hcap : rest.length ≤ 998) (hn : n = 4)
     (hact : 88 ≤ s.activeWords.toNat)
     (hc : ReadonlyCache s.memory n tl inv m0)
     (hm0 : m0 = MachineState.readWord s.memory (32*n-32))
@@ -77,7 +54,7 @@ theorem run_middle4 (pc0 : Nat) (s : State)
     runInstructions middle4
       (framed s (UInt256.ofNat pc0)
         ([c,bi,pbi,hd,pb,ent,m32,allOnes,target,m64,m0,tl,m96,inv,tn,aEnd,dst,ret] ++ rest)) =
-    some (framed s (UInt256.ofNat (pc0+19))
+    some (framed s (UInt256.ofNat (pc0+23))
       ([rowC0 s.memory n,rowMu s.memory n,UInt256.lt (tn+c) c,
         pbi,hd,pb,ent,m32,allOnes,target,m64,m0,tl,m96,inv,tn+c,aEnd,dst,ret] ++ rest)) := by
   have hs := TnCacheStoreAt.run_middle15 pc0 s c bi pbi hd pb ent m32 target m64 m0 tl m96 inv tn
@@ -98,7 +75,7 @@ theorem run_tail (pc0 : Nat) (s : State)
       (framed s (UInt256.ofNat pc0)
         ([c,f,pbi,hd,pb,ent,w5,allOnes,target,w8,r0,r1,r2,r3,tn] ++ rest)) =
     some (framed {s with memory := TnCacheMemory.put s.memory (tn+c) 2112}
-      (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb) then hd else UInt256.ofNat (pc0+51))
+      (if UInt256.isTrue (negative32+pbi) then hd else UInt256.ofNat (pc0+49))
       (TnCacheFrameOps.frame (negative32+pbi) hd pb ent w5 target w8
         (r0 :: r1 :: r2 :: r3 :: (UInt256.lt (tn+c) c+f) :: rest))) := by
   have hs := TnCacheStoreAt.run_tail16 pc0 s c f pbi hd pb ent w5 target w8 r0 r1 r2 r3 tn rest hcap hact
@@ -128,7 +105,6 @@ theorem run_tailShort (pc0 : Nat) (s : State)
   simpa only [tailShort, TnCacheMemory.put, TnCacheFrameOps.frame, List.cons_append, List.nil_append,
     Nat.add_zero, Nat.add_assoc, Nat.reduceAdd] using both
 
-#print axioms run_middle
 #print axioms run_middle8
 #print axioms run_middle4
 #print axioms run_tail

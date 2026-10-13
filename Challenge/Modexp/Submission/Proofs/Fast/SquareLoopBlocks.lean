@@ -8,19 +8,19 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached SquareRows
 
-def pcNx : Nat := 4142
+def pcNx : Nat := 4152
 /-- The four-limb kernel exit: it pushes the R4 return and runs the stack counter
 (`TnM128SquareExit.e4Program`). -/
-def pcSqExit : Nat := 4234
-def pcLast : Nat := 4221
-/-- The four-limb `last` trampoline (`PUSH6 4221 JUMP`). -/
-def pcTail : Nat := 4250
+def pcSqExit : Nat := 4273
+def pcLast : Nat := 4260
+/-- The four-limb `last` trampoline (`PUSH2 4260 JUMP`). -/
+def pcTail : Nat := 4289
 /-- The four-limb CSUB return: straight back into R4. -/
-def pcH2 : Nat := 4579
+def pcH2 : Nat := 4610
 
 def frameStack (mem : ByteArray) (_n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) : List UInt256 :=
-  [pbi, UInt256.ofNat 4258, UInt256.ofNat 2336, ent, m32, allOnes,
+  [pbi, UInt256.ofNat 4293, MachineState.readWord mem 192, ent, m32, allOnes,
     MachineState.readWord mem 128, m64, m0, tl, m96, inv, UInt256.ofNat 0, aprev, pdst, ret] ++ rest
 
 def frameAt (pc : Nat) (s : State) (mem : ByteArray) (n : Nat)
@@ -30,9 +30,7 @@ def frameAt (pc : Nat) (s : State) (mem : ByteArray) (n : Nat)
     memory := mem
     stack := frameStack mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest}
 
-abbrev sqExitProgram := TnM128SquareExit.sqExitProgram
 abbrev lastProgram := TnM128SquareExit.lastProgram
-abbrev sqExitBlock := TnM128SquareExit.sqExitBlock
 abbrev cProgram := TnM128SquareExit.cProgram
 abbrev e4Program := TnM128SquareExit.e4Program
 abbrev e4Block := TnM128SquareExit.e4Block

@@ -13,7 +13,7 @@ open Challenge.Modexp.Submission.Proofs.Fast
 entries at `2951 + 39 * ((-n) &&& 3)`; the new one has exactly two, the eight-limb chain head and
 the four-limb one 0x91 bytes later, so the word is a two-way choice on the limb count. -/
 def entryWord (n : Nat) : UInt256 :=
-  UInt256.ofNat (if n = 4 then 3032 else 2899)
+  UInt256.ofNat (if n = 4 then 3056 else 2940)
 
 /-- The same value in the MAC chain's own vocabulary, for the section lemma's cache hypothesis. -/
 theorem entryWord_eq_entryPC (n : Nat) (hn : n = 4 ∨ n = 8) :

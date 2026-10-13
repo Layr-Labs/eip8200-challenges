@@ -1,8 +1,9 @@
 import Challenge.Modexp.Submission.Proofs.Fast.TnM128InitialMultiply
-import Challenge.Modexp.Submission.Proofs.Fast.TnM128FusionFrame
 import Challenge.Modexp.Submission.Proofs.Fast.TnM128SquareExit
+import Challenge.Modexp.Submission.Proofs.Fast.CapDispatch
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
+set_option linter.unusedTactic false
 set_option maxRecDepth 40000
 set_option maxHeartbeats 2000000
 namespace Challenge.Modexp.Submission.Proofs.Fast.TnM128FusedEntry
@@ -10,59 +11,162 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open WindowNibbleKernel WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast
-open Monpro CiosCached
+open Monpro CiosCached CiosCachedMacCore
 
-def prefixProgram : List Instr := TnM128FusionFrame.frameProgram 3533 772
+/-- The product setup after the square loop (pc 3487, TL/p2/zloop/msplit): clear the carry slot,
+`aEnd := mem[0xae0] + 0x100` (the staged operand's last limb), drop the row pointer, `q := aEnd - 0x920`
+(`= 32·n`), the width's row head `hd := 3545 + 1794·[aEnd & 0x80 ≠ 0]` (5339 for four limbs),
+`dst := 256`, `ret := 772`. -/
+def prefixHead : List Instr :=
+  [.op .JUMPDEST, .push 0 0, .op (.Swap ⟨12, by decide⟩), .op .POP,
+   .push 2 2784, .op .MLOAD, .push 2 256, .op .ADD, .op (.Swap ⟨13, by decide⟩), .op .POP,
+   .op .POP,
+   .push 2 2336, .op (.Dup ⟨13, by decide⟩), .op .SUB]
+
+/-- The width's row head from bit 7 of `aEnd` (msplit). -/
+def prefixSelect : List Instr :=
+  [.push 1 128, .op (.Dup ⟨14, by decide⟩), .op .AND, .push 0 0, .op .LT,
+   .push 2 1794, .op .MUL, .push 2 3545, .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .POP]
+
+def prefixTail : List Instr :=
+  [.push 2 256, .op (.Swap ⟨14, by decide⟩), .op .POP,
+   .push 2 772, .op (.Swap ⟨15, by decide⟩), .op .POP]
+
+def prefixProgram : List Instr := (prefixHead ++ prefixSelect) ++ prefixTail
+
+/-- Zero the product scratch `[2048, 2048 + 64 + 32·n)` (`aEnd - 0x8e0` bytes) and jump to the
+row head. -/
 def clearProgram : List Instr :=
-  [.push 2 2016, .op (.Dup ⟨10, by decide⟩), .op .SUB,
-   .op .CALLDATASIZE, .push 2 2048, .op .CALLDATACOPY]
+  [.push 2 2272, .op (.Dup ⟨14, by decide⟩), .op .SUB,
+   .op .CALLDATASIZE, .push 2 2048, .op .CALLDATACOPY, .op (.Dup ⟨1, by decide⟩), .op .JUMP]
 
-def prefixBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3471 prefixProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2681 36 3471 prefixProgram
+def prefixBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3487 prefixProgram :=
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2716 31 3487 prefixProgram
     (by decide) (by rfl) (by rfl) (by decide)
-def clearBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3523 clearProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2717 6 3523 clearProgram
+def clearBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3533 clearProgram :=
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2747 8 3533 clearProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
+/-- The first multiply row, the operand block at 2368 and the product scratch cleared. -/
 def rowReady (s : State) (mem : ByteArray) (n : Nat)
-    (tl inv m0 m96 m64 m32 : UInt256) (rest : List UInt256) : State :=
-  TnM128Setup.outState s mem 256 n 0 (UInt256.ofNat 3533) (TnM128Setup.l1Target n) m32 m64 m0
-    (tl :: m96 :: inv :: TnM128Setup.zeroTn :: UInt256.ofNat (2368+32*n-32) ::
-      UInt256.ofNat 256 :: UInt256.ofNat 772 :: rest)
+    (w3 ent tl inv m0 m96 m64 m32 : UInt256) (rest : List UInt256) : State :=
+  TnM128RowsSteps.rowState s ⟨mem, UInt256.ofNat 0⟩ n 0 w3 ent tl inv m0
+    (UInt256.ofNat (2368+32*n-32)) m96 m64 m32 (UInt256.ofNat 256) (UInt256.ofNat 772) rest
 
 def prefixState (s : State) (mem : ByteArray) (n : Nat)
-    (tl inv m0 m96 m64 m32 : UInt256) (rest : List UInt256) : State :=
-  { rowReady s mem n tl inv m0 m96 m64 m32 rest with pc := UInt256.ofNat 3523 }
+    (w3 ent tl inv m0 m96 m64 m32 : UInt256) (rest : List UInt256) : State :=
+  framed {s with memory := mem} (UInt256.ofNat 3533)
+    (TnCacheFrameOps.frame (TnCacheRowPointers.qptr n 0) (UInt256.ofNat (TnM128RowSteps.headPC n))
+      w3 ent m32 (MachineState.readWord mem 128) m64
+      (m0 :: tl :: m96 :: inv :: UInt256.ofNat 0 :: UInt256.ofNat (2368+32*n-32) ::
+        UInt256.ofNat 256 :: UInt256.ofNat 772 :: rest))
+
+theorem run_prefixHead (tn : UInt256) (s : State) (mem : ByteArray) (n : Nat)
+    (pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1000) (hn : n = 4 ∨ n = 8)
+    (htlw : MachineState.readWord mem 2784 = UInt256.ofNat (2080+32*n))
+    (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions prefixHead
+      (TnM128SquareExit.frameAt tn (MachineState.readWord mem 128) 3487 s mem n pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
+      some (framed {s with memory := mem} (UInt256.ofNat 3507)
+        ([UInt256.ofNat (32*n), UInt256.ofNat 4293, w3, ent, m32, allOnes,
+          MachineState.readWord mem 128, m64, m0, tl, m96, inv, UInt256.ofNat 0,
+          UInt256.ofNat (2368+32*n-32), pdst, ret] ++ rest)) := by
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  have hc16 : rest.length + 16 < 1024 := by omega
+  have hc17 : rest.length + 17 < 1024 := by omega
+  have hc18 : rest.length + 18 < 1024 := by omega
+  have hactT : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2784 32) =
+      s.activeWords := activeWords_fix s 2784 32 (by decide) (by decide) hact
+  have h2784 : (2784 : UInt256).toNat = 2784 := by decide
+  rcases hn with rfl | rfl <;>
+  · simp [prefixHead, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+      TnM128SquareExit.frameAt, TnM128SquareExit.frameStack, framed,
+      State.activeWordsAfterUInt256, hactT, htlw, h2784,
+      hc13, hc14, hc15, hc16, hc17, hc18, List.exchange,
+      Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
+    all_goals decide
+
+theorem run_prefixSelect (s : State) (q hd w3 ent m32 m128 m64 m0 tl m96 inv z aEnd pdst ret : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1000) :
+    runInstructions prefixSelect
+      (framed s (UInt256.ofNat 3507)
+        ([q, hd, w3, ent, m32, allOnes, m128, m64, m0, tl, m96, inv, z, aEnd, pdst, ret] ++ rest)) =
+      some (framed s (UInt256.ofNat 3523)
+        ([q, UInt256.ofNat 3545 + UInt256.ofNat 1794 * CapDispatch.selectBit aEnd, w3, ent, m32,
+          allOnes, m128, m64, m0, tl, m96, inv, z, aEnd, pdst, ret] ++ rest)) := by
+  have hc16 : rest.length + 16 < 1024 := by omega
+  have hc17 : rest.length + 17 < 1024 := by omega
+  have hc18 : rest.length + 18 < 1024 := by omega
+  simp [prefixSelect, runInstructions, Challenge.EvmProof.Stepper.runInstr, framed,
+    List.exchange, hc16, hc17, hc18,
+    CapDispatch.selectBit, CapDispatch.zero_lt_eq_double_isZero, CapDispatch.land_comm',
+    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
+
+theorem run_prefixTail (s : State) (q hd w3 ent m32 m128 m64 m0 tl m96 inv z aEnd pdst ret : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1000) :
+    runInstructions prefixTail
+      (framed s (UInt256.ofNat 3523)
+        ([q, hd, w3, ent, m32, allOnes, m128, m64, m0, tl, m96, inv, z, aEnd, pdst, ret] ++ rest)) =
+      some (framed s (UInt256.ofNat 3533)
+        ([q, hd, w3, ent, m32, allOnes, m128, m64, m0, tl, m96, inv, z, aEnd,
+          UInt256.ofNat 256, UInt256.ofNat 772] ++ rest)) := by
+  have hc16 : rest.length + 16 < 1024 := by omega
+  have hc17 : rest.length + 17 < 1024 := by omega
+  simp [prefixTail, runInstructions, Challenge.EvmProof.Stepper.runInstr, framed,
+    List.exchange, hc16, hc17,
+    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
+
+theorem headPC_select (n : Nat) (hn : n = 4 ∨ n = 8) :
+    UInt256.ofNat 3545 + UInt256.ofNat 1794 * CapDispatch.selectBit (UInt256.ofNat (2368+32*n-32)) =
+      UInt256.ofNat (TnM128RowSteps.headPC n) := by
+  rcases hn with rfl | rfl <;> decide
 
 theorem run_prefix (tn : UInt256) (s : State) (mem : ByteArray) (n : Nat)
-    (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
+    (pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000) (hn : n = 4 ∨ n = 8)
-    (htl : tl = UInt256.ofNat (2080+32*n)) :
+    (htlw : MachineState.readWord mem 2784 = UInt256.ofNat (2080+32*n))
+    (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prefixProgram
-      (TnM128SquareExit.frameAt tn (MachineState.readWord mem 128) 3471 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
-      some (prefixState s mem n tl inv m0 m96 m64 m32 rest) := by
-  rcases hn with rfl | rfl <;> subst tl <;>
-    exact TnM128FusionFrame.run_prefix (s := {s with memory := mem}) (p := pbi)
-      (oldHead := UInt256.ofNat 4258) (oldEnd := UInt256.ofNat (2368-32))
-      (ent := ent) (neg := m32) (mask := allOnes) (ent2 := MachineState.readWord mem 128)
-      (inv := m64) (m0 := m0) (tl := _) (m96 := m96) (m64 := inv) (m32 := tn)
-      (aprev := aprev) (dst := pdst) (ret := ret) (head := UInt256.ofNat 3533)
-      (finish := UInt256.ofNat 772) (rest := rest) (by omega)
+      (TnM128SquareExit.frameAt tn (MachineState.readWord mem 128) 3487 s mem n pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
+      some (prefixState s mem n w3 ent tl inv m0 m96 m64 m32 rest) := by
+  have h1 := run_prefixHead tn s mem n pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hn
+    htlw hact
+  have h2 := run_prefixSelect {s with memory := mem} (UInt256.ofNat (32*n)) (UInt256.ofNat 4293) w3
+    ent m32 (MachineState.readWord mem 128) m64 m0 tl m96 inv (UInt256.ofNat 0)
+    (UInt256.ofNat (2368+32*n-32)) pdst ret rest hcap
+  have h3 := run_prefixTail {s with memory := mem} (UInt256.ofNat (32*n))
+    (UInt256.ofNat 3545 + UInt256.ofNat 1794 * CapDispatch.selectBit (UInt256.ofNat (2368+32*n-32)))
+    w3 ent m32 (MachineState.readWord mem 128) m64 m0 tl m96 inv (UInt256.ofNat 0)
+    (UInt256.ofNat (2368+32*n-32)) pdst ret rest hcap
+  have hq : UInt256.ofNat (32*n) = TnCacheRowPointers.qptr n 0 := by
+    simp only [TnCacheRowPointers.qptr, Nat.sub_zero]
+  have h := runInstructions_append_some _ _ _ _ _ (runInstructions_append_some _ _ _ _ _ h1 h2) h3
+  rw [headPC_select n hn, hq] at h
+  exact h
 
 theorem run_clear (s : State) (mem : ByteArray) (n : Nat)
-    (tl inv m0 m96 m64 m32 : UInt256) (rest : List UInt256)
+    (w3 ent tl inv m0 m96 m64 m32 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000) (hn : n = 4 ∨ n = 8)
     (hact : 88 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
-    (htl : tl = UInt256.ofNat (2080+32*n)) :
-    runInstructions clearProgram (prefixState s mem n tl inv m0 m96 m64 m32 rest) =
-      some (rowReady s (mpZeroed s mem n) n tl inv m0 m96 m64 m32 rest) := by
+    (hjd : Decode.isValidJumpDest s.executionEnv.code (TnM128RowSteps.headPC n) = true) :
+    runInstructions clearProgram (prefixState s mem n w3 ent tl inv m0 m96 m64 m32 rest) =
+      some (rowReady s (mpZeroed s mem n) n w3 ent tl inv m0 m96 m64 m32 rest) := by
   have hn8 : n ≤ 8 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
   have hc16 : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc19 : rest.length + 19 < 1024 := by omega
-  have hsub : tl - UInt256.ofNat 2016 = UInt256.ofNat (64+32*n) := by
-    rw [htl, Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)]
+  have hsub : UInt256.ofNat (2368+32*n-32) - UInt256.ofNat 2272 = UInt256.ofNat (64+32*n) := by
+    rw [Challenge.EvmProof.Word.ofNat_sub_ofNat (by omega) (by omega)]
     congr 1; omega
   have hactC := activeWords_fix s 2048 (64+32*n) (by omega) (by omega) hact
   have hcdsN : s.executionEnv.calldata.size %
@@ -72,32 +176,40 @@ theorem run_clear (s : State) (mem : ByteArray) (n : Nat)
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       64+32*n := Nat.mod_eq_of_lt (by omega)
   have h2048 : (2048 : UInt256).toNat = 2048 := by decide
-  simp only [prefixState, rowReady, TnM128Setup.outState,
+  have hhd : (UInt256.ofNat (TnM128RowSteps.headPC n)).toNat = TnM128RowSteps.headPC n := by
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
+    rcases hn with rfl | rfl <;> decide
+  simp only [prefixState, rowReady, TnM128RowsSteps.rowState,
     StagedMonpro.readWord_mpZeroed s mem n 128 hn8 (Or.inl (by decide))]
   simp [clearProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    prefixState, rowReady, TnM128Setup.outState, mpZeroed, hsub, hactC, hcdsN, hsizeN, h2048,
-    State.activeWordsAfterUInt256, hc16, hc17, hc18, hc19,
+    TnCacheFrameOps.frame, framed, mpZeroed, hsub, hactC, hcdsN, hsizeN, h2048, hhd, hjd,
+    State.activeWordsAfterUInt256, hc13, hc14, hc15, hc16, hc17, hc18, hc19, show 0 < n from by omega,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
 noncomputable def gasSteps_entry (tn : UInt256) (s : State) (mem : ByteArray) (n : Nat)
-    (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
+    (pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000) (hn : n = 4 ∨ n = 8)
     (hrun : s.halt = .Running) (hcode : s.executionEnv.code = TnM128Candidate.bytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
-    (htl : tl = UInt256.ofNat (2080+32*n)) :
+    (htlw : MachineState.readWord mem 2784 = UInt256.ofNat (2080+32*n)) :
     Challenge.EvmProof.GasSteps
-      (TnM128SquareExit.frameAt tn (MachineState.readWord mem 128) 3471 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
-      (rowReady s (mpZeroed s mem n) n tl inv m0 m96 m64 m32 rest) :=
+      (TnM128SquareExit.frameAt tn (MachineState.readWord mem 128) 3487 s mem n pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
+      (rowReady s (mpZeroed s mem n) n w3 ent tl inv m0 m96 m64 m32 rest) :=
   (prefixBlock.steps (TnM128SquareSteps.environment
-    (TnM128SquareExit.frameAt tn (MachineState.readWord mem 128) 3471 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) hcode hfork hrun hnp) rfl
-    (run_prefix tn s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hn htl)).trans
+    (TnM128SquareExit.frameAt tn (MachineState.readWord mem 128) 3487 s mem n pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest) hcode hfork hrun hnp) rfl
+    (run_prefix tn s mem n pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hn htlw hact)).trans
   (clearBlock.steps (TnM128SquareSteps.environment
-    (prefixState s mem n tl inv m0 m96 m64 m32 rest) hcode hfork hrun hnp) rfl
-    (run_clear s mem n tl inv m0 m96 m64 m32 rest hcap hn hact hcds htl))
+    (prefixState s mem n w3 ent tl inv m0 m96 m64 m32 rest) hcode hfork hrun hnp) rfl
+    (run_clear s mem n w3 ent tl inv m0 m96 m64 m32 rest hcap hn hact hcds
+      (by
+        have h := TnM128RowSteps.head_jump n hn
+        rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+          Nat.mod_eq_of_lt (by rcases hn with rfl | rfl <;> decide)] at h
+        rw [hcode]; exact h)))
 
 #print axioms gasSteps_entry
 end Challenge.Modexp.Submission.Proofs.Fast.TnM128FusedEntry

@@ -25,6 +25,7 @@ theorem readonlyCache_sqRowsCarry {mem : ByteArray} {n : Nat} {tl inv m0 : UInt2
   hc.of_preserved
     (readWord_sqRowsCarry mem n 2720 hn (Or.inr (by decide)) i hi)
     (readWord_sqRowsCarry mem n (16 * n + 32) hn (Or.inl (by omega)) i hi)
+      (readWord_sqRowsCarry mem n 224 hn (Or.inl (by omega)) i hi)
 
 theorem extraCache_sqRowsCarry {mem : ByteArray} {m96 m64 m32 : UInt256}
     (hc : CiosReadonlyExtra.ExtraCache mem m96 m64 m32) (n : Nat) (hn : n ≤ 8) (i : Nat)
@@ -52,6 +53,7 @@ theorem readonlyCache_sqPro {mem : ByteArray} {n : Nat} {tl inv m0 : UInt256}
   hc.of_preserved
     (readWord_sqPro mem n i 2720 tb hi (Or.inr (by omega)))
     (readWord_sqPro mem n i (16 * n + 32) tb hi (Or.inl (by omega)))
+      (readWord_sqPro mem n i 224 tb hi (Or.inl (by omega)))
 
 theorem readonlyCache_l1Run {q : MacState} {n : Nat} {tl inv m0 : UInt256}
     (hc : CiosReadonly.ReadonlyCache q.memory n tl inv m0) (hn : n ≤ 8) (bi : UInt256)
@@ -60,6 +62,7 @@ theorem readonlyCache_l1Run {q : MacState} {n : Nat} {tl inv m0 : UInt256}
   hc.of_preserved
     (readWord_l1Run q bi pa n j0 2720 (Or.inr (by omega)) k hk)
     (readWord_l1Run q bi pa n j0 (16 * n + 32) (Or.inl (by omega)) k hk)
+      (readWord_l1Run q bi pa n j0 224 (Or.inl (by omega)) k hk)
 
 theorem extraCache_sqPro {mem : ByteArray} {m96 m64 m32 : UInt256}
     (hc : CiosReadonlyExtra.ExtraCache mem m96 m64 m32) (n i : Nat) (hi : i < n)

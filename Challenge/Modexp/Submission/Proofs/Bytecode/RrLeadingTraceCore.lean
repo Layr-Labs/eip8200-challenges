@@ -82,14 +82,14 @@ def copiedActiveWords (template : State) (n : Nat) : UInt256 :=
 def entryState (template : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { template with
-    pc := UInt256.ofNat 2397
+    pc := UInt256.ofNat 2448
     stack := outer n bsize esize msize
     memory := mem }
 
 def copiedState (template : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { template with
-    pc := UInt256.ofNat 2408
+    pc := UInt256.ofNat 2459
     stack := outer n bsize esize msize
     memory := copiedMemory mem n
     activeWords := copiedActiveWords template n }
@@ -97,7 +97,7 @@ def copiedState (template : State) (mem : ByteArray)
 def counterState (template : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { template with
-    pc := UInt256.ofNat 2428
+    pc := UInt256.ofNat 2479
     stack := UInt256.ofNat (directCounter n) :: outer n bsize esize msize
     memory := copiedMemory mem n
     activeWords := copiedActiveWords template n }
@@ -154,7 +154,7 @@ theorem run_copy (template : State) (mem : ByteArray)
     runInstructions copyProgram (entryState template mem n bsize esize msize) =
       some (copiedState template mem n bsize esize msize) := by
   have hpc :
-      (((UInt256.ofNat 2397).succ + UInt256.ofNat 3).succ +
+      (((UInt256.ofNat 2448).succ + UInt256.ofNat 3).succ +
         UInt256.ofNat 3 + UInt256.ofNat 3).succ = UInt256.ofNat 2260 := by
     decide
   simp [copyProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,

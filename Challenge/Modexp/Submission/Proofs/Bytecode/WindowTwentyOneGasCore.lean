@@ -10,7 +10,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.EvmProof WindowNibbleKernel WindowTwentyOneBinding WindowTwentyOneMsize
 
 /-- The precopy route: table, setup, row stores, the modulus pool, the first digit,
-sixty windows, the jump over the RSA code and the moved tail with the return. -/
+sixty windows and the tail with the return. -/
 structure Paths (artifact : ProgramArtifact) (fork : Fork) where
   table : Block artifact fork 879 WindowTwentyOneTableBuild.program
   setup : Block artifact fork 968 WindowPrecopyRoute.setupProgram
@@ -18,9 +18,7 @@ structure Paths (artifact : ProgramArtifact) (fork : Fork) where
   pool : Block artifact fork 981 WindowPrecopyRoute.poolProgram
   first : Block artifact fork 1296 WindowPrecopyRoute.firstProgram
   head : Block artifact fork 1308 (WindowPrecopyRoute.routeWindows 0 60)
-  jump : Block artifact fork 2388 WindowPrecopyRoute.jumpProgram
-  tail : Block artifact fork 5483 WindowPrecopyRoute.tailProgram
-  tailJump : Decode.isValidJumpDest artifact.code 5483 = true
+  tail : Block artifact fork 2388 WindowPrecopyRoute.tailProgram
 
 /-- Table, setup, row stores, pool, first digit, 62 windows, the last digit and the
 return, from the normalized state at 879.  The exponent word and the spare modulus
@@ -71,23 +69,12 @@ def steps_core {artifact : ProgramArtifact} {fork : Fork}
         List.replicate 315 modulus ++ WindowPrecopyRoute.frame modulus exponent (rest.drop 2)))
     (env.transfer rfl rfl) rfl
     (WindowPrecopyRoute.run_headAt template base modulus exponent (rest.drop 2) hdrop)
-  have hdest : Decode.isValidJumpDest template.executionEnv.code 5483 = true := by
-    rw [env.code]
-    exact paths.tailJump
-  have gj := paths.jump.steps
+  have gt := paths.tail.steps
     (s := WindowPrecopyRoute.routeState template 2388 base modulus exponent
       (WindowTwentyOneMath.accumulator base modulus exponent.toNat 60 ::
         List.replicate 15 modulus ++ WindowPrecopyRoute.frame modulus exponent (rest.drop 2)))
     (env.transfer rfl rfl) rfl
-    (WindowPrecopyRoute.run_jumpAt template base modulus exponent _
-      (by simp only [WindowPrecopyRoute.frame, List.length_cons, List.length_append,
-        List.length_replicate]; omega) hdest)
-  have gt := paths.tail.steps
-    (s := WindowPrecopyRoute.routeState template 5483 base modulus exponent
-      (WindowTwentyOneMath.accumulator base modulus exponent.toNat 60 ::
-        List.replicate 15 modulus ++ WindowPrecopyRoute.frame modulus exponent (rest.drop 2)))
-    (env.transfer rfl rfl) rfl
     (WindowPrecopyRoute.run_tailAt template base modulus exponent (rest.drop 2) hdrop)
-  exact ((((((ht.trans gs).trans gc).trans gp).trans gf).trans gh).trans gj).trans gt
+  exact (((((ht.trans gs).trans gc).trans gp).trans gf).trans gh).trans gt
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneGasCore

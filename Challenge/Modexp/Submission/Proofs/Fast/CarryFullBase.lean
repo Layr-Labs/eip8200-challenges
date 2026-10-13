@@ -22,6 +22,7 @@ theorem readonlyCache_rowsCarry {mem : ByteArray} {n : Nat} {tl inv m0 : UInt256
   hc.of_preserved
     (readWord_rowsCarry mem pa pb n 2720 hn (Or.inr (by decide)) i)
     (readWord_rowsCarry mem pa pb n (16*n+32) hn (Or.inl (by omega)) i)
+      (readWord_rowsCarry mem pa pb n 224 hn (Or.inl (by omega)) i)
 
 theorem extraCache_rowsCarry {mem : ByteArray} {m96 m64 m32 : UInt256}
     (hc : CiosReadonlyExtra.ExtraCache mem m96 m64 m32) (pa pb n i : Nat) (hn : n ≤ 8) :

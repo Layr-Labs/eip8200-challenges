@@ -27,7 +27,7 @@ theorem run_suffix (s : State) (pc : Nat) (mem : ByteArray)
     runInstructions suffix
       (TnCacheL2Trace.state s (UInt256.ofNat pc) mem bi mu c0 n k
         pbi hd pb ent m32 target m64 (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)) =
-    some (TnCacheLastTrace.lastState s (UInt256.ofNat (pc+100)) mem bi mu c0 n (k+3)
+    some (TnCacheLastTrace.lastState s (UInt256.ofNat (pc+98)) mem bi mu c0 n (k+3)
       pbi hd pb ent m32 target m64 (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)) := by
   have hrest : (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest).length ≤ 1006 := by
     simp only [List.length_cons]; omega
@@ -42,10 +42,10 @@ theorem run_suffix (s : State) (pc : Nat) (mem : ByteArray)
   have h1 := TnMod128Trace.run_step64 s (UInt256.ofNat (pc+1)) mem bi mu c0 n k
     pbi hd pb ent m32 target m64 (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)
     hrest hact hn hk hc.word64
-  have h2 := TnMod128Trace.run_step32 s (UInt256.ofNat (pc+34)) mem bi mu c0 n (k+1)
+  have h2 := TnMod128Trace.run_step32 s (UInt256.ofNat (pc+33)) mem bi mu c0 n (k+1)
     pbi hd pb ent m32 target m64 (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)
     hrest hact hn (by omega) hc.word32
-  have h3 := TnCacheLastTrace.run_stepLast 0 s (UInt256.ofNat (pc+67)) mem bi mu c0 n (k+2)
+  have h3 := TnCacheLastTrace.run_stepLast 0 s (UInt256.ofNat (pc+65)) mem bi mu c0 n (k+2)
     0 2112 2144 (by change 0 = _; omega) (by change 2112 = _; omega) (by change 2144 = _; omega)
     pbi hd pb ent m32 target m64 (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)
     (by simp only [List.length_cons]; omega) hact hn (by omega) (by intro _; rfl)
@@ -54,10 +54,10 @@ theorem run_suffix (s : State) (pc : Nat) (mem : ByteArray)
   have h012 := runInstructions_append_some _ _ _ _ _ h01 h2
   exact runInstructions_append_some _ _ _ _ _ h012 h3
 
-/-- Four cells; the second reads modulus[160] from the `m0` frame slot and the third
-reads modulus[128] from the cached frame slot. -/
+/-- Four cells; the first takes modulus[192] from frame word `pb` (p2), the second reads
+modulus[160] from the `m0` frame slot and the third modulus[128] from the cached frame slot. -/
 def prefixProgram : List Instr :=
-  ((([.op .JUMPDEST] ++ l2Program 2 192 2304 2336) ++
+  ((([.op .JUMPDEST] ++ TnCacheL2Trace.l2ProgramFrame 2304 2336) ++
     TnMod128Trace.program160) ++ TnMod128Trace.program) ++
     TnCacheExtraTrace.extraProgramZeroNarrow 2208 2240
 
@@ -67,11 +67,12 @@ theorem run_prefix (s : State) (pc : Nat) (mem : ByteArray) (bi mu c0 : UInt256)
     (hact : 88 ≤ s.activeWords.toNat)
     (hc : TnCacheExtraTrace.ExtraCache mem m96 m64 m32)
     (hcache : m128 = MachineState.readWord mem 128)
-    (hm0 : m0 = MachineState.readWord mem 160) :
+    (hm0 : m0 = MachineState.readWord mem 160)
+    (hpb : pb = MachineState.readWord mem 192) :
     runInstructions prefixProgram
       (TnCacheL2Trace.state s (UInt256.ofNat pc) mem bi mu c0 8 0
         pbi hd pb ent m32 m128 m64 (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)) =
-    some (TnCacheL2Trace.state s (UInt256.ofNat (pc+134)) mem bi mu c0 8 4
+    some (TnCacheL2Trace.state s (UInt256.ofNat (pc+129)) mem bi mu c0 8 4
       pbi hd pb ent m32 m128 m64 (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)) := by
   have hrest : (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest).length ≤ 1006 := by
     simp only [List.length_cons]; omega
@@ -83,17 +84,17 @@ theorem run_prefix (s : State) (pc : Nat) (mem : ByteArray) (bi mu c0 : UInt256)
     simp (disch := omega) [runInstructions, Challenge.EvmProof.Stepper.runInstr, TnCacheL2Trace.state,
       Challenge.EvmProof.Word.succ_ofNat_mod]
     omega
-  have h1 := TnCacheL2Trace.run_step 2 s (UInt256.ofNat (pc+1)) mem bi mu c0 8 0
-    192 2304 2336 (by decide) (by decide) (by decide)
+  have h1 := TnCacheL2Trace.run_stepFrame s (UInt256.ofNat (pc+1)) mem bi mu c0 8 0
+    2304 2336 (by decide) (by decide)
     pbi hd pb ent m32 m128 m64 (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)
-    hrest hact (by decide) (by decide) (by decide)
-  have h2 := TnMod128Trace.run_step160 s (UInt256.ofNat (pc+37)) mem bi mu c0
+    hrest hact (by decide) (by decide) hpb
+  have h2 := TnMod128Trace.run_step160 s (UInt256.ofNat (pc+33)) mem bi mu c0
     pbi hd pb ent m32 m128 m64 m0 (tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)
     (by simp only [List.length_cons]; omega) hact hm0
-  have h3 := TnMod128Trace.run_step s (UInt256.ofNat (pc+69)) mem bi mu c0
+  have h3 := TnMod128Trace.run_step s (UInt256.ofNat (pc+65)) mem bi mu c0
     pbi hd pb ent m32 m128 m64 (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)
     hrest hact hcache
-  have h4 := TnCacheExtraTrace.run_extraStepZeroNarrow s (UInt256.ofNat (pc+102)) mem bi mu c0 8 3
+  have h4 := TnCacheExtraTrace.run_extraStepZeroNarrow s (UInt256.ofNat (pc+97)) mem bi mu c0 8 3
     96 2208 2240 (by decide) (by decide) (by decide) (by decide)
     pbi hd pb ent m32 m128 tl m64 m0 aEnd m96 inv tn dst ret rest hcap hact (by decide) (by decide) hc
   simp only [Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, Nat.reduceAdd, Fin.val_ofNat] at h1 h2 h3 h4
@@ -106,7 +107,7 @@ theorem run_prefix (s : State) (pc : Nat) (mem : ByteArray) (bi mu c0 : UInt256)
 def fullProgram (n : Nat) : List Instr :=
   if n = 4 then suffix else prefixProgram ++ suffix
 
-def fullSize (n : Nat) : Nat := if n = 4 then 100 else 234
+def fullSize (n : Nat) : Nat := if n = 4 then 98 else 227
 
 /-- All reduction cells preserve the arbitrary cached carry slot and consume mu. -/
 theorem run_full (s : State) (pc : Nat) (mem : ByteArray) (bi mu c0 : UInt256)
@@ -116,7 +117,8 @@ theorem run_full (s : State) (pc : Nat) (mem : ByteArray) (bi mu c0 : UInt256)
     (hact : 88 ≤ s.activeWords.toNat)
     (hc : TnCacheExtraTrace.ExtraCache mem m96 m64 m32)
     (hcache : m128 = MachineState.readWord mem 128)
-    (hm0 : n = 8 → m0 = MachineState.readWord mem 160) :
+    (hm0 : n = 8 → m0 = MachineState.readWord mem 160)
+    (hpb : n = 8 → pb = MachineState.readWord mem 192) :
     runInstructions (fullProgram n)
       (TnCacheL2Trace.state s (UInt256.ofNat pc) mem bi mu c0 n 0
         pbi hd pb ent m32 m128 m64 (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)) =
@@ -127,8 +129,8 @@ theorem run_full (s : State) (pc : Nat) (mem : ByteArray) (bi mu c0 : UInt256)
       run_suffix s pc mem bi mu c0 4 0 pbi hd pb ent tn m128 tl inv m0 aEnd m96 m64 m32 dst ret
         rest hcap hact (by decide) (by decide) hc
   · have hp := run_prefix s pc mem bi mu c0 pbi hd pb ent tn m128 tl inv m0 aEnd m96 m64 m32 dst ret
-      rest hcap hact hc hcache (hm0 rfl)
-    have hs := run_suffix s (pc+134) mem bi mu c0 8 4 pbi hd pb ent tn m128 tl inv m0 aEnd m96 m64 m32 dst ret
+      rest hcap hact hc hcache (hm0 rfl) (hpb rfl)
+    have hs := run_suffix s (pc+129) mem bi mu c0 8 4 pbi hd pb ent tn m128 tl inv m0 aEnd m96 m64 m32 dst ret
       rest hcap hact (by decide) (by decide) hc
     have both := runInstructions_append_some _ _ _ _ _ hp hs
     simpa [fullProgram, fullSize, Nat.add_assoc] using both

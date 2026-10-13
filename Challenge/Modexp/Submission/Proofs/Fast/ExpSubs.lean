@@ -1,6 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.Fast.FusedMemory
 import Challenge.Modexp.Submission.Proofs.Fast.Exp
-import Challenge.Modexp.Submission.Proofs.Fast.CarryFullFast
+import Challenge.Modexp.Submission.Proofs.Fast.CarryFullBase
 import Challenge.Modexp.Submission.Proofs.Fast.SquareResult
 import Challenge.Modexp.Submission.Proofs.Fast.SquareLoop
 
@@ -79,55 +79,6 @@ theorem eligible_of_frame {mem : ByteArray} {n bsize minv : Nat} (hf : Frame mem
   have hv := congrArg UInt256.toNat hw
   rw [toNat_ofNat_self hminvlt, toNat_ofNat_self (by decide)] at hv
   exact hminv1 hv
-
-/-- The `MONPRO` step of the concrete instance. -/
-noncomputable def subsMonpro (s : State) (n bsize mm minv : Nat)
-    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 88 ≤ s.activeWords.toNat)
-    (hcds : s.executionEnv.calldata.size < 2 ^ 256)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
-    (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0)
-    (hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1) :
-    ∀ (pa pb pd : Nat) (ret : UInt256) (tail : List UInt256)
-      (mem : ByteArray) (a b : Nat), tail.length ≤ 998 →
-      32 ≤ pa → pa + 32 * n ≤ 2048 → 32 ≤ pb → pb + 32 * n ≤ 2048 →
-      pd + 32 * n ≤ 2048 →
-      Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true →
-      tail[1]? = some (UInt256.ofNat (32 * n)) →
-      tail[2]? = some (MachineState.readWord mem 2688) →
-      Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
-      Model.FastRepresents mem pa n a → Model.FastRepresents mem pb n b → a < mm →
-      Challenge.EvmProof.GasSteps (mpCall s mem pa pb pd ret tail)
-        (retTo s (CarryResult.monproMem s mem pa pb n pd) ret tail) := by
-  intro pa pb pd ret tail mem a b hcap hpa hpaFit hpb hpbFit hpdFit hjump hw hslot hf hm ha hb ham
-  -- `GasSteps` lives in `Type`, so the limb count has to be split by `cases`.
-  cases n with
-  | zero => exact absurd hn (by omega)
-  | succ n1 =>
-    cases n1 with
-    | zero => exact absurd hn (by omega)
-    | succ p =>
-      have hpdN : (UInt256.ofNat pd).toNat = pd :=
-        toNat_ofNat_self (Nat.lt_of_le_of_lt (show pd ≤ 2048 by omega) (by norm_num))
-      have hlow : (MachineState.readWord mem (32 * (p + 2) - 32)).toNat =
-          mm % Limbs.radix := by
-        have h := Model.readWord_of_fastRepresents hm (j := p + 1) (by omega)
-        rw [show (0 : Nat) + 32 * (p + 1) = 32 * (p + 2) - 32 from by omega,
-          show p + 1 + 1 - 1 - (p + 1) = 0 from by omega, pow_zero, Nat.div_one] at h
-        exact h
-      have hmi : (MachineState.readWord mem 2720).toNat = minv := by
-        rw [hf.minvW, toNat_ofNat_self hminvlt]
-      exact Challenge.EvmProof.GasSteps.cast
-        (CarryFull.gasSteps_monproFullFast s mem pa pb p a b mm (UInt256.ofNat pd) ret tail
-          (by omega) hrun hcode hfork hnp hact (by omega) hpa hpaFit hpb hpbFit hcds
-          hf.s32 hf.tl hf.ml hw hslot hjump (by omega) ha hb hm ham hmpos
-          (by rw [hlow, hmi]; exact hminvA)
-          (eligible_of_frame hf hfast hminv1 hminvlt))
-        rfl
-        (by simp only [Csub.csReturnedState_eq_result, retTo, CarryResult.monproMem_def, hpdN])
 
 /-- The Montgomery-inverse side condition forces an odd modulus. -/
 theorem odd_of_minvA {mm minv : Nat}
@@ -241,8 +192,6 @@ noncomputable def subs (s : State) (n bsize mm minv : Nat)
   amMem pa pb pd mem := amMemOf mem pa pb n pd
   mpFrame pa pb pd mem hpd hf := monproMem_frame' pa pb pd (by omega) (by omega) (by omega) hf
   amFrame pa pb pd mem hpd hf := amMemOf_frame pa pb pd (by omega) (by omega) (by omega) hf
-  monpro := subsMonpro s n bsize mm minv hcode hfork hrun hnp hact hcds hn (by omega) hmpos
-    hminvlt hminvA hfast hminv1
   sqMem mem := SquareResult.sqMem s mem n
   sqFrame _ hf := sqMem_frame' (by omega) (by omega) hf
   square := subsSquare s n bsize mm minv hfast hminv1

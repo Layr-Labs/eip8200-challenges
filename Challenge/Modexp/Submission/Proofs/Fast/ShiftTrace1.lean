@@ -30,32 +30,32 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs
 
-@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2083 = 2670 := by
+@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2124 = 2717 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2089 = 2677 := by
+@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2130 = 2724 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2095 = 2684 := by
+@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2136 = 2731 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2101 = 2691 := by
+@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2142 = 2738 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2107 = 2698 := by
+@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2148 = 2745 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2113 = 2705 := by
+@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2154 = 2752 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 /-- The `DUP2` that ends `blk2982`; the E5 cache block starts at the next index (1872, pc 2531). -/
-@[simp] private theorem followupPC1871 : Artifact.submissionArtifact.instructionPC 2123 = 2717 := by
+@[simp] private theorem followupPC1871 : Artifact.submissionArtifact.instructionPC 2164 = 2764 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 

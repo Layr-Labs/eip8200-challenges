@@ -14,44 +14,38 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCachedMacCore
 open TnCacheMemory TnCacheRowModel TnCacheSquareModel TnCacheRowPreserves TnCacheRowPointers
 open TnM128SquareRowSteps TnM128SquareTailSteps TnM128ReductionSteps
 
+/-- st8/n8g: the square rows leave through the mode test straight to the `n8` block (pc 4207)
+with the carry word still in the frame (no flush) and the row pointer at zero. -/
 def exitState (s : State) (mem : ByteArray) (tn : UInt256) (_n : Nat)
-    (aprev tl inv m0 m96 m64 m32 dst ret : UInt256) (rest : List UInt256) : State :=
-  framed {s with memory := mem} (UInt256.ofNat 4198)
-    (TnCacheFrameOps.frame (UInt256.ofNat 2336) (UInt256.ofNat 4258) (UInt256.ofNat 2336)
-      (UInt256.ofNat 3858) m32 (MachineState.readWord mem 128) m64
+    (aprev w3 tl inv m0 m96 m64 m32 dst ret : UInt256) (rest : List UInt256) : State :=
+  framed {s with memory := mem} (UInt256.ofNat 4207)
+    (TnCacheFrameOps.frame (UInt256.ofNat 0) (UInt256.ofNat 4293) w3
+      (UInt256.ofNat 3875) m32 (MachineState.readWord mem 128) m64
       (m0 :: tl :: m96 :: inv :: tn :: aprev :: dst :: ret :: rest))
 
 noncomputable def finish_steps (s : State)
     (env : Environment TnM128CandidateArtifact.submissionArtifact .Osaka s)
     (z : CacheState) (n : Nat) (hn : n ≤ 8)
-    (aprev tl inv m0 m96 m64 m32 dst ret : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
-    GasSteps (rowState s z n n aprev tl inv m0 m96 m64 m32 dst ret rest)
-      (exitState s (lift z.memory z.tn) z.tn n aprev tl inv m0 m96 m64 m32 dst ret rest) := by
+    (aprev w3 tl inv m0 m96 m64 m32 dst ret : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 998) (_hact : 88 ≤ s.activeWords.toNat) :
+    GasSteps (rowState s z n n aprev w3 tl inv m0 m96 m64 m32 dst ret rest)
+      (exitState s z.memory z.tn n aprev w3 tl inv m0 m96 m64 m32 dst ret rest) := by
   let tail := m0 :: tl :: m96 :: inv :: z.tn :: aprev :: dst :: ret :: rest
   let st : State := {s with memory := z.memory}
-  let aft : State := {s with memory := lift z.memory z.tn}
-  let stack := TnCacheFrameOps.frame (pointer 2368 n n) (UInt256.ofNat 4258) (UInt256.ofNat 2336)
+  let stack := TnCacheFrameOps.frame (qptr n n) (UInt256.ofNat 4293) w3
     (UInt256.ofNat (sqEnt n n)) m32 (MachineState.readWord z.memory 128) m64 tail
   have htail : tail.length ≤ 1006 := by simp only [tail, List.length_cons]; omega
-  have hj : Decode.isValidJumpDest aft.executionEnv.code 4198 = true := by
-    rw [show aft.executionEnv.code = TnM128CandidateArtifact.submissionArtifact.code from env.code]
-    exact TnM128CandidateArtifact.isValidJumpDest_index 3257 (by rfl)
-  have hf := TnCacheFrameOps.run_flush13 4128 st (pointer 2368 n n) (UInt256.ofNat 4258)
-    (UInt256.ofNat 2336) (UInt256.ofNat (sqEnt n n)) m32 (MachineState.readWord z.memory 128) m64
-    m0 tl m96 inv z.tn (aprev :: dst :: ret :: rest) (by simp only [List.length_cons]; omega) hact
-  have g0 := TnM128CandidateBlocks.flush.steps
-    (s := framed st (UInt256.ofNat 4128) stack) (env.transfer rfl rfl) rfl hf
-  have hg := TnCacheExitTrace.run_square_guard aft 4133 (pointer 2368 n n)
-    (UInt256.ofNat 2336) (UInt256.ofNat (sqEnt n n)) m32 (MachineState.readWord z.memory 128) m64
+  have hj : Decode.isValidJumpDest st.executionEnv.code 4207 = true := by
+    rw [show st.executionEnv.code = TnM128CandidateArtifact.submissionArtifact.code from env.code]
+    exact TnM128CandidateArtifact.isValidJumpDest_index 3283 (by rfl)
+  have hg := TnCacheExitTrace.run_square_guard st 4138 (qptr n n)
+    w3 (UInt256.ofNat (sqEnt n n)) m32 (MachineState.readWord z.memory 128) m64
     tail htail hj
   have g1 := TnM128L1Blocks.guard.steps
-    (s := framed aft (UInt256.ofNat 4133) stack) (env.transfer rfl rfl) rfl hg
-  have hp := pointer_end 2368 n (by decide) (by omega)
-  have he : sqEnt n n = 3858 := by unfold sqEnt; omega
-  simpa only [rowState, exitState, if_neg (Nat.lt_irrefl n), st, aft, stack, tail,
-    hp, he, Nat.reduceSub,
-    read_lift_outside z.memory z.tn 128 (Or.inl (by decide))] using g0.trans g1
+    (s := framed st (UInt256.ofNat 4138) stack) (env.transfer rfl rfl) rfl hg
+  have hq : qptr n n = UInt256.ofNat 0 := by unfold qptr; simp
+  have he : sqEnt n n = 3875 := by unfold sqEnt; omega
+  simpa only [rowState, exitState, if_neg (Nat.lt_irrefl n), st, stack, tail, hq, he] using g1
 
 #print axioms finish_steps
 end Challenge.Modexp.Submission.Proofs.Fast.TnM128SquareFinishSteps

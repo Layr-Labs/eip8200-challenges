@@ -103,6 +103,105 @@ theorem run_step (w : Fin 33) (template : State) (pc : UInt256) (mem : ByteArray
   simpa only [program_eq, st, state, framed, l2Step, hx, htl, hts, hpc,
     List.cons_append, List.nil_append] using hall
 
+/-- p2: the first second-loop cell of the eight-limb reduction takes its multiplier from frame
+word 5 (`DUP2 DUP7 MUL DUP10 DUP8 DUP5 MULMOD`, `n1` under p2) instead of loading it. -/
+def frameMultiplyProgram : List Instr :=
+  [.op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨6, by decide⟩), .op .MUL, .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .MULMOD]
+
+def l2ProgramFrame (tl ts : UInt256) : List Instr :=
+  frameMultiplyProgram ++ macFusedPostProgram tl ts
+
+theorem run_frameMultiply (template : State) (pc c y w2 w3 w4 x w6 w7 : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1008) :
+    runInstructions frameMultiplyProgram
+      (framed template pc ([c, y, w2, w3, w4, x, w6, w7, allOnes] ++ rest)) =
+    some (framed template (advancePC 7 pc)
+      ([UInt256.mulMod y x maxWord, x * y, c, y] ++ ([w2, w3, w4, x, w6, w7, allOnes] ++ rest))) := by
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length < 1011 := by omega
+  have hN : allOnes = maxWord := allOnes_value
+  simp [runInstructions, frameMultiplyProgram, framed, Challenge.EvmProof.Stepper.runInstr,
+    advancePC, hc9, hc10, hc11, hc12, hc13, hN]
+
+/-- `l2ProgramFrame` computes the cell of `macFusedProgram` with `x` read from the frame. -/
+theorem run_fusedFrame (template : State) (pc x y c w2 w3 w4 w6 w7 tl ts : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1008)
+    (hload : UInt256.ofNat (MachineState.activeWordsAfter
+      template.activeWords.toNat tl.toNat 32) = template.activeWords)
+    (hstore : UInt256.ofNat (MachineState.activeWordsAfter
+      template.activeWords.toNat ts.toNat 32) = template.activeWords) :
+    runInstructions (l2ProgramFrame tl ts)
+      (framed template pc ([c, y, w2, w3, w4, x, w6, w7, allOnes] ++ rest)) =
+    some (framed
+      { template with
+        memory := MachineState.writeBytes template.memory
+          (Data.Bytes.natToBytesPadded
+            (macSum x y (MachineState.readWord template.memory tl.toNat) c).toNat 32)
+          ts.toNat }
+      (advancePC 7 pc + UInt256.ofNat 25)
+      ([macCarry x y (MachineState.readWord template.memory tl.toNat) c, y] ++
+        ([w2, w3, w4, x, w6, w7, allOnes] ++ rest))) := by
+  let tail := [w2, w3, w4, x, w6, w7, allOnes] ++ rest
+  have htail : tail.length + 8 < 1024 := by
+    simp only [tail, List.length_append, List.length_cons, List.length_nil]; omega
+  have hm := run_frameMultiply template pc c y w2 w3 w4 x w6 w7 rest hrest
+  have hp := CiosCachedFused.run_post template (advancePC 7 pc)
+    (UInt256.mulMod y x maxWord) (x * y) c y tl ts tail htail hload hstore
+  have hc : partialCarry x y c +
+      UInt256.lt ((x * y + c) + MachineState.readWord template.memory tl.toNat)
+        (x * y + c) =
+      macCarry x y (MachineState.readWord template.memory tl.toNat) c := by
+    rw [Challenge.EvmProof.Word.word_add_comm (partialCarry x y c)]
+    simpa only [UInt256.gt, UInt256.lt,
+      Challenge.EvmProof.Word.word_add_comm (x * y + c) (MachineState.readWord template.memory tl.toNat)] using
+      carry_eq x y (MachineState.readWord template.memory tl.toNat) c
+  have hs : (x * y + c) + MachineState.readWord template.memory tl.toNat =
+      macSum x y (MachineState.readWord template.memory tl.toNat) c := by
+    rw [Challenge.EvmProof.Word.word_add_comm]
+    exact sum_eq x y (MachineState.readWord template.memory tl.toNat) c
+  change runInstructions (macFusedPostProgram tl ts) _ =
+    some (framed _ _ ([partialCarry x y c + _, y] ++ tail)) at hp
+  rw [hc, hs] at hp
+  exact runInstructions_append_some _ _ _ _ _ hm hp
+
+/-- One second-loop cell with the multiplier taken from the `pbEnd` frame word. -/
+theorem run_stepFrame (template : State) (pc : UInt256) (mem : ByteArray)
+    (bi mu c0 : UInt256) (n k : Nat) (tl ts : UInt256)
+    (htl : tl.toNat = 2112 + 32 * (n - 2 - k))
+    (hts : ts.toNat = 2112 + 32 * (n - 1 - k))
+    (pbi paEnd pbEnd flag tn destination returnPC : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1006)
+    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hk : k+1 < n)
+    (hpb : pbEnd = MachineState.readWord (l2Step mem mu c0 n k).memory (32 * (n - 2 - k))) :
+    runInstructions (l2ProgramFrame tl ts)
+      (state template pc mem bi mu c0 n k pbi paEnd pbEnd flag tn destination returnPC rest) =
+    some (state template (pc + UInt256.ofNat 32) mem bi mu c0 n (k+1)
+      pbi paEnd pbEnd flag tn destination returnPC rest) := by
+  have hactT : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
+      (2112 + 32*(n-2-k)) 32) = template.activeWords :=
+    activeWords_fix template _ 32 (by decide) (by omega) hactive
+  have hactW : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
+      (2112 + 32*(n-1-k)) 32) = template.activeWords :=
+    activeWords_fix template _ 32 (by decide) (by omega) hactive
+  let st : State := { template with memory := (l2Step mem mu c0 n k).memory }
+  have hT : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat tl.toNat 32) =
+      st.activeWords := by simpa only [st, htl] using hactT
+  have hW : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat ts.toNat 32) =
+      st.activeWords := by simpa only [st, hts] using hactW
+  have hf := run_fusedFrame st pc pbEnd mu (l2Step mem mu c0 n k).carry bi pbi paEnd flag tn
+    tl ts ([destination, returnPC] ++ rest)
+    (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) hT hW
+  have hpc : advancePC 7 pc + UInt256.ofNat 25 = pc + UInt256.ofNat 32 := by
+    simp [advancePC, succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
+  rw [hpb] at hf
+  simpa only [st, state, framed, l2Step, htl, hts, hpc, hpb,
+    List.cons_append, List.nil_append] using hf
+
 #print axioms run_load
 #print axioms run_step
+#print axioms run_stepFrame
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheL2Trace

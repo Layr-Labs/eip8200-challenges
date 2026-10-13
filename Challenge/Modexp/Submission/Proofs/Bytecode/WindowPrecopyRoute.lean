@@ -10,15 +10,15 @@ set_option warningAsError true
 
 Every modulus copy the ladder consumes is pushed once, before the accumulator exists.
 Pcs outside the route are unchanged; instruction indices after pc 2397 move by -80.
+The tail follows the head windows directly at 2388 (no jump, no `JUMPDEST`).
 
 * 968..976 `setupProgram`: `e <<< 1` and `e >>> 3` from the exponent word under the modulus;
 * 976..981 `copyProgram`: the two `MSIZE` stores, `e >>> 3` at 512 and `e <<< 1` at 544;
 * 981..1296 `poolProgram`: `DUP2` and 314 `DUP1`, the 315 modulus copies;
 * 1296..1308 `firstProgram`: nibble 0 from byte 512 (`e >>> 251`);
 * 1308..2388 `routeWindows 0 60`: nibbles 1..60;
-* 2388..2392 `jumpProgram`: `PUSH2 5483 JUMP` to the moved tail;
-* 5483..5544 `tailProgram`: `JUMPDEST`, nibbles 61 and 62, the last four squarings,
-  nibble 63 from `e <<< 1` on the stack, and the return.
+* 2388..2448 `tailProgram`: nibbles 61 and 62, the last four squarings, nibble 63 from
+  `e <<< 1` on the stack, and the return, straight after the head windows.
 -/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowPrecopyRoute
@@ -350,20 +350,6 @@ theorem run_routeWindows (template : State) (mem : ByteArray) (base modulus expo
       rw [advance_succ_front, show 1 + start + 1 = 1 + (start + 1) by omega]
       simpa only [routeWindows, hpc] using hall
 
-/-- 2388..2392: `PUSH2 5483 JUMP` to the moved tail. -/
-def jumpProgram : List Instr := [.push 2 (UInt256.ofNat 5483), .op .JUMP]
-
-theorem run_jump (template : State) (pc : UInt256) (mem : ByteArray) (active : Nat)
-    (stack : List UInt256) (hcap : stack.length + 1 < 1024)
-    (hdest : Decode.isValidJumpDest template.executionEnv.code 5483 = true) :
-    runInstructions jumpProgram (WindowTwentyOneLookup.framed template pc mem active stack) =
-    some (WindowTwentyOneLookup.framed template (UInt256.ofNat 5483) mem active stack) := by
-  have hcap0 : stack.length < 1024 := by omega
-  have ht : (UInt256.ofNat 5483).toNat = 5483 := by
-    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
-  simp [runInstructions, jumpProgram, WindowTwentyOneLookup.framed,
-    Challenge.EvmProof.Stepper.runInstr, hcap0, hcap, ht, hdest]
-
 /-- 5528..5538: nibble 63 from `e <<< 1` (third on the stack) and the last multiply. -/
 def finalProgram : List Instr :=
   [.op (.Dup ⟨2, by decide⟩), .push 1 (UInt256.ofNat 4), .op .SHL,
@@ -394,16 +380,9 @@ theorem run_final (template : State) (pc : UInt256) (mem : ByteArray)
       h18, haddress, hread, hactive,
       State.activeWordsAfterUInt256, advancePC, succ_eq_add, hp2, hp3, word_add_assoc]
 
-private theorem run_jumpdest (template : State) (pc : UInt256) (mem : ByteArray) (active : Nat)
-    (stack : List UInt256) (hcap : stack.length < 1024) :
-    runInstructions [.op .JUMPDEST] (WindowTwentyOneLookup.framed template pc mem active stack) =
-    some (WindowTwentyOneLookup.framed template (advancePC 1 pc) mem active stack) := by
-  simp [runInstructions, WindowTwentyOneLookup.framed, Challenge.EvmProof.Stepper.runInstr,
-    hcap, advancePC]
-
-/-- 5483..5544: `JUMPDEST`, nibbles 61 and 62, the last four squarings, nibble 63, return. -/
+/-- 2388..2448: nibbles 61 and 62, the last four squarings, nibble 63, return. -/
 def tailProgram : List Instr :=
-  [.op .JUMPDEST] ++ routeWindows 60 2 ++ WindowSixteenBlock.Block.squares 4 ++ finalProgram ++
+  routeWindows 60 2 ++ WindowSixteenBlock.Block.squares 4 ++ finalProgram ++
     WindowTwentyOneReturn.program
 
 /-! ## The route, state by state -/
@@ -430,9 +409,9 @@ theorem routeMem_table (base modulus exponent : UInt256) :
 def returnedState (template : State) (base modulus exponent : UInt256) (rest : List UInt256) :
     State :=
   WindowTwentyOneReturn.returned
-    (routeState template 5538 base modulus exponent
+    (routeState template 2442 base modulus exponent
       (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63 :: frame modulus exponent rest))
-    (UInt256.ofNat 5543) (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 18
+    (UInt256.ofNat 2447) (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 18
     (frame modulus exponent rest)
 
 theorem run_setupAt (template : State) (base modulus exponent : UInt256)
@@ -501,40 +480,21 @@ theorem run_headAt (template : State) (base modulus exponent : UInt256)
   rw [advancePC_ofNat] at h
   exact h
 
-theorem run_jumpAt (template : State) (base modulus exponent : UInt256) (stack : List UInt256)
-    (hcap : stack.length + 1 < 1024)
-    (hdest : Decode.isValidJumpDest template.executionEnv.code 5483 = true) :
-    runInstructions jumpProgram (routeState template 2388 base modulus exponent stack) =
-    some (routeState template 5483 base modulus exponent stack) :=
-  run_jump template _ _ 18 stack hcap hdest
-
 theorem run_tailAt (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 600) :
-    runInstructions tailProgram (routeState template 5483 base modulus exponent
+    runInstructions tailProgram (routeState template 2388 base modulus exponent
       (WindowTwentyOneMath.accumulator base modulus exponent.toNat 60 ::
         List.replicate 15 modulus ++ frame modulus exponent rest)) =
     some (returnedState template base modulus exponent rest) := by
-  have h0 : runInstructions [.op .JUMPDEST] (routeState template 5483 base modulus exponent
+  have h1 : runInstructions (routeWindows 60 2) (routeState template 2388 base modulus exponent
       (WindowTwentyOneMath.accumulator base modulus exponent.toNat 60 ::
         List.replicate 15 modulus ++ frame modulus exponent rest)) =
-      some (routeState template 5484 base modulus exponent
-        (WindowTwentyOneMath.accumulator base modulus exponent.toNat 60 ::
-          List.replicate 15 modulus ++ frame modulus exponent rest)) := by
-    have h := run_jumpdest template (UInt256.ofNat 5483) (routeMem base modulus exponent) 18
-      (WindowTwentyOneMath.accumulator base modulus exponent.toNat 60 ::
-        List.replicate 15 modulus ++ frame modulus exponent rest)
-      (by simp only [frame, List.length_cons, List.length_append, List.length_replicate]; omega)
-    rw [advancePC_ofNat] at h
-    exact h
-  have h1 : runInstructions (routeWindows 60 2) (routeState template 5484 base modulus exponent
-      (WindowTwentyOneMath.accumulator base modulus exponent.toNat 60 ::
-        List.replicate 15 modulus ++ frame modulus exponent rest)) =
-      some (routeState template 5520 base modulus exponent
+      some (routeState template 2424 base modulus exponent
         (WindowTwentyOneMath.accumulator base modulus exponent.toNat 62 ::
           List.replicate 4 modulus ++ modulus :: frame modulus exponent rest)) := by
     have h := run_routeWindows template (routeMem base modulus exponent) base modulus exponent
       (frame modulus exponent rest) (routeMem_table base modulus exponent)
-      (fun i hi => precopy_address _ exponent i hi) 2 60 (by omega) (UInt256.ofNat 5484)
+      (fun i hi => precopy_address _ exponent i hi) 2 60 (by omega) (UInt256.ofNat 2388)
       (WindowTwentyOneMath.accumulator base modulus exponent.toNat 60) 5
       (by simp only [frame, List.length_cons]; omega)
     have h62 : WindowTwentyOneMath.advance base modulus exponent.toNat (1 + 60) 2
@@ -544,14 +504,14 @@ theorem run_tailAt (template : State) (base modulus exponent : UInt256)
     rw [advancePC_ofNat, h62] at h
     exact h
   have h2 : runInstructions (WindowSixteenBlock.Block.squares 4)
-      (routeState template 5520 base modulus exponent
+      (routeState template 2424 base modulus exponent
         (WindowTwentyOneMath.accumulator base modulus exponent.toNat 62 ::
           List.replicate 4 modulus ++ modulus :: frame modulus exponent rest)) =
-      some (routeState template 5528 base modulus exponent
+      some (routeState template 2432 base modulus exponent
         (WindowMath.squareWordAfter modulus 4
           (WindowTwentyOneMath.accumulator base modulus exponent.toNat 62) ::
           modulus :: frame modulus exponent rest)) := by
-    have h := WindowSixteenBlock.Block.run_squares template (UInt256.ofNat 5520)
+    have h := WindowSixteenBlock.Block.run_squares template (UInt256.ofNat 2424)
       (routeMem base modulus exponent) 18 modulus
       (WindowTwentyOneMath.accumulator base modulus exponent.toNat 62)
       (modulus :: frame modulus exponent rest) 4 (by decide)
@@ -560,18 +520,18 @@ theorem run_tailAt (template : State) (base modulus exponent : UInt256)
     exact h
   have hd := WindowTwentyOneMath.nibble_lt exponent.toNat 63
   have h3 : runInstructions finalProgram
-      (routeState template 5528 base modulus exponent
+      (routeState template 2432 base modulus exponent
         (WindowMath.squareWordAfter modulus 4
           (WindowTwentyOneMath.accumulator base modulus exponent.toNat 62) ::
           modulus :: frame modulus exponent rest)) =
       some (WindowTwentyOneReturn.framed
-        (routeState template 5538 base modulus exponent
+        (routeState template 2442 base modulus exponent
           (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63 ::
             frame modulus exponent rest))
-        (UInt256.ofNat 5538)
+        (UInt256.ofNat 2442)
         (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63 ::
           frame modulus exponent rest)) := by
-    have h := run_final template (UInt256.ofNat 5528) (routeMem base modulus exponent) base modulus
+    have h := run_final template (UInt256.ofNat 2432) (routeMem base modulus exponent) base modulus
       (WindowMath.squareWordAfter modulus 4
         (WindowTwentyOneMath.accumulator base modulus exponent.toNat 62))
       (UInt256.shiftLeft exponent (UInt256.ofNat 1)) (WindowTwentyOneMath.nibble exponent.toNat 63)
@@ -583,13 +543,12 @@ theorem run_tailAt (template : State) (base modulus exponent : UInt256)
           (WindowTwentyOneMath.accumulator base modulus exponent.toNat 62)) modulus] at h
     exact h
   have h4 := WindowTwentyOneReturn.run_return
-    (routeState template 5538 base modulus exponent
+    (routeState template 2442 base modulus exponent
       (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63 :: frame modulus exponent rest))
-    (UInt256.ofNat 5538) (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 18
+    (UInt256.ofNat 2442) (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 18
     (by decide) rfl (frame modulus exponent rest) (by simp only [frame, List.length_cons]; omega)
   rw [advancePC_ofNat] at h4
-  have h01 := runInstructions_append_some _ _ _ _ _ h0 h1
-  have h012 := runInstructions_append_some _ _ _ _ _ h01 h2
+  have h012 := runInstructions_append_some _ _ _ _ _ h1 h2
   have h0123 := runInstructions_append_some _ _ _ _ _ h012 h3
   have hall := runInstructions_append_some _ _ _ _ _ h0123 h4
   exact hall

@@ -19,10 +19,10 @@ open Challenge.Modexp.Submission.Proofs.Fast.Cios2Dispatch
 open CiosCached CiosCachedMidMemory CarryIface
 open CarryRowModel CarryResult
 
-/-- The eight rows of an eight-limb multiply, from the row-0 head (`hd = 4261`) to the final
-subtraction. -/
-opaque gasSteps_rowsEight (s : State) (mem : ByteArray) (pa pb : Nat)
-    (tl inv m0 aEnd m96 m64 m32 pdst ret : UInt256) (rest : List UInt256)
+/-- The 8 rows of a eight-limb multiply (multiplier at `0x100`), from the row-0 head to the
+final subtraction. -/
+opaque gasSteps_rowsEight (s : State) (mem : ByteArray) (pa : Nat)
+    (w3 ent tl inv m0 aEnd m96 m64 m32 pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
@@ -30,24 +30,22 @@ opaque gasSteps_rowsEight (s : State) (mem : ByteArray) (pa pb : Nat)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat)
     (hpaFit : pa + 32 * 8 ≤ 2048 ∨ pa = 2368)
-    (hpb : 32 ≤ pb) (hpbFit : pb + 32 * 8 ≤ 2048)
     (hminv : inverseInvariant mem 8)
     (hc : CiosReadonly.ReadonlyCache mem 8 tl inv m0)
     (he : CiosReadonlyExtra.ExtraCache mem m96 m64 m32)
     (hAend : aEnd = UInt256.ofNat (pa+32*8-32))
-    (hsnapshot : StagedOperand.Snapshot mem pa 8) :
+    (hsnapshot : StagedOperand.Snapshot mem pa 8)
+    (hw3 : w3 = MachineState.readWord mem 192) :
     Challenge.EvmProof.GasSteps
-      (outState s (mpZeroed s mem 8) pb 8 0 (UInt256.ofNat 3533) (l1Target 8) m32 m64 m0
-        (tl :: m96 :: inv :: UInt256.ofNat 0 :: aEnd :: pdst :: ret :: rest))
-      (mpCsubState s (rowsCarry (mpZeroed s mem 8) pa pb 8 8) pdst ret rest) := by
+      (TnM128RowsSteps.rowState s ⟨mpZeroed s mem 8, UInt256.ofNat 0⟩ 8 0 w3 ent tl inv m0 aEnd
+        m96 m64 m32 pdst ret rest)
+      (mpCsubState s (rowsCarry (mpZeroed s mem 8) pa 256 8 8) pdst ret rest) := by
   have hcode' : s.executionEnv.code = TnM128Candidate.bytecode :=
     hcode.trans TnM128GlobalBinding.bytecode_eq
   have env := TnM128SquareSteps.environment s hcode' hfork hrun hnp
-  have g := TnM128InitialMultiply.rows_steps s env mem pa pb 8
-    (by decide) tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hact
-    hpaFit hpb hpbFit hminv hc ⟨he.word96, he.word64, he.word32⟩ hAend hsnapshot
-  simpa only [outState, TnM128Setup.outState, TnM128Setup.zeroTn,
-    l1Target, TnM128Setup.l1Target,
-    mpCsubState, CiosCachedMacCore.framed, List.cons_append, List.nil_append] using g
+  have g := TnM128InitialMultiply.rows_steps s env mem pa 8
+    (by decide) w3 ent tl inv m0 aEnd m96 m64 m32 pdst ret rest hcap hact
+    hpaFit hminv hc ⟨he.word96, he.word64, he.word32⟩ hAend hsnapshot (fun _ => hw3)
+  simpa only [mpCsubState, CiosCachedMacCore.framed, List.cons_append, List.nil_append] using g
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryFull

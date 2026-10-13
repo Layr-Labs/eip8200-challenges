@@ -34,7 +34,7 @@ NOT definitionally equal; `mulMod_comm` below is what bridges them, and every
 statement downstream keeps the accumulator-first spelling. -/
 def lookupProgram : List Instr :=
   [.op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩), .push 8 5, .op .SHL, .op .MLOAD,
+   .op (.Dup ⟨2, by decide⟩), .push 1 5, .op .SHL, .op .MLOAD,
    .op .MULMOD, .op (.Swap ⟨4, by decide⟩), .op .POP]
 
 def beginSquareProgram : List Instr :=
@@ -50,7 +50,7 @@ This eight-instruction block is twenty-three bytes; it also replaces the followi
 external POP. The square-state and final word-state interfaces are unchanged. -/
 def fusedSquareLookupProgram : List Instr :=
   [.op (.Dup ⟨6, by decide⟩), .op (.Swap ⟨1, by decide⟩),
-   .push 15 5, .op .SHL, .op .MLOAD, .op .MULMOD,
+   .push 1 5, .op .SHL, .op .MLOAD, .op .MULMOD,
    .op (.Swap ⟨3, by decide⟩), .op .POP]
 
 /-- Keep the accumulator at the top between squarings: four pure squarings

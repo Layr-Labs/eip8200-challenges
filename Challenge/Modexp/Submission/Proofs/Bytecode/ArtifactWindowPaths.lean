@@ -113,15 +113,9 @@ private def nine_head :
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
-private def nine_jump :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2388 WindowPrecopyRoute.jumpProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1891 2 2388 WindowPrecopyRoute.jumpProgram
-    (by decide) (by rfl)
-    (by rw [locations_map_instruction]; rfl) (by decide)
-
 private def nine_tail :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 5483 WindowPrecopyRoute.tailProgram :=
-  WindowTwentyOneSlice.block allWellFormed 4310 49 5483 WindowPrecopyRoute.tailProgram
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 2388 WindowPrecopyRoute.tailProgram :=
+  WindowTwentyOneSlice.block allWellFormed 1891 48 2388 WindowPrecopyRoute.tailProgram
     (by decide) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
@@ -184,9 +178,7 @@ def twentyOnePaths : WindowTwentyOneGasRoute.Paths submissionArtifact .Osaka whe
   pool := nine_pool
   first := nine_first
   head := nine_head
-  jump := nine_jump
   tail := nine_tail
-  tailJump := by exact isValidJumpDest_index 4310 (by rfl)
   genJump := by
     have h := isValidJumpDest_index 52 (by rfl)
     exact h

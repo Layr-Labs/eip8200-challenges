@@ -59,7 +59,8 @@ theorem product_cached (s : State) {mem : ByteArray} {tl inv m0 m96 m64 m32 : UI
     (h : Cached mem 2368 8 tl inv m0 m96 m64 m32) :
     Cached (firstProduct mem).memory 2368 8 tl inv m0 m96 m64 m32 := by
   refine ⟨h.readonly.of_preserved (product_read s mem 2720 (Or.inr (by decide)))
-      (product_read s mem 160 (Or.inl (by decide))),
+      (product_read s mem 160 (Or.inl (by decide)))
+      (product_read s mem 224 (Or.inl (by decide))),
     h.extra.of_preserved (product_read s mem 96 (Or.inl (by decide)))
       (product_read s mem 64 (Or.inl (by decide)))
       (product_read s mem 32 (Or.inl (by decide))), ?_, fun _ _ => rfl⟩
@@ -71,7 +72,8 @@ theorem first_cached (s : State) {mem : ByteArray} {tl inv m0 m96 m64 m32 : UInt
     (h : Cached mem 2368 8 tl inv m0 m96 m64 m32) :
     Cached (first mem).memory 2368 8 tl inv m0 m96 m64 m32 := by
   refine ⟨h.readonly.of_preserved (first_read s mem 2720 (Or.inr (by decide)))
-      (first_read s mem 160 (Or.inl (by decide))),
+      (first_read s mem 160 (Or.inl (by decide)))
+      (first_read s mem 224 (Or.inl (by decide))),
     h.extra.of_preserved (first_read s mem 96 (Or.inl (by decide)))
       (first_read s mem 64 (Or.inl (by decide)))
       (first_read s mem 32 (Or.inl (by decide))), ?_, fun _ _ => rfl⟩

@@ -25,7 +25,7 @@ def baseStack (bi pbi paEnd pbEnd flag dst ret : UInt256) (rest : List UInt256) 
 
 def input (s : State) (c bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=
-  framed s (UInt256.ofNat 3827) ([c] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)
+  framed s (UInt256.ofNat 3844) ([c] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)
 
 def stored (s : State) (c bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=

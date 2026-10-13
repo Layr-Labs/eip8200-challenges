@@ -13,86 +13,96 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
 open Challenge.Modexp.Submission.Proofs.Fast Monpro SquareModel StagedOperand
 open CiosCached CiosCachedMacCore CiosReadonly CiosCachedMidMemory TnM128ReductionSteps
 
-def l1PC (n : Nat) : Nat := if n = 4 then 5309 else 3562
+def l1PC (n : Nat) : Nat := if n = 4 then 5373 else 3579
 
 theorem l1_jump (n : Nat) (hn : n = 4 ∨ n = 8) :
     Decode.isValidJumpDest TnM128Candidate.bytecode (UInt256.ofNat (l1PC n)).toNat = true := by
   rcases hn with rfl | rfl
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 4168 (by rfl)
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 2752 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 4232 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 2784 (by rfl)
 
-theorem row_jump :
-    Decode.isValidJumpDest TnM128Candidate.bytecode (UInt256.ofNat 3533).toNat = true :=
-  TnM128CandidateArtifact.isValidJumpDest_index 2723 (by rfl)
+/-- The multiply row head of each width (msplit: one loop per width). -/
+def headPC (n : Nat) : Nat := if n = 4 then 5339 else 3545
 
-def result (mem : ByteArray) (tn : UInt256) (pa n : Nat) (pbi : UInt256) :
+theorem head_jump (n : Nat) (hn : n = 4 ∨ n = 8) :
+    Decode.isValidJumpDest TnM128Candidate.bytecode (UInt256.ofNat (headPC n)).toNat = true := by
+  rcases hn with rfl | rfl
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 4203 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 2755 (by rfl)
+
+def result (mem : ByteArray) (tn : UInt256) (pa n : Nat) (q : UInt256) :
     TnCacheRowModel.CacheState :=
   TnCacheSquareModel.fromL1
-    (l1Step mem (MachineState.readWord mem pbi.toNat) pa n n) tn n
+    (l1Step mem (MachineState.readWord mem (q.toNat+224)) pa n n) tn n
 
-/-- A complete ordinary multiply row of the selected candidate, from the row
-head through both limb loops and the actual next-row branch. -/
+/-- A complete ordinary multiply row of the selected candidate, from the width's row head
+(`b_i = mem[q + 0xe0]`) through both limb loops and the actual next-row branch. -/
 noncomputable def row_steps (s : State)
     (env : Environment TnM128CandidateArtifact.submissionArtifact .Osaka s)
     (pa n : Nat) (hn : n = 4 ∨ n = 8)
-    (pbi pb tn m128 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
+    (q pb ent tn m128 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)
-    (hact : 88 ≤ s.activeWords.toNat) (hpbi : pbi.toNat ≤ 2784)
+    (hact : 88 ≤ s.activeWords.toNat) (hq : q.toNat ≤ 2560)
     (hpa : pa+32*n ≤ 2048 ∨ pa = 2368)
     (ha : aEnd.toNat = pa+32*(n-1))
     (hc : ReadonlyCache s.memory n tl inv m0)
     (he : TnCacheExtraTrace.ExtraCache s.memory m96 m64 m32)
     (hi : inverseInvariant s.memory n) (hs : Snapshot s.memory pa n)
-    (hcache : m128 = MachineState.readWord s.memory 128) :
+    (hcache : m128 = MachineState.readWord s.memory 128)
+    (hpb : n = 8 → pb = MachineState.readWord s.memory 192) :
     GasSteps
-      (framed s (UInt256.ofNat 3533)
-        (TnCacheFrameOps.frame pbi (UInt256.ofNat 3533) pb (UInt256.ofNat (l1PC n))
+      (framed s (UInt256.ofNat (headPC n))
+        (TnCacheFrameOps.frame q (UInt256.ofNat (headPC n)) pb ent
           m32 m128 m64
           (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)))
-      (framed {s with memory := (result s.memory tn pa n pbi).memory}
-        (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb)
-         then UInt256.ofNat 3533 else UInt256.ofNat 4128)
-        (TnCacheFrameOps.frame (negative32+pbi) (UInt256.ofNat 3533) pb
-          (UInt256.ofNat (l1PC n)) m32
+      (framed {s with memory := (result s.memory tn pa n q).memory}
+        (if UInt256.isTrue (negative32+q)
+         then UInt256.ofNat (headPC n) else UInt256.ofNat 4138)
+        (TnCacheFrameOps.frame (negative32+q) (UInt256.ofNat (headPC n)) pb
+          ent m32
           m128 m64
-          (m0 :: tl :: m96 :: inv :: (result s.memory tn pa n pbi).tn :: aEnd :: dst :: ret :: rest))) := by
-  let bi := MachineState.readWord s.memory pbi.toNat
+          (m0 :: tl :: m96 :: inv :: (result s.memory tn pa n q).tn :: aEnd :: dst :: ret :: rest))) := by
+  let bi := MachineState.readWord s.memory (q.toNat+224)
   let q1 := l1Step s.memory bi pa n 1
   let qn := l1Step s.memory bi pa n n
   let tail := m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest
   have hn' : 1 ≤ n ∧ n ≤ 8 := by omega
-  have ht : tl.toNat = 2112+32*(n-1) := by
-    rw [hc.lowAddress, Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt (by omega)]
-    omega
-  have hj : Decode.isValidJumpDest s.executionEnv.code
-      (UInt256.ofNat (l1PC n)).toNat = true := by rw [env.code]; exact l1_jump n hn
   have hhd : Decode.isValidJumpDest s.executionEnv.code
-      (UInt256.ofNat 3533).toNat = true := by rw [env.code]; exact row_jump
-  have hhead := TnCacheHeadTrace.run_head s 3533 pa n pbi (UInt256.ofNat 3533) pb
-    (UInt256.ofNat (l1PC n)) m32 m128 tl m64 m0 aEnd m96 inv tn
-    dst ret rest hcap hn' hact hpbi hpa ha ht hj
-  have g0 := TnM128L1Blocks.head.steps
-    (s := framed s (UInt256.ofNat 3533)
-      (TnCacheFrameOps.frame pbi (UInt256.ofNat 3533) pb (UInt256.ofNat (l1PC n))
-        m32 m128 m64 tail)) (env.transfer rfl rfl) rfl hhead
+      (UInt256.ofNat (headPC n)).toNat = true := by rw [env.code]; exact head_jump n hn
+  have hhead := TnCacheHeadTrace.run_headC s (headPC n) pa n q (UInt256.ofNat (headPC n)) pb
+    ent m32 m128 tl m64 m0 aEnd m96 inv tn
+    dst ret rest hcap hn' hact hq hpa ha
+  have hpc : headPC n + 34 = l1PC n := by
+    rcases hn with rfl | rfl <;> rfl
+  rw [hpc] at hhead
+  have g0 : GasSteps
+      (framed s (UInt256.ofNat (headPC n))
+        (TnCacheFrameOps.frame q (UInt256.ofNat (headPC n)) pb ent m32 m128 m64 tail))
+      (TnCacheL1Trace.qState s (UInt256.ofNat (l1PC n)) q1 bi
+        q (UInt256.ofNat (headPC n)) pb ent m32 m128 m64 tail) := by
+    by_cases h4 : n = 4
+    · subst n
+      exact TnM128L1Blocks.head4.steps (env.transfer rfl rfl) rfl hhead
+    · have h8 : n = 8 := hn.resolve_left h4
+      subst n
+      exact TnM128L1Blocks.head.steps (env.transfer rfl rfl) rfl hhead
   have hs1 : Snapshot q1.memory pa n := by
     exact Snapshot.l1StepOn_pres_stage
       (q := l1Step s.memory bi pa n 0) hs bi 0 hn'.2 hpa (by omega)
   have g1 : GasSteps
       (TnCacheL1Trace.qState s (UInt256.ofNat (l1PC n)) q1 bi
-        pbi (UInt256.ofNat 3533) pb (UInt256.ofNat (l1PC n)) m32 m128 m64 tail)
+        q (UInt256.ofNat (headPC n)) pb ent m32 m128 m64 tail)
       (TnCacheL1Trace.qState s (UInt256.ofNat (middlePC n)) (l1Run q1 bi pa n 1 (n-1)) bi
-        pbi (UInt256.ofNat 3533) pb (UInt256.ofNat (l1PC n)) m32 m128 m64 tail) := by
+        q (UInt256.ofNat (headPC n)) pb ent m32 m128 m64 tail) := by
     by_cases h4 : n = 4
     · subst n
       exact TnM128L1Steps.private_steps s env q1 bi pa
-        pbi (UInt256.ofNat 3533) pb (UInt256.ofNat (l1PC 4)) m32 m128 m64 tail
+        q (UInt256.ofNat (headPC 4)) pb ent m32 m128 m64 tail
         (by simp only [tail, List.length_cons]; omega) hact hpa hs1
     · have h8 : n = 8 := hn.resolve_left h4
       subst n
       exact TnM128L1Steps.suffix_steps s env q1 bi pa 8 1 7 (by decide)
-        pbi (UInt256.ofNat 3533) pb (UInt256.ofNat (l1PC 8)) m32 m128 m64 tail
+        q (UInt256.ofNat (headPC 8)) pb ent m32 m128 m64 tail
         (by simp only [tail, List.length_cons]; omega) hact (by decide) (by decide) hpa hs1
   have hqn : l1Run q1 bi pa n 1 (n-1) = qn := by
     simp only [q1, qn, StagedOperand.l1Run_l1Step, show 1+(n-1) = n from by omega]
@@ -101,10 +111,11 @@ noncomputable def row_steps (s : State)
     rw [show MachineState.readWord qn.memory 128 = MachineState.readWord s.memory 128 from
       Monpro.readWord_l1Step_low _ _ pa n 128 n (by decide)]
     exact hcache
-  have g2 := reduction_steps s env qn bi tn n hn pbi (UInt256.ofNat 3533) pb
-    (UInt256.ofNat (l1PC n)) m128 tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hact
+  have g2 := reduction_steps s env qn bi tn n hn q (UInt256.ofNat (headPC n)) pb
+    ent m128 tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hact
     (hc.l1 hn'.2 bi pa n) (he.l1 bi pa n n hn'.2)
-    (inverse_l1Step s.memory bi pa n n hn'.2 hi) hm128 hhd
+    (inverse_l1Step s.memory bi pa n n hn'.2 hi) hm128
+    (fun h => (hpb h).trans (Monpro.readWord_l1Step_low _ _ pa n 192 n (by decide)).symm) hhd
   have both := (g0.trans g1).trans g2
   simpa only [qn, q1, bi, tail, result] using both
 

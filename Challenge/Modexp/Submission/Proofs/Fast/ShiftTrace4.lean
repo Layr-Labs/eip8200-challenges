@@ -311,7 +311,7 @@ theorem jumpD4692 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
 on every reachable state (`repair_lt_mm`), so the artifact does not call it.  The hypotheses the
 call needed are kept so that the call sites are unchanged. -/
 def gasSteps_csubStep (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
-    (hk : 1 ≤ k) (hk32 : k ≤ 32) (_hn : 2 ≤ n) (_hn32 : n ≤ 8) (e : Env s)
+    (hk : 2 ≤ k) (hk32 : k ≤ 32) (_hn : 2 ≤ n) (_hn32 : n ≤ 8) (e : Env s)
     (_hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
     (_htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
     (_hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
@@ -320,9 +320,9 @@ def gasSteps_csubStep (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize
     Challenge.EvmProof.GasSteps (csubCallState z s mem n bsize esize msize k)
       (afterCsubState z s mem n bsize esize msize k) :=
     soundEnv blk3253 e (run_csubCall z s mem n bsize esize msize k hk hk32 e.code e.run)
-def canonicalCopyBlock : WindowTwentyOneBinding.Block Artifact.submissionArtifact .Osaka 2574
+def canonicalCopyBlock : WindowTwentyOneBinding.Block Artifact.submissionArtifact .Osaka 2621
     ShiftProducerSplitRun.copyProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2011 5 2574 ShiftProducerSplitRun.copyProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2052 5 2621 ShiftProducerSplitRun.copyProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def gasSteps_hitCsub (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)
@@ -401,9 +401,9 @@ abbrev stepMid (mem : ByteArray) (n : Nat) : ByteArray :=
 abbrev stepNeg (mem : ByteArray) (n : Nat) : UInt256 :=
   negOf (stepMac mem n).memory (stepMac mem n).carry (stepQ mem n)
 
-/-- One shift step: from the loop head with `k ≥ 1` steps to go back to the loop
-head with `k - 1`, the memory advanced by `stepMem`. -/
-def gasSteps_step (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k mm minv : Nat)
+/-- One shift step up to the bottom test: from the loop head with `k ≥ 1` steps to go to the
+`CSUB`-call block, the memory advanced by `stepMem`. -/
+def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k mm minv : Nat)
     {r : Nat}
     (hk : 1 ≤ k) (hk32 : k ≤ 32) (hn : 2 ≤ n) (hn32 : n ≤ 8) (hbs : bsize = 32 * n)
     (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
@@ -419,7 +419,7 @@ def gasSteps_step (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msi
         (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))))
     (hfast : n = 4 ∨ n = 8) :
     Challenge.EvmProof.GasSteps (shiftLoopState z s mem n bsize esize msize k)
-      (shiftLoopState z s (stepMem mem n mm) n bsize esize msize (k - 1)) := by
+      (csubCallState z s (stepMem mem n mm) n bsize esize msize k) := by
   have rf' : RepairFacts (stepMid mem n) n mm (stepNeg mem n) := rf
   -- frame words along the way
   have htl0 : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n) := inv.frame.tl
@@ -558,17 +558,54 @@ def gasSteps_step (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msi
         (addCount (stepMid mem n) n mm (stepNeg mem n)) (by omega) hn32 e hc1 htlMid
         rf'.addRoundsOut (rf'.addLastOut hc1)
       exact (start.trans adds).trans tail
-  have g4 : Challenge.EvmProof.GasSteps
-      (csubCallState z s (fixMem (stepMid mem n) n mm (stepNeg mem n)) n bsize esize msize k)
-      (afterCsubState z s (fixMem (stepMid mem n) n mm (stepNeg mem n)) n bsize esize msize k) :=
-    gasSteps_csubStep z s (fixMem (stepMid mem n) n mm (stepNeg mem n)) n bsize esize msize k
-      hk hk32 hn hn32 e
-      (by rw [hhighFix 2752 (by omega)]; exact hml0)
-      (by rw [hhighFix 2784 (by omega)]; exact htl0)
-      (by rw [hhighFix 2688 le_rfl]; exact hs320)
-      (by rw [rf'.subDoneTn]; decide)
-      hfast
-  -- `CSUB` returns to the loop head with `k - 1`: `afterCsubState k` is `shiftLoopState (k - 1)`.
-  exact Challenge.EvmProof.GasSteps.cast (((g1.trans g2).trans g3).trans g4) rfl rfl
+  exact Challenge.EvmProof.GasSteps.cast ((g1.trans g2).trans g3) rfl rfl
+
+/-- One shift step with `k ≥ 2`: the bottom test jumps back to the loop head with `k - 1`. -/
+def gasSteps_step (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k mm minv : Nat)
+    {r : Nat}
+    (hk : 2 ≤ k) (hk32 : k ≤ 32) (hn : 2 ≤ n) (hn32 : n ≤ 8) (hbs : bsize = 32 * n)
+    (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
+    (htop : Limbs.radix ^ n < 2 * mm)
+    (e : Env s)
+    (inv : StepInv mem n bsize mm minv)
+    (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm)
+    (rf : RepairFacts
+      (midMem (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
+        (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n)))
+      n mm
+      (negOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
+        (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))))
+    (hfast : n = 4 ∨ n = 8) :
+    Challenge.EvmProof.GasSteps (shiftLoopState z s mem n bsize esize msize k)
+      (shiftLoopState z s (stepMem mem n mm) n bsize esize msize (k - 1)) :=
+  Challenge.EvmProof.GasSteps.cast
+    ((gasSteps_stepPre z s mem n bsize esize msize k mm minv (by omega) hk32 hn hn32 hbs hmpos hmm
+        htop e inv hbase hr rf hfast).trans
+      (soundEnv blk3253 e
+        (run_csubCall z s (stepMem mem n mm) n bsize esize msize k hk hk32 e.code e.run)))
+    rfl rfl
+
+/-- The last shift step (`k = 1`): the bottom test falls through to `SHIFT_DONE`. -/
+def gasSteps_stepLast (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize mm minv : Nat)
+    {r : Nat}
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hbs : bsize = 32 * n)
+    (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
+    (htop : Limbs.radix ^ n < 2 * mm)
+    (e : Env s)
+    (inv : StepInv mem n bsize mm minv)
+    (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm)
+    (rf : RepairFacts
+      (midMem (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
+        (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n)))
+      n mm
+      (negOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
+        (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))))
+    (hfast : n = 4 ∨ n = 8) :
+    Challenge.EvmProof.GasSteps (shiftLoopState z s mem n bsize esize msize 1)
+      (shiftDoneState z s (stepMem mem n mm) n bsize esize msize) :=
+  ((gasSteps_stepPre z s mem n bsize esize msize 1 mm minv le_rfl (by decide) hn hn32 hbs hmpos hmm
+      htop e inv hbase hr rf hfast).trans
+    (soundEnv blk3253 e (run_csubCall_last z s (stepMem mem n mm) n bsize esize msize e.run))).trans
+  (soundEnv blk3253x e (run_csubExit z s (stepMem mem n mm) n bsize esize msize e.code e.run))
 
 end Challenge.Modexp.Submission.Proofs.Fast.Shift
